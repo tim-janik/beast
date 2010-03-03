@@ -278,6 +278,142 @@ brute_force_loop_tests (void)
     }
 }
 
+static float *
+gen_expect (float *out,
+            int    begin,
+            int    end,
+            int    channels)
+{
+  int frame;
+  int delta = (begin < end) ? 1 : -1;
+
+  for (frame = begin; frame != end; frame += delta)
+    {
+      int ch;
+      for (ch = 0; ch < channels; ch++)
+        {
+          *out++ = frame + (ch + 1.0) / (channels + 1.0);
+        }
+    }
+  return out;
+}
+
+static void
+multi_channel_test_one (int pingpong,
+                        int channels,
+                        int frames,
+                        int loop_start,
+                        int loop_end)
+{
+  GslDataHandle *myhandle;
+  GslDataCache *dcache;
+  GslWaveChunk *wchunk;
+  BseErrorType error;
+
+  const int LOOP_COUNT = 20;
+  const int LOOP_TYPE = pingpong ? GSL_WAVE_LOOP_PINGPONG : GSL_WAVE_LOOP_JUMP;
+  size_t my_data_length = channels * frames;
+  float *my_data = malloc (my_data_length * sizeof (float));
+
+  int p, c;
+  for (p = 0; p < frames; p++)
+    for (c = 0; c < channels; c++)
+      my_data[p * channels + c] = p + (c + 1.0) / (channels + 1.0);
+
+  myhandle = gsl_data_handle_new_mem (channels, 32, 44100, 440, my_data_length, my_data, NULL);
+  dcache = gsl_data_cache_new (myhandle, channels);
+  gsl_data_handle_unref (myhandle);
+  wchunk = gsl_wave_chunk_new (dcache,
+                               44100.0, 44.0,
+                               LOOP_TYPE, loop_start * channels, loop_end * channels, LOOP_COUNT);
+  error = gsl_wave_chunk_open (wchunk);
+  if (error)
+    g_error ("failed to open wave chunk: %s", bse_error_blurb (error));
+  gsl_wave_chunk_unref (wchunk);
+
+  float *expect = malloc (my_data_length * sizeof (float) * (LOOP_COUNT + 1));
+  float *ep = expect;
+  int l;
+  ep = gen_expect (ep, 0, loop_start, channels);
+  for (l = 0; l < LOOP_COUNT / (pingpong + 1); l++)
+    {
+      ep = gen_expect (ep, loop_start, loop_end + 1, channels);
+      if (pingpong)
+        ep = gen_expect (ep, loop_end - 1, loop_start, channels);
+    }
+  ep = gen_expect (ep, loop_start, loop_end + 1, channels);
+  ep = gen_expect (ep, loop_end + 1, frames, channels);
+
+  GslWaveChunkBlock block = { 0, };
+  block.play_dir = 1;
+  block.offset = 0;
+
+  GslLong pos = 0;
+  while (block.offset < wchunk->wave_length)
+    {
+      gsl_wave_chunk_use_block (wchunk, &block);
+
+      float *f;
+      double max_diff = 0;
+      int step;
+      if ((block.play_dir < 0) ^ (block.dirstride < 0))
+        step = -1;
+      else
+        step = 1;
+
+      for (f = block.start; f != block.end; f += step)
+        {
+          if (pos < wchunk->wave_length)
+            max_diff = MAX (max_diff, fabs (*f - expect[pos]));
+          pos++;
+        }
+      TCHECK (max_diff < 1e-10);
+      gsl_wave_chunk_unuse_block (wchunk, &block);
+      block.offset = block.next_offset;
+    }
+  free (expect);
+  free (my_data);
+}
+
+static void
+multi_channel_tests()
+{
+  TSTART ("multi channel loop");
+  int pingpong;
+  for (pingpong = 0; pingpong != 2; pingpong++)
+    {
+      int channels;
+      for (channels = 1; channels <= 32; channels++)
+        {
+          bool skip = false;
+
+          if (pingpong && (channels > 1))   // FIXME: ping pong multichannel loops are broken
+            {
+              skip = true;
+            }
+          else
+            {
+              multi_channel_test_one (pingpong, channels, 127, 13, 113);
+              if (channels > 2)             // FIXME: loops with channels > 2 are broken
+                {
+                  skip = true;
+                }
+              else
+                {
+                  multi_channel_test_one (pingpong, channels, 1027, 153, 336);
+                  multi_channel_test_one (pingpong, channels, 4028, 1001, 3977);
+                }
+            }
+
+          if (!skip)
+            TOK();
+          else
+            fprintf (stderr, "!");
+        }
+    }
+  TDONE();
+}
+
 int
 main (gint   argc,
       gchar *argv[])
@@ -294,6 +430,7 @@ main (gint   argc,
 
   reversed_datahandle_test();
   simple_loop_tests();
+  multi_channel_tests();
   if (sfi_init_settings().test_slow)
     brute_force_loop_tests();
 
