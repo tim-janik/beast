@@ -191,6 +191,26 @@ adsr-wave-2-test:
 	$(BSEFCOMPARE) $(srcdir)/adsr-wave-2-test.ref $(@F).tmp --threshold 99.99
 	rm -f $(@F).tmp $(@F).wav
 
+# a test for play-type=plain-wave-1
+FEATURE_TESTS += plain-wave-1-test
+EXTRA_DIST += plain-wave-1-test.bse plain-wave-1-test.ref
+plain-wave-1-test:
+	$(BSE2WAV) $(srcdir)/plain-wave-1-test.bse $(@F).wav
+	$(BSEFEXTRACT) $(@F).wav --cut-zeros --channel 0 --avg-spectrum --spectrum --avg-energy --end-time  > $(@F).tmp
+	$(BSEFEXTRACT) $(@F).wav --cut-zeros --channel 1 --avg-spectrum --spectrum --avg-energy --end-time >> $(@F).tmp
+	$(BSEFCOMPARE) $(srcdir)/plain-wave-1-test.ref $(@F).tmp --threshold 99.99
+	rm -f $(@F).tmp $(@F).wav
+
+# a test for play-type=plain-wave-2
+FEATURE_TESTS += plain-wave-2-test
+EXTRA_DIST += plain-wave-2-test.bse plain-wave-2-test.ref
+plain-wave-2-test:
+	$(BSE2WAV) $(srcdir)/plain-wave-2-test.bse $(@F).wav
+	$(BSEFEXTRACT) $(@F).wav --cut-zeros --channel 0 --avg-spectrum --spectrum --avg-energy --end-time  > $(@F).tmp
+	$(BSEFEXTRACT) $(@F).wav --cut-zeros --channel 1 --avg-spectrum --spectrum --avg-energy --end-time >> $(@F).tmp
+	$(BSEFCOMPARE) $(srcdir)/plain-wave-2-test.ref $(@F).tmp --threshold 99.99
+	rm -f $(@F).tmp $(@F).wav
+
 # the BEAST demo song
 FEATURE_TESTS += partymonster-test
 EXTRA_DIST += partymonster.ref
