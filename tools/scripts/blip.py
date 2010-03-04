@@ -65,12 +65,31 @@ def repeat (block, n):
       out.append (block[j])
   return out
 
+def ad_envelope (block, attack): # attack in range 0 .. 1
+  out = array.array('f')
+  decay = 1.0 - attack
+  volume = 0
+  for i in range (len (block)):
+    pos = i * 1.0 / len (block)
+    if pos < attack:
+      volume += 1.0 / (attack * len (block))
+    else:
+      volume -= 1.0 / (decay * len (block))
+    out.append (block[i] * volume)
+  return out
+
 out_psq = pseudo_square (48000, 440)
 out_psq.tofile (open ("pseudo-square-440", "w"))
 
 out_psaw = pseudo_saw (48000, 440)
 out_psaw.tofile (open ("pseudo-saw-440", "w"))
 
-#out_psq_psaw = repeat (interleave (out_psq, out_psaw), 50)
 out_psq_psaw = interleave (out_psq, out_psaw)
 out_psq_psaw.tofile (open ("pseudo-stereo-440", "w"))
+
+out_psq_env = ad_envelope (repeat (pseudo_square (48000, 440), 50), 0.1)
+out_psq_env.tofile (open ("pseudo-square-env-440", "w"))
+
+out_pstereo_env = interleave (ad_envelope (repeat (pseudo_square (48000, 440), 50), 0.1),
+                              ad_envelope (repeat (pseudo_saw (48000, 440), 50), 0.1))
+out_pstereo_env.tofile (open ("pseudo-stereo-env-440", "w"))

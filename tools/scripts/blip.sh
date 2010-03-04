@@ -42,3 +42,15 @@ bsewavetool add-raw-chunk pseudo-stereo.bsewave -f 440.366972477 -F float -R 480
 LOOP_END=216
 bsewavetool xinfo pseudo-stereo.bsewave -f440.36 loop-type=jump loop-start=0 loop-end=$LOOP_END loop-count=1000000
 bsewavetool xinfo pseudo-stereo.bsewave --wave play-type=adsr-wave-2
+
+rm pseudo-square-env.bsewave
+bsewavetool create pseudo-square-env.bsewave 1
+bsewavetool add-raw-chunk pseudo-square-env.bsewave -f 440.366972477 -F float -R 48000 pseudo-square-env-440
+bsewavetool xinfo pseudo-square-env.bsewave --wave play-type=plain-wave-1
+bsewavetool oggenc pseudo-square-env.bsewave
+
+rm pseudo-stereo-env.bsewave
+bsewavetool create pseudo-stereo-env.bsewave 2
+bsewavetool add-raw-chunk pseudo-stereo-env.bsewave -f 440.366972477 -F float -R 48000 pseudo-stereo-env-440
+bsewavetool xinfo pseudo-stereo-env.bsewave --wave play-type=plain-wave-2
+bsewavetool oggenc pseudo-stereo-env.bsewave
