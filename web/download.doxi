@@ -91,25 +91,25 @@ For @uri{http://www.gentoo.org/, Gentoo} there exists a
 @heading Bleeding Edge
 
 The @beastbse source code tree is hosted on the
-@uri{http://www.gnome.org, GNOME project}'s SVN server
+@uri{http://www.gnome.org, GNOME project}'s git server
 in the 
-@uri{http://svn.gnome.org/viewsvn/beast/trunk/, beast SVN module}.
+@uri{http://git.gnome.org/browse/beast/, beast git repository}.
 You can check it out like this:
 
 @example
-$ svn co svn://svn.gnome.org/svn/beast/trunk beast
+$ git clone git://git.gnome.org/beast
 @done
 
-We recommend that you read the @uri{http://developer.gnome.org/tools/svn.html, tutorial}
-on using, getting, and building GNOME projects from SVN.
+There is a collection of @uri{http://live.gnome.org/Git, git related documents} on
+live.gnome.org to help you getting started with git.
 
-Building from SVN requires additional tools than building the release tarballs.
+Building from the git repository requires additional tools than building the release tarballs.
 This is due to documentation build rules and code generation rules for which the
 results are simply included in release tarballs.
-And unlike release tarballs, the SVN version of @beast has to be build in place
+And unlike release tarballs, the git version of @beast has to be build in place
 with srcdir==builddir.
 
-Beware that SVN versions may behave way less stable than release tarballs,
+Beware that git versions may behave way less stable than release tarballs,
 and they may produce invalid or incompatible @file{.bse} files.
 So please do not distribute non-release packages of @beastbse, that would
 mean putting the enduser's data at risk and produces much unneccessary
