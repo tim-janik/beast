@@ -26,7 +26,6 @@
 #include <birnet/birnetmath.hh>
 #include <birnet/birnetutf8.hh>
 #include <birnet/birnetutils.hh>
-#include <birnet/birnetsignal.hh>
 #include <birnet/birnetthread.hh>
 
 #endif /* __BIRNET_H__ */
