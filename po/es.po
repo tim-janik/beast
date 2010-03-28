@@ -7,227 +7,21 @@
 # Ismael Rubio Rojas <ismael_rubio_rojas@hotmail.com>, 2003.
 # Francisco Javier F. Serrador <serrador@cvs.gnome.org>, 2003, 2004, 2006.
 # Yelitza Louze <ylouze@redhat.com>, 2003.
-# Jorge González <jorge.gonzalez.gonzalez@hispalinux.es>, 2004, 2005, 2006.
-# Jorge González <jorgegonz@svn.gnome.org>, 2009.
+# Jorge González <jorgegonz@svn.gnome.org>, 2004, 2005, 2006, 2009, 2010.
 msgid ""
 msgstr ""
 "Project-Id-Version: pan2\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-02-14 01:38+0100\n"
-"PO-Revision-Date: 2009-06-06 13:22+0200\n"
+"Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
+"product=beast&component=general\n"
+"POT-Creation-Date: 2010-02-14 01:01+0000\n"
+"PO-Revision-Date: 2010-03-28 13:58+0200\n"
 "Last-Translator: Jorge González <jorgegonz@svn.gnome.org>\n"
 "Language-Team: Español <gnome-es-list@gnome.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: KBabel 1.11.4\n"
-"Plural-Forms:  nplurals=2; plural=(n != 1);\n"
-
-#: ../library/scripts/mixer-splitup-by-track.scm.h:25
-msgid "/Song/Assign Tracks to individual Mixer Busses"
-msgstr ""
-
-#: ../library/scripts/mixer-splitup-by-track.scm.h:26
-msgid ""
-"This script creates a new Mixer Bus for each track in the song that is "
-"currently using the Master Bus as output."
-msgstr ""
-
-#: ../library/scripts/mixer-splitup-by-track.scm.h:30
-#: ../library/scripts/song-parts-operations.scm.h:30
-#: ../library/scripts/song-parts-operations.scm.h:39
-#, fuzzy
-msgid "Song"
-msgstr "_Canción"
-
-#: ../library/scripts/mixer-splitup-by-track.scm.h:57
-#: ../library/scripts/song-parts-operations.scm.h:45
-#, fuzzy
-msgid "No valid song supplied"
-msgstr "Propietario del objeto no válido"
-
-#: ../library/scripts/mixer-splitup-by-track.scm.h:59
-msgid "This script cannot be used while the project is playing"
-msgstr ""
-
-#: ../library/scripts/modules2grid.scm.h:21
-msgid "/SNet/Grid Align"
-msgstr ""
-
-#: ../library/scripts/modules2grid.scm.h:22
-msgid ""
-"Round module positions to their nearest grid position, so to align all "
-"modules within a synthesis network."
-msgstr ""
-
-#: ../library/scripts/modules2grid.scm.h:26
-#, fuzzy
-msgid "Synth Net"
-msgstr "Sintetización hecha"
-
-#: ../library/scripts/modules2grid.scm.h:30
-#, fuzzy
-msgid "No valid synthesis network supplied"
-msgstr "Â¿Dibujar las redes de síntesis con los bordes suavizados?"
-
-#: ../library/scripts/part-harmonic-transposer.scm.h:25
-msgid "/Part/Harmonic Transposer"
-msgstr ""
-
-#. ; FIXME: the description may be suboptimal; the problem is
-#. ; that I can't precisely describe details of musical theory
-#. ; in english. -- stw
-#: ../library/scripts/part-harmonic-transposer.scm.h:29
-msgid ""
-"The harmonic transposer takes the selection of a part and transposes it to "
-"different harmonies. If you for instance have selected a measure filled with "
-"C major chords, and enter \"C,Am,F,G\" as harmonic sequence, the result will "
-"be four measures, filled with C major, A minor, F major and G major "
-"chords. \n"
-"\n"
-"This also works for melodies, so you can transpose a whole melody written in "
-"G major to D minor. The standard scales used in church music (ionian, "
-"dorian, phrygian, lydian, mixolydian, aeolian, locrian) are also supported: "
-"it is for instance possible to write Ddorian or Caeolian. The aeolian scale "
-"is equivalent to minor and the ionian scale is equivalent to major. \n"
-"\n"
-"Since musically, there is no preference on whether to transpose up or down "
-"it is possible to specify the first harmony that will be transposed down "
-"(all harmonies below this will be transposed up). It is possible to omit "
-"this value. Then all notes will be transposed up."
-msgstr ""
-
-#: ../library/scripts/part-harmonic-transposer.scm.h:50
-#: ../library/scripts/record-midi.scm.h:25
-#, fuzzy
-msgid "Part"
-msgstr "Partes"
-
-#: ../library/scripts/part-harmonic-transposer.scm.h:51
-msgid "Harmony Sequence"
-msgstr ""
-
-#: ../library/scripts/part-harmonic-transposer.scm.h:52
-msgid "Transpose down starting at"
-msgstr ""
-
-#: ../library/scripts/part-harmonic-transposer.scm.h:209
-#, fuzzy
-msgid "No valid part supplied"
-msgstr "Propietario del objeto no válido"
-
-#: ../library/scripts/part-harmonic-transposer.scm.h:211
-#, fuzzy
-msgid "No notes selected"
-msgstr "Ninguna cuantización seleccionada"
-
-#: ../library/scripts/part-harmonic-transposer.scm.h:218
-#, fuzzy
-msgid "Failed to parse harmony list"
-msgstr "Error al iniciar la grabación al disco."
-
-#: ../library/scripts/part-harmonic-transposer.scm.h:221
-msgid "Harmony list is too short"
-msgstr ""
-
-#: ../library/scripts/progressor-example.scm.h:32
-msgid "/Project/Toys/Progressor..."
-msgstr ""
-
-#: ../library/scripts/progressor-example.scm.h:33
-msgid ""
-"Progressor takes two seed values and then starts progressing. It doesn't do "
-"anything particularly usefull, other than ticking the main program from time "
-"to time. It is a funny example though."
-msgstr ""
-
-#: ../library/scripts/progressor-example.scm.h:38
-#, fuzzy
-msgid "N Iterations"
-msgstr "Información"
-
-#: ../library/scripts/progressor-example.scm.h:39
-msgid "N Wait Spins"
-msgstr ""
-
-#: ../library/scripts/progressor-example.scm.h:40
-msgid "Update Percentage"
-msgstr ""
-
-#: ../library/scripts/record-midi.scm.h:20
-msgid "/Part/Record Midi..."
-msgstr ""
-
-#: ../library/scripts/record-midi.scm.h:21
-msgid ""
-"Record midi events, currently being played on the default external midi "
-"device, into a given song part. The MIDI recorder is still work in progress."
-msgstr ""
-
-#: ../library/scripts/record-midi.scm.h:26
-#, fuzzy
-msgid "Start Now"
-msgstr "Iniciar editor"
-
-#: ../library/scripts/record-midi.scm.h:49
-#, fuzzy
-msgid "No valid part object supplied"
-msgstr "Propietario del objeto no válido"
-
-#: ../library/scripts/record-midi.scm.h:50
-msgid "You probably want to start this script from a part editor."
-msgstr ""
-
-#: ../library/scripts/record-midi.scm.h:53
-msgid ""
-"Not currently recording...\n"
-"\n"
-"The MIDI recorder is still work in progress.\n"
-"Currently, you need a MIDI Synthesizer network running, in order for this "
-"script to catch the events currently being played back."
-msgstr ""
-
-#: ../library/scripts/song-parts-operations.scm.h:25
-msgid "/Song/Crop parts (loop range)"
-msgstr ""
-
-#: ../library/scripts/song-parts-operations.scm.h:26
-msgid ""
-"Crops all parts within the loop range and moves parts after the loop range "
-"backwards accordingly."
-msgstr ""
-
-#: ../library/scripts/song-parts-operations.scm.h:34
-#, fuzzy
-msgid "/Song/Duplicate parts (loop range)"
-msgstr "Falló la detección (del inicio de) la cabecera"
-
-#: ../library/scripts/song-parts-operations.scm.h:35
-msgid ""
-"Duplicate all parts within the loop range and moves parts after the loop "
-"range forward accordingly."
-msgstr ""
-
-#: ../library/scripts/song-parts-operations.scm.h:62
-msgid ""
-"The loop range of the specified song contains no parts or is unset, so no "
-"parts can be identified to operate on."
-msgstr ""
-
-#: ../library/scripts/song-parts-operations.scm.h:64
-#, fuzzy
-msgid "Show messages about empty part range"
-msgstr "Mostrar mensajes sobre problemas con las señales de entrada"
-
-#: ../library/scripts/song-parts-operations.scm.h:68
-#, fuzzy
-msgid "Failed to crop part range."
-msgstr "Error al iniciar la grabación al disco."
-
-#: ../library/scripts/song-parts-operations.scm.h:80
-#, fuzzy
-msgid "Failed to duplicate part range."
-msgstr "Falló la detección (del inicio de) la cabecera"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: ../beast-gtk/bstapp.c:81
 msgid "_New"
@@ -3730,11 +3524,11 @@ msgid ""
 "No suitable web browser executable could be found to be executed and to "
 "display the URL: %s"
 msgstr ""
+"No se ha podido encontrar un navegador web apropiado para mostrar el URL: %s"
 
 #: ../birnet/birnetutils.cc:1198
-#, fuzzy
 msgid "Show messages about web browser launch problems"
-msgstr "Mostrar mensajes sobre problemas con las señales de entrada"
+msgstr "Mostrar mensajes sobre problemas de lanzamiento del navegador web"
 
 #: ../bse/bseautodoc.c:185 ../bse/bseautodoc.c:191
 msgid "Range:"
@@ -3782,15 +3576,15 @@ msgid "Cutoff [Hz]"
 msgstr "Corte [Hz]"
 
 #: ../bse/bsebiquadfilter.c:133
-#, fuzzy
 msgid "Filter cutoff frequency in Hertz"
-msgstr "Configura el porcentaje de la frecuencia de corte"
+msgstr "Frecuencia de corte del filtro en hercios"
 
 #: ../bse/bsebiquadfilter.c:141 ../bse/bseconstant.c:127
 #: ../bse/bsestandardosc.c:149 ../plugins/bseiirfilter.c:146
 #: ../plugins/bseiirfilter.c:157 ../plugins/davcanyondelay.c:114
 #: ../plugins/davorgan.c:113 ../plugins/davsyndrum.c:94
 #: ../plugins/davxtalstrings.c:109
+#, c-format
 msgid "Note"
 msgstr "Nota"
 
@@ -3800,6 +3594,8 @@ msgid ""
 "Filter cutoff frequency as note, converted to Hertz according to the current "
 "musical tuning"
 msgstr ""
+"Frecuencia de corte del filtro como una nota, convertida en hercios según el "
+"tono musical actual"
 
 #: ../bse/bsebiquadfilter.c:147 ../bse/bsebiquadfilter.c:153
 msgid "Emphasis"
@@ -4059,6 +3855,7 @@ msgid "Constant Output %u"
 msgstr "Salida constante %u"
 
 #: ../bse/bseconstant.c:108
+#, c-format
 msgid "Value [float]"
 msgstr "Valor [flotante]"
 
@@ -4073,18 +3870,22 @@ msgstr "Valor de señal constante"
 #: ../plugins/davsyndrum.c:93 ../plugins/davxtalstrings.c:101
 #: ../plugins/davxtalstrings.c:103 ../plugins/davxtalstrings.c:107
 #: ../plugins/davxtalstrings.c:112 ../plugins/davxtalstrings.c:117
+#, c-format
 msgid "Frequency"
 msgstr "Frecuencia"
 
 #: ../bse/bseconstant.c:118
 msgid "Constant signal value interpreted as frequency value in Hertz"
 msgstr ""
+"Valor constante de señal interpretado como valor de frecuencia en hercios"
 
 #: ../bse/bseconstant.c:129
 msgid ""
 "Constant signal value as note, converted to Hertz according to the current "
 "musical tuning"
 msgstr ""
+"Valor constante de señal como nota, convertido a hercios según el tono "
+"musical actual"
 
 #: ../bse/bseconstant.c:135
 #, c-format
@@ -4131,7 +3932,7 @@ msgstr ""
 #. Rational Intonation: http://en.wikipedia.org/wiki/Just_intonation
 #: ../bse/bsecore.idl:84
 msgid "Diatonic Scale"
-msgstr "Escala daltónica"
+msgstr "Escala diatónica"
 
 #. http://en.wikipedia.org/wiki/Diatonic_scale
 #: ../bse/bsecore.idl:85
@@ -4144,19 +3945,20 @@ msgstr ""
 
 #. Werckmeister I
 #: ../bse/bsecore.idl:89
-#, fuzzy
 msgid "Indian Scale"
-msgstr "Escala vertical"
+msgstr "Escala india"
 
 #. http://en.wikipedia.org/wiki/Just_intonation#Indian_scales
 #: ../bse/bsecore.idl:90
 msgid ""
 "Diatonic scale used in Indian music with wolf interval at Dha, close to 3/2"
 msgstr ""
+"Escala diatónica usada en la música india con quinta del lobo en Dha, cerca "
+"de 3/2"
 
 #: ../bse/bsecore.idl:91
 msgid "Pythagorean Tuning"
-msgstr ""
+msgstr "Afinación pitagórica"
 
 #. http://en.wikipedia.org/wiki/Pythagorean_tuning
 #: ../bse/bsecore.idl:92
@@ -4168,7 +3970,7 @@ msgstr ""
 
 #: ../bse/bsecore.idl:95
 msgid "Pentatonic 5-limit"
-msgstr ""
+msgstr "Límite de 5 de la escala pentatónica"
 
 #. http://en.wikipedia.org/wiki/Pentatonic_scale
 #: ../bse/bsecore.idl:96
@@ -4180,7 +3982,7 @@ msgstr ""
 
 #: ../bse/bsecore.idl:99
 msgid "Pentatonic Blues"
-msgstr ""
+msgstr "Blues pentatónico"
 
 #. http://en.wikipedia.org/wiki/Pentatonic_scale
 #: ../bse/bsecore.idl:100
@@ -4191,7 +3993,7 @@ msgstr ""
 
 #: ../bse/bsecore.idl:102
 msgid "Pentatonic Gogo"
-msgstr ""
+msgstr "Gogo pentatónico"
 
 #. http://en.wikipedia.org/wiki/Pentatonic_scale
 #: ../bse/bsecore.idl:103
@@ -4298,7 +4100,7 @@ msgstr ""
 
 #: ../bse/bsecore.idl:140
 msgid "Young Temperament"
-msgstr ""
+msgstr "Temperamento joven"
 
 #. http://en.wikipedia.org/wiki/Young_temperament
 #: ../bse/bsecore.idl:141
@@ -5596,10 +5398,12 @@ msgid "/Input & Output/Instrument Output"
 msgstr "/Entrada y salida/Salida de instrumento"
 
 #: ../bse/bsejanitor.c:535
+#, c-format
 msgid "killed by janitor"
 msgstr "killed by janitor"
 
 #: ../bse/bsejanitor.c:537
+#, c-format
 msgid "connection terminated"
 msgstr "conexión terminada"
 
@@ -5609,6 +5413,7 @@ msgid "%s (core dumped)"
 msgstr "%s (core dumped)"
 
 #: ../bse/bsemain.cc:270
+#, c-format
 msgid ""
 "\n"
 "Available PCM drivers:\n"
@@ -5617,6 +5422,7 @@ msgstr ""
 "Controladores PCM disponibles:\n"
 
 #: ../bse/bsemain.cc:272
+#, c-format
 msgid ""
 "\n"
 "Available MIDI drivers:\n"
@@ -5998,11 +5804,11 @@ msgstr "Maestro"
 
 #: ../bse/bsesong.c:746
 msgid "Tuning"
-msgstr "Modificaciones"
+msgstr "Tono"
 
 #: ../bse/bsesong.c:748
 msgid "Musical Tuning"
-msgstr "Modificaciones musicales"
+msgstr "Tono musical"
 
 #: ../bse/bsesong.c:749
 msgid ""
@@ -6163,11 +5969,12 @@ msgid "Base Frequency"
 msgstr "Frecuencia base"
 
 #: ../bse/bsestandardosc.c:145
-#, fuzzy
 msgid ""
 "Oscillator frequency in Hertz, i.e. the number of oscillator cycles per "
 "second"
-msgstr "Número de ciclos del oscilador por segundo"
+msgstr ""
+"Frecuencia del oscilador en hercios, ej. el número de ciclos del oscilador "
+"por segundo"
 
 #: ../bse/bsestandardosc.c:150
 msgid ""
@@ -6998,9 +6805,8 @@ msgid "Cutoff Frequency (All Filters)"
 msgstr "Frecuencia de corte (todos los filtros)"
 
 #: ../plugins/bseiirfilter.c:141
-#, fuzzy
 msgid "Filter cutoff frequency"
-msgstr "Configura el porcentaje de la frecuencia de corte"
+msgstr "Frecuencia de corte del filtro"
 
 #: ../plugins/bseiirfilter.c:150 ../plugins/bseiirfilter.c:155
 msgid "Cutoff Frequency 2 (Band Pass/Stop)"
@@ -7461,6 +7267,66 @@ msgstr "Salida derecha"
 #, c-format
 msgid "failed to add wave chunk from file \"%s\": %s"
 msgstr "error al añadir partes de onda desde el archivo «%s»: %s"
+
+#, fuzzy
+#~ msgid "Song"
+#~ msgstr "_Canción"
+
+#, fuzzy
+#~ msgid "No valid song supplied"
+#~ msgstr "Propietario del objeto no válido"
+
+#, fuzzy
+#~ msgid "Synth Net"
+#~ msgstr "Sintetización hecha"
+
+#, fuzzy
+#~ msgid "No valid synthesis network supplied"
+#~ msgstr "Â¿Dibujar las redes de síntesis con los bordes suavizados?"
+
+#, fuzzy
+#~ msgid "Part"
+#~ msgstr "Partes"
+
+#, fuzzy
+#~ msgid "No valid part supplied"
+#~ msgstr "Propietario del objeto no válido"
+
+#, fuzzy
+#~ msgid "No notes selected"
+#~ msgstr "Ninguna cuantización seleccionada"
+
+#, fuzzy
+#~ msgid "Failed to parse harmony list"
+#~ msgstr "Error al iniciar la grabación al disco."
+
+#, fuzzy
+#~ msgid "N Iterations"
+#~ msgstr "Información"
+
+#, fuzzy
+#~ msgid "Start Now"
+#~ msgstr "Iniciar editor"
+
+#, fuzzy
+#~ msgid "No valid part object supplied"
+#~ msgstr "Propietario del objeto no válido"
+
+#, fuzzy
+#~ msgid "/Song/Duplicate parts (loop range)"
+#~ msgstr "Falló la detección (del inicio de) la cabecera"
+
+#, fuzzy
+#~ msgid "Show messages about empty part range"
+#~ msgstr "Mostrar mensajes sobre problemas con las señales de entrada"
+
+#, fuzzy
+#~ msgid "Failed to crop part range."
+#~ msgstr "Error al iniciar la grabación al disco."
+
+#, fuzzy
+#~ msgid "Failed to duplicate part range."
+#~ msgstr "Falló la detección (del inicio de) la cabecera"
 
 #~ msgid "Musical notation corresponding to the oscillator frequency"
 #~ msgstr "Notación musical correspondiente a la frecuencia del oscilador"
