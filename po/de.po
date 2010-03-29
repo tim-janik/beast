@@ -5724,7 +5724,7 @@ msgstr ""
 #: ../bse/bseserver.c:534
 #, c-format
 msgid "Failed to open PCM devices: %s"
-msgstr "Öffnen der PCM-Geräte %s fehlgeschlagen: %s"
+msgstr "Öffnen der PCM-Geräte fehlgeschlagen: %s"
 
 #: ../bse/bseserver.c:535
 msgid "Show messages about PCM device selections problems"
@@ -5747,7 +5747,7 @@ msgstr ""
 #: ../bse/bseserver.c:558
 #, c-format
 msgid "Failed to open MIDI devices: %s"
-msgstr "Öffnen der MIDI-Geräte %s fehlgeschlagen: %s"
+msgstr "Öffnen der MIDI-Geräte fehlgeschlagen: %s"
 
 #: ../bse/bseserver.c:559
 msgid "Show messages about MIDI device selections problems"
