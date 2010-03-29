@@ -5,7 +5,7 @@
 # Moritz Mekelburger <moritz@unix-ag.org>, 2004.
 # Hendrik Richter <hendrikr@gnome.org>, 2005.
 # Jens Seidel <jseidel@cvs.gnome.org>, 2006.
-# Mario Blättermann <mariobl@gnome.org>, 2009.
+# Mario Blättermann <mariobl@gnome.org>, 2009, 2010.
 #
 # Strittige Übersetzungen, bitte gegenprüfen!
 #  Part => Part
@@ -16,219 +16,16 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: beast 0.5.6\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-02-14 01:38+0100\n"
-"PO-Revision-Date: 2009-09-19 17:55+0100\n"
+"Project-Id-Version: beast master\n"
+"Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
+"product=beast&component=general\n"
+"POT-Creation-Date: 2010-02-14 01:01+0000\n"
+"PO-Revision-Date: 2010-03-29 18:23+0100\n"
 "Last-Translator: Mario Blättermann <mariobl@gnome.org>\n"
 "Language-Team: German <gnome-de@gnome.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-
-#: ../library/scripts/mixer-splitup-by-track.scm.h:25
-msgid "/Song/Assign Tracks to individual Mixer Busses"
-msgstr ""
-
-#: ../library/scripts/mixer-splitup-by-track.scm.h:26
-msgid ""
-"This script creates a new Mixer Bus for each track in the song that is "
-"currently using the Master Bus as output."
-msgstr ""
-
-#: ../library/scripts/mixer-splitup-by-track.scm.h:30
-#: ../library/scripts/song-parts-operations.scm.h:30
-#: ../library/scripts/song-parts-operations.scm.h:39
-msgid "Song"
-msgstr "Titel"
-
-#: ../library/scripts/mixer-splitup-by-track.scm.h:57
-#: ../library/scripts/song-parts-operations.scm.h:45
-#, fuzzy
-msgid "No valid song supplied"
-msgstr "Synthesemodule"
-
-#: ../library/scripts/mixer-splitup-by-track.scm.h:59
-msgid "This script cannot be used while the project is playing"
-msgstr ""
-
-#: ../library/scripts/modules2grid.scm.h:21
-msgid "/SNet/Grid Align"
-msgstr ""
-
-#: ../library/scripts/modules2grid.scm.h:22
-msgid ""
-"Round module positions to their nearest grid position, so to align all "
-"modules within a synthesis network."
-msgstr ""
-"Modulpositionen werden auf die naheliegensten Gitterkoordinaten gerundet, so "
-"dass alle Module in einem Synthesenetzwerk an einem Gitter ausgerichtet "
-"werden."
-
-#: ../library/scripts/modules2grid.scm.h:26
-#, fuzzy
-msgid "Synth Net"
-msgstr "_Synth"
-
-#: ../library/scripts/modules2grid.scm.h:30
-#, fuzzy
-msgid "No valid synthesis network supplied"
-msgstr "Synthesemodule"
-
-#: ../library/scripts/part-harmonic-transposer.scm.h:25
-msgid "/Part/Harmonic Transposer"
-msgstr ""
-
-#. ; FIXME: the description may be suboptimal; the problem is
-#. ; that I can't precisely describe details of musical theory
-#. ; in english. -- stw
-#: ../library/scripts/part-harmonic-transposer.scm.h:29
-msgid ""
-"The harmonic transposer takes the selection of a part and transposes it to "
-"different harmonies. If you for instance have selected a measure filled with "
-"C major chords, and enter \"C,Am,F,G\" as harmonic sequence, the result will "
-"be four measures, filled with C major, A minor, F major and G major "
-"chords. \n"
-"\n"
-"This also works for melodies, so you can transpose a whole melody written in "
-"G major to D minor. The standard scales used in church music (ionian, "
-"dorian, phrygian, lydian, mixolydian, aeolian, locrian) are also supported: "
-"it is for instance possible to write Ddorian or Caeolian. The aeolian scale "
-"is equivalent to minor and the ionian scale is equivalent to major. \n"
-"\n"
-"Since musically, there is no preference on whether to transpose up or down "
-"it is possible to specify the first harmony that will be transposed down "
-"(all harmonies below this will be transposed up). It is possible to omit "
-"this value. Then all notes will be transposed up."
-msgstr ""
-
-#: ../library/scripts/part-harmonic-transposer.scm.h:50
-#: ../library/scripts/record-midi.scm.h:25
-#, fuzzy
-msgid "Part"
-msgstr "Parts"
-
-#: ../library/scripts/part-harmonic-transposer.scm.h:51
-msgid "Harmony Sequence"
-msgstr ""
-
-#: ../library/scripts/part-harmonic-transposer.scm.h:52
-msgid "Transpose down starting at"
-msgstr ""
-
-#: ../library/scripts/part-harmonic-transposer.scm.h:209
-#, fuzzy
-msgid "No valid part supplied"
-msgstr "Synthesemodule"
-
-#: ../library/scripts/part-harmonic-transposer.scm.h:211
-#, fuzzy
-msgid "No notes selected"
-msgstr "Keine Quantisierung gewählt"
-
-#: ../library/scripts/part-harmonic-transposer.scm.h:218
-msgid "Failed to parse harmony list"
-msgstr ""
-
-#: ../library/scripts/part-harmonic-transposer.scm.h:221
-msgid "Harmony list is too short"
-msgstr ""
-
-#: ../library/scripts/progressor-example.scm.h:32
-msgid "/Project/Toys/Progressor..."
-msgstr ""
-
-#: ../library/scripts/progressor-example.scm.h:33
-msgid ""
-"Progressor takes two seed values and then starts progressing. It doesn't do "
-"anything particularly usefull, other than ticking the main program from time "
-"to time. It is a funny example though."
-msgstr ""
-
-#: ../library/scripts/progressor-example.scm.h:38
-#, fuzzy
-msgid "N Iterations"
-msgstr "Informationen"
-
-#: ../library/scripts/progressor-example.scm.h:39
-msgid "N Wait Spins"
-msgstr ""
-
-#: ../library/scripts/progressor-example.scm.h:40
-msgid "Update Percentage"
-msgstr ""
-
-#: ../library/scripts/record-midi.scm.h:20
-msgid "/Part/Record Midi..."
-msgstr ""
-
-#: ../library/scripts/record-midi.scm.h:21
-msgid ""
-"Record midi events, currently being played on the default external midi "
-"device, into a given song part. The MIDI recorder is still work in progress."
-msgstr ""
-
-#: ../library/scripts/record-midi.scm.h:26
-#, fuzzy
-msgid "Start Now"
-msgstr "Editor starten"
-
-#: ../library/scripts/record-midi.scm.h:49
-#, fuzzy
-msgid "No valid part object supplied"
-msgstr "Synthesemodule"
-
-#: ../library/scripts/record-midi.scm.h:50
-msgid "You probably want to start this script from a part editor."
-msgstr ""
-
-#: ../library/scripts/record-midi.scm.h:53
-msgid ""
-"Not currently recording...\n"
-"\n"
-"The MIDI recorder is still work in progress.\n"
-"Currently, you need a MIDI Synthesizer network running, in order for this "
-"script to catch the events currently being played back."
-msgstr ""
-
-#: ../library/scripts/song-parts-operations.scm.h:25
-msgid "/Song/Crop parts (loop range)"
-msgstr ""
-
-#: ../library/scripts/song-parts-operations.scm.h:26
-msgid ""
-"Crops all parts within the loop range and moves parts after the loop range "
-"backwards accordingly."
-msgstr ""
-
-#: ../library/scripts/song-parts-operations.scm.h:34
-msgid "/Song/Duplicate parts (loop range)"
-msgstr ""
-
-#: ../library/scripts/song-parts-operations.scm.h:35
-msgid ""
-"Duplicate all parts within the loop range and moves parts after the loop "
-"range forward accordingly."
-msgstr ""
-
-#: ../library/scripts/song-parts-operations.scm.h:62
-msgid ""
-"The loop range of the specified song contains no parts or is unset, so no "
-"parts can be identified to operate on."
-msgstr ""
-
-#: ../library/scripts/song-parts-operations.scm.h:64
-#, fuzzy
-msgid "Show messages about empty part range"
-msgstr "Meldungen über Startprobleme des Webbrowsers anzeigen"
-
-#: ../library/scripts/song-parts-operations.scm.h:68
-msgid "Failed to crop part range."
-msgstr ""
-
-#: ../library/scripts/song-parts-operations.scm.h:80
-msgid "Failed to duplicate part range."
-msgstr ""
 
 #: ../beast-gtk/bstapp.c:81
 msgid "_New"
@@ -392,8 +189,7 @@ msgstr "Neuer Titel"
 
 #: ../beast-gtk/bstapp.c:140
 msgid "Create a new song, consisting of a mixer, tracks, parts and notes"
-msgstr ""
-"Einen neuen Titel anlegen, bestehend aus Mixer, Spuren, Parts und Noten"
+msgstr "Einen neuen Titel anlegen, bestehend aus Mixer, Spuren, Parts und Noten"
 
 #: ../beast-gtk/bstapp.c:142
 msgid "Add Custom Synthesizer"
@@ -808,9 +604,8 @@ msgid "Name"
 msgstr "Name"
 
 #: ../beast-gtk/bstfiledialog.c:137
-#, fuzzy
 msgid "Sample or instrument name"
-msgstr "Instrument speichern"
+msgstr "Name des Instruments oder Samples"
 
 #: ../beast-gtk/bstfiledialog.c:140
 msgid "Size"
@@ -1043,8 +838,7 @@ msgstr "Ändern …"
 msgid "Change the currently selected key binding"
 msgstr "Die momentan gewählte Tastenkombination ändern"
 
-#: ../beast-gtk/bstkeybindings.c:53
-#: ../beast-gtk/dialogs/radgets-beast.xml.h:24
+#: ../beast-gtk/bstkeybindings.c:53 ../beast-gtk/dialogs/radgets-beast.xml.h:24
 msgid "Raise"
 msgstr "Erhöhen"
 
@@ -1052,8 +846,7 @@ msgstr "Erhöhen"
 msgid "Raise the currently selected key binding, relative to its neighbours"
 msgstr "Aktuelle Position der Tastenkombination nach oben verschieben"
 
-#: ../beast-gtk/bstkeybindings.c:55
-#: ../beast-gtk/dialogs/radgets-beast.xml.h:18
+#: ../beast-gtk/bstkeybindings.c:55 ../beast-gtk/dialogs/radgets-beast.xml.h:18
 msgid "Lower"
 msgstr "Absenken"
 
@@ -1174,9 +967,9 @@ msgid "Failed to load project \"%s\": %s"
 msgstr "Das Laden des Projekts »%s« ist fehlgeschlagen: %s"
 
 #: ../beast-gtk/bstmain.c:331
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to merge project \"%s\": %s"
-msgstr "Das Laden des Projekts »%s« ist fehlgeschlagen: %s"
+msgstr "Das Zusammenführen des Projekts »%s« ist fehlgeschlagen: %s"
 
 #: ../beast-gtk/bstmain.c:885
 msgid "BEAST About"
@@ -1193,8 +986,7 @@ msgstr "Mitwirkende:"
 
 #: ../beast-gtk/bstmsgabsorb.c:224
 msgid "Enable or disable message display of a specific message type"
-msgstr ""
-"Legt fest, ob Nachrichten eines bestimmten Typs angezeigt werden sollen"
+msgstr "Legt fest, ob Nachrichten eines bestimmten Typs angezeigt werden sollen"
 
 #: ../beast-gtk/bstmsgabsorb.c:226
 msgid "Message Type"
@@ -1233,9 +1025,8 @@ msgid "%s: automation from MIDI control: %s"
 msgstr "%s: Automatisierung aus MIDI-Steuerung: %s"
 
 #: ../beast-gtk/bstparam-automation.c:234
-#, fuzzy
 msgid "Control Automation"
-msgstr "Steuereingang"
+msgstr "Automatisierung der Steuerung"
 
 #: ../beast-gtk/bstparam-choice.c:143
 msgid "Drop Down Combo"
@@ -1549,8 +1340,7 @@ msgid "Steps"
 msgstr "Schritte"
 
 #: ../beast-gtk/bstpatternctrl.c:123
-msgid ""
-"The number of cells to move across each time an event or note was edited"
+msgid "The number of cells to move across each time an event or note was edited"
 msgstr ""
 "Die Anzahl der Zellen, die jedes Mal hinüberbewegt werden, wenn ein Ereignis "
 "oder eine Note editiert wurde"
@@ -2022,10 +1812,10 @@ msgstr "Wiedergabe wird unterbrochen"
 
 #: ../beast-gtk/bstrackeditor.c:94
 msgid ""
-"The rack editor is still highly experimental code and guaranteed to be "
-"broken by future releases. So don't rely on rack editor contents to look "
-"similarly in future versions and be prepared to work around possible "
-"instabilities in the code (i.e. save your projects regularly)."
+"The rack editor is still highly experimental code and guaranteed to be broken "
+"by future releases. So don't rely on rack editor contents to look similarly "
+"in future versions and be prepared to work around possible instabilities in "
+"the code (i.e. save your projects regularly)."
 msgstr ""
 "Der Baugruppeneditor ist nach wie vor sehr experimentell und garantiert "
 "fehlerhaft in zukünftigen Releases. Verlassen Sie sich also nicht darauf, "
@@ -2157,8 +1947,7 @@ msgid "128 Value FFT Window"
 msgstr ""
 
 #: ../beast-gtk/bstrecords.idl:47
-msgid ""
-"A 128 value FFT window corresponds to a spectrum with 65 frequency peaks"
+msgid "A 128 value FFT window corresponds to a spectrum with 65 frequency peaks"
 msgstr ""
 
 #: ../beast-gtk/bstrecords.idl:48
@@ -2568,7 +2357,7 @@ msgstr "Schriftgröße"
 
 #: ../beast-gtk/bstrecords.idl:110
 msgid "Font size in pixels for labels displayed in synthesis networks"
-msgstr ""
+msgstr "Schriftgröße der in Synthesenetzwerken angezeigten Beschriftungen"
 
 #: ../beast-gtk/bstrecords.idl:112
 msgid "Anti-Alias"
@@ -2585,8 +2374,7 @@ msgstr ""
 #: ../beast-gtk/bstrecords.idl:114
 msgid "Fallback into Edit mode after creating synthesis modules?"
 msgstr ""
-"Nach der Erzeugung der Synthesemodule in den Bearbeitungsmodus "
-"zurückschalten?"
+"Nach der Erzeugung der Synthesemodule in den Bearbeitungsmodus zurückschalten?"
 
 # CHECK
 #: ../beast-gtk/bstrecords.idl:116
@@ -2605,6 +2393,8 @@ msgstr "Klingel bei Fehlern aktivieren"
 #: ../beast-gtk/bstrecords.idl:120
 msgid "Notify users via error bells if edits cannot be carried out"
 msgstr ""
+"Den Benutzer mittels Klängen benachrichtigen, falls Bearbeitungen nicht "
+"ausgeführt werden können"
 
 #: ../beast-gtk/bstrecords.idl:122
 msgid "Homogeneous Input Fields"
@@ -2702,7 +2492,7 @@ msgstr "Vertikale Gitterfarbe"
 
 #: ../beast-gtk/bstrecords.idl:154 ../beast-gtk/bstrecords.idl:161
 msgid "Middle Bar Color"
-msgstr ""
+msgstr "Farbe des mittleren Balkens"
 
 #: ../beast-gtk/bstrecords.idl:157
 msgid "Background image used by the control events editor."
@@ -2804,7 +2594,7 @@ msgstr "Rollrichtung der Anzeige wählen"
 
 #: ../beast-gtk/bstscrollgraph.c:577
 msgid "Boost"
-msgstr ""
+msgstr "Anhebung"
 
 #: ../beast-gtk/bstscrollgraph.c:577
 msgid "Adjust frequency level threshold"
@@ -2816,7 +2606,7 @@ msgstr "Fenstergröße"
 
 #: ../beast-gtk/bstscrollgraph.c:580
 msgid "Adjust FFT window size"
-msgstr ""
+msgstr "FFT-Fenstergröße anpassen"
 
 #: ../beast-gtk/bstscrollgraph.c:670
 msgid "Unconnected Output Channel"
@@ -2968,7 +2758,7 @@ msgstr "Parts"
 
 #: ../beast-gtk/bstsupershell.c:196
 msgid "Busses"
-msgstr ""
+msgstr "Busse"
 
 #: ../beast-gtk/bstsupershell.c:200 ../beast-gtk/bstsupershell.c:217
 msgid "Routing"
@@ -3028,8 +2818,7 @@ msgstr ""
 # CHECK
 #: ../beast-gtk/bsttrackrollctrl.c:67
 msgid "Use the horizontal ruler to adjust the right loop pointer"
-msgstr ""
-"Das horizontale Lineal verwenden, um den rechten Loop-Marker anzupassen"
+msgstr "Das horizontale Lineal verwenden, um den rechten Loop-Marker anzupassen"
 
 #: ../beast-gtk/bsttrackrollctrl.c:415 ../beast-gtk/bsttrackrollctrl.c:427
 msgid "Edit Part"
@@ -3102,8 +2891,7 @@ msgid "List of available waves to choose a track instrument from"
 msgstr "Liste der verfügbaren Waves, um ein Spurinstrument daraus zu wählen"
 
 #: ../beast-gtk/bsttrackview.c:606
-msgid ""
-"Notes from unchecked tracks are ignored by the sequencer during playback"
+msgid "Notes from unchecked tracks are ignored by the sequencer during playback"
 msgstr ""
 "Noten aus nicht markierten Spuren werden von Sequenzer bei der Wiedergabe "
 "ignoriert"
@@ -3118,13 +2906,13 @@ msgid "Synthesis network or wave to be used as instrument by this track"
 msgstr ""
 
 #: ../beast-gtk/bsttrackview.c:615
-#, fuzzy
 msgid "Midi channel assigned to this track, 0 uses private per-track channel"
-msgstr "Dieser Spur zugeordneter MIDI-Kanal"
+msgstr ""
+"Dieser Spur zugeordneter MIDI-Kanal, 0 verwendet den privaten spurweisen Kanal"
 
 #: ../beast-gtk/bsttrackview.c:618
 msgid "Mixer busses connected to track output"
-msgstr ""
+msgstr "Mixer-Busse, die als Spur-Ausgabe verwendet werden"
 
 #: ../beast-gtk/bsttrackview.c:621 ../bse/bsemidisynth.c:458
 #: ../bse/bsesong.c:777 ../bse/bsetrack.c:1035
@@ -3168,6 +2956,8 @@ msgid ""
 "This setting can be changed in the \"Messages\" section of the preferences "
 "dialog"
 msgstr ""
+"Diese Einstellung kann im Abschnitt »Meldungen« des Einstellungsdialogs "
+"geändert werden"
 
 #: ../beast-gtk/bstusermessage.c:367
 #, c-format
@@ -3204,7 +2994,7 @@ msgstr "Verarbeitung läuft"
 #: ../beast-gtk/bstusermessage.c:603
 #, c-format
 msgid "An error occoured during execution of script procedure '%s': %s"
-msgstr ""
+msgstr "Ein Fehler trat während der Ausführung der Skiptprozedur »%s« auf: %s"
 
 #: ../beast-gtk/bstusermessage.c:604 ../beast-gtk/bstusermessage.c:797
 msgid "Script execution error."
@@ -3624,8 +3414,8 @@ msgstr "Auto-Kürzen"
 msgid ""
 "If set, overfull text is cut-off and an ellipsis \"...\" is displayed instead"
 msgstr ""
-"Legt fest, ob überlanger Text abgeschnitten wird und stattdessen eine "
-"Ellipse (»...«) angezeigt werden soll"
+"Legt fest, ob überlanger Text abgeschnitten wird und stattdessen eine Ellipse "
+"(»...«) angezeigt werden soll"
 
 #: ../beast-gtk/gxk/gxksimplelabel.c:147
 msgid "Justification"
@@ -3637,8 +3427,8 @@ msgid ""
 "The alignment of the lines in the text of the label relative to each other. "
 "This does NOT affect the alignment of the label within its allocation."
 msgstr ""
-"Die interne, relative Zeilenausrichtung des Beschriftungstexts. Dies "
-"betrifft NICHT die Ausrichtung der Beschriftung innerhalb ihrer Allozierung"
+"Die interne, relative Zeilenausrichtung des Beschriftungstexts. Dies betrifft "
+"NICHT die Ausrichtung der Beschriftung innerhalb ihrer Allozierung"
 
 #: ../beast-gtk/gxk/gxksimplelabel.c:152
 msgid "Pattern"
@@ -3778,6 +3568,7 @@ msgstr "Grenzfrequenz des Filters in Hertz"
 #: ../plugins/bseiirfilter.c:157 ../plugins/davcanyondelay.c:114
 #: ../plugins/davorgan.c:113 ../plugins/davsyndrum.c:94
 #: ../plugins/davxtalstrings.c:109
+#, c-format
 msgid "Note"
 msgstr "Note"
 
@@ -3787,6 +3578,8 @@ msgid ""
 "Filter cutoff frequency as note, converted to Hertz according to the current "
 "musical tuning"
 msgstr ""
+"Filter-Trennfrequenz als Notenwert, entsprechend der aktuellen musikalischen "
+"Stimmung in Hertz umgewandelt"
 
 # CHECK
 #: ../bse/bsebiquadfilter.c:147 ../bse/bsebiquadfilter.c:153
@@ -3900,6 +3693,8 @@ msgstr "Verfügbare Eingänge"
 #: ../bse/bsebus.c:134
 msgid "List of available synthesis signals to be used as bus input"
 msgstr ""
+"Liste der verfügbaren Synthesesignale, die als Bus-Eingabe verwendet werden "
+"können."
 
 #: ../bse/bsebus.c:145 ../bse/bsetrack.c:300
 msgid "Available Outputs"
@@ -3907,7 +3702,7 @@ msgstr "Verfügbare Ausgänge"
 
 #: ../bse/bsebus.c:145
 msgid "List of available mixer busses to be used as bus output"
-msgstr ""
+msgstr "Liste der verfügbaren Mixer-Busse, die als Bus-Ausgabe verwendet werden"
 
 #: ../bse/bsebus.c:873 ../bse/bsebus.c:875 ../bse/bsebus.c:877
 #: ../bse/bsebus.c:879 ../bse/bsebus.c:883 ../bse/bsemidisynth.c:461
@@ -3921,7 +3716,7 @@ msgstr "Stumm"
 
 #: ../bse/bsebus.c:874
 msgid "Mute: turn off the bus volume"
-msgstr ""
+msgstr "Stumm: Die Buslautstärke stummschalten"
 
 #: ../bse/bsebus.c:876
 msgid "Solo"
@@ -3929,7 +3724,7 @@ msgstr "Solo"
 
 #: ../bse/bsebus.c:876
 msgid "Solo: mute all other busses"
-msgstr ""
+msgstr "Solo: Alle anderen Busse stummschalten"
 
 #: ../bse/bsebus.c:878
 msgid "Sync"
@@ -3945,7 +3740,7 @@ msgstr "Linke Lautstärke"
 
 #: ../bse/bsebus.c:880
 msgid "Volume adjustment in decibel of left bus channel"
-msgstr ""
+msgstr "Lautstärkeanpassung des linken Buskanals in Dezibel"
 
 #: ../bse/bsebus.c:884
 msgid "Right Volume"
@@ -3953,7 +3748,7 @@ msgstr "Rechte Lautstärke"
 
 #: ../bse/bsebus.c:884
 msgid "Volume adjustment in decibel of right bus channel"
-msgstr ""
+msgstr "Lautstärkeanpassung des rechten Buskanals in Dezibel"
 
 #: ../bse/bsebus.c:887
 msgid "Signal Inputs"
@@ -3970,6 +3765,7 @@ msgstr "Eingangssignale"
 #: ../bse/bsebus.c:894
 msgid "Synthesis signals (from tracks and busses) used as bus input"
 msgstr ""
+"Synthesesignale (aus Spuren und Bussen), die als Bus-Eingabe verwendet werden"
 
 #: ../bse/bsebus.c:896 ../bse/bsetrack.c:1037
 msgid "Signal Outputs"
@@ -3981,7 +3777,7 @@ msgstr "Ausgabesignale"
 
 #: ../bse/bsebus.c:899
 msgid "Mixer busses used as output for synthesis signals"
-msgstr ""
+msgstr "Als Ausgabe für Synthesesignale verwendete Mixer-Busse"
 
 #: ../bse/bsebus.c:902
 msgid "Internals"
@@ -4029,8 +3825,8 @@ msgstr "Rechter Kanalausgang"
 
 #: ../bse/bsebus.c:932
 msgid ""
-"Bus implementation for songs, used to route track audio signals to the "
-"master output."
+"Bus implementation for songs, used to route track audio signals to the master "
+"output."
 msgstr ""
 
 #: ../bse/bseconstant.c:83
@@ -4040,9 +3836,10 @@ msgstr "/Andere Quellen/Konstant"
 #: ../bse/bseconstant.c:105 ../bse/bseconstant.c:136
 #, c-format
 msgid "Constant Output %u"
-msgstr ""
+msgstr "Konstante Ausgabe %u"
 
 #: ../bse/bseconstant.c:108
+#, c-format
 msgid "Value [float]"
 msgstr "Wert [float]"
 
@@ -4057,18 +3854,21 @@ msgstr "Konstanter Signalwert"
 #: ../plugins/davsyndrum.c:93 ../plugins/davxtalstrings.c:101
 #: ../plugins/davxtalstrings.c:103 ../plugins/davxtalstrings.c:107
 #: ../plugins/davxtalstrings.c:112 ../plugins/davxtalstrings.c:117
+#, c-format
 msgid "Frequency"
 msgstr "Frequenz"
 
 #: ../bse/bseconstant.c:118
 msgid "Constant signal value interpreted as frequency value in Hertz"
-msgstr ""
+msgstr "Konstanter Signalwert, interpretiert als Frequenzwert in Hertz"
 
 #: ../bse/bseconstant.c:129
 msgid ""
 "Constant signal value as note, converted to Hertz according to the current "
 "musical tuning"
 msgstr ""
+"Konstanter Signalwert als Note, entsprechend der aktuellen musikalischen "
+"Stimmung in Hertz umgewandelt"
 
 #: ../bse/bseconstant.c:135
 #, c-format
@@ -4137,8 +3937,8 @@ msgstr ""
 "In der Musiktheorie ist eine diatonische Tonleiter (auch: heptatonia prima) "
 "eine Tonleiter aus sieben Noten, die fünf Ganzton- und zwölf Halbtonschritte "
 "enthält. Die halben Töne sind dabei maximal getrennt. Zwischen zwei "
-"Halbtonschritten liegen entweder zwei oder drei ganze Töne, was sich in "
-"jeder Oktave wiederholt."
+"Halbtonschritten liegen entweder zwei oder drei ganze Töne, was sich in jeder "
+"Oktave wiederholt."
 
 #. Werckmeister I
 #: ../bse/bsecore.idl:89
@@ -4163,10 +3963,10 @@ msgid ""
 "in which the frequency relationships of all intervals are based on the ratio "
 "3:2. Its discovery is generally credited to Pythagoras."
 msgstr ""
-"Die Pythagoreische Stimmung ist die älteste Art der Stimmung der "
-"zwölftönigen chromatischen Tonleiter. Die Frequenzbeziehungen aller "
-"Intervalle basieren hier auf dem Verhältnis 3:2. Die Entdeckung wird meist "
-"Pythagoras zugeschrieben."
+"Die Pythagoreische Stimmung ist die älteste Art der Stimmung der zwölftönigen "
+"chromatischen Tonleiter. Die Frequenzbeziehungen aller Intervalle basieren "
+"hier auf dem Verhältnis 3:2. Die Entdeckung wird meist Pythagoras "
+"zugeschrieben."
 
 #: ../bse/bsecore.idl:95
 msgid "Pentatonic 5-limit"
@@ -4182,7 +3982,7 @@ msgstr ""
 
 #: ../bse/bsecore.idl:99
 msgid "Pentatonic Blues"
-msgstr ""
+msgstr "Pentatonischer Blues"
 
 #. http://en.wikipedia.org/wiki/Pentatonic_scale
 #: ../bse/bsecore.idl:100
@@ -4190,16 +3990,18 @@ msgid ""
 "The blues scale is the minor pentatonic with an additional augmented fourth, "
 "which is referred to as the \"blues note\"."
 msgstr ""
+"Die Blues-Tonleiter ist eine pentatonische Molltonleiter mit einer "
+"zusätzlichen (?) Quarte. welche auch als »Blues-Note« bekannt ist."
 
 #: ../bse/bsecore.idl:102
 msgid "Pentatonic Gogo"
-msgstr ""
+msgstr "Pentatonischer Gogo"
 
 #. http://en.wikipedia.org/wiki/Pentatonic_scale
 #: ../bse/bsecore.idl:103
 msgid ""
-"The Pentatonic Gogo scale is an anhemitonic pentatonic scale used to tune "
-"the instruments of the Gogo people of Tanzania."
+"The Pentatonic Gogo scale is an anhemitonic pentatonic scale used to tune the "
+"instruments of the Gogo people of Tanzania."
 msgstr ""
 
 #. Meantone Temperament: http://en.wikipedia.org/wiki/Meantone_temperament
@@ -4253,8 +4055,7 @@ msgid ""
 "In this tuning the fifths C-G, D-A, E-B, F#-C#, and Bb-F are tempered narrow "
 "by 1/3 comma, and the fifths G#-D# and Eb-Bb are widened by 1/3 comma. The "
 "other fifths are pure. Most of its intervals are close to sixth-comma "
-"meantone. Werckmeister designed this tuning for playing mainly diatonic "
-"music."
+"meantone. Werckmeister designed this tuning for playing mainly diatonic music."
 msgstr ""
 
 #: ../bse/bsecore.idl:122
@@ -4264,15 +4065,15 @@ msgstr "Werckmeister V"
 #. http://en.wikipedia.org/wiki/Werckmeister_temperament
 #: ../bse/bsecore.idl:123
 msgid ""
-"In this tuning the fifths D-A, A-E, F#-C#, C#-G#, and F-C are narrowed by "
-"1/4 comma, and the fifth G#-D# is widened by 1/4 comma. The other fifths are "
+"In this tuning the fifths D-A, A-E, F#-C#, C#-G#, and F-C are narrowed by 1/4 "
+"comma, and the fifth G#-D# is widened by 1/4 comma. The other fifths are "
 "pure. This temperament is closer to equal temperament than Werckmeister III "
 "or IV."
 msgstr ""
-"In dieser Stimmung sind die Quinten D-A, A-E, Fis-Cis, Cis-Gis und F-C um "
-"1/4 Komma verkleinert, während die Quinte Gis-Dis um 1/4 Komma vergrößert "
-"wird. Die anderen Quinten sind rein. Diese Stimmung ist näher an der "
-"gleichtönigen Stimmung als Werckmeister III oder IV."
+"In dieser Stimmung sind die Quinten D-A, A-E, Fis-Cis, Cis-Gis und F-C um 1/4 "
+"Komma verkleinert, während die Quinte Gis-Dis um 1/4 Komma vergrößert wird. "
+"Die anderen Quinten sind rein. Diese Stimmung ist näher an der gleichtönigen "
+"Stimmung als Werckmeister III oder IV."
 
 #: ../bse/bsecore.idl:126
 msgid "Werckmeister VI"
@@ -4281,12 +4082,12 @@ msgstr "Werckmeister VI"
 #. http://en.wikipedia.org/wiki/Werckmeister_temperament
 #: ../bse/bsecore.idl:127
 msgid ""
-"This tuning is also known as Septenarius tuning is based on a division of "
-"the monochord length into 196 = 7 * 7 * 4 parts. The resulting scale has "
-"rational frequency relationships, but in practice involves pure and impure "
-"sounding fifths. Werckmeister described the Septenarius as a \"temperament "
-"which has nothing at all to do with the divisions of the comma, nevertheless "
-"in practice so correct that one can be really satisfied with it\"."
+"This tuning is also known as Septenarius tuning is based on a division of the "
+"monochord length into 196 = 7 * 7 * 4 parts. The resulting scale has rational "
+"frequency relationships, but in practice involves pure and impure sounding "
+"fifths. Werckmeister described the Septenarius as a \"temperament which has "
+"nothing at all to do with the divisions of the comma, nevertheless in "
+"practice so correct that one can be really satisfied with it\"."
 msgstr ""
 
 #: ../bse/bsecore.idl:134
@@ -4313,15 +4114,15 @@ msgstr "Young-Stimmung"
 msgid ""
 "Thomas Young devised a form of musical tuning to make the harmony most "
 "perfect in those keys which are the most frequently used (give better major "
-"thirds in those keys), but to not have any unplayable keys. This is "
-"attempted by tuning upwards from C a sequence of six pure fourths, as well "
-"as six equally imperfect fifths."
+"thirds in those keys), but to not have any unplayable keys. This is attempted "
+"by tuning upwards from C a sequence of six pure fourths, as well as six "
+"equally imperfect fifths."
 msgstr ""
 
 #. special cased signals
 #: ../bse/bsecore.idl:150
 msgid "Program Change"
-msgstr ""
+msgstr "Programmänderung"
 
 #. 7bit
 #: ../bse/bsecore.idl:151
@@ -4379,9 +4180,9 @@ msgstr "Dateneintrag"
 msgid "Volume"
 msgstr "Lautstärke"
 
-#: ../bse/bsecore.idl:164 ../bse/bsecore.idl:341
-#: ../plugins/bseamplifier.idl:51 ../plugins/bseamplifier.idl:56
-#: ../plugins/bsebalance.idl:44 ../plugins/bsebalance.idl:49
+#: ../bse/bsecore.idl:164 ../bse/bsecore.idl:341 ../plugins/bseamplifier.idl:51
+#: ../plugins/bseamplifier.idl:56 ../plugins/bsebalance.idl:44
+#: ../plugins/bsebalance.idl:49
 msgid "Balance"
 msgstr "Abgleich"
 
@@ -5042,37 +4843,33 @@ msgstr "Thread ID"
 
 #: ../bse/bsecore.idl:749
 msgid "A unique number identifying this thread"
-msgstr ""
+msgstr "Eine eindeutige Zahl, die diesen Thread identifiziert"
 
 #: ../bse/bsecore.idl:751
 msgid "Priority"
 msgstr "Priorität"
 
 #: ../bse/bsecore.idl:751
-#, fuzzy
 msgid ""
 "The nice value of a thread, -20 indicates a high priority thread and +19 a "
 "low priority one that is 'nice' to others"
 msgstr ""
-"Der \"nice\"-Wert eines Prozesses: -20 bezeichnet eine hohe priorität und "
-"+19 eine niedrige, also einen Prozess, der \"nice\" (freundlich) zu anderen "
-"ist."
+"Der »nice«-Wert eines Prozesses: -20 bezeichnet eine hohe Priorität und +19 "
+"eine niedrige, also einen Prozess, der »nice« (freundlich) zu anderen ist."
 
 #: ../bse/bsecore.idl:754
 msgid "Processor"
 msgstr "Prozessor"
 
 #: ../bse/bsecore.idl:754
-#, fuzzy
 msgid "The processor that this thread is currently being executed on"
 msgstr "Der Prozessor, auf dem dieser Prozess derzeit ausgeführt wird"
 
 #: ../bse/bsecore.idl:756
 msgid "User Time"
-msgstr ""
+msgstr "Benutzerzeit"
 
 #: ../bse/bsecore.idl:756
-#, fuzzy
 msgid "The CPU time spent executing instructions of this thread"
 msgstr ""
 "Die CPU-Zeit, die verwendet wurde, um die Befehle dieser Funktion umzusetzen"
@@ -5082,27 +4879,27 @@ msgid "System Time"
 msgstr "Systemzeit"
 
 #: ../bse/bsecore.idl:758
-#, fuzzy
 msgid "The CPU time spent in the system for this thread"
 msgstr "Die Rechenzeit, die das System für diesen Prozess verwendet hat"
 
 #: ../bse/bsecore.idl:760
 msgid "Child User Time"
-msgstr ""
+msgstr "Abhängige Benutzerzeit"
 
 #: ../bse/bsecore.idl:760
 msgid "The CPU time spent executing instructions of children of this thread"
 msgstr ""
+"Die Rechenzeit, die das System für die von diesem Prozess abhängenden "
+"Prozesse verwendet hat"
 
 #: ../bse/bsecore.idl:762
 msgid "Child System Time"
-msgstr ""
+msgstr "Abhängige Systemzeit"
 
 #: ../bse/bsecore.idl:762
-#, fuzzy
 msgid "The CPU time spent in the system for children of this thread"
 msgstr ""
-"Die Rechenzeit, die das System für die von diesem Prozess anhängenden "
+"Die Rechenzeit, die das System für die von diesem Prozess abhängenden "
 "Prozesse verwendet hat"
 
 #: ../bse/bsecore.idl:777
@@ -5122,12 +4919,10 @@ msgstr ""
 "Verringerung dieses Wertes erhöht die Prozessorlast."
 
 #: ../bse/bsecore.idl:781
-#, fuzzy
 msgid "Synth Mixing Frequency"
-msgstr "Frequenz zentrieren"
+msgstr "Systhesizer-Mixfrequenz"
 
 #: ../bse/bsecore.idl:782
-#, fuzzy
 msgid "Synthesis mixing frequency, common values are: 22050, 44100, 48000"
 msgstr "Synthesizer-Mixer-Frequenz, übliche Werte sind: 22050, 44100, 48000"
 
@@ -5141,6 +4936,8 @@ msgid ""
 "Frequency at which control values are evaluated, should be much smaller than "
 "Synth Mixing Frequency to reduce CPU load"
 msgstr ""
+"Frequenz zur Berechnung der Steuerungswerte. Sollte viel kleiner sein als die "
+"Mixerfrequenz des Synthesizers, um die Prozessorlast zu reduzieren."
 
 #: ../bse/bsecore.idl:789
 msgid "MIDI"
@@ -5202,9 +4999,8 @@ msgstr ""
 "Suchpfad für Ordner, durch »%s« getrennt, zur Suche nach BSE-Effektdateien."
 
 #: ../bse/bsecore.idl:809
-#, fuzzy
 msgid "Instrument Path"
-msgstr "Part einfügen"
+msgstr "Instrumentenpfad"
 
 #: ../bse/bsecore.idl:810
 #, c-format
@@ -5212,8 +5008,7 @@ msgid ""
 "Search path of directories, seperated by \"%s\", used to find BSE instrument "
 "files."
 msgstr ""
-"Suchpfad für Ordner, durch »%s« getrennt, zur Suche nach BSE-"
-"Instrumentdateien."
+"Suchpfad für Ordner, durch »%s« getrennt, zur Suche nach BSE-Instrumentdateien."
 
 #: ../bse/bsecore.idl:813
 msgid "Script Path"
@@ -5249,11 +5044,10 @@ msgstr "LADSPA-Pfad"
 #: ../bse/bsecore.idl:823
 #, c-format
 msgid ""
-"Search path of directories, seperated by \"%s\", used to find LADSPA "
-"plugins. This path is searched for in addition to the standard LADSPA "
-"location on this system. LADSPA is the Linux Audio Developer's Simple Plugin "
-"API, more informations about LADSPA plugins can be found at http://www."
-"ladspa.org/."
+"Search path of directories, seperated by \"%s\", used to find LADSPA plugins. "
+"This path is searched for in addition to the standard LADSPA location on this "
+"system. LADSPA is the Linux Audio Developer's Simple Plugin API, more "
+"informations about LADSPA plugins can be found at http://www.ladspa.org/."
 msgstr ""
 "Suchpfad für Ordner, durch »%s« getrennt, zur Suche nach LADSPA-Plugins. In "
 "diesem Pfad wird zusätzlich zum Vorgabeort der LADSPA-Plugins auf diesem "
@@ -5272,7 +5066,7 @@ msgstr ""
 
 #: ../bse/bseenums.c:96
 msgid "Everything went well"
-msgstr ""
+msgstr "Alles in Ordnung"
 
 #: ../bse/bseenums.c:97
 msgid "Internal error (please report)"
@@ -5301,7 +5095,7 @@ msgstr "Datei existiert bereits"
 
 #: ../bse/bseenums.c:104
 msgid "Premature EOF"
-msgstr ""
+msgstr "Vorzeitiges EOF"
 
 #: ../bse/bseenums.c:105
 msgid "File empty"
@@ -5351,35 +5145,35 @@ msgstr "Außerhalb des Speichers"
 #. content errors
 #: ../bse/bseenums.c:118
 msgid "Failed to detect (start of) header"
-msgstr ""
+msgstr "Beginn des Dateikopfs konnte nicht erkannt werden"
 
 #: ../bse/bseenums.c:119
 msgid "Failed to retrieve seek information"
-msgstr ""
+msgstr "Informationen zum Durchsuchen konnten nicht geholt werden"
 
 #: ../bse/bseenums.c:120
 msgid "No data available"
-msgstr ""
+msgstr "Keine Daten verfügbar"
 
 #: ../bse/bseenums.c:121
 msgid "Data corrupt"
-msgstr ""
+msgstr "Fehlerhafte Daten"
 
 #: ../bse/bseenums.c:122
 msgid "Wrong number of channels"
-msgstr ""
+msgstr "Falsche Kanalanzahl"
 
 #: ../bse/bseenums.c:123
 msgid "Invalid format"
-msgstr ""
+msgstr "Ungültiges Format"
 
 #: ../bse/bseenums.c:124
 msgid "Unknown format"
-msgstr ""
+msgstr "Unbekanntes Format"
 
 #: ../bse/bseenums.c:125
 msgid "Requested data values unmatched"
-msgstr ""
+msgstr "Angeforderte Datenwerte stimmen nicht überein"
 
 #. miscellaneous errors
 #: ../bse/bseenums.c:127
@@ -5387,70 +5181,69 @@ msgid "Temporary error"
 msgstr "Temporärer Fehler"
 
 #: ../bse/bseenums.c:128
-#, fuzzy
 msgid "No such wave"
-msgstr "Event verloren"
+msgstr "Keine solche Wellenform"
 
 #: ../bse/bseenums.c:129
 msgid "CODEC failure"
-msgstr ""
+msgstr "Codec-Fehler"
 
 #: ../bse/bseenums.c:130
 msgid "Functionality not implemented"
-msgstr ""
+msgstr "Funktionalität nicht implementiert"
 
 #: ../bse/bseenums.c:131
 msgid "Invalid object property"
-msgstr ""
+msgstr "Ungültige Objekteigenschaft"
 
 #: ../bse/bseenums.c:132
 msgid "Invalid MIDI control type"
-msgstr ""
+msgstr "Ungültiger MIDI-Steuerungstyp"
 
 #: ../bse/bseenums.c:133
 msgid "Parsing error"
-msgstr ""
+msgstr "Verarbeitungsfehler"
 
 #: ../bse/bseenums.c:134
 msgid "Failed to spawn child process"
-msgstr ""
+msgstr "Kindprozess konnte nicht erstellt werden"
 
 #. Device errors
 #: ../bse/bseenums.c:136
 msgid "No device (driver) available"
-msgstr ""
+msgstr "Kein Gerät (Treiber) verfügbar"
 
 #: ../bse/bseenums.c:137
 msgid "Device not async capable"
-msgstr ""
+msgstr "Gerät kann nicht asynchron angesteuert werden"
 
 #: ../bse/bseenums.c:138
 msgid "Device busy"
-msgstr ""
+msgstr "Gerät besetzt"
 
 #: ../bse/bseenums.c:139
 msgid "Failed to configure device format"
-msgstr ""
+msgstr "Konfiguration des Geräteformats fehlgeschlagen"
 
 #: ../bse/bseenums.c:140
 msgid "Failed to configure device buffer"
-msgstr ""
+msgstr "Gerätepuffer konnte nicht konfiguriert werden"
 
 #: ../bse/bseenums.c:141
 msgid "Failed to configure device latency"
-msgstr ""
+msgstr "Gerätelatenz konnte nicht konfiguriert werden"
 
 #: ../bse/bseenums.c:142
 msgid "Failed to configure number of device channels"
-msgstr ""
+msgstr "Anzahl der Gerätekanäle konnte nicht konfiguriert werden"
 
 #: ../bse/bseenums.c:143
 msgid "Failed to configure device frequency"
-msgstr ""
+msgstr "Grerätefrequenz konnte nicht konfiguriert werden"
 
 #: ../bse/bseenums.c:144
 msgid "Device configurations mismatch"
-msgstr ""
+msgstr "Gerätekonfigurationen simmen nicht überein"
 
 #. BseSource errors
 #: ../bse/bseenums.c:146
@@ -5508,20 +5301,20 @@ msgstr "Keine solche Prozedur"
 
 #: ../bse/bseenums.c:160
 msgid "Procedure currently busy"
-msgstr ""
+msgstr "Prozedur ist gegenwärtig belegt"
 
 #. recursion
 #: ../bse/bseenums.c:161
 msgid "Procedure parameter invalid"
-msgstr ""
+msgstr "Prozedurparameter ist ungültig"
 
 #: ../bse/bseenums.c:162
 msgid "Procedure execution failed"
-msgstr ""
+msgstr "Ausführung der Prozedur fehlgeschlagen"
 
 #: ../bse/bseenums.c:163
 msgid "Procedure execution aborted"
-msgstr ""
+msgstr "Ausführung der Prozedur abgebrochen"
 
 #. various procedure errors
 #: ../bse/bseenums.c:165
@@ -5534,7 +5327,7 @@ msgstr "Kein solches Ereignis"
 
 #: ../bse/bseenums.c:168
 msgid "Ownership mismatch"
-msgstr ""
+msgstr "Eigentumsverhältnisse stimmen nicht überein"
 
 #: ../bse/bseenums.c:169
 msgid "Invalid offset"
@@ -5563,7 +5356,7 @@ msgstr ""
 
 #: ../bse/bseinstrumentinput.c:122 ../bse/bsemidiinput.c:112
 msgid "Velocity"
-msgstr ""
+msgstr "Geschwindigkeit"
 
 #: ../bse/bseinstrumentinput.c:122 ../bse/bsemidiinput.c:112
 msgid "Velocity of the note press"
@@ -5612,24 +5405,26 @@ msgid "High indicates the instrument is done synthesizing"
 msgstr ""
 
 #: ../bse/bseinstrumentoutput.c:150
-#, fuzzy
 msgid "/Input & Output/Instrument Output"
-msgstr "_Ein- und Ausgabe"
+msgstr "/Ein- und Ausgabe/Instrumentenausgabe"
 
 #: ../bse/bsejanitor.c:535
+#, c-format
 msgid "killed by janitor"
 msgstr ""
 
 #: ../bse/bsejanitor.c:537
+#, c-format
 msgid "connection terminated"
 msgstr "Verbindung wurde beendet"
 
 #: ../bse/bsejanitor.c:539
 #, c-format
 msgid "%s (core dumped)"
-msgstr ""
+msgstr "%s (Speicherauszug erstellt)"
 
 #: ../bse/bsemain.cc:270
+#, c-format
 msgid ""
 "\n"
 "Available PCM drivers:\n"
@@ -5638,15 +5433,17 @@ msgstr ""
 "Verfügbare PCM-Treiber:\n"
 
 #: ../bse/bsemain.cc:272
+#, c-format
 msgid ""
 "\n"
 "Available MIDI drivers:\n"
 msgstr ""
+"\n"
+"Verfügbare MIDI-Treiber:\n"
 
 #: ../bse/bsemidicontroller.c:85
-#, fuzzy
 msgid "/Input & Output/MIDI Control Input"
-msgstr "_Ein- und Ausgabe"
+msgstr "/Ein- und Ausgabe/MIDI-Steuerungseingabe"
 
 #: ../bse/bsemidicontroller.c:136
 msgid "Ctrl Out1"
@@ -5686,6 +5483,9 @@ msgid ""
 "Discards all output events and generates no input events. This driver\n"
 "is not part of the automatic device selection list for MIDI devices."
 msgstr ""
+"Alle Ausgabeereignisse verwerfen und keine Eingabeereignisse\n"
+"erzeugen. Dieser Treiber ist nicht Teil der automatischen\n"
+"Geräteauswahlliste für MIDI-Geräte."
 
 #. TRANSLATORS: keep this text to 70 chars in width
 #: ../bse/bsemididevice-oss.c:266
@@ -5697,9 +5497,8 @@ msgid ""
 msgstr ""
 
 #: ../bse/bsemidiinput.c:81
-#, fuzzy
 msgid "/Input & Output/MIDI Voice Input"
-msgstr "_Ein- und Ausgabe"
+msgstr "/Ein- und Ausgabe/MIDI-Stimmeingabe"
 
 #: ../bse/bsemidisynth.c:227 ../bse/bsesubsynth.c:156 ../bse/bsetrack.c:292
 msgid "Available Synthesizers"
@@ -5708,6 +5507,8 @@ msgstr "Verfügbare Synthesizer"
 #: ../bse/bsemidisynth.c:227
 msgid "List of available synthesis networks to choose a MIDI instrument from"
 msgstr ""
+"Liste der verfügbaren Synthesenetzwerke, aus denen ein MIDI-Instrument "
+"gewählt werden soll"
 
 #: ../bse/bsemidisynth.c:231 ../bse/bsesong.c:140 ../bse/bsetrack.c:296
 msgid "Available Postprocessors"
@@ -5716,6 +5517,8 @@ msgstr "Verfügbare Postprozessoren"
 #: ../bse/bsemidisynth.c:231 ../bse/bsesong.c:140 ../bse/bsetrack.c:296
 msgid "List of available synthesis networks to choose a postprocessor from"
 msgstr ""
+"Liste der verfügbaren Synthesenetzwerke, aus denen ein Postprozessor gewählt "
+"werden soll"
 
 #: ../bse/bsemidisynth.c:442 ../bse/bsemidisynth.c:447
 #: ../bse/bsemidisynth.c:452 ../bse/bsemidisynth.c:456 ../bse/bsesong.c:775
@@ -5750,15 +5553,13 @@ msgstr "Kanalbeschriftungen"
 
 # CHECK
 #: ../bse/bsemidisynth.c:469
-#, fuzzy
 msgid "Master [dB]"
-msgstr "Zuwachs [dB]"
+msgstr "Master [dB]"
 
 # CHECK
 #: ../bse/bsemidisynth.c:476
-#, fuzzy
 msgid "Master [%]"
-msgstr "Master-Lautstärke"
+msgstr "Master [%]"
 
 #: ../bse/bsemidisynth.c:480 ../bse/bsesong.c:779
 msgid "Playback Settings"
@@ -5813,7 +5614,7 @@ msgstr "Eindeutiger Name dieses Objekts"
 
 #: ../bse/bseobject.c:856
 msgid "Free form comment or description"
-msgstr ""
+msgstr "Kommentar oder Beschreibung in freier Form"
 
 #: ../bse/bseparasite.proc:26 ../bse/bseparasite.proc:50
 #: ../bse/bseparasite.proc:68 ../bse/bseparasite.proc:87
@@ -5827,7 +5628,7 @@ msgstr "Pfad"
 
 #: ../bse/bseparasite.proc:28
 msgid "Parasite Paths"
-msgstr ""
+msgstr "Parasitäre Pfade"
 
 #: ../bse/bseparasite.proc:52 ../bse/bseparasite.proc:70
 #: ../bse/bseparasite.proc:89
@@ -5859,14 +5660,12 @@ msgid ""
 msgstr ""
 
 #: ../bse/bsepcminput.c:84
-#, fuzzy
 msgid "/Input & Output/PCM Input"
-msgstr "_Ein- und Ausgabe"
+msgstr "/Ein- und Ausgabe/PCM-Eingabe"
 
 #: ../bse/bsepcmoutput.c:84
-#, fuzzy
 msgid "/Input & Output/PCM Output"
-msgstr "_Ein- und Ausgabe"
+msgstr "/Ein- und Ausgabe/PCM-Ausgabe"
 
 #: ../bse/bsepcmoutput.c:129
 msgid "Right channel Input"
@@ -5878,12 +5677,11 @@ msgstr "WAVE-Datei"
 
 #: ../bse/bseserver.c:145
 msgid "Name of the WAVE file used for recording BSE sound output"
-msgstr ""
+msgstr "Name der WAVE-Datei, welche für die BSE-Klangausgabe verwendet wird"
 
 #: ../bse/bseserver.c:477
-#, fuzzy
 msgid "Recording Audio Input"
-msgstr "Audio-Ein, rechts"
+msgstr "Audio-Ausgabe zur Aufzeichnung"
 
 #: ../bse/bseserver.c:478
 msgid "Failed to start recording from audio device."
@@ -5900,11 +5698,11 @@ msgstr ""
 #: ../bse/bseserver.c:484
 #, c-format
 msgid "Audio device \"%s\" is not open for input, audio driver: %s=%s"
-msgstr ""
+msgstr "Audiogerät »%s ist nicht für Eingabe verfügbar, Audiogerät: %s=%s"
 
 #: ../bse/bseserver.c:488
 msgid "Show messages about audio input problems"
-msgstr ""
+msgstr "Meldungen über Probleme mit der Audio-Eingabe anzeigen"
 
 #: ../bse/bseserver.c:530
 msgid "No Audio"
@@ -5912,24 +5710,25 @@ msgstr "Kein Audio"
 
 #: ../bse/bseserver.c:531
 msgid "No available audio device was found."
-msgstr ""
+msgstr "Es wurde kein verfügbares Audiogerät gefunden."
 
 #: ../bse/bseserver.c:532
 msgid ""
 "No available audio device could be found and opened successfully. Sorry, no "
 "fallback selection can be made for audio devices, giving up."
 msgstr ""
+"Es konnte kein verfügbares Audiogerät gefunden und erfolgreich geöffnet "
+"werden. Es ist leider keine ersatzweise Auswahl für Audiogeräte möglich. Wird "
+"abgebrochen."
 
 #: ../bse/bseserver.c:534
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to open PCM devices: %s"
-msgstr ""
-"Öffnen des MIDI-Gerätes %s fehlgeschlagen (greife stattdessen auf Null-Gerät "
-"zurück): %s"
+msgstr "Öffnen der PCM-Geräte %s fehlgeschlagen: %s"
 
 #: ../bse/bseserver.c:535
 msgid "Show messages about PCM device selections problems"
-msgstr ""
+msgstr "Meldungen über Probleme mit der PCM-Geräteauswahl anzeigen"
 
 #: ../bse/bseserver.c:554
 msgid "No MIDI"
@@ -5937,52 +5736,51 @@ msgstr "Kein MIDI"
 
 #: ../bse/bseserver.c:555
 msgid "MIDI input or oputput is not available."
-msgstr ""
+msgstr "MIDI-Eingabe oder -Ausgabe ist nicht verfügbar."
 
 #: ../bse/bseserver.c:556
 msgid ""
-"No available MIDI device could be found and opened successfully. Reverting "
-"to null device, no MIDI events will be received or sent."
+"No available MIDI device could be found and opened successfully. Reverting to "
+"null device, no MIDI events will be received or sent."
 msgstr ""
 
 #: ../bse/bseserver.c:558
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to open MIDI devices: %s"
-msgstr ""
-"Öffnen des MIDI-Gerätes %s fehlgeschlagen (greife stattdessen auf Null-Gerät "
-"zurück): %s"
+msgstr "Öffnen der MIDI-Geräte %s fehlgeschlagen: %s"
 
 #: ../bse/bseserver.c:559
 msgid "Show messages about MIDI device selections problems"
-msgstr ""
+msgstr "Meldungen über Probleme mit der MIDI-Geräteauswahl anzeigen"
 
 #: ../bse/bseserver.c:613
 msgid "Start Disk Recording"
-msgstr ""
+msgstr "Festplattenaufnahme starten"
 
 #: ../bse/bseserver.c:614
 msgid "Failed to start recording to disk."
-msgstr ""
+msgstr "Die Aufzeichnung auf Festplatte konnte nicht gestartet werden."
 
 #: ../bse/bseserver.c:615
 msgid ""
 "An error occoured while opening the recording file, selecting a different "
 "file might fix this situation."
 msgstr ""
+"Ein Fehler trat beim Öffnen der aufgezeichneten Datei auf. Die Auswahl einer "
+"anderen Datei könnte dieses Problem beseitigen."
 
 #: ../bse/bseserver.c:617
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to open file \"%s\" for output: %s"
-msgstr "Öffnen der Ausgangsdatei \"%s\" fehlgeschlagen:%s"
+msgstr "Öffnen der Ausgabedatei »%s« fehlgeschlagen: %s"
 
 #: ../bse/bseserver.c:618
 msgid "Show recording file errors"
-msgstr ""
+msgstr "Fehler der aufgezeichneten Datei anzeigen"
 
 #: ../bse/bsesnooper.c:76
-#, fuzzy
 msgid "/Misc/Snooper"
-msgstr "Schnüffler"
+msgstr "/Verschiedenes/Schnüffler"
 
 #: ../bse/bsesnooper.c:107
 msgid "Signal In"
@@ -5990,28 +5788,26 @@ msgstr "Eingangssignal"
 
 #: ../bse/bsesnooper.c:107
 msgid "Snoop Signal"
-msgstr ""
+msgstr "Signalschnüffler"
 
 # CHECK
 #. TRANSLATORS: this is the name of the master mixer bus. i.e. the final audio output bus.
 #: ../bse/bsesong.c:649
-#, fuzzy
 msgid "Master"
-msgstr "Master-Lautstärke"
+msgstr "Master"
 
 #: ../bse/bsesong.c:746
-#, fuzzy
 msgid "Tuning"
-msgstr "Routing"
+msgstr "Tuning"
 
 #: ../bse/bsesong.c:748
 msgid "Musical Tuning"
-msgstr ""
+msgstr "Musikalische Stimmung"
 
 #: ../bse/bsesong.c:749
 msgid ""
-"The tuning system which specifies the tones or pitches to be used. Due to "
-"the psychoacoustic properties of tones, various pitch combinations can sound "
+"The tuning system which specifies the tones or pitches to be used. Due to the "
+"psychoacoustic properties of tones, various pitch combinations can sound "
 "\"natural\" or \"pleasing\" when used in combination, the musical tuning "
 "system defines the number and spacing of frequency values applied."
 msgstr ""
@@ -6022,14 +5818,12 @@ msgid "Timing"
 msgstr ""
 
 #: ../bse/bsesong.c:758
-#, fuzzy
 msgid "Ticks"
-msgstr "Spuren"
+msgstr "Ticks"
 
 #: ../bse/bsesong.c:758
-#, fuzzy
 msgid "Number of ticks per quarter note"
-msgstr "Viertelnoten einfügen"
+msgstr "Anzahl der Ticks pro Viertelnote"
 
 #: ../bse/bsesong.c:762
 msgid "Numerator"
@@ -6060,20 +5854,22 @@ msgstr ""
 
 #: ../bse/bsesong.proc:35
 msgid "Create a new mixer bus for a Song."
-msgstr ""
+msgstr "Einen neuen Mixerbus für ein Lied erzeugen."
 
 #: ../bse/bsesong.proc:72
 msgid "Delete a mixer bus from a Song."
-msgstr ""
+msgstr "Einen Mixerbus aus einem Lied entfernen."
 
 #: ../bse/bsesong.proc:112
 msgid ""
 "Retrieve master output bus of a song, will create one if it doesn't exist."
 msgstr ""
+"Master-Ausgabebus eines Titels ermitteln. Ein neuer wird erzeugt, falls er "
+"nicht existiert. "
 
 #: ../bse/bsesong.proc:139
 msgid "Retrieve master output bus of a song if it exists."
-msgstr ""
+msgstr "Master-Ausgabebus eines Titels ermitteln, falls er existiert."
 
 #. TRANSLATORS: this is the name of the track that is used to automatically
 #. * adopt orphan (unlinked) parts.
@@ -6085,6 +5881,8 @@ msgstr "Verwaiste Teile"
 #: ../bse/bsesong.proc:208
 msgid "Ensure that each part in a song is inserted into at least one track."
 msgstr ""
+"Stellen Sie sicher, dass jeder Part eines Liedes mindestens einer Spur "
+"zugeordnet wurde."
 
 #: ../bse/bsesong.proc:243
 msgid "Create a new Part in a Song."
@@ -6095,9 +5893,8 @@ msgid "Delete a Part from a Song."
 msgstr "Einen Part aus einem Song löschen."
 
 #: ../bse/bsesong.proc:312
-#, fuzzy
 msgid "Create a new Track for a Song."
-msgstr "Eine neue Spur zu diesem Titel hinzufügen"
+msgstr "Eine neue Spur für einen Titel erzeugen."
 
 #: ../bse/bsesong.proc:348
 msgid "Delete a Track from a Song."
@@ -6106,15 +5903,19 @@ msgstr "Eine Spur aus einem Song entfernen."
 #: ../bse/bsesong.proc:387
 msgid "Find a track suitable for playing notes of a given part."
 msgstr ""
+"Eine Spur suchen, die für das Abspielen von Noten des angegebenen Parts "
+"geeignet ist."
 
 #: ../bse/bsesong.proc:430
 msgid ""
 "Find the first track that contains part, suitable to check for orphan parts."
 msgstr ""
+"Nach der ersten Spur suchen, die den Part enthält, nützlich für die Suche "
+"nach verwaisten Parts."
 
 #: ../bse/bsesong.proc:457
 msgid "Synthesize a note on a song of an active project."
-msgstr ""
+msgstr "Eine Note eines Liedes eines aktiven Projekts synthetisieren."
 
 #: ../bse/bsesong.proc:506
 msgid "Retrieve song timing information at a specific tick."
@@ -6127,9 +5928,8 @@ msgid ""
 msgstr ""
 
 #: ../bse/bsestandardosc.c:110
-#, fuzzy
 msgid "/Audio Sources/Standard Oscillator"
-msgstr "_Audio-Quellen"
+msgstr "/Audio-Quellen/Standard-Oszillator"
 
 #: ../bse/bsestandardosc.c:131 ../bse/bsestandardosc.c:137
 msgid "Wave Form"
@@ -6150,7 +5950,7 @@ msgstr "Phase"
 
 #: ../bse/bsestandardosc.c:139
 msgid "Initial phase of the oscillator wave form (cycle offset in degree)"
-msgstr ""
+msgstr "Erste Phase der Oszillator-Wellenform (Schwingungsversatz in Grad)"
 
 #: ../bse/bsestandardosc.c:142 ../bse/bsestandardosc.c:147
 #: ../bse/bsestandardosc.c:152 ../bse/bsestandardosc.c:157
@@ -6161,24 +5961,27 @@ msgstr "Grundfrequenz"
 
 #: ../bse/bsestandardosc.c:145
 msgid ""
-"Oscillator frequency in Hertz, i.e. the number of oscillator cycles per "
-"second"
+"Oscillator frequency in Hertz, i.e. the number of oscillator cycles per second"
 msgstr ""
+"Oszillatorfrequenz in Hertz, also die Anzahl der Schwingungen des Oszillators "
+"pro Sekunde"
 
 #: ../bse/bsestandardosc.c:150
 msgid ""
 "Oscillator frequency as note, converted to Hertz according to the current "
 "musical tuning"
 msgstr ""
+"Oszillatorfrequenz als Notenwert, entsprechend der aktuellen musikalischen "
+"Stimmung in Hertz umgewandelt"
 
 #: ../bse/bsestandardosc.c:154 ../plugins/davorgan.c:118
 #: ../plugins/davxtalstrings.c:114
 msgid "Transpose"
-msgstr ""
+msgstr "Transponierung"
 
 #: ../bse/bsestandardosc.c:154
 msgid "Transposition of the oscillator frequency in semitones"
-msgstr ""
+msgstr "Transponierung der Oszillatorfrequenz in Halbtonschritten"
 
 #: ../bse/bsestandardosc.c:159 ../plugins/davorgan.c:123
 #: ../plugins/davxtalstrings.c:119
@@ -6232,7 +6035,6 @@ msgid "Pulse Modulation [%]"
 msgstr "Pulsbreitenmodulation [%]"
 
 #: ../bse/bsestandardosc.c:192
-#, fuzzy
 msgid ""
 "Strength of pulse width modulation input (Pulse has to be selected as wave "
 "form for this to take effect)"
@@ -6287,7 +6089,6 @@ msgid "Assignments"
 msgstr "Zuordnungen"
 
 #: ../bse/bsesubiport.c:303 ../bse/bsesuboport.c:304
-#, fuzzy
 msgid ""
 "The port name is a unique name to establish input<->output port relationships"
 msgstr ""
@@ -6295,9 +6096,8 @@ msgstr ""
 "Beziehung herzustellen"
 
 #: ../bse/bsesubiport.c:334
-#, fuzzy
 msgid "/Virtualization/Virtual Input"
-msgstr "_Virtualisierung"
+msgstr "/Virtualisierung/Virtuelle Eingabe"
 
 #: ../bse/bsesuboport.c:293 ../bse/bsesubsynth.c:547
 #, c-format
@@ -6310,14 +6110,12 @@ msgid "Output Port %u"
 msgstr "Ausgabeport %u"
 
 #: ../bse/bsesuboport.c:335
-#, fuzzy
 msgid "/Virtualization/Virtual Output"
-msgstr "_Virtualisierung"
+msgstr "/Virtualisierung/Virtuelle Ausgabe"
 
 #: ../bse/bsesubsynth.c:95
-#, fuzzy
 msgid "/Virtualization/Virtual Sub Synth"
-msgstr "_Virtualisierung"
+msgstr "/Virtualisierung/Virtuelle Subsynthese"
 
 #: ../bse/bsesubsynth.c:156
 msgid "List of available synthesis networks to choose a sub network from"
@@ -6326,10 +6124,11 @@ msgstr "Liste der verfügbaren virtuellen Netzwerke, um ein Sub-Netz zu wählen"
 #: ../bse/bsesubsynth.c:513
 msgid "Synthesis network to use as embedded sub network"
 msgstr ""
+"Synthesenetzwerk, welches als eingebettetes Subnetzwerk verwendet werden soll"
 
 #: ../bse/bsesubsynth.c:522
 msgid "Input Assignments"
-msgstr ""
+msgstr "Eingabe-Zuordnungen"
 
 #: ../bse/bsesubsynth.c:523
 msgid "Output port name to interface from"
@@ -6337,7 +6136,7 @@ msgstr ""
 
 #: ../bse/bsesubsynth.c:532
 msgid "Output Assignments"
-msgstr ""
+msgstr "Ausgabe-Zuordnungen"
 
 #: ../bse/bsesubsynth.c:533
 msgid "Input port name to interface to"
@@ -6370,15 +6169,19 @@ msgstr "Datum der letzten Änderung"
 #: ../bse/bsetrack.c:283
 msgid "List of available waves to choose as track instrument"
 msgstr ""
+"Liste der verfügbaren Wellenformen, aus denen Spur-Instrumente gewählt werden "
+"können"
 
 #: ../bse/bsetrack.c:292
 msgid "List of available synthesis networks to choose a track instrument from"
 msgstr ""
+"Liste der verfügbaren Synthesenetzwerke, aus denen Spur-Instrumente gewählt "
+"werden können"
 
 #: ../bse/bsetrack.c:300
-#, fuzzy
 msgid "List of available mixer busses to be used as track output"
-msgstr "Liste der verfügbaren virtuellen Netzwerke, um ein Sub-Netz zu wählen"
+msgstr ""
+"Liste der verfügbaren Mixer-Busse, die als Spurausgabe verwendet werden können"
 
 #: ../bse/bsetrack.c:1010
 msgid "Muted"
@@ -6390,12 +6193,11 @@ msgstr "Synth Eingang"
 
 #: ../bse/bsetrack.c:1014
 msgid "Synthesis network to be used as instrument"
-msgstr ""
+msgstr "Synthesenetzwerk, welches als Instrument verwendet werden soll"
 
 #: ../bse/bsetrack.c:1019
-#, fuzzy
 msgid "Wave to be used as instrument"
-msgstr "Als Instrument speichern"
+msgstr "Als Instrument zu verwendende Wellenform"
 
 #: ../bse/bsetrack.c:1024
 msgid "Max Voixes"
@@ -6404,6 +6206,7 @@ msgstr "Maximale Stimmen"
 #: ../bse/bsetrack.c:1030
 msgid "Midi channel assigned to this track, 0 uses internal per-track channel"
 msgstr ""
+"Dieser Spur zugeordneter MIDI-Kanal, 0 verwendet den internen spurweisen Kanal"
 
 #: ../bse/bsetrack.c:1040
 msgid "Mixer busses used as output for this track"
@@ -6415,17 +6218,16 @@ msgid "Wave \"%s\": failed to load wave chunk for frequency %f: %s"
 msgstr ""
 
 #: ../bse/bsewaveosc.c:95
-#, fuzzy
 msgid "/Audio Sources/Wave Oscillator"
-msgstr "_Audio-Quellen"
+msgstr "/Audio-Quellen/Wellenform-Oszillator"
 
 #: ../bse/bsewaveosc.c:127
 msgid "List of available waves to choose as oscillator source"
-msgstr ""
+msgstr "Liste der als Oszillatorquelle zu verwendenden Wellenformen"
 
 #: ../bse/bsewaveosc.c:563
 msgid "Wave used as oscillator source"
-msgstr ""
+msgstr "Als Oszillatorquelle verwendete Wellenform"
 
 #: ../bse/bsewaveosc.c:567
 msgid "Channel"
@@ -6433,17 +6235,15 @@ msgstr "Kanal"
 
 #: ../bse/bsewaveosc.c:567
 msgid "The audio channel to play, usually 1 is left, 2 is right"
-msgstr ""
+msgstr "Der abzuspielende Audiokanal. Normalerweise ist 1 links und 2 rechts."
 
 #: ../bse/bsewaveosc.c:572
-#, fuzzy
 msgid "Modulation Strength for linear frequency modulation"
-msgstr "Ausprägung der linearen Frequenzmodulation"
+msgstr "Modulationsstärke der linearen Frequenzmodulation"
 
 #: ../bse/bsewaveosc.c:593 ../plugins/davorgan.c:148
-#, fuzzy
 msgid "Frequency Input"
-msgstr "Frequenzeingabe zentrieren"
+msgstr "Frequenzeingabe"
 
 #: ../bse/bsewaveosc.c:597
 #, fuzzy
@@ -6451,14 +6251,12 @@ msgid "Mod In"
 msgstr "Modulinfos"
 
 #: ../bse/bsewaveosc.c:597
-#, fuzzy
 msgid "Modulation Input"
-msgstr "Modulationszuwachseingabe"
+msgstr "Modulationseingabe"
 
 #: ../bse/bsewaveosc.c:599
-#, fuzzy
 msgid "Wave Output"
-msgstr "Ausgabe"
+msgstr "Wellenform-Ausgabe"
 
 #: ../bse/bsewaveosc.c:601
 #, fuzzy
@@ -6633,7 +6431,6 @@ msgid "Attack [ms]"
 msgstr "Ansprechzeit [ms]"
 
 #: ../plugins/artscompressor.idl:54
-#, fuzzy
 msgid "Set the attack time in milliseconds"
 msgstr "Die Ansprechzeit in Millisekunden festlegen"
 
@@ -6642,7 +6439,6 @@ msgid "Release [ms]"
 msgstr "Ausschwingzeit [ms]"
 
 #: ../plugins/artscompressor.idl:55
-#, fuzzy
 msgid "Set the release time in milliseconds"
 msgstr "Die Ausschwingzeit in Millisekunden festlegen"
 
@@ -6652,7 +6448,7 @@ msgstr "Schwellwert [dB]"
 
 #: ../plugins/artscompressor.idl:56
 msgid "Only parts louder than threshold are compressed"
-msgstr ""
+msgstr "Es werden nur Teile komprimiert, die über der Ansprechschwelle liegen"
 
 #: ../plugins/artscompressor.idl:57
 msgid "Ratio [x:1]"
@@ -6676,8 +6472,7 @@ msgstr "Auto-Ausgabe"
 
 #: ../plugins/artscompressor.idl:59
 msgid ""
-"Adjust the output amplification automatically according to threshold and "
-"ratio"
+"Adjust the output amplification automatically according to threshold and ratio"
 msgstr ""
 
 #: ../plugins/bseadder.c:95 ../plugins/bsemult.c:58
@@ -6708,11 +6503,11 @@ msgid ""
 "It supports two control inputs and two audio inputs which are mixed together "
 "after balance and level adjustments. The gain setting controls "
 "preamplification of the mixed audio signal. The mixed control signal, "
-"weighted by a strength setting, determines additional amplification, "
-"allowing for external sources to modulate the overall volume (tremolo). The "
-"mixed control signal can influence the amplification linearly (to amplify "
-"other control signals) or exponentially (to amplify audio signals). Finally, "
-"the master volume controls amplification of the resulting output signal."
+"weighted by a strength setting, determines additional amplification, allowing "
+"for external sources to modulate the overall volume (tremolo). The mixed "
+"control signal can influence the amplification linearly (to amplify other "
+"control signals) or exponentially (to amplify audio signals). Finally, the "
+"master volume controls amplification of the resulting output signal."
 msgstr ""
 
 #: ../plugins/bseamplifier.idl:43 ../plugins/bsebalance.idl:34
@@ -6828,16 +6623,15 @@ msgstr "Master-Lautstärke"
 
 #: ../plugins/bseamplifier.idl:66
 msgid "Output stage amplification in decibel"
-msgstr ""
+msgstr "Ausgabeverstärkung in Dezibel"
 
 #: ../plugins/bseatandistort.c:88
 msgid "Audio Input Signal"
 msgstr "Audio-Eingabesignal"
 
 #: ../plugins/bseatandistort.c:90
-#, fuzzy
 msgid "Distorted Audio Output"
-msgstr "Gefilterte Audio-Ausgabe"
+msgstr "Verzerrte Audio-Ausgabe"
 
 #: ../plugins/bsebalance.idl:25
 msgid "/Spatial/Balance"
@@ -6940,18 +6734,16 @@ msgid "Cutoff Frequency (All Filters)"
 msgstr "Grenzfrequenz (alle Filter)"
 
 #: ../plugins/bseiirfilter.c:141
-#, fuzzy
 msgid "Filter cutoff frequency"
-msgstr "Grenzfrequenz in Prozent vorgeben"
+msgstr "Grenzfrequenz des Filters"
 
 #: ../plugins/bseiirfilter.c:150 ../plugins/bseiirfilter.c:155
 msgid "Cutoff Frequency 2 (Band Pass/Stop)"
 msgstr "Grenzfrequenz 2 (Bandpass/Stopp)"
 
 #: ../plugins/bseiirfilter.c:152
-#, fuzzy
 msgid "Second filter cutoff frequency"
-msgstr "Grenzfrequenz in Prozent vorgeben"
+msgstr "Zweite Grenzfrequenz des Filters"
 
 #: ../plugins/bseiirfilter.c:162
 msgid "Unfiltered Input"
@@ -6967,9 +6759,9 @@ msgid "Sole Output"
 msgstr "Ausgabe löschen"
 
 #: ../plugins/bsemixer.c:113
-#, fuzzy, c-format
+#, c-format
 msgid "Channel%u"
-msgstr "Kanalbeschriftungen"
+msgstr "Kanal%u"
 
 #: ../plugins/bsemixer.c:115
 #, fuzzy, c-format
@@ -6978,9 +6770,9 @@ msgstr "Kanalbeschriftungen"
 
 # CHECK
 #: ../plugins/bsemixer.c:125
-#, fuzzy, c-format
+#, c-format
 msgid "Channel%u [dB]"
-msgstr "Zuwachs [dB]"
+msgstr "Kanel%u [dB]"
 
 #: ../plugins/bsemixer.c:136
 #, c-format
@@ -7014,9 +6806,8 @@ msgid "Audio Input 4"
 msgstr "Audio-Eingabe 4"
 
 #: ../plugins/bsenoise.idl:26
-#, fuzzy
 msgid "/Audio Sources/Noise"
-msgstr "_Audio-Quellen"
+msgstr "/Audio-Quellen/Rauschen"
 
 #: ../plugins/bsenoise.idl:27
 msgid "Noise is a generator of (supposedly) white noise"
@@ -7085,8 +6876,8 @@ msgid ""
 msgstr ""
 "DavBassFilter ist ein resonanter tiefpassfilter im Stil des TB-303, der auf "
 "der Portierung des VCF303 von gsyn v0.2 basiert. Der Algorithmus basiert "
-"teilweise auf dem, der in \"Musical Applications of Microprocessors\" von "
-"Hal Chamberlin beschrieben wird."
+"teilweise auf dem, der in \"Musical Applications of Microprocessors\" von Hal "
+"Chamberlin beschrieben wird."
 
 #: ../plugins/davbassfilter.idl:31 ../plugins/davchorus.idl:28
 msgid "Audio input"
@@ -7162,11 +6953,11 @@ msgstr "Zeit der Rechts-nach-links-Verzögerung"
 
 #: ../plugins/davcanyondelay.c:92 ../plugins/davcanyondelay.c:102
 msgid "Feedback [%]"
-msgstr ""
+msgstr "Rückkopplung (%):"
 
 #: ../plugins/davcanyondelay.c:93
 msgid "The feedback amount; a negative feedback inverts the signal"
-msgstr ""
+msgstr "Der Grad der Rückkopplung, wobei ein negativer Wert das Signal umkehrt"
 
 #: ../plugins/davcanyondelay.c:96 ../plugins/davcanyondelay.c:101
 msgid "Right to Left"
@@ -7174,7 +6965,7 @@ msgstr "Rechts nach links"
 
 #: ../plugins/davcanyondelay.c:98
 msgid "The time for the right to left delay"
-msgstr ""
+msgstr "Zeit für die Verzögerung von rechts nach links"
 
 #: ../plugins/davcanyondelay.c:103
 msgid "Set the feedback amount; a negative feedback inverts the signal"
@@ -7182,7 +6973,7 @@ msgstr ""
 
 #: ../plugins/davcanyondelay.c:107 ../plugins/davcanyondelay.c:113
 msgid "IIR Low-Pass Filter"
-msgstr ""
+msgstr "IIR-Tiefpassfilter"
 
 #: ../plugins/davcanyondelay.c:109
 #, fuzzy
@@ -7234,10 +7025,12 @@ msgid ""
 "Organ frequency as note, converted to Hertz according to the current musical "
 "tuning"
 msgstr ""
+"Orgelfrequenz als Notenwert, entsprechend der aktuellen musikalischen "
+"Stimmung in Hertz umgewandelt"
 
 #: ../plugins/davorgan.c:118 ../plugins/davxtalstrings.c:114
 msgid "Transposition of the frequency in semitones"
-msgstr ""
+msgstr "Transponierung der Frequenz in Halbtonschritten"
 
 #: ../plugins/davorgan.c:149
 #, fuzzy
@@ -7245,15 +7038,16 @@ msgid "Organ Output"
 msgstr "Ausgabe"
 
 #: ../plugins/davsyndrum.c:89
-#, fuzzy
 msgid "Drum frequency in Hertz"
-msgstr "Frequenzeingabe zentrieren"
+msgstr "Frequenz des Schlagzeugs in Hertz"
 
 #: ../plugins/davsyndrum.c:95
 msgid ""
 "Drum frequency as note, converted to Hertz according to the current musical "
 "tuning"
 msgstr ""
+"Frequenz des Schlagzeugs als Notenwert, entsprechend der aktuellen "
+"musikalischen Stimmung in Hertz umgewandelt"
 
 #: ../plugins/davsyndrum.c:99 ../plugins/davxtalstrings.c:123
 #, fuzzy
@@ -7277,7 +7071,7 @@ msgstr "Takt Eingang"
 
 #: ../plugins/davsyndrum.c:104
 msgid "Manual trigger for the drum"
-msgstr ""
+msgstr "Manueller Auslöser für Schlagzeug"
 
 #: ../plugins/davsyndrum.c:107
 msgid "Resonance"
@@ -7289,9 +7083,8 @@ msgid "The resonance half life in number of milli seconds"
 msgstr "Die Ausschwingzeit in Millisekunden festlegen"
 
 #: ../plugins/davsyndrum.c:112
-#, fuzzy
 msgid "Frequency Ratio"
-msgstr "Frequenz"
+msgstr "Frequenzverhältnis"
 
 #: ../plugins/davsyndrum.c:113
 msgid ""
@@ -7300,9 +7093,8 @@ msgid ""
 msgstr ""
 
 #: ../plugins/davsyndrum.c:117
-#, fuzzy
 msgid "Drum Frequency Input"
-msgstr "Frequenzeingabe zentrieren"
+msgstr "Frequenzeingabe des Schlagzeugs"
 
 #: ../plugins/davsyndrum.c:119
 #, fuzzy
@@ -7332,6 +7124,8 @@ msgid ""
 "String oscillation frequency as note, converted to Hertz according to the "
 "current musical tuning"
 msgstr ""
+"Oszillatorfrequenz für Saiteninstrumente als Notenwert, entsprechend der "
+"aktuellen musikalischen Stimmung in Hertz umgewandelt"
 
 #: ../plugins/davxtalstrings.c:124
 msgid "Velocity of the string pluck"
@@ -7343,9 +7137,8 @@ msgid "Pluck the string"
 msgstr "Wiedergabeeinstellungen"
 
 #: ../plugins/davxtalstrings.c:130 ../plugins/davxtalstrings.c:135
-#, fuzzy
 msgid "Decay"
-msgstr "Abfall [%]"
+msgstr "Abfall"
 
 #: ../plugins/davxtalstrings.c:131
 #, fuzzy
@@ -7366,7 +7159,7 @@ msgstr ""
 
 #: ../plugins/davxtalstrings.c:140 ../plugins/davxtalstrings.c:145
 msgid "Flavour"
-msgstr ""
+msgstr "Klangfarbe"
 
 #: ../plugins/davxtalstrings.c:141
 msgid "Metallic Factor [%]"
@@ -7415,9 +7208,60 @@ msgid "Right Output"
 msgstr "Ausgang, Rechts"
 
 #: ../tools/bsewavetool.cc:1219
-#, fuzzy, c-format
+#, c-format
 msgid "failed to add wave chunk from file \"%s\": %s"
-msgstr "Öffnen der Ausgangsdatei \"%s\" fehlgeschlagen:%s"
+msgstr "Hinzufügen des Wellenformabschnitts aus Datei »%s« fehlgeschlagen:%s"
+
+#~ msgid "Song"
+#~ msgstr "Titel"
+
+#, fuzzy
+#~ msgid "No valid song supplied"
+#~ msgstr "Synthesemodule"
+
+#~ msgid ""
+#~ "Round module positions to their nearest grid position, so to align all "
+#~ "modules within a synthesis network."
+#~ msgstr ""
+#~ "Modulpositionen werden auf die naheliegensten Gitterkoordinaten gerundet, "
+#~ "so dass alle Module in einem Synthesenetzwerk an einem Gitter ausgerichtet "
+#~ "werden."
+
+#, fuzzy
+#~ msgid "Synth Net"
+#~ msgstr "_Synth"
+
+#, fuzzy
+#~ msgid "No valid synthesis network supplied"
+#~ msgstr "Synthesemodule"
+
+#, fuzzy
+#~ msgid "Part"
+#~ msgstr "Parts"
+
+#, fuzzy
+#~ msgid "No valid part supplied"
+#~ msgstr "Synthesemodule"
+
+#, fuzzy
+#~ msgid "No notes selected"
+#~ msgstr "Keine Quantisierung gewählt"
+
+#, fuzzy
+#~ msgid "N Iterations"
+#~ msgstr "Informationen"
+
+#, fuzzy
+#~ msgid "Start Now"
+#~ msgstr "Editor starten"
+
+#, fuzzy
+#~ msgid "No valid part object supplied"
+#~ msgstr "Synthesemodule"
+
+#, fuzzy
+#~ msgid "Show messages about empty part range"
+#~ msgstr "Meldungen über Startprobleme des Webbrowsers anzeigen"
 
 #~ msgid ""
 #~ "BseEvaluator is a module which can compute arithmetic operations in a "
@@ -7426,10 +7270,10 @@ msgstr "Öffnen der Ausgangsdatei \"%s\" fehlgeschlagen:%s"
 #~ "input * 5\" or \"output = 2 * input + 1\"."
 #~ msgstr ""
 #~ "Der BseEvaluator ist ein Modul, das arithmetische Operationen berechnen "
-#~ "kann und das mit einer einfachen Syntax gesteuert wird. Das "
-#~ "Eingangssignal wird mit input, das Ausgangssignal mit output bezeichnet. "
-#~ "Einfache Beispiele für Programme wären \"output = input * 5\" oder "
-#~ "\"output = 2 * input + 1\"."
+#~ "kann und das mit einer einfachen Syntax gesteuert wird. Das Eingangssignal "
+#~ "wird mit input, das Ausgangssignal mit output bezeichnet. Einfache "
+#~ "Beispiele für Programme wären \"output = input * 5\" oder \"output = 2 * "
+#~ "input + 1\"."
 
 #~ msgid "Audio output"
 #~ msgstr "Auto-Ausgabe"
