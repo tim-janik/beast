@@ -1479,18 +1479,22 @@ fallback_thread_exit (gpointer retval)
 
 #ifdef g_atomic_int_get
 static int
-(g_atomic_int_get) (volatile int *atomic)
+birnet_g_atomic_int_get (volatile int *atomic)
 {
   return g_atomic_int_get (atomic);
 }
+#undef  g_atomic_int_get
+#define g_atomic_int_get birnet_g_atomic_int_get
 #endif
 
 #ifdef g_atomic_pointer_get
 static void*
-(g_atomic_pointer_get) (volatile void **atomic)
+birnet_g_atomic_pointer_get (volatile void **atomic)
 {
   return (void*) g_atomic_pointer_get (atomic);
 }
+#undef  g_atomic_pointer_get
+#define g_atomic_pointer_get birnet_g_atomic_pointer_get
 #endif
 
 
