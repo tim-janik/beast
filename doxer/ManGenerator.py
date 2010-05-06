@@ -2,6 +2,7 @@
 #
 # Doxer - Software documentation system
 # Copyright (C) 2006 Tim Janik
+# Copyright (C) 2007 Stefan Westerfeld
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -16,8 +17,10 @@
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
-import os, sys, re, Config, Data, DoxiParser
+import os, sys, re, Config, Data, DoxiParser, warnings
 def debug (*args): Config.debug_print (*args)
+def doxer_warn_if_reached():
+  warnings.warn ("doxer_warn_if_reached() triggered", stacklevel=2) # better implementation: see #477275
 
 # --- ManOStream ---
 class ManOStream:
@@ -142,6 +145,7 @@ class ManGenerator:
   def __init__ (self, manstream):
     self.mstream = manstream
     self.call_stack = []
+    self.list_item_open = False
   # transformation functions
   def lookup_handler (self, tagname, tagdict):
     handler = tagdict.get (tagname)
@@ -308,9 +312,47 @@ class ManGenerator:
     self.mstream << '\n'
     transformer (node, keyword_dict, NODE_TEXT)
     self.mstream << '\n\n.PP\n'
+  def doxer_list_get_innermost_type (self):
+    ltype = 'none'
+    for node in reversed (self.call_stack):
+      if node.name == 'doxer_list':
+        tokens = node.arg
+        while tokens:
+          arg, tokens = DoxiParser.split_arg_from_token_list (tokens)
+          arg = DoxiParser.plain_text_from_token_list (arg).strip()
+          if   arg == 'BULLET':     ltype = 'bullet'
+          elif arg == 'bullet':     ltype = 'bullet'
+          elif arg == 'none':       ltype = 'none'
+          else:
+            print >> sys.stderr, "%s:%u: warning: manual page backend does not support list type: %s" % (node.fname, node.fline, arg)
+        return ltype
+    doxer_warn_if_reached() # this function is designed to be called in doxer_list contexts only
+    return ltype
+  def doxer_list_close_item (self):
+    if self.list_item_open and self.doxer_list_get_innermost_type() == 'bullet':
+      self.mstream << '\n.LP\n'
+    self.list_item_open = False
+  def doxer_list (self, data, transformer, node, keyword_dict):
+    old_list_item_open = self.list_item_open
+    self.list_item_open = False
+    self.mstream << '\n'
+    transformer (node, keyword_dict, NODE_TEXT)
+    self.doxer_list_close_item()
+    self.mstream << '\n\n.PP\n'
+    self.list_item_open = old_list_item_open
   def doxer_item (self, data, transformer, node, keyword_dict):
-    self.mstream << '\n.TP\n'
-    transformer (node, keyword_dict)
+    assert (len (self.call_stack) >= 2) # item can only occur inside lists and deflists
+    if self.call_stack[-2].name == 'doxer_list':
+      self.doxer_list_close_item()
+      self.list_item_open = True
+      list_type = self.doxer_list_get_innermost_type()
+      if list_type   == 'none':   self.mstream << '\n.TP\n'
+      elif list_type == 'bullet': self.mstream << '\n.IP " *" 3\n'
+      else:                       doxer_warn_if_reached()
+      transformer (node, keyword_dict, NODE_TEXT)
+    else:                               # doxer_deflist
+      self.mstream << '\n.TP\n'
+      transformer (node, keyword_dict)
   def bold (self, tagname, transformer, node, keyword_dict):
     self.mstream << r'\fB'
     transformer (node, keyword_dict)
@@ -370,7 +412,7 @@ class ManGenerator:
     'doxer_newline'     : linebreak,
     'doxer_visible'     : doxer_visibility,
     'doxer_hidden'      : doxer_visibility,
-    'doxer_list'        : pass_block,
+    'doxer_list'        : doxer_list,
     'doxer_deflist'     : pass_block,
     'doxer_item'        : doxer_item,
     'doxer_table'       : pass_block,
