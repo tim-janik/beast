@@ -413,6 +413,8 @@ def parse_command_and_args():
     if arg == '--debug':
       Config.debug = True
       Config.print_traceback = True
+    elif arg == '--fatal-warnings':
+      Config.fatal_warnings = True
     elif arg == '--help' or arg == '-h':
       print_help ()
       sys.exit (0)
@@ -485,6 +487,7 @@ def print_help (with_help = True):
   print "  --help, -h                print this help message"
   print "  --version, -v             print version info"
   print "  --debug                   print debug information"
+  print "  --fatal-warnings          abort program on doxer_warn()"
   print "  -d OUTPUTDIR              write output to OUTPUTDIR/ (defaults to ./)"
   print "  -D name value             define 'name' to 'value'"
   print "  -I DIRECTORY              add DIRECTORY to include path"

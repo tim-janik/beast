@@ -2,6 +2,7 @@
 #
 # Doxer - Software documentation system
 # Copyright (C) 2005-2006 Tim Janik
+# Copyright (C) 2007 Stefan Westerfeld
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -72,6 +73,26 @@ class ConstDict:
           line += " "
         line += str (s)
       sys.stderr.write ("|> " + line + "\n")
+  # doxer warnings
+  def doxer_warn (self, msg, stacklevel=1):
+    class DoxerWarning (UserWarning):
+      """
+        Doxer's own warnings (we subclass to not conflict with installed warning filters)
+      """
+    import warnings
+    if self.__dict__.has_key ("fatal_warnings"):
+      raise msg
+    else:
+      warnings.warn (msg + ": ", DoxerWarning, stacklevel=stacklevel+1)
+  def doxer_warn_if_reached (self):
+    import inspect
+    frame_info = inspect.getframeinfo (inspect.currentframe (1))
+    self.doxer_warn ("doxer_warn_if_reached() encountered in function %s" % (frame_info[2]), 2)
+  def doxer_warn_if_fail (self, condition):
+    import inspect
+    if not condition:
+      frame_info = inspect.getframeinfo (inspect.currentframe (1))
+      self.doxer_warn ("doxer_warn_if_fail() failed in function %s" % (frame_info[2]), 2)
 
 # --- module interface ---
 sys.modules[__name__] = ConstDict (init_dict)

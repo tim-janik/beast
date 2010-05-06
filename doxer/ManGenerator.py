@@ -18,9 +18,9 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 import os, sys, re, Config, Data, DoxiParser, warnings
+from Config import doxer_warn_if_reached
+
 def debug (*args): Config.debug_print (*args)
-def doxer_warn_if_reached():
-  warnings.warn ("doxer_warn_if_reached() triggered", stacklevel=2) # better implementation: see #477275
 
 # --- ManOStream ---
 class ManOStream:
