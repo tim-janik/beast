@@ -171,6 +171,9 @@ artscompressor-test:
 	$(BSEFCOMPARE) $(srcdir)/artscompressor.ref $(@F).tmp --threshold 99.99
 	rm -f $(@F).tmp $(@F).wav
 
+# required wave files for sample based tests *-wave-[12]-test.bse
+EXTRA_DIST += pseudo-saw.bsewave pseudo-square-env.bsewave pseudo-stereo.bsewave pseudo-stereo-env.bsewave
+
 # a test for play-type=adsr-wave-1
 FEATURE_TESTS += adsr-wave-1-test
 EXTRA_DIST += adsr-wave-1-test.bse adsr-wave-1-test.ref
