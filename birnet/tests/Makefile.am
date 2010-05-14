@@ -35,3 +35,6 @@ sorting_LDADD	 = $(progs_ldadd)
 TESTS		+= datalist
 datalist_SOURCES = datalist.cc
 datalist_LDADD	 = $(progs_ldadd)
+TESTS		+= utils
+utils_SOURCES    = utils.cc
+utils_LDADD	 = $(progs_ldadd)

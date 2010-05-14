@@ -1,5 +1,6 @@
 /* Birnet
  * Copyright (C) 2005-2006 Tim Janik
+ * Copyright (C) 2010 Stefan Westerfeld
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -18,6 +19,7 @@
 #define __BIRNET_UTILS_XX_HH__
 
 #include <birnet/birnetcdefs.h>
+#include <glib.h> /* g_free */
 #include <string>
 #include <vector>
 #include <map>
@@ -552,6 +554,64 @@ public: /* generic data API */
   template<typename Type> inline Type swap_data   (DataKey<Type> *key)            { return data_list.swap (key); }
   template<typename Type> inline void delete_data (DataKey<Type> *key)            { data_list.del (key); }
 };
+
+/* --- class to allocate aligned memory --- */
+template<class T, int ALIGN>
+class AlignedArray {
+  unsigned char *unaligned_mem;
+  T *data;
+  size_t n_elements;
+
+  void
+  allocate_aligned_data()
+  {
+    BIRNET_ASSERT ((ALIGN % sizeof (T)) == 0);
+    data = reinterpret_cast<T *> (malloc_aligned (n_elements * sizeof (T), ALIGN, &unaligned_mem));
+  }
+  /* no copy constructor and no assignment operator */
+  BIRNET_PRIVATE_CLASS_COPY (AlignedArray);
+public:
+  AlignedArray (const vector<T>& elements) :
+    n_elements (elements.size())
+  {
+    allocate_aligned_data();
+
+    for (size_t i = 0; i < n_elements; i++)
+      new (data + i) T (elements[i]);
+  }
+  AlignedArray (size_t n_elements) :
+    n_elements (n_elements)
+  {
+    allocate_aligned_data();
+
+    for (size_t i = 0; i < n_elements; i++)
+      new (data + i) T();
+  }
+  ~AlignedArray()
+  {
+    /* C++ destruction order: last allocated element is deleted first */
+    while (n_elements)
+      data[--n_elements].~T();
+
+    g_free (unaligned_mem);
+  }
+  T&
+  operator[] (size_t pos)
+  {
+    return data[pos];
+  }
+  const T&
+  operator[] (size_t pos) const
+  {
+    return data[pos];
+  }
+  size_t
+  size()
+  {
+    return n_elements;
+  }
+};
+
 
 /* --- implementation --- */
 void _birnet_init_threads (void);

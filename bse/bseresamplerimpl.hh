@@ -34,6 +34,7 @@ using std::vector;
 using std::min;
 using std::max;
 using std::copy;
+using Birnet::AlignedArray;
 
 /* see: http://ds9a.nl/gcc-simd/ */
 union F4Vector 
@@ -151,63 +152,6 @@ fir_compute_sse_taps (const vector<float>& taps)
   
   return sse_taps;
 }
-
-/* Helper class to allocate aligned memory */
-template<class T, int ALIGN>
-class AlignedArray {
-  unsigned char *unaligned_mem;
-  T *data;
-  unsigned int n_elements;
-  
-  void
-  allocate_aligned_data()
-  {
-    g_assert ((ALIGN % sizeof (T)) == 0);
-    data = reinterpret_cast<T *> (Birnet::malloc_aligned (n_elements * sizeof (T), ALIGN, &unaligned_mem));
-  }
-  /* no copy constructor and no assignment operator */
-  BIRNET_PRIVATE_CLASS_COPY (AlignedArray);
-public:
-  AlignedArray (const vector<T>& elements) :
-    n_elements (elements.size())
-  {
-    allocate_aligned_data();
-    
-    for (unsigned int i = 0; i < n_elements; i++)
-      new (data + i) T(elements[i]);
-  }
-  AlignedArray (unsigned int n_elements) :
-    n_elements (n_elements)
-  {
-    allocate_aligned_data();
-    
-    for (unsigned int i = 0; i < n_elements; i++)
-      new (data + i) T();
-  }
-  ~AlignedArray()
-  {
-    /* C++ destruction order: last allocated element is deleted first */
-    while (n_elements)
-      data[--n_elements].~T();
-    
-    g_free (unaligned_mem);
-  }
-  T&
-  operator[] (unsigned int pos)
-  {
-    return data[pos];
-  }
-  const T&
-  operator[] (unsigned int pos) const
-  {
-    return data[pos];
-  }
-  unsigned int
-  size()
-  {
-    return n_elements;
-  }
-};
 
 /**
  * This function tests the SSEified FIR filter code (that is, the reordering
