@@ -93,6 +93,7 @@ html/style/%: $(top_srcdir)/web/style/%
 	@mkdir -p html/style/
 	cp $< $@
 html/style/doxer-style.css: @DOXRULE@
+	@mkdir -p html/style/
 	$(DOXER) writecss -d html/style/
 
 # MAN generation rules
@@ -108,17 +109,21 @@ mans/%.5: @DOXRULE@ %.5.doxi
 
 # HTML generation rules
 html/%.1.html: @DOXRULE@ %.1.doxi
+	@mkdir -p html/
 	$(DOXER) doxi2htmlman $< -d html/ $(DOXIDEFS)
 html/%.3.html: @DOXRULE@ %.3.doxi
+	@mkdir -p html/
 	$(DOXER) doxi2htmlman $< -d html/ $(DOXIDEFS)
 html/%.html: @DOXRULE@ %.doxi
 	@mkdir -p html/
 	$(DOXER) doxi2html $< -d html/ $(DOXIDEFS)
 html/%.html: @DOXRULE@ gendoxi/%.doxi
+	@mkdir -p html/
 	$(DOXER) doxi2html $< -d html/ $(DOXIDEFS)
 
 # HTML import rules
 ${HTML_IMPORTS}:
+	@mkdir -p html/
 	cp $(subst html/, ${srcdir}/imports/, ${HTML_IMPORTS}) html/
 
 # Generated .doxi files
