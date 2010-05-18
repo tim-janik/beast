@@ -46,13 +46,19 @@ int main(int argc, char **argv)
 
   printf ("%s: testing remote glue layer calls via C++ interface:\n", argv[0]);
 
-  const int max_calls = 10000;
-  double start = gettime ();
+  const int max_calls = 30000;
+  const int runs = 7;
+  double t = 1e7;
 
-  for(int i=0; i < max_calls; i++)
-    note_to_freq (MUSICAL_TUNING_12_TET, 60, 0);
+  for (int r = 0; r < runs; r++)
+    {
+      double start = gettime ();
 
-  double t = gettime () - start;
+      for(int i=0; i < max_calls; i++)
+        note_to_freq (MUSICAL_TUNING_12_TET, 60, 0);
+
+      t = std::min (gettime () - start, t);
+    }
   printf ("%f seconds for %d invocations => %f invocations/second, %f milli seconds per invocation\n",
           t, max_calls, max_calls / t, t * 1000 / max_calls);
 
