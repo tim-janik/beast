@@ -516,11 +516,11 @@ alsa_device_write (BsePcmHandle *handle,
       gssize n = 0;                                             /* in frames */
       do
         {
-          if (n < 0)    /* errors during read, could be underrun (-EPIPE) */
+          if (n < 0)    /* errors during write, could be overrun (-EPIPE) */
             {
               DEBUG ("ALSA: write() error: %s", snd_strerror (n));
               snd_lib_error_set_handler (silent_error_handler);
-              snd_pcm_prepare (alsa->read_handle);  /* force retrigger */
+              snd_pcm_prepare (alsa->write_handle);  /* force retrigger */
               snd_lib_error_set_handler (NULL);
               return;
             }
