@@ -257,7 +257,7 @@ gsl_wave_osc_set_filter (GslWaveOscData *wosc,
 
   if (istep != wosc->istep)
     {
-      gfloat nyquist_fact = 2.0 * PI / wosc->mix_freq, cutoff_freq = 18000, stop_freq = 24000;
+      gfloat nyquist_fact = 2.0 * PI / wosc->mix_freq, cutoff_freq = 18000, stop_freq = MAX (wosc->wchunk->mix_freq / 2, 24000);
       gfloat empiric_filter_stability_limit = 6.;
       gfloat filt_fact = CLAMP (1. / step,
 				1. / (empiric_filter_stability_limit * zero_padding),
@@ -270,6 +270,7 @@ gsl_wave_osc_set_filter (GslWaveOscData *wosc,
 
       wosc->istep = istep;
       gsl_filter_tscheb2_lp (GSL_WAVE_OSC_FILTER_ORDER, freq_c, freq_r / freq_c, 0.18, wosc->a, wosc->b);
+
       /* Scale to compensate for zero-padding.
        * Adjust volume of the chunk according to its volume adjustment.
        */
