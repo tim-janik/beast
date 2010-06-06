@@ -34,6 +34,22 @@ struct Foo
   }
 };
 
+template<class T, int N>
+void aligned_array_test()
+{
+  const size_t cache_line_size = 64; // sync with Birnet::malloc_aligned
+
+  size_t len = g_random_int_range (1, 1000);
+  AlignedArray<T, N> array (len);
+  TCHECK (array.size() == len);
+  for (size_t i = 0; i < array.size(); i++)
+    TCHECK (array[i] == 0);
+  TCHECK (size_t (&array[0]) % N == 0);
+  if (cache_line_size % N == 0) // cases where we expect 64-byte alignment
+    TCHECK (size_t (&array[0]) % cache_line_size == 0);
+  TOK();
+};
+
 int Foo::destructor_calls = 0;
 
 static void
@@ -41,11 +57,30 @@ test_aligned_array (void)
 {
   TSTART ("AlignedArray");
   TOK();
-  AlignedArray<int, 65540> array (3);      // choose an alignment that is unlikely to occur by chance
-  TASSERT (array[0] == 0);
-  TASSERT (array[1] == 0);
-  TASSERT (array[2] == 0);
-  TASSERT (size_t (&array[0]) % 65540 == 0);
+  // try different alignments (char is needed where size is not a multiple of 4)
+  aligned_array_test<char, 1> ();
+  aligned_array_test<char, 2> ();
+  aligned_array_test<char, 3> ();
+  aligned_array_test<int, 4> ();
+  aligned_array_test<char, 7> ();
+  aligned_array_test<int, 8> ();
+  aligned_array_test<char, 13> ();
+  aligned_array_test<int, 16> ();
+  aligned_array_test<char, 23> ();
+  aligned_array_test<int, 32> ();
+  aligned_array_test<char, 47> ();
+  aligned_array_test<int, 64> ();
+  aligned_array_test<char, 99> ();
+  aligned_array_test<int, 128> ();
+  aligned_array_test<char, 199> ();
+  aligned_array_test<int, 256> ();
+  aligned_array_test<char, 311> ();
+  aligned_array_test<int, 512> ();
+  aligned_array_test<char, 777> ();
+  aligned_array_test<int, 1024> ();
+  aligned_array_test<char, 1234> ();
+  aligned_array_test<int, 2048> ();
+  aligned_array_test<int, 65540> ();
     {
       AlignedArray<Foo, 40> foo_array (5);
       TASSERT (size_t (&foo_array[0]) % 40 == 0);
