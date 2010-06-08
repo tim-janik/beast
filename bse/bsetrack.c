@@ -1021,7 +1021,7 @@ bse_track_class_init (BseTrackClass *class)
 						     SFI_PARAM_STANDARD ":unprepared"));
   bse_object_class_add_param (object_class, _("Synth Input"),
 			      PROP_N_VOICES,
-			      sfi_pspec_int ("n_voices", _("Max Voixes"), _("Maximum number of voices for simultaneous playback"),
+			      sfi_pspec_int ("n_voices", _("Max Voices"), _("Maximum number of voices for simultaneous playback"),
 					     16, 1, 256, 1,
 					     SFI_PARAM_GUI SFI_PARAM_STORAGE ":scale:unprepared"));
   bse_object_class_add_param (object_class, _("MIDI Instrument"),
