@@ -429,6 +429,13 @@ Effect::max_block_size() const
   return BSE_STREAM_MAX_VALUES;
 }
 
+BseMusicalTuningType
+Effect::current_musical_tuning() const
+{
+  BseSource *source = cast (const_cast <Effect*> (this));
+  return bse_item_current_musical_tuning (BSE_ITEM (source));
+}
+
 void
 Effect::class_init (CxxBaseClass *klass)
 {

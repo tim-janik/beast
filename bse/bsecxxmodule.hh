@@ -159,6 +159,8 @@ protected:
                                                         BseTrans        *trans);
   unsigned int              block_size                 () const;
   unsigned int              max_block_size             () const;
+public: /* FIXME: make this protected as soon as the modules have their own current_musical_tuning() accessor */
+  BseMusicalTuningType      current_musical_tuning     () const;
 };
 /* implement Bse::Effect and Bse::SynthesisModule methods */
 #define BSE_EFFECT_INTEGRATE_MODULE(ObjectType,ModuleType,ParamType)            \
