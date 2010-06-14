@@ -107,6 +107,11 @@ $(srcdir)/davchorus.cc: davchorus.genidl.hh # davplugins
 plugins_built_sources      += davchorus.genidl.hh
 davplugins_FPU_la_SOURCES += davchorus.cc
 
+## C++ Plugin davorgan
+$(srcdir)/davorgan.cc: davorgan.genidl.hh # davplugins
+plugins_built_sources      += davorgan.genidl.hh
+davplugins_FPU_la_SOURCES += davorgan.cc
+
 
 ## C Plugin bsesimpleadsr
 EXTRA_HEADERS      += bsesimpleadsr.h
@@ -211,21 +216,6 @@ bsesequencer_SSE_la_SOURCES   = $(bsesequencer_FPU_la_SOURCES)
 bsesequencer_SSE_la_LDFLAGS   = $(bsesequencer_FPU_la_LDFLAGS)
 bsesequencer_SSE_la_LIBADD    = $(bsesequencer_FPU_la_LIBADD)
 bsesequencer_SSE_la_CFLAGS    = $(SSE_PLUGIN_CFLAGS)
-
-
-## C Plugin davorgan
-EXTRA_HEADERS      += davorgan.h
-$(srcdir)/davorgan.c: davorgan.h
-plugin_FPU_ltlibs += davorgan.FPU.la
-davorgan_FPU_la_SOURCES = davorgan.c
-davorgan_FPU_la_LDFLAGS = -module $(plugins_ldflags)
-davorgan_FPU_la_LIBADD  = $(plugins_libs)
-davorgan_FPU_la_CFLAGS    = $(FPU_PLUGIN_CFLAGS)
-plugin_SSE_ltlibs   += davorgan.SSE.la
-davorgan_SSE_la_SOURCES   = $(davorgan_FPU_la_SOURCES)
-davorgan_SSE_la_LDFLAGS   = $(davorgan_FPU_la_LDFLAGS)
-davorgan_SSE_la_LIBADD    = $(davorgan_FPU_la_LIBADD)
-davorgan_SSE_la_CFLAGS    = $(SSE_PLUGIN_CFLAGS)
 
 
 ## C Plugin davxtalstrings

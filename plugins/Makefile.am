@@ -27,6 +27,7 @@ idl_plugins = $(strip			\
 	+++davplugins 			\
 	davbassfilter.idl		\
 	davchorus.idl			\
+	davorgan.idl			\
 )
 EXTRA_HEADERS += $(filter-out +++%, $(idl_plugins))
 # setup generation of C++ plugins from idl files
@@ -48,7 +49,6 @@ cglob_plugins = $(strip		\
 	bsemixer.[hc]		\
 	bsemult.[hc]		\
 	bsesequencer.[hc]	\
-	davorgan.[hc]		\
 	davxtalstrings.[hc]	\
 	davsyndrum.[hc]		\
 	davcanyondelay.[hc]	\
