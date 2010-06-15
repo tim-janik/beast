@@ -66,11 +66,13 @@ slowcheck: bse-loading-check
 
 CLEANFILES += distfiles.list warnings.tmp
 plugin_globs = '$(top_builddir)/plugins/.libs/*.so:$(top_builddir)/plugins/freeverb/.libs/*.so'
+samplepath = '$(top_srcdir)/tests/audio:$(top_srcdir)/library/samples'
 EXTRA_DIST += checkproject.scm
 BSESCM = $(strip								\
 	$(top_builddir)/shell/bsescm-$(BIN_VERSION)				\
 	  -p null -m null							\
 	  --bse-rcfile "/dev/null" --bse-no-load				\
 	  --bse-override-plugin-globs '$(plugin_globs)'				\
+          --bse-override-sample-path $(samplepath)                              \
 	  -s "$(top_srcdir)/tests/filecheck/checkproject.scm"			\
 )
