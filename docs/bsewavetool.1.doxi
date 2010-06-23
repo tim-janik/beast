@@ -117,6 +117,21 @@ bsewavetool - A tool for editing the native multisample format for @beast and @b
           little-endian, big-endian [little-endian].
         @done
 
+@subheading del-chunk {-m=midi-note|-f=osc-freq|--chunk-key=key|--all-chunks}
+        Removes one or more chunks from the bsewave file.
+
+        @manb{Options:}
+        @itemize{none}
+        @item @manb{-f} @mani{<osc-freq>} @*
+          Oscillator frequency to select a wave chunk.
+        @item @manb{-m} @mani{<midi-note>} @*
+          Alternative way to specify oscillator frequency.
+        @item @manb{--chunk-key} @mani{<key>} @*
+          Select wave chunk using chunk key from list-chunks.
+        @item @manb{--all-chunks} @*
+          Delete all chunks.
+        @done
+
 @subheading xinfo {-m=midi-note|-f=osc-freq|--chunk-key=key|--all-chunks|--wave} key=[value] ...
         Add, change or remove an XInfo string of a bsewave file.
         Omission of [value] deletes the XInfo associated with the key.

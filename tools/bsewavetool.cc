@@ -1227,6 +1227,66 @@ public:
   }
 } cmd_add_chunk ("add-chunk"), cmd_add_raw_chunk ("add-raw-chunk", AddChunk::RAW);
 
+class DelChunkCmd : public Command {
+  vector<gfloat> m_freq_list;
+  bool           m_all_chunks;
+public:
+  void
+  blurb (bool bshort)
+  {
+    g_print ("{-m=midi-note|-f=osc-freq|--chunk-key=key|--all-chunks}\n");
+    if (bshort)
+      return;
+    g_print ("    Removes one or more chunks from the bsewave file.\n");
+    g_print ("    Options:\n");
+    g_print ("    -f <osc-freq>       oscillator frequency to select a wave chunk\n");
+    g_print ("    -m <midi-note>      alternative way to specify oscillator frequency\n");
+    g_print ("    --chunk-key <key>   select wave chunk using chunk key from list-chunks\n");
+    g_print ("    --all-chunks        delete all chunks\n");
+    /*       "**********1*********2*********3*********4*********5*********6*********7*********" */
+  }
+  guint
+  parse_args (guint  argc,
+              char **argv)
+  {
+    bool seen_selection = false;
+    for (guint i = 1; i < argc; i++)
+      {
+	if (parse_chunk_selection (argv, i, argc, m_all_chunks, m_freq_list))
+          seen_selection = true;
+      }
+    return !seen_selection ? 1 : 0; /* # args missing */
+  }
+  bool
+  exec (Wave *wave)
+  {
+    /* get the wave into storage order */
+    wave->sort();
+    list<WaveChunk>::iterator it = wave->chunks.begin();
+    while (it != wave->chunks.end())
+      {
+        list<WaveChunk>::iterator next_it = it;
+        next_it++;
+
+        if (m_all_chunks || wave->match (*it, m_freq_list))
+          {
+            GslDataHandle *dhandle = it->dhandle;
+            double osc_freq = gsl_data_handle_osc_freq (dhandle);
+            sfi_info ("DELETE: osc-freq=%g", osc_freq);
+
+            wave->remove (it);
+          }
+        it = next_it;
+      }
+    return true;
+  }
+  DelChunkCmd (const char *command_name) :
+    Command (command_name),
+    m_all_chunks (false)
+  {
+  }
+} cmd ("del-chunk");
+
 class XInfoCmd : public Command {
   vector<char*> args;
 public:
