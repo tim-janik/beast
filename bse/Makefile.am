@@ -91,7 +91,7 @@ bse_sources = $(strip \
 	bsecxxarg.cc		bsecxxmodule.cc		bsecxxplugin.cc			bseloader.cc \
 	bseresampler.cc 	bsedatahandle-resample.cc				bsedatahandle-fir.cc \
 	bseloader-aiff.cc	bseloader-guspatch.cc	bseloader-oggvorbis.cc		bseloader-bsewave.cc \
-	bseloader-mad.cc	bseloader-wav.cc	\
+	bseloader-mad.cc	bseloader-wav.cc	bseloader-flac.cc               bsedatahandle-flac.cc \
 	bsebusmodule.cc		\
 	bsebasics.cc		\
 	bseprobe.cc		\

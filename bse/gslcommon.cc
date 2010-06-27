@@ -408,4 +408,5 @@ gsl_init (void)
   _gsl_init_loader_oggvorbis ();
   _gsl_init_loader_mad ();
   bse_init_loader_gus_patch ();
+  bse_init_loader_flac ();
 }

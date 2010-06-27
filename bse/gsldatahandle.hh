@@ -115,6 +115,10 @@ GslDataHandle*	  bse_data_handle_new_fir_lowpass   (GslDataHandle *src_handle,		
 gdouble           bse_data_handle_fir_response_db   (GslDataHandle *fir_handle,         // implemented in bsedatahandle-fir.cc
                                                      gdouble        freq);
 
+/* --- flac datahandle --- */
+GslDataHandle*    bse_data_handle_new_flac          (const gchar*   file_name,
+                                                     gfloat         osc_freq);
+
 
 
 /* --- xinfo handling --- */

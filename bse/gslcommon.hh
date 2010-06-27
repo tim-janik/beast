@@ -56,6 +56,7 @@ void	_gsl_init_loader_wav		(void);
 void	_gsl_init_loader_oggvorbis	(void);
 void	_gsl_init_loader_mad		(void);
 void	bse_init_loader_gus_patch	(void);
+void	bse_init_loader_flac      	(void);
 #define		GSL_N_IO_RETRIES	(5)
 G_END_DECLS
 
