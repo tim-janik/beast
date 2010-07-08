@@ -86,6 +86,8 @@ class ManOStream:
       self.output += chr
       self.output_changed()
       return
+    if chr == '-':
+      self.output += '\\';
     self.output += chr
     self.output_changed()
   def put (self, string):
