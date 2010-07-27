@@ -27,7 +27,8 @@ bsewavetool - A tool for editing the native multisample format for @beast and @b
 	@item approximating the sound of an instrument (such as a piano) by sampling
 	      some notes, and mapping these to the corresponding frequencies in a
 	      @mani{bsewave} file - when such a file is loaded by @bse and a note is
-	      played, @bse will play the "nearest" note, and - if necessary pitch it
+	      played, @bse will play the "nearest" note, and - if necessary - pitch
+              it
 	@done
 
 
