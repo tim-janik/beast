@@ -214,7 +214,7 @@ super_shell_build_snet (BstSuperShell *self,
   if (bse_snet_supports_user_synths (snet) || BST_DBG_EXT)
     gtk_notebook_append_page (notebook,
                               gtk_widget_get_toplevel (GTK_WIDGET (bst_snet_router_build_page (snet))),
-                              gxk_notebook_create_tabulator (_("Routing"), BST_STOCK_MESH, _("Add, edit and connect synthsizer mesh components")));
+                              gxk_notebook_create_tabulator (_("Routing"), BST_STOCK_MESH, _("Add, edit and connect synthesizer mesh components")));
   param_view = bst_param_view_new (snet);
   gtk_notebook_append_page (notebook,
                             bst_param_view_new (snet),
