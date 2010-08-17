@@ -50,8 +50,11 @@ private:
     DataHandleFlac *dh = static_cast<DataHandleFlac *> (client_data);
     dh->m_buffer_start = frame->header.number.sample_number;
     dh->m_buffer.clear();
+
+    // scale with 1/32768 for 16 bit, 1/(2^23) for 24 bit
+    double scale = 2.0 / (1 << frame->header.bits_per_sample);
     for (int i = 0; i < frame->header.blocksize; i++)
-      dh->m_buffer.push_back (buffer[0][i] * (1 / 32768.0));
+      dh->m_buffer.push_back (buffer[0][i] * scale);
     return FLAC__STREAM_DECODER_WRITE_STATUS_CONTINUE;
   }
   static void
