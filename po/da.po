@@ -3,7 +3,13 @@
 # This file is distributed under the same license as the beast package.
 # Joe Hansen <joedalton2@yahoo.dk>, 2010.
 #
+# ADSR Envelope Generator -> ADSR-kurvegenerator
+# busses -> busser (Interne dataoverførselsenheder i en computer f.eks. mellem 
+#                   RAM, CPU, lydkort osv.)
+# dial -> drejeskive
 # discard -> kassér
+# dottet -> punkteret
+# event -> hændelse ?
 # fallback -> reserve
 # feedback -> feedback i lydsammenhænge er sådan noget med forstærket lyd 
 #             som bliver opfanget af mikrofoner og derved sendt tilbage 
@@ -12,8 +18,10 @@
 #             "tilbagekobling" det som kommer tættest på, men det dækker 
 #             det ikke ordentligt, jeg vil anbefale at lade det stå på 
 #             engelsk eftersom det er det udtryk folk bruger.
+# knob -> drejeknap
 # note -> node (Kenneth har afklaret den her). Enkelte steder note.
 # part -> stemme (Kenneth har afklaret den her).
+# rack -> rack (engelsk låneord; et rack).
 # synthesis -> syntese
 # synthesis networks -> syntesenetværk
 # synthesizer mesh -> synthesizernet (Et "synthesizer mesh" er det der vises 
@@ -23,6 +31,8 @@
 #                     sammen gennem filtre og effekter og den slags i et "net" og 
 #                     jeg mener derfor at det vil være en god oversættelse at kalde 
 #                     det et "synthesizernet".
+# Triplet whole note -> trioliseret helnode
+# wave -> wave
 #
 # engelsk fejl synthsizer mesh
 # ved output/input skal kanal så på den danske oversættelse
@@ -32,8 +42,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast master\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-08-21 12:50+0200\n"
-"PO-Revision-Date: 2010-07-20 09:01I+0200\n"
+"POT-Creation-Date: 2010-08-23 22:38+0200\n"
+"PO-Revision-Date: 2010-08-14 09:01I+0200\n"
 "Last-Translator: Joe Hansen <joedalton2@yahoo.dk>\n"
 "Language-Team: Danish <dansk@dansk-gruppen.dk>\n"
 "MIME-Version: 1.0\n"
@@ -159,11 +169,11 @@ msgstr "Vis en oversigt over alle procedurer"
 
 #: ../beast-gtk/bstapp.c:126
 msgid "Rack Editor"
-msgstr ""
+msgstr "Rackredigering"
 
 #: ../beast-gtk/bstapp.c:128 ../beast-gtk/bstprofiler.c:224
 msgid "Profiler"
-msgstr ""
+msgstr "Profileringsprogram"
 
 #: ../beast-gtk/bstapp.c:128
 msgid "Display statistics and timing information"
@@ -219,7 +229,7 @@ msgid ""
 "Add a new MIDI synthesizer to control an instrument from external MIDI events"
 msgstr ""
 "Tilføj en ny MIDI-synthesizer for at kontrollere et instrument fra eksterne "
-"MIDI-begivenheder"
+"MIDI-hændelser"
 
 #: ../beast-gtk/bstapp.c:146
 msgid "Remove Song or Synthesizer"
@@ -438,7 +448,7 @@ msgstr ""
 #. FIXME: undo Edit when hide && GXK_DIALOG_HIDE_ON_DELETE
 #: ../beast-gtk/bstapp.c:977
 msgid "Rack editor"
-msgstr ""
+msgstr "Rackredigering"
 
 #: ../beast-gtk/bstapp.c:991
 msgid "Preferences"
@@ -544,7 +554,7 @@ msgstr "Alle"
 
 #: ../beast-gtk/bsteventrollctrl.c:57
 msgid "Select all events"
-msgstr "Vælg alle begivenheder"
+msgstr "Vælg alle hændelser"
 
 #. special cased signals
 #: ../beast-gtk/bsteventrollctrl.c:59 ../beast-gtk/bstpianorollctrl.c:59
@@ -555,7 +565,7 @@ msgstr "Ingen"
 
 #: ../beast-gtk/bsteventrollctrl.c:59
 msgid "Unselect all events"
-msgstr "Fravælg alle begivenheder"
+msgstr "Fravælg alle hændelser"
 
 #: ../beast-gtk/bsteventrollctrl.c:61 ../beast-gtk/bstpianorollctrl.c:61
 msgid "Invert"
@@ -568,7 +578,7 @@ msgstr ""
 #: ../beast-gtk/bsteventrollctrl.c:445 ../beast-gtk/bsteventrollctrl.c:452
 #: ../beast-gtk/bsteventrollctrl.c:521
 msgid "Move Control Event"
-msgstr ""
+msgstr "Flyt kontrolhændelse"
 
 #: ../beast-gtk/bsteventrollctrl.c:452 ../beast-gtk/bsteventrollctrl.c:606
 #: ../beast-gtk/bsteventrollctrl.c:656 ../beast-gtk/bstpianorollctrl.c:579
@@ -580,11 +590,11 @@ msgstr "Intet mål"
 
 #: ../beast-gtk/bsteventrollctrl.c:521 ../beast-gtk/bsteventrollctrl.c:642
 msgid "Lost Event"
-msgstr ""
+msgstr "Mistet hændelse"
 
 #: ../beast-gtk/bsteventrollctrl.c:531 ../beast-gtk/bsteventrollctrl.c:564
 msgid "Align Control Events"
-msgstr ""
+msgstr "Juster kontrolhændelser"
 
 #: ../beast-gtk/bsteventrollctrl.c:564 ../beast-gtk/bsteventrollctrl.c:690
 #: ../beast-gtk/bstpianorollctrl.c:810 ../beast-gtk/bstpianorollctrl.c:846
@@ -593,16 +603,25 @@ msgstr "Afbrudt"
 
 #: ../beast-gtk/bsteventrollctrl.c:590
 msgid "Insert Control Event"
-msgstr ""
+msgstr "Indsæt kontrolhændelse"
 
+# Tror de her skal læses som "Ændr størrelse på kontrol"-hændelse
+# måske ordst.:
+# Hændelse for ændring af st. på kontr.
+# der er nogle flere af dem i de omkringstående strenge
+# I brugerfladeprogrammering taler man ofte om 'events' eller signaler -
+# ting som sker når nogen klikker på en knap, trykker på en tast,
+# flytter musen eller noget tilsvarende.  Så man kan have en 'hændelse'
+# der repræsenterer at brugeren udfører en bestemt type 'handling'.  Det
+# er dog ikke så ofte at brugeren har brug for at vide den slags
 #: ../beast-gtk/bsteventrollctrl.c:601 ../beast-gtk/bsteventrollctrl.c:606
 #: ../beast-gtk/bsteventrollctrl.c:642
 msgid "Resize Control Event"
-msgstr ""
+msgstr "Hændelse for ændring af størrelse på kontrol"
 
 #: ../beast-gtk/bsteventrollctrl.c:653 ../beast-gtk/bsteventrollctrl.c:656
 msgid "Delete Control Event"
-msgstr ""
+msgstr "Hændelse for sletning af kontrol"
 
 #: ../beast-gtk/bsteventrollctrl.c:666 ../beast-gtk/bsteventrollctrl.c:690
 #: ../beast-gtk/bstpianorollctrl.c:784 ../beast-gtk/bstpianorollctrl.c:810
@@ -1094,19 +1113,19 @@ msgstr ""
 
 #: ../beast-gtk/bstparam-scale.c:65
 msgid "Knob"
-msgstr ""
+msgstr "Drejeknap"
 
 #: ../beast-gtk/bstparam-scale.c:71
 msgid "Knob (Logarithmic)"
-msgstr ""
+msgstr "Drejeknap (logaritmisk)"
 
 #: ../beast-gtk/bstparam-scale.c:83
 msgid "Dial"
-msgstr ""
+msgstr "Drejeskive"
 
 #: ../beast-gtk/bstparam-scale.c:89
 msgid "Dial (Logarithmic)"
-msgstr ""
+msgstr "Drejeskive (logaritmisk)"
 
 #: ../beast-gtk/bstparam-searchpath.c:54
 msgid "Remove Paths"
@@ -1222,37 +1241,38 @@ msgstr ""
 #: ../beast-gtk/bstpatterncolumns.c:697
 msgid "  select various event types (controls, continuous controllers)"
 msgstr ""
+"  vælg forskellige hændelsestyper (kontroller, fortsættende kontrollere)"
 
 #. !!! LEAVE UNTRANSLATED !!!
 #: ../beast-gtk/bstpatterncolumns.c:699
 msgid "bar, |"
-msgstr ""
+msgstr "bar, |"
 
 #: ../beast-gtk/bstpatterncolumns.c:700
 msgid "  display solid vertical bar"
-msgstr ""
+msgstr "  vis fast lodret bjælke"
 
 #. !!! LEAVE UNTRANSLATED !!!
 #: ../beast-gtk/bstpatterncolumns.c:702
 msgid "dbar, :"
-msgstr ""
+msgstr "dbar, :"
 
 #: ../beast-gtk/bstpatterncolumns.c:703
 msgid "  display dotted vertical bar"
-msgstr ""
+msgstr "  vis punkteret lodret bjælke"
 
 #. !!! LEAVE UNTRANSLATED !!!
 #: ../beast-gtk/bstpatterncolumns.c:705
 msgid "space, _"
-msgstr ""
+msgstr "space, _"
 
 #: ../beast-gtk/bstpatterncolumns.c:706
 msgid "  insert vertical space"
-msgstr ""
+msgstr "  indsæt lodrette mellemrum"
 
 #: ../beast-gtk/bstpatterncolumns.c:707
 msgid "EVENTS:"
-msgstr "BEGIVENHEDER:"
+msgstr "HÆNDELSER:"
 
 #. !!! LEAVE UNTRANSLATED !!!
 #: ../beast-gtk/bstpatterncolumns.c:709
@@ -1348,6 +1368,8 @@ msgstr "Trin"
 msgid ""
 "The number of cells to move across each time an event or note was edited"
 msgstr ""
+"Antallet af celler der skal bevæges over hver gang en hændelse eller node "
+"blev redigeret"
 
 #: ../beast-gtk/bstpatternctrl.c:127 ../beast-gtk/bstscrollgraph.c:574
 msgid "Direction"
@@ -1356,7 +1378,7 @@ msgstr "Retning"
 #: ../beast-gtk/bstpatternctrl.c:128
 msgid "The direction of cell movement each time an event or note was edited"
 msgstr ""
-"Retningen på cellebevægelse hver gang en begivenhed eller node blev redigeret"
+"Retningen på cellebevægelse hver gang en hændelse eller node blev redigeret"
 
 #: ../beast-gtk/bstpatternctrl.c:132
 msgid "HWrap"
@@ -1459,7 +1481,7 @@ msgstr ""
 
 #: ../beast-gtk/bstpatternctrl.c:346 ../beast-gtk/bstpatternctrl.c:360
 msgid "Remove any events in the focus cell"
-msgstr ""
+msgstr "Fjern alle hændelser i fokuscellen"
 
 #: ../beast-gtk/bstpatternctrl.c:350 ../beast-gtk/bstpatternctrl.c:364
 msgid "Set the focus cell note"
@@ -1491,11 +1513,11 @@ msgstr "Slet node (museknap 1)"
 
 #: ../beast-gtk/bstpianorollctrl.c:81
 msgid "Align Events"
-msgstr ""
+msgstr "Juster hændelser"
 
 #: ../beast-gtk/bstpianorollctrl.c:81
 msgid "Draw a line to align events to"
-msgstr ""
+msgstr "Linje som hændelser skal justeres (hen) til"
 
 #: ../beast-gtk/bstpianorollctrl.c:83
 msgid "Select"
@@ -1811,6 +1833,11 @@ msgid ""
 "similarly in future versions and be prepared to work around possible "
 "instabilities in the code (i.e. save your projects regularly)."
 msgstr ""
+"Rackredigeringen er stadig eksperimental kode og vil ikke fungere uden "
+"problemer i fremtidige udgivelser. Du kan derfor ikke stole på, at dens "
+"indhold vil være uforandret i fremtidige versioner, og du skal være "
+"forberedt på at arbejde omkring ustabilitet i koden (det vil sige gem dine "
+"projekter ofte)."
 
 #: ../beast-gtk/bstrackeditor.c:108 ../beast-gtk/bstrackview.c:42
 #: ../beast-gtk/dialogs/radgets-beast.xml.h:40
@@ -1819,7 +1846,7 @@ msgstr "_Rediger"
 
 #: ../beast-gtk/bstrackitem.c:205
 msgid "Edit Rack Item"
-msgstr ""
+msgstr "Rediger rackpunkt"
 
 #: ../beast-gtk/bstrackitem.c:207
 msgid "Controller"
@@ -2067,9 +2094,10 @@ msgstr "Ottendedelsnode"
 msgid "1/16"
 msgstr "1/16"
 
+# sekstendedel sb., -en, -e, i sms. sekstendedels-, fx sekstendedelsnode.
 #: ../beast-gtk/bstrecords.idl:65
 msgid "Sixteenth note"
-msgstr "Sekstendelsnode"
+msgstr "sekstendedelsnode"
 
 #: ../beast-gtk/bstrecords.idl:66
 msgid "1/32"
@@ -2085,7 +2113,7 @@ msgstr "1/64"
 
 #: ../beast-gtk/bstrecords.idl:67
 msgid "Sixty-fourth note"
-msgstr "Fireogtredsdelsnode"
+msgstr "Fireogtresdelsnode"
 
 #: ../beast-gtk/bstrecords.idl:68
 msgid "1/128"
@@ -2101,7 +2129,7 @@ msgstr "1/1."
 
 #: ../beast-gtk/bstrecords.idl:69
 msgid "Dotted whole note"
-msgstr ""
+msgstr "Punkteret helnode"
 
 #: ../beast-gtk/bstrecords.idl:70
 msgid "1/2."
@@ -2109,7 +2137,7 @@ msgstr "1/2."
 
 #: ../beast-gtk/bstrecords.idl:70
 msgid "Dotted half note"
-msgstr ""
+msgstr "Punkteret halvnode"
 
 #: ../beast-gtk/bstrecords.idl:71
 msgid "1/4."
@@ -2117,7 +2145,7 @@ msgstr "1/4."
 
 #: ../beast-gtk/bstrecords.idl:71
 msgid "Dotted quarter note"
-msgstr ""
+msgstr "Punkteret fjerdedelsnode"
 
 #: ../beast-gtk/bstrecords.idl:72
 msgid "1/8."
@@ -2125,15 +2153,16 @@ msgstr "1/8."
 
 #: ../beast-gtk/bstrecords.idl:72
 msgid "Dotted eighths note"
-msgstr ""
+msgstr "Punkteret ottendedelsnode"
 
 #: ../beast-gtk/bstrecords.idl:73
 msgid "1/16."
 msgstr "1/16."
 
+# sekstendedel sb., -en, -e, i sms. sekstendedels-, fx sekstendedelsnode.
 #: ../beast-gtk/bstrecords.idl:73
 msgid "Dotted sixteenth note"
-msgstr ""
+msgstr "Punkteret sekstendedelsnode"
 
 #: ../beast-gtk/bstrecords.idl:74
 msgid "1/32."
@@ -2141,7 +2170,7 @@ msgstr "1/32."
 
 #: ../beast-gtk/bstrecords.idl:74
 msgid "Dotted thirty-secondth note"
-msgstr ""
+msgstr "Punkteret toogtredivedelsnode"
 
 #: ../beast-gtk/bstrecords.idl:75
 msgid "1/64."
@@ -2149,7 +2178,7 @@ msgstr "1/64."
 
 #: ../beast-gtk/bstrecords.idl:75
 msgid "Dotted sixty-fourth note"
-msgstr ""
+msgstr "Punkteret fireogtresdelsnode"
 
 #: ../beast-gtk/bstrecords.idl:76
 msgid "1/128."
@@ -2157,71 +2186,72 @@ msgstr "1/128."
 
 #: ../beast-gtk/bstrecords.idl:76
 msgid "Dotted hundred twenty-eighth note"
-msgstr ""
+msgstr "Punkteret hundredeogotteogtyvendedelsnode"
 
 #: ../beast-gtk/bstrecords.idl:77
 msgid "1/1T"
-msgstr ""
+msgstr "1/1T"
 
 #: ../beast-gtk/bstrecords.idl:77
 msgid "Triplet whole note"
-msgstr ""
+msgstr "Trioliseret helnode"
 
 #: ../beast-gtk/bstrecords.idl:78
 msgid "1/2T"
-msgstr ""
+msgstr "1/2T"
 
 #: ../beast-gtk/bstrecords.idl:78
 msgid "Triplet half note"
-msgstr ""
+msgstr "Trioliseret halvnode"
 
 #: ../beast-gtk/bstrecords.idl:79
 msgid "1/4T"
-msgstr ""
+msgstr "1/4T"
 
 #: ../beast-gtk/bstrecords.idl:79
 msgid "Triplet quarter note"
-msgstr ""
+msgstr "Trioliseret fjerdedelsnode"
 
 #: ../beast-gtk/bstrecords.idl:80
 msgid "1/8T"
-msgstr ""
+msgstr "1/8T"
 
 #: ../beast-gtk/bstrecords.idl:80
 msgid "Triplet eighths note"
-msgstr ""
+msgstr "Trioliseret ottendedelsnode"
 
 #: ../beast-gtk/bstrecords.idl:81
 msgid "1/16T"
-msgstr ""
+msgstr "1/16T"
 
+# sekstendedel sb., -en, -e, i sms. sekstendedels-, fx sekstendedelsnode.
 #: ../beast-gtk/bstrecords.idl:81
 msgid "Triplet sixteenth note"
-msgstr ""
+msgstr "Trioliseret sekstendedelsnode"
 
 #: ../beast-gtk/bstrecords.idl:82
 msgid "1/32T"
-msgstr ""
+msgstr "1/32T"
 
 #: ../beast-gtk/bstrecords.idl:82
 msgid "Triplet thirty-secondth note"
-msgstr ""
+msgstr "Trioliseret toogtredivedelsnode"
 
 #: ../beast-gtk/bstrecords.idl:83
 msgid "1/64T"
-msgstr ""
+msgstr "1/64T"
 
 #: ../beast-gtk/bstrecords.idl:83
 msgid "Triplet sixty-fourth note"
-msgstr ""
+msgstr "Trioliseret fireogtresdelsnode"
 
 #: ../beast-gtk/bstrecords.idl:84
 msgid "1/128T"
-msgstr ""
+msgstr "1/128T"
 
 #: ../beast-gtk/bstrecords.idl:84
 msgid "Triplet hundred twenty-eighth note"
-msgstr ""
+msgstr "Trioliseret hundredeogotteogtyvendedelsnode"
 
 #: ../beast-gtk/bstrecords.idl:89
 msgid "2"
@@ -2483,7 +2513,7 @@ msgstr "Farve på midterbjælke"
 
 #: ../beast-gtk/bstrecords.idl:157
 msgid "Background image used by the control events editor."
-msgstr ""
+msgstr "Baggrundsbillede brugt af kontrolhændelsesredigeringen."
 
 #: ../beast-gtk/bstrecords.idl:162
 msgid "Positive Value Color"
@@ -2680,11 +2710,11 @@ msgstr ""
 
 #: ../beast-gtk/bstsnetrouter.c:1092
 msgid "ADSR"
-msgstr ""
+msgstr "ADSR"
 
 #: ../beast-gtk/bstsnetrouter.c:1092
 msgid "ADSR Envelope Generator"
-msgstr ""
+msgstr "ADSR-kurvegenerator"
 
 #: ../beast-gtk/bstsnetrouter.c:1093
 msgid "DCA"
@@ -2732,15 +2762,15 @@ msgstr "Stemmer"
 
 #: ../beast-gtk/bstsupershell.c:196
 msgid "Busses"
-msgstr ""
+msgstr "Busser"
 
 #: ../beast-gtk/bstsupershell.c:200 ../beast-gtk/bstsupershell.c:217
 msgid "Routing"
-msgstr ""
+msgstr "Routing"
 
 #: ../beast-gtk/bstsupershell.c:213
 msgid "Rack"
-msgstr ""
+msgstr "Rack"
 
 #: ../beast-gtk/bstsupershell.c:217
 #, fuzzy
@@ -2806,7 +2836,7 @@ msgstr "Indsæt del"
 
 #: ../beast-gtk/bsttrackrollctrl.c:448 ../beast-gtk/bsttrackrollctrl.c:554
 msgid "Lost Part"
-msgstr ""
+msgstr "Mistet del"
 
 #: ../beast-gtk/bsttrackrollctrl.c:453 ../beast-gtk/bsttrackrollctrl.c:458
 msgid "Position taken"
@@ -2824,9 +2854,11 @@ msgstr "Ingen spor"
 msgid "Delete Part"
 msgstr "Slet del"
 
+# henvisningsdel også mulighed (tror det dog ikke)
+# Tror 'Henvis til del' eller 'Sammenkæd del' el. lign.
 #: ../beast-gtk/bsttrackrollctrl.c:488 ../beast-gtk/bsttrackrollctrl.c:522
 msgid "Link Part"
-msgstr ""
+msgstr "Henvis til del"
 
 #: ../beast-gtk/bsttrackrollctrl.c:488 ../beast-gtk/bsttrackrollctrl.c:522
 #: ../beast-gtk/bsttrackrollctrl.c:554
@@ -2880,7 +2912,7 @@ msgstr ""
 
 #: ../beast-gtk/bsttrackview.c:618
 msgid "Mixer busses connected to track output"
-msgstr ""
+msgstr "Mixerbusser forbundet til sporuddata"
 
 #: ../beast-gtk/bsttrackview.c:621 ../bse/bsemidisynth.c:458
 #: ../bse/bsesong.c:777 ../bse/bsetrack.c:1035
@@ -3058,7 +3090,7 @@ msgstr "_Eksempler"
 
 #: ../beast-gtk/dialogs/radgets-beast.xml.h:12
 msgid "Events"
-msgstr "Begivenheder"
+msgstr "Hændelser"
 
 #: ../beast-gtk/dialogs/radgets-beast.xml.h:13
 msgid "HZoom"
@@ -3127,11 +3159,11 @@ msgstr ""
 
 #: ../beast-gtk/dialogs/radgets-beast.xml.h:31
 msgid "Virtual Rack"
-msgstr ""
+msgstr "Virtuelt rack"
 
 #: ../beast-gtk/dialogs/radgets-beast.xml.h:32
 msgid "Wave_s"
-msgstr ""
+msgstr "Wave_s"
 
 #: ../beast-gtk/dialogs/radgets-beast.xml.h:33
 msgid "Zoom"
@@ -3638,7 +3670,7 @@ msgstr "Tilgængelige uddata"
 
 #: ../bse/bsebus.c:145
 msgid "List of available mixer busses to be used as bus output"
-msgstr ""
+msgstr "Liste over tilgængelige mixerbusser der skal bruges som busuddata"
 
 #: ../bse/bsebus.c:873 ../bse/bsebus.c:875 ../bse/bsebus.c:877
 #: ../bse/bsebus.c:879 ../bse/bsebus.c:883 ../bse/bsemidisynth.c:461
@@ -3648,11 +3680,11 @@ msgstr ""
 
 #: ../bse/bsebus.c:874
 msgid "Mute"
-msgstr ""
+msgstr "Sluk"
 
 #: ../bse/bsebus.c:874
 msgid "Mute: turn off the bus volume"
-msgstr ""
+msgstr "Sluk: Sluk for buslydstyrken"
 
 #: ../bse/bsebus.c:876
 msgid "Solo"
@@ -3660,11 +3692,11 @@ msgstr "Solo"
 
 #: ../bse/bsebus.c:876
 msgid "Solo: mute all other busses"
-msgstr ""
+msgstr "Solo: Sluk alle andre busser"
 
 #: ../bse/bsebus.c:878
 msgid "Sync"
-msgstr ""
+msgstr "Synk"
 
 #: ../bse/bsebus.c:878
 msgid "Syncronize left and right volume"
@@ -3700,7 +3732,7 @@ msgstr "Inddatasignaler"
 #.
 #: ../bse/bsebus.c:894
 msgid "Synthesis signals (from tracks and busses) used as bus input"
-msgstr ""
+msgstr "Syntesesignaler (fra spor og busser) brugt som businddata"
 
 #: ../bse/bsebus.c:896 ../bse/bsetrack.c:1037
 msgid "Signal Outputs"
@@ -3712,7 +3744,7 @@ msgstr "Uddatasignaler"
 
 #: ../bse/bsebus.c:899
 msgid "Mixer busses used as output for synthesis signals"
-msgstr ""
+msgstr "Mixerbusser brugt som uddata for syntesesignaler"
 
 #: ../bse/bsebus.c:902
 msgid "Internals"
@@ -5201,7 +5233,7 @@ msgstr "Intet sådant punkt"
 
 #: ../bse/bseenums.c:166
 msgid "No such event"
-msgstr "Ingen sådan begivenhed"
+msgstr "Ingen sådan hændelse"
 
 #: ../bse/bseenums.c:168
 msgid "Ownership mismatch"
@@ -5356,6 +5388,9 @@ msgid ""
 "Discards all output events and generates no input events. This driver\n"
 "is not part of the automatic device selection list for MIDI devices."
 msgstr ""
+"Fjern alle uddatahændelser og generer ingen inddatahændelser. Denne\n"
+"driver er ikke en del af den automatiske enhedsvalgliste for\n"
+"MIDI-enheder."
 
 #. TRANSLATORS: keep this text to 70 chars in width
 #: ../bse/bsemididevice-oss.c:266
@@ -5611,6 +5646,8 @@ msgid ""
 "No available MIDI device could be found and opened successfully. Reverting "
 "to null device, no MIDI events will be received or sent."
 msgstr ""
+"Ingen tilgængelig MIDI-enhed kunne findes og åbnes. Gendanner til null-"
+"enhed. Ingen MIDI-hændelse vil blive modtaget eller sendt."
 
 #: ../bse/bseserver.c:558
 #, c-format
@@ -5619,7 +5656,7 @@ msgstr "Kunne ikke åbne MIDI-enheder: %s"
 
 #: ../bse/bseserver.c:559
 msgid "Show messages about MIDI device selections problems"
-msgstr ""
+msgstr "Vis beskeder om problemer med MIDI-enhedsvalg"
 
 #: ../bse/bseserver.c:613
 msgid "Start Disk Recording"
@@ -5991,7 +6028,7 @@ msgstr ""
 
 #: ../bse/bsesuper.c:203
 msgid "Author"
-msgstr ""
+msgstr "Forfatter"
 
 #: ../bse/bsesuper.c:203
 msgid "Person changing or creating this object"
@@ -5999,7 +6036,7 @@ msgstr ""
 
 #: ../bse/bsesuper.c:208
 msgid "License"
-msgstr ""
+msgstr "Licens"
 
 #: ../bse/bsesuper.c:208
 msgid "Copyright license applying to this object"
@@ -6007,7 +6044,7 @@ msgstr ""
 
 #: ../bse/bsesuper.c:216
 msgid "Creation Time"
-msgstr ""
+msgstr "Oprettelsestidspunkt"
 
 #: ../bse/bsesuper.c:220
 msgid "Last modification time"
@@ -6020,14 +6057,15 @@ msgstr "Liste over tilgængelige waves der kan vælges som sporinstrument"
 #: ../bse/bsetrack.c:292
 msgid "List of available synthesis networks to choose a track instrument from"
 msgstr ""
+"Liste over tilgængelige syntesenetværk hvor et sporinstrument kan vælges fra"
 
 #: ../bse/bsetrack.c:300
 msgid "List of available mixer busses to be used as track output"
-msgstr ""
+msgstr "Liste over tilgængelige mixerbusser der skal bruges som sporuddata"
 
 #: ../bse/bsetrack.c:1010
 msgid "Muted"
-msgstr ""
+msgstr "Slukket"
 
 #: ../bse/bsetrack.c:1012 ../bse/bsetrack.c:1017 ../bse/bsetrack.c:1022
 msgid "Synth Input"
@@ -6035,11 +6073,11 @@ msgstr ""
 
 #: ../bse/bsetrack.c:1014
 msgid "Synthesis network to be used as instrument"
-msgstr ""
+msgstr "Syntesenetværk der skal bruges som instrument"
 
 #: ../bse/bsetrack.c:1019
 msgid "Wave to be used as instrument"
-msgstr ""
+msgstr "Wave der skal bruges som instrument"
 
 #: ../bse/bsetrack.c:1030
 msgid "Midi channel assigned to this track, 0 uses internal per-track channel"
@@ -6047,7 +6085,7 @@ msgstr ""
 
 #: ../bse/bsetrack.c:1040
 msgid "Mixer busses used as output for this track"
-msgstr ""
+msgstr "Mixerbusser brugt som uddata for dette spor"
 
 #: ../bse/bsewave.c:331
 #, c-format
@@ -6580,22 +6618,22 @@ msgstr "Enlig uddata"
 #: ../plugins/bsemixer.c:113
 #, c-format
 msgid "Channel%u"
-msgstr ""
+msgstr "Kanal%u"
 
 #: ../plugins/bsemixer.c:115
 #, c-format
 msgid "Channel%u [float]"
-msgstr ""
+msgstr "Kanal%u [flydende]"
 
 #: ../plugins/bsemixer.c:125
 #, c-format
 msgid "Channel%u [dB]"
-msgstr ""
+msgstr "Kanal%u [dB]"
 
 #: ../plugins/bsemixer.c:136
 #, c-format
 msgid "Channel%u [%%]"
-msgstr ""
+msgstr "Kanal%u [%%]"
 
 #: ../plugins/bsemixer.c:147
 #, c-format
