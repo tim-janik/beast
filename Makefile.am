@@ -41,12 +41,22 @@ check: check-recursive
 	@echo $(ALL_CHECKED_MSG)
 	@echo $(ALL_CHECKED_MSG) | sed 's/./=/g'
 
-# === ChangeLog ===
+# --- ChangeLog ---
 ChangeLog:	$(shell $(srcdir)/mkrelease.sh commit-stamps)
 	$(srcdir)/mkrelease.sh ChangeLog \
 	  -R ce584d04999a7fb9393e1cfedde2048ba73e8878..HEAD
 noinst_DATA += ChangeLog
 EXTRA_DIST  += ChangeLog mkrelease.sh
+
+# --- release-news ---
+release-news:
+	$(srcdir)/mkrelease.sh news
+.PHONY: release-news
+
+# --- release-upload ---
+release-upload: ChangeLog
+	$(srcdir)/mkrelease.sh upload -U localhost:tmp -E configure.in:BSE_MICRO_VERSION
+.PHONY: release-upload
 
 # fixup automake-1.9.6 distuninstallcheck:-rule reporting files created by update-mime-database(1)
 filter_stale_uninstalled      = | egrep -v '^.*/share/mime/(subclasses|globs|magic|XMLnamespaces|aliases)$$'
