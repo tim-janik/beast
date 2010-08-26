@@ -246,6 +246,7 @@ EXTRA_DIST += $(strip		\
 	$(doxi_files)		\
 	bse-categories.txt	\
 	interpolation.txt	\
+	ChangeLog.svn		\
 	OldBeast.ChangeLog	\
 	OldBse.ChangeLog	\
 	OldPlugins.ChangeLog	\
