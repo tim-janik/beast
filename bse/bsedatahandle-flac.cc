@@ -48,13 +48,17 @@ private:
                        void                       *client_data)
   {
     DataHandleFlac *dh = static_cast<DataHandleFlac *> (client_data);
-    dh->m_buffer_start = frame->header.number.sample_number;
+    dh->m_buffer_start = frame->header.number.sample_number * frame->header.channels;
     dh->m_buffer.clear();
 
     // scale with 1/32768 for 16 bit, 1/(2^23) for 24 bit
     double scale = 2.0 / (1 << frame->header.bits_per_sample);
     for (int i = 0; i < frame->header.blocksize; i++)
-      dh->m_buffer.push_back (buffer[0][i] * scale);
+      {
+        // interleave channels
+        for (int ch = 0; ch < frame->header.channels; ch++)
+          dh->m_buffer.push_back (buffer[ch][i] * scale);
+      }
     return FLAC__STREAM_DECODER_WRITE_STATUS_CONTINUE;
   }
   static void
@@ -66,6 +70,7 @@ private:
 
 protected:
   CDataHandleFlac	m_dhandle;
+  int                   m_n_channels;
   bool			m_init_ok;
   string                m_file_name;
   FLAC__StreamDecoder  *m_decoder;
@@ -115,7 +120,7 @@ public:
     if (FLAC__stream_decoder_get_channels (m_decoder) == 0)
       return BSE_ERROR_IO;
 
-    setup->n_channels = FLAC__stream_decoder_get_channels (m_decoder);
+    m_n_channels = setup->n_channels = FLAC__stream_decoder_get_channels (m_decoder);
     setup->n_values = FLAC__stream_decoder_get_total_samples (m_decoder);
     setup->bit_depth = FLAC__stream_decoder_get_bits_per_sample (m_decoder);
     setup->mix_freq = FLAC__stream_decoder_get_sample_rate (m_decoder);
@@ -150,7 +155,7 @@ public:
       }
 
     // need to seek to get to the right location
-    FLAC__bool seek_ok = FLAC__stream_decoder_seek_absolute (m_decoder, voffset);
+    FLAC__bool seek_ok = FLAC__stream_decoder_seek_absolute (m_decoder, voffset / m_n_channels);
     if (!seek_ok)
       return -1;
 
