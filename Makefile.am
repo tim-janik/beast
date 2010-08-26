@@ -42,21 +42,11 @@ check: check-recursive
 	@echo $(ALL_CHECKED_MSG) | sed 's/./=/g'
 
 # === ChangeLog ===
-LAST_COMMITID = ce584d04999a7fb9393e1cfedde2048ba73e8878
-ChangeLog:	$(shell ls "$${GIT_DIR:-.git}/packed-refs" "$${GIT_DIR:-.git}/HEAD" "$${GIT_DIR:-.git}/`git symbolic-ref -q HEAD || echo HEAD`" 2>/dev/null )
-	: # Generate ChangeLog with -prefixed records
-	git log --pretty='format:%ad %an 	# %H (%cn)%n%n%s%n%n%b' \
-		${LAST_COMMITID}..HEAD		 > xgen-$(@F)
-	: # Tab-indent ChangeLog, except for record start
-	sed 's/^/	/;s/^	//;/^[ 	]*<unknown>$$/d' -i xgen-$(@F)
-	: # Kill trailing whitespaces, compress multiple trailing newlines
-	$(PYTHON) -c "import sys, re; sys.stdout.write ( \
-	  re.compile (r'\n\n\n(?=^\w)', re.M).sub ('\n\n', \
-	  re.compile ('^[	 ]+$$', re.M).sub ('', \
-	  sys.stdin.read())))" < xgen-$(@F) > xgen2-$(@F)
-	cp xgen2-$(@F) $@ && rm -f xgen-$(@F) xgen2-$(@F)
+ChangeLog:	$(shell $(srcdir)/mkrelease.sh commit-stamps)
+	$(srcdir)/mkrelease.sh ChangeLog \
+	  -R ce584d04999a7fb9393e1cfedde2048ba73e8878..HEAD
 noinst_DATA += ChangeLog
-EXTRA_DIST  += ChangeLog
+EXTRA_DIST  += ChangeLog mkrelease.sh
 
 # fixup automake-1.9.6 distuninstallcheck:-rule reporting files created by update-mime-database(1)
 filter_stale_uninstalled      = | egrep -v '^.*/share/mime/(subclasses|globs|magic|XMLnamespaces|aliases)$$'
