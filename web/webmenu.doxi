@@ -85,7 +85,8 @@
     @menu_branch{development}
 	@itemize{none}
 	@item 	@fmenuuri{@top_webdir/news-file,		Release NEWS}
-	@item 	@fmenuuri{@top_webdir/log-head,			ChangeLog}
+	@item 	@fmenuuri{@top_webdir/log-head,			Changes (master)}
+	@item 	@fmenuuri{@top_webdir/log-svn,			Old Logs}
 	@item 	@doxer_span{menu-leaf,				BEAST/BSE Development}
 	@item 	@fmenuuri{@top_webdir/architecture,		Architecture}
 	@item 	@fmenuuri{@top_webdir/plugin-devel,		Writing Plugins}

@@ -247,10 +247,4 @@ EXTRA_DIST += $(strip		\
 	bse-categories.txt	\
 	interpolation.txt	\
 	ChangeLog.svn		\
-	OldBeast.ChangeLog	\
-	OldBse.ChangeLog	\
-	OldPlugins.ChangeLog	\
-	OldBirnet.ChangeLog	\
-	OldDoxer.ChangeLog	\
-	OldSfi.ChangeLog	\
 )

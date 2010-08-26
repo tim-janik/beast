@@ -5,11 +5,13 @@
 
 @heading Current Development State
 
-There are various documents in SVN that track the current development state.
-Every major part has it's own ChangeLog (see links in the sidebar) and for
-overall track keeping, the release specific
+Beast is now using @uri{http://git.or.cz/, Git} as version control system.
+An commit based overview of the changes in the repository is available for the
+@uri{http://beast.gtk.org/log-head, master branch}, and we also keep a list
+of all the changes that went into the
+@uri{http://beast.gtk.org/log-svn, old SVN repository}.
+For overall track keeping, the release specific
 @uri{@top_webdir/news-file, NEWS file} is used.
-
 
 @heading Translations
 

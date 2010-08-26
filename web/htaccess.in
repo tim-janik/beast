@@ -123,9 +123,14 @@ Redirect 301 /logo-submissions/image-zoom-24.html	http://beast.gtk.org/logogalle
 Redirect 301 /pub/beast				http://beast.gtk.org/beast-ftp/
 
 # Compat redirects for links pre-2003
-Redirect 301 /docs/cvs-changelog-plugins.html	http://beast.gtk.org/log-plugins
-Redirect 301 /docs/cvs-changelog-bse.html	http://beast.gtk.org/log-bse
-Redirect 301 /docs/cvs-changelog-beast.html	http://beast.gtk.org/log-beast
+Redirect 301 /docs/cvs-changelog-plugins.html	http://beast.gtk.org/log-svn
+Redirect 301 /docs/cvs-changelog-beast.html	http://beast.gtk.org/log-svn
+Redirect 301 /docs/cvs-changelog-bse.html	http://beast.gtk.org/log-svn
+Redirect 301 /log-plugins			http://beast.gtk.org/log-svn
+Redirect 301 /log-birnet			http://beast.gtk.org/log-svn
+Redirect 301 /log-beast				http://beast.gtk.org/log-svn
+Redirect 301 /log-bse				http://beast.gtk.org/log-svn
+Redirect 301 /log-sfi				http://beast.gtk.org/log-svn
 Redirect 301 /docs/ref-bse.html			http://beast.gtk.org/rdocu-bse/
 Redirect 301 /docs/ref-bsw-procs.html		http://beast.gtk.org/bse-interface
 Redirect 301 /docs/ref-gsl.html			http://beast.gtk.org/rdocu-bse/
