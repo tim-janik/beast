@@ -3,6 +3,16 @@
 #
 ## This work is provided "as is"; see: http://rapicorn.org/LICENSE-AS-IS
 
+MYVERSION="mkrelease.sh version 20100827"
+# 20100827: implemented 'news' command
+# 20100421: added tagging, even revision checking and revision bumping
+# 20100420: implemented rsync based 'upload' for release tarballs
+# 20090605: ported to git-1.6.0
+# 20080515: take packed-refs into account as git stamp file
+# 20070820: implemented 'commit-stamps', handle non-symbolic git stamp files
+# 20070518: implemented 'ChangeLog' generation from git"
+# 20060217: implemented scp based remote file updates
+
 # === initial setup ===
 SCRIPT_NAME="$0"
 die() {
@@ -26,6 +36,7 @@ usage() {
 	  upload		check and upload release tarball
 	Options:
 	  -h, --help		usage help
+	  -v, --version		issue version and brief history
 	  -E <revisionvar>	variable to increment (e.g. configure.ac:MICRO)
 	  -R <revision>		revision range for "ChangeLog" generation
 	                        last release revision for "news" (auto)
@@ -51,6 +62,7 @@ while test $# -ne 0 -a $parse_options = 1; do
     -T)		TARBALL="$2" ; shift ;;
     -U)		REMOTE_URL="$2" ; shift ;;
     -V)		VERSION="$2" ; shift ;;
+    -v|--version) echo "$MYVERSION" ; exit 0 ;;
     --)		parse_options=0 ;;
     *)		[ -z "$COMMAND" ] || usage 1 ; COMMAND="$1" ;;
   esac
