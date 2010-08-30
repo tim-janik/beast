@@ -132,4 +132,4 @@ distcheck: dist
 # remove non-distributed po files from distributed POTFILES.in
 dist-hook:
 	sed 's,^\(drivers/\),# \1,' < $(distdir)/po/POTFILES.in > $(distdir)/po/POTFILES.tmp
-	mv $(distdir)/po/POTFILES.tmp $(distdir)/po/POTFILES.in
+	mv -f $(distdir)/po/POTFILES.tmp $(distdir)/po/POTFILES.in
