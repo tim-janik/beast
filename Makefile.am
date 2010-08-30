@@ -58,13 +58,21 @@ release-upload: ChangeLog
 	$(srcdir)/mkrelease.sh upload -U localhost:tmp -E configure.in:BSE_MICRO_VERSION
 .PHONY: release-upload
 
-# fixup automake-1.9.6 distuninstallcheck:-rule reporting files created by update-mime-database(1)
-filter_stale_uninstalled      = | egrep -v '^.*/share/mime/(subclasses|globs|magic|XMLnamespaces|aliases)$$'
-filter_stale_buildfiles       = | egrep -v '^./report.out$$'
-distuninstallcheck_listfiles  = find . -type f -print 		# automake-1.9 setting
-distuninstallcheck_listfiles += $(filter_stale_uninstalled)	# amend by required filtering
-distcleancheck_listfiles      = find . -type f -print		# automake-1.9 setting
-distcleancheck_listfiles     += $(filter_stale_buildfiles)	# amend by required filtering
+# --- dist fixes ---
+uninstall_filter = $(strip	\
+	./share/mime/subclasses		./share/mime/icons	./share/mime/generic-icons \
+	./share/mime/globs		./share/mime/types	./share/mime/XMLnamespaces \
+	./share/mime/mime.cache		./share/mime/magic	./share/mime/globs2 \
+	./share/mime/treemagic		./share/mime/aliases	\
+)
+#distuninstallcheck_listfiles = find . -type f -print	# original automake-1.11 setting
+distuninstallcheck_listfiles  = find . -type f $(patsubst ./%, ! -path \*/%, $(uninstall_filter)) -print
+clean_filter = $(strip		\
+	./report.out		\
+)
+#distcleancheck_listfiles     = find . -type f -print	# original automake-1.11 setting
+distcleancheck_listfiles      = find . -type f $(patsubst ./%, ! -path \*/%, $(clean_filter)) -print
+
 # fixup automake-1.9.6 distcheck:-rule, which attempts to rebuild a dist tarball from within the test-build
 # also, bsescm currently needs install: before check:
 distcheck: dist
