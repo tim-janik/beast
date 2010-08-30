@@ -26,6 +26,9 @@ import-docs:
 	touch stamp-import-docs
 .PHONY: import-docs
 
+EXTRA_DIST += stamp-import-docs
+
 dist-hook:
-	find stamp-import-docs -mtime -4 | fgrep -q stamp \
+	[ ! -e stamp-import-docs ] \
+	|| find stamp-import-docs -mtime -4 | fgrep -q stamp \
 	|| { echo "docs/imports/: Last import is older than 3 days, please run: make import-docs -C docs/imports/" >&2 ; exit 1 ; }
