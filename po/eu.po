@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: eu\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-04-25 01:38+0200\n"
+"POT-Creation-Date: 2010-08-21 00:26+0200\n"
 "PO-Revision-Date: 2006-08-08 17:07+0000\n"
 "Last-Translator: Iñaki Larrañaga Murgoitio <dooteo@euskalgnu.org>\n"
 "Language-Team: Basque <itzulpena@euskalgnu.org>\n"
@@ -2958,7 +2958,7 @@ msgid "Rack"
 msgstr "Armairua"
 
 #: ../beast-gtk/bstsupershell.c:217
-msgid "Add, edit and connect synthsizer mesh components"
+msgid "Add, edit and connect synthesizer mesh components"
 msgstr ""
 
 #: ../beast-gtk/bstsupershell.c:221
@@ -5663,7 +5663,7 @@ msgstr "Gorde instrumentua"
 msgid "MIDI Channel"
 msgstr "%u kanala"
 
-#: ../bse/bsemidisynth.c:449
+#: ../bse/bsemidisynth.c:449 ../bse/bsetrack.c:1024
 msgid "Max Voices"
 msgstr ""
 
@@ -6330,10 +6330,6 @@ msgstr "Sintesi-sarea interfaze gisa erabiltzeko"
 #, fuzzy
 msgid "Wave to be used as instrument"
 msgstr "Gorde instrumentu gisa"
-
-#: ../bse/bsetrack.c:1024
-msgid "Max Voixes"
-msgstr ""
 
 #: ../bse/bsetrack.c:1030
 msgid "Midi channel assigned to this track, 0 uses internal per-track channel"

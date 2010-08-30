@@ -15,7 +15,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast HEAD\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-04-25 01:38+0200\n"
+"POT-Creation-Date: 2010-08-21 00:26+0200\n"
 "PO-Revision-Date: 2005-03-31 20:55-0700\n"
 "Last-Translator: Steve Murphy <murf@e-tools.com>\n"
 "Language-Team: Kinyarwanda <translation-team-rw@lists.sourceforge.net>\n"
@@ -3465,7 +3465,7 @@ msgstr ""
 
 #: ../beast-gtk/bstsupershell.c:217
 #, fuzzy
-msgid "Add, edit and connect synthsizer mesh components"
+msgid "Add, edit and connect synthesizer mesh components"
 msgstr "Guhindura Na Kwihuza"
 
 #: ../beast-gtk/bstsupershell.c:221
@@ -6489,7 +6489,7 @@ msgstr ""
 msgid "MIDI Channel"
 msgstr ""
 
-#: ../bse/bsemidisynth.c:449
+#: ../bse/bsemidisynth.c:449 ../bse/bsetrack.c:1024
 msgid "Max Voices"
 msgstr ""
 
@@ -7201,10 +7201,6 @@ msgstr "urusobe Kuri Nka"
 #, fuzzy
 msgid "Wave to be used as instrument"
 msgstr "Kuri Nka"
-
-#: ../bse/bsetrack.c:1024
-msgid "Max Voixes"
-msgstr ""
 
 #: ../bse/bsetrack.c:1030
 #, fuzzy

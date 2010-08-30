@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-04-25 01:38+0200\n"
+"POT-Creation-Date: 2010-08-21 00:26+0200\n"
 "PO-Revision-Date: 2005-07-05 19:42+0200\n"
 "Last-Translator: Miloslav Trmac <mitr@volny.cz>\n"
 "Language-Team: Czech <cs@li.org>\n"
@@ -2937,7 +2937,8 @@ msgstr "Rack"
 
 # FIXME: s/synthsizer/synthesizer/
 #: ../beast-gtk/bstsupershell.c:217
-msgid "Add, edit and connect synthsizer mesh components"
+#, fuzzy
+msgid "Add, edit and connect synthesizer mesh components"
 msgstr "Přidávat, upravovat a propojovat komponenty sítě syntetizéru"
 
 #: ../beast-gtk/bstsupershell.c:221
@@ -5629,7 +5630,7 @@ msgstr "Nástroj MIDI"
 msgid "MIDI Channel"
 msgstr "Kanál MIDI"
 
-#: ../bse/bsemidisynth.c:449
+#: ../bse/bsemidisynth.c:449 ../bse/bsetrack.c:1024
 msgid "Max Voices"
 msgstr "Max hlasů"
 
@@ -6294,11 +6295,6 @@ msgstr "Síť syntézy, kterou používat jako nástroj"
 #: ../bse/bsetrack.c:1019
 msgid "Wave to be used as instrument"
 msgstr "Vlna, kterou používat jako nástroj"
-
-# FIXME: s/Voixes/Voices/
-#: ../bse/bsetrack.c:1024
-msgid "Max Voixes"
-msgstr "Max hlasů"
 
 #: ../bse/bsetrack.c:1030
 msgid "Midi channel assigned to this track, 0 uses internal per-track channel"
@@ -7348,6 +7344,10 @@ msgstr "Pravý výstup"
 #, c-format
 msgid "failed to add wave chunk from file \"%s\": %s"
 msgstr "nemohu přidat část vlny ze souboru \"%s\": %s"
+
+# FIXME: s/Voixes/Voices/
+#~ msgid "Max Voixes"
+#~ msgstr "Max hlasů"
 
 #~ msgid "Musical notation corresponding to the oscillator frequency"
 #~ msgstr "Hudební notace odpovídající frekvenci oscilátoru"

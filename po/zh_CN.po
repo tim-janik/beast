@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-04-25 01:38+0200\n"
+"POT-Creation-Date: 2010-08-21 00:26+0200\n"
 "PO-Revision-Date: 2003-10-25 21:45+0800\n"
 "Last-Translator: storm119 <bbbush@163.com>\n"
 "Language-Team: zh_CN <i18n-translation@lists.linux.net.cn>\n"
@@ -3055,7 +3055,7 @@ msgid "Rack"
 msgstr "音轨"
 
 #: ../beast-gtk/bstsupershell.c:217
-msgid "Add, edit and connect synthsizer mesh components"
+msgid "Add, edit and connect synthesizer mesh components"
 msgstr ""
 
 #: ../beast-gtk/bstsupershell.c:221
@@ -5844,7 +5844,7 @@ msgstr "正在保存项目“%s”"
 msgid "MIDI Channel"
 msgstr "输入通道使用中"
 
-#: ../bse/bsemidisynth.c:449
+#: ../bse/bsemidisynth.c:449 ../bse/bsetrack.c:1024
 msgid "Max Voices"
 msgstr ""
 
@@ -6515,10 +6515,6 @@ msgstr ""
 #, fuzzy
 msgid "Wave to be used as instrument"
 msgstr "正在保存项目“%s”"
-
-#: ../bse/bsetrack.c:1024
-msgid "Max Voixes"
-msgstr ""
 
 #: ../bse/bsetrack.c:1030
 msgid "Midi channel assigned to this track, 0 uses internal per-track channel"

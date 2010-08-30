@@ -42,7 +42,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast master\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-08-23 22:38+0200\n"
+"POT-Creation-Date: 2010-08-21 00:26+0200\n"
 "PO-Revision-Date: 2010-08-14 09:01I+0200\n"
 "Last-Translator: Joe Hansen <joedalton2@yahoo.dk>\n"
 "Language-Team: Danish <dansk@dansk-gruppen.dk>\n"
@@ -50,6 +50,206 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: ../library/scripts/mixer-splitup-by-track.scm.h:25
+msgid "/Song/Assign Tracks to individual Mixer Busses"
+msgstr ""
+
+#: ../library/scripts/mixer-splitup-by-track.scm.h:26
+msgid ""
+"This script creates a new Mixer Bus for each track in the song that is "
+"currently using the Master Bus as output."
+msgstr ""
+
+#: ../library/scripts/mixer-splitup-by-track.scm.h:30
+#: ../library/scripts/song-parts-operations.scm.h:30
+#: ../library/scripts/song-parts-operations.scm.h:39
+#, fuzzy
+msgid "Song"
+msgstr "_Sang"
+
+#: ../library/scripts/mixer-splitup-by-track.scm.h:57
+#: ../library/scripts/song-parts-operations.scm.h:45
+msgid "No valid song supplied"
+msgstr ""
+
+#: ../library/scripts/mixer-splitup-by-track.scm.h:59
+msgid "This script cannot be used while the project is playing"
+msgstr ""
+
+#: ../library/scripts/modules2grid.scm.h:21
+msgid "/SNet/Grid Align"
+msgstr ""
+
+#: ../library/scripts/modules2grid.scm.h:22
+msgid ""
+"Round module positions to their nearest grid position, so to align all "
+"modules within a synthesis network."
+msgstr ""
+
+#: ../library/scripts/modules2grid.scm.h:26
+#, fuzzy
+msgid "Synth Net"
+msgstr "Synthesizer"
+
+#: ../library/scripts/modules2grid.scm.h:30
+msgid "No valid synthesis network supplied"
+msgstr ""
+
+#: ../library/scripts/part-harmonic-transposer.scm.h:25
+msgid "/Part/Harmonic Transposer"
+msgstr ""
+
+#. ; FIXME: the description may be suboptimal; the problem is
+#. ; that I can't precisely describe details of musical theory
+#. ; in english. -- stw
+#: ../library/scripts/part-harmonic-transposer.scm.h:29
+msgid ""
+"The harmonic transposer takes the selection of a part and transposes it to "
+"different harmonies. If you for instance have selected a measure filled with "
+"C major chords, and enter \"C,Am,F,G\" as harmonic sequence, the result will "
+"be four measures, filled with C major, A minor, F major and G major "
+"chords. \n"
+"\n"
+"This also works for melodies, so you can transpose a whole melody written in "
+"G major to D minor. The standard scales used in church music (ionian, "
+"dorian, phrygian, lydian, mixolydian, aeolian, locrian) are also supported: "
+"it is for instance possible to write Ddorian or Caeolian. The aeolian scale "
+"is equivalent to minor and the ionian scale is equivalent to major. \n"
+"\n"
+"Since musically, there is no preference on whether to transpose up or down "
+"it is possible to specify the first harmony that will be transposed down "
+"(all harmonies below this will be transposed up). It is possible to omit "
+"this value. Then all notes will be transposed up."
+msgstr ""
+
+#: ../library/scripts/part-harmonic-transposer.scm.h:50
+#: ../library/scripts/record-midi.scm.h:25
+#, fuzzy
+msgid "Part"
+msgstr "Stemmer"
+
+#: ../library/scripts/part-harmonic-transposer.scm.h:51
+msgid "Harmony Sequence"
+msgstr ""
+
+#: ../library/scripts/part-harmonic-transposer.scm.h:52
+msgid "Transpose down starting at"
+msgstr ""
+
+#: ../library/scripts/part-harmonic-transposer.scm.h:209
+msgid "No valid part supplied"
+msgstr ""
+
+#: ../library/scripts/part-harmonic-transposer.scm.h:211
+msgid "No notes selected"
+msgstr ""
+
+#: ../library/scripts/part-harmonic-transposer.scm.h:218
+#, fuzzy
+msgid "Failed to parse harmony list"
+msgstr "Kunne ikke påbegynde optagelse til disk."
+
+#: ../library/scripts/part-harmonic-transposer.scm.h:221
+msgid "Harmony list is too short"
+msgstr ""
+
+#: ../library/scripts/progressor-example.scm.h:32
+msgid "/Project/Toys/Progressor..."
+msgstr ""
+
+#: ../library/scripts/progressor-example.scm.h:33
+msgid ""
+"Progressor takes two seed values and then starts progressing. It doesn't do "
+"anything particularly usefull, other than ticking the main program from time "
+"to time. It is a funny example though."
+msgstr ""
+
+#: ../library/scripts/progressor-example.scm.h:38
+#, fuzzy
+msgid "N Iterations"
+msgstr "Information"
+
+#: ../library/scripts/progressor-example.scm.h:39
+msgid "N Wait Spins"
+msgstr ""
+
+#: ../library/scripts/progressor-example.scm.h:40
+msgid "Update Percentage"
+msgstr ""
+
+#: ../library/scripts/record-midi.scm.h:20
+msgid "/Part/Record Midi..."
+msgstr ""
+
+#: ../library/scripts/record-midi.scm.h:21
+msgid ""
+"Record midi events, currently being played on the default external midi "
+"device, into a given song part. The MIDI recorder is still work in progress."
+msgstr ""
+
+#: ../library/scripts/record-midi.scm.h:26
+#, fuzzy
+msgid "Start Now"
+msgstr "Start:"
+
+#: ../library/scripts/record-midi.scm.h:49
+#, fuzzy
+msgid "No valid part object supplied"
+msgstr "Ugyldig objektegenskab"
+
+#: ../library/scripts/record-midi.scm.h:50
+msgid "You probably want to start this script from a part editor."
+msgstr ""
+
+#: ../library/scripts/record-midi.scm.h:53
+msgid ""
+"Not currently recording...\n"
+"\n"
+"The MIDI recorder is still work in progress.\n"
+"Currently, you need a MIDI Synthesizer network running, in order for this "
+"script to catch the events currently being played back."
+msgstr ""
+
+#: ../library/scripts/song-parts-operations.scm.h:25
+msgid "/Song/Crop parts (loop range)"
+msgstr ""
+
+#: ../library/scripts/song-parts-operations.scm.h:26
+msgid ""
+"Crops all parts within the loop range and moves parts after the loop range "
+"backwards accordingly."
+msgstr ""
+
+#: ../library/scripts/song-parts-operations.scm.h:34
+msgid "/Song/Duplicate parts (loop range)"
+msgstr ""
+
+#: ../library/scripts/song-parts-operations.scm.h:35
+msgid ""
+"Duplicate all parts within the loop range and moves parts after the loop "
+"range forward accordingly."
+msgstr ""
+
+#: ../library/scripts/song-parts-operations.scm.h:62
+msgid ""
+"The loop range of the specified song contains no parts or is unset, so no "
+"parts can be identified to operate on."
+msgstr ""
+
+#: ../library/scripts/song-parts-operations.scm.h:64
+#, fuzzy
+msgid "Show messages about empty part range"
+msgstr "Vis beskeder om problemer med PCM-enhedsvalg"
+
+#: ../library/scripts/song-parts-operations.scm.h:68
+#, fuzzy
+msgid "Failed to crop part range."
+msgstr "Kunne ikke påbegynde optagelse til disk."
+
+#: ../library/scripts/song-parts-operations.scm.h:80
+msgid "Failed to duplicate part range."
+msgstr ""
 
 #: ../beast-gtk/bstapp.c:81
 msgid "_New"
@@ -3547,7 +3747,6 @@ msgstr ""
 #: ../plugins/bseiirfilter.c:157 ../plugins/davcanyondelay.c:114
 #: ../plugins/davorgan.c:113 ../plugins/davsyndrum.c:94
 #: ../plugins/davxtalstrings.c:109
-#, c-format
 msgid "Note"
 msgstr "Node"
 
@@ -3806,7 +4005,6 @@ msgid "Constant Output %u"
 msgstr "Konstant uddata %u"
 
 #: ../bse/bseconstant.c:108
-#, c-format
 msgid "Value [float]"
 msgstr ""
 
@@ -3821,7 +4019,6 @@ msgstr ""
 #: ../plugins/davsyndrum.c:93 ../plugins/davxtalstrings.c:101
 #: ../plugins/davxtalstrings.c:103 ../plugins/davxtalstrings.c:107
 #: ../plugins/davxtalstrings.c:112 ../plugins/davxtalstrings.c:117
-#, c-format
 msgid "Frequency"
 msgstr "Frekvens"
 
@@ -5316,12 +5513,10 @@ msgid "/Input & Output/Instrument Output"
 msgstr ""
 
 #: ../bse/bsejanitor.c:535
-#, c-format
 msgid "killed by janitor"
 msgstr "dræbt af janitor"
 
 #: ../bse/bsejanitor.c:537
-#, c-format
 msgid "connection terminated"
 msgstr "forbindelse afbrudt"
 
@@ -5331,7 +5526,6 @@ msgid "%s (core dumped)"
 msgstr ""
 
 #: ../bse/bsemain.cc:270
-#, c-format
 msgid ""
 "\n"
 "Available PCM drivers:\n"
@@ -5340,7 +5534,6 @@ msgstr ""
 "Tilgængelige PCM-drivere:\n"
 
 #: ../bse/bsemain.cc:272
-#, c-format
 msgid ""
 "\n"
 "Available MIDI drivers:\n"

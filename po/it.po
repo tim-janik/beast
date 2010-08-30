@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast-it\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-04-25 01:38+0200\n"
+"POT-Creation-Date: 2010-08-21 00:26+0200\n"
 "PO-Revision-Date: 2008-01-20 01:11+0100\n"
 "Last-Translator: Michele Petrecca <michelinux@alice.it>\n"
 "Language-Team: Italiano <it@li.org>\n"
@@ -2976,7 +2976,8 @@ msgid "Rack"
 msgstr "Rack"
 
 #: ../beast-gtk/bstsupershell.c:217
-msgid "Add, edit and connect synthsizer mesh components"
+#, fuzzy
+msgid "Add, edit and connect synthesizer mesh components"
 msgstr "Aggiungi, modifica e connetti i componenti della rete sintetizzatrice"
 
 #: ../beast-gtk/bstsupershell.c:221
@@ -5673,7 +5674,7 @@ msgstr "Strumento MIDI"
 msgid "MIDI Channel"
 msgstr "Canale MIDI"
 
-#: ../bse/bsemidisynth.c:449
+#: ../bse/bsemidisynth.c:449 ../bse/bsetrack.c:1024
 msgid "Max Voices"
 msgstr "Massimo numero voci"
 
@@ -6346,10 +6347,6 @@ msgstr "Reti di sintesi atte ad essere usate come strumento"
 #: ../bse/bsetrack.c:1019
 msgid "Wave to be used as instrument"
 msgstr "Wave che possono essere usati come strumento"
-
-#: ../bse/bsetrack.c:1024
-msgid "Max Voixes"
-msgstr ""
 
 #: ../bse/bsetrack.c:1030
 msgid "Midi channel assigned to this track, 0 uses internal per-track channel"

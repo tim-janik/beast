@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast 0.7.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-04-25 01:38+0200\n"
+"POT-Creation-Date: 2010-08-21 00:26+0200\n"
 "PO-Revision-Date: 2008-06-11 12:59+0200\n"
 "Last-Translator: Yannig Marchegay (Kokoyaya) <yannig@marchegay.org>\n"
 "Language-Team: Occitan (post 1500) <ubuntu-l10n-oci@lists.ubuntu.com>\n"
@@ -2877,7 +2877,7 @@ msgid "Rack"
 msgstr ""
 
 #: ../beast-gtk/bstsupershell.c:217
-msgid "Add, edit and connect synthsizer mesh components"
+msgid "Add, edit and connect synthesizer mesh components"
 msgstr ""
 
 #: ../beast-gtk/bstsupershell.c:221
@@ -5510,7 +5510,7 @@ msgstr ""
 msgid "MIDI Channel"
 msgstr ""
 
-#: ../bse/bsemidisynth.c:449
+#: ../bse/bsemidisynth.c:449 ../bse/bsetrack.c:1024
 msgid "Max Voices"
 msgstr ""
 
@@ -6143,10 +6143,6 @@ msgstr ""
 
 #: ../bse/bsetrack.c:1019
 msgid "Wave to be used as instrument"
-msgstr ""
-
-#: ../bse/bsetrack.c:1024
-msgid "Max Voixes"
 msgstr ""
 
 #: ../bse/bsetrack.c:1030

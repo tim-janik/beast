@@ -17,16 +17,15 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: beast master\n"
-"Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
-"product=beast&component=general\n"
-"POT-Creation-Date: 2010-07-01 16:53+0200\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2010-08-21 00:26+0200\n"
 "PO-Revision-Date: 2010-06-17 23:32+0100\n"
 "Last-Translator: Mario Blättermann <mariobl@gnome.org>\n"
 "Language-Team: German <gnome-de@gnome.org>\n"
-"Language: de\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Language: de\n"
 
 #: ../library/scripts/mixer-splitup-by-track.scm.h:25
 msgid "/Song/Assign Tracks to individual Mixer Busses"
@@ -2985,7 +2984,7 @@ msgid "Rack"
 msgstr "Ablage"
 
 #: ../beast-gtk/bstsupershell.c:217
-msgid "Add, edit and connect synthsizer mesh components"
+msgid "Add, edit and connect synthesizer mesh components"
 msgstr ""
 
 #: ../beast-gtk/bstsupershell.c:221
@@ -5206,8 +5205,7 @@ msgstr "Sample-Pfad"
 #, c-format
 msgid ""
 "Search path of directories, seperated by \"%s\", used to find audio samples."
-msgstr ""
-"Suchpfad für Ordner, durch »%s« getrennt, zur Suche nach Audio-Samples."
+msgstr "Suchpfad für Ordner, durch »%s« getrennt, zur Suche nach Audio-Samples."
 
 #: ../bse/bsecore.idl:805
 msgid "Effect Path"

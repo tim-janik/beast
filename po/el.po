@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: el\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-04-25 01:38+0200\n"
+"POT-Creation-Date: 2010-08-21 00:26+0200\n"
 "PO-Revision-Date: 2003-11-09 18:32+0200\n"
 "Last-Translator: Kostas Papadimas <pkst@gnome.org>\n"
 "Language-Team: Greek <nls@tux.hellug.gr>\n"
@@ -3093,7 +3093,7 @@ msgid "Rack"
 msgstr "Κομμάτια"
 
 #: ../beast-gtk/bstsupershell.c:217
-msgid "Add, edit and connect synthsizer mesh components"
+msgid "Add, edit and connect synthesizer mesh components"
 msgstr ""
 
 #: ../beast-gtk/bstsupershell.c:221
@@ -5914,7 +5914,7 @@ msgstr "Αποθήκευση οργάνου"
 msgid "MIDI Channel"
 msgstr "Κανάλι εισόδου σε χρήση"
 
-#: ../bse/bsemidisynth.c:449
+#: ../bse/bsemidisynth.c:449 ../bse/bsetrack.c:1024
 msgid "Max Voices"
 msgstr ""
 
@@ -6600,10 +6600,6 @@ msgstr ""
 #, fuzzy
 msgid "Wave to be used as instrument"
 msgstr "Αποθήκευση οργάνου"
-
-#: ../bse/bsetrack.c:1024
-msgid "Max Voixes"
-msgstr ""
 
 #: ../bse/bsetrack.c:1030
 msgid "Midi channel assigned to this track, 0 uses internal per-track channel"

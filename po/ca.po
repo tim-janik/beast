@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-04-25 01:38+0200\n"
+"POT-Creation-Date: 2010-08-21 00:26+0200\n"
 "PO-Revision-Date: 2006-08-18 05:28+0200\n"
 "Last-Translator: Gil Forcada <gilforcada@guifi.net>\n"
 "Language-Team: Catalan <gnome@softcatala.org>\n"
@@ -3006,7 +3006,8 @@ msgid "Rack"
 msgstr "Rack"
 
 #: ../beast-gtk/bstsupershell.c:217
-msgid "Add, edit and connect synthsizer mesh components"
+#, fuzzy
+msgid "Add, edit and connect synthesizer mesh components"
 msgstr "Afegeix, edita i connecta  components de la malla de sintetització"
 
 #: ../beast-gtk/bstsupershell.c:221
@@ -5722,7 +5723,7 @@ msgstr "Instrument MIDI"
 msgid "MIDI Channel"
 msgstr "Canal MIDI"
 
-#: ../bse/bsemidisynth.c:449
+#: ../bse/bsemidisynth.c:449 ../bse/bsetrack.c:1024
 msgid "Max Voices"
 msgstr "Màxim de veus"
 
@@ -6398,10 +6399,6 @@ msgstr "Xarxa de síntesi per utilitzar com a instrument"
 #: ../bse/bsetrack.c:1019
 msgid "Wave to be used as instrument"
 msgstr "Ona a utilitzar com a instrument"
-
-#: ../bse/bsetrack.c:1024
-msgid "Max Voixes"
-msgstr "Veus màximes"
 
 #: ../bse/bsetrack.c:1030
 msgid "Midi channel assigned to this track, 0 uses internal per-track channel"
@@ -7463,6 +7460,9 @@ msgstr "Sortida dreta"
 #, c-format
 msgid "failed to add wave chunk from file \"%s\": %s"
 msgstr "No s'ha pogut afegir un tros d'ona des del fitxer «%s»: %s"
+
+#~ msgid "Max Voixes"
+#~ msgstr "Veus màximes"
 
 #~ msgid "Musical notation corresponding to the oscillator frequency"
 #~ msgstr "Notació musical corresponent a la freqüència de l'oscil·lador"

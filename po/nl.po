@@ -12,7 +12,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: nl\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-04-25 01:38+0200\n"
+"POT-Creation-Date: 2010-08-21 00:26+0200\n"
 "PO-Revision-Date: 2006-10-04 12:02+0200\n"
 "Last-Translator: Tino Meinen <a.t.meinen@chello.nl>\n"
 "Language-Team: Dutch <vertaling@vrijschrift.org>\n"
@@ -3052,7 +3052,8 @@ msgid "Rack"
 msgstr "Rack"
 
 #: ../beast-gtk/bstsupershell.c:217
-msgid "Add, edit and connect synthsizer mesh components"
+#, fuzzy
+msgid "Add, edit and connect synthesizer mesh components"
 msgstr "Toevoegen, bewerken en verbinden van synthesizernet componenten"
 
 # wijzigen/aanpassen
@@ -5814,7 +5815,7 @@ msgstr "MIDI-instrument"
 msgid "MIDI Channel"
 msgstr "MIDI-kanaal"
 
-#: ../bse/bsemidisynth.c:449
+#: ../bse/bsemidisynth.c:449 ../bse/bsetrack.c:1024
 msgid "Max Voices"
 msgstr "Max stemmen"
 
@@ -6510,10 +6511,6 @@ msgstr "Het synthese-netwerk dat als instrument gebruikt zal worden"
 #: ../bse/bsetrack.c:1019
 msgid "Wave to be used as instrument"
 msgstr "Wave dat als instrument gebruikt zal worden"
-
-#: ../bse/bsetrack.c:1024
-msgid "Max Voixes"
-msgstr "Max stemmen"
 
 # MIDI-ingang dat aan dit kanaal is toebedeeld,...
 #: ../bse/bsetrack.c:1030
@@ -7596,6 +7593,9 @@ msgstr "Rechter uitgang"
 #, c-format
 msgid "failed to add wave chunk from file \"%s\": %s"
 msgstr "Toevoegen van stukje wave-bestand uit ‘%s’ is mislukt: %s"
+
+#~ msgid "Max Voixes"
+#~ msgstr "Max stemmen"
 
 #~ msgid "Musical notation corresponding to the oscillator frequency"
 #~ msgstr "Musikale notatie corresponderend met de oscillatorfrequentie"

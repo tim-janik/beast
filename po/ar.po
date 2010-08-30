@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Project\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-04-25 01:38+0200\n"
+"POT-Creation-Date: 2010-08-21 00:26+0200\n"
 "PO-Revision-Date: 2006-11-17 23:52+0100\n"
 "Last-Translator: Djihed Afifi <djihed@gmail.com>\n"
 "Language-Team: Arabic <doc@arabeyes.org>\n"
@@ -3228,7 +3228,7 @@ msgid "Rack"
 msgstr ""
 
 #: ../beast-gtk/bstsupershell.c:217
-msgid "Add, edit and connect synthsizer mesh components"
+msgid "Add, edit and connect synthesizer mesh components"
 msgstr ""
 
 #: ../beast-gtk/bstsupershell.c:221
@@ -6224,7 +6224,7 @@ msgstr ""
 msgid "MIDI Channel"
 msgstr "قناة الفيديو"
 
-#: ../bse/bsemidisynth.c:449
+#: ../bse/bsemidisynth.c:449 ../bse/bsetrack.c:1024
 #, fuzzy
 msgid "Max Voices"
 msgstr "<كل الأصوات>"
@@ -6926,11 +6926,6 @@ msgstr ""
 #: ../bse/bsetrack.c:1019
 msgid "Wave to be used as instrument"
 msgstr ""
-
-#: ../bse/bsetrack.c:1024
-#, fuzzy
-msgid "Max Voixes"
-msgstr "أقصى عدد من السّطور"
 
 #: ../bse/bsetrack.c:1030
 msgid "Midi channel assigned to this track, 0 uses internal per-track channel"
@@ -8009,6 +8004,10 @@ msgstr "جهاز الخرج:"
 #, c-format
 msgid "failed to add wave chunk from file \"%s\": %s"
 msgstr ""
+
+#, fuzzy
+#~ msgid "Max Voixes"
+#~ msgstr "أقصى عدد من السّطور"
 
 #, fuzzy
 #~ msgid "Fatal Error"

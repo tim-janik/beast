@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-04-25 01:38+0200\n"
+"POT-Creation-Date: 2010-08-21 00:26+0200\n"
 "PO-Revision-Date: 2006-04-19 21:24+0100\n"
 "Last-Translator: Daniel Nylander <po@danielnylander.se>\n"
 "Language-Team: Swedish <sv@li.org>\n"
@@ -2987,7 +2987,7 @@ msgid "Rack"
 msgstr "Rack"
 
 #: ../beast-gtk/bstsupershell.c:217
-msgid "Add, edit and connect synthsizer mesh components"
+msgid "Add, edit and connect synthesizer mesh components"
 msgstr ""
 
 #: ../beast-gtk/bstsupershell.c:221
@@ -5767,7 +5767,7 @@ msgstr "MIDI-instrument"
 msgid "MIDI Channel"
 msgstr "MIDI-kanal"
 
-#: ../bse/bsemidisynth.c:449
+#: ../bse/bsemidisynth.c:449 ../bse/bsetrack.c:1024
 msgid "Max Voices"
 msgstr "Max röster"
 
@@ -6443,10 +6443,6 @@ msgstr ""
 #, fuzzy
 msgid "Wave to be used as instrument"
 msgstr "Spara instrument"
-
-#: ../bse/bsetrack.c:1024
-msgid "Max Voixes"
-msgstr ""
 
 #: ../bse/bsetrack.c:1030
 msgid "Midi channel assigned to this track, 0 uses internal per-track channel"

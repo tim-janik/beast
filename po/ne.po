@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast.HEAD.ne\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-04-25 01:38+0200\n"
+"POT-Creation-Date: 2010-08-21 00:26+0200\n"
 "PO-Revision-Date: 2006-09-01 14:55+0545\n"
 "Last-Translator: Mahesh subedi <submanesh@hotmail.com>\n"
 "Language-Team: Nepali <info@mpp.org.np>\n"
@@ -2926,7 +2926,8 @@ msgid "Rack"
 msgstr "र्याक"
 
 #: ../beast-gtk/bstsupershell.c:217
-msgid "Add, edit and connect synthsizer mesh components"
+#, fuzzy
+msgid "Add, edit and connect synthesizer mesh components"
 msgstr "सिन्थेसाइजर मेष अवयवहरू थप्नुहोस्, सम्पादन गर्नुहोस् र जडान गर्नुहोस्"
 
 #: ../beast-gtk/bstsupershell.c:221
@@ -5607,7 +5608,7 @@ msgstr "मिडि बाजा"
 msgid "MIDI Channel"
 msgstr "मिडि च्यानल"
 
-#: ../bse/bsemidisynth.c:449
+#: ../bse/bsemidisynth.c:449 ../bse/bsetrack.c:1024
 msgid "Max Voices"
 msgstr "म्याक्स स्वर"
 
@@ -6265,10 +6266,6 @@ msgstr "बाजामा प्रयोग गर्न सिन्थेस
 #: ../bse/bsetrack.c:1019
 msgid "Wave to be used as instrument"
 msgstr "बाजाको रूपमा प्रयोग गरिने तरङ्ग"
-
-#: ../bse/bsetrack.c:1024
-msgid "Max Voixes"
-msgstr "म्याक्स स्वर"
 
 #: ../bse/bsetrack.c:1030
 msgid "Midi channel assigned to this track, 0 uses internal per-track channel"
@@ -7314,6 +7311,9 @@ msgstr "दायाँ निर्गत"
 #, c-format
 msgid "failed to add wave chunk from file \"%s\": %s"
 msgstr "फाइल \"%s\"बाट वेब भाग थप गर्न असफल: %s"
+
+#~ msgid "Max Voixes"
+#~ msgstr "म्याक्स स्वर"
 
 #~ msgid "Musical notation corresponding to the oscillator frequency"
 #~ msgstr "ओस्सिलेटर आवृतिमा सङ्गीत सम्बन्धी सङ्केत अनुकूल"

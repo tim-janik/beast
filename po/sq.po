@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast HEAD\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-04-25 01:38+0200\n"
+"POT-Creation-Date: 2010-08-21 00:26+0200\n"
 "PO-Revision-Date: 2004-09-03 17:26+0200\n"
 "Last-Translator: Laurent Dhima <laurenti@alblinux.net>\n"
 "Language-Team: Albanian <gnome-albanian-perkthyesit@lists.sourceforge.net>\n"
@@ -3201,7 +3201,7 @@ msgid "Rack"
 msgstr ""
 
 #: ../beast-gtk/bstsupershell.c:217
-msgid "Add, edit and connect synthsizer mesh components"
+msgid "Add, edit and connect synthesizer mesh components"
 msgstr ""
 
 #: ../beast-gtk/bstsupershell.c:221
@@ -6115,7 +6115,7 @@ msgstr "MIDI"
 msgid "MIDI Channel"
 msgstr "MIDI Kanali"
 
-#: ../bse/bsemidisynth.c:449
+#: ../bse/bsemidisynth.c:449 ../bse/bsetrack.c:1024
 #, fuzzy
 msgid "Max Voices"
 msgstr "Zëra"
@@ -6833,10 +6833,6 @@ msgstr ""
 
 #: ../bse/bsetrack.c:1019
 msgid "Wave to be used as instrument"
-msgstr ""
-
-#: ../bse/bsetrack.c:1024
-msgid "Max Voixes"
 msgstr ""
 
 #: ../bse/bsetrack.c:1030

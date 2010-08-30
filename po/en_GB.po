@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-04-25 01:38+0200\n"
+"POT-Creation-Date: 2010-08-21 00:26+0200\n"
 "PO-Revision-Date: 2007-03-12 00:16-0000\n"
 "Last-Translator: David Lodge <dave@cirt.net>\n"
 "Language-Team: English/GB <en@li.org>\n"
@@ -2940,7 +2940,8 @@ msgid "Rack"
 msgstr "Rack"
 
 #: ../beast-gtk/bstsupershell.c:217
-msgid "Add, edit and connect synthsizer mesh components"
+#, fuzzy
+msgid "Add, edit and connect synthesizer mesh components"
 msgstr "Add, edit and connect synthsizer mesh components"
 
 #: ../beast-gtk/bstsupershell.c:221
@@ -5686,7 +5687,7 @@ msgstr "MIDI Instrument"
 msgid "MIDI Channel"
 msgstr "MIDI Channel"
 
-#: ../bse/bsemidisynth.c:449
+#: ../bse/bsemidisynth.c:449 ../bse/bsetrack.c:1024
 msgid "Max Voices"
 msgstr "Max Voices"
 
@@ -6354,10 +6355,6 @@ msgstr "Synthesis network to be used as instrument"
 #: ../bse/bsetrack.c:1019
 msgid "Wave to be used as instrument"
 msgstr "Wave to be used as instrument"
-
-#: ../bse/bsetrack.c:1024
-msgid "Max Voixes"
-msgstr "Max Voixes"
 
 #: ../bse/bsetrack.c:1030
 msgid "Midi channel assigned to this track, 0 uses internal per-track channel"
@@ -7400,6 +7397,9 @@ msgstr "Right Output"
 #, c-format
 msgid "failed to add wave chunk from file \"%s\": %s"
 msgstr "failed to add wave chunk from file \"%s\": %s"
+
+#~ msgid "Max Voixes"
+#~ msgstr "Max Voixes"
 
 #~ msgid "Musical notation corresponding to the oscillator frequency"
 #~ msgstr "Musical notation corresponding to the oscillator frequency"

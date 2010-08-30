@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-04-25 01:38+0200\n"
+"POT-Creation-Date: 2010-08-21 00:26+0200\n"
 "PO-Revision-Date: 2004-02-27 22:42+0100\n"
 "Last-Translator: Данило Шеган <danilo@prevod.org>\n"
 "Language-Team: Serbian (sr) <serbiangnome-lista@nongnu.org>\n"
@@ -3050,7 +3050,7 @@ msgid "Rack"
 msgstr "Полица"
 
 #: ../beast-gtk/bstsupershell.c:217
-msgid "Add, edit and connect synthsizer mesh components"
+msgid "Add, edit and connect synthesizer mesh components"
 msgstr ""
 
 #: ../beast-gtk/bstsupershell.c:221
@@ -5837,7 +5837,7 @@ msgstr "Сачувај инструмент"
 msgid "MIDI Channel"
 msgstr "Канал%u"
 
-#: ../bse/bsemidisynth.c:449
+#: ../bse/bsemidisynth.c:449 ../bse/bsetrack.c:1024
 msgid "Max Voices"
 msgstr ""
 
@@ -6521,10 +6521,6 @@ msgstr "Мрежа за синтезу са којом да се спрегне"
 #, fuzzy
 msgid "Wave to be used as instrument"
 msgstr "Сачувај као инструмент"
-
-#: ../bse/bsetrack.c:1024
-msgid "Max Voixes"
-msgstr ""
 
 #: ../bse/bsetrack.c:1030
 msgid "Midi channel assigned to this track, 0 uses internal per-track channel"

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-04-25 01:38+0200\n"
+"POT-Creation-Date: 2010-08-21 00:26+0200\n"
 "PO-Revision-Date: 2007-07-29 00:56-0300\n"
 "Last-Translator: Raphael Higino <raphaelh@uai.com.br>\n"
 "Language-Team: Brazilian Portuguese <gnome-l10n-br@listas.cipsga.org.br>\n"
@@ -2966,7 +2966,8 @@ msgid "Rack"
 msgstr "Pilha"
 
 #: ../beast-gtk/bstsupershell.c:217
-msgid "Add, edit and connect synthsizer mesh components"
+#, fuzzy
+msgid "Add, edit and connect synthesizer mesh components"
 msgstr "Adiciona, edita e conecta os componentes da malha sintetizadora"
 
 #: ../beast-gtk/bstsupershell.c:221
@@ -5694,7 +5695,7 @@ msgstr "Instrumento MIDI"
 msgid "MIDI Channel"
 msgstr "Canal MIDI"
 
-#: ../bse/bsemidisynth.c:449
+#: ../bse/bsemidisynth.c:449 ../bse/bsetrack.c:1024
 msgid "Max Voices"
 msgstr "Vozes máximas"
 
@@ -6351,10 +6352,6 @@ msgstr "A rede de síntese para usar como instrumento"
 #: ../bse/bsetrack.c:1019
 msgid "Wave to be used as instrument"
 msgstr "O som para usar como instrumento"
-
-#: ../bse/bsetrack.c:1024
-msgid "Max Voixes"
-msgstr "Vozes máximas"
 
 #: ../bse/bsetrack.c:1030
 #, fuzzy
@@ -7382,6 +7379,9 @@ msgstr "Saída direita"
 #, fuzzy, c-format
 msgid "failed to add wave chunk from file \"%s\": %s"
 msgstr "Falha ao abrir o arquivo de saída \"%s\": %s"
+
+#~ msgid "Max Voixes"
+#~ msgstr "Vozes máximas"
 
 #~ msgid "/Misc/Evaluator"
 #~ msgstr "/Miscelânea/Evaluator"
