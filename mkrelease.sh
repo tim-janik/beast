@@ -3,7 +3,8 @@
 #
 ## This work is provided "as is"; see: http://rapicorn.org/LICENSE-AS-IS
 
-MYVERSION="mkrelease.sh version 20100827"
+MYVERSION="mkrelease.sh version 20100831"
+# 20100831: implemented 'shellvar' command
 # 20100827: implemented 'news' command
 # 20100421: added tagging, even revision checking and revision bumping
 # 20100420: implemented rsync based 'upload' for release tarballs
@@ -34,10 +35,12 @@ usage() {
 	  ChangeLog		generate ChangeLog from git history
 	  news			list commits since last release tag
 	  upload		check and upload release tarball
+	  shellvar <FILE:VAR>	shell-eval VAR variable assignment in FILE
 	Options:
 	  -h, --help		usage help
 	  -v, --version		issue version and brief history
-	  -E <revisionvar>	variable to increment (e.g. configure.ac:MICRO)
+	  -E <FILE:VAR>         revision variable to increment during "upload"
+	                        (e.g. configure.ac:MICRO)
 	  -R <revision>		revision range for "ChangeLog" generation
 	                        last release revision for "news" (auto)
 	  -T <disttarball>	name of distribution tarball (from Makefile)
@@ -64,7 +67,13 @@ while test $# -ne 0 -a $parse_options = 1; do
     -V)		VERSION="$2" ; shift ;;
     -v|--version) echo "$MYVERSION" ; exit 0 ;;
     --)		parse_options=0 ;;
-    *)		[ -z "$COMMAND" ] || usage 1 ; COMMAND="$1" ;;
+    *)		[ -z "$COMMAND" ] || usage 1
+		COMMAND="$1"
+		[ "$COMMAND" = shellvar ] && {
+		  shift
+		  [ $# -ge 1 ] || usage 1
+		  SHELLVAR="$1"
+		} ;;
   esac
   shift
 done
@@ -277,6 +286,25 @@ done
   }
   msg2 "Note, push tag with:          # git push origin '$VERSION'"
   msg2 "Done."
+  exit
+}
+
+# === shellvar ===
+[ "$COMMAND" = "shellvar" ] && {
+  ECHO_N=echo\ -n
+  test -t 1 && ECHO_N=echo # include trailing newline on terminals
+  # extract file from SHELLVAR
+  SHELLVAR_FILE=`printf "%s" "$SHELLVAR" | sed -e 's/:.*//'`
+  SHELLVAR_NAME=`printf "%s" "$SHELLVAR" | sed -ne '/:/ { s/[^:]*:// ; p ; q }'`
+  [ -z "$SHELLVAR_FILE" ] && die 3 "Failed to extract file from: $SHELLVAR"
+  [ -z "$SHELLVAR_NAME" ] && die 3 "Failed to extract variable from: $SHELLVAR"
+  [ -r "$SHELLVAR_FILE" ] || die 3 "Failed to read file: $SHELLVAR_FILE"
+  sed -n "/^\s*$SHELLVAR_NAME=/{p;q}" "$SHELLVAR_FILE" | grep -q . \
+    || die 3 "$SHELLVAR_FILE: Failed to detect variable assignment: $SHELLVAR_NAME="
+  ( echo "set -e"
+    sed -n "/^\s*[A-Za-z][A-Za-z0-9_]\+=/p; /^\s*$SHELLVAR_NAME=/q" "$SHELLVAR_FILE" \
+    && echo $ECHO_N \"\$"$SHELLVAR_NAME"\" ) | "$SHELL" \
+      || die 3 "$SHELLVAR_FILE: Error while evaluating variable assignments for: $SHELLVAR_NAME="
   exit
 }
 
