@@ -3,7 +3,8 @@
 #
 ## This work is provided "as is"; see: http://rapicorn.org/LICENSE-AS-IS
 
-MYVERSION="mkrelease.sh version 20100831"
+MYVERSION="mkrelease.sh version 20100901"
+# 20100901: check HEAD against upstream repository
 # 20100831: implemented 'shellvar' command
 # 20100827: implemented 'news' command
 # 20100421: added tagging, even revision checking and revision bumping
@@ -158,6 +159,7 @@ done
   msg_()  	{ printf "%-76s" "$@ " ; }
   msg()  	{ msg_ "  $@" ; }
   ok()   	{ echo "  OK" ; }
+  skip()   	{ echo "SKIP" ; }
   fail() {
     echo "FAIL"
     while [ -n "$1" ] ; do
@@ -245,6 +247,17 @@ done
   msg "Checking for even revision in version $VERSION..."
   test "$REVISION" = `echo "$REVISION / 2 * 2" | bc` && ok \
     || fail "note: refusing to release development version with odd revision: $REVISION"
+  msg "Checking HEAD to match upstream repository..."
+  HBRANCH=`git symbolic-ref HEAD | sed s,^refs/heads/,,`
+  HREMOTE=`git config --get "branch.$HBRANCH.remote"`
+  H_MERGE=`git config --get "branch.$HBRANCH.merge"`
+  test -z "$HBRANCH" -o -z "$HREMOTE" -o -z "$H_MERGE" && skip || {
+    RCOMMIT=`git ls-remote "$HREMOTE" "$H_MERGE" | sed 's/^\([[:alnum:]]\+\).*/\1/'`
+    TCOMMIT=`git rev-list -n1 HEAD`
+    test "$TCOMMIT" = "$RCOMMIT" && ok \
+      || fail "note: mismatching HEAD and upstream revisions: $HREMOTE $H_MERGE" \
+              "  $TCOMMIT != ${RCOMMIT:-<unknown-ref>}"
+  }
   msg "Checking remote for unique release tarball..."
   ssh "$REMOTE_HOST" test ! -e "$REMOTE_PATH$TARBALL" && ok \
     || fail "note: file already exists: $REMOTE_HOST:$REMOTE_PATH$TARBALL"
