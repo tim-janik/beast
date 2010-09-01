@@ -4,7 +4,7 @@
 ## This work is provided "as is"; see: http://rapicorn.org/LICENSE-AS-IS
 
 MYVERSION="mkrelease.sh version 20100901"
-# 20100901: check HEAD against upstream repository
+# 20100901: check HEAD against upstream repository, upload last
 # 20100831: implemented 'shellvar' command
 # 20100827: implemented 'news' command
 # 20100421: added tagging, even revision checking and revision bumping
@@ -262,26 +262,21 @@ done
   ssh "$REMOTE_HOST" test ! -e "$REMOTE_PATH$TARBALL" && ok \
     || fail "note: file already exists: $REMOTE_HOST:$REMOTE_PATH$TARBALL"
   # planned steps
-  msg2 "* Planned: upload tarball $TARBALL..."
   msg2 "* Planned: tag HEAD as '$VERSION' release..."
   [ -n "$REVISIONVAR" ] && \
     msg2 "* Planned: commit revision increment of $REVISIONVAR_FILE:$REVISIONVAR_NAME"
+  msg2 "* Planned: upload tarball $TARBALL..."
   read -ei n -p "--- Proceed as planned [y/n]? " ANS
   case "$ANS" in
     Y|YES|Yes|y|yes|1) msg "Confirmed planned procedures..." ; ok ;;
     *) die 1 "User cancellation..." ;;
   esac
-  # upload
-  msg_ "* Uploading release tarball $TARBALL..."
-  rsync -lpt --delay-updates "$TARBALL" "$REMOTE_HOST:$REMOTE_PATH" && ok \
-    || fail "note: rsync transfer failed"
-  RLS=$(ssh "$REMOTE_HOST" ls -l \`readlink -f "$REMOTE_PATH/$TARBALL"\`)
-  msg2 ">" "$RLS"
   # tag release
   msg_ "* Tagging HEAD as '$VERSION' release..."
   git tag -m "Released $TARBALL" "$VERSION" && ok || fail
   git tag -n1 -l "$VERSION" | sed 's/^/  > /'
   # bump version
+  needs_head_push=false
   [ -n "$REVISIONVAR" ] && {
     N=$((1 + $REVISION))
     msg "Increment $REVISIONVAR_FILE:$REVISIONVAR_NAME to $N..."
@@ -295,8 +290,17 @@ done
     git commit -v -m "$REVISIONVAR_FILE: revision increment of $REVISIONVAR_NAME to $N" \
       -- "$REVISIONVAR_FILE" | sed 's/^/  > /' || die "git commit failed"
     msg_ "* Comitted revision increment of $REVISIONVAR_NAME to $N" ; ok
-    msg2 "Note, push HEAD with:         # git push origin"
+    needs_head_push=true
   }
+  # upload
+  msg_ "* Uploading release tarball $TARBALL..."
+  rsync -lpt --delay-updates "$TARBALL" "$REMOTE_HOST:$REMOTE_PATH" && ok \
+    || fail "note: rsync transfer failed"
+  RLS=$(ssh "$REMOTE_HOST" ls -l \`readlink -f "$REMOTE_PATH/$TARBALL"\`)
+  msg2 ">" "$RLS"
+  # push notes
+  $needs_head_push && \
+    msg2 "Note, push HEAD with:         # git push origin"
   msg2 "Note, push tag with:          # git push origin '$VERSION'"
   msg2 "Done."
   exit
