@@ -10,6 +10,8 @@ builtin(include, birnet/acbirnet.m4)dnl
 AC_INIT(beast, m4_esyscmd(./mkrelease.sh shellvar configure.in:BST_VERSION))
 AC_CONFIG_SRCDIR([bse/bseconfig.h.in])
 AM_CONFIG_HEADER(configure.h)
+AC_CONFIG_AUX_DIR([autotools])
+AC_CONFIG_MACRO_DIR([autotools])
 AC_PREREQ(2.57)
 
 #
