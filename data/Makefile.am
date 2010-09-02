@@ -49,6 +49,7 @@ sharedpixmapsdir = $(datadir)/pixmaps
 sharedpixmaps_DATA = beast.png beast-audio-x-bse.png
 beast-audio-x-bse.png: $(srcdir)/bse-mime.png
 	cp $< $@
+CLEANFILES += beast-audio-x-bse.png
 EXTRA_DIST += $(sharedpixmaps_DATA)
 
 # generate and install .desktop file
@@ -56,8 +57,8 @@ EXTRA_DIST += $(sharedpixmaps_DATA)
 dotdesktopdir = $(datadir)/applications
 dotdesktop_in_files = beast.desktop.in
 dotdesktop_DATA = $(dotdesktop_in_files:.desktop.in=.desktop)
-CLEANFILES += beast.desktop
 beast.desktop: beast.desktop.in
+CLEANFILES += beast.desktop
 EXTRA_DIST += $(dotdesktop_in_files)
 
 # generate and install .xml mime info file
