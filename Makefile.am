@@ -18,9 +18,6 @@ site site-preview site-update site-update-all site-update-pages site-update-gall
 # extra dependencies
 configure: birnet/acbirnet.m4 birnet/configure.inc
 
-CLEANFILES += $(strip		\
-)
-
 EXTRA_DIST += $(strip		\
 	TODO			\
 	COPYING.GPL		\
