@@ -3,6 +3,7 @@
 #
 ## GNU Lesser General Public License version 2 or any later version.
 include $(top_srcdir)/Makefile.decl
+AUTOMAKE_OPTIONS = -Wno-portability
 
 private_images = $(strip	\
 	beast-logo.png		\
@@ -52,12 +53,19 @@ beast-audio-x-bse.png: $(srcdir)/bse-mime.png
 CLEANFILES += beast-audio-x-bse.png
 EXTRA_DIST += $(sharedpixmaps_DATA)
 
+# intltool-merge translation rules
+PODEPS          = $(wildcard $(top_srcdir)/po/*.po)
+INTLMERGE_CACHE = $(top_builddir)/po/intlmerge.tmpcache
+$(INTLMERGE_CACHE): $(PODEPS)
+	LC_ALL=C $(INTLMERGE) -d -u -c $(INTLMERGE_CACHE) $(top_srcdir)/po /dev/null /dev/null
+%.desktop: %.desktop.in	$(INTLMERGE_CACHE)
+	LC_ALL=C $(INTLMERGE) -d -u -c $(INTLMERGE_CACHE) $(top_srcdir)/po $< $@
+%.xml: %.xml.in		$(INTLMERGE_CACHE)
+	LC_ALL=C $(INTLMERGE) -x -u -c $(INTLMERGE_CACHE) $(top_srcdir)/po $< $@
+%.keys: %.keys.in	$(INTLMERGE_CACHE)
+	LC_ALL=C $(INTLMERGE) -k -u -c $(INTLMERGE_CACHE) $(top_srcdir)/po $< $@
+
 # generate and install .desktop file
-# FIXME: INTLTOOL_DESKTOP_RULE
-%.desktop: %.desktop.in
-	$(INTLTOOL_MERGE) $(wildcard $(top_srcdir)/po/*.po) ; \
-	LC_ALL=C $(INTLTOOL_MERGE) -d -u -c $(top_builddir)/po/.intltool-merge-cache \
-			$(top_srcdir)/po $< $@
 dotdesktopdir = $(datadir)/applications
 dotdesktop_in_files = beast.desktop.in
 dotdesktop_DATA = $(dotdesktop_in_files:.desktop.in=.desktop)
@@ -66,11 +74,6 @@ CLEANFILES += beast.desktop
 EXTRA_DIST += $(dotdesktop_in_files)
 
 # generate and install .xml mime info file
-# FIXME: INTLTOOL_XML_RULE
-%.xml: %.xml.in
-	$(INTLTOOL_MERGE) $(wildcard $(top_srcdir)/po/*.po) ; \
-	LC_ALL=C $(INTLTOOL_MERGE) -x -u -c $(top_builddir)/po/.intltool-merge-cache \
-		$(top_srcdir)/po $< $@
 sharedmimedir = $(datadir)/mime
 sharedmimepackagedir = $(sharedmimedir)/packages
 sharedmimepackage_in_files = beast.xml.in
@@ -80,11 +83,6 @@ beast.xml: beast.xml.in
 EXTRA_DIST += $(sharedmimepackage_in_files)
 
 # generate and install .mime and .keys files
-# FIXME: INTLTOOL_KEYS_RULE
-%.keys: %.keys.in
-	$(INTLTOOL_MERGE) $(wildcard $(top_srcdir)/po/*.po) ; \
-	LC_ALL=C $(INTLTOOL_MERGE) -k -u -c $(top_builddir)/po/.intltool-merge-cache \
-		$(top_srcdir)/po $< $@
 mimedir = $(datadir)/mime-info
 mime_in_file = bse.keys.in bse.mime
 mime_DATA = $(mime_in_file:.keys.in=.keys)
