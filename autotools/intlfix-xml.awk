@@ -25,11 +25,13 @@ BEGIN {
       }
       #print ""
     } else if (XMLEVENT == "COMMENT") {
-      gsub ("\\*/", "* /", XMLNAME)
+      gsub ("\\*/", "* /", XMLNAME)     # escape enclosed C-comment ends
       ostring = sprintf ("/* %s */\n", XMLNAME)
       printf ("__XML_LINE__%-3d: %s", OLINE, ostring); gsub (/[^\n]/, "", ostring); OLINE += length (ostring)
     } else if (XMLEVENT == "CHARDATA" && match (TAG, "^_[^_]")) {
-      sub ("^_", "", TAG); gsub ("[\\\"]", "\\" "\\&", XMLNAME)
+      gsub ("[\\\"]", "\\" "\\&", XMLNAME) # escape string quotes
+      gsub (/\n/, "\\n\"\n\"", XMLNAME)    # escape newlines
+      sub ("^_", "", TAG)
       ostring = sprintf ("%s /*<%s/>*/_(\"%s\");\n", MARKER, TAG, XMLNAME);
       printf ("__XML_LINE__%-3d: %s", OLINE, ostring); gsub (/[^\n]/, "", ostring); OLINE += length (ostring)
     } else if (XMLEVENT == "ENDELEM") {
