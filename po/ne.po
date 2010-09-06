@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast.HEAD.ne\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-09-06 23:54+0200\n"
+"POT-Creation-Date: 2010-09-06 23:59+0200\n"
 "PO-Revision-Date: 2006-09-01 14:55+0545\n"
 "Last-Translator: Mahesh subedi <submanesh@hotmail.com>\n"
 "Language-Team: Nepali <info@mpp.org.np>\n"
@@ -184,6 +184,10 @@ msgstr "/आगत र निर्गत/PCM आगत"
 msgid "/Misc/Snooper"
 msgstr "/मिस्क/स्नुपर"
 
+#: plugins/standardguspatchenvelope.idl:28
+msgid "/Misc/StandardGusPatchEnvelope"
+msgstr ""
+
 #: bse/bseconstant.c:83
 msgid "/Other Sources/Constant"
 msgstr "/अन्य स्रोत/अचल"
@@ -202,6 +206,16 @@ msgstr ""
 
 #: plugins/bseamplifier.idl:29
 msgid "/Routing/Amplifier"
+msgstr "/राउटिङ/एम्प्लिफायर"
+
+#: plugins/bsecontribsampleandhold.idl:25
+#, fuzzy
+msgid "/Routing/Sample and Hold"
+msgstr "/राउटिङ/एम्प्लिफायर"
+
+#: plugins/bsesummation.idl:25
+#, fuzzy
+msgid "/Routing/Summation"
 msgstr "/राउटिङ/एम्प्लिफायर"
 
 #: library/scripts/modules2grid.scm:21
@@ -613,6 +627,10 @@ msgstr "ADSR"
 msgid "ADSR Envelope Generator"
 msgstr "ADSR खाम जेनेरेटर"
 
+#: plugins/standardsaturator.idl:24
+msgid "ATAN"
+msgstr ""
+
 #: beast-gtk/bsteventrollctrl.c:564 beast-gtk/bsteventrollctrl.c:690
 #: beast-gtk/bstpianorollctrl.c:810 beast-gtk/bstpianorollctrl.c:846
 msgid "Aborted"
@@ -621,6 +639,16 @@ msgstr "परित्याग गरियो"
 #: beast-gtk/bsteventrollctrl.c:699 beast-gtk/bstpianorollctrl.c:855
 msgid "Abortion"
 msgstr "एबोर्सन"
+
+#: plugins/bsesummation.idl:33
+#, fuzzy
+msgid "Accumulated audio output 1"
+msgstr "एम्प्लिफाइड अडियो निर्गत"
+
+#: plugins/bsesummation.idl:35
+#, fuzzy
+msgid "Accumulated audio output 2"
+msgstr "एम्प्लिफाइड अडियो निर्गत"
 
 #: beast-gtk/bstbuseditor.c:38 beast-gtk/bstbusmixer.c:35
 #: beast-gtk/bstbusview.c:34 beast-gtk/bstpartview.c:39
@@ -635,6 +663,10 @@ msgstr "अनुकूलन सिन्थेसाइजर थप्नु�
 #: beast-gtk/bstapp.c:144
 msgid "Add MIDI Synthesizer"
 msgstr "MIDI सिन्थेसाइजर थप्नुहोस्"
+
+#: bse/bsebus.proc:102
+msgid "Add a bus to the input list of a bus."
+msgstr ""
 
 #: beast-gtk/bstapp.c:144
 msgid ""
@@ -651,6 +683,11 @@ msgstr "प्रभाव वा गीतमा बाजाको रूप�
 
 #: beast-gtk/bsttrackview.c:63
 msgid "Add a new track to this song"
+msgstr "यो गीतमा नयाँ ट्र्याक थप्नुहोस्"
+
+#: bse/bsebus.proc:30
+#, fuzzy
+msgid "Add a track to the input list of a bus."
 msgstr "यो गीतमा नयाँ ट्र्याक थप्नुहोस्"
 
 #: beast-gtk/bstparam-searchpath.c:128
@@ -872,6 +909,10 @@ msgstr "बाँन्की सम्पादक सजावटमा कन
 msgid "Array of column types"
 msgstr "स्तम्भ प्रकारको एरे"
 
+#: plugins/bsecontribsampleandhold.idl:23
+msgid "Artem Popov"
+msgstr ""
+
 #: plugins/artscompressor.idl:28
 msgid ""
 "ArtsCompressor compresses the sound.\n"
@@ -961,9 +1002,20 @@ msgstr "नियन्त्रण आगत २ को तह एटेनु�
 msgid "Audio"
 msgstr "अडियो"
 
+#: plugins/bsesummation.idl:34
+#, fuzzy
+msgid "Audio Diff"
+msgstr "अडियो"
+
+#: plugins/standardguspatchenvelope.idl:46
+#, fuzzy
+msgid "Audio Gate"
+msgstr "अडियो निर्गत"
+
 #: bse/bsebiquadfilter.c:188 plugins/bseatandistort.c:88
-#: plugins/bseiirfilter.c:162 plugins/davbassfilter.idl:31
-#: plugins/davchorus.idl:28
+#: plugins/bsecontribsampleandhold.idl:27 plugins/bseiirfilter.c:162
+#: plugins/davbassfilter.idl:31 plugins/davchorus.idl:28
+#: plugins/standardguspatchenvelope.idl:45
 msgid "Audio In"
 msgstr "अडियो आगत"
 
@@ -972,13 +1024,15 @@ msgstr "अडियो आगत"
 msgid "Audio In%u"
 msgstr "अडियो आगत %u"
 
-#: plugins/artscompressor.idl:48 plugins/bseadder.c:95
+#: bse/bsebusmodule.idl:28 plugins/artscompressor.idl:48 plugins/bseadder.c:95
 #: plugins/bseamplifier.idl:43 plugins/bsebalance.idl:34 plugins/bsemult.c:58
+#: plugins/bsesummation.idl:31
 msgid "Audio In1"
 msgstr "अडियो आगत १"
 
-#: plugins/artscompressor.idl:49 plugins/bseadder.c:97
+#: bse/bsebusmodule.idl:29 plugins/artscompressor.idl:49 plugins/bseadder.c:97
 #: plugins/bseamplifier.idl:44 plugins/bsebalance.idl:35 plugins/bsemult.c:60
+#: plugins/bsesummation.idl:32
 msgid "Audio In2"
 msgstr "अडियो आगत २"
 
@@ -991,6 +1045,7 @@ msgid "Audio In4"
 msgstr "अडियो आगत ४"
 
 #: plugins/bseamplifier.idl:48 plugins/bsebalance.idl:41
+#: plugins/bsecontribsampleandhold.idl:27
 msgid "Audio Input"
 msgstr "अडियो आगत"
 
@@ -1014,26 +1069,45 @@ msgstr "अडियो आगत ४"
 msgid "Audio Input Signal"
 msgstr "अडियो आगत सङ्केत"
 
+#: plugins/standardguspatchenvelope.idl:45
+msgid "Audio Input of the WaveOsc playing the patch"
+msgstr ""
+
 #: bse/bsebiquadfilter.c:196 bse/bsestandardosc.c:205 bse/bsewaveosc.c:599
 #: plugins/bseadder.c:99 plugins/bseamplifier.idl:47
-#: plugins/bseatandistort.c:90 plugins/bseiirfilter.c:164
-#: plugins/bsemixer.c:107 plugins/bsemult.c:66 plugins/davbassfilter.idl:33
-#: plugins/davchorus.idl:29 plugins/davorgan.c:149 plugins/davsyndrum.c:123
+#: plugins/bseatandistort.c:90 plugins/bsecontribsampleandhold.idl:29
+#: plugins/bseiirfilter.c:164 plugins/bsemixer.c:107 plugins/bsemult.c:66
+#: plugins/davbassfilter.idl:33 plugins/davchorus.idl:29
+#: plugins/davorgan.c:149 plugins/davsyndrum.c:123
 #: plugins/davxtalstrings.c:155
 msgid "Audio Out"
 msgstr "अडियो निर्गत"
 
-#: plugins/artscompressor.idl:50
+#. outputs
+#: bse/bsebusmodule.idl:30 plugins/artscompressor.idl:50
+#: plugins/standardguspatchenvelope.idl:49
 msgid "Audio Out1"
 msgstr "अडियो निर्गत १"
 
-#: plugins/artscompressor.idl:51
+#: bse/bsebusmodule.idl:31 plugins/artscompressor.idl:51
+#: plugins/standardguspatchenvelope.idl:50
 msgid "Audio Out2"
 msgstr "अडियो निर्गत २"
 
-#: plugins/bseadder.c:99 plugins/bsemult.c:66
+#: plugins/bseadder.c:99 plugins/bsecontribsampleandhold.idl:29
+#: plugins/bsemult.c:66
 msgid "Audio Output"
 msgstr "अडियो निर्गत"
+
+#: plugins/bsesummation.idl:33
+#, fuzzy
+msgid "Audio Sum1"
+msgstr "अडियो निर्गत १"
+
+#: plugins/bsesummation.idl:35
+#, fuzzy
+msgid "Audio Sum2"
+msgstr "अडियो निर्गत २"
 
 #: bse/bseserver.c:484
 #, c-format
@@ -1044,11 +1118,11 @@ msgstr "आगतका लागि अडियो यन्त्र \"%s\" �
 msgid "Audio input"
 msgstr "अडियो आगत"
 
-#: plugins/artscompressor.idl:48
+#: plugins/artscompressor.idl:48 plugins/bsesummation.idl:31
 msgid "Audio input 1"
 msgstr "अडियो आगत १"
 
-#: plugins/artscompressor.idl:49
+#: plugins/artscompressor.idl:49 plugins/bsesummation.idl:32
 msgid "Audio input 2"
 msgstr "अडियो आगत २"
 
@@ -1060,7 +1134,7 @@ msgstr "लेखक"
 msgid "Authors:"
 msgstr "लेखक:"
 
-#: plugins/artscompressor.idl:59
+#: plugins/artscompressor.idl:59 plugins/standardsaturator.idl:56
 msgid "Auto Output"
 msgstr "स्वत: आगत"
 
@@ -1076,6 +1150,12 @@ msgid ""
 msgstr ""
 "स्वत: विशेष ड्राइभर हो, स्वत: ड्राइभर छनोटका लागि यसले\n"
 "स्थानहोल्डर सरह कार्य गर्दछ"
+
+#: plugins/standardsaturator.idl:57
+msgid ""
+"Automatically adapt the output volume according to changes in saturation "
+"level"
+msgstr ""
 
 #: bse/bsebus.c:134
 msgid "Available Inputs"
@@ -1228,6 +1308,10 @@ msgstr "प्रति मिनेटमा बिट्स"
 #: beast-gtk/bstkeybindings.c:49
 msgid "Bind a new key combination to a program function"
 msgstr "कार्यक्रम प्रकार्यमा नयाँ कूञ्जी संयोजन बेर्नुहोस्"
+
+#: plugins/bsequantizer.idl:29
+msgid "Bit Depth"
+msgstr ""
 
 #: beast-gtk/bstscrollgraph.c:577
 msgid "Boost"
@@ -1881,6 +1965,11 @@ msgstr "नियन्त्रण आगत"
 msgid "Control Strength"
 msgstr "नियन्त्रण बल"
 
+#: bse/bsesource.proc:736
+#, fuzzy
+msgid "Control Type"
+msgstr "नियन्त्रण प्रकार:"
+
 #. label=
 #: beast-gtk/dialogs/radgets-beast.xml:501
 msgid "Control Type:"
@@ -2206,6 +2295,10 @@ msgid ""
 "Diatonic scale used in Indian music with wolf interval at Dha, close to 3/2"
 msgstr ""
 
+#: plugins/bsesummation.idl:34
+msgid "Difference between audio outputs 1 and 2"
+msgstr ""
+
 #: beast-gtk/bstpatternctrl.c:127 beast-gtk/bstscrollgraph.c:574
 msgid "Direction"
 msgstr "दिशा"
@@ -2289,6 +2382,7 @@ msgid "Document _Index..."
 msgstr "कागजात अनुक्रमण..."
 
 #: bse/bsewaveosc.c:603 plugins/bsesimpleadsr.c:122
+#: plugins/standardguspatchenvelope.idl:51
 msgid "Done Out"
 msgstr "गरियो"
 
@@ -2471,6 +2565,10 @@ msgstr "विशेष सन्देश प्रकारको सन्द
 msgid "End:"
 msgstr "अन्त्य:"
 
+#: bse/bsebus.proc:174
+msgid "Ensure that a bus has an output connection."
+msgstr ""
+
 #: bse/bsesong.proc:208
 msgid "Ensure that each part in a song is inserted into at least one track."
 msgstr "गीतमा प्रत्येक अंश कम्तीमा एउटा ट्र्याक राखेको छ भनेर याद गर्नुहोस्"
@@ -2483,6 +2581,14 @@ msgstr "कागजात वा फाइल स्थान प्रवि�
 #: plugins/davbassfilter.idl:37
 msgid "Envelope Modulation [%]"
 msgstr "खाम मोड्युलेसन [%]"
+
+#: plugins/standardguspatchenvelope.idl:49
+msgid "Envelope audio output 1 (left output signal)"
+msgstr ""
+
+#: plugins/standardguspatchenvelope.idl:50
+msgid "Envelope audio output 2 (right output signal)"
+msgstr ""
 
 #: plugins/bseiirfilter.c:136
 msgid "Epsilon"
@@ -2836,8 +2942,14 @@ msgstr ""
 msgid "Fine Tune"
 msgstr "राम्रो ट्युन"
 
-#: plugins/bseamplifier.idl:43 plugins/bsebalance.idl:34
+#: bse/bsebusmodule.idl:28 plugins/bseamplifier.idl:43
+#: plugins/bsebalance.idl:34
 msgid "First audio input"
+msgstr "पहिलो अडियो आगत"
+
+#: bse/bsebusmodule.idl:30
+#, fuzzy
+msgid "First audio output"
 msgstr "पहिलो अडियो आगत"
 
 #: plugins/bseamplifier.idl:45 plugins/bsebalance.idl:36
@@ -2890,16 +3002,19 @@ msgstr "आवृति मोड आगत"
 msgid "Freq Out"
 msgstr "आवृति बाहिर"
 
+#. inputs
 #: bse/bseconstant.c:116 bse/bseinstrumentinput.c:118 bse/bsemidiinput.c:108
 #: bse/bsestandardosc.c:144 plugins/davcanyondelay.c:108
 #: plugins/davorgan.c:107 plugins/davsyndrum.c:87 plugins/davsyndrum.c:88
 #: plugins/davsyndrum.c:93 plugins/davxtalstrings.c:101
 #: plugins/davxtalstrings.c:103 plugins/davxtalstrings.c:107
 #: plugins/davxtalstrings.c:112 plugins/davxtalstrings.c:117
+#: plugins/standardguspatchenvelope.idl:42
 msgid "Frequency"
 msgstr "आवृत्ति"
 
 #: bse/bsewaveosc.c:593 plugins/davorgan.c:148
+#: plugins/standardguspatchenvelope.idl:42
 msgid "Frequency Input"
 msgstr "आवृति आगत"
 
@@ -2949,13 +3064,14 @@ msgstr "प्रकार्यत्मकता कार्यान्व�
 msgid "Functions to be activated for a key binding"
 msgstr "कुञ्जी बाइन्डिङ सक्रिय पार्न प्रकार्य"
 
-#: plugins/artscompressor.idl:26
+#: plugins/artscompressor.idl:26 plugins/bsecontribsampleandhold.idl:24
 msgid "GNU General Public License"
 msgstr "जि एन यु साधारण सार्वजनिक अनुमतिपत्र"
 
-#: plugins/bseamplifier.idl:28 plugins/bsebalance.idl:24
-#: plugins/bsenoise.idl:25 plugins/davbassfilter.idl:25
-#: plugins/davchorus.idl:25
+#: bse/bsebusmodule.idl:26 plugins/bseamplifier.idl:28
+#: plugins/bsebalance.idl:24 plugins/bsenoise.idl:25
+#: plugins/bsesummation.idl:24 plugins/davbassfilter.idl:25
+#: plugins/davchorus.idl:25 plugins/standardguspatchenvelope.idl:27
 msgid "GNU Lesser General Public License"
 msgstr "जी एन यु लेस्सर साधारण सार्वजनिक अनुमतिपत्र"
 
@@ -2980,7 +3096,7 @@ msgstr "गेइन [डिबि]"
 msgid "Gate"
 msgstr "गेट"
 
-#: plugins/bsesimpleadsr.c:116
+#: plugins/bsesimpleadsr.c:116 plugins/standardguspatchenvelope.idl:43
 msgid "Gate In"
 msgstr "भित्र आउनुहोस्"
 
@@ -2992,7 +3108,11 @@ msgstr "बाहिर जानुहोस्"
 msgid "Gate Output"
 msgstr "गेट निर्गत"
 
-#: plugins/bsesimpleadsr.c:116
+#: plugins/standardguspatchenvelope.idl:46
+msgid "Gate Output of the WaveOsc playing the patch"
+msgstr ""
+
+#: plugins/bsesimpleadsr.c:116 plugins/standardguspatchenvelope.idl:43
 msgid "Gate input (activates/deactivates envelope)"
 msgstr "आगत गेट (खाम सक्रिय/असक्रिय पार्छ)"
 
@@ -3015,6 +3135,13 @@ msgstr "साधारण उद्देश्य नियन्त्रक 
 #: beast-gtk/bstpreferences.c:79
 msgid "Generic Keys"
 msgstr "जेनेरिक कुञ्जी"
+
+#: bse/bsetrack.proc:251
+msgid ""
+"Get the output module for this track. The output of this module is the "
+"merged result from all polyphonic voices and has all track specific "
+"alterations applied."
+msgstr ""
 
 #. tooltip=
 #: beast-gtk/dialogs/radgets-standard.xml:455
@@ -3056,6 +3183,14 @@ msgstr "एच जुम"
 #: beast-gtk/bstrecords.idl:62
 msgid "Half note"
 msgstr "आधा द्रष्टव्य"
+
+#: plugins/standardsaturator.idl:31
+msgid "Hard"
+msgstr ""
+
+#: plugins/standardsaturator.idl:31
+msgid "Hard saturation via clipping (prone to clicks)"
+msgstr ""
 
 #: library/scripts/part-harmonic-transposer.scm:51
 msgid "Harmony Sequence"
@@ -3552,6 +3687,11 @@ msgstr "बायाँ च्यानल निर्गत"
 msgid "Left to Right"
 msgstr "दायाँतिर सार्नुहोस्"
 
+#: plugins/standardsaturator.idl:52
+#, fuzzy
+msgid "Level"
+msgstr "लेबुल"
+
 #: beast-gtk/bstwaveview.c:43
 msgid "Lib..."
 msgstr "लिब..."
@@ -3563,6 +3703,12 @@ msgstr "अनुमतिपत्र"
 #: bse/bseautodoc.c:363 bse/bseautodoc.c:437
 msgid "License:"
 msgstr "अनुमतिपत्र:"
+
+#: plugins/standardsaturator.idl:28
+msgid ""
+"Linear saturation with a soft knee transit into the clipping range (equals "
+"hard clipping at 100%) which approaches quadratic curvature for small levels"
+msgstr ""
 
 #: beast-gtk/bsttrackrollctrl.c:46
 msgid "Link"
@@ -3731,7 +3877,7 @@ msgstr "नियन्त्रण सङ्केतका लागि लो
 msgid "MIDI"
 msgstr "मिडि"
 
-#: bse/bsemidisynth.c:444 bse/bsetrack.c:1029
+#: bse/bsemidisynth.c:444 bse/bsesource.proc:734 bse/bsetrack.c:1029
 msgid "MIDI Channel"
 msgstr "मिडि च्यानल"
 
@@ -4268,6 +4414,12 @@ msgstr "कुनै पनि होइन"
 msgid "Norm Type"
 msgstr "नर्म प्रकार"
 
+#: plugins/standardsaturator.idl:53
+msgid ""
+"Normalization level of the saturation curve in percent, some saturation "
+"types still allow overdrive signals beyond this level"
+msgstr ""
+
 #: library/scripts/record-midi.scm:53
 msgid ""
 "Not currently recording...\n"
@@ -4325,6 +4477,11 @@ msgstr "द्रष्टव्य लम्बाइ"
 
 #: plugins/davxtalstrings.c:132
 msgid "Note decay is the 'half-life' of the note's decay in seconds"
+msgstr ""
+
+#: bse/bseladspamodule.c:196
+msgid ""
+"Note values are converted to Hertz according to the current musical tuning"
 msgstr ""
 
 #: beast-gtk/bstapp.c:173
@@ -4546,6 +4703,11 @@ msgstr "आगत सङ्केत मोनिटर"
 msgid "Output Signals"
 msgstr "आगत सङ्केत"
 
+#: plugins/standardsaturator.idl:59
+#, fuzzy
+msgid "Output Volume"
+msgstr "बायाँ भोल्युम"
+
 #: plugins/artscompressor.idl:58
 msgid "Output [dB]"
 msgstr "निर्गत [dB]"
@@ -4554,7 +4716,7 @@ msgstr "निर्गत [dB]"
 msgid "Output port name to interface from"
 msgstr "यसबाट इन्टरफेस गर्न निर्गत पोर्ट नाम"
 
-#: plugins/bseamplifier.idl:66
+#: plugins/bseamplifier.idl:66 plugins/standardsaturator.idl:59
 msgid "Output stage amplification in decibel"
 msgstr "डेसिबलमा आगत स्टेज एम्प्लिफिकेसन"
 
@@ -4883,6 +5045,7 @@ msgstr ""
 
 #: beast-gtk/bstsnetrouter.c:705 beast-gtk/bstsupershell.c:188
 #: beast-gtk/bstsupershell.c:221 beast-gtk/bstsupershell.c:235
+#: plugins/standardguspatchenvelope.idl:37
 msgid "Properties"
 msgstr "गुण"
 
@@ -4982,6 +5145,20 @@ msgstr "क्यू: कुनै पनि होइन"
 #: beast-gtk/bstpianorollctrl.c:125 beast-gtk/bsttrackrollctrl.c:80
 msgid "Q: Tact"
 msgstr "क्यू: दक्षता"
+
+#: plugins/standardsaturator.idl:26
+msgid "Quadratic"
+msgstr ""
+
+#: plugins/bsequantizer.idl:27
+#, fuzzy
+msgid "Quantization"
+msgstr "क्वान्टिजेसन"
+
+#: plugins/bsequantizer.idl:28
+#, fuzzy
+msgid "Quantization Steps"
+msgstr "क्वान्टिजेसन"
 
 #: beast-gtk/bstpianorollctrl.c:135 beast-gtk/bsttrackrollctrl.c:90
 msgid "Quantize to eighths note boundaries"
@@ -5143,6 +5320,14 @@ msgstr "बाटो हटाउनुहोस्"
 msgid "Remove Song or Synthesizer"
 msgstr "गीत वा सिन्थेसाइजर हटाउनुहोस्"
 
+#: bse/bsebus.proc:138
+msgid "Remove a bus from the input list of a bus."
+msgstr ""
+
+#: bse/bsebus.proc:66
+msgid "Remove a track from the input list of a bus."
+msgstr ""
+
 #: beast-gtk/bstpatternctrl.c:346 beast-gtk/bstpatternctrl.c:360
 msgid "Remove any events in the focus cell"
 msgstr "फोकस कक्षमा केही घटना हटाउनुहोस्"
@@ -5213,6 +5398,10 @@ msgstr "रेसोनान्स [%]"
 msgid "Restarting Playback"
 msgstr "प्लेब्याक फेरि सुरु हुँदैछ"
 
+#: bse/bsecontainer.proc:27
+msgid "Retrieve all immediate children of a container"
+msgstr ""
+
 #: bse/bsesong.proc:139
 msgid "Retrieve master output bus of a song if it exists."
 msgstr "यदि यो अवस्थित छैन भने गीतको मास्टर आगत बस पुन: प्राप्त गर्नुहोस्"
@@ -5227,11 +5416,11 @@ msgstr ""
 msgid "Retrieve song timing information at a specific tick."
 msgstr "गीत समय सूचना उचित टिकमा पुन: प्राप्त गर्नुहोस्"
 
-#: plugins/bsesimpleadsr.c:118
+#: plugins/bsesimpleadsr.c:118 plugins/standardguspatchenvelope.idl:44
 msgid "Retrigger In"
 msgstr "रेट्रिग्गर आगत"
 
-#: plugins/bsesimpleadsr.c:118
+#: plugins/bsesimpleadsr.c:118 plugins/standardguspatchenvelope.idl:44
 msgid "Retrigger input (raising edge retriggers envelope)"
 msgstr "रेट्रिग्गर आगत (कुना बढाइएको रेट्रिग्गर खाम)"
 
@@ -5330,6 +5519,35 @@ msgstr "नमूना बाटो"
 #: beast-gtk/bstfiledialog.c:137
 msgid "Sample or instrument name"
 msgstr "नमूना वा बाजाको नाम"
+
+#: plugins/bsecontribsampleandhold.idl:26
+msgid ""
+"SampleAndHold samples the input signal when triggered and holds it until "
+"triggered again."
+msgstr ""
+
+#: plugins/standardsaturator.idl:51
+#, fuzzy
+msgid "Saturation Type"
+msgstr "सिर्जना समय"
+
+#: plugins/standardsaturator.idl:24
+msgid ""
+"Saturation via arc tangent function which is reasonably linear in the lower "
+"50% but develops a strong curvature above 80%"
+msgstr ""
+
+#: plugins/standardsaturator.idl:22
+msgid ""
+"Saturation via hyperbolic tangent function which is mostly linear for small "
+"levels while providing a soft curvature for high volume signals"
+msgstr ""
+
+#: plugins/standardsaturator.idl:26
+msgid ""
+"Saturation via quadratic approximation which keeps a well-proportioned "
+"curvature across all levels"
+msgstr ""
 
 #: beast-gtk/bstapp.c:156
 msgid "Save As Effect..."
@@ -5487,8 +5705,14 @@ msgstr ""
 msgid "Searchpath Text Entry"
 msgstr "खोजी बाटो पाठ प्रविष्टि"
 
-#: plugins/bseamplifier.idl:44 plugins/bsebalance.idl:35
+#: bse/bsebusmodule.idl:29 plugins/bseamplifier.idl:44
+#: plugins/bsebalance.idl:35
 msgid "Second audio input"
+msgstr "दोस्रो अडियो आगत"
+
+#: bse/bsebusmodule.idl:31
+#, fuzzy
+msgid "Second audio output"
 msgstr "दोस्रो अडियो आगत"
 
 #: plugins/bseamplifier.idl:46 plugins/bsebalance.idl:37
@@ -5756,6 +5980,10 @@ msgstr ""
 msgid "Snoop Signal"
 msgstr "स्नुप सङ्केत"
 
+#: plugins/standardsaturator.idl:28
+msgid "Soft Knee"
+msgstr ""
+
 #: plugins/bsemixer.c:107
 msgid "Sole Output"
 msgstr "सोल निर्गत"
@@ -5809,6 +6037,17 @@ msgstr "मानक एम्प्लिफायर मोड्युल"
 #: beast-gtk/bstsnetrouter.c:1091
 msgid "Standard oscillator module"
 msgstr "मानक ओसिलेटर मोड्युल"
+
+#: plugins/standardguspatchenvelope.idl:29
+msgid ""
+"StandardGusPatchEnvelope is an Envelope for GUS Patches\n"
+"\n"
+"GUS Patches contain different volume settings and tremolo settings for "
+"different notes, and the envelopes are of a non-standard form, thus using a "
+"BseWaveOsc alone is not enough to produce the sound of the GUS Patches; to "
+"accomplish the playing, you thus need to connect one (or for stereo two) "
+"BseWaveOsc(s) and their Gate Output Signal to this module."
+msgstr ""
 
 #: bse/bsestandardosc.c:106
 msgid ""
@@ -6009,6 +6248,11 @@ msgstr "सिन्थेसिस मिश्रण आवृति, सा�
 msgid "Synthesis module currently busy"
 msgstr "सिन्थेसिस मोड्युल हाललाई ब्यस्त"
 
+#: bse/bsebusmodule.idl:27
+#, fuzzy
+msgid "Synthesis module used internally by BseBus"
+msgstr "सिन्थेसिस मोड्युल हाललाई ब्यस्त"
+
 #: beast-gtk/bsttrackview.c:612
 msgid "Synthesis network or wave to be used as instrument by this track"
 msgstr "यो ट्र्याकद्वारा बाजाको रूपमा प्रयोग हुने सिन्थेसिस सञ्जाल वा तरङ्ग"
@@ -6060,6 +6304,10 @@ msgstr "सिन्थेसाइजर: %s"
 msgid "System Time"
 msgstr "प्रणाली समय"
 
+#: plugins/standardsaturator.idl:22
+msgid "TANH"
+msgstr ""
+
 #: beast-gtk/bstprofiler.c:247
 msgid "TID"
 msgstr "TID"
@@ -6105,6 +6353,12 @@ msgstr "यो थ्रेड शाखाका लागि ब्यति�
 msgid "The CPU time spent in the system for this thread"
 msgstr "CPU को समय जुन यो थ्रेडको प्रणालीमा बित्दछ"
 
+#: bse/bsesource.proc:734
+msgid ""
+"The MIDI Channel from which automation events should be received, 0 "
+"designates the default MIDI channel"
+msgstr ""
+
 #. http://en.wikipedia.org/wiki/Pentatonic_scale
 #: bse/bsecore.idl:103
 msgid ""
@@ -6112,11 +6366,27 @@ msgid ""
 "the instruments of the Gogo people of Tanzania."
 msgstr ""
 
+#: plugins/bsequantizer.idl:25
+msgid ""
+"The Quantizer plugin quantizes the input signals according to a configurable "
+"step setting. This simulates low quality digital signal transfer paths or "
+"ancient computer hardware."
+msgstr ""
+
 #. http://de.wikipedia.org/wiki/Silbermann-Sorge-Temperatur
 #: bse/bsecore.idl:110
 msgid ""
 "The Silbermann-Sorge temperament is a meantone temperament used for Baroque "
 "era organs by Gottfried Silbermann."
+msgstr ""
+
+#: plugins/bsesummation.idl:26
+msgid ""
+"The Summation module adds up all inputs connected to its multi-connect input "
+"streams. The sum of all inputs connected to 'Audio In1' is available at "
+"'Audio Sum1', and similarly, 'Audio Sum2' is the accumulatiuon signal of all "
+"streams connected to 'Audio In2'. A difference signal between 'Audio Sum1' "
+"and 'Audio Sum2' is also generated and is available at 'Audio Diff'."
 msgstr ""
 
 #: beast-gtk/gxk/gxksimplelabel.c:148
@@ -6212,10 +6482,18 @@ msgstr ""
 "थ्रेडको राम्रो मान, -२० ले उच्च प्राथमिकता थ्रेडलाई सङ्केत गर्दछ र +१९ तल्लो प्राथमिकता "
 "जुन अरूलाई राम्रो लाग्छ"
 
+#: plugins/bsequantizer.idl:29
+msgid "The number of bits the quantization steps correspond to."
+msgstr ""
+
 #: beast-gtk/bstpatternctrl.c:123
 msgid ""
 "The number of cells to move across each time an event or note was edited"
 msgstr "घटना वा द्रष्टव्य सम्पादन गरिने प्रत्येक समयमा वरिपरि सारिने कक्षहरूको सङ्ख्या"
+
+#: plugins/bsequantizer.idl:28
+msgid "The number of different steps the output signal is quantized to."
+msgstr ""
 
 #: beast-gtk/bstpatterncolumns.c:686
 msgid ""
@@ -6285,8 +6563,17 @@ msgid ""
 "system defines the number and spacing of frequency values applied."
 msgstr ""
 
+#: bse/bsesource.proc:736
+msgid "The type of control events used for automation"
+msgstr ""
+
 #: plugins/bseiirfilter.c:125
 msgid "The type of filter to use"
+msgstr "प्रयोग गर्ने फिल्टरको प्रकार"
+
+#: plugins/standardsaturator.idl:51
+#, fuzzy
+msgid "The type of saturation to be used"
 msgstr "प्रयोग गर्ने फिल्टरको प्रकार"
 
 #: plugins/davsyndrum.c:100
@@ -6321,7 +6608,7 @@ msgid ""
 "dialog"
 msgstr "यो सेटिङ प्राथमिक संवादको \"सूचना\" क्षेत्रमा परिवर्तन गर्न सकिन्छ"
 
-#: plugins/bsesimpleadsr.c:122
+#: plugins/bsesimpleadsr.c:122 plugins/standardguspatchenvelope.idl:51
 msgid "This signal goes high after the release phase has completed"
 msgstr "छाडिएको समय सकिएपछि यो सङ्केत उच्च हुन्छ"
 
@@ -6462,9 +6749,14 @@ msgstr "ट्रिग्गर आगत"
 msgid "Trigger Hit"
 msgstr "ट्रिग्गर आगत"
 
-#: plugins/davbassfilter.idl:32 plugins/davsyndrum.c:121
-#: plugins/davxtalstrings.c:153
+#: plugins/bsecontribsampleandhold.idl:28 plugins/davbassfilter.idl:32
+#: plugins/davsyndrum.c:121 plugins/davxtalstrings.c:153
 msgid "Trigger In"
+msgstr "ट्रिग्गर आगत"
+
+#: plugins/bsecontribsampleandhold.idl:28
+#, fuzzy
+msgid "Trigger Input"
 msgstr "ट्रिग्गर आगत"
 
 #: plugins/davsyndrum.c:99 plugins/davxtalstrings.c:123
@@ -6691,7 +6983,7 @@ msgstr "अवास्तविक आगत %u"
 msgid "Virtual output %u"
 msgstr "अवास्तविक निर्गत %u"
 
-#: bse/bsecore.idl:163 bse/bsecore.idl:340
+#: bse/bsebusmodule.idl:32 bse/bsecore.idl:163 bse/bsecore.idl:340
 msgid "Volume"
 msgstr "भोल्युम"
 

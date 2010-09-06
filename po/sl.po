@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast master\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-09-06 23:54+0200\n"
+"POT-Creation-Date: 2010-09-06 23:59+0200\n"
 "PO-Revision-Date: 2010-04-11 12:03+0100\n"
 "Last-Translator: Andrej Žnidaršič <andrej.znidarsic@gmail.com>\n"
 "Language-Team: Slovenian GNOME Translation Team <gnome-si@googlegroups.com>\n"
@@ -187,6 +187,10 @@ msgstr "/Vhod in izhod/izhod PCM"
 msgid "/Misc/Snooper"
 msgstr "Razne možnosti"
 
+#: plugins/standardguspatchenvelope.idl:28
+msgid "/Misc/StandardGusPatchEnvelope"
+msgstr ""
+
 #: bse/bseconstant.c:83
 msgid "/Other Sources/Constant"
 msgstr "/Drugi viri/stalno"
@@ -205,6 +209,16 @@ msgstr ""
 
 #: plugins/bseamplifier.idl:29
 msgid "/Routing/Amplifier"
+msgstr "/Usmerjanje/ojačevalnik"
+
+#: plugins/bsecontribsampleandhold.idl:25
+#, fuzzy
+msgid "/Routing/Sample and Hold"
+msgstr "/Usmerjanje/ojačevalnik"
+
+#: plugins/bsesummation.idl:25
+#, fuzzy
+msgid "/Routing/Summation"
 msgstr "/Usmerjanje/ojačevalnik"
 
 #: library/scripts/modules2grid.scm:21
@@ -618,6 +632,10 @@ msgstr "ADSR"
 msgid "ADSR Envelope Generator"
 msgstr "Ustvarjalnik ovojnice ADSR"
 
+#: plugins/standardsaturator.idl:24
+msgid "ATAN"
+msgstr ""
+
 #: beast-gtk/bsteventrollctrl.c:564 beast-gtk/bsteventrollctrl.c:690
 #: beast-gtk/bstpianorollctrl.c:810 beast-gtk/bstpianorollctrl.c:846
 msgid "Aborted"
@@ -626,6 +644,16 @@ msgstr "Prekinjeno"
 #: beast-gtk/bsteventrollctrl.c:699 beast-gtk/bstpianorollctrl.c:855
 msgid "Abortion"
 msgstr "Preklic"
+
+#: plugins/bsesummation.idl:33
+#, fuzzy
+msgid "Accumulated audio output 1"
+msgstr "Ojačan zvočni izhod"
+
+#: plugins/bsesummation.idl:35
+#, fuzzy
+msgid "Accumulated audio output 2"
+msgstr "Ojačan zvočni izhod"
 
 #: beast-gtk/bstbuseditor.c:38 beast-gtk/bstbusmixer.c:35
 #: beast-gtk/bstbusview.c:34 beast-gtk/bstpartview.c:39
@@ -640,6 +668,10 @@ msgstr "Dodaj sintetizator po meri"
 #: beast-gtk/bstapp.c:144
 msgid "Add MIDI Synthesizer"
 msgstr "Dodaj sintetizator MIDI"
+
+#: bse/bsebus.proc:102
+msgid "Add a bus to the input list of a bus."
+msgstr ""
 
 #: beast-gtk/bstapp.c:144
 msgid ""
@@ -657,6 +689,11 @@ msgstr ""
 
 #: beast-gtk/bsttrackview.c:63
 msgid "Add a new track to this song"
+msgstr "Dodajanje nove sledi tej skladbi"
+
+#: bse/bsebus.proc:30
+#, fuzzy
+msgid "Add a track to the input list of a bus."
 msgstr "Dodajanje nove sledi tej skladbi"
 
 #: beast-gtk/bstparam-searchpath.c:128
@@ -882,6 +919,10 @@ msgstr "Uporaba spremembe nastavitev razporeditve urejevalnika vzorcev"
 msgid "Array of column types"
 msgstr "Polje vrst stolpcev"
 
+#: plugins/bsecontribsampleandhold.idl:23
+msgid "Artem Popov"
+msgstr ""
+
 #: plugins/artscompressor.idl:28
 msgid ""
 "ArtsCompressor compresses the sound.\n"
@@ -948,9 +989,20 @@ msgstr "Zmanjšanje ravni nadzornega vhoda 2"
 msgid "Audio"
 msgstr "Zvok"
 
+#: plugins/bsesummation.idl:34
+#, fuzzy
+msgid "Audio Diff"
+msgstr "Zvok"
+
+#: plugins/standardguspatchenvelope.idl:46
+#, fuzzy
+msgid "Audio Gate"
+msgstr "Zvočni izhod"
+
 #: bse/bsebiquadfilter.c:188 plugins/bseatandistort.c:88
-#: plugins/bseiirfilter.c:162 plugins/davbassfilter.idl:31
-#: plugins/davchorus.idl:28
+#: plugins/bsecontribsampleandhold.idl:27 plugins/bseiirfilter.c:162
+#: plugins/davbassfilter.idl:31 plugins/davchorus.idl:28
+#: plugins/standardguspatchenvelope.idl:45
 msgid "Audio In"
 msgstr "Zvočni Vh"
 
@@ -959,13 +1011,15 @@ msgstr "Zvočni Vh"
 msgid "Audio In%u"
 msgstr "Zvočni vhod %u"
 
-#: plugins/artscompressor.idl:48 plugins/bseadder.c:95
+#: bse/bsebusmodule.idl:28 plugins/artscompressor.idl:48 plugins/bseadder.c:95
 #: plugins/bseamplifier.idl:43 plugins/bsebalance.idl:34 plugins/bsemult.c:58
+#: plugins/bsesummation.idl:31
 msgid "Audio In1"
 msgstr "Zvočni Vh1"
 
-#: plugins/artscompressor.idl:49 plugins/bseadder.c:97
+#: bse/bsebusmodule.idl:29 plugins/artscompressor.idl:49 plugins/bseadder.c:97
 #: plugins/bseamplifier.idl:44 plugins/bsebalance.idl:35 plugins/bsemult.c:60
+#: plugins/bsesummation.idl:32
 msgid "Audio In2"
 msgstr "Zvočni Vh2"
 
@@ -978,6 +1032,7 @@ msgid "Audio In4"
 msgstr "Zvočni Vh4"
 
 #: plugins/bseamplifier.idl:48 plugins/bsebalance.idl:41
+#: plugins/bsecontribsampleandhold.idl:27
 msgid "Audio Input"
 msgstr "Zvočni vhod"
 
@@ -1001,26 +1056,45 @@ msgstr "Zvočni vhod 4"
 msgid "Audio Input Signal"
 msgstr "Vhodni zvočni signal"
 
+#: plugins/standardguspatchenvelope.idl:45
+msgid "Audio Input of the WaveOsc playing the patch"
+msgstr ""
+
 #: bse/bsebiquadfilter.c:196 bse/bsestandardosc.c:205 bse/bsewaveosc.c:599
 #: plugins/bseadder.c:99 plugins/bseamplifier.idl:47
-#: plugins/bseatandistort.c:90 plugins/bseiirfilter.c:164
-#: plugins/bsemixer.c:107 plugins/bsemult.c:66 plugins/davbassfilter.idl:33
-#: plugins/davchorus.idl:29 plugins/davorgan.c:149 plugins/davsyndrum.c:123
+#: plugins/bseatandistort.c:90 plugins/bsecontribsampleandhold.idl:29
+#: plugins/bseiirfilter.c:164 plugins/bsemixer.c:107 plugins/bsemult.c:66
+#: plugins/davbassfilter.idl:33 plugins/davchorus.idl:29
+#: plugins/davorgan.c:149 plugins/davsyndrum.c:123
 #: plugins/davxtalstrings.c:155
 msgid "Audio Out"
 msgstr "Zvočni izhod"
 
-#: plugins/artscompressor.idl:50
+#. outputs
+#: bse/bsebusmodule.idl:30 plugins/artscompressor.idl:50
+#: plugins/standardguspatchenvelope.idl:49
 msgid "Audio Out1"
 msgstr "Zvočni Iz1"
 
-#: plugins/artscompressor.idl:51
+#: bse/bsebusmodule.idl:31 plugins/artscompressor.idl:51
+#: plugins/standardguspatchenvelope.idl:50
 msgid "Audio Out2"
 msgstr "Zvočni Iz2"
 
-#: plugins/bseadder.c:99 plugins/bsemult.c:66
+#: plugins/bseadder.c:99 plugins/bsecontribsampleandhold.idl:29
+#: plugins/bsemult.c:66
 msgid "Audio Output"
 msgstr "Zvočni izhod"
+
+#: plugins/bsesummation.idl:33
+#, fuzzy
+msgid "Audio Sum1"
+msgstr "Zvočni Iz1"
+
+#: plugins/bsesummation.idl:35
+#, fuzzy
+msgid "Audio Sum2"
+msgstr "Zvočni Iz2"
 
 #: bse/bseserver.c:484
 #, c-format
@@ -1031,11 +1105,11 @@ msgstr "Zvočna naprava \"%s\" ni odprta za vhod, zvočni gonilnik: %s=%s"
 msgid "Audio input"
 msgstr "Zvočni vhod"
 
-#: plugins/artscompressor.idl:48
+#: plugins/artscompressor.idl:48 plugins/bsesummation.idl:31
 msgid "Audio input 1"
 msgstr "Zvočni vhod 1"
 
-#: plugins/artscompressor.idl:49
+#: plugins/artscompressor.idl:49 plugins/bsesummation.idl:32
 msgid "Audio input 2"
 msgstr "Zvočni vhod 2"
 
@@ -1047,7 +1121,7 @@ msgstr "Avtor"
 msgid "Authors:"
 msgstr "Avtorji:"
 
-#: plugins/artscompressor.idl:59
+#: plugins/artscompressor.idl:59 plugins/standardsaturator.idl:56
 msgid "Auto Output"
 msgstr "Zvočni izhod"
 
@@ -1063,6 +1137,12 @@ msgid ""
 msgstr ""
 "Auto je posebni gonilnik, deluje kot držalo za\n"
 "samodejni izbor gonilnika."
+
+#: plugins/standardsaturator.idl:57
+msgid ""
+"Automatically adapt the output volume according to changes in saturation "
+"level"
+msgstr ""
 
 #: bse/bsebus.c:134
 msgid "Available Inputs"
@@ -1217,6 +1297,10 @@ msgstr "Udarci na minuto"
 #: beast-gtk/bstkeybindings.c:49
 msgid "Bind a new key combination to a program function"
 msgstr "Povezava nove kombinacije tipk z zmožnostjo programa"
+
+#: plugins/bsequantizer.idl:29
+msgid "Bit Depth"
+msgstr ""
 
 #: beast-gtk/bstscrollgraph.c:577
 msgid "Boost"
@@ -1862,6 +1946,11 @@ msgstr "Nadzor vhoda"
 msgid "Control Strength"
 msgstr "Nadzor moči"
 
+#: bse/bsesource.proc:736
+#, fuzzy
+msgid "Control Type"
+msgstr "Vrsta nadzora:"
+
 #. label=
 #: beast-gtk/dialogs/radgets-beast.xml:501
 msgid "Control Type:"
@@ -2186,6 +2275,10 @@ msgid ""
 "Diatonic scale used in Indian music with wolf interval at Dha, close to 3/2"
 msgstr ""
 
+#: plugins/bsesummation.idl:34
+msgid "Difference between audio outputs 1 and 2"
+msgstr ""
+
 #: beast-gtk/bstpatternctrl.c:127 beast-gtk/bstscrollgraph.c:574
 msgid "Direction"
 msgstr "Smer"
@@ -2267,6 +2360,7 @@ msgid "Document _Index..."
 msgstr "_Kazalo dokumenta ..."
 
 #: bse/bsewaveosc.c:603 plugins/bsesimpleadsr.c:122
+#: plugins/standardguspatchenvelope.idl:51
 msgid "Done Out"
 msgstr "Končan Iz"
 
@@ -2446,6 +2540,10 @@ msgstr "Omogoči ali onemogoči prikaz sporočila o določeni vrsti sporočila"
 msgid "End:"
 msgstr "Konec:"
 
+#: bse/bsebus.proc:174
+msgid "Ensure that a bus has an output connection."
+msgstr ""
+
 #: bse/bsesong.proc:208
 msgid "Ensure that each part in a song is inserted into at least one track."
 msgstr "Prepričajte se, da je vsak del v skladbi vstavljen v vsaj eno sled."
@@ -2458,6 +2556,14 @@ msgstr "Vnesite mesto dokumenta ali datoteke"
 #: plugins/davbassfilter.idl:37
 msgid "Envelope Modulation [%]"
 msgstr "Modulacija ovojnice [%]"
+
+#: plugins/standardguspatchenvelope.idl:49
+msgid "Envelope audio output 1 (left output signal)"
+msgstr ""
+
+#: plugins/standardguspatchenvelope.idl:50
+msgid "Envelope audio output 2 (right output signal)"
+msgstr ""
 
 #: plugins/bseiirfilter.c:136
 msgid "Epsilon"
@@ -2811,8 +2917,14 @@ msgstr ""
 msgid "Fine Tune"
 msgstr "Fino uglaševanje"
 
-#: plugins/bseamplifier.idl:43 plugins/bsebalance.idl:34
+#: bse/bsebusmodule.idl:28 plugins/bseamplifier.idl:43
+#: plugins/bsebalance.idl:34
 msgid "First audio input"
+msgstr "Prvi zvočni vhod"
+
+#: bse/bsebusmodule.idl:30
+#, fuzzy
+msgid "First audio output"
 msgstr "Prvi zvočni vhod"
 
 #: plugins/bseamplifier.idl:45 plugins/bsebalance.idl:36
@@ -2865,16 +2977,19 @@ msgstr "Frek Mod Vh"
 msgid "Freq Out"
 msgstr "Frekv Iz"
 
+#. inputs
 #: bse/bseconstant.c:116 bse/bseinstrumentinput.c:118 bse/bsemidiinput.c:108
 #: bse/bsestandardosc.c:144 plugins/davcanyondelay.c:108
 #: plugins/davorgan.c:107 plugins/davsyndrum.c:87 plugins/davsyndrum.c:88
 #: plugins/davsyndrum.c:93 plugins/davxtalstrings.c:101
 #: plugins/davxtalstrings.c:103 plugins/davxtalstrings.c:107
 #: plugins/davxtalstrings.c:112 plugins/davxtalstrings.c:117
+#: plugins/standardguspatchenvelope.idl:42
 msgid "Frequency"
 msgstr "Frekvenca"
 
 #: bse/bsewaveosc.c:593 plugins/davorgan.c:148
+#: plugins/standardguspatchenvelope.idl:42
 msgid "Frequency Input"
 msgstr "Frekvenčni vhod"
 
@@ -2924,13 +3039,14 @@ msgstr "Zmožnost ni podprta"
 msgid "Functions to be activated for a key binding"
 msgstr "Zagnane zmožnosti z določenimi tipkovnimi bližnjicami"
 
-#: plugins/artscompressor.idl:26
+#: plugins/artscompressor.idl:26 plugins/bsecontribsampleandhold.idl:24
 msgid "GNU General Public License"
 msgstr "Splošno javno dovoljenje GNU"
 
-#: plugins/bseamplifier.idl:28 plugins/bsebalance.idl:24
-#: plugins/bsenoise.idl:25 plugins/davbassfilter.idl:25
-#: plugins/davchorus.idl:25
+#: bse/bsebusmodule.idl:26 plugins/bseamplifier.idl:28
+#: plugins/bsebalance.idl:24 plugins/bsenoise.idl:25
+#: plugins/bsesummation.idl:24 plugins/davbassfilter.idl:25
+#: plugins/davchorus.idl:25 plugins/standardguspatchenvelope.idl:27
 msgid "GNU Lesser General Public License"
 msgstr "Manj splošno dovoljenje GNU"
 
@@ -2956,7 +3072,7 @@ msgstr "Okrepitev glasnosti [dB]"
 msgid "Gate"
 msgstr "Vrata"
 
-#: plugins/bsesimpleadsr.c:116
+#: plugins/bsesimpleadsr.c:116 plugins/standardguspatchenvelope.idl:43
 msgid "Gate In"
 msgstr "Vrata vhoda"
 
@@ -2968,7 +3084,11 @@ msgstr "Izhod vrat"
 msgid "Gate Output"
 msgstr "Izhod vrat"
 
-#: plugins/bsesimpleadsr.c:116
+#: plugins/standardguspatchenvelope.idl:46
+msgid "Gate Output of the WaveOsc playing the patch"
+msgstr ""
+
+#: plugins/bsesimpleadsr.c:116 plugins/standardguspatchenvelope.idl:43
 msgid "Gate input (activates/deactivates envelope)"
 msgstr ""
 
@@ -2991,6 +3111,13 @@ msgstr "Splošno namenski nadzornik 4"
 #: beast-gtk/bstpreferences.c:79
 msgid "Generic Keys"
 msgstr "Splošne tipke"
+
+#: bse/bsetrack.proc:251
+msgid ""
+"Get the output module for this track. The output of this module is the "
+"merged result from all polyphonic voices and has all track specific "
+"alterations applied."
+msgstr ""
 
 #. tooltip=
 #: beast-gtk/dialogs/radgets-standard.xml:455
@@ -3032,6 +3159,14 @@ msgstr "VPovečava"
 #: beast-gtk/bstrecords.idl:62
 msgid "Half note"
 msgstr "Polovinka"
+
+#: plugins/standardsaturator.idl:31
+msgid "Hard"
+msgstr ""
+
+#: plugins/standardsaturator.idl:31
+msgid "Hard saturation via clipping (prone to clicks)"
+msgstr ""
 
 #: library/scripts/part-harmonic-transposer.scm:51
 msgid "Harmony Sequence"
@@ -3537,6 +3672,11 @@ msgstr "Izhod levega kanala"
 msgid "Left to Right"
 msgstr "Od leve proti desni"
 
+#: plugins/standardsaturator.idl:52
+#, fuzzy
+msgid "Level"
+msgstr "Oznaka"
+
 #: beast-gtk/bstwaveview.c:43
 msgid "Lib..."
 msgstr "Knjiž..."
@@ -3548,6 +3688,12 @@ msgstr "Licenca"
 #: bse/bseautodoc.c:363 bse/bseautodoc.c:437
 msgid "License:"
 msgstr "Licenca:"
+
+#: plugins/standardsaturator.idl:28
+msgid ""
+"Linear saturation with a soft knee transit into the clipping range (equals "
+"hard clipping at 100%) which approaches quadratic curvature for small levels"
+msgstr ""
 
 #: beast-gtk/bsttrackrollctrl.c:46
 msgid "Link"
@@ -3716,7 +3862,7 @@ msgstr "Frekvenca filtra nizkih frekvenc za nadzorni signal"
 msgid "MIDI"
 msgstr "MIDI"
 
-#: bse/bsemidisynth.c:444 bse/bsetrack.c:1029
+#: bse/bsemidisynth.c:444 bse/bsesource.proc:734 bse/bsetrack.c:1029
 msgid "MIDI Channel"
 msgstr "Kanal MIDI"
 
@@ -4259,6 +4405,12 @@ msgstr "Brez"
 msgid "Norm Type"
 msgstr "Vrsta datoteke"
 
+#: plugins/standardsaturator.idl:53
+msgid ""
+"Normalization level of the saturation curve in percent, some saturation "
+"types still allow overdrive signals beyond this level"
+msgstr ""
+
 #: library/scripts/record-midi.scm:53
 msgid ""
 "Not currently recording...\n"
@@ -4316,6 +4468,14 @@ msgstr "_Dolžina note"
 #: plugins/davxtalstrings.c:132
 msgid "Note decay is the 'half-life' of the note's decay in seconds"
 msgstr "Dušenje note je čas razpolovitve glasnosti note v sekundah "
+
+#: bse/bseladspamodule.c:196
+#, fuzzy
+msgid ""
+"Note values are converted to Hertz according to the current musical tuning"
+msgstr ""
+"Stalna vrednost signala kot nota, pretvorjena v hertze glede na trenutno "
+"uglaševanje"
 
 #: beast-gtk/bstapp.c:173
 msgid "Notes and informations about this release cycle"
@@ -4541,6 +4701,11 @@ msgstr "Nadzor izhodnih signalov"
 msgid "Output Signals"
 msgstr "Izhodni signali"
 
+#: plugins/standardsaturator.idl:59
+#, fuzzy
+msgid "Output Volume"
+msgstr "Leva glasnost"
+
 #: plugins/artscompressor.idl:58
 msgid "Output [dB]"
 msgstr "Izhod[dB]"
@@ -4549,7 +4714,7 @@ msgstr "Izhod[dB]"
 msgid "Output port name to interface from"
 msgstr ""
 
-#: plugins/bseamplifier.idl:66
+#: plugins/bseamplifier.idl:66 plugins/standardsaturator.idl:59
 msgid "Output stage amplification in decibel"
 msgstr ""
 
@@ -4879,6 +5044,7 @@ msgstr ""
 
 #: beast-gtk/bstsnetrouter.c:705 beast-gtk/bstsupershell.c:188
 #: beast-gtk/bstsupershell.c:221 beast-gtk/bstsupershell.c:235
+#: plugins/standardguspatchenvelope.idl:37
 msgid "Properties"
 msgstr "Lastnosti"
 
@@ -4978,6 +5144,20 @@ msgstr "K: Brez"
 #: beast-gtk/bstpianorollctrl.c:125 beast-gtk/bsttrackrollctrl.c:80
 msgid "Q: Tact"
 msgstr "Q: Takt"
+
+#: plugins/standardsaturator.idl:26
+msgid "Quadratic"
+msgstr ""
+
+#: plugins/bsequantizer.idl:27
+#, fuzzy
+msgid "Quantization"
+msgstr "_Kvantizacija"
+
+#: plugins/bsequantizer.idl:28
+#, fuzzy
+msgid "Quantization Steps"
+msgstr "_Kvantizacija"
 
 #: beast-gtk/bstpianorollctrl.c:135 beast-gtk/bsttrackrollctrl.c:90
 msgid "Quantize to eighths note boundaries"
@@ -5138,6 +5318,14 @@ msgstr "Odstrani poti"
 msgid "Remove Song or Synthesizer"
 msgstr "Odstrani skladbo ali sintetizator"
 
+#: bse/bsebus.proc:138
+msgid "Remove a bus from the input list of a bus."
+msgstr ""
+
+#: bse/bsebus.proc:66
+msgid "Remove a track from the input list of a bus."
+msgstr ""
+
 #: beast-gtk/bstpatternctrl.c:346 beast-gtk/bstpatternctrl.c:360
 msgid "Remove any events in the focus cell"
 msgstr "Odstrani morebitne dogodke v izbrani celici"
@@ -5207,6 +5395,10 @@ msgstr "Resonanca [%]"
 msgid "Restarting Playback"
 msgstr "Ponovno začenjanje predvajanja"
 
+#: bse/bsecontainer.proc:27
+msgid "Retrieve all immediate children of a container"
+msgstr ""
+
 #: bse/bsesong.proc:139
 msgid "Retrieve master output bus of a song if it exists."
 msgstr "Pridobi vodilo glavnega izhoda skladbe, če obstaja."
@@ -5221,11 +5413,11 @@ msgstr "Pridobi vodilo glavnega izhoda skladbe, če ne obstaja, bo ustvarjeno."
 msgid "Retrieve song timing information at a specific tick."
 msgstr "Pridobi "
 
-#: plugins/bsesimpleadsr.c:118
+#: plugins/bsesimpleadsr.c:118 plugins/standardguspatchenvelope.idl:44
 msgid "Retrigger In"
 msgstr "Vhod ponovnega sprožilca"
 
-#: plugins/bsesimpleadsr.c:118
+#: plugins/bsesimpleadsr.c:118 plugins/standardguspatchenvelope.idl:44
 msgid "Retrigger input (raising edge retriggers envelope)"
 msgstr ""
 
@@ -5323,6 +5515,35 @@ msgstr "Pot vzorca"
 #: beast-gtk/bstfiledialog.c:137
 msgid "Sample or instrument name"
 msgstr "Ime vzorca ali inštrumenta"
+
+#: plugins/bsecontribsampleandhold.idl:26
+msgid ""
+"SampleAndHold samples the input signal when triggered and holds it until "
+"triggered again."
+msgstr ""
+
+#: plugins/standardsaturator.idl:51
+#, fuzzy
+msgid "Saturation Type"
+msgstr "Čas nastanka"
+
+#: plugins/standardsaturator.idl:24
+msgid ""
+"Saturation via arc tangent function which is reasonably linear in the lower "
+"50% but develops a strong curvature above 80%"
+msgstr ""
+
+#: plugins/standardsaturator.idl:22
+msgid ""
+"Saturation via hyperbolic tangent function which is mostly linear for small "
+"levels while providing a soft curvature for high volume signals"
+msgstr ""
+
+#: plugins/standardsaturator.idl:26
+msgid ""
+"Saturation via quadratic approximation which keeps a well-proportioned "
+"curvature across all levels"
+msgstr ""
 
 #: beast-gtk/bstapp.c:156
 msgid "Save As Effect..."
@@ -5478,8 +5699,14 @@ msgstr ""
 msgid "Searchpath Text Entry"
 msgstr "Vnos besedila iskalne poti"
 
-#: plugins/bseamplifier.idl:44 plugins/bsebalance.idl:35
+#: bse/bsebusmodule.idl:29 plugins/bseamplifier.idl:44
+#: plugins/bsebalance.idl:35
 msgid "Second audio input"
+msgstr "Drugo zvočni vhod"
+
+#: bse/bsebusmodule.idl:31
+#, fuzzy
+msgid "Second audio output"
 msgstr "Drugo zvočni vhod"
 
 #: plugins/bseamplifier.idl:46 plugins/bsebalance.idl:37
@@ -5748,6 +5975,10 @@ msgstr "Tleskanje strune"
 msgid "Snoop Signal"
 msgstr "<b>Jakost Signala</b>"
 
+#: plugins/standardsaturator.idl:28
+msgid "Soft Knee"
+msgstr ""
+
 #: plugins/bsemixer.c:107
 msgid "Sole Output"
 msgstr ""
@@ -5801,6 +6032,17 @@ msgstr "Modul običajnega ojačevalnika"
 #: beast-gtk/bstsnetrouter.c:1091
 msgid "Standard oscillator module"
 msgstr "Modul običajnega oscilatorja"
+
+#: plugins/standardguspatchenvelope.idl:29
+msgid ""
+"StandardGusPatchEnvelope is an Envelope for GUS Patches\n"
+"\n"
+"GUS Patches contain different volume settings and tremolo settings for "
+"different notes, and the envelopes are of a non-standard form, thus using a "
+"BseWaveOsc alone is not enough to produce the sound of the GUS Patches; to "
+"accomplish the playing, you thus need to connect one (or for stereo two) "
+"BseWaveOsc(s) and their Gate Output Signal to this module."
+msgstr ""
 
 #: bse/bsestandardosc.c:106
 msgid ""
@@ -6001,6 +6243,11 @@ msgstr "Mešalna frekvenca sinteze, pogoste vrednosti so: 22050, 44100, 48000"
 msgid "Synthesis module currently busy"
 msgstr "Modul sinteze je trenutno zaposlen"
 
+#: bse/bsebusmodule.idl:27
+#, fuzzy
+msgid "Synthesis module used internally by BseBus"
+msgstr "Modul sinteze je trenutno zaposlen"
+
 #: beast-gtk/bsttrackview.c:612
 msgid "Synthesis network or wave to be used as instrument by this track"
 msgstr "Sintezno omrežje ali val za uporabo kot inštrument na tej sledi"
@@ -6052,6 +6299,10 @@ msgstr "Sintetizator: %s"
 msgid "System Time"
 msgstr "Sistemski čas"
 
+#: plugins/standardsaturator.idl:22
+msgid "TANH"
+msgstr ""
+
 # Id niti = IDN
 #: beast-gtk/bstprofiler.c:247
 msgid "TID"
@@ -6099,6 +6350,12 @@ msgstr "Čas CPE porabljen v sistemu za podrejene predmete te niti"
 msgid "The CPU time spent in the system for this thread"
 msgstr "CPU čas v sistemu porabljen za to nit"
 
+#: bse/bsesource.proc:734
+msgid ""
+"The MIDI Channel from which automation events should be received, 0 "
+"designates the default MIDI channel"
+msgstr ""
+
 #. http://en.wikipedia.org/wiki/Pentatonic_scale
 #: bse/bsecore.idl:103
 #, fuzzy
@@ -6109,11 +6366,27 @@ msgstr ""
 "Skala pentatonski Gogo je XXXX pentatonska skala uporabljena, ki jo za "
 "uglaševanje inštrumentov uporablja ljudstvo Gogo v Tanzaniji."
 
+#: plugins/bsequantizer.idl:25
+msgid ""
+"The Quantizer plugin quantizes the input signals according to a configurable "
+"step setting. This simulates low quality digital signal transfer paths or "
+"ancient computer hardware."
+msgstr ""
+
 #. http://de.wikipedia.org/wiki/Silbermann-Sorge-Temperatur
 #: bse/bsecore.idl:110
 msgid ""
 "The Silbermann-Sorge temperament is a meantone temperament used for Baroque "
 "era organs by Gottfried Silbermann."
+msgstr ""
+
+#: plugins/bsesummation.idl:26
+msgid ""
+"The Summation module adds up all inputs connected to its multi-connect input "
+"streams. The sum of all inputs connected to 'Audio In1' is available at "
+"'Audio Sum1', and similarly, 'Audio Sum2' is the accumulatiuon signal of all "
+"streams connected to 'Audio In2'. A difference signal between 'Audio Sum1' "
+"and 'Audio Sum2' is also generated and is available at 'Audio Diff'."
 msgstr ""
 
 #: beast-gtk/gxk/gxksimplelabel.c:148
@@ -6210,10 +6483,18 @@ msgstr ""
 "Ocena prednosti delovanja niza, -20 pomeni niz z visoko prednosti, +19 pa "
 "pomeni niz z nizko prednostjo"
 
+#: plugins/bsequantizer.idl:29
+msgid "The number of bits the quantization steps correspond to."
+msgstr ""
+
 #: beast-gtk/bstpatternctrl.c:123
 msgid ""
 "The number of cells to move across each time an event or note was edited"
 msgstr "Število celic za premik ob vsakem urejanju dogodka ali note"
+
+#: plugins/bsequantizer.idl:28
+msgid "The number of different steps the output signal is quantized to."
+msgstr ""
 
 #: beast-gtk/bstpatterncolumns.c:686
 msgid ""
@@ -6284,8 +6565,17 @@ msgstr ""
 "slišati \"naravno\" ali \"všečno\". Uglaševalni sistem določi število in "
 "razmak med uporabljenimi frekvenčnimi vrednostmi."
 
+#: bse/bsesource.proc:736
+msgid "The type of control events used for automation"
+msgstr ""
+
 #: plugins/bseiirfilter.c:125
 msgid "The type of filter to use"
+msgstr "Vrsta filtra za uporabo"
+
+#: plugins/standardsaturator.idl:51
+#, fuzzy
+msgid "The type of saturation to be used"
 msgstr "Vrsta filtra za uporabo"
 
 #: plugins/davsyndrum.c:100
@@ -6324,7 +6614,7 @@ msgstr ""
 "To nastavitev je mogoče spremeniti v odseku \"Sporočila\" pogovornega okna "
 "možnosti"
 
-#: plugins/bsesimpleadsr.c:122
+#: plugins/bsesimpleadsr.c:122 plugins/standardguspatchenvelope.idl:51
 msgid "This signal goes high after the release phase has completed"
 msgstr "Signal se dvigne po koncu faze sprostitve"
 
@@ -6465,9 +6755,14 @@ msgstr "Sprožilec"
 msgid "Trigger Hit"
 msgstr "Sproži udarec"
 
-#: plugins/davbassfilter.idl:32 plugins/davsyndrum.c:121
-#: plugins/davxtalstrings.c:153
+#: plugins/bsecontribsampleandhold.idl:28 plugins/davbassfilter.idl:32
+#: plugins/davsyndrum.c:121 plugins/davxtalstrings.c:153
 msgid "Trigger In"
+msgstr "Vhod sprožilca"
+
+#: plugins/bsecontribsampleandhold.idl:28
+#, fuzzy
+msgid "Trigger Input"
 msgstr "Vhod sprožilca"
 
 #: plugins/davsyndrum.c:99 plugins/davxtalstrings.c:123
@@ -6695,7 +6990,7 @@ msgstr "Navidezni vhod %u"
 msgid "Virtual output %u"
 msgstr "Navidezni izhod %u"
 
-#: bse/bsecore.idl:163 bse/bsecore.idl:340
+#: bse/bsebusmodule.idl:32 bse/bsecore.idl:163 bse/bsecore.idl:340
 msgid "Volume"
 msgstr "Glasnost"
 

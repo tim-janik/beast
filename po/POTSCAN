@@ -1,11 +1,5 @@
 #0 List of source files to scan for translatable strings
 #0 Please keep alphabetically sorted
-library/scripts/mixer-splitup-by-track.scm
-library/scripts/modules2grid.scm
-library/scripts/part-harmonic-transposer.scm
-library/scripts/progressor-example.scm
-library/scripts/record-midi.scm
-library/scripts/song-parts-operations.scm
 beast-gtk/bstapp.c
 beast-gtk/bstauxdialogs.c
 beast-gtk/bstbuseditor.c
@@ -71,13 +65,17 @@ birnet/birnetutils.cc
 bse/bseautodoc.c
 bse/bsebiquadfilter.c
 bse/bsebus.c
+bse/bsebusmodule.idl
+bse/bsebus.proc
 bse/bseconstant.c
+bse/bsecontainer.proc
 bse/bsecore.idl
 bse/bsedevice.c
 bse/bseenums.c
 bse/bseinstrumentinput.c
 bse/bseinstrumentoutput.c
 bse/bsejanitor.c
+bse/bseladspamodule.c
 bse/bsemain.cc
 bse/bsemidicontroller.c
 bse/bsemididevice-null.c
@@ -95,12 +93,14 @@ bse/bseserver.c
 bse/bsesnooper.c
 bse/bsesong.c
 bse/bsesong.proc
+bse/bsesource.proc
 bse/bsestandardosc.c
 bse/bsesubiport.c
 bse/bsesuboport.c
 bse/bsesubsynth.c
 bse/bsesuper.c
 bse/bsetrack.c
+bse/bsetrack.proc
 bse/bsewave.c
 bse/bsewaveosc.c
 data/beast.desktop.in
@@ -109,18 +109,27 @@ data/bse.keys.in
 drivers/bse-alsa/bsemididevice-alsa.c
 drivers/bse-alsa/bsepcmdevice-alsa.c
 drivers/bse-portaudio/bsepcmdevice-portaudio.cc
+library/scripts/mixer-splitup-by-track.scm
+library/scripts/modules2grid.scm
+library/scripts/part-harmonic-transposer.scm
+library/scripts/progressor-example.scm
+library/scripts/record-midi.scm
+library/scripts/song-parts-operations.scm
 plugins/artscompressor.idl
 plugins/bseadder.c
 plugins/bseamplifier.idl
 plugins/bseatandistort.c
 plugins/bsebalance.idl
+plugins/bsecontribsampleandhold.idl
 # plugins/bsefirfilter.c
 plugins/bseiirfilter.c
 plugins/bsemixer.c
 plugins/bsemult.c
 plugins/bsenoise.idl
+plugins/bsequantizer.idl
 plugins/bsesequencer.c
 plugins/bsesimpleadsr.c
+plugins/bsesummation.idl
 plugins/davbassfilter.idl
 plugins/davcanyondelay.c
 plugins/davchorus.idl
@@ -129,4 +138,7 @@ plugins/davorgan.c
 plugins/davsyndrum.c
 plugins/davxtalstrings.c
 plugins/freeverb/bsefreeverb.c
+plugins/standardguspatchenvelope.idl
+plugins/standardsaturator.idl
+sfi/sfidl-parser.hh
 tools/bsewavetool.cc
