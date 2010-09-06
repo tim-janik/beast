@@ -1,4 +1,4 @@
-#!@INTLTOOL_PERL@ -w
+#!/usr/bin/perl -w
 # -*- Mode: perl; indent-tabs-mode: nil; c-basic-offset: 4  -*-
 
 #
@@ -35,13 +35,14 @@
 ## Release information
 my $PROGRAM = "intltool-merge";
 my $PACKAGE = "intltool";
-my $VERSION = "0.35.0";
+my $VERSION = "0.41.1";
 
 ## Loaded modules
 use strict; 
 use Getopt::Long;
 use Text::Wrap;
 use File::Basename;
+use Encode;
 
 my $must_end_tag      = -1;
 my $last_depth        = -1;
@@ -60,6 +61,8 @@ my $KEYS_STYLE_ARG = 0;
 my $DESKTOP_STYLE_ARG = 0;
 my $SCHEMAS_STYLE_ARG = 0;
 my $RFC822DEB_STYLE_ARG = 0;
+my $QUOTED_STYLE_ARG = 0;
+my $QUOTEDXML_STYLE_ARG = 0;
 my $QUIET_ARG = 0;
 my $PASS_THROUGH_ARG = 0;
 my $UTF8_ARG = 0;
@@ -79,6 +82,8 @@ GetOptions
  "desktop-style|d" => \$DESKTOP_STYLE_ARG,
  "schemas-style|s" => \$SCHEMAS_STYLE_ARG,
  "rfc822deb-style|r" => \$RFC822DEB_STYLE_ARG,
+ "quoted-style" => \$QUOTED_STYLE_ARG,
+ "quotedxml-style" => \$QUOTEDXML_STYLE_ARG,
  "pass-through|p" => \$PASS_THROUGH_ARG,
  "utf8|u" => \$UTF8_ARG,
  "multiple-output|m" => \$MULTIPLE_OUTPUT,
@@ -91,8 +96,6 @@ my $OUTFILE;
 
 my %po_files_by_lang = ();
 my %translations = ();
-my $iconv = $ENV{"ICONV"} || $ENV{"INTLTOOL_ICONV"} || "@INTLTOOL_ICONV@";
-my $devnull = ($^O eq 'MSWin32' ? 'NUL:' : '/dev/null');
 
 # Use this instead of \w for XML files to handle more possible characters.
 my $w = "[-A-Za-z0-9._:]";
@@ -131,7 +134,7 @@ elsif ($KEYS_STYLE_ARG && @ARGV > 2)
 	&utf8_sanity_check;
 	&preparation;
 	&print_message;
-	&keys_merge_translations;
+        &keys_merge_translations;
 	&finalize;
 } 
 elsif ($DESKTOP_STYLE_ARG && @ARGV > 2) 
@@ -155,6 +158,14 @@ elsif ($RFC822DEB_STYLE_ARG && @ARGV > 2)
 	&preparation;
 	&print_message;
 	&rfc822deb_merge_translations;
+	&finalize;
+} 
+elsif (($QUOTED_STYLE_ARG || $QUOTEDXML_STYLE_ARG) && @ARGV > 2)
+{
+	&utf8_sanity_check;
+	&preparation;
+	&print_message;
+	&quoted_merge_translations($QUOTEDXML_STYLE_ARG);
 	&finalize;
 } 
 else 
@@ -193,6 +204,8 @@ Mandatory options: (exactly one must be specified)
   -k, --keys-style       includes translations in the keys style
   -s, --schemas-style    includes translations in the schemas style
   -r, --rfc822deb-style  includes translations in the RFC822 style
+      --quoted-style     includes translations in the quoted string style
+      --quotedxml-style  includes translations in the quoted xml string style
   -x, --xml-style        includes translations in the standard xml style
 
 Other options:
@@ -207,8 +220,7 @@ Other options:
       --help             display this help and exit
       --version          output version information and exit
 
-Report bugs to http://bugzilla.gnome.org/ (product name "$PACKAGE")
-or send email to <xml-i18n-tools\@gnome.org>.
+Report bugs to http://bugs.launchpad.net/intltool
 _EOF_
     exit;
 }
@@ -249,32 +261,42 @@ sub po_file2lang
 
 sub gather_po_files
 {
-    for my $po_file (glob "$PO_DIR/*.po") {
-	$po_files_by_lang{po_file2lang($po_file)} = $po_file;
-    }
-}
-
-sub get_local_charset
-{
-    my ($encoding) = @_;
-    my $alias_file = $ENV{"G_CHARSET_ALIAS"} || "@INTLTOOL_LIBDIR@/charset.alias";
-
-    # seek character encoding aliases in charset.alias (glib)
-
-    if (open CHARSET_ALIAS, $alias_file) 
+    if (my $linguas = $ENV{"LINGUAS"})
     {
-	while (<CHARSET_ALIAS>) 
-        {
-            next if /^\#/;
-            return $1 if (/^\s*([-._a-zA-Z0-9]+)\s+$encoding\b/i)
+        for my $lang (split / /, $linguas) {
+            my $po_file = $PO_DIR . "/" . $lang . ".po";
+            if (-e $po_file) {
+                $po_files_by_lang{$lang} = $po_file;
+            }
         }
-
-        close CHARSET_ALIAS;
     }
+    else
+    {
+        if (open LINGUAS_FILE, "$PO_DIR/LINGUAS")
+        {
+            while (<LINGUAS_FILE>)
+            {
+                next if /^#/;
 
-    # if not found, return input string
+                for my $lang (split)
+                {
+                    chomp ($lang);
+                    my $po_file = $PO_DIR . "/" . $lang . ".po";
+                    if (-e $po_file) {
+                        $po_files_by_lang{$lang} = $po_file;
+                    }
+                }
+            }
 
-    return $encoding;
+            close LINGUAS_FILE;
+        }
+        else
+        {
+            for my $po_file (glob "$PO_DIR/*.po") {
+                $po_files_by_lang{po_file2lang($po_file)} = $po_file;
+            }
+        }
+    }
 }
 
 sub get_po_encoding
@@ -298,11 +320,6 @@ sub get_po_encoding
     {
         print STDERR "Warning: no encoding found in $in_po_file. Assuming ISO-8859-1\n" unless $QUIET_ARG;
         $encoding = "ISO-8859-1";
-    }
-
-    system ("$iconv -f $encoding -t UTF-8 <$devnull 2>$devnull");
-    if ($?) {
-	$encoding = get_local_charset($encoding);
     }
 
     return $encoding
@@ -379,35 +396,43 @@ sub get_cached_translation_database
     &create_cache;
 }
 
+sub add_translation
+{
+    my ($lang, $encoding, $msgctxt, $msgid, $msgstr) = @_;
+
+    return if !($msgid && $msgstr);
+
+    if ($msgctxt) {
+	$msgid = "$msgctxt\004$msgid";
+    }
+    if (uc $encoding ne "UTF-8") {
+        Encode::from_to ($msgid, $encoding, "UTF-8");
+        Encode::from_to ($msgstr, $encoding, "UTF-8");
+    }
+    $translations{$lang, $msgid} = $msgstr;
+}
+
 sub create_translation_database
 {
     for my $lang (keys %po_files_by_lang) 
     {
     	my $po_file = $po_files_by_lang{$lang};
+        my $encoding = "UTF-8";
 
         if ($UTF8_ARG) 
         {
-            my $encoding = get_po_encoding ($po_file);
-
-            if (lc $encoding eq "utf-8") 
-            {
-                open PO_FILE, "<$po_file";	
-            } 
-            else 
-            {
-		print "NOTICE: $po_file is not in UTF-8 but $encoding, converting...\n" unless $QUIET_ARG;;
-
-                open PO_FILE, "$iconv -f $encoding -t UTF-8 $po_file|";	
+            $encoding = get_po_encoding ($po_file);
+            if (uc $encoding ne "UTF-8") {
+                print "NOTICE: $po_file is not in UTF-8 but $encoding, converting...\n" unless $QUIET_ARG;;
             }
-        } 
-        else 
-        {
-            open PO_FILE, "<$po_file";	
         }
+        open PO_FILE, "<$po_file";	
 
 	my $nextfuzzy = 0;
+	my $inmsgctxt = 0;
 	my $inmsgid = 0;
 	my $inmsgstr = 0;
+	my $msgctxt = "";
 	my $msgid = "";
 	my $msgstr = "";
 
@@ -415,36 +440,60 @@ sub create_translation_database
         {
 	    $nextfuzzy = 1 if /^#, fuzzy/;
        
-	    if (/^msgid "((\\.|[^\\])*)"/ ) 
+	    if (/^msgctxt "((\\.|[^\\]+)*)"/ ) 
             {
-		$translations{$lang, $msgid} = $msgstr if $inmsgstr && $msgid && $msgstr;
-		$msgid = "";
-		$msgstr = "";
+		if ($inmsgstr) {
+		    add_translation ($lang, $encoding,
+                                     $msgctxt, $msgid, $msgstr);
+		    $msgctxt = "";
+		    $msgid = "";
+		    $msgstr = "";
+		}
+
+		$msgctxt = unescape_po_string($1);
+		$inmsgctxt = 1;
+		$inmsgid = 0;
+		$inmsgstr = 0;
+	    }
+
+	    if (/^msgid "((\\.|[^\\]+)*)"/ ) 
+            {
+		if ($inmsgstr) {
+                    add_translation ($lang, $encoding,
+                                     $msgctxt, $msgid, $msgstr);
+		    $msgctxt = "";
+		    $msgid = "";
+		    $msgstr = "";
+		}
 
 		if ($nextfuzzy) {
 		    $inmsgid = 0;
+		    $nextfuzzy = 0;
 		} else {
 		    $msgid = unescape_po_string($1);
 		    $inmsgid = 1;
 		}
+		$inmsgctxt = 0;
 		$inmsgstr = 0;
-		$nextfuzzy = 0;
 	    }
 
-	    if (/^msgstr "((\\.|[^\\])*)"/) 
+	    if (/^msgstr "((\\.|[^\\]+)*)"/) 
             {
 	        $msgstr = unescape_po_string($1);
 		$inmsgstr = 1;
+		$inmsgctxt = 0;
 		$inmsgid = 0;
 	    }
 
-	    if (/^"((\\.|[^\\])*)"/) 
+	    if (/^"((\\.|[^\\]+)*)"/) 
             {
+	        $msgctxt .= unescape_po_string($1) if $inmsgctxt;
 	        $msgid .= unescape_po_string($1) if $inmsgid;
 	        $msgstr .= unescape_po_string($1) if $inmsgstr;
 	    }
 	}
-	$translations{$lang, $msgid} = $msgstr if $inmsgstr && $msgid && $msgstr;
+        add_translation ($lang, $encoding, $msgctxt, $msgid, $msgstr)
+            if ($inmsgstr);
     }
 }
 
@@ -483,16 +532,15 @@ sub unescape_po_string
     return $string;
 }
 
-## NOTE: deal with < - &lt; but not > - &gt;  because it seems its ok to have 
-## > in the entity. For further info please look at #84738.
 sub entity_decode
 {
     local ($_) = @_;
 
     s/&apos;/'/g; # '
     s/&quot;/"/g; # "
-    s/&amp;/&/g;
     s/&lt;/</g;
+    s/&gt;/>/g;
+    s/&amp;/&/g;
 
     return $_;
 }
@@ -517,6 +565,7 @@ sub entity_encode_int_minimalist
     return "&amp;" if $_ == 38;
     return "&apos;" if $_ == 39;
     return "&lt;" if $_ == 60;
+    return "&gt;" if $_ == 62;
     return chr $_;
 }
 
@@ -752,16 +801,23 @@ sub traverse
 
 	print $fh "<$nodename", $outattr;
 	if ($translate) {
-	    $lookup = getXMLstring($content, $spacepreserve);
+	    $content = getXMLstring($content, $spacepreserve);
             if (!$spacepreserve) {
-                $lookup =~ s/^\s+//s;
-                $lookup =~ s/\s+$//s;
+                $content =~ s/^\s+//s;
+                $content =~ s/\s+$//s;
+            }
+            if (exists $attrs->{"msgctxt"}) {
+                my $context = entity_decode ($attrs->{"msgctxt"});
+                $context =~ s/^["'](.*)["']/$1/;
+                $lookup = "$context\004$content";
+            } else {
+                $lookup = $content;
             }
 
 	    if ($lookup || $translate == 2) {
                 my $translation = $translations{$language, $lookup} if isWellFormedXmlFragment($translations{$language, $lookup});
                 if ($MULTIPLE_OUTPUT && ($translation || $translate == 2)) {
-                    $translation = $lookup if (!$translation);
+                    $translation = $content if (!$translation);
                     print $fh " xml:lang=\"", $language, "\"" if $language;
                     print $fh ">";
                     if ($translate == 2) {
@@ -778,7 +834,7 @@ sub traverse
                     if ($translate == 2) {
                         translate_subnodes($fh, \@all, $language, 1, $spacepreserve);
                     } else {
-                        print $fh $lookup;
+                        print $fh $content;
                     }
                     print $fh "</$nodename>";
                 }
@@ -797,7 +853,7 @@ sub traverse
                         my $localattrs = getAttributeString($attrs, 1, $lang, \$translate);
                         my $translation = $translations{$lang, $lookup} if isWellFormedXmlFragment($translations{$lang, $lookup});
                         if ($translate && !$translation) {
-                            $translation = $lookup;
+                            $translation = $content;
                         }
 
                         if ($translation || $translate) {
@@ -1006,8 +1062,8 @@ sub xml_merge_output
 
     if ($MULTIPLE_OUTPUT) {
         for my $lang (sort keys %po_files_by_lang) {
-	    if ( ! -e $lang ) {
-	        mkdir $lang or die "Cannot create subdirectory $lang: $!\n";
+	    if ( ! -d $lang ) {
+	        mkdir $lang or -d $lang or die "Cannot create subdirectory $lang: $!\n";
             }
             open OUTPUT, ">$lang/$OUTFILE" or die "Cannot open $lang/$OUTFILE: $!\n";
             binmode (OUTPUT) if $^O eq 'MSWin32';
@@ -1017,43 +1073,74 @@ sub xml_merge_output
             close OUTPUT;
             print "CREATED $lang/$OUTFILE\n" unless $QUIET_ARG;
         }
-    } 
-    open OUTPUT, ">$OUTFILE" or die "Cannot open $OUTFILE: $!\n";
-    binmode (OUTPUT) if $^O eq 'MSWin32';
-    my $tree = readXml($FILE);
-    print_header($FILE, \*OUTPUT);
-    parseTree(\*OUTPUT, $tree);
-    close OUTPUT;
-    print "CREATED $OUTFILE\n" unless $QUIET_ARG;
+        if ( ! -d "C" ) {
+            mkdir "C" or -d "C" or die "Cannot create subdirectory C: $!\n";
+        }
+        open OUTPUT, ">C/$OUTFILE" or die "Cannot open C/$OUTFILE: $!\n";
+        binmode (OUTPUT) if $^O eq 'MSWin32';
+        my $tree = readXml($FILE);
+        print_header($FILE, \*OUTPUT);
+        parseTree(\*OUTPUT, $tree);
+        close OUTPUT;
+        print "CREATED C/$OUTFILE\n" unless $QUIET_ARG;
+    } else {
+        open OUTPUT, ">$OUTFILE" or die "Cannot open $OUTFILE: $!\n";
+        binmode (OUTPUT) if $^O eq 'MSWin32';
+        my $tree = readXml($FILE);
+        print_header($FILE, \*OUTPUT);
+        parseTree(\*OUTPUT, $tree);
+        close OUTPUT;
+        print "CREATED $OUTFILE\n" unless $QUIET_ARG;
+    }
 }
 
-sub keys_merge_translations
+sub keys_merge_translation
 {
-    open INPUT, "<${FILE}" or die;
-    open OUTPUT, ">${OUTFILE}" or die;
+    my ($lang) = @_;
+
+    if ( ! -d $lang && $MULTIPLE_OUTPUT)
+    {
+        mkdir $lang or -d $lang or die "Cannot create subdirectory $lang: $!\n";
+    }
+
+    open INPUT, "<${FILE}" or die "Cannot open ${FILE}: $!\n";
+    open OUTPUT, ">$lang/$OUTFILE" or die "Cannot open $lang/$OUTFILE: $!\n";
     binmode (OUTPUT) if $^O eq 'MSWin32';
 
-    while (<INPUT>) 
+    while (<INPUT>)
     {
-        if (s/^(\s*)_(\w+=(.*))/$1$2/)  
+        if (s/^(\s*)_(\w+=(.*))/$1$2/)
         {
-	    my $string = $3;
+            my $string = $3;
 
-            print OUTPUT;
-
-	    my $non_translated_line = $_;
-
-            for my $lang (sort keys %po_files_by_lang) 
+            if (!$MULTIPLE_OUTPUT)
             {
-		my $translation = $translations{$lang, $string};
-                next if !$translation;
+                print OUTPUT;
+
+                my $non_translated_line = $_;
+
+                for my $lang (sort keys %po_files_by_lang)
+                {
+                    my $translation = $translations{$lang, $string};
+                    next if !$translation;
+
+                    $_ = $non_translated_line;
+                    s/(\w+)=.*/[$lang]$1=$translation/;
+                    print OUTPUT;
+                }
+            }
+            else
+            {
+                my $non_translated_line = $_;
+                my $translation = $translations{$lang, $string};
+                $translation = $string if !$translation;
 
                 $_ = $non_translated_line;
-		s/(\w+)=.*/[$lang]$1=$translation/;
+                s/(\w+)=.*/$1=$translation/;
                 print OUTPUT;
             }
-	} 
-        else 
+        }
+        else
         {
             print OUTPUT;
         }
@@ -1061,6 +1148,24 @@ sub keys_merge_translations
 
     close OUTPUT;
     close INPUT;
+
+    print "CREATED $lang/$OUTFILE\n" unless $QUIET_ARG;
+}
+
+sub keys_merge_translations
+{
+    if ($MULTIPLE_OUTPUT)
+    {
+        for my $lang (sort keys %po_files_by_lang)
+        {
+            keys_merge_translation ($lang);
+        }
+        keys_merge_translation ("C");
+    }
+    else
+    {
+        keys_merge_translation (".");
+    }
 }
 
 sub desktop_merge_translations
@@ -1071,7 +1176,7 @@ sub desktop_merge_translations
 
     while (<INPUT>) 
     {
-        if (s/^(\s*)_(\w+=(.*))/$1$2/)  
+        if (s/^(\s*)_([A-Za-z0-9\-]+=(.*))/$1$2/)  
         {
 	    my $string = $3;
 
@@ -1354,3 +1459,42 @@ sub rfc822deb_split
     return @list;
 }
 
+sub quoted_translation
+{
+    my ($xml_mode, $lang, $string) = @_;
+
+    $string = entity_decode($string) if $xml_mode;
+    $string =~ s/\\\"/\"/g;
+
+    my $translation = $translations{$lang, $string};
+    $translation = $string if !$translation;
+    $translation = entity_encode($translation) if $xml_mode;
+    $translation =~ s/\"/\\\"/g;
+    return $translation
+}
+
+sub quoted_merge_translations
+{
+    my ($xml_mode) = @_;
+
+    if (!$MULTIPLE_OUTPUT) {
+        print "Quoted only supports Multiple Output.\n";
+        exit(1);
+    }
+
+    for my $lang (sort keys %po_files_by_lang) {
+        if ( ! -d $lang ) {
+            mkdir $lang or -d $lang or die "Cannot create subdirectory $lang: $!\n";
+        }
+        open INPUT, "<${FILE}" or die;
+        open OUTPUT, ">$lang/$OUTFILE" or die "Cannot open $lang/$OUTFILE: $!\n";
+        binmode (OUTPUT) if $^O eq 'MSWin32';
+        while (<INPUT>) 
+        {
+            s/\"(([^\"]|\\\")*[^\\\"])\"/"\"" . &quoted_translation($xml_mode, $lang, $1) . "\""/ge;
+            print OUTPUT;
+        }
+        close OUTPUT;
+        close INPUT;
+    }
+}

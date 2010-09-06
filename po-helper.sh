@@ -1,1 +1,0 @@
-BST_GETTEXT_DOMAIN=beast-v0.7.2

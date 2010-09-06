@@ -53,7 +53,11 @@ CLEANFILES += beast-audio-x-bse.png
 EXTRA_DIST += $(sharedpixmaps_DATA)
 
 # generate and install .desktop file
-@INTLTOOL_DESKTOP_RULE@
+# FIXME: INTLTOOL_DESKTOP_RULE
+%.desktop: %.desktop.in
+	$(INTLTOOL_MERGE) $(wildcard $(top_srcdir)/po/*.po) ; \
+	LC_ALL=C $(INTLTOOL_MERGE) -d -u -c $(top_builddir)/po/.intltool-merge-cache \
+			$(top_srcdir)/po $< $@
 dotdesktopdir = $(datadir)/applications
 dotdesktop_in_files = beast.desktop.in
 dotdesktop_DATA = $(dotdesktop_in_files:.desktop.in=.desktop)
@@ -62,7 +66,11 @@ CLEANFILES += beast.desktop
 EXTRA_DIST += $(dotdesktop_in_files)
 
 # generate and install .xml mime info file
-@INTLTOOL_XML_RULE@
+# FIXME: INTLTOOL_XML_RULE
+%.xml: %.xml.in
+	$(INTLTOOL_MERGE) $(wildcard $(top_srcdir)/po/*.po) ; \
+	LC_ALL=C $(INTLTOOL_MERGE) -x -u -c $(top_builddir)/po/.intltool-merge-cache \
+		$(top_srcdir)/po $< $@
 sharedmimedir = $(datadir)/mime
 sharedmimepackagedir = $(sharedmimedir)/packages
 sharedmimepackage_in_files = beast.xml.in
@@ -72,7 +80,11 @@ beast.xml: beast.xml.in
 EXTRA_DIST += $(sharedmimepackage_in_files)
 
 # generate and install .mime and .keys files
-@INTLTOOL_KEYS_RULE@
+# FIXME: INTLTOOL_KEYS_RULE
+%.keys: %.keys.in
+	$(INTLTOOL_MERGE) $(wildcard $(top_srcdir)/po/*.po) ; \
+	LC_ALL=C $(INTLTOOL_MERGE) -k -u -c $(top_builddir)/po/.intltool-merge-cache \
+		$(top_srcdir)/po $< $@
 mimedir = $(datadir)/mime-info
 mime_in_file = bse.keys.in bse.mime
 mime_DATA = $(mime_in_file:.keys.in=.keys)

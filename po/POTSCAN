@@ -1,11 +1,11 @@
-# List of source files containing translatable strings.
-# Please keep this file sorted alphabetically
-[type: gettext/scm-funcs] library/scripts/mixer-splitup-by-track.scm
-[type: gettext/scm-funcs] library/scripts/modules2grid.scm
-[type: gettext/scm-funcs] library/scripts/part-harmonic-transposer.scm
-[type: gettext/scm-funcs] library/scripts/progressor-example.scm
-[type: gettext/scm-funcs] library/scripts/record-midi.scm
-[type: gettext/scm-funcs] library/scripts/song-parts-operations.scm
+#0 List of source files to scan for translatable strings
+#0 Please keep alphabetically sorted
+library/scripts/mixer-splitup-by-track.scm
+library/scripts/modules2grid.scm
+library/scripts/part-harmonic-transposer.scm
+library/scripts/progressor-example.scm
+library/scripts/record-midi.scm
+library/scripts/song-parts-operations.scm
 beast-gtk/bstapp.c
 beast-gtk/bstauxdialogs.c
 beast-gtk/bstbuseditor.c

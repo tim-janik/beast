@@ -9,7 +9,8 @@ SUBDIRS = . data birnet sfi bse plugins shell beast-gtk launchers library tools 
 noinst_DATA =
 
 # require automake 1.9
-AUTOMAKE_OPTIONS = 1.9 dist-bzip2 no-dist-gzip
+AUTOMAKE_OPTIONS = 1.9 dist-bzip2 no-dist-gzip -Wno-portability
+ACLOCAL_AMFLAGS = -I autotools
 
 site site-preview site-update site-update-all site-update-pages site-update-galleries:
 	@$(MAKE) -C web/ $(AM_MAKEFLAGS) $@
@@ -18,20 +19,13 @@ site site-preview site-update site-update-all site-update-pages site-update-gall
 configure: birnet/acbirnet.m4 birnet/configure.inc
 
 CLEANFILES += $(strip		\
-	intltool-extract	\
-	intltool-merge		\
-	intltool-update		\
 )
 
 EXTRA_DIST += $(strip		\
 	TODO			\
 	COPYING.GPL		\
 	COPYING.LGPL		\
-	po-helper.sh.in		\
 	topconfig.h		\
-	intltool-extract.in     \
-	intltool-merge.in       \
-	intltool-update.in	\
 )
 
 # check: message

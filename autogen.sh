@@ -12,7 +12,6 @@ AUTOCONF=autoconf
 AUTOCONF_POSTFIX=2.50
 AUTOCONF_VERSION=2.57
 AUTOHEADER=autoheader
-GLIB_GETTEXTIZE=glib-gettextize
 LIBTOOLIZE=libtoolize
 LIBTOOLIZE_VERSION=1.5.0
 CONFIGURE_OPTIONS=
@@ -92,13 +91,6 @@ else
 	DIE=1
 fi
 
-# check for gettextize
-$GLIB_GETTEXTIZE --version >/dev/null 2>&1 || {
-	echo "You need to have $GLIB_GETTEXTIZE installed to compile $PROJECT."
-	echo "Get the source tarball at http://www.gtk.org/download/"
-	DIE=1
-}
-
 # check for libtool
 check_version "`$LIBTOOLIZE --version 2>/dev/null | sed 1q`" $LIBTOOLIZE_VERSION || {
 	echo "You need to have $LIBTOOLIZE (version >= $LIBTOOLIZE_VERSION) installed to compile $PROJECT."
@@ -142,18 +134,6 @@ rm -rf autom4te.cache/
 
 echo "Running: $LIBTOOLIZE"
 $LIBTOOLIZE --force || exit $?
-
-echo "Running: $GLIB_GETTEXTIZE"
-echo "no" | $GLIB_GETTEXTIZE --force || exit $?
-
-
-echo "Providing our own patched intltool..."
-# echo "Running: intltoolize"
-# intltoolize --force --copy || exit $?
-# echo "Patching intltool for SCM and custom Makefile rules"
-# patch -p0 -b <po/intltool-scm-35.diff || exit $?
-echo "Overriding gettext po/Makefile.in.in with intltool version"
-rm -f po/Makefile.in.in && cp -v po/Makefile.intltool po/Makefile.in.in || exit $?
 
 echo "Running: $ACLOCAL $ACLOCAL_FLAGS"
 $ACLOCAL $ACLOCAL_FLAGS	|| exit $?

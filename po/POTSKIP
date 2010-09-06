@@ -1,5 +1,5 @@
-# List of source files that should *not* be translated.
-# Please keep this file sorted alphabetically
+#0 List of source files to scan for translatable strings
+#0 Please keep alphabetically sorted
 beast-gtk/bststest.c
 plugins/bsefirfilter.c
 plugins/davguitar.c

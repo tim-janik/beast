@@ -1,8 +1,10 @@
-dnl # Birnet
-dnl # GNU Lesser General Public License version 2 or any later version.
+# Birnet
+# GNU Lesser General Public License version 2 or any later version.
 
-# include BEAST specific macros
+# include various m4 macros
 builtin(include, birnet/acbirnet.m4)dnl
+m4_include(autotools/glib-gettext.m4)
+
 
 #
 # Configure script for BEAST/BSE
@@ -162,39 +164,45 @@ AC_DEFUN([DUMMY_DEFS],
 dnl #
 dnl # Define package requirements.
 dnl #
-dnl ## include acintltool.m4 to provide IT_PROG_INTLTOOL
-builtin(include, acintltool.m4)dnl
 AC_DEFUN([AC_I18N_REQUIREMENTS],
 [
-    ALL_LINGUAS=`cat "$srcdir/po/LINGUAS" | grep -v '^#' | xargs echo -n `
-    AC_SUBST(ALL_LINGUAS)
-    AC_SUBST([CONFIG_STATUS_DEPENDENCIES], ['$(top_srcdir)/po/LINGUAS'])
+  # LINGUAS
+  ALL_LINGUAS=`cat "$srcdir/po/LINGUAS" | grep -v '^#' | xargs echo -n `
+  AC_SUBST(ALL_LINGUAS)
+  AC_SUBST([CONFIG_STATUS_DEPENDENCIES], ['$(top_srcdir)/po/LINGUAS'])
 
-    dnl # versioned BEAST gettext domain (po/)
-    BST_GETTEXT_DOMAIN=beast-v$BIN_VERSION    # version without -rcZ
-    AC_SUBST(BST_GETTEXT_DOMAIN)
-    AC_DEFINE_UNQUOTED(BST_GETTEXT_DOMAIN, "$BST_GETTEXT_DOMAIN", [Versioned BEAST gettext domain])
-    GETTEXT_PACKAGE=$BST_GETTEXT_DOMAIN
-    AC_SUBST(GETTEXT_PACKAGE)
+  # versioned BEAST gettext domain (po/)
+  BST_GETTEXT_DOMAIN=beast-v$BIN_VERSION    # version without -rcZ
+  AC_SUBST(BST_GETTEXT_DOMAIN)
+  AC_DEFINE_UNQUOTED(BST_GETTEXT_DOMAIN, "$BST_GETTEXT_DOMAIN", [Versioned BEAST gettext domain])
+  GETTEXT_PACKAGE=$BST_GETTEXT_DOMAIN
+  AC_SUBST(GETTEXT_PACKAGE)
 
-    dnl # locale directory for all domains
-    dnl # (AM_GLIB_DEFINE_LOCALEDIR() could do this if it would do AC_SUBST())
-    saved_prefix="$prefix"
-    saved_exec_prefix="$exec_prefix"
-    test "x$prefix" = xNONE && prefix=$ac_default_prefix
-    test "x$exec_prefix" = xNONE && exec_prefix=$prefix
-    if test "x$CATOBJEXT" = "x.mo" ; then
-      beastlocaledir=`eval echo "${libdir}/locale"`
-    else
-      beastlocaledir=`eval echo "${datadir}/locale"`
-    fi
-    exec_prefix="$saved_exec_prefix"
-    prefix="$saved_prefix"
-    AC_SUBST(beastlocaledir)
+  # locale directory for all domains
+  # (AM_GLIB_DEFINE_LOCALEDIR() could do this if it would do AC_SUBST())
+  saved_prefix="$prefix"		; saved_exec_prefix="$exec_prefix"
+  test "x$prefix" = xNONE && prefix="$ac_default_prefix"
+  test "x$exec_prefix" = xNONE && exec_prefix="$prefix"
+  if test "x$CATOBJEXT" = "x.mo" ; then
+    beastlocaledir=`eval echo "${libdir}/locale"`
+  else
+    beastlocaledir=`eval echo "${datadir}/locale"`
+  fi
+  exec_prefix="$saved_exec_prefix"	; prefix="$saved_prefix"
+  AC_SUBST(beastlocaledir)
 
-    dnl # do gettext checks and prepare for intltool
-    AM_GLIB_GNU_GETTEXT
-    IT_PROG_INTLTOOL
+  # check for proper gettext support
+  AM_GLIB_GNU_GETTEXT([external])
+  test -z "$ac_cv_path_XGETTEXT" && {
+    AC_MSG_ERROR(["Failed to detect gettext, required for internationalization." \
+      "GNU gettext is available from: http://www.gnu.org/software/gettext/"])
+  }
+
+  # check for gettext utilities
+  AC_PATH_PROG(ICONV, iconv, iconv)
+  AC_PATH_PROG(MSGFMT, msgfmt, msgfmt)
+  AC_PATH_PROG(MSGMERGE, msgmerge, msgmerge)
+  AC_PATH_PROG(XGETTEXT, xgettext, xgettext)
 ])
 AC_DEFUN([AC_SFI_REQUIREMENTS],
 [
@@ -623,8 +631,7 @@ library/skins/Makefile
 library/skins/images/Makefile
 tools/Makefile
 tools/scripts/Makefile
-po/Makefile.in
-po-helper.sh
+po/Makefile
 tests/Makefile
 tests/latency/Makefile
 tests/scripts/Makefile
