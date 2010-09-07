@@ -203,7 +203,8 @@ AC_DEFUN([AC_I18N_REQUIREMENTS],
   AC_PATH_PROG(MSGFMT, msgfmt, msgfmt)
   AC_PATH_PROG(MSGMERGE, msgmerge, msgmerge)
   AC_PATH_PROG(XGETTEXT, xgettext, xgettext)
-  INTLMERGE='$(abs_top_srcdir)/autotools/intltool-merge'
+  AC_SUBST(ac_aux_dir) dnl # needed to ship various intlfix scripts
+  INTLMERGE='$(top_builddir)/$(ac_aux_dir)/intltool-merge'
   AC_SUBST(INTLMERGE) dnl # AC_PATH_PROG(INTLMERGE, intltool-merge, intltool-merge)
 ])
 AC_DEFUN([AC_SFI_REQUIREMENTS],
@@ -219,7 +220,7 @@ AC_DEFUN([AC_SFI_REQUIREMENTS],
 
     AC_CHECK_FUNCS(getpwnam_r getpwnam)
     AC_CHECK_FUNCS(timegm)
-    
+
     dnl # --- toy profiler ---
     AM_CONDITIONAL(IF_TOYPROF, test x"$enable_toyprof" = xyes)
 

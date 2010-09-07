@@ -24,19 +24,19 @@ POSRC_TYPES =
 #
 POSRC_TYPES          += XML
 POSRC_XML_PATTERN     = '\.xml\(.in\)\?$$'
-POSRC_XML_FILTER      = gawk -f ./autotools/intlfix-xml.awk
+POSRC_XML_FILTER      = gawk -f $(INTLFIXDIR)/intlfix-xml.awk
 #
 POSRC_TYPES          += SCM
 POSRC_SCM_PATTERN     = '\.scm\(.in\)\?$$'
-POSRC_SCM_FILTER      = sed -f ./autotools/intlfix-scm.sed
+POSRC_SCM_FILTER      = sed -f $(INTLFIXDIR)/intlfix-scm.sed
 #
 POSRC_TYPES          += KEYS
 POSRC_KEYS_PATTERN    = '\.keys\(.in\)\?$$'
-POSRC_KEYS_FILTER     = gawk -f ./autotools/intlfix-las.awk
+POSRC_KEYS_FILTER     = gawk -f $(INTLFIXDIR)/intlfix-las.awk
 #
 POSRC_TYPES          += DESKTOP
 POSRC_DESKTOP_PATTERN = '\.desktop\(.in\)\?$$'
-POSRC_DESKTOP_FILTER  = gawk -f ./autotools/intlfix-las.awk
+POSRC_DESKTOP_FILTER  = gawk -f $(INTLFIXDIR)/intlfix-las.awk
 #
 POSRC_TYPES          += IDL
 POSRC_IDL_PATTERN     = '\.idl\(.in\)\?$$'
@@ -57,7 +57,10 @@ POSRC_CCH_FILTER      =
 TRANSLATIONS = $(if ${PO_LINGUAS}, ${PO_LINGUAS}, ${ALL_LINGUAS})
 GMOFILES     = $(patsubst %, %.gmo, $(TRANSLATIONS))
 POFILES      = $(patsubst %, %.po,  $(TRANSLATIONS))
-EXTRA_DIST  += $(POFILES) messages.pot
+INTLFIXDIR   = $(top_builddir)/$(ac_aux_dir)
+EXTRA_DIST  += POTIGNORE POTSCAN POTSKIP $(POFILES) messages.pot
+EXTRA_DIST  += $(INTLFIXDIR)/intltool-merge  $(INTLFIXDIR)/intlfix-scm.sed
+EXTRA_DIST  += $(INTLFIXDIR)/intlfix-xml.awk $(INTLFIXDIR)/intlfix-las.awk
 CLEANFILES  += $(GMOFILES)
 KEYWORDS     = _ N_ U_ Q_
 TEXTFLAGS    = _:1:pass-c-format
@@ -152,7 +155,7 @@ define prepare_pot_source
 	  cat "potlist$$$$.tmp" | \
 	  while read file ; do \
 	    d=`dirname "$$file"` ; mkdir -p "$(TMPDIR)/$$d" || exit $$? ; \
-	    (cd $(top_srcdir) && $(POSRC_$(strip $(1))_FILTER) "$$file") > "$(TMPDIR)/$$file" \
+	    $(POSRC_$(strip $(1))_FILTER) $(top_srcdir)/"$$file" > "$(TMPDIR)/$$file" \
 	    || exit $$? ; \
 	  done \
 	, \
@@ -169,7 +172,7 @@ unlisted:
 	| if test -e POTSCAN   ; then grep -vFf POTSCAN   ; else cat ; fi \
 	| if test -e POTSKIP   ; then grep -vFf POTSKIP   ; else cat ; fi \
 	| if test -e POTIGNORE ; then grep -vEf POTIGNORE ; else cat ; fi \
-	> "xgen-$(@F)"
+	> "xgen-$(@F)" ; :
 	@ # scanning file types...
 	@$(foreach TYPE, $(POSRC_TYPES), \
 	  $(call test_unlisted, $(TYPE), "xgen-$(@F)", "unlisted"))
@@ -186,7 +189,7 @@ define test_unlisted
 	grep $(POSRC_$(strip $(1))_PATTERN) $(2) | \
 	  $(if $(POSRC_$(strip $(1))_FILTER), \
 	    while read file ; do \
-	      (cd $(top_srcdir) && INTLFIX=:marker: $(POSRC_$(strip $(1))_FILTER) "$$file") | \
+	      INTLFIX=:marker: $(POSRC_$(strip $(1))_FILTER $(top_srcdir)/"$$file") | \
 	      grep -q $(INLTFIXPATTERN) && echo "$$file" ; \
 	    done \
 	  , \
