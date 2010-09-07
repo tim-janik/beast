@@ -169,10 +169,8 @@ unlisted:
 	@rm -f unlisted
 	@ # list possible POT sources...
 	@(cd $(top_srcdir) && find . $(FIND_NOHIDDEN) -type f -print) | sed 's,^\./,,' \
-	| if test -e POTSCAN   ; then grep -vFf POTSCAN   ; else cat ; fi \
-	| if test -e POTSKIP   ; then grep -vFf POTSKIP   ; else cat ; fi \
-	| if test -e POTIGNORE ; then grep -vEf POTIGNORE ; else cat ; fi \
-	> "xgen-$(@F)" ; :
+	| grep -vxF -f $(srcdir)/POTSCAN -f $(srcdir)/POTSKIP \
+	| grep -vEf $(srcdir)/POTIGNORE -e '^_(inst|build)/' -e $(DISTDIRPAT) > "xgen-$(@F)" ; :
 	@ # scanning file types...
 	@$(foreach TYPE, $(POSRC_TYPES), \
 	  $(call test_unlisted, $(TYPE), "xgen-$(@F)", "unlisted"))
@@ -182,6 +180,7 @@ unlisted:
 	@if test -e unlisted ; then \
 	  echo "Found `wc -l <unlisted` untranslated files, see:"; ls -l "`pwd`/unlisted" ; \
 	else echo "Done, all files listed." ; fi
+DISTDIRPAT = '^$(PACKAGE)-$(VERSION)/' # ignore $(distdir)/*
 FIND_NOHIDDEN = \( -name '.?*' -prune -false -o ! -name '.?*' \) # skip .foobar dirs & files
 # (test_unlisted, POSRC_TYPE, INFILE, OUTFILE)
 define test_unlisted
