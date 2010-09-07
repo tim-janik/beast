@@ -72,7 +72,7 @@ costly-distcheck-tests:
 	@case "$(BEAST_BUILD)" in *:distcheck-tests:*) $(MAKE) report ;; esac
 .PHONY: costly-distcheck-tests
 
-# remove non-distributed po files from distributed POTFILES.in
+# remove non-distributed po files from distributed po/POTSCAN
 dist-hook:
-	sed 's,^\(drivers/\),# \1,' < $(distdir)/po/POTFILES.in > $(distdir)/po/POTFILES.tmp
-	mv -f $(distdir)/po/POTFILES.tmp $(distdir)/po/POTFILES.in
+	sed 's,^\(drivers/\),# \1,' < $(distdir)/po/POTSCAN > $(distdir)/po/POTSCAN.tmp
+	mv -f $(distdir)/po/POTSCAN.tmp $(distdir)/po/POTSCAN
