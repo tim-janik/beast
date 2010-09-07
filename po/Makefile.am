@@ -198,3 +198,6 @@ define test_unlisted
 endef # GNU Make needs an explicit last newline
 .PHONY: unlisted
 CLEANFILES += unlisted
+
+# clean INTLMERGE leftovers
+CLEANFILES += intlmerge.tmpcache
