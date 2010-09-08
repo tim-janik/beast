@@ -188,8 +188,8 @@ define test_unlisted
 	grep $(POSRC_$(strip $(1))_PATTERN) $(2) | \
 	  $(if $(POSRC_$(strip $(1))_FILTER), \
 	    while read file ; do \
-	      INTLFIX=:marker: $(POSRC_$(strip $(1))_FILTER $(top_srcdir)/"$$file") | \
-	      grep -q $(INLTFIXPATTERN) && echo "$$file" ; \
+	       $(POSRC_$(strip $(1))_FILTER) $(top_srcdir)/"$$file" | \
+	       grep -q $(INLTFIXPATTERN) && echo "$$file" ; \
 	    done \
 	  , \
 	    (cd $(top_srcdir) && xargs grep -l $(I18NPATTERN) ) \

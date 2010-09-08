@@ -1,8 +1,6 @@
 
 # AWK file to extract translatable strings from single line assignments
 
-BEGIN { MARKER = ""; if (ENVIRON["INTLFIX"] ~ /:marker:/) MARKER = "__INTLFIX__: "; }
-
 /^#/ { print "// " substr ($0, 2) ; next }
 
 /^[[:space:]]*_([^=]*)=/ {
@@ -11,7 +9,7 @@ BEGIN { MARKER = ""; if (ENVIRON["INTLFIX"] ~ /:marker:/) MARKER = "__INTLFIX__:
     sub (/[[:space:]]*_/, "", name)
     sub (/^[^=]*=/, "", value)
     gsub ("[\\\"]", "\\" "\\&", value)
-    print MARKER " /*" name "*/_(\"" value "\");"
+    print "__INTLFIX__: /*" name "*/_(\"" value "\");"
     next
 }
 

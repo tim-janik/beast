@@ -7,7 +7,6 @@
 # - xmlparse.awk:   	Copyright (C) 2001 Steve Coile
 
 BEGIN {
-  MARKER = ""; if (ENVIRON["INTLFIX"] ~ /:marker:/) MARKER = "__INTLFIX__:";
   OLINE = 1
   TAG = ""
   while (getXMLEVENT(ARGV[1])) {
@@ -20,7 +19,7 @@ BEGIN {
 	if ($i ~ /^_[^_]/) {
 	  aname = $i; avalue = XMLATTR[$i]
 	  sub ("^_", "", aname); gsub ("[\\\"]", "\\" "\\&", avalue)
-          printf ("%s /*%s=*/_(\"%s\"); ", MARKER, aname, avalue)
+          printf ("__INTLFIX__: /*%s=*/_(\"%s\"); ", aname, avalue)
 	}
       }
       #print ""
@@ -32,7 +31,7 @@ BEGIN {
       gsub ("[\\\"]", "\\" "\\&", XMLNAME) # escape string quotes
       gsub (/\n/, "\\n\"\n\"", XMLNAME)    # escape newlines
       sub ("^_", "", TAG)
-      ostring = sprintf ("%s /*<%s/>*/_(\"%s\");\n", MARKER, TAG, XMLNAME);
+      ostring = sprintf ("__INTLFIX__: /*<%s/>*/_(\"%s\");\n", TAG, XMLNAME);
       printf ("__XML_LINE__%-3d: %s", OLINE, ostring); gsub (/[^\n]/, "", ostring); OLINE += length (ostring)
     } else if (XMLEVENT == "ENDELEM") {
       printf ("</>")
