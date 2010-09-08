@@ -64,12 +64,19 @@ clean_filter = $(strip		\
 #distcleancheck_listfiles     = find . -type f -print	# original automake-1.11 setting
 distcleancheck_listfiles      = find . -type f $(patsubst ./%, ! -path \*/%, $(clean_filter)) -print
 
-# run 'make report' after installcheck from distcheck
+# (test_option, INPUTSTRING, YESOPT, [NOOPT]) :- true if YESOPT is present
+test_option = test `echo ":$(strip $(1)):" | sed 's/.*:$(strip $(2))://g' | wc -c` -lt \
+      `echo ":$(strip $(1)):" | sed 's/.*:$(or $(strip $(3)), no-$(strip $(2)))://g' | wc -c`
+
+# by default, run 'make report' after installcheck from inside distcheck
 DISTCHECK_CONFIGURE_FLAGS = --enable-distcheck-tests
 INSTALLCHECK_HOOK = installcheck # use indirection to emulate installcheck-hook
 $(INSTALLCHECK_HOOK): costly-distcheck-tests
+# --enable-distcheck-tests causes BEAST_BUILD_DEFAULTS=distcheck-tests which can
+# be overridden by the user with BEAST_BUILD=no-distcheck-tests
 costly-distcheck-tests:
-	@case "$(BEAST_BUILD)" in *:distcheck-tests:*) $(MAKE) report ;; esac
+	@! $(call test_option, $(BEAST_BUILD_DEFAULTS):$(BEAST_BUILD), distcheck-tests) \
+	|| $(MAKE) report
 .PHONY: costly-distcheck-tests
 
 # remove non-distributed po files from distributed po/POTSCAN

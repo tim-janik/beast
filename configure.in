@@ -91,10 +91,10 @@ AC_ARG_ENABLE(distcheck-tests, [  --enable-distcheck-tests       turn on resourc
 AC_ARG_WITH(doxer,             [  --with-doxer=[no/yes]          build documentation with doxer documentation tool], [DOXRULE=''], [DOXRULE='#'])
 AC_SUBST(DOXRULE)
 
-# BEAST_BUILD configuration
-BEAST_BUILD="$BEAST_BUILD"
-test "$enable_distcheck_tests" = yes && BEAST_BUILD=":distcheck-tests:$BEAST_BUILD"
-AC_SUBST(BEAST_BUILD)
+# set BEAST_BUILD_DEFAULTS from configure's BEAST_BUILD env
+BEAST_BUILD_DEFAULTS="$BEAST_BUILD_DEFAULTS"
+test "$enable_distcheck_tests" = yes && BEAST_BUILD_DEFAULTS="$BEAST_BUILD_DEFAULTS:distcheck-tests:"
+AC_SUBST(BEAST_BUILD_DEFAULTS)
 
 dnl # setup DEBUG defaults
 if test "x$enable_debug" = "xyes"; then
