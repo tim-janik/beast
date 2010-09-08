@@ -679,6 +679,8 @@ pattern_column_layouter_apply (GtkWidget *dialog)
     }
 }
 
+#define __(str)         str /* leave string unstranslated */
+
 void
 bst_pattern_column_layouter_popup (BstPatternView *pview)
 {
@@ -686,49 +688,35 @@ bst_pattern_column_layouter_popup (BstPatternView *pview)
     N_("The pattern editor column layout is specified by listing column types "
        "with possible modifiers in display order."), "\n\n",
     N_("COLUMN TYPES:"), "\n",
-    /* !!! LEAVE UNTRANSLATED !!! */
-    N_("note-1, note-2, ..."), "\n",
+    __("note-1, note-2, ..."), "\n",
     N_("  display notes of the first, second, ... channel"), "\n",
-    /* !!! LEAVE UNTRANSLATED !!! */
-    N_("offset-1, length-2, velocity-3, ..."), "\n",
+    __("offset-1, length-2, velocity-3, ..."), "\n",
     N_("  display offset, length or velocity of notes in the first, second, ... channel"), "\n",
-    /* !!! LEAVE UNTRANSLATED !!! */
-    N_("control-0, ..., control-63, cc-0, cc-31"), "\n",
+    __("control-0, ..., control-63, cc-0, cc-31"), "\n",
     N_("  select various event types (controls, continuous controllers)"), "\n",
-    /* !!! LEAVE UNTRANSLATED !!! */
-    N_("bar, |"), "\n",
+    __("bar, |"), "\n",
     N_("  display solid vertical bar"), "\n",
-    /* !!! LEAVE UNTRANSLATED !!! */
-    N_("dbar, :"), "\n",
+    __("dbar, :"), "\n",
     N_("  display dotted vertical bar"), "\n",
-    /* !!! LEAVE UNTRANSLATED !!! */
-    N_("space, _"), "\n",
+    __("space, _"), "\n",
     N_("  insert vertical space"), "\n\n",
     N_("EVENTS:"), "\n",
-    /* !!! LEAVE UNTRANSLATED !!! */
-    N_("  balance, volume, cc-8, ..."), "\n\n",
+    __("  balance, volume, cc-8, ..."), "\n\n",
     N_("MODIFIERS:"), "\n",
-    /* !!! LEAVE UNTRANSLATED !!! */
-    N_("hex2, hex4"), "\n",
+    __("hex2, hex4"), "\n",
     N_("  display 2 (00..FF) or 4 (0000..FFFF) digit hex numbers"), "\n",
-    /* !!! LEAVE UNTRANSLATED !!! */
-    N_("shex2, shex4"), "\n",
+    __("shex2, shex4"), "\n",
     N_("  display 2 (-FF..+FF) or 4 (-FFFF..+FFFF) digit signed hex numbers"), "\n",
-    /* !!! LEAVE UNTRANSLATED !!! */
-    N_("dec2, dec3"), "\n",
+    __("dec2, dec3"), "\n",
     N_("  display 2 (00..99) or 3 (000..999) digit decimal numbers"), "\n",
-    /* !!! LEAVE UNTRANSLATED !!! */
-    N_("sdec2, sdec3"), "\n",
+    __("sdec2, sdec3"), "\n",
     N_("  display 2 (-99..+99) or 3 (-999..+999) digit signed decimal numbers"), "\n",
-    /* !!! LEAVE UNTRANSLATED !!! */
-    N_("col1, col2, col3"), "\n",
+    __("col1, col2, col3"), "\n",
     N_("  selects one of 3 predefined colors"), "\n",
-    /* !!! LEAVE UNTRANSLATED !!! */
-    N_("lfold, rfold"), "\n",
+    __("lfold, rfold"), "\n",
     N_("  allow folding the column into left/right neighbour"), "\n",
     N_("EXAMPLE:"), "\n",
-    /* !!! LEAVE UNTRANSLATED !!! */
-    N_("note-1 | velocity-1=hex2 | note-2 | volume=hex4"), "\n",
+    __("note-1 | velocity-1=hex2 | note-2 | volume=hex4"), "\n",
   };
   GtkWidget *dialog = g_object_get_data (pview, "BstPattern-layouter");
   GtkEntry *entry;
@@ -744,13 +732,16 @@ bst_pattern_column_layouter_popup (BstPatternView *pview)
       gxk_scroll_text_clear (sctext);
       for (i = 0; i < G_N_ELEMENTS (help_text); i++)
         {
-          const gchar *tx = help_text[i], *p = tx;
+          const gchar *hx = help_text[i], *p = hx;
           while (*p == ' ')
             p++;
-          if (p > tx)
+          if (p > hx)
             gxk_scroll_text_push_indent (sctext);
-          gxk_scroll_text_append (sctext, p);
-          if (p > tx)
+          const char *tx = _(hx);
+          while (*tx == ' ')
+            tx++;
+          gxk_scroll_text_append (sctext, tx);
+          if (p > hx)
             gxk_scroll_text_pop_indent (sctext);
         }
       g_signal_connect (gxk_radget_find (dialog, "cancel-button"), "clicked",
