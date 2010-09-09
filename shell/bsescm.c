@@ -302,8 +302,8 @@ shell_parse_args (gint    *argc_p,
           g_print ("Compiled for: %s\n", BST_ARCH_NAME);
           g_print ("BSESCM comes with ABSOLUTELY NO WARRANTY.\n");
           g_print ("You may redistribute copies of BSESCM under the terms of\n");
-          g_print ("the GNU General Public License which can be found in the\n");
-          g_print ("BEAST source package. Sources, examples and contact\n");
+          g_print ("the GNU Lesser General Public License which can be found in\n");
+          g_print ("the BEAST source package. Sources, examples and contact\n");
           g_print ("information are available at http://beast.gtk.org/.\n");
           exit (0);
         }
