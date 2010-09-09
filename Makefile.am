@@ -20,8 +20,6 @@ configure: birnet/acbirnet.m4 birnet/configure.inc
 
 EXTRA_DIST += $(strip		\
 	TODO			\
-	COPYING.GPL		\
-	COPYING.LGPL		\
 	topconfig.h		\
 )
 
