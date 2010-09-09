@@ -23,7 +23,7 @@ namespace Arts {
 class Compressor : Effect {
   Info    icon       = "icons/compressor.png";
   Info    authors    = "Matthias Kretz, Stefan Westerfeld";
-  Info    license    = _("GNU General Public License");
+  Info    license    = _("GNU Lesser General Public License");
   Info    category   = _("/Enhance/ArtsCompressor");
   Info    blurb      = _("ArtsCompressor compresses the sound.\n\n"
                          "Compression is a dynamic operation that consists of two parts:\n"
