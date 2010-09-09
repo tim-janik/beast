@@ -263,7 +263,7 @@ wavetool_print_version (void)
   g_print ("Refer to beast --version for more version information.\n");
   g_print ("bsewavetool comes with ABSOLUTELY NO WARRANTY.\n");
   g_print ("You may redistribute copies of bsewavetool under the terms\n");
-  g_print ("of the GNU General Public License which can be found in\n");
+  g_print ("of the GNU Lesser General Public License which can be found in\n");
   g_print ("the BEAST source package. Sources, examples and contact\n");
   g_print ("information are available at http://beast.gtk.org/.\n");
 }
