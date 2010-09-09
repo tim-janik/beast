@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-09-06 23:59+0200\n"
+"POT-Creation-Date: 2010-09-09 04:06+0200\n"
 "PO-Revision-Date: 2004-02-27 22:42+0100\n"
 "Last-Translator: Danilo Šegan <danilo@prevod.org>\n"
 "Language-Team: Serbian (sr) <serbiangnome-lista@nongnu.org>\n"
@@ -30,39 +30,34 @@ msgid ""
 "Available PCM drivers:\n"
 msgstr "_Sintetizatori"
 
-#: beast-gtk/bstpatterncolumns.c:728
+#: beast-gtk/bstpatterncolumns.c:717
 msgid "  allow folding the column into left/right neighbour"
 msgstr "  dozvoli zaklapanje kolone sa levim/desnim susedom"
 
-#. !!! LEAVE UNTRANSLATED !!!
-#: beast-gtk/bstpatterncolumns.c:709
-msgid "  balance, volume, cc-8, ..."
-msgstr "  balance, volume, cc-8, ..."
-
-#: beast-gtk/bstpatterncolumns.c:722
+#: beast-gtk/bstpatterncolumns.c:713
 msgid "  display 2 (-99..+99) or 3 (-999..+999) digit signed decimal numbers"
 msgstr ""
 "  prikaži 2- (-99..+99) ili 3- (-999..+999) cifrene označene dekadne brojeve"
 
-#: beast-gtk/bstpatterncolumns.c:716
+#: beast-gtk/bstpatterncolumns.c:709
 msgid "  display 2 (-FF..+FF) or 4 (-FFFF..+FFFF) digit signed hex numbers"
 msgstr ""
 "  prikaži 2- (-FF..+FF) ili 4- (-FFFF..+FFFF) cifrene označene heksadekadne "
 "brojeve"
 
-#: beast-gtk/bstpatterncolumns.c:719
+#: beast-gtk/bstpatterncolumns.c:711
 msgid "  display 2 (00..99) or 3 (000..999) digit decimal numbers"
 msgstr "  prikaži 2- (00..99) ili 3- (000..999) cifrene dekadne brojeve"
 
-#: beast-gtk/bstpatterncolumns.c:713
+#: beast-gtk/bstpatterncolumns.c:707
 msgid "  display 2 (00..FF) or 4 (0000..FFFF) digit hex numbers"
 msgstr "  prikaži 2- (00..FF) ili 4- (0000..FFFF) cifrene heksadekadne brojeve"
 
-#: beast-gtk/bstpatterncolumns.c:703
+#: beast-gtk/bstpatterncolumns.c:700
 msgid "  display dotted vertical bar"
 msgstr "  prikaži istačkanu uspravnu traku"
 
-#: beast-gtk/bstpatterncolumns.c:691
+#: beast-gtk/bstpatterncolumns.c:692
 msgid "  display notes of the first, second, ... channel"
 msgstr "  prikaži note prvog, drugog,... kanala"
 
@@ -72,19 +67,19 @@ msgid ""
 "channel"
 msgstr "  prikaži pomeraj, dužinu ili brzinu nota u prvom, drugom,... kanalu"
 
-#: beast-gtk/bstpatterncolumns.c:700
+#: beast-gtk/bstpatterncolumns.c:698
 msgid "  display solid vertical bar"
 msgstr "  prikaži punu uspravnu traku"
 
-#: beast-gtk/bstpatterncolumns.c:706
+#: beast-gtk/bstpatterncolumns.c:702
 msgid "  insert vertical space"
 msgstr "  umetni uspravni razmak"
 
-#: beast-gtk/bstpatterncolumns.c:697
+#: beast-gtk/bstpatterncolumns.c:696
 msgid "  select various event types (controls, continuous controllers)"
 msgstr "  izaberi razne vrste događaja (upravljanje, neprekidni upravljači)"
 
-#: beast-gtk/bstpatterncolumns.c:725
+#: beast-gtk/bstpatterncolumns.c:715
 msgid "  selects one of 3 predefined colors"
 msgstr "  izabira jednu od 3 pretpostavljene boje"
 
@@ -214,7 +209,7 @@ msgstr ""
 msgid "/Routing/Amplifier"
 msgstr "/Usmeravanje/Pojačivač"
 
-#: plugins/bsecontribsampleandhold.idl:25
+#: plugins/bsecontribsampleandhold.idl:24
 #, fuzzy
 msgid "/Routing/Sample and Hold"
 msgstr "/Usmeravanje/Pojačivač"
@@ -925,7 +920,7 @@ msgstr "Primeni izmene podešavanja u izgledu uređivača obrazaca"
 msgid "Array of column types"
 msgstr "Niz vrsta kolona"
 
-#: plugins/bsecontribsampleandhold.idl:23
+#: plugins/bsecontribsampleandhold.idl:22
 msgid "Artem Popov"
 msgstr ""
 
@@ -1006,7 +1001,7 @@ msgid "Audio Gate"
 msgstr "Izlaz zvuka"
 
 #: bse/bsebiquadfilter.c:188 plugins/bseatandistort.c:88
-#: plugins/bsecontribsampleandhold.idl:27 plugins/bseiirfilter.c:162
+#: plugins/bsecontribsampleandhold.idl:26 plugins/bseiirfilter.c:162
 #: plugins/davbassfilter.idl:31 plugins/davchorus.idl:28
 #: plugins/standardguspatchenvelope.idl:45
 msgid "Audio In"
@@ -1038,7 +1033,7 @@ msgid "Audio In4"
 msgstr "Ulaz zvuka4"
 
 #: plugins/bseamplifier.idl:48 plugins/bsebalance.idl:41
-#: plugins/bsecontribsampleandhold.idl:27
+#: plugins/bsecontribsampleandhold.idl:26
 msgid "Audio Input"
 msgstr "Ulaz zvuka"
 
@@ -1070,7 +1065,7 @@ msgstr ""
 
 #: bse/bsebiquadfilter.c:196 bse/bsestandardosc.c:205 bse/bsewaveosc.c:599
 #: plugins/bseadder.c:99 plugins/bseamplifier.idl:47
-#: plugins/bseatandistort.c:90 plugins/bsecontribsampleandhold.idl:29
+#: plugins/bseatandistort.c:90 plugins/bsecontribsampleandhold.idl:28
 #: plugins/bseiirfilter.c:164 plugins/bsemixer.c:107 plugins/bsemult.c:66
 #: plugins/davbassfilter.idl:33 plugins/davchorus.idl:29
 #: plugins/davorgan.c:149 plugins/davsyndrum.c:123
@@ -1091,7 +1086,7 @@ msgstr "Izlaz zvuka"
 msgid "Audio Out2"
 msgstr "Izlaz zvuka"
 
-#: plugins/bseadder.c:99 plugins/bsecontribsampleandhold.idl:29
+#: plugins/bseadder.c:99 plugins/bsecontribsampleandhold.idl:28
 #: plugins/bsemult.c:66
 msgid "Audio Output"
 msgstr "Zvučni izlaz"
@@ -1388,7 +1383,7 @@ msgstr ""
 msgid "CODEC failure"
 msgstr ""
 
-#: beast-gtk/bstpatterncolumns.c:688
+#: beast-gtk/bstpatterncolumns.c:690
 msgid "COLUMN TYPES:"
 msgstr "VRSTE KOLONA:"
 
@@ -2515,11 +2510,11 @@ msgid ""
 "range forward accordingly."
 msgstr ""
 
-#: beast-gtk/bstpatterncolumns.c:707
+#: beast-gtk/bstpatterncolumns.c:703
 msgid "EVENTS:"
 msgstr "DOGAĐAJI:"
 
-#: beast-gtk/bstpatterncolumns.c:729
+#: beast-gtk/bstpatterncolumns.c:718
 msgid "EXAMPLE:"
 msgstr "PRIMER:"
 
@@ -3141,12 +3136,9 @@ msgstr ""
 msgid "Functions to be activated for a key binding"
 msgstr "Funkcije koje se pokreću za dodeljeni taster"
 
-#: plugins/artscompressor.idl:26 plugins/bsecontribsampleandhold.idl:24
-msgid "GNU General Public License"
-msgstr "GNU-ova opšta javna licenca (GPL)"
-
-#: bse/bsebusmodule.idl:26 plugins/bseamplifier.idl:28
-#: plugins/bsebalance.idl:24 plugins/bsenoise.idl:25
+#: bse/bsebusmodule.idl:26 plugins/artscompressor.idl:26
+#: plugins/bseamplifier.idl:28 plugins/bsebalance.idl:24
+#: plugins/bsecontribsampleandhold.idl:23 plugins/bsenoise.idl:25
 #: plugins/bsesummation.idl:24 plugins/davbassfilter.idl:25
 #: plugins/davchorus.idl:25 plugins/standardguspatchenvelope.idl:27
 msgid "GNU Lesser General Public License"
@@ -4024,7 +4016,7 @@ msgstr "Program za slaganje MIDI-ja, sastavljanje muzike i modularnu sintezu"
 msgid "MIDI input or oputput is not available."
 msgstr ""
 
-#: beast-gtk/bstpatterncolumns.c:710
+#: beast-gtk/bstpatterncolumns.c:705
 msgid "MODIFIERS:"
 msgstr "IZMENjIVAČI:"
 
@@ -4938,7 +4930,7 @@ msgid "Pattern"
 msgstr "Obrazac"
 
 #. GXK_DIALOG_MODAL
-#: beast-gtk/bstpatterncolumns.c:741
+#: beast-gtk/bstpatterncolumns.c:729
 msgid "Pattern Editor Layout"
 msgstr "Izgled uređivača obrazaca"
 
@@ -5658,7 +5650,7 @@ msgstr "Ukloni putanje"
 msgid "Sample or instrument name"
 msgstr "Sačuvaj instrument"
 
-#: plugins/bsecontribsampleandhold.idl:26
+#: plugins/bsecontribsampleandhold.idl:25
 msgid ""
 "SampleAndHold samples the input signal when triggered and holds it until "
 "triggered again."
@@ -6653,7 +6645,7 @@ msgstr ""
 msgid "The number of different steps the output signal is quantized to."
 msgstr ""
 
-#: beast-gtk/bstpatterncolumns.c:686
+#: beast-gtk/bstpatterncolumns.c:688
 msgid ""
 "The pattern editor column layout is specified by listing column types with "
 "possible modifiers in display order."
@@ -6913,12 +6905,12 @@ msgstr "Ul. prekidač"
 msgid "Trigger Hit"
 msgstr "Ul. prekidač"
 
-#: plugins/bsecontribsampleandhold.idl:28 plugins/davbassfilter.idl:32
+#: plugins/bsecontribsampleandhold.idl:27 plugins/davbassfilter.idl:32
 #: plugins/davsyndrum.c:121 plugins/davxtalstrings.c:153
 msgid "Trigger In"
 msgstr "Ul. prekidač"
 
-#: plugins/bsecontribsampleandhold.idl:28
+#: plugins/bsecontribsampleandhold.idl:27
 #, fuzzy
 msgid "Trigger Input"
 msgstr "Ul. prekidač"
@@ -7552,24 +7544,9 @@ msgstr "P_regled"
 msgid "_Virtualization"
 msgstr "_Virtuelizacija"
 
-#. !!! LEAVE UNTRANSLATED !!!
-#: beast-gtk/bstpatterncolumns.c:699
-msgid "bar, |"
-msgstr "bar, |"
-
-#. !!! LEAVE UNTRANSLATED !!!
-#: beast-gtk/bstpatterncolumns.c:724
-msgid "col1, col2, col3"
-msgstr "col1, col2, col3"
-
 #: bse/bsejanitor.c:537
 msgid "connection terminated"
 msgstr ""
-
-#. !!! LEAVE UNTRANSLATED !!!
-#: beast-gtk/bstpatterncolumns.c:696
-msgid "control-0, ..., control-63, cc-0, cc-31"
-msgstr "control-0, ..., control-63, cc-0, cc-31"
 
 #: bse/bsecore.idl:301 bse/bsecore.idl:470
 msgid "control-102"
@@ -7833,16 +7810,6 @@ msgstr "Upravljač"
 msgid "control-90"
 msgstr "Upravljač"
 
-#. !!! LEAVE UNTRANSLATED !!!
-#: beast-gtk/bstpatterncolumns.c:702
-msgid "dbar, :"
-msgstr "dbar, :"
-
-#. !!! LEAVE UNTRANSLATED !!!
-#: beast-gtk/bstpatterncolumns.c:718
-msgid "dec2, dec3"
-msgstr "dec2, dec3"
-
 #: tools/bsewavetool.cc:1219
 #, fuzzy, c-format
 msgid "failed to add wave chunk from file \"%s\": %s"
@@ -7852,53 +7819,16 @@ msgstr ""
 "zbog:\n"
 "%s"
 
-#. !!! LEAVE UNTRANSLATED !!!
-#: beast-gtk/bstpatterncolumns.c:712
-msgid "hex2, hex4"
-msgstr "hex2, hex4"
-
 #: bse/bsejanitor.c:535
 msgid "killed by janitor"
 msgstr ""
-
-#. !!! LEAVE UNTRANSLATED !!!
-#: beast-gtk/bstpatterncolumns.c:727
-msgid "lfold, rfold"
-msgstr "lfold, rfold"
-
-#. !!! LEAVE UNTRANSLATED !!!
-#: beast-gtk/bstpatterncolumns.c:731
-msgid "note-1 | velocity-1=hex2 | note-2 | volume=hex4"
-msgstr "note-1 | velocity-1=hex2 | note-2 | volume=hex4"
-
-#. !!! LEAVE UNTRANSLATED !!!
-#: beast-gtk/bstpatterncolumns.c:690
-msgid "note-1, note-2, ..."
-msgstr "note-1, note-2, ..."
-
-#. !!! LEAVE UNTRANSLATED !!!
-#: beast-gtk/bstpatterncolumns.c:693
-msgid "offset-1, length-2, velocity-3, ..."
-msgstr "offset-1, length-2, velocity-3, ..."
 
 #: beast-gtk/bstusermessage.c:578 beast-gtk/bstusermessage.c:580
 msgid "processing"
 msgstr "obrađujem"
 
-#. !!! LEAVE UNTRANSLATED !!!
-#: beast-gtk/bstpatterncolumns.c:721
-msgid "sdec2, sdec3"
-msgstr "sdec2, sdec3"
-
-#. !!! LEAVE UNTRANSLATED !!!
-#: beast-gtk/bstpatterncolumns.c:715
-msgid "shex2, shex4"
-msgstr "shex2, shex4"
-
-#. !!! LEAVE UNTRANSLATED !!!
-#: beast-gtk/bstpatterncolumns.c:705
-msgid "space, _"
-msgstr "space, _"
+#~ msgid "  balance, volume, cc-8, ..."
+#~ msgstr "  balance, volume, cc-8, ..."
 
 #~ msgid " Object Reference"
 #~ msgstr " Referenca objekta"
@@ -7988,6 +7918,9 @@ msgstr "space, _"
 
 #~ msgid "Find"
 #~ msgstr "Pronađi"
+
+#~ msgid "GNU General Public License"
+#~ msgstr "GNU-ova opšta javna licenca (GPL)"
 
 #~ msgid "Guitar Output"
 #~ msgstr "Izlaz gitare"
@@ -8128,3 +8061,42 @@ msgstr "space, _"
 
 #~ msgid "Zoom Selection"
 #~ msgstr "Uvećaj izbor"
+
+#~ msgid "bar, |"
+#~ msgstr "bar, |"
+
+#~ msgid "col1, col2, col3"
+#~ msgstr "col1, col2, col3"
+
+#~ msgid "control-0, ..., control-63, cc-0, cc-31"
+#~ msgstr "control-0, ..., control-63, cc-0, cc-31"
+
+#~ msgid "dbar, :"
+#~ msgstr "dbar, :"
+
+#~ msgid "dec2, dec3"
+#~ msgstr "dec2, dec3"
+
+#~ msgid "hex2, hex4"
+#~ msgstr "hex2, hex4"
+
+#~ msgid "lfold, rfold"
+#~ msgstr "lfold, rfold"
+
+#~ msgid "note-1 | velocity-1=hex2 | note-2 | volume=hex4"
+#~ msgstr "note-1 | velocity-1=hex2 | note-2 | volume=hex4"
+
+#~ msgid "note-1, note-2, ..."
+#~ msgstr "note-1, note-2, ..."
+
+#~ msgid "offset-1, length-2, velocity-3, ..."
+#~ msgstr "offset-1, length-2, velocity-3, ..."
+
+#~ msgid "sdec2, sdec3"
+#~ msgstr "sdec2, sdec3"
+
+#~ msgid "shex2, shex4"
+#~ msgstr "shex2, shex4"
+
+#~ msgid "space, _"
+#~ msgstr "space, _"

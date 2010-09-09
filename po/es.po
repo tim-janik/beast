@@ -13,7 +13,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast.master\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-09-06 23:59+0200\n"
+"POT-Creation-Date: 2010-09-09 04:06+0200\n"
 "PO-Revision-Date: 2010-08-24 20:42+0200\n"
 "Last-Translator: Jorge González <jorgegonz@svn.gnome.org>\n"
 "Language-Team: Español <gnome-es-list@gnome.org>\n"
@@ -39,36 +39,31 @@ msgstr ""
 "\n"
 "Controladores PCM disponibles:\n"
 
-#: beast-gtk/bstpatterncolumns.c:728
+#: beast-gtk/bstpatterncolumns.c:717
 msgid "  allow folding the column into left/right neighbour"
 msgstr "  permitir plegar la columna con el vecino de la izquierda/derecha"
 
-#. !!! LEAVE UNTRANSLATED !!!
-#: beast-gtk/bstpatterncolumns.c:709
-msgid "  balance, volume, cc-8, ..."
-msgstr "  balance, volume, cc-8, …"
-
-#: beast-gtk/bstpatterncolumns.c:722
+#: beast-gtk/bstpatterncolumns.c:713
 msgid "  display 2 (-99..+99) or 3 (-999..+999) digit signed decimal numbers"
 msgstr "  mostrar 2 (-99..+99) o 3 (-999..+999) dígitos decimales"
 
-#: beast-gtk/bstpatterncolumns.c:716
+#: beast-gtk/bstpatterncolumns.c:709
 msgid "  display 2 (-FF..+FF) or 4 (-FFFF..+FFFF) digit signed hex numbers"
 msgstr "  mostrar 2 (-FF..+FF) o 4 (-FFFF..+FFFF) dígitos hexadecimales"
 
-#: beast-gtk/bstpatterncolumns.c:719
+#: beast-gtk/bstpatterncolumns.c:711
 msgid "  display 2 (00..99) or 3 (000..999) digit decimal numbers"
 msgstr "  mostrar 2 (00..99) o 3 (000..999) dígitos decimales"
 
-#: beast-gtk/bstpatterncolumns.c:713
+#: beast-gtk/bstpatterncolumns.c:707
 msgid "  display 2 (00..FF) or 4 (0000..FFFF) digit hex numbers"
 msgstr "  mostrar 2 (00..FF) o 4 (0000..FFFF) dígitos hexadecimales"
 
-#: beast-gtk/bstpatterncolumns.c:703
+#: beast-gtk/bstpatterncolumns.c:700
 msgid "  display dotted vertical bar"
 msgstr "  mostrar una barra vertical de puntos"
 
-#: beast-gtk/bstpatterncolumns.c:691
+#: beast-gtk/bstpatterncolumns.c:692
 msgid "  display notes of the first, second, ... channel"
 msgstr "  mostrar las notas del primer, segundo, … canal"
 
@@ -80,20 +75,20 @@ msgstr ""
 "  mostrar compensación, longitud o velocidad de las notas en el primer, "
 "segundo, … canal"
 
-#: beast-gtk/bstpatterncolumns.c:700
+#: beast-gtk/bstpatterncolumns.c:698
 msgid "  display solid vertical bar"
 msgstr "  mostrar una barra vertical sólida"
 
-#: beast-gtk/bstpatterncolumns.c:706
+#: beast-gtk/bstpatterncolumns.c:702
 msgid "  insert vertical space"
 msgstr "  insertar espacio vertical"
 
-#: beast-gtk/bstpatterncolumns.c:697
+#: beast-gtk/bstpatterncolumns.c:696
 msgid "  select various event types (controls, continuous controllers)"
 msgstr ""
 "  seleccionar varios tipos de eventos (controles, controladores contínuos)"
 
-#: beast-gtk/bstpatterncolumns.c:725
+#: beast-gtk/bstpatterncolumns.c:715
 msgid "  selects one of 3 predefined colors"
 msgstr "  selecciona uno de 3 colores predefinidos"
 
@@ -211,7 +206,7 @@ msgstr ""
 msgid "/Routing/Amplifier"
 msgstr "/Encaminamiento/Amplificador"
 
-#: plugins/bsecontribsampleandhold.idl:25
+#: plugins/bsecontribsampleandhold.idl:24
 #, fuzzy
 msgid "/Routing/Sample and Hold"
 msgstr "/Encaminamiento/Amplificador"
@@ -966,7 +961,7 @@ msgstr ""
 msgid "Array of column types"
 msgstr "Formación de tipos de columnas"
 
-#: plugins/bsecontribsampleandhold.idl:23
+#: plugins/bsecontribsampleandhold.idl:22
 msgid "Artem Popov"
 msgstr ""
 
@@ -1075,7 +1070,7 @@ msgid "Audio Gate"
 msgstr "Salida de sonido"
 
 #: bse/bsebiquadfilter.c:188 plugins/bseatandistort.c:88
-#: plugins/bsecontribsampleandhold.idl:27 plugins/bseiirfilter.c:162
+#: plugins/bsecontribsampleandhold.idl:26 plugins/bseiirfilter.c:162
 #: plugins/davbassfilter.idl:31 plugins/davchorus.idl:28
 #: plugins/standardguspatchenvelope.idl:45
 msgid "Audio In"
@@ -1107,7 +1102,7 @@ msgid "Audio In4"
 msgstr "Entrada de sonido 4"
 
 #: plugins/bseamplifier.idl:48 plugins/bsebalance.idl:41
-#: plugins/bsecontribsampleandhold.idl:27
+#: plugins/bsecontribsampleandhold.idl:26
 msgid "Audio Input"
 msgstr "Entrada de sonido"
 
@@ -1137,7 +1132,7 @@ msgstr ""
 
 #: bse/bsebiquadfilter.c:196 bse/bsestandardosc.c:205 bse/bsewaveosc.c:599
 #: plugins/bseadder.c:99 plugins/bseamplifier.idl:47
-#: plugins/bseatandistort.c:90 plugins/bsecontribsampleandhold.idl:29
+#: plugins/bseatandistort.c:90 plugins/bsecontribsampleandhold.idl:28
 #: plugins/bseiirfilter.c:164 plugins/bsemixer.c:107 plugins/bsemult.c:66
 #: plugins/davbassfilter.idl:33 plugins/davchorus.idl:29
 #: plugins/davorgan.c:149 plugins/davsyndrum.c:123
@@ -1156,7 +1151,7 @@ msgstr "Salida de sonido 1"
 msgid "Audio Out2"
 msgstr "Salida de sonido 2"
 
-#: plugins/bseadder.c:99 plugins/bsecontribsampleandhold.idl:29
+#: plugins/bseadder.c:99 plugins/bsecontribsampleandhold.idl:28
 #: plugins/bsemult.c:66
 msgid "Audio Output"
 msgstr "Salida de sonido"
@@ -1447,7 +1442,7 @@ msgstr "Buses"
 msgid "CODEC failure"
 msgstr "Fallo de códec"
 
-#: beast-gtk/bstpatterncolumns.c:688
+#: beast-gtk/bstpatterncolumns.c:690
 msgid "COLUMN TYPES:"
 msgstr "TIPOS de COLUMNA:"
 
@@ -2544,11 +2539,11 @@ msgid ""
 "range forward accordingly."
 msgstr ""
 
-#: beast-gtk/bstpatterncolumns.c:707
+#: beast-gtk/bstpatterncolumns.c:703
 msgid "EVENTS:"
 msgstr "EVENTOS:"
 
-#: beast-gtk/bstpatterncolumns.c:729
+#: beast-gtk/bstpatterncolumns.c:718
 msgid "EXAMPLE:"
 msgstr "EJEMPLO:"
 
@@ -3143,12 +3138,9 @@ msgstr "Funcionalidad no implementada"
 msgid "Functions to be activated for a key binding"
 msgstr "Funciones a ser activadas para una combinación de teclas"
 
-#: plugins/artscompressor.idl:26 plugins/bsecontribsampleandhold.idl:24
-msgid "GNU General Public License"
-msgstr "GNU General Public Licence"
-
-#: bse/bsebusmodule.idl:26 plugins/bseamplifier.idl:28
-#: plugins/bsebalance.idl:24 plugins/bsenoise.idl:25
+#: bse/bsebusmodule.idl:26 plugins/artscompressor.idl:26
+#: plugins/bseamplifier.idl:28 plugins/bsebalance.idl:24
+#: plugins/bsecontribsampleandhold.idl:23 plugins/bsenoise.idl:25
 #: plugins/bsesummation.idl:24 plugins/davbassfilter.idl:25
 #: plugins/davchorus.idl:25 plugins/standardguspatchenvelope.idl:27
 msgid "GNU Lesser General Public License"
@@ -4010,7 +4002,7 @@ msgstr ""
 msgid "MIDI input or oputput is not available."
 msgstr "La entrada o salida MIDI no está disponible."
 
-#: beast-gtk/bstpatterncolumns.c:710
+#: beast-gtk/bstpatterncolumns.c:705
 msgid "MODIFIERS:"
 msgstr "MODIFICADORES:"
 
@@ -4925,7 +4917,7 @@ msgid "Pattern"
 msgstr "Patrón"
 
 #. GXK_DIALOG_MODAL
-#: beast-gtk/bstpatterncolumns.c:741
+#: beast-gtk/bstpatterncolumns.c:729
 msgid "Pattern Editor Layout"
 msgstr "Salida del editor de patrones"
 
@@ -5640,7 +5632,7 @@ msgstr "Ruta de muestras"
 msgid "Sample or instrument name"
 msgstr "Muestra o nombre del instrumento"
 
-#: plugins/bsecontribsampleandhold.idl:26
+#: plugins/bsecontribsampleandhold.idl:25
 msgid ""
 "SampleAndHold samples the input signal when triggered and holds it until "
 "triggered again."
@@ -6644,7 +6636,7 @@ msgstr ""
 msgid "The number of different steps the output signal is quantized to."
 msgstr ""
 
-#: beast-gtk/bstpatterncolumns.c:686
+#: beast-gtk/bstpatterncolumns.c:688
 msgid ""
 "The pattern editor column layout is specified by listing column types with "
 "possible modifiers in display order."
@@ -6905,12 +6897,12 @@ msgstr "Disparador"
 msgid "Trigger Hit"
 msgstr "Entrada del disparador"
 
-#: plugins/bsecontribsampleandhold.idl:28 plugins/davbassfilter.idl:32
+#: plugins/bsecontribsampleandhold.idl:27 plugins/davbassfilter.idl:32
 #: plugins/davsyndrum.c:121 plugins/davxtalstrings.c:153
 msgid "Trigger In"
 msgstr "Entrada del disparador"
 
-#: plugins/bsecontribsampleandhold.idl:28
+#: plugins/bsecontribsampleandhold.idl:27
 #, fuzzy
 msgid "Trigger Input"
 msgstr "Entrada del disparador"
@@ -7520,24 +7512,9 @@ msgstr "_Ver"
 msgid "_Virtualization"
 msgstr "_Virtualización"
 
-#. !!! LEAVE UNTRANSLATED !!!
-#: beast-gtk/bstpatterncolumns.c:699
-msgid "bar, |"
-msgstr "bar, |"
-
-#. !!! LEAVE UNTRANSLATED !!!
-#: beast-gtk/bstpatterncolumns.c:724
-msgid "col1, col2, col3"
-msgstr "col1, col2, col3"
-
 #: bse/bsejanitor.c:537
 msgid "connection terminated"
 msgstr "conexión terminada"
-
-#. !!! LEAVE UNTRANSLATED !!!
-#: beast-gtk/bstpatterncolumns.c:696
-msgid "control-0, ..., control-63, cc-0, cc-31"
-msgstr "control-0, …, control-63, cc-0, cc-31"
 
 #: bse/bsecore.idl:301 bse/bsecore.idl:470
 msgid "control-102"
@@ -7763,68 +7740,21 @@ msgstr "control-9"
 msgid "control-90"
 msgstr "control-90"
 
-#. !!! LEAVE UNTRANSLATED !!!
-#: beast-gtk/bstpatterncolumns.c:702
-msgid "dbar, :"
-msgstr "dbar, :"
-
-#. !!! LEAVE UNTRANSLATED !!!
-#: beast-gtk/bstpatterncolumns.c:718
-msgid "dec2, dec3"
-msgstr "dec2, dec3"
-
 #: tools/bsewavetool.cc:1219
 #, c-format
 msgid "failed to add wave chunk from file \"%s\": %s"
 msgstr "error al añadir partes de onda desde el archivo «%s»: %s"
 
-#. !!! LEAVE UNTRANSLATED !!!
-#: beast-gtk/bstpatterncolumns.c:712
-msgid "hex2, hex4"
-msgstr "hex2, hex4"
-
 #: bse/bsejanitor.c:535
 msgid "killed by janitor"
 msgstr "killed by janitor"
-
-#. !!! LEAVE UNTRANSLATED !!!
-#: beast-gtk/bstpatterncolumns.c:727
-msgid "lfold, rfold"
-msgstr "lfold, rfold"
-
-#. !!! LEAVE UNTRANSLATED !!!
-#: beast-gtk/bstpatterncolumns.c:731
-msgid "note-1 | velocity-1=hex2 | note-2 | volume=hex4"
-msgstr "note-1 | velocity-1=hex2 | note-2 | volume=hex4"
-
-#. !!! LEAVE UNTRANSLATED !!!
-#: beast-gtk/bstpatterncolumns.c:690
-msgid "note-1, note-2, ..."
-msgstr "note-1, note-2, …"
-
-#. !!! LEAVE UNTRANSLATED !!!
-#: beast-gtk/bstpatterncolumns.c:693
-msgid "offset-1, length-2, velocity-3, ..."
-msgstr "offset-1, length-2, velocity-3, …"
 
 #: beast-gtk/bstusermessage.c:578 beast-gtk/bstusermessage.c:580
 msgid "processing"
 msgstr "procesando"
 
-#. !!! LEAVE UNTRANSLATED !!!
-#: beast-gtk/bstpatterncolumns.c:721
-msgid "sdec2, sdec3"
-msgstr "sdec2, sdec3"
-
-#. !!! LEAVE UNTRANSLATED !!!
-#: beast-gtk/bstpatterncolumns.c:715
-msgid "shex2, shex4"
-msgstr "shex2, shex4"
-
-#. !!! LEAVE UNTRANSLATED !!!
-#: beast-gtk/bstpatterncolumns.c:705
-msgid "space, _"
-msgstr "space, _"
+#~ msgid "  balance, volume, cc-8, ..."
+#~ msgstr "  balance, volume, cc-8, …"
 
 #~ msgid " Object Reference"
 #~ msgstr " Referencia de objeto"
@@ -7884,6 +7814,9 @@ msgstr "space, _"
 #~ msgid "Fatal Error"
 #~ msgstr "Error fatal"
 
+#~ msgid "GNU General Public License"
+#~ msgstr "GNU General Public Licence"
+
 #, fuzzy
 #~ msgid "Identifier:"
 #~ msgstr "Identificador de propiedad"
@@ -7934,3 +7867,42 @@ msgstr "space, _"
 
 #~ msgid "Volume [dB] Steps"
 #~ msgstr "Volumen de pasos [dB]"
+
+#~ msgid "bar, |"
+#~ msgstr "bar, |"
+
+#~ msgid "col1, col2, col3"
+#~ msgstr "col1, col2, col3"
+
+#~ msgid "control-0, ..., control-63, cc-0, cc-31"
+#~ msgstr "control-0, …, control-63, cc-0, cc-31"
+
+#~ msgid "dbar, :"
+#~ msgstr "dbar, :"
+
+#~ msgid "dec2, dec3"
+#~ msgstr "dec2, dec3"
+
+#~ msgid "hex2, hex4"
+#~ msgstr "hex2, hex4"
+
+#~ msgid "lfold, rfold"
+#~ msgstr "lfold, rfold"
+
+#~ msgid "note-1 | velocity-1=hex2 | note-2 | volume=hex4"
+#~ msgstr "note-1 | velocity-1=hex2 | note-2 | volume=hex4"
+
+#~ msgid "note-1, note-2, ..."
+#~ msgstr "note-1, note-2, …"
+
+#~ msgid "offset-1, length-2, velocity-3, ..."
+#~ msgstr "offset-1, length-2, velocity-3, …"
+
+#~ msgid "sdec2, sdec3"
+#~ msgstr "sdec2, sdec3"
+
+#~ msgid "shex2, shex4"
+#~ msgstr "shex2, shex4"
+
+#~ msgid "space, _"
+#~ msgstr "space, _"

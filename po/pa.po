@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pa\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-09-06 23:59+0200\n"
+"POT-Creation-Date: 2010-09-09 04:06+0200\n"
 "PO-Revision-Date: 2004-10-05 19:32+0530\n"
 "Last-Translator: Amanpreet Singh Alam <aalam@redhat.com>\n"
 "Language-Team: Punjabi <fedora-trans-pa@redhat.com>\n"
@@ -30,36 +30,31 @@ msgid ""
 "Available PCM drivers:\n"
 msgstr ""
 
-#: beast-gtk/bstpatterncolumns.c:728
+#: beast-gtk/bstpatterncolumns.c:717
 msgid "  allow folding the column into left/right neighbour"
 msgstr ""
 
-#. !!! LEAVE UNTRANSLATED !!!
-#: beast-gtk/bstpatterncolumns.c:709
-msgid "  balance, volume, cc-8, ..."
-msgstr ""
-
-#: beast-gtk/bstpatterncolumns.c:722
+#: beast-gtk/bstpatterncolumns.c:713
 msgid "  display 2 (-99..+99) or 3 (-999..+999) digit signed decimal numbers"
 msgstr ""
 
-#: beast-gtk/bstpatterncolumns.c:716
+#: beast-gtk/bstpatterncolumns.c:709
 msgid "  display 2 (-FF..+FF) or 4 (-FFFF..+FFFF) digit signed hex numbers"
 msgstr ""
 
-#: beast-gtk/bstpatterncolumns.c:719
+#: beast-gtk/bstpatterncolumns.c:711
 msgid "  display 2 (00..99) or 3 (000..999) digit decimal numbers"
 msgstr ""
 
-#: beast-gtk/bstpatterncolumns.c:713
+#: beast-gtk/bstpatterncolumns.c:707
 msgid "  display 2 (00..FF) or 4 (0000..FFFF) digit hex numbers"
 msgstr ""
 
-#: beast-gtk/bstpatterncolumns.c:703
+#: beast-gtk/bstpatterncolumns.c:700
 msgid "  display dotted vertical bar"
 msgstr ""
 
-#: beast-gtk/bstpatterncolumns.c:691
+#: beast-gtk/bstpatterncolumns.c:692
 msgid "  display notes of the first, second, ... channel"
 msgstr ""
 
@@ -69,19 +64,19 @@ msgid ""
 "channel"
 msgstr ""
 
-#: beast-gtk/bstpatterncolumns.c:700
+#: beast-gtk/bstpatterncolumns.c:698
 msgid "  display solid vertical bar"
 msgstr ""
 
-#: beast-gtk/bstpatterncolumns.c:706
+#: beast-gtk/bstpatterncolumns.c:702
 msgid "  insert vertical space"
 msgstr ""
 
-#: beast-gtk/bstpatterncolumns.c:697
+#: beast-gtk/bstpatterncolumns.c:696
 msgid "  select various event types (controls, continuous controllers)"
 msgstr ""
 
-#: beast-gtk/bstpatterncolumns.c:725
+#: beast-gtk/bstpatterncolumns.c:715
 msgid "  selects one of 3 predefined colors"
 msgstr ""
 
@@ -199,7 +194,7 @@ msgstr ""
 msgid "/Routing/Amplifier"
 msgstr ""
 
-#: plugins/bsecontribsampleandhold.idl:25
+#: plugins/bsecontribsampleandhold.idl:24
 msgid "/Routing/Sample and Hold"
 msgstr ""
 
@@ -868,7 +863,7 @@ msgstr ""
 msgid "Array of column types"
 msgstr ""
 
-#: plugins/bsecontribsampleandhold.idl:23
+#: plugins/bsecontribsampleandhold.idl:22
 msgid "Artem Popov"
 msgstr ""
 
@@ -948,7 +943,7 @@ msgid "Audio Gate"
 msgstr "ਧੁਨੀ ਆਉਟਪੁੱਟ"
 
 #: bse/bsebiquadfilter.c:188 plugins/bseatandistort.c:88
-#: plugins/bsecontribsampleandhold.idl:27 plugins/bseiirfilter.c:162
+#: plugins/bsecontribsampleandhold.idl:26 plugins/bseiirfilter.c:162
 #: plugins/davbassfilter.idl:31 plugins/davchorus.idl:28
 #: plugins/standardguspatchenvelope.idl:45
 msgid "Audio In"
@@ -980,7 +975,7 @@ msgid "Audio In4"
 msgstr ""
 
 #: plugins/bseamplifier.idl:48 plugins/bsebalance.idl:41
-#: plugins/bsecontribsampleandhold.idl:27
+#: plugins/bsecontribsampleandhold.idl:26
 msgid "Audio Input"
 msgstr ""
 
@@ -1010,7 +1005,7 @@ msgstr ""
 
 #: bse/bsebiquadfilter.c:196 bse/bsestandardosc.c:205 bse/bsewaveosc.c:599
 #: plugins/bseadder.c:99 plugins/bseamplifier.idl:47
-#: plugins/bseatandistort.c:90 plugins/bsecontribsampleandhold.idl:29
+#: plugins/bseatandistort.c:90 plugins/bsecontribsampleandhold.idl:28
 #: plugins/bseiirfilter.c:164 plugins/bsemixer.c:107 plugins/bsemult.c:66
 #: plugins/davbassfilter.idl:33 plugins/davchorus.idl:29
 #: plugins/davorgan.c:149 plugins/davsyndrum.c:123
@@ -1029,7 +1024,7 @@ msgstr ""
 msgid "Audio Out2"
 msgstr ""
 
-#: plugins/bseadder.c:99 plugins/bsecontribsampleandhold.idl:29
+#: plugins/bseadder.c:99 plugins/bsecontribsampleandhold.idl:28
 #: plugins/bsemult.c:66
 msgid "Audio Output"
 msgstr ""
@@ -1294,7 +1289,7 @@ msgstr ""
 msgid "CODEC failure"
 msgstr ""
 
-#: beast-gtk/bstpatterncolumns.c:688
+#: beast-gtk/bstpatterncolumns.c:690
 msgid "COLUMN TYPES:"
 msgstr ""
 
@@ -2372,11 +2367,11 @@ msgid ""
 "range forward accordingly."
 msgstr ""
 
-#: beast-gtk/bstpatterncolumns.c:707
+#: beast-gtk/bstpatterncolumns.c:703
 msgid "EVENTS:"
 msgstr ""
 
-#: beast-gtk/bstpatterncolumns.c:729
+#: beast-gtk/bstpatterncolumns.c:718
 msgid "EXAMPLE:"
 msgstr ""
 
@@ -2936,12 +2931,9 @@ msgstr ""
 msgid "Functions to be activated for a key binding"
 msgstr ""
 
-#: plugins/artscompressor.idl:26 plugins/bsecontribsampleandhold.idl:24
-msgid "GNU General Public License"
-msgstr ""
-
-#: bse/bsebusmodule.idl:26 plugins/bseamplifier.idl:28
-#: plugins/bsebalance.idl:24 plugins/bsenoise.idl:25
+#: bse/bsebusmodule.idl:26 plugins/artscompressor.idl:26
+#: plugins/bseamplifier.idl:28 plugins/bsebalance.idl:24
+#: plugins/bsecontribsampleandhold.idl:23 plugins/bsenoise.idl:25
 #: plugins/bsesummation.idl:24 plugins/davbassfilter.idl:25
 #: plugins/davchorus.idl:25 plugins/standardguspatchenvelope.idl:27
 msgid "GNU Lesser General Public License"
@@ -3783,7 +3775,7 @@ msgstr ""
 msgid "MIDI input or oputput is not available."
 msgstr ""
 
-#: beast-gtk/bstpatterncolumns.c:710
+#: beast-gtk/bstpatterncolumns.c:705
 msgid "MODIFIERS:"
 msgstr ""
 
@@ -4662,7 +4654,7 @@ msgid "Pattern"
 msgstr ""
 
 #. GXK_DIALOG_MODAL
-#: beast-gtk/bstpatterncolumns.c:741
+#: beast-gtk/bstpatterncolumns.c:729
 msgid "Pattern Editor Layout"
 msgstr ""
 
@@ -5349,7 +5341,7 @@ msgstr "ਨਮੂਨਾ ਮਾਰਗ"
 msgid "Sample or instrument name"
 msgstr ""
 
-#: plugins/bsecontribsampleandhold.idl:26
+#: plugins/bsecontribsampleandhold.idl:25
 msgid ""
 "SampleAndHold samples the input signal when triggered and holds it until "
 "triggered again."
@@ -6290,7 +6282,7 @@ msgstr ""
 msgid "The number of different steps the output signal is quantized to."
 msgstr ""
 
-#: beast-gtk/bstpatterncolumns.c:686
+#: beast-gtk/bstpatterncolumns.c:688
 msgid ""
 "The pattern editor column layout is specified by listing column types with "
 "possible modifiers in display order."
@@ -6534,12 +6526,12 @@ msgstr ""
 msgid "Trigger Hit"
 msgstr ""
 
-#: plugins/bsecontribsampleandhold.idl:28 plugins/davbassfilter.idl:32
+#: plugins/bsecontribsampleandhold.idl:27 plugins/davbassfilter.idl:32
 #: plugins/davsyndrum.c:121 plugins/davxtalstrings.c:153
 msgid "Trigger In"
 msgstr ""
 
-#: plugins/bsecontribsampleandhold.idl:28
+#: plugins/bsecontribsampleandhold.idl:27
 msgid "Trigger Input"
 msgstr ""
 
@@ -7144,23 +7136,8 @@ msgstr ""
 msgid "_Virtualization"
 msgstr ""
 
-#. !!! LEAVE UNTRANSLATED !!!
-#: beast-gtk/bstpatterncolumns.c:699
-msgid "bar, |"
-msgstr ""
-
-#. !!! LEAVE UNTRANSLATED !!!
-#: beast-gtk/bstpatterncolumns.c:724
-msgid "col1, col2, col3"
-msgstr ""
-
 #: bse/bsejanitor.c:537
 msgid "connection terminated"
-msgstr ""
-
-#. !!! LEAVE UNTRANSLATED !!!
-#: beast-gtk/bstpatterncolumns.c:696
-msgid "control-0, ..., control-63, cc-0, cc-31"
 msgstr ""
 
 #: bse/bsecore.idl:301 bse/bsecore.idl:470
@@ -7387,67 +7364,17 @@ msgstr "ਕੰਟਰੋਲ-੯"
 msgid "control-90"
 msgstr "ਕੰਟਰੋਲ-੯੦"
 
-#. !!! LEAVE UNTRANSLATED !!!
-#: beast-gtk/bstpatterncolumns.c:702
-msgid "dbar, :"
-msgstr ""
-
-#. !!! LEAVE UNTRANSLATED !!!
-#: beast-gtk/bstpatterncolumns.c:718
-msgid "dec2, dec3"
-msgstr ""
-
 #: tools/bsewavetool.cc:1219
 #, c-format
 msgid "failed to add wave chunk from file \"%s\": %s"
-msgstr ""
-
-#. !!! LEAVE UNTRANSLATED !!!
-#: beast-gtk/bstpatterncolumns.c:712
-msgid "hex2, hex4"
 msgstr ""
 
 #: bse/bsejanitor.c:535
 msgid "killed by janitor"
 msgstr ""
 
-#. !!! LEAVE UNTRANSLATED !!!
-#: beast-gtk/bstpatterncolumns.c:727
-msgid "lfold, rfold"
-msgstr ""
-
-#. !!! LEAVE UNTRANSLATED !!!
-#: beast-gtk/bstpatterncolumns.c:731
-msgid "note-1 | velocity-1=hex2 | note-2 | volume=hex4"
-msgstr ""
-
-#. !!! LEAVE UNTRANSLATED !!!
-#: beast-gtk/bstpatterncolumns.c:690
-msgid "note-1, note-2, ..."
-msgstr ""
-
-#. !!! LEAVE UNTRANSLATED !!!
-#: beast-gtk/bstpatterncolumns.c:693
-msgid "offset-1, length-2, velocity-3, ..."
-msgstr ""
-
 #: beast-gtk/bstusermessage.c:578 beast-gtk/bstusermessage.c:580
 msgid "processing"
-msgstr ""
-
-#. !!! LEAVE UNTRANSLATED !!!
-#: beast-gtk/bstpatterncolumns.c:721
-msgid "sdec2, sdec3"
-msgstr ""
-
-#. !!! LEAVE UNTRANSLATED !!!
-#: beast-gtk/bstpatterncolumns.c:715
-msgid "shex2, shex4"
-msgstr ""
-
-#. !!! LEAVE UNTRANSLATED !!!
-#: beast-gtk/bstpatterncolumns.c:705
-msgid "space, _"
 msgstr ""
 
 #~ msgid "Mono In"

@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast.HEAD.ne\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-09-06 23:59+0200\n"
+"POT-Creation-Date: 2010-09-09 04:06+0200\n"
 "PO-Revision-Date: 2006-09-01 14:55+0545\n"
 "Last-Translator: Mahesh subedi <submanesh@hotmail.com>\n"
 "Language-Team: Nepali <info@mpp.org.np>\n"
@@ -37,38 +37,33 @@ msgstr ""
 "\n"
 "उपलब्ध PCM ड्राइभर:\n"
 
-#: beast-gtk/bstpatterncolumns.c:728
+#: beast-gtk/bstpatterncolumns.c:717
 msgid "  allow folding the column into left/right neighbour"
 msgstr "  दायाँ/बायाँ छिमेकमा स्तम्भ फोल्डिङ अनुमति दिनुहोस्"
 
-#. !!! LEAVE UNTRANSLATED !!!
-#: beast-gtk/bstpatterncolumns.c:709
-msgid "  balance, volume, cc-8, ..."
-msgstr "  मौज्दात, भोल्युम, सीसी-८, ..."
-
-#: beast-gtk/bstpatterncolumns.c:722
+#: beast-gtk/bstpatterncolumns.c:713
 msgid "  display 2 (-99..+99) or 3 (-999..+999) digit signed decimal numbers"
 msgstr "  २ (-९९..+९९) वा ३ (-९९९..+९९९) अङ्क साइन्ड दशमलव नम्बर प्रदर्शन गर्नुहोस्"
 
-#: beast-gtk/bstpatterncolumns.c:716
+#: beast-gtk/bstpatterncolumns.c:709
 msgid "  display 2 (-FF..+FF) or 4 (-FFFF..+FFFF) digit signed hex numbers"
 msgstr ""
 "  २ (-एफएफ..+एफएफ) वा ४ (-एफएफएफएफ..+एफएफएफएफ) अङ्क साइन्ड हेक्स नम्बर प्रदर्शन "
 "गर्नुहोस्"
 
-#: beast-gtk/bstpatterncolumns.c:719
+#: beast-gtk/bstpatterncolumns.c:711
 msgid "  display 2 (00..99) or 3 (000..999) digit decimal numbers"
 msgstr "  २ (००..९९) वा ३ (०००..९९९) अङ्क दशमलव नम्बरहरू प्रदर्शन गर्नुहोस्"
 
-#: beast-gtk/bstpatterncolumns.c:713
+#: beast-gtk/bstpatterncolumns.c:707
 msgid "  display 2 (00..FF) or 4 (0000..FFFF) digit hex numbers"
 msgstr "  २ (००..एफएफ) वा ४ (००००..एफएफएफएफ) अङ्क हेक्स नम्बरहरू प्रदर्शन गर्नुहोस्"
 
-#: beast-gtk/bstpatterncolumns.c:703
+#: beast-gtk/bstpatterncolumns.c:700
 msgid "  display dotted vertical bar"
 msgstr "  थोप्ला गरिएको ठाडोपट्टी प्रदर्शन गर्नुहोस्"
 
-#: beast-gtk/bstpatterncolumns.c:691
+#: beast-gtk/bstpatterncolumns.c:692
 msgid "  display notes of the first, second, ... channel"
 msgstr "  पहिलो, दोस्रो, ... च्यानलको टिप्पणी प्रदर्शन गर्नुहोस्"
 
@@ -78,19 +73,19 @@ msgid ""
 "channel"
 msgstr "अफसेट, लम्बाइ वा वेग पहिलो, दोस्रो, ... च्यानलको प्रदर्शन गर्नुहोस्"
 
-#: beast-gtk/bstpatterncolumns.c:700
+#: beast-gtk/bstpatterncolumns.c:698
 msgid "  display solid vertical bar"
 msgstr "  ठोस ठाडोपट्टी प्रदर्शन गर्नुहोस्"
 
-#: beast-gtk/bstpatterncolumns.c:706
+#: beast-gtk/bstpatterncolumns.c:702
 msgid "  insert vertical space"
 msgstr "  ठाडो खाली ठाउँ घुसाउनुहोस्"
 
-#: beast-gtk/bstpatterncolumns.c:697
+#: beast-gtk/bstpatterncolumns.c:696
 msgid "  select various event types (controls, continuous controllers)"
 msgstr "  विभिन्न घटना प्रकार चयन गर्नुहोस् (नियन्त्रण, निरन्तर नियन्त्रक)"
 
-#: beast-gtk/bstpatterncolumns.c:725
+#: beast-gtk/bstpatterncolumns.c:715
 msgid "  selects one of 3 predefined colors"
 msgstr "  ३ पूर्वपरिभाषित रङ मध्ये एउटा चयन गर्नुहोस्"
 
@@ -208,7 +203,7 @@ msgstr ""
 msgid "/Routing/Amplifier"
 msgstr "/राउटिङ/एम्प्लिफायर"
 
-#: plugins/bsecontribsampleandhold.idl:25
+#: plugins/bsecontribsampleandhold.idl:24
 #, fuzzy
 msgid "/Routing/Sample and Hold"
 msgstr "/राउटिङ/एम्प्लिफायर"
@@ -909,7 +904,7 @@ msgstr "बाँन्की सम्पादक सजावटमा कन
 msgid "Array of column types"
 msgstr "स्तम्भ प्रकारको एरे"
 
-#: plugins/bsecontribsampleandhold.idl:23
+#: plugins/bsecontribsampleandhold.idl:22
 msgid "Artem Popov"
 msgstr ""
 
@@ -1013,7 +1008,7 @@ msgid "Audio Gate"
 msgstr "अडियो निर्गत"
 
 #: bse/bsebiquadfilter.c:188 plugins/bseatandistort.c:88
-#: plugins/bsecontribsampleandhold.idl:27 plugins/bseiirfilter.c:162
+#: plugins/bsecontribsampleandhold.idl:26 plugins/bseiirfilter.c:162
 #: plugins/davbassfilter.idl:31 plugins/davchorus.idl:28
 #: plugins/standardguspatchenvelope.idl:45
 msgid "Audio In"
@@ -1045,7 +1040,7 @@ msgid "Audio In4"
 msgstr "अडियो आगत ४"
 
 #: plugins/bseamplifier.idl:48 plugins/bsebalance.idl:41
-#: plugins/bsecontribsampleandhold.idl:27
+#: plugins/bsecontribsampleandhold.idl:26
 msgid "Audio Input"
 msgstr "अडियो आगत"
 
@@ -1075,7 +1070,7 @@ msgstr ""
 
 #: bse/bsebiquadfilter.c:196 bse/bsestandardosc.c:205 bse/bsewaveosc.c:599
 #: plugins/bseadder.c:99 plugins/bseamplifier.idl:47
-#: plugins/bseatandistort.c:90 plugins/bsecontribsampleandhold.idl:29
+#: plugins/bseatandistort.c:90 plugins/bsecontribsampleandhold.idl:28
 #: plugins/bseiirfilter.c:164 plugins/bsemixer.c:107 plugins/bsemult.c:66
 #: plugins/davbassfilter.idl:33 plugins/davchorus.idl:29
 #: plugins/davorgan.c:149 plugins/davsyndrum.c:123
@@ -1094,7 +1089,7 @@ msgstr "अडियो निर्गत १"
 msgid "Audio Out2"
 msgstr "अडियो निर्गत २"
 
-#: plugins/bseadder.c:99 plugins/bsecontribsampleandhold.idl:29
+#: plugins/bseadder.c:99 plugins/bsecontribsampleandhold.idl:28
 #: plugins/bsemult.c:66
 msgid "Audio Output"
 msgstr "अडियो निर्गत"
@@ -1377,7 +1372,7 @@ msgstr "बस"
 msgid "CODEC failure"
 msgstr "कोडेक असफल"
 
-#: beast-gtk/bstpatterncolumns.c:688
+#: beast-gtk/bstpatterncolumns.c:690
 msgid "COLUMN TYPES:"
 msgstr "स्तम्भ प्रकार:"
 
@@ -2472,11 +2467,11 @@ msgid ""
 "range forward accordingly."
 msgstr ""
 
-#: beast-gtk/bstpatterncolumns.c:707
+#: beast-gtk/bstpatterncolumns.c:703
 msgid "EVENTS:"
 msgstr "घटना:"
 
-#: beast-gtk/bstpatterncolumns.c:729
+#: beast-gtk/bstpatterncolumns.c:718
 msgid "EXAMPLE:"
 msgstr "उदाहरण:"
 
@@ -3064,12 +3059,9 @@ msgstr "प्रकार्यत्मकता कार्यान्व�
 msgid "Functions to be activated for a key binding"
 msgstr "कुञ्जी बाइन्डिङ सक्रिय पार्न प्रकार्य"
 
-#: plugins/artscompressor.idl:26 plugins/bsecontribsampleandhold.idl:24
-msgid "GNU General Public License"
-msgstr "जि एन यु साधारण सार्वजनिक अनुमतिपत्र"
-
-#: bse/bsebusmodule.idl:26 plugins/bseamplifier.idl:28
-#: plugins/bsebalance.idl:24 plugins/bsenoise.idl:25
+#: bse/bsebusmodule.idl:26 plugins/artscompressor.idl:26
+#: plugins/bseamplifier.idl:28 plugins/bsebalance.idl:24
+#: plugins/bsecontribsampleandhold.idl:23 plugins/bsenoise.idl:25
 #: plugins/bsesummation.idl:24 plugins/davbassfilter.idl:25
 #: plugins/davchorus.idl:25 plugins/standardguspatchenvelope.idl:27
 msgid "GNU Lesser General Public License"
@@ -3917,7 +3909,7 @@ msgstr "मिडि ट्र्याकर, सङ्गीत रचना �
 msgid "MIDI input or oputput is not available."
 msgstr "मिडि आगत वा निर्गत उपलब्ध छैन ।"
 
-#: beast-gtk/bstpatterncolumns.c:710
+#: beast-gtk/bstpatterncolumns.c:705
 msgid "MODIFIERS:"
 msgstr "परिमार्जनकर्ता:"
 
@@ -4816,7 +4808,7 @@ msgid "Pattern"
 msgstr "बाँन्की"
 
 #. GXK_DIALOG_MODAL
-#: beast-gtk/bstpatterncolumns.c:741
+#: beast-gtk/bstpatterncolumns.c:729
 msgid "Pattern Editor Layout"
 msgstr "सम्पादक बाँन्की सजावट"
 
@@ -5520,7 +5512,7 @@ msgstr "नमूना बाटो"
 msgid "Sample or instrument name"
 msgstr "नमूना वा बाजाको नाम"
 
-#: plugins/bsecontribsampleandhold.idl:26
+#: plugins/bsecontribsampleandhold.idl:25
 msgid ""
 "SampleAndHold samples the input signal when triggered and holds it until "
 "triggered again."
@@ -6495,7 +6487,7 @@ msgstr "घटना वा द्रष्टव्य सम्पादन �
 msgid "The number of different steps the output signal is quantized to."
 msgstr ""
 
-#: beast-gtk/bstpatterncolumns.c:686
+#: beast-gtk/bstpatterncolumns.c:688
 msgid ""
 "The pattern editor column layout is specified by listing column types with "
 "possible modifiers in display order."
@@ -6749,12 +6741,12 @@ msgstr "ट्रिग्गर आगत"
 msgid "Trigger Hit"
 msgstr "ट्रिग्गर आगत"
 
-#: plugins/bsecontribsampleandhold.idl:28 plugins/davbassfilter.idl:32
+#: plugins/bsecontribsampleandhold.idl:27 plugins/davbassfilter.idl:32
 #: plugins/davsyndrum.c:121 plugins/davxtalstrings.c:153
 msgid "Trigger In"
 msgstr "ट्रिग्गर आगत"
 
-#: plugins/bsecontribsampleandhold.idl:28
+#: plugins/bsecontribsampleandhold.idl:27
 #, fuzzy
 msgid "Trigger Input"
 msgstr "ट्रिग्गर आगत"
@@ -7364,24 +7356,9 @@ msgstr "दृश्य"
 msgid "_Virtualization"
 msgstr "अवास्तविकता"
 
-#. !!! LEAVE UNTRANSLATED !!!
-#: beast-gtk/bstpatterncolumns.c:699
-msgid "bar, |"
-msgstr "पट्टी, |"
-
-#. !!! LEAVE UNTRANSLATED !!!
-#: beast-gtk/bstpatterncolumns.c:724
-msgid "col1, col2, col3"
-msgstr "स्तम्भ १, स्तम्भ २, स्तम्भ ३"
-
 #: bse/bsejanitor.c:537
 msgid "connection terminated"
 msgstr "जडान समाप्त"
-
-#. !!! LEAVE UNTRANSLATED !!!
-#: beast-gtk/bstpatterncolumns.c:696
-msgid "control-0, ..., control-63, cc-0, cc-31"
-msgstr "नियन्त्रण-०, ..., नियन्त्रण-६३, सीसी-०, सीसी-३१"
 
 #: bse/bsecore.idl:301 bse/bsecore.idl:470
 msgid "control-102"
@@ -7607,68 +7584,21 @@ msgstr "नियन्त्रण-९"
 msgid "control-90"
 msgstr "नियन्त्रण-९०"
 
-#. !!! LEAVE UNTRANSLATED !!!
-#: beast-gtk/bstpatterncolumns.c:702
-msgid "dbar, :"
-msgstr "डिपट्टी, :"
-
-#. !!! LEAVE UNTRANSLATED !!!
-#: beast-gtk/bstpatterncolumns.c:718
-msgid "dec2, dec3"
-msgstr "दशमलव २, दशमलव ३"
-
 #: tools/bsewavetool.cc:1219
 #, c-format
 msgid "failed to add wave chunk from file \"%s\": %s"
 msgstr "फाइल \"%s\"बाट वेब भाग थप गर्न असफल: %s"
 
-#. !!! LEAVE UNTRANSLATED !!!
-#: beast-gtk/bstpatterncolumns.c:712
-msgid "hex2, hex4"
-msgstr "हेक्स २, हेक्स ४"
-
 #: bse/bsejanitor.c:535
 msgid "killed by janitor"
 msgstr "ज्यानिटरद्वारा मारियो"
-
-#. !!! LEAVE UNTRANSLATED !!!
-#: beast-gtk/bstpatterncolumns.c:727
-msgid "lfold, rfold"
-msgstr "आईफोल्ड, आरफोल्ड"
-
-#. !!! LEAVE UNTRANSLATED !!!
-#: beast-gtk/bstpatterncolumns.c:731
-msgid "note-1 | velocity-1=hex2 | note-2 | volume=hex4"
-msgstr "टिप्पणी-१ | वेग-१=हेक्स २ | टिप्पणी-२ | ध्वनि=हेक्स ४"
-
-#. !!! LEAVE UNTRANSLATED !!!
-#: beast-gtk/bstpatterncolumns.c:690
-msgid "note-1, note-2, ..."
-msgstr "टिप्पणी-१, टिप्पणी-२, ..."
-
-#. !!! LEAVE UNTRANSLATED !!!
-#: beast-gtk/bstpatterncolumns.c:693
-msgid "offset-1, length-2, velocity-3, ..."
-msgstr "अफसेट-१, लम्बाइ-२, वेग-३, ..."
 
 #: beast-gtk/bstusermessage.c:578 beast-gtk/bstusermessage.c:580
 msgid "processing"
 msgstr "प्रक्रिया हुँदैछ"
 
-#. !!! LEAVE UNTRANSLATED !!!
-#: beast-gtk/bstpatterncolumns.c:721
-msgid "sdec2, sdec3"
-msgstr "एसदशमलव २, एसदशमलव ३"
-
-#. !!! LEAVE UNTRANSLATED !!!
-#: beast-gtk/bstpatterncolumns.c:715
-msgid "shex2, shex4"
-msgstr "सेह्क्स २, सेह्क्स ४"
-
-#. !!! LEAVE UNTRANSLATED !!!
-#: beast-gtk/bstpatterncolumns.c:705
-msgid "space, _"
-msgstr "खाली ठाउँ, _"
+#~ msgid "  balance, volume, cc-8, ..."
+#~ msgstr "  मौज्दात, भोल्युम, सीसी-८, ..."
 
 #~ msgid " Object Reference"
 #~ msgstr " वस्तु सान्दर्भिक"
@@ -7735,6 +7665,9 @@ msgstr "खाली ठाउँ, _"
 #, fuzzy
 #~ msgid "Find"
 #~ msgstr "खोजी गर्नुहोस्"
+
+#~ msgid "GNU General Public License"
+#~ msgstr "जि एन यु साधारण सार्वजनिक अनुमतिपत्र"
 
 #, fuzzy
 #~ msgid "Guitar Output"
@@ -7838,3 +7771,42 @@ msgstr "खाली ठाउँ, _"
 #, fuzzy
 #~ msgid "Zoom Selection"
 #~ msgstr "फाइल चयन"
+
+#~ msgid "bar, |"
+#~ msgstr "पट्टी, |"
+
+#~ msgid "col1, col2, col3"
+#~ msgstr "स्तम्भ १, स्तम्भ २, स्तम्भ ३"
+
+#~ msgid "control-0, ..., control-63, cc-0, cc-31"
+#~ msgstr "नियन्त्रण-०, ..., नियन्त्रण-६३, सीसी-०, सीसी-३१"
+
+#~ msgid "dbar, :"
+#~ msgstr "डिपट्टी, :"
+
+#~ msgid "dec2, dec3"
+#~ msgstr "दशमलव २, दशमलव ३"
+
+#~ msgid "hex2, hex4"
+#~ msgstr "हेक्स २, हेक्स ४"
+
+#~ msgid "lfold, rfold"
+#~ msgstr "आईफोल्ड, आरफोल्ड"
+
+#~ msgid "note-1 | velocity-1=hex2 | note-2 | volume=hex4"
+#~ msgstr "टिप्पणी-१ | वेग-१=हेक्स २ | टिप्पणी-२ | ध्वनि=हेक्स ४"
+
+#~ msgid "note-1, note-2, ..."
+#~ msgstr "टिप्पणी-१, टिप्पणी-२, ..."
+
+#~ msgid "offset-1, length-2, velocity-3, ..."
+#~ msgstr "अफसेट-१, लम्बाइ-२, वेग-३, ..."
+
+#~ msgid "sdec2, sdec3"
+#~ msgstr "एसदशमलव २, एसदशमलव ३"
+
+#~ msgid "shex2, shex4"
+#~ msgstr "सेह्क्स २, सेह्क्स ४"
+
+#~ msgid "space, _"
+#~ msgstr "खाली ठाउँ, _"
