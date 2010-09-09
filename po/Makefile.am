@@ -106,6 +106,31 @@ check-unlisted:
 	@echo "Check top source directory for missing translations..."
 	@$(MAKE) unlisted
 	@! test -e unlisted
+.PHONY: check-unlisted
+
+# check SCM i18n string extraction
+check-local: check-scm-strings
+.PHONY: check-scm-strings
+check-scm-strings:
+	@echo "Check po files missing translation strings..."
+	@for lang in $(TRANSLATIONS); do	\
+	  file=$$lang.po ;			\
+	  echo $(ECHO_N) "  $$lang.po: " ;	\
+	  for pattern in $(CHECK_SCM_PATS) ; do	\
+	    grep -Fq $$pattern $$file || {	\
+	      echo "$$file: misses strings from: $$pattern" ; exit 1 ; } \
+	  done ;				\
+	  echo "OK" ;				\
+	done
+CHECK_SCM_PATS=$(strip					\
+	library/scripts/mixer-splitup-by-track.scm	\
+	library/scripts/modules2grid.scm		\
+	library/scripts/part-harmonic-transposer.scm	\
+	library/scripts/progressor-example.scm		\
+	library/scripts/record-midi.scm			\
+	library/scripts/song-parts-operations.scm	\
+)
+
 
 # force regeneration of all po files
 update-po: Makefile
