@@ -833,16 +833,19 @@ beast_show_about_box (void)
     "Stefan Westerfeld",
     "Sven Herzberg",
     "Tim Janik",
-    /* plugins */
+    /* plugins & instruments */
     "\xd0\x90\xd1\x80\xd1\x82\xd0\xb5\xd0\xbc \xd0\x9f\xd0\xbe\xd0\xbf\xd0\xbe\xd0\xb2", /* "Artem Popov", */
     "David A. Bartold",
     //"Tim Janik",
     //"Stefan Westerfeld",
+    "William DeVore",
+    "Krzysztof Foltman",
     /* translations */
     "Adam Weinberger",
     "Alexandre Prokoudine",
     "Amanpreet Singh Alam",
     //"Artem Popov",
+    "Bruno Brouard",
     "Christian Neumair",
     "Christian Rose",
     "Christophe Merlet",
@@ -861,15 +864,20 @@ beast_show_about_box (void)
     // "I\xc3\261aki Larra\xc3\261aga Murgotio",
     "Ismael Andres Rubio Rojas",
     "Jens Seidel",
+    "Joe Hansen",
     "Jorge Gonzalez",
+    "Kjartan Maraas",
     "Kees van den Broek",
     "Kostas Papadimas",
     "Laurent Dhima",
+    "Leonardo Ferreira Fontenelle",
+    "Mario Blättermann",
+    "Maxim V. Dziumanenko",
     "Metin Amiroff",
     "Miloslav Trmac",
     "Moritz Mekelburger",
     "Pawan Chitrakar",
-    "Petrecca Michele",
+    "Michele Petrecca",
     "Raphael Higino",
     "Robert Sedak",
     "Satoru SATOH",
@@ -878,6 +886,7 @@ beast_show_about_box (void)
     "Vincent van Adrighem",
     "Xavier Conde Rueda",
     "Yelitza Louze",
+    "Yannig Marchegay",
     NULL
   };
   if (!GTK_WIDGET_VISIBLE (beast_splash))
