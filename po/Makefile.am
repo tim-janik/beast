@@ -52,8 +52,6 @@ POSRC_CCH_NAME	      = C/C++ Files
 POSRC_CCH_PATTERN     = '\.[hcHC][hcHC]\?\(.in\)\?$$'
 POSRC_CCH_FILTER      =
 
-# FIXME: XML awk needs to \n-escape newlines to avoid unterminated string literals
-
 TRANSLATIONS = $(if ${PO_LINGUAS}, ${PO_LINGUAS}, ${ALL_LINGUAS})
 GMOFILES     = $(patsubst %, %.gmo, $(TRANSLATIONS))
 POFILES      = $(patsubst %, %.po,  $(TRANSLATIONS))
