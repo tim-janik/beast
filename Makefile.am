@@ -44,7 +44,7 @@ release-news:
 
 # --- release-upload ---
 release-upload: ChangeLog
-	$(srcdir)/mkrelease.sh upload -U localhost:tmp -E configure.in:BSE_MICRO_VERSION
+	$(srcdir)/mkrelease.sh upload -U beast:dist/beast/ -E configure.in:BSE_MICRO_VERSION
 .PHONY: release-upload
 
 # --- dist fixes ---
