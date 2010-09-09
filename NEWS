@@ -18,7 +18,7 @@ Overview of Changes in BEAST/BSE 0.7.2:
   - FSM Growl Bass instrument [Krzysztof Foltman]
   - FSM Synth String Sweep [Krzysztof Foltman]
 * Added support for loading 32bit and 24bit PCM-format WAV files
-* Added support for gcc-4.3 and automake-1.10
+* Added support for gcc-4.4 and automake-1.10
 * Added support for guile-1.8, guile-1.6 remains as minimum requirement
 * Various fixes, improvements and much improved test coverage.
 * Bug fixes: #452604, #468229, #344388, #451086, #450724, #454121, #491552,

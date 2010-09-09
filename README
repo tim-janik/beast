@@ -4,9 +4,9 @@ General Information
 This is a development version of BEAST/BSE, the BEdevilled Audio SysTem
 and the Bedevilled Sound Engine. BEAST is a powerful music composition
 and modular synthesis application released as free software under the
-GNU GPL and GNU LGPL, that runs under unix.
-Much more information about the project can be found at the website and
-in the documents and manuals shipped with release tarballs.
+GNU LGPL, that runs under unix. More information about the project can
+can be found on the website and in the documents and manuals shipped
+with release tarballs.
 
 Beast is a soft realtime application which needs elevated CPU
 scheduling priorities. It installs a small suid wrapper which
@@ -15,42 +15,35 @@ For linux kernels of the 2.6.x series, this enables the low-latency
 scheduling behavior needed to avoid audio drop outs, this kernel
 series is therefore recommended for operating Beast.
 
-In order to build release tarballs, you need Gtk+-2.6, a recent version
-of the Gtk+-2.6 based GnomeCanvas, Guile-1.6 and the Ogg/Vorbis
-Codec libraries.
-Though optional, it is a good idea to also have libmad (MPEG audio
-decoder library) around when compiling BEAST.
+In order to build release tarballs, Gtk+-2.12 is needed, a recent
+version of GnomeCanvas, Guile-1.6 and the Ogg/Vorbis Codec libraries.
+Support for MP3 files is optional and requires libmad (MPEG audio
+decoder library) when compiling BEAST.
 Most distributions already ship with these packages,
 the sources can be found at:
 
 GnomeCanvas (use >= 2.4):
   ftp://ftp.gnome.org/pub/GNOME/sources/libgnomecanvas/
-Gtk+-2.6:
-  ftp://ftp.gtk.org/pub/gtk/v2.6/
-Guile-1.6:
+Gtk+:
+  http://ftp.gnome.org/pub/gnome/sources/gtk+/
+Guile:
   http://www.gnu.org/software/guile/guile.html
-Ogg/Vorbis (at least version 1.0):
+Ogg/Vorbis:
   http://www.xiph.org/ogg/vorbis/download/
 MAD (BSE requires libmad-0.15.1b):
   http://www.mars.org/home/rob/proj/mpeg/
 
-The official ftp site for BEAST/BSE is:
-  ftp://beast.gtk.org/pub/beast
-
-The official web site for BEAST/BSE is:
+The web site, download and forums for BEAST/BSE are:
   http://beast.gtk.org/
-
-There also is a mailing list for the project (beast@gnome.org):
-  http://mail.gnome.org/mailman/listinfo/beast/
-
-And a related IRC channel:
+  http://beast.gtk.org/beast-ftp/
+  http://mail.gnome.org/mailman/listinfo/beast/ (beast@gnome.org)
   #beast on GimpNet (irc.gimp.org:6666)
 
 BEAST also supports the LADSPA plugin API, so various kinds of third
 party plugins can be loaded and executed by BEAST. LADSPA plugins are
 available from:
 	http://www.ladspa.org
-and places linked there from. BEAST will look for LADSPA plugins under
+And from places linked there. BEAST will look for LADSPA plugins under
 lib/ladspa/ of it's own installation prefix, and in the directories
 listed in $LADSPA_PATH.
 
@@ -61,4 +54,4 @@ Installation
 Note that Beast has to be fully installed to function properly, and that
 the binaries built in the launchers/ directory have to be installed with
 permissions of the root user.
-For generic installation instructions, see the file `INSTALL'.
+For generic installation instructions, see the file 'INSTALL'.
