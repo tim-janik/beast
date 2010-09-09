@@ -22,7 +22,7 @@ class Evaluator : Bse::Effect {
   /*Info    icon      = "icons/bseevaluator.png";*/
   Info    options   = "unstable";
   Info    authors   = "Stefan Westerfeld";
-  Info    license   = _("GNU General Public License");
+  Info    license   = _("GNU Lesser General Public License");
   Info    category  = _("/Misc/Evaluator");
   Info    blurb     = _("BseEvaluator is a module which can compute arithmetic operations in a small language. "
                         "The audio input signal is called input, the audio output signal is called output. "
