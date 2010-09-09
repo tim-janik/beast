@@ -155,7 +155,7 @@ AC_DEFUN([AC_ASOUND_CHECK],
     if test $found_alsa1 = 0; then
 	AC_MSG_ERROR([ALSA version 1.0.5 is required to build this package])
     fi
-    
+
     dnl --- check for -lasound ---
     found_libasound=0
     dnl snd_asoundlib_version() was introduced in ALSA 1.0.5

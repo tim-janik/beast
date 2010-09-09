@@ -1,3 +1,8 @@
+Overview of Changes in BSE-ALSA 0.7.2:
+
+* Fixes for automake-1.10 builds
+* Moved Beast/BSE to GNU LGPL
+
 Overview of Changes in BSE-ALSA 0.7.1:
 
 * Fixes to adapt to BEAST-0.7.1
