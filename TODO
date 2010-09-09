@@ -1,4 +1,13 @@
-- rename KF* instruments to FSM* instruments (kfoltman's original acronym in the buzz world)
+NEXT-RELEASE:
+- BUILD: move clean-generated: and generated: into Makefile.decl
+POST-RELEASE:
+- add freq->freq detuning/modulation plugin (offer volt/per/octave output?)
+- adsr: + delay parameter
+  looping flag with threshold
+  max sustain time
+  gate out (phase selectable)
+  time: 2 scales ; seconds milliseconds
+TODOS:
 - WEB: http://lwn.net/Articles/217873/ (tannenbaum reliable systems) -> usability page
 - unconditionally add /usr/lib/ladspa to search path
 - fix block-dependence of bsenoise, i.e. non-noisy distributions
@@ -7,14 +16,10 @@
 - replace secontribsampleandhold.[ic]* with LGPL variant, adapt COPYING*
 - undef _DOMAIN
 - if no usable PCM device could be found, but devices where found at all, the error mesage should contain "is device in use?"
-- wavetool manual page
 - change midi events to either list note + fine_tune instead of frequency, or at least preserve notes
 - reconsider musical tuning for midi devices and midi files
-- implement include path handling for bsewave files to fix slowtests/audio/Makefile.am:minisong-test
-NEXT-RELEASE:
 - sample technics drum kits for reference
 - use sweep for resampler test
-- man page for wavetool          
 - consider new beast instruments
 - beast replays samples at 50% volume if std amp/adsr is used: probably bug
 - DavOrgan bug: make testcase            (C++ify before)
@@ -27,17 +32,9 @@ NEXT-RELEASE:
   for the copying of VIRTUAL nodes to really work (copy correct data),
   all VIRTUALs must have been processed before any SCHEDULED nodes
   (since the latter modify the buffer pointers)
-- move clean-generated: and generated: into Makefile.decl
 - move sfi_alloc_upper_power2 to birnet
 - toggle sensitivity of oscillator:Pusle properties when non-pulse wave form is selected
 - song pointer display should be adjusted by the latency value specified in preferences
-POST-RELEASE:
-- add freq->freq detuning/modulation plugin (offer volt/per/octave output?)
-- adsr: + delay parameter
-  looping flag with threshold
-  max sustain time
-  gate out (phase selectable)
-  time: 2 scales ; seconds milliseconds
 INCOMPAT:
 - merge 2 * BseSimpleADSR into 1
 - delete BseAtanDistort
@@ -66,10 +63,6 @@ MISC:
 - print detail score with loop range (in progress printing)
 - save detail_names as comment with score_details
 - adjust inner loop abortion according to normed score values
-- THREADING: benchmark TLS vs. g_*private_set()/pthread_setspecific()
-- THREADING: make Birnet::Thread provide DataListContainer functionally, albeit thread-safe
-- THREADING: implement a --force-gthread-table option and use it for a test in make check
-- THREADING: properly document guards and wrap them in C++
 MODULES:
 - trigger-button module
 - joystick module
@@ -86,7 +79,6 @@ BUGS(FIXME):
 - check envelope module enum value names (nick, blurb/tooltips)
 - add stock icons for Select/None Select/All Select/Invert
 - bsewavetool: fix per-command docu to properly account for input.bsewave
-- install bsewavetool, bsewavetool.1
 - add midi control numbers to midi control enum values as tooltips
 - popping up two modal dialogs (error and warning) allowes closing of only one
 - implement combinatoric selections with shift+control
