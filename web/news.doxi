@@ -21,8 +21,11 @@
 @done
 @row
 @cell Feedback:
-@cell	Wiki 	@uri{http://beast.gtk.org/wiki:Discussion,Discussion} and
-		@uri{http://beast.gtk.org/wiki:HelpDesk,HelpDesk} pages
+@cell	Wiki 	@uri{http://beast.gtk.org/wiki:Discussion,Discussion} pages
+@done
+@row
+@cell Translations:
+@cell		@uri{http://www.transifex.net/projects/p/gnome-org-beast/c/default/,Translate Beast} at transifex
 @done
 @row
 @cell Bug Reports:

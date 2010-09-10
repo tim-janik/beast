@@ -31,6 +31,11 @@ New bugs can be entered in the bug report form of the "beast" product:
 @item @longuri{http://bugzilla.gnome.org/simple-bug-guide.cgi?product=beast, Report new Beast bugs}
 @done
 
+@heading Translations
+
+Translations for Beast can be submitted here:
+	@uri{http://www.transifex.net/projects/p/gnome-org-beast/c/default/, Beast at Transifex}
+
 @heading IRC
 
 There's a @code{#beast} channel on the
