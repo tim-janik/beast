@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-09-09 04:06+0200\n"
+"POT-Creation-Date: 2010-09-10 02:03+0200\n"
 "PO-Revision-Date: 2005-06-23 19:50-0400\n"
 "Last-Translator: Adam Weinberger <adamw@gnome.org>\n"
 "Language-Team: Canadian English <adamw@gnome.org>\n"
@@ -1218,7 +1218,7 @@ msgstr ""
 msgid "BEAST"
 msgstr "BEAST"
 
-#: beast-gtk/bstmain.c:885
+#: beast-gtk/bstmain.c:893
 msgid "BEAST About"
 msgstr "BEAST About"
 
@@ -1226,7 +1226,7 @@ msgstr "BEAST About"
 msgid "BEAST Startup"
 msgstr "BEAST Startup"
 
-#: beast-gtk/bstmain.c:886
+#: beast-gtk/bstmain.c:894
 #, c-format
 msgid "BEAST Version %s"
 msgstr "BEAST Version %s"
@@ -1673,7 +1673,7 @@ msgstr "Continuous 9"
 msgid "Continuous MIDI Control #1 - Bank Select"
 msgstr "Continuous MIDI Control #1 - Bank Select"
 
-#: beast-gtk/bstmain.c:887
+#: beast-gtk/bstmain.c:895
 msgid "Contributions made by:"
 msgstr "Contributions made by:"
 

@@ -42,7 +42,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast master\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-09-09 04:06+0200\n"
+"POT-Creation-Date: 2010-09-10 02:03+0200\n"
 "PO-Revision-Date: 2010-08-14 09:01I+0200\n"
 "Last-Translator: Joe Hansen <joedalton2@yahoo.dk>\n"
 "Language-Team: Danish <dansk@dansk-gruppen.dk>\n"
@@ -1183,7 +1183,7 @@ msgid "BEAST"
 msgstr "BEAST"
 
 # BEAST - om
-#: beast-gtk/bstmain.c:885
+#: beast-gtk/bstmain.c:893
 msgid "BEAST About"
 msgstr "Om BEAST"
 
@@ -1191,7 +1191,7 @@ msgstr "Om BEAST"
 msgid "BEAST Startup"
 msgstr "BEAST opstart"
 
-#: beast-gtk/bstmain.c:886
+#: beast-gtk/bstmain.c:894
 #, c-format
 msgid "BEAST Version %s"
 msgstr "BEAST version %s"
@@ -1626,7 +1626,7 @@ msgstr ""
 msgid "Continuous MIDI Control #1 - Bank Select"
 msgstr ""
 
-#: beast-gtk/bstmain.c:887
+#: beast-gtk/bstmain.c:895
 msgid "Contributions made by:"
 msgstr "Bidrag fra:"
 

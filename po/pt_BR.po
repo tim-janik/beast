@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-09-09 04:06+0200\n"
+"POT-Creation-Date: 2010-09-10 02:03+0200\n"
 "PO-Revision-Date: 2007-07-29 00:56-0300\n"
 "Last-Translator: Raphael Higino <raphaelh@uai.com.br>\n"
 "Language-Team: Brazilian Portuguese <gnome-l10n-br@listas.cipsga.org.br>\n"
@@ -1182,7 +1182,7 @@ msgstr ""
 msgid "BEAST"
 msgstr "BEAST"
 
-#: beast-gtk/bstmain.c:885
+#: beast-gtk/bstmain.c:893
 msgid "BEAST About"
 msgstr "Sobre o BEAST"
 
@@ -1190,7 +1190,7 @@ msgstr "Sobre o BEAST"
 msgid "BEAST Startup"
 msgstr "Inicialização do BEAST"
 
-#: beast-gtk/bstmain.c:886
+#: beast-gtk/bstmain.c:894
 #, c-format
 msgid "BEAST Version %s"
 msgstr "BEAST Versão %s"
@@ -1643,7 +1643,7 @@ msgstr "Contínuo 9"
 msgid "Continuous MIDI Control #1 - Bank Select"
 msgstr "Controle MIDI contínuo nº 1 - Seleção de Banco"
 
-#: beast-gtk/bstmain.c:887
+#: beast-gtk/bstmain.c:895
 msgid "Contributions made by:"
 msgstr "Contribuições feitas por:"
 

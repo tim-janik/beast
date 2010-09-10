@@ -15,7 +15,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast HEAD\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-09-09 04:06+0200\n"
+"POT-Creation-Date: 2010-09-10 02:03+0200\n"
 "PO-Revision-Date: 2005-03-31 20:55-0700\n"
 "Last-Translator: Steve Murphy <murf@e-tools.com>\n"
 "Language-Team: Kinyarwanda <translation-team-rw@lists.sourceforge.net>\n"
@@ -1349,7 +1349,7 @@ msgstr "Umubare Bya ISEGONDA Bya Ukoresha: Igihe ku Urudodo"
 msgid "BEAST"
 msgstr ""
 
-#: beast-gtk/bstmain.c:885
+#: beast-gtk/bstmain.c:893
 msgid "BEAST About"
 msgstr ""
 
@@ -1357,7 +1357,7 @@ msgstr ""
 msgid "BEAST Startup"
 msgstr ""
 
-#: beast-gtk/bstmain.c:886
+#: beast-gtk/bstmain.c:894
 #, c-format
 msgid "BEAST Version %s"
 msgstr ""
@@ -1862,7 +1862,7 @@ msgstr "9"
 msgid "Continuous MIDI Control #1 - Bank Select"
 msgstr "1."
 
-#: beast-gtk/bstmain.c:887
+#: beast-gtk/bstmain.c:895
 #, fuzzy
 msgid "Contributions made by:"
 msgstr "ku"

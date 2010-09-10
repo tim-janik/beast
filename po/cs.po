@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-09-09 04:06+0200\n"
+"POT-Creation-Date: 2010-09-10 02:03+0200\n"
 "PO-Revision-Date: 2005-07-05 19:42+0200\n"
 "Last-Translator: Miloslav Trmac <mitr@volny.cz>\n"
 "Language-Team: Czech <cs@li.org>\n"
@@ -1203,7 +1203,7 @@ msgstr ""
 msgid "BEAST"
 msgstr "BEAST"
 
-#: beast-gtk/bstmain.c:885
+#: beast-gtk/bstmain.c:893
 msgid "BEAST About"
 msgstr "BEAST O aplikaci"
 
@@ -1211,7 +1211,7 @@ msgstr "BEAST O aplikaci"
 msgid "BEAST Startup"
 msgstr "Spuštění BEAST"
 
-#: beast-gtk/bstmain.c:886
+#: beast-gtk/bstmain.c:894
 #, c-format
 msgid "BEAST Version %s"
 msgstr "BEAST verze %s"
@@ -1659,7 +1659,7 @@ msgstr "Spojité 9"
 msgid "Continuous MIDI Control #1 - Bank Select"
 msgstr "Spojité řízení MIDI č. 1 - Výběr banky"
 
-#: beast-gtk/bstmain.c:887
+#: beast-gtk/bstmain.c:895
 msgid "Contributions made by:"
 msgstr "Přispěli:"
 

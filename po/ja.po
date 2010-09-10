@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast 0.6.2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-09-09 04:06+0200\n"
+"POT-Creation-Date: 2010-09-10 02:03+0200\n"
 "PO-Revision-Date: 2004-08-06 19:59+0200\n"
 "Last-Translator: Satoru SATOH <ss@gnome.gr.jp>\n"
 "Language-Team: Japanese <translation@gnome.gr.jp>\n"
@@ -1152,7 +1152,7 @@ msgstr "スレッドが使用するユーザー CPU 時間の平均(msec/sec)"
 msgid "BEAST"
 msgstr "BEAST"
 
-#: beast-gtk/bstmain.c:885
+#: beast-gtk/bstmain.c:893
 msgid "BEAST About"
 msgstr "BEAST の情報"
 
@@ -1160,7 +1160,7 @@ msgstr "BEAST の情報"
 msgid "BEAST Startup"
 msgstr "BEAST 起動"
 
-#: beast-gtk/bstmain.c:886
+#: beast-gtk/bstmain.c:894
 #, c-format
 msgid "BEAST Version %s"
 msgstr "BEAST バージョン %s"
@@ -1608,7 +1608,7 @@ msgstr ""
 msgid "Continuous MIDI Control #1 - Bank Select"
 msgstr "連続 MIDI コントロール #1 - バンク選択"
 
-#: beast-gtk/bstmain.c:887
+#: beast-gtk/bstmain.c:895
 msgid "Contributions made by:"
 msgstr "貢献した人々:"
 

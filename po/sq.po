@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast HEAD\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-09-09 04:06+0200\n"
+"POT-Creation-Date: 2010-09-10 02:03+0200\n"
 "PO-Revision-Date: 2004-09-03 17:26+0200\n"
 "Last-Translator: Laurent Dhima <laurenti@alblinux.net>\n"
 "Language-Team: Albanian <gnome-albanian-perkthyesit@lists.sourceforge.net>\n"
@@ -1234,7 +1234,7 @@ msgstr "Mesatarja nga milisekonda sekondë nga përdorues CPU ora nga"
 msgid "BEAST"
 msgstr ""
 
-#: beast-gtk/bstmain.c:885
+#: beast-gtk/bstmain.c:893
 #, fuzzy
 msgid "BEAST About"
 msgstr "Informacione"
@@ -1243,7 +1243,7 @@ msgstr "Informacione"
 msgid "BEAST Startup"
 msgstr ""
 
-#: beast-gtk/bstmain.c:886
+#: beast-gtk/bstmain.c:894
 #, fuzzy, c-format
 msgid "BEAST Version %s"
 msgstr "Versioni"
@@ -1722,7 +1722,7 @@ msgstr "Përmbajtja"
 msgid "Continuous MIDI Control #1 - Bank Select"
 msgstr ""
 
-#: beast-gtk/bstmain.c:887
+#: beast-gtk/bstmain.c:895
 #, fuzzy
 msgid "Contributions made by:"
 msgstr "nga:"

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Project\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-09-09 04:06+0200\n"
+"POT-Creation-Date: 2010-09-10 02:03+0200\n"
 "PO-Revision-Date: 2006-11-17 23:52+0100\n"
 "Last-Translator: Djihed Afifi <djihed@gmail.com>\n"
 "Language-Team: Arabic <doc@arabeyes.org>\n"
@@ -1215,7 +1215,7 @@ msgstr ""
 msgid "BEAST"
 msgstr ""
 
-#: beast-gtk/bstmain.c:885
+#: beast-gtk/bstmain.c:893
 #, fuzzy
 msgid "BEAST About"
 msgstr "_حول الملحق"
@@ -1225,7 +1225,7 @@ msgstr "_حول الملحق"
 msgid "BEAST Startup"
 msgstr "برامج بدء التشغيل"
 
-#: beast-gtk/bstmain.c:886
+#: beast-gtk/bstmain.c:894
 #, fuzzy, c-format
 msgid "BEAST Version %s"
 msgstr "اصدارة الرزمة"
@@ -1716,7 +1716,7 @@ msgstr "م_ستمر"
 msgid "Continuous MIDI Control #1 - Bank Select"
 msgstr ""
 
-#: beast-gtk/bstmain.c:887
+#: beast-gtk/bstmain.c:895
 #, fuzzy
 msgid "Contributions made by:"
 msgstr "الاثنان(جنبا بجنب)"

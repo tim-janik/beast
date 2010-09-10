@@ -13,7 +13,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast.master\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-09-09 04:06+0200\n"
+"POT-Creation-Date: 2010-09-10 02:03+0200\n"
 "PO-Revision-Date: 2010-08-24 20:42+0200\n"
 "Last-Translator: Jorge González <jorgegonz@svn.gnome.org>\n"
 "Language-Team: Español <gnome-es-list@gnome.org>\n"
@@ -1261,7 +1261,7 @@ msgstr ""
 msgid "BEAST"
 msgstr "BEAST"
 
-#: beast-gtk/bstmain.c:885
+#: beast-gtk/bstmain.c:893
 msgid "BEAST About"
 msgstr "Acerca de Beast"
 
@@ -1269,7 +1269,7 @@ msgstr "Acerca de Beast"
 msgid "BEAST Startup"
 msgstr "Inicio de BEAST"
 
-#: beast-gtk/bstmain.c:886
+#: beast-gtk/bstmain.c:894
 #, c-format
 msgid "BEAST Version %s"
 msgstr "Versión %s de BEAST"
@@ -1722,7 +1722,7 @@ msgstr "Contínuo 9"
 msgid "Continuous MIDI Control #1 - Bank Select"
 msgstr "Modo de control MIDI continuo #1 - Selección de banco"
 
-#: beast-gtk/bstmain.c:887
+#: beast-gtk/bstmain.c:895
 msgid "Contributions made by:"
 msgstr "Contribuciones hechas por:"
 
