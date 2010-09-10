@@ -33,7 +33,7 @@ dnl# if any functions have been added, set BSE_INTERFACE_AGE to 0.
 dnl# if backwards compatibility has been broken,
 dnl# set BSE_BINARY_AGE _and_ BSE_INTERFACE_AGE to 0.
 dnl# BST_RELEASE_CANDIDATE may contain rc[0-9]+ or nothing
-BST_RELEASE_CANDIDATE= #rc1
+BST_RELEASE_CANDIDATE=fix1 #rc1
 
 # version number setup
 BSE_VERSION=$BSE_MAJOR_VERSION.$BSE_MINOR_VERSION.$BSE_MICRO_VERSION
