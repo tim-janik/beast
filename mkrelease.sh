@@ -4,6 +4,7 @@
 ## This work is provided "as is"; see: http://rapicorn.org/LICENSE-AS-IS
 
 MYVERSION="mkrelease.sh version 20100901"
+# 20100910: fixed 'commit-stamps' outside of git repos
 # 20100901: check HEAD against upstream repository, upload last
 # 20100831: implemented 'shellvar' command
 # 20100827: implemented 'news' command
@@ -82,10 +83,11 @@ done
 # === commit-stamps ===
 [ "$COMMAND" = "commit-stamps" ] && {
   # echo stamp files touched by commits
-  ls "${GIT_DIR:-.git}/`git symbolic-ref -q HEAD || echo HEAD`" \
-     "${GIT_DIR:-.git}/packed-refs" \
-     "${GIT_DIR:-.git}/HEAD" \
-     2>/dev/null
+  [ -e "${GIT_DIR:-.git}" ] && \
+    ls "${GIT_DIR:-.git}/`git symbolic-ref -q HEAD || echo HEAD`" \
+       "${GIT_DIR:-.git}/packed-refs" \
+       "${GIT_DIR:-.git}/HEAD" \
+       2>/dev/null
   exit
 }
 
