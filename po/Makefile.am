@@ -141,6 +141,8 @@ update-po: Makefile
 	  $(GMSGFMT) -o /dev/null --verbose $(srcdir)/$$i ; \
 	done
 .PHONY: update-po
+DISTDIR_HOOK = distdir # use indirection to emulate distdir-hook
+$(DISTDIR_HOOK): $(shell test -w $(srcdir)/messages.pot && echo 'update-po')
 
 $(srcdir)/messages.pot:
 	@echo "Rebuilding $(@F)..."
