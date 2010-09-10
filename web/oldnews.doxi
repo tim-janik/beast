@@ -7,6 +7,15 @@
 @dnl ----------------------------- START -----------------------------
 
 
+@newsentry{Wednesday 12 March 2008, Fantasy III Contest}
+The Fantasy Project is an annual challenge. Each artist who participates
+can create his own song, as long as he uses the lyrics given below
+("Jean Lucs Poem") unchanged. All styles of music, such as classical,
+blues, rock, metal, rap, dance, techno, house, ... are welcome. 
+@* @uri{http://space.twc.de/~stefan/fantasyIII, Fantasy III Contest}
+@* @uri{http://space.twc.de/~stefan/fantasyII, Fantasy II Results}
+
+
 @newsentry{Thursday 28 December 2006, New release with security fix}
 
 BEAST/BSE version 0.7.1 is available from the
@@ -19,6 +28,28 @@ BEAST tarball:
 @uri{http://beast.gtk.org/beast-ftp/v0.7/beast-0.7.0-0.7.1.diff.bz2, beast-0.7.0-0.7.1.diff.bz2}
 @* @uri{http://alsa-project.org, ALSA} driver:
 @uri{http://beast.gtk.org/beast-ftp/v0.7/bse-alsa-0.7.1.tar.bz2, bse-alsa-0.7.1.tar.bz2}
+
+The 0.7 development series of Beast focusses on improving usability and
+ease of music production. Feedback is very much appreciated, please take
+the opportunity and provide your comments and questions in online forums
+like the Beast
+@uri{@top_webdir/wiki:HelpDesk, Help Desk}, Beast
+@uri{http://bugzilla.gnome.org/buglist.cgi?query=product:beast, Bugzilla} or the
+@uri{@top_webdir/contact, mailing list}.
+
+Many new features went into this release and lot of normal bugfixes and one security bugfix:
+@*
+* Fixed SUID security vulnerability by validating success of seteuid/setreuid,
+  related security advisories, describing the vulnerability:
+@itemize
+@item @uri{http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2006-2916, CVE-2006-2916 - artswrapper}
+@item @uri{http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2006-4447, CVE-2006-4447 - X.Org}
+@done
+Translation updates were made to italian.
+The
+@uri{@top_webdir/news-file,Release NEWS section} has the exact change list, so enjoy
+the new code and please 
+@uri{http://bugzilla.gnome.org/simple-bug-guide.cgi?product=beast, report all bugs} encountered.
 
 
 @newsentry{Sunday 22 October 2006, Development News}
