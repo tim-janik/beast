@@ -46,7 +46,7 @@
 			 "down (all harmonies below this will be transposed up). It is possible "
 			 "to omit this value. Then all notes will be transposed up.")
 		     "Stefan Westerfeld"
-		     "GNU General Public License"
+		     "Provided \"as is\", WITHOUT ANY WARRANTY"
 		     (bse-param-part   (N_ "Part"))
 		     (bse-param-string (N_ "Harmony Sequence") "C,Amin,F,G")
 		     (bse-param-string (N_ "Transpose down starting at") "F"))

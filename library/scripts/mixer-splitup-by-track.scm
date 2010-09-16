@@ -26,7 +26,7 @@
 		     (N_ "This script creates a new Mixer Bus for each track in the "
 			 "song that is currently using the Master Bus as output.")
 		     "Stefan Westerfeld"
-		     "GNU General Public License"
+		     "Provided \"as is\", WITHOUT ANY WARRANTY"
 		     (bse-param-song (N_ "Song")))
 
 ;; function to get song for a track (improves readability)

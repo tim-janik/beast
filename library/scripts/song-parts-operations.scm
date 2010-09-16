@@ -26,7 +26,7 @@
 		     (N_ "Crops all parts within the loop range "
 			 "and moves parts after the loop range backwards accordingly.")
 		     "Stefan Westerfeld"
-		     "GNU General Public License"
+		     "Provided \"as is\", WITHOUT ANY WARRANTY"
 		     (bse-param-song (N_ "Song")))
 
 (bse-script-register 'song-parts-duplicate
@@ -35,7 +35,7 @@
 		     (N_ "Duplicate all parts within the loop range "
 			 "and moves parts after the loop range forward accordingly.")
 		     "Stefan Westerfeld"
-		     "GNU General Public License"
+		     "Provided \"as is\", WITHOUT ANY WARRANTY"
 		     (bse-param-song (N_ "Song")))
 
 ;; common code for duplicate & crop:
