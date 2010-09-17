@@ -18,7 +18,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast master\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-09-10 02:03+0200\n"
+"POT-Creation-Date: 2010-09-10 19:11+0200\n"
 "PO-Revision-Date: 2010-06-17 23:32+0100\n"
 "Last-Translator: Mario Blättermann <mariobl@gnome.org>\n"
 "Language-Team: German <gnome-de@gnome.org>\n"
@@ -357,7 +357,7 @@ msgstr "1/8T"
 
 #: beast-gtk/bstrecords.idl:50
 msgid "1024 Value FFT Window"
-msgstr ""
+msgstr "1024-Werte FFT Anzeige"
 
 #: beast-gtk/bstrecords.idl:100
 msgid "12"
@@ -370,7 +370,7 @@ msgstr "Gleichstufige 12-Ton-Temperatur"
 
 #: beast-gtk/bstrecords.idl:47
 msgid "128 Value FFT Window"
-msgstr ""
+msgstr "128-Werte FFT Anzeige"
 
 #: beast-gtk/bstrecords.idl:92
 msgid "16"
@@ -378,11 +378,11 @@ msgstr "16"
 
 #: beast-gtk/bstrecords.idl:44
 msgid "16 Value FFT Window"
-msgstr ""
+msgstr "16-Werte FFT Anzeige"
 
 #: beast-gtk/bstrecords.idl:54
 msgid "16384 Value FFT Window"
-msgstr ""
+msgstr "16384-Werte FFT Anzeige"
 
 #: beast-gtk/bstpianorollctrl.c:98
 msgid "1\\/1"
@@ -426,15 +426,15 @@ msgstr "2 & 4"
 
 #: beast-gtk/bstrecords.idl:41
 msgid "2 Value FFT Window"
-msgstr ""
+msgstr "2-Werte FFT Anzeige"
 
 #: beast-gtk/bstrecords.idl:51
 msgid "2048 Value FFT Window"
-msgstr ""
+msgstr "2048-Werte FFT Anzeige"
 
 #: beast-gtk/bstrecords.idl:48
 msgid "256 Value FFT Window"
-msgstr ""
+msgstr "256-Werte FFT Anzeige"
 
 #: beast-gtk/bstrecords.idl:98
 msgid "3"
@@ -450,11 +450,11 @@ msgstr "3 & 6"
 
 #: beast-gtk/bstrecords.idl:45
 msgid "32 Value FFT Window"
-msgstr ""
+msgstr "32-Werte FFT Anzeige"
 
 #: beast-gtk/bstrecords.idl:55
 msgid "32768 Value FFT Window"
-msgstr ""
+msgstr "32768-Werte FFT Anzeige"
 
 #: beast-gtk/bstrecords.idl:90
 msgid "4"
@@ -474,11 +474,11 @@ msgstr "4 & 8"
 
 #: beast-gtk/bstrecords.idl:42
 msgid "4 Value FFT Window"
-msgstr ""
+msgstr "4-Werte FFT Anzeige"
 
 #: beast-gtk/bstrecords.idl:52
 msgid "4096 Value FFT Window"
-msgstr ""
+msgstr "4096-Werte FFT Anzeige"
 
 #: bse/bsecore.idl:80
 msgid "5 Tone Equal Temperament"
@@ -486,7 +486,7 @@ msgstr "Gleichstufige 12-Ton-Temperatur"
 
 #: beast-gtk/bstrecords.idl:49
 msgid "512 Value FFT Window"
-msgstr ""
+msgstr "512-Werte FFT Anzeige"
 
 #: beast-gtk/bstrecords.idl:99
 msgid "6"
@@ -498,11 +498,11 @@ msgstr "6 & 12"
 
 #: beast-gtk/bstrecords.idl:46
 msgid "64 Value FFT Window"
-msgstr ""
+msgstr "64-Werte FFT Anzeige"
 
 #: beast-gtk/bstrecords.idl:56
 msgid "65536 Value FFT Window"
-msgstr ""
+msgstr "65536-Werte FFT Anzeige"
 
 #: bse/bsecore.idl:77
 msgid "7 Tone Equal Temperament"
@@ -518,11 +518,11 @@ msgstr "8 & 16"
 
 #: beast-gtk/bstrecords.idl:43
 msgid "8 Value FFT Window"
-msgstr ""
+msgstr "8-Werte FFT Anzeige"
 
 #: beast-gtk/bstrecords.idl:53
 msgid "8192 Value FFT Window"
-msgstr ""
+msgstr "8192-Werte FFT Anzeige"
 
 #: beast-gtk/bstrecords.idl:50
 msgid ""
