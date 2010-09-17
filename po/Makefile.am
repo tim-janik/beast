@@ -129,6 +129,37 @@ CHECK_SCM_PATS=$(strip					\
 	library/scripts/song-parts-operations.scm	\
 )
 
+shdie = { echo "ERROR:" $(1) >&2 ; exit $(or $(2), 127) ; }
+
+merge-po: $(srcdir)/messages.pot # FILE=...
+	@test -r "$(FILE)" || $(call shdie, "$@: source argument required: make $@ FILE=...")
+	@echo "Merging external po file: $(FILE)..."
+	@r=`realpath "$(FILE)"` ; for f in $(POFILES) ; do \
+	  test "`realpath $$f`" != "$$r" || \
+	  $(call shdie, "$@: FILE already exists in POFILES: $$r"); \
+	done
+	@c= ; : "# find POFILE candidate for merging FILE";\
+	p=`basename "$(FILE)" .po`; test -n "$$c" || \
+	for f in $(POFILES) ; do \
+	  test "`basename $$f .po`" == "$$p" && \
+	  { c="$$f" ; r="(basenames match)"; break ; } ; done ; \
+	p=`sed -n -e '/^"Language-Team:/p; 45q' < "$(FILE)"`; test -n "$$c" || \
+	for f in $(POFILES) ; do \
+	  fp=`sed -n -e '/^"Language-Team:/p; 45q' < "$$f"`; \
+	  test -n "$$p" -a "$$p" == "$$fp" && \
+	  { c="$$f" ; r="(Language-Team fields match)"; break ; } ; done ; \
+	p=`sed -n -e '/^"Language:/p; 45q' < "$(FILE)"`; test -n "$$c" || \
+	for f in $(POFILES) ; do \
+	  fp=`sed -n -e '/^"Language:/p; 45q' < "$$f"`; \
+	  test -n "$$p" -a "$$p" == "$$fp" && \
+	  { c="$$f" ; r="(Language fields match)"; break ; } ; done ; \
+	if test -z "$$c" ; then \
+	  $(call shdie, "$@: failed to find po merging candidate; try renaming FILE") ; \
+	else \
+	  echo "Target for merging: $$c $$r" ; \
+	  $(MSGMERGE) -s -C "$$c" -o "$$c" "$(FILE)" $(srcdir)/messages.pot || exit $? ; \
+	  $(GMSGFMT) -o /dev/null --verbose "$$c" ; \
+	fi
 
 # force regeneration of all po files
 update-po: Makefile
