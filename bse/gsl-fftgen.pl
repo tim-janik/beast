@@ -32,7 +32,9 @@ my $min_split = 2048;
 my $min_compress = 512;
 my $fft2loop = 0;
 my $single_stage = 0;
-my $negate_sign = 0;
+my $negate_sign = 1;
+my $func_name = "analysis";
+my $scale = 0;
 my $Wtest = 0;
 
 #
@@ -42,8 +44,9 @@ while ($_ = $ARGV[0], defined $_ && /^-/) {
     shift;
     last if (/^--$/);
     if (/^--fft2loop$/) { $fft2loop = 1 }
-    elsif (/^--analysis$/) { $negate_sign = 0 }
-    elsif (/^--synthesis$/) { $negate_sign = 1 }
+    elsif (/^--analysis$/) { $negate_sign = 1; $func_name = "analysis"; $scale = 0; }
+    elsif (/^--synthesis$/) { $negate_sign = 0; $func_name = "synthesis"; $scale = 0; }
+    elsif (/^--synthesis-scale$/) { $negate_sign = 0; $func_name = "synthesis_scale"; $scale = 1; }
     elsif (/^--Wtest$/) { $Wtest = 1 }
     elsif (/^--double$/) { $ieee_type = "double" }
     elsif (/^--skip-macros$/) { $gen_macros = 0 }
@@ -52,6 +55,7 @@ while ($_ = $ARGV[0], defined $_ && /^-/) {
     elsif (/^--min-compress$/) { $min_compress = shift }
     elsif (/^--single-stage$/) { $single_stage = shift }
 }
+
 # parse arguments
 my @arguments = 0;
 if (defined $ARGV[0]) {
@@ -217,18 +221,18 @@ sub unroll_stage {
 		my $offset2 = $offset1 + $n_points;
 		my $offset1r = bitreverse ($fft_size, $offset1 >> 1) << 1;
 		my $offset2r = bitreverse ($fft_size, $offset2 >> 1) << 1;
-		my $scale = !$negate_sign ? "__1, __0" : sprintf "1.0 / (%s) %u", $tmp_ieee_type, $fft_size;
+		my $scale_args = ! $scale ? "__1, __0" : sprintf "1.0 / (%s) %u", $tmp_ieee_type, $fft_size;
 		printf($indent."BUTTERFLY_10%s (X[%s], X[%s + 1],\n".
 		       $indent."                X[%s], X[%s + 1],\n".
 		       $indent."                Y[%s], Y[%s + 1],\n".
 		       $indent."                Y[%s], Y[%s + 1],\n".
 		       $indent."                %s);\n",
-		       $negate_sign ? "scale" : "",
+		       $scale ? "scale" : "",
 		       $offset1r, $offset1r,
 		       $offset2r, $offset2r,
 		       $offset1, $offset1,
 		       $offset2, $offset2,
-		       $scale);
+		       $scale_args);
 	    }
 	}
     } elsif ($unroll_outer) {
@@ -325,7 +329,7 @@ sub bitreverse_fft2 {
     # mul_result = gsl_complex (c1.re * c2.re - c1.im * c2.im, c1.re * c2.im + c1.im * c2.re);
     printf "
 static inline void
-bitreverse_fft2analysis (const uint         n,
+bitreverse_fft2synthesis (const unsigned int n,
                          const %-6s        *X,
                          %-6s              *Y)
 {
@@ -370,25 +374,26 @@ bitreverse_fft2analysis (const uint         n,
     }
 }
 static inline void
-bitreverse_fft2synthesis (const uint         n,
-                          const %-6s        *X,
-                          %-6s              *Y)
+bitreverse_fft2synthesis_scale (const unsigned int n,
+                               const %-6s        *X,
+                               %-6s              *Y)
 {
   const uint n2 = n >> 1, n1 = n + n2, max = n >> 2;
   uint i, r;
   %s scale = n;
 
   scale = 1.0 / scale;
+
   BUTTERFLY_10scale (X[0], X[1],
 		     X[n], X[n + 1],
 		     Y[0], Y[1],
 		     Y[2], Y[3],
 		     scale);
   BUTTERFLY_10scale (X[n2], X[n2 + 1],
-		     X[n1], X[n1 + 1],
-		     Y[4], Y[5],
-		     Y[6], Y[7],
-		     scale);
+		X[n1], X[n1 + 1],
+		Y[4], Y[5],
+		Y[6], Y[7],
+		scale);
   for (i = 1, r = 0; i < max; i++)
     {
       uint k, j = n >> 1;
@@ -403,20 +408,65 @@ bitreverse_fft2synthesis (const uint         n,
       k = r >> 1;
       j = i << 3;
       BUTTERFLY_10scale (X[k], X[k + 1],
-			 X[k + n], X[k + n + 1],
-			 Y[j], Y[j + 1],
-			 Y[j + 2], Y[j + 3],
-			 scale);
+		         X[k + n], X[k + n + 1],
+		         Y[j], Y[j + 1],
+		         Y[j + 2], Y[j + 3],
+		         scale);
       k += n2;
       j += 4;
       BUTTERFLY_10scale (X[k], X[k + 1],
-			 X[k + n], X[k + n + 1],
-			 Y[j], Y[j + 1],
-			 Y[j + 2], Y[j + 3],
-			 scale);
+		         X[k + n], X[k + n + 1],
+		         Y[j], Y[j + 1],
+		         Y[j + 2], Y[j + 3],
+		         scale);
     }
 }
-", $ieee_type, $ieee_type, $ieee_type, $ieee_type, $tmp_ieee_type;
+static inline void
+bitreverse_fft2analysis (const unsigned int n,
+                          const %-6s        *X,
+                          %-6s              *Y)
+{
+  const unsigned int n2 = n >> 1, n1 = n + n2, max = n >> 2;
+  unsigned int i, r;
+
+  BUTTERFLY_10 (X[0], X[1],
+		X[n], X[n + 1],
+		Y[0], Y[1],
+		Y[2], Y[3],
+		__0, __1);
+  BUTTERFLY_10 (X[n2], X[n2 + 1],
+		X[n1], X[n1 + 1],
+		Y[4], Y[5],
+		Y[6], Y[7],
+		__0, __1);
+  for (i = 1, r = 0; i < max; i++)
+    {
+      unsigned int k, j = n >> 1;
+
+      while (r >= j)
+	{
+	  r -= j;
+	  j >>= 1;
+	}
+      r |= j;
+
+      k = r >> 1;
+      j = i << 3;
+      BUTTERFLY_10 (X[k], X[k + 1],
+		    X[k + n], X[k + n + 1],
+		    Y[j], Y[j + 1],
+		    Y[j + 2], Y[j + 3],
+		    __0, __1);
+      k += n2;
+      j += 4;
+      BUTTERFLY_10 (X[k], X[k + 1],
+		    X[k + n], X[k + n + 1],
+		    Y[j], Y[j + 1],
+		    Y[j + 2], Y[j + 3],
+		    __0, __1);
+    }
+}
+", $ieee_type, $ieee_type, $ieee_type, $ieee_type, $tmp_ieee_type, $ieee_type, $ieee_type, $tmp_ieee_type;
 
     # testing:
     # define BUTTERFLY_10(X1re,X1im,X2re,X2im,Y1re,Y1im,Y2re,Y2im,Wre,Wim,T1re,T1im,T2re,T2im) \
@@ -698,7 +748,7 @@ sub gen_stage {
     if ($n_points == 2) {   # input stage needs special handling
 	if ($kind eq 'L') {
 	    printf "\n%s/* perform fft2 and bitreverse input */\n", $indent;
-	    printf "%sbitreverse_fft2%s (%u, X, Y);\n", $indent, $negate_sign ? "synthesis" : "analysis", $fft_size;
+	    printf "%sbitreverse_fft2%s (%u, X, Y);\n", $indent, $func_name, $fft_size;
 	} elsif ($kind eq 'F') {
 	    printf "\n%s/* perform %u times fft2 */\n", $indent, $times;
 	    unroll_stage ($fft_size, $n_points, $times, 1);
@@ -723,10 +773,10 @@ sub gen_stage {
 	    for (my $i = 0; $i < $times; $i++) {
 		if ($i) {
 		    printf($indent."gsl_power2_fft%u%s_skip2 (X + %u, Y + %u);\n",
-			   $n_points, $negate_sign ? "synthesis" : "analysis", $n_points * $i << 1, $n_points * $i << 1);
+			   $n_points, $func_name, $n_points * $i << 1, $n_points * $i << 1);
 		} else {
 		    printf($indent."gsl_power2_fft%u%s_skip2 (X, Y);\n",
-			   $n_points, $negate_sign ? "synthesis" : "analysis");
+			   $n_points, $func_name);
 		}
 	    }
 	} else {
@@ -786,7 +836,7 @@ print " */\n";
     
     printf "static void\n";
     printf("gsl_power2_fft%u%s%s (const %s *X, %s *Y)\n{\n",
-	   $fft_size, $negate_sign ? "synthesis" : "analysis",
+	   $fft_size, $func_name,
 	   $skip2 ? "_skip2" : "",
 	   $ieee_type, $ieee_type);
     printf "%sregister uint butterfly, block, offset;\n", $indent;
