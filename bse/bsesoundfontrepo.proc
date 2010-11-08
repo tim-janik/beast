@@ -1,0 +1,155 @@
+/* BSE - Bedevilled Sound Engine	-*-mode: c;-*-
+ * Copyright (C) 2000-2003 Tim Janik
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * A copy of the GNU Lesser General Public License should ship along
+ * with this library; if not, see http://www.gnu.org/copyleft/.
+ */
+#include <bse/bseplugin.h>
+#include <bse/bseprocedure.h>
+#include <bse/bsesoundfontrepo.h>
+#include <bse/bsesoundfont.h>
+#include <bse/bseloader.h>
+
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
+#include <errno.h>
+
+
+/* --- auxlillary functions --- */
+static BseErrorType
+load_file (BseSoundFontRepo *sfrepo,
+	   const gchar      *file_name,
+           BseSoundFont    **sound_font_p)
+{
+  gchar *fname = g_path_get_basename (file_name);
+  BseSoundFont *sound_font = g_object_new (BSE_TYPE_SOUND_FONT, "uname", fname, NULL);
+  g_free (fname);
+  bse_container_add_item (BSE_CONTAINER (sfrepo), BSE_ITEM (sound_font));
+
+  BseStorageBlob *blob = bse_storage_blob_new_from_file (file_name, FALSE);
+  BseErrorType error = bse_sound_font_load_blob (sound_font, blob, TRUE);
+  bse_storage_blob_unref (blob);
+  if (error == BSE_ERROR_NONE)
+    {
+      *sound_font_p = sound_font;
+    }
+  else
+    {
+      bse_container_remove_item (BSE_CONTAINER (sfrepo), BSE_ITEM (sound_font));
+      *sound_font_p = NULL;
+    }
+  g_object_unref (sound_font);
+  return error;
+}
+
+/* --- procedures --- */
+AUTHORS	= "Tim Janik <timj@gtk.org>";
+LICENSE = "GNU Lesser General Public License";
+
+
+METHOD (BseSoundFontRepo, load-file) {
+  HELP	= "Load sound font from file";
+  IN    = bse_param_spec_object ("sound_font_repo", "Sound Font Repo", NULL,
+				 BSE_TYPE_SOUND_FONT_REPO, SFI_PARAM_STANDARD);
+  IN	= sfi_pspec_string ("file_name", "File Name", "The file to import sound fonts from",
+			    NULL, SFI_PARAM_STANDARD);
+  OUT   = bse_param_spec_genum ("error", "Error", NULL,
+				BSE_TYPE_ERROR_TYPE, BSE_ERROR_NONE,
+				SFI_PARAM_STANDARD);
+}
+BODY (BseProcedureClass *proc,
+      const GValue      *in_values,
+      GValue            *out_values)
+{
+  /* extract parameter values */
+  BseSoundFontRepo *self    = (BseSoundFontRepo*) bse_value_get_object (in_values++);
+  gchar *file_name          = sfi_value_get_string (in_values++);
+  BseUndoStack *ustack;
+  BseErrorType error;
+  BseSoundFont *sound_font;
+
+  /* check parameters */
+  if (!BSE_IS_SOUND_FONT_REPO (self) || !file_name)
+    return BSE_ERROR_PROC_PARAM_INVAL;
+
+  if (BSE_SOURCE_PREPARED (self))
+    {
+      /* In theory, its possible to allow loading sound fonts while
+       * the project is playing; in practice, the sound font repo
+       * lock would be locked for a very long time, which would stall
+       * the audio production ...
+       */
+      error = BSE_ERROR_SOURCE_BUSY;
+    }
+  else
+    {
+      ustack = bse_item_undo_open (self, "load-sound-font");
+      error = load_file (self, file_name, &sound_font);
+      if (sound_font)
+	bse_item_push_undo_proc (self, "remove-sound-font", sound_font);
+      bse_item_undo_close (ustack);
+   }
+
+  /* set output parameters */
+  g_value_set_enum (out_values++, error);
+
+  return BSE_ERROR_NONE;
+}
+
+METHOD (BseSoundFontRepo, remove-sound-font) {
+  HELP  = "Remove a sound font from repository";
+  IN    = bse_param_spec_object ("sound_font_repo", "Sound Font Repo", NULL,
+				 BSE_TYPE_SOUND_FONT_REPO, SFI_PARAM_STANDARD);
+  IN    = bse_param_spec_object ("sound_font", "Sound Font", NULL,
+				 BSE_TYPE_SOUND_FONT, SFI_PARAM_STANDARD);
+} BODY (BseProcedureClass *proc,
+	const GValue      *in_values,
+	GValue            *out_values)
+{
+  /* extract parameter values */
+  BseSoundFontRepo *self = (BseSoundFontRepo*) bse_value_get_object (in_values++);
+  BseItem *child         = (BseItem*) bse_value_get_object (in_values++);
+  BseUndoStack *ustack;
+  BseErrorType error;
+
+  /* check parameters */
+  if (!BSE_IS_SOUND_FONT_REPO (self) || !BSE_IS_SOUND_FONT (child) ||
+      child->parent != BSE_ITEM (self))
+    return BSE_ERROR_PROC_PARAM_INVAL;
+
+  if (BSE_SOURCE_PREPARED (self))
+    {
+      /* Don't allow unloading sound fonts which could be required by engine
+       * modules in the DSP thread currently producing audio output.
+       */
+      error = BSE_ERROR_SOURCE_BUSY;
+    }
+  else
+    {
+      /* action */
+      ustack = bse_item_undo_open (self, "remove-sound-font %s", bse_object_debug_name (child));
+      /* remove object references */
+      bse_container_uncross_undoable (BSE_CONTAINER (self), child);
+      /* how to get rid of the item once backed up */
+      bse_item_push_redo_proc (self, "remove-sound-font", child);
+      /* remove (without redo queueing) */
+      bse_container_remove_backedup (BSE_CONTAINER (self), child, ustack);
+      /* done */
+      bse_item_undo_close (ustack);
+
+      error = BSE_ERROR_NONE;
+    }
+
+  return error;
+}
