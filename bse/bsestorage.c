@@ -27,6 +27,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
+#include <sys/types.h>
+#include <signal.h>
 
 
 /* --- macros --- */
@@ -55,7 +57,14 @@ struct _BseStorageItemLink
   BseItem              *to_item;
   gchar                *error;
 };
-
+struct _BseStorageBlob
+{
+  SfiMutex    mutex;
+  char       *file_name;
+  int	      ref_count;
+  gboolean    is_temp_file;
+  gulong      id;
+};
 
 /* --- prototypes --- */
 static void       bse_storage_init                 (BseStorage       *self);
@@ -78,10 +87,11 @@ static GTokenType compat_parse_data_handle         (BseStorage       *self,
                                                     gfloat           *mix_freq_p,
                                                     gfloat           *osc_freq_p);
 
-
 /* --- variables --- */
 static gpointer parent_class = NULL;
 static GQuark   quark_raw_data_handle = 0;
+static GQuark   quark_blob = 0;
+static GQuark   quark_blob_id = 0;
 static GQuark   quark_vorbis_data_handle = 0;
 static GQuark   quark_dblock_data_handle = 0;
 static GQuark   quark_bse_storage_binary_v0 = 0;
@@ -121,6 +131,10 @@ bse_storage_class_init (BseStorageClass *class)
   quark_vorbis_data_handle = g_quark_from_static_string ("vorbis-data-handle");
   quark_dblock_data_handle = g_quark_from_static_string ("dblock-data-handle");
   quark_bse_storage_binary_v0 = g_quark_from_static_string ("BseStorageBinaryV0");
+  quark_blob = g_quark_from_string ("blob");
+  quark_blob_id = g_quark_from_string ("blob-id");
+
+  bse_storage_blob_clean_files(); /* FIXME: maybe better placed in bsemain.c */
 
   gobject_class->finalize = bse_storage_finalize;
 }
@@ -141,6 +155,8 @@ bse_storage_init (BseStorage *self)
   self->dblocks = NULL;
   self->n_dblocks = 0;
   self->free_me = NULL;
+  self->blobs = NULL;
+  self->n_blobs = 0;
 
   bse_storage_reset (self);
 }
@@ -161,9 +177,10 @@ bse_storage_turn_readable (BseStorage  *self,
                            const gchar *storage_name)
 {
   BseStorageDBlock *dblocks;
+  BseStorageBlob **blobs;
   const gchar *cmem;
   gchar *text;
-  guint n_dblocks, l;
+  guint n_dblocks, n_blobs, l;
 
   g_return_if_fail (BSE_IS_STORAGE (self));
   g_return_if_fail (BSE_STORAGE_DBLOCK_CONTAINED (self));
@@ -178,13 +195,19 @@ bse_storage_turn_readable (BseStorage  *self,
   text = g_memdup (cmem, l + 1);
   dblocks = self->dblocks;
   n_dblocks = self->n_dblocks;
+  blobs = self->blobs;
+  n_blobs = self->n_blobs;
   self->dblocks = NULL;
   self->n_dblocks = 0;
+  self->blobs = NULL;
+  self->n_blobs = 0;
 
   bse_storage_input_text (self, text, storage_name);
   self->free_me = text;
   self->dblocks = dblocks;
   self->n_dblocks = n_dblocks;
+  self->blobs = blobs;
+  self->n_blobs = n_blobs;
   BSE_OBJECT_SET_FLAGS (self, BSE_STORAGE_DBLOCK_CONTAINED);
 }
 
@@ -232,6 +255,12 @@ bse_storage_reset (BseStorage *self)
   self->dblocks = NULL;
   self->n_dblocks = 0;
 
+  for (i = 0; i < self->n_blobs; i++)
+    bse_storage_blob_unref (self->blobs[i]);
+  g_free (self->blobs);
+  self->blobs = NULL;
+  self->n_blobs = 0;
+
   g_free (self->free_me);
   self->free_me = NULL;
 
@@ -258,6 +287,16 @@ bse_storage_add_dblock (BseStorage    *self,
   self->dblocks[i].mix_freq = gsl_data_handle_mix_freq (dhandle);
   self->dblocks[i].osc_freq = gsl_data_handle_osc_freq (dhandle);
   return self->dblocks[i].id;
+}
+
+static gulong
+bse_storage_add_blob (BseStorage     *self,
+                      BseStorageBlob *blob)
+{
+  guint i = self->n_blobs++;
+  self->blobs = g_renew (BseStorageBlob *, self->blobs, self->n_blobs);
+  self->blobs[i] = bse_storage_blob_ref (blob);
+  return self->blobs[i]->id;
 }
 
 static BseStorageDBlock*
@@ -576,21 +615,27 @@ storage_path_table_resolve_upath (BseStorage   *self,
                                   BseContainer *container,
                                   gchar        *upath)
 {
-  gchar *next_uname = strchr (upath, ':');
+  char *next_upath = strchr (upath, ':');
   /* upaths consist of colon seperated unames from the item's ancestry */
-  if (next_uname)
+  if (next_upath) /* A:B[:...] */
     {
+      char *next_next_upath = strchr (next_upath + 1, ':');
       BseItem *item;
-      next_uname[0] = 0;
-      item = storage_path_table_lookup (self, container, upath);
-      next_uname[0] = ':';
+      next_upath[0] = 0;
+      if (next_next_upath)
+	next_next_upath[0] = 0;
+      /* lookup A */
+      item = storage_path_table_resolve_upath (self, container, upath);
+      next_upath[0] = ':';
+      if (next_next_upath)
+	next_next_upath[0] = ':';
+      /* lookup B[:...] in A */
       if (BSE_IS_CONTAINER (item))
-        return storage_path_table_lookup (self, BSE_CONTAINER (item), next_uname + 1);
+	return storage_path_table_resolve_upath (self, BSE_CONTAINER (item), next_upath + 1);
       else
-        return NULL;
+	return NULL;
     }
-  else
-    return storage_path_table_lookup (self, container, upath);
+  return storage_path_table_lookup (self, container, upath);
 }
 
 static void
@@ -1716,6 +1761,310 @@ bse_storage_parse_data_handle_rest (BseStorage     *self,
   g_return_val_if_fail (data_handle_p != NULL, G_TOKEN_ERROR);
 
   return parse_data_handle_trampoline (self, TRUE, data_handle_p, n_channels_p, mix_freq_p, osc_freq_p);
+}
+
+/* blobs */
+
+BseStorageBlob *
+bse_storage_blob_ref (BseStorageBlob *blob)
+{
+  g_return_val_if_fail (blob != NULL, NULL);
+  g_return_val_if_fail (blob->ref_count > 0, NULL);
+
+  GSL_SPIN_LOCK (&blob->mutex);
+  blob->ref_count++;
+  GSL_SPIN_UNLOCK (&blob->mutex);
+
+  return blob;
+}
+
+const gchar *
+bse_storage_blob_file_name (BseStorageBlob *blob)
+{
+  g_return_val_if_fail (blob != NULL, NULL);
+  g_return_val_if_fail (blob->ref_count > 0, NULL);
+
+  GSL_SPIN_LOCK (&blob->mutex);
+  const gchar *file_name = blob->file_name;
+  GSL_SPIN_UNLOCK (&blob->mutex);
+
+  return file_name;
+}
+
+void
+bse_storage_blob_unref (BseStorageBlob *blob)
+{
+  g_return_if_fail (blob != NULL);
+  g_return_if_fail (blob->ref_count > 0);
+
+  GSL_SPIN_LOCK (&blob->mutex);
+  blob->ref_count--;
+  gboolean destroy = blob->ref_count == 0;
+  GSL_SPIN_UNLOCK (&blob->mutex);
+  if (destroy)
+    {
+      if (blob->is_temp_file)
+	{
+	  unlink (blob->file_name);
+	  /* FIXME: check error code and do what? */
+	}
+      sfi_mutex_destroy (&blob->mutex);
+      g_free (blob->file_name);
+      blob->file_name = NULL;
+      bse_id_free (blob->id);
+      g_free (blob);
+    }
+}
+
+/* search in /tmp for files called "bse-<user>-<pid>*"
+ * delete files if the pid does not exist any longer
+ */
+void
+bse_storage_blob_clean_files()
+{
+  GError *error;
+  const char *tmp_dir = g_get_tmp_dir();
+  GDir *dir = g_dir_open (tmp_dir, 0, &error);
+  if (dir)
+    {
+      char *pattern = g_strdup_printf ("bse-%s-", g_get_user_name());
+      const char *file_name;
+      while ((file_name = g_dir_read_name (dir)))
+	{
+	  if (strncmp (pattern, file_name, strlen (pattern)) == 0)
+	    {
+	      int pid = atoi (file_name + strlen (pattern));
+
+              if (kill (pid, 0) == -1 && errno == ESRCH)
+		{
+		  char *path = g_strdup_printf ("%s/%s", tmp_dir, file_name);
+		  unlink (path);
+		  g_free (path);
+		}
+	    }
+	}
+      g_free (pattern);
+      g_dir_close (dir);
+    }
+}
+
+BseStorageBlob *
+bse_storage_blob_new_from_file (const char *file_name,
+                                gboolean    is_temp_file)
+{
+  BseStorageBlob *blob = g_new0 (BseStorageBlob, 1);
+  blob->file_name = g_strdup (file_name);
+  blob->ref_count = 1;
+  blob->is_temp_file = is_temp_file;
+  blob->id = bse_id_alloc();
+  sfi_mutex_init (&blob->mutex);
+  return blob;
+}
+
+gboolean
+bse_storage_blob_is_temp_file (BseStorageBlob *blob)
+{
+  g_return_val_if_fail (blob != NULL, FALSE);
+  g_return_val_if_fail (blob->ref_count > 0, FALSE);
+
+  GSL_SPIN_LOCK (&blob->mutex);
+  gboolean is_temp_file = blob->is_temp_file;
+  GSL_SPIN_UNLOCK (&blob->mutex);
+
+  return is_temp_file;
+}
+
+typedef struct
+{
+  BseStorageBlob *blob;
+  BseStorage     *storage;
+  int             fd;
+} WStoreBlob;
+
+static WStoreBlob *
+wstore_blob_new (BseStorage *storage,
+                 BseStorageBlob *blob)
+{
+  WStoreBlob *wsb = (WStoreBlob *) g_new0 (WStoreBlob, 1);
+  wsb->blob = bse_storage_blob_ref (blob);
+  wsb->storage = storage;
+  wsb->fd = -1;
+  return wsb;
+}
+
+static gint /* -errno || length */
+wstore_blob_reader (gpointer data,
+		    void    *buffer,
+		    guint    blength)
+{
+  WStoreBlob *wsb = data;
+  if (wsb->fd == -1)
+    {
+      do
+	wsb->fd = open (bse_storage_blob_file_name (wsb->blob), O_RDONLY);
+      while (wsb->fd == -1 && errno == EINTR);
+      if (wsb->fd == -1)
+	{
+	  bse_storage_error (wsb->storage, "file %s could not be opened: %s", bse_storage_blob_file_name (wsb->blob), strerror (errno));
+	  return -errno;
+	}
+    }
+  int n;
+  do
+    n = read (wsb->fd, buffer, blength);
+  while (n == -1 && errno == EINTR);
+  if (n < 0)
+    return -errno;
+  else
+    return n;
+}
+
+static void
+wstore_blob_destroy (gpointer data)
+{
+  WStoreBlob *wblob = data;
+  if (wblob->fd >= 0)
+    close (wblob->fd);
+  bse_storage_blob_unref (wblob->blob);
+}
+
+void
+bse_storage_put_blob (BseStorage      *self,
+                      BseStorageBlob  *blob)
+{
+  if (BSE_STORAGE_DBLOCK_CONTAINED (self))
+    {
+      gulong id = bse_storage_add_blob (self, blob);
+      bse_storage_break (self);
+      bse_storage_printf (self, "(%s %lu)", g_quark_to_string (quark_blob_id), id);
+    }
+  else
+    {
+      bse_storage_break (self);
+      bse_storage_printf (self, "(%s ", g_quark_to_string (quark_blob));
+      bse_storage_push_level (self);
+      bse_storage_break (self);
+      sfi_wstore_put_binary (self->wstore, wstore_blob_reader, wstore_blob_new (self, blob), wstore_blob_destroy);
+      bse_storage_pop_level (self);
+      bse_storage_putc (self, ')');
+    }
+}
+
+GTokenType
+bse_storage_parse_blob (BseStorage             *self,
+                        BseStorageBlob        **blob)
+{
+  GScanner *scanner = bse_storage_get_scanner (self);
+  int bse_fd = -1;
+  int tmp_fd = -1;
+  char *file_name = g_strdup_printf ("%s/bse-%s-%u-%08x", g_get_tmp_dir(), g_get_user_name(), getpid(), g_random_int());
+
+  *blob = NULL; /* on error, the resulting blob should be NULL */
+
+  parse_or_return (scanner, '(');
+  parse_or_return (scanner, G_TOKEN_IDENTIFIER);
+  if (g_quark_try_string (scanner->value.v_identifier) == quark_blob)
+    {
+      SfiNum offset, length;
+      GTokenType token = sfi_rstore_parse_binary (self->rstore, &offset, &length);
+      if (token != G_TOKEN_NONE)
+	return token;
+
+      char buffer[1024];
+      bse_fd = open (self->rstore->fname, O_RDONLY);
+      if (bse_fd < 0)
+	{
+	  bse_storage_error (self, "couldn't open file %s for reading: %s\n", self->rstore->fname, strerror (errno));
+	  goto return_with_error;
+	}
+      tmp_fd = open (file_name, O_CREAT | O_WRONLY, 0600);
+      if (tmp_fd < 0)
+	{
+	  bse_storage_error (self, "couldn't open file %s for writing: %s\n", file_name, strerror (errno));
+	  goto return_with_error;
+	}
+      int result = lseek (bse_fd, offset, SEEK_SET);
+      if (result != offset)
+	{
+	  bse_storage_error (self, "could not seek to position %lld in bse file %s\n", offset, self->rstore->fname);
+	  goto return_with_error;
+	}
+      int bytes_todo = length;
+      while (bytes_todo > 0)
+	{
+	  int rbytes, wbytes;
+
+          do
+            rbytes = read (bse_fd, buffer, MIN (bytes_todo, 1024));
+          while (rbytes == -1 && errno == EINTR);
+
+	  if (rbytes == -1)
+	    {
+	      bse_storage_error (self, "error while reading file %s: %s\n", self->rstore->fname, strerror (errno));
+	      goto return_with_error;
+	    }
+	  if (rbytes == 0)
+	    {
+	      bse_storage_error (self, "end-of-file occured too early in file %s\n", self->rstore->fname);
+	      goto return_with_error;
+	    }
+
+	  int bytes_written = 0;
+	  while (bytes_written != rbytes)
+	    {
+	      do
+		wbytes = write (tmp_fd, &buffer[bytes_written], rbytes - bytes_written);
+	      while (wbytes == -1 && errno == EINTR);
+	      if (wbytes == -1)
+		{
+		  bse_storage_error (self, "error while writing file %s: %s\n", self->rstore->fname, strerror (errno));
+		  goto return_with_error;
+		}
+	      bytes_written += wbytes;
+	    }
+
+	  bytes_todo -= rbytes;
+	}
+      close (bse_fd);
+      close (tmp_fd);
+      *blob = bse_storage_blob_new_from_file (file_name, TRUE);
+      g_free (file_name);
+    }
+  else if (g_quark_try_string (scanner->value.v_identifier) == quark_blob_id)
+    {
+      int i;
+      gulong id;
+      parse_or_return (scanner, G_TOKEN_INT);
+      id = scanner->value.v_int64;
+      *blob = NULL;
+      for (i = 0; i < self->n_blobs; i++)
+	{
+	  if (self->blobs[i]->id == id)
+	    *blob = bse_storage_blob_ref (self->blobs[i]);
+	}
+      if (!*blob)
+	{
+	  g_warning ("failed to lookup storage blob with id=%ld\n", id);
+	  goto return_with_error;
+	}
+     }
+  else
+    {
+      goto return_with_error;
+    }
+  parse_or_return (scanner, ')');
+
+  return G_TOKEN_NONE;
+
+return_with_error:
+  if (bse_fd != -1)
+    close (bse_fd);
+  if (tmp_fd != -1)
+    {
+      close (tmp_fd);
+      unlink (file_name);
+    }
+  return G_TOKEN_ERROR;
 }
 
 BseErrorType

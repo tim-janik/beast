@@ -56,6 +56,7 @@ typedef enum    /*< skip >*/
 /* --- BseStorage --- */
 typedef struct _BseStorageDBlock   BseStorageDBlock;
 typedef struct _BseStorageItemLink BseStorageItemLink;
+typedef struct _BseStorageBlob     BseStorageBlob;
 typedef void (*BseStorageRestoreLink)   (gpointer        data,
                                          BseStorage     *storage,
                                          BseItem        *from_item,
@@ -79,6 +80,8 @@ struct _BseStorage
   /* internal data */
   guint                  n_dblocks;
   BseStorageDBlock      *dblocks;
+  guint                  n_blobs;
+  BseStorageBlob       **blobs;
   gchar                 *free_me;
   /* compat */ // VERSION-FIXME: needed only for <= 0.5.1
   gfloat                 mix_freq;
@@ -141,6 +144,8 @@ void         bse_storage_put_item_link          (BseStorage             *self,
 void         bse_storage_put_data_handle        (BseStorage             *self,
                                                  guint                   significant_bits,
                                                  GslDataHandle          *dhandle);
+void         bse_storage_put_blob               (BseStorage             *self,
+                                                 BseStorageBlob         *blob);
 void         bse_storage_put_xinfos             (BseStorage             *self,
                                                  gchar                 **xinfos);
 BseErrorType bse_storage_flush_fd               (BseStorage             *self,
@@ -185,8 +190,19 @@ GTokenType   bse_storage_parse_rest             (BseStorage             *self,
                                                  gpointer                context_data,
                                                  BseTryStatement         try_statement,
                                                  gpointer                user_data);
+GTokenType   bse_storage_parse_blob             (BseStorage             *self,
+                                                 BseStorageBlob        **blob);
 gboolean     bse_storage_check_parse_negate     (BseStorage             *self);
 
+/* --- bse storage blob --- */
+
+BseStorageBlob  *bse_storage_blob_ref               (BseStorageBlob         *self);
+const gchar     *bse_storage_blob_file_name         (BseStorageBlob         *self);
+gboolean         bse_storage_blob_is_temp_file      (BseStorageBlob         *self);
+void             bse_storage_blob_unref             (BseStorageBlob         *self);
+BseStorageBlob  *bse_storage_blob_new_from_file     (const gchar            *file_name,
+                                                     gboolean                is_temp_file);
+void             bse_storage_blob_clean_files       (void);
 
 /* --- short-hands --- */
 #define bse_storage_get_scanner(s)      ((s)->rstore->scanner)
@@ -196,7 +212,6 @@ gboolean     bse_storage_check_parse_negate     (BseStorage             *self);
 #define bse_storage_break(s)            sfi_wstore_break ((s)->wstore)
 #define bse_storage_putc(s,c)           sfi_wstore_putc ((s)->wstore, c)
 #define bse_storage_puts(s,b)           sfi_wstore_puts ((s)->wstore, b)
-
 
 G_END_DECLS
 
