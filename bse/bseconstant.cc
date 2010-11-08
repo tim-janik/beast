@@ -216,11 +216,6 @@ bse_constant_update_modules (BseConstant *constant,
 			       sizeof (constant->constants),
 			       trans);
 }
-typedef struct {
-  guint  index;
-  guint  n_values;
-  gfloat constants[BSE_CONSTANT_N_OUTPUTS];
-} FlowAccessData;
 static void
 constant_process (BseModule *module,
 		  guint      n_values)

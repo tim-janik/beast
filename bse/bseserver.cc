@@ -467,7 +467,7 @@ server_open_midi_device (BseServer *server)
       if (server->midi_device)
         sfi_msg_display (SFI_MSG_WARNING,
                          SFI_MSG_TITLE ("%s", _("No MIDI")),
-                         SFI_MSG_TEXT1 ("%s", _("MIDI input or oputput is not available.")),
+                         SFI_MSG_TEXT1 ("%s", _("MIDI input or output is not available.")),
                          SFI_MSG_TEXT2 ("%s", _("No available MIDI device could be found and opened successfully. "
                                                 "Reverting to null device, no MIDI events will be received or sent.")),
                          SFI_MSG_TEXT3 (_("Failed to open MIDI devices: %s"), bse_error_blurb (error)),
