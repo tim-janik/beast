@@ -135,7 +135,7 @@ track_view_fill_value (BstItemView *iview,
       const gchar *string;
       gboolean vbool;
       SfiInt vint;
-      SfiProxy snet, wave;
+      SfiProxy snet, wave, sound_font_preset;
       BseItemSeq *iseq;
       SfiSeq *seq;
     case COL_SEQID:
@@ -154,8 +154,18 @@ track_view_fill_value (BstItemView *iview,
       break;
     case COL_SYNTH:
       snet = 0;
-      bse_proxy_get (item, "snet", &snet, "wave", &wave, NULL);
-      g_value_set_string (value, snet || wave ? bse_item_get_name (snet ? snet : wave) : "");
+      wave = 0;
+      sound_font_preset = 0;
+      bse_proxy_get (item, "snet", &snet, "wave", &wave, "sound_font_preset", &sound_font_preset, NULL);
+      if (snet)
+	string = bse_item_get_name (snet);
+      else if (wave)
+	string = bse_item_get_name (wave);
+      else if (sound_font_preset)
+	string = bse_item_get_name (sound_font_preset);
+      else
+	string = "";
+      g_value_set_string (value, string);
       break;
     case COL_MIDI_CHANNEL:
       bse_proxy_get (item, "midi-channel", &vint, NULL);
@@ -190,7 +200,7 @@ track_view_synth_edited (BstTrackView *self,
 			 const gchar  *text)
 {
   g_return_if_fail (BST_IS_TRACK_VIEW (self));
-  
+
   if (strpath)
     {
       gint row = gxk_tree_spath_index0 (strpath);
@@ -199,11 +209,18 @@ track_view_synth_edited (BstTrackView *self,
 	{
 	  SfiProxy proxy = 0;
 	  GSList *slist = NULL;
-	  /* list possible snet/wave candidates */
+	  /* list possible snet/wave/sound_font_preset candidates */
           BsePropertyCandidates *pc = bse_item_get_property_candidates (item, "snet");
+          printf ("[0] slist=%p\n", slist);
 	  slist = g_slist_append (slist, pc->items);
           pc = bse_item_get_property_candidates (item, "wave");
+          printf ("[1] slist=%p\n", slist);
 	  slist = g_slist_append (slist, pc->items);
+	  pc = bse_item_get_property_candidates (item, "sound_font_preset");
+          printf ("[2] slist=%p\n", slist);
+          printf ("pc=%p\n", pc);
+          printf ("pc->items=%p\n", pc->items);
+          slist = g_slist_append (slist, pc->items);
 	  /* find best match */
 	  proxy = bst_item_seq_list_match (slist, text);
 	  g_slist_free (slist);
@@ -211,11 +228,13 @@ track_view_synth_edited (BstTrackView *self,
 	    bse_proxy_set (item, "snet", proxy, NULL);
 	  else if (proxy && BSE_IS_WAVE (proxy))
 	    bse_proxy_set (item, "wave", proxy, NULL);
+	  else if (proxy && BSE_IS_SOUND_FONT_PRESET (proxy))
+	    bse_proxy_set (item, "sound_font_preset", proxy, NULL);
 	  else
-	    bse_proxy_set (item, "snet", 0, "wave", 0, NULL);
+	    bse_proxy_set (item, "snet", 0, "wave", 0, "sound_font_preset", 0, NULL);
 	}
       else
-	bse_proxy_set (item, "snet", 0, "wave", 0, NULL);
+	bse_proxy_set (item, "snet", 0, "wave", 0, "sound_font_preset", 0, NULL);
     }
 }
 
@@ -296,6 +315,9 @@ track_view_synth_popup (BstTrackView         *self,
                                                             _("Available Waves"),
                                                             _("List of available waves to choose a track instrument from"),
                                                             bse_project_get_wave_repo (bse_item_get_project (item)),
+							    _("Available Sound Fonts"),
+							    _("List of available sound fonts to choose track instrument from"),
+							    bse_project_get_sound_font_repo (bse_item_get_project (item)),
                                                             track_view_synth_popup_cb, g_memdup (&sdata, sizeof (sdata)), track_view_synth_popup_cleanup);
           gxk_cell_renderer_popup_dialog (pcell, dialog);
         }
@@ -323,6 +345,7 @@ track_view_post_synth_popup (BstTrackView         *self,
           GtkWidget *dialog = bst_track_synth_dialog_popup (self, item,
                                                             pc->label, pc->tooltip, pc->items,
                                                             NULL, NULL, 0,
+							    NULL, NULL, 0,
                                                             track_view_synth_popup_cb, g_memdup (&sdata, sizeof (sdata)), track_view_synth_popup_cleanup);
           gxk_cell_renderer_popup_dialog (pcell, dialog);
         }

@@ -57,7 +57,7 @@ bst_track_synth_dialog_init (BstTrackSynthDialog *self)
                           GXK_DIALOG_POPUP_POS |
                           GXK_DIALOG_MODAL),
                 NULL);
-  gxk_dialog_set_sizes (GXK_DIALOG (self), 550, 300, 600, 320);
+  gxk_dialog_set_sizes (GXK_DIALOG (self), 550, 300, 600, 450);
   
   /* notebook */
   self->notebook = g_object_new (GXK_TYPE_NOTEBOOK,
@@ -120,6 +120,10 @@ bst_track_synth_dialog_init (BstTrackSynthDialog *self)
   self->wpage = g_object_new (BST_TYPE_WAVE_VIEW, "visible", TRUE, NULL);
   gxk_notebook_append (self->notebook, self->wpage, "wave", TRUE);
   bst_wave_view_set_editable (BST_WAVE_VIEW (self->wpage), FALSE);
+
+  /* sound font view */
+  self->sfont_page = g_object_new (BST_TYPE_SOUND_FONT_VIEW, "visible", TRUE, NULL);
+  gxk_notebook_append (self->notebook, self->sfont_page, "sound_font", TRUE);
   
   /* provide buttons */
   self->ok = gxk_dialog_default_action_swapped (GXK_DIALOG (self), BST_STOCK_OK, bst_track_synth_dialog_activate, self);
@@ -236,6 +240,9 @@ bst_track_synth_dialog_popup (gpointer     parent_widget,
                               const gchar *wrepo_label,
                               const gchar *wrepo_tooltip,
                               SfiProxy     wrepo,
+                              const gchar *sfrepo_label,
+                              const gchar *sfrepo_tooltip,
+                              SfiProxy     sfrepo,
                               BstTrackSynthDialogSelected  selected_callback,
                               gpointer                     selected_data,
                               GxkFreeFunc                  selected_cleanup)
@@ -246,6 +253,8 @@ bst_track_synth_dialog_popup (gpointer     parent_widget,
     candidate_label = "";
   if (!wrepo_label)
     wrepo_label = "";
+  if (!sfrepo_label)
+    sfrepo_label = "";
 
   bst_track_synth_dialog_setup (self, NULL, NULL, 0);
 
@@ -253,8 +262,10 @@ bst_track_synth_dialog_popup (gpointer     parent_widget,
   gxk_widget_set_tooltip (self->tview, candidate_tooltip);
   g_object_set (gtk_notebook_get_tab_label (self->notebook, self->wpage), "label", wrepo_label, NULL);
   gxk_widget_set_tooltip (BST_ITEM_VIEW (self->wpage)->tree, wrepo_tooltip);
+  g_object_set (gtk_notebook_get_tab_label (self->notebook, self->sfont_page), "label", sfrepo_label, NULL);
+  gxk_widget_set_tooltip (BST_ITEM_VIEW (self->sfont_page)->tree, sfrepo_tooltip);
 
-  bst_track_synth_dialog_set (self, candidates, wrepo);
+  bst_track_synth_dialog_set (self, candidates, wrepo, sfrepo);
   bst_track_synth_dialog_setup (self, parent_widget,
                                 /* TRANSLATORS: this is a dialog title and %s is replaced by an object name */
                                 _("Synthesizer Selection: %s"),
@@ -271,14 +282,17 @@ bst_track_synth_dialog_popup (gpointer     parent_widget,
 void
 bst_track_synth_dialog_set (BstTrackSynthDialog *self,
                             BseItemSeq          *iseq,
-                            SfiProxy             wrepo)
+                            SfiProxy             wrepo,
+			    SfiProxy		 sfrepo)
 {
   g_return_if_fail (BST_IS_TRACK_SYNTH_DIALOG (self));
   
   bst_item_view_set_container (BST_ITEM_VIEW (self->wpage), wrepo);
+  bst_item_view_set_container (BST_ITEM_VIEW (self->sfont_page), sfrepo);
   bst_item_seq_store_set (self->pstore, iseq);
-  g_object_set (self->wpage, "visible", wrepo != 0, NULL);
   g_object_set (self->spage, "visible", iseq != NULL, NULL);
+  g_object_set (self->wpage, "visible", wrepo != 0, NULL);
+  g_object_set (self->sfont_page, "visible", sfrepo != 0, NULL);
 }
 
 static void
@@ -303,9 +317,15 @@ bst_track_synth_dialog_activate (BstTrackSynthDialog *self)
           proxy = bst_item_seq_store_get_from_iter (self->pstore, &piter);
         }
     }
-  else if (self->wpage)
-    proxy = bst_item_view_get_current (BST_ITEM_VIEW (self->wpage));
-  
+  else if (self->wpage && gxk_widget_viewable (GTK_WIDGET (self->wpage)))
+    {
+      proxy = bst_item_view_get_current (BST_ITEM_VIEW (self->wpage));
+    }
+  else if (self->sfont_page && gxk_widget_viewable (GTK_WIDGET (self->sfont_page)))
+    {
+      proxy = bst_sound_font_view_get_preset (BST_SOUND_FONT_VIEW (self->sfont_page));
+    }
+
   /* ignore_activate guards against multiple clicks */
   self->ignore_activate = TRUE;
   /* notify and done */
