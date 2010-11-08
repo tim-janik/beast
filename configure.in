@@ -266,9 +266,12 @@ AC_DEFUN([AC_BSE_REQUIREMENTS],
       AC_MSG_ERROR([Ogg/Vorbis is missing, but required])
     fi
 
+    dnl Check for FluidSynth
+    PKG_CHECK_MODULES(FLUID, fluidsynth >= 1.0.6)
+
     dnl # --- complete CFLAGS/LIBS setup ---
-    BSE_CFLAGS="$MAD_CFLAGS $SFI_CFLAGS"
-    BSE_LIBS="$OV_LIBS $MAD_LIBS $SFI_LIBS"
+    BSE_CFLAGS="$MAD_CFLAGS $SFI_CFLAGS $FLUID_CFLAGS"
+    BSE_LIBS="$OV_LIBS $MAD_LIBS $SFI_LIBS $FLUID_LIBS"
     AC_SUBST(BSE_CFLAGS)
     AC_SUBST(BSE_LIBS)
     dnl # --- figure stuff for bse.pc ---
