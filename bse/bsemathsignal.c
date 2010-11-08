@@ -132,7 +132,7 @@ bse_window_hamming (double x)	/* sharp (rectangle) cutoffs at boundaries */
 }
 
 double
-bse_window_sinc (double x)	/* noramlied C. Lanczos window */
+bse_window_sinc (double x)	/* normalized C. Lanczos window */
 {
   if (fabs (x) > 1)
     return 0;

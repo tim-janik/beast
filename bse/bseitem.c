@@ -334,7 +334,7 @@ gather_child (BseItem *child,
  * @param data	        @a data pointer to @a ccheck and @a pcheck
  * @return		returns @a items
  *
- * This function gathers items from an object hirachy, walking upwards,
+ * This function gathers items from an object hierachy, walking upwards,
  * starting out with @a item. For each container passing @a ccheck(), all
  * immediate children are tested for addition with @a pcheck.
  */
