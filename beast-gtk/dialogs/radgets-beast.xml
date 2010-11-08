@@ -209,6 +209,25 @@
       </alignment>
     </hbox>
   </xdef:wave-view>
+
+  <!-- sound font view -->
+  <xdef:sound-font-view inherit="BstSoundFontView" border-width="3" >
+    <vbox spacing="3" >
+      <hbox spacing="3" >
+	<scrolled-window id="tree-area" pack:expand="1" >
+	  <tree-view id="tree-view" height="120" width="200" />
+	</scrolled-window>
+	<alignment yscale="0" yalign="0" >
+	  <vbox homogeneous="1" spacing="3" >
+	    <big-button-factory actions="sound-font-view-actions" />
+	  </vbox>
+	</alignment>
+      </hbox>
+      <scrolled-window id="preset-area" pack:expand="1" >
+	<tree-view id="preset-view" height="120" width="200" />
+      </scrolled-window>
+    </vbox>
+  </xdef:sound-font-view>
   
   <!-- part view -->
   <xdef:part-view inherit="BstPartView" border-width="3" >
