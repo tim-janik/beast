@@ -39,21 +39,23 @@ typedef struct  _BstFileDialogClass BstFileDialogClass;
 
 /* --- structures --- */
 typedef enum {
-  BST_FILE_DIALOG_OPEN_PROJECT	   = 0x0001,
-  BST_FILE_DIALOG_MERGE_PROJECT	   = 0x0002,
-  BST_FILE_DIALOG_SAVE_PROJECT	   = 0x0003,
-  BST_FILE_DIALOG_IMPORT_MIDI	   = 0x0004,
-  BST_FILE_DIALOG_SELECT_FILE	   = 0x0008,
-  BST_FILE_DIALOG_SELECT_DIR	   = 0x0009,
-  BST_FILE_DIALOG_LOAD_WAVE	   = 0x0011,
-  BST_FILE_DIALOG_LOAD_WAVE_LIB	   = 0x0012,
-  BST_FILE_DIALOG_MERGE_EFFECT     = 0x0021,
-  BST_FILE_DIALOG_MERGE_INSTRUMENT = 0x0022,
-  BST_FILE_DIALOG_SAVE_EFFECT      = 0x0023,
-  BST_FILE_DIALOG_SAVE_INSTRUMENT  = 0x0024,
-  BST_FILE_DIALOG_MODE_MASK	   = 0x00ff,
-  BST_FILE_DIALOG_ALLOW_DIRS	   = 0x1000,
-  BST_FILE_DIALOG_FLAG_MASK	   = 0xff00
+  BST_FILE_DIALOG_OPEN_PROJECT	      = 0x0001,
+  BST_FILE_DIALOG_MERGE_PROJECT	      = 0x0002,
+  BST_FILE_DIALOG_SAVE_PROJECT	      = 0x0003,
+  BST_FILE_DIALOG_IMPORT_MIDI	      = 0x0004,
+  BST_FILE_DIALOG_SELECT_FILE	      = 0x0008,
+  BST_FILE_DIALOG_SELECT_DIR	      = 0x0009,
+  BST_FILE_DIALOG_LOAD_WAVE	      = 0x0011,
+  BST_FILE_DIALOG_LOAD_WAVE_LIB	      = 0x0012,
+  BST_FILE_DIALOG_LOAD_SOUND_FONT     = 0x0013,
+  BST_FILE_DIALOG_LOAD_SOUND_FONT_LIB = 0x0014,
+  BST_FILE_DIALOG_MERGE_EFFECT	      = 0x0021,
+  BST_FILE_DIALOG_MERGE_INSTRUMENT    = 0x0022,
+  BST_FILE_DIALOG_SAVE_EFFECT	      = 0x0023,
+  BST_FILE_DIALOG_SAVE_INSTRUMENT     = 0x0024,
+  BST_FILE_DIALOG_MODE_MASK	      = 0x00ff,
+  BST_FILE_DIALOG_ALLOW_DIRS	      = 0x1000,
+  BST_FILE_DIALOG_FLAG_MASK	      = 0xff00
 } BstFileDialogMode;
 struct _BstFileDialog
 {
@@ -109,6 +111,9 @@ GtkWidget*	bst_file_dialog_popup_select_dir  	(gpointer	   parent_widget);
 GtkWidget*	bst_file_dialog_popup_load_wave		(gpointer	   parent_widget,
 							 SfiProxy	   wave_repo,
 							 gboolean	   show_lib);
+GtkWidget*	bst_file_dialog_popup_load_sound_font   (gpointer          parent_widget,
+                                                         SfiProxy          sound_font_repo,
+                                                         gboolean          show_lib);
 void		bst_file_dialog_set_mode		(BstFileDialog	  *self,
 							 gpointer          parent_widget,
 							 BstFileDialogMode mode,

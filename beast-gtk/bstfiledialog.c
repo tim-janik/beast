@@ -244,6 +244,16 @@ bst_file_dialog_global_wave (void)
 }
 
 static BstFileDialog*
+bst_file_dialog_global_sound_font (void)
+{
+  static BstFileDialog *singleton = NULL;
+  if (!singleton)
+    singleton = g_object_new (BST_TYPE_FILE_DIALOG, NULL);
+  return singleton;
+}
+
+
+static BstFileDialog*
 bst_file_dialog_global_effect (void)
 {
   static BstFileDialog *singleton = NULL;
@@ -333,6 +343,7 @@ bst_file_dialog_set_mode (BstFileDialog    *self,
   /* handle tree visibility */
   switch (mode & BST_FILE_DIALOG_MODE_MASK)
     {
+    case BST_FILE_DIALOG_LOAD_SOUND_FONT:
     case BST_FILE_DIALOG_LOAD_WAVE:
       g_free (self->search_path);
       self->search_path = g_strdup (bse_server_get_sample_path (BSE_SERVER));
@@ -341,6 +352,7 @@ bst_file_dialog_set_mode (BstFileDialog    *self,
       gxk_notebook_set_current_page_widget (GTK_NOTEBOOK (self->notebook), self->fpage);
       g_object_set (self->notebook, "show_border", TRUE, "show_tabs", TRUE, NULL);
       break;
+    case BST_FILE_DIALOG_LOAD_SOUND_FONT_LIB:
     case BST_FILE_DIALOG_LOAD_WAVE_LIB:
       g_free (self->search_path);
       self->search_path = g_strdup (bse_server_get_sample_path (BSE_SERVER));
@@ -783,6 +795,37 @@ bst_file_dialog_load_wave (BstFileDialog *self,
 }
 
 GtkWidget*
+bst_file_dialog_popup_load_sound_font (gpointer parent_widget,
+				       SfiProxy sound_font_repo,
+				       gboolean show_lib)
+{
+  BstFileDialog *self = bst_file_dialog_global_sound_font ();
+  GtkWidget *widget = GTK_WIDGET (self);
+
+  bst_file_dialog_set_mode (self, parent_widget,
+			    show_lib ? BST_FILE_DIALOG_LOAD_SOUND_FONT_LIB : BST_FILE_DIALOG_LOAD_SOUND_FONT,
+			    _("Load Sound Font"), sound_font_repo);
+  gxk_widget_showraise (widget);
+
+  return widget;
+}
+
+static gboolean
+bst_file_dialog_load_sound_font (BstFileDialog *self,
+			         const gchar   *file_name)
+{
+  BseErrorType error;
+
+  gxk_status_printf (0, NULL, _("Loading sound font `%s'"), file_name);
+  error = bse_sound_font_repo_load_file (self->proxy, file_name);
+  bst_status_eprintf (error, _("Loading sound font `%s'"), file_name);
+  if (error)
+    sfi_error (_("Failed to load sound font \"%s\": %s"), file_name, bse_error_blurb (error));
+
+  return TRUE;
+}
+
+GtkWidget*
 bst_file_dialog_create (void)
 {
   BstFileDialog *self = g_object_new (BST_TYPE_FILE_DIALOG, NULL);
@@ -919,6 +962,10 @@ bst_file_dialog_activate (BstFileDialog *self)
     case BST_FILE_DIALOG_LOAD_WAVE:
     case BST_FILE_DIALOG_LOAD_WAVE_LIB:
       popdown = bst_file_dialog_load_wave (self, file_name);
+      break;
+    case BST_FILE_DIALOG_LOAD_SOUND_FONT:
+    case BST_FILE_DIALOG_LOAD_SOUND_FONT_LIB:
+      popdown = bst_file_dialog_load_sound_font (self, file_name);
       break;
     }
   if (swin)
