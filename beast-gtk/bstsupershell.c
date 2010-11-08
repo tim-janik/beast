@@ -21,6 +21,7 @@
 #include "bstbusmixer.h"
 #include "bstbusview.h"
 #include "bstwaveview.h"
+#include "bstsoundfontview.h"
 #include "bstrackview.h"
 #include "bstsnetrouter.h"
 #include "bstgconfig.h"
@@ -235,6 +236,20 @@ super_shell_build_wave_repo (BstSuperShell *self,
                             gxk_notebook_create_tabulator (_("Properties"), BST_STOCK_PROPERTIES, NULL));
 }
 
+static void
+super_shell_build_sound_font_repo (BstSuperShell *self,
+                                   GtkNotebook   *notebook)
+{
+  SfiProxy sfrepo = self->super;
+
+  gtk_notebook_append_page (notebook,
+                            bst_sound_font_view_new (sfrepo),
+                            gxk_notebook_create_tabulator (_("Sound Fonts"), BST_STOCK_MINI_WAVE_REPO, NULL));
+  gtk_notebook_append_page (notebook,
+                            bst_param_view_new (sfrepo),
+                            gxk_notebook_create_tabulator (_("Properties"), BST_STOCK_PROPERTIES, NULL));
+}
+
 static GtkNotebook*
 create_notebook (BstSuperShell *self)
 {
@@ -259,6 +274,8 @@ super_shell_add_views (BstSuperShell *self)
     super_shell_build_song (self, create_notebook (self));
   else if (BSE_IS_WAVE_REPO (self->super))
     super_shell_build_wave_repo (self, create_notebook (self));
+  else if (BSE_IS_SOUND_FONT_REPO (self->super))
+    super_shell_build_sound_font_repo (self, create_notebook (self));
   else /* BSE_IS_SNET (self->super) */
     super_shell_build_snet (self, create_notebook (self));
 }
