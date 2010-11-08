@@ -416,7 +416,7 @@ bse_source_prepare (BseSource *source)
   g_object_freeze_notify (G_OBJECT (source));
   source_class_collect_properties (BSE_SOURCE_GET_CLASS (source));
   source->contexts = g_bsearch_array_create (&context_config);
-  BSE_OBJECT_SET_FLAGS (source, BSE_SOURCE_FLAG_PREPARED);      /* guard properties from _before_ preapre() */
+  BSE_OBJECT_SET_FLAGS (source, BSE_SOURCE_FLAG_PREPARED);      /* guard properties from _before_ prepare() */
   BSE_SOURCE_GET_CLASS (source)->prepare (source);
   source_notify_properties (source);
   g_object_thaw_notify (G_OBJECT (source));
