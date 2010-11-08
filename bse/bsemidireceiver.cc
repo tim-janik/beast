@@ -26,6 +26,7 @@
 #include <sfi/gbsearcharray.h>
 #include <map>
 #include <set>
+#include <list>
 
 namespace {
 using namespace Bse;
@@ -231,6 +232,31 @@ struct ControlValue {
   }
 };
 
+struct EventHandler
+{
+  guint               midi_channel;
+  BseMidiEventHandler handler_func;
+  gpointer            handler_data;
+  BseModule          *module;
+
+  EventHandler (guint               midi_channel,
+                BseMidiEventHandler handler_func,
+                gpointer            handler_data,
+                BseModule          *module) :
+    midi_channel (midi_channel),
+    handler_func (handler_func),
+    handler_data (handler_data),
+    module (module)
+  {
+  }
+  bool operator == (const EventHandler& other)
+  {
+    return (midi_channel == other.midi_channel &&
+            handler_func == other.handler_func &&
+            handler_data == other.handler_data &&
+            module       == other.module);
+  }
+};
 
 /* --- voice prototypes --- */
 typedef struct VoiceSwitch          VoiceSwitch;
@@ -246,6 +272,7 @@ struct MidiChannel {
   guint           n_voices;
   VoiceSwitch   **voices;
   VoiceInputTable voice_input_table;
+  std::list<EventHandler> event_handlers;
   MidiChannel (guint mc) :
     midi_channel (mc),
     poly_enabled (0)
@@ -265,6 +292,21 @@ struct MidiChannel {
     if (poly_enabled)
       poly_enabled--;
   }
+  void
+  add_event_handler (const EventHandler& handler)
+  {
+    event_handlers.push_back (handler);
+  }
+  void
+  remove_event_handler (const EventHandler& handler)
+  {
+    list<EventHandler>::iterator hi = find (event_handlers.begin(), event_handlers.end(), handler);
+    g_return_if_fail (hi != event_handlers.end());
+    event_handlers.erase (hi);
+  }
+  bool
+  call_event_handlers (BseMidiEvent *event,
+                       BseTrans     *trans);
   ~MidiChannel()
   {
     if (vinput)
@@ -443,6 +485,24 @@ public:
   {
     ControlValue *cv = get_control_value (midi_channel, signal_type);
     cv->remove_handler (handler_func, handler_data, module);
+  }
+  void
+  add_event_handler (guint              midi_channel,
+		     BseMidiEventHandler handler_func,
+		     gpointer           handler_data,
+		     BseModule         *module)
+  {
+    MidiChannel *channel = get_channel (midi_channel);
+    channel->add_event_handler (EventHandler (midi_channel, handler_func, handler_data, module));
+  }
+  void
+  remove_event_handler (guint              midi_channel,
+			BseMidiEventHandler handler_func,
+			gpointer           handler_data,
+			BseModule         *module)
+  {
+    MidiChannel *channel = get_channel (midi_channel);
+    channel->remove_event_handler (EventHandler (midi_channel, handler_func, handler_data, module));
   }
 };
 
@@ -1043,6 +1103,35 @@ MidiChannel::no_poly_voice (const gchar *event_name,
             mchannel->midi_channel, event_name, freq);
 }
 
+bool
+MidiChannel::call_event_handlers (BseMidiEvent *event,
+                                  BseTrans     *trans)
+{
+  bool success = false;
+  list<EventHandler>::iterator hi;
+  for (hi = event_handlers.begin(); hi != event_handlers.end(); hi++)
+    {
+      int activated = 0;
+      for (guint i = 0; i < n_voices; i++)
+	{
+	  if (voices[i] && voices[i]->n_vinputs)
+	    {
+	      if (check_voice_switch_available_L (voices[i]))
+		{
+		  activated++;
+		  VoiceSwitch *vswitch = voices[i];
+		  activate_voice_switch_L (vswitch, event->delta_time, trans);
+		}
+	    }
+	}
+      if (!(activated <= 1))
+	g_warning (G_STRLOC ": midi event handling: assertion (activated <= 1) failed, activated = %d", activated);
+      hi->handler_func (hi->handler_data, hi->module, event, trans);
+      success = true;
+    }
+  return success;
+}
+
 void
 MidiChannel::start_note (guint64         tick_stamp,
                          gfloat          freq,
@@ -1530,6 +1619,40 @@ bse_midi_receiver_remove_control_handler (BseMidiReceiver      *self,
 }
 
 void
+bse_midi_receiver_add_event_handler (BseMidiReceiver   *self,
+                                     guint              midi_channel,
+                                     BseMidiEventHandler handler_func,
+                                     gpointer           handler_data,
+                                     BseModule         *module)
+{
+  g_return_if_fail (self != NULL);
+  g_return_if_fail (midi_channel > 0);
+  g_return_if_fail (handler_func != NULL);
+  g_return_if_fail (module != NULL);
+
+  BSE_MIDI_RECEIVER_LOCK ();
+  self->add_event_handler (midi_channel, handler_func, handler_data, module);
+  BSE_MIDI_RECEIVER_UNLOCK ();
+}
+
+void
+bse_midi_receiver_remove_event_handler (BseMidiReceiver   *self,
+                                        guint              midi_channel,
+                                        BseMidiEventHandler handler_func,
+                                        gpointer           handler_data,
+                                        BseModule         *module)
+{
+  g_return_if_fail (self != NULL);
+  g_return_if_fail (midi_channel > 0);
+  g_return_if_fail (handler_func != NULL);
+  g_return_if_fail (module != NULL);
+
+  BSE_MIDI_RECEIVER_LOCK ();
+  self->remove_event_handler (midi_channel, handler_func, handler_data, module);
+  BSE_MIDI_RECEIVER_UNLOCK ();
+}
+
+void
 bse_midi_receiver_channel_enable_poly (BseMidiReceiver *self,
                                        guint            midi_channel)
 {
@@ -1980,79 +2103,85 @@ midi_receiver_process_event_L (BseMidiReceiver *self,
   if (event->delta_time <= max_tick_stamp)
     {
       BseTrans *trans = bse_trans_open ();
+      MidiChannel *mchannel = self->peek_channel (event->channel);
       self->events = sfi_ring_remove_node (self->events, self->events);
-      switch (event->status)
+
+      bool event_handled = false;
+      if (mchannel)
+	event_handled = mchannel->call_event_handlers (event, trans);
+
+      if (!event_handled)
 	{
-          MidiChannel *mchannel;
-        case BSE_MIDI_NOTE_ON:
-          mchannel = self->peek_channel (event->channel);
-	  DEBUG_EVENTS ("MidiChannel[%u]: NoteOn  %fHz Velo=%f (stamp:%llu)", event->channel,
-                        event->data.note.frequency, event->data.note.velocity, event->delta_time);
-	  if (mchannel)
-            mchannel->start_note (event->delta_time,
-                                  event->data.note.frequency,
-                                  event->data.note.velocity,
-                                  trans);
-          else
-            sfi_diag ("ignoring note-on (%fHz) for foreign midi channel: %u", event->data.note.frequency, event->channel);
-	  break;
-	case BSE_MIDI_KEY_PRESSURE:
-	case BSE_MIDI_NOTE_OFF:
-          mchannel = self->peek_channel (event->channel);
-          DEBUG_EVENTS ("MidiChannel[%u]: %s %fHz (stamp:%llu)", event->channel,
-                        event->status == BSE_MIDI_NOTE_OFF ? "NoteOff" : "NotePressure",
-                        event->data.note.frequency, event->delta_time);
-          if (mchannel)
-            {
-              gboolean sustained_note = event->status == BSE_MIDI_NOTE_OFF &&
-                                        (BSE_GCONFIG (invert_sustain) ^
-                                         (self->get_control (event->channel, BSE_MIDI_SIGNAL_CONTROL_64) >= 0.5));
-              mchannel->adjust_note (event->delta_time,
-                                     event->data.note.frequency, event->status,
-                                     event->data.note.velocity, sustained_note, trans);
-            }
-	  break;
-	case BSE_MIDI_CONTROL_CHANGE:
-	  DEBUG_EVENTS ("MidiChannel[%u]: Control %2u Value=%f (stamp:%llu)", event->channel,
-                        event->data.control.control, event->data.control.value, event->delta_time);
-	  process_midi_control_L (self, event->channel, event->delta_time,
-				  event->data.control.control, event->data.control.value,
-				  FALSE,
-                                  trans);
-	  break;
-	case BSE_MIDI_X_CONTINUOUS_CHANGE:
-	  DEBUG_EVENTS ("MidiChannel[%u]: X Continuous Control %2u Value=%f (stamp:%llu)", event->channel,
-                        event->data.control.control, event->data.control.value, event->delta_time);
-	  process_midi_control_L (self, event->channel, event->delta_time,
-				  event->data.control.control, event->data.control.value,
-                                  TRUE,
-				  trans);
-	  break;
-	case BSE_MIDI_PROGRAM_CHANGE:
-	  DEBUG_EVENTS ("MidiChannel[%u]: Program %u (Value=%f) (stamp:%llu)", event->channel,
-                        event->data.program, event->data.program / (gfloat) 0x7f, event->delta_time);
-	  update_midi_signal_L (self, event->channel, event->delta_time,
-				BSE_MIDI_SIGNAL_PROGRAM, event->data.program / (gfloat) 0x7f,
-				trans);
-	  break;
-	case BSE_MIDI_CHANNEL_PRESSURE:
-	  DEBUG_EVENTS ("MidiChannel[%u]: Channel Pressure Value=%f (stamp:%llu)", event->channel,
-                        event->data.intensity, event->delta_time);
-	  update_midi_signal_L (self, event->channel, event->delta_time,
-				BSE_MIDI_SIGNAL_PRESSURE, event->data.intensity,
-				trans);
-	  break;
-	case BSE_MIDI_PITCH_BEND:
-	  DEBUG_EVENTS ("MidiChannel[%u]: Pitch Bend Value=%f (stamp:%llu)", event->channel,
-                        event->data.pitch_bend, event->delta_time);
-	  update_midi_signal_L (self, event->channel, event->delta_time,
-				BSE_MIDI_SIGNAL_PITCH_BEND, event->data.pitch_bend,
-				trans);
-	  break;
-	default:
-	  DEBUG_EVENTS ("MidiChannel[%u]: Ignoring Event %u (stamp:%llu)", event->channel,
-                        event->status, event->delta_time);
-	  break;
+	  switch (event->status)
+	    {
+	    case BSE_MIDI_NOTE_ON:
+	      DEBUG_EVENTS ("MidiChannel[%u]: NoteOn  %fHz Velo=%f (stamp:%llu)", event->channel,
+			    event->data.note.frequency, event->data.note.velocity, event->delta_time);
+	      if (mchannel)
+		mchannel->start_note (event->delta_time,
+				      event->data.note.frequency,
+				      event->data.note.velocity,
+				      trans);
+	      else
+		sfi_diag ("ignoring note-on (%fHz) for foreign midi channel: %u", event->data.note.frequency, event->channel);
+	      break;
+	    case BSE_MIDI_KEY_PRESSURE:
+	    case BSE_MIDI_NOTE_OFF:
+	      DEBUG_EVENTS ("MidiChannel[%u]: %s %fHz (stamp:%llu)", event->channel,
+			    event->status == BSE_MIDI_NOTE_OFF ? "NoteOff" : "NotePressure",
+			    event->data.note.frequency, event->delta_time);
+	      if (mchannel)
+		{
+		  gboolean sustained_note = event->status == BSE_MIDI_NOTE_OFF &&
+					    (BSE_GCONFIG (invert_sustain) ^
+					     (self->get_control (event->channel, BSE_MIDI_SIGNAL_CONTROL_64) >= 0.5));
+		  mchannel->adjust_note (event->delta_time,
+					 event->data.note.frequency, event->status,
+					 event->data.note.velocity, sustained_note, trans);
+		}
+	      break;
+	    case BSE_MIDI_CONTROL_CHANGE:
+	      DEBUG_EVENTS ("MidiChannel[%u]: Control %2u Value=%f (stamp:%llu)", event->channel,
+			    event->data.control.control, event->data.control.value, event->delta_time);
+	      process_midi_control_L (self, event->channel, event->delta_time,
+				      event->data.control.control, event->data.control.value,
+				      FALSE,
+				      trans);
+	      break;
+	    case BSE_MIDI_X_CONTINUOUS_CHANGE:
+	      DEBUG_EVENTS ("MidiChannel[%u]: X Continuous Control %2u Value=%f (stamp:%llu)", event->channel,
+			    event->data.control.control, event->data.control.value, event->delta_time);
+	      process_midi_control_L (self, event->channel, event->delta_time,
+				      event->data.control.control, event->data.control.value,
+				      TRUE,
+				      trans);
+	      break;
+	    case BSE_MIDI_PROGRAM_CHANGE:
+	      DEBUG_EVENTS ("MidiChannel[%u]: Program %u (Value=%f) (stamp:%llu)", event->channel,
+			    event->data.program, event->data.program / (gfloat) 0x7f, event->delta_time);
+	      update_midi_signal_L (self, event->channel, event->delta_time,
+				    BSE_MIDI_SIGNAL_PROGRAM, event->data.program / (gfloat) 0x7f,
+				    trans);
+	      break;
+	    case BSE_MIDI_CHANNEL_PRESSURE:
+	      DEBUG_EVENTS ("MidiChannel[%u]: Channel Pressure Value=%f (stamp:%llu)", event->channel,
+			    event->data.intensity, event->delta_time);
+	      update_midi_signal_L (self, event->channel, event->delta_time,
+				    BSE_MIDI_SIGNAL_PRESSURE, event->data.intensity,
+				    trans);
+	      break;
+	    case BSE_MIDI_PITCH_BEND:
+	      DEBUG_EVENTS ("MidiChannel[%u]: Pitch Bend Value=%f (stamp:%llu)", event->channel,
+			    event->data.pitch_bend, event->delta_time);
+	      update_midi_signal_L (self, event->channel, event->delta_time,
+				    BSE_MIDI_SIGNAL_PITCH_BEND, event->data.pitch_bend,
+				    trans);
+	      break;
+	    default:
+	      DEBUG_EVENTS ("MidiChannel[%u]: Ignoring Event %u (stamp:%llu)", event->channel,
+			    event->status, event->delta_time);
+	      break;
+	    }
 	}
       if (self->notifier)
 	{
