@@ -51,6 +51,10 @@ struct _BseTrack
   BseWave	  *wave;
   BseSNet	  *wnet;
 
+  /* sound font synthesis */
+  BseSoundFontPreset  *sound_font_preset;
+  BseSNet         *sound_font_net;
+
   /* playback intergration */
   BseSource       *sub_synth;
   BseSource       *voice_input;
