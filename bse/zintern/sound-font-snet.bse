@@ -1,0 +1,17 @@
+; BseProject
+
+(bse-version "0.7.2")
+
+(container-child "BseCSynth::%bse-intern-sound-font-snet"
+  (modification-time "2009-03-14 14:23:28")
+  (creation-time "2003-04-27 20:45:24")
+  (license "Provided \"as is\", WITHOUT ANY WARRANTY (http://beast.gtk.org/LICENSE-AS-IS)")
+  (author "Tim Janik, Stefan Westerfeld")
+  (container-child "BseInstrumentOutput::instrument-output"
+    (pos-y 1)
+    (pos-x 3)
+    (source-input "left-audio" (link 1 "sound-font-osc") "left-out")
+    (source-input "right-audio" (link 1 "sound-font-osc") "right-out")
+    (source-input "synth-done" (link 1 "sound-font-osc") "done-out"))
+  (container-child "BseSoundFontOsc::sound-font-osc"
+    (pos-y 1)))
