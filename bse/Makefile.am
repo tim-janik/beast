@@ -56,7 +56,8 @@ bse_public_headers = $(strip \
 	bsenote.h		bsemidifile.h		bseblockutils.hh		\
 	bsecxxvalue.hh		bsecxxutils.hh		bsecxxbase.hh			bsecxxclosure.hh \
 	bsecxxarg.hh		bsecxxmodule.hh		bsecxxplugin.hh			bseloader.h \
-	bseresampler.hh		bseresamplerimpl.hh	\
+	bseresampler.hh		bseresamplerimpl.hh	bsesoundfontrepo.h		bsesoundfont.h	\
+	bsesoundfontpreset.h	bsesoundfontosc.h	\
 )
 # BSE C & C++ sources
 bse_sources = $(strip \
@@ -64,7 +65,7 @@ bse_sources = $(strip \
 	gslfilter.c		gslcommon.c \
 	gsldatahandle-vorbis.c	gslvorbis-enc.c	gsldatacache.c	gslvorbis-cutter.c \
 	gsldatahandle-mad.c	           	gslfilehash.c	gsldatautils.c	\
-	gslwaveosc.c		gslosctable.c	gslmagic.c	                 \
+	gslwaveosc.c		gslosctable.c	gslmagic.c	\
 	\
 	bseengine.c		bseenginemaster.c	bseengineschedule.c		bseengineutils.c \
 	bsebus.c		bsecategories.c 	\
@@ -95,6 +96,7 @@ bse_sources = $(strip \
 	bsebusmodule.cc		\
 	bsecore.cc		\
 	bseprobe.cc		\
+	bsesoundfontrepo.c	bsesoundfont.c		bsesoundfontpreset.c		bsesoundfontosc.c \
 )
 # BSE Synthesis Modules
 bse_idl_sources =
@@ -116,6 +118,7 @@ bse_proc_sources = $(strip \
 	bsejanitor.proc		bsepart.proc		bseparasite.proc	bseprocedure.proc	bseproject.proc	bsescripthelper.proc	\
 	bseserver.proc		bsesong.proc		bsebus.proc		bsesource.proc		bsecsynth.proc	bsesnet.proc		\
 	bsetrack.proc		bseitem.proc		bsewave.proc		bsewaveosc.proc		bsewaverepo.proc			\
+	bsesoundfontrepo.proc	\
 )
 bse_proc_gen_sources = $(bse_proc_sources:.proc=.genprc.c)
 # non-compile and non-install sources required
