@@ -31,6 +31,7 @@
 #include "bsemidinotifier.h"
 #include "gslcommon.h"
 #include "bseengine.h"
+#include "bsesoundfontrepo.h"
 #include <string.h>
 #include <stdlib.h>
 #include <fcntl.h>
@@ -186,6 +187,7 @@ bse_project_init (BseProject *self,
 		  gpointer    rclass)
 {
   BseWaveRepo *wrepo;
+  BseSoundFontRepo *sfrepo;
 
   self->state = BSE_PROJECT_INACTIVE;
   self->supers = NULL;
@@ -202,8 +204,12 @@ bse_project_init (BseProject *self,
   wrepo = bse_container_new_child (BSE_CONTAINER (self), BSE_TYPE_WAVE_REPO,
                                    "uname", "Wave-Repository",
                                    NULL);
+  sfrepo = bse_container_new_child (BSE_CONTAINER (self), BSE_TYPE_SOUND_FONT_REPO,
+                                    "uname", "Sound-Font-Repository",
+                                    NULL);
   /* with fixed uname */
   BSE_OBJECT_SET_FLAGS (wrepo, BSE_OBJECT_FLAG_FIXED_UNAME);
+  BSE_OBJECT_SET_FLAGS (sfrepo, BSE_OBJECT_FLAG_FIXED_UNAME);
 }
 
 static void
@@ -438,6 +444,13 @@ bse_project_retrieve_child (BseContainer *container,
       g_warning ("%s: no wave-repo found in project\n", G_STRLOC);
       return NULL;	/* shouldn't happen */
     }
+  else if (g_type_is_a (child_type, BSE_TYPE_SOUND_FONT_REPO))	/* and the same sound font repo */
+    {
+      BseSoundFontRepo *sfrepo = bse_project_get_sound_font_repo (self);
+      if (!sfrepo)
+	g_warning ("%s: no sound-font-repo found in project\n", G_STRLOC);
+      return BSE_ITEM (sfrepo);
+    }
   else
     {
       BseItem *item = BSE_CONTAINER_CLASS (parent_class)->retrieve_child (container, child_type, uname);
@@ -653,6 +666,17 @@ bse_project_get_wave_repo (BseProject *self)
   GSList *slist;
   for (slist = self->supers; slist; slist = slist->next)
     if (BSE_IS_WAVE_REPO (slist->data))
+      return slist->data;
+  return NULL;
+}
+
+BseSoundFontRepo*
+bse_project_get_sound_font_repo (BseProject *self)
+{
+  g_return_val_if_fail (BSE_IS_PROJECT (self), NULL);
+  GSList *slist;
+  for (slist = self->supers; slist; slist = slist->next)
+    if (BSE_IS_SOUND_FONT_REPO (slist->data))
       return slist->data;
   return NULL;
 }
