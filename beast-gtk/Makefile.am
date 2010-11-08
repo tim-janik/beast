@@ -38,8 +38,8 @@ beast_headers = $(strip \
 	bstsnetrouter.h		bstsplash.h	bsttrackview.h		bstsupershell.h	    \
 	bstusermessage.h	bstdial.h	bsttracksynthdialog.h	bstwaveeditor.h	    \
 	bstzoomedwindow.h	bstskinconfig.h	bstmsgabsorb.h		bstsampleeditor.h   \
-	bstrackview.h		bsttreestores.h	bstbseutils.h		bstutils.h	    \
-	bstdefs.h \
+	bstrackview.h		bsttreestores.h bstbseutils.h		\
+	bstutils.h		bstdefs.h	bstsoundfontview.h	bstsoundfontpresetview.c  \
 )
 EXTRA_DIST += $(beast_headers)
 # BEAST sources to build the program from
@@ -61,7 +61,7 @@ beast_sources = $(strip \
 	bstusermessage.c	bstdial.c	bsttracksynthdialog.c	bstwaveeditor.c	    \
 	bstzoomedwindow.c	bstskinconfig.c	bstmsgabsorb.c		bstsampleeditor.c   \
 	bstrackview.c		bsttreestores.c	bstbseutils.c		bstutils.c	    \
-	$(PROFILE_SOURCE) \
+	bstsoundfontview.c	bstsoundfontpresetview.c	        $(PROFILE_SOURCE)   \
 )
 # BEAST sources that get included (don't have own .lo rules)
 beast_extra_files = $(strip 						\
