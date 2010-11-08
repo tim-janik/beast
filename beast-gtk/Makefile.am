@@ -39,7 +39,7 @@ beast_headers = $(strip \
 	bstusermessage.h	bstdial.h	bsttracksynthdialog.h	bstwaveeditor.h	    \
 	bstzoomedwindow.h	bstskinconfig.h	bstmsgabsorb.h		bstsampleeditor.h   \
 	bstrackview.h		bsttreestores.h bstbseutils.h		\
-	bstutils.h		bstdefs.h	bstsoundfontview.h	bstsoundfontpresetview.c  \
+	bstutils.h		bstdefs.h	bstsoundfontview.h	bstsoundfontpresetview.h  \
 )
 EXTRA_DIST += $(beast_headers)
 # BEAST sources to build the program from
