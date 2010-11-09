@@ -211,15 +211,10 @@ track_view_synth_edited (BstTrackView *self,
 	  GSList *slist = NULL;
 	  /* list possible snet/wave/sound_font_preset candidates */
           BsePropertyCandidates *pc = bse_item_get_property_candidates (item, "snet");
-          printf ("[0] slist=%p\n", slist);
 	  slist = g_slist_append (slist, pc->items);
           pc = bse_item_get_property_candidates (item, "wave");
-          printf ("[1] slist=%p\n", slist);
 	  slist = g_slist_append (slist, pc->items);
 	  pc = bse_item_get_property_candidates (item, "sound_font_preset");
-          printf ("[2] slist=%p\n", slist);
-          printf ("pc=%p\n", pc);
-          printf ("pc->items=%p\n", pc->items);
           slist = g_slist_append (slist, pc->items);
 	  /* find best match */
 	  proxy = bst_item_seq_list_match (slist, text);
