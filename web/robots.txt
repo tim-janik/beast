@@ -1,8 +1,8 @@
-# robots.txt for http://beast.gtk.org/
-User-agent: *
-Disallow: /wiki.php
-Disallow: /wiki.phtml
-Disallow: /wiki:SandBox
+# robots.txt for http://beast.testbit.eu/
+#User-agent: *
+#Disallow: /wiki.php
+#Disallow: /wiki.phtml
+#Disallow: /wiki:SandBox
 User-Agent: W3C-checklink
 Disallow: /rdocu-gxk/
 Disallow: /rdocu-bse/

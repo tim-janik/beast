@@ -117,7 +117,7 @@
         }
         if (file_put_contents ($blurbfile, $text_quoted, LOCK_EX) > 0) {
           if (move_uploaded_file ($tmpname, $destfile)) {
-            $notified = @mail ("timj@beast.gtk.org", "BEAST-UPLOAD: ".$realname,
+            $notified = @mail ("timj@gtk.org", "BEAST-UPLOAD: ".$realname,
                                "=== BEAST-UPLOAD ===\n\n".
                                "FILE:\n".$realname."\n\n".
                                "DEST:\n".$destfile."\n\n".

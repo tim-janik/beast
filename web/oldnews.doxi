@@ -23,11 +23,11 @@ BEAST/BSE version 0.7.1 is available from the
 @doxer_dnl , here is the @uri{http://gnomedesktop.org/node/2722,FootNotes announcement}.
 
 BEAST tarball:
-@uri{http://beast.gtk.org/beast-ftp/v0.7/beast-0.7.1.tar.bz2, beast-0.7.1.tar.bz2}
+@uri{http:dist/beast/v0.7/beast-0.7.1.tar.bz2, beast-0.7.1.tar.bz2}
 @* BEAST patch:
-@uri{http://beast.gtk.org/beast-ftp/v0.7/beast-0.7.0-0.7.1.diff.bz2, beast-0.7.0-0.7.1.diff.bz2}
+@uri{http:dist/beast/v0.7/beast-0.7.0-0.7.1.diff.bz2, beast-0.7.0-0.7.1.diff.bz2}
 @* @uri{http://alsa-project.org, ALSA} driver:
-@uri{http://beast.gtk.org/beast-ftp/v0.7/bse-alsa-0.7.1.tar.bz2, bse-alsa-0.7.1.tar.bz2}
+@uri{http:dist/beast/v0.7/bse-alsa-0.7.1.tar.bz2, bse-alsa-0.7.1.tar.bz2}
 
 The 0.7 development series of Beast focusses on improving usability and
 ease of music production. Feedback is very much appreciated, please take
@@ -138,7 +138,7 @@ Some @doxer_bold{bugs were fixed}:
 The @uri{@top_webdir/documentation, documentation section} and the
 @uri{@top_webdir/historic, historic section} got updated, and we've
 put up a new @beast overview paper on the website, this time in english:
-@* @beast - @uri{http://beast.gtk.org/mirror/beast-overview-2005.pdf, Music Synthesis Under Linux (PDF)}
+@* @beast - @uri{http:mirror/beast-overview-2005.pdf, Music Synthesis Under Linux (PDF)}
 
 
 @newsentry{Sunday 16 July 2006, Release of the new development branch}
@@ -148,11 +148,11 @@ BEAST/BSE version 0.7.0 is available from the
 @uri{http://gnomedesktop.org/node/2722,FootNotes announcement}.
 
 BEAST tarball:
-@uri{http://beast.gtk.org/beast-ftp/v0.7/beast-0.7.0.tar.bz2, beast-0.7.0.tar.bz2}
+@uri{http:dist/beast/v0.7/beast-0.7.0.tar.bz2, beast-0.7.0.tar.bz2}
 @* BEAST patch:
-@uri{http://beast.gtk.org/beast-ftp/v0.7/beast-0.6.6-0.7.0.diff.bz2, beast-0.6.6-0.7.0.diff.bz2}
+@uri{http:dist/beast/v0.7/beast-0.6.6-0.7.0.diff.bz2, beast-0.6.6-0.7.0.diff.bz2}
 @* @uri{http://alsa-project.org, ALSA} driver:
-@uri{http://beast.gtk.org/beast-ftp/v0.7/bse-alsa-0.7.0.tar.bz2, bse-alsa-0.7.0.tar.bz2}
+@uri{http:dist/beast/v0.7/bse-alsa-0.7.0.tar.bz2, bse-alsa-0.7.0.tar.bz2}
 
 
 The 0.7 development series of Beast focusses on improving usability and
@@ -295,13 +295,13 @@ BEAST/BSE version 0.6.6 is available from the
 @uri{@top_webdir/download,download section}, here is the @uri{http://gnomedesktop.org/node/2267,FootNotes announcement}.
 
 BEAST tarball:
-@uri{http://beast.gtk.org/beast-ftp/v0.6/beast-0.6.6.tar.gz, beast-0.6.6.tar.gz}
+@uri{http:dist/beast/v0.6/beast-0.6.6.tar.gz, beast-0.6.6.tar.gz}
 @* BEAST patch:
-@uri{http://beast.gtk.org/beast-ftp/v0.6/patch-beast-0.6.5-0.6.6.bz2, patch-beast-0.6.5-0.6.6.bz2}
+@uri{http:dist/beast/v0.6/patch-beast-0.6.5-0.6.6.bz2, patch-beast-0.6.5-0.6.6.bz2}
 @* @uri{http://alsa-project.org, ALSA} driver:
-@uri{http://beast.gtk.org/beast-ftp/v0.6/bse-alsa-0.6.6.tar.gz, bse-alsa-0.6.6.tar.gz}
+@uri{http:dist/beast/v0.6/bse-alsa-0.6.6.tar.gz, bse-alsa-0.6.6.tar.gz}
 @* @uri{http://www.portaudio.com/, PortAudio} driver:
-@uri{http://beast.gtk.org/beast-ftp/v0.6/bse-portaudio-0.6.6.tar.gz, bse-portaudio-0.6.6.tar.gz}
+@uri{http:dist/beast/v0.6/bse-portaudio-0.6.6.tar.gz, bse-portaudio-0.6.6.tar.gz}
 
 
 This release contains important bug fixes. Major bugs in the @bse file saving mechanism
@@ -323,13 +323,13 @@ BEAST/BSE version 0.6.5 is available from the
 here is the @uri{http://gnomedesktop.org/node/2225,FootNotes announcement}.
 
 BEAST tarball:
-@uri{http://beast.gtk.org/beast-ftp/v0.6/beast-0.6.5.tar.gz, beast-0.6.5.tar.gz}
+@uri{http:dist/beast/v0.6/beast-0.6.5.tar.gz, beast-0.6.5.tar.gz}
 @* BEAST patch:
-@uri{http://beast.gtk.org/beast-ftp/v0.6/patch-beast-0.6.4-0.6.5.bz2, patch-beast-0.6.4-0.6.5.bz2}
+@uri{http:dist/beast/v0.6/patch-beast-0.6.4-0.6.5.bz2, patch-beast-0.6.4-0.6.5.bz2}
 @* @uri{http://alsa-project.org, ALSA} driver:
-@uri{http://beast.gtk.org/beast-ftp/v0.6/bse-alsa-0.6.4.tar.gz, bse-alsa-0.6.4.tar.gz}
+@uri{http:dist/beast/v0.6/bse-alsa-0.6.4.tar.gz, bse-alsa-0.6.4.tar.gz}
 @* @uri{http://www.portaudio.com/, PortAudio} driver:
-@uri{http://beast.gtk.org/beast-ftp/v0.6/bse-portaudio-0.6.4.tar.gz, bse-portaudio-0.6.4.tar.gz}
+@uri{http:dist/beast/v0.6/bse-portaudio-0.6.4.tar.gz, bse-portaudio-0.6.4.tar.gz}
 
 
 This release introduces support for GUS Patch files, has a new tool "bsewavetool" to
@@ -347,7 +347,7 @@ the new code and please report bugs to our
 
 @newsentry{Friday 4 February 2005, From the "I'll be back" dept.}
 
-Our @uri{http://beast.gtk.org/wiki:Discussion, Wiki} is back!
+Our @uri{http:wiki:Discussion, Wiki} is back!
 @uri{http://www.gtk.org/,Gtk.org} is running new @uri{http://www.php.net/,PHP}
 packages now, so the wiki and search facility could be re-enabled. 
 In other news, we're working on the next release, so expect 0.6.5 soon.
@@ -369,13 +369,13 @@ BEAST/BSE version 0.6.4 is available from the
 @uri{@top_webdir/download,download section}.
 
 BEAST tarball:
-@uri{http://beast.gtk.org/beast-ftp/v0.6/beast-0.6.4.tar.gz, beast-0.6.4.tar.gz}
+@uri{http:dist/beast/v0.6/beast-0.6.4.tar.gz, beast-0.6.4.tar.gz}
 @* BEAST patch:
-@uri{http://beast.gtk.org/beast-ftp/v0.6/patch-beast-0.6.3-0.6.4.bz2, patch-beast-0.6.3-0.6.4.bz2}
+@uri{http:dist/beast/v0.6/patch-beast-0.6.3-0.6.4.bz2, patch-beast-0.6.3-0.6.4.bz2}
 @* @uri{http://alsa-project.org, ALSA} driver:
-@uri{http://beast.gtk.org/beast-ftp/v0.6/bse-alsa-0.6.4.tar.gz, bse-alsa-0.6.4.tar.gz}
+@uri{http:dist/beast/v0.6/bse-alsa-0.6.4.tar.gz, bse-alsa-0.6.4.tar.gz}
 @* @uri{http://www.portaudio.com/, PortAudio} driver:
-@uri{http://beast.gtk.org/beast-ftp/v0.6/bse-portaudio-0.6.4.tar.gz, bse-portaudio-0.6.4.tar.gz}
+@uri{http:dist/beast/v0.6/bse-portaudio-0.6.4.tar.gz, bse-portaudio-0.6.4.tar.gz}
 
 
 The most important change in this release is probably the reduced CPU consumption due to
@@ -383,13 +383,13 @@ lowered scope updating priority. Very convenient are the newly added -n<niceleve
 -N (don't renice) options which may be used to adjust or bypass the scheduling priority
 raising effects of the suid launcher executables.
 A nice bonus in this release are the 
-@uri{http://beast.gtk.org/images/screenshots/stwZ04-fft_scopes.png, FFT based spectrographs},
+@uri{http:images/screenshots/stwZ04-fft_scopes.png, FFT based spectrographs},
 available for all synthesis
 modules with output channels via the context menu.
 New with this release is the experimental
 @uri{http://www.portaudio.com/, PortAudio} driver, Stefan Westerfeld put
 a lot of work into making this happen, so please give the driver a try and
-supply us with @uri{mailto://beast@@gnome.org, positive and negative feedback}.
+supply us with @uri{mailto:beast@@gnome.org, positive and negative feedback}.
 And as usual, we've had quite a number of language translation updates,
 in particular canadian english, british english, czech, dutch and spanish.
 Behind the scenes, we've also been doing some code cleanups, removed libbsw from the
@@ -407,11 +407,11 @@ BEAST/BSE version 0.6.3 and BSE-ALSA version 0.6.3 are available from the
 @uri{http://gnomedesktop.org/node/2049, FootNotes announcement}.
 
 BEAST tarball:
-@uri{http://beast.gtk.org/beast-ftp/v0.6/beast-0.6.3.tar.gz, beast-0.6.3.tar.gz}
+@uri{http:dist/beast/v0.6/beast-0.6.3.tar.gz, beast-0.6.3.tar.gz}
 @* BEAST patch:
-@uri{http://beast.gtk.org/beast-ftp/v0.6/patch-beast-0.6.2-0.6.3.bz2, patch-beast-0.6.2-0.6.3.bz2}
+@uri{http:dist/beast/v0.6/patch-beast-0.6.2-0.6.3.bz2, patch-beast-0.6.2-0.6.3.bz2}
 @* @uri{http://alsa-project.org, ALSA} driver:
-@uri{http://beast.gtk.org/beast-ftp/v0.6/bse-alsa-0.6.3.tar.gz, bse-alsa-0.6.3.tar.gz}
+@uri{http:dist/beast/v0.6/bse-alsa-0.6.3.tar.gz, bse-alsa-0.6.3.tar.gz}
 
 
 It took a long time to get this release out, but the new features and the bug fixes
@@ -431,9 +431,9 @@ BEAST/BSE version 0.6.2 is available from the
 here is the @uri{http://www.gnomedesktop.org/article.php?sid=1870, FootNotes announcement}.
 
 Tarball:
-@uri{http://beast.gtk.org/beast-ftp/v0.6/beast-0.6.2.tar.gz, beast-0.6.2.tar.gz}
+@uri{http:dist/beast/v0.6/beast-0.6.2.tar.gz, beast-0.6.2.tar.gz}
 and patch:
-@uri{http://beast.gtk.org/beast-ftp/v0.6/patch-beast-0.6.1-0.6.2.bz2, patch-beast-0.6.1-0.6.2.bz2}.
+@uri{http:dist/beast/v0.6/patch-beast-0.6.1-0.6.2.bz2, patch-beast-0.6.1-0.6.2.bz2}.
 
 Lots of tiny but important details got fixed in this release. @beast also had a lot of
 language translation updates, and supports more fine grained note quantization and note lengths.
@@ -450,17 +450,17 @@ please report bugs to our
 Thanks to Owen Taylor, a configuration error of the
 @uri{http://mail.gnome.org/archives/beast/, beast mailing list}
 was fixed, so the list is up again and reports about the new
-@uri{http://beast.gtk.org/beast-ftp/v0.6/testing/beast-0.6.2-rc2.tar.gz, release candidate}
+@uri{http:dist/beast/v0.6/testing/beast-0.6.2-rc2.tar.gz, release candidate}
 (as well as ordinary beast stuff) can be discussed on list again.
 
 
 @newsentry{Thursday 01 Jul 2004, New Release Candidate}
 
 A new release candidate
-@uri{http://beast.gtk.org/beast-ftp/v0.6/testing/beast-0.6.2-rc2.tar.gz, beast-0.6.2-rc2.tar.gz}
+@uri{http:dist/beast/v0.6/testing/beast-0.6.2-rc2.tar.gz, beast-0.6.2-rc2.tar.gz}
 is up in the download area. The mailing list is currently non-functional so please send
 problems and success stories about the candidate to
-@uri{mailto://timj@@beast.gtk.org, Tim Janik}.
+@uri{mailto:timj@@gtk.org, Tim Janik}.
 
 
 @newsentry{Sunday 07 Mar 2004, The low latency BEAST Release}
@@ -470,9 +470,9 @@ BEAST/BSE version 0.6.1 is available from the
 here is the @uri{http://www.gnomedesktop.org/article.php?sid=1708, FootNotes announcement}.
 
 Tarball:
-@uri{http://beast.gtk.org/beast-ftp/v0.6/beast-0.6.1.tar.gz, beast-0.6.1.tar.gz}
+@uri{http:dist/beast/v0.6/beast-0.6.1.tar.gz, beast-0.6.1.tar.gz}
 and patch:
-@uri{http://beast.gtk.org/beast-ftp/v0.6/patch-beast-0.6.0-0.6.1.bz2, patch-beast-0.6.0-0.6.1.bz2}.
+@uri{http:dist/beast/v0.6/patch-beast-0.6.0-0.6.1.bz2, patch-beast-0.6.0-0.6.1.bz2}.
 
 Apart from important bug fixes, this release comes with a small suid wrapper,
 that acquires a nice level of -20 and drops privileges. This allows
@@ -490,13 +490,13 @@ languages and more bug fixes are listed in the
 @newsentry{Wednesday 18 Feb 2004, Website updates}
 
 BEAST v0.6.0 supports skins for the
-@uri{http://beast.gtk.org/screenshots/image-zoom-5.html, piano roll and event roll}
+@uri{http:images/screenshots/stwZ05-wave_editor.png, piano roll and event roll}
 widgets, so we've opened up a
-@uri{http://beast.gtk.org/sound-browser.phtml?loc=/skins, place to collect skin packages}.
+@uri{http:sound-browser.phtml?loc=/skins, place to collect skin packages}.
 The
-@uri{http://beast.gtk.org/wiki:BeastBse, wiki} also had changes on the
-@uri{http://beast.gtk.org/wiki:BeastFeatures, BeastFeatures} and
-@uri{http://beast.gtk.org/wiki:FeatureRequests, FeatureRequests} pages
+@uri{http:wiki:BeastBse, wiki} also had changes on the
+@uri{http:wiki:BeastFeatures, BeastFeatures} and
+@uri{http:wiki:FeatureRequests, FeatureRequests} pages
 and the 
 @uri{@top_webdir/synthesis-links, synthesis links section} was updated.
 
@@ -508,9 +508,9 @@ BEAST/BSE version 0.6.0 is available from the
 here is the @uri{http://www.gnomedesktop.org/article.php?sid=1648, FootNotes announcement}.
 
 Tarball:
-@uri{http://beast.gtk.org/beast-ftp/v0.6/beast-0.6.0.tar.gz, beast-0.6.0.tar.gz}
+@uri{http:dist/beast/v0.6/beast-0.6.0.tar.gz, beast-0.6.0.tar.gz}
 and patch:
-@uri{http://beast.gtk.org/beast-ftp/v0.6/patch-beast-0.5.6-0.6.0.bz2, patch-beast-0.5.6-0.6.0.bz2}.
+@uri{http:dist/beast/v0.6/patch-beast-0.5.6-0.6.0.bz2, patch-beast-0.5.6-0.6.0.bz2}.
 
 Besides loads of bug fixes in this release, newly added features involve
 per-track scopes, skins for the event and piano roll widgets, major speedups,
@@ -521,10 +521,10 @@ As always, the @uri{@top_webdir/news-file, NEWS section} has all the glory detai
 @newsentry{Thursday 22 Jan 2004, Wiki openings}
 
 The @beast website has a
-@uri{http://beast.gtk.org/wiki:BeastBse, Wiki Area} now, all users and
-visitors are invited to @uri{http://beast.gtk.org/wiki:Discussion, discuss}
+@uri{http:wiki:BeastBse, Wiki Area} now, all users and
+visitors are invited to @uri{http:wiki:Discussion, discuss}
 various topics or to sign the
-@uri{http://beast.gtk.org/wiki:GuestBook, GuestBook}.
+@uri{http:wiki:GuestBook, GuestBook}.
 
 
 @newsentry{Saturday 10 Jan 2004, BSE Sound Archive}
@@ -538,9 +538,9 @@ For demonstration purposes, we will also take
 @uri{http://www.xiph.org/ogg/vorbis/, Ogg/Vorbis}
 files alongside a BSE Song to ease previews.
 For instance, here is the
-@uri{http://beast.gtk.org/beast-ftp/bse-files/partymonster.ogg, Ogg/Vorbis version}
+@uri{http:dist/beast/bse-files/partymonster.ogg, Ogg/Vorbis version}
 of the BEAST demo song
-@uri{http://beast.gtk.org/beast-ftp/bse-files/partymonster.bse, Party Monster}.
+@uri{http:dist/beast/bse-files/partymonster.bse, Party Monster}.
 
 Have fun and
 @uri{@top_webdir/sound-upload, start contributing}! ;-)
@@ -562,7 +562,7 @@ make: Leaving directory `/tmp/beast-0.5.6/data'
 @done
 
 you can apply this patch
-@uri{http://beast.gtk.org/beast-ftp/v0.5/patch-beast-0.5.6-0.5.6+intltool.bz2, patch-beast-0.5.6-0.5.6+intltool.bz2}
+@uri{http:dist/beast/v0.5/patch-beast-0.5.6-0.5.6+intltool.bz2, patch-beast-0.5.6-0.5.6+intltool.bz2}
 like:
 
 @example
@@ -581,9 +581,9 @@ here is the
 @uri{http://gnomedesktop.org/article.php?sid=1551,FootNotes announcement}.
 
 Tarball:
-@uri{http://beast.gtk.org/beast-ftp/v0.5/beast-0.5.6.tar.gz, beast-0.5.6.tar.gz}
+@uri{http:dist/beast/v0.5/beast-0.5.6.tar.gz, beast-0.5.6.tar.gz}
 and patch:
-@uri{http://beast.gtk.org/beast-ftp/v0.5/patch-beast-0.5.5-0.5.6.bz2, patch-beast-0.5.5-0.5.6.bz2}.
+@uri{http:dist/beast/v0.5/patch-beast-0.5.5-0.5.6.bz2, patch-beast-0.5.5-0.5.6.bz2}.
 
 Newly added features in this release involve a TB-303 style Bass Filter, major GUI
 improvements, MIDI file import abilities, a new C++ language binding, new language
@@ -592,7 +592,7 @@ As always, the @uri{@top_webdir/news-file, NEWS section} has all the glory detai
 
 In other news, we're looking for a graphics artist to improve plugin icons and
 help us develop fancier widgets like sliders, knobs, etc...
-Please @uri{mailto://beast@@gnome.org, drop us a line} at our
+Please @uri{mailto:beast@@gnome.org, drop us a line} at our
 @uri{http://mail.gnome.org/mailman/listinfo/beast/, mailing list} if you're willing
 to contribute.
 
@@ -614,9 +614,9 @@ here is the
 @uri{http://gnomedesktop.org/article.php?sid=1422, FootNotes announcement}.
 
 Tarball:
-@uri{http://beast.gtk.org/beast-ftp/v0.5/beast-0.5.5.tar.gz, beast-0.5.5.tar.gz}
+@uri{http:dist/beast/v0.5/beast-0.5.5.tar.gz, beast-0.5.5.tar.gz}
 and patch:
-@uri{http://beast.gtk.org/beast-ftp/v0.5/patch-beast-0.5.4-0.5.5.bz2, patch-beast-0.5.4-0.5.5.bz2}.
+@uri{http:dist/beast/v0.5/patch-beast-0.5.4-0.5.5.bz2, patch-beast-0.5.4-0.5.5.bz2}.
 
 Newly added features in this release involve Canyon Delay, MIDI Input, Panorama
 and Compressor modules, a demo song, stock instruments and effects, extended
@@ -642,9 +642,9 @@ BEAST/BSE version 0.5.4 is available in the
 @uri{@top_webdir/download,download section}.
 
 Tarball:
-@uri{http://beast.gtk.org/beast-ftp/v0.5/beast-0.5.4.tar.gz, beast-0.5.4.tar.gz}
+@uri{http:dist/beast/v0.5/beast-0.5.4.tar.gz, beast-0.5.4.tar.gz}
 and patch:
-@uri{http://beast.gtk.org/beast-ftp/v0.5/patch-beast-0.5.3-0.5.4.bz2, patch-beast-0.5.3-0.5.4.bz2}.
+@uri{http:dist/beast/v0.5/patch-beast-0.5.3-0.5.4.bz2, patch-beast-0.5.3-0.5.4.bz2}.
 
 Newly added features in this release involve a drum module, velocity-,
 fine-tune- and control-event-editing in songs and support for post-processing
@@ -656,7 +656,7 @@ The details are outlined in the
 @newsentry{Friday 18 Jul 2003, BEAST RPM Packages}
 
 After visiting the @beast talk at LinuxTag 2003,
-@uri{mailto://gwaluga@@computerbraxas.de, Gregor Waluga} 
+@uri{mailto:gwaluga@@computerbraxas.de, Gregor Waluga} 
 wrote a small
 @uri{http://linux.waluga.de/beast/BEAST-installation under-SuSE 82.txt, HOWTO (english and german)}
 about getting @beast to run under SuSE 8.2.
@@ -691,9 +691,9 @@ BEAST/BSE version 0.5.3 is available in the
 @uri{http://gnomedesktop.org/article.php?sid=1182, FootNotes announcement}.
 
 Tarball:
-@uri{http://beast.gtk.org/beast-ftp/v0.5/beast-0.5.3.tar.gz, beast-0.5.3.tar.gz}
+@uri{http:dist/beast/v0.5/beast-0.5.3.tar.gz, beast-0.5.3.tar.gz}
 and patch:
-@uri{http://beast.gtk.org/beast-ftp/v0.5/patch-beast-0.5.2-0.5.3.bz2, patch-beast-0.5.2-0.5.3.bz2}.
+@uri{http:dist/beast/v0.5/patch-beast-0.5.2-0.5.3.bz2, patch-beast-0.5.2-0.5.3.bz2}.
 
 Aparently version 0.5.2 crashed during script initialization on some systems
 due to bugs in the child communication code. So here is a quick update, fixing
@@ -708,9 +708,9 @@ BEAST/BSE version 0.5.2 is available in the
 @uri{http://www.gnomedesktop.org/article.php?sid=1176, FootNotes announcement}.
 
 Tarball:
-@uri{http://beast.gtk.org/beast-ftp/v0.5/beast-0.5.2.tar.gz, beast-0.5.2.tar.gz}
+@uri{http:dist/beast/v0.5/beast-0.5.2.tar.gz, beast-0.5.2.tar.gz}
 and patch:
-@uri{http://beast.gtk.org/beast-ftp/v0.5/patch-beast-0.5.1-0.5.2.bz2, patch-beast-0.5.1-0.5.2.bz2}.
+@uri{http:dist/beast/v0.5/patch-beast-0.5.1-0.5.2.bz2, patch-beast-0.5.1-0.5.2.bz2}.
 
 With this release, @beast allowes to gracefully backup from erroneous
 user actions, by offering unlimited Undo/Redo facilities for all operations.
@@ -726,9 +726,9 @@ The @beast patch to update from version 0.5.0 to 0.5.1 unfortunately
 missed an image file (due to it being detected as binary by diff),
 causing the 0.5.1 build to fail for some users. We've put up a new
 patch as
-@uri{http://beast.gtk.org/beast-ftp/v0.5/patch-beast-0.5.0-0.5.1.fixed.gz, patch-beast-0.5.0-0.5.1.fixed.gz}
+@uri{http:dist/beast/v0.5/patch-beast-0.5.0-0.5.1.fixed.gz, patch-beast-0.5.0-0.5.1.fixed.gz}
 now, which contains the missing file and correctly updates from 0.5.0 to
-@uri{http://beast.gtk.org/beast-ftp/v0.5/beast-0.5.1.tar.gz, beast-0.5.1.tar.gz}.
+@uri{http:dist/beast/v0.5/beast-0.5.1.tar.gz, beast-0.5.1.tar.gz}.
 We apologise for the inconvenience this may have caused.
 
 On a related topic, many users encountered crashes upon creation of synthesis
@@ -824,7 +824,7 @@ release.
 @newsentry{Saturday 11 January 2003, Website Switch}
 
 The new website is up, finally! Many thanks go to
-@uri{mailto://dirt@@gtk.org, Alper Ersoy} for his continued efford to set
+@uri{mailto:dirt@@gtk.org, Alper Ersoy} for his continued efford to set
 the site up. The new site has a completely redone layout, improved structure
 and a lot more content.
 
@@ -835,7 +835,7 @@ So browse and enjoy! ;-)
 
 The CVS tree has undergone major shuffeling recently due to integration of a
 new middleware layer into BSE. In other news, our website maintainer
-@uri{mailto://dirt@@gtk.org, Alper Ersoy} is working hard on a new
+@uri{mailto:dirt@@gtk.org, Alper Ersoy} is working hard on a new
 website layout which is why we haven't had much site updating in the last
 couple weeks.
 
@@ -967,7 +967,7 @@ being publically consumable.
 
 Once again, beast.gtk.org is looking for a new webmaster, so if you have skills
 in this area and love contributing, send off an
-@uri{mailto://timj@@beast.gtk.org, email}.
+@uri{mailto:timj@@gtk.org, email}.
 
 
 @newsentry{Monday 30 October 2000, BEASTIE BITS}
@@ -984,7 +984,7 @@ is scheduled shortly after the release of Gtk+ 2.0.
 
 On the artistic side, we're still looking for icon submissions for plugins that still use
 placeholders, and some of the older ones could stand polishing. If you're interested in
-helping out in this area, please send @uri{mailto://timj@@beast.gtk.org, us} email.
+helping out in this area, please send @uri{mailto:timj@@gtk.org, us} email.
 
 
 @newsentry{Monday 9 May 2000, Logo Contest in Progress}
@@ -992,12 +992,12 @@ helping out in this area, please send @uri{mailto://timj@@beast.gtk.org, us} ema
 As announced on Sunday 12 March, we are in search of a decent logo.  Submissions are accepted to
 @uri{ftp://beast.gtk.org/incoming/} and are shown on 
 @uri{@top_webdir/logogallery.phtml}.
-If you have questions/comments/feedback, @uri{mailto://timj@@beast.gtk.org, contact us}.
+If you have questions/comments/feedback, @uri{mailto:timj@@gtk.org, contact us}.
 
 
 @newsentry{Sunday 12 March 2000, Version @strong{0.3.2} released}
 
-See the @uri{http://beast.gtk.org/mirror/gnome-news/953148210.html, Gnotice here} (mirrored from http://news.gnome.org:80/gnome-news/953148210/).
+See the @uri{http:mirror/gnome-news/953148210.html, Gnotice here} (mirrored from http://news.gnome.org:80/gnome-news/953148210/).
 
 Plenty of work has been put into this new version, so BEAST is coming closer to ALPHA stage ;)
 the highlights of this release include new synthesizer modules submitted by David A. Bartold 
@@ -1015,7 +1015,7 @@ BEAST with BSE (having some musical tendencies), it could earn you an email alia
 magnificent fame and of course immense personal satisfaction ;) (plus a couple of beers if you come around 
 to GUADEC ;)
 
-@uri{mailto://timj@@beast.gtk.org, Contact us} if you're interested.
+@uri{mailto:timj@@gtk.org, Contact us} if you're interested.
 
 
 @newstag{Thursday 9 March 2000}
@@ -1023,13 +1023,13 @@ to GUADEC ;)
 We're currently seeking artists to help us with icons and logos.  Here are a couple of new screen shots (from the 
 current development version in CVS) to show what things currently look like:
 @itemize
-@item @uri{http://beast.gtk.org/images/oldshots/beast-shot-icons1.png, This one}
+@item @uri{http:images/oldshots/beast-shot-icons1.png, This one}
       shows the icons used in synthesis networks and some other things.
-@item The @uri{http://beast.gtk.org/images/oldshots/beast-shot-dnd1.png, other one}
+@item The @uri{http:images/oldshots/beast-shot-dnd1.png, other one}
       shows drag and drop of patterns into arrangements.
 @done
 
-If you'd like to help, please @uri{mailto://timj@@beast.gtk.org, email us}.
+If you'd like to help, please @uri{mailto:timj@@gtk.org, email us}.
 
 
 @newstag{Friday 14 January 2000}
@@ -1042,7 +1042,7 @@ As usual, the ChangeLogs are always available for your perusal (see the links in
 @newstag{Friday 31 December 1999}
 
 Version 0.3.0 (pre-alpha) released.  For details, see
-@uri{http://beast.gtk.org/mirror/gnome-news/946616649.html, the announcement} (mirrored from http://news.gnome.org/gnome-news/946616649/index_html)
+@uri{http:mirror/gnome-news/946616649.html, the announcement} (mirrored from http://news.gnome.org/gnome-news/946616649/index_html)
 on @uri{http://news.gnome.org/gnome-news, Gnotices}.
 
 @dnl ----------------------------- END -----------------------------

@@ -9,7 +9,7 @@
 @*
 @rawhtml{
 <form method="GET" action="http://www.google.com/custom">
-  <input type="hidden" name="domains" value="beast.gtk.org">
+  <input type="hidden" name="domains" value="beast.testbit.eu">
   <table cellpadding=0 cellspacing=0 border=0>
   <tr>
     <td>
@@ -26,7 +26,10 @@
       <input id=srch1 type=radio name=sitesearch value="">
       <label for=srch1>Search WWW</label>
       &nbsp;
-      <input id=srch2 type=radio name=sitesearch value="beast.gtk.org"  checked>
+      <input id=srch2 type=radio name=sitesearch value="beast.testbit.eu"  checked>
+      <label for=srch2>Search beast.testbit.eu</label>
+      &nbsp;
+      <input id=srch2 type=radio name=sitesearch value="beast.gtk.org">
       <label for=srch2>Search beast.gtk.org</label>
     </font></td>
   </tr>
@@ -34,10 +37,10 @@
 </form>
 }
 
-@subsubheading Search the @uri{http://beast.gtk.org/wiki:,wiki area}
+@subsubheading Search the @uri{http://beast.testbit.eu/wiki:,wiki area}
 
 @*
 @itemize
-@item Search @uri{http://beast.gtk.org/wiki:SearchPages, Wiki Pages}
-@item Search @uri{http://beast.gtk.org/wiki:PowerSearch, Wiki Page Text}
+@item Search @uri{http://beast.testbit.eu/wiki:SearchPages, Wiki Pages}
+@item Search @uri{http://beast.testbit.eu/wiki:PowerSearch, Wiki Page Text}
 @done

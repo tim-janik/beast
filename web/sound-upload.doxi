@@ -10,7 +10,7 @@
 <?php
   define ('DESTINATIONDIR', '/web/beast/contrib-queue/');
   define ('NAME_TIP', 'e.g. Tim Janik');
-  define ('EMAIL_TIP', 'e.g. timj@beast.gtk.org');
+  define ('EMAIL_TIP', 'e.g. timj@gtk.org');
   define ('DESCRIPTION_TIP', 'e.g. FunnyTune is a funny test song');
   define ('FILE_TIP', 'Name of BSE or OGG file');
   include '../php/file-upload.php';

@@ -15,7 +15,7 @@ Options +MultiViews
 RewriteEngine On
 
 # --- Wiki rewriting ---
-# rewrite beast.gtk.org/wiki:BeastFeatures?action=edit to beast.gtk.org/wiki.phtml?action=edit&id=BeastFeatures
+# rewrite beast.../wiki:BeastFeatures?action=edit to beast.../wiki.phtml?action=edit&id=BeastFeatures
 RewriteRule wiki:(.*)$		wiki.phtml?id=$1  [L,QSA]	# append query parameters  
 
 # --- PHP configuration ---
@@ -31,17 +31,17 @@ php_value  memory_limit        9437184
 # 302 - Found (resides temporarily under different URI)
 
 # Miscellaneous redirects
-Redirect 301 /wiki				http://beast.gtk.org/wiki:BeastBse
-Redirect 301 /wiki/				http://beast.gtk.org/wiki:BeastBse
-Redirect 301 /wiki.php				http://beast.gtk.org/wiki:BeastBse
-#Redirect 301 /wiki.phtml			http://beast.gtk.org/wiki:
+Redirect 301 /wiki				http://beast.testbit.eu/wiki:BeastBse
+Redirect 301 /wiki/				http://beast.testbit.eu/wiki:BeastBse
+Redirect 301 /wiki.php				http://beast.testbit.eu/wiki:BeastBse
+#Redirect 301 /wiki.phtml			http://beast.testbit.eu/wiki:
 Redirect 301 /wiki:RamboKidBlog			http://blogs.gnome.org/timj
-Redirect 302 /xmlns:xdef			http://beast.gtk.org/documentation
-Redirect 302 /screenshots.html			http://beast.gtk.org/screenshots
-Redirect 302 /mailinglist.html			http://beast.gtk.org/contact
-Redirect 302 /bugs.html				http://beast.gtk.org/contact
-Redirect 302 /bugs				http://beast.gtk.org/contact
-Redirect 302 /LICENSE-AS-IS			http://beast.gtk.org/mirror/LICENSE-AS-IS
+Redirect 302 /xmlns:xdef			http://beast.testbit.eu/documentation
+Redirect 302 /screenshots.html			http://beast.testbit.eu/screenshots
+Redirect 302 /mailinglist.html			http://beast.testbit.eu/contact
+Redirect 302 /bugs.html				http://beast.testbit.eu/contact
+Redirect 302 /bugs				http://beast.testbit.eu/contact
+Redirect 302 /LICENSE-AS-IS			http://beast.testbit.eu/mirror/LICENSE-AS-IS
 # in the above, the following list of entry points should be made sure to exist:
 # download.html, screenshots.html, mailinglist.html, bugs.html, faq.html, about.html
 
@@ -50,95 +50,95 @@ Redirect 301 /quickstart.html			http://testbit.eu/wiki/Beast-Quickstart
 Redirect 301 /quickstart			http://testbit.eu/wiki/Beast-Quickstart
 
 # Compat redirects for links for 2006 Aug...Dec
-Redirect 301 /bsesh.1.html		http://beast.gtk.org/bsescm.1.html
-Redirect 301 /bsesh.1			http://beast.gtk.org/bsescm.1
+Redirect 301 /bsesh.1.html		http://beast.testbit.eu/bsescm.1.html
+Redirect 301 /bsesh.1			http://beast.testbit.eu/bsescm.1
 
 # Compat redirects for links from Feb..Apr 2006
 RewriteCond %{QUERY_STRING} 		^image=screenshots/(.*)$
-RewriteRule ^screenshots.phtml$		http://beast.gtk.org/screenshots?image=screenshotdir/%1 [R=301,L]
+RewriteRule ^screenshots.phtml$		http://beast.testbit.eu/screenshots?image=screenshotdir/%1 [R=301,L]
 RewriteCond %{QUERY_STRING}		^image=logogallery/(.*)$
-RewriteRule ^logogallery.phtml$		http://beast.gtk.org/logogallery?image=logogallerydir/%1 [R=301,L]
+RewriteRule ^logogallery.phtml$		http://beast.testbit.eu/logogallery?image=logogallerydir/%1 [R=301,L]
 
 # Compat redirects for links pre-2006
-Redirect 301 /browse-bse-files.html			http://beast.gtk.org/sound-browser
-Redirect 301 /upload-bse-files.html			http://beast.gtk.org/sound-upload
-Redirect 301 /links-related.html			http://beast.gtk.org/related-links
-Redirect 301 /links-synthesis.html			http://beast.gtk.org/synthesis-links
-Redirect 301 /search.php				http://beast.gtk.org/search
-Redirect 301 /release-news.html				http://beast.gtk.org/news-file
-Redirect 301 /overview-de.html				http://beast.gtk.org/overview2003de
-Redirect 301 /objdoc.html				http://beast.gtk.org/bse-objects
-Redirect 301 /bse-structs.3.html			http://beast.gtk.org/bse-interface
-Redirect 301 /bse-procs.3.html				http://beast.gtk.org/bse-interface
-Redirect 301 /sfi.3.html				http://beast.gtk.org/rdocu-sfi/
-Redirect 301 /bse.3.html				http://beast.gtk.org/rdocu-bse/
-Redirect 301 /beast-gxk.3.html				http://beast.gtk.org/rdocu-gxk/
-Redirect 301 /screenshots/index.html			http://beast.gtk.org/screenshots
-Redirect 301 /images/screenshots/			http://beast.gtk.org/screenshots
-Redirect 301 /screenshots/image-zoom-1.html		http://beast.gtk.org/screenshots?image=screenshotdir/stwZ01-modular_synth_bass.png
-Redirect 301 /screenshots/image-zoom-2.html		http://beast.gtk.org/screenshots?image=screenshotdir/stwZ02-track_view.png
-Redirect 301 /screenshots/image-zoom-3.html		http://beast.gtk.org/screenshots?image=screenshotdir/stwZ03-piano_roll.png
-Redirect 301 /screenshots/image-zoom-4.html		http://beast.gtk.org/screenshots?image=screenshotdir/stwZ04-fft_scopes.png
-Redirect 301 /screenshots/image-zoom-5.html		http://beast.gtk.org/screenshots?image=screenshotdir/stwZ05-wave_editor.png
-Redirect 301 /screenshots/image-zoom-6.html		http://beast.gtk.org/screenshots?image=screenshotdir/stwZ06-skin_support.png
-Redirect 301 /screenshots/image-zoom-7.html		http://beast.gtk.org/screenshots?image=screenshotdir/stwZ07-audio_mixer.png
-Redirect 301 /screenshots/image-zoom-8.html		http://beast.gtk.org/screenshots?image=screenshotdir/stwZ08-pattern_editor.png
-Redirect 301 /screenshots/image-zoom-9.html		http://beast.gtk.org/screenshots?image=screenshotdir/stwZ09-post_processing_network.png
-Redirect 301 /screenshots/image-zoom-10.html		http://beast.gtk.org/screenshots?image=screenshotdir/z2003-01-simple-loop.png
-Redirect 301 /screenshots/image-zoom-11.html		http://beast.gtk.org/screenshots?image=screenshotdir/z2003-02-wave-play.png
-Redirect 301 /screenshots/image-zoom-12.html		http://beast.gtk.org/screenshots?image=screenshotdir/z2003-03-synthnet.png
-Redirect 301 /screenshots/image-zoom-13.html		http://beast.gtk.org/screenshots?image=screenshotdir/z2003-04-piano-roll.png
-Redirect 301 /screenshots/image-zoom-14.html		http://beast.gtk.org/screenshots?image=screenshotdir/z2003-05-red-flash.png
-Redirect 301 /screenshots/image-zoom-15.html		http://beast.gtk.org/screenshots?image=screenshotdir/z2003-06-track-roll.png
-Redirect 301 /screenshots/image-zoom-16.html		http://beast.gtk.org/screenshots?image=screenshotdir/z2003-07-patterned.png
-Redirect 301 /screenshots/image-zoom-17.html		http://beast.gtk.org/screenshots?image=screenshotdir/z2003-08-synth-fm.png
-Redirect 301 /screenshots/image-zoom-18.html		http://beast.gtk.org/screenshots?image=screenshotdir/z2003-95-preferences.png
-Redirect 301 /screenshots/image-zoom-19.html		http://beast.gtk.org/screenshots?image=screenshotdir/z2003-96-trackedit.png
-Redirect 301 /logo-submissions/image-zoom-1.html	http://beast.gtk.org/logogallery?image=logogallerydir/anon-beast-iktome-long.png
-Redirect 301 /logo-submissions/image-zoom-2.html	http://beast.gtk.org/logogallery?image=logogallerydir/anon-beast-iktome.png
-Redirect 301 /logo-submissions/image-zoom-3.html	http://beast.gtk.org/logogallery?image=logogallerydir/cyria-bse2.png
-Redirect 301 /logo-submissions/image-zoom-4.html	http://beast.gtk.org/logogallery?image=logogallerydir/cyria-bse3.png
-Redirect 301 /logo-submissions/image-zoom-5.html	http://beast.gtk.org/logogallery?image=logogallerydir/cyria-bse4.png
-Redirect 301 /logo-submissions/image-zoom-6.html	http://beast.gtk.org/logogallery?image=logogallerydir/dlundin-beast2.png
-Redirect 301 /logo-submissions/image-zoom-7.html	http://beast.gtk.org/logogallery?image=logogallerydir/dlundin-beast2_noshades.png
-Redirect 301 /logo-submissions/image-zoom-8.html	http://beast.gtk.org/logogallery?image=logogallerydir/dlundin-beast_large.png
-Redirect 301 /logo-submissions/image-zoom-9.html	http://beast.gtk.org/logogallery?image=logogallerydir/dlundin-beast_logo.png
-Redirect 301 /logo-submissions/image-zoom-10.html	http://beast.gtk.org/logogallery?image=logogallerydir/dlundin-logo.png
-Redirect 301 /logo-submissions/image-zoom-11.html	http://beast.gtk.org/logogallery?image=logogallerydir/drc-beast.png
-Redirect 301 /logo-submissions/image-zoom-12.html	http://beast.gtk.org/logogallery?image=logogallerydir/jimmac-01.png
-Redirect 301 /logo-submissions/image-zoom-13.html	http://beast.gtk.org/logogallery?image=logogallerydir/jimmac-02.png
-Redirect 301 /logo-submissions/image-zoom-14.html	http://beast.gtk.org/logogallery?image=logogallerydir/jimmac-03.png
-Redirect 301 /logo-submissions/image-zoom-15.html	http://beast.gtk.org/logogallery?image=logogallerydir/jimmac-icon.png
-Redirect 301 /logo-submissions/image-zoom-16.html	http://beast.gtk.org/logogallery?image=logogallerydir/jimmac-logo.png
-Redirect 301 /logo-submissions/image-zoom-17.html	http://beast.gtk.org/logogallery?image=logogallerydir/jimmac-splash.png
-Redirect 301 /logo-submissions/image-zoom-18.html	http://beast.gtk.org/logogallery?image=logogallerydir/mrogers-beast-head.jpg
-Redirect 301 /logo-submissions/image-zoom-19.html	http://beast.gtk.org/logogallery?image=logogallerydir/mrogers-beast-large.jpg
-Redirect 301 /logo-submissions/image-zoom-20.html	http://beast.gtk.org/logogallery?image=logogallerydir/mythor-beast.png
-Redirect 301 /logo-submissions/image-zoom-21.html	http://beast.gtk.org/logogallery?image=logogallerydir/swamp-bse-skull.jpg
-Redirect 301 /logo-submissions/image-zoom-22.html	http://beast.gtk.org/logogallery?image=logogallerydir/sylane-beast-compo.png
-Redirect 301 /logo-submissions/image-zoom-23.html	http://beast.gtk.org/logogallery?image=logogallerydir/tk_beast_01.png
-Redirect 301 /logo-submissions/image-zoom-24.html	http://beast.gtk.org/logogallery?image=logogallerydir/tk_beast_02.png
+Redirect 301 /browse-bse-files.html			http://beast.testbit.eu/sound-browser
+Redirect 301 /upload-bse-files.html			http://beast.testbit.eu/sound-upload
+Redirect 301 /links-related.html			http://beast.testbit.eu/related-links
+Redirect 301 /links-synthesis.html			http://beast.testbit.eu/synthesis-links
+Redirect 301 /search.php				http://beast.testbit.eu/search
+Redirect 301 /release-news.html				http://beast.testbit.eu/news-file
+Redirect 301 /overview-de.html				http://beast.testbit.eu/overview2003de
+Redirect 301 /objdoc.html				http://beast.testbit.eu/bse-objects
+Redirect 301 /bse-structs.3.html			http://beast.testbit.eu/bse-interface
+Redirect 301 /bse-procs.3.html				http://beast.testbit.eu/bse-interface
+Redirect 301 /sfi.3.html				http://beast.testbit.eu/rdocu-sfi/
+Redirect 301 /bse.3.html				http://beast.testbit.eu/rdocu-bse/
+Redirect 301 /beast-gxk.3.html				http://beast.testbit.eu/rdocu-gxk/
+Redirect 301 /screenshots/index.html			http://beast.testbit.eu/screenshots
+Redirect 301 /images/screenshots/			http://beast.testbit.eu/screenshots?image=screenshotdir/
+Redirect 301 /screenshots/image-zoom-1.html		http://beast.testbit.eu/screenshots?image=screenshotdir/stwZ01-modular_synth_bass.png
+Redirect 301 /screenshots/image-zoom-2.html		http://beast.testbit.eu/screenshots?image=screenshotdir/stwZ02-track_view.png
+Redirect 301 /screenshots/image-zoom-3.html		http://beast.testbit.eu/screenshots?image=screenshotdir/stwZ03-piano_roll.png
+Redirect 301 /screenshots/image-zoom-4.html		http://beast.testbit.eu/screenshots?image=screenshotdir/stwZ04-fft_scopes.png
+Redirect 301 /screenshots/image-zoom-5.html		http://beast.testbit.eu/screenshots?image=screenshotdir/stwZ05-wave_editor.png
+Redirect 301 /screenshots/image-zoom-6.html		http://beast.testbit.eu/screenshots?image=screenshotdir/stwZ06-skin_support.png
+Redirect 301 /screenshots/image-zoom-7.html		http://beast.testbit.eu/screenshots?image=screenshotdir/stwZ07-audio_mixer.png
+Redirect 301 /screenshots/image-zoom-8.html		http://beast.testbit.eu/screenshots?image=screenshotdir/stwZ08-pattern_editor.png
+Redirect 301 /screenshots/image-zoom-9.html		http://beast.testbit.eu/screenshots?image=screenshotdir/stwZ09-post_processing_network.png
+Redirect 301 /screenshots/image-zoom-10.html		http://beast.testbit.eu/screenshots?image=screenshotdir/z2003-01-simple-loop.png
+Redirect 301 /screenshots/image-zoom-11.html		http://beast.testbit.eu/screenshots?image=screenshotdir/z2003-02-wave-play.png
+Redirect 301 /screenshots/image-zoom-12.html		http://beast.testbit.eu/screenshots?image=screenshotdir/z2003-03-synthnet.png
+Redirect 301 /screenshots/image-zoom-13.html		http://beast.testbit.eu/screenshots?image=screenshotdir/z2003-04-piano-roll.png
+Redirect 301 /screenshots/image-zoom-14.html		http://beast.testbit.eu/screenshots?image=screenshotdir/z2003-05-red-flash.png
+Redirect 301 /screenshots/image-zoom-15.html		http://beast.testbit.eu/screenshots?image=screenshotdir/z2003-06-track-roll.png
+Redirect 301 /screenshots/image-zoom-16.html		http://beast.testbit.eu/screenshots?image=screenshotdir/z2003-07-patterned.png
+Redirect 301 /screenshots/image-zoom-17.html		http://beast.testbit.eu/screenshots?image=screenshotdir/z2003-08-synth-fm.png
+Redirect 301 /screenshots/image-zoom-18.html		http://beast.testbit.eu/screenshots?image=screenshotdir/z2003-95-preferences.png
+Redirect 301 /screenshots/image-zoom-19.html		http://beast.testbit.eu/screenshots?image=screenshotdir/z2003-96-trackedit.png
+Redirect 301 /logo-submissions/image-zoom-1.html	http://beast.testbit.eu/logogallery?image=logogallerydir/anon-beast-iktome-long.png
+Redirect 301 /logo-submissions/image-zoom-2.html	http://beast.testbit.eu/logogallery?image=logogallerydir/anon-beast-iktome.png
+Redirect 301 /logo-submissions/image-zoom-3.html	http://beast.testbit.eu/logogallery?image=logogallerydir/cyria-bse2.png
+Redirect 301 /logo-submissions/image-zoom-4.html	http://beast.testbit.eu/logogallery?image=logogallerydir/cyria-bse3.png
+Redirect 301 /logo-submissions/image-zoom-5.html	http://beast.testbit.eu/logogallery?image=logogallerydir/cyria-bse4.png
+Redirect 301 /logo-submissions/image-zoom-6.html	http://beast.testbit.eu/logogallery?image=logogallerydir/dlundin-beast2.png
+Redirect 301 /logo-submissions/image-zoom-7.html	http://beast.testbit.eu/logogallery?image=logogallerydir/dlundin-beast2_noshades.png
+Redirect 301 /logo-submissions/image-zoom-8.html	http://beast.testbit.eu/logogallery?image=logogallerydir/dlundin-beast_large.png
+Redirect 301 /logo-submissions/image-zoom-9.html	http://beast.testbit.eu/logogallery?image=logogallerydir/dlundin-beast_logo.png
+Redirect 301 /logo-submissions/image-zoom-10.html	http://beast.testbit.eu/logogallery?image=logogallerydir/dlundin-logo.png
+Redirect 301 /logo-submissions/image-zoom-11.html	http://beast.testbit.eu/logogallery?image=logogallerydir/drc-beast.png
+Redirect 301 /logo-submissions/image-zoom-12.html	http://beast.testbit.eu/logogallery?image=logogallerydir/jimmac-01.png
+Redirect 301 /logo-submissions/image-zoom-13.html	http://beast.testbit.eu/logogallery?image=logogallerydir/jimmac-02.png
+Redirect 301 /logo-submissions/image-zoom-14.html	http://beast.testbit.eu/logogallery?image=logogallerydir/jimmac-03.png
+Redirect 301 /logo-submissions/image-zoom-15.html	http://beast.testbit.eu/logogallery?image=logogallerydir/jimmac-icon.png
+Redirect 301 /logo-submissions/image-zoom-16.html	http://beast.testbit.eu/logogallery?image=logogallerydir/jimmac-logo.png
+Redirect 301 /logo-submissions/image-zoom-17.html	http://beast.testbit.eu/logogallery?image=logogallerydir/jimmac-splash.png
+Redirect 301 /logo-submissions/image-zoom-18.html	http://beast.testbit.eu/logogallery?image=logogallerydir/mrogers-beast-head.jpg
+Redirect 301 /logo-submissions/image-zoom-19.html	http://beast.testbit.eu/logogallery?image=logogallerydir/mrogers-beast-large.jpg
+Redirect 301 /logo-submissions/image-zoom-20.html	http://beast.testbit.eu/logogallery?image=logogallerydir/mythor-beast.png
+Redirect 301 /logo-submissions/image-zoom-21.html	http://beast.testbit.eu/logogallery?image=logogallerydir/swamp-bse-skull.jpg
+Redirect 301 /logo-submissions/image-zoom-22.html	http://beast.testbit.eu/logogallery?image=logogallerydir/sylane-beast-compo.png
+Redirect 301 /logo-submissions/image-zoom-23.html	http://beast.testbit.eu/logogallery?image=logogallerydir/tk_beast_01.png
+Redirect 301 /logo-submissions/image-zoom-24.html	http://beast.testbit.eu/logogallery?image=logogallerydir/tk_beast_02.png
 
 # Compat redirects for links pre-2004
-Redirect 301 /pub/beast				http://beast.gtk.org/beast-ftp/
+Redirect 301 /pub/beast				http://beast.testbit.eu/beast-ftp/
 
 # Compat redirects for links pre-2003
-Redirect 301 /docs/cvs-changelog-plugins.html	http://beast.gtk.org/log-svn
-Redirect 301 /docs/cvs-changelog-beast.html	http://beast.gtk.org/log-svn
-Redirect 301 /docs/cvs-changelog-bse.html	http://beast.gtk.org/log-svn
-Redirect 301 /log-plugins			http://beast.gtk.org/log-svn
-Redirect 301 /log-birnet			http://beast.gtk.org/log-svn
-Redirect 301 /log-beast				http://beast.gtk.org/log-svn
-Redirect 301 /log-bse				http://beast.gtk.org/log-svn
-Redirect 301 /log-sfi				http://beast.gtk.org/log-svn
-Redirect 301 /docs/ref-bse.html			http://beast.gtk.org/rdocu-bse/
-Redirect 301 /docs/ref-bsw-procs.html		http://beast.gtk.org/bse-interface
-Redirect 301 /docs/ref-gsl.html			http://beast.gtk.org/rdocu-bse/
-Redirect 301 /docs/ref-gxk.html			http://beast.gtk.org/rdocu-gxk/
-Redirect 301 /docs/cvs-news.html		http://beast.gtk.org/news-file
-Redirect 301 /docs/cvs-faq.html			http://beast.gtk.org/faq
-Redirect 301 /logo-submissions.html		http://beast.gtk.org/logogallery
+Redirect 301 /docs/cvs-changelog-plugins.html	http://beast.testbit.eu/log-svn
+Redirect 301 /docs/cvs-changelog-beast.html	http://beast.testbit.eu/log-svn
+Redirect 301 /docs/cvs-changelog-bse.html	http://beast.testbit.eu/log-svn
+Redirect 301 /log-plugins			http://beast.testbit.eu/log-svn
+Redirect 301 /log-birnet			http://beast.testbit.eu/log-svn
+Redirect 301 /log-beast				http://beast.testbit.eu/log-svn
+Redirect 301 /log-bse				http://beast.testbit.eu/log-svn
+Redirect 301 /log-sfi				http://beast.testbit.eu/log-svn
+Redirect 301 /docs/ref-bse.html			http://beast.testbit.eu/rdocu-bse/
+Redirect 301 /docs/ref-bsw-procs.html		http://beast.testbit.eu/bse-interface
+Redirect 301 /docs/ref-gsl.html			http://beast.testbit.eu/rdocu-bse/
+Redirect 301 /docs/ref-gxk.html			http://beast.testbit.eu/rdocu-gxk/
+Redirect 301 /docs/cvs-news.html		http://beast.testbit.eu/news-file
+Redirect 301 /docs/cvs-faq.html			http://beast.testbit.eu/faq
+Redirect 301 /logo-submissions.html		http://beast.testbit.eu/logogallery
 
 # Compat redirects for links pre-2001
-Redirect 301 /beast-shot1.png			http://beast.gtk.org/screenshots
-Redirect 301 /docs/beast.html			http://beast.gtk.org/development
+Redirect 301 /beast-shot1.png			http://beast.testbit.eu/screenshots
+Redirect 301 /docs/beast.html			http://beast.testbit.eu/development

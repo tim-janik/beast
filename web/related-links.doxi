@@ -20,7 +20,7 @@
 @item @uri{http://www.lilypond.org, LilyPond - Music Notation For Everyone}
 @item @uri{http://www.gnu.org/software/guile/guile.html, Guile - Scheme Scipting Language}
 @item @uri{http://www.gnu.org/software/texinfo/, Texinfo - BEAST and BSE documentation format}
-@item @uri{http://www.gtk.org, GTK+ - The GIMP Toolkit}
+@item @uri{http://www.testbit.eu, GTK+ - The GIMP Toolkit}
 @item @uri{http://www.gnome.org, GNOME Project}
 @item @uri{http://www.freedesktop.org/, freedesktop.org}
 @item @uri{http://www.gnu.org, GNU - GNU's Not Unix!}
@@ -50,7 +50,8 @@
 @item @uri{http://www.heise.de/software/default.shtml?prg=24860, Heise Online - BEAST Page}                                           
 @item @uri{http://packages.qa.debian.org/b/beast.html, BEAST package for Debian}
       (and @uri{http://packages.qa.debian.org/b/bse-alsa.html, bse-alsa package})
-@item @uri{http://web.archive.org/web/*/http://beast.gtk.org, BEAST at the Web Archive}
+@item @uri{http://web.archive.org/web/*/http://beast.gtk.org, BEAST at the Web Archive (old)}
+@item @uri{http://web.archive.org/web/*/http://beast.testbit.eu, BEAST at the Web Archive}
 @item @uri{http://directory.fsf.org/beast.html, BEAST at the FSF/UNESCO Free Software Directory}
 @item The @uri{http://dmoz.org/, Open Directory Project} lists Beast on the
 	@uri{http://dmoz.org/Computers/Multimedia/Music_and_Audio/Software/Linux/, Linux Audio} Page, mirrored in the

@@ -149,11 +149,13 @@ html/%.html: ../docs/gendoxi/%.doxi
 html/%.html: %.tmpdoxi
 	$(DOXER) doxi2html $< -d html/  -D TOP_WEBDIR "." $(DOXIDEFS)
 
-HTMLDIR_LINKS = html/dist html/beast-ftp html/index.html
+HTMLDIR_LINKS = html/mirror html/dist html/beast-ftp html/index.html html/images/oldshots
 ${HTMLDIR_LINKS}:
-	ln -fs ../dist		html/dist
-	ln -fs dist		html/beast-ftp
-	ln -fs news.html	html/index.html
+	ln -fs ../mirror		html/mirror
+	ln -fs ../dist			html/dist
+	ln -fs dist/beast		html/beast-ftp
+	ln -fs news.html		html/index.html
+	ln -fs ../mirror/oldshots	html/images/oldshots
 
 CHANGELOG2DOXI = $(top_srcdir)/doxer/changelog2doxi.py
 log-head.tmpdoxi: $(top_srcdir)/ChangeLog $(CHANGELOG2DOXI)

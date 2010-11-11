@@ -8,7 +8,7 @@
 @table{noframe}
 @row
 @cell IRC Channel:@s@s@s
-@cell	@code{#beast} on @uri{http://beast.gtk.org/wiki:GimpNet,GimpNet}
+@cell	@code{#beast} on @uri{http:wiki:GimpNet,GimpNet}
 @done
 @row
 @cell Email:
@@ -17,11 +17,11 @@
 @row
 @cell Forum:
 @cell	Use the @uri{http://news.gmane.org/gmane.comp.gnome.beast, Mailing List Web Gateway} or our
-		@uri{http://beast.gtk.org/wiki:BeastBse, Wiki}
+		@uri{http:wiki:BeastBse, Wiki}
 @done
 @row
 @cell Feedback:
-@cell	Wiki 	@uri{http://beast.gtk.org/wiki:Discussion,Discussion} pages
+@cell	Wiki 	@uri{http:wiki:Discussion,Discussion} pages
 @done
 @row
 @cell Translations:
@@ -45,11 +45,10 @@ BEAST/BSE version 0.7.2 is available from the
 @doxer_dnl , here is the @uri{http://gnomedesktop.org/node/2722,FootNotes announcement}.
 
 BEAST tarball:
-@uri{http://beast.gtk.org/beast-ftp/v0.7/beast-0.7.2.tar.bz2, beast-0.7.2.tar.bz2}
-@* BEAST patch:
-@uri{http://beast.gtk.org/beast-ftp/v0.7/beast-0.7.1-0.7.2.diff.bz2, beast-0.7.1-0.7.2.diff.bz2}
+@uri{http:dist/beast/v0.7/beast-0.7.2.tar.bz2, beast-0.7.2.tar.bz2}
+@dnl @* BEAST patch: @uri{http:dist/beast/v0.7/beast-0.7.1-0.7.2.diff.bz2, beast-0.7.1-0.7.2.diff.bz2}
 @* @uri{http://alsa-project.org, ALSA} driver:
-@uri{http://beast.gtk.org/beast-ftp/v0.7/bse-alsa-0.7.2.tar.bz2, bse-alsa-0.7.2.tar.bz2}
+@uri{http:dist/beast/v0.7/bse-alsa-0.7.2.tar.bz2, bse-alsa-0.7.2.tar.bz2}
 @* @*
 
 
@@ -73,7 +72,7 @@ Due to a @uri{http://www.lanedo.com, variety of reasons} Beast
 development has stalled for quite some time.
 Recently, @uri{http://space.twc.de/~stefan/, Stefan Westerfeld}
 has kicked off some new work and
-@uri{http://beast.gtk.org/log-head, fixes are slowly trippling into}
+@uri{http:log-head, fixes are slowly trippling into}
 the Beast tree again.
 In particular, he brought
 @uri{http://mail.gnome.org/archives/beast/2009-June/msg00001.html, win32 builds}

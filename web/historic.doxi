@@ -21,9 +21,9 @@ submissions, which can still be found on the
 
 Finally, here's a collection of past articles and papers related to BEAST:
 @itemize
-@item @longuri{http://beast.gtk.org/mirror/beast-overview-2005.pdf, BEAST Overview from LAC 2005}
+@item @longuri{http:mirror/beast-overview-2005.pdf, BEAST Overview from LAC 2005}
 @item @longuri{http://www.linux-user.de/ausgabe/2003/11/032-beast/, German BEAST Workshop}
-@item @uri{http://beast.gtk.org/mirror/LinuxMagazin_LadConf2003.pdf, German Article on LAD Conference 2003}
+@item @uri{http:mirror/LinuxMagazin_LadConf2003.pdf, German Article on LAD Conference 2003}
       (mirrored from http://lad.linuxaudio.org/contrib/zkm_meeting_2003/LinuxMagazin_LadConf2003.pdf)
 @item @longuri{http://www.fosdem.org/2003/index/interviews/interviews_steiner.html, Interview with Jakub 'Jimmac' Steiner}
 @item @longuri{http://www.kuro5hin.org/story/2002/6/8/2524/90038, Trackers and Linux}

@@ -115,8 +115,8 @@
             background-position:top; background-repeat:repeat-x; padding-bottom:1.5em"></div>
 
 <form method="GET" action="http://www.google.com/custom" name="searchform">
-  <input type="hidden" name="domains" value="beast.gtk.org">
-  <input type="hidden" name="sitesearch" value="beast.gtk.org">
+  <input type="hidden" name="domains" value="beast.testbit.eu">
+  <input type="hidden" name="sitesearch" value="beast.testbit.eu">
   <table border="0">
     <tr><td align="center"><input type="text" name="q" maxlength="255" size="15" value="Search Website"
           onFocus="if(this.value=='Search Website')this.value=''"/></td></tr>
@@ -128,6 +128,6 @@
 @dnl# === Website Footer ===
 @heading{group=footer}
 @*
-@center @doxer_fontsize{-1, The @beast website is maintained by @uri{mailto:timj@@beast.gtk.org, Tim Janik}.
+@center @doxer_fontsize{-1, The @beast website is maintained by @uri{mailto:timj@@gtk.org, Tim Janik}.
 Validate the @uri{http://validator.w3.org/check/referer,HTML} or @uri{http://jigsaw.w3.org/css-validator/check/referer,CSS}.
 }

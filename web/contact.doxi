@@ -39,7 +39,7 @@ Translations for Beast can be submitted here:
 @heading IRC
 
 There's a @code{#beast} channel on the
-@uri{http://beast.gtk.org/wiki:GimpNet,GimpNet} IRC Network
+@uri{http:wiki:GimpNet,GimpNet} IRC Network
 (Server: @code{irc.gimp.org}, Port: @code{6666}), used to
 discuss BEAST/BSE development issues and user questions.
 The core developers usually hang out there, though they may
@@ -49,6 +49,6 @@ be idle for many hours a day.
 @heading Contacts
 
 @itemize
-@item Email the @uri{mailto://timj@@beast.gtk.org, developer}.
-@item Email the @uri{mailto://timj@@beast.gtk.org, webmaster}.
+@item Email the @uri{mailto:timj@@gtk.org, developer}.
+@item Email the @uri{mailto:timj@@gtk.org, webmaster}.
 @done

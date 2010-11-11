@@ -40,7 +40,7 @@ and generic values. Users of BIRNET or SFI will probably also appreciate the
 Introductionary material is also provided:
 @itemize
 @item @uri{@top_webdir/quickstart, @beastbse Quick Start Guide} - The Quick Start Guide shipped with @beast
-@item @uri{http://beast.gtk.org/mirror/beast-overview-2005.pdf, Music Synthesis Under Linux (PDF)} -
+@item @uri{http:mirror/beast-overview-2005.pdf, Music Synthesis Under Linux (PDF)} -
       A @beast Overview from @uri{http://lad.linuxaudio.org/eventszkm2005.php, LAC 2005}
 @item @uri{@top_webdir/overview2003de, @beast Overview from 2003 (German)} -
       Paper from the @uri{http://www.linuxtag.org/2003/en/conferences/talk.xsp_id_47.html, @beast presentation at LinuxTag 2003}

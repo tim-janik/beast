@@ -5,11 +5,10 @@
 
 @heading Where Can I Get @beastbse?		@anchor{tarballs}
 
-Publically consumable releases can be found via ftp:
-@uri{ftp://beast.gtk.org/pub/beast/}.
+Publically consumable releases are available as tarballs:
+@uri{http:dist/beast/ , dist/beast/}
 
-Or alternatively via http:
-@uri{http://beast.gtk.org/beast-ftp/}.
+
 
 The packages provided in the download directory have the following purposes:
 
