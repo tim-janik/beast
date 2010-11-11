@@ -68,13 +68,6 @@ TARGET_DIRS = $(strip								\
 )
 ${HTML_TARGETS} ${RDOCU_TARGETS}: webmenu.doxi webframe.doxi ../docs/beastdefs.doxi
 
-# tarball targets
-beastweb-galleries.tar.bz2: ${TARGET_DIRS} html/screenshotdir/.md5sum html/logogallerydir/.md5sum
-	tar jcf $@ html/screenshotdir/ html/logogallerydir/
-beastweb-pages.tar.bz2: ${TARGET_DIRS} html/style/.md5sum html/web-images/.md5sum html/images/.md5sum ${PHP_TARGETS} ${HTML_TARGETS} ${RDOCU_TARGETS}
-	tar jcf $@ --anchored --exclude='html/screenshotdir/*' --exclude='html/logogallerydir/*' php/ html/
-CLEANFILES += beastweb-galleries.tar.bz2 beastweb-pages.tar.bz2
-
 ${TARGET_DIRS}:	# rule to create directories
 	mkdir -p $@
 
@@ -153,10 +146,14 @@ html/doxer-docu.html: ../doxer/docu-main.doxi
 html/%.html: ../docs/gendoxi/%.doxi
 	$(DOXER) doxi2html $(strip $< -d html/  -D TOP_WEBDIR "." $(DOXIDEFS) $(call DOCFRAME_DEFS))
 
-
 html/%.html: %.tmpdoxi
 	$(DOXER) doxi2html $< -d html/  -D TOP_WEBDIR "." $(DOXIDEFS)
 
+HTMLDIR_LINKS = html/dist html/beast-ftp html/index.html
+${HTMLDIR_LINKS}:
+	ln -fs ../dist		html/dist
+	ln -fs dist		html/beast-ftp
+	ln -fs news.html	html/index.html
 
 CHANGELOG2DOXI = $(top_srcdir)/doxer/changelog2doxi.py
 log-head.tmpdoxi: $(top_srcdir)/ChangeLog $(CHANGELOG2DOXI)
@@ -264,32 +261,17 @@ clean-local:
 	-rmdir php/
 
 # website targets
-site: beastweb-pages.tar.bz2 beastweb-galleries.tar.bz2
-.PHONY: site site-preview site-update site-update-all site-update-galleries site-update-pages
+site: ${TARGET_DIRS} ${PHP_TARGETS} ${HTML_TARGETS} ${RDOCU_TARGETS} ${HTMLDIR_LINKS}
+site: html/screenshotdir/.md5sum html/logogallerydir/.md5sum
+site: html/style/.md5sum html/web-images/.md5sum html/images/.md5sum
+.PHONY: site site-preview site-update
 # remote installation
-ACCOUNT_USER = $(subst tjlocal, timj, ${USER})
-ACCOUNT=$(strip $(ACCOUNT_USER))@beast.gtk.org
-ACDEST=/web/beast/
-ACTMP=xgen-tmp
-site-update-pages: beastweb-pages.tar.bz2
-	scp -p $< ${ACCOUNT}:${ACTMP}-$(<F)
-	ssh ${ACCOUNT} 					\
-	 "set -ex "					\
-	 "&& tar jxmpf ${ACTMP}-$(<F) -C ${ACDEST} "	\
-	 "&& rm ${ACTMP}-$(<F)"
-site-update-galleries: beastweb-galleries.tar.bz2
-	scp -p $< ${ACCOUNT}:${ACTMP}-$(<F)
-	ssh ${ACCOUNT} 					\
-	 "set -ex "					\
-	 "&& tar jxmpf ${ACTMP}-$(<F) -C ${ACDEST} "	\
-	 "&& rm ${ACTMP}-$(<F)"
-site-update-all: beastweb-pages.tar.bz2 beastweb-galleries.tar.bz2 site-update-pages site-update-galleries
-site-update: site-update-pages
+SITE_REMOTE = beast-web:/srv/beast/
+site-update: site
+	rsync -aH --progress --del php html ${SITE_REMOTE}
 # preview installation
 BEAST_PREVIEW=~/public_html/beast-preview/
-site-preview: ${BEAST_PREVIEW}/. beastweb-pages.tar.bz2 beastweb-galleries.tar.bz2
-	rm -rf ${BEAST_PREVIEW}/html/ ${BEAST_PREVIEW}/php/
-	tar jxmpf beastweb-pages.tar.bz2 -C ${BEAST_PREVIEW}
-	tar jxmpf beastweb-galleries.tar.bz2 -C ${BEAST_PREVIEW}
+site-preview: ${BEAST_PREVIEW}/. site
+	rsync -aH --progress --del php html ${BEAST_PREVIEW}
 	ln -s ../beast-ftp ${BEAST_PREVIEW}/html/beast-ftp
 	ln -s news.html ${BEAST_PREVIEW}/html/index.html
