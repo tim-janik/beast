@@ -818,12 +818,37 @@ sfi_rec_field (const SfiRec *rec,
   return rec->fields + index;
 }
 
+/* legal chars for dupcanon */
+static inline int
+legal (char c)
+{
+  return ((c >= 'a' && c <= 'z') || (c == '-') ||
+          (c >= '0' && c <= '9') ||
+          (c >= 'A' && c <= 'Z'));
+}
+
+/* returns dup'd canonified version of the string, or NULL if input was already canonified */
 static inline gchar*
 dupcanon (const gchar *field_name)
 {
-  return g_strcanon (g_strdup (field_name),
-		     G_CSET_A_2_Z G_CSET_a_2_z G_CSET_DIGITS,
-		     '-');
+  size_t i = 0;
+
+  while (legal (field_name[i]))
+    i++;
+
+  if (field_name[i] == 0)  // no need for canonification, all chars legal
+    return NULL;
+
+  size_t len = strlen (field_name);
+  gchar *canon_field_name = (gchar *) g_malloc (len + 1);
+  memcpy (canon_field_name, field_name, len + 1);
+  while (i < len)
+    {
+      if (!legal (canon_field_name[i]))
+        canon_field_name[i] = '-';
+      i++;
+    }
+  return canon_field_name;
 }
 
 static inline guint
@@ -864,10 +889,12 @@ sfi_rec_set_copy (SfiRec       *rec,
 		  gboolean      deep_copy,
 		  const GValue *value)
 {
-  gchar *name;
+  const gchar *name;
+  gchar *dupcanon_name;
   guint i;
   
-  name = dupcanon (field_name);
+  dupcanon_name = dupcanon (field_name);
+  name = dupcanon_name ? dupcanon_name : field_name;
   i = sfi_rec_lookup (rec, name);
   if (i >= rec->n_fields)
     {
@@ -875,14 +902,14 @@ sfi_rec_set_copy (SfiRec       *rec,
       rec->fields = g_realloc (rec->fields, rec->n_fields * sizeof (rec->fields[0]));
       memset (rec->fields + i, 0, sizeof (rec->fields[0]));
       rec->field_names = g_realloc (rec->field_names, rec->n_fields * sizeof (rec->field_names[0]));
-      rec->field_names[i] = name;
+      rec->field_names[i] = dupcanon_name ? dupcanon_name : g_strdup (name);
       /* we don't sort upon insertion to speed up record creation */
       rec->sorted = FALSE;
     }
   else
     {
       g_value_unset (rec->fields + i);
-      g_free (name);
+      g_free (dupcanon_name);
     }
   g_value_init (rec->fields + i, value_type);
   if (deep_copy)
@@ -907,7 +934,8 @@ GValue*
 sfi_rec_get (SfiRec      *rec,
 	     const gchar *field_name)
 {
-  gchar *name;
+  const gchar *name;
+  gchar *dupcanon_name;
   guint i;
   
   g_return_val_if_fail (rec != NULL, NULL);
@@ -915,9 +943,10 @@ sfi_rec_get (SfiRec      *rec,
 
   if (!rec->sorted)
     sfi_rec_sort (rec);
-  name = dupcanon (field_name);
+  dupcanon_name = dupcanon (field_name);
+  name = dupcanon_name ? dupcanon_name : field_name;
   i = sfi_rec_lookup (rec, name);
-  g_free (name);
+  g_free (dupcanon_name);
   if (i < rec->n_fields)
     return rec->fields + i;
   return NULL;
@@ -928,19 +957,21 @@ sfi_rec_forced_get (SfiRec          *rec,
                     const gchar     *field_name,
                     GType            value_type)
 {
-  gchar *name;
+  const gchar *name;
+  gchar *dupcanon_name;
   guint i;
   g_return_val_if_fail (rec != NULL, NULL);
   g_return_val_if_fail (field_name != NULL, NULL);
   g_return_val_if_fail (G_TYPE_IS_VALUE (value_type), NULL);
   if (!rec->sorted)
     sfi_rec_sort (rec);
-  name = dupcanon (field_name);
+  dupcanon_name = dupcanon (field_name);
+  name = dupcanon_name ? dupcanon_name : field_name;
   i = sfi_rec_lookup (rec, name);
   if (i < rec->n_fields)
     {
       GValue *value = rec->fields + i;
-      g_free (name);
+      g_free (dupcanon_name);
       if (G_VALUE_TYPE (value) != value_type)
         {
           g_value_unset (value);
@@ -948,10 +979,10 @@ sfi_rec_forced_get (SfiRec          *rec,
         }
       return value;
     }
-  sfi_rec_set_copy (rec, field_name, value_type, FALSE, NULL);
+  sfi_rec_set_copy (rec, name, value_type, FALSE, NULL);
   sfi_rec_sort (rec);
   i = sfi_rec_lookup (rec, name);
-  g_free (name);
+  g_free (dupcanon_name);
   return rec->fields + i;
 }
 
