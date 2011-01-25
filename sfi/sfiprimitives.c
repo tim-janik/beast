@@ -818,9 +818,9 @@ sfi_rec_field (const SfiRec *rec,
   return rec->fields + index;
 }
 
-/* legal chars for dupcanon */
+/* valid chars for dupcanon */
 static inline int
-legal (char c)
+valid (char c)
 {
   return ((c >= 'a' && c <= 'z') || (c == '-') ||
           (c >= '0' && c <= '9') ||
@@ -833,18 +833,16 @@ dupcanon (const gchar *field_name)
 {
   size_t i = 0;
 
-  while (legal (field_name[i]))
+  while (valid (field_name[i]))
     i++;
 
   if (field_name[i] == 0)  // no need for canonification, all chars legal
     return NULL;
 
-  size_t len = strlen (field_name);
-  gchar *canon_field_name = (gchar *) g_malloc (len + 1);
-  memcpy (canon_field_name, field_name, len + 1);
-  while (i < len)
+  gchar *canon_field_name = g_strdup (field_name);
+  while (canon_field_name[i])
     {
-      if (!legal (canon_field_name[i]))
+      if (!valid (canon_field_name[i]))
         canon_field_name[i] = '-';
       i++;
     }
