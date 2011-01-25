@@ -270,7 +270,7 @@ site: html/style/.md5sum html/web-images/.md5sum html/images/.md5sum
 # remote installation
 SITE_REMOTE = beast-web:/srv/beast/
 site-update: site
-	rsync -aH --progress --del php html ${SITE_REMOTE}
+	rsync -aH --progress php html ${SITE_REMOTE}
 # preview installation
 BEAST_PREVIEW=~/public_html/beast-preview/
 site-preview: ${BEAST_PREVIEW}/. site
