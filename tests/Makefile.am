@@ -60,9 +60,13 @@ perftest_LDADD   = $(progs_ldadd)
 noinst_PROGRAMS      += testresampler
 testresampler_SOURCES = testresampler.cc
 testresampler_LDADD   = $(progs_ldadd)
+# testresamplerq
+TESTS                 += testresamplerq
+testresamplerq_SOURCES = testresamplerq.cc
+testresamplerq_LDADD   = $(progs_ldadd)
+
 
 # === Resampler tests ===
-check-after: resampler-quick-checks
 resampler-quick-checks:
 	: ## some quick checks (resampler-checks contains actual tests - use make slowcheck)
 	./testresampler filter-impl
@@ -72,7 +76,6 @@ resampler-quick-checks:
 	./testresampler accuracy --fpu --oversample --precision=20 --freq-scan=180,18000,1671 --max-threshold=113.5
 	./testresampler accuracy --subsample --precision=24 --freq-scan=90,9000,983 --max-threshold=126
 
-slowcheck: resampler-checks
 resampler-checks:
 	: ## test SSE filter implementation
 	./testresampler filter-impl
@@ -108,8 +111,7 @@ resampler-checks:
 	./testresampler accuracy       --subsample  --precision=16 --freq-scan=25,9000,25  --max-threshold=85.5 # ideally: 96dB
 	./testresampler accuracy --fpu --subsample  --precision=16 --freq-scan=25,9000,25  --max-threshold=85.5 # ideally: 96dB
 
-perf:
-	./perftest
+resampler-perf:
 	./testresampler perf --fpu --precision=8  --up
 	./testresampler perf --fpu --precision=8  --down
 	./testresampler perf --fpu --precision=8  --subsample
@@ -142,3 +144,7 @@ perf:
 	./testresampler perf       --precision=24 --down
 	./testresampler perf       --precision=24 --subsample
 	./testresampler perf       --precision=24 --oversample
+
+# perf tests
+perf:
+	./perftest
