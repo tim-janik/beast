@@ -303,22 +303,33 @@ struct SpectrumFeature : public Feature
 {
   vector< vector<double> > spectrum;
   vector< vector<double> > joined_spectrum;
+  vector< double >         window;
 
   SpectrumFeature() :
     Feature ("--spectrum", "generate 30ms sliced frequency spectrums")
   {
   }
 
-  vector<double>
-  build_frequency_vector (GslLong size,
-			  double *samples)
+  void
+  init_window (size_t size)
   {
+    window.resize (size);
+
+    for (size_t i = 0; i < size; i++)
+      window[i] = bse_window_blackman (2.0 * i / size - 1.0); /* the bse blackman window is defined in range [-1, 1] */
+  }
+
+  vector<double>
+  build_frequency_vector (double *samples)
+  {
+    const size_t size = window.size();
+    assert (size > 0);
+
     vector<double> fvector;
     double in[size], c[size + 2], *im;
-    gint i;
 
-    for (i = 0; i < size; i++)
-      in[i] = bse_window_blackman (2.0 * i / size - 1.0) * samples[i]; /* the bse blackman window is defined in range [-1, 1] */
+    for (size_t i = 0; i < size; i++)
+      in[i] = window[i] * samples[i];
 
     gsl_power2_fftar (size, in, c);
     c[size] = c[1];
@@ -326,7 +337,7 @@ struct SpectrumFeature : public Feature
     c[1] = 0;
     im = c + 1;
 
-    for (i = 0; i <= size >> 1; i++)
+    for (size_t i = 0; i <= size >> 1; i++)
       {
 	double abs = sqrt (c[i << 1] * c[i << 1] + im[i << 1] * im[i << 1]);
 	/* FIXME: is this the correct normalization? */
@@ -396,6 +407,8 @@ struct SpectrumFeature : public Feature
     if (spectrum.size()) /* don't compute the same feature twice */
       return;
 
+    init_window (4096);
+
     double file_size_ms = signal.time_ms (signal.length());
 
     for (double offset_ms = 0; offset_ms < file_size_ms; offset_ms += 30) /* extract a feature vector every 30 ms */
@@ -418,7 +431,7 @@ struct SpectrumFeature : public Feature
 
 	if (!skip)
 	  {
-	    vector<double> fvector = build_frequency_vector (4096, samples);
+	    vector<double> fvector = build_frequency_vector (samples);
 	    spectrum.push_back (collapse_frequency_vector (fvector, signal.mix_freq(), 50, 1.6));
 	  }
       }
