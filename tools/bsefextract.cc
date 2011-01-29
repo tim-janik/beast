@@ -1551,8 +1551,18 @@ main (int    argc,
       exit (1);
     }
 
+  /*
+   * use a data cache to speedup reading
+   */
+  GslDataCache *dcache = gsl_data_cache_from_dhandle (dhandle, /* min_padding */ 8);
+  assert (dcache);
+
+  GslDataHandle *cached_dhandle = gsl_data_handle_new_dcached (dcache);
+  error = gsl_data_handle_open (cached_dhandle);
+  assert (!error);
+
   /* extract features */
-  Signal signal (dhandle);
+  Signal signal (cached_dhandle);
 
   if (options.channel >= signal.n_channels())
     {
