@@ -68,7 +68,7 @@ struct Options {
 
 class Signal
 {
-  mutable GslDataPeekBuffer m_peek_buffer;
+  vector<float>   m_samples;
   GslDataHandle	 *m_data_handle;
   guint		  m_n_channels;
   GslLong	  m_length;
@@ -102,8 +102,19 @@ public:
     m_length = gsl_data_handle_length (data_handle);
     m_offset = 0;
 
-    memset (&m_peek_buffer, 0, sizeof (m_peek_buffer));
-    m_peek_buffer.dir = 1; /* incremental direction */;
+    m_samples.resize (m_length);
+    size_t have_samples = 0;
+    while (have_samples < m_length)
+      {
+        int64 r = gsl_data_handle_read (data_handle, have_samples, MIN (m_length - have_samples, 4096 * m_n_channels),
+                                        &m_samples[have_samples]);
+        if (r < 0)
+          {
+            g_printerr ("error reading sample data\n");
+            exit (1);
+          }
+        have_samples += r;
+      }
 
     if (options.cut_zeros_head)
       {
@@ -156,7 +167,7 @@ public:
 
   double operator[] (GslLong k) const
   {
-    return gsl_data_handle_peek_value (m_data_handle, k + m_offset, &m_peek_buffer);
+    return m_samples[k + m_offset];
   }
   
   double mix_freq() const
@@ -1564,18 +1575,8 @@ main (int    argc,
       exit (1);
     }
 
-  /*
-   * use a data cache to speedup reading
-   */
-  GslDataCache *dcache = gsl_data_cache_from_dhandle (dhandle, /* min_padding */ 8);
-  assert (dcache);
-
-  GslDataHandle *cached_dhandle = gsl_data_handle_new_dcached (dcache);
-  error = gsl_data_handle_open (cached_dhandle);
-  assert (!error);
-
   /* extract features */
-  Signal signal (cached_dhandle);
+  Signal signal (dhandle);
 
   if (options.channel >= signal.n_channels())
     {
