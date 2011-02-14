@@ -338,6 +338,25 @@ parse_bool_option (char        **argv,
   return false;
 }
 
+/* Since the function g_str_hash has changed between glib 2.26 and glib 2.28,
+ * we include the original code here to make chunk keys behave the same with
+ * both glib versions, so the unit tests pass with any glib version.
+ */
+static guint
+old_g_str_hash (gconstpointer v)
+{
+  /* 31 bit hash function */
+  const signed char *p = static_cast<const signed char *> (v);
+  guint32 h = *p;
+
+  if (h)
+    for (p += 1; *p != '\0'; p++)
+      h = (h << 5) - h + *p;
+
+  return h;
+}
+
+
 /* wave chunk keys for shell iteration */
 class WaveChunkKey {
   BseFloatIEEE754 m_osc_freq;
@@ -365,7 +384,7 @@ public:
 
     const uint64 key_checksum = key_uint & 0x1ff;
     key_uint ^= key_checksum << 32LL;  // deobfuscate high bits with checksum
-    const uint64 checksum = g_str_hash (string_printf ("%lld", key_uint - key_checksum).c_str()) % 509;
+    const uint64 checksum = old_g_str_hash (string_printf ("%lld", key_uint - key_checksum).c_str()) % 509;
     if (key_checksum != checksum)
       return; // invalid key
     key_uint >>= 9;
@@ -393,7 +412,7 @@ public:
     key_uint <<= 23;
     key_uint |= m_osc_freq.mpn.mantissa;        // 23 bit
     key_uint <<= 9;                             // +9 bit checksum
-    const uint64 checksum = g_str_hash (string_printf ("%lld", key_uint).c_str()) % 509;
+    const uint64 checksum = old_g_str_hash (string_printf ("%lld", key_uint).c_str()) % 509;
     key_uint |= checksum;
     key_uint ^= checksum << 32LL;               // obfuscate high bits with checksum
 
