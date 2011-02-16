@@ -13,7 +13,7 @@ DEFS += -DG_LOG_DOMAIN=\"BSE-TEST\" # -DG_DISABLE_CONST_RETURNS
 EXTRA_DIST += arrows.gp filter-defs.gp
 
 noinst_PROGRAMS = $(ALLTESTS)
-progs_ldadd     = $(top_builddir)/bse/libbse.la
+progs_ldadd     = $(top_builddir)/bse/libbse.la $(BSE_LIBS)
 
 TESTS            += misctests
 misctests_SOURCES = misctests.cc

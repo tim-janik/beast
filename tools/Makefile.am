@@ -10,7 +10,7 @@ INCLUDES += -I$(top_srcdir) -I$(top_builddir) $(BSE_CFLAGS)
 DEFS += -DG_LOG_DOMAIN=\"BSE-TOOLS\" -DG_DISABLE_CONST_RETURNS
 
 noinst_PROGRAMS = $(ALLTESTS)
-progs_ldadd     = $(top_builddir)/bse/libbse.la
+progs_ldadd     = $(top_builddir)/bse/libbse.la $(BSE_LIBS)
 
 #
 # tools to build

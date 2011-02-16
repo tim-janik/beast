@@ -48,7 +48,7 @@ generated: clean-generated $(GENERATED)
 # test programs
 #
 noinst_PROGRAMS = $(ALLTESTS)
-progs_ldadd = $(top_builddir)/bse/libbse.la
+progs_ldadd = $(top_builddir)/bse/libbse.la $(BSE_LIBS)
 
 SLOWTESTS         += cxxbinding
 cxxbinding_SOURCES = cxxbinding.cc bsecxxapi.cc
