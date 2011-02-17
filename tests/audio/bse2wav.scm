@@ -27,7 +27,7 @@
 
 ;; playback + recording procedure
 (define (bse-2-wav bse-file wav-file seconds)
-  (let* ((blimp "*")
+  (let* ((counter 0)
 	 ;; create a new project
 	 (project (bse-server-use-new-project bse-server bse-file))
 	 ;; load file contents into project
@@ -46,14 +46,17 @@
     (bse-server-start-recording bse-server wav-file seconds)
     ;; play project and indicate progress
     (display (string-append "Playing " bse-file ": -"))
+    (bse-project-auto-deactivate project 0)
     (bse-project-play project)
     (while (bse-project-is-playing project)
-	   (usleep 250000)
-	   (display #\backspace)
-	   (display blimp)
-	   (if (string=? blimp "*")
-	       (set! blimp "o")
-	       (set! blimp "*")))
+	   (usleep 10000)
+	   (let ((rem           (remainder counter 50))
+                 (display-blimp (lambda (blimp)
+                                  (display #\backspace)
+                                  (display blimp))))
+             (if (= rem 0)  (display-blimp "*"))
+             (if (= rem 25) (display-blimp "o")))
+           (set! counter (1+ counter)))
     ;; cleanup
     (bse-project-stop project)
     (display #\backspace)
