@@ -10,7 +10,7 @@ BSEFEXTRACT = $(top_builddir)/tools/bsefextract
 BSEFCOMPARE = $(top_builddir)/tools/bsefcompare
 BSE2WAV = $(strip							\
 	$(top_builddir)/shell/bsescm-$(BIN_VERSION)			\
-	  --bse-mixing-freq=48000 -p null -m null			\
+	  --bse-mixing-freq=48000 -p null=nosleep -m null		\
 	  --bse-rcfile "/dev/null" --bse-no-load			\
 	  --bse-override-plugin-globs $(builddirplugins)		\
           --bse-override-sample-path $(samplepath)                      \
