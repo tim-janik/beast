@@ -26,6 +26,7 @@ typedef struct
 {
   BsePcmHandle handle;
   guint        busy_us;
+  guint        sleep_us;
 } NullHandle;
 
 /* --- prototypes --- */
@@ -73,6 +74,10 @@ bse_pcm_device_null_open (BseDevice     *device,
   handle->check_io = null_device_check_io;
   handle->latency = null_device_latency;
   null->busy_us = 0;
+  if (n_args == 1 && strcmp (args[0], "nosleep") == 0)
+    null->sleep_us = 0;
+  else
+    null->sleep_us = 10 * 1000;
   BSE_PCM_DEVICE (device)->handle = handle;
   DEBUG ("NULL: opening PCM readable=%d writable=%d: %s", require_readable, require_writable, bse_error_blurb (BSE_ERROR_NONE));
   return BSE_ERROR_NONE;
@@ -123,7 +128,8 @@ null_device_write (BsePcmHandle *handle,
     {
       null->busy_us = 0;
       /* give cpu to other applications (we might run at nice level -20) */
-      g_usleep (10 * 1000);
+      if (null->sleep_us)
+        g_usleep (null->sleep_us);
     }
 }
 
@@ -136,10 +142,13 @@ bse_pcm_device_null_class_init (BsePcmDeviceNullClass *class)
   bse_device_class_setup (device_class,
                           -1,
                           "null",
-                          NULL, /* syntax */
+                          _("[nosleep]"), /* syntax */
                           /* TRANSLATORS: keep this text to 70 chars in width */
                           _("Discard all PCM output and provide zero blocks as input. This\n"
-                            "driver is not part of the automatic PCM device selection list."));
+                            "driver is not part of the automatic PCM device selection list.\n"
+                            "Normally the null driver sleeps regularily to give CPU cycles to\n"
+                            "other apps, which is helpful when running at high priority.\n"
+                            "Sleeping can be disabled by passing \"nosleep\" as option.\n"));
   device_class->open = bse_pcm_device_null_open;
   device_class->close = bse_pcm_device_null_close;
 }
