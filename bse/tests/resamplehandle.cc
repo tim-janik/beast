@@ -23,10 +23,14 @@
 #include <bse/bseblockutils.hh>
 #include <stdlib.h>
 #include <vector>
+#include <string>
+#include <map>
 
 using std::vector;
+using std::string;
 using std::max;
 using std::min;
+using std::map;
 
 static void
 read_through (GslDataHandle *handle)
@@ -173,20 +177,38 @@ generate_test_signal (vector<Sample> &signal,
                       const double    frequency1,
 		      const double    frequency2 = -1)
 {
-  signal.clear();
-  for (size_t i = 0; i < signal_length; i++)
+  static map<size_t, vector<float> > window_cache;
+  vector<float>& cached_window = window_cache[signal_length];
+  if (cached_window.empty())
     {
-      double wpos = (i * 2 - double (signal_length)) / signal_length;
+      cached_window.resize (signal_length);
 
-      double phase1 = i * 2 * M_PI * frequency1 / sample_rate;
-      signal.push_back (sin (phase1) * bse_window_blackman (wpos));
-
-      if (frequency2 > 0)   /* stereo */
-	{
-	  double phase2 = i * 2 * M_PI * frequency2 / sample_rate;
-	  signal.push_back (sin (phase2) * bse_window_blackman (wpos));
-	}
+      for (size_t i = 0; i < signal_length; i++)
+        {
+          double wpos = (i * 2 - double (signal_length)) / signal_length;
+          cached_window[i] = bse_window_blackman (wpos);
+        }
     }
+
+  string signal_cache_key = Birnet::string_printf ("%zd/%.1f/%.1f/%.1f", signal_length, sample_rate, frequency1, frequency2);
+  static map<string, vector<Sample> > signal_cache;
+  vector<Sample>& cached_signal = signal_cache[signal_cache_key];
+
+  if (cached_signal.empty())
+    {
+      for (size_t i = 0; i < signal_length; i++)
+        {
+          double phase1 = i * 2 * M_PI * frequency1 / sample_rate;
+          cached_signal.push_back (sin (phase1) * cached_window[i]);
+
+          if (frequency2 > 0)   /* stereo */
+            {
+              double phase2 = i * 2 * M_PI * frequency2 / sample_rate;
+              cached_signal.push_back (sin (phase2) * cached_window[i]);
+            }
+        }
+    }
+  signal = cached_signal;
 }
 
 static void
