@@ -106,7 +106,7 @@ check (const char           *up_down,
       for (int64 i = 0; i < rhandle->setup.n_values; i++)
 	{
 	  double resampled = gsl_data_handle_peek_value (rhandle, i, &peek_buffer);
-	  worst_diff = max (resampled - expected[i], worst_diff);
+	  worst_diff = max (fabs (resampled - expected[i]), worst_diff);
 	}
       worst_diff_db = bse_db_from_factor (worst_diff, -200);
       TPRINT ("linear(%dst read) read worst_diff = %f (%f dB)\n", repeat, worst_diff, worst_diff_db);
@@ -125,7 +125,7 @@ check (const char           *up_down,
       for (int64 i = start; i < std::min (start + len, rhandle->setup.n_values); i++)
 	{
 	  double resampled = gsl_data_handle_peek_value (rhandle, i, &peek_buffer);
-	  worst_diff = max (resampled - expected[i], worst_diff);
+	  worst_diff = max (fabs (resampled - expected[i]), worst_diff);
 	}
     }
   worst_diff_db = bse_db_from_factor (worst_diff, -200);
@@ -232,7 +232,7 @@ run_tests (const char *run_type)
 
   for (int p = 0; params[p].bits; p++)
     {
-      const int LEN = 44100 * 4;
+      const int LEN = 44100 / 2;  /* 500ms test signal */
       vector<float> input;
       vector<double> expected;
 
