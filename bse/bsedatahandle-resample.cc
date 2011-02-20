@@ -112,25 +112,25 @@ protected:
     return n_values;
   }
   void
-  deinterleave (float *src,
-                float *dest,
-                int64  n_values)
+  deinterleave (float  *src,
+                float  *dest,
+                size_t  n_values)
   {
-    const int64 n_channels = m_dhandle.setup.n_channels;
+    const guint n_channels = m_dhandle.setup.n_channels;
 
-    for (int64 ch = 0; ch < n_channels; ch++)
-      for (int64 v = ch; v < n_values; v += n_channels)
+    for (guint ch = 0; ch < n_channels; ch++)
+      for (size_t v = ch; v < n_values; v += n_channels)
 	*dest++ = src[v];
   }
   void
-  interleave (float *src,
-              float *dest,
-              int64  n_values)
+  interleave (float  *src,
+              float  *dest,
+              size_t  n_values)
   {
-    const int64 n_channels = m_dhandle.setup.n_channels;
+    const guint n_channels = m_dhandle.setup.n_channels;
 
-    for (int64 ch = 0; ch < n_channels; ch++)
-      for (int64 v = ch; v < n_values; v += n_channels)
+    for (guint ch = 0; ch < n_channels; ch++)
+      for (size_t v = ch; v < n_values; v += n_channels)
 	dest[v] = *src++;
   }
 
