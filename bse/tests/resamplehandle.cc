@@ -115,7 +115,7 @@ check (const char           *up_down,
 
   /* test seeking */
   worst_diff = 0.0;
-  const uint count = sfi_init_settings().test_slow ? 3000 : 100;
+  const uint count = sfi_init_settings().test_slow ? 300 : 100;
   for (uint j = 0; j < count; j++)
     {
       int64 start = rand() % rhandle->setup.n_values;
