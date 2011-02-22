@@ -1092,11 +1092,10 @@ bse_scm_context_iteration (SCM s_may_block)
     sfi_glue_context_dispatch ();
   else if (gh_scm2bool (s_may_block))
     {
-      /* FIXME: we need a real poll() based wait implementation here */
       do
         {
           BSE_SCM_ALLOW_INTS ();
-          g_usleep (250 * 1000);
+          g_main_context_iteration (g_main_context_default(), TRUE);
           BSE_SCM_DEFER_INTS ();
         }
       while (!sfi_glue_context_pending ());
