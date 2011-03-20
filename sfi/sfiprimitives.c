@@ -829,14 +829,14 @@ valid (char c)
 
 /* returns dup'd canonified version of the string, or NULL if input was already canonified */
 static inline gchar*
-dupcanon (const gchar *field_name)
+may_dupcanon (const gchar *field_name)
 {
   size_t i = 0;
 
   while (valid (field_name[i]))
     i++;
 
-  if (field_name[i] == 0)  // no need for canonification, all chars legal
+  if (field_name[i] == 0)  // no need for canonification, all chars valid
     return NULL;
 
   gchar *canon_field_name = g_strdup (field_name);
@@ -891,7 +891,7 @@ sfi_rec_set_copy (SfiRec       *rec,
   gchar *dupcanon_name;
   guint i;
   
-  dupcanon_name = dupcanon (field_name);
+  dupcanon_name = may_dupcanon (field_name);
   name = dupcanon_name ? dupcanon_name : field_name;
   i = sfi_rec_lookup (rec, name);
   if (i >= rec->n_fields)
@@ -941,7 +941,7 @@ sfi_rec_get (SfiRec      *rec,
 
   if (!rec->sorted)
     sfi_rec_sort (rec);
-  dupcanon_name = dupcanon (field_name);
+  dupcanon_name = may_dupcanon (field_name);
   name = dupcanon_name ? dupcanon_name : field_name;
   i = sfi_rec_lookup (rec, name);
   g_free (dupcanon_name);
@@ -963,7 +963,7 @@ sfi_rec_forced_get (SfiRec          *rec,
   g_return_val_if_fail (G_TYPE_IS_VALUE (value_type), NULL);
   if (!rec->sorted)
     sfi_rec_sort (rec);
-  dupcanon_name = dupcanon (field_name);
+  dupcanon_name = may_dupcanon (field_name);
   name = dupcanon_name ? dupcanon_name : field_name;
   i = sfi_rec_lookup (rec, name);
   if (i < rec->n_fields)
