@@ -400,16 +400,23 @@ alsa_device_check_io (BsePcmHandle *handle,
   
   if (0)
     {
+      snd_pcm_state_t ws = SND_PCM_STATE_DISCONNECTED, rs = SND_PCM_STATE_DISCONNECTED;
       snd_pcm_status_t *stat = alsa_alloca0 (snd_pcm_status);
-      snd_pcm_status (alsa->read_handle, stat);
+      if (alsa->read_handle)
+        {
+          snd_pcm_status (alsa->read_handle, stat);
+          rs = snd_pcm_state (alsa->read_handle);
+        }
       guint rn = snd_pcm_status_get_avail (stat);
-      snd_pcm_status (alsa->write_handle, stat);
+      if (alsa->write_handle)
+        {
+          snd_pcm_status (alsa->write_handle, stat);
+          ws = snd_pcm_state (alsa->write_handle);
+        }
       guint wn = snd_pcm_status_get_avail (stat);
       g_printerr ("ALSA: check_io: read=%4u/%4u (%s) write=%4u/%4u (%s) block=%u: %s\n",
-                  rn, alsa->period_size * alsa->n_periods,
-                  snd_pcm_state_name (snd_pcm_state (alsa->read_handle)),
-                  wn, alsa->period_size * alsa->n_periods,
-                  snd_pcm_state_name (snd_pcm_state (alsa->write_handle)),
+                  rn, alsa->period_size * alsa->n_periods, snd_pcm_state_name (rs),
+                  wn, alsa->period_size * alsa->n_periods, snd_pcm_state_name (ws),
                   handle->block_length,
                   rn >= handle->block_length ? "TRUE" : "FALSE");
     }
