@@ -32,6 +32,7 @@
 static SFI_MSG_TYPE_DEFINE (debug_pcm, "pcm", SFI_MSG_DEBUG, NULL);
 #define DEBUG(...) sfi_debug (debug_pcm, __VA_ARGS__)
 
+static snd_output_t *snd_output = NULL; // only for debugging
 
 /* --- ALSA PCM handle --- */
 typedef struct
@@ -333,20 +334,21 @@ alsa_device_setup (AlsaPcmHandle       *alsa,
   if (snd_pcm_sw_params_get_boundary (sparams, &boundary) < 0)
     return BSE_ERROR_FILE_OPEN_FAILED;
   gboolean stop_on_xrun = FALSE;                                                /* ignore XRUN */
-  guint threshold = stop_on_xrun ? buffer_size : boundary;
+  guint threshold = stop_on_xrun ? buffer_size : MIN (buffer_size * 2, boundary);
+  // constrain boundary for stop_threshold, to work around 64bit alsa lib setting boundary to 0x5000000000000000
   if (snd_pcm_sw_params_set_stop_threshold (phandle, sparams, threshold) < 0)
     return BSE_ERROR_DEVICE_BUFFER;
   if (snd_pcm_sw_params_set_silence_threshold (phandle, sparams, 0) < 0 ||
       snd_pcm_sw_params_set_silence_size (phandle, sparams, boundary) < 0)      /* play silence on XRUN */
     return BSE_ERROR_DEVICE_BUFFER;
-  if (snd_pcm_sw_params_set_xfer_align (phandle, sparams, 1) < 0)
-    return BSE_ERROR_DEVICE_BUFFER;
+  // if (snd_pcm_sw_params_set_xfer_align (phandle, sparams, 1) < 0) return BSE_ERROR_DEVICE_BUFFER;
   if (snd_pcm_sw_params (phandle, sparams) < 0)
     return BSE_ERROR_FILE_OPEN_FAILED;
   /* assign out values */
   *mix_freq = rate;
   *n_periodsp = nperiods;
   *period_sizep = period_size;
+  /* dump debugging info */
   DEBUG ("ALSA: setup: w=%d r=%d n_channels=%d sample_freq=%d nperiods=%u period=%u (%u) bufsz=%u",
          phandle == alsa->write_handle,
          phandle == alsa->read_handle,
@@ -354,6 +356,7 @@ alsa_device_setup (AlsaPcmHandle       *alsa,
          *mix_freq, *n_periodsp, *period_sizep,
          (guint) (nperiods * period_size),
          (guint) buffer_size);
+  // snd_pcm_dump (phandle, snd_output);
   return BSE_ERROR_NONE;
 }
 
@@ -571,4 +574,6 @@ bse_pcm_device_alsa_class_init (BsePcmDeviceALSAClass *class)
   bse_device_class_setup (class, BSE_RATING_PREFERRED, name, syntax, info);
   device_class->open = bse_pcm_device_alsa_open;
   device_class->close = bse_pcm_device_alsa_close;
+  int err = snd_output_stdio_attach (&snd_output, stderr, 0);
+  (void) err;
 }
