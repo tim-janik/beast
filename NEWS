@@ -1,3 +1,19 @@
+Overview of Changes in BEAST/BSE 0.7.4:
+
+* Various build system fixes [stw,timj]
+* License fixups for some scripts [stw]
+* Fixed subnormal tests on AMD64 if SSE unit is in DAZ mode [stw]
+* Replaced slow resampler checks with a much faster resampling test [stw]
+* Performance improvements for various tests [stw]
+* GLib 2.28 unit test porting [stw]
+* Speed improvements for record field name [stw]
+* Fixed XRUNs in ALSA driver on 64bit systems [timj]
+* Added beast.doap [Jonh Wendell]
+* PO handling improvements.
+* Updated German translation.
+* Updated Norwegian bokmål translation [Kjartan Maraas]
+* Added e-Telugu translation [Veeven]
+
 Overview of Changes in BEAST/BSE 0.7.2:
 
 * Moved Beast/BSE to GNU LGPL, use AS-IS license for examples
