@@ -697,7 +697,6 @@ doxer/Makefile
 docs/Makefile
 docs/images/Makefile
 docs/imports/Makefile
-web/Makefile
 ])
 
 AC_OUTPUT
