@@ -4,6 +4,7 @@
 ## This work is provided "as is"; see: http://rapicorn.org/LICENSE-AS-IS
 
 MYVERSION="mkrelease.sh version 20100901"
+# 20110407: extract 'contributors' from NEWS files
 # 20100910: fixed 'commit-stamps' outside of git repos
 # 20100901: check HEAD against upstream repository, upload last
 # 20100831: implemented 'shellvar' command
@@ -34,6 +35,7 @@ usage() {
 	Usage: `basename $SCRIPT_NAME` <command> [options]
 	Commands:
 	  commit-stamps		list stamp files affected by a commit
+	  contributors		extract contributor C strings from NEWS files
 	  ChangeLog		generate ChangeLog from git history
 	  news			list commits since last release tag
 	  upload		check and upload release tarball
@@ -43,6 +45,8 @@ usage() {
 	  -v, --version		issue version and brief history
 	  -E <FILE:VAR>         revision variable to increment during "upload"
 	                        (e.g. configure.ac:MICRO)
+	  -B <A,B,C...>		ignored names for "contributors"
+	  -C <NEWS>		file with ignored C strings for "contributors"
 	  -R <revision>		revision range for "ChangeLog" generation
 	                        last release revision for "news" (auto)
 	  -T <disttarball>	name of distribution tarball (from Makefile)
@@ -58,10 +62,14 @@ VERSION=_parse
 TARBALL=_parse
 REMOTE_URL=
 REVISIONVAR=
+CONTRBLACK=
+CONTRCFILE=/dev/null
 parse_options=1
 while test $# -ne 0 -a $parse_options = 1; do
   case "$1" in
     -h|--help)	usage 0 ;;
+    -B)		CONTRBLACK="$2" ; shift ;;
+    -C)		CONTRCFILE="$2" ; shift ;;
     -E)		REVISIONVAR="$2" ; shift ;;
     -R)		R_REVISION="$2" ; shift ;;
     -T)		TARBALL="$2" ; shift ;;
@@ -110,6 +118,32 @@ done
   } > $TEMPF
   # replace atomically
   mv $TEMPF ChangeLog
+  exit
+}
+
+# === contributors ===
+[ "$COMMAND" = "contributors" ] && {
+  TEMPF="`mktemp -t yyTMPcontribs.$$XXXXXX`" && touch $TEMPF || \
+    die 9 "Failed to create temporary file"
+  # find and extract contributor names from first NEWS section
+  sed -n '/^[A-Za-z0-9]/{
+	    # loop over content lines of first NEWS section
+	    :1 n;
+	    /^[A-Za-z0-9]/q;
+	    /\[.*\]/{
+	      # extract names, enclosed in brackets
+	      s/\(^.*\[\|][^]]*$\)//g;
+	      # separate list of names by newlines
+	      s/[,;\/]/\n/g;
+	      # remove excessive whitespaces
+	      s/\(^\s\+\|\s\+$\)//g ; s/\s\s\+/ /g
+	      p; };
+	    b 1; }' < NEWS | sort | uniq > $TEMPF
+  # list unknown contributor names as C strings
+  while read NAME ; do
+    case ",$CONTRBLACK," in (*",$NAME,"*) continue ;; esac
+    grep -qFie \""$NAME"\" "$CONTRCFILE" || echo "  \"$NAME\","
+  done < $TEMPF
   exit
 }
 

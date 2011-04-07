@@ -42,6 +42,11 @@ release-news:
 	$(srcdir)/mkrelease.sh news
 .PHONY: release-news
 
+# --- release-contributors ---
+release-contributors:
+	$(srcdir)/mkrelease.sh contributors -B timj,stw -C $(srcdir)/beast-gtk/bstmain.c
+.PHONY: release-contributors
+
 # --- release-upload ---
 release-upload: ChangeLog
 	$(srcdir)/mkrelease.sh upload -U beast:dist/beast/ -E configure.in:BSE_MICRO_VERSION
