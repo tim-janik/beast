@@ -321,10 +321,6 @@ DOCS:
 - plugin-devel: mention possibility of deriving from BassFilterProperties() for expensive
   table etc. calculations
 - automate uploading of images from docs/ to gtk.org:/web/beast/html/cvs-images/
-WEB:
-- webmenu indicators are wrong for inner submenu items, i.e.
-  http://beast.gtk.org/historic.html has "v Historic" indicator,
-  but http://beast.gtk.org/oldnews.html has "> Historic" indicator
 
 MONITORING DIALOG:
 * Frame "Thread Info"
