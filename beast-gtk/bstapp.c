@@ -1098,19 +1098,19 @@ app_action_exec (gpointer data,
       beast_show_about_box ();
       break;
     case ACTION_URL_HELP_DESK:
-      sfi_url_show ("http://beast.gtk.org/wiki:HelpDesk");
+      sfi_url_show ("http://beast.testbit.eu/Beast_Help_Desk");
       break;
     case ACTION_URL_BEAST_SITE:
-      sfi_url_show ("http://beast.gtk.org/");
+      sfi_url_show ("http://beast.testbit.eu/");
       break;
     case ACTION_URL_REPORT_BUG:
       sfi_url_show ("http://bugzilla.gnome.org/simple-bug-guide.cgi?product=beast");
       break;
     case ACTION_URL_ONLINE_SYNTHESIZERS:
-      sfi_url_show ("http://beast.gtk.org/sound-browser");
+      sfi_url_show ("http://beast.testbit.eu/Beast_Sound_Gallery");
       break;
     case ACTION_URL_ONLINE_DEMOS:
-      sfi_url_show ("http://beast.gtk.org/sound-browser");
+      sfi_url_show ("http://beast.testbit.eu/Beast_Sound_Gallery");
       break;
     case ACTION_DEMO_DIALOG_ERROR:
     case ACTION_DEMO_DIALOG_WARNING:

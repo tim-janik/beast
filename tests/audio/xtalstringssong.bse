@@ -16,7 +16,7 @@
   (tpqn 384)
   (modification-time "2007-01-24 22:31:26")
   (creation-time "2003-10-04 18:10:14")
-  (license "Provided \\\"as is\\\", WITHOUT ANY WARRANTY (http://beast.gtk.org/LICENSE-AS-IS)")
+  (license "Provided \\\"as is\\\", WITHOUT ANY WARRANTY (http://beast.testbit.eu/LICENSE-AS-IS)")
   (author "Stefan Westerfeld")
   (container-child "BsePart::Part-1"
     (n-channels 2)
@@ -93,7 +93,7 @@
 (container-child "BseCSynth::XtalString"
   (modification-time "2007-01-24 22:31:26")
   (creation-time "2003-10-04 20:36:52")
-  (license "Provided \\\"as is\\\", WITHOUT ANY WARRANTY (http://beast.gtk.org/LICENSE-AS-IS)")
+  (license "Provided \\\"as is\\\", WITHOUT ANY WARRANTY (http://beast.testbit.eu/LICENSE-AS-IS)")
   (author "Stefan Westerfeld")
   (container-child "BseAmplifier::BseAmplifier-1"
     (master-volume 1)
@@ -152,7 +152,7 @@
 (container-child "BseCSynth::XtalStringBass"
   (modification-time "2007-01-24 22:31:56")
   (creation-time "2003-10-04 20:36:52")
-  (license "Provided \\\"as is\\\", WITHOUT ANY WARRANTY (http://beast.gtk.org/LICENSE-AS-IS)")
+  (license "Provided \\\"as is\\\", WITHOUT ANY WARRANTY (http://beast.testbit.eu/LICENSE-AS-IS)")
   (author "Stefan Westerfeld")
   (container-child "BseAmplifier::BseAmplifier-1"
     (master-volume 1)

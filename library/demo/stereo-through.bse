@@ -6,7 +6,7 @@
   (auto-activate #t)
   (modification-time "2006-07-08 23:38:13")
   (creation-time "2004-12-16 01:22:49")
-  (license "Provided \"as is\", WITHOUT ANY WARRANTY (http://beast.gtk.org/LICENSE-AS-IS)")
+  (license "Provided \"as is\", WITHOUT ANY WARRANTY (http://beast.testbit.eu/LICENSE-AS-IS)")
   (author "Tim Janik")
   (container-child "BsePcmInput::PcmInput-1"
     (pos-y 1)

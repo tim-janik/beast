@@ -5,7 +5,7 @@
 (container-child "BseCSynth::FSM Synth String Sweep"
   (modification-time "2007-09-20 22:23:52")
   (creation-time "2007-09-17 21:40:07")
-  (license "Provided \"as is\", WITHOUT ANY WARRANTY (http://beast.gtk.org/LICENSE-AS-IS)")
+  (license "Provided \"as is\", WITHOUT ANY WARRANTY (http://beast.testbit.eu/LICENSE-AS-IS)")
   (author "Krzysztof Foltman")
   (blurb "Soft and wide string sweep")
   (container-child "BseSimpleADSR::SimpleADSR-1"

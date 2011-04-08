@@ -5,7 +5,7 @@
 (container-child "BseCSynth::FSM Growl Bass"
   (modification-time "2007-09-20 22:23:39")
   (creation-time "2007-09-18 19:27:16")
-  (license "Provided \"as is\", WITHOUT ANY WARRANTY (http://beast.gtk.org/LICENSE-AS-IS)")
+  (license "Provided \"as is\", WITHOUT ANY WARRANTY (http://beast.testbit.eu/LICENSE-AS-IS)")
   (author "Krzysztof Foltman")
   (blurb "Recommended for C-2 to C+4.")
   (container-child "BseInstrumentInput::InstrumentInput-1"

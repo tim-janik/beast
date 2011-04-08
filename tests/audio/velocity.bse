@@ -202,7 +202,7 @@
 (container-child "BseCSynth::BQS SynDrum"
   (modification-time "2006-05-15 21:00:19")
   (creation-time "2006-04-07 20:44:57")
-  (license "Provided \"as is\", WITHOUT ANY WARRANTY (http://beast.gtk.org/LICENSE-AS-IS)")
+  (license "Provided \"as is\", WITHOUT ANY WARRANTY (http://beast.testbit.eu/LICENSE-AS-IS)")
   (author "Tim Janik")
   (blurb "Example Instrument based on the DavSynDrum module.")
   (container-child "BseInstrumentOutput::InstrumentOutput-1"

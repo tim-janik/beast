@@ -30,7 +30,7 @@
     </td>
     <td width="85%" align="right">
 }
-  @center @doxer_fontsize{-1, This document is part of the @uri{http://beast.gtk.org, @beast project}.
+  @center @doxer_fontsize{-1, This document is part of the @uri{http://beast.testbit.eu, @beast project}.
   }
 @rawhtml{
     </td>

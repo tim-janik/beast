@@ -360,5 +360,5 @@ bsewavetool - A tool for editing the native multisample format for @beast and @b
 
 @heading SEE ALSO
 @uri{beast.1.html,beast(1)} @*
-@longuri{http://beast.gtk.org, BEAST/BSE Website} @*
-@longuri{http://beast.gtk.org/architecture#section-samples-and-wave-files, Samples and Waves in BEAST}
+@longuri{http://beast.testbit.eu, BEAST/BSE Website} @*
+@longuri{http://beast.testbit.eu/architecture#section-samples-and-wave-files, Samples and Waves in BEAST}

@@ -11,7 +11,7 @@
   (auto-activate #t)
   (modification-time "2006-12-23 14:38:04")
   (creation-time "2006-12-23 14:38:04")
-  (license "Provided \"as is\", WITHOUT ANY WARRANTY (http://beast.gtk.org/LICENSE-AS-IS)")
+  (license "Provided \"as is\", WITHOUT ANY WARRANTY (http://beast.testbit.eu/LICENSE-AS-IS)")
   (author "Tim Janik")
   (blurb "The difference channel is used to invert the highpass")
   (container-child "BseSummation::Sum/Diff"

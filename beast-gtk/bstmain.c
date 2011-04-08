@@ -366,17 +366,17 @@ main (int   argc,
         "and questions in online forums like the Beast "
         "<span tag=\"hyperlink\"><xlink ref=\"http://bugzilla.gnome.org/buglist.cgi?query=product:beast\">Bugzilla</xlink></span> "
         "or the "
-        "<span tag=\"hyperlink\"><xlink ref=\"http://beast.gtk.org/contact\">mailing list</xlink></span>, "
+        "<span tag=\"hyperlink\"><xlink ref=\"http://beast.testbit.eu/Beast_Contact\">mailing list</xlink></span>, "
         "all of which can be reached through the links provided by the Help/ menu."
         "<newline/><newline/>"
         "The Beast website provides much more information like detailed "
-        "<span tag=\"hyperlink\"><xlink ref=\"http://beast.gtk.org/news-file\">release NEWS</xlink></span>, "
+        "<span tag=\"hyperlink\"><xlink ref=\"http://beast.testbit.eu/Beast_News\">project news</xlink></span>, "
         "synthesis hints, documentation and a "
-        "<span tag=\"hyperlink\"><xlink ref=\"http://beast.gtk.org/sound-browser\">sound archive</xlink></span>. "
+        "<span tag=\"hyperlink\"><xlink ref=\"http://beast.testbit.eu/Beast_Sound_Gallery\">sound archive</xlink></span>. "
         "<newline/>"
         "So either activate 'Help/Beast Website...' or go to:"
         "<newline/>"
-        "<span tag=\"mono\">        </span><span tag=\"hyperlink\"><xlink ref=\"http://beast.gtk.org\">http://beast.gtk.org</xlink></span>"
+        "<span tag=\"mono\">        </span><span tag=\"hyperlink\"><xlink ref=\"http://beast.testbit.eu/\">http://beast.testbit.eu</xlink></span>"
         "</tag-span-markup>";
       GtkWidget *sctext = gxk_scroll_text_create (GXK_SCROLL_TEXT_WRAP | GXK_SCROLL_TEXT_SANS | GXK_SCROLL_TEXT_CENTER, NULL);
       gxk_scroll_text_set_tsm (sctext, release_notes_contents);
@@ -744,7 +744,7 @@ bst_exit_print_version (void)
   g_print ("You may redistribute copies of BEAST under the terms of\n");
   g_print ("the GNU Lesser General Public License which can be found in\n");
   g_print ("the BEAST source package. Sources, examples and contact\n");
-  g_print ("information are available at http://beast.gtk.org/.\n");
+  g_print ("information are available at http://beast.testbit.eu/.\n");
   g_free (freeme);
   exit (0);
 }

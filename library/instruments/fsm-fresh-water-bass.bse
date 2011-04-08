@@ -5,7 +5,7 @@
 (container-child "BseCSynth::FSM Fresh Water Bass"
   (modification-time "2007-09-22 01:55:03")
   (creation-time "2007-09-18 19:27:16")
-  (license "Provided \"as is\", WITHOUT ANY WARRANTY (http://beast.gtk.org/LICENSE-AS-IS)")
+  (license "Provided \"as is\", WITHOUT ANY WARRANTY (http://beast.testbit.eu/LICENSE-AS-IS)")
   (author "Krzysztof Foltman")
   (blurb "Recommended for C-2 to C-0")
   (container-child "BseInstrumentInput::InstrumentInput-1"

@@ -37,8 +37,8 @@ delete_note_setup (BseProcedureClass *proc,
 		   GParamSpec       **out_pspecs)
 {
   proc->help      = ("Delete current note and shift remaining notes up");
-  proc->author    = "Dave Seidel <feldspar@beast.gtk.org>";
-  proc->copyright = "Dave Seidel <feldspar@beast.gtk.org>";
+  proc->author    = "Dave Seidel <feldspar@beast.testbit.eu>";
+  proc->copyright = "Dave Seidel <feldspar@beast.testbit.eu>";
   proc->date      = "2000";
   
   /* input parameters */
@@ -99,8 +99,8 @@ insert_note_setup (BseProcedureClass *proc,
 		   GParamSpec       **out_pspecs)
 {
   proc->help      = ("Insert new note and shift remaining notes down");
-  proc->author    = "Dave Seidel <feldspar@beast.gtk.org>";
-  proc->copyright = "Dave Seidel <feldspar@beast.gtk.org>";
+  proc->author    = "Dave Seidel <feldspar@beast.testbit.eu>";
+  proc->copyright = "Dave Seidel <feldspar@beast.testbit.eu>";
   proc->date      = "2000";
   
   /* input parameters */
@@ -159,8 +159,8 @@ clear_instrument_setup (BseProcedureClass *proc,
 			GParamSpec       **out_pspecs)
 {
   proc->help      = ("Reset instrument for selected notes");
-  proc->author    = "Dave Seidel <feldspar@beast.gtk.org>";
-  proc->copyright = "Dave Seidel <feldspar@beast.gtk.org>";
+  proc->author    = "Dave Seidel <feldspar@beast.testbit.eu>";
+  proc->copyright = "Dave Seidel <feldspar@beast.testbit.eu>";
   proc->date      = "2000";
   
   /* input parameters */
@@ -209,8 +209,8 @@ fill_instrument_setup (BseProcedureClass *proc,
 		       GParamSpec       **out_pspecs)
 {
   proc->help      = ("Reset instrument for selected notes");
-  proc->author    = "Dave Seidel <feldspar@beast.gtk.org>";
-  proc->copyright = "Dave Seidel <feldspar@beast.gtk.org>";
+  proc->author    = "Dave Seidel <feldspar@beast.testbit.eu>";
+  proc->copyright = "Dave Seidel <feldspar@beast.testbit.eu>";
   proc->date      = "2000";
   
   /* input parameters */

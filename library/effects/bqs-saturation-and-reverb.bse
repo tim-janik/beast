@@ -5,7 +5,7 @@
 (container-child "BseCSynth::BQS Saturation And Reverb"
   (modification-time "2006-07-12 12:46:45")
   (creation-time "2005-08-07 14:23:05")
-  (license "Provided \\\"as is\\\", WITHOUT ANY WARRANTY (http://beast.gtk.org/LICENSE-AS-IS)")
+  (license "Provided \\\"as is\\\", WITHOUT ANY WARRANTY (http://beast.testbit.eu/LICENSE-AS-IS)")
   (author "Stefan Westerfeld")
   (container-child "BseSubIPort::SubIPort-1"
     (pos-y 2)

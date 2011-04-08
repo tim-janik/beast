@@ -22,7 +22,7 @@ A list of the various contributions is given in the
 About box of @beast.
 
 @subsection Document History
-This FAQ was written by @uri{mailto://timj@@beast.gtk.org, Tim Janik}.
+This FAQ was written by @uri{mailto://timj@@beast.testbit.eu, Tim Janik}.
 Initial markup was done by Dave Seidel, until
 @uri{mailto://dirt@@gtk.org, Alper Ersoy} implemented
 a new markup parser for @beast documentation. Around the
@@ -33,8 +33,8 @@ all docs inclusing the FAQ got migrated to doxer format.
 @anchor{contacts}
 @subsection Contact Information and Resources
 @itemize
-@item WWW: @uri{http://beast.gtk.org}
-@item FTP: @uri{ftp://beast.gtk.org/pub/beast}
+@item WWW: @uri{http://beast.testbit.eu}
+@item FTP: @uri{ftp://beast.testbit.eu/pub/beast}
 @item Mailing List: @uri{http://mail.gnome.org/mailman/listinfo/beast/}.
 @done
 
@@ -164,16 +164,16 @@ handle this situation in much more flexible and adequate ways.
 @subsection What platforms are supported?
 
 Beast is mainly developed under Linux and has been ported to some BSD versions.
-The @uri{http://beast.gtk.org/download, Download page} of the Beast website links
+The @uri{http://beast.testbit.eu/download, Download page} of the Beast website links
 to the available packages and source code repositories for the various supported
 Linux and BSD variants.
 
 Some effort also went into a Windows port, more details about the state of which
-can be found on the @uri{http://beast.gtk.org/wiki:WindowsPort, Windows port wiki page}.
+can be found on the @uri{http://beast.testbit.eu/wiki:WindowsPort, Windows port wiki page}.
 
 Other operating systems are currently not supported, but the project is always taking
 patches and looks for new volounteers. So to start a new port, simply write your patch
-and contact the @uri{http://beast.gtk.org/contact, mailing list and developers}.
+and contact the @uri{http://beast.testbit.eu/contact, mailing list and developers}.
 
 @subsection Why does nothing happen on @emph{Play}?
 

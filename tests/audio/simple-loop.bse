@@ -5,13 +5,13 @@
 (container-child "BseWaveRepo::Wave-Repository"
   (modification-time "2006-07-08 23:51:00")
   (creation-time "2002-02-06 14:05:19")
-  (license "Provided \"as is\", WITHOUT ANY WARRANTY (http://beast.gtk.org/LICENSE-AS-IS)")
+  (license "Provided \"as is\", WITHOUT ANY WARRANTY (http://beast.testbit.eu/LICENSE-AS-IS)")
   (author "Tim Janik"))
 (container-child "BseCSynth::Simple-Loop"
   (auto-activate #t)
   (modification-time "2006-07-08 23:51:00")
   (creation-time "2002-02-06 14:05:24")
-  (license "Provided \"as is\", WITHOUT ANY WARRANTY (http://beast.gtk.org/LICENSE-AS-IS)")
+  (license "Provided \"as is\", WITHOUT ANY WARRANTY (http://beast.testbit.eu/LICENSE-AS-IS)")
   (author "Tim Janik")
   (parasite f "BstRouterZoom" 1 1)
   (container-child "BsePcmOutput::PcmOutput"

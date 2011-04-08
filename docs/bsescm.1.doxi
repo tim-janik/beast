@@ -118,5 +118,5 @@ bsescm - A Guile based scheme shell for @beast and @bse.
 @heading SEE ALSO
 @uri{beast.1.html,beast(1)},
 @uri{bse.5.html,bse(5)},
-@longuri{http://beast.gtk.org, BEAST/BSE Website},
+@longuri{http://beast.testbit.eu, BEAST/BSE Website},
 @longuri{http://www.gnu.org/software/guile/docs/,Guile Documentation}

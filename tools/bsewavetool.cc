@@ -265,7 +265,7 @@ wavetool_print_version (void)
   g_print ("You may redistribute copies of bsewavetool under the terms\n");
   g_print ("of the GNU Lesser General Public License which can be found in\n");
   g_print ("the BEAST source package. Sources, examples and contact\n");
-  g_print ("information are available at http://beast.gtk.org/.\n");
+  g_print ("information are available at http://beast.testbit.eu/.\n");
 }
 
 static void

@@ -112,7 +112,7 @@
 (container-child "BseCSynth::BQS Organ"
   (modification-time "2006-10-21 19:32:55")
   (creation-time "2006-04-07 20:44:57")
-  (license "Provided \"as is\", WITHOUT ANY WARRANTY (http://beast.gtk.org/LICENSE-AS-IS)")
+  (license "Provided \"as is\", WITHOUT ANY WARRANTY (http://beast.testbit.eu/LICENSE-AS-IS)")
   (author "Tim Janik")
   (blurb "Example Instrument based on the DavOrgan module.")
   (container-child "BseInstrumentOutput::InstrumentOutput-1"
@@ -161,7 +161,7 @@
 (container-child "BseCSynth::BQS Organ-1"
   (modification-time "2006-10-21 19:32:55")
   (creation-time "2006-04-07 20:44:57")
-  (license "Provided \"as is\", WITHOUT ANY WARRANTY (http://beast.gtk.org/LICENSE-AS-IS)")
+  (license "Provided \"as is\", WITHOUT ANY WARRANTY (http://beast.testbit.eu/LICENSE-AS-IS)")
   (author "Tim Janik")
   (blurb "Example Instrument based on the DavOrgan module.")
   (container-child "BseInstrumentOutput::InstrumentOutput-1"
@@ -212,7 +212,7 @@
 (container-child "BseCSynth::BQS Organ-2"
   (modification-time "2006-10-21 19:32:55")
   (creation-time "2006-04-07 20:44:57")
-  (license "Provided \"as is\", WITHOUT ANY WARRANTY (http://beast.gtk.org/LICENSE-AS-IS)")
+  (license "Provided \"as is\", WITHOUT ANY WARRANTY (http://beast.testbit.eu/LICENSE-AS-IS)")
   (author "Tim Janik")
   (blurb "Example Instrument based on the DavOrgan module.")
   (container-child "BseInstrumentOutput::InstrumentOutput-1"

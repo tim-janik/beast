@@ -25,7 +25,7 @@
 # synthesis -> syntese
 # synthesis networks -> syntesenetværk
 # synthesizer mesh -> synthesizernet (Et "synthesizer mesh" er det der vises 
-#                     i midten af dette skærmbillede: http://beast.gtk.org/
+#                     i midten af dette skærmbillede: http://beast.testbit.eu/
 #                     screenshots?image=screenshotdir/stwZ01-modular_synth_bass.png
 #                     Det har noget at gøre med hvordan forskellig input er bundet
 #                     sammen gennem filtre og effekter og den slags i et "net" og 

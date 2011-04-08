@@ -1,7 +1,7 @@
 ## Process this file with automake to generate Makefile.in
 # Copyright (C) 2010 Tim Janik
 #
-# This work is provided "as is"; see: http://beast.gtk.org/mirror/LICENSE-AS-IS
+# This work is provided "as is"; see: http://beast.testbit.eu/LICENSE-AS-IS
 include $(top_srcdir)/Makefile.decl
 AUTOMAKE_OPTIONS = -Wno-portability
 

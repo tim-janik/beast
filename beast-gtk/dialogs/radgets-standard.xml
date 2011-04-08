@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>		<!--*-mode: xml;-*-->
 <gxk-radget-definitions
-  xmlns:xdef="http://beast.gtk.org/xmlns:xdef"
-  xmlns:prop="http://beast.gtk.org/xmlns:prop"
-  xmlns:pack="http://beast.gtk.org/xmlns:pack"
-  xmlns:hook="http://beast.gtk.org/xmlns:hook"
-  xmlns:size="http://beast.gtk.org/xmlns:size"
-  xmlns:default-pack="http://beast.gtk.org/xmlns:default-pack" >
+  xmlns:xdef="http://beast.testbit.eu/xmlns:xdef"
+  xmlns:prop="http://beast.testbit.eu/xmlns:prop"
+  xmlns:pack="http://beast.testbit.eu/xmlns:pack"
+  xmlns:hook="http://beast.testbit.eu/xmlns:hook"
+  xmlns:size="http://beast.testbit.eu/xmlns:size"
+  xmlns:default-pack="http://beast.testbit.eu/xmlns:default-pack" >
   
   <!-- widget-patcher -->
   <xdef:tooltip inherit="GxkWidgetPatcher"

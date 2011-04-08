@@ -5,7 +5,7 @@
 (container-child "BseCSynth::BQS Compressor"
   (modification-time "2006-07-12 12:45:01")
   (creation-time "2003-10-18 01:55:54")
-  (license "Provided \\\"as is\\\", WITHOUT ANY WARRANTY (http://beast.gtk.org/LICENSE-AS-IS)")
+  (license "Provided \\\"as is\\\", WITHOUT ANY WARRANTY (http://beast.testbit.eu/LICENSE-AS-IS)")
   (author "Stefan Westerfeld")
   (container-child "BseArtsCompressor::ArtsStereoCompressor-1"
     (output-db 7.300460638166486)

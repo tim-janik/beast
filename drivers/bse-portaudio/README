@@ -8,10 +8,10 @@ PortAudio (>= V19):
   http://www.portaudio.com/
 
 The official ftp site for BEAST/BSE is:
-  ftp://beast.gtk.org/pub/beast
+  ftp://beast.testbit.eu/pub/beast
 
 The official web site for BEAST/BSE is:
-  http://beast.gtk.org/
+  http://beast.testbit.eu/
 
 There also is a mailing list for the project (beast@gnome.org):
   http://mail.gnome.org/mailman/listinfo/beast/

@@ -69,5 +69,5 @@
   <navigation-node title="Download"                target="download.html"          />
   <navigation-node title="Contact"                 target="contact.html"           />
   <navigation-node title="Search"                  target="search.php"             />
-  <navigation-node title="Wiki"                    target="http://beast.gtk.org/wiki:BeastBse" />
+  <navigation-node title="Wiki"                    target="http://beast.testbit.eu/wiki:BeastBse" />
 </navigation>

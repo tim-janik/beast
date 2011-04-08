@@ -36,17 +36,17 @@
 @itemize
 @item @uri{@top_webdir/bse-objects.html,	BSE Objects and Plugins} (Properties, Signals, Channels)
 @item @uri{@top_webdir/bse-interface.html,	BSE Interface (public API)}
-@item Online: @uri{http://beast.gtk.org/rdocu-sfi/,	SFI Reference Documentation}
-@item Online: @uri{http://beast.gtk.org/rdocu-bse/,	BSE Reference Documentation} - Bedevilled Sound Engine
-@item Online: @uri{http://beast.gtk.org/rdocu-gxk/,	GXK Reference Documentation} - Gtk+ Extension Kit
+@item Online: @uri{http://beast.testbit.eu/rdocu-sfi/,	SFI Reference Documentation}
+@item Online: @uri{http://beast.testbit.eu/rdocu-bse/,	BSE Reference Documentation} - Bedevilled Sound Engine
+@item Online: @uri{http://beast.testbit.eu/rdocu-gxk/,	GXK Reference Documentation} - Gtk+ Extension Kit
 @done
 
 @heading Online Resources
 @itemize
-@item @uri{http://beast.gtk.org/,			BEAST Website}
-@item @uri{http://beast.gtk.org/sound-browser,		Sound Archive}
-@item @uri{http://beast.gtk.org/wiki:HelpDesk,		Help Desk}
-@item @uri{http://beast.gtk.org/wiki:FeatureRequests,	Feature Requests}
-@item @uri{http://beast.gtk.org/wiki:BeastTodo,		Community TODO}
-@item @uri{http://beast.gtk.org/synthesis-links,	Synthesis Links}
+@item @uri{http://beast.testbit.eu/,				BEAST Website}
+@item @uri{http://beast.testbit.eu/Beast_Sound_Gallery,		Sound Archive}
+@item @uri{http://beast.testbit.eu/Beast_Help_Desk,		Help Desk}
+@item @uri{http://beast.testbit.eu/Beast_Feature_Requests,	Feature Requests}
+@item @uri{http://beast.testbit.eu/Beast_Use_Cases,		Community Input}
+@item @uri{http://beast.testbit.eu/Synthesis_Links,		Synthesis Links}
 @done

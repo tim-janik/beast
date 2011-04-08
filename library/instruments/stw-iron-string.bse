@@ -5,7 +5,7 @@
 (container-child "BseCSynth::STW Iron String"
   (modification-time "2007-09-20 22:24:53")
   (creation-time "2003-10-04 16:36:52")
-  (license "Provided \"as is\", WITHOUT ANY WARRANTY (http://beast.gtk.org/LICENSE-AS-IS)")
+  (license "Provided \"as is\", WITHOUT ANY WARRANTY (http://beast.testbit.eu/LICENSE-AS-IS)")
   (author "Stefan Westerfeld")
   (container-child "BseAmplifier::Amplifier-1"
     (master-volume 1)
