@@ -7,10 +7,11 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast 0.6.2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-09-10 02:03+0200\n"
+"POT-Creation-Date: 2011-04-08 10:51+0200\n"
 "PO-Revision-Date: 2004-08-06 19:59+0200\n"
 "Last-Translator: Satoru SATOH <ss@gnome.gr.jp>\n"
 "Language-Team: Japanese <translation@gnome.gr.jp>\n"
+"Language: ja\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -766,7 +767,7 @@ msgid "Adjustments"
 msgstr "調整"
 
 #. TRANSLATORS: keep this text to 70 chars in width
-#: drivers/bse-alsa/bsemididevice-alsa.c:307
+#: drivers/bsemididevice-alsa.c:307
 #, c-format
 msgid ""
 "Advanced Linux Sound Architecture MIDI driver, using\n"
@@ -784,7 +785,7 @@ msgid ""
 msgstr ""
 
 #. TRANSLATORS: keep this text to 70 chars in width
-#: drivers/bse-alsa/bsepcmdevice-alsa.c:551
+#: drivers/bsepcmdevice-alsa.c:561
 #, c-format
 msgid ""
 "Advanced Linux Sound Architecture PCM driver, using\n"
@@ -1152,7 +1153,7 @@ msgstr "スレッドが使用するユーザー CPU 時間の平均(msec/sec)"
 msgid "BEAST"
 msgstr "BEAST"
 
-#: beast-gtk/bstmain.c:893
+#: beast-gtk/bstmain.c:895
 msgid "BEAST About"
 msgstr "BEAST の情報"
 
@@ -1160,7 +1161,7 @@ msgstr "BEAST の情報"
 msgid "BEAST Startup"
 msgstr "BEAST 起動"
 
-#: beast-gtk/bstmain.c:894
+#: beast-gtk/bstmain.c:896
 #, c-format
 msgid "BEAST Version %s"
 msgstr "BEAST バージョン %s"
@@ -1608,7 +1609,7 @@ msgstr ""
 msgid "Continuous MIDI Control #1 - Bank Select"
 msgstr "連続 MIDI コントロール #1 - バンク選択"
 
-#: beast-gtk/bstmain.c:895
+#: beast-gtk/bstmain.c:897
 msgid "Contributions made by:"
 msgstr "貢献した人々:"
 
@@ -2050,7 +2051,6 @@ msgid "DCA"
 msgstr "DCA"
 
 #: bse/bsepcmdevice-oss.c:646
-#: drivers/bse-portaudio/bsepcmdevice-portaudio.cc:401
 msgid "DEVICE,MODE"
 msgstr "DEVICE.MODE"
 
@@ -2268,10 +2268,13 @@ msgstr ""
 
 #. syntax
 #. TRANSLATORS: keep this text to 70 chars in width
-#: bse/bsepcmdevice-null.c:141
+#: bse/bsepcmdevice-null.c:147
 msgid ""
 "Discard all PCM output and provide zero blocks as input. This\n"
-"driver is not part of the automatic PCM device selection list."
+"driver is not part of the automatic PCM device selection list.\n"
+"Normally the null driver sleeps regularily to give CPU cycles to\n"
+"other apps, which is helpful when running at high priority.\n"
+"Sleeping can be disabled by passing \"nosleep\" as option.\n"
 msgstr ""
 
 #. tooltip=
@@ -4705,8 +4708,7 @@ msgstr "PCM 出力モジュール"
 msgid "PID:     %u\n"
 msgstr "PID:     %u\n"
 
-#: drivers/bse-alsa/bsemididevice-alsa.c:305
-#: drivers/bse-alsa/bsepcmdevice-alsa.c:549
+#: drivers/bsemididevice-alsa.c:305 drivers/bsepcmdevice-alsa.c:559
 msgid "PLUGIN:CARD,DEV,SUBDEV"
 msgstr ""
 
@@ -4888,15 +4890,6 @@ msgstr "プラグイン"
 #: beast-gtk/bstparam-choice.c:155
 msgid "Popup Options"
 msgstr "ポップアップオプション"
-
-#. TRANSLATORS: keep this text to 70 chars in width
-#: drivers/bse-portaudio/bsepcmdevice-portaudio.cc:403
-#, c-format
-msgid ""
-"PortAudio PCM driver, using %s.\n"
-"  DEVICE - the PortAudio device to use, 'default' selects default device\n"
-"  MODE   - rw = read/write, ro = readonly, wo = writeonly\n"
-msgstr ""
 
 #: bse/bsecore.idl:161 bse/bsecore.idl:338
 msgid "Portamento Time"
@@ -7092,6 +7085,10 @@ msgstr "ズーム"
 msgid "Zoom:"
 msgstr "ズーム:"
 
+#: bse/bsepcmdevice-null.c:145
+msgid "[nosleep]"
+msgstr ""
+
 #: beast-gtk/bstapp.c:110
 msgid "_About..."
 msgstr "情報(_A)..."
@@ -7573,7 +7570,7 @@ msgstr "コントロール 9"
 msgid "control-90"
 msgstr "コントロール 90"
 
-#: tools/bsewavetool.cc:1219
+#: tools/bsewavetool.cc:1238
 #, fuzzy, c-format
 msgid "failed to add wave chunk from file \"%s\": %s"
 msgstr "出力ファイル \"%s\" を開くのに失敗: %s"

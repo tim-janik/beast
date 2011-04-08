@@ -10,10 +10,11 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast 0.7.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-09-10 02:03+0200\n"
+"POT-Creation-Date: 2011-04-08 10:51+0200\n"
 "PO-Revision-Date: 2010-06-23 21:18+0200\n"
 "Last-Translator: Bruno Brouard <annoa.b@gmail.com>\n"
 "Language-Team: GNOME French Team <gnomefr@traduc.org>\n"
+"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -814,7 +815,7 @@ msgid "Adjustments"
 msgstr "Ajustements"
 
 #. TRANSLATORS: keep this text to 70 chars in width
-#: drivers/bse-alsa/bsemididevice-alsa.c:307
+#: drivers/bsemididevice-alsa.c:307
 #, c-format
 msgid ""
 "Advanced Linux Sound Architecture MIDI driver, using\n"
@@ -845,7 +846,7 @@ msgstr ""
 "  SOUS-PÉRIPH - n° du sous-périphérique pour les greffons comme 'hw'\n"
 
 #. TRANSLATORS: keep this text to 70 chars in width
-#: drivers/bse-alsa/bsepcmdevice-alsa.c:551
+#: drivers/bsepcmdevice-alsa.c:561
 #, c-format
 msgid ""
 "Advanced Linux Sound Architecture PCM driver, using\n"
@@ -936,8 +937,8 @@ msgstr ""
 #, c-format
 msgid "An error occoured during execution of script procedure '%s': %s"
 msgstr ""
-"Une erreur est survenue pendant l'exécution de la procédure de script « %"
-"s » : %s"
+"Une erreur est survenue pendant l'exécution de la procédure de script "
+"« %s » : %s"
 
 #: bse/bseserver.c:615
 msgid ""
@@ -1177,8 +1178,8 @@ msgstr "Audio Out2"
 #, c-format
 msgid "Audio device \"%s\" is not open for input, audio driver: %s=%s"
 msgstr ""
-"Le périphérique audio « %s » n'est pas ouvert en entrée, pilote audio : %s = %"
-"s"
+"Le périphérique audio « %s » n'est pas ouvert en entrée, pilote audio : "
+"%s = %s"
 
 #: plugins/davbassfilter.idl:31 plugins/davchorus.idl:28
 msgid "Audio input"
@@ -1268,7 +1269,7 @@ msgstr ""
 msgid "BEAST"
 msgstr "BEAST"
 
-#: beast-gtk/bstmain.c:893
+#: beast-gtk/bstmain.c:895
 msgid "BEAST About"
 msgstr "À propos de BEAST"
 
@@ -1276,7 +1277,7 @@ msgstr "À propos de BEAST"
 msgid "BEAST Startup"
 msgstr "Démarrage de BEAST"
 
-#: beast-gtk/bstmain.c:894
+#: beast-gtk/bstmain.c:896
 #, c-format
 msgid "BEAST Version %s"
 msgstr "BEAST version %s"
@@ -1731,7 +1732,7 @@ msgstr "Continuo 9"
 msgid "Continuous MIDI Control #1 - Bank Select"
 msgstr "Contrôle MIDI continu n°1 — Sélection de banque"
 
-#: beast-gtk/bstmain.c:895
+#: beast-gtk/bstmain.c:897
 msgid "Contributions made by:"
 msgstr "Contributions de :"
 
@@ -2174,7 +2175,6 @@ msgid "DCA"
 msgstr "DCA"
 
 #: bse/bsepcmdevice-oss.c:646
-#: drivers/bse-portaudio/bsepcmdevice-portaudio.cc:401
 msgid "DEVICE,MODE"
 msgstr "PÉRIPHÉRIQUE, MODE"
 
@@ -2388,14 +2388,14 @@ msgstr "Annuler les modifications"
 
 #. syntax
 #. TRANSLATORS: keep this text to 70 chars in width
-#: bse/bsepcmdevice-null.c:141
+#: bse/bsepcmdevice-null.c:147
 msgid ""
 "Discard all PCM output and provide zero blocks as input. This\n"
-"driver is not part of the automatic PCM device selection list."
+"driver is not part of the automatic PCM device selection list.\n"
+"Normally the null driver sleeps regularily to give CPU cycles to\n"
+"other apps, which is helpful when running at high priority.\n"
+"Sleeping can be disabled by passing \"nosleep\" as option.\n"
 msgstr ""
-"Détruit toute sortie PCM et ne génère aucun bloc en entrée.\n"
-"Ce pilote ne fait pas partie de la liste de choix automatique\n"
-"des périphériques PCM."
 
 #. tooltip=
 #: beast-gtk/dialogs/radgets-beast.xml:557
@@ -4889,8 +4889,7 @@ msgid "PID:     %u\n"
 msgstr "PID :     %u\n"
 
 # Faut-il traduire ? Mettre un espace avant et après les « : » ?
-#: drivers/bse-alsa/bsemididevice-alsa.c:305
-#: drivers/bse-alsa/bsepcmdevice-alsa.c:549
+#: drivers/bsemididevice-alsa.c:305 drivers/bsepcmdevice-alsa.c:559
 msgid "PLUGIN:CARD,DEV,SUBDEV"
 msgstr "GREFFON : CARTE, PÉRIPH, SOUS-PÉRIPH"
 
@@ -5073,20 +5072,6 @@ msgstr "Greffons"
 #: beast-gtk/bstparam-choice.c:155
 msgid "Popup Options"
 msgstr "Menu contextuel"
-
-#. TRANSLATORS: keep this text to 70 chars in width
-#: drivers/bse-portaudio/bsepcmdevice-portaudio.cc:403
-#, c-format
-msgid ""
-"PortAudio PCM driver, using %s.\n"
-"  DEVICE - the PortAudio device to use, 'default' selects default device\n"
-"  MODE   - rw = read/write, ro = readonly, wo = writeonly\n"
-msgstr ""
-"Pilote PCM PortAudio, utilisant %s.\n"
-"  PÉRIPH - le périphérique PortAudio à utiliser, 'default'\n"
-"           sélectionne celui par défaut.\n"
-"  MODE   - rw = lecture/écriture, ro = lecture seule,\n"
-"           wo = écriture seule.\n"
 
 #: bse/bsecore.idl:161 bse/bsecore.idl:338
 msgid "Portamento Time"
@@ -7353,6 +7338,10 @@ msgstr "Zoom"
 msgid "Zoom:"
 msgstr "Zoom :"
 
+#: bse/bsepcmdevice-null.c:145
+msgid "[nosleep]"
+msgstr ""
+
 #: beast-gtk/bstapp.c:110
 msgid "_About..."
 msgstr "À _propos..."
@@ -7831,7 +7820,7 @@ msgstr "contrôle-9"
 msgid "control-90"
 msgstr "contrôle-90"
 
-#: tools/bsewavetool.cc:1219
+#: tools/bsewavetool.cc:1238
 #, c-format
 msgid "failed to add wave chunk from file \"%s\": %s"
 msgstr "échec de l'ajout d'une partie du son à partir du fichier « %s »  : %s"
@@ -7847,8 +7836,27 @@ msgstr "traitement"
 #~ msgid "  balance, volume, cc-8, ..."
 #~ msgstr "  balance, volume, cc-8, ..."
 
+#~ msgid ""
+#~ "Discard all PCM output and provide zero blocks as input. This\n"
+#~ "driver is not part of the automatic PCM device selection list."
+#~ msgstr ""
+#~ "Détruit toute sortie PCM et ne génère aucun bloc en entrée.\n"
+#~ "Ce pilote ne fait pas partie de la liste de choix automatique\n"
+#~ "des périphériques PCM."
+
 #~ msgid "GNU General Public License"
 #~ msgstr "La Licence Publique Générale GNU (GPL)"
+
+#~ msgid ""
+#~ "PortAudio PCM driver, using %s.\n"
+#~ "  DEVICE - the PortAudio device to use, 'default' selects default device\n"
+#~ "  MODE   - rw = read/write, ro = readonly, wo = writeonly\n"
+#~ msgstr ""
+#~ "Pilote PCM PortAudio, utilisant %s.\n"
+#~ "  PÉRIPH - le périphérique PortAudio à utiliser, 'default'\n"
+#~ "           sélectionne celui par défaut.\n"
+#~ "  MODE   - rw = lecture/écriture, ro = lecture seule,\n"
+#~ "           wo = écriture seule.\n"
 
 #~ msgid "bar, |"
 #~ msgstr "bar, |"

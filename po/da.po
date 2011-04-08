@@ -42,10 +42,11 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast master\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-09-10 02:03+0200\n"
+"POT-Creation-Date: 2011-04-08 10:51+0200\n"
 "PO-Revision-Date: 2010-08-14 09:01I+0200\n"
 "Last-Translator: Joe Hansen <joedalton2@yahoo.dk>\n"
 "Language-Team: Danish <dansk@dansk-gruppen.dk>\n"
+"Language: da\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -799,7 +800,7 @@ msgid "Adjustments"
 msgstr ""
 
 #. TRANSLATORS: keep this text to 70 chars in width
-#: drivers/bse-alsa/bsemididevice-alsa.c:307
+#: drivers/bsemididevice-alsa.c:307
 #, c-format
 msgid ""
 "Advanced Linux Sound Architecture MIDI driver, using\n"
@@ -817,7 +818,7 @@ msgid ""
 msgstr ""
 
 #. TRANSLATORS: keep this text to 70 chars in width
-#: drivers/bse-alsa/bsepcmdevice-alsa.c:551
+#: drivers/bsepcmdevice-alsa.c:561
 #, c-format
 msgid ""
 "Advanced Linux Sound Architecture PCM driver, using\n"
@@ -1183,7 +1184,7 @@ msgid "BEAST"
 msgstr "BEAST"
 
 # BEAST - om
-#: beast-gtk/bstmain.c:893
+#: beast-gtk/bstmain.c:895
 msgid "BEAST About"
 msgstr "Om BEAST"
 
@@ -1191,7 +1192,7 @@ msgstr "Om BEAST"
 msgid "BEAST Startup"
 msgstr "BEAST opstart"
 
-#: beast-gtk/bstmain.c:894
+#: beast-gtk/bstmain.c:896
 #, c-format
 msgid "BEAST Version %s"
 msgstr "BEAST version %s"
@@ -1626,7 +1627,7 @@ msgstr ""
 msgid "Continuous MIDI Control #1 - Bank Select"
 msgstr ""
 
-#: beast-gtk/bstmain.c:895
+#: beast-gtk/bstmain.c:897
 msgid "Contributions made by:"
 msgstr "Bidrag fra:"
 
@@ -2067,7 +2068,6 @@ msgid "DCA"
 msgstr ""
 
 #: bse/bsepcmdevice-oss.c:646
-#: drivers/bse-portaudio/bsepcmdevice-portaudio.cc:401
 msgid "DEVICE,MODE"
 msgstr ""
 
@@ -2275,13 +2275,14 @@ msgstr "Kassér ændringer"
 
 #. syntax
 #. TRANSLATORS: keep this text to 70 chars in width
-#: bse/bsepcmdevice-null.c:141
+#: bse/bsepcmdevice-null.c:147
 msgid ""
 "Discard all PCM output and provide zero blocks as input. This\n"
-"driver is not part of the automatic PCM device selection list."
+"driver is not part of the automatic PCM device selection list.\n"
+"Normally the null driver sleeps regularily to give CPU cycles to\n"
+"other apps, which is helpful when running at high priority.\n"
+"Sleeping can be disabled by passing \"nosleep\" as option.\n"
 msgstr ""
-"Kassér alle PCM-uddata og lever nulblokke som inddata. Denne\n"
-"driver er ikke en del af den automatiske PCM-enhedsudvælgelsesliste."
 
 #. tooltip=
 #: beast-gtk/dialogs/radgets-beast.xml:557
@@ -4678,8 +4679,7 @@ msgstr "PCM-uddatamodul"
 msgid "PID:     %u\n"
 msgstr "PID:     %u\n"
 
-#: drivers/bse-alsa/bsemididevice-alsa.c:305
-#: drivers/bse-alsa/bsepcmdevice-alsa.c:549
+#: drivers/bsemididevice-alsa.c:305 drivers/bsepcmdevice-alsa.c:559
 msgid "PLUGIN:CARD,DEV,SUBDEV"
 msgstr ""
 
@@ -4858,15 +4858,6 @@ msgstr "Udvidelsesmoduler"
 
 #: beast-gtk/bstparam-choice.c:155
 msgid "Popup Options"
-msgstr ""
-
-#. TRANSLATORS: keep this text to 70 chars in width
-#: drivers/bse-portaudio/bsepcmdevice-portaudio.cc:403
-#, c-format
-msgid ""
-"PortAudio PCM driver, using %s.\n"
-"  DEVICE - the PortAudio device to use, 'default' selects default device\n"
-"  MODE   - rw = read/write, ro = readonly, wo = writeonly\n"
 msgstr ""
 
 #: bse/bsecore.idl:161 bse/bsecore.idl:338
@@ -7018,6 +7009,10 @@ msgstr "Zoom"
 msgid "Zoom:"
 msgstr "Zoom:"
 
+#: bse/bsepcmdevice-null.c:145
+msgid "[nosleep]"
+msgstr ""
+
 #: beast-gtk/bstapp.c:110
 msgid "_About..."
 msgstr "_Om..."
@@ -7496,7 +7491,7 @@ msgstr ""
 msgid "control-90"
 msgstr "kontrol-90"
 
-#: tools/bsewavetool.cc:1219
+#: tools/bsewavetool.cc:1238
 #, c-format
 msgid "failed to add wave chunk from file \"%s\": %s"
 msgstr ""
@@ -7508,6 +7503,13 @@ msgstr "dræbt af janitor"
 #: beast-gtk/bstusermessage.c:578 beast-gtk/bstusermessage.c:580
 msgid "processing"
 msgstr "behandler"
+
+#~ msgid ""
+#~ "Discard all PCM output and provide zero blocks as input. This\n"
+#~ "driver is not part of the automatic PCM device selection list."
+#~ msgstr ""
+#~ "Kassér alle PCM-uddata og lever nulblokke som inddata. Denne\n"
+#~ "driver er ikke en del af den automatiske PCM-enhedsudvælgelsesliste."
 
 #~ msgid "bar, |"
 #~ msgstr "bar, |"

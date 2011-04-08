@@ -13,10 +13,11 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast.master\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-09-10 02:03+0200\n"
+"POT-Creation-Date: 2011-04-08 10:51+0200\n"
 "PO-Revision-Date: 2010-08-24 20:42+0200\n"
 "Last-Translator: Jorge González <jorgegonz@svn.gnome.org>\n"
 "Language-Team: Español <gnome-es-list@gnome.org>\n"
+"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -811,7 +812,7 @@ msgid "Adjustments"
 msgstr "Ajustes"
 
 #. TRANSLATORS: keep this text to 70 chars in width
-#: drivers/bse-alsa/bsemididevice-alsa.c:307
+#: drivers/bsemididevice-alsa.c:307
 #, c-format
 msgid ""
 "Advanced Linux Sound Architecture MIDI driver, using\n"
@@ -843,7 +844,7 @@ msgstr ""
 "'hw'\n"
 
 #. TRANSLATORS: keep this text to 70 chars in width
-#: drivers/bse-alsa/bsepcmdevice-alsa.c:551
+#: drivers/bsepcmdevice-alsa.c:561
 #, c-format
 msgid ""
 "Advanced Linux Sound Architecture PCM driver, using\n"
@@ -1170,8 +1171,8 @@ msgstr "Salida de sonido 2"
 #, c-format
 msgid "Audio device \"%s\" is not open for input, audio driver: %s=%s"
 msgstr ""
-"El dispositivo de sonido «%s» no está disponible como entrada, controlador de "
-"sonido: %s=%s"
+"El dispositivo de sonido «%s» no está disponible como entrada, controlador "
+"de sonido: %s=%s"
 
 #: plugins/davbassfilter.idl:31 plugins/davchorus.idl:28
 msgid "Audio input"
@@ -1261,7 +1262,7 @@ msgstr ""
 msgid "BEAST"
 msgstr "BEAST"
 
-#: beast-gtk/bstmain.c:893
+#: beast-gtk/bstmain.c:895
 msgid "BEAST About"
 msgstr "Acerca de Beast"
 
@@ -1269,7 +1270,7 @@ msgstr "Acerca de Beast"
 msgid "BEAST Startup"
 msgstr "Inicio de BEAST"
 
-#: beast-gtk/bstmain.c:894
+#: beast-gtk/bstmain.c:896
 #, c-format
 msgid "BEAST Version %s"
 msgstr "Versión %s de BEAST"
@@ -1722,7 +1723,7 @@ msgstr "Contínuo 9"
 msgid "Continuous MIDI Control #1 - Bank Select"
 msgstr "Modo de control MIDI continuo #1 - Selección de banco"
 
-#: beast-gtk/bstmain.c:895
+#: beast-gtk/bstmain.c:897
 msgid "Contributions made by:"
 msgstr "Contribuciones hechas por:"
 
@@ -2164,7 +2165,6 @@ msgid "DCA"
 msgstr "DCA"
 
 #: bse/bsepcmdevice-oss.c:646
-#: drivers/bse-portaudio/bsepcmdevice-portaudio.cc:401
 msgid "DEVICE,MODE"
 msgstr "DISPOSITIVO,MODO"
 
@@ -2188,8 +2188,8 @@ msgid ""
 msgstr ""
 "El filtro DavBass es un filtro paso bajo resonante estilo TB-303 basado en "
 "las partes de VCF202 del gsyn v0.2. El algoritmo del filtro está "
-"parcialmente basado en el que está descrito en «Aplicaciones musicales de los "
-"microprocesadores» de Hal Chamberlin."
+"parcialmente basado en el que está descrito en «Aplicaciones musicales de "
+"los microprocesadores» de Hal Chamberlin."
 
 #: plugins/davchorus.idl:27
 msgid "DavChorus adds more depth to sounds"
@@ -2378,14 +2378,14 @@ msgstr "Descartar los cambios"
 
 #. syntax
 #. TRANSLATORS: keep this text to 70 chars in width
-#: bse/bsepcmdevice-null.c:141
+#: bse/bsepcmdevice-null.c:147
 msgid ""
 "Discard all PCM output and provide zero blocks as input. This\n"
-"driver is not part of the automatic PCM device selection list."
+"driver is not part of the automatic PCM device selection list.\n"
+"Normally the null driver sleeps regularily to give CPU cycles to\n"
+"other apps, which is helpful when running at high priority.\n"
+"Sleeping can be disabled by passing \"nosleep\" as option.\n"
 msgstr ""
-"Descartar todas las salidas PCM e introducir bloques cero como entrada.\n"
-"Este controlador no es parte de la lista de selección de  dispositivo PCM "
-"automática."
 
 #. tooltip=
 #: beast-gtk/dialogs/radgets-beast.xml:557
@@ -4843,8 +4843,7 @@ msgstr "Módulo de salida PCM"
 msgid "PID:     %u\n"
 msgstr "PID:     %u\n"
 
-#: drivers/bse-alsa/bsemididevice-alsa.c:305
-#: drivers/bse-alsa/bsepcmdevice-alsa.c:549
+#: drivers/bsemididevice-alsa.c:305 drivers/bsepcmdevice-alsa.c:559
 msgid "PLUGIN:CARD,DEV,SUBDEV"
 msgstr "COMPLEMENTO:TARJETA,DISPOSITIVO,SUBDISPOSITIVO"
 
@@ -5029,20 +5028,6 @@ msgstr "Complementos"
 #: beast-gtk/bstparam-choice.c:155
 msgid "Popup Options"
 msgstr "Opciones emergentes"
-
-#. TRANSLATORS: keep this text to 70 chars in width
-#: drivers/bse-portaudio/bsepcmdevice-portaudio.cc:403
-#, c-format
-msgid ""
-"PortAudio PCM driver, using %s.\n"
-"  DEVICE - the PortAudio device to use, 'default' selects default device\n"
-"  MODE   - rw = read/write, ro = readonly, wo = writeonly\n"
-msgstr ""
-"Controlador del puerto de sonido PCM, usando %s.\n"
-"  DISPOSITIVO - el puerto de sonido a usar, «predeterminado» selecciona el "
-"dispositivo predeterminado\n"
-"  MODO            - rw = lectura/escritura, ro = sólo lectura, wo = sólo "
-"escritura\n"
 
 #: bse/bsecore.idl:161 bse/bsecore.idl:338
 msgid "Portamento Time"
@@ -7262,6 +7247,10 @@ msgstr "Ampliación"
 msgid "Zoom:"
 msgstr "Ampliación:"
 
+#: bse/bsepcmdevice-null.c:145
+msgid "[nosleep]"
+msgstr ""
+
 #: beast-gtk/bstapp.c:110
 msgid "_About..."
 msgstr "_Acerca de…"
@@ -7740,7 +7729,7 @@ msgstr "control-9"
 msgid "control-90"
 msgstr "control-90"
 
-#: tools/bsewavetool.cc:1219
+#: tools/bsewavetool.cc:1238
 #, c-format
 msgid "failed to add wave chunk from file \"%s\": %s"
 msgstr "error al añadir partes de onda desde el archivo «%s»: %s"
@@ -7807,6 +7796,14 @@ msgstr "procesando"
 #~ msgid "Description:"
 #~ msgstr "Descripción"
 
+#~ msgid ""
+#~ "Discard all PCM output and provide zero blocks as input. This\n"
+#~ "driver is not part of the automatic PCM device selection list."
+#~ msgstr ""
+#~ "Descartar todas las salidas PCM e introducir bloques cero como entrada.\n"
+#~ "Este controlador no es parte de la lista de selección de  dispositivo PCM "
+#~ "automática."
+
 #, fuzzy
 #~ msgid "Enable meters"
 #~ msgstr "Parámetros"
@@ -7834,6 +7831,17 @@ msgstr "procesando"
 #, fuzzy
 #~ msgid "Output Channels:"
 #~ msgstr "Canal de entrada %u"
+
+#~ msgid ""
+#~ "PortAudio PCM driver, using %s.\n"
+#~ "  DEVICE - the PortAudio device to use, 'default' selects default device\n"
+#~ "  MODE   - rw = read/write, ro = readonly, wo = writeonly\n"
+#~ msgstr ""
+#~ "Controlador del puerto de sonido PCM, usando %s.\n"
+#~ "  DISPOSITIVO - el puerto de sonido a usar, «predeterminado» selecciona "
+#~ "el dispositivo predeterminado\n"
+#~ "  MODO            - rw = lectura/escritura, ro = sólo lectura, wo = sólo "
+#~ "escritura\n"
 
 #, fuzzy
 #~ msgid "Properties:"

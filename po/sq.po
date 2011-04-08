@@ -6,10 +6,11 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast HEAD\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-09-10 02:03+0200\n"
+"POT-Creation-Date: 2011-04-08 10:51+0200\n"
 "PO-Revision-Date: 2004-09-03 17:26+0200\n"
 "Last-Translator: Laurent Dhima <laurenti@alblinux.net>\n"
 "Language-Team: Albanian <gnome-albanian-perkthyesit@lists.sourceforge.net>\n"
+"Language: sq\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -819,7 +820,7 @@ msgid "Adjustments"
 msgstr ""
 
 #. TRANSLATORS: keep this text to 70 chars in width
-#: drivers/bse-alsa/bsemididevice-alsa.c:307
+#: drivers/bsemididevice-alsa.c:307
 #, c-format
 msgid ""
 "Advanced Linux Sound Architecture MIDI driver, using\n"
@@ -837,7 +838,7 @@ msgid ""
 msgstr ""
 
 #. TRANSLATORS: keep this text to 70 chars in width
-#: drivers/bse-alsa/bsepcmdevice-alsa.c:551
+#: drivers/bsepcmdevice-alsa.c:561
 #, c-format
 msgid ""
 "Advanced Linux Sound Architecture PCM driver, using\n"
@@ -1234,7 +1235,7 @@ msgstr "Mesatarja nga milisekonda sekondë nga përdorues CPU ora nga"
 msgid "BEAST"
 msgstr ""
 
-#: beast-gtk/bstmain.c:893
+#: beast-gtk/bstmain.c:895
 #, fuzzy
 msgid "BEAST About"
 msgstr "Informacione"
@@ -1243,7 +1244,7 @@ msgstr "Informacione"
 msgid "BEAST Startup"
 msgstr ""
 
-#: beast-gtk/bstmain.c:894
+#: beast-gtk/bstmain.c:896
 #, fuzzy, c-format
 msgid "BEAST Version %s"
 msgstr "Versioni"
@@ -1722,7 +1723,7 @@ msgstr "Përmbajtja"
 msgid "Continuous MIDI Control #1 - Bank Select"
 msgstr ""
 
-#: beast-gtk/bstmain.c:895
+#: beast-gtk/bstmain.c:897
 #, fuzzy
 msgid "Contributions made by:"
 msgstr "nga:"
@@ -2195,7 +2196,6 @@ msgid "DCA"
 msgstr ""
 
 #: bse/bsepcmdevice-oss.c:646
-#: drivers/bse-portaudio/bsepcmdevice-portaudio.cc:401
 msgid "DEVICE,MODE"
 msgstr ""
 
@@ -2430,10 +2430,13 @@ msgstr ""
 
 #. syntax
 #. TRANSLATORS: keep this text to 70 chars in width
-#: bse/bsepcmdevice-null.c:141
+#: bse/bsepcmdevice-null.c:147
 msgid ""
 "Discard all PCM output and provide zero blocks as input. This\n"
-"driver is not part of the automatic PCM device selection list."
+"driver is not part of the automatic PCM device selection list.\n"
+"Normally the null driver sleeps regularily to give CPU cycles to\n"
+"other apps, which is helpful when running at high priority.\n"
+"Sleeping can be disabled by passing \"nosleep\" as option.\n"
 msgstr ""
 
 #. tooltip=
@@ -5125,8 +5128,7 @@ msgstr "PCM Rezultati"
 msgid "PID:     %u\n"
 msgstr ""
 
-#: drivers/bse-alsa/bsemididevice-alsa.c:305
-#: drivers/bse-alsa/bsepcmdevice-alsa.c:549
+#: drivers/bsemididevice-alsa.c:305 drivers/bsepcmdevice-alsa.c:559
 msgid "PLUGIN:CARD,DEV,SUBDEV"
 msgstr ""
 
@@ -5326,15 +5328,6 @@ msgstr "Plugins"
 #, fuzzy
 msgid "Popup Options"
 msgstr "Mundësitë"
-
-#. TRANSLATORS: keep this text to 70 chars in width
-#: drivers/bse-portaudio/bsepcmdevice-portaudio.cc:403
-#, c-format
-msgid ""
-"PortAudio PCM driver, using %s.\n"
-"  DEVICE - the PortAudio device to use, 'default' selects default device\n"
-"  MODE   - rw = read/write, ro = readonly, wo = writeonly\n"
-msgstr ""
 
 #: bse/bsecore.idl:161 bse/bsecore.idl:338
 #, fuzzy
@@ -7712,6 +7705,10 @@ msgstr "Shkalla e zmadhimit"
 msgid "Zoom:"
 msgstr "Shkalla e zmadhimit:"
 
+#: bse/bsepcmdevice-null.c:145
+msgid "[nosleep]"
+msgstr ""
+
 #: beast-gtk/bstapp.c:110
 msgid "_About..."
 msgstr "_Informacione..."
@@ -8206,7 +8203,7 @@ msgstr ""
 msgid "control-90"
 msgstr ""
 
-#: tools/bsewavetool.cc:1219
+#: tools/bsewavetool.cc:1238
 #, fuzzy, c-format
 msgid "failed to add wave chunk from file \"%s\": %s"
 msgstr "hap"

@@ -15,10 +15,11 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast HEAD\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-09-10 02:03+0200\n"
+"POT-Creation-Date: 2011-04-08 10:51+0200\n"
 "PO-Revision-Date: 2005-03-31 20:55-0700\n"
 "Last-Translator: Steve Murphy <murf@e-tools.com>\n"
 "Language-Team: Kinyarwanda <translation-team-rw@lists.sourceforge.net>\n"
+"Language: rw\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -930,7 +931,7 @@ msgid "Adjustments"
 msgstr ""
 
 #. TRANSLATORS: keep this text to 70 chars in width
-#: drivers/bse-alsa/bsemididevice-alsa.c:307
+#: drivers/bsemididevice-alsa.c:307
 #, fuzzy, c-format
 msgid ""
 "Advanced Linux Sound Architecture MIDI driver, using\n"
@@ -951,7 +952,7 @@ msgstr ""
 "kugirango nka i Umubare kugirango nka"
 
 #. TRANSLATORS: keep this text to 70 chars in width
-#: drivers/bse-alsa/bsepcmdevice-alsa.c:551
+#: drivers/bsepcmdevice-alsa.c:561
 #, fuzzy, c-format
 msgid ""
 "Advanced Linux Sound Architecture PCM driver, using\n"
@@ -1349,7 +1350,7 @@ msgstr "Umubare Bya ISEGONDA Bya Ukoresha: Igihe ku Urudodo"
 msgid "BEAST"
 msgstr ""
 
-#: beast-gtk/bstmain.c:893
+#: beast-gtk/bstmain.c:895
 msgid "BEAST About"
 msgstr ""
 
@@ -1357,7 +1358,7 @@ msgstr ""
 msgid "BEAST Startup"
 msgstr ""
 
-#: beast-gtk/bstmain.c:894
+#: beast-gtk/bstmain.c:896
 #, c-format
 msgid "BEAST Version %s"
 msgstr ""
@@ -1862,7 +1863,7 @@ msgstr "9"
 msgid "Continuous MIDI Control #1 - Bank Select"
 msgstr "1."
 
-#: beast-gtk/bstmain.c:895
+#: beast-gtk/bstmain.c:897
 #, fuzzy
 msgid "Contributions made by:"
 msgstr "ku"
@@ -2344,7 +2345,6 @@ msgid "DCA"
 msgstr ""
 
 #: bse/bsepcmdevice-oss.c:646
-#: drivers/bse-portaudio/bsepcmdevice-portaudio.cc:401
 msgid "DEVICE,MODE"
 msgstr ""
 
@@ -2589,14 +2589,14 @@ msgstr ""
 
 #. syntax
 #. TRANSLATORS: keep this text to 70 chars in width
-#: bse/bsepcmdevice-null.c:141
-#, fuzzy
+#: bse/bsepcmdevice-null.c:147
 msgid ""
 "Discard all PCM output and provide zero blocks as input. This\n"
-"driver is not part of the automatic PCM device selection list."
+"driver is not part of the automatic PCM device selection list.\n"
+"Normally the null driver sleeps regularily to give CPU cycles to\n"
+"other apps, which is helpful when running at high priority.\n"
+"Sleeping can be disabled by passing \"nosleep\" as option.\n"
 msgstr ""
-"Byose Ibisohoka Na Zeru Nka Iyinjiza ni OYA Bya i Byikoresha APAREYE Ihitamo "
-"Urutonde"
 
 #. tooltip=
 #: beast-gtk/dialogs/radgets-beast.xml:557
@@ -5322,8 +5322,7 @@ msgstr "Modire"
 msgid "PID:     %u\n"
 msgstr ""
 
-#: drivers/bse-alsa/bsemididevice-alsa.c:305
-#: drivers/bse-alsa/bsepcmdevice-alsa.c:549
+#: drivers/bsemididevice-alsa.c:305 drivers/bsepcmdevice-alsa.c:559
 msgid "PLUGIN:CARD,DEV,SUBDEV"
 msgstr ""
 
@@ -5528,15 +5527,6 @@ msgstr ""
 #: beast-gtk/bstparam-choice.c:155
 msgid "Popup Options"
 msgstr ""
-
-#. TRANSLATORS: keep this text to 70 chars in width
-#: drivers/bse-portaudio/bsepcmdevice-portaudio.cc:403
-#, fuzzy, c-format
-msgid ""
-"PortAudio PCM driver, using %s.\n"
-"  DEVICE - the PortAudio device to use, 'default' selects default device\n"
-"  MODE   - rw = read/write, ro = readonly, wo = writeonly\n"
-msgstr "Musomyi: ikoresha i APAREYE Kuri Gukoresha a Mburabuzi Gusoma Kwandika"
 
 #: bse/bsecore.idl:161 bse/bsecore.idl:338
 msgid "Portamento Time"
@@ -7956,6 +7946,10 @@ msgstr "Ihindurangano"
 msgid "Zoom:"
 msgstr "Ihindurangano..."
 
+#: bse/bsepcmdevice-null.c:145
+msgid "[nosleep]"
+msgstr ""
+
 # offmgr/source\offapp\intro\intro.hrc:TEXT_DEFAULTABOUT.text
 #: beast-gtk/bstapp.c:110
 #, fuzzy
@@ -8576,7 +8570,7 @@ msgstr "Igenzura 9"
 msgid "control-90"
 msgstr "Igenzura"
 
-#: tools/bsewavetool.cc:1219
+#: tools/bsewavetool.cc:1238
 #, fuzzy, c-format
 msgid "failed to add wave chunk from file \"%s\": %s"
 msgstr "Kuri Ibirimo UMUVUMBA IDOSIYE"
@@ -8614,6 +8608,14 @@ msgstr "Inonosora"
 #~ msgstr "Umwirondoro"
 
 #, fuzzy
+#~ msgid ""
+#~ "Discard all PCM output and provide zero blocks as input. This\n"
+#~ "driver is not part of the automatic PCM device selection list."
+#~ msgstr ""
+#~ "Byose Ibisohoka Na Zeru Nka Iyinjiza ni OYA Bya i Byikoresha APAREYE "
+#~ "Ihitamo Urutonde"
+
+#, fuzzy
 #~ msgid "Failed to open MIDI devices (reverting to null device): %s"
 #~ msgstr "Kuri Gufungura Kuri NTAGIHARI APAREYE"
 
@@ -8644,6 +8646,14 @@ msgstr "Inonosora"
 #, fuzzy
 #~ msgid "Musical notation corresponding to the oscillator frequency"
 #~ msgstr "Kuri i Ubwisubire"
+
+#, fuzzy
+#~ msgid ""
+#~ "PortAudio PCM driver, using %s.\n"
+#~ "  DEVICE - the PortAudio device to use, 'default' selects default device\n"
+#~ "  MODE   - rw = read/write, ro = readonly, wo = writeonly\n"
+#~ msgstr ""
+#~ "Musomyi: ikoresha i APAREYE Kuri Gukoresha a Mburabuzi Gusoma Kwandika"
 
 # #-#-#-#-#  basctl.pot (PACKAGE VERSION)  #-#-#-#-#
 # basctl/source\basicide\basidesh.src:RID_POPUP_BRKPROPS.RID_BRKPROPS.text

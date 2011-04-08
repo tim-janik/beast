@@ -8,10 +8,11 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast master\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-09-10 02:03+0200\n"
+"POT-Creation-Date: 2011-04-08 10:51+0200\n"
 "PO-Revision-Date: 2010-04-11 12:03+0100\n"
 "Last-Translator: Andrej Žnidaršič <andrej.znidarsic@gmail.com>\n"
 "Language-Team: Slovenian GNOME Translation Team <gnome-si@googlegroups.com>\n"
+"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -770,7 +771,7 @@ msgid "Adjustments"
 msgstr "Prilagoditve"
 
 #. TRANSLATORS: keep this text to 70 chars in width
-#: drivers/bse-alsa/bsemididevice-alsa.c:307
+#: drivers/bsemididevice-alsa.c:307
 #, c-format
 msgid ""
 "Advanced Linux Sound Architecture MIDI driver, using\n"
@@ -801,7 +802,7 @@ msgstr ""
 "  SUBDEV - številka naprave za vstavke kot 'hw'\n"
 
 #. TRANSLATORS: keep this text to 70 chars in width
-#: drivers/bse-alsa/bsepcmdevice-alsa.c:551
+#: drivers/bsepcmdevice-alsa.c:561
 #, c-format
 msgid ""
 "Advanced Linux Sound Architecture PCM driver, using\n"
@@ -1183,7 +1184,7 @@ msgstr ""
 msgid "BEAST"
 msgstr "BEAST"
 
-#: beast-gtk/bstmain.c:893
+#: beast-gtk/bstmain.c:895
 msgid "BEAST About"
 msgstr "BEAST o programu"
 
@@ -1191,7 +1192,7 @@ msgstr "BEAST o programu"
 msgid "BEAST Startup"
 msgstr "Zagon BEAST"
 
-#: beast-gtk/bstmain.c:894
+#: beast-gtk/bstmain.c:896
 #, c-format
 msgid "BEAST Version %s"
 msgstr "BEAST različica %s"
@@ -1624,7 +1625,7 @@ msgstr "Stalno 9"
 msgid "Continuous MIDI Control #1 - Bank Select"
 msgstr "Stalni MIDI nadzor št 1 - Izbor banke"
 
-#: beast-gtk/bstmain.c:895
+#: beast-gtk/bstmain.c:897
 msgid "Contributions made by:"
 msgstr "Prispevali so:"
 
@@ -2070,7 +2071,6 @@ msgid "DCA"
 msgstr "DCA"
 
 #: bse/bsepcmdevice-oss.c:646
-#: drivers/bse-portaudio/bsepcmdevice-portaudio.cc:401
 msgid "DEVICE,MODE"
 msgstr "NAPRAVA,NAČIN"
 
@@ -2284,13 +2284,14 @@ msgstr "Zavrzi spremembe"
 
 #. syntax
 #. TRANSLATORS: keep this text to 70 chars in width
-#: bse/bsepcmdevice-null.c:141
+#: bse/bsepcmdevice-null.c:147
 msgid ""
 "Discard all PCM output and provide zero blocks as input. This\n"
-"driver is not part of the automatic PCM device selection list."
+"driver is not part of the automatic PCM device selection list.\n"
+"Normally the null driver sleeps regularily to give CPU cycles to\n"
+"other apps, which is helpful when running at high priority.\n"
+"Sleeping can be disabled by passing \"nosleep\" as option.\n"
 msgstr ""
-"Zavrzi ves izhod PCM in zagotovi nične bloke kot vhod. Ta\n"
-"gonilnik ni del seznama samodejne izbire naprave PCM."
 
 #. tooltip=
 #: beast-gtk/dialogs/radgets-beast.xml:557
@@ -4732,8 +4733,7 @@ msgstr "Modul izhoda PCM"
 msgid "PID:     %u\n"
 msgstr "PID:     %u\n"
 
-#: drivers/bse-alsa/bsemididevice-alsa.c:305
-#: drivers/bse-alsa/bsepcmdevice-alsa.c:549
+#: drivers/bsemididevice-alsa.c:305 drivers/bsepcmdevice-alsa.c:559
 msgid "PLUGIN:CARD,DEV,SUBDEV"
 msgstr "VSTAVEK:KARTICA,NAPRAVA,PODNAPRAVA"
 
@@ -4914,18 +4914,6 @@ msgstr "Vstavki"
 #: beast-gtk/bstparam-choice.c:155
 msgid "Popup Options"
 msgstr "Možnosti pojavnih oken"
-
-#. TRANSLATORS: keep this text to 70 chars in width
-#: drivers/bse-portaudio/bsepcmdevice-portaudio.cc:403
-#, c-format
-msgid ""
-"PortAudio PCM driver, using %s.\n"
-"  DEVICE - the PortAudio device to use, 'default' selects default device\n"
-"  MODE   - rw = read/write, ro = readonly, wo = writeonly\n"
-msgstr ""
-"PortAudio PCM gonilnik, uporablja %s.\n"
-" DEVICE - PortAudio naprava za uporabo, 'default' izbere privzeto napravo\n"
-" MODE   - rw = branje/pisanje, ro = le branje, wo = le pisanje\n"
 
 #: bse/bsecore.idl:161 bse/bsecore.idl:338
 #, fuzzy
@@ -7112,6 +7100,10 @@ msgstr "Povečava"
 msgid "Zoom:"
 msgstr "Povečava:"
 
+#: bse/bsepcmdevice-null.c:145
+msgid "[nosleep]"
+msgstr ""
+
 #: beast-gtk/bstapp.c:110
 msgid "_About..."
 msgstr "_O Programu ..."
@@ -7590,7 +7582,7 @@ msgstr "Nadzor-9"
 msgid "control-90"
 msgstr "Nadzor-90"
 
-#: tools/bsewavetool.cc:1219
+#: tools/bsewavetool.cc:1238
 #, c-format
 msgid "failed to add wave chunk from file \"%s\": %s"
 msgstr ""
@@ -7607,12 +7599,29 @@ msgstr "izvajanje"
 #~ msgid "  balance, volume, cc-8, ..."
 #~ msgstr "  balance, volume, cc-8, ..."
 
+#~ msgid ""
+#~ "Discard all PCM output and provide zero blocks as input. This\n"
+#~ "driver is not part of the automatic PCM device selection list."
+#~ msgstr ""
+#~ "Zavrzi ves izhod PCM in zagotovi nične bloke kot vhod. Ta\n"
+#~ "gonilnik ni del seznama samodejne izbire naprave PCM."
+
 #~ msgid "GNU General Public License"
 #~ msgstr "Splošno javno dovoljenje GNU"
 
 #, fuzzy
 #~ msgid "Max Voixes"
 #~ msgstr "Največje število glasov"
+
+#~ msgid ""
+#~ "PortAudio PCM driver, using %s.\n"
+#~ "  DEVICE - the PortAudio device to use, 'default' selects default device\n"
+#~ "  MODE   - rw = read/write, ro = readonly, wo = writeonly\n"
+#~ msgstr ""
+#~ "PortAudio PCM gonilnik, uporablja %s.\n"
+#~ " DEVICE - PortAudio naprava za uporabo, 'default' izbere privzeto "
+#~ "napravo\n"
+#~ " MODE   - rw = branje/pisanje, ro = le branje, wo = le pisanje\n"
 
 #~ msgid "bar, |"
 #~ msgstr "bar, |"

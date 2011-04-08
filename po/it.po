@@ -9,10 +9,11 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast-it\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-09-10 02:03+0200\n"
+"POT-Creation-Date: 2011-04-08 10:51+0200\n"
 "PO-Revision-Date: 2008-01-20 01:11+0100\n"
 "Last-Translator: Michele Petrecca <michelinux@alice.it>\n"
 "Language-Team: Italiano <it@li.org>\n"
+"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=ISO-8859-1\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -808,7 +809,7 @@ msgid "Adjustments"
 msgstr "Regolazioni"
 
 #. TRANSLATORS: keep this text to 70 chars in width
-#: drivers/bse-alsa/bsemididevice-alsa.c:307
+#: drivers/bsemididevice-alsa.c:307
 #, c-format
 msgid ""
 "Advanced Linux Sound Architecture MIDI driver, using\n"
@@ -840,7 +841,7 @@ msgstr ""
 "  SUBDEV - il numero del 'sotto-dispositivo' pre plugin come 'hw'\n"
 
 #. TRANSLATORS: keep this text to 70 chars in width
-#: drivers/bse-alsa/bsepcmdevice-alsa.c:551
+#: drivers/bsepcmdevice-alsa.c:561
 #, c-format
 msgid ""
 "Advanced Linux Sound Architecture PCM driver, using\n"
@@ -1248,7 +1249,7 @@ msgstr ""
 msgid "BEAST"
 msgstr "BEAST"
 
-#: beast-gtk/bstmain.c:893
+#: beast-gtk/bstmain.c:895
 msgid "BEAST About"
 msgstr "Altro su BEAST"
 
@@ -1256,7 +1257,7 @@ msgstr "Altro su BEAST"
 msgid "BEAST Startup"
 msgstr "Avvio BEAST"
 
-#: beast-gtk/bstmain.c:894
+#: beast-gtk/bstmain.c:896
 #, c-format
 msgid "BEAST Version %s"
 msgstr "Versione di BEAST %s"
@@ -1696,7 +1697,7 @@ msgstr "Continuo 9"
 msgid "Continuous MIDI Control #1 - Bank Select"
 msgstr ""
 
-#: beast-gtk/bstmain.c:895
+#: beast-gtk/bstmain.c:897
 msgid "Contributions made by:"
 msgstr "Sviluppatori e contributori al programma:"
 
@@ -2139,7 +2140,6 @@ msgid "DCA"
 msgstr "DCA"
 
 #: bse/bsepcmdevice-oss.c:646
-#: drivers/bse-portaudio/bsepcmdevice-portaudio.cc:401
 msgid "DEVICE,MODE"
 msgstr "DISPOSITIVO,MODO"
 
@@ -2351,13 +2351,14 @@ msgstr "Annulla i Cambi"
 
 #. syntax
 #. TRANSLATORS: keep this text to 70 chars in width
-#: bse/bsepcmdevice-null.c:141
+#: bse/bsepcmdevice-null.c:147
 msgid ""
 "Discard all PCM output and provide zero blocks as input. This\n"
-"driver is not part of the automatic PCM device selection list."
+"driver is not part of the automatic PCM device selection list.\n"
+"Normally the null driver sleeps regularily to give CPU cycles to\n"
+"other apps, which is helpful when running at high priority.\n"
+"Sleeping can be disabled by passing \"nosleep\" as option.\n"
 msgstr ""
-"Scarta tutte le uscite PCM e fornisce blocchi zero come ingressi. Questo\n"
-" non fa parte della lista di selezione automatica dei dispositivi PCM."
 
 #. tooltip=
 #: beast-gtk/dialogs/radgets-beast.xml:557
@@ -4796,8 +4797,7 @@ msgstr "Modulo di Uscita PCM"
 msgid "PID:     %u\n"
 msgstr "PID:     %u\n"
 
-#: drivers/bse-alsa/bsemididevice-alsa.c:305
-#: drivers/bse-alsa/bsepcmdevice-alsa.c:549
+#: drivers/bsemididevice-alsa.c:305 drivers/bsepcmdevice-alsa.c:559
 msgid "PLUGIN:CARD,DEV,SUBDEV"
 msgstr "PLUGIN:CARD,DEV,SUBDEV"
 
@@ -4977,20 +4977,6 @@ msgstr "Plugin"
 #: beast-gtk/bstparam-choice.c:155
 msgid "Popup Options"
 msgstr "Opzioni Popup"
-
-#. TRANSLATORS: keep this text to 70 chars in width
-#: drivers/bse-portaudio/bsepcmdevice-portaudio.cc:403
-#, c-format
-msgid ""
-"PortAudio PCM driver, using %s.\n"
-"  DEVICE - the PortAudio device to use, 'default' selects default device\n"
-"  MODE   - rw = read/write, ro = readonly, wo = writeonly\n"
-msgstr ""
-"PortAudio PCM driver, in uso %s.\n"
-"  DEVICE - the dispositivo PortAudio da usare, 'default' seleziona il "
-"dispositivo predefinito\n"
-"  MODALITA'   - rw = lettura/scrittura, ro = solo in lettura, wo = solo in "
-"scrittura\n"
 
 #: bse/bsecore.idl:161 bse/bsecore.idl:338
 msgid "Portamento Time"
@@ -7171,6 +7157,10 @@ msgstr "Ingrandisci"
 msgid "Zoom:"
 msgstr "Ingrandisci:"
 
+#: bse/bsepcmdevice-null.c:145
+msgid "[nosleep]"
+msgstr ""
+
 #: beast-gtk/bstapp.c:110
 msgid "_About..."
 msgstr "_Altro..."
@@ -7649,7 +7639,7 @@ msgstr "controllo-9"
 msgid "control-90"
 msgstr "controllo-90"
 
-#: tools/bsewavetool.cc:1219
+#: tools/bsewavetool.cc:1238
 #, c-format
 msgid "failed to add wave chunk from file \"%s\": %s"
 msgstr "aggiunta non riuscita di un pezzo wave dal file \"%s\": %s"
@@ -7665,8 +7655,26 @@ msgstr "processamento"
 #~ msgid "  balance, volume, cc-8, ..."
 #~ msgstr "  balance, volume cc-8, ..."
 
+#~ msgid ""
+#~ "Discard all PCM output and provide zero blocks as input. This\n"
+#~ "driver is not part of the automatic PCM device selection list."
+#~ msgstr ""
+#~ "Scarta tutte le uscite PCM e fornisce blocchi zero come ingressi. Questo\n"
+#~ " non fa parte della lista di selezione automatica dei dispositivi PCM."
+
 #~ msgid "GNU General Public License"
 #~ msgstr "GNU General Public License"
+
+#~ msgid ""
+#~ "PortAudio PCM driver, using %s.\n"
+#~ "  DEVICE - the PortAudio device to use, 'default' selects default device\n"
+#~ "  MODE   - rw = read/write, ro = readonly, wo = writeonly\n"
+#~ msgstr ""
+#~ "PortAudio PCM driver, in uso %s.\n"
+#~ "  DEVICE - the dispositivo PortAudio da usare, 'default' seleziona il "
+#~ "dispositivo predefinito\n"
+#~ "  MODALITA'   - rw = lettura/scrittura, ro = solo in lettura, wo = solo "
+#~ "in scrittura\n"
 
 #~ msgid "bar, |"
 #~ msgstr "bar, |"
