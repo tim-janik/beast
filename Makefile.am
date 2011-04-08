@@ -81,8 +81,3 @@ costly-distcheck-tests:
 	@! $(call test_option, $(BEAST_BUILD_DEFAULTS):$(BEAST_BUILD), distcheck-tests) \
 	|| $(MAKE) report
 .PHONY: costly-distcheck-tests
-
-# remove non-distributed po files from distributed po/POTSCAN
-dist-hook:
-	sed 's,^\(drivers/\),# \1,' < $(distdir)/po/POTSCAN > $(distdir)/po/POTSCAN.tmp
-	mv -f $(distdir)/po/POTSCAN.tmp $(distdir)/po/POTSCAN

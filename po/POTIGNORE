@@ -2,3 +2,4 @@
 #0 Please keep alphabetically sorted
 .*\.genidl\.hh
 .*\.genprc\.c
+drivers/bse-portaudio/bsepcmdevice-portaudio.cc
