@@ -1,5 +1,6 @@
 Overview of Changes in BEAST/BSE 0.7.4:
 
+* Moved project website to: http://beast.testbit.eu/
 * Various build system fixes [stw,timj]
 * License fixups for some scripts [stw]
 * Fixed subnormal tests on AMD64 if SSE unit is in DAZ mode [stw]
