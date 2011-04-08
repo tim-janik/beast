@@ -112,7 +112,7 @@ check-local: check-scm-strings
 check-scm-strings:
 	@echo "Check po files missing translation strings..."
 	@for lang in $(TRANSLATIONS); do	\
-	  file=$$lang.po ;			\
+	  file=$(srcdir)/$$lang.po ;		\
 	  echo $(ECHO_N) "  $$lang.po: " ;	\
 	  for pattern in $(CHECK_SCM_PATS) ; do	\
 	    grep -Fq $$pattern $$file || {	\
