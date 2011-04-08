@@ -15,10 +15,10 @@
 
 @heading Manual Pages
 @itemize
-@item @uri{@top_webdir/beast.1.html,		BEAST - Bedevilled Audio System}
+@item @uri{@top_webdir/beast.1.html,		BEAST - Better Audio System}
 @item @uri{@top_webdir/bsescm.1.html,		BSESCM - BSE Scheme Shell}
 @item @uri{@top_webdir/sfidl.1.html,		SFIDL - SFI IDL Compiler}
-@item @uri{@top_webdir/bse.5.html,		BSE - Bedevilled Sound Engine File Format}
+@item @uri{@top_webdir/bse.5.html,		BSE - Better Sound Engine File Format}
 @done
 
 @anchor{development}
@@ -37,7 +37,7 @@
 @item @uri{@top_webdir/bse-objects.html,	BSE Objects and Plugins} (Properties, Signals, Channels)
 @item @uri{@top_webdir/bse-interface.html,	BSE Interface (public API)}
 @item Online: @uri{http://beast.testbit.eu/rdocu-sfi/,	SFI Reference Documentation}
-@item Online: @uri{http://beast.testbit.eu/rdocu-bse/,	BSE Reference Documentation} - Bedevilled Sound Engine
+@item Online: @uri{http://beast.testbit.eu/rdocu-bse/,	BSE Reference Documentation} - Better Sound Engine
 @item Online: @uri{http://beast.testbit.eu/rdocu-gxk/,	GXK Reference Documentation} - Gtk+ Extension Kit
 @done
 

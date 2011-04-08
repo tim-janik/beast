@@ -1,4 +1,4 @@
-/* BSE - Bedevilled Sound Engine
+/* BSE - Better Sound Engine
  * Copyright (C) 2000 Dave Seidel
  *
  * This library is free software; you can redistribute it and/or

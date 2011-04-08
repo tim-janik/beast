@@ -1,7 +1,7 @@
-# BEAST - Bedevilled Audio System                                                                                                                             
+# BEAST - Better Audio System
 # Copyright (C) 2003 Stefan Westerfeld
 # Copyright (C) 2000-2006 Tim Janik
-#                                                                                                                                                             
+#
 ## GNU Lesser General Public License version 2 or any later version.
 include $(top_srcdir)/Makefile.decl
 

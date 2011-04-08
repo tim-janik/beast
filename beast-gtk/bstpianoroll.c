@@ -1,4 +1,4 @@
-/* BEAST - Bedevilled Audio System
+/* BEAST - Better Audio System
  * Copyright (C) 2002-2004 Tim Janik
  *
  * This library is free software; you can redistribute it and/or

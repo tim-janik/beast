@@ -1,4 +1,4 @@
-# SHELL - Bedevilled Sound Engine Shell
+# SHELL - Better Sound Engine Shell
 # Copyright (C) 2001-2003 Tim Janik
 #
 ## GNU Lesser General Public License version 2 or any later version.

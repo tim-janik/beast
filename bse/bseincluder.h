@@ -1,4 +1,4 @@
-/* BSE - Bedevilled Sound Engine
+/* BSE - Better Sound Engine
  *
  * This software is provided "as is"; redistribution and modification
  * is permitted, provided that the following disclaimer is retained.

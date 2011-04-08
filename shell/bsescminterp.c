@@ -1,4 +1,4 @@
-/* BSE-SCM - Bedevilled Sound Engine Scheme Wrapper
+/* BSE-SCM - Better Sound Engine Scheme Wrapper
  * Copyright (C) 2002-2003 Tim Janik
  *
  * This library is free software; you can redistribute it and/or

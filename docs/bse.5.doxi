@@ -1,14 +1,14 @@
 @doxer_dnl      # emacs: -*- mode: texinfo; texinfo-open-quote: "\""; texinfo-close-quote: "\""; -*-
 @doxer_set{rvstamp,git_author_date} $Date$
 @include @doxer_get{DOXI_INCLUDE_FILE}
-@doxer_set{title}	BSE - Bedevilled Sound Engine File Format
+@doxer_set{title}	BSE - Better Sound Engine File Format
 @doxer_set{man-title}	BSE
 @doxer_set{man-date}	@doxer_get{rvstamp}
 @doxer_set{man-source}	beast-@doxer_get{BST_VERSION}
 @doxer_set{man-manual}	BEAST Manual Pages
 
 @heading NAME
-	BSE - Bedevilled Sound Engine File Format
+	BSE - Better Sound Engine File Format
 
 @heading SYNOPSIS
 	@mani{filename}@manb{.bse}

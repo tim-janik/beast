@@ -17,7 +17,7 @@ bsescm - A Guile based scheme shell for @beast and @bse.
 
 @heading DESCRIPTION
 	@manb{bsescm} is a @uri{http://www.gnu.org/software/guile/docs/,Guile} based scheme shell for @bse,
-	the Bedevilled Sound Engine.
+	the Better Sound Engine.
 
 	@manb{bsescm} provides a shell interface to all procedures exported by the
 	@bse library, so scripts are able to access the full range of functionality

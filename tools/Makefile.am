@@ -1,4 +1,4 @@
-# BEAST - Bedevilled Audio System
+# BEAST - Better Audio System
 # Copyright (C) 1996-2004 Tim Janik
 #
 ## GNU Lesser General Public License version 2 or any later version.

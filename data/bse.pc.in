@@ -14,7 +14,7 @@ effectdir=@bseeffectdir@
 instrumentdir=@bseinstrumentdir@
 
 Name: BSE
-Description: Bedevilled Sound Engine (Synthesis Core)
+Description: Better Sound Engine (Synthesis Core)
 Requires: @BSE_PC_REQUIRE@ gobject-2.0 gmodule-2.0
 Version: @VERSION@
 Libs: -L${libdir} -lbse @BSE_PC_LIBS@

@@ -1,4 +1,4 @@
-# BEAST/BSE - Bedevilled Audio System / Bedevilled Sound Engine
+# BEAST/BSE - Better Audio System / Better Sound Engine
 ## GNU Lesser General Public License version 2 or any later version.
 
 # $0+0 == number of arrows

@@ -1,4 +1,4 @@
-/* BSE - Bedevilled Sound Engine
+/* BSE - Better Sound Engine
  * Copyright (C) 2004-2005 Stefan Westerfeld
  * Copyright (C) 1998-2005 Tim Janik
  *

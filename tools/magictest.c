@@ -1,4 +1,4 @@
-/* BSE - Bedevilled Sound Engine
+/* BSE - Better Sound Engine
  * Copyright (C) 2000-2003 Tim Janik
  *
  * This library is free software; you can redistribute it and/or

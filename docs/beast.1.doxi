@@ -1,7 +1,7 @@
 @doxer_dnl      # emacs: -*- mode: texinfo; texinfo-open-quote: "\""; texinfo-close-quote: "\""; -*-
 @doxer_set{rvstamp,git_author_date} $Date$
 @include @doxer_get{DOXI_INCLUDE_FILE}
-@doxer_set{title}	BEAST - Bedevilled Audio System
+@doxer_set{title}	BEAST - Better Audio System
 @doxer_set{man-title}	BEAST
 @doxer_set{man-date}	@doxer_get{rvstamp}
 @doxer_set{man-source}	beast-@doxer_get{BST_VERSION}
@@ -14,7 +14,7 @@ beast - Music composition and modular synthesis application.
 	@manb{beast} [@mani{OPTIONS}] [@mani{FILES...}]
 
 @heading DESCRIPTION
-	@manb{beast} is the BEdevilled Audio SysTem. It is a music composition and
+	@manb{beast} is the BEtter Audio SysTem. It is a music composition and
 	modular synthesis application released as free software under the
 	GNU GPL and GNU LGPL.
 

@@ -1,4 +1,4 @@
-# BSE-PortAudio - Bedevilled Sound Engine PortAudio Driver Package
+# BSE-PortAudio - Better Sound Engine PortAudio Driver Package
 # Copyright (C) 2004 Tim Janik
 # Copyright (C) 2004 Stefan Westerfeld
 #

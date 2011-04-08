@@ -1,4 +1,4 @@
-# BSE - Bedevilled Sound Engine dynamic Plugins
+# BSE - Better Sound Engine dynamic Plugins
 # Copyright (C) 2003 Tim Janik
 #
 ## GNU Lesser General Public License version 2 or any later version.

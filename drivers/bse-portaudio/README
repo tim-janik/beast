@@ -1,7 +1,7 @@
 BSE Driver Package
 ==================
 
-This is a BSE (Bedevilled Sound Engine) plugin/driver package.  In order to
+This is a BSE (Better Sound Engine) plugin/driver package.  In order to
 build this package, you need recent versions of BSE (>=0.6.4) and PortAudioV19.
 
 PortAudio (>= V19):

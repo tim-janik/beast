@@ -1,4 +1,4 @@
-# BEAST/BSE - Bedevilled Audio System / Bedevilled Sound Engine
+# BEAST/BSE - Better Audio System / Better Sound Engine
 ## GNU Lesser General Public License version 2 or any later version.
 
 dB(x)=20*log(abs(x))/log(10)	# logarithmische Filterdarstellung in dB (s/20/10/ for abs(x)^2)
