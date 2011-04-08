@@ -52,6 +52,7 @@ usage() {
 	  -T <disttarball>	name of distribution tarball (from Makefile)
 	  -U <remoteurl>	remote release URL (e.g. example.com:distdir)
 	  -V <releaseversion>	release version (from Makefile)
+	  -X			expect no strings to be found for "contributors"
 EOF
   [ -z "$1" ] || exit $1
 }
@@ -64,6 +65,7 @@ REMOTE_URL=
 REVISIONVAR=
 CONTRBLACK=
 CONTRCFILE=/dev/null
+CONTREXIT=0
 parse_options=1
 while test $# -ne 0 -a $parse_options = 1; do
   case "$1" in
@@ -75,6 +77,7 @@ while test $# -ne 0 -a $parse_options = 1; do
     -T)		TARBALL="$2" ; shift ;;
     -U)		REMOTE_URL="$2" ; shift ;;
     -V)		VERSION="$2" ; shift ;;
+    -X)		CONTREXIT=1 ;;
     -v|--version) echo "$MYVERSION" ; exit 0 ;;
     --)		parse_options=0 ;;
     *)		[ -z "$COMMAND" ] || usage 1
@@ -140,11 +143,12 @@ done
 	      p; };
 	    b 1; }' < NEWS | sort | uniq > $TEMPF
   # list unknown contributor names as C strings
+  EX=0
   while read NAME ; do
     case ",$CONTRBLACK," in (*",$NAME,"*) continue ;; esac
-    grep -qFie \""$NAME"\" "$CONTRCFILE" || echo "  \"$NAME\","
+    grep -qFie \""$NAME"\" "$CONTRCFILE" || { echo "  \"$NAME\"," ; EX=$CONTREXIT ; }
   done < $TEMPF
-  exit
+  exit $EX
 }
 
 # === news ===

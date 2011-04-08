@@ -37,20 +37,15 @@ ChangeLog:	$(shell $(srcdir)/mkrelease.sh commit-stamps)
 noinst_DATA += ChangeLog
 EXTRA_DIST  += ChangeLog mkrelease.sh
 
-# --- release-news ---
+# --- release helpers ---
 release-news:
-	$(srcdir)/mkrelease.sh news
-.PHONY: release-news
-
-# --- release-contributors ---
-release-contributors:
-	$(srcdir)/mkrelease.sh contributors -B timj,stw -C $(srcdir)/beast-gtk/bstmain.c
-.PHONY: release-contributors
-
-# --- release-upload ---
+	@$(srcdir)/mkrelease.sh news
+release-check:
+	@echo "Checking for unlisted contributors..."
+	@$(srcdir)/mkrelease.sh contributors -X -B timj,stw -C $(srcdir)/beast-gtk/bstmain.c
 release-upload: ChangeLog
 	$(srcdir)/mkrelease.sh upload -U beast:dist/beast/ -E configure.in:BSE_MICRO_VERSION
-.PHONY: release-upload
+.PHONY: release-news release-check release-upload
 
 # --- dist fixes ---
 uninstall_filter = $(strip	\
