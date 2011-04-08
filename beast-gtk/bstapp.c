@@ -1104,7 +1104,7 @@ app_action_exec (gpointer data,
       sfi_url_show ("http://beast.testbit.eu/");
       break;
     case ACTION_URL_REPORT_BUG:
-      sfi_url_show ("http://bugzilla.gnome.org/simple-bug-guide.cgi?product=beast");
+      sfi_url_show ("https://bugzilla.gnome.org/enter_bug.cgi?product=beast");
       break;
     case ACTION_URL_ONLINE_SYNTHESIZERS:
       sfi_url_show ("http://beast.testbit.eu/Beast_Sound_Gallery");
