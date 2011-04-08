@@ -39,16 +39,20 @@ HTML_IMPORTS = $(strip				\
 	html/Beast-Quickstart			\
 )
 CLEANFILES += ${HTML_TARGETS}
-STYLE_TARGETS = $(strip				\
-	html/style/beast-style.css		\
-	html/style/plain.css			\
-	html/style/doxer-style.css		\
-	html/style/beast-dot.png		\
-	html/style/beast-small.png		\
-	html/style/title-arrow-24x64.png	\
-	html/style/home-arrow-24x64.png		\
+STYLE_FILES = $(strip				\
+	style/beast-style.css			\
+	style/plain.css				\
+	style/doxer-style.css			\
+	style/beast-dot.png			\
+	style/beast-small.png			\
+	style/title-arrow-24x64.png		\
+	style/home-arrow-24x64.png		\
+	style/triangle-down-blue.png		\
+	style/triangle-right-blue.png		\
 )
-CLEANFILES += ${STYLE_TARGETS}
+EXTRA_DIST   += $(patsubst %, %, $(STYLE_FILES))
+STYLE_TARGETS = $(patsubst %, html/%, $(STYLE_FILES))
+CLEANFILES   += ${STYLE_TARGETS}
 PSOURCE_TARGETS = $(strip			\
 	psource/birnet.psrc			\
 	psource/sfi.psrc			\
@@ -64,7 +68,7 @@ DOCFRAME_DEFS = -D DOXI_INCLUDE_FILE \"docframe.doxi\"
 DOXIDEFS = -D TOP_WEBDIR "." -D BST_VERSION ${BST_VERSION} -I $(srcdir) $(call DOCFRAME_DEFS)
 
 # ship readily built documentation
-EXTRA_DIST += $(MAN_TARGETS) $(HTML_TARGETS) $(STYLE_TARGETS)
+EXTRA_DIST += $(MAN_TARGETS) $(HTML_TARGETS)
 
 # build and install MAN pages
 dist_man_MANS = $(MAN_TARGETS)	# sfi.3 bse.3 beast-gxk.3 bse-procs.3 bse-structs.3
@@ -89,12 +93,11 @@ uninstall-local:
 ##${install_htmldocsDATA_VARIABLE}: make-install-dirs
 
 # CSS style sheet rules
-html/style/%: $(top_srcdir)/web/style/%
+html/style/%: $(srcdir)/style/%
 	@mkdir -p html/style/
 	cp $< $@
-html/style/doxer-style.css: @DOXRULE@
-	@mkdir -p html/style/
-	$(DOXER) writecss -d html/style/
+style/doxer-style.css: @DOXRULE@
+	$(DOXER) writecss -d style/
 
 # MAN generation rules
 mans/%.1: @DOXRULE@ %.1.doxi
