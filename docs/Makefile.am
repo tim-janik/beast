@@ -14,8 +14,6 @@ HTMLMAN_TARGETS       = $(patsubst mans/%,html/%.html,$(MANUAL_PAGES))
 EXTRA_DIST           += $(MANUAL_PAGES) $(HTMLMAN_TARGETS)
 MAINTAINERCLEANFILES += $(CACHE_TARGETS) $(MAN_TARGETS)
 CLEANFILES           += $(HTMLMAN_TARGETS)
-xxx:
-	echo $(dist_man_MANS)
 
 HTML_TARGETS = $(strip				\
 	html/architecture.html			\
