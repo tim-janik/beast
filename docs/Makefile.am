@@ -6,14 +6,17 @@ include $(top_srcdir)/Makefile.decl
 
 SUBDIRS = images imports
 
-MAN_TARGETS = $(strip				\
-	mans/beast.1				\
-	mans/bsescm.1				\
-	mans/bsewavetool.1			\
-	mans/sfidl.1				\
-	mans/bse.5				\
-)
-CLEANFILES += ${MAN_TARGETS}
+# Manual Pages to be built and installed
+man_MANS              = ${MANUAL_PAGES} # automake-1.11 needs this expandable w/o patsubst
+MANUAL_PAGES	      = mans/bse.5 mans/beast.1 mans/bsescm.1 mans/bsewavetool.1 mans/sfidl.1
+CACHE_TARGETS         = $(patsubst mans/%,cache/%,$(MANUAL_PAGES))
+HTMLMAN_TARGETS       = $(patsubst mans/%,html/%.html,$(MANUAL_PAGES))
+EXTRA_DIST           += $(MANUAL_PAGES) $(HTMLMAN_TARGETS)
+MAINTAINERCLEANFILES += $(CACHE_TARGETS) $(MAN_TARGETS)
+CLEANFILES           += $(HTMLMAN_TARGETS)
+xxx:
+	echo $(dist_man_MANS)
+
 HTML_TARGETS = $(strip				\
 	html/architecture.html			\
 	html/beast-index.html			\
@@ -25,11 +28,6 @@ HTML_TARGETS = $(strip				\
 	html/plugin-devel.html			\
 	html/sfidl-manual.html			\
 	\
-	html/beast.1.html			\
-	html/bsescm.1.html			\
-	html/bsewavetool.1.html			\
-	html/sfidl.1.html			\
-	html/bse.5.html				\
 	html/coding-style.html			\
 	\
 	${HTML_IMPORTS}				\
@@ -70,12 +68,9 @@ DOXIDEFS = -D TOP_WEBDIR "." -D BST_VERSION ${BST_VERSION} -I $(srcdir) $(call D
 # ship readily built documentation
 EXTRA_DIST += $(MAN_TARGETS) $(HTML_TARGETS)
 
-# build and install MAN pages
-dist_man_MANS = $(MAN_TARGETS)	# sfi.3 bse.3 beast-gxk.3 bse-procs.3 bse-structs.3
-
 # build and install HTML docs
 htmldocsdir = ${beastdocsdir}/html
-htmldocs_DATA = ${HTML_TARGETS}
+htmldocs_DATA = ${HTML_TARGETS} $(HTMLMAN_TARGETS)
 # build and install HTML style/ targets
 styledocsdir = ${htmldocsdir}/style
 styledocs_DATA = ${STYLE_TARGETS}
@@ -99,24 +94,30 @@ html/style/%: $(srcdir)/style/%
 style/doxer-style.css: @DOXRULE@
 	$(DOXER) writecss -d style/
 
-# MAN generation rules
-mans/%.1: @DOXRULE@ %.1.doxi
-	@mkdir -p mans/
-	$(DOXER) doxi2man $< -d mans/ $(DOXIDEFS)
-mans/%.3: @DOXRULE@ %.3.doxi
-	@mkdir -p mans/
-	$(DOXER) doxi2man $< -d mans/ $(DOXIDEFS)
-mans/%.5: @DOXRULE@ %.5.doxi
-	@mkdir -p mans/
-	$(DOXER) doxi2man $< -d mans/ $(DOXIDEFS)
+# $(call AGINGRULE, stamp-file-for-aging, AgingInMinutes, rule-name-for-remaking)
+AGINGRULE = $(shell test -e $(1) && find $(1) -type f -mmin -"$(strip $(2))" | grep -q '.' || echo " $(3)")
+
+# MAN rules for download, roff and html generation
+mans/ cache/ html/:
+	mkdir -p $@
+.PHONY: stamp-refresh-message
+stamp-refresh-message:	# conditional phony dependency
+	@TXT="  Some source files hosted online appear outdated; forcing refresh...  " \
+	&& echo "$$TXT" | sed 's/./=/g' && echo "$$TXT" && echo "$$TXT" | sed 's/./=/g'
+cache/stamp-refresh: $(call AGINGRULE, cache/stamp-refresh, 1440, stamp-refresh-message) | cache/ # refresh daily
+	touch $@
+$(CACHE_TARGETS): cache/stamp-refresh
+	curl -sfS http://beast.testbit.eu/$(@F)?action=render >$(@D)/xgen-$(@F)
+	mv $(@D)/xgen-$(@F) $@ ; rm -f $(@D)/xgen-$(@F)
+WIKIHTML2MAN = wikihtml2man.py
+mans/%: cache/% | mans/
+	$(WIKIHTML2MAN) $< >$(@D)/xgen-$(@F)
+	mv $(@D)/xgen-$(@F) $@ ; rm -f $(@D)/xgen-$(@F)
+html/%.html: mans/% | html/
+	groff -mandoc -Thtml $< >$(@D)/xgen-$(@F)
+	mv $(@D)/xgen-$(@F) $@ ; rm -f $(@D)/xgen-$(@F)
 
 # HTML generation rules
-html/%.1.html: @DOXRULE@ %.1.doxi
-	@mkdir -p html/
-	$(DOXER) doxi2htmlman $< -d html/ $(DOXIDEFS)
-html/%.3.html: @DOXRULE@ %.3.doxi
-	@mkdir -p html/
-	$(DOXER) doxi2htmlman $< -d html/ $(DOXIDEFS)
 html/%.html: @DOXRULE@ %.doxi
 	@mkdir -p html/
 	$(DOXER) doxi2html $< -d html/ $(DOXIDEFS)
@@ -225,7 +226,7 @@ psource/bse-interface.psrc: @DOXRULE@ $(AUTODOC) $(top_builddir)/config.status
 	&& rm -f psource/bse-interface.scad
 CLEANFILES += psource/bse-objects.scad psource/bse-interface.scad
 clean-local:
-	rm -rf gendoxi/ html/ psource/ mans/
+	rm -rf gendoxi/ html/ psource/
 
 intermediate_files = $(strip    \
         news-file.tmpdoxi       \
@@ -234,14 +235,10 @@ intermediate_files = $(strip    \
 
 doxi_files = $(strip		\
 	architecture.doxi	\
-	beast.1.doxi		\
 	faq.doxi		\
 	sfidl-manual.doxi	\
 	beast-index.doxi	\
-	bsescm.1.doxi		\
 	plugin-devel.doxi	\
-	sfidl.1.doxi		\
-	bsewavetool.1.doxi	\
 	coding-style.doxi	\
 )
 
