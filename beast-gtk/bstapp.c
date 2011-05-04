@@ -1067,7 +1067,7 @@ app_action_exec (gpointer data,
       docs_title = "BEAST FAQ";
       goto BROWSE_LOCAL_URL;
     case ACTION_HELP_QUICK_START:
-      docs_url = "html/Beast-Quickstart";
+      docs_url = "html/Beast-Quickstart.html";
       docs_title = "BEAST Quick Start Guide";
       goto BROWSE_LOCAL_URL;
     case ACTION_HELP_RELEASE_NOTES:
