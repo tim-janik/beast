@@ -4,7 +4,7 @@
 ## GNU Lesser General Public License version 2 or any later version.
 include $(top_srcdir)/Makefile.decl
 
-SUBDIRS = . data birnet sfi bse plugins drivers shell beast-gtk launchers library tools po tests doxer docs
+SUBDIRS = . data birnet sfi bse plugins drivers shell beast-gtk launchers library tools po tests docs
 
 noinst_DATA =
 
