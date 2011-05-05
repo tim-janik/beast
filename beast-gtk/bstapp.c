@@ -1063,7 +1063,7 @@ app_action_exec (gpointer data,
       docs_title = "BEAST Index";
       goto BROWSE_LOCAL_URL;
     case ACTION_HELP_FAQ:
-      docs_url = "html/faq.html";
+      docs_url = "html/Beast_FAQ.html";
       docs_title = "BEAST FAQ";
       goto BROWSE_LOCAL_URL;
     case ACTION_HELP_QUICK_START:
