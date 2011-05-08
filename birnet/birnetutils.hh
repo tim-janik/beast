@@ -41,7 +41,9 @@ typedef BirnetUnichar unichar;
 /* --- convenient stdc++ types --- */
 typedef std::string String;
 using std::vector;
-using std::map;       
+using std::map;
+using std::min;
+using std::max;
 class VirtualTypeid {
 protected:
   virtual      ~VirtualTypeid      ();
@@ -75,6 +77,8 @@ void birnet_runtime_problemv (char        ewran_tag,
 #define BIRNET_PRIVATE_CLASS_COPY(Class)        private: Class (const Class&); Class& operator= (const Class&);
 #ifdef  _BIRNET_SOURCE_EXTENSIONS
 #define PRIVATE_CLASS_COPY                      BIRNET_PRIVATE_CLASS_COPY
+#define return_if_fail                          g_return_if_fail
+#define return_val_if_fail                      g_return_val_if_fail
 #endif  /* _BIRNET_SOURCE_EXTENSIONS */
 
 /* --- initialization --- */
