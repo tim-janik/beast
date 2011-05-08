@@ -133,7 +133,7 @@ plugins/davbassfilter.idl
 plugins/davcanyondelay.c
 plugins/davchorus.idl
 # plugins/davguitar.c
-plugins/davorgan.c
+plugins/davorgan.idl
 plugins/davsyndrum.c
 plugins/davxtalstrings.c
 plugins/freeverb/bsefreeverb.c
