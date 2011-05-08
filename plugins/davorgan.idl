@@ -33,8 +33,8 @@ class Organ : Effect {
                            BSE_KAMMER_FREQUENCY, STANDARD ":dial");
     Int  base_note = Note (_("Note"), _("Organ frequency as note, converted to Hertz according to the current musical tuning"),
 			   BSE_KAMMER_NOTE, GUI);
-    Int  transpose = (_("Transpose"), _("Transposition of the frequency in semitones"),
-		      0, BSE_MIN_TRANSPOSE, BSE_MAX_TRANSPOSE, 12, STANDARD ":f:dial:skip-default");
+    Int  transpose = Int (_("Transpose"), _("Transposition of the frequency in semitones"),
+                          0, BSE_MIN_TRANSPOSE, BSE_MAX_TRANSPOSE, 12, STANDARD ":f:dial:skip-default");
     Int  fine_tune = FineTune (_("Fine Tune"), _("Amount of detuning in cent (hundredth part of a semitone)"),
 			       STANDARD ":f:dial:skip-default");
   };
@@ -47,9 +47,9 @@ class Organ : Effect {
     Real harm5 = Perc (_("2nd"),     _("2nd Harmonic"), 100. * 55. / 127., STANDARD ":scale");
    };
   group _("Instrument flavour") {
-    Bool brass = (_("Brass Sounds"), _("Changes the organ to sound more brassy"), FALSE, STANDARD);
-    Bool reed  = (_("Reed Sounds"),  _("Adds reeds sound"), FALSE, STANDARD);
-    Bool flute = (_("Flute Sounds"), _("Adds flute sounds"), FALSE, STANDARD);
+    Bool brass = Bool (_("Brass Sounds"), _("Changes the organ to sound more brassy"), FALSE, STANDARD);
+    Bool reed  = Bool (_("Reed Sounds"),  _("Adds reeds sound"), FALSE, STANDARD);
+    Bool flute = Bool (_("Flute Sounds"), _("Adds flute sounds"), FALSE, STANDARD);
   };
 };
 

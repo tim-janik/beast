@@ -20,9 +20,9 @@
 #include <bse/bsemain.h>
 #include <vector>
 
-namespace Bse { namespace Dav {
+namespace Bse {
+namespace Dav {
 
-using namespace std;
 using namespace Birnet;  // FIXME: move to Bse namespace
 using Birnet::uint32;    // FIXME: move to Bse header
 
@@ -30,36 +30,26 @@ class Organ : public OrganBase {
   /* per mix_freq() tables */
   class Tables
   {
-    uint	  m_ref_count;
-    uint	  m_rate;
-
-    vector<float> m_sine_table;
-    vector<float> m_triangle_table;
-    vector<float> m_pulse_table;
-
+    vector<float> m_sine_table, m_triangle_table, m_pulse_table;
+    uint	  m_ref_count, m_rate;
     Tables (uint urate) :
-      m_ref_count (1),
-      m_rate (urate),
-      m_sine_table (urate),
-      m_triangle_table (urate),
-      m_pulse_table (urate)
+      m_sine_table (urate), m_triangle_table (urate), m_pulse_table (urate),
+      m_ref_count (1), m_rate (urate)
     {
-      double rate   = urate;
-      double half   = rate / 2;
-      double slope  = rate / 10;
+      double rate = urate, half = rate / 2, slope = rate / 10;
       int    i;
-
       /* Initialize sine table. */
       for (i = 0; i < rate; i++)
 	m_sine_table[i] = sin ((i / rate) * 2.0 * PI) / 6.0;
-
       /* Initialize triangle table. */
       for (i = 0; i < rate / 2; i++)
 	m_triangle_table[i] = (4 / rate * i - 1.0) / 6.0;
       for (; i < rate; i++)
 	m_triangle_table[i] = (4 / rate * (rate - i) - 1.0) / 6.0;
-
-      /* Initialize pulse table. */
+      /* Initialize beveled pulse table:  _
+       *                                 / \
+       *                              \_/
+       */
       for (i = 0; i < slope; i++)
 	m_pulse_table[i] = (-i / slope) / 6.0;
       for (; i < half - slope; i++)
@@ -72,31 +62,25 @@ class Organ : public OrganBase {
 	m_pulse_table[i] = ((rate - i) * 1.0 / slope) / 6.0;
     }
     ~Tables()
-    {
-      // private destructor; use ref_counting
-    }
-
+    {} // private destructor; use ref_counting
     static map<uint, Tables*> table_map;   /* rate -> rate specific tables */
     static Mutex              table_mutex;
-
   public:
     static Tables*
     ref (uint rate)
     {
       AutoLocker locker (table_mutex);
-
       if (table_map[rate])
 	table_map[rate]->m_ref_count++;
       else
 	table_map[rate] = new Tables (rate);
-
       return table_map[rate];
     }
     void
     unref()
     {
+      return_if_fail (m_ref_count > 0);
       AutoLocker locker (table_mutex);
-
       if (--m_ref_count == 0)
 	{
 	  table_map[m_rate] = 0;
@@ -119,64 +103,40 @@ class Organ : public OrganBase {
       return &m_pulse_table[0];
     }
   };
-
   /* FIXME: get rid of this as soon as the modules have their own current_musical_tuning() accessor */
   struct Properties : public OrganProperties {
     BseMusicalTuningType current_musical_tuning;
-
     Properties (Organ *organ) :
       OrganProperties (organ),
       current_musical_tuning (organ->current_musical_tuning())
-    {
-    }
+    {}
   };
   class Module : public SynthesisModule {
   public:
     /* frequency */
-    double	  m_transpose_factor;
-    double	  m_fine_tune_factor;
-    double	  m_cfreq;
-
+    double	  m_transpose_factor, m_fine_tune_factor, m_base_freq;
     /* instrument flavour */
-    bool	  m_flute;
-    bool	  m_reed;
-    bool	  m_brass;
-
+    bool	  m_flute, m_reed, m_brass;
     /* harmonics */
-    double	  m_harm0;
-    double	  m_harm1;
-    double	  m_harm2;
-    double	  m_harm3;
-    double	  m_harm4;
-    double	  m_harm5;
-
+    double	  m_harm0, m_harm1, m_harm2, m_harm3, m_harm4, m_harm5;
     /* phase accumulators */
-    uint32	  m_harm0_paccu;
-    uint32	  m_harm1_paccu;
-    uint32	  m_harm2_paccu;
-    uint32	  m_harm3_paccu;
-    uint32	  m_harm4_paccu;
-    uint32	  m_harm5_paccu;
-
+    uint32	  m_harm0_paccu, m_harm1_paccu, m_harm2_paccu, m_harm3_paccu, m_harm4_paccu, m_harm5_paccu;
     /* mix_freq() specific tables */
     Tables       *m_tables;
-
     Module() :
       m_tables (Tables::ref (mix_freq()))
-    {
-    }
+    {}
     ~Module()
     {
       m_tables->unref();
-      m_tables = 0;
+      m_tables = NULL;
     }
     void
     config (Properties *properties)
     {
-      m_cfreq = properties->base_freq;
+      m_base_freq = properties->base_freq;
       m_transpose_factor = bse_transpose_factor (properties->current_musical_tuning, properties->transpose);
       m_fine_tune_factor = bse_cent_tune_fast (properties->fine_tune);
-
       // percent -> factor conversions
       m_harm0 = properties->harm0 / 100.0;
       m_harm1 = properties->harm1 / 100.0;
@@ -184,7 +144,6 @@ class Organ : public OrganBase {
       m_harm3 = properties->harm3 / 100.0;
       m_harm4 = properties->harm4 / 100.0;
       m_harm5 = properties->harm5 / 100.0;
-
       m_flute = properties->flute;
       m_reed = properties->reed;
       m_brass = properties->brass;
@@ -194,7 +153,6 @@ class Organ : public OrganBase {
     {
       uint32 rfactor = bse_main_args->allow_randomization ? 1 : 0;
       uint32 mix_freq_256 = mix_freq() * 256;
-
       /* to make all notes sound a bit different, randomize the initial phase of
        * each harmonic (except if the user requested deterministic behaviour)
        */
@@ -246,7 +204,7 @@ class Organ : public OrganBase {
       if (istream (ICHANNEL_FREQ_IN).connected)
 	freq_256 = dfreq_to_freq_256 (BSE_FREQ_FROM_VALUE (ifreq[0]));
       else
-	freq_256 = dfreq_to_freq_256 (m_cfreq);
+	freq_256 = dfreq_to_freq_256 (m_base_freq);
 
       uint mix_freq_256 = mix_freq() * 256;
       uint freq_256_harm0 = freq_256 / 2;
@@ -263,10 +221,10 @@ class Organ : public OrganBase {
 	    {
 	      float vaccu;
 
-	      vaccu = table_pos (sine_table, freq_256_harm0, mix_freq_256, &m_harm0_paccu) * m_harm0;
-	      vaccu += table_pos (sine_table, freq_256_harm1, mix_freq_256, &m_harm1_paccu) * m_harm1;
-	      vaccu += table_pos (reed_table, freq_256_harm2, mix_freq_256, &m_harm2_paccu) * m_harm2;
-	      vaccu += table_pos (sine_table, freq_256_harm3, mix_freq_256, &m_harm3_paccu) * m_harm3;
+	      vaccu  = table_pos (sine_table,  freq_256_harm0, mix_freq_256, &m_harm0_paccu) * m_harm0;
+	      vaccu += table_pos (sine_table,  freq_256_harm1, mix_freq_256, &m_harm1_paccu) * m_harm1;
+	      vaccu += table_pos (reed_table,  freq_256_harm2, mix_freq_256, &m_harm2_paccu) * m_harm2;
+	      vaccu += table_pos (sine_table,  freq_256_harm3, mix_freq_256, &m_harm3_paccu) * m_harm3;
 	      vaccu += table_pos (flute_table, freq_256_harm4, mix_freq_256, &m_harm4_paccu) * m_harm4;
 	      vaccu += table_pos (flute_table, freq_256_harm5, mix_freq_256, &m_harm5_paccu) * m_harm5;
 	      ovalues[i] = vaccu;
@@ -283,11 +241,11 @@ class Organ : public OrganBase {
 	    {
 	      float vaccu;
 
-	      vaccu = table_pos (sine_table, freq_256_harm0, mix_freq_256, &m_harm0_paccu) * m_harm0;
-	      vaccu += table_pos (sine_table, freq_256_harm1, mix_freq_256, &m_harm1_paccu) * m_harm1;
-	      vaccu += table_pos (sine_table, freq_256_harm2, mix_freq_256, &m_harm2_paccu) * m_harm2;
-	      vaccu += table_pos (reed_table, freq_256_harm3, mix_freq_256, &m_harm3_paccu) * m_harm3;
-	      vaccu += table_pos (sine_table, freq_256_harm4, mix_freq_256, &m_harm4_paccu) * m_harm4;
+	      vaccu  = table_pos (sine_table,  freq_256_harm0, mix_freq_256, &m_harm0_paccu) * m_harm0;
+	      vaccu += table_pos (sine_table,  freq_256_harm1, mix_freq_256, &m_harm1_paccu) * m_harm1;
+	      vaccu += table_pos (sine_table,  freq_256_harm2, mix_freq_256, &m_harm2_paccu) * m_harm2;
+	      vaccu += table_pos (reed_table,  freq_256_harm3, mix_freq_256, &m_harm3_paccu) * m_harm3;
+	      vaccu += table_pos (sine_table,  freq_256_harm4, mix_freq_256, &m_harm4_paccu) * m_harm4;
 	      vaccu += table_pos (flute_table, freq_256_harm5, mix_freq_256, &m_harm5_paccu) * m_harm5;
 	      ovalues[i] = vaccu;
 	    }
@@ -313,7 +271,6 @@ public:
       }
     return false;
   }
-
   /* implement creation and config methods for synthesis Module */
   BSE_EFFECT_INTEGRATE_MODULE (Organ, Module, Properties);
 };
