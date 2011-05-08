@@ -38,8 +38,7 @@ static guint         global_tick_stamp_leaps = 0;
 /* --- tick stamps --- */
 static BirnetMutex     global_tick_stamp_mutex = { 0, };
 /**
- * gsl_tick_stamp
- * @RETURNS: GSL's execution tick stamp as unsigned 64bit integer
+ * @return GSL's execution tick stamp as unsigned 64bit integer
  *
  * Retrieve the global GSL tick counter stamp.
  * GSL increments its global tick stamp at certain intervals,
@@ -50,7 +49,7 @@ static BirnetMutex     global_tick_stamp_mutex = { 0, };
  * sfi_thread_awake_before(). Tick stamp updating occours at
  * GSL engine block processing boundaries, so code that can
  * guarantee to not run across those boundaries (for instance
- * BseProcessFunc() functions) may use the macro %GSL_TICK_STAMP
+ * BseProcessFunc() functions) may use the macro GSL_TICK_STAMP
  * to retrieve the current tick in a faster manner (not involving
  * mutex locking). See also bse_module_tick_stamp().
  * This function is MT-safe and may be called from any thread.
@@ -76,8 +75,7 @@ _gsl_tick_stamp_set_leap (guint ticks)
 }
 
 /**
- * gsl_tick_stamp_last
- * @RETURNS: Current tick stamp and system time in micro seconds
+ * @return Current tick stamp and system time in micro seconds
  *
  * Get the system time of the last GSL global tick stamp update.
  * This function is MT-safe and may be called from any thread.
@@ -115,11 +113,10 @@ _gsl_tick_stamp_inc (void)
 }
 
 /**
- * gsl_thread_awake_before
- * @tick_stamp: tick stamp update to trigger wakeup
+ * @param tick_stamp tick stamp update to trigger wakeup
  * Wakeup the currently running thread upon the last global tick stamp
  * update (see gsl_tick_stamp()) that happens prior to updating the
- * global tick stamp to @tick_stamp.
+ * global tick stamp to @a tick_stamp.
  * (If the moment of wakeup has already passed by, the thread is
  * woken up at the next global tick stamp update.)
  */

@@ -731,8 +731,8 @@ bse_server_discard_pcm_input_module (BseServer *self,
   bse_server_close_devices (self);
 }
 
-/* bse_server_script_start
- * @script_control: associated script control object
+/**
+ * @param script_control associated script control object
  *
  * Signal script invocation start.
  */
@@ -757,10 +757,10 @@ bse_server_registration (BseServer          *server,
   g_signal_emit (server, signal_registration, 0, rtype, what, error);
 }
 
-/* bse_server_script_error
- * @script_name: name of the executed script
- * @proc_name:   procedure name to execute
- * @reason:      error condition
+/**
+ * @param script_name name of the executed script
+ * @param proc_name   procedure name to execute
+ * @param reason      error condition
  *
  * Signal script invocation error.
  */

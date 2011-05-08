@@ -301,11 +301,11 @@ gsl_filter_tscheb2_rp (unsigned int iorder,
 }
 
 /**
- * gsl_filter_tscheb2_steepness_db
- * @iorder:      filter order
- * @c_freq:      passband cutoff frequency (0..pi)
- * @epsilon:     fall off at passband frequency (0..1)
- * @stopband_db: reduction in stopband in dB (>= 0)
+ * @param iorder      filter order
+ * @param c_freq      passband cutoff frequency (0..pi)
+ * @param epsilon     fall off at passband frequency (0..1)
+ * @param stopband_db reduction in stopband in dB (>= 0)
+ *
  * Calculates the steepness parameter for Tschebyscheff type 2 lowpass filter,
  * based on the ripple residue in the stop band.
  */
@@ -319,11 +319,11 @@ gsl_filter_tscheb2_steepness_db (unsigned int iorder,
 }
 
 /**
- * gsl_filter_tscheb2_steepness
- * @iorder:    filter order
- * @c_freq:    passband cutoff frequency (0..pi)
- * @epsilon:   fall off at passband frequency (0..1)
- * @residue:   maximum of transfer function in stopband (0..1)
+ * @param iorder    filter order
+ * @param c_freq    passband cutoff frequency (0..pi)
+ * @param epsilon   fall off at passband frequency (0..1)
+ * @param residue   maximum of transfer function in stopband (0..1)
+ *
  * Calculates the steepness parameter for Tschebyscheff type 2 lowpass filter,
  * based on ripple residue in the stop band.
  */
@@ -346,12 +346,12 @@ gsl_filter_tscheb2_steepness (unsigned int iorder,
 
 /* --- lowpass filters --- */
 /**
- * gsl_filter_butter_lp
- * @iorder:   filter order
- * @freq:     cutoff frequency (0..pi)
- * @epsilon:  fall off at cutoff frequency (0..1)
- * @a:        root polynomial coefficients a[0..iorder]
- * @b:        pole polynomial coefficients b[0..iorder]
+ * @param iorder   filter order
+ * @param freq     cutoff frequency (0..pi)
+ * @param epsilon  fall off at cutoff frequency (0..1)
+ * @param a        root polynomial coefficients a[0..iorder]
+ * @param b        pole polynomial coefficients b[0..iorder]
+ *
  * Butterworth lowpass filter.
  */
 void
@@ -376,12 +376,12 @@ gsl_filter_butter_lp (unsigned int iorder,
 }
 
 /**
- * gsl_filter_tscheb1_lp
- * @iorder:   filter order
- * @freq:     cutoff frequency (0..pi)
- * @epsilon:  fall off at cutoff frequency (0..1)
- * @a:        root polynomial coefficients a[0..iorder]
- * @b:        pole polynomial coefficients b[0..iorder]
+ * @param iorder   filter order
+ * @param freq     cutoff frequency (0..pi)
+ * @param epsilon  fall off at cutoff frequency (0..1)
+ * @param a        root polynomial coefficients a[0..iorder]
+ * @param b        pole polynomial coefficients b[0..iorder]
+ *
  * Tschebyscheff type 1 lowpass filter.
  */
 void
@@ -411,17 +411,17 @@ gsl_filter_tscheb1_lp (unsigned int iorder,
 }
 
 /**
- * gsl_filter_tscheb2_lp
- * @iorder:    filter order
- * @freq:      passband cutoff frequency (0..pi)
- * @steepness: frequency steepness (c_freq * steepness < pi)
- * @epsilon:   fall off at passband frequency (0..1)
- * @a:         root polynomial coefficients a[0..iorder]
- * @b:         pole polynomial coefficients b[0..iorder]
+ * @param iorder    filter order
+ * @param freq      passband cutoff frequency (0..pi)
+ * @param steepness frequency steepness (c_freq * steepness < pi)
+ * @param epsilon   fall off at passband frequency (0..1)
+ * @param a         root polynomial coefficients a[0..iorder]
+ * @param b         pole polynomial coefficients b[0..iorder]
+ *
  * Tschebyscheff type 2 lowpass filter.
  * To gain a transition band between freq1 and freq2, pass arguements
- * @freq=freq1 and @steepness=freq2/freq1. To specify the transition
- * band width in fractions of octaves, pass @steepness=2^octave_fraction.
+ * @a freq=freq1 and @a steepness=freq2/freq1. To specify the transition
+ * band width in fractions of octaves, pass @a steepness=2^octave_fraction.
  */
 void
 gsl_filter_tscheb2_lp (unsigned int iorder,
@@ -450,12 +450,12 @@ gsl_filter_tscheb2_lp (unsigned int iorder,
 
 /* --- highpass filters --- */
 /**
- * gsl_filter_butter_hp
- * @iorder:   filter order
- * @freq:     passband frequency (0..pi)
- * @epsilon:  fall off at passband frequency (0..1)
- * @a:        root polynomial coefficients a[0..iorder]
- * @b:        pole polynomial coefficients b[0..iorder]
+ * @param iorder   filter order
+ * @param freq     passband frequency (0..pi)
+ * @param epsilon  fall off at passband frequency (0..1)
+ * @param a        root polynomial coefficients a[0..iorder]
+ * @param b        pole polynomial coefficients b[0..iorder]
+ *
  * Butterworth highpass filter.
  */
 void
@@ -473,12 +473,12 @@ gsl_filter_butter_hp (unsigned int iorder,
 }
 
 /**
- * gsl_filter_tscheb1_hp
- * @iorder:   filter order
- * @freq:     passband frequency (0..pi)
- * @epsilon:  fall off at passband frequency (0..1)
- * @a:        root polynomial coefficients a[0..iorder]
- * @b:        pole polynomial coefficients b[0..iorder]
+ * @param iorder   filter order
+ * @param freq     passband frequency (0..pi)
+ * @param epsilon  fall off at passband frequency (0..1)
+ * @param a        root polynomial coefficients a[0..iorder]
+ * @param b        pole polynomial coefficients b[0..iorder]
+ *
  * Tschebyscheff type 1 highpass filter.
  */
 void
@@ -496,13 +496,13 @@ gsl_filter_tscheb1_hp (unsigned int iorder,
 }
 
 /**
- * gsl_filter_tscheb2_hp
- * @iorder:    filter order
- * @freq:      stopband frequency (0..pi)
- * @steepness: frequency steepness
- * @epsilon:   fall off at passband frequency (0..1)
- * @a:         root polynomial coefficients a[0..iorder]
- * @b:         pole polynomial coefficients b[0..iorder]
+ * @param iorder    filter order
+ * @param freq      stopband frequency (0..pi)
+ * @param steepness frequency steepness
+ * @param epsilon   fall off at passband frequency (0..1)
+ * @param a         root polynomial coefficients a[0..iorder]
+ * @param b         pole polynomial coefficients b[0..iorder]
+ *
  * Tschebyscheff type 2 highpass filter.
  */
 void
@@ -523,13 +523,13 @@ gsl_filter_tscheb2_hp   (unsigned int iorder,
 
 /* --- bandpass filters --- */
 /**
- * gsl_filter_butter_bp
- * @iorder:   filter order (must be even)
- * @freq1:    stopband end frequency (0..pi)
- * @freq2:    passband end frequency (0..pi)
- * @epsilon:  fall off at passband frequency (0..1)
- * @a:        root polynomial coefficients a[0..iorder]
- * @b:        pole polynomial coefficients b[0..iorder]
+ * @param iorder   filter order (must be even)
+ * @param freq1    stopband end frequency (0..pi)
+ * @param freq2    passband end frequency (0..pi)
+ * @param epsilon  fall off at passband frequency (0..1)
+ * @param a        root polynomial coefficients a[0..iorder]
+ * @param b        pole polynomial coefficients b[0..iorder]
+ *
  * Butterworth bandpass filter.
  */
 void
@@ -557,13 +557,13 @@ gsl_filter_butter_bp (unsigned int iorder,
 }
 
 /**
- * gsl_filter_tscheb1_bp
- * @iorder:   filter order (must be even)
- * @freq1:    stopband end frequency (0..pi)
- * @freq2:    passband end frequency (0..pi)
- * @epsilon:  fall off at passband frequency (0..1)
- * @a:        root polynomial coefficients a[0..iorder]
- * @b:        pole polynomial coefficients b[0..iorder]
+ * @param iorder   filter order (must be even)
+ * @param freq1    stopband end frequency (0..pi)
+ * @param freq2    passband end frequency (0..pi)
+ * @param epsilon  fall off at passband frequency (0..1)
+ * @param a        root polynomial coefficients a[0..iorder]
+ * @param b        pole polynomial coefficients b[0..iorder]
+ *
  * Tschebyscheff type 1 bandpass filter.
  */
 void
@@ -591,14 +591,14 @@ gsl_filter_tscheb1_bp (unsigned int iorder,
 }
 
 /**
- * gsl_filter_tscheb2_bp
- * @iorder:    filter order (must be even)
- * @freq1:     stopband end frequency (0..pi)
- * @freq2:     passband end frequency (0..pi)
- * @steepness: frequency steepness factor
- * @epsilon:   fall off at passband frequency (0..1)
- * @a:         root polynomial coefficients a[0..iorder]
- * @b:         pole polynomial coefficients b[0..iorder]
+ * @param iorder    filter order (must be even)
+ * @param freq1     stopband end frequency (0..pi)
+ * @param freq2     passband end frequency (0..pi)
+ * @param steepness frequency steepness factor
+ * @param epsilon   fall off at passband frequency (0..1)
+ * @param a         root polynomial coefficients a[0..iorder]
+ * @param b         pole polynomial coefficients b[0..iorder]
+ *
  * Tschebyscheff type 2 bandpass filter.
  */
 void
@@ -629,13 +629,13 @@ gsl_filter_tscheb2_bp (unsigned int iorder,
 
 /* --- bandstop filters --- */
 /**
- * gsl_filter_butter_bs
- * @iorder:   filter order (must be even)
- * @freq1:    passband end frequency (0..pi)
- * @freq2:    stopband end frequency (0..pi)
- * @epsilon:  fall off at passband frequency (0..1)
- * @a:        root polynomial coefficients a[0..iorder]
- * @b:        pole polynomial coefficients b[0..iorder]
+ * @param iorder   filter order (must be even)
+ * @param freq1    passband end frequency (0..pi)
+ * @param freq2    stopband end frequency (0..pi)
+ * @param epsilon  fall off at passband frequency (0..1)
+ * @param a        root polynomial coefficients a[0..iorder]
+ * @param b        pole polynomial coefficients b[0..iorder]
+ *
  * Butterworth bandstop filter.
  */
 void
@@ -663,13 +663,13 @@ gsl_filter_butter_bs (unsigned int iorder,
 }
 
 /**
- * gsl_filter_tscheb1_bs
- * @iorder:   filter order (must be even)
- * @freq1:    passband end frequency (0..pi)
- * @freq2:    stopband end frequency (0..pi)
- * @epsilon:  fall off at passband frequency (0..1)
- * @a:        root polynomial coefficients a[0..iorder]
- * @b:        pole polynomial coefficients b[0..iorder]
+ * @param iorder   filter order (must be even)
+ * @param freq1    passband end frequency (0..pi)
+ * @param freq2    stopband end frequency (0..pi)
+ * @param epsilon  fall off at passband frequency (0..1)
+ * @param a        root polynomial coefficients a[0..iorder]
+ * @param b        pole polynomial coefficients b[0..iorder]
+ *
  * Tschebyscheff type 1 bandstop filter.
  */
 void
@@ -697,14 +697,14 @@ gsl_filter_tscheb1_bs (unsigned int iorder,
 }
 
 /**
- * gsl_filter_tscheb2_bs
- * @iorder:    filter order (must be even)
- * @freq1:     passband end frequency (0..pi)
- * @freq2:     stopband end frequency (0..pi)
- * @steepness: frequency steepness factor
- * @epsilon:   fall off at passband frequency (0..1)
- * @a:         root polynomial coefficients a[0..iorder]
- * @b:         pole polynomial coefficients b[0..iorder]
+ * @param iorder    filter order (must be even)
+ * @param freq1     passband end frequency (0..pi)
+ * @param freq2     stopband end frequency (0..pi)
+ * @param steepness frequency steepness factor
+ * @param epsilon   fall off at passband frequency (0..1)
+ * @param a         root polynomial coefficients a[0..iorder]
+ * @param b         pole polynomial coefficients b[0..iorder]
+ *
  * Tschebyscheff type 2 bandstop filter.
  */
 void
@@ -853,16 +853,14 @@ gsl_blackman_window (double x)
 }
 
 /**
- * gsl_filter_fir_approx
- *
- * @iorder: order of the filter (must be oven, >= 2)
- * @freq:   the frequencies of the transfer function
- * @value:  the desired value of the transfer function
- * @interpolate_db:  whether to interpolate the transfer function "value linear" or "dB linear"
+ * @param iorder order of the filter (must be oven, >= 2)
+ * @param freq   the frequencies of the transfer function
+ * @param value  the desired value of the transfer function
+ * @param interpolate_db  whether to interpolate the transfer function "value linear" or "dB linear"
  *
  * Approximates a given transfer function with an iorder-coefficient FIR filter.
  * It is recommended to provide enough frequency values, so that
- * @n_points >= @iorder.
+ * @a n_points >= @a iorder.
  */
 void
 gsl_filter_fir_approx (unsigned int  iorder,
@@ -1305,13 +1303,11 @@ gsl_biquad_lphp_reso (GslBiquadFilter   *c,
 
 /* --- filter scanning -- */
 /**
- * gsl_filter_sine_scan
- *
- * @order:    order of the iir filter
- * @a:        root polynomial coefficients of the filter a[0..order]
- * @b:        pole polynomial coefficients of the filter b[0..order]
- * @freq:     frequency to test
- * @mix_freq: the mixing frequency
+ * @param order    order of the iir filter
+ * @param a        root polynomial coefficients of the filter a[0..order]
+ * @param b        pole polynomial coefficients of the filter b[0..order]
+ * @param freq     frequency to test
+ * @param mix_freq the mixing frequency
  *
  * This function sends a sine signal of the desired frequency through an IIR
  * filter, to test the value of the transfer function at a given point. It uses

@@ -655,12 +655,11 @@ gsl_data_find_tailmatch (GslDataHandle     *dhandle,
 }
 
 /**
- * gsl_data_find_block
- * @handle:   an open GslDataHandle
- * @n_values: amount of values to look for
- * @values:   values to find
- * @epsilon:  maximum difference upon comparisions
- * @RETURNS:  position of values in data handle or -1
+ * @param handle   an open GslDataHandle
+ * @param n_values amount of values to look for
+ * @param values   values to find
+ * @param epsilon  maximum difference upon comparisions
+ * @returns        position of values in data handle or -1
  *
  * Find the position of a block of values within a
  * data handle, where all values compare to the reference
@@ -702,15 +701,14 @@ gsl_data_find_block (GslDataHandle *handle,
 }
 
 /**
- * gsl_data_make_fade_ramp
- * @dhandle:  valid and opened #GslDataHandle
- * @min_pos:  position within @dhandle
- * @max_pos:  position within @dhandle
- * @length_p: location to store the length of the fade ramp in
- * @RETURNS:  newly allocated float block with fade ramp
- * Create a float value block of abs (@max_pos - @min_pos) values,
- * which contain a fade ramp of values from @dhandle, with @min_pos
- * indicating the minimum of the fade ramp and @max_pos indicating
+ * @param dhandle  valid and opened GslDataHandle
+ * @param min_pos  position within @a dhandle
+ * @param max_pos  position within @a dhandle
+ * @param length_p location to store the length of the fade ramp in
+ * @return         newly allocated float block with fade ramp
+ * Create a float value block of abs (@a max_pos - @a min_pos) values,
+ * which contain a fade ramp of values from @a dhandle, with @a min_pos
+ * indicating the minimum of the fade ramp and @a max_pos indicating
  * its maximum.
  */
 gfloat*
@@ -760,11 +758,10 @@ gsl_data_make_fade_ramp (GslDataHandle *handle,
 }
 
 /**
- * gsl_data_clip_sample
- * @dhandle:  valid and opened #GslDataHandle
- * @cconfig:  clip configuration
- * @result:   clip result
- * @RETURNS:  error code as stored in @result
+ * @param dhandle  valid and opened GslDataHandle
+ * @param cconfig  clip configuration
+ * @param result   clip result
+ * @return  error code as stored in @a result
  * Clip silence at head and/or tail of a data handle
  * according to a given threshold and optionally produce
  * a fade ramp.

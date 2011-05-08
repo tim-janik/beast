@@ -266,11 +266,11 @@ bse_janitor_get_ident (BseJanitor *self)
   return self->port ? self->port->ident : NULL;
 }
 
-/* bse_janitor_progress
- * @self:     janitor object
- * @progress: progress value
+/**
+ * @param self     janitor object
+ * @param progress progress value
  *
- * Signal progress, @progress is either a value between 0 and 1
+ * Signal progress, @a progress is either a value between 0 and 1
  * to indicate completion status or is -1 to indicate progress
  * of unknown amount.
  */

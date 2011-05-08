@@ -1027,14 +1027,13 @@ gsl_data_handle_new_translate (GslDataHandle *src_handle,
 }
 
 /**
- * gsl_data_handle_new_cut
- * @src_handle:   source GslDataHandle
- * @cut_offset:   offset of gap into @src_handle
- * @n_cut_values: length of gap in @src_handle
- * @RETURNS: a newly created data handle
+ * @param src_handle   source GslDataHandle
+ * @param cut_offset   offset of gap into @a src_handle
+ * @param n_cut_values length of gap in @a src_handle
+ * @return             a newly created data handle
  *
- * Create a new data handle containing the contents of @src_handle
- * minus @n_cut_values at offset @cut_offset.
+ * Create a new data handle containing the contents of @a src_handle
+ * minus @a n_cut_values at offset @a cut_offset.
  */
 GslDataHandle*
 gsl_data_handle_new_cut (GslDataHandle *src_handle,
@@ -1045,14 +1044,13 @@ gsl_data_handle_new_cut (GslDataHandle *src_handle,
 }
 
 /**
- * gsl_data_handle_new_crop
- * @src_handle: source GslDataHandle
- * @n_head_cut: number of values to cut at data handle head
- * @n_tail_cut: number of values to cut at data handle tail
- * @RETURNS: a newly created data handle
+ * @param src_handle source GslDataHandle
+ * @param n_head_cut number of values to cut at data handle head
+ * @param n_tail_cut number of values to cut at data handle tail
+ * @return           a newly created data handle
  *
- * Create a new data handle containing the contents of @src_handle
- * minus @n_head_cut values at the start and @n_tail_cut values at
+ * Create a new data handle containing the contents of @a src_handle
+ * minus @a n_head_cut values at the start and @a n_tail_cut values at
  * the end.
  */
 GslDataHandle*

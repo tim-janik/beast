@@ -154,7 +154,7 @@ bse_module_is_scheduled (BseModule *module)
 
 /**
  * @param module	The module to integrate
- * @param Returns	New job suitable for bse_trans_add()
+ * @return       	New job suitable for bse_trans_add()
  *
  * Create a new transaction job to integrate @a module into the engine.
  * This function is MT-safe and may be called from any thread.
@@ -176,7 +176,7 @@ bse_job_integrate (BseModule *module)
 
 /**
  * @param module	The module to discard
- * @param Returns	New job suitable for bse_trans_add()
+ * @return       	New job suitable for bse_trans_add()
  *
  * Create a new transaction job which removes @a module from the
  * engine and destroys it.
@@ -198,7 +198,7 @@ bse_job_discard (BseModule *module)
 
 /**
  * @param module	Module with input streams
- * @param Returns	New job suitable for bse_trans_add()
+ * @return       	New job suitable for bse_trans_add()
  *
  * Create a new transaction job which causes all connected input streams
  * of @a module to be disconnected, like it's done upon discarding the module.
@@ -220,7 +220,7 @@ bse_job_kill_inputs (BseModule *module)
 
 /**
  * @param module	Module with output streams
- * @param Returns	New job suitable for bse_trans_add()
+ * @return       	New job suitable for bse_trans_add()
  *
  * Create a new transaction job which causes all connected output streams
  * of @a module to be disconnected, like it's done upon discarding the module.
@@ -245,7 +245,7 @@ bse_job_kill_outputs (BseModule *module)
  * @param src_ostream	Index of output stream of @a src_module
  * @param dest_module	Module with unconnected input stream
  * @param dest_istream	Index of input stream of @a dest_module
- * @param Returns	New job suitable for bse_trans_add()
+ * @return       	New job suitable for bse_trans_add()
  *
  * Create a new transaction job which connects the ouput stream @a src_ostream
  * of module @a src_module to the input stream @a dest_istream of module @a dest_module
@@ -281,7 +281,7 @@ bse_job_connect (BseModule *src_module,
  * @param src_ostream	Index of output stream of @a src_module
  * @param dest_module	Module with unconnected joint input stream
  * @param dest_jstream	Index of joint input stream of @a dest_module
- * @param Returns	New job suitable for bse_trans_add()
+ * @return       	New job suitable for bse_trans_add()
  *
  * Create a new transaction job which connects the ouput stream @a src_ostream
  * of module @a src_module to the joint input stream @a dest_istream of module
@@ -314,7 +314,7 @@ bse_job_jconnect (BseModule *src_module,
 /**
  * @param dest_module	Module with connected input stream
  * @param dest_istream	Index of input stream of @a dest_module
- * @param Returns	New job suitable for bse_trans_add()
+ * @return       	New job suitable for bse_trans_add()
  *
  * Create a new transaction job which causes the input stream @a dest_istream
  * of @a dest_module to be disconnected (it is an error if the input stream isn't
@@ -345,7 +345,7 @@ bse_job_disconnect (BseModule *dest_module,
  * @param dest_jstream	Index of input stream of @a dest_module
  * @param src_module	Module with output stream
  * @param src_ostream	Index of output stream of @a src_module
- * @param Returns	New job suitable for bse_trans_add()
+ * @return       	New job suitable for bse_trans_add()
  *
  * Create a new transaction job which causes the joint input
  * stream @a dest_jstream of @a dest_module to be disconnected from
@@ -396,7 +396,7 @@ bse_job_set_consumer (BseModule *module,
 
 /**
  * @param module	The module to be reset
- * @param Returns	New job suitable for bse_trans_add()
+ * @return       	New job suitable for bse_trans_add()
  *
  * Forces a reset of @a module before its next call to
  * process(), if its class provides a reset()
@@ -422,7 +422,7 @@ bse_job_force_reset (BseModule *module)
 }
 
 /**
- * BseEngineAccessFunc
+ * \fn BseEngineAccessFunc
  * @param module	Module to operate on
  * @param data	Accessor data
  *
@@ -437,7 +437,7 @@ bse_job_force_reset (BseModule *module)
  * @param access_func	The accessor function (executed in master thread)
  * @param data	Data passed in to the accessor
  * @param free_func	Function to free @a data (executed in user thread)
- * @param Returns	New job suitable for bse_trans_add()
+ * @return       	New job suitable for bse_trans_add()
  *
  * Create a new transaction job which will invoke @a access_func 
  * on @a module with @a data when the transaction queue is processed
@@ -493,7 +493,7 @@ bse_engine_add_user_callback (gpointer      data,
 }
 
 /**
- * BseEngineProbeFunc
+ * \fn BseEngineProbeFunc
  * @param data  	user data passed in to bse_job_probe_request()
  * @param n_values	number of values probed
  * @param tick_stamp	engine time in microseconds of the probe
@@ -515,7 +515,7 @@ bse_engine_add_user_callback (gpointer      data,
  * @param module	The module to access
  * @param probe_func	Function invoked with @a data in the user thread
  * @param data	        Data passed in to the accessor
- * @param Returns	New job suitable for bse_trans_add()
+ * @return       	New job suitable for bse_trans_add()
  *
  * Create a new transaction job which inserts @a probe_func with @a data
  * into the job queue of @a module.
@@ -562,7 +562,7 @@ bse_job_probe_request (BseModule         *module,
  * @param access_func	The accessor function
  * @param data	Data passed in to the accessor
  * @param free_func	Function to free @a data
- * @param Returns	New job suitable for bse_trans_add()
+ * @return       	New job suitable for bse_trans_add()
  *
  * Create a new transaction job which inserts @a access_func 
  * with @a data into the flow job queue of @a module.
@@ -609,7 +609,7 @@ bse_job_flow_access (BseModule    *module,
  * @param access_func	The accessor function
  * @param data	Data passed in to the accessor
  * @param free_func	Function to free @a data
- * @param Returns	New job suitable for bse_trans_add()
+ * @return       	New job suitable for bse_trans_add()
  *
  * Create a new transaction job which inserts @a access_func 
  * with @a data into the boundary job queue of @a module.
@@ -660,7 +660,7 @@ bse_engine_boundary_discard (BseModule      *module,
 
 /**
  * @param module	The module to access
- * @param Returns	New job suitable for bse_trans_add()
+ * @return       	New job suitable for bse_trans_add()
  *
  * Discard @a module at block boundaries, after all ordinary jobs
  * have been processed. This job type should be used instead of
@@ -692,7 +692,7 @@ bse_job_boundary_discard (BseModule *module)
 
 /**
  * @param module	Module not currently suspended
- * @param Returns	New job suitable for bse_trans_add()
+ * @return       	New job suitable for bse_trans_add()
  *
  * Create a new transaction job which suspends the @a module
  * and all it's input modules which don't have other non-suspended
@@ -718,7 +718,7 @@ bse_job_suspend_now (BseModule *module)
 /**
  * @param module	Module to resume
  * @param tick_stamp	Sample tick at which to resume @a module
- * @param Returns	New job suitable for bse_trans_add()
+ * @return       	New job suitable for bse_trans_add()
  *
  * Create a new transaction job which inserts a resumption
  * event into the job queue of @a module.
@@ -747,14 +747,14 @@ bse_job_resume_at (BseModule *module,
 }
 
 /**
- * BseEnginePollFunc
+ * \fn BseEnginePollFunc
  * @param data	Data of poll function
  * @param n_values	Minimum number of values the engine wants to process
  * @param timeout_p	Location of timeout value
  * @param n_fds	Number of file descriptors used for polling
  * @param fds	File descriptors to be used for polling
  * @param revents_filled	Indicates whether @a fds actually have their ->revents field filled with valid data.
- * @param Returns	A boolean value indicating whether the engine should process data right now
+ * @return       	A boolean value indicating whether the engine should process data right now
  *
  * The BseEnginePollFunc is a user supplied callback function which can be hooked into the
  * BSE Engine. The engine uses the poll functions to determine whether processing of
@@ -774,7 +774,7 @@ bse_job_resume_at (BseModule *module,
  * @param free_func	Function to free @a data
  * @param n_fds	Number of poll file descriptors
  * @param fds	File descriptors to select(2) or poll(2) on
- * @param Returns	New job suitable for bse_trans_add()
+ * @return       	New job suitable for bse_trans_add()
  *
  * Create a new transaction job which adds a poll function
  * to the engine. The poll function is used by the engine to
@@ -808,7 +808,7 @@ bse_job_add_poll (BseEnginePollFunc    poll_func,
 /**
  * @param poll_func	Poll function to remove
  * @param data	Data of poll function
- * @param Returns	New job suitable for bse_trans_add()
+ * @return       	New job suitable for bse_trans_add()
  *
  * Create a new transaction job which removes a previously inserted poll
  * function from the engine.
@@ -837,7 +837,7 @@ bse_job_remove_poll (BseEnginePollFunc poll_func,
  * @param timer_func	Timer function to add
  * @param data	Data of timer function
  * @param free_func	Function to free @a data
- * @param Returns	New job suitable for bse_trans_add()
+ * @return       	New job suitable for bse_trans_add()
  *
  * Create a new transaction job which adds a timer function
  * to the engine. The timer function is called after the engine
@@ -864,7 +864,7 @@ bse_job_add_timer (BseEngineTimerFunc timer_func,
 
 /**
  * @param debug	Debug message
- * @param Returns	New job suitable for bse_trans_add()
+ * @return       	New job suitable for bse_trans_add()
  *
  * Create a new transaction job which issues @a debug message when
  * the job is executed. This function is meant for debugging purposes
@@ -883,7 +883,7 @@ bse_job_debug (const gchar *debug)
 }
 
 /**
- * @param Returns	New job suitable for bse_trans_add()
+ * @return       	New job suitable for bse_trans_add()
  *
  * Create a new transaction job which does nothing.
  * The job enforces a roundtrip to the engine's master
@@ -902,7 +902,7 @@ bse_job_nop (void)
 }
 
 /**
- * @param Returns	Newly opened empty transaction
+ * @return       	Newly opened empty transaction
  *
  * Open up a new transaction to commit jobs to the BSE Engine.
  * While the distinct functions to operate on a transaction are
@@ -951,7 +951,7 @@ bse_trans_add (BseTrans *trans,
 /**
  * @param trans1	open transaction
  * @param trans2	open transaction
- * @param Returns	open transaction @a trans1
+ * @return       	open transaction @a trans1
  *
  * Merge two open transactions by appending the jobs of @a trans2
  * to the jobs of @a trans1, returning the resulting transaction.
@@ -1328,7 +1328,7 @@ bse_engine_constrain (guint            latency_ms,
  * @param latency_ms	calculation latency in milli seconds
  * @param sample_freq	mixing frequency
  * @param control_freq	frequency at which to check control values or 0
- * @param returns	whether reconfiguration was successful
+ * @return      	whether reconfiguration was successful
  *
  * Reconfigure engine parameters. This function may only be called
  * after engine initialization and can only succeed if no modules

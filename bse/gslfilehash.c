@@ -89,15 +89,14 @@ stat_file (const gchar *file_name,
 }
 
 /**
- * gsl_hfile_open
- * @file_name: name of the file to open
- * @RETURNS:   a new opened #GslHFile or NULL if an error occoured (errno set)
+ * @param file_name     name of the file to open
+ * @returns             a new opened GslHFile or NULL if an error occoured (errno set)
  *
  * Open a file for reading and return the associated GSL hashed file.
- * The motivation for using a #GslHFile over normal unix file
+ * The motivation for using a GslHFile over normal unix file
  * descriptors is to reduce the amount of opened unix file descriptors and
  * to ensure thread safety upon reading offset relative byte blocks.
- * Multiple open #GslHFiles with equal file names will share a
+ * Multiple open GslHFiles with equal file names will share a
  * single unix file descriptor as long as the file wasn't modified meanwhile.
  * This function is MT-safe and may be called from any thread.
  */
@@ -152,10 +151,9 @@ gsl_hfile_open (const gchar *file_name)
 }
 
 /**
- * gsl_hfile_close
- * @hfile:     valid #GslHFile
+ * @param hfile     valid GslHFile
  *
- * Close and destroy a #GslHFile.
+ * Close and destroy a GslHFile.
  * This function is MT-safe and may be called from any thread.
  */
 void
@@ -195,12 +193,11 @@ gsl_hfile_close (GslHFile *hfile)
 }
 
 /**
- * gsl_hfile_pread
- * @hfile:   valid GslHFile
- * @offset:  offset in bytes within 0 and file end
- * @n_bytes: number of bytes to read
- * @bytes:   buffer to store read bytes
- * @RETURNS: amount of bytes read or -1 if an error occoured (errno set)
+ * @param hfile   valid GslHFile
+ * @param offset  offset in bytes within 0 and file end
+ * @param n_bytes number of bytes to read
+ * @param bytes   buffer to store read bytes
+ * @return amount of bytes read or -1 if an error occoured (errno set)
  *
  * Read a block of bytes from a GslHFile.
  * This function is MT-safe and may be called from any thread.
@@ -274,9 +271,8 @@ gsl_hfile_pread (GslHFile *hfile,
 }
 
 /**
- * gsl_hfile_zoffset
- * @hfile:   valid GslHFile
- * @RETURNS: offset of first zero byte or -1
+ * @param hfile  valid GslHFile
+ * @return offset of first zero byte or -1
  *
  * Find the offset of the first zero byte in a GslHFile.
  * This function is MT-safe and may be called from any thread.
@@ -339,9 +335,8 @@ gsl_hfile_zoffset (GslHFile *hfile)
 }
 
 /**
- * gsl_rfile_open
- * @file_name: name of the file to open
- * @RETURNS:   a new opened #GslRFile or NULL if an error occoured (errno set)
+ * @param file_name name of the file to open
+ * @return          a new opened #GslRFile or NULL if an error occoured (errno set)
  *
  * Open a file for reading and create a GSL read only file handle for it.
  * The motivation for using a #GslRFile over normal unix files
@@ -366,11 +361,10 @@ gsl_rfile_open (const gchar *file_name)
 }
 
 /**
- * gsl_rfile_name
- * @rfile:   valid #GslRFile
- * @RETURNS: the file name used to open this file
+ * @param rfile   valid #GslRFile
+ * @return        the file name used to open this file
  *
- * Retrieve the file name used to open @rfile.
+ * Retrieve the file name used to open @a rfile.
  */
 gchar*
 gsl_rfile_name (GslRFile *rfile)
@@ -383,12 +377,11 @@ gsl_rfile_name (GslRFile *rfile)
 }
 
 /**
- * gsl_rfile_seek_set
- * @rfile:   valid #GslRFile
- * @offset:  new seek position within 0 and gsl_rfile_length()+1
- * @RETURNS: resulting position within 0 and gsl_rfile_length()+1
+ * @param rfile   valid GslRFile
+ * @param offset  new seek position within 0 and gsl_rfile_length()+1
+ * @return        resulting position within 0 and gsl_rfile_length()+1
  *
- * Set the current #GslRFile seek position.
+ * Set the current GslRFile seek position.
  */
 GslLong
 gsl_rfile_seek_set (GslRFile *rfile,
@@ -407,11 +400,10 @@ gsl_rfile_seek_set (GslRFile *rfile,
 }
 
 /**
- * gsl_rfile_position
- * @rfile:   valid #GslRFile
- * @RETURNS: current position within 0 and gsl_rfile_length()
+ * @param rfile   valid GslRFile
+ * @return current position within 0 and gsl_rfile_length()
  *
- * Retrieve the current #GslRFile seek position.
+ * Retrieve the current GslRFile seek position.
  */
 GslLong
 gsl_rfile_position (GslRFile *rfile)
@@ -424,11 +416,10 @@ gsl_rfile_position (GslRFile *rfile)
 }
 
 /**
- * gsl_rfile_length
- * @rfile:   valid #GslRFile
- * @RETURNS: total length of the #GslRFile in bytes
+ * @param rfile   valid GslRFile
+ * @return total length of the GslRFile in bytes
  *
- * Retrieve the file length of @rfile in bytes.
+ * Retrieve the file length of @a rfile in bytes.
  */
 GslLong
 gsl_rfile_length (GslRFile *rfile)
@@ -445,12 +436,11 @@ gsl_rfile_length (GslRFile *rfile)
 }
 
 /**
- * gsl_rfile_pread
- * @rfile:   valid GslRFile
- * @offset:  offset in bytes within 0 and gsl_rfile_length()
- * @n_bytes: number of bytes to read
- * @bytes:   buffer to store read bytes
- * @RETURNS: amount of bytes read or -1 if an error occoured (errno set)
+ * @param rfile   valid GslRFile
+ * @param offset  offset in bytes within 0 and gsl_rfile_length()
+ * @param n_bytes number of bytes to read
+ * @param bytes   buffer to store read bytes
+ * @return amount of bytes read or -1 if an error occoured (errno set)
  *
  * Read a block of bytes from a GslRFile at a specified position.
  */
@@ -467,11 +457,10 @@ gsl_rfile_pread (GslRFile *rfile,
 }
 
 /**
- * gsl_rfile_read
- * @rfile:   valid GslRFile
- * @n_bytes: number of bytes to read
- * @bytes:   buffer to store read bytes
- * @RETURNS: amount of bytes read or -1 if an error occoured (errno set)
+ * @param rfile   valid GslRFile
+ * @param n_bytes number of bytes to read
+ * @param bytes   buffer to store read bytes
+ * @return amount of bytes read or -1 if an error occoured (errno set)
  *
  * Read a block of bytes from a GslRFile from the current seek position
  * and advance the seek position.
@@ -493,10 +482,9 @@ gsl_rfile_read (GslRFile *rfile,
 }
 
 /**
- * gsl_rfile_close
- * @rfile:     valid #GslRFile
+ * @param rfile  valid GslRFile
  *
- * Close and destroy a #GslRFile.
+ * Close and destroy a GslRFile.
  */
 void
 gsl_rfile_close (GslRFile *rfile)

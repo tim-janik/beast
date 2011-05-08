@@ -370,16 +370,17 @@ public:
 using namespace Bse;
 
 /**
+ * <pre>
  *           __________
  *          /
  *         /
- *        /
- *  _____/
+ *        /|
+ *  _____/ |
  *         |
  *    cutoff_freq
- *
- * @cutoff_freq: cutoff frequency in Hz in intervall [0..SR/2]
- * @order:       number of filter coefficients
+ * </pre>
+ * @param cutoff_freq cutoff frequency in Hz in intervall [0..SR/2]
+ * @param order       number of filter coefficients
  */
 extern "C" GslDataHandle*
 bse_data_handle_new_fir_highpass (GslDataHandle *src_handle,
@@ -391,16 +392,17 @@ bse_data_handle_new_fir_highpass (GslDataHandle *src_handle,
 }
 
 /**
- * ______                    
- *       \    
- *        \  
- *         \
- *          \__________
+ * <pre>
+ * ______
+ *       \
+ *        \
+ *        |\
+ *        | \ __________
  *        |
  *   cutoff_freq
- *
- * @cutoff_freq: cutoff frequency in Hz in intervall [0..SR/2]
- * @order:       number of filter coefficients
+ * </pre>
+ * @param cutoff_freq cutoff frequency in Hz in intervall [0..SR/2]
+ * @param order       number of filter coefficients
  */
 extern "C" GslDataHandle*
 bse_data_handle_new_fir_lowpass (GslDataHandle *src_handle,
