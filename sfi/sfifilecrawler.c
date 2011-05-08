@@ -573,13 +573,11 @@ sfi_path_get_filename (const gchar  *filename,
  * which allowes for more detailed mode tests and is recommended
  * over use of this function.
  * Here is the list of possible GFileTest flags:
- * @itemize
- * @item G_FILE_TEST_IS_REGULAR    - test for a recular file
- * @item G_FILE_TEST_IS_SYMLINK    - test for a symlink
- * @item G_FILE_TEST_IS_DIR        - test for a directory
- * @item G_FILE_TEST_IS_EXECUTABLE - test for an executable
- * @item G_FILE_TEST_EXISTS        - test whether the file exists
- * @done
+ * @li @c G_FILE_TEST_IS_REGULAR    - test for a recular file
+ * @li @c G_FILE_TEST_IS_SYMLINK    - test for a symlink
+ * @li @c G_FILE_TEST_IS_DIR        - test for a directory
+ * @li @c G_FILE_TEST_IS_EXECUTABLE - test for an executable
+ * @li @c G_FILE_TEST_EXISTS        - test whether the file exists
  */
 gboolean
 g_file_test_all (const gchar  *file,

@@ -159,27 +159,25 @@ sfi_time_to_string (SfiTime ustime)
 }
 
 /**
-   @param ustime	time in micro seconds
-   @param elements      string identifying time elements
-   @return		newly allocated string
-   
-   Retrieve the time @a ustime in human readable form.
-   Within the rnage of date and time formats parsable by
-   sfi_time_from_string(), the nicest display is selected
-   according to the current locale and other user settings.
-   By means of the @a elements argument, various elemtns of
-   a full date string can be selected:
-   @itemize
-   @item H - display hours
-   @item M - display minutes
-   @item S - display seconds
-   @item d - display day
-   @item m - display month
-   @item y - display year
-   @done
-   The returned time string describes UTC time and
-   thus contains no time zone or UTC offset information.
-*/
+ * @param ustime	time in micro seconds
+ * @param elements      string identifying time elements
+ * @return		newly allocated string
+ * Retrieve the time @a ustime in human readable form.
+ * Within the rnage of date and time formats parsable by
+ * sfi_time_from_string(), the nicest display is selected
+ * according to the current locale and other user settings.
+ * By means of the @a elements argument, various elemtns of
+ * a full date string can be selected:
+ * @li @c H - display hours
+ * @li @c M - display minutes
+ * @li @c S - display seconds
+ * @li @c d - display day
+ * @li @c m - display month
+ * @li @c y - display year
+ *
+ * The returned time string describes UTC time and
+ * thus contains no time zone or UTC offset information.
+ */
 gchar*
 sfi_time_to_nice_string (SfiTime      ustime,
                          const gchar *elements)
