@@ -12,9 +12,10 @@ DOCU_GLOBS = *.idl *.h *.H *.hh *.proc
 DOXY_GLOBS = $(DOCU_GLOBS) *.c *.C *.cc
 SRCTREE    = srctree
 
-build-stamp: $(git_stamp) doxygen.cfg
-	rm -rf html/ $(SRCTREE)/
-	mkdir -p html/ $(SRCTREE)/
+.PHONY: $(SRCTREE)
+$(SRCTREE):
+	rm -rf $(SRCTREE)/
+	mkdir -p $(SRCTREE)/
 	@echo "### Copying Source..."
 	CWD=`pwd` \
 	&& for dir in $(DOC_DIRS) ; do \
@@ -27,6 +28,12 @@ build-stamp: $(git_stamp) doxygen.cfg
 	cd $(SRCTREE)/ \
 	&& find . -type f \( $(patsubst %,-name '%' -o, $(DOCU_GLOBS)) -false \) \
 	   -exec sed  '1,+0s,^,/** @file {} */,' {} --in-place \;
+
+
+build-stamp: $(git_stamp) doxygen.cfg
+	rm -rf html/
+	mkdir -p html/
+	$(MAKE) $(SRCTREE)
 	@echo "### Doxygen..."
 	(cat doxygen.cfg \
 	&& echo "STRIP_FROM_PATH  = `pwd`/$(SRCTREE)" \
