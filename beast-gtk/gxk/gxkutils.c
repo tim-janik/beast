@@ -1458,9 +1458,9 @@ gxk_widget_activate_accel_group (GtkWidget     *widget,
 }
 
 /**
- * @param sgmode	size group mode, one of GTK_SIZE_GROUP_NONE,
- *          GTK_SIZE_GROUP_HORIZONTAL, GTK_SIZE_GROUP_VERTICAL or
- *	    GTK_SIZE_GROUP_BOTH
+ * @param sgmode	size group mode, one of @c GTK_SIZE_GROUP_NONE,
+ *          @c GTK_SIZE_GROUP_HORIZONTAL, @c GTK_SIZE_GROUP_VERTICAL or
+ *	    @c GTK_SIZE_GROUP_BOTH
  * @param ...:    NULL terminated list of widgets to group together
  *
  * Group horizontal and/or vertical resizing behaviour of
@@ -1621,20 +1621,18 @@ gxk_tree_view_add_column (GtkTreeView       *tree_view,
  * The @a column_flags argument is a combination of letters that
  * are able to switch certain characteristics on or off,
  * currently supported are:
- * @itemize
- * @item F - column is fixed in sizing;
- * @item A - column resizes automatically;
- * @item G - columns sizing behaviour is grow only;
- * @item S - column is sortable;
- * @item s - column is unsortable;
- * @item O - column is reorderable;
- * @item o - column is not reorderable;
- * @item R - column is user-resizable;
- * @item r - column is not user-resizable;
- * @item P - add extra padding between multiple cells of the same column;
- * @item p - cancel a previous #P flag;
- * @item # - automatically popup dialogs for popup cell renderers.
- * @done
+ * @li @c F - column is fixed in sizing;
+ * @li @c A - column resizes automatically;
+ * @li @c G - columns sizing behaviour is grow only;
+ * @li @c S - column is sortable;
+ * @li @c s - column is unsortable;
+ * @li @c O - column is reorderable;
+ * @li @c o - column is not reorderable;
+ * @li @c R - column is user-resizable;
+ * @li @c r - column is not user-resizable;
+ * @li @c P - add extra padding between multiple cells of the same column;
+ * @li @c p - cancel a previous #P flag;
+ * @li @c # - automatically popup dialogs for popup cell renderers.
  */
 void
 gxk_tree_view_append_text_columns (GtkTreeView *tree_view,
@@ -1831,8 +1829,8 @@ gxk_tree_view_add_text_column (GtkTreeView  *tree_view,
  * @param xalign	horizontal text alignment
  * @param title	column title
  * @param tooltip	column tooltip
- * @param edited_callback	edit notification callback 
- * @param popup_callback	popup notification callback 
+ * @param edited_callback	edit notification callback
+ * @param popup_callback	popup notification callback
  * @param data	data passed in to toggled_callback
  * @param cflags	connection flags
  * @return		a newly added GtkTreeViewColumn
@@ -1868,7 +1866,7 @@ gxk_tree_view_add_popup_column (GtkTreeView  *tree_view,
  * @param xalign	horizontal text alignment
  * @param title	column title
  * @param tooltip	column tooltip
- * @param toggled_callback	notification callback 
+ * @param toggled_callback	notification callback
  * @param data	data passed in to toggled_callback
  * @param cflags	connection flags
  * @return		a newly added GtkTreeViewColumn
@@ -2768,7 +2766,7 @@ scrolled_window_size_request_spare_space (GtkScrolledWindow *scwin,
  * @param scwin	valid GtkScrolledWindow
  *
  * A normal GtkScrolledWindow requests extra space for a horizontal scrollbar
- * if the vertical scroll policy is set to GTK_POLICY_NEVER and vice versa,
+ * if the vertical scroll policy is set to @c GTK_POLICY_NEVER and vice versa,
  * regardless of whether the scrollbars have to be shown or not.
  * This function patches up this behaviour to spare the extra requested space
  * from the outer scrolled window requisition if possible (that is, if the

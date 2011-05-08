@@ -244,18 +244,16 @@ gxk_dialog_finalize (GObject *object)
  *
  * Create a new configurable dialog. Possible values for the
  * flags are:
- * @itemize
- * @item GXK_DIALOG_HIDE_ON_DELETE - only hide and not destroy the
+ * @li @c GXK_DIALOG_HIDE_ON_DELETE - only hide and not destroy the
  * dialog upon window manager delete events;
- * @item GXK_DIALOG_IGNORE_ESCAPE - prevents delete event generation on Escape key presses;
- * @item GXK_DIALOG_DELETE_BUTTON - add a "Close" button to the dialog;
- * @item GXK_DIALOG_STATUS_BAR - add a status bar widget to the dialog;
- * @item GXK_DIALOG_WINDOW_GROUP - open up an extra window group for the dialog;
- * @item GXK_DIALOG_MODAL - the dialog is modal while visible;
- * @item GXK_DIALOG_POPUP_POS - popup the dialog below mouse pointer;
- * @item GXK_DIALOG_PRESERVE_STATE - prevents unrealization of the dialog upon hiding,
+ * @li @c GXK_DIALOG_IGNORE_ESCAPE - prevents delete event generation on Escape key presses;
+ * @li @c GXK_DIALOG_DELETE_BUTTON - add a "Close" button to the dialog;
+ * @li @c GXK_DIALOG_STATUS_BAR - add a status bar widget to the dialog;
+ * @li @c GXK_DIALOG_WINDOW_GROUP - open up an extra window group for the dialog;
+ * @li @c GXK_DIALOG_MODAL - the dialog is modal while visible;
+ * @li @c GXK_DIALOG_POPUP_POS - popup the dialog below mouse pointer;
+ * @li @c GXK_DIALOG_PRESERVE_STATE - prevents unrealization of the dialog upon hiding,
  * which preserves properties like the window size.
- * @done
  */
 gpointer
 gxk_dialog_new (gpointer       pointer_loc,
