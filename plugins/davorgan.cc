@@ -40,7 +40,7 @@ class Organ : public OrganBase {
       int    i;
       /* Initialize sine table. */
       for (i = 0; i < rate; i++)
-	m_sine_table[i] = sin ((i / rate) * 2.0 * PI) / 6.0;
+	m_sine_table[i] = sin (i / rate * 2.0 * PI) / 6.0;
       /* Initialize triangle table. */
       for (i = 0; i < rate / 2; i++)
 	m_triangle_table[i] = (4 / rate * i - 1.0) / 6.0;
@@ -51,7 +51,7 @@ class Organ : public OrganBase {
        *                              \_/
        */
       for (i = 0; i < slope; i++)
-	m_pulse_table[i] = (-i / slope) / 6.0;
+	m_pulse_table[i] = -i / slope / 6.0;
       for (; i < half - slope; i++)
 	m_pulse_table[i] = -1.0 / 6.0;
       for (; i < half + slope; i++)
@@ -63,7 +63,7 @@ class Organ : public OrganBase {
     }
     ~Tables()
     {} // private destructor; use ref_counting
-    static map<uint, Tables*> table_map;   /* rate -> rate specific tables */
+    static map<uint, Tables*> table_map;        // map of rate specific tables
     static Mutex              table_mutex;
   public:
     static Tables*
