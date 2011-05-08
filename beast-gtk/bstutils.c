@@ -685,16 +685,14 @@ bst_gmask_container_create (guint    border_width,
  * The second auxillary widget will expand if additional
  * space is available. Other layout details are configured
  * through the @a gpack packing type:
- * @itemize
- * @item BST_GMASK_FIT - the action widget is not expanded,
- * @item BST_GMASK_INTERLEAVE - allow the action widget to expand across auxillary
+ * @li @c BST_GMASK_FIT - the action widget is not expanded,
+ * @li @c BST_GMASK_INTERLEAVE - allow the action widget to expand across auxillary
  * columns if it requests that much space,
- * @item BST_GMASK_BIG - force expansion of the action widget across all possible
+ * @li @c BST_GMASK_BIG - force expansion of the action widget across all possible
  * columns up to the prompt,
- * @item BST_GMASK_CENTER - center the action widget within space across all possible
+ * @li @c BST_GMASK_CENTER - center the action widget within space across all possible
  * columns up to the prompt.
- * @item BST_GMASK_MULTI_SPAN - span aux2 widget across multiple gmask columns.
- * @done
+ * @li @c BST_GMASK_MULTI_SPAN - span aux2 widget across multiple gmask columns.
  */
 BstGMask*
 bst_gmask_form (GtkWidget   *gmask_container,

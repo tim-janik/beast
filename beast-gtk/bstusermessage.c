@@ -677,16 +677,16 @@ text_concat (char *prefix,
 
 /**
  * bst_message_dialog_display
- * @log_domain:   log domain
- * @level:        one of %BST_MSG_ERROR, %BST_MSG_WARNING, %BST_MSG_INFO, %BST_MSG_DIAG
- * @n_bits:       number of message bits
- * @bits:         message bits from bst_msg_bit_printf
+ * @param log_domain   log domain
+ * @param level        one of %BST_MSG_ERROR, %BST_MSG_WARNING, %BST_MSG_INFO, %BST_MSG_DIAG
+ * @param n_bits       number of message bits
+ * @param bits         message bits from bst_msg_bit_printf
  *
  * Present a message dialog to the user. The current value of errno
  * is preserved around calls to this function. Usually this function isn't
  * used directly, but bst_msg_dialog() is called instead which does not require
- * %NULL termination of its argument list and automates the @log_domain argument.
- * The @log_domain indicates the calling module and relates to %G_LOG_DOMAIN
+ * %NULL termination of its argument list and automates the @a log_domain argument.
+ * The @a log_domain indicates the calling module and relates to %G_LOG_DOMAIN
  * as used by g_log().
  * The msg bit arguments passed in form various parts of the log message, the
  * following macro set is provided to construct the parts from printf-style
