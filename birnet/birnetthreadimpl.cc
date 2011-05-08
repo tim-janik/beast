@@ -273,7 +273,7 @@ birnet_thread_exec (gpointer data)
   global_startup_mutex.lock();
   /* acquiring this mutex waits for birnet_thread_run() to figure inlist (global_thread_list, self) */
   global_startup_mutex.unlock();
-  
+
   func (user_data);
   g_datalist_clear (&thread->qdata);
 
@@ -298,7 +298,7 @@ common_thread_start (BirnetThread    *thread,
 {
   GThread *gthread = NULL;
   GError *gerror = NULL;
-  
+
   g_return_val_if_fail (thread != NULL, FALSE);
   g_return_val_if_fail (thread->tid == -1, FALSE);
   g_return_val_if_fail (func != NULL, FALSE);
@@ -1148,17 +1148,17 @@ birnet_guard_deregister_all (BirnetThread *thread)
  * http://research.sun.com/scalable/Papers/CATS2003.pdf and
  * http://www.research.ibm.com/people/m/michael/ieeetpds-2004.pdf.
  * The exact sequence of steps to protect and access a node is as follows:
- * @* 1) Store the adress of a node to be protected in a hazard pointer
- * @* 2) Verify that the hazard pointer points to a valid node
- * @* 3) Dereference the node only as long as it's protected by the hazard pointer.
- * @* For example:
- * @* 0: BirnetGuard *guard = birnet_guard_register (1);
- * @* 1: peek_head_label:
- * @* 2: auto GSList *node = shared_list_head;
- * @* 3: birnet_guard_protect (guard, 0, node);
- * @* 4: if (node != shared_list_head) goto peek_head_label;
- * @* 5: operate_on_protected_node (node);
- * @* 6: birnet_guard_deregister (guard);
+ * @li 1) Store the adress of a node to be protected in a hazard pointer
+ * @li 2) Verify that the hazard pointer points to a valid node
+ * @li 3) Dereference the node only as long as it's protected by the hazard pointer.
+ * For example:
+ * @li @c 0: BirnetGuard *guard = birnet_guard_register (1);
+ * @li @c 1: peek_head_label:
+ * @li @c 2: auto GSList *node = shared_list_head;
+ * @li @c 3: birnet_guard_protect (guard, 0, node);
+ * @li @c 4: if (node != shared_list_head) goto peek_head_label;
+ * @li @c 5: operate_on_protected_node (node);
+ * @li @c 6: birnet_guard_deregister (guard);
  */
 #if 0
 static inline

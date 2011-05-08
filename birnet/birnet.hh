@@ -28,5 +28,11 @@
 #include <birnet/birnetutils.hh>
 #include <birnet/birnetthread.hh>
 
+/**
+ * @namespace Birnet
+ * Library with utility functions, carried forward in Rapicorn: http://dev.testbit.eu/rapicorn/latest/
+ */
+namespace Birnet {}
+
 #endif /* __BIRNET_H__ */
 /* vim:set ts=8 sts=2 sw=2: */

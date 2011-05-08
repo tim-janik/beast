@@ -646,6 +646,10 @@ string_cmp_uuid (const String &uuid_string1,
 }
 
 /* --- file utils --- */
+/**
+ * @namespace Birnet::Path
+ * The Birnet::Path namespace covers function for file path manipulation and evaluation.
+ */
 namespace Path {
 
 const String
@@ -787,19 +791,17 @@ errno_check_file (const char *file_name,
  * Perform various checks on @a file and return whether all
  * checks passed. On failure, errno is set appropriately, and
  * FALSE is returned. Available features to be checked for are:
- * @itemize
- * @item e - @a file must exist
- * @item r - @a file must be readable
- * @item w - @a file must be writable
- * @item x - @a file must be executable
- * @item f - @a file must be a regular file
- * @item d - @a file must be a directory
- * @item l - @a file must be a symbolic link
- * @item c - @a file must be a character device
- * @item b - @a file must be a block device
- * @item p - @a file must be a named pipe
- * @item s - @a file must be a socket.
- * @done
+ * @li @c e - @a file must exist
+ * @li @c r - @a file must be readable
+ * @li @c w - @a file must be writable
+ * @li @c x - @a file must be executable
+ * @li @c f - @a file must be a regular file
+ * @li @c d - @a file must be a directory
+ * @li @c l - @a file must be a symbolic link
+ * @li @c c - @a file must be a character device
+ * @li @c b - @a file must be a block device
+ * @li @c p - @a file must be a named pipe
+ * @li @c s - @a file must be a socket.
  */
 bool
 check (const String &file,
