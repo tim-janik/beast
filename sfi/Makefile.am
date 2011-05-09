@@ -18,7 +18,7 @@ sfi_public_headers = $(strip \
 	sfitests.h	sfi.h						\
 )
 sfi_all_sources = $(strip \
-	sfistore.c	sficomwire.c	sfifilecrawler.c \
+	sfistore.c	sficomwire.c	sfifilecrawler.cc \
 	glib-extra.c			sfiwrapper.cc	 \
 	sfivmarshal.c	sfiglue.c	sfigluecodec.c	sfiglueproxy.c	\
 	sfinote.c	sfiparams.c	sfiprimitives.c	sfiserial.c	\

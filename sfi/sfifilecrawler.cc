@@ -73,11 +73,11 @@ sfi_file_crawler_new (void)
  *
  * Fetch next result if any or NULL.
  */
-gchar*
+char*
 sfi_file_crawler_pop (SfiFileCrawler *self)
 {
   g_return_val_if_fail (self != NULL, NULL);
-  return sfi_ring_pop_head (&self->results);
+  return (char*) sfi_ring_pop_head (&self->results);
 }
 
 /**
@@ -111,7 +111,7 @@ sfi_file_crawler_add_tests (SfiFileCrawler *self,
 {
   g_return_if_fail (self != NULL);
 
-  self->ptest |= tests;
+  self->ptest = GFileTest (self->ptest | tests);
 }
 
 /**
@@ -199,9 +199,9 @@ file_crawler_queue_readdir (SfiFileCrawler *self,
 static void	/* self->accu is implicit in/out arg */
 file_crawler_crawl_readdir (SfiFileCrawler *self)
 {
-  DIR *dd = self->dhandle;
+  DIR *dd = (DIR*) self->dhandle;
   struct dirent *d_entry = readdir (dd);
-  
+
   if (d_entry)
     {
       if (!(d_entry->d_name[0] == '.' && d_entry->d_name[1] == 0) &&
@@ -223,7 +223,7 @@ file_crawler_crawl_readdir (SfiFileCrawler *self)
       self->base_dir = NULL;
       closedir (dd);
       self->dhandle = NULL;
-      self->ftest = 0;
+      self->ftest = GFileTest (0);
     }
 }
 
@@ -319,8 +319,8 @@ file_crawler_crawl_abs_path (SfiFileCrawler *self)
     }
   else if (self->dlist) /* && self->pdqueue */
     {
-      gchar *dir = sfi_ring_pop_head (&self->dlist);
-      gchar *pattern = self->pdqueue->data;
+      char *dir = (char*) sfi_ring_pop_head (&self->dlist);
+      char *pattern = (char*) self->pdqueue->data;
       GFileTest ftest = self->pdqueue->next != self->pdqueue ? G_FILE_TEST_IS_DIR : self->stest;
       /* continue reading {dir-list}/pattern files */
       file_crawler_queue_readdir (self, dir, pattern, ftest);
@@ -329,7 +329,7 @@ file_crawler_crawl_abs_path (SfiFileCrawler *self)
   else /* !self->dlist */
     while (self->pdqueue)
       {
-	gchar *seg = sfi_ring_pop_head (&self->pdqueue);
+	char *seg = (char*) sfi_ring_pop_head (&self->pdqueue);
 	g_free (seg);
 	/* directory path was a dead end, we're done, no result */
       }
@@ -362,7 +362,7 @@ path_make_absolute (const gchar *rpath,
 static void
 file_crawler_crawl_dpatterns (SfiFileCrawler *self)
 {
-  gchar *dpattern = sfi_ring_pop_head (&self->dpatterns);
+  char *dpattern = (char*) sfi_ring_pop_head (&self->dpatterns);
   if (dpattern)
     {
       /* make absolute */
