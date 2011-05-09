@@ -59,8 +59,8 @@ sfi_pointer_cmp (gconstpointer   value1,
                  gconstpointer   value2,
                  gpointer        dummy)
 {
-  const char *p1 = value1;
-  const char *p2 = value2;
+  const char *p1 = (const char*) value1;
+  const char *p2 = (const char*) value2;
   return p1 < p2 ? -1 : p1 != p2;
 }
 
@@ -907,8 +907,8 @@ static inline int
 pointerloccmp (const void *pp1,
                const void *pp2)
 {
-  const gpointer *p1 = pp1;
-  const gpointer *p2 = pp2;
+  void* const * p1 = (void**) pp1;
+  void* const * p2 = (void**) pp2;
   return *p1 < *p2 ? -1 : *p1 != *p2;
 }
 
@@ -953,7 +953,7 @@ sfi_ring_reorder (SfiRing        *unordered_ring,
   if (!unordered_ring || !new_ring_order)
     return unordered_ring;
   const SfiRing *ring;
-  
+
   /* construct a sorted array for faster lookups; O(length(unordered_ring)) */
   gpointer *items = NULL;
   guint i, n_items = 0, n_alloced = 0;
@@ -970,7 +970,7 @@ sfi_ring_reorder (SfiRing        *unordered_ring,
   sfi_ring_free (unordered_ring);
   unordered_ring = NULL;
   qsort (items, n_items, sizeof (items[0]), pointerloccmp);
-  
+
   /* collapse duplicates; O(length(unordered_ring)) */
   guint j = 0, *counts = g_new0 (guint, n_items);
   for (i = 0; i < n_items; i++)
