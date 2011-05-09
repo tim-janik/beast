@@ -156,14 +156,13 @@ wire_write_remote (SfiComWire *wire)
     }
 }
 
-static inline gpointer
+static inline uint8*
 put_uint32 (gpointer p,
 	    guint32  val)
 {
-  guint32 *ip = p;
-  
+  uint32 *ip = (uint32*) p;
   *ip++ = GUINT32_TO_BE (val);
-  return ip;
+  return (uint8*) ip;
 }
 
 static void
@@ -225,15 +224,14 @@ wire_read_remote (SfiComWire *wire)
     }
 }
 
-static inline gpointer
+static inline uint8*
 get_uint32 (gpointer p,
 	    guint32 *val)
 {
-  guint32 *ip = p, v;
-  
+  uint32 *ip = (uint32*) p, v;
   v = *ip++;
   *val = GUINT32_FROM_BE (v);
-  return ip;
+  return (uint8*) ip;
 }
 
 static void
@@ -273,7 +271,7 @@ wire_receive (SfiComWire *wire)
 	      guint n;
 	    case SFI_COM_MSG_REQUEST:
 	    case SFI_COM_MSG_RESULT:
-	      msg = alloc_msg (type);
+	      msg = alloc_msg (SfiComMsgType (type));
 	      msg->mlength = mlength;
 	      p = get_uint32 (p, &msg->request);
 	      msg->message = g_new (gchar, strl);
@@ -324,10 +322,10 @@ wire_read_gstring (SfiComWire *wire,
 		   gint        fd,
 		   GString    *gstring)
 {
-  guint l = gstring->len;
-  guint8 *pos, *bound;
-  gint n;
-  
+  uint l = gstring->len;
+  char *pos, *bound;
+  int n;
+
   g_string_set_size (gstring, l + 8192);
   pos = gstring->str + l;
   bound = gstring->str + gstring->len;
@@ -337,8 +335,8 @@ wire_read_gstring (SfiComWire *wire,
       pos += MAX (n, 0);
     }
   while (n < 0 && errno == EINTR);
-  g_string_set_size (gstring, pos - (guint8*) gstring->str);
-  
+  g_string_set_size (gstring, pos - gstring->str);
+
   /* n==0 on pipes/fifos means remote closed the connection (end-of-file) */
   return n > 0 || (n < 0 && (errno == EINTR || errno == EAGAIN));
 }
@@ -371,8 +369,7 @@ wire_find_link (GList *list,
 {
   for (; list; list = list->next)
     {
-      SfiComMsg *msg = list->data;
-      
+      SfiComMsg *msg = (SfiComMsg*) list->data;
       if (msg->request == request)
 	return list;
     }
@@ -430,9 +427,8 @@ sfi_com_wire_receive_result (SfiComWire *wire,
   in_link = wire_find_link (wire->iresults, request);
   if (in_link)
     {
-      SfiComMsg *omsg = out_link->data;
-      SfiComMsg *imsg = in_link->data;
-      
+      SfiComMsg *omsg = (SfiComMsg*) out_link->data;
+      SfiComMsg *imsg = (SfiComMsg*) in_link->data;
       wire->orequests = g_list_delete_link (wire->orequests, out_link);
       wire->iresults = g_list_delete_link (wire->iresults, in_link);
       free_msg (omsg);
@@ -447,14 +443,13 @@ sfi_com_wire_forget_request (SfiComWire *wire,
 			     guint       request)
 {
   GList *out_link;
-  SfiComMsg *omsg;
-  
+
   g_return_if_fail (wire != NULL);
   g_return_if_fail (request > 0);
   out_link = wire_find_link (wire->orequests, request);
   g_return_if_fail (out_link != NULL);
-  
-  omsg = out_link->data;
+
+  SfiComMsg *omsg = (SfiComMsg*) out_link->data;
   wire->orequests = g_list_delete_link (wire->orequests, out_link);
   free_msg (omsg);
 }
@@ -462,11 +457,9 @@ sfi_com_wire_forget_request (SfiComWire *wire,
 guint
 sfi_com_wire_peek_first_result (SfiComWire *wire)
 {
-  SfiComMsg *msg;
-  
   g_return_val_if_fail (wire != NULL, 0);
-  
-  msg = wire->iresults ? wire->iresults->data : NULL;
+
+  SfiComMsg *msg = (SfiComMsg*) (wire->iresults ? wire->iresults->data : NULL);
   return msg ? msg->request : 0;
 }
 
@@ -476,14 +469,14 @@ sfi_com_wire_receive_request (SfiComWire *wire,
 {
   g_return_val_if_fail (wire != NULL, NULL);
   g_return_val_if_fail (request_p != NULL, NULL);
-  
+
   wire_receive (wire);
   wire_update_alive (wire);
-  
+
   if (wire->irequests)
     {
-      SfiComMsg *msg = wire->irequests->data;
-      
+      SfiComMsg *msg = (SfiComMsg*) wire->irequests->data;
+
       wire->irequests = g_list_remove (wire->irequests, msg);
       if (msg->request == 0)
 	{
@@ -517,16 +510,16 @@ sfi_com_wire_send_result (SfiComWire  *wire,
   g_return_if_fail (result_msg != NULL);
   received_link = wire_find_link (wire->rrequests, request);
   g_return_if_fail (received_link != NULL);
-  
+
   msg = alloc_msg (SFI_COM_MSG_RESULT);
   msg->request = request;
   msg->message = g_strdup (result_msg);
   wire_send (wire, msg);
-  
-  free_msg (received_link->data);
+
+  free_msg ((SfiComMsg*) received_link->data);
   wire->rrequests = g_list_delete_link (wire->rrequests, received_link);
   free_msg (msg);
-  
+
   wire_update_alive (wire);
 }
 
@@ -535,15 +528,15 @@ sfi_com_wire_discard_request (SfiComWire *wire,
 			      guint       request)
 {
   GList *received_link;
-  
+
   g_return_if_fail (wire != NULL);
   g_return_if_fail (request > 0);
   received_link = wire_find_link (wire->rrequests, request);
   g_return_if_fail (received_link != NULL);
-  
-  free_msg (received_link->data);
+
+  free_msg ((SfiComMsg*) received_link->data);
   wire->rrequests = g_list_delete_link (wire->rrequests, received_link);
-  
+
   wire_update_alive (wire);
 }
 
@@ -587,15 +580,14 @@ sfi_com_wire_dispatch (SfiComWire  *wire,
 		       guint        request)
 {
   GList *received_link;
-  SfiComMsg *msg;
   gboolean handled;
-  
+
   g_return_if_fail (wire != NULL);
   g_return_if_fail (request > 0);
   received_link = wire_find_link (wire->rrequests, request);
   g_return_if_fail (received_link != NULL);
-  
-  msg = received_link->data;
+
+  SfiComMsg *msg = (SfiComMsg*) received_link->data;
   handled = wire->dispatch_func (wire->dispatch_data, msg->request, msg->message, wire);
   if (!handled)
     wire_default_dispatch (NULL, msg->request, msg->message, wire);
@@ -789,16 +781,16 @@ sfi_com_wire_destroy (SfiComWire *wire)
   sfi_com_wire_set_dispatcher (wire, NULL, NULL, NULL);
   sfi_com_wire_close_remote (wire, TRUE);
   for (list = wire->orequests; list; list = list->next)
-    free_msg (list->data);
+    free_msg ((SfiComMsg*) list->data);
   g_list_free (wire->orequests);
   for (list = wire->iresults; list; list = list->next)
-    free_msg (list->data);
+    free_msg ((SfiComMsg*) list->data);
   g_list_free (wire->iresults);
   for (list = wire->irequests; list; list = list->next)
-    free_msg (list->data);
+    free_msg ((SfiComMsg*) list->data);
   g_list_free (wire->irequests);
   for (list = wire->rrequests; list; list = list->next)
-    free_msg (list->data);
+    free_msg ((SfiComMsg*) list->data);
   g_list_free (wire->rrequests);
   g_string_free (wire->gstring_stdout, TRUE);
   g_string_free (wire->gstring_stderr, TRUE);
@@ -828,17 +820,17 @@ void
 sfi_com_wire_select (SfiComWire *wire,
 		     guint       timeout)
 {
-  fd_set rfds, wfds, efds;
-  guint *fds, i, n, max_fd = 0;
+  uint i, n;
   struct timeval tv;
-  
+
   g_return_if_fail (wire != NULL);
-  
+
+  fd_set rfds, wfds, efds;
   FD_ZERO (&rfds);
   FD_ZERO (&wfds);
   FD_ZERO (&efds);
-  
-  fds = sfi_com_wire_get_read_fds (wire, &n);
+
+  int max_fd = 0, *fds = sfi_com_wire_get_read_fds (wire, &n);
   for (i = 0; i < n; i++)
     {
       FD_SET (fds[i], &rfds);
@@ -934,8 +926,8 @@ typedef struct {
 static void
 pre_exec_child_setup (gpointer data)
 {
-  ChildSetupData *cdata = data;
-  
+  ChildSetupData *cdata = (ChildSetupData*) data;
+
   if (cdata->keepexec1)
     unset_cloexec (cdata->keepexec1);
   if (cdata->keepexec2)
@@ -944,7 +936,7 @@ pre_exec_child_setup (gpointer data)
   setpriority (PRIO_PROCESS, getpid(), 0);
 }
 
-gchar*
+const char*
 sfi_com_spawn_async (const gchar *executable,
 		     gint        *child_pid,
 		     gint        *standard_input,	/* writable */
@@ -955,32 +947,31 @@ sfi_com_spawn_async (const gchar *executable,
 		     gint        *command_output,	/* readable */
 		     SfiRing     *args)
 {
-  gint command_input_pipe[2] = { -1, -1 };
-  gint command_output_pipe[2] = { -1, -1 };
+  int command_input_pipe[2] = { -1, -1 };
+  int command_output_pipe[2] = { -1, -1 };
   ChildSetupData setup_data = { -1, -1 };
   SfiRing *ring, *cargs = NULL;
-  gchar **argv, **argp, *reterr = NULL;
+  char **argv, **argp;
+  const char *reterr = NULL;
   GError *error = NULL;
-  guint l;
-  
+  uint l;
+
   g_return_val_if_fail (executable != NULL, NULL);
   if (command_fd_option)
     g_return_val_if_fail (command_fd_option && command_input && command_output, NULL);
   else
     g_return_val_if_fail (!command_fd_option && !command_input && !command_output, NULL);
-  
+
   if (command_fd_option)
     {
       if (pipe (command_output_pipe) < 0 || pipe (command_input_pipe) < 0)
 	{
 	  gint e = errno;
-	  
 	  if (command_output_pipe[0] >= 0)
 	    {
 	      close (command_output_pipe[0]);
 	      close (command_output_pipe[1]);
 	    }
-	  
 	  return g_strdup_printf ("failed to create communication channels: %s", g_strerror (e));
 	}
       cargs = sfi_ring_prepend (cargs, g_strdup_printf ("%u", command_output_pipe[1]));
@@ -992,20 +983,20 @@ sfi_com_spawn_async (const gchar *executable,
     }
   cargs = sfi_ring_prepend (cargs, g_strdup_printf (/*"SFI-Spawn:%s"*/"%s", executable));
   cargs = sfi_ring_prepend (cargs, g_strdup (executable));
-  
+
   l = sfi_ring_length (cargs) + sfi_ring_length (args);
   argv = g_new (gchar*, l + 1);
   argp = argv;
   for (ring = cargs; ring; ring = sfi_ring_walk (ring, cargs))
-    *argp++ = ring->data;
+    *argp++ = (char*) ring->data;
   for (ring = args; ring; ring = sfi_ring_walk (ring, args))
-    *argp++ = ring->data;
+    *argp++ = (char*) ring->data;
   *argp = NULL;
-  
+
   if (!g_spawn_async_with_pipes (spawn_current_dir, argv, NULL,
-                                 G_SPAWN_DO_NOT_REAP_CHILD |
-                                 /* G_SPAWN_CHILD_INHERITS_STDIN | */
-				 G_SPAWN_FILE_AND_ARGV_ZERO,
+                                 GSpawnFlags (G_SPAWN_DO_NOT_REAP_CHILD |
+                                              /* G_SPAWN_CHILD_INHERITS_STDIN | */
+                                              G_SPAWN_FILE_AND_ARGV_ZERO),
 				 pre_exec_child_setup, &setup_data,
 				 child_pid,
 				 standard_input,
@@ -1030,7 +1021,7 @@ sfi_com_spawn_async (const gchar *executable,
 	*standard_error = -1;
       goto cleanup;
     }
-  
+
  cleanup:
   g_free (argv);
   for (ring = cargs; ring; ring = sfi_ring_walk (ring, cargs))
@@ -1046,6 +1037,6 @@ sfi_com_spawn_async (const gchar *executable,
       *command_input = command_input_pipe[1];
       *command_output = command_output_pipe[0];
     }
-  
+
   return reterr;
 }

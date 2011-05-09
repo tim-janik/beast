@@ -164,7 +164,7 @@ gchar*		sfi_com_wire_ping_pong		(SfiComWire	*wire,
 
 /* --- fork/exec --- */
 void		sfi_com_set_spawn_dir		(const gchar	*cwd);
-gchar*		sfi_com_spawn_async		(const gchar	*executable,
+const char*	sfi_com_spawn_async		(const gchar	*executable,
 						 gint		*child_pid,
 						 gint		*standard_input,
 						 gint		*standard_output,
