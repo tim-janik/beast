@@ -342,20 +342,20 @@ com_port_write_queued (SfiComPort *port)
 static gboolean
 com_port_write (SfiComPort   *port,
 		guint         n_bytes,
-		const guint8 *bytes)
+		const uint8  *bytes)
 {
-  gint fd = port->pfd[1].fd;
+  int fd = port->pfd[1].fd;
   if (!com_port_write_queued (port))
     return FALSE; /* connection broke */
   if (fd >= 0 && !port->wbuffer.n)
     {
-      gint n;
+      int n;
       do
 	n = write (fd, bytes, MIN (n_bytes, IO_BOTTLE_NECK));
       while (n < 0 && errno == EINTR);
       if (n == 0 || (n < 0 && errno != EINTR && errno != EAGAIN && errno != ERESTART))
 	return FALSE;
-      n = CLAMP (n, 0, n_bytes);
+      n = CLAMP (n, 0, int (n_bytes));
       n_bytes -= n;
       bytes += n;
     }
