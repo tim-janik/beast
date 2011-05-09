@@ -28,14 +28,14 @@ GType	*sfi__value_types = NULL;
 static gpointer
 copy_seq (gpointer boxed)
 {
-  SfiSeq *seq = boxed;
+  SfiSeq *seq = (SfiSeq*) boxed;
   return seq ? sfi_seq_ref (seq) : NULL;
 }
 
 static void
 free_seq (gpointer boxed)
 {
-  SfiSeq *seq = boxed;
+  SfiSeq *seq = (SfiSeq*) boxed;
   if (seq)
     sfi_seq_unref (seq);
 }
@@ -43,14 +43,14 @@ free_seq (gpointer boxed)
 static gpointer
 copy_rec (gpointer boxed)
 {
-  SfiRec *rec = boxed;
+  SfiRec *rec = (SfiRec*) boxed;
   return rec ? sfi_rec_ref (rec) : NULL;
 }
 
 static void
 free_rec (gpointer boxed)
 {
-  SfiRec *rec = boxed;
+  SfiRec *rec = (SfiRec*) boxed;
   if (rec)
     sfi_rec_unref (rec);
 }
@@ -58,14 +58,14 @@ free_rec (gpointer boxed)
 static gpointer
 copy_bblock (gpointer boxed)
 {
-  SfiBBlock *bblock = boxed;
+  SfiBBlock *bblock = (SfiBBlock*) boxed;
   return bblock ? sfi_bblock_ref (bblock) : NULL;
 }
 
 static void
 free_bblock (gpointer boxed)
 {
-  SfiBBlock *bblock = boxed;
+  SfiBBlock *bblock = (SfiBBlock*) boxed;
   if (bblock)
     sfi_bblock_unref (bblock);
 }
@@ -73,14 +73,14 @@ free_bblock (gpointer boxed)
 static gpointer
 copy_fblock (gpointer boxed)
 {
-  SfiFBlock *fblock = boxed;
+  SfiFBlock *fblock = (SfiFBlock*) boxed;
   return fblock ? sfi_fblock_ref (fblock) : NULL;
 }
 
 static void
 free_fblock (gpointer boxed)
 {
-  SfiFBlock *fblock = boxed;
+  SfiFBlock *fblock = (SfiFBlock*) boxed;
   if (fblock)
     sfi_fblock_unref (fblock);
 }
@@ -106,7 +106,7 @@ _sfi_init_values (void)
   sfi__value_types = value_types;
   
   /* value types */
-  SFI_TYPE_CHOICE = g_type_register_static (G_TYPE_STRING, "SfiChoice", &info, 0);
+  SFI_TYPE_CHOICE = g_type_register_static (G_TYPE_STRING, "SfiChoice", &info, GTypeFlags (0));
   SFI_TYPE_BBLOCK = g_boxed_type_register_static ("SfiBBlock", copy_bblock, free_bblock);
   SFI_TYPE_FBLOCK = g_boxed_type_register_static ("SfiFBlock", copy_fblock, free_fblock);
   SFI_TYPE_SEQ = g_boxed_type_register_static ("SfiSeq", copy_seq, free_seq);
@@ -172,17 +172,15 @@ sfi_value_get_bblock (const GValue *value)
 {
   g_return_val_if_fail (SFI_VALUE_HOLDS_BBLOCK (value), NULL);
 
-  return g_value_get_boxed (value);
+  return (SfiBBlock*) g_value_get_boxed (value);
 }
 
 SfiBBlock*
 sfi_value_dup_bblock (const GValue *value)
 {
-  SfiBBlock *bblock;
-
   g_return_val_if_fail (SFI_VALUE_HOLDS_BBLOCK (value), NULL);
 
-  bblock = g_value_get_boxed (value);
+  SfiBBlock *bblock = (SfiBBlock*) g_value_get_boxed (value);
   return bblock ? sfi_bblock_ref (bblock) : NULL;
 }
 
@@ -200,7 +198,7 @@ sfi_value_take_bblock (GValue    *value,
 		       SfiBBlock *bblock)
 {
   g_return_if_fail (SFI_VALUE_HOLDS_BBLOCK (value));
-  
+
   g_value_take_boxed (value, bblock);
 }
 
@@ -209,17 +207,15 @@ sfi_value_get_fblock (const GValue *value)
 {
   g_return_val_if_fail (SFI_VALUE_HOLDS_FBLOCK (value), NULL);
 
-  return g_value_get_boxed (value);
+  return (SfiFBlock*) g_value_get_boxed (value);
 }
 
 SfiFBlock*
 sfi_value_dup_fblock (const GValue *value)
 {
-  SfiFBlock *fblock;
-
   g_return_val_if_fail (SFI_VALUE_HOLDS_FBLOCK (value), NULL);
 
-  fblock = g_value_get_boxed (value);
+  SfiFBlock *fblock = (SfiFBlock*) g_value_get_boxed (value);
   return fblock ? sfi_fblock_ref (fblock) : NULL;
 }
 
@@ -282,8 +278,8 @@ SfiSeq*
 sfi_value_get_seq (const GValue *value)
 {
   g_return_val_if_fail (SFI_VALUE_HOLDS_SEQ (value), NULL);
-  
-  return g_value_get_boxed (value);
+
+  return (SfiSeq*) g_value_get_boxed (value);
 }
 
 void
@@ -291,7 +287,7 @@ sfi_value_set_seq (GValue *value,
 		   SfiSeq *seq)
 {
   g_return_if_fail (SFI_VALUE_HOLDS_SEQ (value));
-  
+
   g_value_set_boxed (value, seq);
 }
 
@@ -300,7 +296,7 @@ sfi_value_take_seq (GValue *value,
 		    SfiSeq *seq)
 {
   g_return_if_fail (SFI_VALUE_HOLDS_SEQ (value));
-  
+
   g_value_take_boxed (value, seq);
 }
 
@@ -308,16 +304,15 @@ SfiRec*
 sfi_value_get_rec (const GValue *value)
 {
   g_return_val_if_fail (SFI_VALUE_HOLDS_REC (value), NULL);
-  
-  return g_value_get_boxed (value);
+
+  return (SfiRec*) g_value_get_boxed (value);
 }
 
 SfiRec*
 sfi_value_dup_rec (const GValue *value)
 {
-  SfiRec *rec;
   g_return_val_if_fail (SFI_VALUE_HOLDS_REC (value), NULL);
-  rec = g_value_get_boxed (value);
+  SfiRec *rec = (SfiRec*) g_value_get_boxed (value);
   return rec ? sfi_rec_ref (rec) : NULL;
 }
 
@@ -360,12 +355,10 @@ void
 sfi_value_copy_deep (const GValue *src_value,
 		     GValue       *dest_value)
 {
-  SfiSCategory scat;
-
   g_return_if_fail (G_IS_VALUE (src_value));
   g_return_if_fail (G_IS_VALUE (dest_value));
-  
-  scat = sfi_categorize_type (G_VALUE_TYPE (src_value)) & SFI_SCAT_TYPE_MASK;
+
+  SfiSCategory scat = SfiSCategory (sfi_categorize_type (G_VALUE_TYPE (src_value)) & SFI_SCAT_TYPE_MASK);
   switch (scat)
     {
       case SFI_SCAT_SEQ:
@@ -533,15 +526,11 @@ sfi_value_lchoice (const gchar *vchoice,
 GValue*
 sfi_value_choice_enum (const GValue *enum_value)
 {
-  GEnumClass *eclass;
-  GEnumValue *ev;
-  GValue *value;
-
   g_return_val_if_fail (G_VALUE_HOLDS_ENUM (enum_value), NULL);
 
-  eclass = g_type_class_ref (G_VALUE_TYPE (enum_value));
-  ev = g_enum_get_value (eclass, g_value_get_enum (enum_value));
-  value = sfi_value_choice (ev ? ev->value_name : NULL);
+  GEnumClass *eclass = (GEnumClass*) g_type_class_ref (G_VALUE_TYPE (enum_value));
+  GEnumValue *ev = g_enum_get_value (eclass, g_value_get_enum (enum_value));
+  GValue *value = sfi_value_choice (ev ? ev->value_name : NULL);
   g_type_class_unref (eclass);
   return value;
 }
@@ -638,10 +627,9 @@ sfi_value_choice2enum (const GValue *choice_value,
 		       GValue       *enum_value,
 		       GParamSpec   *fallback_param)
 {
-  GEnumClass *eclass;
   GEnumValue *ev = NULL;
-  const gchar *eval;
-  guint i;
+  const char *eval;
+  uint i;
 
   g_return_if_fail (SFI_VALUE_HOLDS_CHOICE (choice_value));
   g_return_if_fail (G_VALUE_HOLDS_ENUM (enum_value));
@@ -651,7 +639,7 @@ sfi_value_choice2enum (const GValue *choice_value,
       g_return_if_fail (G_VALUE_HOLDS (enum_value, G_PARAM_SPEC_VALUE_TYPE (fallback_param)));
     }
 
-  eclass = g_type_class_ref (G_VALUE_TYPE (enum_value));
+  GEnumClass *eclass = (GEnumClass*) g_type_class_ref (G_VALUE_TYPE (enum_value));
   eval = sfi_value_get_choice (choice_value);
   if (eval)
     for (i = 0; i < eclass->n_values; i++)
@@ -694,18 +682,14 @@ void
 sfi_value_enum2choice (const GValue *enum_value,
 		       GValue       *choice_value)
 {
-  GEnumClass *eclass;
-  GEnumValue *ev;
-  gchar *sname;
-
   g_return_if_fail (SFI_VALUE_HOLDS_CHOICE (choice_value));
   g_return_if_fail (G_VALUE_HOLDS_ENUM (enum_value));
 
-  eclass = g_type_class_ref (G_VALUE_TYPE (enum_value));
-  ev = g_enum_get_value (eclass, g_value_get_enum (enum_value));
+  GEnumClass *eclass = (GEnumClass*) g_type_class_ref (G_VALUE_TYPE (enum_value));
+  GEnumValue *ev = g_enum_get_value (eclass, g_value_get_enum (enum_value));
   if (!ev)
     ev = eclass->values;
-  sname = to_sname (g_strdup (ev->value_name));
+  char *sname = to_sname (g_strdup (ev->value_name));
   sfi_value_set_choice (choice_value, sname);
   g_free (sname);
   g_type_class_unref (eclass);
@@ -716,12 +700,11 @@ sfi_choice2enum_checked (const gchar    *choice_value,
                          GType           enum_type,
                          GError        **errorp)
 {
-  GEnumClass *eclass;
   GEnumValue *ev = NULL;
   guint i;
   gint enum_value;
 
-  eclass = g_type_class_ref (enum_type);
+  GEnumClass *eclass = (GEnumClass*) g_type_class_ref (enum_type);
   if (choice_value)
     for (i = 0; i < eclass->n_values; i++)
       if (sfi_choice_match_detailed (eclass->values[i].value_name, choice_value, TRUE))
@@ -751,12 +734,11 @@ const gchar*
 sfi_enum2choice (gint            enum_value,
                  GType           enum_type)
 {
-  GEnumClass *eclass;
   GEnumValue *ev;
   const gchar *choice;
   gchar *cident;
 
-  eclass = g_type_class_ref (enum_type);
+  GEnumClass *eclass = (GEnumClass*) g_type_class_ref (enum_type);
   ev = g_enum_get_value (eclass, enum_value);
   if (!ev)
     ev = eclass->values;
