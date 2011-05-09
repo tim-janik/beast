@@ -20,11 +20,10 @@ mans/:
 $(MANUAL_CACHE_TARGETS): cache/stamp-refresh
 	curl -sfS http://beast.testbit.eu/$(@F)?action=render >$(@D)/xgen-$(@F)
 	mv $(@D)/xgen-$(@F) $@ ; rm -f $(@D)/xgen-$(@F)
-WIKIHTML2MAN = wikihtml2man.py
-mans/%: cache/% | mans/
+mans/%: $(IFMAN) cache/% | mans/
 	$(WIKIHTML2MAN) $< >$(@D)/xgen-$(@F)
 	mv $(@D)/xgen-$(@F) $@ ; rm -f $(@D)/xgen-$(@F)
-html/%.html: mans/% | html/
+html/%.html: $(IFMAN) mans/% | html/
 	groff -mandoc -Thtml $< >$(@D)/xgen-$(@F)
 	mv $(@D)/xgen-$(@F) $@ ; rm -f $(@D)/xgen-$(@F)
 
@@ -69,7 +68,7 @@ cache/:
 stamp-refresh-message:	# conditional phony dependency
 	@TXT="  Some source files hosted online appear outdated; forcing refresh...  " \
 	&& echo "$$TXT" | sed 's/./=/g' && echo "$$TXT" && echo "$$TXT" | sed 's/./=/g'
-cache/stamp-refresh: $(call AGINGRULE, cache/stamp-refresh, 1440, stamp-refresh-message) | cache/ # refresh daily
+cache/stamp-refresh: $(IFAGING) $(call AGINGRULE, cache/stamp-refresh, 1440, stamp-refresh-message) | cache/ # refresh daily
 	touch $@
 MAINTAINERCLEANFILES += cache/
 # $(call AGINGRULE, stamp-file-for-aging, AgingInMinutes, rule-name-for-remaking)

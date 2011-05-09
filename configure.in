@@ -353,6 +353,29 @@ AC_DEFUN([AC_BSE_REQUIREMENTS],
     bseuserdatadir='~/beast'
     AC_SUBST(bseuserdatadir)
 ])
+AC_DEFUN([AC_MAN_REQUIREMENTS],
+[
+  AC_PATH_PROGS(WIKIHTML2MAN, wikihtml2man wikihtml2man.py, false)
+  AC_PATH_PROG(GROFF, groff, false)
+  IFMAN=
+  IFAGING=
+  if test x"$enable_maintainer_mode" = xyes ; then
+    test x"$WIKIHTML2MAN" = xfalse && {
+      AC_MSG_ERROR(This package requires the wikihtml2man.py tool for maintainer builds)
+    }
+    echo "" | $GROFF -mandoc -Thtml 2>/dev/null | grep -Fq HTML || {
+      AC_MSG_ERROR(Failed to test-build HTML manual page via groff)
+    }
+  else # non-maintainer builds, need to have pre-built manual pages
+    test -e "${srcdir}/docs/mans/beast.1" || {
+      AC_MSG_ERROR([Missing prepackaged manual pages, use --enable-maintainer-mode])
+    }
+    IFMAN="#"
+    IFAGING="#"
+  fi
+  AC_SUBST(IFMAN)
+  AC_SUBST(IFAGING)
+])
 AC_DEFUN([AC_ASOUND_CHECK],
 [
     saved_cflags="$CFLAGS"
@@ -627,6 +650,7 @@ AC_BIRNET_REQUIREMENTS
 AC_I18N_REQUIREMENTS
 AC_SFI_REQUIREMENTS
 AC_BSE_REQUIREMENTS
+AC_MAN_REQUIREMENTS
 AC_ASOUND_CHECK
 AC_BSESCM_REQUIREMENTS
 AC_BSE_SNDDEV_CHECK
