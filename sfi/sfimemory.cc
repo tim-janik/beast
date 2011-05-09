@@ -42,11 +42,9 @@ static inline gpointer
 low_alloc (gsize mem_size)
 {
   gpointer mem;
-  
   if (mem_size >= TS8_SIZE && mem_size / 8 < SIMPLE_CACHE_SIZE)
     {
       guint cell;
-      
       mem_size = (mem_size + 7) & ~0x7;
       cell = (mem_size >> 3) - 1;
       sfi_mutex_lock (&global_memory_mutex);
@@ -56,7 +54,6 @@ low_alloc (gsize mem_size)
 	{
 	  guint8 *cache_mem = g_malloc (mem_size * PREALLOC);
 	  guint i;
-	  
 	  sfi_mutex_lock (&global_memory_mutex);
 	  memory_allocated += mem_size * PREALLOC;
 	  for (i = 0; i < PREALLOC - 1; i++)
@@ -84,8 +81,7 @@ low_free (gsize    mem_size,
 {
   if (mem_size >= TS8_SIZE && mem_size / 8 < SIMPLE_CACHE_SIZE)
     {
-      guint cell;
-      
+      uint cell;
       mem_size = (mem_size + 7) & ~0x7;
       cell = (mem_size >> 3) - 1;
       sfi_mutex_lock (&global_memory_mutex);
@@ -117,16 +113,16 @@ low_free (gsize    mem_size,
 gpointer
 sfi_alloc_memblock (gsize block_size)
 {
-  guint8 *cmem;
-  gsize *debug_size;
-  
+  uint8 *cmem;
+  size_t *debug_size;
+
   g_return_val_if_fail (block_size >= sizeof (gpointer), NULL);	/* cache-link size */
-  
-  cmem = low_alloc (block_size + DBG8_SIZE);
+
+  cmem = (uint8*) low_alloc (block_size + DBG8_SIZE);
   debug_size = (gsize*) cmem;
   *debug_size = block_size;
   cmem += DBG8_SIZE;
-  
+
   return cmem;
 }
 
@@ -134,12 +130,12 @@ void
 sfi_free_memblock (gsize    block_size,
 		   gpointer mem)
 {
-  gsize *debug_size;
-  guint8 *cmem;
+  size_t *debug_size;
+  uint8 *cmem;
   
   g_return_if_fail (mem != NULL);
   
-  cmem = mem;
+  cmem = (uint8*) mem;
   cmem -= DBG8_SIZE;
   debug_size = (gsize*) cmem;
   if (block_size != *debug_size)
@@ -190,11 +186,12 @@ void
 _sfi_free_node_list (gpointer mem,
 		     gsize    node_size)
 {
-  struct { gpointer data, next; } *tmp, *node = mem;
-  
+  struct LinkedData { gpointer data; LinkedData *next; };
+  LinkedData *tmp, *node = (LinkedData*) mem;
+
   g_return_if_fail (node != NULL);
   g_return_if_fail (node_size >= 2 * sizeof (gpointer));
-  
+
   /* FIXME: this can be optimized to an O(1) operation with T-style links in mem-caches */
   do
     {
