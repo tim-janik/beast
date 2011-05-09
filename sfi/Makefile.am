@@ -22,7 +22,7 @@ sfi_all_sources = $(strip \
 	glib-extra.c			sfiwrapper.cc	sfiprimitives.cc \
 	sfivmarshal.c	sfiglue.c	sfigluecodec.c	sfiglueproxy.c	\
 	sfinote.c	sfiparams.c			sfiserial.c	\
-	sfitime.c	sfitypes.c	sfivalues.c	sfiustore.c	\
+	sfitime.cc	sfitypes.c	sfivalues.c	sfiustore.c	\
 	sficxx.cc	sfiring.cc	sfimemory.cc	sficomport.cc	\
 	$(conditional_toyprof_sources)	\
 )
