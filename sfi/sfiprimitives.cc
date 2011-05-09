@@ -90,7 +90,7 @@ sfi_bblock_copy_deep (const SfiBBlock *bblock)
 
   fb = sfi_bblock_new ();
   fb->n_bytes = bblock->n_bytes;
-  fb->bytes = g_memdup (bblock->bytes, bblock->n_bytes * sizeof (bblock->bytes[0]));
+  fb->bytes = (uint8*) g_memdup (bblock->bytes, bblock->n_bytes * sizeof (bblock->bytes[0]));
   return fb;
 }
 
@@ -239,7 +239,7 @@ sfi_fblock_copy_deep (const SfiFBlock *fblock)
 
   fb = sfi_fblock_new ();
   fb->n_values = fblock->n_values;
-  fb->values = g_memdup (fblock->values, fblock->n_values * sizeof (fblock->values[0]));
+  fb->values = (float*) g_memdup (fblock->values, fblock->n_values * sizeof (fblock->values[0]));
   return fb;
 }
 
@@ -355,7 +355,7 @@ sfi_seq_append_copy (SfiSeq       *seq,
   n = upper_power2 (seq->n_elements);
   if (n > l)
     {
-      seq->elements = g_realloc (seq->elements, n * sizeof (seq->elements[0]));
+      seq->elements = (GValue*) g_realloc (seq->elements, n * sizeof (seq->elements[0]));
       memset (seq->elements + l, 0, (n - l) * sizeof (seq->elements[0]));
     }
   g_value_init (seq->elements + i, value_type);
@@ -887,19 +887,19 @@ sfi_rec_set_copy (SfiRec       *rec,
 		  gboolean      deep_copy,
 		  const GValue *value)
 {
-  const gchar *name;
-  gchar *dupcanon_name;
-  guint i;
-  
+  const char *name;
+  char *dupcanon_name;
+  uint i;
+
   dupcanon_name = may_dupcanon (field_name);
   name = dupcanon_name ? dupcanon_name : field_name;
   i = sfi_rec_lookup (rec, name);
   if (i >= rec->n_fields)
     {
       i = rec->n_fields++;
-      rec->fields = g_realloc (rec->fields, rec->n_fields * sizeof (rec->fields[0]));
+      rec->fields = (GValue*) g_realloc (rec->fields, rec->n_fields * sizeof (rec->fields[0]));
       memset (rec->fields + i, 0, sizeof (rec->fields[0]));
-      rec->field_names = g_realloc (rec->field_names, rec->n_fields * sizeof (rec->field_names[0]));
+      rec->field_names = (char**) g_realloc (rec->field_names, rec->n_fields * sizeof (rec->field_names[0]));
       rec->field_names[i] = dupcanon_name ? dupcanon_name : g_strdup (name);
       /* we don't sort upon insertion to speed up record creation */
       rec->sorted = FALSE;
@@ -1026,8 +1026,8 @@ static int
 strpointercmp (const void *p1,
 	       const void *p2)
 {
-  gchar *const *s1 = p1;
-  gchar *const *s2 = p2;
+  char *const *s1 = (char**) p1;
+  char *const *s2 = (char**) p2;
   return strcmp (*s1, *s2);
 }
 
@@ -1035,10 +1035,10 @@ void
 sfi_rec_sort (SfiRec *rec)
 {
   g_return_if_fail (rec != NULL);
-  
+
   if (!rec->sorted && rec->n_fields > 1)
     {
-      gchar **fnames = g_memdup (rec->field_names, rec->n_fields * sizeof (rec->field_names[0]));
+      char **fnames = (char**) g_memdup (rec->field_names, rec->n_fields * sizeof (rec->field_names[0]));
       GValue *fields = g_new (GValue, rec->n_fields);
       guint i;
       /* sort field names */
