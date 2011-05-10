@@ -14,7 +14,7 @@
  * A copy of the GNU Lesser General Public License should ship along
  * with this library; if not, see http://www.gnu.org/copyleft/.
  */
-#include "bseloopfuncs.h"
+#include "bseloopfuncs.hh"
 #include <bse/gsldatacache.h>
 #include <string.h>
 #include <signal.h>    /* G_BREAKPOINT() */
@@ -601,12 +601,12 @@ dcache_headloop_score (GslDataCache     *dcache,
       if (lnode->offset > lstart + l || lstart + l >= lnode->offset + node_size)
 	{
 	  gsl_data_cache_unref_node (dcache, lnode);
-	  lnode = *lnp = gsl_data_cache_ref_node (dcache, lstart + l, TRUE);
+	  lnode = *lnp = gsl_data_cache_ref_node (dcache, lstart + l, GSL_DATA_CACHE_DEMAND_LOAD);
 	}
       if (cnode->offset > cstart + i || cstart + i >= cnode->offset + node_size)
 	{
 	  gsl_data_cache_unref_node (dcache, cnode);
-	  cnode = *cnp = gsl_data_cache_ref_node (dcache, cstart + i, TRUE);
+	  cnode = *cnp = gsl_data_cache_ref_node (dcache, cstart + i, GSL_DATA_CACHE_DEMAND_LOAD);
 	}
       cdiff = cstart + i - cnode->offset;
       ldiff = lstart + l - lnode->offset;
@@ -669,8 +669,8 @@ gsl_data_find_loop1 (GslDataHandle    *dhandle,
   gsl_data_handle_close (dhandle);
   gsl_data_cache_unref (dcache);
 
-  dnode1 = gsl_data_cache_ref_node (dcache, config->block_start, TRUE);
-  dnode2 = gsl_data_cache_ref_node (dcache, config->block_start, TRUE);
+  dnode1 = gsl_data_cache_ref_node (dcache, config->block_start, GSL_DATA_CACHE_DEMAND_LOAD);
+  dnode2 = gsl_data_cache_ref_node (dcache, config->block_start, GSL_DATA_CACHE_DEMAND_LOAD);
 
   /* widen loop, keeping it end-aligned to cstart
    *      |------------##########|--------------------|......
@@ -797,8 +797,8 @@ tailloop_score (GslDataCache          *dcache,
   while (looppos < loopstart)
     looppos += loopsize;
 
-  snode = gsl_data_cache_ref_node (dcache, loopstart - compare, TRUE);
-  lnode = gsl_data_cache_ref_node (dcache, looppos, TRUE);
+  snode = gsl_data_cache_ref_node (dcache, loopstart - compare, GSL_DATA_CACHE_DEMAND_LOAD);
+  lnode = gsl_data_cache_ref_node (dcache, looppos, GSL_DATA_CACHE_DEMAND_LOAD);
   for (i = loopstart - compare; i < loopstart;)
     {
       GslLong sdiff, ldiff, slen, llen, loop_len, compare_len, j;
@@ -807,12 +807,12 @@ tailloop_score (GslDataCache          *dcache,
       if (snode->offset > i || i >= snode->offset + node_size)
 	{
 	  gsl_data_cache_unref_node (dcache, snode);
-	  snode = gsl_data_cache_ref_node (dcache, i, TRUE);
+	  snode = gsl_data_cache_ref_node (dcache, i, GSL_DATA_CACHE_DEMAND_LOAD);
 	}
       if (lnode->offset > looppos || looppos >= lnode->offset + node_size)
 	{
 	  gsl_data_cache_unref_node (dcache, lnode);
-	  lnode = gsl_data_cache_ref_node (dcache, looppos, TRUE);
+	  lnode = gsl_data_cache_ref_node (dcache, looppos, GSL_DATA_CACHE_DEMAND_LOAD);
 	}
       sdiff = i - snode->offset;
       ldiff = looppos - lnode->offset;

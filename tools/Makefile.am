@@ -17,12 +17,12 @@ progs_ldadd     = $(top_builddir)/bse/libbse.la $(BSE_LIBS)
 #
 
 bin_PROGRAMS        = bsewavetool
-bsewavetool_SOURCES = bsewavetool.cc bwtwave.cc bseloopfuncs.c
+bsewavetool_SOURCES = bsewavetool.cc bwtwave.cc bseloopfuncs.cc
 bsewavetool_LDADD   = $(progs_ldadd)
-EXTRA_DIST         += bsewavetool.hh bwtwave.hh bseloopfuncs.h sfiutils.h
+EXTRA_DIST         += bsewavetool.hh bwtwave.hh bseloopfuncs.hh sfiutils.hh
 
 noinst_PROGRAMS  += cutvorbis
-cutvorbis_SOURCES = cutvorbis.c cxxdummy.cc
+cutvorbis_SOURCES = cutvorbis.cc cxxdummy.cc
 cutvorbis_LDADD   = $(progs_ldadd)
 
 noinst_PROGRAMS    += bsefextract
@@ -34,11 +34,11 @@ bsefcompare_SOURCES = bsefcompare.cc
 bsefcompare_LDADD   = $(progs_ldadd)
 
 noinst_PROGRAMS  += magictest
-magictest_SOURCES = magictest.c cxxdummy.cc
+magictest_SOURCES = magictest.cc cxxdummy.cc
 magictest_LDADD   = $(progs_ldadd)
 
 noinst_PROGRAMS += mathtool
-mathtool_SOURCES = mathtool.c cxxdummy.cc
+mathtool_SOURCES = mathtool.cc cxxdummy.cc
 mathtool_LDADD   = $(progs_ldadd)
 
 # === Bsewavetool tests ===

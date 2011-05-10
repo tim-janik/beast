@@ -105,7 +105,7 @@ main (gint   argc,
                   if (test_open)
                     {
                       BseWaveFileInfo *wfi;
-                      BseErrorType error = 0;
+                      BseErrorType error = BSE_ERROR_NONE;
                       g_print ("\n  LOADER: %s\n", loader->name);
                       wfi = bse_wave_file_info_load (argv[i], &error);
                       if (wfi)

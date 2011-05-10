@@ -681,7 +681,7 @@ print_int_ring (SfiRing *ring)
   SfiRing *node;
   g_print ("{");
   for (node = ring; node; node = sfi_ring_walk (node, ring))
-    g_print ("%c", (gint) node->data);
+    g_print ("%c", (gint) (long) node->data);
   g_print ("}");
 }
 
@@ -690,8 +690,8 @@ ints_cmp (gconstpointer d1,
 	  gconstpointer d2,
           gpointer      data)
 {
-  gint i1 = (gint) d1;
-  gint i2 = (gint) d2;
+  gint i1 = (gint) (long) d1;
+  gint i2 = (gint) (long) d2;
   return i1 - i2;
 }
 

@@ -16,7 +16,7 @@
  */
 #include <bse/gsldatahandle.h>
 #include <bse/gslwavechunk.h>
-#include "bseloopfuncs.h"
+#include "bseloopfuncs.hh"
 #include "bwtwave.hh"
 #include <typeinfo>
 #include <string>
