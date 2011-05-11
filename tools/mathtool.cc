@@ -681,7 +681,7 @@ print_int_ring (SfiRing *ring)
   SfiRing *node;
   g_print ("{");
   for (node = ring; node; node = sfi_ring_walk (node, ring))
-    g_print ("%c", (gint) (long) node->data);
+    g_print ("%c", char (size_t (node->data)));
   g_print ("}");
 }
 
@@ -690,9 +690,9 @@ ints_cmp (gconstpointer d1,
 	  gconstpointer d2,
           gpointer      data)
 {
-  gint i1 = (gint) (long) d1;
-  gint i2 = (gint) (long) d2;
-  return i1 - i2;
+  size_t i1 = size_t (d1);
+  size_t i2 = size_t (d2);
+  return i1 < i2 ? -1 : i1 > i2;
 }
 
 static void
@@ -717,13 +717,12 @@ ring_test (void)
     { 26, 'z', 'y', 'x', 'w', 'v', 'u', 't', 's', 'r', 'q', 'p', 'o', 'n', 'm'
       ,   'l', 'k', 'j', 'i', 'h', 'g', 'f', 'e', 'd', 'c', 'b', 'a', },
   };
-  gint n;
 
-  for (n = 0; n < G_N_ELEMENTS (data_array); n++)
+  for (uint n = 0; n < G_N_ELEMENTS (data_array); n++)
     {
-      gint i, l = data_array[n][0];
+      uint l = data_array[n][0];
       SfiRing *ring = NULL;
-      for (i = 1; i <= l; i++)
+      for (uint i = 1; i <= l; i++)
 	ring = sfi_ring_append (ring, (gpointer) (data_array[n][i]));
       g_print ("source: ");
       print_int_ring (ring);
