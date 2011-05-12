@@ -24,7 +24,7 @@
 #include <sys/time.h>
 #include <libintl.h>
 #include <sys/resource.h>
-#include "bsescminterp.h"
+#include "bsescminterp.hh"
 #include "topconfig.h"
 
 #define	PRG_NAME	"bsescm"
@@ -197,8 +197,8 @@ shell_parse_args (gint    *argc_p,
 	{
 	  GLogLevelFlags fatal_mask;
 
-	  fatal_mask = g_log_set_always_fatal (G_LOG_FATAL_MASK);
-	  fatal_mask |= G_LOG_LEVEL_WARNING | G_LOG_LEVEL_CRITICAL;
+	  fatal_mask = g_log_set_always_fatal (GLogLevelFlags (G_LOG_FATAL_MASK));
+          fatal_mask = GLogLevelFlags (fatal_mask | G_LOG_LEVEL_WARNING | G_LOG_LEVEL_CRITICAL);
 	  g_log_set_always_fatal (fatal_mask);
 	  argv[i] = NULL;
 	}

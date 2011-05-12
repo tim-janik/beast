@@ -25,14 +25,14 @@ CLEANFILES += $(gen_sources)
 # programs to build
 #
 bin_PROGRAMS = bsescm-$(BIN_VERSION)		# this expands to bsescm-0.7.0 or similar
-bsescm___BIN_VERSION__SOURCES = bsescm.c bsescminterp.c cxxdummy.cc
+bsescm___BIN_VERSION__SOURCES = bsescm.cc bsescminterp.cc
 bsescm___BIN_VERSION__LDADD = $(programs_ldadd) $(BSESCM_LIBS)
 
 # libraries to link programs against
 programs_ldadd = $(top_builddir)/bse/libbse.la
 # source setups
-bsescminterp.c: # bsescm-genglue.c
-EXTRA_DIST += bsescminterp.h
+bsescminterp.cc: # bsescm-genglue.c
+EXTRA_DIST += bsescminterp.hh
 
 
 #

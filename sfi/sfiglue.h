@@ -188,12 +188,18 @@ void		sfi_glue_context_destroy	(SfiGlueContext	*context);
 
 
 /* --- Glue utilities --- */
-void		sfi_glue_gc_add		(gpointer	 data,
-					 gpointer	 free_func); // void (*free_func) (gpointer data);
-void		sfi_glue_gc_remove	(gpointer	 data,
-					 gpointer	 free_func); // void (*free_func) (gpointer data);
-void		sfi_glue_gc_free_now	(gpointer	 data,
-					 gpointer	 free_func); // void (*free_func) (gpointer data);
+#ifdef __cplusplus
+typedef void (*SfiGlueGcFreeFunc)(void*);
+#else
+typedef void *SfiGlueGcFreeFunc;  // FIXME: remove C-legacy
+#endif
+
+void		sfi_glue_gc_add		(gpointer	    data,
+					 SfiGlueGcFreeFunc  free_func);
+void		sfi_glue_gc_remove	(gpointer	    data,
+					 SfiGlueGcFreeFunc  free_func);
+void		sfi_glue_gc_free_now	(gpointer	    data,
+					 SfiGlueGcFreeFunc  free_func);
 void		sfi_glue_gc_run		(void);
 
 

@@ -16,7 +16,7 @@
  */
 #include <string.h>
 #include <errno.h>
-#include "bsescminterp.h"
+#include "bsescminterp.hh"
 #include <sfi/sficomwire.h>
 #include <bse/bseglue.h>
 
@@ -135,7 +135,7 @@ choice_value_from_scm (SCM s_string)
 static gulong tc_glue_gc_cell = 0;
 #define SCM_IS_GLUE_GC_CELL(sval)    (SCM_SMOB_PREDICATE (tc_glue_gc_cell, sval))
 #define SCM_GET_GLUE_GC_CELL(sval)   ((BseScmGCCell*) SCM_SMOB_DATA (sval))
-typedef void (*BseScmFreeFunc) ();
+typedef void (*BseScmFreeFunc) (void *data);
 typedef struct {
   gpointer       data;
   BseScmFreeFunc free_func;
@@ -605,7 +605,7 @@ bse_scm_glue_get_prop (SCM s_proxy,
   if (value)
     {
       s_retval = bse_scm_from_value (value);
-      sfi_glue_gc_free_now ((gpointer) value, sfi_value_free);
+      sfi_glue_gc_free_now ((void*) value, BseScmFreeFunc (sfi_value_free));
     }
 
   BSE_SCM_ALLOW_INTS ();
@@ -634,7 +634,7 @@ bse_scm_glue_call (SCM s_proc_name,
   bse_scm_enter_gc (&gclist, proc_name, g_free, STRING_LENGTH_FROM_SCM (s_proc_name));
 
   seq = sfi_seq_new ();
-  bse_scm_enter_gc (&gclist, seq, sfi_seq_unref, 1024); // FIXME: GC callbacks may run in any thread
+  bse_scm_enter_gc (&gclist, seq, BseScmFreeFunc (sfi_seq_unref), 1024); // FIXME: GC callbacks may run in any thread
   for (node = s_arg_list; IS_SCM_PAIR (node); node = SCM_CDR (node))
     {
       SCM arg = SCM_CAR (node);
@@ -651,7 +651,7 @@ bse_scm_glue_call (SCM s_proc_name,
   if (value)
     {
       s_retval = bse_scm_from_value (value);
-      sfi_glue_gc_free_now (value, sfi_value_free);
+      sfi_glue_gc_free_now (value, BseScmFreeFunc (sfi_value_free));
     }
 
   BSE_SCM_ALLOW_INTS ();
@@ -673,7 +673,7 @@ static void
 signal_data_free (gpointer  data,
                   GClosure *closure)
 {
-  SignalData *sdata = data;
+  SignalData *sdata = (SignalData*) data;
   SCM s_lambda = sdata->s_lambda;
   g_free (sdata->signal);
   g_free (sdata);
@@ -683,7 +683,7 @@ signal_data_free (gpointer  data,
 static SCM
 signal_marshal_sproc (void *data)
 {
-  SignalData *sdata = data;
+  SignalData *sdata = (SignalData*) data;
   SCM s_ret, args = SCM_EOL;
   guint i;
 
@@ -708,11 +708,11 @@ signal_closure_marshal (GClosure       *closure,
                         gpointer        marshal_data)
 {
   SCM_STACKITEM stack_item;
-  SignalData *sdata = closure->data;
+  SignalData *sdata = (SignalData*) closure->data;
   sdata->n_args = n_param_values;
   sdata->args = param_values;
   scm_internal_cwdr ((scm_t_catch_body) signal_marshal_sproc, sdata,
-                     scm_handle_by_message_noexit, "BSE", &stack_item);
+                     scm_handle_by_message_noexit, const_cast<char *> ("BSE"), &stack_item);
 }
 
 SCM
@@ -822,7 +822,7 @@ bse_scm_script_message (SCM s_type,
   /* figure message level */
   BSE_SCM_DEFER_INTS();
   gchar *strtype = strdup_from_scm (s_type);
-  guint mtype = sfi_msg_lookup_type (strtype);
+  SfiMsgType mtype = sfi_msg_lookup_type (strtype);
   g_free (strtype);
   BSE_SCM_ALLOW_INTS();
   if (!mtype)
@@ -1013,7 +1013,7 @@ bse_scm_script_register (SCM s_name,
 	  g_message ("while registering \"%s\": %s", name, sfi_value_get_string (rval));
 	  g_free (name);
 	}
-      sfi_glue_gc_free_now (rval, sfi_value_free);
+      sfi_glue_gc_free_now (rval, BseScmFreeFunc (sfi_value_free));
     }
   BSE_SCM_ALLOW_INTS ();
 
@@ -1065,7 +1065,7 @@ bse_scm_script_args (void)
     args = bse_scm_from_value (rvalue);
   else
     args = SCM_EOL;
-  sfi_glue_gc_free_now (rvalue, sfi_value_free);
+  sfi_glue_gc_free_now (rvalue, BseScmFreeFunc (sfi_value_free));
   BSE_SCM_ALLOW_INTS ();
 
   bse_scm_destroy_gc_plateau (gcplateau);
@@ -1144,6 +1144,8 @@ register_types (const gchar **types)
   bse_scm_destroy_gc_plateau (gcplateau);
 }
 
+typedef SCM (*BseScmFunc)();
+
 void
 bse_scm_interp_init (void)
 {
@@ -1159,22 +1161,22 @@ bse_scm_interp_init (void)
 
   tc_glue_rec = scm_make_smob_type ("BseGlueRec", 0);
   scm_set_smob_free (tc_glue_rec, bse_scm_free_glue_rec);
-  gh_new_procedure ("bse-rec-get", bse_scm_glue_rec_get, 2, 0, 0);
-  gh_new_procedure ("bse-rec-set", bse_scm_glue_rec_set, 3, 0, 0);
-  gh_new_procedure ("bse-rec-new", bse_scm_glue_rec_new, 0, 1, 0);
-  gh_new_procedure ("bse-rec-print", bse_scm_glue_rec_print, 1, 0, 0);
+  gh_new_procedure ("bse-rec-get", BseScmFunc (bse_scm_glue_rec_get), 2, 0, 0);
+  gh_new_procedure ("bse-rec-set", BseScmFunc (bse_scm_glue_rec_set), 3, 0, 0);
+  gh_new_procedure ("bse-rec-new", BseScmFunc (bse_scm_glue_rec_new), 0, 1, 0);
+  gh_new_procedure ("bse-rec-print", BseScmFunc (bse_scm_glue_rec_print), 1, 0, 0);
 
   tc_glue_proxy = scm_make_smob_type ("SfiProxy", 0);
   SCM_NEWSMOB (glue_null_proxy, tc_glue_proxy, 0);
   scm_permanent_object (glue_null_proxy);
   scm_set_smob_equalp (tc_glue_proxy, bse_scm_proxy_equalp);
   scm_set_smob_print (tc_glue_proxy, bse_scm_proxy_print);
-  gh_new_procedure ("bse-proxy-is-null?", bse_scm_proxy_is_null, 1, 0, 0);
-  gh_new_procedure ("bse-proxy-get-null", bse_scm_proxy_get_null, 0, 1, 0);
+  gh_new_procedure ("bse-proxy-is-null?", BseScmFunc (bse_scm_proxy_is_null), 1, 0, 0);
+  gh_new_procedure ("bse-proxy-get-null", BseScmFunc (bse_scm_proxy_get_null), 0, 1, 0);
 
-  gh_new_procedure ("bse-glue-call", bse_scm_glue_call, 2, 0, 0);
-  gh_new_procedure ("bse-glue-set-prop", bse_scm_glue_set_prop, 3, 0, 0);
-  gh_new_procedure ("bse-glue-get-prop", bse_scm_glue_get_prop, 2, 0, 0);
+  gh_new_procedure ("bse-glue-call", BseScmFunc (bse_scm_glue_call), 2, 0, 0);
+  gh_new_procedure ("bse-glue-set-prop", BseScmFunc (bse_scm_glue_set_prop), 3, 0, 0);
+  gh_new_procedure ("bse-glue-get-prop", BseScmFunc (bse_scm_glue_get_prop), 2, 0, 0);
 
   procs = sfi_glue_list_proc_names ();
   for (i = 0; procs[i]; i++)
@@ -1190,14 +1192,14 @@ bse_scm_interp_init (void)
   register_types (procs2);
 
   gh_new_procedure0_0 ("bse-server-get", bse_scm_server_get);
-  gh_new_procedure ("bse-script-register", bse_scm_script_register, 6, 0, 1);
-  gh_new_procedure ("bse-script-fetch-args", bse_scm_script_args, 0, 0, 0);
-  gh_new_procedure ("bse-choice-match?", bse_scm_choice_match, 2, 0, 0);
-  gh_new_procedure ("bse-signal-connect", bse_scm_signal_connect, 3, 0, 0);
-  gh_new_procedure ("bse-signal-disconnect", bse_scm_signal_disconnect, 2, 0, 0);
-  gh_new_procedure ("bse-context-pending", bse_scm_context_pending, 0, 0, 0);
-  gh_new_procedure ("bse-context-iteration", bse_scm_context_iteration, 1, 0, 0);
-  gh_new_procedure ("bse-script-message", bse_scm_script_message, 1, 0, 1);
-  gh_new_procedure ("bse-gettext", bse_scm_gettext, 1, 0, 0);
-  gh_new_procedure ("bse-gettext-q", bse_scm_gettext_q, 1, 0, 0);
+  gh_new_procedure ("bse-script-register", BseScmFunc (bse_scm_script_register), 6, 0, 1);
+  gh_new_procedure ("bse-script-fetch-args", BseScmFunc (bse_scm_script_args), 0, 0, 0);
+  gh_new_procedure ("bse-choice-match?", BseScmFunc (bse_scm_choice_match), 2, 0, 0);
+  gh_new_procedure ("bse-signal-connect", BseScmFunc (bse_scm_signal_connect), 3, 0, 0);
+  gh_new_procedure ("bse-signal-disconnect", BseScmFunc (bse_scm_signal_disconnect), 2, 0, 0);
+  gh_new_procedure ("bse-context-pending", BseScmFunc (bse_scm_context_pending), 0, 0, 0);
+  gh_new_procedure ("bse-context-iteration", BseScmFunc (bse_scm_context_iteration), 1, 0, 0);
+  gh_new_procedure ("bse-script-message", BseScmFunc (bse_scm_script_message), 1, 0, 1);
+  gh_new_procedure ("bse-gettext", BseScmFunc (bse_scm_gettext), 1, 0, 0);
+  gh_new_procedure ("bse-gettext-q", BseScmFunc (bse_scm_gettext_q), 1, 0, 0);
 }
