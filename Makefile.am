@@ -44,7 +44,7 @@ release-check:
 	@echo "Checking for unlisted contributors..."
 	@$(srcdir)/mkrelease.sh contributors -X -B timj,stw -C $(srcdir)/beast-gtk/bstmain.c
 release-upload: ChangeLog
-	$(srcdir)/mkrelease.sh upload -U beast:dist/beast/ -E configure.in:BSE_MICRO_VERSION
+	$(srcdir)/mkrelease.sh upload -U dist.testbit.eu:dist/beast/v0.7/ -E configure.in:BSE_MICRO_VERSION
 .PHONY: release-news release-check release-upload
 
 # --- dist fixes ---
