@@ -712,7 +712,7 @@ signal_closure_marshal (GClosure       *closure,
   sdata->n_args = n_param_values;
   sdata->args = param_values;
   scm_internal_cwdr ((scm_t_catch_body) signal_marshal_sproc, sdata,
-                     scm_handle_by_message_noexit, const_cast<char *> ("BSE"), &stack_item);
+                     scm_handle_by_message_noexit, const_cast<char*> ("BSE"), &stack_item);
 }
 
 SCM
@@ -1108,6 +1108,8 @@ bse_scm_context_iteration (SCM s_may_block)
 
 
 /* --- initialization --- */
+typedef SCM (*BseScmFunc) ();
+
 static void
 register_types (const gchar **types)
 {
@@ -1143,8 +1145,6 @@ register_types (const gchar **types)
     }
   bse_scm_destroy_gc_plateau (gcplateau);
 }
-
-typedef SCM (*BseScmFunc)();
 
 void
 bse_scm_interp_init (void)

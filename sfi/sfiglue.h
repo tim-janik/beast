@@ -189,7 +189,7 @@ void		sfi_glue_context_destroy	(SfiGlueContext	*context);
 
 /* --- Glue utilities --- */
 #ifdef __cplusplus
-typedef void (*SfiGlueGcFreeFunc)(void*);
+typedef void (*SfiGlueGcFreeFunc) (void*);
 #else
 typedef void *SfiGlueGcFreeFunc;  // FIXME: remove C-legacy
 #endif
