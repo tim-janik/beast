@@ -29,8 +29,8 @@
 
 /* --- variables --- */
 static const struct {
-  gchar *name;
-  gint note;
+  const char *name;
+  int         note;
 } sfi_note_table[] = {
   { "ces",	SFI_KAMMER_NOTE - 10 - SFI_KAMMER_OCTAVE * 12 },
   { "cis",	SFI_KAMMER_NOTE -  8 - SFI_KAMMER_OCTAVE * 12 },
@@ -72,23 +72,24 @@ SfiInt
 sfi_note_from_string_err (const gchar *note_string,
 			  gchar      **error_p)
 {
-  gchar *string, *freeme;
-  gint i, fits, note, sharp = 0;
+  char *string, *freeme;
+  int fits, note, sharp = 0;
+  uint i;
 
   if (error_p)
     *error_p = NULL;
   g_return_val_if_fail (note_string != NULL, SFI_NOTE_VOID);
-  
+
   string = freeme = g_strdup_stripped (note_string);
   g_ascii_strdown (string, -1);
-  
+
   note = SFI_NOTE_VOID;
   if (strcmp (string, "void") == 0)	/* *valid* SFI_NOTE_VOID path */
     {
       g_free (freeme);
       return note;
     }
-  
+
   if (string[0] == '#' && is_note_letter (string[1]))   /* #C-0 */
     {
       sharp++;
@@ -100,7 +101,7 @@ sfi_note_from_string_err (const gchar *note_string,
       string[1] = string[0];
       string++;
     }
-  
+
   fits = FALSE;
   for (i = 0; i < G_N_ELEMENTS (sfi_note_table); i++)
     {
@@ -111,13 +112,13 @@ sfi_note_from_string_err (const gchar *note_string,
       if (fits)
 	break;
     }
-  
+
   note = SFI_KAMMER_NOTE;		/* *invalid* note value */
   if (fits)
     {
-      gchar *s;
-      gint o;
-      
+      char *s;
+      int o;
+
       if (*(string + strlen (sfi_note_table[i].name)))
 	{
 	  o = strtol (string + strlen (sfi_note_table[i].name), &s, 10);
@@ -126,11 +127,11 @@ sfi_note_from_string_err (const gchar *note_string,
 	}
       else
 	o = 0;
-      
+
       if (fits)
 	note = SFI_NOTE_CLAMP (sfi_note_table[i].note + sharp + o * 12);
     }
-  
+
   g_free (freeme);
 
   if (!fits && error_p)
