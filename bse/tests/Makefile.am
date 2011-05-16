@@ -26,7 +26,7 @@ filtertest_LDADD   = $(progs_ldadd)
 EXTRA_DIST        += filtercatalog.cc
 
 TESTS          += testfft
-testfft_SOURCES = testfft.c cxxdummy.cc
+testfft_SOURCES = testfft.cc
 testfft_LDADD   = $(progs_ldadd)
 
 TESTS          += testcxx
@@ -40,7 +40,7 @@ subnormals_LDADD    = $(progs_ldadd)
 subnormals_CXXFLAGS = $(AM_CXXFLAGS) -ffast-math
 
 TESTS             += loophandle
-loophandle_SOURCES = loophandle.c
+loophandle_SOURCES = loophandle.cc
 loophandle_LDADD   = $(progs_ldadd)
 
 TESTS             += blocktests
