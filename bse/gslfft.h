@@ -87,10 +87,9 @@ void	gsl_power2_fftsc (const uint         n_values,
 			  double            *ri_values_out);
 
 /**
- * gsl_power2_fftsc_scale
- * @n_values:      Number of complex values
- * @ri_values_in:  Complex frequency values [0..n_values*2-1]
- * @ri_values_out: Complex sample values [0..n_values*2-1]
+ * @param n_values      Number of complex values
+ * @param ri_values_in  Complex frequency values [0..n_values*2-1]
+ * @param ri_values_out Complex sample values [0..n_values*2-1]
  * This function performs a decimation in time fourier transformation
  * in backwards direction with normalization. As such, this function
  * represents the counterpart to gsl_power2_fftac(), that is, a value
@@ -111,10 +110,9 @@ void    gsl_power2_fftsc_scale (const unsigned int n_values,
 			        const double      *ri_values_in,
 			        double            *ri_values_out);
 /**
- * gsl_power2_fftar
- * @n_values:      Number of real sample values
- * @r_values_in:   Real sample values [0..n_values-1]
- * @ri_values_out: Complex frequency values [0..n_values-1]
+ * @param n_values      Number of real sample values
+ * @param r_values_in   Real sample values [0..n_values-1]
+ * @param ri_values_out Complex frequency values [0..n_values-1]
  * Real valued variant of gsl_power2_fftac(), the input array contains
  * real valued equidistant sampled data [0..n_values-1], and the output
  * array contains the positive frequency half of the complex valued
@@ -165,10 +163,9 @@ void	gsl_power2_fftsr (const unsigned int n_values,
 			  double            *r_values_out);
 
 /**
- * gsl_power2_fftsr_scale
- * @n_values:     Number of real sample values
- * @ri_values_in: Complex frequency values [0..n_values-1]
- * @r_values_out: Real sample values [0..n_values-1]
+ * @param n_values     Number of real sample values
+ * @param ri_values_in Complex frequency values [0..n_values-1]
+ * @param r_values_out Real sample values [0..n_values-1]
  * Real valued variant of gsl_power2_fftsc(), counterpart to
  * gsl_power2_fftar(), using the same frequency storage format.
  * A real valued data set transformed into the frequency domain
