@@ -186,7 +186,7 @@ sfi_constants_get_index (guint               n_consts,
   offs = i;
   order = rsorted_consts[offs].index;
   /* walk lesser matches */
-  for (i = 1; i <= offs; i++)
+  for (i = 1; i <= int (offs); i++)
     if (consts_rmatch (l, key, rsorted_consts[offs - i].name_length, rsorted_consts[offs - i].name) == 0)
       order = MIN (order, rsorted_consts[offs - i].index);
     else

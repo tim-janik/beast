@@ -58,7 +58,7 @@ sfi_wstore_destroy (SfiWStore *wstore)
   wstore->text = NULL;
   while (wstore->bblocks)
     {
-      BBlock *bblock = sfi_ring_pop_head (&wstore->bblocks);
+      BBlock *bblock = (BBlock*) sfi_ring_pop_head (&wstore->bblocks);
       if (bblock->destroy)
         bblock->destroy (bblock->data);
       g_free (bblock);
@@ -329,9 +329,9 @@ sfi_wstore_flush_fd (SfiWStore *wstore,
   /* store binary data */
   for (ring = wstore->bblocks; ring; ring = sfi_ring_walk (ring, wstore->bblocks))
     {
-      BBlock *bblock = ring->data;
-      gint n;
-      
+      BBlock *bblock = (BBlock*) ring->data;
+      int n;
+
       /* save block offset */
       do
 	bblock->offset = lseek (fd, 0, SEEK_CUR);
@@ -339,14 +339,14 @@ sfi_wstore_flush_fd (SfiWStore *wstore,
       bblock->length = 0;
       if (bblock->offset < 0 && errno)
         return -errno;
-      
+
       /* dump binary */
       do
 	{
 	  n = bblock->reader (bblock->data, buffer, bsize);
 	  if (n < 0)
 	    break;	// FIXME: error handling
-	  g_assert (n <= bsize);
+	  g_assert (n <= int (bsize));
 	  do
 	    l = write (fd, buffer, n);
 	  while (l < 0 && errno == EINTR);
@@ -360,11 +360,11 @@ sfi_wstore_flush_fd (SfiWStore *wstore,
   /* patch binary offsets and lengths */
   for (ring = wstore->bblocks; ring; ring = sfi_ring_walk (ring, wstore->bblocks))
     {
-      BBlock *bblock = ring->data;
+      BBlock *bblock = (BBlock*) ring->data;
       off_t foff;
       gchar ptext[2 + 8 + 1 + 2 + 8 + 1];
       /*          0x *0* ' '  0x *0* '\0' */
-      
+
       do
 	foff = lseek (fd, text_offset + bblock->patch_offset, SEEK_SET);
       while (foff < 0 && errno == EINTR);
@@ -524,7 +524,7 @@ sfi_rstore_unexp_token (SfiRStore *rstore,
   scanner = rstore->scanner;
   if (scanner->parse_errors < scanner->max_parse_errors)
     {
-      gchar *message;
+      const char *message;
 
       if (scanner->parse_errors + 1 >= scanner->max_parse_errors)
         message = "aborting...";
@@ -568,7 +568,7 @@ scanner_skip_statement (GScanner *scanner,
 	{
 	case G_TOKEN_EOF:
 	case G_TOKEN_ERROR:
-	  return ')';
+	  return GTokenType (')');
 	case '(':
 	  level++;
 	  break;
@@ -707,7 +707,7 @@ rstore_ensure_bin_offset (SfiRStore *rstore)
 	  if (l < 0)
 	    return FALSE;
 
-	  p = memchr (sdata, 0, l);
+	  p = (uint8*) memchr (sdata, 0, l);
 	  seen_zero = p != NULL;
 	  zero_offset += seen_zero ? p - sdata : l;
 	}
@@ -760,7 +760,7 @@ sfi_rstore_parse_zbinary (SfiRStore *rstore,
   g_return_val_if_fail (offset_p && length_p, G_TOKEN_ERROR);
 
   if (g_scanner_get_next_token (rstore->scanner) != '(')
-    return '(';
+    return GTokenType ('(');
   if (g_scanner_get_next_token (rstore->scanner) != G_TOKEN_IDENTIFIER ||
       strcmp (rstore->scanner->value.v_identifier, "binary-appendix") != 0)
     return G_TOKEN_IDENTIFIER;
@@ -771,7 +771,7 @@ sfi_rstore_parse_zbinary (SfiRStore *rstore,
     return G_TOKEN_INT;
   SfiNum length = rstore->scanner->value.v_int64;
   if (g_scanner_get_next_token (rstore->scanner) != ')')
-    return ')';
+    return GTokenType (')');
   *offset_p = offset;
   *length_p = length;
   return G_TOKEN_NONE;
@@ -813,8 +813,8 @@ sfi_rstore_parse_until (SfiRStore     *rstore,
   while (!sfi_rstore_eof (rstore) && g_scanner_get_next_token (scanner) == '(')
     {
       GTokenType expected_token;
-      guint saved_line, saved_position;
-      
+      uint saved_line, saved_position;
+
       /* it is only useful to feature statements which
        * start out with an identifier (syntactically)
        */
@@ -827,9 +827,9 @@ sfi_rstore_parse_until (SfiRStore     *rstore,
       /* parse a statement (may return SFI_TOKEN_UNMATCHED) */
       saved_line = scanner->line;
       saved_position = scanner->position;
-      expected_token = try_statement (context_data, rstore->parser_this, scanner, user_data);
+      expected_token = (GTokenType) try_statement (context_data, (SfiRStore*) rstore->parser_this, scanner, user_data);
       /* if there are no matches, skip statement */
-      if (expected_token == SFI_TOKEN_UNMATCHED)
+      if (expected_token == GTokenType (SFI_TOKEN_UNMATCHED))
         {
           if (saved_line != scanner->line || saved_position != scanner->position ||
               scanner->next_token != G_TOKEN_IDENTIFIER)
