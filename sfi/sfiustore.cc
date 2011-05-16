@@ -89,7 +89,7 @@ foreach_wrapper (gpointer key,
 		 gpointer value,
 		 gpointer data)
 {
-  FData *fdata = data;
+  FData *fdata = (FData*) data;
   /* iterate as long as SfiUStoreForeach() returns TRUE */
   return !fdata->foreach (fdata->data, (gulong) key, value);
 }
@@ -176,7 +176,7 @@ static gboolean
 upool_enlist (gpointer        data,
               gulong          unique_id)
 {
-  UPoolList *list = data;
+  UPoolList *list = (UPoolList*) data;
   guint i = list->n_ids++;
   if (list->n_ids > list->capacity)
     {
@@ -224,8 +224,8 @@ static gint
 ppool_cmp (gconstpointer a,
            gconstpointer b)
 {
-  const gchar *c1 = a;
-  const gchar *c2 = b;
+  const char *c1 = (const char*) a;
+  const char *c2 = (const char*) b;
   return c1 < c2 ? -1 : c1 != c2;
 }
 
@@ -269,7 +269,7 @@ ppool_foreach_wrapper (gpointer key,
                        gpointer value,
                        gpointer data)
 {
-  PPoolData *pdata = data;
+  PPoolData *pdata = (PPoolData*) data;
   /* iterate as long as SfiPPoolForeach() returns TRUE */
   return !pdata->foreach (pdata->data, key);
 }
@@ -291,7 +291,7 @@ ppool_foreach_slist (gpointer key,
                      gpointer value,
                      gpointer data)
 {
-  GSList **slist_p = data;
+  GSList **slist_p = (GSList**) data;
   *slist_p = g_slist_prepend (*slist_p, key);
   return FALSE; /* always continue */
 }
