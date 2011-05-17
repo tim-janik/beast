@@ -26,11 +26,11 @@ G_BEGIN_DECLS
 
 
 /* --- invocations --- */
-void	sfi_vmarshal_void	(gpointer	 func,
-				 gpointer	 arg0,
-				 guint		 n_args,
-				 const GValue	*args,  /* 1..n */
-				 gpointer	 data); /* n+1 */
+void	sfi_vmarshal_void	(void         *func,
+				 void         *arg0,
+				 uint	       n_args,
+				 const GValue *args,  /* 1..n */
+				 void         *data); /* n+1 */
 
 
 /* --- internal --- */
