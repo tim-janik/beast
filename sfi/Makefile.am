@@ -20,7 +20,7 @@ sfi_public_headers = $(strip \
 sfi_all_sources = $(strip \
 	sfistore.cc	sficomwire.cc	sfifilecrawler.cc \
 	glib-extra.c			sfiwrapper.cc	sfiprimitives.cc \
-	sfivmarshal.c	sfiglue.cc	sfigluecodec.cc	sfiglueproxy.c	\
+	sfivmarshal.c	sfiglue.cc	sfigluecodec.cc	sfiglueproxy.cc	\
 	sfinote.cc	sfiparams.cc			sfiserial.cc	\
 	sfitime.cc	sfitypes.cc	sfivalues.cc	sfiustore.cc	\
 	sficxx.cc	sfiring.cc	sfimemory.cc	sficomport.cc	\
