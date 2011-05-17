@@ -160,7 +160,7 @@ encoder_process_message (SfiGlueEncoder *encoder,
   if (SFI_VALUE_HOLDS_SEQ (value))
     {
       SfiSeq *seq = sfi_value_get_seq (value);
-      SfiGlueCodecCommands cmd = seq && seq->n_elements >= 1 ? sfi_seq_get_int (seq, 0) : 0;
+      SfiGlueCodecCommands cmd = SfiGlueCodecCommands (seq && seq->n_elements >= 1 ? sfi_seq_get_int (seq, 0) : 0);
       switch (cmd)
 	{
 	case SFI_GLUE_CODEC_ASYNC_RETURN:
@@ -302,7 +302,7 @@ decoder_describe_iface (SfiGlueDecoder *decoder,
       sfi_seq_unref (seq);
     }
   rvalue = sfi_value_rec (rec);
-  sfi_glue_gc_free_now (iface, sfi_glue_iface_unref);
+  sfi_glue_gc_free_now (iface, SfiGlueGcFreeFunc (sfi_glue_iface_unref));
   return rvalue;
 }
 
@@ -369,7 +369,7 @@ decoder_describe_proc (SfiGlueDecoder *decoder,
 	}
     }
   rvalue = sfi_value_rec (rec);
-  sfi_glue_gc_free_now (proc, sfi_glue_proc_unref);
+  sfi_glue_gc_free_now (proc, SfiGlueGcFreeFunc (sfi_glue_proc_unref));
   return rvalue;
 }
 
@@ -402,7 +402,7 @@ decoder_list_proc_names (SfiGlueDecoder *decoder,
 {
   const gchar **names = sfi_glue_list_proc_names ();
   GValue *rvalue = seq_value_from_strv (names);
-  sfi_glue_gc_free_now (names, g_strfreev);
+  sfi_glue_gc_free_now (names, SfiGlueGcFreeFunc (g_strfreev));
   return rvalue;
 }
 
@@ -428,7 +428,7 @@ decoder_list_method_names (SfiGlueDecoder *decoder,
 {
   const gchar **names = sfi_glue_list_method_names (sfi_seq_get_string (seq, 1));
   GValue *rvalue = seq_value_from_strv (names);
-  sfi_glue_gc_free_now (names, g_strfreev);
+  sfi_glue_gc_free_now (names, SfiGlueGcFreeFunc (g_strfreev));
   return rvalue;
 }
 
@@ -453,7 +453,7 @@ decoder_base_iface (SfiGlueDecoder *decoder,
   gchar *name = sfi_glue_base_iface ();
   GValue *rvalue = NULL;
   rvalue = sfi_value_string (name);
-  sfi_glue_gc_free_now (name, g_free);
+  sfi_glue_gc_free_now (name, SfiGlueGcFreeFunc (g_free));
   return rvalue;
 }
 
@@ -479,7 +479,7 @@ decoder_iface_children (SfiGlueDecoder *decoder,
 {
   const gchar **names = sfi_glue_iface_children (sfi_seq_get_string (seq, 1));
   GValue *rvalue = seq_value_from_strv (names);
-  sfi_glue_gc_free_now (names, g_strfreev);
+  sfi_glue_gc_free_now (names, SfiGlueGcFreeFunc (g_strfreev));
   return rvalue;
 }
 
@@ -509,7 +509,7 @@ decoder_exec_proc (SfiGlueDecoder *decoder,
   GValue *pvalue = sfi_glue_call_seq (sfi_seq_get_string (seq, 1),
 				      sfi_seq_get_seq (seq, 2));
   if (pvalue)
-    sfi_glue_gc_remove (pvalue, sfi_value_free);
+    sfi_glue_gc_remove (pvalue, SfiGlueGcFreeFunc (sfi_value_free));
   return pvalue;
 }
 
@@ -536,7 +536,7 @@ decoder_proxy_iface (SfiGlueDecoder *decoder,
   const gchar *name = sfi_glue_proxy_iface (sfi_seq_get_proxy (seq, 1));
   GValue *rvalue = NULL;
   rvalue = sfi_value_string (name);
-  sfi_glue_gc_free_now ((char*) name, g_free);
+  sfi_glue_gc_free_now ((char*) name, SfiGlueGcFreeFunc (g_free));
   return rvalue;
 }
 
@@ -596,7 +596,7 @@ decoder_proxy_list_properties (SfiGlueDecoder *decoder,
 							sfi_seq_get_string (seq, 3),
 							NULL);
   GValue *rvalue = seq_value_from_strv (names);
-  sfi_glue_gc_free_now (names, g_strfreev);
+  sfi_glue_gc_free_now (names, SfiGlueGcFreeFunc (g_strfreev));
   return rvalue;
 }
 
@@ -629,7 +629,7 @@ decoder_proxy_get_pspec (SfiGlueDecoder *decoder,
   GValue *rvalue = NULL;
   rvalue = sfi_value_pspec (pspec);
   if (pspec)
-    sfi_glue_gc_free_now (pspec, g_param_spec_unref);
+    sfi_glue_gc_free_now (pspec, SfiGlueGcFreeFunc (g_param_spec_unref));
   return rvalue;
 }
 
@@ -638,15 +638,13 @@ encoder_proxy_get_pspec_scategory (SfiGlueContext *context,
 				   SfiProxy        proxy,
 				   const gchar    *prop_name)
 {
-  SfiSCategory scat;
   SfiSeq *seq = sfi_seq_new ();
   sfi_seq_append_int (seq, SFI_GLUE_CODEC_PROXY_GET_PSPEC_SCATEGORY);
   sfi_seq_append_proxy (seq, proxy);
   sfi_seq_append_string (seq, prop_name);
-  
+
   seq = encoder_exec_round_trip (context, seq);
-  
-  scat = sfi_seq_get_int (seq, 0);
+  SfiSCategory scat = (SfiSCategory) sfi_seq_get_int (seq, 0);
   sfi_seq_unref (seq);
   return scat;
 }
@@ -711,7 +709,7 @@ decoder_proxy_get_property (SfiGlueDecoder *decoder,
   GValue *pvalue = (GValue*) sfi_glue_proxy_get_property (sfi_seq_get_proxy (seq, 1),
 							  sfi_seq_get_string (seq, 2));
   if (pvalue)
-    sfi_glue_gc_remove (pvalue, sfi_value_free);
+    sfi_glue_gc_remove (pvalue, SfiGlueGcFreeFunc (sfi_value_free));
   return pvalue;
 }
 
@@ -829,7 +827,7 @@ decoder_client_msg (SfiGlueDecoder *decoder,
     {
       rvalue = sfi_glue_client_msg (msg, cvalue);
       if (rvalue)
-	sfi_glue_gc_remove (rvalue, sfi_value_free);
+	sfi_glue_gc_remove (rvalue, SfiGlueGcFreeFunc (sfi_value_free));
     }
   
   return rvalue;
@@ -867,14 +865,13 @@ static void
 encoder_destroy (SfiGlueContext *context)
 {
   SfiGlueEncoder *encoder = (SfiGlueEncoder*) context;
-  SfiSeq *seq;
   sfi_com_port_unref (encoder->port);
   g_value_unset (&encoder->svalue);
-  seq = sfi_ring_pop_head (&encoder->events);
+  SfiSeq *seq = (SfiSeq*) sfi_ring_pop_head (&encoder->events);
   while (seq)
     {
       sfi_seq_unref (seq);
-      seq = sfi_ring_pop_head (&encoder->events);
+      seq = (SfiSeq*) sfi_ring_pop_head (&encoder->events);
     }
   g_free (encoder);
 }
@@ -972,13 +969,10 @@ sfi_glue_decoder_add_handler (SfiGlueDecoder         *decoder,
 			      SfiGlueDecoderClientMsg func,
 			      gpointer                user_data)
 {
-  guint i;
-  
   g_return_if_fail (decoder != NULL);
   g_return_if_fail (func != NULL);
-  
-  i = decoder->n_chandler++;
-  decoder->chandler = g_realloc (decoder->chandler, sizeof (decoder->chandler[0]) * decoder->n_chandler);
+  uint i = decoder->n_chandler++;
+  decoder->chandler = (SfiGlueDecoder::ClientMsg*) g_realloc (decoder->chandler, sizeof (decoder->chandler[0]) * decoder->n_chandler);
   decoder->chandler[i].client_msg = func;
   decoder->chandler[i].user_data = user_data;
 }
@@ -1033,7 +1027,7 @@ sfi_glue_decoder_dispatch (SfiGlueDecoder *decoder)
   /* send away queued signals */
   sfi_com_port_send_bulk (decoder->port, decoder->outgoing);
   while (decoder->outgoing)
-    sfi_value_free (sfi_ring_pop_head (&decoder->outgoing));
+    sfi_value_free ((GValue*) sfi_ring_pop_head (&decoder->outgoing));
   
   /* FIXME: catch messages */
   
@@ -1079,7 +1073,7 @@ sfi_glue_decoder_dispatch (SfiGlueDecoder *decoder)
   /* send away new signals and result */
   sfi_com_port_send_bulk (decoder->port, decoder->outgoing);
   while (decoder->outgoing)
-    sfi_value_free (sfi_ring_pop_head (&decoder->outgoing));
+    sfi_value_free ((GValue*) sfi_ring_pop_head (&decoder->outgoing));
   sfi_com_port_process_io (decoder->port);
   
   sfi_glue_gc_run ();
@@ -1113,7 +1107,7 @@ sfi_glue_decoder_destroy (SfiGlueDecoder *decoder)
   
   sfi_com_port_unref (decoder->port);
   for (ring = decoder->outgoing; ring; ring = sfi_ring_walk (ring, decoder->outgoing))
-    sfi_value_free (ring->data);
+    sfi_value_free ((GValue*) ring->data);
   sfi_ring_free (decoder->outgoing);
   if (decoder->incoming)
     sfi_value_free (decoder->incoming);

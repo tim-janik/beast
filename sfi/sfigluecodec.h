@@ -59,7 +59,7 @@ struct _SfiGlueDecoder
   GValue	 *incoming;
   SfiRing	 *outgoing;
   guint           n_chandler;
-  struct {
+  struct ClientMsg {
     SfiGlueDecoderClientMsg client_msg;
     gpointer                user_data;
   }		 *chandler;
