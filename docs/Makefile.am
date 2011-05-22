@@ -76,7 +76,6 @@ AGINGRULE = $(shell test -e $(1) && find $(1) -type f -mmin -"$(strip $(2))" | g
 
 
 EXTRA_DIST += $(strip		\
-	coding-style.doxi	\
 	bse-categories.txt	\
 	interpolation.txt	\
 	ChangeLog.svn		\
