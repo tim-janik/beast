@@ -317,7 +317,7 @@ bsequery_SOURCES = bsequery.c cxxdummy.cc
 bsequery_LDADD   = $(progs_LDADD)
 
 noinst_PROGRAMS   += bseautodoc
-bseautodoc_SOURCES = bseautodoc.c cxxdummy.cc
+bseautodoc_SOURCES = bseautodoc.cc
 bseautodoc_LDADD   = $(progs_LDADD)
 
 noinst_PROGRAMS += bseinfo

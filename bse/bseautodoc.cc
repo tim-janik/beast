@@ -85,7 +85,7 @@ static const gchar*
 lookup_boxed_tag (GParamSpec *pspec)
 {
   if (pspec)
-    return g_param_spec_get_qdata (pspec, boxed_type_tag);
+    return (const gchar*) g_param_spec_get_qdata (pspec, boxed_type_tag);
   return NULL;
 }
 
@@ -236,7 +236,7 @@ show_procdoc (void)
   for (i = 0; i < cseq->n_cats; i++)
     {
       GType type = g_type_from_name (cseq->cats[i]->type);
-      BseProcedureClass *class = g_type_class_ref (type);
+      BseProcedureClass *pclass = (BseProcedureClass*) g_type_class_ref (type);
       const gchar *blurb = bse_type_get_blurb (type);
       gchar *cname = g_type_name_to_cname (cseq->cats[i]->type);
       gchar *sname = g_type_name_to_sname (cseq->cats[i]->type);
@@ -246,20 +246,20 @@ show_procdoc (void)
       g_print ("  'name': '%s',\n", cname);
       g_print ("  'aliases': [ ('%s', 'scheme'), ], # aliases\n", sname);
       g_print ("  'args': [ # input arguments\n");
-      for (j = 0; j < class->n_in_pspecs; j++)
+      for (j = 0; j < pclass->n_in_pspecs; j++)
 	{
-          GParamSpec *pspec = G_PARAM_SPEC (class->in_pspecs[j]);
+          GParamSpec *pspec = G_PARAM_SPEC (pclass->in_pspecs[j]);
           print_pspec (pspec, "    ", "");
         }
       g_print ("  ],\n");
 
-      if (class->n_out_pspecs == 1)
+      if (pclass->n_out_pspecs == 1)
         {
           g_print ("  'return': \n");
-          GParamSpec *pspec = G_PARAM_SPEC (class->out_pspecs[0]);
+          GParamSpec *pspec = G_PARAM_SPEC (pclass->out_pspecs[0]);
           print_pspec (pspec, "    ", "");
         }
-      else if (class->n_out_pspecs > 1)
+      else if (pclass->n_out_pspecs > 1)
         g_print ("  'return': ('RETURNS', 'MultiReturn', '', '', ('%s', '', 0), ),\n", _("This procedure has multiple return values."));
 
       if (blurb)
@@ -283,7 +283,7 @@ show_procdoc (void)
         g_print ("  'location': ('procedures/%s', 0),\n", cseq->cats[i]->type);
       
       g_print ("},\n");
-      g_type_class_unref (class);
+      g_type_class_unref (pclass);
       g_free (cname);
       g_free (sname);
     }
@@ -330,14 +330,14 @@ show_structdoc (void)
           
 	  if (element)
 	    {
-	      GParamSpec *pspec = pspecs->data;
+	      GParamSpec *pspec = (GParamSpec*) pspecs->data;
 	      gchar *cname = g_type_name_to_cname (pspec->name);
               g_print ("  ('n_%s', 'guint', '', '', (%s, '', 0), ),\n", cname, qescape (_("Number of elements (C specific)")));
               g_free (cname);
 	    }
 	  for (ring = pspecs; ring; ring = sfi_ring_walk (ring, pspecs))
 	    {
-	      GParamSpec *pspec = ring->data;
+	      GParamSpec *pspec = (GParamSpec*) ring->data;
               print_pspec (pspec, "    ", element ? "*" : "");
 	    }
           g_print ("  ],\n");
@@ -448,7 +448,7 @@ showdoc_print_type (GObjectClass *oclass,
     {
       GParamSpec **pspecs;
       btype = g_type_next_base (type, btype);
-      pspecs = g_object_class_list_properties (g_type_class_peek (btype), NULL);
+      pspecs = g_object_class_list_properties ((GObjectClass*) g_type_class_peek (btype), NULL);
       /* show GUI properties */
       if (type == btype || FALSE) /* always show all properties? */
         for (j = 0; pspecs[j]; j++)
@@ -489,7 +489,7 @@ showdoc_print_type (GObjectClass *oclass,
       g_type_is_a (type, BSE_TYPE_SOURCE) &&
       !strequals ("BseServer", g_type_name (type)))
     {
-      BseSource *source = g_object_new (type, NULL);
+      BseSource *source = (BseSource*) g_object_new (type, NULL);
       for (j = 0; j < BSE_SOURCE_N_ICHANNELS (source); j++)
         {
           g_print ("  {\n");
@@ -524,7 +524,7 @@ showdoc_print_type (GObjectClass *oclass,
 static void
 showdoc_descendants (GType type)
 {
-  GObjectClass *oclass = g_type_class_ref (type);
+  GObjectClass *oclass = (GObjectClass*) g_type_class_ref (type);
   showdoc_print_type (oclass, TRUE);
   GType *child, *children = g_type_children (type, NULL);
   for (child = children; *child; child++)
