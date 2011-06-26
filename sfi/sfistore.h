@@ -140,8 +140,8 @@ void            sfi_rstore_quick_scan         (SfiRStore      *rstore,
 
 /* --- convenience --- */
 #define sfi_scanner_parse_or_return(scanner, token)  G_STMT_START{ \
-  guint _t = (token); \
-  if (g_scanner_get_next_token (scanner) != _t) \
+  SfiTokenType _t = (SfiTokenType) (token); \
+  if ((SfiTokenType) g_scanner_get_next_token (scanner) != _t) \
     return _t; \
 }G_STMT_END
 #define sfi_scanner_peek_or_return(scanner, token)   G_STMT_START{ \
