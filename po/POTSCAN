@@ -62,8 +62,8 @@ beast-gtk/gxk/gxkparam-toggle.c
 beast-gtk/gxk/gxksimplelabel.c
 birnet/birnetmsg.cc
 birnet/birnetutils.cc
-bse/bseautodoc.c
-bse/bsebiquadfilter.c
+bse/bseautodoc.cc
+bse/bsebiquadfilter.cc
 bse/bsebus.c
 bse/bsebusmodule.idl
 bse/bsebus.proc
