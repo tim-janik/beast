@@ -39,8 +39,8 @@ typedef struct _UncrossNode UncrossNode;
 
 
 /* --- prototypes --- */
-static void         bse_container_class_init            (BseContainerClass      *class);
-static void         bse_container_class_finalize        (BseContainerClass      *class);
+static void         bse_container_class_init            (BseContainerClass      *klass);
+static void         bse_container_class_finalize        (BseContainerClass      *klass);
 static void         bse_container_init                  (BseContainer           *container);
 static void         bse_container_dispose               (GObject                *object);
 static void         bse_container_finalize              (GObject                *object);
@@ -104,18 +104,18 @@ BSE_BUILTIN_TYPE (BseContainer)
 }
 
 static void
-bse_container_class_init (BseContainerClass *class)
+bse_container_class_init (BseContainerClass *klass)
 {
   GObjectClass *gobject_class;
   BseObjectClass *object_class;
   BseItemClass *item_class;
   BseSourceClass *source_class;
   
-  parent_class = g_type_class_peek_parent (class);
-  gobject_class = G_OBJECT_CLASS (class);
-  object_class = BSE_OBJECT_CLASS (class);
-  item_class = BSE_ITEM_CLASS (class);
-  source_class = BSE_SOURCE_CLASS (class);
+  parent_class = (GTypeClass*) g_type_class_peek_parent (klass);
+  gobject_class = G_OBJECT_CLASS (klass);
+  object_class = BSE_OBJECT_CLASS (klass);
+  item_class = BSE_ITEM_CLASS (klass);
+  source_class = BSE_SOURCE_CLASS (klass);
   
   quark_cross_links = g_quark_from_static_string ("BseContainerCrossLinks");
   
@@ -128,13 +128,13 @@ bse_container_class_init (BseContainerClass *class)
   source_class->context_dismiss = bse_container_context_dismiss;
   source_class->reset = bse_container_reset;
   
-  class->add_item = bse_container_do_add_item;
-  class->remove_item = bse_container_do_remove_item;
-  class->forall_items = NULL;
-  class->check_restore = container_default_check_restore;
-  class->retrieve_child = bse_container_real_retrieve_child;
-  class->context_children = container_context_children;
-  class->release_children = container_release_children;
+  klass->add_item = bse_container_do_add_item;
+  klass->remove_item = bse_container_do_remove_item;
+  klass->forall_items = NULL;
+  klass->check_restore = container_default_check_restore;
+  klass->retrieve_child = bse_container_real_retrieve_child;
+  klass->context_children = container_context_children;
+  klass->release_children = container_release_children;
   
   container_signals[SIGNAL_ITEM_ADDED] = bse_object_class_add_signal (object_class, "item_added",
                                                                       G_TYPE_NONE, 1, BSE_TYPE_ITEM);
@@ -144,7 +144,7 @@ bse_container_class_init (BseContainerClass *class)
 }
 
 static void
-bse_container_class_finalize (BseContainerClass *class)
+bse_container_class_finalize (BseContainerClass *klass)
 {
 }
 
@@ -170,7 +170,7 @@ bse_container_dispose (GObject *gobject)
       BSE_CONTAINER_GET_CLASS (container)->release_children (container);
       
       /* remove any existing cross-links (with notification) */
-      g_object_set_qdata (container, quark_cross_links, NULL);
+      g_object_set_qdata (G_OBJECT (container), quark_cross_links, NULL);
     }
   
   /* chain parent class' dispose handler */
@@ -257,7 +257,7 @@ bse_container_add_item (BseContainer *container,
       guint i = 0, l;
       
       if (!uname)
-        uname = g_object_get_data (container, "BseContainer-base-name");
+        uname = (char*) g_object_get_data (G_OBJECT (container), "BseContainer-base-name");
       if (!uname)
         {
           uname = BSE_OBJECT_TYPE_NAME (item);
@@ -278,7 +278,7 @@ bse_container_add_item (BseContainer *container,
       g_object_set (item, "uname", buffer, NULL); /* no undo */
       g_free (buffer);
     }
-  g_object_set_data (container, "BseContainer-base-name", NULL);
+  g_object_set_data (G_OBJECT (container), "BseContainer-base-name", NULL);
 
   BSE_CONTAINER_GET_CLASS (container)->add_item (container, item);
   if (item->parent != NULL)
@@ -306,13 +306,13 @@ bse_container_new_child_bname (BseContainer *container,
   g_return_val_if_fail (g_type_is_a (child_type, BSE_TYPE_ITEM), NULL);
   g_return_val_if_fail (!G_TYPE_IS_ABSTRACT (child_type), NULL);
 
-  g_object_set_data_full (container, "BseContainer-base-name", g_strdup (base_name), g_free);
+  g_object_set_data_full (G_OBJECT (container), "BseContainer-base-name", g_strdup (base_name), g_free);
   va_start (var_args, first_param_name);
   child = g_object_new_valist (child_type, first_param_name, var_args);
   va_end (var_args);
   if (base_name)
     g_object_set (child, "uname", NULL, NULL); /* no undo */
-  bse_container_add_item (container, child);
+  bse_container_add_item (container, BSE_ITEM (child));
   g_object_unref (child);
   
   return child;
@@ -411,7 +411,7 @@ static gboolean
 list_items (BseItem *item,
             gpointer data)
 {
-  BseItemSeq *iseq = data;
+  BseItemSeq *iseq = (BseItemSeq*) data;
   
   bse_item_seq_append (iseq, item);
   
@@ -440,7 +440,7 @@ static gboolean
 count_item_seqid (BseItem *item,
                   gpointer data_p)
 {
-  gpointer *data = data_p;
+  void **data = (void**) data_p;
   
   if (G_OBJECT_TYPE (item) == (GType) data[2])
     data[0] = GUINT_TO_POINTER (GPOINTER_TO_UINT (data[0]) + 1);
@@ -484,7 +484,7 @@ static gboolean
 find_nth_item (BseItem *item,
                gpointer data_p)
 {
-  gpointer *data = data_p;
+  void **data = (void**) data_p;
   
   if (G_OBJECT_TYPE (item) == (GType) data[2])
     {
@@ -519,7 +519,7 @@ bse_container_get_item (BseContainer *container,
       
       BSE_CONTAINER_GET_CLASS (container)->forall_items (container, find_nth_item, data);
       
-      return data[1];
+      return BSE_ITEM (data[1]);
     }
   else
     return NULL;
@@ -529,7 +529,7 @@ static gboolean
 store_forall (BseItem *item,
               gpointer data)
 {
-  BseStorage *storage = data;
+  BseStorage *storage = (BseStorage*) data;
   if (!BSE_ITEM_INTERNAL (item) &&
       bse_item_needs_storage (item, storage))
     bse_storage_store_child (storage, item);
@@ -570,8 +570,8 @@ static gboolean
 find_unamed_item (BseItem *item,
                   gpointer data_p)
 {
-  gpointer *data = data_p;
-  gchar *uname = data[1];
+  void **data = (void**) data_p;
+  gchar *uname = (char*) data[1];
   
   if (bse_string_equals (BSE_OBJECT_UNAME (item), uname))
     {
@@ -595,7 +595,7 @@ bse_container_lookup_item (BseContainer *container,
   data[1] = (gpointer) uname;
   bse_container_forall_items (container, find_unamed_item, data);
   
-  return data[0];
+  return BSE_ITEM (data[0]);
 }
 
 static BseItem*
@@ -603,9 +603,9 @@ bse_container_real_retrieve_child (BseContainer *container,
                                    GType         child_type,
                                    const gchar  *uname)
 {
-  return bse_container_new_child (container, child_type,
-                                  uname ? "uname" : NULL, uname,
-                                  NULL);
+  return (BseItem*) bse_container_new_child (container, child_type,
+                                             uname ? "uname" : NULL, uname,
+                                             NULL);
 }
 
 BseItem*
@@ -654,7 +654,7 @@ BseItem*
 bse_container_resolve_upath (BseContainer *container,
                              const gchar  *upath)
 {
-  gchar *next_uname;
+  const gchar *next_uname;
   
   g_return_val_if_fail (BSE_IS_CONTAINER (container), NULL);
   g_return_val_if_fail (upath != NULL, NULL);
@@ -695,13 +695,13 @@ bse_container_make_upath (BseContainer *container,
   for (; item != self_item; item = item->parent)
     {
       ulist = g_slist_prepend (ulist, BSE_OBJECT_UNAME (item));
-      n += strlen (ulist->data) + 1;
+      n += strlen ((char*) ulist->data) + 1;
     }
   path = g_new (gchar, n);
   p = path;
   for (slist = ulist; slist; slist = slist->next)
     {
-      strcpy (p, slist->data);
+      strcpy (p, (char*) slist->data);
       p += strlen (p);
       if (slist->next)
         *p++ = ':';
@@ -789,7 +789,7 @@ uncross_link_R (BseContainerCrossLinks *clinks,
 static void
 destroy_clinks (gpointer data)
 {
-  BseContainerCrossLinks *clinks = data;
+  BseContainerCrossLinks *clinks = (BseContainerCrossLinks*) data;
   
   if (clinks->n_cross_links)
     container_queue_cross_changes (clinks->container);
@@ -803,14 +803,14 @@ static inline void
 container_set_clinks (gpointer                container,
                       BseContainerCrossLinks *clinks)
 {
-  g_object_steal_qdata (container, quark_cross_links);
-  g_object_set_qdata_full (container, quark_cross_links, clinks, destroy_clinks);
+  g_object_steal_qdata (G_OBJECT (container), quark_cross_links);
+  g_object_set_qdata_full (G_OBJECT (container), quark_cross_links, clinks, destroy_clinks);
 }
 
 static inline BseContainerCrossLinks*
 container_get_clinks (gpointer container)
 {
-  return g_object_get_qdata (container, quark_cross_links);
+  return (BseContainerCrossLinks*) g_object_get_qdata (G_OBJECT (container), quark_cross_links);
 }
 
 void
@@ -837,7 +837,7 @@ _bse_container_cross_link (BseContainer    *container,
   if (!clinks)
     {
       i = 0;
-      clinks = g_realloc (clinks, sizeof (BseContainerCrossLinks));
+      clinks = (BseContainerCrossLinks*) g_realloc (clinks, sizeof (BseContainerCrossLinks));
       clinks->n_cross_links = i + 1;
       clinks->container = container;
       container_set_clinks (container, clinks);
@@ -847,7 +847,7 @@ _bse_container_cross_link (BseContainer    *container,
       BseContainerCrossLinks *old_loc = clinks;
       
       i = clinks->n_cross_links++;
-      clinks = g_realloc (clinks, sizeof (BseContainerCrossLinks) + i * sizeof (clinks->cross_links[0]));
+      clinks = (BseContainerCrossLinks*) g_realloc (clinks, sizeof (BseContainerCrossLinks) + i * sizeof (clinks->cross_links[0]));
       if (old_loc != clinks)
         container_set_clinks (container, clinks);
     }
@@ -972,7 +972,7 @@ static inline gboolean
 item_check_branch (BseItem *item,
                    gpointer container)
 {
-  BseItem *ancestor = container;
+  BseItem *ancestor = BSE_ITEM (container);
   
   do
     {
@@ -1096,7 +1096,7 @@ static gboolean
 forall_slist_prepend (BseItem *item,
                       gpointer data)
 {
-  GSList **slist_p = data;
+  GSList **slist_p = (GSList**) data;
   
   if (BSE_IS_SOURCE (item))
     *slist_p = g_slist_prepend (*slist_p, item);
@@ -1132,7 +1132,7 @@ bse_container_context_create (BseSource *source,
       GSList *node, *slist = BSE_CONTAINER_GET_CLASS (container)->context_children (container);
       
       for (node = slist; node; node = node->next)
-        bse_source_create_context (node->data, context_handle, trans);
+        bse_source_create_context (BSE_SOURCE (node->data), context_handle, trans);
       g_slist_free (slist);
     }
 }
@@ -1141,7 +1141,7 @@ static gboolean
 forall_context_connect (BseItem *item,
                         gpointer _data)
 {
-  gpointer *data = _data;
+  void **data = (void**) _data;
   guint cid = GPOINTER_TO_UINT (data[0]);
   
   if (BSE_IS_SOURCE (item))
@@ -1151,7 +1151,7 @@ forall_context_connect (BseItem *item,
       g_return_val_if_fail (BSE_SOURCE_PREPARED (item), TRUE);
       
       if (bse_source_has_context (source, cid))
-        bse_source_connect_context (source, cid, data[1]);
+        bse_source_connect_context (source, cid, (BseTrans*) data[1]);
     }
   
   return TRUE;
@@ -1182,7 +1182,7 @@ static gboolean
 forall_context_dismiss (BseItem *item,
                         gpointer _data)
 {
-  gpointer *data = _data;
+  void **data = (void**) _data;
   guint cid = GPOINTER_TO_UINT (data[0]);
   
   if (BSE_IS_SOURCE (item))
@@ -1192,7 +1192,7 @@ forall_context_dismiss (BseItem *item,
       g_return_val_if_fail (BSE_SOURCE_PREPARED (item), TRUE);
       
       if (bse_source_has_context (source, cid))
-        bse_source_dismiss_context (source, cid, data[1]);
+        bse_source_dismiss_context (source, cid, (BseTrans*) data[1]);
     }
   
   return TRUE;
@@ -1254,10 +1254,10 @@ static void
 undo_remove_child (BseUndoStep  *ustep,
                    BseUndoStack *ustack)
 {
-  BseItem *child = g_object_new (ustep->data[0].v_ulong,
-                                 "uname", ustep->data[1].v_pointer,
-                                 NULL);
-  bse_container_add_item (bse_undo_pointer_unpack (ustep->data[2].v_pointer, ustack), child);
+  BseItem *child = (BseItem*) g_object_new (ustep->data[0].v_ulong,
+                                            "uname", ustep->data[1].v_pointer,
+                                            NULL);
+  bse_container_add_item ((BseContainer*) bse_undo_pointer_unpack ((char*) ustep->data[2].v_pointer, ustack), child);
   g_object_unref (child);
 }
 
@@ -1323,8 +1323,8 @@ bse_container_remove_backedup (BseContainer *container,
   BseProject *deactivate_project = NULL;
   if (!BSE_UNDO_STACK_VOID (ustack) && BSE_IS_SOURCE (child) && BSE_SOURCE_PREPARED (child))
     {
-      BseSourceClass *class = BSE_SOURCE_GET_CLASS (child);
-      if (class->automation_properties)
+      BseSourceClass *klass = BSE_SOURCE_GET_CLASS (child);
+      if (klass->automation_properties)
         {
           /* automation properties can't be setup on prepared children */
           deactivate_project = bse_item_get_project (child);
@@ -1347,9 +1347,9 @@ static gboolean
 container_debug_tree_forall (BseItem *item,
                              gpointer data_p)
 {
-  gpointer *data = data_p;
-  BseContainer *container = data[0];
-  FILE *file = data[1];
+  void **data = (void**) data_p;
+  BseContainer *container = BSE_CONTAINER (data[0]);
+  FILE *file = (FILE*) data[1];
 
   fprintf (file, "  %s (%s)\n", bse_container_make_upath (container, item), bse_object_debug_name (item));
   if (BSE_IS_CONTAINER (item))
