@@ -160,7 +160,7 @@ centry_new (const gchar *caller,
 	g_trash_stack_push (&free_entries, centry++);
     }
   else
-    centry = g_trash_stack_pop (&free_entries);
+    centry = (CEntry*) g_trash_stack_pop (&free_entries);
   
   centry->next = cat_entries;
   cat_entries = centry;
@@ -226,8 +226,8 @@ static gint
 centries_strorder (gconstpointer a,
 		   gconstpointer b)
 {
-  const CEntry *e1 = a;
-  const CEntry *e2 = b;
+  const CEntry *e1 = (const CEntry*) a;
+  const CEntry *e2 = (const CEntry*) b;
   gchar *c1 = g_quark_to_string (e1->category);
   gchar *c2 = g_quark_to_string (e2->category);
   
@@ -249,7 +249,7 @@ cats_sort (void)
   last = NULL;
   for (slist = clist; slist; slist = slist->next)
     {
-      centry = slist->data;
+      centry = (CEntry*) slist->data;
       centry->next = last;
       last = centry;
     }
@@ -346,7 +346,7 @@ bse_category_from_id (guint id)
 
   g_return_val_if_fail (id > 0, NULL);
 
-  centry = sfi_ustore_lookup (category_ustore, id);
+  centry = (CEntry*) sfi_ustore_lookup (category_ustore, id);
   if (centry)
     {
       BseCategory *cat = bse_category_new ();
