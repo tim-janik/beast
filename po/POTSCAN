@@ -64,7 +64,7 @@ birnet/birnetmsg.cc
 birnet/birnetutils.cc
 bse/bseautodoc.cc
 bse/bsebiquadfilter.cc
-bse/bsebus.c
+bse/bsebus.cc
 bse/bsebusmodule.idl
 bse/bsebus.proc
 bse/bseconstant.c
