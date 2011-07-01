@@ -67,7 +67,7 @@ bse/bsebiquadfilter.cc
 bse/bsebus.cc
 bse/bsebusmodule.idl
 bse/bsebus.proc
-bse/bseconstant.c
+bse/bseconstant.cc
 bse/bsecontainer.proc
 bse/bsecore.idl
 bse/bsedevice.c

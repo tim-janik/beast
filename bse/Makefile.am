@@ -69,7 +69,7 @@ bse_sources = $(strip \
 	bseengine.c		bseenginemaster.c	bseengineschedule.c		bseengineutils.c \
 	bsebus.cc		bsecategories.cc 	\
 	bsefilter.cc   		bsebiquadfilter.cc	bsefilter-ellf.c	\
-	bseconstant.c		bseconstvalues.c	bsecontainer.c			bsecontextmerger.c \
+	bseconstant.cc		bseconstvalues.c	bsecontainer.c			bsecontextmerger.c \
 	bsedatapocket.c		bseeditablesample.c	bseenums.c			bsegconfig.c \
 	bseglobals.c		bseglue.c		bseitem.c			bsejanitor.c \
 	bsemain.cc		bsemath.c		bsemathsignal.c			bseladspa.cc \
