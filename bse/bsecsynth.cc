@@ -25,15 +25,15 @@ enum
 
 
 /* --- prototypes --- */
-static void      bse_csynth_class_init             (BseCSynthClass *class);
+static void      bse_csynth_class_init             (BseCSynthClass *klass);
 static void      bse_csynth_init                   (BseCSynth      *self);
 static void      bse_csynth_finalize               (GObject        *object);
 static void      bse_csynth_set_property           (GObject        *object,
-                                                    guint           param_id,
+                                                    unsigned int    param_id,
                                                     const GValue   *value,
                                                     GParamSpec     *pspec);
 static void      bse_csynth_get_property           (GObject        *object,
-                                                    guint           param_id,
+                                                    unsigned int    param_id,
                                                     GValue         *value,
                                                     GParamSpec     *pspec);
 
@@ -60,11 +60,11 @@ BSE_BUILTIN_TYPE (BseCSynth)
 }
 
 static void
-bse_csynth_class_init (BseCSynthClass *class)
+bse_csynth_class_init (BseCSynthClass *klass)
 {
-  GObjectClass *gobject_class = G_OBJECT_CLASS (class);
+  GObjectClass *gobject_class = G_OBJECT_CLASS (klass);
   
-  parent_class = g_type_class_peek_parent (class);
+  parent_class = (GTypeClass*) g_type_class_peek_parent (klass);
   
   gobject_class->set_property = bse_csynth_set_property;
   gobject_class->get_property = bse_csynth_get_property;
@@ -88,7 +88,7 @@ bse_csynth_finalize (GObject *object)
 
 static void
 bse_csynth_set_property (GObject      *object,
-                         guint         param_id,
+                         unsigned int  param_id,
                          const GValue *value,
                          GParamSpec   *pspec)
 {
@@ -103,10 +103,10 @@ bse_csynth_set_property (GObject      *object,
 }
 
 static void
-bse_csynth_get_property (GObject    *object,
-                         guint       param_id,
-                         GValue     *value,
-                         GParamSpec *pspec)
+bse_csynth_get_property (GObject     *object,
+                         unsigned int param_id,
+                         GValue      *value,
+                         GParamSpec  *pspec)
 {
   BseCSynth *self = BSE_CSYNTH (object);
   

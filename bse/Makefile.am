@@ -84,7 +84,7 @@ bse_sources = $(strip \
 	bseinstrumentoutput.c	bsesubiport.c		bseinstrumentinput.c		bsesuboport.c \
 	bsesubsynth.c		bsesuper.c		bsetrack.c			bsetype.c \
 	bseutils.c		bsemidivoice.c		bsewave.c			bsewaveosc.c \
-	bsecsynth.c		bsewaverepo.c		bseladspamodule.c		bsepcmwriter.c \
+	bsecsynth.cc		bsewaverepo.c		bseladspamodule.c		bsepcmwriter.c \
 	bsecompat.cc		bseundostack.c		bsemidiinput.c			bsemididecoder.c \
 	bsenote.cc		bsemidifile.c		bseblockutils.cc		\
 	bsecxxvalue.cc		bsecxxutils.cc		bsecxxbase.cc			bsecxxclosure.cc \
