@@ -145,8 +145,8 @@ void            sfi_rstore_quick_scan         (SfiRStore      *rstore,
     return _t; \
 }G_STMT_END
 #define sfi_scanner_peek_or_return(scanner, token)   G_STMT_START{ \
-  GScanner *__s = (scanner); guint _t = (token); \
-  if (g_scanner_peek_next_token (__s) != _t) { \
+  GScanner *__s = (scanner); SfiTokenType _t = (SfiTokenType) (token); \
+  if ((SfiTokenType) g_scanner_peek_next_token (__s) != _t) { \
     g_scanner_get_next_token (__s); /* advance position for error-handler */ \
     return _t; \
   } \
