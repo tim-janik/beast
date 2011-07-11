@@ -25,17 +25,17 @@
 
 /* --- prototypes --- */
 static void	 bse_context_merger_init		(BseContextMerger	 *self);
-static void	 bse_context_merger_class_init		(BseContextMergerClass	 *class);
+static void	 bse_context_merger_class_init		(BseContextMergerClass	 *klass);
 static void	 bse_context_merger_context_create	(BseSource		 *source,
-							 guint			  context_handle,
+							 unsigned int		  context_handle,
 							 BseTrans		 *trans);
 static void	 bse_context_merger_context_dismiss	(BseSource		 *source,
-							 guint			  context_handle,
+							 unsigned int		  context_handle,
 							 BseTrans		 *trans);
 
 
 /* --- variables --- */
-static gpointer parent_class = NULL;
+static void *parent_class = NULL;
 
 
 /* --- functions --- */
@@ -61,19 +61,19 @@ BSE_BUILTIN_TYPE (BseContextMerger)
 }
 
 static void
-bse_context_merger_class_init (BseContextMergerClass *class)
+bse_context_merger_class_init (BseContextMergerClass *klass)
 {
-  BseSourceClass *source_class = BSE_SOURCE_CLASS (class);
-  guint channel_id, i;
+  BseSourceClass *source_class = BSE_SOURCE_CLASS (klass);
+  unsigned int channel_id, i;
   
-  parent_class = g_type_class_peek_parent (class);
+  parent_class = g_type_class_peek_parent (klass);
   
   source_class->context_create = bse_context_merger_context_create;
   source_class->context_dismiss = bse_context_merger_context_dismiss;
   
   for (i = 0; i < BSE_CONTEXT_MERGER_N_IOPORTS; i++)
     {
-      gchar *ident;
+      char *ident;
       
       ident = g_strdup_printf ("input-%u", i + 1);
       channel_id = bse_source_class_add_jchannel (source_class, ident, NULL, NULL);
@@ -95,7 +95,7 @@ bse_context_merger_init (BseContextMerger *self)
 
 void
 bse_context_merger_set_merge_context (BseContextMerger *self,
-				      guint             merge_context)
+				      unsigned int      merge_context)
 {
   g_return_if_fail (BSE_CONTEXT_MERGER (self));
   
@@ -111,29 +111,29 @@ bse_context_merger_set_merge_context (BseContextMerger *self,
 }
 
 typedef struct {
-  guint real_context;
-  guint ref_count;
+  unsigned int real_context;
+  unsigned int ref_count;
 } ContextModuleData;
 
 static void
-context_merger_process (BseModule *module,
-			guint      n_values)
+context_merger_process (BseModule    *module,
+			unsigned int  n_values)
 {
-  guint i;
+  unsigned int i;
   
   for (i = 0; i < BSE_CONTEXT_MERGER_N_IOPORTS; i++)
     if (BSE_MODULE_OSTREAM (module, i).connected)
       {
-	guint j, n_cons = BSE_MODULE_JSTREAM (module, i).n_connections;
+	unsigned int j, n_cons = BSE_MODULE_JSTREAM (module, i).n_connections;
 	
 	if (!n_cons)
 	  module->ostreams[i].values = bse_engine_const_values (0);
 	else if (n_cons == 1)
-	  module->ostreams[i].values = (gfloat*) BSE_MODULE_JBUFFER (module, i, 0);
+	  module->ostreams[i].values = (float*) BSE_MODULE_JBUFFER (module, i, 0);
 	else
 	  {
-	    gfloat *sout = BSE_MODULE_OBUFFER (module, i);
-	    const gfloat *sin = BSE_MODULE_JBUFFER (module, i, 0);
+	    float *sout = BSE_MODULE_OBUFFER (module, i);
+	    const float *sin = BSE_MODULE_JBUFFER (module, i, 0);
             bse_block_copy_float (n_values, sout, sin);
 	    for (j = 1; j < n_cons; j++)
 	      {
@@ -145,9 +145,9 @@ context_merger_process (BseModule *module,
 }
 
 static void
-bse_context_merger_context_create (BseSource *source,
-				   guint      context_handle,
-				   BseTrans  *trans)
+bse_context_merger_context_create (BseSource    *source,
+				   unsigned int  context_handle,
+				   BseTrans     *trans)
 {
   static const BseModuleClass context_merger_mclass = {
     0,                            /* n_istreams */
@@ -171,7 +171,7 @@ bse_context_merger_context_create (BseSource *source,
 		   context_handle, self->merge_context);
       else
 	{
-	  ContextModuleData *cmdata = module->user_data;
+	  ContextModuleData *cmdata = (ContextModuleData*) module->user_data;
 	  cmdata->ref_count++;
 	}
     }
@@ -193,9 +193,9 @@ bse_context_merger_context_create (BseSource *source,
 }
 
 static void
-bse_context_merger_context_dismiss (BseSource *source,
-				    guint      context_handle,
-				    BseTrans  *trans)
+bse_context_merger_context_dismiss (BseSource     *source,
+				    unsigned int   context_handle,
+				    BseTrans      *trans)
 {
   BseModule *module;
   
@@ -211,7 +211,7 @@ bse_context_merger_context_dismiss (BseSource *source,
   module = bse_source_get_context_imodule (source, context_handle);
   if (module)
     {
-      ContextModuleData *cmdata = module->user_data;
+      ContextModuleData *cmdata = (ContextModuleData*) module->user_data;
       g_return_if_fail (cmdata->ref_count > 0);
       cmdata->ref_count--;
       if (cmdata->ref_count)	/* prevent discarding from engine */
