@@ -56,7 +56,7 @@ typedef struct
 {
   guint	               id;
   guint	               n_items;
-  struct {
+  struct Item {
     GQuark             quark;
     gchar              type;
     BseDataPocketValue value;
