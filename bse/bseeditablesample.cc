@@ -32,15 +32,15 @@ struct _Notify
 
 /* --- prototypes --- */
 static void	    bse_editable_sample_init		(BseEditableSample	*self);
-static void	    bse_editable_sample_class_init	(BseEditableSampleClass	*class);
+static void	    bse_editable_sample_class_init	(BseEditableSampleClass	*klass);
 static void	    bse_editable_sample_dispose		(GObject		*object);
 static void	    bse_editable_sample_finalize	(GObject		*object);
 
 
 /* --- variables --- */
-static gpointer parent_class = NULL;
-static guint	signal_changed = 0;
-static Notify  *changed_notify_list = NULL;
+static void          *parent_class = NULL;
+static unsigned int   signal_changed = 0;
+static Notify        *changed_notify_list = NULL;
 
 
 /* --- functions --- */
@@ -70,12 +70,12 @@ BSE_BUILTIN_TYPE (BseEditableSample)
 }
 
 static void
-bse_editable_sample_class_init (BseEditableSampleClass *class)
+bse_editable_sample_class_init (BseEditableSampleClass *klass)
 {
-  GObjectClass *gobject_class = G_OBJECT_CLASS (class);
-  BseObjectClass *object_class = BSE_OBJECT_CLASS (class);
+  GObjectClass *gobject_class = G_OBJECT_CLASS (klass);
+  BseObjectClass *object_class = BSE_OBJECT_CLASS (klass);
   
-  parent_class = g_type_class_peek_parent (class);
+  parent_class = g_type_class_peek_parent (klass);
   
   gobject_class->dispose = bse_editable_sample_dispose;
   gobject_class->finalize = bse_editable_sample_finalize;
@@ -135,7 +135,7 @@ bse_editable_sample_finalize (GObject *object)
 }
 
 static gboolean
-changed_notify_handler (gpointer editable)
+changed_notify_handler (void *editable)
 {
   BSE_THREADS_ENTER ();
   

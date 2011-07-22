@@ -70,7 +70,7 @@ bse_sources = $(strip \
 	bsebus.cc		bsecategories.cc 	\
 	bsefilter.cc   		bsebiquadfilter.cc	bsefilter-ellf.c	\
 	bseconstant.cc		bseconstvalues.cc	bsecontainer.cc			bsecontextmerger.cc \
-	bsedatapocket.cc	bseeditablesample.c	bseenums.c			bsegconfig.c \
+	bsedatapocket.cc	bseeditablesample.cc	bseenums.c			bsegconfig.c \
 	bseglobals.c		bseglue.c		bseitem.c			bsejanitor.c \
 	bsemain.cc		bsemath.c		bsemathsignal.c			bseladspa.cc \
 	bsemidicontroller.c	bsemididevice.c 	bsedevice.cc 			\
