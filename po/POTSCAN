@@ -70,8 +70,8 @@ bse/bsebus.proc
 bse/bseconstant.cc
 bse/bsecontainer.proc
 bse/bsecore.idl
-bse/bsedevice.c
-bse/bseenums.c
+bse/bsedevice.cc
+bse/bseenums.cc
 bse/bseinstrumentinput.c
 bse/bseinstrumentoutput.c
 bse/bsejanitor.c
