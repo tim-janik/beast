@@ -321,6 +321,6 @@ bseautodoc_SOURCES = bseautodoc.cc
 bseautodoc_LDADD   = $(progs_LDADD)
 
 noinst_PROGRAMS += bseinfo
-bseinfo_SOURCES  = bseinfo.c cxxdummy.cc
+bseinfo_SOURCES  = bseinfo.cc cxxdummy.cc
 bseinfo_LDADD    = $(progs_LDADD)
 

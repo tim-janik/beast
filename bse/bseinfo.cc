@@ -22,17 +22,17 @@
 #define	FLF	"26.20"
 
 static void
-print_int (const gchar *name,
-           gint         integer)
+print_int (const char *name,
+           int         integer)
 {
   g_print ("%s =%-4d\n", name, integer);
 }
 
 static void
-print_note (const gchar *note_name,
-	    gint         note)
+print_note (const char *note_name,
+	    int         note)
 {
-  gchar *string;
+  char *string;
   
   string = bse_note_to_string (note);
   g_print ("%s =%-4d \tfactor=%"FLF"f [%-5s] (freq=%"FLF"f)\n",
@@ -43,8 +43,8 @@ print_note (const gchar *note_name,
 }
 
 static void
-print_fine_tune (const gchar *tune_name,
-		 gint         tune)
+print_fine_tune (const char *tune_name,
+		 int         tune)
 {
   g_print ("%s =%-4d \tfactor=%"FLF"f\n",
 	   tune_name, tune,
@@ -52,10 +52,10 @@ print_fine_tune (const gchar *tune_name,
 }
 
 int
-main (gint   argc,
-      gchar *argv[])
+main (int   argc,
+      char *argv[])
 {
-  gint j, k;
+  int j, k;
   
   g_thread_init (NULL);
   bse_init_inprocess (&argc, &argv, "BseInfo", NULL);
@@ -83,8 +83,8 @@ main (gint   argc,
     for (j = BSE_MIN_NOTE; j <= BSE_MAX_NOTE; j += 3)
       for (k = BSE_MIN_FINE_TUNE / 2; k <= BSE_MAX_FINE_TUNE / 2; k += 10)
 	{
-	  gdouble f, freq = bse_note_to_tuned_freq (BSE_MUSICAL_TUNING_12_TET, j, k);
-	  gint note, fine_tune;
+	  double f, freq = bse_note_to_tuned_freq (BSE_MUSICAL_TUNING_12_TET, j, k);
+	  int note, fine_tune;
 	  g_print ("compose  : note=%4d fine_tune=%4d freq=%"FLF"f\n", j, k, freq);
 	  f = freq;
 	  note = bse_note_from_freq (BSE_MUSICAL_TUNING_12_TET, freq);
@@ -95,10 +95,10 @@ main (gint   argc,
   if (0)
     for (j = BSE_MIN_NOTE; j <= BSE_MAX_NOTE; j += 1)
       {
-	gint octave = SFI_NOTE_OCTAVE (j);
-	gint semitone = SFI_NOTE_SEMITONE (j);
-	gint note = BSE_NOTE_GENERIC (octave, semitone);
-	gchar *name = bse_note_to_string (j);
+	int octave = SFI_NOTE_OCTAVE (j);
+	int semitone = SFI_NOTE_SEMITONE (j);
+	int note = BSE_NOTE_GENERIC (octave, semitone);
+	char *name = bse_note_to_string (j);
 	
 	g_print ("note[%3d]: name=%-8s octave=%3d semitone=%3d note=%3d match=%u\n",
 		 j, name, octave, semitone, note, j == note);
@@ -110,10 +110,10 @@ main (gint   argc,
       SfiRing *ring;
       g_print ("search path: \"%s\"\n", argv[1]);
       // plist = bse_search_path_list_files (argv[1], NULL);
-      ring = sfi_file_crawler_list_files (argv[1], NULL, 0);
+      ring = sfi_file_crawler_list_files (argv[1], NULL, GFileTest (0));
       while (ring)
         {
-          gchar *name = sfi_ring_pop_head (&ring);
+          char *name = (char*) sfi_ring_pop_head (&ring);
           g_print ("%s\n", name);
         }
     }
