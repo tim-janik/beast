@@ -21,9 +21,9 @@
 
 
 /* --- variables --- */
-BseGConfig        *bse_global_config = NULL;
-static GParamSpec *pspec_global_config = NULL;
-static guint       gconfig_lock_count = 0;
+BseGConfig           *bse_global_config = NULL;
+static GParamSpec    *pspec_global_config = NULL;
+static unsigned int   gconfig_lock_count = 0;
 
 
 /* --- functions --- */
