@@ -22,20 +22,20 @@
 void
 bse_globals_init (void) { /* FIXME: remove */ }
 
-gdouble
-bse_db_to_factor (gdouble dB)
+double
+bse_db_to_factor (double dB)
 {
-  gdouble factor = dB / 20; /* Bell */
+  double factor = dB / 20; /* Bell */
   return pow (10, factor);
 }
 
-gdouble
-bse_db_from_factor (gdouble factor,
-		    gdouble min_dB)
+double
+bse_db_from_factor (double factor,
+		    double min_dB)
 {
   if (factor > 0)
     {
-      gdouble dB = log10 (factor); /* Bell */
+      double dB = log10 (factor); /* Bell */
       dB *= 20;
       return dB;
     }
@@ -43,7 +43,7 @@ bse_db_from_factor (gdouble factor,
     return min_dB;
 }
 
-glong
+long
 bse_time_range_to_ms (BseTimeRangeType time_range)
 {
   g_return_val_if_fail (time_range >= BSE_TIME_RANGE_SHORT, 0);
@@ -88,12 +88,12 @@ bse_time_range_to_ms (BseTimeRangeType time_range)
  * preceeding even realtime synthesis job handling should be executed this way.
  * This function is MT-safe and may be called from any thread.
  */
-guint
+unsigned int
 bse_idle_now (GSourceFunc function,
-	      gpointer    data)
+	      void       *data)
 {
   GSource *source = g_idle_source_new ();
-  guint id;
+  unsigned int id;
   g_source_set_priority (source, BSE_PRIORITY_NOW);
   g_source_set_callback (source, function, data, NULL);
   id = g_source_attach (source, bse_main_context);
@@ -110,12 +110,12 @@ bse_idle_now (GSourceFunc function,
  * asyncronously as soon as the BSE core isn't occupied by realtime job handling.
  * This function is MT-safe and may be called from any thread.
  */
-guint
+unsigned int
 bse_idle_next (GSourceFunc function,
-	      gpointer    data)
+	       void       *data)
 {
   GSource *source = g_idle_source_new ();
-  guint id;
+  unsigned int id;
   g_source_set_priority (source, BSE_PRIORITY_NEXT);
   g_source_set_callback (source, function, data, NULL);
   id = g_source_attach (source, bse_main_context);
@@ -133,12 +133,12 @@ bse_idle_next (GSourceFunc function,
  * asyncronous notifications.
  * This function is MT-safe and may be called from any thread.
  */
-guint
+unsigned int
 bse_idle_notify (GSourceFunc function,
-		 gpointer    data)
+		 void       *data)
 {
   GSource *source = g_idle_source_new ();
-  guint id;
+  unsigned int id;
   g_source_set_priority (source, BSE_PRIORITY_NOTIFY);
   g_source_set_callback (source, function, data, NULL);
   id = g_source_attach (source, bse_main_context);
@@ -146,12 +146,12 @@ bse_idle_notify (GSourceFunc function,
   return id;
 }
 
-guint
+unsigned int
 bse_idle_normal (GSourceFunc function,
-		 gpointer    data)
+		 void       *data)
 {
   GSource *source = g_idle_source_new ();
-  guint id;
+  unsigned int id;
   g_source_set_priority (source, BSE_PRIORITY_NORMAL);
   g_source_set_callback (source, function, data, NULL);
   id = g_source_attach (source, bse_main_context);
@@ -159,12 +159,12 @@ bse_idle_normal (GSourceFunc function,
   return id;
 }
 
-guint
+unsigned int
 bse_idle_update (GSourceFunc function,
-		 gpointer    data)
+		 void       *data)
 {
   GSource *source = g_idle_source_new ();
-  guint id;
+  unsigned int id;
   g_source_set_priority (source, BSE_PRIORITY_UPDATE);
   g_source_set_callback (source, function, data, NULL);
   id = g_source_attach (source, bse_main_context);
@@ -172,12 +172,12 @@ bse_idle_update (GSourceFunc function,
   return id;
 }
 
-guint
+unsigned int
 bse_idle_background (GSourceFunc function,
-		     gpointer    data)
+		     void       *data)
 {
   GSource *source = g_idle_source_new ();
-  guint id;
+  unsigned int id;
   g_source_set_priority (source, BSE_PRIORITY_BACKGROUND);
   g_source_set_callback (source, function, data, NULL);
   id = g_source_attach (source, bse_main_context);
@@ -194,13 +194,13 @@ bse_idle_background (GSourceFunc function,
  * bse_idle_now(), after a delay period of @a usec_delay has passed.
  * This function is MT-safe and may be called from any thread.
  */
-guint
+unsigned int
 bse_idle_timed (guint64     usec_delay,
 		GSourceFunc function,
-		gpointer    data)
+		void       *data)
 {
   GSource *source = g_timeout_source_new (CLAMP (usec_delay / 1000, 0, G_MAXUINT));
-  guint id;
+  unsigned int id;
   g_source_set_priority (source, BSE_PRIORITY_NEXT);
   g_source_set_callback (source, function, data, NULL);
   id = g_source_attach (source, bse_main_context);
@@ -215,7 +215,7 @@ bse_idle_timed (guint64     usec_delay,
  * This function is MT-safe and may be called from any thread.
  */
 gboolean
-bse_idle_remove (guint id)
+bse_idle_remove (unsigned int id)
 {
   GSource *source;
 
