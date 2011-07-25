@@ -197,7 +197,7 @@ main (int   argc,
 
       /* setup reference and work fft records */
       fill_rand (i << 1, ref_fft_in);
-      memcpy (dft_in, ref_fft_in, MAX_FFT_SIZE * sizeof (dft_in[0]));
+      memcpy (dft_in, ref_fft_in, MAX_DFT_SIZE * sizeof (dft_in[0]));
 
       reference_power2_fftc (i, ref_fft_in, ref_fft_aout, REF_ANALYSIS);
       reference_dftc (i, dft_in, dft_aout);
