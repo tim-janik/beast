@@ -33,7 +33,7 @@ struct _Notify
 {
   Notify        *next;
   BseDataPocket *pocket;
-  unsigned int   entry_id;
+  uint           entry_id;
 };
 
 
@@ -54,9 +54,9 @@ static SfiTokenType bse_data_pocket_restore_private	(BseObject		*object,
 
 /* --- variables --- */
 static void         *parent_class = NULL;
-static unsigned int  signal_entry_added = 0;
-static unsigned int  signal_entry_removed = 0;
-static unsigned int  signal_entry_changed = 0;
+static uint          signal_entry_added = 0;
+static uint          signal_entry_removed = 0;
+static uint          signal_entry_changed = 0;
 static Notify       *changed_notify_list = NULL;
 static GQuark	     quark_set_data = 0;
 
@@ -201,7 +201,7 @@ changed_notify_handler (void *data)
 
 static void
 changed_notify_add (BseDataPocket *pocket,
-		    unsigned int   entry_id)
+		    uint           entry_id)
 {
   Notify *notify;
   
@@ -222,12 +222,12 @@ pocket_uncross (BseItem *pitem,
 		BseItem *item)
 {
   BseDataPocket *pocket = BSE_DATA_POCKET (pitem);
-  unsigned int i;
+  uint i;
   
   for (i = 0; i < pocket->n_entries; i++)
     {
       BseDataPocketEntry *entry = pocket->entries + i;
-      unsigned int n, have_this_id = 0;
+      uint n, have_this_id = 0;
       
       for (n = 0; n < entry->n_items; n++)
 	if (entry->items[n].type == BSE_DATA_POCKET_OBJECT &&
@@ -262,7 +262,7 @@ static void
 remove_cross_ref (BseDataPocket *pocket,
 		  BseItem       *item)
 {
-  unsigned int i;
+  uint i;
   
   g_return_if_fail (BSE_IS_ITEM (item));
   g_return_if_fail (bse_item_common_ancestor (BSE_ITEM (pocket), item) != NULL); // FIXME: delete
@@ -271,7 +271,7 @@ remove_cross_ref (BseDataPocket *pocket,
   for (i = 0; i < pocket->n_entries; i++)
     {
       BseDataPocketEntry *entry = pocket->entries + i;
-      unsigned int n;
+      uint n;
       
       for (n = 0; n < entry->n_items; n++)
 	if (entry->items[n].type == BSE_DATA_POCKET_OBJECT &&
@@ -283,10 +283,10 @@ remove_cross_ref (BseDataPocket *pocket,
   bse_item_cross_unlink (BSE_ITEM (pocket), item, pocket_uncross);
 }
 
-unsigned int
+uint
 _bse_data_pocket_create_entry (BseDataPocket *pocket)
 {
-  unsigned int id, i;
+  uint id, i;
   
   g_return_val_if_fail (BSE_IS_DATA_POCKET (pocket), 0);
   
@@ -306,11 +306,11 @@ _bse_data_pocket_create_entry (BseDataPocket *pocket)
 
 gboolean
 _bse_data_pocket_delete_entry (BseDataPocket *pocket,
-			       unsigned int   entry_id)
+			       uint           entry_id)
 {
   BseDataPocketEntry *entry;
   GSList *cr_del = NULL;
-  unsigned int i, n;
+  uint i, n;
   
   g_return_val_if_fail (BSE_IS_DATA_POCKET (pocket), FALSE);
   g_return_val_if_fail (entry_id > 0, FALSE);
@@ -357,13 +357,13 @@ _bse_data_pocket_delete_entry (BseDataPocket *pocket,
 
 gboolean
 _bse_data_pocket_entry_set (BseDataPocket     *pocket,
-			    unsigned int       id,
+			    uint               id,
 			    GQuark             data_quark,
 			    char               type,
 			    BseDataPocketValue value)
 {
   BseDataPocketEntry *entry;
-  unsigned int i, n;
+  uint i, n;
   bool delete_item;
   
   g_return_val_if_fail (BSE_IS_DATA_POCKET (pocket), FALSE);
@@ -438,12 +438,12 @@ _bse_data_pocket_entry_set (BseDataPocket     *pocket,
 
 char
 _bse_data_pocket_entry_get (BseDataPocket      *pocket,
-			    unsigned int        id,
+			    uint                id,
 			    GQuark              data_quark,
 			    BseDataPocketValue *value)
 {
   BseDataPocketEntry *entry;
-  unsigned int i, n;
+  uint i, n;
   
   g_return_val_if_fail (BSE_IS_DATA_POCKET (pocket), 0);
   
@@ -482,7 +482,7 @@ bse_data_pocket_do_store_private (BseObject  *object,
 				  BseStorage *storage)
 {
   BseDataPocket *pocket = BSE_DATA_POCKET (object);
-  unsigned int i, j;
+  uint i, j;
   
   /* chain parent class' handler */
   if (BSE_OBJECT_CLASS (parent_class)->store_private)
@@ -509,7 +509,7 @@ bse_data_pocket_do_store_private (BseObject  *object,
 	  switch (entry->items[j].type)
 	    {
 	      char *string;
-	      unsigned int v_uint;
+	      uint v_uint;
 	    case BSE_DATA_POCKET_INT:	bse_storage_printf (storage, "%u", entry->items[j].value.v_int);	break;
 	    case BSE_DATA_POCKET_FLOAT:	bse_storage_putf (storage, entry->items[j].value.v_float);		break;
 	    case BSE_DATA_POCKET_INT64:
@@ -537,7 +537,7 @@ bse_data_pocket_do_store_private (BseObject  *object,
 }
 
 typedef struct {
-  unsigned int id;
+  uint id;
   GQuark quark;
 } ObjectEntry;
 
@@ -565,14 +565,14 @@ object_entry_resolved (void           *data,
 
 static SfiTokenType
 parse_set_data (BseDataPocket *pocket,
-		unsigned int   id,
+		uint           id,
 		BseStorage    *storage,
                 GScanner      *scanner)
 {
   BseDataPocketValue value;
   ObjectEntry *oentry = NULL;
   GQuark quark;
-  unsigned int ttype;
+  uint ttype;
   gboolean char_2_token;
   
   parse_or_return (scanner, G_TOKEN_STRING);
@@ -656,7 +656,7 @@ bse_data_pocket_restore_private (BseObject  *object,
   if (g_scanner_peek_next_token (scanner) == G_TOKEN_IDENTIFIER &&
       bse_string_equals ("create-entry", scanner->next_value.v_identifier))
     {
-      unsigned int id = _bse_data_pocket_create_entry (pocket);
+      uint id = _bse_data_pocket_create_entry (pocket);
       
       parse_or_return (scanner, G_TOKEN_IDENTIFIER);	/* eat identifier */
 

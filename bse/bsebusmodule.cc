@@ -35,7 +35,7 @@ class BusModule : public BusModuleBase {
     {
     }
     void
-    process (unsigned int n_values)
+    process (uint n_values)
     {
       if (istream (ICHANNEL_AUDIO_IN1).connected && ostream (OCHANNEL_AUDIO_OUT1).connected)
         {

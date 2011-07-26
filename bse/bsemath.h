@@ -95,63 +95,63 @@ static inline BseComplex bse_complex_sinh       (BseComplex     c);
 static inline BseComplex bse_complex_cosh       (BseComplex     c);
 static inline BseComplex bse_complex_tanh       (BseComplex     c);
 char*                    bse_complex_str        (BseComplex     c);
-char*                    bse_complex_list       (unsigned int   n_points,
+char*                    bse_complex_list       (uint           n_points,
                                                  BseComplex    *points,
                                                  const char    *indent);
 void                     bse_complex_gnuplot    (const char    *file_name,
-                                                 unsigned int   n_points,
+                                                 uint           n_points,
                                                  BseComplex    *points);
 
 /* --- polynomials --- */
 /* example, degree=2: 5+2x+7x^2 => a[0..degree] = { 5, 2, 7 } */
-static inline void     bse_poly_add             (unsigned int   degree,
+static inline void     bse_poly_add             (uint           degree,
                                                  double        *a, /* a[0..degree] */
                                                  double        *b);
-static inline void     bse_poly_sub             (unsigned int   order,
+static inline void     bse_poly_sub             (uint           order,
                                                  double        *a, /* [0..degree] */
                                                  double        *b);
 static inline void     bse_poly_mul             (double        *p,  /* out:[0..aorder+border] */
-                                                 unsigned int   aorder,
+                                                 uint           aorder,
                                                  const double  *a,  /* in:[0..aorder] */
-                                                 unsigned int   border,
+                                                 uint           border,
                                                  const double  *b); /* in:[0..border] */
-static inline void     bse_poly_scale           (unsigned int   order,
+static inline void     bse_poly_scale           (uint           order,
                                                  double        *a, /* [0..degree] */
                                                  double         scale);
-static inline void     bse_poly_xscale          (unsigned int   order,
+static inline void     bse_poly_xscale          (uint           order,
                                                  double        *a, /* [0..degree] */
                                                  double         xscale);
-static inline double   bse_poly_eval            (unsigned int   degree,
+static inline double   bse_poly_eval            (uint           degree,
                                                  double        *a, /* [0..degree] */
                                                  double         x);
-void                   bse_poly_complex_roots   (unsigned int   poly_degree,
+void                   bse_poly_complex_roots   (uint           poly_degree,
                                                  double        *a, /* [0..degree] (degree+1 elements) */
                                                  BseComplex    *roots); /* [degree] */
-void                   bse_poly_from_re_roots   (unsigned int   poly_degree,
+void                   bse_poly_from_re_roots   (uint           poly_degree,
                                                  double        *a, /* [0..degree] */
                                                  BseComplex    *roots);
-void                   bse_cpoly_from_roots     (unsigned int   poly_degree,
+void                   bse_cpoly_from_roots     (uint           poly_degree,
                                                  BseComplex    *c, /* [0..degree] */
                                                  BseComplex    *roots);
-static inline void     bse_cpoly_mul_monomial   (unsigned int   degree, /* _new_ degree */
+static inline void     bse_cpoly_mul_monomial   (uint           degree, /* _new_ degree */
                                                  BseComplex    *c, /* in:[0..degree-1] out:[0..degree] */
                                                  BseComplex     root); /* c(x) *= (x^1 - root) */
-static inline void     bse_cpoly_mul_reciprocal (unsigned int   degree, /* _new_ degree */
+static inline void     bse_cpoly_mul_reciprocal (uint           degree, /* _new_ degree */
                                                  BseComplex    *c, /* in:[0..degree-1] out:[0..degree] */
                                                  BseComplex     root); /* c(x) *= (1 - root * x^-1) */
 static inline void     bse_cpoly_mul            (BseComplex    *p,  /* out:[0..aorder+border] */
-                                                 unsigned int   aorder,
+                                                 uint           aorder,
                                                  BseComplex    *a,  /* in:[0..aorder] */
-                                                 unsigned int   border,
+                                                 uint           border,
                                                  BseComplex    *b); /* in:[0..border] */
 gboolean               bse_poly2_droots         (gdouble        roots[2],
                                                  gdouble        a,
                                                  gdouble        b,
                                                  gdouble        c);
-char*                  bse_poly_str             (unsigned int   degree,
+char*                  bse_poly_str             (uint           degree,
                                                  double        *a,
                                                  const char    *var);
-char*                  bse_poly_str1            (unsigned int   degree,
+char*                  bse_poly_str1            (uint           degree,
                                                  double        *a,
                                                  const char    *var);
 
@@ -167,7 +167,7 @@ gint                   bse_rand_bool            (void);                   /* ran
 void                   bse_float_gnuplot        (const char    *file_name,
                                                  double         xstart,
                                                  double         xstep,
-                                                 unsigned int   n_ypoints,
+                                                 uint           n_ypoints,
                                                  const float   *ypoints);
 
 
@@ -374,37 +374,37 @@ bse_complex_tanh (BseComplex c)
                           bse_complex_cosh (c));
 }
 static inline void
-bse_poly_add (unsigned int degree,
+bse_poly_add (uint         degree,
               double      *a,
               double      *b)
 {
-  unsigned int i;
+  uint         i;
   
   for (i = 0; i <= degree; i++)
     a[i] += b[i];
 }
 static inline void
-bse_poly_sub (unsigned int degree,
+bse_poly_sub (uint         degree,
               double      *a,
               double      *b)
 {
-  unsigned int i;
+  uint         i;
   
   for (i = 0; i <= degree; i++)
     a[i] -= b[i];
 }
 static inline void
 bse_poly_mul (double        *p,  /* out:[0..aorder+border] */
-              unsigned int   aorder,
+              uint           aorder,
               const double  *a,  /* in:[0..aorder] */
-              unsigned int   border,
+              uint           border,
               const double  *b)  /* in:[0..border] */
 {
-  unsigned int i;
+  uint         i;
   
   for (i = aorder + border; i > 0; i--)
     {
-      unsigned int j;
+      uint         j;
       double t = 0;
       
       for (j = i - MIN (border, i); j <= MIN (aorder, i); j++)
@@ -414,11 +414,11 @@ bse_poly_mul (double        *p,  /* out:[0..aorder+border] */
   p[0] = a[0] * b[0];
 }
 static inline void
-bse_cpoly_mul_monomial (unsigned int degree,
+bse_cpoly_mul_monomial (uint         degree,
                         BseComplex  *c,
                         BseComplex   root)
 {
-  unsigned int j;
+  uint         j;
   
   c[degree] = c[degree - 1];
   for (j = degree - 1; j >= 1; j--)
@@ -426,11 +426,11 @@ bse_cpoly_mul_monomial (unsigned int degree,
   c[0] = bse_complex_mul (c[0], bse_complex_inv (root));
 }
 static inline void
-bse_cpoly_mul_reciprocal (unsigned int degree,
+bse_cpoly_mul_reciprocal (uint         degree,
                           BseComplex  *c,
                           BseComplex   root)
 {
-  unsigned int j;
+  uint         j;
   
   c[degree] = bse_complex_mul (c[degree - 1], bse_complex_inv (root));
   for (j = degree - 1; j >= 1; j--)
@@ -439,17 +439,17 @@ bse_cpoly_mul_reciprocal (unsigned int degree,
 }
 static inline void
 bse_cpoly_mul (BseComplex  *p,  /* [0..aorder+border] */
-               unsigned int aorder,
+               uint         aorder,
                BseComplex  *a,
-               unsigned int border,
+               uint         border,
                BseComplex  *b)
 {
-  unsigned int i;
+  uint         i;
   
   for (i = aorder + border; i > 0; i--)
     {
       BseComplex t;
-      unsigned int j;
+      uint         j;
       
       t = bse_complex (0, 0);
       for (j = i - MIN (i, border); j <= MIN (aorder, i); j++)
@@ -459,22 +459,22 @@ bse_cpoly_mul (BseComplex  *p,  /* [0..aorder+border] */
   p[0] = bse_complex_mul (a[0], b[0]);
 }
 static inline void
-bse_poly_scale (unsigned int degree,
+bse_poly_scale (uint         degree,
                 double      *a,
                 double       scale)
 {
-  unsigned int i;
+  uint         i;
   
   for (i = 0; i <= degree; i++)
     a[i] *= scale;
 }
 static inline void
-bse_poly_xscale (unsigned int degree,
+bse_poly_xscale (uint         degree,
                  double      *a,
                  double       xscale)
 {
   double scale = xscale;
-  unsigned int i;
+  uint         i;
   
   for (i = 1; i <= degree; i++)
     {
@@ -483,7 +483,7 @@ bse_poly_xscale (unsigned int degree,
     }
 }
 static inline double
-bse_poly_eval (unsigned int degree,
+bse_poly_eval (uint         degree,
                double      *a,
                double       x)
 {

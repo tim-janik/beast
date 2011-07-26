@@ -29,11 +29,11 @@ static void      bse_csynth_class_init             (BseCSynthClass *klass);
 static void      bse_csynth_init                   (BseCSynth      *self);
 static void      bse_csynth_finalize               (GObject        *object);
 static void      bse_csynth_set_property           (GObject        *object,
-                                                    unsigned int    param_id,
+                                                    uint            param_id,
                                                     const GValue   *value,
                                                     GParamSpec     *pspec);
 static void      bse_csynth_get_property           (GObject        *object,
-                                                    unsigned int    param_id,
+                                                    uint            param_id,
                                                     GValue         *value,
                                                     GParamSpec     *pspec);
 
@@ -88,7 +88,7 @@ bse_csynth_finalize (GObject *object)
 
 static void
 bse_csynth_set_property (GObject      *object,
-                         unsigned int  param_id,
+                         uint          param_id,
                          const GValue *value,
                          GParamSpec   *pspec)
 {
@@ -104,7 +104,7 @@ bse_csynth_set_property (GObject      *object,
 
 static void
 bse_csynth_get_property (GObject     *object,
-                         unsigned int param_id,
+                         uint         param_id,
                          GValue      *value,
                          GParamSpec  *pspec)
 {

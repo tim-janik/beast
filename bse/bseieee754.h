@@ -146,19 +146,19 @@ typedef union
 {
   float		v_float;
   struct {
-    unsigned int mantissa : 23;
-    unsigned int biased_exponent : 8;
-    unsigned int sign : 1;
+    uint mantissa : 23;
+    uint biased_exponent : 8;
+    uint sign : 1;
   } mpn;
 } BseFloatIEEE754;
 typedef union
 {
   double	v_double;
   struct {
-    unsigned int mantissa_low : 32;
-    unsigned int mantissa_high : 20;
-    unsigned int biased_exponent : 11;
-    unsigned int sign : 1;
+    uint mantissa_low : 32;
+    uint mantissa_high : 20;
+    uint biased_exponent : 11;
+    uint sign : 1;
   } mpn;
 } BseDoubleIEEE754;
 #define	_BSE_DOUBLE_INF_BYTES	{ 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xf0, 0x7f }
@@ -170,19 +170,19 @@ typedef union
 {
   float         v_float;
   struct {
-    unsigned int sign : 1;
-    unsigned int biased_exponent : 8;
-    unsigned int mantissa : 23;
+    uint sign : 1;
+    uint biased_exponent : 8;
+    uint mantissa : 23;
   } mpn;
 } BseFloatIEEE754;
 typedef union
 {
   double        v_double;
   struct {
-    unsigned int sign : 1;
-    unsigned int biased_exponent : 11;
-    unsigned int mantissa_high : 20;
-    unsigned int mantissa_low : 32;
+    uint sign : 1;
+    uint biased_exponent : 11;
+    uint mantissa_high : 20;
+    uint mantissa_low : 32;
   } mpn;
 } BseDoubleIEEE754;
 #define	_BSE_DOUBLE_INF_BYTES	{ 0x7f, 0xf0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 }

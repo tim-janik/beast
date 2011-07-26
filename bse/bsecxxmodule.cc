@@ -112,7 +112,7 @@ SynthesisModule::set_module (BseModule *engine_module)
 }
 
 void
-SynthesisModule::ostream_set (unsigned int ostream_index,
+SynthesisModule::ostream_set (uint         ostream_index,
                               const float *values)
 {
   BseModule *m = engine_module();
@@ -360,7 +360,7 @@ handler_setup_func (BseModule      *module,   /* Engine Thread */
 }
 
 BseModule*
-Effect::integrate_engine_module (unsigned int   context_handle,
+Effect::integrate_engine_module (uint           context_handle,
                                  BseTrans      *trans)
 {
   BseSource *source = cast (this);
@@ -415,7 +415,7 @@ Effect::dismiss_engine_module (BseModule       *engine_module,
     }
 }
 
-unsigned int
+uint
 Effect::block_size() const
 {
   g_return_val_if_fail (is_prepared(), 0);
@@ -423,7 +423,7 @@ Effect::block_size() const
   return bse_engine_block_size();
 }
 
-unsigned int
+uint
 Effect::max_block_size() const
 {
   return BSE_STREAM_MAX_VALUES;

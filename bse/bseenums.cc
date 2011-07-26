@@ -38,8 +38,8 @@ bse_type_register_enums (void)
     /* include generated enum list */
 #include "bseenum_list.c"
   };
-  unsigned int n_enums = sizeof (enums) / sizeof (enums[0]);
-  unsigned int i;
+  uint n_enums = sizeof (enums) / sizeof (enums[0]);
+  uint i;
   
   for (i = 0; i < n_enums; i++)
     {

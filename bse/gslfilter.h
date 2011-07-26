@@ -31,17 +31,17 @@ static inline double     bse_trans_zepsilon2ss  (double         epsilon);
 
 
 /* --- filter roots and poles --- */
-void	gsl_filter_butter_rp    (unsigned int iorder,
+void	gsl_filter_butter_rp    (uint         iorder,
 				 double       freq,   /* 0..pi */
 				 double       epsilon,
 				 BseComplex  *roots,  /* [0..iorder-1] */
 				 BseComplex  *poles);
-void	gsl_filter_tscheb1_rp	(unsigned int iorder,
+void	gsl_filter_tscheb1_rp	(uint         iorder,
 				 double       freq,   /* 0..pi */
 				 double       epsilon,
 				 BseComplex  *roots,  /* [0..iorder-1] */
 				 BseComplex  *poles);
-void	gsl_filter_tscheb2_rp	(unsigned int iorder,
+void	gsl_filter_tscheb2_rp	(uint         iorder,
 				 double       c_freq, /* 0..pi */
 				 double       steepness,
 				 double       epsilon,
@@ -50,28 +50,28 @@ void	gsl_filter_tscheb2_rp	(unsigned int iorder,
 
 
 /* --- tschebyscheff type II steepness --- */
-double	gsl_filter_tscheb2_steepness_db	(unsigned int iorder,
+double	gsl_filter_tscheb2_steepness_db	(uint         iorder,
 					 double       c_freq,
 					 double       epsilon,
 					 double       stopband_db);
-double	gsl_filter_tscheb2_steepness	(unsigned int iorder,
+double	gsl_filter_tscheb2_steepness	(uint         iorder,
 					 double       c_freq,
 					 double       epsilon,
 					 double       residue);
 
 
 /* --- lowpass filters --- */
-void	gsl_filter_butter_lp    (unsigned int iorder,
+void	gsl_filter_butter_lp    (uint         iorder,
 				 double       freq, /* 0..pi */
 				 double       epsilon,
 				 double      *a,    /* [0..iorder] */
 				 double      *b);
-void	gsl_filter_tscheb1_lp	(unsigned int iorder,
+void	gsl_filter_tscheb1_lp	(uint         iorder,
 				 double       freq, /* 0..pi */
 				 double       epsilon,
 				 double      *a,    /* [0..iorder] */
 				 double      *b);
-void	gsl_filter_tscheb2_lp	(unsigned int iorder,
+void	gsl_filter_tscheb2_lp	(uint         iorder,
 				 double       c_freq, /* 0..pi */
                                  double       steepness,
 				 double       epsilon,
@@ -80,17 +80,17 @@ void	gsl_filter_tscheb2_lp	(unsigned int iorder,
 
 
 /* --- highpass filters --- */
-void	gsl_filter_butter_hp	(unsigned int iorder,
+void	gsl_filter_butter_hp	(uint         iorder,
 				 double       freq,   /* 0..pi */
 				 double       epsilon,
 				 double      *a,      /* [0..iorder] */
 				 double      *b);
-void	gsl_filter_tscheb1_hp	(unsigned int iorder,
+void	gsl_filter_tscheb1_hp	(uint         iorder,
 				 double       freq,   /* 0..pi */
 				 double       epsilon,
 				 double      *a,      /* [0..iorder] */
 				 double      *b);
-void	gsl_filter_tscheb2_hp	(unsigned int iorder,
+void	gsl_filter_tscheb2_hp	(uint         iorder,
 				 double       c_freq, /* 0..pi */
 				 double       steepness,
 				 double       epsilon,
@@ -99,19 +99,19 @@ void	gsl_filter_tscheb2_hp	(unsigned int iorder,
 
 
 /* --- bandpass filters --- */
-void	gsl_filter_butter_bp	(unsigned int iorder,
+void	gsl_filter_butter_bp	(uint         iorder,
 				 double       freq1,  /* 0..pi */
 				 double       freq2,  /* 0..pi */
 				 double       epsilon,
 				 double      *a,      /* [0..iorder] */
 				 double      *b);
-void	gsl_filter_tscheb1_bp	(unsigned int iorder,
+void	gsl_filter_tscheb1_bp	(uint         iorder,
 				 double       freq1,  /* 0..pi */
 				 double       freq2,  /* 0..pi */
 				 double       epsilon,
 				 double      *a,      /* [0..iorder] */
 				 double      *b);
-void	gsl_filter_tscheb2_bp	(unsigned int iorder,
+void	gsl_filter_tscheb2_bp	(uint         iorder,
 				 double       freq1,  /* 0..pi */
 				 double       freq2,  /* 0..pi */
 				 double       steepness,
@@ -121,19 +121,19 @@ void	gsl_filter_tscheb2_bp	(unsigned int iorder,
 
 
 /* --- bandstop filters --- */
-void	gsl_filter_butter_bs	(unsigned int iorder,
+void	gsl_filter_butter_bs	(uint         iorder,
 				 double       freq1,  /* 0..pi */
 				 double       freq2,  /* 0..pi */
 				 double       epsilon,
 				 double      *a,      /* [0..iorder] */
 				 double      *b);
-void	gsl_filter_tscheb1_bs	(unsigned int iorder,
+void	gsl_filter_tscheb1_bs	(uint         iorder,
 				 double       freq1,  /* 0..pi */
 				 double       freq2,  /* 0..pi */
 				 double       epsilon,
 				 double      *a,      /* [0..iorder] */
 				 double      *b);
-void	gsl_filter_tscheb2_bs	(unsigned int iorder,
+void	gsl_filter_tscheb2_bs	(uint         iorder,
 				 double       freq1,  /* 0..pi */
 				 double       freq2,  /* 0..pi */
 				 double       steepness,
@@ -143,9 +143,9 @@ void	gsl_filter_tscheb2_bs	(unsigned int iorder,
 
 
 /* --- FIR Filters --- */
-void	gsl_filter_fir_approx	(unsigned int  iorder,
+void	gsl_filter_fir_approx	(uint          iorder,
 				 double       *a,	/* [0..iorder] */
-				 unsigned int  n_points,
+				 uint          n_points,
 				 const double *freq,
 				 const double *value,
 				 gboolean      interpolate_db);

@@ -88,12 +88,12 @@ bse_time_range_to_ms (BseTimeRangeType time_range)
  * preceeding even realtime synthesis job handling should be executed this way.
  * This function is MT-safe and may be called from any thread.
  */
-unsigned int
+uint
 bse_idle_now (GSourceFunc function,
 	      void       *data)
 {
   GSource *source = g_idle_source_new ();
-  unsigned int id;
+  uint id;
   g_source_set_priority (source, BSE_PRIORITY_NOW);
   g_source_set_callback (source, function, data, NULL);
   id = g_source_attach (source, bse_main_context);
@@ -110,12 +110,12 @@ bse_idle_now (GSourceFunc function,
  * asyncronously as soon as the BSE core isn't occupied by realtime job handling.
  * This function is MT-safe and may be called from any thread.
  */
-unsigned int
+uint
 bse_idle_next (GSourceFunc function,
 	       void       *data)
 {
   GSource *source = g_idle_source_new ();
-  unsigned int id;
+  uint id;
   g_source_set_priority (source, BSE_PRIORITY_NEXT);
   g_source_set_callback (source, function, data, NULL);
   id = g_source_attach (source, bse_main_context);
@@ -133,12 +133,12 @@ bse_idle_next (GSourceFunc function,
  * asyncronous notifications.
  * This function is MT-safe and may be called from any thread.
  */
-unsigned int
+uint
 bse_idle_notify (GSourceFunc function,
 		 void       *data)
 {
   GSource *source = g_idle_source_new ();
-  unsigned int id;
+  uint id;
   g_source_set_priority (source, BSE_PRIORITY_NOTIFY);
   g_source_set_callback (source, function, data, NULL);
   id = g_source_attach (source, bse_main_context);
@@ -146,12 +146,12 @@ bse_idle_notify (GSourceFunc function,
   return id;
 }
 
-unsigned int
+uint
 bse_idle_normal (GSourceFunc function,
 		 void       *data)
 {
   GSource *source = g_idle_source_new ();
-  unsigned int id;
+  uint id;
   g_source_set_priority (source, BSE_PRIORITY_NORMAL);
   g_source_set_callback (source, function, data, NULL);
   id = g_source_attach (source, bse_main_context);
@@ -159,12 +159,12 @@ bse_idle_normal (GSourceFunc function,
   return id;
 }
 
-unsigned int
+uint
 bse_idle_update (GSourceFunc function,
 		 void       *data)
 {
   GSource *source = g_idle_source_new ();
-  unsigned int id;
+  uint id;
   g_source_set_priority (source, BSE_PRIORITY_UPDATE);
   g_source_set_callback (source, function, data, NULL);
   id = g_source_attach (source, bse_main_context);
@@ -172,12 +172,12 @@ bse_idle_update (GSourceFunc function,
   return id;
 }
 
-unsigned int
+uint
 bse_idle_background (GSourceFunc function,
 		     void       *data)
 {
   GSource *source = g_idle_source_new ();
-  unsigned int id;
+  uint id;
   g_source_set_priority (source, BSE_PRIORITY_BACKGROUND);
   g_source_set_callback (source, function, data, NULL);
   id = g_source_attach (source, bse_main_context);
@@ -194,13 +194,13 @@ bse_idle_background (GSourceFunc function,
  * bse_idle_now(), after a delay period of @a usec_delay has passed.
  * This function is MT-safe and may be called from any thread.
  */
-unsigned int
+uint
 bse_idle_timed (guint64     usec_delay,
 		GSourceFunc function,
 		void       *data)
 {
   GSource *source = g_timeout_source_new (CLAMP (usec_delay / 1000, 0, G_MAXUINT));
-  unsigned int id;
+  uint id;
   g_source_set_priority (source, BSE_PRIORITY_NEXT);
   g_source_set_callback (source, function, data, NULL);
   id = g_source_attach (source, bse_main_context);
@@ -215,7 +215,7 @@ bse_idle_timed (guint64     usec_delay,
  * This function is MT-safe and may be called from any thread.
  */
 gboolean
-bse_idle_remove (unsigned int id)
+bse_idle_remove (uint id)
 {
   GSource *source;
 

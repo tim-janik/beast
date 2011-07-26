@@ -327,7 +327,7 @@ bse_resampler2_destroy (BseResampler2 *resampler)
 void
 bse_resampler2_process_block (BseResampler2 *resampler,
                               const float   *input,
-                              unsigned int   n_input_samples,
+                              uint           n_input_samples,
 			      float         *output)
 {
   reinterpret_cast<Bse::Resampler::Resampler2 *> (resampler)->process_block (input, n_input_samples, output);

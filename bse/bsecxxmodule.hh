@@ -30,9 +30,9 @@ enum ProcessCost {
 };
 struct JStream {
   const float **values;
-  unsigned int  n_connections;
+  uint          n_connections;
   /* private: */
-  unsigned int  jcount; /* reserved */
+  uint          jcount; /* reserved */
 };
 struct IStream {
   const float  *values;
@@ -52,16 +52,16 @@ public:
   explicit                  SynthesisModule ();
   virtual                  ~SynthesisModule () = 0;
   virtual void              reset           () = 0;
-  virtual void              process         (unsigned int n_values) = 0;
+  virtual void              process         (uint n_values) = 0;
   virtual const ProcessCost cost            ();
-  inline const IStream&     istream         (unsigned int istream_index) const;
-  inline const JStream&     jstream         (unsigned int jstream_index) const;
-  inline const OStream&     ostream         (unsigned int ostream_index) const;
-  void                      ostream_set     (unsigned int ostream_index,
+  inline const IStream&     istream         (uint istream_index) const;
+  inline const JStream&     jstream         (uint jstream_index) const;
+  inline const OStream&     ostream         (uint ostream_index) const;
+  void                      ostream_set     (uint ostream_index,
                                              const float *values);
   const float*              const_values    (float  value);
-  inline const unsigned int mix_freq        () const;
-  inline const unsigned int block_size      () const;
+  inline const uint         mix_freq        () const;
+  inline const uint         block_size      () const;
   inline guint64            tick_stamp      ();
   inline BseModule*         engine_module   ();
   static inline int         dtoi            (double d) { return bse_dtoi (d); }
@@ -131,7 +131,7 @@ public:
   const gchar*  ochannel_ident    (guint i) const { return BSE_SOURCE_OCHANNEL_IDENT (gobject(), i); }
   const gchar*  ochannel_label    (guint i) const { return BSE_SOURCE_OCHANNEL_LABEL (gobject(), i); }
   const gchar*  ochannel_blurb    (guint i) const { return BSE_SOURCE_OCHANNEL_BLURB (gobject(), i); }
-  virtual SynthesisModule*  create_module              (unsigned int     context_handle,
+  virtual SynthesisModule*  create_module              (uint             context_handle,
                                                         BseTrans        *trans) = 0;
   virtual SynthesisModule::
   Closure*                  make_module_config_closure () = 0;
@@ -152,20 +152,20 @@ protected:
                                                         int              n_istreams = -1,
                                                         int              n_jstreams = -1,
                                                         int              n_ostreams = -1);
-  virtual BseModule*        integrate_engine_module    (unsigned int     context_handle,
+  virtual BseModule*        integrate_engine_module    (uint             context_handle,
                                                         BseTrans        *trans);
   virtual void              dismiss_engine_module      (BseModule       *engine_module,
                                                         guint            context_handle,
                                                         BseTrans        *trans);
-  unsigned int              block_size                 () const;
-  unsigned int              max_block_size             () const;
+  uint                      block_size                 () const;
+  uint                      max_block_size             () const;
 public: /* FIXME: make this protected as soon as the modules have their own current_musical_tuning() accessor */
   BseMusicalTuningType      current_musical_tuning     () const;
 };
 /* implement Bse::Effect and Bse::SynthesisModule methods */
 #define BSE_EFFECT_INTEGRATE_MODULE(ObjectType,ModuleType,ParamType)            \
 Bse::SynthesisModule*                                                           \
-create_module (unsigned int context_handle,                                     \
+create_module (uint         context_handle,                                     \
                BseTrans    *trans)                                              \
 {                                                                               \
   /* check that 'this' is a ObjectType* */                                      \
@@ -217,12 +217,12 @@ SynthesisModule::engine_module ()
 {
   return intern_module;
 }
-inline const unsigned int
+inline const uint
 SynthesisModule::mix_freq () const
 {
   return externC::bse_engine_exvar_sample_freq;
 }
-inline const unsigned int
+inline const uint
 SynthesisModule::block_size () const
 {
   return externC::bse_engine_exvar_block_size;
@@ -233,19 +233,19 @@ SynthesisModule::tick_stamp ()
   return externC::bse_module_tick_stamp (engine_module());
 }
 inline const IStream&
-SynthesisModule::istream (unsigned int istream_index) const
+SynthesisModule::istream (uint         istream_index) const
 {
   void *istreams = BSE_MODULE_GET_ISTREAMSP (intern_module);
   return reinterpret_cast<IStream*> (istreams)[istream_index];
 }
 inline const JStream&
-SynthesisModule::jstream (unsigned int jstream_index) const
+SynthesisModule::jstream (uint         jstream_index) const
 {
   void *jstreams = BSE_MODULE_GET_JSTREAMSP (intern_module);
   return reinterpret_cast<JStream*> (jstreams)[jstream_index];
 }
 inline const OStream&
-SynthesisModule::ostream (unsigned int ostream_index) const
+SynthesisModule::ostream (uint         ostream_index) const
 {
   void *ostreams = BSE_MODULE_GET_OSTREAMSP (intern_module);
   return reinterpret_cast<OStream*> (ostreams)[ostream_index];

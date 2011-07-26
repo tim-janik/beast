@@ -25,10 +25,10 @@
 
 /* --- structures --- */
 typedef struct {
-  unsigned int     id;
+  uint             id;
   union {
     GSList       *list;
-    unsigned int  next_nref; /* index+1 */
+    uint          next_nref; /* index+1 */
   } data;
 } NotifyRef;
 typedef struct {
@@ -36,14 +36,14 @@ typedef struct {
   char          *user;
   SfiUStore     *bproxies;
   SfiRing	*events;
-  unsigned int	 n_nrefs;
+  uint        	 n_nrefs;
   NotifyRef	*nrefs;
-  unsigned int	 free_nref; /* index+1 */
+  uint        	 free_nref; /* index+1 */
 } BContext;
 typedef struct {
   GSList        *closures;
   unsigned long  release_id;
-  unsigned int   remote_watch : 1;
+  uint           remote_watch : 1;
 } BProxy;
 typedef struct {
   GClosure      closure;
@@ -99,7 +99,7 @@ static gboolean		bglue_proxy_request_notify	(SfiGlueContext *context,
 							 const char     *signal,
 							 gboolean        enable_notify);
 static void		bglue_proxy_processed_notify	(SfiGlueContext	*context,
-							 unsigned int	 notify_id);
+							 uint        	 notify_id);
 static GValue*          bglue_client_msg                (SfiGlueContext *context,
 							 const char     *msg,
 							 GValue         *value);
@@ -164,11 +164,11 @@ bse_glue_context_intern (const char *user)
   return &bcontext->context;
 }
 
-static unsigned int
+static uint
 bcontext_new_notify_ref (BContext *bcontext)
 {
   static unsigned char rand_counter = 0;
-  unsigned int i = bcontext->free_nref;
+  uint i = bcontext->free_nref;
   if (i)
     i -= 1; /* id -> index */
   else
@@ -187,10 +187,10 @@ bcontext_new_notify_ref (BContext *bcontext)
 
 static void
 bcontext_notify_ref_add_item (BContext     *bcontext,
-			      unsigned int  id,
+			      uint          id,
 			      BseItem      *item)
 {
-  unsigned int i = (id & 0xffffff) - 1;
+  uint i = (id & 0xffffff) - 1;
   if (item)
     bcontext->nrefs[i].data.list = g_slist_prepend (bcontext->nrefs[i].data.list,
 						    bse_item_use (item));
@@ -198,9 +198,9 @@ bcontext_notify_ref_add_item (BContext     *bcontext,
 
 static gboolean
 bcontext_release_notify_ref (BContext     *bcontext,
-			     unsigned int  id)
+			     uint          id)
 {
-  unsigned int i = (id & 0xffffff) - 1;
+  uint i = (id & 0xffffff) - 1;
   if (i < bcontext->n_nrefs &&
       bcontext->nrefs[i].id == id)
     {
@@ -232,7 +232,7 @@ bcontext_queue_release (BContext *bcontext,
 
 static void
 bcontext_queue_signal (BContext     *bcontext,
-		       unsigned int  nref_id,
+		       uint          nref_id,
 		       const char   *signal,
 		       SfiSeq       *args)
 {
@@ -431,7 +431,7 @@ bglue_describe_iface (SfiGlueContext *context,
   GObjectClass *oclass;
   GParamSpec **pspecs;
   GSList *plist = NULL;
-  unsigned int i, n;
+  uint i, n;
   
   if (!G_TYPE_IS_OBJECT (type) || !g_type_is_a (type, BSE_TYPE_ITEM))
     return NULL;
@@ -479,13 +479,13 @@ bglue_describe_iface (SfiGlueContext *context,
   return f;
 }
 
-unsigned int
+uint
 bse_glue_enum_index (GType enum_type,
 		     int   enum_value)
 {
   GEnumClass *eclass;
   GEnumValue *ev;
-  unsigned int index;
+  uint index;
   
   g_return_val_if_fail (G_TYPE_IS_ENUM (enum_type), G_MAXINT);
   g_return_val_if_fail (G_TYPE_IS_DERIVED (enum_type), G_MAXINT);
@@ -514,7 +514,7 @@ bglue_describe_proc (SfiGlueContext *context,
   proc = (BseProcedureClass*) g_type_class_ref (type);
   if (proc->n_out_pspecs < 2)
     {
-      unsigned int i;
+      uint i;
       
       p = sfi_glue_proc_new (g_type_name (type));
       p->help = g_strdup (bse_type_get_blurb (type));
@@ -543,7 +543,7 @@ bglue_list_proc_names (SfiGlueContext *context)
 {
   BseCategorySeq *cseq = bse_categories_match_typed ("/Proc/""*", BSE_TYPE_PROCEDURE);
   char **p;
-  unsigned int i;
+  uint i;
   
   p = g_new (char*, cseq->n_cats + 1);
   for (i = 0; i < cseq->n_cats; i++)
@@ -561,7 +561,7 @@ bglue_list_method_names (SfiGlueContext *context,
   GType type = g_type_from_name (iface_name);
   BseCategorySeq *cseq;
   char **p, *prefix;
-  unsigned int i, l, n_procs;
+  uint i, l, n_procs;
   
   if (!g_type_is_a (type, BSE_TYPE_ITEM))
     return NULL;
@@ -598,7 +598,7 @@ bglue_iface_children (SfiGlueContext *context,
   if (g_type_is_a (type, BSE_TYPE_ITEM))
     {
       GType *children;
-      unsigned int n;
+      uint n;
       
       children = g_type_children (type, &n);
       childnames = g_new (char*, n + 1);
@@ -632,7 +632,7 @@ bglue_exec_proc (SfiGlueContext *context,
       BseProcedureClass *proc = (BseProcedureClass*) g_type_class_ref (ptype);
       GValue *ovalues = g_new0 (GValue, proc->n_out_pspecs);
       GSList *ilist = NULL, *olist = NULL, *clearlist = NULL;
-      unsigned int i, sl = sfi_seq_length (params);
+      uint i, sl = sfi_seq_length (params);
       BseErrorType error;
       
       for (i = 0; i < proc->n_in_pspecs; i++)
@@ -721,7 +721,7 @@ bglue_proxy_list_properties (SfiGlueContext *context,
     {
       GType first_base_type = first_ancestor ? g_type_from_name (first_ancestor) : 0;
       GType last_base_type = last_ancestor ? g_type_from_name (last_ancestor) : 0;
-      unsigned int i, n;
+      uint i, n;
       GParamSpec **pspecs = g_object_class_list_properties (G_OBJECT_GET_CLASS (object), &n);
       char **p = g_new (char*, n + 1);
       names = p;
@@ -926,7 +926,7 @@ bglue_proxy_watch_release (SfiGlueContext *context,
 static void
 bclosure_marshal (GClosure       *closure,
 		  GValue         *return_value,
-		  unsigned int    n_param_values,
+		  uint            n_param_values,
 		  const GValue   *param_values,
 		  void           *invocation_hint,
 		  void           *marshal_data)
@@ -935,7 +935,7 @@ bclosure_marshal (GClosure       *closure,
   BContext *bcontext = (BContext*) closure->data;
   const char *signal = g_quark_to_string (bclosure->qsignal);
   SfiSeq *args = sfi_seq_new ();
-  unsigned int i, nref_id = bcontext_new_notify_ref (bcontext);
+  uint i, nref_id = bcontext_new_notify_ref (bcontext);
 
   for (i = 0; i < n_param_values; i++)
     {
@@ -952,7 +952,7 @@ bclosure_marshal (GClosure       *closure,
 static void
 bclosure_notify_marshal (GClosure       *closure,
 			 GValue         *return_value,
-			 unsigned int    n_param_values,
+			 uint            n_param_values,
 			 const GValue   *param_values,
 			 void           *invocation_hint,
 			 void           *marshal_data)
@@ -962,7 +962,7 @@ bclosure_notify_marshal (GClosure       *closure,
   char *signal = g_quark_to_string (bclosure->qsignal);
   SfiSeq *args = sfi_seq_new ();
   BseItem *item;
-  unsigned int nref_id = bcontext_new_notify_ref (bcontext);
+  uint nref_id = bcontext_new_notify_ref (bcontext);
   GParamSpec *pspec;
 
   /* here we handle aliasing of ::notify to ::property_notify,
@@ -994,7 +994,7 @@ bglue_proxy_request_notify (SfiGlueContext *context,
   GSList *slist, *last = NULL;
   GClosureMarshal sig_closure_marshal;
   char *sig_name, *c;
-  unsigned int sig_id;
+  uint sig_id;
   gboolean connected;
 
   if (!BSE_IS_ITEM (item) || !signal)
@@ -1087,7 +1087,7 @@ bglue_proxy_request_notify (SfiGlueContext *context,
 
 static void
 bglue_proxy_processed_notify (SfiGlueContext *context,
-			      unsigned int    notify_id)
+			      uint            notify_id)
 {
   BContext *bcontext = (BContext*) context;
   if (!bcontext_release_notify_ref (bcontext, notify_id))
@@ -1143,7 +1143,7 @@ bglue_destroy (SfiGlueContext *context)
   BContext *bcontext = (BContext*) context;
   GSList *plist = NULL;
   SfiSeq *seq;
-  unsigned int i;
+  uint i;
   sfi_ustore_foreach (bcontext->bproxies, bproxy_foreach_slist, &plist);
   while (plist)
     {

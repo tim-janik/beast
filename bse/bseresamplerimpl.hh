@@ -179,7 +179,7 @@ fir_test_filter_sse (bool        verbose,
       AlignedArray<float,16> sse_taps (fir_compute_sse_taps (taps));
       if (verbose)
 	{
-	  for (unsigned int i = 0; i < sse_taps.size(); i++)
+	  for (uint i = 0; i < sse_taps.size(); i++)
 	    {
 	      printf ("%3d", (int) (sse_taps[i] + 0.5));
 	      if (i % 4 == 3)
@@ -263,7 +263,7 @@ protected:
                          guint        n_input_samples,
 			 float       *output)
   {
-    unsigned int i = 0;
+    uint i = 0;
     if (USE_SSE)
       {
 	while (i + 3 < n_input_samples)
@@ -283,7 +283,7 @@ protected:
                            guint        n_input_samples,
 			   float       *output)
   {
-    unsigned int i = 0;
+    uint i = 0;
     if (USE_SSE)
       {
 	while ((reinterpret_cast<ptrdiff_t> (&input[i]) & 15) && i < n_input_samples)
@@ -316,7 +316,7 @@ public:
                  guint        n_input_samples,
 		 float       *output)
   {
-    const unsigned int history_todo = min (n_input_samples, ORDER - 1);
+    const uint history_todo = min (n_input_samples, ORDER - 1);
     
     copy (input, input + history_todo, &history[ORDER - 1]);
     process_block_aligned (&history[0], history_todo, output);
@@ -392,7 +392,7 @@ class Downsampler2 : public Resampler2 {
 			 float       *output,
 			 guint        n_output_samples)
   {
-    unsigned int i = 0;
+    uint i = 0;
     if (USE_SSE)
       {
 	while (i + 3 < n_output_samples)
@@ -413,7 +413,7 @@ class Downsampler2 : public Resampler2 {
 			   float       *output,
 			   guint        n_output_samples)
   {
-    unsigned int i = 0;
+    uint i = 0;
     if (USE_SSE)
       {
 	while ((reinterpret_cast<ptrdiff_t> (&input_even[i]) & 15) && i < n_output_samples)
@@ -429,7 +429,7 @@ class Downsampler2 : public Resampler2 {
                  guint        n_data_values,
 		 float       *output)
   {
-    for (unsigned int i = 0; i < n_data_values; i += 2)
+    for (uint i = 0; i < n_data_values; i += 2)
       output[i / 2] = data[i];
   }
 public:
@@ -457,14 +457,14 @@ public:
   {
     g_assert ((n_input_samples & 1) == 0);
     
-    const unsigned int BLOCKSIZE = 1024;
+    const uint BLOCKSIZE = 1024;
     
     F4Vector  block[BLOCKSIZE / 4]; /* using F4Vector ensures 16-byte alignment */
     float    *input_even = &block[0].f[0];
     
     while (n_input_samples)
       {
-	unsigned int n_input_todo = min (n_input_samples, BLOCKSIZE * 2);
+	uint n_input_todo = min (n_input_samples, BLOCKSIZE * 2);
         
         /* since the halfband filter contains zeros every other sample
 	 * and since we're using SSE instructions, which expect the
@@ -483,8 +483,8 @@ public:
         
 	const float       *input_odd = input + 1; /* we process this one with a stepping of 2 */
         
-	const unsigned int n_output_todo = n_input_todo / 2;
-	const unsigned int history_todo = min (n_output_todo, ORDER - 1);
+	const uint n_output_todo = n_input_todo / 2;
+	const uint history_todo = min (n_output_todo, ORDER - 1);
         
 	copy (input_even, input_even + history_todo, &history_even[ORDER - 1]);
 	deinterleave2 (input_odd, history_todo * 2, &history_odd[ORDER - 1]);

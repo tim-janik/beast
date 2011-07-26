@@ -40,7 +40,7 @@ bse_device_list (BseDevice    *self)
 
 static char**
 device_split_args (const char   *arg_string,
-                   unsigned int *n)
+                   uint         *n)
 {
   *n = 0;
   if (!arg_string || !arg_string[0])
@@ -63,7 +63,7 @@ device_open_args (BseDevice      *self,
                   const char     *arg_string)
 {
   BseErrorType error;
-  unsigned int n;
+  uint n;
   char **args = device_split_args (arg_string, &n);
   error = BSE_DEVICE_GET_CLASS (self)->open (self,
                                              need_readable != FALSE,
@@ -234,7 +234,7 @@ device_class_list_entries (GType    type,
       ring = bse_device_list (device);
       g_object_unref (device);
     }
-  unsigned int n, i;
+  uint n, i;
   GType *children = g_type_children (type, &n);
   for (i = 0; i < n; i++)
     ring = sfi_ring_concat (ring, device_class_list_entries (children[i], request_callback, data));
@@ -358,7 +358,7 @@ device_classes_list (GType type,
     ring = sfi_ring_append (ring, klass);
   else
     g_type_class_unref (klass);
-  unsigned int n, i;
+  uint n, i;
   GType *children = g_type_children (type, &n);
   for (i = 0; i < n; i++)
     ring = sfi_ring_concat (ring, device_classes_list (children[i], min_rating));

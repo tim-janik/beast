@@ -55,7 +55,7 @@ extern "C" {
  * Note that the transformation is performed out of place, the input
  * array is not modified, and may not overlap with the output array.
  */
-void	gsl_power2_fftac (const unsigned int n_values,
+void	gsl_power2_fftac (const uint         n_values,
 			  const double      *ri_values_in,
 			  double            *ri_values_out);
 
@@ -80,7 +80,7 @@ void	gsl_power2_fftac (const unsigned int n_values,
  * Note that the transformation is performed out of place, the input
  * array is not modified, and may not overlap with the output array.
  */
-void	gsl_power2_fftsc (const unsigned int n_values,
+void	gsl_power2_fftsc (const uint         n_values,
 			  const double      *ri_values_in,
 			  double            *ri_values_out);
 
@@ -110,7 +110,7 @@ void	gsl_power2_fftsc (const unsigned int n_values,
  * Note that the transformation is performed out of place, the input
  * array is not modified, and may not overlap with the output array.
  */
-void	gsl_power2_fftar (const unsigned int n_values,
+void	gsl_power2_fftar (const uint         n_values,
 			  const double      *r_values_in,
 			  double            *ri_values_out);
 
@@ -134,16 +134,16 @@ void	gsl_power2_fftar (const unsigned int n_values,
  * Note that the transformation is performed out of place, the input
  * array is not modified, and may not overlap with the output array.
  */
-void	gsl_power2_fftsr (const unsigned int n_values,
+void	gsl_power2_fftsr (const uint         n_values,
 			  const double      *ri_values_in,
 			  double            *r_values_out);
 
 
 /* --- convenience wrappers --- */
-void	gsl_power2_fftar_simple	(const unsigned int n_values,
+void	gsl_power2_fftar_simple	(const uint         n_values,
 				 const float       *real_values,
 				 float		   *complex_values);
-void	gsl_power2_fftsr_simple	(const unsigned int n_values,
+void	gsl_power2_fftsr_simple	(const uint         n_values,
 				 const float	   *complex_values,
 				 float             *real_values);
      

@@ -27,10 +27,10 @@
 static void	 bse_context_merger_init		(BseContextMerger	 *self);
 static void	 bse_context_merger_class_init		(BseContextMergerClass	 *klass);
 static void	 bse_context_merger_context_create	(BseSource		 *source,
-							 unsigned int		  context_handle,
+							 uint        		  context_handle,
 							 BseTrans		 *trans);
 static void	 bse_context_merger_context_dismiss	(BseSource		 *source,
-							 unsigned int		  context_handle,
+							 uint        		  context_handle,
 							 BseTrans		 *trans);
 
 
@@ -64,7 +64,7 @@ static void
 bse_context_merger_class_init (BseContextMergerClass *klass)
 {
   BseSourceClass *source_class = BSE_SOURCE_CLASS (klass);
-  unsigned int channel_id, i;
+  uint channel_id, i;
   
   parent_class = g_type_class_peek_parent (klass);
   
@@ -95,7 +95,7 @@ bse_context_merger_init (BseContextMerger *self)
 
 void
 bse_context_merger_set_merge_context (BseContextMerger *self,
-				      unsigned int      merge_context)
+				      uint              merge_context)
 {
   g_return_if_fail (BSE_CONTEXT_MERGER (self));
   
@@ -111,20 +111,20 @@ bse_context_merger_set_merge_context (BseContextMerger *self,
 }
 
 typedef struct {
-  unsigned int real_context;
-  unsigned int ref_count;
+  uint real_context;
+  uint ref_count;
 } ContextModuleData;
 
 static void
 context_merger_process (BseModule    *module,
-			unsigned int  n_values)
+			uint          n_values)
 {
-  unsigned int i;
+  uint i;
   
   for (i = 0; i < BSE_CONTEXT_MERGER_N_IOPORTS; i++)
     if (BSE_MODULE_OSTREAM (module, i).connected)
       {
-	unsigned int j, n_cons = BSE_MODULE_JSTREAM (module, i).n_connections;
+	uint j, n_cons = BSE_MODULE_JSTREAM (module, i).n_connections;
 	
 	if (!n_cons)
 	  module->ostreams[i].values = bse_engine_const_values (0);
@@ -146,7 +146,7 @@ context_merger_process (BseModule    *module,
 
 static void
 bse_context_merger_context_create (BseSource    *source,
-				   unsigned int  context_handle,
+				   uint          context_handle,
 				   BseTrans     *trans)
 {
   static const BseModuleClass context_merger_mclass = {
@@ -194,7 +194,7 @@ bse_context_merger_context_create (BseSource    *source,
 
 static void
 bse_context_merger_context_dismiss (BseSource     *source,
-				    unsigned int   context_handle,
+				    uint           context_handle,
 				    BseTrans      *trans)
 {
   BseModule *module;

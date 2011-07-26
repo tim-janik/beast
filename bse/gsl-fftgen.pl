@@ -325,12 +325,12 @@ sub bitreverse_fft2 {
     # mul_result = gsl_complex (c1.re * c2.re - c1.im * c2.im, c1.re * c2.im + c1.im * c2.re);
     printf "
 static inline void
-bitreverse_fft2analysis (const unsigned int n,
+bitreverse_fft2analysis (const uint         n,
                          const %-6s        *X,
                          %-6s              *Y)
 {
-  const unsigned int n2 = n >> 1, n1 = n + n2, max = n >> 2;
-  unsigned int i, r;
+  const uint n2 = n >> 1, n1 = n + n2, max = n >> 2;
+  uint i, r;
   
   BUTTERFLY_10 (X[0], X[1],
 		X[n], X[n + 1],
@@ -344,7 +344,7 @@ bitreverse_fft2analysis (const unsigned int n,
 		__1, __0);
   for (i = 1, r = 0; i < max; i++)
     {
-      unsigned int k, j = n >> 1;
+      uint k, j = n >> 1;
 
       while (r >= j)
 	{
@@ -370,12 +370,12 @@ bitreverse_fft2analysis (const unsigned int n,
     }
 }
 static inline void
-bitreverse_fft2synthesis (const unsigned int n,
+bitreverse_fft2synthesis (const uint         n,
                           const %-6s        *X,
                           %-6s              *Y)
 {
-  const unsigned int n2 = n >> 1, n1 = n + n2, max = n >> 2;
-  unsigned int i, r;
+  const uint n2 = n >> 1, n1 = n + n2, max = n >> 2;
+  uint i, r;
   %s scale = n;
 
   scale = 1.0 / scale;
@@ -391,7 +391,7 @@ bitreverse_fft2synthesis (const unsigned int n,
 		     scale);
   for (i = 1, r = 0; i < max; i++)
     {
-      unsigned int k, j = n >> 1;
+      uint k, j = n >> 1;
 
       while (r >= j)
 	{
@@ -789,7 +789,7 @@ print " */\n";
 	   $fft_size, $negate_sign ? "synthesis" : "analysis",
 	   $skip2 ? "_skip2" : "",
 	   $ieee_type, $ieee_type);
-    printf "%sregister unsigned int butterfly, block, offset;\n", $indent;
+    printf "%sregister uint butterfly, block, offset;\n", $indent;
     printf "%sregister %s Wre, Wim;\n\n", $indent, $tmp_ieee_type, $tmp_ieee_type;
     printf "%sbutterfly = block = offset = 0, Wre = Wim = 0.0; /* silence compiler */\n", $indent;
     

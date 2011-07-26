@@ -39,7 +39,7 @@ static void	    bse_editable_sample_finalize	(GObject		*object);
 
 /* --- variables --- */
 static void          *parent_class = NULL;
-static unsigned int   signal_changed = 0;
+static uint           signal_changed = 0;
 static Notify        *changed_notify_list = NULL;
 
 

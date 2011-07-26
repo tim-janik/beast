@@ -36,7 +36,7 @@ namespace
 {
 typedef unsigned char byte;
 typedef unsigned short int word;
-typedef unsigned int dword;
+typedef uint dword;
 typedef char sbyte;
 typedef short int sword;
 typedef int sdword;

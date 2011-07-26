@@ -23,7 +23,7 @@
 /* --- variables --- */
 BseGConfig           *bse_global_config = NULL;
 static GParamSpec    *pspec_global_config = NULL;
-static unsigned int   gconfig_lock_count = 0;
+static uint           gconfig_lock_count = 0;
 
 
 /* --- functions --- */

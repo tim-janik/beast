@@ -40,14 +40,14 @@ pretty_print_double (char  *str,
 }
 
 char*
-bse_complex_list (unsigned int n_points,
+bse_complex_list (uint         n_points,
 		  BseComplex  *points,
 		  const char  *indent)
 {
-  static unsigned int rbi = 0;
+  static uint rbi = 0;
   static char* rbuffer[RING_BUFFER_LENGTH] = { NULL, };
   char *s, *tbuffer = g_newa (char, (FLOAT_STRING_SIZE * 2 * n_points));
-  unsigned int i;
+  uint i;
   
   rbi = (rbi + 1) % RING_BUFFER_LENGTH;
   if (rbuffer[rbi] != NULL)
@@ -72,7 +72,7 @@ bse_complex_list (unsigned int n_points,
 char*
 bse_complex_str (BseComplex c)
 {
-  static unsigned int rbi = 0;
+  static uint rbi = 0;
   static char* rbuffer[RING_BUFFER_LENGTH] = { NULL, };
   char *s, tbuffer[FLOAT_STRING_SIZE * 2];
   
@@ -92,14 +92,14 @@ bse_complex_str (BseComplex c)
 }
 
 char*
-bse_poly_str (unsigned int degree,
+bse_poly_str (uint         degree,
 	      double      *a,
 	      const char  *var)
 {
-  static unsigned int rbi = 0;
+  static uint rbi = 0;
   static char* rbuffer[RING_BUFFER_LENGTH] = { NULL, };
   char *s, *tbuffer = g_newa (char, degree * FLOAT_STRING_SIZE);
-  unsigned int i;
+  uint i;
   
   if (!var)
     var = "x";
@@ -125,14 +125,14 @@ bse_poly_str (unsigned int degree,
 }
 
 char*
-bse_poly_str1 (unsigned int degree,
+bse_poly_str1 (uint         degree,
 	       double      *a,
 	       const char  *var)
 {
-  static unsigned int rbi = 0;
+  static uint rbi = 0;
   static char* rbuffer[RING_BUFFER_LENGTH] = { NULL, };
   char *s, *tbuffer = g_newa (char, degree * FLOAT_STRING_SIZE);
-  unsigned int i, need_plus = 0;
+  uint i, need_plus = 0;
   
   if (!var)
     var = "x";
@@ -181,7 +181,7 @@ bse_poly_str1 (unsigned int degree,
 
 void
 bse_complex_gnuplot (const char  *file_name,
-		     unsigned int n_points,
+		     uint         n_points,
 		     BseComplex  *points)
 {
   FILE *fout = fopen (file_name, "w");
@@ -194,7 +194,7 @@ void
 bse_float_gnuplot (const char    *file_name,
                    double         xstart,
                    double         xstep,
-                   unsigned int   n_ypoints,
+                   uint           n_ypoints,
                    const float   *ypoints)
 {
   FILE *fout = fopen (file_name, "w");
@@ -221,11 +221,11 @@ bse_temp_freq (double kammer_freq,
 }
 
 void
-bse_poly_from_re_roots (unsigned int degree,
+bse_poly_from_re_roots (uint         degree,
 			double      *a,
 			BseComplex  *roots)
 {
-  unsigned int i;
+  uint i;
   
   /* initialize polynomial */
   a[1] = 1;
@@ -233,7 +233,7 @@ bse_poly_from_re_roots (unsigned int degree,
   /* monomial factor multiplication */
   for (i = 1; i < degree; i++)
     {
-      unsigned int j;
+      uint j;
       
       a[i + 1] = a[i];
       for (j = i; j >= 1; j--)
@@ -243,11 +243,11 @@ bse_poly_from_re_roots (unsigned int degree,
 }
 
 void
-bse_cpoly_from_roots (unsigned int degree,
+bse_cpoly_from_roots (uint         degree,
 		      BseComplex  *c,
 		      BseComplex  *roots)
 {
-  unsigned int i;
+  uint i;
   
   /* initialize polynomial */
   c[1].re = 1;
@@ -258,7 +258,7 @@ bse_cpoly_from_roots (unsigned int degree,
   for (i = 1; i < degree; i++)
     {
       BseComplex r = bse_complex (-roots[i].re, -roots[i].im);
-      unsigned int j;
+      uint j;
       
       c[i + 1] = c[i];
       for (j = i; j >= 1; j--)

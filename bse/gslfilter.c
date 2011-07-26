@@ -36,7 +36,7 @@ gsl_db_invert (double x)
 }
 
 static void
-band_filter_common (unsigned int iorder,
+band_filter_common (uint         iorder,
 		    double       p_freq, /* 0..pi */
 		    double       s_freq, /* 0..pi */
 		    double       epsilon,
@@ -47,7 +47,7 @@ band_filter_common (unsigned int iorder,
 		    gboolean     band_pass,
 		    gboolean     t1_norm)
 {
-  unsigned int iorder2 = iorder >> 1;
+  uint iorder2 = iorder >> 1;
   BseComplex *poly = g_newa (BseComplex, iorder + 1);
   BseComplex fpoly[2 + 1] = { { 0, }, { 0, }, { 1, 0 } };
   double alpha, norm;
@@ -100,7 +100,7 @@ band_filter_common (unsigned int iorder,
 }
 
 static void
-filter_rp_to_z (unsigned int iorder,
+filter_rp_to_z (uint         iorder,
 		BseComplex  *roots, /* [0..iorder-1] */
 		BseComplex  *poles,
 		double      *a,     /* [0..iorder] */
@@ -125,7 +125,7 @@ filter_rp_to_z (unsigned int iorder,
 }
 
 static void
-filter_lp_invert (unsigned int iorder,
+filter_lp_invert (uint         iorder,
 		  double      *a,     /* [0..iorder] */
 		  double      *b)
 {
@@ -141,7 +141,7 @@ filter_lp_invert (unsigned int iorder,
 
 /* --- butterworth filter --- */
 void
-gsl_filter_butter_rp (unsigned int iorder,
+gsl_filter_butter_rp (uint         iorder,
 		      double       freq, /* 0..pi */
 		      double       epsilon,
 		      BseComplex  *roots,    /* [0..iorder-1] */
@@ -152,7 +152,7 @@ gsl_filter_butter_rp (unsigned int iorder,
   /* double kappa = bse_trans_freq2s (freq); */
   double kappa;
   BseComplex root;
-  unsigned int i;
+  uint i;
 
   epsilon = bse_trans_zepsilon2ss (epsilon);
   kappa = bse_trans_freq2s (freq) * pow (epsilon, -1.0 / order);
@@ -176,11 +176,11 @@ gsl_filter_butter_rp (unsigned int iorder,
 
 /* --- tschebyscheff type 1 filter --- */
 static double
-tschebyscheff_eval (unsigned int degree,
+tschebyscheff_eval (uint         degree,
 		    double       x)
 {
   double td = x, td_m_1 = 1;
-  unsigned int d = 1;
+  uint d = 1;
 
   /* eval polynomial for a certain x */
   if (degree == 0)
@@ -198,7 +198,7 @@ tschebyscheff_eval (unsigned int degree,
 }
 
 static double
-tschebyscheff_inverse (unsigned int degree,
+tschebyscheff_inverse (uint         degree,
 		       double       x)
 {
   /* note, that thebyscheff_eval(degree,x)=cosh(degree*acosh(x)) */
@@ -206,7 +206,7 @@ tschebyscheff_inverse (unsigned int degree,
 }
 
 void
-gsl_filter_tscheb1_rp (unsigned int iorder,
+gsl_filter_tscheb1_rp (uint         iorder,
 		       double       freq,  /* 1..pi */
 		       double       epsilon,
 		       BseComplex  *roots, /* [0..iorder-1] */
@@ -217,7 +217,7 @@ gsl_filter_tscheb1_rp (unsigned int iorder,
   double beta_mul = pi / (2.0 * order);
   double kappa = bse_trans_freq2s (freq);
   BseComplex root;
-  unsigned int i;
+  uint i;
 
   epsilon = bse_trans_zepsilon2ss (epsilon);
   alpha = asinh (1.0 / epsilon) / order;
@@ -241,7 +241,7 @@ gsl_filter_tscheb1_rp (unsigned int iorder,
 
 /* --- tschebyscheff type 2 filter --- */
 void
-gsl_filter_tscheb2_rp (unsigned int iorder,
+gsl_filter_tscheb2_rp (uint         iorder,
 		       double       c_freq, /* 1..pi */
 		       double       steepness,
 		       double       epsilon,
@@ -256,7 +256,7 @@ gsl_filter_tscheb2_rp (unsigned int iorder,
   double alpha;
   double beta_mul = pi / (2.0 * order);
   BseComplex root;
-  unsigned int i;
+  uint i;
 
 #if 0
   /* triggers an internal compiler error with gcc-2.95.4 (and certain
@@ -310,7 +310,7 @@ gsl_filter_tscheb2_rp (unsigned int iorder,
  * based on the ripple residue in the stop band.
  */
 double
-gsl_filter_tscheb2_steepness_db (unsigned int iorder,
+gsl_filter_tscheb2_steepness_db (uint         iorder,
 				 double       c_freq,
 				 double       epsilon,
 				 double       stopband_db)
@@ -328,7 +328,7 @@ gsl_filter_tscheb2_steepness_db (unsigned int iorder,
  * based on ripple residue in the stop band.
  */
 double
-gsl_filter_tscheb2_steepness (unsigned int iorder,
+gsl_filter_tscheb2_steepness (uint         iorder,
 			      double       c_freq,
 			      double       epsilon,
 			      double       residue)
@@ -355,7 +355,7 @@ gsl_filter_tscheb2_steepness (unsigned int iorder,
  * Butterworth lowpass filter.
  */
 void
-gsl_filter_butter_lp (unsigned int iorder,
+gsl_filter_butter_lp (uint         iorder,
 		      double       freq, /* 0..pi */
 		      double       epsilon,
 		      double      *a,    /* [0..iorder] */
@@ -385,7 +385,7 @@ gsl_filter_butter_lp (unsigned int iorder,
  * Tschebyscheff type 1 lowpass filter.
  */
 void
-gsl_filter_tscheb1_lp (unsigned int iorder,
+gsl_filter_tscheb1_lp (uint         iorder,
 		       double       freq, /* 0..pi */
 		       double       epsilon,
 		       double      *a,    /* [0..iorder] */
@@ -424,7 +424,7 @@ gsl_filter_tscheb1_lp (unsigned int iorder,
  * band width in fractions of octaves, pass @a steepness=2^octave_fraction.
  */
 void
-gsl_filter_tscheb2_lp (unsigned int iorder,
+gsl_filter_tscheb2_lp (uint         iorder,
 		       double       freq,   /* 0..pi */
 		       double       steepness,
 		       double       epsilon,
@@ -459,7 +459,7 @@ gsl_filter_tscheb2_lp (unsigned int iorder,
  * Butterworth highpass filter.
  */
 void
-gsl_filter_butter_hp (unsigned int iorder,
+gsl_filter_butter_hp (uint         iorder,
 		      double       freq, /* 0..pi */
 		      double       epsilon,
 		      double      *a,    /* [0..iorder] */
@@ -482,7 +482,7 @@ gsl_filter_butter_hp (unsigned int iorder,
  * Tschebyscheff type 1 highpass filter.
  */
 void
-gsl_filter_tscheb1_hp (unsigned int iorder,
+gsl_filter_tscheb1_hp (uint         iorder,
 		       double       freq, /* 0..pi */
 		       double       epsilon,
 		       double      *a,    /* [0..iorder] */
@@ -506,7 +506,7 @@ gsl_filter_tscheb1_hp (unsigned int iorder,
  * Tschebyscheff type 2 highpass filter.
  */
 void
-gsl_filter_tscheb2_hp   (unsigned int iorder,
+gsl_filter_tscheb2_hp   (uint         iorder,
 			 double       freq,
 			 double       steepness,
 			 double       epsilon,
@@ -533,14 +533,14 @@ gsl_filter_tscheb2_hp   (unsigned int iorder,
  * Butterworth bandpass filter.
  */
 void
-gsl_filter_butter_bp (unsigned int iorder,
+gsl_filter_butter_bp (uint         iorder,
 		      double       freq1, /* 0..pi */
 		      double       freq2, /* 0..pi */
 		      double       epsilon,
 		      double      *a,      /* [0..iorder] */
 		      double      *b)
 {
-  unsigned int iorder2 = iorder >> 1;
+  uint iorder2 = iorder >> 1;
   BseComplex *roots = g_newa (BseComplex, iorder2);
   BseComplex *poles = g_newa (BseComplex, iorder2);
   double theta;
@@ -567,14 +567,14 @@ gsl_filter_butter_bp (unsigned int iorder,
  * Tschebyscheff type 1 bandpass filter.
  */
 void
-gsl_filter_tscheb1_bp (unsigned int iorder,
+gsl_filter_tscheb1_bp (uint         iorder,
 		       double       freq1, /* 0..pi */
 		       double       freq2, /* 0..pi */
 		       double       epsilon,
 		       double      *a,      /* [0..iorder] */
 		       double      *b)
 {
-  unsigned int iorder2 = iorder >> 1;
+  uint iorder2 = iorder >> 1;
   BseComplex *roots = g_newa (BseComplex, iorder2);
   BseComplex *poles = g_newa (BseComplex, iorder2);
   double theta;
@@ -602,7 +602,7 @@ gsl_filter_tscheb1_bp (unsigned int iorder,
  * Tschebyscheff type 2 bandpass filter.
  */
 void
-gsl_filter_tscheb2_bp (unsigned int iorder,
+gsl_filter_tscheb2_bp (uint         iorder,
 		       double       freq1, /* 0..pi */
 		       double       freq2, /* 0..pi */
 		       double       steepness,
@@ -610,7 +610,7 @@ gsl_filter_tscheb2_bp (unsigned int iorder,
 		       double      *a,      /* [0..iorder] */
 		       double      *b)
 {
-  unsigned int iorder2 = iorder >> 1;
+  uint iorder2 = iorder >> 1;
   BseComplex *roots = g_newa (BseComplex, iorder2);
   BseComplex *poles = g_newa (BseComplex, iorder2);
   double theta;
@@ -639,14 +639,14 @@ gsl_filter_tscheb2_bp (unsigned int iorder,
  * Butterworth bandstop filter.
  */
 void
-gsl_filter_butter_bs (unsigned int iorder,
+gsl_filter_butter_bs (uint         iorder,
 		      double       freq1, /* 0..pi */
 		      double       freq2, /* 0..pi */
 		      double       epsilon,
 		      double      *a,      /* [0..iorder] */
 		      double      *b)
 {
-  unsigned int iorder2 = iorder >> 1;
+  uint iorder2 = iorder >> 1;
   BseComplex *roots = g_newa (BseComplex, iorder2);
   BseComplex *poles = g_newa (BseComplex, iorder2);
   double theta;
@@ -673,14 +673,14 @@ gsl_filter_butter_bs (unsigned int iorder,
  * Tschebyscheff type 1 bandstop filter.
  */
 void
-gsl_filter_tscheb1_bs (unsigned int iorder,
+gsl_filter_tscheb1_bs (uint         iorder,
 		       double       freq1, /* 0..pi */
 		       double       freq2, /* 0..pi */
 		       double       epsilon,
 		       double      *a,      /* [0..iorder] */
 		       double      *b)
 {
-  unsigned int iorder2 = iorder >> 1;
+  uint iorder2 = iorder >> 1;
   BseComplex *roots = g_newa (BseComplex, iorder2);
   BseComplex *poles = g_newa (BseComplex, iorder2);
   double theta;
@@ -708,7 +708,7 @@ gsl_filter_tscheb1_bs (unsigned int iorder,
  * Tschebyscheff type 2 bandstop filter.
  */
 void
-gsl_filter_tscheb2_bs (unsigned int iorder,
+gsl_filter_tscheb2_bs (uint         iorder,
 		       double       freq1, /* 0..pi */
 		       double       freq2, /* 0..pi */
 		       double       steepness,
@@ -716,7 +716,7 @@ gsl_filter_tscheb2_bs (unsigned int iorder,
 		       double      *a,      /* [0..iorder] */
 		       double      *b)
 {
-  unsigned int iorder2 = iorder >> 1;
+  uint iorder2 = iorder >> 1;
   BseComplex *roots = g_newa (BseComplex, iorder2);
   BseComplex *poles = g_newa (BseComplex, iorder2);
   double theta;
@@ -736,7 +736,7 @@ gsl_filter_tscheb2_bs (unsigned int iorder,
 /* --- tschebyscheff type 1 via generic root-finding --- */
 #if 0
 static void
-tschebyscheff_poly (unsigned int degree,
+tschebyscheff_poly (uint         degree,
 		    double      *v)
 {
   /* construct all polynomial koefficients */
@@ -762,7 +762,7 @@ tschebyscheff_poly (unsigned int degree,
 }
 
 static void
-gsl_filter_tscheb1_test	(unsigned int iorder,
+gsl_filter_tscheb1_test	(uint         iorder,
 			 double       zomega,
 			 double       epsilon,
 			 double      *a,    /* [0..iorder] */
@@ -773,7 +773,7 @@ gsl_filter_tscheb1_test	(unsigned int iorder,
   double *vk = g_newa (double, 1 + iorder), norm;
   double *q = g_newa (double, 2 * (1 + iorder));
   double O = bse_trans_freq2s (zomega);
-  unsigned int i;
+  uint i;
   
   /* calc Vk() */
   tschebyscheff_poly (iorder, vk);
@@ -863,9 +863,9 @@ gsl_blackman_window (double x)
  * @a n_points >= @a iorder.
  */
 void
-gsl_filter_fir_approx (unsigned int  iorder,
+gsl_filter_fir_approx (uint          iorder,
 		       double       *a,	/* [0..iorder] */
-		       unsigned int  n_points,
+		       uint          n_points,
 		       const double *freq,
 		       const double *value,
 		       gboolean      interpolate_db)
@@ -876,8 +876,8 @@ gsl_filter_fir_approx (unsigned int  iorder,
    *    larger fft_sizes produce better filters?
    * b) generalize windowing
    */
-  unsigned int fft_size = 8;
-  unsigned int point = 0, i;
+  uint fft_size = 8;
+  uint point = 0, i;
   double lfreq = -2, lval = 1.0, rfreq = -1, rval = 1.0;
   double *fft_in, *fft_out;
   double ffact;

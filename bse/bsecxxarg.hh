@@ -81,7 +81,7 @@ BSE__SPECIALIZE(bool,                 bool,   "b", no_cast, no_cast);
 // BSE__SPECIALIZE(signed short,      int,    "i", no_cast, no_cast);
 // BSE__SPECIALIZE(unsigned short,    int,    "i", no_cast, no_cast);
 BSE__SPECIALIZE(signed int,           int,    "i", no_cast, no_cast);
-BSE__SPECIALIZE(unsigned int,         int,    "i", no_cast, no_cast);
+BSE__SPECIALIZE(uint,                 int,    "i", no_cast, no_cast);
 BSE__SPECIALIZE(signed long,          int,    "i", no_cast, no_cast);
 BSE__SPECIALIZE(unsigned long,        int,    "i", no_cast, no_cast);
 BSE__SPECIALIZE(signed long long,     num,    "n", no_cast, no_cast);

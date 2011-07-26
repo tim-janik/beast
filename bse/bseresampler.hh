@@ -17,7 +17,7 @@
 #ifndef __BSE_RESAMPLER_HH__
 #define __BSE_RESAMPLER_HH__
 
-#include <glib.h>
+#include <bse/bsecxxutils.hh>
 
 G_BEGIN_DECLS
 
@@ -44,7 +44,7 @@ BseResampler2* bse_resampler2_create        (BseResampler2Mode      mode,
 void           bse_resampler2_destroy       (BseResampler2         *resampler);
 void	       bse_resampler2_process_block (BseResampler2         *resampler,
                                              const float           *input,
-                                             unsigned int           n_input_samples,
+                                             uint                   n_input_samples,
 					     float                 *output);
 guint	       bse_resampler2_order         (BseResampler2         *resampler);
 double	       bse_resampler2_delay         (BseResampler2         *resampler);
@@ -86,7 +86,7 @@ public:
   /**
    * resample a data block
    */
-  virtual void	      process_block (const float *input, unsigned int n_input_samples, float *output) = 0;
+  virtual void	      process_block (const float *input, uint n_input_samples, float *output) = 0;
   /**
    * return FIR filter order
    */
