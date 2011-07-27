@@ -72,7 +72,7 @@ bse/bsecontainer.proc
 bse/bsecore.idl
 bse/bsedevice.cc
 bse/bseenums.cc
-bse/bseinstrumentinput.c
+bse/bseinstrumentinput.cc
 bse/bseinstrumentoutput.c
 bse/bsejanitor.c
 bse/bseladspamodule.c
