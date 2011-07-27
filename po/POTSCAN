@@ -73,7 +73,7 @@ bse/bsecore.idl
 bse/bsedevice.cc
 bse/bseenums.cc
 bse/bseinstrumentinput.cc
-bse/bseinstrumentoutput.c
+bse/bseinstrumentoutput.cc
 bse/bsejanitor.c
 bse/bseladspamodule.c
 bse/bsemain.cc

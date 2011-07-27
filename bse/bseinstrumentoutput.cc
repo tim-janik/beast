@@ -31,7 +31,7 @@ enum
 
 
 /* --- variables --- */
-static gpointer		 parent_class = NULL;
+static void *parent_class = NULL;
 
 
 /* --- functions --- */
@@ -41,7 +41,7 @@ bse_instrument_output_reset_names (BseInstrumentOutput *self)
   BseSubOPort *oport = BSE_SUB_OPORT (self);
   BseItem *item = BSE_ITEM (self);
   BseSNet *snet = item->parent ? BSE_SNET (item->parent) : NULL;
-  const gchar *name;
+  const char *name;
   
   g_object_freeze_notify (G_OBJECT (self));
   name = BSE_SOURCE_ICHANNEL_IDENT (self, 0);
@@ -80,7 +80,7 @@ bse_instrument_output_set_parent (BseItem *item,
   BseInstrumentOutput *self = BSE_INSTRUMENT_OUTPUT (item);
   
   if (item->parent)
-    g_signal_handlers_disconnect_by_func (item->parent, bse_instrument_output_reset_names, self);
+    g_signal_handlers_disconnect_by_func (item->parent, (void*) bse_instrument_output_reset_names, self);
   
   /* chain parent class' handler */
   BSE_ITEM_CLASS (parent_class)->set_parent (item, parent);
@@ -93,14 +93,14 @@ bse_instrument_output_set_parent (BseItem *item,
 }
 
 static void
-bse_instrument_output_class_init (BseInstrumentOutputClass *class)
+bse_instrument_output_class_init (BseInstrumentOutputClass *klass)
 {
-  BseObjectClass *object_class = BSE_OBJECT_CLASS (class);
-  BseItemClass *item_class = BSE_ITEM_CLASS (class);
-  BseSourceClass *source_class = BSE_SOURCE_CLASS (class);
-  guint i, ichannel_id;
+  BseObjectClass *object_class = BSE_OBJECT_CLASS (klass);
+  BseItemClass *item_class = BSE_ITEM_CLASS (klass);
+  BseSourceClass *source_class = BSE_SOURCE_CLASS (klass);
+  uint i, ichannel_id;
   
-  parent_class = g_type_class_peek_parent (class);
+  parent_class = g_type_class_peek_parent (klass);
   
   item_class->set_parent = bse_instrument_output_set_parent;
   
@@ -109,7 +109,7 @@ bse_instrument_output_class_init (BseInstrumentOutputClass *class)
   /* override parent properties with NOP properties */
   for (i = 0; i < BSE_SUB_OPORT_N_PORTS; i++)
     {
-      gchar *string = g_strdup_printf ("out_port_%u", i + 1);
+      char *string = g_strdup_printf ("out_port_%u", i + 1);
       bse_object_class_add_param (object_class, NULL, PROP_OPORT_NAME + i * 2,
 				  sfi_pspec_string (string, NULL, NULL, NULL, NULL));
       g_free (string);
