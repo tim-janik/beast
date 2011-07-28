@@ -34,16 +34,16 @@ enum {
 
 
 /* --- prototypes --- */
-static void             bse_item_class_init_base        (BseItemClass           *class);
-static void             bse_item_class_finalize_base    (BseItemClass           *class);
-static void             bse_item_class_init             (BseItemClass           *class);
+static void             bse_item_class_init_base        (BseItemClass           *klass);
+static void             bse_item_class_finalize_base    (BseItemClass           *klass);
+static void             bse_item_class_init             (BseItemClass           *klass);
 static void             bse_item_init                   (BseItem                *item);
 static void             bse_item_set_property_internal  (GObject                *object,
-                                                         guint                   param_id,
+                                                         uint                    param_id,
                                                          const GValue           *value,
                                                          GParamSpec             *pspec);
 static void             bse_item_get_property_internal  (GObject                *object,
-                                                         guint                   param_id,
+                                                         uint                    param_id,
                                                          GValue                 *value,
                                                          GParamSpec             *pspec);
 static void             bse_item_update_state           (BseItem                *self);
@@ -52,8 +52,8 @@ static gboolean         bse_item_real_needs_storage     (BseItem                
 static void             bse_item_do_dispose             (GObject                *object);
 static void             bse_item_do_finalize            (GObject                *object);
 static void             bse_item_do_set_uname           (BseObject              *object,
-                                                         const gchar            *uname);
-static guint            bse_item_do_get_seqid           (BseItem                *item);
+                                                         const char             *uname);
+static uint             bse_item_do_get_seqid           (BseItem                *item);
 static void             bse_item_do_set_parent          (BseItem                *item,
                                                          BseItem                *parent);
 static BseUndoStack*    bse_item_default_get_undo       (BseItem                *self);
@@ -91,23 +91,23 @@ BSE_BUILTIN_TYPE (BseItem)
 }
 
 static void
-bse_item_class_init_base (BseItemClass *class)
+bse_item_class_init_base (BseItemClass *klass)
 {
-  class->get_candidates = NULL;
+  klass->get_candidates = NULL;
 }
 
 static void
-bse_item_class_finalize_base (BseItemClass *class)
+bse_item_class_finalize_base (BseItemClass *klass)
 {
 }
 
 static void
-bse_item_class_init (BseItemClass *class)
+bse_item_class_init (BseItemClass *klass)
 {
-  GObjectClass *gobject_class = G_OBJECT_CLASS (class);
-  BseObjectClass *object_class = BSE_OBJECT_CLASS (class);
+  GObjectClass *gobject_class = G_OBJECT_CLASS (klass);
+  BseObjectClass *object_class = BSE_OBJECT_CLASS (klass);
   
-  parent_class = g_type_class_peek_parent (class);
+  parent_class = (GTypeClass*) g_type_class_peek_parent (klass);
   
   gobject_class->get_property = bse_item_get_property_internal;
   gobject_class->set_property = bse_item_set_property_internal;
@@ -116,16 +116,16 @@ bse_item_class_init (BseItemClass *class)
   
   object_class->set_uname = bse_item_do_set_uname;
   
-  class->set_parent = bse_item_do_set_parent;
-  class->get_seqid = bse_item_do_get_seqid;
-  class->get_undo = bse_item_default_get_undo;
-  class->needs_storage = bse_item_real_needs_storage;
+  klass->set_parent = bse_item_do_set_parent;
+  klass->get_seqid = bse_item_do_get_seqid;
+  klass->get_undo = bse_item_default_get_undo;
+  klass->needs_storage = bse_item_real_needs_storage;
   
   bse_object_class_add_param (object_class, NULL,
                               PROP_SEQID,
                               sfi_pspec_int ("seqid", "Sequential ID", NULL,
                                              0, 0, SFI_MAXINT, 1, "r"));
-  bse_item_class_add_parasite_signals (class);
+  bse_item_class_add_parasite_signals (klass);
 }
 
 static void
@@ -136,7 +136,7 @@ bse_item_init (BseItem *item)
 
 static void
 bse_item_set_property_internal (GObject                *object,
-                                guint                   param_id,
+                                uint                    param_id,
                                 const GValue           *value,
                                 GParamSpec             *pspec)
 {
@@ -151,7 +151,7 @@ bse_item_set_property_internal (GObject                *object,
 
 static void
 bse_item_get_property_internal (GObject                *object,
-                                guint                   param_id,
+                                uint                    param_id,
                                 GValue                 *value,
                                 GParamSpec             *pspec)
 {
@@ -197,8 +197,8 @@ bse_item_do_finalize (GObject *object)
 }
 
 static void
-bse_item_do_set_uname (BseObject   *object,
-                       const gchar *uname)
+bse_item_do_set_uname (BseObject  *object,
+                       const char *uname)
 {
   BseItem *item = BSE_ITEM (object);
   
@@ -222,8 +222,8 @@ bse_item_do_set_parent (BseItem *self,
 }
 
 static gboolean
-recurse_update_state (BseItem  *self,
-                      gpointer  data)
+recurse_update_state (BseItem *self,
+                      void    *data)
 {
   bse_item_update_state (self);
   return TRUE;
@@ -260,10 +260,10 @@ bse_item_update_state (BseItem *self)
  * internal.
  */
 void
-bse_item_set_internal (gpointer item,
+bse_item_set_internal (void    *item,
                        gboolean internal)
 {
-  BseItem *self = item;
+  BseItem *self = BSE_ITEM (item);
   
   g_return_if_fail (BSE_IS_ITEM (self));
   
@@ -293,9 +293,9 @@ bse_item_needs_storage (BseItem    *self,
 
 void
 bse_item_compat_setup (BseItem         *self,
-                       guint            vmajor,
-                       guint            vminor,
-                       guint            vmicro)
+                       uint             vmajor,
+                       uint             vminor,
+                       uint             vmicro)
 {
   g_return_if_fail (BSE_IS_ITEM (self));
   
@@ -305,7 +305,7 @@ bse_item_compat_setup (BseItem         *self,
 
 typedef struct {
   BseItem              *item;
-  gpointer              data;
+  void                 *data;
   BseItemSeq           *iseq;
   GType                 base_type;
   BseItemCheckContainer ccheck;
@@ -314,9 +314,9 @@ typedef struct {
 
 static gboolean
 gather_child (BseItem *child,
-              gpointer data)
+              void    *data)
 {
-  GatherData *gdata = data;
+  GatherData *gdata = (GatherData*) data;
   
   if (child != gdata->item && !BSE_ITEM_INTERNAL (child) &&
       g_type_is_a (G_OBJECT_TYPE (child), gdata->base_type) &&
@@ -344,7 +344,7 @@ bse_item_gather_items (BseItem              *item,
                        GType                 base_type,
                        BseItemCheckContainer ccheck,
                        BseItemCheckProxy     pcheck,
-                       gpointer              data)
+                       void                 *data)
 {
   GatherData gdata;
   
@@ -373,7 +373,7 @@ bse_item_gather_items (BseItem              *item,
 static gboolean
 gather_typed_ccheck (BseContainer   *container,
                      BseItem        *item,
-                     gpointer        data)
+                     void           *data)
 {
   GType type = (GType) data;
   return g_type_is_a (G_OBJECT_TYPE (container), type);
@@ -382,7 +382,7 @@ gather_typed_ccheck (BseContainer   *container,
 static gboolean
 gather_typed_acheck (BseItem  *proxy,
                      BseItem  *item,
-                     gpointer  data)
+                     void     *data)
 {
   return proxy != item && !bse_item_has_ancestor (item, proxy);
 }
@@ -408,18 +408,18 @@ bse_item_gather_items_typed (BseItem              *item,
                              gboolean              allow_ancestor)
 {
   if (allow_ancestor)
-    return bse_item_gather_items (item, iseq, proxy_type, gather_typed_ccheck, NULL, (gpointer) container_type);
+    return bse_item_gather_items (item, iseq, proxy_type, gather_typed_ccheck, NULL, (void*) container_type);
   else
     return bse_item_gather_items (item, iseq, proxy_type,
-                                  gather_typed_ccheck, gather_typed_acheck, (gpointer) container_type);
+                                  gather_typed_ccheck, gather_typed_acheck, (void*) container_type);
 }
 
 gboolean
 bse_item_get_candidates (BseItem                *item,
-                         const gchar            *property,
+                         const char             *property,
                          BsePropertyCandidates  *pc)
 {
-  BseItemClass *class;
+  BseItemClass *klass;
   GParamSpec *pspec;
   
   g_return_val_if_fail (BSE_IS_ITEM (item), FALSE);
@@ -433,9 +433,9 @@ bse_item_get_candidates (BseItem                *item,
     pc->items = bse_item_seq_new();
   if (!pc->partitions)
     pc->partitions = bse_type_seq_new();
-  class = g_type_class_peek (pspec->owner_type);
-  if (class && class->get_candidates)
-    class->get_candidates (item, pspec->param_id, pc, pspec);
+  klass = (BseItemClass*) g_type_class_peek (pspec->owner_type);
+  if (klass && klass->get_candidates)
+    klass->get_candidates (item, pspec->param_id, pc, pspec);
   return TRUE;
 }
 
@@ -494,7 +494,7 @@ bse_item_set_parent (BseItem *item,
   g_object_unref (item);
 }
 
-static guint
+static uint
 bse_item_do_get_seqid (BseItem *item)
 {
   if (item->parent)
@@ -504,14 +504,14 @@ bse_item_do_get_seqid (BseItem *item)
 }
 
 static gboolean
-idle_handler_seqid_changed (gpointer data)
+idle_handler_seqid_changed (void *data)
 {
   BSE_THREADS_ENTER ();
   
   while (item_seqid_changed_queue)
     {
-      BseItem *item = g_slist_pop_head (&item_seqid_changed_queue);
-      g_object_notify (item, "seqid");
+      BseItem *item = (BseItem*) g_slist_pop_head (&item_seqid_changed_queue);
+      g_object_notify (G_OBJECT (item), "seqid");
     }
   
   BSE_THREADS_LEAVE ();
@@ -532,7 +532,7 @@ bse_item_queue_seqid_changed (BseItem *item)
     item_seqid_changed_queue = g_slist_prepend (item_seqid_changed_queue, item);
 }
 
-guint
+uint
 bse_item_get_seqid (BseItem *item)
 {
   g_return_val_if_fail (BSE_IS_ITEM (item), 0);
@@ -738,17 +738,17 @@ bse_item_current_musical_tuning (BseItem *self)
 }
 
 static inline GType
-find_method_procedure (GType        object_type,
-                       const gchar *method_name)
+find_method_procedure (GType       object_type,
+                       const char *method_name)
 {
-  guint l2 = strlen (method_name);
+  uint l2 = strlen (method_name);
   GType proc_type, type = object_type; /* assumed to be *derived* from BSE_TYPE_ITEM */
   do
     {
-      gchar *name, *type_name = g_type_name (type);
-      guint l1 = strlen (type_name);
+      char *name, *type_name = g_type_name (type);
+      uint l1 = strlen (type_name);
       
-      name = g_new (gchar, l1 + 1 + l2 + 1);
+      name = g_new (char, l1 + 1 + l2 + 1);
       memcpy (name, type_name, l1);
       name[l1] = '+';
       memcpy (name + l1 + 1, method_name, l2);
@@ -766,7 +766,7 @@ find_method_procedure (GType        object_type,
 
 static inline BseErrorType
 bse_item_execva_i (BseItem     *item,
-                   const gchar *procedure,
+                   const char  *procedure,
                    va_list      var_args,
                    gboolean     skip_oparams)
 {
@@ -792,11 +792,11 @@ bse_item_execva_i (BseItem     *item,
 }
 
 BseErrorType
-bse_item_exec (gpointer     _item,
-               const gchar *procedure,
+bse_item_exec (void       *_item,
+               const char *procedure,
                ...)
 {
-  BseItem *item = _item;
+  BseItem *item = (BseItem*) _item;
   va_list var_args;
   BseErrorType error;
   
@@ -811,11 +811,11 @@ bse_item_exec (gpointer     _item,
 }
 
 BseErrorType
-bse_item_exec_void (gpointer     _item,
-                    const gchar *procedure,
+bse_item_exec_void (void       *_item,
+                    const char *procedure,
                     ...)
 {
-  BseItem *item = _item;
+  BseItem *item = (BseItem*) _item;
   va_list var_args;
   BseErrorType error;
   
@@ -836,7 +836,7 @@ pack_value_for_undo (GValue       *value,
   GType type = G_VALUE_TYPE (value);
   if (G_TYPE_IS_OBJECT (type))
     {
-      gchar *p = bse_undo_pointer_pack (g_value_get_object (value), ustack);
+      char *p = bse_undo_pointer_pack (g_value_get_object (value), ustack);
       g_value_unset (value);
       g_value_init (value, BSE_TYPE_PACKED_POINTER);
       sfi_value_take_string (value, p);
@@ -851,7 +851,7 @@ unpack_value_from_undo (GValue       *value,
   GType type = G_VALUE_TYPE (value);
   if (type == BSE_TYPE_PACKED_POINTER)
     {
-      BseItem *item = bse_undo_pointer_unpack (g_value_get_string (value), ustack);
+      BseItem *item = (BseItem*) bse_undo_pointer_unpack (g_value_get_string (value), ustack);
       g_value_unset (value);
       g_value_init (value, G_TYPE_OBJECT);
       g_value_set_object (value, item);
@@ -862,11 +862,11 @@ unpack_value_from_undo (GValue       *value,
 static void
 unde_free_proc (BseUndoStep *ustep)
 {
-  BseProcedureClass *proc = ustep->data[0].v_pointer;
-  GValue *ivalues = ustep->data[1].v_pointer; /* may or may not packed for undo */
+  BseProcedureClass *proc = (BseProcedureClass*) ustep->data[0].v_pointer;
+  GValue *ivalues = (GValue*) ustep->data[1].v_pointer; /* may or may not packed for undo */
   if (ivalues && proc)
     {
-      guint i;
+      uint i;
       for (i = 0; i < proc->n_in_pspecs; i++)
         g_value_unset (ivalues + i);
       g_free (ivalues);
@@ -878,14 +878,14 @@ static void
 undo_call_proc (BseUndoStep  *ustep,
                 BseUndoStack *ustack)
 {
-  BseProcedureClass *proc = ustep->data[0].v_pointer;
-  GValue *ivalues = ustep->data[1].v_pointer; /* packed for undo */
+  BseProcedureClass *proc = (BseProcedureClass*) ustep->data[0].v_pointer;
+  GValue *ivalues = (GValue*) ustep->data[1].v_pointer; /* packed for undo */
   gboolean commit_as_redo = ustep->data[2].v_long;
   if (commit_as_redo)
     {
-      const gchar *packed_item_pointer = g_value_get_string (ivalues + 0);
-      BseItem *item = bse_undo_pointer_unpack (packed_item_pointer, ustack);
-      BseUndoStack *redo_stack = bse_item_undo_open (item, BSE_PROCEDURE_NAME (proc));
+      const char *packed_item_pointer = g_value_get_string (ivalues + 0);
+      BseItem *item = (BseItem*) bse_undo_pointer_unpack (packed_item_pointer, ustack);
+      BseUndoStack *redo_stack = (BseUndoStack*) bse_item_undo_open (item, BSE_PROCEDURE_NAME (proc));
       BseUndoStep *redo_step;
       redo_step = bse_undo_step_new (undo_call_proc, unde_free_proc, 3);
       redo_step->data[0].v_pointer = proc;
@@ -901,7 +901,7 @@ undo_call_proc (BseUndoStep  *ustep,
     {
       GValue ovalue = { 0, };
       BseErrorType error;
-      guint i;
+      uint i;
       /* convert values from undo */
       for (i = 0; i < proc->n_in_pspecs; i++)
         unpack_value_from_undo (ivalues + i, ustack);
@@ -915,7 +915,7 @@ undo_call_proc (BseUndoStep  *ustep,
         {
           /* check returned error if any */
           if (G_PARAM_SPEC_VALUE_TYPE (proc->out_pspecs[0]) == BSE_TYPE_ERROR_TYPE && !error)
-            error = g_value_get_enum (&ovalue);
+            error = BseErrorType (g_value_get_enum (&ovalue));
           g_value_unset (&ovalue);
         }
       /* we're not tolerating any errors */
@@ -926,8 +926,8 @@ undo_call_proc (BseUndoStep  *ustep,
 }
 
 static void
-bse_item_push_undo_proc_valist (gpointer     item,
-                                const gchar *procedure,
+bse_item_push_undo_proc_valist (void        *item,
+                                const char  *procedure,
                                 gboolean     commit_as_redo,
                                 va_list      var_args)
 {
@@ -936,7 +936,7 @@ bse_item_push_undo_proc_valist (gpointer     item,
   BseProcedureClass *proc;
   GValue *ivalues;
   BseErrorType error;
-  guint i;
+  uint i;
   if (BSE_UNDO_STACK_VOID (ustack) ||
       BSE_ITEM_INTERNAL (item))
     {
@@ -951,7 +951,7 @@ bse_item_push_undo_proc_valist (gpointer     item,
       return;
     }
   
-  proc = g_type_class_ref (proc_type);
+  proc = (BseProcedureClass*) g_type_class_ref (proc_type);
   /* we allow one return value */
   if (proc->n_out_pspecs > 1)
     {
@@ -994,8 +994,8 @@ bse_item_push_undo_proc_valist (gpointer     item,
 }
 
 void
-bse_item_push_undo_proc (gpointer         item,
-                         const gchar     *procedure,
+bse_item_push_undo_proc (void       *item,
+                         const char *procedure,
                          ...)
 {
   va_list var_args;
@@ -1009,8 +1009,8 @@ bse_item_push_undo_proc (gpointer         item,
 }
 
 void
-bse_item_push_redo_proc (gpointer         item,
-                         const gchar     *procedure,
+bse_item_push_redo_proc (void       *item,
+                         const char *procedure,
                          ...)
 {
   va_list var_args;
@@ -1024,8 +1024,8 @@ bse_item_push_redo_proc (gpointer         item,
 }
 
 void
-bse_item_set_undoable (gpointer        object,
-                       const gchar    *first_property_name,
+bse_item_set_undoable (void          *object,
+                       const char    *first_property_name,
                        ...)
 {
   va_list var_args;
@@ -1038,24 +1038,24 @@ bse_item_set_undoable (gpointer        object,
 }
 
 void
-bse_item_set_valist_undoable (gpointer     object,
-                              const gchar *first_property_name,
-                              va_list      var_args)
+bse_item_set_valist_undoable (void       *object,
+                              const char *first_property_name,
+                              va_list     var_args)
 {
-  BseItem *self = object;
-  const gchar *name;
+  BseItem *self = BSE_ITEM (object);
+  const char *name;
   
   g_return_if_fail (BSE_IS_ITEM (self));
   
   g_object_ref (object);
-  g_object_freeze_notify (object);
+  g_object_freeze_notify (G_OBJECT (object));
   
   name = first_property_name;
   while (name)
     {
       GValue value = { 0, };
       GParamSpec *pspec;
-      gchar *error = NULL;
+      char *error = NULL;
       
       pspec = g_object_class_find_property (G_OBJECT_GET_CLASS (self), name);
       if (!pspec)
@@ -1076,9 +1076,9 @@ bse_item_set_valist_undoable (gpointer     object,
         }
       bse_item_set_property_undoable (self, pspec->name, &value);
       g_value_unset (&value);
-      name = va_arg (var_args, gchar*);
+      name = va_arg (var_args, char*);
     }
-  g_object_thaw_notify (object);
+  g_object_thaw_notify (G_OBJECT (object));
   g_object_unref (object);
 }
 
@@ -1119,9 +1119,9 @@ static void
 undo_set_property (BseUndoStep  *ustep,
                    BseUndoStack *ustack)
 {
-  bse_item_set_property_undoable (bse_undo_pointer_unpack (ustep->data[0].v_pointer, ustack),
-                                  ustep->data[1].v_pointer,
-                                  unpack_value_from_undo (ustep->data[2].v_pointer, ustack));
+  bse_item_set_property_undoable ((BseItem*) bse_undo_pointer_unpack ((const char*) ustep->data[0].v_pointer, ustack),
+                                  (const char*) ustep->data[1].v_pointer,
+                                  unpack_value_from_undo ((GValue*) ustep->data[2].v_pointer, ustack));
 }
 
 static void
@@ -1129,13 +1129,13 @@ unde_free_property (BseUndoStep *ustep)
 {
   g_free (ustep->data[0].v_pointer);
   g_free (ustep->data[1].v_pointer);
-  g_value_unset (ustep->data[2].v_pointer); /* may or may not be unpacked */
+  g_value_unset ((GValue*) ustep->data[2].v_pointer); /* may or may not be unpacked */
   g_free (ustep->data[2].v_pointer);
 }
 
 static inline gboolean
-item_property_check_skip_undo (BseItem     *self,
-                               const gchar *name)
+item_property_check_skip_undo (BseItem    *self,
+                               const char *name)
 {
   GParamSpec *pspec = g_object_class_find_property (G_OBJECT_GET_CLASS (self), name);
   return pspec && sfi_pspec_check_option (pspec, "skip-undo");
@@ -1143,7 +1143,7 @@ item_property_check_skip_undo (BseItem     *self,
 
 void
 bse_item_set_property_undoable (BseItem      *self,
-                                const gchar  *name,
+                                const char   *name,
                                 const GValue *value)
 {
   BseUndoStack *ustack = bse_item_undo_open (self, "set-property(%s,\"%s\")", bse_object_debug_name (self), name);
@@ -1175,13 +1175,13 @@ bse_item_set_property_undoable (BseItem      *self,
 }
 
 BseUndoStack*
-bse_item_undo_open (gpointer     item,
-                    const gchar *format,
+bse_item_undo_open (void       *item,
+                    const char *format,
                     ...)
 {
-  BseItem     *self = item;
+  BseItem     *self = BSE_ITEM (item);
   BseUndoStack *ustack;
-  gchar *buffer;
+  char *buffer;
   va_list args;
   
   g_return_val_if_fail (format != NULL, NULL);
@@ -1194,7 +1194,7 @@ bse_item_undo_open (gpointer     item,
     bse_undo_group_open (ustack, buffer);
   else
     {
-      gchar *str = g_strconcat ("DUMMY-GROUP(", buffer, ")", NULL);
+      char *str = g_strconcat ("DUMMY-GROUP(", buffer, ")", NULL);
       ustack = bse_undo_stack_dummy ();
       bse_undo_group_open (ustack, str);
       g_free (str);
@@ -1214,8 +1214,8 @@ static void
 undo_restore_item (BseUndoStep  *ustep,
                    BseUndoStack *ustack)
 {
-  BseItem *item = bse_undo_pointer_unpack (ustep->data[0].v_pointer, ustack);
-  BseStorage *storage = ustep->data[1].v_pointer;
+  BseItem *item = (BseItem*) bse_undo_pointer_unpack ((const char*) ustep->data[0].v_pointer, ustack);
+  BseStorage *storage = BSE_STORAGE (ustep->data[1].v_pointer);
   GTokenType expected_token = G_TOKEN_NONE;
   
   expected_token = bse_storage_restore_item (storage, item);
@@ -1228,7 +1228,7 @@ undo_restore_item (BseUndoStep  *ustep,
 static void
 unde_free_item (BseUndoStep *ustep)
 {
-  BseStorage *storage = ustep->data[1].v_pointer;
+  BseStorage *storage = BSE_STORAGE (ustep->data[1].v_pointer);
   g_free (ustep->data[0].v_pointer);
   bse_storage_reset (storage);
   g_object_unref (storage);
@@ -1257,9 +1257,9 @@ bse_item_backup_to_undo (BseItem      *self,
 {
   if (!BSE_UNDO_STACK_VOID (ustack))
     {
-      BseStorage *storage = g_object_new (BSE_TYPE_STORAGE, NULL);
-      bse_storage_prepare_write (storage, (BSE_STORAGE_DBLOCK_CONTAINED |
-                                           BSE_STORAGE_SELF_CONTAINED));
+      BseStorage *storage = (BseStorage*) g_object_new (BSE_TYPE_STORAGE, NULL);
+      bse_storage_prepare_write (storage, BseStorageMode (BSE_STORAGE_DBLOCK_CONTAINED |
+                                                          BSE_STORAGE_SELF_CONTAINED));
       bse_storage_store_item (storage, self);
       
       bse_item_push_undo_storage (self, ustack, storage);
