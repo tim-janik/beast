@@ -41,16 +41,16 @@ static SFI_MSG_TYPE_DEFINE (debug_aiff, "aiff", SFI_MSG_DEBUG, NULL);
 typedef struct
 {
   guint32 form_type;    /* AIFF_ID("AIFF") */
-  guint   n_channels;
-  guint   bit_depth;
-  guint   n_values;     /* n-channels * n-values-per-channel */
-  gdouble mix_freq;
-  gchar  *name, *author, *copyright, *annotation;
-  guint   n_markers;
-  struct {
+  uint    n_channels;
+  uint    bit_depth;
+  uint    n_values;     /* n-channels * n-values-per-channel */
+  double  mix_freq;
+  char   *name, *author, *copyright, *annotation;
+  uint    n_markers;
+  struct Marker {
     guint16 id;
-    guint   pos;
-    gchar  *name;
+    uint    pos;
+    char   *name;
   }      *markers;
   struct {
     guint8  base_note;
@@ -65,8 +65,8 @@ typedef struct
     guint16 release_begin_id;         /* marker id */
     guint16 release_end_id;           /* marker id */
   }       instrument;
-  guint   data_start;   /* file position */
-  guint   data_size;    /* in bytes */
+  uint    data_start;   /* file position */
+  uint    data_size;    /* in bytes */
 } AiffFile;
 
 
@@ -75,7 +75,7 @@ static inline int
 aiff_read_u32 (int      fd,
                guint32 *data)
 {
-  gint r;
+  int r;
   do
     r = read (fd, data, 4);
   while (r < 0 && errno == EINTR);
@@ -87,7 +87,7 @@ static inline int
 aiff_read_s16 (int     fd,
                gint16 *data)
 {
-  gint r;
+  int r;
   do
     r = read (fd, data, 2);
   while (r < 0 && errno == EINTR);
@@ -99,7 +99,7 @@ static inline int
 aiff_read_u16 (int      fd,
                guint16 *data)
 {
-  gint r;
+  int r;
   do
     r = read (fd, data, 2);
   while (r < 0 && errno == EINTR);
@@ -108,14 +108,14 @@ aiff_read_u16 (int      fd,
 }
 
 static inline int
-aiff_read_f80 (int      fd,
-               gdouble *data)
+aiff_read_f80 (int     fd,
+               double *data)
 {
   guint8 bytes[10];
   guint32 mantissa_low, mantissa_high;
   gint32 biased_exponent, sign;
-  gdouble d;
-  gint r;
+  double d;
+  int r;
   do
     r = read (fd, bytes, 10);
   while (r < 0 && errno == EINTR);
@@ -137,18 +137,18 @@ aiff_read_f80 (int      fd,
 }
 
 static inline int
-aiff_read_pstring (int     fd,
-                   gchar **pstring)
+aiff_read_pstring (int    fd,
+                   char **pstring)
 {
   guint8 length;
-  gchar *string;
-  gint r;
+  char *string;
+  int r;
   do
     r = read (fd, &length, 1);
   while (r < 0 && errno == EINTR);
   if (r < 0)
     return r;
-  string = g_new (gchar, length + 1);
+  string = g_new (char, length + 1);
   do
     r = read (fd, string, length | 1);    /* force even string length */
   while (r < 0 && errno == EINTR);
@@ -163,13 +163,13 @@ aiff_read_pstring (int     fd,
 }
 
 static BseErrorType
-aiff_read_comm (gint      fd,
+aiff_read_comm (int       fd,
                 AiffFile *afile,
                 guint32   chunk_size)
 {
   gint16 num_channels, sample_size;
   guint32 num_sample_frames;
-  gdouble sample_rate;
+  double sample_rate;
   if (chunk_size < 18)
     return BSE_ERROR_FORMAT_INVALID;
   if (aiff_read_s16 (fd, &num_channels) < 0 ||
@@ -189,12 +189,12 @@ aiff_read_comm (gint      fd,
 }
 
 static BseErrorType
-aiff_read_mark (gint      fd,
+aiff_read_mark (int       fd,
                 AiffFile *afile,
                 guint32   chunk_size)
 {
   guint16 num_markers;
-  guint i;
+  uint i;
   if (chunk_size < 2)
     return BSE_ERROR_FORMAT_INVALID;
   if (aiff_read_u16 (fd, &num_markers) < 0)
@@ -203,13 +203,13 @@ aiff_read_mark (gint      fd,
     {
       guint16 marker_id;
       guint32 position, j;
-      gchar *marker_name;
+      char *marker_name;
       if (aiff_read_u16 (fd, &marker_id) < 0 ||
           aiff_read_u32 (fd, &position) < 0 ||
           aiff_read_pstring (fd, &marker_name) < 0)
         return gsl_error_from_errno (errno, BSE_ERROR_FILE_READ_FAILED);
       j = afile->n_markers++;
-      afile->markers = g_realloc (afile->markers, sizeof (afile->markers[0]) * afile->n_markers);
+      afile->markers = (AiffFile::Marker*) g_realloc (afile->markers, sizeof (afile->markers[0]) * afile->n_markers);
       afile->markers[j].id = marker_id;
       afile->markers[j].pos = position;
       afile->markers[j].name = marker_name;
@@ -219,11 +219,11 @@ aiff_read_mark (gint      fd,
 }
 
 static BseErrorType
-aiff_read_inst (gint      fd,
+aiff_read_inst (int       fd,
                 AiffFile *afile,
                 guint32   chunk_size)
 {
-  gint r;
+  int r;
   BIRNET_STATIC_ASSERT (sizeof (afile->instrument) == 20);
   if (chunk_size < 20)
     return BSE_ERROR_FORMAT_INVALID;
@@ -231,7 +231,7 @@ aiff_read_inst (gint      fd,
     r = read (fd, &afile->instrument, 20);
   while (r < 0 && errno == EINTR);
   if (r < 0)
-    return r;
+    return BseErrorType (r);
   afile->instrument.gain_dB = GINT16_FROM_BE (afile->instrument.gain_dB);
   afile->instrument.sustain_loop_mode = GUINT16_FROM_BE (afile->instrument.sustain_loop_mode);
   afile->instrument.sustain_begin_id = GUINT16_FROM_BE (afile->instrument.sustain_begin_id);
@@ -248,7 +248,7 @@ aiff_read_inst (gint      fd,
 }
 
 static BseErrorType
-aiff_read_ssnd (gint      fd,
+aiff_read_ssnd (int       fd,
                 AiffFile *afile,
                 guint32   chunk_size)
 {
@@ -273,16 +273,16 @@ aiff_read_ssnd (gint      fd,
 }
 
 static BseErrorType
-aiff_append_string (gint      fd,
+aiff_append_string (int       fd,
                     AiffFile *afile,
                     guint32   chunk_id,
                     guint32   chunk_size,
-                    gchar   **text)
+                    char    **text)
 {
-  gchar *string, *old = *text;
+  char *string, *old = *text;
   chunk_size = MIN (chunk_size, 0xfffe);
-  string = g_new (gchar, chunk_size + 1);
-  gint r;
+  string = g_new (char, chunk_size + 1);
+  int r;
   do
     r = read (fd, string, chunk_size);
   while (r < 0 && errno == EINTR);
@@ -295,7 +295,7 @@ aiff_append_string (gint      fd,
 }
 
 static BseErrorType
-aiff_file_load (gint      fd,
+aiff_file_load (int       fd,
                 AiffFile *afile)
 {
   guint32 form_id, form_size, form_type, seek_pos;
@@ -328,7 +328,7 @@ aiff_file_load (gint      fd,
         case AIFF_ULONG ('A','U','T','H'): error = aiff_append_string (fd, afile, chunk_id, chunk_size, &afile->author); break;
         case AIFF_ULONG ('(','c',')',' '): error = aiff_append_string (fd, afile, chunk_id, chunk_size, &afile->copyright); break;
         case AIFF_ULONG ('A','N','N','O'): error = aiff_append_string (fd, afile, chunk_id, chunk_size, &afile->annotation); break;
-        default:                           error = 0;      /* ignore unknown chunks */
+        default:                           error = BSE_ERROR_NONE;      /* ignore unknown chunks */
           AIFF_DEBUG ("%c%c%c%c: ignored...",
                       chunk_id >> 24, chunk_id >> 16 & 0xff, chunk_id >> 8 & 0xff, chunk_id & 0xff);
         }
@@ -346,7 +346,7 @@ aiff_file_load (gint      fd,
 static void
 aiff_file_free (AiffFile *afile)
 {
-  guint i;
+  uint i;
   for (i = 0; i < afile->n_markers; i++)
     g_free (afile->markers[i].name);
   g_free (afile->markers);
@@ -364,14 +364,14 @@ typedef struct
 } FileInfo;
 
 static BseWaveFileInfo*
-aiff_load_file_info (gpointer      data,
-                     const gchar  *file_name,
+aiff_load_file_info (void         *data,
+                     const char   *file_name,
                      BseErrorType *error_p)
 {
   AiffFile *afile;
   FileInfo *fi;
-  gint fd = open (file_name, O_RDONLY);
-  gchar *str;
+  int fd = open (file_name, O_RDONLY);
+  char *str;
   if (fd < 0)
     {
       *error_p = gsl_error_from_errno (errno, BSE_ERROR_FILE_OPEN_FAILED);
@@ -408,7 +408,7 @@ aiff_load_file_info (gpointer      data,
     }
   fi = sfi_new_struct0 (FileInfo, 1);
   fi->wfi.n_waves = 1;
-  fi->wfi.waves = g_malloc0 (sizeof (fi->wfi.waves[0]) * fi->wfi.n_waves);
+  fi->wfi.waves = (BseWaveFileInfo::Wave*) g_malloc0 (sizeof (fi->wfi.waves[0]) * fi->wfi.n_waves);
   str = g_path_get_basename (file_name);
   fi->wfi.waves[0].name = g_strdup (afile->name ? afile->name : str);
   g_free (str);
@@ -418,7 +418,7 @@ aiff_load_file_info (gpointer      data,
 }
 
 static void
-aiff_free_file_info (gpointer         data,
+aiff_free_file_info (void            *data,
                      BseWaveFileInfo *file_info)
 {
   FileInfo *fi = (FileInfo*) file_info;
@@ -438,9 +438,9 @@ typedef struct
 } WaveDsc;
 
 static BseWaveDsc*
-aiff_load_wave_dsc (gpointer         data,
+aiff_load_wave_dsc (void            *data,
                     BseWaveFileInfo *file_info,
-                    guint            nth_wave,
+                    uint             nth_wave,
                     BseErrorType    *error_p)
 {
   FileInfo *fi = (FileInfo*) file_info;
@@ -456,7 +456,7 @@ aiff_load_wave_dsc (gpointer         data,
   dsc->wdsc.xinfos = bse_xinfos_add_value (dsc->wdsc.xinfos, "license", fi->afile->copyright);
   dsc->wdsc.xinfos = bse_xinfos_add_value (dsc->wdsc.xinfos, "blurb", fi->afile->annotation);
   dsc->wdsc.n_chunks = 1;
-  dsc->wdsc.chunks = g_malloc0 (sizeof (dsc->wdsc.chunks[0]) * dsc->wdsc.n_chunks);
+  dsc->wdsc.chunks = (BseWaveChunkDsc*) g_malloc0 (sizeof (dsc->wdsc.chunks[0]) * dsc->wdsc.n_chunks);
   dsc->wdsc.chunks[0].mix_freq = afile->mix_freq;
   dsc->wdsc.chunks[0].osc_freq = bse_temp_freq (BSE_CONFIG (kammer_freq),
                                                 afile->instrument.base_note - BSE_CONFIG (midi_kammer_note));
@@ -464,8 +464,8 @@ aiff_load_wave_dsc (gpointer         data,
       afile->instrument.sustain_begin_id && afile->instrument.sustain_end_id)
     {
       guint16 bid = afile->instrument.sustain_begin_id, eid = afile->instrument.sustain_end_id;
-      guint bpos = 0, epos = 0;
-      guint i;
+      uint bpos = 0, epos = 0;
+      uint i;
       for (i = 0; i < afile->n_markers && (bid || eid); i++)
         if (afile->markers[i].id == bid)
           {
@@ -498,12 +498,12 @@ aiff_load_wave_dsc (gpointer         data,
 }
 
 static void
-aiff_free_wave_dsc (gpointer    data,
+aiff_free_wave_dsc (void       *data,
                     BseWaveDsc *wave_dsc)
 {
   WaveDsc *dsc = (WaveDsc*) wave_dsc;
   
-  guint i;
+  uint i;
   for (i = 0; i < dsc->wdsc.n_chunks; i++)
     g_strfreev (dsc->wdsc.chunks[i].xinfos);
   g_free (dsc->wdsc.chunks);
@@ -511,9 +511,9 @@ aiff_free_wave_dsc (gpointer    data,
 }
 
 static GslDataHandle*
-aiff_create_chunk_handle (gpointer      data,
+aiff_create_chunk_handle (void         *data,
                           BseWaveDsc   *wave_dsc,
-                          guint         nth_chunk,
+                          uint          nth_chunk,
                           BseErrorType *error_p)
 {
   WaveDsc *dsc = (WaveDsc*) wave_dsc;
@@ -535,9 +535,9 @@ aiff_create_chunk_handle (gpointer      data,
 void
 _gsl_init_loader_aiff (void)
 {
-  static const gchar *file_exts[] = { "aiff", "aif", NULL, };
-  static const gchar *mime_types[] = { "audio/aiff", "audio/x-aiff", NULL, };
-  static const gchar *magics[] = {
+  static const char *file_exts[] = { "aiff", "aif", NULL, };
+  static const char *mime_types[] = { "audio/aiff", "audio/x-aiff", NULL, };
+  static const char *magics[] = {
     (
      "0  string  FORM\n"
      "8  string  AIFF\n"
@@ -548,7 +548,7 @@ _gsl_init_loader_aiff (void)
     "Audio Interchange File Format",
     file_exts,
     mime_types,
-    0,	/* flags */
+    BseLoaderFlags (0),	/* flags */
     magics,
     0,  /* priority */
     NULL,

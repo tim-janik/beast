@@ -26,7 +26,7 @@ G_BEGIN_DECLS
 struct _BseWaveFileInfo
 {
   guint	   n_waves;
-  struct {
+  struct Wave {
     gchar *name;
   }       *waves;
 
