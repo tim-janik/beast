@@ -71,7 +71,7 @@ bse_sources = $(strip \
 	bsefilter.cc   		bsebiquadfilter.cc	bsefilter-ellf.cc	\
 	bseconstant.cc		bseconstvalues.cc	bsecontainer.cc			bsecontextmerger.cc \
 	bsedatapocket.cc	bseeditablesample.cc	bseenums.cc			bsegconfig.cc \
-	bseglobals.cc		bseglue.cc		bseitem.cc			bsejanitor.c \
+	bseglobals.cc		bseglue.cc		bseitem.cc			bsejanitor.cc \
 	bsemain.cc		bsemath.c		bsemathsignal.c			bseladspa.cc \
 	bsemidicontroller.c	bsemididevice.c 	bsedevice.cc 			\
 	bsemididevice-null.c	bsemididevice-oss.c	bsemidievent.c			bsemidinotifier.c \

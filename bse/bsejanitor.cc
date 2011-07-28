@@ -35,36 +35,36 @@ enum
 
 
 /* --- prototypes --- */
-static void	bse_janitor_class_init		(BseJanitorClass	*class);
+static void	bse_janitor_class_init		(BseJanitorClass	*klass);
 static void	bse_janitor_init		(BseJanitor		*janitor);
 static void	bse_janitor_finalize		(GObject	        *object);
 static void     bse_janitor_set_property	(GObject		*janitor,
-						 guint          	 param_id,
+						 uint          	         param_id,
 						 const GValue         	*value,
 						 GParamSpec     	*pspec);
 static void     bse_janitor_get_property	(GObject	     	*janitor,
-						 guint          	 param_id,
+						 uint          	         param_id,
 						 GValue         	*value,
 						 GParamSpec     	*pspec);
 static void     bse_janitor_set_parent		(BseItem                *item,
 						 BseItem                *parent);
 static void	janitor_install_jsource		(BseJanitor		*self);
-static gboolean	janitor_idle_clean_jsource	(gpointer		 data);
+static gboolean	janitor_idle_clean_jsource	(void                   *data);
 static void	janitor_port_closed		(SfiComPort		*port,
-						 gpointer		 close_data);
+						 void                   *close_data);
 static GValue*	janitor_client_msg		(SfiGlueDecoder		*decoder,
-						 gpointer		 user_data,
-						 const gchar		*message,
+						 void                   *user_data,
+						 const char		*message,
 						 const GValue		*value);
 
 
 /* --- variables --- */
 static GTypeClass *parent_class = NULL;
 static GSList     *janitor_stack = NULL;
-static guint       signal_action = 0;
-static guint       signal_action_changed = 0;
-static guint       signal_shutdown = 0;
-static guint       signal_progress = 0;
+static uint        signal_action = 0;
+static uint        signal_action_changed = 0;
+static uint        signal_shutdown = 0;
+static uint        signal_progress = 0;
 
 
 /* --- functions --- */
@@ -92,13 +92,13 @@ BSE_BUILTIN_TYPE (BseJanitor)
 }
 
 static void
-bse_janitor_class_init (BseJanitorClass *class)
+bse_janitor_class_init (BseJanitorClass *klass)
 {
-  GObjectClass *gobject_class = G_OBJECT_CLASS (class);
-  BseObjectClass *object_class = BSE_OBJECT_CLASS (class);
-  BseItemClass *item_class = BSE_ITEM_CLASS (class);
+  GObjectClass *gobject_class = G_OBJECT_CLASS (klass);
+  BseObjectClass *object_class = BSE_OBJECT_CLASS (klass);
+  BseItemClass *item_class = BSE_ITEM_CLASS (klass);
   
-  parent_class = g_type_class_peek_parent (class);
+  parent_class = (GTypeClass*) g_type_class_peek_parent (klass);
   
   gobject_class->set_property = bse_janitor_set_property;
   gobject_class->get_property = bse_janitor_get_property;
@@ -148,7 +148,7 @@ bse_janitor_init (BseJanitor *self)
 
 static void
 bse_janitor_set_property (GObject      *object,
-			  guint         param_id,
+			  uint          param_id,
 			  const GValue *value,
 			  GParamSpec   *pspec)
 {
@@ -168,7 +168,7 @@ bse_janitor_set_property (GObject      *object,
 
 static void
 bse_janitor_get_property (GObject    *object,
-			  guint       param_id,
+			  uint        param_id,
 			  GValue     *value,
 			  GParamSpec *pspec)
 {
@@ -207,7 +207,7 @@ bse_janitor_finalize (GObject *object)
   
   while (self->actions)
     {
-      BseJanitorAction *a = self->actions->data;
+      BseJanitorAction *a = (BseJanitorAction*) self->actions->data;
       bse_janitor_remove_action (self, g_quark_to_string (a->action));
     }
   
@@ -227,7 +227,7 @@ bse_janitor_new (SfiComPort *port)
   
   g_return_val_if_fail (port != NULL, NULL);
   
-  self = bse_container_new_child ((BseContainer*) bse_server_get (), BSE_TYPE_JANITOR, NULL);
+  self = (BseJanitor*) bse_container_new_child ((BseContainer*) bse_server_get (), BSE_TYPE_JANITOR, NULL);
   g_object_ref (self);
 
   /* store the port */
@@ -245,9 +245,9 @@ bse_janitor_new (SfiComPort *port)
 }
 
 void
-bse_janitor_set_procedure (BseJanitor  *self,
-                           const gchar *script_name,
-                           const gchar *proc_name)
+bse_janitor_set_procedure (BseJanitor *self,
+                           const char *script_name,
+                           const char *proc_name)
 {
   g_return_if_fail (BSE_IS_JANITOR (self));
   
@@ -255,10 +255,10 @@ bse_janitor_set_procedure (BseJanitor  *self,
   self->proc_name = g_strdup (proc_name);
   g_free (self->script_name);
   self->script_name = g_strdup (script_name);
-  g_object_notify (self, "status-message");
+  g_object_notify (G_OBJECT (self), "status-message");
 }
 
-const gchar*
+const char*
 bse_janitor_get_ident (BseJanitor *self)
 {
   g_return_val_if_fail (BSE_IS_JANITOR (self), NULL);
@@ -276,7 +276,7 @@ bse_janitor_get_ident (BseJanitor *self)
  */
 void
 bse_janitor_progress (BseJanitor *self,
-		      gfloat      progress)
+		      float       progress)
 {
   g_return_if_fail (BSE_IS_JANITOR (self));
   
@@ -294,7 +294,7 @@ find_action (BseJanitor *self,
   GSList *slist;
   for (slist = self->actions; slist; slist = slist->next)
     {
-      BseJanitorAction *a = slist->data;
+      BseJanitorAction *a = (BseJanitorAction*) slist->data;
       if (a->action == aquark)
 	return a;
     }
@@ -302,10 +302,10 @@ find_action (BseJanitor *self,
 }
 
 void
-bse_janitor_add_action (BseJanitor  *self,
-			const gchar *action,
-			const gchar *name,
-			const gchar *blurb)
+bse_janitor_add_action (BseJanitor *self,
+			const char *action,
+			const char *name,
+			const char *blurb)
 {
   BseJanitorAction *a;
   
@@ -327,8 +327,8 @@ bse_janitor_add_action (BseJanitor  *self,
 }
 
 void
-bse_janitor_remove_action (BseJanitor  *self,
-			   const gchar *action)
+bse_janitor_remove_action (BseJanitor *self,
+			   const char *action)
 {
   BseJanitorAction *a;
   
@@ -351,8 +351,8 @@ bse_janitor_remove_action (BseJanitor  *self,
 }
 
 void
-bse_janitor_trigger_action (BseJanitor  *self,
-			    const gchar *action)
+bse_janitor_trigger_action (BseJanitor *self,
+			    const char *action)
 {
   BseJanitorAction *a;
   
@@ -367,13 +367,13 @@ bse_janitor_trigger_action (BseJanitor  *self,
 BseJanitor*
 bse_janitor_get_current (void)
 {
-  return janitor_stack ? janitor_stack->data : NULL;
+  return janitor_stack ? (BseJanitor*) janitor_stack->data : NULL;
 }
 
 static void
 janitor_shutdown (BseJanitor *self)
 {
-  gfloat n_seconds = 1;
+  float n_seconds = 1;
   self->port_closed = TRUE; /* protects further (recursive) janitor_shutdown() calls */
   sfi_com_port_close_remote (self->port, self->force_kill);
   if (sfi_com_port_test_reap_child (self->port))
@@ -418,8 +418,8 @@ bse_janitor_set_parent (BseItem *item,
 
 static GValue*
 janitor_client_msg (SfiGlueDecoder *decoder,
-		    gpointer        user_data,
-		    const gchar    *message,
+		    void           *user_data,
+		    const char     *message,
 		    const GValue   *value)
 {
   BseJanitor *self = BSE_JANITOR (user_data);
@@ -439,7 +439,7 @@ typedef struct {
 
 static gboolean
 janitor_prepare (GSource *source,
-		 gint    *timeout_p)
+		 int     *timeout_p)
 {
   BseJanitor *self = ((JSource*) source)->janitor;
   return sfi_glue_decoder_pending (self->decoder);
@@ -455,7 +455,7 @@ janitor_check (GSource *source)
 static gboolean
 janitor_dispatch (GSource    *source,
 		  GSourceFunc callback,
-		  gpointer    user_data)
+		  void       *user_data)
 {
   BseJanitor *self = ((JSource*) source)->janitor;
   SfiComPort *port = self->port;
@@ -503,17 +503,17 @@ janitor_install_jsource (BseJanitor *self)
   self->source = source;
   g_source_set_priority (source, BSE_PRIORITY_GLUE);
   ring = sfi_glue_decoder_list_poll_fds (self->decoder);
-  pfd = sfi_ring_pop_head (&ring);
+  pfd = (GPollFD*) sfi_ring_pop_head (&ring);
   while (pfd)
     {
       g_source_add_poll (source, pfd);
-      pfd = sfi_ring_pop_head (&ring);
+      pfd = (GPollFD*) sfi_ring_pop_head (&ring);
     }
   g_source_attach (source, bse_main_context);
 }
 
 static gboolean
-janitor_idle_clean_jsource (gpointer data)
+janitor_idle_clean_jsource (void *data)
 {
   BseJanitor *self = BSE_JANITOR (data);
   SfiComPort *port = self->port;
@@ -564,7 +564,7 @@ janitor_idle_clean_jsource (gpointer data)
     }
   sfi_com_port_unref (port);
   self->port = NULL;
-  g_object_notify (self, "connected");
+  g_object_notify (G_OBJECT (self), "connected");
   if (BSE_ITEM (self)->parent)
     bse_container_remove_item (BSE_CONTAINER (BSE_ITEM (self)->parent), BSE_ITEM (self));
   g_object_unref (self);
@@ -573,7 +573,7 @@ janitor_idle_clean_jsource (gpointer data)
 
 static void
 janitor_port_closed (SfiComPort *port,
-		     gpointer    close_data)
+		     void       *close_data)
 {
   BseJanitor *self = BSE_JANITOR (close_data);
   /* this function is called by the SfiComPort */
