@@ -23,25 +23,25 @@
 
 
 /* --- prototypes --- */
-static void	bse_ladspa_module_class_init	 (BseLadspaModuleClass	*class);
+static void	bse_ladspa_module_class_init	 (BseLadspaModuleClass	*klass);
 static void     ladspa_derived_init		 (BseLadspaModule	*self);
 static void     ladspa_derived_finalize		 (GObject		*object);
 static void	ladspa_derived_set_property	 (GObject		*object,
-						  guint			 param_id,
+						  uint			 param_id,
 						  const GValue		*value,
 						  GParamSpec		*pspec);
 static void	ladspa_derived_get_property	 (GObject		*object,
-						  guint			 param_id,
+						  uint			 param_id,
 						  GValue		*value,
 						  GParamSpec		*pspec);
 static void	ladspa_derived_context_create	 (BseSource		*source,
-						  guint			 context_handle,
+						  uint			 context_handle,
 						  BseTrans		*trans);
 static void	bse_ladspa_module_class_init_from_info (BseLadspaModuleClass *ladspa_module_class);
 
 
 /* --- variables --- */
-static gpointer	derived_parent_class = NULL;
+static void    *derived_parent_class = NULL;
 static GQuark   quark_value_index = 0;
 static GQuark   quark_notify_sibling = 0;
 
@@ -73,38 +73,38 @@ BSE_BUILTIN_TYPE (BseLadspaModule)
 }
 
 static void
-bse_ladspa_module_class_init (BseLadspaModuleClass *class)
+bse_ladspa_module_class_init (BseLadspaModuleClass *klass)
 {
   quark_value_index = g_quark_from_static_string ("BseLadspaValueIndex");
   quark_notify_sibling = g_quark_from_static_string ("BseLadspaNotifySibling");
 
-  class->bli = NULL;
+  klass->bli = NULL;
 }
 
 static void
-ladspa_derived_class_init (BseLadspaModuleClass *class,
-			   gpointer              class_data)
+ladspa_derived_class_init (BseLadspaModuleClass *klass,
+			   void                 *class_data)
 {
-  GObjectClass *gobject_class = G_OBJECT_CLASS (class);
-  BseSourceClass *source_class = BSE_SOURCE_CLASS (class);
+  GObjectClass *gobject_class = G_OBJECT_CLASS (klass);
+  BseSourceClass *source_class = BSE_SOURCE_CLASS (klass);
 
-  derived_parent_class = g_type_class_peek_parent (class);
+  derived_parent_class = g_type_class_peek_parent (klass);
 
   g_assert (class_data != NULL);
-  class->bli = class_data;
+  klass->bli = (BseLadspaInfo*) class_data;
 
   gobject_class->finalize = ladspa_derived_finalize;
 
   source_class->context_create = ladspa_derived_context_create;
 
-  bse_ladspa_module_class_init_from_info (class);
+  bse_ladspa_module_class_init_from_info (klass);
 }
 
 static void
-ladspa_derived_class_finalize (BseLadspaModuleClass *class,
-			       gpointer              class_data)
+ladspa_derived_class_finalize (BseLadspaModuleClass *klass,
+			       void                 *class_data)
 {
-  g_free (class->gsl_class);
+  g_free (klass->gsl_class);
 }
 
 void
@@ -128,7 +128,7 @@ bse_ladspa_module_class_init_from_info (BseLadspaModuleClass *ladspa_module_clas
   BseObjectClass *object_class = BSE_OBJECT_CLASS (ladspa_module_class);
   BseSourceClass *source_class = BSE_SOURCE_CLASS (ladspa_module_class);
   BseLadspaInfo *bli = ladspa_module_class->bli;
-  guint ochannel, ichannel, i;
+  uint ochannel, ichannel, i;
   
   g_assert (ladspa_module_class->bli != NULL &&
 	    gobject_class->set_property == NULL &&
@@ -141,7 +141,7 @@ bse_ladspa_module_class_init_from_info (BseLadspaModuleClass *ladspa_module_clas
     {
       BseLadspaPort *port = bli->cports + i;
       GParamSpec *pspec, *pspec2 = NULL;
-      const gchar *group;
+      const char *group;
       // g_print ("LADSPA-PORT: %s\n", bse_ladspa_info_port_2str (port));
       if (port->boolean)
 	{
@@ -151,7 +151,7 @@ bse_ladspa_module_class_init_from_info (BseLadspaModuleClass *ladspa_module_clas
 	}
       else if (port->integer_stepping)
 	{
-	  const gchar *hints;
+	  const char *hints;
 	  /* try to guess when scales are going to be useful */
 	  if (port->minimum < 0 ||
 	      port->maximum - port->minimum > 10)
@@ -165,9 +165,9 @@ bse_ladspa_module_class_init_from_info (BseLadspaModuleClass *ladspa_module_clas
 	}
       else if (port->frequency)
 	{
-	  gfloat maximum = port->maximum;
-	  gfloat minimum = port->minimum;
-	  gfloat dfvalue = port->default_value;
+	  float maximum = port->maximum;
+	  float minimum = port->minimum;
+	  float dfvalue = port->default_value;
 	  if (port->rate_relative)
 	    {
 	      /* we relate a maximum value of 0.5 (sample_freq/2) to BSE_MAX_OSC_FREQUENCY */
@@ -188,11 +188,11 @@ bse_ladspa_module_class_init_from_info (BseLadspaModuleClass *ladspa_module_clas
 	  if (port->concert_a)
 	    {
 	      /* when defaulting to A', we probably have note-aligned port values */
-	      gint min_note = bse_note_from_freq_bounded (BSE_MUSICAL_TUNING_12_TET, minimum);
-	      gint max_note = bse_note_from_freq_bounded (BSE_MUSICAL_TUNING_12_TET, maximum);
+	      int min_note = bse_note_from_freq_bounded (BSE_MUSICAL_TUNING_12_TET, minimum);
+	      int max_note = bse_note_from_freq_bounded (BSE_MUSICAL_TUNING_12_TET, maximum);
 	      if (max_note - min_note > 2)
 		{
-		  gchar *ident2 = g_strconcat (port->ident, "-note", NULL);
+		  char *ident2 = g_strconcat (port->ident, "-note", NULL);
 		  pspec2 = sfi_pspec_note (ident2, port->name, _("Note values are converted to Hertz according to the current musical tuning"),
 					   BSE_KAMMER_NOTE, min_note, max_note, FALSE,
 					   SFI_PARAM_GUI);
@@ -204,7 +204,7 @@ bse_ladspa_module_class_init_from_info (BseLadspaModuleClass *ladspa_module_clas
 	}
       else /* normal float */
 	{
-	  gfloat stepping;
+	  float stepping;
 	  if (port->maximum - port->minimum > 3 * 10.0)
 	    stepping = 10.0;
 	  else if (port->maximum - port->minimum > 3 * 1.0)
@@ -223,7 +223,7 @@ bse_ladspa_module_class_init_from_info (BseLadspaModuleClass *ladspa_module_clas
       bse_object_class_add_param (object_class, group, i + 1, pspec);
       if (pspec2)
 	{
-	  g_param_spec_set_qdata (pspec2, quark_value_index, (gpointer) i);
+	  g_param_spec_set_qdata (pspec2, quark_value_index, (void *) i);
 	  if (port->output)
 	    sfi_pspec_add_option (pspec2, "ro", "+");   /* read-only at the GUI */
 	  bse_object_class_add_param (object_class, group, bli->n_cports + i + 1, pspec2);
@@ -240,7 +240,7 @@ bse_ladspa_module_class_init_from_info (BseLadspaModuleClass *ladspa_module_clas
     }
 }
 
-static gfloat
+static float
 ladspa_value_get_float (BseLadspaModule *self,
                         const GValue    *value,
 			BseLadspaPort   *port)
@@ -264,9 +264,9 @@ ladspa_value_get_float (BseLadspaModule *self,
 
 static void
 ladspa_value_set_float (BseLadspaModule *self,
-                        GValue        *value,
-			BseLadspaPort *port,
-			gfloat         v_float)
+                        GValue          *value,
+			BseLadspaPort   *port,
+			float            v_float)
 {
   switch (sfi_categorize_type (G_VALUE_TYPE (value)))
     {
@@ -290,17 +290,17 @@ ladspa_value_set_float (BseLadspaModule *self,
 static void
 ladspa_derived_init (BseLadspaModule *self)
 {
-  BseLadspaModuleClass *class = BSE_LADSPA_MODULE_GET_CLASS (self);
-  GObjectClass *gobject_class = G_OBJECT_CLASS (class);
-  guint i;
-  self->cvalues = g_new (gfloat, class->bli->n_cports);
-  for (i = 0; i < class->bli->n_cports; i++)
+  BseLadspaModuleClass *klass = BSE_LADSPA_MODULE_GET_CLASS (self);
+  GObjectClass *gobject_class = G_OBJECT_CLASS (klass);
+  uint i;
+  self->cvalues = g_new (float, klass->bli->n_cports);
+  for (i = 0; i < klass->bli->n_cports; i++)
     {
-      GParamSpec *pspec = g_object_class_find_property (gobject_class, class->bli->cports[i].ident);
+      GParamSpec *pspec = g_object_class_find_property (gobject_class, klass->bli->cports[i].ident);
       GValue tmp = { 0, };
       g_value_init (&tmp, G_PARAM_SPEC_VALUE_TYPE (pspec));
       g_param_value_set_default (pspec, &tmp);
-      self->cvalues[i] = ladspa_value_get_float (self, &tmp, class->bli->cports + i);
+      self->cvalues[i] = ladspa_value_get_float (self, &tmp, klass->bli->cports + i);
       g_value_unset (&tmp);
     }
 }
@@ -315,60 +315,60 @@ ladspa_derived_finalize (GObject *object)
 
 static void
 ladspa_derived_get_property (GObject    *object,
-			     guint       param_id,
+			     uint        param_id,
 			     GValue     *value,
 			     GParamSpec *pspec)
 {
   BseLadspaModule *self = BSE_LADSPA_MODULE (object);
-  BseLadspaModuleClass *class = BSE_LADSPA_MODULE_GET_CLASS (self);
-  guint i = param_id - 1;
-  if (i >= class->bli->n_cports)
-    i = (guint) g_param_spec_get_qdata (pspec, quark_value_index);
-  ladspa_value_set_float (self, value, class->bli->cports + i, self->cvalues[i]);
+  BseLadspaModuleClass *klass = BSE_LADSPA_MODULE_GET_CLASS (self);
+  uint i = param_id - 1;
+  if (i >= klass->bli->n_cports)
+    i = (unsigned long) g_param_spec_get_qdata (pspec, quark_value_index);
+  ladspa_value_set_float (self, value, klass->bli->cports + i, self->cvalues[i]);
 }
 
 typedef struct
 {
   BseLadspaInfo *bli;
-  gpointer       handle;
-  guint	         activated : 1;
-  gfloat	*ibuffers;
-  gfloat         cvalues[1];	/* flexible array */
+  void          *handle;
+  uint	         activated : 1;
+  float	        *ibuffers;
+  float          cvalues[1];	/* flexible array */
 } LadspaData;
-#define	LADSPA_DATA_SIZE(bli)	  (sizeof (LadspaData) + (MAX (bli->n_cports, 1) - 1) * sizeof (gfloat))
-#define	LADSPA_CVALUES_COUNT(bli) (bli->n_cports /* * sizeof (gfloat) */)
+#define	LADSPA_DATA_SIZE(bli)	  (sizeof (LadspaData) + (MAX (bli->n_cports, 1) - 1) * sizeof (float))
+#define	LADSPA_CVALUES_COUNT(bli) (bli->n_cports /* * sizeof (float) */)
 
 static void
 ladspa_module_access (BseModule *module,        /* EngineThread */
-		      gpointer   data)
+		      void      *data)
 {
-  LadspaData *ldata = module->user_data;
-  LadspaData *cdata = data;
+  LadspaData *ldata = (LadspaData*) module->user_data;
+  LadspaData *cdata = (LadspaData*) data;
   /* this runs in the Gsl Engine threads */
   bse_block_copy_float (LADSPA_CVALUES_COUNT (ldata->bli), ldata->cvalues, cdata->cvalues);
 }
 
 static void
 ladspa_derived_set_property (GObject      *object,
-			     guint         param_id,
+			     uint          param_id,
 			     const GValue *value,
 			     GParamSpec   *pspec)
 {
   BseLadspaModule *self = BSE_LADSPA_MODULE (object);
-  BseLadspaModuleClass *class = BSE_LADSPA_MODULE_GET_CLASS (self);
-  GParamSpec *pspec2 = g_param_spec_get_qdata (pspec, quark_notify_sibling);
+  BseLadspaModuleClass *klass = BSE_LADSPA_MODULE_GET_CLASS (self);
+  GParamSpec *pspec2 = (GParamSpec*) g_param_spec_get_qdata (pspec, quark_notify_sibling);
   /* store value */
-  guint i = param_id - 1;
-  if (i >= class->bli->n_cports)
-    i = (guint) g_param_spec_get_qdata (pspec, quark_value_index);
-  self->cvalues[i] = ladspa_value_get_float (self, value, class->bli->cports + i);
+  uint i = param_id - 1;
+  if (i >= klass->bli->n_cports)
+    i = (unsigned long) g_param_spec_get_qdata (pspec, quark_value_index);
+  self->cvalues[i] = ladspa_value_get_float (self, value, klass->bli->cports + i);
   if (pspec2)
     g_object_notify (object, pspec2->name);
   /* update modules in all contexts with the new control values */
   if (BSE_SOURCE_PREPARED (self))
     {
-      LadspaData *cdata = g_malloc0 (LADSPA_DATA_SIZE (class->bli));
-      bse_block_copy_float (LADSPA_CVALUES_COUNT (class->bli), cdata->cvalues, self->cvalues);
+      LadspaData *cdata = (LadspaData*) g_malloc0 (LADSPA_DATA_SIZE (klass->bli));
+      bse_block_copy_float (LADSPA_CVALUES_COUNT (klass->bli), cdata->cvalues, self->cvalues);
       bse_source_access_modules (BSE_SOURCE (self),
 				 ladspa_module_access,
 				 cdata, g_free,
@@ -379,7 +379,7 @@ ladspa_derived_set_property (GObject      *object,
 static void
 ladspa_module_reset (BseModule *module)
 {
-  LadspaData *ldata = module->user_data;
+  LadspaData *ldata = (LadspaData*) module->user_data;
   if (ldata->activated && ldata->bli->deactivate)
     ldata->bli->deactivate (ldata->handle);
   ldata->activated = FALSE;
@@ -392,11 +392,11 @@ ladspa_module_reset (BseModule *module)
 
 static void
 ladspa_module_process (BseModule *module,
-		       guint      n_values)
+		       uint       n_values)
 {
-  LadspaData *ldata = module->user_data;
+  LadspaData *ldata = (LadspaData*) module->user_data;
   BseLadspaInfo *bli = ldata->bli;
-  guint i, nis = 0, nos = 0, bsize = bse_engine_block_size ();
+  uint i, nis = 0, nos = 0, bsize = bse_engine_block_size ();
   /* connect audio ports and copy audio buffers */
   for (i = 0; i < bli->n_aports; i++)
     if (bli->aports[i].output)
@@ -406,9 +406,9 @@ ladspa_module_process (BseModule *module,
       }
     else
       {
-	gfloat *ibuffer = ldata->ibuffers + nis * bsize;
-	const gfloat *srcbuf = BSE_MODULE_IBUFFER (module, nis);
-	guint j;
+	float *ibuffer = ldata->ibuffers + nis * bsize;
+	const float *srcbuf = BSE_MODULE_IBUFFER (module, nis);
+	uint j;
 	if (bli->aports[i].rate_relative)
 	  for (j = 0; j < n_values; j++)
 	    ibuffer[j] = srcbuf[j] * BSE_SIGNAL_TO_FREQ_FACTOR;
@@ -422,8 +422,8 @@ ladspa_module_process (BseModule *module,
   for (i = 0, nos = 0; i < bli->n_aports; i++)
     if (bli->aports[i].output && bli->aports[i].rate_relative)
       {
-	gfloat *obuf = BSE_MODULE_OBUFFER (module, nos);
-	guint j;
+	float *obuf = BSE_MODULE_OBUFFER (module, nos);
+	uint j;
 	for (j = 0; j < n_values; j++)
 	  obuf[j] *= BSE_SIGNAL_FROM_FREQ_FACTOR;
 	nos++;
@@ -431,10 +431,10 @@ ladspa_module_process (BseModule *module,
 }
 
 static void
-ladspa_module_free_data (gpointer        data,
+ladspa_module_free_data (void                 *data,
 			 const BseModuleClass *klass)
 {
-  LadspaData *ldata = data;
+  LadspaData *ldata = (LadspaData*) data;
   if (ldata->activated && ldata->bli->deactivate)
     ldata->bli->deactivate (ldata->handle);
   ldata->activated = FALSE;
@@ -446,7 +446,7 @@ ladspa_module_free_data (gpointer        data,
 
 static void
 ladspa_derived_context_create (BseSource *source,
-			       guint      context_handle,
+			       uint       context_handle,
 			       BseTrans  *trans)
 {
   static const BseModuleClass ladspa_module_class = {
@@ -460,25 +460,25 @@ ladspa_derived_context_create (BseSource *source,
     BSE_COST_EXPENSIVE,		/* cost */
   };
   BseLadspaModule *self = BSE_LADSPA_MODULE (source);
-  BseLadspaModuleClass *class = BSE_LADSPA_MODULE_GET_CLASS (self);
-  BseLadspaInfo *bli = class->bli;
-  LadspaData *ldata = g_malloc0 (LADSPA_DATA_SIZE (bli));
+  BseLadspaModuleClass *klass = BSE_LADSPA_MODULE_GET_CLASS (self);
+  BseLadspaInfo *bli = klass->bli;
+  LadspaData *ldata = (LadspaData*) g_malloc0 (LADSPA_DATA_SIZE (bli));
   BseModule *module;
-  guint i, nis;
+  uint i, nis;
 
   ldata->bli = bli;
   /* setup audio streams */
-  if (!class->gsl_class)
+  if (!klass->gsl_class)
     {
-      guint nos = 0;
+      uint nos = 0;
       for (i = 0, nis = 0; i < bli->n_aports; i++)
 	if (bli->aports[i].output)
 	  nos++;
 	else
 	  nis++;
-      class->gsl_class = g_memdup (&ladspa_module_class, sizeof (ladspa_module_class));
-      class->gsl_class->n_istreams = nis;
-      class->gsl_class->n_ostreams = nos;
+      klass->gsl_class = (BseModuleClass*) g_memdup (&ladspa_module_class, sizeof (ladspa_module_class));
+      klass->gsl_class->n_istreams = nis;
+      klass->gsl_class->n_ostreams = nos;
     }
   /* create ladspa plugin instance */
   ldata->handle = bli->instantiate (bli->descdata, bse_engine_sample_freq ());
@@ -488,13 +488,13 @@ ladspa_derived_context_create (BseSource *source,
   /* initialize control ports */
   bse_block_copy_float (LADSPA_CVALUES_COUNT (bli), ldata->cvalues, self->cvalues);
   /* allocate input audio buffers */
-  ldata->ibuffers = g_new (gfloat, class->gsl_class->n_istreams * bse_engine_block_size ());
+  ldata->ibuffers = g_new (float, klass->gsl_class->n_istreams * bse_engine_block_size ());
   /* connect input audio ports */
   for (i = 0, nis = 0; i < bli->n_aports; i++)
     if (bli->aports[i].input)
       bli->connect_port (ldata->handle, bli->aports[i].port_index, ldata->ibuffers + nis++ * bse_engine_block_size ());
   
-  module = bse_module_new (class->gsl_class, ldata);
+  module = bse_module_new (klass->gsl_class, ldata);
   bse_source_set_context_module (source, context_handle, module);
   bse_trans_add (trans, bse_job_integrate (module));
   
