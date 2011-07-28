@@ -26,8 +26,8 @@
 #include <errno.h>
 
 
-#define parse_or_return(scanner, token) { guint _t = (token); \
-                                          if (g_scanner_get_next_token (scanner) != _t) \
+#define parse_or_return(scanner, token) { GslWaveTokenType _t = GslWaveTokenType (token); \
+                                          if (GslWaveTokenType (g_scanner_get_next_token (scanner)) != _t) \
                                             return _t; \
                                         }
 static SFI_MSG_TYPE_DEFINE (debug_bsewave, "bsewave", SFI_MSG_DEBUG, NULL);
@@ -97,15 +97,15 @@ static const char *bsewave_tokens[] = {
 typedef struct
 {
   BseWaveFileInfo wfi;
-  gchar          *cwd;
+  char           *cwd;
 } FileInfo;
 
 typedef struct
 {
   BseWaveDsc        wdsc;
   GslWaveFormatType dfl_format;
-  guint		    dfl_byte_order;
-  gfloat	    dfl_mix_freq;
+  uint		    dfl_byte_order;
+  float	            dfl_mix_freq;
 } WaveDsc;
 
 /* BseWaveChunkDsc accessors */
@@ -125,7 +125,7 @@ typedef struct
 /* --- functions --- */
 static GTokenType
 bsewave_skip_rest_statement (GScanner *scanner,
-			     guint     level)
+			     uint      level)
 {
   g_return_val_if_fail (scanner != NULL, G_TOKEN_ERROR);
   
@@ -134,7 +134,7 @@ bsewave_skip_rest_statement (GScanner *scanner,
       g_scanner_get_next_token (scanner);
       switch (scanner->token)
 	{
-	case G_TOKEN_EOF: case G_TOKEN_ERROR:                   return '}';
+	case G_TOKEN_EOF: case G_TOKEN_ERROR:                   return GTokenType ('}');
 	case '(': case '{': case '[':           level++;        break;
 	case ')': case '}': case ']':           level--;        break;
 	default:                                                break;
@@ -145,21 +145,21 @@ bsewave_skip_rest_statement (GScanner *scanner,
 }
 
 static BseWaveFileInfo*
-bsewave_load_file_info (gpointer      data,
-			const gchar  *_file_name,
+bsewave_load_file_info (void         *data,
+			const char   *_file_name,
 			BseErrorType *error_p)
 {
   FileInfo *fi = NULL;
   gboolean in_wave = FALSE, abort = FALSE;
   SfiRing *wave_names = NULL;
   GScanner *scanner;
-  gchar *cwd, *file_name;
-  gint fd;
-  guint i;
+  char *cwd, *file_name;
+  int fd;
+  uint i;
   
   if (g_path_is_absolute (_file_name))
     {
-      gchar *p = strrchr (_file_name, G_DIR_SEPARATOR);
+      const char *p = strrchr (_file_name, G_DIR_SEPARATOR);
       
       g_assert (p != NULL);
       cwd = g_strndup (_file_name, p - _file_name + 1);
@@ -181,14 +181,14 @@ bsewave_load_file_info (gpointer      data,
     }
   
   scanner = g_scanner_new64 (sfi_storage_scanner_config);
-  scanner->config->cpair_comment_single = "#\n";
+  scanner->config->cpair_comment_single = (char*) "#\n";
   g_scanner_scope_add_symbol (scanner, 0, "wave", GUINT_TO_POINTER (BSEWAVE_TOKEN_WAVE));
   g_scanner_scope_add_symbol (scanner, 0, "name", GUINT_TO_POINTER (BSEWAVE_TOKEN_NAME));
   g_scanner_input_file (scanner, fd);
   while (!abort)
     {
       g_scanner_get_next_token (scanner);
-      switch (scanner->token)
+      switch (GslWaveTokenType (scanner->token))
 	{
 	case BSEWAVE_TOKEN_WAVE:
 	  if (g_scanner_peek_next_token (scanner) == '{')
@@ -207,7 +207,7 @@ bsewave_load_file_info (gpointer      data,
 	      g_scanner_get_next_token (scanner); /* eat '=' */
 	      if (g_scanner_peek_next_token (scanner) == G_TOKEN_STRING)
 		{
-		  gchar *wave_name;
+		  char *wave_name;
 		  
 		  g_scanner_get_next_token (scanner); /* eat string */
 		  wave_name = g_strdup (scanner->value.v_string);
@@ -239,9 +239,9 @@ bsewave_load_file_info (gpointer      data,
       
       fi = sfi_new_struct0 (FileInfo, 1);
       fi->wfi.n_waves = sfi_ring_length (wave_names);
-      fi->wfi.waves = g_malloc0 (sizeof (fi->wfi.waves[0]) * fi->wfi.n_waves);
+      fi->wfi.waves = (BseWaveFileInfo::Wave*) g_malloc0 (sizeof (fi->wfi.waves[0]) * fi->wfi.n_waves);
       for (i = 0, ring = wave_names; i < fi->wfi.n_waves; i++, ring = ring->next)
-	fi->wfi.waves[i].name = ring->data;
+	fi->wfi.waves[i].name = (char*) ring->data;
       sfi_ring_free (wave_names);
       fi->cwd = cwd;
     }
@@ -253,11 +253,11 @@ bsewave_load_file_info (gpointer      data,
 }
 
 static void
-bsewave_free_file_info (gpointer         data,
+bsewave_free_file_info (void            *data,
 			BseWaveFileInfo *file_info)
 {
   FileInfo *fi = (FileInfo*) file_info;
-  guint i;
+  uint i;
   
   for (i = 0; i < fi->wfi.n_waves; i++)
     g_free (fi->wfi.waves[i].name);
@@ -266,16 +266,16 @@ bsewave_free_file_info (gpointer         data,
   sfi_delete_struct (FileInfo, fi);
 }
 
-static guint
+static uint
 bsewave_parse_chunk_dsc (GScanner        *scanner,
 			 BseWaveChunkDsc *chunk)
 {
   parse_or_return (scanner, '{');
   do
-    switch (g_scanner_get_next_token (scanner))
+    switch (GslWaveTokenType (g_scanner_get_next_token (scanner)))
       {
-        gchar *key;
-        gfloat vfloat;
+        char *key;
+        float vfloat;
       case '}':
 	return G_TOKEN_NONE;
       default:
@@ -284,7 +284,7 @@ bsewave_parse_chunk_dsc (GScanner        *scanner,
 	parse_or_return (scanner, '=');
 	parse_or_return (scanner, G_TOKEN_INT);
 	chunk->osc_freq = bse_temp_freq (BSE_CONFIG (kammer_freq),
-					 ((gint) scanner->value.v_int64) - BSE_CONFIG (midi_kammer_note));
+					 ((int) scanner->value.v_int64) - BSE_CONFIG (midi_kammer_note));
         chunk->xinfos = bse_xinfos_add_num (chunk->xinfos, "midi-note", scanner->value.v_int64);
 	break;
       case BSEWAVE_TOKEN_OSC_FREQ:
@@ -375,7 +375,7 @@ bsewave_parse_chunk_dsc (GScanner        *scanner,
       case BSEWAVE_TOKEN_BYTE_ORDER:
         parse_or_return (scanner, '=');
         g_scanner_get_next_token (scanner);
-        switch (scanner->token)
+        switch (GslWaveTokenType (scanner->token))
           {
           case BSEWAVE_TOKEN_LITTLE_ENDIAN:
           case BSEWAVE_TOKEN_LITTLE:        LOADER_BYTE_ORDER (chunk) = G_LITTLE_ENDIAN; break;
@@ -387,7 +387,7 @@ bsewave_parse_chunk_dsc (GScanner        *scanner,
       case BSEWAVE_TOKEN_FORMAT:
         parse_or_return (scanner, '=');
         g_scanner_get_next_token (scanner);
-        switch (scanner->token)
+        switch (GslWaveTokenType (scanner->token))
           {
           case BSEWAVE_TOKEN_SIGNED_8:      LOADER_FORMAT (chunk) = GSL_WAVE_FORMAT_SIGNED_8;    break;
           case BSEWAVE_TOKEN_SIGNED_12:     LOADER_FORMAT (chunk) = GSL_WAVE_FORMAT_SIGNED_12;   break;
@@ -414,17 +414,17 @@ bsewave_parse_chunk_dsc (GScanner        *scanner,
   while (TRUE);
 }
 
-static guint
-bsewave_parse_wave_dsc (GScanner    *scanner,
-			WaveDsc     *dsc,
-			const gchar *wave_name)
+static uint
+bsewave_parse_wave_dsc (GScanner   *scanner,
+			WaveDsc    *dsc,
+			const char *wave_name)
 {
   parse_or_return (scanner, '{');
   do
-    switch (g_scanner_get_next_token (scanner))
+    switch (GslWaveTokenType (g_scanner_get_next_token (scanner)))
       {
-	guint i, token;
-        gchar *key;
+	uint i, token;
+        char *key;
       case '}':
 	return G_TOKEN_NONE;
       default:
@@ -514,7 +514,7 @@ bsewave_parse_wave_dsc (GScanner    *scanner,
 	if (g_scanner_peek_next_token (scanner) != '{')
 	  parse_or_return (scanner, '{');
 	i = dsc->wdsc.n_chunks++;
-	dsc->wdsc.chunks = g_realloc (dsc->wdsc.chunks, sizeof (dsc->wdsc.chunks[0]) * dsc->wdsc.n_chunks);
+	dsc->wdsc.chunks = (BseWaveChunkDsc*) g_realloc (dsc->wdsc.chunks, sizeof (dsc->wdsc.chunks[0]) * dsc->wdsc.n_chunks);
 	memset (dsc->wdsc.chunks + i, 0, sizeof (dsc->wdsc.chunks[0]) * 1);
 	dsc->wdsc.chunks[i].mix_freq = 0;
 	dsc->wdsc.chunks[i].osc_freq = -1;
@@ -526,7 +526,7 @@ bsewave_parse_wave_dsc (GScanner    *scanner,
         if (dsc->wdsc.chunks[i].osc_freq <= 0)
           {
             /* try to set osc-freq from xinfos */
-            gfloat osc_freq = bse_xinfos_get_float (dsc->wdsc.chunks[i].xinfos, "osc-freq");
+            float osc_freq = bse_xinfos_get_float (dsc->wdsc.chunks[i].xinfos, "osc-freq");
             if (osc_freq == 0 && bse_xinfos_get_value (dsc->wdsc.chunks[i].xinfos, "midi-note")) /* also matches midi-note=0 */
               {
                 SfiNum midi_note = bse_xinfos_get_num (dsc->wdsc.chunks[i].xinfos, "midi-note");
@@ -537,11 +537,11 @@ bsewave_parse_wave_dsc (GScanner    *scanner,
           }
 	if (dsc->wdsc.chunks[i].osc_freq <= 0)
 	  g_scanner_error (scanner, "wave chunk \"%s\" without oscilator frequency: mix_freq=%f osc_freq=%f",
-			   LOADER_FILE (&dsc->wdsc.chunks[i]) ? (gchar*) LOADER_FILE (&dsc->wdsc.chunks[i]) : "",
+			   LOADER_FILE (&dsc->wdsc.chunks[i]) ? (char*) LOADER_FILE (&dsc->wdsc.chunks[i]) : "",
 			   dsc->wdsc.chunks[i].mix_freq, dsc->wdsc.chunks[i].osc_freq);
         if (dsc->wdsc.chunks[i].osc_freq >= dsc->wdsc.chunks[i].mix_freq / 2.)
           g_scanner_error (scanner, "wave chunk \"%s\" with invalid mixing/oscilator frequency: mix_freq=%f osc_freq=%f",
-			   LOADER_FILE (&dsc->wdsc.chunks[i]) ? (gchar*) LOADER_FILE (&dsc->wdsc.chunks[i]) : "",
+			   LOADER_FILE (&dsc->wdsc.chunks[i]) ? (char*) LOADER_FILE (&dsc->wdsc.chunks[i]) : "",
                            dsc->wdsc.chunks[i].mix_freq, dsc->wdsc.chunks[i].osc_freq);
         break;
       }
@@ -551,7 +551,7 @@ bsewave_parse_wave_dsc (GScanner    *scanner,
 static void
 bsewave_wave_dsc_free (WaveDsc *dsc)
 {
-  guint i;
+  uint i;
   for (i = 0; i < dsc->wdsc.n_chunks; i++)
     {
       g_strfreev (dsc->wdsc.chunks[i].xinfos);
@@ -564,14 +564,14 @@ bsewave_wave_dsc_free (WaveDsc *dsc)
 }
 
 static BseWaveDsc*
-bsewave_load_wave_dsc (gpointer         data,
+bsewave_load_wave_dsc (void            *data,
 		       BseWaveFileInfo *file_info,
-		       guint            nth_wave,
+		       uint             nth_wave,
 		       BseErrorType    *error_p)
 {
-  guint token, i;
+  uint token, i;
   
-  gint fd = open (file_info->file_name, O_RDONLY);
+  int fd = open (file_info->file_name, O_RDONLY);
   if (fd < 0)
     {
       *error_p = gsl_error_from_errno (errno, BSE_ERROR_FILE_OPEN_FAILED);
@@ -579,7 +579,7 @@ bsewave_load_wave_dsc (gpointer         data,
     }
   
   GScanner *scanner = g_scanner_new64 (sfi_storage_scanner_config);
-  scanner->config->cpair_comment_single = "#\n";
+  scanner->config->cpair_comment_single = (char*) "#\n";
   scanner->input_name = file_info->file_name;
   g_scanner_input_file (scanner, fd);
   for (i = BSEWAVE_TOKEN_WAVE; i < BSEWAVE_TOKEN_LAST; i++)
@@ -594,7 +594,7 @@ bsewave_load_wave_dsc (gpointer         data,
   dsc->dfl_format = GSL_WAVE_FORMAT_SIGNED_16;
   dsc->dfl_byte_order = G_LITTLE_ENDIAN;
   dsc->dfl_mix_freq = 44100;
-  if (g_scanner_get_next_token (scanner) != BSEWAVE_TOKEN_WAVE)
+  if (GslWaveTokenType (g_scanner_get_next_token (scanner)) != BSEWAVE_TOKEN_WAVE)
     token = BSEWAVE_TOKEN_WAVE;
   else
     token = bsewave_parse_wave_dsc (scanner, dsc, file_info->waves[nth_wave].name);
@@ -603,7 +603,7 @@ bsewave_load_wave_dsc (gpointer         data,
       bsewave_wave_dsc_free (dsc);
       dsc = NULL;
       if (!scanner->parse_errors)
-	g_scanner_unexp_token (scanner, token, "identifier", "keyword", NULL, "discarding wave", TRUE);
+	g_scanner_unexp_token (scanner, GTokenType (token), "identifier", "keyword", NULL, "discarding wave", TRUE);
     }
   else
     {
@@ -630,7 +630,7 @@ bsewave_load_wave_dsc (gpointer         data,
 }
 
 static void
-bsewave_free_wave_dsc (gpointer    data,
+bsewave_free_wave_dsc (void       *data,
 		       BseWaveDsc *wave_dsc)
 {
   WaveDsc *dsc = (WaveDsc*) wave_dsc;
@@ -640,13 +640,13 @@ bsewave_free_wave_dsc (gpointer    data,
 
 static GslDataHandle*
 bsewave_load_singlechunk_wave (BseWaveFileInfo *fi,
-			       const gchar     *wave_name,
-                               gfloat           osc_freq,
+			       const char      *wave_name,
+                               float            osc_freq,
 			       BseErrorType    *error_p,
-                               guint           *n_channelsp)
+                               uint            *n_channelsp)
 {
   BseWaveDsc *wdsc;
-  guint i;
+  uint i;
   
   if (fi->n_waves == 1 && !wave_name)
     i = 0;
@@ -676,7 +676,7 @@ bsewave_load_singlechunk_wave (BseWaveFileInfo *fi,
       GslDataHandle *dhandle = bse_wave_handle_create (wdsc, 0, error_p);
       if (dhandle && osc_freq > 0)
         {
-          gchar **xinfos = NULL;
+          char **xinfos = NULL;
           xinfos = bse_xinfos_add_float (xinfos, "osc-freq", osc_freq);
           GslDataHandle *tmp_handle = gsl_data_handle_new_add_xinfos (dhandle, xinfos);
           g_strfreev (xinfos);
@@ -696,9 +696,9 @@ bsewave_load_singlechunk_wave (BseWaveFileInfo *fi,
 }
 
 static GslDataHandle*
-bsewave_create_chunk_handle (gpointer      data,
+bsewave_create_chunk_handle (void         *data,
 			     BseWaveDsc   *wave_dsc,
-			     guint         nth_chunk,
+			     uint          nth_chunk,
 			     BseErrorType *error_p)
 {
   WaveDsc *dsc = (WaveDsc*) wave_dsc;
@@ -708,50 +708,52 @@ bsewave_create_chunk_handle (gpointer      data,
   GslDataHandle *dhandle = NULL;
   switch (LOADER_TYPE (chunk))
     {
-      gchar *string;
+      char *string;
     case AUTO_FILE_MAGIC:
-      *error_p = BSE_ERROR_IO;
-      /* construct chunk file name from (hopefully) relative path */
-      if (g_path_is_absolute (LOADER_FILE (chunk)))
-        string = g_strdup (LOADER_FILE (chunk));
-      else
-        string = g_strdup_printf ("%s%c%s", fi->cwd, G_DIR_SEPARATOR, (char*) LOADER_FILE (chunk));
-      /* try to load the chunk via registered loaders */
-      BseWaveFileInfo *cfi = bse_wave_file_info_load (string, error_p);
-      if (cfi)
-	{
-          guint nch = 0;
-	  /* FIXME: there's a potential attack here, in letting a single chunk
-	   * wave's chunk point to its own wave. this'll trigger recursions until
-	   * stack overflow
-	   */
-	  dhandle = bsewave_load_singlechunk_wave (cfi, LOADER_INDEX (chunk), chunk->osc_freq, error_p, &nch);
-          if (dhandle && chunk->xinfos)
-            {
-              GslDataHandle *tmp_handle = dhandle;
-              dhandle = gsl_data_handle_new_add_xinfos (dhandle, chunk->xinfos);
-              gsl_data_handle_unref (tmp_handle);
-            }
-          if (dhandle && nch != dsc->wdsc.n_channels)
-            {
-              *error_p = BSE_ERROR_WRONG_N_CHANNELS;
-              gsl_data_handle_unref (dhandle);
-              dhandle = NULL;
-            }
-	  bse_wave_file_info_unref (cfi);
-	}
-      g_free (string);
+      {
+        *error_p = BSE_ERROR_IO;
+        /* construct chunk file name from (hopefully) relative path */
+        if (g_path_is_absolute ((char*) LOADER_FILE (chunk)))
+          string = g_strdup ((char*) LOADER_FILE (chunk));
+        else
+          string = g_strdup_printf ("%s%c%s", fi->cwd, G_DIR_SEPARATOR, (char*) LOADER_FILE (chunk));
+        /* try to load the chunk via registered loaders */
+        BseWaveFileInfo *cfi = bse_wave_file_info_load (string, error_p);
+        if (cfi)
+          {
+            uint nch = 0;
+            /* FIXME: there's a potential attack here, in letting a single chunk
+             * wave's chunk point to its own wave. this'll trigger recursions until
+             * stack overflow
+             */
+            dhandle = bsewave_load_singlechunk_wave (cfi, (char*) LOADER_INDEX (chunk), chunk->osc_freq, error_p, &nch);
+            if (dhandle && chunk->xinfos)
+              {
+                GslDataHandle *tmp_handle = dhandle;
+                dhandle = gsl_data_handle_new_add_xinfos (dhandle, chunk->xinfos);
+                gsl_data_handle_unref (tmp_handle);
+              }
+            if (dhandle && nch != dsc->wdsc.n_channels)
+              {
+                *error_p = BSE_ERROR_WRONG_N_CHANNELS;
+                gsl_data_handle_unref (dhandle);
+                dhandle = NULL;
+              }
+            bse_wave_file_info_unref (cfi);
+          }
+        g_free (string);
+      }
       break;
     case RAW_FILE_MAGIC:
       /* construct chunk file name from (hopefully) relative path */
-      if (g_path_is_absolute (LOADER_FILE (chunk)))
-        string = g_strdup (LOADER_FILE (chunk));
+      if (g_path_is_absolute ((char*) LOADER_FILE (chunk)))
+        string = g_strdup ((char*) LOADER_FILE (chunk));
       else
         string = g_strdup_printf ("%s%c%s", fi->cwd, G_DIR_SEPARATOR, (char*) LOADER_FILE (chunk));
       /* try to load a raw sample */
       dhandle = gsl_wave_handle_new (string,			/* file name */
 				     dsc->wdsc.n_channels,
-				     LOADER_FORMAT (chunk) ? LOADER_FORMAT (chunk) : dsc->dfl_format,
+				     GslWaveFormatType (LOADER_FORMAT (chunk) ? LOADER_FORMAT (chunk) : dsc->dfl_format),
 				     LOADER_BYTE_ORDER (chunk) ? LOADER_BYTE_ORDER (chunk) : dsc->dfl_byte_order,
                                      chunk->mix_freq > 0 ? chunk->mix_freq : dsc->dfl_mix_freq,
                                      chunk->osc_freq,
@@ -766,7 +768,7 @@ bsewave_create_chunk_handle (gpointer      data,
 	{
 	  dhandle = gsl_wave_handle_new_zoffset (fi->wfi.file_name,
 						 dsc->wdsc.n_channels,
-                                                 LOADER_FORMAT (chunk) ? LOADER_FORMAT (chunk) : dsc->dfl_format,
+                                                 GslWaveFormatType (LOADER_FORMAT (chunk) ? LOADER_FORMAT (chunk) : dsc->dfl_format),
                                                  LOADER_BYTE_ORDER (chunk) ? LOADER_BYTE_ORDER (chunk) : dsc->dfl_byte_order,
                                                  chunk->mix_freq > 0 ? chunk->mix_freq : dsc->dfl_mix_freq,
                                                  chunk->osc_freq,
@@ -782,7 +784,7 @@ bsewave_create_chunk_handle (gpointer      data,
       if (LOADER_LENGTH (chunk))        /* inlined binary data */
 	{
           *error_p = BSE_ERROR_IO;
-          guint vnch = 0;
+          uint vnch = 0;
 	  dhandle = gsl_data_handle_new_ogg_vorbis_zoffset (fi->wfi.file_name,
                                                             chunk->osc_freq,
                                                             LOADER_BOFFSET (chunk),     /* byte offset */
@@ -816,14 +818,14 @@ bsewave_create_chunk_handle (gpointer      data,
 void
 _gsl_init_loader_gslwave (void)
 {
-  static const gchar *file_exts[] = { "bsewave", NULL, };
-  static const gchar *mime_types[] = { "audio/x-bsewave", NULL, };
-  static const gchar *magics[] = { "0 string #BseWave1", NULL, };
+  static const char *file_exts[] = { "bsewave", NULL, };
+  static const char *mime_types[] = { "audio/x-bsewave", NULL, };
+  static const char *magics[] = { "0 string #BseWave1", NULL, };
   static BseLoader loader = {
     "BseWave",
     file_exts,
     mime_types,
-    0,	/* flags */
+    BseLoaderFlags (0),	/* flags */
     magics,
     0,  /* priority */
     NULL,
