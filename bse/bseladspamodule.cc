@@ -323,7 +323,7 @@ ladspa_derived_get_property (GObject    *object,
   BseLadspaModuleClass *klass = BSE_LADSPA_MODULE_GET_CLASS (self);
   uint i = param_id - 1;
   if (i >= klass->bli->n_cports)
-    i = (unsigned long) g_param_spec_get_qdata (pspec, quark_value_index);
+    i = (ptrdiff_t) g_param_spec_get_qdata (pspec, quark_value_index);
   ladspa_value_set_float (self, value, klass->bli->cports + i, self->cvalues[i]);
 }
 
@@ -360,7 +360,7 @@ ladspa_derived_set_property (GObject      *object,
   /* store value */
   uint i = param_id - 1;
   if (i >= klass->bli->n_cports)
-    i = (unsigned long) g_param_spec_get_qdata (pspec, quark_value_index);
+    i = (ptrdiff_t) g_param_spec_get_qdata (pspec, quark_value_index);
   self->cvalues[i] = ladspa_value_get_float (self, value, klass->bli->cports + i);
   if (pspec2)
     g_object_notify (object, pspec2->name);
