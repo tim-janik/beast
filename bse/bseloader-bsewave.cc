@@ -423,7 +423,8 @@ bsewave_parse_wave_dsc (GScanner   *scanner,
   do
     switch (GslWaveTokenType (g_scanner_get_next_token (scanner)))
       {
-	uint i, token;
+	uint i;
+        int token;
         char *key;
       case '}':
 	return G_TOKEN_NONE;
