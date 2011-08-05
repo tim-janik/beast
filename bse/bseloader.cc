@@ -31,7 +31,7 @@ static SfiRing   *gsl_magic_list2 = NULL;
 
 /* --- functions --- */
 static BseLoader*
-loader_find_by_name (const gchar *name)
+loader_find_by_name (const char *name)
 {
   BseLoader *loader;
 
@@ -61,7 +61,7 @@ bse_loader_register (BseLoader *loader)
   if (loader->magic_specs)
     {
       GslMagic *magic;
-      guint i, j;
+      uint i, j;
 
       for (i = 0; loader->magic_specs[i]; i++)
 	{
@@ -86,21 +86,21 @@ bse_loader_register (BseLoader *loader)
     }
 }
 
-static guint8*
-skipchr (const guint8 *mem,
-	 gchar         byte,
-	 guint         maxlen)
+static uint8*
+skipchr (const uint8 *mem,
+	 char         byte,
+	 uint         maxlen)
 {
-  const guint8 *p = mem, *bound = p + maxlen;
+  const uint8 *p = mem, *bound = p + maxlen;
 
   while (p < bound)
     if (UNLIKELY (*p++ != byte))
-      return (guint8*) p - 1;
+      return (uint8*) p - 1;
   return NULL;
 }
 
 BseLoader*
-bse_loader_match (const gchar *file_name)
+bse_loader_match (const char *file_name)
 {
   GslMagic *magic = NULL;
 
@@ -114,7 +114,7 @@ bse_loader_match (const gchar *file_name)
    */
   if (!magic && gsl_magic_list2)
     {
-      guint8 buffer[1024], *p = NULL;
+      uint8 buffer[1024], *p = NULL;
       GslLong n, pos = 0;
       GslHFile *hfile = gsl_hfile_open (file_name);
       if (!hfile)
@@ -141,11 +141,11 @@ bse_loader_match (const gchar *file_name)
 	magic = gsl_magic_list_match_file_skip (gsl_magic_list2, file_name, pos);
     }
 
-  return magic ? magic->data : NULL;
+  return magic ? (BseLoader*) magic->data : NULL;
 }
 
 BseWaveFileInfo*
-bse_wave_file_info_load (const gchar  *file_name,
+bse_wave_file_info_load (const char   *file_name,
 			 BseErrorType *error_p)
 {
   BseWaveFileInfo *finfo = NULL;
@@ -172,7 +172,7 @@ bse_wave_file_info_load (const gchar  *file_name,
 	{
 	  if (finfo->n_waves > 0)
 	    {
-	      guint i;
+	      uint i;
 
 	      g_return_val_if_fail (finfo->loader == NULL, NULL);
 	      g_return_val_if_fail (finfo->file_name == NULL, NULL);
@@ -238,7 +238,7 @@ bse_wave_file_info_ref (BseWaveFileInfo *wave_file_info)
   return wave_file_info;
 }
 
-const gchar*
+const char*
 bse_wave_file_info_loader (BseWaveFileInfo *fi)
 {
   g_return_val_if_fail (fi != NULL, NULL);
@@ -248,7 +248,7 @@ bse_wave_file_info_loader (BseWaveFileInfo *fi)
 
 BseWaveDsc*
 bse_wave_dsc_load (BseWaveFileInfo *wave_file_info,
-		   guint            nth_wave,
+		   uint             nth_wave,
                    gboolean         accept_empty,
                    BseErrorType    *error_p)
 {
@@ -312,7 +312,7 @@ bse_wave_dsc_free (BseWaveDsc *wave_dsc)
 
 GslDataHandle*
 bse_wave_handle_create (BseWaveDsc   *wave_dsc,
-			guint	      nth_chunk,
+			uint	      nth_chunk,
 			BseErrorType *error_p)
 {
   BseErrorType error = BSE_ERROR_NONE;
@@ -348,7 +348,7 @@ bse_wave_handle_create (BseWaveDsc   *wave_dsc,
 
 GslWaveChunk*
 bse_wave_chunk_create (BseWaveDsc   *wave_dsc,
-		       guint         nth_chunk,
+		       uint          nth_chunk,
 		       BseErrorType *error_p)
 {
   GslDataHandle *dhandle;
@@ -377,7 +377,7 @@ bse_wave_chunk_create (BseWaveDsc   *wave_dsc,
     return NULL;
   /* dcache keeps dhandle alive */
 
-  const gchar *ltype = bse_xinfos_get_value (chunk->xinfos, "loop-type");
+  const char *ltype = bse_xinfos_get_value (chunk->xinfos, "loop-type");
   GslWaveLoopType loop_type = ltype ? gsl_wave_loop_type_from_string (ltype) : GSL_WAVE_LOOP_NONE;
   SfiNum loop_start = bse_xinfos_get_num (chunk->xinfos, "loop-start");
   SfiNum loop_end = bse_xinfos_get_num (chunk->xinfos, "loop-end");

@@ -88,7 +88,7 @@ bse_sources = $(strip \
 	bsecompat.cc		bseundostack.c		bsemidiinput.c			bsemididecoder.c \
 	bsenote.cc		bsemidifile.c		bseblockutils.cc		\
 	bsecxxvalue.cc		bsecxxutils.cc		bsecxxbase.cc			bsecxxclosure.cc \
-	bsecxxarg.cc		bsecxxmodule.cc		bsecxxplugin.cc			bseloader.c \
+	bsecxxarg.cc		bsecxxmodule.cc		bsecxxplugin.cc			bseloader.cc \
 	bseresampler.cc 	bsedatahandle-resample.cc				bsedatahandle-fir.cc \
 	bseloader-aiff.cc	bseloader-guspatch.cc	bseloader-oggvorbis.c		bseloader-bsewave.cc \
 	bseloader-mad.c		bseloader-wav.c		\
