@@ -35,13 +35,13 @@ typedef struct
 
 /* --- functions --- */
 static BseWaveFileInfo*
-oggv_load_file_info (gpointer      data,
-		     const gchar  *file_name,
+oggv_load_file_info (void         *data,
+		     const char   *file_name,
 		     BseErrorType *error_p)
 {
   FileInfo *fi = sfi_new_struct0 (FileInfo, 1);
   FILE *file;
-  gint err, i;
+  int err, i;
   
   file = fopen (file_name, "r");
   if (!file)
@@ -61,11 +61,11 @@ oggv_load_file_info (gpointer      data,
     }
 
   fi->wfi.n_waves = ov_streams (&fi->ofile);
-  fi->wfi.waves = g_malloc0 (sizeof (fi->wfi.waves[0]) * fi->wfi.n_waves);
+  fi->wfi.waves = (BseWaveFileInfo::Wave*) g_malloc0 (sizeof (fi->wfi.waves[0]) * fi->wfi.n_waves);
   for (i = 0; i < fi->wfi.n_waves; i++)
     {
       vorbis_comment *vc = ov_comment (&fi->ofile, i);
-      guint n;
+      uint n;
 
       for (n = 0; n < vc->comments; n++)
 	if (strcmp (vc->user_comments[n], "title=") == 0)
@@ -80,11 +80,11 @@ oggv_load_file_info (gpointer      data,
 }
 
 static void
-oggv_free_file_info (gpointer         data,
+oggv_free_file_info (void            *data,
 		     BseWaveFileInfo *file_info)
 {
   FileInfo *fi = (FileInfo*) file_info;
-  guint i;
+  uint i;
 
   for (i = 0; i < fi->wfi.n_waves; i++)
     g_free (fi->wfi.waves[i].name);
@@ -94,9 +94,9 @@ oggv_free_file_info (gpointer         data,
 }
 
 static BseWaveDsc*
-oggv_load_wave_dsc (gpointer         data,
+oggv_load_wave_dsc (void            *data,
 		    BseWaveFileInfo *file_info,
-		    guint            nth_wave,
+		    uint             nth_wave,
 		    BseErrorType    *error_p)
 {
   FileInfo *fi = (FileInfo*) file_info;
@@ -115,10 +115,10 @@ oggv_load_wave_dsc (gpointer         data,
 }
 
 static void
-oggv_free_wave_dsc (gpointer    data,
+oggv_free_wave_dsc (void       *data,
 		    BseWaveDsc *wdsc)
 {
-  guint i;
+  uint i;
   for (i = 0; i < wdsc->n_chunks; i++)
     g_strfreev (wdsc->chunks[i].xinfos);
   g_free (wdsc->chunks);
@@ -127,9 +127,9 @@ oggv_free_wave_dsc (gpointer    data,
 }
 
 static GslDataHandle*
-oggv_create_chunk_handle (gpointer      data,
+oggv_create_chunk_handle (void         *data,
 			  BseWaveDsc   *wdsc,
-			  guint         nth_chunk,
+			  uint          nth_chunk,
 			  BseErrorType *error_p)
 {
   FileInfo *fi = (FileInfo*) wdsc->file_info;
@@ -154,14 +154,14 @@ oggv_create_chunk_handle (gpointer      data,
 void
 _gsl_init_loader_oggvorbis (void)
 {
-  static const gchar *file_exts[] = { "ogg", NULL, };
-  static const gchar *mime_types[] = { "application/ogg", "application/x-ogg", "audio/x-vorbis", "audio/x-ogg", NULL, };
-  static const gchar *magics[] = { "0 string OggS\n" "29 string vorbis", NULL, };
+  static const char *file_exts[] = { "ogg", NULL, };
+  static const char *mime_types[] = { "application/ogg", "application/x-ogg", "audio/x-vorbis", "audio/x-ogg", NULL, };
+  static const char *magics[] = { "0 string OggS\n" "29 string vorbis", NULL, };
   static BseLoader loader = {
     "Ogg/Vorbis",
     file_exts,
     mime_types,
-    0, /* flags */
+    BseLoaderFlags (0), /* flags */
     magics,
     0,  /* priority */
     NULL,
