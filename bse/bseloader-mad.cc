@@ -26,21 +26,21 @@
 typedef struct
 {
   BseWaveFileInfo wfi;
-  guint           n_channels;
-  gfloat	  mix_freq;
-  gfloat	  osc_freq;
+  uint            n_channels;
+  float	          mix_freq;
+  float	          osc_freq;
 } FileInfo;
 
 
 /* --- functions --- */
 static BseWaveFileInfo*
-mad_load_file_info (gpointer      data,
-		    const gchar  *file_name,
+mad_load_file_info (void         *data,
+		    const char   *file_name,
 		    BseErrorType *error_p)
 {
   FileInfo *fi;
-  guint n_channels;
-  gfloat mix_freq;
+  uint n_channels;
+  float mix_freq;
   BseErrorType error;
 
   error = gsl_data_handle_mad_testopen (file_name, &n_channels, &mix_freq);
@@ -52,8 +52,8 @@ mad_load_file_info (gpointer      data,
 
   fi = sfi_new_struct0 (FileInfo, 1);
   fi->wfi.n_waves = 1;	/* we support only a single MPEG stream */
-  fi->wfi.waves = g_malloc0 (sizeof (fi->wfi.waves[0]) * fi->wfi.n_waves);
-  const gchar *dsep = strrchr (file_name, G_DIR_SEPARATOR);
+  fi->wfi.waves = (BseWaveFileInfo::Wave*) g_malloc0 (sizeof (fi->wfi.waves[0]) * fi->wfi.n_waves);
+  const char *dsep = strrchr (file_name, G_DIR_SEPARATOR);
   fi->wfi.waves[0].name = g_strdup (dsep ? dsep + 1 : file_name);
   fi->n_channels = n_channels;
   fi->mix_freq = mix_freq;
@@ -63,11 +63,11 @@ mad_load_file_info (gpointer      data,
 }
 
 static void
-mad_free_file_info (gpointer         data,
+mad_free_file_info (void            *data,
 		    BseWaveFileInfo *file_info)
 {
   FileInfo *fi = (FileInfo*) file_info;
-  guint i;
+  uint i;
 
   for (i = 0; i < fi->wfi.n_waves; i++)
     g_free (fi->wfi.waves[i].name);
@@ -76,9 +76,9 @@ mad_free_file_info (gpointer         data,
 }
 
 static BseWaveDsc*
-mad_load_wave_dsc (gpointer         data,
+mad_load_wave_dsc (void            *data,
 		   BseWaveFileInfo *file_info,
-		   guint            nth_wave,
+		   uint             nth_wave,
 		   BseErrorType    *error_p)
 {
   FileInfo *fi = (FileInfo*) file_info;
@@ -95,10 +95,10 @@ mad_load_wave_dsc (gpointer         data,
 }
 
 static void
-mad_free_wave_dsc (gpointer    data,
+mad_free_wave_dsc (void       *data,
 		   BseWaveDsc *wdsc)
 {
-  guint i;
+  uint i;
   for (i = 0; i < wdsc->n_chunks; i++)
     g_strfreev (wdsc->chunks[i].xinfos);
   g_free (wdsc->chunks);
@@ -107,9 +107,9 @@ mad_free_wave_dsc (gpointer    data,
 }
 
 static GslDataHandle*
-mad_create_chunk_handle (gpointer      data,
+mad_create_chunk_handle (void         *data,
 			 BseWaveDsc   *wdsc,
-			 guint         nth_chunk,
+			 uint          nth_chunk,
 			 BseErrorType *error_p)
 {
   FileInfo *fi = (FileInfo*) wdsc->file_info;
@@ -175,18 +175,18 @@ mad_create_chunk_handle (gpointer      data,
 void
 _gsl_init_loader_mad (void)
 {
-  static const gchar *file_exts[] = {
+  static const char *file_exts[] = {
     "mp1", "mp2", "mp3",
     NULL,
   };
-  static const gchar *mime_types[] = {
+  static const char *mime_types[] = {
     "audio/mp3", "audio/x-mp3", "audio/mpg3", "audio/x-mpg3", "audio/mpeg3", "audio/x-mpeg3",
     "audio/mp2", "audio/x-mp2", "audio/mpg2", "audio/x-mpg2", "audio/mpeg2", "audio/x-mpeg2",
     "audio/mp1", "audio/x-mp1", "audio/mpg1", "audio/x-mpg1", "audio/mpeg1", "audio/x-mpeg1",
     "audio/mpeg", "audio/x-mpeg",
     NULL,
   };
-  static const gchar *magics[] = {
+  static const char *magics[] = {
     MAGIC_MPEG10_I, MAGIC_MPEG10_II, MAGIC_MPEG10_III,
     MAGIC_MPEG20_I, MAGIC_MPEG20_II, MAGIC_MPEG20_III,
     MAGIC_MPEG25_I, MAGIC_MPEG25_II, MAGIC_MPEG25_III,
