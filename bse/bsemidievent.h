@@ -140,17 +140,17 @@ GType         bse_midi_event_get_type (void); /* boxed */
 BseMidiEvent* bse_midi_alloc_event    (void);
 BseMidiEvent* bse_midi_copy_event     (const BseMidiEvent *src);
 void          bse_midi_free_event     (BseMidiEvent       *event);
-BseMidiEvent* bse_midi_event_note_on  (guint               midi_channel,
-                                       guint64             delta_time,
-                                       gfloat              frequency,
-                                       gfloat              velocity);
-BseMidiEvent* bse_midi_event_note_off (guint               midi_channel,
-                                       guint64             delta_time,
+BseMidiEvent* bse_midi_event_note_on  (uint                midi_channel,
+                                       uint64              delta_time,
+                                       float               frequency,
+                                       float               velocity);
+BseMidiEvent* bse_midi_event_note_off (uint                midi_channel,
+                                       uint64              delta_time,
                                        gfloat              frequency);
-BseMidiEvent* bse_midi_event_signal   (guint               midi_channel,
-                                       guint64             delta_time,
+BseMidiEvent* bse_midi_event_signal   (uint                midi_channel,
+                                       uint64              delta_time,
                                        BseMidiSignalType   signal_type,
-                                       gfloat              value);
+                                       float               value);
 
 
 /* --- MIDI Signals --- */

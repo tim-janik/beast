@@ -19,6 +19,7 @@
 #include "bseglue.h"
 #include "gslcommon.h"
 #include "bseieee754.h"
+#include "bsecxxplugin.hh"
 
 #include <errno.h>
 
@@ -34,7 +35,7 @@ static GEnumClass      *bse_midi_signal_class = NULL;
  * Get the initial default value for a midi signal.
  * This function is MT-safe and may be called from any thread.
  */
-gfloat
+float
 bse_midi_signal_default (BseMidiSignalType type)
 {
   switch (type)
@@ -43,7 +44,7 @@ bse_midi_signal_default (BseMidiSignalType type)
     case BSE_MIDI_SIGNAL_CONTINUOUS_7:	return 100.0 / 127.0;   /* Volume */
     case BSE_MIDI_SIGNAL_CONTINUOUS_8:	return 0.5;	        /* Balance */
     case BSE_MIDI_SIGNAL_CONTINUOUS_10:	return 0.5;	        /* Panorama */
-    case BSE_MIDI_SIGNAL_CONTINUOUS_11:	return 0x3f80 / (gfloat) 0x3fff; /* Expression */
+    case BSE_MIDI_SIGNAL_CONTINUOUS_11:	return 0x3f80 / (float) 0x3fff; /* Expression */
     case BSE_MIDI_SIGNAL_CONTROL_7:	return 100.0 / 127.0;	/* Volume MSB */
     case BSE_MIDI_SIGNAL_CONTROL_8:	return 0.5;	        /* Balance MSB */
     case BSE_MIDI_SIGNAL_CONTROL_10:	return 0.5;	        /* Panorama MSB */
@@ -65,25 +66,25 @@ bse_midi_signal_default (BseMidiSignalType type)
     }
 }
 
-const gchar*
+const char*
 bse_midi_signal_name (BseMidiSignalType signal)
 {
   GEnumValue *ev;
   
   if (!bse_midi_signal_class)
-    bse_midi_signal_class = g_type_class_ref (BSE_TYPE_MIDI_SIGNAL_TYPE);
+    bse_midi_signal_class = (GEnumClass*) g_type_class_ref (BSE_TYPE_MIDI_SIGNAL_TYPE);
   
   ev = g_enum_get_value (bse_midi_signal_class, signal);
   return ev ? ev->value_name : NULL;
 }
 
-const gchar*
+const char*
 bse_midi_signal_nick (BseMidiSignalType signal)
 {
   GEnumValue *ev;
   
   if (!bse_midi_signal_class)
-    bse_midi_signal_class = g_type_class_ref (BSE_TYPE_MIDI_SIGNAL_TYPE);
+    bse_midi_signal_class = (GEnumClass*) g_type_class_ref (BSE_TYPE_MIDI_SIGNAL_TYPE);
   
   ev = g_enum_get_value (bse_midi_signal_class, signal);
   return ev ? ev->value_nick : NULL;
@@ -143,7 +144,7 @@ bse_midi_copy_event (const BseMidiEvent *src)
   event = bse_midi_alloc_event ();
   *event = *src;
   if (src->status == BSE_MIDI_SYS_EX)
-    event->data.sys_ex.bytes = g_memdup (src->data.sys_ex.bytes, src->data.sys_ex.n_bytes);
+    event->data.sys_ex.bytes = (uint8*) g_memdup (src->data.sys_ex.bytes, src->data.sys_ex.n_bytes);
   return event;
 }
 
@@ -154,10 +155,10 @@ bse_midi_alloc_event (void)
 }
 
 BseMidiEvent*
-bse_midi_event_note_on (guint   midi_channel,
-			guint64 delta_time,
-			gfloat  frequency,
-			gfloat  velocity)
+bse_midi_event_note_on (uint   midi_channel,
+			uint64 delta_time,
+			float  frequency,
+			float  velocity)
 {
   BseMidiEvent *event;
   
@@ -176,9 +177,9 @@ bse_midi_event_note_on (guint   midi_channel,
 }
 
 BseMidiEvent*
-bse_midi_event_note_off (guint   midi_channel,
-			 guint64 delta_time,
-			 gfloat  frequency)
+bse_midi_event_note_off (uint   midi_channel,
+			 uint64 delta_time,
+			 float  frequency)
 {
   BseMidiEvent *event;
   
@@ -196,10 +197,10 @@ bse_midi_event_note_off (guint   midi_channel,
 }
 
 BseMidiEvent*
-bse_midi_event_signal (guint             midi_channel,
-                       guint64           delta_time,
+bse_midi_event_signal (uint              midi_channel,
+                       uint64            delta_time,
                        BseMidiSignalType signal_type,
-                       gfloat            value)
+                       float             value)
 {
   BseMidiEvent *event;
 
@@ -251,18 +252,18 @@ bse_midi_event_signal (guint             midi_channel,
   return event;
 }
 
-static gpointer
-boxed_copy_midi_event (gpointer boxed)
+static void *
+boxed_copy_midi_event (void *boxed)
 {
-  BseMidiEvent *src = boxed;
+  BseMidiEvent *src = (BseMidiEvent*) boxed;
   BseMidiEvent *dest = bse_midi_copy_event (src);
   return dest;
 }
 
 static void
-boxed_free_midi_event (gpointer boxed)
+boxed_free_midi_event (void *boxed)
 {
-  BseMidiEvent *event = boxed;
+  BseMidiEvent *event = (BseMidiEvent*) boxed;
   bse_midi_free_event (event);
 }
 
