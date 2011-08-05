@@ -80,7 +80,7 @@ bse/bsemain.cc
 bse/bsemidicontroller.cc
 bse/bsemididevice-null.cc
 bse/bsemididevice-oss.cc
-bse/bsemidiinput.c
+bse/bsemidiinput.cc
 bse/bsemidisynth.c
 bse/bsemidivoice.c
 bse/bseobject.c
