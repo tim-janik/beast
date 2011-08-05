@@ -46,17 +46,17 @@ static SFI_MSG_TYPE_DEFINE (debug_midi, "midi", SFI_MSG_DEBUG, NULL);
 typedef struct
 {
   BseMidiHandle	handle;
-  gint		fd;
+  int		fd;
 } OSSHandle;
 
 
 /* --- prototypes --- */
-static gboolean         oss_midi_io_handler		(gpointer       data,
-                                                         guint          n_pfds,
+static gboolean         oss_midi_io_handler		(void          *data,
+                                                         uint           n_pfds,
                                                          GPollFD       *pfds);
 
 /* --- variables --- */
-static gpointer parent_class = NULL;
+static void *parent_class = NULL;
 
 
 /* --- functions --- */
@@ -67,15 +67,15 @@ bse_midi_device_oss_init (BseMidiDeviceOSS *oss)
 }
 
 static BseErrorType
-check_device_usage (const gchar *name,
-                    const gchar *check_mode)
+check_device_usage (const char *name,
+                    const char *check_mode)
 {
   BseErrorType error = gsl_file_check (name, check_mode);
   if (!error)
     {
       errno = 0;
-      gint mode = strchr (check_mode, 'w') ? O_WRONLY : O_RDONLY;
-      gint fd = open (name, mode | O_NONBLOCK, 0);      /* open non blocking to avoid waiting for other clients */
+      int mode = strchr (check_mode, 'w') ? O_WRONLY : O_RDONLY;
+      int fd = open (name, mode | O_NONBLOCK, 0);      /* open non blocking to avoid waiting for other clients */
       /* we only check for ENODEV here, since the mode
        * might be wrong and the device may be busy.
        */
@@ -90,13 +90,13 @@ check_device_usage (const gchar *name,
 static SfiRing*
 bse_midi_device_oss_list_devices (BseDevice *device)
 {
-  const gchar *postfixes[] = { "", "0", "1", "2", "3" };
+  const char *postfixes[] = { "", "0", "1", "2", "3" };
   SfiRing *ring = NULL;
-  guint i;
-  gchar *last = NULL;
+  uint i;
+  char *last = NULL;
   for (i = 0; i < G_N_ELEMENTS (postfixes); i++)
     {
-      gchar *dname = g_strconcat (BSE_MIDI_DEVICE_OSS (device)->device_name, postfixes[i], NULL);
+      char *dname = g_strconcat (BSE_MIDI_DEVICE_OSS (device)->device_name, postfixes[i], NULL);
       if (!birnet_file_equals (last, dname))
         {
           if (check_device_usage (dname, "crw") == BSE_ERROR_NONE)
@@ -128,15 +128,15 @@ static BseErrorType
 bse_midi_device_oss_open (BseDevice     *device,
                           gboolean       require_readable,
                           gboolean       require_writable,
-                          guint          n_args,
-                          const gchar  **args)
+                          uint           n_args,
+                          const char   **args)
 {
-  const gchar *dname;
+  const char *dname;
   if (n_args >= 1)      /* DEVICE */
     dname = args[0];
   else
     dname = BSE_MIDI_DEVICE_OSS (device)->device_name;
-  gint omode, retry_mode = 0;
+  int omode, retry_mode = 0;
   if (n_args >= 2)      /* MODE */
     omode = strcmp (args[1], "rw") == 0 ? O_RDWR : strcmp (args[1], "ro") == 0 ? O_RDONLY : O_WRONLY;   /* parse: ro rw wo */
   else
@@ -152,7 +152,7 @@ bse_midi_device_oss_open (BseDevice     *device,
 
   /* try open */
   BseErrorType error;
-  gint fd = -1;
+  int fd = -1;
   handle->readable = (omode & O_RDWR) == O_RDWR || (omode & O_RDONLY) == O_RDONLY;
   handle->writable = (omode & O_RDWR) == O_RDWR || (omode & O_WRONLY) == O_WRONLY;
   handle->midi_decoder = BSE_MIDI_DEVICE (device)->midi_decoder;
@@ -224,15 +224,15 @@ bse_midi_device_oss_finalize (GObject *object)
 }
 
 static gboolean
-oss_midi_io_handler (gpointer       data,       /* Sequencer Thread */
-                     guint          n_pfds,
+oss_midi_io_handler (void          *data,       /* Sequencer Thread */
+                     uint           n_pfds,
                      GPollFD       *pfds)
 {
   OSSHandle *oss = (OSSHandle*) data;
   BseMidiHandle *handle = &oss->handle;
   const gsize buf_size = 8192;
-  guint8 buffer[buf_size];
-  guint64 systime;
+  uint8 buffer[buf_size];
+  uint64 systime;
   gssize l;
   
   /* this should spawn its own thread someday */
@@ -249,17 +249,17 @@ oss_midi_io_handler (gpointer       data,       /* Sequencer Thread */
 }
 
 static void
-bse_midi_device_oss_class_init (BseMidiDeviceOSSClass *class)
+bse_midi_device_oss_class_init (BseMidiDeviceOSSClass *klass)
 {
-  GObjectClass *gobject_class = G_OBJECT_CLASS (class);
-  BseDeviceClass *device_class = BSE_DEVICE_CLASS (class);
+  GObjectClass *gobject_class = G_OBJECT_CLASS (klass);
+  BseDeviceClass *device_class = BSE_DEVICE_CLASS (klass);
 
-  parent_class = g_type_class_peek_parent (class);
+  parent_class = g_type_class_peek_parent (klass);
 
   gobject_class->finalize = bse_midi_device_oss_finalize;
 
   device_class->list_devices = bse_midi_device_oss_list_devices;
-  bse_device_class_setup (class,
+  bse_device_class_setup (klass,
                           BSE_RATING_DEFAULT,
                           "oss", "DEVICE,MODE",
                           /* TRANSLATORS: keep this text to 70 chars in width */
