@@ -29,29 +29,29 @@ static SFI_MSG_TYPE_DEFINE (debug_midi_file, "midi-file", SFI_MSG_DEBUG, NULL);
 #define DEBUG(...)      sfi_debug (debug_midi_file, __VA_ARGS__)
 
 typedef struct {
-  guint32       type;   /* four letter chunk identifier */
-  guint32       length; /* length of data to follow, big-endian */
+  uint32       type;   /* four letter chunk identifier */
+  uint32       length; /* length of data to follow, big-endian */
 } ChunkHeader;
 
 typedef struct {
   ChunkHeader   chunk;          /* 'MThd' */
   /* data section */
-  guint16       format;         /* 0=single-track, 1=synchronous-tracks, 2=asynchronous-tracks */
-  guint16       n_tracks;       /* always 1 for single-track */
-  guint16       division;       /* if 0x8000 is set => SMPTE, ticks-per-quarter-note otherwise */
+  uint16        format;         /* 0=single-track, 1=synchronous-tracks, 2=asynchronous-tracks */
+  uint16        n_tracks;       /* always 1 for single-track */
+  uint16        division;       /* if 0x8000 is set => SMPTE, ticks-per-quarter-note otherwise */
 } SMFHeader;
 
 
 /* --- functions --- */
-static guint
-dummy_read (gint  fd,
-            guint n_bytes)
+static uint
+dummy_read (int  fd,
+            uint n_bytes)
 {
-  guint8 space[1024];
-  guint total = 0;
+  uint8 space[1024];
+  uint total = 0;
   while (total < n_bytes)
     {
-      gint l = read (fd, space, MIN (n_bytes - total, 1024));
+      int l = read (fd, space, MIN (n_bytes - total, 1024));
       if (l < 0)
         return total;
       total += l;
@@ -60,10 +60,10 @@ dummy_read (gint  fd,
 }
 
 static BseErrorType
-smf_read_header (gint       fd,
+smf_read_header (int        fd,
                  SMFHeader *header)
 {
-  guint n_bytes;
+  uint n_bytes;
   /* read standard header */
   n_bytes = 4 + 4 + 2 + 2 + 2;
   if (read (fd, header, n_bytes) != n_bytes)
@@ -119,11 +119,11 @@ smf_read_header (gint       fd,
 
 static BseErrorType
 smf_read_track (BseMidiFile    *smf,
-                gint            fd,
+                int             fd,
                 BseMidiDecoder *md)
 {
   ChunkHeader chunk; /* 'MTrk' */
-  guint n_bytes;
+  uint n_bytes;
   /* chunk header */
   n_bytes = 4 + 4;
   if (read (fd, &chunk, n_bytes) != n_bytes)
@@ -144,8 +144,8 @@ smf_read_track (BseMidiFile    *smf,
   n_bytes = chunk.length;
   while (n_bytes)
     {
-      guint8 buffer[4096];
-      gint l = MIN (n_bytes, sizeof (buffer));
+      uint8 buffer[4096];
+      int l = MIN (n_bytes, sizeof (buffer));
       if (read (fd, buffer, l) < 0)
         {
           DEBUG ("failed to read (got %d bytes) midi track: %s", l, g_strerror (errno));
@@ -158,13 +158,13 @@ smf_read_track (BseMidiFile    *smf,
 }
 
 BseMidiFile*
-bse_midi_file_load (const gchar  *file_name,
+bse_midi_file_load (const char   *file_name,
                     BseErrorType *error_p)
 {
   BseMidiFile *smf;
   SMFHeader header;
   BseErrorType dummy_error;
-  gint i, fd = open (file_name, O_RDONLY);
+  int i, fd = open (file_name, O_RDONLY);
   if (!error_p)
     error_p = &dummy_error;
   if (fd < 0)
@@ -180,7 +180,7 @@ bse_midi_file_load (const gchar  *file_name,
       return NULL;
     }
 
-  smf = g_malloc0 (sizeof (BseMidiFile) + header.n_tracks * sizeof (smf->tracks[0]));
+  smf = (BseMidiFile*) g_malloc0 (sizeof (BseMidiFile) + header.n_tracks * sizeof (smf->tracks[0]));
   smf->musical_tuning = BSE_MUSICAL_TUNING_12_TET;
 #if 0
   smf->tpqn = header.division;
@@ -201,9 +201,9 @@ bse_midi_file_load (const gchar  *file_name,
       events = bse_midi_decoder_pop_event_list (md);
       while (events)
         {
-          guint n = smf->tracks[i].n_events++;
+          uint n = smf->tracks[i].n_events++;
           smf->tracks[i].events = g_renew (BseMidiEvent*, smf->tracks[i].events, smf->tracks[i].n_events);
-          smf->tracks[i].events[n] = sfi_ring_pop_head (&events);
+          smf->tracks[i].events[n] = (BseMidiEvent*) sfi_ring_pop_head (&events);
         }
       // g_printerr ("track%u: n_events=%u\n", i, smf->tracks[i].n_events);
       bse_midi_decoder_destroy (md);
@@ -233,7 +233,7 @@ bse_midi_file_load (const gchar  *file_name,
 void
 bse_midi_file_free (BseMidiFile *smf)
 {
-  guint i, j;
+  uint i, j;
   for (i = 0; i < smf->n_tracks; i++)
     for (j = 0; j < smf->tracks[i].n_events; j++)
       bse_midi_free_event (smf->tracks[i].events[j]);
@@ -244,22 +244,22 @@ bse_midi_file_free (BseMidiFile *smf)
 
 void
 bse_midi_file_add_part_events (BseMidiFile *smf,
-                               guint        nth_track,
+                               uint         nth_track,
                                BsePart     *part,
                                BseTrack    *ptrack)
 {
   BseMidiFileTrack *track = smf->tracks + nth_track;
-  guint i, j, dur, start = 0;
-  gfloat fvalue = 0;
+  uint i, j, dur, start = 0;
+  float fvalue = 0;
   for (i = 0; i < track->n_events; i++)
     {
       BseMidiEvent *event = track->events[i];
-      BseMidiSignalType msignal = 0;
+      BseMidiSignalType msignal = BseMidiSignalType (0);
       start += event->delta_time;
       switch (event->status)
         {
-          gfloat frequency, velocity;
-          gint note, fine_tune;
+          float frequency, velocity;
+          int note, fine_tune;
         case BSE_MIDI_NOTE_ON:
           frequency = event->data.note.frequency;
           velocity = event->data.note.velocity;
@@ -273,14 +273,14 @@ bse_midi_file_add_part_events (BseMidiFile *smf,
           note = bse_note_from_freq (smf->musical_tuning, frequency);
           fine_tune = bse_note_fine_tune_from_note_freq (smf->musical_tuning, note, frequency);
           bse_item_exec_void (part, "insert-note-auto",
-                              (guint) (start * smf->tpqn_rate),
-                              (guint) (dur * smf->tpqn_rate),
+                              (uint) (start * smf->tpqn_rate),
+                              (uint) (dur * smf->tpqn_rate),
                               note, fine_tune, velocity);
           break;
         case BSE_MIDI_CONTROL_CHANGE:
           if (!msignal)
             {
-              msignal = BSE_MIDI_SIGNAL_CONTROL_0 + event->data.control.control;
+              msignal = BseMidiSignalType (BSE_MIDI_SIGNAL_CONTROL_0 + event->data.control.control);
               fvalue = event->data.control.value;
             }
         case BSE_MIDI_PROGRAM_CHANGE:
@@ -302,12 +302,12 @@ bse_midi_file_add_part_events (BseMidiFile *smf,
               fvalue = event->data.pitch_bend;
             }
           bse_item_exec_void (part, "insert-control",
-                              (guint) (start * smf->tpqn_rate), msignal, fvalue);
+                              (uint) (start * smf->tpqn_rate), msignal, fvalue);
           break;
         case BSE_MIDI_TEXT_EVENT:
           if (track)
             {
-              gchar *string;
+              char *string;
               bse_item_get (ptrack, "blurb", &string, NULL);
               if (string && string[0])
                 string = g_strconcat (string, " ", event->data.text, NULL);
@@ -334,7 +334,7 @@ bse_midi_file_setup_song (BseMidiFile    *smf,
                           BseSong        *song)
 {
   BseBus *master_bus;
-  guint i, j;
+  uint i, j;
   bse_item_set_undoable (song,
                          "tpqn", smf->tpqn,
                          "numerator", smf->numerator,
