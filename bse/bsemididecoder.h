@@ -40,20 +40,20 @@ struct _BseMidiDecoder
 
   /* configuration */
   BseMusicalTuningType musical_tuning;
-  guint                auto_queue : 1;
-  guint                smf_support : 1;
+  uint                 auto_queue : 1;
+  uint                 smf_support : 1;
 
   /*< private >*/
-  guint                 state_changed : 1;
-  BseMidiDecoderState   state;
-  guint32               delta_time;     /* valid after BSE_MIDI_DECODER_DELTA_TIME_LOW */
-  BseMidiEventType      event_type;     /* event after BSE_MIDI_DECODER_META_EVENT */
-  BseMidiEventType      running_mode;
-  guint                 zchannel;       /* current channel prefix (offset=-1) */
-  guint32               left_bytes;     /* data to be read (BSE_MIDI_DECODER_DATA) */
+  uint                 state_changed : 1;
+  BseMidiDecoderState  state;
+  uint32               delta_time;     /* valid after BSE_MIDI_DECODER_DELTA_TIME_LOW */
+  BseMidiEventType     event_type;     /* event after BSE_MIDI_DECODER_META_EVENT */
+  BseMidiEventType     running_mode;
+  uint                 zchannel;       /* current channel prefix (offset=-1) */
+  uint32               left_bytes;     /* data to be read (BSE_MIDI_DECODER_DATA) */
   /* data accu */
-  guint                 n_bytes;
-  guint8               *bytes;
+  uint                 n_bytes;
+  uint8               *bytes;
 };
 
 
@@ -63,12 +63,12 @@ BseMidiDecoder* bse_midi_decoder_new                      (gboolean             
                                                            BseMusicalTuningType  musical_tuning);
 void            bse_midi_decoder_destroy                  (BseMidiDecoder       *self);
 void            bse_midi_decoder_push_data                (BseMidiDecoder       *self,
-                                                           guint                 n_bytes,
-                                                           guint8               *bytes,
-                                                           guint64               usec_systime);
+                                                           uint                  n_bytes,
+                                                           uint8                *bytes,
+                                                           uint64                usec_systime);
 void            bse_midi_decoder_push_smf_data            (BseMidiDecoder       *self,
-                                                           guint                 n_bytes,
-                                                           guint8               *bytes);
+                                                           uint                  n_bytes,
+                                                           uint8                *bytes);
 BseMidiEvent*   bse_midi_decoder_pop_event                (BseMidiDecoder       *self);
 SfiRing*        bse_midi_decoder_pop_event_list           (BseMidiDecoder       *self);
 

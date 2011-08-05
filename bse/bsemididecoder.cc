@@ -41,8 +41,8 @@ bse_midi_decoder_new (gboolean             auto_queue,
   self->state_changed = FALSE;
   self->state = BSE_MIDI_DECODER_ZERO;
   self->delta_time = 0;
-  self->event_type = 0;
-  self->running_mode = 0;
+  self->event_type = BseMidiEventType (0);
+  self->running_mode = BseMidiEventType (0);
   self->zchannel = 0;
   self->left_bytes = 0;
   self->n_bytes = 0;
@@ -58,7 +58,7 @@ bse_midi_decoder_destroy (BseMidiDecoder *self)
   
   while (self->events)
     {
-      BseMidiEvent *event = sfi_ring_pop_head (&self->events);
+      BseMidiEvent *event = (BseMidiEvent*) sfi_ring_pop_head (&self->events);
       bse_midi_free_event (event);
     }
   g_free (self->bytes);
@@ -70,7 +70,7 @@ bse_midi_decoder_pop_event (BseMidiDecoder *self)
 {
   g_return_val_if_fail (self != NULL, NULL);
   
-  return sfi_ring_pop_head (&self->events);
+  return (BseMidiEvent*) sfi_ring_pop_head (&self->events);
 }
 
 SfiRing*
@@ -101,13 +101,13 @@ decoder_state_to_string (BseMidiDecoderState state)
 static void
 midi_decoder_advance_state (BseMidiDecoder *self)
 {
-  BseMidiDecoderState next_state = self->state + 1;
+  BseMidiDecoderState next_state = BseMidiDecoderState (self->state + 1);
   next_state = next_state <= BSE_MIDI_DECODER_DONE ? next_state : BSE_MIDI_DECODER_ZERO;
   if (next_state == BSE_MIDI_DECODER_ZERO)
     {
       /* do the usual initialization */
       self->delta_time = 0;
-      self->event_type = 0;
+      self->event_type = BseMidiEventType (0);
       /* keep running_mode and zchannel */
       g_assert (self->left_bytes == 0);
       if (self->n_bytes)
@@ -128,9 +128,9 @@ midi_decoder_next_state (BseMidiDecoder     *self,
 }
 
 typedef struct {
-  guint8 *bytes;
-  guint8 *bound;
-  guint64 delta_time;
+  uint8 *bytes;
+  uint8 *bound;
+  uint64 delta_time;
 } Data;
 
 static inline void
@@ -140,7 +140,7 @@ midi_decoder_parse_data (BseMidiDecoder *self,
   switch (self->state)
     {
       BseMidiDecoderState next_state;
-      guint v;
+      uint v;
     case BSE_MIDI_DECODER_ZERO:
       if (d->bytes < d->bound)
         midi_decoder_advance_state (self);
@@ -170,7 +170,7 @@ midi_decoder_parse_data (BseMidiDecoder *self,
       /* check status byte (data/command) */
       if (self->event_type == 0xFF)             /* special case, second half of meta event in smf_support */
         {
-          self->event_type = BSE_MIDI_SEQUENCE_NUMBER + v;
+          self->event_type = BseMidiEventType (BSE_MIDI_SEQUENCE_NUMBER + v);
         }
       else if (!(v & 0x80))                                     /* data, MIDI running mode command */
         {
@@ -186,7 +186,7 @@ midi_decoder_parse_data (BseMidiDecoder *self,
         }
       else if (BSE_MIDI_CHANNEL_VOICE_MESSAGE (v))              /* ordinary MIDI command */
         {
-          self->event_type = v & 0xf0;
+          self->event_type = BseMidiEventType (v & 0xf0);
           self->zchannel = v & 0x0f;
           self->running_mode = self->event_type;
           /* self->zchannel also used by running mode */
@@ -194,32 +194,32 @@ midi_decoder_parse_data (BseMidiDecoder *self,
       else if (self->smf_support && v == 0xF0)                  /* SMF Sys-Ex */
         {
           self->event_type = BSE_MIDI_MULTI_SYS_EX_START;
-          self->running_mode = 0;
+          self->running_mode = BseMidiEventType (0);
           /* keep self->zchannel */
         }
       else if (self->smf_support && v == 0xF7)                  /* SMF Sys-Ex Escape */
         {
           self->event_type = BSE_MIDI_MULTI_SYS_EX_NEXT;
-          self->running_mode = 0;
+          self->running_mode = BseMidiEventType (0);
           /* keep self->zchannel */
         }
       else if (self->smf_support && v == 0xFF)                  /* SMF Meta-Event, first half */
         {
           /* need second byte */
           next_state = BSE_MIDI_DECODER_EVENT;
-          self->event_type = 0xFF;
-          self->running_mode = 0;
+          self->event_type = BseMidiEventType (0xFF);
+          self->running_mode = BseMidiEventType (0);
           /* keep self->zchannel */
         }
       else if (BSE_MIDI_SYSTEM_COMMON_MESSAGE (v))              /* system-common */
         {
-          self->event_type = v;
-          self->running_mode = 0;
+          self->event_type = BseMidiEventType (v);
+          self->running_mode = BseMidiEventType (0);
           /* keep self->zchannel */
         }
       else /* BSE_MIDI_SYSTEM_REALTIME_MESSAGE (v) */           /* system-realtime */
         {
-          self->event_type = v;
+          self->event_type = BseMidiEventType (v);
           /* keep running mode */
         }
       midi_decoder_next_state (self, next_state);
@@ -261,7 +261,7 @@ midi_decoder_parse_data (BseMidiDecoder *self,
           default: /* probably bogus, inform user for debugging purposes */
             sfi_diag ("BseMidiDecoder: unhandled midi %s byte 0x%02X\n",
                       self->event_type < 0x80 ? "data" : "command", self->event_type);
-            self->event_type = 0;             /* start over */
+            self->event_type = BseMidiEventType (0);             /* start over */
             next_state = BSE_MIDI_DECODER_ZERO;
             break;
           }
@@ -270,13 +270,13 @@ midi_decoder_parse_data (BseMidiDecoder *self,
     case BSE_MIDI_DECODER_DATA:
       if (self->event_type == BSE_MIDI_SYS_EX)
         {       /* special casing SYS_EX since we need to read up until end mark */
-          guint8 *p = memchr (d->bytes, BSE_MIDI_END_EX, d->bound - d->bytes);
+          uint8 *p = (uint8*) memchr (d->bytes, BSE_MIDI_END_EX, d->bound - d->bytes);
           p = p ? p : d->bound;
           if (p > d->bytes)     /* append data bytes */
             {
-              guint n = self->n_bytes, l = p - d->bytes;
+              uint n = self->n_bytes, l = p - d->bytes;
               self->n_bytes += l;
-              self->bytes = g_renew (guint8, self->bytes, self->n_bytes);
+              self->bytes = g_renew (uint8, self->bytes, self->n_bytes);
               memcpy (self->bytes + n, d->bytes, l);
             }
           d->bytes = p;
@@ -285,9 +285,9 @@ midi_decoder_parse_data (BseMidiDecoder *self,
         }
       else      /* read normal event data bytes */
         {
-          guint n = self->n_bytes, l = MIN (self->left_bytes, d->bound - d->bytes);
+          uint n = self->n_bytes, l = MIN (self->left_bytes, d->bound - d->bytes);
           self->n_bytes += l;
-          self->bytes = g_renew (guint8, self->bytes, self->n_bytes);
+          self->bytes = g_renew (uint8, self->bytes, self->n_bytes);
           memcpy (self->bytes + n, d->bytes, l);
           d->bytes += l;
           self->left_bytes -= l;
@@ -305,9 +305,9 @@ midi_decoder_parse_data (BseMidiDecoder *self,
 
 void
 bse_midi_decoder_push_data (BseMidiDecoder *self,
-                            guint           n_bytes,
-                            guint8         *bytes,
-                            guint64         usec_systime)
+                            uint            n_bytes,
+                            uint8          *bytes,
+                            uint64          usec_systime)
 {
   Data data;
   
@@ -328,7 +328,7 @@ bse_midi_decoder_push_data (BseMidiDecoder *self,
     {
       while (self->events)
         {
-          BseMidiEvent *event = sfi_ring_pop_head (&self->events);
+          BseMidiEvent *event = (BseMidiEvent*) sfi_ring_pop_head (&self->events);
           bse_midi_receiver_farm_distribute_event (event);
           bse_midi_free_event (event);
         }
@@ -338,8 +338,8 @@ bse_midi_decoder_push_data (BseMidiDecoder *self,
 
 void
 bse_midi_decoder_push_smf_data (BseMidiDecoder       *self,
-                                guint                 n_bytes,
-                                guint8               *bytes)
+                                uint                  n_bytes,
+                                uint8                *bytes)
 {
   g_return_if_fail (self != NULL);
   if (n_bytes)
@@ -352,13 +352,13 @@ static inline gboolean
 midi_decoder_extract_specific (BseMidiDecoder *self,
                                BseMidiEvent   *event)
 {
-  const double DR7F = 1.0 / (gdouble) 0x7f;
-  const double DR2000 = 1.0 / (gdouble) 0x2000;
+  const double DR7F = 1.0 / (double) 0x7f;
+  const double DR2000 = 1.0 / (double) 0x2000;
   /* command specific event portions */
   switch (event->status)
     {
-      guint v;
-      gint ival;
+      uint v;
+      int ival;
     case BSE_MIDI_NOTE_OFF:     /* 7bit note, 7bit velocity */
     case BSE_MIDI_NOTE_ON:      /* 7bit note, 7bit velocity */
     case BSE_MIDI_KEY_PRESSURE: /* 7bit note, 7bit intensity */
@@ -459,7 +459,7 @@ midi_decoder_extract_specific (BseMidiDecoder *self,
     case BSE_MIDI_TEXT_EVENT_0D:        /* 8bit text */
     case BSE_MIDI_TEXT_EVENT_0E:        /* 8bit text */
     case BSE_MIDI_TEXT_EVENT_0F:        /* 8bit text */
-      event->data.text = g_strndup (self->bytes, self->n_bytes);
+      event->data.text = g_strndup ((const char*) self->bytes, self->n_bytes);
       DEBUG ("ch-%02x: text event (0x%02X): %s", event->channel, event->status, event->data.text);
       break;
     case BSE_MIDI_CHANNEL_PREFIX:       /* 8bit channel number (0..15) */

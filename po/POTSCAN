@@ -77,7 +77,7 @@ bse/bseinstrumentoutput.cc
 bse/bsejanitor.cc
 bse/bseladspamodule.cc
 bse/bsemain.cc
-bse/bsemidicontroller.c
+bse/bsemidicontroller.cc
 bse/bsemididevice-null.c
 bse/bsemididevice-oss.c
 bse/bsemidiinput.c
