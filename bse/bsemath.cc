@@ -198,10 +198,10 @@ bse_float_gnuplot (const char    *file_name,
                    const float   *ypoints)
 {
   FILE *fout = fopen (file_name, "w");
-  guint i;
+  uint i;
   for (i = 0; i < n_ypoints; i++)
     {
-      gchar xstr[FLOAT_STRING_SIZE], ystr[FLOAT_STRING_SIZE];
+      char xstr[FLOAT_STRING_SIZE], ystr[FLOAT_STRING_SIZE];
       pretty_print_double (xstr, xstart + i * xstep);
       pretty_print_double (ystr, ypoints[i]);
       fprintf (fout, "%s %s\n", xstr, ystr);
@@ -268,13 +268,13 @@ bse_cpoly_from_roots (uint         degree,
 }
 
 gboolean
-bse_poly2_droots (gdouble roots[2],
-		  gdouble a,
-		  gdouble b,
-		  gdouble c)
+bse_poly2_droots (double roots[2],
+		  double a,
+		  double b,
+		  double c)
 {
-  gdouble square = b * b - 4.0 * a * c;
-  gdouble tmp;
+  double square = b * b - 4.0 * a * c;
+  double tmp;
   
   if (square < 0)
     return FALSE;
@@ -291,7 +291,7 @@ bse_poly2_droots (gdouble roots[2],
 }
 
 double
-bse_bit_depth_epsilon (guint n_bits)
+bse_bit_depth_epsilon (uint n_bits)
 {
   /* epsilon for various bit depths, based on significance of one bit,
    * minus fudge. created with:
@@ -335,7 +335,7 @@ bse_bit_depth_epsilon (guint n_bits)
   return bit_epsilons[CLAMP (n_bits, 1, 32) - 1];
 }
 
-gint
+int
 bse_rand_bool (void)
 {
   return rand () & 1;	// FIXME
