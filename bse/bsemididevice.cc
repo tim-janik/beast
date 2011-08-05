@@ -22,7 +22,7 @@
 
 
 /* --- variables --- */
-static gpointer parent_class = NULL;
+static void *parent_class = NULL;
 
 
 /* --- functions --- */
@@ -63,11 +63,11 @@ bse_midi_device_finalize (GObject *object)
 }
 
 static void
-bse_midi_device_class_init (BseMidiDeviceClass *class)
+bse_midi_device_class_init (BseMidiDeviceClass *klass)
 {
-  GObjectClass *gobject_class = G_OBJECT_CLASS (class);
+  GObjectClass *gobject_class = G_OBJECT_CLASS (klass);
   
-  parent_class = g_type_class_peek_parent (class);
+  parent_class = g_type_class_peek_parent (klass);
   
   gobject_class->dispose = bse_midi_device_dispose;
   gobject_class->finalize = bse_midi_device_finalize;
