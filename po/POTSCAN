@@ -78,7 +78,7 @@ bse/bsejanitor.cc
 bse/bseladspamodule.cc
 bse/bsemain.cc
 bse/bsemidicontroller.cc
-bse/bsemididevice-null.c
+bse/bsemididevice-null.cc
 bse/bsemididevice-oss.c
 bse/bsemidiinput.c
 bse/bsemidisynth.c

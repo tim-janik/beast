@@ -46,8 +46,8 @@ static BseErrorType
 bse_midi_device_null_open (BseDevice     *device,
                            gboolean       require_readable,
                            gboolean       require_writable,
-                           guint          n_args,
-                           const gchar  **args)
+                           uint           n_args,
+                           const char   **args)
 {
   NULLHandle *null = g_new0 (NULLHandle, 1);
   BseMidiHandle *handle = &null->handle;
@@ -76,12 +76,12 @@ bse_midi_device_null_close (BseDevice *device)
 }
 
 static void
-bse_midi_device_null_class_init (BseMidiDeviceNULLClass *class)
+bse_midi_device_null_class_init (BseMidiDeviceNULLClass *klass)
 {
-  BseDeviceClass *device_class = BSE_DEVICE_CLASS (class);
+  BseDeviceClass *device_class = BSE_DEVICE_CLASS (klass);
   
   device_class->list_devices = bse_midi_device_null_list_devices;
-  bse_device_class_setup (class,
+  bse_device_class_setup (klass,
                           -1,
                           "null", NULL,
                           /* TRANSLATORS: keep this text to 70 chars in width */

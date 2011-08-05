@@ -74,7 +74,7 @@ bse_sources = $(strip \
 	bseglobals.cc		bseglue.cc		bseitem.cc			bsejanitor.cc \
 	bsemain.cc		bsemath.cc		bsemathsignal.cc		bseladspa.cc \
 	bsemidicontroller.cc	bsemididevice.cc 	bsedevice.cc 			\
-	bsemididevice-null.c	bsemididevice-oss.c	bsemidievent.c			bsemidinotifier.c \
+	bsemididevice-null.cc	bsemididevice-oss.c	bsemidievent.c			bsemidinotifier.c \
 	bsemidireceiver.cc	bsemidisynth.c		bseobject.c			bsepart.c \
 	bsepcminput.c		bsepcmoutput.c		bseparam.c			bseparasite.c \
 	bsepcmdevice.c		bsepcmdevice-oss.c	bsepcmdevice-null.c		bseplugin.c \
