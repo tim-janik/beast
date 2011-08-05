@@ -717,11 +717,11 @@ bse_saturate_branching (double value,
 
 void    _bse_init_signal (void);
 
+extern const double * const bse_cent_table;
+
 static inline double G_GNUC_CONST
 bse_cent_tune_fast (int fine_tune)
 {
-  extern const double * const bse_cent_table;
-
   return bse_cent_table[CLAMP (fine_tune, -100, 100)];
 }
 

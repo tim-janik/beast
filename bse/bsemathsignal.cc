@@ -21,12 +21,12 @@
 /* --- frequency modulation --- */
 void
 bse_frequency_modulator (const BseFrequencyModulator *fm,
-			 guint                        n_values,
-			 const gfloat                *ifreq,
-			 const gfloat                *ifmod,
-			 gfloat                      *fm_buffer)
+			 uint                         n_values,
+			 const float                 *ifreq,
+			 const float                 *ifmod,
+			 float                       *fm_buffer)
 {
-  gfloat *bound, fine_tune, fm_strength;
+  float *bound, fine_tune, fm_strength;
   gboolean with_fine_tune;
 
   fine_tune = bse_cent_tune_fast (fm->fine_tune);
@@ -61,7 +61,7 @@ bse_frequency_modulator (const BseFrequencyModulator *fm,
     }
   else if (ifmod)
     {
-      gfloat signal_freq = fm->signal_freq * fine_tune;
+      float signal_freq = fm->signal_freq * fine_tune;
 
       if (fm->exponential_fm)
 	do {
@@ -85,7 +85,7 @@ bse_frequency_modulator (const BseFrequencyModulator *fm,
     }
   else
     {
-      gfloat signal_freq = fm->signal_freq * fine_tune;
+      float signal_freq = fm->signal_freq * fine_tune;
 
       do {
 	*fm_buffer++ = signal_freq;
