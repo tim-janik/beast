@@ -31,7 +31,7 @@ static gchar*   get_user_home (const gchar *user,
 
 
 /* --- variables --- */
-static gchar *init_cwd = NULL;
+static char *init_cwd = NULL;
 
 
 /* --- functions --- */
@@ -42,7 +42,7 @@ _sfi_init_file_crawler (void)
   if (!init_cwd || !g_path_is_absolute (init_cwd))
     {
       g_free (init_cwd);
-      init_cwd = g_get_tmp_dir ();
+      init_cwd = g_strdup (g_get_tmp_dir ());
     }
   if (!init_cwd || !g_path_is_absolute (init_cwd))
     {
