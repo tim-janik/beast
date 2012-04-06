@@ -111,6 +111,8 @@ BIRNET_EXTERN_C_BEGIN();
 #define BIRNET_CPP_PASTE2(a,b)                  BIRNET_CPP_PASTE2i (a,b)
 #define BIRNET_STATIC_ASSERT_NAMED(expr,asname) typedef struct { char asname[(expr) ? 1 : -1]; } BIRNET_CPP_PASTE2 (Birnet_StaticAssertion_LINE, __LINE__)
 #define BIRNET_STATIC_ASSERT(expr)              BIRNET_STATIC_ASSERT_NAMED (expr, compile_time_assertion_failed)
+#define BIRNET_STARTUP_ASSERTi(e, _N)           namespace { static struct _N { inline _N() { BIRNET_ASSERT (e); } } _N; }
+#define BIRNET_STARTUP_ASSERT(expr)             BIRNET_STARTUP_ASSERTi (expr, BIRNET_CPP_PASTE2 (StartupAssertion, __LINE__))
 
 /* --- attributes --- */
 #if     __GNUC__ > 3 || (__GNUC__ == 3 && __GNUC_MINOR__ >= 3)
