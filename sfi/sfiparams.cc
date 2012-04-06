@@ -1049,11 +1049,9 @@ GParamSpec*
 sfi_pspec_proxy_from_object (GParamSpec *object_pspec)
 {
   GParamSpec *pspec;
-  GParamSpecObject *ospec;
-  
+
   g_return_val_if_fail (G_IS_PARAM_SPEC_OBJECT (object_pspec), NULL);
-  
-  ospec = G_PARAM_SPEC_OBJECT (object_pspec);
+
   pspec = sfi_pspec_proxy (object_pspec->name,
 			   object_pspec->_nick,
 			   object_pspec->_blurb,
@@ -1132,11 +1130,11 @@ sfi_pspec_get_owner (GParamSpec *pspec)
 {
   g_return_val_if_fail (G_IS_PARAM_SPEC (pspec), NULL);
 
-  char *owner = (char*) g_param_spec_get_qdata (pspec, quark_param_owner);
+  const char *owner = (char*) g_param_spec_get_qdata (pspec, quark_param_owner);
   if (!owner && pspec->owner_type)
     {
       owner = g_type_name (pspec->owner_type);
-      g_param_spec_set_qdata (pspec, quark_param_owner, owner);
+      g_param_spec_set_qdata (pspec, quark_param_owner, (void*) owner);
     }
   return owner;
 }

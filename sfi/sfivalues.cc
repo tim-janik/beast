@@ -150,7 +150,7 @@ sfi_check_value (const GValue *value)
     return (vtype == SFI_TYPE_PROXY);
 }
 
-gchar*
+const char*
 sfi_value_get_choice (const GValue *value)
 {
   g_return_val_if_fail (SFI_VALUE_HOLDS_CHOICE (value), NULL);

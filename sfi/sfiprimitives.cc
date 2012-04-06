@@ -700,7 +700,7 @@ sfi_seq_to_strv (SfiSeq *seq)
 
   for (i = 0; i < seq->n_elements; i++)
     if (G_VALUE_HOLDS_STRING (seq->elements + i))
-      slist = g_slist_prepend (slist, sfi_value_get_string (seq->elements + i));
+      slist = g_slist_prepend (slist, const_cast<char*> (sfi_value_get_string (seq->elements + i)));
   slist = g_slist_reverse (slist);
   strv = g_strslistv (slist);
   g_slist_free (slist);

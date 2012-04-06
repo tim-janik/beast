@@ -73,7 +73,7 @@ G_BEGIN_DECLS
 
 
 /* --- Sfi value accessors --- */
-gchar*	    sfi_value_get_choice	(const GValue	*value);
+const char* sfi_value_get_choice	(const GValue	*value);
 void	    sfi_value_set_choice	(GValue		*value,
 					 const gchar	*choice_value);
 SfiBBlock*  sfi_value_get_bblock	(const GValue	*value);

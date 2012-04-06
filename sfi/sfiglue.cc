@@ -459,10 +459,10 @@ sfi_glue_vcall_string (const gchar    *proc_name,
 {
   va_list var_args;
   GValue *rvalue;
-  gchar *retv = NULL;
-  
+  const char *retv = NULL;
+
   g_return_val_if_fail (proc_name != NULL, NULL);
-  
+
   va_start (var_args, first_arg_type);
   rvalue = sfi_glue_call_valist (proc_name, first_arg_type, var_args);
   va_end (var_args);
@@ -481,10 +481,10 @@ sfi_glue_vcall_choice (const gchar    *proc_name,
 {
   va_list var_args;
   GValue *rvalue;
-  gchar *retv = NULL;
-  
+  const char *retv = NULL;
+
   g_return_val_if_fail (proc_name != NULL, NULL);
-  
+
   va_start (var_args, first_arg_type);
   rvalue = sfi_glue_call_valist (proc_name, first_arg_type, var_args);
   va_end (var_args);

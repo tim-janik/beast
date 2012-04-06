@@ -322,7 +322,7 @@ sfi_serialize_primitives (SfiSCategory scat,
     case SFI_SCAT_STRING:
       if (gstring)
 	{
-	  gchar *cstring = sfi_value_get_string (value);
+	  char *cstring = const_cast<char*> (sfi_value_get_string (value));
 	  if (cstring)
 	    {
 	      gchar *string = g_strescape (cstring, NULL);
@@ -348,7 +348,7 @@ sfi_serialize_primitives (SfiSCategory scat,
     case SFI_SCAT_CHOICE:
       if (gstring)
 	{
-	  gchar *cstring = sfi_value_get_string (value);
+	  char *cstring = const_cast<char*> (sfi_value_get_string (value));
 	  if (!cstring)
 	    gstring_puts (gstring, SFI_SERIAL_NULL_TOKEN);
 	  else
