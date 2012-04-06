@@ -233,29 +233,28 @@ bse_container_add_item (BseContainer *container,
                         BseItem      *item)
 {
   BseUndoStack *ustack;
-  gchar *uname;
-  
+
   g_return_if_fail (BSE_IS_CONTAINER (container));
   g_return_if_fail (BSE_IS_ITEM (item));
   g_return_if_fail (item->parent == NULL);
   g_return_if_fail (BSE_CONTAINER_GET_CLASS (container)->add_item != NULL); /* paranoid */
-  
+
   g_object_ref (container);
   g_object_ref (item);
   ustack = bse_item_undo_open (container, "add-child-noundo");
   bse_undo_stack_ignore_steps (ustack);
   g_object_freeze_notify (G_OBJECT (container));
   g_object_freeze_notify (G_OBJECT (item));
-  
-  uname = BSE_OBJECT_UNAME (item);
-  
+
+  const char *uname = BSE_OBJECT_UNAME (item);
+
   /* ensure uniqueness of item unames within a container
    */
   if (!uname || bse_container_lookup_item (container, uname))
     {
       gchar *buffer, *p;
       guint i = 0, l;
-      
+
       if (!uname)
         uname = (char*) g_object_get_data (G_OBJECT (container), "BseContainer-base-name");
       if (!uname)
@@ -274,7 +273,7 @@ bse_container_add_item (BseContainer *container,
       do
         g_snprintf (p, 11, "-%u", ++i);
       while (bse_container_lookup_item (container, buffer));
-      
+
       g_object_set (item, "uname", buffer, NULL); /* no undo */
       g_free (buffer);
     }
@@ -283,7 +282,7 @@ bse_container_add_item (BseContainer *container,
   BSE_CONTAINER_GET_CLASS (container)->add_item (container, item);
   if (item->parent != NULL)
     g_signal_emit (container, container_signals[SIGNAL_ITEM_ADDED], 0, item);
-  
+
   g_object_thaw_notify (G_OBJECT (item));
   g_object_thaw_notify (G_OBJECT (container));
   bse_undo_stack_unignore_steps (ustack);

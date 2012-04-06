@@ -51,7 +51,7 @@ Value::get_real () const
     throw WrongTypeGValue (G_STRLOC);
 }
 
-const SfiString
+const char*
 Value::get_string () const
 {
   GValue *v = gvalue();

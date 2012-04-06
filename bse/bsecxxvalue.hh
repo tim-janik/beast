@@ -31,8 +31,8 @@ struct Value : GValue {
   SfiInt                get_enum    () const { return get_num(); }
   SfiNum                get_num     () const;
   SfiReal               get_real    () const;
-  const SfiString       get_string  () const;
-  const SfiString       get_choice  () const { return get_string(); }
+  const char*           get_string  () const;
+  const char*           get_choice  () const { return get_string(); }
   gpointer              get_pointer () const;
   CxxBase*              get_base    () const;
   GObject*              get_object  () const;

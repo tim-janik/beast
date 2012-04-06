@@ -228,9 +228,9 @@ centries_strorder (gconstpointer a,
 {
   const CEntry *e1 = (const CEntry*) a;
   const CEntry *e2 = (const CEntry*) b;
-  gchar *c1 = g_quark_to_string (e1->category);
-  gchar *c2 = g_quark_to_string (e2->category);
-  
+  const char *c1 = g_quark_to_string (e1->category);
+  const char *c2 = g_quark_to_string (e2->category);
+
   return strcmp (c2, c1);
 }
 
@@ -268,28 +268,28 @@ categories_match (const gchar      *pattern,
   BseCategorySeq *cseq = bse_category_seq_new ();
   GPatternSpec *pspec = g_pattern_spec_new (pattern);
   CEntry *centry;
-  
+
   for (centry = cat_entries; centry; centry = centry->next)
     {
-      gchar *category = g_quark_to_string (centry->category);
-      
+      const char *category = g_quark_to_string (centry->category);
+
       if (g_pattern_match_string (pspec, category) &&
 	  (!base_type || g_type_is_a (centry->type, base_type)))
 	{
 	  BseCategory cat = { 0, };
-	  
-	  cat.category = category;
+
+	  cat.category = const_cast<char*> (category);
 	  cat.category_id = centry->category_id;
 	  cat.mindex = centry->mindex;
 	  cat.lindex = centry->lindex;
-	  cat.type = g_type_name (centry->type);
+	  cat.type = const_cast<char*>  (g_type_name (centry->type));
 	  cat.icon = centry->icon ? centry->icon : NULL;
           if (!check || check (&cat, data))
             bse_category_seq_append (cseq, &cat);
 	}
     }
   g_pattern_spec_free (pspec);
-  
+
   return cseq;
 }
 
@@ -321,18 +321,17 @@ BseCategorySeq*
 bse_categories_from_type (GType type)
 {
   BseCategorySeq *cseq = bse_category_seq_new ();
-  CEntry *centry;
-  
-  for (centry = cat_entries; centry; centry = centry->next)
+
+  for (CEntry *centry = cat_entries; centry; centry = centry->next)
     if (centry->type == type)
       {
 	BseCategory cat = { 0, };
-	
-	cat.category = g_quark_to_string (centry->category);
+
+	cat.category = const_cast<char*> (g_quark_to_string (centry->category));
 	cat.category_id = centry->category_id;
 	cat.mindex = centry->mindex;
 	cat.lindex = centry->lindex;
-	cat.type = g_type_name (centry->type);
+	cat.type = const_cast<char*> (g_type_name (centry->type));
 	cat.icon = centry->icon ? centry->icon : NULL;
 	bse_category_seq_append (cseq, &cat);
       }

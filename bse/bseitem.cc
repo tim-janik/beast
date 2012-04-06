@@ -745,15 +745,15 @@ find_method_procedure (GType       object_type,
   GType proc_type, type = object_type; /* assumed to be *derived* from BSE_TYPE_ITEM */
   do
     {
-      char *name, *type_name = g_type_name (type);
+      const char *type_name = g_type_name (type);
       uint l1 = strlen (type_name);
-      
-      name = g_new (char, l1 + 1 + l2 + 1);
+
+      char *name = g_new (char, l1 + 1 + l2 + 1);
       memcpy (name, type_name, l1);
       name[l1] = '+';
       memcpy (name + l1 + 1, method_name, l2);
       name[l1 + 1 + l2] = 0;
-      
+
       proc_type = bse_procedure_lookup (name);
       g_free (name);
       if (proc_type)

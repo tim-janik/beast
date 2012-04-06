@@ -959,7 +959,7 @@ bclosure_notify_marshal (GClosure       *closure,
 {
   BClosure *bclosure = (BClosure*) closure;
   BContext *bcontext = (BContext*) closure->data;
-  char *signal = g_quark_to_string (bclosure->qsignal);
+  const char *csignal = g_quark_to_string (bclosure->qsignal);
   SfiSeq *args = sfi_seq_new ();
   BseItem *item;
   uint nref_id = bcontext_new_notify_ref (bcontext);
@@ -973,7 +973,7 @@ bclosure_notify_marshal (GClosure       *closure,
   bcontext_notify_ref_add_item (bcontext, nref_id, item);
   pspec = sfi_value_get_pspec (param_values + 1);
   sfi_seq_append_string (args, pspec->name);
-  signal = g_strconcat ("property-", signal, NULL);
+  char *signal = g_strconcat ("property-", csignal, NULL);
   bcontext_queue_signal (bcontext, nref_id, signal, args);
   g_free (signal);
   sfi_seq_unref (args);

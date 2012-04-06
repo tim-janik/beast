@@ -66,7 +66,7 @@ tag_all_boxed_pspecs (void)
       if (element)
 	{
 	  g_param_spec_ref (element);
-	  g_param_spec_set_qdata (element, boxed_type_tag, g_type_name (children[i]));
+	  g_param_spec_set_qdata (element, boxed_type_tag, const_cast<char*> (g_type_name (children[i])));
 	}
       else if (rfields.n_fields)
 	{
@@ -74,7 +74,7 @@ tag_all_boxed_pspecs (void)
 	  for (j = 0; j < rfields.n_fields; j++)
 	    {
 	      g_param_spec_ref (rfields.fields[j]);
-	      g_param_spec_set_qdata (rfields.fields[j], boxed_type_tag, g_type_name (children[i]));
+	      g_param_spec_set_qdata (rfields.fields[j], boxed_type_tag, const_cast<char*> (g_type_name (children[i])));
 	    }
 	}
     }
