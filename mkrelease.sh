@@ -108,7 +108,7 @@ done
     die 9 "Failed to create temporary file"
   trap "rm -f $TEMPF" 0 HUP INT QUIT TRAP USR1 PIPE TERM
   # Generate ChangeLog with -prefixed records
-  git log --date=short --pretty='%ad  %an 	# %h%n%n%s%n%n%b' ${R_REVISION:-HEAD} \
+  git log --date=short --pretty='%ad  %an 	# %h%n%n%s%n%n%b' --abbrev=11 ${R_REVISION:-HEAD} \
   | {
     # Tab-indent ChangeLog, except for record start
     sed 's/^/	/; s/^	//; /^[ 	]*<unknown>$/d'
