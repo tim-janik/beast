@@ -20,6 +20,7 @@
 #include "birnetthread.hh"
 #include "birnetmsg.hh"
 #include "birnetcpu.hh"
+#include <unistd.h>
 #include <errno.h>
 #include <sys/types.h>
 #include <sys/stat.h>
