@@ -105,7 +105,7 @@ bse_type_add_license (GType        type,
   g_type_set_qdata (type, quark_license, g_strdup (license));
 }
 
-GType  
+GType
 bse_type_register_static (GType            parent_type,
 			  const gchar     *type_name,
 			  const gchar     *type_blurb,
@@ -113,28 +113,25 @@ bse_type_register_static (GType            parent_type,
                           guint            line,
                           const GTypeInfo *info)
 {
-  GType type;
-  
+  GTypeInfo tmp_info;
+
   /* some builtin types have destructors eventhough they are registered
    * statically, compensate for that
    */
   if (G_TYPE_IS_INSTANTIATABLE (parent_type) && info->class_finalize)
     {
-      GTypeInfo tmp_info;
-      
       tmp_info = *info;
       tmp_info.class_finalize = NULL;
       info = &tmp_info;
     }
-  
-  type = g_type_register_static (parent_type, type_name, info, 0);
-  
+
+  const GType type = g_type_register_static (parent_type, type_name, info, 0);
   bse_type_add_blurb (type, type_blurb, file, line);
-  
+
   return type;
 }
 
-GType  
+GType
 bse_type_register_abstract (GType            parent_type,
                             const gchar     *type_name,
                             const gchar     *type_blurb,
@@ -142,28 +139,24 @@ bse_type_register_abstract (GType            parent_type,
                             guint            line,
                             const GTypeInfo *info)
 {
-  GType type;
-  
+  GTypeInfo tmp_info;
+
   /* some builtin types have destructors eventhough they are registered
    * statically, compensate for that
    */
   if (G_TYPE_IS_INSTANTIATABLE (parent_type) && info->class_finalize)
     {
-      GTypeInfo tmp_info;
-      
       tmp_info = *info;
       tmp_info.class_finalize = NULL;
       info = &tmp_info;
     }
-  
-  type = g_type_register_static (parent_type, type_name, info, G_TYPE_FLAG_ABSTRACT);
-  
+
+  const GType type = g_type_register_static (parent_type, type_name, info, G_TYPE_FLAG_ABSTRACT);
   bse_type_add_blurb (type, type_blurb, file, line);
-  
   return type;
 }
 
-GType  
+GType
 bse_type_register_dynamic (GType        parent_type,
 			   const gchar *type_name,
 			   GTypePlugin *plugin)
