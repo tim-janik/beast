@@ -481,5 +481,5 @@ bse_midi_synth_class_init (BseMidiSynthClass *class)
 			      PROP_AUTO_ACTIVATE,
 			      sfi_pspec_bool ("auto_activate", NULL, NULL,
 					      TRUE, /* change default */
-					      /* override parent property */ 0));
+					      /* override parent property: 0 */ "w"));
 }

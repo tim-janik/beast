@@ -780,7 +780,7 @@ bse_song_class_init (BseSongClass *class)
 			      PROP_AUTO_ACTIVATE,
 			      sfi_pspec_bool ("auto_activate", NULL, NULL,
 					      TRUE, /* change default */
-					      /* override parent property */ 0));
+					      /* override parent property: 0 */ "w"));
   bse_object_class_add_param (object_class, _("Looping"),
 			      PROP_LOOP_ENABLED,
 			      sfi_pspec_bool ("loop_enabled", NULL, NULL,

@@ -93,8 +93,20 @@ bse_instrument_output_set_parent (BseItem *item,
 }
 
 static void
+bse_instrument_output_get_property (GObject *object, uint param_id, GValue *value, GParamSpec *pspec)
+{
+  switch (param_id)
+    {
+    default:
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (object, param_id, pspec);
+      break;
+    }
+}
+
+static void
 bse_instrument_output_class_init (BseInstrumentOutputClass *klass)
 {
+  GObjectClass *gobject_class = G_OBJECT_CLASS (klass);
   BseObjectClass *object_class = BSE_OBJECT_CLASS (klass);
   BseItemClass *item_class = BSE_ITEM_CLASS (klass);
   BseSourceClass *source_class = BSE_SOURCE_CLASS (klass);
@@ -102,6 +114,7 @@ bse_instrument_output_class_init (BseInstrumentOutputClass *klass)
   
   parent_class = g_type_class_peek_parent (klass);
   
+  gobject_class->get_property = bse_instrument_output_get_property;
   item_class->set_parent = bse_instrument_output_set_parent;
   
   /* assert parent class introduced enough ports */
@@ -111,7 +124,8 @@ bse_instrument_output_class_init (BseInstrumentOutputClass *klass)
     {
       char *string = g_strdup_printf ("out_port_%u", i + 1);
       bse_object_class_add_param (object_class, NULL, PROP_OPORT_NAME + i * 2,
-				  sfi_pspec_string (string, NULL, NULL, NULL, NULL));
+				  sfi_pspec_string (string, NULL, NULL, NULL,
+                                                    /* override parent property: 0 */ "r"));
       g_free (string);
     }
   
