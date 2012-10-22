@@ -831,9 +831,11 @@ public:
         printf ("%s::get_element()\n", nname);
         printf ("{\n");
         printf ("  static GParamSpec *element = NULL;\n");
-        printf ("  if (!element)\n");
+        printf ("  if (!element) {\n");
         // printf ("#line %u \"%s\"\n", si->content.line, parser.fileName().c_str());
-        printf ("    element = %s;\n", untyped_pspec_constructor (si->content).c_str());
+        printf ("    element = g_param_spec_ref (%s);\n", untyped_pspec_constructor (si->content).c_str());
+        printf ("    g_param_spec_sink (element);\n");
+        printf ("  }\n");
         printf ("  return element;\n");
         printf ("}\n\n");
       }
