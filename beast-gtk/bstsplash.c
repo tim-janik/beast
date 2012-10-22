@@ -258,12 +258,12 @@ bst_splash_show_grab (GtkWidget *widget)
 
   if (!GTK_WIDGET_VISIBLE (widget))
     {
+      gtk_widget_show (widget);
       if (!self->has_grab)
         {
           self->has_grab = TRUE;
           gtk_grab_add (widget);
         }
-      gtk_widget_show (widget);
 
       GDK_THREADS_LEAVE ();
       while (!GTK_WIDGET_MAPPED (widget))
