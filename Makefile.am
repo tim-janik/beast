@@ -47,20 +47,16 @@ release-upload: ChangeLog
 	$(srcdir)/mkrelease.sh upload -U dist.testbit.eu:dist/beast/v0.7/ -E configure.in:BSE_MICRO_VERSION
 .PHONY: release-news release-check release-upload
 
-# --- dist fixes ---
-uninstall_filter = $(strip	\
-	./share/mime/subclasses		./share/mime/icons	./share/mime/generic-icons \
-	./share/mime/globs		./share/mime/types	./share/mime/XMLnamespaces \
-	./share/mime/mime.cache		./share/mime/magic	./share/mime/globs2 \
-	./share/mime/treemagic		./share/mime/aliases	\
-)
+# == Dist Fixes ==
+# Some files remain after distcheck, that we cannot clean up. So we role our own listfiles filter.
+distuninstallcheck_listfiles  = find . -type f $(patsubst ./%, ! -path \*/%, $(uninstall_filter_files)) -print
 #distuninstallcheck_listfiles = find . -type f -print	# original automake-1.11 setting
-distuninstallcheck_listfiles  = find . -type f $(patsubst ./%, ! -path \*/%, $(uninstall_filter)) -print
-clean_filter = $(strip		\
-	./report.out		\
+uninstall_filter_files = $(strip	\
+	./share/mime/subclasses		./share/mime/XMLnamespaces	./share/mime/globs2	\
+	./share/mime/version		./share/mime/icons		./share/mime/types	\
+	./share/mime/treemagic		./share/mime/aliases		./share/mime/magic	\
+	./share/mime/mime.cache		./share/mime/generic-icons	./share/mime/globs	\
 )
-#distcleancheck_listfiles     = find . -type f -print	# original automake-1.11 setting
-distcleancheck_listfiles      = find . -type f $(patsubst ./%, ! -path \*/%, $(clean_filter)) -print
 
 # (test_option, INPUTSTRING, YESOPT, [NOOPT]) :- true if YESOPT is present
 test_option = test `echo ":$(strip $(1)):" | sed 's/.*:$(strip $(2))://g' | wc -c` -lt \
@@ -74,5 +70,5 @@ $(INSTALLCHECK_HOOK): costly-distcheck-tests
 # be overridden by the user with BEAST_BUILD=no-distcheck-tests
 costly-distcheck-tests:
 	@! $(call test_option, $(BEAST_BUILD_DEFAULTS):$(BEAST_BUILD), distcheck-tests) \
-	|| $(MAKE) report
+	|| ( $(MAKE) report && mv ./report.out /tmp/beast-distcheck$$$$.report )
 .PHONY: costly-distcheck-tests
