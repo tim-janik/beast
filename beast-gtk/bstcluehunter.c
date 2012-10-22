@@ -134,7 +134,7 @@ bst_clue_hunter_class_init (BstClueHunterClass *class)
 				   g_param_spec_enum ("type", NULL, NULL,
 						      GTK_TYPE_WINDOW_TYPE,
 						      GTK_WINDOW_POPUP,
-						      0));
+						      /* should be 0 */ G_PARAM_READABLE));
   g_object_class_install_property (gobject_class,
 				   PROP_PATTERN_MATCHING,
 				   g_param_spec_boolean ("pattern_matching", NULL, NULL,
