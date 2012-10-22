@@ -21,6 +21,7 @@
 #include <bse/bseloader.h>
 #include <bse/bsecxxutils.hh>
 #include <sys/stat.h>
+#include <unistd.h>
 #include <fcntl.h>
 #include <errno.h>
 #include <stdio.h>

@@ -18,6 +18,7 @@
 #include <bse/gslwavechunk.h>
 #include "bseloopfuncs.hh"
 #include "bwtwave.hh"
+#include <unistd.h>
 #include <typeinfo>
 #include <string>
 
