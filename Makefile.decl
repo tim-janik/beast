@@ -13,6 +13,11 @@ GENERATED_CLEANFILES=
 GENERATED=$(strip $(GENERATED_EXTRA_DIST) $(GENERATED_CLEANFILES))
 EXTRA_DIST=$(GENERATED_EXTRA_DIST)
 
+# Verbosity macros
+Q       = $(if $(findstring 1, $(V)) ,, @)
+QGEN    = $(Q:@=@echo '  GEN   ' $@; )
+QSTDERR = $(Q:@=2>/dev/null)
+
 # assign project wide defaults
 AM_CFLAGS = -D_BIRNET_SOURCE_EXTENSIONS
 AM_CXXFLAGS = -D_BIRNET_SOURCE_EXTENSIONS
@@ -48,16 +53,16 @@ TESTS=
 .PHONY: slowcheck slowcheck-recursive slowcheck-SLOWTESTS
 slowcheck: all slowcheck-recursive slowcheck-SLOWTESTS
 slowcheck-recursive:
-	@for subdir in $(SUBDIRS) ; do				\
+	$(Q) for subdir in $(SUBDIRS) ; do			\
 	  test "$$subdir" = '.' ||				\
 	    $(MAKE) -C "$$subdir" $(AM_MAKEFLAGS) slowcheck ||	\
 	    exit 1 ;						\
 	done
 slowcheck-SLOWTESTS:
-	@for tst in $(SLOWTESTS) ; do \
+	$(Q) for tst in $(SLOWTESTS) ; do \
 	  ./$$tst --test-slow && echo "PASS: $$tst" || exit 1 ;		\
 	done
-	@MESSAGETEXT="All $(words $(SLOWTESTS)) slow tests passed"	\
+	$(Q) MESSAGETEXT="All $(words $(SLOWTESTS)) slow tests passed"	\
 	&& [ 0 -lt $(words $(SLOWTESTS)) ]				\
 	&& echo $$MESSAGETEXT | sed 's/./=/g' && echo $$MESSAGETEXT	\
 	&& echo $$MESSAGETEXT | sed 's/./=/g' || true
@@ -68,16 +73,16 @@ SLOWTESTS=
 .PHONY: perf perf-recursive perf-PERFTESTS
 perf: all perf-recursive perf-PERFTESTS
 perf-recursive:
-	@for subdir in $(SUBDIRS) ; do				\
+	$(Q) for subdir in $(SUBDIRS) ; do			\
 	  test "$$subdir" = '.' ||				\
 	    $(MAKE) -C "$$subdir" $(AM_MAKEFLAGS) perf ||	\
 	    exit 1 ;						\
 	done
 perf-PERFTESTS:
-	@for tst in $(PERFTESTS) ; do \
+	$(Q) for tst in $(PERFTESTS) ; do \
 	  ./$$tst --test-perf && echo "PASS: $$tst" || exit 1 ;		\
 	done
-	@MESSAGETEXT="All $(words $(PERFTESTS)) perf tests passed"	\
+	$(Q) MESSAGETEXT="All $(words $(PERFTESTS)) perf tests passed"	\
 	&& [ 0 -lt $(words $(PERFTESTS)) ]				\
 	&& echo $$MESSAGETEXT | sed 's/./=/g' && echo $$MESSAGETEXT	\
 	&& echo $$MESSAGETEXT | sed 's/./=/g' || true
@@ -89,7 +94,7 @@ ALLTESTS = $(TESTS) $(SLOWTESTS) $(PERFTESTS) # used in noinst_PROGRAMS
 # === report ===
 .PHONY: report
 report: all
-	@export REPORTFILE="$(REPORTFILE)"			\
+	$(Q) export REPORTFILE="$(REPORTFILE)"			\
 	&& [ -z "$$REPORTFILE" ]				\
 	&& export REPORTFILE="$(shell pwd)/report.out" ;	\
 	( :							\
