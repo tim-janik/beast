@@ -20,13 +20,15 @@
 #include "sfiparams.h"
 #include "sfitime.h"
 #include "sfinote.h"
+#include <stdlib.h>     // FIXME: remove "free"
 
+typedef std::string String; // FIXME
 
 /* --- parsing aids --- */
 #define MC(s)   const_cast<char*> (s)
 static const GScannerConfig storage_scanner_config = {
   MC (
-      " \t\r\n"
+      " \t\r\n\v"
       )			/* cset_skip_characters */,
   MC (
       G_CSET_a_2_z
@@ -94,6 +96,49 @@ scanner_skip_statement (GScanner *scanner,
   return G_TOKEN_NONE;
 }
 
+static String
+string_vprintf (const char *format, va_list vargs) // FIXME: move
+{
+  char *str = NULL;
+  if (vasprintf (&str, format, vargs) >= 0 && str)
+    {
+      String s = str;
+      free (str);
+      return s;
+    }
+  else
+    return format;
+}
+
+static String
+string_printf (const char *format, ...) // FIXME: move
+{
+  String str;
+  va_list args;
+  va_start (args, format);
+  str = string_vprintf (format, args);
+  va_end (args);
+  return str;
+}
+
+static String
+string_to_cescape (const String &str)   // FIXME: move
+{
+  String buffer;
+  for (String::const_iterator it = str.begin(); it != str.end(); it++)
+    {
+      uint8 d = *it;
+      if (d < 32 || d > 126 || d == '?')
+        buffer += string_printf ("\\%03o", d);
+      else if (d == '\\')
+        buffer += "\\\\";
+      else if (d == '"')
+        buffer += "\\\"";
+      else
+        buffer += d;
+    }
+  return buffer;
+}
 
 /* --- storage helpers --- */
 #define	gstring_puts(gstring, string)	g_string_append (gstring, string)
@@ -324,13 +369,7 @@ sfi_serialize_primitives (SfiSCategory scat,
 	{
 	  char *cstring = const_cast<char*> (sfi_value_get_string (value));
 	  if (cstring)
-	    {
-	      gchar *string = g_strescape (cstring, NULL);
-	      gstring_putc (gstring, '"');
-	      gstring_puts (gstring, string);
-	      gstring_putc (gstring, '"');
-	      g_free (string);
-	    }
+            gstring_puts (gstring, String ("\"" + string_to_cescape (cstring) + "\"").c_str());
 	  else
 	    gstring_puts (gstring, SFI_SERIAL_NULL_TOKEN);
 	}
@@ -340,7 +379,7 @@ sfi_serialize_primitives (SfiSCategory scat,
 	  if (sfi_serial_check_parse_null_token (scanner))
 	    sfi_value_set_string (value, NULL);
 	  else if (scanner->token == G_TOKEN_STRING)
-	    sfi_value_set_string (value, scanner->value.v_string);
+            sfi_value_set_string (value, scanner->value.v_string);
 	  else
 	    return G_TOKEN_STRING;
 	}

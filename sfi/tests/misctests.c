@@ -282,6 +282,7 @@ serial_pspec_check (GParamSpec *pspec,
   g_string_free (s2, TRUE);
 }
 
+// serialize @a value according to @a pspec, deserialize and assert a matching result
 static void
 serialize_cmp (GValue     *value,
 	       GParamSpec *pspec)
