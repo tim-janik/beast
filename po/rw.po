@@ -15,7 +15,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast HEAD\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-04-08 10:51+0200\n"
+"POT-Creation-Date: 2012-10-22 18:16+0200\n"
 "PO-Revision-Date: 2005-03-31 20:55-0700\n"
 "Last-Translator: Steve Murphy <murf@e-tools.com>\n"
 "Language-Team: Kinyarwanda <translation-team-rw@lists.sourceforge.net>\n"
@@ -161,7 +161,7 @@ msgstr "Guhitamo Icyabaye Amagenzura Gikomeza"
 msgid "  selects one of 3 predefined colors"
 msgstr "Bya 3. Amabara"
 
-#: bse/bsejanitor.c:539
+#: bse/bsejanitor.cc:539
 #, c-format
 msgid "%s (core dumped)"
 msgstr ""
@@ -205,6 +205,10 @@ msgstr "..."
 msgid "/Audio Sources/Noise"
 msgstr ""
 
+#: plugins/davorgan.idl:27
+msgid "/Audio Sources/Organ"
+msgstr ""
+
 #: bse/bsestandardosc.c:110
 msgid "/Audio Sources/Standard Oscillator"
 msgstr ""
@@ -225,23 +229,23 @@ msgstr ""
 msgid "/Filters/Bass Filter"
 msgstr ""
 
-#: bse/bsebiquadfilter.c:106
+#: bse/bsebiquadfilter.cc:106
 msgid "/Filters/Biquad Types"
 msgstr ""
 
-#: bse/bseinstrumentoutput.c:150
+#: bse/bseinstrumentoutput.cc:164
 msgid "/Input & Output/Instrument Output"
 msgstr ""
 
-#: bse/bseinstrumentinput.c:150
+#: bse/bseinstrumentinput.cc:164
 msgid "/Input & Output/Instrument Voice Input"
 msgstr ""
 
-#: bse/bsemidicontroller.c:85
+#: bse/bsemidicontroller.cc:86
 msgid "/Input & Output/MIDI Control Input"
 msgstr ""
 
-#: bse/bsemidiinput.c:81
+#: bse/bsemidiinput.cc:81
 msgid "/Input & Output/MIDI Voice Input"
 msgstr ""
 
@@ -261,7 +265,7 @@ msgstr ""
 msgid "/Misc/StandardGusPatchEnvelope"
 msgstr ""
 
-#: bse/bseconstant.c:83
+#: bse/bseconstant.cc:83
 msgid "/Other Sources/Constant"
 msgstr ""
 
@@ -470,6 +474,14 @@ msgstr ""
 msgid "16384 Value FFT Window"
 msgstr ""
 
+#: plugins/davorgan.idl:42
+msgid "16th"
+msgstr ""
+
+#: plugins/davorgan.idl:42
+msgid "16th Harmonic"
+msgstr ""
+
 #: beast-gtk/bstpianorollctrl.c:98
 #, fuzzy
 msgid "1\\/1"
@@ -519,6 +531,14 @@ msgstr "2"
 msgid "2 & 4"
 msgstr "2. 4."
 
+#: plugins/davorgan.idl:46
+msgid "2 2/3rd"
+msgstr ""
+
+#: plugins/davorgan.idl:46
+msgid "2 2/3rd Harmonic"
+msgstr ""
+
 #: beast-gtk/bstrecords.idl:41
 #, fuzzy
 msgid "2 Value FFT Window"
@@ -530,6 +550,14 @@ msgstr ""
 
 #: beast-gtk/bstrecords.idl:48
 msgid "256 Value FFT Window"
+msgstr ""
+
+#: plugins/davorgan.idl:47
+msgid "2nd"
+msgstr ""
+
+#: plugins/davorgan.idl:47
+msgid "2nd Harmonic"
 msgstr ""
 
 #: beast-gtk/bstrecords.idl:98
@@ -582,6 +610,22 @@ msgstr "4."
 msgid "4096 Value FFT Window"
 msgstr ""
 
+#: plugins/davorgan.idl:45
+msgid "4th"
+msgstr ""
+
+#: plugins/davorgan.idl:45
+msgid "4th Harmonic"
+msgstr ""
+
+#: plugins/davorgan.idl:44
+msgid "5 1/3rd"
+msgstr ""
+
+#: plugins/davorgan.idl:44
+msgid "5 1/3rd Harmonic"
+msgstr ""
+
 #: bse/bsecore.idl:80
 msgid "5 Tone Equal Temperament"
 msgstr ""
@@ -627,6 +671,14 @@ msgstr "8"
 
 #: beast-gtk/bstrecords.idl:53
 msgid "8192 Value FFT Window"
+msgstr ""
+
+#: plugins/davorgan.idl:43
+msgid "8th"
+msgstr ""
+
+#: plugins/davorgan.idl:43
+msgid "8th Harmonic"
 msgstr ""
 
 #: beast-gtk/bstrecords.idl:50
@@ -843,6 +895,14 @@ msgstr "a Gishya Kuri iyi"
 msgid "Add directory to searchpath"
 msgstr "bushyinguro Kuri"
 
+#: plugins/davorgan.idl:52
+msgid "Add flute sounds"
+msgstr ""
+
+#: plugins/davorgan.idl:51
+msgid "Add reeds sound"
+msgstr ""
+
 #: beast-gtk/bstsupershell.c:217
 #, fuzzy
 msgid "Add, edit and connect synthesizer mesh components"
@@ -924,8 +984,8 @@ msgstr "i Ihindurangano Umubarwa Bya i Kugaragaza"
 msgid "Adjust whether to draw dB values instead of lines"
 msgstr "Kuri Gushushanya Uduciro Bya Imirongo"
 
-#: bse/bsebus.c:873 bse/bsebus.c:875 bse/bsebus.c:877 bse/bsebus.c:879
-#: bse/bsebus.c:883 bse/bsemidisynth.c:461 bse/bsemidisynth.c:467
+#: bse/bsebus.cc:874 bse/bsebus.cc:876 bse/bsebus.cc:878 bse/bsebus.cc:880
+#: bse/bsebus.cc:884 bse/bsemidisynth.c:461 bse/bsemidisynth.c:467
 #: bse/bsemidisynth.c:474 bse/bsetrack.c:1008
 msgid "Adjustments"
 msgstr ""
@@ -972,7 +1032,7 @@ msgstr ""
 "org Bya ku APAREYE Na i ni i Umubare kugirango nka i APAREYE Umubare "
 "kugirango nka i Umubare kugirango nka"
 
-#: bse/bseinstrumentinput.c:124 bse/bsemidiinput.c:114
+#: bse/bseinstrumentinput.cc:138 bse/bsemidiinput.cc:114
 msgid "Aftertouch"
 msgstr ""
 
@@ -1005,7 +1065,7 @@ msgstr "Byose"
 msgid "Always"
 msgstr ""
 
-#: bse/bsestandardosc.c:159 plugins/davorgan.c:123
+#: bse/bsestandardosc.c:159 plugins/davorgan.idl:38
 #: plugins/davxtalstrings.c:119
 #, fuzzy
 msgid "Amount of detuning in cent (hundredth part of a semitone)"
@@ -1153,7 +1213,7 @@ msgstr "Iyinjiza"
 msgid "Audio Gate"
 msgstr "Iyinjiza"
 
-#: bse/bsebiquadfilter.c:188 plugins/bseatandistort.c:88
+#: bse/bsebiquadfilter.cc:188 plugins/bseatandistort.c:88
 #: plugins/bsecontribsampleandhold.idl:26 plugins/bseiirfilter.c:162
 #: plugins/davbassfilter.idl:31 plugins/davchorus.idl:28
 #: plugins/standardguspatchenvelope.idl:45
@@ -1218,12 +1278,12 @@ msgstr ""
 msgid "Audio Input of the WaveOsc playing the patch"
 msgstr ""
 
-#: bse/bsebiquadfilter.c:196 bse/bsestandardosc.c:205 bse/bsewaveosc.c:599
+#: bse/bsebiquadfilter.cc:196 bse/bsestandardosc.c:205 bse/bsewaveosc.c:599
 #: plugins/bseadder.c:99 plugins/bseamplifier.idl:47
 #: plugins/bseatandistort.c:90 plugins/bsecontribsampleandhold.idl:28
 #: plugins/bseiirfilter.c:164 plugins/bsemixer.c:107 plugins/bsemult.c:66
 #: plugins/davbassfilter.idl:33 plugins/davchorus.idl:29
-#: plugins/davorgan.c:149 plugins/davsyndrum.c:123
+#: plugins/davorgan.idl:30 plugins/davsyndrum.c:123
 #: plugins/davxtalstrings.c:155
 msgid "Audio Out"
 msgstr ""
@@ -1279,7 +1339,7 @@ msgstr "Iyinjiza 2."
 msgid "Author"
 msgstr "Umwanditsi"
 
-#: bse/bseautodoc.c:354 bse/bseautodoc.c:428
+#: bse/bseautodoc.cc:354 bse/bseautodoc.cc:428
 #, fuzzy
 msgid "Authors:"
 msgstr "Abahanzi"
@@ -1294,7 +1354,7 @@ msgid "Auto cut"
 msgstr "Gukata"
 
 #. TRANSLATORS: keep this text to 70 chars in width
-#: bse/bsedevice.c:339
+#: bse/bsedevice.cc:339
 #, fuzzy
 msgid ""
 "Auto is a special driver, it acts as a placeholder for\n"
@@ -1307,7 +1367,7 @@ msgid ""
 "level"
 msgstr ""
 
-#: bse/bsebus.c:134
+#: bse/bsebus.cc:135
 msgid "Available Inputs"
 msgstr ""
 
@@ -1316,7 +1376,7 @@ msgstr ""
 msgid "Available Items:"
 msgstr ""
 
-#: bse/bsebus.c:145 bse/bsetrack.c:300
+#: bse/bsebus.cc:146 bse/bsetrack.c:300
 msgid "Available Outputs"
 msgstr ""
 
@@ -1419,7 +1479,7 @@ msgstr "Ishusho ku i Ishusho Muhinduzi"
 msgid "Background image used by the piano-roll editor."
 msgstr "Ishusho ku i Kuzinga Muhinduzi"
 
-#: bse/bseenums.c:155
+#: bse/bseenums.cc:155
 msgid "Bad loopback"
 msgstr ""
 
@@ -1445,8 +1505,7 @@ msgid "Bank Select"
 msgstr ""
 
 #: bse/bsestandardosc.c:142 bse/bsestandardosc.c:147 bse/bsestandardosc.c:152
-#: bse/bsestandardosc.c:157 plugins/davorgan.c:106 plugins/davorgan.c:111
-#: plugins/davorgan.c:116 plugins/davorgan.c:121
+#: bse/bsestandardosc.c:157 plugins/davorgan.idl:31
 #, fuzzy
 msgid "Base Frequency"
 msgstr "Base"
@@ -1482,6 +1541,10 @@ msgstr ""
 
 #: beast-gtk/bstscrollgraph.c:577
 msgid "Boost"
+msgstr ""
+
+#: plugins/davorgan.idl:50
+msgid "Brass Sounds"
 msgstr ""
 
 #: bse/bsecore.idl:158 bse/bsecore.idl:335
@@ -1525,7 +1588,7 @@ msgstr ""
 msgid "Bus Name"
 msgstr ""
 
-#: bse/bsebus.c:932
+#: bse/bsebus.cc:933
 #, fuzzy
 msgid ""
 "Bus implementation for songs, used to route track audio signals to the "
@@ -1536,7 +1599,7 @@ msgstr "kugirango Kuri Kuri i Mugenga Ibisohoka"
 msgid "Busses"
 msgstr ""
 
-#: bse/bseenums.c:129
+#: bse/bseenums.cc:129
 msgid "CODEC failure"
 msgstr ""
 
@@ -1567,11 +1630,11 @@ msgstr "CPU"
 msgid "Cancel"
 msgstr "Kureka"
 
-#: bse/bsebiquadfilter.c:131 bse/bsebiquadfilter.c:139
+#: bse/bsebiquadfilter.cc:131 bse/bsebiquadfilter.cc:139
 msgid "Center Frequency"
 msgstr ""
 
-#: bse/bsebiquadfilter.c:190
+#: bse/bsebiquadfilter.cc:190
 msgid "Center Frequency Input"
 msgstr ""
 
@@ -1589,6 +1652,10 @@ msgstr "i Byahiswemo Urufunguzo Bifatanya"
 #, fuzzy
 msgid "Change the numeric focus cell contents (e.g. octave) by a given amount"
 msgstr "g."
+
+#: plugins/davorgan.idl:50
+msgid "Change the organ to sound more brassy"
+msgstr ""
 
 # #-#-#-#-#  svx.pot (PACKAGE VERSION)  #-#-#-#-#
 # svx/source\svdraw\svdstr.src:STR_DragPathObj.text
@@ -1730,7 +1797,7 @@ msgstr "Kugena Imiterere"
 msgid "Configure the column layout of the pattern editor"
 msgstr "i Inkingi Imigaragarire Bya i Ishusho Muhinduzi"
 
-#: bse/bseconstant.c:135
+#: bse/bseconstant.cc:135
 #, c-format
 msgid "Const Out%u"
 msgstr ""
@@ -1756,22 +1823,22 @@ msgstr ""
 msgid "Constant Negative HIGH"
 msgstr ""
 
-#: bse/bseconstant.c:105 bse/bseconstant.c:136
+#: bse/bseconstant.cc:105 bse/bseconstant.cc:136
 #, c-format
 msgid "Constant Output %u"
 msgstr ""
 
-#: bse/bseconstant.c:110
+#: bse/bseconstant.cc:110
 msgid "Constant signal value"
 msgstr ""
 
-#: bse/bseconstant.c:129
+#: bse/bseconstant.cc:129
 msgid ""
 "Constant signal value as note, converted to Hertz according to the current "
 "musical tuning"
 msgstr ""
 
-#: bse/bseconstant.c:118
+#: bse/bseconstant.cc:118
 msgid "Constant signal value interpreted as frequency value in Hertz"
 msgstr ""
 
@@ -2296,19 +2363,19 @@ msgstr ""
 msgid "Ctrl Out"
 msgstr ""
 
-#: bse/bsemidicontroller.c:136
+#: bse/bsemidicontroller.cc:137
 msgid "Ctrl Out1"
 msgstr ""
 
-#: bse/bsemidicontroller.c:138
+#: bse/bsemidicontroller.cc:139
 msgid "Ctrl Out2"
 msgstr ""
 
-#: bse/bsemidicontroller.c:140
+#: bse/bsemidicontroller.cc:141
 msgid "Ctrl Out3"
 msgstr ""
 
-#: bse/bsemidicontroller.c:142
+#: bse/bsemidicontroller.cc:143
 msgid "Ctrl Out4"
 msgstr ""
 
@@ -2335,7 +2402,7 @@ msgstr "2."
 msgid "Cutoff [%]"
 msgstr ""
 
-#: bse/bsebiquadfilter.c:133 plugins/bseiirfilter.c:141
+#: bse/bsebiquadfilter.cc:133 plugins/bseiirfilter.c:141
 #: plugins/bseiirfilter.c:152
 msgid "Cutoff [Hz]"
 msgstr ""
@@ -2356,7 +2423,7 @@ msgstr ""
 msgid "Data Entry"
 msgstr ""
 
-#: bse/bseenums.c:121
+#: bse/bseenums.cc:121
 msgid "Data corrupt"
 msgstr ""
 
@@ -2372,6 +2439,10 @@ msgstr "2.."
 #, fuzzy
 msgid "DavChorus adds more depth to sounds"
 msgstr "Birenzeho Ubujyakuzimu Kuri Amajwi"
+
+#: plugins/davorgan.idl:28
+msgid "DavOrgan is a versatile additive organ synthesizer"
+msgstr ""
 
 #: plugins/davxtalstrings.c:130 plugins/davxtalstrings.c:135
 msgid "Decay"
@@ -2521,23 +2592,23 @@ msgstr ""
 msgid "Development..."
 msgstr ""
 
-#: bse/bseenums.c:138
+#: bse/bseenums.cc:138
 #, fuzzy
 msgid "Device busy"
 msgstr "Irahuze"
 
-#: bse/bseenums.c:144
+#: bse/bseenums.cc:144
 #, fuzzy
 msgid "Device configurations mismatch"
 msgstr "Amaboneza"
 
-#: bse/bseenums.c:137
+#: bse/bseenums.cc:137
 #, fuzzy
 msgid "Device not async capable"
 msgstr "OYA"
 
 #. file errors
-#: bse/bseenums.c:102
+#: bse/bseenums.cc:102
 #, fuzzy
 msgid "Device or resource busy"
 msgstr "Cyangwa Irahuze"
@@ -2605,7 +2676,7 @@ msgid "Discard changes and close dialog"
 msgstr "Amahinduka Na Gufunga Ikiganiro"
 
 #. TRANSLATORS: keep this text to 70 chars in width
-#: bse/bsemididevice-null.c:88
+#: bse/bsemididevice-null.cc:88
 #, fuzzy
 msgid ""
 "Discards all output events and generates no input events. This driver\n"
@@ -2845,7 +2916,7 @@ msgid "Eighths note"
 msgstr "Impugukirwa"
 
 # sw/source\ui\utlui\poolfmt.src:STR_POOLCHR_HTML_EMPHASIS.text
-#: bse/bsebiquadfilter.c:147 bse/bsebiquadfilter.c:153
+#: bse/bsebiquadfilter.cc:147 bse/bsebiquadfilter.cc:153
 msgid "Emphasis"
 msgstr "Gushimangira"
 
@@ -3000,7 +3071,7 @@ msgstr "Urubariro"
 msgid "Every twelfth row"
 msgstr "Urubariro"
 
-#: bse/bseenums.c:96
+#: bse/bseenums.cc:96
 msgid "Everything went well"
 msgstr ""
 
@@ -3031,27 +3102,27 @@ msgstr ""
 msgid "Expression"
 msgstr "imvugo"
 
-#: bse/bseenums.c:140
+#: bse/bseenums.cc:140
 #, fuzzy
 msgid "Failed to configure device buffer"
 msgstr "Kuri Kugena Imiterere APAREYE"
 
-#: bse/bseenums.c:139
+#: bse/bseenums.cc:139
 #, fuzzy
 msgid "Failed to configure device format"
 msgstr "Kuri Kugena Imiterere APAREYE Imiterere"
 
-#: bse/bseenums.c:143
+#: bse/bseenums.cc:143
 #, fuzzy
 msgid "Failed to configure device frequency"
 msgstr "Kuri Kugena Imiterere APAREYE Ubwisubire"
 
-#: bse/bseenums.c:141
+#: bse/bseenums.cc:141
 #, fuzzy
 msgid "Failed to configure device latency"
 msgstr "Kuri Kugena Imiterere APAREYE"
 
-#: bse/bseenums.c:142
+#: bse/bseenums.cc:142
 #, fuzzy
 msgid "Failed to configure number of device channels"
 msgstr "Kuri Kugena Imiterere Umubare Bya APAREYE"
@@ -3062,7 +3133,7 @@ msgid "Failed to crop part range."
 msgstr "Kuri Gutangira Bya Umutwempangano"
 
 #. content errors
-#: bse/bseenums.c:118
+#: bse/bseenums.cc:118
 #, fuzzy
 msgid "Failed to detect (start of) header"
 msgstr "Kuri Gutangira Bya Umutwempangano"
@@ -3077,7 +3148,7 @@ msgstr "Kuri Gutangira Bya Umutwempangano"
 msgid "Failed to execute script procedure '%s': %s"
 msgstr "Kuri Gufungura Ibisohoka IDOSIYE"
 
-#: birnet/birnetutils.cc:1196
+#: birnet/birnetutils.cc:1199
 msgid "Failed to launch a web browser executable"
 msgstr ""
 
@@ -3125,7 +3196,7 @@ msgid ""
 "%s"
 msgstr "Kuri Gusimbura Kuri"
 
-#: bse/bseenums.c:119
+#: bse/bseenums.cc:119
 #, fuzzy
 msgid "Failed to retrieve seek information"
 msgstr "Kuri Ibisobanuro"
@@ -3150,7 +3221,7 @@ msgid ""
 "%s"
 msgstr "Kuri Kubika Kuri Kuri"
 
-#: bse/bseenums.c:134
+#: bse/bseenums.cc:134
 #, fuzzy
 msgid "Failed to spawn child process"
 msgstr "Kuri"
@@ -3178,12 +3249,12 @@ msgstr ""
 msgid "File Selection"
 msgstr "Ihitamo rya dosiye"
 
-#: bse/bseenums.c:105
+#: bse/bseenums.cc:105
 #, fuzzy
 msgid "File empty"
 msgstr "Idosiye ubusa"
 
-#: bse/bseenums.c:103
+#: bse/bseenums.cc:103
 #, fuzzy
 msgid "File exists already"
 msgstr "Idosiye"
@@ -3207,7 +3278,7 @@ msgstr "Guhindura izina"
 msgid "Filename Text Entry"
 msgstr ""
 
-#: bse/bsebiquadfilter.c:125
+#: bse/bsebiquadfilter.cc:125
 msgid "Filter"
 msgstr "Muyunguruzi"
 
@@ -3223,7 +3294,7 @@ msgstr ""
 msgid "Filter Specification"
 msgstr ""
 
-#: bse/bsebiquadfilter.c:127 plugins/bseiirfilter.c:125
+#: bse/bsebiquadfilter.cc:127 plugins/bseiirfilter.c:125
 msgid "Filter Type"
 msgstr ""
 
@@ -3232,19 +3303,19 @@ msgstr ""
 msgid "Filter cutoff frequency"
 msgstr "i Ubwisubire Ijanisha"
 
-#: bse/bsebiquadfilter.c:141 plugins/bseiirfilter.c:147
+#: bse/bsebiquadfilter.cc:141 plugins/bseiirfilter.c:147
 #: plugins/bseiirfilter.c:158 plugins/davcanyondelay.c:115
 msgid ""
 "Filter cutoff frequency as note, converted to Hertz according to the current "
 "musical tuning"
 msgstr ""
 
-#: bse/bsebiquadfilter.c:133
+#: bse/bsebiquadfilter.cc:133
 #, fuzzy
 msgid "Filter cutoff frequency in Hertz"
 msgstr "i Ubwisubire Ijanisha"
 
-#: bse/bsebiquadfilter.c:196
+#: bse/bsebiquadfilter.cc:196
 msgid "Filtered Audio Signal"
 msgstr ""
 
@@ -3274,7 +3345,7 @@ msgid ""
 "Find the first track that contains part, suitable to check for orphan parts."
 msgstr "i Itangira Kirimo Kuri Kugenzura... kugirango"
 
-#: bse/bsestandardosc.c:159 plugins/davorgan.c:123
+#: bse/bsestandardosc.c:159 plugins/davorgan.idl:38
 #: plugins/davxtalstrings.c:119
 msgid "Fine Tune"
 msgstr ""
@@ -3308,6 +3379,10 @@ msgstr ""
 msgid "Flip Spectrum display,  interchaging low and high frequencies"
 msgstr "Kugaragaza Byo hasi Na kirekire"
 
+#: plugins/davorgan.idl:52
+msgid "Flute Sounds"
+msgstr ""
+
 # starmath/sdi\smslots.src:SID_FONTSIZE.text
 #: beast-gtk/bstrecords.idl:110
 msgid "Font Size"
@@ -3330,13 +3405,13 @@ msgstr ""
 msgid "Free form comment or description"
 msgstr ""
 
-#: bse/bsebiquadfilter.c:190 bse/bsestandardosc.c:197 bse/bsewaveosc.c:593
-#: plugins/davorgan.c:148 plugins/davsyndrum.c:117
+#: bse/bsebiquadfilter.cc:190 bse/bsestandardosc.c:197 bse/bsewaveosc.c:593
+#: plugins/davorgan.idl:29 plugins/davsyndrum.c:117
 #: plugins/davxtalstrings.c:151
 msgid "Freq In"
 msgstr ""
 
-#: bse/bsebiquadfilter.c:192 bse/bsestandardosc.c:199
+#: bse/bsebiquadfilter.cc:192 bse/bsestandardosc.c:199
 msgid "Freq Mod In"
 msgstr ""
 
@@ -3375,22 +3450,22 @@ msgstr ""
 # #-#-#-#-#  scaddins.pot (PACKAGE VERSION)  #-#-#-#-#
 # scaddins/source\analysis\analysis.src:RID_ANALYSIS_FUNCTION_DESCRIPTIONS.ANALYSIS_Coupnum.6.text
 #. inputs
-#: bse/bseconstant.c:116 bse/bseinstrumentinput.c:118 bse/bsemidiinput.c:108
-#: bse/bsestandardosc.c:144 plugins/davcanyondelay.c:108
-#: plugins/davorgan.c:107 plugins/davsyndrum.c:87 plugins/davsyndrum.c:88
-#: plugins/davsyndrum.c:93 plugins/davxtalstrings.c:101
-#: plugins/davxtalstrings.c:103 plugins/davxtalstrings.c:107
-#: plugins/davxtalstrings.c:112 plugins/davxtalstrings.c:117
-#: plugins/standardguspatchenvelope.idl:42
+#: bse/bseconstant.cc:116 bse/bseinstrumentinput.cc:132
+#: bse/bsemidiinput.cc:108 bse/bsestandardosc.c:144
+#: plugins/davcanyondelay.c:108 plugins/davorgan.idl:32
+#: plugins/davsyndrum.c:87 plugins/davsyndrum.c:88 plugins/davsyndrum.c:93
+#: plugins/davxtalstrings.c:101 plugins/davxtalstrings.c:103
+#: plugins/davxtalstrings.c:107 plugins/davxtalstrings.c:112
+#: plugins/davxtalstrings.c:117 plugins/standardguspatchenvelope.idl:42
 msgid "Frequency"
 msgstr "Ubwisubire"
 
-#: bse/bsewaveosc.c:593 plugins/davorgan.c:148
+#: bse/bsewaveosc.c:593 plugins/davorgan.idl:29
 #: plugins/standardguspatchenvelope.idl:42
 msgid "Frequency Input"
 msgstr ""
 
-#: bse/bsebiquadfilter.c:192 bse/bsestandardosc.c:199
+#: bse/bsebiquadfilter.cc:192 bse/bsestandardosc.c:199
 msgid "Frequency Modulation Input"
 msgstr ""
 
@@ -3466,7 +3541,7 @@ msgstr "Umumaro"
 msgid "Function used to create new key bindings"
 msgstr "Kuri Kurema Gishya Urufunguzo Ibyafataranyijwe"
 
-#: bse/bseenums.c:130
+#: bse/bseenums.cc:130
 #, fuzzy
 msgid "Functionality not implemented"
 msgstr "OYA"
@@ -3480,28 +3555,29 @@ msgstr "Kuri kugirango a Urufunguzo Bifatanya"
 #: plugins/bseamplifier.idl:28 plugins/bsebalance.idl:24
 #: plugins/bsecontribsampleandhold.idl:23 plugins/bsenoise.idl:25
 #: plugins/bsesummation.idl:24 plugins/davbassfilter.idl:25
-#: plugins/davchorus.idl:25 plugins/standardguspatchenvelope.idl:27
+#: plugins/davchorus.idl:25 plugins/davorgan.idl:26
+#: plugins/standardguspatchenvelope.idl:27
 msgid "GNU Lesser General Public License"
 msgstr ""
 
-#: bse/bsebiquadfilter.c:194
+#: bse/bsebiquadfilter.cc:194
 msgid "Gain Mod In"
 msgstr ""
 
-#: bse/bsebiquadfilter.c:194
+#: bse/bsebiquadfilter.cc:194
 msgid "Gain Modulation Input"
 msgstr ""
 
-#: bse/bsebiquadfilter.c:183
+#: bse/bsebiquadfilter.cc:183
 #, no-c-format
 msgid "Gain Modulation [%]"
 msgstr ""
 
-#: bse/bsebiquadfilter.c:149
+#: bse/bsebiquadfilter.cc:149
 msgid "Gain [dB]"
 msgstr ""
 
-#: bse/bseinstrumentinput.c:120 bse/bsemidiinput.c:110
+#: bse/bseinstrumentinput.cc:134 bse/bsemidiinput.cc:110
 msgid "Gate"
 msgstr ""
 
@@ -3609,6 +3685,10 @@ msgstr ""
 msgid "Hard saturation via clipping (prone to clicks)"
 msgstr ""
 
+#: plugins/davorgan.idl:41
+msgid "Harmonics"
+msgstr ""
+
 #: library/scripts/part-harmonic-transposer.scm:51
 msgid "Harmony Sequence"
 msgstr ""
@@ -3617,12 +3697,12 @@ msgstr ""
 msgid "Harmony list is too short"
 msgstr ""
 
-#: bse/bseinstrumentinput.c:120 bse/bsemidiinput.c:110
+#: bse/bseinstrumentinput.cc:134 bse/bsemidiinput.cc:110
 #, fuzzy
 msgid "High if the note is currently being pressed"
 msgstr "NIBA i Impugukirwa ni"
 
-#: bse/bseinstrumentoutput.c:124
+#: bse/bseinstrumentoutput.cc:138
 #, fuzzy
 msgid "High indicates the instrument is done synthesizing"
 msgstr "i ni Byakozwe"
@@ -3798,11 +3878,11 @@ msgid "Input Port %u"
 msgstr ""
 
 #. SYNC: type partitions determine the order of displayed objects
-#: bse/bsebus.c:890
+#: bse/bsebus.cc:891
 msgid "Input Signals"
 msgstr ""
 
-#: bse/bseenums.c:151
+#: bse/bseenums.cc:151
 #, fuzzy
 msgid "Input channel already in use"
 msgstr "in Gukoresha"
@@ -3812,7 +3892,7 @@ msgstr "in Gukoresha"
 msgid "Input channel in use"
 msgstr "in Gukoresha"
 
-#: bse/bseenums.c:150
+#: bse/bseenums.cc:150
 #, fuzzy
 msgid "Input channel is private"
 msgstr "ni By'umwihariko"
@@ -3822,16 +3902,16 @@ msgstr "ni By'umwihariko"
 msgid "Input port name to interface to"
 msgstr "Umuyoboro Izina: Kuri Kuri"
 
-#: bse/bseenums.c:152
+#: bse/bseenums.cc:152
 msgid "Input/Output channels already connected"
 msgstr ""
 
-#: bse/bseenums.c:149
+#: bse/bseenums.cc:149
 #, fuzzy
 msgid "Input/Output channels not connected"
 msgstr "OYA"
 
-#: bse/bseenums.c:99
+#: bse/bseenums.cc:99
 #, fuzzy
 msgid "Input/output error"
 msgstr "Ibisohoka Ikosa"
@@ -3927,55 +4007,60 @@ msgstr "Ihindurangero Kwimura Ibisobanuro Imbeba Akabuto 1. Na 2."
 msgid "Instrument Path"
 msgstr ""
 
-#: bse/bseenums.c:100
+#: plugins/davorgan.idl:49
+#, fuzzy
+msgid "Instrument flavour"
+msgstr "Kubika"
+
+#: bse/bseenums.cc:100
 msgid "Insufficient permission"
 msgstr ""
 
-#: bse/bseenums.c:97
+#: bse/bseenums.cc:97
 #, fuzzy
 msgid "Internal error (please report)"
 msgstr "Ikosa Icyegeranyo"
 
-#: bse/bsebus.c:902
+#: bse/bsebus.cc:903
 msgid "Internals"
 msgstr ""
 
-#: bse/bseenums.c:132
+#: bse/bseenums.cc:132
 #, fuzzy
 msgid "Invalid MIDI control type"
 msgstr "Igenzura Ubwoko"
 
-#: bse/bseenums.c:170
+#: bse/bseenums.cc:170
 #, fuzzy
 msgid "Invalid duration"
 msgstr "Igihe- ngombwa"
 
-#: bse/bseenums.c:123
+#: bse/bseenums.cc:123
 #, fuzzy
 msgid "Invalid format"
 msgstr "Imiterere"
 
-#: bse/bseenums.c:131
+#: bse/bseenums.cc:131
 #, fuzzy
 msgid "Invalid object property"
 msgstr "Igikoresho indangakintu"
 
-#: bse/bseenums.c:169
+#: bse/bseenums.cc:169
 #, fuzzy
 msgid "Invalid offset"
 msgstr "Nta- boneza"
 
-#: bse/bseenums.c:171
+#: bse/bseenums.cc:171
 #, fuzzy
 msgid "Invalid overlap"
 msgstr "Korosa"
 
-#: bse/bseenums.c:153
+#: bse/bseenums.cc:153
 #, fuzzy
 msgid "Invalid synthesis module connection"
 msgstr "Modire Ukwihuza"
 
-#: bse/bseenums.c:157
+#: bse/bseenums.cc:157
 #, fuzzy
 msgid "Invalid synthsis module type"
 msgstr "Modire Ubwoko"
@@ -4000,7 +4085,7 @@ msgid ""
 "Invert the state of sustain (damper) pedal so on/off meanings are reversed"
 msgstr "i Leta Bya ku Bidakora Bicuritswe"
 
-#: bse/bseenums.c:107
+#: bse/bseenums.cc:107
 #, fuzzy
 msgid "Is a directory"
 msgstr "a bushyinguro"
@@ -4077,7 +4162,7 @@ msgstr "Igihe"
 msgid "Latency [ms]"
 msgstr ""
 
-#: birnet/birnetutils.cc:1195
+#: birnet/birnetutils.cc:1198
 msgid "Launch Web Browser"
 msgstr ""
 
@@ -4096,11 +4181,11 @@ msgstr "Imigaragarire"
 msgid "Left"
 msgstr "Ibumoso"
 
-#: bse/bseinstrumentoutput.c:118
+#: bse/bseinstrumentoutput.cc:132
 msgid "Left Audio"
 msgstr ""
 
-#: bse/bsebus.c:907 bse/bsepcmoutput.c:127 plugins/freeverb/bsefreeverb.c:121
+#: bse/bsebus.cc:908 bse/bsepcmoutput.c:127 plugins/freeverb/bsefreeverb.c:121
 msgid "Left Audio In"
 msgstr ""
 
@@ -4108,7 +4193,7 @@ msgstr ""
 msgid "Left Audio Input"
 msgstr ""
 
-#: bse/bsebus.c:911 bse/bsepcminput.c:127 plugins/freeverb/bsefreeverb.c:123
+#: bse/bsebus.cc:912 bse/bsepcminput.c:127 plugins/freeverb/bsefreeverb.c:123
 msgid "Left Audio Out"
 msgstr ""
 
@@ -4116,7 +4201,7 @@ msgstr ""
 msgid "Left Audio Output"
 msgstr ""
 
-#: bse/bseinstrumentoutput.c:118
+#: bse/bseinstrumentoutput.cc:132
 msgid "Left Channel Output"
 msgstr ""
 
@@ -4137,7 +4222,7 @@ msgstr ""
 msgid "Left Output"
 msgstr ""
 
-#: bse/bsebus.c:880
+#: bse/bsebus.cc:881
 msgid "Left Volume"
 msgstr ""
 
@@ -4146,12 +4231,12 @@ msgstr ""
 msgid "Left audio output"
 msgstr "Ibisohoka"
 
-#: bse/bsebus.c:907 bse/bsepcmoutput.c:127
+#: bse/bsebus.cc:908 bse/bsepcmoutput.c:127
 #, fuzzy
 msgid "Left channel input"
 msgstr "Iyinjiza"
 
-#: bse/bsebus.c:911 bse/bsepcminput.c:127
+#: bse/bsebus.cc:912 bse/bsepcminput.c:127
 #, fuzzy
 msgid "Left channel output"
 msgstr "Ibisohoka"
@@ -4174,7 +4259,7 @@ msgstr ""
 msgid "License"
 msgstr ""
 
-#: bse/bseautodoc.c:363 bse/bseautodoc.c:437
+#: bse/bseautodoc.cc:363 bse/bseautodoc.cc:437
 msgid "License:"
 msgstr ""
 
@@ -4198,7 +4283,7 @@ msgstr ""
 msgid "Link or move parts (mouse button 1 and 2)"
 msgstr "Cyangwa Kwimura Imbeba Akabuto 1. Na 2."
 
-#: bse/bsebus.c:145
+#: bse/bsebus.cc:146
 #, fuzzy
 msgid "List of available mixer busses to be used as bus output"
 msgstr "Bya Bihari Kuri Nka Ibisohoka"
@@ -4228,7 +4313,7 @@ msgstr "Bya Bihari Kuri Guhitamo a urusobe Bivuye"
 msgid "List of available synthesis networks to choose a track instrument from"
 msgstr "Bya Bihari Kuri Guhitamo a Bivuye"
 
-#: bse/bsebus.c:134
+#: bse/bsebus.cc:135
 #, fuzzy
 msgid "List of available synthesis signals to be used as bus input"
 msgstr "Bya Bihari Kuri Nka Iyinjiza"
@@ -4338,7 +4423,7 @@ msgid "Location"
 msgstr "Ahantu"
 
 #. change default
-#. override parent property
+#. override parent property: 0
 #: bse/bsesong.c:784 bse/bsesong.c:788 bse/bsesong.c:793 bse/bsesong.c:798
 msgid "Looping"
 msgstr ""
@@ -4394,22 +4479,22 @@ msgstr ""
 msgid "MIDI Instrument"
 msgstr ""
 
-#: bse/bsemidicontroller.c:136
+#: bse/bsemidicontroller.cc:137
 #, fuzzy
 msgid "MIDI Signal 1"
 msgstr "1."
 
-#: bse/bsemidicontroller.c:138
+#: bse/bsemidicontroller.cc:139
 #, fuzzy
 msgid "MIDI Signal 2"
 msgstr "2."
 
-#: bse/bsemidicontroller.c:140
+#: bse/bsemidicontroller.cc:141
 #, fuzzy
 msgid "MIDI Signal 3"
 msgstr "3."
 
-#: bse/bsemidicontroller.c:142
+#: bse/bsemidicontroller.cc:143
 #, fuzzy
 msgid "MIDI Signal 4"
 msgstr "4."
@@ -4443,7 +4528,7 @@ msgstr ""
 msgid "Master"
 msgstr "Mugenga"
 
-#: bse/bsebus.c:904
+#: bse/bsebus.cc:905
 msgid "Master Output"
 msgstr ""
 
@@ -4574,7 +4659,7 @@ msgstr ""
 msgid "Mixer busses connected to track output"
 msgstr "Kuri Ibisohoka"
 
-#: bse/bsebus.c:899
+#: bse/bsebus.cc:900
 #, fuzzy
 msgid "Mixer busses used as output for synthesis signals"
 msgstr "Nka Ibisohoka kugirango"
@@ -4597,8 +4682,8 @@ msgstr ""
 msgid "Mod In"
 msgstr ""
 
-#: bse/bsebiquadfilter.c:162 bse/bsebiquadfilter.c:168
-#: bse/bsebiquadfilter.c:174 bse/bsebiquadfilter.c:180
+#: bse/bsebiquadfilter.cc:162 bse/bsebiquadfilter.cc:168
+#: bse/bsebiquadfilter.cc:174 bse/bsebiquadfilter.cc:180
 #: bse/bsestandardosc.c:162 bse/bsestandardosc.c:167 bse/bsestandardosc.c:172
 #: bse/bsestandardosc.c:177 bse/bsewaveosc.c:569 bse/bsewaveosc.c:575
 #: bse/bsewaveosc.c:581
@@ -4743,11 +4828,11 @@ msgstr ""
 msgid "Musical Tuning"
 msgstr ""
 
-#: bse/bsebus.c:874
+#: bse/bsebus.cc:875
 msgid "Mute"
 msgstr "Mute"
 
-#: bse/bsebus.c:874
+#: bse/bsebus.cc:875
 #, fuzzy
 msgid "Mute: turn off the bus volume"
 msgstr "Bidakora i Igice"
@@ -4841,13 +4926,13 @@ msgstr ""
 msgid "No available audio device was found."
 msgstr ""
 
-#: bse/bseenums.c:120
+#: bse/bseenums.cc:120
 #, fuzzy
 msgid "No data available"
 msgstr "Ibyatanzwe Bihari"
 
 #. Device errors
-#: bse/bseenums.c:136
+#: bse/bseenums.cc:136
 #, fuzzy
 msgid "No device (driver) available"
 msgstr "APAREYE Musomyi: Bihari"
@@ -4862,54 +4947,54 @@ msgstr "Byahiswemo"
 msgid "No quantization selected"
 msgstr "Byahiswemo"
 
-#: bse/bseenums.c:115
+#: bse/bseenums.cc:115
 #, fuzzy
 msgid "No space left on device"
 msgstr "Umwanya Ibumoso: ku APAREYE"
 
 #. various procedure errors
-#: bse/bseenums.c:165
+#: bse/bseenums.cc:165
 #, fuzzy
 msgid "No such entry"
 msgstr "Icyinjijwe"
 
-#: bse/bseenums.c:166
+#: bse/bseenums.cc:166
 #, fuzzy
 msgid "No such event"
 msgstr "Icyabaye"
 
-#: bse/bseenums.c:106
+#: bse/bseenums.cc:106
 #, fuzzy
 msgid "No such file, device or directory"
 msgstr "IDOSIYE APAREYE Cyangwa bushyinguro"
 
-#: bse/bseenums.c:147
+#: bse/bseenums.cc:147
 #, fuzzy
 msgid "No such input channel"
 msgstr "Iyinjiza"
 
-#: bse/bseenums.c:148
+#: bse/bseenums.cc:148
 #, fuzzy
 msgid "No such output channel"
 msgstr "Ibisohoka"
 
 #. BseProcedure errors
-#: bse/bseenums.c:159
+#: bse/bseenums.cc:159
 msgid "No such procedure"
 msgstr ""
 
 #. BseSource errors
-#: bse/bseenums.c:146
+#: bse/bseenums.cc:146
 #, fuzzy
 msgid "No such synthesis module"
 msgstr "Modire"
 
-#: bse/bseenums.c:128
+#: bse/bseenums.cc:128
 #, fuzzy
 msgid "No such wave"
 msgstr "UMUVUMBA"
 
-#: birnet/birnetutils.cc:1197
+#: birnet/birnetutils.cc:1200
 #, c-format
 msgid ""
 "No suitable web browser executable could be found to be executed and to "
@@ -4920,7 +5005,7 @@ msgstr ""
 #: beast-gtk/bsteventrollctrl.c:656 beast-gtk/bstpianorollctrl.c:579
 #: beast-gtk/bstpianorollctrl.c:689 beast-gtk/bstpianorollctrl.c:752
 #: beast-gtk/bsttrackrollctrl.c:479 beast-gtk/bsttrackrollctrl.c:499
-#: beast-gtk/bsttrackrollctrl.c:571 bse/bseenums.c:167
+#: beast-gtk/bsttrackrollctrl.c:571 bse/bseenums.cc:167
 #, fuzzy
 msgid "No target"
 msgstr "Intego"
@@ -4968,7 +5053,7 @@ msgstr ""
 msgid "None"
 msgstr "Nta na kimwe"
 
-#: bse/bsebiquadfilter.c:155
+#: bse/bsebiquadfilter.cc:155
 msgid "Norm Type"
 msgstr ""
 
@@ -4988,10 +5073,10 @@ msgid ""
 msgstr ""
 
 # sc/source\ui\pagedlg\hfedtdlg.src:RID_HFBASE.FL_INFO.text
-#: bse/bsebiquadfilter.c:141 bse/bseconstant.c:127 bse/bsestandardosc.c:149
+#: bse/bsebiquadfilter.cc:141 bse/bseconstant.cc:127 bse/bsestandardosc.c:149
 #: plugins/bseiirfilter.c:146 plugins/bseiirfilter.c:157
-#: plugins/davcanyondelay.c:114 plugins/davorgan.c:113 plugins/davsyndrum.c:94
-#: plugins/davxtalstrings.c:109
+#: plugins/davcanyondelay.c:114 plugins/davorgan.idl:34
+#: plugins/davsyndrum.c:94 plugins/davxtalstrings.c:109
 msgid "Note"
 msgstr "Igisobanuro"
 
@@ -5007,7 +5092,7 @@ msgstr ""
 msgid "Note Fine Tune"
 msgstr ""
 
-#: bse/bseinstrumentinput.c:118 bse/bsemidiinput.c:108
+#: bse/bseinstrumentinput.cc:132 bse/bsemidiinput.cc:108
 msgid "Note Frequency"
 msgstr ""
 
@@ -5037,7 +5122,7 @@ msgstr ""
 msgid "Note decay is the 'half-life' of the note's decay in seconds"
 msgstr ""
 
-#: bse/bseladspamodule.c:196
+#: bse/bseladspamodule.cc:196
 msgid ""
 "Note values are converted to Hertz according to the current musical tuning"
 msgstr ""
@@ -5067,11 +5152,11 @@ msgstr "Bya"
 msgid "Number of Rows"
 msgstr "Bya"
 
-#: bse/bseautodoc.c:335
+#: bse/bseautodoc.cc:335
 msgid "Number of elements (C specific)"
 msgstr ""
 
-#: bse/bsebiquadfilter.c:177 bse/bsestandardosc.c:174 bse/bsewaveosc.c:584
+#: bse/bsebiquadfilter.cc:177 bse/bsestandardosc.c:174 bse/bsewaveosc.c:584
 #, fuzzy
 msgid "Number of octaves to be affected by exponential frequency modulation"
 msgstr "Bya Kuri ku Ubwisubire"
@@ -5126,7 +5211,7 @@ msgid "Open Project"
 msgstr ""
 
 #. TRANSLATORS: keep this text to 70 chars in width
-#: bse/bsemididevice-oss.c:266
+#: bse/bsemididevice-oss.cc:266
 #, fuzzy
 msgid ""
 "Open Sound System MIDI driver:\n"
@@ -5155,7 +5240,7 @@ msgstr ""
 msgid "Open existing project"
 msgstr "Umushinga"
 
-#: bse/bseenums.c:108
+#: bse/bseenums.cc:108
 #, fuzzy
 msgid "Open failed"
 msgstr "Byanze"
@@ -5180,19 +5265,21 @@ msgstr "Itondekanya"
 msgid "Order of Filter"
 msgstr "Bya"
 
-#: plugins/davorgan.c:149
-msgid "Organ Output"
-msgstr ""
-
-#: plugins/davorgan.c:114
+#: plugins/davorgan.idl:34
 msgid ""
 "Organ frequency as note, converted to Hertz according to the current musical "
 "tuning"
 msgstr ""
 
-#: plugins/davorgan.c:108
+#: plugins/davorgan.idl:32
 msgid "Organ frequency in Hertz, i.e. the pitch of the base tone"
 msgstr ""
+
+# sw/source\ui\envelp\mailmrge.src:DLG_MAILMERGE.FL_DEST.text
+#: plugins/davorgan.idl:30
+#, fuzzy
+msgid "Organ output"
+msgstr "Ibisohoka"
 
 #: beast-gtk/bstdbmeter.c:766 beast-gtk/bstdbmeter.c:1061
 #: beast-gtk/bstdbmeter.c:1561
@@ -5244,7 +5331,7 @@ msgstr "UMUVUMBA Ifishi"
 
 # # @name NO_MEMORY
 # # @loc none
-#: bse/bseenums.c:116
+#: bse/bseenums.cc:116
 msgid "Out of memory"
 msgstr "Ububiko bwarenzwe"
 
@@ -5275,7 +5362,7 @@ msgstr ""
 msgid "Output Signal Monitor"
 msgstr ""
 
-#: bse/bsebus.c:898 bse/bsetrack.c:1039
+#: bse/bsebus.cc:899 bse/bsetrack.c:1039
 msgid "Output Signals"
 msgstr ""
 
@@ -5303,7 +5390,7 @@ msgstr "in"
 msgid "Outputs"
 msgstr ""
 
-#: bse/bseenums.c:168
+#: bse/bseenums.cc:168
 msgid "Ownership mismatch"
 msgstr ""
 
@@ -5371,11 +5458,11 @@ msgstr ""
 msgid "Parasite Paths"
 msgstr ""
 
-#: bse/bseenums.c:154
+#: bse/bseenums.cc:154
 msgid "Parent mismatch"
 msgstr ""
 
-#: bse/bseenums.c:133
+#: bse/bseenums.cc:133
 #, fuzzy
 msgid "Parsing error"
 msgstr "Ikosa"
@@ -5446,7 +5533,7 @@ msgstr "Bya Ikoresha:"
 msgid "Percentage of background image pixel to blend over background color."
 msgstr "Bya Mbuganyuma Ishusho Kuri KURI Mbuganyuma Ibara"
 
-#: bse/bsebiquadfilter.c:171 bse/bsestandardosc.c:169 bse/bsewaveosc.c:578
+#: bse/bsebiquadfilter.cc:171 bse/bsestandardosc.c:169 bse/bsewaveosc.c:578
 #, fuzzy
 msgid "Perform exponential frequency modulation instead of linear"
 msgstr "Ubwisubire Bya By'umurongo"
@@ -5574,7 +5661,7 @@ msgstr ""
 msgid "Preferences"
 msgstr "Ibyahisemo"
 
-#: bse/bseenums.c:104
+#: bse/bseenums.cc:104
 msgid "Premature EOF"
 msgstr ""
 
@@ -5598,22 +5685,22 @@ msgstr ""
 msgid "Procedure _Browser"
 msgstr ""
 
-#: bse/bseenums.c:160
+#: bse/bseenums.cc:160
 #, fuzzy
 msgid "Procedure currently busy"
 msgstr "Irahuze"
 
-#: bse/bseenums.c:163
+#: bse/bseenums.cc:163
 msgid "Procedure execution aborted"
 msgstr ""
 
-#: bse/bseenums.c:162
+#: bse/bseenums.cc:162
 #, fuzzy
 msgid "Procedure execution failed"
 msgstr "Byanze"
 
 #. recursion
-#: bse/bseenums.c:161
+#: bse/bseenums.cc:161
 #, fuzzy
 msgid "Procedure parameter invalid"
 msgstr "Sibyo"
@@ -5885,7 +5972,7 @@ msgid "Raise the currently selected key binding, relative to its neighbours"
 msgstr "i Byahiswemo Urufunguzo Bifatanya Bifitanye isano Kuri"
 
 # filter/source\pdf\impdialog.src:RID_PDF_EXPORT_DLG.RB_RANGE.text
-#: bse/bseautodoc.c:185 bse/bseautodoc.c:191
+#: bse/bseautodoc.cc:185 bse/bseautodoc.cc:191
 #, fuzzy
 msgid "Range:"
 msgstr "Urutonde"
@@ -5899,7 +5986,7 @@ msgstr ""
 msgid "Ratio [x:1]"
 msgstr "X 1."
 
-#: bse/bseenums.c:110
+#: bse/bseenums.cc:110
 #, fuzzy
 msgid "Read failed"
 msgstr "Byanze"
@@ -5942,6 +6029,10 @@ msgstr "i Iheruka Igikorwa"
 #, fuzzy
 msgid "Redo the last undone editing step"
 msgstr "i Iheruka Intera"
+
+#: plugins/davorgan.idl:51
+msgid "Reed Sounds"
+msgstr ""
 
 #: plugins/davcanyondelay.c:109
 #, fuzzy
@@ -6031,7 +6122,7 @@ msgstr "muri Utudomo"
 msgid "Report a Beast Bug..."
 msgstr ""
 
-#: bse/bseenums.c:125
+#: bse/bseenums.cc:125
 #, fuzzy
 msgid "Requested data values unmatched"
 msgstr "Ibyatanzwe Uduciro"
@@ -6098,11 +6189,11 @@ msgstr "Iyinjiza Ibahasha"
 msgid "Right"
 msgstr "Iburyo"
 
-#: bse/bseinstrumentoutput.c:120
+#: bse/bseinstrumentoutput.cc:134
 msgid "Right Audio"
 msgstr ""
 
-#: bse/bsebus.c:909 bse/bsepcmoutput.c:129 plugins/freeverb/bsefreeverb.c:122
+#: bse/bsebus.cc:910 bse/bsepcmoutput.c:129 plugins/freeverb/bsefreeverb.c:122
 msgid "Right Audio In"
 msgstr ""
 
@@ -6110,7 +6201,7 @@ msgstr ""
 msgid "Right Audio Input"
 msgstr ""
 
-#: bse/bsebus.c:913 bse/bsepcminput.c:129 plugins/freeverb/bsefreeverb.c:124
+#: bse/bsebus.cc:914 bse/bsepcminput.c:129 plugins/freeverb/bsefreeverb.c:124
 msgid "Right Audio Out"
 msgstr ""
 
@@ -6118,7 +6209,7 @@ msgstr ""
 msgid "Right Audio Output"
 msgstr ""
 
-#: bse/bseinstrumentoutput.c:120
+#: bse/bseinstrumentoutput.cc:134
 msgid "Right Channel Output"
 msgstr ""
 
@@ -6139,7 +6230,7 @@ msgstr ""
 msgid "Right Output"
 msgstr ""
 
-#: bse/bsebus.c:884
+#: bse/bsebus.cc:885
 msgid "Right Volume"
 msgstr ""
 
@@ -6152,12 +6243,12 @@ msgstr "Ibisohoka"
 msgid "Right channel Input"
 msgstr ""
 
-#: bse/bsebus.c:909
+#: bse/bsebus.cc:910
 #, fuzzy
 msgid "Right channel input"
 msgstr "Iyinjiza"
 
-#: bse/bsebus.c:913 bse/bsepcminput.c:129
+#: bse/bsebus.cc:914 bse/bsepcminput.c:129
 #, fuzzy
 msgid "Right channel output"
 msgstr "Ibisohoka"
@@ -6399,7 +6490,7 @@ msgstr "Igenzura Iyinjiza"
 msgid "Second filter cutoff frequency"
 msgstr "ku Ubwisubire"
 
-#: bse/bseenums.c:109
+#: bse/bseenums.cc:109
 #, fuzzy
 msgid "Seek failed"
 msgstr "Byanze"
@@ -6592,7 +6683,7 @@ msgstr "Ubutumwa Ibyerekeye"
 msgid "Show messages about empty part range"
 msgstr "Ubutumwa Ibyerekeye"
 
-#: birnet/birnetutils.cc:1198
+#: birnet/birnetutils.cc:1201
 #, fuzzy
 msgid "Show messages about web browser launch problems"
 msgstr "Ubutumwa Ibyerekeye"
@@ -6619,11 +6710,11 @@ msgstr "i Ubuso"
 msgid "Signal In"
 msgstr ""
 
-#: bse/bsebus.c:887
+#: bse/bsebus.cc:888
 msgid "Signal Inputs"
 msgstr ""
 
-#: bse/bsebus.c:896 bse/bsetrack.c:1037
+#: bse/bsebus.cc:897 bse/bsetrack.c:1037
 msgid "Signal Outputs"
 msgstr ""
 
@@ -6700,11 +6791,11 @@ msgstr ""
 msgid "Sole Output"
 msgstr ""
 
-#: bse/bsebus.c:876
+#: bse/bsebus.cc:877
 msgid "Solo"
 msgstr ""
 
-#: bse/bsebus.c:876
+#: bse/bsebus.cc:877
 #, fuzzy
 msgid "Solo: mute all other busses"
 msgstr "Mute Byose Ikindi"
@@ -6863,12 +6954,12 @@ msgstr ""
 msgid "Store references to wave files"
 msgstr "Indango Kuri UMUVUMBA Idosiye"
 
-#: bse/bsebiquadfilter.c:184
+#: bse/bsebiquadfilter.cc:184
 #, fuzzy
 msgid "Strength of gain modulation"
 msgstr "Bya"
 
-#: bse/bsebiquadfilter.c:165 bse/bsestandardosc.c:164
+#: bse/bsebiquadfilter.cc:165 bse/bsestandardosc.c:164
 #, fuzzy
 msgid "Strength of linear frequency modulation"
 msgstr "Bya By'umurongo Ubwisubire"
@@ -6923,7 +7014,7 @@ msgstr ""
 msgid "SynDrum Output"
 msgstr ""
 
-#: bse/bsebus.c:878
+#: bse/bsebus.cc:879
 msgid "Sync"
 msgstr ""
 
@@ -6943,7 +7034,7 @@ msgstr ""
 msgid "Syncronization Output"
 msgstr ""
 
-#: bse/bsebus.c:878
+#: bse/bsebus.cc:879
 #, fuzzy
 msgid "Syncronize left and right volume"
 msgstr "Ibumoso: Na Iburyo: Igice"
@@ -6952,7 +7043,7 @@ msgstr "Ibumoso: Na Iburyo: Igice"
 msgid "Synth Control Frequency"
 msgstr ""
 
-#: bse/bseinstrumentoutput.c:124
+#: bse/bseinstrumentoutput.cc:138
 msgid "Synth Done"
 msgstr ""
 
@@ -6982,7 +7073,7 @@ msgstr ""
 msgid "Synthesis mixing frequency, common values are: 22050, 44100, 48000"
 msgstr "Ubwisubire Uduciro"
 
-#: bse/bseenums.c:156
+#: bse/bseenums.cc:156
 #, fuzzy
 msgid "Synthesis module currently busy"
 msgstr "Modire Irahuze"
@@ -7021,7 +7112,7 @@ msgstr "urusobe Kuri Gukoresha Nka Gitsindiye urusobe"
 #. TRANSLATORS: the "tracks and busses" order in this tooltip needs
 #. * to be preserved to match the GUI order of displayed objects.
 #.
-#: bse/bsebus.c:894
+#: bse/bsebus.cc:895
 #, fuzzy
 msgid "Synthesis signals (from tracks and busses) used as bus input"
 msgstr "Bivuye Na Nka Iyinjiza"
@@ -7064,7 +7155,7 @@ msgid "Technical description of the multi-threaded synthesis engine innards"
 msgstr "Isobanuramiterere Bya i"
 
 #. miscellaneous errors
-#: bse/bseenums.c:127
+#: bse/bseenums.cc:127
 #, fuzzy
 msgid "Temporary error"
 msgstr "Ikosa"
@@ -7176,12 +7267,12 @@ msgstr "Leta Bya i Urudodo"
 msgid "The feedback amount; a negative feedback inverts the signal"
 msgstr ""
 
-#: bse/bsebiquadfilter.c:127 plugins/bseiirfilter.c:119
+#: bse/bsebiquadfilter.cc:127 plugins/bseiirfilter.c:119
 #, fuzzy
 msgid "The filter design type"
 msgstr "Muyunguruzi... Ihangagishusho Ubwoko"
 
-#: bse/bsebiquadfilter.c:156
+#: bse/bsebiquadfilter.cc:156
 #, fuzzy
 msgid ""
 "The filter gain normalization type (supported only by highpass and lowpass)"
@@ -7359,7 +7450,7 @@ msgstr "Kuri Ryari: i Urufunguzo ni"
 msgid "Thirty-secondth note"
 msgstr "Impugukirwa"
 
-#: bse/bseautodoc.c:263
+#: bse/bseautodoc.cc:263
 msgid "This procedure has multiple return values."
 msgstr ""
 
@@ -7480,12 +7571,12 @@ msgid ""
 msgstr "Gitambitse Igenda Bya i Akazu Gufunika"
 
 #. out of resource conditions
-#: bse/bseenums.c:113
+#: bse/bseenums.cc:113
 #, fuzzy
 msgid "Too many open files"
 msgstr "Gufungura Idosiye"
 
-#: bse/bseenums.c:114
+#: bse/bseenums.cc:114
 #, fuzzy
 msgid "Too many open files in system"
 msgstr "Gufungura Idosiye in Sisitemu"
@@ -7503,7 +7594,7 @@ msgstr ""
 msgid "Tracks contain instrument definitions and parts with notes"
 msgstr "Na Na: Ibisobanuro"
 
-#: bse/bsestandardosc.c:154 plugins/davorgan.c:118
+#: bse/bsestandardosc.c:154 plugins/davorgan.idl:36
 #: plugins/davxtalstrings.c:114
 msgid "Transpose"
 msgstr ""
@@ -7512,7 +7603,7 @@ msgstr ""
 msgid "Transpose down starting at"
 msgstr ""
 
-#: plugins/davorgan.c:118 plugins/davxtalstrings.c:114
+#: plugins/davorgan.idl:36 plugins/davxtalstrings.c:114
 #, fuzzy
 msgid "Transposition of the frequency in semitones"
 msgstr "Kuri i Ubwisubire"
@@ -7635,7 +7726,7 @@ msgstr "Iheruka Intera"
 msgid "Undo the effect of the last action"
 msgstr "i INGARUKA Bya i Iheruka Igikorwa"
 
-#: bse/bsebiquadfilter.c:188
+#: bse/bsebiquadfilter.cc:188
 msgid "Unfiltered Audio Signal"
 msgstr ""
 
@@ -7649,11 +7740,11 @@ msgstr ""
 
 # # @name OTHER
 # # @loc none
-#: bse/bseenums.c:98
+#: bse/bseenums.cc:98
 msgid "Unknown error"
 msgstr "Ikosa itazwi"
 
-#: bse/bseenums.c:124
+#: bse/bseenums.cc:124
 #, fuzzy
 msgid "Unknown format"
 msgstr "Imiterere"
@@ -7674,7 +7765,7 @@ msgid "Unspecified length"
 msgstr "Uburebure"
 
 # sch/source\ui\dlg\tplabel.src:TP_AXIS_LABEL.FT_UNUSED.text
-#: bse/bseinstrumentoutput.c:122
+#: bse/bseinstrumentoutput.cc:136
 msgid "Unused"
 msgstr "Kidakoreshwa"
 
@@ -7724,12 +7815,12 @@ msgstr ""
 msgid "VZoom"
 msgstr ""
 
-#: bse/bseconstant.c:108
+#: bse/bseconstant.cc:108
 #, fuzzy
 msgid "Value [float]"
 msgstr "Kureremba"
 
-#: bse/bseinstrumentinput.c:122 bse/bsemidiinput.c:112
+#: bse/bseinstrumentinput.cc:136 bse/bsemidiinput.cc:112
 msgid "Velocity"
 msgstr ""
 
@@ -7737,7 +7828,7 @@ msgstr ""
 msgid "Velocity Out"
 msgstr ""
 
-#: bse/bseinstrumentinput.c:122 bse/bsemidiinput.c:112
+#: bse/bseinstrumentinput.cc:136 bse/bsemidiinput.cc:112
 #, fuzzy
 msgid "Velocity of the note press"
 msgstr "Bya i Impugukirwa Kanda"
@@ -7747,7 +7838,7 @@ msgstr "Bya i Impugukirwa Kanda"
 msgid "Velocity of the string pluck"
 msgstr "Bya i Impugukirwa Kanda"
 
-#: bse/bseinstrumentinput.c:124 bse/bsemidiinput.c:114
+#: bse/bseinstrumentinput.cc:138 bse/bsemidiinput.cc:114
 #, fuzzy
 msgid "Velocity while the note is pressed"
 msgstr "i Impugukirwa ni"
@@ -7806,12 +7897,12 @@ msgstr "Ibisohoka"
 msgid "Volume"
 msgstr "Igice"
 
-#: bse/bsebus.c:880
+#: bse/bsebus.cc:881
 #, fuzzy
 msgid "Volume adjustment in decibel of left bus channel"
 msgstr "in Bya Ibumoso:"
 
-#: bse/bsebus.c:884
+#: bse/bsebus.cc:885
 #, fuzzy
 msgid "Volume adjustment in decibel of right bus channel"
 msgstr "in Bya Iburyo:"
@@ -7899,7 +7990,7 @@ msgstr "Impugukirwa"
 msgid "Window Size"
 msgstr ""
 
-#: bse/bseenums.c:111
+#: bse/bseenums.cc:111
 #, fuzzy
 msgid "Write failed"
 msgstr "Byanze"
@@ -7914,7 +8005,7 @@ msgstr "Umushinga Kuri a IDOSIYE"
 msgid "Write project to disk"
 msgstr "Umushinga Kuri"
 
-#: bse/bseenums.c:122
+#: bse/bseenums.cc:122
 #, fuzzy
 msgid "Wrong number of channels"
 msgstr "Umubare Bya"
@@ -8286,7 +8377,7 @@ msgstr "Kureba"
 msgid "_Virtualization"
 msgstr ""
 
-#: bse/bsejanitor.c:537
+#: bse/bsejanitor.cc:537
 msgid "connection terminated"
 msgstr ""
 
@@ -8575,7 +8666,7 @@ msgstr "Igenzura"
 msgid "failed to add wave chunk from file \"%s\": %s"
 msgstr "Kuri Ibirimo UMUVUMBA IDOSIYE"
 
-#: bse/bsejanitor.c:535
+#: bse/bsejanitor.cc:535
 msgid "killed by janitor"
 msgstr ""
 

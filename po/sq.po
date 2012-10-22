@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast HEAD\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-04-08 10:51+0200\n"
+"POT-Creation-Date: 2012-10-22 18:16+0200\n"
 "PO-Revision-Date: 2004-09-03 17:26+0200\n"
 "Last-Translator: Laurent Dhima <laurenti@alblinux.net>\n"
 "Language-Team: Albanian <gnome-albanian-perkthyesit@lists.sourceforge.net>\n"
@@ -87,7 +87,7 @@ msgstr "zgjidh"
 msgid "  selects one of 3 predefined colors"
 msgstr "nga"
 
-#: bse/bsejanitor.c:539
+#: bse/bsejanitor.cc:539
 #, c-format
 msgid "%s (core dumped)"
 msgstr ""
@@ -127,6 +127,11 @@ msgstr "..."
 msgid "/Audio Sources/Noise"
 msgstr "Zëri Burimet Noise"
 
+#: plugins/davorgan.idl:27
+#, fuzzy
+msgid "/Audio Sources/Organ"
+msgstr "Zëri Burimet"
+
 #: bse/bsestandardosc.c:110
 #, fuzzy
 msgid "/Audio Sources/Standard Oscillator"
@@ -151,27 +156,27 @@ msgstr "Chorus"
 msgid "/Filters/Bass Filter"
 msgstr "Filtrat Bas Filtri"
 
-#: bse/bsebiquadfilter.c:106
+#: bse/bsebiquadfilter.cc:106
 #, fuzzy
 msgid "/Filters/Biquad Types"
 msgstr "Filtrat Llojet"
 
-#: bse/bseinstrumentoutput.c:150
+#: bse/bseinstrumentoutput.cc:164
 #, fuzzy
 msgid "/Input & Output/Instrument Output"
 msgstr "Input Rezultati Rezultati"
 
-#: bse/bseinstrumentinput.c:150
+#: bse/bseinstrumentinput.cc:164
 #, fuzzy
 msgid "/Input & Output/Instrument Voice Input"
 msgstr "Input Rezultati Zë Input"
 
-#: bse/bsemidicontroller.c:85
+#: bse/bsemidicontroller.cc:86
 #, fuzzy
 msgid "/Input & Output/MIDI Control Input"
 msgstr "Input Rezultati MIDI Kontrollo Input"
 
-#: bse/bsemidiinput.c:81
+#: bse/bsemidiinput.cc:81
 #, fuzzy
 msgid "/Input & Output/MIDI Voice Input"
 msgstr "Input Rezultati MIDI Zë Input"
@@ -195,7 +200,7 @@ msgstr "Të Ndryshme"
 msgid "/Misc/StandardGusPatchEnvelope"
 msgstr ""
 
-#: bse/bseconstant.c:83
+#: bse/bseconstant.cc:83
 #, fuzzy
 msgid "/Other Sources/Constant"
 msgstr "Tjetër Burimet"
@@ -392,6 +397,14 @@ msgstr ""
 msgid "16384 Value FFT Window"
 msgstr ""
 
+#: plugins/davorgan.idl:42
+msgid "16th"
+msgstr ""
+
+#: plugins/davorgan.idl:42
+msgid "16th Harmonic"
+msgstr ""
+
 #: beast-gtk/bstpianorollctrl.c:98
 #, fuzzy
 msgid "1\\/1"
@@ -440,6 +453,14 @@ msgstr "2"
 msgid "2 & 4"
 msgstr "4"
 
+#: plugins/davorgan.idl:46
+msgid "2 2/3rd"
+msgstr ""
+
+#: plugins/davorgan.idl:46
+msgid "2 2/3rd Harmonic"
+msgstr ""
+
 #: beast-gtk/bstrecords.idl:41
 msgid "2 Value FFT Window"
 msgstr ""
@@ -450,6 +471,14 @@ msgstr ""
 
 #: beast-gtk/bstrecords.idl:48
 msgid "256 Value FFT Window"
+msgstr ""
+
+#: plugins/davorgan.idl:47
+msgid "2nd"
+msgstr ""
+
+#: plugins/davorgan.idl:47
+msgid "2nd Harmonic"
 msgstr ""
 
 #: beast-gtk/bstrecords.idl:98
@@ -501,6 +530,22 @@ msgstr ""
 msgid "4096 Value FFT Window"
 msgstr ""
 
+#: plugins/davorgan.idl:45
+msgid "4th"
+msgstr ""
+
+#: plugins/davorgan.idl:45
+msgid "4th Harmonic"
+msgstr ""
+
+#: plugins/davorgan.idl:44
+msgid "5 1/3rd"
+msgstr ""
+
+#: plugins/davorgan.idl:44
+msgid "5 1/3rd Harmonic"
+msgstr ""
+
 #: bse/bsecore.idl:80
 msgid "5 Tone Equal Temperament"
 msgstr ""
@@ -545,6 +590,14 @@ msgstr ""
 
 #: beast-gtk/bstrecords.idl:53
 msgid "8192 Value FFT Window"
+msgstr ""
+
+#: plugins/davorgan.idl:43
+msgid "8th"
+msgstr ""
+
+#: plugins/davorgan.idl:43
+msgid "8th Harmonic"
 msgstr ""
 
 #: beast-gtk/bstrecords.idl:50
@@ -735,6 +788,14 @@ msgstr "Shto a i ri"
 msgid "Add directory to searchpath"
 msgstr ""
 
+#: plugins/davorgan.idl:52
+msgid "Add flute sounds"
+msgstr ""
+
+#: plugins/davorgan.idl:51
+msgid "Add reeds sound"
+msgstr ""
+
 #: beast-gtk/bstsupershell.c:217
 msgid "Add, edit and connect synthesizer mesh components"
 msgstr ""
@@ -813,8 +874,8 @@ msgstr "Përshtat nga"
 msgid "Adjust whether to draw dB values instead of lines"
 msgstr "Përshtat nga rreshta"
 
-#: bse/bsebus.c:873 bse/bsebus.c:875 bse/bsebus.c:877 bse/bsebus.c:879
-#: bse/bsebus.c:883 bse/bsemidisynth.c:461 bse/bsemidisynth.c:467
+#: bse/bsebus.cc:874 bse/bsebus.cc:876 bse/bsebus.cc:878 bse/bsebus.cc:880
+#: bse/bsebus.cc:884 bse/bsemidisynth.c:461 bse/bsemidisynth.c:467
 #: bse/bsemidisynth.c:474 bse/bsetrack.c:1008
 msgid "Adjustments"
 msgstr ""
@@ -855,7 +916,7 @@ msgid ""
 "  SUBDEV - the subdevice number for plugins like 'hw'\n"
 msgstr ""
 
-#: bse/bseinstrumentinput.c:124 bse/bsemidiinput.c:114
+#: bse/bseinstrumentinput.cc:138 bse/bsemidiinput.cc:114
 msgid "Aftertouch"
 msgstr ""
 
@@ -889,7 +950,7 @@ msgstr ""
 msgid "Always"
 msgstr ""
 
-#: bse/bsestandardosc.c:159 plugins/davorgan.c:123
+#: bse/bsestandardosc.c:159 plugins/davorgan.idl:38
 #: plugins/davxtalstrings.c:119
 msgid "Amount of detuning in cent (hundredth part of a semitone)"
 msgstr ""
@@ -1023,7 +1084,7 @@ msgstr "Zëri"
 msgid "Audio Gate"
 msgstr "Zëri Zvogëlo"
 
-#: bse/bsebiquadfilter.c:188 plugins/bseatandistort.c:88
+#: bse/bsebiquadfilter.cc:188 plugins/bseatandistort.c:88
 #: plugins/bsecontribsampleandhold.idl:26 plugins/bseiirfilter.c:162
 #: plugins/davbassfilter.idl:31 plugins/davchorus.idl:28
 #: plugins/standardguspatchenvelope.idl:45
@@ -1095,12 +1156,12 @@ msgstr "Audio"
 msgid "Audio Input of the WaveOsc playing the patch"
 msgstr ""
 
-#: bse/bsebiquadfilter.c:196 bse/bsestandardosc.c:205 bse/bsewaveosc.c:599
+#: bse/bsebiquadfilter.cc:196 bse/bsestandardosc.c:205 bse/bsewaveosc.c:599
 #: plugins/bseadder.c:99 plugins/bseamplifier.idl:47
 #: plugins/bseatandistort.c:90 plugins/bsecontribsampleandhold.idl:28
 #: plugins/bseiirfilter.c:164 plugins/bsemixer.c:107 plugins/bsemult.c:66
 #: plugins/davbassfilter.idl:33 plugins/davchorus.idl:29
-#: plugins/davorgan.c:149 plugins/davsyndrum.c:123
+#: plugins/davorgan.idl:30 plugins/davsyndrum.c:123
 #: plugins/davxtalstrings.c:155
 #, fuzzy
 msgid "Audio Out"
@@ -1159,7 +1220,7 @@ msgstr "Zëri Input 2"
 msgid "Author"
 msgstr "Autori"
 
-#: bse/bseautodoc.c:354 bse/bseautodoc.c:428
+#: bse/bseautodoc.cc:354 bse/bseautodoc.cc:428
 msgid "Authors:"
 msgstr "Autorët:"
 
@@ -1174,7 +1235,7 @@ msgid "Auto cut"
 msgstr "Automatike preje"
 
 #. TRANSLATORS: keep this text to 70 chars in width
-#: bse/bsedevice.c:339
+#: bse/bsedevice.cc:339
 msgid ""
 "Auto is a special driver, it acts as a placeholder for\n"
 "automatic driver selection."
@@ -1186,7 +1247,7 @@ msgid ""
 "level"
 msgstr ""
 
-#: bse/bsebus.c:134
+#: bse/bsebus.cc:135
 #, fuzzy
 msgid "Available Inputs"
 msgstr "Input"
@@ -1197,7 +1258,7 @@ msgstr "Input"
 msgid "Available Items:"
 msgstr "Në dispozicion Elementë:"
 
-#: bse/bsebus.c:145 bse/bsetrack.c:300
+#: bse/bsebus.cc:146 bse/bsetrack.c:300
 #, fuzzy
 msgid "Available Outputs"
 msgstr "Input"
@@ -1304,7 +1365,7 @@ msgstr "Sfondi figurë nga."
 msgid "Background image used by the piano-roll editor."
 msgstr "Sfondi figurë nga."
 
-#: bse/bseenums.c:155
+#: bse/bseenums.cc:155
 msgid "Bad loopback"
 msgstr ""
 
@@ -1331,8 +1392,7 @@ msgid "Bank Select"
 msgstr "Zgjidh"
 
 #: bse/bsestandardosc.c:142 bse/bsestandardosc.c:147 bse/bsestandardosc.c:152
-#: bse/bsestandardosc.c:157 plugins/davorgan.c:106 plugins/davorgan.c:111
-#: plugins/davorgan.c:116 plugins/davorgan.c:121
+#: bse/bsestandardosc.c:157 plugins/davorgan.idl:31
 #, fuzzy
 msgid "Base Frequency"
 msgstr "Bazë Frekuenca"
@@ -1368,6 +1428,10 @@ msgstr ""
 
 #: beast-gtk/bstscrollgraph.c:577
 msgid "Boost"
+msgstr ""
+
+#: plugins/davorgan.idl:50
+msgid "Brass Sounds"
 msgstr ""
 
 #: bse/bsecore.idl:158 bse/bsecore.idl:335
@@ -1410,7 +1474,7 @@ msgstr ""
 msgid "Bus Name"
 msgstr "Emri"
 
-#: bse/bsebus.c:932
+#: bse/bsebus.cc:933
 #, fuzzy
 msgid ""
 "Bus implementation for songs, used to route track audio signals to the "
@@ -1421,7 +1485,7 @@ msgstr "Bus për."
 msgid "Busses"
 msgstr ""
 
-#: bse/bseenums.c:129
+#: bse/bseenums.cc:129
 msgid "CODEC failure"
 msgstr ""
 
@@ -1449,12 +1513,12 @@ msgstr "CPU"
 msgid "Cancel"
 msgstr "_Anullo"
 
-#: bse/bsebiquadfilter.c:131 bse/bsebiquadfilter.c:139
+#: bse/bsebiquadfilter.cc:131 bse/bsebiquadfilter.cc:139
 #, fuzzy
 msgid "Center Frequency"
 msgstr "Në qendër Frekuenca"
 
-#: bse/bsebiquadfilter.c:190
+#: bse/bsebiquadfilter.cc:190
 #, fuzzy
 msgid "Center Frequency Input"
 msgstr "Në qendër Frekuenca Input"
@@ -1473,6 +1537,10 @@ msgstr "Ndrysho"
 #, fuzzy
 msgid "Change the numeric focus cell contents (e.g. octave) by a given amount"
 msgstr "Ndrysho e nga a"
+
+#: plugins/davorgan.idl:50
+msgid "Change the organ to sound more brassy"
+msgstr ""
 
 #: beast-gtk/bstkeybindings.c:51
 msgid "Change..."
@@ -1603,7 +1671,7 @@ msgstr "Konfiguro"
 msgid "Configure the column layout of the pattern editor"
 msgstr "Konfiguro nga"
 
-#: bse/bseconstant.c:135
+#: bse/bseconstant.cc:135
 #, fuzzy, c-format
 msgid "Const Out%u"
 msgstr "Zvogëlo"
@@ -1630,22 +1698,22 @@ msgstr ""
 msgid "Constant Negative HIGH"
 msgstr ""
 
-#: bse/bseconstant.c:105 bse/bseconstant.c:136
+#: bse/bseconstant.cc:105 bse/bseconstant.cc:136
 #, fuzzy, c-format
 msgid "Constant Output %u"
 msgstr "Rezultati"
 
-#: bse/bseconstant.c:110
+#: bse/bseconstant.cc:110
 msgid "Constant signal value"
 msgstr ""
 
-#: bse/bseconstant.c:129
+#: bse/bseconstant.cc:129
 msgid ""
 "Constant signal value as note, converted to Hertz according to the current "
 "musical tuning"
 msgstr ""
 
-#: bse/bseconstant.c:118
+#: bse/bseconstant.cc:118
 msgid "Constant signal value interpreted as frequency value in Hertz"
 msgstr ""
 
@@ -2141,22 +2209,22 @@ msgstr "Ctrl"
 msgid "Ctrl Out"
 msgstr "Ctrl Zvogëlo"
 
-#: bse/bsemidicontroller.c:136
+#: bse/bsemidicontroller.cc:137
 #, fuzzy
 msgid "Ctrl Out1"
 msgstr "Ctrl"
 
-#: bse/bsemidicontroller.c:138
+#: bse/bsemidicontroller.cc:139
 #, fuzzy
 msgid "Ctrl Out2"
 msgstr "Ctrl"
 
-#: bse/bsemidicontroller.c:140
+#: bse/bsemidicontroller.cc:141
 #, fuzzy
 msgid "Ctrl Out3"
 msgstr "Ctrl"
 
-#: bse/bsemidicontroller.c:142
+#: bse/bsemidicontroller.cc:143
 #, fuzzy
 msgid "Ctrl Out4"
 msgstr "Ctrl"
@@ -2185,7 +2253,7 @@ msgstr "Frekuenca Ndal"
 msgid "Cutoff [%]"
 msgstr ""
 
-#: bse/bsebiquadfilter.c:133 plugins/bseiirfilter.c:141
+#: bse/bsebiquadfilter.cc:133 plugins/bseiirfilter.c:141
 #: plugins/bseiirfilter.c:152
 #, fuzzy
 msgid "Cutoff [Hz]"
@@ -2208,7 +2276,7 @@ msgstr ""
 msgid "Data Entry"
 msgstr "Teksti"
 
-#: bse/bseenums.c:121
+#: bse/bseenums.cc:121
 msgid "Data corrupt"
 msgstr ""
 
@@ -2225,6 +2293,10 @@ msgstr ""
 #, fuzzy
 msgid "DavChorus adds more depth to sounds"
 msgstr "tjetër"
+
+#: plugins/davorgan.idl:28
+msgid "DavOrgan is a versatile additive organ synthesizer"
+msgstr ""
 
 #: plugins/davxtalstrings.c:130 plugins/davxtalstrings.c:135
 msgid "Decay"
@@ -2365,22 +2437,22 @@ msgstr ""
 msgid "Development..."
 msgstr "Zhvillim"
 
-#: bse/bseenums.c:138
+#: bse/bseenums.cc:138
 #, fuzzy
 msgid "Device busy"
 msgstr "Dispozitivi"
 
-#: bse/bseenums.c:144
+#: bse/bseenums.cc:144
 msgid "Device configurations mismatch"
 msgstr ""
 
-#: bse/bseenums.c:137
+#: bse/bseenums.cc:137
 #, fuzzy
 msgid "Device not async capable"
 msgstr "Dispozitivi nuk"
 
 #. file errors
-#: bse/bseenums.c:102
+#: bse/bseenums.cc:102
 #, fuzzy
 msgid "Device or resource busy"
 msgstr "Dispozitivi"
@@ -2446,7 +2518,7 @@ msgid "Discard changes and close dialog"
 msgstr "Anullo dhe mbylle dialog"
 
 #. TRANSLATORS: keep this text to 70 chars in width
-#: bse/bsemididevice-null.c:88
+#: bse/bsemididevice-null.cc:88
 msgid ""
 "Discards all output events and generates no input events. This driver\n"
 "is not part of the automatic device selection list for MIDI devices."
@@ -2677,7 +2749,7 @@ msgstr "Ndrysho Pjesa"
 msgid "Eighths note"
 msgstr ""
 
-#: bse/bsebiquadfilter.c:147 bse/bsebiquadfilter.c:153
+#: bse/bsebiquadfilter.cc:147 bse/bsebiquadfilter.cc:153
 msgid "Emphasis"
 msgstr ""
 
@@ -2828,7 +2900,7 @@ msgstr "Çdo e treta"
 msgid "Every twelfth row"
 msgstr "Çdo"
 
-#: bse/bseenums.c:96
+#: bse/bseenums.cc:96
 #, fuzzy
 msgid "Everything went well"
 msgstr "Gjithçka"
@@ -2862,26 +2934,26 @@ msgstr "Audio"
 msgid "Expression"
 msgstr ""
 
-#: bse/bseenums.c:140
+#: bse/bseenums.cc:140
 #, fuzzy
 msgid "Failed to configure device buffer"
 msgstr "Dështoi periferik"
 
-#: bse/bseenums.c:139
+#: bse/bseenums.cc:139
 #, fuzzy
 msgid "Failed to configure device format"
 msgstr "Dështoi periferik"
 
-#: bse/bseenums.c:143
+#: bse/bseenums.cc:143
 msgid "Failed to configure device frequency"
 msgstr ""
 
-#: bse/bseenums.c:141
+#: bse/bseenums.cc:141
 #, fuzzy
 msgid "Failed to configure device latency"
 msgstr "Dështoi periferik"
 
-#: bse/bseenums.c:142
+#: bse/bseenums.cc:142
 #, fuzzy
 msgid "Failed to configure number of device channels"
 msgstr "Dështoi periferik"
@@ -2891,7 +2963,7 @@ msgid "Failed to crop part range."
 msgstr ""
 
 #. content errors
-#: bse/bseenums.c:118
+#: bse/bseenums.cc:118
 msgid "Failed to detect (start of) header"
 msgstr ""
 
@@ -2904,7 +2976,7 @@ msgstr ""
 msgid "Failed to execute script procedure '%s': %s"
 msgstr "hap"
 
-#: birnet/birnetutils.cc:1196
+#: birnet/birnetutils.cc:1199
 msgid "Failed to launch a web browser executable"
 msgstr ""
 
@@ -2952,7 +3024,7 @@ msgid ""
 "%s"
 msgstr "Dështoi elemino j j"
 
-#: bse/bseenums.c:119
+#: bse/bseenums.cc:119
 #, fuzzy
 msgid "Failed to retrieve seek information"
 msgstr "Dështoi periferik"
@@ -2977,7 +3049,7 @@ msgid ""
 "%s"
 msgstr "Dështoi elemino j j"
 
-#: bse/bseenums.c:134
+#: bse/bseenums.cc:134
 #, fuzzy
 msgid "Failed to spawn child process"
 msgstr "Dështoi fëmi (sekondar, i dytë)"
@@ -3004,11 +3076,11 @@ msgstr ""
 msgid "File Selection"
 msgstr "Zgjedhja e file"
 
-#: bse/bseenums.c:105
+#: bse/bseenums.cc:105
 msgid "File empty"
 msgstr ""
 
-#: bse/bseenums.c:103
+#: bse/bseenums.cc:103
 msgid "File exists already"
 msgstr ""
 
@@ -3031,7 +3103,7 @@ msgstr "Riemërto"
 msgid "Filename Text Entry"
 msgstr "Emri i file Teksti"
 
-#: bse/bsebiquadfilter.c:125
+#: bse/bsebiquadfilter.cc:125
 msgid "Filter"
 msgstr "Filtri"
 
@@ -3050,7 +3122,7 @@ msgstr "Filtri Zgjedhja"
 msgid "Filter Specification"
 msgstr "Filtri"
 
-#: bse/bsebiquadfilter.c:127 plugins/bseiirfilter.c:125
+#: bse/bsebiquadfilter.cc:127 plugins/bseiirfilter.c:125
 #, fuzzy
 msgid "Filter Type"
 msgstr "Filtri Lloji"
@@ -3060,18 +3132,18 @@ msgstr "Filtri Lloji"
 msgid "Filter cutoff frequency"
 msgstr "Në qendër Frekuenca"
 
-#: bse/bsebiquadfilter.c:141 plugins/bseiirfilter.c:147
+#: bse/bsebiquadfilter.cc:141 plugins/bseiirfilter.c:147
 #: plugins/bseiirfilter.c:158 plugins/davcanyondelay.c:115
 msgid ""
 "Filter cutoff frequency as note, converted to Hertz according to the current "
 "musical tuning"
 msgstr ""
 
-#: bse/bsebiquadfilter.c:133
+#: bse/bsebiquadfilter.cc:133
 msgid "Filter cutoff frequency in Hertz"
 msgstr ""
 
-#: bse/bsebiquadfilter.c:196
+#: bse/bsebiquadfilter.cc:196
 #, fuzzy
 msgid "Filtered Audio Signal"
 msgstr "Zëri Sinjali"
@@ -3101,7 +3173,7 @@ msgid ""
 "Find the first track that contains part, suitable to check for orphan parts."
 msgstr ""
 
-#: bse/bsestandardosc.c:159 plugins/davorgan.c:123
+#: bse/bsestandardosc.c:159 plugins/davorgan.idl:38
 #: plugins/davxtalstrings.c:119
 msgid "Fine Tune"
 msgstr ""
@@ -3134,6 +3206,10 @@ msgstr ""
 msgid "Flip Spectrum display,  interchaging low and high frequencies"
 msgstr ""
 
+#: plugins/davorgan.idl:52
+msgid "Flute Sounds"
+msgstr ""
+
 #: beast-gtk/bstrecords.idl:110
 msgid "Font Size"
 msgstr "Madhësia e gërmave"
@@ -3156,14 +3232,14 @@ msgstr ""
 msgid "Free form comment or description"
 msgstr ""
 
-#: bse/bsebiquadfilter.c:190 bse/bsestandardosc.c:197 bse/bsewaveosc.c:593
-#: plugins/davorgan.c:148 plugins/davsyndrum.c:117
+#: bse/bsebiquadfilter.cc:190 bse/bsestandardosc.c:197 bse/bsewaveosc.c:593
+#: plugins/davorgan.idl:29 plugins/davsyndrum.c:117
 #: plugins/davxtalstrings.c:151
 #, fuzzy
 msgid "Freq In"
 msgstr "Frekuenca"
 
-#: bse/bsebiquadfilter.c:192 bse/bsestandardosc.c:199
+#: bse/bsebiquadfilter.cc:192 bse/bsestandardosc.c:199
 #, fuzzy
 msgid "Freq Mod In"
 msgstr "Zmadho"
@@ -3174,23 +3250,23 @@ msgid "Freq Out"
 msgstr "Zvogëlo"
 
 #. inputs
-#: bse/bseconstant.c:116 bse/bseinstrumentinput.c:118 bse/bsemidiinput.c:108
-#: bse/bsestandardosc.c:144 plugins/davcanyondelay.c:108
-#: plugins/davorgan.c:107 plugins/davsyndrum.c:87 plugins/davsyndrum.c:88
-#: plugins/davsyndrum.c:93 plugins/davxtalstrings.c:101
-#: plugins/davxtalstrings.c:103 plugins/davxtalstrings.c:107
-#: plugins/davxtalstrings.c:112 plugins/davxtalstrings.c:117
-#: plugins/standardguspatchenvelope.idl:42
+#: bse/bseconstant.cc:116 bse/bseinstrumentinput.cc:132
+#: bse/bsemidiinput.cc:108 bse/bsestandardosc.c:144
+#: plugins/davcanyondelay.c:108 plugins/davorgan.idl:32
+#: plugins/davsyndrum.c:87 plugins/davsyndrum.c:88 plugins/davsyndrum.c:93
+#: plugins/davxtalstrings.c:101 plugins/davxtalstrings.c:103
+#: plugins/davxtalstrings.c:107 plugins/davxtalstrings.c:112
+#: plugins/davxtalstrings.c:117 plugins/standardguspatchenvelope.idl:42
 msgid "Frequency"
 msgstr "Frekuenca"
 
-#: bse/bsewaveosc.c:593 plugins/davorgan.c:148
+#: bse/bsewaveosc.c:593 plugins/davorgan.idl:29
 #: plugins/standardguspatchenvelope.idl:42
 #, fuzzy
 msgid "Frequency Input"
 msgstr "Frekuenca"
 
-#: bse/bsebiquadfilter.c:192 bse/bsestandardosc.c:199
+#: bse/bsebiquadfilter.cc:192 bse/bsestandardosc.c:199
 #, fuzzy
 msgid "Frequency Modulation Input"
 msgstr "Frekuenca Input"
@@ -3231,7 +3307,7 @@ msgstr "Funksioni"
 msgid "Function used to create new key bindings"
 msgstr "Funksioni i ri"
 
-#: bse/bseenums.c:130
+#: bse/bseenums.cc:130
 #, fuzzy
 msgid "Functionality not implemented"
 msgstr "Funksionaliteti nuk"
@@ -3245,31 +3321,32 @@ msgstr "Funksionet aktivizuar për a"
 #: plugins/bseamplifier.idl:28 plugins/bsebalance.idl:24
 #: plugins/bsecontribsampleandhold.idl:23 plugins/bsenoise.idl:25
 #: plugins/bsesummation.idl:24 plugins/davbassfilter.idl:25
-#: plugins/davchorus.idl:25 plugins/standardguspatchenvelope.idl:27
+#: plugins/davchorus.idl:25 plugins/davorgan.idl:26
+#: plugins/standardguspatchenvelope.idl:27
 #, fuzzy
 msgid "GNU Lesser General Public License"
 msgstr "GNU Të përgjithshme Publik Liçenca"
 
-#: bse/bsebiquadfilter.c:194
+#: bse/bsebiquadfilter.cc:194
 #, fuzzy
 msgid "Gain Mod In"
 msgstr "Zmadho"
 
-#: bse/bsebiquadfilter.c:194
+#: bse/bsebiquadfilter.cc:194
 #, fuzzy
 msgid "Gain Modulation Input"
 msgstr "Input"
 
-#: bse/bsebiquadfilter.c:183
+#: bse/bsebiquadfilter.cc:183
 #, no-c-format
 msgid "Gain Modulation [%]"
 msgstr ""
 
-#: bse/bsebiquadfilter.c:149
+#: bse/bsebiquadfilter.cc:149
 msgid "Gain [dB]"
 msgstr ""
 
-#: bse/bseinstrumentinput.c:120 bse/bsemidiinput.c:110
+#: bse/bseinstrumentinput.cc:134 bse/bsemidiinput.cc:110
 #, fuzzy
 msgid "Gate"
 msgstr "Ngjit"
@@ -3380,6 +3457,10 @@ msgstr ""
 msgid "Hard saturation via clipping (prone to clicks)"
 msgstr ""
 
+#: plugins/davorgan.idl:41
+msgid "Harmonics"
+msgstr ""
+
 #: library/scripts/part-harmonic-transposer.scm:51
 msgid "Harmony Sequence"
 msgstr ""
@@ -3388,12 +3469,12 @@ msgstr ""
 msgid "Harmony list is too short"
 msgstr ""
 
-#: bse/bseinstrumentinput.c:120 bse/bsemidiinput.c:110
+#: bse/bseinstrumentinput.cc:134 bse/bsemidiinput.cc:110
 #, fuzzy
 msgid "High if the note is currently being pressed"
 msgstr "E lartë është"
 
-#: bse/bseinstrumentoutput.c:124
+#: bse/bseinstrumentoutput.cc:138
 #, fuzzy
 msgid "High indicates the instrument is done synthesizing"
 msgstr "E lartë është u krye"
@@ -3573,12 +3654,12 @@ msgid "Input Port %u"
 msgstr "Input Porta"
 
 #. SYNC: type partitions determine the order of displayed objects
-#: bse/bsebus.c:890
+#: bse/bsebus.cc:891
 #, fuzzy
 msgid "Input Signals"
 msgstr "Audio"
 
-#: bse/bseenums.c:151
+#: bse/bseenums.cc:151
 #, fuzzy
 msgid "Input channel already in use"
 msgstr "Input në"
@@ -3588,7 +3669,7 @@ msgstr "Input në"
 msgid "Input channel in use"
 msgstr "Input në"
 
-#: bse/bseenums.c:150
+#: bse/bseenums.cc:150
 #, fuzzy
 msgid "Input channel is private"
 msgstr "Input"
@@ -3598,17 +3679,17 @@ msgstr "Input"
 msgid "Input port name to interface to"
 msgstr "Input emri interfaqja"
 
-#: bse/bseenums.c:152
+#: bse/bseenums.cc:152
 #, fuzzy
 msgid "Input/Output channels already connected"
 msgstr "Input Rezultati"
 
-#: bse/bseenums.c:149
+#: bse/bseenums.cc:149
 #, fuzzy
 msgid "Input/Output channels not connected"
 msgstr "Input Rezultati nuk"
 
-#: bse/bseenums.c:99
+#: bse/bseenums.cc:99
 #, fuzzy
 msgid "Input/output error"
 msgstr "Input Rezultati"
@@ -3710,54 +3791,59 @@ msgstr "Fut dhe"
 msgid "Instrument Path"
 msgstr "Fut Pjesa"
 
-#: bse/bseenums.c:100
+#: plugins/davorgan.idl:49
+#, fuzzy
+msgid "Instrument flavour"
+msgstr "Fut Pjesa"
+
+#: bse/bseenums.cc:100
 msgid "Insufficient permission"
 msgstr ""
 
-#: bse/bseenums.c:97
+#: bse/bseenums.cc:97
 msgid "Internal error (please report)"
 msgstr ""
 
-#: bse/bsebus.c:902
+#: bse/bsebus.cc:903
 msgid "Internals"
 msgstr ""
 
-#: bse/bseenums.c:132
+#: bse/bseenums.cc:132
 #, fuzzy
 msgid "Invalid MIDI control type"
 msgstr "E pavlefshme lloji"
 
-#: bse/bseenums.c:170
+#: bse/bseenums.cc:170
 #, fuzzy
 msgid "Invalid duration"
 msgstr "E pavlefshme kohëzgjatja"
 
-#: bse/bseenums.c:123
+#: bse/bseenums.cc:123
 #, fuzzy
 msgid "Invalid format"
 msgstr "E pavlefshme"
 
-#: bse/bseenums.c:131
+#: bse/bseenums.cc:131
 #, fuzzy
 msgid "Invalid object property"
 msgstr "E pavlefshme"
 
-#: bse/bseenums.c:169
+#: bse/bseenums.cc:169
 #, fuzzy
 msgid "Invalid offset"
 msgstr "E pavlefshme"
 
-#: bse/bseenums.c:171
+#: bse/bseenums.cc:171
 #, fuzzy
 msgid "Invalid overlap"
 msgstr "E pavlefshme"
 
-#: bse/bseenums.c:153
+#: bse/bseenums.cc:153
 #, fuzzy
 msgid "Invalid synthesis module connection"
 msgstr "E pavlefshme lloji"
 
-#: bse/bseenums.c:157
+#: bse/bseenums.cc:157
 #, fuzzy
 msgid "Invalid synthsis module type"
 msgstr "E pavlefshme lloji"
@@ -3781,7 +3867,7 @@ msgid ""
 "Invert the state of sustain (damper) pedal so on/off meanings are reversed"
 msgstr ""
 
-#: bse/bseenums.c:107
+#: bse/bseenums.cc:107
 #, fuzzy
 msgid "Is a directory"
 msgstr "Zgjidh Directory"
@@ -3863,7 +3949,7 @@ msgstr "E fundit ora"
 msgid "Latency [ms]"
 msgstr "ms"
 
-#: birnet/birnetutils.cc:1195
+#: birnet/birnetutils.cc:1198
 msgid "Launch Web Browser"
 msgstr ""
 
@@ -3877,12 +3963,12 @@ msgstr "Planimetria:"
 msgid "Left"
 msgstr "Majtas"
 
-#: bse/bseinstrumentoutput.c:118
+#: bse/bseinstrumentoutput.cc:132
 #, fuzzy
 msgid "Left Audio"
 msgstr "Audio"
 
-#: bse/bsebus.c:907 bse/bsepcmoutput.c:127 plugins/freeverb/bsefreeverb.c:121
+#: bse/bsebus.cc:908 bse/bsepcmoutput.c:127 plugins/freeverb/bsefreeverb.c:121
 #, fuzzy
 msgid "Left Audio In"
 msgstr "Majtas Zëri Zmadho"
@@ -3892,7 +3978,7 @@ msgstr "Majtas Zëri Zmadho"
 msgid "Left Audio Input"
 msgstr "Majtas Zëri Input"
 
-#: bse/bsebus.c:911 bse/bsepcminput.c:127 plugins/freeverb/bsefreeverb.c:123
+#: bse/bsebus.cc:912 bse/bsepcminput.c:127 plugins/freeverb/bsefreeverb.c:123
 #, fuzzy
 msgid "Left Audio Out"
 msgstr "Majtas Zëri Zvogëlo"
@@ -3902,7 +3988,7 @@ msgstr "Majtas Zëri Zvogëlo"
 msgid "Left Audio Output"
 msgstr "Majtas Zëri Rezultati"
 
-#: bse/bseinstrumentoutput.c:118
+#: bse/bseinstrumentoutput.cc:132
 #, fuzzy
 msgid "Left Channel Output"
 msgstr "Majtas Kanali Rezultati"
@@ -3928,7 +4014,7 @@ msgstr "Majtas Zvogëlo"
 msgid "Left Output"
 msgstr "Majtas Rezultati"
 
-#: bse/bsebus.c:880
+#: bse/bsebus.cc:881
 #, fuzzy
 msgid "Left Volume"
 msgstr "Majtas Volumi"
@@ -3938,12 +4024,12 @@ msgstr "Majtas Volumi"
 msgid "Left audio output"
 msgstr "Majtas"
 
-#: bse/bsebus.c:907 bse/bsepcmoutput.c:127
+#: bse/bsebus.cc:908 bse/bsepcmoutput.c:127
 #, fuzzy
 msgid "Left channel input"
 msgstr "Majtas"
 
-#: bse/bsebus.c:911 bse/bsepcminput.c:127
+#: bse/bsebus.cc:912 bse/bsepcminput.c:127
 #, fuzzy
 msgid "Left channel output"
 msgstr "Majtas"
@@ -3966,7 +4052,7 @@ msgstr ""
 msgid "License"
 msgstr "Liçenca"
 
-#: bse/bseautodoc.c:363 bse/bseautodoc.c:437
+#: bse/bseautodoc.cc:363 bse/bseautodoc.cc:437
 msgid "License:"
 msgstr "Liçenca:"
 
@@ -3990,7 +4076,7 @@ msgstr "Lidhje Pjesa"
 msgid "Link or move parts (mouse button 1 and 2)"
 msgstr "Lidhje dhe"
 
-#: bse/bsebus.c:145
+#: bse/bsebus.cc:146
 #, fuzzy
 msgid "List of available mixer busses to be used as bus output"
 msgstr "Lista nga"
@@ -4020,7 +4106,7 @@ msgstr "Lista nga a"
 msgid "List of available synthesis networks to choose a track instrument from"
 msgstr "Lista nga a"
 
-#: bse/bsebus.c:134
+#: bse/bsebus.cc:135
 #, fuzzy
 msgid "List of available synthesis signals to be used as bus input"
 msgstr "Lista nga"
@@ -4130,7 +4216,7 @@ msgid "Location"
 msgstr "Vendodhja"
 
 #. change default
-#. override parent property
+#. override parent property: 0
 #: bse/bsesong.c:784 bse/bsesong.c:788 bse/bsesong.c:793 bse/bsesong.c:798
 msgid "Looping"
 msgstr ""
@@ -4187,22 +4273,22 @@ msgstr "MIDI Kanali"
 msgid "MIDI Instrument"
 msgstr "MIDI"
 
-#: bse/bsemidicontroller.c:136
+#: bse/bsemidicontroller.cc:137
 #, fuzzy
 msgid "MIDI Signal 1"
 msgstr "MIDI Sinjali 1"
 
-#: bse/bsemidicontroller.c:138
+#: bse/bsemidicontroller.cc:139
 #, fuzzy
 msgid "MIDI Signal 2"
 msgstr "MIDI Sinjali 2"
 
-#: bse/bsemidicontroller.c:140
+#: bse/bsemidicontroller.cc:141
 #, fuzzy
 msgid "MIDI Signal 3"
 msgstr "MIDI Sinjali 3"
 
-#: bse/bsemidicontroller.c:142
+#: bse/bsemidicontroller.cc:143
 #, fuzzy
 msgid "MIDI Signal 4"
 msgstr "MIDI Sinjali 4"
@@ -4236,7 +4322,7 @@ msgstr ""
 msgid "Master"
 msgstr "Master"
 
-#: bse/bsebus.c:904
+#: bse/bsebus.cc:905
 #, fuzzy
 msgid "Master Output"
 msgstr "Rezultati"
@@ -4366,7 +4452,7 @@ msgstr "Kontrolli i volumit"
 msgid "Mixer busses connected to track output"
 msgstr ""
 
-#: bse/bsebus.c:899
+#: bse/bsebus.cc:900
 msgid "Mixer busses used as output for synthesis signals"
 msgstr ""
 
@@ -4387,8 +4473,8 @@ msgstr "\"Mnemonic widget\""
 msgid "Mod In"
 msgstr "Zmadho"
 
-#: bse/bsebiquadfilter.c:162 bse/bsebiquadfilter.c:168
-#: bse/bsebiquadfilter.c:174 bse/bsebiquadfilter.c:180
+#: bse/bsebiquadfilter.cc:162 bse/bsebiquadfilter.cc:168
+#: bse/bsebiquadfilter.cc:174 bse/bsebiquadfilter.cc:180
 #: bse/bsestandardosc.c:162 bse/bsestandardosc.c:167 bse/bsestandardosc.c:172
 #: bse/bsestandardosc.c:177 bse/bsewaveosc.c:569 bse/bsewaveosc.c:575
 #: bse/bsewaveosc.c:581
@@ -4542,12 +4628,12 @@ msgstr "Muzikë"
 msgid "Musical Tuning"
 msgstr ""
 
-#: bse/bsebus.c:874
+#: bse/bsebus.cc:875
 #, fuzzy
 msgid "Mute"
 msgstr "Pa zë"
 
-#: bse/bsebus.c:874
+#: bse/bsebus.cc:875
 #, fuzzy
 msgid "Mute: turn off the bus volume"
 msgstr "Pa zë volumi"
@@ -4647,13 +4733,13 @@ msgstr ""
 msgid "No available audio device was found."
 msgstr ""
 
-#: bse/bseenums.c:120
+#: bse/bseenums.cc:120
 #, fuzzy
 msgid "No data available"
 msgstr "Jo periferik"
 
 #. Device errors
-#: bse/bseenums.c:136
+#: bse/bseenums.cc:136
 #, fuzzy
 msgid "No device (driver) available"
 msgstr "Jo periferik"
@@ -4668,53 +4754,53 @@ msgstr "Jo"
 msgid "No quantization selected"
 msgstr "Jo"
 
-#: bse/bseenums.c:115
+#: bse/bseenums.cc:115
 msgid "No space left on device"
 msgstr ""
 
 #. various procedure errors
-#: bse/bseenums.c:165
+#: bse/bseenums.cc:165
 #, fuzzy
 msgid "No such entry"
 msgstr "Jo"
 
-#: bse/bseenums.c:166
+#: bse/bseenums.cc:166
 #, fuzzy
 msgid "No such event"
 msgstr "Jo"
 
-#: bse/bseenums.c:106
+#: bse/bseenums.cc:106
 msgid "No such file, device or directory"
 msgstr ""
 
-#: bse/bseenums.c:147
+#: bse/bseenums.cc:147
 #, fuzzy
 msgid "No such input channel"
 msgstr "Jo"
 
-#: bse/bseenums.c:148
+#: bse/bseenums.cc:148
 #, fuzzy
 msgid "No such output channel"
 msgstr "Jo"
 
 #. BseProcedure errors
-#: bse/bseenums.c:159
+#: bse/bseenums.cc:159
 #, fuzzy
 msgid "No such procedure"
 msgstr "Jo"
 
 #. BseSource errors
-#: bse/bseenums.c:146
+#: bse/bseenums.cc:146
 #, fuzzy
 msgid "No such synthesis module"
 msgstr "Jo"
 
-#: bse/bseenums.c:128
+#: bse/bseenums.cc:128
 #, fuzzy
 msgid "No such wave"
 msgstr "Jo"
 
-#: birnet/birnetutils.cc:1197
+#: birnet/birnetutils.cc:1200
 #, c-format
 msgid ""
 "No suitable web browser executable could be found to be executed and to "
@@ -4725,7 +4811,7 @@ msgstr ""
 #: beast-gtk/bsteventrollctrl.c:656 beast-gtk/bstpianorollctrl.c:579
 #: beast-gtk/bstpianorollctrl.c:689 beast-gtk/bstpianorollctrl.c:752
 #: beast-gtk/bsttrackrollctrl.c:479 beast-gtk/bsttrackrollctrl.c:499
-#: beast-gtk/bsttrackrollctrl.c:571 bse/bseenums.c:167
+#: beast-gtk/bsttrackrollctrl.c:571 bse/bseenums.cc:167
 #, fuzzy
 msgid "No target"
 msgstr "Jo"
@@ -4774,7 +4860,7 @@ msgstr ""
 msgid "None"
 msgstr "Asnjë"
 
-#: bse/bsebiquadfilter.c:155
+#: bse/bsebiquadfilter.cc:155
 #, fuzzy
 msgid "Norm Type"
 msgstr "Lloji"
@@ -4794,10 +4880,10 @@ msgid ""
 "script to catch the events currently being played back."
 msgstr ""
 
-#: bse/bsebiquadfilter.c:141 bse/bseconstant.c:127 bse/bsestandardosc.c:149
+#: bse/bsebiquadfilter.cc:141 bse/bseconstant.cc:127 bse/bsestandardosc.c:149
 #: plugins/bseiirfilter.c:146 plugins/bseiirfilter.c:157
-#: plugins/davcanyondelay.c:114 plugins/davorgan.c:113 plugins/davsyndrum.c:94
-#: plugins/davxtalstrings.c:109
+#: plugins/davcanyondelay.c:114 plugins/davorgan.idl:34
+#: plugins/davsyndrum.c:94 plugins/davxtalstrings.c:109
 msgid "Note"
 msgstr "Shënim"
 
@@ -4816,7 +4902,7 @@ msgstr "Shënim"
 msgid "Note Fine Tune"
 msgstr "Frekuenca"
 
-#: bse/bseinstrumentinput.c:118 bse/bsemidiinput.c:108
+#: bse/bseinstrumentinput.cc:132 bse/bsemidiinput.cc:108
 #, fuzzy
 msgid "Note Frequency"
 msgstr "Frekuenca"
@@ -4852,7 +4938,7 @@ msgstr "Shënim Gjatësia"
 msgid "Note decay is the 'half-life' of the note's decay in seconds"
 msgstr ""
 
-#: bse/bseladspamodule.c:196
+#: bse/bseladspamodule.cc:196
 msgid ""
 "Note values are converted to Hertz according to the current musical tuning"
 msgstr ""
@@ -4881,11 +4967,11 @@ msgstr "Numri nga Kollonat"
 msgid "Number of Rows"
 msgstr "Numri nga Rreshtat"
 
-#: bse/bseautodoc.c:335
+#: bse/bseautodoc.cc:335
 msgid "Number of elements (C specific)"
 msgstr ""
 
-#: bse/bsebiquadfilter.c:177 bse/bsestandardosc.c:174 bse/bsewaveosc.c:584
+#: bse/bsebiquadfilter.cc:177 bse/bsestandardosc.c:174 bse/bsewaveosc.c:584
 #, fuzzy
 msgid "Number of octaves to be affected by exponential frequency modulation"
 msgstr "Numri nga nga"
@@ -4936,7 +5022,7 @@ msgid "Open Project"
 msgstr "Hap Projekti"
 
 #. TRANSLATORS: keep this text to 70 chars in width
-#: bse/bsemididevice-oss.c:266
+#: bse/bsemididevice-oss.cc:266
 msgid ""
 "Open Sound System MIDI driver:\n"
 "  DEVICE - MIDI device file name.\n"
@@ -4958,7 +5044,7 @@ msgstr ""
 msgid "Open existing project"
 msgstr "Hap një projekt ekzistues"
 
-#: bse/bseenums.c:108
+#: bse/bseenums.cc:108
 msgid "Open failed"
 msgstr ""
 
@@ -4981,20 +5067,20 @@ msgstr "Renditja"
 msgid "Order of Filter"
 msgstr "Renditja nga Filtri"
 
-#: plugins/davorgan.c:149
-#, fuzzy
-msgid "Organ Output"
-msgstr "Rezultati"
-
-#: plugins/davorgan.c:114
+#: plugins/davorgan.idl:34
 msgid ""
 "Organ frequency as note, converted to Hertz according to the current musical "
 "tuning"
 msgstr ""
 
-#: plugins/davorgan.c:108
+#: plugins/davorgan.idl:32
 msgid "Organ frequency in Hertz, i.e. the pitch of the base tone"
 msgstr ""
+
+#: plugins/davorgan.idl:30
+#, fuzzy
+msgid "Organ output"
+msgstr "Rezultati"
 
 #: beast-gtk/bstdbmeter.c:766 beast-gtk/bstdbmeter.c:1061
 #: beast-gtk/bstdbmeter.c:1561
@@ -5044,7 +5130,7 @@ msgstr ""
 msgid "Oscillator wave form"
 msgstr ""
 
-#: bse/bseenums.c:116
+#: bse/bseenums.cc:116
 msgid "Out of memory"
 msgstr ""
 
@@ -5078,7 +5164,7 @@ msgstr "Rezultati Porta"
 msgid "Output Signal Monitor"
 msgstr "Audio"
 
-#: bse/bsebus.c:898 bse/bsetrack.c:1039
+#: bse/bsebus.cc:899 bse/bsetrack.c:1039
 #, fuzzy
 msgid "Output Signals"
 msgstr "Audio"
@@ -5109,7 +5195,7 @@ msgstr "Rezultati"
 msgid "Outputs"
 msgstr "Rezultati"
 
-#: bse/bseenums.c:168
+#: bse/bseenums.cc:168
 msgid "Ownership mismatch"
 msgstr ""
 
@@ -5169,12 +5255,12 @@ msgstr "Ngjite"
 msgid "Parasite Paths"
 msgstr "Shtigjet"
 
-#: bse/bseenums.c:154
+#: bse/bseenums.cc:154
 #, fuzzy
 msgid "Parent mismatch"
 msgstr "Prindi"
 
-#: bse/bseenums.c:133
+#: bse/bseenums.cc:133
 #, fuzzy
 msgid "Parsing error"
 msgstr "gabim"
@@ -5243,7 +5329,7 @@ msgstr "Përqindja nga CPU"
 msgid "Percentage of background image pixel to blend over background color."
 msgstr "Përqindja nga figurë."
 
-#: bse/bsebiquadfilter.c:171 bse/bsestandardosc.c:169 bse/bsewaveosc.c:578
+#: bse/bsebiquadfilter.cc:171 bse/bsestandardosc.c:169 bse/bsewaveosc.c:578
 #, fuzzy
 msgid "Perform exponential frequency modulation instead of linear"
 msgstr "nga"
@@ -5357,7 +5443,7 @@ msgstr "Proçesori"
 msgid "Preferences"
 msgstr "Preferimet"
 
-#: bse/bseenums.c:104
+#: bse/bseenums.cc:104
 msgid "Premature EOF"
 msgstr ""
 
@@ -5382,20 +5468,20 @@ msgstr "Shfletuesi"
 msgid "Procedure _Browser"
 msgstr "Shfletuesi"
 
-#: bse/bseenums.c:160
+#: bse/bseenums.cc:160
 msgid "Procedure currently busy"
 msgstr ""
 
-#: bse/bseenums.c:163
+#: bse/bseenums.cc:163
 msgid "Procedure execution aborted"
 msgstr ""
 
-#: bse/bseenums.c:162
+#: bse/bseenums.cc:162
 msgid "Procedure execution failed"
 msgstr ""
 
 #. recursion
-#: bse/bseenums.c:161
+#: bse/bseenums.cc:161
 #, fuzzy
 msgid "Procedure parameter invalid"
 msgstr "I pavlefshëm"
@@ -5655,7 +5741,7 @@ msgstr "Përpjestim"
 msgid "Raise the currently selected key binding, relative to its neighbours"
 msgstr "Përpjestim"
 
-#: bse/bseautodoc.c:185 bse/bseautodoc.c:191
+#: bse/bseautodoc.cc:185 bse/bseautodoc.cc:191
 msgid "Range:"
 msgstr ""
 
@@ -5669,7 +5755,7 @@ msgstr "Përpjestim"
 msgid "Ratio [x:1]"
 msgstr "Përpjestim"
 
-#: bse/bseenums.c:110
+#: bse/bseenums.cc:110
 msgid "Read failed"
 msgstr ""
 
@@ -5706,6 +5792,10 @@ msgstr "Rikthe veprimin e fundit të anulluar"
 #, fuzzy
 msgid "Redo the last undone editing step"
 msgstr "Përsërite e fundit"
+
+#: plugins/davorgan.idl:51
+msgid "Reed Sounds"
+msgstr ""
 
 #: plugins/davcanyondelay.c:109
 msgid "Reflection cutoff frequency"
@@ -5798,7 +5888,7 @@ msgstr "Përsërit"
 msgid "Report a Beast Bug..."
 msgstr ""
 
-#: bse/bseenums.c:125
+#: bse/bseenums.cc:125
 msgid "Requested data values unmatched"
 msgstr ""
 
@@ -5865,12 +5955,12 @@ msgstr ""
 msgid "Right"
 msgstr "Djathtas"
 
-#: bse/bseinstrumentoutput.c:120
+#: bse/bseinstrumentoutput.cc:134
 #, fuzzy
 msgid "Right Audio"
 msgstr "Djathtas"
 
-#: bse/bsebus.c:909 bse/bsepcmoutput.c:129 plugins/freeverb/bsefreeverb.c:122
+#: bse/bsebus.cc:910 bse/bsepcmoutput.c:129 plugins/freeverb/bsefreeverb.c:122
 #, fuzzy
 msgid "Right Audio In"
 msgstr "Djathtas Zëri Zmadho"
@@ -5880,7 +5970,7 @@ msgstr "Djathtas Zëri Zmadho"
 msgid "Right Audio Input"
 msgstr "Djathtas Zëri Input"
 
-#: bse/bsebus.c:913 bse/bsepcminput.c:129 plugins/freeverb/bsefreeverb.c:124
+#: bse/bsebus.cc:914 bse/bsepcminput.c:129 plugins/freeverb/bsefreeverb.c:124
 #, fuzzy
 msgid "Right Audio Out"
 msgstr "Djathtas Zëri Zvogëlo"
@@ -5890,7 +5980,7 @@ msgstr "Djathtas Zëri Zvogëlo"
 msgid "Right Audio Output"
 msgstr "Djathtas Zëri Rezultati"
 
-#: bse/bseinstrumentoutput.c:120
+#: bse/bseinstrumentoutput.cc:134
 #, fuzzy
 msgid "Right Channel Output"
 msgstr "Djathtas Kanali Rezultati"
@@ -5916,7 +6006,7 @@ msgstr "Djathtas Zvogëlo"
 msgid "Right Output"
 msgstr "Djathtas Rezultati"
 
-#: bse/bsebus.c:884
+#: bse/bsebus.cc:885
 #, fuzzy
 msgid "Right Volume"
 msgstr "Djathtas Volumi"
@@ -5931,12 +6021,12 @@ msgstr "Djathtas"
 msgid "Right channel Input"
 msgstr "Djathtas Input"
 
-#: bse/bsebus.c:909
+#: bse/bsebus.cc:910
 #, fuzzy
 msgid "Right channel input"
 msgstr "Input"
 
-#: bse/bsebus.c:913 bse/bsepcminput.c:129
+#: bse/bsebus.cc:914 bse/bsepcminput.c:129
 #, fuzzy
 msgid "Right channel output"
 msgstr "Djathtas"
@@ -6182,7 +6272,7 @@ msgstr "Sekonda kontrolli"
 msgid "Second filter cutoff frequency"
 msgstr "Në qendër Frekuenca"
 
-#: bse/bseenums.c:109
+#: bse/bseenums.cc:109
 #, fuzzy
 msgid "Seek failed"
 msgstr "Zgjidh file"
@@ -6365,7 +6455,7 @@ msgstr "Alarm informacione MIDI periferik"
 msgid "Show messages about empty part range"
 msgstr "Alarm informacione MIDI periferik"
 
-#: birnet/birnetutils.cc:1198
+#: birnet/birnetutils.cc:1201
 #, fuzzy
 msgid "Show messages about web browser launch problems"
 msgstr "Alarm informacione MIDI periferik"
@@ -6394,12 +6484,12 @@ msgstr "Tkurr"
 msgid "Signal In"
 msgstr "Sinjali Zmadho"
 
-#: bse/bsebus.c:887
+#: bse/bsebus.cc:888
 #, fuzzy
 msgid "Signal Inputs"
 msgstr "Input"
 
-#: bse/bsebus.c:896 bse/bsetrack.c:1037
+#: bse/bsebus.cc:897 bse/bsetrack.c:1037
 #, fuzzy
 msgid "Signal Outputs"
 msgstr "Input"
@@ -6483,11 +6573,11 @@ msgstr ""
 msgid "Sole Output"
 msgstr "Rezultati"
 
-#: bse/bsebus.c:876
+#: bse/bsebus.cc:877
 msgid "Solo"
 msgstr ""
 
-#: bse/bsebus.c:876
+#: bse/bsebus.cc:877
 #, fuzzy
 msgid "Solo: mute all other busses"
 msgstr "tjetër"
@@ -6636,12 +6726,12 @@ msgstr ""
 msgid "Store references to wave files"
 msgstr ""
 
-#: bse/bsebiquadfilter.c:184
+#: bse/bsebiquadfilter.cc:184
 #, fuzzy
 msgid "Strength of gain modulation"
 msgstr "nga"
 
-#: bse/bsebiquadfilter.c:165 bse/bsestandardosc.c:164
+#: bse/bsebiquadfilter.cc:165 bse/bsestandardosc.c:164
 #, fuzzy
 msgid "Strength of linear frequency modulation"
 msgstr "nga"
@@ -6697,7 +6787,7 @@ msgstr "_Ndalo"
 msgid "SynDrum Output"
 msgstr "Rezultati"
 
-#: bse/bsebus.c:878
+#: bse/bsebus.cc:879
 #, fuzzy
 msgid "Sync"
 msgstr "Shënim"
@@ -6722,7 +6812,7 @@ msgstr "Input"
 msgid "Syncronization Output"
 msgstr "Rezultati"
 
-#: bse/bsebus.c:878
+#: bse/bsebus.cc:879
 msgid "Syncronize left and right volume"
 msgstr ""
 
@@ -6731,7 +6821,7 @@ msgstr ""
 msgid "Synth Control Frequency"
 msgstr "Frekuenca"
 
-#: bse/bseinstrumentoutput.c:124
+#: bse/bseinstrumentoutput.cc:138
 #, fuzzy
 msgid "Synth Done"
 msgstr "Sintetizuesi U plotësua"
@@ -6766,7 +6856,7 @@ msgstr "Modulët"
 msgid "Synthesis mixing frequency, common values are: 22050, 44100, 48000"
 msgstr ""
 
-#: bse/bseenums.c:156
+#: bse/bseenums.cc:156
 msgid "Synthesis module currently busy"
 msgstr ""
 
@@ -6800,7 +6890,7 @@ msgstr ""
 #. TRANSLATORS: the "tracks and busses" order in this tooltip needs
 #. * to be preserved to match the GUI order of displayed objects.
 #.
-#: bse/bsebus.c:894
+#: bse/bsebus.cc:895
 #, fuzzy
 msgid "Synthesis signals (from tracks and busses) used as bus input"
 msgstr "dhe"
@@ -6845,7 +6935,7 @@ msgid "Technical description of the multi-threaded synthesis engine innards"
 msgstr "përshkrimi nga"
 
 #. miscellaneous errors
-#: bse/bseenums.c:127
+#: bse/bseenums.cc:127
 msgid "Temporary error"
 msgstr ""
 
@@ -6954,12 +7044,12 @@ msgstr "nga"
 msgid "The feedback amount; a negative feedback inverts the signal"
 msgstr ""
 
-#: bse/bsebiquadfilter.c:127 plugins/bseiirfilter.c:119
+#: bse/bsebiquadfilter.cc:127 plugins/bseiirfilter.c:119
 #, fuzzy
 msgid "The filter design type"
 msgstr "filtro lloji"
 
-#: bse/bsebiquadfilter.c:156
+#: bse/bsebiquadfilter.cc:156
 #, fuzzy
 msgid ""
 "The filter gain normalization type (supported only by highpass and lowpass)"
@@ -7124,7 +7214,7 @@ msgstr ""
 msgid "Thirty-secondth note"
 msgstr ""
 
-#: bse/bseautodoc.c:263
+#: bse/bseautodoc.cc:263
 msgid "This procedure has multiple return values."
 msgstr ""
 
@@ -7249,11 +7339,11 @@ msgid ""
 msgstr "Kavo nga"
 
 #. out of resource conditions
-#: bse/bseenums.c:113
+#: bse/bseenums.cc:113
 msgid "Too many open files"
 msgstr ""
 
-#: bse/bseenums.c:114
+#: bse/bseenums.cc:114
 msgid "Too many open files in system"
 msgstr ""
 
@@ -7269,7 +7359,7 @@ msgstr "Pistat"
 msgid "Tracks contain instrument definitions and parts with notes"
 msgstr ""
 
-#: bse/bsestandardosc.c:154 plugins/davorgan.c:118
+#: bse/bsestandardosc.c:154 plugins/davorgan.idl:36
 #: plugins/davxtalstrings.c:114
 msgid "Transpose"
 msgstr ""
@@ -7278,7 +7368,7 @@ msgstr ""
 msgid "Transpose down starting at"
 msgstr ""
 
-#: plugins/davorgan.c:118 plugins/davxtalstrings.c:114
+#: plugins/davorgan.idl:36 plugins/davxtalstrings.c:114
 msgid "Transposition of the frequency in semitones"
 msgstr ""
 
@@ -7388,7 +7478,7 @@ msgstr "Anullo e fundit"
 msgid "Undo the effect of the last action"
 msgstr "Anullo nga e fundit akcion"
 
-#: bse/bsebiquadfilter.c:188
+#: bse/bsebiquadfilter.cc:188
 #, fuzzy
 msgid "Unfiltered Audio Signal"
 msgstr "Zëri Sinjali"
@@ -7402,11 +7492,11 @@ msgstr "Input"
 msgid "Unique name of this object"
 msgstr ""
 
-#: bse/bseenums.c:98
+#: bse/bseenums.cc:98
 msgid "Unknown error"
 msgstr ""
 
-#: bse/bseenums.c:124
+#: bse/bseenums.cc:124
 msgid "Unknown format"
 msgstr ""
 
@@ -7425,7 +7515,7 @@ msgstr "Fut"
 msgid "Unspecified length"
 msgstr "E papërcaktuar"
 
-#: bse/bseinstrumentoutput.c:122
+#: bse/bseinstrumentoutput.cc:136
 #, fuzzy
 msgid "Unused"
 msgstr "Anullo"
@@ -7475,12 +7565,12 @@ msgstr ""
 msgid "VZoom"
 msgstr ""
 
-#: bse/bseconstant.c:108
+#: bse/bseconstant.cc:108
 #, fuzzy
 msgid "Value [float]"
 msgstr "Vlera"
 
-#: bse/bseinstrumentinput.c:122 bse/bsemidiinput.c:112
+#: bse/bseinstrumentinput.cc:136 bse/bsemidiinput.cc:112
 msgid "Velocity"
 msgstr "Shpejtësia"
 
@@ -7489,7 +7579,7 @@ msgstr "Shpejtësia"
 msgid "Velocity Out"
 msgstr "Shpejtësia Zvogëlo"
 
-#: bse/bseinstrumentinput.c:122 bse/bsemidiinput.c:112
+#: bse/bseinstrumentinput.cc:136 bse/bsemidiinput.cc:112
 #, fuzzy
 msgid "Velocity of the note press"
 msgstr "Shpejtësia nga"
@@ -7499,7 +7589,7 @@ msgstr "Shpejtësia nga"
 msgid "Velocity of the string pluck"
 msgstr "Shpejtësia nga"
 
-#: bse/bseinstrumentinput.c:124 bse/bsemidiinput.c:114
+#: bse/bseinstrumentinput.cc:138 bse/bsemidiinput.cc:114
 #, fuzzy
 msgid "Velocity while the note is pressed"
 msgstr "Shpejtësia është"
@@ -7566,12 +7656,12 @@ msgstr "Virtual"
 msgid "Volume"
 msgstr "Bazë Volumi"
 
-#: bse/bsebus.c:880
+#: bse/bsebus.cc:881
 #, fuzzy
 msgid "Volume adjustment in decibel of left bus channel"
 msgstr "Volumi nga majtas"
 
-#: bse/bsebus.c:884
+#: bse/bsebus.cc:885
 #, fuzzy
 msgid "Volume adjustment in decibel of right bus channel"
 msgstr "Volumi nga djathtas"
@@ -7657,7 +7747,7 @@ msgstr ""
 msgid "Window Size"
 msgstr "Madhësia e gërmave"
 
-#: bse/bseenums.c:111
+#: bse/bseenums.cc:111
 #, fuzzy
 msgid "Write failed"
 msgstr "filtro"
@@ -7672,7 +7762,7 @@ msgstr "Shkrim a"
 msgid "Write project to disk"
 msgstr "Shkrim disk"
 
-#: bse/bseenums.c:122
+#: bse/bseenums.cc:122
 #, fuzzy
 msgid "Wrong number of channels"
 msgstr "Dështoi periferik"
@@ -7975,7 +8065,7 @@ msgstr "_Shfaq"
 msgid "_Virtualization"
 msgstr ""
 
-#: bse/bsejanitor.c:537
+#: bse/bsejanitor.cc:537
 msgid "connection terminated"
 msgstr ""
 
@@ -8208,7 +8298,7 @@ msgstr ""
 msgid "failed to add wave chunk from file \"%s\": %s"
 msgstr "hap"
 
-#: bse/bsejanitor.c:535
+#: bse/bsejanitor.cc:535
 msgid "killed by janitor"
 msgstr ""
 

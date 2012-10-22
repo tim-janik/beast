@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast-it\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-04-08 10:51+0200\n"
+"POT-Creation-Date: 2012-10-22 18:16+0200\n"
 "PO-Revision-Date: 2008-01-20 01:11+0100\n"
 "Last-Translator: Michele Petrecca <michelinux@alice.it>\n"
 "Language-Team: Italiano <it@li.org>\n"
@@ -88,7 +88,7 @@ msgstr "  seleziona diversi tipi di eventi (controlli, ecc)"
 msgid "  selects one of 3 predefined colors"
 msgstr "  seleziona uno dei tre colori predefiniti"
 
-#: bse/bsejanitor.c:539
+#: bse/bsejanitor.cc:539
 #, c-format
 msgid "%s (core dumped)"
 msgstr "%s (core dumped)"
@@ -126,6 +126,11 @@ msgstr "..."
 msgid "/Audio Sources/Noise"
 msgstr "/Audio Sorgenti/Rumore"
 
+#: plugins/davorgan.idl:27
+#, fuzzy
+msgid "/Audio Sources/Organ"
+msgstr "Sorgenti _Audio"
+
 #: bse/bsestandardosc.c:110
 msgid "/Audio Sources/Standard Oscillator"
 msgstr "/Audio Sorgenti/Oscillatore Standard"
@@ -146,23 +151,23 @@ msgstr "/Incrementa/Chorus"
 msgid "/Filters/Bass Filter"
 msgstr "/Filtri/Filtro Basso"
 
-#: bse/bsebiquadfilter.c:106
+#: bse/bsebiquadfilter.cc:106
 msgid "/Filters/Biquad Types"
 msgstr ""
 
-#: bse/bseinstrumentoutput.c:150
+#: bse/bseinstrumentoutput.cc:164
 msgid "/Input & Output/Instrument Output"
 msgstr "/Ingresso & Uscita/Uscita Strumento"
 
-#: bse/bseinstrumentinput.c:150
+#: bse/bseinstrumentinput.cc:164
 msgid "/Input & Output/Instrument Voice Input"
 msgstr "/Ingresso & Uscita/Ingresso Strumento Voce"
 
-#: bse/bsemidicontroller.c:85
+#: bse/bsemidicontroller.cc:86
 msgid "/Input & Output/MIDI Control Input"
 msgstr "/Ingresso & Uscita/Ingresso Controllo MIDI"
 
-#: bse/bsemidiinput.c:81
+#: bse/bsemidiinput.cc:81
 msgid "/Input & Output/MIDI Voice Input"
 msgstr "/Ingresso & Uscita/Ingresso Voce MIDI"
 
@@ -182,7 +187,7 @@ msgstr ""
 msgid "/Misc/StandardGusPatchEnvelope"
 msgstr ""
 
-#: bse/bseconstant.c:83
+#: bse/bseconstant.cc:83
 msgid "/Other Sources/Constant"
 msgstr "/Altre Sorgenti/Costante"
 
@@ -369,6 +374,14 @@ msgstr "Finestra con 16 valori FFT"
 msgid "16384 Value FFT Window"
 msgstr "Finestra con 16384 valori FFT"
 
+#: plugins/davorgan.idl:42
+msgid "16th"
+msgstr ""
+
+#: plugins/davorgan.idl:42
+msgid "16th Harmonic"
+msgstr ""
+
 #: beast-gtk/bstpianorollctrl.c:98
 msgid "1\\/1"
 msgstr "1\\/1"
@@ -409,6 +422,14 @@ msgstr "2"
 msgid "2 & 4"
 msgstr "2 & 4"
 
+#: plugins/davorgan.idl:46
+msgid "2 2/3rd"
+msgstr ""
+
+#: plugins/davorgan.idl:46
+msgid "2 2/3rd Harmonic"
+msgstr ""
+
 #: beast-gtk/bstrecords.idl:41
 msgid "2 Value FFT Window"
 msgstr "Finestra con 2 valori FFT"
@@ -420,6 +441,14 @@ msgstr "Finestra con 2048 valori FFT"
 #: beast-gtk/bstrecords.idl:48
 msgid "256 Value FFT Window"
 msgstr "Finestra con 256 valori FFT"
+
+#: plugins/davorgan.idl:47
+msgid "2nd"
+msgstr ""
+
+#: plugins/davorgan.idl:47
+msgid "2nd Harmonic"
+msgstr ""
 
 #: beast-gtk/bstrecords.idl:98
 msgid "3"
@@ -465,6 +494,22 @@ msgstr "Finestra con 4 valori FFT"
 msgid "4096 Value FFT Window"
 msgstr "Finestra con 4096 valori FFT"
 
+#: plugins/davorgan.idl:45
+msgid "4th"
+msgstr ""
+
+#: plugins/davorgan.idl:45
+msgid "4th Harmonic"
+msgstr ""
+
+#: plugins/davorgan.idl:44
+msgid "5 1/3rd"
+msgstr ""
+
+#: plugins/davorgan.idl:44
+msgid "5 1/3rd Harmonic"
+msgstr ""
+
 #: bse/bsecore.idl:80
 msgid "5 Tone Equal Temperament"
 msgstr ""
@@ -508,6 +553,14 @@ msgstr "Finestra con 8 valori FFT"
 #: beast-gtk/bstrecords.idl:53
 msgid "8192 Value FFT Window"
 msgstr "Finestra con 8192 valori FFT"
+
+#: plugins/davorgan.idl:43
+msgid "8th"
+msgstr ""
+
+#: plugins/davorgan.idl:43
+msgid "8th Harmonic"
+msgstr ""
 
 #: beast-gtk/bstrecords.idl:50
 msgid ""
@@ -726,6 +779,14 @@ msgstr "Aggiungi una nuova traccia a questa canzone"
 msgid "Add directory to searchpath"
 msgstr "Aggiungi directory dal percorso di ricerca"
 
+#: plugins/davorgan.idl:52
+msgid "Add flute sounds"
+msgstr ""
+
+#: plugins/davorgan.idl:51
+msgid "Add reeds sound"
+msgstr ""
+
 #: beast-gtk/bstsupershell.c:217
 #, fuzzy
 msgid "Add, edit and connect synthesizer mesh components"
@@ -802,8 +863,8 @@ msgstr "Regola il fattore di ingrandimento della finestra d'instradamento"
 msgid "Adjust whether to draw dB values instead of lines"
 msgstr "Imposta se visualizzare il valore in dB invece che lineare"
 
-#: bse/bsebus.c:873 bse/bsebus.c:875 bse/bsebus.c:877 bse/bsebus.c:879
-#: bse/bsebus.c:883 bse/bsemidisynth.c:461 bse/bsemidisynth.c:467
+#: bse/bsebus.cc:874 bse/bsebus.cc:876 bse/bsebus.cc:878 bse/bsebus.cc:880
+#: bse/bsebus.cc:884 bse/bsemidisynth.c:461 bse/bsemidisynth.c:467
 #: bse/bsemidisynth.c:474 bse/bsetrack.c:1008
 msgid "Adjustments"
 msgstr "Regolazioni"
@@ -872,7 +933,7 @@ msgstr ""
 "  DEV    - il numero del dispositivo per plugin come 'hw'\n"
 "  SUBDEV - il numero del 'sotto-dispositivo' pre plugin come 'hw'\n"
 
-#: bse/bseinstrumentinput.c:124 bse/bsemidiinput.c:114
+#: bse/bseinstrumentinput.cc:138 bse/bsemidiinput.cc:114
 msgid "Aftertouch"
 msgstr ""
 
@@ -905,7 +966,7 @@ msgstr "Tutto"
 msgid "Always"
 msgstr "Sempre"
 
-#: bse/bsestandardosc.c:159 plugins/davorgan.c:123
+#: bse/bsestandardosc.c:159 plugins/davorgan.idl:38
 #: plugins/davxtalstrings.c:119
 msgid "Amount of detuning in cent (hundredth part of a semitone)"
 msgstr "Ammontare, in centesimi, del detuning (centesima parte di un semitono)"
@@ -1060,7 +1121,7 @@ msgstr "Audio"
 msgid "Audio Gate"
 msgstr "Uscita Audio"
 
-#: bse/bsebiquadfilter.c:188 plugins/bseatandistort.c:88
+#: bse/bsebiquadfilter.cc:188 plugins/bseatandistort.c:88
 #: plugins/bsecontribsampleandhold.idl:26 plugins/bseiirfilter.c:162
 #: plugins/davbassfilter.idl:31 plugins/davchorus.idl:28
 #: plugins/standardguspatchenvelope.idl:45
@@ -1121,12 +1182,12 @@ msgstr "Segnale Audio d'Ingresso"
 msgid "Audio Input of the WaveOsc playing the patch"
 msgstr ""
 
-#: bse/bsebiquadfilter.c:196 bse/bsestandardosc.c:205 bse/bsewaveosc.c:599
+#: bse/bsebiquadfilter.cc:196 bse/bsestandardosc.c:205 bse/bsewaveosc.c:599
 #: plugins/bseadder.c:99 plugins/bseamplifier.idl:47
 #: plugins/bseatandistort.c:90 plugins/bsecontribsampleandhold.idl:28
 #: plugins/bseiirfilter.c:164 plugins/bsemixer.c:107 plugins/bsemult.c:66
 #: plugins/davbassfilter.idl:33 plugins/davchorus.idl:29
-#: plugins/davorgan.c:149 plugins/davsyndrum.c:123
+#: plugins/davorgan.idl:30 plugins/davsyndrum.c:123
 #: plugins/davxtalstrings.c:155
 msgid "Audio Out"
 msgstr "Uscita Audio"
@@ -1179,7 +1240,7 @@ msgstr "Ingresso Audio 2"
 msgid "Author"
 msgstr "Autore"
 
-#: bse/bseautodoc.c:354 bse/bseautodoc.c:428
+#: bse/bseautodoc.cc:354 bse/bseautodoc.cc:428
 msgid "Authors:"
 msgstr "Autori:"
 
@@ -1192,7 +1253,7 @@ msgid "Auto cut"
 msgstr ""
 
 #. TRANSLATORS: keep this text to 70 chars in width
-#: bse/bsedevice.c:339
+#: bse/bsedevice.cc:339
 msgid ""
 "Auto is a special driver, it acts as a placeholder for\n"
 "automatic driver selection."
@@ -1204,7 +1265,7 @@ msgid ""
 "level"
 msgstr ""
 
-#: bse/bsebus.c:134
+#: bse/bsebus.cc:135
 msgid "Available Inputs"
 msgstr "Ingressi Disponibili"
 
@@ -1213,7 +1274,7 @@ msgstr "Ingressi Disponibili"
 msgid "Available Items:"
 msgstr "Voci Disponibli:"
 
-#: bse/bsebus.c:145 bse/bsetrack.c:300
+#: bse/bsebus.cc:146 bse/bsetrack.c:300
 msgid "Available Outputs"
 msgstr "Uscite Disponibili"
 
@@ -1309,7 +1370,7 @@ msgstr "Immagine di sfondo usata dall'editor di pattern."
 msgid "Background image used by the piano-roll editor."
 msgstr "Immagine di Sfondo usata per il Piano Roll Editor"
 
-#: bse/bseenums.c:155
+#: bse/bseenums.cc:155
 msgid "Bad loopback"
 msgstr ""
 
@@ -1333,8 +1394,7 @@ msgid "Bank Select"
 msgstr "Selezione Banco"
 
 #: bse/bsestandardosc.c:142 bse/bsestandardosc.c:147 bse/bsestandardosc.c:152
-#: bse/bsestandardosc.c:157 plugins/davorgan.c:106 plugins/davorgan.c:111
-#: plugins/davorgan.c:116 plugins/davorgan.c:121
+#: bse/bsestandardosc.c:157 plugins/davorgan.idl:31
 msgid "Base Frequency"
 msgstr "Frequenza Base"
 
@@ -1366,6 +1426,10 @@ msgstr ""
 #: beast-gtk/bstscrollgraph.c:577
 msgid "Boost"
 msgstr "Boost"
+
+#: plugins/davorgan.idl:50
+msgid "Brass Sounds"
+msgstr ""
 
 #: bse/bsecore.idl:158 bse/bsecore.idl:335
 msgid "Breath Control"
@@ -1402,7 +1466,7 @@ msgstr ""
 msgid "Bus Name"
 msgstr "Nome Bus"
 
-#: bse/bsebus.c:932
+#: bse/bsebus.cc:933
 msgid ""
 "Bus implementation for songs, used to route track audio signals to the "
 "master output."
@@ -1414,7 +1478,7 @@ msgstr ""
 msgid "Busses"
 msgstr "Bus"
 
-#: bse/bseenums.c:129
+#: bse/bseenums.cc:129
 msgid "CODEC failure"
 msgstr "Errore CODEC"
 
@@ -1438,11 +1502,11 @@ msgstr "CPU%"
 msgid "Cancel"
 msgstr "Cancella"
 
-#: bse/bsebiquadfilter.c:131 bse/bsebiquadfilter.c:139
+#: bse/bsebiquadfilter.cc:131 bse/bsebiquadfilter.cc:139
 msgid "Center Frequency"
 msgstr "Frequenza Centrale"
 
-#: bse/bsebiquadfilter.c:190
+#: bse/bsebiquadfilter.cc:190
 msgid "Center Frequency Input"
 msgstr "Ingresso Frequenza Centrale"
 
@@ -1459,6 +1523,10 @@ msgid "Change the numeric focus cell contents (e.g. octave) by a given amount"
 msgstr ""
 "Cambia il contenuto numerico (ad esempio l'ottava) di una cella dove è "
 "attivo il focus."
+
+#: plugins/davorgan.idl:50
+msgid "Change the organ to sound more brassy"
+msgstr ""
 
 #: beast-gtk/bstkeybindings.c:51
 msgid "Change..."
@@ -1578,7 +1646,7 @@ msgstr "Configura"
 msgid "Configure the column layout of the pattern editor"
 msgstr "Configura l'aspetto delle colonne dell'editor di pattern"
 
-#: bse/bseconstant.c:135
+#: bse/bseconstant.cc:135
 #, c-format
 msgid "Const Out%u"
 msgstr "Costante d'Uscita%u"
@@ -1604,22 +1672,22 @@ msgstr "Costante Negativa CENTER"
 msgid "Constant Negative HIGH"
 msgstr "Costante Negativa HIGH"
 
-#: bse/bseconstant.c:105 bse/bseconstant.c:136
+#: bse/bseconstant.cc:105 bse/bseconstant.cc:136
 #, c-format
 msgid "Constant Output %u"
 msgstr "Costante d'Uscita %u"
 
-#: bse/bseconstant.c:110
+#: bse/bseconstant.cc:110
 msgid "Constant signal value"
 msgstr "Valore segnale costante"
 
-#: bse/bseconstant.c:129
+#: bse/bseconstant.cc:129
 msgid ""
 "Constant signal value as note, converted to Hertz according to the current "
 "musical tuning"
 msgstr ""
 
-#: bse/bseconstant.c:118
+#: bse/bseconstant.cc:118
 msgid "Constant signal value interpreted as frequency value in Hertz"
 msgstr ""
 "Il valore del segnale costante è interpretato come valore di frequenza in "
@@ -2093,19 +2161,19 @@ msgstr "Ctrl In2"
 msgid "Ctrl Out"
 msgstr "Ctrl Usc"
 
-#: bse/bsemidicontroller.c:136
+#: bse/bsemidicontroller.cc:137
 msgid "Ctrl Out1"
 msgstr "Ctrl Usc1"
 
-#: bse/bsemidicontroller.c:138
+#: bse/bsemidicontroller.cc:139
 msgid "Ctrl Out2"
 msgstr "Ctrl Usc2"
 
-#: bse/bsemidicontroller.c:140
+#: bse/bsemidicontroller.cc:141
 msgid "Ctrl Out3"
 msgstr "Ctrl Usc3"
 
-#: bse/bsemidicontroller.c:142
+#: bse/bsemidicontroller.cc:143
 msgid "Ctrl Out4"
 msgstr "Ctrl Usc4"
 
@@ -2130,7 +2198,7 @@ msgstr "Frequenza di Taglio 2 (Passa Banda/Stop)"
 msgid "Cutoff [%]"
 msgstr "Frequenza di Taglio (Cutoff) [%]"
 
-#: bse/bsebiquadfilter.c:133 plugins/bseiirfilter.c:141
+#: bse/bsebiquadfilter.cc:133 plugins/bseiirfilter.c:141
 #: plugins/bseiirfilter.c:152
 msgid "Cutoff [Hz]"
 msgstr "Taglio (cutoff) [Hz]"
@@ -2151,7 +2219,7 @@ msgstr "Motore DSP..."
 msgid "Data Entry"
 msgstr ""
 
-#: bse/bseenums.c:121
+#: bse/bseenums.cc:121
 msgid "Data corrupt"
 msgstr "Corruzione Dati"
 
@@ -2169,6 +2237,10 @@ msgstr ""
 #: plugins/davchorus.idl:27
 msgid "DavChorus adds more depth to sounds"
 msgstr "Il DavChorus aggiunge maggiore profondità ai suoni"
+
+#: plugins/davorgan.idl:28
+msgid "DavOrgan is a versatile additive organ synthesizer"
+msgstr ""
 
 #: plugins/davxtalstrings.c:130 plugins/davxtalstrings.c:135
 msgid "Decay"
@@ -2291,20 +2363,20 @@ msgstr "Sviluppo Plugins..."
 msgid "Development..."
 msgstr "Sviluppo..."
 
-#: bse/bseenums.c:138
+#: bse/bseenums.cc:138
 msgid "Device busy"
 msgstr "Dispositivo occupato"
 
-#: bse/bseenums.c:144
+#: bse/bseenums.cc:144
 msgid "Device configurations mismatch"
 msgstr "Disadattamento di configurazione del dispositivo"
 
-#: bse/bseenums.c:137
+#: bse/bseenums.cc:137
 msgid "Device not async capable"
 msgstr ""
 
 #. file errors
-#: bse/bseenums.c:102
+#: bse/bseenums.cc:102
 msgid "Device or resource busy"
 msgstr "Dispositivo o risorsa impegnata"
 
@@ -2366,7 +2438,7 @@ msgid "Discard changes and close dialog"
 msgstr "Annulla i cambi e chiudi la finestra"
 
 #. TRANSLATORS: keep this text to 70 chars in width
-#: bse/bsemididevice-null.c:88
+#: bse/bsemididevice-null.cc:88
 msgid ""
 "Discards all output events and generates no input events. This driver\n"
 "is not part of the automatic device selection list for MIDI devices."
@@ -2580,7 +2652,7 @@ msgstr "Percorso Effetti"
 msgid "Eighths note"
 msgstr "Nota da un Ottavo (croma)"
 
-#: bse/bsebiquadfilter.c:147 bse/bsebiquadfilter.c:153
+#: bse/bsebiquadfilter.cc:147 bse/bsebiquadfilter.cc:153
 msgid "Emphasis"
 msgstr "Enfasi"
 
@@ -2715,7 +2787,7 @@ msgstr "Ogni tre righe"
 msgid "Every twelfth row"
 msgstr "Ogni dodici righe"
 
-#: bse/bseenums.c:96
+#: bse/bseenums.cc:96
 msgid "Everything went well"
 msgstr "Qualunque cosa andava bene"
 
@@ -2745,23 +2817,23 @@ msgstr "Esporta Audio"
 msgid "Expression"
 msgstr "Espressione"
 
-#: bse/bseenums.c:140
+#: bse/bseenums.cc:140
 msgid "Failed to configure device buffer"
 msgstr "Fallita la configurazione del buffer del dispositivo"
 
-#: bse/bseenums.c:139
+#: bse/bseenums.cc:139
 msgid "Failed to configure device format"
 msgstr "Fallita la configurazione del formato del dispositivo"
 
-#: bse/bseenums.c:143
+#: bse/bseenums.cc:143
 msgid "Failed to configure device frequency"
 msgstr "Fallita la configurazione della frequenza del dispositivo"
 
-#: bse/bseenums.c:141
+#: bse/bseenums.cc:141
 msgid "Failed to configure device latency"
 msgstr "Fallita la configurazione della latenza del dispositivo"
 
-#: bse/bseenums.c:142
+#: bse/bseenums.cc:142
 msgid "Failed to configure number of device channels"
 msgstr "Fallita la configurazione del numero dei canali del dispositivo"
 
@@ -2770,7 +2842,7 @@ msgid "Failed to crop part range."
 msgstr "Taglio della parte selezionata fallito."
 
 #. content errors
-#: bse/bseenums.c:118
+#: bse/bseenums.cc:118
 msgid "Failed to detect (start of) header"
 msgstr ""
 
@@ -2783,7 +2855,7 @@ msgstr "Fallita la duplicazione della parte selezionata."
 msgid "Failed to execute script procedure '%s': %s"
 msgstr "Fallita l'esecuzione della procedura di script \"%s\": %s"
 
-#: birnet/birnetutils.cc:1196
+#: birnet/birnetutils.cc:1199
 msgid "Failed to launch a web browser executable"
 msgstr "Non è stato possibile avviare un browser WEB"
 
@@ -2835,7 +2907,7 @@ msgstr ""
 "dovuta a:\n"
 "%s"
 
-#: bse/bseenums.c:119
+#: bse/bseenums.cc:119
 msgid "Failed to retrieve seek information"
 msgstr "Fallita la ricerca sul recupero delle informazioni"
 
@@ -2868,7 +2940,7 @@ msgstr ""
 "dovuto a:\n"
 "%s"
 
-#: bse/bseenums.c:134
+#: bse/bseenums.cc:134
 msgid "Failed to spawn child process"
 msgstr ""
 
@@ -2894,11 +2966,11 @@ msgstr "Feedback [%]"
 msgid "File Selection"
 msgstr "Selezione File"
 
-#: bse/bseenums.c:105
+#: bse/bseenums.cc:105
 msgid "File empty"
 msgstr "File vuoto"
 
-#: bse/bseenums.c:103
+#: bse/bseenums.cc:103
 msgid "File exists already"
 msgstr "Il file già esiste"
 
@@ -2918,7 +2990,7 @@ msgstr "Nome del file"
 msgid "Filename Text Entry"
 msgstr "Inserisci il Testo del Nome del File"
 
-#: bse/bsebiquadfilter.c:125
+#: bse/bsebiquadfilter.cc:125
 msgid "Filter"
 msgstr "Filtro"
 
@@ -2934,7 +3006,7 @@ msgstr "Scelta Filtro"
 msgid "Filter Specification"
 msgstr "Specifiche del Filtro"
 
-#: bse/bsebiquadfilter.c:127 plugins/bseiirfilter.c:125
+#: bse/bsebiquadfilter.cc:127 plugins/bseiirfilter.c:125
 msgid "Filter Type"
 msgstr "Tipo di Filtro"
 
@@ -2942,18 +3014,18 @@ msgstr "Tipo di Filtro"
 msgid "Filter cutoff frequency"
 msgstr "Frequenza di taglio (cutoff) del filtro"
 
-#: bse/bsebiquadfilter.c:141 plugins/bseiirfilter.c:147
+#: bse/bsebiquadfilter.cc:141 plugins/bseiirfilter.c:147
 #: plugins/bseiirfilter.c:158 plugins/davcanyondelay.c:115
 msgid ""
 "Filter cutoff frequency as note, converted to Hertz according to the current "
 "musical tuning"
 msgstr ""
 
-#: bse/bsebiquadfilter.c:133
+#: bse/bsebiquadfilter.cc:133
 msgid "Filter cutoff frequency in Hertz"
 msgstr "Imposta la Frequenza di taglio (Cutoff) in Hz"
 
-#: bse/bsebiquadfilter.c:196
+#: bse/bsebiquadfilter.cc:196
 msgid "Filtered Audio Signal"
 msgstr "Segnale Audio Filtrato"
 
@@ -2981,7 +3053,7 @@ msgstr ""
 "Trova la prima traccia che contiene una sezione adatta al controllo per le "
 "parti \"orfane\"."
 
-#: bse/bsestandardosc.c:159 plugins/davorgan.c:123
+#: bse/bsestandardosc.c:159 plugins/davorgan.idl:38
 #: plugins/davxtalstrings.c:119
 msgid "Fine Tune"
 msgstr "Regolazione Puntuale"
@@ -3012,6 +3084,10 @@ msgstr ""
 msgid "Flip Spectrum display,  interchaging low and high frequencies"
 msgstr ""
 
+#: plugins/davorgan.idl:52
+msgid "Flute Sounds"
+msgstr ""
+
 #: beast-gtk/bstrecords.idl:110
 msgid "Font Size"
 msgstr "Dimensione Font"
@@ -3034,13 +3110,13 @@ msgstr "Formato"
 msgid "Free form comment or description"
 msgstr "Commento e/o descrizione libera"
 
-#: bse/bsebiquadfilter.c:190 bse/bsestandardosc.c:197 bse/bsewaveosc.c:593
-#: plugins/davorgan.c:148 plugins/davsyndrum.c:117
+#: bse/bsebiquadfilter.cc:190 bse/bsestandardosc.c:197 bse/bsewaveosc.c:593
+#: plugins/davorgan.idl:29 plugins/davsyndrum.c:117
 #: plugins/davxtalstrings.c:151
 msgid "Freq In"
 msgstr "Ingr.Freq"
 
-#: bse/bsebiquadfilter.c:192 bse/bsestandardosc.c:199
+#: bse/bsebiquadfilter.cc:192 bse/bsestandardosc.c:199
 msgid "Freq Mod In"
 msgstr "Ingr.Modul.Freq."
 
@@ -3049,22 +3125,22 @@ msgid "Freq Out"
 msgstr "Freq.Usc."
 
 #. inputs
-#: bse/bseconstant.c:116 bse/bseinstrumentinput.c:118 bse/bsemidiinput.c:108
-#: bse/bsestandardosc.c:144 plugins/davcanyondelay.c:108
-#: plugins/davorgan.c:107 plugins/davsyndrum.c:87 plugins/davsyndrum.c:88
-#: plugins/davsyndrum.c:93 plugins/davxtalstrings.c:101
-#: plugins/davxtalstrings.c:103 plugins/davxtalstrings.c:107
-#: plugins/davxtalstrings.c:112 plugins/davxtalstrings.c:117
-#: plugins/standardguspatchenvelope.idl:42
+#: bse/bseconstant.cc:116 bse/bseinstrumentinput.cc:132
+#: bse/bsemidiinput.cc:108 bse/bsestandardosc.c:144
+#: plugins/davcanyondelay.c:108 plugins/davorgan.idl:32
+#: plugins/davsyndrum.c:87 plugins/davsyndrum.c:88 plugins/davsyndrum.c:93
+#: plugins/davxtalstrings.c:101 plugins/davxtalstrings.c:103
+#: plugins/davxtalstrings.c:107 plugins/davxtalstrings.c:112
+#: plugins/davxtalstrings.c:117 plugins/standardguspatchenvelope.idl:42
 msgid "Frequency"
 msgstr "Frequenza"
 
-#: bse/bsewaveosc.c:593 plugins/davorgan.c:148
+#: bse/bsewaveosc.c:593 plugins/davorgan.idl:29
 #: plugins/standardguspatchenvelope.idl:42
 msgid "Frequency Input"
 msgstr "Frequenza d'Ingresso"
 
-#: bse/bsebiquadfilter.c:192 bse/bsestandardosc.c:199
+#: bse/bsebiquadfilter.cc:192 bse/bsestandardosc.c:199
 msgid "Frequency Modulation Input"
 msgstr "Ingresso Modulazione di Frequenza"
 
@@ -3101,7 +3177,7 @@ msgstr "Funzione"
 msgid "Function used to create new key bindings"
 msgstr "Funzione da associare alla combinazione di tasti"
 
-#: bse/bseenums.c:130
+#: bse/bseenums.cc:130
 msgid "Functionality not implemented"
 msgstr "Funzionalitï¿½ non implementata"
 
@@ -3113,28 +3189,29 @@ msgstr "Funzione da attivare tramite combinazione di tasti"
 #: plugins/bseamplifier.idl:28 plugins/bsebalance.idl:24
 #: plugins/bsecontribsampleandhold.idl:23 plugins/bsenoise.idl:25
 #: plugins/bsesummation.idl:24 plugins/davbassfilter.idl:25
-#: plugins/davchorus.idl:25 plugins/standardguspatchenvelope.idl:27
+#: plugins/davchorus.idl:25 plugins/davorgan.idl:26
+#: plugins/standardguspatchenvelope.idl:27
 msgid "GNU Lesser General Public License"
 msgstr "GNU Lesser General Public License (LGPL)"
 
-#: bse/bsebiquadfilter.c:194
+#: bse/bsebiquadfilter.cc:194
 msgid "Gain Mod In"
 msgstr "Guad.Modul.Ingr."
 
-#: bse/bsebiquadfilter.c:194
+#: bse/bsebiquadfilter.cc:194
 msgid "Gain Modulation Input"
 msgstr "Guadagno Mudulazione d'Ingresso"
 
-#: bse/bsebiquadfilter.c:183
+#: bse/bsebiquadfilter.cc:183
 #, no-c-format
 msgid "Gain Modulation [%]"
 msgstr "Guadagno Modulazione [%]"
 
-#: bse/bsebiquadfilter.c:149
+#: bse/bsebiquadfilter.cc:149
 msgid "Gain [dB]"
 msgstr "Guadagno [dB]"
 
-#: bse/bseinstrumentinput.c:120 bse/bsemidiinput.c:110
+#: bse/bseinstrumentinput.cc:134 bse/bsemidiinput.cc:110
 msgid "Gate"
 msgstr "Gate"
 
@@ -3234,6 +3311,10 @@ msgstr ""
 msgid "Hard saturation via clipping (prone to clicks)"
 msgstr ""
 
+#: plugins/davorgan.idl:41
+msgid "Harmonics"
+msgstr ""
+
 #: library/scripts/part-harmonic-transposer.scm:51
 msgid "Harmony Sequence"
 msgstr "Sequenza Armonica"
@@ -3242,11 +3323,11 @@ msgstr "Sequenza Armonica"
 msgid "Harmony list is too short"
 msgstr "La lista armonica è troppo corta"
 
-#: bse/bseinstrumentinput.c:120 bse/bsemidiinput.c:110
+#: bse/bseinstrumentinput.cc:134 bse/bsemidiinput.cc:110
 msgid "High if the note is currently being pressed"
 msgstr "Valore alto se la nota è correntemente utilizzata"
 
-#: bse/bseinstrumentoutput.c:124
+#: bse/bseinstrumentoutput.cc:138
 msgid "High indicates the instrument is done synthesizing"
 msgstr "Un valore alto indica che lo strumento è in fase di sintetizzazione."
 
@@ -3411,11 +3492,11 @@ msgid "Input Port %u"
 msgstr "Ingresso Porta %u"
 
 #. SYNC: type partitions determine the order of displayed objects
-#: bse/bsebus.c:890
+#: bse/bsebus.cc:891
 msgid "Input Signals"
 msgstr "Ingresso Segnali"
 
-#: bse/bseenums.c:151
+#: bse/bseenums.cc:151
 msgid "Input channel already in use"
 msgstr "Il canale d'ingresso è in uso"
 
@@ -3423,7 +3504,7 @@ msgstr "Il canale d'ingresso è in uso"
 msgid "Input channel in use"
 msgstr "Canale d'ingresso in uso"
 
-#: bse/bseenums.c:150
+#: bse/bseenums.cc:150
 msgid "Input channel is private"
 msgstr "Il canale d'ingresso è privato"
 
@@ -3431,15 +3512,15 @@ msgstr "Il canale d'ingresso è privato"
 msgid "Input port name to interface to"
 msgstr "Nome della porta d'ingresso da interfacciare a"
 
-#: bse/bseenums.c:152
+#: bse/bseenums.cc:152
 msgid "Input/Output channels already connected"
 msgstr "Canali Ingresso/Uscita correntemente connessi"
 
-#: bse/bseenums.c:149
+#: bse/bseenums.cc:149
 msgid "Input/Output channels not connected"
 msgstr "Canali Ingresso/Uscita non connessi"
 
-#: bse/bseenums.c:99
+#: bse/bseenums.cc:99
 msgid "Input/output error"
 msgstr "Errore Ingresso/Uscita"
 
@@ -3521,47 +3602,52 @@ msgstr "Inserisci/Ridimensiona/Sposta le note (pulsanti del mouse 1 e 2)"
 msgid "Instrument Path"
 msgstr "Percorso Strumenti"
 
-#: bse/bseenums.c:100
+#: plugins/davorgan.idl:49
+#, fuzzy
+msgid "Instrument flavour"
+msgstr "Percorso Strumenti"
+
+#: bse/bseenums.cc:100
 msgid "Insufficient permission"
 msgstr "Permessi insufficienti"
 
-#: bse/bseenums.c:97
+#: bse/bseenums.cc:97
 msgid "Internal error (please report)"
 msgstr "Errore interno (riportare il log)"
 
-#: bse/bsebus.c:902
+#: bse/bsebus.cc:903
 msgid "Internals"
 msgstr ""
 
-#: bse/bseenums.c:132
+#: bse/bseenums.cc:132
 msgid "Invalid MIDI control type"
 msgstr "Tipo di controllo MIDI non valido"
 
-#: bse/bseenums.c:170
+#: bse/bseenums.cc:170
 msgid "Invalid duration"
 msgstr "Durata non valida"
 
-#: bse/bseenums.c:123
+#: bse/bseenums.cc:123
 msgid "Invalid format"
 msgstr "Formato non valido"
 
-#: bse/bseenums.c:131
+#: bse/bseenums.cc:131
 msgid "Invalid object property"
 msgstr "Proprietà oggetto non valida"
 
-#: bse/bseenums.c:169
+#: bse/bseenums.cc:169
 msgid "Invalid offset"
 msgstr "Offset non valido"
 
-#: bse/bseenums.c:171
+#: bse/bseenums.cc:171
 msgid "Invalid overlap"
 msgstr "Sovrapposizione non valida"
 
-#: bse/bseenums.c:153
+#: bse/bseenums.cc:153
 msgid "Invalid synthesis module connection"
 msgstr "Non valida connessione del odulo di sintesi"
 
-#: bse/bseenums.c:157
+#: bse/bseenums.cc:157
 msgid "Invalid synthsis module type"
 msgstr "Non valido il tipo del modulo di sintesi"
 
@@ -3584,7 +3670,7 @@ msgstr ""
 "Inverte lo stato del pedale (sordina) di sustain; in sostanza la sequenza on/"
 "off è invertita."
 
-#: bse/bseenums.c:107
+#: bse/bseenums.cc:107
 msgid "Is a directory"
 msgstr "E' una cartella"
 
@@ -3657,7 +3743,7 @@ msgstr "Ultima modifica"
 msgid "Latency [ms]"
 msgstr "Latenza [ms]"
 
-#: birnet/birnetutils.cc:1195
+#: birnet/birnetutils.cc:1198
 msgid "Launch Web Browser"
 msgstr "Avvia un browser WEB"
 
@@ -3670,11 +3756,11 @@ msgstr "Aspetto:"
 msgid "Left"
 msgstr "Sinistra"
 
-#: bse/bseinstrumentoutput.c:118
+#: bse/bseinstrumentoutput.cc:132
 msgid "Left Audio"
 msgstr "Audio SInistro"
 
-#: bse/bsebus.c:907 bse/bsepcmoutput.c:127 plugins/freeverb/bsefreeverb.c:121
+#: bse/bsebus.cc:908 bse/bsepcmoutput.c:127 plugins/freeverb/bsefreeverb.c:121
 msgid "Left Audio In"
 msgstr "Ingresso Audio Sinistro"
 
@@ -3682,7 +3768,7 @@ msgstr "Ingresso Audio Sinistro"
 msgid "Left Audio Input"
 msgstr "Ingresso Audio Sinistro"
 
-#: bse/bsebus.c:911 bse/bsepcminput.c:127 plugins/freeverb/bsefreeverb.c:123
+#: bse/bsebus.cc:912 bse/bsepcminput.c:127 plugins/freeverb/bsefreeverb.c:123
 msgid "Left Audio Out"
 msgstr "Uscita Audio Sinistra"
 
@@ -3690,7 +3776,7 @@ msgstr "Uscita Audio Sinistra"
 msgid "Left Audio Output"
 msgstr "Uscita Audio SInistra"
 
-#: bse/bseinstrumentoutput.c:118
+#: bse/bseinstrumentoutput.cc:132
 msgid "Left Channel Output"
 msgstr "Uscita Canale Sinistro"
 
@@ -3711,7 +3797,7 @@ msgstr "Uscita Sinistra"
 msgid "Left Output"
 msgstr "Uscita Sinistra"
 
-#: bse/bsebus.c:880
+#: bse/bsebus.cc:881
 msgid "Left Volume"
 msgstr "Volume Sinistro"
 
@@ -3719,11 +3805,11 @@ msgstr "Volume Sinistro"
 msgid "Left audio output"
 msgstr "Uscita audio sinistra"
 
-#: bse/bsebus.c:907 bse/bsepcmoutput.c:127
+#: bse/bsebus.cc:908 bse/bsepcmoutput.c:127
 msgid "Left channel input"
 msgstr "Ingresso canale sinistro"
 
-#: bse/bsebus.c:911 bse/bsepcminput.c:127
+#: bse/bsebus.cc:912 bse/bsepcminput.c:127
 msgid "Left channel output"
 msgstr "Uscita canale sinistro"
 
@@ -3744,7 +3830,7 @@ msgstr "Lib..."
 msgid "License"
 msgstr "Licenza"
 
-#: bse/bseautodoc.c:363 bse/bseautodoc.c:437
+#: bse/bseautodoc.cc:363 bse/bseautodoc.cc:437
 msgid "License:"
 msgstr "Licenza:"
 
@@ -3766,7 +3852,7 @@ msgstr "Collega Parte"
 msgid "Link or move parts (mouse button 1 and 2)"
 msgstr "Collega o Sposta parti (pulsanti del mouse 1 e 2)"
 
-#: bse/bsebus.c:145
+#: bse/bsebus.cc:146
 msgid "List of available mixer busses to be used as bus output"
 msgstr "Lista dei bus del mixer disponibili per essere usati come bus d'uscita"
 
@@ -3796,7 +3882,7 @@ msgstr ""
 "Lista delle reti di sintesi disponibili per sceglierne una come traccia di "
 "uno strumento da"
 
-#: bse/bsebus.c:134
+#: bse/bsebus.cc:135
 msgid "List of available synthesis signals to be used as bus input"
 msgstr ""
 "Lista dei segnali di sintesi disponibili per essere usati come bus d'ingresso"
@@ -3893,7 +3979,7 @@ msgid "Location"
 msgstr "Locazione"
 
 #. change default
-#. override parent property
+#. override parent property: 0
 #: bse/bsesong.c:784 bse/bsesong.c:788 bse/bsesong.c:793 bse/bsesong.c:798
 msgid "Looping"
 msgstr ""
@@ -3941,19 +4027,19 @@ msgstr "Canale MIDI"
 msgid "MIDI Instrument"
 msgstr "Strumento MIDI"
 
-#: bse/bsemidicontroller.c:136
+#: bse/bsemidicontroller.cc:137
 msgid "MIDI Signal 1"
 msgstr "Segnale MIDI 1"
 
-#: bse/bsemidicontroller.c:138
+#: bse/bsemidicontroller.cc:139
 msgid "MIDI Signal 2"
 msgstr "Segnale MIDI 2"
 
-#: bse/bsemidicontroller.c:140
+#: bse/bsemidicontroller.cc:141
 msgid "MIDI Signal 3"
 msgstr "Segnale MIDI 3"
 
-#: bse/bsemidicontroller.c:142
+#: bse/bsemidicontroller.cc:143
 msgid "MIDI Signal 4"
 msgstr "Segnale MIDI 4"
 
@@ -3984,7 +4070,7 @@ msgstr "Trigger manuale per la batteria"
 msgid "Master"
 msgstr "Master"
 
-#: bse/bsebus.c:904
+#: bse/bsebus.cc:905
 msgid "Master Output"
 msgstr "Uscita Master"
 
@@ -4102,7 +4188,7 @@ msgstr "Mixer"
 msgid "Mixer busses connected to track output"
 msgstr "Bus del Mixer connesso alla traccia d'uscita"
 
-#: bse/bsebus.c:899
+#: bse/bsebus.cc:900
 msgid "Mixer busses used as output for synthesis signals"
 msgstr "Bus del mixer usati come uscite per i segnali di sintesi"
 
@@ -4122,8 +4208,8 @@ msgstr "Oggetto Mnemonico"
 msgid "Mod In"
 msgstr "Modul.Ingr."
 
-#: bse/bsebiquadfilter.c:162 bse/bsebiquadfilter.c:168
-#: bse/bsebiquadfilter.c:174 bse/bsebiquadfilter.c:180
+#: bse/bsebiquadfilter.cc:162 bse/bsebiquadfilter.cc:168
+#: bse/bsebiquadfilter.cc:174 bse/bsebiquadfilter.cc:180
 #: bse/bsestandardosc.c:162 bse/bsestandardosc.c:167 bse/bsestandardosc.c:172
 #: bse/bsestandardosc.c:177 bse/bsewaveosc.c:569 bse/bsewaveosc.c:575
 #: bse/bsewaveosc.c:581
@@ -4252,11 +4338,11 @@ msgstr ""
 msgid "Musical Tuning"
 msgstr ""
 
-#: bse/bsebus.c:874
+#: bse/bsebus.cc:875
 msgid "Mute"
 msgstr "Silenzia"
 
-#: bse/bsebus.c:874
+#: bse/bsebus.cc:875
 msgid "Mute: turn off the bus volume"
 msgstr "Silenzia: azzera il volume del bus"
 
@@ -4351,12 +4437,12 @@ msgstr ""
 msgid "No available audio device was found."
 msgstr "Nessun dispositivo audio è stato trovato."
 
-#: bse/bseenums.c:120
+#: bse/bseenums.cc:120
 msgid "No data available"
 msgstr "Nessun dato disponibile"
 
 #. Device errors
-#: bse/bseenums.c:136
+#: bse/bseenums.cc:136
 msgid "No device (driver) available"
 msgstr "Nessun dispositivo (driver) disponibile"
 
@@ -4368,46 +4454,46 @@ msgstr "Non è stata selezionata nesuna nota"
 msgid "No quantization selected"
 msgstr "Nessuna quantizzazione selezionata"
 
-#: bse/bseenums.c:115
+#: bse/bseenums.cc:115
 msgid "No space left on device"
 msgstr "Non c'è spazio disponibile sul dispositivo"
 
 #. various procedure errors
-#: bse/bseenums.c:165
+#: bse/bseenums.cc:165
 msgid "No such entry"
 msgstr "Nessun elemento inserito"
 
-#: bse/bseenums.c:166
+#: bse/bseenums.cc:166
 msgid "No such event"
 msgstr "Nessun evento"
 
-#: bse/bseenums.c:106
+#: bse/bseenums.cc:106
 msgid "No such file, device or directory"
 msgstr "Nessun file, cartella o dispositivo"
 
-#: bse/bseenums.c:147
+#: bse/bseenums.cc:147
 msgid "No such input channel"
 msgstr "Nessun canale d'ingresso"
 
-#: bse/bseenums.c:148
+#: bse/bseenums.cc:148
 msgid "No such output channel"
 msgstr "Nessun canale d'uscita"
 
 #. BseProcedure errors
-#: bse/bseenums.c:159
+#: bse/bseenums.cc:159
 msgid "No such procedure"
 msgstr "Nessuna procedura"
 
 #. BseSource errors
-#: bse/bseenums.c:146
+#: bse/bseenums.cc:146
 msgid "No such synthesis module"
 msgstr "Nessun modulo di sintesi"
 
-#: bse/bseenums.c:128
+#: bse/bseenums.cc:128
 msgid "No such wave"
 msgstr "Nessun file wave"
 
-#: birnet/birnetutils.cc:1197
+#: birnet/birnetutils.cc:1200
 #, c-format
 msgid ""
 "No suitable web browser executable could be found to be executed and to "
@@ -4418,7 +4504,7 @@ msgstr "Nessun browser WEB può essere eseguito per visualizzare l'URL: %s"
 #: beast-gtk/bsteventrollctrl.c:656 beast-gtk/bstpianorollctrl.c:579
 #: beast-gtk/bstpianorollctrl.c:689 beast-gtk/bstpianorollctrl.c:752
 #: beast-gtk/bsttrackrollctrl.c:479 beast-gtk/bsttrackrollctrl.c:499
-#: beast-gtk/bsttrackrollctrl.c:571 bse/bseenums.c:167
+#: beast-gtk/bsttrackrollctrl.c:571 bse/bseenums.cc:167
 msgid "No target"
 msgstr "Nessun Obiettivo"
 
@@ -4461,7 +4547,7 @@ msgstr "Parametro Non Registrato"
 msgid "None"
 msgstr "Niente"
 
-#: bse/bsebiquadfilter.c:155
+#: bse/bsebiquadfilter.cc:155
 msgid "Norm Type"
 msgstr ""
 
@@ -4480,10 +4566,10 @@ msgid ""
 "script to catch the events currently being played back."
 msgstr ""
 
-#: bse/bsebiquadfilter.c:141 bse/bseconstant.c:127 bse/bsestandardosc.c:149
+#: bse/bsebiquadfilter.cc:141 bse/bseconstant.cc:127 bse/bsestandardosc.c:149
 #: plugins/bseiirfilter.c:146 plugins/bseiirfilter.c:157
-#: plugins/davcanyondelay.c:114 plugins/davorgan.c:113 plugins/davsyndrum.c:94
-#: plugins/davxtalstrings.c:109
+#: plugins/davcanyondelay.c:114 plugins/davorgan.idl:34
+#: plugins/davsyndrum.c:94 plugins/davxtalstrings.c:109
 msgid "Note"
 msgstr "Nota"
 
@@ -4499,7 +4585,7 @@ msgstr "Inserisci Nota"
 msgid "Note Fine Tune"
 msgstr "Regolazione Puntuale Nota"
 
-#: bse/bseinstrumentinput.c:118 bse/bsemidiinput.c:108
+#: bse/bseinstrumentinput.cc:132 bse/bsemidiinput.cc:108
 msgid "Note Frequency"
 msgstr "Frequenza Nota"
 
@@ -4529,7 +4615,7 @@ msgstr "Durata Nota"
 msgid "Note decay is the 'half-life' of the note's decay in seconds"
 msgstr ""
 
-#: bse/bseladspamodule.c:196
+#: bse/bseladspamodule.cc:196
 msgid ""
 "Note values are converted to Hertz according to the current musical tuning"
 msgstr ""
@@ -4557,11 +4643,11 @@ msgstr "Numero di Colonne"
 msgid "Number of Rows"
 msgstr "Numero di Righe"
 
-#: bse/bseautodoc.c:335
+#: bse/bseautodoc.cc:335
 msgid "Number of elements (C specific)"
 msgstr "Numero di elementi (C specifico)"
 
-#: bse/bsebiquadfilter.c:177 bse/bsestandardosc.c:174 bse/bsewaveosc.c:584
+#: bse/bsebiquadfilter.cc:177 bse/bsestandardosc.c:174 bse/bsewaveosc.c:584
 msgid "Number of octaves to be affected by exponential frequency modulation"
 msgstr ""
 "Numero di Ottave alle quali viene applicata la Modulazione di Frequenza "
@@ -4610,7 +4696,7 @@ msgid "Open Project"
 msgstr "Apri Progetto"
 
 #. TRANSLATORS: keep this text to 70 chars in width
-#: bse/bsemididevice-oss.c:266
+#: bse/bsemididevice-oss.cc:266
 msgid ""
 "Open Sound System MIDI driver:\n"
 "  DEVICE - MIDI device file name.\n"
@@ -4641,7 +4727,7 @@ msgstr ""
 msgid "Open existing project"
 msgstr "Apri un progetto esistente"
 
-#: bse/bseenums.c:108
+#: bse/bseenums.cc:108
 msgid "Open failed"
 msgstr "Apertura fallita"
 
@@ -4663,19 +4749,20 @@ msgstr "Ordine"
 msgid "Order of Filter"
 msgstr "Ordine del Filtro"
 
-#: plugins/davorgan.c:149
-msgid "Organ Output"
-msgstr "Uscita Organo"
-
-#: plugins/davorgan.c:114
+#: plugins/davorgan.idl:34
 msgid ""
 "Organ frequency as note, converted to Hertz according to the current musical "
 "tuning"
 msgstr ""
 
-#: plugins/davorgan.c:108
+#: plugins/davorgan.idl:32
 msgid "Organ frequency in Hertz, i.e. the pitch of the base tone"
 msgstr ""
+
+#: plugins/davorgan.idl:30
+#, fuzzy
+msgid "Organ output"
+msgstr "Uscita Organo"
 
 #: beast-gtk/bstdbmeter.c:766 beast-gtk/bstdbmeter.c:1061
 #: beast-gtk/bstdbmeter.c:1561
@@ -4724,7 +4811,7 @@ msgstr ""
 msgid "Oscillator wave form"
 msgstr "Oscillatore di forma d'onda"
 
-#: bse/bseenums.c:116
+#: bse/bseenums.cc:116
 msgid "Out of memory"
 msgstr "Out of memory"
 
@@ -4754,7 +4841,7 @@ msgstr "Uscita Porta %u"
 msgid "Output Signal Monitor"
 msgstr "Monitor Segnali d'Uscita"
 
-#: bse/bsebus.c:898 bse/bsetrack.c:1039
+#: bse/bsebus.cc:899 bse/bsetrack.c:1039
 msgid "Output Signals"
 msgstr "Uscita Segnali"
 
@@ -4780,7 +4867,7 @@ msgstr "Stadio di amplificazione d'uscita in decibel"
 msgid "Outputs"
 msgstr "Uscite"
 
-#: bse/bseenums.c:168
+#: bse/bseenums.cc:168
 msgid "Ownership mismatch"
 msgstr ""
 
@@ -4834,11 +4921,11 @@ msgstr "Elemento parassita"
 msgid "Parasite Paths"
 msgstr ""
 
-#: bse/bseenums.c:154
+#: bse/bseenums.cc:154
 msgid "Parent mismatch"
 msgstr ""
 
-#: bse/bseenums.c:133
+#: bse/bseenums.cc:133
 msgid "Parsing error"
 msgstr "Errore d'analisi"
 
@@ -4902,7 +4989,7 @@ msgstr "Percentuale d'uso della CPU"
 msgid "Percentage of background image pixel to blend over background color."
 msgstr "Percentuale dell'immagine di sfondo da miscelare sul colore di sfondo."
 
-#: bse/bsebiquadfilter.c:171 bse/bsestandardosc.c:169 bse/bsewaveosc.c:578
+#: bse/bsebiquadfilter.cc:171 bse/bsestandardosc.c:169 bse/bsewaveosc.c:578
 msgid "Perform exponential frequency modulation instead of linear"
 msgstr "Esegui Modulazione Esponenziale di Frequenza invece di quella Lineare"
 
@@ -5002,7 +5089,7 @@ msgstr "Postprocessore"
 msgid "Preferences"
 msgstr "Preferenze"
 
-#: bse/bseenums.c:104
+#: bse/bseenums.cc:104
 msgid "Premature EOF"
 msgstr "Prematuro End Of File "
 
@@ -5025,20 +5112,20 @@ msgstr "Procedura Browser"
 msgid "Procedure _Browser"
 msgstr "Procedura _Browser"
 
-#: bse/bseenums.c:160
+#: bse/bseenums.cc:160
 msgid "Procedure currently busy"
 msgstr "Procedura correntemente occupata"
 
-#: bse/bseenums.c:163
+#: bse/bseenums.cc:163
 msgid "Procedure execution aborted"
 msgstr "Esecuzione procedura annullata"
 
-#: bse/bseenums.c:162
+#: bse/bseenums.cc:162
 msgid "Procedure execution failed"
 msgstr "Esecuzione procedura fallita"
 
 #. recursion
-#: bse/bseenums.c:161
+#: bse/bseenums.cc:161
 msgid "Procedure parameter invalid"
 msgstr "Non valido parametro procedura"
 
@@ -5281,7 +5368,7 @@ msgstr "Sposta su"
 msgid "Raise the currently selected key binding, relative to its neighbours"
 msgstr "Sposta verso l'alto di una posizione la combinazione selezionata"
 
-#: bse/bseautodoc.c:185 bse/bseautodoc.c:191
+#: bse/bseautodoc.cc:185 bse/bseautodoc.cc:191
 msgid "Range:"
 msgstr "Range:"
 
@@ -5293,7 +5380,7 @@ msgstr "Rapporto d'Ingresso"
 msgid "Ratio [x:1]"
 msgstr "Rapporto [x:1]"
 
-#: bse/bseenums.c:110
+#: bse/bseenums.cc:110
 msgid "Read failed"
 msgstr "Lettura fallita"
 
@@ -5326,6 +5413,10 @@ msgstr "Ripristina l'ultima azione"
 #: beast-gtk/bstpartdialog.c:68
 msgid "Redo the last undone editing step"
 msgstr "Ripristina l'ultimo passo di editing"
+
+#: plugins/davorgan.idl:51
+msgid "Reed Sounds"
+msgstr ""
 
 #: plugins/davcanyondelay.c:109
 msgid "Reflection cutoff frequency"
@@ -5407,7 +5498,7 @@ msgstr "Ripeti esecuzione all'interno dei punti ciclici"
 msgid "Report a Beast Bug..."
 msgstr "Riporta un bug di Beast..."
 
-#: bse/bseenums.c:125
+#: bse/bseenums.cc:125
 msgid "Requested data values unmatched"
 msgstr "I dati richiesti presentano valori non coincidenti"
 
@@ -5470,11 +5561,11 @@ msgstr ""
 msgid "Right"
 msgstr "Destra"
 
-#: bse/bseinstrumentoutput.c:120
+#: bse/bseinstrumentoutput.cc:134
 msgid "Right Audio"
 msgstr "Audio Destro"
 
-#: bse/bsebus.c:909 bse/bsepcmoutput.c:129 plugins/freeverb/bsefreeverb.c:122
+#: bse/bsebus.cc:910 bse/bsepcmoutput.c:129 plugins/freeverb/bsefreeverb.c:122
 msgid "Right Audio In"
 msgstr "Ingresso Audio Destro"
 
@@ -5482,7 +5573,7 @@ msgstr "Ingresso Audio Destro"
 msgid "Right Audio Input"
 msgstr "Ingresso Audio Destro"
 
-#: bse/bsebus.c:913 bse/bsepcminput.c:129 plugins/freeverb/bsefreeverb.c:124
+#: bse/bsebus.cc:914 bse/bsepcminput.c:129 plugins/freeverb/bsefreeverb.c:124
 msgid "Right Audio Out"
 msgstr "Uscita Audio Destra"
 
@@ -5490,7 +5581,7 @@ msgstr "Uscita Audio Destra"
 msgid "Right Audio Output"
 msgstr "Uscita Audio Destra"
 
-#: bse/bseinstrumentoutput.c:120
+#: bse/bseinstrumentoutput.cc:134
 msgid "Right Channel Output"
 msgstr "Uscita Canale Destro"
 
@@ -5511,7 +5602,7 @@ msgstr "Uscita Destra"
 msgid "Right Output"
 msgstr "Uscita Destra"
 
-#: bse/bsebus.c:884
+#: bse/bsebus.cc:885
 msgid "Right Volume"
 msgstr "Volume Destro"
 
@@ -5523,11 +5614,11 @@ msgstr "Uscita audio destra"
 msgid "Right channel Input"
 msgstr "Ingresso canale destro"
 
-#: bse/bsebus.c:909
+#: bse/bsebus.cc:910
 msgid "Right channel input"
 msgstr "Ingresso canale destro"
 
-#: bse/bsebus.c:913 bse/bsepcminput.c:129
+#: bse/bsebus.cc:914 bse/bsepcminput.c:129
 msgid "Right channel output"
 msgstr "Uscita canale destro"
 
@@ -5766,7 +5857,7 @@ msgstr "Secondo Controllo d'Ingresso"
 msgid "Second filter cutoff frequency"
 msgstr ""
 
-#: bse/bseenums.c:109
+#: bse/bseenums.cc:109
 msgid "Seek failed"
 msgstr "Ricerca fallita"
 
@@ -5929,7 +6020,7 @@ msgstr "Mostra messaggi riguardo ai problemi audio in ingresso"
 msgid "Show messages about empty part range"
 msgstr "Mostra messaggi nello spettro delle parti vuote"
 
-#: birnet/birnetutils.cc:1198
+#: birnet/birnetutils.cc:1201
 msgid "Show messages about web browser launch problems"
 msgstr "Mostra messaggi sui problemi al lancio del browser WEB"
 
@@ -5953,11 +6044,11 @@ msgstr "Riduce l'area da scorrere"
 msgid "Signal In"
 msgstr "Ingr.Segnale"
 
-#: bse/bsebus.c:887
+#: bse/bsebus.cc:888
 msgid "Signal Inputs"
 msgstr "Segnale Ingressi"
 
-#: bse/bsebus.c:896 bse/bsetrack.c:1037
+#: bse/bsebus.cc:897 bse/bsetrack.c:1037
 msgid "Signal Outputs"
 msgstr "Segnale Uscite"
 
@@ -6030,11 +6121,11 @@ msgstr ""
 msgid "Sole Output"
 msgstr "Uscita Unica"
 
-#: bse/bsebus.c:876
+#: bse/bsebus.cc:877
 msgid "Solo"
 msgstr "Solo"
 
-#: bse/bsebus.c:876
+#: bse/bsebus.cc:877
 msgid "Solo: mute all other busses"
 msgstr "Solo: silenzia tutti gli altri bus"
 
@@ -6172,11 +6263,11 @@ msgstr "Esecuzione Fermata"
 msgid "Store references to wave files"
 msgstr "Memorizza i riferimenti ai file wave"
 
-#: bse/bsebiquadfilter.c:184
+#: bse/bsebiquadfilter.cc:184
 msgid "Strength of gain modulation"
 msgstr "Intensità della modulazione di guadagno"
 
-#: bse/bsebiquadfilter.c:165 bse/bsestandardosc.c:164
+#: bse/bsebiquadfilter.cc:165 bse/bsestandardosc.c:164
 msgid "Strength of linear frequency modulation"
 msgstr "Intensità della modulazione lineare di frequenza"
 
@@ -6223,7 +6314,7 @@ msgstr "Interruttori"
 msgid "SynDrum Output"
 msgstr "Uscita SynDrum"
 
-#: bse/bsebus.c:878
+#: bse/bsebus.cc:879
 msgid "Sync"
 msgstr "Sync"
 
@@ -6243,7 +6334,7 @@ msgstr "Sincronizzazione Ingresso"
 msgid "Syncronization Output"
 msgstr "Sincronizzazione Uscita"
 
-#: bse/bsebus.c:878
+#: bse/bsebus.cc:879
 msgid "Syncronize left and right volume"
 msgstr "Sincronizza il volume sinistro e destro"
 
@@ -6251,7 +6342,7 @@ msgstr "Sincronizza il volume sinistro e destro"
 msgid "Synth Control Frequency"
 msgstr "Controllo Frequenza Synth"
 
-#: bse/bseinstrumentoutput.c:124
+#: bse/bseinstrumentoutput.cc:138
 msgid "Synth Done"
 msgstr ""
 
@@ -6281,7 +6372,7 @@ msgid "Synthesis mixing frequency, common values are: 22050, 44100, 48000"
 msgstr ""
 "Frequenza di sintesi. I valori più comuni sono: 22050Hz, 44100Hz e 48000Hz"
 
-#: bse/bseenums.c:156
+#: bse/bseenums.cc:156
 msgid "Synthesis module currently busy"
 msgstr "Attuale modulo(i) di sintesi occupato(i)"
 
@@ -6314,7 +6405,7 @@ msgstr "Rete di sintesi da usare come rete secondaria inclusa"
 #. TRANSLATORS: the "tracks and busses" order in this tooltip needs
 #. * to be preserved to match the GUI order of displayed objects.
 #.
-#: bse/bsebus.c:894
+#: bse/bsebus.cc:895
 msgid "Synthesis signals (from tracks and busses) used as bus input"
 msgstr "Segnali di sintesi (dalle tracce e dai bus) usati come ingresso al bus"
 
@@ -6354,7 +6445,7 @@ msgid "Technical description of the multi-threaded synthesis engine innards"
 msgstr "Descrizione tecnica della sintesi multiprocesso nativa"
 
 #. miscellaneous errors
-#: bse/bseenums.c:127
+#: bse/bseenums.cc:127
 msgid "Temporary error"
 msgstr "Errore Momentaneo"
 
@@ -6458,11 +6549,11 @@ msgstr "Stato d'esecuzione del thread"
 msgid "The feedback amount; a negative feedback inverts the signal"
 msgstr ""
 
-#: bse/bsebiquadfilter.c:127 plugins/bseiirfilter.c:119
+#: bse/bsebiquadfilter.cc:127 plugins/bseiirfilter.c:119
 msgid "The filter design type"
 msgstr "Tipo di filtro"
 
-#: bse/bsebiquadfilter.c:156
+#: bse/bsebiquadfilter.cc:156
 msgid ""
 "The filter gain normalization type (supported only by highpass and lowpass)"
 msgstr ""
@@ -6631,7 +6722,7 @@ msgstr "L'oggetto è attivato quando la chiave mnemonica è premuta"
 msgid "Thirty-secondth note"
 msgstr "Nota da un Trentaduesimo (biscroma)"
 
-#: bse/bseautodoc.c:263
+#: bse/bseautodoc.cc:263
 msgid "This procedure has multiple return values."
 msgstr "Questa procedura ha valori di ritorno multipli."
 
@@ -6748,11 +6839,11 @@ msgid ""
 msgstr ""
 
 #. out of resource conditions
-#: bse/bseenums.c:113
+#: bse/bseenums.cc:113
 msgid "Too many open files"
 msgstr "Troppi file aperti"
 
-#: bse/bseenums.c:114
+#: bse/bseenums.cc:114
 msgid "Too many open files in system"
 msgstr "Troppi file aperti nel sistema"
 
@@ -6769,7 +6860,7 @@ msgid "Tracks contain instrument definitions and parts with notes"
 msgstr ""
 "Questa sezione contiene le definizioni degli strumenti e le parti con le note"
 
-#: bse/bsestandardosc.c:154 plugins/davorgan.c:118
+#: bse/bsestandardosc.c:154 plugins/davorgan.idl:36
 #: plugins/davxtalstrings.c:114
 msgid "Transpose"
 msgstr "Trasposizione"
@@ -6778,7 +6869,7 @@ msgstr "Trasposizione"
 msgid "Transpose down starting at"
 msgstr ""
 
-#: plugins/davorgan.c:118 plugins/davxtalstrings.c:114
+#: plugins/davorgan.idl:36 plugins/davxtalstrings.c:114
 msgid "Transposition of the frequency in semitones"
 msgstr "Trasposizione in semitoni della frequenza"
 
@@ -6877,7 +6968,7 @@ msgstr "Annulla l'ultimo passo editato"
 msgid "Undo the effect of the last action"
 msgstr "Annulla l'effetto dell'ultima azione"
 
-#: bse/bsebiquadfilter.c:188
+#: bse/bsebiquadfilter.cc:188
 msgid "Unfiltered Audio Signal"
 msgstr "Segnale Audio Non Filtrato"
 
@@ -6889,11 +6980,11 @@ msgstr "Ingresso Non Filtrato"
 msgid "Unique name of this object"
 msgstr "Nome unico di questo oggetto"
 
-#: bse/bseenums.c:98
+#: bse/bseenums.cc:98
 msgid "Unknown error"
 msgstr "Errore sconosciuto"
 
-#: bse/bseenums.c:124
+#: bse/bseenums.cc:124
 msgid "Unknown format"
 msgstr "Formato sconosciuto"
 
@@ -6909,7 +7000,7 @@ msgstr "Deseleziona tutte le note"
 msgid "Unspecified length"
 msgstr "Durata non specificata"
 
-#: bse/bseinstrumentoutput.c:122
+#: bse/bseinstrumentoutput.cc:136
 msgid "Unused"
 msgstr "Non usato"
 
@@ -6954,11 +7045,11 @@ msgstr "Scala Verticale:"
 msgid "VZoom"
 msgstr "VZoom"
 
-#: bse/bseconstant.c:108
+#: bse/bseconstant.cc:108
 msgid "Value [float]"
 msgstr "Valore [float]"
 
-#: bse/bseinstrumentinput.c:122 bse/bsemidiinput.c:112
+#: bse/bseinstrumentinput.cc:136 bse/bsemidiinput.cc:112
 msgid "Velocity"
 msgstr "Velocity"
 
@@ -6966,7 +7057,7 @@ msgstr "Velocity"
 msgid "Velocity Out"
 msgstr ""
 
-#: bse/bseinstrumentinput.c:122 bse/bsemidiinput.c:112
+#: bse/bseinstrumentinput.cc:136 bse/bsemidiinput.cc:112
 msgid "Velocity of the note press"
 msgstr ""
 
@@ -6974,7 +7065,7 @@ msgstr ""
 msgid "Velocity of the string pluck"
 msgstr ""
 
-#: bse/bseinstrumentinput.c:124 bse/bsemidiinput.c:114
+#: bse/bseinstrumentinput.cc:138 bse/bsemidiinput.cc:114
 msgid "Velocity while the note is pressed"
 msgstr ""
 
@@ -7030,11 +7121,11 @@ msgstr "Uscita virtuale %u"
 msgid "Volume"
 msgstr "Volume"
 
-#: bse/bsebus.c:880
+#: bse/bsebus.cc:881
 msgid "Volume adjustment in decibel of left bus channel"
 msgstr "Regolazione volume in decibel del canale sinistro del bus"
 
-#: bse/bsebus.c:884
+#: bse/bsebus.cc:885
 msgid "Volume adjustment in decibel of right bus channel"
 msgstr "Regolazione volume in decibel del canale destro del bus"
 
@@ -7116,7 +7207,7 @@ msgstr "Nota Intera (semibreve)"
 msgid "Window Size"
 msgstr "Dimensione Finestra"
 
-#: bse/bseenums.c:111
+#: bse/bseenums.cc:111
 msgid "Write failed"
 msgstr "Scrittura fallita"
 
@@ -7128,7 +7219,7 @@ msgstr "Scrivi progetto in uno specifico file"
 msgid "Write project to disk"
 msgstr "Scrivi progetto su disco"
 
-#: bse/bseenums.c:122
+#: bse/bseenums.cc:122
 msgid "Wrong number of channels"
 msgstr "Numero di canali non corretti"
 
@@ -7411,7 +7502,7 @@ msgstr "_Vista"
 msgid "_Virtualization"
 msgstr "_Virtualizzazione"
 
-#: bse/bsejanitor.c:537
+#: bse/bsejanitor.cc:537
 msgid "connection terminated"
 msgstr "connessione terminata"
 
@@ -7644,7 +7735,7 @@ msgstr "controllo-90"
 msgid "failed to add wave chunk from file \"%s\": %s"
 msgstr "aggiunta non riuscita di un pezzo wave dal file \"%s\": %s"
 
-#: bse/bsejanitor.c:535
+#: bse/bsejanitor.cc:535
 msgid "killed by janitor"
 msgstr ""
 

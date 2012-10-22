@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Project\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-04-08 10:51+0200\n"
+"POT-Creation-Date: 2012-10-22 18:16+0200\n"
 "PO-Revision-Date: 2006-11-17 23:52+0100\n"
 "Last-Translator: Djihed Afifi <djihed@gmail.com>\n"
 "Language-Team: Arabic <doc@arabeyes.org>\n"
@@ -82,7 +82,7 @@ msgstr ""
 msgid "  selects one of 3 predefined colors"
 msgstr ""
 
-#: bse/bsejanitor.c:539
+#: bse/bsejanitor.cc:539
 #, fuzzy, c-format
 msgid "%s (core dumped)"
 msgstr "الكلمات النووية"
@@ -123,6 +123,11 @@ msgstr "   "
 msgid "/Audio Sources/Noise"
 msgstr "مصادر القاموس موجودة"
 
+#: plugins/davorgan.idl:27
+#, fuzzy
+msgid "/Audio Sources/Organ"
+msgstr "مُلحق الصوت"
+
 #: bse/bsestandardosc.c:110
 msgid "/Audio Sources/Standard Oscillator"
 msgstr ""
@@ -144,25 +149,25 @@ msgstr ""
 msgid "/Filters/Bass Filter"
 msgstr "تسجيل إجراءات المصفاة"
 
-#: bse/bsebiquadfilter.c:106
+#: bse/bsebiquadfilter.cc:106
 #, fuzzy
 msgid "/Filters/Biquad Types"
 msgstr "كل الفئات المدعومة"
 
-#: bse/bseinstrumentoutput.c:150
+#: bse/bseinstrumentoutput.cc:164
 #, fuzzy
 msgid "/Input & Output/Instrument Output"
 msgstr "جهاز خرج الصوت"
 
-#: bse/bseinstrumentinput.c:150
+#: bse/bseinstrumentinput.cc:164
 msgid "/Input & Output/Instrument Voice Input"
 msgstr ""
 
-#: bse/bsemidicontroller.c:85
+#: bse/bsemidicontroller.cc:86
 msgid "/Input & Output/MIDI Control Input"
 msgstr ""
 
-#: bse/bsemidiinput.c:81
+#: bse/bsemidiinput.cc:81
 msgid "/Input & Output/MIDI Voice Input"
 msgstr ""
 
@@ -185,7 +190,7 @@ msgstr "إعدادات مختلفة"
 msgid "/Misc/StandardGusPatchEnvelope"
 msgstr ""
 
-#: bse/bseconstant.c:83
+#: bse/bseconstant.cc:83
 #, fuzzy
 msgid "/Other Sources/Constant"
 msgstr "مصادر القاموس موجودة"
@@ -383,6 +388,14 @@ msgstr ""
 msgid "16384 Value FFT Window"
 msgstr ""
 
+#: plugins/davorgan.idl:42
+msgid "16th"
+msgstr ""
+
+#: plugins/davorgan.idl:42
+msgid "16th Harmonic"
+msgstr ""
+
 #: beast-gtk/bstpianorollctrl.c:98
 msgid "1\\/1"
 msgstr ""
@@ -426,6 +439,14 @@ msgstr "2"
 msgid "2 & 4"
 msgstr ""
 
+#: plugins/davorgan.idl:46
+msgid "2 2/3rd"
+msgstr ""
+
+#: plugins/davorgan.idl:46
+msgid "2 2/3rd Harmonic"
+msgstr ""
+
 #: beast-gtk/bstrecords.idl:41
 #, fuzzy
 msgid "2 Value FFT Window"
@@ -437,6 +458,14 @@ msgstr ""
 
 #: beast-gtk/bstrecords.idl:48
 msgid "256 Value FFT Window"
+msgstr ""
+
+#: plugins/davorgan.idl:47
+msgid "2nd"
+msgstr ""
+
+#: plugins/davorgan.idl:47
+msgid "2nd Harmonic"
 msgstr ""
 
 #: beast-gtk/bstrecords.idl:98
@@ -489,6 +518,22 @@ msgstr "إرساء نافذة البرنامج"
 msgid "4096 Value FFT Window"
 msgstr ""
 
+#: plugins/davorgan.idl:45
+msgid "4th"
+msgstr ""
+
+#: plugins/davorgan.idl:45
+msgid "4th Harmonic"
+msgstr ""
+
+#: plugins/davorgan.idl:44
+msgid "5 1/3rd"
+msgstr ""
+
+#: plugins/davorgan.idl:44
+msgid "5 1/3rd Harmonic"
+msgstr ""
+
 #: bse/bsecore.idl:80
 msgid "5 Tone Equal Temperament"
 msgstr ""
@@ -536,6 +581,14 @@ msgstr "إرساء نافذة البرنامج"
 
 #: beast-gtk/bstrecords.idl:53
 msgid "8192 Value FFT Window"
+msgstr ""
+
+#: plugins/davorgan.idl:43
+msgid "8th"
+msgstr ""
+
+#: plugins/davorgan.idl:43
+msgid "8th Harmonic"
 msgstr ""
 
 #: beast-gtk/bstrecords.idl:50
@@ -725,6 +778,14 @@ msgstr "أضف معيار جديد لهذا البحث"
 msgid "Add directory to searchpath"
 msgstr "فشلت اضافة دليل."
 
+#: plugins/davorgan.idl:52
+msgid "Add flute sounds"
+msgstr ""
+
+#: plugins/davorgan.idl:51
+msgid "Add reeds sound"
+msgstr ""
+
 #: beast-gtk/bstsupershell.c:217
 msgid "Add, edit and connect synthesizer mesh components"
 msgstr ""
@@ -795,8 +856,8 @@ msgstr ""
 msgid "Adjust whether to draw dB values instead of lines"
 msgstr ""
 
-#: bse/bsebus.c:873 bse/bsebus.c:875 bse/bsebus.c:877 bse/bsebus.c:879
-#: bse/bsebus.c:883 bse/bsemidisynth.c:461 bse/bsemidisynth.c:467
+#: bse/bsebus.cc:874 bse/bsebus.cc:876 bse/bsebus.cc:878 bse/bsebus.cc:880
+#: bse/bsebus.cc:884 bse/bsemidisynth.c:461 bse/bsemidisynth.c:467
 #: bse/bsemidisynth.c:474 bse/bsetrack.c:1008
 msgid "Adjustments"
 msgstr ""
@@ -837,7 +898,7 @@ msgid ""
 "  SUBDEV - the subdevice number for plugins like 'hw'\n"
 msgstr ""
 
-#: bse/bseinstrumentinput.c:124 bse/bsemidiinput.c:114
+#: bse/bseinstrumentinput.cc:138 bse/bsemidiinput.cc:114
 msgid "Aftertouch"
 msgstr ""
 
@@ -872,7 +933,7 @@ msgstr "الكل"
 msgid "Always"
 msgstr ""
 
-#: bse/bsestandardosc.c:159 plugins/davorgan.c:123
+#: bse/bsestandardosc.c:159 plugins/davorgan.idl:38
 #: plugins/davxtalstrings.c:119
 msgid "Amount of detuning in cent (hundredth part of a semitone)"
 msgstr ""
@@ -1004,7 +1065,7 @@ msgstr "الصوت"
 msgid "Audio Gate"
 msgstr "اخرج"
 
-#: bse/bsebiquadfilter.c:188 plugins/bseatandistort.c:88
+#: bse/bsebiquadfilter.cc:188 plugins/bseatandistort.c:88
 #: plugins/bsecontribsampleandhold.idl:26 plugins/bseiirfilter.c:162
 #: plugins/davbassfilter.idl:31 plugins/davchorus.idl:28
 #: plugins/standardguspatchenvelope.idl:45
@@ -1076,12 +1137,12 @@ msgstr "جهاز دخل الصوت"
 msgid "Audio Input of the WaveOsc playing the patch"
 msgstr ""
 
-#: bse/bsebiquadfilter.c:196 bse/bsestandardosc.c:205 bse/bsewaveosc.c:599
+#: bse/bsebiquadfilter.cc:196 bse/bsestandardosc.c:205 bse/bsewaveosc.c:599
 #: plugins/bseadder.c:99 plugins/bseamplifier.idl:47
 #: plugins/bseatandistort.c:90 plugins/bsecontribsampleandhold.idl:28
 #: plugins/bseiirfilter.c:164 plugins/bsemixer.c:107 plugins/bsemult.c:66
 #: plugins/davbassfilter.idl:33 plugins/davchorus.idl:29
-#: plugins/davorgan.c:149 plugins/davsyndrum.c:123
+#: plugins/davorgan.idl:30 plugins/davsyndrum.c:123
 #: plugins/davxtalstrings.c:155
 #, fuzzy
 msgid "Audio Out"
@@ -1141,7 +1202,7 @@ msgstr "جهاز دخل الصوت"
 msgid "Author"
 msgstr "<b>المؤلف:</b>"
 
-#: bse/bseautodoc.c:354 bse/bseautodoc.c:428
+#: bse/bseautodoc.cc:354 bse/bseautodoc.cc:428
 #, fuzzy
 msgid "Authors:"
 msgstr "الكتاب:"
@@ -1157,7 +1218,7 @@ msgid "Auto cut"
 msgstr "قص المنتقى"
 
 #. TRANSLATORS: keep this text to 70 chars in width
-#: bse/bsedevice.c:339
+#: bse/bsedevice.cc:339
 msgid ""
 "Auto is a special driver, it acts as a placeholder for\n"
 "automatic driver selection."
@@ -1169,7 +1230,7 @@ msgid ""
 "level"
 msgstr ""
 
-#: bse/bsebus.c:134
+#: bse/bsebus.cc:135
 #, fuzzy
 msgid "Available Inputs"
 msgstr "التهييئات المتوفّرة"
@@ -1180,7 +1241,7 @@ msgstr "التهييئات المتوفّرة"
 msgid "Available Items:"
 msgstr "إنشاء عناصر"
 
-#: bse/bsebus.c:145 bse/bsetrack.c:300
+#: bse/bsebus.cc:146 bse/bsetrack.c:300
 #, fuzzy
 msgid "Available Outputs"
 msgstr "التهييئات المتوفّرة"
@@ -1284,7 +1345,7 @@ msgstr ""
 msgid "Background image used by the piano-roll editor."
 msgstr ""
 
-#: bse/bseenums.c:155
+#: bse/bseenums.cc:155
 #, fuzzy
 msgid "Bad loopback"
 msgstr "حلقة خلفية محلية"
@@ -1312,8 +1373,7 @@ msgid "Bank Select"
 msgstr "إنتقاء ملف"
 
 #: bse/bsestandardosc.c:142 bse/bsestandardosc.c:147 bse/bsestandardosc.c:152
-#: bse/bsestandardosc.c:157 plugins/davorgan.c:106 plugins/davorgan.c:111
-#: plugins/davorgan.c:116 plugins/davorgan.c:121
+#: bse/bsestandardosc.c:157 plugins/davorgan.idl:31
 #, fuzzy
 msgid "Base Frequency"
 msgstr "أساس DN:"
@@ -1347,6 +1407,10 @@ msgstr ""
 
 #: beast-gtk/bstscrollgraph.c:577
 msgid "Boost"
+msgstr ""
+
+#: plugins/davorgan.idl:50
+msgid "Brass Sounds"
 msgstr ""
 
 #: bse/bsecore.idl:158 bse/bsecore.idl:335
@@ -1383,7 +1447,7 @@ msgstr ""
 msgid "Bus Name"
 msgstr "اسم الموصول"
 
-#: bse/bsebus.c:932
+#: bse/bsebus.cc:933
 msgid ""
 "Bus implementation for songs, used to route track audio signals to the "
 "master output."
@@ -1393,7 +1457,7 @@ msgstr ""
 msgid "Busses"
 msgstr ""
 
-#: bse/bseenums.c:129
+#: bse/bseenums.cc:129
 #, fuzzy
 msgid "CODEC failure"
 msgstr "فشل التحقق!\n"
@@ -1422,12 +1486,12 @@ msgstr "المعالج:"
 msgid "Cancel"
 msgstr "إلغاء"
 
-#: bse/bsebiquadfilter.c:131 bse/bsebiquadfilter.c:139
+#: bse/bsebiquadfilter.cc:131 bse/bsebiquadfilter.cc:139
 #, fuzzy
 msgid "Center Frequency"
 msgstr "الصدر الأوسط"
 
-#: bse/bsebiquadfilter.c:190
+#: bse/bsebiquadfilter.cc:190
 #, fuzzy
 msgid "Center Frequency Input"
 msgstr "تكبير نافذة الإدخال"
@@ -1442,6 +1506,10 @@ msgstr ""
 
 #: beast-gtk/bstpatternctrl.c:338
 msgid "Change the numeric focus cell contents (e.g. octave) by a given amount"
+msgstr ""
+
+#: plugins/davorgan.idl:50
+msgid "Change the organ to sound more brassy"
 msgstr ""
 
 #: beast-gtk/bstkeybindings.c:51
@@ -1577,7 +1645,7 @@ msgstr "إ_عداد"
 msgid "Configure the column layout of the pattern editor"
 msgstr ""
 
-#: bse/bseconstant.c:135
+#: bse/bseconstant.cc:135
 #, fuzzy, c-format
 msgid "Const Out%u"
 msgstr "اخرج"
@@ -1608,23 +1676,23 @@ msgstr "مركز تحكم جنوم"
 msgid "Constant Negative HIGH"
 msgstr "(أولوية مرتفعة جدا)"
 
-#: bse/bseconstant.c:105 bse/bseconstant.c:136
+#: bse/bseconstant.cc:105 bse/bseconstant.cc:136
 #, fuzzy, c-format
 msgid "Constant Output %u"
 msgstr "جهاز الخرج:"
 
-#: bse/bseconstant.c:110
+#: bse/bseconstant.cc:110
 #, fuzzy
 msgid "Constant signal value"
 msgstr "(أولوية مرتفعة جدا)"
 
-#: bse/bseconstant.c:129
+#: bse/bseconstant.cc:129
 msgid ""
 "Constant signal value as note, converted to Hertz according to the current "
 "musical tuning"
 msgstr ""
 
-#: bse/bseconstant.c:118
+#: bse/bseconstant.cc:118
 msgid "Constant signal value interpreted as frequency value in Hertz"
 msgstr ""
 
@@ -2126,19 +2194,19 @@ msgstr ""
 msgid "Ctrl Out"
 msgstr "اخرج"
 
-#: bse/bsemidicontroller.c:136
+#: bse/bsemidicontroller.cc:137
 msgid "Ctrl Out1"
 msgstr ""
 
-#: bse/bsemidicontroller.c:138
+#: bse/bsemidicontroller.cc:139
 msgid "Ctrl Out2"
 msgstr ""
 
-#: bse/bsemidicontroller.c:140
+#: bse/bsemidicontroller.cc:141
 msgid "Ctrl Out3"
 msgstr ""
 
-#: bse/bsemidicontroller.c:142
+#: bse/bsemidicontroller.cc:143
 msgid "Ctrl Out4"
 msgstr ""
 
@@ -2165,7 +2233,7 @@ msgstr ""
 msgid "Cutoff [%]"
 msgstr ""
 
-#: bse/bsebiquadfilter.c:133 plugins/bseiirfilter.c:141
+#: bse/bsebiquadfilter.cc:133 plugins/bseiirfilter.c:141
 #: plugins/bseiirfilter.c:152
 #, fuzzy
 msgid "Cutoff [Hz]"
@@ -2190,7 +2258,7 @@ msgstr "دافعة ال_محرّك:"
 msgid "Data Entry"
 msgstr "إدخال مباشر"
 
-#: bse/bseenums.c:121
+#: bse/bseenums.cc:121
 #, fuzzy
 msgid "Data corrupt"
 msgstr "البيانات البكسلية للصورة تالفة"
@@ -2204,6 +2272,10 @@ msgstr ""
 
 #: plugins/davchorus.idl:27
 msgid "DavChorus adds more depth to sounds"
+msgstr ""
+
+#: plugins/davorgan.idl:28
+msgid "DavOrgan is a versatile additive organ synthesizer"
 msgstr ""
 
 #: plugins/davxtalstrings.c:130 plugins/davxtalstrings.c:135
@@ -2350,23 +2422,23 @@ msgstr "تنشيط الملحقات %s"
 msgid "Development..."
 msgstr "تطوير"
 
-#: bse/bseenums.c:138
+#: bse/bseenums.cc:138
 #, fuzzy
 msgid "Device busy"
 msgstr "الدليل مشغول"
 
-#: bse/bseenums.c:144
+#: bse/bseenums.cc:144
 #, fuzzy
 msgid "Device configurations mismatch"
 msgstr "عدم تطابق بين الموضوع/المُصدر"
 
-#: bse/bseenums.c:137
+#: bse/bseenums.cc:137
 #, fuzzy
 msgid "Device not async capable"
 msgstr "لم أتمكّن من التعرف التّلقائي على جهاز المودم"
 
 #. file errors
-#: bse/bseenums.c:102
+#: bse/bseenums.cc:102
 msgid "Device or resource busy"
 msgstr ""
 
@@ -2433,7 +2505,7 @@ msgid "Discard changes and close dialog"
 msgstr ""
 
 #. TRANSLATORS: keep this text to 70 chars in width
-#: bse/bsemididevice-null.c:88
+#: bse/bsemididevice-null.cc:88
 msgid ""
 "Discards all output events and generates no input events. This driver\n"
 "is not part of the automatic device selection list for MIDI devices."
@@ -2667,7 +2739,7 @@ msgstr "مسار الجهاز"
 msgid "Eighths note"
 msgstr "ملحوظة المركّب"
 
-#: bse/bsebiquadfilter.c:147 bse/bsebiquadfilter.c:153
+#: bse/bsebiquadfilter.cc:147 bse/bsebiquadfilter.cc:153
 #, fuzzy
 msgid "Emphasis"
 msgstr "تشديد"
@@ -2812,7 +2884,7 @@ msgstr "ألوان صفوف متناوبة"
 msgid "Every twelfth row"
 msgstr "ألوان صفوف متناوبة"
 
-#: bse/bseenums.c:96
+#: bse/bseenums.cc:96
 #, fuzzy
 msgid "Everything went well"
 msgstr "حل اللغز! حسنا فعلت!"
@@ -2846,27 +2918,27 @@ msgstr "مُلحق الصوت"
 msgid "Expression"
 msgstr "تعبير"
 
-#: bse/bseenums.c:140
+#: bse/bseenums.cc:140
 #, fuzzy
 msgid "Failed to configure device buffer"
 msgstr "فشل ضبط جهاز براي: %s."
 
-#: bse/bseenums.c:139
+#: bse/bseenums.cc:139
 #, fuzzy
 msgid "Failed to configure device format"
 msgstr "فشل ضبط جهاز براي: %s."
 
-#: bse/bseenums.c:143
+#: bse/bseenums.cc:143
 #, fuzzy
 msgid "Failed to configure device frequency"
 msgstr "فشل ضبط جهاز براي: %s."
 
-#: bse/bseenums.c:141
+#: bse/bseenums.cc:141
 #, fuzzy
 msgid "Failed to configure device latency"
 msgstr "فشل ضبط جهاز براي: %s."
 
-#: bse/bseenums.c:142
+#: bse/bseenums.cc:142
 msgid "Failed to configure number of device channels"
 msgstr ""
 
@@ -2876,7 +2948,7 @@ msgid "Failed to crop part range."
 msgstr "فشلت كتابة بعض بيانات الإعداد إلى القرص\n"
 
 #. content errors
-#: bse/bseenums.c:118
+#: bse/bseenums.cc:118
 #, fuzzy
 msgid "Failed to detect (start of) header"
 msgstr "فشل فتح الدليل الحاوي على الصور الترويسية: %s"
@@ -2891,7 +2963,7 @@ msgstr "فشل فتح الدليل الحاوي على الصور الترويس
 msgid "Failed to execute script procedure '%s': %s"
 msgstr "فشل تنفيذ العملية الإبنة (%s)"
 
-#: birnet/birnetutils.cc:1196
+#: birnet/birnetutils.cc:1199
 msgid "Failed to launch a web browser executable"
 msgstr ""
 
@@ -2940,7 +3012,7 @@ msgid ""
 "%s"
 msgstr "خطأ في إعراب ملف XML"
 
-#: bse/bseenums.c:119
+#: bse/bseenums.cc:119
 #, fuzzy
 msgid "Failed to retrieve seek information"
 msgstr "فشل تحميل معلومات الصورة"
@@ -2965,7 +3037,7 @@ msgid ""
 "%s"
 msgstr "الملف الذي فيه سيحفظ تقرير الخلال"
 
-#: bse/bseenums.c:134
+#: bse/bseenums.cc:134
 #, fuzzy
 msgid "Failed to spawn child process"
 msgstr "فشل إنشاء العمليّة الإبنة '%s': %s"
@@ -2993,12 +3065,12 @@ msgstr ""
 msgid "File Selection"
 msgstr "خيارات إنتقاء الملف"
 
-#: bse/bseenums.c:105
+#: bse/bseenums.cc:105
 #, fuzzy
 msgid "File empty"
 msgstr "ملف _فارغ"
 
-#: bse/bseenums.c:103
+#: bse/bseenums.cc:103
 #, fuzzy
 msgid "File exists already"
 msgstr "الملف موجود مسبّقا."
@@ -3023,7 +3095,7 @@ msgstr "اسم الملف"
 msgid "Filename Text Entry"
 msgstr "ادخال كتابة تنبئيا"
 
-#: bse/bsebiquadfilter.c:125
+#: bse/bsebiquadfilter.cc:125
 #, fuzzy
 msgid "Filter"
 msgstr "مرشح"
@@ -3043,7 +3115,7 @@ msgstr "مصفاة ذات الأولويّة \"%s\""
 msgid "Filter Specification"
 msgstr "مصفاة ذات الأولويّة \"%s\""
 
-#: bse/bsebiquadfilter.c:127 plugins/bseiirfilter.c:125
+#: bse/bsebiquadfilter.cc:127 plugins/bseiirfilter.c:125
 #, fuzzy
 msgid "Filter Type"
 msgstr "نوع التّنبيه"
@@ -3053,19 +3125,19 @@ msgstr "نوع التّنبيه"
 msgid "Filter cutoff frequency"
 msgstr "الصدر الأوسط"
 
-#: bse/bsebiquadfilter.c:141 plugins/bseiirfilter.c:147
+#: bse/bsebiquadfilter.cc:141 plugins/bseiirfilter.c:147
 #: plugins/bseiirfilter.c:158 plugins/davcanyondelay.c:115
 msgid ""
 "Filter cutoff frequency as note, converted to Hertz according to the current "
 "musical tuning"
 msgstr ""
 
-#: bse/bsebiquadfilter.c:133
+#: bse/bsebiquadfilter.cc:133
 #, fuzzy
 msgid "Filter cutoff frequency in Hertz"
 msgstr "تكبير نافذة الإدخال"
 
-#: bse/bsebiquadfilter.c:196
+#: bse/bsebiquadfilter.cc:196
 #, fuzzy
 msgid "Filtered Audio Signal"
 msgstr "اشارة معرفة من طرف المستخدم 1"
@@ -3095,7 +3167,7 @@ msgid ""
 "Find the first track that contains part, suitable to check for orphan parts."
 msgstr ""
 
-#: bse/bsestandardosc.c:159 plugins/davorgan.c:123
+#: bse/bsestandardosc.c:159 plugins/davorgan.idl:38
 #: plugins/davxtalstrings.c:119
 msgid "Fine Tune"
 msgstr ""
@@ -3129,6 +3201,10 @@ msgstr "قلب أ_فقي"
 msgid "Flip Spectrum display,  interchaging low and high frequencies"
 msgstr ""
 
+#: plugins/davorgan.idl:52
+msgid "Flute Sounds"
+msgstr ""
+
 #: beast-gtk/bstrecords.idl:110
 #, fuzzy
 msgid "Font Size"
@@ -3151,14 +3227,14 @@ msgstr "التهيئة"
 msgid "Free form comment or description"
 msgstr ""
 
-#: bse/bsebiquadfilter.c:190 bse/bsestandardosc.c:197 bse/bsewaveosc.c:593
-#: plugins/davorgan.c:148 plugins/davsyndrum.c:117
+#: bse/bsebiquadfilter.cc:190 bse/bsestandardosc.c:197 bse/bsewaveosc.c:593
+#: plugins/davorgan.idl:29 plugins/davsyndrum.c:117
 #: plugins/davxtalstrings.c:151
 #, fuzzy
 msgid "Freq In"
 msgstr "تكبير"
 
-#: bse/bsebiquadfilter.c:192 bse/bsestandardosc.c:199
+#: bse/bsebiquadfilter.cc:192 bse/bsestandardosc.c:199
 #, fuzzy
 msgid "Freq Mod In"
 msgstr "زر في اللوحة"
@@ -3169,23 +3245,23 @@ msgid "Freq Out"
 msgstr "اخرج"
 
 #. inputs
-#: bse/bseconstant.c:116 bse/bseinstrumentinput.c:118 bse/bsemidiinput.c:108
-#: bse/bsestandardosc.c:144 plugins/davcanyondelay.c:108
-#: plugins/davorgan.c:107 plugins/davsyndrum.c:87 plugins/davsyndrum.c:88
-#: plugins/davsyndrum.c:93 plugins/davxtalstrings.c:101
-#: plugins/davxtalstrings.c:103 plugins/davxtalstrings.c:107
-#: plugins/davxtalstrings.c:112 plugins/davxtalstrings.c:117
-#: plugins/standardguspatchenvelope.idl:42
+#: bse/bseconstant.cc:116 bse/bseinstrumentinput.cc:132
+#: bse/bsemidiinput.cc:108 bse/bsestandardosc.c:144
+#: plugins/davcanyondelay.c:108 plugins/davorgan.idl:32
+#: plugins/davsyndrum.c:87 plugins/davsyndrum.c:88 plugins/davsyndrum.c:93
+#: plugins/davxtalstrings.c:101 plugins/davxtalstrings.c:103
+#: plugins/davxtalstrings.c:107 plugins/davxtalstrings.c:112
+#: plugins/davxtalstrings.c:117 plugins/standardguspatchenvelope.idl:42
 msgid "Frequency"
 msgstr ""
 
-#: bse/bsewaveosc.c:593 plugins/davorgan.c:148
+#: bse/bsewaveosc.c:593 plugins/davorgan.idl:29
 #: plugins/standardguspatchenvelope.idl:42
 #, fuzzy
 msgid "Frequency Input"
 msgstr "<b>جهاز الإدخال</b>"
 
-#: bse/bsebiquadfilter.c:192 bse/bsestandardosc.c:199
+#: bse/bsebiquadfilter.cc:192 bse/bsestandardosc.c:199
 #, fuzzy
 msgid "Frequency Modulation Input"
 msgstr "تكبير نافذة الإدخال"
@@ -3224,7 +3300,7 @@ msgstr "الوظيفة"
 msgid "Function used to create new key bindings"
 msgstr ""
 
-#: bse/bseenums.c:130
+#: bse/bseenums.cc:130
 #, fuzzy
 msgid "Functionality not implemented"
 msgstr "الأمر غير مركّب"
@@ -3237,30 +3313,31 @@ msgstr ""
 #: plugins/bseamplifier.idl:28 plugins/bsebalance.idl:24
 #: plugins/bsecontribsampleandhold.idl:23 plugins/bsenoise.idl:25
 #: plugins/bsesummation.idl:24 plugins/davbassfilter.idl:25
-#: plugins/davchorus.idl:25 plugins/standardguspatchenvelope.idl:27
+#: plugins/davchorus.idl:25 plugins/davorgan.idl:26
+#: plugins/standardguspatchenvelope.idl:27
 msgid "GNU Lesser General Public License"
 msgstr ""
 
-#: bse/bsebiquadfilter.c:194
+#: bse/bsebiquadfilter.cc:194
 #, fuzzy
 msgid "Gain Mod In"
 msgstr "زر في اللوحة"
 
-#: bse/bsebiquadfilter.c:194
+#: bse/bsebiquadfilter.cc:194
 #, fuzzy
 msgid "Gain Modulation Input"
 msgstr "تكبير نافذة الإدخال"
 
-#: bse/bsebiquadfilter.c:183
+#: bse/bsebiquadfilter.cc:183
 #, no-c-format
 msgid "Gain Modulation [%]"
 msgstr ""
 
-#: bse/bsebiquadfilter.c:149
+#: bse/bsebiquadfilter.cc:149
 msgid "Gain [dB]"
 msgstr ""
 
-#: bse/bseinstrumentinput.c:120 bse/bsemidiinput.c:110
+#: bse/bseinstrumentinput.cc:134 bse/bsemidiinput.cc:110
 msgid "Gate"
 msgstr ""
 
@@ -3375,6 +3452,10 @@ msgstr ""
 msgid "Hard saturation via clipping (prone to clicks)"
 msgstr ""
 
+#: plugins/davorgan.idl:41
+msgid "Harmonics"
+msgstr ""
+
 #: library/scripts/part-harmonic-transposer.scm:51
 msgid "Harmony Sequence"
 msgstr ""
@@ -3383,11 +3464,11 @@ msgstr ""
 msgid "Harmony list is too short"
 msgstr ""
 
-#: bse/bseinstrumentinput.c:120 bse/bsemidiinput.c:110
+#: bse/bseinstrumentinput.cc:134 bse/bsemidiinput.cc:110
 msgid "High if the note is currently being pressed"
 msgstr ""
 
-#: bse/bseinstrumentoutput.c:124
+#: bse/bseinstrumentoutput.cc:138
 msgid "High indicates the instrument is done synthesizing"
 msgstr ""
 
@@ -3566,12 +3647,12 @@ msgid "Input Port %u"
 msgstr "منفذ الاستماع"
 
 #. SYNC: type partitions determine the order of displayed objects
-#: bse/bsebus.c:890
+#: bse/bsebus.cc:891
 #, fuzzy
 msgid "Input Signals"
 msgstr "<b>جهاز الإدخال</b>"
 
-#: bse/bseenums.c:151
+#: bse/bseenums.cc:151
 #, fuzzy
 msgid "Input channel already in use"
 msgstr "توثيق المفتاح (%s) مستعمَل\n"
@@ -3581,7 +3662,7 @@ msgstr "توثيق المفتاح (%s) مستعمَل\n"
 msgid "Input channel in use"
 msgstr "استخدام خط في الشارة"
 
-#: bse/bseenums.c:150
+#: bse/bseenums.cc:150
 msgid "Input channel is private"
 msgstr ""
 
@@ -3589,15 +3670,15 @@ msgstr ""
 msgid "Input port name to interface to"
 msgstr ""
 
-#: bse/bseenums.c:152
+#: bse/bseenums.cc:152
 msgid "Input/Output channels already connected"
 msgstr ""
 
-#: bse/bseenums.c:149
+#: bse/bseenums.cc:149
 msgid "Input/Output channels not connected"
 msgstr ""
 
-#: bse/bseenums.c:99
+#: bse/bseenums.cc:99
 #, fuzzy
 msgid "Input/output error"
 msgstr "حدث خطأ خلال فتح %s."
@@ -3692,55 +3773,60 @@ msgstr ""
 msgid "Instrument Path"
 msgstr "مسار الجهاز"
 
-#: bse/bseenums.c:100
+#: plugins/davorgan.idl:49
+#, fuzzy
+msgid "Instrument flavour"
+msgstr "مسار الجهاز"
+
+#: bse/bseenums.cc:100
 #, fuzzy
 msgid "Insufficient permission"
 msgstr "رُفض التّصريح"
 
-#: bse/bseenums.c:97
+#: bse/bseenums.cc:97
 #, fuzzy
 msgid "Internal error (please report)"
 msgstr "خطأ داخلي عند passwdexpired"
 
-#: bse/bsebus.c:902
+#: bse/bsebus.cc:903
 msgid "Internals"
 msgstr ""
 
-#: bse/bseenums.c:132
+#: bse/bseenums.cc:132
 #, fuzzy
 msgid "Invalid MIDI control type"
 msgstr "cdr_type غير صالح \"%s\" في <%s>"
 
-#: bse/bseenums.c:170
+#: bse/bseenums.cc:170
 #, fuzzy
 msgid "Invalid duration"
 msgstr "مدة المكالمة"
 
-#: bse/bseenums.c:123
+#: bse/bseenums.cc:123
 #, fuzzy
 msgid "Invalid format"
 msgstr "نمط الملف غير صحيح."
 
-#: bse/bseenums.c:131
+#: bse/bseenums.cc:131
 #, fuzzy
 msgid "Invalid object property"
 msgstr "بيانات جسم محرّر الخاصيات"
 
-#: bse/bseenums.c:169
+#: bse/bseenums.cc:169
 #, fuzzy
 msgid "Invalid offset"
 msgstr "إنحراف الذاكرة الإفتراضية"
 
-#: bse/bseenums.c:171
+#: bse/bseenums.cc:171
 #, fuzzy
 msgid "Invalid overlap"
 msgstr " (يونيكود غير صحيح)"
 
-#: bse/bseenums.c:153
+#: bse/bseenums.cc:153
 msgid "Invalid synthesis module connection"
 msgstr ""
 
-#: bse/bseenums.c:157
+#: bse/bseenums.cc:157
 #, fuzzy
 msgid "Invalid synthsis module type"
 msgstr "cdr_type غير صالح \"%s\" في <%s>"
@@ -3765,7 +3851,7 @@ msgid ""
 "Invert the state of sustain (damper) pedal so on/off meanings are reversed"
 msgstr ""
 
-#: bse/bseenums.c:107
+#: bse/bseenums.cc:107
 #, fuzzy
 msgid "Is a directory"
 msgstr "دليل"
@@ -3849,7 +3935,7 @@ msgstr "إظهار وقت آخر تعديل"
 msgid "Latency [ms]"
 msgstr "أدنى زمن:\t%s ملّي ثانية\n"
 
-#: birnet/birnetutils.cc:1195
+#: birnet/birnetutils.cc:1198
 msgid "Launch Web Browser"
 msgstr ""
 
@@ -3864,12 +3950,12 @@ msgstr "<b>مخطط</b>"
 msgid "Left"
 msgstr "اليسار"
 
-#: bse/bseinstrumentoutput.c:118
+#: bse/bseinstrumentoutput.cc:132
 #, fuzzy
 msgid "Left Audio"
 msgstr "مُلحق الصوت"
 
-#: bse/bsebus.c:907 bse/bsepcmoutput.c:127 plugins/freeverb/bsefreeverb.c:121
+#: bse/bsebus.cc:908 bse/bsepcmoutput.c:127 plugins/freeverb/bsefreeverb.c:121
 #, fuzzy
 msgid "Left Audio In"
 msgstr "عرض الهامش ا?يسر بالبكسل"
@@ -3879,7 +3965,7 @@ msgstr "عرض الهامش ا?يسر بالبكسل"
 msgid "Left Audio Input"
 msgstr "جهاز دخل الصوت"
 
-#: bse/bsebus.c:911 bse/bsepcminput.c:127 plugins/freeverb/bsefreeverb.c:123
+#: bse/bsebus.cc:912 bse/bsepcminput.c:127 plugins/freeverb/bsefreeverb.c:123
 #, fuzzy
 msgid "Left Audio Out"
 msgstr "<b>رسالة خارج المكتب:</b>"
@@ -3889,7 +3975,7 @@ msgstr "<b>رسالة خارج المكتب:</b>"
 msgid "Left Audio Output"
 msgstr "جهاز خرج الصوت"
 
-#: bse/bseinstrumentoutput.c:118
+#: bse/bseinstrumentoutput.cc:132
 #, fuzzy
 msgid "Left Channel Output"
 msgstr "جهاز خرج الصوت"
@@ -3915,7 +4001,7 @@ msgstr "اخرج"
 msgid "Left Output"
 msgstr "جهاز الخرج:"
 
-#: bse/bsebus.c:880
+#: bse/bsebus.cc:881
 #, fuzzy
 msgid "Left Volume"
 msgstr "متحكم شدة الصوت"
@@ -3925,12 +4011,12 @@ msgstr "متحكم شدة الصوت"
 msgid "Left audio output"
 msgstr "جهاز خرج الصوت"
 
-#: bse/bsebus.c:907 bse/bsepcmoutput.c:127
+#: bse/bsebus.cc:908 bse/bsepcmoutput.c:127
 #, fuzzy
 msgid "Left channel input"
 msgstr "تكبير نافذة الإدخال"
 
-#: bse/bsebus.c:911 bse/bsepcminput.c:127
+#: bse/bsebus.cc:912 bse/bsepcminput.c:127
 #, fuzzy
 msgid "Left channel output"
 msgstr "جهاز خرج الصوت"
@@ -3954,7 +4040,7 @@ msgstr ""
 msgid "License"
 msgstr "الترخيص"
 
-#: bse/bseautodoc.c:363 bse/bseautodoc.c:437
+#: bse/bseautodoc.cc:363 bse/bseautodoc.cc:437
 #, fuzzy
 msgid "License:"
 msgstr "الترخيص"
@@ -3979,7 +4065,7 @@ msgstr "وصلة التنزيل"
 msgid "Link or move parts (mouse button 1 and 2)"
 msgstr ""
 
-#: bse/bsebus.c:145
+#: bse/bsebus.cc:146
 msgid "List of available mixer busses to be used as bus output"
 msgstr ""
 
@@ -4003,7 +4089,7 @@ msgstr ""
 msgid "List of available synthesis networks to choose a track instrument from"
 msgstr ""
 
-#: bse/bsebus.c:134
+#: bse/bsebus.cc:135
 msgid "List of available synthesis signals to be used as bus input"
 msgstr ""
 
@@ -4107,7 +4193,7 @@ msgid "Location"
 msgstr "الموقع"
 
 #. change default
-#. override parent property
+#. override parent property: 0
 #: bse/bsesong.c:784 bse/bsesong.c:788 bse/bsesong.c:793 bse/bsesong.c:798
 #, fuzzy
 msgid "Looping"
@@ -4163,22 +4249,22 @@ msgstr "قناة الفيديو"
 msgid "MIDI Instrument"
 msgstr ""
 
-#: bse/bsemidicontroller.c:136
+#: bse/bsemidicontroller.cc:137
 #, fuzzy
 msgid "MIDI Signal 1"
 msgstr "<b>قوّة الإشارة</b>"
 
-#: bse/bsemidicontroller.c:138
+#: bse/bsemidicontroller.cc:139
 #, fuzzy
 msgid "MIDI Signal 2"
 msgstr "<b>قوّة الإشارة</b>"
 
-#: bse/bsemidicontroller.c:140
+#: bse/bsemidicontroller.cc:141
 #, fuzzy
 msgid "MIDI Signal 3"
 msgstr "<b>قوّة الإشارة</b>"
 
-#: bse/bsemidicontroller.c:142
+#: bse/bsemidicontroller.cc:143
 #, fuzzy
 msgid "MIDI Signal 4"
 msgstr "<b>قوّة الإشارة</b>"
@@ -4212,7 +4298,7 @@ msgstr ""
 msgid "Master"
 msgstr "جاري تعليق السيد..."
 
-#: bse/bsebus.c:904
+#: bse/bsebus.cc:905
 #, fuzzy
 msgid "Master Output"
 msgstr "جهاز الخرج:"
@@ -4342,7 +4428,7 @@ msgstr " فتح جهاز هندسة الصوت"
 msgid "Mixer busses connected to track output"
 msgstr ""
 
-#: bse/bsebus.c:899
+#: bse/bsebus.cc:900
 msgid "Mixer busses used as output for synthesis signals"
 msgstr ""
 
@@ -4365,8 +4451,8 @@ msgstr "قطعة مفتاح الإختصار المسطر"
 msgid "Mod In"
 msgstr "تكبير"
 
-#: bse/bsebiquadfilter.c:162 bse/bsebiquadfilter.c:168
-#: bse/bsebiquadfilter.c:174 bse/bsebiquadfilter.c:180
+#: bse/bsebiquadfilter.cc:162 bse/bsebiquadfilter.cc:168
+#: bse/bsebiquadfilter.cc:174 bse/bsebiquadfilter.cc:180
 #: bse/bsestandardosc.c:162 bse/bsestandardosc.c:167 bse/bsestandardosc.c:172
 #: bse/bsestandardosc.c:177 bse/bsewaveosc.c:569 bse/bsewaveosc.c:575
 #: bse/bsewaveosc.c:581
@@ -4509,12 +4595,12 @@ msgstr "تفضيلات المؤلّف"
 msgid "Musical Tuning"
 msgstr ""
 
-#: bse/bsebus.c:874
+#: bse/bsebus.cc:875
 #, fuzzy
 msgid "Mute"
 msgstr "صمت"
 
-#: bse/bsebus.c:874
+#: bse/bsebus.cc:875
 msgid "Mute: turn off the bus volume"
 msgstr ""
 
@@ -4614,13 +4700,13 @@ msgstr ""
 msgid "No available audio device was found."
 msgstr ""
 
-#: bse/bseenums.c:120
+#: bse/bseenums.cc:120
 #, fuzzy
 msgid "No data available"
 msgstr "لا وجود لوصف."
 
 #. Device errors
-#: bse/bseenums.c:136
+#: bse/bseenums.cc:136
 #, fuzzy
 msgid "No device (driver) available"
 msgstr "لا يوجد لغات"
@@ -4635,54 +4721,54 @@ msgstr "لم يتم انتقاء أيّة تطبيقات"
 msgid "No quantization selected"
 msgstr "لم يتم انتقاء أيّة تطبيقات"
 
-#: bse/bseenums.c:115
+#: bse/bseenums.cc:115
 #, fuzzy
 msgid "No space left on device"
 msgstr "لا توجد مساحة كافية على الجهاز"
 
 #. various procedure errors
-#: bse/bseenums.c:165
+#: bse/bseenums.cc:165
 #, fuzzy
 msgid "No such entry"
 msgstr "لا رسالة بهذا الإسم"
 
-#: bse/bseenums.c:166
+#: bse/bseenums.cc:166
 #, fuzzy
 msgid "No such event"
 msgstr "لا رسالة بهذا الإسم"
 
-#: bse/bseenums.c:106
+#: bse/bseenums.cc:106
 msgid "No such file, device or directory"
 msgstr ""
 
-#: bse/bseenums.c:147
+#: bse/bseenums.cc:147
 #, fuzzy
 msgid "No such input channel"
 msgstr "أجهزة الإدخال دون امتدادات"
 
-#: bse/bseenums.c:148
+#: bse/bseenums.cc:148
 #, fuzzy
 msgid "No such output channel"
 msgstr "ليس ثمّة رسالة %s في %s"
 
 #. BseProcedure errors
-#: bse/bseenums.c:159
+#: bse/bseenums.cc:159
 #, fuzzy
 msgid "No such procedure"
 msgstr "لا رسالة بهذا الإسم"
 
 #. BseSource errors
-#: bse/bseenums.c:146
+#: bse/bseenums.cc:146
 #, fuzzy
 msgid "No such synthesis module"
 msgstr "ليس ثمّة رسالة %s في %s"
 
-#: bse/bseenums.c:128
+#: bse/bseenums.cc:128
 #, fuzzy
 msgid "No such wave"
 msgstr "لا رسالة بهذا الإسم"
 
-#: birnet/birnetutils.cc:1197
+#: birnet/birnetutils.cc:1200
 #, c-format
 msgid ""
 "No suitable web browser executable could be found to be executed and to "
@@ -4693,7 +4779,7 @@ msgstr ""
 #: beast-gtk/bsteventrollctrl.c:656 beast-gtk/bstpianorollctrl.c:579
 #: beast-gtk/bstpianorollctrl.c:689 beast-gtk/bstpianorollctrl.c:752
 #: beast-gtk/bsttrackrollctrl.c:479 beast-gtk/bsttrackrollctrl.c:499
-#: beast-gtk/bsttrackrollctrl.c:571 bse/bseenums.c:167
+#: beast-gtk/bsttrackrollctrl.c:571 bse/bseenums.cc:167
 #, fuzzy
 msgid "No target"
 msgstr "هدف الإطار"
@@ -4743,7 +4829,7 @@ msgstr "مفتاح غير قياسي"
 msgid "None"
 msgstr "لا شيء"
 
-#: bse/bsebiquadfilter.c:155
+#: bse/bsebiquadfilter.cc:155
 #, fuzzy
 msgid "Norm Type"
 msgstr "نوع التّنبيه"
@@ -4763,10 +4849,10 @@ msgid ""
 "script to catch the events currently being played back."
 msgstr ""
 
-#: bse/bsebiquadfilter.c:141 bse/bseconstant.c:127 bse/bsestandardosc.c:149
+#: bse/bsebiquadfilter.cc:141 bse/bseconstant.cc:127 bse/bsestandardosc.c:149
 #: plugins/bseiirfilter.c:146 plugins/bseiirfilter.c:157
-#: plugins/davcanyondelay.c:114 plugins/davorgan.c:113 plugins/davsyndrum.c:94
-#: plugins/davxtalstrings.c:109
+#: plugins/davcanyondelay.c:114 plugins/davorgan.idl:34
+#: plugins/davsyndrum.c:94 plugins/davxtalstrings.c:109
 #, fuzzy
 msgid "Note"
 msgstr "ملاحظة"
@@ -4786,7 +4872,7 @@ msgstr "إدخال مباشر"
 msgid "Note Fine Tune"
 msgstr "<b>خصائص المذكرة الافتراضية</b>"
 
-#: bse/bseinstrumentinput.c:118 bse/bsemidiinput.c:108
+#: bse/bseinstrumentinput.cc:132 bse/bsemidiinput.cc:108
 #, fuzzy
 msgid "Note Frequency"
 msgstr "ملحوظة المركّب"
@@ -4821,7 +4907,7 @@ msgstr "عتبة الطّول"
 msgid "Note decay is the 'half-life' of the note's decay in seconds"
 msgstr ""
 
-#: bse/bseladspamodule.c:196
+#: bse/bseladspamodule.cc:196
 msgid ""
 "Note values are converted to Hertz according to the current musical tuning"
 msgstr ""
@@ -4849,12 +4935,12 @@ msgstr "عدد الأعمدة:"
 msgid "Number of Rows"
 msgstr "عدد السطور في البكسبف"
 
-#: bse/bseautodoc.c:335
+#: bse/bseautodoc.cc:335
 #, fuzzy
 msgid "Number of elements (C specific)"
 msgstr "لم افهم `%s' (عدد عناصر مغلوط)"
 
-#: bse/bsebiquadfilter.c:177 bse/bsestandardosc.c:174 bse/bsewaveosc.c:584
+#: bse/bsebiquadfilter.cc:177 bse/bsestandardosc.c:174 bse/bsewaveosc.c:584
 msgid "Number of octaves to be affected by exponential frequency modulation"
 msgstr ""
 
@@ -4906,7 +4992,7 @@ msgid "Open Project"
 msgstr "فتح ملف"
 
 #. TRANSLATORS: keep this text to 70 chars in width
-#: bse/bsemididevice-oss.c:266
+#: bse/bsemididevice-oss.cc:266
 msgid ""
 "Open Sound System MIDI driver:\n"
 "  DEVICE - MIDI device file name.\n"
@@ -4929,7 +5015,7 @@ msgstr ""
 msgid "Open existing project"
 msgstr "فتح مستند مسبق"
 
-#: bse/bseenums.c:108
+#: bse/bseenums.cc:108
 #, fuzzy
 msgid "Open failed"
 msgstr "فشل فتح \"%s\": %s\n"
@@ -4955,20 +5041,20 @@ msgstr "الترتيب"
 msgid "Order of Filter"
 msgstr "مصفاة ذات الأولويّة \"%s\""
 
-#: plugins/davorgan.c:149
-#, fuzzy
-msgid "Organ Output"
-msgstr "جهاز الخرج:"
-
-#: plugins/davorgan.c:114
+#: plugins/davorgan.idl:34
 msgid ""
 "Organ frequency as note, converted to Hertz according to the current musical "
 "tuning"
 msgstr ""
 
-#: plugins/davorgan.c:108
+#: plugins/davorgan.idl:32
 msgid "Organ frequency in Hertz, i.e. the pitch of the base tone"
 msgstr ""
+
+#: plugins/davorgan.idl:30
+#, fuzzy
+msgid "Organ output"
+msgstr "جهاز الخرج:"
 
 #: beast-gtk/bstdbmeter.c:766 beast-gtk/bstdbmeter.c:1061
 #: beast-gtk/bstdbmeter.c:1561
@@ -5020,7 +5106,7 @@ msgstr ""
 msgid "Oscillator wave form"
 msgstr "مناول أفعال الاستمارة"
 
-#: bse/bseenums.c:116
+#: bse/bseenums.cc:116
 #, fuzzy
 msgid "Out of memory"
 msgstr "نفذت الذّاكرة"
@@ -5056,7 +5142,7 @@ msgstr "منفذ الاستماع"
 msgid "Output Signal Monitor"
 msgstr "مراقبة شدة صوت الإخراج الصوتي"
 
-#: bse/bsebus.c:898 bse/bsetrack.c:1039
+#: bse/bsebus.cc:899 bse/bsetrack.c:1039
 #, fuzzy
 msgid "Output Signals"
 msgstr "جهاز الخرج:"
@@ -5084,7 +5170,7 @@ msgstr ""
 msgid "Outputs"
 msgstr ""
 
-#: bse/bseenums.c:168
+#: bse/bseenums.cc:168
 #, fuzzy
 msgid "Ownership mismatch"
 msgstr "لخبطة في النوع"
@@ -5146,12 +5232,12 @@ msgstr ""
 msgid "Parasite Paths"
 msgstr "المسارات المستثناة للبحث السّريع"
 
-#: bse/bseenums.c:154
+#: bse/bseenums.cc:154
 #, fuzzy
 msgid "Parent mismatch"
 msgstr "لخبطة في النوع"
 
-#: bse/bseenums.c:133
+#: bse/bseenums.cc:133
 #, fuzzy
 msgid "Parsing error"
 msgstr "خطأ أثناء ترجمة المصفات: %s: %s"
@@ -5223,7 +5309,7 @@ msgstr "إستخدام مفتاح الشّهادة"
 msgid "Percentage of background image pixel to blend over background color."
 msgstr ""
 
-#: bse/bsebiquadfilter.c:171 bse/bsestandardosc.c:169 bse/bsewaveosc.c:578
+#: bse/bsebiquadfilter.cc:171 bse/bsestandardosc.c:169 bse/bsewaveosc.c:578
 msgid "Perform exponential frequency modulation instead of linear"
 msgstr ""
 
@@ -5338,7 +5424,7 @@ msgstr ""
 msgid "Preferences"
 msgstr "تفضيلات"
 
-#: bse/bseenums.c:104
+#: bse/bseenums.cc:104
 #, fuzzy
 msgid "Premature EOF"
 msgstr "EOF من التطبيق الإبن\n"
@@ -5366,23 +5452,23 @@ msgstr "متصفّح الانترنت"
 msgid "Procedure _Browser"
 msgstr "متصفّح الانترنت"
 
-#: bse/bseenums.c:160
+#: bse/bseenums.cc:160
 #, fuzzy
 msgid "Procedure currently busy"
 msgstr "العب نغمة المشغول"
 
-#: bse/bseenums.c:163
+#: bse/bseenums.cc:163
 #, fuzzy
 msgid "Procedure execution aborted"
 msgstr "مكّن إجراء الت_شغيل السريع"
 
-#: bse/bseenums.c:162
+#: bse/bseenums.cc:162
 #, fuzzy
 msgid "Procedure execution failed"
 msgstr "فشل تسجيل %s إلى %s"
 
 #. recursion
-#: bse/bseenums.c:161
+#: bse/bseenums.cc:161
 #, fuzzy
 msgid "Procedure parameter invalid"
 msgstr "ليس دليل مستخدمين صحيح"
@@ -5635,7 +5721,7 @@ msgstr ""
 msgid "Raise the currently selected key binding, relative to its neighbours"
 msgstr ""
 
-#: bse/bseautodoc.c:185 bse/bseautodoc.c:191
+#: bse/bseautodoc.cc:185 bse/bseautodoc.cc:191
 #, fuzzy
 msgid "Range:"
 msgstr "نطاق"
@@ -5650,7 +5736,7 @@ msgstr "تكبير"
 msgid "Ratio [x:1]"
 msgstr "النسبة"
 
-#: bse/bseenums.c:110
+#: bse/bseenums.cc:110
 #, fuzzy
 msgid "Read failed"
 msgstr "فشل في قراءة الملف '%s': %s"
@@ -5687,6 +5773,10 @@ msgstr "تكرار آخر عملية متراجع عنها"
 
 #: beast-gtk/bstpartdialog.c:68
 msgid "Redo the last undone editing step"
+msgstr ""
+
+#: plugins/davorgan.idl:51
+msgid "Reed Sounds"
 msgstr ""
 
 #: plugins/davcanyondelay.c:109
@@ -5782,7 +5872,7 @@ msgstr ""
 msgid "Report a Beast Bug..."
 msgstr "أداة تقرير خلال"
 
-#: bse/bseenums.c:125
+#: bse/bseenums.cc:125
 msgid "Requested data values unmatched"
 msgstr ""
 
@@ -5848,12 +5938,12 @@ msgstr ""
 msgid "Right"
 msgstr "اليمين"
 
-#: bse/bseinstrumentoutput.c:120
+#: bse/bseinstrumentoutput.cc:134
 #, fuzzy
 msgid "Right Audio"
 msgstr "مُلحق الصوت"
 
-#: bse/bsebus.c:909 bse/bsepcmoutput.c:129 plugins/freeverb/bsefreeverb.c:122
+#: bse/bsebus.cc:910 bse/bsepcmoutput.c:129 plugins/freeverb/bsefreeverb.c:122
 #, fuzzy
 msgid "Right Audio In"
 msgstr "عرض الهامش ا?يمن بالبكسل"
@@ -5863,7 +5953,7 @@ msgstr "عرض الهامش ا?يمن بالبكسل"
 msgid "Right Audio Input"
 msgstr "جهاز دخل الصوت"
 
-#: bse/bsebus.c:913 bse/bsepcminput.c:129 plugins/freeverb/bsefreeverb.c:124
+#: bse/bsebus.cc:914 bse/bsepcminput.c:129 plugins/freeverb/bsefreeverb.c:124
 #, fuzzy
 msgid "Right Audio Out"
 msgstr "<b>رسالة خارج المكتب:</b>"
@@ -5873,7 +5963,7 @@ msgstr "<b>رسالة خارج المكتب:</b>"
 msgid "Right Audio Output"
 msgstr "جهاز خرج الصوت"
 
-#: bse/bseinstrumentoutput.c:120
+#: bse/bseinstrumentoutput.cc:134
 #, fuzzy
 msgid "Right Channel Output"
 msgstr "جهاز خرج الصوت"
@@ -5899,7 +5989,7 @@ msgstr "اخرج"
 msgid "Right Output"
 msgstr "جهاز الخرج:"
 
-#: bse/bsebus.c:884
+#: bse/bsebus.cc:885
 #, fuzzy
 msgid "Right Volume"
 msgstr "متحكم شدة الصوت"
@@ -5914,12 +6004,12 @@ msgstr "جهاز خرج الصوت"
 msgid "Right channel Input"
 msgstr "تكبير نافذة الإدخال"
 
-#: bse/bsebus.c:909
+#: bse/bsebus.cc:910
 #, fuzzy
 msgid "Right channel input"
 msgstr "تكبير نافذة الإدخال"
 
-#: bse/bsebus.c:913 bse/bsepcminput.c:129
+#: bse/bsebus.cc:914 bse/bsepcminput.c:129
 #, fuzzy
 msgid "Right channel output"
 msgstr "جهاز خرج الصوت"
@@ -6167,7 +6257,7 @@ msgstr "تكبير نافذة الإدخال"
 msgid "Second filter cutoff frequency"
 msgstr "الصدر الأوسط"
 
-#: bse/bseenums.c:109
+#: bse/bseenums.cc:109
 #, fuzzy
 msgid "Seek failed"
 msgstr "فشل الاختبار %d"
@@ -6352,7 +6442,7 @@ msgstr ""
 msgid "Show messages about empty part range"
 msgstr ""
 
-#: birnet/birnetutils.cc:1198
+#: birnet/birnetutils.cc:1201
 msgid "Show messages about web browser launch problems"
 msgstr ""
 
@@ -6381,12 +6471,12 @@ msgstr "منطقة خارطة الصورة"
 msgid "Signal In"
 msgstr "تكبير"
 
-#: bse/bsebus.c:887
+#: bse/bsebus.cc:888
 #, fuzzy
 msgid "Signal Inputs"
 msgstr "<b>قوّة الإشارة</b>"
 
-#: bse/bsebus.c:896 bse/bsetrack.c:1037
+#: bse/bsebus.cc:897 bse/bsetrack.c:1037
 #, fuzzy
 msgid "Signal Outputs"
 msgstr "<b>قوّة الإشارة</b>"
@@ -6472,12 +6562,12 @@ msgstr ""
 msgid "Sole Output"
 msgstr "جهاز الخرج:"
 
-#: bse/bsebus.c:876
+#: bse/bsebus.cc:877
 #, fuzzy
 msgid "Solo"
 msgstr "سولو الطبل"
 
-#: bse/bsebus.c:876
+#: bse/bsebus.cc:877
 msgid "Solo: mute all other busses"
 msgstr ""
 
@@ -6627,12 +6717,12 @@ msgstr "عرض الصوت:"
 msgid "Store references to wave files"
 msgstr ""
 
-#: bse/bsebiquadfilter.c:184
+#: bse/bsebiquadfilter.cc:184
 #, fuzzy
 msgid "Strength of gain modulation"
 msgstr "النّسبة المئويّة لقوّة الإشارة اللّاسلكيّة"
 
-#: bse/bsebiquadfilter.c:165 bse/bsestandardosc.c:164
+#: bse/bsebiquadfilter.cc:165 bse/bsestandardosc.c:164
 msgid "Strength of linear frequency modulation"
 msgstr ""
 
@@ -6684,7 +6774,7 @@ msgstr "قاطعات"
 msgid "SynDrum Output"
 msgstr "جهاز الخرج:"
 
-#: bse/bsebus.c:878
+#: bse/bsebus.cc:879
 #, fuzzy
 msgid "Sync"
 msgstr "أصناف المزامنة:"
@@ -6709,7 +6799,7 @@ msgstr "<b>جهاز الإدخال</b>"
 msgid "Syncronization Output"
 msgstr "جهاز الخرج:"
 
-#: bse/bsebus.c:878
+#: bse/bsebus.cc:879
 #, fuzzy
 msgid "Syncronize left and right volume"
 msgstr "حرّك الفأرة ثمّ اضغط على زرّها اليسار واليمين"
@@ -6719,7 +6809,7 @@ msgstr "حرّك الفأرة ثمّ اضغط على زرّها اليسار و�
 msgid "Synth Control Frequency"
 msgstr "مجموعة تحكم الاستمارة"
 
-#: bse/bseinstrumentoutput.c:124
+#: bse/bseinstrumentoutput.cc:138
 #, fuzzy
 msgid "Synth Done"
 msgstr "تم الاختبار %d"
@@ -6754,7 +6844,7 @@ msgstr "اختر الإعدادات"
 msgid "Synthesis mixing frequency, common values are: 22050, 44100, 48000"
 msgstr ""
 
-#: bse/bseenums.c:156
+#: bse/bseenums.cc:156
 msgid "Synthesis module currently busy"
 msgstr ""
 
@@ -6786,7 +6876,7 @@ msgstr ""
 #. TRANSLATORS: the "tracks and busses" order in this tooltip needs
 #. * to be preserved to match the GUI order of displayed objects.
 #.
-#: bse/bsebus.c:894
+#: bse/bsebus.cc:895
 msgid "Synthesis signals (from tracks and busses) used as bus input"
 msgstr ""
 
@@ -6827,7 +6917,7 @@ msgid "Technical description of the multi-threaded synthesis engine innards"
 msgstr ""
 
 #. miscellaneous errors
-#: bse/bseenums.c:127
+#: bse/bseenums.cc:127
 #, fuzzy
 msgid "Temporary error"
 msgstr ""
@@ -6934,12 +7024,12 @@ msgstr "تشعيب قائمة الرّسائل."
 msgid "The feedback amount; a negative feedback inverts the signal"
 msgstr ""
 
-#: bse/bsebiquadfilter.c:127 plugins/bseiirfilter.c:119
+#: bse/bsebiquadfilter.cc:127 plugins/bseiirfilter.c:119
 #, fuzzy
 msgid "The filter design type"
 msgstr "نوع جهاز الخرج"
 
-#: bse/bsebiquadfilter.c:156
+#: bse/bsebiquadfilter.cc:156
 msgid ""
 "The filter gain normalization type (supported only by highpass and lowpass)"
 msgstr ""
@@ -7101,7 +7191,7 @@ msgstr "القطعة التي ستفعل عند نقر مفتاح الإختصا
 msgid "Thirty-secondth note"
 msgstr "<b>خصائص المذكرة الافتراضية</b>"
 
-#: bse/bseautodoc.c:263
+#: bse/bseautodoc.cc:263
 msgid "This procedure has multiple return values."
 msgstr ""
 
@@ -7221,12 +7311,12 @@ msgid ""
 msgstr ""
 
 #. out of resource conditions
-#: bse/bseenums.c:113
+#: bse/bseenums.cc:113
 #, fuzzy
 msgid "Too many open files"
 msgstr "الملفات المفتوحة كثيرة جدا"
 
-#: bse/bseenums.c:114
+#: bse/bseenums.cc:114
 msgid "Too many open files in system"
 msgstr ""
 
@@ -7242,7 +7332,7 @@ msgstr ""
 msgid "Tracks contain instrument definitions and parts with notes"
 msgstr ""
 
-#: bse/bsestandardosc.c:154 plugins/davorgan.c:118
+#: bse/bsestandardosc.c:154 plugins/davorgan.idl:36
 #: plugins/davxtalstrings.c:114
 msgid "Transpose"
 msgstr ""
@@ -7251,7 +7341,7 @@ msgstr ""
 msgid "Transpose down starting at"
 msgstr ""
 
-#: plugins/davorgan.c:118 plugins/davxtalstrings.c:114
+#: plugins/davorgan.idl:36 plugins/davxtalstrings.c:114
 msgid "Transposition of the frequency in semitones"
 msgstr ""
 
@@ -7367,7 +7457,7 @@ msgstr "تراجع عن آخر تغيير للنص"
 msgid "Undo the effect of the last action"
 msgstr "تكرار آخر عملية متراجع عنها"
 
-#: bse/bsebiquadfilter.c:188
+#: bse/bsebiquadfilter.cc:188
 #, fuzzy
 msgid "Unfiltered Audio Signal"
 msgstr "اشارة معرفة من طرف المستخدم 1"
@@ -7382,12 +7472,12 @@ msgstr "<b>جهاز الإدخال</b>"
 msgid "Unique name of this object"
 msgstr "الدور الميسر لهذا الجسم"
 
-#: bse/bseenums.c:98
+#: bse/bseenums.cc:98
 #, fuzzy
 msgid "Unknown error"
 msgstr "خطأ مجهول"
 
-#: bse/bseenums.c:124
+#: bse/bseenums.cc:124
 #, fuzzy
 msgid "Unknown format"
 msgstr "تهيئة الصورة مجهولة"
@@ -7407,7 +7497,7 @@ msgstr "إ_غلاق جميع الملاحظات"
 msgid "Unspecified length"
 msgstr "عتبة الطّول"
 
-#: bse/bseinstrumentoutput.c:122
+#: bse/bseinstrumentoutput.cc:136
 msgid "Unused"
 msgstr ""
 
@@ -7456,12 +7546,12 @@ msgstr ""
 msgid "VZoom"
 msgstr ""
 
-#: bse/bseconstant.c:108
+#: bse/bseconstant.cc:108
 #, fuzzy
 msgid "Value [float]"
 msgstr "قيمة التحجيم"
 
-#: bse/bseinstrumentinput.c:122 bse/bsemidiinput.c:112
+#: bse/bseinstrumentinput.cc:136 bse/bsemidiinput.cc:112
 msgid "Velocity"
 msgstr ""
 
@@ -7470,7 +7560,7 @@ msgstr ""
 msgid "Velocity Out"
 msgstr "اخرج"
 
-#: bse/bseinstrumentinput.c:122 bse/bsemidiinput.c:112
+#: bse/bseinstrumentinput.cc:136 bse/bsemidiinput.cc:112
 #, fuzzy
 msgid "Velocity of the note press"
 msgstr "ضغط يسار الفأرة"
@@ -7480,7 +7570,7 @@ msgstr "ضغط يسار الفأرة"
 msgid "Velocity of the string pluck"
 msgstr "ضغط يسار الفأرة"
 
-#: bse/bseinstrumentinput.c:124 bse/bsemidiinput.c:114
+#: bse/bseinstrumentinput.cc:138 bse/bsemidiinput.cc:114
 msgid "Velocity while the note is pressed"
 msgstr ""
 
@@ -7546,11 +7636,11 @@ msgstr "جهاز الخرج:"
 msgid "Volume"
 msgstr "شدة الصوت"
 
-#: bse/bsebus.c:880
+#: bse/bsebus.cc:881
 msgid "Volume adjustment in decibel of left bus channel"
 msgstr ""
 
-#: bse/bsebus.c:884
+#: bse/bsebus.cc:885
 msgid "Volume adjustment in decibel of right bus channel"
 msgstr ""
 
@@ -7641,7 +7731,7 @@ msgstr "ملحوظة المركّب"
 msgid "Window Size"
 msgstr "حجم نافذة المحادثة"
 
-#: bse/bseenums.c:111
+#: bse/bseenums.cc:111
 #, fuzzy
 msgid "Write failed"
 msgstr "فشلت كتابة \"%s\": %s\n"
@@ -7656,7 +7746,7 @@ msgstr "تعذّر الكتابة في ملف BMP "
 msgid "Write project to disk"
 msgstr "تعطيل الحف_ظ للقرص"
 
-#: bse/bseenums.c:122
+#: bse/bseenums.cc:122
 #, fuzzy
 msgid "Wrong number of channels"
 msgstr "لم افهم `%s' (عدد عناصر مغلوط)"
@@ -7981,7 +8071,7 @@ msgstr "_اعرض"
 msgid "_Virtualization"
 msgstr ""
 
-#: bse/bsejanitor.c:537
+#: bse/bsejanitor.cc:537
 #, fuzzy
 msgid "connection terminated"
 msgstr "تم إلغاء الإتّصال"
@@ -8271,7 +8361,7 @@ msgstr "<b>أسلوب القطعة:</b>"
 msgid "failed to add wave chunk from file \"%s\": %s"
 msgstr ""
 
-#: bse/bsejanitor.c:535
+#: bse/bsejanitor.cc:535
 #, fuzzy
 msgid "killed by janitor"
 msgstr "الاثنان(جنبا بجنب)"
