@@ -1056,7 +1056,7 @@ bst_snet_router_init (BstSNetRouter      *self)
                     "swapped_signal::event", bst_snet_router_root_event, self,
                     NULL);
   
-  self->adjustment = (GtkAdjustment*) gtk_adjustment_new (1.0, 0.20, 5.00, 0.05, 0.50, 0.50);
+  self->adjustment = (GtkAdjustment*) gtk_adjustment_new (1.0, 0.20, 5.00, 0.05, 0.50, 0 /* 0.50 - spin buttons needs 0 */);
   g_object_connect (self->adjustment,
                     "swapped_signal::value_changed", bst_snet_router_adjust_zoom, self,
                     "swapped_signal::destroy", g_nullify_pointer, &self->adjustment,
