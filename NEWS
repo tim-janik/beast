@@ -1,3 +1,13 @@
+Overview of Changes in BEAST/BSE 0.7.6:
+
+* Packaging fixups, download and integrate documentation from beast wiki.
+* Work around regressions introduced in recent GLib and GTK+ versions.
+* Various bug and leak fixups.
+* Moved lots of code to C++.
+* Build documentation with doxygen.
+* Code fixups for g++-4.4, g++-4.7.
+* Improved DavOrgan frequency handling.
+
 Overview of Changes in BEAST/BSE 0.7.4:
 
 * Renamed the project to Better Audio System / Better Sound Engine
