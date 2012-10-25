@@ -24,6 +24,7 @@ EXTRA_DIST += beast-index.html
 
 # == Download Imports ==
 IMPORT_FILES = # files to be imported/updated
+EXTRA_DIST  += $(IMPORT_FILES:%=import/%) import/stamp
 import:	# online docs are downloaded and stored in $(srcdir)/import/
 	$(Q) test "$(srcdir)" = "$(builddir)" -a -d html/
 	$(Q) rm -rf newimport/ && mkdir newimport/
@@ -86,13 +87,13 @@ HREFS = 's,&lt;\(\(http\|ftp\)s\?:[^<>]\+\)&gt;,\&lt;<a href="\1">\1</a>\&gt;,g'
 MISSING_MSG = "  Some files hosted online appear missing or outdated; please issue: make import  "
 CURRENTNESS = 21600 # 21600 seconds = 6 hours
 check-aging-files: check-missing-files
-	$(Q) LAST=`test -e import/stamp && cat import/stamp || echo 0` ; NOW=`date +%s` \
+	$(Q) LAST=`cd $(srcdir) && test -e import/stamp && cat import/stamp || echo 0` ; NOW=`date +%s` \
 	; test $$(($$NOW - $$LAST)) -lt $(CURRENTNESS) || { \
 	  echo $(MISSING_MSG) | sed 's/./=/g' && echo $(MISSING_MSG) && echo $(MISSING_MSG) | sed 's/./=/g' \
 	  && false ; }
 dist-hook: check-aging-files
 check-missing-files:
-	$(Q) test 1 $(patsubst %, -a -e $(srcdir)/import/%, $(IMPORT_FILES)) || { \
+	$(Q) { cd $(srcdir) && test 1 $(patsubst %, -a -e $(srcdir)/import/%, $(IMPORT_FILES)) ; } || { \
 	  echo $(MISSING_MSG) | sed 's/./=/g' && echo $(MISSING_MSG) && echo $(MISSING_MSG) | sed 's/./=/g' \
 	  && false ; }
 import/%:
