@@ -1,0 +1,119 @@
+<table id="toc" class="toc"><tr><td><div id="toctitle"><h2>Contents</h2></div>
+<ul>
+<li class="toclevel-1 tocsection-1"><a href="#Introduction"><span class="tocnumber">1</span> <span class="toctext">Introduction</span></a>
+<ul>
+<li class="toclevel-2 tocsection-2"><a href="#Authors"><span class="tocnumber">1.1</span> <span class="toctext">Authors</span></a></li>
+<li class="toclevel-2 tocsection-3"><a href="#Document_History"><span class="tocnumber">1.2</span> <span class="toctext">Document History</span></a></li>
+<li class="toclevel-2 tocsection-4"><a href="#Contact_Information_and_Resources"><span class="tocnumber">1.3</span> <span class="toctext">Contact Information and Resources</span></a></li>
+</ul>
+</li>
+<li class="toclevel-1 tocsection-5"><a href="#Questions_.26_Answers"><span class="tocnumber">2</span> <span class="toctext">Questions &amp; Answers</span></a>
+<ul>
+<li class="toclevel-2 tocsection-6"><a href="#Why_do_I_get_.22Cannot_access_memory_at_address_0x706f6e6d.22_when_running_BEAST_in_gdb.3F"><span class="tocnumber">2.1</span> <span class="toctext">Why do I get "Cannot access memory at address 0x706f6e6d" when running <i>BEAST</i> in gdb?</span></a></li>
+<li class="toclevel-2 tocsection-7"><a href="#Why_doesn.27t_my_synthesis_network_produce_any_sound.3F"><span class="tocnumber">2.2</span> <span class="toctext">Why doesn't my synthesis network produce any sound?</span></a></li>
+<li class="toclevel-2 tocsection-8"><a href="#Why_can.27t_I_get_the_synthesis_networks_to_work.3F"><span class="tocnumber">2.3</span> <span class="toctext">Why can't I get the synthesis networks to work?</span></a></li>
+<li class="toclevel-2 tocsection-9"><a href="#Why_do_I_see_BEAST-WARNING_.2A.2A:_strange.2C_can.27t_find_any_plugins.2C_please_check_....2Fplugins_on_startup.3F"><span class="tocnumber">2.4</span> <span class="toctext">Why do I see BEAST-WARNING **: strange, can't find any plugins, please check .../plugins on startup?</span></a></li>
+<li class="toclevel-2 tocsection-10"><a href="#Why_can.27t_I_get_BEAST_to_load_my_.mp3.2C_.aiff.2C_.something_sample_files.3F"><span class="tocnumber">2.5</span> <span class="toctext">Why can't I get <i>BEAST</i> to load my .mp3, .aiff, .something sample files?</span></a></li>
+<li class="toclevel-2 tocsection-11"><a href="#Why_does_BEAST_sometimes_crash_with_a_segmentation_fault_on_startup.3F"><span class="tocnumber">2.6</span> <span class="toctext">Why does <i>BEAST</i> sometimes crash with a segmentation fault on startup?</span></a></li>
+<li class="toclevel-2 tocsection-12"><a href="#Why_doesn.27t_BEAST_0.4.0_play_songs_from_earlier_versions.3F"><span class="tocnumber">2.7</span> <span class="toctext">Why doesn't <i>BEAST</i> 0.4.0 play songs from earlier versions?</span></a></li>
+<li class="toclevel-2 tocsection-13"><a href="#What_is_a_.bse_file.3F"><span class="tocnumber">2.8</span> <span class="toctext">What is a .bse file?</span></a></li>
+<li class="toclevel-2 tocsection-14"><a href="#What_are_the_minimum_hardware_requirements_for_BEAST.3F"><span class="tocnumber">2.9</span> <span class="toctext">What are the minimum hardware requirements for <i>BEAST</i>?</span></a></li>
+<li class="toclevel-2 tocsection-15"><a href="#BEAST_crashes_upon_creation_of_new_synthesis_networks.3F"><span class="tocnumber">2.10</span> <span class="toctext"><i>BEAST</i> crashes upon creation of new synthesis networks?</span></a></li>
+<li class="toclevel-2 tocsection-16"><a href="#How_do_i_get_MIDI_to_work.3F"><span class="tocnumber">2.11</span> <span class="toctext">How do i get MIDI to work?</span></a></li>
+<li class="toclevel-2 tocsection-17"><a href="#GCC.2FG.2B.2B_crashes_or_leaks_or_hangs_when_compiling_BEAST"><span class="tocnumber">2.12</span> <span class="toctext">GCC/G++ crashes or leaks or hangs when compiling <i>BEAST</i></span></a></li>
+<li class="toclevel-2 tocsection-18"><a href="#Unwanted_signal_distortion_when_using_multiple_tracks"><span class="tocnumber">2.13</span> <span class="toctext">Unwanted signal distortion when using multiple tracks</span></a></li>
+<li class="toclevel-2 tocsection-19"><a href="#What_platforms_are_supported.3F"><span class="tocnumber">2.14</span> <span class="toctext">What platforms are supported?</span></a></li>
+<li class="toclevel-2 tocsection-20"><a href="#Why_does_nothing_happen_on_Play.3F"><span class="tocnumber">2.15</span> <span class="toctext">Why does nothing happen on <i>Play</i>?</span></a></li>
+</ul>
+</li>
+</ul>
+</td></tr></table>
+<h1> <span class="mw-headline" id="Introduction"> Introduction</span></h1>
+<h2> <span class="mw-headline" id="Authors"> Authors </span></h2>
+<p>The main author of <i>BEAST/BSE</i> is Tim Janik. A list of the various contributions is given in the About box of <i>BEAST</i>.
+</p><p><br/>
+</p>
+<h2> <span class="mw-headline" id="Document_History"> Document History </span></h2>
+<p>This FAQ was written by <a rel="nofollow" class="external text" href="mailto://timj@beast.gtk.org">Tim Janik</a>. Initial markup was done by Dave Seidel, until <a rel="nofollow" class="external text" href="mailto://dirt@gtk.org">Alper Ersoy</a> implemented a new markup parser for <i>BEAST</i> documentation. Around the 0.4.1 release, the docs got migrated to texinfo format. After the 0.6.6 release, the documentation system was rewritten, so all docs inclusing the FAQ got migrated to doxer format. In 2011 the FAQ got incorporated into the Beast wiki.
+</p><p><br/>
+</p>
+<h2> <span class="mw-headline" id="Contact_Information_and_Resources"> Contact Information and Resources </span></h2>
+<ul><li> WWW: <a rel="nofollow" class="external free" href="http://beast.testbit.eu">http://beast.testbit.eu</a>
+</li><li> Mailing List: <a rel="nofollow" class="external free" href="http://mail.gnome.org/mailman/listinfo/beast/">http://mail.gnome.org/mailman/listinfo/beast/</a>.
+</li></ul>
+<h1> <span class="mw-headline" id="Questions_.26_Answers"> Questions &amp; Answers</span></h1>
+<h2> <span class="mw-headline" id="Why_do_I_get_.22Cannot_access_memory_at_address_0x706f6e6d.22_when_running_BEAST_in_gdb.3F"> Why do I get "Cannot access memory at address 0x706f6e6d" when running <i>BEAST</i> in gdb? </span></h2>
+<p>Some versions of gdb have problems figuring dynamic plugins, we can only hope that this is going to be fixed some time soon. Newer versions of gdb may already figure what's going on with the plugins if you simply restart <i>BEAST</i> within gdb.
+</p><p><b>UPDATE:</b> This problem has not been reproduced with gdb versions newer than 5.
+</p>
+<h2> <span class="mw-headline" id="Why_doesn.27t_my_synthesis_network_produce_any_sound.3F"> Why doesn't my synthesis network produce any sound? </span></h2>
+<p>There are various possible causes for this. First, make sure you have <i>BEAST</i> correctly installed and accessing your sound card by running one of the synthesis tests in the ./test/ subdirectory. For custom synthesis networks, make sure you have something noisy (e.g. the audio output of an oscillator) hooked up to a PcmOutput module, and have the network's "Auto Activate" parameter (on it's "Parameters" notebook page, section "Playback Settings") enabled.
+</p>
+<h2> <span class="mw-headline" id="Why_can.27t_I_get_the_synthesis_networks_to_work.3F"> Why can't I get the synthesis networks to work? </span></h2>
+<p>This is probably a plugin loading problem, most synthesis networks require plugins and won't work if there are any problems loading/finding them. <i>BEAST</i> loads its plugins from some common installation directory. It therefore needs to be properly installed before you can make use of its plugins. Simply starting it from within the build directory is not sufficient.
+</p>
+<h2> <span class="mw-headline" id="Why_do_I_see_BEAST-WARNING_.2A.2A:_strange.2C_can.27t_find_any_plugins.2C_please_check_....2Fplugins_on_startup.3F"> Why do I see <tt>BEAST-WARNING **: strange, can't find any plugins, please check .../plugins</tt> on startup? </span></h2>
+<p>See previous question.
+</p>
+<h2> <span class="mw-headline" id="Why_can.27t_I_get_BEAST_to_load_my_.mp3.2C_.aiff.2C_.something_sample_files.3F"> Why can't I get <i>BEAST</i> to load my .mp3, .aiff, .something sample files? </span></h2>
+<p>Import functionality for foreign sample types is always being worked on, but due to the sheer multitude of formats out there chances are that a specific format is not yet supported. However, sample file loaders have much improved in the last versions, and at this point exist for Ogg/Vorbis, MPEG Audio 1.0/2.0/2.5 Layer I/II/III, RIFF/WAVE, and .bsewave (<i>BSE</i> multi sample format) files.
+</p>
+<h2> <span class="mw-headline" id="Why_does_BEAST_sometimes_crash_with_a_segmentation_fault_on_startup.3F"> Why does <i>BEAST</i> sometimes crash with a segmentation fault on startup? </span></h2>
+<p>This was due to a bug in the X Keyboard extension. <i>BEAST</i> tries to figure the country specifics of the keyboard layout, using the XKB extension. Apparently, there are some allocation problems in XkbFreeKeyboard() or XkbFreeClientMap() in libX11, which can cause random crashes. Usually <i>BEAST</i> will run fine when restarted.
+</p><p><b>UPDATE:</b> Recent versions of XKB seem to have fixed this problem.
+</p>
+<h2> <span class="mw-headline" id="Why_doesn.27t_BEAST_0.4.0_play_songs_from_earlier_versions.3F"> Why doesn't <i>BEAST</i> 0.4.0 play songs from earlier versions? </span></h2>
+<p>The song support was completely rewritten for this version. If lots of compatiblity problem reports occur, a converter might be implemented at some point.
+</p>
+<h2> <span class="mw-headline" id="What_is_a_.bse_file.3F"> What is a <tt>.bse</tt> file? </span></h2>
+<p><i>BEAST</i> stores saved data in <i>BSE</i> files. These files can hold everything associated with a project, such as the definition of synthesis networks, songs with their notes and tracks, and even complete music sample files. Except for raw sample data, the contents are stored in a human readable text form using lisp syntax. The textual file contents may even be manually edited, as long as the binary appendix used to store wave data doesn't get corrupted.
+The recommended mime type image for <i>BSE</i> files looks like this: <a href="http://testbit.eu/index.php?title=Special:Upload&amp;wpDestFile=Bse-mime" class="new" title="File:Bse-mime">,,BSE-Mime-Logo,png</a>
+</p>
+<h2> <span class="mw-headline" id="What_are_the_minimum_hardware_requirements_for_BEAST.3F"> What are the minimum hardware requirements for <i>BEAST</i>? </span></h2>
+<p>This depends a lot on how you utilise <i>BEAST</i>. If you simply want to create synthesis networks or very simple songs, any Pentium II ought to suffice. If you want to lay down a few tracks with effects you may need something more modern like a CPU with 1 GHz or higher core frequency.
+</p>
+<h2> <span class="mw-headline" id="BEAST_crashes_upon_creation_of_new_synthesis_networks.3F"> <i>BEAST</i> crashes upon creation of new synthesis networks? </span></h2>
+<p><i>BEAST</i> uses the <a rel="nofollow" class="external text" href="ftp://ftp.gnome.org/pub/GNOME/sources/libgnomecanvas/">GnomeCanvas Library</a> to display synthesis networks. That library has a malicious redrawing bug in versions up to (including) 2.2.0.1 triggering an assertion if the code is compiled with debugging output, which looks like this <a rel="nofollow" class="external text" href="http://developer.gnome.org/doc/API/2.0/libgnomecanvas/GnomeCanvas.html#GnomeCanvas">GnomeCanvas</a> error:
+<code>
+GnomeCanvas-ERROR **: file gnome-canvas.c: line 3509 (gnome_canvas_request_update_real): assertion failed: (canvas-&gt;idle_id&#160;!= 0)
+aborting...
+</code>
+This issue got fixed with version 2.2.0.2, so users encountering crashes with <i>BEAST</i> upon creation of synthesis networks will need to upgrade their <a rel="nofollow" class="external text" href="http://developer.gnome.org/doc/API/2.0/libgnomecanvas/GnomeCanvas.html#GnomeCanvas">GnomeCanvas</a> Library to at least 2.2.0.2.
+</p>
+<h2> <span class="mw-headline" id="How_do_i_get_MIDI_to_work.3F"> How do i get MIDI to work? </span></h2>
+<p><i>BEAST</i> comes with a <i><tt>test/midi-test.bse</tt></i> file in the <i><tt>test/</tt></i> directory of recent releases, it works out of the box with properly setup MIDI drivers and MIDI pianos. Setting up MIDI drivers can be a tough task on its own but is beyond the scope of this FAQ and is already taken care of by <a rel="nofollow" class="external text" href="http://www.midi-howto.com/">The Linux MIDI-HOWTO</a>, which provides good descriptions and further links to related documentation.
+</p>
+<h2> <span class="mw-headline" id="GCC.2FG.2B.2B_crashes_or_leaks_or_hangs_when_compiling_BEAST"> GCC/G++ crashes or leaks or hangs when compiling <i>BEAST</i></span></h2>
+<p>Recent versions of <i>BEAST</i> make use of C++ templates pretty heavily. This allowes us to greatly simplify some code portions (for instance the plugin implementations), but it's also a stress-test for the compilers out there. So people encountering problems compiling C++ code in <i>BEAST</i> should try to upgrade their compilers as a first meassure.
+</p>
+<h2> <span class="mw-headline" id="Unwanted_signal_distortion_when_using_multiple_tracks"> Unwanted signal distortion when using multiple tracks </span></h2>
+<p>The signal output of a song's tracks in <i>BEAST</i> are added up before they are routed to the sound output driver. If this added-up signal exceeds the maximum amplitude supported by the output driver (usually the machine's sound card), the output values are clipped to the supported range, causing the audio signal to encounter distortion of varying amounts, depending on the signal utilization of the channels. In the current version (0.6.2), the distortion can be circumvented by adding a post-processing network to songs which attenuates the incoming signals (left and right). The Quick Start Guide has a section detailing the setup of postprocessing networks. For future versions, a mixer is already in development, which will allow to handle this situation in much more flexible and adequate ways.
+</p>
+<h2> <span class="mw-headline" id="What_platforms_are_supported.3F"> What platforms are supported? </span></h2>
+<p>Beast is mainly developed under Linux and has been ported to some BSD versions. The <a href="http://testbit.eu/Beast_Download" title="Beast Download"> Download page</a> of the Beast website links to the available packages and source code repositories for the various supported Linux and BSD variants.
+Some effort also went into a Windows port, more details about the state of which can be found on the <a href="http://testbit.eu/Beast_Windows_Port" title="Beast Windows Port">Beast Windows Port</a> wiki page.
+Other operating systems are currently not supported, but the project is always taking patches and looks for new volounteers. So to start a new port, simply write your patch and contact the <a href="http://testbit.eu/Beast_Contact" title="Beast Contact"> mailing list and developers</a>.
+</p>
+<h2> <span class="mw-headline" id="Why_does_nothing_happen_on_Play.3F"> Why does nothing happen on <i>Play</i>? </span></h2>
+<p>If correctly installed, <i>BEAST</i> should play the demo song from the Demo-menu out of the box, unless it cannot acquire a suitable PCM device. To debug PCM problem causes, the following can be used:
+</p>
+<pre> $ beast --bse-debug=pcm
+</pre>
+<p>This can produce message like the following:
+</p>
+<pre> beast-0.7.1[999]:BSE-ALSA:1: ALSA: opening PCM &quot;hw:0,0" readable=1 writable=1: Device or resource busy
+</pre>
+<p>This is an indication that you have other audio programs (players or sound servers) which currently access your PCM device and block it for <i>BEAST</i>. Stopping or closing the other applications should free the audio device for use by <i>BEAST</i>.
+</p>
+<pre> beast-0.7.1[26493]:BSE-ALSA:1: ALSA: opening PCM &quot;hw:0,0" readable=0 writable=1: Failed to configure device frequency
+</pre>
+<p>This one is a bit more tricky. Some ALSA drivers only allow very specific playback rates to be used by audio applications. <i>BEAST</i> uses the playback rate specified in the user preferences which comes with plausible defaults upon installation. If you see this message, try to adjust the "Synth Mixing Frequency" on the "BSE" page of the Edit/Preferences dialog.
+</p>
+<!-- 
+NewPP limit report
+Preprocessor node count: 90/1000000
+Post-expand include size: 0/2097152 bytes
+Template argument size: 0/2097152 bytes
+Expensive parser function count: 0/100
+-->
+<!-- Saved in parser cache with key mediawikidb:pcache:idhash:49-1!*!0!!en!2!* and timestamp 20121025003655 -->

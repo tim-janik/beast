@@ -1,0 +1,98 @@
+<table id="toc" class="toc"><tr><td><div id="toctitle"><h2>Contents</h2></div>
+<ul>
+<li class="toclevel-1 tocsection-1"><a href="#BEAST.2FBSE_Quickstart_Guide"><span class="tocnumber">1</span> <span class="toctext">BEAST/BSE Quickstart Guide</span></a>
+<ul>
+<li class="toclevel-2 tocsection-2"><a href="#First_Start_At_Synthesis"><span class="tocnumber">1.1</span> <span class="toctext">First Start At Synthesis</span></a>
+<ul>
+<li class="toclevel-3 tocsection-3"><a href="#Creating_A_Synthesizer_Network"><span class="tocnumber">1.1.1</span> <span class="toctext">Creating A Synthesizer Network</span></a></li>
+<li class="toclevel-3 tocsection-4"><a href="#Creating_And_Connecting_Synthesis_Modules"><span class="tocnumber">1.1.2</span> <span class="toctext">Creating And Connecting Synthesis Modules</span></a></li>
+<li class="toclevel-3 tocsection-5"><a href="#Starting_And_Stopping_Playback"><span class="tocnumber">1.1.3</span> <span class="toctext">Starting And Stopping Playback</span></a></li>
+</ul>
+</li>
+<li class="toclevel-2 tocsection-6"><a href="#Setting_Up_Songs"><span class="tocnumber">1.2</span> <span class="toctext">Setting Up Songs</span></a>
+<ul>
+<li class="toclevel-3 tocsection-7"><a href="#What_Is_A_Synthesis_Instrument.3F"><span class="tocnumber">1.2.1</span> <span class="toctext">What Is A Synthesis Instrument?</span></a></li>
+<li class="toclevel-3 tocsection-8"><a href="#Creating_A_Synthesis_Instrument"><span class="tocnumber">1.2.2</span> <span class="toctext">Creating A Synthesis Instrument</span></a></li>
+<li class="toclevel-3 tocsection-9"><a href="#Setting_Up_Parts_And_Tracks"><span class="tocnumber">1.2.3</span> <span class="toctext">Setting Up Parts And Tracks</span></a></li>
+<li class="toclevel-3 tocsection-10"><a href="#Postprocessing_Tracks_and_Songs"><span class="tocnumber">1.2.4</span> <span class="toctext">Postprocessing Tracks and Songs</span></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</td></tr></table>
+<h1> <span class="mw-headline" id="BEAST.2FBSE_Quickstart_Guide"> BEAST/BSE Quickstart Guide </span></h1>
+<p>This guide attempts to give a few brief hints for new users, in order to get started with the most basic tasks that can be accomplished with <a href="http://testbit.eu/Beast" title="Beast">Beast</a>.
+</p>
+<h2> <span class="mw-headline" id="First_Start_At_Synthesis"> First Start At Synthesis </span></h2>
+<p>The most basic task <a href="http://testbit.eu/Beast" title="Beast">Beast</a> is able to accomplish is the creation of new musical sounds which is done by using a variety of music producers, called “Modules”. Forming a network of multiple modules to create a new sound is most generally being refered to as “Synthesis”.
+</p>
+<h3> <span class="mw-headline" id="Creating_A_Synthesizer_Network"> Creating A Synthesizer Network </span></h3>
+<ol><li> Select ``/Project/Add Custom Synthesizer`` from the menu to create a new network.
+</li><li> In the newly created synthesizer network <code>Unnamed</code>, on the notebook page <b>Properties</b>, enable the <b>Auto Activate</b> property to enable automated playback of this network.
+</li><li> Select the <b>Routing</b> notebook page.
+</li></ol>
+<h3> <span class="mw-headline" id="Creating_And_Connecting_Synthesis_Modules"> Creating And Connecting Synthesis Modules </span></h3>
+<p>The synthesis network routing editor allowes for creation of synthesis modules, establishing connections between module inputs and outputs, and for adjustment of a module's parameter set.
+</p><p>Here's how to setup a very simple test case:
+</p>
+<ol><li> Create two modules by selecting them from either the pallete window or from the Button-3 popup menu of the <b>Routing</b> notebook page and then clicking into the routing area. The two modules you need are <a href="http://testbit.eu/index.php?title=BsePcmOutput&amp;action=edit&amp;redlink=1" class="new" title="BsePcmOutput (page does not exist)">BsePcmOutput</a> and <a href="http://testbit.eu/index.php?title=BseStandardOsc&amp;action=edit&amp;redlink=1" class="new" title="BseStandardOsc (page does not exist)">BseStandardOsc</a>.
+</li><li> Connect the <b>Audio Out</b> output channel of the oscillator to the input channels <b>Left Audio In</b> and <b>Right Audio In</b> of the output module.
+</li></ol>
+<h3> <span class="mw-headline" id="Starting_And_Stopping_Playback"> Starting And Stopping Playback </span></h3>
+<p>Playback of a <a href="http://testbit.eu/Beast" title="Beast">Beast</a> project can be started or restarted by selecting the menu item ``/Project/Play``. Similarly, playback is halted by selecting ``/Project/Stop``.
+</p>
+<h2> <span class="mw-headline" id="Setting_Up_Songs"> Setting Up Songs </span></h2>
+<p>To be able to playback songs with <a href="http://testbit.eu/Beast" title="Beast">Beast</a>, synthesis instruments have to be created which are used to playback the notes contained in the parts of a song. Songs are created through the menu by selecting ``/Project/New Song``.
+</p>
+<h3> <span class="mw-headline" id="What_Is_A_Synthesis_Instrument.3F"> What Is A Synthesis Instrument? </span></h3>
+<p>A synthesis instrument is a special kind of synthesizer network, it has particular properties:
+</p>
+<ul><li> A synthesis instrument doesn't need to have its <b>Auto Activate</b> property enabled. That's because the song using the instrument will take care of activating it when neccessary.
+</li><li> A dedicated module type is used as input to the synthesis instrument so information about the note to be played can be fed into it.
+</li><li> A dedicated module type is used as output of the synthesis instrument to jointly compose the sound output together with other synthesis instruments being used.
+</li></ul>
+<h3> <span class="mw-headline" id="Creating_A_Synthesis_Instrument"> Creating A Synthesis Instrument </span></h3>
+<p>Here is how to create a simple synthesis instrument with one oscillator producing the basic tone, an envelope to control a note's volume, and an amplifier to adjust overall volume and apply the envelope to the oscillator.
+</p>
+<ol><li> Select ``/Project/New Custom Synthesizer`` from the menu.
+</li><li> Switch to the networks's <b>Routing</b> notebook page.
+</li><li> Create an <a href="http://testbit.eu/index.php?title=BSeInstrumentInput&amp;action=edit&amp;redlink=1" class="new" title="BSeInstrumentInput (page does not exist)">BSeInstrumentInput</a> and an <a href="http://testbit.eu/index.php?title=BseInstrumentOutput&amp;action=edit&amp;redlink=1" class="new" title="BseInstrumentOutput (page does not exist)">BseInstrumentOutput</a> module.
+</li><li> Create the three modules making up the actual instrument: a <a href="http://testbit.eu/index.php?title=BseStandardOsc&amp;action=edit&amp;redlink=1" class="new" title="BseStandardOsc (page does not exist)">BseStandardOsc</a>, a <a href="http://testbit.eu/index.php?title=BseSimpleADSR&amp;action=edit&amp;redlink=1" class="new" title="BseSimpleADSR (page does not exist)">BseSimpleADSR</a> (the envelope) and an <a href="http://testbit.eu/index.php?title=BseAmplifier&amp;action=edit&amp;redlink=1" class="new" title="BseAmplifier (page does not exist)">BseAmplifier</a>.
+</li><li> To control the oscillating frequency, and to trigger the oscillator wave at note start, connect the output channels <b>Frequency</b> and <b>Gate</b> of the <a href="http://testbit.eu/index.php?title=BseInstrumentInput&amp;action=edit&amp;redlink=1" class="new" title="BseInstrumentInput (page does not exist)">BseInstrumentInput</a> module to the input channels <b>Freq In</b> and <b>Sync In</b> of the <a href="http://testbit.eu/index.php?title=BseStandardOsc&amp;action=edit&amp;redlink=1" class="new" title="BseStandardOsc (page does not exist)">BseStandardOsc</a> module respectively.
+</li><li> To let the <a href="http://testbit.eu/index.php?title=BseAmplifier&amp;action=edit&amp;redlink=1" class="new" title="BseAmplifier (page does not exist)">BseAmplifier</a> shape the volume of the oscillating tone and to provide actual output, connect the output channel <b>Audio Out</b> of the <a href="http://testbit.eu/index.php?title=BseStandardOsc&amp;action=edit&amp;redlink=1" class="new" title="BseStandardOsc (page does not exist)">BseStandardOsc</a> to one of the <b>Audio</b> input channels of the <a href="http://testbit.eu/index.php?title=BseAmplifier&amp;action=edit&amp;redlink=1" class="new" title="BseAmplifier (page does not exist)">BseAmplifier</a> and connect the <a href="http://testbit.eu/index.php?title=BseAmplifier&amp;action=edit&amp;redlink=1" class="new" title="BseAmplifier (page does not exist)">BseAmplifier</a>'s output channel <b>Audio Out</b> to the two input channels <b>Right Audio</b> and <b>Left Audio</b> of the <a href="http://testbit.eu/index.php?title=BseInstrumentOutput&amp;action=edit&amp;redlink=1" class="new" title="BseInstrumentOutput (page does not exist)">BseInstrumentOutput</a>.
+</li><li> It is recommended to intially reduce the <b>Master Volume</b> property of the <a href="http://testbit.eu/index.php?title=BseAmplifier&amp;action=edit&amp;redlink=1" class="new" title="BseAmplifier (page does not exist)">BseAmplifier</a> to avoid overdriving the output later on. The properties of a module can be adjusted in it's property dialog which is offered by the Button-3 popup menu of each module.
+</li><li> Connect the input channel <b>Gate In</b> of the <a href="http://testbit.eu/index.php?title=BseSimpleADSR&amp;action=edit&amp;redlink=1" class="new" title="BseSimpleADSR (page does not exist)">BseSimpleADSR</a> to the output channel <b>Gate</b> of the <a href="http://testbit.eu/index.php?title=BseInstrumentInput&amp;action=edit&amp;redlink=1" class="new" title="BseInstrumentInput (page does not exist)">BseInstrumentInput</a> to trigger the envelope at note start. Connect the <b>Ctrl Out</b> output channel of the <a href="http://testbit.eu/index.php?title=BseSimpleADSR&amp;action=edit&amp;redlink=1" class="new" title="BseSimpleADSR (page does not exist)">BseSimpleADSR</a> to one of the <b>Control</b> input channels of the <a href="http://testbit.eu/index.php?title=BseAmplifier&amp;action=edit&amp;redlink=1" class="new" title="BseAmplifier (page does not exist)">BseAmplifier</a>.
+</li><li> <b>IMPORTANT:</b> Synthesis instruments are used to play multiple notes sequentially. In order to determine when an instrument has finished playing a certain note and is thusly free to play a new note, the <b>Synth Done</b> channel of the <a href="http://testbit.eu/index.php?title=BseInstrumentOutput&amp;action=edit&amp;redlink=1" class="new" title="BseInstrumentOutput (page does not exist)">BseInstrumentOutput</a> must be connected to a signal going high at note end. For this example, connect the <b>Synth Done</b> channel to the <b>Done Out</b> output channel of the <a href="http://testbit.eu/index.php?title=BseSimpleADSR&amp;action=edit&amp;redlink=1" class="new" title="BseSimpleADSR (page does not exist)">BseSimpleADSR</a> module, this output channel produces a signal which is low while the envelope is active and goes high past the envelope end.
+</li></ol>
+<p>While the synthesis instrument is ready for use now, it can't be used or tested directly, but has to be deployed in a song or [BseMidiSynth]] (offered by the main menu under ``/Project/New MIDI Synthesizer``) which leads us to the next Topic.
+</p>
+<h3> <span class="mw-headline" id="Setting_Up_Parts_And_Tracks"> Setting Up Parts And Tracks </span></h3>
+<p>Songs basically consist of notes kept in “Parts” which are arranged in “Tracks”. The tracks control the order in which parts are played and what instrument is used to play a certain part. So the steps to a simple test setup for a synthesis instrument are:
+</p>
+<ol><li> Switch to the <b>Tracks</b> notebook page of a song and add a track to the song.
+</li><li> Click into the track's tact area to create a new part within it.
+</li><li> Click onto the newly created part to start up a piano roll editor to arrange notes within parts.
+</li><li> Use the piano roll editor to create some notes in the part to be played back.
+</li><li> Select a synthesis network (created as shown in the last section) as synthesis input for this track by editing the <b>Synth</b> property.
+</li></ol>
+<p>A song with parts, instruments and tracks setup can be played back via the main menu by selecting the menu item ``/Project/Play``.
+</p>
+<h3> <span class="mw-headline" id="Postprocessing_Tracks_and_Songs"> Postprocessing Tracks and Songs </span></h3>
+<p>The sound generated by the tracks of a song and the song itself can be postprocessed by synthesis networks to add effects and adjust the sound to your needs. Postprocessing networks are created as follows:
+</p>
+<ol><li> Select ``/Project/New Custom Synthesizer`` from the menu to create a new network.
+</li><li> Add a virtual input and output, i.e. a <a href="http://testbit.eu/index.php?title=BseSubIPort&amp;action=edit&amp;redlink=1" class="new" title="BseSubIPort (page does not exist)">BseSubIPort</a> and a <a href="http://testbit.eu/index.php?title=BseSubOPort&amp;action=edit&amp;redlink=1" class="new" title="BseSubOPort (page does not exist)">BseSubOPort</a> module, to the network.
+</li><li> Connect the first two input and output channels between the two modules, these carry the left and right channel sound of a track respectively, so the sound signals may pass through the postprocessing network.
+</li><li> Alternatively, rather than simply connecting the inputs to the outputs, you may use an effect such as the free reverb module <a href="http://testbit.eu/index.php?title=BseFreeVerb&amp;action=edit&amp;redlink=1" class="new" title="BseFreeVerb (page does not exist)">BseFreeVerb</a> inbetween the input and output connections.
+</li></ol>
+<p>To postprocess the sound of a single track in a song, select the synthesis network as postprocessing network for the track by editing the tracks “Post” property. To apply the network to a song, select it as postprocessing network for the song by editing the songs “Custom Postprocess Net” property.
+</p>
+<!-- 
+NewPP limit report
+Preprocessor node count: 38/1000000
+Post-expand include size: 0/2097152 bytes
+Template argument size: 0/2097152 bytes
+Expensive parser function count: 0/100
+-->
+<!-- Saved in parser cache with key mediawikidb:pcache:idhash:19-1!*!0!!en!*!* and timestamp 20121025003655 -->
