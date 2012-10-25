@@ -76,7 +76,8 @@ HTMLMAN_PAGES = $(patsubst mans/%, html/%.html, $(MANUAL_PAGES))
 CLEANFILES   += $(HTMLMAN_PAGES)
 html/%.html: mans/%
 	$(AM_V_GEN)
-	$(Q) groff -mandoc -Thtml $< \
+	$(Q) set -o pipefail \
+	&& groff -mandoc -Thtml $< \
 	| sed $(HREFS) >$(@D)/xgen-$(@F)
 	$(Q) mv $(@D)/xgen-$(@F) $@
 HREFS = 's,&lt;\(\(http\|ftp\)s\?:[^<>]\+\)&gt;,\&lt;<a href="\1">\1</a>\&gt;,g'
