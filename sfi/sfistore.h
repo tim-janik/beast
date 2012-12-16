@@ -38,6 +38,7 @@ typedef struct
 } SfiWStore;
 typedef enum    /*< skip >*/
 {
+  SFI_TOKEN_NONE = G_TOKEN_NONE, // convenience
   SFI_TOKEN_UNMATCHED   = G_TOKEN_LAST + 1,
   SFI_TOKEN_LAST
 } SfiTokenType;
