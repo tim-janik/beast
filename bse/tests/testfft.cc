@@ -24,23 +24,37 @@
 #include <stdlib.h>
 #include <string.h>
 
-
 #define	MAX_FFT_SIZE	(65536 * 2) //  * 8 * 8
+#define	MAX_DFT_SIZE	(1024 * 2) //  * 8 * 8
 #define	EPSILON		(4.8e-6)
 
+#define REF_ANALYSIS   (-1)
+#define REF_SYNTHESIS  (1)
 
 /* --- prototypes --- */
 static void	reference_power2_fftc	(unsigned int       n_values,
 					 const double      *rivalues_in,
 					 double            *rivalues_out,
 					 int                esign);
+static void	reference_dftc	        (unsigned int       n_values,
+					 const double      *rivalues_in,
+					 double            *rivalues_out);
 static void	fill_rand		(guint		    n,
 					 double		   *a);
+static void	scale_block    		(guint		    n,
+					 double		   *a,
+                                         double             factor);
 static double	diff			(guint   	    m,
 					 guint   	    p,
 					 double 	   *a1,
 					 double 	   *a2,
 					 const gchar  	   *str);
+static void     make_real               (guint              n,
+                                         double            *a);
+static void     extract_real            (guint              n,
+                                         const double      *a,
+                                         double            *b);
+
 
 
 /* --- functions --- */
@@ -58,17 +72,18 @@ main (int   argc,
   gettimeofday (&tv, NULL);
   srand (tv.tv_sec ^ tv.tv_usec);
   
-  double ref_fft_in[MAX_FFT_SIZE] = { 0, };
-  double ref_fft_aout[MAX_FFT_SIZE] = { 0, };
-  double ref_fft_sout[MAX_FFT_SIZE] = { 0, };
-  double ref_fft_back[MAX_FFT_SIZE] = { 0, };
-  double work_fft_in[MAX_FFT_SIZE] = { 0, };
-  double work_fft_aout[MAX_FFT_SIZE] = { 0, };
-  double work_fft_sout[MAX_FFT_SIZE] = { 0, };
-  double work_fft_back[MAX_FFT_SIZE] = { 0, };
+  static double ref_fft_in[MAX_FFT_SIZE] = { 0, };
+  static double ref_fft_aout[MAX_FFT_SIZE] = { 0, };
+  static double ref_fft_sout[MAX_FFT_SIZE] = { 0, };
+  static double ref_fft_back[MAX_FFT_SIZE] = { 0, };
+  static double work_fft_in[MAX_FFT_SIZE] = { 0, };
+  static double work_fft_aout[MAX_FFT_SIZE] = { 0, };
+  static double work_fft_sout[MAX_FFT_SIZE] = { 0, };
+  static double work_fft_back[MAX_FFT_SIZE] = { 0, };
+  static double scaled_fft_back[MAX_FFT_SIZE] = { 0, };
 
   /* run tests */
-  for (i = 2; i <= MAX_FFT_SIZE >> 1; i <<= 1)
+  for (i = 8; i <= MAX_FFT_SIZE >> 1; i <<= 1)
     {
       double d;
       
@@ -83,14 +98,17 @@ main (int   argc,
       // memset (work_fft_aout, 0, MAX_FFT_SIZE * sizeof (work_fft_aout[0]));
       // memset (work_fft_sout, 0, MAX_FFT_SIZE * sizeof (work_fft_sout[0]));
       // memset (work_fft_back, 0, MAX_FFT_SIZE * sizeof (work_fft_sout[0]));
-      reference_power2_fftc (i, ref_fft_in, ref_fft_aout, +1);
-      reference_power2_fftc (i, ref_fft_in, ref_fft_sout, -1);
-      reference_power2_fftc (i, ref_fft_aout, ref_fft_back, -1);
+      reference_power2_fftc (i, ref_fft_in, ref_fft_aout, REF_ANALYSIS);
+      reference_power2_fftc (i, ref_fft_in, ref_fft_sout, REF_SYNTHESIS);
+      reference_power2_fftc (i, ref_fft_aout, ref_fft_back, REF_SYNTHESIS);
+      scale_block (i << 1, ref_fft_back, 1.0 / i);
 
       /* perform fft test */
       gsl_power2_fftac (i, work_fft_in, work_fft_aout);
       gsl_power2_fftsc (i, work_fft_in, work_fft_sout);
       gsl_power2_fftsc (i, work_fft_aout, work_fft_back);
+      scale_block (i << 1, work_fft_back, 1.0 / i);
+      gsl_power2_fftsc_scale (i, work_fft_aout, scaled_fft_back);
 
       /* check differences */
       d = diff (i << 1, 0, ref_fft_in, work_fft_in, "Checking input record");
@@ -118,11 +136,86 @@ main (int   argc,
 	TERROR ("Error sum in analysis FFT exceeds epsilon: %g > %g", d, EPSILON);
       else
         TOK();
+      d = diff (i << 1, 0, work_fft_in, scaled_fft_back, "GSL analysis and scaled re-synthesis");
+      if (fabs (d) > EPSILON)
+	TERROR ("Error sum in analysis FFT exceeds epsilon: %g > %g", d, EPSILON);
+      else
+        TOK();
       d = diff (i << 1, 0, ref_fft_back, work_fft_back, "Reference re-synthesis vs. GSL");
       if (fabs (d) > EPSILON)
 	TERROR ("Error sum in analysis FFT exceeds epsilon: %g > %g", d, EPSILON);
       else
         TOK();
+      d = diff (i << 1, 0, ref_fft_back, scaled_fft_back, "Reference re-synthesis vs. scaled GSL");
+      if (fabs (d) > EPSILON)
+	TERROR ("Error sum in analysis FFT exceeds epsilon: %g > %g", d, EPSILON);
+      else
+        TOK();
+
+      /* test with real data */
+      make_real (i << 1, ref_fft_in);
+      extract_real (i << 1, ref_fft_in, work_fft_in);
+      reference_power2_fftc (i, ref_fft_in, ref_fft_aout, REF_ANALYSIS);
+      ref_fft_aout[1] = ref_fft_aout[i]; /* special packing for purely real FFTs */
+
+      /* perform real fft test */
+      gsl_power2_fftar (i, work_fft_in, work_fft_aout);
+      gsl_power2_fftsr (i, work_fft_aout, work_fft_back);
+      scale_block (i, work_fft_back, 1.0 / i);
+      gsl_power2_fftsr_scale (i, work_fft_aout, scaled_fft_back);
+
+      d = diff (i, 0, ref_fft_aout, work_fft_aout, "Reference real analysis vs. real GSL");
+      if (fabs (d) > EPSILON)
+	TERROR ("Error sum in analysis FFT exceeds epsilon: %g > %g", d, EPSILON);
+      else
+        TOK();
+
+      d = diff (i, 0, work_fft_in, scaled_fft_back, "Real input vs. scaled real GSL resynthesis");
+      if (fabs (d) > EPSILON)
+	TERROR ("Error sum in analysis FFT exceeds epsilon: %g > %g", d, EPSILON);
+      else
+        TOK();
+
+      d = diff (i, 0, work_fft_in, work_fft_back, "Real input vs. real GSL resynthesis");
+      if (fabs (d) > EPSILON)
+	TERROR ("Error sum in analysis FFT exceeds epsilon: %g > %g", d, EPSILON);
+      else
+        TOK();
+
+      TDONE();
+    }
+
+  static double dft_in[MAX_DFT_SIZE] = { 0, };
+  static double dft_aout[MAX_DFT_SIZE] = { 0, };
+
+  /* test reference fft against reference dft */
+  for (i = 2; i <= MAX_DFT_SIZE >> 1; i <<= 1)
+    {
+      double d;
+
+      TSTART ("Checking reference fft for size %u", i);
+
+      /* setup reference and work fft records */
+      fill_rand (i << 1, ref_fft_in);
+      memcpy (dft_in, ref_fft_in, MAX_DFT_SIZE * sizeof (dft_in[0]));
+
+      reference_power2_fftc (i, ref_fft_in, ref_fft_aout, REF_ANALYSIS);
+      reference_dftc (i, dft_in, dft_aout);
+
+
+      /* check differences */
+      d = diff (i << 1, 0, ref_fft_in, dft_in, "Checking input record");
+      if (d)
+	TERROR ("Input record was modified");
+      else
+        TOK();
+
+      d = diff (i << 1, 0, ref_fft_aout, dft_aout, "Reference FFT analysis against reference DFT analysis");
+      if (fabs (d) > EPSILON)
+        TERROR ("Error sum in analysis FFT exceeds epsilon: %g > %g", d, EPSILON);
+      else
+        TOK();
+
       TDONE();
     }
 
@@ -135,6 +228,35 @@ fill_rand (guint   n,
 {
   while (n--)
     a[n] = -1. + 2. * rand() / (RAND_MAX + 1.0);
+}
+
+static void
+make_real (guint              n,
+           double            *a)
+{
+  guint x;
+  for (x = 1; x < n; x += 2)
+    a[x] = 0; /* eliminate complex part */
+}
+
+static void
+extract_real (guint              n,
+              const double      *a,
+              double            *b)
+{
+  guint x;
+  for (x = 0; x < n; x += 2)
+    *b++ = a[x]; /* extract real part */
+}
+
+
+static void
+scale_block (guint    n,
+	     double  *a,
+             double   factor)
+{
+  while (n--)
+    a[n] *= factor;
 }
 
 static double
@@ -296,7 +418,7 @@ reference_bitreverse_fft2synthesis (const unsigned int n,
   unsigned int i, r;
   double scale = n;
 
-  scale = 1.0 / scale;
+  scale = 1; /* set to 1.0 / scale to get scaled synthesis */
   BUTTERFLY_10scale (X[0], X[1],
 		     X[n], X[n + 1],
 		     Y[0], Y[1],
@@ -458,4 +580,37 @@ reference_power2_fftc (unsigned int  n_values,
       block_size = block_size2;
     }
   while (block_size <= n_values);
+}
+
+/*--------------- reference DFT -----------------*/
+
+static BseComplex
+complex_exp (BseComplex z)
+{
+  /* also found in g++-4.2 C++ complex numbers */
+  return bse_complex_polar (exp(z.re), z.im);
+}
+
+void
+reference_dftc (unsigned int       n_values,
+		const double      *rivalues_in,
+		double            *rivalues_out)
+{
+  /* http://en.wikipedia.org/wiki/Discrete_Fourier_transform says:
+   *
+   * out[k] = SUM{n=0..N-1} (in[n] * exp (-2 * pi * j / N * k * n))
+   */
+  guint k, n;
+  for (k = 0; k < n_values; k++)
+    {
+      BseComplex result = { 0, 0 };
+
+      for (n = 0; n < n_values; n++)
+        result = bse_complex_add (result,
+                                  bse_complex_mul (bse_complex (rivalues_in[n * 2], rivalues_in[n * 2 + 1]),
+                                                   complex_exp (bse_complex (0, -2 * PI / n_values * ((k * n) % n_values)))));
+
+      rivalues_out[k * 2]     = result.re;
+      rivalues_out[k * 2 + 1] = result.im;
+    }
 }

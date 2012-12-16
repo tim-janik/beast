@@ -299,7 +299,7 @@ cache_table_ref_entry (GslOscWaveForm wave_form,
       gsl_power2_fftar_simple (e->n_values, values, fft);
       step = e->mfreq * (gdouble) e->n_values;
       fft_filter (e->n_values, fft, step, filter_func);
-      gsl_power2_fftsr_simple (e->n_values, fft, values);
+      gsl_power2_fftsr_scale_simple (e->n_values, fft, values);
       g_free (fft);
       gsl_osc_wave_normalize (e->n_values, values, (min + max) / 2, max);
 

@@ -921,7 +921,7 @@ gsl_filter_fir_approx (uint          iorder,
 	fft_in[1] = val;
     }
   
-  gsl_power2_fftsr (fft_size, fft_in, fft_out);
+  gsl_power2_fftsr_scale (fft_size, fft_in, fft_out);
   
   for (i = 0; i <= iorder / 2; i++)
     {

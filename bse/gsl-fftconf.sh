@@ -29,7 +29,7 @@ $MKFFT $OPTIONS 0
 #
 # generate small fft sizes, seperating stage 2
 #
-for dir in --analysis --synthesis ; do
+for dir in --analysis --synthesis --synthesis-scale ; do
   DOPT="$OPTIONS --skip-macros $dir"
   echo "Generating FFT functions: $dir" >&2
   $MKFFT $DOPT	   2 F				# standalone fft2
@@ -68,31 +68,44 @@ cat <<__EOF
 
 /* public FFT frontends and generic handling of huge fft sizes */
 
+typedef enum {
+  BIG_ANALYSIS = 1,
+  BIG_SYNTHESIS = 2,
+  BIG_SYNTHESIS_SCALE = 3
+} FFTMode;
 
 static void
 gsl_power2_fftc_big (const unsigned int n_values,
 		     const $IEEE_TYPE  *rivalues_in,
 		     $IEEE_TYPE        *rivalues,
-                     const int          esign)
+                     FFTMode            mode)
 {
+  const int esign = (mode == BIG_ANALYSIS) ? -1 : 1;
   const unsigned int n_values2 = n_values << 1;
   double theta = esign < 0 ? -3.1415926535897932384626433832795029 : 3.1415926535897932384626433832795029;
   unsigned int i, block_size = 8192 << 1;
   double last_sin;
 
-  if (esign > 0)
-    {
-      if (rivalues_in)
-        bitreverse_fft2analysis (n_values, rivalues_in, rivalues);
-      for (i = 0; i < n_values; i += 8192)
-        gsl_power2_fft8192analysis_skip2 (rivalues + (i << 1), rivalues + (i << 1));
-    }
-  else
+  if (mode == BIG_SYNTHESIS)
     {
       if (rivalues_in)
         bitreverse_fft2synthesis (n_values, rivalues_in, rivalues);
       for (i = 0; i < n_values; i += 8192)
         gsl_power2_fft8192synthesis_skip2 (rivalues + (i << 1), rivalues + (i << 1));
+    }
+  else if (mode == BIG_SYNTHESIS_SCALE)
+    {
+      if (rivalues_in)
+        bitreverse_fft2synthesis_scale (n_values, rivalues_in, rivalues);
+      for (i = 0; i < n_values; i += 8192)
+        gsl_power2_fft8192synthesis_scale_skip2 (rivalues + (i << 1), rivalues + (i << 1));
+    }
+  else if (mode == BIG_ANALYSIS)
+    {
+      if (rivalues_in)
+        bitreverse_fft2analysis (n_values, rivalues_in, rivalues);
+      for (i = 0; i < n_values; i += 8192)
+        gsl_power2_fft8192analysis_skip2 (rivalues + (i << 1), rivalues + (i << 1));
     }
   theta *= (double) 1.0 / 8192.;
   last_sin = sin (theta);
@@ -231,7 +244,7 @@ gsl_power2_fftac (const unsigned int n_values,
       case 2048: gsl_power2_fft2048analysis (rivalues_in, rivalues_out);	break;
       case 4096: gsl_power2_fft4096analysis (rivalues_in, rivalues_out);	break;
       case 8192: gsl_power2_fft8192analysis (rivalues_in, rivalues_out);	break;
-      default:	 gsl_power2_fftc_big (n_values, rivalues_in, rivalues_out, +1);
+      default:	 gsl_power2_fftc_big (n_values, rivalues_in, rivalues_out, BIG_ANALYSIS);
     }
 }
 void
@@ -257,7 +270,34 @@ gsl_power2_fftsc (const unsigned int n_values,
       case 2048: gsl_power2_fft2048synthesis (rivalues_in, rivalues_out);	break;
       case 4096: gsl_power2_fft4096synthesis (rivalues_in, rivalues_out);	break;
       case 8192: gsl_power2_fft8192synthesis (rivalues_in, rivalues_out);	break;
-      default:	 gsl_power2_fftc_big (n_values, rivalues_in, rivalues_out, -1);
+      default:	 gsl_power2_fftc_big (n_values, rivalues_in, rivalues_out, BIG_SYNTHESIS);
+    }
+  /* { unsigned int i; for (i = 0; i < n_values << 1; i++) rivalues_out[i] *= (double) n_values; } */
+}
+void
+gsl_power2_fftsc_scale (const unsigned int n_values,
+                        const $IEEE_TYPE  *rivalues_in,
+                        $IEEE_TYPE        *rivalues_out)
+{
+  g_return_if_fail ((n_values & (n_values - 1)) == 0 && n_values >= 1);
+
+  switch (n_values)
+    {
+      case    1: rivalues_out[0] = rivalues_in[0], rivalues_out[1] = rivalues_in[1]; break;
+      case    2: gsl_power2_fft2synthesis_scale (rivalues_in, rivalues_out);	break;
+      case    4: gsl_power2_fft4synthesis_scale (rivalues_in, rivalues_out);	break;
+      case    8: gsl_power2_fft8synthesis_scale (rivalues_in, rivalues_out);	break;
+      case   16: gsl_power2_fft16synthesis_scale (rivalues_in, rivalues_out);	break;
+      case   32: gsl_power2_fft32synthesis_scale (rivalues_in, rivalues_out);	break;
+      case   64: gsl_power2_fft64synthesis_scale (rivalues_in, rivalues_out);	break;
+      case  128: gsl_power2_fft128synthesis_scale (rivalues_in, rivalues_out);	break;
+      case  256: gsl_power2_fft256synthesis_scale (rivalues_in, rivalues_out);	break;
+      case  512: gsl_power2_fft512synthesis_scale (rivalues_in, rivalues_out);	break;
+      case 1024: gsl_power2_fft1024synthesis_scale (rivalues_in, rivalues_out);	break;
+      case 2048: gsl_power2_fft2048synthesis_scale (rivalues_in, rivalues_out);	break;
+      case 4096: gsl_power2_fft4096synthesis_scale (rivalues_in, rivalues_out);	break;
+      case 8192: gsl_power2_fft8192synthesis_scale (rivalues_in, rivalues_out);	break;
+      default:	 gsl_power2_fftc_big (n_values, rivalues_in, rivalues_out, BIG_SYNTHESIS_SCALE);
     }
   /* { unsigned int i; for (i = 0; i < n_values << 1; i++) rivalues_out[i] *= (double) n_values; } */
 }
@@ -280,7 +320,7 @@ gsl_power2_fftar (const unsigned int n_values,
 
   g_return_if_fail ((n_values & (n_values - 1)) == 0 && n_values >= 2);
 
-  gsl_power2_fftac (n_cvalues, r_values_in, rivalues_out);
+  gsl_power2_fftsc (n_cvalues, r_values_in, rivalues_out);
   theta = 3.1415926535897932384626433832795029;
   theta /= (double) n_cvalues;
 
@@ -309,12 +349,12 @@ gsl_power2_fftar (const unsigned int n_values,
       H1im = F2im + F1re;
       H1re = F1im - F2re;
       H2re = F2re - F1im;
-      H2im = H1im - FEim;
+      H2im = FEim - H1im;
       H1re += FEre;
       H2re += FEre;
       H1im += FEim;
       rivalues_out[i] = H1re;
-      rivalues_out[i + 1] = H1im;
+      rivalues_out[i + 1] = -H1im;
       rivalues_out[r] = H2re;
       rivalues_out[r + 1] = H2im;
       WMULTIPLY (Wre, Wim, Dre, Dim);
@@ -322,11 +362,14 @@ gsl_power2_fftar (const unsigned int n_values,
   Dre = rivalues_out[0];
   rivalues_out[0] = Dre + rivalues_out[1];
   rivalues_out[1] = Dre - rivalues_out[1];
+  rivalues_out[n_cvalues + 1] = -rivalues_out[n_cvalues + 1];
 }
-void
-gsl_power2_fftsr (const unsigned int n_values,
-                  const double      *rivalues_in,
-                  double            *r_values_out)
+
+static inline void
+gsl_power2_fftsr_impl (const unsigned int n_values,
+                       const double      *rivalues_in,
+                       double            *r_values_out,
+                       gboolean           need_scale)
 {
   unsigned int n_cvalues = n_values >> 1;
   double Dre, Dim, Wre, Wim, theta, scale;
@@ -360,9 +403,8 @@ gsl_power2_fftsr (const unsigned int n_values,
       ri |= j;
 
       FOre = -FOre;
-      FOim = -FOim;
       FEre *= 0.5;
-      FEim *= 0.5;
+      FEim *= -0.5;
       F2re = FOre * Wim;
       F2im = FOim * Wim;
       F1re = FOre * Wre;
@@ -391,9 +433,16 @@ gsl_power2_fftsr (const unsigned int n_values,
   if (n_values < 4)
     return;
   r_values_out[2] = rivalues_in[i];
-  r_values_out[2 + 1] = rivalues_in[i + 1];
-  scale = n_cvalues;
-  scale = 1.0 / scale;
+  r_values_out[2 + 1] = -rivalues_in[i + 1];
+  if (need_scale)
+    {
+      scale = n_cvalues;
+      scale = 1 / scale;
+    }
+  else
+    {
+      scale = 2;
+    }
   for (i = 0; i < n_values; i += 4)
     BUTTERFLY_10scale (r_values_out[i], r_values_out[i + 1],
                        r_values_out[i + 2], r_values_out[i + 3],
@@ -403,21 +452,39 @@ gsl_power2_fftsr (const unsigned int n_values,
   switch (n_cvalues)
     {
       case    2: break;
-      case    4: gsl_power2_fft4synthesis_skip2 (NULL, r_values_out);	 break;
-      case    8: gsl_power2_fft8synthesis_skip2 (NULL, r_values_out);	 break;
-      case   16: gsl_power2_fft16synthesis_skip2 (NULL, r_values_out);	 break;
-      case   32: gsl_power2_fft32synthesis_skip2 (NULL, r_values_out);	 break;
-      case   64: gsl_power2_fft64synthesis_skip2 (NULL, r_values_out);	 break;
-      case  128: gsl_power2_fft128synthesis_skip2 (NULL, r_values_out);	 break;
-      case  256: gsl_power2_fft256synthesis_skip2 (NULL, r_values_out);	 break;
-      case  512: gsl_power2_fft512synthesis_skip2 (NULL, r_values_out);	 break;
-      case 1024: gsl_power2_fft1024synthesis_skip2 (NULL, r_values_out); break;
-      case 2048: gsl_power2_fft2048synthesis_skip2 (NULL, r_values_out); break;
-      case 4096: gsl_power2_fft4096synthesis_skip2 (NULL, r_values_out); break;
-      case 8192: gsl_power2_fft8192synthesis_skip2 (NULL, r_values_out); break;
-      default:	 gsl_power2_fftc_big (n_cvalues, NULL, r_values_out, -1);
+      case    4: gsl_power2_fft4analysis_skip2 (NULL, r_values_out);	 break;
+      case    8: gsl_power2_fft8analysis_skip2 (NULL, r_values_out);	 break;
+      case   16: gsl_power2_fft16analysis_skip2 (NULL, r_values_out);	 break;
+      case   32: gsl_power2_fft32analysis_skip2 (NULL, r_values_out);	 break;
+      case   64: gsl_power2_fft64analysis_skip2 (NULL, r_values_out);	 break;
+      case  128: gsl_power2_fft128analysis_skip2 (NULL, r_values_out);	 break;
+      case  256: gsl_power2_fft256analysis_skip2 (NULL, r_values_out);	 break;
+      case  512: gsl_power2_fft512analysis_skip2 (NULL, r_values_out);	 break;
+      case 1024: gsl_power2_fft1024analysis_skip2 (NULL, r_values_out); break;
+      case 2048: gsl_power2_fft2048analysis_skip2 (NULL, r_values_out); break;
+      case 4096: gsl_power2_fft4096analysis_skip2 (NULL, r_values_out); break;
+      case 8192: gsl_power2_fft8192analysis_skip2 (NULL, r_values_out); break;
+      default:	 gsl_power2_fftc_big (n_cvalues, NULL, r_values_out, BIG_ANALYSIS);
     }
 }
+
+void
+gsl_power2_fftsr (const unsigned int n_values,
+                  const double      *rivalues_in,
+                  double            *r_values_out)
+{
+  gsl_power2_fftsr_impl (n_values, rivalues_in, r_values_out, FALSE);
+}
+
+void
+gsl_power2_fftsr_scale (const unsigned int n_values,
+                       const double      *rivalues_in,
+                       double            *r_values_out)
+{
+  gsl_power2_fftsr_impl (n_values, rivalues_in, r_values_out, TRUE);
+}
+
+
 void
 gsl_power2_fftar_simple (const unsigned int n_values,
                          const float       *real_values,
@@ -442,10 +509,14 @@ gsl_power2_fftar_simple (const unsigned int n_values,
   complex_values[n_values + 1] = 0.0;
   g_free (rv);
 }
+__EOF
+for FUNC_NAME in fftsr fftsr_scale
+do
+cat << __EOF
 void
-gsl_power2_fftsr_simple (const unsigned int n_values,
-                         const float       *complex_values,
-                         float             *real_values)
+gsl_power2_${FUNC_NAME}_simple (const unsigned int n_values,
+                                const float       *complex_values,
+                                float             *real_values)
 {
   double *cv, *rv;
   guint i;
@@ -458,10 +529,11 @@ gsl_power2_fftsr_simple (const unsigned int n_values,
   while (i--)
     cv[i] = complex_values[i];
   cv[1] = complex_values[n_values];
-  gsl_power2_fftsr (n_values, cv, rv);
+  gsl_power2_$FUNC_NAME (n_values, cv, rv);
   i = n_values;
   while (i--)
     real_values[i] = rv[i];
   g_free (cv);
 }
 __EOF
+done
