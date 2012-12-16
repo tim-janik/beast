@@ -103,7 +103,7 @@ test_time (void)
   TASSERT (error != NULL);
   // g_print ("{%s}", error);
   g_free (error);
-  for (i = 0; i < G_N_ELEMENTS (time_strings); i++)
+  for (i = 0; size_t (i) < G_N_ELEMENTS (time_strings); i++)
     {
       t = sfi_time_from_string_err (time_strings[i], &error);
       if (!error)
@@ -169,7 +169,7 @@ test_com_ports (void)
 static void
 test_thread (gpointer data)
 {
-  guint *tdata = data;
+  guint *tdata = (guint*) data;
   sfi_thread_sleep (-1);
   *tdata += 1;
   while (!sfi_thread_aborted ())
@@ -203,7 +203,7 @@ test_threads (void)
 #define SCANNER_ASSERT64(scanner, printout, token, text, svalue) { \
   g_scanner_input_text (scanner, text, strlen (text)); \
   TASSERT (g_scanner_get_next_token (scanner) == token); \
-  if (printout) g_print ("{scanner.v_int64:%llu}", scanner->value.v_int64); \
+  if (printout) g_print ("{scanner.v_int64:%llu}", (long long unsigned int) (scanner->value.v_int64)); \
   TASSERT (scanner->value.v_int64 == svalue); \
   TASSERT (g_scanner_get_next_token (scanner) == '#'); \
 }
@@ -252,7 +252,7 @@ typedef enum /*< skip >*/
   SERIAL_TEST_PSPEC
 } SerialTest;
 
-static SerialTest serial_test_type = 0;
+static SerialTest serial_test_type = SerialTest (0);
 
 static void
 serial_pspec_check (GParamSpec *pspec,
@@ -313,7 +313,7 @@ serialize_cmp (GValue     *value,
 	    else
 	      token = G_TOKEN_IDENTIFIER;
 	  else
-	    token = '(';
+	    token = GTokenType ('(');
 	}
       if (0)
 	g_print ("{parsing:%s}", gstring->str);
@@ -591,6 +591,7 @@ check_thread_wrapper_compilation (void)
   sfi_mutex_init (mtx);
   sfi_mutex_lock (mtx);
   boolv = sfi_mutex_trylock (mtx);
+  TASSERT (boolv == false);
   sfi_mutex_unlock (mtx);
   sfi_mutex_destroy (mtx);
   sfi_rec_mutex_init (rmtx);
@@ -610,7 +611,6 @@ check_thread_wrapper_compilation (void)
   BirnetThreadFunc thread_func = NULL;
   BirnetThreadWakeup wakeup_func = NULL;
   GDestroyNotify dstry = NULL;
-  int pid;
   BirnetInt64 stamp = 31;
   BirnetThreadInfo *tinfo;
   thrd = sfi_thread_new (name);
@@ -619,8 +619,9 @@ check_thread_wrapper_compilation (void)
   sfi_thread_unref (thrd);
   sfi_thread_start (thrd, thread_func, udata);
   thrd = sfi_thread_self ();
-  pid = sfi_thread_self_pid ();
-  pid = sfi_thread_get_pid (thrd);
+  int pid1 = sfi_thread_self_pid ();
+  int pid2 = sfi_thread_get_pid (thrd);
+  TASSERT (pid1 == pid2);
   name = sfi_thread_get_name (thrd);
   sfi_thread_set_name (name);
   sfi_thread_sleep (usecs);
@@ -772,9 +773,9 @@ generate_vmarshal_code (void)
   g_print ("    }\n}\n");
 }
 
-static gchar *pointer1 = "huhu";
-static gchar *pointer2 = "haha";
-static gchar *pointer3 = "zoot";
+static const char *pointer1 = "huhu";
+static const char *pointer2 = "haha";
+static const char *pointer3 = "zoot";
 
 static void
 test_vmarshal_func4 (gpointer o,
@@ -813,15 +814,11 @@ test_vmarshals (void)
   TSTART ("Vmarshals");
   sfi_seq_append_real (seq, -426.9112e-267);
   sfi_seq_append_num (seq, -2598768763298128732LL);
-  sfi_vmarshal_void (test_vmarshal_func4, pointer1,
-		  seq->n_elements, seq->elements,
-		  pointer3);
+  sfi_vmarshal_void ((void*) test_vmarshal_func4, (void*) pointer1, seq->n_elements, seq->elements, (void*) pointer3);
   sfi_seq_append_proxy (seq, (SfiProxy) pointer2);
   sfi_seq_append_int (seq, -2134567);
   sfi_seq_append_num (seq, (long) test_vmarshal_func7);
-  sfi_vmarshal_void (test_vmarshal_func7, pointer1,
-		  seq->n_elements, seq->elements,
-		  pointer3);
+  sfi_vmarshal_void ((void*) test_vmarshal_func7, (void*) pointer1, seq->n_elements, seq->elements, (void*) pointer3);
   TDONE ();
   sfi_seq_unref (seq);
 }
@@ -960,6 +957,6 @@ main (int   argc,
 }
 
 /* distcc preprocessing test */
-char *test_distcc_strings = "ÿÿÿÿ";
+const char *test_distcc_strings = "ÿÿÿÿ";
 
 /* vim:set ts=8 sts=2 sw=2: */

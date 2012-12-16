@@ -14,12 +14,12 @@ SFIDL 		  = $(top_builddir)/sfi/sfidl
 
 # ring
 TESTS       += ring
-ring_SOURCES = ring.c dummy.cc
+ring_SOURCES = ring.cc
 ring_LDADD   = $(progs_ldadd)
 
 # misctests
 TESTS	          += misctests
-misctests_SOURCES  = misctests.c dummy.cc
+misctests_SOURCES  = misctests.cc
 misctests_LDADD	   = $(progs_ldadd)
 $(srcdir)/misctests.c: testidl.h testidl.c
 
