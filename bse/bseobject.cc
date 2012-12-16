@@ -69,7 +69,7 @@ bse_object_debug_leaks (void)
       
       for (list = objects; list; list = list->next)
 	{
-	  BseObject *object = list->data;
+	  BseObject *object = (BseObject*) list->data;
 	  
 	  DEBUG ("stale %s:\t prepared=%u locked=%u ref_count=%u id=%u ((BseObject*)%p)",
                  G_OBJECT_TYPE_NAME (object),
@@ -95,7 +95,7 @@ bse_object_debug_leaks (void)
 gchar*
 bse_object_strdup_debug_handle (gpointer object)
 {
-  GTypeInstance *instance = object;
+  GTypeInstance *instance = (GTypeInstance*) object;
   if (!instance)
     return g_strdup ("<NULL>");
   if (!instance->g_class)
@@ -109,7 +109,7 @@ bse_object_strdup_debug_handle (gpointer object)
 const gchar*
 bse_object_debug_name (gpointer object)
 {
-  GTypeInstance *instance = object;
+  GTypeInstance *instance = (GTypeInstance*) object;
   gchar *debug_name;
   
   if (!instance)
@@ -118,7 +118,7 @@ bse_object_debug_name (gpointer object)
     return "<NULL-Class>";
   if (!g_type_is_a (instance->g_class->g_type, BSE_TYPE_OBJECT))
     return "<Non-BseObject>";
-  debug_name = g_object_get_data (G_OBJECT (instance), "bse-debug-name");
+  debug_name = (char*) g_object_get_data (G_OBJECT (instance), "bse-debug-name");
   if (!debug_name)
     {
       const gchar *uname = BSE_OBJECT_UNAME (instance);
@@ -131,9 +131,7 @@ bse_object_debug_name (gpointer object)
 static inline void
 object_unames_ht_insert (BseObject *object)
 {
-  GSList *object_slist;
-  
-  object_slist = g_hash_table_lookup (object_unames_ht, BSE_OBJECT_UNAME (object));
+  GSList *object_slist = (GSList*) g_hash_table_lookup (object_unames_ht, BSE_OBJECT_UNAME (object));
   if (object_slist)
     g_hash_table_remove (object_unames_ht, BSE_OBJECT_UNAME (object_slist->data));
   object_slist = g_slist_prepend (object_slist, object);
@@ -147,16 +145,14 @@ bse_object_init (BseObject *object)
   object->lock_count = 0;
   object->unique_id = bse_id_alloc ();
   sfi_ustore_insert (object_id_ustore, object->unique_id, object);
-  
+
   object_unames_ht_insert (object);
 }
 
 static inline void
 object_unames_ht_remove (BseObject *object)
 {
-  GSList *object_slist, *orig_slist;
-  
-  object_slist = g_hash_table_lookup (object_unames_ht, BSE_OBJECT_UNAME (object));
+  GSList *orig_slist, *object_slist = (GSList*) g_hash_table_lookup (object_unames_ht, BSE_OBJECT_UNAME (object));
   orig_slist = object_slist;
   object_slist = g_slist_remove (object_slist, object);
   if (object_slist != orig_slist)
@@ -208,7 +204,7 @@ static void
 bse_object_do_set_uname (BseObject   *object,
 			 const gchar *uname)
 {
-  g_object_set_qdata_full (object, bse_quark_uname, g_strdup (uname), uname ? g_free : NULL);
+  g_object_set_qdata_full ((GObject*) object, bse_quark_uname, g_strdup (uname), uname ? g_free : NULL);
 }
 
 static void
@@ -253,7 +249,7 @@ bse_object_do_set_property (GObject      *gobject,
           g_free (string);
           string = NULL;
         }
-      g_object_set_qdata_full (object, quark_blurb, string, string ? g_free : NULL);
+      g_object_set_qdata_full ((GObject*) object, quark_blurb, string, string ? g_free : NULL);
       break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
@@ -275,7 +271,7 @@ bse_object_do_get_property (GObject     *gobject,
       g_value_set_string (value, BSE_OBJECT_UNAME (object));
       break;
     case PROP_BLURB:
-      string = g_object_get_qdata (object, quark_blurb);
+      string = (char*) g_object_get_qdata ((GObject*) object, quark_blurb);
       g_value_set_string (value, string ? string : "");
       break;
     default:
@@ -356,7 +352,7 @@ bse_object_class_add_signal (BseObjectClass    *oclass,
   va_start (args, n_params);
   signal_id = g_signal_new_valist (signal_name,
 				   G_TYPE_FROM_CLASS (oclass),
-				   G_SIGNAL_RUN_FIRST | G_SIGNAL_NO_RECURSE | G_SIGNAL_NO_HOOKS,
+				   GSignalFlags (G_SIGNAL_RUN_FIRST | G_SIGNAL_NO_RECURSE | G_SIGNAL_NO_HOOKS),
 				   NULL, NULL, NULL,
 				   bse_object_marshal_signal,
 				   return_type,
@@ -383,7 +379,7 @@ bse_object_class_add_asignal (BseObjectClass    *oclass,
   va_start (args, n_params);
   signal_id = g_signal_new_valist (signal_name,
 				   G_TYPE_FROM_CLASS (oclass),
-				   G_SIGNAL_RUN_FIRST | G_SIGNAL_NO_RECURSE | G_SIGNAL_NO_HOOKS | G_SIGNAL_ACTION,
+				   GSignalFlags (G_SIGNAL_RUN_FIRST | G_SIGNAL_NO_RECURSE | G_SIGNAL_NO_HOOKS | G_SIGNAL_ACTION),
 				   NULL, NULL, NULL,
 				   bse_object_marshal_signal,
 				   return_type,
@@ -410,7 +406,7 @@ bse_object_class_add_dsignal (BseObjectClass    *oclass,
   va_start (args, n_params);
   signal_id = g_signal_new_valist (signal_name,
 				   G_TYPE_FROM_CLASS (oclass),
-				   G_SIGNAL_RUN_FIRST | G_SIGNAL_NO_RECURSE | G_SIGNAL_NO_HOOKS | G_SIGNAL_DETAILED,
+				   GSignalFlags (G_SIGNAL_RUN_FIRST | G_SIGNAL_NO_RECURSE | G_SIGNAL_NO_HOOKS | G_SIGNAL_DETAILED),
 				   NULL, NULL, NULL,
 				   bse_object_marshal_signal,
 				   return_type,
@@ -423,8 +419,8 @@ bse_object_class_add_dsignal (BseObjectClass    *oclass,
 void
 bse_object_lock (gpointer _object)
 {
-  BseObject *object = _object;
-  GObject *gobject = _object;
+  BseObject *object = (BseObject*) _object;
+  GObject *gobject = (GObject*) _object;
   
   g_return_if_fail (BSE_IS_OBJECT (object));
   g_return_if_fail (gobject->ref_count > 0);
@@ -447,7 +443,7 @@ bse_object_lock (gpointer _object)
 void
 bse_object_unlock (gpointer _object)
 {
-  BseObject *object = _object;
+  BseObject *object = (BseObject*) _object;
 
   g_return_if_fail (BSE_IS_OBJECT (object));
   g_return_if_fail (object->lock_count > 0);
@@ -482,10 +478,8 @@ bse_objects_list_by_uname (GType	type,
   
   if (object_unames_ht)
     {
-      GSList *object_slist, *slist;
-      
-      object_slist = g_hash_table_lookup (object_unames_ht, uname);
-      
+      GSList *slist, *object_slist = (GSList*) g_hash_table_lookup (object_unames_ht, uname);
+
       for (slist = object_slist; slist; slist = slist->next)
 	if (g_type_is_a (BSE_OBJECT_TYPE (slist->data), type))
 	  object_list = g_list_prepend (object_list, slist->data);
@@ -499,28 +493,23 @@ list_objects (gpointer key,
 	      gpointer value,
 	      gpointer user_data)
 {
-  GSList *slist;
-  gpointer *data = user_data;
-  
-  for (slist = value; slist; slist = slist->next)
-    if (g_type_is_a (BSE_OBJECT_TYPE (slist->data), (GType) data[1]))
-      data[0] = g_list_prepend (data[0], slist->data);
+  gpointer *data = (void**) user_data;
+
+  for (GSList *slist = (GSList*) value; slist; slist = slist->next)
+    if (g_type_is_a (BSE_OBJECT_TYPE (slist->data), GType (data[1])))
+      data[0] = g_list_prepend ((GList*) data[0], slist->data);
 }
 
 GList* /* list_free result */
 bse_objects_list (GType	  type)
 {
   g_return_val_if_fail (BSE_TYPE_IS_OBJECT (type) == TRUE, NULL);
-  
   if (object_unames_ht)
     {
       gpointer data[2] = { NULL, (gpointer) type, };
-      
       g_hash_table_foreach (object_unames_ht, list_objects, data);
-      
-      return data[0];
+      return (GList*) data[0];
     }
-  
   return NULL;
 }
 
@@ -530,7 +519,7 @@ object_check_pspec_editable (BseObject      *object,
 {
   if (sfi_pspec_check_option (pspec, "ro"))     /* RDONLY option (GUI) */
     return FALSE;
-  BseObjectClass *klass = g_type_class_peek (pspec->owner_type);
+  BseObjectClass *klass = (BseObjectClass*) g_type_class_peek (pspec->owner_type);
   if (klass && klass->editable_property)
     return klass->editable_property (object, pspec->param_id, pspec) != FALSE;
   else
@@ -544,7 +533,7 @@ bse_object_editable_property (gpointer        object,
   GParamSpec *pspec = g_object_class_find_property (G_OBJECT_GET_CLASS (object), property);
   if (!pspec || !(pspec->flags & G_PARAM_WRITABLE))
     return FALSE;
-  return BSE_OBJECT_GET_CLASS (object)->check_pspec_editable (object, pspec);
+  return BSE_OBJECT_GET_CLASS (object)->check_pspec_editable ((BseObject*) object, pspec);
 }
 
 void
@@ -578,7 +567,7 @@ bse_object_do_get_icon (BseObject *object)
   
   g_return_val_if_fail (BSE_IS_OBJECT (object), NULL);
 
-  icon = g_object_get_qdata (G_OBJECT (object), bse_quark_icon);
+  icon = (BseIcon*) g_object_get_qdata (G_OBJECT (object), bse_quark_icon);
   if (!icon)
     {
       BseCategorySeq *cseq;
@@ -668,7 +657,7 @@ typedef struct {
 static guint
 eclosure_hash (gconstpointer c)
 {
-  const EClosure *e = c;
+  const EClosure *e = (const EClosure*) c;
   guint h = G_HASH_LONG ((long) e->src_object) >> 2;
   h += G_HASH_LONG ((long) e->closure.data) >> 1;
   h += e->src_detail;
@@ -682,7 +671,7 @@ static gint
 eclosure_equals (gconstpointer c1,
 		 gconstpointer c2)
 {
-  const EClosure *e1 = c1, *e2 = c2;
+  const EClosure *e1 = (const EClosure*) c1, *e2 = (const EClosure*) c2;
   return (e1->src_object   == e2->src_object &&
 	  e1->closure.data == e2->closure.data &&
 	  e1->src_detail   == e2->src_detail &&
@@ -703,7 +692,7 @@ eclosure_marshal (GClosure       *closure,
   if (e->dest_signal)
     g_signal_emit (e->closure.data, e->dest_signal, e->dest_detail);
   else
-    g_object_notify (e->closure.data, g_quark_to_string (e->dest_detail));
+    g_object_notify ((GObject*) e->closure.data, g_quark_to_string (e->dest_detail));
 }
 
 void
@@ -719,7 +708,7 @@ bse_object_reemit_signal (gpointer     src_object,
       EClosure *e;
       key.closure.data = dest_object;
       key.src_object = src_object;
-      e = g_hash_table_lookup (eclosures_ht, &key);
+      e = (EClosure*) g_hash_table_lookup (eclosures_ht, &key);
       if (!e)
 	{
 	  GSignalQuery query;
@@ -774,7 +763,7 @@ bse_object_remove_reemit (gpointer     src_object,
       key.closure.data = dest_object;
       key.src_object = src_object;
       key.dest_signal = property_notify ? 0 : key.dest_signal;
-      e = g_hash_table_lookup (eclosures_ht, &key);
+      e = (EClosure*) g_hash_table_lookup (eclosures_ht, &key);
       if (e)
 	{
 	  g_return_if_fail (e->erefs > 0);
@@ -783,8 +772,9 @@ bse_object_remove_reemit (gpointer     src_object,
 	  if (!e->erefs)
 	    {
 	      g_hash_table_remove (eclosures_ht, e);
-	      g_signal_handlers_disconnect_matched (e->src_object, G_SIGNAL_MATCH_CLOSURE |
-						    G_SIGNAL_MATCH_ID | G_SIGNAL_MATCH_DETAIL,
+	      g_signal_handlers_disconnect_matched (e->src_object,
+                                                    GSignalMatchType (G_SIGNAL_MATCH_CLOSURE |
+                                                                      G_SIGNAL_MATCH_ID | G_SIGNAL_MATCH_DETAIL),
 						    e->src_signal, e->src_detail,
 						    &e->closure, NULL, NULL);
 	      g_closure_invalidate (&e->closure);

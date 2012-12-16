@@ -75,7 +75,7 @@ bse_sources = $(strip \
 	bsemain.cc		bsemath.cc		bsemathsignal.cc		bseladspa.cc \
 	bsemidicontroller.cc	bsemididevice.cc 	bsedevice.cc 			\
 	bsemididevice-null.cc	bsemididevice-oss.cc	bsemidievent.cc			bsemidinotifier.c \
-	bsemidireceiver.cc	bsemidisynth.c		bseobject.c			bsepart.cc \
+	bsemidireceiver.cc	bsemidisynth.c		bseobject.cc			bsepart.cc \
 	bsepcminput.cc		bsepcmoutput.cc		bseparam.cc			bseparasite.c \
 	bsepcmdevice.cc		bsepcmdevice-oss.cc	bsepcmdevice-null.cc		bseplugin.c \
 	bseprocedure.c		bseproject.cc		bsescripthelper.c		bseserver.cc \
