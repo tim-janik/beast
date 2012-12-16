@@ -42,7 +42,7 @@ enum
 
 
 /* --- prototypes --- */
-static void	    bse_part_class_init		(BsePartClass	*class);
+static void	    bse_part_class_init		(BsePartClass	*klass);
 static void	    bse_part_init		(BsePart	*self);
 static void	    bse_part_set_property	(GObject        *object,
 						 guint           param_id,
@@ -100,13 +100,13 @@ BSE_BUILTIN_TYPE (BsePart)
 }
 
 static void
-bse_part_class_init (BsePartClass *class)
+bse_part_class_init (BsePartClass *klass)
 {
-  GObjectClass *gobject_class = G_OBJECT_CLASS (class);
-  BseObjectClass *object_class = BSE_OBJECT_CLASS (class);
-  // BseItemClass *item_class = BSE_ITEM_CLASS (class);
+  GObjectClass *gobject_class = G_OBJECT_CLASS (klass);
+  BseObjectClass *object_class = BSE_OBJECT_CLASS (klass);
+  // BseItemClass *item_class = BSE_ITEM_CLASS (klass);
   
-  parent_class = g_type_class_peek_parent (class);
+  parent_class = g_type_class_peek_parent (klass);
   
   gobject_class->set_property = bse_part_set_property;
   gobject_class->get_property = bse_part_get_property;

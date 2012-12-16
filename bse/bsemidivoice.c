@@ -25,7 +25,7 @@
 
 /* --- prototypes --- */
 static void bse_midi_voice_input_init             (BseMidiVoiceInput        *self);
-static void bse_midi_voice_input_class_init       (BseMidiVoiceInputClass   *class);
+static void bse_midi_voice_input_class_init       (BseMidiVoiceInputClass   *klass);
 static void bse_midi_voice_input_dispose          (GObject                  *object);
 static void bse_midi_voice_input_context_create   (BseSource                *source,
                                                    guint                     context_handle,
@@ -34,7 +34,7 @@ static void bse_midi_voice_input_context_dismiss  (BseSource                *sou
                                                    guint                     context_handle,
                                                    BseTrans                 *trans);
 static void bse_midi_voice_switch_init            (BseMidiVoiceSwitch       *self);
-static void bse_midi_voice_switch_class_init      (BseMidiVoiceSwitchClass  *class);
+static void bse_midi_voice_switch_class_init      (BseMidiVoiceSwitchClass  *klass);
 static void bse_midi_voice_switch_dispose         (GObject                  *object);
 static void bse_midi_voice_switch_context_create  (BseSource                *source,
                                                    guint                     context_handle,
@@ -93,13 +93,13 @@ BSE_BUILTIN_TYPE (BseMidiVoiceSwitch)
 }
 
 static void
-bse_midi_voice_input_class_init (BseMidiVoiceInputClass *class)
+bse_midi_voice_input_class_init (BseMidiVoiceInputClass *klass)
 {
-  GObjectClass *gobject_class = G_OBJECT_CLASS (class);
-  BseSourceClass *source_class = BSE_SOURCE_CLASS (class);
+  GObjectClass *gobject_class = G_OBJECT_CLASS (klass);
+  BseSourceClass *source_class = BSE_SOURCE_CLASS (klass);
   guint channel_id;
   
-  voice_input_parent_class = g_type_class_peek_parent (class);
+  voice_input_parent_class = g_type_class_peek_parent (klass);
   
   gobject_class->dispose = bse_midi_voice_input_dispose;
   
@@ -117,13 +117,13 @@ bse_midi_voice_input_class_init (BseMidiVoiceInputClass *class)
 }
 
 static void
-bse_midi_voice_switch_class_init (BseMidiVoiceSwitchClass *class)
+bse_midi_voice_switch_class_init (BseMidiVoiceSwitchClass *klass)
 {
-  GObjectClass *gobject_class = G_OBJECT_CLASS (class);
-  BseSourceClass *source_class = BSE_SOURCE_CLASS (class);
+  GObjectClass *gobject_class = G_OBJECT_CLASS (klass);
+  BseSourceClass *source_class = BSE_SOURCE_CLASS (klass);
   guint channel_id;
   
-  voice_switch_parent_class = g_type_class_peek_parent (class);
+  voice_switch_parent_class = g_type_class_peek_parent (klass);
   
   gobject_class->dispose = bse_midi_voice_switch_dispose;
   

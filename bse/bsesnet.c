@@ -916,14 +916,14 @@ bse_snet_context_dismiss (BseSource *source,
 }
 
 static void
-bse_snet_class_init (BseSNetClass *class)
+bse_snet_class_init (BseSNetClass *klass)
 {
-  GObjectClass *gobject_class = G_OBJECT_CLASS (class);
-  BseObjectClass *object_class = BSE_OBJECT_CLASS (class);
-  BseSourceClass *source_class = BSE_SOURCE_CLASS (class);
-  BseContainerClass *container_class = BSE_CONTAINER_CLASS (class);
+  GObjectClass *gobject_class = G_OBJECT_CLASS (klass);
+  BseObjectClass *object_class = BSE_OBJECT_CLASS (klass);
+  BseSourceClass *source_class = BSE_SOURCE_CLASS (klass);
+  BseContainerClass *container_class = BSE_CONTAINER_CLASS (klass);
   
-  parent_class = g_type_class_peek_parent (class);
+  parent_class = g_type_class_peek_parent (klass);
   
   gobject_class->set_property = bse_snet_set_property;
   gobject_class->get_property = bse_snet_get_property;

@@ -285,29 +285,29 @@ bse_object_do_get_property (GObject     *gobject,
 }
 
 void
-bse_object_class_add_grouped_property (BseObjectClass *class,
+bse_object_class_add_grouped_property (BseObjectClass *klass,
                                        guint	       property_id,
                                        GParamSpec     *pspec)
 {
-  g_return_if_fail (BSE_IS_OBJECT_CLASS (class));
+  g_return_if_fail (BSE_IS_OBJECT_CLASS (klass));
   g_return_if_fail (G_IS_PARAM_SPEC (pspec));
   g_return_if_fail (property_id > 0);
   
-  g_object_class_install_property (G_OBJECT_CLASS (class), property_id, pspec);
+  g_object_class_install_property (G_OBJECT_CLASS (klass), property_id, pspec);
 }
 
 void
-bse_object_class_add_property (BseObjectClass *class,
+bse_object_class_add_property (BseObjectClass *klass,
 			       const gchar    *property_group,
 			       guint	       property_id,
 			       GParamSpec     *pspec)
 {
-  g_return_if_fail (BSE_IS_OBJECT_CLASS (class));
+  g_return_if_fail (BSE_IS_OBJECT_CLASS (klass));
   g_return_if_fail (G_IS_PARAM_SPEC (pspec));
   g_return_if_fail (sfi_pspec_get_group (pspec) == NULL);
   
   sfi_pspec_set_group (pspec, property_group);
-  bse_object_class_add_grouped_property (class, property_id, pspec);
+  bse_object_class_add_grouped_property (klass, property_id, pspec);
 }
 
 void
@@ -530,9 +530,9 @@ object_check_pspec_editable (BseObject      *object,
 {
   if (sfi_pspec_check_option (pspec, "ro"))     /* RDONLY option (GUI) */
     return FALSE;
-  BseObjectClass *class = g_type_class_peek (pspec->owner_type);
-  if (class && class->editable_property)
-    return class->editable_property (object, pspec->param_id, pspec) != FALSE;
+  BseObjectClass *klass = g_type_class_peek (pspec->owner_type);
+  if (klass && klass->editable_property)
+    return klass->editable_property (object, pspec->param_id, pspec) != FALSE;
   else
     return TRUE;
 }
@@ -802,22 +802,22 @@ bse_object_remove_reemit (gpointer     src_object,
 }
 
 static void
-bse_object_class_base_init (BseObjectClass *class)
+bse_object_class_base_init (BseObjectClass *klass)
 {
-  class->editable_property = NULL;
+  klass->editable_property = NULL;
 }
 
 static void
-bse_object_class_base_finalize (BseObjectClass *class)
+bse_object_class_base_finalize (BseObjectClass *klass)
 {
 }
 
 static void
-bse_object_class_init (BseObjectClass *class)
+bse_object_class_init (BseObjectClass *klass)
 {
-  GObjectClass *gobject_class = G_OBJECT_CLASS (class);
+  GObjectClass *gobject_class = G_OBJECT_CLASS (klass);
   
-  parent_class = g_type_class_peek_parent (class);
+  parent_class = g_type_class_peek_parent (klass);
   
   bse_quark_uname = g_quark_from_static_string ("bse-object-uname");
   bse_quark_icon = g_quark_from_static_string ("bse-object-icon");
@@ -832,16 +832,16 @@ bse_object_class_init (BseObjectClass *class)
   gobject_class->dispose = bse_object_do_dispose;
   gobject_class->finalize = bse_object_do_finalize;
   
-  class->check_pspec_editable = object_check_pspec_editable;
-  class->set_uname = bse_object_do_set_uname;
-  class->store_private = bse_object_store_private;
-  class->restore_start = object_restore_start;
-  class->restore_private = object_restore_private;
-  class->restore_finish = object_restore_finish;
-  class->unlocked = NULL;
-  class->get_icon = bse_object_do_get_icon;
+  klass->check_pspec_editable = object_check_pspec_editable;
+  klass->set_uname = bse_object_do_set_uname;
+  klass->store_private = bse_object_store_private;
+  klass->restore_start = object_restore_start;
+  klass->restore_private = object_restore_private;
+  klass->restore_finish = object_restore_finish;
+  klass->unlocked = NULL;
+  klass->get_icon = bse_object_do_get_icon;
   
-  bse_object_class_add_param (class, NULL,
+  bse_object_class_add_param (klass, NULL,
 			      PROP_UNAME,
 			      sfi_pspec_string ("uname", _("Name"), _("Unique name of this object"),
 						NULL,
@@ -851,15 +851,15 @@ bse_object_class_init (BseObjectClass *class)
 						 * objects, specifically BseItem
 						 * and BseContainer.
 						 */));
-  bse_object_class_add_param (class, NULL,
+  bse_object_class_add_param (klass, NULL,
 			      PROP_BLURB,
 			      sfi_pspec_string ("blurb", _("Comment"), _("Free form comment or description"),
 						"",
 						SFI_PARAM_STANDARD ":skip-default"));
   
-  object_signals[SIGNAL_RELEASE] = bse_object_class_add_signal (class, "release",
+  object_signals[SIGNAL_RELEASE] = bse_object_class_add_signal (klass, "release",
 								G_TYPE_NONE, 0);
-  object_signals[SIGNAL_ICON_CHANGED] = bse_object_class_add_signal (class, "icon_changed",
+  object_signals[SIGNAL_ICON_CHANGED] = bse_object_class_add_signal (klass, "icon_changed",
 								     G_TYPE_NONE, 0);
 }
 

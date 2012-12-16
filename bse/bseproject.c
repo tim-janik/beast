@@ -56,8 +56,8 @@ enum {
 
 
 /* --- prototypes --- */
-static void	bse_project_class_init		(BseProjectClass	*class);
-static void	bse_project_class_finalize	(BseProjectClass	*class);
+static void	bse_project_class_init		(BseProjectClass	*klass);
+static void	bse_project_class_finalize	(BseProjectClass	*klass);
 static void	bse_project_init		(BseProject		*project,
 						 gpointer		 rclass);
 static void     bse_project_set_property        (GObject                *object,
@@ -118,15 +118,15 @@ BSE_BUILTIN_TYPE (BseProject)
 }
 
 static void
-bse_project_class_init (BseProjectClass *class)
+bse_project_class_init (BseProjectClass *klass)
 {
-  GObjectClass *gobject_class = G_OBJECT_CLASS (class);
-  BseObjectClass *object_class = BSE_OBJECT_CLASS (class);
-  BseItemClass *item_class = BSE_ITEM_CLASS (class);
-  BseSourceClass *source_class = BSE_SOURCE_CLASS (class);
-  BseContainerClass *container_class = BSE_CONTAINER_CLASS (class);
+  GObjectClass *gobject_class = G_OBJECT_CLASS (klass);
+  BseObjectClass *object_class = BSE_OBJECT_CLASS (klass);
+  BseItemClass *item_class = BSE_ITEM_CLASS (klass);
+  BseSourceClass *source_class = BSE_SOURCE_CLASS (klass);
+  BseContainerClass *container_class = BSE_CONTAINER_CLASS (klass);
   
-  parent_class = g_type_class_peek_parent (class);
+  parent_class = g_type_class_peek_parent (klass);
   quark_storage_trap = g_quark_from_static_string ("bse-project-storage-trap");
 
   gobject_class->set_property = bse_project_set_property;
@@ -156,7 +156,7 @@ bse_project_class_init (BseProjectClass *class)
 }
 
 static void
-bse_project_class_finalize (BseProjectClass *class)
+bse_project_class_finalize (BseProjectClass *klass)
 {
 }
 

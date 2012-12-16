@@ -50,7 +50,7 @@ enum
 
 /* --- prototypes --- */
 static void         bse_song_update_tpsi_SL   (BseSong            *song);
-static void         bse_song_class_init       (BseSongClass       *class);
+static void         bse_song_class_init       (BseSongClass       *klass);
 static void         bse_song_init             (BseSong            *song);
 
 
@@ -711,17 +711,17 @@ bse_song_compat_finish (BseSuper       *super,
 }
 
 static void
-bse_song_class_init (BseSongClass *class)
+bse_song_class_init (BseSongClass *klass)
 {
-  GObjectClass *gobject_class = G_OBJECT_CLASS (class);
-  BseObjectClass *object_class = BSE_OBJECT_CLASS (class);
-  BseItemClass *item_class = BSE_ITEM_CLASS (class);
-  BseSourceClass *source_class = BSE_SOURCE_CLASS (class);
-  BseContainerClass *container_class = BSE_CONTAINER_CLASS (class);
-  BseSuperClass *super_class = BSE_SUPER_CLASS (class);
+  GObjectClass *gobject_class = G_OBJECT_CLASS (klass);
+  BseObjectClass *object_class = BSE_OBJECT_CLASS (klass);
+  BseItemClass *item_class = BSE_ITEM_CLASS (klass);
+  BseSourceClass *source_class = BSE_SOURCE_CLASS (klass);
+  BseContainerClass *container_class = BSE_CONTAINER_CLASS (klass);
+  BseSuperClass *super_class = BSE_SUPER_CLASS (klass);
   BseSongTiming timing;
 
-  parent_class = g_type_class_peek_parent (class);
+  parent_class = g_type_class_peek_parent (klass);
   
   gobject_class->set_property = bse_song_set_property;
   gobject_class->get_property = bse_song_get_property;
