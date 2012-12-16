@@ -61,7 +61,7 @@ bse_script_procedure_init (BseScriptProcedureClass *klass,
   for (ring = sdata->params; ring; ring = sfi_ring_walk (ring, sdata->params))
     {
       gchar *f1 = NULL, *f2 = NULL;
-      GParamSpec *pspec = bse_script_param_spec (ring->data, sdata->script_file, sdata->name, &f1, &f2);
+      GParamSpec *pspec = bse_script_param_spec ((char*) ring->data, sdata->script_file, sdata->name, &f1, &f2);
       g_free (f1);
       g_free (f2);
       if (pspec)
@@ -121,7 +121,7 @@ bse_script_proc_register (const gchar *script_file,
   script_info.class_data = sdata;
   
   tname = g_strconcat ("bse-script-", name, NULL);
-  type = g_type_register_static (BSE_TYPE_PROCEDURE, tname, &script_info, 0);
+  type = g_type_register_static (BSE_TYPE_PROCEDURE, tname, &script_info, GTypeFlags (0));
   g_free (tname);
   if (type)
     {
@@ -178,7 +178,7 @@ bse_script_procedure_exec (BseProcedureClass *proc,
 	}
       if (!quark_script_args)
 	quark_script_args = g_quark_from_static_string ("bse-script-helper-script-args");
-      g_object_set_qdata_full (janitor, quark_script_args, sfi_seq_copy_deep (seq), sfi_seq_unref);
+      g_object_set_qdata_full ((GObject*) janitor, quark_script_args, sfi_seq_copy_deep (seq), GDestroyNotify (sfi_seq_unref));
       sfi_seq_unref (seq);
     }
 
@@ -206,9 +206,9 @@ bse_script_check_client_msg (SfiGlueDecoder *decoder,
 	  SfiRing *params = NULL;
 	  GType type;
 	  guint i;
-	  
+
 	  for (i = vargs_pos; i < seq->n_elements; i++)
-	    params = sfi_ring_append (params, sfi_value_get_string (sfi_seq_get (seq, i)));
+	    params = sfi_ring_append (params, (void*) sfi_value_get_string (sfi_seq_get (seq, i)));
 	  type = bse_script_proc_register (janitor->script_name,
 					   sfi_value_get_string (sfi_seq_get (seq, 0)),
 					   sfi_value_get_string (sfi_seq_get (seq, 1)),
@@ -219,16 +219,17 @@ bse_script_check_client_msg (SfiGlueDecoder *decoder,
 					   sfi_value_get_string (sfi_seq_get (seq, 6)),
 					   sfi_value_get_string (sfi_seq_get (seq, 7)),
 					   params);
-	  sfi_ring_free (params);
+          (void) type;
+          sfi_ring_free (params);
 	  retval = sfi_value_bool (TRUE);	// success
 	}
       return retval;
     }
   else if (strcmp (message, "bse-client-msg-script-args") == 0)
     {
-      SfiSeq *seq = g_object_get_qdata (janitor, quark_script_args);
+      SfiSeq *seq = (SfiSeq*) g_object_get_qdata ((GObject*) janitor, quark_script_args);
       GValue *rvalue = sfi_value_seq (seq);
-      g_object_set_qdata (janitor, quark_script_args, NULL);
+      g_object_set_qdata ((GObject*) janitor, quark_script_args, NULL);
       return rvalue;
     }
   return NULL;
@@ -263,13 +264,13 @@ bse_script_file_register (const gchar *file_name,
 {
   BseServer *server = bse_server_get ();
   SfiRing *params = NULL;
-  gchar *shellpath, *proc_name = "registration hook";
+  const char *proc_name = "registration hook";
   BseErrorType error;
-  
+
   params = sfi_ring_append (params, g_strdup ("--bse-enable-register"));
   params = sfi_ring_append (params, g_strdup ("--bse-eval"));
   params = sfi_ring_append (params, g_strdup_printf ("(load \"%s\")", file_name));
-  shellpath = g_strdup_printf ("%s/%s-%s", bse_main_args->path_binaries, "bsescm", BIN_VERSION);
+  char *shellpath = g_strdup_printf ("%s/%s-%s", bse_main_args->path_binaries, "bsescm", BIN_VERSION);
   *janitor_p = NULL;
   error = bse_server_run_remote (server, shellpath,
 				 params, file_name, proc_name, janitor_p);

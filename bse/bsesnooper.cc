@@ -168,20 +168,18 @@ snooper_process (BseModule *module,
 		 guint      n_values)
 {
   const gfloat *wave_in = BSE_MODULE_IBUFFER (module, 0);
-  SnoopData *data = module->user_data;
-  
+  SnoopData *data = (SnoopData*) module->user_data;
+
   if (data->context_id == *data->active_context_id &&
       module->istreams[0].connected)
     {
       gfloat min = wave_in[0], max = wave_in[0];
       gfloat avg = wave_in[0], first = wave_in[0], last = wave_in[n_values - 1];
       gboolean seen_nan = FALSE, seen_pinf = FALSE, seen_ninf = FALSE, seen_subn = FALSE;
-      guint i;
-      
-      for (i = 1; i < n_values; i++)
+
+      for (uint i = 1; i < n_values; i++)
 	{
-	  gfloat v = wave_in[i];
-	  
+	  float v = wave_in[i];
 	  max = MAX (max, v);
 	  min = MIN (min, v);
 	  avg += v;
@@ -215,14 +213,14 @@ bse_snooper_context_create (BseSource *source,
 			    BseTrans  *trans)
 {
   static const BseModuleClass snooper_class = {
-    BSE_SNOOPER_N_ICHANNELS,	/* n_istreams */
-    0,                  	/* n_jstreams */
-    0,				/* n_ostreams */
-    snooper_process,		/* process */
-    NULL,                       /* process_defer */
-    NULL,                       /* reset */
-    (gpointer) g_free,		/* free */
-    BSE_COST_CHEAP,		/* flags */
+    BSE_SNOOPER_N_ICHANNELS,    // n_istreams
+    0,                          // n_jstreams
+    0,                          // n_ostreams
+    snooper_process,            // process
+    NULL,                       // process_defer
+    NULL,                       // reset
+    (BseModuleFreeFunc) g_free, // free
+    BSE_COST_CHEAP,             // mflags
   };
   BseSnooper *snooper = BSE_SNOOPER (source);
   SnoopData *data = g_new0 (SnoopData, 1);

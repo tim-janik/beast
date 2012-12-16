@@ -89,7 +89,7 @@ show_nodes (GType        type,
 
   if (feature_channels && g_type_is_a (type, BSE_TYPE_SOURCE))
     {
-      BseSourceClass *klass = g_type_class_ref (type);
+      BseSourceClass *klass = (BseSourceClass*) g_type_class_ref (type);
       gchar buffer[1024];
 
       sprintf (buffer,
@@ -146,7 +146,7 @@ show_procdoc (void)
   for (i = 0; i < cseq->n_cats; i++)
     {
       GType type = g_type_from_name (cseq->cats[i]->type);
-      BseProcedureClass *klass = g_type_class_ref (type);
+      BseProcedureClass *klass = (BseProcedureClass*) g_type_class_ref (type);
       gchar *pname = g_type_name_to_sname (cseq->cats[i]->type);
       const gchar *blurb = bse_type_get_blurb (type);
       guint j;
@@ -213,7 +213,7 @@ main (gint   argc,
   gboolean list_synths = 0;
   gchar *show_synth = NULL;
   gchar *root_name = NULL;
-  gchar *iindent = "";
+  const char *iindent = "";
   char pluginbool[2] = "0";
   char scriptbool[2] = "0";
   SfiInitValue config[] = {
@@ -227,8 +227,8 @@ main (gint   argc,
   g_thread_init (NULL);
 
   sfi_init (&argc, &argv, "BseQuery", NULL);
-  
-  guint i;
+
+  int i;
   for (i = 1; i < argc; i++)
     {
       if (strcmp ("-s", argv[i]) == 0)
@@ -244,7 +244,7 @@ main (gint   argc,
 	    {
 	      char *p;
 	      guint n;
-	      
+
 	      p = argv[i];
 	      while (*p)
 		p++;
@@ -310,7 +310,8 @@ main (gint   argc,
         pluginbool[1] = '1';
       else if (strcmp ("-:f", argv[i]) == 0)
 	{
-	  g_log_set_always_fatal (G_LOG_LEVEL_WARNING | G_LOG_LEVEL_CRITICAL | g_log_set_always_fatal (G_LOG_FATAL_MASK));
+	  g_log_set_always_fatal (GLogLevelFlags (G_LOG_LEVEL_WARNING | G_LOG_LEVEL_CRITICAL |
+                                                  g_log_set_always_fatal (GLogLevelFlags (G_LOG_FATAL_MASK))));
 	}
       else if (strcmp ("-h", argv[i]) == 0)
 	{
@@ -350,8 +351,7 @@ main (gint   argc,
       root = ~0;
       for (i = 0; i <= G_TYPE_FUNDAMENTAL_MAX; i += G_TYPE_MAKE_FUNDAMENTAL (1))
 	{
-	  gchar *name = g_type_name (i);
-	  
+	  const char *name = g_type_name (i);
 	  if (name)
 	    show_nodes (i, 0, iindent);
 	}

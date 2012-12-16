@@ -78,8 +78,8 @@ bse_sources = $(strip \
 	bsemidireceiver.cc	bsemidisynth.c		bseobject.cc			bsepart.cc \
 	bsepcminput.cc		bsepcmoutput.cc		bseparam.cc			bseparasite.c \
 	bsepcmdevice.cc		bsepcmdevice-oss.cc	bsepcmdevice-null.cc		bseplugin.c \
-	bseprocedure.c		bseproject.cc		bsescripthelper.c		bseserver.cc \
-	bsesnet.cc		bsesnooper.c		bsesong.cc			bsesequencer.cc \
+	bseprocedure.c		bseproject.cc		bsescripthelper.cc		bseserver.cc \
+	bsesnet.cc		bsesnooper.cc		bsesong.cc			bsesequencer.cc \
 	bsesource.cc		bsestandardosc.cc	bsestandardsynths.cc		bsestorage.cc \
 	bseinstrumentoutput.cc	bsesubiport.cc		bseinstrumentinput.cc		bsesuboport.cc \
 	bsesubsynth.cc		bsesuper.cc		bsetrack.cc			bsetype.cc \
@@ -314,7 +314,7 @@ bseprocidl_SOURCES = bseprocidl.cc
 bseprocidl_LDADD   = $(progs_LDADD)
 
 noinst_PROGRAMS += bsequery
-bsequery_SOURCES = bsequery.c cxxdummy.cc
+bsequery_SOURCES = bsequery.cc cxxdummy.cc
 bsequery_LDADD   = $(progs_LDADD)
 
 noinst_PROGRAMS   += bseautodoc

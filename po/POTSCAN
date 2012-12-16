@@ -90,7 +90,7 @@ bse/bsepcmdevice-oss.cc
 bse/bsepcminput.cc
 bse/bsepcmoutput.cc
 bse/bseserver.cc
-bse/bsesnooper.c
+bse/bsesnooper.cc
 bse/bsesong.cc
 bse/bsesong.proc
 bse/bsesource.proc
