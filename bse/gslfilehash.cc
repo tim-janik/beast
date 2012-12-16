@@ -26,7 +26,7 @@
 
 /* macros */
 #if (GLIB_SIZEOF_LONG > 4)
-#define HASH_LONG(l)	(l + (l >> 32))
+#define HASH_LONG(l)	(l + (guint64 (l) >> 32))
 #else
 #define HASH_LONG(l)	(l)
 #endif
@@ -41,7 +41,7 @@ static GHashTable *hfile_ht = NULL;
 static guint
 hfile_hash (gconstpointer key)
 {
-  const GslHFile *hfile = key;
+  const GslHFile *hfile = (const GslHFile*) key;
   guint h;
   
   h = HASH_LONG (hfile->mtime);
@@ -55,8 +55,8 @@ static gboolean
 hfile_equals (gconstpointer key1,
 	      gconstpointer key2)
 {
-  const GslHFile *hfile1 = key1;
-  const GslHFile *hfile2 = key2;
+  const GslHFile *hfile1 = (const GslHFile*) key1;
+  const GslHFile *hfile2 = (const GslHFile*) key2;
   
   return (hfile1->mtime == hfile2->mtime &&
 	  hfile1->n_bytes == hfile2->n_bytes &&
@@ -114,7 +114,7 @@ gsl_hfile_open (const gchar *file_name)
     return NULL;	/* errno from stat() */
   
   sfi_mutex_lock (&fdpool_mutex);
-  hfile = g_hash_table_lookup (hfile_ht, &key);
+  hfile = (GslHFile*) g_hash_table_lookup (hfile_ht, &key);
   if (hfile)
     {
       sfi_mutex_lock (&hfile->mutex);
@@ -316,7 +316,7 @@ gsl_hfile_zoffset (GslHFile *hfile)
 	  return -1;
 	}
 
-      p = memchr (sdata, 0, l);
+      p = (guint8*) memchr (sdata, 0, l);
       seen_zero = p != NULL;
       zoffset += seen_zero ? p - sdata : l;
     }

@@ -18,6 +18,7 @@
 #define __GSL_OSC_TABLE_H__
 
 #include <bse/gsldefs.h>
+#include <sfi/gbsearcharray.h>
 
 G_BEGIN_DECLS
 
@@ -41,7 +42,7 @@ typedef struct
 {
   gfloat         mix_freq;
   GslOscWaveForm wave_form;
-  gpointer       entry_array;
+  GBSearchArray *entry_array;
 } GslOscTable;
 
 typedef struct

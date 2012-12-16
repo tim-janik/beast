@@ -514,8 +514,8 @@ xinfo_handle_open (GslDataHandle      *dhandle,
       i = 0;
       while (sxinfos)
         {
-          const gchar *xinfo = sfi_ring_pop_head (&sxinfos);
-          const gchar *e = strchr (xinfo, '=');
+          const char *xinfo = (const char*) sfi_ring_pop_head (&sxinfos);
+          const char *e = strchr (xinfo, '=');
           if (e[1]) /* non-empty xinfo */
             setup->xinfos[i++] = g_strdup (xinfo);
         }
@@ -622,8 +622,8 @@ xinfo_data_handle_new (GslDataHandle *src_handle,
   SfiRing *ring = NULL;
   while (dest_added)
     {
-      gchar *xinfo = sfi_ring_pop_head (&dest_added);
-      const gchar *e = strchr (xinfo, '=');
+      char *xinfo = (char*) sfi_ring_pop_head (&dest_added);
+      const char *e = strchr (xinfo, '=');
       if (e[1]) /* non-empty xinfo */
         ring = sfi_ring_append (ring, xinfo);
       else
@@ -644,8 +644,8 @@ xinfo_data_handle_new (GslDataHandle *src_handle,
   ring = NULL;
   while (dest_remove)
     {
-      gchar *xinfo = sfi_ring_pop_head (&dest_remove);
-      const gchar *e = strchr (xinfo, '=');
+      char *xinfo = (char*) sfi_ring_pop_head (&dest_remove);
+      const char *e = strchr (xinfo, '=');
       if (!e[1]) /* empty xinfo */
         ring = sfi_ring_append (ring, xinfo);
       else
@@ -1398,7 +1398,7 @@ dcache_handle_read (GslDataHandle *dhandle,
   DCacheHandle *chandle = (DCacheHandle*) dhandle;
   GslDataCacheNode *node;
   
-  node = gsl_data_cache_ref_node (chandle->dcache, voffset, TRUE);
+  node = gsl_data_cache_ref_node (chandle->dcache, voffset, GSL_DATA_CACHE_DEMAND_LOAD);
   voffset -= node->offset;
   n_values = MIN (n_values, chandle->node_size - voffset);
   memcpy (values, node->data + voffset, sizeof (values[0]) * n_values);
@@ -1604,7 +1604,7 @@ wave_handle_read (GslDataHandle *dhandle,
     {
       guint8 *u8; gint8 *s8; guint16 *u16; guint32 *u32; gint32 *s32;
     case GSL_WAVE_FORMAT_UNSIGNED_8:
-      u8 = buffer; u8 += n_values * 3;
+      u8 = (guint8*) buffer; u8 += n_values * 3;
       l = gsl_hfile_pread (whandle->hfile, byte_offset, n_values, u8);
       if (l < 1)
 	return l;
@@ -1613,7 +1613,7 @@ wave_handle_read (GslDataHandle *dhandle,
     case GSL_WAVE_FORMAT_SIGNED_8:
     case GSL_WAVE_FORMAT_ALAW:
     case GSL_WAVE_FORMAT_ULAW:
-      s8 = buffer; s8 += n_values * 3;
+      s8 = (gint8*) buffer; s8 += n_values * 3;
       l = gsl_hfile_pread (whandle->hfile, byte_offset, n_values, s8);
       if (l < 1)
 	return l;
@@ -1623,7 +1623,7 @@ wave_handle_read (GslDataHandle *dhandle,
     case GSL_WAVE_FORMAT_UNSIGNED_12:
     case GSL_WAVE_FORMAT_SIGNED_16:
     case GSL_WAVE_FORMAT_UNSIGNED_16:
-      u16 = buffer; u16 += n_values;
+      u16 = (guint16*) buffer; u16 += n_values;
       l = gsl_hfile_pread (whandle->hfile, byte_offset, n_values << 1, u16);
       if (l < 2)
 	return l < 0 ? l : 0;
@@ -1631,7 +1631,7 @@ wave_handle_read (GslDataHandle *dhandle,
       gsl_conv_to_float (whandle->format, whandle->byte_order, u16, values, l);
       break;
     case GSL_WAVE_FORMAT_SIGNED_24:
-      s8 = buffer; s8 += n_values * 1;
+      s8 = (gint8*) buffer; s8 += n_values * 1;
       l = gsl_hfile_pread (whandle->hfile, byte_offset, n_values * 3, s8);
       if (l < 3)
 	return l < 0 ? l : 0;
@@ -1639,7 +1639,7 @@ wave_handle_read (GslDataHandle *dhandle,
       gsl_conv_to_float (whandle->format, whandle->byte_order, s8, values, l);
       break;
     case GSL_WAVE_FORMAT_SIGNED_24_PAD4:
-      s32 = buffer;
+      s32 = (gint32*) buffer;
       l = gsl_hfile_pread (whandle->hfile, byte_offset, n_values * 4, s32);
       if (l < 4)
 	return l < 0 ? l : 0;
@@ -1647,7 +1647,7 @@ wave_handle_read (GslDataHandle *dhandle,
       gsl_conv_to_float (whandle->format, whandle->byte_order, s32, values, l);
       break;
     case GSL_WAVE_FORMAT_SIGNED_32:
-      s32 = buffer;
+      s32 = (gint32*) buffer;
       l = gsl_hfile_pread (whandle->hfile, byte_offset, n_values * 4, s32);
       if (l < 4)
         return l < 0 ? l : 0;
@@ -1655,7 +1655,7 @@ wave_handle_read (GslDataHandle *dhandle,
       gsl_conv_to_float (whandle->format, whandle->byte_order, s32, values, l);
       break;
     case GSL_WAVE_FORMAT_FLOAT:
-      u32 = buffer;
+      u32 = (guint32*) buffer;
       l = gsl_hfile_pread (whandle->hfile, byte_offset, n_values << 2, u32);
       if (l < 4)
 	return l < 0 ? l : 0;

@@ -110,7 +110,7 @@ fill_block (GslWaveChunk *wchunk,
     wpos.dir = -wpos.dir;
   wpos.pos = offset;
   wpos.loop_count = loop_count;
-  dnode = gsl_data_cache_ref_node (wchunk->dcache, 0, TRUE);
+  dnode = gsl_data_cache_ref_node (wchunk->dcache, 0, GSL_DATA_CACHE_DEMAND_LOAD);
   for (i = 0; i < length; i++)
     {
       GslLong offset = wpos.pos;
@@ -122,7 +122,7 @@ fill_block (GslWaveChunk *wchunk,
 	  if (offset < dnode->offset || offset >= dnode->offset + dnode_length)
 	    {
 	      gsl_data_cache_unref_node (wchunk->dcache, dnode);
-	      dnode = gsl_data_cache_ref_node (wchunk->dcache, offset, TRUE);
+	      dnode = gsl_data_cache_ref_node (wchunk->dcache, offset, GSL_DATA_CACHE_DEMAND_LOAD);
 	    }
 	  block[i] = dnode->data[offset - dnode->offset];
 	}
@@ -490,7 +490,7 @@ gsl_wave_chunk_use_block (GslWaveChunk      *wchunk,
 	  else
 	    offset = iter.lbound + iter.rel_pos;
 	  max_length = reverse ? offset - iter.lbound : iter.ubound - offset;
-	  dnode = gsl_data_cache_ref_node (wchunk->dcache, offset, TRUE); /* FIXME: demand_load */
+	  dnode = gsl_data_cache_ref_node (wchunk->dcache, offset, GSL_DATA_CACHE_DEMAND_LOAD);
 	  offset -= dnode->offset;
 	  block->start = dnode->data + offset;
 	  if (reverse)
@@ -542,7 +542,7 @@ gsl_wave_chunk_unuse_block (GslWaveChunk      *wchunk,
   
   if (block->node)
     {
-      gsl_data_cache_unref_node (wchunk->dcache, block->node);
+      gsl_data_cache_unref_node (wchunk->dcache, (GslDataCacheNode*) block->node);
       block->node = NULL;
     }
 }
@@ -803,7 +803,7 @@ gsl_wave_loop_type_to_string (GslWaveLoopType wave_loop)
 GslWaveLoopType
 gsl_wave_loop_type_from_string (const gchar *string)
 {
-  g_return_val_if_fail (string != NULL, 0);
+  g_return_val_if_fail (string != NULL, GSL_WAVE_LOOP_NONE);
   
   while (*string == ' ')
     string++;

@@ -92,7 +92,7 @@ vfile_read (void  *ptr,
 	    size_t nmemb,
 	    void  *datasource)
 {
-  VFile *vfile = datasource;
+  VFile *vfile = (VFile*) datasource;
   size_t bytes = size * nmemb;
   size_t bytes_to_eof = vfile->byte_length - (gsl_rfile_position (vfile->rfile) - vfile->byte_offset);
   return gsl_rfile_read (vfile->rfile, MIN (bytes, bytes_to_eof), ptr);
@@ -103,7 +103,7 @@ vfile_seek (void       *datasource,
 	    ogg_int64_t offset,
 	    int         whence)
 {
-  VFile *vfile = datasource;
+  VFile *vfile = (VFile*) datasource;
   ogg_int64_t l;
   switch (whence)
     {
@@ -130,7 +130,7 @@ vfile_seek (void       *datasource,
 static int
 vfile_close (void *datasource)
 {
-  VFile *vfile = datasource;
+  VFile *vfile = (VFile*) datasource;
   gsl_rfile_close (vfile->rfile);
   g_free (vfile);
   return 0;
@@ -139,7 +139,7 @@ vfile_close (void *datasource)
 static long
 vfile_tell (void *datasource)
 {
-  VFile *vfile = datasource;
+  VFile *vfile = (VFile*) datasource;
   return gsl_rfile_position (vfile->rfile) - vfile->byte_offset;
 }
 
@@ -273,17 +273,17 @@ static void
 read_packet (VorbisHandle *vhandle)
 {
   gfloat **pcm = NULL;
-  gint stream_id, i;
-  
+  gint stream_id;
+
   vhandle->pcm_pos = ov_pcm_tell (&vhandle->ofile) - vhandle->soffset;
   vhandle->pcm_length = ov_read_float (&vhandle->ofile, &pcm, G_MAXINT, &stream_id);
-  if (vhandle->pcm_pos < 0 || vhandle->pcm_length < 0 || stream_id != vhandle->bitstream)
+  if (vhandle->pcm_pos < 0 || vhandle->pcm_length < 0 || stream_id != int (vhandle->bitstream))
     {
       /* urg, this is bad! */
       dh_vorbis_coarse_seek (&vhandle->dhandle, 0);
     }
   else
-    for (i = 0; i < vhandle->dhandle.setup.n_channels; i++)
+    for (uint i = 0; i < vhandle->dhandle.setup.n_channels; i++)
       vhandle->pcm[i] = pcm[i];
 }
 
@@ -569,6 +569,6 @@ gsl_vorbis1_handle_put_wstore (GslVorbis1Handle *vorbis1,
 guint
 gsl_vorbis_make_serialno (void)
 {
-  static guint global_ogg_serial = ('B' << 24) | ('S' << 16) | ('E' << 8) | 128;
-  return g_atomic_int_exchange_and_add (&global_ogg_serial, 1);
+  static volatile uint global_ogg_serial = ('B' << 24) | ('S' << 16) | ('E' << 8) | 128;
+  return __sync_fetch_and_add (&global_ogg_serial, 1);
 }

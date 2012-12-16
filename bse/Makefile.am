@@ -60,11 +60,11 @@ bse_public_headers = $(strip \
 )
 # BSE C & C++ sources
 bse_sources = $(strip \
-	gslfft.c		gsloscillator.c	gsldatahandle.c	gslwavechunk.c \
-	gslfilter.c		gslcommon.c \
-	gsldatahandle-vorbis.c	gslvorbis-enc.c	gsldatacache.c	gslvorbis-cutter.c \
-	gsldatahandle-mad.c	           	gslfilehash.c	gsldatautils.c	\
-	gslwaveosc.c		gslosctable.c	gslmagic.c	                 \
+	gslfft.cc		gsloscillator.cc	gsldatahandle.cc	gslwavechunk.cc \
+	gslfilter.cc		gslcommon.cc \
+	gsldatahandle-vorbis.cc	gslvorbis-enc.cc	gsldatacache.cc	gslvorbis-cutter.cc \
+	gsldatahandle-mad.cc	           	gslfilehash.cc	gsldatautils.cc	\
+	gslwaveosc.cc		gslosctable.cc	gslmagic.cc	                 \
 	\
 	bseengine.c		bseenginemaster.c	bseengineschedule.c		bseengineutils.c \
 	bsebus.cc		bsecategories.cc 	\
@@ -125,8 +125,8 @@ EXTRA_DIST += $(strip \
 	mktypes.pl	mkcalls.pl	mkcproc.pl		\
 	bseconfig.h.in	bsepcmmodule.cc				\
 	bsewave.header						\
-	gsl-fftgen.pl	gsl-fftconf.sh	gsloscillator-aux.c	\
-	gslincluder.c	gslwaveosc-aux.c			\
+	gsl-fftgen.pl	gsl-fftconf.sh	gsloscillator-aux.cc	\
+	gslincluder.h	gslwaveosc-aux.cc			\
 )
 
 # -pthread -> -lpthread hack (required for libtool library linkage)
@@ -170,9 +170,9 @@ CLEANFILES += $(bse_proc_gen_sources)
 else
 MAINTAINERCLEANFILES += $(bse_proc_gen_sources)
 endif
-# gslfft.c
-GENERATED += gslfft.c
-$(srcdir)/gslfft.c: @PERLRULE@ $(srcdir)/gsl-fftgen.pl $(srcdir)/gsl-fftconf.sh
+# gslfft.cc
+GENERATED += gslfft.cc
+$(srcdir)/gslfft.cc: @PERLRULE@ $(srcdir)/gsl-fftgen.pl $(srcdir)/gsl-fftconf.sh
 	$(srcdir)/gsl-fftconf.sh '$(PERL) $(srcdir)/gsl-fftgen.pl' \"gslfft.h\" >$@
 # bsegentypes.h
 GENERATED_EXTRA_DIST += bsegentypes.h

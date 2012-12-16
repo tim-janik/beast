@@ -33,7 +33,6 @@
 
 
 /* --- typedefs & structures  --- */
-typedef struct _Magic Magic;
 typedef struct _BFile BFile;
 struct _BFile
 {
@@ -47,10 +46,8 @@ struct _BFile
 
 
 /* --- prototypes --- */
-static Magic*	magic_create		(gchar		*magic_string,
-					 const gchar	*original);
-static gboolean	magic_match_file	(BFile		*bfile,
-					 Magic       	*magics);
+static GslRealMagic* magic_create	(char *magic_string, const char *original);
+static gboolean	magic_match_file	(BFile *bfile, GslRealMagic *magics);
 static gboolean	bfile_open		(BFile		*bfile,
 					 const gchar    *file_name,
 					 guint		 skip_offset);
@@ -68,8 +65,8 @@ magic_cmp (gconstpointer p1,
 	   gconstpointer p2,
            gpointer      data)
 {
-  const GslMagic *m1 = p1;
-  const GslMagic *m2 = p2;
+  const GslMagic *m1 = (const GslMagic*) p1;
+  const GslMagic *m2 = (const GslMagic*) p2;
   /* smaller values are higher priority */
   return m2->priority - m1->priority;
 }
@@ -95,15 +92,15 @@ gsl_magic_list_brute_match (SfiRing     *magic_list,
 
   if (bfile_open (&bfile, file_name, skip_bytes))
     {
-      gchar *extension = strrchr (file_name, '.');
+      const char *extension = strrchr (file_name, '.');
       SfiRing *node;
       
       /* match by extension */
       if (ext_matches && extension)
 	for (node = magic_list; node; node = sfi_ring_walk (node, magic_list))
 	  {
-	    GslMagic *magic = node->data;
-	    
+	    GslMagic *magic = (GslMagic*) node->data;
+
 	    if (!magic->extension || strcmp (magic->extension, extension) != 0)
 	      continue;
 	    if (magic != skip_magic && magic_match_file (&bfile, magic->match_list))
@@ -113,8 +110,8 @@ gsl_magic_list_brute_match (SfiRing     *magic_list,
       if (other_matches)
 	for (node = magic_list; node; node = sfi_ring_walk (node, magic_list))
 	  {
-	    GslMagic *magic = node->data;
-	    
+	    GslMagic *magic = (GslMagic*) node->data;
+
 	    if (extension && magic->extension && strcmp (magic->extension, extension) == 0)
 	      continue;
 	    if (magic != skip_magic && magic_match_file (&bfile, magic->match_list))
@@ -140,16 +137,16 @@ gsl_magic_list_match_file_skip (SfiRing     *magic_list,
   
   if (bfile_open (&bfile, file_name, skip_offset))
     {
-      gchar *extension = strrchr (file_name, '.');
+      const char *extension = strrchr (file_name, '.');
       gint rpriority = G_MAXINT;
       SfiRing *node;
-      
+
       /* we do a quick scan by extension first */
       if (!rmagic && extension)
 	for (node = magic_list; node; node = sfi_ring_walk (node, magic_list))
 	  {
-	    GslMagic *magic = node->data;
-	    
+	    GslMagic *magic = (GslMagic*) node->data;
+
 	    if (!magic->extension
 		|| strcmp (magic->extension, extension) != 0
 		|| rpriority < magic->priority
@@ -165,8 +162,8 @@ gsl_magic_list_match_file_skip (SfiRing     *magic_list,
       if (!rmagic && extension)
 	for (node = magic_list; node; node = sfi_ring_walk (node, magic_list))
 	  {
-	    GslMagic *magic = node->data;
-	    
+	    GslMagic *magic = (GslMagic*) node->data;
+
 	    if ((magic->extension && strcmp (magic->extension, extension) == 0)
 		|| rpriority < magic->priority
 		|| (rmagic && rpriority == magic->priority))
@@ -181,8 +178,8 @@ gsl_magic_list_match_file_skip (SfiRing     *magic_list,
       if (!rmagic && !extension)
 	for (node = magic_list; node; node = sfi_ring_walk (node, magic_list))
 	  {
-	    GslMagic *magic = node->data;
-	    
+	    GslMagic *magic = (GslMagic*) node->data;
+
 	    if (rpriority < magic->priority ||
 		(rmagic && rpriority == magic->priority))
 	      continue;
@@ -212,7 +209,7 @@ gsl_magic_create (gpointer     data,
 		  const gchar *magic_spec)
 {
   GslMagic *magic;
-  Magic *match_list;
+  GslRealMagic *match_list;
   gchar *magic_string;
 
   g_return_val_if_fail (magic_spec != NULL, NULL);
@@ -233,7 +230,7 @@ gsl_magic_create (gpointer     data,
 }
 
 
-/* --- Magic creation/checking --- */
+/* --- GslRealMagic creation/checking --- */
 typedef enum
 {
   MAGIC_CHECK_ANY,
@@ -254,9 +251,9 @@ typedef union
   guint32 v_uint32;
   gchar  *v_string;
 } MagicData;
-struct _Magic
+struct _GslRealMagic
 {
-  Magic         *next;
+  GslRealMagic  *next;
   gulong         offset;
   guint          data_size;
   MagicCheckType magic_check;
@@ -271,8 +268,7 @@ static const gchar *magic_field_delims = " \t,";
 static const gchar *magic_string_delims = " \t\n\r";
 
 static gboolean
-magic_parse_test (Magic       *magic,
-		  const gchar *string)
+magic_parse_test (GslRealMagic *magic, const gchar *string)
 {
   if (!magic->read_string)
     {
@@ -369,8 +365,7 @@ magic_parse_test (Magic       *magic,
 }
 
 static gboolean
-magic_parse_type (Magic       *magic,
-		  const gchar *string)
+magic_parse_type (GslRealMagic *magic, const gchar *string)
 {
   gchar *f = NULL;
 
@@ -452,8 +447,7 @@ magic_parse_type (Magic       *magic,
 }
 
 static gboolean
-magic_parse_offset (Magic *magic,
-		    gchar *string)
+magic_parse_offset (GslRealMagic *magic, char *string)
 {
   gchar *f = NULL;
   
@@ -465,13 +459,12 @@ magic_parse_offset (Magic *magic,
   return !f || *f == 0;
 }
 
-static Magic*
-magic_create (gchar       *magic_string,
-	      const gchar *original)
+static GslRealMagic*
+magic_create (char *magic_string, const char *original)
 {
 #define SKIP_CLEAN(s)	{ while (*s && !strchr (magic_field_delims, *s)) s++; \
                           if (*s) do *(s++) = 0; while (strchr (magic_field_delims, *s)); }
-  Magic *magics = NULL;
+  GslRealMagic *magics = NULL;
   gchar *p = magic_string;
   
   while (p && *p)
@@ -486,11 +479,10 @@ magic_create (gchar       *magic_string,
 	}
       else
 	{
-	  Magic *tmp = magics;
-	  
-	  magics = g_new0 (Magic, 1);
+	  GslRealMagic *tmp = magics;
+	  magics = g_new0 (GslRealMagic, 1);
 	  magics->next = tmp;
-	  
+
 	  magic_string = p;
 	  SKIP_CLEAN (p);
 	  if (!magic_parse_offset (magics, magic_string))
@@ -524,8 +516,7 @@ magic_create (gchar       *magic_string,
 }
 
 static gboolean
-magic_check_data (Magic     *magic,
-		  MagicData *data)
+magic_check_data (GslRealMagic *magic, MagicData *data)
 {
   gint cmp = 0;
 
@@ -581,9 +572,7 @@ magic_check_data (Magic     *magic,
 }
 
 static inline gboolean
-magic_read_data (BFile     *bfile,
-		 Magic     *magic,
-		 MagicData *data)
+magic_read_data (BFile *bfile, GslRealMagic *magic, MagicData *data)
 {
   guint file_size = bfile_get_size (bfile);
 
@@ -644,8 +633,7 @@ magic_read_data (BFile     *bfile,
 }
 
 static gboolean
-magic_match_file (BFile *bfile,
-		  Magic *magics)
+magic_match_file (BFile *bfile, GslRealMagic *magics)
 {
   g_return_val_if_fail (bfile != NULL, FALSE);
   g_return_val_if_fail (magics != NULL, FALSE);
@@ -654,12 +642,12 @@ magic_match_file (BFile *bfile,
     {
       gchar data_string[MAX_MAGIC_STRING + 1];
       MagicData data;
-      
+
       if (magics->read_string)
 	data.v_string = data_string;
       else
 	data.v_uint32 = 0;
-      
+
       if (!magic_read_data (bfile, magics, &data) ||
 	  !magic_check_data (magics, &data))
 	return FALSE;
@@ -707,7 +695,7 @@ bfile_open (BFile       *bfile,
 	do
 	  ret = lseek (bfile->fd, skip_offset, SEEK_SET);
 	while (ret < 0 && errno == EINTR);
-      if (ret != skip_offset)
+      if (ret < 0 || uint (ret) != skip_offset)
 	{
 	  bfile_close (bfile);
 	  return FALSE;

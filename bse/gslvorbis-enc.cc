@@ -65,11 +65,11 @@ static void
 gsl_vorbis_encoder_enqueue_page (GslVorbisEncoder *self,
                                  ogg_page         *opage)
 {
-  EDataBlock *dblock = g_malloc (sizeof (EDataBlock) - sizeof (dblock->data[0]) + opage->header_len);
+  EDataBlock *dblock = (EDataBlock*) g_malloc (sizeof (EDataBlock) - sizeof (dblock->data[0]) + opage->header_len);
   dblock->length = opage->header_len;
   memcpy (dblock->data, opage->header, dblock->length);
   self->dblocks = sfi_ring_append (self->dblocks, dblock);
-  dblock = g_malloc (sizeof (EDataBlock) - sizeof (dblock->data[0]) + opage->body_len);
+  dblock = (EDataBlock*) g_malloc (sizeof (EDataBlock) - sizeof (dblock->data[0]) + opage->body_len);
   dblock->length = opage->body_len;
   memcpy (dblock->data, opage->body, dblock->length);
   self->dblocks = sfi_ring_append (self->dblocks, dblock);
@@ -115,8 +115,8 @@ gsl_vorbis_encoder_add_comment (GslVorbisEncoder *self,
   g_return_if_fail (self != NULL);
   g_return_if_fail (self->stream_setup == FALSE);
   g_return_if_fail (comment != NULL);
-  
-  vorbis_comment_add (&self->vcomment, (gpointer) comment);
+
+  vorbis_comment_add (&self->vcomment, comment);
 }
 
 void
@@ -128,17 +128,17 @@ gsl_vorbis_encoder_add_named_comment (GslVorbisEncoder *self,
   g_return_if_fail (self->stream_setup == FALSE);
   g_return_if_fail (tag_name != NULL);
   g_return_if_fail (comment != NULL);
-  
-  vorbis_comment_add_tag (&self->vcomment, (gpointer) tag_name, (gpointer) comment);
+
+  vorbis_comment_add_tag (&self->vcomment, tag_name, comment);
 }
 
-static gchar*
-convert_latin1_to_utf8 (const gchar *string)
+static char*
+convert_latin1_to_utf8 (const char *string)
 {
   if (string)
     {
-      const guchar *s = string;
-      guint l = strlen (s);
+      const guchar *s = (const guchar*) string;
+      uint l = strlen ((const char*) s);
       guchar *dest = g_new (guchar, l * 2 + 1), *d = dest;
       while (*s)
         if (*s >= 0xC0)
@@ -148,7 +148,7 @@ convert_latin1_to_utf8 (const gchar *string)
         else
           *d++ = *s++;
       *d++ = 0;
-      return dest;
+      return (char*) dest;
     }
   return NULL;
 }
@@ -181,7 +181,7 @@ gsl_vorbis_encoder_add_named_lcomment (GslVorbisEncoder *self,
   g_return_if_fail (comment != NULL);
   
   utf8_comment = convert_latin1_to_utf8 (comment);
-  vorbis_comment_add_tag (&self->vcomment, (gpointer) tag_name, utf8_comment);
+  vorbis_comment_add_tag (&self->vcomment, tag_name, utf8_comment);
   g_free (utf8_comment);
 }
 
@@ -446,7 +446,7 @@ gsl_vorbis_encoder_read_ogg (GslVorbisEncoder *self,
     gsl_vorbis_encoder_process (self);
   while (n_bytes && self->dblocks)
     {
-      EDataBlock *dblock = self->dblocks->data;
+      EDataBlock *dblock = (EDataBlock*) self->dblocks->data;
       guint l = MIN (n_bytes, dblock->length - self->dblock_offset);
       memcpy (bytes, dblock->data + self->dblock_offset, l);
       n_bytes -= l;
@@ -480,7 +480,7 @@ gsl_vorbis_encoder_version (void)
   if (r != 0)
     {
       vorbis_info_clear (&vinfo);
-      goto error_result;
+      return g_strdup ("unknown");
     }
   vorbis_dsp_state vdsp = { 0 };
   vorbis_analysis_init (&vdsp, &vinfo);
@@ -515,6 +515,5 @@ gsl_vorbis_encoder_version (void)
   /* return result */
   if (vendor)
     return vendor; // e.g. "Xiphophorus libVorbis I 20000508" (first beta) or "Xiph.Org libVorbis I 20020717" (1.0)
- error_result:
   return g_strdup ("unknown");
 }
