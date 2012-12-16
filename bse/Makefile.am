@@ -60,7 +60,7 @@ bse_public_headers = $(strip \
 )
 # BSE C & C++ sources
 bse_sources = $(strip \
-	gslfft.c		gsloscillator.cc	gsldatahandle.cc	gslwavechunk.cc \
+	gslfft.cc		gsloscillator.cc	gsldatahandle.cc	gslwavechunk.cc \
 	gslfilter.cc		gslcommon.cc \
 	gsldatahandle-vorbis.cc	gslvorbis-enc.cc	gsldatacache.cc	gslvorbis-cutter.cc \
 	gsldatahandle-mad.cc	           	gslfilehash.cc	gsldatautils.cc	\
@@ -170,9 +170,9 @@ CLEANFILES += $(bse_proc_gen_sources)
 else
 MAINTAINERCLEANFILES += $(bse_proc_gen_sources)
 endif
-# gslfft.c
-GENERATED += gslfft.c
-$(srcdir)/gslfft.c: @PERLRULE@ $(srcdir)/gsl-fftgen.pl $(srcdir)/gsl-fftconf.sh
+# gslfft.cc
+GENERATED += gslfft.cc
+$(srcdir)/gslfft.cc: @PERLRULE@ $(srcdir)/gsl-fftgen.pl $(srcdir)/gsl-fftconf.sh
 	$(srcdir)/gsl-fftconf.sh '$(PERL) $(srcdir)/gsl-fftgen.pl' \"gslfft.h\" >$@
 # bsegentypes.h
 GENERATED_EXTRA_DIST += bsegentypes.h
