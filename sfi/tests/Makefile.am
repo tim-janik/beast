@@ -35,7 +35,7 @@ testsfidl_SOURCES = testsfidl.cc \
 			../sfidl-generator.cc ../sfidl-namespace.cc ../sfidl-options.cc ../sfidl-parser.cc \
 			../sfidl-factory.cc ../sfidl-typelist.cc ../sfidl-cbase.cc ../sfidl-clientc.cc \
 			../sfidl-clientcxx.cc ../sfidl-corec.cc ../sfidl-corecxx.cc ../sfidl-cxxbase.cc \
-			../sfidl-hostc.cc ../glib-extra.c
+			../sfidl-hostc.cc ../glib-extra.cc
 testsfidl_LDADD   = $(progs_nosfi_ldadd)
 $(srcdir)/testsfidl.cc: testidl.h testidl.c
 
