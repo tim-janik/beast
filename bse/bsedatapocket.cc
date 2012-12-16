@@ -641,7 +641,7 @@ parse_set_data (BseDataPocket *pocket,
   
   g_scanner_get_next_token (scanner); /* eat ')' */
   
-  return SfiTokenType (G_TOKEN_NONE);
+  return SFI_TOKEN_NONE;
 }
 
 static SfiTokenType

@@ -160,7 +160,7 @@ while (<>) {
     }
 
     if ($gen_export_proto) {
-	print "extern BSE_BUILTIN_PROTO ($type);\n";
+	print "extern \"C\" BSE_BUILTIN_PROTO ($type);\n";
     }
     
     if ($gen_interns) {

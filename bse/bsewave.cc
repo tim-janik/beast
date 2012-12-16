@@ -173,8 +173,7 @@ bse_wave_lookup_chunk (BseWave *wave,
 }
 
 void
-bse_wave_remove_chunk (BseWave      *wave,
-		       GslWaveChunk *wchunk)
+bse_wave_remove_chunk (BseWave *wave, GslWaveChunk *wchunk)
 {
   g_return_if_fail (BSE_IS_WAVE (wave));
   g_return_if_fail (wchunk != NULL);
@@ -200,8 +199,8 @@ wchunk_cmp (gconstpointer a,
 	    gconstpointer b,
             gpointer      data)
 {
-  const GslWaveChunk *w1 = a;
-  const GslWaveChunk *w2 = b;
+  const GslWaveChunk *w1 = (const GslWaveChunk*) a;
+  const GslWaveChunk *w2 = (const GslWaveChunk*) b;
   
   return w1->osc_freq < w2->osc_freq ? -1 : w1->osc_freq > w2->osc_freq;
 }
@@ -247,9 +246,9 @@ bse_wave_clear (BseWave *wave)
 
   /* delete all wave chunks */
   while (wave->wave_chunks)
-    bse_wave_remove_chunk (wave, wave->wave_chunks->data);
+    bse_wave_remove_chunk (wave, (GslWaveChunk*) wave->wave_chunks->data);
   while (wave->open_handles)
-    gsl_data_handle_close (sfi_ring_pop_head (&wave->open_handles));
+    gsl_data_handle_close ((GslDataHandle*) sfi_ring_pop_head (&wave->open_handles));
 
   /* free fields */
   g_free (wave->file_name);
@@ -289,7 +288,7 @@ bse_wave_load_wave_file (BseWave      *self,
 
       for (walk = files; walk; walk = sfi_ring_walk (files, walk))
 	{
-	  char *fname = walk->data;
+          char *fname = (char*) walk->data;
 	  if (!fi)
 	    fi = bse_wave_file_info_load (fname, &error);
 	  g_free (fname);
@@ -386,7 +385,7 @@ bse_wave_store_private (BseObject  *object,
       SfiRing *ring;
       for (ring = wave->wave_chunks; ring; ring = sfi_ring_walk (ring, wave->wave_chunks))
         {
-          GslWaveChunk *wchunk = ring->data;
+          GslWaveChunk *wchunk = (GslWaveChunk*) ring->data;
           BseErrorType error = gsl_data_handle_open (wchunk->dcache->dhandle);
           if (error)
             {
@@ -438,38 +437,38 @@ parse_wave_chunk (BseWave         *wave,
       pwchunk->xinfos = NULL;
       GTokenType token = bse_storage_parse_xinfos (storage, &pwchunk->xinfos);
       if (token != G_TOKEN_NONE)
-        return token;
+        return SfiTokenType (token);
     }
   else if (bse_storage_match_data_handle (storage, quark))
     {
       guint expected_token;
       if (pwchunk->data_handle)
-	return bse_storage_warn_skip (storage, "duplicate wave data reference");
+	return (SfiTokenType) bse_storage_warn_skip (storage, "duplicate wave data reference");
       expected_token = bse_storage_parse_data_handle_rest (storage,
                                                            &pwchunk->data_handle,
                                                            &pwchunk->wh_n_channels,
                                                            &pwchunk->wh_mix_freq,
                                                            &pwchunk->wh_osc_freq);
       if (expected_token != G_TOKEN_NONE)
-	return expected_token;
+	return SfiTokenType (expected_token);
       if (!pwchunk->data_handle)
         bse_storage_warn (storage, "invalid wave data reference");
       /* closing brace already parsed by bse_storage_parse_data_handle_rest() */
-      return G_TOKEN_NONE;
+      return SFI_TOKEN_NONE;
     }
   else if (BSE_STORAGE_COMPAT (storage, 0, 5, 1) && quark == quark_wave_handle)
     {
       guint expected_token;
       g_scanner_get_next_token (scanner); /* eat identifier */
       if (pwchunk->data_handle)
-	return bse_storage_warn_skip (storage, "duplicate wave data reference");
+	return (SfiTokenType) bse_storage_warn_skip (storage, "duplicate wave data reference");
       expected_token = bse_storage_parse_data_handle (storage,
                                                       &pwchunk->data_handle,
                                                       &pwchunk->wh_n_channels,
                                                       &pwchunk->wh_mix_freq,
                                                       &pwchunk->wh_osc_freq);
       if (expected_token != G_TOKEN_NONE)
-	return expected_token;
+	return SfiTokenType (expected_token);
       if (!pwchunk->data_handle)
         bse_storage_warn (storage, "invalid wave data reference");
     }
@@ -495,7 +494,7 @@ parse_wave_chunk (BseWave         *wave,
     }
   else
     return SFI_TOKEN_UNMATCHED;
-  return g_scanner_get_next_token (scanner) == ')' ? G_TOKEN_NONE : ')';
+  return g_scanner_get_next_token (scanner) == ')' ? SFI_TOKEN_NONE : SfiTokenType (')');
 }
 
 static SfiTokenType
@@ -519,7 +518,7 @@ bse_wave_restore_private (BseObject  *object,
       gchar **xinfos = NULL;
       GTokenType token = bse_storage_parse_xinfos (storage, &xinfos);
       if (token != G_TOKEN_NONE)
-        return token;
+        return SfiTokenType (token);
       guint i = 0;
       for (i = 0; xinfos && xinfos[i]; i++)
         wave->xinfos = bse_xinfos_parse_assignment (wave->xinfos, xinfos[i]);
@@ -539,7 +538,7 @@ bse_wave_restore_private (BseObject  *object,
       if (g_scanner_get_next_token (scanner) != G_TOKEN_STRING)
 	{
 	  g_free (file_name);
-	  return G_TOKEN_STRING;
+	  return SfiTokenType (G_TOKEN_STRING);
 	}
       wave_name = g_strdup (scanner->value.v_string);
       skip_list = bse_freq_array_new (1024);
@@ -574,7 +573,7 @@ bse_wave_restore_private (BseObject  *object,
               }
             else
               {
-                expected_token = ')';
+                expected_token = GTokenType (')');
                 goto out_of_load_wave;
               }
           }
@@ -601,14 +600,14 @@ bse_wave_restore_private (BseObject  *object,
       if (g_scanner_get_next_token (scanner) != G_TOKEN_STRING)
 	{
 	  g_free (file_name);
-	  return G_TOKEN_STRING;
+	  return SfiTokenType (G_TOKEN_STRING);
 	}
       gchar *wave_name = g_strdup (scanner->value.v_string);
       if (g_scanner_get_next_token (scanner) != ')')
 	{
 	  g_free (file_name);
 	  g_free (wave_name);
-	  return ')';
+	  return SfiTokenType (')');
 	}
       // g_print ("set-locator \"%s\" \"%s\"\n", file_name, wave_name);
       bse_wave_set_locator (wave, file_name, wave_name);
@@ -688,9 +687,9 @@ bse_wave_restore_private (BseObject  *object,
       g_strfreev (parsed_wchunk.xinfos);
     }
   else /* chain parent class' handler */
-    expected_token = BSE_OBJECT_CLASS (parent_class)->restore_private (object, storage, scanner);
-  
-  return expected_token;
+    expected_token = (GTokenType) BSE_OBJECT_CLASS (parent_class)->restore_private (object, storage, scanner);
+
+  return SfiTokenType (expected_token);
 }
 
 void
@@ -708,20 +707,20 @@ bse_wave_get_index_for_modules (BseWave *wave)
 {
   g_return_val_if_fail (BSE_IS_WAVE (wave), NULL);
   g_return_val_if_fail (wave->request_count > 0, NULL);
-  
+
   if (!wave->n_wchunks)
     return NULL;
   if (wave->index_dirty || !wave->index_list)
     {
-      BseWaveIndex *index = g_malloc (sizeof (BseWaveIndex) + sizeof (index->entries[0]) * (wave->n_wchunks - 1));
+      BseWaveIndex *index = (BseWaveIndex*) g_malloc (sizeof (BseWaveIndex) + sizeof (index->entries[0]) * (wave->n_wchunks - 1));
       index->n_entries = 0;
       SfiRing *ring;
       for (ring = wave->wave_chunks; ring; ring = sfi_ring_walk (ring, wave->wave_chunks))
 	{
-	  BseErrorType error = gsl_wave_chunk_open (ring->data);
+	  BseErrorType error = gsl_wave_chunk_open ((GslWaveChunk*) ring->data);
 	  if (!error)
             {
-              index->entries[index->n_entries].wchunk = ring->data;
+              index->entries[index->n_entries].wchunk = (GslWaveChunk*) ring->data;
               index->entries[index->n_entries].osc_freq = index->entries[index->n_entries].wchunk->osc_freq;
               index->entries[index->n_entries].velocity = 1; // FIXME: velocity=1 hardcoded
               index->n_entries++;
@@ -731,7 +730,7 @@ bse_wave_get_index_for_modules (BseWave *wave)
       // FIXME: add dummy wave chunk if none was opened succesfully?
       wave->index_dirty = FALSE;
     }
-  return wave->index_list->data;
+  return (BseWaveIndex*) wave->index_list->data;
 }
 
 void
@@ -739,17 +738,16 @@ bse_wave_drop_index (BseWave *wave)
 {
   g_return_if_fail (BSE_IS_WAVE (wave));
   g_return_if_fail (wave->request_count > 0);
-  
+
   wave->request_count--;
   if (!wave->request_count)
     {
       while (wave->index_list)
 	{
 	  GSList *tmp = wave->index_list->next;
-	  BseWaveIndex *index = wave->index_list->data;
-	  guint i;
-	  
-	  for (i = 0; i < index->n_entries; i++)
+	  BseWaveIndex *index = (BseWaveIndex*) wave->index_list->data;
+
+	  for (uint i = 0; i < index->n_entries; i++)
 	    gsl_wave_chunk_close (index->entries[i].wchunk);
 	  g_free (index);
 	  g_slist_free_1 (wave->index_list);
@@ -817,9 +815,9 @@ bse_wave_class_init (BseWaveClass *klass)
   GObjectClass *gobject_class = G_OBJECT_CLASS (klass);
   BseObjectClass *object_class = BSE_OBJECT_CLASS (klass);
   BseItemClass *item_class = BSE_ITEM_CLASS (klass);
-  
-  parent_class = g_type_class_peek_parent (klass);
-  
+
+  parent_class = (GTypeClass*) g_type_class_peek_parent (klass);
+
   gobject_class->set_property = bse_wave_set_property;
   gobject_class->get_property = bse_wave_get_property;
   gobject_class->dispose = bse_wave_dispose;

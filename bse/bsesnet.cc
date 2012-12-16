@@ -19,7 +19,6 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <stdlib.h>
-#include <sfi/gbsearcharray.h>
 #include <bse/bseengine.h>
 #include <bse/gslcommon.h>
 #include "bsesnet.h"
@@ -110,7 +109,7 @@ void
 bse_snet_intern_child (BseSNet *self,
                        gpointer child)
 {
-  BseItem *item = child;
+  BseItem *item = (BseItem*) child;
 
   g_return_if_fail (BSE_IS_SNET (self));
   g_return_if_fail (BSE_IS_ITEM (item));
@@ -128,8 +127,8 @@ bse_snet_release_children (BseContainer *container)
   BseSNet *snet = BSE_SNET (container);
 
   while (snet->sources)
-    bse_container_remove_item (container, sfi_ring_pop_head (&snet->sources));
-  
+    bse_container_remove_item (container, (BseItem*) sfi_ring_pop_head (&snet->sources));
+
   /* chain parent class' handler */
   BSE_CONTAINER_CLASS (parent_class)->release_children (container);
 }
@@ -148,9 +147,9 @@ bse_snet_finalize (GObject *object)
   BseContainer *container = BSE_CONTAINER (object);
   
   while (snet->sources)
-    bse_container_remove_item (container, sfi_ring_pop_head (&snet->sources));
+    bse_container_remove_item (container, (BseItem*) sfi_ring_pop_head (&snet->sources));
   while (snet->isources)
-    bse_container_remove_item (container, sfi_ring_pop_head (&snet->isources));
+    bse_container_remove_item (container, (BseItem*) sfi_ring_pop_head (&snet->isources));
   if (snet->port_unregistered_id)
     {
       bse_idle_remove (snet->port_unregistered_id);
@@ -255,7 +254,7 @@ bse_snet_forall_items (BseContainer      *container,
   node = snet->sources;
   while (node)
     {
-      BseItem *item = node->data;
+      BseItem *item = (BseItem*) node->data;
       node = sfi_ring_walk (node, snet->sources);
       if (!func (item, data))
         return;
@@ -264,7 +263,7 @@ bse_snet_forall_items (BseContainer      *container,
   node = snet->isources;
   while (node)
     {
-      BseItem *item = node->data;
+      BseItem *item = (BseItem*) node->data;
       node = sfi_ring_walk (node, snet->isources);
       if (!func (item, data))
         return;
@@ -301,7 +300,7 @@ snet_find_port_name (BseSNet     *snet,
   GSList *slist;
   
   for (slist = in_port ? snet->iport_names : snet->oport_names; slist; slist = slist->next)
-    if (strcmp (name, slist->data) == 0)
+    if (strcmp (name, (const char*) slist->data) == 0)
       return slist;
   return NULL;
 }
@@ -426,8 +425,8 @@ static gint
 snet_ports_compare (gconstpointer bsearch_node1, /* key */
 		    gconstpointer bsearch_node2)
 {
-  const BseSNetPort *p1 = bsearch_node1;
-  const BseSNetPort *p2 = bsearch_node2;
+  const BseSNetPort *p1 = (const BseSNetPort*) bsearch_node1;
+  const BseSNetPort *p2 = (const BseSNetPort*) bsearch_node2;
   gint cmp;
   
   cmp = G_BSEARCH_ARRAY_CMP (p1->context, p2->context);
@@ -446,11 +445,10 @@ port_lookup (BseSNet     *snet,
 	     gboolean	  is_input)
 {
   BseSNetPort key;
-  
   key.name = (gchar*) name;
   key.context = snet_context;
   key.input = is_input != FALSE;
-  return g_bsearch_array_lookup (snet->port_array, &port_array_config, &key);
+  return (BseSNetPort*) g_bsearch_array_lookup (snet->port_array, &port_array_config, &key);
 }
 
 static BseSNetPort*
@@ -460,21 +458,20 @@ port_insert (BseSNet     *snet,
 	     gboolean     is_input)
 {
   BseSNetPort key = { NULL, }, *port;
-  
   key.name = (gchar*) name;
   key.context = snet_context;
   key.input = is_input != FALSE;
-  
-  port = g_bsearch_array_lookup (snet->port_array, &port_array_config, &key);
+
+  port = (BseSNetPort*) g_bsearch_array_lookup (snet->port_array, &port_array_config, &key);
   g_return_val_if_fail (port == NULL, port);	/* shouldn't fail */
-  
+
   key.name = g_strdup (key.name);
   key.src_omodule = NULL;
   key.src_ostream = G_MAXUINT;
   key.dest_imodule = NULL;
   key.dest_istream = G_MAXUINT;
   snet->port_array = g_bsearch_array_insert (snet->port_array, &port_array_config, &key);
-  return g_bsearch_array_lookup (snet->port_array, &port_array_config, &key);
+  return (BseSNetPort*) g_bsearch_array_lookup (snet->port_array, &port_array_config, &key);
 }
 
 static void
@@ -638,8 +635,7 @@ static inline ContextData*
 find_context_data (BseSNet *self,
 		   guint    context_id)
 {
-  gpointer data = bse_source_get_context_data (BSE_SOURCE (self), context_id);
-  return data;
+  return (ContextData*) bse_source_get_context_data (BSE_SOURCE (self), context_id);
 }
 
 static ContextData*
@@ -678,10 +674,10 @@ free_context_data (BseSource *source,
 		   BseTrans  *trans)
 {
   BseSNet *self = BSE_SNET (source);
-  ContextData *cdata = data;
-  
+  ContextData *cdata = (ContextData*) data;
+
   g_return_if_fail (cdata->n_branches == 0);
-  
+
   bse_midi_receiver_unref (cdata->midi_receiver);
   bse_id_free (cdata->context_id);
   if (cdata->parent_context)
@@ -846,8 +842,8 @@ bse_snet_reset (BseSource *source)
   
   if (g_bsearch_array_get_n_nodes (self->port_array))
     {
-      BseSNetPort *port = g_bsearch_array_get_nth (self->port_array, &port_array_config, 0);
-      
+      BseSNetPort *port = (BseSNetPort*) g_bsearch_array_get_nth (self->port_array, &port_array_config, 0);
+
       g_warning ("%s: %cport \"%s\" still active: context=%u src=%p dest=%p",
 		 G_STRLOC, port->input ? 'i' : 'o', port->name,
 		 port->context, port->src_omodule, port->dest_imodule);
@@ -867,7 +863,7 @@ bse_snet_context_create (BseSource *source,
   
   if (self->tmp_context_children)
     {
-      BseContextMerger *context_merger = self->tmp_context_children->data;
+      BseContextMerger *context_merger = (BseContextMerger*) self->tmp_context_children->data;
       ContextData *cdata = find_context_data (self, context_handle);
       
       g_assert (BSE_IS_CONTEXT_MERGER (context_merger));
@@ -922,9 +918,9 @@ bse_snet_class_init (BseSNetClass *klass)
   BseObjectClass *object_class = BSE_OBJECT_CLASS (klass);
   BseSourceClass *source_class = BSE_SOURCE_CLASS (klass);
   BseContainerClass *container_class = BSE_CONTAINER_CLASS (klass);
-  
-  parent_class = g_type_class_peek_parent (klass);
-  
+
+  parent_class = (GTypeClass*) g_type_class_peek_parent (klass);
+
   gobject_class->set_property = bse_snet_set_property;
   gobject_class->get_property = bse_snet_get_property;
   gobject_class->dispose = bse_snet_dispose;

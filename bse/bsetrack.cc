@@ -30,6 +30,7 @@
 #include "bsemidivoice.h"
 #include "bsemidireceiver.h"
 #include "bsewaverepo.h"
+#include "bsecxxplugin.hh"
 #include <string.h>
 
 static SFI_MSG_TYPE_DEFINE (debug_xref, "xref", SFI_MSG_DEBUG, NULL);
@@ -203,18 +204,15 @@ static void
 track_delete_entry (BseTrack *self,
 		    guint     index)
 {
-  guint n;
-  BsePart *part;
-
   g_return_if_fail (index < self->n_entries_SL);
 
-  part = self->entries_SL[index].part;
+  BsePart *part = self->entries_SL[index].part;
   bse_object_remove_reemit (part, "notify::last-tick", self, "changed");
   bse_object_unproxy_notifies (part, self, "changed");
   XREF_DEBUG ("cross-unlink: %p %p", self, part);
   bse_item_cross_unlink (BSE_ITEM (self), BSE_ITEM (part), track_uncross_part);
   BSE_SEQUENCER_LOCK ();
-  n = self->n_entries_SL--;
+  self->n_entries_SL -= 1;
   bse_id_free (self->entries_SL[index].id);
   g_memmove (self->entries_SL + index, self->entries_SL + index + 1, (self->n_entries_SL - index) * sizeof (self->entries_SL[0]));
   BSE_SEQUENCER_UNLOCK ();
@@ -301,7 +299,7 @@ bse_track_get_candidates (BseItem               *item,
       bse_bus_or_track_list_output_candidates (BSE_ITEM (self), pc->items);
       /* remove existing outputs */
       for (ring = self->bus_outputs; ring; ring = sfi_ring_walk (ring, self->bus_outputs))
-        bse_item_seq_remove (pc->items, ring->data);
+        bse_item_seq_remove (pc->items, (BseItem*) ring->data);
       break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (self, param_id, pspec);
@@ -401,14 +399,14 @@ clear_snet_and_wave (BseTrack *self)
       bse_object_unproxy_notifies (self->snet, self, "changed");
       bse_item_cross_unlink (BSE_ITEM (self), BSE_ITEM (self->snet), track_uncross_snet);
       self->snet = NULL;
-      g_object_notify (self, "snet");
+      g_object_notify ((GObject*) self, "snet");
     }
   if (self->wave)
     {
       bse_object_unproxy_notifies (self->wave, self, "changed");
       bse_item_cross_unlink (BSE_ITEM (self), BSE_ITEM (self->wave), track_uncross_wave);
       self->wave = NULL;
-      g_object_notify (self, "wave");
+      g_object_notify ((GObject*) self, "wave");
     }
   if (self->wnet)
     {
@@ -438,7 +436,7 @@ bse_track_set_property (GObject      *object,
     case PROP_SNET:
       if (!self->sub_synth || !BSE_SOURCE_PREPARED (self))
 	{
-	  BseSNet *snet = bse_value_get_object (value);
+	  BseSNet *snet = (BseSNet*) bse_value_get_object (value);
 	  if (snet || self->snet)
 	    {
 	      clear_snet_and_wave (self);
@@ -458,7 +456,7 @@ bse_track_set_property (GObject      *object,
     case PROP_WAVE:
       if (!self->sub_synth || !BSE_SOURCE_PREPARED (self->sub_synth))
 	{
-	  BseWave *wave = bse_value_get_object (value);
+	  BseWave *wave = (BseWave*) bse_value_get_object (value);
 	  if (wave || self->wave)
 	    {
 	      clear_snet_and_wave (self);
@@ -494,7 +492,7 @@ bse_track_set_property (GObject      *object,
               bse_item_cross_unlink (BSE_ITEM (self), BSE_ITEM (self->pnet), track_uncross_pnet);
               self->pnet = NULL;
             }
-          self->pnet = bse_value_get_object (value);
+          self->pnet = (BseSNet*) bse_value_get_object (value);
           if (self->pnet)
             {
               bse_item_cross_link (BSE_ITEM (self), BSE_ITEM (self->pnet), track_uncross_pnet);
@@ -507,7 +505,7 @@ bse_track_set_property (GObject      *object,
 	}
       break;
     case PROP_OUTPUTS:
-      bse_bus_or_track_set_outputs (BSE_ITEM (self), g_value_get_boxed (value));
+      bse_bus_or_track_set_outputs (BSE_ITEM (self), (BseItemSeq*) g_value_get_boxed (value));
       break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (self, param_id, pspec);
@@ -539,7 +537,7 @@ bse_track_get_property (GObject    *object,
     case PROP_OUTPUTS:
       iseq = bse_item_seq_new();
       for (ring = self->bus_outputs; ring; ring = sfi_ring_walk (ring, self->bus_outputs))
-        bse_item_seq_append (iseq, ring->data);
+        bse_item_seq_append (iseq, (BseItem*) ring->data);
       g_value_take_boxed (value, iseq);
       break;
     case PROP_WAVE:
@@ -734,21 +732,21 @@ bse_track_add_modules (BseTrack        *self,
   g_return_if_fail (midi_receiver != NULL);
 
   /* midi voice input */
-  self->voice_input = bse_container_new_child (container, BSE_TYPE_MIDI_VOICE_INPUT, NULL);
+  self->voice_input = (BseSource*) bse_container_new_child (container, BSE_TYPE_MIDI_VOICE_INPUT, NULL);
   bse_item_set_internal (self->voice_input, TRUE);
   
   /* sub synth */
-  self->sub_synth = bse_container_new_child_bname (container, BSE_TYPE_SUB_SYNTH, "Track-Instrument",
-                                                   "in_port_1", "frequency",
-                                                   "in_port_2", "gate",
-                                                   "in_port_3", "velocity",
-                                                   "in_port_4", "aftertouch",
-                                                   "out_port_1", "left-audio",
-                                                   "out_port_2", "right-audio",
-                                                   "out_port_3", "unused",
-                                                   "out_port_4", "synth-done",
-                                                   "snet", self->snet,
-                                                   NULL);
+  self->sub_synth = (BseSource*) bse_container_new_child_bname (container, BSE_TYPE_SUB_SYNTH, "Track-Instrument",
+                                                                "in_port_1", "frequency",
+                                                                "in_port_2", "gate",
+                                                                "in_port_3", "velocity",
+                                                                "in_port_4", "aftertouch",
+                                                                "out_port_1", "left-audio",
+                                                                "out_port_2", "right-audio",
+                                                                "out_port_3", "unused",
+                                                                "out_port_4", "synth-done",
+                                                                "snet", self->snet,
+                                                                NULL);
   bse_item_set_internal (self->sub_synth, TRUE);
   
   /* voice input <-> sub-synth */
@@ -760,9 +758,9 @@ bse_track_add_modules (BseTrack        *self,
 			     self->voice_input, BSE_MIDI_VOICE_INPUT_OCHANNEL_VELOCITY);
   bse_source_must_set_input (self->sub_synth, 3,
 			     self->voice_input, BSE_MIDI_VOICE_INPUT_OCHANNEL_AFTERTOUCH);
-  
+
   /* midi voice switch */
-  self->voice_switch = bse_container_new_child (container, BSE_TYPE_MIDI_VOICE_SWITCH, NULL);
+  self->voice_switch = (BseSource*) bse_container_new_child (container, BSE_TYPE_MIDI_VOICE_SWITCH, NULL);
   bse_item_set_internal (self->voice_switch, TRUE);
   bse_midi_voice_input_set_voice_switch (BSE_MIDI_VOICE_INPUT (self->voice_input), BSE_MIDI_VOICE_SWITCH (self->voice_switch));
 
@@ -773,18 +771,18 @@ bse_track_add_modules (BseTrack        *self,
 			     self->sub_synth, 1);
   bse_source_must_set_input (self->voice_switch, BSE_MIDI_VOICE_SWITCH_ICHANNEL_DISCONNECT,
 			     self->sub_synth, 3);
-  
+
   /* midi voice switch <-> context merger */
   bse_source_must_set_input (BSE_SOURCE (self), 0,
 			     self->voice_switch, BSE_MIDI_VOICE_SWITCH_OCHANNEL_LEFT);
   bse_source_must_set_input (BSE_SOURCE (self), 1,
 			     self->voice_switch, BSE_MIDI_VOICE_SWITCH_OCHANNEL_RIGHT);
-  
+
   /* postprocess */
-  self->postprocess = bse_container_new_child_bname (container, BSE_TYPE_SUB_SYNTH, "Track-Postprocess", NULL);
+  self->postprocess = (BseSource*) bse_container_new_child_bname (container, BSE_TYPE_SUB_SYNTH, "Track-Postprocess", NULL);
   bse_item_set_internal (self->postprocess, TRUE);
   bse_sub_synth_set_null_shortcut (BSE_SUB_SYNTH (self->postprocess), TRUE);
-  
+
   /* context merger <-> postprocess */
   bse_source_must_set_input (self->postprocess, 0, BSE_SOURCE (self), 0);
   bse_source_must_set_input (self->postprocess, 1, BSE_SOURCE (self), 1);
@@ -939,7 +937,7 @@ part_link_resolved (gpointer        data,
   BseTrack *self = BSE_TRACK (from_item);
 
   if (error)
-    bse_storage_warn (storage, error);
+    bse_storage_warn (storage, "%s", error);
   else if (!BSE_IS_PART (to_item))
     bse_storage_warn (storage, "skipping invalid part reference: %s", bse_object_debug_name (to_item));
   else if (to_item->parent != from_item->parent)
@@ -965,16 +963,16 @@ bse_track_restore_private (BseObject  *object,
     {
       GTokenType token;
       guint tick;
-      
+
       g_scanner_get_next_token (scanner);       /* eat quark */
-      
+
       parse_or_return (scanner, G_TOKEN_INT);
       tick = scanner->value.v_int64;
       token = bse_storage_parse_item_link (storage, BSE_ITEM (self), part_link_resolved, GUINT_TO_POINTER (tick));
       if (token != G_TOKEN_NONE)
-	return token;
+	return SfiTokenType (token);
       parse_or_return (scanner, ')');
-      return G_TOKEN_NONE;
+      return SFI_TOKEN_NONE;
     }
   else /* chain parent class' handler */
     return BSE_OBJECT_CLASS (parent_class)->restore_private (object, storage, scanner);
@@ -987,9 +985,9 @@ bse_track_class_init (BseTrackClass *klass)
   BseObjectClass *object_class = BSE_OBJECT_CLASS (klass);
   BseItemClass *item_class = BSE_ITEM_CLASS (klass);
   BseSourceClass *source_class = BSE_SOURCE_CLASS (klass);
-  
-  parent_class = g_type_class_peek_parent (klass);
-  
+
+  parent_class = (GTypeClass*) g_type_class_peek_parent (klass);
+
   gobject_class->set_property = bse_track_set_property;
   gobject_class->get_property = bse_track_get_property;
   gobject_class->dispose = bse_track_dispose;

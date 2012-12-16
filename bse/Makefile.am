@@ -75,16 +75,16 @@ bse_sources = $(strip \
 	bsemain.cc		bsemath.cc		bsemathsignal.cc		bseladspa.cc \
 	bsemidicontroller.cc	bsemididevice.cc 	bsedevice.cc 			\
 	bsemididevice-null.cc	bsemididevice-oss.cc	bsemidievent.cc			bsemidinotifier.c \
-	bsemidireceiver.cc	bsemidisynth.c		bseobject.c			bsepart.c \
-	bsepcminput.cc		bsepcmoutput.cc		bseparam.c			bseparasite.c \
+	bsemidireceiver.cc	bsemidisynth.c		bseobject.c			bsepart.cc \
+	bsepcminput.cc		bsepcmoutput.cc		bseparam.cc			bseparasite.c \
 	bsepcmdevice.cc		bsepcmdevice-oss.cc	bsepcmdevice-null.cc		bseplugin.c \
-	bseprocedure.c		bseproject.c		bsescripthelper.c		bseserver.cc \
-	bsesnet.c		bsesnooper.c		bsesong.c			bsesequencer.cc \
-	bsesource.c		bsestandardosc.c	bsestandardsynths.c		bsestorage.c \
-	bseinstrumentoutput.cc	bsesubiport.c		bseinstrumentinput.cc		bsesuboport.c \
-	bsesubsynth.c		bsesuper.c		bsetrack.c			bsetype.c \
-	bseutils.cc		bsemidivoice.c		bsewave.c			bsewaveosc.c \
-	bsecsynth.cc		bsewaverepo.c		bseladspamodule.cc		bsepcmwriter.cc \
+	bseprocedure.c		bseproject.cc		bsescripthelper.c		bseserver.cc \
+	bsesnet.cc		bsesnooper.c		bsesong.cc			bsesequencer.cc \
+	bsesource.cc		bsestandardosc.cc	bsestandardsynths.cc		bsestorage.c \
+	bseinstrumentoutput.cc	bsesubiport.cc		bseinstrumentinput.cc		bsesuboport.cc \
+	bsesubsynth.cc		bsesuper.cc		bsetrack.cc			bsetype.cc \
+	bseutils.cc		bsemidivoice.c		bsewave.cc			bsewaveosc.cc \
+	bsecsynth.cc		bsewaverepo.cc		bseladspamodule.cc		bsepcmwriter.cc \
 	bsecompat.cc		bseundostack.c		bsemidiinput.cc			bsemididecoder.cc \
 	bsenote.cc		bsemidifile.cc		bseblockutils.cc		\
 	bsecxxvalue.cc		bsecxxutils.cc		bsecxxbase.cc			bsecxxclosure.cc \

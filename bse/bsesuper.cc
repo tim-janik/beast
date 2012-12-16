@@ -43,10 +43,6 @@ static void
 bse_super_init (BseSuper *super,
 		gpointer  rclass)
 {
-  BseObject *object;
-  
-  object = BSE_OBJECT (super);
-  
   super->creation_time = sfi_time_from_utc (sfi_time_system ());
   super->mod_time = super->creation_time;
   super->context_handle = ~0;
@@ -85,23 +81,23 @@ bse_super_set_property (GObject      *object,
   switch (param_id)
     {
     case PARAM_AUTHOR:
-      g_object_set_qdata_full (super,
+      g_object_set_qdata_full ((GObject*) super,
 			       quark_author,
 			       g_strdup (g_value_get_string (value)),
 			       g_free);
       break;
     case PARAM_LICENSE:
-      g_object_set_qdata_full (super,
+      g_object_set_qdata_full ((GObject*) super,
 			       quark_license,
 			       g_strdup (g_value_get_string (value)),
 			       g_free);
       break;
     case PARAM_COPYRIGHT:
-      if (g_object_get_qdata (super, quark_license) == NULL)
-        g_object_set_qdata_full (super, quark_license,
+      if (g_object_get_qdata ((GObject*) super, quark_license) == NULL)
+        g_object_set_qdata_full ((GObject*) super, quark_license,
                                  g_strdup (g_value_get_string (value)),
                                  g_free);
-      g_object_notify (super, "license");
+      g_object_notify ((GObject*) super, "license");
       break;
     case PARAM_MOD_TIME:
       super->mod_time = MAX (super->creation_time, sfi_value_get_time (value));
@@ -112,7 +108,7 @@ bse_super_set_property (GObject      *object,
       if (super->creation_time > super->mod_time)
 	{
 	  super->mod_time = super->creation_time;
-	  g_object_notify (super, "modification-time");
+	  g_object_notify ((GObject*) super, "modification-time");
 	}
       break;
     default:
@@ -131,10 +127,10 @@ bse_super_get_property (GObject     *object,
   switch (param_id)
     {
     case PARAM_AUTHOR:
-      g_value_set_string (value, g_object_get_qdata (super, quark_author));
+      g_value_set_string (value, (const char*) g_object_get_qdata ((GObject*) super, quark_author));
       break;
     case PARAM_LICENSE:
-      g_value_set_string (value, g_object_get_qdata (super, quark_license));
+      g_value_set_string (value, (const char*) g_object_get_qdata ((GObject*) super, quark_license));
       break;
     case PARAM_MOD_TIME:
       sfi_value_set_time (value, super->mod_time);
@@ -183,12 +179,11 @@ bse_super_class_init (BseSuperClass *klass)
   BseObjectClass *object_class = BSE_OBJECT_CLASS (klass);
   BseItemClass *item_class = BSE_ITEM_CLASS (klass);
   // BseSourceClass *source_class = BSE_SOURCE_CLASS (klass);
-  
-  parent_class = g_type_class_peek_parent (klass);
-  
+
+  parent_class = (GTypeClass*) g_type_class_peek_parent (klass);
   quark_author = g_quark_from_static_string ("author");
   quark_license = g_quark_from_static_string ("license");
-  
+
   gobject_class->set_property = bse_super_set_property;
   gobject_class->get_property = bse_super_get_property;
   gobject_class->finalize = bse_super_finalize;

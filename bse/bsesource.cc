@@ -15,7 +15,6 @@
  * with this library; if not, see http://www.gnu.org/copyleft/.
  */
 #include <string.h>
-#include <sfi/gbsearcharray.h>
 #include "bsesource.h"
 
 #include "bsecontainer.h"
@@ -326,7 +325,7 @@ bse_source_class_cache_engine_class (BseSourceClass *source_class,
   g_return_if_fail (source_class->engine_class == NULL);
   g_return_if_fail (engine_class != NULL);
 
-  source_class->engine_class = g_memdup (engine_class, sizeof (*engine_class));
+  source_class->engine_class = (BseModuleClass*) g_memdup (engine_class, sizeof (*engine_class));
 }
 
 guint
@@ -366,7 +365,7 @@ source_class_collect_properties (BseSourceClass *klass)
                g_type_is_a (G_PARAM_SPEC_VALUE_TYPE (pspec), SFI_TYPE_INT) ||
                g_type_is_a (G_PARAM_SPEC_VALUE_TYPE (pspec), SFI_TYPE_NUM)))
             {
-              BseSourceClass *source_class = g_type_class_ref (pspec->owner_type);
+              BseSourceClass *source_class = (BseSourceClass*) g_type_class_ref (pspec->owner_type);
               if (!source_class || !source_class->property_updated)
                 g_warning ("%s: ignoring automation property \"%s\" without property_updated() implementation",
                            g_type_name (pspec->owner_type), pspec->name);
@@ -387,15 +386,15 @@ source_notify_properties (BseSource *self)
   source_class_collect_properties (BSE_SOURCE_GET_CLASS (self));
   SfiRing *ring;
   for (ring = klass->unprepared_properties; ring; ring = sfi_ring_walk (ring, klass->unprepared_properties))
-    g_object_notify (self, G_PARAM_SPEC (ring->data)->name);
+    g_object_notify ((GObject*) self, G_PARAM_SPEC (ring->data)->name);
 }
 
 static gint
 contexts_compare (gconstpointer bsearch_node1, /* key */
 		  gconstpointer bsearch_node2)
 {
-  const BseSourceContext *c1 = bsearch_node1;
-  const BseSourceContext *c2 = bsearch_node2;
+  const BseSourceContext *c1 = (const BseSourceContext*) bsearch_node1;
+  const BseSourceContext *c2 = (const BseSourceContext*) bsearch_node2;
 
   return G_BSEARCH_ARRAY_CMP (c1->id, c2->id);
 }
@@ -445,9 +444,7 @@ bse_source_reset (BseSource *source)
       BseTrans *trans = bse_trans_open ();
       while (n_contexts)
 	{
-	  BseSourceContext *context = g_bsearch_array_get_nth (source->contexts,
-							       &context_config,
-							       n_contexts - 1);
+	  BseSourceContext *context = (BseSourceContext*) g_bsearch_array_get_nth (source->contexts, &context_config, n_contexts - 1);
 	  bse_source_dismiss_context (source, context->id, trans);
 	  n_contexts = BSE_SOURCE_N_CONTEXTS (source);
 	}
@@ -467,8 +464,8 @@ static gint
 automation_properties_cmp (gconstpointer bsearch_node1, /* key */
                            gconstpointer bsearch_node2)
 {
-  const BseAutomationProperty *ap1 = bsearch_node1;
-  const BseAutomationProperty *ap2 = bsearch_node2;
+  const BseAutomationProperty *ap1 = (const BseAutomationProperty*) bsearch_node1;
+  const BseAutomationProperty *ap2 = (const BseAutomationProperty*) bsearch_node2;
   return G_BSEARCH_ARRAY_CMP (ap1->pspec, ap2->pspec);
 }
 
@@ -477,7 +474,7 @@ static const GBSearchConfig aprop_bconfig = { sizeof (BseAutomationProperty), au
 static void
 aprop_array_free (gpointer data)
 {
-  GBSearchArray *aparray = data;
+  GBSearchArray *aparray = (GBSearchArray*) data;
   g_bsearch_array_free (aparray, &aprop_bconfig);
 }
 
@@ -487,46 +484,47 @@ bse_source_set_automation_property (BseSource        *source,
                                     guint             midi_channel,
                                     BseMidiSignalType signal_type)
 {
-  g_assert (BSE_MIDI_CONTROL_NONE          == 0 &&
-            BSE_MIDI_CONTROL_CONTINUOUS_0  == BSE_MIDI_SIGNAL_CONTINUOUS_0 &&
-            BSE_MIDI_CONTROL_CONTINUOUS_31 == BSE_MIDI_SIGNAL_CONTINUOUS_31 &&
-            BSE_MIDI_CONTROL_0             == BSE_MIDI_SIGNAL_CONTROL_0 &&
-            BSE_MIDI_CONTROL_127           == BSE_MIDI_SIGNAL_CONTROL_127);
+  g_assert (BSE_MIDI_CONTROL_NONE          == BseMidiControlType (0) &&
+            BSE_MIDI_CONTROL_CONTINUOUS_0  == BseMidiControlType (BSE_MIDI_SIGNAL_CONTINUOUS_0) &&
+            BSE_MIDI_CONTROL_CONTINUOUS_31 == BseMidiControlType (BSE_MIDI_SIGNAL_CONTINUOUS_31) &&
+            BSE_MIDI_CONTROL_0             == BseMidiControlType (BSE_MIDI_SIGNAL_CONTROL_0) &&
+            BSE_MIDI_CONTROL_127           == BseMidiControlType (BSE_MIDI_SIGNAL_CONTROL_127));
   g_return_val_if_fail (BSE_IS_SOURCE (source), BSE_ERROR_INTERNAL);
   g_return_val_if_fail (prop_name != NULL, BSE_ERROR_INTERNAL);
   if (BSE_SOURCE_PREPARED (source))
     return BSE_ERROR_SOURCE_BUSY;
-  if (signal_type != BSE_MIDI_CONTROL_NONE &&
-      (signal_type < BSE_MIDI_CONTROL_CONTINUOUS_0 || signal_type > BSE_MIDI_CONTROL_CONTINUOUS_31) &&
-      (signal_type < BSE_MIDI_CONTROL_0 || signal_type > BSE_MIDI_CONTROL_127))
+  const BseMidiControlType control_type = BseMidiControlType (signal_type);
+  if (control_type != BSE_MIDI_CONTROL_NONE &&
+      (control_type < BSE_MIDI_CONTROL_CONTINUOUS_0 || control_type > BSE_MIDI_CONTROL_CONTINUOUS_31) &&
+      (control_type < BSE_MIDI_CONTROL_0 || control_type > BSE_MIDI_CONTROL_127))
     return BSE_ERROR_INVALID_MIDI_CONTROL;
   source_class_collect_properties (BSE_SOURCE_GET_CLASS (source));
   GParamSpec *pspec = g_object_class_find_property (G_OBJECT_GET_CLASS (source), prop_name);
   SfiRing *ring = sfi_ring_find (BSE_SOURCE_GET_CLASS (source)->automation_properties, pspec);
   if (!ring)    /* !pspec or pspec not found */
     return BSE_ERROR_INVALID_PROPERTY;
-  GBSearchArray *aparray = g_object_get_data (source, "BseSource-AutomationProperties"), *oarray = aparray;
+  GBSearchArray *aparray = (GBSearchArray*) g_object_get_data (G_OBJECT (source), "BseSource-AutomationProperties"), *oarray = aparray;
   if (!aparray)
     aparray = g_bsearch_array_create (&aprop_bconfig);
-  BseAutomationProperty key = { pspec, }, *ap = g_bsearch_array_lookup (aparray, &aprop_bconfig, &key);
+  BseAutomationProperty key = { pspec, }, *ap = (BseAutomationProperty*) g_bsearch_array_lookup (aparray, &aprop_bconfig, &key);
   if (!ap)
     {
       key.midi_channel = 0;
-      key.signal_type = 0;
+      key.signal_type = BseMidiSignalType (0);
       aparray = g_bsearch_array_insert (aparray, &aprop_bconfig, &key);
-      ap = g_bsearch_array_lookup (aparray, &aprop_bconfig, &key);
+      ap = (BseAutomationProperty*) g_bsearch_array_lookup (aparray, &aprop_bconfig, &key);
     }
   if (oarray != aparray)
     {
-      g_object_steal_data (source, "BseSource-AutomationProperties");
-      g_object_set_data_full (source, "BseSource-AutomationProperties", aparray, aprop_array_free);
+      g_object_steal_data ((GObject*) source, "BseSource-AutomationProperties");
+      g_object_set_data_full ((GObject*) source, "BseSource-AutomationProperties", aparray, aprop_array_free);
     }
   if (ap->midi_channel != midi_channel ||
       ap->signal_type != signal_type)
     {
       ap->midi_channel = midi_channel;
       ap->signal_type = signal_type;
-      g_object_notify (source, pspec->name);
+      g_object_notify ((GObject*) source, pspec->name);
     }
   return BSE_ERROR_NONE;
 }
@@ -542,10 +540,10 @@ bse_source_get_automation_property (BseSource         *source,
   GParamSpec *pspec = g_object_class_find_property (G_OBJECT_GET_CLASS (source), prop_name);
   if (pspec)
     {
-      GBSearchArray *aparray = g_object_get_data (source, "BseSource-AutomationProperties");
+      GBSearchArray *aparray = (GBSearchArray*) g_object_get_data ((GObject*) source, "BseSource-AutomationProperties");
       if (aparray)
         {
-          BseAutomationProperty key = { pspec, }, *ap = g_bsearch_array_lookup (aparray, &aprop_bconfig, &key);
+          BseAutomationProperty key = { pspec, }, *ap = (BseAutomationProperty*) g_bsearch_array_lookup (aparray, &aprop_bconfig, &key);
           if (ap)
             {
               if (psignal_type)
@@ -566,11 +564,12 @@ bse_source_get_automation_properties (BseSource        *source,
   g_return_val_if_fail (BSE_IS_SOURCE (source), NULL);
   if (n_props)
     {
-      GBSearchArray *aparray = g_object_get_data (source, "BseSource-AutomationProperties");
+      GBSearchArray *aparray = (GBSearchArray*) g_object_get_data ((GObject*) source, "BseSource-AutomationProperties");
       if (aparray)
         {
           *n_props = g_bsearch_array_get_n_nodes (aparray);
-          return g_memdup (g_bsearch_array_get_nth (aparray, &aprop_bconfig, 0), sizeof (BseAutomationProperty) * *n_props);
+          void *ap = g_memdup (g_bsearch_array_get_nth (aparray, &aprop_bconfig, 0), sizeof (BseAutomationProperty) * *n_props);
+          return (BseAutomationProperty*) ap;
         }
       *n_props = 0;
     }
@@ -590,7 +589,7 @@ context_nth (BseSource *source,
 {
   g_return_val_if_fail (index < BSE_SOURCE_N_CONTEXTS (source), NULL);
 
-  return g_bsearch_array_get_nth (source->contexts, &context_config, index);
+  return (BseSourceContext*) g_bsearch_array_get_nth (source->contexts, &context_config, index);
 }
 
 static inline BseSourceContext*
@@ -600,7 +599,7 @@ context_lookup (BseSource *source,
   BseSourceContext key;
 
   key.id = context_handle;
-  return g_bsearch_array_lookup (source->contexts, &context_config, &key);
+  return (BseSourceContext*) g_bsearch_array_lookup (source->contexts, &context_config, &key);
 }
 
 gboolean
@@ -671,7 +670,7 @@ source_create_context (BseSource               *source,
 
   g_object_ref (source);
   key.id = context_handle;
-  key.u.data.d1 = free_data;
+  key.u.data.d1 = (void*) free_data;
   key.u.data.d2 = data;
   source->contexts = g_bsearch_array_insert (source->contexts, &context_config, &key);
   BSE_SOURCE_GET_CLASS (source)->context_create (source, key.id, trans);
@@ -853,7 +852,7 @@ bse_source_dismiss_context (BseSource *source,
       if (BSE_SOURCE_N_OCHANNELS (source) == 0 &&
 	  BSE_SOURCE_N_ICHANNELS (source) == 0)
 	{
-	  free_cdata = context->u.data.d1;
+	  free_cdata = (BseSourceFreeContextData) context->u.data.d1;
 	  cdata = context->u.data.d2;
 	}
       source->contexts = g_bsearch_array_remove (source->contexts, &context_config,
@@ -962,7 +961,7 @@ bse_source_list_omodules (BseSource *source)
   if (BSE_SOURCE_N_OCHANNELS (source))
     for (i = 0; i < n_contexts; i++)
       {
-        BseSourceContext *context = g_bsearch_array_get_nth (source->contexts, &context_config, i);
+        BseSourceContext *context = (BseSourceContext*) g_bsearch_array_get_nth (source->contexts, &context_config, i);
         if (context->u.mods.omodule)
           ring = sfi_ring_append (ring, context->u.mods.omodule);
       }
@@ -1076,14 +1075,13 @@ bse_source_flow_access_modules (BseSource    *source,
       else if (context->u.mods.omodule && context->u.mods.omodule != context->u.mods.imodule)
 	modules = g_slist_prepend (modules, context->u.mods.omodule);
     }
-  
+
   if (modules)
     {
       BseTrans *my_trans = trans ? trans : bse_trans_open ();
-      GSList *slist;
-      
-      for (slist = modules; slist; slist = slist->next)
-	bse_trans_add (my_trans, bse_job_flow_access (slist->data, tick_stamp, access_func, data,
+
+      for (GSList *slist = modules; slist; slist = slist->next)
+	bse_trans_add (my_trans, bse_job_flow_access ((BseModule*) slist->data, tick_stamp, access_func, data,
 						      slist->next ? NULL : data_free_func));
       if (!trans)
 	bse_trans_commit (my_trans);
@@ -1124,7 +1122,7 @@ bse_source_access_modules (BseSource    *source,
       GSList *slist;
 
       for (slist = modules; slist; slist = slist->next)
-	bse_trans_add (my_trans, bse_job_access (slist->data, access_func, data,
+	bse_trans_add (my_trans, bse_job_access ((BseModule*) slist->data, access_func, data,
 						 slist->next ? NULL : data_free_func));
       if (!trans)
 	bse_trans_commit (my_trans);
@@ -1143,8 +1141,8 @@ static void
 op_access_update (BseModule *module,
 		  gpointer   data)
 {
-  AccessData *adata = data;
-  guint8 *m = module->user_data;
+  AccessData *adata = (AccessData*) data;
+  guint8 *m = (guint8*) module->user_data;
 
   memcpy (m + adata->member_offset, adata + 1, adata->member_size);
 }
@@ -1163,7 +1161,7 @@ bse_source_update_modules (BseSource *source,
   g_return_if_fail (member_data != NULL);
   g_return_if_fail (member_size > 0);
 
-  adata = g_malloc (sizeof (AccessData) + member_size);
+  adata = (AccessData*) g_malloc (sizeof (AccessData) + member_size);
   adata->member_offset = member_offset;
   adata->member_size = member_size;
   memcpy (adata + 1, member_data, member_size);
@@ -1418,7 +1416,7 @@ bse_source_has_output (BseSource *source,
       GSList *slist;
       for (slist = source->outputs; slist; slist = slist->next)
         {
-          BseSource *isource = slist->data;
+          BseSource *isource = (BseSource*) slist->data;
           guint i, j;
           for (i = 0; i < BSE_SOURCE_N_ICHANNELS (isource); i++)
             {
@@ -1453,8 +1451,7 @@ bse_source_must_set_input_loc (BseSource      *source,
 }
 
 static SfiRing*
-collect_inputs_flat (SfiRing   *ring,
-                     BseSource *source)
+collect_inputs_flat (SfiRing *ring, BseSource *source)
 {
   guint i, j;
 
@@ -1501,7 +1498,7 @@ bse_source_collect_inputs_recursive (BseSource *source)
 
   ring = collect_inputs_flat (ring, source);
   for (node = ring; node; node = sfi_ring_walk (node, ring))
-    ring = collect_inputs_flat (ring, node->data);
+    ring = collect_inputs_flat (ring, (BseSource*) node->data);
   return ring;
 }
 
@@ -1544,7 +1541,7 @@ bse_source_test_input_recursive (BseSource      *source,
   gboolean match = last->data == test;
   for (node = ring; node && !match; node = sfi_ring_walk (node, ring))
     {
-      ring = collect_inputs_flat (ring, node->data);
+      ring = collect_inputs_flat (ring, (BseSource*) node->data);
       match = ring_search_backwards (ring->prev, last, test);
       last = ring->prev;
     }
@@ -1637,7 +1634,7 @@ bse_source_clear_ochannels (BseSource *source)
   g_object_ref (source);
   while (source->outputs)
     {
-      BseSource *isource = source->outputs->data;
+      BseSource *isource = (BseSource*) source->outputs->data;
       guint i;
       
       g_object_ref (isource);
@@ -1695,7 +1692,7 @@ bse_source_backup_ochannels_to_undo (BseSource *source)
       
       for (slist = uniq_outputs; slist; slist = slist->next)
         {
-          BseSource *isource = slist->data;
+          BseSource *isource = (BseSource*) slist->data;
           guint i;
           for (i = 0; i < BSE_SOURCE_N_ICHANNELS (isource); i++)
             {
@@ -1745,7 +1742,7 @@ bse_source_real_store_private (BseObject  *object,
       
       for (slist = outputs; slist; slist = slist->next)
         {
-          BseSourceOutput *output = slist->data;
+          BseSourceOutput *output = (BseSourceOutput*) slist->data;
           
           bse_storage_break (storage);
           bse_storage_printf (storage,
@@ -1775,7 +1772,7 @@ bse_source_input_backup_to_undo (BseSource      *source,
 
   ustack = bse_item_undo_open (source, "unset-input %s", bse_object_debug_name (source));
 
-  storage = g_object_new (BSE_TYPE_STORAGE, NULL);
+  storage = (BseStorage*) g_object_new (BSE_TYPE_STORAGE, NULL);
   bse_storage_prepare_write (storage, BSE_STORAGE_DBLOCK_CONTAINED);
 
   bse_storage_break (storage);
@@ -1808,7 +1805,7 @@ resolve_osource_input (gpointer     data,
 		       BseItem     *to_item,
 		       const gchar *error)
 {
-  DeferredInput *dinput = data;
+  DeferredInput *dinput = (DeferredInput*) data;
   BseSource *source = BSE_SOURCE (from_item);
   BseSource *osource = to_item ? BSE_SOURCE (to_item) : NULL;
 
@@ -1889,17 +1886,17 @@ bse_source_restore_private (BseObject  *object,
 	{
 	  GTokenType token = bse_storage_parse_item_link (storage, BSE_ITEM (source), resolve_osource_input, dinput);
 	  if (token != G_TOKEN_NONE)
-	    return token;
+	    return SfiTokenType (token);
 	}
-      
+
       /* parse ochannel name */
       parse_or_return (scanner, G_TOKEN_STRING);
       peek_or_return (scanner, ')');
       dinput->ochannel_ident = g_strdup (scanner->value.v_string);
-      
+
       /* close statement */
       parse_or_return (scanner, ')');
-      return G_TOKEN_NONE;
+      return SFI_TOKEN_NONE;
     }
   else /* chain parent class' handler */
     return BSE_OBJECT_CLASS (parent_class)->restore_private (object, storage, scanner);
@@ -1939,7 +1936,7 @@ void
 bse_source_class_inherit_channels (BseSourceClass *source_class)
 {
   g_return_if_fail (BSE_IS_SOURCE_CLASS (source_class));
-  BseSourceClass *parent_class = g_type_class_peek_parent (source_class);
+  BseSourceClass *parent_class = (BseSourceClass*) g_type_class_peek_parent (source_class);
   g_return_if_fail (BSE_IS_SOURCE_CLASS (parent_class));
   g_return_if_fail (source_class->channel_defs.n_ichannels == 0);
   g_return_if_fail (source_class->channel_defs.n_ochannels == 0);
@@ -1949,9 +1946,9 @@ bse_source_class_inherit_channels (BseSourceClass *source_class)
   guint i;
   /* dup ichannel arrays */
   source_class->channel_defs.n_ichannels = defs->n_ichannels;
-  source_class->channel_defs.ichannel_idents = g_memdup (defs->ichannel_idents, sizeof (gchar*) * defs->n_ichannels);
-  source_class->channel_defs.ichannel_labels = g_memdup (defs->ichannel_labels, sizeof (gchar*) * defs->n_ichannels);
-  source_class->channel_defs.ichannel_blurbs = g_memdup (defs->ichannel_blurbs, sizeof (gchar*) * defs->n_ichannels);
+  source_class->channel_defs.ichannel_idents = (char**) g_memdup (defs->ichannel_idents, sizeof (gchar*) * defs->n_ichannels);
+  source_class->channel_defs.ichannel_labels = (char**) g_memdup (defs->ichannel_labels, sizeof (gchar*) * defs->n_ichannels);
+  source_class->channel_defs.ichannel_blurbs = (char**) g_memdup (defs->ichannel_blurbs, sizeof (gchar*) * defs->n_ichannels);
   /* dup ichannel array contents */
   for (i = 0; i < defs->n_ichannels; i++)
     {
@@ -1960,13 +1957,13 @@ bse_source_class_inherit_channels (BseSourceClass *source_class)
       source_class->channel_defs.ichannel_blurbs[i] = g_strdup (defs->ichannel_blurbs[i]);
     }
   /* dup jstream ids + jchannel flags */
-  source_class->channel_defs.ijstreams = g_memdup (defs->ijstreams, sizeof (guint) * defs->n_ichannels);
+  source_class->channel_defs.ijstreams = (guint*) g_memdup (defs->ijstreams, sizeof (guint) * defs->n_ichannels);
   source_class->channel_defs.n_jstreams = defs->n_jstreams;
   /* dup ochannel arrays */
   source_class->channel_defs.n_ochannels = defs->n_ochannels;
-  source_class->channel_defs.ochannel_idents = g_memdup (defs->ochannel_idents, sizeof (gchar*) * defs->n_ochannels);
-  source_class->channel_defs.ochannel_labels = g_memdup (defs->ochannel_labels, sizeof (gchar*) * defs->n_ochannels);
-  source_class->channel_defs.ochannel_blurbs = g_memdup (defs->ochannel_blurbs, sizeof (gchar*) * defs->n_ochannels);
+  source_class->channel_defs.ochannel_idents = (char**) g_memdup (defs->ochannel_idents, sizeof (gchar*) * defs->n_ochannels);
+  source_class->channel_defs.ochannel_labels = (char**) g_memdup (defs->ochannel_labels, sizeof (gchar*) * defs->n_ochannels);
+  source_class->channel_defs.ochannel_blurbs = (char**) g_memdup (defs->ochannel_blurbs, sizeof (gchar*) * defs->n_ochannels);
   /* dup ochannel array contents */
   for (i = 0; i < defs->n_ochannels; i++)
     {
@@ -2022,8 +2019,7 @@ bse_source_class_init (BseSourceClass *klass)
   GObjectClass *gobject_class = G_OBJECT_CLASS (klass);
   BseObjectClass *object_class = BSE_OBJECT_CLASS (klass);
 
-  parent_class = g_type_class_peek_parent (klass);
-  
+  parent_class = (GTypeClass*) g_type_class_peek_parent (klass);
   gobject_class->set_property = bse_source_set_property;
   gobject_class->get_property = bse_source_get_property;
   gobject_class->dispose = bse_source_dispose;

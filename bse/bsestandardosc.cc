@@ -235,11 +235,11 @@ bse_standard_osc_set_property (GObject      *object,
 			       GParamSpec   *pspec)
 {
   BseStandardOsc *self = BSE_STANDARD_OSC (object);
-  
+
   switch (param_id)
     {
     case PROP_WAVE_FORM:
-      self->wave = g_value_get_enum (value);
+      self->wave = (BseStandardOscWaveType) g_value_get_enum (value);
       bse_standard_osc_update_modules (self, TRUE, NULL);
       break;
     case PROP_PHASE:
@@ -249,15 +249,15 @@ bse_standard_osc_set_property (GObject      *object,
     case PROP_BASE_FREQ:
       self->config.cfreq = sfi_value_get_real (value);
       bse_standard_osc_update_modules (self, FALSE, NULL);
-      g_object_notify (self, "base_note");
+      g_object_notify ((GObject*) self, "base_note");
       break;
     case PROP_BASE_NOTE:
       self->config.cfreq = bse_note_to_freq (bse_item_current_musical_tuning (BSE_ITEM (self)), sfi_value_get_note (value));
       self->config.cfreq = MAX (self->config.cfreq, BSE_MIN_OSC_FREQUENCY);
       bse_standard_osc_update_modules (self, FALSE, NULL);
-      g_object_notify (self, "base_freq");
+      g_object_notify ((GObject*) self, "base_freq");
       if (bse_note_from_freq (bse_item_current_musical_tuning (BSE_ITEM (self)), self->config.cfreq) != sfi_value_get_note (value))
-	g_object_notify (self, "base_note");
+	g_object_notify ((GObject*) self, "base_note");
       break;
     case PROP_TRANSPOSE:
       self->transpose = sfi_value_get_int (value);
@@ -353,9 +353,9 @@ static void
 bse_standard_osc_prepare (BseSource *source)
 {
   BseStandardOsc *self = BSE_STANDARD_OSC (source);
-  
+
   self->config.table = gsl_osc_table_create (bse_engine_sample_freq (),
-					     self->wave,
+					     GslOscWaveForm (self->wave),
 					     bse_window_blackman,
 					     G_N_ELEMENTS (osc_table_freqs),
 					     osc_table_freqs);
@@ -375,18 +375,18 @@ static void
 standard_osc_access (BseModule *module,
 		     gpointer   data)
 {
-  GslOscData *osc = module->user_data;
-  OscConfigData *cdata = data;
-  
+  GslOscData *osc = (GslOscData*) module->user_data;
+  OscConfigData *cdata = (OscConfigData*) data;
+
   /* this runs in the Gsl Engine threads */
-  
+
   gsl_osc_config (osc, &cdata->config);
 }
 
 static void
 standard_osc_access_free (gpointer data)
 {
-  OscConfigData *cdata = data;
+  OscConfigData *cdata = (OscConfigData*) data;
   
   if (cdata->old_osc_table)
     gsl_osc_table_free (cdata->old_osc_table);
@@ -411,7 +411,7 @@ bse_standard_osc_update_modules (BseStandardOsc *self,
 	{
 	  cdata.old_osc_table = self->config.table;
 	  self->config.table = gsl_osc_table_create (bse_engine_sample_freq (),
-						     self->wave,
+						     GslOscWaveForm (self->wave),
 						     bse_window_blackman,
 						     G_N_ELEMENTS (osc_table_freqs),
 						     osc_table_freqs);
@@ -430,8 +430,8 @@ bse_standard_osc_update_modules (BseStandardOsc *self,
 static void
 standard_osc_reset (BseModule *module)
 {
-  GslOscData *osc = module->user_data;
-  
+  GslOscData *osc = (GslOscData*) module->user_data;
+
   gsl_osc_reset (osc);
 }
 
@@ -439,7 +439,7 @@ static void
 standard_osc_process (BseModule *module,
 		      guint      n_values)
 {
-  GslOscData *osc = module->user_data;
+  GslOscData *osc = (GslOscData*) module->user_data;
   const gfloat *freq_in = NULL;
   const gfloat *mod_in = NULL;
   const gfloat *sync_in = NULL;

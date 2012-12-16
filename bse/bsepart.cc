@@ -19,7 +19,7 @@
 #include "bsestorage.h"
 #include "bsesong.h"
 #include "bsetrack.h"
-#include <sfi/gbsearcharray.h>
+#include "bsecxxplugin.hh"
 #include "gslcommon.h"
 #include "bsemathsignal.h" // bse_semitone_table
 #include "bseieee754.h"
@@ -166,7 +166,7 @@ part_add_channel (BsePart *self,
   guint i = self->n_channels++;
   self->channels = g_renew (BsePartNoteChannel, self->channels, self->n_channels);
   bse_part_note_channel_init (&self->channels[i]);
-  g_object_notify (self, "n_channels");
+  g_object_notify ((GObject*) self, "n_channels");
 }
 
 static void
@@ -352,7 +352,7 @@ part_update_last_tick (BsePart *self)
   BSE_SEQUENCER_LOCK ();
   self->last_tick_SL = last_tick;
   BSE_SEQUENCER_UNLOCK ();
-  g_object_notify (self, "last-tick");
+  g_object_notify ((GObject*) self, "last-tick");
   bse_part_links_changed (self);
 }
 
@@ -361,7 +361,7 @@ range_changed_notify_handler (gpointer data)
 {
   while (plist_range_changed)
     {
-      BsePart *self = sfi_ring_pop_head (&plist_range_changed);
+      BsePart *self = (BsePart*) sfi_ring_pop_head (&plist_range_changed);
       self->range_queued = FALSE;
       guint tick = self->range_tick, duration = self->range_bound - tick;
       gint min_note = self->range_min_note, max_note = self->range_max_note;
@@ -438,7 +438,7 @@ links_changed_notify_handler (gpointer data)
 {
   while (plist_links_changed)
     {
-      BsePart *self = sfi_ring_pop_head (&plist_links_changed);
+      BsePart *self = (BsePart*) sfi_ring_pop_head (&plist_links_changed);
       self->links_queued = FALSE;
       g_signal_emit (self, signal_links_changed, 0);
     }
@@ -464,8 +464,8 @@ static int
 part_link_compare (const void *p1,
                    const void *p2)
 {
-  const BsePartLink *const*lp1 = p1;
-  const BsePartLink *const*lp2 = p2;
+  const BsePartLink *const*lp1 = (const BsePartLink *const*) p1;
+  const BsePartLink *const*lp2 = (const BsePartLink *const*) p2;
   const BsePartLink *l1 = lp1[0];
   const BsePartLink *l2 = lp2[0];
   if (l1->tick == l2->tick)
@@ -490,10 +490,9 @@ bse_part_list_links (BsePart *self)
       SfiRing *ring;
       for (ring = song->tracks_SL; ring; ring = sfi_ring_walk (ring, song->tracks_SL))
         {
-          BseTrack *track = ring->data;
+          BseTrack *track = (BseTrack*) ring->data;
           BseTrackPartSeq *tps = bse_track_list_part (track, self);
-          gint i;
-          for (i = 0; i < tps->n_tparts; i++)
+          for (uint i = 0; i < tps->n_tparts; i++)
             {
               BseTrackPart *tp = tps->tparts[i];
               BsePartLink pl;
@@ -528,7 +527,7 @@ bse_part_select_notes (BsePart *self,
   for (channel = 0; channel < self->n_channels; channel++)
     {
       BsePartEventNote *note, *last;
-      if (channel != match_channel && match_channel != ~0)
+      if (channel != match_channel && match_channel != ~uint (0))
         continue;
       note = bse_part_note_channel_lookup_ge (&self->channels[channel], tick);
       last = bse_part_note_channel_lookup_lt (&self->channels[channel], tick + duration);
@@ -602,7 +601,7 @@ bse_part_select_notes_exclusive (BsePart *self,
         {
           gboolean selected = (note->tick >= tick && note->tick < tick + duration &&
                                note->note >= min_note && note->note <= max_note &&
-                               (channel == match_channel || match_channel == ~0));
+                               (channel == match_channel || match_channel == ~uint (0)));
           if (note->selected != selected)
             {
               bse_part_note_channel_change_note (&self->channels[channel], note, note->id, selected,
@@ -789,7 +788,7 @@ bse_part_insert_note (BsePart *self,
 		      gfloat   velocity)
 {
   BsePartEventNote key = { 0 };
-  gboolean use_any_channel = channel == ~0;
+  const bool use_any_channel = channel == ~uint (0);
   g_return_val_if_fail (BSE_IS_PART (self), BSE_ERROR_INTERNAL);
   if (use_any_channel)
     channel = 0;
@@ -893,7 +892,7 @@ bse_part_change_note (BsePart *self,
 		      gfloat   velocity)
 {
   BsePartEventNote key = { 0 }, *note;
-  gboolean use_any_channel = channel == ~0;
+  const bool use_any_channel = channel == ~uint (0);
   guint i, old_tick;
   
   g_return_val_if_fail (BSE_IS_PART (self), FALSE);
@@ -1101,7 +1100,7 @@ bse_part_query_event (BsePart           *self,
           equery->velocity = 0;
           equery->fine_tune_value = 0;
           equery->velocity_value = 0;
-          equery->control_type = cev->ctype;
+          equery->control_type = BseMidiSignalType (cev->ctype);
           equery->control_value = cev->value;
         }
       return BSE_PART_EVENT_CONTROL;
@@ -1129,7 +1128,7 @@ bse_part_query_event (BsePart           *self,
           equery->velocity = note->velocity;
           equery->fine_tune_value = note_get_control_value (note, BSE_MIDI_SIGNAL_FINE_TUNE);
           equery->velocity_value = note_get_control_value (note, BSE_MIDI_SIGNAL_VELOCITY);
-          equery->control_type = 0;
+          equery->control_type = BseMidiSignalType (0);
           equery->control_value = 0;
         }
       return BSE_PART_EVENT_NOTE;
@@ -1189,7 +1188,7 @@ bse_part_list_notes (BsePart *self,
   for (channel = 0; channel < self->n_channels; channel++)
     {
       SfiUPool *tickpool;
-      if (channel != match_channel && match_channel != ~0)
+      if (channel != match_channel && match_channel != ~uint (0))
         continue;
       tickpool = sfi_upool_new ();
       /* gather notes spanning across tick */
@@ -1251,7 +1250,7 @@ bse_part_list_controls (BsePart          *self,
           BsePartEventNote *last = bse_part_note_channel_lookup_lt (&self->channels[channel], tick + duration);
           if (!note)
             continue;
-          if (channel != match_channel && match_channel != ~0)
+          if (channel != match_channel && match_channel != ~uint (0))
             continue;
           while (note <= last)
             {
@@ -1274,7 +1273,7 @@ bse_part_list_controls (BsePart          *self,
               bse_part_control_seq_take_append (cseq,
                                                 bse_part_control (cev->id,
                                                                   node->tick,
-                                                                  cev->ctype,
+                                                                  BseMidiSignalType (cev->ctype),
                                                                   cev->value,
                                                                   cev->selected));
           node++;
@@ -1381,7 +1380,7 @@ bse_part_list_selected_controls (BsePart           *self,
               bse_part_control_seq_take_append (cseq,
                                                 bse_part_control (cev->id,
                                                                   node->tick,
-                                                                  cev->ctype,
+                                                                  BseMidiSignalType (cev->ctype),
                                                                   cev->value,
                                                                   cev->selected));
           node++;
@@ -1492,7 +1491,7 @@ bse_part_restore_private (BseObject  *object,
       parse_or_return (scanner, G_TOKEN_INT);           /* channel */
       channel = scanner->value.v_int64;
       if (channel >= self->n_channels)
-        return bse_storage_warn_skip (storage, "ignoring notes with invalid channel: %u", channel);
+        return (SfiTokenType) bse_storage_warn_skip (storage, "ignoring notes with invalid channel: %u", channel);
       while (g_scanner_peek_next_token (scanner) != ')')
         {
           guint tick, duration, note;
@@ -1532,7 +1531,7 @@ bse_part_restore_private (BseObject  *object,
                               channel, tick, duration, note);
         }
       parse_or_return (scanner, ')');
-      return G_TOKEN_NONE;
+      return SFI_TOKEN_NONE;
     }
   else if (quark == quark_insert_controls)
     {
@@ -1564,19 +1563,19 @@ bse_part_restore_private (BseObject  *object,
           else
             {
               g_clear_error (&error);
-              return G_TOKEN_FLOAT;
+              return SfiTokenType (G_TOKEN_FLOAT);
             }
           if (g_scanner_peek_next_token (scanner) != ')')
             g_clear_error (&error);
           parse_or_return (scanner, ')');
           if (error)
             bse_storage_warn (storage, "unknown control event: %s", error->message);
-          else if (!bse_part_insert_control (self, tick, ctype, CLAMP (value, -1, +1)))
+          else if (!bse_part_insert_control (self, tick, BseMidiSignalType (ctype), CLAMP (value, -1, +1)))
             bse_storage_warn (storage, "failed to insert control event of type: %d", ctype);
           g_clear_error (&error);
         }
       parse_or_return (scanner, ')');
-      return G_TOKEN_NONE;
+      return SFI_TOKEN_NONE;
     }
   else if (quark == quark_insert_note)       /* pre-0.6.0 */
     {
@@ -1611,7 +1610,7 @@ bse_part_restore_private (BseObject  *object,
       if (!bse_part_insert_note (self, ~0, tick, duration, note, fine_tune, velocity))
 	bse_storage_warn (storage, "note insertion (note=%d tick=%u duration=%u) failed",
 			  note, tick, duration);
-      return G_TOKEN_NONE;
+      return SFI_TOKEN_NONE;
     }
   else if (quark == quark_insert_control)       /* pre-0.6.0 */
     {
@@ -1638,12 +1637,12 @@ bse_part_restore_private (BseObject  *object,
           value = negate ? -scanner->value.v_float : scanner->value.v_float;
         }
       else
-        return G_TOKEN_FLOAT;
+        return SfiTokenType (G_TOKEN_FLOAT);
       parse_or_return (scanner, ')');
 
-      if (!bse_part_insert_control (self, tick, ctype, CLAMP (value, -1, +1)))
+      if (!bse_part_insert_control (self, tick, BseMidiSignalType (ctype), CLAMP (value, -1, +1)))
         bse_storage_warn (storage, "skipping control event of invalid type: %d", ctype);
-      return G_TOKEN_NONE;
+      return SFI_TOKEN_NONE;
     }
   else /* chain parent class' handler */
     return BSE_OBJECT_CLASS (parent_class)->restore_private (object, storage, scanner);
@@ -1655,8 +1654,8 @@ static gint
 part_controls_cmp_tick_nodes (gconstpointer bsearch_node1, /* key */
                               gconstpointer bsearch_node2)
 {
-  const BsePartTickNode *n1 = bsearch_node1;
-  const BsePartTickNode *n2 = bsearch_node2;
+  const BsePartTickNode *n1 = (const BsePartTickNode*) bsearch_node1;
+  const BsePartTickNode *n2 = (const BsePartTickNode*) bsearch_node2;
   return G_BSEARCH_ARRAY_CMP (n1->tick, n2->tick);
 }
 
@@ -1678,7 +1677,7 @@ bse_part_controls_lookup (BsePartControls     *self,
 {
   BsePartTickNode key, *node;
   key.tick = tick;
-  node = g_bsearch_array_lookup (self->bsa, &controls_bsc, &key);
+  node = (BsePartTickNode*) g_bsearch_array_lookup (self->bsa, &controls_bsc, &key);
   return node;
 }
 
@@ -1689,7 +1688,7 @@ bse_part_controls_lookup_event (BsePartControls     *self,
 {
   BsePartTickNode key, *node;
   key.tick = tick;
-  node = g_bsearch_array_lookup (self->bsa, &controls_bsc, &key);
+  node = (BsePartTickNode*) g_bsearch_array_lookup (self->bsa, &controls_bsc, &key);
   if (node)
     {
       BsePartEventControl *cev;
@@ -1706,11 +1705,11 @@ bse_part_controls_lookup_ge (BsePartControls     *self,
 {
   BsePartTickNode key, *node;
   key.tick = tick;
-  node = g_bsearch_array_lookup_sibling (self->bsa, &controls_bsc, &key);
+  node = (BsePartTickNode*) g_bsearch_array_lookup_sibling (self->bsa, &controls_bsc, &key);
   if (node && node->tick < tick)        /* adjust smaller ticks */
     {
       guint ix = 1 + g_bsearch_array_get_index (self->bsa, &controls_bsc, node);
-      node = g_bsearch_array_get_nth (self->bsa, &controls_bsc, ix); /* returns NULL for i >= n_nodes */
+      node = (BsePartTickNode*) g_bsearch_array_get_nth (self->bsa, &controls_bsc, ix); /* returns NULL for i >= n_nodes */
       g_assert (!node || node->tick >= tick);
     }
   return node;
@@ -1722,7 +1721,7 @@ bse_part_controls_lookup_le (BsePartControls     *self,
 {
   BsePartTickNode key, *node;
   key.tick = tick;
-  node = g_bsearch_array_lookup_sibling (self->bsa, &controls_bsc, &key);
+  node = (BsePartTickNode*) g_bsearch_array_lookup_sibling (self->bsa, &controls_bsc, &key);
   if (node && node->tick > tick)        /* adjust smaller ticks */
     {
       node = g_bsearch_array_get_index (self->bsa, &controls_bsc, node) > 0 ? node - 1 : NULL;
@@ -1742,7 +1741,7 @@ BsePartTickNode*
 bse_part_controls_get_bound (BsePartControls *self)
 {
   guint nn = g_bsearch_array_get_n_nodes (self->bsa);
-  BsePartTickNode *first = g_bsearch_array_get_nth (self->bsa, &controls_bsc, 0);
+  BsePartTickNode *first = (BsePartTickNode*) g_bsearch_array_get_nth (self->bsa, &controls_bsc, 0);
   return first ? first + nn : NULL;
 }
 
@@ -1752,7 +1751,7 @@ bse_part_controls_get_last_tick (BsePartControls *self)
   guint n_nodes = g_bsearch_array_get_n_nodes (self->bsa);
   if (n_nodes)
     {
-      BsePartTickNode *node = g_bsearch_array_get_nth (self->bsa, &controls_bsc, n_nodes - 1);
+      BsePartTickNode *node = (BsePartTickNode*) g_bsearch_array_get_nth (self->bsa, &controls_bsc, n_nodes - 1);
       return node->tick + 1;
     }
   return 0;
@@ -1764,13 +1763,13 @@ bse_part_controls_ensure_tick (BsePartControls *self,
 {
   BsePartTickNode key = { 0 }, *node;
   key.tick = tick;
-  node = g_bsearch_array_lookup (self->bsa, &controls_bsc, &key);
+  node = (BsePartTickNode*) g_bsearch_array_lookup (self->bsa, &controls_bsc, &key);
   if (!node)
     {
       BSE_SEQUENCER_LOCK ();
       self->bsa = g_bsearch_array_insert (self->bsa, &controls_bsc, &key);
       BSE_SEQUENCER_UNLOCK ();
-      node = g_bsearch_array_lookup (self->bsa, &controls_bsc, &key);
+      node = (BsePartTickNode*) g_bsearch_array_lookup (self->bsa, &controls_bsc, &key);
     }
   return node;
 }
@@ -1860,7 +1859,7 @@ bse_part_controls_destroy (BsePartControls *self)
   guint nn = g_bsearch_array_get_n_nodes (self->bsa);
   while (nn)
     {
-      BsePartTickNode *node = g_bsearch_array_get_nth (self->bsa, &controls_bsc, --nn);
+      BsePartTickNode *node = (BsePartTickNode*) g_bsearch_array_get_nth (self->bsa, &controls_bsc, --nn);
       BsePartEventControl *cev, *next;
       for (cev = node->events; cev; cev = next)
         {
@@ -1878,8 +1877,8 @@ static gint
 part_note_channel_cmp_notes (gconstpointer bsearch_node1, /* key */
                              gconstpointer bsearch_node2)
 {
-  const BsePartEventNote *n1 = bsearch_node1;
-  const BsePartEventNote *n2 = bsearch_node2;
+  const BsePartEventNote *n1 = (const BsePartEventNote*) bsearch_node1;
+  const BsePartEventNote *n2 = (const BsePartEventNote*) bsearch_node2;
   return G_BSEARCH_ARRAY_CMP (n1->tick, n2->tick);
 }
 
@@ -1901,7 +1900,7 @@ bse_part_note_channel_lookup (BsePartNoteChannel     *self,
 {
   BsePartEventNote key, *note;
   key.tick = tick;
-  note = g_bsearch_array_lookup (self->bsa, &note_channel_bsc, &key);
+  note = (BsePartEventNote*) g_bsearch_array_lookup (self->bsa, &note_channel_bsc, &key);
   return note;
 }
 
@@ -1909,7 +1908,7 @@ BsePartEventNote*
 bse_part_note_channel_get_bound (BsePartNoteChannel *self)
 {
   guint nn = g_bsearch_array_get_n_nodes (self->bsa);
-  BsePartEventNote *first = g_bsearch_array_get_nth (self->bsa, &note_channel_bsc, 0);
+  BsePartEventNote *first = (BsePartEventNote*) g_bsearch_array_get_nth (self->bsa, &note_channel_bsc, 0);
   return first ? first + nn : NULL;
 }
 
@@ -1919,7 +1918,7 @@ bse_part_note_channel_lookup_le (BsePartNoteChannel     *self,
 {
   BsePartEventNote key, *note;
   key.tick = tick;
-  note = g_bsearch_array_lookup_sibling (self->bsa, &note_channel_bsc, &key);
+  note = (BsePartEventNote*) g_bsearch_array_lookup_sibling (self->bsa, &note_channel_bsc, &key);
   if (note && note->tick > tick)        /* adjust greater ticks */
     {
       note = g_bsearch_array_get_index (self->bsa, &note_channel_bsc, note) > 0 ? note - 1 : NULL;
@@ -1941,11 +1940,11 @@ bse_part_note_channel_lookup_ge (BsePartNoteChannel     *self,
 {
   BsePartEventNote key, *note;
   key.tick = tick;
-  note = g_bsearch_array_lookup_sibling (self->bsa, &note_channel_bsc, &key);
+  note = (BsePartEventNote*) g_bsearch_array_lookup_sibling (self->bsa, &note_channel_bsc, &key);
   if (note && note->tick < tick)        /* adjust smaller ticks */
     {
       guint ix = 1 + g_bsearch_array_get_index (self->bsa, &note_channel_bsc, note);
-      note = g_bsearch_array_get_nth (self->bsa, &note_channel_bsc, ix); /* returns NULL for i >= n_nodes */
+      note = (BsePartEventNote*) g_bsearch_array_get_nth (self->bsa, &note_channel_bsc, ix); /* returns NULL for i >= n_nodes */
       g_assert (!note || note->tick >= tick);
     }
   return note;
@@ -1957,14 +1956,14 @@ bse_part_note_channel_get_last_tick (BsePartNoteChannel *self)
   guint last_tick = 0, n_nodes = g_bsearch_array_get_n_nodes (self->bsa);
   if (n_nodes)
     {
-      BsePartEventNote *note = g_bsearch_array_get_nth (self->bsa, &note_channel_bsc, n_nodes - 1);
+      BsePartEventNote *note = (BsePartEventNote*) g_bsearch_array_get_nth (self->bsa, &note_channel_bsc, n_nodes - 1);
       BsePartEventNote key = { 0 };
       guint i;
       for (i = 0; i < BSE_PART_NOTE_N_CROSSINGS (note); i++)
         {
           BsePartEventNote *xnote;
           key.tick = BSE_PART_NOTE_CROSSING (note, i);
-          xnote = g_bsearch_array_lookup (self->bsa, &note_channel_bsc, &key);
+          xnote = (BsePartEventNote*) g_bsearch_array_lookup (self->bsa, &note_channel_bsc, &key);
           last_tick = MAX (last_tick, xnote->tick + xnote->duration);
         }
       last_tick = MAX (last_tick, note->tick + note->duration);
@@ -1979,7 +1978,7 @@ part_note_channel_check_crossing (BsePartNoteChannel *self,
 {
   BsePartEventNote key, *note;
   key.tick = note_tick;
-  note = g_bsearch_array_lookup (self->bsa, &note_channel_bsc, &key);
+  note = (BsePartEventNote*) g_bsearch_array_lookup (self->bsa, &note_channel_bsc, &key);
   g_assert (note);
   return note->tick + note->duration > tick_mark;
 }
@@ -2030,13 +2029,13 @@ bse_part_note_channel_insert (BsePartNoteChannel     *self,
   BSE_SEQUENCER_LOCK ();
   self->bsa = g_bsearch_array_insert (self->bsa, &note_channel_bsc, &key);
   BSE_SEQUENCER_UNLOCK ();
-  note = g_bsearch_array_lookup (self->bsa, &note_channel_bsc, &key);
+  note = (BsePartEventNote*) g_bsearch_array_lookup (self->bsa, &note_channel_bsc, &key);
   g_assert (note->crossings == NULL && note->id == key.id);
   ix = g_bsearch_array_get_index (self->bsa, &note_channel_bsc, note);
   /* copy predecessor crossings */
   if (ix > 0)
     {
-      BsePartEventNote *pre = g_bsearch_array_get_nth (self->bsa, &note_channel_bsc, ix - 1);
+      BsePartEventNote *pre = (BsePartEventNote*) g_bsearch_array_get_nth (self->bsa, &note_channel_bsc, ix - 1);
       guint *crossings = NULL;
       for (i = 0; i < BSE_PART_NOTE_N_CROSSINGS (pre); i++)
         if (part_note_channel_check_crossing (self, BSE_PART_NOTE_CROSSING (pre, i), key.tick))
@@ -2050,7 +2049,7 @@ bse_part_note_channel_insert (BsePartNoteChannel     *self,
   /* update successor crossings */
   for (i = ix + 1; i < g_bsearch_array_get_n_nodes (self->bsa); i++)
     {
-      BsePartEventNote *node = g_bsearch_array_get_nth (self->bsa, &note_channel_bsc, i);
+      BsePartEventNote *node = (BsePartEventNote*) g_bsearch_array_get_nth (self->bsa, &note_channel_bsc, i);
       if (key.tick + key.duration > node->tick)
         {
           BSE_SEQUENCER_LOCK ();
@@ -2091,7 +2090,7 @@ bse_part_note_channel_remove (BsePartNoteChannel     *self,
 {
   BsePartEventNote key, *note, *next, *bound = bse_part_note_channel_get_bound (self);
   key.tick = tick;
-  note = g_bsearch_array_lookup (self->bsa, &note_channel_bsc, &key);
+  note = (BsePartEventNote*) g_bsearch_array_lookup (self->bsa, &note_channel_bsc, &key);
   key = *note;
   /* update successor crossings */
   for (next = note + 1; next < bound; next++)
@@ -2117,7 +2116,7 @@ bse_part_note_channel_destroy (BsePartNoteChannel *self)
   guint nn = g_bsearch_array_get_n_nodes (self->bsa);
   while (nn)
     {
-      BsePartEventNote *note = g_bsearch_array_get_nth (self->bsa, &note_channel_bsc, --nn);
+      BsePartEventNote *note = (BsePartEventNote*) g_bsearch_array_get_nth (self->bsa, &note_channel_bsc, --nn);
       g_free (note->crossings);
     }
   g_bsearch_array_free (self->bsa, &note_channel_bsc);

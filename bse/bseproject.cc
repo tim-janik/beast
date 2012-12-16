@@ -126,7 +126,7 @@ bse_project_class_init (BseProjectClass *klass)
   BseSourceClass *source_class = BSE_SOURCE_CLASS (klass);
   BseContainerClass *container_class = BSE_CONTAINER_CLASS (klass);
   
-  parent_class = g_type_class_peek_parent (klass);
+  parent_class = (GTypeClass*) g_type_class_peek_parent (klass);
   quark_storage_trap = g_quark_from_static_string ("bse-project-storage-trap");
 
   gobject_class->set_property = bse_project_set_property;
@@ -165,7 +165,7 @@ undo_notify (BseProject     *project,
              BseUndoStack   *ustack,
              gboolean        step_added)
 {
-  g_object_notify (project, "dirty");
+  g_object_notify ((GObject*) project, "dirty");
   if (step_added && !project->in_redo)
     {
       bse_undo_stack_force_dirty (project->undo_stack);
@@ -178,7 +178,7 @@ redo_notify (BseProject     *project,
              BseUndoStack   *ustack,
              gboolean        step_added)
 {
-  g_object_notify (project, "dirty");
+  g_object_notify ((GObject*) project, "dirty");
 }
 
 static void
@@ -199,9 +199,7 @@ bse_project_init (BseProject *self,
   bse_midi_receiver_enter_farm (self->midi_receiver);
 
   /* we always have a wave-repo */
-  wrepo = bse_container_new_child (BSE_CONTAINER (self), BSE_TYPE_WAVE_REPO,
-                                   "uname", "Wave-Repository",
-                                   NULL);
+  wrepo = (BseWaveRepo*) bse_container_new_child (BSE_CONTAINER (self), BSE_TYPE_WAVE_REPO, "uname", "Wave-Repository", NULL);
   /* with fixed uname */
   BSE_OBJECT_SET_FLAGS (wrepo, BSE_OBJECT_FLAG_FIXED_UNAME);
 }
@@ -249,9 +247,9 @@ bse_project_release_children (BseContainer *container)
   BseProject *project = BSE_PROJECT (container);
 
   while (project->items)
-    bse_container_remove_item (BSE_CONTAINER (project), project->items->data);
+    bse_container_remove_item (BSE_CONTAINER (project), (BseItem*) project->items->data);
   while (project->supers)
-    bse_container_remove_item (BSE_CONTAINER (project), project->supers->data);
+    bse_container_remove_item (BSE_CONTAINER (project), (BseItem*) project->supers->data);
 
   /* chain parent class' handler */
   BSE_CONTAINER_CLASS (parent_class)->release_children (container);
@@ -301,7 +299,7 @@ bse_project_clear_undo (BseProject *self)
     {
       bse_undo_stack_clear (self->undo_stack);
       bse_undo_stack_clear (self->redo_stack);
-      g_object_notify (self, "dirty");
+      g_object_notify ((GObject*) self, "dirty");
     }
 }
 
@@ -311,14 +309,14 @@ bse_project_clean_dirty (BseProject *self)
   g_return_if_fail (BSE_IS_PROJECT (self));
   bse_undo_stack_clean_dirty (self->undo_stack);
   bse_undo_stack_clean_dirty (self->redo_stack);
-  g_object_notify (self, "dirty");
+  g_object_notify ((GObject*) self, "dirty");
 }
 
 static void
 project_undo_do_deactivate (BseUndoStep  *ustep,
                             BseUndoStack *ustack)
 {
-  BseProject *self = bse_undo_pointer_unpack (ustep->data[0].v_pointer, ustack);
+  BseProject *self = (BseProject*) bse_undo_pointer_unpack ((const char*) ustep->data[0].v_pointer, ustack);
   bse_project_deactivate (self);
 }
 
@@ -400,9 +398,7 @@ bse_project_forall_items (BseContainer      *container,
   slist = self->supers;
   while (slist)
     {
-      BseItem *item;
-
-      item = slist->data;
+      BseItem *item = (BseItem*) slist->data;
       slist = slist->next;
       if (!func (item, data))
 	return;
@@ -411,9 +407,7 @@ bse_project_forall_items (BseContainer      *container,
   slist = self->items;
   while (slist)
     {
-      BseItem *item;
-
-      item = slist->data;
+      BseItem *item = (BseItem*) slist->data;
       slist = slist->next;
       if (!func (item, data))
 	return;
@@ -434,14 +428,14 @@ bse_project_retrieve_child (BseContainer *container,
 
       for (slist = self->supers; slist; slist = slist->next)
 	if (g_type_is_a (G_OBJECT_TYPE (slist->data), BSE_TYPE_WAVE_REPO))
-	  return slist->data;
+	  return (BseItem*) slist->data;
       g_warning ("%s: no wave-repo found in project\n", G_STRLOC);
       return NULL;	/* shouldn't happen */
     }
   else
     {
       BseItem *item = BSE_CONTAINER_CLASS (parent_class)->retrieve_child (container, child_type, uname);
-      StorageTrap *strap = g_object_get_qdata (self, quark_storage_trap);
+      StorageTrap *strap = (StorageTrap*) g_object_get_qdata ((GObject*) self, quark_storage_trap);
       if (item && strap)
 	{
           if (strap->intern_children)
@@ -457,10 +451,10 @@ static gboolean
 add_item_upaths (BseItem *item,
 		 gpointer data_p)
 {
-  gpointer *data = data_p;
-  BseStringSeq *sseq = data[0];
+  gpointer *data = (void**) data_p;
+  BseStringSeq *sseq = (BseStringSeq*) data[0];
   GType item_type = (GType) data[1];
-  BseContainer *container = data[2];
+  BseContainer *container = (BseContainer*) data[2];
 
   if (g_type_is_a (BSE_OBJECT_TYPE (item), item_type))
     {
@@ -501,7 +495,7 @@ compute_missing_supers (BseProject *self,
   GSList *targets = NULL, *missing = sfi_ppool_slist (storage->referenced_items);
   while (missing)
     {
-      BseItem *item = g_slist_pop_head (&missing);
+      BseItem *item = (BseItem*) g_slist_pop_head (&missing);
       BseSuper *super = bse_item_get_super (item);
       if (BSE_ITEM (super)->parent == project_item &&
           !sfi_ppool_lookup (storage->stored_items, super))
@@ -534,16 +528,16 @@ bse_project_store_bse (BseProject  *self,
   if (fd < 0)
     return bse_error_from_errno (errno, BSE_ERROR_FILE_OPEN_FAILED);
 
-  storage = g_object_new (BSE_TYPE_STORAGE, NULL);
+  storage = (BseStorage*) g_object_new (BSE_TYPE_STORAGE, NULL);
   flags = 0;
   if (self_contained)
     flags |= BSE_STORAGE_SELF_CONTAINED;
-  bse_storage_prepare_write (storage, flags);
+  bse_storage_prepare_write (storage, BseStorageMode (flags));
 
   slist = g_slist_prepend (slist, super ? (void*) super : (void*) self);
   while (slist)
     {
-      BseItem *item = g_slist_pop_head (&slist);
+      BseItem *item = (BseItem*) g_slist_pop_head (&slist);
       if (item == (BseItem*) self)
         bse_storage_store_item (storage, item);
       else
@@ -590,7 +584,7 @@ bse_project_restore (BseProject *self,
   GSList *slist = self->supers;
   while (slist)
     {
-      BseSuper *super = slist->data;
+      BseSuper *super = (BseSuper*) slist->data;
       slist = slist->next;
       BseSuperClass *super_class = BSE_SUPER_GET_CLASS (super);
       super_class->compat_finish (super, storage->major_version, storage->minor_version, storage->micro_version);
@@ -611,7 +605,7 @@ bse_project_upath_resolver (gpointer     func_data,
 			    const gchar *upath,
 			    gchar      **error_p)
 {
-  BseProject *self = func_data;
+  BseProject *self = (BseProject*) func_data;
   gpointer item = NULL;
 
   if (error_p)
@@ -625,8 +619,8 @@ bse_project_upath_resolver (gpointer     func_data,
     item = bse_container_resolve_upath (BSE_CONTAINER (self), upath);
   else if (error_p)
     *error_p = g_strdup_printf ("unable to resolve object of type `%s' from upath: %s", g_type_name (required_type), upath);
-  
-  return item;
+
+  return (BseObject*) item;
 }
 
 BseItem*
@@ -653,7 +647,7 @@ bse_project_get_wave_repo (BseProject *self)
   GSList *slist;
   for (slist = self->supers; slist; slist = slist->next)
     if (BSE_IS_WAVE_REPO (slist->data))
-      return slist->data;
+      return (BseWaveRepo*) slist->data;
   return NULL;
 }
 
@@ -664,7 +658,7 @@ bse_project_get_song (BseProject *self)
   GSList *slist;
   for (slist = self->supers; slist; slist = slist->next)
     if (BSE_IS_SONG (slist->data))
-      return slist->data;
+      return (BseSong*) slist->data;
   return NULL;
 }
 
@@ -674,7 +668,7 @@ project_check_restore (BseContainer *container,
 {
   if (BSE_CONTAINER_CLASS (parent_class)->check_restore (container, child_type))
     {
-      StorageTrap *strap = g_object_get_qdata (container, quark_storage_trap);
+      StorageTrap *strap = (StorageTrap*) g_object_get_qdata ((GObject*) container, quark_storage_trap);
       if (!strap)
 	return TRUE;
       if (!g_type_is_a (g_type_from_name (child_type), strap->base_type))
@@ -687,7 +681,7 @@ project_check_restore (BseContainer *container,
     return FALSE;
 }
 
-gpointer
+BseSNet*
 bse_project_create_intern_synth (BseProject  *self,
 				 const gchar *synth_name,
 				 GType        check_type)
@@ -701,11 +695,11 @@ bse_project_create_intern_synth (BseProject  *self,
   bse_synth = bse_standard_synth_inflate (synth_name, NULL);
   if (bse_synth)
     {
-      BseStorage *storage = g_object_new (BSE_TYPE_STORAGE, NULL);
+      BseStorage *storage = (BseStorage*) g_object_new (BSE_TYPE_STORAGE, NULL);
       BseErrorType error = BSE_ERROR_NONE;
-      StorageTrap strap = { 0, TRUE, }, *old_strap = g_object_get_qdata (self, quark_storage_trap);
+      StorageTrap strap = { 0, TRUE, }, *old_strap = (StorageTrap*) g_object_get_qdata ((GObject*) self, quark_storage_trap);
       bse_storage_input_text (storage, bse_synth, "<builtin-lib>");
-      g_object_set_qdata (self, quark_storage_trap, &strap);
+      g_object_set_qdata ((GObject*) self, quark_storage_trap, &strap);
       strap.max_items = 1;
       strap.base_type = check_type;
       strap.items = NULL;
@@ -718,21 +712,18 @@ bse_project_create_intern_synth (BseProject  *self,
 	g_warning ("failed to create internal synth \"%s\": %s",
 		   synth_name, bse_error_blurb (error ? error : BSE_ERROR_NO_ENTRY));
       else
-	synth = strap.items->data;
+	synth = (BseItem*) strap.items->data;
       g_slist_free (strap.items);
-      g_object_set_qdata (self, quark_storage_trap, old_strap);
+      g_object_set_qdata ((GObject*) self, quark_storage_trap, old_strap);
     }
-  return synth;
+  return BSE_SNET (synth);
 }
 
 BseCSynth*
 bse_project_create_intern_csynth (BseProject *self,
                                   const char *base_name)
 {
-  BseCSynth *csynth = bse_container_new_child_bname (BSE_CONTAINER (self),
-                                                     BSE_TYPE_CSYNTH,
-                                                     base_name,
-                                                     NULL);
+  BseCSynth *csynth = (BseCSynth*) bse_container_new_child_bname (BSE_CONTAINER (self), BSE_TYPE_CSYNTH, base_name, NULL);
   bse_item_set_internal (BSE_ITEM (csynth), TRUE);
   return csynth;
 }
@@ -743,9 +734,10 @@ bse_project_get_midi_notifier (BseProject *self)
   GSList *slist;
   for (slist = self->items; slist; slist = slist->next)
     if (BSE_IS_MIDI_NOTIFIER (slist->data))
-      return slist->data;
+      return (BseMidiNotifier*) slist->data;
 
-  BseMidiNotifier *mnot = bse_container_new_child_bname (BSE_CONTAINER (self), BSE_TYPE_MIDI_NOTIFIER, "%bse-intern-midi-notifier", NULL);
+  BseMidiNotifier *mnot = (BseMidiNotifier*) bse_container_new_child_bname (BSE_CONTAINER (self), BSE_TYPE_MIDI_NOTIFIER,
+                                                                            "%bse-intern-midi-notifier", NULL);
   bse_midi_notifier_set_receiver (mnot, self->midi_receiver);
   bse_item_set_internal (BSE_ITEM (mnot), TRUE);
   return mnot;
@@ -760,7 +752,7 @@ bse_project_prepare (BseSource *source)
   /* make sure Wave repositories are prepared first */
   for (slist = self->supers; slist; slist = slist->next)
     if (BSE_IS_WAVE_REPO (slist->data))
-      bse_source_prepare (slist->data);
+      bse_source_prepare ((BseSource*) slist->data);
 
   /* chain parent class' handler to prepare the rest */
   BSE_SOURCE_CLASS (parent_class)->prepare (source);
@@ -792,7 +784,7 @@ bse_project_state_changed (BseProject     *self,
     {
       SfiTime stamp = gsl_tick_stamp ();
       SfiTime delay_usecs = 0;
-      if (self->deactivate_min_tick > stamp)
+      if (SfiTime (self->deactivate_min_tick) > stamp)
 	delay_usecs = (self->deactivate_min_tick - stamp) * 1000000 / bse_engine_sample_freq ();
       self->deactivate_timer = bse_idle_timed (self->deactivate_usecs + delay_usecs, auto_deactivate, self);
     }
@@ -874,7 +866,7 @@ bse_project_start_playback (BseProject *self)
     {
       BseSuper *super = BSE_SUPER (slist->data);
       if (BSE_SUPER_NEEDS_CONTEXT (super) &&
-	  super->context_handle == ~0)
+	  super->context_handle == ~uint (0))
 	{
           BseMidiContext mcontext = { 0, 0, 0 };
           BseSNet *snet = BSE_SNET (super);
@@ -898,7 +890,7 @@ bse_project_start_playback (BseProject *self)
     bse_project_state_changed (self, BSE_PROJECT_PLAYING);
   /* then, start the sequencer */
   while (songs)
-    bse_sequencer_start_song (sfi_ring_pop_head (&songs), 0);
+    bse_sequencer_start_song ((BseSong*) sfi_ring_pop_head (&songs), 0);
 }
 
 void
@@ -919,7 +911,7 @@ bse_project_stop_playback (BseProject *self)
       BseSuper *super = BSE_SUPER (slist->data);
       if (BSE_IS_SONG (super))
         bse_sequencer_remove_song (BSE_SONG (super));
-      if (super->context_handle != ~0 && BSE_SUPER_NEEDS_CONTEXT (super))
+      if (super->context_handle != ~uint (0) && BSE_SUPER_NEEDS_CONTEXT (super))
 	{
 	  BseSource *source = BSE_SOURCE (super);
 	  bse_source_dismiss_context (source, super->context_handle, trans);
@@ -946,7 +938,7 @@ bse_project_check_auto_stop (BseProject *self)
       for (slist = self->supers; slist; slist = slist->next)
 	{
 	  BseSuper *super = BSE_SUPER (slist->data);
-	  if (super->context_handle != ~0)
+	  if (super->context_handle != ~uint (0))
 	    {
 	      if (!BSE_IS_SONG (super) || !BSE_SONG (super)->sequencer_done_SL)
 		return;
@@ -974,7 +966,7 @@ bse_project_deactivate (BseProject *self)
   for (slist = self->supers; slist; slist = slist->next)
     {
       BseSuper *super = BSE_SUPER (slist->data);
-      if (super->context_handle != ~0)
+      if (super->context_handle != ~uint (0))
 	{
 	  BseSource *source = BSE_SOURCE (super);
 	  bse_source_dismiss_context (source, super->context_handle, trans);

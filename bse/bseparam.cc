@@ -43,7 +43,7 @@ bse_param_spec_object (const gchar    *name,
   
   g_return_val_if_fail (g_type_is_a (object_type, BSE_TYPE_OBJECT), NULL);
   
-  pspec = g_param_spec_object (name, NULL_CHECKED (nick), NULL_CHECKED (blurb), object_type, 0);
+  pspec = g_param_spec_object (name, NULL_CHECKED (nick), NULL_CHECKED (blurb), object_type, GParamFlags (0));
   sfi_pspec_set_options (pspec, hints);
   sfi_pspec_add_option (pspec, "skip-default", "+");
   
@@ -103,7 +103,7 @@ bse_param_spec_boxed (const gchar *name,
   if (sfi_boxed_type_get_rec_fields (boxed_type).n_fields ||
       sfi_boxed_type_get_seq_element (boxed_type))
     {
-      pspec = g_param_spec_boxed (name, nick, blurb, boxed_type, 0);
+      pspec = g_param_spec_boxed (name, nick, blurb, boxed_type, GParamFlags (0));
       sfi_pspec_set_options (pspec, hints);
     }
   else

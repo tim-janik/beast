@@ -800,7 +800,7 @@ bus_restore_private (BseObject  *object,
         return SfiTokenType (token);
       /* close statement */
       parse_or_return (scanner, ')');
-      return SfiTokenType (G_TOKEN_NONE);
+      return SFI_TOKEN_NONE;
     }
   else /* chain parent class' handler */
     return BSE_OBJECT_CLASS (bus_parent_class)->restore_private (object, storage, scanner);

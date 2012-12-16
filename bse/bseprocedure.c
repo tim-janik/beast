@@ -33,7 +33,6 @@ static SFI_MSG_TYPE_DEFINE (debug_procs, "procs", SFI_MSG_DEBUG, NULL);
 
 
 /* --- prototypes --- */
-extern void     bse_type_register_procedure_info  (GTypeInfo                *info);
 static void     bse_procedure_base_init           (BseProcedureClass        *proc);
 static void     bse_procedure_base_finalize       (BseProcedureClass        *proc);
 static void     bse_procedure_init                (BseProcedureClass        *proc,
@@ -725,7 +724,7 @@ procedure_class_unref (BseProcedureClass *proc)
     }
 }
 
-extern void
+void
 bse_type_register_procedure_info (GTypeInfo *info)
 {
   static const GTypeInfo proc_info = {

@@ -84,9 +84,9 @@ bse_wave_repo_class_init (BseWaveRepoClass *klass)
 {
   GObjectClass *gobject_class = G_OBJECT_CLASS (klass);
   BseContainerClass *container_class = BSE_CONTAINER_CLASS (klass);
-  
-  parent_class = g_type_class_peek_parent (klass);
-  
+
+  parent_class = (GTypeClass*) g_type_class_peek_parent (klass);
+
   gobject_class->set_property = bse_wave_repo_set_property;
   gobject_class->get_property = bse_wave_repo_get_property;
   gobject_class->dispose = bse_wave_repo_dispose;
@@ -109,8 +109,8 @@ bse_wave_repo_release_children (BseContainer *container)
   BseWaveRepo *wrepo = BSE_WAVE_REPO (container);
 
   while (wrepo->waves)
-    bse_container_remove_item (container, wrepo->waves->data);
-  
+    bse_container_remove_item (container, (BseItem*) wrepo->waves->data);
+
   /* chain parent class' handler */
   BSE_CONTAINER_CLASS (parent_class)->release_children (container);
 }
@@ -177,13 +177,12 @@ bse_wave_repo_forall_items (BseContainer      *container,
 {
   BseWaveRepo *wrepo = BSE_WAVE_REPO (container);
   GList *list;
-  
+
   list = wrepo->waves;
   while (list)
     {
       BseItem *item;
-      
-      item = list->data;
+      item = (BseItem*) list->data;
       list = list->next;
       if (!func (item, data))
 	return;

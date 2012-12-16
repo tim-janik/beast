@@ -223,7 +223,7 @@ bse_sub_synth_set_property (GObject      *object,
               bse_item_cross_unlink (BSE_ITEM (self), BSE_ITEM (self->snet), sub_synth_uncross_snet);
               self->snet = NULL;
             }
-	  self->snet = bse_value_get_object (value);
+	  self->snet = (BseSNet*) bse_value_get_object (value);
 	  if (self->snet)
             {
               bse_item_cross_link (BSE_ITEM (self), BSE_ITEM (self->snet), sub_synth_uncross_snet);
@@ -396,9 +396,9 @@ bse_sub_synth_context_connect (BseSource *source,
     {
       BseModule *imodule = bse_source_get_context_imodule (source, context_handle);
       BseModule *omodule = bse_source_get_context_omodule (source, context_handle);
-      ModData *mdata_in = imodule->user_data;
+      ModData *mdata_in = (ModData*) imodule->user_data;
       guint foreign_context_handle = mdata_in->synth_context_handle;
-      
+
       if (foreign_context_handle)
 	{
 	  bse_source_connect_context (BSE_SOURCE (snet), foreign_context_handle, trans);
@@ -424,9 +424,9 @@ bse_sub_synth_context_dismiss (BseSource *source,
   if (snet)
     {
       BseModule *imodule = bse_source_get_context_imodule (source, context_handle);
-      ModData *mdata_in = imodule->user_data;
+      ModData *mdata_in = (ModData*) imodule->user_data;
       guint i, foreign_context_handle = mdata_in->synth_context_handle;
-      
+
       if (foreign_context_handle)
 	{
 	  for (i = 0; i < BSE_SOURCE_N_ICHANNELS (self); i++)
@@ -460,9 +460,9 @@ bse_sub_synth_update_port_contexts (BseSubSynth *self,
     if (is_input)
       {
 	BseModule *imodule = bse_source_get_context_imodule (source, cids[i]);
-	ModData *mdata_in = imodule->user_data;
+	ModData *mdata_in = (ModData*) imodule->user_data;
 	guint foreign_context_handle = mdata_in->synth_context_handle;
-	
+
 	if (foreign_context_handle)
 	  {
 	    bse_snet_set_iport_src (snet, old_name, foreign_context_handle, NULL, port, trans);
@@ -472,9 +472,9 @@ bse_sub_synth_update_port_contexts (BseSubSynth *self,
     else
       {
 	BseModule *omodule = bse_source_get_context_omodule (source, cids[i]);
-	ModData *mdata_in = omodule->user_data;
+	ModData *mdata_in = (ModData*) omodule->user_data;
         guint foreign_context_handle = mdata_in->synth_context_handle;
-	
+
         if (foreign_context_handle)
 	  {
 	    bse_snet_set_oport_dest (snet, old_name, foreign_context_handle, NULL, port, trans);

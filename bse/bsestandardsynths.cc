@@ -46,7 +46,7 @@ bse_zfile_uncompress (const BseZFile *zfile,
 {
   uLongf dlen = zfile->text_size;
   guint len = dlen + 1;
-  guint8 *text = g_malloc (len);
+  guint8 *text = (guint8*) g_malloc (len);
   gint result;
   const gchar *err;
 
@@ -85,7 +85,7 @@ bse_zfile_uncompress (const BseZFile *zfile,
   text[dlen] = 0;
   if (text_len)
     *text_len = dlen;
-  return text;
+  return (char*) text;
 }
 
 gchar*

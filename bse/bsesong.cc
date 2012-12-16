@@ -28,6 +28,7 @@
 #include "bsesequencer.h"
 #include "bsesubsynth.h"
 #include "bseengine.h"	// FIXME: for bse_engine_sample_freq()
+#include "bsecxxplugin.hh"
 #include <string.h>
 
 
@@ -103,11 +104,11 @@ bse_song_release_children (BseContainer *container)
   BseSong *self = BSE_SONG (container);
 
   while (self->busses)
-    bse_container_remove_item (container, self->busses->data);
+    bse_container_remove_item (container, (BseItem*) self->busses->data);
   while (self->parts)
-    bse_container_remove_item (container, self->parts->data);
+    bse_container_remove_item (container, (BseItem*) self->parts->data);
   while (self->tracks_SL)
-    bse_container_remove_item (container, self->tracks_SL->data);
+    bse_container_remove_item (container, (BseItem*) self->tracks_SL->data);
 
   /* chain parent class' handler */
   BSE_CONTAINER_CLASS (parent_class)->release_children (container);
@@ -169,10 +170,10 @@ bse_song_set_property (GObject      *object,
     case PROP_MUSICAL_TUNING:
       if (!BSE_SOURCE_PREPARED (self))
         {
-          self->musical_tuning = g_value_get_enum (value);
+          self->musical_tuning = (BseMusicalTuningType) g_value_get_enum (value);
           SfiRing *ring;
           for (ring = self->parts; ring; ring = sfi_ring_walk (ring, self->parts))
-            bse_part_set_semitone_table (ring->data, bse_semitone_table_from_tuning (self->musical_tuning));
+            bse_part_set_semitone_table ((BsePart*) ring->data, bse_semitone_table_from_tuning (self->musical_tuning));
         }
       break;
     case PROP_BPM:
@@ -188,7 +189,7 @@ bse_song_set_property (GObject      *object,
               bse_item_cross_unlink (BSE_ITEM (self), BSE_ITEM (self->pnet), song_uncross_pnet);
               self->pnet = NULL;
             }
-          self->pnet = bse_value_get_object (value);
+          self->pnet = (BseSNet*) bse_value_get_object (value);
           if (self->pnet)
             {
               bse_item_cross_link (BSE_ITEM (self), BSE_ITEM (self->pnet), song_uncross_pnet);
@@ -235,7 +236,7 @@ bse_song_set_property (GObject      *object,
 				   self->loop_right_SL > self->loop_left_SL);
 	  BSE_SEQUENCER_UNLOCK ();
 	  if (loop_enabled != self->loop_enabled_SL)
-	    g_object_notify (self, "loop_enabled");
+	    g_object_notify ((GObject*) self, "loop_enabled");
 	}
       break;
     case PROP_LOOP_RIGHT:
@@ -250,18 +251,18 @@ bse_song_set_property (GObject      *object,
 				   self->loop_right_SL > self->loop_left_SL);
 	  BSE_SEQUENCER_UNLOCK ();
           if (loop_enabled != self->loop_enabled_SL)
-	    g_object_notify (self, "loop_enabled");
+	    g_object_notify ((GObject*) self, "loop_enabled");
 	}
       break;
     case PROP_TICK_POINTER:
       vint = sfi_value_get_int (value);
-      if (vint != self->tick_SL)
+      if (uint (vint) != self->tick_SL)
 	{
 	  BSE_SEQUENCER_LOCK ();
 	  self->tick_SL = vint;
 	  for (ring = self->tracks_SL; ring; ring = sfi_ring_walk (ring, self->tracks_SL))
 	    {
-	      BseTrack *track = ring->data;
+	      BseTrack *track = (BseTrack*) ring->data;
 	      track->track_done_SL = FALSE;	/* let sequencer recheck if playing */
 	    }
 	  BSE_SEQUENCER_UNLOCK ();
@@ -417,7 +418,7 @@ bse_song_forall_items (BseContainer	 *container,
   ring = self->parts;
   while (ring)
     {
-      BseItem *item = ring->data;
+      BseItem *item = (BseItem*) ring->data;
       ring = sfi_ring_walk (ring, self->parts);
       if (!func (item, data))
 	return;
@@ -439,7 +440,7 @@ bse_song_remove_item (BseContainer *container,
       bse_track_remove_modules (BSE_TRACK (item), BSE_CONTAINER (self));
       ring = sfi_ring_find (self->tracks_SL, item);
       for (tmp = sfi_ring_walk (ring, self->tracks_SL); tmp; tmp = sfi_ring_walk (tmp, self->tracks_SL))
-	bse_item_queue_seqid_changed (tmp->data);
+	bse_item_queue_seqid_changed ((BseItem*) tmp->data);
       BSE_SEQUENCER_LOCK ();
       self->tracks_SL = sfi_ring_remove_node (self->tracks_SL, ring);
       BSE_SEQUENCER_UNLOCK ();
@@ -448,7 +449,7 @@ bse_song_remove_item (BseContainer *container,
     {
       SfiRing *tmp, *ring = sfi_ring_find (self->parts, item);
       for (tmp = sfi_ring_walk (ring, self->parts); tmp; tmp = sfi_ring_walk (tmp, self->parts))
-	bse_item_queue_seqid_changed (tmp->data);
+	bse_item_queue_seqid_changed ((BseItem*) tmp->data);
       self->parts = sfi_ring_remove_node (self->parts, ring);
     }
   else if (g_type_is_a (BSE_OBJECT_TYPE (item), BSE_TYPE_BUS))
@@ -457,7 +458,7 @@ bse_song_remove_item (BseContainer *container,
         bse_song_set_solo_bus (self, NULL);
       SfiRing *tmp, *ring = sfi_ring_find (self->busses, item);
       for (tmp = sfi_ring_walk (ring, self->busses); tmp; tmp = sfi_ring_walk (tmp, self->busses))
-	bse_item_queue_seqid_changed (tmp->data);
+	bse_item_queue_seqid_changed ((BseItem*) tmp->data);
       self->busses = sfi_ring_remove_node (self->busses, ring);
     }
   else
@@ -472,7 +473,7 @@ song_position_handler (gpointer data)
 {
   BseSong *self = BSE_SONG (data);
 
-  if (self->last_position != self->tick_SL)
+  if (uint (self->last_position) != self->tick_SL)
     {
       BSE_SEQUENCER_LOCK ();
       self->last_position = self->tick_SL;
@@ -527,7 +528,7 @@ bse_song_context_create (BseSource *source,
 
   if (!bse_snet_context_is_branch (snet, context_handle))       /* catch recursion */
     for (ring = self->tracks_SL; ring; ring = sfi_ring_walk (ring, self->tracks_SL))
-      bse_track_clone_voices (ring->data, snet, context_handle, mcontext, trans);
+      bse_track_clone_voices ((BseTrack*) ring->data, snet, context_handle, mcontext, trans);
 }
 
 static void
@@ -553,7 +554,7 @@ bse_song_reset (BseSource *source)
 
   bse_object_unlock (BSE_OBJECT (self));
 
-  g_object_notify (self, "tick-pointer");
+  g_object_notify ((GObject*) self, "tick-pointer");
 }
 
 BseSource*
@@ -562,7 +563,7 @@ bse_song_create_summation (BseSong *self)
   GType type = g_type_from_name ("BseSummation");
   if (!g_type_is_a (type, BSE_TYPE_SOURCE))
     g_error ("%s: failed to resolve %s object type, probably missing or broken plugin installation", G_STRFUNC, "BseSummation");
-  BseSource *summation = bse_container_new_child (BSE_CONTAINER (self), type, "uname", "Summation", NULL);
+  BseSource *summation = (BseSource*) bse_container_new_child (BSE_CONTAINER (self), type, "uname", "Summation", NULL);
   g_assert (summation != NULL);
   bse_snet_intern_child (BSE_SNET (self), summation);
   return summation;
@@ -590,7 +591,7 @@ bse_song_set_solo_bus (BseSong        *self,
   SfiRing *ring;
   self->solo_bus = bus;
   for (ring = self->busses; ring; ring = sfi_ring_walk (ring, self->busses))
-    bse_bus_change_solo (ring->data, self->solo_bus && ring->data != self->solo_bus && ring->data != master);
+    bse_bus_change_solo ((BseBus*) ring->data, self->solo_bus && ring->data != self->solo_bus && ring->data != master);
 }
 
 static void
@@ -625,14 +626,12 @@ bse_song_init (BseSong *self)
   self->loop_right_SL = -1;
 
   /* post processing slot */
-  self->postprocess = bse_container_new_child (BSE_CONTAINER (self), BSE_TYPE_SUB_SYNTH,
-                                               "uname", "Postprocess",
-                                               NULL);
+  self->postprocess = (BseSource*) bse_container_new_child (BSE_CONTAINER (self), BSE_TYPE_SUB_SYNTH, "uname", "Postprocess", NULL);
   bse_snet_intern_child (snet, self->postprocess);
   bse_sub_synth_set_null_shortcut (BSE_SUB_SYNTH (self->postprocess), TRUE);
 
   /* output */
-  self->output = bse_container_new_child (BSE_CONTAINER (self), BSE_TYPE_PCM_OUTPUT, NULL);
+  self->output = (BseSource*) bse_container_new_child (BSE_CONTAINER (self), BSE_TYPE_PCM_OUTPUT, NULL);
   bse_snet_intern_child (snet, self->output);
 
   /* postprocess <-> output */
@@ -656,7 +655,7 @@ bse_song_ensure_master (BseSong *self)
   if (!child)
     {
       BseUndoStack *ustack = bse_item_undo_open (self, "create-master");
-      child = bse_container_new_child_bname (BSE_CONTAINER (self), BSE_TYPE_BUS, master_bus_name(), NULL);
+      child = (BseSource*) bse_container_new_child_bname (BSE_CONTAINER (self), BSE_TYPE_BUS, master_bus_name(), NULL);
       g_object_set (child, "master-output", TRUE, NULL); /* no undo */
       bse_item_push_undo_proc (self, "remove-bus", child);
       bse_item_undo_close (ustack);
@@ -681,7 +680,7 @@ bse_song_compat_finish (BseSuper       *super,
       /* collect all bus inputs */
       SfiRing *node, *tracks, *inputs = NULL;
       for (node = self->busses; node; node = sfi_ring_walk (node, self->busses))
-        inputs = sfi_ring_concat (inputs, bse_bus_list_inputs (node->data));
+        inputs = sfi_ring_concat (inputs, bse_bus_list_inputs ((BseBus*) node->data));
       /* find tracks that are not in input list */
       tracks = sfi_ring_copy (self->tracks_SL);
       inputs = sfi_ring_sort (inputs, sfi_pointer_cmp, NULL);
@@ -695,7 +694,7 @@ bse_song_compat_finish (BseSuper       *super,
       BseSource *master = bse_song_ensure_master (self);
       for (node = master ? tracks : NULL; node; node = sfi_ring_walk (node, tracks))
         {
-          BseErrorType error = bse_bus_connect (BSE_BUS (master), node->data);
+          BseErrorType error = bse_bus_connect (BSE_BUS (master), (BseItem*) node->data);
           if (error)
             sfi_warning ("Failed to connect track %s: %s", bse_object_debug_name (node->data), bse_error_blurb (error));
           clear_undo = TRUE;
@@ -721,7 +720,7 @@ bse_song_class_init (BseSongClass *klass)
   BseSuperClass *super_class = BSE_SUPER_CLASS (klass);
   BseSongTiming timing;
 
-  parent_class = g_type_class_peek_parent (klass);
+  parent_class = (GTypeClass*) g_type_class_peek_parent (klass);
   
   gobject_class->set_property = bse_song_set_property;
   gobject_class->get_property = bse_song_get_property;

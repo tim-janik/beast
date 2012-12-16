@@ -166,7 +166,7 @@ clear_wave_and_esample (BseWaveOsc *self)
           bse_engine_wait_on_trans ();
         }
       bse_wave_drop_index (wave);
-      g_object_notify (self, "wave");
+      g_object_notify ((GObject*) self, "wave");
     }
 
   if (self->esample_wchunk)
@@ -220,7 +220,7 @@ bse_wave_osc_set_property (GObject      *object,
     {
       BseWave *wave;
     case PARAM_WAVE:
-      wave = bse_value_get_object (value);
+      wave = (BseWave*) bse_value_get_object (value);
       if (wave != self->wave)
         {
           clear_wave_and_esample (self);
@@ -335,8 +335,8 @@ static void
 wosc_access (BseModule *module,
              gpointer   data)
 {
-  GslWaveOscData *wosc = module->user_data;
-  GslWaveOscConfig *config = data;
+  GslWaveOscData *wosc = (GslWaveOscData*) module->user_data;
+  GslWaveOscConfig *config = (GslWaveOscConfig*) data;
   
   /* this runs in the Gsl Engine threads */
   
@@ -348,7 +348,14 @@ wchunk_from_data (gpointer wchunk_data,
                   gfloat   freq,
                   gfloat   velocity)
 {
-  return wchunk_data;
+  return (GslWaveChunk*) wchunk_data;
+}
+
+static inline GslWaveChunk*
+wave_index_lookup_best (void *data, float freq, float vel)
+{
+  BseWaveIndex *wave = (BseWaveIndex*) data;
+  return bse_wave_index_lookup_best (wave, freq, vel);
 }
 
 static void
@@ -361,7 +368,7 @@ bse_wave_osc_update_config_wchunk (BseWaveOsc *self)
       BseWaveIndex *index = bse_wave_get_index_for_modules (self->wave);
       self->config.wchunk_data = index && index->n_entries ? index : NULL;
       if (self->config.wchunk_data)
-        self->config.lookup_wchunk = (gpointer) bse_wave_index_lookup_best;
+        self->config.lookup_wchunk = wave_index_lookup_best;
     }
   else if (self->esample_wchunk)
     {
@@ -385,8 +392,7 @@ static void
 wosc_free (gpointer        data,
            const BseModuleClass *klass)
 {
-  GslWaveOscData *wosc = data;
-  
+  GslWaveOscData *wosc = (GslWaveOscData*) data;
   gsl_wave_osc_shutdown (wosc);
   g_free (wosc);
 }
@@ -395,7 +401,7 @@ static void
 wosc_process (BseModule *module,
               guint      n_values)
 {
-  GslWaveOscData *wosc = module->user_data;
+  GslWaveOscData *wosc = (GslWaveOscData*) module->user_data;
   gfloat gate, done;
   
   gsl_wave_osc_process (wosc,
@@ -417,7 +423,7 @@ wosc_process (BseModule *module,
 static void
 wosc_reset (BseModule *module)
 {
-  GslWaveOscData *wosc = module->user_data;
+  GslWaveOscData *wosc = (GslWaveOscData*) module->user_data;
   gsl_wave_osc_reset (wosc);
 }
 
@@ -467,8 +473,8 @@ static void
 pcm_pos_access (BseModule *module,      /* EngineThread */
                 gpointer   data)
 {
-  GslWaveOscData *wosc = module->user_data;
-  PcmPos *pos = data;
+  GslWaveOscData *wosc = (GslWaveOscData*) module->user_data;
+  PcmPos *pos = (PcmPos*) data;
 
   pos->stamp = GSL_TICK_STAMP;
   pos->module_pcm_position = gsl_wave_osc_cur_pos (wosc);
@@ -483,7 +489,7 @@ pcm_pos_access (BseModule *module,      /* EngineThread */
 static void
 pcm_pos_access_free (gpointer data)     /* UserThread */
 {
-  PcmPos *pos = data;
+  PcmPos *pos = (PcmPos*) data;
   BseWaveOsc *self = pos->wosc;
   
   if (pos->perc < 0)
@@ -509,7 +515,7 @@ bse_wave_osc_mass_seek (guint              n_woscs,
         {
           PcmPos *pos = g_new (PcmPos, 1);
           pos->perc = perc;
-          pos->wosc = g_object_ref (wosc);
+          pos->wosc = (BseWaveOsc*) g_object_ref (wosc);
           bse_source_access_modules (BSE_SOURCE (pos->wosc),
                                      pcm_pos_access,
                                      pos,
@@ -529,7 +535,7 @@ bse_wave_osc_request_pcm_position (BseWaveOsc *self)
     {
       PcmPos *pos = g_new (PcmPos, 1);
       pos->perc = -1;
-      pos->wosc = g_object_ref (self);
+      pos->wosc = (BseWaveOsc*) g_object_ref (self);
       bse_source_access_modules (BSE_SOURCE (self),
                                  pcm_pos_access,
                                  pos,

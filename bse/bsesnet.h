@@ -61,7 +61,7 @@ struct _BseSNet
   SfiRing	*isources;	/* internal (protected) sources */
   GSList	*iport_names;
   GSList	*oport_names;
-  gpointer	 port_array;	/* of type BseSNetPort* */
+  GBSearchArray *port_array;	/* of type BseSNetPort* */
 
   GSList	*tmp_context_children;
 

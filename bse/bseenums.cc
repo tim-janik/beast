@@ -18,10 +18,6 @@
 #include "gslcommon.h"
 #include <errno.h>
 
-/* --- prototypes --- */
-extern "C" void	bse_type_register_enums		(void);
-
-
 /* include generated enum value arrays and *.h files the enums steam from */
 #include "bseenum_arrays.c"
 

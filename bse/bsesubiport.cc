@@ -182,12 +182,14 @@ bse_sub_iport_context_create (BseSource *source,
   if (!BSE_SOURCE_GET_CLASS (self)->engine_class)
     {
       BseModuleClass module_class = {
-        .n_istreams = BSE_SOURCE_N_OCHANNELS (self),
-        .n_jstreams = 0,
-        .n_ostreams = BSE_SOURCE_N_OCHANNELS (self),
-        .process = sub_iport_process,
-        .free = NULL,
-        .mflags = BSE_COST_CHEAP,
+        BSE_SOURCE_N_OCHANNELS (self),  // n_istreams
+        0,                              // n_jstreams
+        BSE_SOURCE_N_OCHANNELS (self),  // n_ostreams
+        sub_iport_process,              // process
+        NULL,                           // process_defer
+        NULL,                           // reset
+        NULL,                           // free
+        BSE_COST_CHEAP,                 // mflags
       };
       bse_source_class_cache_engine_class (BSE_SOURCE_GET_CLASS (self), &module_class);
     }
