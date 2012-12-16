@@ -134,9 +134,9 @@ null_device_write (BsePcmHandle *handle,
 }
 
 static void
-bse_pcm_device_null_class_init (BsePcmDeviceNullClass *class)
+bse_pcm_device_null_class_init (BsePcmDeviceNullClass *klass)
 {
-  BseDeviceClass *device_class = BSE_DEVICE_CLASS (class);
+  BseDeviceClass *device_class = BSE_DEVICE_CLASS (klass);
   
   device_class->list_devices = bse_pcm_device_null_list_devices;
   bse_device_class_setup (device_class,

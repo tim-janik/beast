@@ -197,12 +197,12 @@ bse_pcm_device_frequency_align (gint mix_freq)
 }
 
 static void
-bse_pcm_device_class_init (BsePcmDeviceClass *class)
+bse_pcm_device_class_init (BsePcmDeviceClass *klass)
 {
-  GObjectClass *gobject_class = G_OBJECT_CLASS (class);
-  BseDeviceClass *device_class = BSE_DEVICE_CLASS (class);
+  GObjectClass *gobject_class = G_OBJECT_CLASS (klass);
+  BseDeviceClass *device_class = BSE_DEVICE_CLASS (klass);
 
-  parent_class = g_type_class_peek_parent (class);
+  parent_class = g_type_class_peek_parent (klass);
   
   gobject_class->dispose = bse_pcm_device_dispose;
 

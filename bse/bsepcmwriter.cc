@@ -27,7 +27,7 @@
 
 /* --- prototypes --- */
 static void	   bse_pcm_writer_init			(BsePcmWriter      *pdev);
-static void	   bse_pcm_writer_class_init		(BsePcmWriterClass *class);
+static void	   bse_pcm_writer_class_init		(BsePcmWriterClass *klass);
 static void	   bse_pcm_writer_finalize		(GObject           *object);
 
 
@@ -60,11 +60,11 @@ BSE_BUILTIN_TYPE (BsePcmWriter)
 }
 
 static void
-bse_pcm_writer_class_init (BsePcmWriterClass *class)
+bse_pcm_writer_class_init (BsePcmWriterClass *klass)
 {
-  GObjectClass *gobject_class = G_OBJECT_CLASS (class);
+  GObjectClass *gobject_class = G_OBJECT_CLASS (klass);
   
-  parent_class = g_type_class_peek_parent (class);
+  parent_class = g_type_class_peek_parent (klass);
   
   gobject_class->finalize = bse_pcm_writer_finalize;
 }
@@ -98,7 +98,6 @@ bse_pcm_writer_open (BsePcmWriter *self,
 		     guint         sample_freq,
                      uint64        recorded_maximum)
 {
-  BseErrorType error;
   gint fd;
 
   g_return_val_if_fail (BSE_IS_PCM_WRITER (self), BSE_ERROR_INTERNAL);
@@ -108,8 +107,6 @@ bse_pcm_writer_open (BsePcmWriter *self,
   g_return_val_if_fail (sample_freq >= 1000, BSE_ERROR_INTERNAL);
 
   sfi_mutex_lock (&self->mutex);
-
-  error = 0;
 
   self->n_bytes = 0;
   self->recorded_maximum = recorded_maximum;
