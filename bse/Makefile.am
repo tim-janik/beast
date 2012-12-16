@@ -126,7 +126,7 @@ EXTRA_DIST += $(strip \
 	bseconfig.h.in	bsepcmmodule.cc				\
 	bsewave.header						\
 	gsl-fftgen.pl	gsl-fftconf.sh	gsloscillator-aux.cc	\
-	gslincluder.c	gslwaveosc-aux.cc			\
+	gslincluder.h	gslwaveosc-aux.cc			\
 )
 
 # -pthread -> -lpthread hack (required for libtool library linkage)

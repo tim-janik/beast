@@ -87,7 +87,7 @@ osc_update_pwm_offset (GslOscData *osc,
                                 const gfloat*,const gfloat*,const gfloat*, \
 		                const gfloat*,gfloat*,gfloat*)
 #define	GSL_INCLUDER_FILE	"gsloscillator-aux.cc"
-#include "gslincluder.c"
+#include "gslincluder.h"
 #undef	OSC_INCLUDER_FLAGS
 
 /* pulse width modulation oscillator variants */
@@ -99,7 +99,7 @@ osc_update_pwm_offset (GslOscData *osc,
                                 const gfloat*,const gfloat*,const gfloat*, \
 		                const gfloat*,gfloat*,gfloat*)
 #define	GSL_INCLUDER_FILE	"gsloscillator-aux.cc"
-#include "gslincluder.c"
+#include "gslincluder.h"
 #undef	OSC_INCLUDER_FLAGS
 
 
