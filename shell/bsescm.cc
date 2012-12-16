@@ -116,9 +116,8 @@ main (int   argc,
   setpriority (PRIO_PROCESS, getpid(), 0);
 
   /* setup main context to be able to wait for events from bse in bse_scm_context_iteration */
-  sfi_thread_set_wakeup ((BirnetThreadWakeup) g_main_context_wakeup, g_main_context_default(), NULL);
-  source = g_source_simple (G_PRIORITY_DEFAULT, (GSourcePending) sfi_glue_context_pending, dummy_dispatch,
-                            NULL, NULL, NULL);
+  sfi_thread_set_wakeup (BirnetThreadWakeup (g_main_context_wakeup), g_main_context_default(), NULL);
+  source = g_source_simple (G_PRIORITY_DEFAULT, GSourcePending (sfi_glue_context_pending), dummy_dispatch, NULL, NULL, NULL);
   g_source_attach (source, NULL);
   g_source_unref (source);
 
