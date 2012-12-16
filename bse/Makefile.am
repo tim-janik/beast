@@ -60,11 +60,11 @@ bse_public_headers = $(strip \
 )
 # BSE C & C++ sources
 bse_sources = $(strip \
-	gslfft.c		gsloscillator.c	gsldatahandle.c	gslwavechunk.c \
+	gslfft.c		gsloscillator.c	gsldatahandle.c	gslwavechunk.cc \
 	gslfilter.c		gslcommon.c \
 	gsldatahandle-vorbis.c	gslvorbis-enc.c	gsldatacache.c	gslvorbis-cutter.c \
 	gsldatahandle-mad.c	           	gslfilehash.c	gsldatautils.c	\
-	gslwaveosc.c		gslosctable.c	gslmagic.c	                 \
+	gslwaveosc.cc		gslosctable.c	gslmagic.c	                 \
 	\
 	bseengine.c		bseenginemaster.c	bseengineschedule.c		bseengineutils.c \
 	bsebus.cc		bsecategories.cc 	\
@@ -126,7 +126,7 @@ EXTRA_DIST += $(strip \
 	bseconfig.h.in	bsepcmmodule.cc				\
 	bsewave.header						\
 	gsl-fftgen.pl	gsl-fftconf.sh	gsloscillator-aux.c	\
-	gslincluder.c	gslwaveosc-aux.c			\
+	gslincluder.c	gslwaveosc-aux.cc			\
 )
 
 # -pthread -> -lpthread hack (required for libtool library linkage)
