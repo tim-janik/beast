@@ -908,9 +908,8 @@ void CodeGeneratorCBase::printClientSequenceMethodImpl()
       printf("{\n");
       printf("  g_return_if_fail (seq != NULL);\n");
       printf("\n");
-      printf("  seq->%s = g_realloc (seq->%s, "
-	  "(seq->n_%s + 1) * sizeof (seq->%s[0]));\n",
-	  elements.c_str(), elements.c_str(), elements.c_str(), elements.c_str());
+      printf("  seq->%s = (typeof (seq->%s)) g_realloc (seq->%s, (seq->n_%s + 1) * sizeof (seq->%s[0]));\n",
+             elements.c_str(), elements.c_str(), elements.c_str(), elements.c_str(), elements.c_str());
       printf("  seq->%s[seq->n_%s++] = %s (element);\n", elements.c_str(), elements.c_str(),
 	  elementCopy.c_str());
       printf("}\n\n");
@@ -941,8 +940,8 @@ void CodeGeneratorCBase::printClientSequenceMethodImpl()
       printf("  length = sfi_seq_length (sfi_seq);\n");
       printf("  seq = g_new0 (%s, 1);\n",mname.c_str());
       printf("  seq->n_%s = length;\n", elements.c_str());
-      printf("  seq->%s = g_malloc (seq->n_%s * sizeof (seq->%s[0]));\n\n",
-	  elements.c_str(), elements.c_str(), elements.c_str());
+      printf("  seq->%s = (typeof (seq->%s)) g_malloc (seq->n_%s * sizeof (seq->%s[0]));\n\n",
+             elements.c_str(), elements.c_str(), elements.c_str(), elements.c_str());
       printf("  for (i = 0; i < length; i++)\n");
       printf("    {\n");
       printf("      GValue *element = sfi_seq_get (sfi_seq, i);\n");
@@ -994,8 +993,8 @@ void CodeGeneratorCBase::printClientSequenceMethodImpl()
 	  printf("    }\n");
 	}
       printf("\n");
-      printf("  seq->%s = g_realloc (seq->%s, new_size * sizeof (seq->%s[0]));\n",
-	  elements.c_str(), elements.c_str(), elements.c_str());
+      printf("  seq->%s = (typeof (seq->%s)) g_realloc (seq->%s, new_size * sizeof (seq->%s[0]));\n",
+             elements.c_str(), elements.c_str(), elements.c_str(), elements.c_str());
       printf("  if (new_size > seq->n_%s)\n", elements.c_str());
       if (element_i_new != "")
 	{
