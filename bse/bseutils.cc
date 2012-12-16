@@ -189,7 +189,7 @@ bse_item_seq_from_ring (SfiRing *ring)
   BseItemSeq *iseq = bse_item_seq_new();
   SfiRing *node;
   for (node = ring; node; node = sfi_ring_walk (node, ring))
-    bse_item_seq_append (iseq, node->data);
+    bse_item_seq_append (iseq, (BseItem*) node->data);
   return iseq;
 }
 
@@ -382,7 +382,7 @@ bse_icon_from_pixstream (const guint8 *pixstream)
 
   g_return_val_if_fail (pixstream != NULL, NULL);
 
-  if (strncmp (s, "GdkP", 4) != 0)
+  if (strncmp ((const char*) s, "GdkP", 4) != 0)
     return NULL;
   s += 4;
 
@@ -401,7 +401,7 @@ bse_icon_from_pixstream (const guint8 *pixstream)
   if (width < 1 || height < 1)
     return NULL;
 
-  pixd.type = BSE_PIXDATA_RGBA | (type >> 24 == 2 ? BSE_PIXDATA_1BYTE_RLE : 0);
+  pixd.type = BsePixdataType (BSE_PIXDATA_RGBA | (type >> 24 == 2 ? BSE_PIXDATA_1BYTE_RLE : 0));
   pixd.width = width;
   pixd.height = height;
   pixd.encoded_pix_data = s;
@@ -644,8 +644,8 @@ bse_xinfos_dup_consolidated (gchar  **xinfos,
           i = 0;
           while (xinfo_list)
             {
-              const gchar *xinfo = sfi_ring_pop_head (&xinfo_list);
-              const gchar *e = strchr (xinfo, '=');
+              const char *xinfo = (const char*) sfi_ring_pop_head (&xinfo_list);
+              const char *e = strchr (xinfo, '=');
               if (e[1] &&       /* non-empty xinfo */
                   (e[0] != '.' || copy_interns))
                 dest_xinfos[i++] = g_strdup (xinfo);
@@ -675,7 +675,7 @@ bse_xinfo_stub_compare (const gchar     *xinfo1,  /* must contain '=' */
 guint
 bse_string_hash (gconstpointer string)
 {
-  const gchar *p = string;
+  const char *p = (const char*) string;
   guint h = 0;
   if (!p)
     return 1;
@@ -689,7 +689,7 @@ bse_string_equals (gconstpointer string1,
 		   gconstpointer string2)
 {
   if (string1 && string2)
-    return strcmp (string1, string2) == 0;
+    return strcmp ((const char*) string1, (const char*) string2) == 0;
   else
     return string1 == string2;
 }

@@ -557,11 +557,10 @@ test_notes (void)
   g_free (str);
   for (i = SFI_MIN_NOTE; i <= SFI_MAX_NOTE; i++)
     {
-      gint octave;
-      guint semitone;
+      int octave, semitone;
       gboolean black_semitone;
       gchar letter;
-      
+
       sfi_note_examine (i, &octave, &semitone, &black_semitone, &letter);
       TASSERT (octave == SFI_NOTE_OCTAVE (i));
       TASSERT (semitone == SFI_NOTE_SEMITONE (i));

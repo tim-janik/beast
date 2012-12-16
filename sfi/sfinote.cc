@@ -145,9 +145,8 @@ sfi_note_to_string (SfiInt note)
 {
   if (SFI_NOTE_IS_VALID (note))
     {
-      guint ht = 0;
-      gint o = 0;
-      
+      gint ht = 0, o = 0;
+
       sfi_note_examine (note, &o, &ht, NULL, NULL);
       if (o)
 	return g_strdup_printf ("%s%+d", sfi_note_name_table[ht], o);
@@ -161,21 +160,21 @@ sfi_note_to_string (SfiInt note)
 void
 sfi_note_examine (gint      note,
 		  gint     *octave_p,
-		  guint    *semitone_p,
+		  gint     *semitone_p,
 		  gboolean *black_semitone_p,
 		  gchar	   *letter_p)
 {
   static const gint8 semitone_flags[12] = { 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 1, 0 };
   guint semitone;
   gint octave;
-  
+
   g_return_if_fail (SFI_NOTE_IS_VALID (note));
-  
+
   semitone = note % 12 + (9 - (SFI_KAMMER_NOTE % 12));
   note -= semitone;
   octave = note - (SFI_KAMMER_NOTE - 9);
   octave = octave / 12 + SFI_KAMMER_OCTAVE;
-  
+
   if (octave_p)
     *octave_p = octave;
   if (semitone_p)
