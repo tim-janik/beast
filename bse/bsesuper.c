@@ -177,14 +177,14 @@ super_compat_finish (BseSuper       *super,
 }
 
 static void
-bse_super_class_init (BseSuperClass *class)
+bse_super_class_init (BseSuperClass *klass)
 {
-  GObjectClass *gobject_class = G_OBJECT_CLASS (class);
-  BseObjectClass *object_class = BSE_OBJECT_CLASS (class);
-  BseItemClass *item_class = BSE_ITEM_CLASS (class);
-  // BseSourceClass *source_class = BSE_SOURCE_CLASS (class);
+  GObjectClass *gobject_class = G_OBJECT_CLASS (klass);
+  BseObjectClass *object_class = BSE_OBJECT_CLASS (klass);
+  BseItemClass *item_class = BSE_ITEM_CLASS (klass);
+  // BseSourceClass *source_class = BSE_SOURCE_CLASS (klass);
   
-  parent_class = g_type_class_peek_parent (class);
+  parent_class = g_type_class_peek_parent (klass);
   
   quark_author = g_quark_from_static_string ("author");
   quark_license = g_quark_from_static_string ("license");
@@ -195,8 +195,8 @@ bse_super_class_init (BseSuperClass *class)
 
   item_class->compat_setup = super_compat_setup;
 
-  class->modified = super_modified;
-  class->compat_finish = super_compat_finish;
+  klass->modified = super_modified;
+  klass->compat_finish = super_compat_finish;
   
   bse_object_class_add_param (object_class, NULL,
 			      PARAM_AUTHOR,

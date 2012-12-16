@@ -15,13 +15,13 @@ drivers_libs        = $(top_builddir)/bse/libbse.la $(BSE_LIBS)
 EXTRA_DIST=
 
 # Plugin bsepcmdevice-alsa
-bsepcmdevice_alsa_la_SOURCES = bsepcmdevice-alsa.c
+bsepcmdevice_alsa_la_SOURCES = bsepcmdevice-alsa.cc
 bsepcmdevice_alsa_la_LDFLAGS = -module $(drivers_ldflags)
 bsepcmdevice_alsa_la_LIBADD  = $(drivers_libs) $(ALSA_LIBS)
 EXTRA_DIST                  += bsepcmdevice-alsa.h
 
 # Plugin bsemididevice-alsa
-bsemididevice_alsa_la_SOURCES = bsemididevice-alsa.c
+bsemididevice_alsa_la_SOURCES = bsemididevice-alsa.cc
 bsemididevice_alsa_la_LDFLAGS = -module $(drivers_ldflags)
 bsemididevice_alsa_la_LIBADD  = $(drivers_libs) $(ALSA_LIBS)
 EXTRA_DIST                   += bsemididevice-alsa.h

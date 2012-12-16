@@ -34,8 +34,8 @@ enum
 
 /* --- prototypes --- */
 static void	 bse_pcm_output_init		(BsePcmOutput		*scard);
-static void	 bse_pcm_output_class_init	(BsePcmOutputClass	*class);
-static void	 bse_pcm_output_class_finalize	(BsePcmOutputClass	*class);
+static void	 bse_pcm_output_class_init	(BsePcmOutputClass	*klass);
+static void	 bse_pcm_output_class_finalize	(BsePcmOutputClass	*klass);
 static void	 bse_pcm_output_set_property	(GObject		*object,
 						 guint			 param_id,
 						 const GValue		*value,
@@ -86,14 +86,14 @@ BSE_BUILTIN_TYPE (BsePcmOutput)
 }
 
 static void
-bse_pcm_output_class_init (BsePcmOutputClass *class)
+bse_pcm_output_class_init (BsePcmOutputClass *klass)
 {
-  GObjectClass *gobject_class = G_OBJECT_CLASS (class);
-  BseObjectClass *object_class = BSE_OBJECT_CLASS (class);
-  BseSourceClass *source_class = BSE_SOURCE_CLASS (class);
+  GObjectClass *gobject_class = G_OBJECT_CLASS (klass);
+  BseObjectClass *object_class = BSE_OBJECT_CLASS (klass);
+  BseSourceClass *source_class = BSE_SOURCE_CLASS (klass);
   guint ichannel_id;
   
-  parent_class = g_type_class_peek_parent (class);
+  parent_class = g_type_class_peek_parent (klass);
   
   gobject_class->set_property = bse_pcm_output_set_property;
   gobject_class->get_property = bse_pcm_output_get_property;
@@ -131,7 +131,7 @@ bse_pcm_output_class_init (BsePcmOutputClass *class)
 }
 
 static void
-bse_pcm_output_class_finalize (BsePcmOutputClass *class)
+bse_pcm_output_class_finalize (BsePcmOutputClass *klass)
 {
 }
 
@@ -152,18 +152,18 @@ bse_pcm_output_set_property (GObject      *object,
     {
     case PARAM_MVOLUME_f:
       self->volume_factor = sfi_value_get_real (value);
-      g_object_notify (self, "master_volume_dB");
-      g_object_notify (self, "master_volume_perc");
+      g_object_notify ((GObject*) self, "master_volume_dB");
+      g_object_notify ((GObject*) self, "master_volume_perc");
       break;
     case PARAM_MVOLUME_dB:
       self->volume_factor = bse_db_to_factor (sfi_value_get_real (value));
-      g_object_notify (self, "master_volume_f");
-      g_object_notify (self, "master_volume_perc");
+      g_object_notify ((GObject*) self, "master_volume_f");
+      g_object_notify ((GObject*) self, "master_volume_perc");
       break;
     case PARAM_MVOLUME_PERC:
       self->volume_factor = sfi_value_get_int (value) / 100.0;
-      g_object_notify (self, "master_volume_f");
-      g_object_notify (self, "master_volume_dB");
+      g_object_notify ((GObject*) self, "master_volume_f");
+      g_object_notify ((GObject*) self, "master_volume_dB");
       break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, param_id, pspec);
@@ -215,7 +215,7 @@ static void
 pcm_output_process (BseModule *module,
 		    guint      n_values)
 {
-  ModData *mdata = module->user_data;
+  ModData *mdata = (ModData*) module->user_data;
   const gfloat *ls = BSE_MODULE_IBUFFER (module, BSE_PCM_OUTPUT_ICHANNEL_LEFT);
   const gfloat *rs = BSE_MODULE_IBUFFER (module, BSE_PCM_OUTPUT_ICHANNEL_RIGHT);
   gfloat *ld = BSE_MODULE_OBUFFER (module, BSE_PCM_OUTPUT_ICHANNEL_LEFT);

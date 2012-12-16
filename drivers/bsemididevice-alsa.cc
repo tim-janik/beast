@@ -36,7 +36,7 @@ typedef struct
 } AlsaMidiHandle;
 
 /* --- prototypes --- */
-static void     bse_midi_device_alsa_class_init (BseMidiDeviceALSAClass *class);
+static void     bse_midi_device_alsa_class_init (BseMidiDeviceALSAClass *klass);
 static void     bse_midi_device_alsa_init       (BseMidiDeviceALSA      *self);
 static gboolean alsa_midi_io_handler            (gpointer                data,
                                                  guint                   n_pfds,
@@ -57,7 +57,7 @@ bse_midi_device_alsa_init (BseMidiDeviceALSA *self)
 {
 }
 
-#define alsa_alloca0(struc)     ({ struc##_t *ptr = alloca (struc##_sizeof()); memset (ptr, 0, struc##_sizeof()); ptr; })
+#define alsa_alloca0(struc)     ({ struc##_t *ptr = (struc##_t*) alloca (struc##_sizeof()); memset (ptr, 0, struc##_sizeof()); ptr; })
 
 static SfiRing*
 bse_midi_device_alsa_list_devices (BseDevice *device)
@@ -181,7 +181,7 @@ bse_midi_device_alsa_open (BseDevice     *device,
       if (!error && snd_rawmidi_params_current (alsa->read_handle, mparams) < 0)
         error = BSE_ERROR_FILE_OPEN_FAILED;
       if (0)
-        g_printerr ("midiread:  buffer=%d active_sensing=%d min_avail=%d\n",
+        g_printerr ("midiread:  buffer=%zd active_sensing=%d min_avail=%zd\n",
                     snd_rawmidi_params_get_buffer_size (mparams),
                     !snd_rawmidi_params_get_no_active_sensing (mparams),
                     snd_rawmidi_params_get_avail_min (mparams));
@@ -191,7 +191,7 @@ bse_midi_device_alsa_open (BseDevice     *device,
       if (!error && snd_rawmidi_params_current (alsa->write_handle, mparams) < 0)
         error = BSE_ERROR_FILE_OPEN_FAILED;
       if (0)
-        g_printerr ("midiwrite: buffer=%d active_sensing=%d min_avail=%d\n",
+        g_printerr ("midiwrite: buffer=%zd active_sensing=%d min_avail=%zd\n",
                     snd_rawmidi_params_get_buffer_size (mparams),
                     !snd_rawmidi_params_get_no_active_sensing (mparams),
                     snd_rawmidi_params_get_avail_min (mparams));
@@ -291,12 +291,12 @@ alsa_midi_io_handler (gpointer        data,     /* Sequencer Thread */
 }
 
 static void
-bse_midi_device_alsa_class_init (BseMidiDeviceALSAClass *class)
+bse_midi_device_alsa_class_init (BseMidiDeviceALSAClass *klass)
 {
-  GObjectClass *gobject_class = G_OBJECT_CLASS (class);
-  BseDeviceClass *device_class = BSE_DEVICE_CLASS (class);
+  GObjectClass *gobject_class = G_OBJECT_CLASS (klass);
+  BseDeviceClass *device_class = BSE_DEVICE_CLASS (klass);
   
-  parent_class = g_type_class_peek_parent (class);
+  parent_class = g_type_class_peek_parent (klass);
   
   gobject_class->finalize = bse_midi_device_alsa_finalize;
   
@@ -317,7 +317,7 @@ bse_midi_device_alsa_class_init (BseMidiDeviceALSAClass *class)
                                          "  DEV    - the device number for plugins like 'hw'\n"
                                          "  SUBDEV - the subdevice number for plugins like 'hw'\n"),
                                        snd_asoundlib_version());
-  bse_device_class_setup (class, BSE_RATING_PREFERRED, name, syntax, info);
+  bse_device_class_setup (klass, BSE_RATING_PREFERRED, name, syntax, info);
   device_class->open = bse_midi_device_alsa_open;
   device_class->close = bse_midi_device_alsa_close;
 }

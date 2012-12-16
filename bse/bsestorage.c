@@ -59,7 +59,7 @@ struct _BseStorageItemLink
 
 /* --- prototypes --- */
 static void       bse_storage_init                 (BseStorage       *self);
-static void       bse_storage_class_init           (BseStorageClass  *class);
+static void       bse_storage_class_init           (BseStorageClass  *klass);
 static void       bse_storage_finalize             (GObject          *object);
 static void       storage_path_table_insert        (BseStorage       *self,
                                                     BseContainer     *container,
@@ -111,11 +111,11 @@ BSE_BUILTIN_TYPE (BseStorage)
 }
 
 static void
-bse_storage_class_init (BseStorageClass *class)
+bse_storage_class_init (BseStorageClass *klass)
 {
-  GObjectClass *gobject_class = G_OBJECT_CLASS (class);
+  GObjectClass *gobject_class = G_OBJECT_CLASS (klass);
 
-  parent_class = g_type_class_peek_parent (class);
+  parent_class = g_type_class_peek_parent (klass);
 
   quark_raw_data_handle = g_quark_from_static_string ("raw-data-handle");
   quark_vorbis_data_handle = g_quark_from_static_string ("vorbis-data-handle");

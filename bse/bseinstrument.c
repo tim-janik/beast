@@ -79,7 +79,7 @@ static BseDot env_dflt_dots[ENV_N_DOTS] = {
 
 
 /* --- prototypes --- */
-static void	bse_instrument_class_init	(BseInstrumentClass	*class);
+static void	bse_instrument_class_init	(BseInstrumentClass	*klass);
 static void	bse_instrument_init		(BseInstrument		*instrument);
 static void	bse_instrument_do_destroy	(BseObject		*object);
 static void	bse_instrument_set_property	(GObject		*object,
@@ -123,12 +123,12 @@ BSE_BUILTIN_TYPE (BseInstrument)
 }
 
 static void
-bse_instrument_class_init (BseInstrumentClass *class)
+bse_instrument_class_init (BseInstrumentClass *klass)
 {
-  GObjectClass *gobject_class = G_OBJECT_CLASS (class);
-  BseObjectClass *object_class = BSE_OBJECT_CLASS (class);
+  GObjectClass *gobject_class = G_OBJECT_CLASS (klass);
+  BseObjectClass *object_class = BSE_OBJECT_CLASS (klass);
   
-  parent_class = g_type_class_peek_parent (class);
+  parent_class = g_type_class_peek_parent (klass);
   
   gobject_class->set_property = bse_instrument_set_property;
   gobject_class->get_property = bse_instrument_get_property;

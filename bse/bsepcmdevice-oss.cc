@@ -207,7 +207,7 @@ bse_pcm_device_oss_open (BseDevice     *device,
   /* setup PCM handle or shutdown */
   if (!error)
     {
-      oss->frag_buf = g_malloc (FRAG_BUF_SIZE (oss));
+      oss->frag_buf = (gint16*) g_malloc (FRAG_BUF_SIZE (oss));
       handle->block_length = 0; /* setup after open */
       bse_device_set_opened (device, dname, handle->readable, handle->writable);
       if (handle->readable)
@@ -286,7 +286,7 @@ oss_device_setup (OSSHandle *oss,
   d_int = handle->n_channels - 1;
   if (ioctl (fd, SNDCTL_DSP_STEREO, &d_int) < 0)
     return BSE_ERROR_DEVICE_CHANNELS;
-  if (handle->n_channels != d_int + 1)
+  if (int (handle->n_channels) != d_int + 1)
     return BSE_ERROR_DEVICE_CHANNELS;
   oss->frame_size = handle->n_channels * bytes_per_value;
 
@@ -406,7 +406,7 @@ oss_device_retrigger (OSSHandle *oss)
 
   /* provide latency buffering */
   gint size = oss->queue_length * oss->frame_size, n;
-  guint8 *silence = g_malloc0 (size);
+  guint8 *silence = (guint8*) g_malloc0 (size);
   do
     n = write (oss->fd, silence, size);
   while (n < 0 && errno == EAGAIN); /* retry on signals */
@@ -567,7 +567,7 @@ oss_device_read (BsePcmHandle *handle,
   do
     {
       gsize n = MIN (buf_size, n_left << 1);
-      gint16 *b, *s = buf;
+      gint16 *b, *s = (gint16*) buf;
       gssize l;
       
       do
@@ -630,17 +630,17 @@ oss_device_write (BsePcmHandle *handle,
 }
 
 static void
-bse_pcm_device_oss_class_init (BsePcmDeviceOSSClass *class)
+bse_pcm_device_oss_class_init (BsePcmDeviceOSSClass *klass)
 {
-  GObjectClass *gobject_class = G_OBJECT_CLASS (class);
-  BseDeviceClass *device_class = BSE_DEVICE_CLASS (class);
+  GObjectClass *gobject_class = G_OBJECT_CLASS (klass);
+  BseDeviceClass *device_class = BSE_DEVICE_CLASS (klass);
   
-  parent_class = g_type_class_peek_parent (class);
+  parent_class = g_type_class_peek_parent (klass);
   
   gobject_class->finalize = bse_pcm_device_oss_finalize;
   
   device_class->list_devices = bse_pcm_device_oss_list_devices;
-  bse_device_class_setup (class,
+  bse_device_class_setup (klass,
                           BSE_RATING_DEFAULT,
                           "oss",
                           _("DEVICE,MODE"),

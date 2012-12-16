@@ -21,7 +21,7 @@
 
 
 /* --- prototypes --- */
-static void	   bse_midi_notifier_class_init		(BseMidiNotifierClass *class);
+static void	   bse_midi_notifier_class_init		(BseMidiNotifierClass *klass);
 static void	   bse_midi_notifier_init		(BseMidiNotifier      *self);
 static void	   bse_midi_notifier_finalize		(GObject	      *object);
 
@@ -56,13 +56,13 @@ BSE_BUILTIN_TYPE (BseMidiNotifier)
 }
 
 static void
-bse_midi_notifier_class_init (BseMidiNotifierClass *class)
+bse_midi_notifier_class_init (BseMidiNotifierClass *klass)
 {
-  GObjectClass *gobject_class = G_OBJECT_CLASS (class);
-  BseObjectClass *object_class = BSE_OBJECT_CLASS (class);
+  GObjectClass *gobject_class = G_OBJECT_CLASS (klass);
+  BseObjectClass *object_class = BSE_OBJECT_CLASS (klass);
   guint i;
   
-  parent_class = g_type_class_peek_parent (class);
+  parent_class = g_type_class_peek_parent (klass);
   
   gobject_class->finalize = bse_midi_notifier_finalize;
   

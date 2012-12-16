@@ -812,13 +812,13 @@ bse_wave_index_lookup_best (BseWaveIndex *windex,
 }
 
 static void
-bse_wave_class_init (BseWaveClass *class)
+bse_wave_class_init (BseWaveClass *klass)
 {
-  GObjectClass *gobject_class = G_OBJECT_CLASS (class);
-  BseObjectClass *object_class = BSE_OBJECT_CLASS (class);
-  BseItemClass *item_class = BSE_ITEM_CLASS (class);
+  GObjectClass *gobject_class = G_OBJECT_CLASS (klass);
+  BseObjectClass *object_class = BSE_OBJECT_CLASS (klass);
+  BseItemClass *item_class = BSE_ITEM_CLASS (klass);
   
-  parent_class = g_type_class_peek_parent (class);
+  parent_class = g_type_class_peek_parent (klass);
   
   gobject_class->set_property = bse_wave_set_property;
   gobject_class->get_property = bse_wave_get_property;

@@ -71,9 +71,9 @@ static const GBSearchConfig bconfig_crefs = {
 
 /* --- functions --- */
 void
-bse_item_class_add_parasite_signals (BseItemClass *class)
+bse_item_class_add_parasite_signals (BseItemClass *klass)
 {
-  BseObjectClass *object_class = BSE_OBJECT_CLASS (class);
+  BseObjectClass *object_class = BSE_OBJECT_CLASS (klass);
   signal_parasites_added = bse_object_class_add_dsignal (object_class, "parasites-added",
                                                          G_TYPE_NONE, 1, G_TYPE_STRING | G_SIGNAL_TYPE_STATIC_SCOPE);
   signal_parasite_changed = bse_object_class_add_dsignal (object_class, "parasite-changed",

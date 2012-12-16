@@ -89,15 +89,15 @@ show_nodes (GType        type,
 
   if (feature_channels && g_type_is_a (type, BSE_TYPE_SOURCE))
     {
-      BseSourceClass *class = g_type_class_ref (type);
+      BseSourceClass *klass = g_type_class_ref (type);
       gchar buffer[1024];
 
       sprintf (buffer,
 	       "\t(ichannels %u) (ochannels %u)",
-	       class->channel_defs.n_ichannels,
-	       class->channel_defs.n_ochannels);
+	       klass->channel_defs.n_ichannels,
+	       klass->channel_defs.n_ochannels);
       fputs (buffer, f_out);
-      g_type_class_unref (class);
+      g_type_class_unref (klass);
     }
 
   fputc ('\n', f_out);
@@ -146,23 +146,23 @@ show_procdoc (void)
   for (i = 0; i < cseq->n_cats; i++)
     {
       GType type = g_type_from_name (cseq->cats[i]->type);
-      BseProcedureClass *class = g_type_class_ref (type);
+      BseProcedureClass *klass = g_type_class_ref (type);
       gchar *pname = g_type_name_to_sname (cseq->cats[i]->type);
       const gchar *blurb = bse_type_get_blurb (type);
       guint j;
 
       fprintf (f_out, "/**\n * %s\n", pname);
-      for (j = 0; j < class->n_in_pspecs; j++)
+      for (j = 0; j < klass->n_in_pspecs; j++)
 	{
-	  GParamSpec *pspec = G_PARAM_SPEC (class->in_pspecs[j]);
+	  GParamSpec *pspec = G_PARAM_SPEC (klass->in_pspecs[j]);
 
 	  fprintf (f_out, " * @%s: %s\n",
 		   pspec->name,
 		   g_param_spec_get_blurb (pspec) ? g_param_spec_get_blurb (pspec) : nullstr);
 	}
-      for (j = 0; j < class->n_out_pspecs; j++)
+      for (j = 0; j < klass->n_out_pspecs; j++)
 	{
-	  GParamSpec *pspec = G_PARAM_SPEC (class->out_pspecs[j]);
+	  GParamSpec *pspec = G_PARAM_SPEC (klass->out_pspecs[j]);
 
 	  fprintf (f_out, " * @Returns: %s: %s\n",
 		   pspec->name,
@@ -171,7 +171,7 @@ show_procdoc (void)
       if (blurb)
 	fprintf (f_out, " * %s\n", blurb);
       fprintf (f_out, " **/\n");
-      g_type_class_unref (class);
+      g_type_class_unref (klass);
       g_free (pname);
     }
   bse_category_seq_free (cseq);

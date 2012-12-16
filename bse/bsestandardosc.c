@@ -46,8 +46,8 @@ enum
 
 /* --- prototypes --- */
 static void	bse_standard_osc_init		(BseStandardOsc		*standard_osc);
-static void	bse_standard_osc_class_init	(BseStandardOscClass	*class);
-static void	bse_standard_osc_class_finalize	(BseStandardOscClass	*class);
+static void	bse_standard_osc_class_init	(BseStandardOscClass	*klass);
+static void	bse_standard_osc_class_finalize	(BseStandardOscClass	*klass);
 static void	bse_standard_osc_set_property	(GObject		*object,
 						 guint			 param_id,
 						 const GValue		*value,
@@ -112,14 +112,14 @@ BSE_BUILTIN_TYPE (BseStandardOsc)
 }
 
 static void
-bse_standard_osc_class_init (BseStandardOscClass *class)
+bse_standard_osc_class_init (BseStandardOscClass *klass)
 {
-  GObjectClass *gobject_class = G_OBJECT_CLASS (class);
-  BseObjectClass *object_class = BSE_OBJECT_CLASS (class);
-  BseSourceClass *source_class = BSE_SOURCE_CLASS (class);
+  GObjectClass *gobject_class = G_OBJECT_CLASS (klass);
+  BseObjectClass *object_class = BSE_OBJECT_CLASS (klass);
+  BseSourceClass *source_class = BSE_SOURCE_CLASS (klass);
   guint ochannel, ichannel;
   
-  parent_class = g_type_class_peek_parent (class);
+  parent_class = g_type_class_peek_parent (klass);
   
   gobject_class->set_property = bse_standard_osc_set_property;
   gobject_class->get_property = bse_standard_osc_get_property;
@@ -209,7 +209,7 @@ bse_standard_osc_class_init (BseStandardOscClass *class)
 }
 
 static void
-bse_standard_osc_class_finalize (BseStandardOscClass *class)
+bse_standard_osc_class_finalize (BseStandardOscClass *klass)
 {
 }
 

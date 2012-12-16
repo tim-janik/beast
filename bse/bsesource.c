@@ -71,9 +71,9 @@ static const GBSearchConfig context_config = {
 /* --- functions --- */
 static void
 bse_source_init (BseSource      *source,
-		 BseSourceClass *class)
+		 BseSourceClass *klass)
 {
-  source->channel_defs = &BSE_SOURCE_CLASS (class)->channel_defs;
+  source->channel_defs = &BSE_SOURCE_CLASS (klass)->channel_defs;
   source->inputs = g_new0 (BseSourceInput, BSE_SOURCE_N_ICHANNELS (source));
   source->outputs = NULL;
   source->contexts = NULL;
@@ -175,15 +175,15 @@ bse_source_finalize (GObject *object)
 }
 
 static gboolean
-bse_source_class_has_channel (BseSourceClass *class,
+bse_source_class_has_channel (BseSourceClass *klass,
                               const gchar    *channel_ident)
 {
   guint i;
-  for (i = 0; i < class->channel_defs.n_ichannels; i++)
-    if (strcmp (channel_ident, class->channel_defs.ichannel_idents[i]) == 0)
+  for (i = 0; i < klass->channel_defs.n_ichannels; i++)
+    if (strcmp (channel_ident, klass->channel_defs.ichannel_idents[i]) == 0)
       return TRUE;
-  for (i = 0; i < class->channel_defs.n_ochannels; i++)
-    if (strcmp (channel_ident, class->channel_defs.ochannel_idents[i]) == 0)
+  for (i = 0; i < klass->channel_defs.n_ochannels; i++)
+    if (strcmp (channel_ident, klass->channel_defs.ochannel_idents[i]) == 0)
       return TRUE;
   return FALSE;
 }
@@ -345,12 +345,12 @@ bse_source_find_ochannel (BseSource   *source,
 }
 
 static void
-source_class_collect_properties (BseSourceClass *class)
+source_class_collect_properties (BseSourceClass *klass)
 {
-  if (!class->filtered_properties)
+  if (!klass->filtered_properties)
     {
       guint n, i;
-      GParamSpec **pspecs = g_object_class_list_properties (G_OBJECT_CLASS (class), &n);
+      GParamSpec **pspecs = g_object_class_list_properties (G_OBJECT_CLASS (klass), &n);
       for (i = 0; i < n; i++)
         {
           GParamSpec *pspec = pspecs[i];
@@ -358,7 +358,7 @@ source_class_collect_properties (BseSourceClass *class)
           gboolean preparation = automate || (sfi_pspec_check_option (pspec, "prepared") ||
                                               sfi_pspec_check_option (pspec, "unprepared"));
           if (preparation)
-            class->unprepared_properties = sfi_ring_append (class->unprepared_properties, pspec);
+            klass->unprepared_properties = sfi_ring_append (klass->unprepared_properties, pspec);
           if (automate && (pspec->flags & G_PARAM_WRITABLE) &&
               g_type_is_a (pspec->owner_type, BSE_TYPE_SOURCE) &&
               (g_type_is_a (G_PARAM_SPEC_VALUE_TYPE (pspec), SFI_TYPE_REAL) ||
@@ -371,22 +371,22 @@ source_class_collect_properties (BseSourceClass *class)
                 g_warning ("%s: ignoring automation property \"%s\" without property_updated() implementation",
                            g_type_name (pspec->owner_type), pspec->name);
               else
-                class->automation_properties = sfi_ring_append (class->automation_properties, pspec);
+                klass->automation_properties = sfi_ring_append (klass->automation_properties, pspec);
               g_type_class_unref (source_class);
             }
         }
       g_free (pspecs);
-      class->filtered_properties = TRUE;
+      klass->filtered_properties = TRUE;
     }
 }
 
 static void
 source_notify_properties (BseSource *self)
 {
-  BseSourceClass *class = BSE_SOURCE_GET_CLASS (self);
+  BseSourceClass *klass = BSE_SOURCE_GET_CLASS (self);
   source_class_collect_properties (BSE_SOURCE_GET_CLASS (self));
   SfiRing *ring;
-  for (ring = class->unprepared_properties; ring; ring = sfi_ring_walk (ring, class->unprepared_properties))
+  for (ring = klass->unprepared_properties; ring; ring = sfi_ring_walk (ring, klass->unprepared_properties))
     g_object_notify (self, G_PARAM_SPEC (ring->data)->name);
 }
 
@@ -1906,25 +1906,25 @@ bse_source_restore_private (BseObject  *object,
 }
 
 static void
-bse_source_class_base_init (BseSourceClass *class)
+bse_source_class_base_init (BseSourceClass *klass)
 {
   /* reset ichannel, jchannel and ochannel defs */
-  class->channel_defs.n_ichannels = 0;
-  class->channel_defs.ichannel_idents = NULL;
-  class->channel_defs.ichannel_labels = NULL;
-  class->channel_defs.ichannel_blurbs = NULL;
-  class->channel_defs.ijstreams = NULL;
-  class->channel_defs.n_jstreams = 0;
-  class->channel_defs.n_ochannels = 0;
-  class->channel_defs.ochannel_idents = NULL;
-  class->channel_defs.ochannel_labels = NULL;
-  class->channel_defs.ochannel_blurbs = NULL;
+  klass->channel_defs.n_ichannels = 0;
+  klass->channel_defs.ichannel_idents = NULL;
+  klass->channel_defs.ichannel_labels = NULL;
+  klass->channel_defs.ichannel_blurbs = NULL;
+  klass->channel_defs.ijstreams = NULL;
+  klass->channel_defs.n_jstreams = 0;
+  klass->channel_defs.n_ochannels = 0;
+  klass->channel_defs.ochannel_idents = NULL;
+  klass->channel_defs.ochannel_labels = NULL;
+  klass->channel_defs.ochannel_blurbs = NULL;
   /* reset other class members */
-  class->property_updated = NULL;
-  class->engine_class = NULL;
-  class->filtered_properties = FALSE;
-  class->unprepared_properties = NULL;
-  class->automation_properties = NULL;
+  klass->property_updated = NULL;
+  klass->engine_class = NULL;
+  klass->filtered_properties = FALSE;
+  klass->unprepared_properties = NULL;
+  klass->automation_properties = NULL;
 }
 
 BseMusicalTuningType
@@ -1977,52 +1977,52 @@ bse_source_class_inherit_channels (BseSourceClass *source_class)
 }
 
 static void
-bse_source_class_base_finalize (BseSourceClass *class)
+bse_source_class_base_finalize (BseSourceClass *klass)
 {
   guint i;
   
-  for (i = 0; i < class->channel_defs.n_ichannels; i++)
+  for (i = 0; i < klass->channel_defs.n_ichannels; i++)
     {
-      g_free (class->channel_defs.ichannel_idents[i]);
-      g_free (class->channel_defs.ichannel_labels[i]);
-      g_free (class->channel_defs.ichannel_blurbs[i]);
+      g_free (klass->channel_defs.ichannel_idents[i]);
+      g_free (klass->channel_defs.ichannel_labels[i]);
+      g_free (klass->channel_defs.ichannel_blurbs[i]);
     }
-  g_free (class->channel_defs.ichannel_idents);
-  g_free (class->channel_defs.ichannel_labels);
-  g_free (class->channel_defs.ichannel_blurbs);
-  g_free (class->channel_defs.ijstreams);
-  class->channel_defs.n_jstreams = 0;
-  class->channel_defs.n_ichannels = 0;
-  class->channel_defs.ichannel_idents = NULL;
-  class->channel_defs.ichannel_labels = NULL;
-  class->channel_defs.ichannel_blurbs = NULL;
-  class->channel_defs.ijstreams = NULL;
-  for (i = 0; i < class->channel_defs.n_ochannels; i++)
+  g_free (klass->channel_defs.ichannel_idents);
+  g_free (klass->channel_defs.ichannel_labels);
+  g_free (klass->channel_defs.ichannel_blurbs);
+  g_free (klass->channel_defs.ijstreams);
+  klass->channel_defs.n_jstreams = 0;
+  klass->channel_defs.n_ichannels = 0;
+  klass->channel_defs.ichannel_idents = NULL;
+  klass->channel_defs.ichannel_labels = NULL;
+  klass->channel_defs.ichannel_blurbs = NULL;
+  klass->channel_defs.ijstreams = NULL;
+  for (i = 0; i < klass->channel_defs.n_ochannels; i++)
     {
-      g_free (class->channel_defs.ochannel_idents[i]);
-      g_free (class->channel_defs.ochannel_labels[i]);
-      g_free (class->channel_defs.ochannel_blurbs[i]);
+      g_free (klass->channel_defs.ochannel_idents[i]);
+      g_free (klass->channel_defs.ochannel_labels[i]);
+      g_free (klass->channel_defs.ochannel_blurbs[i]);
     }
-  g_free (class->channel_defs.ochannel_idents);
-  g_free (class->channel_defs.ochannel_labels);
-  g_free (class->channel_defs.ochannel_blurbs);
-  class->channel_defs.n_ochannels = 0;
-  class->channel_defs.ochannel_idents = NULL;
-  class->channel_defs.ochannel_labels = NULL;
-  class->channel_defs.ochannel_blurbs = NULL;
-  g_free (class->engine_class);
-  class->engine_class = NULL;
-  sfi_ring_free (class->unprepared_properties);
-  sfi_ring_free (class->automation_properties);
+  g_free (klass->channel_defs.ochannel_idents);
+  g_free (klass->channel_defs.ochannel_labels);
+  g_free (klass->channel_defs.ochannel_blurbs);
+  klass->channel_defs.n_ochannels = 0;
+  klass->channel_defs.ochannel_idents = NULL;
+  klass->channel_defs.ochannel_labels = NULL;
+  klass->channel_defs.ochannel_blurbs = NULL;
+  g_free (klass->engine_class);
+  klass->engine_class = NULL;
+  sfi_ring_free (klass->unprepared_properties);
+  sfi_ring_free (klass->automation_properties);
 }
 
 static void
-bse_source_class_init (BseSourceClass *class)
+bse_source_class_init (BseSourceClass *klass)
 {
-  GObjectClass *gobject_class = G_OBJECT_CLASS (class);
-  BseObjectClass *object_class = BSE_OBJECT_CLASS (class);
+  GObjectClass *gobject_class = G_OBJECT_CLASS (klass);
+  BseObjectClass *object_class = BSE_OBJECT_CLASS (klass);
 
-  parent_class = g_type_class_peek_parent (class);
+  parent_class = g_type_class_peek_parent (klass);
   
   gobject_class->set_property = bse_source_set_property;
   gobject_class->get_property = bse_source_get_property;
@@ -2033,13 +2033,13 @@ bse_source_class_init (BseSourceClass *class)
   object_class->store_private = bse_source_real_store_private;
   object_class->restore_private = bse_source_restore_private;
 
-  class->prepare = bse_source_real_prepare;
-  class->context_create = bse_source_real_context_create;
-  class->context_connect = bse_source_real_context_connect;
-  class->context_dismiss = bse_source_real_context_dismiss;
-  class->reset = bse_source_real_reset;
-  class->add_input = bse_source_real_add_input;
-  class->remove_input = bse_source_real_remove_input;
+  klass->prepare = bse_source_real_prepare;
+  klass->context_create = bse_source_real_context_create;
+  klass->context_connect = bse_source_real_context_connect;
+  klass->context_dismiss = bse_source_real_context_dismiss;
+  klass->reset = bse_source_real_reset;
+  klass->add_input = bse_source_real_add_input;
+  klass->remove_input = bse_source_real_remove_input;
 
   bse_object_class_add_param (object_class, "Position",
 			      PROP_POS_X,
@@ -2053,7 +2053,7 @@ bse_source_class_init (BseSourceClass *class)
 					      SFI_PARAM_STORAGE ":skip-default:f:"));
 
   signal_io_changed = bse_object_class_add_signal (object_class, "io-changed", G_TYPE_NONE, 0);
-  bse_source_class_add_probe_signals (class);
+  bse_source_class_add_probe_signals (klass);
 }
 
 BSE_BUILTIN_TYPE (BseSource)

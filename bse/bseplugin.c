@@ -34,7 +34,7 @@ static SFI_MSG_TYPE_DEFINE (debug_plugins, "plugins", SFI_MSG_DEBUG, NULL);
 
 /* --- prototypes --- */
 static void	    bse_plugin_init		(BsePlugin	  *plugin);
-static void	    bse_plugin_class_init	(BsePluginClass	  *class);
+static void	    bse_plugin_class_init	(BsePluginClass	  *klass);
 static void	    bse_plugin_complete_info	(GTypePlugin	  *gplugin,
 						 GType       	   type,
 						 GTypeInfo 	  *type_info,
@@ -116,9 +116,9 @@ bse_plugin_finalize (GObject *object)
 }
 
 static void
-bse_plugin_class_init (BsePluginClass *class)
+bse_plugin_class_init (BsePluginClass *klass)
 {
-  GObjectClass *gobject_class = G_OBJECT_CLASS (class);
+  GObjectClass *gobject_class = G_OBJECT_CLASS (klass);
   
   gobject_class->dispose = bse_plugin_dispose;
   gobject_class->finalize = bse_plugin_finalize;

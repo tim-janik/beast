@@ -265,15 +265,15 @@ bse_sub_oport_update_modules (BseSubOPort *self,
   bse_trans_commit (trans);
 }
 static void
-bse_sub_oport_class_init (BseSubOPortClass *class)
+bse_sub_oport_class_init (BseSubOPortClass *klass)
 {
-  GObjectClass *gobject_class = G_OBJECT_CLASS (class);
-  BseObjectClass *object_class = BSE_OBJECT_CLASS (class);
-  BseItemClass *item_class = BSE_ITEM_CLASS (class);
-  BseSourceClass *source_class = BSE_SOURCE_CLASS (class);
+  GObjectClass *gobject_class = G_OBJECT_CLASS (klass);
+  BseObjectClass *object_class = BSE_OBJECT_CLASS (klass);
+  BseItemClass *item_class = BSE_ITEM_CLASS (klass);
+  BseSourceClass *source_class = BSE_SOURCE_CLASS (klass);
   guint i, channel_id;
   
-  parent_class = g_type_class_peek_parent (class);
+  parent_class = g_type_class_peek_parent (klass);
   
   gobject_class->set_property = bse_sub_oport_set_property;
   gobject_class->get_property = bse_sub_oport_get_property;

@@ -83,7 +83,7 @@ G_BEGIN_DECLS
 /* --- functions --- */
 void	sfi_note_examine	 (SfiInt	 note,
 				  gint          *octave_p,
-				  guint         *semitone_p,
+				  gint          *semitone_p,
 				  gboolean	*black_semitone_p,
 				  gchar         *letter_p);
 /* return a newly allocated string which describes `note' literally */

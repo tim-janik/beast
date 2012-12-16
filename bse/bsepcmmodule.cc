@@ -63,7 +63,7 @@ bse_pcm_module_poll (gpointer       data,
 		     const GPollFD *fds,
 		     gboolean       revents_filled)
 {
-  BsePCMModuleData *mdata = data;
+  BsePCMModuleData *mdata = (BsePCMModuleData*) data;
   BsePcmHandle *handle = mdata->handle;
   return bse_pcm_handle_check_io (handle, timeout_p);
 }
@@ -72,7 +72,7 @@ static void
 bse_pcm_omodule_process (BseModule *module,
 			 guint      n_values)
 {
-  BsePCMModuleData *mdata = module->user_data;
+  BsePCMModuleData *mdata = (BsePCMModuleData*) module->user_data;
   gfloat *d = mdata->buffer;
   gfloat *b = mdata->bound;
   const gfloat *src;
@@ -115,7 +115,7 @@ static void
 bse_pcm_module_data_free (gpointer        data,
 			  const BseModuleClass *klass)
 {
-  BsePCMModuleData *mdata = data;
+  BsePCMModuleData *mdata = (BsePCMModuleData*) data;
   
   g_free (mdata->buffer);
   g_free (mdata);
@@ -165,12 +165,10 @@ static void
 bse_pcm_omodule_remove (BseModule *pcm_module,
 			BseTrans  *trans)
 {
-  BsePCMModuleData *mdata;
-  
   g_return_if_fail (pcm_module != NULL);
   g_return_if_fail (trans != NULL);
-  
-  mdata = pcm_module->user_data;
+
+  BsePCMModuleData *mdata = (BsePCMModuleData*) pcm_module->user_data;
   bse_trans_add (trans,
 		 bse_job_remove_poll (bse_pcm_module_poll, mdata));
   bse_trans_add (trans,
@@ -187,7 +185,7 @@ pcm_imodule_check_input (gpointer data)         /* UserThread */
 static void
 bse_pcm_imodule_reset (BseModule *module)       /* EngineThread */
 {
-  BsePCMModuleData *mdata = module->user_data;
+  BsePCMModuleData *mdata = (BsePCMModuleData*) module->user_data;
   if (!mdata->pcm_input_checked)
     {
       mdata->pcm_input_checked = TRUE;
@@ -200,7 +198,7 @@ static void
 bse_pcm_imodule_process (BseModule *module,     /* EngineThread */
 			 guint      n_values)
 {
-  BsePCMModuleData *mdata = module->user_data;
+  BsePCMModuleData *mdata = (BsePCMModuleData*) module->user_data;
   gfloat *left = BSE_MODULE_OBUFFER (module, BSE_PCM_MODULE_OSTREAM_LEFT);
   gfloat *right = BSE_MODULE_OBUFFER (module, BSE_PCM_MODULE_OSTREAM_RIGHT);
   gsize l;
@@ -265,12 +263,9 @@ static void
 bse_pcm_imodule_remove (BseModule *pcm_module,
 			BseTrans  *trans)
 {
-  BsePCMModuleData *mdata;
-  
   g_return_if_fail (pcm_module != NULL);
   g_return_if_fail (trans != NULL);
-  
-  mdata = pcm_module->user_data;
+
   bse_trans_add (trans,
 		 bse_job_discard (pcm_module));
 }

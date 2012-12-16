@@ -76,15 +76,15 @@ bse_sources = $(strip \
 	bsemidicontroller.cc	bsemididevice.cc 	bsedevice.cc 			\
 	bsemididevice-null.cc	bsemididevice-oss.cc	bsemidievent.cc			bsemidinotifier.c \
 	bsemidireceiver.cc	bsemidisynth.c		bseobject.c			bsepart.c \
-	bsepcminput.c		bsepcmoutput.c		bseparam.c			bseparasite.c \
-	bsepcmdevice.c		bsepcmdevice-oss.c	bsepcmdevice-null.c		bseplugin.c \
-	bseprocedure.c		bseproject.c		bsescripthelper.c		bseserver.c \
+	bsepcminput.cc		bsepcmoutput.cc		bseparam.c			bseparasite.c \
+	bsepcmdevice.cc		bsepcmdevice-oss.cc	bsepcmdevice-null.cc		bseplugin.c \
+	bseprocedure.c		bseproject.c		bsescripthelper.c		bseserver.cc \
 	bsesnet.c		bsesnooper.c		bsesong.c			bsesequencer.cc \
 	bsesource.c		bsestandardosc.c	bsestandardsynths.c		bsestorage.c \
 	bseinstrumentoutput.cc	bsesubiport.c		bseinstrumentinput.cc		bsesuboport.c \
 	bsesubsynth.c		bsesuper.c		bsetrack.c			bsetype.c \
-	bseutils.c		bsemidivoice.c		bsewave.c			bsewaveosc.c \
-	bsecsynth.cc		bsewaverepo.c		bseladspamodule.cc		bsepcmwriter.c \
+	bseutils.cc		bsemidivoice.c		bsewave.c			bsewaveosc.c \
+	bsecsynth.cc		bsewaverepo.c		bseladspamodule.cc		bsepcmwriter.cc \
 	bsecompat.cc		bseundostack.c		bsemidiinput.cc			bsemididecoder.cc \
 	bsenote.cc		bsemidifile.cc		bseblockutils.cc		\
 	bsecxxvalue.cc		bsecxxutils.cc		bsecxxbase.cc			bsecxxclosure.cc \
@@ -123,7 +123,7 @@ bse_proc_gen_sources = $(bse_proc_sources:.proc=.genprc.c)
 EXTRA_DIST += $(strip \
 	bsecore.idl	bse.idl					\
 	mktypes.pl	mkcalls.pl	mkcproc.pl		\
-	bseconfig.h.in	bsepcmmodule.c				\
+	bseconfig.h.in	bsepcmmodule.cc				\
 	bsewave.header						\
 	gsl-fftgen.pl	gsl-fftconf.sh	gsloscillator-aux.c	\
 	gslincluder.c	gslwaveosc-aux.c			\

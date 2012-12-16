@@ -25,6 +25,7 @@
 #include "bsepcmwriter.h"
 #include "bsemididevice-null.h"
 #include "bsejanitor.h"
+#include "bsecxxplugin.hh"
 #include <sys/time.h>
 #include <sys/resource.h>
 #include <fcntl.h>
@@ -33,7 +34,7 @@
 
 
 /* --- PCM BseModule implementations ---*/
-#include "bsepcmmodule.c"
+#include "bsepcmmodule.cc"
 
 
 /* --- parameters --- */
@@ -47,7 +48,7 @@ enum
 
 
 /* --- prototypes --- */
-static void	bse_server_class_init		(BseServerClass	   *class);
+static void	bse_server_class_init		(BseServerClass	   *klass);
 static void	bse_server_init			(BseServer	   *server);
 static void	bse_server_finalize		(GObject	   *object);
 static void	bse_server_set_property		(GObject           *object,
@@ -115,14 +116,14 @@ BSE_BUILTIN_TYPE (BseServer)
 }
 
 static void
-bse_server_class_init (BseServerClass *class)
+bse_server_class_init (BseServerClass *klass)
 {
-  GObjectClass *gobject_class = G_OBJECT_CLASS (class);
-  BseObjectClass *object_class = BSE_OBJECT_CLASS (class);
-  BseItemClass *item_class = BSE_ITEM_CLASS (class);
-  BseContainerClass *container_class = BSE_CONTAINER_CLASS (class);
+  GObjectClass *gobject_class = G_OBJECT_CLASS (klass);
+  BseObjectClass *object_class = BSE_OBJECT_CLASS (klass);
+  BseItemClass *item_class = BSE_ITEM_CLASS (klass);
+  BseContainerClass *container_class = BSE_CONTAINER_CLASS (klass);
   
-  parent_class = g_type_class_peek_parent (class);
+  parent_class = (GTypeClass*) g_type_class_peek_parent (klass);
   
   gobject_class->set_property = bse_server_set_property;
   gobject_class->get_property = bse_server_get_property;
@@ -169,7 +170,7 @@ rc_file_try_statement (gpointer   context_data,
 		       GScanner  *scanner,
 		       gpointer   user_data)
 {
-  BseServer *server = context_data;
+  BseServer *server = (BseServer*) context_data;
   g_assert (scanner->next_token == G_TOKEN_IDENTIFIER);
   if (strcmp ("bse-preferences", scanner->next_value.v_identifier) == 0)
     {
@@ -184,7 +185,7 @@ rc_file_try_statement (gpointer   context_data,
                       "bse-preferences", rec,
                       NULL);
       sfi_value_free (value);
-      return token;
+      return SfiTokenType (token);
     }
   else
     return SFI_TOKEN_UNMATCHED;
@@ -303,7 +304,7 @@ bse_server_notify_gconfig (BseServer *server)
 {
   g_return_if_fail (BSE_IS_SERVER (server));
   
-  g_object_notify (server, bse_gconfig_pspec ()->name);
+  g_object_notify ((GObject*) server, bse_gconfig_pspec ()->name);
 }
 
 static void
@@ -335,7 +336,7 @@ bse_server_forall_items (BseContainer      *container,
   
   while (slist)
     {
-      BseItem *item = slist->data;
+      BseItem *item = (BseItem*) slist->data;
       
       slist = slist->next;
       if (!func (item, data))
@@ -378,7 +379,7 @@ bse_server_get (void)
   
   if (!server)
     {
-      server = g_object_new (BSE_TYPE_SERVER, NULL);
+      server = (BseServer*) g_object_new (BSE_TYPE_SERVER, NULL);
       g_object_ref (server);
     }
   
@@ -402,9 +403,7 @@ bse_server_create_project (BseServer   *server,
   g_return_val_if_fail (name != NULL, NULL);
   g_return_val_if_fail (bse_server_find_project (server, name) == NULL, NULL);
   
-  project = g_object_new (BSE_TYPE_PROJECT,
-			  "uname", name,
-			  NULL);
+  project = (BseProject*) g_object_new (BSE_TYPE_PROJECT, "uname", name, NULL);
   server->projects = g_list_prepend (server->projects, project);
   g_object_connect (project,
 		    "signal::release", destroy_project, server,
@@ -424,7 +423,7 @@ bse_server_find_project (BseServer   *server,
   
   for (node = server->projects; node; node = node->next)
     {
-      BseProject *project = node->data;
+      BseProject *project = (BseProject*) node->data;
       gchar *uname = BSE_OBJECT_UNAME (project);
       
       if (uname && strcmp (name, uname) == 0)
@@ -439,13 +438,13 @@ bse_server_stop_recording (BseServer *self)
   GList *node;
   for (node = self->projects; node; node = node->next)
     {
-      BseProject *project = node->data;
+      BseProject *project = (BseProject*) node->data;
       bse_project_stop_playback (project);
     }
   self->wave_seconds = 0;
   g_free (self->wave_file);
   self->wave_file = NULL;
-  g_object_notify (self, "wave-file");
+  g_object_notify ((GObject*) self, "wave-file");
 }
 
 void
@@ -462,7 +461,7 @@ bse_server_start_recording (BseServer      *self,
           g_free (self->wave_file);
           self->wave_file = NULL;
         }
-      g_object_notify (self, "wave-file");
+      g_object_notify ((GObject*) self, "wave-file");
     }
 }
 
@@ -500,7 +499,7 @@ static void
 pcm_request_callback (BseDevice *device,
                       gpointer   data)
 {
-  PcmRequest *pr = data;
+  PcmRequest *pr = (PcmRequest*) data;
   bse_pcm_device_request (BSE_PCM_DEVICE (device), pr->n_channels, pr->mix_freq, pr->latency, pr->block_size);
 }
 
@@ -511,8 +510,8 @@ server_open_pcm_device (BseServer *server,
                         guint      block_size)
 {
   g_return_val_if_fail (server->pcm_device == NULL, BSE_ERROR_INTERNAL);
-  
-  BseErrorType error = 0;
+
+  BseErrorType error = BSE_ERROR_NONE;
   PcmRequest pr;
   pr.n_channels = 2;
   pr.mix_freq = mix_freq;
@@ -546,7 +545,7 @@ server_open_midi_device (BseServer *server)
   server->midi_device = (BseMidiDevice*) bse_device_open_best (BSE_TYPE_MIDI_DEVICE, TRUE, FALSE, bse_main_args->midi_drivers, NULL, NULL, &error);
   if (!server->midi_device)
     {
-      SfiRing *ring = sfi_ring_prepend (NULL, "null");
+      SfiRing *ring = sfi_ring_prepend (NULL, (void*) "null");
       server->midi_device = (BseMidiDevice*) bse_device_open_best (BSE_TYPE_MIDI_DEVICE_NULL, TRUE, FALSE, ring, NULL, NULL, NULL);
       sfi_ring_free (ring);
       if (server->midi_device)
@@ -589,7 +588,7 @@ bse_server_open_devices (BseServer *self)
       mix_freq = aligned_freq;
       bse_engine_constrain (latency, mix_freq, BSE_GCONFIG (synth_control_freq), &block_size, NULL);
       BseErrorType new_error = server_open_pcm_device (self, mix_freq, latency, block_size);
-      error = new_error ? error : 0;
+      error = new_error ? error : BSE_ERROR_NONE;
     }
   if (!error)
     error = server_open_midi_device (self);
@@ -602,7 +601,7 @@ bse_server_open_devices (BseServer *self)
       if (self->wave_file)
 	{
 	  BseErrorType error;
-	  self->pcm_writer = g_object_new (BSE_TYPE_PCM_WRITER, NULL);
+	  self->pcm_writer = (BsePcmWriter*) g_object_new (BSE_TYPE_PCM_WRITER, NULL);
           const uint n_channels = 2;
 	  error = bse_pcm_writer_open (self->pcm_writer, self->wave_file,
                                        n_channels, bse_engine_sample_freq (),
@@ -809,8 +808,8 @@ bse_server_message (BseServer          *server,
   BseMessage umsg = { 0, };
   umsg.log_domain = (char*) log_domain;
   umsg.type = msg_type;
-  umsg.ident = (char*) sfi_msg_type_ident (msg_type);
-  umsg.label = (char*) sfi_msg_type_label (msg_type);
+  umsg.ident = (char*) sfi_msg_type_ident (SfiMsgType (msg_type));
+  umsg.label = (char*) sfi_msg_type_label (SfiMsgType (msg_type));
   umsg.title = (char*) title;
   umsg.primary = (char*) primary;
   umsg.secondary = (char*) secondary;
@@ -858,23 +857,23 @@ bse_server_run_remote (BseServer         *server,
 {
   gint child_pid, command_input, command_output;
   BseJanitor *janitor = NULL;
-  gchar *reason;
-  
+
   g_return_val_if_fail (BSE_IS_SERVER (server), BSE_ERROR_INTERNAL);
   g_return_val_if_fail (process_name != NULL, BSE_ERROR_INTERNAL);
   g_return_val_if_fail (script_name != NULL, BSE_ERROR_INTERNAL);
   g_return_val_if_fail (proc_name != NULL, BSE_ERROR_INTERNAL);
-  
+
   child_pid = command_input = command_output = -1;
-  reason = sfi_com_spawn_async (process_name,
-				&child_pid,
-				NULL, /* &standard_input, */
-				NULL, /* &standard_output, */
-				NULL, /* &standard_error, */
-				"--bse-pipe",
-				&command_input,
-				&command_output,
-				params);
+  const char *reason = sfi_com_spawn_async (process_name,
+                                            &child_pid,
+                                            NULL, /* &standard_input, */
+                                            NULL, /* &standard_output, */
+                                            NULL, /* &standard_error, */
+                                            "--bse-pipe",
+                                            &command_input,
+                                            &command_output,
+                                            params);
+  char *freeme = NULL;
   if (!reason)
     {
       gchar *ident = g_strdup_printf ("%s::%s", script_name, proc_name);
@@ -886,7 +885,7 @@ bse_server_run_remote (BseServer         *server,
       if (!port->connected)	/* bad, bad */
 	{
 	  sfi_com_port_unref (port);
-	  reason = g_strdup ("failed to establish connection");
+	  reason = freeme = g_strdup ("failed to establish connection");
 	}
       else
 	{
@@ -902,9 +901,10 @@ bse_server_run_remote (BseServer         *server,
   if (reason)
     {
       bse_server_script_error (server, script_name, proc_name, reason);
-      g_free (reason);
+      g_free (freeme);
       return BSE_ERROR_SPAWN;
     }
+  g_free (freeme);
   bse_server_script_start (server, janitor);
   return BSE_ERROR_NONE;
 }
@@ -1058,11 +1058,11 @@ iowatch_remove (BseServer *server,
 		gpointer   data)
 {
   GSList *slist;
-  
+
   for (slist = server->watch_list; slist; slist = slist->next)
     {
-      WSource *wsource = slist->data;
-      
+      WSource *wsource = (WSource*) slist->data;
+
       if (wsource->watch_func == watch_func && wsource->data == data)
 	{
 	  g_source_destroy (&wsource->source);

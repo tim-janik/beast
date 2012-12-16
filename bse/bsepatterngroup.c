@@ -36,7 +36,7 @@ enum {
 
 
 /* --- prototypes --- */
-static void	    bse_pattern_group_class_init	(BsePatternGroupClass	*class);
+static void	    bse_pattern_group_class_init	(BsePatternGroupClass	*klass);
 static void	    bse_pattern_group_init		(BsePatternGroup	*pattern_group);
 static void	    bse_pattern_group_destroy		(BseObject		*object);
 static void         bse_pattern_group_set_property 	(BsePatternGroup	*pattern_group,
@@ -86,12 +86,12 @@ BSE_BUILTIN_TYPE (BsePatternGroup)
 }
 
 static void
-bse_pattern_group_class_init (BsePatternGroupClass *class)
+bse_pattern_group_class_init (BsePatternGroupClass *klass)
 {
-  GObjectClass *gobject_class = G_OBJECT_CLASS (class);
-  BseObjectClass *object_class = BSE_OBJECT_CLASS (class);
+  GObjectClass *gobject_class = G_OBJECT_CLASS (klass);
+  BseObjectClass *object_class = BSE_OBJECT_CLASS (klass);
   
-  parent_class = g_type_class_peek_parent (class);
+  parent_class = g_type_class_peek_parent (klass);
   
   gobject_class->set_property = bse_pattern_group_set_property;
   gobject_class->get_property = bse_pattern_group_get_property;

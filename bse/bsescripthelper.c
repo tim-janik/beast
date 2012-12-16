@@ -27,7 +27,7 @@
 
 
 /* --- prototypes --- */
-static void		bse_script_procedure_init	(BseScriptProcedureClass *class,
+static void		bse_script_procedure_init	(BseScriptProcedureClass *klass,
 							 BseScriptData		 *sdata);
 static BseErrorType	bse_script_procedure_exec	(BseProcedureClass	 *proc,
 							 const GValue		 *in_values,
@@ -45,14 +45,14 @@ static GQuark quark_script_args = 0;
 
 /* --- functions --- */
 static void
-bse_script_procedure_init (BseScriptProcedureClass *class,
+bse_script_procedure_init (BseScriptProcedureClass *klass,
 			   BseScriptData           *sdata)
 {
-  BseProcedureClass *proc = (BseProcedureClass*) class;
+  BseProcedureClass *proc = (BseProcedureClass*) klass;
   SfiRing *ring;
   guint n;
   
-  class->sdata = sdata;
+  klass->sdata = sdata;
   proc->execute = bse_script_procedure_exec;
   
   /* we support a limited parameter set for scripts */

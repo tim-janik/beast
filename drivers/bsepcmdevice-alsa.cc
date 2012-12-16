@@ -49,7 +49,7 @@ typedef struct
 
 
 /* --- prototypes --- */
-static void             bse_pcm_device_alsa_class_init  (BsePcmDeviceALSAClass  *class);
+static void             bse_pcm_device_alsa_class_init  (BsePcmDeviceALSAClass  *klass);
 static void             bse_pcm_device_alsa_init        (BsePcmDeviceALSA       *self);
 static BseErrorType     alsa_device_setup               (AlsaPcmHandle          *alsa,
                                                          snd_pcm_t              *phandle,
@@ -82,7 +82,7 @@ bse_pcm_device_alsa_init (BsePcmDeviceALSA *self)
   const_pcm_status_sizeof = snd_pcm_status_sizeof();
 }
 
-#define alsa_alloca0(struc)     ({ struc##_t *ptr = alloca (struc##_sizeof()); memset (ptr, 0, struc##_sizeof()); ptr; })
+#define alsa_alloca0(struc)     ({ struc##_t *ptr = (struc##_t*) alloca (struc##_sizeof()); memset (ptr, 0, struc##_sizeof()); ptr; })
 
 static SfiRing*
 bse_pcm_device_alsa_list_devices (BseDevice *device)
@@ -224,7 +224,7 @@ bse_pcm_device_alsa_open (BseDevice     *device,
   /* setup PCM handle or shutdown */
   if (!error)
     {
-      alsa->period_buffer = g_malloc (alsa->period_size * alsa->frame_size);
+      alsa->period_buffer = (gint16*) g_malloc (alsa->period_size * alsa->frame_size);
       bse_device_set_opened (device, dname, handle->readable, handle->writable);
       if (handle->readable)
         handle->read = alsa_device_read;
@@ -385,7 +385,7 @@ alsa_device_retrigger (AlsaPcmHandle *alsa)
   if (alsa->write_handle)
     {
       gint n, buffer_length = alsa->n_periods * alsa->period_size; /* buffer size chosen by ALSA based on latency request */
-      guint8 *silence = g_malloc0 (buffer_length * alsa->frame_size);
+      guint8 *silence = (guint8*) g_malloc0 (buffer_length * alsa->frame_size);
       do
         n = snd_pcm_writei (alsa->write_handle, silence, buffer_length);
       while (n == -EAGAIN); /* retry on signals */
@@ -439,7 +439,7 @@ alsa_device_check_io (BsePcmHandle *handle,
     }
   
   /* check whether data can be processed */
-  if (n_frames_avail >= handle->block_length)
+  if (n_frames_avail >= ssize_t (handle->block_length))
     return TRUE;        /* need processing */
   
   /* calculate timeout until processing is possible or needed */
@@ -545,12 +545,12 @@ alsa_device_write (BsePcmHandle *handle,
 }
 
 static void
-bse_pcm_device_alsa_class_init (BsePcmDeviceALSAClass *class)
+bse_pcm_device_alsa_class_init (BsePcmDeviceALSAClass *klass)
 {
-  GObjectClass *gobject_class = G_OBJECT_CLASS (class);
-  BseDeviceClass *device_class = BSE_DEVICE_CLASS (class);
+  GObjectClass *gobject_class = G_OBJECT_CLASS (klass);
+  BseDeviceClass *device_class = BSE_DEVICE_CLASS (klass);
   
-  parent_class = g_type_class_peek_parent (class);
+  parent_class = g_type_class_peek_parent (klass);
   
   gobject_class->finalize = bse_pcm_device_alsa_finalize;
   
@@ -571,7 +571,7 @@ bse_pcm_device_alsa_class_init (BsePcmDeviceALSAClass *class)
                                          "  DEV    - the device number for plugins like 'hw'\n"
                                          "  SUBDEV - the subdevice number for plugins like 'hw'\n"),
                                        snd_asoundlib_version());
-  bse_device_class_setup (class, BSE_RATING_PREFERRED, name, syntax, info);
+  bse_device_class_setup (klass, BSE_RATING_PREFERRED, name, syntax, info);
   device_class->open = bse_pcm_device_alsa_open;
   device_class->close = bse_pcm_device_alsa_close;
   int err = snd_output_stdio_attach (&snd_output, stderr, 0);

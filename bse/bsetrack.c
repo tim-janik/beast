@@ -52,7 +52,7 @@ enum {
 };
 
 /* --- prototypes --- */
-static void         bse_track_class_init          (BseTrackClass *class);
+static void         bse_track_class_init          (BseTrackClass *klass);
 static void         bse_track_init                (BseTrack      *self);
 static void         bse_track_dispose             (GObject       *object);
 static void         bse_track_finalize            (GObject       *object);
@@ -981,14 +981,14 @@ bse_track_restore_private (BseObject  *object,
 }
 
 static void
-bse_track_class_init (BseTrackClass *class)
+bse_track_class_init (BseTrackClass *klass)
 {
-  GObjectClass *gobject_class = G_OBJECT_CLASS (class);
-  BseObjectClass *object_class = BSE_OBJECT_CLASS (class);
-  BseItemClass *item_class = BSE_ITEM_CLASS (class);
-  BseSourceClass *source_class = BSE_SOURCE_CLASS (class);
+  GObjectClass *gobject_class = G_OBJECT_CLASS (klass);
+  BseObjectClass *object_class = BSE_OBJECT_CLASS (klass);
+  BseItemClass *item_class = BSE_ITEM_CLASS (klass);
+  BseSourceClass *source_class = BSE_SOURCE_CLASS (klass);
   
-  parent_class = g_type_class_peek_parent (class);
+  parent_class = g_type_class_peek_parent (klass);
   
   gobject_class->set_property = bse_track_set_property;
   gobject_class->get_property = bse_track_get_property;
@@ -1003,7 +1003,7 @@ bse_track_class_init (BseTrackClass *class)
   source_class->context_create = bse_track_context_create;
   source_class->context_dismiss = bse_track_context_dismiss;
 
-  bse_source_class_inherit_channels (BSE_SOURCE_CLASS (class));
+  bse_source_class_inherit_channels (BSE_SOURCE_CLASS (klass));
 
   bse_object_class_add_param (object_class, _("Adjustments"),
 			      PROP_MUTED,

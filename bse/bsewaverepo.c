@@ -27,7 +27,7 @@ enum
 
 
 /* --- prototypes --- */
-static void	bse_wave_repo_class_init	(BseWaveRepoClass	*class);
+static void	bse_wave_repo_class_init	(BseWaveRepoClass	*klass);
 static void	bse_wave_repo_init		(BseWaveRepo		*wrepo);
 static void	bse_wave_repo_dispose		(GObject		*object);
 static void     bse_wave_repo_release_children  (BseContainer		*container);
@@ -80,12 +80,12 @@ BSE_BUILTIN_TYPE (BseWaveRepo)
 }
 
 static void
-bse_wave_repo_class_init (BseWaveRepoClass *class)
+bse_wave_repo_class_init (BseWaveRepoClass *klass)
 {
-  GObjectClass *gobject_class = G_OBJECT_CLASS (class);
-  BseContainerClass *container_class = BSE_CONTAINER_CLASS (class);
+  GObjectClass *gobject_class = G_OBJECT_CLASS (klass);
+  BseContainerClass *container_class = BSE_CONTAINER_CLASS (klass);
   
-  parent_class = g_type_class_peek_parent (class);
+  parent_class = g_type_class_peek_parent (klass);
   
   gobject_class->set_property = bse_wave_repo_set_property;
   gobject_class->get_property = bse_wave_repo_get_property;

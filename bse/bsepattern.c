@@ -43,7 +43,7 @@ enum {
 
 
 /* --- prototypes --- */
-static void	    bse_pattern_class_init	 (BsePatternClass	*class);
+static void	    bse_pattern_class_init	 (BsePatternClass	*klass);
 static void	    bse_pattern_init		 (BsePattern		*pattern);
 static void	    bse_pattern_do_destroy	 (BseObject		*object);
 static void	    bse_pattern_do_set_parent    (BseItem		*item,
@@ -89,14 +89,14 @@ BSE_BUILTIN_TYPE (BsePattern)
 }
 
 static void
-bse_pattern_class_init (BsePatternClass	*class)
+bse_pattern_class_init (BsePatternClass	*klass)
 {
   BseObjectClass *object_class;
   BseItemClass *item_class;
   
-  parent_class = g_type_class_peek_parent (class);
-  object_class = BSE_OBJECT_CLASS (class);
-  item_class = BSE_ITEM_CLASS (class);
+  parent_class = g_type_class_peek_parent (klass);
+  object_class = BSE_OBJECT_CLASS (klass);
+  item_class = BSE_ITEM_CLASS (klass);
   
   object_class->restore = bse_pattern_restore;
   object_class->store_private = bse_pattern_store_private;
