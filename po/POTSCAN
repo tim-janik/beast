@@ -106,8 +106,8 @@ bse/bsewaveosc.c
 data/beast.desktop.in
 data/beast.xml.in
 data/bse.keys.in
-drivers/bsepcmdevice-alsa.c
-drivers/bsemididevice-alsa.c
+drivers/bsepcmdevice-alsa.cc
+drivers/bsemididevice-alsa.cc
 library/scripts/mixer-splitup-by-track.scm
 library/scripts/modules2grid.scm
 library/scripts/part-harmonic-transposer.scm
