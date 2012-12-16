@@ -20,7 +20,6 @@
 #include <sfi/gbsearcharray.h>
 #include <string.h>
 
-
 typedef struct {
   const gchar *path;
   SfiRec      *rec;
@@ -619,7 +618,7 @@ bse_parasite_restore (BseObject  *object,
   GTokenType ttype;
   guint n_values;
   gpointer data;
-  
+
   /* check identifier */
   if (g_scanner_peek_next_token (scanner) != G_TOKEN_IDENTIFIER ||
       !bse_string_equals ("parasite", scanner->next_value.v_identifier))
@@ -638,12 +637,12 @@ bse_parasite_restore (BseObject  *object,
   if (g_scanner_get_next_token (scanner) != G_TOKEN_STRING)
     return G_TOKEN_STRING;
   quark = g_quark_from_string (scanner->value.v_string);
-  
-  switch (ttype)
+
+  switch ((uint) ttype)
     {
       guint i;
       gfloat *floats;
-      
+
     case PARASITE_FLOAT:
       if (g_scanner_get_next_token (scanner) != G_TOKEN_INT)
 	return G_TOKEN_INT;

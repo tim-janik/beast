@@ -783,7 +783,7 @@ bus_restore_start (BseObject  *object,
   BSE_OBJECT_CLASS (bus_parent_class)->restore_start (object, storage);
 }
 
-static SfiTokenType
+static GTokenType
 bus_restore_private (BseObject  *object,
                      BseStorage *storage,
                      GScanner   *scanner)
@@ -797,10 +797,10 @@ bus_restore_private (BseObject  *object,
       /* parse osource upath and queue handler */
       GTokenType token = bse_storage_parse_item_link (storage, BSE_ITEM (self), bus_restore_add_input, NULL);
       if (token != G_TOKEN_NONE)
-        return SfiTokenType (token);
+        return token;
       /* close statement */
       parse_or_return (scanner, ')');
-      return SFI_TOKEN_NONE;
+      return G_TOKEN_NONE;
     }
   else /* chain parent class' handler */
     return BSE_OBJECT_CLASS (bus_parent_class)->restore_private (object, storage, scanner);

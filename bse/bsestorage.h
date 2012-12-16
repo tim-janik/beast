@@ -115,9 +115,9 @@ void         bse_storage_input_text             (BseStorage             *self,
 GTokenType   bse_storage_restore_item           (BseStorage             *self,
                                                  gpointer                item);
 void         bse_storage_store_item             (BseStorage             *self,
-                                                 gpointer                item);
+                                                 BseItem                *item);
 void         bse_storage_store_child            (BseStorage             *self,
-                                                 gpointer                item);
+                                                 BseItem                *item);
 const gchar* bse_storage_item_get_compat_type   (BseItem                *item);
 
 

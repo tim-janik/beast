@@ -47,7 +47,7 @@ static gboolean     bse_data_pocket_needs_storage       (BseItem                
                                                          BseStorage             *storage);
 static void	    bse_data_pocket_do_store_private	(BseObject		*object,
 							 BseStorage		*storage);
-static SfiTokenType bse_data_pocket_restore_private	(BseObject		*object,
+static GTokenType   bse_data_pocket_restore_private	(BseObject		*object,
 							 BseStorage		*storage,
                                                          GScanner               *scanner);
 
@@ -550,20 +550,20 @@ object_entry_resolved (void           *data,
 {
   ObjectEntry *oentry = (ObjectEntry*) data;
   BseDataPocket *pocket = BSE_DATA_POCKET (from_item);
-  
+
   if (error)
-    bse_storage_warn (storage, error);
+    bse_storage_warn (storage, "%s", error);
   else if (oentry->id)
     {
       BseDataPocketValue value;
-      
+
       value.v_object = to_item;
       _bse_data_pocket_entry_set (pocket, oentry->id, oentry->quark, BSE_DATA_POCKET_OBJECT, value);
     }
   g_free (oentry);
 }
 
-static SfiTokenType
+static GTokenType
 parse_set_data (BseDataPocket *pocket,
 		uint           id,
 		BseStorage    *storage,
@@ -583,7 +583,7 @@ parse_set_data (BseDataPocket *pocket,
   g_scanner_get_next_token (scanner);
   scanner->config->char_2_token = char_2_token;
   if (scanner->token != G_TOKEN_CHAR)
-    return SfiTokenType (G_TOKEN_CHAR);
+    return G_TOKEN_CHAR;
   ttype = scanner->value.v_char;
   
   switch (ttype)
@@ -619,19 +619,19 @@ parse_set_data (BseDataPocket *pocket,
       oentry->quark = quark;
       token = bse_storage_parse_item_link (storage, BSE_ITEM (pocket), object_entry_resolved, oentry);
       if (token != G_TOKEN_NONE)
-	return SfiTokenType (token);
+	return token;
       if (g_scanner_peek_next_token (scanner) != ')')
 	{
 	  oentry->id = 0;
-	  return SfiTokenType (')');
+	  return GTokenType (')');
 	}
       break;
     default:
       /* unmatched data type */
-      return (SfiTokenType) bse_storage_warn_skip (storage,
-				                   "invalid data type specification `%c' for \"%s\"",
-				                   ttype,
-				                   g_quark_to_string (quark));
+      return bse_storage_warn_skip (storage,
+                                    "invalid data type specification `%c' for \"%s\"",
+                                    ttype,
+                                    g_quark_to_string (quark));
     }
   peek_or_return (scanner, ')');
   
@@ -641,10 +641,10 @@ parse_set_data (BseDataPocket *pocket,
   
   g_scanner_get_next_token (scanner); /* eat ')' */
   
-  return SFI_TOKEN_NONE;
+  return G_TOKEN_NONE;
 }
 
-static SfiTokenType
+static GTokenType
 bse_data_pocket_restore_private (BseObject  *object,
 				 BseStorage *storage,
                                  GScanner   *scanner)
@@ -670,13 +670,13 @@ bse_data_pocket_restore_private (BseObject  *object,
 		{
 		  expected_token = (GTokenType) parse_set_data (pocket, id, storage, scanner);
 		  if (expected_token != G_TOKEN_NONE)
-		    return SfiTokenType (expected_token);
+		    return expected_token;
 		}
 	      else
 		bse_storage_warn_skip (storage, "unknown directive `%s'", scanner->next_value.v_identifier);
 	    }
 	  else
-	    return SfiTokenType (')');
+	    return GTokenType (')');
 	}
       parse_or_return (scanner, ')');
       expected_token = G_TOKEN_NONE;
@@ -684,5 +684,5 @@ bse_data_pocket_restore_private (BseObject  *object,
   else /* chain parent class' handler */
     expected_token = (GTokenType) BSE_OBJECT_CLASS (parent_class)->restore_private (object, storage, scanner);
 
-  return SfiTokenType (expected_token);
+  return expected_token;
 }

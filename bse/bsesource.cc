@@ -1856,7 +1856,7 @@ resolve_osource_input (gpointer     data,
   g_free (dinput);
 }
 
-static SfiTokenType
+static GTokenType
 bse_source_restore_private (BseObject  *object,
 			    BseStorage *storage,
                             GScanner   *scanner)
@@ -1886,7 +1886,7 @@ bse_source_restore_private (BseObject  *object,
 	{
 	  GTokenType token = bse_storage_parse_item_link (storage, BSE_ITEM (source), resolve_osource_input, dinput);
 	  if (token != G_TOKEN_NONE)
-	    return SfiTokenType (token);
+	    return token;
 	}
 
       /* parse ochannel name */
@@ -1896,7 +1896,7 @@ bse_source_restore_private (BseObject  *object,
 
       /* close statement */
       parse_or_return (scanner, ')');
-      return SFI_TOKEN_NONE;
+      return G_TOKEN_NONE;
     }
   else /* chain parent class' handler */
     return BSE_OBJECT_CLASS (parent_class)->restore_private (object, storage, scanner);

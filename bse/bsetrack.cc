@@ -67,7 +67,7 @@ static void         bse_track_get_property        (GObject       *object,
                                                    GParamSpec    *pspec);
 static void         bse_track_store_private       (BseObject     *object,
                                                    BseStorage    *storage);
-static SfiTokenType bse_track_restore_private     (BseObject     *object,
+static GTokenType   bse_track_restore_private     (BseObject     *object,
                                                    BseStorage    *storage,
                                                    GScanner      *scanner);
 static void         bse_track_update_midi_channel (BseTrack      *self);
@@ -951,7 +951,7 @@ part_link_resolved (gpointer        data,
     }
 }
 
-static SfiTokenType
+static GTokenType
 bse_track_restore_private (BseObject  *object,
 			   BseStorage *storage,
                            GScanner   *scanner)
@@ -970,9 +970,9 @@ bse_track_restore_private (BseObject  *object,
       tick = scanner->value.v_int64;
       token = bse_storage_parse_item_link (storage, BSE_ITEM (self), part_link_resolved, GUINT_TO_POINTER (tick));
       if (token != G_TOKEN_NONE)
-	return SfiTokenType (token);
+	return token;
       parse_or_return (scanner, ')');
-      return SFI_TOKEN_NONE;
+      return G_TOKEN_NONE;
     }
   else /* chain parent class' handler */
     return BSE_OBJECT_CLASS (parent_class)->restore_private (object, storage, scanner);

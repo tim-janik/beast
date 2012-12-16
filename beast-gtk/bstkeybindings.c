@@ -656,7 +656,7 @@ bst_key_binding_dump (const gchar *file_name,
   return close (fd) < 0 ? BSE_ERROR_IO : BSE_ERROR_NONE;
 }
 
-static SfiTokenType
+static GTokenType
 key_binding_try_statement (gpointer   context_data,
                            SfiRStore *rstore,
                            GScanner  *scanner,

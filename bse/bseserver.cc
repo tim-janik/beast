@@ -164,7 +164,7 @@ bse_server_class_init (BseServerClass *klass)
 						     G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING);
 }
 
-static SfiTokenType
+static GTokenType
 rc_file_try_statement (gpointer   context_data,
 		       SfiRStore *rstore,
 		       GScanner  *scanner,
@@ -185,7 +185,7 @@ rc_file_try_statement (gpointer   context_data,
                       "bse-preferences", rec,
                       NULL);
       sfi_value_free (value);
-      return SfiTokenType (token);
+      return token;
     }
   else
     return SFI_TOKEN_UNMATCHED;

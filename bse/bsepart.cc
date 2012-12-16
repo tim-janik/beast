@@ -56,7 +56,7 @@ static void	    bse_part_dispose		(GObject	*object);
 static void	    bse_part_finalize		(GObject	*object);
 static void	    bse_part_store_private	(BseObject	*object,
 						 BseStorage	*storage);
-static SfiTokenType bse_part_restore_private	(BseObject	*object,
+static GTokenType   bse_part_restore_private	(BseObject	*object,
 						 BseStorage	*storage,
                                                  GScanner       *scanner);
 
@@ -1470,7 +1470,7 @@ bse_part_store_private (BseObject  *object,
     }
 }
 
-static SfiTokenType
+static GTokenType
 bse_part_restore_private (BseObject  *object,
 			  BseStorage *storage,
                           GScanner   *scanner)
@@ -1491,7 +1491,7 @@ bse_part_restore_private (BseObject  *object,
       parse_or_return (scanner, G_TOKEN_INT);           /* channel */
       channel = scanner->value.v_int64;
       if (channel >= self->n_channels)
-        return (SfiTokenType) bse_storage_warn_skip (storage, "ignoring notes with invalid channel: %u", channel);
+        return bse_storage_warn_skip (storage, "ignoring notes with invalid channel: %u", channel);
       while (g_scanner_peek_next_token (scanner) != ')')
         {
           guint tick, duration, note;
@@ -1531,7 +1531,7 @@ bse_part_restore_private (BseObject  *object,
                               channel, tick, duration, note);
         }
       parse_or_return (scanner, ')');
-      return SFI_TOKEN_NONE;
+      return G_TOKEN_NONE;
     }
   else if (quark == quark_insert_controls)
     {
@@ -1563,7 +1563,7 @@ bse_part_restore_private (BseObject  *object,
           else
             {
               g_clear_error (&error);
-              return SfiTokenType (G_TOKEN_FLOAT);
+              return G_TOKEN_FLOAT;
             }
           if (g_scanner_peek_next_token (scanner) != ')')
             g_clear_error (&error);
@@ -1575,7 +1575,7 @@ bse_part_restore_private (BseObject  *object,
           g_clear_error (&error);
         }
       parse_or_return (scanner, ')');
-      return SFI_TOKEN_NONE;
+      return G_TOKEN_NONE;
     }
   else if (quark == quark_insert_note)       /* pre-0.6.0 */
     {
@@ -1610,7 +1610,7 @@ bse_part_restore_private (BseObject  *object,
       if (!bse_part_insert_note (self, ~0, tick, duration, note, fine_tune, velocity))
 	bse_storage_warn (storage, "note insertion (note=%d tick=%u duration=%u) failed",
 			  note, tick, duration);
-      return SFI_TOKEN_NONE;
+      return G_TOKEN_NONE;
     }
   else if (quark == quark_insert_control)       /* pre-0.6.0 */
     {
@@ -1637,12 +1637,12 @@ bse_part_restore_private (BseObject  *object,
           value = negate ? -scanner->value.v_float : scanner->value.v_float;
         }
       else
-        return SfiTokenType (G_TOKEN_FLOAT);
+        return G_TOKEN_FLOAT;
       parse_or_return (scanner, ')');
 
       if (!bse_part_insert_control (self, tick, BseMidiSignalType (ctype), CLAMP (value, -1, +1)))
         bse_storage_warn (storage, "skipping control event of invalid type: %d", ctype);
-      return SFI_TOKEN_NONE;
+      return G_TOKEN_NONE;
     }
   else /* chain parent class' handler */
     return BSE_OBJECT_CLASS (parent_class)->restore_private (object, storage, scanner);

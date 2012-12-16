@@ -614,7 +614,7 @@ object_restore_start (BseObject      *object,
 {
 }
 
-static SfiTokenType
+static GTokenType
 object_restore_private (BseObject      *object,
                         BseStorage     *storage,
                         GScanner       *scanner)

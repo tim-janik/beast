@@ -80,7 +80,7 @@ bse_sources = $(strip \
 	bsepcmdevice.cc		bsepcmdevice-oss.cc	bsepcmdevice-null.cc		bseplugin.c \
 	bseprocedure.c		bseproject.cc		bsescripthelper.c		bseserver.cc \
 	bsesnet.cc		bsesnooper.c		bsesong.cc			bsesequencer.cc \
-	bsesource.cc		bsestandardosc.cc	bsestandardsynths.cc		bsestorage.c \
+	bsesource.cc		bsestandardosc.cc	bsestandardsynths.cc		bsestorage.cc \
 	bseinstrumentoutput.cc	bsesubiport.cc		bseinstrumentinput.cc		bsesuboport.cc \
 	bsesubsynth.cc		bsesuper.cc		bsetrack.cc			bsetype.cc \
 	bseutils.cc		bsemidivoice.c		bsewave.cc			bsewaveosc.cc \

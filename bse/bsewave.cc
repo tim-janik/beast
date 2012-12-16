@@ -419,7 +419,7 @@ bse_wave_store_private (BseObject  *object,
     }
 }
 
-static SfiTokenType
+static GTokenType
 parse_wave_chunk (BseWave         *wave,
 		  BseStorage      *storage,
                   GScanner        *scanner,
@@ -437,38 +437,38 @@ parse_wave_chunk (BseWave         *wave,
       pwchunk->xinfos = NULL;
       GTokenType token = bse_storage_parse_xinfos (storage, &pwchunk->xinfos);
       if (token != G_TOKEN_NONE)
-        return SfiTokenType (token);
+        return token;
     }
   else if (bse_storage_match_data_handle (storage, quark))
     {
-      guint expected_token;
+      GTokenType expected_token;
       if (pwchunk->data_handle)
-	return (SfiTokenType) bse_storage_warn_skip (storage, "duplicate wave data reference");
+	return bse_storage_warn_skip (storage, "duplicate wave data reference");
       expected_token = bse_storage_parse_data_handle_rest (storage,
                                                            &pwchunk->data_handle,
                                                            &pwchunk->wh_n_channels,
                                                            &pwchunk->wh_mix_freq,
                                                            &pwchunk->wh_osc_freq);
       if (expected_token != G_TOKEN_NONE)
-	return SfiTokenType (expected_token);
+	return expected_token;
       if (!pwchunk->data_handle)
         bse_storage_warn (storage, "invalid wave data reference");
       /* closing brace already parsed by bse_storage_parse_data_handle_rest() */
-      return SFI_TOKEN_NONE;
+      return G_TOKEN_NONE;
     }
   else if (BSE_STORAGE_COMPAT (storage, 0, 5, 1) && quark == quark_wave_handle)
     {
-      guint expected_token;
+      GTokenType expected_token;
       g_scanner_get_next_token (scanner); /* eat identifier */
       if (pwchunk->data_handle)
-	return (SfiTokenType) bse_storage_warn_skip (storage, "duplicate wave data reference");
+	return bse_storage_warn_skip (storage, "duplicate wave data reference");
       expected_token = bse_storage_parse_data_handle (storage,
                                                       &pwchunk->data_handle,
                                                       &pwchunk->wh_n_channels,
                                                       &pwchunk->wh_mix_freq,
                                                       &pwchunk->wh_osc_freq);
       if (expected_token != G_TOKEN_NONE)
-	return SfiTokenType (expected_token);
+	return expected_token;
       if (!pwchunk->data_handle)
         bse_storage_warn (storage, "invalid wave data reference");
     }
@@ -494,10 +494,10 @@ parse_wave_chunk (BseWave         *wave,
     }
   else
     return SFI_TOKEN_UNMATCHED;
-  return g_scanner_get_next_token (scanner) == ')' ? SFI_TOKEN_NONE : SfiTokenType (')');
+  return g_scanner_get_next_token (scanner) == ')' ? G_TOKEN_NONE : GTokenType (')');
 }
 
-static SfiTokenType
+static GTokenType
 bse_wave_restore_private (BseObject  *object,
 			  BseStorage *storage,
                           GScanner   *scanner)
@@ -518,7 +518,7 @@ bse_wave_restore_private (BseObject  *object,
       gchar **xinfos = NULL;
       GTokenType token = bse_storage_parse_xinfos (storage, &xinfos);
       if (token != G_TOKEN_NONE)
-        return SfiTokenType (token);
+        return token;
       guint i = 0;
       for (i = 0; xinfos && xinfos[i]; i++)
         wave->xinfos = bse_xinfos_parse_assignment (wave->xinfos, xinfos[i]);
@@ -538,7 +538,7 @@ bse_wave_restore_private (BseObject  *object,
       if (g_scanner_get_next_token (scanner) != G_TOKEN_STRING)
 	{
 	  g_free (file_name);
-	  return SfiTokenType (G_TOKEN_STRING);
+	  return G_TOKEN_STRING;
 	}
       wave_name = g_strdup (scanner->value.v_string);
       skip_list = bse_freq_array_new (1024);
@@ -600,14 +600,14 @@ bse_wave_restore_private (BseObject  *object,
       if (g_scanner_get_next_token (scanner) != G_TOKEN_STRING)
 	{
 	  g_free (file_name);
-	  return SfiTokenType (G_TOKEN_STRING);
+	  return G_TOKEN_STRING;
 	}
       gchar *wave_name = g_strdup (scanner->value.v_string);
       if (g_scanner_get_next_token (scanner) != ')')
 	{
 	  g_free (file_name);
 	  g_free (wave_name);
-	  return SfiTokenType (')');
+	  return GTokenType (')');
 	}
       // g_print ("set-locator \"%s\" \"%s\"\n", file_name, wave_name);
       bse_wave_set_locator (wave, file_name, wave_name);
@@ -689,7 +689,7 @@ bse_wave_restore_private (BseObject  *object,
   else /* chain parent class' handler */
     expected_token = (GTokenType) BSE_OBJECT_CLASS (parent_class)->restore_private (object, storage, scanner);
 
-  return SfiTokenType (expected_token);
+  return expected_token;
 }
 
 void

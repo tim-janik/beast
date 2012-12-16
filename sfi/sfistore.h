@@ -36,17 +36,13 @@ typedef struct
   guint    flushed : 1;
   gchar    comment_start;
 } SfiWStore;
-typedef enum    /*< skip >*/
-{
-  SFI_TOKEN_NONE = G_TOKEN_NONE, // convenience
-  SFI_TOKEN_UNMATCHED   = G_TOKEN_LAST + 1,
-  SFI_TOKEN_LAST
-} SfiTokenType;
+#define SFI_TOKEN_UNMATCHED     ((GTokenType) (G_TOKEN_LAST + 1))
+#define SFI_TOKEN_LAST          ((GTokenType) (SFI_TOKEN_UNMATCHED + 1))
 typedef struct _SfiRStore SfiRStore;
-typedef SfiTokenType (*SfiStoreParser)  (gpointer        context_data,
-                                         SfiRStore      *rstore, /* parser_this */
-                                         GScanner       *scanner,
-                                         gpointer        user_data);
+typedef GTokenType (*SfiStoreParser)  (gpointer        context_data,
+                                       SfiRStore      *rstore, /* parser_this */
+                                       GScanner       *scanner,
+                                       gpointer        user_data);
 struct _SfiRStore
 {
   GScanner      *scanner;
@@ -140,18 +136,20 @@ void            sfi_rstore_quick_scan         (SfiRStore      *rstore,
 
 
 /* --- convenience --- */
-#define sfi_scanner_parse_or_return(scanner, token)  G_STMT_START{ \
-  SfiTokenType _t = (SfiTokenType) (token); \
-  if ((SfiTokenType) g_scanner_get_next_token (scanner) != _t) \
-    return _t; \
-}G_STMT_END
-#define sfi_scanner_peek_or_return(scanner, token)   G_STMT_START{ \
-  GScanner *__s = (scanner); SfiTokenType _t = (SfiTokenType) (token); \
-  if ((SfiTokenType) g_scanner_peek_next_token (__s) != _t) { \
-    g_scanner_get_next_token (__s); /* advance position for error-handler */ \
-    return _t; \
-  } \
-}G_STMT_END
+#define sfi_scanner_parse_or_return(scanner, token)  G_STMT_START {     \
+  GTokenType _t = GTokenType (token);                                   \
+  if (g_scanner_get_next_token (scanner) != _t)                         \
+    return _t;                                                          \
+} G_STMT_END
+#define sfi_scanner_peek_or_return(scanner, token)   G_STMT_START {     \
+  GTokenType _t = GTokenType (token);                                   \
+  GScanner *__s = (scanner);                                            \
+  if (g_scanner_peek_next_token (__s) != _t)                            \
+    {                                                                   \
+      g_scanner_get_next_token (__s); /* advance to error pos */        \
+      return _t;                                                        \
+    }                                                                   \
+} G_STMT_END
 
 
 G_END_DECLS
