@@ -22,6 +22,7 @@
 #include "gslcommon.h"
 #include "bseproject.h"
 #include "bseparasite.h"
+#include "bsecxxplugin.hh"
 #include <unistd.h>
 #include <fcntl.h>
 #include <stdlib.h>
@@ -175,7 +176,7 @@ bse_storage_turn_readable (BseStorage  *self,
   bse_storage_break (self);
 
   cmem = sfi_wstore_peek_text (self->wstore, &l);
-  text = g_memdup (cmem, l + 1);
+  text = (char*) g_memdup (cmem, l + 1);
   dblocks = self->dblocks;
   n_dblocks = self->n_dblocks;
   self->dblocks = NULL;
@@ -281,9 +282,9 @@ bse_storage_prepare_write (BseStorage    *self,
   self->wstore = sfi_wstore_new ();
   self->stored_items = sfi_ppool_new ();
   self->referenced_items = sfi_ppool_new ();
-  mode &= BSE_STORAGE_MODE_MASK;
+  mode = BseStorageMode (mode & BSE_STORAGE_MODE_MASK);
   if (mode & BSE_STORAGE_DBLOCK_CONTAINED)
-    mode |= BSE_STORAGE_SELF_CONTAINED;
+    mode = BseStorageMode (mode | BSE_STORAGE_SELF_CONTAINED);
   BSE_OBJECT_SET_FLAGS (self, mode);
   bse_storage_break (self);
   bse_storage_printf (self, "(bse-version \"%u.%u.%u\")\n\n", BSE_MAJOR_VERSION, BSE_MINOR_VERSION, BSE_MICRO_VERSION);
@@ -382,7 +383,7 @@ storage_add_item_link (BseStorage           *self,
 {
   BseStorageItemLink *ilink = g_new0 (BseStorageItemLink, 1);
   self->item_links = sfi_ring_append (self->item_links, ilink);
-  ilink->from_item = g_object_ref (from_item);
+  ilink->from_item = (BseItem*) g_object_ref (from_item);
   ilink->restore_link = restore_link;
   ilink->data = data;
   ilink->error = error;
@@ -421,7 +422,7 @@ bse_storage_finish_parsing (BseStorage *self)
 
   while (self->item_links)
     {
-      BseStorageItemLink *ilink = sfi_ring_pop_head (&self->item_links);
+      BseStorageItemLink *ilink = (BseStorageItemLink*) sfi_ring_pop_head (&self->item_links);
 
       if (ilink->error)
         {
@@ -487,7 +488,7 @@ bse_storage_finish_parsing (BseStorage *self)
 const gchar*
 bse_storage_item_get_compat_type (BseItem *item)
 {
-  const gchar *type = g_object_get_data (item, "BseStorage-compat-type");
+  const gchar *type = (const char*) g_object_get_data ((GObject*) item, "BseStorage-compat-type");
   if (!type)
     type = G_OBJECT_TYPE_NAME (item);
   return type;
@@ -502,7 +503,7 @@ typedef struct {
 static guint
 uname_child_hash (gconstpointer uc)
 {
-  const UNameChild *uchild = uc;
+  const UNameChild *uchild = (const UNameChild*) uc;
   guint h = g_str_hash (uchild->uname);
   h ^= G_HASH_LONG ((long) uchild->container);
   return h;
@@ -512,8 +513,8 @@ static gint
 uname_child_equals (gconstpointer uc1,
                     gconstpointer uc2)
 {
-  const UNameChild *uchild1 = uc1;
-  const UNameChild *uchild2 = uc2;
+  const UNameChild *uchild1 = (const UNameChild*) uc1;
+  const UNameChild *uchild2 = (const UNameChild*) uc2;
   return (bse_string_equals (uchild1->uname, uchild2->uname) &&
           uchild1->container == uchild2->container);
 }
@@ -521,7 +522,7 @@ uname_child_equals (gconstpointer uc1,
 static void
 uname_child_free (gpointer uc)
 {
-  UNameChild *uchild = uc;
+  UNameChild *uchild = (UNameChild*) uc;
   g_object_unref (uchild->container);
   g_free (uchild->uname);
   g_object_unref (uchild->item);
@@ -534,21 +535,21 @@ storage_path_table_insert (BseStorage   *self,
                            const gchar  *uname,
                            BseItem      *item)
 {
-  UNameChild key, *uchild;
+  UNameChild key;
   key.container = container;
-  key.uname = (gchar*) uname;
-  uchild = g_hash_table_lookup (self->path_table, &key);
+  key.uname = (char*) uname;
+  UNameChild *uchild = (UNameChild*) g_hash_table_lookup (self->path_table, &key);
   if (!uchild)
     {
       uchild = g_new (UNameChild, 1);
-      uchild->container = g_object_ref (container);
+      uchild->container = (BseContainer*) g_object_ref (container);
       uchild->uname = g_strdup (uname);
       uchild->item = NULL;
       g_hash_table_insert (self->path_table, uchild, uchild);
     }
   if (uchild->item)
     g_object_unref (uchild->item);
-  uchild->item = g_object_ref (item);
+  uchild->item = (BseItem*) g_object_ref (item);
   DEBUG ("INSERT: (%p,%s) => %p", container, uname, item);
 }
 
@@ -560,7 +561,7 @@ storage_path_table_lookup (BseStorage   *self,
   UNameChild key, *uchild;
   key.container = container;
   key.uname = (gchar*) uname;
-  uchild = g_hash_table_lookup (self->path_table, &key);
+  uchild = (UNameChild*) g_hash_table_lookup (self->path_table, &key);
   DEBUG ("LOOKUP: (%p,%s) => %p", container, uname, uchild ? uchild->item : NULL);
   if (uchild)
     return uchild->item;
@@ -601,10 +602,10 @@ item_link_resolved (gpointer     data,
                     const gchar *error)
 {
   if (error)
-    bse_storage_warn (self, error);
+    bse_storage_warn (self, "%s", error);
   else
     {
-      GParamSpec *pspec = data;
+      GParamSpec *pspec = (GParamSpec*) data;
       GValue value = { 0, };
 
       g_value_init (&value, G_PARAM_SPEC_VALUE_TYPE (pspec));
@@ -615,10 +616,7 @@ item_link_resolved (gpointer     data,
     }
 }
 
-static SfiTokenType item_restore_try_statement (gpointer    item,
-                                                BseStorage *self,
-                                                GScanner   *scanner,
-                                                gpointer    user_data);
+static GTokenType item_restore_try_statement (gpointer item, BseStorage *self, GScanner *scanner, gpointer user_data);
 
 static GTokenType
 restore_item_property (BseItem    *item,
@@ -708,10 +706,10 @@ restore_source_automation (BseItem    *item,
   gint midi_channel = scanner->value.v_int64;
   /* parse control type */
   parse_or_return (scanner, G_TOKEN_IDENTIFIER);
-  BseMidiControlType control_type = sfi_choice2enum (scanner->value.v_identifier, BSE_TYPE_MIDI_CONTROL_TYPE);
+  BseMidiControlType control_type = (BseMidiControlType) sfi_choice2enum (scanner->value.v_identifier, BSE_TYPE_MIDI_CONTROL_TYPE);
   /* close statement */
   parse_or_return (scanner, ')');
-  BseErrorType error = bse_source_set_automation_property (BSE_SOURCE (item), pspec->name, midi_channel, control_type);
+  BseErrorType error = bse_source_set_automation_property (BSE_SOURCE (item), pspec->name, midi_channel, BseMidiSignalType (control_type));
   if (error)
     bse_storage_warn (self, "failed to automate property \"%s\": %s", pspec->name, bse_error_blurb (error));
   return G_TOKEN_NONE;
@@ -765,7 +763,7 @@ restore_container_child (BseContainer *container,
   g_free (type_name);
   item = bse_container_retrieve_child (container, tmp);
   if (item)
-    g_object_set_data_full (item, "BseStorage-compat-type", compat_type, g_free);
+    g_object_set_data_full ((GObject*) item, "BseStorage-compat-type", compat_type, g_free);
   else
     g_free (compat_type);
   g_free (tmp);
@@ -786,12 +784,13 @@ restore_container_child (BseContainer *container,
   return expected_token;
 }
 
-static SfiTokenType
-item_restore_try_statement (gpointer    item,
+static GTokenType
+item_restore_try_statement (gpointer    _item,
                             BseStorage *self,
                             GScanner   *scanner,
                             gpointer    user_data)
 {
+  BseItem *item = BSE_ITEM (_item);
   GTokenType expected_token = SFI_TOKEN_UNMATCHED;
 
   /* ensure that the statement starts out with an identifier */
@@ -817,13 +816,13 @@ item_restore_try_statement (gpointer    item,
     expected_token = restore_source_automation (item, self);
 
   if (expected_token == SFI_TOKEN_UNMATCHED)
-    expected_token = BSE_OBJECT_GET_CLASS (item)->restore_private (item, self, scanner);
+    expected_token = BSE_OBJECT_GET_CLASS (item)->restore_private ((BseObject*) item, self, scanner);
 
   if (expected_token == SFI_TOKEN_UNMATCHED)
-    expected_token = bse_parasite_restore (item, self);
+    expected_token = bse_parasite_restore ((BseObject*) item, self);
 
   if (expected_token == SFI_TOKEN_UNMATCHED && BSE_IS_CONTAINER (item))
-    expected_token = restore_container_child (item, self);
+    expected_token = restore_container_child ((BseContainer*) item, self);
 
   if (expected_token == SFI_TOKEN_UNMATCHED && strcmp (scanner->next_value.v_identifier, "bse-version") == 0)
     expected_token = storage_parse_bse_version (self);
@@ -861,7 +860,7 @@ bse_storage_parse_rest (BseStorage     *self,
   g_return_val_if_fail (BSE_IS_STORAGE (self), G_TOKEN_ERROR);
   g_return_val_if_fail (self->rstore != NULL, G_TOKEN_ERROR);
 
-  return sfi_rstore_parse_until (self->rstore, ')', context_data, (SfiStoreParser) try_statement, user_data);
+  return sfi_rstore_parse_until (self->rstore, GTokenType (')'), context_data, (SfiStoreParser) try_statement, user_data);
 }
 
 gboolean
@@ -1020,7 +1019,7 @@ bse_storage_parse_item_link (BseStorage           *self,
             }
 
           parse_or_goto (G_TOKEN_STRING, error_parse_link);
-          peek_or_goto (')', error_parse_link);
+          peek_or_goto (GTokenType (')'), error_parse_link);
 
           ilink = storage_add_item_link (self, from_item, restore_link, data, NULL);
           ilink->upath = g_strdup (scanner->value.v_string);
@@ -1031,11 +1030,11 @@ bse_storage_parse_item_link (BseStorage           *self,
           expected_token = G_TOKEN_IDENTIFIER;
           goto error_parse_link;
         }
-      parse_or_goto (')', error_parse_link);
+      parse_or_goto (GTokenType (')'), error_parse_link);
     }
   else
     {
-      expected_token = '(';
+      expected_token = GTokenType ('(');
       goto error_parse_link;
     }
 
@@ -1123,7 +1122,7 @@ bse_item_store_property (BseItem    *item,
       bse_storage_putc (storage, '(');
       bse_storage_puts (storage, pspec->name);
       bse_storage_putc (storage, ' ');
-      bse_storage_put_item_link (storage, item, g_value_get_object (value));
+      bse_storage_put_item_link (storage, item, (BseItem*) g_value_get_object (value));
       bse_storage_putc (storage, ')');
     }
   else if (g_type_is_a (G_VALUE_TYPE (value), G_TYPE_OBJECT))
@@ -1139,9 +1138,9 @@ bse_source_store_automation (BseSource  *source,
                              GParamSpec *pspec)
 {
   guint midi_channel = 0;
-  BseMidiSignalType signal_type = 0;
+  BseMidiSignalType signal_type = BseMidiSignalType (0);
   bse_source_get_automation_property (source, pspec->name, &midi_channel, &signal_type);
-  BseMidiControlType control_type = signal_type;
+  BseMidiControlType control_type = BseMidiControlType (signal_type);
   if (control_type)
     {
       bse_storage_break (storage);
@@ -1181,8 +1180,7 @@ store_item_properties (BseItem    *item,
 }
 
 void
-bse_storage_store_item (BseStorage *self,
-                        gpointer    item)
+bse_storage_store_item (BseStorage *self, BseItem *item)
 {
   g_return_if_fail (BSE_IS_STORAGE (self));
   g_return_if_fail (self->wstore);
@@ -1200,15 +1198,14 @@ bse_storage_store_item (BseStorage *self,
   bse_parasite_store (BSE_OBJECT (item), self);
 
   if (BSE_IS_CONTAINER (item))
-    bse_container_store_children (item, self);
+    bse_container_store_children ((BseContainer*) item, self);
 
   g_object_unref (item);
   g_object_unref (self);
 }
 
 void
-bse_storage_store_child (BseStorage *self,
-                         gpointer    item)
+bse_storage_store_child (BseStorage *self, BseItem *item)
 {
   gchar *uname;
 
@@ -1330,7 +1327,7 @@ bse_storage_parse_xinfos (BseStorage *self,
           return G_TOKEN_NONE;
         }
       /* everything else, even #t is bogus */
-      return 'f';
+      return GTokenType ('f');
     }
   else if (scanner->token == '(')
     {
@@ -1347,7 +1344,7 @@ bse_storage_parse_xinfos (BseStorage *self,
       return G_TOKEN_NONE;
     }
   else
-    return '(';
+    return GTokenType ('(');
 }
 
 static GTokenType
@@ -1395,7 +1392,7 @@ typedef struct {
 static void
 wstore_data_handle_destroy (gpointer data)
 {
-  WStoreDHandle *wh = data;
+  WStoreDHandle *wh = (WStoreDHandle*) data;
   if (wh->opened)
     gsl_data_handle_close (wh->dhandle);
   gsl_data_handle_unref (wh->dhandle);
@@ -1407,7 +1404,7 @@ wstore_data_handle_reader (gpointer data,
                            void    *buffer,
                            guint    blength)
 {
-  WStoreDHandle *wh = data;
+  WStoreDHandle *wh = (WStoreDHandle*) data;
   GslLong n;
   
   if (!wh->opened)
@@ -1426,7 +1423,7 @@ wstore_data_handle_reader (gpointer data,
     return 0;
 
   do
-    n = gsl_data_handle_read (wh->dhandle, wh->length, blength / sizeof (gfloat), buffer);
+    n = gsl_data_handle_read (wh->dhandle, wh->length, blength / sizeof (gfloat), (float*) buffer);
   while (n < 0 && errno == EINTR);
   if (n < 0)    /* bail out */
     {
@@ -1435,7 +1432,7 @@ wstore_data_handle_reader (gpointer data,
     }
   wh->length += n;
 
-  return gsl_conv_from_float_clip (wh->format, wh->byte_order, buffer, buffer, n);
+  return gsl_conv_from_float_clip (GslWaveFormatType (wh->format), wh->byte_order, (const float*) buffer, buffer, n);
 }
 
 void
@@ -1480,15 +1477,16 @@ bse_storage_put_data_handle (BseStorage    *self,
     {
       if (significant_bits < 1)
         significant_bits = 32;
-      guint format = gsl_data_handle_bit_depth (dhandle);
-      significant_bits = MIN (format, significant_bits);
+      const uint bitdepth = gsl_data_handle_bit_depth (dhandle);
+      significant_bits = MIN (bitdepth, significant_bits);
+      GslWaveFormatType format;
       if (significant_bits > 16)
         format = GSL_WAVE_FORMAT_FLOAT;
       else if (significant_bits <= 8)
         format = GSL_WAVE_FORMAT_SIGNED_8;
       else
         format = GSL_WAVE_FORMAT_SIGNED_16;
-      
+
       bse_storage_break (self);
       bse_storage_printf (self,
                           "(%s %u %s %s",
@@ -1524,7 +1522,7 @@ parse_raw_data_handle (BseStorage     *self,
                        gfloat         *osc_freq_p)
 {
   GScanner *scanner = bse_storage_get_scanner (self);
-  guint n_channels, format, byte_order;
+  guint n_channels, byte_order;
   gfloat mix_freq, osc_freq;
   SfiNum offset, length;
   GTokenType token;
@@ -1535,10 +1533,10 @@ parse_raw_data_handle (BseStorage     *self,
     return bse_storage_warn_skip (self, "invalid number of channels: %u", n_channels);
 
   parse_or_return (scanner, G_TOKEN_IDENTIFIER);
-  format = gsl_wave_format_from_string (scanner->value.v_identifier);
+  GslWaveFormatType format = gsl_wave_format_from_string (scanner->value.v_identifier);
   if (format == GSL_WAVE_FORMAT_NONE)
     return bse_storage_warn_skip (self, "unknown format for data handle: %s", scanner->value.v_identifier);
-  
+
   parse_or_return (scanner, G_TOKEN_IDENTIFIER);
   byte_order = gsl_byte_order_from_string (scanner->value.v_identifier);
   if (!byte_order)
