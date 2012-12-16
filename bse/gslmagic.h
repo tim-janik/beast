@@ -27,14 +27,15 @@ extern "C" {
 
 
 /* --- structures --- */
+typedef struct _GslRealMagic GslRealMagic;
 struct _GslMagic
 {
   gpointer data;
   gchar   *extension;
 
   /*< private >*/
-  gint     priority;
-  gpointer match_list;
+  gint          priority;
+  GslRealMagic *match_list;
 };
 
 

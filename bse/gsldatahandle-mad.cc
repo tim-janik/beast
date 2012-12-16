@@ -164,7 +164,7 @@ check_frame_validity (MadHandle         *handle,
 		      struct mad_header *header)
 {
   guint frame_size = MAD_NSBSAMPLES (header) * 32;
-  gchar *reason = NULL;
+  const char *reason = NULL;
 
   if (frame_size <= 0)
     reason = "frame_size < 1";
@@ -202,7 +202,7 @@ read_next_frame_header (MadHandle *handle)
 	  /* read on */
 	  if (!stream_read (handle))
 	    {
-	      handle->error = handle->eof ? 0 : gsl_error_from_errno (errno, BSE_ERROR_FILE_EOF);
+	      handle->error = handle->eof ? BSE_ERROR_NONE : gsl_error_from_errno (errno, BSE_ERROR_FILE_EOF);
 	      return FALSE;
 	    }
 	  return read_next_frame_header (handle);	/* retry */
@@ -214,7 +214,7 @@ read_next_frame_header (MadHandle *handle)
       succeeded = FALSE;
     }
 
-  handle->error = handle->stream.error ? error_from_mad_stream (&handle->stream, BSE_ERROR_FILE_SEEK_FAILED) : 0;
+  handle->error = handle->stream.error ? error_from_mad_stream (&handle->stream, BSE_ERROR_FILE_SEEK_FAILED) : BSE_ERROR_NONE;
 
   return succeeded;
 }
@@ -238,7 +238,7 @@ pcm_frame_read (MadHandle *handle,
 	  /* read on */
 	  if (!stream_read (handle))
 	    {
-	      handle->error = handle->eof ? 0 : gsl_error_from_errno (errno, BSE_ERROR_FILE_READ_FAILED);
+	      handle->error = handle->eof ? BSE_ERROR_NONE : gsl_error_from_errno (errno, BSE_ERROR_FILE_READ_FAILED);
 	      return FALSE;
 	    }
 	  return pcm_frame_read (handle, synth);	/* retry */
@@ -259,7 +259,7 @@ pcm_frame_read (MadHandle *handle,
   if (!succeeded && handle->stream.error)
     handle->error = error_from_mad_stream (&handle->stream, BSE_ERROR_FILE_READ_FAILED);
   else
-    handle->error = 0;
+    handle->error = BSE_ERROR_NONE;
   return succeeded;
 }
 
@@ -267,8 +267,7 @@ static guint*
 create_seek_table (MadHandle *handle,
 		   guint     *n_seeks_p)
 {
-  guint *seeks = NULL;
-  guint offs, n_seeks = 0;
+  uint *seeks = NULL, n_seeks = 0;
 
   *n_seeks_p = 0;
   mad_synth_finish (&handle->synth);
@@ -279,7 +278,6 @@ create_seek_table (MadHandle *handle,
   mad_synth_init (&handle->synth);
   mad_stream_options (&handle->stream, handle->stream_options);
 
-  offs = 0;
   /* lseek (handle->hfile, offs, SEEK_SET) */
   handle->eof = FALSE;
   handle->bfill = 0;
@@ -334,7 +332,6 @@ create_seek_table (MadHandle *handle,
   while (!handle->eof);
       
   /* reset file offset */
-  offs = 0;
   /* lseek (handle->hfile, offs, SEEK_SET) */
   handle->eof = FALSE;
   handle->file_pos = 0;
@@ -697,7 +694,7 @@ dh_mad_new (const gchar  *file_name,
       handle->eof = FALSE;
       handle->hfile = NULL;
       handle->file_pos = 0;
-      handle->error = 0;
+      handle->error = BSE_ERROR_NONE;
       handle->n_seeks = 0;
       handle->seeks = NULL;
       handle->seek_mtime = -1;
@@ -712,7 +709,7 @@ dh_mad_new (const gchar  *file_name,
 	{
 	  if (!skip_seek_keep_open)
 	    gsl_data_handle_close (&handle->dhandle);
-          *errorp = 0;
+          *errorp = BSE_ERROR_NONE;
 	  return &handle->dhandle;
 	}
       MAD_DEBUG ("failed to open \"%s\": %s", file_name, handle->stream.error ? mad_stream_errorstr (&handle->stream) : bse_error_blurb (error));
@@ -737,7 +734,7 @@ gsl_data_handle_new_mad_err (const gchar  *file_name,
   g_return_val_if_fail (file_name != NULL, NULL);
   g_return_val_if_fail (osc_freq > 0, NULL);
 
-  BseErrorType error = 0;
+  BseErrorType error = BSE_ERROR_NONE;
   return dh_mad_new (file_name, osc_freq, FALSE, errorp ? errorp : &error);
 }
 
@@ -751,7 +748,7 @@ gsl_data_handle_mad_testopen (const gchar *file_name,
   
   g_return_val_if_fail (file_name != NULL, BSE_ERROR_INTERNAL);
 
-  BseErrorType error = 0;
+  BseErrorType error = BSE_ERROR_NONE;
   dhandle = dh_mad_new (file_name, 439, TRUE, &error);
   if (!dhandle)
     return error ? error : BSE_ERROR_FILE_OPEN_FAILED;

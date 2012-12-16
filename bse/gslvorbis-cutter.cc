@@ -87,11 +87,11 @@ static void
 enqueue_page (SfiRing **dblocks,
               ogg_page *opage)
 {
-  CDataBlock *dblock = g_malloc (sizeof (CDataBlock) - sizeof (dblock->data[0]) + opage->header_len);
+  CDataBlock *dblock = (CDataBlock*) g_malloc (sizeof (CDataBlock) - sizeof (dblock->data[0]) + opage->header_len);
   dblock->length = opage->header_len;
   memcpy (dblock->data, opage->header, dblock->length);
   *dblocks = sfi_ring_append (*dblocks, dblock);
-  dblock = g_malloc (sizeof (CDataBlock) - sizeof (dblock->data[0]) + opage->body_len);
+  dblock = (CDataBlock*) g_malloc (sizeof (CDataBlock) - sizeof (dblock->data[0]) + opage->body_len);
   dblock->length = opage->body_len;
   memcpy (dblock->data, opage->body, dblock->length);
   *dblocks = sfi_ring_append (*dblocks, dblock);
@@ -104,7 +104,7 @@ gsl_vorbis_cutter_new (void)
 {
   GslVorbisCutter *self = g_new0 (GslVorbisCutter, 1);
   self->cutpoint = 0;
-  self->cutmode = 0;
+  self->cutmode = GSL_VORBIS_CUTTER_NONE;
   self->eos = FALSE;
   self->dblock_offset = 0;
   self->dblocks = NULL;
@@ -219,7 +219,7 @@ gsl_vorbis_cutter_read_ogg (GslVorbisCutter *self,
 
   while (n_bytes && self->dblocks)
     {
-      CDataBlock *dblock = self->dblocks->data;
+      CDataBlock *dblock = (CDataBlock*) self->dblocks->data;
       guint l = MIN (n_bytes, dblock->length - self->dblock_offset);
       memcpy (bytes, dblock->data + self->dblock_offset, l);
       n_bytes -= l;
@@ -300,7 +300,7 @@ vorbis_cutter_process_paket (GslVorbisCutter *self,
       if (self->n_packets > 3)  /* audio packet */
         {
           gboolean last_on_page = FALSE;
-          DEBUG ("packet[%d]: b_o_s=%ld e_o_s=%ld packetno=%lld pgran=%lld granule=%lld", self->n_packets - 1,
+          DEBUG ("packet[%d]: b_o_s=%ld e_o_s=%ld packetno=%ld pgran=%ld granule=%ld", self->n_packets - 1,
                  opacket->b_o_s, opacket->e_o_s,
                  opacket->packetno, opacket->granulepos,
                  self->tracking_granule);
@@ -335,7 +335,7 @@ vorbis_cutter_process_paket (GslVorbisCutter *self,
               }
         }
       else
-        DEBUG ("packet[%d]: b_o_s=%ld e_o_s=%ld packetno=%lld pgran=%lld", self->n_packets - 1,
+        DEBUG ("packet[%d]: b_o_s=%ld e_o_s=%ld packetno=%ld pgran=%ld", self->n_packets - 1,
                opacket->b_o_s, opacket->e_o_s,
                opacket->packetno, opacket->granulepos);
       /* copy packet to output stream */
@@ -382,7 +382,7 @@ gsl_vorbis_cutter_write_ogg (GslVorbisCutter *self,
   if (!self->eos)
     {
       ogg_page opage;
-      guint8 *buffer = ogg_sync_buffer (&self->isync, n_bytes);
+      guint8 *buffer = (guint8*) ogg_sync_buffer (&self->isync, n_bytes);
       memcpy (buffer, bytes, n_bytes);
       ogg_sync_wrote (&self->isync, n_bytes);
       /* process incoming data page wise */

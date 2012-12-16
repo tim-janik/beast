@@ -234,7 +234,7 @@ gsl_error_select (guint           n_errors,
 {
   BseErrorType *errors = g_new (BseErrorType, MAX (1, n_errors));
   va_list args;
-  guint i, e, score;
+  guint i, score;
   /* function used to select a descriptive error in
    * multi-error scenarios
    */
@@ -242,12 +242,12 @@ gsl_error_select (guint           n_errors,
   for (i = 0; i < n_errors; i++)
     {
       if (i)
-        first_error = va_arg (args, BseErrorType);
+        first_error = (BseErrorType) va_arg (args, int); // BseErrorType
       errors[i] = first_error;
     }
   va_end (args);
   /* grab first error, unless followed by an error with higher score */
-  e = errors[0];
+  BseErrorType e = errors[0];
   score = score_error (e);
   for (i = 1; i < n_errors; i++)
     {
@@ -326,11 +326,11 @@ gsl_progress_wipe (GslProgressState *pstate)
 
   if (pstate->wipe_length)
     {
-      gchar *wstr = g_malloc (pstate->wipe_length + 1 + 1);
+      char *wstr = (char*) g_malloc (pstate->wipe_length + 1 + 1);
       memset (wstr, ' ', pstate->wipe_length);
       wstr[pstate->wipe_length] = '\r';
       wstr[pstate->wipe_length + 1] = 0;
-      g_printerr (wstr);
+      g_printerr ("%s", wstr);
       g_free (wstr);
       pstate->wipe_length = 0;
     }

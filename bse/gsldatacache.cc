@@ -552,7 +552,7 @@ gsl_data_cache_unref_node (GslDataCache     *dcache,
       if (current_mem > cache_mem)              /* round-robin cache trashing */
 	{
 	  guint dcache_count, needs_unlock;
-	  dcache = sfi_ring_pop_head (&global_dcache_list);
+	  dcache = (GslDataCache*) sfi_ring_pop_head (&global_dcache_list);
 	  GSL_SPIN_LOCK (&dcache->mutex);
 	  dcache->ref_count++;
 	  global_dcache_list = sfi_ring_append (global_dcache_list, dcache);
@@ -625,7 +625,7 @@ gsl_data_cache_from_dhandle (GslDataHandle *dhandle,
   GSL_SPIN_LOCK (&global_dcache_mutex);
   for (ring = global_dcache_list; ring; ring = sfi_ring_walk (ring, global_dcache_list))
     {
-      GslDataCache *dcache = ring->data;
+      GslDataCache *dcache = (GslDataCache*) ring->data;
 
       if (dcache->dhandle == dhandle && dcache->padding >= min_padding)
 	{

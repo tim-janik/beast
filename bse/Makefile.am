@@ -60,11 +60,11 @@ bse_public_headers = $(strip \
 )
 # BSE C & C++ sources
 bse_sources = $(strip \
-	gslfft.c		gsloscillator.c	gsldatahandle.c	gslwavechunk.cc \
-	gslfilter.c		gslcommon.c \
-	gsldatahandle-vorbis.c	gslvorbis-enc.c	gsldatacache.c	gslvorbis-cutter.c \
-	gsldatahandle-mad.c	           	gslfilehash.c	gsldatautils.c	\
-	gslwaveosc.cc		gslosctable.c	gslmagic.c	                 \
+	gslfft.c		gsloscillator.cc	gsldatahandle.cc	gslwavechunk.cc \
+	gslfilter.cc		gslcommon.cc \
+	gsldatahandle-vorbis.cc	gslvorbis-enc.cc	gsldatacache.cc	gslvorbis-cutter.cc \
+	gsldatahandle-mad.cc	           	gslfilehash.cc	gsldatautils.cc	\
+	gslwaveosc.cc		gslosctable.cc	gslmagic.cc	                 \
 	\
 	bseengine.c		bseenginemaster.c	bseengineschedule.c		bseengineutils.c \
 	bsebus.cc		bsecategories.cc 	\
@@ -125,7 +125,7 @@ EXTRA_DIST += $(strip \
 	mktypes.pl	mkcalls.pl	mkcproc.pl		\
 	bseconfig.h.in	bsepcmmodule.cc				\
 	bsewave.header						\
-	gsl-fftgen.pl	gsl-fftconf.sh	gsloscillator-aux.c	\
+	gsl-fftgen.pl	gsl-fftconf.sh	gsloscillator-aux.cc	\
 	gslincluder.c	gslwaveosc-aux.cc			\
 )
 

@@ -19,7 +19,6 @@
 #include "bsemath.h"
 #include "gslfft.h"
 #include <string.h>
-#include <sfi/gbsearcharray.h>
 
 
 static SFI_MSG_TYPE_DEFINE (debug_osc, "osc", SFI_MSG_DEBUG, NULL);
@@ -35,7 +34,7 @@ static SFI_MSG_TYPE_DEFINE (debug_osc, "osc", SFI_MSG_DEBUG, NULL);
 
 
 /* --- structures --- */
-typedef struct
+struct OscTableEntry
 {
   /* main key (osc and cache tables) */
   gfloat         mfreq;			/* [0..0.5], mix_freq relative */
@@ -46,8 +45,8 @@ typedef struct
   guint		 ref_count;
   guint		 min_pos, max_pos;	/* pulse extension */
   guint          n_values;
-  const gfloat   values[1];		/* flexible array */
-} OscTableEntry;
+  float          values[1];		/* flexible array */
+};
 
 
 /* --- prototypes --- */
@@ -81,8 +80,8 @@ static gint
 cache_table_entry_locs_cmp (gconstpointer bsearch_node1, /* key */
 			    gconstpointer bsearch_node2)
 {
-  const OscTableEntry * const *ep1 = bsearch_node1;
-  const OscTableEntry * const *ep2 = bsearch_node2;
+  const OscTableEntry *const *ep1 = (const OscTableEntry*const*) bsearch_node1;
+  const OscTableEntry *const *ep2 = (const OscTableEntry*const*) bsearch_node2;
   const OscTableEntry *e1 = *ep1;
   const OscTableEntry *e2 = *ep2;
   
@@ -101,8 +100,8 @@ static gint
 osc_table_entry_locs_cmp (gconstpointer bsearch_node1, /* key */
 			  gconstpointer bsearch_node2)
 {
-  const OscTableEntry * const *ep1 = bsearch_node1;
-  const OscTableEntry * const *ep2 = bsearch_node2;
+  const OscTableEntry *const *ep1 = (const OscTableEntry*const*) bsearch_node1;
+  const OscTableEntry *const *ep2 = (const OscTableEntry*const*) bsearch_node2;
   const OscTableEntry *e1 = *ep1;
   const OscTableEntry *e2 = *ep2;
   
@@ -115,23 +114,23 @@ cache_table_entry_lookup_best (GslOscWaveForm wave_form,
 			       gfloat         mfreq)
 {
   OscTableEntry key, *k = &key, **ep1 = NULL, **ep2, **ep3 = NULL;
-  
+
   key.mfreq = mfreq;
   key.wave_form = wave_form;
   key.filter_func = filter_func;
-  
+
   /* get exact match or a match which is one off into either direction */
-  ep2 = g_bsearch_array_lookup_sibling (cache_entries, &cache_taconfig, &k);
+  ep2 = (OscTableEntry**) g_bsearch_array_lookup_sibling (cache_entries, &cache_taconfig, &k);
   if (ep2)
     {
-      guint i = g_bsearch_array_get_index (cache_entries, &cache_taconfig, ep2);
-      
+      uint i = g_bsearch_array_get_index (cache_entries, &cache_taconfig, ep2);
+
       /* get siblings */
       if (i > 0)
-	ep1 = g_bsearch_array_get_nth (cache_entries, &cache_taconfig, i - 1);
+	ep1 = (OscTableEntry**) g_bsearch_array_get_nth (cache_entries, &cache_taconfig, i - 1);
       if (i + 1 < g_bsearch_array_get_n_nodes (cache_entries))
-	ep3 = g_bsearch_array_get_nth (cache_entries, &cache_taconfig, i + 1);
-      
+	ep3 = (OscTableEntry**) g_bsearch_array_get_nth (cache_entries, &cache_taconfig, i + 1);
+
       /* get rid of invalid matches, i.e. ones with:
        * - a different wave
        * - a different filter
@@ -182,20 +181,20 @@ osc_table_entry_lookup_best (const GslOscTable *table,
 			     gfloat	       *min_mfreq)
 {
   OscTableEntry key, *k = &key, **ep;
-  guint i;
-  
+  uint i;
+
   /* get exact match or a match which is one off into either direction */
   key.mfreq = mfreq;
-  ep = g_bsearch_array_lookup_sibling (table->entry_array, &osc_taconfig, &k);
+  ep = (OscTableEntry**) g_bsearch_array_lookup_sibling (table->entry_array, &osc_taconfig, &k);
   if (UNLIKELY (!ep))
     return NULL;	/* ugh, bad */
-  
+
   if (mfreq > (*ep)->mfreq)	/* need better filter */
     {
       i = g_bsearch_array_get_index (table->entry_array, &osc_taconfig, ep);
       if (i + 1 < g_bsearch_array_get_n_nodes (table->entry_array))
 	{
-	  ep = g_bsearch_array_get_nth (table->entry_array, &osc_taconfig, i + 1);
+	  ep = (OscTableEntry**) g_bsearch_array_get_nth (table->entry_array, &osc_taconfig, i + 1);
 	  OSC_DEBUG ("osc-lookup: want_freq=%f got_freq=%f (table=%p, i=%u, n=%u)",
 		     mfreq * table->mix_freq, (*ep)->mfreq * table->mix_freq,
 		     table, i + 1, g_bsearch_array_get_n_nodes (table->entry_array));
@@ -217,7 +216,7 @@ osc_table_entry_lookup_best (const GslOscTable *table,
       i = g_bsearch_array_get_index (table->entry_array, &osc_taconfig, ep);
       if (i > 0)
 	{
-	  OscTableEntry **tp = g_bsearch_array_get_nth (table->entry_array, &osc_taconfig, i - 1);
+	  OscTableEntry **tp = (OscTableEntry**) g_bsearch_array_get_nth (table->entry_array, &osc_taconfig, i - 1);
 	  
 	  *min_mfreq = (*tp)->mfreq;
 	}
@@ -284,7 +283,7 @@ cache_table_ref_entry (GslOscWaveForm wave_form,
        * - OscTableEntry already contains the first float values
        * - we need n_values+1 adressable floats to provide values[0] == values[n_values]
        */
-      e = g_malloc (sizeof (OscTableEntry) + sizeof (gfloat) * size);
+      e = (OscTableEntry*) g_malloc (sizeof (OscTableEntry) + sizeof (gfloat) * size);
       values = (gfloat*) &e->values[0];
       e->wave_form = wave_form;
       e->filter_func = (guint8*) filter_func;
@@ -325,11 +324,8 @@ cache_table_unref_entry (OscTableEntry *e)
   e->ref_count -= 1;
   if (e->ref_count == 0)
     {
-      OscTableEntry **ep;
-      guint i;
-      
-      ep = g_bsearch_array_lookup (cache_entries, &cache_taconfig, &e);
-      i = g_bsearch_array_get_index (cache_entries, &cache_taconfig, ep);
+      OscTableEntry **ep = (OscTableEntry**) g_bsearch_array_lookup (cache_entries, &cache_taconfig, &e);
+      uint i = g_bsearch_array_get_index (cache_entries, &cache_taconfig, ep);
       cache_entries = g_bsearch_array_remove (cache_entries, &cache_taconfig, i);
     }
 }
@@ -431,9 +427,7 @@ gsl_osc_table_free (GslOscTable *table)
   n = g_bsearch_array_get_n_nodes (table->entry_array);
   while (n--)
     {
-      OscTableEntry **ep;
-      
-      ep = g_bsearch_array_get_nth (table->entry_array, &osc_taconfig, n);
+      OscTableEntry **ep = (OscTableEntry**) g_bsearch_array_get_nth (table->entry_array, &osc_taconfig, n);
       cache_table_unref_entry (*ep);
       table->entry_array = g_bsearch_array_remove (table->entry_array, &osc_taconfig, n);
     }
@@ -452,16 +446,17 @@ gsl_osc_wave_fill_buffer (GslOscWaveForm type,
 			  guint	         n_values,
 			  gfloat	*values)
 {
-  gdouble max = n_values, hmax = max * 0.5, qmax = n_values * 0.25;
-  gint i, half = n_values / 2, quarter = half / 2;
-  
+  const double max = n_values, hmax = max * 0.5, qmax = n_values * 0.25;
+  const uint half = n_values / 2, quarter = half / 2;
+
   switch (type)
     {
-      gdouble frac, pos;
+      double frac, pos;
+      uint i;
     case GSL_OSC_WAVE_SINE:
       for (i = 0; i < n_values; i++)
 	{
-	  frac = ((gdouble) i) / max; /* [0..1[ */
+	  frac = (double (i)) / max; /* [0..1[ */
 	  pos = frac * 2. * PI;
 	  values[i] = sin (pos);
 	}
@@ -469,21 +464,21 @@ gsl_osc_wave_fill_buffer (GslOscWaveForm type,
     case GSL_OSC_WAVE_SAW_RISE:
       for (i = 0; i < n_values; i++)
 	{
-	  frac = ((gdouble) i) / max; /* [0..1[ */
+	  frac = (double (i)) / max; /* [0..1[ */
 	  values[i] = 2.0 * frac - 1.0;
 	}
       break;
     case GSL_OSC_WAVE_SAW_FALL:
       for (i = 0; i < n_values; i++)
 	{
-	  frac = ((gdouble) i) / max; /* [0..1[ */
+	  frac = (double (i)) / max; /* [0..1[ */
 	  values[i] = 1.0 - 2.0 * frac;
 	}
       break;
     case GSL_OSC_WAVE_PEAK_RISE:	/* spaced saw */
       for (i = 0; i < half; i++)
 	{
-	  frac = ((gdouble) i) / hmax;
+	  frac = (double (i)) / hmax;
           values[i] = 2.0 * frac - 1.0;
 	}
       for (; i < n_values; i++)
@@ -492,7 +487,7 @@ gsl_osc_wave_fill_buffer (GslOscWaveForm type,
     case GSL_OSC_WAVE_PEAK_FALL:	/* spaced saw */
       for (i = 0; i < half; i++)
 	{
-	  frac = ((gdouble) i) / hmax;
+	  frac = (double (i)) / hmax;
           values[i] = 1.0 - 2.0 * frac;
 	}
       for (; i < n_values; i++)
@@ -501,29 +496,29 @@ gsl_osc_wave_fill_buffer (GslOscWaveForm type,
     case GSL_OSC_WAVE_TRIANGLE:
       for (i = 0; i < quarter; i++)
 	{
-	  frac = ((gdouble) i) / qmax;
+	  frac = (double (i)) / qmax;
 	  values[i] = frac;
 	}
       for (; i < half + quarter; i++)
 	{
-	  frac = ((gdouble) i - quarter) / hmax;
+	  frac = (double (i) - quarter) / hmax;
           values[i] = 1.0 - 2.0 * frac;
 	}
       for (; i < n_values; i++)
 	{
-	  frac = ((gdouble) i - half - quarter) / qmax;
+	  frac = (double (i) - half - quarter) / qmax;
 	  values[i] = frac - 1.0;
 	}
       break;
     case GSL_OSC_WAVE_MOOG_SAW:
       for (i = 0; i < half; i++)
 	{
-	  frac = ((gdouble) i) / hmax;
+	  frac = (double (i)) / hmax;
           values[i] = 2.0 * frac - 1.0;
 	}
       for (; i < n_values; i++)
 	{
-	  frac = ((gdouble) i) / max;
+	  frac = (double (i)) / max;
           values[i] = 1.0 - 2.0 * frac;
 	}
       break;

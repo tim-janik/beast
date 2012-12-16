@@ -275,7 +275,7 @@ bse_wave_file_from_fbuffer (const char          *file_name,
   void *buffer = g_new (guint32, n_values);
   GslLong n = gsl_conv_from_float_clip (n_bits > 8 ? GSL_WAVE_FORMAT_SIGNED_16 : GSL_WAVE_FORMAT_UNSIGNED_8,
                                         G_LITTLE_ENDIAN, values, buffer, n_values);
-  int retval = bse_wave_file_from_bbuffer (file_name, n_bits, n_channels, sample_freq, n_values, n, buffer);
+  int retval = bse_wave_file_from_bbuffer (file_name, n_bits, n_channels, sample_freq, n_values, n, (const uint8*) buffer);
   g_free (buffer);
   return retval;
 }
@@ -292,7 +292,7 @@ bse_wave_file_from_dbuffer (const char          *file_name,
   void *buffer = g_new (guint32, n_values);
   GslLong n = gsl_conv_from_double_clip (n_bits > 8 ? GSL_WAVE_FORMAT_SIGNED_16 : GSL_WAVE_FORMAT_UNSIGNED_8,
                                          G_LITTLE_ENDIAN, values, buffer, n_values);
-  int retval = bse_wave_file_from_bbuffer (file_name, n_bits, n_channels, sample_freq, n_values, n, buffer);
+  int retval = bse_wave_file_from_bbuffer (file_name, n_bits, n_channels, sample_freq, n_values, n, (const uint8*) buffer);
   g_free (buffer);
   return retval;
 }
@@ -335,7 +335,7 @@ typedef struct {
 static void
 wstore_context_destroy (gpointer data)
 {
-  WStoreContext *wc = data;
+  WStoreContext *wc = (WStoreContext*) data;
   if (wc->opened)
     gsl_data_handle_close (wc->dhandle);
   gsl_data_handle_unref (wc->dhandle);
@@ -347,7 +347,7 @@ wstore_context_reader (gpointer data,
 		       void    *buffer,
 		       guint    blength)
 {
-  WStoreContext *wc = data;
+  WStoreContext *wc = (WStoreContext*) data;
   GslLong l;
 
   if (!wc->opened)
@@ -362,17 +362,17 @@ wstore_context_reader (gpointer data,
   if (wc->length >= gsl_data_handle_length (wc->dhandle))
     return 0;	/* done */
 
-  l = gsl_data_handle_read (wc->dhandle, wc->length, blength, buffer);
+  l = gsl_data_handle_read (wc->dhandle, wc->length, blength, (float*) buffer);
   if (l < 1)
     {
       /* single retry */
-      l = gsl_data_handle_read (wc->dhandle, wc->length, blength, buffer);
+      l = gsl_data_handle_read (wc->dhandle, wc->length, blength, (float*) buffer);
       if (l < 1)
 	return -EIO;	/* bail out */
     }
   wc->length += l;
 
-  return gsl_conv_from_float_clip (wc->format, wc->byte_order, buffer, buffer, l);
+  return gsl_conv_from_float_clip (wc->format, wc->byte_order, (const float*) buffer, buffer, l);
 }
 
 void
@@ -467,7 +467,7 @@ gsl_data_find_min_max (GslDataHandle          *handle,
   gsl_data_handle_open (handle);
 
   GslDataPeekBuffer peek_buffer = { +1 /* incremental direction */, 0, };
-  double vmin = +1e999, vmax = -1e999;
+  double vmin = +DBL_MAX, vmax = -DBL_MAX;
   uint i;
   for (i = 0; i < handle->setup.n_values; i++)
     {

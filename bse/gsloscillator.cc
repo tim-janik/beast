@@ -86,7 +86,7 @@ osc_update_pwm_offset (GslOscData *osc,
 #define	GSL_INCLUDER_TABLE	static void (*osc_process_table[]) (GslOscData*,guint, \
                                 const gfloat*,const gfloat*,const gfloat*, \
 		                const gfloat*,gfloat*,gfloat*)
-#define	GSL_INCLUDER_FILE	"gsloscillator-aux.c"
+#define	GSL_INCLUDER_FILE	"gsloscillator-aux.cc"
 #include "gslincluder.c"
 #undef	OSC_INCLUDER_FLAGS
 
@@ -98,7 +98,7 @@ osc_update_pwm_offset (GslOscData *osc,
 #define	GSL_INCLUDER_TABLE	static void (*osc_process_pulse_table[]) (GslOscData*,guint, \
                                 const gfloat*,const gfloat*,const gfloat*, \
 		                const gfloat*,gfloat*,gfloat*)
-#define	GSL_INCLUDER_FILE	"gsloscillator-aux.c"
+#define	GSL_INCLUDER_FILE	"gsloscillator-aux.cc"
 #include "gslincluder.c"
 #undef	OSC_INCLUDER_FLAGS
 
