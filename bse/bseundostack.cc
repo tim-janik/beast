@@ -59,10 +59,10 @@ bse_undo_stack_limit (BseUndoStack *self,
   self->max_steps = max_steps;
   while (self->n_undo_groups > self->max_steps)
     {
-      BseUndoGroup *group = sfi_ring_pop_tail (&self->undo_groups);
+      BseUndoGroup *group = (BseUndoGroup*) sfi_ring_pop_tail (&self->undo_groups);
       self->n_undo_groups--;
       while (group->undo_steps)
-        bse_undo_step_free (sfi_ring_pop_head (&group->undo_steps));
+        bse_undo_step_free ((BseUndoStep*) sfi_ring_pop_head (&group->undo_steps));
       g_free (group->name);
       g_free (group);
     }
@@ -137,7 +137,7 @@ void
 bse_undo_stack_push (BseUndoStack *self,
                      BseUndoStep  *ustep)
 {
-  const gchar *debug_name = self->debug_names ? self->debug_names->data : "-";
+  const char *debug_name = self->debug_names ? (const char*) self->debug_names->data : "-";
 
   g_return_if_fail (self->n_open_groups > 0);
   g_return_if_fail (ustep != NULL);
@@ -175,7 +175,7 @@ bse_undo_stack_push_add_on (BseUndoStack *self,
     }
   else if (self->undo_groups)
     {
-      BseUndoGroup *group = self->undo_groups->data;    /* fetch last group */
+      BseUndoGroup *group = (BseUndoGroup*) self->undo_groups->data;    /* fetch last group */
       g_return_if_fail (group->undo_steps != NULL);     /* empty groups are not allowed */
       DEBUG ("undo step:  *    ((BseUndoFunc) %p) [AddOn to last group]", ustep->undo_func);
       ustep->debug_name = g_strdup ("AddOn");
@@ -217,7 +217,7 @@ bse_undo_group_close (BseUndoStack *self)
           self->group->stamp = 0; // sfi_time_system ();
           if (self->merge_next && self->undo_groups)
             {
-              BseUndoGroup *mgroup = self->undo_groups->data;
+              BseUndoGroup *mgroup = (BseUndoGroup*) self->undo_groups->data;
               g_free (mgroup->name);
               mgroup->name = g_strdup (self->merge_name);
               mgroup->undo_steps = sfi_ring_concat (self->group->undo_steps,
@@ -252,13 +252,13 @@ bse_undo_group_peek_last_atom (BseUndoStack *self,
       self->max_steps > 1 &&
       self->undo_groups)
     {
-      BseUndoGroup *group = self->undo_groups->data;
+      BseUndoGroup *group = (BseUndoGroup*) self->undo_groups->data;
       if (sfi_ring_cmp_length (group->undo_steps, 1) == 0)
         {
           /* last undo commit was atomic step */
           if (stamp_p)
             *stamp_p = group->stamp;
-          return group->undo_steps->data;
+          return (BseUndoStep*) group->undo_steps->data;
         }
     }
   return NULL;
@@ -299,19 +299,17 @@ bse_undo_stack_depth (BseUndoStack *self)
 const gchar*
 bse_undo_stack_peek (BseUndoStack *self)
 {
-  BseUndoGroup *group = self->undo_groups ? self->undo_groups->data : NULL;
+  BseUndoGroup *group = self->undo_groups ? (BseUndoGroup*) self->undo_groups->data : NULL;
   return group ? group->name : NULL;
 }
 
 void
 bse_undo_stack_undo (BseUndoStack *self)
 {
-  BseUndoGroup *group;
-
   if (self->group)
     g_return_if_fail (self->group->undo_steps == NULL);
 
-  group = sfi_ring_pop_head (&self->undo_groups);
+  BseUndoGroup *group = (BseUndoGroup*) sfi_ring_pop_head (&self->undo_groups);
   if (group)
     {
       self->n_undo_groups--;
@@ -322,13 +320,13 @@ bse_undo_stack_undo (BseUndoStack *self)
           SfiRing *ring = group->undo_steps;
           for (ring = group->undo_steps; ring; ring = sfi_ring_walk (ring, group->undo_steps))
             {
-              BseUndoStep *ustep = ring->data;
+              BseUndoStep *ustep = (BseUndoStep*) ring->data;
               DEBUG ("   STEP UNDO: %s", ustep->debug_name);
             }
         }
       while (group->undo_steps)
         {
-          BseUndoStep *ustep = sfi_ring_pop_head (&group->undo_steps);
+          BseUndoStep *ustep = (BseUndoStep*) sfi_ring_pop_head (&group->undo_steps);
           bse_undo_step_exec (ustep, self);
           bse_undo_step_free (ustep);
         }
@@ -347,11 +345,9 @@ bse_undo_step_new (BseUndoFunc     undo_func,
                    BseUndoFree     free_func,
                    guint           n_data_fields)
 {
-  BseUndoStep *ustep;
   g_return_val_if_fail (undo_func != NULL, NULL);
 
-  ustep = g_malloc0 (sizeof (BseUndoStep) +
-                     sizeof (ustep->data) * (MAX (n_data_fields, 1) - 1));
+  BseUndoStep *ustep = (BseUndoStep*) g_malloc0 (sizeof (BseUndoStep) + sizeof (ustep->data) * (MAX (n_data_fields, 1) - 1));
   ustep->undo_func = undo_func;
   ustep->free_func = free_func;
   ustep->debug_name = NULL;
@@ -376,21 +372,18 @@ bse_undo_step_free (BseUndoStep *ustep)
 }
 
 gchar*
-bse_undo_pointer_pack (gpointer      item,
+bse_undo_pointer_pack (gpointer      _item,
                        BseUndoStack *ustack)
 {
-  BseProject *project;
-
   g_return_val_if_fail (ustack != NULL, NULL);
-
-  if (!item)
+  if (!_item)
     return NULL;
-  g_return_val_if_fail (BSE_IS_ITEM (item), NULL);
+  BseItem *item = BSE_ITEM (_item);
 
   if (IS_DUMMY_USTACK (ustack))
     return NULL;
 
-  project = bse_item_get_project (item);
+  BseProject *project = bse_item_get_project (item);
   g_return_val_if_fail (project != NULL, NULL);
 
   /* upaths start out with chars >= 7 */
