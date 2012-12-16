@@ -30,7 +30,7 @@ g_object_disconnect_any (gpointer object,
    * disconnection that does not exist (it may do so for all-signals
    * instead).
    */
-  g_signal_handlers_disconnect_matched (object, G_SIGNAL_MATCH_FUNC | G_SIGNAL_MATCH_DATA,
+  g_signal_handlers_disconnect_matched (object, GSignalMatchType (G_SIGNAL_MATCH_FUNC | G_SIGNAL_MATCH_DATA),
                                         0, 0, 0,
                                         function, data);
 }
@@ -116,7 +116,7 @@ g_strslistv (GSList *slist)
   i = 0;
   while (slist)
     {
-      str_array[i++] = g_strdup (slist->data);
+      str_array[i++] = g_strdup ((const char*) slist->data);
       slist = slist->next;
     }
   str_array[i] = NULL;
@@ -336,7 +336,7 @@ g_option_get (const gchar *option_string,
     return NULL;                        /* option not present */
   else switch (value[0])
     {
-      gchar *s;
+      const char *s;
     case ':':   return g_strdup ("1");  /* option was present, no modifier */
     case 0:     return g_strdup ("1");  /* option was present, no modifier */
     case '+':   return g_strdup ("1");  /* option was present, enable modifier */
@@ -362,7 +362,7 @@ g_option_check (const gchar *option_string,
     return FALSE;                       /* option not present */
   else switch (value[0])
     {
-      gchar *s;
+      const char *s;
     case ':':   return TRUE;            /* option was present, no modifier */
     case 0:     return TRUE;            /* option was present, no modifier */
     case '+':   return TRUE;            /* option was present, enable modifier */
@@ -416,7 +416,7 @@ g_param_spec_set_options (GParamSpec  *pspec,
   if (options)
     g_param_spec_set_qdata (pspec, quark_pspec_options, (gchar*) g_intern_string (options));
   /* pspec->flags &= ~G_PARAM_MASK; */
-  pspec->flags |= pspec_flags (options);
+  pspec->flags = GParamFlags (pspec->flags | pspec_flags (options));
 }
 
 gboolean
@@ -491,9 +491,9 @@ g_param_spec_provides_options (GParamSpec  *pspec,
 const gchar*
 g_param_spec_get_options (GParamSpec *pspec)
 {
-  const gchar *options;
+  const char *options;
   g_return_val_if_fail (G_IS_PARAM_SPEC (pspec), NULL);
-  options = g_param_spec_get_qdata (pspec, quark_pspec_options);
+  options = (const char*) g_param_spec_get_qdata (pspec, quark_pspec_options);
   return options ? options : "";
 }
 
@@ -520,7 +520,7 @@ g_param_spec_set_istepping (GParamSpec  *pspec,
   else
     {
       g_param_spec_set_qdata (pspec, quark_pspec_istepping64, NULL);
-      g_param_spec_set_qdata (pspec, quark_pspec_istepping, (void*) (guint32) stepping);
+      g_param_spec_set_qdata (pspec, quark_pspec_istepping, (void*) size_t (stepping));
     }
 }
 
@@ -529,10 +529,10 @@ g_param_spec_get_istepping (GParamSpec *pspec)
 {
   guint64 stepping;
   g_return_val_if_fail (G_IS_PARAM_SPEC (pspec), 0);
-  stepping = (guint32) g_param_spec_get_qdata (pspec, quark_pspec_istepping);
+  stepping = size_t (g_param_spec_get_qdata (pspec, quark_pspec_istepping));
   if (!stepping)
     {
-      guint64 *istepping64 = g_param_spec_get_qdata (pspec, quark_pspec_istepping64);
+      guint64 *istepping64 = (guint64*) g_param_spec_get_qdata (pspec, quark_pspec_istepping64);
       stepping = istepping64 ? *istepping64 : 0;
     }
   return stepping;
@@ -560,9 +560,9 @@ g_param_spec_set_fstepping (GParamSpec  *pspec,
 gdouble
 g_param_spec_get_fstepping (GParamSpec *pspec)
 {
-  gdouble *fstepping;
+  double *fstepping;
   g_return_val_if_fail (G_IS_PARAM_SPEC (pspec), 0);
-  fstepping = g_param_spec_get_qdata (pspec, quark_pspec_fstepping);
+  fstepping = (double*) g_param_spec_get_qdata (pspec, quark_pspec_fstepping);
   return fstepping ? *fstepping : 0;
 }
 
@@ -604,7 +604,7 @@ g_param_spec_get_log_scale (GParamSpec  *pspec,
 {
   LogScale *lscale;
   g_return_val_if_fail (G_IS_PARAM_SPEC (pspec), FALSE);
-  lscale = g_param_spec_get_qdata (pspec, quark_pspec_log_scale);
+  lscale = (LogScale*) g_param_spec_get_qdata (pspec, quark_pspec_log_scale);
   if (lscale)
     {
       if (center)
@@ -742,8 +742,8 @@ type_name_to_cname (const gchar *type_name,
   else if (check_lower (s[0]))
     {
       static const struct {
-	gchar *gname;
-	gchar *xname;
+	const char *gname;
+	const char *xname;
       } glib_ftypes[] = {
 	{ "gboolean",   "GBoolean" },
 	{ "gchar",      "GChar" },
@@ -759,9 +759,7 @@ type_name_to_cname (const gchar *type_name,
 	{ "gpointer",   "GPointer" },
 	{ "gchararray", "GString" },	/* G_TYPE_STRING */
       };
-      guint i;
-
-      for (i = 0; i < G_N_ELEMENTS (glib_ftypes); i++)
+      for (size_t i = 0; i < G_N_ELEMENTS (glib_ftypes); i++)
 	if (strcmp (s, glib_ftypes[i].gname) == 0)
 	  {
 	    s = glib_ftypes[i].xname;

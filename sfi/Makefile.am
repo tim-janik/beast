@@ -19,7 +19,7 @@ sfi_public_headers = $(strip \
 )
 sfi_all_sources = $(strip \
 	sfistore.cc	sficomwire.cc	sfifilecrawler.cc \
-	glib-extra.c			sfiwrapper.cc	sfiprimitives.cc \
+	glib-extra.cc			sfiwrapper.cc	sfiprimitives.cc \
 	sfivmarshal.cc	sfiglue.cc	sfigluecodec.cc	sfiglueproxy.cc	\
 	sfinote.cc	sfiparams.cc			sfiserial.cc	\
 	sfitime.cc	sfitypes.cc	sfivalues.cc	sfiustore.cc	\
@@ -57,20 +57,19 @@ CLEANFILES += libsfi.o libsfi.lo
 # source files
 common_idl_sources = sfidl-generator.cc sfidl-namespace.cc sfidl-options.cc sfidl-parser.cc \
   sfidl-factory.cc sfidl-typelist.cc sfidl-cbase.cc sfidl-clientc.cc sfidl-clientcxx.cc sfidl-corec.cc \
-  sfidl-corecxx.cc sfidl-cxxbase.cc sfidl-hostc.cc glib-extra.c
+  sfidl-corecxx.cc sfidl-cxxbase.cc sfidl-hostc.cc sfidl-utils.cc
 
 bin_PROGRAMS = sfidl
 sfidl_SOURCES = sfidl.cc $(common_idl_sources)
 sfidl_LDADD = $(SFI_LIBS) -lm $(top_builddir)/birnet/libbirnet.o # libsfi.la
-sfidl_CFLAGS = $(AM_CFLAGS) # hack to cause glib-extra.c to be compiled twice (work around automake)
 EXTRA_DIST += sfidl-generator.hh sfidl-namespace.hh sfidl-options.hh sfidl-parser.hh sfidl-factory.hh
 EXTRA_DIST += sfidl-cbase.hh sfidl-clientc.hh sfidl-clientcxx.hh sfidl-cxxbase.hh sfidl-hostc.hh sfidl-utils.hh
 
 #
 # TOYPROF: poor man's profiling toy
 #
-TOYPROF_H_SOURCES = toyprof.h toyprof-mem.h
-TOYPROF_C_SOURCES = toyprof.c toyprof-mem.c
+TOYPROF_H_SOURCES = toyprof.hh toyprof-mem.hh
+TOYPROF_C_SOURCES = toyprof.cc toyprof-mem.cc
 EXTRA_DIST += toyprof.pl toyprof.README $(TOYPROF_H_SOURCES)
 if IF_TOYPROF
 conditional_toyprof_sources = $(TOYPROF_C_SOURCES)
