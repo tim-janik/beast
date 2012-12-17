@@ -129,6 +129,7 @@ bse_plugin_init (BsePlugin *plugin)
   plugin->use_count = 0;
   plugin->version_match = 1;
   plugin->force_clean = 0;
+  plugin->resident_types = 0;
   plugin->n_types = 0;
   plugin->types = NULL;
 }
@@ -203,6 +204,13 @@ runtime_export_config (void)
 }
 
 static BsePlugin *startup_plugin = NULL;
+
+void
+bse_plugin_make_resident()
+{
+  g_assert (startup_plugin != NULL);
+  startup_plugin->resident_types = TRUE;
+}
 
 BsePlugin*
 bse_exports__add_node (const BseExportIdentity *identity,
@@ -307,6 +315,7 @@ bse_plugin_unload (BsePlugin *plugin)
 {
   g_return_if_fail (plugin->gmodule != NULL && plugin->fname != NULL);
   g_return_if_fail (plugin->use_count == 0);
+  g_return_if_fail (plugin->resident_types == 0);
 
   bse_plugin_uninit_types (plugin);
   g_module_close ((GModule*) plugin->gmodule);
@@ -682,13 +691,20 @@ bse_plugin_check_load (const gchar *const_file_name)
     {
       plugin->fname = file_name;
       plugin->gmodule = gmodule;
-      
+
       /* register BSE module types */
       bse_plugin_init_types (plugin);
 
       bse_plugins = g_slist_prepend (bse_plugins, plugin);
       if (plugin->use_count == 0)
         bse_plugin_unload (plugin);
+    }
+  else if (plugin->resident_types)
+    {
+      plugin->use_count += 1; // make plugin resident
+      plugin->fname = file_name;
+      plugin->gmodule = gmodule;
+      bse_plugins = g_slist_prepend (bse_plugins, plugin);
     }
   else
     {

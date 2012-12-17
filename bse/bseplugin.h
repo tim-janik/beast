@@ -43,6 +43,7 @@ struct _BsePlugin
   guint		 use_count : 16;
   guint          version_match : 1;
   guint          force_clean : 1;
+  guint          resident_types : 1;
 
   BseExportNode *chain;
   guint		 n_types;
@@ -58,7 +59,7 @@ struct _BsePluginClass
 SfiRing*	bse_plugin_path_list_files	(gboolean        include_drivers,
                                                  gboolean        include_plugins);
 const gchar*	bse_plugin_check_load		(const gchar	*file_name);
-
+void            bse_plugin_make_resident        ();
 
 /* --- registration macros --- */
 
