@@ -17,9 +17,7 @@
 #include "bseadder.h"
 
 #include <bse/bseengine.h>
-#include <bse/bsecategories.h>
-#include <bse/bseplugin.h>
-#include <sfi/sficxx.hh>
+#include <bse/bsecxxplugin.hh>
 
 #include <string.h>
 
@@ -52,45 +50,11 @@ static void	 bse_adder_update_modules	(BseAdder	*self,
 
 
 /* --- Export to BSE --- */
-static GType
-bse_adder_get_type ()
-{
-  static const GTypeInfo type_info = {
-    sizeof (BseAdderClass),
-    (GBaseInitFunc) NULL,
-    (GBaseFinalizeFunc) NULL,
-    (GClassInitFunc) bse_adder_class_init,
-    (GClassFinalizeFunc) NULL,
-    NULL /* class_data */,
-    sizeof (BseAdder),
-    0 /* n_preallocs */,
-    (GInstanceInitFunc) bse_adder_init,
-  };
 #include "./icons/sum.c"
-  static GType type_id = 0;
-  if (!type_id)
-    {
-      type_id = bse_type_register_static (BSE_TYPE_SOURCE,
-                                          "BseAdder",
-                                          "The Adder is a very simplisitic prototype mixer that just sums up "
-                                          "incoming signals (it does allow for switching to subtract mode though)",
-                                          __FILE__, __LINE__,
-                                          &type_info);
-      bse_categories_register_stock_module (N_("Routing/Adder"), type_id, sum_icon); // FIXME: deprecated
-    }
-  return type_id;
-}
-
-static void
-init_adder ()
-{
-  // make this plugin resident to allow static type registration
-  bse_plugin_make_resident();
-  // force registration of plugin types
-  volatile GType types = BSE_TYPE_ADDER;
-  (void) types;
-}
-static Sfi::Init onload (init_adder);
+BSE_RESIDENT_TYPE_DEF (BseAdder, bse_adder, N_("Routing/Adder"),
+                       "The Adder is a very simplisitic prototype mixer that just sums up "
+                       "incoming signals (it does allow for switching to subtract mode though)",
+                       sum_icon);
 
 /* --- variables --- */
 static gpointer		 parent_class = NULL;
