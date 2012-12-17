@@ -15,9 +15,9 @@
  * with this library; if not, see http://www.gnu.org/copyleft/.
  */
 #include "bseatandistort.h"
-
 #include <bse/bseengine.h>
 #include <bse/bsemathsignal.h>
+#include <bse/bsecxxplugin.hh>
 
 
 /* --- parameters --- */
@@ -30,7 +30,7 @@ enum
 
 /* --- prototypes --- */
 static void	 bse_atan_distort_init		      (BseAtanDistort		*self);
-static void	 bse_atan_distort_class_init	      (BseAtanDistortClass	*class);
+static void	 bse_atan_distort_class_init	      (BseAtanDistortClass	*klass);
 static void	 bse_atan_distort_set_property	      (GObject			*object,
 						       guint                     param_id,
 						       const GValue             *value,
@@ -47,15 +47,11 @@ static void	 bse_atan_distort_update_modules      (BseAtanDistort		*comp);
 
 /* --- Export to BSE --- */
 #include "./icons/atan.c"
-BSE_REGISTER_OBJECT (BseAtanDistort, BseSource, "/Modules/Distortion/Atan Distort", "",
-                     "BseAtanDistort compresses or expands the input signal with distortion "
-                     "(in a manner similar to the atan(3) mathematical function, thus it's name). "
-                     "The strength with which the input signal is treated is adjustable from "
-                     "maximum attenuation to maximum boost.",
-                     atan_icon,
-                     bse_atan_distort_class_init, NULL, bse_atan_distort_init);
-BSE_DEFINE_EXPORTS ();
-
+BSE_RESIDENT_TYPE_DEF (BseAtanDistort, bse_atan_distort, "Distortion/Atan Distort",
+                       "BseAtanDistort compresses or expands the input signal with distortion "
+                       "(in a manner similar to the atan(3) mathematical function, thus it's name). "
+                       "The strength with which the input signal is treated is adjustable from "
+                       "maximum attenuation to maximum boost.", atan_icon);
 
 /* --- variables --- */
 static gpointer	       parent_class = NULL;
@@ -63,14 +59,14 @@ static gpointer	       parent_class = NULL;
 
 /* --- functions --- */
 static void
-bse_atan_distort_class_init (BseAtanDistortClass *class)
+bse_atan_distort_class_init (BseAtanDistortClass *klass)
 {
-  GObjectClass *gobject_class = G_OBJECT_CLASS (class);
-  BseObjectClass *object_class = BSE_OBJECT_CLASS (class);
-  BseSourceClass *source_class = BSE_SOURCE_CLASS (class);
+  GObjectClass *gobject_class = G_OBJECT_CLASS (klass);
+  BseObjectClass *object_class = BSE_OBJECT_CLASS (klass);
+  BseSourceClass *source_class = BSE_SOURCE_CLASS (klass);
   guint channel_id;
   
-  parent_class = g_type_class_peek_parent (class);
+  parent_class = g_type_class_peek_parent (klass);
   
   gobject_class->set_property = bse_atan_distort_set_property;
   gobject_class->get_property = bse_atan_distort_get_property;
@@ -172,7 +168,7 @@ static void
 atan_distort_process (BseModule *module,
 		      guint      n_values)
 {
-  AtanDistortModule *admod = module->user_data;
+  AtanDistortModule *admod = (AtanDistortModule*) module->user_data;
   const gfloat *sig_in = module->istreams[BSE_ATAN_DISTORT_ICHANNEL_MONO1].values;
   gfloat *sig_out = module->ostreams[BSE_ATAN_DISTORT_OCHANNEL_MONO1].values;
   gfloat *bound = sig_out + n_values;

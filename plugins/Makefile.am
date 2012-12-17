@@ -35,8 +35,8 @@ SFIDL_INC = --nostdinc -I$(top_srcdir) -I$(top_builddir)
 	$(SFIDL) --plugin  --macro $(<F) $(SFIDL_INC) -I$(top_builddir) $< > $@ || (rm $@ ; exit 1 )
 
 # == C++ Plugins ==
-cxx_plugin_headers = bseadder.h
-cxx_plugin_sources = bseadder.cc
+cxx_plugin_headers = bseadder.h bseatandistort.h
+cxx_plugin_sources = bseadder.cc bseatandistort.cc
 EXTRA_HEADERS	  += $(cxx_plugin_headers)
 cxxplugins_FPU_la_SOURCES  = $(cxx_plugin_sources)
 cxxplugins_FPU_la_LDFLAGS  = -module $(plugins_ldflags)
@@ -56,7 +56,6 @@ UNPORTED = $(strip		\
 )
 cglob_plugins = $(strip		\
 	bsesimpleadsr.[hc]	\
-	bseatandistort.[hc]	\
 	bseiirfilter.[hc]	\
 	bsemixer.[hc]		\
 	bsemult.[hc]		\
