@@ -15,9 +15,9 @@
  * with this library; if not, see http://www.gnu.org/copyleft/.
  */
 #include "bsemidinotifier.h"
-
 #include "bsemain.h"
 #include "gslcommon.h"
+#include "bsecxxplugin.hh"
 
 
 /* --- prototypes --- */
@@ -114,7 +114,7 @@ static inline void
 bse_midi_notifier_notify_event (BseMidiNotifier *self,
                                 BseMidiEvent    *event)
 {
-  BseMidiChannelEvent cev = { 0, };
+  BseMidiChannelEvent cev = { BseMidiChannelEventType (0), };
   switch (event->status)
     {
       /* channel voice messages */
@@ -208,10 +208,12 @@ bse_midi_notifier_dispatch (BseMidiNotifier *self)
   SfiRing *ring = bse_midi_receiver_fetch_notify_events (self->midi_receiver);
   if (!ring)
     return;
-  guint need_emission = g_signal_handler_find (self, G_SIGNAL_MATCH_ID | G_SIGNAL_MATCH_UNBLOCKED, signal_midi_event, 0, NULL, NULL, NULL);
+  uint need_emission = g_signal_handler_find (self,
+                                              GSignalMatchType (G_SIGNAL_MATCH_ID | G_SIGNAL_MATCH_UNBLOCKED),
+                                              signal_midi_event, 0, NULL, NULL, NULL);
   while (ring)
     {
-      BseMidiEvent *event = sfi_ring_pop_head (&ring);
+      BseMidiEvent *event = (BseMidiEvent*) sfi_ring_pop_head (&ring);
       if (event->channel < BSE_MIDI_MAX_CHANNELS && need_emission)
         bse_midi_notifier_notify_event (self, event);
       bse_midi_free_event (event);
@@ -224,7 +226,7 @@ midi_notifiers_need_dispatch (void)
   SfiRing *ring;
   for (ring = midi_notifier_list; ring; ring = sfi_ring_walk (ring, midi_notifier_list))
     {
-      BseMidiNotifier *notifier = ring->data;
+      BseMidiNotifier *notifier = (BseMidiNotifier*) ring->data;
       if (notifier->midi_receiver && bse_midi_receiver_has_notify_events (notifier->midi_receiver))
         return TRUE;
     }
@@ -259,7 +261,7 @@ midi_notifiers_source_dispatch (GSource    *source,
   SfiRing *ring = midi_notifier_list;
   while (ring)
     {
-      BseMidiNotifier *notifier = ring->data;
+      BseMidiNotifier *notifier = (BseMidiNotifier*) ring->data;
       ring = sfi_ring_walk (ring, midi_notifier_list);
       bse_midi_notifier_dispatch (notifier);
     }

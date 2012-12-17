@@ -312,7 +312,7 @@ bse_midi_voice_switch_ref_poly_voice (BseMidiVoiceSwitch     *self,
   mcontext.midi_channel = self->midi_channel;
   for (slist = self->midi_voices; slist; slist = slist->next)
     {
-      mvoice = slist->data;
+      mvoice = (MidiVoice*) slist->data;
       if (mvoice->context_handle == context_handle)
 	break;
     }
@@ -343,7 +343,7 @@ bse_midi_voice_switch_peek_poly_voice (BseMidiVoiceSwitch     *self,
 
   for (slist = self->midi_voices; slist; slist = slist->next)
     {
-      mvoice = slist->data;
+      mvoice = (MidiVoice*) slist->data;
       if (mvoice->context_handle == context_handle)
 	break;
     }
@@ -373,7 +373,7 @@ bse_midi_voice_switch_unref_poly_voice (BseMidiVoiceSwitch *self,
   mcontext.midi_channel = self->midi_channel;
   for (slist = self->midi_voices; slist; slist = slist->next)
     {
-      mvoice = slist->data;
+      mvoice = (MidiVoice*) slist->data;
       if (mvoice->context_handle == context_handle)
 	break;
     }

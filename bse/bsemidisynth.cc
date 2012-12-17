@@ -108,14 +108,14 @@ bse_midi_synth_init (BseMidiSynth *self)
   self->volume_factor = bse_db_to_factor (0);
   
   /* midi voice modules */
-  self->voice_input = bse_container_new_child (BSE_CONTAINER (self), BSE_TYPE_MIDI_VOICE_INPUT, NULL);
+  self->voice_input = (BseSource*) bse_container_new_child (BSE_CONTAINER (self), BSE_TYPE_MIDI_VOICE_INPUT, NULL);
   bse_snet_intern_child (snet, self->voice_input);
-  self->voice_switch = bse_container_new_child (BSE_CONTAINER (self), BSE_TYPE_MIDI_VOICE_SWITCH, NULL);
+  self->voice_switch = (BseSource*) bse_container_new_child (BSE_CONTAINER (self), BSE_TYPE_MIDI_VOICE_SWITCH, NULL);
   bse_snet_intern_child (snet, self->voice_switch);
   bse_midi_voice_input_set_voice_switch (BSE_MIDI_VOICE_INPUT (self->voice_input), BSE_MIDI_VOICE_SWITCH (self->voice_switch));
   
   /* context merger */
-  self->context_merger = bse_container_new_child (BSE_CONTAINER (self), BSE_TYPE_CONTEXT_MERGER, NULL);
+  self->context_merger = (BseSource*) bse_container_new_child (BSE_CONTAINER (self), BSE_TYPE_CONTEXT_MERGER, NULL);
   bse_snet_intern_child (snet, self->context_merger);
   
   /* midi voice switch <-> context merger */
@@ -125,9 +125,7 @@ bse_midi_synth_init (BseMidiSynth *self)
                              self->voice_switch, BSE_MIDI_VOICE_SWITCH_OCHANNEL_RIGHT);
 
   /* post processing slot */
-  self->postprocess = bse_container_new_child (BSE_CONTAINER (self), BSE_TYPE_SUB_SYNTH,
-                                               "uname", "Postprocess",
-                                               NULL);
+  self->postprocess = (BseSource*) bse_container_new_child (BSE_CONTAINER (self), BSE_TYPE_SUB_SYNTH, "uname", "Postprocess", NULL);
   bse_snet_intern_child (snet, self->postprocess);
   bse_sub_synth_set_null_shortcut (BSE_SUB_SYNTH (self->postprocess), TRUE);
 
@@ -138,7 +136,7 @@ bse_midi_synth_init (BseMidiSynth *self)
                              self->context_merger, 1);
 
   /* output */
-  self->output = bse_container_new_child (BSE_CONTAINER (self), BSE_TYPE_PCM_OUTPUT, NULL);
+  self->output = (BseSource*) bse_container_new_child (BSE_CONTAINER (self), BSE_TYPE_PCM_OUTPUT, NULL);
   bse_snet_intern_child (snet, self->output);
   
   /* postprocess <-> output */
@@ -148,16 +146,16 @@ bse_midi_synth_init (BseMidiSynth *self)
                              self->postprocess, 1);
   
   /* sub synth */
-  self->sub_synth = bse_container_new_child (BSE_CONTAINER (self), BSE_TYPE_SUB_SYNTH,
-                                             "in_port_1", "frequency",
-                                             "in_port_2", "gate",
-                                             "in_port_3", "velocity",
-                                             "in_port_4", "aftertouch",
-                                             "out_port_1", "left-audio",
-                                             "out_port_2", "right-audio",
-                                             "out_port_3", "unused",
-                                             "out_port_4", "synth-done",
-                                             NULL);
+  self->sub_synth = (BseSource*) bse_container_new_child (BSE_CONTAINER (self), BSE_TYPE_SUB_SYNTH,
+                                                          "in_port_1", "frequency",
+                                                          "in_port_2", "gate",
+                                                          "in_port_3", "velocity",
+                                                          "in_port_4", "aftertouch",
+                                                          "out_port_1", "left-audio",
+                                                          "out_port_2", "right-audio",
+                                                          "out_port_3", "unused",
+                                                          "out_port_4", "synth-done",
+                                                          NULL);
   bse_snet_intern_child (snet, self->sub_synth);
 
   /* voice input <-> sub-synth */
@@ -271,7 +269,7 @@ bse_midi_synth_set_property (GObject      *object,
               bse_item_cross_unlink (BSE_ITEM (self), BSE_ITEM (self->snet), midi_synth_uncross_snet);
               self->snet = NULL;
             }
-          self->snet = bse_value_get_object (value);
+          self->snet = (BseSNet*) bse_value_get_object (value);
           if (self->snet)
             {
               bse_item_cross_link (BSE_ITEM (self), BSE_ITEM (self->snet), midi_synth_uncross_snet);
@@ -291,7 +289,7 @@ bse_midi_synth_set_property (GObject      *object,
               bse_item_cross_unlink (BSE_ITEM (self), BSE_ITEM (self->pnet), midi_synth_uncross_pnet);
               self->pnet = NULL;
             }
-          self->pnet = bse_value_get_object (value);
+          self->pnet = (BseSNet*) bse_value_get_object (value);
           if (self->pnet)
             {
               bse_item_cross_link (BSE_ITEM (self), BSE_ITEM (self->pnet), midi_synth_uncross_pnet);
@@ -319,24 +317,24 @@ bse_midi_synth_set_property (GObject      *object,
       g_object_set (self->output, /* no undo */
                     "master_volume_f", self->volume_factor,
                     NULL);
-      g_object_notify (self, "volume_dB");
-      g_object_notify (self, "volume_perc");
+      g_object_notify ((GObject*) self, "volume_dB");
+      g_object_notify ((GObject*) self, "volume_perc");
       break;
     case PROP_VOLUME_dB:
       self->volume_factor = bse_db_to_factor (sfi_value_get_real (value));
       g_object_set (self->output, /* no undo */
                     "master_volume_f", self->volume_factor,
                     NULL);
-      g_object_notify (self, "volume_f");
-      g_object_notify (self, "volume_perc");
+      g_object_notify ((GObject*) self, "volume_f");
+      g_object_notify ((GObject*) self, "volume_perc");
       break;
     case PROP_VOLUME_PERC:
       self->volume_factor = sfi_value_get_int (value) / 100.0;
       g_object_set (self->output, /* no undo */
                     "master_volume_f", self->volume_factor,
                     NULL);
-      g_object_notify (self, "volume_f");
-      g_object_notify (self, "volume_dB");
+      g_object_notify ((GObject*) self, "volume_f");
+      g_object_notify ((GObject*) self, "volume_dB");
       break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (self, param_id, pspec);
@@ -427,18 +425,16 @@ bse_midi_synth_class_init (BseMidiSynthClass *klass)
   BseObjectClass *object_class = BSE_OBJECT_CLASS (klass);
   BseItemClass *item_class = BSE_ITEM_CLASS (klass);
   BseSourceClass *source_class = BSE_SOURCE_CLASS (klass);
-  
-  parent_class = g_type_class_peek_parent (klass);
-  
+
+  parent_class = (GTypeClass*) g_type_class_peek_parent (klass);
   gobject_class->set_property = bse_midi_synth_set_property;
   gobject_class->get_property = bse_midi_synth_get_property;
   gobject_class->finalize = bse_midi_synth_finalize;
-  
   item_class->get_candidates = bse_midi_synth_get_candidates;
-  
+
   source_class->context_create = bse_midi_synth_context_create;
   source_class->context_dismiss = bse_midi_synth_context_dismiss;
-  
+
   bse_object_class_add_param (object_class, _("MIDI Instrument"),
 			      PROP_MIDI_CHANNEL,
 			      sfi_pspec_int ("midi_channel", _("MIDI Channel"), NULL,

@@ -81,8 +81,8 @@ bse/bsemidicontroller.cc
 bse/bsemididevice-null.cc
 bse/bsemididevice-oss.cc
 bse/bsemidiinput.cc
-bse/bsemidisynth.c
-bse/bsemidivoice.c
+bse/bsemidisynth.cc
+bse/bsemidivoice.cc
 bse/bseobject.cc
 bse/bseparasite.proc
 bse/bsepcmdevice-null.cc

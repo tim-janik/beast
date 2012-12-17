@@ -74,8 +74,8 @@ bse_sources = $(strip \
 	bseglobals.cc		bseglue.cc		bseitem.cc			bsejanitor.cc \
 	bsemain.cc		bsemath.cc		bsemathsignal.cc		bseladspa.cc \
 	bsemidicontroller.cc	bsemididevice.cc 	bsedevice.cc 			\
-	bsemididevice-null.cc	bsemididevice-oss.cc	bsemidievent.cc			bsemidinotifier.c \
-	bsemidireceiver.cc	bsemidisynth.c		bseobject.cc			bsepart.cc \
+	bsemididevice-null.cc	bsemididevice-oss.cc	bsemidievent.cc			bsemidinotifier.cc \
+	bsemidireceiver.cc	bsemidisynth.cc		bseobject.cc			bsepart.cc \
 	bsepcminput.cc		bsepcmoutput.cc		bseparam.cc			bseparasite.cc \
 	bsepcmdevice.cc		bsepcmdevice-oss.cc	bsepcmdevice-null.cc		bseplugin.cc \
 	bseprocedure.cc		bseproject.cc		bsescripthelper.cc		bseserver.cc \
@@ -83,7 +83,7 @@ bse_sources = $(strip \
 	bsesource.cc		bsestandardosc.cc	bsestandardsynths.cc		bsestorage.cc \
 	bseinstrumentoutput.cc	bsesubiport.cc		bseinstrumentinput.cc		bsesuboport.cc \
 	bsesubsynth.cc		bsesuper.cc		bsetrack.cc			bsetype.cc \
-	bseutils.cc		bsemidivoice.c		bsewave.cc			bsewaveosc.cc \
+	bseutils.cc		bsemidivoice.cc		bsewave.cc			bsewaveosc.cc \
 	bsecsynth.cc		bsewaverepo.cc		bseladspamodule.cc		bsepcmwriter.cc \
 	bsecompat.cc		bseundostack.cc		bsemidiinput.cc			bsemididecoder.cc \
 	bsenote.cc		bsemidifile.cc		bseblockutils.cc		\
