@@ -14,10 +14,11 @@
  * A copy of the GNU Lesser General Public License should ship along
  * with this library; if not, see http://www.gnu.org/copyleft/.
  */
-#include        <bse/bseplugin.h>
-#include        <bse/bseprocedure.h>
-#include        <bse/bsepart.h>
-#include        <bse/bsesong.h>
+#include <bse/bseplugin.h>
+#include <bse/bseprocedure.h>
+#include <bse/bsepart.h>
+#include <bse/bsesong.h>
+#include "bsecxxplugin.hh"
 
 
 AUTHORS	= "Tim Janik <timj@gtk.org>";
@@ -46,7 +47,7 @@ BODY (BseProcedureClass *proc,
       GValue            *out_values)
 {
   /* extract parameter values */
-  BsePart *self      = bse_value_get_object (in_values++);
+  BsePart *self = (BsePart*) bse_value_get_object (in_values++);
   guint    tick	     = sfi_value_get_int (in_values++);
   guint    duration  = sfi_value_get_int (in_values++);
   gint     note	     = sfi_value_get_note (in_values++);
@@ -96,7 +97,7 @@ BODY (BseProcedureClass *proc,
       GValue            *out_values)
 {
   /* extract parameter values */
-  BsePart *self      = bse_value_get_object (in_values++);
+  BsePart *self = (BsePart*) bse_value_get_object (in_values++);
   guint    channel   = sfi_value_get_int (in_values++);
   guint    tick	     = sfi_value_get_int (in_values++);
   guint    duration  = sfi_value_get_int (in_values++);
@@ -143,7 +144,7 @@ BODY (BseProcedureClass *proc,
       GValue            *out_values)
 {
   /* extract parameter values */
-  BsePart *self      = bse_value_get_object (in_values++);
+  BsePart *self = (BsePart*) bse_value_get_object (in_values++);
   guint    tick	     = sfi_value_get_int (in_values++);
   guint    ctype     = g_value_get_enum (in_values++);
   gfloat   value     = sfi_value_get_real (in_values++);
@@ -156,7 +157,7 @@ BODY (BseProcedureClass *proc,
   
   /* action */
   ustack = bse_item_undo_open (self, "insert-event");
-  id = bse_part_insert_control (self, tick, ctype, value);
+  id = bse_part_insert_control (self, tick, BseMidiSignalType (ctype), value);
   if (id)
     bse_item_push_undo_proc (self, "delete-event", id);
   bse_item_undo_close (ustack);
@@ -192,7 +193,7 @@ BODY (BseProcedureClass *proc,
       GValue            *out_values)
 {
   /* extract parameter values */
-  BsePart *self      = bse_value_get_object (in_values++);
+  BsePart *self = (BsePart*) bse_value_get_object (in_values++);
   guint    id	     = sfi_value_get_int (in_values++);
   guint    tick	     = sfi_value_get_int (in_values++);
   guint    duration  = sfi_value_get_int (in_values++);
@@ -253,7 +254,7 @@ BODY (BseProcedureClass *proc,
       GValue            *out_values)
 {
   /* extract parameter values */
-  BsePart *self  = bse_value_get_object (in_values++);
+  BsePart *self = (BsePart*) bse_value_get_object (in_values++);
   guint    id    = sfi_value_get_int (in_values++);
   guint    tick  = sfi_value_get_int (in_values++);
   guint    ctype = g_value_get_enum (in_values++);
@@ -272,7 +273,7 @@ BODY (BseProcedureClass *proc,
       BseUndoStack *ustack = bse_item_undo_open (self, "change-control");
       if (equery.tick != tick || equery.control_type != ctype || equery.control_value != value)
         {
-          success = bse_part_change_control (self, id, tick, ctype, value);
+          success = bse_part_change_control (self, id, tick, BseMidiSignalType (ctype), value);
           if (success)
             bse_item_push_undo_proc (self, "change-control", id, equery.tick, equery.control_type, equery.control_value);
         }
@@ -284,7 +285,7 @@ BODY (BseProcedureClass *proc,
     {
       BseUndoStack *ustack = bse_item_undo_open (self, "change-control");
       BsePartQueryEvent xquery;
-      success = bse_part_change_control (self, id, tick, ctype, value);
+      success = bse_part_change_control (self, id, tick, BseMidiSignalType (ctype), value);
       if (success && bse_part_query_event (self, id, &xquery) == BSE_PART_EVENT_NOTE &&
           (equery.fine_tune_value != xquery.fine_tune_value ||
            equery.velocity_value  != xquery.velocity_value))
@@ -322,7 +323,7 @@ BODY (BseProcedureClass *proc,
       GValue            *out_values)
 {
   /* extract parameter values */
-  BsePart *self     = bse_value_get_object (in_values++);
+  BsePart *self = (BsePart*) bse_value_get_object (in_values++);
   guint    id	    = sfi_value_get_int (in_values++);
   BsePartQueryEvent equery;
   gboolean deleted = FALSE;
@@ -371,7 +372,7 @@ BODY (BseProcedureClass *proc,
       GValue            *out_values)
 {
   /* extract parameter values */
-  BsePart *self     = bse_value_get_object (in_values++);
+  BsePart *self = (BsePart*) bse_value_get_object (in_values++);
   guint    id	    = sfi_value_get_int (in_values++);
   gboolean selected = FALSE;
   BsePartQueryEvent equery;
@@ -406,7 +407,7 @@ BODY (BseProcedureClass *proc,
       GValue            *out_values)
 {
   /* extract parameter values */
-  BsePart *self     = bse_value_get_object (in_values++);
+  BsePart *self = (BsePart*) bse_value_get_object (in_values++);
   guint    tick	    = sfi_value_get_int (in_values++);
   guint    duration = sfi_value_get_int (in_values++);
   
@@ -438,7 +439,7 @@ BODY (BseProcedureClass *proc,
       GValue            *out_values)
 {
   /* extract parameter values */
-  BsePart *self     = bse_value_get_object (in_values++);
+  BsePart *self = (BsePart*) bse_value_get_object (in_values++);
   guint    channel  = sfi_value_get_int (in_values++);
   guint    tick	    = sfi_value_get_int (in_values++);
   guint    duration = sfi_value_get_int (in_values++);
@@ -472,7 +473,7 @@ BODY (BseProcedureClass *proc,
       GValue            *out_values)
 {
   /* extract parameter values */
-  BsePart *self      = bse_value_get_object (in_values++);
+  BsePart *self = (BsePart*) bse_value_get_object (in_values++);
   guint    tick	     = sfi_value_get_int (in_values++);
   guint    duration  = sfi_value_get_int (in_values++);
   guint    ctype     = g_value_get_enum (in_values++);
@@ -482,7 +483,7 @@ BODY (BseProcedureClass *proc,
     return BSE_ERROR_PROC_PARAM_INVAL;
   
   /* action */
-  bse_value_take_boxed (out_values++, bse_part_list_controls (self, ~0, tick, duration, ctype));
+  bse_value_take_boxed (out_values++, bse_part_list_controls (self, ~0, tick, duration, BseMidiSignalType (ctype)));
   
   return BSE_ERROR_NONE;
 }
@@ -505,7 +506,7 @@ BODY (BseProcedureClass *proc,
       GValue            *out_values)
 {
   /* extract parameter values */
-  BsePart *self     = bse_value_get_object (in_values++);
+  BsePart *self = (BsePart*) bse_value_get_object (in_values++);
   guint    tick	    = sfi_value_get_int (in_values++);
   guint    duration = sfi_value_get_int (in_values++);
   gint     min_note = sfi_value_get_note (in_values++);
@@ -535,7 +536,7 @@ BODY (BseProcedureClass *proc,
       GValue            *out_values)
 {
   /* extract parameter values */
-  BsePart *self     = bse_value_get_object (in_values++);
+  BsePart *self = (BsePart*) bse_value_get_object (in_values++);
   guint    tick	    = sfi_value_get_int (in_values++);
   guint    duration = sfi_value_get_int (in_values++);
   
@@ -561,7 +562,7 @@ BODY (BseProcedureClass *proc,
       GValue            *out_values)
 {
   /* extract parameter values */
-  BsePart *self     = bse_value_get_object (in_values++);
+  BsePart *self = (BsePart*) bse_value_get_object (in_values++);
   
   /* check parameters */
   if (!BSE_IS_PART (self))
@@ -588,7 +589,7 @@ BODY (BseProcedureClass *proc,
       GValue            *out_values)
 {
   /* extract parameter values */
-  BsePart *self     = bse_value_get_object (in_values++);
+  BsePart *self = (BsePart*) bse_value_get_object (in_values++);
   guint    ctype    = g_value_get_enum (in_values++);
   
   /* check parameters */
@@ -596,7 +597,7 @@ BODY (BseProcedureClass *proc,
     return BSE_ERROR_PROC_PARAM_INVAL;
   
   /* action */
-  bse_value_take_boxed (out_values++, bse_part_list_selected_controls (self, ctype));
+  bse_value_take_boxed (out_values++, bse_part_list_selected_controls (self, BseMidiSignalType (ctype)));
   
   return BSE_ERROR_NONE;
 }
@@ -618,7 +619,7 @@ BODY (BseProcedureClass *proc,
       GValue            *out_values)
 {
   /* extract parameter values */
-  BsePart *self     = bse_value_get_object (in_values++);
+  BsePart *self = (BsePart*) bse_value_get_object (in_values++);
   guint    tick	    = sfi_value_get_int (in_values++);
   guint    duration = sfi_value_get_int (in_values++);
   gint     note     = sfi_value_get_note (in_values++);
@@ -649,7 +650,7 @@ BODY (BseProcedureClass *proc,
       GValue            *out_values)
 {
   /* extract parameter values */
-  BsePart *self     = bse_value_get_object (in_values++);
+  BsePart *self = (BsePart*) bse_value_get_object (in_values++);
   guint    tick	    = sfi_value_get_int (in_values++);
   gint     note     = sfi_value_get_note (in_values++);
   
@@ -680,7 +681,7 @@ BODY (BseProcedureClass *proc,
       GValue            *out_values)
 {
   /* extract parameter values */
-  BsePart *self     = bse_value_get_object (in_values++);
+  BsePart *self = (BsePart*) bse_value_get_object (in_values++);
   guint    tick	    = sfi_value_get_int (in_values++);
   guint    ctype    = g_value_get_enum (in_values++);
   
@@ -689,7 +690,7 @@ BODY (BseProcedureClass *proc,
     return BSE_ERROR_PROC_PARAM_INVAL;
   
   /* action */
-  bse_value_take_boxed (out_values++, bse_part_list_controls (self, ~0, tick, 1, ctype));
+  bse_value_take_boxed (out_values++, bse_part_list_controls (self, ~0, tick, 1, BseMidiSignalType (ctype)));
   
   return BSE_ERROR_NONE;
 }
@@ -715,7 +716,7 @@ BODY (BseProcedureClass *proc,
       GValue            *out_values)
 {
   /* extract parameter values */
-  BsePart *self     = bse_value_get_object (in_values++);
+  BsePart *self = (BsePart*) bse_value_get_object (in_values++);
   guint    channel  = sfi_value_get_int (in_values++);
   guint    tick	    = sfi_value_get_int (in_values++);
   guint    duration = sfi_value_get_int (in_values++);
@@ -726,7 +727,7 @@ BODY (BseProcedureClass *proc,
     return BSE_ERROR_PROC_PARAM_INVAL;
   
   /* action */
-  bse_value_take_boxed (out_values++, bse_part_list_controls (self, channel, tick, duration, ctype));
+  bse_value_take_boxed (out_values++, bse_part_list_controls (self, channel, tick, duration, BseMidiSignalType (ctype)));
   
   return BSE_ERROR_NONE;
 }
@@ -743,7 +744,7 @@ BODY (BseProcedureClass *proc,
       GValue            *out_values)
 {
   /* extract parameter values */
-  BsePart *self     = bse_value_get_object (in_values++);
+  BsePart *self = (BsePart*) bse_value_get_object (in_values++);
   
   /* check parameters */
   if (!BSE_IS_PART (self))
@@ -767,7 +768,7 @@ BODY (BseProcedureClass *proc,
       GValue            *out_values)
 {
   /* extract parameter values */
-  BsePart *self     = bse_value_get_object (in_values++);
+  BsePart *self = (BsePart*) bse_value_get_object (in_values++);
   
   /* check parameters */
   if (!BSE_IS_PART (self))
@@ -797,7 +798,7 @@ BODY (BseProcedureClass *proc,
       GValue            *out_values)
 {
   /* extract parameter values */
-  BsePart *self   = bse_value_get_object (in_values++);
+  BsePart *self = (BsePart*) bse_value_get_object (in_values++);
   guint tick      = sfi_value_get_int (in_values++);
   guint duration  = sfi_value_get_int (in_values++);
   gint  min_note  = sfi_value_get_note (in_values++);
@@ -829,7 +830,7 @@ BODY (BseProcedureClass *proc,
       GValue            *out_values)
 {
   /* extract parameter values */
-  BsePart *self   = bse_value_get_object (in_values++);
+  BsePart *self = (BsePart*) bse_value_get_object (in_values++);
   guint tick      = sfi_value_get_int (in_values++);
   guint duration  = sfi_value_get_int (in_values++);
   guint ctype     = g_value_get_enum (in_values++);
@@ -838,7 +839,7 @@ BODY (BseProcedureClass *proc,
   if (!BSE_IS_PART (self))
     return BSE_ERROR_PROC_PARAM_INVAL;
   
-  bse_part_select_controls_exclusive (self, tick, duration, ctype);
+  bse_part_select_controls_exclusive (self, tick, duration, BseMidiSignalType (ctype));
   
   return BSE_ERROR_NONE;
 }
@@ -860,7 +861,7 @@ BODY (BseProcedureClass *proc,
       GValue            *out_values)
 {
   /* extract parameter values */
-  BsePart *self   = bse_value_get_object (in_values++);
+  BsePart *self = (BsePart*) bse_value_get_object (in_values++);
   guint tick      = sfi_value_get_int (in_values++);
   guint duration  = sfi_value_get_int (in_values++);
   guint ctype     = g_value_get_enum (in_values++);
@@ -869,7 +870,7 @@ BODY (BseProcedureClass *proc,
   if (!BSE_IS_PART (self))
     return BSE_ERROR_PROC_PARAM_INVAL;
   
-  bse_part_select_controls (self, tick, duration, ctype, TRUE);
+  bse_part_select_controls (self, tick, duration, BseMidiSignalType (ctype), TRUE);
   
   return BSE_ERROR_NONE;
 }
@@ -892,7 +893,7 @@ BODY (BseProcedureClass *proc,
       GValue            *out_values)
 {
   /* extract parameter values */
-  BsePart *self   = bse_value_get_object (in_values++);
+  BsePart *self = (BsePart*) bse_value_get_object (in_values++);
   guint tick      = sfi_value_get_int (in_values++);
   guint duration  = sfi_value_get_int (in_values++);
   gint  min_note  = sfi_value_get_note (in_values++);
@@ -925,7 +926,7 @@ BODY (BseProcedureClass *proc,
       GValue            *out_values)
 {
   /* extract parameter values */
-  BsePart *self   = bse_value_get_object (in_values++);
+  BsePart *self = (BsePart*) bse_value_get_object (in_values++);
   guint tick      = sfi_value_get_int (in_values++);
   guint duration  = sfi_value_get_int (in_values++);
   gint  min_note  = sfi_value_get_note (in_values++);
@@ -957,7 +958,7 @@ BODY (BseProcedureClass *proc,
       GValue            *out_values)
 {
   /* extract parameter values */
-  BsePart *self   = bse_value_get_object (in_values++);
+  BsePart *self = (BsePart*) bse_value_get_object (in_values++);
   guint tick      = sfi_value_get_int (in_values++);
   guint duration  = sfi_value_get_int (in_values++);
   guint ctype     = g_value_get_enum (in_values++);
@@ -966,7 +967,7 @@ BODY (BseProcedureClass *proc,
   if (!BSE_IS_PART (self))
     return BSE_ERROR_PROC_PARAM_INVAL;
   
-  bse_part_select_controls (self, tick, duration, ctype, FALSE);
+  bse_part_select_controls (self, tick, duration, BseMidiSignalType (ctype), FALSE);
   
   return BSE_ERROR_NONE;
 }
@@ -983,7 +984,7 @@ BODY (BseProcedureClass *proc,
       GValue            *out_values)
 {
   /* extract parameter values */
-  BsePart *self     = bse_value_get_object (in_values++);
+  BsePart *self = (BsePart*) bse_value_get_object (in_values++);
   guint    id	    = sfi_value_get_int (in_values++);
   BsePartQueryEvent equery;
   
@@ -1014,7 +1015,7 @@ BODY (BseProcedureClass *proc,
       GValue            *out_values)
 {
   /* extract parameter values */
-  BsePart *self     = bse_value_get_object (in_values++);
+  BsePart *self = (BsePart*) bse_value_get_object (in_values++);
   guint    id	    = sfi_value_get_int (in_values++);
   BsePartQueryEvent equery;
   
@@ -1043,7 +1044,7 @@ METHOD (BsePart, get-timing) {
 	GValue            *out_values)
 {
   /* extract parameter values */
-  BsePart *self = bse_value_get_object (in_values++);
+  BsePart *self = (BsePart*) bse_value_get_object (in_values++);
   SfiInt   tick = sfi_value_get_int (in_values++);
   BseItem *parent;
   BseSongTiming timing = { 0, };
@@ -1076,7 +1077,7 @@ BODY (BseProcedureClass *proc,
       GValue            *out_values)
 {
   /* extract parameter values */
-  BsePart *self = bse_value_get_object (in_values++);
+  BsePart *self = (BsePart*) bse_value_get_object (in_values++);
 
   /* check parameters */
   if (!BSE_IS_PART (self))

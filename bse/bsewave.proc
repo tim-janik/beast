@@ -14,10 +14,10 @@
  * A copy of the GNU Lesser General Public License should ship along
  * with this library; if not, see http://www.gnu.org/copyleft/.
  */
-#include        <bse/bseplugin.h>
-#include        <bse/bseprocedure.h>
-#include        <bse/bsewave.h>
-#include        <bse/bseeditablesample.h>
+#include <bse/bseplugin.h>
+#include <bse/bseprocedure.h>
+#include <bse/bsewave.h>
+#include <bse/bseeditablesample.h>
 
 
 AUTHORS = "Tim Janik <timj@gtk.org>";
@@ -41,9 +41,9 @@ BODY (BseProcedureClass *proc,
       GValue            *out_values)
 {
   /* extract parameter values */
-  BseWave *wave           = (BseWave*) bse_value_get_object (in_values++);
-  gchar *file_name        = sfi_value_get_string (in_values++);
-  gchar *wave_name        = sfi_value_get_string (in_values++);
+  BseWave *wave = (BseWave*) bse_value_get_object (in_values++);
+  const char *file_name = sfi_value_get_string (in_values++);
+  const char *wave_name = sfi_value_get_string (in_values++);
   BseErrorType error = BSE_ERROR_NONE;
   
   /* check parameters */
@@ -70,7 +70,7 @@ BODY (BseProcedureClass *proc,
       GValue            *out_values)
 {
   /* extract parameter values */
-  BseWave *wave = bse_value_get_object (in_values++);
+  BseWave *wave = (BseWave*) bse_value_get_object (in_values++);
   
   /* check parameters */
   if (!BSE_IS_WAVE (wave))
@@ -96,19 +96,19 @@ BODY (BseProcedureClass *proc,
       GValue            *out_values)
 {
   /* extract parameter values */
-  BseWave *wave     = bse_value_get_object (in_values++);
+  BseWave *wave = (BseWave*) bse_value_get_object (in_values++);
   guint chunk_index = sfi_value_get_int (in_values++);
   BseEditableSample *esample = NULL;
   GslWaveChunk *wchunk = NULL;
-  
+
   /* check parameters */
   if (!BSE_IS_WAVE (wave))
     return BSE_ERROR_PROC_PARAM_INVAL;
-  
-  wchunk = sfi_ring_nth_data (wave->wave_chunks, chunk_index);
+
+  wchunk = (GslWaveChunk*) sfi_ring_nth_data (wave->wave_chunks, chunk_index);
   if (wchunk)
     {
-      esample = g_object_new (BSE_TYPE_EDITABLE_SAMPLE, NULL);
+      esample = (BseEditableSample*) g_object_new (BSE_TYPE_EDITABLE_SAMPLE, NULL);
       bse_editable_sample_set_wchunk (esample, wchunk);
       bse_item_use (BSE_ITEM (esample));
       g_object_unref (esample);
@@ -135,15 +135,15 @@ BODY (BseProcedureClass *proc,
       GValue            *out_values)
 {
   /* extract parameter values */
-  BseWave *wave     = bse_value_get_object (in_values++);
+  BseWave *wave = (BseWave*) bse_value_get_object (in_values++);
   guint chunk_index = sfi_value_get_int (in_values++);
   GslWaveChunk *wchunk = NULL;
-  
+
   /* check parameters */
   if (!BSE_IS_WAVE (wave))
     return BSE_ERROR_PROC_PARAM_INVAL;
-  
-  wchunk = sfi_ring_nth_data (wave->wave_chunks, chunk_index);
+
+  wchunk = (GslWaveChunk*) sfi_ring_nth_data (wave->wave_chunks, chunk_index);
   if (wchunk)
     sfi_value_set_real (out_values++, wchunk->osc_freq);
 
@@ -165,15 +165,15 @@ BODY (BseProcedureClass *proc,
       GValue            *out_values)
 {
   /* extract parameter values */
-  BseWave *wave     = bse_value_get_object (in_values++);
+  BseWave *wave = (BseWave*) bse_value_get_object (in_values++);
   guint chunk_index = sfi_value_get_int (in_values++);
   GslWaveChunk *wchunk = NULL;
-  
+
   /* check parameters */
   if (!BSE_IS_WAVE (wave))
     return BSE_ERROR_PROC_PARAM_INVAL;
-  
-  wchunk = sfi_ring_nth_data (wave->wave_chunks, chunk_index);
+
+  wchunk = (GslWaveChunk*) sfi_ring_nth_data (wave->wave_chunks, chunk_index);
   if (wchunk)
     sfi_value_set_real (out_values++, wchunk->mix_freq);
 

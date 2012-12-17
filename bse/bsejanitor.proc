@@ -37,7 +37,7 @@ BODY (BseProcedureClass *proc,
       GValue            *out_values)
 {
   /* extract parameter values */
-  BseJanitor  *self   = bse_value_get_object (in_values++);
+  BseJanitor  *self = (BseJanitor*) bse_value_get_object (in_values++);
   const gchar *action = sfi_value_get_string (in_values++);
   
   /* check parameters */
@@ -62,7 +62,7 @@ BODY (BseProcedureClass *proc,
       GValue            *out_values)
 {
   /* extract parameter values */
-  BseJanitor *self = bse_value_get_object (in_values++);
+  BseJanitor *self = (BseJanitor*) bse_value_get_object (in_values++);
   
   /* check parameters */
   if (!BSE_IS_JANITOR (self))
@@ -86,7 +86,7 @@ BODY (BseProcedureClass *proc,
       GValue            *out_values)
 {
   /* extract parameter values */
-  BseJanitor *self = bse_value_get_object (in_values++);
+  BseJanitor *self = (BseJanitor*) bse_value_get_object (in_values++);
   
   /* check parameters */
   if (!BSE_IS_JANITOR (self))
@@ -110,7 +110,7 @@ BODY (BseProcedureClass *proc,
       GValue            *out_values)
 {
   /* extract parameter values */
-  BseJanitor *self = bse_value_get_object (in_values++);
+  BseJanitor *self = (BseJanitor*) bse_value_get_object (in_values++);
   
   /* check parameters */
   if (!BSE_IS_JANITOR (self))
@@ -136,19 +136,17 @@ BODY (BseProcedureClass *proc,
       GValue            *out_values)
 {
   /* extract parameter values */
-  BseJanitor       *self = bse_value_get_object (in_values++);
+  BseJanitor *self = (BseJanitor*) bse_value_get_object (in_values++);
   guint             nth  = sfi_value_get_int (in_values++);
-  BseJanitorAction *a;
-  
+
   /* check parameters */
   if (!BSE_IS_JANITOR (self))
     return BSE_ERROR_PROC_PARAM_INVAL;
-  
-  a = g_slist_nth_data (self->actions, nth);
-  
+
+  BseJanitorAction *a = (BseJanitorAction*) g_slist_nth_data (self->actions, nth);
   /* set output parameters */
   sfi_value_set_string (out_values++, a ? g_quark_to_string (a->action) : NULL);
-  
+
   return BSE_ERROR_NONE;
 }
 
@@ -166,19 +164,18 @@ BODY (BseProcedureClass *proc,
       GValue            *out_values)
 {
   /* extract parameter values */
-  BseJanitor       *self = bse_value_get_object (in_values++);
+  BseJanitor *self = (BseJanitor*) bse_value_get_object (in_values++);
   guint             nth  = sfi_value_get_int (in_values++);
-  BseJanitorAction *a;
-  
+
   /* check parameters */
   if (!BSE_IS_JANITOR (self))
     return BSE_ERROR_PROC_PARAM_INVAL;
-  
-  a = g_slist_nth_data (self->actions, nth);
-  
+
+  BseJanitorAction *a = (BseJanitorAction*) g_slist_nth_data (self->actions, nth);
+
   /* set output parameters */
   sfi_value_set_string (out_values++, a ? a->name : NULL);
-  
+
   return BSE_ERROR_NONE;
 }
 
@@ -196,19 +193,17 @@ BODY (BseProcedureClass *proc,
       GValue            *out_values)
 {
   /* extract parameter values */
-  BseJanitor       *self = bse_value_get_object (in_values++);
+  BseJanitor *self = (BseJanitor*) bse_value_get_object (in_values++);
   guint             nth  = sfi_value_get_int (in_values++);
-  BseJanitorAction *a;
-  
+
   /* check parameters */
   if (!BSE_IS_JANITOR (self))
     return BSE_ERROR_PROC_PARAM_INVAL;
-  
-  a = g_slist_nth_data (self->actions, nth);
-  
+
+  BseJanitorAction *a = (BseJanitorAction*) g_slist_nth_data (self->actions, nth);
+
   /* set output parameters */
   sfi_value_set_string (out_values++, a ? a->blurb : NULL);
-  
   return BSE_ERROR_NONE;
 }
 
@@ -222,7 +217,7 @@ BODY (BseProcedureClass *proc,
       GValue            *out_values)
 {
   /* extract parameter values */
-  BseJanitor *self = bse_value_get_object (in_values++);
+  BseJanitor *self = (BseJanitor*) bse_value_get_object (in_values++);
   
   /* check parameters */
   if (!BSE_IS_JANITOR (self))
@@ -393,7 +388,7 @@ PROCEDURE (bse-script-send-message, "Script/Message") {
   const gchar *text2  = sfi_value_get_string (in_values++);
   const gchar *text3  = sfi_value_get_string (in_values++);
   const gchar *check  = sfi_value_get_string (in_values++);
-  SfiMsgType    type  = mtype ? sfi_msg_lookup_type (mtype) : 0;
+  SfiMsgType type  = mtype ? sfi_msg_lookup_type (mtype) : SfiMsgType (0);
 
   /* check parameters */
   if (!mtype || !(text1 || text2))
@@ -404,7 +399,7 @@ PROCEDURE (bse-script-send-message, "Script/Message") {
     return BSE_ERROR_PROC_EXECUTION;
 
   /* action */
-  bse_server_message (bse_server_get (), domain, type, text0, text1, text2, text3, check, janitor, NULL, janitor->port->remote_pid);
+  bse_server_message (bse_server_get (), domain, BseMsgType (type), text0, text1, text2, text3, check, janitor, NULL, janitor->port->remote_pid);
 
   return BSE_ERROR_NONE;
 }

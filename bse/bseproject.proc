@@ -28,6 +28,7 @@
 #include <bse/bsemidireceiver.h>
 #include <bse/bsemidinotifier.h>
 #include <bse/bseengine.h>
+#include "bsecxxplugin.hh"
 
 
 AUTHORS = "Tim Janik <timj@gtk.org>";
@@ -45,8 +46,8 @@ METHOD (BseProject, is-playing) {
         GValue            *out_values)
 {
   /* extract parameter values */
-  BseProject *project = bse_value_get_object (in_values++);
-  
+  BseProject *project = (BseProject*) bse_value_get_object (in_values++);
+
   /* check parameters */
   if (!BSE_IS_PROJECT (project))
     return BSE_ERROR_PROC_PARAM_INVAL;
@@ -70,7 +71,7 @@ METHOD (BseProject, is-active) {
         GValue            *out_values)
 {
   /* extract parameter values */
-  BseProject *project = bse_value_get_object (in_values++);
+  BseProject *project = (BseProject*) bse_value_get_object (in_values++);
   
   /* check parameters */
   if (!BSE_IS_PROJECT (project))
@@ -93,7 +94,7 @@ METHOD (BseProject, get-midi-notifier) {
         GValue            *out_values)
 {
   /* extract parameter values */
-  BseProject *self = bse_value_get_object (in_values++);
+  BseProject *self = (BseProject*) bse_value_get_object (in_values++);
 
   /* check parameters */
   if (!BSE_IS_PROJECT (self))
@@ -120,8 +121,8 @@ METHOD (BseProject, import-midi-file, "File/Import MIDI") {
         GValue            *out_values)
 {
   /* extract parameter values */
-  BseProject *project = bse_value_get_object (in_values++);
-  gchar *file_name = sfi_value_get_string (in_values++);
+  BseProject *project = (BseProject*) bse_value_get_object (in_values++);
+  const char *file_name = sfi_value_get_string (in_values++);
   BseMidiFile *smf;
   BseErrorType error;
   
@@ -168,8 +169,8 @@ METHOD (BseProject, restore-from-file, "File/Restore") {
         GValue            *out_values)
 {
   /* extract parameter values */
-  BseProject *project = bse_value_get_object (in_values++);
-  gchar *file_name = sfi_value_get_string (in_values++);
+  BseProject *project = (BseProject*) bse_value_get_object (in_values++);
+  const char *file_name = sfi_value_get_string (in_values++);
   BseErrorType error;
   
   /* check parameters */
@@ -179,7 +180,7 @@ METHOD (BseProject, restore-from-file, "File/Restore") {
   /* action */
   if (!project->in_undo && !project->in_redo)
     {
-      BseStorage *storage = g_object_new (BSE_TYPE_STORAGE, NULL);
+      BseStorage *storage = (BseStorage*) g_object_new (BSE_TYPE_STORAGE, NULL);
       error = bse_storage_input_file (storage, file_name);
       if (!error)
         error = bse_project_restore (project, storage);
@@ -217,9 +218,9 @@ METHOD (BseProject, store-bse, "File/Store") {
         GValue            *out_values)
 {
   /* extract parameter values */
-  BseProject *project = bse_value_get_object (in_values++);
-  BseSuper *super = bse_value_get_object (in_values++);
-  gchar *file_name = sfi_value_get_string (in_values++);
+  BseProject *project = (BseProject*) bse_value_get_object (in_values++);
+  BseSuper *super = (BseSuper*) bse_value_get_object (in_values++);
+  const char *file_name = sfi_value_get_string (in_values++);
   gboolean self_contained = sfi_value_get_bool (in_values++);
   BseErrorType error;
   
@@ -250,8 +251,8 @@ METHOD (BseProject, create-song) {
         GValue            *out_values)
 {
   /* extract parameter values */
-  BseContainer *container = bse_value_get_object (in_values++);
-  const gchar *name       = sfi_value_get_string (in_values++);
+  BseContainer *container = (BseContainer*) bse_value_get_object (in_values++);
+  const char *name = sfi_value_get_string (in_values++);
   BseUndoStack *ustack;
   BseItem *child;
 
@@ -261,7 +262,7 @@ METHOD (BseProject, create-song) {
 
   /* action */
   ustack = bse_item_undo_open (container, "create-song");
-  child = bse_container_new_child (container, BSE_TYPE_SONG, NULL);
+  child = (BseItem*) bse_container_new_child (container, BSE_TYPE_SONG, NULL);
   if (name)
     bse_item_set (child, "uname", name, NULL);
   bse_item_push_undo_proc (container, "remove-snet", child);
@@ -284,7 +285,7 @@ METHOD (BseProject, get-wave-repo) {
         GValue            *out_values)
 {
   /* extract parameter values */
-  BseProject *project = bse_value_get_object (in_values++);
+  BseProject *project = (BseProject*) bse_value_get_object (in_values++);
   BseWaveRepo *wrepo = NULL;
   
   /* check parameters */
@@ -313,8 +314,8 @@ METHOD (BseProject, get-data-pocket) {
         GValue            *out_values)
 {
   /* extract parameter values */
-  BseProject *project = bse_value_get_object (in_values++);
-  gchar *name = sfi_value_get_string (in_values++);
+  BseProject *project = (BseProject*) bse_value_get_object (in_values++);
+  const char *name = sfi_value_get_string (in_values++);
   BseItem *item;
   
   /* check parameters */
@@ -324,9 +325,7 @@ METHOD (BseProject, get-data-pocket) {
   /* action */
   item = bse_project_lookup_typed_item (project, BSE_TYPE_DATA_POCKET, name);
   if (!item)
-    item = bse_container_new_child (BSE_CONTAINER (project), BSE_TYPE_DATA_POCKET,
-                                    "uname", name,
-                                    NULL);
+    item = (BseItem*) bse_container_new_child (BSE_CONTAINER (project), BSE_TYPE_DATA_POCKET, "uname", name, NULL);
   
   /* set output parameters */
   bse_value_set_object (out_values++, item);
@@ -347,8 +346,8 @@ METHOD (BseProject, create-csynth) {
         GValue            *out_values)
 {
   /* extract parameter values */
-  BseContainer *container = bse_value_get_object (in_values++);
-  const gchar *name       = sfi_value_get_string (in_values++);
+  BseContainer *container = (BseContainer*) bse_value_get_object (in_values++);
+  const char *name = sfi_value_get_string (in_values++);
   BseUndoStack *ustack;
   BseItem *child;
   
@@ -358,7 +357,7 @@ METHOD (BseProject, create-csynth) {
   
   /* action */
   ustack = bse_item_undo_open (container, "create-csynth");
-  child = bse_container_new_child (container, BSE_TYPE_CSYNTH, NULL);
+  child = (BseItem*) bse_container_new_child (container, BSE_TYPE_CSYNTH, NULL);
   if (name)
     bse_item_set (child, "uname", name, NULL);
   bse_item_push_undo_proc (container, "remove-snet", child);
@@ -383,8 +382,8 @@ METHOD (BseProject, create-midi-synth) {
         GValue            *out_values)
 {
   /* extract parameter values */
-  BseContainer *container = bse_value_get_object (in_values++);
-  gchar *name             = sfi_value_get_string (in_values++);
+  BseContainer *container = (BseContainer*) bse_value_get_object (in_values++);
+  const char *name = sfi_value_get_string (in_values++);
   BseUndoStack *ustack;
   BseItem *child;
 
@@ -394,7 +393,7 @@ METHOD (BseProject, create-midi-synth) {
   
   /* action */
   ustack = bse_item_undo_open (container, "create-midi-synth");
-  child = bse_container_new_child (container, BSE_TYPE_MIDI_SYNTH, NULL);
+  child = (BseItem*) bse_container_new_child (container, BSE_TYPE_MIDI_SYNTH, NULL);
   if (name)
     bse_item_set (child, "uname", name, NULL);
   bse_item_push_undo_proc (container, "remove-snet", child);
@@ -417,8 +416,8 @@ METHOD (BseProject, remove-snet) {
         GValue            *out_values)
 {
   /* extract parameter values */
-  BseContainer *self  = bse_value_get_object (in_values++);
-  BseItem      *child = bse_value_get_object (in_values++);
+  BseContainer *self = (BseContainer*) bse_value_get_object (in_values++);
+  BseItem *child = (BseItem*) bse_value_get_object (in_values++);
   BseUndoStack *ustack;
   
   /* check parameters */
@@ -455,7 +454,7 @@ METHOD (BseProject, list-uname-paths) {
         GValue            *out_values)
 {
   /* extract parameter values */
-  BseProject *project = bse_value_get_object (in_values++);
+  BseProject *project = (BseProject*) bse_value_get_object (in_values++);
   const gchar *tname  = sfi_value_get_string (in_values++);
   GType type          = tname ? g_type_from_name (tname) : 0;
   
@@ -482,7 +481,7 @@ METHOD (BseProject, find-item) {
         GValue            *out_values)
 {
   /* extract parameter values */
-  BseProject *project = bse_value_get_object (in_values++);
+  BseProject *project = (BseProject*) bse_value_get_object (in_values++);
   const gchar *string = sfi_value_get_string (in_values++);
   
   /* check parameters */
@@ -509,7 +508,7 @@ METHOD (BseProject, match-items-by-uname) {
         GValue            *out_values)
 {
   /* extract parameter values */
-  BseProject *project = bse_value_get_object (in_values++);
+  BseProject *project = (BseProject*) bse_value_get_object (in_values++);
   const gchar *tname  = sfi_value_get_string (in_values++);
   const gchar *string = sfi_value_get_string (in_values++);
   GType type          = tname ? g_type_from_name (tname) : 0;
@@ -524,9 +523,9 @@ METHOD (BseProject, match-items-by-uname) {
   iseq = bse_item_seq_new ();
   free_list = bse_objects_list_by_uname (type, string);
   for (list = free_list; list; list = list->next)
-    if (bse_item_get_project (list->data) == project)
+    if (bse_item_get_project ((BseItem*) list->data) == project)
       {
-        bse_item_seq_append (iseq, list->data);
+        bse_item_seq_append (iseq, (BseItem*) list->data);
         break;
       }
   g_list_free (free_list);
@@ -547,7 +546,7 @@ METHOD (BseProject, get-supers) {
         GValue            *out_values)
 {
   /* extract parameter values */
-  BseProject *project = bse_value_get_object (in_values++);
+  BseProject *project = (BseProject*) bse_value_get_object (in_values++);
   BseItemSeq *iseq;
   GSList *slist;
   
@@ -558,7 +557,7 @@ METHOD (BseProject, get-supers) {
   /* action */
   iseq = bse_item_seq_new ();
   for (slist = project->supers; slist; slist = slist->next)
-    bse_item_seq_append (iseq, slist->data);
+    bse_item_seq_append (iseq, (BseItem*) slist->data);
   
   /* set output parameters */
   bse_value_take_boxed (out_values++, iseq);
@@ -577,7 +576,7 @@ METHOD (BseProject, can-play) {
         GValue            *out_values)
 {
   /* extract parameter values */
-  BseProject *project = bse_value_get_object (in_values++);
+  BseProject *project = (BseProject*) bse_value_get_object (in_values++);
   gpointer wrepo;
   
   /* check parameters */
@@ -602,7 +601,7 @@ METHOD (BseProject, get-state) {
         GValue            *out_values)
 {
   /* extract parameter values */
-  BseProject *self = bse_value_get_object (in_values++);
+  BseProject *self = (BseProject*) bse_value_get_object (in_values++);
   
   /* check parameters */
   if (!BSE_IS_PROJECT (self))
@@ -626,7 +625,7 @@ METHOD (BseProject, activate) {
         GValue            *out_values)
 {
   /* extract parameter values */
-  BseProject *self = bse_value_get_object (in_values++);
+  BseProject *self = (BseProject*) bse_value_get_object (in_values++);
   BseProjectState state_before;
   BseErrorType error;
 
@@ -656,7 +655,7 @@ METHOD (BseProject, start-playback) {
         GValue            *out_values)
 {
   /* extract parameter values */
-  BseProject *self = bse_value_get_object (in_values++);
+  BseProject *self = (BseProject*) bse_value_get_object (in_values++);
   BseProjectState state_before;
 
   /* check parameters */
@@ -686,7 +685,7 @@ METHOD (BseProject, play) {
         GValue            *out_values)
 {
   /* extract parameter values */
-  BseProject *self = bse_value_get_object (in_values++);
+  BseProject *self = (BseProject*) bse_value_get_object (in_values++);
   BseErrorType error;
   BseProjectState state_before;
   
@@ -722,7 +721,7 @@ METHOD (BseProject, deactivate) {
         GValue            *out_values)
 {
   /* extract parameter values */
-  BseProject *self = bse_value_get_object (in_values++);
+  BseProject *self = (BseProject*) bse_value_get_object (in_values++);
 
   /* check parameters */
   if (!BSE_IS_PROJECT (self))
@@ -742,7 +741,7 @@ METHOD (BseProject, stop-playback) {
         GValue            *out_values)
 {
   /* extract parameter values */
-  BseProject *self = bse_value_get_object (in_values++);
+  BseProject *self = (BseProject*) bse_value_get_object (in_values++);
 
   /* check parameters */
   if (!BSE_IS_PROJECT (self))
@@ -762,7 +761,7 @@ METHOD (BseProject, stop) {
         GValue            *out_values)
 {
   /* extract parameter values */
-  BseProject *self = bse_value_get_object (in_values++);
+  BseProject *self = (BseProject*) bse_value_get_object (in_values++);
 
   /* check parameters */
   if (!BSE_IS_PROJECT (self))
@@ -784,7 +783,7 @@ METHOD (BseProject, auto-deactivate) {
         GValue            *out_values)
 {
   /* extract parameter values */
-  BseProject *self  = bse_value_get_object (in_values++);
+  BseProject *self = (BseProject*) bse_value_get_object (in_values++);
   gint64      msecs = sfi_value_get_int (in_values++);
 
   /* check parameters */
@@ -807,7 +806,7 @@ METHOD (BseProject, inject-midi-control) {
         GValue            *out_values)
 {
   /* extract parameter values */
-  BseProject *project   = bse_value_get_object (in_values++);
+  BseProject *project = (BseProject*) bse_value_get_object (in_values++);
   int midi_channel      = g_value_get_int (in_values++);
   int midi_control      = g_value_get_int (in_values++);
   SfiReal control_value = sfi_value_get_real (in_values++);
@@ -844,8 +843,8 @@ METHOD (BseProject, change-name) {
         GValue            *out_values)
 {
   /* extract parameter values */
-  BseProject *project = bse_value_get_object (in_values++);
-  gchar *name = sfi_value_get_string (in_values++);
+  BseProject *project = (BseProject*) bse_value_get_object (in_values++);
+  const char *name = sfi_value_get_string (in_values++);
   
   /* check parameters */
   if (!BSE_IS_PROJECT (project) || !name)
@@ -868,7 +867,7 @@ METHOD (BseProject, undo-depth) {
         GValue            *out_values)
 {
   /* extract parameter values */
-  BseProject *project = bse_value_get_object (in_values++);
+  BseProject *project = (BseProject*) bse_value_get_object (in_values++);
   
   /* check parameters */
   if (!BSE_IS_PROJECT (project))
@@ -889,7 +888,7 @@ METHOD (BseProject, undo) {
         GValue            *out_values)
 {
   /* extract parameter values */
-  BseProject *project = bse_value_get_object (in_values++);
+  BseProject *project = (BseProject*) bse_value_get_object (in_values++);
 
   /* check parameters */
   if (!BSE_IS_PROJECT (project))
@@ -923,7 +922,7 @@ METHOD (BseProject, redo-depth) {
         GValue            *out_values)
 {
   /* extract parameter values */
-  BseProject *project = bse_value_get_object (in_values++);
+  BseProject *project = (BseProject*) bse_value_get_object (in_values++);
   
   /* check parameters */
   if (!BSE_IS_PROJECT (project))
@@ -944,7 +943,7 @@ METHOD (BseProject, redo) {
         GValue            *out_values)
 {
   /* extract parameter values */
-  BseProject *project = bse_value_get_object (in_values++);
+  BseProject *project = (BseProject*) bse_value_get_object (in_values++);
   
   /* check parameters */
   if (!BSE_IS_PROJECT (project))
@@ -976,7 +975,7 @@ METHOD (BseProject, clear-undo) {
         GValue            *out_values)
 {
   /* extract parameter values */
-  BseProject *project = bse_value_get_object (in_values++);
+  BseProject *project = (BseProject*) bse_value_get_object (in_values++);
   
   /* check parameters */
   if (!BSE_IS_PROJECT (project))
@@ -997,7 +996,7 @@ METHOD (BseProject, clean-dirty) {
         GValue            *out_values)
 {
   /* extract parameter values */
-  BseProject *project = bse_value_get_object (in_values++);
+  BseProject *project = (BseProject*) bse_value_get_object (in_values++);
   
   /* check parameters */
   if (!BSE_IS_PROJECT (project))
@@ -1019,7 +1018,7 @@ METHOD (BseProject, is-dirty) {
         GValue            *out_values)
 {
   /* extract parameter values */
-  BseProject *project = bse_value_get_object (in_values++);
+  BseProject *project = (BseProject*) bse_value_get_object (in_values++);
   
   /* check parameters */
   if (!BSE_IS_PROJECT (project))

@@ -8,7 +8,7 @@ SUBDIRS = icons zintern . tests
 
 # need -I$(top_srcdir) for <bse/bsedefs.h>
 # need -I$(top_builddir) for <sfi/sficonfig.h>
-# need -I$(srcdir) for "bseserver.h" in .genprc.c
+# need -I$(srcdir) for "bseserver.h" in .genprc.cc
 # need -I. (builddir) for "bsecore.genidl.hh" in bsecore.cc
 INCLUDES += -I$(top_srcdir) -I$(top_builddir) -I$(srcdir) -I. $(BSE_CFLAGS) -DG_DISABLE_DEPRECATED -DG_DISABLE_CONST_RETURNS
 DEFS     += $(strip \
@@ -118,7 +118,7 @@ bse_proc_sources = $(strip \
 	bseserver.proc		bsesong.proc		bsebus.proc		bsesource.proc		bsecsynth.proc	bsesnet.proc		\
 	bsetrack.proc		bseitem.proc		bsewave.proc		bsewaveosc.proc		bsewaverepo.proc			\
 )
-bse_proc_gen_sources = $(bse_proc_sources:.proc=.genprc.c)
+bse_proc_gen_sources = $(bse_proc_sources:.proc=.genprc.cc)
 # non-compile and non-install sources required
 EXTRA_DIST += $(strip \
 	bsecore.idl	bse.idl					\
@@ -163,7 +163,7 @@ SFIDL_INC = --nostdinc -I$(top_srcdir) -I$(top_builddir)
 #
 # rules to generate built sources
 #
-%.genprc.c: @PERLRULE@ %.proc mkcproc.pl
+%.genprc.cc: @PERLRULE@ %.proc mkcproc.pl
 	$(srcdir)/mkcproc.pl --funcname $@ --preprocess $< >$@
 if WITH_PERLRULE
 CLEANFILES += $(bse_proc_gen_sources)

@@ -35,7 +35,7 @@ BODY (BseProcedureClass *proc,
       GValue            *out_values)
 {
   /* extract parameter values */
-  BseMidiNotifier *self = bse_value_get_object (in_values++);
+  BseMidiNotifier *self = (BseMidiNotifier*) bse_value_get_object (in_values++);
   struct timeval tv;
   guint64 stamp;
   

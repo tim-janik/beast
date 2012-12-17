@@ -35,7 +35,7 @@ PROCEDURE (bse-error-name, "Error Name") {
 	GValue            *out_values)
 {
   /* extract parameter values */
-  BseErrorType error = g_value_get_enum (in_values++);
+  BseErrorType error = (BseErrorType) g_value_get_enum (in_values++);
   
   /* check parameters */
   
@@ -59,7 +59,7 @@ PROCEDURE (bse-error-blurb, "Error Blurb") {
 	GValue            *out_values)
 {
   /* extract parameter values */
-  BseErrorType error = g_value_get_enum (in_values++);
+  BseErrorType error = (BseErrorType) g_value_get_enum (in_values++);
   
   /* check parameters */
   

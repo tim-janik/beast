@@ -311,8 +311,7 @@ my $func = func_name ($file);
 if ($funcname) {
     $func = func_name ($funcname);
 }
-print "BseExportNode* $func (void);\n";
-print "BseExportNode* $func (void)\n{\n  return $last_node;\n}\n";
+print "extern \"C\" BseExportNode* $func (void)\n{\n  return $last_node;\n}\n";
 
 
 print "\n/*\n * Generated data ends here\n */\n";

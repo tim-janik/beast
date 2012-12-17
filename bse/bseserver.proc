@@ -47,8 +47,8 @@ BODY (BseProcedureClass *proc,
       GValue            *out_values)
 {
   /* extract parameter values */
-  BseServer *server     = (BseServer*) bse_value_get_object (in_values++);
-  gchar *name           = sfi_value_get_string (in_values++);
+  BseServer *server = (BseServer*) bse_value_get_object (in_values++);
+  const char *name = sfi_value_get_string (in_values++);
   gchar *uname;
   guint num = 1;
   BseProject *project;
@@ -91,8 +91,8 @@ BODY (BseProcedureClass *proc,
       GValue            *out_values)
 {
   /* extract parameter values */
-  BseServer *server	= bse_value_get_object (in_values++);
-  gchar *file_name	= sfi_value_get_string (in_values++);
+  BseServer *server = (BseServer*) bse_value_get_object (in_values++);
+  const char *file_name = sfi_value_get_string (in_values++);
   BseWaveFileInfo *finfo;
   
   /* check parameters */
@@ -121,7 +121,7 @@ BODY (BseProcedureClass *proc,
       GValue            *out_values)
 {
   /* extract parameter values */
-  BseServer *server	= bse_value_get_object (in_values++);
+  BseServer *server = (BseServer*) bse_value_get_object (in_values++);
   GSList *slist;
   guint n_scripts = 0;
   
@@ -152,7 +152,7 @@ BODY (BseProcedureClass *proc,
       GValue            *out_values)
 {
   /* extract parameter values */
-  BseServer *server	= bse_value_get_object (in_values++);
+  BseServer *server = (BseServer*) bse_value_get_object (in_values++);
   
   /* check parameters */
   if (!BSE_IS_SERVER (server))
@@ -186,17 +186,17 @@ script_janitor_closed (BseJanitor *janitor,
 static gboolean
 register_scripts (gpointer data)
 {
-  BseServer *server = data;
-  ScriptRegistration *scr = g_object_get_data (server, "script-registration-queue");
+  BseServer *server = (BseServer*) data;
+  ScriptRegistration *scr = (ScriptRegistration*) g_object_get_data ((GObject*) server, "script-registration-queue");
   BseJanitor *janitor = NULL;
   BseErrorType error;
-  
+
   if (!scr)
     {
       bse_server_registration (server, BSE_REGISTER_DONE, NULL, NULL);
       return FALSE;
     }
-  g_object_set_data (server, "script-registration-queue", scr->next);
+  g_object_set_data ((GObject*) server, "script-registration-queue", scr->next);
   
   error = scr->register_func (scr->script, &janitor);
   if (!janitor)
@@ -219,7 +219,7 @@ BODY (BseProcedureClass *proc,
 {
   static gboolean registration_done = FALSE;
   /* extract parameter values */
-  BseServer *server	       = bse_value_get_object (in_values++);
+  BseServer *server = (BseServer*) bse_value_get_object (in_values++);
   ScriptRegistration *scr_list = NULL;
   SfiRing *ring;
   
@@ -238,13 +238,13 @@ BODY (BseProcedureClass *proc,
   while (ring)
     {
       ScriptRegistration *scr = g_new0 (ScriptRegistration, 1);
-      scr->script = sfi_ring_pop_head (&ring);
+      scr->script = (char*) sfi_ring_pop_head (&ring);
       scr->register_func = bse_script_file_register;
       scr->next = scr_list;
       scr_list = scr;
     }
   
-  g_object_set_data (server, "script-registration-queue", scr_list);
+  g_object_set_data ((GObject*) server, "script-registration-queue", scr_list);
   bse_idle_normal (register_scripts, server);
   
   return BSE_ERROR_NONE;
@@ -253,14 +253,14 @@ BODY (BseProcedureClass *proc,
 static gboolean
 register_core_plugins (gpointer data)
 {
-  BseServer *server = data;
-  SfiRing *plugins = g_object_get_data (server, "plugin-registration-queue");
+  BseServer *server = (BseServer*) data;
+  SfiRing *plugins = (SfiRing*) g_object_get_data ((GObject*) server, "plugin-registration-queue");
   const gchar *error;
   
   if (plugins)
     {
-      gchar *name = sfi_ring_pop_head (&plugins);
-      g_object_set_data (server, "plugin-registration-queue", plugins);
+      char *name = (char*) sfi_ring_pop_head (&plugins);
+      g_object_set_data ((GObject*) server, "plugin-registration-queue", plugins);
       error = bse_plugin_check_load (name);
       bse_server_registration (server, BSE_REGISTER_PLUGIN, name, error);
       g_free (name);
@@ -284,7 +284,7 @@ BODY (BseProcedureClass *proc,
 {
   static gboolean registration_done = FALSE;
   /* extract parameter values */
-  BseServer *server	= bse_value_get_object (in_values++);
+  BseServer *server = (BseServer*) bse_value_get_object (in_values++);
   SfiRing *ring;
   
   /* check parameters */
@@ -299,7 +299,7 @@ BODY (BseProcedureClass *proc,
   registration_done = TRUE;
   
   ring = bse_plugin_path_list_files (!bse_main_args->load_drivers_early, TRUE);
-  g_object_set_data (server, "plugin-registration-queue", ring);
+  g_object_set_data ((GObject*) server, "plugin-registration-queue", ring);
   
   bse_idle_normal (register_core_plugins, server);
   
@@ -309,11 +309,11 @@ BODY (BseProcedureClass *proc,
 static gboolean
 register_ladspa_plugins (gpointer data)
 {
-  BseServer *server = data;
-  SfiRing *lplugins = g_object_get_data (server, "ladspa-registration-queue");
+  BseServer *server = (BseServer*) data;
+  SfiRing *lplugins = (SfiRing*) g_object_get_data ((GObject*) server, "ladspa-registration-queue");
   const gchar *error;
   
-  if (g_object_get_data (server, "plugin-registration-queue"))
+  if (g_object_get_data ((GObject*) server, "plugin-registration-queue"))
     {
       /* give precedence to core plugins until they're done registering */
       return TRUE;
@@ -321,8 +321,8 @@ register_ladspa_plugins (gpointer data)
   
   if (lplugins)
     {
-      gchar *name = sfi_ring_pop_head (&lplugins);
-      g_object_set_data (server, "ladspa-registration-queue", lplugins);
+      char *name = (char*) sfi_ring_pop_head (&lplugins);
+      g_object_set_data ((GObject*) server, "ladspa-registration-queue", lplugins);
       error = bse_ladspa_plugin_check_load (name);
       bse_server_registration (server, BSE_REGISTER_PLUGIN, name, error);
       g_free (name);
@@ -346,7 +346,7 @@ BODY (BseProcedureClass *proc,
 {
   static gboolean registration_done = FALSE;
   /* extract parameter values */
-  BseServer *server	= bse_value_get_object (in_values++);
+  BseServer *server = (BseServer*) bse_value_get_object (in_values++);
   SfiRing *ring;
   
   /* check parameters */
@@ -361,7 +361,7 @@ BODY (BseProcedureClass *proc,
   registration_done = TRUE;
   
   ring = bse_ladspa_plugin_path_list_files ();
-  g_object_set_data (server, "ladspa-registration-queue", ring);
+  g_object_set_data ((GObject*) server, "ladspa-registration-queue", ring);
   
   bse_idle_normal (register_ladspa_plugins, server);
   
@@ -383,7 +383,7 @@ BODY (BseProcedureClass *proc,
       GValue            *out_values)
 {
   /* extract parameter values */
-  BseServer *server = bse_value_get_object (in_values++);
+  BseServer *server = (BseServer*) bse_value_get_object (in_values++);
   SfiWStore *wstore;
   gchar *file_name;
   GValue *value;
@@ -435,7 +435,7 @@ BODY (BseProcedureClass *proc,
       GValue            *out_values)
 {
   /* extract parameter values */
-  BseServer *server     = bse_value_get_object (in_values++);
+  BseServer *server = (BseServer*) bse_value_get_object (in_values++);
   const char *wave_file = g_value_get_string (in_values++);
   double n_seconds      = g_value_get_double (in_values++);
 
