@@ -17,6 +17,9 @@
 #include "bseadder.h"
 
 #include <bse/bseengine.h>
+#include <bse/bsecategories.h>
+#include <bse/bseplugin.h>
+#include <sfi/sficxx.hh>
 
 #include <string.h>
 
@@ -32,7 +35,6 @@ enum
 /* --- prototypes --- */
 static void	 bse_adder_init			(BseAdder	*self);
 static void	 bse_adder_class_init		(BseAdderClass	*klass);
-static void      bse_adder_class_finalize       (BseAdderClass  *klass);
 static void	 bse_adder_set_property		(GObject        *object,
 						 guint           param_id,
 						 const GValue   *value,
@@ -50,14 +52,45 @@ static void	 bse_adder_update_modules	(BseAdder	*self,
 
 
 /* --- Export to BSE --- */
+static GType
+bse_adder_get_type ()
+{
+  static const GTypeInfo type_info = {
+    sizeof (BseAdderClass),
+    (GBaseInitFunc) NULL,
+    (GBaseFinalizeFunc) NULL,
+    (GClassInitFunc) bse_adder_class_init,
+    (GClassFinalizeFunc) NULL,
+    NULL /* class_data */,
+    sizeof (BseAdder),
+    0 /* n_preallocs */,
+    (GInstanceInitFunc) bse_adder_init,
+  };
 #include "./icons/sum.c"
-BSE_REGISTER_OBJECT (BseAdder, BseSource, "/Modules/Routing/Adder", "deprecated",
-                     "The Adder is a very simplisitic prototype mixer that just sums up "
-                     "incoming signals (it does allow for switching to subtract mode though)",
-                     sum_icon,
-                     bse_adder_class_init, bse_adder_class_finalize, bse_adder_init);
-BSE_DEFINE_EXPORTS ();
+  static GType type_id = 0;
+  if (!type_id)
+    {
+      type_id = bse_type_register_static (BSE_TYPE_SOURCE,
+                                          "BseAdder",
+                                          "The Adder is a very simplisitic prototype mixer that just sums up "
+                                          "incoming signals (it does allow for switching to subtract mode though)",
+                                          __FILE__, __LINE__,
+                                          &type_info);
+      bse_categories_register_stock_module (N_("Routing/Adder"), type_id, sum_icon); // FIXME: deprecated
+    }
+  return type_id;
+}
 
+static void
+init_adder ()
+{
+  // make this plugin resident to allow static type registration
+  bse_plugin_make_resident();
+  // force registration of plugin types
+  volatile GType types = BSE_TYPE_ADDER;
+  (void) types;
+}
+static Sfi::Init onload (init_adder);
 
 /* --- variables --- */
 static gpointer		 parent_class = NULL;
@@ -98,13 +131,6 @@ bse_adder_class_init (BseAdderClass *klass)
   g_assert (channel == BSE_ADDER_JCHANNEL_AUDIO2);
   channel = bse_source_class_add_ochannel (source_class, "audio-out", _("Audio Out"), _("Audio Output"));
   g_assert (channel == BSE_ADDER_OCHANNEL_AUDIO_OUT);
-}
-
-static void
-bse_adder_class_finalize (BseAdderClass *klass)
-{
-  bse_icon_free (klass->sub_icon);
-  klass->sub_icon = NULL;
 }
 
 static void

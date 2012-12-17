@@ -28,7 +28,7 @@ extern "C" {
 
 
 /* --- object type macros --- */
-#define BSE_TYPE_ADDER              (BSE_EXPORT_TYPE_ID (BseAdder))
+#define BSE_TYPE_ADDER              (bse_adder_get_type())
 #define BSE_ADDER(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), BSE_TYPE_ADDER, BseAdder))
 #define BSE_ADDER_CLASS(class)      (G_TYPE_CHECK_CLASS_CAST ((class), BSE_TYPE_ADDER, BseAdderClass))
 #define BSE_IS_ADDER(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), BSE_TYPE_ADDER))
