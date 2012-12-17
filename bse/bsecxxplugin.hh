@@ -20,6 +20,9 @@
 #include <bse/bsecxxmodule.hh>
 #include <bse/bseexports.h>
 #include <bse/bseparam.h>
+#include <bse/bsecategories.h>
+#include <bse/bseplugin.h>
+#include <sfi/sficxx.hh>
 
 namespace Bse {
 
@@ -45,6 +48,32 @@ extern ::BseExportIdentity bse_builtin_export_identity; /* sync with bseplugin.h
 };
 #endif
 
+// == Resident Type Plugin Registration ==
+#define BSE_RESIDENT_TYPE_DEF(Object, func, category, blurb, icon)      \
+  static GType func##_get_type () {                                     \
+    static const GTypeInfo type_info = {                                \
+      sizeof (Object##Class),                                           \
+      (GBaseInitFunc) NULL,                                             \
+      (GBaseFinalizeFunc) NULL,                                         \
+      (GClassInitFunc) func##_class_init,                               \
+      (GClassFinalizeFunc) NULL,                                        \
+      NULL /* class_data */,                                            \
+      sizeof (Object),                                                  \
+      0 /* n_preallocs */,                                              \
+      (GInstanceInitFunc) func##_init,                                  \
+    };                                                                  \
+    static GType type_id = 0;                                           \
+    if (!type_id)                                                       \
+      {                                                                 \
+        type_id = bse_type_register_static (BSE_TYPE_SOURCE,  # Object , blurb, __FILE__, __LINE__, &type_info); \
+        bse_categories_register_stock_module (N_(category), type_id, icon); \
+      }                                                                 \
+    return type_id;                                                     \
+  }                                                                     \
+  static void func##__onload () {                                       \
+    bse_plugin_make_resident();                                         \
+    (void) (volatile GType) func##_get_type();                          \
+  } static Sfi::Init func##__onload_ (func##__onload);
 
 /* --- hook registration --- */
 /* hook registration is based on a static ExportTypeKeeper
