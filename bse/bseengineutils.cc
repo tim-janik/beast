@@ -38,9 +38,8 @@ _engine_alloc_ostreams (guint n)
   if (n)
     {
       guint i = sizeof (BseOStream) * n + sizeof (gfloat) * bse_engine_block_size () * n;
-      BseOStream *streams = g_malloc0 (i);
-      gfloat *buffers = (gfloat*) (streams + n);
-      
+      BseOStream *streams = (BseOStream*) g_malloc0 (i);
+      float *buffers = (float*) (streams + n);
       for (i = 0; i < n; i++)
 	{
 	  streams[i].values = buffers;
@@ -678,13 +677,13 @@ _engine_mnl_node_changed (EngineNode *node)
 
 
 /* --- const value blocks --- */
-extern const gfloat bse_engine_master_zero_block[];
-gfloat*
+float*
 bse_engine_const_zeros (guint smaller_than_BSE_STREAM_MAX_VALUES)
 {
+  static const float engine_const_zero_block[BSE_STREAM_MAX_VALUES + 16 /* SIMD alignment */] = { 0, };
   /* this function is callable from any thread */
   g_assert (smaller_than_BSE_STREAM_MAX_VALUES <= BSE_STREAM_MAX_VALUES);
-  return (gfloat*) bse_engine_master_zero_block;
+  return (float*) engine_const_zero_block;
 }
 
 typedef struct
@@ -747,52 +746,43 @@ const_values_insert (ConstValuesArray *array,
 {
   if (array->n_nodes == 0)
     {
-      guint new_size = upper_power2 (sizeof (gfloat*));
-      
-      array->nodes = g_realloc (array->nodes, new_size);
-      array->nodes_used = g_realloc (array->nodes_used, new_size / sizeof (gfloat*));
+      uint new_size = upper_power2 (sizeof (float*));
+      array->nodes = (float**) g_realloc (array->nodes, new_size);
+      array->nodes_used = (guint8*) g_realloc (array->nodes_used, new_size / sizeof (gfloat*));
       array->n_nodes = 1;
-      
       g_assert (index == 0);
     }
   else
     {
-      guint n_nodes = array->n_nodes++;
-      
+      uint n_nodes = array->n_nodes++;
       if (*array->nodes[index] < *value_block)
 	index++;
-      
       if (1)
 	{
-	  guint new_size = upper_power2 (array->n_nodes * sizeof (gfloat*));
-	  guint old_size = upper_power2 (n_nodes * sizeof (gfloat*));
-	  
+	  uint new_size = upper_power2 (array->n_nodes * sizeof (gfloat*));
+	  uint old_size = upper_power2 (n_nodes * sizeof (gfloat*));
 	  if (new_size != old_size)
 	    {
-	      array->nodes = g_realloc (array->nodes, new_size);
-	      array->nodes_used = g_realloc (array->nodes_used, new_size / sizeof(gfloat*));
+	      array->nodes = (float**) g_realloc (array->nodes, new_size);
+	      array->nodes_used = (guint8*) g_realloc (array->nodes_used, new_size / sizeof (float*));
 	    }
 	}
       g_memmove (array->nodes + index + 1, array->nodes + index, (n_nodes - index) * sizeof (array->nodes[0]));
       g_memmove (array->nodes_used + index + 1, array->nodes_used + index, (n_nodes - index) * sizeof (array->nodes_used[0]));
     }
-  
   array->nodes[index] = value_block;
   array->nodes_used[index] = CONST_VALUES_EXPIRE;
 }
 
 static ConstValuesArray cvalue_array = { 0, NULL, NULL };
 
-gfloat*
+float*
 bse_engine_const_values (gfloat value)
 {
-  gfloat **block;
-  
   if (fabs (value) < BSE_SIGNAL_EPSILON)
-    return (gfloat*) bse_engine_master_zero_block;
-  
-  block = const_values_lookup_nextmost (&cvalue_array, value);
-  
+    return bse_engine_const_zeros (BSE_STREAM_MAX_VALUES);
+
+  float **block = const_values_lookup_nextmost (&cvalue_array, value);
   /* found correct match? */
   if (block && fabs (**block - value) < BSE_SIGNAL_EPSILON)
     {

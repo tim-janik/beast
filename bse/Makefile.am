@@ -66,7 +66,7 @@ bse_sources = $(strip \
 	gsldatahandle-mad.cc	           	gslfilehash.cc	gsldatautils.cc	\
 	gslwaveosc.cc		gslosctable.cc	gslmagic.cc	                 \
 	\
-	bseengine.c		bseenginemaster.c	bseengineschedule.c		bseengineutils.c \
+	bseengine.cc		bseenginemaster.cc	bseengineschedule.cc		bseengineutils.cc \
 	bsebus.cc		bsecategories.cc 	\
 	bsefilter.cc   		bsebiquadfilter.cc	bsefilter-ellf.cc	\
 	bseconstant.cc		bseconstvalues.cc	bsecontainer.cc			bsecontextmerger.cc \

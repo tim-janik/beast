@@ -540,7 +540,7 @@ bse_job_probe_request (BseModule         *module,
   EngineNode *node = ENGINE_NODE (module);
   g_return_val_if_fail (probe_func != NULL, NULL);
   
-  EngineTimedJob *tjob = g_malloc0 (sizeof (tjob->probe));
+  EngineTimedJob *tjob = (EngineTimedJob*) g_malloc0 (sizeof (tjob->probe));
   tjob->type = ENGINE_JOB_PROBE_JOB;
   tjob->tick_stamp = 0;
   tjob->probe.data = data;
@@ -588,7 +588,7 @@ bse_job_flow_access (BseModule    *module,
   g_return_val_if_fail (tick_stamp < GSL_MAX_TICK_STAMP, NULL);
   g_return_val_if_fail (access_func != NULL, NULL);
   
-  EngineTimedJob *tjob = g_malloc0 (sizeof (tjob->access));
+  EngineTimedJob *tjob = (EngineTimedJob*) g_malloc0 (sizeof (tjob->access));
   tjob->type = ENGINE_JOB_FLOW_JOB;
   tjob->tick_stamp = tick_stamp;
   tjob->access.free_func = free_func;
@@ -634,7 +634,7 @@ bse_job_boundary_access (BseModule    *module,
   g_return_val_if_fail (tick_stamp < GSL_MAX_TICK_STAMP, NULL);
   g_return_val_if_fail (access_func != NULL, NULL);
   
-  EngineTimedJob *tjob = g_malloc0 (sizeof (tjob->access));
+  EngineTimedJob *tjob = (EngineTimedJob*) g_malloc0 (sizeof (tjob->access));
   tjob->type = ENGINE_JOB_BOUNDARY_JOB;
   tjob->tick_stamp = tick_stamp;
   tjob->access.free_func = free_func;
@@ -675,7 +675,7 @@ bse_job_boundary_discard (BseModule *module)
 {
   g_return_val_if_fail (module != NULL, NULL);
 
-  EngineTimedJob *tjob = g_malloc0 (sizeof (tjob->access));
+  EngineTimedJob *tjob = (EngineTimedJob*) g_malloc0 (sizeof (tjob->access));
   tjob->type = ENGINE_JOB_BOUNDARY_JOB;
   tjob->tick_stamp = 0;
   tjob->access.free_func = NULL;
@@ -800,7 +800,7 @@ bse_job_add_poll (BseEnginePollFunc    poll_func,
   job->poll.data = data;
   job->poll.free_func = free_func;
   job->poll.n_fds = n_fds;
-  job->poll.fds = g_memdup (fds, sizeof (fds[0]) * n_fds);
+  job->poll.fds = (GPollFD*) g_memdup (fds, sizeof (fds[0]) * n_fds);
   
   return job;
 }
@@ -1026,7 +1026,7 @@ static gboolean
 dtrans_timer (gpointer timer_data,
 	      guint64  stamp)
 {
-  DTrans *data = timer_data;
+  DTrans *data = (DTrans*) timer_data;
   if (data->tick_stamp <= stamp)
     {
       if (!data->trans->jobs_head)
@@ -1209,7 +1209,7 @@ bse_module_new_virtual (guint       n_iostreams,
   
   g_return_val_if_fail (n_iostreams > 0, NULL);
   
-  vclass = g_memdup (&virtual_module_class, sizeof (virtual_module_class));
+  vclass = (VirtualModuleClass*) g_memdup (&virtual_module_class, sizeof (virtual_module_class));
   vclass->klass.n_istreams = n_iostreams;
   vclass->klass.n_ostreams = n_iostreams;
   vclass->free_data = free_data;

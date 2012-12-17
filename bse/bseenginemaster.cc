@@ -81,7 +81,6 @@ static void	master_schedule_discard	(void);
 static gboolean	       master_need_reflow = FALSE;
 static gboolean	       master_need_process = FALSE;
 static EngineNode     *master_consumer_list = NULL;
-const gfloat           bse_engine_master_zero_block[BSE_STREAM_MAX_VALUES + 16 /* SIMD alignment */] = { 0, }; /* FIXME: move elsewhere? join? */
 static Timer	      *master_timer_list = NULL;
 static Poll	      *master_poll_list = NULL;
 static guint           master_n_pollfds = 0;
@@ -194,16 +193,13 @@ master_jdisconnect_node (EngineNode *node,
 }
 
 static void
-master_disconnect_node_outputs (EngineNode *src_node,
-				EngineNode *dest_node)
+master_disconnect_node_outputs (EngineNode *src_node, EngineNode *dest_node)
 {
-  gint i, j;
-  
-  for (i = 0; i < ENGINE_NODE_N_ISTREAMS (dest_node); i++)
+  for (int i = 0; i < ENGINE_NODE_N_ISTREAMS (dest_node); i++)
     if (dest_node->inputs[i].src_node == src_node)
       master_idisconnect_node (dest_node, i);
-  for (j = 0; j < ENGINE_NODE_N_JSTREAMS (dest_node); j++)
-    for (i = 0; i < dest_node->module.jstreams[j].jcount; i++)
+  for (int j = 0; j < ENGINE_NODE_N_JSTREAMS (dest_node); j++)
+    for (uint i = 0; i < dest_node->module.jstreams[j].jcount; i++)
       if (dest_node->jinputs[j][i].src_node == src_node)
 	master_jdisconnect_node (dest_node, j, i--);
 }
@@ -357,7 +353,7 @@ master_process_job (BseJob *job)
       JOB_DEBUG ("kill_outputs(%p)", node);
       g_return_if_fail (node->integrated == TRUE);
       while (node->output_nodes)
-	master_disconnect_node_outputs (node, node->output_nodes->data);
+	master_disconnect_node_outputs (node, (EngineNode*) node->output_nodes->data);
       master_need_reflow |= TRUE;
       break;
     case ENGINE_JOB_DISCARD:
@@ -377,7 +373,7 @@ master_process_job (BseJob *job)
 	  master_jdisconnect_node (node, jstream, node->module.jstreams[jstream].jcount - 1);
       /* kill outputs */
       while (node->output_nodes)
-	master_disconnect_node_outputs (node, node->output_nodes->data);
+	master_disconnect_node_outputs (node, (EngineNode*) node->output_nodes->data);
       /* remove from consumer list */
       if (ENGINE_NODE_IS_CONSUMER (node))
 	{
@@ -428,7 +424,7 @@ master_process_job (BseJob *job)
     case ENGINE_JOB_SUSPEND:
       node = job->tick.node;
       stamp = job->tick.stamp;
-      JOB_DEBUG ("suspend(%p,%llu)", node, stamp);
+      JOB_DEBUG ("suspend(%p,%llu)", node, (long long unsigned int) stamp);
       g_return_if_fail (node->integrated == TRUE);
       if (node->local_active < stamp)
 	{
@@ -441,7 +437,7 @@ master_process_job (BseJob *job)
     case ENGINE_JOB_RESUME:
       node = job->tick.node;
       stamp = job->tick.stamp;
-      JOB_DEBUG ("resume(%p,%llu)", node, stamp);
+      JOB_DEBUG ("resume(%p,%llu)", node, (long long unsigned int) stamp);
       g_return_if_fail (node->integrated == TRUE);
       if (node->local_active > stamp)
 	{
@@ -791,7 +787,7 @@ master_update_node_state (EngineNode *node,
     do
       {
         TJOB_DEBUG ("flow-access for (%p:s=%u) at:%lld current:%lld\n",
-                    node, node->sched_tag, tjob->tick_stamp, node->counter);
+                    node, node->sched_tag, (long long unsigned int) tjob->tick_stamp, (long long unsigned int) node->counter);
         tjob->access.access_func (&node->module, tjob->access.data);
         tjob = node_pop_flow_job (node, max_tick);
       }
@@ -835,7 +831,7 @@ master_process_locked_node (EngineNode *node,
 	      ENGINE_NODE_UNLOCK (inode);
 	    }
 	  else
-	    node->module.istreams[i].values = bse_engine_master_zero_block;
+	    node->module.istreams[i].values = bse_engine_const_zeros (BSE_STREAM_MAX_VALUES);
 	}
       /* ensure all jstream inputs have n_values available */
       for (j = 0; j < ENGINE_NODE_N_JSTREAMS (node); j++)
@@ -863,7 +859,7 @@ master_process_locked_node (EngineNode *node,
 	  /* suspended node processing behaviour */
 	  for (i = 0; i < ENGINE_NODE_N_OSTREAMS (node); i++)
 	    if (node->module.ostreams[i].connected)
-	      node->module.ostreams[i].values = (gfloat*) bse_engine_master_zero_block;
+	      node->module.ostreams[i].values = bse_engine_const_zeros (BSE_STREAM_MAX_VALUES);
           node->needs_reset = TRUE;
 	}
       else
@@ -946,7 +942,7 @@ master_process_flow (void)
       SfiRing *ring = probe_node_list;
       while (ring)
         {
-          node = ring->data; /* current ring may be removed during master_take_probes() */
+          node = (EngineNode*) ring->data; /* current ring may be removed during master_take_probes() */
           ring = sfi_ring_walk (ring, probe_node_list);
           if (!ENGINE_NODE_IS_SCHEDULED (node))
             master_take_probes (node, current_stamp, n_values, PROBE_UNSCHEDULED);
@@ -960,12 +956,12 @@ master_process_flow (void)
 	{
 	  if (profile_node)
 	    {
-	      if (profile_maxtime > profile_modules)
+	      if (profile_maxtime > guint64 (profile_modules))
 		g_print ("Excess Node: %p  Duration: %llu usecs     ((void(*)())%p)         \n",
-			 profile_node, profile_maxtime, profile_node->module.klass->process);
+			 profile_node, (long long unsigned int) profile_maxtime, profile_node->module.klass->process);
 	      else
 		g_print ("Slowest Node: %p  Duration: %llu usecs     ((void(*)())%p)         \r",
-			 profile_node, profile_maxtime, profile_node->module.klass->process);
+			 profile_node, (long long unsigned int) profile_maxtime, profile_node->module.klass->process);
 	    }
 	}
       
@@ -1097,7 +1093,7 @@ _engine_master_dispatch_jobs (void)
         while (ring)
           {
             SfiRing *current = ring;
-            EngineNode *node = ring->data;
+            EngineNode *node = (EngineNode*) ring->data;
             ring = sfi_ring_walk (ring, boundary_node_list);
             EngineTimedJob *tjob = node_pop_boundary_job (node, last_block_tick, current);
             if (tjob)
@@ -1105,7 +1101,7 @@ _engine_master_dispatch_jobs (void)
             while (tjob)
               {
                 TJOB_DEBUG ("boundary-access for (%p:s=%u) at:%lld current:%lld\n",
-                            node, node->sched_tag, tjob->tick_stamp, node->counter);
+                            node, node->sched_tag, (long long int) tjob->tick_stamp, (long long int) node->counter);
                 tjob->access.access_func (&node->module, tjob->access.data);
                 tjob = node_pop_boundary_job (node, last_block_tick, current);
               }
