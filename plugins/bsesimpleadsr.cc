@@ -17,7 +17,7 @@
 #include "bsesimpleadsr.h"
 
 #include <bse/bseengine.h>
-
+#include <bse/bsecxxplugin.hh>
 
 #define	TIME_EPSILON	(0.00001)
 
@@ -35,7 +35,7 @@ enum
 
 /* --- prototypes --- */
 static void	bse_simple_adsr_init		(BseSimpleADSR		*senv);
-static void	bse_simple_adsr_class_init	(BseSimpleADSRClass	*class);
+static void	bse_simple_adsr_class_init	(BseSimpleADSRClass	*klass);
 static void	bse_simple_adsr_set_property	(GObject		*object,
 						 guint			 param_id,
 						 const GValue		*value,
@@ -49,16 +49,11 @@ static void	bse_simple_adsr_context_create	(BseSource		*source,
 						 BseTrans		*trans);
 static void	bse_simple_adsr_update_modules	(BseSimpleADSR		*simple_adsr,
 						 BseTrans		*trans);
-
-
-/* --- Export to BSE --- */
+// == Type Registration ==
 #include "./icons/adsr.c"
-BSE_REGISTER_OBJECT (BseSimpleADSR, BseSource, "/Modules/Other Sources/Simple ADSR", "",
-                     "Simple ADSR envelope generator",
-                     adsr_icon,
-                     bse_simple_adsr_class_init, NULL, bse_simple_adsr_init);
-BSE_DEFINE_EXPORTS ();
-
+BSE_RESIDENT_TYPE_DEF (BseSimpleADSR, bse_simple_adsr, N_("Other Sources/Simple ADSR"),
+                       "Simple ADSR envelope generator",
+                       adsr_icon);
 
 /* --- variables --- */
 static gpointer	       parent_class = NULL;
@@ -66,15 +61,15 @@ static gpointer	       parent_class = NULL;
 
 /* --- functions --- */
 static void
-bse_simple_adsr_class_init (BseSimpleADSRClass *class)
+bse_simple_adsr_class_init (BseSimpleADSRClass *klass)
 {
-  GObjectClass *gobject_class = G_OBJECT_CLASS (class);
-  BseObjectClass *object_class = BSE_OBJECT_CLASS (class);
-  BseSourceClass *source_class = BSE_SOURCE_CLASS (class);
+  GObjectClass *gobject_class = G_OBJECT_CLASS (klass);
+  BseObjectClass *object_class = BSE_OBJECT_CLASS (klass);
+  BseSourceClass *source_class = BSE_SOURCE_CLASS (klass);
   guint ochannel, ichannel;
   gchar *desc;
   
-  parent_class = g_type_class_peek_parent (class);
+  parent_class = g_type_class_peek_parent (klass);
   
   gobject_class->set_property = bse_simple_adsr_set_property;
   gobject_class->get_property = bse_simple_adsr_get_property;
@@ -159,7 +154,7 @@ bse_simple_adsr_set_property (GObject      *object,
       bse_simple_adsr_update_modules (self, NULL);
       break;
     case PARAM_TIME_RANGE:
-      self->time_range = g_value_get_enum (value);
+      self->time_range = (BseTimeRangeType) g_value_get_enum (value);
       bse_simple_adsr_update_modules (self, NULL);
       break;
     default:
@@ -200,39 +195,39 @@ bse_simple_adsr_get_property (GObject    *object,
 
 #define	BSE_MIX_VARIANT_NAME	ramp_mix_gate_inc
 #define	BSE_MIX_VARIANT	(BSE_MIX_RAMP_WITH_GATE | BSE_MIX_RAMP_WITH_INC)
-#include "bsesimpleadsr-aux.c"
+#include "bsesimpleadsr-aux.cc"
 
 #define	BSE_MIX_VARIANT_NAME	ramp_mix_inc
 #define	BSE_MIX_VARIANT	(BSE_MIX_RAMP_WITH_INC)
-#include "bsesimpleadsr-aux.c"
+#include "bsesimpleadsr-aux.cc"
 
 #define	BSE_MIX_VARIANT_NAME	ramp_mix_gate_trig_dec
 #define	BSE_MIX_VARIANT	(BSE_MIX_RAMP_WITH_GATE | BSE_MIX_RAMP_WITH_TRIG | BSE_MIX_RAMP_WITH_DEC)
-#include "bsesimpleadsr-aux.c"
+#include "bsesimpleadsr-aux.cc"
 
 #define	BSE_MIX_VARIANT_NAME	const_mix_gate_trig
 #define	BSE_MIX_VARIANT	(BSE_MIX_RAMP_WITH_GATE | BSE_MIX_RAMP_WITH_TRIG)
-#include "bsesimpleadsr-aux.c"
+#include "bsesimpleadsr-aux.cc"
 
 #define	BSE_MIX_VARIANT_NAME	ramp_mix_gate_dec
 #define	BSE_MIX_VARIANT	(BSE_MIX_RAMP_WITH_GATE | BSE_MIX_RAMP_WITH_DEC)
-#include "bsesimpleadsr-aux.c"
+#include "bsesimpleadsr-aux.cc"
 
 #define	BSE_MIX_VARIANT_NAME	ramp_mix_trig_dec
 #define	BSE_MIX_VARIANT	(BSE_MIX_RAMP_WITH_TRIG | BSE_MIX_RAMP_WITH_DEC)
-#include "bsesimpleadsr-aux.c"
+#include "bsesimpleadsr-aux.cc"
 
 #define	BSE_MIX_VARIANT_NAME	ramp_mix_invgate_dec
 #define	BSE_MIX_VARIANT	(BSE_MIX_RAMP_WITH_IGATE | BSE_MIX_RAMP_WITH_DEC)
-#include "bsesimpleadsr-aux.c"
+#include "bsesimpleadsr-aux.cc"
 
 #define	BSE_MIX_VARIANT_NAME	const_mix_invgate
 #define	BSE_MIX_VARIANT	(BSE_MIX_RAMP_WITH_IGATE)
-#include "bsesimpleadsr-aux.c"
+#include "bsesimpleadsr-aux.cc"
 
 #define	BSE_MIX_VARIANT_NAME	const_mix_trig
 #define	BSE_MIX_VARIANT	(BSE_MIX_RAMP_WITH_TRIG)
-#include "bsesimpleadsr-aux.c"
+#include "bsesimpleadsr-aux.cc"
 
 enum {
   ATTACK,
@@ -253,7 +248,7 @@ static void
 simple_adsr_process (BseModule *module,
 		     guint      n_values)
 {
-  SimpleADSR *env = module->user_data;
+  SimpleADSR *env = (SimpleADSR*) module->user_data;
   BseSimpleADSRVars *vars = &env->vars;
   BseMixRampLinear *ramp = &env->ramp;
   const gfloat *gate_in = BSE_MODULE_IBUFFER (module, BSE_SIMPLE_ADSR_ICHANNEL_GATE);
@@ -290,12 +285,13 @@ simple_adsr_process (BseModule *module,
       ramp->trig_in = trig_in + (ramp->wave_out - wave_out);
       switch (env->phase)
 	{
+          gint n_written;
 	case ATTACK:
 	  ramp->level_step = vars->attack_inc;
 	  ramp->level_border = vars->attack_level;
 	  state = (have_gate ? ramp_mix_gate_inc : ramp_mix_inc) (ramp);
 	  /* update last trigger val because we mixed without it */
-          gint n_written = ramp->wave_out - wave_out;
+          n_written = ramp->wave_out - wave_out;
 	  ramp->last_trigger = trig_in[MAX (1, n_written) - 1];
 	  switch (state)
 	    {
@@ -371,7 +367,7 @@ simple_adsr_process (BseModule *module,
 static void
 simple_adsr_reset (BseModule *module)
 {
-  SimpleADSR *env = module->user_data;
+  SimpleADSR *env = (SimpleADSR*) module->user_data;
   env->ramp.last_trigger = 0;
   env->ramp.level = 0;
   env->phase = ATTACK;
