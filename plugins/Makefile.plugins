@@ -128,21 +128,6 @@ bsesimpleadsr_SSE_la_LIBADD    = $(bsesimpleadsr_FPU_la_LIBADD)
 bsesimpleadsr_SSE_la_CFLAGS    = $(SSE_PLUGIN_CFLAGS)
 
 
-## C Plugin bseadder
-EXTRA_HEADERS      += bseadder.h
-$(srcdir)/bseadder.c: bseadder.h
-plugin_FPU_ltlibs += bseadder.FPU.la
-bseadder_FPU_la_SOURCES = bseadder.c
-bseadder_FPU_la_LDFLAGS = -module $(plugins_ldflags)
-bseadder_FPU_la_LIBADD  = $(plugins_libs)
-bseadder_FPU_la_CFLAGS    = $(FPU_PLUGIN_CFLAGS)
-plugin_SSE_ltlibs   += bseadder.SSE.la
-bseadder_SSE_la_SOURCES   = $(bseadder_FPU_la_SOURCES)
-bseadder_SSE_la_LDFLAGS   = $(bseadder_FPU_la_LDFLAGS)
-bseadder_SSE_la_LIBADD    = $(bseadder_FPU_la_LIBADD)
-bseadder_SSE_la_CFLAGS    = $(SSE_PLUGIN_CFLAGS)
-
-
 ## C Plugin bseatandistort
 EXTRA_HEADERS      += bseatandistort.h
 $(srcdir)/bseatandistort.c: bseatandistort.h

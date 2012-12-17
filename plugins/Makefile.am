@@ -8,9 +8,7 @@ SUBDIRS = icons . freeverb # evaluator
 
 INCLUDES += -I$(top_srcdir) -I. $(BSE_CFLAGS) -DG_LOG_DOMAIN="\"$(strip $(basename $(<F)))\""
 
-#
-# C++ Plugins
-#
+# == IDL C++ Plugins ==
 idl_plugins = $(strip			\
 	+++artsplugins 			\
 	artscompressor.idl		\
@@ -36,6 +34,21 @@ SFIDL_INC = --nostdinc -I$(top_srcdir) -I$(top_builddir)
 %.genidl.hh: %.idl $(SFIDL)
 	$(SFIDL) --plugin  --macro $(<F) $(SFIDL_INC) -I$(top_builddir) $< > $@ || (rm $@ ; exit 1 )
 
+# == C++ Plugins ==
+cxx_plugin_headers = bseadder.h
+cxx_plugin_sources = bseadder.cc
+EXTRA_HEADERS	  += $(cxx_plugin_headers)
+cxxplugins_FPU_la_SOURCES  = $(cxx_plugin_sources)
+cxxplugins_FPU_la_LDFLAGS  = -module $(plugins_ldflags)
+cxxplugins_FPU_la_LIBADD   = $(plugins_libs)
+cxxplugins_FPU_la_CFLAGS   = $(FPU_PLUGIN_CFLAGS)
+cxxplugins_FPU_la_CXXFLAGS = $(FPU_PLUGIN_CXXFLAGS)
+cxxplugins_SSE_la_SOURCES  = $(cxx_plugin_sources)
+cxxplugins_SSE_la_LDFLAGS  = -module $(plugins_ldflags)
+cxxplugins_SSE_la_LIBADD   = $(plugins_libs)
+cxxplugins_SSE_la_CFLAGS   = $(SSE_PLUGIN_CFLAGS)
+cxxplugins_SSE_la_CXXFLAGS = $(SSE_PLUGIN_CXXFLAGS)
+
 # old/unported plugin list
 UNPORTED = $(strip		\
 	bsefirfilter.[hc]	\
@@ -43,7 +56,6 @@ UNPORTED = $(strip		\
 )
 cglob_plugins = $(strip		\
 	bsesimpleadsr.[hc]	\
-	bseadder.[hc]		\
 	bseatandistort.[hc]	\
 	bseiirfilter.[hc]	\
 	bsemixer.[hc]		\
@@ -65,13 +77,13 @@ plugins_built_sources 	  = 	# listed in Makefile.plugins
 CLEANFILES 		 += $(plugins_built_sources)
 # .FPU plugins
 plugin_FPU_ltlibs	  =	# listed in Makefile.plugins
-plugin_FPU_LTLIBRARIES	  = $(plugin_FPU_ltlibs)
+plugin_FPU_LTLIBRARIES	  = $(plugin_FPU_ltlibs) cxxplugins.FPU.la
 plugin_FPUdir 	  	  = $(bseplugindir)
 FPU_PLUGIN_CFLAGS	  = $(AM_CFLAGS) $(PLUGIN_FLAGS) $(FPU_FLAGS)
 FPU_PLUGIN_CXXFLAGS	  = $(AM_CXXFLAGS) $(PLUGIN_FLAGS) $(FPU_FLAGS)
 # .SSE plugins
 plugin_SSE_ltlibs	  =	# listed in Makefile.plugins
-plugin_SSE_LTLIBRARIES	  = $(plugin_SSE_cond_libs)
+plugin_SSE_LTLIBRARIES	  = $(plugin_SSE_cond_libs) cxxplugins.SSE.la
 plugin_SSEdir		  = $(bseplugindir)
 SSE_PLUGIN_CFLAGS	  = $(AM_CFLAGS) $(PLUGIN_FLAGS) $(SSE_FLAGS)
 SSE_PLUGIN_CXXFLAGS	  = $(AM_CXXFLAGS) $(PLUGIN_FLAGS) $(SSE_FLAGS)
