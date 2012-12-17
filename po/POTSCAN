@@ -115,7 +115,7 @@ library/scripts/progressor-example.scm
 library/scripts/record-midi.scm
 library/scripts/song-parts-operations.scm
 plugins/artscompressor.idl
-plugins/bseadder.c
+plugins/bseadder.cc
 plugins/bseamplifier.idl
 plugins/bseatandistort.c
 plugins/bsebalance.idl
