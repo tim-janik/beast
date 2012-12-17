@@ -26,6 +26,7 @@
 #include "bseproject.h"
 #include "gslcommon.h"
 #include "bseengine.h"
+#include "bsecxxplugin.hh"
 #include <string.h>
 
 AUTHORS = "Tim Janik <timj@gtk.org>";
@@ -42,7 +43,7 @@ METHOD (BseSong, create-bus) {
         GValue            *out_values)
 {
   /* extract parameter values */
-  BseSong *self = bse_value_get_object (in_values++);
+  BseSong *self = (BseSong*) bse_value_get_object (in_values++);
   BseErrorType error = BSE_ERROR_NONE;
   BseUndoStack *ustack;
   BseItem *child = NULL;
@@ -57,7 +58,7 @@ METHOD (BseSong, create-bus) {
   else
     {
       ustack = bse_item_undo_open (self, "create-bus");
-      child = bse_container_new_child (BSE_CONTAINER (self), BSE_TYPE_BUS, NULL);
+      child = (BseItem*) bse_container_new_child (BSE_CONTAINER (self), BSE_TYPE_BUS, NULL);
       bse_item_push_undo_proc (self, "remove-bus", child);
       bse_item_undo_close (ustack);
     }
@@ -79,8 +80,8 @@ METHOD (BseSong, remove-bus) {
         GValue            *out_values)
 {
   /* extract parameter values */
-  BseSong *self = bse_value_get_object (in_values++);
-  BseItem *child = bse_value_get_object (in_values++);
+  BseSong *self = (BseSong*) bse_value_get_object (in_values++);
+  BseItem *child = (BseItem*) bse_value_get_object (in_values++);
   BseErrorType error = BSE_ERROR_NONE;
   
   /* check parameters */
@@ -119,7 +120,7 @@ METHOD (BseSong, ensure-master-bus) {
         GValue            *out_values)
 {
   /* extract parameter values */
-  BseSong *self = bse_value_get_object (in_values++);
+  BseSong *self = (BseSong*) bse_value_get_object (in_values++);
   BseSource *child;
 
   /* check parameters */
@@ -146,7 +147,7 @@ METHOD (BseSong, get-master-bus) {
         GValue            *out_values)
 {
   /* extract parameter values */
-  BseSong *self = bse_value_get_object (in_values++);
+  BseSong *self = (BseSong*) bse_value_get_object (in_values++);
 
   /* check parameters */
   if (!BSE_IS_SONG (self))
@@ -173,18 +174,17 @@ orphans_track_name (void)
 static BseTrack*
 bse_song_ensure_orphans_track_noundo (BseSong *self)
 {
-  SfiRing *ring;
-  for (ring = self->tracks_SL; ring; ring = sfi_ring_walk (ring, self->tracks_SL))
+  for (SfiRing *ring = self->tracks_SL; ring; ring = sfi_ring_walk (ring, self->tracks_SL))
     {
-      BseTrack *track = ring->data;
+      BseTrack *track = (BseTrack*) ring->data;
       gboolean muted = FALSE;
       g_object_get (track, "muted", &muted, NULL);
-      if (muted && g_object_get_data (track, "BseSong-orphan-track") == bse_song_ensure_orphans_track_noundo) /* detect orphan-parts track */
+      if (muted && g_object_get_data ((GObject*) track, "BseSong-orphan-track") == bse_song_ensure_orphans_track_noundo) /* detect orphan-parts track */
         return track;
     }
-  gpointer child = bse_container_new_child_bname (BSE_CONTAINER (self), BSE_TYPE_TRACK, orphans_track_name(), NULL);
+  BseTrack *child = (BseTrack*) bse_container_new_child_bname (BSE_CONTAINER (self), BSE_TYPE_TRACK, orphans_track_name(), NULL);
   g_object_set (child, "muted", TRUE, NULL); /* no undo */
-  g_object_set_data (child, "BseSong-orphan-track", bse_song_ensure_orphans_track_noundo); /* mark orphan-parts track */
+  g_object_set_data ((GObject*) child, "BseSong-orphan-track", (void*) bse_song_ensure_orphans_track_noundo); /* mark orphan-parts track */
   return child;
 }
 
@@ -196,7 +196,7 @@ bse_song_find_first_track (BseSong *self,
   /* action */
   for (ring = self->tracks_SL; ring; ring = sfi_ring_walk (ring, self->tracks_SL))
     {
-      BseTrack *track = ring->data;
+      BseTrack *track = (BseTrack*) ring->data;
       guint start;
       if (bse_track_find_part (track, part, &start))
         return track;
@@ -213,7 +213,7 @@ METHOD (BseSong, ensure-track-links) {
         GValue            *out_values)
 {
   /* extract parameter values */
-  BseSong *self = bse_value_get_object (in_values++);
+  BseSong *self = (BseSong*) bse_value_get_object (in_values++);
 
   /* check parameters */
   if (!BSE_IS_SONG (self))
@@ -223,7 +223,7 @@ METHOD (BseSong, ensure-track-links) {
   gboolean clear_undo = FALSE;
   SfiRing *ring;
   for (ring = self->parts; ring; ring = sfi_ring_walk (ring, self->parts))
-    if (!bse_song_find_first_track (self, ring->data))
+    if (!bse_song_find_first_track (self, (BsePart*) ring->data))
       {
         BseTrack *track = bse_song_ensure_orphans_track_noundo (self);
         bse_item_exec_void (track, "insert-part", bse_track_get_last_tick (track), ring->data);
@@ -250,23 +250,23 @@ METHOD (BseSong, create-part) {
         GValue            *out_values)
 {
   /* extract parameter values */
-  BseSong *self = bse_value_get_object (in_values++);
+  BseSong *self = (BseSong*) bse_value_get_object (in_values++);
   BseUndoStack *ustack;
   BseItem *child;
 
   /* check parameters */
   if (!BSE_IS_SONG (self))
     return BSE_ERROR_PROC_PARAM_INVAL;
-  
+
   /* action */
   ustack = bse_item_undo_open (self, "create-part");
-  child = bse_container_new_child (BSE_CONTAINER (self), BSE_TYPE_PART, NULL);
+  child = (BseItem*) bse_container_new_child (BSE_CONTAINER (self), BSE_TYPE_PART, NULL);
   bse_item_push_undo_proc (self, "remove-part", child);
   bse_item_undo_close (ustack);
-  
+
   /* set output parameters */
   bse_value_set_object (out_values++, child);
-  
+
   return BSE_ERROR_NONE;
 }
 
@@ -281,14 +281,14 @@ METHOD (BseSong, remove-part) {
         GValue            *out_values)
 {
   /* extract parameter values */
-  BseSong *self = bse_value_get_object (in_values++);
-  BseItem *child = bse_value_get_object (in_values++);
+  BseSong *self = (BseSong*) bse_value_get_object (in_values++);
+  BseItem *child = (BseItem*) bse_value_get_object (in_values++);
   BseErrorType error = BSE_ERROR_NONE;
-  
+
   /* check parameters */
   if (!BSE_IS_SONG (self) || !BSE_IS_PART (child) || BSE_ITEM (child)->parent != BSE_ITEM (self))
     return BSE_ERROR_PROC_PARAM_INVAL;
-  
+
   /* action */
   if (BSE_SOURCE_PREPARED (self))
     error = BSE_ERROR_SOURCE_BUSY;
@@ -319,28 +319,28 @@ METHOD (BseSong, create-track) {
         GValue            *out_values)
 {
   /* extract parameter values */
-  BseSong *self = bse_value_get_object (in_values++);
+  BseSong *self = (BseSong*) bse_value_get_object (in_values++);
   BseErrorType error = BSE_ERROR_NONE;
   BseItem *child = NULL;
 
   /* check parameters */
   if (!BSE_IS_SONG (self))
     return BSE_ERROR_PROC_PARAM_INVAL;
-  
+
   /* action */
   if (BSE_SOURCE_PREPARED (self))
     error = BSE_ERROR_SOURCE_BUSY;
   else
     {
       BseUndoStack *ustack = bse_item_undo_open (self, "create-track");
-      child = bse_container_new_child (BSE_CONTAINER (self), BSE_TYPE_TRACK, NULL);
+      child = (BseItem*) bse_container_new_child (BSE_CONTAINER (self), BSE_TYPE_TRACK, NULL);
       bse_item_push_undo_proc (self, "remove-track", child);
       bse_item_undo_close (ustack);
     }
 
   /* set output parameters */
   bse_value_set_object (out_values++, child);
-  
+
   return error;
 }
 
@@ -355,15 +355,15 @@ METHOD (BseSong, remove-track) {
         GValue            *out_values)
 {
   /* extract parameter values */
-  BseSong *self  = bse_value_get_object (in_values++);
-  BseItem *child = bse_value_get_object (in_values++);
+  BseSong *self = (BseSong*) bse_value_get_object (in_values++);
+  BseItem *child = (BseItem*) bse_value_get_object (in_values++);
   BseErrorType error = BSE_ERROR_NONE;
-  
+
   /* check parameters */
   if (!BSE_IS_SONG (self) || !BSE_IS_TRACK (child) ||
       BSE_ITEM (child)->parent != BSE_ITEM (self))
     return BSE_ERROR_PROC_PARAM_INVAL;
-  
+
   /* action */
   if (BSE_SOURCE_PREPARED (self))
     error = BSE_ERROR_SOURCE_BUSY;
@@ -396,8 +396,8 @@ METHOD (BseSong, find-track-for-part) {
         GValue            *out_values)
 {
   /* extract parameter values */
-  BseSong *self = bse_value_get_object (in_values++);
-  BsePart *part = bse_value_get_object (in_values++);
+  BseSong *self = (BseSong*) bse_value_get_object (in_values++);
+  BsePart *part = (BsePart*) bse_value_get_object (in_values++);
   BseTrack *track = NULL;
   guint tick = 0;
   SfiRing *ring;
@@ -410,7 +410,7 @@ METHOD (BseSong, find-track-for-part) {
   /* action */
   for (ring = self->tracks_SL; ring; ring = sfi_ring_walk (ring, self->tracks_SL))
     {
-      BseTrack *test_track = ring->data;
+      BseTrack *test_track = (BseTrack*) ring->data;
       guint start;
       if (bse_track_find_part (test_track, part, &start) &&
 	  (!track || start < tick))
@@ -439,8 +439,8 @@ METHOD (BseSong, find-any-track-for-part) {
         GValue            *out_values)
 {
   /* extract parameter values */
-  BseSong *self = bse_value_get_object (in_values++);
-  BsePart *part = bse_value_get_object (in_values++);
+  BseSong *self = (BseSong*) bse_value_get_object (in_values++);
+  BsePart *part = (BsePart*) bse_value_get_object (in_values++);
 
   /* check parameters */
   if (!BSE_IS_SONG (self) || !BSE_IS_PART (part) ||
@@ -472,8 +472,8 @@ METHOD (BseSong, synthesize-note) {
         GValue            *out_values)
 {
   /* extract parameter values */
-  BseSong *self      = bse_value_get_object (in_values++);
-  BseTrack *track    = bse_value_get_object (in_values++);
+  BseSong *self = (BseSong*) bse_value_get_object (in_values++);
+  BseTrack *track    = (BseTrack*) bse_value_get_object (in_values++);
   guint    duration  = sfi_value_get_int (in_values++);
   gint     note      = sfi_value_get_note (in_values++);
   gint     fine_tune = sfi_value_get_int (in_values++);
@@ -512,7 +512,7 @@ METHOD (BseSong, get-timing) {
         GValue            *out_values)
 {
   /* extract parameter values */
-  BseSong *self = bse_value_get_object (in_values++);
+  BseSong *self = (BseSong*) bse_value_get_object (in_values++);
   SfiInt   tick = sfi_value_get_int (in_values++);
   BseSongTiming timing = { 0, };
 

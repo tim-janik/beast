@@ -19,7 +19,8 @@
 #ifndef __BSE_CONTAINER_H__
 #define __BSE_CONTAINER_H__
 
-#include	<bse/bsesource.h>
+#include <bse/bsesource.h>
+#include <sfi/gbsearcharray.h>
 
 G_BEGIN_DECLS
 

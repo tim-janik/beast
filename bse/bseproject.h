@@ -91,7 +91,7 @@ BseItem*	bse_project_lookup_typed_item	(BseProject	*project,
 						 const gchar	*uname);
 BseWaveRepo*	bse_project_get_wave_repo	(BseProject	*project);
 BseSong*	bse_project_get_song    	(BseProject	*project);
-gpointer	bse_project_create_intern_synth	(BseProject	*project,
+BseSNet*	bse_project_create_intern_synth	(BseProject	*project,
 						 const gchar	*synth_name,
 						 GType           check_type);
 BseCSynth*      bse_project_create_intern_csynth(BseProject     *project,

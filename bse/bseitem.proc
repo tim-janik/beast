@@ -20,6 +20,7 @@
 #include <bse/bsecontainer.h>
 #include <bse/bseundostack.h>
 #include <bse/bseparasite.h>	// FIXME
+#include "bsecxxplugin.hh"
 
 
 AUTHORS	= "Tim Janik <timj@gtk.org>";
@@ -202,7 +203,7 @@ METHOD (BseItem, get-uname-path) {
 	GValue            *out_values)
 {
   /* extract parameter values */
-  BseItem *item = bse_value_get_object (in_values++);
+  BseItem *item = (BseItem*) bse_value_get_object (in_values++);
   BseProject *project;
   
   /* check parameters */
@@ -302,7 +303,7 @@ METHOD (BseItem, set-name) {
 	GValue            *out_values)
 {
   /* extract parameter values */
-  BseItem *item     = bse_value_get_object (in_values++);
+  BseItem *item = (BseItem*) bse_value_get_object (in_values++);
   const gchar *name = g_value_get_string (in_values++);
 
   /* check parameters */
@@ -381,8 +382,8 @@ METHOD (BseItem, common-ancestor) {
 	GValue            *out_values)
 {
   /* extract parameter values */
-  BseItem *item  = bse_value_get_object (in_values++);
-  BseItem *item2 = bse_value_get_object (in_values++);
+  BseItem *item = (BseItem*) bse_value_get_object (in_values++);
+  BseItem *item2 = (BseItem*) bse_value_get_object (in_values++);
   
   /* check parameters */
   if (!BSE_IS_ITEM (item) || !BSE_IS_ITEM (item2))
@@ -432,8 +433,8 @@ METHOD (BseItem, check-is-a) {
 	GValue            *out_values)
 {
   /* extract parameter values */
-  BseItem *item    = bse_value_get_object (in_values++);
-  gchar *type_name = sfi_value_get_string (in_values++);
+  BseItem *item = (BseItem*) bse_value_get_object (in_values++);
+  const char *type_name = sfi_value_get_string (in_values++);
   GType type;
   gboolean is_a;
   
@@ -463,9 +464,9 @@ METHOD (BseItem, get-property-candidates) {
 	GValue            *out_values)
 {
   /* extract parameter values */
-  BseItem *self     = bse_value_get_object (in_values++);
-  gchar   *property = sfi_value_get_string (in_values++);
-  
+  BseItem *self = (BseItem*) bse_value_get_object (in_values++);
+  const char   *property = sfi_value_get_string (in_values++);
+
   /* check parameters */
   if (!BSE_IS_ITEM (self) || !property)
     return BSE_ERROR_PROC_PARAM_INVAL;
@@ -494,9 +495,9 @@ METHOD (BseItem, editable-property) {
 	GValue            *out_values)
 {
   /* extract parameter values */
-  BseItem *self     = bse_value_get_object (in_values++);
-  gchar   *property = sfi_value_get_string (in_values++);
-  
+  BseItem *self = (BseItem*) bse_value_get_object (in_values++);
+  const char   *property = sfi_value_get_string (in_values++);
+
   /* check parameters */
   if (!BSE_IS_ITEM (self) || !property)
     return BSE_ERROR_PROC_PARAM_INVAL;
@@ -518,7 +519,7 @@ METHOD (BseItem, get-icon) {
 	GValue            *out_values)
 {
   /* extract parameter values */
-  BseItem *self     = bse_value_get_object (in_values++);
+  BseItem *self = (BseItem*) bse_value_get_object (in_values++);
   
   /* check parameters */
   if (!BSE_IS_ITEM (self))
@@ -541,8 +542,8 @@ METHOD (BseItem, group-undo) {
 	GValue            *out_values)
 {
   /* extract parameter values */
-  BseItem *self     = bse_value_get_object (in_values++);
-  gchar *name       = sfi_value_get_string (in_values++);
+  BseItem *self = (BseItem*) bse_value_get_object (in_values++);
+  const char *name       = sfi_value_get_string (in_values++);
   BseUndoStack *ustack;
 
   /* check parameters */
@@ -565,7 +566,7 @@ METHOD (BseItem, ungroup-undo) {
 	GValue            *out_values)
 {
   /* extract parameter values */
-  BseItem *self     = bse_value_get_object (in_values++);
+  BseItem *self = (BseItem*) bse_value_get_object (in_values++);
   BseUndoStack *ustack;
 
   /* check parameters */
@@ -588,7 +589,7 @@ METHOD (BseItem, undo) {
 	GValue            *out_values)
 {
   /* extract parameter values */
-  BseItem *self     = bse_value_get_object (in_values++);
+  BseItem *self = (BseItem*) bse_value_get_object (in_values++);
   BseProject *project;
 
   /* check parameters */
@@ -611,7 +612,7 @@ METHOD (BseItem, redo) {
 	GValue            *out_values)
 {
   /* extract parameter values */
-  BseItem *self     = bse_value_get_object (in_values++);
+  BseItem *self = (BseItem*) bse_value_get_object (in_values++);
   BseProject *project;
 
   /* check parameters */
@@ -634,7 +635,7 @@ METHOD (BseItem, clear-undo) {
 	GValue            *out_values)
 {
   /* extract parameter values */
-  BseItem *self     = bse_value_get_object (in_values++);
+  BseItem *self = (BseItem*) bse_value_get_object (in_values++);
   BseProject *project;
 
   /* check parameters */
@@ -659,7 +660,7 @@ METHOD (BseItem, undo-depth) {
         GValue            *out_values)
 {
   /* extract parameter values */
-  BseItem *self     = bse_value_get_object (in_values++);
+  BseItem *self = (BseItem*) bse_value_get_object (in_values++);
   gint depth = 0;
   BseProject *project;
 
@@ -688,7 +689,7 @@ METHOD (BseItem, redo-depth) {
         GValue            *out_values)
 {
   /* extract parameter values */
-  BseItem *self     = bse_value_get_object (in_values++);
+  BseItem *self = (BseItem*) bse_value_get_object (in_values++);
   gint depth = 0;
   BseProject *project;
 
@@ -716,7 +717,7 @@ METHOD (BseItem, fixme-set-parasite) {
 	GValue            *out_values)
 {
   /* extract parameter values */
-  BseItem *self     = bse_value_get_object (in_values++);
+  BseItem *self = (BseItem*) bse_value_get_object (in_values++);
   const gchar *name = sfi_value_get_string (in_values++);
   SfiFBlock *fblock = sfi_value_get_fblock (in_values++);
   
@@ -740,7 +741,7 @@ METHOD (BseItem, fixme-get-parasite) {
 	GValue            *out_values)
 {
   /* extract parameter values */
-  BseItem *self     = bse_value_get_object (in_values++);
+  BseItem *self = (BseItem*) bse_value_get_object (in_values++);
   const gchar *name = sfi_value_get_string (in_values++);
   
   /* check parameters */

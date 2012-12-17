@@ -46,7 +46,7 @@ EngineNode*	_engine_mnl_head		(void);
  * MasterThread - op engine control thread
  * SlaveThread  - op engine calculation threads
  *
- * these functions are for _internal_ use of bseengine*.c implementations
+ * these functions are for _internal_ use of bseengine*.cc implementations
  */
 
 /* --- job transactions --- */

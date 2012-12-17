@@ -304,7 +304,7 @@ bst_msg_absorb_config_save (void)
   g_free (file_name);
 }
 
-static SfiTokenType
+static GTokenType
 msg_absorb_config_try_statement (gpointer   context_data,
                                  SfiRStore *rstore,
                                  GScanner  *scanner,

@@ -17,7 +17,8 @@
 #ifndef __BSE_PART_H__
 #define __BSE_PART_H__
 
-#include        <bse/bseitem.h>
+#include <bse/bseitem.h>
+#include <sfi/gbsearcharray.h>
 
 G_BEGIN_DECLS
 
@@ -32,10 +33,10 @@ G_BEGIN_DECLS
 
 /* --- typedefs & structures --- */
 typedef struct {
-  gpointer bsa;
+  GBSearchArray *bsa;
 } BsePartControls;
 typedef struct {
-  gpointer bsa;
+  GBSearchArray *bsa;
 } BsePartNoteChannel;
 struct _BsePart
 {

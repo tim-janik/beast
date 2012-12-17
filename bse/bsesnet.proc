@@ -35,15 +35,15 @@ METHOD (BseSNet, supports-user-synths) {
 	GValue            *out_values)
 {
   /* extract parameter values */
-  BseSNet *snet = bse_value_get_object (in_values++);
-  
+  BseSNet *snet = (BseSNet*) bse_value_get_object (in_values++);
+
   /* check parameters */
   if (!BSE_IS_SNET (snet))
     return BSE_ERROR_PROC_PARAM_INVAL;
-  
+
   /* set output parameters */
   sfi_value_set_bool (out_values++, BSE_SNET_USER_SYNTH (snet));
-  
+
   return BSE_ERROR_NONE;
 }
 
@@ -61,7 +61,7 @@ METHOD (BseSNet, can-create-source) {
 	GValue            *out_values)
 {
   /* extract parameter values */
-  BseSNet *snet = bse_value_get_object (in_values++);
+  BseSNet *snet = (BseSNet*) bse_value_get_object (in_values++);
   const gchar *type_name = sfi_value_get_string (in_values++);
   GType type = g_type_from_name (type_name);
   BseErrorType error = BSE_ERROR_NONE;
@@ -96,7 +96,7 @@ METHOD (BseSNet, create-source) {
 	GValue            *out_values)
 {
   /* extract parameter values */
-  BseContainer *container = bse_value_get_object (in_values++);
+  BseContainer *container = (BseContainer*) bse_value_get_object (in_values++);
   const gchar *type_name  = sfi_value_get_string (in_values++);
   BseItem *child;
   BseUndoStack *ustack;
@@ -111,7 +111,7 @@ METHOD (BseSNet, create-source) {
   
   /* action */
   ustack = bse_item_undo_open (container, "create-source");
-  child = bse_container_new_child (container, g_type_from_name (type_name), NULL);
+  child = (BseItem*) bse_container_new_child (container, g_type_from_name (type_name), NULL);
   bse_item_push_undo_proc (container, "remove-source", child);
   bse_item_undo_close (ustack);
 
@@ -135,8 +135,8 @@ METHOD (BseSNet, remove-source) {
 	GValue            *out_values)
 {
   /* extract parameter values */
-  BseSNet *self      = bse_value_get_object (in_values++);
-  BseItem *child     = bse_value_get_object (in_values++);
+  BseSNet *self = (BseSNet*) bse_value_get_object (in_values++);
+  BseItem *child = (BseItem*) bse_value_get_object (in_values++);
   BseErrorType error = BSE_ERROR_NONE;
   BseUndoStack *ustack;
 

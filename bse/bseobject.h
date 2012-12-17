@@ -84,7 +84,7 @@ struct _BseObjectClass
 						 BseStorage	*storage);
   void                  (*restore_start)        (BseObject      *object,
                                                  BseStorage     *storage);
-  SfiTokenType		(*restore_private)	(BseObject	*object,
+  GTokenType		(*restore_private)	(BseObject	*object,
 						 BseStorage	*storage,
                                                  GScanner       *scanner);
   void                  (*restore_finish)       (BseObject      *object,

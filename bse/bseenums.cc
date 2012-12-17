@@ -18,12 +18,8 @@
 #include "gslcommon.h"
 #include <errno.h>
 
-/* --- prototypes --- */
-extern "C" void	bse_type_register_enums		(void);
-
-
 /* include generated enum value arrays and *.h files the enums steam from */
-#include "bseenum_arrays.c"
+#include "bseenum_arrays.cc"
 
 /* --- functions --- */
 void
@@ -36,7 +32,7 @@ bse_type_register_enums (void)
     void       *values;
   } enums[] = {
     /* include generated enum list */
-#include "bseenum_list.c"
+#include "bseenum_list.cc"
   };
   uint n_enums = sizeof (enums) / sizeof (enums[0]);
   uint i;

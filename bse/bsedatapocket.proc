@@ -35,9 +35,9 @@ METHOD (BseDataPocket, create-entry) {
 	GValue            *out_values)
 {
   /* extract parameter values */
-  BseDataPocket *pocket = bse_value_get_object (in_values++);
-  guint id;
-  
+  BseDataPocket *pocket = (BseDataPocket*) bse_value_get_object (in_values++);
+  uint id;
+
   /* check parameters */
   if (!BSE_IS_DATA_POCKET (pocket))
     return BSE_ERROR_PROC_PARAM_INVAL;
@@ -65,10 +65,10 @@ METHOD (BseDataPocket, delete-entry) {
 	GValue            *out_values)
 {
   /* extract parameter values */
-  BseDataPocket *pocket = bse_value_get_object (in_values++);
-  guint id              = sfi_value_get_int (in_values++);
-  gboolean fail = TRUE;
-  
+  BseDataPocket *pocket = (BseDataPocket*) bse_value_get_object (in_values++);
+  uint id = sfi_value_get_int (in_values++);
+  bool fail = TRUE;
+
   /* check parameters */
   if (!BSE_IS_DATA_POCKET (pocket))
     return BSE_ERROR_PROC_PARAM_INVAL;
@@ -94,8 +94,8 @@ METHOD (BseDataPocket, get-n-entries) {
 	GValue            *out_values)
 {
   /* extract parameter values */
-  BseDataPocket *pocket = bse_value_get_object (in_values++);
-  
+  BseDataPocket *pocket = (BseDataPocket*) bse_value_get_object (in_values++);
+
   /* check parameters */
   if (!BSE_IS_DATA_POCKET (pocket))
     return BSE_ERROR_PROC_PARAM_INVAL;
@@ -119,9 +119,9 @@ METHOD (BseDataPocket, get-nth-entry-id) {
 	GValue            *out_values)
 {
   /* extract parameter values */
-  BseDataPocket *pocket = bse_value_get_object (in_values++);
-  guint index           = sfi_value_get_int (in_values++);
-  
+  BseDataPocket *pocket = (BseDataPocket*) bse_value_get_object (in_values++);
+  uint index = sfi_value_get_int (in_values++);
+
   /* check parameters */
   if (!BSE_IS_DATA_POCKET (pocket))
     return BSE_ERROR_PROC_PARAM_INVAL;
@@ -152,12 +152,12 @@ METHOD (BseDataPocket, set-float) {
 	GValue            *out_values)
 {
   /* extract parameter values */
-  BseDataPocket *pocket = bse_value_get_object (in_values++);
+  BseDataPocket *pocket = (BseDataPocket*) bse_value_get_object (in_values++);
   guint id              = sfi_value_get_int (in_values++);
-  gchar *name           = sfi_value_get_string (in_values++);
+  const char *name      = sfi_value_get_string (in_values++);
   gfloat v_float        = sfi_value_get_real (in_values++);
   BseDataPocketValue value;
-  gboolean success = FALSE;
+  bool success = FALSE;
   
   /* check parameters */
   if (!BSE_IS_DATA_POCKET (pocket))
@@ -194,12 +194,12 @@ METHOD (BseDataPocket, set-int) {
 	GValue            *out_values)
 {
   /* extract parameter values */
-  BseDataPocket *pocket = bse_value_get_object (in_values++);
+  BseDataPocket *pocket = (BseDataPocket*) bse_value_get_object (in_values++);
   guint id              = sfi_value_get_int (in_values++);
-  gchar *name           = sfi_value_get_string (in_values++);
+  const char *name      = sfi_value_get_string (in_values++);
   guint v_uint          = sfi_value_get_int (in_values++);
   BseDataPocketValue value;
-  gboolean success = FALSE;
+  bool success = FALSE;
   
   /* check parameters */
   if (!BSE_IS_DATA_POCKET (pocket))
@@ -236,12 +236,12 @@ METHOD (BseDataPocket, set-object) {
 	GValue            *out_values)
 {
   /* extract parameter values */
-  BseDataPocket *pocket = bse_value_get_object (in_values++);
+  BseDataPocket *pocket = (BseDataPocket*) bse_value_get_object (in_values++);
   guint id              = sfi_value_get_int (in_values++);
-  gchar *name           = sfi_value_get_string (in_values++);
-  BseItem *v_object     = bse_value_get_object (in_values++);
+  const char *name      = sfi_value_get_string (in_values++);
+  BseItem *v_object     = (BseItem*) bse_value_get_object (in_values++);
   BseDataPocketValue value;
-  gboolean success = FALSE;
+  bool success = FALSE;
   
   /* check parameters */
   if (!BSE_IS_DATA_POCKET (pocket) ||
@@ -277,25 +277,23 @@ METHOD (BseDataPocket, set-string) {
 	GValue            *out_values)
 {
   /* extract parameter values */
-  BseDataPocket *pocket = bse_value_get_object (in_values++);
+  BseDataPocket *pocket = (BseDataPocket*) bse_value_get_object (in_values++);
   guint id              = sfi_value_get_int (in_values++);
-  gchar *name           = sfi_value_get_string (in_values++);
-  gchar *v_string       = sfi_value_get_string (in_values++);
-  BseDataPocketValue value;
-  gboolean success = FALSE;
-  
+  const char *name      = sfi_value_get_string (in_values++);
+  const char *v_string  = sfi_value_get_string (in_values++);
+  bool success = FALSE;
   /* check parameters */
   if (!BSE_IS_DATA_POCKET (pocket))
     return BSE_ERROR_PROC_PARAM_INVAL;
-  
   /* action */
-  value.v_string = v_string;
   if (id)
-    success = _bse_data_pocket_entry_set (pocket, id, g_quark_from_string (name), BSE_DATA_POCKET_STRING, value);
-  
+    {
+      BseDataPocketValue value;
+      value.v_string = (char*) v_string;
+      success = _bse_data_pocket_entry_set (pocket, id, g_quark_from_string (name), BSE_DATA_POCKET_STRING, value);
+    }
   /* set output parameters */
   g_value_set_enum (out_values++, success ? BSE_ERROR_NONE : BSE_ERROR_NO_ENTRY);
-  
   return BSE_ERROR_NONE;
 }
 
@@ -314,9 +312,9 @@ METHOD (BseDataPocket, get-float) {
 	GValue            *out_values)
 {
   /* extract parameter values */
-  BseDataPocket *pocket = bse_value_get_object (in_values++);
+  BseDataPocket *pocket = (BseDataPocket*) bse_value_get_object (in_values++);
   guint id              = sfi_value_get_int (in_values++);
-  gchar *name           = sfi_value_get_string (in_values++);
+  const char *name      = sfi_value_get_string (in_values++);
   BseDataPocketValue value = { 0, };
   gchar type;
   
@@ -348,9 +346,9 @@ METHOD (BseDataPocket, get-int) {
 	GValue            *out_values)
 {
   /* extract parameter values */
-  BseDataPocket *pocket = bse_value_get_object (in_values++);
+  BseDataPocket *pocket = (BseDataPocket*) bse_value_get_object (in_values++);
   guint id              = sfi_value_get_int (in_values++);
-  gchar *name           = sfi_value_get_string (in_values++);
+  const char *name      = sfi_value_get_string (in_values++);
   BseDataPocketValue value = { 0, };
   gchar type;
   
@@ -382,9 +380,9 @@ METHOD (BseDataPocket, get-object) {
 	GValue            *out_values)
 {
   /* extract parameter values */
-  BseDataPocket *pocket = bse_value_get_object (in_values++);
+  BseDataPocket *pocket = (BseDataPocket*) bse_value_get_object (in_values++);
   guint id              = sfi_value_get_int (in_values++);
-  gchar *name           = sfi_value_get_string (in_values++);
+  const char *name      = sfi_value_get_string (in_values++);
   BseDataPocketValue value = { 0, };
   gchar type;
   
@@ -416,9 +414,9 @@ METHOD (BseDataPocket, get-string) {
 	GValue            *out_values)
 {
   /* extract parameter values */
-  BseDataPocket *pocket = bse_value_get_object (in_values++);
+  BseDataPocket *pocket = (BseDataPocket*) bse_value_get_object (in_values++);
   guint id              = sfi_value_get_int (in_values++);
-  gchar *name           = sfi_value_get_string (in_values++);
+  const char *name      = sfi_value_get_string (in_values++);
   BseDataPocketValue value = { 0, };
   gchar type;
   

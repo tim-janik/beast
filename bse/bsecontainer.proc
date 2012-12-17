@@ -17,6 +17,7 @@
 #include <bse/bseplugin.h>
 #include <bse/bseprocedure.h>
 #include <bse/bsecontainer.h>
+#include "bsecxxplugin.hh"
 
 
 AUTHORS	= "Tim Janik <timj@gtk.org>";
@@ -32,8 +33,8 @@ METHOD (BseContainer, list-children) {
 	GValue            *out_values)
 {
   /* extract parameter values */
-  BseContainer *container = bse_value_get_object (in_values++);
-  
+  BseContainer *container = (BseContainer*) bse_value_get_object (in_values++);
+
   /* check parameters */
   if (!BSE_IS_CONTAINER (container))
     return BSE_ERROR_PROC_PARAM_INVAL;
@@ -55,9 +56,9 @@ METHOD (BseContainer, lookup-item) {
 	GValue            *out_values)
 {
   /* extract parameter values */
-  BseContainer *container = bse_value_get_object (in_values++);
-  gchar *uname            = sfi_value_get_string (in_values++);
-  
+  BseContainer *container = (BseContainer*) bse_value_get_object (in_values++);
+  const char *uname       = sfi_value_get_string (in_values++);
+
   /* check parameters */
   if (!BSE_IS_CONTAINER (container) || !uname)
     return BSE_ERROR_PROC_PARAM_INVAL;
@@ -81,8 +82,8 @@ METHOD (BseContainer, get-item) {
 	GValue            *out_values)
 {
   /* extract parameter values */
-  BseContainer *container = bse_value_get_object (in_values++);
-  const gchar *type_name  = sfi_value_get_string (in_values++);
+  BseContainer *container = (BseContainer*) bse_value_get_object (in_values++);
+  const char *type_name   = sfi_value_get_string (in_values++);
   guint seqid             = sfi_value_get_int (in_values++);
   GType type = type_name ? g_type_from_name (type_name) : 0;
 

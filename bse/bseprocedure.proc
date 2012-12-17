@@ -20,6 +20,7 @@
 #include "bseserver.h"
 #include "bsemath.h"    /* bse_temp_freq */
 #include "bsemain.h"
+#include "bsecxxplugin.hh"
 #include <string.h>     /* strchr */
 #include <stdlib.h>     /* strtol */
 
@@ -41,7 +42,7 @@ PROCEDURE (bse-note-to-freq, "Note to Freq") {
         GValue            *out_values)
 {
   /* extract parameter values */
-  BseMusicalTuningType musical_tuning = g_value_get_enum (in_values++);
+  BseMusicalTuningType musical_tuning = (BseMusicalTuningType) g_value_get_enum (in_values++);
   int                  note           = sfi_value_get_int (in_values++);
   int                  fine_tune      = sfi_value_get_int (in_values++);
   BseNoteDescription *info;
@@ -74,7 +75,7 @@ PROCEDURE (bse-note-from-freq, "Note from Freq") {
         GValue            *out_values)
 {
   /* extract parameter values */
-  BseMusicalTuningType musical_tuning = g_value_get_enum (in_values++);
+  BseMusicalTuningType musical_tuning = (BseMusicalTuningType) g_value_get_enum (in_values++);
   float                frequency      = sfi_value_get_real (in_values++);
   
   /* set out params */
@@ -97,7 +98,7 @@ BODY (BseProcedureClass *proc,
       GValue            *out_values)
 {
   /* extract parameter values */
-  BseMusicalTuningType musical_tuning = g_value_get_enum (in_values++);
+  BseMusicalTuningType musical_tuning = (BseMusicalTuningType) g_value_get_enum (in_values++);
   int                  note	      = sfi_value_get_int (in_values++);
   int                  fine_tune      = sfi_value_get_int (in_values++);
   
@@ -123,7 +124,7 @@ BODY (BseProcedureClass *proc,
       GValue            *out_values)
 {
   /* extract parameter values */
-  BseMusicalTuningType musical_tuning = g_value_get_enum (in_values++);
+  BseMusicalTuningType musical_tuning = (BseMusicalTuningType) g_value_get_enum (in_values++);
   float                freq	      = sfi_value_get_real (in_values++);
   gint note;
   
@@ -148,8 +149,8 @@ BODY (BseProcedureClass *proc,
       GValue            *out_values)
 {
   /* extract parameter values */
-  BseMusicalTuningType musical_tuning = g_value_get_enum (in_values++);
-  char                *name           = sfi_value_get_string (in_values++);
+  BseMusicalTuningType musical_tuning = (BseMusicalTuningType) g_value_get_enum (in_values++);
+  const char *name = sfi_value_get_string (in_values++);
   gint note;
   
   /* describe note */
@@ -176,7 +177,7 @@ BODY (BseProcedureClass *proc,
       GValue            *out_values)
 {
   /* extract parameter values */
-  BseMusicalTuningType musical_tuning = g_value_get_enum (in_values++);
+  BseMusicalTuningType musical_tuning = (BseMusicalTuningType) g_value_get_enum (in_values++);
   guint                semitone	      = sfi_value_get_int (in_values++);
   int                  octave	      = sfi_value_get_int (in_values++);
   int                  fine_tune      = sfi_value_get_int (in_values++);
@@ -198,7 +199,7 @@ PROCEDURE (bse-type-options, "Type Options") {
         GValue            *out_values)
 {
   /* extract parameter values */
-  gchar *stype = sfi_value_get_string (in_values++);
+  const char *stype = sfi_value_get_string (in_values++);
   GType type;
 
   /* check parameters */
@@ -222,7 +223,7 @@ PROCEDURE (bse-type-blurb, "Type Blurb") {
         GValue            *out_values)
 {
   /* extract parameter values */
-  gchar *stype = sfi_value_get_string (in_values++);
+  const char *stype = sfi_value_get_string (in_values++);
   GType type;
 
   /* check parameters */
@@ -246,7 +247,7 @@ PROCEDURE (bse-type-authors, "Type Authors") {
         GValue            *out_values)
 {
   /* extract parameter values */
-  gchar *stype = sfi_value_get_string (in_values++);
+  const char *stype = sfi_value_get_string (in_values++);
   GType type;
 
   /* check parameters */
@@ -270,7 +271,7 @@ PROCEDURE (bse-type-license, "Type License") {
         GValue            *out_values)
 {
   /* extract parameter values */
-  gchar *stype = sfi_value_get_string (in_values++);
+  const char *stype = sfi_value_get_string (in_values++);
   GType type;
 
   /* check parameters */
@@ -289,7 +290,7 @@ static gdouble
 str2num (const gchar *str,
          guint        nth)
 {
-  gchar *num_any = ".0123456789", *num_first = num_any + 1;
+  const char *num_any = ".0123456789", *num_first = num_any + 1;
   while (nth--)
     {
       /* skip number */
@@ -320,8 +321,8 @@ PROCEDURE (bse-string-extract-number, "String Extract Number") {
         GValue            *out_values)
 {
   /* extract parameter values */
-  gchar *string   = sfi_value_get_string (in_values++);
-  gchar *format   = sfi_value_get_string (in_values++);
+  const char *string   = sfi_value_get_string (in_values++);
+  const char *format   = sfi_value_get_string (in_values++);
   SfiReal aux_base = sfi_value_get_real (in_values++);
   SfiReal dflt     = sfi_value_get_real (in_values++);
   SfiReal number = dflt;

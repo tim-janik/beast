@@ -19,6 +19,7 @@
 #include <bse/bsewaverepo.h>
 #include <bse/bseloader.h>
 #include <bse/bsewave.h>
+#include "bsecxxplugin.hh"
 
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -33,7 +34,7 @@ load_file (BseWaveRepo *wrepo,
            BseWave    **wave_p)
 {
   gchar *fname = g_path_get_basename (file_name);
-  BseWave *wave = g_object_new (BSE_TYPE_WAVE, "uname", fname, NULL);
+  BseWave *wave = (BseWave*) g_object_new (BSE_TYPE_WAVE, "uname", fname, NULL);
   g_free (fname);
   BseErrorType error = bse_wave_load_wave_file (wave, file_name, NULL, NULL, NULL, TRUE);
   if (wave->n_wchunks)
@@ -73,8 +74,8 @@ BODY (BseProcedureClass *proc,
       GValue            *out_values)
 {
   /* extract parameter values */
-  BseWaveRepo *self    = (BseWaveRepo*) bse_value_get_object (in_values++);
-  gchar *file_name     = sfi_value_get_string (in_values++);
+  BseWaveRepo *self = (BseWaveRepo*) bse_value_get_object (in_values++);
+  const char *file_name = sfi_value_get_string (in_values++);
   BseUndoStack *ustack;
   BseErrorType error;
   BseWave *wave;
@@ -140,8 +141,7 @@ BODY (BseProcedureClass *proc,
       GValue            *out_values)
 {
   /* extract parameter values */
-  gchar *filename = sfi_value_get_string (in_values++);
-  BseSampleFileInfo info = { 0, };
+  const char *filename = sfi_value_get_string (in_values++);
   BseWaveFileInfo *wfi = NULL;
   struct stat sbuf = { 0, };
 
@@ -150,7 +150,8 @@ BODY (BseProcedureClass *proc,
     return BSE_ERROR_PROC_PARAM_INVAL;
 
   /* construct info */
-  info.file = filename;
+  BseSampleFileInfo info = { 0, };
+  info.file = (char*) filename;
   info.waves = bse_string_seq_new ();
   if (stat (filename, &sbuf) < 0)
     info.error = bse_error_from_errno (errno, BSE_ERROR_FILE_OPEN_FAILED);

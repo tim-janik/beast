@@ -38,8 +38,8 @@ BODY (BseProcedureClass *proc,
       GValue            *out_values)
 {
   /* extract parameter values */
-  BseBus *self = bse_value_get_object (in_values++);
-  BseTrack   *track = bse_value_get_object (in_values++);
+  BseBus *self = (BseBus*) bse_value_get_object (in_values++);
+  BseTrack *track = (BseTrack*) bse_value_get_object (in_values++);
   BseErrorType error = BSE_ERROR_NONE;
 
   /* check parameters */
@@ -74,8 +74,8 @@ BODY (BseProcedureClass *proc,
       GValue            *out_values)
 {
   /* extract parameter values */
-  BseBus *self = bse_value_get_object (in_values++);
-  BseTrack   *track = bse_value_get_object (in_values++);
+  BseBus *self = (BseBus*) bse_value_get_object (in_values++);
+  BseTrack *track = (BseTrack*) bse_value_get_object (in_values++);
   BseErrorType error = BSE_ERROR_NONE;
 
   /* check parameters */
@@ -110,8 +110,8 @@ BODY (BseProcedureClass *proc,
       GValue            *out_values)
 {
   /* extract parameter values */
-  BseBus *self = bse_value_get_object (in_values++);
-  BseBus *bus = bse_value_get_object (in_values++);
+  BseBus *self = (BseBus*) bse_value_get_object (in_values++);
+  BseBus *bus = (BseBus*) bse_value_get_object (in_values++);
   BseErrorType error = BSE_ERROR_NONE;
 
   /* check parameters */
@@ -146,8 +146,8 @@ BODY (BseProcedureClass *proc,
       GValue            *out_values)
 {
   /* extract parameter values */
-  BseBus *self = bse_value_get_object (in_values++);
-  BseBus     *bus = bse_value_get_object (in_values++);
+  BseBus *self = (BseBus*) bse_value_get_object (in_values++);
+  BseBus *bus = (BseBus*) bse_value_get_object (in_values++);
   BseErrorType error = BSE_ERROR_NONE;
 
   /* check parameters */
@@ -181,7 +181,7 @@ BODY (BseProcedureClass *proc,
       GValue            *out_values)
 {
   /* extract parameter values */
-  BseBus *self = bse_value_get_object (in_values++);
+  BseBus *self = (BseBus*) bse_value_get_object (in_values++);
   BseErrorType error = BSE_ERROR_NONE;
 
   /* check parameters */

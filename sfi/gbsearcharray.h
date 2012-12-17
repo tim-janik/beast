@@ -176,9 +176,7 @@ g_bsearch_array_lookup_fuzzy (GBSearchArray        *barray,
   return G_LIKELY (!sibling_or_after) ? NULL : (sibling_or_after > 1 && cmp > 0) ? check + sizeof_node : check;
 }
 static inline gpointer
-g_bsearch_array_get_nth (GBSearchArray        *barray,
-                         const GBSearchConfig *bconfig,
-                         guint                 nth)
+g_bsearch_array_get_nth (GBSearchArray *barray, const GBSearchConfig *bconfig, guint nth)
 {
   return (G_LIKELY (nth < barray->n_nodes) ?
           G_BSEARCH_ARRAY_NODES (barray) + nth * bconfig->sizeof_node :

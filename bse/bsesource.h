@@ -21,6 +21,7 @@
 
 #include <bse/bseitem.h>
 #include <bse/gsldefs.h>
+#include <sfi/gbsearcharray.h>
 
 G_BEGIN_DECLS
 
@@ -102,7 +103,7 @@ struct _BseSource
   BseSourceChannelDefs *channel_defs;
   BseSourceInput       *inputs;	/* [n_ichannels] */
   GSList	       *outputs;
-  gpointer		contexts; /* bsearch array of type BseSourceContext */
+  GBSearchArray        *contexts; /* bsearch array of type BseSourceContext */
   SfiReal		pos_x, pos_y;
   BseSourceProbes      *probes;
 };

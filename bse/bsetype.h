@@ -84,8 +84,7 @@ void         bse_type_uninit_boxed              (BseExportNodeBoxed *bnode);
 #define	BSE_TYPE_ID(BseTypeName)	(bse_type_builtin_id_##BseTypeName)
 #ifdef BSE_COMPILATION
 #  define BSE_BUILTIN_PROTO(BseTypeName) GType bse_type_builtin_register_##BseTypeName (void)
-#  define BSE_BUILTIN_TYPE(BseTypeName)	 EXTERN_C BSE_BUILTIN_PROTO (BseTypeName); \
-                                         EXTERN_C GType bse_type_builtin_register_##BseTypeName (void)
+#  define BSE_BUILTIN_TYPE(BseTypeName)	 EXTERN_C BSE_BUILTIN_PROTO (BseTypeName); EXTERN_C BSE_BUILTIN_PROTO (BseTypeName)
 #  define BSE_DUMMY_TYPE(BseTypeName)	 EXTERN_C BSE_BUILTIN_PROTO (BseTypeName) { return 0; } \
                                          EXTERN_C BSE_BUILTIN_PROTO (BseTypeName)
 #endif /* BSE_COMPILATION */
@@ -99,6 +98,11 @@ GParamSpec*     bse_param_spec_enum (const gchar    *name,
                                      GType           enum_type,
                                      const gchar    *hints);
 
+// == type initializers ==
+void    bse_type_register_enums                 ();
+void    bse_type_register_procedure_info        (GTypeInfo *info);
+void    bse_type_register_object_info           (GTypeInfo *info);
+void    bse_param_types_init			();
 
 /* -- auto generated type ids --- */
 #include        <bse/bsegentypes.h>

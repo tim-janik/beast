@@ -36,7 +36,7 @@ METHOD (BseEditableSample, open) {
 	GValue            *out_values)
 {
   /* extract parameter values */
-  BseEditableSample *esample = bse_value_get_object (in_values++);
+  BseEditableSample *esample = (BseEditableSample*) bse_value_get_object (in_values++);
   BseErrorType error;
   
   /* check parameters */
@@ -73,7 +73,7 @@ METHOD (BseEditableSample, close) {
 	GValue            *out_values)
 {
   /* extract parameter values */
-  BseEditableSample *esample = bse_value_get_object (in_values++);
+  BseEditableSample *esample = (BseEditableSample*) bse_value_get_object (in_values++);
   
   /* check parameters */
   if (!BSE_IS_EDITABLE_SAMPLE (esample) || !esample->wchunk || !esample->open_count)
@@ -98,7 +98,7 @@ METHOD (BseEditableSample, get-length) {
 	GValue            *out_values)
 {
   /* extract parameter values */
-  BseEditableSample *esample = bse_value_get_object (in_values++);
+  BseEditableSample *esample = (BseEditableSample*) bse_value_get_object (in_values++);
   GslDataCache *dcache = NULL;
   
   /* check parameters */
@@ -124,7 +124,7 @@ METHOD (BseEditableSample, get-n-channels) {
 	GValue            *out_values)
 {
   /* extract parameter values */
-  BseEditableSample *esample = bse_value_get_object (in_values++);
+  BseEditableSample *esample = (BseEditableSample*) bse_value_get_object (in_values++);
   
   /* check parameters */
   if (!BSE_IS_EDITABLE_SAMPLE (esample))
@@ -147,7 +147,7 @@ METHOD (BseEditableSample, get-osc-freq) {
 	GValue            *out_values)
 {
   /* extract parameter values */
-  BseEditableSample *esample = bse_value_get_object (in_values++);
+  BseEditableSample *esample = (BseEditableSample*) bse_value_get_object (in_values++);
   
   /* check parameters */
   if (!BSE_IS_EDITABLE_SAMPLE (esample))
@@ -171,7 +171,7 @@ METHOD (BseEditableSample, read-samples) {
         GValue            *out_values)
 {
   /* extract parameter values */
-  BseEditableSample *esample = bse_value_get_object (in_values++);
+  BseEditableSample *esample = (BseEditableSample*) bse_value_get_object (in_values++);
   guint              voffset = sfi_value_get_int (in_values++);
   GslDataCache *dcache = NULL;
   SfiFBlock *fblock;
@@ -186,7 +186,7 @@ METHOD (BseEditableSample, read-samples) {
     fblock = sfi_fblock_new_sized (1024);
   else
     {
-      GslDataCacheNode *dnode = gsl_data_cache_ref_node (dcache, voffset, TRUE);
+      GslDataCacheNode *dnode = (GslDataCacheNode*) gsl_data_cache_ref_node (dcache, voffset, GSL_DATA_CACHE_DEMAND_LOAD);
       guint i, l, dnode_length = dcache->node_size;
       
       l = dnode_length - (voffset - dnode->offset) + dcache->padding;
@@ -223,7 +223,7 @@ METHOD (BseEditableSample, collect-stats) {
         GValue            *out_values)
 {
   /* extract parameter values */
-  BseEditableSample *esample    = bse_value_get_object (in_values++);
+  BseEditableSample *esample    = (BseEditableSample*) bse_value_get_object (in_values++);
   guint              voffset    = sfi_value_get_int (in_values++);
   double             offs_scale = g_value_get_double (in_values++);
   guint              block_size = sfi_value_get_int (in_values++);

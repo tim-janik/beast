@@ -17,6 +17,7 @@
 #include <bse/bseparasite.h>
 #include <bse/bseprocedure.h>
 #include <bse/bseexports.h>
+#include "bsecxxplugin.hh"
 
 AUTHORS	= "Tim Janik <timj@gtk.org>";
 LICENSE = "GNU Lesser General Public License";
@@ -30,7 +31,7 @@ METHOD (BseItem, list-parasites) {
 	const GValue      *in_values,
 	GValue            *out_values)
 {
-  BseItem     *item = g_value_get_object (in_values++);
+  BseItem *item = (BseItem*) g_value_get_object (in_values++);
   const gchar *path = g_value_get_string (in_values++);
   SfiRing *ring;
   BseStringSeq *sseq;
@@ -39,7 +40,7 @@ METHOD (BseItem, list-parasites) {
   sseq = bse_string_seq_new ();
   ring = bse_item_list_parasites (item, path);
   while (ring)
-    bse_string_seq_append (sseq, sfi_ring_pop_head (&ring));
+    bse_string_seq_append (sseq, (const char*) sfi_ring_pop_head (&ring));
   bse_value_take_boxed (out_values++, sseq);
   return BSE_ERROR_NONE;
 }
@@ -54,7 +55,7 @@ METHOD (BseItem, get-parasite) {
 	const GValue      *in_values,
 	GValue            *out_values)
 {
-  BseItem     *item = g_value_get_object (in_values++);
+  BseItem *item = (BseItem*) g_value_get_object (in_values++);
   const gchar *path = g_value_get_string (in_values++);
   if (!BSE_IS_ITEM (item))
     return BSE_ERROR_PROC_PARAM_INVAL;
@@ -72,7 +73,7 @@ METHOD (BseItem, set-parasite) {
 	const GValue      *in_values,
 	GValue            *out_values)
 {
-  BseItem     *item = g_value_get_object (in_values++);
+  BseItem *item = (BseItem*) g_value_get_object (in_values++);
   const gchar *path = g_value_get_string (in_values++);
   SfiRec      *rec  = sfi_value_get_rec (in_values++);
   if (!BSE_IS_ITEM (item))
@@ -91,7 +92,7 @@ METHOD (BseItem, add-parasite) {
 	const GValue      *in_values,
 	GValue            *out_values)
 {
-  BseItem     *item = g_value_get_object (in_values++);
+  BseItem *item = (BseItem*) g_value_get_object (in_values++);
   const gchar *path = g_value_get_string (in_values++);
   SfiRec      *rec  = sfi_value_get_rec (in_values++);
   if (!BSE_IS_ITEM (item))

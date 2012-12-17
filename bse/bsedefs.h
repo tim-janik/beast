@@ -137,7 +137,7 @@ typedef void          (*BseFreeFunc)         (gpointer           data);
 typedef gboolean      (*BseIOWatch)	     (gpointer		 data,
                                               guint              n_pfds,
 					      GPollFD		*pfd);
-typedef SfiTokenType  (*BseTryStatement)     (gpointer           context_data,
+typedef GTokenType    (*BseTryStatement)     (gpointer           context_data,
                                               BseStorage        *storage,
                                               GScanner          *scanner,
                                               gpointer           user_data);

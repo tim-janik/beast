@@ -36,11 +36,11 @@ PROCEDURE (bse-proxy-check, "Proxy Check") {
 	GValue            *out_values)
 {
   /* extract parameter values */
-  BseItem *item    = bse_value_get_object (in_values++);
-  gchar *type_name = sfi_value_get_string (in_values++);
+  BseItem *item = (BseItem*) bse_value_get_object (in_values++);
+  const char *type_name = sfi_value_get_string (in_values++);
   GType type;
   gboolean is_a;
-  
+
   /* check parameters */
   if (!type_name)
     type_name = "";
