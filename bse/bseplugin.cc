@@ -133,7 +133,7 @@ bse_plugin_init (BsePlugin *plugin)
   plugin->types = NULL;
 }
 
-#include "bsebuiltin_externs.c" // include extern declarations of builtin init functions
+#include "bsebuiltin_externs.cc" // include extern declarations of builtin init functions
 
 void
 bse_plugin_init_builtins (void)
@@ -142,7 +142,7 @@ bse_plugin_init_builtins (void)
     {
       static BseExportNode* (* const builtin_inits[]) (void) = {
 	/* and list them in an array */
-#include "bsebuiltin_array.c"
+#include "bsebuiltin_array.cc"
       };
       static const guint n_builtin_inits = G_N_ELEMENTS (builtin_inits);
       guint i;

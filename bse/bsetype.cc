@@ -396,7 +396,7 @@ bse_param_spec_enum (const gchar    *name,
 
 /* --- SFIDL includes --- */
 /* include SFIDL generations */
-#include        "bsegentypes.c"
+#include        "bsegentypes.cc"
 
 
 void
@@ -407,7 +407,7 @@ bse_type_init (void)
     GType   *const type_p;
     GType   (*register_type) (void);
   } builtin_types[] = {
-#include "bsegentype_array.c"   // include class type id builtin variable declarations
+#include "bsegentype_array.cc"  // include class type id builtin variable declarations
   };
   const guint n_builtin_types = sizeof (builtin_types) / sizeof (builtin_types[0]);
   static GTypeFundamentalInfo finfo = { GTypeFundamentalFlags (0), };

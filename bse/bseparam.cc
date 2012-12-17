@@ -21,12 +21,12 @@
 #define NULL_CHECKED(x)         ((x) && (x)[0] ? x : NULL)
 
 /* --- prototypes --- */
-extern void	bse_param_types_init	(void);	/* sync with btype.c */
+extern void	bse_param_types_init	(void);	/* sync with btype.cc */
 
 
 /* --- type initialization --- */
 void
-bse_param_types_init (void)	/* sync with btype.c */
+bse_param_types_init (void)	/* sync with btype.cc */
 {
 }
 

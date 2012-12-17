@@ -177,7 +177,7 @@ $(srcdir)/gslfft.cc: @PERLRULE@ $(srcdir)/gsl-fftgen.pl $(srcdir)/gsl-fftconf.sh
 # bsegentypes.h
 GENERATED_EXTRA_DIST += bsegentypes.h
 $(libbse_la_OBJECTS): bsegentypes.h
-bsegentypes.h: @PERLRULE@ mktypes.pl $(filter-out bsegentypes.c, $(bse_sources)) $(filter-out bsegentypes.h, $(bse_public_headers))
+bsegentypes.h: @PERLRULE@ mktypes.pl $(filter-out bsegentypes.cc, $(bse_sources)) $(filter-out bsegentypes.h, $(bse_public_headers))
 bsegentypes.h: @PERLRULE@ bsecore.idl $(SFIDL)
 	( \
 	  cd $(srcdir) \
@@ -186,16 +186,16 @@ bsegentypes.h: @PERLRULE@ bsecore.idl $(SFIDL)
 	    --eprod "#define BSE_TYPE_@ENUMSHORT@\t    (BSE_TYPE_ID (@EnumName@))\n" \
 	    --eprod "extern GType BSE_TYPE_ID (@EnumName@);" \
 	      $(filter-out bsegentypes.h, $(bse_public_headers)) \
-	  && $(PERL) mktypes.pl --externs $(filter-out bsegentypes.c, $(bse_sources)) \
+	  && $(PERL) mktypes.pl --externs $(filter-out bsegentypes.cc, $(bse_sources)) \
 	) > xgen-$(@F) \
 	&& $(SFIDL) $(SFIDL_INC) --core-c --header $(srcdir)/bsecore.idl >> xgen-$(@F) \
 	&& (cmp -s xgen-$(@F) $(srcdir)/bsegentypes.h || cp xgen-$(@F) $(srcdir)/bsegentypes.h) \
 	&& rm -f xgen-$(@F)
 $(bse_sources): bsegentypes.h
-# bsegentypes.c
-GENERATED_EXTRA_DIST += bsegentypes.c
-$(libbse_la_OBJECTS): bsegentypes.c
-bsegentypes.c: @PERLRULE@ bsegentypes.h mktypes.pl bsecore.idl $(SFIDL)
+# bsegentypes.cc
+GENERATED_EXTRA_DIST += bsegentypes.cc
+$(libbse_la_OBJECTS): bsegentypes.cc
+bsegentypes.cc: @PERLRULE@ bsegentypes.h mktypes.pl bsecore.idl $(SFIDL)
 	( \
 	  cd $(srcdir) \
 	  && $(GLIB_MKENUMS) \
@@ -205,10 +205,10 @@ bsegentypes.c: @PERLRULE@ bsegentypes.h mktypes.pl bsecore.idl $(SFIDL)
 	) > xgen-$(@F) \
 	&& cp xgen-$(@F) $(@F) \
 	&& rm -f xgen-$(@F)
-# bseenum_arrays.c
-GENERATED_CLEANFILES += bseenum_arrays.c
-$(libbse_la_OBJECTS): bseenum_arrays.c
-bseenum_arrays.c: bsegentypes.h
+# bseenum_arrays.cc
+GENERATED_CLEANFILES += bseenum_arrays.cc
+$(libbse_la_OBJECTS): bseenum_arrays.cc
+bseenum_arrays.cc: bsegentypes.h
 	( \
 	  cd $(srcdir) \
 	  && $(GLIB_MKENUMS) \
@@ -221,10 +221,10 @@ bseenum_arrays.c: bsegentypes.h
 	) > xgen-$(@F) \
 	&& cp xgen-$(@F) $@ \
 	&& rm -f xgen-$(@F)
-# bseenum_list.c
-GENERATED_CLEANFILES += bseenum_list.c
-$(libbse_la_OBJECTS): bseenum_list.c
-bseenum_list.c: bsegentypes.h
+# bseenum_list.cc
+GENERATED_CLEANFILES += bseenum_list.cc
+$(libbse_la_OBJECTS): bseenum_list.cc
+bseenum_list.cc: bsegentypes.h
 	( \
 	  cd $(srcdir) \
 	  && $(GLIB_MKENUMS) \
@@ -234,28 +234,28 @@ bseenum_list.c: bsegentypes.h
 	) > xgen-$(@F) \
 	&& cp xgen-$(@F) $@ \
 	&& rm -f xgen-$(@F)
-# bsegentype_array.c
-GENERATED_EXTRA_DIST += bsegentype_array.c
-$(libbse_la_OBJECTS): bsegentype_array.c
-bsegentype_array.c: @PERLRULE@ bsegentypes.h
+# bsegentype_array.cc
+GENERATED_EXTRA_DIST += bsegentype_array.cc
+$(libbse_la_OBJECTS): bsegentype_array.cc
+bsegentype_array.cc: @PERLRULE@ bsegentypes.h
 	cd $(srcdir) \
 	&& $(PERL) mktypes.pl --array $(bse_sources) > xgen-$(@F) \
 	&& cp xgen-$(@F) $(@F) \
 	&& rm -f xgen-$(@F)
-# bsebuiltin_externs.c
-GENERATED_EXTRA_DIST += bsebuiltin_externs.c
-#$(libbse_la_OBJECTS): bsebuiltin_externs.c # forces complete rebuild when *.proc changes
-bseplugin.cc: bsebuiltin_externs.c
-bsebuiltin_externs.c: @PERLRULE@ $(bse_proc_gen_sources) mkcproc.pl
+# bsebuiltin_externs.cc
+GENERATED_EXTRA_DIST += bsebuiltin_externs.cc
+#$(libbse_la_OBJECTS): bsebuiltin_externs.cc # forces complete rebuild when *.proc changes
+bseplugin.cc: bsebuiltin_externs.cc
+bsebuiltin_externs.cc: @PERLRULE@ $(bse_proc_gen_sources) mkcproc.pl
 	cd $(srcdir) \
 	&& $(PERL) mkcproc.pl --externs $(bse_proc_gen_sources) > xgen-$(@F) \
 	&& cp xgen-$(@F) $(@F) \
 	&& rm -f xgen-$(@F)
-# bsebuiltin_array.c
-GENERATED_EXTRA_DIST += bsebuiltin_array.c
-#$(libbse_la_OBJECTS): bsebuiltin_array.c # forces complete rebuild when *.proc changes
-bseplugin.cc: bsebuiltin_array.c
-bsebuiltin_array.c: @PERLRULE@ $(bse_proc_gen_sources) mkcproc.pl
+# bsebuiltin_array.cc
+GENERATED_EXTRA_DIST += bsebuiltin_array.cc
+#$(libbse_la_OBJECTS): bsebuiltin_array.cc # forces complete rebuild when *.proc changes
+bseplugin.cc: bsebuiltin_array.cc
+bsebuiltin_array.cc: @PERLRULE@ $(bse_proc_gen_sources) mkcproc.pl
 	cd $(srcdir) \
 	&& $(PERL) mkcproc.pl --functions $(bse_proc_gen_sources) > xgen-$(@F) \
 	&& cp xgen-$(@F) $(@F) \
