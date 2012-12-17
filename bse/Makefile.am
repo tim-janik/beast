@@ -76,9 +76,9 @@ bse_sources = $(strip \
 	bsemidicontroller.cc	bsemididevice.cc 	bsedevice.cc 			\
 	bsemididevice-null.cc	bsemididevice-oss.cc	bsemidievent.cc			bsemidinotifier.c \
 	bsemidireceiver.cc	bsemidisynth.c		bseobject.cc			bsepart.cc \
-	bsepcminput.cc		bsepcmoutput.cc		bseparam.cc			bseparasite.c \
-	bsepcmdevice.cc		bsepcmdevice-oss.cc	bsepcmdevice-null.cc		bseplugin.c \
-	bseprocedure.c		bseproject.cc		bsescripthelper.cc		bseserver.cc \
+	bsepcminput.cc		bsepcmoutput.cc		bseparam.cc			bseparasite.cc \
+	bsepcmdevice.cc		bsepcmdevice-oss.cc	bsepcmdevice-null.cc		bseplugin.cc \
+	bseprocedure.cc		bseproject.cc		bsescripthelper.cc		bseserver.cc \
 	bsesnet.cc		bsesnooper.cc		bsesong.cc			bsesequencer.cc \
 	bsesource.cc		bsestandardosc.cc	bsestandardsynths.cc		bsestorage.cc \
 	bseinstrumentoutput.cc	bsesubiport.cc		bseinstrumentinput.cc		bsesuboport.cc \
@@ -245,7 +245,7 @@ bsegentype_array.c: @PERLRULE@ bsegentypes.h
 # bsebuiltin_externs.c
 GENERATED_EXTRA_DIST += bsebuiltin_externs.c
 #$(libbse_la_OBJECTS): bsebuiltin_externs.c # forces complete rebuild when *.proc changes
-bseplugin.c: bsebuiltin_externs.c
+bseplugin.cc: bsebuiltin_externs.c
 bsebuiltin_externs.c: @PERLRULE@ $(bse_proc_gen_sources) mkcproc.pl
 	cd $(srcdir) \
 	&& $(PERL) mkcproc.pl --externs $(bse_proc_gen_sources) > xgen-$(@F) \
@@ -254,7 +254,7 @@ bsebuiltin_externs.c: @PERLRULE@ $(bse_proc_gen_sources) mkcproc.pl
 # bsebuiltin_array.c
 GENERATED_EXTRA_DIST += bsebuiltin_array.c
 #$(libbse_la_OBJECTS): bsebuiltin_array.c # forces complete rebuild when *.proc changes
-bseplugin.c: bsebuiltin_array.c
+bseplugin.cc: bsebuiltin_array.c
 bsebuiltin_array.c: @PERLRULE@ $(bse_proc_gen_sources) mkcproc.pl
 	cd $(srcdir) \
 	&& $(PERL) mkcproc.pl --functions $(bse_proc_gen_sources) > xgen-$(@F) \

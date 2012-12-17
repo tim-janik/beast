@@ -29,8 +29,8 @@ typedef struct {
   GSList  *paths; /* contains ref-counted const gchar* */
 } CRef;
 struct _BseParasite {
-  gpointer nodes;
-  gpointer crefs;
+  GBSearchArray *nodes;
+  GBSearchArray *crefs;
 };
 
 
@@ -83,8 +83,8 @@ static gint
 parasite_node_cmp (gconstpointer  bsn1,
                    gconstpointer  bsn2)
 {
-  const Node *n1 = bsn1;
-  const Node *n2 = bsn2;
+  const Node *n1 = (const Node*) bsn1;
+  const Node *n2 = (const Node*) bsn2;
   return strcmp (n1->path, n2->path);
 }
 
@@ -101,8 +101,8 @@ static gint
 parasite_cref_cmp (gconstpointer  bsn1,
                    gconstpointer  bsn2)
 {
-  const CRef *r1 = bsn1;
-  const CRef *r2 = bsn2;
+  const CRef *r1 = (const CRef*) bsn1;
+  const CRef *r2 = (const CRef*) bsn2;
   return G_BSEARCH_ARRAY_CMP (r1->link, r2->link);
 }
 
@@ -110,15 +110,15 @@ static void
 parasite_uncross_object (BseItem *item,
                          BseItem *link)
 {
-  CRef *cref, key = { 0, };
+  CRef key = { 0, };
   key.link = link;
-  cref = g_bsearch_array_lookup (item->parasite->crefs, &bconfig_crefs, &key);
+  CRef *cref = (CRef*) g_bsearch_array_lookup (item->parasite->crefs, &bconfig_crefs, &key);
   g_return_if_fail (cref != NULL);
   while (cref->paths)
     {
-      const gchar *path = cref->paths->data;
+      const char *path = (const char*) cref->paths->data;
       bse_item_set_parasite (item, path, NULL);
-      cref = g_bsearch_array_lookup (item->parasite->crefs, &bconfig_crefs, &key);
+      cref = (CRef*) g_bsearch_array_lookup (item->parasite->crefs, &bconfig_crefs, &key);
     }
 }
 
@@ -129,11 +129,11 @@ parasite_ref_object (BseItem     *item,
 {
   CRef *cref, key = { 0, };
   key.link = link;
-  cref = g_bsearch_array_lookup (item->parasite->crefs, &bconfig_crefs, &key);
+  cref = (CRef*) g_bsearch_array_lookup (item->parasite->crefs, &bconfig_crefs, &key);
   if (!cref)
     {
       item->parasite->crefs = g_bsearch_array_insert (item->parasite->crefs, &bconfig_crefs, &key);
-      cref = g_bsearch_array_lookup (item->parasite->crefs, &bconfig_crefs, &key);
+      cref = (CRef*) g_bsearch_array_lookup (item->parasite->crefs, &bconfig_crefs, &key);
       bse_item_cross_link (item, link, parasite_uncross_object);
     }
   cref->paths = g_slist_prepend (cref->paths, (gchar*) g_intern_string (path));
@@ -147,7 +147,7 @@ parasite_unref_object (BseItem     *item,
   CRef *cref, key = {0, };
   GSList *plink;
   key.link = link;
-  cref = g_bsearch_array_lookup (item->parasite->crefs, &bconfig_crefs, &key);
+  cref = (CRef*) g_bsearch_array_lookup (item->parasite->crefs, &bconfig_crefs, &key);
   g_return_if_fail (cref != NULL);
   plink = g_slist_find (cref->paths, path);
   g_return_if_fail (plink != NULL);
@@ -166,7 +166,7 @@ parasite_ref_value (BseItem      *item,
 {
   if (G_VALUE_HOLDS_OBJECT (value))
     {
-      BseItem *link = g_value_get_object (value);
+      BseItem *link = (BseItem*) g_value_get_object (value);
       if (link)
         parasite_ref_object (item, path, link);
     }
@@ -191,7 +191,7 @@ parasite_unref_value (BseItem      *item,
 {
   if (G_VALUE_HOLDS_OBJECT (value))
     {
-      BseItem *link = g_value_get_object (value);
+      BseItem *link = (BseItem*) g_value_get_object (value);
       if (link)
         parasite_unref_object (item, path, link);
     }
@@ -266,7 +266,7 @@ bse_item_set_parasite (BseItem        *item,
     parasite_init (item);
   /* ensure node */
   key.path = parasite_path;
-  node = g_bsearch_array_lookup (item->parasite->nodes, &bconfig_nodes, &key);
+  node = (Node*) g_bsearch_array_lookup (item->parasite->nodes, &bconfig_nodes, &key);
   if (!node)
     {
       /* catch no-op deletion */
@@ -274,7 +274,7 @@ bse_item_set_parasite (BseItem        *item,
         return;
       key.path = g_intern_string (parasite_path);
       item->parasite->nodes = g_bsearch_array_insert (item->parasite->nodes, &bconfig_nodes, &key);
-      node = g_bsearch_array_lookup (item->parasite->nodes, &bconfig_nodes, &key);
+      node = (Node*) g_bsearch_array_lookup (item->parasite->nodes, &bconfig_nodes, &key);
       notify_add = TRUE;
     }
   /* queue undo */
@@ -315,7 +315,7 @@ bse_item_get_parasite (BseItem        *item,
     {
       Node *node, key = { 0, };
       key.path = parasite_path;
-      node = g_bsearch_array_lookup (item->parasite->nodes, &bconfig_nodes, &key);
+      node = (Node*) g_bsearch_array_lookup (item->parasite->nodes, &bconfig_nodes, &key);
       if (node)
         return node->rec;
     }
@@ -326,16 +326,16 @@ static void
 undo_set_parasite (BseUndoStep  *ustep,
                    BseUndoStack *ustack)
 {
-  BseItem *item = bse_undo_pointer_unpack (ustep->data[0].v_pointer, ustack);
-  const gchar *path = ustep->data[1].v_pointer;
-  SfiRec *rec = ustep->data[2].v_pointer;
+  BseItem *item = (BseItem*) bse_undo_pointer_unpack ((const char*) ustep->data[0].v_pointer, ustack);
+  const gchar *path = (const char*) ustep->data[1].v_pointer;
+  SfiRec *rec = (SfiRec*) ustep->data[2].v_pointer;
   bse_item_set_parasite (item, path, rec);
 }
 
 static void
 unde_free_parasite (BseUndoStep *ustep)
 {
-  SfiRec *rec = ustep->data[2].v_pointer;
+  SfiRec *rec = (SfiRec*) ustep->data[2].v_pointer;
   g_free (ustep->data[0].v_pointer);
   if (rec)
     sfi_rec_unref (rec);
@@ -366,8 +366,8 @@ bse_item_delete_parasites (BseItem *item)
     {
       while (g_bsearch_array_get_n_nodes (item->parasite->nodes))
         {
-          Node *node = g_bsearch_array_get_nth (item->parasite->nodes, &bconfig_nodes,
-                                                g_bsearch_array_get_n_nodes (item->parasite->nodes) - 1);
+          Node *node = (Node*) g_bsearch_array_get_nth (item->parasite->nodes, &bconfig_nodes,
+                                                        g_bsearch_array_get_n_nodes (item->parasite->nodes) - 1);
           bse_item_set_parasite (item, node->path, NULL);
         }
       g_assert (g_bsearch_array_get_n_nodes (item->parasite->crefs) == 0);
@@ -390,7 +390,7 @@ bse_item_list_parasites (BseItem     *item,
         return NULL;
       for (i = 0; i < g_bsearch_array_get_n_nodes (item->parasite->nodes); i++)
         {
-          Node *node = g_bsearch_array_get_nth (item->parasite->nodes, &bconfig_nodes, i);
+          Node *node = (Node*) g_bsearch_array_get_nth (item->parasite->nodes, &bconfig_nodes, i);
           if (strncmp (parent_path, node->path, l) == 0)
             {
               const gchar *slash = strchr (node->path + l, '/');
@@ -475,21 +475,17 @@ void
 bse_parasite_store (BseObject  *object,
 		    BseStorage *storage)
 {
-  ParasiteList *list;
-  guint n;
-  
-  list = g_object_get_qdata (object, quark_parasite_list);
+  ParasiteList *list = (ParasiteList*) g_object_get_qdata ((GObject*) object, quark_parasite_list);
   if (!list)
     return;
-  
-  for (n = 0; n < list->n_parasites; n++)
+  for (uint n = 0; n < list->n_parasites; n++)
     {
       Parasite *parasite = list->parasites + n;
       gchar *name;
-      
+
       if (!parasite->n_values)
 	continue;
-      
+
       bse_storage_break (storage);
       name = g_strescape (g_quark_to_string (parasite->quark), NULL);
       bse_storage_printf (storage, "(parasite %c \"%s\"",
@@ -497,14 +493,12 @@ bse_parasite_store (BseObject  *object,
 			  name);
       switch (parasite->type)
 	{
-	  guint i;
-	  
+	  uint i;
 	case PARASITE_FLOAT:
 	  bse_storage_printf (storage, " %u", parasite->n_values);
 	  for (i = 0; i < parasite->n_values; i++)
 	    {
-	      gfloat *floats = parasite->data;
-	      
+	      float *floats = (float*) parasite->data;
 	      if ((i + 1) % 5 == 0)
 		bse_storage_break (storage);
 	      bse_storage_putc (storage, ' ');
@@ -526,7 +520,7 @@ bse_parasite_store (BseObject  *object,
 static void
 parasite_list_free (gpointer data)
 {
-  ParasiteList *list = data;
+  ParasiteList *list = (ParasiteList*) data;
   guint i;
   
   for (i = 0; i < list->n_parasites; i++)
@@ -541,23 +535,17 @@ fetch_parasite (BseObject *object,
 		gchar      type,
 		gboolean   create)
 {
-  ParasiteList *list;
-  guint i;
-  
-  list = g_object_get_qdata (object, quark_parasite_list);
-  
+  ParasiteList *list = (ParasiteList*) g_object_get_qdata ((GObject*) object, quark_parasite_list);
   if (list)
-    for (i = 0; i < list->n_parasites; i++)
+    for (uint i = 0; i < list->n_parasites; i++)
       if (list->parasites[i].quark == quark &&
 	  list->parasites[i].type == type)
 	return list->parasites + i;
-  
   if (create)
     {
       ParasiteList *olist = list;
-      
-      i = list ? list->n_parasites : 0;
-      list = g_realloc (list, sizeof (ParasiteList) + i * sizeof (Parasite));
+      uint i = list ? list->n_parasites : 0;
+      list = (ParasiteList*) g_realloc (list, sizeof (ParasiteList) + i * sizeof (Parasite));
       list->n_parasites = i + 1;
       if (list != olist)
 	{
@@ -565,8 +553,8 @@ fetch_parasite (BseObject *object,
 	    quark_parasite_list = g_quark_from_static_string ("BseParasiteList");
 	  
 	  if (olist)
-	    g_object_steal_qdata (object, quark_parasite_list);
-	  g_object_set_qdata_full (object, quark_parasite_list, list, parasite_list_free);
+	    g_object_steal_qdata ((GObject*) object, quark_parasite_list);
+	  g_object_set_qdata_full ((GObject*) object, quark_parasite_list, list, parasite_list_free);
 	}
       
       list->parasites[i].quark = quark;
@@ -585,28 +573,24 @@ delete_parasite (BseObject *object,
 		 GQuark     quark,
 		 gchar      type)
 {
-  ParasiteList *list;
   Parasite *parasite = NULL;
-  guint i;
-  
-  list = g_object_get_qdata (object, quark_parasite_list);
+  ParasiteList *list = (ParasiteList*) g_object_get_qdata ((GObject*) object, quark_parasite_list);
   if (!list)
     return;
-  
+  uint i;
   for (i = 0; i < list->n_parasites; i++)
     if (list->parasites[i].quark == quark &&
 	list->parasites[i].type == type)
       parasite = list->parasites + i;
   if (!parasite)
     return;
-  
   if (parasite->n_values)
     g_free (parasite->data);
   list->n_parasites -= 1;
   if (i < list->n_parasites)
     list->parasites[i] = list->parasites[list->n_parasites];
   else if (list->n_parasites == 0)
-    g_object_set_qdata (object, quark_parasite_list, NULL);
+    g_object_set_qdata ((GObject*) object, quark_parasite_list, NULL);
 }
 
 GTokenType
@@ -680,11 +664,9 @@ bse_parasite_restore (BseObject  *object,
 				    ttype,
 				    g_quark_to_string (quark));
     }
-  
   if (g_scanner_peek_next_token (scanner) == ')')
     {
       Parasite *parasite = fetch_parasite (object, quark, ttype, TRUE);
-      
       if (parasite->n_values)
 	g_free (parasite->data);
       parasite->n_values = n_values;
@@ -692,9 +674,8 @@ bse_parasite_restore (BseObject  *object,
     }
   else if (n_values)
     g_free (data);
-  
   /* read closing brace */
-  return g_scanner_get_next_token (scanner) == ')' ? G_TOKEN_NONE : ')';
+  return g_scanner_get_next_token (scanner) == ')' ? G_TOKEN_NONE : GTokenType (')');
 }
 
 void
@@ -733,18 +714,11 @@ SfiFBlock*
 bse_parasite_get_floats (BseObject   *object,
 			 const gchar *name)
 {
-  Parasite *parasite;
-  SfiFBlock *fblock;
-  
   g_return_val_if_fail (BSE_IS_OBJECT (object), 0);
   g_return_val_if_fail (name != NULL, 0);
-  
-  parasite = fetch_parasite (object,
-			     g_quark_try_string (name),
-			     PARASITE_FLOAT,
-			     FALSE);
-  fblock = sfi_fblock_new ();
+  Parasite *parasite = fetch_parasite (object, g_quark_try_string (name), PARASITE_FLOAT, FALSE);
+  SfiFBlock *fblock = sfi_fblock_new ();
   if (parasite)
-    sfi_fblock_append (fblock, parasite->n_values, parasite->data);
+    sfi_fblock_append (fblock, parasite->n_values, (const float*) parasite->data);
   return fblock;
 }

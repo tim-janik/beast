@@ -34,7 +34,7 @@ sub func_name {
 
 if ($gen_externs) {
     for (@ARGV) {
-	print "BseExportNode* ". func_name ($_) ." (void);\n";
+	print "extern \"C\" BseExportNode* ". func_name ($_) ." (void);\n";
     }
     exit 0;
 } elsif ($gen_funcs) {

@@ -146,9 +146,9 @@ typedef struct {
 
 
 
-BsePlugin*      bse_exports__add_node   (const BseExportIdentity *identity,     // bseplugin.c
+BsePlugin*      bse_exports__add_node   (const BseExportIdentity *identity,     // bseplugin.cc
                                          BseExportNode           *enode);
-void            bse_exports__del_node   (BsePlugin               *plugin,       // bseplugin.c
+void            bse_exports__del_node   (BsePlugin               *plugin,       // bseplugin.cc
                                          BseExportNode           *enode);
 
 /* implementation prototype */

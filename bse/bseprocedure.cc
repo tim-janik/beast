@@ -148,10 +148,10 @@ bse_procedure_init (BseProcedureClass       *proc,
   j = 0;
   for (i = 0; i < proc->n_in_pspecs; i++)
     if (G_TYPE_IS_CLASSED ((G_PARAM_SPEC_VALUE_TYPE (proc->in_pspecs[i]))))
-      proc->class_refs[j++] = g_type_class_ref (G_PARAM_SPEC_VALUE_TYPE (proc->in_pspecs[i]));
+      proc->class_refs[j++] = (GTypeClass*) g_type_class_ref (G_PARAM_SPEC_VALUE_TYPE (proc->in_pspecs[i]));
   for (i = 0; i < proc->n_out_pspecs; i++)
     if (G_TYPE_IS_CLASSED ((G_PARAM_SPEC_VALUE_TYPE (proc->out_pspecs[i]))))
-      proc->class_refs[j++] = g_type_class_ref (G_PARAM_SPEC_VALUE_TYPE (proc->out_pspecs[i]));
+      proc->class_refs[j++] = (GTypeClass*) g_type_class_ref (G_PARAM_SPEC_VALUE_TYPE (proc->out_pspecs[i]));
   proc->class_refs[j++] = NULL;
 
   /* hookup execute method */
@@ -173,26 +173,21 @@ bse_procedure_type_register (const gchar *name,
                              BsePlugin   *plugin,
                              GType       *ret_type)
 {
-  GType   type, base_type = 0;
-  gchar *p;
-  
+  GType base_type = 0;
   g_return_val_if_fail (ret_type != NULL, bse_error_blurb (BSE_ERROR_INTERNAL));
   *ret_type = 0;
   g_return_val_if_fail (name != NULL, bse_error_blurb (BSE_ERROR_INTERNAL));
   g_return_val_if_fail (plugin != NULL, bse_error_blurb (BSE_ERROR_INTERNAL));
-  
-  type = g_type_from_name (name);
+  GType type = g_type_from_name (name);
   if (type)
     return "Procedure already registered";
-  
-  p = strchr (name, '+');
-  if (p)
+  const char *pn = strchr (name, '+');
+  if (pn)
     {
       /* enforce <OBJECT>+<METHOD> syntax */
-      if (!p[1])
+      if (!pn[1])
         return "Procedure name invalid";
-      
-      p = g_strndup (name, p - name);
+      char *p = g_strndup (name, pn - name);
       base_type = g_type_from_name (p);
       g_free (p);
       if (!g_type_is_a (base_type, BSE_TYPE_OBJECT))
@@ -298,19 +293,14 @@ bse_procedure_marshal (GType               proc_type,
                        BseProcedureMarshal marshal,
                        gpointer            marshal_data)
 {
-  BseProcedureClass *proc;
-  GValue tmp_ivalues[BSE_PROCEDURE_MAX_IN_PARAMS];
-  GValue tmp_ovalues[BSE_PROCEDURE_MAX_OUT_PARAMS];
-  guint i, bail_out = FALSE;
+  GValue tmp_ivalues[BSE_PROCEDURE_MAX_IN_PARAMS], tmp_ovalues[BSE_PROCEDURE_MAX_OUT_PARAMS];
+  uint i, bail_out = FALSE;
   BseErrorType error;
-  
   g_return_val_if_fail (BSE_TYPE_IS_PROCEDURE (proc_type), BSE_ERROR_INTERNAL);
-  
-  proc = g_type_class_ref (proc_type);
+  BseProcedureClass *proc = (BseProcedureClass*) g_type_class_ref (proc_type);
   for (i = 0; i < proc->n_in_pspecs; i++)
     {
       GParamSpec *pspec = proc->in_pspecs[i];
-      
       tmp_ivalues[i].g_type = 0;
       g_value_init (tmp_ivalues + i, G_PARAM_SPEC_VALUE_TYPE (pspec));
       if (!sfi_value_transform (ivalues + i, tmp_ivalues + i))
@@ -487,16 +477,11 @@ bse_procedure_marshal_valist (GType               proc_type,
                               gboolean            skip_ovalues,
                               va_list             var_args)
 {
-  GValue tmp_ivalues[BSE_PROCEDURE_MAX_IN_PARAMS];
-  GValue tmp_ovalues[BSE_PROCEDURE_MAX_OUT_PARAMS];
-  BseProcedureClass *proc;
-  BseErrorType error;
-
   g_return_val_if_fail (BSE_TYPE_IS_PROCEDURE (proc_type), BSE_ERROR_INTERNAL);
-
-  proc = g_type_class_ref (proc_type);
-  error = bse_procedure_call_collect (proc, first_value, marshal, marshal_data,
-                                      FALSE, skip_ovalues, tmp_ivalues, tmp_ovalues, var_args);
+  GValue tmp_ivalues[BSE_PROCEDURE_MAX_IN_PARAMS], tmp_ovalues[BSE_PROCEDURE_MAX_OUT_PARAMS];
+  BseProcedureClass *proc = (BseProcedureClass*) g_type_class_ref (proc_type);
+  BseErrorType error = bse_procedure_call_collect (proc, first_value, marshal, marshal_data,
+                                                   FALSE, skip_ovalues, tmp_ivalues, tmp_ovalues, var_args);
   procedure_class_unref (proc);
   return error;
 }
@@ -526,7 +511,7 @@ bse_procedure_collect_input_args (BseProcedureClass  *proc,
   g_return_val_if_fail (BSE_IS_PROCEDURE_CLASS (proc), BSE_ERROR_INTERNAL);
 
   /* add an extra reference count to the class */
-  proc = g_type_class_ref (BSE_PROCEDURE_TYPE (proc));
+  proc = (BseProcedureClass*) g_type_class_ref (BSE_PROCEDURE_TYPE (proc));
   error = bse_procedure_call_collect (proc, first_value, NULL, NULL,
                                       TRUE, TRUE, ivalues, NULL, var_args);
   /* so the class can enter the cache here */
@@ -669,7 +654,7 @@ proc_cache_dispatch (GSource    *source,
   proc = proc_cache;
   while (proc)
     {
-      BseProcedureClass *next = proc->cache_next;
+      BseProcedureClass *next = (BseProcedureClass*) proc->cache_next;
       if (proc->cache_stamp < 2)        /* purging of old procs */
         {
           /* unlink */
@@ -692,7 +677,7 @@ proc_cache_dispatch (GSource    *source,
   while (ulist)
     {
       proc = ulist;
-      ulist = proc->cache_next;
+      ulist = (BseProcedureClass*) proc->cache_next;
       proc->cache_next = NULL;
       // g_printerr ("release-procedure: %s\n", BSE_PROCEDURE_NAME (proc));
       g_type_class_unref (proc);

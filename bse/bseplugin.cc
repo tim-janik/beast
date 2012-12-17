@@ -71,12 +71,8 @@ BSE_BUILTIN_TYPE (BsePlugin)
     NULL,		/* interface_finalize */
     NULL,		/* interface_data */
   };
-  GType plugin_type;
-  
-  plugin_type = g_type_register_static (G_TYPE_OBJECT, "BsePlugin", &plugin_info, 0);
-  
+  GType plugin_type = g_type_register_static (G_TYPE_OBJECT, "BsePlugin", &plugin_info, GTypeFlags (0));
   g_type_add_interface_static (plugin_type, G_TYPE_TYPE_PLUGIN, &iface_info);
-  
   return plugin_type;
 }
 
@@ -137,20 +133,20 @@ bse_plugin_init (BsePlugin *plugin)
   plugin->types = NULL;
 }
 
+#include "bsebuiltin_externs.c" // include extern declarations of builtin init functions
+
 void
 bse_plugin_init_builtins (void)
 {
   if (!bse_plugins)
     {
-      /* include extern declarations of builtin init functions */
-#include "bsebuiltin_externs.c"
       static BseExportNode* (* const builtin_inits[]) (void) = {
 	/* and list them in an array */
 #include "bsebuiltin_array.c"
       };
       static const guint n_builtin_inits = G_N_ELEMENTS (builtin_inits);
       guint i;
-      
+
       /* initialize builtin types via pseudo plugin handle */
       for (i = 0; i < n_builtin_inits; i++)
 	{
@@ -158,7 +154,7 @@ bse_plugin_init_builtins (void)
           if (chain)
             {
               /* create resident plugin struct */
-              BsePlugin *plugin = g_object_new (BSE_TYPE_PLUGIN, NULL);
+              BsePlugin *plugin = (BsePlugin*) g_object_new (BSE_TYPE_PLUGIN, NULL);
               g_object_ref (plugin);
               plugin->use_count = 1;
               plugin->fname = g_strdup ("BSE-BUILTIN");
@@ -171,7 +167,7 @@ bse_plugin_init_builtins (void)
       if (bse_builtin_export_identity.export_chain)
         {
           /* create resident plugin struct */
-          BsePlugin *plugin = g_object_new (BSE_TYPE_PLUGIN, NULL);
+          BsePlugin *plugin = (BsePlugin*) g_object_new (BSE_TYPE_PLUGIN, NULL);
           g_object_ref (plugin);
           plugin->use_count = 1;
           plugin->fname = g_strdup ("BSE-CXX-BUILTIN");
@@ -230,14 +226,13 @@ bse_exports__add_node (const BseExportIdentity *identity,
 }
 
 static const char*
-plugin_check_identity (BsePlugin *plugin,
-                       GModule   *gmodule)
+plugin_check_identity (BsePlugin *plugin, GModule *gmodule)
 {
   if (!plugin->chain)
     {
       /* handle legacy C plugins */
       BseExportIdentity **symbol_p = NULL;
-      if (g_module_symbol (gmodule, BSE_EXPORT_IDENTITY_STRING, (gpointer) &symbol_p) && *symbol_p)
+      if (g_module_symbol (gmodule, BSE_EXPORT_IDENTITY_STRING, (void**) &symbol_p) && *symbol_p)
         {
           BseExportIdentity *identity = *symbol_p;
           if (identity->major != BSE_MAJOR_VERSION ||
@@ -262,21 +257,18 @@ static void
 bse_plugin_use (GTypePlugin *gplugin)
 {
   BsePlugin *plugin = BSE_PLUGIN (gplugin);
-  
   g_return_if_fail (plugin != NULL);
-  
   g_object_ref (G_OBJECT (plugin));
   if (!plugin->use_count)
     {
       DEBUG ("reloading-plugin: %s", plugin->fname);
-      
       plugin->use_count++;
       startup_plugin = plugin;
-      plugin->gmodule = g_module_open (plugin->fname, 0); /* reopen for use non-lazy */
+      plugin->gmodule = g_module_open (plugin->fname, GModuleFlags (0)); /* reopen for use non-lazy */
       startup_plugin = NULL;
       if (!plugin->gmodule)
 	g_error ("failed to reinitialize plugin \"%s\": %s", plugin->fname, g_module_error ());
-      const char *cerror = plugin_check_identity (plugin, plugin->gmodule);
+      const char *cerror = plugin_check_identity (plugin, (GModule*) plugin->gmodule);
       if (cerror)
 	g_error ("failed to reinitialize plugin \"%s\": %s", plugin->fname, cerror);
       if (!plugin->chain)
@@ -315,15 +307,15 @@ bse_plugin_unload (BsePlugin *plugin)
 {
   g_return_if_fail (plugin->gmodule != NULL && plugin->fname != NULL);
   g_return_if_fail (plugin->use_count == 0);
-  
+
   bse_plugin_uninit_types (plugin);
-  g_module_close (plugin->gmodule);
+  g_module_close ((GModule*) plugin->gmodule);
   plugin->gmodule = NULL;
-  
+
   /* reset plugin local pointers */
   if (plugin->force_clean)
     plugin->chain = NULL;
-  
+
   DEBUG ("unloaded-plugin: %s", plugin->fname);
 }
 
@@ -421,7 +413,7 @@ static void
 bse_plugin_reinit_types (BsePlugin *plugin)
 {
   guint n = plugin->n_types;
-  GType *types = g_memdup (plugin->types, sizeof (plugin->types[0]) * n);
+  GType *types = (GType*) g_memdup (plugin->types, sizeof (plugin->types[0]) * n);
   BseExportNode *node;
 
   for (node = plugin->chain; node && node->ntype; node = node->next)
@@ -581,16 +573,12 @@ bse_plugin_init_types (BsePlugin *plugin)
 static inline BsePlugin*
 bse_plugin_find (GModule *gmodule)
 {
-  GSList *slist;
-  
-  for (slist = bse_plugins; slist; slist = slist->next)
+  for (GSList *slist = bse_plugins; slist; slist = slist->next)
     {
-      BsePlugin *plugin = slist->data;
-      
+      BsePlugin *plugin = (BsePlugin*) slist->data;
       if (plugin->gmodule == gmodule)
 	return plugin;
     }
-  
   return NULL;
 }
 
@@ -655,7 +643,7 @@ bse_plugin_check_load (const gchar *const_file_name)
   DEBUG ("register: %s", file_name);
 
   /* load module */
-  BsePlugin *plugin = g_object_new (BSE_TYPE_PLUGIN, NULL);
+  BsePlugin *plugin = (BsePlugin*) g_object_new (BSE_TYPE_PLUGIN, NULL);
   plugin->fname = g_strdup (file_name);
   startup_plugin = plugin;
   gmodule = g_module_open (file_name, G_MODULE_BIND_LAZY);
@@ -793,7 +781,7 @@ bse_plugin_path_list_files (gboolean include_drivers,
       ring = NULL;
       for (fname = files; fname; fname = sfi_ring_next (fname, files))
         {
-          char *name = fname->data;
+          char *name = (char*) fname->data;
           bool match = plugin_extension_filter (name, G_N_ELEMENTS (exts), exts);
           DEBUG ("PluginExtensionFilter: %s: %s", name, match ? "(match)" : "(ignored)");
           if (match)
