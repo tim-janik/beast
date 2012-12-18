@@ -113,21 +113,6 @@ plugins_built_sources      += davorgan.genidl.hh
 davplugins_FPU_la_SOURCES += davorgan.cc
 
 
-## C Plugin bseiirfilter
-EXTRA_HEADERS      += bseiirfilter.h
-$(srcdir)/bseiirfilter.c: bseiirfilter.h
-plugin_FPU_ltlibs += bseiirfilter.FPU.la
-bseiirfilter_FPU_la_SOURCES = bseiirfilter.c
-bseiirfilter_FPU_la_LDFLAGS = -module $(plugins_ldflags)
-bseiirfilter_FPU_la_LIBADD  = $(plugins_libs)
-bseiirfilter_FPU_la_CFLAGS    = $(FPU_PLUGIN_CFLAGS)
-plugin_SSE_ltlibs   += bseiirfilter.SSE.la
-bseiirfilter_SSE_la_SOURCES   = $(bseiirfilter_FPU_la_SOURCES)
-bseiirfilter_SSE_la_LDFLAGS   = $(bseiirfilter_FPU_la_LDFLAGS)
-bseiirfilter_SSE_la_LIBADD    = $(bseiirfilter_FPU_la_LIBADD)
-bseiirfilter_SSE_la_CFLAGS    = $(SSE_PLUGIN_CFLAGS)
-
-
 ## C Plugin davxtalstrings
 EXTRA_HEADERS      += davxtalstrings.h
 $(srcdir)/davxtalstrings.c: davxtalstrings.h

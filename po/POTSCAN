@@ -121,7 +121,7 @@ plugins/bseatandistort.cc
 plugins/bsebalance.idl
 plugins/bsecontribsampleandhold.idl
 # plugins/bsefirfilter.c
-plugins/bseiirfilter.c
+plugins/bseiirfilter.cc
 plugins/bsemixer.cc
 plugins/bsemult.cc
 plugins/bsenoise.idl

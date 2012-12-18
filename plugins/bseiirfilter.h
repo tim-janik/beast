@@ -17,7 +17,6 @@
 #ifndef __BSE_IIR_FILTER_H__
 #define __BSE_IIR_FILTER_H__
 
-#include <bse/bseplugin.h>
 #include <bse/bsesource.h>
 
 #ifdef __cplusplus
@@ -26,29 +25,13 @@ extern "C" {
 
 
 /* --- type macros --- */
-#define BSE_TYPE_IIR_FILTER              (BSE_EXPORT_TYPE_ID (BseIIRFilter))
+#define BSE_TYPE_IIR_FILTER              (bse_iir_filter_get_type())
 #define BSE_IIR_FILTER(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), BSE_TYPE_IIR_FILTER, BseIIRFilter))
 #define BSE_IIR_FILTER_CLASS(class)      (G_TYPE_CHECK_CLASS_CAST ((class), BSE_TYPE_IIR_FILTER, BseIIRFilterClass))
 #define BSE_IS_IIR_FILTER(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), BSE_TYPE_IIR_FILTER))
 #define BSE_IS_IIR_FILTER_CLASS(class)   (G_TYPE_CHECK_CLASS_TYPE ((class), BSE_TYPE_IIR_FILTER))
 #define BSE_IIR_FILTER_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), BSE_TYPE_IIR_FILTER, BseIIRFilterClass))
 #define	BSE_IIR_FILTER_MAX_ORDER	 (18)
-
-
-/* --- enums --- */
-typedef enum
-{
-  BSE_IIR_FILTER_BUTTERWORTH = 1,
-  BSE_IIR_FILTER_CHEBYCHEFF1,
-  BSE_IIR_FILTER_CHEBYCHEFF2
-} BseIIRFilterAlgorithm;
-typedef enum
-{
-  BSE_IIR_FILTER_LOW_PASS = 1,
-  BSE_IIR_FILTER_HIGH_PASS,
-  BSE_IIR_FILTER_BAND_PASS,
-  BSE_IIR_FILTER_BAND_STOP
-} BseIIRFilterType;
 
 
 /* --- BseIIRFilter source --- */
