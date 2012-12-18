@@ -110,18 +110,18 @@ GObject*  gxk_param_get_object          (GxkParam           *param);
 
 /* --- param view/editor --- */
 typedef struct {
-  gchar      *name, *nick;
+  const char *name, *nick;
 } GxkParamEditorIdent;
 typedef struct {
   GxkParamEditorIdent ident;
   struct {
     GType        type;
-    const gchar *type_name;
+    const char  *type_name;
     guint        all_int_nums : 1;
     guint        all_float_nums : 1;
   }              type_match;
   struct {
-    gchar      *options;        /* required pspec options */
+    const char *options;        /* required pspec options */
     gint8       rating;
     guint       editing : 1;
   }             features;

@@ -129,4 +129,13 @@ GtkWidget*	gxk_dialog_action_multi		(GxkDialog	    *dialog,
 
 G_END_DECLS
 
+// == Flags Enumeration Operators in C++ ==
+#ifdef __cplusplus
+inline GxkDialogFlags  operator&  (GxkDialogFlags  s1, GxkDialogFlags s2) { return GxkDialogFlags (s1 & (long long unsigned) s2); }
+inline GxkDialogFlags& operator&= (GxkDialogFlags &s1, GxkDialogFlags s2) { s1 = s1 & s2; return s1; }
+inline GxkDialogFlags  operator|  (GxkDialogFlags  s1, GxkDialogFlags s2) { return GxkDialogFlags (s1 | (long long unsigned) s2); }
+inline GxkDialogFlags& operator|= (GxkDialogFlags &s1, GxkDialogFlags s2) { s1 = s1 | s2; return s1; }
+inline GxkDialogFlags  operator~  (GxkDialogFlags  s1)                    { return GxkDialogFlags (~(long long unsigned) s1); }
+#endif // __cplusplus
+
 #endif  /* __GXK_DIALOG_H__ */
