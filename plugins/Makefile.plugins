@@ -1,42 +1,6 @@
 
 
 
-## === C++ Plugin Library artsplugins === 
-plugin_FPU_ltlibs          += artsplugins.FPU.la
-artsplugins_FPU_la_SOURCES  =
-artsplugins_FPU_la_CXXFLAGS = $(FPU_PLUGIN_CXXFLAGS)
-artsplugins_FPU_la_LDFLAGS  = -module $(plugins_ldflags)
-artsplugins_FPU_la_LIBADD   = $(plugins_libs)
-plugin_SSE_ltlibs          += artsplugins.SSE.la
-artsplugins_SSE_la_SOURCES  = $(artsplugins_FPU_la_SOURCES)
-artsplugins_SSE_la_CXXFLAGS = $(SSE_PLUGIN_CXXFLAGS)
-artsplugins_SSE_la_LDFLAGS  = $(artsplugins_FPU_la_LDFLAGS)
-artsplugins_SSE_la_LIBADD   = $(artsplugins_FPU_la_LIBADD)
-
-## C++ Plugin artscompressor
-$(srcdir)/artscompressor.cc: artscompressor.genidl.hh # artsplugins
-plugins_built_sources      += artscompressor.genidl.hh
-artsplugins_FPU_la_SOURCES += artscompressor.cc
-
-
-## === C++ Plugin Library contribplugins === 
-plugin_FPU_ltlibs          += contribplugins.FPU.la
-contribplugins_FPU_la_SOURCES  =
-contribplugins_FPU_la_CXXFLAGS = $(FPU_PLUGIN_CXXFLAGS)
-contribplugins_FPU_la_LDFLAGS  = -module $(plugins_ldflags)
-contribplugins_FPU_la_LIBADD   = $(plugins_libs)
-plugin_SSE_ltlibs          += contribplugins.SSE.la
-contribplugins_SSE_la_SOURCES  = $(contribplugins_FPU_la_SOURCES)
-contribplugins_SSE_la_CXXFLAGS = $(SSE_PLUGIN_CXXFLAGS)
-contribplugins_SSE_la_LDFLAGS  = $(contribplugins_FPU_la_LDFLAGS)
-contribplugins_SSE_la_LIBADD   = $(contribplugins_FPU_la_LIBADD)
-
-## C++ Plugin bsecontribsampleandhold
-$(srcdir)/bsecontribsampleandhold.cc: bsecontribsampleandhold.genidl.hh # contribplugins
-plugins_built_sources      += bsecontribsampleandhold.genidl.hh
-contribplugins_FPU_la_SOURCES += bsecontribsampleandhold.cc
-
-
 ## === C++ Plugin Library bseplugins === 
 plugin_FPU_ltlibs          += bseplugins.FPU.la
 bseplugins_FPU_la_SOURCES  =
@@ -48,6 +12,11 @@ bseplugins_SSE_la_SOURCES  = $(bseplugins_FPU_la_SOURCES)
 bseplugins_SSE_la_CXXFLAGS = $(SSE_PLUGIN_CXXFLAGS)
 bseplugins_SSE_la_LDFLAGS  = $(bseplugins_FPU_la_LDFLAGS)
 bseplugins_SSE_la_LIBADD   = $(bseplugins_FPU_la_LIBADD)
+
+## C++ Plugin artscompressor
+$(srcdir)/artscompressor.cc: artscompressor.genidl.hh # bseplugins
+plugins_built_sources      += artscompressor.genidl.hh
+bseplugins_FPU_la_SOURCES += artscompressor.cc
 
 ## C++ Plugin bseamplifier
 $(srcdir)/bseamplifier.cc: bseamplifier.genidl.hh # bseplugins
@@ -84,30 +53,22 @@ $(srcdir)/standardguspatchenvelope.cc: standardguspatchenvelope.genidl.hh # bsep
 plugins_built_sources      += standardguspatchenvelope.genidl.hh
 bseplugins_FPU_la_SOURCES += standardguspatchenvelope.cc
 
-
-## === C++ Plugin Library davplugins === 
-plugin_FPU_ltlibs          += davplugins.FPU.la
-davplugins_FPU_la_SOURCES  =
-davplugins_FPU_la_CXXFLAGS = $(FPU_PLUGIN_CXXFLAGS)
-davplugins_FPU_la_LDFLAGS  = -module $(plugins_ldflags)
-davplugins_FPU_la_LIBADD   = $(plugins_libs)
-plugin_SSE_ltlibs          += davplugins.SSE.la
-davplugins_SSE_la_SOURCES  = $(davplugins_FPU_la_SOURCES)
-davplugins_SSE_la_CXXFLAGS = $(SSE_PLUGIN_CXXFLAGS)
-davplugins_SSE_la_LDFLAGS  = $(davplugins_FPU_la_LDFLAGS)
-davplugins_SSE_la_LIBADD   = $(davplugins_FPU_la_LIBADD)
+## C++ Plugin bsecontribsampleandhold
+$(srcdir)/bsecontribsampleandhold.cc: bsecontribsampleandhold.genidl.hh # bseplugins
+plugins_built_sources      += bsecontribsampleandhold.genidl.hh
+bseplugins_FPU_la_SOURCES += bsecontribsampleandhold.cc
 
 ## C++ Plugin davbassfilter
-$(srcdir)/davbassfilter.cc: davbassfilter.genidl.hh # davplugins
+$(srcdir)/davbassfilter.cc: davbassfilter.genidl.hh # bseplugins
 plugins_built_sources      += davbassfilter.genidl.hh
-davplugins_FPU_la_SOURCES += davbassfilter.cc
+bseplugins_FPU_la_SOURCES += davbassfilter.cc
 
 ## C++ Plugin davchorus
-$(srcdir)/davchorus.cc: davchorus.genidl.hh # davplugins
+$(srcdir)/davchorus.cc: davchorus.genidl.hh # bseplugins
 plugins_built_sources      += davchorus.genidl.hh
-davplugins_FPU_la_SOURCES += davchorus.cc
+bseplugins_FPU_la_SOURCES += davchorus.cc
 
 ## C++ Plugin davorgan
-$(srcdir)/davorgan.cc: davorgan.genidl.hh # davplugins
+$(srcdir)/davorgan.cc: davorgan.genidl.hh # bseplugins
 plugins_built_sources      += davorgan.genidl.hh
-davplugins_FPU_la_SOURCES += davorgan.cc
+bseplugins_FPU_la_SOURCES += davorgan.cc

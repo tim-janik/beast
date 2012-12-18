@@ -10,11 +10,8 @@ INCLUDES += -I$(top_srcdir) -I. $(BSE_CFLAGS) -DG_LOG_DOMAIN="\"$(strip $(basena
 
 # == IDL C++ Plugins ==
 idl_plugins = $(strip			\
-	+++artsplugins 			\
-	artscompressor.idl		\
-	+++contribplugins 		\
-	bsecontribsampleandhold.idl	\
 	+++bseplugins 			\
+	artscompressor.idl		\
 	bseamplifier.idl		\
 	bsebalance.idl			\
 	bsenoise.idl			\
@@ -22,7 +19,7 @@ idl_plugins = $(strip			\
 	bsesummation.idl		\
 	standardsaturator.idl		\
 	standardguspatchenvelope.idl	\
-	+++davplugins 			\
+	bsecontribsampleandhold.idl	\
 	davbassfilter.idl		\
 	davchorus.idl			\
 	davorgan.idl			\
