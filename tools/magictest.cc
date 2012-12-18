@@ -38,7 +38,7 @@ int
 main (gint   argc,
       gchar *argv[])
 {
-  static gchar *magic_presets[][2] = {
+  static const char *magic_presets[][2] = {
     /* some test entries, order is important for some cases */
     { "Berkeley DB 2.X Hash/Little Endian",	"12 lelong 0x061561", },
     { "MS-DOS executable (EXE)",		"0 string MZ", },
@@ -68,12 +68,12 @@ main (gint   argc,
   
   for (i = 0; i < n_magic_presets; i++)
     magic_list = sfi_ring_append (magic_list,
-				  gsl_magic_create (magic_presets[i][0],
+				  gsl_magic_create ((void*) magic_presets[i][0],
 						    0,
 						    0,
 						    magic_presets[i][1]));
   
-  for (i = 1; i < argc; i++)
+  for (i = 1; i < uint (argc); i++)
     {
       if (strcmp ("-p", argv[i]) == 0)
 	; // FIXME: bsw_register_plugins (BSE_PATH_PLUGINS, FALSE, NULL, NULL, NULL);
@@ -92,7 +92,7 @@ main (gint   argc,
 	  
 	  g_print ("%s:", argv[i]);
 	  pad = g_strnfill (MAX (40, l) - l, ' ');
-	  g_print (pad);
+	  g_print ("%s", pad);
 	  g_free (pad);
 	  if (!magic && !loader)
 	    g_print (" no magic/loader found");
