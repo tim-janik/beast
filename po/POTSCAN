@@ -135,7 +135,7 @@ plugins/davchorus.idl
 # plugins/davguitar.c
 plugins/davorgan.idl
 plugins/davsyndrum.cc
-plugins/davxtalstrings.c
+plugins/davxtalstrings.cc
 plugins/freeverb/bsefreeverb.c
 plugins/standardguspatchenvelope.idl
 plugins/standardsaturator.idl

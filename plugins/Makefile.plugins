@@ -111,18 +111,3 @@ davplugins_FPU_la_SOURCES += davchorus.cc
 $(srcdir)/davorgan.cc: davorgan.genidl.hh # davplugins
 plugins_built_sources      += davorgan.genidl.hh
 davplugins_FPU_la_SOURCES += davorgan.cc
-
-
-## C Plugin davxtalstrings
-EXTRA_HEADERS      += davxtalstrings.h
-$(srcdir)/davxtalstrings.c: davxtalstrings.h
-plugin_FPU_ltlibs += davxtalstrings.FPU.la
-davxtalstrings_FPU_la_SOURCES = davxtalstrings.c
-davxtalstrings_FPU_la_LDFLAGS = -module $(plugins_ldflags)
-davxtalstrings_FPU_la_LIBADD  = $(plugins_libs)
-davxtalstrings_FPU_la_CFLAGS    = $(FPU_PLUGIN_CFLAGS)
-plugin_SSE_ltlibs   += davxtalstrings.SSE.la
-davxtalstrings_SSE_la_SOURCES   = $(davxtalstrings_FPU_la_SOURCES)
-davxtalstrings_SSE_la_LDFLAGS   = $(davxtalstrings_FPU_la_LDFLAGS)
-davxtalstrings_SSE_la_LIBADD    = $(davxtalstrings_FPU_la_LIBADD)
-davxtalstrings_SSE_la_CFLAGS    = $(SSE_PLUGIN_CFLAGS)
