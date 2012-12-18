@@ -136,7 +136,7 @@ plugins/davchorus.idl
 plugins/davorgan.idl
 plugins/davsyndrum.cc
 plugins/davxtalstrings.cc
-plugins/freeverb/bsefreeverb.c
+plugins/freeverb/bsefreeverb.cc
 plugins/standardguspatchenvelope.idl
 plugins/standardsaturator.idl
 sfi/sfidl-parser.hh
