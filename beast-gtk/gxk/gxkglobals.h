@@ -73,4 +73,25 @@ void	gxk_init_radget_types	(void);
 
 G_END_DECLS
 
+// == Flags Enumeration Operators in C++ ==
+#ifdef __cplusplus
+inline GdkEventMask  operator&  (GdkEventMask  s1, GdkEventMask s2) { return GdkEventMask (s1 & (long long unsigned) s2); }
+inline GdkEventMask& operator&= (GdkEventMask &s1, GdkEventMask s2) { s1 = s1 & s2; return s1; }
+inline GdkEventMask  operator|  (GdkEventMask  s1, GdkEventMask s2) { return GdkEventMask (s1 | (long long unsigned) s2); }
+inline GdkEventMask& operator|= (GdkEventMask &s1, GdkEventMask s2) { s1 = s1 | s2; return s1; }
+inline GdkEventMask  operator~  (GdkEventMask  s1)                 { return GdkEventMask (~(long long unsigned) s1); }
+
+inline GdkWindowHints  operator&  (GdkWindowHints  s1, GdkWindowHints s2) { return GdkWindowHints (s1 & (long long unsigned) s2); }
+inline GdkWindowHints& operator&= (GdkWindowHints &s1, GdkWindowHints s2) { s1 = s1 & s2; return s1; }
+inline GdkWindowHints  operator|  (GdkWindowHints  s1, GdkWindowHints s2) { return GdkWindowHints (s1 | (long long unsigned) s2); }
+inline GdkWindowHints& operator|= (GdkWindowHints &s1, GdkWindowHints s2) { s1 = s1 | s2; return s1; }
+inline GdkWindowHints  operator~  (GdkWindowHints  s1)                 { return GdkWindowHints (~(long long unsigned) s1); }
+
+inline GtkAttachOptions  operator&  (GtkAttachOptions  s1, GtkAttachOptions s2) { return GtkAttachOptions (s1 & (long long unsigned) s2); }
+inline GtkAttachOptions& operator&= (GtkAttachOptions &s1, GtkAttachOptions s2) { s1 = s1 & s2; return s1; }
+inline GtkAttachOptions  operator|  (GtkAttachOptions  s1, GtkAttachOptions s2) { return GtkAttachOptions (s1 | (long long unsigned) s2); }
+inline GtkAttachOptions& operator|= (GtkAttachOptions &s1, GtkAttachOptions s2) { s1 = s1 | s2; return s1; }
+inline GtkAttachOptions  operator~  (GtkAttachOptions  s1)                 { return GtkAttachOptions (~(long long unsigned) s1); }
+#endif // __cplusplus
+
 #endif /* __GXK_GLOBALS_H__ */
