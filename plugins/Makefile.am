@@ -35,8 +35,10 @@ SFIDL_INC = --nostdinc -I$(top_srcdir) -I$(top_builddir)
 	$(SFIDL) --plugin  --macro $(<F) $(SFIDL_INC) -I$(top_builddir) $< > $@ || (rm $@ ; exit 1 )
 
 # == C++ Plugins ==
-cxx_plugin_headers = bseadder.h  bseatandistort.h  bsesimpleadsr.h  bsemixer.h  bsemult.h  bsesequencer.h  bseiirfilter.h
-cxx_plugin_sources = bseadder.cc bseatandistort.cc bsesimpleadsr.cc bsemixer.cc bsemult.cc bsesequencer.cc bseiirfilter.cc
+cxx_plugin_headers = bseadder.h  bseatandistort.h  bsesimpleadsr.h  bsemixer.h  bsemult.h  bsesequencer.h  bseiirfilter.h	\
+		     davcanyondelay.h
+cxx_plugin_sources = bseadder.cc bseatandistort.cc bsesimpleadsr.cc bsemixer.cc bsemult.cc bsesequencer.cc bseiirfilter.cc	\
+		     davcanyondelay.cc
 cxx_plugin_extra   = bsesimpleadsr-aux.cc
 EXTRA_DIST        += $(cxx_plugin_headers) $(cxx_plugin_extra)
 cxxplugins_FPU_la_SOURCES  = $(cxx_plugin_sources)
@@ -58,7 +60,6 @@ UNPORTED = $(strip		\
 cglob_plugins = $(strip		\
 	davxtalstrings.[hc]	\
 	davsyndrum.[hc]		\
-	davcanyondelay.[hc]	\
 )
 EXTRA_DIST += $(strip \
         $(EXTRA_HEADERS) \

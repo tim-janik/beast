@@ -141,18 +141,3 @@ davsyndrum_SSE_la_SOURCES   = $(davsyndrum_FPU_la_SOURCES)
 davsyndrum_SSE_la_LDFLAGS   = $(davsyndrum_FPU_la_LDFLAGS)
 davsyndrum_SSE_la_LIBADD    = $(davsyndrum_FPU_la_LIBADD)
 davsyndrum_SSE_la_CFLAGS    = $(SSE_PLUGIN_CFLAGS)
-
-
-## C Plugin davcanyondelay
-EXTRA_HEADERS      += davcanyondelay.h
-$(srcdir)/davcanyondelay.c: davcanyondelay.h
-plugin_FPU_ltlibs += davcanyondelay.FPU.la
-davcanyondelay_FPU_la_SOURCES = davcanyondelay.c
-davcanyondelay_FPU_la_LDFLAGS = -module $(plugins_ldflags)
-davcanyondelay_FPU_la_LIBADD  = $(plugins_libs)
-davcanyondelay_FPU_la_CFLAGS    = $(FPU_PLUGIN_CFLAGS)
-plugin_SSE_ltlibs   += davcanyondelay.SSE.la
-davcanyondelay_SSE_la_SOURCES   = $(davcanyondelay_FPU_la_SOURCES)
-davcanyondelay_SSE_la_LDFLAGS   = $(davcanyondelay_FPU_la_LDFLAGS)
-davcanyondelay_SSE_la_LIBADD    = $(davcanyondelay_FPU_la_LIBADD)
-davcanyondelay_SSE_la_CFLAGS    = $(SSE_PLUGIN_CFLAGS)

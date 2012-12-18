@@ -130,7 +130,7 @@ plugins/bsesequencer.cc
 plugins/bsesimpleadsr.cc
 plugins/bsesummation.idl
 plugins/davbassfilter.idl
-plugins/davcanyondelay.c
+plugins/davcanyondelay.cc
 plugins/davchorus.idl
 # plugins/davguitar.c
 plugins/davorgan.idl

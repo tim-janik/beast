@@ -23,7 +23,7 @@
 G_BEGIN_DECLS
 
 /* --- object type macros --- */
-#define DAV_TYPE_CANYON_DELAY              (BSE_EXPORT_TYPE_ID (DavCanyonDelay))
+#define DAV_TYPE_CANYON_DELAY              (dav_canyon_delay_get_type())
 #define DAV_CANYON_DELAY(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), DAV_TYPE_CANYON_DELAY, DavCanyonDelay))
 #define DAV_CANYON_DELAY_CLASS(class)      (G_TYPE_CHECK_CLASS_CAST ((class), DAV_TYPE_CANYON_DELAY, DavCanyonDelayClass))
 #define DAV_IS_CANYON_DELAY(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), DAV_TYPE_CANYON_DELAY))
