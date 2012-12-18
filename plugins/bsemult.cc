@@ -17,25 +17,22 @@
 #include "bsemult.h"
 
 #include <bse/bseengine.h>
+#include <bse/bsecxxplugin.hh>
 
 #include <string.h>
 
 /* --- prototypes --- */
 static void	 bse_mult_init			(BseMult	*mult);
-static void	 bse_mult_class_init		(BseMultClass	*class);
+static void	 bse_mult_class_init		(BseMultClass	*klass);
 static void	 bse_mult_context_create	(BseSource	*source,
 						 guint		 context_handle,
 						 BseTrans	*trans);
 
-
-/* --- Export to BSE --- */
+// == Type Registration ==
 #include "./icons/multiply.c"
-BSE_REGISTER_OBJECT (BseMult, BseSource, "/Modules/Routing/Multiply", "",
-                     "Mult is a channel multiplier for ring-modulating incoming signals",
-                     multiply_icon,
-                     bse_mult_class_init, NULL, bse_mult_init);
-BSE_DEFINE_EXPORTS ();
-
+BSE_RESIDENT_TYPE_DEF (BseMult, bse_mult, N_("Routing/Multiply"),
+                       "Mult is a channel multiplier for ring-modulating incoming signals",
+                       multiply_icon);
 
 /* --- variables --- */
 static gpointer		 parent_class = NULL;
@@ -43,18 +40,15 @@ static gpointer		 parent_class = NULL;
 
 /* --- functions --- */
 static void
-bse_mult_class_init (BseMultClass *class)
+bse_mult_class_init (BseMultClass *klass)
 {
-  BseObjectClass *object_class;
   BseSourceClass *source_class;
   guint ichannel, ochannel;
-  
+
   parent_class = g_type_class_peek (BSE_TYPE_SOURCE);
-  object_class = BSE_OBJECT_CLASS (class);
-  source_class = BSE_SOURCE_CLASS (class);
-  
+  source_class = BSE_SOURCE_CLASS (klass);
   source_class->context_create = bse_mult_context_create;
-  
+
   ichannel = bse_source_class_add_ichannel (source_class, "audio-in1", _("Audio In1"), _("Audio Input 1"));
   g_assert (ichannel == BSE_MULT_ICHANNEL_MONO1);
   ichannel = bse_source_class_add_ichannel (source_class, "audio-in2", _("Audio In2"), _("Audio Input 2"));

@@ -123,7 +123,7 @@ plugins/bsecontribsampleandhold.idl
 # plugins/bsefirfilter.c
 plugins/bseiirfilter.c
 plugins/bsemixer.cc
-plugins/bsemult.c
+plugins/bsemult.cc
 plugins/bsenoise.idl
 plugins/bsequantizer.idl
 plugins/bsesequencer.c

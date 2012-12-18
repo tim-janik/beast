@@ -128,21 +128,6 @@ bseiirfilter_SSE_la_LIBADD    = $(bseiirfilter_FPU_la_LIBADD)
 bseiirfilter_SSE_la_CFLAGS    = $(SSE_PLUGIN_CFLAGS)
 
 
-## C Plugin bsemult
-EXTRA_HEADERS      += bsemult.h
-$(srcdir)/bsemult.c: bsemult.h
-plugin_FPU_ltlibs += bsemult.FPU.la
-bsemult_FPU_la_SOURCES = bsemult.c
-bsemult_FPU_la_LDFLAGS = -module $(plugins_ldflags)
-bsemult_FPU_la_LIBADD  = $(plugins_libs)
-bsemult_FPU_la_CFLAGS    = $(FPU_PLUGIN_CFLAGS)
-plugin_SSE_ltlibs   += bsemult.SSE.la
-bsemult_SSE_la_SOURCES   = $(bsemult_FPU_la_SOURCES)
-bsemult_SSE_la_LDFLAGS   = $(bsemult_FPU_la_LDFLAGS)
-bsemult_SSE_la_LIBADD    = $(bsemult_FPU_la_LIBADD)
-bsemult_SSE_la_CFLAGS    = $(SSE_PLUGIN_CFLAGS)
-
-
 ## C Plugin bsesequencer
 EXTRA_HEADERS      += bsesequencer.h
 $(srcdir)/bsesequencer.c: bsesequencer.h
