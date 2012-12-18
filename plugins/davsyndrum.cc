@@ -52,13 +52,13 @@ static void dav_syn_drum_update_modules (DavSynDrum      *self,
 
 // == Type Registration ==
 #include "./icons/drum.c"
-BSE_RESIDENT_TYPE_DEF (DavSynDrum, dav_syn_drum, N_("Audio Sources/Synthetic Drum"),
-                       "DavSynDrum produces synthesized drums. It accepts the drum frequency as "
-                       "input channel or parameter setting. Drums are triggered through a trigger "
-                       "parameter or via a trigger input channel which detects raising edges. "
-                       "The initial frequency shift is controllable through the "
-                       "\"Ratio In\" input channel, and adjustable through a parameter.",
-                       drum_icon);
+BSE_RESIDENT_SOURCE_DEF (DavSynDrum, dav_syn_drum, N_("Audio Sources/Synthetic Drum"),
+                         "DavSynDrum produces synthesized drums. It accepts the drum frequency as "
+                         "input channel or parameter setting. Drums are triggered through a trigger "
+                         "parameter or via a trigger input channel which detects raising edges. "
+                         "The initial frequency shift is controllable through the "
+                         "\"Ratio In\" input channel, and adjustable through a parameter.",
+                         drum_icon);
 
 /* --- variables --- */
 static gpointer          parent_class = NULL;

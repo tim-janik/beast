@@ -49,7 +49,7 @@ extern ::BseExportIdentity bse_builtin_export_identity; /* sync with bseplugin.h
 #endif
 
 // == Resident Type Plugin Registration ==
-#define BSE_RESIDENT_TYPE_DEF(Object, func, category, blurb, icon)      \
+#define BSE_RESIDENT_SOURCE_DEF(Object, func, category, blurb, icon)    \
   static GType func##_get_type () {                                     \
     static const GTypeInfo type_info = {                                \
       sizeof (Object##Class),                                           \

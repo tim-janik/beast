@@ -51,10 +51,10 @@ static void	 bse_adder_update_modules	(BseAdder	*self,
 
 /* --- Export to BSE --- */
 #include "./icons/sum.c"
-BSE_RESIDENT_TYPE_DEF (BseAdder, bse_adder, N_("Routing/Adder"),
-                       "The Adder is a very simplisitic prototype mixer that just sums up "
-                       "incoming signals (it does allow for switching to subtract mode though)",
-                       sum_icon);
+BSE_RESIDENT_SOURCE_DEF (BseAdder, bse_adder, N_("Routing/Adder"),
+                         "The Adder is a very simplisitic prototype mixer that just sums up "
+                         "incoming signals (it does allow for switching to subtract mode though)",
+                         sum_icon);
 
 /* --- variables --- */
 static gpointer		 parent_class = NULL;

@@ -67,11 +67,11 @@ static void	   dav_xtal_strings_update_modules   (DavXtalStrings	   *self,
 
 // == Type Registration ==
 #include "./icons/strings.c"
-BSE_RESIDENT_TYPE_DEF (DavXtalStrings, dav_xtal_strings, N_("Audio Sources/XtalStrings"),
-                       "DavXtalStrings is a plucked string synthesizer, using the "
-                       "Karplus-Strong Algorithm. Commercial use of this module "
-                       "until 2004 requires a license from Stanford University.",
-                       strings_icon);
+BSE_RESIDENT_SOURCE_DEF (DavXtalStrings, dav_xtal_strings, N_("Audio Sources/XtalStrings"),
+                         "DavXtalStrings is a plucked string synthesizer, using the "
+                         "Karplus-Strong Algorithm. Commercial use of this module "
+                         "until 2004 requires a license from Stanford University.",
+                         strings_icon);
 
 /* --- variables --- */
 static gpointer	       parent_class = NULL;

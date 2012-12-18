@@ -30,9 +30,9 @@ static void	 bse_mult_context_create	(BseSource	*source,
 
 // == Type Registration ==
 #include "./icons/multiply.c"
-BSE_RESIDENT_TYPE_DEF (BseMult, bse_mult, N_("Routing/Multiply"),
-                       "Mult is a channel multiplier for ring-modulating incoming signals",
-                       multiply_icon);
+BSE_RESIDENT_SOURCE_DEF (BseMult, bse_mult, N_("Routing/Multiply"),
+                         "Mult is a channel multiplier for ring-modulating incoming signals",
+                         multiply_icon);
 
 /* --- variables --- */
 static gpointer		 parent_class = NULL;

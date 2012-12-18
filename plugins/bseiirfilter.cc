@@ -58,9 +58,9 @@ static void	   bse_iir_filter_update_modules	(BseIIRFilter		*filt);
 
 /* --- Export to BSE --- */
 #include "./icons/filter.c"
-BSE_RESIDENT_TYPE_DEF (BseIIRFilter, bse_iir_filter, N_("Filters/IIR Filter"),
-                       "BseIIRFilter is an infinite impulse response filter of variable order",
-                       filter_icon);
+BSE_RESIDENT_SOURCE_DEF (BseIIRFilter, bse_iir_filter, N_("Filters/IIR Filter"),
+                         "BseIIRFilter is an infinite impulse response filter of variable order",
+                         filter_icon);
 
 /* --- variables --- */
 static gpointer	       parent_class = NULL;

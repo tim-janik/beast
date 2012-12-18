@@ -50,10 +50,10 @@ static void	bse_free_verb_update_modules	(BseFreeVerb		*self);
 
 // == Type Registration ==
 #include "../icons/reverb.c"
-BSE_RESIDENT_TYPE_DEF (BseFreeVerb, bse_free_verb, N_("Filters/Free Verb"),
-                       "BseFreeVerb - Free, studio-quality reverb (SOURCE CODE in the public domain) "
-                       "Written by Jezar at Dreampoint - http://www.dreampoint.co.uk",
-                       reverb_icon);
+BSE_RESIDENT_SOURCE_DEF (BseFreeVerb, bse_free_verb, N_("Filters/Free Verb"),
+                         "BseFreeVerb - Free, studio-quality reverb (SOURCE CODE in the public domain) "
+                         "Written by Jezar at Dreampoint - http://www.dreampoint.co.uk",
+                         reverb_icon);
 
 /* --- variables --- */
 static gpointer        parent_class = NULL;
