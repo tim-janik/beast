@@ -131,7 +131,7 @@ GtkWidget*	gxk_file_selection_split	(GtkFileSelection	 *fs,
 
 /* --- GObject convenience --- */
 typedef struct {
-  gchar        *type_name;
+  const char   *type_name;
   GType         parent;
   GType        *type_id;
   gconstpointer type_data;	/* e.g. GEnumValue array */

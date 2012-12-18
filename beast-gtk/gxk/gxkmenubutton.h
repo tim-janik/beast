@@ -46,8 +46,8 @@ typedef struct {
   GxkAssortment *assortment_object;
   gint           icon_size, old_icon_size;
   gint           width, height;
-  guint8         mode;
-  guint8         relief;
+  GxkMenuButtonMode mode;
+  GtkReliefStyle    relief;
 } GxkMenuButton;
 typedef GtkEventBoxClass GxkMenuButtonClass;
 GType   gxk_menu_button_get_type          (void);

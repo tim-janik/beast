@@ -65,14 +65,14 @@ void	    gxk_stock_register_items	(guint			 n_items,
 
 
 /* --- internal --- */
-extern guint	gxk_size_button;
-extern guint	gxk_size_big_button;
-extern guint	gxk_size_canvas;
-extern guint	gxk_size_toolbar;
-extern guint	gxk_size_menu;
-extern guint	gxk_size_tabulator;
-extern guint	gxk_size_info_sign;
-extern guint	gxk_size_palette;
+extern GtkIconSize	gxk_size_button;
+extern GtkIconSize	gxk_size_big_button;
+extern GtkIconSize	gxk_size_canvas;
+extern GtkIconSize	gxk_size_toolbar;
+extern GtkIconSize	gxk_size_menu;
+extern GtkIconSize	gxk_size_tabulator;
+extern GtkIconSize	gxk_size_info_sign;
+extern GtkIconSize	gxk_size_palette;
 
 
 G_END_DECLS
