@@ -17,6 +17,7 @@
 #include "bsesequencer.h"
 
 #include <bse/bseengine.h>
+#include <bse/bsecxxplugin.hh>
 
 
 enum {
@@ -30,7 +31,7 @@ enum {
 
 /* --- prototypes --- */
 static void	bse_sequencer_init		(BseSequencer		*sequencer);
-static void	bse_sequencer_class_init	(BseSequencerClass	*class);
+static void	bse_sequencer_class_init	(BseSequencerClass	*klass);
 static void	bse_sequencer_finalize		(GObject		*object);
 static void	bse_sequencer_set_property	(BseSequencer           *sequencer,
 						 guint                   param_id,
@@ -47,15 +48,11 @@ static void	bse_sequencer_context_create	(BseSource		*source,
 static void	bse_sequencer_reset		(BseSource		*source);
 static void	bse_sequencer_update_modules	(BseSequencer		*seq);
 
-
-/* --- Export to BSE --- */
+// == Type Registration ==
 #include "./icons/sequencer.c"
-BSE_REGISTER_OBJECT (BseSequencer, BseSource, "/Modules/Other Sources/Sequencer", "",
-                     "The Sequencer produces a frequency signal according to a sequence of notes",
-                     sequencer_icon,
-                     bse_sequencer_class_init, NULL, bse_sequencer_init);
-BSE_DEFINE_EXPORTS ();
-
+BSE_RESIDENT_TYPE_DEF (BseSequencer, bse_sequencer, N_("Other Sources/Sequencer"),
+                       "The Sequencer produces a frequency signal according to a sequence of notes",
+                       sequencer_icon);
 
 /* --- variables --- */
 static gpointer		 parent_class = NULL;
@@ -63,14 +60,14 @@ static gpointer		 parent_class = NULL;
 
 /* --- functions --- */
 static void
-bse_sequencer_class_init (BseSequencerClass *class)
+bse_sequencer_class_init (BseSequencerClass *klass)
 {
-  GObjectClass *gobject_class = G_OBJECT_CLASS (class);
-  BseObjectClass *object_class = BSE_OBJECT_CLASS (class);
-  BseSourceClass *source_class = BSE_SOURCE_CLASS (class);
+  GObjectClass *gobject_class = G_OBJECT_CLASS (klass);
+  BseObjectClass *object_class = BSE_OBJECT_CLASS (klass);
+  BseSourceClass *source_class = BSE_SOURCE_CLASS (klass);
   guint ochannel;
   
-  parent_class = g_type_class_peek_parent (class);
+  parent_class = g_type_class_peek_parent (klass);
   
   gobject_class->set_property = (GObjectSetPropertyFunc) bse_sequencer_set_property;
   gobject_class->get_property = (GObjectGetPropertyFunc) bse_sequencer_get_property;
@@ -139,16 +136,16 @@ bse_sequencer_set_property (BseSequencer *seq,
     {
       BseNoteSequence *sdata;
     case PARAM_LENGTH:
-      if (sfi_value_get_int (value) != bse_note_sequence_length (seq->sdata))
+      if (sfi_value_get_int (value) != (int) bse_note_sequence_length (seq->sdata))
 	{
 	  bse_note_sequence_resize (seq->sdata, sfi_value_get_int (value));
 	  bse_sequencer_update_modules (seq);
-	  g_object_notify (seq, "notes");
+	  g_object_notify ((GObject*) seq, "notes");
 	}
       break;
     case PARAM_NOTES:
       bse_note_sequence_free (seq->sdata);
-      sdata = bse_value_get_boxed (value);
+      sdata = (BseNoteSequence*) bse_value_get_boxed (value);
       if (sdata)
 	{
 	  guint i, l, mnote = SFI_MAX_NOTE;
@@ -169,7 +166,7 @@ bse_sequencer_set_property (BseSequencer *seq,
 	  seq->sdata->offset = SFI_NOTE_C (SFI_KAMMER_OCTAVE);
 	}
       bse_sequencer_update_modules (seq);
-      g_object_notify (seq, "length");
+      g_object_notify ((GObject*) seq, "length");
       break;
     case PARAM_COUNTER:
       seq->counter = sfi_value_get_real (value);
@@ -250,9 +247,9 @@ static void
 seq_access (BseModule *module,
 	    gpointer   data)
 {
-  SeqModule *smod = module->user_data;
-  AccessData *d = data;
-  
+  SeqModule *smod = (SeqModule*) module->user_data;
+  AccessData *d = (AccessData*) data;
+
   smod->n_values = d->n_values;
   smod->values = d->new_values;
   smod->counter = d->counter;
@@ -265,8 +262,8 @@ seq_access (BseModule *module,
 static void
 seq_access_free (gpointer data)
 {
-  AccessData *d = data;
-  
+  AccessData *d = (AccessData*) data;
+
   g_free (d->old_values);
   g_free (d);
 }
@@ -298,7 +295,7 @@ static void
 sequencer_process (BseModule *module,
 		   guint      n_values)
 {
-  SeqModule *smod = module->user_data;
+  SeqModule *smod = (SeqModule*) module->user_data;
   gfloat *freq_out = BSE_MODULE_OBUFFER (module, BSE_SEQUENCER_OCHANNEL_FREQ);
   gfloat *nsync_out = BSE_MODULE_OBUFFER (module, BSE_SEQUENCER_OCHANNEL_NOTE_SYNC);
   gfloat *bound = freq_out + n_values;
@@ -347,13 +344,13 @@ bse_sequencer_context_create (BseSource *source,
     sequencer_process,		/* process */
     NULL,                       /* process_defer */
     NULL,                       /* reset */
-    (gpointer) g_free,		/* free */
+    (BseModuleFreeFunc) g_free,	/* free */
     BSE_COST_CHEAP,		/* flags */
   };
   BseSequencer *seq = BSE_SEQUENCER (source);
   SeqModule *smod = g_new0 (SeqModule, 1);
   BseModule *module;
-  
+
   smod->n_values = seq->n_freq_values;
   smod->values = seq->freq_values;
   smod->counter = seq->counter / 1000.0 * bse_engine_sample_freq ();

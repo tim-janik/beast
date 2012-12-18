@@ -128,21 +128,6 @@ bseiirfilter_SSE_la_LIBADD    = $(bseiirfilter_FPU_la_LIBADD)
 bseiirfilter_SSE_la_CFLAGS    = $(SSE_PLUGIN_CFLAGS)
 
 
-## C Plugin bsesequencer
-EXTRA_HEADERS      += bsesequencer.h
-$(srcdir)/bsesequencer.c: bsesequencer.h
-plugin_FPU_ltlibs += bsesequencer.FPU.la
-bsesequencer_FPU_la_SOURCES = bsesequencer.c
-bsesequencer_FPU_la_LDFLAGS = -module $(plugins_ldflags)
-bsesequencer_FPU_la_LIBADD  = $(plugins_libs)
-bsesequencer_FPU_la_CFLAGS    = $(FPU_PLUGIN_CFLAGS)
-plugin_SSE_ltlibs   += bsesequencer.SSE.la
-bsesequencer_SSE_la_SOURCES   = $(bsesequencer_FPU_la_SOURCES)
-bsesequencer_SSE_la_LDFLAGS   = $(bsesequencer_FPU_la_LDFLAGS)
-bsesequencer_SSE_la_LIBADD    = $(bsesequencer_FPU_la_LIBADD)
-bsesequencer_SSE_la_CFLAGS    = $(SSE_PLUGIN_CFLAGS)
-
-
 ## C Plugin davxtalstrings
 EXTRA_HEADERS      += davxtalstrings.h
 $(srcdir)/davxtalstrings.c: davxtalstrings.h

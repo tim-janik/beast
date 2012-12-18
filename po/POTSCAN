@@ -126,7 +126,7 @@ plugins/bsemixer.cc
 plugins/bsemult.cc
 plugins/bsenoise.idl
 plugins/bsequantizer.idl
-plugins/bsesequencer.c
+plugins/bsesequencer.cc
 plugins/bsesimpleadsr.cc
 plugins/bsesummation.idl
 plugins/davbassfilter.idl
