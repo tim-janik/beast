@@ -117,17 +117,17 @@ library/scripts/song-parts-operations.scm
 plugins/artscompressor.idl
 plugins/bseadder.cc
 plugins/bseamplifier.idl
-plugins/bseatandistort.c
+plugins/bseatandistort.cc
 plugins/bsebalance.idl
 plugins/bsecontribsampleandhold.idl
 # plugins/bsefirfilter.c
 plugins/bseiirfilter.c
-plugins/bsemixer.c
+plugins/bsemixer.cc
 plugins/bsemult.c
 plugins/bsenoise.idl
 plugins/bsequantizer.idl
 plugins/bsesequencer.c
-plugins/bsesimpleadsr.c
+plugins/bsesimpleadsr.cc
 plugins/bsesummation.idl
 plugins/davbassfilter.idl
 plugins/davcanyondelay.c
