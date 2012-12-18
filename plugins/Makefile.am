@@ -27,7 +27,7 @@ idl_plugins = $(strip			\
 	davchorus.idl			\
 	davorgan.idl			\
 )
-EXTRA_HEADERS += $(filter-out +++%, $(idl_plugins))
+EXTRA_DIST += $(filter-out +++%, $(idl_plugins))
 # setup generation of C++ plugins from idl files
 SFIDL = ../sfi/sfidl
 SFIDL_INC = --nostdinc -I$(top_srcdir) -I$(top_builddir)
@@ -56,11 +56,6 @@ cxxplugins_SSE_la_CXXFLAGS = $(SSE_PLUGIN_CXXFLAGS)
 UNPORTED = $(strip		\
 	bsefirfilter.[hc]	\
 	davguitar.[hc]		\
-)
-cglob_plugins = $(strip		\
-)
-EXTRA_DIST += $(strip \
-        $(EXTRA_HEADERS) \
 )
 
 # === plugin build rule setup ===
@@ -130,33 +125,6 @@ refresh-Makefile.plugins: Makefile.am Makefile.in Makefile
 	  echo '$$(srcdir)/'"$$name.cc: $$name.genidl.hh # $$libname"		>>xgen-$(@F)	;\
 	  echo "plugins_built_sources      += $$name.genidl.hh"			>>xgen-$(@F)	;\
 	  echo "$$libname"'_FPU_la_SOURCES += '"$$name.cc"			>>xgen-$(@F)	;\
-	done
-	: # generate C plugin rules
-	for wcfile in $(filter %.c, $(wildcard $(cglob_plugins))) ; do				 \
-	  name=`echo $$wcfile | sed 's/.c$$//' `						;\
-	  _name=`echo $$name | sed 's/[^A-Za-z0-9]/_/g' `					;\
-	  cfile="$$name.c"									;\
-	  hfile="$$name.h"									;\
-	  test -e "$$cfile" || 									 \
-	    { echo "$$cfile: No such file" >&2 ; exit 1 ; } 					;\
-	  grep -qE "BSE_EXPORTS_BEGIN|BSE_DEFINE_EXPORTS" $$cfile ||  				 \
-	    { echo "$$cfile: missing BSE_DEFINE_EXPORTS() directive" >&2 ; exit 1 ; }		;\
-	  echo									>>xgen-$(@F)	;\
-	  echo -e "\n## C Plugin $$name"					>>xgen-$(@F) 	;\
-	  test -e "$$hfile" && {								 \
-	    echo "EXTRA_HEADERS      += $$hfile"				>>xgen-$(@F)	;\
-	    echo '$$(srcdir)/'"$$cfile: $$hfile"				>>xgen-$(@F)	;\
-	  }											;\
-	  echo "plugin_FPU_ltlibs += $$name.FPU.la"				>>xgen-$(@F)	;\
-	  echo "$$_name"'_FPU_la_SOURCES = '"$$cfile"				>>xgen-$(@F)	;\
-	  echo "$$_name"'_FPU_la_LDFLAGS = -module $$(plugins_ldflags)'		>>xgen-$(@F)	;\
-	  echo "$$_name"'_FPU_la_LIBADD  = $$(plugins_libs)'			>>xgen-$(@F)	;\
-	  echo "$$_name"'_FPU_la_CFLAGS    = $$(FPU_PLUGIN_CFLAGS)'		>>xgen-$(@F)	;\
-	  echo "plugin_SSE_ltlibs   += $$name.SSE.la"				>>xgen-$(@F)	;\
-	  echo "$$_name"'_SSE_la_SOURCES   = $$('"$$_name"'_FPU_la_SOURCES)'	>>xgen-$(@F)	;\
-	  echo "$$_name"'_SSE_la_LDFLAGS   = $$('"$$_name"'_FPU_la_LDFLAGS)'	>>xgen-$(@F)	;\
-	  echo "$$_name"'_SSE_la_LIBADD    = $$('"$$_name"'_FPU_la_LIBADD)'	>>xgen-$(@F)	;\
-	  echo "$$_name"'_SSE_la_CFLAGS    = $$(SSE_PLUGIN_CFLAGS)'		>>xgen-$(@F)	;\
 	done
 	: # move Makefile.plugins in place
 	cp xgen-$(@F) Makefile.plugins
