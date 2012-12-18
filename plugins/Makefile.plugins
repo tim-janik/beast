@@ -126,18 +126,3 @@ davxtalstrings_SSE_la_SOURCES   = $(davxtalstrings_FPU_la_SOURCES)
 davxtalstrings_SSE_la_LDFLAGS   = $(davxtalstrings_FPU_la_LDFLAGS)
 davxtalstrings_SSE_la_LIBADD    = $(davxtalstrings_FPU_la_LIBADD)
 davxtalstrings_SSE_la_CFLAGS    = $(SSE_PLUGIN_CFLAGS)
-
-
-## C Plugin davsyndrum
-EXTRA_HEADERS      += davsyndrum.h
-$(srcdir)/davsyndrum.c: davsyndrum.h
-plugin_FPU_ltlibs += davsyndrum.FPU.la
-davsyndrum_FPU_la_SOURCES = davsyndrum.c
-davsyndrum_FPU_la_LDFLAGS = -module $(plugins_ldflags)
-davsyndrum_FPU_la_LIBADD  = $(plugins_libs)
-davsyndrum_FPU_la_CFLAGS    = $(FPU_PLUGIN_CFLAGS)
-plugin_SSE_ltlibs   += davsyndrum.SSE.la
-davsyndrum_SSE_la_SOURCES   = $(davsyndrum_FPU_la_SOURCES)
-davsyndrum_SSE_la_LDFLAGS   = $(davsyndrum_FPU_la_LDFLAGS)
-davsyndrum_SSE_la_LIBADD    = $(davsyndrum_FPU_la_LIBADD)
-davsyndrum_SSE_la_CFLAGS    = $(SSE_PLUGIN_CFLAGS)
