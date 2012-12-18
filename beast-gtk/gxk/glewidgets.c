@@ -117,17 +117,17 @@ gtk_wrap_box_get_type (void)
 }
 
 static void
-gtk_wrap_box_class_init (GtkWrapBoxClass *class)
+gtk_wrap_box_class_init (GtkWrapBoxClass *klass)
 {
   GtkObjectClass *object_class;
   GtkWidgetClass *widget_class;
   GtkContainerClass *container_class;
   
-  object_class = GTK_OBJECT_CLASS (class);
-  widget_class = GTK_WIDGET_CLASS (class);
-  container_class = GTK_CONTAINER_CLASS (class);
+  object_class = GTK_OBJECT_CLASS (klass);
+  widget_class = GTK_WIDGET_CLASS (klass);
+  container_class = GTK_CONTAINER_CLASS (klass);
   
-  parent_gtkwrapbox_class = g_type_class_peek_parent (class);
+  parent_gtkwrapbox_class = g_type_class_peek_parent (klass);
   
   object_class->set_arg = gtk_wrap_box_set_arg;
   object_class->get_arg = gtk_wrap_box_get_arg;
@@ -143,7 +143,7 @@ gtk_wrap_box_class_init (GtkWrapBoxClass *class)
   container_class->set_child_property = gtk_wrap_box_set_child_property;
   container_class->get_child_property = gtk_wrap_box_get_child_property;
 
-  class->rlist_line_children = NULL;
+  klass->rlist_line_children = NULL;
   
   gtk_object_add_arg_type ("GtkWrapBox::homogeneous",
 			   GTK_TYPE_BOOL, GTK_ARG_READWRITE, ARG__gtkwrapbox_HOMOGENEOUS);
@@ -875,17 +875,17 @@ gtk_hwrap_box_get_type (void)
 }
 
 static void
-gtk_hwrap_box_class_init (GtkHWrapBoxClass *class)
+gtk_hwrap_box_class_init (GtkHWrapBoxClass *klass)
 {
   GtkObjectClass *object_class;
   GtkWidgetClass *widget_class;
   GtkContainerClass *container_class;
   GtkWrapBoxClass *wrap_box_class;
   
-  object_class = GTK_OBJECT_CLASS (class);
-  widget_class = GTK_WIDGET_CLASS (class);
-  container_class = GTK_CONTAINER_CLASS (class);
-  wrap_box_class = GTK_WRAP_BOX_CLASS (class);
+  object_class = GTK_OBJECT_CLASS (klass);
+  widget_class = GTK_WIDGET_CLASS (klass);
+  container_class = GTK_CONTAINER_CLASS (klass);
+  wrap_box_class = GTK_WRAP_BOX_CLASS (klass);
   
   parent_gtkhwrapbox_class = gtk_type_class (GTK_TYPE_WRAP_BOX);
   
@@ -1530,17 +1530,17 @@ gtk_vwrap_box_get_type (void)
 }
 
 static void
-gtk_vwrap_box_class_init (GtkVWrapBoxClass *class)
+gtk_vwrap_box_class_init (GtkVWrapBoxClass *klass)
 {
   GtkObjectClass *object_class;
   GtkWidgetClass *widget_class;
   GtkContainerClass *container_class;
   GtkWrapBoxClass *wrap_box_class;
   
-  object_class = GTK_OBJECT_CLASS (class);
-  widget_class = GTK_WIDGET_CLASS (class);
-  container_class = GTK_CONTAINER_CLASS (class);
-  wrap_box_class = GTK_WRAP_BOX_CLASS (class);
+  object_class = GTK_OBJECT_CLASS (klass);
+  widget_class = GTK_WIDGET_CLASS (klass);
+  container_class = GTK_CONTAINER_CLASS (klass);
+  wrap_box_class = GTK_WRAP_BOX_CLASS (klass);
   
   parent_gtkvwrapbox_class = gtk_type_class (GTK_TYPE_WRAP_BOX);
   
