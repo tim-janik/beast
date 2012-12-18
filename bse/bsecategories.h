@@ -40,11 +40,9 @@ BseCategorySeq* bse_categories_match_typed     (const gchar      *pattern,
                                                 GType             base_type);
 BseCategorySeq* bse_categories_from_type       (GType             type);
 BseCategory*    bse_category_from_id           (guint             id);
-#ifdef BSE_COMPILATION
 void      bse_categories_register_stock_module (const gchar      *untranslated_category_trunk,
                                                 GType             type,
                                                 const guint8     *pixstream);
-#endif
 
 
 /* --- implementation --- */

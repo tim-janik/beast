@@ -18,6 +18,7 @@
 #include "davcanyondelay.h"
 
 #include <bse/bseengine.h>
+#include <bse/bsecxxplugin.hh>
 #include <bse/bsemathsignal.h>
 #include <string.h>
 
@@ -37,7 +38,7 @@ enum
 
 /* --- prototypes --- */
 static void dav_canyon_delay_init           (DavCanyonDelay      *self);
-static void dav_canyon_delay_class_init     (DavCanyonDelayClass *class);
+static void dav_canyon_delay_class_init     (DavCanyonDelayClass *klass);
 static void dav_canyon_delay_set_property   (GObject             *object,
                                              guint                param_id,
                                              const GValue        *value,
@@ -52,15 +53,11 @@ static void dav_canyon_delay_context_create (BseSource           *source,
                                              BseTrans            *trans);
 static void dav_canyon_delay_update_modules (DavCanyonDelay      *self);
 
-
-/* --- Export to DAV --- */
+// == Type Registration ==
 #include "./icons/canyon.c"
-BSE_REGISTER_OBJECT (DavCanyonDelay, BseSource, "/Modules/Enhance/CanyonDelay", "",
-                     "DavCanyonDelay adds deep and long canyon-alike echos to stereo signals.",
-                     canyon_icon,
-                     dav_canyon_delay_class_init, NULL, dav_canyon_delay_init);
-BSE_DEFINE_EXPORTS ();
-
+BSE_RESIDENT_SOURCE_DEF (DavCanyonDelay, dav_canyon_delay, N_("Enhance/CanyonDelay"),
+                         "DavCanyonDelay adds deep and long canyon-alike echos to stereo signals.",
+                         canyon_icon);
 
 /* --- variables --- */
 static gpointer          parent_class = NULL;
@@ -68,14 +65,14 @@ static gpointer          parent_class = NULL;
 
 /* --- functions --- */
 static void
-dav_canyon_delay_class_init (DavCanyonDelayClass *class)
+dav_canyon_delay_class_init (DavCanyonDelayClass *klass)
 {
-  GObjectClass *gobject_class = G_OBJECT_CLASS (class);
-  BseObjectClass *object_class = BSE_OBJECT_CLASS (class);
-  BseSourceClass *source_class = BSE_SOURCE_CLASS (class);
+  GObjectClass *gobject_class = G_OBJECT_CLASS (klass);
+  BseObjectClass *object_class = BSE_OBJECT_CLASS (klass);
+  BseSourceClass *source_class = BSE_SOURCE_CLASS (klass);
   guint channel;
 
-  parent_class = g_type_class_peek_parent (class);
+  parent_class = g_type_class_peek_parent (klass);
   
   gobject_class->set_property = dav_canyon_delay_set_property;
   gobject_class->get_property = dav_canyon_delay_get_property;
@@ -158,11 +155,11 @@ dav_canyon_delay_set_property (GObject             *object,
       break;
     case PROP_FILTER_FREQ:
       self->filter_freq = sfi_value_get_real (value);
-      g_object_notify (self, "filter-note");
+      g_object_notify ((GObject*) self, "filter-note");
       break;
     case PROP_FILTER_NOTE:
       self->filter_freq = bse_note_to_freq (bse_item_current_musical_tuning (BSE_ITEM (self)), sfi_value_get_note (value));
-      g_object_notify (self, "filter-freq");
+      g_object_notify ((GObject*) self, "filter-freq");
       break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (self, param_id, pspec);
@@ -220,7 +217,7 @@ static void
 canyon_delay_process (BseModule *module,
                       guint      n_values)
 {
-  DavCanyonDelayModule *cmod = module->user_data;
+  DavCanyonDelayModule *cmod = (DavCanyonDelayModule*) module->user_data;
   const gfloat *left_in = BSE_MODULE_IBUFFER (module, DAV_CANYON_DELAY_ICHANNEL_LEFT);
   const gfloat *right_in = BSE_MODULE_IBUFFER (module, DAV_CANYON_DELAY_ICHANNEL_RIGHT);
   gfloat *left_out = BSE_MODULE_OBUFFER (module, DAV_CANYON_DELAY_OCHANNEL_LEFT);
@@ -272,7 +269,7 @@ canyon_delay_process (BseModule *module,
 static void
 canyon_delay_reset (BseModule *module)
 {
-  DavCanyonDelayModule *cmod = module->user_data;
+  DavCanyonDelayModule *cmod = (DavCanyonDelayModule*) module->user_data;
   cmod->pos = 0;
   cmod->accum_l = 0;
   cmod->accum_r = 0;
@@ -284,7 +281,7 @@ static void
 canyon_delay_free (gpointer        data,
                    const BseModuleClass *klass)
 {
-  DavCanyonDelayModule *cmod = data;
+  DavCanyonDelayModule *cmod = (DavCanyonDelayModule*) data;
   /* Free tables */
   g_free (cmod->data_l);
   g_free (cmod->data_r);
@@ -331,8 +328,8 @@ static void
 canyon_delay_access (BseModule *module,
                      gpointer   data)
 {
-  DavCanyonDelayModule *cmod = module->user_data;
-  DavCanyonDelayParams *params = data;
+  DavCanyonDelayModule *cmod = (DavCanyonDelayModule*) module->user_data;
+  DavCanyonDelayParams *params = (DavCanyonDelayParams*) data;
 
   cmod->params = *params;
 }

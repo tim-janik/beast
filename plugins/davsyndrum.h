@@ -24,7 +24,7 @@ G_BEGIN_DECLS
 
 
 /* --- object type macros --- */
-#define DAV_TYPE_SYN_DRUM              (BSE_EXPORT_TYPE_ID (DavSynDrum))
+#define DAV_TYPE_SYN_DRUM              (dav_syn_drum_get_type())
 #define DAV_SYN_DRUM(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), DAV_TYPE_SYN_DRUM, DavSynDrum))
 #define DAV_SYN_DRUM_CLASS(class)      (G_TYPE_CHECK_CLASS_CAST ((class), DAV_TYPE_SYN_DRUM, DavSynDrumClass))
 #define DAV_IS_SYN_DRUM(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), DAV_TYPE_SYN_DRUM))

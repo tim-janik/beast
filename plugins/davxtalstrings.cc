@@ -23,7 +23,7 @@
  * expired in May of 2004.
  */
 #include "davxtalstrings.h"
-
+#include <bse/bsecxxplugin.hh>
 #include <bse/bseengine.h>
 #include <bse/bsemathsignal.h>
 #include <bse/bsemain.h>
@@ -49,7 +49,7 @@ enum
 
 /* --- prototypes --- */
 static void	   dav_xtal_strings_init	     (DavXtalStrings	   *self);
-static void	   dav_xtal_strings_class_init	     (DavXtalStringsClass  *class);
+static void	   dav_xtal_strings_class_init	     (DavXtalStringsClass  *klass);
 static void	   dav_xtal_strings_set_property     (GObject              *object,
 						      guint                 param_id,
 						      const GValue         *value,
@@ -65,17 +65,13 @@ static void	   dav_xtal_strings_context_create   (BseSource		   *source,
 static void	   dav_xtal_strings_update_modules   (DavXtalStrings	   *self,
 						      gboolean		    trigger_now);
 
-
-/* --- Export to BSE --- */
+// == Type Registration ==
 #include "./icons/strings.c"
-BSE_REGISTER_OBJECT (DavXtalStrings, BseSource, "/Modules/Audio Sources/XtalStrings", "",
-                     "DavXtalStrings is a plucked string synthesizer, using the "
-                     "Karplus-Strong Algorithm. Commercial use of this module "
-                     "until 2004 requires a license from Stanford University.",
-                     strings_icon,
-                     dav_xtal_strings_class_init, NULL, dav_xtal_strings_init);
-BSE_DEFINE_EXPORTS ();
-
+BSE_RESIDENT_SOURCE_DEF (DavXtalStrings, dav_xtal_strings, N_("Audio Sources/XtalStrings"),
+                         "DavXtalStrings is a plucked string synthesizer, using the "
+                         "Karplus-Strong Algorithm. Commercial use of this module "
+                         "until 2004 requires a license from Stanford University.",
+                         strings_icon);
 
 /* --- variables --- */
 static gpointer	       parent_class = NULL;
@@ -83,14 +79,14 @@ static gpointer	       parent_class = NULL;
 
 /* --- functions --- */
 static void
-dav_xtal_strings_class_init (DavXtalStringsClass *class)
+dav_xtal_strings_class_init (DavXtalStringsClass *klass)
 {
-  GObjectClass *gobject_class = G_OBJECT_CLASS (class);
-  BseObjectClass *object_class = BSE_OBJECT_CLASS (class);
-  BseSourceClass *source_class = BSE_SOURCE_CLASS (class);
+  GObjectClass *gobject_class = G_OBJECT_CLASS (klass);
+  BseObjectClass *object_class = BSE_OBJECT_CLASS (klass);
+  BseSourceClass *source_class = BSE_SOURCE_CLASS (klass);
   guint channel_id;
   
-  parent_class = g_type_class_peek_parent (class);
+  parent_class = g_type_class_peek_parent (klass);
   
   gobject_class->set_property = dav_xtal_strings_set_property;
   gobject_class->get_property = dav_xtal_strings_get_property;
@@ -352,9 +348,6 @@ static inline void
 xmod_trigger (XtalStringsModule *xmod,
 	      gdouble            untransposed_trigger_freq)
 {
-  guint i;
-  guint pivot;
-
   /* calculate transposed trigger frequency; the "real frequency" that will
    * be played, including detuning and transpose operations
    */
@@ -372,7 +365,8 @@ xmod_trigger (XtalStringsModule *xmod,
   xmod->damping_factor = calc_factor (trigger_freq, xmod->tparams.note_decay);
   
   /* Create envelope. */
-  pivot = xmod->size / 5;
+  int pivot = xmod->size / 5;
+  int i;
   for (i = 0; i <= pivot; i++)
     xmod->string[i] = ((float) i) / pivot;
   for (; i < xmod->size; i++)
@@ -397,7 +391,7 @@ static void
 xmod_process (BseModule *module,
 	      guint      n_values)
 {
-  XtalStringsModule *xmod = module->user_data;
+  XtalStringsModule *xmod = (XtalStringsModule*) module->user_data;
   const gfloat *freq_in, *trigger_in = BSE_MODULE_IBUFFER (module, DAV_XTAL_STRINGS_ICHANNEL_TRIGGER);
   gfloat *wave_out = BSE_MODULE_OBUFFER (module, DAV_XTAL_STRINGS_OCHANNEL_MONO);
   gint32 pos2;
@@ -460,7 +454,7 @@ xmod_process (BseModule *module,
 static void
 xmod_reset (BseModule *module)
 {
-  XtalStringsModule *xmod = module->user_data;
+  XtalStringsModule *xmod = (XtalStringsModule*) module->user_data;
   
   /* this function is called whenever we need to start from scratch */
   memset (xmod->string, 0, STRING_LENGTH () * sizeof (xmod->string[0]));
@@ -477,7 +471,7 @@ static void
 xmod_free (gpointer        data,
 	   const BseModuleClass *klass)
 {
-  XtalStringsModule *xmod = data;
+  XtalStringsModule *xmod = (XtalStringsModule*) data;
   
   g_free (xmod->string);
   g_free (xmod);
@@ -523,8 +517,8 @@ static void
 xmod_access (BseModule *module,
 	     gpointer   data)
 {
-  XtalStringsModule *xmod = module->user_data;
-  DavXtalStringsParams *params = data;
+  XtalStringsModule *xmod = (XtalStringsModule*) module->user_data;
+  DavXtalStringsParams *params = (DavXtalStringsParams*) data;
   
   xmod->tparams = *params;
   if (params->trigger_now)

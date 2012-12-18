@@ -15,9 +15,9 @@
  * with this library; if not, see http://www.gnu.org/copyleft/.
  */
 #include "bseiirfilter.h"
-
 #include <bse/bseengine.h>
 #include <bse/gslfilter.h>
+#include <bse/bsecxxplugin.hh>
 
 #include <string.h>
 
@@ -40,7 +40,7 @@ enum
 
 /* --- prototypes --- */
 static void	   bse_iir_filter_init			(BseIIRFilter		*iir_filter);
-static void	   bse_iir_filter_class_init		(BseIIRFilterClass	*class);
+static void	   bse_iir_filter_class_init		(BseIIRFilterClass	*klass);
 static void	   bse_iir_filter_set_property		(GObject		*object,
 							 guint			 param_id,
 							 const GValue		*value,
@@ -57,41 +57,10 @@ static void	   bse_iir_filter_update_modules	(BseIIRFilter		*filt);
 
 
 /* --- Export to BSE --- */
-#define BSE_TYPE_IIR_FILTER_ALGORITHM   (BSE_EXPORT_TYPE_ID (BseIIRFilterAlgorithm))
-static GEnumValue bse_iir_filter_algorithm_values[] = {
-  { BSE_IIR_FILTER_BUTTERWORTH, "BSE_IIR_FILTER_BUTTERWORTH", "butterworth" },
-  { BSE_IIR_FILTER_CHEBYCHEFF1, "BSE_IIR_FILTER_CHEBYCHEFF1", "chebycheff1" },
-  { BSE_IIR_FILTER_CHEBYCHEFF2, "BSE_IIR_FILTER_CHEBYCHEFF2", "chebycheff2" },
-  { 0, NULL, NULL }
-};
-static GEnumValue* return_bse_iir_filter_algorithm_values (void) { return bse_iir_filter_algorithm_values; }
-static BseExportNodeEnum __enode_BseIIRFilterAlgorithm = {
-  { NULL,
-    BSE_EXPORT_NODE_ENUM, "BseIIRFilterAlgorithm", },
-  return_bse_iir_filter_algorithm_values,
-};
-#define BSE_TYPE_IIR_FILTER_TYPE        (BSE_EXPORT_TYPE_ID (BseIIRFilterType))
-static GEnumValue bse_iir_filter_type_values[] = {
-  { BSE_IIR_FILTER_LOW_PASS, "BSE_IIR_FILTER_LOW_PASS", "low-pass" },
-  { BSE_IIR_FILTER_HIGH_PASS, "BSE_IIR_FILTER_HIGH_PASS", "high-pass" },
-  { BSE_IIR_FILTER_BAND_PASS, "BSE_IIR_FILTER_BAND_PASS", "band-pass" },
-  { BSE_IIR_FILTER_BAND_STOP, "BSE_IIR_FILTER_BAND_STOP", "band-stop" },
-  { 0, NULL, NULL }
-};
-static GEnumValue* return_bse_iir_filter_type_values (void) { return bse_iir_filter_type_values; }
-static BseExportNodeEnum __enode_BseIIRFilterType = {
-  { (BseExportNode*) &__enode_BseIIRFilterAlgorithm,
-    BSE_EXPORT_NODE_ENUM, "BseIIRFilterType", },
-  return_bse_iir_filter_type_values,
-};
 #include "./icons/filter.c"
-BSE_REGISTER_OBJECT_P ((BseExportNode*) &__enode_BseIIRFilterType,
-                       BseIIRFilter, BseSource, "/Modules/Filters/IIR Filter", "",
-                       "BseIIRFilter is an infinite impulse response filter of variable order",
-                       filter_icon,
-                       bse_iir_filter_class_init, NULL, bse_iir_filter_init);
-BSE_DEFINE_EXPORTS ();
-
+BSE_RESIDENT_SOURCE_DEF (BseIIRFilter, bse_iir_filter, N_("Filters/IIR Filter"),
+                         "BseIIRFilter is an infinite impulse response filter of variable order",
+                         filter_icon);
 
 /* --- variables --- */
 static gpointer	       parent_class = NULL;
@@ -99,14 +68,14 @@ static gpointer	       parent_class = NULL;
 
 /* --- functions --- */
 static void
-bse_iir_filter_class_init (BseIIRFilterClass *class)
+bse_iir_filter_class_init (BseIIRFilterClass *klass)
 {
-  GObjectClass *gobject_class = G_OBJECT_CLASS (class);
-  BseObjectClass *object_class = BSE_OBJECT_CLASS (class);
-  BseSourceClass *source_class = BSE_SOURCE_CLASS (class);
+  GObjectClass *gobject_class = G_OBJECT_CLASS (klass);
+  BseObjectClass *object_class = BSE_OBJECT_CLASS (klass);
+  BseSourceClass *source_class = BSE_SOURCE_CLASS (klass);
   guint ochannel_id, ichannel_id;
   
-  parent_class = g_type_class_peek_parent (class);
+  parent_class = g_type_class_peek_parent (klass);
   
   gobject_class->set_property = bse_iir_filter_set_property;
   gobject_class->get_property = bse_iir_filter_get_property;
@@ -174,7 +143,6 @@ bse_iir_filter_init (BseIIRFilter *filt)
   filt->epsilon = 0.1;
   filt->cut_off_freq1 = BSE_KAMMER_FREQUENCY / 2;
   filt->cut_off_freq2 = filt->cut_off_freq1 + FREQ_DELTA;
-  filt->filter_type = BSE_IIR_FILTER_BUTTERWORTH;
   bse_iir_filter_update_modules (filt);
 }
 
@@ -189,12 +157,12 @@ bse_iir_filter_set_property (GObject	  *object,
   switch (param_id)
     {
     case PARAM_FILTER_ALGO:
-      self->filter_algo = g_value_get_enum (value);
+      self->filter_algo = (BseIIRFilterAlgorithm) g_value_get_enum (value);
       self->algo_type_change = TRUE;
       bse_iir_filter_update_modules (self);
       break;
     case PARAM_FILTER_TYPE:
-      self->filter_type = g_value_get_enum (value);
+      self->filter_type = (BseIIRFilterType) g_value_get_enum (value);
       self->algo_type_change = TRUE;
       bse_iir_filter_update_modules (self);
       break;
@@ -211,11 +179,11 @@ bse_iir_filter_set_property (GObject	  *object,
       if (self->cut_off_freq1 + FREQ_DELTA > self->cut_off_freq2)
 	{
 	  self->cut_off_freq2 = self->cut_off_freq1 + FREQ_DELTA;
-	  g_object_notify (self, "cut_off_freq_2");
-	  g_object_notify (self, "cut_off_note_2");
+	  g_object_notify ((GObject*) self, "cut_off_freq_2");
+	  g_object_notify ((GObject*) self, "cut_off_note_2");
 	}
       bse_iir_filter_update_modules (self);
-      g_object_notify (self, "cut_off_note");
+      g_object_notify ((GObject*) self, "cut_off_note");
       break;
     case PARAM_CUT_OFF_NOTE1:
       self->cut_off_freq1 = bse_note_to_freq (bse_item_current_musical_tuning (BSE_ITEM (self)), sfi_value_get_note (value));
@@ -223,22 +191,22 @@ bse_iir_filter_set_property (GObject	  *object,
       if (self->cut_off_freq1 + FREQ_DELTA > self->cut_off_freq2)
 	{
 	  self->cut_off_freq2 = self->cut_off_freq1 + FREQ_DELTA;
-	  g_object_notify (self, "cut_off_freq_2");
-	  g_object_notify (self, "cut_off_note_2");
+	  g_object_notify ((GObject*) self, "cut_off_freq_2");
+	  g_object_notify ((GObject*) self, "cut_off_note_2");
 	}
       bse_iir_filter_update_modules (self);
-      g_object_notify (self, "cut_off_freq");
+      g_object_notify ((GObject*) self, "cut_off_freq");
       break;
     case PARAM_CUT_OFF_FREQ2:
       self->cut_off_freq2 = sfi_value_get_real (value);
       if (self->cut_off_freq1 + FREQ_DELTA > self->cut_off_freq2)
 	{
 	  self->cut_off_freq1 = self->cut_off_freq2 - FREQ_DELTA;
-	  g_object_notify (self, "cut_off_freq");
-	  g_object_notify (self, "cut_off_note");
+	  g_object_notify ((GObject*) self, "cut_off_freq");
+	  g_object_notify ((GObject*) self, "cut_off_note");
 	}
       bse_iir_filter_update_modules (self);
-      g_object_notify (self, "cut_off_note_2");
+      g_object_notify ((GObject*) self, "cut_off_note_2");
       break;
     case PARAM_CUT_OFF_NOTE2:
       self->cut_off_freq2 = bse_note_to_freq (bse_item_current_musical_tuning (BSE_ITEM (self)), sfi_value_get_note (value));
@@ -246,11 +214,11 @@ bse_iir_filter_set_property (GObject	  *object,
       if (self->cut_off_freq1 + FREQ_DELTA > self->cut_off_freq2)
 	{
 	  self->cut_off_freq1 = self->cut_off_freq2 - FREQ_DELTA;
-	  g_object_notify (self, "cut_off_freq");
-	  g_object_notify (self, "cut_off_note");
+	  g_object_notify ((GObject*) self, "cut_off_freq");
+	  g_object_notify ((GObject*) self, "cut_off_note");
 	}
       bse_iir_filter_update_modules (self);
-      g_object_notify (self, "cut_off_freq_2");
+      g_object_notify ((GObject*) self, "cut_off_freq_2");
       break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (self, param_id, pspec);
@@ -319,9 +287,9 @@ static void
 iir_filter_access (BseModule *module,
 		   gpointer   data)
 {
-  FilterModule *fmod = module->user_data;
-  FilterModule *src = data;
-  
+  FilterModule *fmod = (FilterModule*) module->user_data;
+  FilterModule *src = (FilterModule*) data;
+
   if (src->iir.w)	/* algo_type_change */
     gsl_iir_filter_setup (&fmod->iir, src->iir.order, src->iir.a, src->iir.b, fmod->dummy);
   else
@@ -405,7 +373,7 @@ static void
 iir_filter_process (BseModule *module,
 		    guint      n_values)
 {
-  FilterModule *fmod = module->user_data;
+  FilterModule *fmod = (FilterModule*) module->user_data;
   const gfloat *sig_in = BSE_MODULE_IBUFFER (module, BSE_IIR_FILTER_ICHANNEL_MONO);
   gfloat *sig_out = BSE_MODULE_OBUFFER (module, BSE_IIR_FILTER_OCHANNEL_MONO);
   
@@ -424,7 +392,7 @@ bse_iir_filter_context_create (BseSource *source,
     iir_filter_process,		/* process */
     NULL,                       /* process_defer */
     NULL,                       /* reset */
-    (gpointer) g_free,		/* free */
+    (BseModuleFreeFunc) g_free,	/* free */
     BSE_COST_NORMAL,		/* flags */
   };
   BseIIRFilter *filt = BSE_IIR_FILTER (source);

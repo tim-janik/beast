@@ -43,6 +43,7 @@ struct _BsePlugin
   guint		 use_count : 16;
   guint          version_match : 1;
   guint          force_clean : 1;
+  guint          resident_types : 1;
 
   BseExportNode *chain;
   guint		 n_types;
@@ -58,46 +59,7 @@ struct _BsePluginClass
 SfiRing*	bse_plugin_path_list_files	(gboolean        include_drivers,
                                                  gboolean        include_plugins);
 const gchar*	bse_plugin_check_load		(const gchar	*file_name);
-
-
-/* --- registration macros --- */
-
-#ifdef __cplusplus
-#define BSE_DEFINE_EXPORTS()                                                                    \
-    static ::BseExportIdentity __bse_export_identity =                                          \
-                               BSE_EXPORT_IDENTITY (__enode_chain_head);                        \
-  extern "C" {                                                                                  \
-    extern ::BseExportIdentity *const BSE_EXPORT_IDENTITY_SYMBOL;                               \
-    ::BseExportIdentity *const BSE_EXPORT_IDENTITY_SYMBOL = &__bse_export_identity;             \
-  }
-#else
-#define BSE_DEFINE_EXPORTS()                                                                    \
-  static BseExportIdentity __bse_export_identity =                                              \
-                             BSE_EXPORT_IDENTITY (__enode_chain_head);                          \
-  BseExportIdentity *const BSE_EXPORT_IDENTITY_SYMBOL = &__bse_export_identity
-#endif
-
-#define BSE_DEFINE_EXPORT_STRINGS_FUNC(FUNCNAME, BLURB, AUTHORS, LICENSE)                       \
-  static void FUNCNAME (BseExportStrings *es) {                                                 \
-    es->blurb = BLURB;                                                                          \
-    es->authors = AUTHORS;                                                                      \
-    es->license = LICENSE;                                                                      \
-}
-#define BSE_REGISTER_OBJECT_P(PREV,ObjectType,ParentType,ctgry,opt,blurb,pix,cinit,cfina,iinit) \
-  BSE_DEFINE_EXPORT_STRINGS_FUNC (__enode_##ObjectType##__fill_strings, blurb, 0, 0)            \
-  static BseExportNodeClass __enode_ ## ObjectType = {                                          \
-    { PREV, BSE_EXPORT_NODE_CLASS, #ObjectType, opt, ctgry,                                     \
-      pix, __enode_##ObjectType##__fill_strings },                                              \
-    #ParentType, sizeof (ObjectType ## Class), (GClassInitFunc) cinit,                          \
-    (GClassFinalizeFunc) cfina, sizeof (ObjectType), (GInstanceInitFunc) iinit,                 \
-  };                                                                                            \
-  static BseExportNode __enode_chain_head = {                                                   \
-    (BseExportNode*) &__enode_ ## ObjectType, BSE_EXPORT_NODE_LINK,                             \
-  }
-#define BSE_REGISTER_OBJECT(ObjectType,ParentType,ctgry,opt,blurb,pix,cinit,cfina,iinit) \
-  BSE_REGISTER_OBJECT_P (NULL, ObjectType, ParentType, ctgry, opt, blurb, pix, cinit, cfina, iinit)
-#define BSE_EXPORT_TYPE_ID(EType)       (__enode_ ## EType . node.type)
-
+void            bse_plugin_make_resident        ();
 
 /* --- implementation details --- */
 void		         bse_plugin_init_builtins       (void);

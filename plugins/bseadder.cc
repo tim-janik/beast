@@ -17,6 +17,7 @@
 #include "bseadder.h"
 
 #include <bse/bseengine.h>
+#include <bse/bsecxxplugin.hh>
 
 #include <string.h>
 
@@ -31,8 +32,7 @@ enum
 
 /* --- prototypes --- */
 static void	 bse_adder_init			(BseAdder	*self);
-static void	 bse_adder_class_init		(BseAdderClass	*class);
-static void      bse_adder_class_finalize       (BseAdderClass  *class);
+static void	 bse_adder_class_init		(BseAdderClass	*klass);
 static void	 bse_adder_set_property		(GObject        *object,
 						 guint           param_id,
 						 const GValue   *value,
@@ -51,13 +51,10 @@ static void	 bse_adder_update_modules	(BseAdder	*self,
 
 /* --- Export to BSE --- */
 #include "./icons/sum.c"
-BSE_REGISTER_OBJECT (BseAdder, BseSource, "/Modules/Routing/Adder", "deprecated",
-                     "The Adder is a very simplisitic prototype mixer that just sums up "
-                     "incoming signals (it does allow for switching to subtract mode though)",
-                     sum_icon,
-                     bse_adder_class_init, bse_adder_class_finalize, bse_adder_init);
-BSE_DEFINE_EXPORTS ();
-
+BSE_RESIDENT_SOURCE_DEF (BseAdder, bse_adder, N_("Routing/Adder"),
+                         "The Adder is a very simplisitic prototype mixer that just sums up "
+                         "incoming signals (it does allow for switching to subtract mode though)",
+                         sum_icon);
 
 /* --- variables --- */
 static gpointer		 parent_class = NULL;
@@ -65,12 +62,12 @@ static gpointer		 parent_class = NULL;
 
 /* --- functions --- */
 static void
-bse_adder_class_init (BseAdderClass *class)
+bse_adder_class_init (BseAdderClass *klass)
 {
 #include "./icons/sub.c"
-  GObjectClass *gobject_class = G_OBJECT_CLASS (class);
-  BseObjectClass *object_class = BSE_OBJECT_CLASS (class);
-  BseSourceClass *source_class = BSE_SOURCE_CLASS (class);
+  GObjectClass *gobject_class = G_OBJECT_CLASS (klass);
+  BseObjectClass *object_class = BSE_OBJECT_CLASS (klass);
+  BseSourceClass *source_class = BSE_SOURCE_CLASS (klass);
   guint channel;
 
   parent_class = g_type_class_peek (BSE_TYPE_SOURCE);
@@ -82,7 +79,7 @@ bse_adder_class_init (BseAdderClass *class)
   
   source_class->context_create = bse_adder_context_create;
   
-  class->sub_icon = bse_icon_from_pixstream (sub_pixstream);
+  klass->sub_icon = bse_icon_from_pixstream (sub_pixstream);
   
   bse_object_class_add_param (object_class, "Features",
 			      PARAM_SUBTRACT,
@@ -98,13 +95,6 @@ bse_adder_class_init (BseAdderClass *class)
   g_assert (channel == BSE_ADDER_JCHANNEL_AUDIO2);
   channel = bse_source_class_add_ochannel (source_class, "audio-out", _("Audio Out"), _("Audio Output"));
   g_assert (channel == BSE_ADDER_OCHANNEL_AUDIO_OUT);
-}
-
-static void
-bse_adder_class_finalize (BseAdderClass *class)
-{
-  bse_icon_free (class->sub_icon);
-  class->sub_icon = NULL;
 }
 
 static void
@@ -185,7 +175,7 @@ static void
 adder_process (BseModule *module,
 	       guint      n_values)
 {
-  Adder *adder = module->user_data;
+  Adder *adder = (Adder*) module->user_data;
   guint n_au1 = BSE_MODULE_JSTREAM (module, BSE_ADDER_JCHANNEL_AUDIO1).n_connections;
   guint n_au2 = BSE_MODULE_JSTREAM (module, BSE_ADDER_JCHANNEL_AUDIO2).n_connections;
   gfloat *out, *audio_out = BSE_MODULE_OBUFFER (module, BSE_ADDER_OCHANNEL_AUDIO_OUT);

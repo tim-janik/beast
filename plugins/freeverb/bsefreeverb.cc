@@ -17,6 +17,7 @@
 #include "bsefreeverb.h"
 
 #include <bse/bseengine.h>
+#include <bse/bsecxxplugin.hh>
 
 
 /* --- properties --- */
@@ -33,7 +34,7 @@ enum
 
 /* --- prototypes --- */
 static void	bse_free_verb_init		(BseFreeVerb		*self);
-static void	bse_free_verb_class_init	(BseFreeVerbClass	*class);
+static void	bse_free_verb_class_init	(BseFreeVerbClass	*klass);
 static void	bse_free_verb_set_property	(GObject		*object,
 						 guint			 param_id,
 						 const GValue		*value,
@@ -47,16 +48,12 @@ static void	bse_free_verb_context_create	(BseSource		*source,
 						 BseTrans		*trans);
 static void	bse_free_verb_update_modules	(BseFreeVerb		*self);
 
-
-/* --- Export to BSE --- */
+// == Type Registration ==
 #include "../icons/reverb.c"
-BSE_REGISTER_OBJECT (BseFreeVerb, BseSource, "/Modules/Filters/Free Verb", "",
-                     "BseFreeVerb - Free, studio-quality reverb (SOURCE CODE in the public domain) "
-                     "Written by Jezar at Dreampoint - http://www.dreampoint.co.uk",
-                     reverb_icon,
-                     bse_free_verb_class_init, NULL, bse_free_verb_init);
-BSE_DEFINE_EXPORTS ();
-
+BSE_RESIDENT_SOURCE_DEF (BseFreeVerb, bse_free_verb, N_("Filters/Free Verb"),
+                         "BseFreeVerb - Free, studio-quality reverb (SOURCE CODE in the public domain) "
+                         "Written by Jezar at Dreampoint - http://www.dreampoint.co.uk",
+                         reverb_icon);
 
 /* --- variables --- */
 static gpointer        parent_class = NULL;
@@ -64,16 +61,16 @@ static gpointer        parent_class = NULL;
 
 /* --- functions --- */
 static void
-bse_free_verb_class_init (BseFreeVerbClass *class)
+bse_free_verb_class_init (BseFreeVerbClass *klass)
 {
-  GObjectClass *gobject_class = G_OBJECT_CLASS (class);
-  BseObjectClass *object_class = BSE_OBJECT_CLASS (class);
-  BseSourceClass *source_class = BSE_SOURCE_CLASS (class);
-  BseFreeVerbConstants *constants = &class->constants;
+  GObjectClass *gobject_class = G_OBJECT_CLASS (klass);
+  BseObjectClass *object_class = BSE_OBJECT_CLASS (klass);
+  BseSourceClass *source_class = BSE_SOURCE_CLASS (klass);
+  BseFreeVerbConstants *constants = &klass->constants;
   BseFreeVerbConfig defaults;
   guint channel;
   
-  parent_class = g_type_class_peek_parent (class);
+  parent_class = g_type_class_peek_parent (klass);
   
   gobject_class->set_property = bse_free_verb_set_property;
   gobject_class->get_property = bse_free_verb_get_property;
@@ -122,6 +119,7 @@ bse_free_verb_class_init (BseFreeVerbClass *class)
   channel = bse_source_class_add_ichannel (source_class, "right-audio-in", _("Right Audio In"), _("Right Input"));
   channel = bse_source_class_add_ochannel (source_class, "left-audio-out", _("Left Audio Out"), _("Left Output"));
   channel = bse_source_class_add_ochannel (source_class, "right-audio-out", _("Right Audio Out"), _("Right Output"));
+  (void) channel;
 }
 
 static void
@@ -203,8 +201,8 @@ static void
 free_verb_access (BseModule *module,
 		  gpointer   data)
 {
-  BseFreeVerbCpp *cpp = module->user_data;
-  BseFreeVerbConfig *config = data;
+  BseFreeVerbCpp *cpp = (BseFreeVerbCpp*) module->user_data;
+  BseFreeVerbConfig *config = (BseFreeVerbConfig*) data;
 
   /* this runs in the Gsl Engine threads */
   bse_free_verb_cpp_configure (cpp, config);
@@ -228,7 +226,7 @@ static void
 free_verb_process (BseModule *module,
 		   guint      n_values)
 {
-  BseFreeVerbCpp *cpp = module->user_data;
+  BseFreeVerbCpp *cpp = (BseFreeVerbCpp*) module->user_data;
   const gfloat *ileft = BSE_MODULE_IBUFFER (module, BSE_FREE_VERB_ICHANNEL_LEFT);
   const gfloat *iright = BSE_MODULE_IBUFFER (module, BSE_FREE_VERB_ICHANNEL_RIGHT);
   gfloat *oleft = BSE_MODULE_OBUFFER (module, BSE_FREE_VERB_OCHANNEL_LEFT);
@@ -240,7 +238,7 @@ free_verb_process (BseModule *module,
 static void
 free_verb_reset (BseModule *module)
 {
-  BseFreeVerbCpp *cpp = module->user_data;
+  BseFreeVerbCpp *cpp = (BseFreeVerbCpp*) module->user_data;
   BseFreeVerbConfig config;
 
   bse_free_verb_cpp_restore_config (cpp, &config);
@@ -254,7 +252,7 @@ static void
 free_verb_destroy (gpointer        data,
 		   const BseModuleClass *klass)
 {
-  BseFreeVerbCpp *cpp = data;
+  BseFreeVerbCpp *cpp = (BseFreeVerbCpp*) data;
 
   bse_free_verb_cpp_destroy (cpp);
   g_free (cpp);

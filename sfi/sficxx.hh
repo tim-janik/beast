@@ -1146,6 +1146,11 @@ cxx_value_set_seq (GValue        *value,
   sfi_value_take_seq (value, SeqType::to_seq (self));
 }
 
+// == C++ Auxillaries ==
+struct Init { // stolen from Rapicorn
+  explicit Init (void (*f) ()) { f(); }
+};
+
 } // Sfi
 
 #endif /* __SFI_CXX_H__ */
