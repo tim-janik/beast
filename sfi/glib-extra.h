@@ -71,7 +71,6 @@ void g_object_disconnect_any (gpointer object,
                               gpointer function,
                               gpointer data); /* workaorund for g_object_disconnect() */
 
-
 /* --- string functions --- */
 const gchar*    g_printf_find_localised_directive (const gchar *format);
 gchar**		g_straddv	  (gchar	**str_array,
@@ -322,5 +321,26 @@ GScanner*	g_scanner_new64			(const GScannerConfig *config_templ);
 
 
 G_END_DECLS
+
+// == Flags Enumeration Operators in C++ ==
+#ifdef __cplusplus
+inline GParamFlags  operator&  (GParamFlags  s1, GParamFlags s2) { return GParamFlags (s1 & (long long unsigned) s2); }
+inline GParamFlags& operator&= (GParamFlags &s1, GParamFlags s2) { s1 = s1 & s2; return s1; }
+inline GParamFlags  operator|  (GParamFlags  s1, GParamFlags s2) { return GParamFlags (s1 | (long long unsigned) s2); }
+inline GParamFlags& operator|= (GParamFlags &s1, GParamFlags s2) { s1 = s1 | s2; return s1; }
+inline GParamFlags  operator~  (GParamFlags  s1)                 { return GParamFlags (~(long long unsigned) s1); }
+
+inline GSignalMatchType  operator&  (GSignalMatchType  s1, GSignalMatchType s2) { return GSignalMatchType (s1 & (long long unsigned) s2); }
+inline GSignalMatchType& operator&= (GSignalMatchType &s1, GSignalMatchType s2) { s1 = s1 & s2; return s1; }
+inline GSignalMatchType  operator|  (GSignalMatchType  s1, GSignalMatchType s2) { return GSignalMatchType (s1 | (long long unsigned) s2); }
+inline GSignalMatchType& operator|= (GSignalMatchType &s1, GSignalMatchType s2) { s1 = s1 | s2; return s1; }
+inline GSignalMatchType  operator~  (GSignalMatchType  s1)                 { return GSignalMatchType (~(long long unsigned) s1); }
+
+inline GSignalFlags  operator&  (GSignalFlags  s1, GSignalFlags s2) { return GSignalFlags (s1 & (long long unsigned) s2); }
+inline GSignalFlags& operator&= (GSignalFlags &s1, GSignalFlags s2) { s1 = s1 & s2; return s1; }
+inline GSignalFlags  operator|  (GSignalFlags  s1, GSignalFlags s2) { return GSignalFlags (s1 | (long long unsigned) s2); }
+inline GSignalFlags& operator|= (GSignalFlags &s1, GSignalFlags s2) { s1 = s1 | s2; return s1; }
+inline GSignalFlags  operator~  (GSignalFlags  s1)                 { return GSignalFlags (~(long long unsigned) s1); }
+#endif // __cplusplus
 
 #endif /* __SFI_GLIB_EXTRA_H__ */
