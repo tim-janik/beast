@@ -15,6 +15,7 @@
  * with this library; if not, see http://www.gnu.org/copyleft/.
  */
 #include "configure.h"
+#include <bse/bsecxxplugin.hh>
 #include "bsemididevice-alsa.h"
 #include <bse/bsesequencer.h>
 #include <bse/bsemididecoder.h>
@@ -42,11 +43,10 @@ static gboolean alsa_midi_io_handler            (gpointer                data,
                                                  guint                   n_pfds,
                                                  GPollFD                *pfds);
 
-/* --- define object type and export to BSE --- */
-static const char type_blurb[] = ("MIDI driver implementation for the Advanced Linux Sound Architecture "
-                                  "(http://alsa-project.org/alsa-doc/alsa-lib/midi.html)");
-BSE_REGISTER_OBJECT (BseMidiDeviceALSA, BseMidiDevice, NULL, "", type_blurb, NULL, bse_midi_device_alsa_class_init, NULL, bse_midi_device_alsa_init);
-BSE_DEFINE_EXPORTS ();
+// == Type Registration ==
+BSE_RESIDENT_TYPE_DEF (BseMidiDeviceALSA, bse_midi_device_alsa, BSE_TYPE_MIDI_DEVICE, NULL,
+                       "MIDI driver implementation for the Advanced Linux Sound Architecture "
+                       "(http://alsa-project.org/alsa-doc/alsa-lib/midi.html)", NULL);
 
 /* --- variables --- */
 static gpointer parent_class = NULL;

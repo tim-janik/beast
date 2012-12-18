@@ -23,7 +23,7 @@
 G_BEGIN_DECLS
 
 /* --- object type macros --- */
-#define BSE_TYPE_PCM_DEVICE_ALSA              (BSE_EXPORT_TYPE_ID (BsePcmDeviceALSA))
+#define BSE_TYPE_PCM_DEVICE_ALSA              (bse_pcm_device_alsa_get_type())
 #define BSE_PCM_DEVICE_ALSA(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), BSE_TYPE_PCM_DEVICE_ALSA, BsePcmDeviceALSA))
 #define BSE_PCM_DEVICE_ALSA_CLASS(class)      (G_TYPE_CHECK_CLASS_CAST ((class), BSE_TYPE_PCM_DEVICE_ALSA, BsePcmDeviceALSAClass))
 #define BSE_IS_PCM_DEVICE_ALSA(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), BSE_TYPE_PCM_DEVICE_ALSA))

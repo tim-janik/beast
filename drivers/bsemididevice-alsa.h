@@ -23,7 +23,7 @@
 G_BEGIN_DECLS
 
 /* --- object type macros --- */
-#define BSE_TYPE_MIDI_DEVICE_ALSA              (BSE_EXPORT_TYPE_ID (BseMidiDeviceALSA))
+#define BSE_TYPE_MIDI_DEVICE_ALSA              (bse_midi_device_alsa_get_type())
 #define BSE_MIDI_DEVICE_ALSA(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), BSE_TYPE_MIDI_DEVICE_ALSA, BseMidiDeviceALSA))
 #define BSE_MIDI_DEVICE_ALSA_CLASS(class)      (G_TYPE_CHECK_CLASS_CAST ((class), BSE_TYPE_MIDI_DEVICE_ALSA, BseMidiDeviceALSAClass))
 #define BSE_IS_MIDI_DEVICE_ALSA(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), BSE_TYPE_MIDI_DEVICE_ALSA))
