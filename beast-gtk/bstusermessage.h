@@ -96,8 +96,8 @@ BstMsgBit*        bst_msg_bit_create_choice     (guint                   id,
 #define BST_MSG_CHOICE(id, name, stock_icon)    bst_msg_bit_create_choice (id, name, stock_icon, "C")          /* choice */
 #define BST_MSG_CHOICE_D(id, name, stock_icon)  bst_msg_bit_create_choice (id, name, stock_icon, "D")          /* default */
 #define BST_MSG_CHOICE_S(id, name, sticn, sens) bst_msg_bit_create_choice (id, name, sticn, (sens) ? "" : "I") /* insensitive */
-#define BST_MSG_DIALOG(lvl, ...)                ({ BstMsgType __mt = lvl; guint __result = 0;                   \
-                                                   if (sfi_msg_check (__mt)) {                                  \
+#define BST_MSG_DIALOG(lvl, ...)                ({ BstMsgType __mt = lvl; uint __result = 0;                    \
+                                                  if (sfi_msg_check (SfiMsgType (__mt))) {                      \
                                                      BstMsgBit *__ba[] = { __VA_ARGS__ };                       \
                                                      __result = bst_message_dialog_display (BIRNET_LOG_DOMAIN,  \
                                                                  __mt, BIRNET_ARRAY_SIZE (__ba), __ba); }       \

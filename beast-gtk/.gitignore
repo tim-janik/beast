@@ -1,11 +1,11 @@
 beast-[0-9].[0-9].[0-9]
-bstenum_arrays.c
-bstenum_list.c
-bstgenbseapi.c
+bstenum_arrays.cc
+bstenum_list.cc
+bstgenbseapi.cc
 bstgenbseapi.h
-bstgentypes.c
+bstgentypes.cc
 bstgentypes.h
-bstmarshal.c
+bstmarshal.cc
 bstmarshal.h
 stamp-bstgenbseapi.h
 stamp-bstgentypes.h

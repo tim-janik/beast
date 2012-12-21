@@ -105,7 +105,7 @@ void		gxk_dialog_clear_flags		  (GxkDialog	  *dialog,
 						   GxkDialogFlags  flags);
 void		gxk_dialog_remove_actions	  (GxkDialog	  *dialog);
 #define		gxk_dialog_action(		   dialog, action, callback, data)	\
-                                                  gxk_dialog_action_multi ((dialog), (action), (callback), (data), 0, 0)
+  gxk_dialog_action_multi ((dialog), (action), (callback), (data), 0, (GxkDialogMultiFlags) 0)
 #define		gxk_dialog_default_action(	   dialog, action, callback, data)	\
                                                   gxk_dialog_action_multi ((dialog), (action), (callback), (data), 0, GXK_DIALOG_MULTI_DEFAULT)
 #define		gxk_dialog_action_swapped(	   dialog, action, callback, data)	\
@@ -136,6 +136,11 @@ inline GxkDialogFlags& operator&= (GxkDialogFlags &s1, GxkDialogFlags s2) { s1 =
 inline GxkDialogFlags  operator|  (GxkDialogFlags  s1, GxkDialogFlags s2) { return GxkDialogFlags (s1 | (long long unsigned) s2); }
 inline GxkDialogFlags& operator|= (GxkDialogFlags &s1, GxkDialogFlags s2) { s1 = s1 | s2; return s1; }
 inline GxkDialogFlags  operator~  (GxkDialogFlags  s1)                    { return GxkDialogFlags (~(long long unsigned) s1); }
+inline GxkDialogMultiFlags  operator&  (GxkDialogMultiFlags  s1, GxkDialogMultiFlags s2) { return GxkDialogMultiFlags (s1 & (long long unsigned) s2); }
+inline GxkDialogMultiFlags& operator&= (GxkDialogMultiFlags &s1, GxkDialogMultiFlags s2) { s1 = s1 & s2; return s1; }
+inline GxkDialogMultiFlags  operator|  (GxkDialogMultiFlags  s1, GxkDialogMultiFlags s2) { return GxkDialogMultiFlags (s1 | (long long unsigned) s2); }
+inline GxkDialogMultiFlags& operator|= (GxkDialogMultiFlags &s1, GxkDialogMultiFlags s2) { s1 = s1 | s2; return s1; }
+inline GxkDialogMultiFlags  operator~  (GxkDialogMultiFlags  s1)                    { return GxkDialogMultiFlags (~(long long unsigned) s1); }
 #endif // __cplusplus
 
 #endif  /* __GXK_DIALOG_H__ */

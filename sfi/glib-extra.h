@@ -258,8 +258,8 @@ void    g_usignal_notify         (gint8          usignal);
 
 /* --- GType boilerplate --- */
 #ifndef G_DEFINE_DATA_TYPE      	// GTKFIX: add this to glib?
-#define G_DEFINE_DATA_TYPE(TN, t_n, T_P)                         G_DEFINE_DATA_TYPE_EXTENDED (TN, t_n, T_P, 0, {})
-#define G_DEFINE_DATA_TYPE_WITH_CODE(TN, t_n, T_P, _C_)          G_DEFINE_DATA_TYPE_EXTENDED (TN, t_n, T_P, 0, _C_)
+#define G_DEFINE_DATA_TYPE(TN, t_n, T_P)                         G_DEFINE_DATA_TYPE_EXTENDED (TN, t_n, T_P, GTypeFlags (0), {})
+#define G_DEFINE_DATA_TYPE_WITH_CODE(TN, t_n, T_P, _C_)          G_DEFINE_DATA_TYPE_EXTENDED (TN, t_n, T_P, GTypeFlags (0), _C_)
 #define G_DEFINE_ABSTRACT_DATA_TYPE(TN, t_n, T_P)                G_DEFINE_DATA_TYPE_EXTENDED (TN, t_n, T_P, G_TYPE_FLAG_ABSTRACT, {})
 #define G_DEFINE_ABSTRACT_DATA_TYPE_WITH_CODE(TN, t_n, T_P, _C_) G_DEFINE_DATA_TYPE_EXTENDED (TN, t_n, T_P, G_TYPE_FLAG_ABSTRACT, _C_)
 #endif /* !G_DEFINE_DATA_TYPE */
@@ -341,6 +341,12 @@ inline GSignalFlags& operator&= (GSignalFlags &s1, GSignalFlags s2) { s1 = s1 & 
 inline GSignalFlags  operator|  (GSignalFlags  s1, GSignalFlags s2) { return GSignalFlags (s1 | (long long unsigned) s2); }
 inline GSignalFlags& operator|= (GSignalFlags &s1, GSignalFlags s2) { s1 = s1 | s2; return s1; }
 inline GSignalFlags  operator~  (GSignalFlags  s1)                 { return GSignalFlags (~(long long unsigned) s1); }
+
+inline GConnectFlags  operator&  (GConnectFlags  s1, GConnectFlags s2) { return GConnectFlags (s1 & (long long unsigned) s2); }
+inline GConnectFlags& operator&= (GConnectFlags &s1, GConnectFlags s2) { s1 = s1 & s2; return s1; }
+inline GConnectFlags  operator|  (GConnectFlags  s1, GConnectFlags s2) { return GConnectFlags (s1 | (long long unsigned) s2); }
+inline GConnectFlags& operator|= (GConnectFlags &s1, GConnectFlags s2) { s1 = s1 | s2; return s1; }
+inline GConnectFlags  operator~  (GConnectFlags  s1)                 { return GConnectFlags (~(long long unsigned) s1); }
 #endif // __cplusplus
 
 #endif /* __SFI_GLIB_EXTRA_H__ */

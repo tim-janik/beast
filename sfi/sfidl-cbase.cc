@@ -301,7 +301,7 @@ String CodeGeneratorCBase::createTypeCode (const String& type, const String &nam
       case SEQUENCE:
 	{
 	  if (model == MODEL_VCALL_RFREE)
-	    return "if ("+name+" != NULL) sfi_glue_gc_add ("+name+", "+makeLowerName (type)+"_free)";
+	    return "if ("+name+" != NULL) sfi_glue_gc_add ("+name+", (SfiGlueGcFreeFunc) "+makeLowerName (type)+"_free)";
 
 	  if (parser.isSequence (type))
 	  {

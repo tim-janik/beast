@@ -81,6 +81,12 @@ inline GdkEventMask  operator|  (GdkEventMask  s1, GdkEventMask s2) { return Gdk
 inline GdkEventMask& operator|= (GdkEventMask &s1, GdkEventMask s2) { s1 = s1 | s2; return s1; }
 inline GdkEventMask  operator~  (GdkEventMask  s1)                 { return GdkEventMask (~(long long unsigned) s1); }
 
+inline GdkModifierType  operator&  (GdkModifierType  s1, GdkModifierType s2) { return GdkModifierType (s1 & (long long unsigned) s2); }
+inline GdkModifierType& operator&= (GdkModifierType &s1, GdkModifierType s2) { s1 = s1 & s2; return s1; }
+inline GdkModifierType  operator|  (GdkModifierType  s1, GdkModifierType s2) { return GdkModifierType (s1 | (long long unsigned) s2); }
+inline GdkModifierType& operator|= (GdkModifierType &s1, GdkModifierType s2) { s1 = s1 | s2; return s1; }
+inline GdkModifierType  operator~  (GdkModifierType  s1)                 { return GdkModifierType (~(long long unsigned) s1); }
+
 inline GdkWindowHints  operator&  (GdkWindowHints  s1, GdkWindowHints s2) { return GdkWindowHints (s1 & (long long unsigned) s2); }
 inline GdkWindowHints& operator&= (GdkWindowHints &s1, GdkWindowHints s2) { s1 = s1 & s2; return s1; }
 inline GdkWindowHints  operator|  (GdkWindowHints  s1, GdkWindowHints s2) { return GdkWindowHints (s1 | (long long unsigned) s2); }

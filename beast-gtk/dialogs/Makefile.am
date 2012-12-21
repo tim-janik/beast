@@ -15,12 +15,12 @@ ZINTERN=$(top_builddir)/birnet/birnet-zintern
 
 XMLLINTCALL=$(if $(XMLLINT),$(XMLLINT),true) # handle undefined XMLLINT
 
-beast-xml-zfiles.c: $(XML_FILES) $(ZINTERN)
+beast-xml-zfiles.cc: $(XML_FILES) $(ZINTERN)
 	cd .						\
 	&& $(XMLLINTCALL) --noout $(XML_FILES)		\
 	&& $(ZINTERN) -b -z $(ZFILE_DEFS) > xgen-bxc	\
 	&& cp xgen-bxc $@				\
 	&& rm -f xgen-bxc
-CLEANFILES += xgen-bxc beast-xml-zfiles.c
+CLEANFILES += xgen-bxc beast-xml-zfiles.cc
 
-noinst_DATA = beast-xml-zfiles.c
+noinst_DATA = beast-xml-zfiles.cc

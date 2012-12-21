@@ -36,9 +36,9 @@ typedef enum /*< skip >*/
 } BstKeyBindingParam;
 typedef struct {
   guint  id;
-  gchar *function_name;
+  const char *function_name;
   BstKeyBindingParam ptype;
-  gchar *function_blurb;        /* translated */
+  const char *function_blurb;           /* translated */
   guint  collision_group;
 } BstKeyBindingFunction;
 typedef struct {
