@@ -13,8 +13,8 @@ INCLUDES += -I$(top_srcdir) -I$(top_builddir) -I$(srcdir) -I. $(BEAST_CFLAGS) -D
 DEFS += -DG_LOG_DOMAIN="\"BEAST\""
 
 # special profiling hooks
-PROFILE_SOURCE = # profile.c
-DEFS += # $(subst profile.c, -pg -a, $(findstring profile.c, $(<F)))
+PROFILE_SOURCE = # profile.cc
+DEFS += # $(subst profile.cc, -pg -a, $(findstring profile.cc, $(<F)))
 LIBS += # -lefence # -pg 
 
 #
@@ -46,7 +46,7 @@ EXTRA_DIST += $(beast_headers)
 beast_sources = $(strip \
 	bsttrackrollctrl.cc	bstxframe.cc	bstscrollgraph.cc	\
 	bstdbmeter.cc		bstbusmixer.cc	bstbuseditor.cc		bstitemseqdialog.cc \
-	bstcanvassource.c	bstapp.cc	bstasciipixbuf.cc	bstcanvaslink.cc    \
+	bstcanvassource.cc	bstapp.cc	bstasciipixbuf.cc	bstcanvaslink.cc    \
 	bstpatterncolumns.cc	bstxkb.cc	bstpatternview.cc	bstpatternctrl.cc   \
 	bstkeybindings.cc	bstprofiler.cc	bstgrowbar.cc		bstbusview.cc       \
 	bstpianorollctrl.cc	bstpartview.cc	bstpianoroll.cc		bstplayback.cc	    \
@@ -101,10 +101,10 @@ stamp-bstgentypes.h: $(beast_headers) $(srcdir)/bstrecords.idl $(SFIDL)
 	&& (cmp -s xgen-$(@F) bstgentypes.h || cp xgen-$(@F) bstgentypes.h) \
 	&& rm -f xgen-$(@F) \
 	&& echo timestamp > $@
-# bstgentypes.c
-GENERATED_CLEANFILES += bstgentypes.c
-$(beast_vOBJECTS): bstgentypes.c
-bstgentypes.c: bstgentypes.h $(beast_headers) ${srcdir}/bstrecords.idl $(SFIDL)
+# bstgentypes.cc
+GENERATED_CLEANFILES += bstgentypes.cc
+$(beast_vOBJECTS): bstgentypes.cc
+bstgentypes.cc: bstgentypes.h $(beast_headers) ${srcdir}/bstrecords.idl $(SFIDL)
 	cd . \
 	&& ( cd $(srcdir) && $(GLIB_MKENUMS) \
 	  --eprod "\nGType bst__type_id__@EnumName@ = 0;" \
@@ -112,10 +112,10 @@ bstgentypes.c: bstgentypes.h $(beast_headers) ${srcdir}/bstrecords.idl $(SFIDL)
 	&& $(SFIDL) --host-c --source --init _bst_init_idl ${srcdir}/bstrecords.idl >> xgen-$(@F) \
 	&& cp xgen-$(@F) $@ \
 	&& rm -f xgen-$(@F)
-# bstenum_arrays.c
-GENERATED_CLEANFILES += bstenum_arrays.c
-$(beast_vOBJECTS): bstenum_arrays.c
-bstenum_arrays.c: $(beast_headers)
+# bstenum_arrays.cc
+GENERATED_CLEANFILES += bstenum_arrays.cc
+$(beast_vOBJECTS): bstenum_arrays.cc
+bstenum_arrays.cc: $(beast_headers)
 	cd . \
 	&& ( cd ${srcdir} && $(GLIB_MKENUMS) \
 	  --fprod "\n/* --- @filename@ --- */\n#include\t\"@filename@\"" \
@@ -126,10 +126,10 @@ bstenum_arrays.c: $(beast_headers)
 	    $(beast_headers) ) > xgen-$(@F) \
 	&& cp xgen-$(@F) $@ \
 	&& rm -f xgen-$(@F)
-# bstenum_list.c
-GENERATED_CLEANFILES += bstenum_list.c
-$(beast_vOBJECTS): bstenum_list.c
-bstenum_list.c: $(beast_headers)
+# bstenum_list.cc
+GENERATED_CLEANFILES += bstenum_list.cc
+$(beast_vOBJECTS): bstenum_list.cc
+bstenum_list.cc: $(beast_headers)
 	cd . \
 	&& ( cd $(srcdir) && $(GLIB_MKENUMS) \
 	  --fprod "\n/* --- @filename@ --- */" \
@@ -148,14 +148,14 @@ stamp-bstgenbseapi.h: $(top_srcdir)/bse/*.idl $(top_builddir)/bse/*.idl $(SFIDL)
 	&& (cmp -s xgen-$(@F) bstgenbseapi.h || cp xgen-$(@F) bstgenbseapi.h) \
 	&& rm -f xgen-$(@F) \
 	&& echo timestamp > $@
-# bstgenbseapi.c
-GENERATED_CLEANFILES += bstgenbseapi.c
-$(beast_vOBJECTS): bstgenbseapi.c
-bstgenbseapi.c: bstgenbseapi.h $(top_srcdir)/bse/*.idl $(top_builddir)/bse/*.idl $(SFIDL)
+# bstgenbseapi.cc
+GENERATED_CLEANFILES += bstgenbseapi.cc
+$(beast_vOBJECTS): bstgenbseapi.cc
+bstgenbseapi.cc: bstgenbseapi.h $(top_srcdir)/bse/*.idl $(top_builddir)/bse/*.idl $(SFIDL)
 	cd .	\
 	&& echo -e "/* #include \"bstgenbseapi.h\" */\n" > xgen-$(@F) \
 	&& $(SFIDL) $(SFIDL_INC) --client-c --source --prefix beast_ $(top_srcdir)/bse/bse.idl >> xgen-$(@F) \
-	&& cp xgen-$(@F) bstgenbseapi.c \
+	&& cp xgen-$(@F) bstgenbseapi.cc \
 	&& rm -f xgen-$(@F)
 # bstmarshal.h
 GENERATED_CLEANFILES += bstmarshal.h
@@ -164,10 +164,10 @@ bstmarshal.h: bstmarshal.list
 	glib-genmarshal --prefix=bst_marshal $(srcdir)/bstmarshal.list --header > xgen-$(@F) \
 	&& cp xgen-$(@F) $@ \
 	&& rm -f xgen-$(@F)
-# bstmarshal.c
-GENERATED_CLEANFILES += bstmarshal.c
-$(srcdir)/bstutils.cc: bstmarshal.c
-bstmarshal.c: bstmarshal.list
+# bstmarshal.cc
+GENERATED_CLEANFILES += bstmarshal.cc
+$(srcdir)/bstutils.cc: bstmarshal.cc
+bstmarshal.cc: bstmarshal.list
 	glib-genmarshal --prefix=bst_marshal $(srcdir)/bstmarshal.list --body > xgen-$(@F) \
 	&& cp xgen-$(@F) $@ \
 	&& rm -f xgen-$(@F)

@@ -1,4 +1,4 @@
-/* tsmview.c - TagSpanMarkup Viewer
+/* tsmview.cc - TagSpanMarkup Viewer
  * Copyright (C) 2002 Tim Janik
  *
  * This library is free software; you can redistribute it and/or

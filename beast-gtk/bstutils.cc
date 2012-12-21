@@ -37,7 +37,7 @@
 
 
 /* --- generated enums --- */
-#include "bstenum_arrays.c"     /* enum string value arrays plus include directives */
+#include "bstenum_arrays.cc"     /* enum string value arrays plus include directives */
 
 
 /* --- prototypes --- */
@@ -65,7 +65,7 @@ _bst_init_utils (void)
       GType            *type_id;
       gconstpointer     pointer1;
     } builtin_info[] = {
-#include "bstenum_list.c"       /* type entries */
+#include "bstenum_list.cc"       /* type entries */
     };
     guint i;
     for (i = 0; i < sizeof (builtin_info) / sizeof (builtin_info[0]); i++)
@@ -89,7 +89,7 @@ _bst_init_utils (void)
   /* initialize stock icons (included above) */
   {
     /* generated stock icons */
-#include "beast-gtk/icons/bst-stock-gen.c"
+#include "beast-gtk/icons/bst-stock-gen.cc"
     
     gxk_stock_register_icons (G_N_ELEMENTS (stock_icons), stock_icons);
   }
@@ -108,7 +108,7 @@ _bst_init_utils (void)
   }
 }
 
-#include "beast-gtk/dialogs/beast-xml-zfiles.c"
+#include "beast-gtk/dialogs/beast-xml-zfiles.cc"
 void
 _bst_init_radgets (void)
 {
@@ -1439,7 +1439,7 @@ bst_file_scan_find_key (const gchar *file,
 
 
 /* --- generated marshallers --- */
-#include "bstmarshal.c"
+#include "bstmarshal.cc"
 
 
 /* --- IDL pspecs --- */
@@ -1490,4 +1490,4 @@ bst_file_scan_find_key (const gchar *file,
 #define sfidl_pspec_Proxy_default(group, name) \
   sfi_pspec_set_group (sfi_pspec_proxy (name, NULL, NULL, SFI_PARAM_STANDARD), group)
 /* --- generated type IDs and SFIDL types --- */
-#include "bstgentypes.c"        /* type id defs */
+#include "bstgentypes.cc"       /* type id defs */

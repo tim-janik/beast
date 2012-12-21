@@ -54,7 +54,7 @@ GxkParam*    bst_param_new_proxy      (GParamSpec  *pspec,
 void         bst_param_set_proxy      (GxkParam    *param,
                                        SfiProxy     proxy);
 SfiProxy     bst_param_get_proxy      (GxkParam    *param);
-SfiProxy     bst_item_seq_list_match  (GSList      *proxy_seq_slist,    /* bstparam-proxy.c */
+SfiProxy     bst_item_seq_list_match  (GSList      *proxy_seq_slist,    /* bstparam-proxy.cc */
                                        const gchar *text);
 
 

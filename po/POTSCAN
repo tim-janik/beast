@@ -43,7 +43,6 @@ beast-gtk/bstrecords.idl
 beast-gtk/bstsampleeditor.cc
 beast-gtk/bstscrollgraph.cc
 beast-gtk/bstsnetrouter.cc
-beast-gtk/bststest.cc
 beast-gtk/bstsupershell.cc
 beast-gtk/bsttrackrollctrl.cc
 beast-gtk/bsttracksynthdialog.cc
