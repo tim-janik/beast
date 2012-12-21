@@ -46,24 +46,24 @@ void	   bst_choice_destroy		  (GtkWidget		  *choice);
 
 /* --- BstChoice shortcuts --- */
 #define BST_CHOICE_TITLE(name)           (bst_choice_alloc (BST_CHOICE_TYPE_TITLE, \
-							    (name), 0, BST_STOCK_NONE, 0))
+							    (name), NULL, BST_STOCK_NONE, 0))
 #define BST_CHOICE(id, name, bst_icon)   (bst_choice_alloc (BST_CHOICE_TYPE_ITEM, \
-							    (name), (gpointer) (id), \
+							    (name), (void*) (size_t) (id), \
                                                             BST_STOCK_ ## bst_icon, 0))
 #define BST_CHOICE_D(id, name, bst_icon) (bst_choice_alloc (BST_CHOICE_TYPE_ITEM | \
 							    BST_CHOICE_FLAG_DEFAULT, \
-                                                            (name), (gpointer) (id), \
+                                                            (name), (void*) (size_t) (id), \
 							    BST_STOCK_ ## bst_icon, 0))
 #define BST_CHOICE_S(id, name, icon, s)  (bst_choice_alloc (BST_CHOICE_TYPE_ITEM | \
-							    ((s) ? 0 : BST_CHOICE_FLAG_INSENSITIVE), \
-                                                            (name), (gpointer) (id), \
+							    ((s) ? (BstChoiceFlags) 0 : BST_CHOICE_FLAG_INSENSITIVE), \
+                                                            (name), (void*) (size_t) (id), \
 							    BST_STOCK_ ## icon, 0))
 #define BST_CHOICE_SUBMENU(nam,menu,icn) (bst_choice_alloc (BST_CHOICE_TYPE_SUBMENU, \
 							    (nam), (menu), BST_STOCK_ ## icn, 0))
 #define BST_CHOICE_TEXT(name)            (bst_choice_alloc (BST_CHOICE_TYPE_TEXT, \
-							    (name), 0, BST_STOCK_NONE, 0))
+							    (name), NULL, BST_STOCK_NONE, 0))
 #define BST_CHOICE_SEPERATOR             (bst_choice_alloc (BST_CHOICE_TYPE_SEPARATOR, \
-							    NULL, 0, BST_STOCK_NONE, 0))
+							    NULL, NULL, BST_STOCK_NONE, 0))
 #define BST_CHOICE_END                   (NULL)
 
 
@@ -87,5 +87,14 @@ BstChoice* bst_choice_alloc               (BstChoiceFlags          type,
 					   BseIcon		  *bse_icon);
 
 G_END_DECLS
+
+// == Flags Enumeration Operators in C++ ==
+#ifdef __cplusplus
+inline BstChoiceFlags  operator&  (BstChoiceFlags  s1, BstChoiceFlags s2) { return BstChoiceFlags (s1 & (long long unsigned) s2); }
+inline BstChoiceFlags& operator&= (BstChoiceFlags &s1, BstChoiceFlags s2) { s1 = s1 & s2; return s1; }
+inline BstChoiceFlags  operator|  (BstChoiceFlags  s1, BstChoiceFlags s2) { return BstChoiceFlags (s1 | (long long unsigned) s2); }
+inline BstChoiceFlags& operator|= (BstChoiceFlags &s1, BstChoiceFlags s2) { s1 = s1 | s2; return s1; }
+inline BstChoiceFlags  operator~  (BstChoiceFlags  s1)                    { return BstChoiceFlags (~(long long unsigned) s1); }
+#endif // __cplusplus
 
 #endif  /* __BST_MENUS_H__ */

@@ -44,33 +44,33 @@ beast_headers = $(strip \
 EXTRA_DIST += $(beast_headers)
 # BEAST sources to build the program from
 beast_sources = $(strip \
-	bsttrackrollctrl.c	bstxframe.c	bstscrollgraph.c	\
-	bstdbmeter.c		bstbusmixer.c	bstbuseditor.c		bstitemseqdialog.c  \
-	bstcanvassource.c	bstapp.c	bstasciipixbuf.c	bstcanvaslink.c	    \
-	bstpatterncolumns.c	bstxkb.c	bstpatternview.c	bstpatternctrl.c    \
-	bstkeybindings.c	bstprofiler.c	bstgrowbar.c		bstbusview.c        \
-	bstpianorollctrl.c	bstpartview.c	bstpianoroll.c		bstplayback.c	    \
-	bsttrackroll.c		bstcluehunter.c	bstprojectctrl.c	bstcxxutils.cc	    \
-	bstauxdialogs.c		bstsegment.c	bsteventrollctrl.c	bsteventroll.c	    \
-	bstsnifferscope.c	bstwaveview.c	bstfiledialog.c		bstgconfig.c	    \
-	bstlogadjustment.c	bstitemview.c	bstservermonitor.c	bstknob.c	    \
-	bstparamview.c		bstmenus.c	bstparam.c		bstpartdialog.c	    \
-	bstprocbrowser.c	bstqsampler.c	bstpreferences.c	bstprocedure.c	    \
-	bstrackeditor.c		bstrackitem.c	bstracktable.c		bstsequence.c	    \
-	bstsnetrouter.c		bstsplash.c	bsttrackview.c		bstsupershell.c	    \
-	bstusermessage.c	bstdial.c	bsttracksynthdialog.c	bstwaveeditor.c	    \
-	bstzoomedwindow.c	bstskinconfig.c	bstmsgabsorb.c		bstsampleeditor.c   \
-	bstrackview.c		bsttreestores.c	bstbseutils.c		bstutils.c	    \
+	bsttrackrollctrl.cc	bstxframe.cc	bstscrollgraph.cc	\
+	bstdbmeter.cc		bstbusmixer.cc	bstbuseditor.cc		bstitemseqdialog.cc \
+	bstcanvassource.c	bstapp.cc	bstasciipixbuf.cc	bstcanvaslink.cc    \
+	bstpatterncolumns.cc	bstxkb.cc	bstpatternview.cc	bstpatternctrl.cc   \
+	bstkeybindings.cc	bstprofiler.cc	bstgrowbar.cc		bstbusview.cc       \
+	bstpianorollctrl.cc	bstpartview.cc	bstpianoroll.cc		bstplayback.cc	    \
+	bsttrackroll.cc	       bstcluehunter.cc	bstprojectctrl.cc	bstcxxutils.cc	    \
+	bstauxdialogs.cc	bstsegment.cc	bsteventrollctrl.cc	bsteventroll.cc	    \
+	bstsnifferscope.cc	bstwaveview.cc	bstfiledialog.cc	bstgconfig.cc	    \
+	bstlogadjustment.cc	bstitemview.cc	bstservermonitor.cc	bstknob.cc	    \
+	bstparamview.cc		bstmenus.cc	bstparam.cc		bstpartdialog.cc    \
+	bstprocbrowser.cc	bstqsampler.cc	bstpreferences.cc	bstprocedure.cc	    \
+	bstrackeditor.cc	bstrackitem.cc	bstracktable.cc		bstsequence.cc	    \
+	bstsnetrouter.cc	bstsplash.cc	bsttrackview.cc		bstsupershell.cc    \
+	bstusermessage.cc	bstdial.cc	bsttracksynthdialog.cc	bstwaveeditor.cc    \
+	bstzoomedwindow.cc     bstskinconfig.cc	bstmsgabsorb.cc		bstsampleeditor.cc  \
+	bstrackview.cc	       bsttreestores.cc	bstbseutils.cc		bstutils.cc	    \
 	$(PROFILE_SOURCE) \
 )
 # BEAST sources that get included (don't have own .lo rules)
 beast_extra_files = $(strip 						\
-	bstparam-automation.c						\
-	bstparam-choice.c		bstparam-note-sequence.c	\
-	bstparam-note-spinner.c		bstparam-proxy.c		\
-	bstparam-color-spinner.c	bstparam-scale.c		\
-	bstparam-searchpath.c		bstparam-time.c			\
-	bstparam-item-seq.c		bstrackeditor-covers.c		\
+	bstparam-automation.cc						\
+	bstparam-choice.cc		bstparam-note-sequence.cc	\
+	bstparam-note-spinner.cc		bstparam-proxy.cc		\
+	bstparam-color-spinner.cc	bstparam-scale.cc		\
+	bstparam-searchpath.cc		bstparam-time.cc			\
+	bstparam-item-seq.cc		bstrackeditor-covers.cc		\
 	\
 	bstmarshal.list			bstrecords.idl			\
 )
@@ -90,12 +90,14 @@ $(beast_vOBJECTS): bstgentypes.h
 bstgentypes.h: stamp-bstgentypes.h ;
 stamp-bstgentypes.h: $(beast_headers) $(srcdir)/bstrecords.idl $(SFIDL)
 	cd .	\
+	&& echo 'G_BEGIN_DECLS;'				 > xgen-$(@F) \
 	&& ( cd $(srcdir) && $(GLIB_MKENUMS) \
 	  --fprod "\n/* --- @filename@ --- */" \
 	  --eprod "#define BST_TYPE_@ENUMSHORT@\t    (bst__type_id__@EnumName@)\n" \
 	  --eprod "extern GType bst__type_id__@EnumName@;" \
-	    $(beast_headers) ) > xgen-$(@F) \
-	&& $(SFIDL) --host-c --header ${srcdir}/bstrecords.idl >> xgen-$(@F) \
+	    $(beast_headers) ) 					>> xgen-$(@F) \
+	&& $(SFIDL) --host-c --header ${srcdir}/bstrecords.idl	>> xgen-$(@F) \
+	&& echo 'G_END_DECLS;'					>> xgen-$(@F) \
 	&& (cmp -s xgen-$(@F) bstgentypes.h || cp xgen-$(@F) bstgentypes.h) \
 	&& rm -f xgen-$(@F) \
 	&& echo timestamp > $@
@@ -164,7 +166,7 @@ bstmarshal.h: bstmarshal.list
 	&& rm -f xgen-$(@F)
 # bstmarshal.c
 GENERATED_CLEANFILES += bstmarshal.c
-$(srcdir)/bstutils.c: bstmarshal.c
+$(srcdir)/bstutils.cc: bstmarshal.c
 bstmarshal.c: bstmarshal.list
 	glib-genmarshal --prefix=bst_marshal $(srcdir)/bstmarshal.list --body > xgen-$(@F) \
 	&& cp xgen-$(@F) $@ \
@@ -184,7 +186,7 @@ generated: clean-generated $(GENERATED)
 # build rules for programs
 #
 bin_PROGRAMS = beast-$(BIN_VERSION)
-beast___BIN_VERSION__SOURCES = bstmain.c $(beast_sources)
+beast___BIN_VERSION__SOURCES = bstmain.cc $(beast_sources)
 beast___BIN_VERSION__LDADD = $(progs_LDADD)
 beast_vOBJECTS  = $(beast___BIN_VERSION__OBJECTS)
 noinst_PROGRAMS = $(ALLTESTS)
@@ -195,9 +197,9 @@ progs_LDADD     = $(strip                                       \
 )
 
 noinst_PROGRAMS += tsmview
-tsmview_SOURCES  = tsmview.c cxxdummy.cc
+tsmview_SOURCES  = tsmview.cc cxxdummy.cc
 tsmview_LDADD    = $(progs_LDADD)
 
 noinst_PROGRAMS += testgui
-testgui_SOURCES  = testgui.c $(beast_sources)
+testgui_SOURCES  = testgui.cc $(beast_sources)
 testgui_LDADD    = $(progs_LDADD)

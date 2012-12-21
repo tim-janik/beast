@@ -82,10 +82,10 @@ struct _BstPianoRoll
   guint          release_closes_toplevel : 1;
 
   /* selection rectangle */
-  guint		 selection_tick;
-  guint		 selection_duration;
-  gint		 selection_min_note;
-  gint		 selection_max_note;
+  int		 selection_tick;
+  int		 selection_duration;
+  int		 selection_min_note;
+  int		 selection_max_note;
 };
 struct _BstPianoRollClass
 {

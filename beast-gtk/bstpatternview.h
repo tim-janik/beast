@@ -50,9 +50,9 @@ typedef struct {
   gboolean      start_valid;
   guint         current_col;
   guint         current_row;
-  guint         current_tick;
-  guint         current_duration;
-  gboolean      current_valid;
+  int           current_tick;
+  int           current_duration;
+  bool          current_valid;
   /* convenience: */
   BstPatternView *pview;
 } BstPatternViewDrag;
@@ -77,7 +77,7 @@ struct _BstPatternView
   /* focus cell */
   guint              focus_col;
   guint              focus_row;
-  guint              n_focus_cols;
+  int                n_focus_cols;
   BstPatternColumn **focus_cols;
 
   /* shading */
@@ -133,13 +133,9 @@ void              bst_pattern_view_add_column      (BstPatternView            *s
                                                     BstPatternLType            ltype,
                                                     gint                       num,
                                                     BstPatternLFlags           lflags);
-void              bst_pattern_view_set_focus       (BstPatternView            *self,
-                                                    guint                      focus_col,
-                                                    guint                      focus_row);
+void              bst_pattern_view_set_focus       (BstPatternView *self, int focus_col, int focus_row);
 gint              bst_pattern_view_get_focus_width (BstPatternView            *self);
-BstPatternColumn* bst_pattern_view_get_focus_cell  (BstPatternView            *self,
-                                                    guint                     *tick,
-                                                    guint                     *duration);
+BstPatternColumn* bst_pattern_view_get_focus_cell  (BstPatternView *self, int *tick, int *duration);
 gboolean          bst_pattern_view_dispatch_key    (BstPatternView            *self,
                                                     guint                      keyval,
                                                     GdkModifierType            modifier,
