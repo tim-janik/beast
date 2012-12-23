@@ -16,7 +16,7 @@
  */
 #include "configure.h"
 #include <bse/bsecxxplugin.hh>
-#include "bsemididevice-alsa.h"
+#include "bsemididevice-alsa.hh"
 #include <bse/bsesequencer.hh>
 #include <bse/bsemididecoder.hh>
 #include <alsa/asoundlib.h>

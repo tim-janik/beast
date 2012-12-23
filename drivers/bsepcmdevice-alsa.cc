@@ -16,7 +16,7 @@
  */
 #include "configure.h"
 #include <bse/bsecxxplugin.hh>
-#include "bsepcmdevice-alsa.h"
+#include "bsepcmdevice-alsa.hh"
 #include <bse/gsldatautils.hh>
 #include <alsa/asoundlib.h>
 #include <string.h>
