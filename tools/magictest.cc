@@ -14,12 +14,12 @@
  * A copy of the GNU Lesser General Public License should ship along
  * with this library; if not, see http://www.gnu.org/copyleft/.
  */
-#include <bse/bsemain.h>
+#include <bse/bsemain.hh>
 #include "topconfig.h"
-#include <bse/gslmagic.h>
-#include <bse/gslcommon.h>
-#include <bse/bseloader.h>
-#include <bse/gsldatahandle.h>
+#include <bse/gslmagic.hh>
+#include <bse/gslcommon.hh>
+#include <bse/bseloader.hh>
+#include <bse/gsldatahandle.hh>
 #include <stdio.h>
 #include <string.h>
 

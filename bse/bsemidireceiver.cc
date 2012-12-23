@@ -14,14 +14,14 @@
  * A copy of the GNU Lesser General Public License should ship along
  * with this library; if not, see http://www.gnu.org/copyleft/.
  */
-#include "bsemidireceiver.h"
+#include "bsemidireceiver.hh"
 
-#include "bsemain.h"
-#include "gslcommon.h"
-#include "bseengine.h"
-#include "bsemathsignal.h"
+#include "bsemain.hh"
+#include "gslcommon.hh"
+#include "bseengine.hh"
+#include "bsemathsignal.hh"
 #include "bsecxxutils.hh"
-#include "bsemidinotifier.h"
+#include "bsemidinotifier.hh"
 #include <string.h>
 #include <sfi/gbsearcharray.hh>
 #include <map>

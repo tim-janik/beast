@@ -23,7 +23,7 @@
 #include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include "bsefilter.h"
+#include "bsefilter.hh"
 
 typedef struct {
   int    n_poles;

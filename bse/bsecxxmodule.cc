@@ -15,9 +15,9 @@
  * with this library; if not, see http://www.gnu.org/copyleft/.
  */
 #include "bsecxxmodule.hh"
-#include "bseengine.h"
-#include "bsemidireceiver.h"
-#include "bsesnet.h"
+#include "bseengine.hh"
+#include "bsemidireceiver.hh"
+#include "bsesnet.hh"
 
 namespace Bse {
 

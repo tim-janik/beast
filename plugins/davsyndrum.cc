@@ -15,8 +15,8 @@
  * with this library; if not, see http://www.gnu.org/copyleft/.
  */
 #include "davsyndrum.h"
-#include <bse/bseengine.h>
-#include <bse/bsemathsignal.h>
+#include <bse/bseengine.hh>
+#include <bse/bsemathsignal.hh>
 #include <bse/bsecxxplugin.hh>
 
 /* --- parameters --- */

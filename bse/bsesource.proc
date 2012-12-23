@@ -14,12 +14,12 @@
  * A copy of the GNU Lesser General Public License should ship along
  * with this library; if not, see http://www.gnu.org/copyleft/.
  */
-#include <bse/bseplugin.h>
-#include <bse/bseprocedure.h>
-#include <bse/bsesource.h>
-#include <bse/bseundostack.h>
-#include <bse/bseieee754.h>
-#include <bse/bsemidievent.h>
+#include <bse/bseplugin.hh>
+#include <bse/bseprocedure.hh>
+#include <bse/bsesource.hh>
+#include <bse/bseundostack.hh>
+#include <bse/bseieee754.hh>
+#include <bse/bsemidievent.hh>
 #include "bsecxxplugin.hh"
 
 

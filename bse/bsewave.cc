@@ -14,14 +14,14 @@
  * A copy of the GNU Lesser General Public License should ship along
  * with this library; if not, see http://www.gnu.org/copyleft/.
  */
-#include "bsewave.h"
-#include "bsemain.h"
-#include "bsestorage.h"
-#include "bseprocedure.h"
-#include "gslwavechunk.h"
-#include "gsldatahandle.h"
-#include "bseserver.h"
-#include "bseloader.h"
+#include "bsewave.hh"
+#include "bsemain.hh"
+#include "bsestorage.hh"
+#include "bseprocedure.hh"
+#include "gslwavechunk.hh"
+#include "gsldatahandle.hh"
+#include "bseserver.hh"
+#include "bseloader.hh"
 #include "topconfig.h"
 
 #include <string.h>

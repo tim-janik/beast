@@ -4,8 +4,8 @@
 // http://www.dreampoint.co.uk
 // Based on IS_DENORMAL macro by Jon Watte
 // This code is public domain
-#include <bse/bseplugin.h>
-#include <bse/bseieee754.h>
+#include <bse/bseplugin.hh>
+#include <bse/bseieee754.hh>
 
 #ifndef _denormals_
 #define _denormals_

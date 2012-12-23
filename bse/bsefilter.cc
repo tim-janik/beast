@@ -16,7 +16,7 @@
  * otherwise) arising in any way out of the use of this software, even
  * if advised of the possibility of such damage.
  */
-#include "bsefilter.h"
+#include "bsefilter.hh"
 #include <birnet/birnet.hh>
 
 using namespace Birnet;

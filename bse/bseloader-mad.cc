@@ -15,8 +15,8 @@
  * with this library; if not, see http://www.gnu.org/copyleft/.
  */
 #include "topconfig.h"
-#include "bse/bseloader.h"
-#include "gsldatahandle-mad.h"
+#include "bse/bseloader.hh"
+#include "gsldatahandle-mad.hh"
 
 #include <unistd.h>
 #include <string.h>

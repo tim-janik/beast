@@ -15,8 +15,8 @@
  * with this library; if not, see http://www.gnu.org/copyleft/.
  */
 #include "topconfig.h"
-#include "bseutils.h"
-#include "gsldatautils.h"
+#include "bseutils.hh"
+#include "gsldatautils.hh"
 
 #include <string.h>
 #include <stdlib.h>

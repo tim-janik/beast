@@ -16,7 +16,7 @@
  */
 #include "bsesimpleadsr.h"
 
-#include <bse/bseengine.h>
+#include <bse/bseengine.hh>
 #include <bse/bsecxxplugin.hh>
 
 #define	TIME_EPSILON	(0.00001)

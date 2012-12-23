@@ -36,7 +36,7 @@ CxxClosure::gclosure()
 
 } // Bse
 
-#else /* !BSE_COMPILATION */    // program to generate bsegenclosures.h
+#else /* !BSE_COMPILATION */    // program to generate bsegenclosures.hh
 
 #include <string>
 #include <stdio.h>

@@ -15,10 +15,10 @@
  * with this library; if not, see http://www.gnu.org/copyleft/.
  */
 #include "bwtwave.hh"
-#include <bse/bsemath.h>
-#include <bse/gsldatautils.h>
-#include <bse/gsldatahandle-vorbis.h>
-#include <bse/bseloader.h>
+#include <bse/bsemath.hh>
+#include <bse/gsldatautils.hh>
+#include <bse/gsldatahandle-vorbis.hh>
+#include <bse/bseloader.hh>
 #include <bse/bsecxxutils.hh>
 #include <sys/stat.h>
 #include <unistd.h>

@@ -16,7 +16,7 @@
  * with this library; if not, see http://www.gnu.org/copyleft/.
  */
 #include "bsenoise.genidl.hh"
-#include <bse/bsemain.h>
+#include <bse/bsemain.hh>
 #include <vector>
 
 using namespace std;

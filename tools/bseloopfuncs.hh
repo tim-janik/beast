@@ -17,8 +17,8 @@
 #ifndef __BSE_LOOPFUNCS_H__
 #define __BSE_LOOPFUNCS_H__
 
-#include <bse/gsldatautils.h>
-#include <bse/gslcommon.h>
+#include <bse/gsldatautils.hh>
+#include <bse/gslcommon.hh>
 
 G_BEGIN_DECLS
 

@@ -14,22 +14,22 @@
  * A copy of the GNU Lesser General Public License should ship along
  * with this library; if not, see http://www.gnu.org/copyleft/.
  */
-#include "bsetrack.h"
+#include "bsetrack.hh"
 
-#include "bseglobals.h"
-#include "bsestorage.h"
-#include "bsecsynth.h"
-#include "bsewave.h"
-#include "bsepart.h"
-#include "bsebus.h"
-#include "bsemain.h"
-#include "gslcommon.h"
-#include "bsesubsynth.h"
-#include "bseproject.h"
-#include "bsesong.h"
-#include "bsemidivoice.h"
-#include "bsemidireceiver.h"
-#include "bsewaverepo.h"
+#include "bseglobals.hh"
+#include "bsestorage.hh"
+#include "bsecsynth.hh"
+#include "bsewave.hh"
+#include "bsepart.hh"
+#include "bsebus.hh"
+#include "bsemain.hh"
+#include "gslcommon.hh"
+#include "bsesubsynth.hh"
+#include "bseproject.hh"
+#include "bsesong.hh"
+#include "bsemidivoice.hh"
+#include "bsemidireceiver.hh"
+#include "bsewaverepo.hh"
 #include "bsecxxplugin.hh"
 #include <string.h>
 

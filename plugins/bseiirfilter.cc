@@ -15,8 +15,8 @@
  * with this library; if not, see http://www.gnu.org/copyleft/.
  */
 #include "bseiirfilter.h"
-#include <bse/bseengine.h>
-#include <bse/gslfilter.h>
+#include <bse/bseengine.hh>
+#include <bse/gslfilter.hh>
 #include <bse/bsecxxplugin.hh>
 
 #include <string.h>

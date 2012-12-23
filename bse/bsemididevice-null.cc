@@ -14,9 +14,9 @@
  * A copy of the GNU Lesser General Public License should ship along
  * with this library; if not, see http://www.gnu.org/copyleft/.
  */
-#include	"bsemididevice-null.h"
+#include	"bsemididevice-null.hh"
 
-#include	"bseserver.h"
+#include	"bseserver.hh"
 
 static SFI_MSG_TYPE_DEFINE (debug_midi, "midi", SFI_MSG_DEBUG, NULL);
 #define MIDI_DEBUG(...) sfi_debug (debug_midi, __VA_ARGS__)

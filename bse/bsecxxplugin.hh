@@ -18,10 +18,10 @@
 #define __BSE_CXX_PLUGIN_H__
 
 #include <bse/bsecxxmodule.hh>
-#include <bse/bseexports.h>
-#include <bse/bseparam.h>
-#include <bse/bsecategories.h>
-#include <bse/bseplugin.h>
+#include <bse/bseexports.hh>
+#include <bse/bseparam.hh>
+#include <bse/bsecategories.hh>
+#include <bse/bseplugin.hh>
 #include <sfi/sficxx.hh>
 
 namespace Bse {
@@ -44,7 +44,7 @@ const SfiInt  MAX_FINE_TUNE = BSE_MAX_FINE_TUNE;
 #define BSE_CXX_DEFINE_EXPORTS()
 #define BSE_CXX_EXPORT_IDENTITY    &bse_builtin_export_identity
 extern "C" {
-extern ::BseExportIdentity bse_builtin_export_identity; /* sync with bseplugin.h */
+extern ::BseExportIdentity bse_builtin_export_identity; /* sync with bseplugin.hh */
 };
 #endif
 

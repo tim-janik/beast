@@ -14,12 +14,12 @@
  * A copy of the GNU Lesser General Public License should ship along
  * with this library; if not, see http://www.gnu.org/copyleft/.
  */
-#include "bseengineutils.h"
+#include "bseengineutils.hh"
 #include "bseblockutils.hh"
-#include "gslcommon.h"
-#include "bseenginenode.h"
-#include "bseengineschedule.h"
-#include "bsemathsignal.h"
+#include "gslcommon.hh"
+#include "bseenginenode.hh"
+#include "bseengineschedule.hh"
+#include "bsemathsignal.hh"
 #include <string.h>
 #include <unistd.h>
 #include <fcntl.h>

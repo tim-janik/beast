@@ -14,10 +14,10 @@
  * A copy of the GNU Lesser General Public License should ship along
  * with this library; if not, see http://www.gnu.org/copyleft/.
  */
-#include "bseengine.h"
-#include "gslcommon.h"
-#include "bseengineutils.h"
-#include "bseenginemaster.h"
+#include "bseengine.hh"
+#include "gslcommon.hh"
+#include "bseengineutils.hh"
+#include "bseenginemaster.hh"
 #include <fcntl.h>
 #include <errno.h>
 #include <unistd.h>
@@ -1426,7 +1426,7 @@ bse_engine_init (gboolean run_threaded)
   
   bse_engine_initialized = TRUE;
   
-  /* assert correct implmentation of accessor macros defined in bsedefs.h */
+  /* assert correct implmentation of accessor macros defined in bsedefs.hh */
   g_assert (&BSE_MODULE_GET_USER_DATA ((BseModule*) 42) == &((BseModule*) 42)->user_data);
   g_assert (&BSE_MODULE_GET_ISTREAMSP ((BseModule*) 42) == (void*) &((BseModule*) 42)->istreams);
   g_assert (&BSE_MODULE_GET_JSTREAMSP ((BseModule*) 42) == (void*) &((BseModule*) 42)->jstreams);

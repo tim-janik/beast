@@ -14,17 +14,17 @@
  * A copy of the GNU Lesser General Public License should ship along
  * with this library; if not, see http://www.gnu.org/copyleft/.
  */
-#include "bseserver.h"
-#include "bseproject.h"
-#include "bseengine.h"
-#include "gslcommon.h"
-#include "bseglue.h"
-#include "bsegconfig.h"
-#include "bsemidinotifier.h"
-#include "bsemain.h"		/* threads enter/leave */
-#include "bsepcmwriter.h"
-#include "bsemididevice-null.h"
-#include "bsejanitor.h"
+#include "bseserver.hh"
+#include "bseproject.hh"
+#include "bseengine.hh"
+#include "gslcommon.hh"
+#include "bseglue.hh"
+#include "bsegconfig.hh"
+#include "bsemidinotifier.hh"
+#include "bsemain.hh"		/* threads enter/leave */
+#include "bsepcmwriter.hh"
+#include "bsemididevice-null.hh"
+#include "bsejanitor.hh"
 #include "bsecxxplugin.hh"
 #include <sys/time.h>
 #include <sys/resource.h>

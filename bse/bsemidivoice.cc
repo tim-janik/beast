@@ -14,13 +14,13 @@
  * A copy of the GNU Lesser General Public License should ship along
  * with this library; if not, see http://www.gnu.org/copyleft/.
  */
-#include "bsemidivoice.h"
+#include "bsemidivoice.hh"
 
-#include "bseserver.h"
-#include "bsemidireceiver.h"
-#include "bseengine.h"
-#include "gslcommon.h"
-#include "bsesnet.h"
+#include "bseserver.hh"
+#include "bsemidireceiver.hh"
+#include "bseengine.hh"
+#include "gslcommon.hh"
+#include "bsesnet.hh"
 
 
 /* --- prototypes --- */

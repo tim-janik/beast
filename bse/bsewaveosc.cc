@@ -14,15 +14,15 @@
  * A copy of the GNU Lesser General Public License should ship along
  * with this library; if not, see http://www.gnu.org/copyleft/.
  */
-#include "bsewaveosc.h"
-#include <bse/bsemain.h>
-#include <bse/bsecategories.h>
-#include <bse/bseeditablesample.h>
-#include <bse/bsewaverepo.h>
-#include <bse/bseproject.h>
-#include <bse/bseengine.h>
-#include <bse/gslwavechunk.h>
-#include <bse/gslfilter.h>
+#include "bsewaveosc.hh"
+#include <bse/bsemain.hh>
+#include <bse/bsecategories.hh>
+#include <bse/bseeditablesample.hh>
+#include <bse/bsewaverepo.hh>
+#include <bse/bseproject.hh>
+#include <bse/bseengine.hh>
+#include <bse/gslwavechunk.hh>
+#include <bse/gslfilter.hh>
 
 
 

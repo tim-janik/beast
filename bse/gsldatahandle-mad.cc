@@ -15,9 +15,9 @@
  * with this library; if not, see http://www.gnu.org/copyleft/.
  */
 #include "topconfig.h"
-#include <bse/gsldatahandle-mad.h>
-#include "gslfilehash.h"
-#include <bse/gsldatautils.h>
+#include <bse/gsldatahandle-mad.hh>
+#include "gslfilehash.hh"
+#include <bse/gsldatautils.hh>
 #include <assert.h>
 #include <stdio.h>
 #include <unistd.h>

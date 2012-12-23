@@ -15,10 +15,10 @@
  * with this library; if not, see http://www.gnu.org/copyleft/.
  */
 #include <bse/bsecxxplugin.hh>
-#include <bse/bsewave.h>
+#include <bse/bsewave.hh>
 #include "standardguspatchenvelope.genidl.hh"
-#include <bse/gslwavechunk.h>
-#include <bse/bsemathsignal.h>
+#include <bse/gslwavechunk.hh>
+#include <bse/bsemathsignal.hh>
 
 using namespace std;
 using namespace Sfi;

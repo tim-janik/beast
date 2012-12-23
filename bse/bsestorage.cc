@@ -14,14 +14,14 @@
  * A copy of the GNU Lesser General Public License should ship along
  * with this library; if not, see http://www.gnu.org/copyleft/.
  */
-#include "bsestorage.h"
-#include "bseitem.h"
-#include "gsldatahandle.h"
-#include "gsldatahandle-vorbis.h"
-#include "gsldatautils.h"
-#include "gslcommon.h"
-#include "bseproject.h"
-#include "bseparasite.h"
+#include "bsestorage.hh"
+#include "bseitem.hh"
+#include "gsldatahandle.hh"
+#include "gsldatahandle-vorbis.hh"
+#include "gsldatautils.hh"
+#include "gslcommon.hh"
+#include "bseproject.hh"
+#include "bseparasite.hh"
 #include "bsecxxplugin.hh"
 #include <unistd.h>
 #include <fcntl.h>

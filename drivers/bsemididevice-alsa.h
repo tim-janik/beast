@@ -17,8 +17,8 @@
 #ifndef __BSE_MIDI_DEVICE_ALSA_H__
 #define __BSE_MIDI_DEVICE_ALSA_H__
 
-#include <bse/bsemididevice.h>
-#include <bse/bseplugin.h>
+#include <bse/bsemididevice.hh>
+#include <bse/bseplugin.hh>
 
 G_BEGIN_DECLS
 

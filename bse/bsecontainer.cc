@@ -14,13 +14,13 @@
  * A copy of the GNU Lesser General Public License should ship along
  * with this library; if not, see http://www.gnu.org/copyleft/.
  */
-#include "bsecontainer.h"
-#include "bseundostack.h"
-#include "bsesource.h"
-#include "bseproject.h"
-#include "bsestorage.h"
-#include "bsemain.h"
-#include "bseengine.h"
+#include "bsecontainer.hh"
+#include "bseundostack.hh"
+#include "bsesource.hh"
+#include "bseproject.hh"
+#include "bsestorage.hh"
+#include "bsemain.hh"
+#include "bseengine.hh"
 #include <stdlib.h>
 #include <string.h>
 

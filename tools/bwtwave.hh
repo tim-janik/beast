@@ -17,9 +17,9 @@
 #ifndef __BWT_WAVE_H__
 #define __BWT_WAVE_H__
 
-#include <bse/gsldatahandle.h>
-#include <bse/gslwavechunk.h>
-#include <bse/bseenums.h>
+#include <bse/gsldatahandle.hh>
+#include <bse/gslwavechunk.hh>
+#include <bse/bseenums.hh>
 #include <string>
 #include <list>
 #include <vector>

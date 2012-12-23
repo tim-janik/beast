@@ -17,8 +17,8 @@
 #ifndef __DAV_SYNDRUM_H__
 #define __DAV_SYNDRUM_H__
 
-#include <bse/bseplugin.h>
-#include <bse/bsesource.h>
+#include <bse/bseplugin.hh>
+#include <bse/bsesource.hh>
 
 G_BEGIN_DECLS
 

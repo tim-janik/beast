@@ -14,9 +14,9 @@
  * A copy of the GNU Lesser General Public License should ship along
  * with this library; if not, see http://www.gnu.org/copyleft/.
  */
-#include "bseundostack.h"
-#include "bseproject.h"
-#include "bsecontainer.h"
+#include "bseundostack.hh"
+#include "bseproject.hh"
+#include "bsecontainer.hh"
 #include <string.h>
 
 static SFI_MSG_TYPE_DEFINE (debug_undo, "undo", SFI_MSG_DEBUG, NULL);

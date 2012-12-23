@@ -14,8 +14,8 @@
  * A copy of the GNU Lesser General Public License should ship along
  * with this library; if not, see http://www.gnu.org/copyleft/.
  */
-#include <bse/gsldatahandle.h>
-#include <bse/gslwavechunk.h>
+#include <bse/gsldatahandle.hh>
+#include <bse/gslwavechunk.hh>
 #include "bseloopfuncs.hh"
 #include "bwtwave.hh"
 #include <unistd.h>

@@ -17,7 +17,7 @@
 #include "bsecxxutils.hh"
 
 #include "bsecxxbase.hh"
-#include "bsecategories.h"
+#include "bsecategories.hh"
 #include <list>
 using namespace std;
 
@@ -142,7 +142,7 @@ init_exception_handler ()
 }
 
 extern "C" void
-bse_cxx_init (void)  // prototyped in bseutils.h
+bse_cxx_init (void)  // prototyped in bseutils.hh
 {
   init_exception_handler ();
   Bse::TypeRegistry::init_types();

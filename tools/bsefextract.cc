@@ -14,13 +14,13 @@
  * A copy of the GNU Lesser General Public License should ship along
  * with this library; if not, see http://www.gnu.org/copyleft/.
  */
-#include <bse/bsemain.h>
-#include <bse/bseengine.h>
-#include <bse/bsemathsignal.h>
-#include <bse/gsldatautils.h>
-#include <bse/bseloader.h>
-#include <bse/gslfft.h>
-#include <bse/gslfilter.h>
+#include <bse/bsemain.hh>
+#include <bse/bseengine.hh>
+#include <bse/bsemathsignal.hh>
+#include <bse/gsldatautils.hh>
+#include <bse/bseloader.hh>
+#include <bse/gslfft.hh>
+#include <bse/gslfilter.hh>
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>

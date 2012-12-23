@@ -16,7 +16,7 @@
  */
 #include "bsesequencer.h"
 
-#include <bse/bseengine.h>
+#include <bse/bseengine.hh>
 #include <bse/bsecxxplugin.hh>
 
 

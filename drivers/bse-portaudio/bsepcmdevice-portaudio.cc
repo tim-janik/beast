@@ -18,7 +18,7 @@
 #include "configure.h"
 #include "bsepcmdevice-portaudio.hh"
 #include <portaudio.h>
-#include <bse/gsldatautils.h>
+#include <bse/gsldatautils.hh>
 #include <string.h>
 #include <errno.h>
 #include <string>

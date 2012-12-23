@@ -14,13 +14,13 @@
  * A copy of the GNU Lesser General Public License should ship along
  * with this library; if not, see http://www.gnu.org/copyleft/.
  */
-#include "bseprocedure.h"
-#include "bsemain.h"
+#include "bseprocedure.hh"
+#include "bsemain.hh"
 #include <gobject/gvaluecollector.h>
-#include "bseobject.h"
-#include "bseserver.h"
-#include "bsestorage.h"
-#include "bseexports.h"
+#include "bseobject.hh"
+#include "bseserver.hh"
+#include "bsestorage.hh"
+#include "bseexports.hh"
 #include <string.h>
 
 static SFI_MSG_TYPE_DEFINE (debug_procs, "procs", SFI_MSG_DEBUG, NULL);

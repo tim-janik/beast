@@ -18,7 +18,7 @@
 #include <bse/bseblockutils.hh>
 // #define TEST_VERBOSE
 #include <sfi/sfitests.hh>
-#include <bse/bsemain.h>
+#include <bse/bsemain.hh>
 #include "topconfig.h"
 
 template<typename T> static bool

@@ -14,13 +14,13 @@
  * A copy of the GNU Lesser General Public License should ship along
  * with this library; if not, see http://www.gnu.org/copyleft/.
  */
-#include "bsesubsynth.h"
+#include "bsesubsynth.hh"
 
-#include "bsecategories.h"
-#include "bsecsynth.h"
-#include "bseproject.h"
-#include "bsemidireceiver.h"
-#include "bseengine.h"
+#include "bsecategories.hh"
+#include "bsecsynth.hh"
+#include "bseproject.hh"
+#include "bsemidireceiver.hh"
+#include "bseengine.hh"
 
 #include <string.h>
 

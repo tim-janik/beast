@@ -14,11 +14,11 @@
  * A copy of the GNU Lesser General Public License should ship along
  * with this library; if not, see http://www.gnu.org/copyleft/.
  */
-#include        "bsecategories.h"
-#include        "bsesource.h"
-#include        "bseprocedure.h"
-#include        "bsemain.h"
-#include        "bsestandardsynths.h"
+#include        "bsecategories.hh"
+#include        "bsesource.hh"
+#include        "bseprocedure.hh"
+#include        "bsemain.hh"
+#include        "bsestandardsynths.hh"
 #include        "topconfig.h"
 #include	<stdio.h>
 #include	<stdlib.h>

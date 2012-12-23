@@ -14,11 +14,11 @@
  * A copy of the GNU Lesser General Public License should ship along
  * with this library; if not, see http://www.gnu.org/copyleft/.
  */
-#include "gslwaveosc.h"
-#include "gslfilter.h"
-#include "bsemathsignal.h"
-#include "bseengine.h"	/* for bse_engine_sample_freq() */
-#include "bsemain.h"
+#include "gslwaveosc.hh"
+#include "gslfilter.hh"
+#include "bsemathsignal.hh"
+#include "bseengine.hh"	/* for bse_engine_sample_freq() */
+#include "bsemain.hh"
 #include <string.h>
 
 static SFI_MSG_TYPE_DEFINE (debug_waveosc, "waveosc", SFI_MSG_DEBUG, NULL);

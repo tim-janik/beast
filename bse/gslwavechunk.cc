@@ -14,11 +14,11 @@
  * A copy of the GNU Lesser General Public License should ship along
  * with this library; if not, see http://www.gnu.org/copyleft/.
  */
-#include "gslwavechunk.h"
-#include "bsemain.h"
-#include "gslcommon.h"
-#include "gsldatahandle.h"
-#include "bsemathsignal.h"
+#include "gslwavechunk.hh"
+#include "bsemain.hh"
+#include "gslcommon.hh"
+#include "gsldatahandle.hh"
+#include "bsemathsignal.hh"
 #include <string.h>
 
 

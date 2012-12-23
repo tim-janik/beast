@@ -18,10 +18,10 @@
 #include "bsewavetool.hh"
 #include "topconfig.h"
 #include "bwtwave.hh"
-#include <bse/bsemain.h>	/* for bse_init_intern() */
-#include <bse/bseloader.h>
-#include <bse/gslvorbis-enc.h>
-#include <bse/gsldatahandle-vorbis.h>
+#include <bse/bsemain.hh>	/* for bse_init_intern() */
+#include <bse/bseloader.hh>
+#include <bse/gslvorbis-enc.hh>
+#include <bse/gsldatahandle-vorbis.hh>
 #include <bse/bseresamplerimpl.hh>
 #include <birnet/birnettests.h>
 #include <stdlib.h>

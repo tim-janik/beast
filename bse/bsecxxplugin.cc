@@ -15,8 +15,8 @@
  * with this library; if not, see http://www.gnu.org/copyleft/.
  */
 #include "bsecxxplugin.hh"
-#include "bseplugin.h"
-#include "bsemain.h"
+#include "bseplugin.hh"
+#include "bsemain.hh"
 #include <new>
 
 namespace Bse {

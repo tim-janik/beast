@@ -14,8 +14,8 @@
  * A copy of the GNU Lesser General Public License should ship along
  * with this library; if not, see http://www.gnu.org/copyleft/.
  */
-#include "gslvorbis-enc.h"
-#include <bse/bseieee754.h>
+#include "gslvorbis-enc.hh"
+#include <bse/bseieee754.hh>
 #include <ogg/ogg.h>
 #include <vorbis/codec.h>
 #include <vorbis/vorbisenc.h>

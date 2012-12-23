@@ -14,23 +14,23 @@
  * A copy of the GNU Lesser General Public License should ship along
  * with this library; if not, see http://www.gnu.org/copyleft/.
  */
-#include "bseproject.h"
+#include "bseproject.hh"
 
-#include "bsesuper.h"
-#include "bsestorage.h"
-#include "bsesong.h"
-#include "bsesnet.h"
-#include "bsecsynth.h"
-#include "bsewaverepo.h"
-#include "bsesequencer.h"
-#include "bseserver.h"
-#include "bseundostack.h"
-#include "bsemain.h"
-#include "bsestandardsynths.h"
-#include "bsemidireceiver.h"
-#include "bsemidinotifier.h"
-#include "gslcommon.h"
-#include "bseengine.h"
+#include "bsesuper.hh"
+#include "bsestorage.hh"
+#include "bsesong.hh"
+#include "bsesnet.hh"
+#include "bsecsynth.hh"
+#include "bsewaverepo.hh"
+#include "bsesequencer.hh"
+#include "bseserver.hh"
+#include "bseundostack.hh"
+#include "bsemain.hh"
+#include "bsestandardsynths.hh"
+#include "bsemidireceiver.hh"
+#include "bsemidinotifier.hh"
+#include "gslcommon.hh"
+#include "bseengine.hh"
 #include <string.h>
 #include <stdlib.h>
 #include <fcntl.h>

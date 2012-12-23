@@ -16,7 +16,7 @@
  */
 #include "bstutils.h"
 #include "bstcxxutils.h"
-#include "bse/bse.h"
+#include "bse/bse.hh"
 #include "bstapp.h"
 #include "bstsplash.h"
 #include "bstxkb.h"

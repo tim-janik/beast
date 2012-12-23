@@ -16,8 +16,8 @@
  * with this library; if not, see http://www.gnu.org/copyleft/.
  */
 #include "davorgan.genidl.hh"
-#include <bse/bsemathsignal.h>
-#include <bse/bsemain.h>
+#include <bse/bsemathsignal.hh>
+#include <bse/bsemain.hh>
 #include <vector>
 
 namespace Bse {

@@ -14,9 +14,9 @@
  * A copy of the GNU Lesser General Public License should ship along
  * with this library; if not, see http://www.gnu.org/copyleft/.
  */
-#include	"bsesuper.h"
+#include	"bsesuper.hh"
 
-#include	"bseproject.h"
+#include	"bseproject.hh"
 #include	<string.h>
 
 

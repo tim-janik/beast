@@ -17,8 +17,8 @@
 #ifndef __BSE_SIMPLE_ADSR_H__
 #define __BSE_SIMPLE_ADSR_H__
 
-#include <bse/bseplugin.h>
-#include <bse/bsesource.h>
+#include <bse/bseplugin.hh>
+#include <bse/bsesource.hh>
 
 G_BEGIN_DECLS
 

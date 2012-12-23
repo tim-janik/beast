@@ -24,9 +24,9 @@
  */
 #include "davxtalstrings.h"
 #include <bse/bsecxxplugin.hh>
-#include <bse/bseengine.h>
-#include <bse/bsemathsignal.h>
-#include <bse/bsemain.h>
+#include <bse/bseengine.hh>
+#include <bse/bsemathsignal.hh>
+#include <bse/bsemain.hh>
 
 #include <string.h>
 

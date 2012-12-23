@@ -16,7 +16,7 @@
  */
 #include "topconfig.h"
 #include "bstutils.h"
-#include "bse/bse.h"
+#include "bse/bse.hh"
 #include "bstdbmeter.h"
 #include "bstparam.h"
 #include "bstgconfig.h"

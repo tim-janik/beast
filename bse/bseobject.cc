@@ -14,14 +14,14 @@
  * A copy of the GNU Lesser General Public License should ship along
  * with this library; if not, see http://www.gnu.org/copyleft/.
  */
-#include "bseobject.h"
+#include "bseobject.hh"
 
-#include "bseexports.h"
-#include "bsestorage.h"
-#include "bseparasite.h"
-#include "bsecategories.h"
-#include "bsegconfig.h"
-#include "bsesource.h"		/* debug hack */
+#include "bseexports.hh"
+#include "bsestorage.hh"
+#include "bseparasite.hh"
+#include "bsecategories.hh"
+#include "bsegconfig.hh"
+#include "bsesource.hh"		/* debug hack */
 #include <string.h>
 
 static SFI_MSG_TYPE_DEFINE (debug_leaks, "leaks", SFI_MSG_DEBUG, NULL);

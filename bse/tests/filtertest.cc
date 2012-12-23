@@ -14,13 +14,13 @@
  * A copy of the GNU Lesser General Public License should ship along
  * with this library; if not, see http://www.gnu.org/copyleft/.
  */
-#include <bse/bsedefs.h>
+#include <bse/bsedefs.hh>
 // #define TEST_VERBOSE
 #include <sfi/sfitests.hh>
-#include <bse/bsefilter.h>
-#include <bse/bsemain.h>
-#include <bse/gslfilter.h> // FIXME
-#include <bse/bseglobals.h> // FIXME
+#include <bse/bsefilter.hh>
+#include <bse/bsemain.hh>
+#include <bse/gslfilter.hh> // FIXME
+#include <bse/bseglobals.hh> // FIXME
 #include "topconfig.h"
 #include <math.h>
 #include <stdlib.h>

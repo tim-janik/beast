@@ -17,8 +17,8 @@
 #ifndef __BSE_PCM_DEVICE_ALSA_H__
 #define __BSE_PCM_DEVICE_ALSA_H__
 
-#include <bse/bsepcmdevice.h>
-#include <bse/bseplugin.h>
+#include <bse/bsepcmdevice.hh>
+#include <bse/bseplugin.hh>
 
 G_BEGIN_DECLS
 

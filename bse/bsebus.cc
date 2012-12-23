@@ -14,16 +14,16 @@
  * A copy of the GNU Lesser General Public License should ship along
  * with this library; if not, see http://www.gnu.org/copyleft/.
  */
-#include "bsebus.h"
-#include "bsecategories.h"
-#include "bsetrack.h"
-#include "bsesong.h"
-#include "bseengine.h"
-#include "bsecsynth.h"
-#include "bsesubiport.h"
-#include "bsesuboport.h"
-#include "bseproject.h"
-#include "bsestorage.h"
+#include "bsebus.hh"
+#include "bsecategories.hh"
+#include "bsetrack.hh"
+#include "bsesong.hh"
+#include "bseengine.hh"
+#include "bsecsynth.hh"
+#include "bsesubiport.hh"
+#include "bsesuboport.hh"
+#include "bseproject.hh"
+#include "bsestorage.hh"
 #include "bsecxxplugin.hh"
 
 

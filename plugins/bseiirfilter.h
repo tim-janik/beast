@@ -17,7 +17,7 @@
 #ifndef __BSE_IIR_FILTER_H__
 #define __BSE_IIR_FILTER_H__
 
-#include <bse/bsesource.h>
+#include <bse/bsesource.hh>
 
 #ifdef __cplusplus
 extern "C" {

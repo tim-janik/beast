@@ -14,9 +14,9 @@
  * A copy of the GNU Lesser General Public License should ship along
  * with this library; if not, see http://www.gnu.org/copyleft/.
  */
-#include <bse/gslwavechunk.h>
-#include <bse/gsldatahandle.h>
-#include <bse/bsemain.h>
+#include <bse/gslwavechunk.hh>
+#include <bse/gsldatahandle.hh>
+#include <bse/bsemain.hh>
 #include <sfi/sfitests.hh>
 #include <stdio.h>
 #include <stdlib.h>

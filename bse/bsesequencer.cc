@@ -14,16 +14,16 @@
  * A copy of the GNU Lesser General Public License should ship along
  * with this library; if not, see http://www.gnu.org/copyleft/.
  */
-#include "bsesequencer.h"
-#include "gslcommon.h"
-#include "bsemathsignal.h"
-#include "bseengine.h"
-#include "bsetrack.h"
-#include "bsepart.h"
-#include "bseproject.h"
-#include "bsemidireceiver.h"
-#include "bsemain.h"
-#include "bseieee754.h"
+#include "bsesequencer.hh"
+#include "gslcommon.hh"
+#include "bsemathsignal.hh"
+#include "bseengine.hh"
+#include "bsetrack.hh"
+#include "bsepart.hh"
+#include "bseproject.hh"
+#include "bsemidireceiver.hh"
+#include "bsemain.hh"
+#include "bseieee754.hh"
 #include <sys/poll.h>
 #include <unistd.h>
 #include <fcntl.h>

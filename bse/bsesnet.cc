@@ -19,16 +19,16 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <stdlib.h>
-#include <bse/bseengine.h>
-#include <bse/gslcommon.h>
-#include "bsesnet.h"
+#include <bse/bseengine.hh>
+#include <bse/gslcommon.hh>
+#include "bsesnet.hh"
 
-#include "bseproject.h"
-#include "bsecategories.h"
-#include "bsestorage.h"
-#include "bsemain.h"
-#include "bsecontextmerger.h"
-#include "bsemidireceiver.h"
+#include "bseproject.hh"
+#include "bsecategories.hh"
+#include "bsestorage.hh"
+#include "bsemain.hh"
+#include "bsecontextmerger.hh"
+#include "bsemidireceiver.hh"
 
 
 typedef struct

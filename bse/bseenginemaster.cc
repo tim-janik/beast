@@ -14,14 +14,14 @@
  * A copy of the GNU Lesser General Public License should ship along
  * with this library; if not, see http://www.gnu.org/copyleft/.
  */
-#include "bseenginemaster.h"
+#include "bseenginemaster.hh"
 #include "bseblockutils.hh"
-#include "gslcommon.h"
-#include "bsemain.h" /* bse_log_handler */
-#include "bseenginenode.h"
-#include "bseengineutils.h"
-#include "bseengineschedule.h"
-#include "bseieee754.h"
+#include "gslcommon.hh"
+#include "bsemain.hh" /* bse_log_handler */
+#include "bseenginenode.hh"
+#include "bseengineutils.hh"
+#include "bseengineschedule.hh"
+#include "bseieee754.hh"
 #include <string.h>
 #include <unistd.h>
 #include <sys/poll.h>

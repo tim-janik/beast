@@ -19,8 +19,8 @@
 
 #define  BSE_PLUGIN_NAME  "BseFreeVerb"
 
-#include <bse/bseplugin.h>
-#include <bse/bsesource.h>
+#include <bse/bseplugin.hh>
+#include <bse/bsesource.hh>
 #include "bsefreeverbcpp.h"
 
 G_BEGIN_DECLS

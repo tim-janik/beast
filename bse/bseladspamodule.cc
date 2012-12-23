@@ -14,11 +14,11 @@
  * A copy of the GNU Lesser General Public License should ship along
  * with this library; if not, see http://www.gnu.org/copyleft/.
  */
-#include "bseladspamodule.h"
+#include "bseladspamodule.hh"
 #include "bseblockutils.hh"
-#include "bsecategories.h"
-#include "bseengine.h"
-#include "bsemathsignal.h"
+#include "bsecategories.hh"
+#include "bseengine.hh"
+#include "bsemathsignal.hh"
 #include <string.h>
 
 

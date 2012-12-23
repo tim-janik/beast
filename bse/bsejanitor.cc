@@ -14,13 +14,13 @@
  * A copy of the GNU Lesser General Public License should ship along
  * with this library; if not, see http://www.gnu.org/copyleft/.
  */
-#include "bsejanitor.h"
-#include "bsemain.h"
-#include "bseglue.h"
-#include "bseserver.h"
-#include "bsecontainer.h"
-#include "bseprocedure.h"
-#include "bsescripthelper.h"
+#include "bsejanitor.hh"
+#include "bsemain.hh"
+#include "bseglue.hh"
+#include "bseserver.hh"
+#include "bsecontainer.hh"
+#include "bseprocedure.hh"
+#include "bsescripthelper.hh"
 
 
 enum

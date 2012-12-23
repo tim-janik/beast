@@ -14,11 +14,11 @@
  * A copy of the GNU Lesser General Public License should ship along
  * with this library; if not, see http://www.gnu.org/copyleft/.
  */
-#include "bsecontextmerger.h"
+#include "bsecontextmerger.hh"
 #include "bseblockutils.hh"
-#include "bsesnet.h"
-#include "bseserver.h"
-#include "bseengine.h"
+#include "bsesnet.hh"
+#include "bseserver.hh"
+#include "bseengine.hh"
 
 #include <string.h>
 

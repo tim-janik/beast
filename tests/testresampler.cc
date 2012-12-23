@@ -18,10 +18,10 @@
 #include <bse/bseresamplerimpl.hh>
 #include <bse/bseblockutils.hh>
 #include <birnet/birnettests.h>
-#include <bse/bsemain.h>
-#include <bse/bsemath.h>
-#include <bse/bsemathsignal.h>
-#include <bse/gslfft.h>
+#include <bse/bsemain.hh>
+#include <bse/bsemath.hh>
+#include <bse/bsemathsignal.hh>
+#include <bse/gslfft.hh>
 #include "topconfig.h"
 
 #include <stdio.h>

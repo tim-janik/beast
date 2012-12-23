@@ -14,12 +14,12 @@
  * A copy of the GNU Lesser General Public License should ship along
  * with this library; if not, see http://www.gnu.org/copyleft/.
  */
-#include <bse/bseplugin.h>
-#include <bse/bseprocedure.h>
-#include <bse/bsebus.h>
-#include <bse/bsetrack.h>
-#include <bse/bsesong.h>
-#include <bse/bseundostack.h>
+#include <bse/bseplugin.hh>
+#include <bse/bseprocedure.hh>
+#include <bse/bsebus.hh>
+#include <bse/bsetrack.hh>
+#include <bse/bsesong.hh>
+#include <bse/bseundostack.hh>
 
 
 AUTHORS	= "Tim Janik <timj@gtk.org>";

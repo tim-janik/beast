@@ -17,9 +17,9 @@
  */
 #include "davcanyondelay.h"
 
-#include <bse/bseengine.h>
+#include <bse/bseengine.hh>
 #include <bse/bsecxxplugin.hh>
-#include <bse/bsemathsignal.h>
+#include <bse/bsemathsignal.hh>
 #include <string.h>
 
 

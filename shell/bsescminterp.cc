@@ -18,7 +18,7 @@
 #include <errno.h>
 #include "bsescminterp.hh"
 #include <sfi/sficomwire.hh>
-#include <bse/bseglue.h>
+#include <bse/bseglue.hh>
 
 /* Data types:
  * SCM
