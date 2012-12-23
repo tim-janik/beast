@@ -1,7 +1,4 @@
 # BEAST/BSE - Better Audio System / Better Sound Engine
-# Copyright (C) 1998-2005 Tim Janik
-#
-## GNU Lesser General Public License version 2 or any later version.
 include $(top_srcdir)/Makefile.decl
 
 SUBDIRS = . data birnet sfi bse plugins drivers shell beast-gtk launchers library tools po tests docs

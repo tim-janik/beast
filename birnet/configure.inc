@@ -1,7 +1,5 @@
+dnl # Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 dnl # Birnet                                       -*- Mode: shell-script; -*-
-dnl # Copyright (C) 2006 Tim Janik
-dnl #
-dnl # GNU Lesser General Public License version 2 or any later version.
 
 dnl # BIRNET_COMPUTE_SYSVAL(IDENTIFIER, INCLUDES) defines & AC_SUBST()s BIRNET_SYSVAL_$1
 AC_DEFUN([BIRNET_SUBST_COMPUTED_SYSVAL], 

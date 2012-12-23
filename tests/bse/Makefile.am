@@ -1,8 +1,4 @@
 # beast/tests/bse
-# Copyright (C) 2003-2006 Tim Janik
-# Copyright (C) 2005 Stefan Westerfeld
-#
-## GNU Lesser General Public License version 2 or any later version.
 include $(top_srcdir)/Makefile.decl
 
 INCLUDES += -I$(top_srcdir) -I$(top_builddir) -I$(srcdir) -I. $(SFI_CFLAGS)

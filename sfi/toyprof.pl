@@ -1,10 +1,5 @@
 #!/usr/bin/perl -w
-# TOYPROF - Poor man's profiling toy
-# Copyright (C) 2001 Tim Janik
-#
-# This code is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+# CC0 Public Domain: http://creativecommons.org/publicdomain/zero/1.0/
 
 my $unknown = "???";
 my $refs_file = 0;
