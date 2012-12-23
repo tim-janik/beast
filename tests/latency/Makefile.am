@@ -1,7 +1,4 @@
 # BSE - Better Sound Engine
-# Copyright (C) 2004 Tim Janik
-#
-## GNU Lesser General Public License version 2 or any later version.
 include $(top_srcdir)/Makefile.decl
 
 INCLUDES += -I$(top_srcdir) -I$(top_builddir) -I$(srcdir) -I. $(SFI_CFLAGS)
