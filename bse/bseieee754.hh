@@ -1,16 +1,12 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #ifndef __BSE_IEEE754_H__
 #define __BSE_IEEE754_H__
-
 #include <bse/bsedefs.hh>
 #include <math.h> /* signbit */
-
 /* override math.h definition of PI */
 #undef PI
 #define PI                            (3.141592653589793238462643383279502884197)    // pi
-
 G_BEGIN_DECLS
-
 /* IEEE 754 single precision floating point layout:
  *        31 30           23 22            0
  * +--------+---------------+---------------+
@@ -25,7 +21,6 @@ G_BEGIN_DECLS
  * +--------+----------------+----------------+ +---------------+
  * B0--------------->B1---------->B2--->B3---->  B4->B5->B6->B7->
  */
-
 /* floating point type related constants */
 #define BSE_FLOAT_BIAS		 (127)
 #define	BSE_FLOAT_MAX_NORMAL	 (3.40282347e+38)	   /* 7f7fffff, 2^128 * (1 - BSE_FLOAT_EPSILON) */
@@ -43,14 +38,11 @@ G_BEGIN_DECLS
 #define	BSE_DOUBLE_NAN		 (_bse_dnan_union.d)
 #define	BSE_FLOAT_INF		 (_bse_finf_union.f)
 #define	BSE_FLOAT_NAN		 (_bse_fnan_union.f)
-
 /* multiply with base2 exponent to get base10 exponent (for nomal numbers) */
 #define BSE_LOG_2_BASE_10         (0.30102999566398119521)
-
 /* the following macros work only on variables
  * and evaluate arguments multiple times
  */
-
 /* single precision value checks */
 #define	BSE_FLOAT_IS_ZERO(f)		((f) == 0.0)	/* compiler knows this one */
 #define	BSE_FLOAT_IS_NORMAL(f)		(BSE_FLOAT_PARTS (f).mpn.biased_exponent > 0 && \
@@ -67,7 +59,6 @@ G_BEGIN_DECLS
 #else
 #define BSE_FLOAT_SIGN(f)               (BSE_FLOAT_PARTS (f).mpn.sign)
 #endif
-
 /* double precision value checks */
 #define	BSE_DOUBLE_IS_ZERO(d)		((d) == 0.0)	/* compiler knows this one */
 #define	BSE_DOUBLE_IS_NORMAL(d)		(BSE_DOUBLE_PARTS (d).mpn.biased_exponent > 0 && \
@@ -89,11 +80,9 @@ G_BEGIN_DECLS
 #else
 #define BSE_DOUBLE_SIGN(d)              (BSE_DOUBLE_PARTS (d).mpn.sign)
 #endif
-
 /* --- denormal float handling --- */
 static inline float	bse_float_zap_denormal	(register float  fval);	/* slow */
 static inline double	bse_double_zap_denormal	(register double dval);	/* slow */
-
 /* --- coarse but fast variants to eliminate denormalized floats --- */
 /* pure arithmetic flushing, fastest with -ffast-math */
 #define	BSE_FLOAT_FLUSH(mutable_float)		BSE_FLOAT_FLUSH_with_threshold (mutable_float)
@@ -106,7 +95,6 @@ static inline double	bse_double_zap_denormal	(register double dval);	/* slow */
 #define	BSE_FLOAT_FLUSH(mutable_float)		BSE_FLOAT_FLUSH_with_if (mutable_float)
 #define	BSE_DOUBLE_FLUSH(mutable_double)	BSE_DOUBLE_FLUSH_with_if (mutable_double)
 #endif
-
 /* --- rounding --- */
 typedef	unsigned short int	BseFpuState;
 #if defined (__i386__) && defined (__GNUC__)
@@ -123,7 +111,6 @@ static inline int	bse_dtoi /* nearest */	(register double	 f)  G_GNUC_CONST;
 #endif
 static inline guint64   bse_dtoull              (const double            v);
 static inline gint64    bse_dtoll               (const double            v);
-
 /* --- implementation bits --- */
 #if G_BYTE_ORDER == G_LITTLE_ENDIAN
 typedef union
@@ -176,12 +163,10 @@ typedef union
 #else /* !G_LITTLE_ENDIAN && !G_BIG_ENDIAN */
 #error unknown ENDIAN type
 #endif /* !G_LITTLE_ENDIAN && !G_BIG_ENDIAN */
-
 static const union { unsigned char c[8]; double d; } _bse_dnan_union = { _BSE_DOUBLE_NAN_BYTES };
 static const union { unsigned char c[8]; double d; } _bse_dinf_union = { _BSE_DOUBLE_INF_BYTES };
 static const union { unsigned char c[4]; float f; }  _bse_fnan_union = { _BSE_FLOAT_NAN_BYTES };
 static const union { unsigned char c[4]; float f; }  _bse_finf_union = { _BSE_FLOAT_INF_BYTES };
-
 /* get structured parts of floating point numbers */
 #if __cplusplus
 extern inline BseFloatIEEE754  BSE_FLOAT_PARTS  (register float  fvalue) { BseFloatIEEE754  fret = { fvalue }; return fret; }
@@ -190,7 +175,6 @@ extern inline BseDoubleIEEE754 BSE_DOUBLE_PARTS (register double dvalue) { BseDo
 #define	BSE_FLOAT_PARTS(f)		(((BseFloatIEEE754) (f)))
 #define	BSE_DOUBLE_PARTS(d)		(((BseDoubleIEEE754) (d)))
 #endif
-
 /* --- implementation details --- */
 static inline float
 bse_float_zap_denormal (register float  fval)
@@ -200,7 +184,6 @@ bse_float_zap_denormal (register float  fval)
   else
     return fval;
 }
-
 static inline double
 bse_double_zap_denormal	(register double dval)
 {
@@ -209,7 +192,6 @@ bse_double_zap_denormal	(register double dval)
   else
     return dval;
 }
-
 /* use float arithmetic cancellation to eliminate denormals */
 #define	BSE_FLOAT_FLUSH_with_threshold(mutable_float)	do { 	\
   volatile float __forced_float = 1e-29 + mutable_float;	\
@@ -235,13 +217,11 @@ bse_double_zap_denormal	(register double dval)
   if (G_UNLIKELY (fabs (mutable_double) < 1e-290))	\
     mutable_double = 0;					\
 } while (0)
-
 #if defined (__i386__) && defined (__GNUC__)
 static inline void
 bse_fpu_setround (BseFpuState *cw)
 {
   BseFpuState cv;
-  
   __asm__ ("fnstcw %0"
 	   : "=m" (*&cv));
   *cw = cv;
@@ -254,7 +234,6 @@ static inline int
 bse_fpu_okround (void)
 {
   BseFpuState cv;
-  
   __asm__ ("fnstcw %0"
 	   : "=m" (*&cv));
   return !(cv & 0x0c00);
@@ -270,7 +249,6 @@ static inline int G_GNUC_CONST
 bse_ftoi (register float f)
 {
   int r;
-  
   __asm__ ("fistl %0"
 	   : "=m" (r)
 	   : "t" (f));
@@ -280,7 +258,6 @@ static inline int G_GNUC_CONST
 bse_dtoi (register double f)
 {
   int r;
-  
   __asm__ ("fistl %0"
 	   : "=m" (r)
 	   : "t" (f));
@@ -311,7 +288,5 @@ bse_dtoll (const double v)
 {
   return v < -0.0 ? (gint64) (v - 0.5) : (gint64) (v + 0.5);
 }
-
 G_END_DECLS
-
 #endif /* __BSE_IEEE754_H__ */		/* vim: set ts=8 sw=2 sts=2: */

@@ -3,12 +3,8 @@
 #include <bse/bseprocedure.hh>
 #include <bse/bsesnet.hh>
 #include <bse/bsemain.hh>
-
-
 AUTHORS	= "Tim Janik <timj@gtk.org>";
 LICENSE = "GNU Lesser General Public License";
-
-
 METHOD (BseSNet, supports-user-synths) {
   HELP	= "Check whether users may edit synthesis modules of this network";
   IN	= bse_param_spec_object ("snet", "Synth Net", NULL,
@@ -21,17 +17,13 @@ METHOD (BseSNet, supports-user-synths) {
 {
   /* extract parameter values */
   BseSNet *snet = (BseSNet*) bse_value_get_object (in_values++);
-
   /* check parameters */
   if (!BSE_IS_SNET (snet))
     return BSE_ERROR_PROC_PARAM_INVAL;
-
   /* set output parameters */
   sfi_value_set_bool (out_values++, BSE_SNET_USER_SYNTH (snet));
-
   return BSE_ERROR_NONE;
 }
-
 METHOD (BseSNet, can-create-source) {
   HELP	= "Check whether inserting a new module into a synthesis network is possible";
   IN	= bse_param_spec_object ("snet", "Synth Net", NULL,
@@ -50,24 +42,19 @@ METHOD (BseSNet, can-create-source) {
   const gchar *type_name = sfi_value_get_string (in_values++);
   GType type = g_type_from_name (type_name);
   BseErrorType error = BSE_ERROR_NONE;
-  
   /* check parameters */
   if (!BSE_IS_SNET (snet))
     return BSE_ERROR_PROC_PARAM_INVAL;
-  
   /* action */
   if (!BSE_SNET_USER_SYNTH (snet) && !BSE_DBG_EXT)
     error = BSE_ERROR_NOT_OWNER;
   else if (!g_type_is_a (type, BSE_TYPE_SOURCE) ||
 	   g_type_is_a (type, BSE_TYPE_CONTAINER))
     error = BSE_ERROR_SOURCE_TYPE_INVALID;
-  
   /* set output parameters */
   g_value_set_enum (out_values++, error);
-  
   return BSE_ERROR_NONE;
 }
-
 METHOD (BseSNet, create-source) {
   HELP	= "Insert a new module into a synthesis network";
   IN	= bse_param_spec_object ("snet", "Synth Net", NULL,
@@ -86,26 +73,21 @@ METHOD (BseSNet, create-source) {
   BseItem *child;
   BseUndoStack *ustack;
   BseErrorType error;
-
   /* check parameters */
   if (!BSE_IS_SNET (container))
     return BSE_ERROR_PROC_PARAM_INVAL;
   if (bse_item_exec (container, "can-create-source", type_name, &error) != 0 ||
       error != 0)
     return BSE_ERROR_PROC_PARAM_INVAL;
-  
   /* action */
   ustack = bse_item_undo_open (container, "create-source");
   child = (BseItem*) bse_container_new_child (container, g_type_from_name (type_name), NULL);
   bse_item_push_undo_proc (container, "remove-source", child);
   bse_item_undo_close (ustack);
-
   /* set output parameters */
   bse_value_set_object (out_values++, child);
-  
   return BSE_ERROR_NONE;
 }
-
 METHOD (BseSNet, remove-source) {
   HELP	= "Remove an existing module from its synthesis network";
   IN	= bse_param_spec_object ("snet", "Synth Net", NULL,
@@ -124,12 +106,10 @@ METHOD (BseSNet, remove-source) {
   BseItem *child = (BseItem*) bse_value_get_object (in_values++);
   BseErrorType error = BSE_ERROR_NONE;
   BseUndoStack *ustack;
-
   /* check parameters */
   if (!BSE_IS_SNET (self) || !BSE_IS_SOURCE (child) || child->parent != (BseItem*) self ||
       (!BSE_SNET_USER_SYNTH (self) && !BSE_DBG_EXT))
     return BSE_ERROR_PROC_PARAM_INVAL;
-  
   /* action */
   ustack = bse_item_undo_open (self, "remove-child %s", bse_object_debug_name (child));
   /* remove object references */
@@ -140,9 +120,7 @@ METHOD (BseSNet, remove-source) {
   bse_container_remove_backedup (BSE_CONTAINER (self), child, ustack);
   /* done */
   bse_item_undo_close (ustack);
-  
   /* set output parameters */
   g_value_set_enum (out_values++, error);
-  
   return BSE_ERROR_NONE;
 }

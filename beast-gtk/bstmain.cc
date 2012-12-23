@@ -19,17 +19,12 @@
 #include <sys/time.h>
 #include <sys/resource.h>
 // #include "sfi/toyprof-mem.h"
-
 extern "C" void bse_object_debug_leaks (void); // FIXME
-
-
 /* --- prototypes --- */
 static void			bst_early_parse_args	(gint        *argc_p,
 							 gchar     ***argv_p);
 static void			bst_print_blurb		(void);
 static void			bst_exit_print_version	(void);
-
-
 /* --- variables --- */
 gboolean            bst_developer_hints = FALSE;
 gboolean            bst_debug_extensions = FALSE;
@@ -41,8 +36,6 @@ static gboolean     register_core_plugins = TRUE;
 static gboolean     register_ladspa_plugins = TRUE;
 static gboolean     register_scripts = TRUE;
 static gboolean     may_auto_update_bse_rc_file = TRUE;
-
-
 /* --- functions --- */
 static void
 server_registration (SfiProxy     server,
@@ -52,7 +45,6 @@ server_registration (SfiProxy     server,
 		     gpointer     data)
 {
   BseRegistrationType rtype = bse_registration_type_from_choice (rchoice);
-
   if (rtype == BSE_REGISTER_DONE)
     registration_done = TRUE;
   else
@@ -63,7 +55,6 @@ server_registration (SfiProxy     server,
 	g_message ("failed to register \"%s\": %s", what, error);
     }
 }
-
 int
 main (int   argc,
       char *argv[])
@@ -77,24 +68,20 @@ main (int   argc,
     { NULL },
   };
   guint i;
-
   /* initialize i18n */
   bindtextdomain (BST_GETTEXT_DOMAIN, BST_PATH_LOCALE);
   bind_textdomain_codeset (BST_GETTEXT_DOMAIN, "UTF-8");
   textdomain (BST_GETTEXT_DOMAIN);
   setlocale (LC_ALL, "");
-
   /* initialize random numbers */
   struct timeval tv;
   gettimeofday (&tv, NULL);
   srand48 (tv.tv_usec + (tv.tv_sec << 16));
   srand (tv.tv_usec + (tv.tv_sec << 16));
-
   /* initialize GLib guts */
   // toyprof_init_glib_memtable ("/tmp/beast-leak.debug", 10 /* SIGUSR1 */);
   g_thread_init (NULL);
   g_type_init ();
-
   /* initialize Birnet/Sfi */
   sfi_init (&argc, &argv, _("BEAST"), NULL);  /* application name is user visible */       
   sfi_msg_allow ("misc");
@@ -102,21 +89,18 @@ main (int   argc,
   sfi_thread_set_name ("Beast GUI");
   sfi_thread_set_wakeup ((BirnetThreadWakeup) g_main_context_wakeup,
 			 g_main_context_default (), NULL);
-
   /* initialize Gtk+ and go into threading mode */
   bst_early_parse_args (&argc, &argv);
   if (bst_debug_extensions)
     debugbool[0] = '1';
   gtk_init (&argc, &argv);
   GDK_THREADS_ENTER ();
-
   /* initialize Gtk+ Extension Kit */
   gxk_init ();
   /* documentation search paths */
   gxk_text_add_tsm_path (BST_PATH_DOCS);
   gxk_text_add_tsm_path (BST_PATH_IMAGES);
   gxk_text_add_tsm_path (".");
-
   /* now, we can popup the splash screen */
   beast_splash = bst_splash_new ("BEAST-Splash", BST_SPLASH_WIDTH, BST_SPLASH_HEIGHT, 15);
   bst_splash_set_title (beast_splash, _("BEAST Startup"));
@@ -128,7 +112,6 @@ main (int   argc,
 		       BST_VERSION, BST_VERSION_HINT);
   bst_splash_update_entity (beast_splash, _("Startup"));
   bst_splash_show_grab (beast_splash);
-
   /* BEAST initialization */
   bst_splash_update_item (beast_splash, _("Initializers"));
   _bst_init_utils ();
@@ -136,11 +119,9 @@ main (int   argc,
   _bst_gconfig_init ();
   _bst_skin_config_init ();
   _bst_msg_absorb_config_init ();
-  
   /* parse rc file */
   bst_splash_update_item (beast_splash, _("RC Files"));
   bst_preferences_load_rc_files();
-
   /* show splash images */
   bst_splash_update_item (beast_splash, _("Splash Image"));
   string = g_strconcat (BST_PATH_IMAGES, G_DIR_SEPARATOR_S, BST_SPLASH_IMAGE, NULL);
@@ -152,7 +133,6 @@ main (int   argc,
       bst_splash_set_animation (beast_splash, anim);
       g_object_unref (anim);
     }
-
   /* start BSE core and connect */
   bst_splash_update_item (beast_splash, _("BSE Core"));
   bse_init_async (&argc, &argv, "BEAST", config);
@@ -163,20 +143,16 @@ main (int   argc,
 			    NULL, NULL, NULL);
   g_source_attach (source, NULL);
   g_source_unref (source);
-
   /* now that the BSE thread runs, drop scheduling priorities if we have any */
   setpriority (PRIO_PROCESS, getpid(), 0);
-
   /* watch registration notifications on server */
   bse_proxy_connect (BSE_SERVER,
 		     "signal::registration", server_registration, beast_splash,
 		     NULL);
-
   /* register core plugins */
   if (register_core_plugins)
     {
       bst_splash_update_entity (beast_splash, _("Plugins"));
-
       /* plugin registration, this is done asyncronously,
        * so we wait until all are done
        */
@@ -190,12 +166,10 @@ main (int   argc,
 	  sfi_glue_gc_run ();
 	}
     }
-
   /* register LADSPA plugins */
   if (register_ladspa_plugins)
     {
       bst_splash_update_entity (beast_splash, _("LADSPA Plugins"));
-
       /* plugin registration, this is done asyncronously,
        * so we wait until all are done
        */
@@ -209,7 +183,6 @@ main (int   argc,
 	  sfi_glue_gc_run ();
 	}
     }
-
   /* debugging hook */
   const char *estring = g_getenv ("BEAST_SLEEP4GDB");
   if (estring && atoi (estring) > 0)
@@ -218,12 +191,10 @@ main (int   argc,
       g_message ("going into sleep mode due to debugging request (pid=%u)", getpid ());
       g_usleep (2147483647);
     }
-
   /* register BSE scripts */
   if (register_scripts)
     {
       bst_splash_update_entity (beast_splash, _("Scripts"));
-
       /* script registration, this is done asyncronously,
        * so we wait until all are done
        */
@@ -237,15 +208,12 @@ main (int   argc,
 	  sfi_glue_gc_run ();
 	}
     }
-
   /* listen to BseServer notification */
   bst_splash_update_entity (beast_splash, _("Dialogs"));
   bst_message_connect_to_server ();
   _bst_init_radgets ();
-
   /* install message dialog handler */
   bst_message_handler_install();
-
   /* open files given on command line */
   if (argc > 1)
     bst_splash_update_entity (beast_splash, _("Loading..."));
@@ -254,14 +222,12 @@ main (int   argc,
   for (i = 1; i < argc; i++)
     {
       bst_splash_update ();
-
       /* parse non-file args */
       if (strcmp (argv[i], "--merge") == 0)
         {
           merge_with_last = TRUE;
           continue;
         }
-
       /* load waves into the last project */
       if (bse_server_can_load (BSE_SERVER, argv[i]))
 	{
@@ -294,7 +260,6 @@ main (int   argc,
 	    }
           continue;
 	}
-
       /* load/merge projects */
       if (!app || !merge_with_last)
         {
@@ -318,13 +283,11 @@ main (int   argc,
             sfi_error (_("Failed to merge project \"%s\": %s"), argv[i], bse_error_blurb (error));
         }
     }
-
   /* open default app window
    */
   if (!app)
     {
       SfiProxy project = bse_server_use_new_project (BSE_SERVER, "Untitled.bse");
-      
       bse_project_get_wave_repo (project);
       app = bst_app_new (project);
       bse_item_unuse (project);
@@ -332,7 +295,6 @@ main (int   argc,
       gtk_widget_hide (beast_splash);
     }
   /* splash screen is definitely hidden here (still grabbing) */
-
   /* fire up release notes dialog
    */
   gboolean update_rc_files = FALSE;
@@ -374,7 +336,6 @@ main (int   argc,
       update_rc_files = TRUE;
       bst_gconfig_set_rc_version (BST_VERSION);
     }
-  
   /* release splash grab */
   gtk_widget_hide (beast_splash);
   bst_splash_release_grab (beast_splash);
@@ -386,11 +347,9 @@ main (int   argc,
       g_main_iteration (TRUE);
       GDK_THREADS_ENTER ();
     }
-  
   /* take down GUI */
   bst_message_handler_uninstall();
   bst_message_dialogs_popdown ();
-  
   /* perform necessary cleanup cycles */
   GDK_THREADS_LEAVE ();
   while (g_main_iteration (FALSE))
@@ -400,7 +359,6 @@ main (int   argc,
       GDK_THREADS_LEAVE ();
     }
   GDK_THREADS_ENTER ();
-  
   /* save BSE configuration */
   if (update_rc_files && !bst_preferences_saved())
     {
@@ -413,7 +371,6 @@ main (int   argc,
 	g_warning ("failed to save rc-file \"%s\": %s", file_name, bse_error_blurb (error));
       g_free (file_name);
     }
-  
   /* perform necessary cleanup cycles
    */
   GDK_THREADS_LEAVE ();
@@ -424,12 +381,9 @@ main (int   argc,
       GDK_THREADS_LEAVE ();
     }
   birnet_cleanup_force_handlers();
-
   bse_object_debug_leaks ();
-  
   return 0;
 }
-
 static void
 bst_early_parse_args (int    *argc_p,
 		      char ***argv_p)
@@ -438,7 +392,6 @@ bst_early_parse_args (int    *argc_p,
   gchar **argv = *argv_p;
   gchar *envar;
   guint i, e;
-  
   envar = getenv ("BST_DEBUG");
   if (envar)
     sfi_msg_allow (envar);
@@ -451,7 +404,6 @@ bst_early_parse_args (int    *argc_p,
   envar = getenv ("BEAST_NO_DEBUG");
   if (envar)
     sfi_msg_deny (envar);
-
   gboolean initialize_bse_and_exit = FALSE;
   for (i = 1; i < argc; i++)
     {
@@ -519,7 +471,6 @@ bst_early_parse_args (int    *argc_p,
 	       strncmp ("--debug=", argv[i], 8) == 0)
 	{
 	  gchar *equal = argv[i] + 7;
-	  
 	  if (*equal == '=')
             sfi_msg_allow (equal + 1);
 	  else if (i + 1 < argc)
@@ -533,7 +484,6 @@ bst_early_parse_args (int    *argc_p,
 	       strncmp ("--no-debug=", argv[i], 11) == 0)
 	{
 	  gchar *equal = argv[i] + 10;
-	  
 	  if (*equal == '=')
             sfi_msg_deny (equal + 1);
 	  else if (i + 1 < argc)
@@ -663,7 +613,6 @@ bst_early_parse_args (int    *argc_p,
         }
     }
   gxk_param_set_devel_tips (bst_developer_hints);
-
   e = 1;
   for (i = 1; i < argc; i++)
     if (argv[i])
@@ -673,14 +622,12 @@ bst_early_parse_args (int    *argc_p,
           argv[i] = NULL;
       }
   *argc_p = e;
-
   if (initialize_bse_and_exit)
     {
       bse_init_async (argc_p, argv_p, "BEAST", NULL);
       exit (0);
     }
 }
-
 static void G_GNUC_NORETURN
 bst_exit_print_version (void)
 {
@@ -735,7 +682,6 @@ bst_exit_print_version (void)
   g_free (freeme);
   exit (0);
 }
-
 static void
 bst_print_blurb (void)
 {
@@ -794,7 +740,6 @@ bst_print_blurb (void)
   g_print ("  --g-fatal-warnings      Make warnings fatal (abort)\n");
   g_print ("  --sync                  Do all X calls synchronously\n");
 }
-
 void
 beast_show_about_box (void)
 {

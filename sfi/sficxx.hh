@@ -1,20 +1,16 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #ifndef __SFI_CXX_H__
 #define __SFI_CXX_H__
-
 #include <birnet/birnet.hh>
 #include <sfi/sfi.hh>
 #include <string>
 #include <string.h>
 #include <new>
-
 namespace Sfi {
-
 typedef SfiBool   Bool;    // FIXME: use bool instead?
 typedef SfiInt    Int;
 typedef SfiNum    Num;
 typedef SfiReal   Real;
-
 class String {
   char *cstring;
   int cmp (const char *ostring) const
@@ -141,7 +137,6 @@ public:
     sfi_value_set_string (value, str.c_str());
   }
 };
-
 struct GNewable {
   gpointer operator new (size_t s)
   {
@@ -160,13 +155,11 @@ struct GNewable {
     g_free (mem);
   }
 };
-
 typedef enum {
   INIT_NULL,
   INIT_EMPTY,
   INIT_DEFAULT,
 } InitializationType;
-
 template<typename Type>
 class RecordHandle {
   Type *record;
@@ -323,7 +316,6 @@ public:
       g_value_set_boxed (value, self.c_ptr());
   }
 };
-
 template<typename Type>
 class Sequence {
 public:
@@ -519,7 +511,6 @@ cxx_value_set_boxed_sequence (GValue        *value,
   else
     g_value_set_boxed (value, self.c_ptr());
 }
-
 class FBlock {
   SfiFBlock *block;
 public:
@@ -683,7 +674,6 @@ public:
     sfi_value_set_fblock (value, self.block);
   }
 };
-
 class BBlock {
   SfiBBlock *block;
 public:
@@ -815,7 +805,6 @@ public:
     sfi_value_set_bblock (value, self.block);
   }
 };
-
 class Rec {
   SfiRec *crec;
 public:
@@ -935,7 +924,6 @@ public:
     sfi_value_set_rec (value, self.crec);
   }
 };
-
 class ObjectHandle {
   GObject *cobj;
 public:
@@ -1032,7 +1020,6 @@ public:
     g_value_set_object (value, self.cobj);
   }
 };
-
 template<typename Type> void
 cxx_boxed_to_rec (const GValue *src_value,
                   GValue       *dest_value)
@@ -1046,7 +1033,6 @@ cxx_boxed_to_rec (const GValue *src_value,
     }
   sfi_value_take_rec (dest_value, rec);
 }
-
 template<typename Type> void
 cxx_boxed_from_rec (const GValue *src_value,
                     GValue       *dest_value)
@@ -1061,7 +1047,6 @@ cxx_boxed_from_rec (const GValue *src_value,
     }
   g_value_take_boxed (dest_value, boxed);
 }
-
 template<typename SeqType> void
 cxx_boxed_to_seq (const GValue *src_value,
                   GValue       *dest_value)
@@ -1078,7 +1063,6 @@ cxx_boxed_to_seq (const GValue *src_value,
     }
   sfi_value_take_seq (dest_value, seq);
 }
-
 template<typename SeqType> void
 cxx_boxed_from_seq (const GValue *src_value,
                     GValue       *dest_value)
@@ -1093,7 +1077,6 @@ cxx_boxed_from_seq (const GValue *src_value,
     }
   g_value_take_boxed (dest_value, boxed);
 }
-
 template<typename Type> RecordHandle<Type>
 cxx_value_get_rec (const GValue *value)
 {
@@ -1103,7 +1086,6 @@ cxx_value_get_rec (const GValue *value)
   else
     return INIT_NULL;
 }
-
 template<typename Type> void
 cxx_value_set_rec (GValue                   *value,
                    const RecordHandle<Type> &self)
@@ -1113,7 +1095,6 @@ cxx_value_set_rec (GValue                   *value,
   else
     sfi_value_set_rec (value, NULL);
 }
-
 template<typename SeqType> SeqType
 cxx_value_get_seq (const GValue *value)
 {
@@ -1123,21 +1104,16 @@ cxx_value_get_seq (const GValue *value)
   else
     return SeqType();
 }
-
 template<typename SeqType> void
 cxx_value_set_seq (GValue        *value,
                    const SeqType &self)
 {
   sfi_value_take_seq (value, SeqType::to_seq (self));
 }
-
 // == C++ Auxillaries ==
 struct Init { // stolen from Rapicorn
   explicit Init (void (*f) ()) { f(); }
 };
-
 } // Sfi
-
 #endif /* __SFI_CXX_H__ */
-
 /* vim:set ts=8 sts=2 sw=2: */

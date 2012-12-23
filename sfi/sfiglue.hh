@@ -1,13 +1,10 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #ifndef __SFI_GLUE_H__
 #define __SFI_GLUE_H__
-
 #include <sfi/sfiprimitives.hh>
 #include <sfi/sfiring.hh>
 #include <sfi/sfiparams.hh>
-
 G_BEGIN_DECLS
-
 /* Glue proxy (object handle) description in terms of
  * supported interfaces and property names
  */
@@ -19,15 +16,11 @@ typedef struct {
   guint   n_props;
   gchar **props;/*NULL-term*/	/* property names */
 } SfiGlueIFace;
-
 gchar*		sfi_glue_base_iface	(void);
 const gchar**	sfi_glue_iface_children	(const gchar	*iface_name);
 SfiGlueIFace*	sfi_glue_describe_iface	(const gchar	*iface_name);
 SfiGlueIFace*	sfi_glue_iface_ref	(SfiGlueIFace	*iface);
 void		sfi_glue_iface_unref	(SfiGlueIFace	*iface);
-
-
-
 /* Procedure description in terms of it's parameters
  */
 typedef struct {
@@ -40,13 +33,11 @@ typedef struct {
   guint        n_params;
   GParamSpec **params;
 } SfiGlueProc;
-
 SfiGlueProc*	sfi_glue_describe_proc		(const gchar	*proc_name);
 SfiGlueProc*	sfi_glue_proc_ref		(SfiGlueProc	*proc);
 void		sfi_glue_proc_unref		(SfiGlueProc	*proc);
 const gchar**	sfi_glue_list_proc_names	(void);
 const gchar**	sfi_glue_list_method_names	(const gchar	*iface_name);
-
 GValue*		sfi_glue_call_seq		(const gchar	*proc_name,
 						 SfiSeq		*params);
 GValue*		sfi_glue_call_valist		(const gchar	*proc_name,
@@ -90,8 +81,6 @@ SfiBBlock*	sfi_glue_vcall_bblock		(const gchar	*proc_name,
 						 ...);
 GValue*		sfi_glue_client_msg		(const gchar	*msg,
 						 GValue		*value);
-
-
 /* Glue context table, abstracts middleware implementation */
 typedef struct _SfiGlueContext SfiGlueContext;
 typedef struct {
@@ -149,8 +138,6 @@ typedef struct {
   SfiRing*		(*list_poll_fds)		(SfiGlueContext	*context);
   void			(*destroy)			(SfiGlueContext	*context);
 } SfiGlueContextTable;
-
-
 /* --- Glue Context --- */
 struct _SfiGlueContext
 {
@@ -170,15 +157,12 @@ gboolean	sfi_glue_context_pending	(void);
 void            sfi_glue_context_dispatch	(void);
 SfiSeq*		sfi_glue_context_fetch_event	(void);
 void		sfi_glue_context_destroy	(SfiGlueContext	*context);
-
-
 /* --- Glue utilities --- */
 #ifdef __cplusplus
 typedef void (*SfiGlueGcFreeFunc) (void*);
 #else
 typedef void *SfiGlueGcFreeFunc;  // FIXME: remove C-legacy
 #endif
-
 void		sfi_glue_gc_add		(gpointer	    data,
 					 SfiGlueGcFreeFunc  free_func);
 void		sfi_glue_gc_remove	(gpointer	    data,
@@ -186,8 +170,6 @@ void		sfi_glue_gc_remove	(gpointer	    data,
 void		sfi_glue_gc_free_now	(gpointer	    data,
 					 SfiGlueGcFreeFunc  free_func);
 void		sfi_glue_gc_run		(void);
-
-
 /* --- internal --- */
 gboolean	_sfi_glue_gc_test		(gpointer	 data,
 						 gpointer	 free_func);
@@ -200,8 +182,6 @@ void		sfi_glue_proc_add_ret_param	(SfiGlueProc	*proc,
 gboolean       _sfi_glue_proxy_request_notify	(SfiProxy        proxy,
 						 const gchar    *signal,
 						 gboolean        enable_notify);
-
-
 /* --- implementations --- */
 void	_sfi_init_glue		  (void);
 void sfi_glue_context_common_init (SfiGlueContext            *context,
@@ -216,9 +196,6 @@ sfi_glue_fetch_context (const gchar *floc)
     g_error ("%s: SfiGlue function called without context (use sfi_glue_context_push())", floc);
   return context;
 }
-
 G_END_DECLS
-
 #endif /* __SFI_GLUE_H__ */
-
 /* vim:set ts=8 sts=2 sw=2: */

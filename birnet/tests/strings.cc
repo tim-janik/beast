@@ -3,12 +3,9 @@
 #include <birnet/birnettests.h>
 #include <stdlib.h>
 #include <stdio.h>
-
 using namespace Birnet;
-
 namespace {
 using namespace Birnet;
-
 static void
 random_tf8_and_unichar_test (void)
 {
@@ -23,7 +20,6 @@ random_tf8_and_unichar_test (void)
         continue;
       char buffer[8], gstr[10] = { 0, };
       int l;
-
       l = utf8_from_unichar (uc, buffer);
       TCHECK (l > 0);
       TCHECK (l <= 7);
@@ -38,7 +34,6 @@ random_tf8_and_unichar_test (void)
       TCHECK (p1 == buffer + l);
       char *p2 = utf8_prev (p1);
       TCHECK (p2 == buffer);
-
       char cbuffer[1024];
       snprintf (cbuffer, 1024, "x%sy7", buffer);
       char *cur = cbuffer, *pn, *gn, *pp;
@@ -81,7 +76,6 @@ random_tf8_and_unichar_test (void)
       /* first with bounds */
       pp = utf8_find_prev (cbuffer, cbuffer);
       TCHECK (pp == NULL);
-
       /* validate valid UTF-8 */
       bool bb = utf8_validate (cbuffer);
       bool gb = g_utf8_validate (cbuffer, -1, NULL);
@@ -98,7 +92,6 @@ random_tf8_and_unichar_test (void)
     }
   TDONE();
 }
-
 static void
 random_unichar_test (void)
 {
@@ -113,7 +106,6 @@ random_unichar_test (void)
       int bv, gv;
       if (i % 20000 == 0)
         TOK();
-
       bb = Unichar::isvalid (uc);
       gb = g_unichar_validate (uc);
       TCHECK (bb == gb);
@@ -196,7 +188,6 @@ random_unichar_test (void)
     }
   TDONE();
 }
-
 static void
 uuid_tests (void)
 {
@@ -238,20 +229,15 @@ uuid_tests (void)
   TASSERT (string_cmp_uuid ("a425fd92-4f06-11db-aea9-000102e7e309", "6ba7b812-9dad-11d1-80b4-00c04fd430c8") > 0);
   TDONE();
 }
-
 } // Anon
-
 int
 main (int   argc,
       char *argv[])
 {
   birnet_init_test (&argc, &argv);
-
   uuid_tests();
   random_unichar_test();
   random_tf8_and_unichar_test();
-  
   return 0;
 }
-
 /* vim:set ts=8 sts=2 sw=2: */

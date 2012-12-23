@@ -3,10 +3,8 @@
 #include <birnet/birnettests.h>
 #include <unistd.h>
 #include <stdlib.h>
-
 namespace {
 using namespace Birnet;
-
 /* --- utilities --- */
 BirnetThread*
 birnet_thread_run (const gchar     *name,
@@ -14,7 +12,6 @@ birnet_thread_run (const gchar     *name,
                    gpointer         user_data)
 {
   g_return_val_if_fail (name && name[0], NULL);
-
   BirnetThread *thread = ThreadTable.thread_new (name);
   ThreadTable.thread_ref_sink (thread);
   if (ThreadTable.thread_start (thread, func, user_data))
@@ -25,7 +22,6 @@ birnet_thread_run (const gchar     *name,
       return NULL;
     }
 }
-
 #define birnet_mutex_init(mtx)        (ThreadTable.mutex_init (mtx))
 #define birnet_mutex_lock(mtx)        (ThreadTable.mutex_lock (mtx))
 #define birnet_mutex_trylock(mtx)     (0 == ThreadTable.mutex_trylock (mtx))
@@ -36,30 +32,25 @@ birnet_thread_run (const gchar     *name,
 #define birnet_rec_mutex_trylock(mtx) (0 == ThreadTable.rec_mutex_trylock (mtx))
 #define birnet_rec_mutex_unlock(mtx)  (ThreadTable.rec_mutex_unlock (mtx))
 #define birnet_rec_mutex_destroy(mtx) (ThreadTable.rec_mutex_destroy (mtx))
-
 #define BIRNET_MUTEX_DECLARE_INITIALIZED(mutexname)                             \
   BirnetMutex mutexname = { 0 };                                                \
   static void BIRNET_CONSTRUCTOR                                                \
   BIRNET_CPP_PASTE4 (__birnet_mutex__autoinit, __LINE__, __, mutexname) (void)  \
   { ThreadTable.mutex_chain4init (&mutexname); }
-
 #define BIRNET_REC_MUTEX_DECLARE_INITIALIZED(recmtx)                            \
   BirnetRecMutex recmtx = { { 0 } };                                            \
   static void BIRNET_CONSTRUCTOR                                                \
   BIRNET_CPP_PASTE4 (__birnet_rec_mutex__autoinit, __LINE__, __, recmtx) (void) \
   { ThreadTable.rec_mutex_chain4init (&recmtx); }
-
 #define BIRNET_COND_DECLARE_INITIALIZED(condname)                               \
   BirnetCond condname = { 0 };                                                  \
   static void BIRNET_CONSTRUCTOR                                                \
   BIRNET_CPP_PASTE4 (__birnet_cond__autoinit, __LINE__, __, condname) (void)    \
   { ThreadTable.cond_chain4init (&condname); }
-
 /* --- atomicity tests --- */
 static volatile guint atomic_count = 0;
 static BirnetMutex    atomic_mutex;
 static BirnetCond     atomic_cond;
-
 static void
 atomic_up_thread (gpointer data)
 {
@@ -72,7 +63,6 @@ atomic_up_thread (gpointer data)
   birnet_mutex_unlock (&atomic_mutex);
   TASSERT (strcmp (ThreadTable.thread_name (ThreadTable.thread_self()), "AtomicTest") == 0);
 }
-
 static void
 atomic_down_thread (gpointer data)
 {
@@ -85,7 +75,6 @@ atomic_down_thread (gpointer data)
   birnet_mutex_unlock (&atomic_mutex);
   TASSERT (strcmp (ThreadTable.thread_name (ThreadTable.thread_self()), "AtomicTest") == 0);
 }
-
 static void
 test_atomic (void)
 {
@@ -115,7 +104,6 @@ test_atomic (void)
   TASSERT (atomic_counter == result);
   TDONE ();
 }
-
 /* --- basic threading tests --- */
 static void
 plus1_thread (gpointer data)
@@ -126,11 +114,9 @@ plus1_thread (gpointer data)
   while (!ThreadTable.thread_aborted ())
     ThreadTable.thread_sleep (-1);
 }
-
 static BIRNET_MUTEX_DECLARE_INITIALIZED (static_mutex);
 static BIRNET_REC_MUTEX_DECLARE_INITIALIZED (static_rec_mutex);
 static BIRNET_COND_DECLARE_INITIALIZED (static_cond);
-
 static void
 test_threads (void)
 {
@@ -205,7 +191,6 @@ test_threads (void)
   ThreadTable.thread_unref (thread3);
   TDONE ();
 }
-
 /* --- C++ threading tests --- */
 struct ThreadA : public virtual Birnet::Thread {
   int value;
@@ -224,7 +209,6 @@ struct ThreadA : public virtual Birnet::Thread {
       ThreadTable.atomic_int_add (counter, value);
   }
 };
-
 template<class M> static bool
 lockable (M &mutex)
 {
@@ -233,7 +217,6 @@ lockable (M &mutex)
     mutex.unlock();
   return lockable;
 }
-
 static void
 test_thread_cxx (void)
 {
@@ -262,7 +245,6 @@ test_thread_cxx (void)
     }
   TASSERT (atomic_counter == result);
   TDONE ();
-
   TSTART ("C++OwnedMutex");
   static OwnedMutex static_omutex;
   static_omutex.lock();
@@ -291,7 +273,6 @@ test_thread_cxx (void)
   TASSERT (omutex.owner() == NULL);
   TDONE();
 }
-
 /* --- auto locker tests --- */
 static void
 test_simple_auto_lock (Mutex &mutex1,
@@ -299,18 +280,13 @@ test_simple_auto_lock (Mutex &mutex1,
 {
   TASSERT (lockable (mutex1) == true);
   TASSERT (lockable (mutex2) == true);
-
   AutoLocker locker1 (mutex1);
-
   TASSERT (lockable (mutex1) == false);
   TASSERT (lockable (mutex2) == true);
-
   AutoLocker locker2 (&mutex2);
-
   TASSERT (lockable (mutex1) == false);
   TASSERT (lockable (mutex2) == false);
 }
-
 static void
 test_recursive_auto_lock (RecMutex &rec_mutex,
                           guint     depth)
@@ -333,7 +309,6 @@ test_recursive_auto_lock (RecMutex &rec_mutex,
       locker.unlock();
     }
 }
-
 // helper class for testing auto locking, which counts the lock() and unlock() calls
 class LockCounter {
   guint m_lock_count;
@@ -359,7 +334,6 @@ public:
     return m_lock_count;
   }
 };
-
 class LockCountAssert {
   const LockCounter &m_lock_counter;
   const guint        m_required_lock_count;
@@ -376,7 +350,6 @@ public:
     TASSERT (m_lock_counter.lock_count() == m_required_lock_count);
   }
 };
-
 /* Check that C++ constructors and destructors and the AutoLocker constructor
  * and destructor will be executed in the order we need, that is: an AutoLocker
  * that is created before an object should protect its constructor and
@@ -388,29 +361,21 @@ test_auto_locker_order()
 {
   LockCounter lock_counter1;
   LockCounter lock_counter2;
-
   for (guint i = 0; i < 3; i++)
     {
       LockCountAssert lc_assert1 (lock_counter1, 0);
       LockCountAssert lc_assert2 (lock_counter2, 0);
-
       AutoLocker      auto_locker1 (lock_counter1);
-
       LockCountAssert lc_assert3 (lock_counter1, 1);
       LockCountAssert lc_assert4 (lock_counter2, 0);
-
       AutoLocker      auto_locker2 (lock_counter2);
-
       LockCountAssert lc_assert5 (lock_counter1, 1);
       LockCountAssert lc_assert6 (lock_counter2, 1);
-
       AutoLocker      auto_locker3 (lock_counter1);
-
       LockCountAssert lc_assert7 (lock_counter1, 2);
       LockCountAssert lc_assert8 (lock_counter2, 1);
     }
 }
-
 static void
 test_auto_locker_counting()
 {
@@ -433,7 +398,6 @@ test_auto_locker_counting()
   }
   TASSERT (lock_counter.lock_count() == 0);
 }
-
 static void
 test_auto_locker_cxx()
 {
@@ -457,28 +421,21 @@ test_auto_locker_cxx()
     }
   Mutex mutex1, mutex2;
   RecMutex rec_mutex;
-
   TASSERT (lockable (mutex1) == true);
   TASSERT (lockable (mutex2) == true);
   test_simple_auto_lock (mutex1, mutex2);
   test_simple_auto_lock (mutex1, mutex2);
   TASSERT (lockable (mutex1) == true);
   TASSERT (lockable (mutex2) == true);
-
   test_recursive_auto_lock (rec_mutex, 30);
   AutoLocker locker (&rec_mutex);
   test_recursive_auto_lock (rec_mutex, 17);
-
   test_auto_locker_order();
-  
   test_auto_locker_counting();
-
   TDONE();
 }
-
 /* --- auto locker benchmarks --- */
 #define RUNS (500000)
-
 class HeapLocker {
   // like PtrAutoLocker but allocates on the heap
   struct Lockable {
@@ -509,7 +466,6 @@ public:
   void lock     () { l.lock(); }
   void unlock   () { l.unlock(); }
 };
-
 static void
 bench_heap_auto_locker()
 {
@@ -521,7 +477,6 @@ bench_heap_auto_locker()
       HeapLocker locker2 (rmutex);
     }
 }
-
 static void
 bench_direct_auto_locker()
 {
@@ -564,7 +519,6 @@ bench_direct_auto_locker()
       AutoLocker2 locker2 (rmutex);
     }
 }
-
 class GenericAutoLocker {
   // supports automated scope-bound lock/unlock for all kinds of objects
   struct Locker {
@@ -598,7 +552,6 @@ public:
   void                          unlock             () const             { locker()->unlock(); }
   /*Des*/                       ~GenericAutoLocker ()                   { unlock(); }
 };
-
 static void
 bench_generic_auto_locker()
 {
@@ -610,7 +563,6 @@ bench_generic_auto_locker()
       GenericAutoLocker locker2 (rmutex);
     }
 }
-
 class PtrAutoLocker {
   // like GenericAutoLocker but uses an extra pointer
   struct Locker {
@@ -635,7 +587,6 @@ public:
   void                          unlock         () { locker->unlock(); }
   /*Des*/                       ~PtrAutoLocker () { unlock(); }
 };
-
 static void
 bench_ptr_auto_locker()
 {
@@ -647,7 +598,6 @@ bench_ptr_auto_locker()
       PtrAutoLocker locker2 (rmutex);
     }
 }
-
 static void
 bench_birnet_auto_locker()
 {
@@ -659,7 +609,6 @@ bench_birnet_auto_locker()
       AutoLocker locker2 (rmutex);
     }
 }
-
 static void
 bench_manual_locker()
 {
@@ -673,7 +622,6 @@ bench_manual_locker()
       rmutex.unlock();
     }
 }
-
 static void
 bench_auto_locker_cxx()
 {
@@ -780,7 +728,6 @@ bench_auto_locker_cxx()
   treport_minimized ("Pointer-AutoLocker", pmin / pdups / RUNS * 1000. * 1000. * 1000., TUNIT_NSEC);
   treport_minimized ("Heap-AutoLocker",    tmin / tdups / RUNS * 1000. * 1000. * 1000., TUNIT_NSEC);
 }
-
 /* --- C++ atomicity tests --- */
 static void
 test_thread_atomic_cxx (void)
@@ -837,7 +784,6 @@ test_thread_atomic_cxx (void)
   TASSERT (p == (void*) 4294967279U);
   TDONE ();
 }
-
 /* --- thread_yield --- */
 static inline void
 handle_contention ()
@@ -859,7 +805,6 @@ handle_contention ()
    */
   usleep (500); // 1usec is the minimum value to cause an effect
 }
-
 /* --- ring buffer --- */
 typedef Atomic::RingBuffer<int> IntRingBuffer;
 class IntSequence {
@@ -946,7 +891,6 @@ struct RingBufferReader : public virtual Birnet::Thread, IntSequence {
     TPRINT ("%s done.", Thread::Self::name().c_str());
   }
 };
-
 static void
 test_ring_buffer ()
 {
@@ -966,7 +910,6 @@ test_ring_buffer ()
   TASSERT (rb1.n_writable() == ttl);
   TASSERT (strncmp (buffer, testtext, n) == 0);
   TDONE();
-
   /* check lower end ring buffer sizes (high contention test) */
   for (uint step = 1; step < 8; step++)
     {
@@ -987,7 +930,6 @@ test_ring_buffer ()
       unref (rbw);
       TDONE();
     }
-
   /* check big ring buffer sizes */
   if (true)
     {
@@ -1009,7 +951,6 @@ test_ring_buffer ()
       TDONE();
     }
 }
-
 /* --- --- */
 static void
 test_debug_channel ()
@@ -1042,7 +983,6 @@ test_debug_channel ()
   TICK();
   TDONE();
 }
-
 /* --- late deletable destruction --- */
 static bool deletable_destructor = false;
 struct MyDeletable : public virtual Deletable {
@@ -1083,10 +1023,8 @@ struct MyDeletableHook : public Deletable::DeletionHook {
     deletable = NULL;
   }
 };
-
 static MyDeletable early_deletable __attribute__ ((init_priority (101)));
 static MyDeletable late_deletable __attribute__ ((init_priority (65535)));
-
 static void
 test_deletable_destruction ()
 {
@@ -1121,7 +1059,6 @@ test_deletable_destruction ()
   TDONE();
   /* early_deletable and late_deletable are only tested at program end */
 }
-
 /* --- Mutextes before g_thread_init() --- */
 static void
 test_before_thread_init()
@@ -1134,28 +1071,21 @@ test_before_thread_init()
   delete rmutex;
   delete cond;
 }
-
 } // Anon
-
 static guint constructur_attribute_test = 0;
-
 static void BIRNET_CONSTRUCTOR
 constructur_attribute_test_initializer (void)
 {
   constructur_attribute_test = 0x1237ABBA;
 }
-
 int
 main (int   argc,
       char *argv[])
 {
   if (constructur_attribute_test != 305638330)
     g_error ("%s: static constructors have not been called before main", G_STRFUNC);
-
   test_before_thread_init();
-
   birnet_init_test (&argc, &argv);
-
   test_threads();
   test_atomic();
   test_thread_cxx();
@@ -1166,8 +1096,6 @@ main (int   argc,
   test_debug_channel(); 
   if (init_settings().test_perf)
     bench_auto_locker_cxx();
-  
   return 0;
 }
-
 /* vim:set ts=8 sts=2 sw=2: */

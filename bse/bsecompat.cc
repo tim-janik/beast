@@ -2,8 +2,6 @@
 #include "bsecompat.hh"
 #include "bsestorage.hh"
 #include <string.h>
-
-
 /* --- functions --- */
 gchar*
 bse_compat_rewrite_type_name (BseStorage    *storage,
@@ -34,7 +32,6 @@ bse_compat_rewrite_type_name (BseStorage    *storage,
       return g_strdup (type_changes[i].new_type);
   return NULL;
 }
-
 gchar*
 bse_compat_rewrite_ichannel_ident (BseStorage    *storage,
                                    const gchar   *type_name,
@@ -59,7 +56,6 @@ bse_compat_rewrite_ichannel_ident (BseStorage    *storage,
       return g_strdup (ichannel_changes[i].new_channel);
   return NULL;
 }
-
 gchar*
 bse_compat_rewrite_ochannel_ident (BseStorage    *storage,
                                    const gchar   *type_name,

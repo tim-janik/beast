@@ -1,20 +1,14 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #ifndef __GSL_FILTER_H__
 #define __GSL_FILTER_H__
-
 #include <bse/bsemath.hh>
-
 #ifdef __cplusplus
 extern "C" {
 #endif /* __cplusplus */
-
-
 /* --- transformations --- */
 static inline BseComplex bse_trans_s2z          (BseComplex     s);
 static inline double     bse_trans_freq2s       (double         w);
 static inline double     bse_trans_zepsilon2ss  (double         epsilon);
-
-
 /* --- filter roots and poles --- */
 void	gsl_filter_butter_rp    (uint         iorder,
 				 double       freq,   /* 0..pi */
@@ -32,8 +26,6 @@ void	gsl_filter_tscheb2_rp	(uint         iorder,
 				 double       epsilon,
 				 BseComplex  *roots,  /* [0..iorder-1] */
 				 BseComplex  *poles);
-
-
 /* --- tschebyscheff type II steepness --- */
 double	gsl_filter_tscheb2_steepness_db	(uint         iorder,
 					 double       c_freq,
@@ -43,8 +35,6 @@ double	gsl_filter_tscheb2_steepness	(uint         iorder,
 					 double       c_freq,
 					 double       epsilon,
 					 double       residue);
-
-
 /* --- lowpass filters --- */
 void	gsl_filter_butter_lp    (uint         iorder,
 				 double       freq, /* 0..pi */
@@ -62,8 +52,6 @@ void	gsl_filter_tscheb2_lp	(uint         iorder,
 				 double       epsilon,
 				 double      *a,      /* [0..iorder] */
 				 double      *b);
-
-
 /* --- highpass filters --- */
 void	gsl_filter_butter_hp	(uint         iorder,
 				 double       freq,   /* 0..pi */
@@ -81,8 +69,6 @@ void	gsl_filter_tscheb2_hp	(uint         iorder,
 				 double       epsilon,
 				 double      *a,      /* [0..iorder] */
 				 double      *b);
-
-
 /* --- bandpass filters --- */
 void	gsl_filter_butter_bp	(uint         iorder,
 				 double       freq1,  /* 0..pi */
@@ -103,8 +89,6 @@ void	gsl_filter_tscheb2_bp	(uint         iorder,
 				 double       epsilon,
 				 double      *a,      /* [0..iorder] */
 				 double      *b);
-
-
 /* --- bandstop filters --- */
 void	gsl_filter_butter_bs	(uint         iorder,
 				 double       freq1,  /* 0..pi */
@@ -125,8 +109,6 @@ void	gsl_filter_tscheb2_bs	(uint         iorder,
 				 double       epsilon,
 				 double      *a,      /* [0..iorder] */
 				 double      *b);
-
-
 /* --- FIR Filters --- */
 void	gsl_filter_fir_approx	(uint          iorder,
 				 double       *a,	/* [0..iorder] */
@@ -134,8 +116,6 @@ void	gsl_filter_fir_approx	(uint          iorder,
 				 const double *freq,
 				 const double *value,
 				 gboolean      interpolate_db);
-
-
 /* --- IIR Filter Evaluation --- */
 typedef struct {
   guint order;
@@ -157,8 +137,6 @@ void	gsl_iir_filter_eval	(GslIIRFilter	*f,
 				 guint		 n_values,
 				 const gfloat	*x,
 				 gfloat		*y);
-
-
 /* --- Biquad Filters --- */
 typedef enum	/*< skip >*/
 {
@@ -166,7 +144,6 @@ typedef enum	/*< skip >*/
   GSL_BIQUAD_NORMALIZE_RESONANCE_GAIN,
   GSL_BIQUAD_NORMALIZE_PEAK_GAIN
 } GslBiquadNormalize;
-
 typedef enum	/*< skip >*/
 {
   GSL_BIQUAD_RESONANT_LOWPASS = 1,
@@ -175,7 +152,6 @@ typedef enum	/*< skip >*/
   GSL_BIQUAD_HIGHSHELVE,
   GSL_BIQUAD_PEAK
 } GslBiquadType;
-
 typedef struct {
   GslBiquadType      type;
   GslBiquadNormalize normalize;  	/* high/low pass */
@@ -187,13 +163,11 @@ typedef struct {
   /*< private >*/
   gdouble	     k, v;
 } GslBiquadConfig;
-
 typedef struct {
   gdouble xc0, xc1, xc2;
   gdouble yc1, yc2; /* yc0==1 */
   gdouble xd1, xd2, yd1, yd2; /* history */
 } GslBiquadFilter;
-
 void	gsl_biquad_config_init		(GslBiquadConfig	*c,
 					 GslBiquadType		 type,
 					 GslBiquadNormalize	 normalize);
@@ -212,16 +186,12 @@ void	gsl_biquad_filter_eval		(GslBiquadFilter	*f,
 					 guint			 n_values,
 					 const gfloat		*x,
 					 gfloat			*y);
-
-
 /* --- filter scanning -- */
 gdouble	gsl_filter_sine_scan	(guint		 order,
 				 const gdouble	*a,
 				 const gdouble	*b,
 				 gdouble	 freq,
 				 gdouble	 mix_freq);
-
-
 /* --- implementations --- */
 static inline BseComplex
 bse_trans_s2z (BseComplex s)
@@ -255,11 +225,7 @@ bse_trans_freq2z (double w)
 {
   return atan (w) * 2.;
 }
-
-
-
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */
-
 #endif /* __GSL_FILTER_H__ */	/* vim:set ts=8 sw=2 sts=2: */

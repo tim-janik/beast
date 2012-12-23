@@ -2,12 +2,8 @@
 #include        <bse/bseplugin.hh>
 #include        <bse/bseprocedure.hh>
 #include        <bse/bsedatapocket.hh>
-
-
 AUTHORS	= "Tim Janik <timj@gtk.org>";
 LICENSE = "GNU Lesser General Public License";
-
-
 METHOD (BseDataPocket, create-entry) {
   HELP	= ("Create a new entry in a data pocket. "
 	   "Entries have a unique ID which is required to set values in a data pocket.");
@@ -22,20 +18,15 @@ METHOD (BseDataPocket, create-entry) {
   /* extract parameter values */
   BseDataPocket *pocket = (BseDataPocket*) bse_value_get_object (in_values++);
   uint id;
-
   /* check parameters */
   if (!BSE_IS_DATA_POCKET (pocket))
     return BSE_ERROR_PROC_PARAM_INVAL;
-  
   /* action */
   id = _bse_data_pocket_create_entry (pocket);
-  
   /* set output parameters */
   sfi_value_set_int (out_values++, id);
-  
   return BSE_ERROR_NONE;
 }
-
 METHOD (BseDataPocket, delete-entry) {
   HELP	= "Delete an existing entry from a data pocket";
   IN	= bse_param_spec_object ("data_pocket", "Data Pocket", NULL,
@@ -53,21 +44,16 @@ METHOD (BseDataPocket, delete-entry) {
   BseDataPocket *pocket = (BseDataPocket*) bse_value_get_object (in_values++);
   uint id = sfi_value_get_int (in_values++);
   bool fail = TRUE;
-
   /* check parameters */
   if (!BSE_IS_DATA_POCKET (pocket))
     return BSE_ERROR_PROC_PARAM_INVAL;
-  
   /* action */
   if (id)
     fail = _bse_data_pocket_delete_entry (pocket, id);
-  
   /* set output parameters */
   g_value_set_enum (out_values++, fail ? BSE_ERROR_NO_ENTRY : BSE_ERROR_NONE);
-  
   return BSE_ERROR_NONE;
 }
-
 METHOD (BseDataPocket, get-n-entries) {
   HELP	= "Retrieve the number of entries created in a data pocket.";
   IN	= bse_param_spec_object ("data_pocket", "Data Pocket", "The data pocket storing values",
@@ -80,17 +66,13 @@ METHOD (BseDataPocket, get-n-entries) {
 {
   /* extract parameter values */
   BseDataPocket *pocket = (BseDataPocket*) bse_value_get_object (in_values++);
-
   /* check parameters */
   if (!BSE_IS_DATA_POCKET (pocket))
     return BSE_ERROR_PROC_PARAM_INVAL;
-  
   /* set output parameters */
   sfi_value_set_int (out_values++, pocket->n_entries);
-  
   return BSE_ERROR_NONE;
 }
-
 METHOD (BseDataPocket, get-nth-entry-id) {
   HELP	= "Retrieve the ID of an entry in the data pocket by sequential index.";
   IN	= bse_param_spec_object ("data_pocket", "Data Pocket", "The data pocket storing values",
@@ -106,17 +88,13 @@ METHOD (BseDataPocket, get-nth-entry-id) {
   /* extract parameter values */
   BseDataPocket *pocket = (BseDataPocket*) bse_value_get_object (in_values++);
   uint index = sfi_value_get_int (in_values++);
-
   /* check parameters */
   if (!BSE_IS_DATA_POCKET (pocket))
     return BSE_ERROR_PROC_PARAM_INVAL;
-  
   /* set output parameters */
   sfi_value_set_int (out_values++, index < pocket->n_entries ? pocket->entries[index].id : 0);
-  
   return BSE_ERROR_NONE;
 }
-
 METHOD (BseDataPocket, set-float) {
   HELP	= ("Set a named floating point value in a data pocket entry. "
 	   "Names are required to distinguish different values from each other "
@@ -143,22 +121,17 @@ METHOD (BseDataPocket, set-float) {
   gfloat v_float        = sfi_value_get_real (in_values++);
   BseDataPocketValue value;
   bool success = FALSE;
-  
   /* check parameters */
   if (!BSE_IS_DATA_POCKET (pocket))
     return BSE_ERROR_PROC_PARAM_INVAL;
-  
   /* action */
   value.v_float = v_float;
   if (id)
     success = _bse_data_pocket_entry_set (pocket, id, g_quark_from_string (name), BSE_DATA_POCKET_FLOAT, value);
-  
   /* set output parameters */
   g_value_set_enum (out_values++, success ? BSE_ERROR_NONE : BSE_ERROR_NO_ENTRY);
-  
   return BSE_ERROR_NONE;
 }
-
 METHOD (BseDataPocket, set-int) {
   HELP	= ("Set a named integer value in a data pocket entry. "
 	   "Names are required to distinguish different values from each other "
@@ -185,22 +158,17 @@ METHOD (BseDataPocket, set-int) {
   guint v_uint          = sfi_value_get_int (in_values++);
   BseDataPocketValue value;
   bool success = FALSE;
-  
   /* check parameters */
   if (!BSE_IS_DATA_POCKET (pocket))
     return BSE_ERROR_PROC_PARAM_INVAL;
-  
   /* action */
   value.v_int = v_uint;
   if (id)
     success = _bse_data_pocket_entry_set (pocket, id, g_quark_from_string (name), BSE_DATA_POCKET_INT, value);
-  
   /* set output parameters */
   g_value_set_enum (out_values++, success ? BSE_ERROR_NONE : BSE_ERROR_NO_ENTRY);
-  
   return BSE_ERROR_NONE;
 }
-
 METHOD (BseDataPocket, set-object) {
   HELP	= ("Set a named object reference in a data pocket entry. "
 	   "Object references stored in a data pocket must exist within the "
@@ -227,23 +195,18 @@ METHOD (BseDataPocket, set-object) {
   BseItem *v_object     = (BseItem*) bse_value_get_object (in_values++);
   BseDataPocketValue value;
   bool success = FALSE;
-  
   /* check parameters */
   if (!BSE_IS_DATA_POCKET (pocket) ||
       (v_object && !bse_item_common_ancestor ((BseItem*) pocket, v_object)))
     return BSE_ERROR_PROC_PARAM_INVAL;
-  
   /* action */
   value.v_object = v_object;
   if (id)
     success = _bse_data_pocket_entry_set (pocket, id, g_quark_from_string (name), BSE_DATA_POCKET_OBJECT, value);
-  
   /* set output parameters */
   g_value_set_enum (out_values++, success ? BSE_ERROR_NONE : BSE_ERROR_NO_ENTRY);
-  
   return BSE_ERROR_NONE;
 }
-
 METHOD (BseDataPocket, set-string) {
   HELP	= ("Set a named string in a data pocket entry.");
   IN	= bse_param_spec_object ("data_pocket", "Data Pocket", "The data pocket storing values",
@@ -281,7 +244,6 @@ METHOD (BseDataPocket, set-string) {
   g_value_set_enum (out_values++, success ? BSE_ERROR_NONE : BSE_ERROR_NO_ENTRY);
   return BSE_ERROR_NONE;
 }
-
 METHOD (BseDataPocket, get-float) {
   HELP	= "Retrieve a previously set floating point value from a data pocket entry.";
   IN	= bse_param_spec_object ("data_pocket", "Data Pocket", "The data pocket storing values",
@@ -302,20 +264,15 @@ METHOD (BseDataPocket, get-float) {
   const char *name      = sfi_value_get_string (in_values++);
   BseDataPocketValue value = { 0, };
   gchar type;
-  
   /* check parameters */
   if (!BSE_IS_DATA_POCKET (pocket))
     return BSE_ERROR_PROC_PARAM_INVAL;
-  
   /* action */
   type = _bse_data_pocket_entry_get (pocket, id, g_quark_try_string (name), &value);
-  
   /* set output parameters */
   sfi_value_set_real (out_values++, type == BSE_DATA_POCKET_FLOAT ? value.v_float : 0);
-  
   return BSE_ERROR_NONE;
 }
-
 METHOD (BseDataPocket, get-int) {
   HELP	= "Retrieve a previously set integer value from a data pocket entry.";
   IN	= bse_param_spec_object ("data_pocket", "Data Pocket", "The data pocket storing values",
@@ -336,20 +293,15 @@ METHOD (BseDataPocket, get-int) {
   const char *name      = sfi_value_get_string (in_values++);
   BseDataPocketValue value = { 0, };
   gchar type;
-  
   /* check parameters */
   if (!BSE_IS_DATA_POCKET (pocket))
     return BSE_ERROR_PROC_PARAM_INVAL;
-  
   /* action */
   type = _bse_data_pocket_entry_get (pocket, id, g_quark_try_string (name), &value);
-  
   /* set output parameters */
   sfi_value_set_int (out_values++, type == BSE_DATA_POCKET_INT ? value.v_int : 0);
-  
   return BSE_ERROR_NONE;
 }
-
 METHOD (BseDataPocket, get-object) {
   HELP	= "Retrieve a previously set object reference from a data pocket entry.";
   IN	= bse_param_spec_object ("data_pocket", "Data Pocket", "The data pocket storing values",
@@ -370,20 +322,15 @@ METHOD (BseDataPocket, get-object) {
   const char *name      = sfi_value_get_string (in_values++);
   BseDataPocketValue value = { 0, };
   gchar type;
-  
   /* check parameters */
   if (!BSE_IS_DATA_POCKET (pocket))
     return BSE_ERROR_PROC_PARAM_INVAL;
-  
   /* action */
   type = _bse_data_pocket_entry_get (pocket, id, g_quark_try_string (name), &value);
-  
   /* set output parameters */
   bse_value_set_object (out_values++, type == BSE_DATA_POCKET_OBJECT ? value.v_object : 0);
-  
   return BSE_ERROR_NONE;
 }
-
 METHOD (BseDataPocket, get-string) {
   HELP	= "Retrieve a previously set string from a data pocket entry.";
   IN	= bse_param_spec_object ("data_pocket", "Data Pocket", "The data pocket storing values",
@@ -404,16 +351,12 @@ METHOD (BseDataPocket, get-string) {
   const char *name      = sfi_value_get_string (in_values++);
   BseDataPocketValue value = { 0, };
   gchar type;
-  
   /* check parameters */
   if (!BSE_IS_DATA_POCKET (pocket))
     return BSE_ERROR_PROC_PARAM_INVAL;
-  
   /* action */
   type = _bse_data_pocket_entry_get (pocket, id, g_quark_try_string (name), &value);
-  
   /* set output parameters */
   sfi_value_set_string (out_values++, type == BSE_DATA_POCKET_STRING ? value.v_string : 0);
-  
   return BSE_ERROR_NONE;
 }

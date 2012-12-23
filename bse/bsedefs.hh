@@ -1,7 +1,6 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #ifndef __BSE_DEFS_H__
 #define __BSE_DEFS_H__
-
 #undef   G_DISABLE_ASSERT
 #undef   G_DISABLE_CHECKS
 #include <libintl.h>
@@ -9,17 +8,12 @@
 #include <sfi/sfistore.hh>	// FIXME
 #include <sfi/sficomwire.hh>	// FIXME
 #include <bse/bseconfig.h>
-
 G_BEGIN_DECLS
-
-
 /* --- some globally used macros --- */
 #define BSE_VERSION_CMP(v1_major, v1_minor, v1_micro, v2_major, v2_minor, v2_micro) ( \
                                     (v1_major != v2_major) ? (v1_major > v2_major ? +1 : -1) : \
                                     (v1_minor != v2_minor) ? (v1_minor > v2_minor ? +1 : -1) : \
                                     (v1_micro < v2_micro ? -1 : v1_micro > v2_micro))
-
-
 /* --- BSE objects, classes & interfaces --- */
 typedef struct  _BseBinData                BseBinData;
 typedef struct  _BseBinDataClass           BseBinDataClass;
@@ -86,7 +80,6 @@ typedef struct  _BseVoice		   BseVoice;
 typedef struct  _BseWave                   BseWave;
 typedef struct  _BseWaveRepo               BseWaveRepo;
 typedef struct  _BseWaveRepoClass          BseWaveRepoClass;
-
 /* --- BseModule special handling --- */
 typedef struct _BseModule                  BseModule;
 typedef struct _BseModuleClass             BseModuleClass;
@@ -98,22 +91,17 @@ typedef struct _BseOStream                 BseOStream;
 #define	BSE_MODULE_GET_ISTREAMSP(bsemodule)	(((gpointer*) bsemodule)[2])
 #define	BSE_MODULE_GET_JSTREAMSP(bsemodule)	(((gpointer*) bsemodule)[3])
 #define	BSE_MODULE_GET_OSTREAMSP(bsemodule)	(((gpointer*) bsemodule)[4])
-
 /* --- Bse Loader --- */
 typedef struct _BseLoader               BseLoader;
 typedef struct _BseWaveFileInfo         BseWaveFileInfo;
 typedef struct _BseWaveDsc              BseWaveDsc;
 typedef struct _BseWaveChunkDsc         BseWaveChunkDsc;
-
-
 /* --- BSE aux structures --- */
 typedef struct  _BseExportNode          BseExportNode;
 typedef struct  _BseExportNodeBoxed	BseExportNodeBoxed;
 typedef struct  _BseGlobals             BseGlobals;
 typedef struct  _BsePlugin              BsePlugin;
 typedef struct  _BsePluginClass         BsePluginClass;
-
-
 /* --- BSE function types --- */
 typedef void          (*BseFunc)             (void);
 typedef void          (*BseFreeFunc)         (gpointer           data);
@@ -136,14 +124,9 @@ typedef gboolean      (*BseCategoryForeach)  (const gchar       *category_path,
                                               gpointer           user_data);
 typedef void          (*BseEngineAccessFunc) (BseModule         *module,
                                               gpointer           data); 
-                                         
-
-
 /* --- i18n and gettext helpers --- */
 const gchar* bse_gettext (const gchar *text);
 #define _(str)	bse_gettext (str)
 #define N_(str) (str)
-
 G_END_DECLS
-
 #endif /* __BSE_DEFS_H__ */

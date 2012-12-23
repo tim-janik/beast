@@ -5,7 +5,6 @@
 #include "bstpatternctrl.hh"
 #include "bstfiledialog.hh"
 #include <string.h>
-
 enum {
   ACTION_ADD,
   ACTION_EDIT,
@@ -14,21 +13,17 @@ enum {
   ACTION_RAISE,
   ACTION_LOAD
 };
-
 enum {
   BCOL_KEY,
   BCOL_FUNCTION,
   BCOL_PARAM,
   N_BCOLS
 };
-
 enum {
   FCOL_NAME,
   FCOL_BLURB,
   N_FCOLS
 };
-
-
 /* --- variables --- */
 static const GxkStockAction key_bindings_actions[] = {
   { N_("Add..."),               "",             N_("Bind a new key combination to a program function"),
@@ -44,8 +39,6 @@ static const GxkStockAction key_bindings_actions[] = {
   { N_("Load"),                 "",             N_("Load a key binding set"),
     ACTION_LOAD,                BST_STOCK_LOAD, },
 };
-
-
 /* --- functions --- */
 static inline guint
 key_binding_find_key (BstKeyBinding  *kbinding,
@@ -61,7 +54,6 @@ key_binding_find_key (BstKeyBinding  *kbinding,
       return i;
   return G_MAXINT;
 }
-
 static void
 key_bindings_load_file (GtkWidget   *dialog,
                         const gchar *file,
@@ -78,7 +70,6 @@ key_bindings_load_file (GtkWidget   *dialog,
   if (error)
     g_message ("failed to load \"%s\": %s", file, bse_error_blurb (error));
 }
-
 static void
 key_bindings_exec_action (gpointer data,
                           gulong   action)
@@ -229,7 +220,6 @@ key_bindings_exec_action (gpointer data,
   gxk_status_window_pop ();
   gxk_widget_update_actions_downwards (self);
 }
-
 static gboolean
 key_bindings_check_action (gpointer data,
                            gulong   action,
@@ -260,7 +250,6 @@ key_bindings_check_action (gpointer data,
       return FALSE;
     }
 }
-
 static gdouble
 key_binding_clamp_param (BstKeyBindingParam ptype,
                          gdouble            param)
@@ -277,7 +266,6 @@ key_binding_clamp_param (BstKeyBindingParam ptype,
     default:                            return 0;
     }
 }
-
 static void
 key_binding_binding_param_edited (GtkWidget   *self,
                                   const gchar *strpath,
@@ -304,7 +292,6 @@ key_binding_binding_param_edited (GtkWidget   *self,
     value = g_strtod (text, NULL);
   kbinding->keys[nb].param = key_binding_clamp_param (ptype, value);
 }
-
 static void
 key_binding_fill_binding_value (GtkWidget      *self,
                                 guint           column,
@@ -346,7 +333,6 @@ key_binding_fill_binding_value (GtkWidget      *self,
       break;
     }
 }
-
 static void
 key_binding_fill_function_value (GtkWidget      *self,
                                  guint           column,
@@ -365,7 +351,6 @@ key_binding_fill_function_value (GtkWidget      *self,
       break;
     }
 }
-
 static void
 key_binding_free (gpointer data)
 {
@@ -374,7 +359,6 @@ key_binding_free (gpointer data)
   g_free (kbinding->keys);
   g_free (kbinding);
 }
-
 GtkWidget*
 bst_key_binding_box (const gchar                 *binding_name,
                      guint                        n_funcs,
@@ -389,12 +373,10 @@ bst_key_binding_box (const gchar                 *binding_name,
   kbinding->binding_name = g_strdup (binding_name);
   kbinding->n_funcs = n_funcs;
   kbinding->funcs = funcs;
-
   g_object_set_data_full ((GObject*) self, "BstKeyBinding", kbinding, key_binding_free);
   g_object_set_long (self, "editable", editable != FALSE);
   gxk_widget_publish_actions (self, "key-bindings-actions", G_N_ELEMENTS (key_bindings_actions), key_bindings_actions,
                               NULL, key_bindings_check_action, key_bindings_exec_action);
-  
   /* binding list */
   lwrapper = gxk_list_wrapper_new (N_BCOLS,
                                    G_TYPE_STRING,       /* BCOL_KEY */
@@ -405,7 +387,6 @@ bst_key_binding_box (const gchar                 *binding_name,
                            G_CALLBACK (key_binding_fill_binding_value),
                            self, G_CONNECT_SWAPPED);
   gxk_list_wrapper_notify_append (lwrapper, kbinding->n_keys);
-  
   /* binding view setup */
   tview = (GtkTreeView*) gxk_radget_find (self, "binding-tree-view");
   gtk_tree_view_set_model (tview, GTK_TREE_MODEL (lwrapper));
@@ -422,7 +403,6 @@ bst_key_binding_box (const gchar                 *binding_name,
   gxk_tree_view_add_text_column (tview, BCOL_PARAM, "S", 0.0, _("Parameter"),
                                  _("Parameter to pass to functions upon activation"),
                                  editable ? (void*) key_binding_binding_param_edited : NULL, self, G_CONNECT_SWAPPED);
-  
   /* function list */
   lwrapper = gxk_list_wrapper_new (N_FCOLS,
                                    G_TYPE_STRING,       /* FCOL_NAME */
@@ -432,7 +412,6 @@ bst_key_binding_box (const gchar                 *binding_name,
                            G_CALLBACK (key_binding_fill_function_value),
                            self, G_CONNECT_SWAPPED);
   gxk_list_wrapper_notify_append (lwrapper, kbinding->n_funcs);
-
   /* function view setup */
   tview = (GtkTreeView*) gxk_radget_find (self, "function-tree-view");
   gtk_tree_view_set_model (tview, GTK_TREE_MODEL (lwrapper));
@@ -444,10 +423,8 @@ bst_key_binding_box (const gchar                 *binding_name,
                                  _("Function used to create new key bindings"),
                                  NULL, NULL, GConnectFlags (0));
   gxk_tree_view_add_text_column (tview, FCOL_BLURB, "S", 0.0, _("Description"), NULL, NULL, NULL, GConnectFlags (0));
-
   return (GtkWidget*) self;
 }
-
 void
 bst_key_binding_box_set (GtkWidget                   *self,
                          BstKeyBindingItemSeq        *kbseq)
@@ -459,14 +436,12 @@ bst_key_binding_box_set (GtkWidget                   *self,
   gxk_list_wrapper_notify_clear (GXK_LIST_WRAPPER (model));
   gxk_list_wrapper_notify_append (GXK_LIST_WRAPPER (model), kbinding->n_keys);
 }
-
 BstKeyBindingItemSeq*
 bst_key_binding_box_get (GtkWidget *self)
 {
   BstKeyBinding *kbinding = (BstKeyBinding*) g_object_get_data ((GObject*) self, "BstKeyBinding");
   return bst_key_binding_get_item_seq (kbinding);
 }
-
 BstKeyBindingKey*
 bst_key_binding_lookup_key (BstKeyBinding  *kbinding,
                             guint           keyval,
@@ -483,7 +458,6 @@ bst_key_binding_lookup_key (BstKeyBinding  *kbinding,
       return &kbinding->keys[i];
   return NULL;
 }
-
 const BstKeyBindingFunction*
 bst_key_binding_lookup (BstKeyBinding   *kbinding,
                         guint            keyval,
@@ -496,7 +470,6 @@ bst_key_binding_lookup (BstKeyBinding   *kbinding,
     *param = key ? key->param : 0;
   return key ? &kbinding->funcs[key->func_index] : NULL;
 }
-
 guint
 bst_key_binding_lookup_id (BstKeyBinding   *kbinding,
                            guint            keyval,
@@ -507,7 +480,6 @@ bst_key_binding_lookup_id (BstKeyBinding   *kbinding,
   const BstKeyBindingFunction *func = bst_key_binding_lookup (kbinding, keyval, modifier, collision_group, param);
   return func ? func->id : 0;
 }
-
 static inline guint
 key_binding_find_function (BstKeyBinding *kbinding,
                            const gchar   *func_name)
@@ -518,7 +490,6 @@ key_binding_find_function (BstKeyBinding *kbinding,
       return i;
   return G_MAXINT;
 }
-
 void
 bst_key_binding_set_item_seq (BstKeyBinding        *kbinding,
                               BstKeyBindingItemSeq *seq)
@@ -548,7 +519,6 @@ bst_key_binding_set_item_seq (BstKeyBinding        *kbinding,
   /* shrink capacity */
   kbinding->keys = (BstKeyBindingKey*) g_realloc (kbinding->keys, sizeof (kbinding->keys[0]) * kbinding->n_keys);
 }
-
 BstKeyBindingItemSeq*
 bst_key_binding_get_item_seq (BstKeyBinding *kbinding)
 {
@@ -566,7 +536,6 @@ bst_key_binding_get_item_seq (BstKeyBinding *kbinding)
     }
   return iseq;
 }
-
 GParamSpec*
 bst_key_binding_item_pspec (void)
 {
@@ -579,8 +548,6 @@ bst_key_binding_item_pspec (void)
     }
   return pspec;
 }
-
-
 /* --- keyrc file --- */
 #include <unistd.h>
 #include <fcntl.h>
@@ -595,7 +562,6 @@ bst_key_binding_rcfile (void)
     key_binding_rc = sfi_path_get_filename (".beast/keyrc", "~");
   return key_binding_rc;
 }
-
 BseErrorType
 bst_key_binding_dump (const gchar *file_name,
                       GSList      *kbindings)
@@ -603,20 +569,15 @@ bst_key_binding_dump (const gchar *file_name,
   SfiWStore *wstore;
   GSList *slist;
   gint fd;
-
   g_return_val_if_fail (file_name != NULL, BSE_ERROR_INTERNAL);
-
   sfi_make_dirname_path (file_name);
   fd = open (file_name,
              O_WRONLY | O_CREAT | O_TRUNC, /* O_EXCL, */
              0666);
   if (fd < 0)
     return errno == EEXIST ? BSE_ERROR_FILE_EXISTS : BSE_ERROR_IO;
-
   wstore = sfi_wstore_new ();
-
   sfi_wstore_printf (wstore, "; key-binding-file for BEAST v%s\n", BST_VERSION);
-
   /* store BstSkinConfig */
   sfi_wstore_puts (wstore, "\n");
   for (slist = kbindings; slist; slist = slist->next)
@@ -633,14 +594,11 @@ bst_key_binding_dump (const gchar *file_name,
       sfi_seq_unref (seq);
       sfi_wstore_puts (wstore, "\n");
     }
-
   /* flush buffers to file */
   sfi_wstore_flush_fd (wstore, fd);
   sfi_wstore_destroy (wstore);
-
   return close (fd) < 0 ? BSE_ERROR_IO : BSE_ERROR_NONE;
 }
-
 static GTokenType
 key_binding_try_statement (gpointer   context_data,
                            SfiRStore *rstore,
@@ -674,7 +632,6 @@ key_binding_try_statement (gpointer   context_data,
     }
   return SFI_TOKEN_UNMATCHED;
 }
-
 BseErrorType
 bst_key_binding_parse (const gchar *file_name,
                        GSList      *kbindings)
@@ -684,7 +641,6 @@ bst_key_binding_parse (const gchar *file_name,
   gchar *absname;
   gint fd;
   g_return_val_if_fail (file_name != NULL, BSE_ERROR_INTERNAL);
-
   absname = sfi_path_get_filename (file_name, NULL);
   fd = open (absname, O_RDONLY, 0);
   if (fd < 0)
@@ -693,7 +649,6 @@ bst_key_binding_parse (const gchar *file_name,
       return (errno == ENOENT || errno == ENOTDIR || errno == ELOOP ?
               BSE_ERROR_FILE_NOT_FOUND : BSE_ERROR_IO);
     }
-
   rstore = sfi_rstore_new ();
   sfi_rstore_input_fd (rstore, fd, absname);
   if (sfi_rstore_parse_all (rstore, kbindings, key_binding_try_statement, absname) > 0)

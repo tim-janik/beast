@@ -1,5 +1,4 @@
 /* GdkPixbuf RGBA C-Source image dump 1-byte-run-length-encoded */
-
 static const guint8 filter_icon[] = 
 { ""
   /* Pixbuf magic (0x47646b50) */
@@ -357,5 +356,3 @@ static const guint8 filter_icon[] =
   "\13\205\0\0\0\12\6\0\0\0\11\0\0\0\10\0\0\0\6\0\0\0\4\0\0\0\2\0\0\0\1"
   "\250\0\0\0\0\202\0\0\0\1\207\0\0\0\2\204\0\0\0\3\207\0\0\0\2\202\0\0"
   "\0\1\206\0\0\0\0"};
-
-

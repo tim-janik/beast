@@ -1,16 +1,12 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
-
-
 /* --- automation setup editor --- */
 #include "bstprocedure.hh"
-
 static void
 param_automation_dialog_cancel (GxkDialog *dialog)
 {
   g_object_set_data ((GObject*) dialog, "beast-GxkParam", NULL);
   gxk_toplevel_delete (GTK_WIDGET (dialog));
 }
-
 static void
 param_automation_dialog_ok (GxkDialog *dialog)
 {
@@ -27,7 +23,6 @@ param_automation_dialog_ok (GxkDialog *dialog)
     }
   gxk_toplevel_delete (GTK_WIDGET (dialog));
 }
-
 static void
 param_automation_popup_editor (GtkWidget *widget,
                                GxkParam  *param)
@@ -94,7 +89,6 @@ param_automation_popup_editor (GtkWidget *widget,
       gxk_widget_showraise (GTK_WIDGET (automation_dialog));
     }
 }
-
 static void
 param_automation_unrequest_focus_space (GtkWidget      *button,  // GTKFIX: GtkButton requests focus space for !CAN_FOCUS
                                         GtkRequisition *requisition)
@@ -108,7 +102,6 @@ param_automation_unrequest_focus_space (GtkWidget      *button,  // GTKFIX: GtkB
       requisition->height -= 2 * (focus_width + focus_pad);
     }
 }
-
 static GtkWidget*
 param_automation_create (GxkParam    *param,
                          const gchar *tooltip,
@@ -136,7 +129,6 @@ param_automation_create (GxkParam    *param,
   g_object_connect (button, "signal::clicked", param_automation_popup_editor, param, NULL);
   return widget;
 }
-
 static const SfiChoiceValue*
 param_automation_find_choice_value (const gchar *choice,
                                     GParamSpec  *pspec)
@@ -148,7 +140,6 @@ param_automation_find_choice_value (const gchar *choice,
       return &cvalues.values[i];
   return NULL;
 }
-
 static void
 param_automation_update (GxkParam  *param,
                          GtkWidget *widget)
@@ -214,7 +205,6 @@ param_automation_update (GxkParam  *param,
   g_free (tip);
   gtk_widget_set_sensitive (GTK_BIN (widget)->child, proxy && !bse_source_is_prepared (proxy));
 }
-
 static GxkParamEditor param_automation = {
   { "automation",       N_("Control Automation"), },
   { 0, },

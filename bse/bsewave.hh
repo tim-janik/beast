@@ -1,11 +1,8 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #ifndef __BSE_WAVE_H__
 #define __BSE_WAVE_H__
-
 #include	<bse/bsesource.hh>
-
 G_BEGIN_DECLS
-
 /* --- BSE type macros --- */
 #define BSE_TYPE_WAVE		   (BSE_TYPE_ID (BseWave))
 #define BSE_WAVE(object)	   (G_TYPE_CHECK_INSTANCE_CAST ((object), BSE_TYPE_WAVE, BseWave))
@@ -13,8 +10,6 @@ G_BEGIN_DECLS
 #define BSE_IS_WAVE(object)	   (G_TYPE_CHECK_INSTANCE_TYPE ((object), BSE_TYPE_WAVE))
 #define BSE_IS_WAVE_CLASS(class)   (G_TYPE_CHECK_CLASS_TYPE ((class), BSE_TYPE_WAVE))
 #define BSE_WAVE_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), BSE_TYPE_WAVE, BseWaveClass))
-
-
 /* --- BseWave --- */
 typedef struct _BseWaveClass      BseWaveClass;
 typedef struct {
@@ -29,20 +24,16 @@ typedef struct {
 struct _BseWave
 {
   BseSource	     parent_object;
-
   /* requested BseModule indices */
   guint		     request_count;
   GSList	    *index_list;
   guint		     index_dirty : 1;
-
   /* locator */
   guint		     locator_set : 1;
   gchar		    *file_name;
   gchar		    *wave_name;
-
   /* wave data */
   gchar            **xinfos;
-
   /* wave chunks */
   guint		     n_wchunks;
   SfiRing           *wave_chunks;       /* data=GslWaveChunk* */
@@ -52,8 +43,6 @@ struct _BseWaveClass
 {
   BseSourceClass parent_class;
 };
-
-
 /* --- prototypes -- */
 void		bse_wave_clear                  (BseWave	*wave);
 BseErrorType	bse_wave_load_wave_file		(BseWave	*wave,
@@ -73,12 +62,9 @@ void            bse_wave_remove_chunk           (BseWave        *wave,
 void		bse_wave_request_index		(BseWave	*wave);
 BseWaveIndex*	bse_wave_get_index_for_modules	(BseWave	*wave);
 void		bse_wave_drop_index		(BseWave	*wave);
-
 /* BseWaveIndex is safe to use from BseModules (self-contained constant structure) */
 GslWaveChunk*	bse_wave_index_lookup_best	(BseWaveIndex	*windex,
 						 gfloat		 osc_freq,
                                                  gfloat          velocity);
-						 
 G_END_DECLS
-
 #endif /* __BSE_WAVE_H__ */

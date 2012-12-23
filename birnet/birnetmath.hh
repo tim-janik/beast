@@ -1,19 +1,15 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #ifndef __BIRNET_MATH_HH__
 #define __BIRNET_MATH_HH__
-
 #include <birnet/birnetutils.hh>
 #include <math.h>
-
 namespace Birnet {
-
 /* --- double to integer --- */
 inline int      dtoi32 (double d) BIRNET_CONST;
 inline int64    dtoi64 (double d) BIRNET_CONST;
 inline int64    iround (double d) BIRNET_CONST;
 inline int64    ifloor (double d) BIRNET_CONST;
 inline int64    iceil  (double d) BIRNET_CONST;
-
 /* --- implementation bits --- */
 inline int BIRNET_CONST
 _dtoi32_generic (double d)
@@ -57,8 +53,6 @@ dtoi64 (double d)
 inline int64 BIRNET_CONST iround (double d) { return dtoi64 (round (d)); }
 inline int64 BIRNET_CONST ifloor (double d) { return dtoi64 (floor (d)); }
 inline int64 BIRNET_CONST iceil  (double d) { return dtoi64 (ceil (d)); }
-
 } // Birnet
-
 #endif /* __BIRNET_MATH_HH__ */
 /* vim:set ts=8 sts=2 sw=2: */

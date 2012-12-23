@@ -1,12 +1,9 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #ifndef __SFI_TYPES_H__
 #define __SFI_TYPES_H__
-
 #include <sfi/glib-extra.hh>
 #include <sfi/sfiwrapper.hh>
-
 G_BEGIN_DECLS
-
 /* --- Sfi typedefs --- */
 typedef bool			SfiBool;
 typedef gint			SfiInt;
@@ -34,7 +31,6 @@ typedef struct {
 typedef struct _SfiUStore	SfiUStore;
 typedef struct _SfiUPool	SfiUPool;
 typedef struct _SfiPPool	SfiPPool;
-
 /* --- FIXME: hacks! --- */
 void	sfi_set_error	(GError       **errorp,	// do nothing if *errorp is set already
 			 GQuark         domain,
@@ -47,13 +43,11 @@ gboolean sfi_choice_match_detailed (const gchar *choice_val1,
 gboolean sfi_choice_match (const gchar *choice_val1,
 			   const gchar *choice_val2);
 gchar*	sfi_strdup_canon (const gchar *identifier);
-
 typedef struct {
   const gchar *name;
   guint        name_length;
   guint        index;
 } SfiConstants;
-
 guint	     sfi_constants_get_index	(guint		     n_consts,
 					 const SfiConstants *rsorted_consts,
 					 const gchar	    *constant);
@@ -64,17 +58,12 @@ gint	     sfi_constants_rcmp		(const gchar	    *canon_identifier1,
 					 const gchar	    *canon_identifier2);
 const char*  sfi_category_concat        (const char         *prefix,
                                          const char         *trunk);
-
 /* --- idl macro magic --- */
 #define SFI_START_ARGS()     (
 #define SFI_END_ARGS()       )
 #define SFI_END_ARGS1(a)     a)
 #define SFI_END_ARGS2(a,b)   a , b)
 #define SFI_END_ARGS3(a,b,c) a , b , c)
-
-
 G_END_DECLS
-
 #endif /* __SFI_TYPES_H__ */
-
 /* vim:set ts=8 sts=2 sw=2: */

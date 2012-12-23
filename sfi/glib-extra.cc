@@ -1,8 +1,6 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include <string.h>
 #include "glib-extra.hh"
-
-
 void
 g_object_disconnect_any (gpointer object,
                          gpointer function,
@@ -19,8 +17,6 @@ g_object_disconnect_any (gpointer object,
                                         0, 0, 0,
                                         function, data);
 }
-
-
 /* --- string functions --- */
 const gchar*
 g_printf_find_localised_directive (const gchar *format)
@@ -47,7 +43,6 @@ g_printf_find_localised_directive (const gchar *format)
     }
   return NULL;
 }
-
 gchar**
 g_straddv (gchar      **str_array,
 	   const gchar *new_str)
@@ -63,7 +58,6 @@ g_straddv (gchar      **str_array,
       else
 	{
 	  guint i = 0;
-
 	  while (str_array[i])
 	    i++;
 	  str_array = g_renew (gchar*, str_array, i + 1 + 1);
@@ -74,28 +68,22 @@ g_straddv (gchar      **str_array,
     }
   return str_array;
 }
-
 guint
 g_strlenv (gchar **str_array)
 {
   guint i = 0;
-
   if (str_array)
     while (str_array[i])
       i++;
-
   return i;
 }
-
 gchar**
 g_strslistv (GSList *slist)
 {
   gchar **str_array;
   guint i;
-
   if (!slist)
     return NULL;
-
   i = g_slist_length (slist);
   str_array = g_new (gchar*, i + 1);
   i = 0;
@@ -105,10 +93,8 @@ g_strslistv (GSList *slist)
       slist = slist->next;
     }
   str_array[i] = NULL;
-
   return str_array;
 }
-
 gchar*
 g_strdup_stripped (const gchar *string)
 {
@@ -116,7 +102,6 @@ g_strdup_stripped (const gchar *string)
     {
       const gchar *s = string;
       guint l;
-
       while (*s == ' ')
 	s++;
       l = strlen (s);
@@ -126,7 +111,6 @@ g_strdup_stripped (const gchar *string)
     }
   return NULL;
 }
-
 gchar*
 g_strdup_rstrip (const gchar *string)
 {
@@ -139,7 +123,6 @@ g_strdup_rstrip (const gchar *string)
     }
   return NULL;
 }
-
 gchar*
 g_strdup_lstrip (const gchar *string)
 {
@@ -151,21 +134,18 @@ g_strdup_lstrip (const gchar *string)
     }
   return NULL;
 }
-
 #if !GLIB_CHECK_VERSION (2, 9, 0)
 const gchar*
 g_intern_string (const gchar *string)
 {
   return string ? g_quark_to_string (g_quark_from_string (string)) : NULL;
 }
-
 const gchar*
 g_intern_static_string (const gchar   *string)
 {
   return string ? g_quark_to_string (g_quark_from_static_string (string)) : NULL;
 }
 #endif
-
 static gchar*
 delim_concat_varargs (const gchar *first_string,
                       gchar        delim,
@@ -173,10 +153,8 @@ delim_concat_varargs (const gchar *first_string,
 {
   GString *gstring;
   gchar *s;
-
   if (!first_string)
     return NULL;
-
   gstring = g_string_new (first_string);
   s = va_arg (var_args, gchar*);
   while (s)
@@ -190,10 +168,8 @@ delim_concat_varargs (const gchar *first_string,
         }
       s = va_arg (var_args, gchar*);
     }
-
   return g_string_free (gstring, FALSE);
 }
-
 const gchar*
 g_intern_strconcat (const gchar *first_string,
                     ...)
@@ -211,7 +187,6 @@ g_intern_strconcat (const gchar *first_string,
     }
   return c;
 }
-
 const gchar*
 g_intern_printf (const gchar   *format,
                  ...)
@@ -230,7 +205,6 @@ g_intern_printf (const gchar   *format,
   else
     return NULL;
 }
-
 gchar*
 g_path_concat (const gchar *first_path,
                ...)
@@ -242,7 +216,6 @@ g_path_concat (const gchar *first_path,
   va_end (args);
   return s;
 }
-
 GString*
 g_string_prefix_lines (GString     *gstring,
                        const gchar *pstr)
@@ -261,8 +234,6 @@ g_string_prefix_lines (GString     *gstring,
     }
   return gstring;
 }
-
-
 /* --- string options --- */
 gchar*
 g_option_concat (const gchar *first_option,
@@ -275,19 +246,15 @@ g_option_concat (const gchar *first_option,
   va_end (args);
   return s;
 }
-
 static const gchar*
 g_option_find_value (const gchar *option_string,
                      const gchar *option)
 {
   const gchar *p, *match = NULL;
   gint l = strlen (option);
-
   g_return_val_if_fail (l > 0, NULL);
-
   if (!option_string)
     return NULL;        /* option not found */
-
   /* try first match */
   p = strstr (option_string, option);
   if (p &&
@@ -307,16 +274,13 @@ g_option_find_value (const gchar *option_string,
     }
   return match ? match + l : NULL;
 }
-
 gchar*
 g_option_get (const gchar *option_string,
               const gchar *option)
 {
   const gchar *value = NULL;
-
   if (option && option[0])
     value = g_option_find_value (option_string, option);
-
   if (!value)
     return NULL;                        /* option not present */
   else switch (value[0])
@@ -333,16 +297,13 @@ g_option_get (const gchar *option_string,
     default:    return NULL;            /* anything else, undefined */
     }
 }
-
 gboolean
 g_option_check (const gchar *option_string,
                 const gchar *option)
 {
   const gchar *value = NULL;
-
   if (option && option[0])
     value = g_option_find_value (option_string, option);
-
   if (!value)
     return FALSE;                       /* option not present */
   else switch (value[0])
@@ -367,8 +328,6 @@ g_option_check (const gchar *option_string,
     default:    return FALSE;           /* anything else, undefined */
     }
 }
-
-
 /* --- GParamSpec options --- */
 static GQuark quark_pspec_options = 0;
 static guint
@@ -390,7 +349,6 @@ pspec_flags (const gchar *poptions)
     }
   return flags;
 }
-
 void
 g_param_spec_set_options (GParamSpec  *pspec,
                           const gchar *options)
@@ -403,7 +361,6 @@ g_param_spec_set_options (GParamSpec  *pspec,
   /* pspec->flags &= ~G_PARAM_MASK; */
   pspec->flags = GParamFlags (pspec->flags | pspec_flags (options));
 }
-
 gboolean
 g_param_spec_check_option (GParamSpec  *pspec,
                            const gchar *option)
@@ -413,7 +370,6 @@ g_param_spec_check_option (GParamSpec  *pspec,
   poptions = g_param_spec_get_options (pspec);
   return g_option_check (poptions, option);
 }
-
 void
 g_param_spec_add_option (GParamSpec  *pspec,
                          const gchar *option,
@@ -445,7 +401,6 @@ g_param_spec_add_option (GParamSpec  *pspec,
       g_free (s);
     }
 }
-
 gboolean
 g_param_spec_provides_options (GParamSpec  *pspec,
                                const gchar *options)
@@ -472,7 +427,6 @@ g_param_spec_provides_options (GParamSpec  *pspec,
   else
     return g_param_spec_check_option (pspec, options);
 }
-
 const gchar*
 g_param_spec_get_options (GParamSpec *pspec)
 {
@@ -481,10 +435,8 @@ g_param_spec_get_options (GParamSpec *pspec)
   options = (const char*) g_param_spec_get_qdata (pspec, quark_pspec_options);
   return options ? options : "";
 }
-
 static GQuark quark_pspec_istepping = 0;
 static GQuark quark_pspec_istepping64 = 0;
-
 void
 g_param_spec_set_istepping (GParamSpec  *pspec,
                             guint64      stepping)
@@ -508,7 +460,6 @@ g_param_spec_set_istepping (GParamSpec  *pspec,
       g_param_spec_set_qdata (pspec, quark_pspec_istepping, (void*) size_t (stepping));
     }
 }
-
 guint64
 g_param_spec_get_istepping (GParamSpec *pspec)
 {
@@ -522,9 +473,7 @@ g_param_spec_get_istepping (GParamSpec *pspec)
     }
   return stepping;
 }
-
 static GQuark quark_pspec_fstepping = 0;
-
 void
 g_param_spec_set_fstepping (GParamSpec  *pspec,
                             gdouble      stepping)
@@ -541,7 +490,6 @@ g_param_spec_set_fstepping (GParamSpec  *pspec,
   else
     g_param_spec_set_qdata (pspec, quark_pspec_fstepping, NULL);
 }
-
 gdouble
 g_param_spec_get_fstepping (GParamSpec *pspec)
 {
@@ -550,15 +498,12 @@ g_param_spec_get_fstepping (GParamSpec *pspec)
   fstepping = (double*) g_param_spec_get_qdata (pspec, quark_pspec_fstepping);
   return fstepping ? *fstepping : 0;
 }
-
 typedef struct {
   gdouble center;
   gdouble base;
   gdouble n_steps;
 } LogScale;
-
 static GQuark quark_pspec_log_scale = 0;
-
 void
 g_param_spec_set_log_scale (GParamSpec  *pspec,
                             gdouble      center,
@@ -580,7 +525,6 @@ g_param_spec_set_log_scale (GParamSpec  *pspec,
   else
     g_param_spec_set_qdata (pspec, quark_pspec_log_scale, NULL);
 }
-
 gboolean
 g_param_spec_get_log_scale (GParamSpec  *pspec,
                             gdouble     *center,
@@ -602,23 +546,18 @@ g_param_spec_get_log_scale (GParamSpec  *pspec,
     }
   return FALSE;
 }
-
-
 /* --- list extensions --- */
 gpointer
 g_slist_pop_head (GSList **slist_p)
 {
   gpointer data;
-  
   g_return_val_if_fail (slist_p != NULL, NULL);
-  
   if (!*slist_p)
     return NULL;
   data = (*slist_p)->data;
   *slist_p = g_slist_delete_link (*slist_p, *slist_p);
   return data;
 }
-
 GSList*
 g_slist_append_uniq (GSList  *slist,
 		     gpointer data)
@@ -632,21 +571,17 @@ g_slist_append_uniq (GSList  *slist,
   last->next = g_slist_append (NULL, data);
   return slist;
 }
-
 gpointer
 g_list_pop_head (GList **list_p)
 {
   gpointer data;
-
   g_return_val_if_fail (list_p != NULL, NULL);
-
   if (!*list_p)
     return NULL;
   data = (*list_p)->data;
   *list_p = g_list_delete_link (*list_p, *list_p);
   return data;
 }
-
 void
 g_slist_free_deep (GSList         *slist,
 		   GDestroyNotify  data_destroy)
@@ -658,7 +593,6 @@ g_slist_free_deep (GSList         *slist,
       data = g_slist_pop_head (&slist);
     }
 }
-
 void
 g_list_free_deep (GList         *list,
 		  GDestroyNotify data_destroy)
@@ -670,21 +604,17 @@ g_list_free_deep (GList         *list,
       data = g_list_pop_head (&list);
     }
 }
-
-
 /* --- name conversions --- */
 static inline gchar
 check_lower (gchar c)
 {
   return c >= 'a' && c <= 'z';
 }
-
 static inline gchar
 check_upper (gchar c)
 {
   return c >= 'A' && c <= 'Z';
 }
-
 static inline gchar
 char_convert (gchar    c,
 	      gchar    fallback,
@@ -708,7 +638,6 @@ char_convert (gchar    c,
     }
   return fallback;
 }
-
 static gchar*
 type_name_to_cname (const gchar *type_name,
 		    const gchar *insert,
@@ -718,9 +647,7 @@ type_name_to_cname (const gchar *type_name,
   const gchar *s;
   gchar *result, *p;
   guint was_upper, ilen;
-
   s = type_name;
-
   /* special casing for GLib types */
   if (strcmp (s, "GString") == 0)
     s = "GGString";			/* G_TYPE_GSTRING */
@@ -751,11 +678,9 @@ type_name_to_cname (const gchar *type_name,
 	    break;
 	  }
     }
-
   ilen = strlen (insert);
   result = g_new (gchar, strlen (s) * 2 + ilen + 1);
   p = result;
-
   *p++ = char_convert (*s++, fallback, want_upper);
   while (*s && !check_upper (*s))
     *p++ = char_convert (*s++, fallback, want_upper);
@@ -776,43 +701,32 @@ type_name_to_cname (const gchar *type_name,
       s++;
     }
   *p++ = 0;
-
   return result;
 }
-
 gchar*
 g_type_name_to_cname (const gchar *type_name)
 {
   g_return_val_if_fail (type_name != NULL, NULL);
-
   return type_name_to_cname (type_name, "", '_', FALSE);
 }
-
 gchar*
 g_type_name_to_sname (const gchar *type_name)
 {
   g_return_val_if_fail (type_name != NULL, NULL);
-
   return type_name_to_cname (type_name, "", '-', FALSE);
 }
-
 gchar*
 g_type_name_to_cupper (const gchar *type_name)
 {
   g_return_val_if_fail (type_name != NULL, NULL);
-
   return type_name_to_cname (type_name, "", '_', TRUE);
 }
-
 gchar*
 g_type_name_to_type_macro (const gchar *type_name)
 {
   g_return_val_if_fail (type_name != NULL, NULL);
-
   return type_name_to_cname (type_name, "_TYPE", '_', TRUE);
 }
-
-
 /* --- simple main loop source --- */
 typedef struct {
   GSource         source;
@@ -822,7 +736,6 @@ typedef struct {
   gpointer        data;
   GDestroyNotify  destroy;
 } SimpleSource;
-
 static gboolean
 simple_source_prepare (GSource *source,
 		       gint    *timeout_p)
@@ -831,7 +744,6 @@ simple_source_prepare (GSource *source,
   ssource->last_pending = ssource->pending (ssource->data, timeout_p);
   return ssource->last_pending;
 }
-
 static gboolean
 simple_source_check (GSource *source)
 {
@@ -841,7 +753,6 @@ simple_source_check (GSource *source)
     ssource->last_pending = ssource->pending (ssource->data, &timeout);
   return ssource->last_pending;
 }
-
 static gboolean
 simple_source_dispatch (GSource    *source,
 			GSourceFunc callback,
@@ -851,12 +762,10 @@ simple_source_dispatch (GSource    *source,
   ssource->dispatch (ssource->data);
   return TRUE;
 }
-
 static void
 simple_source_finalize (GSource *source)
 {
   SimpleSource *ssource = (SimpleSource*) source;
-
   /* this finalize handler may be run due to g_source_remove() called
    * from some dispatch() implementation, possibly causing reentrancy
    * problems (mutexes etc.). however, there's hardly anything we could
@@ -865,7 +774,6 @@ simple_source_finalize (GSource *source)
   if (ssource->destroy)
     ssource->destroy (ssource->data);
 }
-
 GSource*
 g_source_simple (gint            priority,
 		 GSourcePending  pending,
@@ -885,10 +793,8 @@ g_source_simple (gint            priority,
   GSource *source;
   va_list var_args;
   GPollFD *pfd;
-
   g_return_val_if_fail (pending != NULL, NULL);
   g_return_val_if_fail (dispatch != NULL, NULL);
-
   source = g_source_new (&simple_source_funcs, sizeof (SimpleSource));
   g_source_set_priority (source, priority);
   ssource = (SimpleSource*) source;
@@ -907,13 +813,11 @@ g_source_simple (gint            priority,
   va_end (var_args);
   return source;
 }
-
 /* --- predicate idle --- */
 typedef struct {
   GSource     source;
   GSourceFunc predicate;
 } PredicateIdle;
-
 static gboolean
 predicate_idle_prepare (GSource *source,
                         gint    *timeout)
@@ -924,7 +828,6 @@ predicate_idle_prepare (GSource *source,
   else
     return FALSE;
 }
-
 static gboolean
 predicate_idle_check (GSource *source)
 {
@@ -934,7 +837,6 @@ predicate_idle_check (GSource *source)
   else
     return FALSE;
 }
-
 static gboolean
 predicate_idle_dispatch (GSource    *source,
                          GSourceFunc callback,
@@ -945,7 +847,6 @@ predicate_idle_dispatch (GSource    *source,
   else
     return FALSE;
 }
-
 guint
 g_predicate_idle_add_full (gint            priority,
                            GSourceFunc     predicate,
@@ -963,7 +864,6 @@ g_predicate_idle_add_full (gint            priority,
   g_source_unref (source);
   return id;
 }
-
 guint
 g_predicate_idle_add (GSourceFunc     predicate,
                       GSourceFunc     function,
@@ -971,7 +871,6 @@ g_predicate_idle_add (GSourceFunc     predicate,
 {
   return g_predicate_idle_add_full (G_PRIORITY_DEFAULT_IDLE, predicate, function, data, NULL);
 }
-
 /* --- GLib main loop reentrant signal queue --- */
 #if 0
 typedef struct _GUSignalData GUSignalData;
@@ -981,7 +880,6 @@ struct _GUSignalData
   guint8       shift;
   GUSignalFunc callback;
 };
-
 static gboolean g_usignal_prepare  (gpointer  source_data,
 			 	    GTimeVal *current_time,
 				    gint     *timeout,
@@ -992,7 +890,6 @@ static gboolean g_usignal_check    (gpointer  source_data,
 static gboolean g_usignal_dispatch (gpointer  source_data,
 				    GTimeVal *dispatch_time,
 				    gpointer  user_data);
-
 static GSourceFuncs usignal_funcs = {
   g_usignal_prepare,
   g_usignal_check,
@@ -1000,7 +897,6 @@ static GSourceFuncs usignal_funcs = {
   g_free
 };
 static	guint32	usignals_notified[8] = { 0, 0, 0, 0, 0, 0, 0, 0 };
-
 static gboolean
 g_usignal_prepare (gpointer  source_data,
 		   GTimeVal *current_time,
@@ -1008,32 +904,25 @@ g_usignal_prepare (gpointer  source_data,
 		   gpointer  user_data)
 {
   GUSignalData *usignal_data = source_data;
-  
   return usignals_notified[usignal_data->index] & (1 << usignal_data->shift);
 }
-
 static gboolean
 g_usignal_check (gpointer  source_data,
 		 GTimeVal *current_time,
 		 gpointer  user_data)
 {
   GUSignalData *usignal_data = source_data;
-  
   return usignals_notified[usignal_data->index] & (1 << usignal_data->shift);
 }
-
 static gboolean
 g_usignal_dispatch (gpointer  source_data,
 		    GTimeVal *dispatch_time,
 		    gpointer  user_data)
 {
   GUSignalData *usignal_data = source_data;
-  
   usignals_notified[usignal_data->index] &= ~(1 << usignal_data->shift);
-  
   return usignal_data->callback (-128 + usignal_data->index * 32 + usignal_data->shift, user_data);
 }
-
 guint
 g_usignal_add (gint8	    usignal,
 	       GUSignalFunc function,
@@ -1041,7 +930,6 @@ g_usignal_add (gint8	    usignal,
 {
   return g_usignal_add_full (G_PRIORITY_DEFAULT, usignal, function, data, NULL);
 }
-
 guint
 g_usignal_add_full (gint           priority,
 		    gint8          usignal,
@@ -1051,30 +939,23 @@ g_usignal_add_full (gint           priority,
 {
   GUSignalData *usignal_data;
   guint s = 128 + usignal;
-  
   g_return_val_if_fail (function != NULL, 0);
-  
   usignal_data = g_new (GUSignalData, 1);
   usignal_data->index = s / 32;
   usignal_data->shift = s % 32;
   usignal_data->callback = function;
-  
   return g_source_add (priority, TRUE, &usignal_funcs, usignal_data, data, destroy);
 }
-
 void
 g_usignal_notify (gint8 usignal)
 {
   guint index, shift;
   guint s = 128 + usignal;
-  
   index = s / 32;
   shift = s % 32;
-  
   usignals_notified[index] |= 1 << shift;
 }
 #endif
-
 GScanner*
 g_scanner_new64 (const GScannerConfig *config_templ)
 {

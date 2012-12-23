@@ -1,13 +1,10 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #ifndef __BSE_SERVER_H__
 #define __BSE_SERVER_H__
-
 #include        <bse/bsesuper.hh>
 #include        <bse/bsepcmdevice.hh>
 #include        <bse/bsemididevice.hh>
-
 G_BEGIN_DECLS
-
 /* --- BSE type macros --- */
 #define BSE_TYPE_SERVER              (BSE_TYPE_ID (BseServer))
 #define BSE_SERVER(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), BSE_TYPE_SERVER, BseServer))
@@ -15,21 +12,15 @@ G_BEGIN_DECLS
 #define BSE_IS_SERVER(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), BSE_TYPE_SERVER))
 #define BSE_IS_SERVER_CLASS(class)   (G_TYPE_CHECK_CLASS_TYPE ((class), BSE_TYPE_SERVER))
 #define BSE_SERVER_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), BSE_TYPE_SERVER, BseServerClass))
-
-
 /* --- BseServer object --- */
 struct _BseServer
 {
   BseContainer     parent_object;
-  
   GSource	  *engine_source;
-  
   GList	          *projects;
   GSList	  *children;
-
   gchar		  *wave_file;
   double           wave_seconds;
-  
   guint		   dev_use_count;
   guint            log_messages : 1;
   guint            pcm_input_checked : 1;
@@ -38,15 +29,12 @@ struct _BseServer
   BseModule       *pcm_omodule;
   BsePcmWriter	  *pcm_writer;
   BseMidiDevice	  *midi_device;
-  
   GSList	  *watch_list;
 };
 struct _BseServerClass
 {
   BseContainerClass parent_class;
 };
-
-
 /* --- prototypes --- */
 BseServer*	bse_server_get				(void);
 BseProject*	bse_server_create_project		(BseServer	*server,
@@ -85,7 +73,6 @@ void		bse_server_add_io_watch			(BseServer	*server,
 void		bse_server_remove_io_watch		(BseServer	*server,
 							 BseIOWatch	 watch_func,
 							 gpointer	 data);
-
 /* --- internal --- */
 void		bse_server_registration			(BseServer          *server,
 							 BseRegistrationType rtype,
@@ -119,7 +106,5 @@ BseErrorType	bse_server_run_remote			(BseServer	    *server,
 void		bse_server_queue_kill_wire		(BseServer	    *server,
 							 SfiComWire	    *wire);
 void		bse_server_notify_gconfig		(BseServer	    *server);
-
 G_END_DECLS
-
 #endif /* __BSE_SERVER_H__ */

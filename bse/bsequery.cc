@@ -11,7 +11,6 @@
 #include	<unistd.h>
 #include	<sys/stat.h>
 #include	<fcntl.h>
-
 static gchar *indent_inc = NULL;
 static guint spacing = 1;
 static FILE *f_out = NULL;
@@ -19,7 +18,6 @@ static GType root = 0;
 static gboolean recursion = TRUE;
 static gboolean feature_blurb = FALSE;
 static gboolean feature_channels = FALSE;
-
 /*
   #define	O_SPACE	"\\as"
   #define	O_ESPACE " "
@@ -28,14 +26,12 @@ static gboolean feature_channels = FALSE;
   #define	O_LLEAF	"\\aL"
   #define	O_KEY_FILL "_"
 */
-
 #define	O_SPACE	" "
 #define	O_ESPACE ""
 #define	O_BRANCH "+"
 #define	O_VLINE "|"
 #define	O_LLEAF	"`"
 #define	O_KEY_FILL "_"
-
 static void
 show_nodes (GType        type,
 	    GType        sibling,
@@ -43,40 +39,31 @@ show_nodes (GType        type,
 {
   GType   *children;
   guint i;
-
   if (!type)
     return;
-
   children = g_type_children (type, NULL);
-
   if (type != root)
     for (i = 0; i < spacing; i++)
       fprintf (f_out, "%s%s\n", indent, O_VLINE);
-  
   fprintf (f_out, "%s%s%s%s",
 	   indent,
 	   sibling ? O_BRANCH : (type != root ? O_LLEAF : O_SPACE),
 	   O_ESPACE,
 	   g_type_name (type));
-
   for (i = strlen (g_type_name (type)); i <= strlen (indent_inc); i++)
     fputs (O_KEY_FILL, f_out);
-
   if (feature_blurb && bse_type_get_blurb (type))
     {
       fputs ("\t[", f_out);
       fputs (bse_type_get_blurb (type), f_out);
       fputs ("]", f_out);
     }
-
   if (G_TYPE_IS_ABSTRACT (type))
     fputs ("\t(abstract)", f_out);
-
   if (feature_channels && g_type_is_a (type, BSE_TYPE_SOURCE))
     {
       BseSourceClass *klass = (BseSourceClass*) g_type_class_ref (type);
       gchar buffer[1024];
-
       sprintf (buffer,
 	       "\t(ichannels %u) (ochannels %u)",
 	       klass->channel_defs.n_ichannels,
@@ -84,34 +71,26 @@ show_nodes (GType        type,
       fputs (buffer, f_out);
       g_type_class_unref (klass);
     }
-
   fputc ('\n', f_out);
-  
   if (children && recursion)
     {
       gchar *new_indent;
       GType   *child;
-
       if (sibling)
 	new_indent = g_strconcat (indent, O_VLINE, indent_inc, NULL);
       else
 	new_indent = g_strconcat (indent, O_SPACE, indent_inc, NULL);
-
       for (child = children; *child; child++)
 	show_nodes (child[0], child[1], new_indent);
-
       g_free (new_indent);
     }
-
   g_free (children);
 }
-
 static void
 show_cats (void)
 {
   BseCategorySeq *cseq;
   guint i;
-
   cseq = bse_categories_match_typed ("*", 0);
   for (i = 0; i < cseq->n_cats; i++)
     fprintf (f_out, "%s\t(%s)\n",
@@ -119,14 +98,12 @@ show_cats (void)
 	     cseq->cats[i]->type);
   bse_category_seq_free (cseq);
 }
-
 static void
 show_procdoc (void)
 {
   BseCategorySeq *cseq;
   guint i;
   const gchar *nullstr = ""; // "???";
-
   cseq = bse_categories_match_typed ("*", BSE_TYPE_PROCEDURE);
   for (i = 0; i < cseq->n_cats; i++)
     {
@@ -135,12 +112,10 @@ show_procdoc (void)
       gchar *pname = g_type_name_to_sname (cseq->cats[i]->type);
       const gchar *blurb = bse_type_get_blurb (type);
       guint j;
-
       fprintf (f_out, "/**\n * %s\n", pname);
       for (j = 0; j < klass->n_in_pspecs; j++)
 	{
 	  GParamSpec *pspec = G_PARAM_SPEC (klass->in_pspecs[j]);
-
 	  fprintf (f_out, " * @%s: %s\n",
 		   pspec->name,
 		   g_param_spec_get_blurb (pspec) ? g_param_spec_get_blurb (pspec) : nullstr);
@@ -148,7 +123,6 @@ show_procdoc (void)
       for (j = 0; j < klass->n_out_pspecs; j++)
 	{
 	  GParamSpec *pspec = G_PARAM_SPEC (klass->out_pspecs[j]);
-
 	  fprintf (f_out, " * @Returns: %s: %s\n",
 		   pspec->name,
 		   g_param_spec_get_blurb (pspec) ? g_param_spec_get_blurb (pspec) : nullstr);
@@ -161,7 +135,6 @@ show_procdoc (void)
     }
   bse_category_seq_free (cseq);
 }
-
 static gint
 help (gchar *arg)
 {
@@ -183,10 +156,8 @@ help (gchar *arg)
   fprintf (stderr, "       procdoc    print procedure documentation\n");
   fprintf (stderr, "       synthlist  list standard synths\n");
   fprintf (stderr, "       synth <x>  dump standard synth <x> definition\n");
-
   return arg != NULL;
 }
-
 int
 main (gint   argc,
       gchar *argv[])
@@ -206,13 +177,9 @@ main (gint   argc,
     { "load-core-scripts", scriptbool },
     { NULL },
   };
-
   f_out = stdout;
-
   g_thread_init (NULL);
-
   sfi_init (&argc, &argv, "BseQuery", NULL);
-
   int i;
   for (i = 1; i < argc; i++)
     {
@@ -229,7 +196,6 @@ main (gint   argc,
 	    {
 	      char *p;
 	      guint n;
-
 	      p = argv[i];
 	      while (*p)
 		p++;
@@ -309,17 +275,13 @@ main (gint   argc,
       else
 	return help (argv[i]);
     }
-
   bse_init_inprocess (&argc, &argv, "BseQuery", config);
-
   if (root_name)
     root = g_type_from_name (root_name);
   else
     root = BSE_TYPE_OBJECT;
-
   if (!gen_froots && !gen_tree && !gen_cats && !gen_procdoc && !list_synths && !show_synth)
     return help (argv[i-1]);
-
   if (!indent_inc)
     {
       indent_inc = g_new (gchar, strlen (O_SPACE) + 1);
@@ -328,7 +290,6 @@ main (gint   argc,
       strcpy (indent_inc, O_SPACE);
       strcpy (indent_inc, O_SPACE);
     }
-
   if (gen_tree)
     show_nodes (root, 0, iindent);
   if (gen_froots)
@@ -357,6 +318,5 @@ main (gint   argc,
       g_print ("%s", text);
       g_free (text);
     }
-
   return 0;
 }

@@ -1,15 +1,10 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #ifndef __BSE_INSTRUMENT_H__
 #define __BSE_INSTRUMENT_H__
-
 #include	<bse/bseitem.hh>
-
-
 #ifdef __cplusplus
 extern "C" {
 #endif /* __cplusplus */
-
-
 /* --- BSE type macros --- */
 #define BSE_TYPE_INSTRUMENT		 (BSE_TYPE_ID (BseInstrument))
 #define BSE_INSTRUMENT(object)		 (G_TYPE_CHECK_INSTANCE_CAST ((object), BSE_TYPE_INSTRUMENT, BseInstrument))
@@ -17,8 +12,6 @@ extern "C" {
 #define BSE_IS_INSTRUMENT(object)	 (G_TYPE_CHECK_INSTANCE_TYPE ((object), BSE_TYPE_INSTRUMENT))
 #define BSE_IS_INSTRUMENT_CLASS(class)	 (G_TYPE_CHECK_CLASS_TYPE ((class), BSE_TYPE_INSTRUMENT))
 #define BSE_INSTRUMENT_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), BSE_TYPE_INSTRUMENT, BseInstrumentClass))
-
-
 /* --- BseInstrument --- */
 typedef struct _BseEnvelope BseEnvelope;
 typedef enum
@@ -43,31 +36,22 @@ struct _BseEnvelope
 struct _BseInstrument
 {
   BseItem	     parent_instance;
-  
   BseInstrumentType  type;
   BseWave	    *wave;
   BseSNet	    *user_snet;
   BseSNet	    *seq_snet;	/* sequencer snet */
-
   gfloat	     volume_factor;
   gint		     balance;
   gint		     transpose;
   gint		     fine_tune;
-
   BseEnvelope	     env;
 };
 struct _BseInstrumentClass
 {
   BseItemClass parent_class;
 };
-
-
 /* --- prototypes -- */
-
-
-
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */
-
 #endif /* __BSE_INSTRUMENT_H__ */

@@ -18,17 +18,13 @@
 #include <sys/types.h>
 #include <unistd.h>
 #include <sfi/sfitests.hh> /* sfti_test_init() */
-
 using namespace Birnet;
-
 /* --- prototypes --- */
 static void	bse_main_loop		(gpointer	 data);
 static void	bse_async_parse_args	(gint	        *argc_p,
 					 gchar	      ***argv_p,
                                          BseMainArgs    *margs,
                                          SfiInitValue    values[]);
-
-
 /* --- variables --- */
 /* from bse.hh */
 const guint		 bse_major_version = BSE_MAJOR_VERSION;
@@ -61,7 +57,6 @@ static BseMainArgs       default_main_args = {
 };
 BseMainArgs             *bse_main_args = NULL;
 BseTraceArgs             bse_trace_args = { NULL, };
-
 /* --- functions --- */
 void
 bse_init_textdomain_only (void)
@@ -70,14 +65,12 @@ bse_init_textdomain_only (void)
   bind_textdomain_codeset (BSE_GETTEXT_DOMAIN, "UTF-8");
   textdomain_setup = TRUE;
 }
-
 const gchar*
 bse_gettext (const gchar *text)
 {
   g_assert (textdomain_setup == TRUE);
   return dgettext (BSE_GETTEXT_DOMAIN, text);
 }
-
 void
 bse_init_async (gint           *argc,
 		gchar        ***argv,
@@ -85,25 +78,19 @@ bse_init_async (gint           *argc,
                 SfiInitValue    values[])
 {
   BirnetThread *thread;
-
   bse_init_textdomain_only();
-
   if (bse_initialization_stage != 0)
     g_error ("%s() may only be called once", "bse_init_async");
   bse_initialization_stage++;
   if (bse_initialization_stage != 1)
     g_error ("%s() may only be called once", "bse_init_async");
-
   /* this function is running in the user program and needs to start the main BSE thread */
-  
   /* paranoid assertions */
   g_assert (G_BYTE_ORDER == G_LITTLE_ENDIAN || G_BYTE_ORDER == G_BIG_ENDIAN);
-
   /* initialize submodules */
   sfi_init (argc, argv, app_name, values);
   bse_main_args = &default_main_args;
   bse_main_args->birnet = sfi_init_settings();
-
   /* handle argument early*/
   if (argc && argv)
     {
@@ -111,17 +98,14 @@ bse_init_async (gint           *argc,
 	g_set_prgname (**argv);
       bse_async_parse_args (argc, argv, bse_main_args, values);
     }
-  
   /* start main BSE thread */
   thread = sfi_thread_run ("BSE Core", bse_main_loop, sfi_thread_self ());
   if (!thread)
     g_error ("failed to start seperate thread for BSE core");
-
   /* wait for initialization completion of the core thread */
   while (bse_initialization_stage < 2)
     sfi_thread_sleep (-1);
 }
-
 const char*
 bse_check_version (guint required_major,
 		   guint required_minor,
@@ -141,45 +125,35 @@ bse_check_version (guint required_major,
     return "BSE version too old (micro mismatch)";
   return NULL;
 }
-
 typedef struct {
   SfiGlueContext *context;
   const gchar *client;
   BirnetThread *thread;
 } AsyncData;
-
 static gboolean
 async_create_context (gpointer data)
 {
   AsyncData *adata = (AsyncData*) data;
   SfiComPort *port1, *port2;
-
   sfi_com_port_create_linked ("Client", adata->thread, &port1,
 			      "Server", sfi_thread_self (), &port2);
   adata->context = sfi_glue_encoder_context (port1);
   bse_janitor_new (port2);
-
   /* wakeup client */
   sfi_thread_wakeup (adata->thread);
-
   return FALSE; /* single-shot */
 }
-
 SfiGlueContext*
 bse_init_glue_context (const gchar *client)
 {
   AsyncData adata = { 0, };
   GSource *source;
-
   g_return_val_if_fail (client != NULL, NULL);
-
   /* function runs in user threads and queues handler in BSE thread to create context */
-
   if (bse_initialization_stage < 2)
     g_error ("%s() called without prior %s()",
 	     "bse_init_glue_context",
 	     "bse_init_async");
-
   /* queue handler to create context */
   source = g_idle_source_new ();
   g_source_set_priority (source, G_PRIORITY_HIGH);
@@ -190,15 +164,12 @@ bse_init_glue_context (const gchar *client)
   g_source_unref (source);
   /* wake up BSE thread */
   g_main_context_wakeup (bse_main_context);
-
   /* wait til context creation */
   do
     sfi_thread_sleep (-1);
   while (!adata.context);
-
   return adata.context;
 }
-
 static void
 bse_init_core (void)
 {
@@ -208,33 +179,27 @@ bse_init_core (void)
   sfi_thread_set_wakeup ((BirnetThreadWakeup) g_main_context_wakeup,
 			 bse_main_context, NULL);
   bse_message_setup_thread_handler();
-
   /* initialize basic components */
   bse_globals_init ();
   _bse_init_signal();
   _bse_init_categories ();
   bse_type_init ();
   bse_cxx_init ();
-  
   /* FIXME: global spawn dir is evil */
   {
     gchar *dir = g_get_current_dir ();
     sfi_com_set_spawn_dir (dir);
     g_free (dir);
   }
-  
   /* initialize GSL components */
   gsl_init ();
-  
   /* remaining BSE components */
   _bse_midi_init ();
   bse_plugin_init_builtins ();
   /* initialize C wrappers around C++ generated types */
   _bse_init_c_wrappers ();
-
   /* make sure the server is alive */
   bse_server_get ();
-
   /* load drivers early */
   if (bse_main_args->load_drivers_early)
     {
@@ -248,7 +213,6 @@ bse_init_core (void)
           g_free (name);
         }
     }
-
   /* dump device list */
   if (bse_main_args->dump_driver_list)
     {
@@ -258,9 +222,7 @@ bse_init_core (void)
       bse_device_dump_list (BSE_TYPE_MIDI_DEVICE, "  ", TRUE, NULL, NULL);
     }
 }
-
 static gboolean single_thread_registration_done = FALSE;
-
 static void
 server_registration (SfiProxy            server,
                      BseRegistrationType rtype,
@@ -279,7 +241,6 @@ server_registration (SfiProxy            server,
         sfi_diag ("failed to register \"%s\": %s", what, error);
     }
 }
-
 static void
 bse_init_intern (gint           *argc,
 		 gchar        ***argv,
@@ -288,16 +249,13 @@ bse_init_intern (gint           *argc,
                  bool            as_test)
 {
   bse_init_textdomain_only();
-
   if (bse_initialization_stage != 0)
     g_error ("%s() may only be called once", "bse_init_intern");
   bse_initialization_stage++;
   if (bse_initialization_stage != 1)
     g_error ("%s() may only be called once", "bse_init_intern");
-
   /* paranoid assertions */
   g_assert (G_BYTE_ORDER == G_LITTLE_ENDIAN || G_BYTE_ORDER == G_BIG_ENDIAN);
-  
   /* initialize submodules */
   if (as_test)
     sfi_init_test (argc, argv, values);
@@ -305,7 +263,6 @@ bse_init_intern (gint           *argc,
     sfi_init (argc, argv, app_name, values);
   bse_main_args = &default_main_args;
   bse_main_args->birnet = sfi_init_settings();
-  
   /* early argument handling */
   if (argc && argv)
     {
@@ -313,9 +270,7 @@ bse_init_intern (gint           *argc,
 	g_set_prgname (**argv);
       bse_async_parse_args (argc, argv, bse_main_args, values);
     }
-  
   bse_init_core ();
-
   /* initialize core plugins & scripts */
   if (bse_main_args->load_core_plugins || bse_main_args->load_core_scripts)
       g_object_connect (bse_server_get(), "signal::registration", server_registration, NULL, NULL);
@@ -352,7 +307,6 @@ bse_init_intern (gint           *argc,
     }
   // sfi_glue_gc_run ();
 }
-
 void
 bse_init_inprocess (gint           *argc,
                     gchar        ***argv,
@@ -361,7 +315,6 @@ bse_init_inprocess (gint           *argc,
 {
   bse_init_intern (argc, argv, app_name, values, false);
 }
-
 void
 bse_init_test (gint           *argc,
                gchar        ***argv,
@@ -369,23 +322,17 @@ bse_init_test (gint           *argc,
 {
   bse_init_intern (argc, argv, NULL, values, true);
 }
-
 static void
 bse_main_loop (gpointer data)
 {
   BirnetThread *client = (BirnetThread*) data;
-
   bse_main_thread = sfi_thread_self ();
-
   bse_init_core ();
-
   /* start other threads */
   bse_sequencer_init_thread ();
-
   /* notify client about completion */
   bse_initialization_stage++;   /* =2 */
   sfi_thread_wakeup (client);
-
   /* and away into the main loop */
   do
     {
@@ -394,7 +341,6 @@ bse_main_loop (gpointer data)
     }
   while (!sfi_thread_aborted ());
 }
-
 guint
 bse_main_getpid (void)
 {
@@ -403,7 +349,6 @@ bse_main_getpid (void)
   else
     return 0;
 }
-
 static gboolean
 core_thread_send_message_async (gpointer data)
 {
@@ -412,7 +357,6 @@ core_thread_send_message_async (gpointer data)
   bse_message_free (umsg);
   return FALSE;
 }
-
 /**
  * BSE log handler, suitable for sfi_msg_set_thread_handler().
  * This function is MT-safe and may be called from any thread.
@@ -464,13 +408,11 @@ bse_msg_handler (const char              *domain,
   /* queue an idle handler in the BSE Core thread */
   bse_idle_next (core_thread_send_message_async, umsg);
 }
-
 void
 bse_message_setup_thread_handler (void)
 {
   Birnet::Msg::set_thread_handler (bse_msg_handler);
 }
-
 void
 bse_message_to_default_handler (const BseMessage *msg)
 {
@@ -487,7 +429,6 @@ bse_message_to_default_handler (const BseMessage *msg)
     parts.push_back (Msg::Check (String (msg->config_check)));
   Msg::default_handler (msg->log_domain, Msg::Type (msg->type), parts);
 }
-
 static guint
 get_n_processors (void)
 {
@@ -498,7 +439,6 @@ get_n_processors (void)
 #endif
   return 1;
 }
-
 static void
 bse_async_parse_args (gint           *argc_p,
 		      gchar        ***argv_p,
@@ -507,18 +447,15 @@ bse_async_parse_args (gint           *argc_p,
 {
   guint argc = *argc_p;
   gchar **argv = *argv_p;
-  
   /* this function is called before the main BSE thread is started,
    * so we can't use any BSE functions yet.
    */
-
   gchar *envar = getenv ("BSE_DEBUG");
   if (envar)
     sfi_msg_allow (envar);
   envar = getenv ("BSE_NO_DEBUG");
   if (envar)
     sfi_msg_deny (envar);
-
   guint i;
   for (i = 1; i < argc; i++)
     {
@@ -683,10 +620,8 @@ bse_async_parse_args (gint           *argc_p,
 	  argv[i] = NULL;
 	}
     }
-
   if (!margs->bse_rcfile)
     margs->bse_rcfile = g_strconcat (g_get_home_dir (), "/.bserc", NULL);
-
   guint e = 1;
   for (i = 1; i < argc; i++)
     if (argv[i])
@@ -696,7 +631,6 @@ bse_async_parse_args (gint           *argc_p,
           argv[i] = NULL;
       }
   *argc_p = e;
-
   if (values)
     {
       SfiInitValue *value = values;
@@ -727,14 +661,12 @@ bse_async_parse_args (gint           *argc_p,
           value++;
         }
     }
-
   /* constrain (user) config */
   margs->wave_chunk_padding = MAX (1, margs->wave_chunk_padding);
   margs->wave_chunk_big_pad = MAX (2 * margs->wave_chunk_padding, margs->wave_chunk_big_pad);
   margs->dcache_block_size = MAX (2 * margs->wave_chunk_big_pad + sizeof (((GslDataCacheNode*) NULL)->data[0]), margs->dcache_block_size);
   margs->dcache_block_size = sfi_alloc_upper_power2 (margs->dcache_block_size - 1);
   /* margs->dcache_cache_memory = sfi_alloc_upper_power2 (margs->dcache_cache_memory); */
-
   /* non-configurable config updates */
   margs->n_processors = get_n_processors ();
 }

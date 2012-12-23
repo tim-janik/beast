@@ -4,10 +4,7 @@
 #include "bstmenus.hh"
 #include "bstparam.hh"
 #include "bstgrowbar.hh"
-
 #define SCROLLBAR_SPACING (3) /* from gtkscrolledwindow.c:DEFAULT_SCROLLBAR_SPACING */
-
-
 /* --- prototypes --- */
 static void	bst_part_dialog_finalize	(GObject		*object);
 static void	piano_canvas_clicked		(BstPianoRoll           *proll,
@@ -29,8 +26,6 @@ static void     part_dialog_action_exec         (gpointer                data,
                                                  gulong                  action);
 static void     part_dialog_run_script_proc     (gpointer                data,
                                                  gulong                  category_id);
-
-
 /* --- track actions --- */
 enum {
   ACTION_NONE           = BST_COMMON_ROLL_TOOL_LAST,
@@ -56,19 +51,14 @@ static const GxkStockAction piano_clear_undo[] = {
   { N_("_Clear Undo"),          NULL,           NULL,
     ACTION_CLEAR_UNDO,          BST_STOCK_CLEAR_UNDO, },
 };
-     
-
 /* --- functions --- */
 G_DEFINE_TYPE (BstPartDialog, bst_part_dialog, GXK_TYPE_DIALOG);
-
 static void
 bst_part_dialog_class_init (BstPartDialogClass *klass)
 {
   GObjectClass *gobject_class = G_OBJECT_CLASS (klass);
-  
   gobject_class->finalize = bst_part_dialog_finalize;
 }
-
 static void
 hzoom_changed (BstPartDialog *self,
 	       GtkAdjustment *adjustment)
@@ -78,7 +68,6 @@ hzoom_changed (BstPartDialog *self,
   if (self->eroll)
     bst_event_roll_set_hzoom (self->eroll, adjustment->value * 0.08);
 }
-
 static void
 vzoom_changed (BstPartDialog *self,
 	       GtkAdjustment *adjustment)
@@ -86,7 +75,6 @@ vzoom_changed (BstPartDialog *self,
   if (self->proll)
     bst_piano_roll_set_vzoom (self->proll, adjustment->value);
 }
-
 static void
 eparam_changed (gpointer  data,
                 GxkParam *param)
@@ -99,7 +87,6 @@ eparam_changed (gpointer  data,
       gxk_widget_update_actions (self); /* update controllers */
     }
 }
-
 static void
 bst_part_dialog_init (BstPartDialog *self)
 {
@@ -110,18 +97,15 @@ bst_part_dialog_init (BstPartDialog *self)
   GtkAdjustment *adj;
   GParamSpec *pspec;
   GxkRadget *radget;
-
   /* configure self */
   g_object_set (self,
                 "name", "BEAST-PartDialog",
                 "flags", GXK_DIALOG_STATUS_BAR,
 		NULL);
   gxk_dialog_set_sizes (GXK_DIALOG (self), 640, 400, 1005, 650);
-  
   /* radget-complete GUI */
   radget = gxk_radget_create ("beast", "piano-roll-box", NULL);
   gtk_container_add (GTK_CONTAINER (GXK_DIALOG (self)->vbox), (GtkWidget*) radget);
-
   /* publish actions */
   gxk_widget_publish_actions (self, "piano-edit-actions",
                               G_N_ELEMENTS (piano_edit_actions), piano_edit_actions,
@@ -132,15 +116,12 @@ bst_part_dialog_init (BstPartDialog *self)
   if (BST_DVL_HINTS)
     gxk_widget_publish_actions (self, "piano-clear-undo", G_N_ELEMENTS (piano_clear_undo), piano_clear_undo,
                                 NULL, part_dialog_action_check, part_dialog_action_exec);
-
   /* publish /Part/ scripts */
   cseq = bse_categories_match ("/Part/*");
   al1 = bst_action_list_from_cats (cseq, 1, BST_STOCK_EXECUTE, NULL, part_dialog_run_script_proc, self);
   gxk_action_list_sort (al1);
   gxk_widget_publish_action_list (self, "part-scripts", al1);
-
   BstGrowBar *grow_bar = (BstGrowBar*) gxk_radget_find (radget, "piano-roll-hgrow-bar");
-
   /* piano roll */
   self->proll = (BstPianoRoll*) gxk_radget_find (radget, "piano-roll");
   gxk_nullify_in_object (self, &self->proll);
@@ -154,7 +135,6 @@ bst_part_dialog_init (BstPartDialog *self)
   gxk_widget_publish_action_list (self, "pctrl-canvas-tools", bst_piano_roll_controller_canvas_actions (self->pctrl));
   gxk_widget_publish_action_list (self, "pctrl-note-tools", bst_piano_roll_controller_note_actions (self->pctrl));
   gxk_widget_publish_action_list (self, "pctrl-quant-tools", bst_piano_roll_controller_quant_actions (self->pctrl));
-
   /* event roll */
   self->eroll = (BstEventRoll*) gxk_radget_find (radget, "event-roll");
   gxk_nullify_in_object (self, &self->eroll);
@@ -164,9 +144,7 @@ bst_part_dialog_init (BstPartDialog *self)
   gxk_scroll_canvas_set_hadjustment (GXK_SCROLL_CANVAS (self->eroll), adj);
   bst_event_roll_set_vpanel_width_hook (self->eroll, (int (*) (void*)) bst_piano_roll_get_vpanel_width, self->proll);
   gxk_widget_publish_action_list (self, "ectrl-select-actions", bst_event_roll_controller_select_actions (self->ectrl));
-
   grow_bar = (BstGrowBar*) gxk_radget_find (radget, "pattern-view-vgrow-bar");
-
   /* pattern view */
   self->pview = (BstPatternView*) gxk_radget_find (radget, "pattern-view");
   gxk_nullify_in_object (self, &self->pview);
@@ -175,7 +153,6 @@ bst_part_dialog_init (BstPartDialog *self)
   adj = bst_grow_bar_get_adjustment (grow_bar);
   gxk_scroll_canvas_set_vadjustment (GXK_SCROLL_CANVAS (self->pview), adj);
   self->pvctrl = bst_pattern_controller_new (self->pview, self->pctrl->quant_rtools);
-
   /* pattern view controls */
   g_signal_connect_swapped (gxk_radget_find (radget, "configure-button"), "clicked",
                             G_CALLBACK (bst_pattern_column_layouter_popup), self->pview);
@@ -196,10 +173,8 @@ bst_part_dialog_init (BstPartDialog *self)
   gxk_radget_add (radget, "pattern-control-box", gxk_vseparator_space_new (TRUE));
   gxk_radget_add (radget, "pattern-control-box", gxk_param_create_editor (self->pvctrl->row_shading, "name"));
   gxk_radget_add (radget, "pattern-control-box", gxk_param_create_editor (self->pvctrl->row_shading, "combo-button"));
-
   /* event roll children */
   g_object_new (GTK_TYPE_LABEL, "visible", TRUE, "label", "C", "parent", self->eroll, NULL);
-
   /* event roll control type */
   pspec = bst_procedure_ref_pspec ("BsePart+change-control", "control-type");
   if (pspec)
@@ -212,7 +187,6 @@ bst_part_dialog_init (BstPartDialog *self)
       sfi_value_set_choice (&param->value, bse_midi_signal_type_to_choice (BSE_MIDI_SIGNAL_VELOCITY));
       gxk_param_apply_value (param); /* update model, auto updates GUI */
     }
-
   /* hzoom */
   adjustment = gtk_adjustment_new (13, 0, 100, 1, 5, 0);
   g_object_connect (adjustment,
@@ -242,30 +216,23 @@ bst_part_dialog_init (BstPartDialog *self)
                                 "width_request", 2 * gxk_size_width (GXK_ICON_SIZE_TOOLBAR),
                                 NULL));
 }
-
 static void
 bst_part_dialog_finalize (GObject *object)
 {
   BstPartDialog *self = BST_PART_DIALOG (object);
-
   bst_part_dialog_set_proxy (self, 0);
-
   bst_piano_roll_controller_unref (self->pctrl);
   bst_event_roll_controller_unref (self->ectrl);
-  
   G_OBJECT_CLASS (bst_part_dialog_parent_class)->finalize (object);
 }
-
 void
 bst_part_dialog_set_proxy (BstPartDialog *self,
 			   SfiProxy       part)
 {
   SfiProxy project;
-
   g_return_if_fail (BST_IS_PART_DIALOG (self));
   if (part)
     g_return_if_fail (BSE_IS_PART (part));
-
   if (self->project)
     {
       bse_proxy_disconnect (self->project,
@@ -273,9 +240,7 @@ bst_part_dialog_set_proxy (BstPartDialog *self,
                             NULL);
       self->project = 0;
     }
-
   project = part ? bse_item_get_project (part) : 0;
-
   if (project)
     {
       bst_window_sync_title_to_proxy (GXK_DIALOG (self), part, "%s");
@@ -290,10 +255,8 @@ bst_part_dialog_set_proxy (BstPartDialog *self,
                          "swapped_signal::property-notify::dirty", gxk_widget_update_actions_downwards, self,
                          NULL);
     }
-
   gxk_widget_update_actions_downwards (self);
 }
-
 static void
 piano_canvas_clicked (BstPianoRoll           *proll,
                       guint                   button,
@@ -307,7 +270,6 @@ piano_canvas_clicked (BstPianoRoll           *proll,
                     event->button.x_root, event->button.y_root,
                     event->button.button, event->button.time);
 }
-
 static void
 event_canvas_clicked (BstEventRoll           *eroll,
                       guint                   button,
@@ -321,7 +283,6 @@ event_canvas_clicked (BstEventRoll           *eroll,
                     event->button.x_root, event->button.y_root,
                     event->button.button, event->button.time);
 }
-
 static void
 part_dialog_run_script_proc (gpointer                data,
                              gulong                  category_id)
@@ -329,13 +290,11 @@ part_dialog_run_script_proc (gpointer                data,
   BstPartDialog *self = BST_PART_DIALOG (data);
   BseCategory *cat = bse_category_from_id (category_id);
   SfiProxy part = self->proll->proxy;
-
   bst_procedure_exec_auto (cat->type,
                            "project", SFI_TYPE_PROXY, bse_item_get_project (part),
                            "part", SFI_TYPE_PROXY, part,
                            NULL);
 }
-
 static gboolean
 part_dialog_action_check (gpointer data,
                           gulong   action,
@@ -375,15 +334,12 @@ part_dialog_action_check (gpointer data,
       return FALSE;
     }
 }
-
 static void
 part_dialog_action_exec (gpointer data,
                          gulong   action)
 {
   BstPartDialog *self = BST_PART_DIALOG (data);
-
   gxk_status_window_push (self);
-
   switch (action)
     {
     case ACTION_CLEAR:
@@ -414,8 +370,6 @@ part_dialog_action_exec (gpointer data,
     default:
       break;
     }
-
   gxk_status_window_pop ();
-
   gxk_widget_update_actions_downwards (self);
 }

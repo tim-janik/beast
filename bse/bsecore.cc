@@ -5,9 +5,7 @@
 #include "bseengine.hh"
 #include "bsesequencer.hh"
 #include "bsecxxplugin.hh" /* includes bsecore.genidl.hh for us */
-
 namespace Bse {
-
 namespace Procedure {
 ThreadTotalsHandle
 collect_thread_totals::exec ()
@@ -69,15 +67,11 @@ collect_thread_totals::exec ()
   g_free (t);
   return tth;
 }
-
 } // Procedure
-
 /* export definitions follow */
 BSE_CXX_DEFINE_EXPORTS();
 BSE_CXX_REGISTER_ALL_TYPES_FROM_BSECORE_IDL();
-
 } // Bse
-
 /* compile and initialize generated C stubs */
 #include "bsegencore.cc"
 void

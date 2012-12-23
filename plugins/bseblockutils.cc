@@ -7,18 +7,14 @@
 #error  SSE support is required for this plugin.
 #endif
 #include <xmmintrin.h>
-
 #define ALIGNMENT16(pointer) (0xf & (ptrdiff_t) (pointer))
 #define ALIGNED16(pointer)   (!ALIGNMENT16 (pointer))
 #ifndef _mm_extract_ss
 #define _mm_extract_ss(_M128)   ({ float result; _mm_store_ss (&result, _M128); result; })
 #endif
-
 namespace {
-
 using std::max;
 using std::min;
-
 class BlockImpl : virtual public Bse::Block::Impl {
   virtual const char*
   impl_name ()
@@ -147,7 +143,6 @@ class BlockImpl : virtual public Bse::Block::Impl {
     if (LIKELY (n_values))
       {
 	minv = maxv = ivalues[0];
-
 	guint upos = 0, n_vectors = 0;
 	if (LIKELY (n_values > 8))
 	  {
@@ -241,7 +236,6 @@ class BlockImpl : virtual public Bse::Block::Impl {
     if (LIKELY (n_values))
       {
 	minv = maxv = ivalues[0];
-
 	guint upos = 0, n_vectors = 0;
 	if (LIKELY (n_values > 8))
 	  {
@@ -334,9 +328,7 @@ public:
 };
 static BlockImpl sse_block_impl;
 } // Anon
-
 namespace Bse {
-
 class CoreHook {
 public:
   void
@@ -345,8 +337,6 @@ public:
     sse_block_impl.hookup();
   }
 };
-
 BSE_CXX_DEFINE_EXPORTS();
 BSE_CXX_REGISTER_STATIC_HOOK (CoreHook);
-
 } // Bse

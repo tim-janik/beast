@@ -1,14 +1,10 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #ifndef __BST_DEFS_H__
 #define __BST_DEFS_H__
-
 #include <gxk/gxk.hh>
 #include <libintl.h>
 #include "bstzoomedwindow.hh"
-
 G_BEGIN_DECLS
-
-
 /* --- generic constants --- */
 typedef enum {
   BST_QUANTIZE_NONE		= 0,
@@ -22,10 +18,7 @@ typedef enum {
   BST_QUANTIZE_NOTE_128		= 128,
   BST_QUANTIZE_TACT		= 65535
 } BstQuantizationType;
-
-
 typedef struct _BstKeyBinding BstKeyBinding;
-
 /* choose IDs that are unlikely to clash with category IDs */
 #define BST_COMMON_ROLL_TOOL_FIRST	(G_MAXINT - 100000)
 typedef enum /*< skip >*/
@@ -46,14 +39,10 @@ typedef enum /*< skip >*/
   BST_COMMON_ROLL_TOOL_MOVE_TICK_RIGHT,
   BST_COMMON_ROLL_TOOL_LAST
 } BstCommonRollTool;
-
-
 /* --- constants & defines --- */
 #define	BST_TAG_DIAMETER	  (20)
 #define BST_STRDUP_RC_FILE()	  (g_strconcat (g_get_home_dir (), "/.beast/beastrc", NULL))
 #define BST_STRDUP_SKIN_PATH()	  (g_strconcat (BST_PATH_SKINS, ":~/.beast/skins/:~/.beast/skins/*/", NULL))
-
-
 /* --- configuration candidates --- */
 /* mouse button numbers and masks for drag operations */
 #define BST_DRAG_BUTTON_COPY	  (1)
@@ -61,8 +50,6 @@ typedef enum /*< skip >*/
 #define BST_DRAG_BUTTON_MOVE	  (2)
 #define BST_DRAG_BUTTON_MOVE_MASK (GDK_BUTTON2_MASK)
 #define BST_DRAG_BUTTON_CONTEXT   (3) /* delete, clone, linkdup */
-
-
 /* --- miscellaneous --- */
 #define	BST_DVL_HINTS		(bst_developer_hints != FALSE)
 #define	BST_DBG_EXT     	(bst_debug_extensions != FALSE)
@@ -71,21 +58,14 @@ typedef enum /*< skip >*/
     if (GTK_IS_OBJECT (object)) \
       g_signal_emit_by_name (object, "notify::generic-change", NULL); \
 } G_STMT_END
-
-
 /* --- i18n and gettext helpers --- */
 #define BEAST_GETTEXT_DOMAIN (NULL)
 #define _(str)	dgettext (BEAST_GETTEXT_DOMAIN, str)
 #define N_(str)	(str)
-
-
 /* --- internal stuff --- */
 void    beast_show_about_box (void);
 extern gboolean bst_developer_hints;
 extern gboolean bst_debug_extensions;
 extern gboolean bst_main_loop_running;
-
-
 G_END_DECLS
-
 #endif /* __BST_DEFS_H__ */

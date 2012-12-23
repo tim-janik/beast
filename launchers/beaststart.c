@@ -4,7 +4,6 @@
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
-
 const char*
 custom_find_executable (int    *argc_p,
                         char ***argv_p)
@@ -27,7 +26,6 @@ custom_find_executable (int    *argc_p,
   strcat (string, version);
   return string;
 }
-
 int
 custom_check_arg_stopper (const char *argument)
 {

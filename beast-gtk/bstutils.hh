@@ -1,16 +1,13 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #ifndef __BST_UTILS_H__
 #define __BST_UTILS_H__
-
 #include "bstbseutils.hh"
 #include <gtk/gtk.h>
 #include "bstdefs.hh"
 #include "bstcluehunter.hh"
 /* generated type IDs, idl types */
 #include "bstgentypes.h"
-
 G_BEGIN_DECLS
-
 /* --- GUI utilities --- */
 void           bst_status_eprintf             (BseErrorType     error,
                                                const gchar     *message_fmt,
@@ -63,8 +60,6 @@ void           bst_background_handler1_add    (gboolean       (*handler) (gpoint
 void           bst_background_handler2_add    (gboolean       (*handler) (gpointer data),
                                                gpointer         data,
                                                void           (*free_func) (gpointer data));
-
-
 /* --- stock utilities --- */
 GtkWidget* bst_stock_button             (const gchar  *stock_id);
 GtkWidget* bst_stock_dbutton            (const gchar  *stock_id);
@@ -79,16 +74,12 @@ void       bst_stock_register_icon      (const gchar  *stock_id,
 #define bst_pixbuf_no_icon()    gxk_stock_fallback_pixbuf (BST_STOCK_NO_ICON)
 #define bst_pixbuf_ladspa()     gxk_stock_fallback_pixbuf (BST_STOCK_LADSPA)
 #define bst_pixbuf_knob()       gxk_stock_fallback_pixbuf (BST_STOCK_KNOB)
-
-
 /* --- misc utils --- */
 gint            bst_fft_size_to_int     (BstFFTSize    fft_size);
 BstFFTSize      bst_fft_size_from_int   (guint         sz);
 gchar*          bst_file_scan_find_key  (const gchar  *file,
                                          const gchar  *key,
                                          const gchar  *value_prefix);
-
-
 /* --- GUI field mask --- */
 typedef struct _BstGMask BstGMask;
 GtkWidget*   bst_gmask_container_create (guint          border_width,
@@ -140,17 +131,13 @@ BstGMask*       bst_gmask_quick         (GtkWidget     *gmask_container,
     bst_gmask_foreach ((mask), gtk_widget_destroy, NULL)
 #define bst_gmask_ref           g_object_ref
 #define bst_gmask_unref         g_object_unref
-
-
 /* --- object utils --- */
 #define bst_object_class_install_property(oclass, group, property_id, pspec) \
   g_object_class_install_property (oclass, property_id, sfi_pspec_set_group (pspec, group))
-
 /* --- stock icon aliases --- */
 #define BST_STOCK_QUESTION              GTK_STOCK_DIALOG_QUESTION
 #define BST_STOCK_WARNING               GTK_STOCK_DIALOG_WARNING
 #define BST_STOCK_ERROR                 GTK_STOCK_DIALOG_ERROR
-
 #define BST_STOCK_NEW                   GTK_STOCK_NEW
 #define BST_STOCK_OPEN                  GTK_STOCK_OPEN
 #define BST_STOCK_MERGE                 GTK_STOCK_OPEN // FIXME
@@ -175,12 +162,9 @@ BstGMask*       bst_gmask_quick         (GtkWidget     *gmask_container,
 #define BST_STOCK_ONLINE_SOUND_ARCHIVE  BST_STOCK_LOAD_LIB // FIXME
 #define BST_STOCK_ADD                   GTK_STOCK_ADD
 #define BST_STOCK_REMOVE                GTK_STOCK_REMOVE
-
 #define BST_STOCK_SELECT_ALL            BST_STOCK_NONE // FIXME
 #define BST_STOCK_SELECT_NONE           BST_STOCK_NONE // FIXME
 #define BST_STOCK_SELECT_INVERT         BST_STOCK_NONE // FIXME
-
-
 /* --- stock actions and aliases --- */
 #define BST_STOCK_NONE                  (NULL)
 #define BST_STOCK_APPLY                 GTK_STOCK_APPLY
@@ -201,24 +185,16 @@ BstGMask*       bst_gmask_quick         (GtkWidget     *gmask_container,
 #define BST_STOCK_ZOOM_FIT              GTK_STOCK_ZOOM_FIT
 #define BST_STOCK_ZOOM_IN               GTK_STOCK_ZOOM_IN
 #define BST_STOCK_ZOOM_OUT              GTK_STOCK_ZOOM_OUT
-
-
 /* --- generated includes --- */
 /* marshallers */
 #include "bstmarshal.h"
 /* icon stock IDs */
 #include "beast-gtk/icons/bst-stock-gen.h"
-
-
 /* --- config values --- */
 BstGConfig*     bst_gconfig_get_global (void);
 #define BST_GCONFIG(field) (* bst_gconfig_get_global ()) . field
-
-
 /* --- internal --- */
 void            _bst_init_utils         (void);
 void            _bst_init_radgets       (void);
-
 G_END_DECLS
-
 #endif /* __BST_UTILS_H__ */

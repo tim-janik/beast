@@ -1,12 +1,8 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #ifndef __BST_SEGMENT_H__
 #define __BST_SEGMENT_H__
-
 #include "bstutils.hh"
-
 G_BEGIN_DECLS
-
-
 /* --- structures & typedefs --- */
 typedef enum {
   BST_SEGMENT_LINE = 1,
@@ -28,8 +24,6 @@ typedef union
   BstSegmentAny    any;
   BstSegmentLine   line;
 } BstSegment;
-
-
 /* --- API --- */
 void    bst_segment_init        (BstSegment     *self,
                                  BstSegmentType  type,
@@ -58,7 +52,5 @@ void    bst_segment_expose      (BstSegment     *self);
 void    bst_segment_draw        (BstSegment     *self,
                                  GtkStyle       *style);
 void    bst_segment_clear       (BstSegment     *self);
-
 G_END_DECLS
-
 #endif /* __BST_SEGMENT_H__ */

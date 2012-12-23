@@ -5,9 +5,7 @@
 #include <birnet/birnettests.h>
 #include "../sficxx.hh"
 #include <stdio.h>
-
 using namespace Sfi;
-
 struct Bar {
   int i;
 };
@@ -17,7 +15,6 @@ typedef struct {
   guint n_elements;
   Int  *elements;
 } CIntSeq;
-
 int
 main (int   argc,
       char *argv[])
@@ -35,7 +32,6 @@ main (int   argc,
   String s3 = "huhu1";
   TASSERT (s2 == s3);
   TDONE();
-
   TSTART ("Test RecordHandle<>");
   TASSERT (sizeof (RecordHandle<Bar>) == sizeof (void*));
   RecordHandle<Bar> b1;
@@ -51,7 +47,6 @@ main (int   argc,
   TASSERT (b4->i == 5);
   TASSERT (b2[0].i == 0);
   TDONE();
-
   TSTART ("Test IntSeq");
   TASSERT (sizeof (IntSeq) == sizeof (void*));
   IntSeq is (9);
@@ -68,14 +63,12 @@ main (int   argc,
   for (int i = 0; i < 12; i++)
     TASSERT (is[i] == 2147483600 + i);
   TDONE();
-
   TSTART ("Test IntSeq in C");
   CIntSeq *cis = *(CIntSeq**) &is;
   TASSERT (cis->n_elements == 12);
   for (int i = 0; i < 12; i++)
     TASSERT (cis->elements[i] == 2147483600 + i);
   TDONE();
-
   TSTART ("Test BarSeq");
   TASSERT (sizeof (BarSeq) == sizeof (void*));
   BarSeq bs (7);
@@ -93,6 +86,5 @@ main (int   argc,
   bs.resize (0);
   TASSERT (bs.length() == 0);
   TDONE();
-
   return 0;
 }

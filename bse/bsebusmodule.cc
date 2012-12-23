@@ -1,8 +1,6 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bsebusmodule.genidl.hh"
-
 namespace Bse {
-
 class BusModule : public BusModuleBase {
   /* bus-module module implementation */
   class Module : public SynthesisModule {
@@ -58,8 +56,6 @@ public:
   /* implement creation and config methods for synthesis Module */
   BSE_EFFECT_INTEGRATE_MODULE (BusModule, Module, BusModuleProperties);
 };
-
 BSE_CXX_DEFINE_EXPORTS ();
 BSE_CXX_REGISTER_EFFECT (BusModule);
-
 } // Bse

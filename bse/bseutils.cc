@@ -2,7 +2,6 @@
 #include "topconfig.h"
 #include "bseutils.hh"
 #include "gsldatautils.hh"
-
 #include <string.h>
 #include <stdlib.h>
 #include <sys/types.h>
@@ -11,8 +10,6 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <errno.h>
-
-
 /* --- record utils --- */
 BseNoteDescription*
 bse_note_description (BseMusicalTuningType   musical_tuning,
@@ -20,7 +17,6 @@ bse_note_description (BseMusicalTuningType   musical_tuning,
                       int                    fine_tune)
 {
   BseNoteDescription *info = bse_note_description_new ();
-
   info->musical_tuning = musical_tuning;
   if (note >= BSE_MIN_NOTE && note <= BSE_MAX_NOTE)
     {
@@ -49,7 +45,6 @@ bse_note_description (BseMusicalTuningType   musical_tuning,
     }
   return info;
 }
-
 BsePartNote*
 bse_part_note (guint    id,
 	       guint    channel,
@@ -61,7 +56,6 @@ bse_part_note (guint    id,
 	       gboolean selected)
 {
   BsePartNote *pnote = bse_part_note_new ();
-
   pnote->id = id;
   pnote->channel = channel;
   pnote->tick = tick;
@@ -70,21 +64,17 @@ bse_part_note (guint    id,
   pnote->fine_tune = fine_tune;
   pnote->velocity = velocity;
   pnote->selected = selected != FALSE;
-
   return pnote;
 }
-
 void
 bse_part_note_seq_take_append (BsePartNoteSeq *seq,
 			       BsePartNote    *element)
 {
   g_return_if_fail (seq != NULL);
   g_return_if_fail (element != NULL);
-
   bse_part_note_seq_append (seq, element);
   bse_part_note_free (element);
 }
-
 BsePartControl*
 bse_part_control (guint              id,
                   guint              tick,
@@ -93,44 +83,36 @@ bse_part_control (guint              id,
                   gboolean           selected)
 {
   BsePartControl *pctrl = bse_part_control_new ();
-
   pctrl->id = id;
   pctrl->tick = tick;
   pctrl->control_type = ctype;
   pctrl->value = value;
   pctrl->selected = selected != FALSE;
-
   return pctrl;
 }
-
 void
 bse_part_control_seq_take_append (BsePartControlSeq *seq,
                                   BsePartControl    *element)
 {
   g_return_if_fail (seq != NULL);
   g_return_if_fail (element != NULL);
-
   bse_part_control_seq_append (seq, element);
   bse_part_control_free (element);
 }
-
 void
 bse_note_sequence_resize (BseNoteSequence *rec,
 			  guint            length)
 {
   guint fill = rec->notes->n_notes;
-
   bse_note_seq_resize (rec->notes, length);
   while (fill < length)
     rec->notes->notes[fill++] = SFI_KAMMER_NOTE;
 }
-
 guint
 bse_note_sequence_length (BseNoteSequence *rec)
 {
   return rec->notes->n_notes;
 }
-
 void
 bse_property_candidate_relabel (BsePropertyCandidates *pc,
                                 const gchar           *label,
@@ -141,7 +123,6 @@ bse_property_candidate_relabel (BsePropertyCandidates *pc,
   g_free (pc->tooltip);
   pc->tooltip = g_strdup (tooltip);
 }
-
 void
 bse_item_seq_remove (BseItemSeq *iseq,
                      BseItem    *item)
@@ -156,7 +137,6 @@ bse_item_seq_remove (BseItemSeq *iseq,
         goto restart;
       }
 }
-
 SfiRing*
 bse_item_seq_to_ring (BseItemSeq *iseq)
 {
@@ -167,7 +147,6 @@ bse_item_seq_to_ring (BseItemSeq *iseq)
       ring = sfi_ring_append (ring, iseq->items[i]);
   return ring;
 }
-
 BseItemSeq*
 bse_item_seq_from_ring (SfiRing *ring)
 {
@@ -177,7 +156,6 @@ bse_item_seq_from_ring (SfiRing *ring)
     bse_item_seq_append (iseq, (BseItem*) node->data);
   return iseq;
 }
-
 /* --- debugging --- */
 static int debug_fds[] = { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 };
 #define MAX_DEBUG_STREAMS       (G_N_ELEMENTS (debug_fds))
@@ -207,7 +185,6 @@ bse_debug_dump_floats (guint   debug_stream,
       g_free (dest);
     }
 }
-
 /* --- balance calculation --- */
 double
 bse_balance_get (double level1,
@@ -215,7 +192,6 @@ bse_balance_get (double level1,
 {
   return level2 - level1;
 }
-
 void
 bse_balance_set (double balance,
                  double *level1,
@@ -248,8 +224,6 @@ bse_balance_set (double balance,
   *level1 = l1;
   *level2 = l2;
 }
-
-
 /* --- icons --- */
 typedef enum                    /*< skip >*/
 {
@@ -271,9 +245,7 @@ bse_icon_from_pixdata (const BsePixdata *pixdata)
 {
   BseIcon *icon;
   guint bpp, encoding;
-
   g_return_val_if_fail (pixdata != NULL, NULL);
-
   if (pixdata->width < 1 || pixdata->width > 128 ||
       pixdata->height < 1 || pixdata->height > 128)
     {
@@ -292,19 +264,16 @@ bse_icon_from_pixdata (const BsePixdata *pixdata)
     }
   if (!pixdata->encoded_pix_data)
     return NULL;
-
   icon = bse_icon_new ();
   icon->bytes_per_pixel = bpp;
   icon->width = pixdata->width;
   icon->height = pixdata->height;
   sfi_bblock_resize (icon->pixels, icon->width * icon->height * icon->bytes_per_pixel);
-
   if (encoding == BSE_PIXDATA_1BYTE_RLE)
     {
       const guint8 *rle_buffer = pixdata->encoded_pix_data;
       guint8 *image_buffer = icon->pixels->bytes;
       guint8 *image_limit = image_buffer + icon->width * icon->height * bpp;
-      
       while (image_buffer < image_limit)
 	{
 	  guint length = *(rle_buffer++);
@@ -347,53 +316,42 @@ bse_icon_from_pixdata (const BsePixdata *pixdata)
     }
   else
     memcpy (icon->pixels->bytes, pixdata->encoded_pix_data, icon->width * icon->height * bpp);
-  
   return icon;
 }
-
 static inline const guint8 *
 get_uint32 (const guint8 *stream, guint *result)
 {
   *result = (stream[0] << 24) + (stream[1] << 16) + (stream[2] << 8) + stream[3];
   return stream + 4;
 }
-
 BseIcon*
 bse_icon_from_pixstream (const guint8 *pixstream)
 {
   BsePixdata pixd;
   const guint8 *s = pixstream;
   guint len, type, rowstride, width, height;
-
   g_return_val_if_fail (pixstream != NULL, NULL);
-
   if (strncmp ((const char*) s, "GdkP", 4) != 0)
     return NULL;
   s += 4;
-
   s = get_uint32 (s, &len);
   if (len < 24)
     return NULL;
-
   s = get_uint32 (s, &type);
   if (type != 0x02010002 &&     /* RLE/8bit/RGBA */
       type != 0x01010002)       /* RAW/8bit/RGBA */
     return NULL;
-
   s = get_uint32 (s, &rowstride);
   s = get_uint32 (s, &width);
   s = get_uint32 (s, &height);
   if (width < 1 || height < 1)
     return NULL;
-
   pixd.type = BsePixdataType (BSE_PIXDATA_RGBA | (type >> 24 == 2 ? BSE_PIXDATA_1BYTE_RLE : 0));
   pixd.width = width;
   pixd.height = height;
   pixd.encoded_pix_data = s;
   return bse_icon_from_pixdata (&pixd);
 }
-
-
 /* --- ID allocator --- */
 #define	ID_WITHHOLD_BUFFER_SIZE		59
 static gulong  id_counter = 1;
@@ -402,12 +360,10 @@ static gulong  id_buffer[ID_WITHHOLD_BUFFER_SIZE];
 static gulong  id_buffer_pos = 0;
 static gulong  n_free_ids = 0;
 static gulong *free_id_buffer = NULL;
-
 void
 bse_id_free (gulong id)
 {
   g_return_if_fail (id > 0);
-
   /* release oldest withheld id */
   if (n_buffer_ids >= ID_WITHHOLD_BUFFER_SIZE)
     {
@@ -417,14 +373,12 @@ bse_id_free (gulong id)
 	free_id_buffer = g_renew (gulong, free_id_buffer, size);
       free_id_buffer[n] = id_buffer[id_buffer_pos];
     }
-
   /* release id */
   id_buffer[id_buffer_pos++] = id;
   n_buffer_ids = MAX (n_buffer_ids, id_buffer_pos);
   if (id_buffer_pos >= ID_WITHHOLD_BUFFER_SIZE)
     id_buffer_pos = 0;
 }
-
 gulong
 bse_id_alloc (void)
 {
@@ -437,8 +391,6 @@ bse_id_alloc (void)
     }
   return id_counter++;
 }
-
-
 /* --- string array manipulation --- */
 static gchar*
 canonify_xinfo_key (const gchar *key)
@@ -450,7 +402,6 @@ canonify_xinfo_key (const gchar *key)
     ckey[0] = '.';
   return ckey;
 }
-
 gchar**
 bse_xinfos_add_value (gchar          **xinfos,
                       const gchar     *key,
@@ -486,7 +437,6 @@ bse_xinfos_add_value (gchar          **xinfos,
       return xinfos;
     }
 }
-
 gchar**
 bse_xinfos_parse_assignment (gchar          **xinfos,
                              const gchar     *assignment)
@@ -505,7 +455,6 @@ bse_xinfos_parse_assignment (gchar          **xinfos,
     xinfos = bse_xinfos_del_value (xinfos, assignment);
   return xinfos;
 }
-
 gchar**
 bse_xinfos_del_value (gchar       **xinfos,
                       const gchar  *key)
@@ -533,7 +482,6 @@ bse_xinfos_del_value (gchar       **xinfos,
     }
   return xinfos;
 }
-
 gchar**
 bse_xinfos_add_float (gchar          **xinfos,
                       const gchar     *key,
@@ -542,7 +490,6 @@ bse_xinfos_add_float (gchar          **xinfos,
   gchar buffer[G_ASCII_DTOSTR_BUF_SIZE * 2 + 1024];
   return bse_xinfos_add_value (xinfos, key, g_ascii_dtostr (buffer, sizeof (buffer), fvalue));
 }
-
 gchar**
 bse_xinfos_add_num (gchar          **xinfos,
                     const gchar     *key,
@@ -552,7 +499,6 @@ bse_xinfos_add_num (gchar          **xinfos,
   g_snprintf (buffer, sizeof (buffer), "%lld", num);
   return bse_xinfos_add_value (xinfos, key, buffer);
 }
-
 const gchar*
 bse_xinfos_get_value (gchar          **xinfos,
                       const gchar     *key)
@@ -570,7 +516,6 @@ bse_xinfos_get_value (gchar          **xinfos,
     }
   return NULL;
 }
-
 gfloat
 bse_xinfos_get_float (gchar          **xinfos,
                       const gchar     *key)
@@ -581,7 +526,6 @@ bse_xinfos_get_float (gchar          **xinfos,
   else
     return 0.0;
 }
-
 SfiNum
 bse_xinfos_get_num (gchar          **xinfos,
                     const gchar     *key)
@@ -592,7 +536,6 @@ bse_xinfos_get_num (gchar          **xinfos,
   else
     return 0.0;
 }
-
 gchar**
 bse_xinfos_dup_consolidated (gchar  **xinfos,
                              gboolean copy_interns)
@@ -641,7 +584,6 @@ bse_xinfos_dup_consolidated (gchar  **xinfos,
     }
   return NULL;
 }
-
 gint
 bse_xinfo_stub_compare (const gchar     *xinfo1,  /* must contain '=' */
                         const gchar     *xinfo2)  /* must contain '=' */
@@ -654,8 +596,6 @@ bse_xinfo_stub_compare (const gchar     *xinfo1,  /* must contain '=' */
     return l1 - l2;
   return strncmp (xinfo1, xinfo2, l1);
 }
-
-
 /* --- miscellaeous --- */
 guint
 bse_string_hash (gconstpointer string)
@@ -668,7 +608,6 @@ bse_string_hash (gconstpointer string)
     h = (h << 5) - h + *p;
   return h;
 }
-
 gint
 bse_string_equals (gconstpointer string1,
 		   gconstpointer string2)
@@ -678,13 +617,11 @@ bse_string_equals (gconstpointer string1,
   else
     return string1 == string2;
 }
-
 const gchar*
 bse_intern_path_user_data (const gchar *dir)
 {
   return g_intern_strconcat (BSE_PATH_USER_DATA ("/"), dir, NULL);
 }
-
 const gchar*
 bse_intern_default_author (void)
 {
@@ -694,23 +631,19 @@ bse_intern_default_author (void)
     return g_intern_string (name);
   return g_intern_static_string ("");
 }
-
 const gchar*
 bse_intern_default_license (void)
 {
   return g_intern_static_string ("Creative Commons Attribution 2.5 (http://creativecommons.org/licenses/by/2.5/)");
 }
-
 void
 bse_bbuffer_puts (gchar        bbuffer[BSE_BBUFFER_SIZE],
 		  const gchar *string)
 {
   g_return_if_fail (bbuffer != NULL);
-  
   strncpy (bbuffer, string, BSE_BBUFFER_SIZE - 1);
   bbuffer[BSE_BBUFFER_SIZE - 1] = 0;
 }
-
 guint
 bse_bbuffer_printf (gchar        bbuffer[BSE_BBUFFER_SIZE],
 		    const gchar *format,
@@ -718,13 +651,10 @@ bse_bbuffer_printf (gchar        bbuffer[BSE_BBUFFER_SIZE],
 {
   va_list args;
   guint l;
-
   g_return_val_if_fail (bbuffer != NULL, 0);
   g_return_val_if_fail (format != NULL, 0);
-
   va_start (args, format);
   l = g_vsnprintf (bbuffer, BSE_BBUFFER_SIZE, format, args);
   va_end (args);
-
   return l;
 }

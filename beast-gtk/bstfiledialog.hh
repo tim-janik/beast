@@ -1,13 +1,9 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #ifndef __BST_FILE_DIALOG_H__
 #define __BST_FILE_DIALOG_H__
-
 #include "bstutils.hh"
 #include "bstapp.hh"
-
 G_BEGIN_DECLS
-
-
 /* --- type macros --- */
 #define BST_TYPE_FILE_DIALOG              (bst_file_dialog_get_type ())
 #define BST_FILE_DIALOG(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), BST_TYPE_FILE_DIALOG, BstFileDialog))
@@ -15,13 +11,9 @@ G_BEGIN_DECLS
 #define BST_IS_FILE_DIALOG(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), BST_TYPE_FILE_DIALOG))
 #define BST_IS_FILE_DIALOG_CLASS(klass)   (G_TYPE_CHECK_CLASS_TYPE ((klass), BST_TYPE_FILE_DIALOG))
 #define BST_FILE_DIALOG_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), BST_TYPE_FILE_DIALOG, BstFileDialogClass))
-
-
 /* --- typedefs --- */
 typedef struct  _BstFileDialog	    BstFileDialog;
 typedef struct  _BstFileDialogClass BstFileDialogClass;
-
-
 /* --- structures --- */
 typedef enum {
   BST_FILE_DIALOG_OPEN_PROJECT	   = 0x0001,
@@ -66,8 +58,6 @@ struct _BstFileDialogClass
 {
   GxkDialogClass parent_class;
 };
-
-
 /* --- prototypes --- */
 GType		bst_file_dialog_get_type		(void);
 GtkWidget*	bst_file_dialog_popup_open_project	(gpointer	   parent_widget);
@@ -111,9 +101,7 @@ void            bst_file_dialog_set_handler             (BstFileDialog    *self,
                                                          BstFileDialogHandler handler,
                                                          gpointer          handler_data,
                                                          GDestroyNotify    destroy);
-
 G_END_DECLS
-
 // == Flags Enumeration Operators in C++ ==
 #ifdef __cplusplus
 inline BstFileDialogMode  operator&  (BstFileDialogMode  s1, BstFileDialogMode s2) { return BstFileDialogMode (s1 & (long long unsigned) s2); }
@@ -122,5 +110,4 @@ inline BstFileDialogMode  operator|  (BstFileDialogMode  s1, BstFileDialogMode s
 inline BstFileDialogMode& operator|= (BstFileDialogMode &s1, BstFileDialogMode s2) { s1 = s1 | s2; return s1; }
 inline BstFileDialogMode  operator~  (BstFileDialogMode  s1)                    { return BstFileDialogMode (~(long long unsigned) s1); }
 #endif // __cplusplus
-
 #endif  /* __BST_FILE_DIALOG_H__ */

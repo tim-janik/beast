@@ -1,12 +1,9 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "gsldatahandle-vorbis.hh"
-
 #include "gslfilehash.hh"
 #include <ogg/ogg.h>
 #include <vorbis/vorbisfile.h>
 #include <errno.h>
-
-
 /* --- defines --- */
 #define	MAX_CHANNELS			(16)		/* hard limit, eases our life somewhat */
 /* number of values to decode and throw away instead of seeking. since
@@ -14,12 +11,9 @@
  * of seek-ahead space
  */
 #define	SEEK_BY_READ_AHEAD(vhandle)	(vhandle->max_block_size * 8)
-
-
 /* --- structure --- */
 typedef struct {
   GslDataHandle dhandle;
-
   guint    bitstream;
   guint    bitstream_serialno; /* set after open() */
   gfloat   osc_freq;
@@ -27,19 +21,14 @@ typedef struct {
   guint    rfile_byte_offset : 31;
   guint    rfile_add_zoffset : 1;
   guint    rfile_byte_length;
-
   /* live data */
   gint64  soffset;	/* our PCM start offset */
   guint   max_block_size;
-
   /* pcm read out cache */
   GslLong pcm_pos, pcm_length;
   gfloat *pcm[MAX_CHANNELS];
-
   OggVorbis_File ofile;
 } VorbisHandle;
-
-
 /* --- functions --- */
 static BseErrorType
 ov_errno_to_error (gint         ov_errno,
@@ -64,13 +53,11 @@ ov_errno_to_error (gint         ov_errno,
     default:		return fallback;
     }
 }
-
 typedef struct {
   GslRFile *rfile;
   GslLong   byte_offset;
   GslLong   byte_length;
 } VFile;
-
 static size_t
 vfile_read (void  *ptr,
 	    size_t size,
@@ -82,7 +69,6 @@ vfile_read (void  *ptr,
   size_t bytes_to_eof = vfile->byte_length - (gsl_rfile_position (vfile->rfile) - vfile->byte_offset);
   return gsl_rfile_read (vfile->rfile, MIN (bytes, bytes_to_eof), ptr);
 }
-
 static int
 vfile_seek (void       *datasource,
 	    ogg_int64_t offset,
@@ -111,7 +97,6 @@ vfile_seek (void       *datasource,
     }
   return l < 0 ? -1 : l - vfile->byte_offset;
 }
-
 static int
 vfile_close (void *datasource)
 {
@@ -120,21 +105,18 @@ vfile_close (void *datasource)
   g_free (vfile);
   return 0;
 }
-
 static long
 vfile_tell (void *datasource)
 {
   VFile *vfile = (VFile*) datasource;
   return gsl_rfile_position (vfile->rfile) - vfile->byte_offset;
 }
-
 static ov_callbacks vfile_ov_callbacks = {
   vfile_read,
   vfile_seek,
   vfile_close,
   vfile_tell,
 };
-
 static BseErrorType
 dh_vorbis_open (GslDataHandle      *dhandle,
 		GslDataHandleSetup *setup)
@@ -144,7 +126,6 @@ dh_vorbis_open (GslDataHandle      *dhandle,
   vorbis_info *vi;
   GslLong n, i;
   gint err;
-
   vfile = g_new0 (VFile, 1);
   vfile->rfile = gsl_rfile_open (vhandle->dhandle.name);
   if (!vfile->rfile)
@@ -179,7 +160,6 @@ dh_vorbis_open (GslDataHandle      *dhandle,
       vfile_close (vfile);
       return ov_errno_to_error (err, BSE_ERROR_FILE_OPEN_FAILED);
     }
-
   n = ov_streams (&vhandle->ofile);
   if (n > vhandle->bitstream)
     {
@@ -193,11 +173,9 @@ dh_vorbis_open (GslDataHandle      *dhandle,
       ov_clear (&vhandle->ofile); /* closes file */
       return BSE_ERROR_NO_DATA;	/* requested bitstream not available */
     }
-
   vhandle->soffset = 0;
   for (i = 0; i < vhandle->bitstream; i++)
     vhandle->soffset += ov_pcm_total (&vhandle->ofile, i);
-
   n = ov_pcm_total (&vhandle->ofile, vhandle->bitstream);
   vi = ov_info (&vhandle->ofile, vhandle->bitstream);
   if (n > 0 && vi && vi->channels && ov_pcm_seek (&vhandle->ofile, vhandle->soffset) >= 0)
@@ -210,35 +188,29 @@ dh_vorbis_open (GslDataHandle      *dhandle,
       ov_clear (&vhandle->ofile); /* closes file */
       return BSE_ERROR_NO_DATA;
     }
-
   vhandle->max_block_size = vorbis_info_blocksize (vi, 0);
   n = vorbis_info_blocksize (vi, 1);
   vhandle->max_block_size = MAX (vhandle->max_block_size, n);
   vhandle->pcm_pos = 0;
   vhandle->pcm_length = 0;
-  
   setup->bit_depth = 24;
   setup->mix_freq = vi->rate;
   setup->needs_cache = TRUE;
   setup->xinfos = bse_xinfos_add_float (setup->xinfos, "osc-freq", vhandle->osc_freq);
   return BSE_ERROR_NONE;
 }
-
 static GslLong
 dh_vorbis_coarse_seek (GslDataHandle *dhandle,
 		       GslLong        voffset)
 {
   VorbisHandle *vhandle = (VorbisHandle*) dhandle;
   GslLong opos = vhandle->pcm_pos, pos = voffset / dhandle->setup.n_channels;
-  
   if (voffset < 0)
     return vhandle->pcm_pos * dhandle->setup.n_channels;
-
   if (pos < vhandle->pcm_pos ||
       pos >= vhandle->pcm_pos + vhandle->pcm_length + SEEK_BY_READ_AHEAD (vhandle))
     {
       gint err = ov_pcm_seek_page (&vhandle->ofile, vhandle->soffset + pos);
-
       if (err)	/* eek */
 	err = ov_pcm_seek_page (&vhandle->ofile, vhandle->soffset);
       else
@@ -250,16 +222,13 @@ dh_vorbis_coarse_seek (GslDataHandle *dhandle,
   if (0)
     g_printerr ("OggS-SEEK: at %llu want %llu got %llu (diff-requested %lld)\n",
 		opos, pos, vhandle->pcm_pos, pos - opos);
-
   return vhandle->pcm_pos * dhandle->setup.n_channels;
 }
-
 static void
 read_packet (VorbisHandle *vhandle)
 {
   gfloat **pcm = NULL;
   gint stream_id;
-
   vhandle->pcm_pos = ov_pcm_tell (&vhandle->ofile) - vhandle->soffset;
   vhandle->pcm_length = ov_read_float (&vhandle->ofile, &pcm, G_MAXINT, &stream_id);
   if (vhandle->pcm_pos < 0 || vhandle->pcm_length < 0 || stream_id != int (vhandle->bitstream))
@@ -271,7 +240,6 @@ read_packet (VorbisHandle *vhandle)
     for (uint i = 0; i < vhandle->dhandle.setup.n_channels; i++)
       vhandle->pcm[i] = pcm[i];
 }
-
 static GslLong
 dh_vorbis_read (GslDataHandle *dhandle,
 		GslLong        voffset, /* in values */
@@ -280,22 +248,17 @@ dh_vorbis_read (GslDataHandle *dhandle,
 {
   VorbisHandle *vhandle = (VorbisHandle*) dhandle;
   GslLong pos = voffset / dhandle->setup.n_channels;
-
   if (pos < vhandle->pcm_pos ||
       pos >= vhandle->pcm_pos + vhandle->pcm_length + SEEK_BY_READ_AHEAD (vhandle))
     {
       GslLong tmp;
-
       /* suckage, needs to seek in file, this takes ages */
       tmp = dh_vorbis_coarse_seek (dhandle, voffset);
       g_assert (tmp <= voffset);
     }
-
   while (pos >= vhandle->pcm_pos + vhandle->pcm_length)
     read_packet (vhandle);
-
   n_values = MIN (n_values, vhandle->pcm_length * dhandle->setup.n_channels);
-
   /* interleave into output buffer */
   if (pos >= vhandle->pcm_pos && pos < vhandle->pcm_pos + vhandle->pcm_length)
     {
@@ -304,15 +267,12 @@ dh_vorbis_read (GslDataHandle *dhandle,
       guint n_samples = MIN (n_values, vhandle->pcm_length * dhandle->setup.n_channels - offset);
       gfloat *pcm[MAX_CHANNELS], *bound = values + n_samples;
       guint i;
-      
       offset /= dhandle->setup.n_channels;
       for (i = 0; i < dhandle->setup.n_channels; i++)
 	pcm[i] = vhandle->pcm[i] + offset + (i < align);
-
       for (i = align; values < bound; values++)
 	{
 	  gfloat f = *(pcm[i]++);
-
 	  f = CLAMP (f, -1.0, 1.0);
 	  *values = f;
 	  if (++i >= dhandle->setup.n_channels)
@@ -323,28 +283,23 @@ dh_vorbis_read (GslDataHandle *dhandle,
   else /* something went wrong here, _badly_ */
     return 0;
 }
-
 static void
 dh_vorbis_close (GslDataHandle *dhandle)
 {
   VorbisHandle *vhandle = (VorbisHandle*) dhandle;
-
   g_strfreev (dhandle->setup.xinfos);
   dhandle->setup.xinfos = NULL;
   ov_clear (&vhandle->ofile);
   vhandle->pcm_pos = 0;
   vhandle->pcm_length = 0;
 }
-
 static void
 dh_vorbis_destroy (GslDataHandle *dhandle)
 {
   VorbisHandle *vhandle = (VorbisHandle*) dhandle;
-
   gsl_data_handle_common_free (dhandle);
   sfi_delete_struct (VorbisHandle, vhandle);
 }
-
 static GslDataHandleFuncs dh_vorbis_vtable = {
   dh_vorbis_open,
   dh_vorbis_read,
@@ -353,7 +308,6 @@ static GslDataHandleFuncs dh_vorbis_vtable = {
   NULL,
   dh_vorbis_destroy,
 };
-
 static GslDataHandle*
 gsl_data_handle_new_ogg_vorbis_any (const gchar *file_name,
                                     guint        lbitstream,
@@ -373,7 +327,6 @@ gsl_data_handle_new_ogg_vorbis_any (const gchar *file_name,
   if (success)
     {
       BseErrorType error;
-
       vhandle->dhandle.vtable = &dh_vorbis_vtable;
       vhandle->n_bitstreams = 0;
       vhandle->bitstream = lbitstream;
@@ -381,7 +334,6 @@ gsl_data_handle_new_ogg_vorbis_any (const gchar *file_name,
       vhandle->rfile_byte_offset = byte_offset;
       vhandle->rfile_add_zoffset = add_zoffset != FALSE;
       vhandle->rfile_byte_length = byte_size;
-
       /* we can only check matters upon opening and need
        * to initialize things like the bitstream_serialno.
        */
@@ -407,17 +359,14 @@ gsl_data_handle_new_ogg_vorbis_any (const gchar *file_name,
       return NULL;
     }
 }
-
 GslDataHandle*
 gsl_data_handle_new_ogg_vorbis_muxed (const gchar *file_name,
                                       guint        lbitstream,
                                       gfloat       osc_freq)
 {
   g_return_val_if_fail (file_name != NULL, NULL);
-
   return gsl_data_handle_new_ogg_vorbis_any (file_name, lbitstream, osc_freq, FALSE, 0, 0, NULL, NULL);
 }
-
 GslDataHandle*
 gsl_data_handle_new_ogg_vorbis_zoffset (const gchar *file_name,
                                         gfloat       osc_freq,
@@ -429,13 +378,10 @@ gsl_data_handle_new_ogg_vorbis_zoffset (const gchar *file_name,
   g_return_val_if_fail (file_name != NULL, NULL);
   g_return_val_if_fail (byte_offset >= 0, NULL);
   g_return_val_if_fail (byte_size > 0, NULL);
-
   return gsl_data_handle_new_ogg_vorbis_any (file_name, 0, osc_freq, TRUE, byte_offset, byte_size, n_channelsp, mix_freq_p);
 }
-
 /* --- writing vorbis files --- */
 #include "gslvorbis-cutter.hh"
-
 struct GslVorbis1Handle
 {
   GslDataHandle   *dhandle;
@@ -449,7 +395,6 @@ struct GslVorbis1Handle
   guint            forced_serialno;
   GslVorbisCutter *vcutter;
 };
-
 GslVorbis1Handle*
 gsl_vorbis1_handle_new (GslDataHandle *ogg_vorbis_handle,
                         guint          serialno)
@@ -469,7 +414,6 @@ gsl_vorbis1_handle_new (GslDataHandle *ogg_vorbis_handle,
     }
   return v1h;
 }
-
 gint
 gsl_vorbis1_handle_read (GslVorbis1Handle *v1h, /* returns -errno || length */
                          guint             blength,
@@ -499,7 +443,6 @@ gsl_vorbis1_handle_read (GslVorbis1Handle *v1h, /* returns -errno || length */
       gsl_vorbis_cutter_filter_serialno (v1h->vcutter, v1h->bitstream_serialno);
       gsl_vorbis_cutter_force_serialno (v1h->vcutter, v1h->forced_serialno);
     }
-
   while (1) /* repeats until data is available */
     {
       guint j, n = gsl_vorbis_cutter_read_ogg (v1h->vcutter, blength, buffer);
@@ -515,7 +458,6 @@ gsl_vorbis1_handle_read (GslVorbis1Handle *v1h, /* returns -errno || length */
       gsl_vorbis_cutter_write_ogg (v1h->vcutter, j, buffer);
     }
 }
-
 void
 gsl_vorbis1_handle_destroy (GslVorbis1Handle *v1h)
 {
@@ -527,7 +469,6 @@ gsl_vorbis1_handle_destroy (GslVorbis1Handle *v1h)
   v1h->dhandle = NULL;
   g_free (v1h);
 }
-
 static gint /* -errno || length */
 vorbis1_handle_reader (gpointer data,
                        void    *buffer,
@@ -536,21 +477,18 @@ vorbis1_handle_reader (gpointer data,
   GslVorbis1Handle *vhandle = (GslVorbis1Handle*) data;
   return gsl_vorbis1_handle_read (vhandle, blength, (guint8*) buffer);
 }
-
 static void
 vorbis1_handle_destroy (gpointer data)
 {
   GslVorbis1Handle *vhandle = (GslVorbis1Handle*) data;
   gsl_vorbis1_handle_destroy (vhandle);
 }
-
 void
 gsl_vorbis1_handle_put_wstore (GslVorbis1Handle *vorbis1,
                                SfiWStore        *wstore)
 {
   sfi_wstore_put_binary (wstore, vorbis1_handle_reader, vorbis1, vorbis1_handle_destroy);
 }
-
 guint
 gsl_vorbis_make_serialno (void)
 {

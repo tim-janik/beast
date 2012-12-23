@@ -4,10 +4,7 @@
 #include "sfiprimitives.hh"
 #include "sfinote.hh"
 #include "sfitime.hh"
-
 #define NULL_CHECKED(x)         ((x) && (x)[0] ? x : NULL)
-
-
 typedef struct {
   gint          (*values_cmp)           (GParamSpec   *pspec,
                                          const GValue *value1,
@@ -16,13 +13,11 @@ typedef struct {
                                          GValue       *value);
   void          (*finalize)             (GParamSpec   *pspec);
 } PSpecClassData;
-
 static inline GParamSpec*
 param_spec_internal (GType param_type, const char *name, const char *nick, const char *blurb, GParamFlags flags)
 {
   return (GParamSpec*) g_param_spec_internal (param_type, name, nick, blurb, flags);
 }
-
 /* --- prototypes --- */
 static gint     param_bblock_values_cmp (GParamSpec   *pspec,
                                          const GValue *value1,
@@ -47,8 +42,6 @@ static void     param_class_init        (gpointer      klass,
                                          gpointer      class_data);
 static void	sfi_pspec_copy_commons	(GParamSpec   *src_pspec,
 					 GParamSpec   *dest_pspec);
-
-
 /* --- variables --- */
 GType        *sfi__param_spec_types = NULL;
 static GQuark quark_hints = 0;
@@ -58,8 +51,6 @@ static GQuark quark_enum_choice_value_getter = 0;
 static GQuark quark_tmp_choice_values = 0;
 static GQuark quark_tmp_record_fields = 0;
 static GQuark quark_boxed_info = 0;
-
-
 /* --- functions --- */
 void
 _sfi_init_params (void)
@@ -76,11 +67,8 @@ _sfi_init_params (void)
     NULL,                       /* instance_init */
   };
   static GType pspec_types[7] = { 0, };
-  
   g_assert (sfi__param_spec_types == NULL);
-  
   sfi__param_spec_types = pspec_types;
-  
   quark_hints = g_quark_from_static_string ("sfi-pspec-hints");
   quark_param_group = g_quark_from_static_string ("sfi-pspec-group");
   quark_param_owner = g_quark_from_static_string ("sfi-pspec-owner");
@@ -88,7 +76,6 @@ _sfi_init_params (void)
   quark_tmp_choice_values = g_quark_from_static_string ("sfi-tmp-choice-values");
   quark_tmp_record_fields = g_quark_from_static_string ("sfi-tmp-choice-values");
   quark_boxed_info = g_quark_from_static_string ("sfi-boxed-info");
-
   /* pspec types */
   info.instance_size = sizeof (SfiParamSpecProxy);
   SFI_TYPE_PARAM_PROXY = g_type_register_static (G_TYPE_PARAM_POINTER, "SfiParamSpecProxy", &info, GTypeFlags (0));
@@ -139,7 +126,6 @@ _sfi_init_params (void)
     SFI_TYPE_PARAM_NOTE = g_type_register_static (SFI_TYPE_PARAM_INT, "SfiParamSpecNote", &info, GTypeFlags (0));
   }
 }
-
 static void
 param_class_init (gpointer klass,
                   gpointer class_data)
@@ -156,8 +142,6 @@ param_class_init (gpointer klass,
         pclass->finalize = cdata->finalize;
     }
 }
-
-
 /* --- Sfi GParamSpec implementations --- */
 static gint
 param_bblock_values_cmp (GParamSpec   *pspec,
@@ -167,10 +151,8 @@ param_bblock_values_cmp (GParamSpec   *pspec,
   // SfiParamSpecBBlock *bspec = SFI_PSPEC_BBLOCK (pspec);
   SfiBBlock *bblock1 = sfi_value_get_bblock (value1);
   SfiBBlock *bblock2 = sfi_value_get_bblock (value2);
-  
   if (!bblock1 || !bblock2)
     return bblock2 ? -1 : bblock1 != bblock2;
-  
   if (bblock1->n_bytes != bblock2->n_bytes)
     return bblock1->n_bytes < bblock2->n_bytes ? -1 : 1;
   else /* bblock1->n_bytes == bblock2->n_bytes */
@@ -182,7 +164,6 @@ param_bblock_values_cmp (GParamSpec   *pspec,
       return 0; /* all values equal */
     }
 }
-
 static gint
 param_fblock_values_cmp (GParamSpec   *pspec,
                          const GValue *value1,
@@ -191,10 +172,8 @@ param_fblock_values_cmp (GParamSpec   *pspec,
   // SfiParamSpecFBlock *fspec = SFI_PSPEC_FBLOCK (pspec);
   SfiFBlock *fblock1 = sfi_value_get_fblock (value1);
   SfiFBlock *fblock2 = sfi_value_get_fblock (value2);
-  
   if (!fblock1 || !fblock2)
     return fblock2 ? -1 : fblock1 != fblock2;
-  
   if (fblock1->n_values != fblock2->n_values)
     return fblock1->n_values < fblock2->n_values ? -1 : 1;
   else /* fblock1->n_values == fblock2->n_values */
@@ -206,7 +185,6 @@ param_fblock_values_cmp (GParamSpec   *pspec,
       return 0; /* all values equal */
     }
 }
-
 static gint
 param_seq_values_cmp (GParamSpec   *pspec,
                       const GValue *value1,
@@ -215,10 +193,8 @@ param_seq_values_cmp (GParamSpec   *pspec,
   SfiParamSpecSeq *sspec = SFI_PSPEC_SEQ (pspec);
   SfiSeq *seq1 = sfi_value_get_seq (value1);
   SfiSeq *seq2 = sfi_value_get_seq (value2);
-  
   if (!seq1 || !seq2)
     return seq2 ? -1 : seq1 != seq2;
-  
   if (seq1->n_elements != seq2->n_elements)
     return seq1->n_elements < seq2->n_elements ? -1 : 1;
   else if (!sspec->element)
@@ -231,13 +207,11 @@ param_seq_values_cmp (GParamSpec   *pspec,
   else /* seq1->n_elements == seq2->n_elements */
     {
       guint i;
-      
       for (i = 0; i < seq1->n_elements; i++)
         {
           GValue *element1 = seq1->elements + i;
           GValue *element2 = seq2->elements + i;
           gint cmp;
-	  
           /* need corresponding element types, provide stable result otherwise */
           if (G_VALUE_TYPE (element1) != G_VALUE_TYPE (element2))
             return G_VALUE_TYPE (element1) < G_VALUE_TYPE (element2) ? -1 : 1;
@@ -251,7 +225,6 @@ param_seq_values_cmp (GParamSpec   *pspec,
       return 0;
     }
 }
-
 static gint
 param_rec_values_cmp (GParamSpec   *pspec,
                       const GValue *value1,
@@ -260,17 +233,14 @@ param_rec_values_cmp (GParamSpec   *pspec,
   // SfiParamSpecRec *rspec = SFI_PSPEC_REC (pspec);
   SfiRec *rec1 = sfi_value_get_rec (value1);
   SfiRec *rec2 = sfi_value_get_rec (value2);
-  
   if (!rec1 || !rec2)
     return rec2 ? -1 : rec1 != rec2;
   // if (rec1->n_fields) return -1;
-  
   if (rec1->n_fields != rec2->n_fields)
     return rec1->n_fields < rec2->n_fields ? -1 : 1;
   else /* rec1->n_fields == rec2->n_fields */
     {
       guint i;
-      
       sfi_rec_sort (rec1);
       sfi_rec_sort (rec2);
       for (i = 0; i < rec1->n_fields; i++)
@@ -281,15 +251,12 @@ param_rec_values_cmp (GParamSpec   *pspec,
           GValue *field2 = rec2->fields + i;
           GParamSpec *fspec;
           gint cmp;
-	  
           cmp = strcmp (field_name1, field_name2);
           if (cmp)
             return cmp;
-	  
           /* need corresponding field types, provide stable result otherwise */
           if (G_VALUE_TYPE (field1) != G_VALUE_TYPE (field2))
             return G_VALUE_TYPE (field1) < G_VALUE_TYPE (field2) ? -1 : 1;
-	  
           fspec = sfi_pspec_get_rec_field (pspec, field_name1);
           /* ignore fields without or non conforming param specs */
           if (fspec && G_VALUE_HOLDS (field1, G_PARAM_SPEC_VALUE_TYPE (fspec)))
@@ -302,7 +269,6 @@ param_rec_values_cmp (GParamSpec   *pspec,
       return 0;
     }
 }
-
 static gboolean
 param_seq_validate (GParamSpec *pspec,
                     GValue     *value)
@@ -310,16 +276,13 @@ param_seq_validate (GParamSpec *pspec,
   SfiParamSpecSeq *sspec = SFI_PSPEC_SEQ (pspec);
   SfiSeq *seq = sfi_value_get_seq (value);
   guint changed = 0;
-  
   if (seq && sspec->element)
     {
       GParamSpec *element_spec = sspec->element;
       guint i;
-      
       for (i = 0; i < seq->n_elements; i++)
         {
           GValue *element = seq->elements + i;
-	  
           /* support conversion of wrongly typed elements */
           if (G_VALUE_TYPE (element) != G_PARAM_SPEC_VALUE_TYPE (element_spec) &&
               sfi_value_type_transformable (G_VALUE_TYPE (element), G_PARAM_SPEC_VALUE_TYPE (element_spec)))
@@ -331,7 +294,6 @@ param_seq_validate (GParamSpec *pspec,
               memcpy (element, &dummy, sizeof (dummy)); /* relocate value */
               changed++;
             }
-	  
           /* need to fixup value type, or ensure that the element is initialized at all */
           if (!sfi_value_type_compatible (G_VALUE_TYPE (element), G_PARAM_SPEC_VALUE_TYPE (element_spec)))
             {
@@ -341,14 +303,12 @@ param_seq_validate (GParamSpec *pspec,
               g_param_value_set_default (element_spec, element);
               changed++;
             }
-	  
           /* validate element against element_spec */
           changed += g_param_value_validate (element_spec, element);
         }
     }
   return changed;
 }
-
 static void
 param_seq_finalize (GParamSpec *pspec)
 {
@@ -363,24 +323,20 @@ param_seq_finalize (GParamSpec *pspec)
   klass = (GParamSpecClass*) g_type_class_peek_parent (klass);
   klass->finalize (pspec);
 }
-
 static gboolean
 param_rec_validate (GParamSpec *pspec,
                     GValue     *value)
 {
   SfiRec *rec = sfi_value_get_rec (value);
   guint changed = 0;
-  
   if (rec)
     {
       SfiRecFields fspecs = sfi_pspec_get_rec_fields (pspec);
       guint i;
-      
       for (i = 0; i < fspecs.n_fields; i++)
         {
           GParamSpec *fspec = fspecs.fields[i];
           GValue *field = sfi_rec_get (rec, fspec->name);
-	  
           /* ensure field presence */
           if (!field)
             {
@@ -392,7 +348,6 @@ param_rec_validate (GParamSpec *pspec,
               field = sfi_rec_get (rec, fspec->name);
               changed++;
             }
-	  
           /* support conversion of wrongly typed fields */
           if (G_VALUE_TYPE (field) != G_PARAM_SPEC_VALUE_TYPE (fspec) &&
               sfi_value_type_transformable (G_VALUE_TYPE (field), G_PARAM_SPEC_VALUE_TYPE (fspec)))
@@ -404,7 +359,6 @@ param_rec_validate (GParamSpec *pspec,
               memcpy (field, &dummy, sizeof (dummy)); /* relocate value */
               changed++;
             }
-	  
           /* need to fixup value type, or ensure that the field is initialized at all */
           if (!sfi_value_type_compatible (G_VALUE_TYPE (field), G_PARAM_SPEC_VALUE_TYPE (fspec)))
             {
@@ -414,14 +368,12 @@ param_rec_validate (GParamSpec *pspec,
               g_param_value_set_default (fspec, field);
               changed++;
             }
-	  
           /* validate field against field_spec */
           changed += g_param_value_validate (fspec, field);
         }
     }
   return changed;
 }
-
 static gboolean
 param_note_validate (GParamSpec *pspec,
 		     GValue     *value)
@@ -430,7 +382,6 @@ param_note_validate (GParamSpec *pspec,
   SfiInt min, max;
   gboolean allow_void;
   guint changed = 0;
-
   sfi_pspec_get_note_range (pspec, &min, &max, NULL);
   allow_void = sfi_pspec_allows_void_note (pspec);
   if (allow_void && note == SFI_NOTE_VOID)
@@ -442,8 +393,6 @@ param_note_validate (GParamSpec *pspec,
     }
   return changed;
 }
-
-
 /* --- Sfi GParamSpec constructors --- */
 GParamSpec*
 sfi_pspec_bool (const gchar    *name,
@@ -453,13 +402,10 @@ sfi_pspec_bool (const gchar    *name,
 		const gchar    *hints)
 {
   g_return_val_if_fail (default_value == TRUE || default_value == FALSE, NULL);
-
   GParamSpec *pspec = g_param_spec_boolean (name, NULL_CHECKED (nick), NULL_CHECKED (blurb), default_value, GParamFlags (0));
   sfi_pspec_set_options (pspec, hints);
-
   return pspec;
 }
-
 GParamSpec*
 sfi_pspec_int (const gchar    *name,
 	       const gchar    *nick,
@@ -473,14 +419,11 @@ sfi_pspec_int (const gchar    *name,
   g_return_val_if_fail (default_value >= minimum_value && default_value <= maximum_value, NULL);
   g_return_val_if_fail (minimum_value <= maximum_value, NULL);
   g_return_val_if_fail (minimum_value + stepping <= maximum_value, NULL);
-
   GParamSpec *pspec = g_param_spec_int (name, NULL_CHECKED (nick), NULL_CHECKED (blurb), minimum_value, maximum_value, default_value, GParamFlags (0));
   sfi_pspec_set_options (pspec, hints);
   g_param_spec_set_istepping (pspec, stepping);
-
   return pspec;
 }
-
 GParamSpec*
 sfi_pspec_num (const gchar    *name,
 	       const gchar    *nick,
@@ -494,14 +437,11 @@ sfi_pspec_num (const gchar    *name,
   g_return_val_if_fail (default_value >= minimum_value && default_value <= maximum_value, NULL);
   g_return_val_if_fail (minimum_value <= maximum_value, NULL);
   g_return_val_if_fail (minimum_value + stepping <= maximum_value, NULL);
-
   GParamSpec *pspec = g_param_spec_int64 (name, NULL_CHECKED (nick), NULL_CHECKED (blurb), minimum_value, maximum_value, default_value, GParamFlags (0));
   sfi_pspec_set_options (pspec, hints);
   g_param_spec_set_istepping (pspec, stepping);
-
   return pspec;
 }
-
 GParamSpec*
 sfi_pspec_real (const gchar    *name,
 		const gchar    *nick,
@@ -515,13 +455,11 @@ sfi_pspec_real (const gchar    *name,
   g_return_val_if_fail (default_value >= minimum_value && default_value <= maximum_value, NULL);
   g_return_val_if_fail (minimum_value <= maximum_value, NULL);
   g_return_val_if_fail (minimum_value + stepping <= maximum_value, NULL);
-
   GParamSpec *pspec = g_param_spec_double (name, NULL_CHECKED (nick), NULL_CHECKED (blurb), minimum_value, maximum_value, default_value, GParamFlags (0));
   sfi_pspec_set_options (pspec, hints);
   g_param_spec_set_fstepping (pspec, stepping);
   return pspec;
 }
-
 GParamSpec*
 sfi_pspec_log_scale (const gchar    *name,
 		     const gchar    *nick,
@@ -536,16 +474,13 @@ sfi_pspec_log_scale (const gchar    *name,
 		     const gchar    *hints)
 {
   GParamSpec *pspec;
-
   g_return_val_if_fail (n_steps > 0, NULL);
   g_return_val_if_fail (base > 0, NULL);
-
   pspec = sfi_pspec_real (name, nick, blurb, default_value, minimum_value, maximum_value, stepping, hints);
   if (pspec)
     sfi_pspec_set_log_scale (pspec, center, base, n_steps);
   return pspec;
 }
-
 GParamSpec*
 sfi_pspec_string (const gchar    *name,
 		  const gchar    *nick,
@@ -558,10 +493,8 @@ sfi_pspec_string (const gchar    *name,
   GParamSpecString *sspec = (GParamSpecString*) G_PARAM_SPEC_STRING (pspec);
   g_free (sspec->default_value);
   sspec->default_value = g_strdup (default_value);
-
   return pspec;
 }
-
 GParamSpec*
 sfi_pspec_choice (const gchar    *name,
 		  const gchar    *nick,
@@ -571,7 +504,6 @@ sfi_pspec_choice (const gchar    *name,
 		  const gchar    *hints)
 {
   g_return_val_if_fail (static_const_cvalues.n_values >= 1, NULL);
-
   GParamSpec *pspec = param_spec_internal (SFI_TYPE_PARAM_CHOICE, name, NULL_CHECKED (nick), NULL_CHECKED (blurb), GParamFlags (0));
   sfi_pspec_set_options (pspec, hints);
   GParamSpecString *sspec = G_PARAM_SPEC_STRING (pspec);
@@ -580,10 +512,8 @@ sfi_pspec_choice (const gchar    *name,
   SfiParamSpecChoice *cspec = SFI_PSPEC_CHOICE (pspec);
   cspec->cvalues = static_const_cvalues;
   pspec->value_type = SFI_TYPE_CHOICE;
-
   return pspec;
 }
-
 GParamSpec*
 sfi_pspec_bblock (const gchar    *name,
 		  const gchar    *nick,
@@ -594,10 +524,8 @@ sfi_pspec_bblock (const gchar    *name,
   GParamSpec *pspec = param_spec_internal (SFI_TYPE_PARAM_BBLOCK, name, NULL_CHECKED (nick), NULL_CHECKED (blurb), GParamFlags (0));
   sfi_pspec_set_options (pspec, hints);
   pspec->value_type = SFI_TYPE_BBLOCK;
-
   return pspec;
 }
-
 GParamSpec*
 sfi_pspec_fblock (const gchar    *name,
 		  const gchar    *nick,
@@ -608,10 +536,8 @@ sfi_pspec_fblock (const gchar    *name,
   GParamSpec *pspec = param_spec_internal (SFI_TYPE_PARAM_FBLOCK, name, NULL_CHECKED (nick), NULL_CHECKED (blurb), GParamFlags (0));
   sfi_pspec_set_options (pspec, hints);
   pspec->value_type = SFI_TYPE_FBLOCK;
-
   return pspec;
 }
-
 GParamSpec*
 sfi_pspec_pspec (const gchar    *name,
 		 const gchar    *nick,
@@ -622,10 +548,8 @@ sfi_pspec_pspec (const gchar    *name,
   GParamSpec *pspec = param_spec_internal (SFI_TYPE_PARAM_PSPEC, name, NULL_CHECKED (nick), NULL_CHECKED (blurb), GParamFlags (0));
   sfi_pspec_set_options (pspec, hints);
   pspec->value_type = G_TYPE_PARAM;
-
   return pspec;
 }
-
 GParamSpec*
 sfi_pspec_seq (const gchar    *name,
 	       const gchar    *nick,
@@ -635,7 +559,6 @@ sfi_pspec_seq (const gchar    *name,
 {
   if (element_spec)
     g_return_val_if_fail (G_IS_PARAM_SPEC (element_spec), NULL);
-
   GParamSpec *pspec = param_spec_internal (SFI_TYPE_PARAM_SEQ, name, NULL_CHECKED (nick), NULL_CHECKED (blurb), GParamFlags (0));
   sfi_pspec_set_options (pspec, hints);
   if (element_spec)
@@ -645,10 +568,8 @@ sfi_pspec_seq (const gchar    *name,
       g_param_spec_sink (element_spec);
     }
   pspec->value_type = SFI_TYPE_SEQ;
-  
   return pspec;
 }
-
 GParamSpec*
 sfi_pspec_rec (const gchar    *name,
 	       const gchar    *nick,
@@ -661,10 +582,8 @@ sfi_pspec_rec (const gchar    *name,
   SfiParamSpecRec *rspec = SFI_PSPEC_REC (pspec);
   rspec->fields = static_const_fields;
   pspec->value_type = SFI_TYPE_REC;
-
   return pspec;
 }
-
 GParamSpec*
 sfi_pspec_rec_generic (const gchar    *name,
                        const gchar    *nick,
@@ -674,7 +593,6 @@ sfi_pspec_rec_generic (const gchar    *name,
   static const SfiRecFields empty_fields = { 0, NULL };
   return sfi_pspec_rec (name, nick, blurb, empty_fields, hints);
 }
-
 GParamSpec*
 sfi_pspec_proxy (const gchar    *name,
 		 const gchar    *nick,
@@ -685,10 +603,8 @@ sfi_pspec_proxy (const gchar    *name,
   GParamSpec *pspec = param_spec_internal (SFI_TYPE_PARAM_PROXY, name, NULL_CHECKED (nick), NULL_CHECKED (blurb), GParamFlags (0));
   sfi_pspec_set_options (pspec, hints);
   pspec->value_type = SFI_TYPE_PROXY;
-
   return pspec;
 }
-
 GParamSpec*
 sfi_pspec_note (const gchar *name,
 		const gchar *nick,
@@ -703,7 +619,6 @@ sfi_pspec_note (const gchar *name,
   GParamSpecInt *ispec;
   GParamSpec *pspec;
   gchar *thints;
-
   if (default_value == SFI_NOTE_VOID)
     {
       g_return_val_if_fail (min_note <= max_note, NULL);
@@ -711,7 +626,6 @@ sfi_pspec_note (const gchar *name,
     }
   else
     g_return_val_if_fail (default_value >= min_note && default_value <= max_note, NULL);
-
   pspec = param_spec_internal (SFI_TYPE_PARAM_NOTE, name, NULL_CHECKED (nick), NULL_CHECKED (blurb), GParamFlags (0));
   nspec = SFI_PSPEC_NOTE (pspec);
   ispec = G_PARAM_SPEC_INT (pspec);
@@ -725,8 +639,6 @@ sfi_pspec_note (const gchar *name,
   g_free (thints);
   return pspec;
 }
-
-
 /* --- conversion --- */
 enum {
   BOXED_RECORD = 1,
@@ -737,7 +649,6 @@ typedef struct {
   guint       boxed_kind : 8;
   GParamSpec *fields[1]; /* variable length array */
 } BoxedInfo;
-
 void
 sfi_boxed_type_set_rec_fields (GType               boxed_type,
                                const SfiRecFields  static_const_fields)
@@ -759,7 +670,6 @@ sfi_boxed_type_set_rec_fields (GType               boxed_type,
     }
   g_type_set_qdata (boxed_type, quark_boxed_info, binfo);
 }
-
 SfiRecFields
 sfi_boxed_type_get_rec_fields (GType boxed_type)
 {
@@ -773,7 +683,6 @@ sfi_boxed_type_get_rec_fields (GType boxed_type)
     }
   return rfields;
 }
-
 void
 sfi_boxed_type_set_seq_element (GType               boxed_type,
                                 GParamSpec         *element)
@@ -799,7 +708,6 @@ sfi_boxed_type_set_seq_element (GType               boxed_type,
     }
   g_type_set_qdata (boxed_type, quark_boxed_info, binfo);
 }
-
 GParamSpec*
 sfi_boxed_type_get_seq_element (GType               boxed_type)
 {
@@ -810,7 +718,6 @@ sfi_boxed_type_get_seq_element (GType               boxed_type)
     pspec = binfo->fields[0];
   return pspec;
 }
-
 void
 sfi_enum_type_set_choice_value_getter (GType                 gtype,
                                        SfiChoiceValueGetter  cvgetter)
@@ -820,7 +727,6 @@ sfi_enum_type_set_choice_value_getter (GType                 gtype,
     g_warning ("%s: unsetting choice value getter of type `%s' while keeping old choice value references", G_STRFUNC, g_type_name (gtype));
   g_type_set_qdata (gtype, quark_enum_choice_value_getter, (void*) cvgetter);
 }
-
 static SfiSeq*
 choice_values_to_seq (const SfiChoiceValues cvalues)
 {
@@ -834,7 +740,6 @@ choice_values_to_seq (const SfiChoiceValues cvalues)
     }
   return seq;
 }
-
 static SfiSeq*
 rec_fields_to_seq (SfiRecFields rfields)
 {
@@ -844,18 +749,15 @@ rec_fields_to_seq (SfiRecFields rfields)
     sfi_seq_append_pspec (seq, rfields.fields[i]);
   return seq;
 }
-
 typedef struct {
   guint        ref_count;
   SfiRecFields rfields;
 } TmpRecordFields;
-
 static void
 tmp_record_fields_unref (TmpRecordFields *trf)
 {
   g_return_if_fail (trf != NULL);
   g_return_if_fail (trf->ref_count > 0);
-
   trf->ref_count--;
   if (!trf->ref_count)
     {
@@ -867,7 +769,6 @@ tmp_record_fields_unref (TmpRecordFields *trf)
       g_free (trf);
     }
 }
-
 static TmpRecordFields*
 tmp_record_fields_from_seq (SfiSeq *seq)
 {
@@ -900,20 +801,17 @@ tmp_record_fields_from_seq (SfiSeq *seq)
     }
   return NULL;
 }
-
 typedef struct {
   guint           ref_count;
   guint           free_values : 1;
   GEnumClass     *eclass; /* !eclass => free (cvalues[*].values.choice_ident) */
   SfiChoiceValues cvalues;
 } TmpChoiceValues;
-
 static void
 tmp_choice_values_unref (TmpChoiceValues *tcv)
 {
   g_return_if_fail (tcv != NULL);
   g_return_if_fail (tcv->ref_count > 0);
-
   tcv->ref_count--;
   if (!tcv->ref_count)
     {
@@ -936,7 +834,6 @@ tmp_choice_values_unref (TmpChoiceValues *tcv)
       g_free (tcv);
     }
 }
-
 static TmpChoiceValues*
 tmp_choice_values_from_seq (SfiSeq *seq)
 {
@@ -969,7 +866,6 @@ tmp_choice_values_from_seq (SfiSeq *seq)
     }
   return NULL;
 }
-
 static TmpChoiceValues*
 tmp_choice_values_from_enum (GEnumClass *eclass)
 {
@@ -1006,7 +902,6 @@ tmp_choice_values_from_enum (GEnumClass *eclass)
     tcv->ref_count++;
   return tcv;
 }
-
 GParamSpec*
 sfi_pspec_choice_from_enum (GParamSpec *enum_pspec)
 {
@@ -1014,9 +909,7 @@ sfi_pspec_choice_from_enum (GParamSpec *enum_pspec)
   GParamSpecEnum *espec;
   TmpChoiceValues *tcv;
   GEnumValue *default_evalue;
-
   g_return_val_if_fail (G_IS_PARAM_SPEC_ENUM (enum_pspec), NULL);
-  
   espec = G_PARAM_SPEC_ENUM (enum_pspec);
   tcv = tmp_choice_values_from_enum (espec->enum_class);
   default_evalue = g_enum_get_value (espec->enum_class, espec->default_value);
@@ -1029,14 +922,11 @@ sfi_pspec_choice_from_enum (GParamSpec *enum_pspec)
   sfi_pspec_copy_commons (enum_pspec, pspec);
   return pspec;
 }
-
 GParamSpec*
 sfi_pspec_proxy_from_object (GParamSpec *object_pspec)
 {
   GParamSpec *pspec;
-
   g_return_val_if_fail (G_IS_PARAM_SPEC_OBJECT (object_pspec), NULL);
-
   pspec = sfi_pspec_proxy (object_pspec->name,
 			   object_pspec->_nick,
 			   object_pspec->_blurb,
@@ -1044,14 +934,11 @@ sfi_pspec_proxy_from_object (GParamSpec *object_pspec)
   sfi_pspec_copy_commons (object_pspec, pspec);
   return pspec;
 }
-
 GParamSpec*
 sfi_pspec_to_serializable (GParamSpec *xpspec)
 {
   GParamSpec *pspec = NULL;
-  
   g_return_val_if_fail (G_IS_PARAM_SPEC (xpspec), NULL);
-  
   if (sfi_categorize_pspec (xpspec))
     pspec = g_param_spec_ref (xpspec);
   else if (G_IS_PARAM_SPEC_BOXED (xpspec))
@@ -1073,48 +960,38 @@ sfi_pspec_to_serializable (GParamSpec *xpspec)
     pspec = sfi_pspec_choice_from_enum (xpspec);
   else if (G_IS_PARAM_SPEC_OBJECT (xpspec))
     pspec = sfi_pspec_proxy_from_object (xpspec);
-  
   if (!pspec)
     g_warning ("%s: unable to convert non serializable pspec \"%s\" of type `%s'",
                G_STRLOC, xpspec->name, g_type_name (G_PARAM_SPEC_VALUE_TYPE (xpspec)));
-  
   return pspec;
 }
-
-
 /* --- pspec accessors --- */
 GParamSpec *
 sfi_pspec_set_group (GParamSpec  *pspec,
                      const gchar *group)
 {
   g_return_val_if_fail (G_IS_PARAM_SPEC (pspec), pspec);
-  
   g_param_spec_set_qdata_full (pspec, quark_param_group, g_strdup (group), group ? g_free : NULL);
   return pspec;
 }
-
 const gchar*
 sfi_pspec_get_group (GParamSpec *pspec)
 {
   g_return_val_if_fail (G_IS_PARAM_SPEC (pspec), NULL);
   return (const char*) g_param_spec_get_qdata (pspec, quark_param_group);
 }
-
 void
 sfi_pspec_set_owner (GParamSpec  *pspec,
 		     const gchar *owner)
 {
   g_return_if_fail (G_IS_PARAM_SPEC (pspec));
   g_return_if_fail (owner != NULL);
-
   g_param_spec_set_qdata_full (pspec, quark_param_owner, g_strdup (owner), g_free);
 }
-
 const gchar*
 sfi_pspec_get_owner (GParamSpec *pspec)
 {
   g_return_val_if_fail (G_IS_PARAM_SPEC (pspec), NULL);
-
   const char *owner = (char*) g_param_spec_get_qdata (pspec, quark_param_owner);
   if (!owner && pspec->owner_type)
     {
@@ -1123,51 +1000,40 @@ sfi_pspec_get_owner (GParamSpec *pspec)
     }
   return owner;
 }
-
 #if 0
 static void
 sfi_pspec_set_void_note (GParamSpec *pspec,
 			 gboolean    allow_void)
 {
   SfiParamSpecNote *nspec;
-
   g_return_if_fail (SFI_IS_PSPEC_NOTE (pspec));
-
   nspec = SFI_PSPEC_NOTE (pspec);
   nspec->allow_void = allow_void != FALSE;
 }
 #endif
-
 gboolean
 sfi_pspec_allows_void_note (GParamSpec *pspec)
 {
   g_return_val_if_fail (G_IS_PARAM_SPEC (pspec), FALSE);
-
   return SFI_IS_PSPEC_NOTE (pspec) && SFI_PSPEC_NOTE (pspec)->allow_void;
 }
-
 typedef struct {
   SfiReal center;
   SfiReal base;
   SfiReal n_steps;
 } LogScale;
-
 SfiBool
 sfi_pspec_get_bool_default (GParamSpec *pspec)
 {
   g_return_val_if_fail (SFI_IS_PSPEC_BOOL (pspec), FALSE);
-  
   return SFI_PSPEC_BOOL (pspec)->default_value;
 }
-
 SfiInt
 sfi_pspec_get_int_default (GParamSpec *pspec)
 {
   g_return_val_if_fail (SFI_IS_PSPEC_INT (pspec), 0);
-  
   return SFI_PSPEC_INT (pspec)->default_value;
 }
-
 void
 sfi_pspec_get_int_range (GParamSpec *pspec,
                          SfiInt     *minimum_value,
@@ -1175,9 +1041,7 @@ sfi_pspec_get_int_range (GParamSpec *pspec,
                          SfiInt     *stepping)
 {
   SfiParamSpecInt *ispec;
-  
   g_return_if_fail (SFI_IS_PSPEC_INT (pspec));
-  
   ispec = SFI_PSPEC_INT (pspec);
   if (minimum_value)
     *minimum_value = ispec->minimum;
@@ -1186,15 +1050,12 @@ sfi_pspec_get_int_range (GParamSpec *pspec,
   if (stepping)
     *stepping = g_param_spec_get_istepping (pspec);
 }
-
 SfiNum
 sfi_pspec_get_num_default (GParamSpec *pspec)
 {
   g_return_val_if_fail (SFI_IS_PSPEC_NUM (pspec), 0);
-  
   return SFI_PSPEC_NUM (pspec)->default_value;
 }
-
 void
 sfi_pspec_get_num_range (GParamSpec *pspec,
                          SfiNum     *minimum_value,
@@ -1202,9 +1063,7 @@ sfi_pspec_get_num_range (GParamSpec *pspec,
                          SfiNum     *stepping)
 {
   SfiParamSpecNum *nspec;
-  
   g_return_if_fail (SFI_IS_PSPEC_NUM (pspec));
-  
   nspec = SFI_PSPEC_NUM (pspec);
   if (minimum_value)
     *minimum_value = nspec->minimum;
@@ -1213,15 +1072,12 @@ sfi_pspec_get_num_range (GParamSpec *pspec,
   if (stepping)
     *stepping = g_param_spec_get_istepping (pspec);
 }
-
 SfiReal
 sfi_pspec_get_real_default (GParamSpec *pspec)
 {
   g_return_val_if_fail (SFI_IS_PSPEC_REAL (pspec), 0);
-  
   return SFI_PSPEC_REAL (pspec)->default_value;
 }
-
 void
 sfi_pspec_get_real_range (GParamSpec *pspec,
                           SfiReal    *minimum_value,
@@ -1229,9 +1085,7 @@ sfi_pspec_get_real_range (GParamSpec *pspec,
                           SfiReal    *stepping)
 {
   SfiParamSpecReal *nspec;
-  
   g_return_if_fail (SFI_IS_PSPEC_REAL (pspec));
-  
   nspec = SFI_PSPEC_REAL (pspec);
   if (minimum_value)
     *minimum_value = nspec->minimum;
@@ -1240,35 +1094,27 @@ sfi_pspec_get_real_range (GParamSpec *pspec,
   if (stepping)
     *stepping = g_param_spec_get_fstepping (pspec);
 }
-
 const gchar*
 sfi_pspec_get_string_default (GParamSpec *pspec)
 {
   g_return_val_if_fail (SFI_IS_PSPEC_STRING (pspec), NULL);
-  
   return SFI_PSPEC_STRING (pspec)->default_value;
 }
-
 const gchar*
 sfi_pspec_get_choice_default (GParamSpec *pspec)
 {
   g_return_val_if_fail (SFI_IS_PSPEC_CHOICE (pspec), NULL);
-  
   return G_PARAM_SPEC_STRING (pspec)->default_value;
 }
-
 SfiChoiceValues
 sfi_pspec_get_choice_values (GParamSpec *pspec)
 {
   SfiParamSpecChoice *cspec;
   SfiChoiceValues dummy = { 0, };
-  
   g_return_val_if_fail (SFI_IS_PSPEC_CHOICE (pspec), dummy);
-  
   cspec = SFI_PSPEC_CHOICE (pspec);
   return cspec->cvalues;
 }
-
 guint64
 sfi_pspec_get_choice_hash (GParamSpec *pspec)
 {
@@ -1287,47 +1133,36 @@ sfi_pspec_get_choice_hash (GParamSpec *pspec)
     hash = (hash << 7) - hash + g_str_hash (cspec->cvalues.values[i].choice_ident);
   return hash;
 }
-
 GParamSpec*
 sfi_pspec_get_seq_element (GParamSpec *pspec)
 {
   SfiParamSpecSeq *sspec;
-  
   g_return_val_if_fail (SFI_IS_PSPEC_SEQ (pspec), NULL);
-  
   sspec = SFI_PSPEC_SEQ (pspec);
   return sspec->element;
 }
-
 SfiRecFields
 sfi_pspec_get_rec_fields (GParamSpec *pspec)
 {
   SfiParamSpecRec *rspec;
   SfiRecFields dummy = { 0, };
-  
   g_return_val_if_fail (SFI_IS_PSPEC_REC (pspec), dummy);
-  
   rspec = SFI_PSPEC_REC (pspec);
   return rspec->fields;
 }
-
 GParamSpec*
 sfi_pspec_get_rec_field (GParamSpec  *pspec,
                          const gchar *field)
 {
   SfiParamSpecRec *rspec;
   guint i;
-  
   g_return_val_if_fail (SFI_IS_PSPEC_REC (pspec), NULL);
-  
   rspec = SFI_PSPEC_REC (pspec);
   for (i = 0; i < rspec->fields.n_fields; i++)
     if (strcmp (rspec->fields.fields[i]->name, field) == 0)
       return rspec->fields.fields[i];
   return NULL;
 }
-
-
 /* --- pspec categories --- */
 GType
 sfi_category_type (SfiSCategory cat_type)
@@ -1349,7 +1184,6 @@ sfi_category_type (SfiSCategory cat_type)
     default:                   return 0;
     }
 }
-
 GType
 sfi_category_param_type (SfiSCategory cat_type)
 {
@@ -1375,7 +1209,6 @@ sfi_category_param_type (SfiSCategory cat_type)
 	return 0;
     }
 }
-
 SfiSCategory
 sfi_categorize_type (GType value_type)
 {
@@ -1408,23 +1241,17 @@ sfi_categorize_type (GType value_type)
   /* FAILED to determine category */
   return SFI_SCAT_INVAL;
 }
-
 SfiSCategory
 sfi_categorize_pspec (GParamSpec *pspec)
 {
   GType value_type, pspec_type;
   SfiSCategory cat;
-  
   g_return_val_if_fail (G_IS_PARAM_SPEC (pspec), SFI_SCAT_INVAL);
-  
   value_type = G_PARAM_SPEC_VALUE_TYPE (pspec);
   pspec_type = G_PARAM_SPEC_TYPE (pspec);
-  
   cat = sfi_categorize_type (value_type);
-  
   if (!g_type_is_a (pspec_type, sfi_category_param_type (cat)))
     return SFI_SCAT_INVAL;
-  
   switch (cat)
     {
     case SFI_SCAT_INT:
@@ -1438,11 +1265,8 @@ sfi_categorize_pspec (GParamSpec *pspec)
     default:
       break;
     }
-  
   return cat;
 }
-
-
 /* --- convenience aliases --- */
 GParamSpec*
 sfi_pspec_time (const gchar *name,
@@ -1458,8 +1282,6 @@ sfi_pspec_time (const gchar *name,
   g_free (thints);
   return pspec;
 }
-
-
 /* --- Record <=> PSpec transforms --- */
 SfiRec*
 sfi_pspec_to_rec (GParamSpec *pspec)
@@ -1468,15 +1290,11 @@ sfi_pspec_to_rec (GParamSpec *pspec)
   SfiSCategory scat;
   SfiRec *prec;
   const gchar *string;
-
   g_return_val_if_fail (pspec != NULL, NULL);
-
   scat = sfi_categorize_pspec (pspec);
   if (!scat)
     return NULL;
-
   prec = sfi_rec_new ();
-
   /* commons */
   sfi_rec_set_int (prec, "sfi_scategory", scat);
   sfi_rec_set_string (prec, "name", pspec->name);
@@ -1493,7 +1311,6 @@ sfi_pspec_to_rec (GParamSpec *pspec)
   if (string)
     sfi_rec_set_string (prec, "group", string);
   sfi_rec_set_string (prec, "options", sfi_pspec_get_options (pspec));
-
   /* type specifics */
   switch (scat & SFI_SCAT_TYPE_MASK)
     {
@@ -1566,7 +1383,6 @@ sfi_pspec_to_rec (GParamSpec *pspec)
     default:
       break;
     }
-  
   /* log scales */
   if (sfi_pspec_get_log_scale (pspec, &log_center, &log_base, &log_n_steps))
     {
@@ -1574,10 +1390,8 @@ sfi_pspec_to_rec (GParamSpec *pspec)
       sfi_rec_set_real (prec, "log_base", log_base);
       sfi_rec_set_real (prec, "log_n_steps", log_n_steps);
     }
-  
   return prec;
 }
-
 GParamSpec*
 sfi_pspec_from_rec (SfiRec *prec)
 {
@@ -1585,9 +1399,7 @@ sfi_pspec_from_rec (SfiRec *prec)
   GParamSpec *pspec = NULL;
   SfiRecFields zero_rfields = { 0, 0, };
   GType ptype;
-
   g_return_val_if_fail (prec != NULL, NULL);
-
   SfiSCategory scat = (SfiSCategory) sfi_rec_get_int (prec, "sfi_scategory");
   name = sfi_rec_get_string (prec, "name");
   ptype = sfi_category_param_type (scat);
@@ -1596,7 +1408,6 @@ sfi_pspec_from_rec (SfiRec *prec)
   nick = sfi_rec_get_string (prec, "nick");
   blurb = sfi_rec_get_string (prec, "blurb");
   hints = sfi_rec_get_string (prec, "options");
-  
  reswitch:
   switch (scat)
     {
@@ -1698,7 +1509,6 @@ sfi_pspec_from_rec (SfiRec *prec)
 	}
       return NULL;
     }
-
   if (pspec)
     {
       string = sfi_rec_get_string (prec, "owner");
@@ -1707,10 +1517,8 @@ sfi_pspec_from_rec (SfiRec *prec)
       sfi_pspec_set_group (pspec, sfi_rec_get_string (prec, "group"));
       sfi_pspec_set_options (pspec, sfi_rec_get_string (prec, "options"));
     }
-
   return pspec;
 }
-
 static void
 sfi_pspec_copy_commons (GParamSpec *src_pspec,
                         GParamSpec *dest_pspec)

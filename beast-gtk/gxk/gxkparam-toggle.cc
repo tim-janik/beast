@@ -1,13 +1,11 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "gxksimplelabel.hh"
 #include "gxkauxwidgets.hh"
-
 /* --- toggle/check button editors --- */
 enum {
   PARAM_TOGGLE_CHECKER,
   PARAM_TOGGLE_WITH_LABEL,
 };
-
 static void
 param_toggle_change_value (GtkWidget *toggle,
 			   GxkParam  *param)
@@ -18,7 +16,6 @@ param_toggle_change_value (GtkWidget *toggle,
       gxk_param_apply_value (param);
     }
 }
-
 static GtkWidget*
 param_toggle_create (GxkParam    *param,
                      const gchar *tooltip,
@@ -53,21 +50,18 @@ param_toggle_create (GxkParam    *param,
                   NULL);
   return widget;
 }
-
 static void
 param_toggle_update (GxkParam  *param,
 		     GtkWidget *widget)
 {
   gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (widget), g_value_get_boolean (&param->value));
 }
-
 static GxkParamEditor param_toggle = {
   { "toggle",           N_("Check/ToggleRadio Button"), },
   { G_TYPE_BOOLEAN, },
   { NULL,         +5,   TRUE, },        /* options, rating, editing */
   param_toggle_create, param_toggle_update, PARAM_TOGGLE_CHECKER,
 };
-
 static GxkParamEditor param_toggle_empty = {
   { "toggle+label",     N_("Toggle Button"), },
   { G_TYPE_BOOLEAN, },

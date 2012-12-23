@@ -1,12 +1,8 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #ifndef __SFI_GLUE_PROXY_H__
 #define __SFI_GLUE_PROXY_H__
-
 #include <sfi/sfiglue.hh>
-
 G_BEGIN_DECLS
-
-
 /* --- typedefs --- */
 typedef enum /*< skip >*/
 {
@@ -16,8 +12,6 @@ typedef enum /*< skip >*/
 } SfiGlueEventType;
 typedef void (*SfiProxyDestroy)	(gpointer	data,
 				 SfiProxy	destroyed_proxy);
-
-
 /* --- functions --- */
 const gchar*	sfi_glue_proxy_iface		(SfiProxy	 proxy);
 gboolean	sfi_glue_proxy_is_a		(SfiProxy	 proxy,
@@ -79,8 +73,6 @@ gulong		sfi_glue_signal_connect_closure	(SfiProxy	 proxy,
 						 gpointer        search_data);
 void		sfi_glue_signal_disconnect	(SfiProxy	 proxy,
 						 gulong		 connection_id);
-
-
 /* --- internal --- */
 gboolean    _sfi_glue_proxy_watch_release	(SfiProxy	 proxy);
 void	    _sfi_glue_proxy_processed_notify	(guint		 notify_id);
@@ -90,10 +82,6 @@ GQuark	    sfi_glue_proxy_get_signal_quark	(const gchar	*signal);
 void	    sfi_glue_proxy_cancel_matched_event	(SfiSeq		*event,
 						 SfiProxy        proxy,
 						 GQuark		 signal_quark);
-
-
 G_END_DECLS
-
 #endif /* __SFI_GLUE_PROXY_H__ */
-
 /* vim:set ts=8 sts=2 sw=2: */

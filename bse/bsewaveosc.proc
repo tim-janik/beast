@@ -4,11 +4,8 @@
 #include <bse/bseprocedure.hh>
 #include <bse/bseeditablesample.hh>
 #include "bsecxxplugin.hh"
-
 AUTHORS	= "Tim Janik <timj@gtk.org>";
 LICENSE = "GNU Lesser General Public License";
-
-
 METHOD (BseWaveOsc, request-pcm-position) {
   HELP	= "Request emission of the ::notify_pcm_position signal.";
   IN	= bse_param_spec_object ("wosc", NULL, "Wave Oscilator",
@@ -19,16 +16,12 @@ METHOD (BseWaveOsc, request-pcm-position) {
 {
   /* extract parameter values */
   BseWaveOsc *self = (BseWaveOsc*) bse_value_get_object (in_values++);
-  
   /* check parameters */
   if (!BSE_IS_WAVE_OSC (self))
     return BSE_ERROR_PROC_PARAM_INVAL;
-  
   bse_wave_osc_request_pcm_position (self);
-  
   return BSE_ERROR_NONE;
 }
-
 PROCEDURE (bse-wave-osc-mass-seek-perc, "Seek Wave Oscillators") {
   HELP	= "Seek a list of wave oscillators to a pcm position given in percentage. The oscillators will seek to the given position syncronously.";
   IN    = bse_param_spec_boxed ("wosc-seq", "Wave Oscilators", NULL, BSE_TYPE_ITEM_SEQ, SFI_PARAM_STANDARD); // FIXME: using BseItemSeq because BseWaveOscSeq requires idl+C++
@@ -51,10 +44,8 @@ PROCEDURE (bse-wave-osc-mass-seek-perc, "Seek Wave Oscillators") {
       woscs[i] = (BseWaveOsc*) iseq->items[i];
   if (n)
     bse_wave_osc_mass_seek (n, woscs, pos);
-  
   return BSE_ERROR_NONE;
 }
-
 METHOD (BseWaveOsc, set-from-editable-sample) {
   HELP	= "Set wave to play from editable sample, bypassing undo and storage mechanisms.";
   IN	= bse_param_spec_object ("wosc", NULL, "Wave Oscilator",
@@ -68,12 +59,9 @@ METHOD (BseWaveOsc, set-from-editable-sample) {
   /* extract parameter values */
   BseWaveOsc *self = (BseWaveOsc*) bse_value_get_object (in_values++);
   BseEditableSample *esample = (BseEditableSample*) bse_value_get_object (in_values++);
-
   /* check parameters */
   if (!BSE_IS_WAVE_OSC (self))
     return BSE_ERROR_PROC_PARAM_INVAL;
-  
   bse_wave_osc_set_from_esample (self, esample);
-  
   return BSE_ERROR_NONE;
 }

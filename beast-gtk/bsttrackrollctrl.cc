@@ -1,13 +1,8 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bsttrackrollctrl.hh"
-
 #include "bstpartdialog.hh"
-
-
 #define QUANTIZATION(self)	((self)->quant_rtools->action_id)
 #define	HAVE_OBJECT		(1 << 31)
-
-
 /* --- prototypes --- */
 static void	controller_drag			(BstTrackRollController	*self,
 						 BstTrackRollDrag	*drag);
@@ -18,8 +13,6 @@ static void	controller_update_hpanel_cursor	(BstTrackRollController *self,
 static void	controller_stop_edit		(BstTrackRollController *self,
 						 gboolean                canceled,
 						 GtkCellEditable        *ecell);
-
-
 /* --- functions --- */
 GxkActionList*
 bst_track_roll_controller_canvas_actions (BstTrackRollController *self)
@@ -39,7 +32,6 @@ bst_track_roll_controller_canvas_actions (BstTrackRollController *self)
                                NULL /*i18n_domain*/, NULL /*acheck*/, NULL /*aexec*/, NULL);
   return alist;
 }
-
 GxkActionList*
 bst_track_roll_controller_hpanel_actions (BstTrackRollController *self)
 {
@@ -56,7 +48,6 @@ bst_track_roll_controller_hpanel_actions (BstTrackRollController *self)
                                NULL /*i18n_domain*/, NULL /*acheck*/, NULL /*aexec*/, NULL);
   return alist;
 }
-
 GxkActionList*
 bst_track_roll_controller_quant_actions (BstTrackRollController *self)
 {
@@ -87,26 +78,21 @@ bst_track_roll_controller_quant_actions (BstTrackRollController *self)
                                NULL /*i18n_domain*/, NULL /*acheck*/, NULL /*aexec*/, NULL);
   return alist;
 }
-
 static void
 controller_reset_canvas_cursor (BstTrackRollController *self)
 {
   controller_update_canvas_cursor (self, self->canvas_rtools->action_id);
 }
-
 static void
 controller_reset_hpanel_cursor (BstTrackRollController *self)
 {
   controller_update_hpanel_cursor (self, self->hpanel_rtools->action_id);
 }
-
 BstTrackRollController*
 bst_track_roll_controller_new (BstTrackRoll *troll)
 {
   BstTrackRollController *self;
-
   g_return_val_if_fail (BST_IS_TRACK_ROLL (troll), NULL);
-
   self = g_new0 (BstTrackRollController, 1);
   self->troll = troll;
   self->ref_count = 1;
@@ -137,10 +123,8 @@ bst_track_roll_controller_new (BstTrackRoll *troll)
   /* register quantization tools */
   self->quant_rtools = gxk_action_group_new ();
   gxk_action_group_select (self->quant_rtools, BST_QUANTIZE_TACT);
-
   return self;
 }
-
 static BstCommonRollTool
 hpanel_button_tool (BstTrackRollController *self,
 		    guint                   button)
@@ -171,7 +155,6 @@ hpanel_button_tool (BstTrackRollController *self,
     }
   return BST_COMMON_ROLL_TOOL_NONE;
 }
-
 static BstCommonRollTool
 canvas_button_tool (BstTrackRollController *self,
 		    guint                   button,
@@ -254,24 +237,19 @@ canvas_button_tool (BstTrackRollController *self,
     }
   return BST_COMMON_ROLL_TOOL_NONE;
 }
-
 BstTrackRollController*
 bst_track_roll_controller_ref (BstTrackRollController *self)
 {
   g_return_val_if_fail (self != NULL, NULL);
   g_return_val_if_fail (self->ref_count >= 1, NULL);
-
   self->ref_count++;
-
   return self;
 }
-
 void
 bst_track_roll_controller_unref (BstTrackRollController *self)
 {
   g_return_if_fail (self != NULL);
   g_return_if_fail (self->ref_count >= 1);
-
   self->ref_count--;
   if (!self->ref_count)
     {
@@ -284,29 +262,24 @@ bst_track_roll_controller_unref (BstTrackRollController *self)
       g_free (self);
     }
 }
-
 void
 bst_track_roll_controller_set_song (BstTrackRollController *self,
 				    SfiProxy                song)
 {
   g_return_if_fail (self != NULL);
   g_return_if_fail (self->ref_count >= 1);
-
   if (BSE_IS_SONG (song))
     self->song = song;
   else
     self->song = 0;
 }
-
 guint
 bst_track_roll_controller_quantize (BstTrackRollController *self,
 				    guint                   fine_tick)
 {
   BseSongTiming *timing;
   guint quant, tick, qtick;
-
   g_return_val_if_fail (self != NULL, fine_tick);
-
   timing = bse_song_get_timing (self->song, fine_tick);
   if (QUANTIZATION (self) == BST_QUANTIZE_NONE)
     quant = 1;
@@ -322,7 +295,6 @@ bst_track_roll_controller_quantize (BstTrackRollController *self,
   tick = timing->tick + qtick;
   return tick;
 }
-
 static void
 controller_update_hpanel_cursor (BstTrackRollController *self,
 				 guint                  tool_id)
@@ -344,7 +316,6 @@ controller_update_hpanel_cursor (BstTrackRollController *self,
       break;
     }
 }
-
 static void
 controller_update_canvas_cursor (BstTrackRollController *self,
 				 guint                  tool_id)
@@ -375,7 +346,6 @@ controller_update_canvas_cursor (BstTrackRollController *self,
       break;
     }
 }
-
 static void
 edit_name_start (BstTrackRollController *self,
 		 BstTrackRollDrag       *drag)
@@ -400,7 +370,6 @@ edit_name_start (BstTrackRollController *self,
     gxk_status_set (GXK_STATUS_ERROR, _("Edit Part"), _("No Part"));
   drag->state = GXK_DRAG_HANDLED;
 }
-
 static void
 controller_stop_edit (BstTrackRollController *self,
 		      gboolean                canceled,
@@ -413,7 +382,6 @@ controller_stop_edit (BstTrackRollController *self,
     }
   controller_reset_canvas_cursor (self);
 }
-
 static void
 insert_start (BstTrackRollController *self,
 	      BstTrackRollDrag       *drag)
@@ -446,7 +414,6 @@ insert_start (BstTrackRollController *self,
       drag->state = GXK_DRAG_HANDLED;
     }
 }
-
 static void
 delete_start (BstTrackRollController *self,
 	      BstTrackRollDrag       *drag)
@@ -464,7 +431,6 @@ delete_start (BstTrackRollController *self,
     gxk_status_set (GXK_STATUS_ERROR, _("Delete Part"), _("No target"));
   drag->state = GXK_DRAG_HANDLED;
 }
-
 static void
 move_link_start (BstTrackRollController *self,
 		 BstTrackRollDrag       *drag,
@@ -485,28 +451,24 @@ move_link_start (BstTrackRollController *self,
       drag->state = GXK_DRAG_HANDLED;
     }
 }
-
 static void
 move_start (BstTrackRollController *self,
 	    BstTrackRollDrag       *drag)
 {
   move_link_start (self, drag, FALSE);
 }
-
 static void
 link_start (BstTrackRollController *self,
 	    BstTrackRollDrag       *drag)
 {
   move_link_start (self, drag, TRUE);
 }
-
 static void
 move_motion (BstTrackRollController *self,
 	     BstTrackRollDrag       *drag)
 {
   const gchar *action = self->skip_deletion ? _("Link Part") : _("Move Part");
   gint new_tick;
-
   new_tick = MAX (drag->current_tick, self->xoffset) - self->xoffset;
   new_tick = bst_track_roll_controller_quantize (self, new_tick);
   // track_changed = self->obj_track != drag->current_track;
@@ -530,14 +492,12 @@ move_motion (BstTrackRollController *self,
       bse_item_ungroup_undo (drag->current_track);
     }
 }
-
 static void
 move_abort (BstTrackRollController *self,
 	    BstTrackRollDrag       *drag)
 {
   gxk_status_set (GXK_STATUS_ERROR, _("Move Part"), _("Lost Part"));
 }
-
 static void
 editor_create (BstTrackRollController *self,
                BstTrackRollDrag       *drag)
@@ -555,7 +515,6 @@ editor_create (BstTrackRollController *self,
     gxk_status_set (GXK_STATUS_ERROR, _("Start Editor"), _("No target"));
   drag->state = GXK_DRAG_HANDLED;
 }
-
 static void
 pointer_move (BstTrackRollController *self,
 	      BstTrackRollDrag       *drag)
@@ -568,7 +527,6 @@ pointer_move (BstTrackRollController *self,
       drag->state = GXK_DRAG_CONTINUE;
     }
 }
-
 static void
 tick_left_move (BstTrackRollController *self,
 		BstTrackRollDrag       *drag)
@@ -580,7 +538,6 @@ tick_left_move (BstTrackRollController *self,
       drag->state = GXK_DRAG_CONTINUE;
     }
 }
-
 static void
 tick_right_move (BstTrackRollController *self,
 		 BstTrackRollDrag       *drag)
@@ -592,7 +549,6 @@ tick_right_move (BstTrackRollController *self,
       drag->state = GXK_DRAG_CONTINUE;
     }
 }
-
 typedef void (*DragFunc) (BstTrackRollController *,
 			  BstTrackRollDrag       *);
 struct _BstTrackRollUtil
@@ -600,7 +556,6 @@ struct _BstTrackRollUtil
   BstCommonRollTool tool;
   DragFunc start, motion, abort;
 };
-
 void
 controller_drag (BstTrackRollController *self,
 		 BstTrackRollDrag       *drag)
@@ -618,7 +573,6 @@ controller_drag (BstTrackRollController *self,
     { BST_COMMON_ROLL_TOOL_MOVE_TICK_LEFT,	tick_left_move,	 tick_left_move,  NULL,		},
     { BST_COMMON_ROLL_TOOL_MOVE_TICK_RIGHT,	tick_right_move, tick_right_move, NULL,		},
   };
-
   /* initial drag handling */
   if (drag->type == GXK_DRAG_START)
     {
@@ -627,9 +581,7 @@ controller_drag (BstTrackRollController *self,
       const BstTrackRollUtil *tool_table;
       guint i, n_tools;
       BseTrackPartSeq *tps;
-
       self->current_tool = NULL;	/* paranoid */
-
       /* figure area specific tool */
       if (drag->canvas_drag)
 	{
@@ -647,7 +599,6 @@ controller_drag (BstTrackRollController *self,
 	}
       else	/* unsupported area */
 	return;
-
       /* setup drag data */
       if (!drag->start_valid)
 	drag->start_track = 0;
@@ -669,7 +620,6 @@ controller_drag (BstTrackRollController *self,
       self->obj_duration = tpart ? tpart->duration : 0;
       self->xoffset = 0;
       self->tick_bound = 0;
-      
       /* find drag tool */
       if (self->obj_part)		/* have object */
 	tool = obj_tool;
@@ -682,7 +632,6 @@ controller_drag (BstTrackRollController *self,
     }
   if (!self->current_tool)
     return;
-
   /* generic drag handling */
   switch (drag->type)
     {

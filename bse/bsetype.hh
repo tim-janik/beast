@@ -1,26 +1,19 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #ifndef __BSE_TYPE_H__
 #define __BSE_TYPE_H__
-
 #include	<bse/bsedefs.hh>
-
 G_BEGIN_DECLS
-
 /* --- typedefs --- */
 #define BSE_TYPE_PROCEDURE	G_TYPE_MAKE_FUNDAMENTAL (G_TYPE_RESERVED_BSE_FIRST + 3)
-
 /* type macros
  */
 #define	BSE_TYPE_IS_PROCEDURE(type)	(G_TYPE_FUNDAMENTAL (type) == BSE_TYPE_PROCEDURE)
 #define	BSE_CLASS_NAME(class)		(g_type_name (G_TYPE_FROM_CLASS (class)))
 #define	BSE_CLASS_TYPE(class)		(G_TYPE_FROM_CLASS (class))
 #define	BSE_TYPE_IS_OBJECT(type)	(g_type_is_a ((type), BSE_TYPE_OBJECT))
-
 /* --- extra types --- */
 extern GType bse_type_id_packed_pointer;
 #define BSE_TYPE_PACKED_POINTER (bse_type_id_packed_pointer)
-
-
 /* --- prototypes --- */
 void         bse_type_init                      (void);
 void         bse_type_add_options               (GType               type,
@@ -58,10 +51,7 @@ GType        bse_type_register_loadable_boxed   (BseExportNodeBoxed *bnode,
                                                  GTypePlugin        *plugin);
 void         bse_type_reinit_boxed              (BseExportNodeBoxed *bnode);
 void         bse_type_uninit_boxed              (BseExportNodeBoxed *bnode);
-
-
 /* --- implementation details --- */
-
 /* magic macros to define type initialization function within
  * .c files. they identify builtin type functions for magic post
  * processing and help resolving runtime type id retrival.
@@ -73,8 +63,6 @@ void         bse_type_uninit_boxed              (BseExportNodeBoxed *bnode);
 #  define BSE_DUMMY_TYPE(BseTypeName)	 EXTERN_C BSE_BUILTIN_PROTO (BseTypeName) { return 0; } \
                                          EXTERN_C BSE_BUILTIN_PROTO (BseTypeName)
 #endif /* BSE_COMPILATION */
-
-
 /* --- customized pspec constructors --- */
 GParamSpec*     bse_param_spec_enum (const gchar    *name,
                                      const gchar    *nick,
@@ -82,22 +70,16 @@ GParamSpec*     bse_param_spec_enum (const gchar    *name,
                                      gint            default_value, /* can always be 0 */
                                      GType           enum_type,
                                      const gchar    *hints);
-
 // == type initializers ==
 void    bse_type_register_enums                 ();
 void    bse_type_register_procedure_info        (GTypeInfo *info);
 void    bse_type_register_object_info           (GTypeInfo *info);
 void    bse_param_types_init			();
-
 /* -- auto generated type ids --- */
 #include        <bse/bsegentypes.h>
-
-
 /* --- dynamic config --- */
 #define BSE_GCONFIG(cfg) (bse_global_config->cfg)
 extern BseGConfig        *bse_global_config;    /* from bsegconfig.[hc] */
-
-
 /* --- provide IDL pspec initializers --- */
 #define sfidl_pspec_Bool(group, locfile, locline, name, nick, blurb, dflt, options) \
   sfi_pspec_set_group (sfi_pspec_bool (name, nick, blurb, dflt, options), group)
@@ -189,8 +171,5 @@ extern BseGConfig        *bse_global_config;    /* from bsegconfig.[hc] */
   sfi_pspec_set_group (bse_param_spec_object (name, NULL, NULL, otype, SFI_PARAM_STANDARD), group)
 #define sfidl_pspec_TypedObject(group, locfile, locline, name, nick, blurb, options, otype) \
   sfi_pspec_set_group (bse_param_spec_object (name, nick, blurb, otype, options), group)
-
-
 G_END_DECLS
-
 #endif /* __BSE_TYPE_H__ */

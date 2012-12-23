@@ -1,15 +1,10 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #ifndef __SFI_COM_PORT_H__
 #define __SFI_COM_PORT_H__
-
 #include <sfi/sfitypes.hh>
 #include <sfi/sfiring.hh>
-
 G_BEGIN_DECLS
-
-
 #define	SFI_COM_PORT_MAGIC	(0x42534500 /* "BSE\0" */)
-
 typedef struct _SfiComPortLink SfiComPortLink;
 typedef struct _SfiComPort     SfiComPort;
 typedef void (*SfiComPortClosedFunc)	(SfiComPort	*port,
@@ -59,8 +54,6 @@ struct _SfiComPortLink
   gboolean    waiting;
   BirnetCond     wcond;
 };
-
-
 /* create ports */
 SfiComPort*	sfi_com_port_from_pipe		(const gchar	*ident,
 						 gint		 remote_input,
@@ -78,7 +71,6 @@ void		sfi_com_port_create_linked	(const gchar	*ident1,
 						 SfiComPort    **port2);
 SfiComPort*	sfi_com_port_ref		(SfiComPort	*port);
 void		sfi_com_port_unref		(SfiComPort	*port);
-
 /* remote I/O */
 void		sfi_com_port_send		(SfiComPort	*port,
 						 const GValue	*value);
@@ -86,14 +78,11 @@ void		sfi_com_port_send_bulk		(SfiComPort	*port,
 						 SfiRing        *value_ring);
 GValue*		sfi_com_port_recv		(SfiComPort	*port);
 GValue*		sfi_com_port_recv_blocking	(SfiComPort	*port);
-
 /* I/O handling */
 GPollFD*	sfi_com_port_get_poll_fds	(SfiComPort	*port,
 						 guint		*n_pfds);
 gboolean	sfi_com_port_io_pending		(SfiComPort	*port);
 void		sfi_com_port_process_io		(SfiComPort	*port);
-
-
 /* shutdown */
 void		sfi_com_port_set_close_func	(SfiComPort	*port,
 						 SfiComPortClosedFunc func,
@@ -103,8 +92,5 @@ void		sfi_com_port_close_remote	(SfiComPort	*port,
 void		sfi_com_port_reap_child 	(SfiComPort	*port,
 						 gboolean	 kill_child);
 gboolean	sfi_com_port_test_reap_child 	(SfiComPort	*port);
-
-
 G_END_DECLS
-
 #endif /* __SFI_COM_PORT_H__ */

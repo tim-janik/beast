@@ -1,15 +1,12 @@
 ;; CC0 Public Domain: http://creativecommons.org/publicdomain/zero/1.0/
 ;; -*- scheme -*-
-
 ;; play argc/argv contents as bse files
-
 ;; load all stock BSE plugins
 (bse-server-register-blocking bse-server-register-core-plugins #f)
 ;; no script registration
 ;;(bse-server-register-blocking bse-server-register-scripts #f)
 ;; no LADSPA plugin registration
 ;;(bse-server-register-blocking bse-server-register-ladspa-plugins #f)
-
 ;; for each file on the command line
 (map (lambda (file)
        (let*

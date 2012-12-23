@@ -16,9 +16,7 @@
 #include <errno.h>
 #include <string.h>
 #include <stdlib.h>
-
 #define NODE(n)         ((Node*) n)
-
 struct _GxkRadgetArgs {
   guint    n_variables;
   gboolean intern_quarks;
@@ -28,11 +26,9 @@ struct _GxkRadgetArgs {
 #define ARGS_N_ENTRIES(o)    ((o) ? (o)->n_variables : 0)
 #define ARGS_NTH_NAME(o,n)   (g_quark_to_string ((o)->quarks[(n)]))
 #define ARGS_NTH_VALUE(o,n)  ((o)->values[(n)])
-
 typedef struct {
   guint null_collapse : 1;
 } EnvSpecials;
-
 typedef struct {
   GSList       *args_list;              /* GxkRadgetArgs* */
   const gchar  *name;
@@ -41,7 +37,6 @@ typedef struct {
   GData        *hgroups, *vgroups, *hvgroups;
   GxkRadget    *xdef_radget;
 } Env;
-
 typedef struct {
   const gchar *name;
   const gchar *value;
@@ -79,8 +74,6 @@ typedef struct {
 } PData;                /* parser state */
 typedef gchar* (*MacroFunc)     (GSList *args,
                                  Env    *env);
-
-
 /* --- prototypes --- */
 static gchar*          expand_expr              (const gchar         *expr,
                                                  Env                 *env);
@@ -99,16 +92,12 @@ static void            gxk_adopt_hint_hook      (GxkRadget           *radget,
                                                  guint                property_id,
                                                  const GValue        *value,
                                                  GParamSpec          *pspec);
-
-
 /* --- variables --- */
 static Domain *standard_domain = NULL;
 static GQuark  quark_id = 0;
 static GQuark  quark_name = 0;
 static GQuark  quark_radget_type = 0;
 static GQuark  quark_radget_node = 0;
-
-
 /* --- functions --- */
 static void
 set_error (GError     **error,
@@ -127,9 +116,7 @@ set_error (GError     **error,
       g_free (buffer);
     }
 }
-
 #define g_slist_new(d) g_slist_prepend (0, d)
-
 typedef struct {
   Node *source;
   Node *clone;
@@ -138,7 +125,6 @@ typedef struct {
   guint        n_clones;
   NodeClone   *clones;
 } CloneList;
-
 static void
 clone_list_add (CloneList *clist,
                 Node      *source,
@@ -149,7 +135,6 @@ clone_list_add (CloneList *clist,
   clist->clones[i].source = source;
   clist->clones[i].clone = clone;
 }
-
 static Node*
 clone_list_find (CloneList *clist,
                  Node      *source)
@@ -161,7 +146,6 @@ clone_list_find (CloneList *clist,
   g_warning ("failed to find clone for %p", source);
   return NULL;
 }
-
 static GxkRadgetArgs*
 clone_args (const GxkRadgetArgs *source)
 {
@@ -169,7 +153,6 @@ clone_args (const GxkRadgetArgs *source)
     return gxk_radget_args_merge (gxk_radget_const_args (), source);
   return NULL;
 }
-
 static Node*
 clone_node_intern (Node        *source,
                    const gchar *domain,
@@ -231,7 +214,6 @@ clone_node_intern (Node        *source,
   g_assert (source->call_stack == NULL);
   return node;
 }
-
 static Node*
 clone_node (Node        *source,
             const gchar *domain,
@@ -243,7 +225,6 @@ clone_node (Node        *source,
   g_free (clist.clones);
   return node;
 }
-
 static inline gboolean
 boolean_from_string (const gchar *value)
 {
@@ -251,14 +232,12 @@ boolean_from_string (const gchar *value)
            value[0] == 'f' || value[0] == 'F' ||
            value[0] == 'n' || value[0] == 'N');
 }
-
 static inline gdouble
 float_from_string (const gchar *value)
 {
   gdouble v_float = value ? g_strtod (value, NULL) : 0;
   return v_float;
 }
-
 static inline guint64
 num_from_string (const gchar *value)
 {
@@ -266,7 +245,6 @@ num_from_string (const gchar *value)
   v_float = v_float > 0 ? v_float + 0.5 : v_float - 0.5;
   return v_float;
 }
-
 static inline gchar
 char2eval (const gchar c)
 {
@@ -279,7 +257,6 @@ char2eval (const gchar c)
   else
     return '-';
 }
-
 static inline gboolean
 enum_match (const gchar *str1,
             const gchar *str2)
@@ -293,7 +270,6 @@ enum_match (const gchar *str1,
     }
   return *str1 == 0 && *str2 == 0;
 }
-
 static gint
 enums_match_value (guint        n_values,
                    GEnumValue  *values,
@@ -323,7 +299,6 @@ enums_match_value (guint        n_values,
     }
   return fallback;
 }
-
 static void
 env_clear (Env *env)
 {
@@ -331,7 +306,6 @@ env_clear (Env *env)
   g_datalist_clear (&env->vgroups);
   g_datalist_clear (&env->hvgroups);
 }
-
 static GtkSizeGroup*
 env_get_size_group (Env         *env,
                     const gchar *name,
@@ -348,7 +322,6 @@ env_get_size_group (Env         *env,
     }
   return sg;
 }
-
 typedef struct _RecursiveOption RecursiveOption;
 struct _RecursiveOption {
   RecursiveOption     *next;
@@ -356,7 +329,6 @@ struct _RecursiveOption {
   GQuark               quark;
 };
 static RecursiveOption *stack_options = NULL;
-
 static const GxkRadgetArgs*
 env_find_quark (Env   *env,
                 GQuark quark,
@@ -378,7 +350,6 @@ env_find_quark (Env   *env,
     }
   return NULL;
 }
-
 static const gchar*
 env_lookup (Env         *env,
             const gchar *var)
@@ -391,7 +362,6 @@ env_lookup (Env         *env,
   args = quark ? env_find_quark (env, quark, &nth) : NULL;
   return args ? ARGS_NTH_VALUE (args, nth) : NULL;
 }
-
 static gchar*
 env_expand_args_value (Env                 *env,
                        const GxkRadgetArgs *args,
@@ -408,7 +378,6 @@ env_expand_args_value (Env                 *env,
   stack_options = ropt.next;
   return exval;
 }
-
 static inline const gchar*
 advance_level (const gchar *c)
 {
@@ -430,7 +399,6 @@ advance_level (const gchar *c)
   while (level);
   return c;
 }
-
 static inline const gchar*
 advance_arg (const gchar *c)
 {
@@ -441,7 +409,6 @@ advance_arg (const gchar *c)
       c++;
   return c;
 }
-
 static const gchar*
 parse_formula (const gchar *c,
                GString     *result,
@@ -478,7 +445,6 @@ parse_formula (const gchar *c,
     }
   return c;
 }
-
 static const gchar*
 parse_dollar (const gchar *c,
               GString     *result,
@@ -524,7 +490,6 @@ parse_dollar (const gchar *c,
     c++;
   return c;
 }
-
 static gchar*
 expand_expr (const gchar *expr,
              Env         *env)
@@ -550,7 +515,6 @@ expand_expr (const gchar *expr,
   else
     return g_string_free (result, FALSE);
 }
-
 #if 0 // FIXME: unused
 static guint64
 num_from_expr (const gchar    *expr,
@@ -561,7 +525,6 @@ num_from_expr (const gchar    *expr,
   g_free (result);
   return num;
 }
-
 static gboolean
 boolean_from_expr (const gchar    *expr,
                    Env            *env)
@@ -572,7 +535,6 @@ boolean_from_expr (const gchar    *expr,
   return boolv;
 }
 #endif
-
 static Node*
 node_children_find_area (Node        *node,
                          const gchar *area)
@@ -595,7 +557,6 @@ node_children_find_area (Node        *node,
     }
   return NULL;
 }
-
 static Node*
 node_find_area (Node        *node,
                 const gchar *area)
@@ -631,7 +592,6 @@ node_find_area (Node        *node,
   else
     return node;
 }
-
 static Node*
 node_lookup (Domain      *domain,
              const gchar *node_name)
@@ -641,7 +601,6 @@ node_lookup (Domain      *domain,
     node = (Node*) g_datalist_get_data (&standard_domain->nodes, node_name);
   return node;
 }
-
 static GxkRadgetArgs*
 radget_args_intern_set (GxkRadgetArgs  *args,
                         const gchar    *name,
@@ -651,7 +610,6 @@ radget_args_intern_set (GxkRadgetArgs  *args,
     args = gxk_radget_const_args ();
   return gxk_radget_args_set (args, name, value);
 }
-
 static Node*
 node_define (Domain       *domain,
              const gchar  *node_name,
@@ -764,7 +722,6 @@ node_define (Domain       *domain,
     set_error (error, "no radget type specified in definition of: %s", node_name);
   return node;
 }
-
 static void             /* callback for open tags <foo bar="baz"> */
 radget_start_element  (GMarkupParseContext *context,
                        const gchar         *element_name,
@@ -820,7 +777,6 @@ radget_start_element  (GMarkupParseContext *context,
   else
     set_error (error, "unknown element: %s", element_name);
 }
-
 static void             /* callback for close tags </foo> */
 radget_end_element (GMarkupParseContext *context,
                     const gchar         *element_name,
@@ -842,7 +798,6 @@ radget_end_element (GMarkupParseContext *context,
       g_slist_pop_head (&pdata->node_stack);
     }
 }
-
 static void             /* callback for character data */
 radget_text (GMarkupParseContext *context,
              const gchar         *text,    /* text is not 0-terminated */
@@ -852,7 +807,6 @@ radget_text (GMarkupParseContext *context,
 {
   // PData *pdata = user_data;
 }
-
 static void             /* callback for comments and processing instructions */
 radget_passthrough (GMarkupParseContext *context,
                     const gchar         *passthrough_text, /* text is not 0-terminated. */
@@ -862,7 +816,6 @@ radget_passthrough (GMarkupParseContext *context,
 {
   // PData *pdata = user_data;
 }
-
 static void             /* callback for errors, including ones set by other methods in the vtable */
 radget_error (GMarkupParseContext *context,
               GError              *error,  /* the GError should not be freed */
@@ -870,7 +823,6 @@ radget_error (GMarkupParseContext *context,
 {
   // PData *pdata = user_data;
 }
-
 static void
 radget_parser (Domain      *domain,
                const gchar *i18n_domain,
@@ -909,9 +861,7 @@ radget_parser (Domain      *domain,
     g_markup_parse_context_end_parse (context, error);
   g_markup_parse_context_free (context);
 }
-
 static GData *domains = NULL;
-
 /**
  * @param domain_name	radget domain name
  * @param file_name	file containing ragdet definitions
@@ -945,7 +895,6 @@ gxk_radget_parse (const gchar    *domain_name,
       g_error_free (myerror);
     }
 }
-
 /**
  * @param domain_name	radget domain name
  * @param text	radget definition string
@@ -980,7 +929,6 @@ gxk_radget_parse_text (const gchar    *domain_name,
       g_error_free (myerror);
     }
 }
-
 static GtkSizeGroup*
 toplevel_get_size_group (GtkWidget   *toplevel,
                          const gchar *name,
@@ -998,7 +946,6 @@ toplevel_get_size_group (GtkWidget   *toplevel,
   g_free (key);
   return sg;
 }
-
 static void
 radget_widget_hierarchy_changed (GtkWidget *widget,
                                  GtkWidget *previous_toplevel)
@@ -1031,7 +978,6 @@ radget_widget_hierarchy_changed (GtkWidget *widget,
       g_object_set_data ((GObject*) widget, "gxk-window-hvgroup", NULL);   /* gtk_size_group_add_widget() <= 2.4.4 may not be called twice */
     }
 }
-
 static void
 property_value_from_string (GtkType      widget_type,
                             GParamSpec  *pspec,
@@ -1123,7 +1069,6 @@ property_value_from_string (GtkType      widget_type,
     g_print ("property[%s]: expr=%s result=%s GValue=%s\n", pspec->name, pvalue, exvalue, g_strdup_value_contents (value));
   g_free (exvalue);
 }
-
 static GxkRadgetArgs*
 merge_args_list (GxkRadgetArgs *args,
                  GSList        *call_args)
@@ -1136,7 +1081,6 @@ merge_args_list (GxkRadgetArgs *args,
     }
   return args;
 }
-
 static GxkRadgetArgs*
 node_expand_call_args (Node   *node,
                        GSList *call_args,
@@ -1189,14 +1133,12 @@ node_expand_call_args (Node   *node,
     g_slist_pop_head (&env->args_list);
   return args;
 }
-
 struct GxkRadgetData {
   Node         *node;
   GxkRadgetArgs *call_stack_top;
   GxkRadget    *xdef_radget;
   Env          *env;
 };
-
 static GxkRadget*
 radget_create_from_node (Node         *node,
                          GxkRadget    *radget,
@@ -1298,7 +1240,6 @@ radget_create_from_node (Node         *node,
     g_slist_pop_head (&env->args_list);
   return radget;
 }
-
 static void
 radget_add_to_parent (GxkRadget    *parent,
                       GxkRadget    *radget,
@@ -1362,7 +1303,6 @@ radget_add_to_parent (GxkRadget    *parent,
   while (n_pops--)
     g_slist_pop_head (&env->args_list);
 }
-
 static void
 radget_apply_hooks (GxkRadget    *radget,
                     Env          *env,
@@ -1411,7 +1351,6 @@ radget_apply_hooks (GxkRadget    *radget,
   while (n_pops--)
     g_slist_pop_head (&env->args_list);
 }
-
 static void
 radget_create_children (GxkRadget    *parent,
                         Env          *env,
@@ -1437,7 +1376,6 @@ radget_create_children (GxkRadget    *parent,
       gxk_radget_free_args (call_args);
     }
 }
-
 static GxkRadget*
 radget_creator (GxkRadget          *radget,
                 const gchar        *domain_name,
@@ -1491,7 +1429,6 @@ radget_creator (GxkRadget          *radget,
     g_warning ("GxkRadget: no such radget domain: %s", domain_name);
   return radget;
 }
-
 /* --- radget args --- */
 GxkRadgetArgs*
 gxk_radget_data_copy_call_args (GxkRadgetData *gdgdata)
@@ -1504,7 +1441,6 @@ gxk_radget_data_copy_call_args (GxkRadgetData *gdgdata)
   g_slist_free (olist);
   return args;
 }
-
 GxkRadgetArgs*
 gxk_radget_const_args (void)
 {
@@ -1512,7 +1448,6 @@ gxk_radget_const_args (void)
   args->intern_quarks = TRUE;
   return args;
 }
-
 GxkRadgetArgs*
 gxk_radget_args_valist (const gchar        *name1,
                         va_list             var_args)
@@ -1527,7 +1462,6 @@ gxk_radget_args_valist (const gchar        *name1,
     }
   return args;
 }
-
 GxkRadgetArgs*
 gxk_radget_args (const gchar *name1,
                  ...)
@@ -1539,7 +1473,6 @@ gxk_radget_args (const gchar *name1,
   va_end (vargs);
   return args;
 }
-
 GxkRadgetArgs*
 gxk_radget_args_set (GxkRadgetArgs  *args,
                      const gchar    *name,
@@ -1568,7 +1501,6 @@ gxk_radget_args_set (GxkRadgetArgs  *args,
     args->values[i] = g_strdup (value);
   return args;
 }
-
 static const gchar*
 radget_args_lookup_quark (const GxkRadgetArgs *args,
                           GQuark               quark,
@@ -1584,7 +1516,6 @@ radget_args_lookup_quark (const GxkRadgetArgs *args,
       }
   return NULL;
 }
-
 const gchar*
 gxk_radget_args_get (const GxkRadgetArgs *args,
                      const gchar         *name)
@@ -1594,7 +1525,6 @@ gxk_radget_args_get (const GxkRadgetArgs *args,
     return radget_args_lookup_quark (args, quark, NULL);
   return NULL;
 }
-
 GxkRadgetArgs*
 gxk_radget_args_merge (GxkRadgetArgs       *args,
                        const GxkRadgetArgs *source)
@@ -1609,7 +1539,6 @@ gxk_radget_args_merge (GxkRadgetArgs       *args,
     }
   return args;
 }
-
 void
 gxk_radget_free_args (GxkRadgetArgs *args)
 {
@@ -1624,14 +1553,12 @@ gxk_radget_free_args (GxkRadgetArgs *args)
       g_free (args);
     }
 }
-
 /* --- radget functions --- */
 GxkRadget*
 gxk_radget_data_get_scope_radget (GxkRadgetData *gdgdata)
 {
   return gdgdata->xdef_radget;
 }
-
 gchar*
 gxk_radget_data_dup_expand (GxkRadgetData       *gdgdata,
                             const gchar         *expression)
@@ -1641,7 +1568,6 @@ gxk_radget_data_dup_expand (GxkRadgetData       *gdgdata,
   gdgdata->env->skip_property = skip_property;
   return string;
 }
-
 GxkRadget*
 gxk_radget_creator (GxkRadget          *radget,
                     const gchar        *domain_name,
@@ -1659,7 +1585,6 @@ gxk_radget_creator (GxkRadget          *radget,
     }
   return radget_creator (radget, domain_name, name, parent, call_args, env_args);
 }
-
 /**
  * @param domain_name	radget domain
  * @param name	        radget definition name
@@ -1686,7 +1611,6 @@ gxk_radget_create (const gchar        *domain_name,
   va_end (vargs);
   return radget;
 }
-
 /**
  * @param radget       toplevel ragdet container
  * @param domain_name  radget domain
@@ -1715,7 +1639,6 @@ gxk_radget_complete (GxkRadget          *radget,
   va_end (vargs);
   return radget;
 }
-
 /**
  * @param radget	a valid radget
  * @return		radget domain
@@ -1730,7 +1653,6 @@ gxk_radget_get_domain (GxkRadget *radget)
   g_return_val_if_fail (radget_node != NULL, NULL);
   return radget_node->domain;
 }
-
 void
 gxk_radget_sensitize (GxkRadget      *radget,
                       const gchar    *name,
@@ -1749,7 +1671,6 @@ gxk_radget_sensitize (GxkRadget      *radget,
       gtk_widget_set_sensitive (widget, sensitive);
     }
 }
-
 /**
  * @param radget	a valid radget
  * @param name	radget name
@@ -1763,13 +1684,10 @@ gxk_radget_find (GxkRadget      *radget,
                  const gchar    *name)
 {
   const gchar *next, *c = name;
-  
   g_return_val_if_fail (radget != NULL, NULL);
   g_return_val_if_fail (name != NULL, NULL);
-  
   if (!GTK_IS_WIDGET (radget))
     return NULL;
-  
   next = strchr (c, '.');
   while (radget && next)
     {
@@ -1782,7 +1700,6 @@ gxk_radget_find (GxkRadget      *radget,
     radget = gxk_widget_find_level_ordered ((GtkWidget*) radget, c);
   return radget;
 }
-
 /**
  * @param radget	a valid radget
  * @param area	radget name
@@ -1806,7 +1723,6 @@ gxk_radget_find_area (GxkRadget      *radget,
     }
   return radget;
 }
-
 /**
  * @param radget	a valid radget
  * @param area	radget name
@@ -1826,8 +1742,6 @@ gxk_radget_add (GxkRadget      *radget,
   else
     g_error ("GxkRadget: failed to find area \"%s\"", area);
 }
-
-
 /* --- radget types --- */
 static void
 radget_define_type (GType           type,
@@ -1845,7 +1759,6 @@ radget_define_type (GType           type,
   if (error)
     g_error ("while registering standard radgets: %s", error->message);
 }
-
 void
 gxk_init_radget_types (void)
 {
@@ -1881,7 +1794,6 @@ gxk_init_radget_types (void)
   gxk_radget_define_type (GXK_TYPE_WIDGET_PATCHER, gxk_widget_patcher_def);
   gxk_radget_register_hook (g_param_spec_string ("gxk-adopt-hint", NULL, NULL, NULL, G_PARAM_READWRITE), 1, gxk_adopt_hint_hook);
 }
-
 gboolean
 gxk_radget_type_lookup (GType           type,
                         GxkRadgetType  *ggtype)
@@ -1894,23 +1806,18 @@ gxk_radget_type_lookup (GType           type,
     }
   return FALSE;
 }
-
 void
 gxk_radget_define_type (GType                type,
                         const GxkRadgetType *ggtype)
 {
   const gchar *attribute_names[1] = { NULL };
   const gchar *attribute_values[1] = { NULL };
-  
   g_return_if_fail (!G_TYPE_IS_ABSTRACT (type));
   g_return_if_fail (G_TYPE_IS_OBJECT (type));
   g_return_if_fail (g_type_get_qdata (type, quark_radget_type) == NULL);
-  
   g_type_set_qdata (type, quark_radget_type, (gpointer) ggtype);
   radget_define_type (type, g_type_name (type), attribute_names, attribute_values, NULL);
 }
-
-
 /* --- widget types --- */
 static GParamSpec*
 widget_find_prop (GTypeClass   *klass,
@@ -1918,7 +1825,6 @@ widget_find_prop (GTypeClass   *klass,
 {
   return g_object_class_find_property (G_OBJECT_CLASS (klass), construct_param_name);
 }
-
 static GxkRadget*
 widget_create (GType               type,
                const gchar        *name,
@@ -1930,7 +1836,6 @@ widget_create (GType               type,
   g_object_set (widget, "name", name, NULL);
   return widget;
 }
-
 static void
 gxk_adopt_hint_hook (GxkRadget           *radget,
                      guint                property_id,
@@ -1939,7 +1844,6 @@ gxk_adopt_hint_hook (GxkRadget           *radget,
 {
   g_object_set_data_full ((GObject*) radget, "gxk-adopt-hint", g_value_dup_string (value), g_free);
 }
-
 static gboolean
 widget_adopt (GxkRadget          *radget,
               GxkRadget          *parent,
@@ -1969,7 +1873,6 @@ widget_adopt (GxkRadget          *radget,
     gtk_container_add (GTK_CONTAINER (parent), GTK_WIDGET (radget));
   return TRUE;
 }
-
 static GParamSpec*
 widget_find_pack (GxkRadget    *radget,
                   const gchar  *pack_name)
@@ -1977,7 +1880,6 @@ widget_find_pack (GxkRadget    *radget,
   GtkWidget *parent = GTK_WIDGET (radget)->parent;
   return gtk_container_class_find_child_property (G_OBJECT_GET_CLASS (parent), pack_name);
 }
-
 static void
 widget_set_pack (GxkRadget    *radget,
                  const gchar  *pack_name,
@@ -1986,7 +1888,6 @@ widget_set_pack (GxkRadget    *radget,
   GtkWidget *parent = GTK_WIDGET (radget)->parent;
   gtk_container_child_set_property (GTK_CONTAINER (parent), (GtkWidget*) radget, pack_name, value);
 }
-
 void
 gxk_radget_define_widget_type (GType type)
 {
@@ -2018,11 +1919,9 @@ gxk_radget_define_widget_type (GType type)
   const gchar *attribute_names[G_N_ELEMENTS (widget_def) + G_N_ELEMENTS (container_def) + 1];
   const gchar *attribute_values[G_N_ELEMENTS (widget_def) + G_N_ELEMENTS (container_def) + 1];
   guint i, j = 0;
-  
   g_return_if_fail (!G_TYPE_IS_ABSTRACT (type));
   g_return_if_fail (g_type_is_a (type, GTK_TYPE_WIDGET));
   g_return_if_fail (g_type_get_qdata (type, quark_radget_type) == NULL);
-  
   g_type_set_qdata (type, quark_radget_type, (gpointer) &widget_info);
   for (i = 0; i < G_N_ELEMENTS (widget_def); i++)
     {
@@ -2041,7 +1940,6 @@ gxk_radget_define_widget_type (GType type)
   attribute_values[j] = NULL;
   radget_define_type (type, g_type_name (type), attribute_names, attribute_values, NULL);
 }
-
 static gboolean
 menu_adopt (GxkRadget          *radget,
             GxkRadget          *parent,
@@ -2057,9 +1955,7 @@ menu_adopt (GxkRadget          *radget,
     gxk_menu_attach_as_popup ((GtkMenu*) radget, (GtkWidget*) parent);
   return TRUE;
 }
-
 static void* return_NULL (void) { return NULL; }
-
 static void
 radget_define_gtk_menu (void)
 {
@@ -2079,7 +1975,6 @@ radget_define_gtk_menu (void)
   attribute_values[0] = "$(ifdef,visible,$visible,1)";
   radget_define_type (type, g_type_name (type), attribute_names, attribute_values, NULL);
 }
-
 /* --- radget hooks --- */
 typedef struct RadgetHook RadgetHook;
 struct RadgetHook {
@@ -2088,7 +1983,6 @@ struct RadgetHook {
   RadgetHook          *next;
 };
 static RadgetHook *radget_hooks = NULL;
-
 void
 gxk_radget_register_hook (GParamSpec   *pspec,
                           guint         property_id,
@@ -2115,7 +2009,6 @@ gxk_radget_register_hook (GParamSpec   *pspec,
   hook->next = radget_hooks;
   radget_hooks = hook;
 }
-
 static GParamSpec*
 find_hook (const gchar   *name,
            GxkRadgetHook *hook_func_p)
@@ -2127,7 +2020,6 @@ find_hook (const gchar   *name,
     *hook_func_p = hook->hook_func;
   return hook ? hook->pspec : NULL;
 }
-
 /* --- macro functions --- */
 static inline const gchar*
 argiter_pop (GSList **slist_p)
@@ -2140,7 +2032,6 @@ argiter_pop (GSList **slist_p)
     }
   return (const char*) d;
 }
-
 static inline gchar*
 argiter_exp (GSList **slist_p,
              Env     *env)
@@ -2148,7 +2039,6 @@ argiter_exp (GSList **slist_p,
   const gchar *s = argiter_pop (slist_p);
   return s ? expand_expr (s, env) : NULL;
 }
-
 static gchar*
 mf_if (GSList *args,
        Env    *env)
@@ -2164,7 +2054,6 @@ mf_if (GSList *args,
   else
     return elze ? expand_expr (elze, env) : g_strdup ("0");
 }
-
 static gchar*
 mf_not (GSList *args,
         Env    *env)
@@ -2175,7 +2064,6 @@ mf_not (GSList *args,
   g_free (cond);
   return g_strdup (b ? "0" : "1");
 }
-
 static gchar*
 mf_blogic (GSList *args,
            Env    *env)
@@ -2199,7 +2087,6 @@ mf_blogic (GSList *args,
     result = !result;
   return g_strdup (result ? "1" : "0");
 }
-
 static inline int
 null_strcmp (const gchar *s1,
              const gchar *s2)
@@ -2209,7 +2096,6 @@ null_strcmp (const gchar *s1,
   else
     return strcmp (s1, s2);
 }
-
 static gchar*
 mf_str_cmp (GSList *args,
             Env    *env)
@@ -2247,9 +2133,7 @@ mf_str_cmp (GSList *args,
   g_free (last);
   return g_strdup (result ? "1" : "0");
 }
-
 #define EQ_FLAG 0x80
-
 static gchar*
 mf_floatcmp (GSList *args,
              Env    *env)
@@ -2288,7 +2172,6 @@ mf_floatcmp (GSList *args,
     }
   return g_strdup (result ? "1" : "0");
 }
-
 static gchar*
 mf_floatcollect (GSList *args,
                  Env    *env)
@@ -2321,7 +2204,6 @@ mf_floatcollect (GSList *args,
     accu /= n;
   return g_strdup_printf ("%.17g", accu);
 }
-
 static gchar*
 mf_first_occupied (GSList *args,
                    Env    *env)
@@ -2335,7 +2217,6 @@ mf_first_occupied (GSList *args,
     }
   return name ? name : g_strdup ("");
 }
-
 static gchar*
 mf_ifdef (GSList *args,
           Env    *env)
@@ -2351,7 +2232,6 @@ mf_ifdef (GSList *args,
   else
     return elze ? expand_expr (elze, env) : g_strdup ("0");
 }
-
 static gchar*
 mf_nth (GSList *args,
         Env    *env)
@@ -2363,7 +2243,6 @@ mf_nth (GSList *args,
   g_free (num);
   return d ? expand_expr (d, env) : NULL;
 }
-
 static gchar*
 mf_null_collapse (GSList *args,
                   Env    *env)
@@ -2374,7 +2253,6 @@ mf_null_collapse (GSList *args,
     env->specials->null_collapse = TRUE;
   return value;
 }
-
 static gchar*
 mf_skip_property (GSList *args,
                   Env    *env)
@@ -2382,14 +2260,12 @@ mf_skip_property (GSList *args,
   env->skip_property = TRUE;
   return g_strdup ("");
 }
-
 static gchar*
 mf_empty (GSList *args,
           Env    *env)
 {
   return g_strdup ("");
 }
-
 static gchar*
 mf_println (GSList *args,
             Env    *env)
@@ -2404,7 +2280,6 @@ mf_println (GSList *args,
   g_print ("\n");
   return NULL;
 }
-
 static MacroFunc
 macro_func_lookup (const gchar *name)
 {

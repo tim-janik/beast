@@ -1,15 +1,9 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #ifndef __GXK_ACTION_H__
 #define __GXK_ACTION_H__
-
 #include "gxkutils.hh"
-
 G_BEGIN_DECLS
-
-
 #define GXK_ACTION_PRIORITY     (G_PRIORITY_HIGH - 10)
-
-
 /* --- structures --- */
 typedef gboolean (*GxkActionCheck)        (gpointer        user_data,
                                            gulong          action_id,
@@ -27,7 +21,6 @@ typedef struct {
   gulong        action_id;
   const gchar  *stock_icon;     /* stock_id for the icon or NULL */
 } GxkAction;
-
 typedef struct {
   const gchar  *name;           /* subject to i18n (key) */
   const gchar  *accelerator;
@@ -35,7 +28,6 @@ typedef struct {
   gulong        action_id;
   const gchar  *stock_icon;     /* stock_id for the icon */
 } GxkStockAction;
-
 /* --- public API --- */
 guint64         gxk_action_inc_cache_stamp      (void);
 GxkActionList*  gxk_action_list_create          (void);
@@ -74,7 +66,6 @@ void            gxk_action_activate_callback    (gconstpointer          action_d
 void      gxk_widget_update_actions_upwards     (gpointer                widget);
 void      gxk_widget_update_actions_downwards   (gpointer                widget);
 void      gxk_widget_update_actions             (gpointer                widget);
-
 /* --- publishing --- */
 void      gxk_widget_publish_action_list        (gpointer                widget,
                                                  const gchar            *prefix,
@@ -131,8 +122,6 @@ void      gxk_window_add_action_client          (GtkWindow              *window,
                                                  gpointer                client_data);
 void      gxk_window_remove_action_client       (GtkWindow              *window,
                                                  gpointer                client_data);
-
-
 /* --- action groups --- */
 #define GXK_TYPE_ACTION_GROUP              (gxk_action_group_get_type ())
 #define GXK_ACTION_GROUP(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), GXK_TYPE_ACTION_GROUP, GxkActionGroup))
@@ -158,8 +147,5 @@ void            gxk_action_group_lock           (GxkActionGroup        *agroup);
 void            gxk_action_group_unlock         (GxkActionGroup        *agroup);
 void            gxk_action_group_dispose        (GxkActionGroup        *agroup);
 GxkActionGroup* gxk_action_toggle_new           (void);
-
-
 G_END_DECLS
-
 #endif /* __GXK_ACTION_H__ */

@@ -8,7 +8,6 @@
 #ifdef __SSE__
 #include <xmmintrin.h>
 #endif
-
 #if 1
 inline float  test1f (float v) { return v;     }
 inline float  test2f (float v) { return bse_float_zap_denormal (v); }
@@ -22,12 +21,10 @@ extern float  test3f (float v);
 extern float  test4f (float v);
 extern float  test5f (float v);
 #endif
-
 inline double test2d (double v) { return bse_double_zap_denormal (v); }
 inline double test3d (double v) { BSE_DOUBLE_FLUSH_with_cond (v); return v; }
 inline double test4d (double v) { BSE_DOUBLE_FLUSH_with_if (v); return v; }
 inline double test5d (double v) { BSE_DOUBLE_FLUSH_with_threshold (v); return v; }
-
 template<float Func (float)> void
 test_correct_subnormal_elimination (const char* algo_name)
 {
@@ -37,20 +34,16 @@ test_correct_subnormal_elimination (const char* algo_name)
     {
       float value = BSE_FLOAT_MAX_SUBNORMAL * i / n;
       g_assert (BSE_FLOAT_IS_SUBNORMAL (value));
-
       float normalized_positive_value = Func (value);
       g_assert (!BSE_FLOAT_IS_SUBNORMAL (normalized_positive_value));
-
       float normalized_negative_value = Func (-value);
       g_assert (!BSE_FLOAT_IS_SUBNORMAL (normalized_negative_value));
-
       if (i % 100000 == 0)
         TOK();
     }
   TOK();
   TDONE();
 }
-
 template<double Func (double)> void
 test_correct_subnormal_elimination (const char* algo_name)
 {
@@ -60,38 +53,29 @@ test_correct_subnormal_elimination (const char* algo_name)
     {
       double value = BSE_DOUBLE_MAX_SUBNORMAL * i / n;
       g_assert (BSE_DOUBLE_IS_SUBNORMAL (value));
-
       double normalized_positive_value = Func (value);
       g_assert (!BSE_DOUBLE_IS_SUBNORMAL (normalized_positive_value));
-
       double normalized_negative_value = Func (-value);
       g_assert (!BSE_DOUBLE_IS_SUBNORMAL (normalized_negative_value));
-
       if (i % 100000 == 0)
         TOK();
     }
   TOK();
   TDONE();
 }
-
 static void
 benchmark_subnormal_eliminations ()
 {
   const float max_sub = BSE_FLOAT_MAX_SUBNORMAL;
-
   TSTART ("Subnormal Cancellation Benchmark");
-
   float n = 10 * 1000000;
   float sum;
   GTimer *timer = g_timer_new();
   volatile double volatile_accu = 0;
-
   int j;
   const int blen = 4096;
   volatile float buffer[blen];
-
   TOK();
-
   sum = j = 0;
   memset ((void*) buffer, 0, sizeof (buffer));
   g_timer_start (timer);
@@ -106,7 +90,6 @@ benchmark_subnormal_eliminations ()
   g_timer_stop (timer);
   float test1_time = g_timer_elapsed (timer, NULL);
   TOK();
-  
   sum = j = 0;
   memset ((void*) buffer, 0, sizeof (buffer));
   g_timer_start (timer);
@@ -121,7 +104,6 @@ benchmark_subnormal_eliminations ()
   g_timer_stop (timer);
   float test2_time = g_timer_elapsed (timer, NULL);
   TOK();
-
   sum = j = 0;
   memset ((void*) buffer, 0, sizeof (buffer));
   g_timer_start (timer);
@@ -136,7 +118,6 @@ benchmark_subnormal_eliminations ()
   g_timer_stop (timer);
   float test3_time = g_timer_elapsed (timer, NULL);
   TOK();
-
   sum = j = 0;
   memset ((void*) buffer, 0, sizeof (buffer));
   g_timer_start (timer);
@@ -151,7 +132,6 @@ benchmark_subnormal_eliminations ()
   g_timer_stop (timer);
   float test4_time = g_timer_elapsed (timer, NULL);
   TOK();
-
   sum = j = 0;
   memset ((void*) buffer, 0, sizeof (buffer));
   g_timer_start (timer);
@@ -166,7 +146,6 @@ benchmark_subnormal_eliminations ()
   g_timer_stop (timer);
   float test5_time = g_timer_elapsed (timer, NULL);
   TOK();
-
   sum = j = 0;
   memset ((void*) buffer, 0, sizeof (buffer));
   g_timer_start (timer);
@@ -185,7 +164,6 @@ benchmark_subnormal_eliminations ()
   float test6_time = g_timer_elapsed (timer, NULL);
   TOK();
   TDONE();
-
   if (0)
     g_print ("subnormal cancellation times: keep=%fs zap=%fs inlined-cond=%fs if-cond=%fs arithmetic=%f bse=%f\n",
              test1_time, test2_time, test3_time, test4_time, test5_time, test6_time);
@@ -196,7 +174,6 @@ benchmark_subnormal_eliminations ()
   treport_minimized ("Subnormals-arithmetic",   test5_time, TUNIT_SECOND);
   treport_minimized ("Subnormals-bse-flush",    test6_time, TUNIT_SECOND);
 }
-
 bool
 check_denormals_are_zero()
 {
@@ -204,23 +181,19 @@ check_denormals_are_zero()
   if (_MM_GET_FLUSH_ZERO_MODE() == _MM_FLUSH_ZERO_ON)
     {
       const int MM_DENORMALS_ARE_ZERO = 0x40;
-
       if (_mm_getcsr() & MM_DENORMALS_ARE_ZERO)
         {
           return true;
         }
     }
 #endif
-
   return false;
 }
-
 int
 main (int   argc,
       char *argv[])
 {
   bse_init_test (&argc, &argv, NULL);
-
   g_printerr ("Checking if your processor is in 'denormals are zero' (DAZ) mode... ");
   bool daz_mode = check_denormals_are_zero();
   g_printerr (daz_mode ? "yes - skipping subnormal elimination tests.\n" : "no.\n");
@@ -230,15 +203,12 @@ main (int   argc,
       test_correct_subnormal_elimination<test3f> ("inlined-cond");
       test_correct_subnormal_elimination<test4f> ("if-cond");
       test_correct_subnormal_elimination<test5f> ("arithmetic");
-
       test_correct_subnormal_elimination<test2d> ("zap-double");
       test_correct_subnormal_elimination<test3d> ("inlined-cond-double");
       test_correct_subnormal_elimination<test4d> ("if-cond-double");
       test_correct_subnormal_elimination<test5d> ("arithmetic-double");
     }
-
   if (sfi_init_settings().test_perf)
     benchmark_subnormal_eliminations();
-
   return 0;
 }

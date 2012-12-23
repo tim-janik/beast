@@ -1,11 +1,8 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #ifndef __GXK_SCROLL_CANVAS_H__
 #define __GXK_SCROLL_CANVAS_H__
-
 #include <gxk/gxkutils.hh>
-
 G_BEGIN_DECLS
-
 /* --- type macros --- */
 #define GXK_TYPE_SCROLL_CANVAS              (gxk_scroll_canvas_get_type ())
 #define GXK_SCROLL_CANVAS(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), GXK_TYPE_SCROLL_CANVAS, GxkScrollCanvas))
@@ -13,8 +10,6 @@ G_BEGIN_DECLS
 #define GXK_IS_SCROLL_CANVAS(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), GXK_TYPE_SCROLL_CANVAS))
 #define GXK_IS_SCROLL_CANVAS_CLASS(klass)   (G_TYPE_CHECK_CLASS_TYPE ((klass), GXK_TYPE_SCROLL_CANVAS))
 #define GXK_SCROLL_CANVAS_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), GXK_TYPE_SCROLL_CANVAS, GxkScrollCanvasClass))
-
-
 /* --- typedefs, enums & structures --- */
 typedef enum    /*< skip >*/
 {
@@ -166,8 +161,6 @@ typedef struct
                                                  GxkScrollCanvasDrag    *drag,
                                                  GdkEvent               *event);
 } GxkScrollCanvasClass;
-
-
 /* --- prototypes --- */
 GType            gxk_scroll_canvas_get_type                (void);
 void             gxk_scroll_canvas_get_layout              (GxkScrollCanvas        *self,
@@ -229,7 +222,5 @@ void             gxk_scroll_canvas_move_marker             (GxkScrollCanvas     
                                                             guint                   x,
                                                             guint                   y);
 void             gxk_scroll_canvas_class_skin_changed      (GxkScrollCanvasClass*);
-
 G_END_DECLS
-
 #endif /* __GXK_SCROLL_CANVAS_H__ */

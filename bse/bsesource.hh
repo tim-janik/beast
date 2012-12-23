@@ -1,14 +1,10 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #ifndef __BSE_SOURCE_H__
 #define __BSE_SOURCE_H__
-
 #include <bse/bseitem.hh>
 #include <bse/gsldefs.hh>
 #include <sfi/gbsearcharray.hh>
-
 G_BEGIN_DECLS
-
-
 /* --- BseSource type macros --- */
 #define BSE_TYPE_SOURCE              (BSE_TYPE_ID (BseSource))
 #define BSE_SOURCE(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), BSE_TYPE_SOURCE, BseSource))
@@ -16,8 +12,6 @@ G_BEGIN_DECLS
 #define BSE_IS_SOURCE(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), BSE_TYPE_SOURCE))
 #define BSE_IS_SOURCE_CLASS(class)   (G_TYPE_CHECK_CLASS_TYPE ((class), BSE_TYPE_SOURCE))
 #define BSE_SOURCE_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), BSE_TYPE_SOURCE, BseSourceClass))
-
-
 /* --- BseSource member macros --- */
 #define BSE_SOURCE_PREPARED(src)	  ((BSE_OBJECT_FLAGS (src) & BSE_SOURCE_FLAG_PREPARED) != 0)
 #define BSE_SOURCE_COLLECTED(src)	  ((BSE_OBJECT_FLAGS (src) & BSE_SOURCE_FLAG_COLLECTED) != 0)
@@ -47,7 +41,6 @@ G_BEGIN_DECLS
                                            0xffffffff)
 #define	BSE_SOURCE_JSTREAM_FLAG		  ((guint) 1 << 31)
 #define BSE_SOURCE_PRIVATE_INPUTS(src)    ((BSE_OBJECT_FLAGS (src) & BSE_SOURCE_FLAG_PRIVATE_INPUTS) != 0)
-
 /* --- BseSource flags --- */
 typedef enum	/*< skip >*/
 {
@@ -56,8 +49,6 @@ typedef enum	/*< skip >*/
   BSE_SOURCE_FLAG_COLLECTED		= 1 << (BSE_ITEM_FLAGS_USHIFT + 2)
 } BseSourceFlags;
 #define BSE_SOURCE_FLAGS_USHIFT        (BSE_ITEM_FLAGS_USHIFT + 3)
-
-
 /* --- typedefs & structures --- */
 typedef union  _BseSourceInput		BseSourceInput;
 typedef struct _BseSourceOutput		BseSourceOutput;
@@ -82,7 +73,6 @@ union _BseSourceInput
 struct _BseSource
 {
   BseItem               parent_object;
-
   BseSourceChannelDefs *channel_defs;
   BseSourceInput       *inputs;	/* [n_ichannels] */
   GSList	       *outputs;
@@ -106,9 +96,7 @@ struct _BseSourceChannelDefs
 struct _BseSourceClass
 {
   BseItemClass		 parent_class;
-
   BseSourceChannelDefs	 channel_defs;
-  
   void          (*property_updated)     (BseSource      *source,        /* overridable method */
                                          guint           property_id,
                                          guint64         tick_stamp,
@@ -125,7 +113,6 @@ struct _BseSourceClass
 					 guint		 context_handle,
 					 BseTrans	*trans);
   void		(*reset)		(BseSource	*source);
-
   /*< private >*/
   void	(*add_input)	(BseSource	*source,
 			 guint		 ichannel,
@@ -140,7 +127,6 @@ struct _BseSourceClass
   SfiRing        *unprepared_properties;
   SfiRing        *automation_properties;
 };
-
 /* --- prototypes -- */
 guint		bse_source_find_ichannel	(BseSource	*source,
 						 const gchar    *ichannel_ident);
@@ -165,8 +151,6 @@ void           	bse_source_must_set_input_loc	(BseSource	*source,
                                                  const gchar    *strloc);
 #define bse_source_must_set_input(is,ic,os,oc)  \
   bse_source_must_set_input_loc (is, ic, os, oc, G_STRLOC)
-
-
 /* --- source implementations --- */
 guint	    bse_source_class_add_ichannel      	(BseSourceClass	*source_class,
 						 const gchar	*ident,
@@ -235,7 +219,6 @@ void	   bse_source_update_modules	        (BseSource	*source,
 void	   bse_source_clear_ichannels	        (BseSource	*source);
 void	   bse_source_clear_ochannels	        (BseSource	*source);
 BseMusicalTuningType bse_source_prepared_musical_tuning (BseSource *source);
-
 /* automation */
 typedef struct {
   GParamSpec       *pspec;
@@ -252,7 +235,6 @@ void                         bse_source_get_automation_property   (BseSource    
                                                                    BseMidiSignalType *psignal_type);
 BseAutomationProperty*       bse_source_get_automation_properties (BseSource         *source,
                                                                    guint             *n_props);
-
 /* --- internal --- */
 SfiRing* bse_source_collect_inputs_flat 	(BseSource	*source);       /* sets mark */
 SfiRing* bse_source_collect_inputs_recursive	(BseSource	*source);       /* sets mark */
@@ -289,7 +271,5 @@ SfiRing*        bse_source_list_omodules        (BseSource      *source);
 void    bse_source_clear_probes                 (BseSource      *source);
 void    bse_source_class_add_probe_signals      (BseSourceClass *klass);
 void    bse_source_probes_modules_changed       (BseSource      *source);
-
 G_END_DECLS
-
 #endif /* __BSE_SOURCE_H__ */

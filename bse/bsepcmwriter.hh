@@ -1,11 +1,8 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #ifndef __BSE_PCM_WRITER_H__
 #define __BSE_PCM_WRITER_H__
-
 #include <bse/bseitem.hh>
-
 G_BEGIN_DECLS
-
 /* --- object type macros --- */
 #define BSE_TYPE_PCM_WRITER              (BSE_TYPE_ID (BsePcmWriter))
 #define BSE_PCM_WRITER(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), BSE_TYPE_PCM_WRITER, BsePcmWriter))
@@ -13,8 +10,6 @@ G_BEGIN_DECLS
 #define BSE_IS_PCM_WRITER(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), BSE_TYPE_PCM_WRITER))
 #define BSE_IS_PCM_WRITER_CLASS(class)   (G_TYPE_CHECK_CLASS_TYPE ((class), BSE_TYPE_PCM_WRITER))
 #define BSE_PCM_WRITER_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), BSE_TYPE_PCM_WRITER, BsePcmWriterClass))
-
-
 /* --- BsePcmWriter  --- */
 struct _BsePcmWriter
 {
@@ -30,8 +25,6 @@ struct _BsePcmWriterClass
 {
   BseItemClass		parent_class;
 };
-
-
 /* --- prototypes --- */
 BseErrorType	bse_pcm_writer_open		(BsePcmWriter		*pdev,
 						 const gchar		*file,
@@ -43,10 +36,7 @@ void		bse_pcm_writer_close		(BsePcmWriter		*pdev);
 void		bse_pcm_writer_write		(BsePcmWriter		*pdev,
 						 gsize			 n_values,
 						 const gfloat		*values);
-
-
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */
-
 #endif /* __BSE_PCM_WRITER_H__ */

@@ -1,8 +1,6 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include <bse/bse.idl>
-
 namespace Bse { namespace Standard {
-
 choice SaturationType {
   SATURATE_TANH      = (_("TANH"),      _("Saturation via hyperbolic tangent function which is mostly linear for "
                                           "small levels while providing a soft curvature for high volume signals")),
@@ -15,7 +13,6 @@ choice SaturationType {
                                           "for small levels")),
   SATURATE_HARD      = (_("Hard"),      _("Hard saturation via clipping (prone to clicks)")),
 };
-
 class Saturator : Bse::Effect {
   Info    category  = "/Distortion/Saturate";
   Info    icon      = "icons/saturate.png";
@@ -45,5 +42,4 @@ class Saturator : Bse::Effect {
     // Bool        test_dump = Trigger ("Test Dump", NULL, GUI);
   };
 };
-
 } } // Bse::Standard

@@ -3,17 +3,14 @@
 #include "bsesequencer.hh"
 #include "bseengine.hh"
 #include <string.h>
-
 static SFI_MSG_TYPE_DEFINE (debug_pcm, "pcm", SFI_MSG_DEBUG, NULL);
 #define DEBUG(...)      sfi_debug (debug_pcm, __VA_ARGS__)
-
 typedef struct
 {
   BsePcmHandle handle;
   guint        busy_us;
   guint        sleep_us;
 } NullHandle;
-
 /* --- prototypes --- */
 static gsize        null_device_read      (BsePcmHandle *handle,
                                            gfloat       *values);
@@ -22,14 +19,11 @@ static void         null_device_write     (BsePcmHandle *handle,
 static gboolean     null_device_check_io  (BsePcmHandle *handle,
                                            glong        *timeoutp);
 static guint        null_device_latency   (BsePcmHandle *handle);
-
-
 /* --- functions --- */
 static void
 bse_pcm_device_null_init (BsePcmDeviceNull *null)
 {
 }
-
 static SfiRing*
 bse_pcm_device_null_list_devices (BseDevice *device)
 {
@@ -37,7 +31,6 @@ bse_pcm_device_null_list_devices (BseDevice *device)
   ring = sfi_ring_append (ring, bse_device_entry_new (device, g_strdup_printf ("default"), NULL));
   return ring;
 }
-
 static BseErrorType
 bse_pcm_device_null_open (BseDevice     *device,
                           gboolean       require_readable,
@@ -47,7 +40,6 @@ bse_pcm_device_null_open (BseDevice     *device,
 {
   NullHandle *null = g_new0 (NullHandle, 1);
   BsePcmHandle *handle = &null->handle;
-  
   /* setup request */
   handle->readable = require_readable;
   handle->writable = require_writable;
@@ -67,7 +59,6 @@ bse_pcm_device_null_open (BseDevice     *device,
   DEBUG ("NULL: opening PCM readable=%d writable=%d: %s", require_readable, require_writable, bse_error_blurb (BSE_ERROR_NONE));
   return BSE_ERROR_NONE;
 }
-
 static void
 bse_pcm_device_null_close (BseDevice *device)
 {
@@ -75,7 +66,6 @@ bse_pcm_device_null_close (BseDevice *device)
   BSE_PCM_DEVICE (device)->handle = NULL;
   g_free (null);
 }
-
 static gboolean
 null_device_check_io (BsePcmHandle *handle,
                       glong        *timeoutp)
@@ -86,14 +76,12 @@ null_device_check_io (BsePcmHandle *handle,
   /* ensure sequencer fairness */
   return !bse_sequencer_thread_lagging (2);
 }
-
 static guint
 null_device_latency (BsePcmHandle *handle)
 {
   /* total latency in frames */
   return handle->mix_freq / 10;
 }
-
 static gsize
 null_device_read (BsePcmHandle *handle,
                   gfloat       *values)
@@ -102,7 +90,6 @@ null_device_read (BsePcmHandle *handle,
   memset (values, 0, sizeof (values[0]) * n_values);
   return n_values;
 }
-
 static void
 null_device_write (BsePcmHandle *handle,
                    const gfloat *values)
@@ -117,12 +104,10 @@ null_device_write (BsePcmHandle *handle,
         g_usleep (null->sleep_us);
     }
 }
-
 static void
 bse_pcm_device_null_class_init (BsePcmDeviceNullClass *klass)
 {
   BseDeviceClass *device_class = BSE_DEVICE_CLASS (klass);
-  
   device_class->list_devices = bse_pcm_device_null_list_devices;
   bse_device_class_setup (device_class,
                           -1,
@@ -137,19 +122,16 @@ bse_pcm_device_null_class_init (BsePcmDeviceNullClass *klass)
   device_class->open = bse_pcm_device_null_open;
   device_class->close = bse_pcm_device_null_close;
 }
-
 BSE_BUILTIN_TYPE (BsePcmDeviceNull)
 {
   GType pcm_device_null_type;
   static const GTypeInfo pcm_device_null_info = {
     sizeof (BsePcmDeviceNullClass),
-    
     (GBaseInitFunc) NULL,
     (GBaseFinalizeFunc) NULL,
     (GClassInitFunc) bse_pcm_device_null_class_init,
     (GClassFinalizeFunc) NULL,
     NULL /* class_data */,
-    
     sizeof (BsePcmDeviceNull),
     0 /* n_preallocs */,
     (GInstanceInitFunc) bse_pcm_device_null_init,

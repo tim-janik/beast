@@ -1,10 +1,8 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 //#define TEST_VERBOSE
 #include <birnet/birnettests.h>
-
 namespace {
 using namespace Birnet;
-
 class MyKey : public DataKey<int> {
   void destroy (int i)
   {
@@ -15,14 +13,12 @@ class MyKey : public DataKey<int> {
     return -1;
   }
 };
-
 class StringKey : public DataKey<String> {
   void destroy (String s)
   {
     TPRINT ("%s: delete \"%s\";\n", STRFUNC, s.c_str());
   }
 };
-
 template<class DataListContainer> static void
 data_list_test_strings (DataListContainer &r)
 {
@@ -35,7 +31,6 @@ data_list_test_strings (DataListContainer &r)
   r.delete_data (&strkey);
   TASSERT (String ("") == r.get_data (&strkey).c_str()); // fallback()
 }
-
 template<class DataListContainer> static void
 data_list_test_ints (DataListContainer &r)
 {
@@ -62,7 +57,6 @@ data_list_test_ints (DataListContainer &r)
   r.set_data (&intkey, 9);
   TASSERT (9 == r.get_data (&intkey));
 }
-
 static void
 data_list_test ()
 {
@@ -72,14 +66,12 @@ data_list_test ()
     data_list_test_strings (r);
   }
   TDONE();
-  
   TSTART ("DataList<int>");
   {
     DataListContainer r;
     data_list_test_ints (r);
   }
   TDONE();
-
   TSTART ("DataList-mixed");
   {
     DataListContainer r;
@@ -88,7 +80,6 @@ data_list_test ()
     data_list_test_strings (r);
   }
   TDONE();
-
   TSTART ("DataList-threaded");
   {
     Thread &thread = Thread::self();
@@ -98,9 +89,7 @@ data_list_test ()
   }
   TDONE();
 }
-
 } // anon
-
 int
 main (int   argc,
       char *argv[])

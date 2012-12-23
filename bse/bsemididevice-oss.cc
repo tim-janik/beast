@@ -5,11 +5,9 @@
 #include "gslcommon.hh" // FIXME: remove
 #include "bsesequencer.hh"
 #include "topconfig.h"
-
 #ifndef	BSE_MIDI_DEVICE_CONF_OSS
 BSE_DUMMY_TYPE (BseMidiDeviceOSS);
 #else   /* BSE_MIDI_DEVICE_CONF_OSS */
-
 #if HAVE_SYS_SOUNDCARD_H
 #include <sys/soundcard.h>
 #elif HAVE_SOUNDCARD_H
@@ -22,35 +20,26 @@ BSE_DUMMY_TYPE (BseMidiDeviceOSS);
 #include <errno.h>
 #include <string.h>
 #include <fcntl.h>
-
 static SFI_MSG_TYPE_DEFINE (debug_midi, "midi", SFI_MSG_DEBUG, NULL);
 #define MIDI_DEBUG(...) sfi_debug (debug_midi, __VA_ARGS__)
-
-
 /* --- structs --- */
 typedef struct
 {
   BseMidiHandle	handle;
   int		fd;
 } OSSHandle;
-
-
 /* --- prototypes --- */
 static gboolean         oss_midi_io_handler		(void          *data,
                                                          uint           n_pfds,
                                                          GPollFD       *pfds);
-
 /* --- variables --- */
 static void *parent_class = NULL;
-
-
 /* --- functions --- */
 static void
 bse_midi_device_oss_init (BseMidiDeviceOSS *oss)
 {
   oss->device_name = g_strdup (BSE_MIDI_DEVICE_CONF_OSS);
 }
-
 static BseErrorType
 check_device_usage (const char *name,
                     const char *check_mode)
@@ -71,7 +60,6 @@ check_device_usage (const char *name,
     }
   return error;
 }
-
 static SfiRing*
 bse_midi_device_oss_list_devices (BseDevice *device)
 {
@@ -108,7 +96,6 @@ bse_midi_device_oss_list_devices (BseDevice *device)
     ring = sfi_ring_append (ring, bse_device_error_new (device, g_strdup_printf ("No devices found")));
   return ring;
 }
-
 static BseErrorType
 bse_midi_device_oss_open (BseDevice     *device,
                           gboolean       require_readable,
@@ -131,10 +118,8 @@ bse_midi_device_oss_open (BseDevice     *device,
     }
   OSSHandle *oss = g_new0 (OSSHandle, 1);
   BseMidiHandle *handle = &oss->handle;
-  
   /* setup request */
   oss->fd = -1;
-
   /* try open */
   BseErrorType error;
   int fd = -1;
@@ -159,7 +144,6 @@ bse_midi_device_oss_open (BseDevice     *device,
     }
   else
     error = bse_error_from_errno (errno, BSE_ERROR_FILE_OPEN_FAILED);
-  
   /* setup MIDI handle or shutdown */
   if (!error)
     {
@@ -177,37 +161,29 @@ bse_midi_device_oss_open (BseDevice     *device,
       g_free (oss);
     }
   MIDI_DEBUG ("OSS: opening \"%s\" readable=%d writable=%d: %s", dname, require_readable, require_writable, bse_error_blurb (error));
-  
   return error;
 }
-
 static void
 bse_midi_device_oss_close (BseDevice *device)
 {
   OSSHandle *oss = (OSSHandle*) BSE_MIDI_DEVICE (device)->handle;
   BseMidiHandle *handle = &oss->handle;
   BSE_MIDI_DEVICE (device)->handle = NULL;
-  
   g_assert (handle->running_thread == FALSE);
   /* midi_handle_abort_wait (handle); */
-  
   bse_sequencer_remove_io_watch (oss_midi_io_handler, oss);
   (void) close (oss->fd);
   g_free (oss);
 }
-
 static void
 bse_midi_device_oss_finalize (GObject *object)
 {
   BseMidiDeviceOSS *mdev_oss = BSE_MIDI_DEVICE_OSS (object);
-  
   g_free (mdev_oss->device_name);
   mdev_oss->device_name = NULL;
-  
   /* chain parent class' handler */
   G_OBJECT_CLASS (parent_class)->finalize (object);
 }
-
 static gboolean
 oss_midi_io_handler (void          *data,       /* Sequencer Thread */
                      uint           n_pfds,
@@ -219,30 +195,23 @@ oss_midi_io_handler (void          *data,       /* Sequencer Thread */
   uint8 buffer[buf_size];
   uint64 systime;
   gssize l;
-  
   /* this should spawn its own thread someday */
   g_assert (handle->running_thread == FALSE);
-  
   systime = sfi_time_system ();
   do
     l = read (oss->fd, buffer, buf_size);
   while (l < 0 && errno == EINTR);	/* don't mind signals */
-  
   if (l > 0)
     bse_midi_decoder_push_data (handle->midi_decoder, l, buffer, systime);
   return TRUE; /* keep alive */
 }
-
 static void
 bse_midi_device_oss_class_init (BseMidiDeviceOSSClass *klass)
 {
   GObjectClass *gobject_class = G_OBJECT_CLASS (klass);
   BseDeviceClass *device_class = BSE_DEVICE_CLASS (klass);
-
   parent_class = g_type_class_peek_parent (klass);
-
   gobject_class->finalize = bse_midi_device_oss_finalize;
-
   device_class->list_devices = bse_midi_device_oss_list_devices;
   bse_device_class_setup (klass,
                           BSE_RATING_DEFAULT,
@@ -255,25 +224,20 @@ bse_midi_device_oss_class_init (BseMidiDeviceOSSClass *klass)
   device_class->open = bse_midi_device_oss_open;
   device_class->close = bse_midi_device_oss_close;
 }
-
 BSE_BUILTIN_TYPE (BseMidiDeviceOSS)
 {
   GType midi_device_oss_type;
-  
   static const GTypeInfo midi_device_oss_info = {
     sizeof (BseMidiDeviceOSSClass),
-    
     (GBaseInitFunc) NULL,
     (GBaseFinalizeFunc) NULL,
     (GClassInitFunc) bse_midi_device_oss_class_init,
     (GClassFinalizeFunc) NULL,
     NULL /* class_data */,
-    
     sizeof (BseMidiDeviceOSS),
     0 /* n_preallocs */,
     (GInstanceInitFunc) bse_midi_device_oss_init,
   };
-  
   midi_device_oss_type = bse_type_register_static (BSE_TYPE_MIDI_DEVICE,
 						   "BseMidiDeviceOSS",
 						   "MIDI device implementation for OSS Lite /dev/midi*",
@@ -281,5 +245,4 @@ BSE_BUILTIN_TYPE (BseMidiDeviceOSS)
                                                    &midi_device_oss_info);
   return midi_device_oss_type;
 }
-
 #endif	/* BSE_MIDI_DEVICE_CONF_OSS */

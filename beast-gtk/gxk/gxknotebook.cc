@@ -1,25 +1,19 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "gxknotebook.hh"
 #include <string.h>
-
-
 /* --- properties --- */
 enum {
   PROP_0,
   PROP_ASSORTMENT
 };
-
 /* --- variables --- */
 static GQuark quark_page_data = 0;
-
 /* --- functions --- */
 G_DEFINE_TYPE (GxkNotebook, gxk_notebook, GTK_TYPE_NOTEBOOK);
-
 static void
 gxk_notebook_init (GxkNotebook *self)
 {
 }
-
 static void
 gxk_notebook_assortment_added (gpointer                client_data,
                                GtkWindow              *window,
@@ -31,7 +25,6 @@ gxk_notebook_assortment_added (gpointer                client_data,
       strcmp (self->assortment_name, assortment->publishing_name) == 0)
     gxk_notebook_set_assortment (self, assortment);
 }
-
 static void
 gxk_notebook_assortment_removed (gpointer                client_data,
                                  GtkWindow              *window,
@@ -42,7 +35,6 @@ gxk_notebook_assortment_removed (gpointer                client_data,
   if (self->assortment == assortment)
     gxk_notebook_set_assortment (self, NULL);
 }
-
 static void
 gxk_notebook_set_property (GObject      *object,
                            guint         prop_id,
@@ -74,7 +66,6 @@ gxk_notebook_set_property (GObject      *object,
       break;
     }
 }
-
 static void
 gxk_notebook_get_property (GObject     *object,
                            guint        prop_id,
@@ -92,7 +83,6 @@ gxk_notebook_get_property (GObject     *object,
       break;
     }
 }
-
 static void
 gxk_notebook_hierarchy_changed (GtkWidget *widget,
                                 GtkWidget *previous_toplevel)
@@ -109,7 +99,6 @@ gxk_notebook_hierarchy_changed (GtkWidget *widget,
         gxk_window_add_assortment_client (GTK_WINDOW (toplevel), gxk_notebook_assortment_added, gxk_notebook_assortment_removed, self);
     }
 }
-
 static void
 notebook_assortment_entry_added (GxkAssortment      *assortment,
                                  GxkAssortmentEntry *entry,
@@ -129,7 +118,6 @@ notebook_assortment_entry_added (GxkAssortment      *assortment,
     }
   gxk_assortment_unblock_selection (assortment);
 }
-
 static void
 notebook_assortment_entry_changed (GxkAssortment      *assortment,
                                    GxkAssortmentEntry *entry,
@@ -146,7 +134,6 @@ notebook_assortment_entry_changed (GxkAssortment      *assortment,
       }
   g_list_free (children);
 }
-
 static void
 notebook_assortment_entry_remove (GxkAssortment      *assortment,
                                   GxkAssortmentEntry *entry,
@@ -162,7 +149,6 @@ notebook_assortment_entry_remove (GxkAssortment      *assortment,
       }
   g_list_free (children);
 }
-
 static void
 notebook_assortment_selection_changed (GxkAssortment *assortment,
                                        GxkNotebook   *self)
@@ -180,7 +166,6 @@ notebook_assortment_selection_changed (GxkAssortment *assortment,
       g_list_free (children);
     }
 }
-
 void
 gxk_notebook_set_assortment (GxkNotebook    *self,
                              GxkAssortment  *assortment)
@@ -220,7 +205,6 @@ gxk_notebook_set_assortment (GxkNotebook    *self,
       notebook_assortment_selection_changed (self->assortment, self);
     }
 }
-
 static void
 gxk_notebook_switch_page (GtkNotebook     *notebook,
                           GtkNotebookPage *page,
@@ -236,7 +220,6 @@ gxk_notebook_switch_page (GtkNotebook     *notebook,
         gxk_assortment_select_data (self->assortment, g_object_get_qdata ((GObject*) child, quark_page_data));
     }
 }
-
 static void
 gxk_notebook_destroy (GtkObject *object)
 {
@@ -246,7 +229,6 @@ gxk_notebook_destroy (GtkObject *object)
   gxk_notebook_set_assortment (self, NULL);
   GTK_OBJECT_CLASS (gxk_notebook_parent_class)->destroy (object);
 }
-
 static void
 gxk_notebook_finalize (GObject *object)
 {
@@ -256,7 +238,6 @@ gxk_notebook_finalize (GObject *object)
   gxk_notebook_set_assortment (self, NULL);
   G_OBJECT_CLASS (gxk_notebook_parent_class)->finalize (object);
 }
-
 static void
 gxk_notebook_class_init (GxkNotebookClass *klass)
 {
@@ -264,19 +245,13 @@ gxk_notebook_class_init (GxkNotebookClass *klass)
   GtkObjectClass *object_class = GTK_OBJECT_CLASS (klass);
   GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (klass);
   GtkNotebookClass *notebook_class = GTK_NOTEBOOK_CLASS (klass);
-  
   quark_page_data = g_quark_from_static_string ("gxk-notebook-page-data");
-
   gobject_class->finalize = gxk_notebook_finalize;
   gobject_class->set_property = gxk_notebook_set_property;
   gobject_class->get_property = gxk_notebook_get_property;
-  
   object_class->destroy = gxk_notebook_destroy;
-  
   widget_class->hierarchy_changed = gxk_notebook_hierarchy_changed;
-
   notebook_class->switch_page = gxk_notebook_switch_page;
-
   g_object_class_install_property (G_OBJECT_CLASS (object_class),
 				   PROP_ASSORTMENT,
 				   g_param_spec_string ("assortment", NULL, NULL,

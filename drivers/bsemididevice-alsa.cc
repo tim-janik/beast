@@ -7,11 +7,8 @@
 #include <alsa/asoundlib.h>
 #include <string.h>
 #include <errno.h>
-
 static SFI_MSG_TYPE_DEFINE (debug_pcm, "midi", SFI_MSG_DEBUG, NULL);
 #define DEBUG(...) sfi_debug (debug_pcm, __VA_ARGS__)
-
-
 /* --- structs --- */
 typedef struct
 {
@@ -20,30 +17,24 @@ typedef struct
   snd_rawmidi_t  *write_handle;
   guint           total_pfds;
 } AlsaMidiHandle;
-
 /* --- prototypes --- */
 static void     bse_midi_device_alsa_class_init (BseMidiDeviceALSAClass *klass);
 static void     bse_midi_device_alsa_init       (BseMidiDeviceALSA      *self);
 static gboolean alsa_midi_io_handler            (gpointer                data,
                                                  guint                   n_pfds,
                                                  GPollFD                *pfds);
-
 // == Type Registration ==
 BSE_RESIDENT_TYPE_DEF (BseMidiDeviceALSA, bse_midi_device_alsa, BSE_TYPE_MIDI_DEVICE, NULL,
                        "MIDI driver implementation for the Advanced Linux Sound Architecture "
                        "(http://alsa-project.org/alsa-doc/alsa-lib/midi.html)", NULL);
-
 /* --- variables --- */
 static gpointer parent_class = NULL;
-
 /* --- functions --- */
 static void
 bse_midi_device_alsa_init (BseMidiDeviceALSA *self)
 {
 }
-
 #define alsa_alloca0(struc)     ({ struc##_t *ptr = (struc##_t*) alloca (struc##_sizeof()); memset (ptr, 0, struc##_sizeof()); ptr; })
-
 static SfiRing*
 bse_midi_device_alsa_list_devices (BseDevice *device)
 {
@@ -51,7 +42,6 @@ bse_midi_device_alsa_list_devices (BseDevice *device)
   snd_ctl_card_info_t *cinfo = alsa_alloca0 (snd_ctl_card_info);
   snd_rawmidi_info_t *winfo = alsa_alloca0 (snd_rawmidi_info);
   snd_rawmidi_info_t *rinfo = alsa_alloca0 (snd_rawmidi_info);
-  
   int cindex = -1;
   snd_card_next (&cindex);
   while (cindex >= 0)
@@ -67,9 +57,7 @@ bse_midi_device_alsa_list_devices (BseDevice *device)
           snd_ctl_close (chandle);
           continue;
         }
-      
       gchar *device_group = g_strdup_printf ("%s - %s", snd_ctl_card_info_get_id (cinfo), snd_ctl_card_info_get_longname (cinfo));
-      
       int pindex = -1;
       snd_ctl_rawmidi_next_device (chandle, &pindex);
       while (pindex >= 0)
@@ -122,7 +110,6 @@ bse_midi_device_alsa_list_devices (BseDevice *device)
     ring = sfi_ring_append (ring, bse_device_error_new (device, g_strdup_printf ("No devices found")));
   return ring;
 }
-
 static void
 silent_error_handler (const char *file,
                       int         line,
@@ -132,7 +119,6 @@ silent_error_handler (const char *file,
                       ...)
 {
 }
-
 static BseErrorType
 bse_midi_device_alsa_open (BseDevice     *device,
                           gboolean       require_readable,
@@ -157,7 +143,6 @@ bse_midi_device_alsa_open (BseDevice     *device,
                                  dname, SND_RAWMIDI_NONBLOCK);
       snd_lib_error_set_handler (NULL);
     }
-
   /* try setup */
   BseErrorType error = !aerror ? BSE_ERROR_NONE : bse_error_from_errno (-aerror, BSE_ERROR_FILE_OPEN_FAILED);
   snd_rawmidi_params_t *mparams = alsa_alloca0 (snd_rawmidi_params);
@@ -183,7 +168,6 @@ bse_midi_device_alsa_open (BseDevice     *device,
     }
   if (!error && alsa->read_handle && snd_rawmidi_poll_descriptors_count (alsa->read_handle) <= 0)
     error = BSE_ERROR_FILE_OPEN_FAILED;
-
   /* setup MIDI handle or shutdown */
   if (!error)
     {
@@ -222,19 +206,15 @@ bse_midi_device_alsa_open (BseDevice     *device,
     }
   DEBUG ("ALSA: opening MIDI \"%s\" readable=%d writable=%d: %s", dname, require_readable, require_writable, bse_error_blurb (error));
   g_free (dname);
-  
   return error;
 }
-
 static void
 bse_midi_device_alsa_close (BseDevice *device)
 {
   AlsaMidiHandle *alsa = (AlsaMidiHandle*) BSE_MIDI_DEVICE (device)->handle;
   BSE_MIDI_DEVICE (device)->handle = NULL;
-
   if (alsa->total_pfds)
     bse_sequencer_remove_io_watch (alsa_midi_io_handler, alsa);
-
   if (alsa->read_handle)
     snd_rawmidi_close (alsa->read_handle);
   if (alsa->write_handle)
@@ -245,7 +225,6 @@ bse_midi_device_alsa_close (BseDevice *device)
     }
   g_free (alsa);
 }
-
 static void
 bse_midi_device_alsa_finalize (GObject *object)
 {
@@ -253,7 +232,6 @@ bse_midi_device_alsa_finalize (GObject *object)
   /* chain parent class' handler */
   G_OBJECT_CLASS (parent_class)->finalize (object);
 }
-
 static gboolean
 alsa_midi_io_handler (gpointer        data,     /* Sequencer Thread */
                       guint           n_pfds,
@@ -264,27 +242,21 @@ alsa_midi_io_handler (gpointer        data,     /* Sequencer Thread */
   const gsize buf_size = 8192;
   guint8 buffer[buf_size];
   gssize l;
-
   guint64 systime = sfi_time_system ();
   do
     l = snd_rawmidi_read (alsa->read_handle, buffer, buf_size);
   while (l < 0 && errno == EINTR);      /* don't mind signals */
-
   if (l > 0)
     bse_midi_decoder_push_data (handle->midi_decoder, l, buffer, systime);
   return TRUE;
 }
-
 static void
 bse_midi_device_alsa_class_init (BseMidiDeviceALSAClass *klass)
 {
   GObjectClass *gobject_class = G_OBJECT_CLASS (klass);
   BseDeviceClass *device_class = BSE_DEVICE_CLASS (klass);
-  
   parent_class = g_type_class_peek_parent (klass);
-  
   gobject_class->finalize = bse_midi_device_alsa_finalize;
-  
   device_class->list_devices = bse_midi_device_alsa_list_devices;
   const gchar *name = "alsa";
   const gchar *syntax = _("PLUGIN:CARD,DEV,SUBDEV");

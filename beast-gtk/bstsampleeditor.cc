@@ -1,19 +1,14 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include	"bstsampleeditor.hh"
-
 #include	"bstprocedure.hh"
 #include	"bstmenus.hh"
 #include	<gdk/gdkkeysyms.h>
-
-
 /* --- parameters --- */
 enum
 {
   PARAM_0,
   PARAM_SAMPLE
 };
-
-
 /* --- prototypes --- */
 static void	bst_sample_editor_class_init	(BstSampleEditorClass	*klass);
 static void	bst_sample_editor_init		(BstSampleEditor	*sample_editor);
@@ -27,18 +22,13 @@ static void	bst_sample_editor_get_property	(GObject		*object,
 						 guint			 prop_id,
 						 GValue			*value,
 						 GParamSpec		*pspec);
-
-
 /* --- static variables --- */
 static gpointer		   parent_class = NULL;
-
-
 /* --- functions --- */
 GtkType
 bst_sample_editor_get_type (void)
 {
   static GtkType sample_editor_type = 0;
-  
   if (!sample_editor_type)
     {
       GtkTypeInfo sample_editor_info =
@@ -52,40 +42,31 @@ bst_sample_editor_get_type (void)
 	/* reserved_2 */ NULL,
 	(GtkClassInitFunc) NULL,
       };
-      
       sample_editor_type = gtk_type_unique (GTK_TYPE_VBOX, &sample_editor_info);
     }
-  
   return sample_editor_type;
 }
-
 static void
 bst_sample_editor_class_init (BstSampleEditorClass *klass)
 {
   GObjectClass *gobject_class = G_OBJECT_CLASS (klass);
   GtkObjectClass *object_class = GTK_OBJECT_CLASS (klass);
   // GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (klass);
-  
   parent_class = g_type_class_peek_parent (klass);
-
   gobject_class->set_property = bst_sample_editor_set_property;
   gobject_class->get_property = bst_sample_editor_get_property;
   gobject_class->finalize = bst_sample_editor_finalize;
-
   object_class->destroy = bst_sample_editor_destroy;
-
   g_object_class_install_property (gobject_class, PARAM_SAMPLE,
 				   sfi_pspec_proxy ("sample", NULL, NULL,
 						    SFI_PARAM_READWRITE));
 }
-
 static void
 bst_sample_editor_init (BstSampleEditor *editor)
 {
   /* setup main container */
   editor->main_vbox = GTK_WIDGET (editor);
 }
-
 static void
 bst_sample_editor_set_property (GObject      *object,
 				guint         prop_id,
@@ -93,7 +74,6 @@ bst_sample_editor_set_property (GObject      *object,
 				GParamSpec   *pspec)
 {
   BstSampleEditor *editor = BST_SAMPLE_EDITOR (object);
-
   switch (prop_id)
     {
     case PARAM_SAMPLE:
@@ -104,7 +84,6 @@ bst_sample_editor_set_property (GObject      *object,
       break;
     }
 }
-
 static void
 bst_sample_editor_get_property (GObject    *object,
 			      guint       prop_id,
@@ -112,7 +91,6 @@ bst_sample_editor_get_property (GObject    *object,
 			      GParamSpec *pspec)
 {
   BstSampleEditor *editor = BST_SAMPLE_EDITOR (object);
-
   switch (prop_id)
     {
     case PARAM_SAMPLE:
@@ -123,7 +101,6 @@ bst_sample_editor_get_property (GObject    *object,
       break;
     }
 }
-
 void
 bst_sample_editor_set_sample (BstSampleEditor *editor,
 			      SfiProxy	       sample)
@@ -131,7 +108,6 @@ bst_sample_editor_set_sample (BstSampleEditor *editor,
   g_return_if_fail (BST_IS_SAMPLE_EDITOR (editor));
   if (sample)
     g_return_if_fail (BSE_IS_EDITABLE_SAMPLE (sample));
-
   if (sample != editor->esample)
     {
       if (editor->esample)
@@ -147,42 +123,31 @@ bst_sample_editor_set_sample (BstSampleEditor *editor,
       g_object_notify (G_OBJECT (editor), "sample");
     }
 }
-
 static void
 bst_sample_editor_destroy (GtkObject *object)
 {
   BstSampleEditor *editor = BST_SAMPLE_EDITOR (object);
-
   bst_sample_editor_set_sample (editor, 0);
-
   if (editor->play_back)
     bst_play_back_handle_destroy (editor->play_back);
   editor->play_back = NULL;
-
   GTK_OBJECT_CLASS (parent_class)->destroy (object);
 }
-
 static void
 bst_sample_editor_finalize (GObject *object)
 {
   // BstSampleEditor *editor = BST_SAMPLE_EDITOR (object);
-
   G_OBJECT_CLASS (parent_class)->finalize (object);
 }
-
 GtkWidget*
 bst_sample_editor_new (SfiProxy sample)
 {
   GtkWidget *widget;
-  
   widget = gtk_widget_new (BST_TYPE_SAMPLE_EDITOR, "sample", sample, NULL);
-  
   return widget;
 }
-
 #define QSAMPLER_SELECTION_TIMEOUT      (33)
 static gulong qsampler_selection_timeout_id = 0;
-
 static void
 qsampler_set_selection (BstQSampler *qsampler,
 			gint         m1,
@@ -191,14 +156,12 @@ qsampler_set_selection (BstQSampler *qsampler,
 {
   BstSampleEditor *editor = BST_SAMPLE_EDITOR (qsampler->owner);
   guint i, length = bse_editable_sample_get_length (editor->esample);
-
   m1 = CLAMP (m1, 0, (gint) (length / editor->n_channels));
   m2 = CLAMP (m2, 0, (gint) (length / editor->n_channels));
   for (i = 0; i < editor->n_channels; i++)
     {
       BstQSampler *qs = editor->qsampler[i];
       gchar *s;
-
       bst_qsampler_set_mark (qs, 1, m1, BST_QSAMPLER_SELECTED);
       bst_qsampler_set_mark (qs, 2, m2, BST_QSAMPLER_SELECTED);
       bst_qsampler_set_region (qs, 1, MIN (m1, m2), 1 + MAX (m1, m2) - MIN (m1, m2), BST_QSAMPLER_SELECTED);
@@ -214,22 +177,18 @@ qsampler_set_selection (BstQSampler *qsampler,
       g_free (s);
     }
 }
-
 static gboolean
 qsampler_selection_timeout (gpointer data)
 {
   BstQSampler *qsampler;
   gboolean retain = FALSE;
-
   GDK_THREADS_ENTER ();
-
   qsampler = BST_QSAMPLER (data);
   if (GTK_WIDGET_DRAWABLE (qsampler))
     {
       gint m1 = bst_qsampler_get_mark_offset (qsampler, 1);
       gint m2 = bst_qsampler_get_mark_offset (qsampler, 2);
       gint x;
-
       gdk_window_get_pointer (GTK_WIDGET (qsampler)->window, &x, NULL, NULL);
       bst_qsampler_get_offset_at (qsampler, &x);
       retain = x < qsampler->pcm_length && x >= 0;
@@ -238,7 +197,6 @@ qsampler_selection_timeout (gpointer data)
       else
 	qsampler_set_selection (qsampler, m1, x, 2);
     }
-
   if (retain && qsampler_selection_timeout_id)
     {
       GDK_THREADS_LEAVE ();
@@ -252,22 +210,18 @@ qsampler_selection_timeout (gpointer data)
       return FALSE;
     }
 }
-
 static gboolean
 qsampler_button_event (BstQSampler    *qsampler,
 		       GdkEventButton *event)
 {
   gboolean handled = FALSE;
-
   if (event->button == 1)
     {
       gint m1 = bst_qsampler_get_mark_offset (qsampler, 1);
       gint m2 = bst_qsampler_get_mark_offset (qsampler, 2);
       gint x = event->x;
-
       handled = TRUE;
       bst_qsampler_get_offset_at (qsampler, &x);
-
       if (event->type == GDK_BUTTON_PRESS && (event->state & GDK_SHIFT_MASK) &&
 	  m1 >= 0 && m2 >= 0)
 	{
@@ -287,22 +241,18 @@ qsampler_button_event (BstQSampler    *qsampler,
 	    }
 	}
     }
-
   return handled;
 }
-
 static gboolean
 qsampler_motion_event (BstQSampler    *qsampler,
 		       GdkEventMotion *event)
 {
   gboolean handled = FALSE;
-
   if (event->type == GDK_MOTION_NOTIFY)
     {
       gint m1 = bst_qsampler_get_mark_offset (qsampler, 1);
       // gint m2 = bst_qsampler_get_mark_offset (qsampler, 2);
       gint x = event->x;
-
       handled = TRUE;
       if (bst_qsampler_get_offset_at (qsampler, &x))
 	qsampler_set_selection (qsampler, m1, x, 2);
@@ -312,25 +262,20 @@ qsampler_motion_event (BstQSampler    *qsampler,
 							    qsampler_selection_timeout,
 							    g_object_ref (qsampler), NULL);
     }
-
   return handled;
 }
-
 static void
 change_draw_mode (BstSampleEditor *editor,
 		  GtkOptionMenu   *omenu)
 {
   guint i;
   BstQSamplerDrawMode mode = (BstQSamplerDrawMode) bst_choice_get_last (omenu->menu);
-
   for (i = 0; i < editor->n_channels; i++)
     {
       BstQSampler *qsampler = editor->qsampler[i];
-
       bst_qsampler_set_draw_mode (qsampler, mode);
     }
 }
-
 static void
 update_play_back_marks (gpointer data,
 			SfiNum   tick_stamp,
@@ -338,19 +283,16 @@ update_play_back_marks (gpointer data,
 {
   BstSampleEditor *editor = (BstSampleEditor*) data;
   guint i;
-
   pcm_pos /= editor->n_channels;
   for (i = 0; i < editor->n_channels; i++)
     {
       BstQSampler *qsampler = editor->qsampler[i];
-
       bst_qsampler_set_mark (qsampler, 3, pcm_pos, BstQSamplerType (0));
       bst_qsampler_force_refresh (qsampler);
       bst_qsampler_scroll_rbounded (qsampler, pcm_pos, 0.98, 0.05);
       bst_qsampler_set_mark (qsampler, 3, pcm_pos, BST_QSAMPLER_PRELIGHT);
     }
 }
-
 static void
 play_back_wchunk (BstSampleEditor *editor)
 {
@@ -365,39 +307,32 @@ play_back_wchunk (BstSampleEditor *editor)
   if (bst_play_back_handle_is_playing (editor->play_back))
     bst_play_back_handle_pcm_notify (editor->play_back, 50, update_play_back_marks, editor);
 }
-
 static void
 adjustments_changed (BstSampleEditor *editor,
 		     GtkAdjustment   *adjustment)
 {
   guint i;
-  
   for (i = 0; i < editor->n_channels; i++)
     {
       BstQSampler *qsampler = editor->qsampler[i];
-      
       if (adjustment == editor->zoom_adjustment)
 	bst_qsampler_set_zoom (qsampler, adjustment->value);
       else if (adjustment == editor->vscale_adjustment)
 	bst_qsampler_set_vscale (qsampler, adjustment->value);
     }
 }
-
 void
 bst_sample_editor_rebuild (BstSampleEditor *editor)
 {
   GtkWidget *qsampler_parent, *sbar, *entry, *mask_parent, *any;
   gpointer gmask;
   guint i;
-  
   g_return_if_fail (BST_IS_SAMPLE_EDITOR (editor));
-  
   gtk_container_foreach (GTK_CONTAINER (editor), (GtkCallback) gtk_widget_destroy, NULL);
   g_free (editor->qsampler);
   editor->qsampler = NULL;
   if (!editor->esample)
     return;
-  
   qsampler_parent = gtk_widget_new (GTK_TYPE_VBOX,
 				    "visible", TRUE,
 				    "spacing", 1,
@@ -405,8 +340,6 @@ bst_sample_editor_rebuild (BstSampleEditor *editor)
 				    "border_width", 0,
 				    NULL);
   editor->qsampler = g_renew (BstQSampler*, editor->qsampler, editor->n_channels);
-  
-  
   /* setup qsampler widgets
    */
   sbar = gtk_widget_new (GTK_TYPE_HSCROLLBAR,
@@ -442,8 +375,6 @@ bst_sample_editor_rebuild (BstSampleEditor *editor)
 	bst_qsampler_set_source_from_esample (qsampler, editor->esample, i);
     }
   gtk_box_pack_start (GTK_BOX (qsampler_parent), sbar, FALSE, TRUE, 0);
-  
-  
   /* setup qsampler zoom and vscale
    */
   mask_parent = bst_gmask_container_create (5, TRUE);
@@ -470,7 +401,6 @@ bst_sample_editor_rebuild (BstSampleEditor *editor)
                                      "visible", TRUE,
                                      NULL);
   gmask = bst_gmask_quick (mask_parent, 1, _("VScale:"), entry, NULL);
-
   /* setup qsampler selection start and end
    */
   editor->sstart = (GtkEntry*) g_object_new (GTK_TYPE_ENTRY,
@@ -487,7 +417,6 @@ bst_sample_editor_rebuild (BstSampleEditor *editor)
 		    "swapped_signal::destroy", g_nullify_pointer, &editor->sstart,
 		    NULL);
   gmask = bst_gmask_quick (mask_parent, 1, _("End:"), editor->send, NULL);
-
   /* setup sample display type
    */
   any = (GtkWidget*) g_object_new (GTK_TYPE_OPTION_MENU,
@@ -509,7 +438,6 @@ bst_sample_editor_rebuild (BstSampleEditor *editor)
 		    NULL);
   gtk_option_menu_set_history (GTK_OPTION_MENU (any), 0);
   gmask = bst_gmask_quick (mask_parent, 2, NULL, any, NULL);
-
   /* setup preview button
    */
   any = (GtkWidget*) g_object_new (GTK_TYPE_BUTTON,

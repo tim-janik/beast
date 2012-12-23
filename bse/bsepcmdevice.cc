@@ -1,14 +1,9 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bsepcmdevice.hh"
-
 #include "gslcommon.hh"
 #include <errno.h>
-
-
 /* --- variables --- */
 static gpointer parent_class = NULL;
-
-
 /* --- functions --- */
 static void
 bse_pcm_device_init (BsePcmDevice *pdev)
@@ -19,7 +14,6 @@ bse_pcm_device_init (BsePcmDevice *pdev)
   pdev->req_block_length = 1024;
   pdev->handle = NULL;
 }
-
 void
 bse_pcm_device_request (BsePcmDevice  *self,
                         guint	       n_channels,
@@ -31,18 +25,15 @@ bse_pcm_device_request (BsePcmDevice  *self,
   g_return_if_fail (!BSE_DEVICE_OPEN (self));
   g_return_if_fail (n_channels >= 1 && n_channels <= 128);
   g_return_if_fail (mix_freq >= 1000 && mix_freq <= 192000);
-
   self->req_n_channels = n_channels;
   self->req_mix_freq = mix_freq;
   self->req_block_length = MAX (block_length, 2);
   self->req_latency_ms = latency_ms;
 }
-
 static void
 bse_pcm_device_dispose (GObject *object)
 {
   BsePcmDevice *pdev = BSE_PCM_DEVICE (object);
-  
   if (BSE_DEVICE_OPEN (pdev))
     {
       g_warning (G_STRLOC ": pcm device still opened");
@@ -50,11 +41,9 @@ bse_pcm_device_dispose (GObject *object)
     }
   if (pdev->handle)
     g_warning (G_STRLOC ": pcm device with stale pcm handle");
-  
   /* chain parent class' handler */
   G_OBJECT_CLASS (parent_class)->dispose (object);
 }
-
 static void
 pcm_device_post_open (BseDevice *device)
 {
@@ -63,14 +52,12 @@ pcm_device_post_open (BseDevice *device)
   g_return_if_fail (BSE_DEVICE_OPEN (self) && self->handle->block_length == 0);
   sfi_mutex_init (&self->handle->mutex);
 }
-
 static void
 pcm_device_pre_close (BseDevice *device)
 {
   BsePcmDevice *self = BSE_PCM_DEVICE (device);
   sfi_mutex_destroy (&self->handle->mutex);
 }
-
 guint
 bse_pcm_device_get_mix_freq (BsePcmDevice *pdev)
 {
@@ -80,7 +67,6 @@ bse_pcm_device_get_mix_freq (BsePcmDevice *pdev)
   else
     return 0;
 }
-
 BsePcmHandle*
 bse_pcm_device_get_handle (BsePcmDevice *pdev,
                            guint         block_length)
@@ -88,37 +74,30 @@ bse_pcm_device_get_handle (BsePcmDevice *pdev,
   g_return_val_if_fail (BSE_IS_PCM_DEVICE (pdev), NULL);
   g_return_val_if_fail (BSE_DEVICE_OPEN (pdev), NULL);
   g_return_val_if_fail (block_length > 0, NULL);
-
   GSL_SPIN_LOCK (&pdev->handle->mutex);
   if (!pdev->handle->block_length)
     pdev->handle->block_length = block_length;
   GSL_SPIN_UNLOCK (&pdev->handle->mutex);
-
   if (pdev->handle->block_length == block_length)
     return pdev->handle;
   else
     return NULL;
 }
-
 gsize
 bse_pcm_handle_read (BsePcmHandle *handle,
 		     gsize         n_values,
 		     gfloat       *values)
 {
   gsize n;
-  
   g_return_val_if_fail (handle != NULL, 0);
   g_return_val_if_fail (handle->readable, 0);
   g_return_val_if_fail (n_values == handle->block_length * handle->n_channels, 0);
-  
   GSL_SPIN_LOCK (&handle->mutex);
   n = handle->read (handle, values);
   GSL_SPIN_UNLOCK (&handle->mutex);
-  
   g_return_val_if_fail (n == handle->block_length * handle->n_channels, n);
   return n;
 }
-
 void
 bse_pcm_handle_write (BsePcmHandle *handle,
 		      gsize         n_values,
@@ -128,18 +107,15 @@ bse_pcm_handle_write (BsePcmHandle *handle,
   g_return_if_fail (handle->writable);
   g_return_if_fail (values != NULL);
   g_return_if_fail (n_values == handle->block_length * handle->n_channels);
-
   GSL_SPIN_LOCK (&handle->mutex);
   handle->write (handle, values);
   GSL_SPIN_UNLOCK (&handle->mutex);
 }
-
 gboolean
 bse_pcm_handle_check_io (BsePcmHandle           *handle,
                          glong                  *timeoutp)
 {
   g_return_val_if_fail (handle != NULL, 0);
-
   glong dummy;
   if (!timeoutp)
     timeoutp = &dummy;
@@ -148,7 +124,6 @@ bse_pcm_handle_check_io (BsePcmHandle           *handle,
   GSL_SPIN_UNLOCK (&handle->mutex);
   return can_read_write;
 }
-
 guint
 bse_pcm_handle_latency (BsePcmHandle *handle)
 {
@@ -158,8 +133,6 @@ bse_pcm_handle_latency (BsePcmHandle *handle)
   GSL_SPIN_UNLOCK (&handle->mutex);
   return n_frames;
 }
-
-
 /* --- frequency utilities --- */
 guint
 bse_pcm_device_frequency_align (gint mix_freq)
@@ -180,37 +153,29 @@ bse_pcm_device_frequency_align (gint mix_freq)
     }
   return best;
 }
-
 static void
 bse_pcm_device_class_init (BsePcmDeviceClass *klass)
 {
   GObjectClass *gobject_class = G_OBJECT_CLASS (klass);
   BseDeviceClass *device_class = BSE_DEVICE_CLASS (klass);
-
   parent_class = g_type_class_peek_parent (klass);
-  
   gobject_class->dispose = bse_pcm_device_dispose;
-
   device_class->post_open = pcm_device_post_open;
   device_class->pre_close = pcm_device_pre_close;
 }
-
 BSE_BUILTIN_TYPE (BsePcmDevice)
 {
   static const GTypeInfo pcm_device_info = {
     sizeof (BsePcmDeviceClass),
-    
     (GBaseInitFunc) NULL,
     (GBaseFinalizeFunc) NULL,
     (GClassInitFunc) bse_pcm_device_class_init,
     (GClassFinalizeFunc) NULL,
     NULL /* class_data */,
-    
     sizeof (BsePcmDevice),
     0 /* n_preallocs */,
     (GInstanceInitFunc) bse_pcm_device_init,
   };
-  
   return bse_type_register_abstract (BSE_TYPE_DEVICE,
                                      "BsePcmDevice",
                                      "PCM device base type",

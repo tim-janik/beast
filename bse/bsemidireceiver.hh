@@ -1,13 +1,9 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #ifndef __BSE_MIDI_RECEIVER_H__
 #define __BSE_MIDI_RECEIVER_H__
-
 #include        <bse/bseobject.hh>
 #include        <bse/bsemidievent.hh>
-
 G_BEGIN_DECLS
-
-
 /* --- API --- */
 #define	BSE_MIDI_CONTROL_MODULE_N_CHANNELS		   (4)
 #define	BSE_MIDI_VOICE_MODULE_N_CHANNELS		   (4)
@@ -96,12 +92,7 @@ void             bse_midi_receiver_enter_farm              (BseMidiReceiver   *s
 void             bse_midi_receiver_farm_distribute_event   (BseMidiEvent      *event);
 void             bse_midi_receiver_farm_process_events     (guint64            max_tick_stamp);
 void             bse_midi_receiver_leave_farm              (BseMidiReceiver   *self);
-
-
 /* --- internal --- */
 void		 _bse_midi_init			(void);
-
-
 G_END_DECLS
-
 #endif /* __BSE_MIDI_RECEIVER_H__ */

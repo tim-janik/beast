@@ -8,14 +8,11 @@
 #include <set>
 using namespace std;
 using namespace Sfi;
-
 namespace { // Anon
 using namespace Bse;
-
 /* --- variables --- */
 static guint    MAX_QUEUE_LENGTH = 3; // or, for 20ms: (int) (bse_engine_sample_freq() * 0.020 / bse_engine_block_size() + 0.5)
 static guint    bse_source_signal_probes = 0;
-
 /* --- functions --- */
 static inline double
 blackman_window (double x)
@@ -27,8 +24,6 @@ blackman_window (double x)
     return 0;
   return 0.42 - 0.5 * cos (PI * x * 2) + 0.08 * cos (4 * PI * x);
 }
-
-
 /* --- ProbeQueue --- */
 class SourceProbes;
 class ProbeQueue {
@@ -315,8 +310,6 @@ public:
 private:
   BIRNET_PRIVATE_CLASS_COPY (ProbeQueue);
 };
-
-
 /* --- SourceProbes --- */
 class SourceProbes {
   typedef std::set<ProbeQueue*, ProbeQueue::KeyLesser> ProbeQueueSet;
@@ -561,17 +554,14 @@ public:
 };
 SfiRing *SourceProbes::bse_probe_sources = NULL;
 guint    SourceProbes::bse_idle_handler_id = 0;
-
 void
 ProbeQueue::queue_probes_update (uint probe_queue_length)
 {
   probes.queue_probes_update (probe_queue_length);
 }
-
 /* --- unprepared probing --- */
 static SfiRing *bse_dummy_sources = NULL;
 static guint    bse_dummy_prober_id = 0;
-
 static gboolean
 bse_dummy_prober (gpointer data)
 {
@@ -586,7 +576,6 @@ bse_dummy_prober (gpointer data)
   bse_dummy_prober_id = 0;
   return FALSE;
 }
-
 void
 SourceProbes::queue_probe_request (guint                 n_channels,
                                    const ProbeFeatures **channel_features,
@@ -611,12 +600,9 @@ SourceProbes::queue_probe_request (guint                 n_channels,
         pqueue->queue_probe_request (*channel_features[i]);
       }
 }
-
 } // Anon
-
 namespace Bse {
 namespace Procedure {
-
 void
 source_request_probes::exec (BseSource                 *source,
                              Int                        ochannel_id,
@@ -631,14 +617,12 @@ source_request_probes::exec (BseSource                 *source,
   prs += rq;
   source_mass_request::exec (prs);
 }
-
 static guint
 fft_align (guint bsize)
 {
   bsize = 1 << (g_bit_storage (bsize) - 1);
   return CLAMP (bsize, 4, 65536);
 }
-
 void
 source_mass_request::exec (const ProbeRequestSeq &cprseq)
 {
@@ -695,13 +679,11 @@ source_mass_request::exec (const ProbeRequestSeq &cprseq)
       channel_features = NULL;
     }
 }
-
 Num
 source_get_tick_stamp::exec (BseSource *self)
 {
   return gsl_tick_stamp ();
 }
-
 Int
 source_get_mix_freq::exec (BseSource *self)
 {
@@ -709,19 +691,14 @@ source_get_mix_freq::exec (BseSource *self)
     throw std::runtime_error ("invalid arguments");
   return BSE_SOURCE_PREPARED (self) ? bse_engine_sample_freq() : 0;
 }
-
 } // Procedure
-
 /* export definitions follow */
 BSE_CXX_DEFINE_EXPORTS();
 BSE_CXX_REGISTER_ALL_TYPES_FROM_BSEPROBE_IDL();
-
 } // Bse
-
 /* --- bsesource.hh bits --- */
 extern "C" {    // from bsesource.hh
 using namespace Bse;
-
 void
 bse_source_clear_probes (BseSource *source)
 {
@@ -730,7 +707,6 @@ bse_source_clear_probes (BseSource *source)
   source->probes = NULL;
   delete probes;
 }                          
-
 void
 bse_source_probes_modules_changed (BseSource *source)
 {
@@ -738,7 +714,6 @@ bse_source_probes_modules_changed (BseSource *source)
   probes->reset_omodules();
   // FIXME: remove: probes->queue_probes_update (1);
 }
-
 void
 bse_source_class_add_probe_signals (BseSourceClass *klass)
 {
@@ -746,5 +721,4 @@ bse_source_class_add_probe_signals (BseSourceClass *klass)
   BseObjectClass *object_class = BSE_OBJECT_CLASS (klass);
   bse_source_signal_probes = bse_object_class_add_signal (object_class, "probes", G_TYPE_NONE, 1, BSE_TYPE_PROBE_SEQ);
 }
-
 };

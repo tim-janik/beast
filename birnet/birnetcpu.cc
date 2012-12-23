@@ -4,9 +4,7 @@
 #include <setjmp.h>
 #include <signal.h>
 #include <string.h>
-
 namespace Birnet {
-
 /* figure architecture name from compiler */
 static const char*
 get_arch_name (void)
@@ -49,7 +47,6 @@ get_arch_name (void)
   return "unknown-arch";
 #endif
 }
-
 /* --- X86 detection via CPUID --- */
 #if     defined __i386__
 #  define x86_has_cpuid()       ({                              \
@@ -106,16 +103,12 @@ get_arch_name (void)
 #  define x86_has_cpuid()                       (false)
 #  define x86_cpuid(input, eax, ebx, ecx, edx)  do {} while (0)
 #endif
-
-
 static jmp_buf cpu_info_jmp_buf;
-
 static void BIRNET_NORETURN
 cpu_info_sigill_handler (int dummy)
 {
   longjmp (cpu_info_jmp_buf, 1);
 }
-
 static bool
 get_x86_cpu_features (CPUInfo *ci,
                       char     vendor[13])
@@ -124,7 +117,6 @@ get_x86_cpu_features (CPUInfo *ci,
   /* check if the CPUID instruction is supported */
   if (!x86_has_cpuid ())
     return false;
-
   /* query intel CPUID range */
   unsigned int eax, ebx, ecx, edx;
   x86_cpuid (0, eax, ebx, ecx, edx);
@@ -159,7 +151,6 @@ get_x86_cpu_features (CPUInfo *ci,
        * "Intel Processor Identificaiton and the CPUID Instruction"
        */
     }
-
   /* query extended CPUID range */
   x86_cpuid (0x80000000, eax, ebx, ecx, edx);
   if (eax >= 0x80000001 &&      /* may query extended feature information */
@@ -177,7 +168,6 @@ get_x86_cpu_features (CPUInfo *ci,
        * "AMD CPUID Specification"
        */
     }
-
   /* check system support for SSE */
   if (ci->x86_sse)
     {
@@ -200,18 +190,14 @@ get_x86_cpu_features (CPUInfo *ci,
         }
       sigaction (SIGILL, &old_action, NULL);
     }
-
   return true;
 }
-
 static CPUInfo cached_cpu_info; /* = 0; */
-
 CPUInfo
 cpu_info (void)
 {
   return cached_cpu_info;
 }
-
 void
 _birnet_init_cpuinfo (void)
 {
@@ -231,7 +217,6 @@ _birnet_init_cpuinfo (void)
     }
   cached_cpu_info = lci;
 }
-
 String
 cpu_info_string (const CPUInfo &cpu_info)
 {
@@ -290,5 +275,4 @@ cpu_info_string (const CPUInfo &cpu_info)
   g_string_free (gstring, TRUE);
   return retval;
 }
-
 } // Birnet

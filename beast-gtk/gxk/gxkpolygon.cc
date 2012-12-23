@@ -1,12 +1,8 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "gxkpolygon.hh"
-
 #include <math.h>
-
 #define	SQR(x)		((x) * (x))
 #define	PI		3.1415926535897932384626433832795029
-
-
 /* --- prototypes --- */
 static void	gxk_polygon_class_init		(GxkPolygonClass *klass);
 static void	gxk_polygon_init		(GxkPolygon	 *self);
@@ -15,12 +11,8 @@ static void	gxk_polygon_size_request	(GtkWidget	 *widget,
 						 GtkRequisition	 *requisition);
 static gboolean gxk_polygon_expose		(GtkWidget       *widget,
 						 GdkEventExpose  *event);
-
-
 /* --- variables --- */
 static gpointer parent_class = NULL;
-
-
 /* --- functions --- */
 GType
 gxk_polygon_get_type (void)
@@ -39,28 +31,22 @@ gxk_polygon_get_type (void)
 	0,      /* n_preallocs */
 	(GInstanceInitFunc) gxk_polygon_init,
       };
-      
       type = g_type_register_static (GTK_TYPE_WIDGET,
 				     "GxkPolygon",
 				     &type_info, GTypeFlags (0));
     }
   return type;
 }
-
 static void
 gxk_polygon_class_init (GxkPolygonClass *klass)
 {
   GObjectClass *gobject_class = G_OBJECT_CLASS (klass);
   GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (klass);
-  
   parent_class = g_type_class_peek_parent (klass);
-  
   gobject_class->finalize = gxk_polygon_finalize;
-  
   widget_class->size_request = gxk_polygon_size_request;
   widget_class->expose_event = gxk_polygon_expose;
 }
-
 static void
 gxk_polygon_init (GxkPolygon *self)
 {
@@ -71,18 +57,14 @@ gxk_polygon_init (GxkPolygon *self)
   self->arcs = NULL;
   gtk_widget_show (GTK_WIDGET (self));
 }
-
 static void
 gxk_polygon_finalize (GObject *object)
 {
   GxkPolygon *self = GXK_POLYGON (object);
-  
   g_free (self->lines);
   g_free (self->arcs);
-  
   G_OBJECT_CLASS (parent_class)->finalize (object);
 }
-
 /**
  * @param polygon_graph	set of lines and arcs
  *
@@ -95,7 +77,6 @@ gxk_polygon_new (GxkPolygonGraph *polygon_graph)
   gxk_polygon_set_graph (self, polygon_graph);
   return self;
 }
-
 /**
  * @param self	valid GxkPolygon
  * @param n_lines	number of lines
@@ -112,13 +93,11 @@ gxk_polygon_set_lines (GxkPolygon     *self,
   g_return_if_fail (GXK_IS_POLYGON (self));
   if (n_lines)
     g_return_if_fail (lines != NULL);
-  
   g_free (self->lines);
   self->n_lines = n_lines;
   self->lines = (GxkPolygonLine*) g_memdup (lines, sizeof (lines[0]) * n_lines);
   gtk_widget_queue_draw (GTK_WIDGET (self));
 }
-
 /**
  * @param self	valid GxkPolygon
  * @param n_arcs	number of arcs
@@ -135,13 +114,11 @@ gxk_polygon_set_arcs (GxkPolygon    *self,
   g_return_if_fail (GXK_IS_POLYGON (self));
   if (n_arcs)
     g_return_if_fail (arcs != NULL);
-  
   g_free (self->arcs);
   self->n_arcs = n_arcs;
   self->arcs = (GxkPolygonArc*) g_memdup (arcs, sizeof (arcs[0]) * n_arcs);
   gtk_widget_queue_draw (GTK_WIDGET (self));
 }
-
 /**
  * @param self	valid GxkPolygon
  * @param polygon_graph	set of lines and arcs
@@ -167,7 +144,6 @@ gxk_polygon_set_graph (GxkPolygon      *self,
       /* gxk_polygon_set_length (self, 0); */
     }
 }
-
 /**
  * @param self	valid GxkPolygon
  * @param length	set of lines and arcs
@@ -180,11 +156,9 @@ gxk_polygon_set_length (GxkPolygon *self,
 			guint       length)
 {
   g_return_if_fail (GXK_IS_POLYGON (self));
-  
   self->request_length = length;
   gtk_widget_queue_resize (GTK_WIDGET (self));
 }
-
 static void
 gxk_polygon_size_request (GtkWidget      *widget,
 			  GtkRequisition *requisition)
@@ -193,7 +167,6 @@ gxk_polygon_size_request (GtkWidget      *widget,
   requisition->width = self->request_length;
   requisition->height = self->request_length;
 }
-
 /* draw line styles:
  * _ETCHED_IN:                   _ETCHED_OUT:
  * #######.  3) # = Dark         +++++++X  3) + = Light
@@ -258,7 +231,6 @@ init_gcs (GxkPolygon   *self,
       break;
     }
 }
-
 static gboolean
 gxk_polygon_expose (GtkWidget      *widget,
 		    GdkEventExpose *event)
@@ -273,7 +245,6 @@ gxk_polygon_expose (GtkWidget      *widget,
   guint n, pass, draw_lines, draw_arcs;
   width -= 2;
   height -= 2;
-  
   if (0)
     gdk_draw_rectangle (widget->window,
 			widget->style->white_gc,
@@ -429,7 +400,6 @@ gxk_polygon_expose (GtkWidget      *widget,
 	}
   return FALSE;
 }
-
 #if 0 /* test polygons */
 /* right turn */
 lines[i++] = (GxkPolygonLine) { 0.5, 0.5, 0.0, 0.9 }; /* \ */
@@ -458,9 +428,7 @@ lines[i++] = (GxkPolygonLine) { 0.1, 0.0, 0.5, 0.5 }; /* / */
 lines[i++] = (GxkPolygonLine) { 0.0, 0.0, 0.5, 0.5 }; /* / */
 lines[i++] = (GxkPolygonLine) { 0.0, 0.1, 0.5, 0.5 }; /* / */
 #endif
-
 #define	STOCK_SIZE	16
-
 /* power */
 static GxkPolygonLine power_lines[] = {
   { 0.44, 1.0, 0.44, 0.5 }, /* | */

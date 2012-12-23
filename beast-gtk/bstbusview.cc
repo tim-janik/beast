@@ -1,15 +1,11 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bstbusview.hh"
-
-
 /* --- prototypes --- */
 static void     bus_view_action_exec           (gpointer                data,
                                                 gulong                  action);
 static gboolean bus_view_action_check          (gpointer                data,
                                                 gulong                  action,
                                                 guint64                 action_stamp);
-
-
 /* --- bus actions --- */
 enum {
   ACTION_ADD_BUS,
@@ -19,19 +15,14 @@ static const GxkStockAction bus_view_actions[] = {
   { N_("Add"),          NULL,   NULL,   ACTION_ADD_BUS,        BST_STOCK_NO_ICON },
   { N_("Delete"),       NULL,   NULL,   ACTION_DELETE_BUS,     BST_STOCK_TRASHCAN },
 };
-
-
 /* --- functions --- */
 G_DEFINE_TYPE (BstBusView, bst_bus_view, BST_TYPE_ITEM_VIEW);
-
 static void
 bst_bus_view_class_init (BstBusViewClass *klass)
 {
   BstItemViewClass *item_view_class = BST_ITEM_VIEW_CLASS (klass);
-  
   item_view_class->item_type = "BseBus";
 }
-
 static void
 bst_bus_view_init (BstBusView *self)
 {
@@ -48,20 +39,15 @@ bst_bus_view_init (BstBusView *self)
   /* create property editor */
   bst_item_view_build_param_view (iview, (GtkContainer*) gxk_radget_find (radget, "property-area"));
 }
-
 GtkWidget*
 bst_bus_view_new (SfiProxy song)
 {
   GtkWidget *bus_view;
-  
   g_return_val_if_fail (BSE_IS_SONG (song), NULL);
-  
   bus_view = gtk_widget_new (BST_TYPE_BUS_VIEW, NULL);
   bst_item_view_set_container (BST_ITEM_VIEW (bus_view), song);
-  
   return bus_view;
 }
-
 static void
 bus_view_action_exec (gpointer                data,
                       gulong                  action)
@@ -83,7 +69,6 @@ bus_view_action_exec (gpointer                data,
     }
   gxk_widget_update_actions_downwards (self);
 }
-
 static gboolean
 bus_view_action_check (gpointer                data,
                        gulong                  action,

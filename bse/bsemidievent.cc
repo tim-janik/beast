@@ -1,18 +1,12 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bsemidievent.hh"
-
 #include "bseglue.hh"
 #include "gslcommon.hh"
 #include "bseieee754.hh"
 #include "bsecxxplugin.hh"
-
 #include <errno.h>
-
-
 /* --- variables --- */
 static GEnumClass      *bse_midi_signal_class = NULL;
-
-
 /* --- functions --- */
 /**
  * @param type BseMidiSignalType type
@@ -50,32 +44,24 @@ bse_midi_signal_default (BseMidiSignalType type)
     default:				return 0.0;
     }
 }
-
 const char*
 bse_midi_signal_name (BseMidiSignalType signal)
 {
   GEnumValue *ev;
-  
   if (!bse_midi_signal_class)
     bse_midi_signal_class = (GEnumClass*) g_type_class_ref (BSE_TYPE_MIDI_SIGNAL_TYPE);
-  
   ev = g_enum_get_value (bse_midi_signal_class, signal);
   return ev ? ev->value_name : NULL;
 }
-
 const char*
 bse_midi_signal_nick (BseMidiSignalType signal)
 {
   GEnumValue *ev;
-  
   if (!bse_midi_signal_class)
     bse_midi_signal_class = (GEnumClass*) g_type_class_ref (BSE_TYPE_MIDI_SIGNAL_TYPE);
-  
   ev = g_enum_get_value (bse_midi_signal_class, signal);
   return ev ? ev->value_nick : NULL;
 }
-
-
 /* --- BseMidiEvents --- */
 /**
  * @param event BseMidiEvent structure
@@ -88,7 +74,6 @@ bse_midi_free_event (BseMidiEvent *event)
 {
   g_return_if_fail (event != NULL);
   g_return_if_fail (event->status != 0);
-  
   switch (event->status)
     {
     case BSE_MIDI_MULTI_SYS_EX_START:
@@ -118,27 +103,22 @@ bse_midi_free_event (BseMidiEvent *event)
     }
   sfi_delete_struct (BseMidiEvent, event);
 }
-
 BseMidiEvent*
 bse_midi_copy_event (const BseMidiEvent *src)
 {
   BseMidiEvent *event;
-
   g_return_val_if_fail (src != NULL, NULL);
-
   event = bse_midi_alloc_event ();
   *event = *src;
   if (src->status == BSE_MIDI_SYS_EX)
     event->data.sys_ex.bytes = (uint8*) g_memdup (src->data.sys_ex.bytes, src->data.sys_ex.n_bytes);
   return event;
 }
-
 BseMidiEvent*
 bse_midi_alloc_event (void)
 {
   return sfi_new_struct0 (BseMidiEvent, 1);
 }
-
 BseMidiEvent*
 bse_midi_event_note_on (uint   midi_channel,
 			uint64 delta_time,
@@ -146,41 +126,33 @@ bse_midi_event_note_on (uint   midi_channel,
 			float  velocity)
 {
   BseMidiEvent *event;
-  
   g_return_val_if_fail (frequency > 0 && frequency < BSE_MAX_FREQUENCY, NULL);
   g_return_val_if_fail (velocity >= 0 && velocity <= 1, NULL);
   g_return_val_if_fail (midi_channel > 0, NULL);
-  
   event = bse_midi_alloc_event ();
   event->status = BSE_MIDI_NOTE_ON;
   event->channel = midi_channel;
   event->delta_time = delta_time;
   event->data.note.frequency = frequency;
   event->data.note.velocity = velocity;
-  
   return event;
 }
-
 BseMidiEvent*
 bse_midi_event_note_off (uint   midi_channel,
 			 uint64 delta_time,
 			 float  frequency)
 {
   BseMidiEvent *event;
-  
   g_return_val_if_fail (frequency > 0 && frequency < BSE_MAX_FREQUENCY, NULL);
   g_return_val_if_fail (midi_channel > 0, NULL);
-  
   event = bse_midi_alloc_event ();
   event->status = BSE_MIDI_NOTE_OFF;
   event->channel = midi_channel;
   event->delta_time = delta_time;
   event->data.note.frequency = frequency;
   event->data.note.velocity = 0.0;
-  
   return event;
 }
-
 BseMidiEvent*
 bse_midi_event_signal (uint              midi_channel,
                        uint64            delta_time,
@@ -188,10 +160,8 @@ bse_midi_event_signal (uint              midi_channel,
                        float             value)
 {
   BseMidiEvent *event;
-
   g_return_val_if_fail (value >= -1 && value <= +1, NULL);
   g_return_val_if_fail (midi_channel > 0, NULL);
-
   event = bse_midi_alloc_event ();
   switch (signal_type)
     {
@@ -236,7 +206,6 @@ bse_midi_event_signal (uint              midi_channel,
   event->delta_time = delta_time;
   return event;
 }
-
 static void *
 boxed_copy_midi_event (void *boxed)
 {
@@ -244,14 +213,12 @@ boxed_copy_midi_event (void *boxed)
   BseMidiEvent *dest = bse_midi_copy_event (src);
   return dest;
 }
-
 static void
 boxed_free_midi_event (void *boxed)
 {
   BseMidiEvent *event = (BseMidiEvent*) boxed;
   bse_midi_free_event (event);
 }
-
 GType
 bse_midi_event_get_type (void)
 {

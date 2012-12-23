@@ -1,12 +1,9 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #ifndef __BSE_CONTAINER_H__
 #define __BSE_CONTAINER_H__
-
 #include <bse/bsesource.hh>
 #include <sfi/gbsearcharray.hh>
-
 G_BEGIN_DECLS
-
 /* --- object type macros --- */
 #define	BSE_TYPE_CONTAINER		(BSE_TYPE_ID (BseContainer))
 #define BSE_CONTAINER(object)		(G_TYPE_CHECK_INSTANCE_CAST ((object), BSE_TYPE_CONTAINER, BseContainer))
@@ -15,8 +12,6 @@ G_BEGIN_DECLS
 #define BSE_IS_CONTAINER_CLASS(class)	(G_TYPE_CHECK_CLASS_TYPE ((class), BSE_TYPE_CONTAINER))
 #define BSE_CONTAINER_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), BSE_TYPE_CONTAINER, BseContainerClass))
 #define BSE_CONTAINER_FLAGS_USHIFT	(BSE_SOURCE_FLAGS_USHIFT + 0)
-
-
 /* --- BseContainer object --- */
 typedef gboolean (*BseForallItemsFunc) (BseItem	 *item,
 					gpointer  data);
@@ -26,13 +21,11 @@ typedef gboolean (*BseForallCrossFunc) (BseItem	 *owner,
 struct _BseContainer
 {
   BseSource	parent_instance;
-  
   guint		n_items;	/* paranoid checks */
 };
 struct _BseContainerClass
 {
   BseSourceClass  parent_class;
-  
   void		(*add_item)		(BseContainer		*container,
 					 BseItem		*item);
   void		(*remove_item)		(BseContainer		*container,
@@ -48,8 +41,6 @@ struct _BseContainerClass
   GSList*	(*context_children)	(BseContainer		*container);
   void		(*release_children)	(BseContainer		*container);
 };
-
-
 /* --- prototypes --- */
 void		bse_container_forall_items	(BseContainer	*container,
 						 BseForallItemsFunc func,
@@ -90,8 +81,6 @@ void        bse_container_uncross_undoable      (BseContainer   *container,
 void        bse_container_remove_backedup       (BseContainer   *container,
                                                  BseItem        *child,
                                                  BseUndoStack   *ustack);
-
-
 /* --- internal functions --- */
 void          _bse_container_cross_link		(BseContainer    *container,
 						 BseItem         *owner,
@@ -105,8 +94,5 @@ void          _bse_container_uncross		(BseContainer    *container,
 						 BseItem         *owner,
 						 BseItem         *link);
 void          bse_container_debug_tree          (BseContainer    *container);
-
-
 G_END_DECLS
-
 #endif /* __BSE_CONTAINER_H__ */

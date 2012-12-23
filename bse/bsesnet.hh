@@ -1,14 +1,9 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #ifndef	__BSE_SNET_H__
 #define	__BSE_SNET_H__
-
 #include	<bse/bsesuper.hh>
 #include	<bse/bseglobals.hh> /* FIXME */
-
-
 G_BEGIN_DECLS
-
-
 /* --- object type macros --- */
 #define BSE_TYPE_SNET		   (BSE_TYPE_ID (BseSNet))
 #define BSE_SNET(object)	   (G_TYPE_CHECK_INSTANCE_CAST ((object), BSE_TYPE_SNET, BseSNet))
@@ -17,16 +12,12 @@ G_BEGIN_DECLS
 #define BSE_IS_SNET_CLASS(class)   (G_TYPE_CHECK_CLASS_TYPE ((class), BSE_TYPE_SNET))
 #define BSE_SNET_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), BSE_TYPE_SNET, BseSNetClass))
 #define BSE_SNET_USER_SYNTH(src)   ((BSE_OBJECT_FLAGS (src) & BSE_SNET_FLAG_USER_SYNTH) != 0)
-
-
 /* --- BseSNet flags --- */
 typedef enum	/*< skip >*/
 {
   BSE_SNET_FLAG_USER_SYNTH	= 1 << (BSE_SUPER_FLAGS_USHIFT + 0)
 } BseSNetFlags;
 #define BSE_SNET_FLAGS_USHIFT	(BSE_SUPER_FLAGS_USHIFT + 1)
-
-
 /* --- BseSNet object --- */
 typedef struct
 {
@@ -41,15 +32,12 @@ typedef struct
 struct _BseSNet
 {
   BseSuper	 parent_object;
-
   SfiRing	*sources;	/* of type BseSource* */
   SfiRing	*isources;	/* internal (protected) sources */
   GSList	*iport_names;
   GSList	*oport_names;
   GBSearchArray *port_array;	/* of type BseSNetPort* */
-
   GSList	*tmp_context_children;
-
   guint		 port_unregistered_id;
 };
 struct _BseSNetClass
@@ -61,8 +49,6 @@ struct _BseMidiContext {
   guint            midi_channel;
   guint            voice_id;
 };
-
-
 /* --- prototypes --- */
 guint            bse_snet_create_context        (BseSNet         *snet,
                                                  BseMidiContext   mcontext,
@@ -114,8 +100,5 @@ void             bse_snet_set_oport_dest        (BseSNet         *snet,
                                                  BseModule       *imodule,
                                                  guint            istream,
                                                  BseTrans        *trans);
-
-
 G_END_DECLS
-
 #endif /* __BSE_SNET_H__ */

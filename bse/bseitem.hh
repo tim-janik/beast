@@ -1,12 +1,8 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #ifndef __BSE_ITEM_H__
 #define __BSE_ITEM_H__
-
 #include        <bse/bseobject.hh>
-
 G_BEGIN_DECLS
-
-
 /* --- object type macros --- */
 #define BSE_TYPE_ITEM               (BSE_TYPE_ID (BseItem))
 #define BSE_ITEM(object)            (G_TYPE_CHECK_INSTANCE_CAST ((object), BSE_TYPE_ITEM, BseItem))
@@ -14,13 +10,9 @@ G_BEGIN_DECLS
 #define BSE_IS_ITEM(object)         (G_TYPE_CHECK_INSTANCE_TYPE ((object), BSE_TYPE_ITEM))
 #define BSE_IS_ITEM_CLASS(class)    (G_TYPE_CHECK_CLASS_TYPE ((class), BSE_TYPE_ITEM))
 #define BSE_ITEM_GET_CLASS(object)  (G_TYPE_INSTANCE_GET_CLASS ((object), BSE_TYPE_ITEM, BseItemClass))
-
-
 /* --- BseItem member macros --- */
 #define BSE_ITEM_SINGLETON(object)  ((BSE_OBJECT_FLAGS (object) & BSE_ITEM_FLAG_SINGLETON) != 0)
 #define BSE_ITEM_INTERNAL(item)     ((BSE_OBJECT_FLAGS (item) & BSE_ITEM_FLAG_INTERN_BRANCH) != 0)
-
-
 /* --- bse item flags --- */
 typedef enum                            /*< skip >*/
 {
@@ -29,13 +21,10 @@ typedef enum                            /*< skip >*/
   BSE_ITEM_FLAG_INTERN_BRANCH   = 1 << (BSE_OBJECT_FLAGS_USHIFT + 2)
 } BseItemFlags;
 #define BSE_ITEM_FLAGS_USHIFT          (BSE_OBJECT_FLAGS_USHIFT + 3)
-
-
 /* --- BseItem object --- */
 struct _BseItem
 {
   BseObject     parent_object;
-
   guint         use_count;
   BseItem      *parent;
   BseParasite  *parasite;
@@ -43,7 +32,6 @@ struct _BseItem
 struct _BseItemClass
 {
   BseObjectClass parent_class;
-  
   void          (*get_candidates) (BseItem               *item,
                                    guint                  param_id,
                                    BsePropertyCandidates *pc,
@@ -59,7 +47,6 @@ struct _BseItemClass
   guint         (*get_seqid)      (BseItem               *item);
   BseUndoStack* (*get_undo)       (BseItem               *item);
 };
-
 typedef void     (*BseItemUncross)           (BseItem        *owner,
                                               BseItem        *link);
 typedef gboolean (*BseItemCheckContainer)    (BseContainer   *container,
@@ -68,8 +55,6 @@ typedef gboolean (*BseItemCheckContainer)    (BseContainer   *container,
 typedef gboolean (*BseItemCheckProxy)        (BseItem        *proxy,
                                               BseItem        *item,
                                               gpointer        data);
-
-
 /* --- prototypes --- */
 BseItemSeq*    bse_item_gather_items         (BseItem                *item,
                                               BseItemSeq             *iseq,
@@ -152,7 +137,5 @@ void          bse_item_push_undo_storage     (BseItem         *self,
 #define bse_item_set             bse_item_set_undoable
 #define bse_item_get             g_object_get
 BseMusicalTuningType bse_item_current_musical_tuning (BseItem     *self);
-
 G_END_DECLS
-
 #endif /* __BSE_ITEM_H__ */

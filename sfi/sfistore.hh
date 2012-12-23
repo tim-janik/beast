@@ -1,13 +1,9 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #ifndef __SFI_STORE_H__
 #define __SFI_STORE_H__
-
 #include <sfi/sfivalues.hh>
 #include <sfi/sfiring.hh>
-
 G_BEGIN_DECLS
-
-
 /* --- typedefs and structures --- */
 typedef gint /* -errno || length */ (*SfiStoreReadBin)  (gpointer        data,
                                                          void           *buffer,
@@ -36,8 +32,6 @@ struct _SfiRStore
   gpointer       parser_this;
   SfiNum         bin_offset;
 };
-
-
 /* --- writable store --- */
 SfiWStore*      sfi_wstore_new                (void);
 void            sfi_wstore_destroy            (SfiWStore      *wstore);
@@ -68,8 +62,6 @@ gint /*-errno*/ sfi_wstore_flush_fd           (SfiWStore      *wstore,
                                                gint            fd);
 const gchar*    sfi_wstore_peek_text          (SfiWStore      *wstore,
                                                guint          *length);
-
-
 /* --- readable store --- */
 SfiRStore*      sfi_rstore_new                (void);
 SfiRStore*      sfi_rstore_new_open           (const gchar    *fname);
@@ -118,8 +110,6 @@ void            sfi_rstore_quick_scan         (SfiRStore      *rstore,
                                                const gchar    *identifier,
                                                SfiRStoreQuickScan qcheck,
                                                gpointer        data);
-
-
 /* --- convenience --- */
 #define sfi_scanner_parse_or_return(scanner, token)  G_STMT_START {     \
   GTokenType _t = GTokenType (token);                                   \
@@ -135,10 +125,6 @@ void            sfi_rstore_quick_scan         (SfiRStore      *rstore,
       return _t;                                                        \
     }                                                                   \
 } G_STMT_END
-
-
 G_END_DECLS
-
 #endif /* __SFI_STORE_H__ */
-
 /* vim:set ts=8 sts=2 sw=2: */

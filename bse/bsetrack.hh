@@ -1,13 +1,10 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #ifndef __BSE_TRACK_H__
 #define __BSE_TRACK_H__
-
 #include <bse/bseitem.hh>
 #include <bse/bsesnet.hh>
 #include <bse/bsecontextmerger.hh>
-
 G_BEGIN_DECLS
-
 /* --- BSE type macros --- */
 #define BSE_TYPE_TRACK		    (BSE_TYPE_ID (BseTrack))
 #define BSE_TRACK(object)	    (G_TYPE_CHECK_INSTANCE_CAST ((object), BSE_TYPE_TRACK, BseTrack))
@@ -15,8 +12,6 @@ G_BEGIN_DECLS
 #define BSE_IS_TRACK(object)	    (G_TYPE_CHECK_INSTANCE_TYPE ((object), BSE_TYPE_TRACK))
 #define BSE_IS_TRACK_CLASS(class)   (G_TYPE_CHECK_CLASS_TYPE ((class), BSE_TYPE_TRACK))
 #define BSE_TRACK_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), BSE_TYPE_TRACK, BseTrackClass))
-
-
 /* --- BseTrack --- */
 typedef struct {
   guint    tick;
@@ -26,24 +21,19 @@ typedef struct {
 struct _BseTrack
 {
   BseContextMerger parent_instance;
-
   guint            channel_id;
   guint		   max_voices;
   BseSNet	  *snet;
   BseSNet         *pnet;
-
   /* wave synthesis */
   BseWave	  *wave;
   BseSNet	  *wnet;
-
   /* playback intergration */
   BseSource       *sub_synth;
   BseSource       *voice_input;
   BseSource       *voice_switch;
   BseSource       *postprocess;
-
   SfiRing         *bus_outputs; /* maintained by bsebus.[hc] */
-
   /* fields protected by sequencer mutex */
   guint		   n_entries_SL : 30;
   guint		   muted_SL : 1;
@@ -55,8 +45,6 @@ struct _BseTrackClass
 {
   BseContextMergerClass parent_class;
 };
-
-
 /* --- prototypes -- */
 void	bse_track_add_modules		(BseTrack		*self,
 					 BseContainer		*container,
@@ -89,7 +77,5 @@ BsePart*	 bse_track_get_part_SL	(BseTrack		*self,
 					 guint			 tick,
 					 guint			*start,
 					 guint			*next);
-
 G_END_DECLS
-
 #endif /* __BSE_TRACK_H__ */

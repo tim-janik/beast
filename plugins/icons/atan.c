@@ -1,5 +1,4 @@
 /* GdkPixbuf RGBA C-Source image dump 1-byte-run-length-encoded */
-
 static const guint8 atan_icon[] = 
 { ""
   /* Pixbuf magic (0x47646b50) */
@@ -138,5 +137,3 @@ static const guint8 atan_icon[] =
   "\377\377\234\0\0\0\0\202\0\0\0\377\204\0\0\0\0\212\0\0\0\377\223\340"
   "\357\377\377\237\0\0\0\377\204\0\0\0\0\1\0\0\0\377\211\340\357\377\377"
   "\262\0\0\0\377\302\0\0\0\0"};
-
-

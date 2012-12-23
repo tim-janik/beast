@@ -1,13 +1,9 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #ifndef __GSL_DATA_HANDLE_VORBIS_H__
 #define __GSL_DATA_HANDLE_VORBIS_H__
-
-
 #include <bse/gslcommon.hh>
 #include <bse/gsldatahandle.hh>
-
 G_BEGIN_DECLS
-
 /* --- reading vorbis files --- */
 GslDataHandle* gsl_data_handle_new_ogg_vorbis_muxed   (const gchar      *file_name,
                                                        guint	         lbitstream,
@@ -18,7 +14,6 @@ GslDataHandle* gsl_data_handle_new_ogg_vorbis_zoffset (const gchar      *file_na
                                                        GslLong           byte_size,
                                                        guint            *n_channelsp,
                                                        gfloat           *mix_freq_p);
-
 /* --- writing vorbis files --- */
 typedef struct GslVorbis1Handle GslVorbis1Handle;
 GslVorbis1Handle* gsl_vorbis1_handle_new              (GslDataHandle    *ogg_vorbis_handle,
@@ -33,7 +28,5 @@ void              gsl_vorbis1_handle_destroy          (GslVorbis1Handle *vorbis1
 void              gsl_vorbis1_handle_put_wstore       (GslVorbis1Handle *vorbis1,
                                                        SfiWStore        *wstore);
 guint             gsl_vorbis_make_serialno            (void);
-
 G_END_DECLS
-
 #endif /* __GSL_DATA_HANDLE_VORBIS_H__ */

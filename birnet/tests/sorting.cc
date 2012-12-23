@@ -4,24 +4,20 @@
 #include <math.h>
 #include <stdlib.h>
 #include <algorithm>
-
 namespace {
 using namespace Birnet;
-
 static int
 compare_floats (float f1,
                 float f2)
 {
   return f1 < f2 ? -1 : f1 > f2;
 }
-
 static int
 smaller_float (float f1,
                float f2)
 {
   return f1 < f2;
 }
-
 static void
 test_binary_lookup()
 {
@@ -111,9 +107,7 @@ test_binary_lookup()
   TASSERT (seen_inexact == true);
   TDONE();
 }
-
 } // Anon
-
 int
 main (int   argc,
       char *argv[])

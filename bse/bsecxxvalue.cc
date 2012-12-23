@@ -1,9 +1,7 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bsecxxvalue.hh"
 #include "bsecxxbase.hh"
-
 namespace Bse {
-
 SfiNum
 Value::get_num () const
 {
@@ -21,7 +19,6 @@ Value::get_num () const
   else
     throw WrongTypeGValue (G_STRLOC);
 }
-
 SfiReal
 Value::get_real () const
 {
@@ -35,7 +32,6 @@ Value::get_real () const
   else
     throw WrongTypeGValue (G_STRLOC);
 }
-
 const char*
 Value::get_string () const
 {
@@ -47,7 +43,6 @@ Value::get_string () const
   else
     throw WrongTypeGValue (G_STRLOC);
 }
-
 gpointer
 Value::get_pointer () const
 {
@@ -57,7 +52,6 @@ Value::get_pointer () const
   else
     throw WrongTypeGValue (G_STRLOC);
 }
-
 CxxBase*
 Value::get_base () const
 {
@@ -72,7 +66,6 @@ Value::get_base () const
   else
     throw WrongTypeGValue (G_STRLOC);
 }
-
 GObject*
 Value::get_object () const
 {
@@ -82,7 +75,6 @@ Value::get_object () const
   else
     throw WrongTypeGValue (G_STRLOC);
 }
-
 GParamSpec*
 Value::get_pspec () const
 {
@@ -92,7 +84,6 @@ Value::get_pspec () const
   else
     throw WrongTypeGValue (G_STRLOC);
 }
-
 void
 Value::set_num (SfiNum n)
 {
@@ -110,7 +101,6 @@ Value::set_num (SfiNum n)
   else
     throw WrongTypeGValue (G_STRLOC);
 }
-
 void
 Value::set_real (SfiReal r)
 {
@@ -124,7 +114,6 @@ Value::set_real (SfiReal r)
   else
     throw WrongTypeGValue (G_STRLOC);
 }
-
 void
 Value::set_string (const char      *s)
 {
@@ -136,7 +125,6 @@ Value::set_string (const char      *s)
   else
     throw WrongTypeGValue (G_STRLOC);
 }
-
 void
 Value::set_pointer (gpointer p)
 {
@@ -146,7 +134,6 @@ Value::set_pointer (gpointer p)
   else
     throw WrongTypeGValue (G_STRLOC);
 }
-
 void
 Value::set_base (CxxBase *b)
 {
@@ -161,7 +148,6 @@ Value::set_base (CxxBase *b)
   else
     throw WrongTypeGValue (G_STRLOC);
 }
-
 void
 Value::set_object (GObject *o)
 {
@@ -171,7 +157,6 @@ Value::set_object (GObject *o)
   else
     throw WrongTypeGValue (G_STRLOC);
 }
-
 void
 Value::set_pspec (GParamSpec *p)
 {
@@ -181,5 +166,4 @@ Value::set_pspec (GParamSpec *p)
   else
     throw WrongTypeGValue (G_STRLOC);
 }
-
 } // Bse

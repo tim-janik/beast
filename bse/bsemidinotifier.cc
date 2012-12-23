@@ -3,83 +3,66 @@
 #include "bsemain.hh"
 #include "gslcommon.hh"
 #include "bsecxxplugin.hh"
-
-
 /* --- prototypes --- */
 static void	   bse_midi_notifier_class_init		(BseMidiNotifierClass *klass);
 static void	   bse_midi_notifier_init		(BseMidiNotifier      *self);
 static void	   bse_midi_notifier_finalize		(GObject	      *object);
-
 /* --- variables --- */
 static gpointer parent_class = NULL;
 static guint    signal_midi_event = 0;
 static GQuark   number_quarks[BSE_MIDI_MAX_CHANNELS] = { 0, };
 static SfiRing *midi_notifier_list = NULL;
-
 /* --- functions --- */
 BSE_BUILTIN_TYPE (BseMidiNotifier)
 {
   static const GTypeInfo midi_notifier_info = {
     sizeof (BseMidiNotifierClass),
-    
     (GBaseInitFunc) NULL,
     (GBaseFinalizeFunc) NULL,
     (GClassInitFunc) bse_midi_notifier_class_init,
     (GClassFinalizeFunc) NULL,
     NULL /* class_data */,
-    
     sizeof (BseMidiNotifier),
     0 /* n_preallocs */,
     (GInstanceInitFunc) bse_midi_notifier_init,
   };
-  
   return bse_type_register_static (BSE_TYPE_ITEM,
 				   "BseMidiNotifier",
 				   "MIDI Event Notifier",
                                    __FILE__, __LINE__,
                                    &midi_notifier_info);
 }
-
 static void
 bse_midi_notifier_class_init (BseMidiNotifierClass *klass)
 {
   GObjectClass *gobject_class = G_OBJECT_CLASS (klass);
   BseObjectClass *object_class = BSE_OBJECT_CLASS (klass);
   guint i;
-  
   parent_class = g_type_class_peek_parent (klass);
-  
   gobject_class->finalize = bse_midi_notifier_finalize;
-  
   for (i = 0; i < BSE_MIDI_MAX_CHANNELS; i++)
     {
       gchar buffer[32];
-      
       g_snprintf (buffer, 32, "%u", i);
       number_quarks[i] = g_quark_from_string (buffer);
     }
-  
   signal_midi_event = bse_object_class_add_dsignal (object_class, "midi-event",
 						    G_TYPE_NONE, 1,
 						    BSE_TYPE_MIDI_CHANNEL_EVENT | G_SIGNAL_TYPE_STATIC_SCOPE);
 }
-
 static void
 bse_midi_notifier_init (BseMidiNotifier *self)
 {
   midi_notifier_list = sfi_ring_append (midi_notifier_list, self);
 }
-
 static void
 bse_midi_notifier_finalize (GObject *object)
 {
   BseMidiNotifier *self = BSE_MIDI_NOTIFIER (object);
   midi_notifier_list = sfi_ring_remove (midi_notifier_list, self);
-  
   /* chain parent class' handler */
   G_OBJECT_CLASS (parent_class)->finalize (object);
 }
-
 void
 bse_midi_notifier_set_receiver (BseMidiNotifier *self,
                                 BseMidiReceiver *midi_receiver)
@@ -94,7 +77,6 @@ bse_midi_notifier_set_receiver (BseMidiNotifier *self,
   if (old)
     bse_midi_receiver_unref (old);
 }
-
 static inline void
 bse_midi_notifier_notify_event (BseMidiNotifier *self,
                                 BseMidiEvent    *event)
@@ -183,7 +165,6 @@ bse_midi_notifier_notify_event (BseMidiNotifier *self,
   if (cev.event_type)
     g_signal_emit (self, signal_midi_event, number_quarks[event->channel], &cev);
 }
-
 void
 bse_midi_notifier_dispatch (BseMidiNotifier *self)
 {
@@ -204,7 +185,6 @@ bse_midi_notifier_dispatch (BseMidiNotifier *self)
       bse_midi_free_event (event);
     }
 }
-
 static gboolean
 midi_notifiers_need_dispatch (void)
 {
@@ -217,7 +197,6 @@ midi_notifiers_need_dispatch (void)
     }
   return FALSE;
 }
-
 static gboolean
 midi_notifiers_source_prepare (GSource *source,
                                gint    *timeout_p)
@@ -227,7 +206,6 @@ midi_notifiers_source_prepare (GSource *source,
   BSE_THREADS_LEAVE ();
   return need_dispatch;
 }
-
 static gboolean
 midi_notifiers_source_check (GSource *source)
 {
@@ -236,7 +214,6 @@ midi_notifiers_source_check (GSource *source)
   BSE_THREADS_LEAVE ();
   return need_dispatch;
 }
-
 static gboolean
 midi_notifiers_source_dispatch (GSource    *source,
                                 GSourceFunc callback,
@@ -253,7 +230,6 @@ midi_notifiers_source_dispatch (GSource    *source,
   BSE_THREADS_LEAVE ();
   return TRUE;
 }
-
 void
 bse_midi_notifiers_attach_source (void)
 {
@@ -266,7 +242,6 @@ bse_midi_notifiers_attach_source (void)
   g_source_set_priority (source, BSE_PRIORITY_NORMAL);
   g_source_attach (source, bse_main_context);
 }
-
 void
 bse_midi_notifiers_wakeup (void)
 {

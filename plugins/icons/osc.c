@@ -1,5 +1,4 @@
 /* GIMP RGBA C-Source image dump 1-byte-run-length-encoded (osc.c) */
-
 #define OSC_IMAGE_WIDTH (64)
 #define OSC_IMAGE_HEIGHT (64)
 #define OSC_IMAGE_BYTES_PER_PIXEL (4) /* 3:RGB, 4:RGBA */
@@ -67,4 +66,3 @@ static const guint8 OSC_IMAGE_rle_pixel_data[1287] =
  "\0\0\0\0\10\17\2\0@\13\1\0\244\5\0\0\335\0\0\0\366\3\0\0\354\2\0\0\351\10"
  "\1\0\2150\6\1\12\377\0\0\0\0\377\0\0\0\0\377\0\0\0\0\377\0\0\0\0\377\0\0\0"
  "\0\377\0\0\0\0\325\0\0\0\0");
-

@@ -4,19 +4,14 @@
 #include <syslog.h>
 #include <errno.h>
 #include <stdio.h>
-
 #ifndef _ // FIXME
 #define _(x)    (x)
 #endif
-
 namespace Birnet {
-
 DebugChannel::DebugChannel()
 {}
-
 DebugChannel::~DebugChannel ()
 {}
-
 struct DebugChannelFileAsync : public virtual DebugChannel, public virtual Thread {
   FILE                    *fout;
   uint                     skip_count;
@@ -86,12 +81,10 @@ struct DebugChannelFileAsync : public virtual DebugChannel, public virtual Threa
     while (Thread::Self::sleep (15 * 1000));
   }
 };
-
 DebugChannel*
 DebugChannel::new_from_file_async (const String &filename)
 {
   DebugChannelFileAsync *dcfa = new DebugChannelFileAsync (filename);
   return dcfa;
 }
-
 } // Birnet

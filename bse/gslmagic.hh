@@ -1,29 +1,20 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #ifndef __GSL_MAGIC_H__
 #define __GSL_MAGIC_H__
-
 #include <bse/gsldefs.hh>
-
-
 #ifdef __cplusplus
 extern "C" {
 #endif /* __cplusplus */
-
-
-
 /* --- structures --- */
 typedef struct _GslRealMagic GslRealMagic;
 struct _GslMagic
 {
   gpointer data;
   gchar   *extension;
-
   /*< private >*/
   gint          priority;
   GslRealMagic *match_list;
 };
-
-
 /* match entity with:
  * prefix,
  * extension,
@@ -37,8 +28,6 @@ struct _GslMagic
  * need pre-parse functionality, to figure name and type of a
  * file's contents.
  */
-
-
 /* --- prototypes --- */
 GslMagic*	gsl_magic_create		(gpointer	 data,
 						 gint		 priority,
@@ -55,9 +44,7 @@ void		gsl_magic_list_brute_match	(SfiRing	*magic_list,
 						 GslMagic	*skip_magic,
 						 SfiRing       **ext_matches,
 						 SfiRing       **other_matches);
-
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */
-
 #endif /* __GSL_MAGIC_H__ */

@@ -1,9 +1,7 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include <bse/bse.idl>
-
 namespace Bse {
 namespace Dav {
-
 class Chorus : Effect {
   Info    icon      = "icons/chorus.png";
   Info    authors   = "David A. Bartold";
@@ -16,6 +14,5 @@ class Chorus : Effect {
     Real wet_out = Perc (_("Wet out [%]"), _("Set the amount of modified data to mix"), 50.0, STANDARD);
   };
 };
-
 } // Dav
 } // Bse

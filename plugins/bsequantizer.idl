@@ -1,8 +1,6 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include <bse/bse.idl>
-
 namespace Bse { namespace Standard {
-
 class Quantizer : Bse::Effect {
   Info    category   = "/Distortion/Quantizer";
   Info    icon       = "icons/quantizer.png";
@@ -18,5 +16,4 @@ class Quantizer : Bse::Effect {
   OStream audio_out1 = ("Audio Out1", "Audio Output 1");
   OStream audio_out2 = ("Audio Out2", "Audio Output 2");
 };
-
 } } // Bse::Standard

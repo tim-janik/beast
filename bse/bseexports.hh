@@ -1,11 +1,8 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #ifndef __BSE_EXPORTS_H__
 #define __BSE_EXPORTS_H__
-
 #include	<bse/bseprocedure.hh>
-
 G_BEGIN_DECLS
-
 /* --- export node types --- */
 typedef enum {
   BSE_EXPORT_NODE_NONE,
@@ -17,7 +14,6 @@ typedef enum {
   BSE_EXPORT_NODE_CLASS,
   BSE_EXPORT_NODE_PROC
 } BseExportNodeType;
-
 /* --- common export node data --- */
 typedef struct {
   /* strings which need to be looked up from catalogs after
@@ -32,7 +28,6 @@ typedef struct {
   guint             line;
 } BseExportStrings;
 typedef void (*BseExportStringsFunc) (BseExportStrings *strings);
-
 /* --- basic export node --- */
 struct _BseExportNode {
   BseExportNode       *next;
@@ -44,7 +39,6 @@ struct _BseExportNode {
   BseExportStringsFunc fill_strings;
   GType                type;
 };
-
 /* --- hook export node --- */
 typedef void (*BseExportHook)	(void *data);
 typedef struct {
@@ -53,7 +47,6 @@ typedef struct {
   BseExportHook		hook;
   void		       *data;
 } BseExportNodeHook;
-
 /* --- enum export node --- */
 typedef GEnumValue*     (*BseExportGetEnumValues)   (void);
 typedef SfiChoiceValues (*BseExportGetChoiceValues) (void);
@@ -62,7 +55,6 @@ typedef struct {
   BseExportGetEnumValues   get_enum_values;
   BseExportGetChoiceValues get_choice_values;
 } BseExportNodeEnum;
-
 /* --- boxed export node --- */
 typedef SfiRecFields (*BseExportGetRecordFields)    (void);
 typedef GParamSpec*  (*BseExportGetSequenceElement) (void);
@@ -77,7 +69,6 @@ struct _BseExportNodeBoxed {
     BseExportGetSequenceElement get_element;
   } func;
 };
-
 /* --- class export node --- */
 typedef struct {
   BseExportNode      node;
@@ -89,7 +80,6 @@ typedef struct {
   guint16            instance_size;
   GInstanceInitFunc  instance_init;
 } BseExportNodeClass;
-
 /* --- procedure export node --- */
 typedef struct {
   BseExportNode     node;
@@ -97,7 +87,6 @@ typedef struct {
   BseProcedureInit  init;
   BseProcedureExec  exec;
 } BseExportNodeProc;
-
 /* --- plugin identity export --- */
 /* plugin export identity (name, bse-version and actual types) */
 #define BSE_EXPORT_IDENTITY_SYMBOL      bse_export__identity
@@ -113,7 +102,6 @@ typedef struct {
   { BSE_MAJOR_VERSION, BSE_MINOR_VERSION, BSE_MICRO_VERSION,    \
     BSE_BINARY_AGE, BSE_INTERFACE_AGE, 0, 0, 0,                 \
     BSE_EXPORT_CONFIG, &HEAD }
-
 #define BSE_EXPORT_FLAG_MMX      (0x1ull << 0)
 #define BSE_EXPORT_FLAG_MMXEXT   (0x1ull << 1)
 #define BSE_EXPORT_FLAG_3DNOW    (0x1ull << 2)
@@ -122,22 +110,16 @@ typedef struct {
 #define BSE_EXPORT_FLAG_SSE2     (0x1ull << 5)
 #define BSE_EXPORT_FLAG_SSE3     (0x1ull << 6)
 #define BSE_EXPORT_FLAG_SSE4     (0x1ull << 7)
-
 #define BSE_EXPORT_CONFIG       (BSE_EXPORT_CONFIG__MMX | BSE_EXPORT_CONFIG__3DNOW | \
                                  BSE_EXPORT_CONFIG__SSE | BSE_EXPORT_CONFIG__SSE2 |  \
                                  BSE_EXPORT_CONFIG__SSE3)
-
-
-
 BsePlugin*      bse_exports__add_node   (const BseExportIdentity *identity,     // bseplugin.cc
                                          BseExportNode           *enode);
 void            bse_exports__del_node   (BsePlugin               *plugin,       // bseplugin.cc
                                          BseExportNode           *enode);
-
 /* implementation prototype */
 void	bse_procedure_complete_info	(const BseExportNodeProc *pnode,
 					 GTypeInfo               *info);
-
 /* --- export config --- */
 #ifdef   __MMX__
 #define BSE_EXPORT_CONFIG__MMX   BSE_EXPORT_FLAG_MMX
@@ -164,7 +146,5 @@ void	bse_procedure_complete_info	(const BseExportNodeProc *pnode,
 #else
 #define BSE_EXPORT_CONFIG__SSE3  0
 #endif
-
 G_END_DECLS
-
 #endif /* __BSE_EXPORTS_H__ */

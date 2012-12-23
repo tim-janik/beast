@@ -1,9 +1,7 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include <bse/bse.idl>
-
 namespace Bse {
 namespace Dav {
-
 class Organ : Effect {
   Info    icon      = "icons/organ.png";
   Info    authors   = "David A. Bartold";
@@ -36,6 +34,5 @@ class Organ : Effect {
     Bool flute = Bool (_("Flute Sounds"), _("Add flute sounds"), false, STANDARD);
   };
 };
-
 } // Dav
 } // Bse

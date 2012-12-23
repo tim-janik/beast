@@ -1,5 +1,4 @@
 /* GIMP RGBA C-Source image dump 1-byte-run-length-encoded (speaker.c) */
-
 #define SPEAKER_WIDTH (64)
 #define SPEAKER_HEIGHT (64)
 #define SPEAKER_BYTES_PER_PIXEL (4) /* 3:RGB, 4:RGBA */
@@ -371,4 +370,3 @@ static const guint8 SPEAKER_rle_pixel_data[10019] =
  "\0\0\0\4\0\0\0\2\202\0\0\0\1\264\0\0\0\0\1\0\0\0\1\202\0\0\0\2\204\0\0\0\3"
  "\2\0\0\0\2\0\0\0\1\267\0\0\0\0\1\0\0\0\1\202\0\0\0\2\204\0\0\0\3\2\0\0\0\2"
  "\0\0\0\1\234\0\0\0\0");
-

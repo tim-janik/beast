@@ -1,11 +1,8 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #ifndef __BST_CANVAS_SOURCE_H__
 #define __BST_CANVAS_SOURCE_H__
-
 #include	"bstutils.hh"
-
 G_BEGIN_DECLS
-
 /* --- Gtk+ type macros --- */
 #define BST_TYPE_CANVAS_SOURCE              (bst_canvas_source_get_type ())
 #define BST_CANVAS_SOURCE(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), BST_TYPE_CANVAS_SOURCE, BstCanvasSource))
@@ -14,25 +11,19 @@ G_BEGIN_DECLS
 #define BST_IS_CANVAS_SOURCE_CLASS(class)   (G_TYPE_CHECK_CLASS_TYPE ((class), BST_TYPE_CANVAS_SOURCE))
 #define BST_CANVAS_SOURCE_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), BST_TYPE_CANVAS_SOURCE, BstCanvasSourceClass))
 #define	BST_CANVAS_SOURCE_PIXEL_SCALE	    ((SfiReal) 100)	/* > total width/height */
-
-
 /* --- structures & typedefs --- */
 typedef	struct	_BstCanvasSource	BstCanvasSource;
 typedef	struct	_BstCanvasSourceClass	BstCanvasSourceClass;
 struct _BstCanvasSource
 {
   GnomeCanvasGroup parent_object;
-
   SfiProxy	   source;
-
   GtkWidget	  *params_dialog;
   GtkWidget	  *source_info;
-
   GnomeCanvasItem *icon_item;
   GnomeCanvasItem *text;
   GSList	  *channel_items;
   GSList	  *channel_hints;
-
   guint		   swap_channels : 1;
   guint            in_move : 1;
   guint		   show_hints : 1;
@@ -46,11 +37,8 @@ struct _BstCanvasSource
 struct _BstCanvasSourceClass
 {
   GnomeCanvasGroupClass parent_class;
-
   void (*update_links)	(BstCanvasSource *source);
 };
-
-
 /* --- prototypes --- */
 GType            bst_canvas_source_get_type          (void);
 GnomeCanvasItem* bst_canvas_source_new               (GnomeCanvasGroup *group,
@@ -84,7 +72,5 @@ void             bst_canvas_source_popup_info        (BstCanvasSource  *csource)
 void             bst_canvas_source_toggle_info       (BstCanvasSource  *csource);
 void             bst_canvas_source_set_channel_hints (BstCanvasSource  *csource,
                                                       gboolean          on_off);
-
 G_END_DECLS
-
 #endif /* __BST_CANVAS_SOURCE_H__ */

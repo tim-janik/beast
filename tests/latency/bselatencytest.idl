@@ -1,8 +1,6 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include <bse/bsecxxmodule.idl>
-
 namespace Bse {
-
 class LatencyTest : Effect {
   Info    authors     = "Stefan Westerfeld";
   Info    license     = _("GNU Lesser General Public License");
@@ -15,7 +13,6 @@ class LatencyTest : Effect {
 			  "After sending a midi event, the latency tester will count the number"
 			  " of samples until it sees some signal on its input channel. From"
 			  " that number a latency is computed and printed (or logged, if you specified a log file)");
-  
   group _("Test configuration") {
     Real   bpm = (_("Beats per Minute"), _("The speed at which test events (quarter notes) are generated"),
                   120, 10, 1000, 5, STANDARD);
@@ -36,10 +33,7 @@ class LatencyTest : Effect {
                              "it is interpreted as an environment variable name and expanded."),
                            "/tmp/midi-fifo", STANDARD);
   };
-  
-  
   IStream audio_in   = (_("Audio In"), _("Test signal input, which the latency tester waits for"));
   OStream audio_out  = (_("Audio Out"), _("Test signal output"));
 };
-
 } // Bse

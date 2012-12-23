@@ -6,17 +6,13 @@
 #include <errno.h>
 #include <string.h>
 #include <stdio.h>
-
 #ifndef _ // FIXME
 #define _(x)    (x)
 #endif
-
 namespace Birnet {
-
 Msg::Part::Part() :
   ptype (0)
 {}
-
 void
 Msg::Part::setup (uint8       _ptype,
                   String      smsg)
@@ -24,7 +20,6 @@ Msg::Part::setup (uint8       _ptype,
   ptype = _ptype;
   string = smsg;
 }
-
 void
 Msg::Part::setup (uint8       _ptype,
                   const char *format,
@@ -34,12 +29,9 @@ Msg::Part::setup (uint8       _ptype,
   setup (_ptype, String (s));
   g_free (s);
 }
-
 const Msg::Part &Msg::empty_part = Part();
-
 volatile int    Msg::n_msg_types = 0;
 uint8 *volatile Msg::msg_type_bits = NULL;
-
 struct MsgType {
   /* this structure cannot use C++ types because it's not properly constructed */
   const char *ident;
@@ -53,7 +45,6 @@ static MsgType* msg_types = NULL; /* cannot use a vector<> here, because of cons
 static bool     msg_log_to_stderr = true;
 static uint     msg_syslog_priority = 0; // LOG_USER | LOG_INFO;
 static FILE    *msg_log_file = NULL;
-
 void
 Msg::set_msg_type_L (uint   mtype,
                      uint32 flags,
@@ -83,7 +74,6 @@ Msg::set_msg_type_L (uint   mtype,
           msg_type_bits[i / 8] &= ~(1 << i % 8);
       }
 }
-
 void
 Msg::init_standard_types()
 {
@@ -124,7 +114,6 @@ Msg::init_standard_types()
   mtype = register_type ("debug", NONE, "Debug");
   set_msg_type_L (mtype, LOG_TO_STDERR, false);
 }
-
 /**
  * @param ident         message identifier
  * @param default_ouput an existing SfiMsgType
@@ -197,14 +186,12 @@ Msg::register_type (const char *ident,
     msg_mutex.unlock();
   return mtype;
 }
-
 static struct AutoConstruct {
   AutoConstruct()
   {
     Msg::register_type ("none", Msg::NONE, "");
   }
 } auto_construct;
-
 /**
  * @param ident message identifier, e.g. "error", "warning", "info", etc...
  * @return      corresponding Type or 0
@@ -222,7 +209,6 @@ Msg::lookup_type (const String &ident)
       return Type (i);
   return Msg::NONE;
 }
-
 void
 Msg::enable (Type mtype)
 {
@@ -230,7 +216,6 @@ Msg::enable (Type mtype)
   if (mtype > 1 && mtype < (int) n_msg_types)
     set_msg_type_L (mtype, msg_types[mtype].flags, true);
 }
-
 void
 Msg::disable (Type mtype)
 {
@@ -238,8 +223,6 @@ Msg::disable (Type mtype)
   if (mtype > 1 && mtype < (int) n_msg_types)
     set_msg_type_L (mtype, msg_types[mtype].flags, false);
 }
-
-
 /**
  * @param type  message type, e.g. Msg::ERROR, Msg::WARNING, Msg::INFO, etc...
  * @return              translated message identifier or NULL
@@ -256,7 +239,6 @@ Msg::type_ident (Type mtype)
     return msg_types[mtype].ident;
   return NULL;
 }
-
 /**
  * @param type  message type, e.g. Msg::ERROR, Msg::WARNING, Msg::INFO, etc...
  * @return              translated message identifier or NULL
@@ -274,7 +256,6 @@ Msg::type_label (Type mtype)
     return msg_types[mtype].label;
   return NULL;
 }
-
 uint32
 Msg::type_flags (Type mtype)
 {
@@ -284,7 +265,6 @@ Msg::type_flags (Type mtype)
     flags = msg_types[mtype].flags;
   return flags;
 }
-
 void
 Msg::configure (Type                mtype,
                 LogFlags            log_mask,
@@ -294,7 +274,6 @@ Msg::configure (Type                mtype,
   if (mtype > 1 && mtype < n_msg_types)
     set_msg_type_L (mtype, log_mask, msg_types[mtype].enabled);
 }
-
 void
 Msg::key_list_change_L (const String &keylist,
                         bool          isenabled)
@@ -316,7 +295,6 @@ Msg::key_list_change_L (const String &keylist,
         set_msg_type_L (i, msg_types[i].flags, isenabled);
       return;
     }
-
   /* walk all kyes */
   String::size_type k = 1;
   String::size_type c = s.find (':', k);
@@ -336,7 +314,6 @@ Msg::key_list_change_L (const String &keylist,
       c = s.find (':', k);
     }
 }
-
 void
 Msg::allow_msgs (const String &key)
 {
@@ -351,7 +328,6 @@ Msg::allow_msgs (const String &key)
                 check (i));
 #endif
 }
-
 void
 Msg::deny_msgs (const String &key)
 {
@@ -359,7 +335,6 @@ Msg::deny_msgs (const String &key)
   if (key.size())
     key_list_change_L (key, false);
 }
-
 void
 Msg::configure_stdlog (bool                redirect_stdlog_to_stderr,
                        const String       &stdlog_filename,
@@ -376,7 +351,6 @@ Msg::configure_stdlog (bool                redirect_stdlog_to_stderr,
     msg_log_file = fopen (stdlog_filename.c_str(), "a");
   msg_syslog_priority = syslog_priority;
 }
-
 static String
 prgname (bool maystrip)
 {
@@ -388,7 +362,6 @@ prgname (bool maystrip)
     }
   return pname;
 }
-
 static String
 log_prefix (const String &prg_name,
             uint          pid,
@@ -416,9 +389,7 @@ log_prefix (const String &prg_name,
   /* ... */
   return str;
 }
-
 static DataKey<Msg::Handler> msg_thread_handler_key;
-
 /**
  * @param handler       a valid Msg::Handler or NULL
  *
@@ -434,7 +405,6 @@ Msg::set_thread_handler (Handler handler)
   Thread &self = Thread::self();
   self.set_data (&msg_thread_handler_key, handler);
 }
-
 void
 Msg::display_parts (const char         *domain,
                     Type                message_type,
@@ -516,7 +486,6 @@ Msg::display_parts (const char         *domain,
     }
   errno = saved_errno;
 }
-
 void
 Msg::display_aparts (const char         *log_domain,
                      Type                message_type,
@@ -541,7 +510,6 @@ Msg::display_aparts (const char         *log_domain,
   display_parts (log_domain, message_type, parts);
   errno = saved_errno;
 }
-
 void
 Msg::display_vmsg (const char         *log_domain,
                    Type                message_type,
@@ -556,7 +524,6 @@ Msg::display_vmsg (const char         *log_domain,
   display_parts (log_domain, message_type, parts);
   errno = saved_errno;
 }
-
 /**
  * @param domain message domain
  * @param parts  message parts
@@ -608,5 +575,4 @@ Msg::default_handler (const char         *domain,
     g_printerr ("** [X] %s\n", checkmsg.c_str());
   g_printerr ("********************************************************************************\n");
 }
-
 } // Birnet

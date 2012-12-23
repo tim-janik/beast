@@ -1,31 +1,24 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include <bse/bse.idl>
-
 namespace Namespace {
-
 using namespace Sfi;
-
 // test enum
 choice FunkynessType {
   REALLY_FUNKY,
   MODERATELY_FUNKY,
   NON_FUNKY = (42, "No Funk At All"),
 };
-
 // test record
 record TestRecord {
   Int           i;
   String        str;
   FunkynessType funky;
 };
-
 sequence TestSequence {
   TestRecord tr;
 };
-
 // adds i and str to the record given by rec
 // TestRecord record_add (TestRecord rec, Int i, String str);
-
 // test effect
 class TestObject : Bse::Effect {
   Info    category  = "/Test/Plugin";
@@ -39,10 +32,8 @@ class TestObject : Bse::Effect {
   property Bse::Effect ef; // C++ Object 
   property Bse::Item it;   // C Object
 };
-
 // test procedure
 Int test_exception (Int i, TestObject o, Int bar, FunkynessType ft) {
   Info category = "/Toys/Test Exception";
 }
-
 };

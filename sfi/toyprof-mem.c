@@ -2,10 +2,8 @@
 // TOYPROF - Poor man's profiling toy
 #define	 _GNU_SOURCE	/* enable various glibc features we depend on */
 #include "toyprof-mem.h"
-
 /* --- configuration --- */
 #define	STACK_TRACE_DEPTH	12	/* number of callers to log */
-
 /* Basic usage:
  * 1) call toyprof_init_glib_memtable ("/tmp/mylogfile", SIGUSR1); in main()
  * 2) start the program
@@ -13,11 +11,8 @@
  * 4) kill -SIGUSR1 <program-pid> ; this dumps leaks since (3) to "/tmp/mylogfile"
  * 5) cat "/tmp/mylogfile" | toyprof.pl | less -S
  */
-
 /* --- extern variables --- */
 volatile gulong		 toyprof_memtotal = 0;
-
-
 #if	 defined __GLIBC__ && __GLIBC__ >= 2
 #include <pthread.h>
 #include <stdio.h>
@@ -32,12 +27,10 @@ volatile gulong		 toyprof_memtotal = 0;
 #include <assert.h>
 #include <errno.h>
 #include <link.h>	/* _r_debug */
-
 #define standard_malloc		malloc
 #define standard_realloc	realloc
 #define standard_free		free
 #define standard_calloc		calloc
-
 typedef struct _MemHeader MemHeader;
 struct _MemHeader
 {
@@ -48,8 +41,6 @@ struct _MemHeader
   MemHeader *next;
 };
 #define	HEADER_SIZE	(sizeof (MemHeader))
-
-
 /* --- variables --- */
 extern GMemVTable	*toyprof_mem_table;
 static gulong		 toyprof_n_traces;
@@ -65,8 +56,6 @@ typedef struct {
 } SymEntry;
 static SymEntry *toyprof_symtab = NULL;
 static guint toyprof_symtab_length = 0;
-
-
 /* --- functions --- */
 static int
 symentry_compare (const void *d1,
@@ -76,7 +65,6 @@ symentry_compare (const void *d1,
   const SymEntry *e2 = d2;
   return e1->sbase < e2->sbase ? -1 : e1->sbase > e2->sbase;
 }
-
 static void
 symtab_init (void)
 {
@@ -103,7 +91,6 @@ symtab_init (void)
   toyprof_symtab[toyprof_symtab_length].sname = main_sname;
   assert (main_sname != NULL);
 }
-
 static SymEntry*
 symtab_lookup (void *symaddr)
 {
@@ -123,7 +110,6 @@ symtab_lookup (void *symaddr)
     }
   return last ? last : toyprof_symtab + toyprof_symtab_length; /* fallback to main */
 }
-
 static void
 toyprof_dump_leaks_U (guint leak_logger_stamp,
 		      gint  fd);
@@ -155,14 +141,12 @@ memleak_handle_jobs (void)
     }
   pthread_mutex_unlock (&profile_mutex);
 }
-
 static void
 toyprof_memsignal (int sigid)
 {
   toyprof_need_dump = 1;
   signal (toyprof_logger_signal, toyprof_memsignal);
 }
-
 void
 toyprof_init_glib_memtable (const gchar *file_name,
 			    gint         logger_signal)
@@ -179,7 +163,6 @@ toyprof_init_glib_memtable (const gchar *file_name,
       signal (toyprof_logger_signal, toyprof_memsignal);
     }
 }
-
 guint
 toyprof_start_leak_logger (void)
 {
@@ -188,7 +171,6 @@ toyprof_start_leak_logger (void)
   pthread_mutex_unlock (&profile_mutex);
   return toyprof_stamp;
 }
-
 static void
 toyprof_dump_leaks_U (guint leak_logger_stamp,
 		      gint  fd)
@@ -210,7 +192,6 @@ toyprof_dump_leaks_U (guint leak_logger_stamp,
 	  }
     }
 }
-
 void
 toyprof_dump_leaks (guint leak_logger_stamp,
 		    gint  fd)
@@ -219,7 +200,6 @@ toyprof_dump_leaks (guint leak_logger_stamp,
   toyprof_dump_leaks_U (leak_logger_stamp, fd);
   pthread_mutex_unlock (&profile_mutex);
 }
-
 static void
 memlist_add (MemHeader *h,
 	     size_t     n_bytes)
@@ -236,7 +216,6 @@ memlist_add (MemHeader *h,
   toyprof_memtotal += h->n_bytes;
   pthread_mutex_unlock (&profile_mutex);
 }
-
 static void
 memlist_remove (MemHeader *h)
 {
@@ -252,7 +231,6 @@ memlist_remove (MemHeader *h)
   h->next = NULL;
   h->prev = NULL;
 }
-
 static gpointer
 toyprof_malloc (gsize n_bytes)
 {
@@ -264,19 +242,16 @@ toyprof_malloc (gsize n_bytes)
   backtrace (h->traces, STACK_TRACE_DEPTH);
   return h + 1;
 }
-
 static void
 toyprof_free (gpointer mem)
 {
   MemHeader *h = mem;
-
   h -= 1;
   memlist_remove (h);
   memset (h, 0xaa, HEADER_SIZE + h->n_bytes);
   standard_free (h);
   memleak_handle_jobs ();
 }
-
 static gpointer
 toyprof_realloc (gpointer mem,
 		 gsize    n_bytes)
@@ -289,7 +264,6 @@ toyprof_realloc (gpointer mem,
       toyprof_free (mem);
       return NULL;
     }
-
   h -= 1;
   memlist_remove (h);
   tmp = standard_realloc (h, HEADER_SIZE + n_bytes);
@@ -305,7 +279,6 @@ toyprof_realloc (gpointer mem,
   backtrace (h->traces, STACK_TRACE_DEPTH);
   return h + 1;
 }
-
 static GMemVTable mprof_table = {
   toyprof_malloc,
   toyprof_realloc,
@@ -315,8 +288,6 @@ static GMemVTable mprof_table = {
   NULL, /* try_realloc */
 };
 GMemVTable *toyprof_mem_table = &mprof_table;
-
-
 #else	/* !__GLIBC__ || __GLIBC__ < 2 */
 void
 toyprof_init_glib_memtable (const gchar *file_name,

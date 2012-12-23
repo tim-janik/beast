@@ -20,11 +20,9 @@
 #include <sys/times.h>
 #include "birnetutils.hh"
 #include "birnetthread.hh"
-
 #define FLOATING_FLAG                           (1 << 31)
 #define THREAD_REF_COUNT(thread)                (thread->ref_field & ~FLOATING_FLAG)
 #define THREAD_CAS(thread, oldval, newval)      Atomic::uint_cas (&thread->ref_field, oldval, newval)
-
 /* --- some GLib compat --- */
 #define HAVE_GSLICE     GLIB_CHECK_VERSION (2, 9, 1)
 #if !GLIB_CHECK_VERSION (2, 10, 0)
@@ -41,7 +39,6 @@ g_atomic_pointer_set (volatile gpointer *atomic,
   while (!g_atomic_pointer_compare_and_exchange ((gpointer*) atomic, *atomic, value));
 }
 #endif
-
 /* --- structures --- */
 struct _BirnetThread
 {
@@ -73,9 +70,7 @@ struct _BirnetThread
     gint           cutime, cstime;
   }                info;
 };
-
 namespace Birnet {
-
 /* --- prototypes --- */
 static void             birnet_guard_deregister_all     (BirnetThread *thread);
 static void	        birnet_thread_handle_exit	(BirnetThread *thread);
@@ -83,8 +78,6 @@ static void             birnet_thread_accounting_L      (BirnetThread *self,
                                                          bool          force_update);
 static void             thread_get_tid                  (BirnetThread *thread);
 static inline guint     cached_getpid                   (void);
-
-
 /* --- variables --- */
 static Mutex       global_thread_mutex;
 static Cond        global_thread_cond;
@@ -94,8 +87,6 @@ static GSList     *thread_awaken_list = NULL;
 static BirnetMutex *mutex_init_chain = NULL;
 static BirnetMutex *rec_mutex_init_chain = NULL;
 static BirnetCond  *cond_init_chain = NULL;
-
-
 /* --- functions --- */
 static BirnetThread*
 common_thread_new (const gchar *name)
@@ -107,7 +98,6 @@ common_thread_new (const gchar *name)
 #else
   thread = g_new0 (BirnetThread, 1);
 #endif
-
   ThreadTable.atomic_pointer_set (&thread->threadxx, NULL);
   thread->ref_field = FLOATING_FLAG + 1;
   thread->name = g_strdup (name);
@@ -123,7 +113,6 @@ common_thread_new (const gchar *name)
   g_datalist_init (&thread->qdata);
   return thread;
 }
-
 static BirnetThread*
 common_thread_ref (BirnetThread *thread)
 {
@@ -137,7 +126,6 @@ common_thread_ref (BirnetThread *thread)
   } while (!THREAD_CAS (thread, old_ref, new_ref));
   return thread;
 }
-
 static BirnetThread*
 common_thread_ref_sink (BirnetThread *thread)
 {
@@ -153,7 +141,6 @@ common_thread_ref_sink (BirnetThread *thread)
     ThreadTable.thread_unref (thread);
   return thread;
 }
-
 static void
 common_thread_unref (BirnetThread *thread)
 {
@@ -180,7 +167,6 @@ common_thread_unref (BirnetThread *thread)
 #endif
     }
 }
-
 static void
 birnet_thread_handle_exit (BirnetThread *thread)
 {
@@ -212,11 +198,9 @@ birnet_thread_handle_exit (BirnetThread *thread)
   thread->awake_stamp = 1;
   global_thread_cond.broadcast();
   global_thread_mutex.unlock();
-  
   /* free thread structure */
   ThreadTable.thread_unref (thread);
 }
-
 static void
 filter_priority_warning (const gchar    *log_domain,
                          GLogLevelFlags  log_level,
@@ -229,7 +213,6 @@ filter_priority_warning (const gchar    *log_domain,
   else
     g_log_default_handler (log_domain, log_level, message, unused_data);
 }
-
 static gpointer
 birnet_thread_exec (gpointer data)
 {
@@ -238,14 +221,10 @@ birnet_thread_exec (gpointer data)
   BirnetThreadFunc func      = (BirnetThreadFunc) tfdx[1];
   gpointer         user_data = tfdx[2];
   ThreadTable.thread_set_handle (thread);
-  
   BirnetThread *self = ThreadTable.thread_self ();
   g_assert (self == thread);
-  
   thread_get_tid (thread);
-
   ThreadTable.thread_ref (thread);
-  
   global_thread_mutex.lock();
   global_thread_list = g_slist_append (global_thread_list, self);
   self->accounting = 1;
@@ -253,20 +232,16 @@ birnet_thread_exec (gpointer data)
   global_thread_cond.broadcast();
   global_thread_mutex.unlock();
   /* here, tfdx contents have become invalid */
-
   global_startup_mutex.lock();
   /* acquiring this mutex waits for birnet_thread_run() to figure inlist (global_thread_list, self) */
   global_startup_mutex.unlock();
-
   func (user_data);
   g_datalist_clear (&thread->qdata);
-
   /* because func() can be prematurely exited via pthread_exit(),
    * birnet_thread_handle_exit() does unref and final destruction
    */
   return NULL;
 }
-
 /**
  * @param thread        a valid, unstarted BirnetThread
  * @param func	        function to execute in new thread
@@ -282,16 +257,12 @@ common_thread_start (BirnetThread    *thread,
 {
   GThread *gthread = NULL;
   GError *gerror = NULL;
-
   g_return_val_if_fail (thread != NULL, FALSE);
   g_return_val_if_fail (thread->tid == -1, FALSE);
   g_return_val_if_fail (func != NULL, FALSE);
-  
   ThreadTable.thread_ref (thread);
-
   /* silence those stupid priority warnings triggered by glib */
   guint hid = g_log_set_handler ("GLib", G_LOG_LEVEL_WARNING, filter_priority_warning, NULL);
-
   /* thread creation context, protection by global_startup_mutex */
   global_startup_mutex.lock();
   void **tfdx = g_new0 (void*, 4);
@@ -299,9 +270,7 @@ common_thread_start (BirnetThread    *thread,
   tfdx[1] = (void*) func;
   tfdx[2] = user_data;
   tfdx[3] = NULL;
-  
   thread->tid = cached_getpid();
-
   /* don't dare setting joinable to TRUE, that prevents the thread's
    * resources from being freed, since we don't offer pthread_join().
    * so we'd just run out of stack at some point.
@@ -322,19 +291,14 @@ common_thread_start (BirnetThread    *thread,
       g_message ("failed to create thread \"%s\": %s", thread->name, gerror->message);
       g_error_free (gerror);
     }
-
   /* let the new thread actually start out */
   global_startup_mutex.unlock();
-
   /* withdraw warning filter */
   g_free (tfdx);
   g_log_remove_handler ("GLib", hid);
-
   ThreadTable.thread_unref (thread);
-
   return gthread != NULL;
 }
-
 /**
  * Volountarily give up the curren scheduler time slice and let
  * another process or thread run, if any is in the queue.
@@ -350,7 +314,6 @@ common_thread_yield (void)
   g_thread_yield();
 #endif
 }
-
 /**
  * @return		thread handle
  *
@@ -379,7 +342,6 @@ common_thread_self (void)
     }
   return thread;
 }
-
 static inline void*
 common_thread_getxx (BirnetThread *thread)
 {
@@ -395,7 +357,6 @@ common_thread_getxx (BirnetThread *thread)
     }
   return ptr;
 }
-
 static void*
 common_thread_selfxx (void)
 {
@@ -404,7 +365,6 @@ common_thread_selfxx (void)
     thread = ThreadTable.thread_self();
   return common_thread_getxx (thread);
 }
-
 static bool
 common_thread_setxx (BirnetThread *thread,
                      void         *xxdata)
@@ -421,7 +381,6 @@ common_thread_setxx (BirnetThread *thread,
   global_thread_mutex.unlock();
   return success;
 }
-
 /**
  * @param thread	a valid BirnetThread handle
  * @return		thread id
@@ -437,7 +396,6 @@ common_thread_pid (BirnetThread *thread)
   thread = thread ? thread : ThreadTable.thread_self();
   return thread->tid;
 }
-
 /**
  * @param thread	a valid BirnetThread handle
  * @return		thread name
@@ -451,7 +409,6 @@ common_thread_name (BirnetThread *thread)
   thread = thread ? thread : ThreadTable.thread_self();
   return thread->name;
 }
-
 static void
 common_thread_set_name (const gchar *name)
 {
@@ -464,7 +421,6 @@ common_thread_set_name (const gchar *name)
       global_thread_mutex.unlock();
     }
 }
-
 static void
 birnet_thread_wakeup_L (BirnetThread *thread)
 {
@@ -473,7 +429,6 @@ birnet_thread_wakeup_L (BirnetThread *thread)
     thread->wakeup_func (thread->wakeup_data);
   thread->got_wakeup = TRUE;
 }
-
 /**
  * @param max_useconds	maximum amount of micro seconds to sleep (-1 for infinite time)
  * @param returns	TRUE while the thread should continue execution
@@ -492,11 +447,8 @@ common_thread_sleep (BirnetInt64 max_useconds)
 {
   BirnetThread *self = ThreadTable.thread_self ();
   bool aborted;
-  
   global_thread_mutex.lock();
-  
   birnet_thread_accounting_L (self, FALSE);
-  
   if (!self->got_wakeup && max_useconds != 0)
     {
       if (max_useconds >= 0) /* wait once without time adjustments */
@@ -505,14 +457,11 @@ common_thread_sleep (BirnetInt64 max_useconds)
 	while (!self->got_wakeup)
 	  self->wakeup_cond.wait (global_thread_mutex);
     }
-  
   self->got_wakeup = FALSE;
   aborted = self->aborted != FALSE;
   global_thread_mutex.unlock();
-  
   return !aborted;
 }
-
 /**
  * @param wakeup_func	wakeup function to be called by birnet_thread_wakeup()
  * @param wakeup_data	data passed into wakeup_func()
@@ -532,17 +481,14 @@ common_thread_set_wakeup (BirnetThreadWakeup wakeup_func,
                           GDestroyNotify     destroy)
 {
   BirnetThread *self = ThreadTable.thread_self ();
-  
   g_return_if_fail (wakeup_func != NULL);
   g_return_if_fail (self->wakeup_func == NULL);
-  
   global_thread_mutex.lock();
   self->wakeup_func = wakeup_func;
   self->wakeup_data = wakeup_data;
   self->wakeup_destroy = destroy;
   global_thread_mutex.unlock();
 }
-
 /**
  * @param thread	thread to wake up
  *
@@ -554,13 +500,11 @@ static void
 common_thread_wakeup (BirnetThread *thread)
 {
   g_return_if_fail (thread != NULL);
-  
   global_thread_mutex.lock();
   g_assert (g_slist_find (global_thread_list, thread));
   birnet_thread_wakeup_L (thread);
   global_thread_mutex.unlock();
 }
-
 /**
  * @param stamp	stamp to trigger wakeup
  *
@@ -572,9 +516,7 @@ static void
 common_thread_awake_after (BirnetUInt64 stamp)
 {
   BirnetThread *self = ThreadTable.thread_self ();
-  
   g_return_if_fail (stamp > 0);
-  
   global_thread_mutex.lock();
   if (!self->awake_stamp)
     {
@@ -585,7 +527,6 @@ common_thread_awake_after (BirnetUInt64 stamp)
     self->awake_stamp = MIN (self->awake_stamp, stamp);
   global_thread_mutex.unlock();
 }
-
 /**
  * @param wakeup_stamp	wakeup stamp to trigger wakeups
  *
@@ -597,7 +538,6 @@ static void
 common_thread_emit_wakeups (BirnetUInt64 wakeup_stamp)
 {
   g_return_if_fail (wakeup_stamp > 0);
-  
   global_thread_mutex.lock();
   GSList *next, *node;
   for (node = thread_awaken_list; node; node = next)
@@ -613,7 +553,6 @@ common_thread_emit_wakeups (BirnetUInt64 wakeup_stamp)
     }
   global_thread_mutex.unlock();
 }
-
 /**
  * @param thread	thread to abort
  *
@@ -627,7 +566,6 @@ common_thread_abort (BirnetThread *thread)
 {
   g_return_if_fail (thread != NULL);
   g_return_if_fail (thread != ThreadTable.thread_self ());
-  
   global_thread_mutex.lock();
   g_assert (g_slist_find (global_thread_list, thread));
   thread->aborted = TRUE;
@@ -636,7 +574,6 @@ common_thread_abort (BirnetThread *thread)
     global_thread_cond.wait (global_thread_mutex);
   global_thread_mutex.unlock();
 }
-
 /**
  * @param thread	thread to abort
  *
@@ -649,14 +586,12 @@ static void
 common_thread_queue_abort (BirnetThread *thread)
 {
   g_return_if_fail (thread != NULL);
-  
   global_thread_mutex.lock();
   g_assert (g_slist_find (global_thread_list, thread));
   thread->aborted = TRUE;
   birnet_thread_wakeup_L (thread);
   global_thread_mutex.unlock();
 }
-
 /**
  * @param returns	TRUE if the thread should abort execution
  *
@@ -676,7 +611,6 @@ common_thread_aborted (void)
   global_thread_mutex.unlock();
   return aborted;
 }
-
 /**
  * @param thread	thread to abort
  * @param returns	TRUE if the thread should abort execution
@@ -695,7 +629,6 @@ common_thread_get_aborted (BirnetThread *thread)
   global_thread_mutex.unlock();
   return aborted;
 }
-
 static bool
 common_thread_get_running (BirnetThread *thread)
 {
@@ -704,7 +637,6 @@ common_thread_get_running (BirnetThread *thread)
   global_thread_mutex.unlock();
   return running;
 }
-
 static void
 common_thread_wait_for_exit (BirnetThread *thread)
 {
@@ -713,14 +645,12 @@ common_thread_wait_for_exit (BirnetThread *thread)
     global_thread_cond.wait (global_thread_mutex);
   global_thread_mutex.unlock();
 }
-
 static gpointer
 common_thread_get_qdata (GQuark quark)
 {
   BirnetThread *self = ThreadTable.thread_self ();
   return quark ? g_datalist_id_get_data (&self->qdata, quark) : NULL;
 }
-
 static void
 common_thread_set_qdata_full (GQuark         quark,
                               gpointer       data,
@@ -731,14 +661,12 @@ common_thread_set_qdata_full (GQuark         quark,
   g_datalist_id_set_data_full (&self->qdata, quark, data,
 			       data ? destroy : (GDestroyNotify) NULL);
 }
-
 static gpointer
 common_thread_steal_qdata (GQuark quark)
 {
   BirnetThread *self = ThreadTable.thread_self ();
   return quark ? g_datalist_id_remove_no_notify (&self->qdata, quark) : NULL;
 }
-
 static bool
 common_split_useconds (BirnetInt64   max_useconds,
                        BirnetUInt64 *abs_secs,
@@ -761,7 +689,6 @@ common_split_useconds (BirnetInt64   max_useconds,
   *abs_usecs = limit_usec;
   return true;
 }
-
 static inline guint
 cached_getpid (void)
 {
@@ -770,7 +697,6 @@ cached_getpid (void)
     cached_pid = getpid();
   return cached_pid;
 }
-
 #ifdef  __linux__
 #include <sys/types.h>
 #include <sys/syscall.h>
@@ -781,7 +707,6 @@ thread_get_tid (BirnetThread *thread)
 {
   gint ppid = thread->tid;      /* creator process id */
   gint tid = -1;
-  
 #if     defined (__linux__) && defined (__NR_gettid)    /* present on linux >= 2.4.20 */
   tid = syscall (__NR_gettid);
 #endif
@@ -793,15 +718,12 @@ thread_get_tid (BirnetThread *thread)
   else
     thread->tid = 0;            /* failed to figure id */
 }
-
-
 /* --- thread info --- */
 static inline unsigned long long int
 timeval_usecs (const struct timeval *tv)
 {
   return tv->tv_usec + tv->tv_sec * (guint64) 1000000;
 }
-
 static void
 thread_info_from_stat_L (BirnetThread *self,
                          double     usec_norm)
@@ -851,7 +773,6 @@ thread_info_from_stat_L (BirnetThread *self,
                 );
   if (file)
     fclose (file);
-
   if (n >= 15)
     {
       self->ac.utime = utime * 10000;
@@ -867,9 +788,7 @@ thread_info_from_stat_L (BirnetThread *self,
   if (n >= 39)
     self->info.processor = 1 + processor;
 }
-
 #define ACCOUNTING_MSECS        (500)
-
 static void
 birnet_thread_accounting_L (BirnetThread *self,
                             bool          force_update)
@@ -909,7 +828,6 @@ birnet_thread_accounting_L (BirnetThread *self,
       self->accounting--;
     }
 }
-
 static BirnetThreadInfo*
 common_thread_info_collect (BirnetThread *thread)
 {
@@ -939,7 +857,6 @@ common_thread_info_collect (BirnetThread *thread)
   global_thread_mutex.unlock();
   return info;
 }
-
 static void
 common_thread_info_free (BirnetThreadInfo  *info)
 {
@@ -947,7 +864,6 @@ common_thread_info_free (BirnetThreadInfo  *info)
   g_free (info->name);
   g_free (info);
 }
-
 /* --- structure chaining for initialization --- */
 static void
 common_mutex_chain4init (BirnetMutex *mutex)
@@ -956,7 +872,6 @@ common_mutex_chain4init (BirnetMutex *mutex)
   mutex->mutex_pointer = mutex_init_chain;
   mutex_init_chain = mutex;
 }
-
 static void
 common_mutex_unchain (BirnetMutex *mutex)
 {
@@ -971,7 +886,6 @@ common_mutex_unchain (BirnetMutex *mutex)
   else
     mutex_init_chain = (BirnetMutex*) mutex->mutex_pointer;
 }
-
 static void
 common_rec_mutex_chain4init (BirnetRecMutex *rec_mutex)
 {
@@ -980,7 +894,6 @@ common_rec_mutex_chain4init (BirnetRecMutex *rec_mutex)
   rec_mutex->mutex.mutex_pointer = rec_mutex_init_chain;
   rec_mutex_init_chain = &rec_mutex->mutex;
 }
-
 static void
 common_rec_mutex_unchain (BirnetRecMutex *rec_mutex)
 {
@@ -996,7 +909,6 @@ common_rec_mutex_unchain (BirnetRecMutex *rec_mutex)
   else
     rec_mutex_init_chain = (BirnetMutex*) mutex->mutex_pointer;
 }
-
 static void
 common_cond_chain4init (BirnetCond *cond)
 {
@@ -1004,7 +916,6 @@ common_cond_chain4init (BirnetCond *cond)
   cond->cond_pointer = cond_init_chain;
   cond_init_chain = cond;
 }
-
 static void
 common_cond_unchain (BirnetCond *cond)
 {
@@ -1019,7 +930,6 @@ common_cond_unchain (BirnetCond *cond)
   else
     cond_init_chain = (BirnetCond*) cond->cond_pointer;
 }
-
 /* --- hazard pointer guards --- */
 struct BirnetGuard
 {
@@ -1034,7 +944,6 @@ static gint       volatile guard_list_length = 0;
 #define BIRNET_GUARD_ALIGN  (4)
 #define guard2values(ptr)       G_STRUCT_MEMBER_P (ptr, +G_STRUCT_OFFSET (BirnetGuard, values[0]))
 #define values2guard(ptr)       G_STRUCT_MEMBER_P (ptr, -G_STRUCT_OFFSET (BirnetGuard, values[0]))
-
 /**
  * @param n_hazards	number of required hazard pointers
  * @return		a valid BirnetGuard
@@ -1081,7 +990,6 @@ birnet_guard_register (guint n_hazards)
     }
   return (volatile BirnetGuard*) guard2values (guard);
 }
-
 /**
  * @param guard	a valid BirnetGuard as returned from birnet_guard_register()
  *
@@ -1099,7 +1007,6 @@ birnet_guard_deregister (volatile BirnetGuard *guard)
   guard->cache_next = (volatile BirnetGuard*) thread->guard_cache;
   thread->guard_cache = guard;
 }
-
 static void
 birnet_guard_deregister_all (BirnetThread *thread)
 {
@@ -1113,7 +1020,6 @@ birnet_guard_deregister_all (BirnetThread *thread)
         ThreadTable.atomic_pointer_cas (&guard->thread, thread, NULL); /* reset ->thread with memory barrier */
       }
 }
-
 /**
  * @param guard	a valid BirnetGuard as returned from birnet_guard_register()
  * @param nth_hazard	index of the hazard pointer to use for protection
@@ -1150,7 +1056,6 @@ void birnet_guard_protect (volatile BirnetGuard *guard,  /* defined in birnetthr
                            guint     nth_hazard,
                            gpointer  value);
 #endif
-
 /**
  * @return		an upper bound on the number of registered hazard pointers
  *
@@ -1166,7 +1071,6 @@ birnet_guard_n_snap_values (void)
 {
   return Atomic::int_get (&guard_list_length);
 }
-
 /**
  * @param n_values	location of n_values variable
  * @param values	value array to fill in
@@ -1217,7 +1121,6 @@ birnet_guard_snap_values (guint          *n_values,
   *n_values = n;                /* number of values used */
   return TRUE;
 }
-
 /**
  * @param value	hazard pointer value
  * @return		TRUE if a hazard pointer protecting @a value has been found
@@ -1248,46 +1151,38 @@ birnet_guard_is_protected (gpointer value)
     }
   return FALSE;
 }
-
 /* --- fallback (GLib) BirnetThreadTable --- */
 static GPrivate *fallback_thread_table_key = NULL;
-
 static void
 fallback_thread_set_handle (BirnetThread *handle)
 {
   g_private_set (fallback_thread_table_key, handle);
 }
-
 static BirnetThread*
 fallback_thread_get_handle (void)
 {
   return (BirnetThread*) g_private_get (fallback_thread_table_key);
 }
-
 static void
 fallback_mutex_init (BirnetMutex *mutex)
 {
   g_return_if_fail (mutex != NULL);
   mutex->mutex_pointer = g_mutex_new ();
 }
-
 static int
 fallback_mutex_trylock (BirnetMutex *mutex)
 {
   return g_mutex_trylock ((GMutex*) mutex->mutex_pointer) ? 0 : -1;
 }
-
 static void
 fallback_mutex_lock (BirnetMutex *mutex)
 {
   static gboolean is_smp_system = FALSE; // FIXME
-  
   /* spin locks should be held only very short times,
    * so usually, we should succeed here.
    */
   if (g_mutex_trylock ((GMutex*) mutex->mutex_pointer))
     return;
-  
   if (!is_smp_system)
     {
       /* on uni processor systems, there's no point in busy spinning */
@@ -1309,20 +1204,17 @@ fallback_mutex_lock (BirnetMutex *mutex)
       g_mutex_lock ((GMutex*) mutex->mutex_pointer);
     }
 }
-
 static void
 fallback_mutex_unlock (BirnetMutex *mutex)
 {
   g_mutex_unlock ((GMutex*) mutex->mutex_pointer);
 }
-
 static void
 fallback_mutex_destroy (BirnetMutex *mutex)
 {
   g_mutex_free ((GMutex*) mutex->mutex_pointer);
   memset (mutex, 0, sizeof (*mutex));
 }
-
 static void
 fallback_rec_mutex_init (BirnetRecMutex *rec_mutex)
 {
@@ -1330,12 +1222,10 @@ fallback_rec_mutex_init (BirnetRecMutex *rec_mutex)
   rec_mutex->depth = 0;
   ThreadTable.mutex_init (&rec_mutex->mutex);
 }
-
 static int
 fallback_rec_mutex_trylock (BirnetRecMutex *rec_mutex)
 {
   BirnetThread *self = ThreadTable.thread_self ();
-  
   if (rec_mutex->owner == self)
     {
       g_assert (rec_mutex->depth > 0);  /* paranoid */
@@ -1354,12 +1244,10 @@ fallback_rec_mutex_trylock (BirnetRecMutex *rec_mutex)
     }
   return -1;
 }
-
 static void
 fallback_rec_mutex_lock (BirnetRecMutex *rec_mutex)
 {
   BirnetThread *self = ThreadTable.thread_self ();
-  
   if (rec_mutex->owner == self)
     {
       g_assert (rec_mutex->depth > 0);  /* paranoid */
@@ -1373,12 +1261,10 @@ fallback_rec_mutex_lock (BirnetRecMutex *rec_mutex)
       rec_mutex->depth = 1;
     }
 }
-
 static void
 fallback_rec_mutex_unlock (BirnetRecMutex *rec_mutex)
 {
   BirnetThread *self = ThreadTable.thread_self ();
-  
   if (rec_mutex->owner == self && rec_mutex->depth > 0)
     {
       rec_mutex->depth -= 1;
@@ -1392,7 +1278,6 @@ fallback_rec_mutex_unlock (BirnetRecMutex *rec_mutex)
     g_warning ("unable to unlock recursive mutex with self %p != %p or depth %u < 1",
 	       rec_mutex->owner, self, rec_mutex->depth);
 }
-
 static void
 fallback_rec_mutex_destroy (BirnetRecMutex *rec_mutex)
 {
@@ -1404,25 +1289,21 @@ fallback_rec_mutex_destroy (BirnetRecMutex *rec_mutex)
       g_assert (rec_mutex->owner == NULL && rec_mutex->depth == 0);
     }
 }
-
 static void
 fallback_cond_init (BirnetCond *cond)
 {
   cond->cond_pointer = g_cond_new ();
 }
-
 static void
 fallback_cond_signal (BirnetCond *cond)
 {
   g_cond_signal ((GCond*) cond->cond_pointer);
 }
-
 static void
 fallback_cond_broadcast (BirnetCond *cond)
 {
   g_cond_broadcast ((GCond*) cond->cond_pointer);
 }
-
 static void
 fallback_cond_wait (BirnetCond  *cond,
                     BirnetMutex *mutex)
@@ -1430,7 +1311,6 @@ fallback_cond_wait (BirnetCond  *cond,
   /* infinite wait */
   g_cond_wait ((GCond*) cond->cond_pointer, (GMutex*) mutex->mutex_pointer);
 }
-
 static void
 fallback_cond_wait_timed (BirnetCond  *cond,
                           BirnetMutex *mutex,
@@ -1447,20 +1327,17 @@ fallback_cond_wait_timed (BirnetCond  *cond,
   else
     g_cond_wait ((GCond*) cond->cond_pointer, (GMutex*) mutex->mutex_pointer);
 }
-
 static void
 fallback_cond_destroy (BirnetCond *cond)
 {
   g_cond_free ((GCond*) cond->cond_pointer);
 }
-
 static void G_GNUC_NORETURN
 fallback_thread_exit (gpointer retval)
 {
   g_thread_exit (retval);
   abort(); /* silence compiler */
 }
-
 #ifdef g_atomic_int_get
 static int
 birnet_g_atomic_int_get (volatile int *atomic)
@@ -1470,7 +1347,6 @@ birnet_g_atomic_int_get (volatile int *atomic)
 #undef  g_atomic_int_get
 #define g_atomic_int_get birnet_g_atomic_int_get
 #endif
-
 #ifdef g_atomic_pointer_get
 static void*
 birnet_g_atomic_pointer_get (volatile void **atomic)
@@ -1480,8 +1356,6 @@ birnet_g_atomic_pointer_get (volatile void **atomic)
 #undef  g_atomic_pointer_get
 #define g_atomic_pointer_get birnet_g_atomic_pointer_get
 #endif
-
-
 static BirnetThreadTable fallback_thread_table = {
   NULL, /* mutex_chain4init */
   NULL, /* mutex_unchain */
@@ -1551,15 +1425,12 @@ static BirnetThreadTable fallback_thread_table = {
   fallback_cond_wait_timed,
   fallback_cond_destroy,
 };
-
 static BirnetThreadTable*
 get_fallback_thread_table (void)
 {
   fallback_thread_table_key = g_private_new ((GDestroyNotify) birnet_thread_handle_exit);
   return &fallback_thread_table;
 }
-
-
 /* --- POSIX threads table --- */
 #if	(BIRNET_HAVE_MUTEXATTR_SETTYPE > 0)
 #include <pthread.h>
@@ -1577,7 +1448,6 @@ pth_thread_get_handle (void)
 {
   return (BirnetThread*) pthread_getspecific (pth_thread_table_key);
 }
-
 static void
 pth_mutex_init (BirnetMutex *mutex)
 {
@@ -1586,7 +1456,6 @@ pth_mutex_init (BirnetMutex *mutex)
    */
   pthread_mutex_init ((pthread_mutex_t*) mutex, NULL);
 }
-
 static void
 pth_rec_mutex_init (BirnetRecMutex *mutex)
 {
@@ -1597,13 +1466,11 @@ pth_rec_mutex_init (BirnetRecMutex *mutex)
   pthread_mutex_init ((pthread_mutex_t*) mutex, &attr);
   pthread_mutexattr_destroy (&attr);
 }
-
 static void
 pth_cond_init (BirnetCond *cond)
 {
   pthread_cond_init ((pthread_cond_t*) cond, NULL);
 }
-
 static void
 pth_cond_wait_timed (BirnetCond  *cond,
                      BirnetMutex *mutex,
@@ -1620,7 +1487,6 @@ pth_cond_wait_timed (BirnetCond  *cond,
   else
     pthread_cond_wait ((pthread_cond_t*) cond, (pthread_mutex_t    *) mutex);
 }
-
 static BirnetThreadTable pth_thread_table = {
   NULL, /* mutex_chain4init */
   NULL, /* mutex_unchain */
@@ -1705,7 +1571,6 @@ get_pth_thread_table (void)
 #else	/* !BIRNET_HAVE_MUTEXATTR_SETTYPE */
 #define	get_pth_thread_table()	NULL
 #endif	/* !BIRNET_HAVE_MUTEXATTR_SETTYPE */
-
 /* ::Birnet::ThreadTable must be a BirnetThreadTable, not a reference for the C API wrapper to work */
 BirnetThreadTable ThreadTable = {
   common_mutex_chain4init,
@@ -1729,7 +1594,6 @@ BirnetThreadTable ThreadTable = {
   (uint (*) (volatile uint*, uint))       g_atomic_int_exchange_and_add,
   NULL,
 };
-
 void
 _birnet_init_threads (void)
 {
@@ -1737,7 +1601,6 @@ _birnet_init_threads (void)
   if (!table)
     table = get_fallback_thread_table ();
   ThreadTable = *table;
-  
   while (mutex_init_chain)
     {
       BirnetMutex *mutex = mutex_init_chain;
@@ -1757,8 +1620,6 @@ _birnet_init_threads (void)
       cond_init_chain = (BirnetCond*) cond->cond_pointer;
       ThreadTable.cond_init (cond);
     }
-  
   ThreadTable.thread_self ();
 }
-
 } // Birnet

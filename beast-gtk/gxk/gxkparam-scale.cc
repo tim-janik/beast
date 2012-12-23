@@ -1,5 +1,4 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
-
 /* --- h/v scale editors --- */
 enum {
   PARAM_SCALE_HORIZONTAL,
@@ -7,7 +6,6 @@ enum {
   PARAM_SCALE_VERTICAL,
   PARAM_LSCALE_VERTICAL,
 };
-
 static void
 param_scale_hscale_size_request (GtkWidget      *scale,
                                  GtkRequisition *requisition)
@@ -19,7 +17,6 @@ param_scale_hscale_size_request (GtkWidget      *scale,
   requisition->width = slider_length * 1.5;
   requisition->width += 2 * trough_border;
 }
-
 static void
 param_scale_vscale_size_request (GtkWidget      *scale,
                                  GtkRequisition *requisition)
@@ -31,7 +28,6 @@ param_scale_vscale_size_request (GtkWidget      *scale,
   requisition->height = slider_length * 1.5;
   requisition->height += 2 * trough_border;
 }
-
 static GtkWidget*
 param_scale_create (GxkParam    *param,
                     const gchar *tooltip,
@@ -66,7 +62,6 @@ param_scale_create (GxkParam    *param,
   gxk_param_add_grab_widget (param, widget);
   return widget;
 }
-
 static GxkParamEditor param_scale1 = {
   { "hscale-lin",       N_("Horizontal Scale"), },
   { G_TYPE_NONE,  NULL, TRUE, TRUE, },  /* all int types and all float types */

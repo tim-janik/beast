@@ -7,14 +7,8 @@
 #include "sfiglue.hh"
 #include "sfifilecrawler.hh"
 #include <string.h>
-
-
-
 /* --- variables --- */
-
-
 /* --- functions --- */
-
 /* --- FIXME: hacks! */
 void
 sfi_set_error (GError       **errorp,
@@ -34,7 +28,6 @@ sfi_set_error (GError       **errorp,
       va_end (args);
     }
 }
-
 static inline gchar
 char_canon (gchar c)
 {
@@ -47,12 +40,10 @@ char_canon (gchar c)
   else
     return '-';
 }
-
 gchar*
 sfi_strdup_canon (const gchar *identifier)
 {
   gchar *str = g_strdup (identifier);
-
   if (str)
     {
       gchar *p;
@@ -61,7 +52,6 @@ sfi_strdup_canon (const gchar *identifier)
     }
   return str;
 }
-
 static inline gboolean
 eval_match (const gchar *str1,
 	    const gchar *str2)
@@ -75,9 +65,7 @@ eval_match (const gchar *str1,
     }
   return *str1 == 0 && *str2 == 0;
 }
-
 #define isalnum(c)      ((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') || (c >= '0' && c <= '9'))
-
 gboolean
 sfi_choice_match_detailed (const gchar *choice_val1,
 			   const gchar *choice_val2,
@@ -85,7 +73,6 @@ sfi_choice_match_detailed (const gchar *choice_val1,
 {
   g_return_val_if_fail (choice_val1 != NULL, FALSE);
   g_return_val_if_fail (choice_val2 != NULL, FALSE);
-
   guint l1 = strlen (choice_val1);
   guint l2 = strlen (choice_val2);
   if (l1_ge_l2 && l1 < l2)
@@ -108,14 +95,12 @@ sfi_choice_match_detailed (const gchar *choice_val1,
     }
   return cv2[0] && eval_match (cv1, cv2);
 }
-
 gboolean
 sfi_choice_match (const gchar *choice_val1,
 		  const gchar *choice_val2)
 {
   return sfi_choice_match_detailed (choice_val1, choice_val2, FALSE);
 }
-
 static inline gint
 consts_rmatch (guint        l1,
 	       const gchar *str1,
@@ -131,7 +116,6 @@ consts_rmatch (guint        l1,
     }
   return 0; /* missing out the length check here which normal strcmp() does */
 }
-
 guint
 sfi_constants_get_index (guint               n_consts,
 			 const SfiConstants *rsorted_consts,
@@ -140,15 +124,12 @@ sfi_constants_get_index (guint               n_consts,
   guint l, offs, order, n_nodes = n_consts;
   gchar *key;
   gint i, cmp;
-  
   g_return_val_if_fail (constant != NULL, 0);
-
   /* canonicalize key */
   l = strlen (constant);
   key = g_new (gchar, l);
   for (offs = 0; offs < l; offs++)
     key[offs] = char_canon (constant[offs]);
-
   /* perform binary search with chopped tail match */
   offs = 0;
   while (offs < n_nodes)
@@ -165,7 +146,6 @@ sfi_constants_get_index (guint               n_consts,
   /* no match */
   g_free (key);
   return 0;
-
   /* explore neighboured matches and favour early indices */
  have_match:
   offs = i;
@@ -185,29 +165,24 @@ sfi_constants_get_index (guint               n_consts,
   g_free (key);
   return order;
 }
-
 const gchar*
 sfi_constants_get_name (guint               n_consts,
 			const SfiConstants *consts,
 			guint               index)
 {
   guint i;
-
   for (i = 0; i < n_consts; i++)
     if (consts[i].index == index)
       return consts[i].name;
   return NULL;
 }
-
 gint
 sfi_constants_rcmp (const gchar *canon_identifier1,
 		    const gchar *canon_identifier2)
 {
   gint cmp, l1, l2;
-
   g_return_val_if_fail (canon_identifier1 != NULL, 0);
   g_return_val_if_fail (canon_identifier2 != NULL, 0);
-
   l1 = strlen (canon_identifier1);
   l2 = strlen (canon_identifier2);
   cmp = consts_rmatch (l1, canon_identifier1, l2, canon_identifier2);
@@ -215,7 +190,6 @@ sfi_constants_rcmp (const gchar *canon_identifier1,
     return l1 - l2;
   return cmp;
 }
-
 const char*
 sfi_category_concat (const char         *prefix,
                      const char         *trunk)

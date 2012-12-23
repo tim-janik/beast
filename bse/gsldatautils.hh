@@ -1,12 +1,9 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #ifndef __GSL_DATA_UTILS_H__
 #define __GSL_DATA_UTILS_H__
-
 #include <bse/bsemath.hh>
 #include <bse/gsldatahandle.hh>
-
 G_BEGIN_DECLS
-
 /* --- structures --- */
 #define GSL_DATA_HANDLE_PEEK_BUFFER     (2048)
 typedef struct
@@ -23,8 +20,6 @@ typedef struct
   GslLong min_loop;
   GslLong max_loop;
 } GslLoopSpec;	/* rename this to GslData... */
-
-
 /* --- data utils --- */
 gboolean	gsl_data_detect_signal		(GslDataHandle		*handle,
 						 GslLong		*sigstart,
@@ -49,8 +44,6 @@ gfloat*         gsl_data_make_fade_ramp         (GslDataHandle          *handle,
 double	        gsl_data_find_min_max		(GslDataHandle		*handle,
                                                  double                 *dmin,
                                                  double                 *dmax);
-
-
 /* --- data handle utils --- */
 static inline gfloat gsl_data_handle_peek_value	(GslDataHandle		*dhandle,
 						 GslLong		 position,
@@ -91,7 +84,6 @@ gint /* errno */     bse_wave_file_from_dbuffer	(const char		*file_name,
 						 guint                   sample_freq,
 						 guint                   n_values,
 						 const gdouble          *values);
-
 /* --- conversion utils --- */
 static inline guint   gsl_conv_from_float	(GslWaveFormatType format,
 						 guint             byte_order,
@@ -125,8 +117,6 @@ static inline void    gsl_conv_to_double	(GslWaveFormatType format,
 						 guint             n_values);
 static inline gint16  gsl_alaw_to_pcm           (gint8             alawv);
 static inline gint16  gsl_ulaw_to_pcm           (gint8             ulawv);
-
-
 /* --- clipping --- */
 typedef struct
 {
@@ -148,17 +138,13 @@ typedef struct
   guint          clipped_tail : 1;
   BseErrorType   error;
 } GslDataClipResult;
-
 BseErrorType    gsl_data_clip_sample    (GslDataHandle     *dhandle,
                                          GslDataClipConfig *cconfig,
                                          GslDataClipResult *result);
-
-
 /* --- misc implementations --- */
 gfloat  gsl_data_peek_value_f   (GslDataHandle     *dhandle,
 				 GslLong            pos,
 				 GslDataPeekBuffer *peekbuf);
-
 static inline gfloat
 gsl_data_handle_peek_value (GslDataHandle     *dhandle,
 			    GslLong	       position,
@@ -168,9 +154,7 @@ gsl_data_handle_peek_value (GslDataHandle     *dhandle,
 	  peekbuf->data[position - peekbuf->start] :
 	  gsl_data_peek_value_f (dhandle, position, peekbuf));
 }
-
 #define	GSL_CONV_FORMAT(format, endian_flag)	(((endian_flag) << 16) | ((format) & 0xffff))
-
 static inline guint     /* returns number of bytes used in dest */
 gsl_conv_from_float (GslWaveFormatType format,
                      guint             byte_order,
@@ -186,10 +170,8 @@ gsl_conv_from_float (GslWaveFormatType format,
   guint32 *u32dest = (guint32*) dest;
   const gfloat *bound = src + n_values;
   const guint32 *u32src = (guint32*) src, *u32bound = (const guint32*) bound;
-  
   if (!n_values)
     return 0;
-  
   switch (GSL_CONV_FORMAT (format, byte_order == G_BYTE_ORDER))
     {
       BseFpuState fpu;
@@ -377,7 +359,6 @@ gsl_conv_from_float (GslWaveFormatType format,
       return 0;
     }
 }
-
 static inline guint     /* returns number of bytes used in dest */
 gsl_conv_from_float_clip (GslWaveFormatType format,
                           guint             byte_order,
@@ -393,10 +374,8 @@ gsl_conv_from_float_clip (GslWaveFormatType format,
   guint32 *u32dest = (guint32*) dest;
   const gfloat *bound = src + n_values;
   const guint32 *u32src = (const guint32*) src, *u32bound = (const guint32*) bound;
-  
   if (!n_values)
     return 0;
-  
   switch (GSL_CONV_FORMAT (format, byte_order == G_BYTE_ORDER))
     {
       BseFpuState fpu;
@@ -608,7 +587,6 @@ gsl_conv_from_float_clip (GslWaveFormatType format,
       return 0;
     }
 }
-
 #define GSL_ALAW_MAX    (0x7e00)
 static inline gint16
 gsl_alaw_to_pcm (gint8 alawv)
@@ -633,7 +611,6 @@ gsl_alaw_to_pcm (gint8 alawv)
   };
   return alawv < 0 ? alaw2pcm_table[128 + alawv] : -alaw2pcm_table[alawv];
 }
-
 #define GSL_ULAW_MAX    (0x7d7c)
 static inline gint16
 gsl_ulaw_to_pcm (gint8 ulawv)
@@ -658,7 +635,6 @@ gsl_ulaw_to_pcm (gint8 ulawv)
   };
   return ulawv < 0 ? ulaw2pcm_table[128 + ulawv] : -ulaw2pcm_table[ulawv];
 }
-
 static inline void
 gsl_conv_to_float (GslWaveFormatType format,
                    guint             byte_order,
@@ -674,10 +650,8 @@ gsl_conv_to_float (GslWaveFormatType format,
   const guint32 *u32src = (guint32*) src;
   gfloat *bound = dest + n_values;
   guint32 *u32dest = (guint32*) dest, *u32bound = (guint32*) bound;
-  
   if (!n_values)
     return;
-  
   switch (GSL_CONV_FORMAT (format, byte_order == G_BYTE_ORDER))
     {
       gint16 vi16;
@@ -826,7 +800,6 @@ gsl_conv_to_float (GslWaveFormatType format,
       g_assert_not_reached ();
     }
 }
-
 /* same as above with s/float/double */
 static inline guint     /* returns number of bytes used in dest */
 gsl_conv_from_double (GslWaveFormatType format,
@@ -843,10 +816,8 @@ gsl_conv_from_double (GslWaveFormatType format,
   gint32 *i32 = (gint32*) dest;
   const gdouble *bound = src + n_values;
   const guint32 *u32src = (const guint32*) src, *u32bound = (const guint32*) bound;
-  
   if (!n_values)
     return 0;
-  
   switch (GSL_CONV_FORMAT (format, byte_order == G_BYTE_ORDER))
     {
       BseFpuState fpu;
@@ -1034,7 +1005,6 @@ gsl_conv_from_double (GslWaveFormatType format,
       return 0;
     }
 }
-
 static inline guint     /* returns number of bytes used in dest */
 gsl_conv_from_double_clip (GslWaveFormatType format,
 			   guint             byte_order,
@@ -1050,10 +1020,8 @@ gsl_conv_from_double_clip (GslWaveFormatType format,
   gint32 *i32 = (gint32*) dest;
   const gdouble *bound = src + n_values;
   const guint32 *u32src = (const guint32*) src, *u32bound = (const guint32*) bound;
-  
   if (!n_values)
     return 0;
-  
   switch (GSL_CONV_FORMAT (format, byte_order == G_BYTE_ORDER))
     {
       BseFpuState fpu;
@@ -1265,7 +1233,6 @@ gsl_conv_from_double_clip (GslWaveFormatType format,
       return 0;
     }
 }
-
 static inline void
 gsl_conv_to_double (GslWaveFormatType format,
 		    guint             byte_order,
@@ -1281,10 +1248,8 @@ gsl_conv_to_double (GslWaveFormatType format,
   const gint32 *i32 = (gint32*) src;
   gdouble *bound = dest + n_values;
   guint32 *u32dest = (guint32*) dest, *u32bound = (guint32*) bound;
-  
   if (!n_values)
     return;
-  
   switch (GSL_CONV_FORMAT (format, byte_order == G_BYTE_ORDER))
     {
       gint16 vi16;
@@ -1433,9 +1398,6 @@ gsl_conv_to_double (GslWaveFormatType format,
       g_assert_not_reached ();
     }
 }
-
 G_END_DECLS
-
 #endif /* __GSL_DATA_UTILS_H__ */
-
 /* vim:set ts=8 sts=2 sw=2: */

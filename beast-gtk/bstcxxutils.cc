@@ -2,9 +2,7 @@
 #include "bstcxxutils.hh"
 #include "bstusermessage.hh"
 #include <birnet/birnet.hh>
-
 using namespace Birnet;
-
 static void
 bstcxx_message_handler (const char              *domain,
                         Msg::Type                mtype,
@@ -45,13 +43,11 @@ bstcxx_message_handler (const char              *domain,
   msg.msg_bits = NULL;
   bst_message_handler (&msg);
 }
-
 extern "C" void
 bst_message_handler_install (void)
 {
   Msg::set_thread_handler (bstcxx_message_handler);
 }
-
 extern "C" void
 bst_message_handler_uninstall (void)
 {

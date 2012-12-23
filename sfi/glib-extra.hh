@@ -1,12 +1,9 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #ifndef __SFI_GLIB_EXTRA_H__
 #define __SFI_GLIB_EXTRA_H__
-
 #include	<glib.h>
 #include	<glib-object.h>
-
 G_BEGIN_DECLS
-
 #if (GLIB_SIZEOF_LONG > 4)
 #define G_HASH_LONG(l)	((l) + ((l) >> 32))
 #else
@@ -27,8 +24,6 @@ G_BEGIN_DECLS
 #    define G_STRFUNC     ((const char*) ("???"))
 #  endif
 #endif
-
-
 /* --- provide (historic) aliases --- */
 #define	g_string_printfa	g_string_append_printf
 #define	g_string_aprintf	g_string_append_printf
@@ -38,8 +33,6 @@ G_BEGIN_DECLS
 #define	g_scanner_remove_symbol( scanner, symbol )	G_STMT_START { \
   g_scanner_scope_remove_symbol ((scanner), 0, (symbol)); \
 } G_STMT_END
-
-
 /* --- abandon typesafety for some frequently used functions --- */
 #ifndef __cplusplus
 #define g_object_notify(o,s)		  g_object_notify ((gpointer) o, s)
@@ -55,7 +48,6 @@ G_BEGIN_DECLS
 void g_object_disconnect_any (gpointer object,
                               gpointer function,
                               gpointer data); /* workaorund for g_object_disconnect() */
-
 /* --- string functions --- */
 const gchar*    g_printf_find_localised_directive (const gchar *format);
 gchar**		g_straddv	  (gchar	**str_array,
@@ -65,23 +57,18 @@ guint		g_strlenv	  (gchar	**str_array);
 gchar*		g_strdup_stripped (const gchar	 *string);
 gchar*		g_strdup_rstrip   (const gchar	 *string);
 gchar*		g_strdup_lstrip   (const gchar	 *string);
-
 #if !GLIB_CHECK_VERSION (2, 9, 0)
 const gchar*    g_intern_string         (const gchar   *string);
 const gchar*    g_intern_static_string  (const gchar   *string);
 #endif
-
 const gchar*    g_intern_strconcat      (const gchar   *first_string,
                                          ...) G_GNUC_NULL_TERMINATED;
 const gchar*    g_intern_printf         (const gchar   *format,
                                          ...) G_GNUC_PRINTF (1,2);
-
 gchar*          g_path_concat     (const gchar   *first_path,
                                    ...) G_GNUC_NULL_TERMINATED;
 GString*        g_string_prefix_lines (GString     *gstring,
                                        const gchar *pstr);
-
-
 /* --- string options --- */
 gchar*          g_option_concat   (const gchar   *first_option,
                                    ...) G_GNUC_NULL_TERMINATED;
@@ -89,8 +76,6 @@ gboolean        g_option_check    (const gchar   *option_string,
                                    const gchar   *option);
 gchar*          g_option_get      (const gchar   *option_string,
                                    const gchar   *option);
-
-
 /* --- GParamSpec extensions --- */
 void         g_param_spec_set_options      (GParamSpec  *pspec,
                                             const gchar *options);
@@ -116,8 +101,6 @@ gboolean     g_param_spec_get_log_scale    (GParamSpec  *pspec,
                                             gdouble     *center,
                                             gdouble     *base,
                                             gdouble     *n_steps);
-
-
 /* --- list extensions --- */
 gpointer	g_slist_pop_head	(GSList	     **slist_p);
 gpointer	g_list_pop_head		(GList	     **list_p);
@@ -127,15 +110,11 @@ void            g_slist_free_deep       (GSList	      *slist,
 					 GDestroyNotify data_destroy);
 void            g_list_free_deep        (GList	       *list,
 					 GDestroyNotify data_destroy);
-
-
 /* --- name conversions --- */
 gchar*  g_type_name_to_cname            (const gchar    *type_name);
 gchar*  g_type_name_to_sname            (const gchar    *type_name);
 gchar*  g_type_name_to_cupper           (const gchar    *type_name);
 gchar*  g_type_name_to_type_macro       (const gchar    *type_name);
-
-
 /* --- simple main loop source --- */
 typedef gboolean (*GSourcePending)  (gpointer	 data,
 				     gint	*timeout);
@@ -147,14 +126,11 @@ GSource*	g_source_simple	(gint		 priority,
 				 GDestroyNotify	 destroy,
 				 GPollFD	*first_pfd,
 				 ...);
-
-
 /* --- bit matrix --- */
 typedef struct {
   guint32 width, height;
   guint32 bits[1]; /* flexible array */
 } GBitMatrix;
-
 static inline GBitMatrix*
 g_bit_matrix_new (guint           width,
                   guint           height)
@@ -164,7 +140,6 @@ g_bit_matrix_new (guint           width,
   matrix->height = height;
   return matrix;
 }
-
 static inline void
 g_bit_matrix_change (GBitMatrix     *matrix,
                      guint           x,
@@ -181,10 +156,8 @@ g_bit_matrix_change (GBitMatrix     *matrix,
   else
     matrix->bits[index] &= ~(1 << shift);
 }
-
 #define g_bit_matrix_set(matrix,x,y)    g_bit_matrix_change (matrix, x, y, TRUE)
 #define g_bit_matrix_unset(matrix,x,y)  g_bit_matrix_change (matrix, x, y, FALSE)
-
 static inline guint32
 g_bit_matrix_peek (GBitMatrix     *matrix,
                    guint           x,
@@ -195,7 +168,6 @@ g_bit_matrix_peek (GBitMatrix     *matrix,
   guint32 shift = cons & 0x1f;  /* % 32 */
   return matrix->bits[index] & (1 << shift);
 }
-
 static inline gboolean
 g_bit_matrix_test (GBitMatrix *matrix,
                    guint       x,
@@ -206,14 +178,11 @@ g_bit_matrix_test (GBitMatrix *matrix,
   else
     return 0;
 }
-
 static inline void
 g_bit_matrix_free (GBitMatrix *matrix)
 {
   g_free (matrix);
 }
-
-
 /* --- predicate idle --- */
 guint g_predicate_idle_add      (GSourceFunc     predicate,
                                  GSourceFunc     function,
@@ -223,8 +192,6 @@ guint g_predicate_idle_add_full (gint            priority,
                                  GSourceFunc     function,
                                  gpointer        data,
                                  GDestroyNotify  notify);
-
-
 /* --- unix signal queue --- */
 #if 0
 typedef gboolean (*GUSignalFunc) (gint8          usignal,
@@ -239,8 +206,6 @@ guint   g_usignal_add_full       (gint           priority,
 				  GDestroyNotify destroy);
 void    g_usignal_notify         (gint8          usignal);
 #endif
-
-
 /* --- GType boilerplate --- */
 #ifndef G_DEFINE_DATA_TYPE      	// GTKFIX: add this to glib?
 #define G_DEFINE_DATA_TYPE(TN, t_n, T_P)                         G_DEFINE_DATA_TYPE_EXTENDED (TN, t_n, T_P, GTypeFlags (0), {})
@@ -286,8 +251,6 @@ type_name##_get_type (void) \
   return g_define_type_id; \
 }
 #endif /* !G_DEFINE_DATA_TYPE */
-
-
 /* --- GScanner --- */
 GScanner*	g_scanner_new64			(const GScannerConfig *config_templ);
 #ifndef G_DISABLE_DEPRECATED
@@ -303,10 +266,7 @@ GScanner*	g_scanner_new64			(const GScannerConfig *config_templ);
 #define g_scanner_freeze_symbol_table(scanner) ((void)0)
 #define g_scanner_thaw_symbol_table(scanner) ((void)0)
 #endif /* G_DISABLE_DEPRECATED */
-
-
 G_END_DECLS
-
 // == Flags Enumeration Operators in C++ ==
 #ifdef __cplusplus
 inline GParamFlags  operator&  (GParamFlags  s1, GParamFlags s2) { return GParamFlags (s1 & (long long unsigned) s2); }
@@ -314,24 +274,20 @@ inline GParamFlags& operator&= (GParamFlags &s1, GParamFlags s2) { s1 = s1 & s2;
 inline GParamFlags  operator|  (GParamFlags  s1, GParamFlags s2) { return GParamFlags (s1 | (long long unsigned) s2); }
 inline GParamFlags& operator|= (GParamFlags &s1, GParamFlags s2) { s1 = s1 | s2; return s1; }
 inline GParamFlags  operator~  (GParamFlags  s1)                 { return GParamFlags (~(long long unsigned) s1); }
-
 inline GSignalMatchType  operator&  (GSignalMatchType  s1, GSignalMatchType s2) { return GSignalMatchType (s1 & (long long unsigned) s2); }
 inline GSignalMatchType& operator&= (GSignalMatchType &s1, GSignalMatchType s2) { s1 = s1 & s2; return s1; }
 inline GSignalMatchType  operator|  (GSignalMatchType  s1, GSignalMatchType s2) { return GSignalMatchType (s1 | (long long unsigned) s2); }
 inline GSignalMatchType& operator|= (GSignalMatchType &s1, GSignalMatchType s2) { s1 = s1 | s2; return s1; }
 inline GSignalMatchType  operator~  (GSignalMatchType  s1)                 { return GSignalMatchType (~(long long unsigned) s1); }
-
 inline GSignalFlags  operator&  (GSignalFlags  s1, GSignalFlags s2) { return GSignalFlags (s1 & (long long unsigned) s2); }
 inline GSignalFlags& operator&= (GSignalFlags &s1, GSignalFlags s2) { s1 = s1 & s2; return s1; }
 inline GSignalFlags  operator|  (GSignalFlags  s1, GSignalFlags s2) { return GSignalFlags (s1 | (long long unsigned) s2); }
 inline GSignalFlags& operator|= (GSignalFlags &s1, GSignalFlags s2) { s1 = s1 | s2; return s1; }
 inline GSignalFlags  operator~  (GSignalFlags  s1)                 { return GSignalFlags (~(long long unsigned) s1); }
-
 inline GConnectFlags  operator&  (GConnectFlags  s1, GConnectFlags s2) { return GConnectFlags (s1 & (long long unsigned) s2); }
 inline GConnectFlags& operator&= (GConnectFlags &s1, GConnectFlags s2) { s1 = s1 & s2; return s1; }
 inline GConnectFlags  operator|  (GConnectFlags  s1, GConnectFlags s2) { return GConnectFlags (s1 | (long long unsigned) s2); }
 inline GConnectFlags& operator|= (GConnectFlags &s1, GConnectFlags s2) { s1 = s1 | s2; return s1; }
 inline GConnectFlags  operator~  (GConnectFlags  s1)                 { return GConnectFlags (~(long long unsigned) s1); }
 #endif // __cplusplus
-
 #endif /* __SFI_GLIB_EXTRA_H__ */

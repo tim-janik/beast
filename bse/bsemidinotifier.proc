@@ -3,11 +3,8 @@
 #include <bse/bseprocedure.hh>
 #include <bse/bsemidinotifier.hh>
 #include <sys/time.h>
-
 AUTHORS	= "Tim Janik <timj@gtk.org>";
 LICENSE = "GNU Lesser General Public License";
-
-
 METHOD (BseMidiNotifier, current-time) {
   HELP	= "Test";
   IN	= bse_param_spec_object ("midi_notifier", "Midi Notifier", NULL,
@@ -23,17 +20,13 @@ BODY (BseProcedureClass *proc,
   BseMidiNotifier *self = (BseMidiNotifier*) bse_value_get_object (in_values++);
   struct timeval tv;
   guint64 stamp;
-  
   /* check parameters */
   if (!BSE_IS_MIDI_NOTIFIER (self))
     return BSE_ERROR_PROC_PARAM_INVAL;
-  
   gettimeofday (&tv, NULL);
   stamp = tv.tv_sec;
   stamp = stamp * 1000000 + tv.tv_usec;
-  
   /* set output parameters */
   sfi_value_set_int (out_values++, stamp / 1000);
-  
   return BSE_ERROR_NONE;
 }

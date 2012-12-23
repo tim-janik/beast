@@ -2,11 +2,9 @@
 //#define TEST_VERBOSE
 #include <birnet/birnettests.h>
 using namespace Birnet;
-
 #if BIRNET_CHECK_VERSION (2147483647, 2147483647, 2147483647) || !BIRNET_CHECK_VERSION (0, 0, 1)      
 #error BIRNET_CHECK_VERSION() apparently broken
 #endif
-
 static void
 test_cpu_info (void)
 {
@@ -20,7 +18,6 @@ test_cpu_info (void)
   TOK();
   TDONE();
 }
-
 static void
 test_paths()
 {
@@ -53,7 +50,6 @@ test_paths()
   TASSERT (Path::dirname ("dir" BIRNET_DIR_SEPARATOR_S "file") == "dir");
   TDONE();
 }
-
 static void
 test_zintern()
 {
@@ -65,7 +61,6 @@ test_zintern()
   TOK();
   TDONE();
 }
-
 static void
 test_files (const char *argv0)
 {
@@ -84,7 +79,6 @@ test_files (const char *argv0)
   TASSERT (Path::check (argv0, "s") == FALSE);
   TDONE();
 }
-
 static void
 test_messaging ()
 {
@@ -118,7 +112,6 @@ test_messaging ()
                 Msg::Text3 ("And more message details: a, b, c."),
                 Msg::Check ("Show this message again."));
 }
-
 static void
 test_virtual_typeid()
 {
@@ -133,21 +126,17 @@ test_virtual_typeid()
   TASSERT (strstr (b.typeid_pretty_name().c_str(), "TypeB") != NULL);
   TDONE();
 }
-
 int
 main (int   argc,
       char *argv[])
 {
   birnet_init_test (&argc, &argv);
-
   test_cpu_info();
   test_paths();
   test_zintern();
   test_files (argv[0]);
   test_messaging();
   test_virtual_typeid();
-  
   return 0;
 }
-
 /* vim:set ts=8 sts=2 sw=2: */

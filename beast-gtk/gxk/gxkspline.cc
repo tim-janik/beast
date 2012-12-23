@@ -4,11 +4,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
-
 #define SQRT_3       (1.7320508075688772935274463415059)
 static const double INF = DBL_MAX;
-
-
 /* --- functions --- */
 static inline double
 segment_eval (const GxkSplineSegment *xseg,     /* must not be last segment */
@@ -38,7 +35,6 @@ segment_eval (const GxkSplineSegment *xseg,     /* must not be last segment */
            next->yd2 * (w * w + 2 * v * (3 * x - v - w) - 3 * x * x) / (6. * (w - v));
   return y;
 }
-
 /**
  * @param n_points	number of fix points
  * @param points	fix points
@@ -51,7 +47,6 @@ gxk_spline_new_natural (guint                   n_points,
 {
   return gxk_spline_new (n_points, points, NAN, NAN);
 }
-
 /**
  * @param spline	correctly setup GxkSpline
  * @return		newly allocated spline
@@ -62,7 +57,6 @@ gxk_spline_copy (GxkSpline *spline)
 {
   return (GxkSpline*) g_memdup (spline, sizeof (spline[0]) + spline->n_segs * sizeof (spline->segs[0]));
 }
-
 static int
 spline_segment_cmp (const void *v1,
                     const void *v2)
@@ -71,7 +65,6 @@ spline_segment_cmp (const void *v1,
   const GxkSplineSegment *s2 = (GxkSplineSegment*) v2;
   return s1->x < s2->x ? -1 : s1->x > s2->x;
 }
-
 /**
  * @param n_points	number of fix points
  * @param points	fix points
@@ -172,7 +165,6 @@ gxk_spline_new (guint                   n_points,
   spline->segs[i].ymin = spline->segs[i].ymax = spline->segs[i].y;
   return spline;
 }
-
 /**
  * @param spline	correctly setup GxkSpline
  * @param x	x position for evaluation
@@ -202,7 +194,6 @@ gxk_spline_eval (const GxkSpline *spline,
   double y = segment_eval (spline->segs + first, x, yd1);
   return y;
 }
-
 /**
  * @param spline	correctly setup GxkSpline
  * @param x	x position for evaluation
@@ -217,14 +208,12 @@ gxk_spline_y (const GxkSpline        *spline,
 {
   return gxk_spline_eval (spline, x, NULL);
 }
-
 static double
 round_to_double (double vin)
 {
   volatile double rounded = vin;
   return rounded;
 }
-
 /**
  * @param spline	correctly setup GxkSpline
  * @param y	interpolated y value
@@ -371,7 +360,6 @@ gxk_spline_findx (const GxkSpline *spline,
     }
   return x;
 }
-
 /**
  * @param spline	correctly setup GxkSpline
  *
@@ -383,7 +371,6 @@ gxk_spline_free (GxkSpline *spline)
   g_return_if_fail (spline != NULL);
   g_free (spline);
 }
-
 /**
  * @param spline	correctly setup GxkSpline
  *

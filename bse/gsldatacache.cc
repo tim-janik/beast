@@ -9,15 +9,12 @@
 #include <string.h>
 #include <errno.h>
 #include <time.h>
-
-
 /* --- macros --- */
 #define	NODEP_INDEX(dcache, node_p)	((node_p) - (dcache)->nodes)
 #define	UPPER_POWER2(n)			(sfi_alloc_upper_power2 (MAX (n, 4)))
 #define	CONFIG_NODE_SIZE()		(BSE_CONFIG (dcache_block_size))
 #define	AGE_EPSILON			(3)	/* must be < resident set */
 #define	LOW_PERSISTENCY_RESIDENT_SET    (5)
-
 /* we use one global lock to protect the dcache list, the list
  * count (length) and the number of aged (unused) nodes.
  * also, each dcache has its own mutext to protect updates in
@@ -36,51 +33,40 @@
  * is considered sufficient until shown otherwise by further
  * profiling/debugging measures.
  */
-
-
 /* --- prototypes --- */
 static void			dcache_free		(GslDataCache	*dcache);
 static GslDataCacheNode*	data_cache_new_node_L	(GslDataCache	*dcache,
 							 int64		 offset,
 							 guint		 pos,
 							 gboolean	 demand_load);
-
-
 /* --- variables --- */
 static BirnetMutex	   global_dcache_mutex = { 0, };
 static BirnetCond	   global_dcache_cond_node_filled = { 0, };
 static SfiRing	  *global_dcache_list = NULL;
 static guint	   global_dcache_count = 0;
 static guint       global_dcache_n_aged_nodes = 0;
-
-
 /* --- functions --- */
 void
 _gsl_init_data_caches (void)
 {
   static gboolean initialized = FALSE;
-
   g_assert (initialized == FALSE);
   initialized++;
-
   BIRNET_STATIC_ASSERT (AGE_EPSILON < LOW_PERSISTENCY_RESIDENT_SET);
   sfi_cond_init (&global_dcache_cond_node_filled);
   sfi_mutex_init (&global_dcache_mutex);
 }
-
 GslDataCache*
 gsl_data_cache_new (GslDataHandle *dhandle,
 		    guint	   padding)
 {
   guint node_size = CONFIG_NODE_SIZE () / sizeof (GslDataType);
   GslDataCache *dcache;
-
   g_return_val_if_fail (dhandle != NULL, NULL);
   g_return_val_if_fail (padding > 0, NULL);
   g_return_val_if_fail (dhandle->name != NULL, NULL);
   g_assert (node_size == sfi_alloc_upper_power2 (node_size));
   g_return_val_if_fail (padding < node_size / 2, NULL);
-
   /* allocate new closed dcache if necessary */
   dcache = sfi_new_struct (GslDataCache, 1);
   dcache->dhandle = gsl_data_handle_ref (dhandle);
@@ -93,26 +79,21 @@ gsl_data_cache_new (GslDataHandle *dhandle,
   dcache->high_persistency = FALSE;
   dcache->n_nodes = 0;
   dcache->nodes = g_renew (GslDataCacheNode*, NULL, UPPER_POWER2 (dcache->n_nodes));
-
   GSL_SPIN_LOCK (&global_dcache_mutex);
   global_dcache_list = sfi_ring_append (global_dcache_list, dcache);
   global_dcache_count++;
   GSL_SPIN_UNLOCK (&global_dcache_mutex);
-
   return dcache;
 }
-
 void
 gsl_data_cache_open (GslDataCache *dcache)
 {
   g_return_if_fail (dcache != NULL);
   g_return_if_fail (dcache->ref_count > 0);
-
   GSL_SPIN_LOCK (&dcache->mutex);
   if (!dcache->open_count)
     {
       BseErrorType error;
-
       error = gsl_data_handle_open (dcache->dhandle);
       if (error)
 	{
@@ -130,16 +111,13 @@ gsl_data_cache_open (GslDataCache *dcache)
     dcache->open_count++;
   GSL_SPIN_UNLOCK (&dcache->mutex);
 }
-
 void
 gsl_data_cache_close (GslDataCache *dcache)
 {
   gboolean need_unref;
-
   g_return_if_fail (dcache != NULL);
   g_return_if_fail (dcache->ref_count > 0);
   g_return_if_fail (dcache->open_count > 0);
-
   GSL_SPIN_LOCK (&dcache->mutex);
   dcache->open_count--;
   need_unref = !dcache->open_count;
@@ -152,36 +130,29 @@ gsl_data_cache_close (GslDataCache *dcache)
   if (need_unref)
     gsl_data_cache_unref (dcache);
 }
-
 GslDataCache*
 gsl_data_cache_ref (GslDataCache *dcache)
 {
   g_return_val_if_fail (dcache != NULL, NULL);
   g_return_val_if_fail (dcache->ref_count > 0, NULL);
-
   /* we might get invoked with global_dcache_mutex locked */
   GSL_SPIN_LOCK (&dcache->mutex);
   dcache->ref_count++;
   GSL_SPIN_UNLOCK (&dcache->mutex);
-
   return dcache;
 }
-
 static void
 dcache_free (GslDataCache *dcache)
 {
   guint i;
-
   g_return_if_fail (dcache->ref_count == 0);
   g_return_if_fail (dcache->open_count == 0);
-
   gsl_data_handle_unref (dcache->dhandle);
   sfi_mutex_destroy (&dcache->mutex);
   for (i = 0; i < dcache->n_nodes; i++)
     {
       GslDataCacheNode *node = dcache->nodes[i];
       guint size;
-
       size = dcache->node_size + (dcache->padding << 1);
       sfi_delete_structs (GslDataType, size, node->data - dcache->padding);
       sfi_delete_struct (GslDataCacheNode, node);
@@ -189,18 +160,15 @@ dcache_free (GslDataCache *dcache)
   g_free (dcache->nodes);
   sfi_delete_struct (GslDataCache, dcache);
 }
-
 void
 gsl_data_cache_unref (GslDataCache *dcache)
 {
   g_return_if_fail (dcache != NULL);
  restart:
   g_return_if_fail (dcache->ref_count > 0);
-
   if (dcache->ref_count == 1)	/* possible destruction, need global lock */
     {
       g_return_if_fail (dcache->open_count == 0);
-
       GSL_SPIN_LOCK (&global_dcache_mutex);
       GSL_SPIN_LOCK (&dcache->mutex);
       if (dcache->ref_count != 1)
@@ -231,7 +199,6 @@ gsl_data_cache_unref (GslDataCache *dcache)
       GSL_SPIN_UNLOCK (&dcache->mutex);
     }
 }
-
 static inline GslDataCacheNode**
 data_cache_lookup_nextmost_node_L (GslDataCache *dcache,
 				   int64         offset)
@@ -240,14 +207,12 @@ data_cache_lookup_nextmost_node_L (GslDataCache *dcache,
     {
       GslDataCacheNode **check, **nodes = dcache->nodes;
       guint n_nodes = dcache->n_nodes, node_size = dcache->node_size;
-
       /* caller has to figure himself whether we return nextmost vs. exact match */
       nodes -= 1;
       do
 	{
 	  register gint cmp;
 	  register guint i;
-	  
 	  i = (n_nodes + 1) >> 1;
 	  check = nodes + i;
 	  cmp = offset < (*check)->offset ? -1 : offset >= (*check)->offset + node_size;
@@ -262,12 +227,10 @@ data_cache_lookup_nextmost_node_L (GslDataCache *dcache,
 	    n_nodes = i - 1;
 	}
       while (n_nodes);
-      
       return check; /* nextmost */
     }
   return NULL;
 }
-
 static inline GslDataCacheNode*
 data_cache_new_node_L (GslDataCache *dcache,
 		       int64	     offset,
@@ -280,7 +243,6 @@ data_cache_new_node_L (GslDataCache *dcache,
   int64 dhandle_length;
   guint i, size;
   gint result;
-
   i = dcache->n_nodes++;
   new_node_array_size = UPPER_POWER2 (dcache->n_nodes);
   if (old_node_array_size != new_node_array_size)
@@ -294,7 +256,6 @@ data_cache_new_node_L (GslDataCache *dcache,
   dnode->age = 0;
   dnode->data = NULL;
   GSL_SPIN_UNLOCK (&dcache->mutex);
-
   size = dcache->node_size + (dcache->padding << 1);
   data = sfi_new_struct (GslDataType, size);
   node_data = data + dcache->padding;
@@ -302,7 +263,6 @@ data_cache_new_node_L (GslDataCache *dcache,
   if (dcache->padding > offset)		/* pad out bytes before data start */
     {
       guint short_pad = dcache->padding - offset;
-
       memset (data, 0, short_pad * sizeof (GslDataType));
       size -= short_pad;
       data += short_pad;
@@ -312,7 +272,6 @@ data_cache_new_node_L (GslDataCache *dcache,
     offset -= dcache->padding;
   if (!demand_load)
     g_message (G_STRLOC ":FIXME: lazy data loading not yet supported");
-  
   /* copy over data from previous node */
   GslDataCacheNode *prev_node = pos ? dcache->nodes[pos - 1] : NULL;
   if (prev_node)
@@ -320,12 +279,10 @@ data_cache_new_node_L (GslDataCache *dcache,
       int64 prev_node_size = dcache->node_size;
       int64 prev_node_offset = prev_node->offset;
       GslDataType *prev_node_data = prev_node->data;
-      
       /* padding around prev_node */
       prev_node_size += dcache->padding << 1;
       prev_node_offset -= dcache->padding;
       prev_node_data -= dcache->padding;
-      
       /* check for overlap */
       if (offset < prev_node_offset + prev_node_size)
         {
@@ -336,7 +293,6 @@ data_cache_new_node_L (GslDataCache *dcache,
           data += overlap;
         }
     }
-
   /* fill from data handle */
   dhandle_length = gsl_data_handle_length (dcache->dhandle);
   do
@@ -359,14 +315,11 @@ data_cache_new_node_L (GslDataCache *dcache,
     }
   while (size && result > 0);
   memset (data, 0, size * sizeof (data[0]));
-
   GSL_SPIN_LOCK (&dcache->mutex);
   dnode->data = node_data;
   sfi_cond_broadcast (&global_dcache_cond_node_filled);
-  
   return dnode;
 }
-
 GslDataCacheNode*
 gsl_data_cache_ref_node (GslDataCache       *dcache,
 			 int64               offset,
@@ -374,12 +327,10 @@ gsl_data_cache_ref_node (GslDataCache       *dcache,
 {
   GslDataCacheNode **node_p, *node;
   guint insertion_pos;
-
   g_return_val_if_fail (dcache != NULL, NULL);
   g_return_val_if_fail (dcache->ref_count > 0, NULL);
   g_return_val_if_fail (dcache->open_count > 0, NULL);
   g_return_val_if_fail (offset < gsl_data_handle_length (dcache->dhandle), NULL);
-
   GSL_SPIN_LOCK (&dcache->mutex);
   node_p = data_cache_lookup_nextmost_node_L (dcache, offset);
   if (node_p)
@@ -388,7 +339,6 @@ gsl_data_cache_ref_node (GslDataCache       *dcache,
       if (offset >= node->offset && offset < node->offset + dcache->node_size)
 	{
 	  gboolean rejuvenate_node = !node->ref_count;
-
 	  if (load_request == GSL_DATA_CACHE_PEEK)
 	    {
 	      if (node->data)
@@ -404,21 +354,18 @@ gsl_data_cache_ref_node (GslDataCache       *dcache,
 		}
 	      return node;
 	    }
-
 	  node->ref_count++;
 	  if (load_request == GSL_DATA_CACHE_DEMAND_LOAD)
 	    while (!node->data)
 	      sfi_cond_wait (&global_dcache_cond_node_filled, &dcache->mutex);
 	  GSL_SPIN_UNLOCK (&dcache->mutex);
 	  /* g_printerr ("hit: %d :%d: %d\n", node->offset, offset, node->offset + dcache->node_size); */
-
 	  if (rejuvenate_node)
 	    {
 	      GSL_SPIN_LOCK (&global_dcache_mutex); /* different lock */
 	      global_dcache_n_aged_nodes--;
 	      GSL_SPIN_UNLOCK (&global_dcache_mutex);
 	    }
-	  
 	  return node;					/* exact match */
 	}
       insertion_pos = NODEP_INDEX (dcache, node_p);	/* insert before neighbour */
@@ -428,17 +375,13 @@ gsl_data_cache_ref_node (GslDataCache       *dcache,
     }
   else
     insertion_pos = 0;	/* insert at start */
-
   if (load_request != GSL_DATA_CACHE_PEEK)
     node = data_cache_new_node_L (dcache, offset, insertion_pos, load_request == GSL_DATA_CACHE_DEMAND_LOAD);
   else
     node = NULL;
-
   GSL_SPIN_UNLOCK (&dcache->mutex);
-
   return node;
 }
-
 static gboolean /* still locked */
 data_cache_free_olders_Lunlock (GslDataCache *dcache,
 				guint         max_lru)	/* how many lru nodes to keep */
@@ -446,16 +389,13 @@ data_cache_free_olders_Lunlock (GslDataCache *dcache,
   GslDataCacheNode **slot_p;
   guint i, rejuvenate, size;
   guint n_freed = 0;
-
   g_return_val_if_fail (dcache != NULL, TRUE);
-
   /* it doesn't make sense to free nodes below the jitter that
    * AGE_EPSILON attempts to prevent.
    */
   max_lru = MAX (AGE_EPSILON, max_lru);
   if (max_lru >= dcache->max_age)
     return TRUE;
-
   rejuvenate = dcache->max_age - max_lru;
   if (0)
     g_print ("start sweep: dcache (%p) with %u nodes, max_age: %u, rejuvenate: %u (max_lru: %u)\n",
@@ -465,7 +405,6 @@ data_cache_free_olders_Lunlock (GslDataCache *dcache,
   for (i = 0; i < dcache->n_nodes; i++)
     {
       GslDataCacheNode *node = dcache->nodes[i];
-
       if (!node->ref_count && node->age <= rejuvenate)
 	{
 	  sfi_delete_structs (GslDataType, size, node->data - dcache->padding);
@@ -488,7 +427,6 @@ data_cache_free_olders_Lunlock (GslDataCache *dcache,
   if (slot_p)
     dcache->n_nodes = NODEP_INDEX (dcache, slot_p);
   GSL_SPIN_UNLOCK (&dcache->mutex);
-
   if (n_freed)
     {
       GSL_SPIN_LOCK (&global_dcache_mutex);
@@ -502,18 +440,15 @@ data_cache_free_olders_Lunlock (GslDataCache *dcache,
 		dcache->n_nodes);
   return FALSE;
 }
-
 void
 gsl_data_cache_unref_node (GslDataCache     *dcache,
 			   GslDataCacheNode *node)
 {
   GslDataCacheNode **node_p;
   gboolean check_cache;
-
   g_return_if_fail (dcache != NULL);
   g_return_if_fail (node != NULL);
   g_return_if_fail (node->ref_count > 0);
-
   GSL_SPIN_LOCK (&dcache->mutex);
   node_p = data_cache_lookup_nextmost_node_L (dcache, node->offset);
   g_assert (node_p && *node_p == node);	/* paranoid check lookup, yeah! */
@@ -524,13 +459,11 @@ gsl_data_cache_unref_node (GslDataCache     *dcache,
        dcache->max_age < AGE_EPSILON))
     node->age = ++dcache->max_age;
   GSL_SPIN_UNLOCK (&dcache->mutex);
-
   if (check_cache)
     {
       guint node_size = CONFIG_NODE_SIZE ();
       guint cache_mem = BSE_CONFIG (dcache_cache_memory);
       guint current_mem;
-
       GSL_SPIN_LOCK (&global_dcache_mutex);
       global_dcache_n_aged_nodes++;
       current_mem = node_size * global_dcache_n_aged_nodes;
@@ -586,32 +519,26 @@ gsl_data_cache_unref_node (GslDataCache     *dcache,
 	GSL_SPIN_UNLOCK (&global_dcache_mutex);
     }
 }
-
 void
 gsl_data_cache_free_olders (GslDataCache *dcache,
 			    guint         max_age)
 {
   g_return_if_fail (dcache != NULL);
-
   GSL_SPIN_LOCK (&dcache->mutex);
   gboolean needs_unlock = data_cache_free_olders_Lunlock (dcache, max_age);
   if (needs_unlock)
     GSL_SPIN_UNLOCK (&dcache->mutex);
 }
-
 GslDataCache*
 gsl_data_cache_from_dhandle (GslDataHandle *dhandle,
 			     guint          min_padding)
 {
   SfiRing *ring;
-
   g_return_val_if_fail (dhandle != NULL, NULL);
-
   GSL_SPIN_LOCK (&global_dcache_mutex);
   for (ring = global_dcache_list; ring; ring = sfi_ring_walk (ring, global_dcache_list))
     {
       GslDataCache *dcache = (GslDataCache*) ring->data;
-
       if (dcache->dhandle == dhandle && dcache->padding >= min_padding)
 	{
 	  gsl_data_cache_ref (dcache);
@@ -620,6 +547,5 @@ gsl_data_cache_from_dhandle (GslDataHandle *dhandle,
 	}
     }
   GSL_SPIN_UNLOCK (&global_dcache_mutex);
-
   return gsl_data_cache_new (dhandle, min_padding);
 }

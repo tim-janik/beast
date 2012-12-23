@@ -1,6 +1,4 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
-
-
 /* --- color parameter editors --- */
 #include "bstauxdialogs.hh"
 static gint
@@ -19,7 +17,6 @@ param_color_spinner_input (GtkSpinButton *spin_button,
   else
     return GTK_INPUT_ERROR;
 }
-
 static gint
 param_color_spinner_output (GtkSpinButton *spin_button,
                             GxkParam      *param)
@@ -30,7 +27,6 @@ param_color_spinner_output (GtkSpinButton *spin_button,
   g_free (string);
   return TRUE;
 }
-
 static void
 param_color_assign (GtkWidget *dialog,
                     GdkColor  *color,
@@ -41,7 +37,6 @@ param_color_assign (GtkWidget *dialog,
   guint n = ((c.red >> 8) << 16) + ((c.green >> 8) << 8) + (c.blue >> 8);
   gtk_adjustment_set_value (spin_button->adjustment, n);
 }
-
 static void
 param_color_popup_selector (GtkSpinButton *spin_button)
 {
@@ -55,7 +50,6 @@ param_color_popup_selector (GtkSpinButton *spin_button)
       gxk_widget_showraise (dialog);
     }
 }
-
 static GtkWidget*
 param_color_spinner_create (GxkParam    *param,
                            const gchar *tooltip,
@@ -87,7 +81,6 @@ param_color_spinner_create (GxkParam    *param,
   gxk_widget_add_option (box, "hexpand", "+");
   return widget;
 }
-
 static void
 param_color_spinner_update (GxkParam  *param,
                            GtkWidget *widget)
@@ -95,7 +88,6 @@ param_color_spinner_update (GxkParam  *param,
   /* contents are updated through the adjustment */
   gtk_editable_set_editable (GTK_EDITABLE (widget), param->editable);
 }
-
 static GxkParamEditor param_color_spinner = {
   { "color-spinner",    N_("Color Entry"), },
   { G_TYPE_INT, },

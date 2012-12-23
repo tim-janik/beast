@@ -6,18 +6,13 @@
 #include <gtk/gtkarrow.h>
 #include <gtk/gtkframe.h>
 #include <gtk/gtklabel.h>
-
-
 #define	ARROW_WIDTH	20
-
 enum {
   PROP_NONE,
   PROP_TEXT_EDITING,
   PROP_POPUP_EDITING,
   PROP_AUTO_POPUP,
 };
-
-
 /* --- prototypes --- */
 static void	gxk_cell_renderer_popup_init		(GxkCellRendererPopup	   *self);
 static void	gxk_cell_renderer_popup_class_init	(GxkCellRendererPopupClass *klass);
@@ -50,13 +45,9 @@ static GtkCellEditable* gxk_cell_renderer_popup_start_editing (GtkCellRenderer  
 							       GdkRectangle         *background_area,
 							       GdkRectangle         *cell_area,
 							       GtkCellRendererState  flags);
-
-
 /* --- variables --- */
 static gpointer parent_class = NULL;
 static guint    signal_popup = 0;
-
-
 /* --- functions --- */
 /**
  * @return		GXK_TYPE_CELL_RENDERER_POPUP
@@ -68,7 +59,6 @@ GType
 gxk_cell_renderer_popup_get_type (void)
 {
   static GType type = 0;
-  
   if (!type)
     {
       static const GTypeInfo type_info = {
@@ -82,29 +72,23 @@ gxk_cell_renderer_popup_get_type (void)
 	0,      /* n_preallocs */
 	(GInstanceInitFunc) gxk_cell_renderer_popup_init,
       };
-      
       type = g_type_register_static (GTK_TYPE_CELL_RENDERER_TEXT,
 				     "GxkCellRendererPopup",
 				     &type_info, GTypeFlags (0));
     }
   return type;
 }
-
 static void
 gxk_cell_renderer_popup_class_init (GxkCellRendererPopupClass *klass)
 {
   GObjectClass *object_class = G_OBJECT_CLASS (klass);
   GtkCellRendererClass *cell_class = GTK_CELL_RENDERER_CLASS (klass);
-
   parent_class = g_type_class_peek_parent (klass);
-
   object_class->get_property = gxk_cell_renderer_popup_get_property;
   object_class->set_property = gxk_cell_renderer_popup_set_property;
-  
   cell_class->get_size = gxk_cell_renderer_popup_get_size;
   cell_class->render = gxk_cell_renderer_popup_render;
   cell_class->start_editing = gxk_cell_renderer_popup_start_editing;
-  
   g_object_class_install_property (object_class,
 				   PROP_TEXT_EDITING,
 				   g_param_spec_boolean ("text-editing", "Text Editing", "Whether the text is directly editable",
@@ -127,7 +111,6 @@ gxk_cell_renderer_popup_class_init (GxkCellRendererPopupClass *klass)
 			       G_TYPE_STRING,
 			       G_TYPE_STRING);
 }
-
 static void
 gxk_cell_renderer_popup_init (GxkCellRendererPopup *self)
 {
@@ -137,7 +120,6 @@ gxk_cell_renderer_popup_init (GxkCellRendererPopup *self)
   // GTK_CELL_RENDERER (self)->xpad = 2;
   // GTK_CELL_RENDERER (self)->ypad = 2;
 }
-
 static void
 gxk_cell_renderer_popup_set_property (GObject      *object,
 				      guint         param_id,
@@ -145,7 +127,6 @@ gxk_cell_renderer_popup_set_property (GObject      *object,
 				      GParamSpec   *pspec)
 {
   GxkCellRendererPopup *self = GXK_CELL_RENDERER_POPUP (object);
-  
   switch (param_id)
     {
     case PROP_TEXT_EDITING:
@@ -162,7 +143,6 @@ gxk_cell_renderer_popup_set_property (GObject      *object,
       break;
     }
 }
-
 static void
 gxk_cell_renderer_popup_get_property (GObject    *object,
 				      guint       param_id,
@@ -170,7 +150,6 @@ gxk_cell_renderer_popup_get_property (GObject    *object,
 				      GParamSpec *pspec)
 {
   GxkCellRendererPopup *self = GXK_CELL_RENDERER_POPUP (object);
-  
   switch (param_id)
     {
     case PROP_TEXT_EDITING:
@@ -187,7 +166,6 @@ gxk_cell_renderer_popup_get_property (GObject    *object,
       break;
     }
 }
-
 static void
 gxk_cell_renderer_popup_get_size (GtkCellRenderer *cell,
 				  GtkWidget       *widget,
@@ -198,9 +176,7 @@ gxk_cell_renderer_popup_get_size (GtkCellRenderer *cell,
 				  gint            *height_p)
 {
   GxkCellRendererPopup *self = GXK_CELL_RENDERER_POPUP (cell);
-
   GTK_CELL_RENDERER_CLASS (parent_class)->get_size (cell, widget, cell_area, xoffs_p, yoffs_p, width_p, height_p);
-
   if (self->popup_editing)
     {
       if (width_p)
@@ -209,7 +185,6 @@ gxk_cell_renderer_popup_get_size (GtkCellRenderer *cell,
 	*xoffs_p = MAX (*xoffs_p - ARROW_WIDTH / 2, 0);
     }
 }
-
 static void
 gxk_cell_renderer_popup_render (GtkCellRenderer     *cell,
 				GdkWindow           *window,
@@ -247,7 +222,6 @@ gxk_cell_renderer_popup_render (GtkCellRenderer     *cell,
                       area->x, area->y, area->width, area->height);
 #endif
 }
-
 void
 gxk_cell_renderer_popup_dialog (GxkCellRendererPopup *self,
 				GtkWidget            *dialog)
@@ -255,7 +229,6 @@ gxk_cell_renderer_popup_dialog (GxkCellRendererPopup *self,
   g_return_if_fail (GXK_IS_CELL_RENDERER_POPUP (self));
   if (dialog)
     g_return_if_fail (GTK_IS_WINDOW (dialog));
-
   if (self->dialog)
     {
       gxk_toplevel_delete (self->dialog);
@@ -268,14 +241,12 @@ gxk_cell_renderer_popup_dialog (GxkCellRendererPopup *self,
       gxk_widget_showraise (self->dialog);
     }
 }
-
 static void
 gxk_cell_renderer_remove_widget (GxkCellRendererPopup *self)
 {
   gxk_cell_renderer_popup_dialog (self, NULL);
   self->entry = NULL;
 }
-
 static void
 gxk_cell_renderer_popup_editing_done (GxkCellRendererPopup *self,
 				      GtkEntry             *entry)
@@ -285,7 +256,6 @@ gxk_cell_renderer_popup_editing_done (GxkCellRendererPopup *self,
     return;
   g_signal_emit_by_name (self, "edited", path, gtk_entry_get_text (entry));
 }
-
 void
 gxk_cell_renderer_popup_change (GxkCellRendererPopup   *self,
                                 const gchar            *text,
@@ -293,7 +263,6 @@ gxk_cell_renderer_popup_change (GxkCellRendererPopup   *self,
                                 gboolean                keep_editing)
 {
   g_return_if_fail (GXK_IS_CELL_RENDERER_POPUP (self));
-
   if (self->entry && text)
     gtk_entry_set_text (GTK_ENTRY (self->entry), text);
   if (!preserve_popup)
@@ -306,7 +275,6 @@ gxk_cell_renderer_popup_change (GxkCellRendererPopup   *self,
       gtk_cell_editable_remove_widget (ecell);
     }
 }
-
 static gboolean
 gxk_cell_renderer_popup_clicked (GxkCellRendererPopup *self)
 {
@@ -320,19 +288,16 @@ gxk_cell_renderer_popup_clicked (GxkCellRendererPopup *self)
     }
   return TRUE;	/* we handled the event */
 }
-
 static gboolean
 gxk_cell_renderer_idle_popup (gpointer data)
 {
   GxkCellRendererPopup *self = GXK_CELL_RENDERER_POPUP (data);
-
   GDK_THREADS_ENTER ();
   if (self->auto_popup && !self->dialog && self->entry)
     gxk_cell_renderer_popup_clicked (self);
   GDK_THREADS_LEAVE ();
   return FALSE;
 }
-
 static GtkCellEditable*
 gxk_cell_renderer_popup_start_editing (GtkCellRenderer      *cell,
 				       GdkEvent             *event,
@@ -389,7 +354,6 @@ gxk_cell_renderer_popup_start_editing (GtkCellRenderer      *cell,
                      g_object_unref);
   return GTK_CELL_EDITABLE (eproxy);
 }
-
 /* --- GxkProxyEditable --- */
 static void
 gxk_proxy_editable_start_editing (GtkCellEditable *cell_editable,
@@ -405,7 +369,6 @@ gxk_proxy_editable_start_editing (GtkCellEditable *cell_editable,
       self->block_start_editing--;
     }
 }
-
 static void
 gxk_proxy_editable_remove_widget (GtkCellEditable *cell_editable)
 {
@@ -417,7 +380,6 @@ gxk_proxy_editable_remove_widget (GtkCellEditable *cell_editable)
       self->block_remove_widget--;
     }
 }
-
 static void
 gxk_proxy_editable_proxy_remove_widget (GtkCellEditable *cell_editable)
 {
@@ -429,7 +391,6 @@ gxk_proxy_editable_proxy_remove_widget (GtkCellEditable *cell_editable)
       self->block_remove_widget--;
     }
 }
-
 static void
 gxk_proxy_editable_editing_done (GtkCellEditable *cell_editable)
 {
@@ -441,7 +402,6 @@ gxk_proxy_editable_editing_done (GtkCellEditable *cell_editable)
       self->block_editing_done--;
     }
 }
-
 static void
 gxk_proxy_editable_proxy_editing_done (GtkCellEditable *cell_editable)
 {
@@ -453,7 +413,6 @@ gxk_proxy_editable_proxy_editing_done (GtkCellEditable *cell_editable)
       self->block_editing_done--;
     }
 }
-
 /**
  * @param self	valid GxkProxyEditable
  * @param ecell	valid GtkCellEditable
@@ -469,7 +428,6 @@ gxk_proxy_editable_set_cell_editable (GxkProxyEditable *self,
   g_return_if_fail (GXK_IS_PROXY_EDITABLE (self));
   g_return_if_fail (GTK_IS_CELL_EDITABLE (ecell));
   g_return_if_fail (self->ecell == NULL);
-
   self->ecell = ecell;
   g_signal_connect_object (ecell, "remove_widget",
 			   G_CALLBACK (gxk_proxy_editable_proxy_remove_widget), self,
@@ -478,7 +436,6 @@ gxk_proxy_editable_set_cell_editable (GxkProxyEditable *self,
 			   G_CALLBACK (gxk_proxy_editable_proxy_editing_done), self,
 			   G_CONNECT_SWAPPED);
 }
-
 static void
 gxk_proxy_editable_init_cell_editable (GtkCellEditableIface *iface)
 {
@@ -486,7 +443,6 @@ gxk_proxy_editable_init_cell_editable (GtkCellEditableIface *iface)
   iface->remove_widget = gxk_proxy_editable_remove_widget;
   iface->editing_done = gxk_proxy_editable_editing_done;
 }
-
 /**
  * @return GXK_TYPE_PROXY_EDITABLE
  *
@@ -499,7 +455,6 @@ GType
 gxk_proxy_editable_get_type (void)
 {
   static GType type = 0;
-  
   if (!type)
     {
       static const GTypeInfo type_info = {

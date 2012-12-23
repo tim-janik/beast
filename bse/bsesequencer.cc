@@ -15,57 +15,44 @@
 #include <errno.h>
 #include <string.h>
 #include <vector>
-
 /* due to a linker/compiler bug on SuSE 9.2, we need to
  * define extern "C" symbols outside of any C++ namespace,
  * in order for C code to link against it.
  */
 extern "C" { BirnetThread *bse_sequencer_thread = NULL; }
-
 using namespace std;
-
 #define CHECKTRACE()    UNLIKELY (bse_trace_args.sequencer)
 #define SEQTRACE(...)   do { if (CHECKTRACE()) sfi_debug_channel_printf (bse_trace_args.sequencer, NULL, __VA_ARGS__); } while (0)
-
 #define	BSE_SEQUENCER_FUTURE_BLOCKS    (7)
-
 /* --- prototypes --- */
 static void	bse_sequencer_thread_main	(gpointer	 data);
 static void	bse_sequencer_process_song_SL	(BseSong	*song,
 						 guint		 n_ticks);
-
-
 /* --- variables --- */
 static BseSequencer    *global_sequencer = NULL;
 static BirnetCond          current_watch_cond = { 0, };
 static gint             sequencer_wake_up_pipe[2] = { -1, -1 };
-
 /* --- functions --- */
 extern "C" void
 bse_sequencer_init_thread (void)
 {
   g_assert (bse_sequencer_thread == NULL);
-
   sfi_cond_init (&current_watch_cond);
-
   if (pipe (sequencer_wake_up_pipe) < 0)
     g_error ("failed to create sequencer wake-up pipe: %s", strerror (errno));
   glong flags = fcntl (sequencer_wake_up_pipe[0], F_GETFL, 0);
   fcntl (sequencer_wake_up_pipe[0], F_SETFL, O_NONBLOCK | flags);
   flags = fcntl (sequencer_wake_up_pipe[1], F_GETFL, 0);
   fcntl (sequencer_wake_up_pipe[1], F_SETFL, O_NONBLOCK | flags);
-
   /* initialize BseSequencer */
   static BseSequencer sseq = { 0, };
   sseq.stamp = gsl_tick_stamp ();
   g_assert (sseq.stamp > 0);
   global_sequencer = &sseq;
-
   bse_sequencer_thread = sfi_thread_run ("Sequencer", bse_sequencer_thread_main, NULL);
   if (!bse_sequencer_thread)
     g_error ("failed to create sequencer thread");
 }
-
 static void
 sequencer_wake_up (gpointer wake_up_data)
 {
@@ -75,7 +62,6 @@ sequencer_wake_up (gpointer wake_up_data)
     err = write (sequencer_wake_up_pipe[1], &wake_up_message, 1);
   while (err < 0 && errno == EINTR);
 }
-
 namespace { // Anon
 class PollPool {
 public:
@@ -170,7 +156,6 @@ public:
     watches.erase (watches.begin() + i);
     return true;
   }
-  
   BIRNET_STATIC_ASSERT (sizeof (GPollFD) == sizeof (struct pollfd));
   BIRNET_STATIC_ASSERT (offsetof (GPollFD, fd) == offsetof (struct pollfd, fd));
   BIRNET_STATIC_ASSERT (sizeof (((GPollFD*) 0)->fd) == sizeof (((struct pollfd*) 0)->fd));
@@ -180,9 +165,7 @@ public:
   BIRNET_STATIC_ASSERT (sizeof (((GPollFD*) 0)->revents) == sizeof (((struct pollfd*) 0)->revents));
 };
 } // Anon
-
 static PollPool sequencer_poll_pool;
-
 extern "C" void
 bse_sequencer_add_io_watch (guint           n_pfds,
                             const GPollFD  *pfds,
@@ -194,12 +177,10 @@ bse_sequencer_add_io_watch (guint           n_pfds,
   sequencer_poll_pool.add_watch (n_pfds, pfds, watch_func, data);
   BSE_SEQUENCER_UNLOCK ();
 }
-
 static BseIOWatch current_watch_func = NULL;
 static gpointer   current_watch_data = NULL;
 static bool       current_watch_needs_remove1 = false;
 static bool       current_watch_needs_remove2 = false;
-
 extern "C" void
 bse_sequencer_remove_io_watch (BseIOWatch      watch_func,
                                gpointer        watch_data)
@@ -246,7 +227,6 @@ bse_sequencer_remove_io_watch (BseIOWatch      watch_func,
   if (!removal_success)
     g_warning ("%s: failed to remove %p(%p)", G_STRFUNC, watch_func, watch_data);
 }
-
 static bool
 bse_sequencer_poll_Lm (gint timeout_ms)
 {
@@ -291,7 +271,6 @@ bse_sequencer_poll_Lm (gint timeout_ms)
     }
   return !sfi_thread_aborted();
 }
-
 extern "C" void
 bse_sequencer_start_song (BseSong        *song,
                           guint64         start_stamp)
@@ -302,7 +281,6 @@ bse_sequencer_start_song (BseSong        *song,
   g_return_if_fail (song->sequencer_start_request_SL == 0);
   g_assert (song->sequencer_owns_refcount_SL == FALSE);
   start_stamp = MAX (start_stamp, 1);
-
   g_object_ref (song);
   BSE_SEQUENCER_LOCK ();
   song->sequencer_owns_refcount_SL = TRUE;
@@ -321,7 +299,6 @@ bse_sequencer_start_song (BseSong        *song,
   BSE_SEQUENCER_UNLOCK ();
   sfi_thread_wakeup (bse_sequencer_thread);
 }
-
 extern "C" void
 bse_sequencer_remove_song (BseSong *song)
 {
@@ -332,7 +309,6 @@ bse_sequencer_remove_song (BseSong *song)
       g_assert (song->sequencer_owns_refcount_SL == FALSE);
       return;   /* uncontained */
     }
-
   BSE_SEQUENCER_LOCK ();
   SfiRing *ring = sfi_ring_find (global_sequencer->songs, song);
   global_sequencer->songs = sfi_ring_remove_node (global_sequencer->songs, ring);
@@ -349,7 +325,6 @@ bse_sequencer_remove_song (BseSong *song)
   if (need_unref)
     g_object_unref (song);
 }
-
 static gboolean
 bse_sequencer_remove_song_async (gpointer data) /* UserThread */
 {
@@ -364,7 +339,6 @@ bse_sequencer_remove_song_async (gpointer data) /* UserThread */
   g_object_unref (song);                        /* sequencer_owns_refcount_SL = FALSE from bse_sequencer_queue_remove_song_SL() */
   return FALSE;
 }
-
 static void
 bse_sequencer_queue_remove_song_SL (BseSong *song)
 {
@@ -373,7 +347,6 @@ bse_sequencer_queue_remove_song_SL (BseSong *song)
   /* queue a job into the BSE core for immediate execution */
   bse_idle_now (bse_sequencer_remove_song_async, song);
 }
-
 extern "C" gboolean
 bse_sequencer_thread_lagging (guint n_blocks)
 {
@@ -385,7 +358,6 @@ bse_sequencer_thread_lagging (guint n_blocks)
   BSE_SEQUENCER_UNLOCK ();
   return lagging;
 }
-
 static void
 bse_sequencer_thread_main (gpointer data)
 {
@@ -398,7 +370,6 @@ bse_sequencer_thread_main (gpointer data)
       const guint64 cur_stamp = gsl_tick_stamp ();
       guint64 next_stamp = cur_stamp + BSE_SEQUENCER_FUTURE_BLOCKS * bse_engine_block_size();
       SfiRing *ring;
-      
       for (ring = global_sequencer->songs; ring; ring = sfi_ring_walk (ring, global_sequencer->songs))
 	{
           BseSong *song = BSE_SONG (ring->data);
@@ -441,14 +412,12 @@ bse_sequencer_thread_main (gpointer data)
 	    }
 	}
       global_sequencer->stamp = next_stamp;
-      
       sfi_thread_awake_after (cur_stamp + bse_engine_block_size ());
     }
   while (bse_sequencer_poll_Lm (-1));
   BSE_SEQUENCER_UNLOCK ();
   SEQTRACE ("SEQ:thrdstop: now=%llu", gsl_tick_stamp());
 }
-
 static void
 bse_sequencer_process_track_SL (BseTrack        *track,
                                 gdouble          start_stamp,
@@ -456,7 +425,6 @@ bse_sequencer_process_track_SL (BseTrack        *track,
                                 guint            n_ticks,
                                 gdouble          stamps_per_tick,
                                 BseMidiReceiver *midi_receiver);
-
 static gboolean
 bse_sequencer_process_song_unlooped_SL (BseSong *song,
                                         guint    n_ticks,
@@ -489,7 +457,6 @@ bse_sequencer_process_song_unlooped_SL (BseSong *song,
   song->delta_stamp_SL += n_ticks * stamps_per_tick;
   return n_done_tracks != n_tracks;
 }
-
 static void
 bse_sequencer_process_song_SL (BseSong *song,
                                guint    n_ticks)
@@ -517,7 +484,6 @@ bse_sequencer_process_song_SL (BseSong *song,
       bse_sequencer_queue_remove_song_SL (song);
     }
 }
-
 static void
 bse_sequencer_process_part_SL (BsePart         *part,
                                gdouble          start_stamp,
@@ -567,7 +533,6 @@ bse_sequencer_process_track_SL (BseTrack        *track,
       part = next ? bse_track_get_part_SL (track, next, &start, &next) : NULL;
     }
 }
-
 static void
 bse_sequencer_process_part_SL (BsePart         *part,
                                gdouble          start_stamp,
@@ -579,7 +544,6 @@ bse_sequencer_process_part_SL (BsePart         *part,
 {
   BsePartTickNode *node, *last;
   guint channel;
-  
   for (channel = 0; channel < part->n_channels; channel++)
     {
       BsePartEventNote *note = bse_part_note_channel_lookup_ge (&part->channels[channel], start_tick);
@@ -606,7 +570,6 @@ bse_sequencer_process_part_SL (BsePart         *part,
           note++;
         }
     }
-  
   node = bse_part_controls_lookup_ge (&part->controls, start_tick);
   last = bse_part_controls_lookup_lt (&part->controls, tick_bound);
   if (node) while (node <= last)

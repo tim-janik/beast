@@ -1,15 +1,9 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #ifndef __BSE_UNDO_STACK_H__
 #define __BSE_UNDO_STACK_H__
-
 #include <bse/bseitem.hh>
-
 G_BEGIN_DECLS
-
-
 #define BSE_UNDO_STACK_VOID(ustack)     ((ustack)->max_steps == 0)
-
-
 /* --- BseUndoStack structs --- */
 typedef struct {
   SfiTime        stamp;
@@ -49,8 +43,6 @@ struct _BseUndoStep
     gulong      v_ulong;
   }             data[1];        /* flexible array */
 };
-
-
 /* --- prototypes --- */
 BseUndoStack*      bse_undo_stack_dummy          (void);
 BseUndoStack*      bse_undo_stack_new            (BseProject     *project,
@@ -87,10 +79,7 @@ gchar*             bse_undo_pointer_pack         (gpointer        item,
                                                   BseUndoStack   *ustack);
 gpointer           bse_undo_pointer_unpack       (const gchar    *packed_pointer,
                                                   BseUndoStack   *ustack);
-
 const BseUndoStep* bse_undo_group_peek_last_atom (BseUndoStack   *self,
                                                   SfiTime        *stamp_p);
-
 G_END_DECLS
-
 #endif /* __BSE_UNDO_STACK_H__ */

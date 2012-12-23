@@ -2,10 +2,8 @@
 //#define TEST_VERBOSE
 #include <birnet/birnettests.h>
 #include <poll.h>
-
 namespace {
 using namespace Birnet;
-
 static void
 test_poll()
 {
@@ -22,18 +20,13 @@ test_poll()
   TASSERT (BIRNET_SYSVAL_POLLNVAL   == POLLNVAL);
   TDONE();
 }
-
 } // Anon
-
 int
 main (int   argc,
       char *argv[])
 {
   birnet_init_test (&argc, &argv);
-
   test_poll();
-
   return 0;
 }
-
 /* vim:set ts=8 sts=2 sw=2: */

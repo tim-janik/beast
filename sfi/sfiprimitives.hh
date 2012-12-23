@@ -1,12 +1,8 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #ifndef __SFI_PRIMITIVES_H__
 #define __SFI_PRIMITIVES_H__
-
 #include <sfi/sfivalues.hh>
-
 G_BEGIN_DECLS
-
-
 /* --- SfiBBlock primitive type --- */
 struct _SfiBBlock {
   guint   ref_count;
@@ -28,8 +24,6 @@ void	   sfi_bblock_append1	   (SfiBBlock	    *bblock,
 				    guint8	     byte0);
 guint	   sfi_bblock_length	   (const SfiBBlock *bblock);
 guint8*	   sfi_bblock_get	   (const SfiBBlock *bblock);
-
-
 /* --- SfiFBlock primitive type --- */
 struct _SfiFBlock {
   guint     ref_count;
@@ -55,8 +49,6 @@ void	   sfi_fblock_append1	   (SfiFBlock	    *fblock,
 				    gfloat	     float0);
 guint	   sfi_fblock_length	   (const SfiFBlock *fblock);
 gfloat*	   sfi_fblock_get	   (const SfiFBlock *fblock);
-
-
 /* --- SfiSeq primitive type --- */
 struct _SfiSeq {
   guint   ref_count;
@@ -133,8 +125,6 @@ SfiProxy     sfi_seq_get_proxy	(SfiSeq		*seq,
 gchar**	     sfi_seq_to_strv	(SfiSeq		*seq);
 SfiSeq*	     sfi_seq_from_strv	(gchar	       **strv);
 SfiSeq*	     sfi_seq_from_cstrv	(const gchar   **strv);
-
-
 /* --- SfiRec primitive type --- */
 struct _SfiRec {
   guint    ref_count;
@@ -228,9 +218,6 @@ SfiRec*	     sfi_rec_get_rec	(SfiRec		*rec,
 				 const gchar	*field_name);
 SfiProxy     sfi_rec_get_proxy	(SfiRec		*rec,
 				 const gchar	*field_name);
-
 G_END_DECLS
-
 #endif /* __SFI_PRIMITIVES_H__ */
-
 /* vim:set ts=8 sts=2 sw=2: */

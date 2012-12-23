@@ -1,11 +1,8 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #ifndef __BSE_DEVICE_H__
 #define __BSE_DEVICE_H__
-
 #include        <bse/bseobject.hh>
-
 G_BEGIN_DECLS
-
 /* --- object type macros --- */
 #define BSE_TYPE_DEVICE              (BSE_TYPE_ID (BseDevice))
 #define BSE_DEVICE(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), BSE_TYPE_DEVICE, BseDevice))
@@ -17,8 +14,6 @@ G_BEGIN_DECLS
 #define BSE_DEVICE_OPEN(pdev)        ((BSE_OBJECT_FLAGS (pdev) & BSE_DEVICE_FLAG_OPEN) != 0)
 #define BSE_DEVICE_READABLE(pdev)    ((BSE_OBJECT_FLAGS (pdev) & BSE_DEVICE_FLAG_READABLE) != 0)
 #define BSE_DEVICE_WRITABLE(pdev)    ((BSE_OBJECT_FLAGS (pdev) & BSE_DEVICE_FLAG_WRITABLE) != 0)
-
-
 /* --- enums --- */
 typedef enum    /*< skip >*/
 {
@@ -27,8 +22,6 @@ typedef enum    /*< skip >*/
   BSE_DEVICE_FLAG_WRITABLE      = 1 << (BSE_OBJECT_FLAGS_USHIFT + 2)
 } BseDeviceFlags;
 #define BSE_DEVICE_FLAGS_USHIFT (BSE_OBJECT_FLAGS_USHIFT + 3)
-
-
 /* --- BseDevice structs --- */
 typedef struct _BseDevice       BseDevice;
 typedef struct _BseDeviceClass  BseDeviceClass;
@@ -63,8 +56,6 @@ typedef struct {
   gchar          *device_group; /* usually NULL */
   gchar          *device_error; /* if device_name == NULL */
 } BseDeviceEntry;
-
-
 /* --- prototypes --- */
 void            bse_device_class_setup     (gpointer        klass,
                                             gint            rating,
@@ -117,8 +108,5 @@ BseDevice*      bse_device_open_auto       (GType           base_type,
                                                                                gpointer   data),
                                             gpointer        data,
                                             BseErrorType   *errorp);
-
-
 G_END_DECLS
-
 #endif /* __BSE_DEVICE_H__ */

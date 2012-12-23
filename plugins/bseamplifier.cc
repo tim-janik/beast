@@ -1,9 +1,7 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bseamplifier.genidl.hh"
 #include <bse/bsemathsignal.hh>
-
 namespace Bse {
-
 class Amplifier : public AmplifierBase {
   /* amplifier module implementation */
   class Module : public SynthesisModule {
@@ -74,7 +72,6 @@ class Amplifier : public AmplifierBase {
                 cv_sum = cl1 * *cv1in++;
               else if (CCASE == CCASE_C1n_C2y)
                 cv_sum = cl2 * *cv2in++;
-
               if (G_UNLIKELY (cv_sum < 0))
                 cv_sum = 0;
               else
@@ -85,7 +82,6 @@ class Amplifier : public AmplifierBase {
               if (G_UNLIKELY (cv_sum > 1.0))
                 cv_sum = 1.0;
             }
-
           double au_out; // never unused
           if (ACASE == ACASE_A1b_A2b)	        /* audio input, au1 and/or au2 */
             au_out = al1 * *au1in++ + al2 * *au2in++;
@@ -93,7 +89,6 @@ class Amplifier : public AmplifierBase {
             au_out = al1 * *au1in++;
           else if (ACASE == ACASE_A1n_A2y)
             au_out = al2 * *au2in++;
-
           au_out *= cv_sum;
           *audio_out++ = au_out;
         }
@@ -127,7 +122,6 @@ class Amplifier : public AmplifierBase {
         simple_control = true;
       if (!simple_control && ctrl_exp)
         mode |= WITH_EXP_CONTROLS;
-
       if (simple_control)
         switch (mode)
           {
@@ -234,9 +228,6 @@ public:
   /* implement creation and config methods for synthesis Module */
   BSE_EFFECT_INTEGRATE_MODULE (Amplifier, Module, AmplifierProperties);
 };
-
 BSE_CXX_DEFINE_EXPORTS();
 BSE_CXX_REGISTER_EFFECT (Amplifier);
-
 } // Bse
-

@@ -1,13 +1,9 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #ifndef __BSE_MAIN_H__
 #define __BSE_MAIN_H__
-
 #include	<bse/bse.hh>	/* initialization */
 #include        <bse/bsetype.hh>
-
 G_BEGIN_DECLS
-
-
 /* --- initialization --- */
 void		bse_init_textdomain_only (void);
 #if 0	// prototyped in bse.hh */
@@ -28,14 +24,11 @@ void		bse_init_inprocess	(gint		*argc,
 void		bse_init_test		(gint		*argc,
 					 gchar	      ***argv,
 					 SfiInitValue    values[]);
-
 /* BSE thread pid (or 0) */
 guint           bse_main_getpid         (void);
-
 /* messaging */
 void            bse_message_setup_thread_handler (void);
 void            bse_message_to_default_handler   (const BseMessage *msg);
-
 /* --- global macros --- */
 #define	BSE_THREADS_ENTER()			// bse_main_global_lock ()
 #define	BSE_THREADS_LEAVE()			// bse_main_global_unlock ()
@@ -43,7 +36,6 @@ void            bse_message_to_default_handler   (const BseMessage *msg);
 #define	BSE_SEQUENCER_UNLOCK()			sfi_mutex_unlock (&bse_main_sequencer_mutex)
 #define	BSE_DBG_EXT     			(bse_main_args->debug_extensions != FALSE)
 #define	BSE_CONFIG(field)			(bse_main_args->field)
-
 /* --- argc/argv overide settings --- */
 typedef struct {
   BirnetInitSettings    birnet;
@@ -76,12 +68,10 @@ typedef struct {
   SfiRing              *pcm_drivers;
   SfiRing              *midi_drivers;
 } BseMainArgs;
-
 /* --- debuging channels --- */
 typedef struct {
   SfiDebugChannel       *sequencer;     /* --bse-trace-sequencer */
 } BseTraceArgs;
-
 /* --- internal --- */
 void    _bse_init_c_wrappers    ();
 extern BseMainArgs     *bse_main_args;
@@ -89,8 +79,5 @@ extern BseTraceArgs     bse_trace_args;
 extern GMainContext    *bse_main_context;
 extern BirnetMutex	bse_main_sequencer_mutex;
 extern BirnetThread    *bse_main_thread;
-
-
 G_END_DECLS
-
 #endif /* __BSE_MAIN_H__ */

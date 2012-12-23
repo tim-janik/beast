@@ -1,7 +1,6 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #ifndef __SFI_H__
 #define __SFI_H__
-
 /* no bin-compat: #include <sfi/sficomwire.hh> */
 #include <sfi/sficomport.hh>
 #include <sfi/sfifilecrawler.hh>
@@ -22,7 +21,5 @@
 #include <sfi/sfivalues.hh>
 #include <sfi/sfivmarshal.hh>
 #include <sfi/sfiwrapper.hh>
-
 #endif /* __SFI_H__ */
-
 /* vim:set ts=8 sts=2 sw=2: */

@@ -1,16 +1,11 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #ifndef __GSL_COMMON_H__
 #define __GSL_COMMON_H__
-
 #include <bse/gsldefs.hh>
 #include <bse/bseenums.hh>
-
 G_BEGIN_DECLS
-
-
 /* --- initialization --- */
 void			gsl_init	(void);
-
 /* --- tick stamps --- */
 typedef struct {
   guint64 tick_stamp;
@@ -26,8 +21,6 @@ void		gsl_thread_awake_before	(guint64	 tick_stamp);
 #define	GSL_SPIN_UNLOCK	sfi_mutex_unlock
 #define	GSL_SYNC_LOCK	sfi_mutex_lock
 #define	GSL_SYNC_UNLOCK	sfi_mutex_unlock
-
-
 /* --- misc --- */
 const gchar* gsl_byte_order_to_string   (guint           byte_order);
 guint        gsl_byte_order_from_string (const gchar    *string);
@@ -38,8 +31,6 @@ BseErrorType gsl_error_select           (guint           n_errors,
                                          ...);
 BseErrorType gsl_file_check		(const gchar	*file_name,
 					 const gchar	*mode);
-
-
 /* --- progress notification --- */
 typedef struct _GslProgressState GslProgressState;
 typedef guint (*GslProgressFunc)        (gpointer          data,
@@ -65,8 +56,6 @@ guint            gsl_progress_printerr  (gpointer          message,
                                          gfloat            pval,
                                          const gchar      *detail,
                                          GslProgressState *pstate);
-
-
 /* --- implementation details --- */
 void	       _gsl_tick_stamp_inc	(void);
 void	       _gsl_tick_stamp_set_leap (guint		 ticks);
@@ -81,8 +70,5 @@ void	bse_init_loader_gus_patch	(void);
 #define		GSL_N_IO_RETRIES	(5)
 #define		_GSL_TICK_STAMP_VAL()	(bse_engine_exvar_tick_stamp + 0)
 extern volatile guint64	bse_engine_exvar_tick_stamp;
-
-
 G_END_DECLS
-
 #endif /* __GSL_COMMON_H__ */

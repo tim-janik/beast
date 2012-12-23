@@ -1,13 +1,10 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #ifndef __GSL_WAVE_CHUNK_H__
 #define __GSL_WAVE_CHUNK_H__
-
 #include <bse/gsldefs.hh>
 #include <bse/gsldatacache.hh>
 #include <bse/gsldatahandle.hh>
-
 G_BEGIN_DECLS
-
 /* --- typedefs & structures --- */
 typedef enum /*< skip >*/
 {
@@ -25,22 +22,18 @@ struct _GslWaveChunk
   /* wave chunk data residency */
   GslDataCache   *dcache;
   GslLong	  length;	/* number of per-channel-values * n-channels */
-  
   /* chunk specific parameters */
   gint		  n_channels;
   GslLong	  n_pad_values;	/* guaranteed pad values around blocks */
   GslLong	  wave_length;	/* start + loop duration + end (single channel) */
-  
   /* flags */
   guint		  pploop_ends_backwards : 1;
   guint		  mini_loop : 1;
-  
   /* loop spec */
   GslWaveLoopType loop_type;
   GslLong	  loop_first;
   GslLong	  loop_last;
   guint		  loop_count;
-  
   /* preformatted blocks */
   GslWaveChunkMem head;
   GslWaveChunkMem enter;
@@ -50,7 +43,6 @@ struct _GslWaveChunk
   GslWaveChunkMem tail;
   GslLong	  leave_end_norm;
   GslLong	  tail_start_norm;
-  
   GslWaveLoopType requested_loop_type;
   GslLong         requested_loop_first;
   GslLong         requested_loop_last;
@@ -78,8 +70,6 @@ struct _GslWaveChunkBlock
   /*< private >*/
   gpointer	node;
 };
-
-
 /* --- prototypes --- */
 void		gsl_wave_chunk_use_block	(GslWaveChunk		*wave_chunk,
 						 GslWaveChunkBlock	*block);
@@ -103,8 +93,5 @@ void		gsl_wave_chunk_debug_block	(GslWaveChunk		*wchunk,
 GslWaveChunk*	_gsl_wave_chunk_copy		(GslWaveChunk		*wchunk);
 const gchar*	gsl_wave_loop_type_to_string	(GslWaveLoopType	 wave_loop);
 GslWaveLoopType	gsl_wave_loop_type_from_string	(const gchar		*string);
-
-
 G_END_DECLS
-
 #endif /* __GSL_WAVE_CHUNK_H__ */

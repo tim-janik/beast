@@ -1,12 +1,9 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #ifndef __GXK_AUX_WIDGETS_H__
 #define __GXK_AUX_WIDGETS_H__
-
 #include "gxkutils.hh"
 #include "gxkradget.hh"
-
 G_BEGIN_DECLS
-
 /* --- menu item --- */
 #define GXK_TYPE_MENU_ITEM              (gxk_menu_item_get_type ())
 #define GXK_MENU_ITEM(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), GXK_TYPE_MENU_ITEM, GxkMenuItem))
@@ -17,7 +14,6 @@ G_BEGIN_DECLS
 typedef GtkImageMenuItem      GxkMenuItem;
 typedef GtkImageMenuItemClass GxkMenuItemClass;
 GType   gxk_menu_item_get_type          (void);
-
 /* --- scrolled window --- */
 #define GXK_TYPE_SCROLLED_WINDOW              (gxk_scrolled_window_get_type ())
 #define GXK_SCROLLED_WINDOW(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), GXK_TYPE_SCROLLED_WINDOW, GxkScrolledWindow))
@@ -28,7 +24,6 @@ GType   gxk_menu_item_get_type          (void);
 typedef GtkScrolledWindow      GxkScrolledWindow;
 typedef GtkScrolledWindowClass GxkScrolledWindowClass;
 GType   gxk_scrolled_window_get_type          (void);
-
 /* --- free radio button --- */
 #define GXK_TYPE_FREE_RADIO_BUTTON            (gxk_free_radio_button_get_type ())
 #define GXK_FREE_RADIO_BUTTON(obj)            (G_TYPE_CHECK_INSTANCE_CAST ((obj), GXK_TYPE_FREE_RADIO_BUTTON, GxkFreeRadioButton))
@@ -40,7 +35,6 @@ typedef GtkRadioButton      GxkFreeRadioButton;
 typedef GtkRadioButtonClass GxkFreeRadioButtonClass;
 GType      gxk_free_radio_button_get_type (void);
 GtkWidget* gxk_free_radio_button_new      (void);
-
 /* --- image --- */
 #define GXK_TYPE_IMAGE              (gxk_image_get_type ())
 #define GXK_IMAGE(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), GXK_TYPE_IMAGE, GxkImage))
@@ -51,7 +45,6 @@ GtkWidget* gxk_free_radio_button_new      (void);
 typedef GtkImage      GxkImage;
 typedef GtkImageClass GxkImageClass;
 GType   gxk_image_get_type              (void);
-
 /* --- widget-patcher --- */
 #define GXK_TYPE_WIDGET_PATCHER              (gxk_widget_patcher_get_type ())
 #define GXK_WIDGET_PATCHER(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), GXK_TYPE_WIDGET_PATCHER, GxkWidgetPatcher))
@@ -78,7 +71,6 @@ typedef struct {
 } GxkWidgetPatcher;
 GType   gxk_widget_patcher_get_type     (void);
 extern const GxkRadgetType *gxk_widget_patcher_def;
-
 /* --- back shade --- */
 #define GXK_TYPE_BACK_SHADE              (gxk_back_shade_get_type ())
 #define GXK_BACK_SHADE(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), GXK_TYPE_BACK_SHADE, GxkBackShade))
@@ -89,9 +81,5 @@ extern const GxkRadgetType *gxk_widget_patcher_def;
 typedef GtkAlignment      GxkBackShade;
 typedef GtkAlignmentClass GxkBackShadeClass;
 GType   gxk_back_shade_get_type          (void);
-
-
-
 G_END_DECLS
-
 #endif /* __GXK_AUX_WIDGETS_H__ */

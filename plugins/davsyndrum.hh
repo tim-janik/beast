@@ -1,13 +1,9 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #ifndef __DAV_SYNDRUM_H__
 #define __DAV_SYNDRUM_H__
-
 #include <bse/bseplugin.hh>
 #include <bse/bsesource.hh>
-
 G_BEGIN_DECLS
-
-
 /* --- object type macros --- */
 #define DAV_TYPE_SYN_DRUM              (dav_syn_drum_get_type())
 #define DAV_SYN_DRUM(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), DAV_TYPE_SYN_DRUM, DavSynDrum))
@@ -15,7 +11,6 @@ G_BEGIN_DECLS
 #define DAV_IS_SYN_DRUM(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), DAV_TYPE_SYN_DRUM))
 #define DAV_IS_SYN_DRUM_CLASS(class)   (G_TYPE_CHECK_CLASS_TYPE ((class), DAV_TYPE_SYN_DRUM))
 #define DAV_SYN_DRUM_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), DAV_TYPE_SYN_DRUM, DavSynDrumClass))
-
 /* --- DavSynDrum source --- */
 typedef struct {
   gfloat freq;
@@ -41,7 +36,6 @@ typedef struct {
   gfloat freq_rad;
   gfloat freq_shift;
 } DavSynDrumModule;
-
 /* --- channels --- */
 enum
 {
@@ -55,7 +49,5 @@ enum
   DAV_SYN_DRUM_OCHANNEL_MONO,
   DAV_SYN_DRUM_N_OCHANNELS
 };
-
 G_END_DECLS
-
 #endif /* __DAV_SYNDRUM_H__ */

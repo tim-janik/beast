@@ -1,5 +1,4 @@
 /* GdkPixbuf RGBA C-Source image dump 1-byte-run-length-encoded */
-
 static const guint8 canyon_icon[] = 
 { ""
   /* Pixbuf magic (0x47646b50) */
@@ -407,5 +406,3 @@ static const guint8 canyon_icon[] =
   "SSS\377RRR\377QQQ\377PPP\377QQQ\377222\377\210\0\0\0\0\2||{\300KKK\300"
   "\203FFF\300\6GGG\300HHG\300HHH\300IIH\300JJJ\300222\300\377\0\0\0\0\326"
   "\0\0\0\0"};
-
-

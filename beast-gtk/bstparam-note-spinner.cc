@@ -1,6 +1,4 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
-
-
 /* --- note parameter editors --- */
 static gint
 param_note_spinner_input (GtkSpinButton *spin_button,
@@ -13,7 +11,6 @@ param_note_spinner_input (GtkSpinButton *spin_button,
   g_free (error);
   return error ? GTK_INPUT_ERROR : TRUE;
 }
-
 static gint
 param_note_spinner_output (GtkSpinButton *spin_button,
                            GxkParam      *param)
@@ -23,7 +20,6 @@ param_note_spinner_output (GtkSpinButton *spin_button,
   g_free (string);
   return TRUE;
 }
-
 static GtkWidget*
 param_note_spinner_create (GxkParam    *param,
                            const gchar *tooltip,
@@ -46,7 +42,6 @@ param_note_spinner_create (GxkParam    *param,
   gxk_widget_set_tooltip (widget, tooltip);
   return widget;
 }
-
 static void
 param_note_spinner_update (GxkParam  *param,
                            GtkWidget *widget)
@@ -54,7 +49,6 @@ param_note_spinner_update (GxkParam  *param,
   /* contents are updated through the adjustment */
   gtk_editable_set_editable (GTK_EDITABLE (widget), param->editable);
 }
-
 static GxkParamEditor param_note_spinner = {
   { "note-spinner",     N_("Note Entry"), },
   { G_TYPE_INT, },

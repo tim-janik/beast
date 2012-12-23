@@ -2,20 +2,14 @@
 #include "bstrackitem.hh"
 #include "bstmenus.hh"
 #include <string.h>
-
-
 /* --- prototypes --- */
 static void       rack_item_class_init          (BstRackItemClass       *klass);
 static void       rack_item_init                (BstRackItem            *item);
 static void       rack_item_destroy             (GtkObject              *object);
 static void       rack_item_button_press        (GxkRackItem            *xitem,
                                                  GdkEventButton         *event);
-
-
 /* --- static variables --- */
 static gpointer             parent_class = NULL;
-
-
 /* --- functions --- */
 GType
 bst_rack_item_get_type (void)
@@ -38,20 +32,15 @@ bst_rack_item_get_type (void)
     }
   return type;
 }
-
 static void
 rack_item_class_init (BstRackItemClass *klass)
 {
   GtkObjectClass *object_class = GTK_OBJECT_CLASS (klass);
   GxkRackItemClass *xitem_class = GXK_RACK_ITEM_CLASS (klass);
-  
   parent_class = g_type_class_peek_parent (klass);
-  
   object_class->destroy = rack_item_destroy;
-  
   xitem_class->button_press = rack_item_button_press;
 }
-
 static void
 rack_item_init (BstRackItem *self)
 {
@@ -60,31 +49,25 @@ rack_item_init (BstRackItem *self)
   self->block_updates = 0;
   self->param = NULL;
 }
-
 static void
 rack_item_destroy (GtkObject *object)
 {
   BstRackItem *self = BST_RACK_ITEM (object);
-  
   if (self->param)
     {
       gxk_param_destroy (self->param);
       self->param = NULL;
     }
-  
   bst_rack_item_set_parasite (self, 0, NULL);
-  
   if (self->choice)
     {
       bst_choice_destroy (self->choice);
       self->controller_choice = NULL;
       self->choice = NULL;
     }
-  
   /* chain parent class' handler */
   GTK_OBJECT_CLASS (parent_class)->destroy (object);
 }
-
 GtkWidget*
 bst_rack_item_new (SfiProxy        proxy,
                    const gchar    *path)
@@ -98,7 +81,6 @@ bst_rack_item_new (SfiProxy        proxy,
   bst_rack_item_set_parasite (self, proxy, path);
   return GTK_WIDGET (self);
 }
-
 static void
 rack_item_parasite_changed (BstRackItem *self)
 {
@@ -108,18 +90,15 @@ rack_item_parasite_changed (BstRackItem *self)
       GParamSpec *pspec = NULL;
       SfiProxy proxy = 0;
       const gchar *controller, *name;
-      
       controller = bse_data_pocket_get_string (self->pocket, self->entry, "property-controller");
       name = bse_data_pocket_get_string (self->pocket, self->entry, "property-name");
       proxy = bse_data_pocket_get_object (self->pocket, self->entry, "property-object");
       if (proxy && name)
         pspec = bse_proxy_get_pspec (proxy, name);
       bst_rack_item_set_proxy (self, pspec ? proxy : 0, pspec, controller);
-      
       if (self->bparam)
         {
           BstRackChildInfo info;
-          
           info.col = bse_data_pocket_get_int (self->pocket, self->entry, "property-x");
           info.row = bse_data_pocket_get_int (self->pocket, self->entry, "property-y");
           info.hspan = bse_data_pocket_get_int (self->pocket, self->entry, "property-hspan");
@@ -134,20 +113,17 @@ rack_item_parasite_changed (BstRackItem *self)
 #endif
     }
 }
-
 static void
 rack_item_remove_proxy (BstRackItem *self)
 {
   bst_rack_item_set_parasite (self, 0, NULL);
 }
-
 void
 bst_rack_item_set_parasite (BstRackItem    *self,
                             SfiProxy        proxy,
                             const gchar    *path)
 {
   g_return_if_fail (BST_IS_RACK_ITEM (self));
-  
   if (self->proxy)
     {
       bse_proxy_disconnect (self->proxy,
@@ -167,7 +143,6 @@ bst_rack_item_set_parasite (BstRackItem    *self,
       rack_item_parasite_changed (self);
     }
 }
-
 static void
 rack_item_button_press (GxkRackItem    *xitem,
                         GdkEventButton *event)
@@ -178,7 +153,6 @@ rack_item_button_press (GxkRackItem    *xitem,
     {
       gboolean can_clone = self->pocket && self->bparam && self->proxy && self->pspec;
       guint id;
-      
       if (!self->choice)
         {
           self->controller_choice = create_controller_menu ();

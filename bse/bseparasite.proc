@@ -3,10 +3,8 @@
 #include <bse/bseprocedure.hh>
 #include <bse/bseexports.hh>
 #include "bsecxxplugin.hh"
-
 AUTHORS	= "Tim Janik <timj@gtk.org>";
 LICENSE = "GNU Lesser General Public License";
-
 METHOD (BseItem, list-parasites) {
   HELP	= "List parasites within a parasite path segment.";
   IN    = bse_param_spec_object ("item", _("Item"), NULL, BSE_TYPE_ITEM, SFI_PARAM_STANDARD);
@@ -29,7 +27,6 @@ METHOD (BseItem, list-parasites) {
   bse_value_take_boxed (out_values++, sseq);
   return BSE_ERROR_NONE;
 }
-
 METHOD (BseItem, get-parasite) {
   SfiRecFields zero_fields = { 0, };
   HELP	= "Retrieve a parasite from an item.";
@@ -47,7 +44,6 @@ METHOD (BseItem, get-parasite) {
   sfi_value_set_rec (out_values++, bse_item_get_parasite (item, path));
   return BSE_ERROR_NONE;
 }
-
 METHOD (BseItem, set-parasite) {
   SfiRecFields zero_fields = { 0, };
   HELP	= "Set or change a parasite on an item.";
@@ -66,7 +62,6 @@ METHOD (BseItem, set-parasite) {
   bse_item_set_parasite (item, path, rec);
   return BSE_ERROR_NONE;
 }
-
 METHOD (BseItem, add-parasite) {
   SfiRecFields zero_fields = { 0, };
   HELP	= "Add a new parasite to an item.";

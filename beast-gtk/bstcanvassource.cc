@@ -1,12 +1,9 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bstcanvassource.hh"
-
 #include "topconfig.h"
 #include "bstparamview.hh"
 #include "bstgconfig.hh"
 #include <string.h>
-
-
 /* --- defines --- */
 #define	ICON_WIDTH(cs)		((gdouble) 64)
 #define	ICON_HEIGHT(cs)		((gdouble) 64)
@@ -32,7 +29,6 @@
 #define	FONT_HEIGHT		((gdouble) BST_GCONFIG (snet_font_size))
 #define RGBA_BLACK		(0x000000ff)
 #define RGBA_INTERNAL           (0x0000ffff)
-
 /* --- signals --- */
 enum
 {
@@ -41,8 +37,6 @@ enum
 };
 typedef void    (*SignalUpdateLinks)            (BstCanvasSource       *source,
 						 gpointer         func_data);
-
-
 /* --- prototypes --- */
 static gboolean bst_canvas_source_child_event	(BstCanvasSource	*csource,
 						 GdkEvent               *event,
@@ -53,20 +47,14 @@ static void	bst_canvas_icon_set		(GnomeCanvasItem	*item,
                                                  const gchar            *module_type);
 static void	csource_info_update		(BstCanvasSource	*csource);
 static void     bst_canvas_source_build         (BstCanvasSource        *csource);
-
-
 /* --- static variables --- */
 static guint                 csource_signals[SIGNAL_LAST] = { 0 };
-
-
 /* --- functions --- */
 G_DEFINE_TYPE (BstCanvasSource, bst_canvas_source, GNOME_TYPE_CANVAS_GROUP);
-
 static void
 bst_canvas_source_init (BstCanvasSource *csource)
 {
   GtkObject *object = GTK_OBJECT (csource);
-  
   csource->source = 0;
   csource->params_dialog = NULL;
   csource->source_info = NULL;
@@ -83,22 +71,18 @@ bst_canvas_source_init (BstCanvasSource *csource)
 		    "signal::notify", bst_canvas_source_changed, NULL,
 		    NULL);
 }
-
 static void
 source_channels_changed (BstCanvasSource *csource)
 {
   g_return_if_fail (BST_IS_CANVAS_SOURCE (csource));
-
   GNOME_CANVAS_NOTIFY (csource);
   bst_canvas_source_update_links (csource);
 }
-
 static gboolean
 idle_move_item (gpointer data)
 {
   BstCanvasSource *self = (BstCanvasSource*) data;
   GnomeCanvasItem *item = GNOME_CANVAS_ITEM (self);
-
   GDK_THREADS_ENTER ();
   if (self->source && item->canvas)
     {
@@ -122,7 +106,6 @@ idle_move_item (gpointer data)
   GDK_THREADS_LEAVE ();
   return FALSE;
 }
-
 static void
 source_pos_changed (BstCanvasSource *self)
 {
@@ -132,7 +115,6 @@ source_pos_changed (BstCanvasSource *self)
       g_idle_add (idle_move_item, g_object_ref (self));
     }
 }
-
 static void
 canvas_source_set_position (BstCanvasSource *self)
 {
@@ -142,59 +124,47 @@ canvas_source_set_position (BstCanvasSource *self)
   GDK_THREADS_ENTER ();
   self->idle_reposition = idle_reposition;
 }
-
 static void
 source_name_changed (BstCanvasSource *csource)
 {
   const gchar *name;
-
   g_return_if_fail (BST_IS_CANVAS_SOURCE (csource));
-
   name = bse_item_get_name_or_type (csource->source);
-
   if (csource->text)
     g_object_set (csource->text, "text", name, NULL);
-
   if (csource->params_dialog)
     {
       gxk_dialog_set_title (GXK_DIALOG (csource->params_dialog), name);
       csource_info_update (csource);
     }
-
   name = g_strconcat ("Info: ", name, NULL);
   if (csource->source_info)
     gxk_dialog_set_title (GXK_DIALOG (csource->source_info), name);
 }
-
 static void
 source_icon_changed (BstCanvasSource *csource)
 {
   BseIcon *icon;
-
   /* update icon in group, revert to a stock icon if none is available
    */
   icon = bse_item_get_icon (csource->source);
   if (csource->icon_item)
     bst_canvas_icon_set (csource->icon_item, icon, bse_item_get_type (csource->source));
 }
-
 static void
 bst_canvas_source_destroy (GtkObject *object)
 {
   BstCanvasSource *csource = BST_CANVAS_SOURCE (object);
   GnomeCanvasGroup *group = GNOME_CANVAS_GROUP (object);
-
   if (csource->in_move)
     {
       csource->in_move = FALSE;
       bse_item_ungroup_undo (csource->source);
     }
-
   while (csource->channel_hints)
     gtk_object_destroy ((GtkObject*) csource->channel_hints->data);
   while (group->item_list)
     gtk_object_destroy ((GtkObject*) group->item_list->data);
-
   if (csource->source)
     {
       bse_proxy_disconnect (csource->source,
@@ -207,12 +177,9 @@ bst_canvas_source_destroy (GtkObject *object)
       bse_item_unuse (csource->source);
       csource->source = 0;
     }
-
   GTK_OBJECT_CLASS (bst_canvas_source_parent_class)->destroy (object);
 }
-
 #define EPSILON 1e-6
-
 static void
 bse_object_set_parasite_coords (SfiProxy proxy,
 				SfiReal  x,
@@ -222,17 +189,14 @@ bse_object_set_parasite_coords (SfiProxy proxy,
                       x / BST_CANVAS_SOURCE_PIXEL_SCALE,
                       y / -BST_CANVAS_SOURCE_PIXEL_SCALE);
 }
-
 GnomeCanvasItem*
 bst_canvas_source_new (GnomeCanvasGroup *group,
 		       SfiProxy		 source)
 {
   BstCanvasSource *csource;
   GnomeCanvasItem *item;
-
   g_return_val_if_fail (GNOME_IS_CANVAS_GROUP (group), NULL);
   g_return_val_if_fail (BSE_IS_SOURCE (source), NULL);
-
   item = gnome_canvas_item_new (group,
 				BST_TYPE_CANVAS_SOURCE,
 				NULL);
@@ -246,31 +210,24 @@ bst_canvas_source_new (GnomeCanvasGroup *group,
 		     "swapped_signal::property-notify::pos-y", source_pos_changed, csource,
 		     "swapped_signal::icon-changed", source_icon_changed, csource,
 		     NULL);
-
   canvas_source_set_position (csource);
   bst_canvas_source_build (csource);
-  
   GNOME_CANVAS_NOTIFY (item);
-  
   return item;
 }
-
 void
 bst_canvas_source_update_links (BstCanvasSource *csource)
 {
   g_return_if_fail (BST_IS_CANVAS_SOURCE (csource));
-
   if (csource->source)
     gtk_signal_emit (GTK_OBJECT (csource), csource_signals[SIGNAL_UPDATE_LINKS]);
 }
-
 static inline void
 canvas_source_create_params (BstCanvasSource *csource)
 {
   if (!csource->params_dialog)
     {
       GtkWidget *param_view;
-
       param_view = bst_param_view_new (csource->source);
       csource->params_dialog = (GtkWidget*) gxk_dialog_new (&csource->params_dialog,
                                                             GTK_OBJECT (csource),
@@ -280,47 +237,37 @@ canvas_source_create_params (BstCanvasSource *csource)
       source_name_changed (csource);
     }
 }
-
 void
 bst_canvas_source_reset_params (BstCanvasSource *csource)
 {
   GtkWidget *param_view;
-
   g_return_if_fail (BST_IS_CANVAS_SOURCE (csource));
-
   canvas_source_create_params (csource);
   param_view = gxk_dialog_get_child (GXK_DIALOG (csource->params_dialog));
   bst_param_view_apply_defaults (BST_PARAM_VIEW (param_view));
 }
-
 void
 bst_canvas_source_popup_params (BstCanvasSource *csource)
 {
   g_return_if_fail (BST_IS_CANVAS_SOURCE (csource));
-
   canvas_source_create_params (csource);
   gxk_widget_showraise (csource->params_dialog);
 }
-
 void
 bst_canvas_source_toggle_params (BstCanvasSource *csource)
 {
   g_return_if_fail (BST_IS_CANVAS_SOURCE (csource));
-
   if (!csource->params_dialog || !GTK_WIDGET_VISIBLE (csource->params_dialog))
     bst_canvas_source_popup_params (csource);
   else
     gtk_widget_hide (csource->params_dialog);
 }
-
 void
 bst_canvas_source_set_channel_hints (BstCanvasSource *csource,
 				     gboolean         on_off)
 {
   GSList *slist;
-
   g_return_if_fail (BST_IS_CANVAS_SOURCE (csource));
-
   csource->show_hints = !!on_off;
   if (csource->show_hints)
     for (slist = csource->channel_hints; slist; slist = slist->next)
@@ -329,7 +276,6 @@ bst_canvas_source_set_channel_hints (BstCanvasSource *csource,
     for (slist = csource->channel_hints; slist; slist = slist->next)
       g_object_set (slist->data, "text", "", NULL);
 }
-
 static void
 csource_info_update (BstCanvasSource *csource)
 {
@@ -339,11 +285,9 @@ csource_info_update (BstCanvasSource *csource)
   if (text)
     {
       const gchar *string;
-
       /* construct information */
       gxk_scroll_text_clear (text);
       gxk_scroll_text_aprintf (text, "%s:\n", bse_item_get_name_or_type (csource->source));
-
       /* type & category */
       gxk_scroll_text_push_indent (text);
       gxk_scroll_text_aprintf (text, "Type: %s\n", bse_item_get_type_name (csource->source));
@@ -351,7 +295,6 @@ csource_info_update (BstCanvasSource *csource)
       if (cseq->n_cats)
         gxk_scroll_text_aprintf (text, "Category: %s\n", cseq->cats[0]->category);
       gxk_scroll_text_pop_indent (text);
-
       /* input channels */
       if (bse_source_n_ichannels (csource->source))
 	{
@@ -374,7 +317,6 @@ csource_info_update (BstCanvasSource *csource)
 	}
       if (bse_source_n_ichannels (csource->source))
 	gxk_scroll_text_pop_indent (text);
-
       /* output channels */
       if (bse_source_n_ochannels (csource->source))
 	{
@@ -397,7 +339,6 @@ csource_info_update (BstCanvasSource *csource)
 	}
       if (bse_source_n_ochannels (csource->source))
 	gxk_scroll_text_pop_indent (text);
-
       /* description */
       string = bse_item_get_type_blurb (csource->source);
       if (string && string[0])
@@ -407,24 +348,20 @@ csource_info_update (BstCanvasSource *csource)
 	  gxk_scroll_text_aprintf (text, "%s\n", string);
 	  gxk_scroll_text_pop_indent (text);
 	}
-
       /* authors */
       string = bse_item_get_type_authors (csource->source);
       if (string && string[0])
         gxk_scroll_text_aprintf (text, "\nAuthors: %s\n", string);
-      
       /* license */
       string = bse_item_get_type_license (csource->source);
       if (string && string[0])
         gxk_scroll_text_aprintf (text, "\nLicense: %s\n", string);
     }
 }
-
 void
 bst_canvas_source_popup_info (BstCanvasSource *csource)
 {
   g_return_if_fail (BST_IS_CANVAS_SOURCE (csource));
-
   if (!csource->source_info)
     {
       GtkWidget *sctext = gxk_scroll_text_create (GXK_SCROLL_TEXT_WIDGET_LOOK, NULL);
@@ -449,18 +386,15 @@ bst_canvas_source_popup_info (BstCanvasSource *csource)
   source_name_changed (csource);
   gxk_widget_showraise (csource->source_info);
 }
-
 void
 bst_canvas_source_toggle_info (BstCanvasSource *csource)
 {
   g_return_if_fail (BST_IS_CANVAS_SOURCE (csource));
-
   if (!csource->source_info || !GTK_WIDGET_VISIBLE (csource->source_info))
     bst_canvas_source_popup_info (csource);
   else
     gtk_widget_hide (csource->source_info);
 }
-
 BstCanvasSource*
 bst_canvas_source_at (GnomeCanvas *canvas,
 		      gdouble      world_x,
@@ -468,34 +402,27 @@ bst_canvas_source_at (GnomeCanvas *canvas,
 {
   return (BstCanvasSource*) gnome_canvas_typed_item_at (canvas, BST_TYPE_CANVAS_SOURCE, world_x, world_y);
 }
-
 gboolean
 bst_canvas_source_is_jchannel (BstCanvasSource *csource,
 			       guint            ichannel)
 {
   g_return_val_if_fail (BST_IS_CANVAS_SOURCE (csource), FALSE);
-
   if (!csource->source)
     return FALSE;
-
   return bse_source_is_joint_ichannel_by_id (csource->source, ichannel);
 }
-
 gboolean
 bst_canvas_source_ichannel_free (BstCanvasSource *csource,
 				 guint            ichannel)
 {
   g_return_val_if_fail (BST_IS_CANVAS_SOURCE (csource), FALSE);
-
   if (!csource->source)
     return FALSE;
-
   if (bse_source_is_joint_ichannel_by_id (csource->source, ichannel))
     return TRUE;
   else
     return bse_source_ichannel_get_osource (csource->source, ichannel, 0) == 0;
 }
-
 void
 bst_canvas_source_ichannel_pos (BstCanvasSource *csource,
 				guint            ochannel,
@@ -503,9 +430,7 @@ bst_canvas_source_ichannel_pos (BstCanvasSource *csource,
 				gdouble         *y_p)
 {
   gdouble x = 0, y = 0;
-  
   g_return_if_fail (BST_IS_CANVAS_SOURCE (csource));
-  
   x = ICHANNEL_X (csource) + CHANNEL_WIDTH (csource) / 2;
   if (csource->source)
     y = CHANNEL_HEIGHT (csource) / bse_source_n_ichannels (csource->source);
@@ -517,7 +442,6 @@ bst_canvas_source_ichannel_pos (BstCanvasSource *csource,
   if (y_p)
     *y_p = y;
 }
-
 void
 bst_canvas_source_ochannel_pos (BstCanvasSource *csource,
 				guint            ichannel,
@@ -525,9 +449,7 @@ bst_canvas_source_ochannel_pos (BstCanvasSource *csource,
 				gdouble         *y_p)
 {
   gdouble x, y;
-  
   g_return_if_fail (BST_IS_CANVAS_SOURCE (csource));
-  
   x = OCHANNEL_X (csource) + CHANNEL_WIDTH (csource) / 2;
   if (csource->source)
     y = CHANNEL_HEIGHT (csource) / bse_source_n_ochannels (csource->source);
@@ -539,18 +461,14 @@ bst_canvas_source_ochannel_pos (BstCanvasSource *csource,
   if (y_p)
     *y_p = y;
 }
-
 guint
 bst_canvas_source_ichannel_at (BstCanvasSource *csource,
 			       gdouble	        x,
 			       gdouble	        y)
 {
   guint channel = ~0;
-
   g_return_val_if_fail (BST_IS_CANVAS_SOURCE (csource), 0);
-
   gnome_canvas_item_w2i (GNOME_CANVAS_ITEM (csource), &x, &y);
-
   x -= ICHANNEL_X (csource);
   y -= ICHANNEL_Y (csource);
   if (x > 0 && x < CHANNEL_WIDTH (csource) &&
@@ -560,21 +478,16 @@ bst_canvas_source_ichannel_at (BstCanvasSource *csource,
       y /= CHANNEL_HEIGHT (csource) / bse_source_n_ichannels (csource->source);
       channel = y;
     }
-
   return channel;
 }
-
 guint
 bst_canvas_source_ochannel_at (BstCanvasSource *csource,
 			       gdouble	        x,
 			       gdouble	        y)
 {
   guint channel = ~0;
-
   g_return_val_if_fail (BST_IS_CANVAS_SOURCE (csource), 0);
-
   gnome_canvas_item_w2i (GNOME_CANVAS_ITEM (csource), &x, &y);
-
   x -= OCHANNEL_X (csource);
   y -= OCHANNEL_Y (csource);
   if (x > 0 && x < CHANNEL_WIDTH (csource) &&
@@ -584,10 +497,8 @@ bst_canvas_source_ochannel_at (BstCanvasSource *csource,
       y /= CHANNEL_HEIGHT (csource) / bse_source_n_ochannels (csource->source);
       channel = y;
     }
-
   return channel;
 }
-
 static void
 bst_canvas_icon_set (GnomeCanvasItem *item,
 		     BseIcon         *icon,
@@ -595,7 +506,6 @@ bst_canvas_icon_set (GnomeCanvasItem *item,
 {
   GdkPixbuf *pixbuf;
   gboolean need_unref = FALSE;
-
   if (icon && icon->pixels->bytes)
     {
       icon = bse_icon_copy_shallow (icon);
@@ -613,7 +523,6 @@ bst_canvas_icon_set (GnomeCanvasItem *item,
     pixbuf = bst_pixbuf_ladspa ();
   else
     pixbuf = bst_pixbuf_no_icon ();
-
   g_object_set (GTK_OBJECT (item),
 		"pixbuf", pixbuf,
 		"x_in_pixels", FALSE,
@@ -623,21 +532,18 @@ bst_canvas_icon_set (GnomeCanvasItem *item,
   if (need_unref)
     g_object_unref (pixbuf);
 }
-
 static void
 channel_item_remove (BstCanvasSource *csource,
 		     GnomeCanvasItem *item)
 {
   csource->channel_items = g_slist_remove (csource->channel_items, item);
 }
-
 static void
 channel_name_remove (BstCanvasSource *csource,
 		     GnomeCanvasItem *item)
 {
   csource->channel_hints = g_slist_remove (csource->channel_hints, item);
 }
-
 static void
 bst_canvas_source_build_channels (BstCanvasSource *csource,
 				  gboolean         is_input,
@@ -654,7 +560,6 @@ bst_canvas_source_build_channels (BstCanvasSource *csource,
   gdouble x1, x2, y1, y2;
   gdouble d_y;
   gboolean east_channel = CHANNEL_EAST (csource, is_input);
-
   if (is_input)
     {
       n_channels = bse_source_n_ichannels (csource->source);
@@ -672,16 +577,13 @@ bst_canvas_source_build_channels (BstCanvasSource *csource,
   d_y = y2 - y1;
   if (n_channels)
     d_y /= n_channels;
-
   if (n_channels > 1)
     {
       gint cd_red, cd_blue, cd_green;
-
       cd_red = ((color1_fade & 0xff0000) - (color1 & 0xff0000)) / (n_channels - 1);
       cd_green = ((color1_fade & 0x00ff00) - (color1 & 0x00ff00)) / (n_channels - 1);
       cd_blue = ((color1_fade & 0x0000ff) - (color1 & 0x0000ff)) / (n_channels - 1);
       color1_delta = (cd_red & ~0xffff) + (cd_green & ~0xff) + cd_blue;
-
       cd_red = ((color2_fade & 0xff0000) - (color2 & 0xff0000)) / (n_channels - 1);
       cd_green = ((color2_fade & 0x00ff00) - (color2 & 0x00ff00)) / (n_channels - 1);
       cd_blue = ((color2_fade & 0x0000ff) - (color2 & 0x0000ff)) / (n_channels - 1);
@@ -708,14 +610,12 @@ bst_canvas_source_build_channels (BstCanvasSource *csource,
           csource->channel_items = g_slist_prepend (csource->channel_items, item);
         }
     }
-
   for (int i = 0; i < n_channels; i++)
     {
       GnomeCanvasItem *item;
       gboolean is_jchannel = is_input && bse_source_is_joint_ichannel_by_id (csource->source, i);
       const gchar *label = (is_input ? bse_source_ichannel_label : bse_source_ochannel_label) (csource->source, i);
       guint tmp_color = is_jchannel ? color2 : color1;
-
       y2 = y1 + d_y;
       if (build_channel_items)
         {
@@ -734,7 +634,6 @@ bst_canvas_source_build_channels (BstCanvasSource *csource,
                             NULL);
           csource->channel_items = g_slist_prepend (csource->channel_items, item);
         }
-
       if (build_channel_hints)
         {
           item = gnome_canvas_item_new (group,
@@ -754,13 +653,11 @@ bst_canvas_source_build_channels (BstCanvasSource *csource,
           g_object_set_data_full (G_OBJECT (item), "hint_text", g_strdup (label), g_free);
           csource->channel_hints = g_slist_prepend (csource->channel_hints, item);
         }
-
       color1 += color1_delta;
       color2 += color2_delta;
       y1 = y2;
     }
 }
-
 static gboolean
 bst_canvas_source_build_async (gpointer data)
 {
@@ -769,9 +666,7 @@ bst_canvas_source_build_async (gpointer data)
     {
       BstCanvasSource *csource = BST_CANVAS_SOURCE (item);
       GnomeCanvasGroup *group = GNOME_CANVAS_GROUP (csource);
-      
       /* keep in mind, that creation order affects stacking */
-
       /* add input and output channel items */
       if (!csource->built_ichannels)
         {
@@ -793,7 +688,6 @@ bst_canvas_source_build_async (gpointer data)
                                             TRUE, FALSE);
           return TRUE;
         }
-
       /* add icon to group */
       if (!csource->icon_item)
         {
@@ -811,7 +705,6 @@ bst_canvas_source_build_async (gpointer data)
           source_icon_changed (csource);
           return TRUE;
         }
-      
       if (!csource->text)
         {
           /* add text item, invoke name_changed callback to setup the text value */
@@ -833,7 +726,6 @@ bst_canvas_source_build_async (gpointer data)
           source_name_changed (csource);
           return TRUE;
         }
-
       /* add input and output channel hints */
       if (!csource->built_ihints)
         {
@@ -862,7 +754,6 @@ bst_canvas_source_build_async (gpointer data)
     g_object_unref (canvas);      /* canvases don't properly protect their items */
   return FALSE;
 }
-
 static void
 bst_canvas_source_build (BstCanvasSource *csource)
 {
@@ -899,7 +790,6 @@ bst_canvas_source_build (BstCanvasSource *csource)
   g_object_set_data_full ((GObject*) csource_item, "bst-workaround-canvas-ref", g_object_ref (csource_item->canvas), g_object_unref);
   bst_background_handler2_add (bst_canvas_source_build_async, g_object_ref (csource), NULL);
 }
-
 static void
 bst_canvas_source_changed (BstCanvasSource *csource)
 {
@@ -911,14 +801,12 @@ bst_canvas_source_changed (BstCanvasSource *csource)
       bse_object_set_parasite_coords (csource->source, x, y);
     }
 }
-
 static gboolean
 bst_canvas_source_event (GnomeCanvasItem *item,
 			 GdkEvent        *event)
 {
   BstCanvasSource *csource = BST_CANVAS_SOURCE (item);
   gboolean handled = FALSE;
-  
   switch (event->type)
     {
     case GDK_BUTTON_PRESS:
@@ -945,7 +833,6 @@ bst_canvas_source_event (GnomeCanvasItem *item,
       if (csource->in_move)
 	{
 	  gdouble x = event->motion.x, y = event->motion.y;
-	  
 	  gnome_canvas_item_w2i (item, &x, &y);
 	  gnome_canvas_item_move (item, x - csource->move_dx, y - csource->move_dy);
 	  GNOME_CANVAS_NOTIFY (item);
@@ -955,7 +842,6 @@ bst_canvas_source_event (GnomeCanvasItem *item,
 	{
 	  guint channel;
 	  const gchar *label = NULL, *prefix = NULL, *ident = NULL;
-
 	  /* set i/o channel hints */
 	  channel = bst_canvas_source_ichannel_at (csource, event->motion.x, event->motion.y);
 	  if (channel != ~uint (0))
@@ -992,13 +878,10 @@ bst_canvas_source_event (GnomeCanvasItem *item,
     default:
       break;
     }
-  
   if (!handled && GNOME_CANVAS_ITEM_CLASS (bst_canvas_source_parent_class)->event)
     handled = GNOME_CANVAS_ITEM_CLASS (bst_canvas_source_parent_class)->event (item, event);
-  
   return handled;
 }
-
 static gboolean
 bst_canvas_source_child_event (BstCanvasSource *csource,
 			       GdkEvent        *event,
@@ -1007,9 +890,7 @@ bst_canvas_source_child_event (BstCanvasSource *csource,
   GnomeCanvasItem *item = GNOME_CANVAS_ITEM (csource);
   GtkWidget *widget = GTK_WIDGET (item->canvas);
   gboolean handled = FALSE;
-  
   csource = BST_CANVAS_SOURCE (item);
-
   switch (event->type)
     {
     case GDK_ENTER_NOTIFY:
@@ -1042,21 +923,17 @@ bst_canvas_source_child_event (BstCanvasSource *csource,
     default:
       break;
     }
-  
   return handled;
 }
-
 static void
 bst_canvas_source_class_init (BstCanvasSourceClass *klass)
 {
   GtkObjectClass *object_class = GTK_OBJECT_CLASS (klass);
   GnomeCanvasItemClass *canvas_item_class = GNOME_CANVAS_ITEM_CLASS (klass);
   /* GnomeCanvasGroupClass *canvas_group_class = GNOME_CANVAS_GROUP_CLASS (klass); */
-  
   object_class->destroy = bst_canvas_source_destroy;
   canvas_item_class->event = bst_canvas_source_event;
   klass->update_links = NULL;
-
   csource_signals[SIGNAL_UPDATE_LINKS] =
     gtk_signal_new ("update-links",
 		    GTK_RUN_LAST,

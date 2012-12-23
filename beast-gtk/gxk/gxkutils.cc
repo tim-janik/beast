@@ -7,29 +7,19 @@
 #include "gxkauxwidgets.hh"
 #include <string.h>
 #include <stdlib.h>
-
-
 /* --- generated marshallers --- */
 #include "gxkmarshal.cc"
-
-
 /* --- generated type IDs and enums --- */
 #include "gxkgentypes.cc"
-
-
 /* --- prototypes --- */
 static void     gxk_traverse_viewable_changed	        (GtkWidget      *widget,
                                                          gpointer        data);
 static void     gxk_traverse_attached_hierarchy_changed (GtkWidget      *widget,
                                                          gpointer        data);
 static void     gxk_menu_refetch_accel_group            (GtkMenu        *menu);
-
-
 /* --- variables --- */
 static guint signal_viewable_changed = 0;
 static guint signal_attached_hierarchy_changed = 0;
-
-
 /* --- functions --- */
 static gboolean
 gxk_widget_real_can_activate_accel (GtkWidget *widget, // GTKFIX: #145270, remove this when depending on gtk+ > 2.4.10
@@ -38,7 +28,6 @@ gxk_widget_real_can_activate_accel (GtkWidget *widget, // GTKFIX: #145270, remov
   /* widgets must be onscreen for accels to take effect */
   return GTK_WIDGET_IS_SENSITIVE (widget) && GTK_WIDGET_DRAWABLE (widget) && gxk_widget_ancestry_viewable (widget);
 }
-
 static gboolean
 ehook_container_focus_child_set (GSignalInvocationHint *ihint,
                                  guint                  n_param_values,
@@ -74,13 +63,11 @@ ehook_container_focus_child_set (GSignalInvocationHint *ihint,
     }
   return TRUE;
 }
-
 void
 gxk_init_utils (void)
 {
   /* type registrations */
   gxk_type_register_generated (G_N_ELEMENTS (generated_type_entries), generated_type_entries);
-  
   /* Gtk+ patchups */
   signal_viewable_changed = g_signal_newv ("viewable-changed",
                                            G_TYPE_FROM_CLASS (gtk_type_class (GTK_TYPE_WIDGET)),
@@ -98,13 +85,11 @@ gxk_init_utils (void)
                                                      G_TYPE_NONE, 0, NULL);
   GtkWidgetClass *widget_class = (GtkWidgetClass*) gtk_type_class (GTK_TYPE_WIDGET);
   widget_class->can_activate_accel = gxk_widget_real_can_activate_accel;
-  
   /* patch up scrolling+focus behaviour */
   g_type_class_unref (g_type_class_ref (GTK_TYPE_CONTAINER));   /* create static class */
   g_signal_add_emission_hook (g_signal_lookup ("set-focus-child", GTK_TYPE_CONTAINER), 0,
                               ehook_container_focus_child_set, NULL, NULL);
 }
-
 /**
  * @param widget	a valid GtkWidget
  * @return		whether @a widget is visible on screen
@@ -128,7 +113,6 @@ gxk_widget_ancestry_viewable (GtkWidget *widget)
     }
   return TRUE;
 }
-
 /**
  * @param n_entries	number of generated types to register
  * @param entries	GxkTypeGenerated type descriptions
@@ -146,7 +130,6 @@ gxk_type_register_generated (guint                   n_entries,
 			     const GxkTypeGenerated *entries)
 {
   guint i;
-
   for (i = 0; i < n_entries; i++)
     {
       GType type_id;
@@ -166,7 +149,6 @@ gxk_type_register_generated (guint                   n_entries,
       *entries[i].type_id = type_id;
     }
 }
-
 /**
  * @param object	a valid GObject
  * @param name	name of the double value to set
@@ -181,9 +163,7 @@ g_object_set_double (gpointer     object,
 		     gdouble      v_double)
 {
   gdouble zero = 0;
-
   g_return_if_fail (G_IS_OBJECT (object));
-
   if (memcmp (&v_double, &zero, sizeof (zero)) == 0)
     g_object_set_data ((GObject*) object, name, NULL);
   else
@@ -193,7 +173,6 @@ g_object_set_double (gpointer     object,
       g_object_set_data_full ((GObject*) object, name, dp, g_free);
     }
 }
-
 /**
  * @param object	a valid GObject
  * @param name	name of the double value to retrieve
@@ -207,11 +186,9 @@ g_object_get_double (gpointer     object,
 		     const gchar *name)
 {
   g_return_val_if_fail (G_IS_OBJECT (object), 0);
-
   double *dp = (double*) g_object_get_data ((GObject*) object, name);
   return dp ? *dp : 0;
 }
-
 /**
  * @param object	a valid GObject
  * @param name	name of the long value to set
@@ -226,10 +203,8 @@ g_object_set_long (gpointer     object,
 		   glong        v_long)
 {
   g_return_if_fail (G_IS_OBJECT (object));
-
   g_object_set_data ((GObject*) object, name, (gpointer) v_long);
 }
-
 /**
  * @param object	a valid GObject
  * @param name	name of the long value to retrieve
@@ -243,10 +218,8 @@ g_object_get_long (gpointer     object,
 		   const gchar *name)
 {
   g_return_val_if_fail (G_IS_OBJECT (object), 0);
-
   return (glong) g_object_get_data ((GObject*) object, name);
 }
-
 gchar*
 gxk_convert_latin1_to_utf8 (const gchar *string)
 {
@@ -267,7 +240,6 @@ gxk_convert_latin1_to_utf8 (const gchar *string)
     }
   return NULL;
 }
-
 gchar*
 gxk_filename_to_utf8 (const gchar *filename)
 {
@@ -280,7 +252,6 @@ gxk_filename_to_utf8 (const gchar *filename)
     }
   return NULL;
 }
-
 const gchar*
 gxk_factory_path_get_leaf (const gchar *path)
 {
@@ -297,7 +268,6 @@ gxk_factory_path_get_leaf (const gchar *path)
     }
   return last ? last : path;
 }
-
 gchar*
 gxk_factory_path_unescape_uline (const gchar *path)
 {
@@ -315,8 +285,6 @@ gxk_factory_path_unescape_uline (const gchar *path)
   *d = 0;
   return str;
 }
-
-
 /* --- Gtk+ Utilities --- */
 /**
  * @param widget	valid GtkWidget
@@ -329,7 +297,6 @@ gboolean
 gxk_widget_viewable (GtkWidget *widget)
 {
   g_return_val_if_fail (GTK_IS_WIDGET (widget), FALSE);
-
   while (widget)
     {
       if (!GTK_WIDGET_MAPPED (widget))
@@ -338,7 +305,6 @@ gxk_widget_viewable (GtkWidget *widget)
     }
   return TRUE;
 }
-
 /**
  * @param widget	valid GtkWidget
  *
@@ -356,10 +322,8 @@ void
 gxk_widget_viewable_changed (GtkWidget *widget)
 {
   g_return_if_fail (GTK_IS_WIDGET (widget));
-  
   g_signal_emit (widget, signal_viewable_changed, 0);
 }
-
 static void
 gxk_traverse_viewable_changed (GtkWidget *widget,
 			       gpointer   data)
@@ -367,7 +331,6 @@ gxk_traverse_viewable_changed (GtkWidget *widget,
   if (GTK_IS_CONTAINER (widget))
     gtk_container_forall (GTK_CONTAINER (widget), (GtkCallback) gxk_widget_viewable_changed, NULL);
 }
-
 /**
  * @param widget	valid GtkWidget
  *
@@ -385,10 +348,8 @@ void
 gxk_widget_attached_hierarchy_changed (GtkWidget *widget)
 {
   g_return_if_fail (GTK_IS_WIDGET (widget));
-  
   g_signal_emit (widget, signal_attached_hierarchy_changed, 0);
 }
-
 static void
 widget_propagate_hierarchy_changed_to_attached (GtkWidget *widget)
 {
@@ -408,7 +369,6 @@ widget_propagate_hierarchy_changed_to_attached (GtkWidget *widget)
   for (; menu_list; menu_list = menu_list->next)
     gxk_widget_attached_hierarchy_changed ((GtkWidget*) menu_list->data);
 }
-
 static void
 gxk_traverse_attached_hierarchy_changed (GtkWidget *widget,
                                          gpointer   data)
@@ -416,12 +376,10 @@ gxk_traverse_attached_hierarchy_changed (GtkWidget *widget,
   if (GTK_IS_CONTAINER (widget))
     gtk_container_forall (GTK_CONTAINER (widget), (GtkCallback) gxk_widget_attached_hierarchy_changed, NULL);
   widget_propagate_hierarchy_changed_to_attached (widget);
-
   /* special attached_hierarchy_changed hooks */
   if (GTK_IS_MENU (widget))
     gxk_menu_refetch_accel_group (GTK_MENU (widget));
 }
-
 static void
 gxk_widget_proxy_hierarchy_changed_to_attached (GtkWidget *widget)
 {
@@ -429,7 +387,6 @@ gxk_widget_proxy_hierarchy_changed_to_attached (GtkWidget *widget)
     g_signal_connect_after (widget, "hierarchy-changed", G_CALLBACK (widget_propagate_hierarchy_changed_to_attached), NULL);
   widget_propagate_hierarchy_changed_to_attached (widget);
 }
-
 /**
  * @param window	valid GdkWindow*
  * @param cursor	GdkCursorType cursor type
@@ -442,7 +399,6 @@ gxk_window_set_cursor_type (GdkWindow    *window,
 			    GdkCursorType cursor)
 {
   g_return_if_fail (GDK_IS_WINDOW (window));
-  
   if (cursor >= GDK_LAST_CURSOR || cursor < 0)
     gdk_window_set_cursor (window, NULL);
   else
@@ -452,11 +408,9 @@ gxk_window_set_cursor_type (GdkWindow    *window,
       gdk_cursor_unref (wc);
     }
 }
-
 static guint   expose_handler_id = 0;
 static GSList *expose_windows = NULL;
 static GSList *cexpose_windows = NULL;
-
 static gboolean
 expose_handler (gpointer data)
 {
@@ -477,7 +431,6 @@ expose_handler (gpointer data)
   GDK_THREADS_LEAVE ();
   return FALSE;
 }
-
 /**
  * @param window	valid GdkWindow
  * @param update_children	whether to also process updates for child windows
@@ -490,7 +443,6 @@ gxk_window_process_next (GdkWindow *window,
 			 gboolean   update_children)
 {
   g_return_if_fail (GDK_IS_WINDOW (window));
-
   if (update_children)
     cexpose_windows = g_slist_append_uniq (cexpose_windows, window);
   else
@@ -498,7 +450,6 @@ gxk_window_process_next (GdkWindow *window,
   if (!expose_handler_id)
     expose_handler_id = g_idle_add_full (G_PRIORITY_DEFAULT, expose_handler, NULL, NULL);
 }
-
 /**
  * Convenience variant of gdk_draw_line() to draw a horizontal line.
  */
@@ -512,7 +463,6 @@ gdk_draw_hline (GdkDrawable            *drawable,
   if (width > 0)
     gdk_draw_line (drawable, gc, x, y, x + width - 1, y);
 }
-
 /**
  * Convenience variant of gdk_draw_line() to draw a vertical line.
  */
@@ -526,7 +476,6 @@ gdk_draw_vline (GdkDrawable            *drawable,
   if (height > 0)
     gdk_draw_line (drawable, gc, x, y, x, y + height - 1);
 }
-
 /**
  * @param colormap	valid GdkColormap
  * @param color	valid GdkColor
@@ -541,7 +490,6 @@ gxk_color_alloc (GdkColormap *colormap,
   if (!gdk_color_alloc (colormap, color))
     g_message ("failed to allocate color: { %d, %d, %d }", color->red, color->green, color->blue);
 }
-
 /**
  * @param rgb_value 0xRrGgBb color value
  *
@@ -561,7 +509,6 @@ gdk_color_from_rgb (guint rgb_value)
   c.blue *= 0x0101;
   return c;
 }
-
 /**
  * @param rgb_value 0xAaRrGgBb color value
  *
@@ -581,7 +528,6 @@ gdk_color_from_argb (guint rgb_value)
   c.blue *= 0x0101;
   return c;
 }
-
 /**
  * @param rgb_value 0xRrGgBbAa color value
  *
@@ -601,7 +547,6 @@ gdk_color_from_rgba (guint rgb_value)
   c.blue *= 0x0101;
   return c;
 }
-
 /* --- Colors --- */
 static int
 gxk_color_dot_cmp (const void *v1,
@@ -611,7 +556,6 @@ gxk_color_dot_cmp (const void *v1,
   const GxkColorDot *c2 = (const GxkColorDot*) v2;
   return c1->value < c2->value ? -1 : c1->value > c2->value;
 }
-
 GxkColorDots*
 gxk_color_dots_new (guint              n_dots,
                     const GxkColorDot *dots)
@@ -624,7 +568,6 @@ gxk_color_dots_new (guint              n_dots,
   qsort (cdots->colors, cdots->n_colors, sizeof_color_dot, gxk_color_dot_cmp);
   return cdots;
 }
-
 guint
 gxk_color_dots_interpolate (GxkColorDots   *cdots,
                             double          value,
@@ -664,7 +607,6 @@ gxk_color_dots_interpolate (GxkColorDots   *cdots,
       return (red << 16) | (green << 8) | blue;
     }
 }
-
 void
 gxk_color_dots_destroy (GxkColorDots *cdots)
 {
@@ -672,9 +614,7 @@ gxk_color_dots_destroy (GxkColorDots *cdots)
   g_free (cdots->colors);
   g_free (cdots);
 }
-
 /* --- Gtk convenience --- */
-
 /**
  * @param widget	a valid GtkWidget
  *
@@ -685,11 +625,9 @@ void
 gxk_widget_make_insensitive (GtkWidget *widget)
 {
   g_return_if_fail (GTK_IS_WIDGET (widget));
-
   if (GTK_WIDGET_IS_SENSITIVE (widget))
     gtk_widget_set_sensitive (widget, FALSE);
 }
-
 /**
  * @param widget	a valid GtkWidget
  *
@@ -700,11 +638,9 @@ void
 gxk_widget_make_sensitive (GtkWidget *widget)
 {
   g_return_if_fail (GTK_IS_WIDGET (widget));
-
   if (!GTK_WIDGET_IS_SENSITIVE (widget))
     gtk_widget_set_sensitive (widget, TRUE);
 }
-
 static gboolean
 idle_showraiser (gpointer data)
 {
@@ -724,7 +660,6 @@ idle_showraiser (gpointer data)
   GDK_THREADS_LEAVE ();
   return FALSE;
 }
-
 /**
  * @param widget	a valid GtkWidget
  *
@@ -737,21 +672,16 @@ void
 gxk_idle_showraise (GtkWidget *widget)
 {
   GtkWidget **widget_p;
-
   g_return_if_fail (GTK_IS_WIDGET (widget));
-
   widget_p = g_new (GtkWidget*, 1);
-
   *widget_p = widget;
   g_object_connect (widget, "signal::destroy", gtk_widget_destroyed, widget_p, NULL);
   gtk_idle_add_priority (GTK_PRIORITY_RESIZE - 1, idle_showraiser, widget_p);
 }
-
 static gint
 idle_shower (GtkWidget **widget_p)
 {
   GDK_THREADS_ENTER ();
-
   if (GTK_IS_WIDGET (*widget_p))
     {
       gtk_signal_disconnect_by_func (GTK_OBJECT (*widget_p),
@@ -762,12 +692,9 @@ idle_shower (GtkWidget **widget_p)
       gtk_widget_show (*widget_p);
     }
   g_free (widget_p);
-
   GDK_THREADS_LEAVE ();
-
   return FALSE;
 }
-
 /**
  * @param widget	a valid GtkWidget
  *
@@ -780,11 +707,8 @@ void
 gxk_idle_show_widget (GtkWidget *widget)
 {
   GtkWidget **widget_p;
-
   g_return_if_fail (GTK_IS_WIDGET (widget));
-
   widget_p = g_new (GtkWidget*, 1);
-
   *widget_p = widget;
   gtk_signal_connect (GTK_OBJECT (widget),
 		      "destroy",
@@ -792,12 +716,10 @@ gxk_idle_show_widget (GtkWidget *widget)
 		      widget_p);
   gtk_idle_add_priority (GTK_PRIORITY_RESIZE - 1, (GtkFunction) idle_shower, widget_p);
 }
-
 static gint
 idle_unrealizer (GtkWidget **widget_p)
 {
   GDK_THREADS_ENTER ();
-
   if (GTK_IS_WINDOW (*widget_p))
     {
       gtk_signal_disconnect_by_func (GTK_OBJECT (*widget_p),
@@ -808,12 +730,9 @@ idle_unrealizer (GtkWidget **widget_p)
         gtk_widget_unrealize (*widget_p);
     }
   g_free (widget_p);
-
   GDK_THREADS_LEAVE ();
-
   return FALSE;
 }
-
 /**
  * @param widget	a valid GtkWindow
  *
@@ -826,11 +745,8 @@ void
 gxk_idle_unrealize_widget (GtkWidget *widget)
 {
   GtkWidget **widget_p;
-
   g_return_if_fail (GTK_IS_WINDOW (widget));
-
   widget_p = g_new (GtkWidget*, 1);
-
   *widget_p = widget;
   gtk_signal_connect (GTK_OBJECT (widget),
 		      "destroy",
@@ -838,7 +754,6 @@ gxk_idle_unrealize_widget (GtkWidget *widget)
 		      widget_p);
   gtk_idle_add_priority (GTK_PRIORITY_RESIZE - 1, (GtkFunction) idle_unrealizer, widget_p);
 }
-
 GtkWidget*
 gxk_notebook_create_tabulator (const gchar *label_text,
                                const gchar *stock_image,
@@ -854,7 +769,6 @@ gxk_notebook_create_tabulator (const gchar *label_text,
   gxk_notebook_change_tabulator (ev, label_text, stock_image, tooltip);
   return ev;
 }
-
 void
 gxk_notebook_change_tabulator (GtkWidget        *tabulator,
                                const gchar      *label_text,
@@ -886,8 +800,6 @@ gxk_notebook_change_tabulator (GtkWidget        *tabulator,
         }
     }
 }
-
-
 /**
  * @param notebook	a valid notebook
  * @param child	a valid parent-less widget
@@ -908,7 +820,6 @@ gxk_notebook_append (GtkNotebook *notebook,
   gtk_notebook_set_menu_label_text (notebook, child, tab_text);
   gtk_notebook_set_tab_label_packing (notebook, child, fillexpand, fillexpand, GTK_PACK_START);
 }
-
 /**
  * @param notebook	valid GtkNotebook
  * @param page	@a notebook page widget
@@ -924,7 +835,6 @@ gxk_notebook_set_current_page_widget (GtkNotebook *notebook,
   if (num >= 0)
     gtk_notebook_set_current_page (notebook, num);
 }
-
 static void
 vseparator_space_request (GtkWidget      *widget,
                           GtkRequisition *requisition,
@@ -933,7 +843,6 @@ vseparator_space_request (GtkWidget      *widget,
   guint i = GPOINTER_TO_INT (data);
   requisition->width = i * widget->style->xthickness;
 }
-
 /**
  * @param draw_seperator	enable visible vertical seperator
  * @return		visible vertical space/seperator widget
@@ -951,7 +860,6 @@ gxk_vseparator_space_new (gboolean draw_seperator)
                     GUINT_TO_POINTER (draw_seperator ? 2 + 1 + 2 : 3));
   return widget;
 }
-
 /**
  * @param notebook	valid GtkNotebook
  * @return		the widget corresponding to the current page
@@ -964,7 +872,6 @@ gtk_notebook_current_widget (GtkNotebook *notebook)
 {
   return gtk_notebook_get_nth_page (notebook, gtk_notebook_get_current_page (notebook));
 }
-
 /**
  * @param widget	valid GtkWidget
  * @return		notebook page widget or NULL
@@ -978,7 +885,6 @@ gxk_notebook_descendant_get_page (GtkWidget *widget)
     widget = widget->parent;
   return widget->parent ? widget : NULL;
 }
-
 /**
  * @param widget	valid GtkWidget
  * @return		notebook page tab widget or NULL
@@ -992,7 +898,6 @@ gxk_notebook_descendant_get_tab (GtkWidget *widget)
   widget = gxk_notebook_descendant_get_page (widget);
   return widget ? gtk_notebook_get_tab_label (GTK_NOTEBOOK (widget->parent), widget) : NULL;
 }
-
 /**
  * @param box	a valid GtkBox
  * @param pos	position of the requested child
@@ -1007,17 +912,13 @@ gtk_box_get_nth_child (GtkBox *box,
                        gint    pos)
 {
   g_return_val_if_fail (GTK_IS_BOX (box), NULL);
-
   GList *child = box->children;
-
   if (child)
     while (child->next && pos--)
       child = child->next;
-
   GtkBoxChild *child_info = child && pos <= 0 ? (GtkBoxChild*) child->data : NULL;
   return child_info ? child_info->widget : NULL;
 }
-
 /**
  * @param widget	a valid widget
  *
@@ -1028,12 +929,10 @@ void
 gxk_widget_showraise (GtkWidget *widget)
 {
   g_return_if_fail (GTK_IS_WIDGET (widget));
-
   gtk_widget_show (widget);
   if (GTK_WIDGET_REALIZED (widget) && !widget->parent)
     gdk_window_raise (widget->window);
 }
-
 static gboolean
 async_delete_event_handler (gpointer data)
 {
@@ -1052,7 +951,6 @@ async_delete_event_handler (gpointer data)
   GDK_THREADS_LEAVE ();
   return FALSE;
 }
-
 /**
  * @param widget	a widget having a toplevel
  *
@@ -1066,12 +964,10 @@ void
 gxk_toplevel_delete (GtkWidget *widget)
 {
   g_return_if_fail (GTK_IS_WIDGET (widget));
-
   widget = gtk_widget_get_toplevel (widget);
   if (GTK_IS_WINDOW (widget) && GTK_WIDGET_DRAWABLE (widget))
     g_idle_add_full (G_PRIORITY_DEFAULT, async_delete_event_handler, g_object_ref (widget), NULL);
 }
-
 /**
  * @param widget	a widget having a toplevel
  *
@@ -1081,12 +977,10 @@ void
 gxk_toplevel_activate_default (GtkWidget *widget)
 {
   g_return_if_fail (GTK_IS_WIDGET (widget));
-
   widget = gtk_widget_get_toplevel (widget);
   if (GTK_IS_WINDOW (widget))
     gtk_window_activate_default (GTK_WINDOW (widget));
 }
-
 /**
  * @param widget	a widget having a toplevel
  *
@@ -1096,16 +990,13 @@ void
 gxk_toplevel_hide (GtkWidget *widget)
 {
   g_return_if_fail (GTK_IS_WIDGET (widget));
-
   widget = gtk_widget_get_toplevel (widget);
   gtk_widget_hide (widget);
 }
-
 typedef struct {
   GtkWidget *child;
   GType      type;
 } DescendantSearch;
-
 static void
 find_descendant_callback (GtkWidget *child,
                           gpointer   data)
@@ -1119,7 +1010,6 @@ find_descendant_callback (GtkWidget *child,
         gtk_container_foreach (GTK_CONTAINER (child), find_descendant_callback, dsearch);
     }
 }
-
 GtkWidget*
 gxk_parent_find_descendant (GtkWidget        *parent,
                             GType             descendant_type)
@@ -1130,7 +1020,6 @@ gxk_parent_find_descendant (GtkWidget        *parent,
     gtk_container_foreach (GTK_CONTAINER (parent), find_descendant_callback, &dsearch);
   return dsearch.child;
 }
-
 enum {
   STYLE_MODIFY_FG_AS_SENSITIVE,
   STYLE_MODIFY_BASE_AS_BG,
@@ -1138,7 +1027,6 @@ enum {
   STYLE_MODIFY_NORMAL_BG_AS_BASE,
   STYLE_MODIFY_BG_AS_ACTIVE,
 };
-
 static void
 widget_modify_style (GtkWidget *widget)
 {
@@ -1201,7 +1089,6 @@ widget_modify_style (GtkWidget *widget)
       break;
     }
 }
-
 /**
  * @param widget	a valid GtkWidget
  *
@@ -1213,7 +1100,6 @@ void
 gxk_widget_modify_as_title (GtkWidget *widget)
 {
   g_return_if_fail (GTK_IS_WIDGET (widget));
-  
   if (!gxk_signal_handler_exists (widget, "realize", G_CALLBACK (widget_modify_style), NULL))
     {
       g_object_set_int (widget, "gxk-style-modify-type", STYLE_MODIFY_FG_AS_SENSITIVE);
@@ -1225,7 +1111,6 @@ gxk_widget_modify_as_title (GtkWidget *widget)
         g_signal_connect_after (widget, "realize", G_CALLBACK (gxk_widget_make_insensitive), NULL);
     }
 }
-
 /**
  * @param widget	a valid GtkWidget
  *
@@ -1238,7 +1123,6 @@ void
 gxk_widget_modify_bg_as_base (GtkWidget *widget)
 {
   g_return_if_fail (GTK_IS_WIDGET (widget));
-
   if (!gxk_signal_handler_exists (widget, "realize", G_CALLBACK (widget_modify_style), NULL))
     {
       g_object_set_int (widget, "gxk-style-modify-type", STYLE_MODIFY_BG_AS_BASE);
@@ -1247,7 +1131,6 @@ gxk_widget_modify_bg_as_base (GtkWidget *widget)
         widget_modify_style (widget);
     }
 }
-
 /**
  * @param widget	a valid GtkWidget
  *
@@ -1258,7 +1141,6 @@ void
 gxk_widget_modify_normal_bg_as_base (GtkWidget *widget)
 {
   g_return_if_fail (GTK_IS_WIDGET (widget));
-
   if (!gxk_signal_handler_exists (widget, "realize", G_CALLBACK (widget_modify_style), NULL))
     {
       g_object_set_int (widget, "gxk-style-modify-type", STYLE_MODIFY_NORMAL_BG_AS_BASE);
@@ -1267,7 +1149,6 @@ gxk_widget_modify_normal_bg_as_base (GtkWidget *widget)
         widget_modify_style (widget);
     }
 }
-
 /**
  * @param widget	a valid GtkWidget
  *
@@ -1281,7 +1162,6 @@ void
 gxk_widget_modify_base_as_bg (GtkWidget *widget)
 {
   g_return_if_fail (GTK_IS_WIDGET (widget));
-
   if (!gxk_signal_handler_exists (widget, "realize", G_CALLBACK (widget_modify_style), NULL))
     {
       g_object_set_int (widget, "gxk-style-modify-type", STYLE_MODIFY_BASE_AS_BG);
@@ -1290,7 +1170,6 @@ gxk_widget_modify_base_as_bg (GtkWidget *widget)
         widget_modify_style (widget);
     }
 }
-
 /**
  * @param widget	a valid GtkWidget
  *
@@ -1301,7 +1180,6 @@ void
 gxk_widget_modify_bg_as_active (GtkWidget *widget)
 {
   g_return_if_fail (GTK_IS_WIDGET (widget));
-
   if (!gxk_signal_handler_exists (widget, "realize", G_CALLBACK (widget_modify_style), NULL))
     {
       g_object_set_int (widget, "gxk-style-modify-type", STYLE_MODIFY_BG_AS_ACTIVE);
@@ -1310,17 +1188,14 @@ gxk_widget_modify_bg_as_active (GtkWidget *widget)
         widget_modify_style (widget);
     }
 }
-
 static gboolean
 expose_bg_clear (GtkWidget      *widget,
 		 GdkEventExpose *event)
 {
   gtk_paint_flat_box (widget->style, widget->window, GTK_STATE_NORMAL,
 		      GTK_SHADOW_NONE, &event->area, widget, "base", 0, 0, -1, -1);
-
   return FALSE;
 }
-
 /**
  * @param widget	a valid GtkWidget
  *
@@ -1334,12 +1209,10 @@ void
 gxk_widget_force_bg_clear (GtkWidget *widget)
 {
   g_return_if_fail (GTK_IS_WIDGET (widget));
-
   gtk_widget_set_redraw_on_allocate (widget, TRUE);
   if (!gxk_signal_handler_exists (widget, "expose_event", G_CALLBACK (expose_bg_clear), NULL))
     g_signal_connect (widget, "expose_event", G_CALLBACK (expose_bg_clear), NULL);
 }
-
 /**
  * @param widget	a valid GtkWidget
  * @param tooltip	descriptive tooltip
@@ -1356,7 +1229,6 @@ gxk_widget_set_tooltip (gpointer     widget,
   gxk_widget_set_latent_tooltip ((GtkWidget*) widget, tooltip);
   gtk_tooltips_set_tip (GXK_TOOLTIPS, (GtkWidget*) widget, tooltip, NULL);
 }
-
 /**
  * @param widget	a valid GtkWidget
  * @param tooltip	descriptive tooltip
@@ -1376,7 +1248,6 @@ gxk_widget_set_latent_tooltip (GtkWidget   *widget,
     tooltip = NULL;
   g_object_set_data_full ((GObject*) widget, "gxk-widget-latent-tooltip", g_strdup (tooltip), g_free);
 }
-
 /**
  * @param widget	a valid GtkWidget
  * @return      	descriptive tooltip
@@ -1390,7 +1261,6 @@ gxk_widget_get_latent_tooltip (GtkWidget *widget)
 {
   return (const char*) g_object_get_data ((GObject*) widget, "gxk-widget-latent-tooltip");
 }
-
 static gboolean
 gxk_activate_accel_group (GtkWidget     *widget,
 			  GdkEventKey   *event,
@@ -1410,7 +1280,6 @@ gxk_activate_accel_group (GtkWidget     *widget,
     }
   return was_handled;
 }
-
 /**
  * @param widget	a valid GtkWidget
  * @param accel_group	a valid GtkAccelGroup
@@ -1427,11 +1296,9 @@ gxk_widget_activate_accel_group (GtkWidget     *widget,
 				 GtkAccelGroup *accel_group)
 {
   g_return_if_fail (GTK_IS_WIDGET (widget));
-
   if (accel_group)
     {
       g_return_if_fail (GTK_IS_ACCEL_GROUP (accel_group));
-
       gtk_accel_group_lock (accel_group);
       g_signal_connect_data (widget, "key_press_event",
 			     G_CALLBACK (gxk_activate_accel_group),
@@ -1439,7 +1306,6 @@ gxk_widget_activate_accel_group (GtkWidget     *widget,
 			     (GClosureNotify) g_object_unref, GConnectFlags (0));
     }
 }
-
 /**
  * @param sgmode	size group mode, one of @c GTK_SIZE_GROUP_NONE,
  *          @c GTK_SIZE_GROUP_HORIZONTAL, @c GTK_SIZE_GROUP_VERTICAL or
@@ -1460,7 +1326,6 @@ gxk_size_group (GtkSizeGroupMode sgmode,
       GtkWidget *widget = (GtkWidget*) first_widget;
       GtkSizeGroup *sgroup = gtk_size_group_new (sgmode);
       va_list args;
-
       va_start (args, first_widget);
       while (widget)
 	{
@@ -1471,7 +1336,6 @@ gxk_size_group (GtkSizeGroupMode sgmode,
       g_object_unref (sgroup);
     }
 }
-
 /**
  * @param strpath	stringified GtkTreePath
  *
@@ -1491,7 +1355,6 @@ gxk_tree_spath_index0 (const gchar *strpath)
     }
   return row;
 }
-
 /**
  *
  * This function is a replacement for gtk_tree_model_get_iter()
@@ -1515,8 +1378,6 @@ gxk_tree_model_get_iter (GtkTreeModel          *tree_model,
     }
   return TRUE;
 }
-
-
 /**
  * @param path	valid GtkTreePath
  *
@@ -1530,7 +1391,6 @@ gxk_tree_path_prev (GtkTreePath *path)
     return FALSE;
   return gtk_tree_path_prev (path);
 }
-
 /**
  * @param tree_view	valid GtkTreeView
  * @param position	column position (or -1 to append)
@@ -1556,36 +1416,28 @@ gxk_tree_view_add_column (GtkTreeView       *tree_view,
 {
   guint n_cols;
   va_list var_args;
-
   g_return_val_if_fail (GTK_IS_TREE_VIEW (tree_view), 0);
   g_return_val_if_fail (GTK_IS_TREE_VIEW_COLUMN (column), 0);
   g_return_val_if_fail (column->tree_view == NULL, 0);
   g_return_val_if_fail (GTK_IS_CELL_RENDERER (cell), 0);
-
   g_object_ref (column);
   g_object_ref (cell);
   gtk_object_sink (GTK_OBJECT (column));
   gtk_object_sink (GTK_OBJECT (cell));
   gtk_tree_view_column_pack_start (column, cell, TRUE);
-
   va_start (var_args, attrib_name);
   while (attrib_name)
     {
       guint col = va_arg (var_args, guint);
-
       gtk_tree_view_column_add_attribute (column, cell, attrib_name, col);
       attrib_name = va_arg (var_args, const gchar*);
     }
   va_end (var_args);
-
   n_cols = gtk_tree_view_insert_column (tree_view, column, position);
-
   g_object_unref (column);
   g_object_unref (cell);
-
   return n_cols;
 }
-
 /**
  * @param tree_view	valid GtkTreeView
  * @param n_cols	number of columns to append
@@ -1623,9 +1475,7 @@ gxk_tree_view_append_text_columns (GtkTreeView *tree_view,
 				   ...)
 {
   va_list var_args;
-
   g_return_if_fail (GTK_IS_TREE_VIEW (tree_view));
-
   va_start (var_args, n_cols);
   while (n_cols--)
     {
@@ -1633,14 +1483,12 @@ gxk_tree_view_append_text_columns (GtkTreeView *tree_view,
       gchar *column_flags = va_arg (var_args, gchar*);
       gfloat xalign = va_arg (var_args, gdouble);
       gchar *title = va_arg (var_args, gchar*);
-
       gxk_tree_view_add_text_column (tree_view, col, column_flags,
 				     xalign, title, NULL,
 				     NULL, NULL, GConnectFlags (0));
     }
   va_end (var_args);
 }
-
 static GtkTreeViewColumn*
 tree_view_add_column (GtkTreeView  *tree_view,
 		      guint	     model_column,
@@ -1662,7 +1510,6 @@ tree_view_add_column (GtkTreeView  *tree_view,
   gboolean reorderable = FALSE, resizable = TRUE, sortable = FALSE, auto_popup = FALSE;
   gchar *p, *column_flags = g_strconcat (" ", dcolumn_flags, ucolumn_flags, NULL);
   guint fixed_width = 0, padding = 0;
-
   for (p = column_flags; *p; p++)
     switch (*p)
       {
@@ -1704,7 +1551,6 @@ tree_view_add_column (GtkTreeView  *tree_view,
 	auto_popup = TRUE;
 	break;
       }
-
   switch (column_type)
     {
     case 1:	/* text */
@@ -1762,7 +1608,6 @@ tree_view_add_column (GtkTreeView  *tree_view,
   g_free (column_flags);
   return tcol;
 }
-
 /**
  * @param tree_view	valid GtkTreeView
  * @param model_column	model column
@@ -1800,12 +1645,10 @@ gxk_tree_view_add_text_column (GtkTreeView  *tree_view,
                                GConnectFlags cflags)
 {
   g_return_val_if_fail (GTK_IS_TREE_VIEW (tree_view), NULL);
-
   return tree_view_add_column (tree_view, model_column, xalign, title, tooltip,
                                edited_callback, NULL, data, cflags,
 			       1, "", column_flags);
 }
-
 /**
  * @param tree_view	valid GtkTreeView
  * @param model_column	model column
@@ -1837,12 +1680,10 @@ gxk_tree_view_add_popup_column (GtkTreeView  *tree_view,
 				GConnectFlags cflags)
 {
   g_return_val_if_fail (GTK_IS_TREE_VIEW (tree_view), NULL);
-
   return tree_view_add_column (tree_view, model_column, xalign, title, tooltip,
 			       edited_callback, popup_callback, data, cflags,
 			       2, "", column_flags);
 }
-
 /**
  * @param tree_view	valid GtkTreeView
  * @param model_column	model column
@@ -1875,12 +1716,10 @@ gxk_tree_view_add_toggle_column (GtkTreeView  *tree_view,
 				 GConnectFlags cflags)
 {
   g_return_val_if_fail (GTK_IS_TREE_VIEW (tree_view), NULL);
-
   return tree_view_add_column (tree_view, model_column, xalign, title, tooltip,
 			       toggled_callback, NULL, data, cflags,
 			       3, "A", column_flags);
 }
-
 void
 gxk_tree_view_set_editable (GtkTreeView *tview,
                             gboolean     maybe_editable)
@@ -1913,7 +1752,6 @@ gxk_tree_view_set_editable (GtkTreeView *tview,
       tcol = (GtkTreeViewColumn*) g_list_pop_head (&clist);
     }
 }
-
 static void
 fixup_tcolumn_title (GtkWidget   *widget,
 		     const gchar *tooltip)
@@ -1923,7 +1761,6 @@ fixup_tcolumn_title (GtkWidget   *widget,
   if (GTK_IS_BUTTON (widget))
     gxk_widget_set_tooltip (widget, tooltip);
 }
-
 /**
  * @param tree_column	valid GtkTreeViewColumn
  * @param title	column title
@@ -1941,9 +1778,7 @@ gxk_tree_view_column_set_tip_title (GtkTreeViewColumn   *tree_column,
 				    const gchar		*tooltip)
 {
   GtkWidget *label;
-
   g_return_if_fail (GTK_IS_TREE_VIEW_COLUMN (tree_column));
-
   gtk_tree_view_column_set_title (tree_column, title);
   label = (GtkWidget*) g_object_new (GTK_TYPE_LABEL,
                                      "visible", TRUE,
@@ -1955,7 +1790,6 @@ gxk_tree_view_column_set_tip_title (GtkTreeViewColumn   *tree_column,
 			 GConnectFlags (0));
   gtk_tree_view_column_set_widget (tree_column, label);
 }
-
 /**
  * @param selection	GtkTreeSelection to modify
  * @param str_path	a stringified GtkTreePath
@@ -1967,15 +1801,12 @@ gxk_tree_selection_select_spath (GtkTreeSelection *selection,
 				 const gchar      *str_path)
 {
   GtkTreePath *path;
-
   g_return_if_fail (GTK_IS_TREE_SELECTION (selection));
   g_return_if_fail (str_path != NULL);
-
   path = gtk_tree_path_new_from_string (str_path);
   gtk_tree_selection_select_path (selection, path);
   gtk_tree_path_free (path);
 }
-
 /**
  * @param selection	GtkTreeSelection to modify
  * @param str_path	a stringified GtkTreePath
@@ -1987,15 +1818,12 @@ gxk_tree_selection_unselect_spath (GtkTreeSelection *selection,
 				   const gchar      *str_path)
 {
   GtkTreePath *path;
-
   g_return_if_fail (GTK_IS_TREE_SELECTION (selection));
   g_return_if_fail (str_path != NULL);
-
   path = gtk_tree_path_new_from_string (str_path);
   gtk_tree_selection_unselect_path (selection, path);
   gtk_tree_path_free (path);
 }
-
 /**
  * @param selection	GtkTreeSelection to modify
  * @param ...:       GtkTreePath indices
@@ -2011,9 +1839,7 @@ gxk_tree_selection_select_ipath (GtkTreeSelection *selection,
   GtkTreePath *path;
   va_list args;
   gint i;
-
   g_return_if_fail (GTK_IS_TREE_SELECTION (selection));
-
   path = gtk_tree_path_new ();
   i = first_index;
   va_start (args, first_index);
@@ -2026,7 +1852,6 @@ gxk_tree_selection_select_ipath (GtkTreeSelection *selection,
   gtk_tree_selection_select_path (selection, path);
   gtk_tree_path_free (path);
 }
-
 /**
  * @param selection	GtkTreeSelection to modify
  * @param ...:       GtkTreePath indices
@@ -2042,9 +1867,7 @@ gxk_tree_selection_unselect_ipath (GtkTreeSelection *selection,
   GtkTreePath *path;
   va_list args;
   gint i;
-
   g_return_if_fail (GTK_IS_TREE_SELECTION (selection));
-
   path = gtk_tree_path_new ();
   i = first_index;
   va_start (args, first_index);
@@ -2057,7 +1880,6 @@ gxk_tree_selection_unselect_ipath (GtkTreeSelection *selection,
   gtk_tree_selection_unselect_path (selection, path);
   gtk_tree_path_free (path);
 }
-
 void
 gxk_tree_view_select_index (GtkTreeView           *tview,
                             guint                  index)
@@ -2076,18 +1898,15 @@ gxk_tree_view_select_index (GtkTreeView           *tview,
     }
   gtk_tree_path_free (path);
 }
-
 static GSList           *browse_selection_queue = NULL;
 static guint             browse_selection_handler_id = 0;
 static GtkTreeSelection *browse_selection_ignore = NULL;
-
 static void
 browse_selection_weak_notify (gpointer data,
 			      GObject *object)
 {
   browse_selection_queue = g_slist_remove (browse_selection_queue, object);
 }
-
 static gboolean
 browse_selection_handler (gpointer data)
 {
@@ -2166,7 +1985,6 @@ browse_selection_handler (gpointer data)
   GDK_THREADS_LEAVE ();
   return FALSE;
 }
-
 static void
 browse_selection_changed (GtkTreeSelection *selection)
 {
@@ -2186,7 +2004,6 @@ browse_selection_changed (GtkTreeSelection *selection)
 	browse_selection_handler_id = g_idle_add_full (G_PRIORITY_DEFAULT, browse_selection_handler, NULL, NULL);
     }
 }
-
 /**
  * @param selection	GtkTreeSelection to watch
  * @param model	tree model used with @a selection
@@ -2207,7 +2024,6 @@ gxk_tree_selection_force_browse (GtkTreeSelection *selection,
     g_signal_connect_object (model, "row-inserted", G_CALLBACK (browse_selection_changed), selection, G_CONNECT_SWAPPED);
   browse_selection_changed (selection);
 }
-
 /**
  * @param tree	valid GtkTreeView
  * @param x_p	x position
@@ -2223,9 +2039,7 @@ gxk_tree_view_get_bin_window_pos (GtkTreeView *tree,
 {
   GdkWindow *window;
   gint ax = 0, ay = 0;
-
   g_return_if_fail (GTK_IS_TREE_VIEW (tree));
-
   window = gtk_tree_view_get_bin_window (tree);
   if (window)
     {
@@ -2245,7 +2059,6 @@ gxk_tree_view_get_bin_window_pos (GtkTreeView *tree,
   if (y_p)
     *y_p = ay;
 }
-
 /**
  * @param tree	valid GtkTreeView
  * @param row	row to retrieve area coordinates for
@@ -2264,9 +2077,7 @@ gxk_tree_view_get_row_area (GtkTreeView *tree,
                             gboolean     content_area)
 {
   GdkRectangle rect = { 0, 0, 0, 0 };
-
   g_return_val_if_fail (GTK_IS_TREE_VIEW (tree), FALSE);
-
   if (row >= 0)
     {
       GtkTreePath *path = gtk_tree_path_new ();
@@ -2291,7 +2102,6 @@ gxk_tree_view_get_row_area (GtkTreeView *tree,
     }
   return FALSE;		/* no row */
 }
-
 /**
  * @param tree	valid GtkTreeView
  * @param row	row to focus
@@ -2304,15 +2114,12 @@ gxk_tree_view_focus_row (GtkTreeView *tree,
 			 gint         row)
 {
   GtkTreePath *path;
-
   g_return_if_fail (GTK_IS_TREE_VIEW (tree));
-
   path = gtk_tree_path_new ();
   gtk_tree_path_append_index (path, row);
   gtk_tree_view_set_cursor (tree, path, NULL, FALSE);
   gtk_tree_path_free (path);
 }
-
 /**
  * @param tree	valid GtkTreeView
  * @param row	row to test
@@ -2325,7 +2132,6 @@ gxk_tree_view_is_row_selected (GtkTreeView *tree,
 			       gint         row)
 {
   g_return_val_if_fail (GTK_IS_TREE_VIEW (tree), FALSE);
-
   if (row >= 0)
     {
       GtkTreePath *path = gtk_tree_path_new ();
@@ -2338,7 +2144,6 @@ gxk_tree_view_is_row_selected (GtkTreeView *tree,
     }
   return FALSE;
 }
-
 /**
  * @param tree	valid GtkTreeView
  * @return		first selected row or -1
@@ -2352,9 +2157,7 @@ gxk_tree_view_get_selected_row (GtkTreeView *tree)
   GtkTreeModel *model;
   GtkTreeIter iter;
   gint row = -1;
-
   g_return_val_if_fail (GTK_IS_TREE_VIEW (tree), -1);
-
   if (gtk_tree_selection_get_selected (gtk_tree_view_get_selection (tree),
 				       &model, &iter))
     {
@@ -2365,7 +2168,6 @@ gxk_tree_view_get_selected_row (GtkTreeView *tree)
     }
   return row;
 }
-
 /**
  * @param tree	valid GtkTreeView
  * @param y	bin window y coordinate
@@ -2383,9 +2185,7 @@ gxk_tree_view_get_row_from_coord (GtkTreeView *tree,
 {
   GtkTreePath *path = NULL;
   gint row = -1, outside = FALSE;
-
   g_return_val_if_fail (GTK_IS_TREE_VIEW (tree), FALSE);
-
   if (!gtk_tree_view_get_path_at_pos (tree, GTK_WIDGET (tree)->allocation.width / 2,
 				      y, &path, NULL, NULL, NULL))
     {
@@ -2431,7 +2231,6 @@ gxk_tree_view_get_row_from_coord (GtkTreeView *tree,
     *row_p = row;
   return row >= 0 && !outside;
 }
-
 /**
  * @param instance	object instance with signals
  * @param detailed_signal	signal name
@@ -2453,11 +2252,9 @@ gxk_signal_handler_exists (gpointer     instance,
 {
   guint signal_id;
   GQuark detail = 0;
-
   g_return_val_if_fail (G_TYPE_CHECK_INSTANCE (instance), FALSE);
   g_return_val_if_fail (detailed_signal != NULL, FALSE);
   g_return_val_if_fail (callback != NULL, FALSE);
-
   if (detailed_signal && g_signal_parse_name (detailed_signal, G_TYPE_FROM_INSTANCE (instance),
 					      &signal_id, &detail, FALSE))
     {
@@ -2476,7 +2273,6 @@ gxk_signal_handler_exists (gpointer     instance,
     g_warning ("%s: signal name \"%s\" is invalid for instance `%p'", G_STRLOC, detailed_signal, instance);
   return FALSE;
 }
-
 /**
  * @param instance	object instance with signals
  * @param detailed_signal	signal name
@@ -2498,11 +2294,9 @@ gxk_signal_handler_pending (gpointer     instance,
 {
   guint signal_id;
   GQuark detail = 0;
-
   g_return_val_if_fail (G_TYPE_CHECK_INSTANCE (instance), FALSE);
   g_return_val_if_fail (detailed_signal != NULL, FALSE);
   g_return_val_if_fail (callback != NULL, FALSE);
-
   if (detailed_signal && g_signal_parse_name (detailed_signal, G_TYPE_FROM_INSTANCE (instance),
 					      &signal_id, &detail, FALSE))
     {
@@ -2521,7 +2315,6 @@ gxk_signal_handler_pending (gpointer     instance,
     g_warning ("%s: signal name \"%s\" is invalid for instance `%p'", G_STRLOC, detailed_signal, instance);
   return FALSE;
 }
-
 /* --- Gtk bug fixes --- */
 /**
  * @param ecell	valid GtkCellEditable
@@ -2534,12 +2327,10 @@ gboolean
 gxk_cell_editable_canceled (GtkCellEditable *ecell)
 {
   g_return_val_if_fail (GTK_IS_CELL_EDITABLE (ecell), FALSE);
-
   if (GTK_IS_ENTRY (ecell))
     return GTK_ENTRY (ecell)->editing_canceled;
   return FALSE;
 }
-
 /**
  * @param ecell	valid GtkCellEditable
  * @return		returns FALSE
@@ -2552,14 +2343,12 @@ void
 gxk_cell_editable_is_focus_handler (GtkCellEditable *ecell)
 {
   g_return_if_fail (GTK_IS_CELL_EDITABLE (ecell));
-
   if (!gtk_widget_is_focus (GTK_WIDGET (ecell)))
     {
       gtk_cell_editable_editing_done (ecell);
       gtk_cell_editable_remove_widget (ecell);
     }
 }
-
 static gchar*
 path_fix_uline (const gchar *str)
 {
@@ -2584,7 +2373,6 @@ path_fix_uline (const gchar *str)
   *q = 0;
   return path;
 }
-
 /**
  * @param ifactory	valid GtkItemFactory
  * @param path	item factory path
@@ -2621,7 +2409,6 @@ gxk_item_factory_sensitize (GtkItemFactory  *ifactory,
     }
   return item;
 }
-
 /**
  * @param ifactory	valid GtkItemFactory
  * @param path	item factory path
@@ -2639,7 +2426,6 @@ gxk_item_factory_get_item (GtkItemFactory *ifactory,
   g_free (p);
   return widget;
 }
-
 /**
  * @param ifactory	valid GtkItemFactory
  * @param path	item factory path
@@ -2657,7 +2443,6 @@ gxk_item_factory_get_widget (GtkItemFactory *ifactory,
   g_free (p);
   return widget;
 }
-
 static void
 requisition_to_aux_info (GtkWidget      *widget,
 			 GtkRequisition *requisition,
@@ -2666,7 +2451,6 @@ requisition_to_aux_info (GtkWidget      *widget,
   double *xyscale = (double*) data;
   guint width = requisition->width;
   guint height = requisition->height;
-  
   /* patch up requisition since gtk tends to allocate the viewport with the
    * requested size minus vscrollbar->width or minus hscrollbar->height.
    */
@@ -2685,16 +2469,13 @@ requisition_to_aux_info (GtkWidget      *widget,
           height += requisition.height;
         }
     }
-  
   /* we constrain the requisition to a fraction of the screen size */
   width = MIN (width, gdk_screen_width () * xyscale[0]);
   height = MIN (height, gdk_screen_height () * xyscale[1]);
-
   gtk_widget_set_size_request (widget,
                                xyscale[0] < 0 ? -1 : width,
                                xyscale[1] < 0 ? -1 : height);
 }
-
 /**
  * @param widget	valid GtkWidget
  * @param xscale	fractional factor for screen width
@@ -2716,14 +2497,12 @@ gxk_widget_proxy_requisition (GtkWidget *widget,
                               gdouble    yscale)
 {
   g_return_if_fail (GTK_IS_WIDGET (widget));
-
   g_signal_handlers_disconnect_by_func (widget, (void*) requisition_to_aux_info, NULL);
   double xyscale[2] = { xscale, yscale };
   if (xscale >= 0 || yscale >= 0)
     g_signal_connect_data (widget, "size-request", G_CALLBACK (requisition_to_aux_info),
                            g_memdup (xyscale, sizeof (xyscale)), (GClosureNotify) g_free, G_CONNECT_AFTER);
 }
-
 static void
 scrolled_window_size_request_spare_space (GtkScrolledWindow *scwin,
                                           GtkRequisition    *requisition)
@@ -2743,7 +2522,6 @@ scrolled_window_size_request_spare_space (GtkScrolledWindow *scwin,
         requisition->height = child_requisition.height;
     }
 }
-
 /**
  * @param scwin	valid GtkScrolledWindow
  *
@@ -2760,7 +2538,6 @@ gxk_scrolled_window_spare_space (GtkScrolledWindow*scwin)
   if (!gxk_signal_handler_exists (scwin, "size-request", G_CALLBACK (scrolled_window_size_request_spare_space), NULL))
     g_signal_connect (scwin, "size-request", G_CALLBACK (scrolled_window_size_request_spare_space), NULL);
 }
-
 /**
  *
  * @param scwin	valid GtkScrolledWindow
@@ -2773,7 +2550,6 @@ gxk_scrolled_window_unspare_space (GtkScrolledWindow*scwin)
   if (gxk_signal_handler_exists (scwin, "size-request", G_CALLBACK (scrolled_window_size_request_spare_space), NULL))
     g_signal_handlers_disconnect_by_func (scwin, (void*) scrolled_window_size_request_spare_space, NULL);
 }
-
 /**
  * @param child	valid GtkWidget
  * @param shadow_type	shadow around the GtkViewport
@@ -2809,7 +2585,6 @@ gxk_scrolled_window_create (GtkWidget        *child,
   gxk_widget_proxy_requisition (viewport, xrequest, yrequest);
   return scwin;
 }
-
 static void
 request_hclient_height (GtkWidget      *widget,
                         GtkRequisition *requisition,
@@ -2819,7 +2594,6 @@ request_hclient_height (GtkWidget      *widget,
   gtk_widget_size_request (client, &client_requisition);
   requisition->height = client_requisition.width;
 }
-
 /**
  * @param widget	valid GtkWidget
  * @param client	valid GtkWidget
@@ -2834,7 +2608,6 @@ gxk_widget_request_hclient_height (GtkWidget       *widget,
   g_signal_handlers_disconnect_by_func (widget, (void*) request_hclient_height, client);
   g_signal_connect_after (widget, "size_request", G_CALLBACK (request_hclient_height), client);
 }
-
 static void
 request_vclient_width (GtkWidget      *widget,
                        GtkRequisition *requisition,
@@ -2844,7 +2617,6 @@ request_vclient_width (GtkWidget      *widget,
   gtk_widget_size_request (client, &client_requisition);
   requisition->width = client_requisition.height;
 }
-
 /**
  * @param widget	valid GtkWidget
  * @param client	valid GtkWidget
@@ -2859,7 +2631,6 @@ gxk_widget_request_vclient_width (GtkWidget       *widget,
   g_signal_handlers_disconnect_by_func (widget, (void*) request_vclient_width, client);
   g_signal_connect_after (widget, "size_request", G_CALLBACK (request_vclient_width), client);
 }
-
 /**
  * @param widget	valid GtkWidget
  * @param ancestor	valid GtkWidget
@@ -2876,7 +2647,6 @@ gxk_widget_has_ancestor (gpointer widget,
   GtkWidget *w = (GtkWidget*) widget, *a = (GtkWidget*) ancestor;
   g_return_val_if_fail (GTK_IS_WIDGET (widget), FALSE);
   g_return_val_if_fail (GTK_IS_WIDGET (ancestor), FALSE);
-
   while (w)
     {
       if (w == a)
@@ -2885,7 +2655,6 @@ gxk_widget_has_ancestor (gpointer widget,
     }
   return FALSE;
 }
-
 /**
  * @param menu	valid GtkMenu
  * @param child	an immediate child of @a menu
@@ -2902,7 +2671,6 @@ gxk_menu_set_active (GtkMenu         *menu,
 {
   g_return_if_fail (GTK_IS_MENU (menu));
   g_return_if_fail (GTK_IS_WIDGET (child));
-
   gint nth = g_list_index (GTK_MENU_SHELL (menu)->children, child);
   if (nth >= 0 && child != menu->old_active_menu_item)
     {
@@ -2918,7 +2686,6 @@ gxk_menu_set_active (GtkMenu         *menu,
 #endif
     }
 }
-
 /**
  * @param widget	valid GtkWidget
  * @param sensitive	whether @a widget should be sensitive
@@ -2957,7 +2724,6 @@ gxk_widget_regulate (GtkWidget      *widget,
       g_object_thaw_notify (G_OBJECT (widget));
     }
 }
-
 /**
  * @param widget	valid GtkWidget
  * @return		TRUE if gxk_widget_regulate() uses @a active for @a widget
@@ -2973,7 +2739,6 @@ gxk_widget_regulate_uses_active (GtkWidget *widget)
   GParamSpec *pspec = g_object_class_find_property (G_OBJECT_GET_CLASS (widget), "active");
   return GTK_IS_MENU_ITEM (widget) || (pspec && pspec->value_type == G_TYPE_BOOLEAN);
 }
-
 /**
  * @param window	valid GtkWindow
  * @return		valid GtkAccelGroup
@@ -2994,7 +2759,6 @@ gxk_window_get_menu_accel_group (GtkWindow *window)
     }
   return agroup;
 }
-
 static GdkGeometry*
 window_get_geometry (GtkWindow *window)
 {
@@ -3008,7 +2772,6 @@ window_get_geometry (GtkWindow *window)
     }
   return geometry;
 }
-
 void
 gxk_window_set_geometry_min_width (GtkWindow       *window,
                                    guint            min_width)
@@ -3020,7 +2783,6 @@ gxk_window_set_geometry_min_width (GtkWindow       *window,
       gtk_window_set_geometry_hints (GTK_WINDOW (window), NULL, geometry, GDK_HINT_MIN_SIZE | GDK_HINT_RESIZE_INC);
     }
 }
-
 void
 gxk_window_set_geometry_min_height (GtkWindow       *window,
                                     guint            min_height)
@@ -3032,7 +2794,6 @@ gxk_window_set_geometry_min_height (GtkWindow       *window,
       gtk_window_set_geometry_hints (GTK_WINDOW (window), NULL, geometry, GDK_HINT_MIN_SIZE | GDK_HINT_RESIZE_INC);
     }
 }
-
 void
 gxk_window_set_geometry_width_inc (GtkWindow       *window,
                                    guint            width_increment)
@@ -3044,7 +2805,6 @@ gxk_window_set_geometry_width_inc (GtkWindow       *window,
       gtk_window_set_geometry_hints (GTK_WINDOW (window), NULL, geometry, GDK_HINT_MIN_SIZE | GDK_HINT_RESIZE_INC);
     }
 }
-
 void
 gxk_window_set_geometry_height_inc (GtkWindow       *window,
                                     guint            height_increment)
@@ -3056,7 +2816,6 @@ gxk_window_set_geometry_height_inc (GtkWindow       *window,
       gtk_window_set_geometry_hints (GTK_WINDOW (window), NULL, geometry, GDK_HINT_MIN_SIZE | GDK_HINT_RESIZE_INC);
     }
 }
-
 static void
 adjust_visibility (GtkWidget  *expander,
                    GParamSpec *pspec,
@@ -3070,7 +2829,6 @@ adjust_visibility (GtkWidget  *expander,
   else
     gtk_widget_hide (widget);
 }
-
 /**
  * @param expander	valid GtkWidget with boolean ::expanded property
  * @param widget	valid GtkWidget
@@ -3086,7 +2844,6 @@ gxk_expander_connect_to_widget (GtkWidget       *expander,
     g_signal_connect_object (expander, "notify::expanded", G_CALLBACK (adjust_visibility), widget, GConnectFlags (0));
   g_object_notify ((GObject*) expander, "expanded");
 }
-
 /**
  * @param label a GtkLabel
  * @param ...   a list of PangoAttrType and value pairs terminated by -1.
@@ -3112,7 +2869,6 @@ gxk_label_set_attributes (GtkLabel *label,
    * Copyright (C) 2000 Michael Natterer <mitch@gimp.org>
    */
   g_return_if_fail (GTK_IS_LABEL (label));
-
   va_list         args;
   va_start (args, label);
   PangoAttrList  *attrs = pango_attr_list_new ();
@@ -3120,7 +2876,6 @@ gxk_label_set_attributes (GtkLabel *label,
   do
     {
       PangoAttrType attr_type = (PangoAttrType) va_arg (args, int); // PangoAttrType
-
       switch (attr_type)
         {
         case PANGO_ATTR_LANGUAGE:
@@ -3150,7 +2905,6 @@ gxk_label_set_attributes (GtkLabel *label,
         case PANGO_ATTR_FOREGROUND:
           {
             const PangoColor *color = va_arg (args, const PangoColor *);
-
             attr = pango_attr_foreground_new (color->red,
                                               color->green,
                                               color->blue);
@@ -3159,7 +2913,6 @@ gxk_label_set_attributes (GtkLabel *label,
         case PANGO_ATTR_BACKGROUND:
           {
             const PangoColor *color = va_arg (args, const PangoColor *);
-
             attr = pango_attr_background_new (color->red,
                                               color->green,
                                               color->blue);
@@ -3197,8 +2950,6 @@ gxk_label_set_attributes (GtkLabel *label,
   gtk_label_set_attributes (label, attrs);
   pango_attr_list_unref (attrs);
 }
-
-
 guint
 gxk_container_get_insertion_slot (GtkContainer *container)
 {
@@ -3218,7 +2969,6 @@ gxk_container_get_insertion_slot (GtkContainer *container)
   g_object_set_data_full ((GObject*) container, "gxk-container-slots", slots, g_free);
   return n_slots;
 }
-
 void
 gxk_container_slot_reorder_child (GtkContainer    *container,
                                   GtkWidget       *widget,
@@ -3241,7 +2991,6 @@ gxk_container_slot_reorder_child (GtkContainer    *container,
         slots[i]++;
     }
 }
-
 /**
  * @param window	the window receiving the grab
  * @param owner_events	if TRUE, events will be reported relative to @a window
@@ -3274,7 +3023,6 @@ gxk_grab_pointer_and_keyboard (GdkWindow    *window,
     }
   return FALSE;
 }
-
 /**
  * @param window	window pointer was previously grabed on
  *
@@ -3292,7 +3040,6 @@ gxk_ungrab_pointer_and_keyboard (GdkWindow *window,
   gdk_display_pointer_ungrab (display, time);
   gdk_display_keyboard_ungrab (display, time);
 }
-
 /**
  * @param menu	valid GtkMenu
  * @return		TRUE if @a menu contains selectable items
@@ -3316,7 +3063,6 @@ gxk_menu_check_sensitive (GtkMenu *menu)
     }
   return FALSE;
 }
-
 static void
 submenu_adjust_sensitivity (GtkMenu *menu)
 {
@@ -3334,7 +3080,6 @@ submenu_adjust_sensitivity (GtkMenu *menu)
         }
     }
 }
-
 static void
 gxk_menu_refetch_accel_group (GtkMenu *menu)
 {
@@ -3342,7 +3087,6 @@ gxk_menu_refetch_accel_group (GtkMenu *menu)
   if (GTK_IS_WINDOW (toplevel))
     gtk_menu_set_accel_group (menu, gxk_window_get_menu_accel_group ((GtkWindow*) toplevel));
 }
-
 /**
  * @param menu	valid GtkMenu
  * @param menu_item	valid GtkMenuItem
@@ -3365,11 +3109,8 @@ gxk_menu_attach_as_submenu (GtkMenu     *menu,
 {
   g_return_if_fail (GTK_IS_MENU (menu));
   g_return_if_fail (GTK_IS_MENU_ITEM (menu_item));
-
   gtk_menu_item_set_submenu (menu_item, GTK_WIDGET (menu));
-
   gxk_widget_proxy_hierarchy_changed_to_attached (GTK_WIDGET (menu_item));
-
   if (!gxk_signal_handler_exists (menu, "parent-set", G_CALLBACK (submenu_adjust_sensitivity), NULL))
     g_object_connect (menu,
                       "signal_after::parent-set", submenu_adjust_sensitivity, NULL,
@@ -3378,7 +3119,6 @@ gxk_menu_attach_as_submenu (GtkMenu     *menu,
                       NULL);
   submenu_adjust_sensitivity (menu);
 }
-
 /**
  * @param option_menu	valid GtkOptionMenu
  * @param menu	valid GtkMenu
@@ -3397,12 +3137,9 @@ gxk_option_menu_set_menu (GtkOptionMenu *option_menu,
 {
   g_return_if_fail (GTK_IS_OPTION_MENU (option_menu));
   g_return_if_fail (GTK_IS_MENU (menu));
-
   gtk_option_menu_set_menu (option_menu, GTK_WIDGET (menu));
-
   gxk_widget_proxy_hierarchy_changed_to_attached (GTK_WIDGET (option_menu));
 }
-
 static void
 popup_menus_detach (gpointer data)
 {
@@ -3414,7 +3151,6 @@ popup_menus_detach (gpointer data)
         gtk_menu_detach (menu);
     }
 }
-
 static void
 popup_menu_detacher (GtkWidget *widget,
                      GtkMenu   *menu)
@@ -3430,7 +3166,6 @@ popup_menu_detacher (GtkWidget *widget,
   if (mdfunc)
     mdfunc (widget, menu);
 }
-
 /**
  * @param menu	valid GtkMenu
  * @param menu_item	valid GtkMenuItem
@@ -3445,16 +3180,13 @@ gxk_menu_attach_as_popup_with_func (GtkMenu          *menu,
 {
   g_return_if_fail (GTK_IS_MENU (menu));
   g_return_if_fail (GTK_IS_WIDGET (widget));
-
   GList *menu_list = (GList*) g_object_steal_data ((GObject*) widget, "GxkWidget-popup-menus");
   menu_list = g_list_prepend (menu_list, menu);
   g_object_set_data_full ((GObject*) widget, "GxkWidget-popup-menus", menu_list, popup_menus_detach);
   g_object_set_data ((GObject*) menu, "gxk-GtkMenuDetachFunc", (void*) mdfunc);
   gtk_menu_attach_to_widget (menu, widget, popup_menu_detacher);
-
   gxk_widget_proxy_hierarchy_changed_to_attached (widget);
 }
-
 /**
  * @param menu	valid GtkMenu
  * @param menu_item	valid GtkMenuItem
@@ -3473,13 +3205,11 @@ gxk_menu_attach_as_popup (GtkMenu         *menu,
 {
   gxk_menu_attach_as_popup_with_func (menu, widget, NULL);
 }
-
 typedef struct {
   gint     x, y, pushed_x, pushed_y;
   guint    pushed_in : 1;
   guint    pushable : 1;
 } PopupData;
-
 static gboolean
 menu_position_unpushed (GtkMenu   *menu,
                         gint      *x,
@@ -3496,7 +3226,6 @@ menu_position_unpushed (GtkMenu   *menu,
   else
     return TRUE;
 }
-
 static void
 menu_position_pushed_in (GtkMenu   *menu,
                          gint      *x,
@@ -3517,7 +3246,6 @@ menu_position_pushed_in (GtkMenu   *menu,
         }
     }
 }
-
 static void
 menu_position_func (GtkMenu  *menu,
                     gint     *x,
@@ -3564,7 +3292,6 @@ menu_position_func (GtkMenu  *menu,
         }
     }
 }
-
 void
 gxk_menu_popup (GtkMenu *menu,
                 gint     x,
@@ -3578,7 +3305,6 @@ gxk_menu_popup (GtkMenu *menu,
   pdata->y = y;
   gtk_menu_popup (menu, NULL, NULL, menu_position_func, pdata, mouse_button, time);
 }
-
 void
 gxk_menu_popup_pushable (GtkMenu         *menu,
                          gint             x,
@@ -3597,7 +3323,6 @@ gxk_menu_popup_pushable (GtkMenu         *menu,
   pdata->pushable = TRUE;
   gtk_menu_popup (menu, NULL, NULL, menu_position_func, pdata, mouse_button, time);
 }
-
 void
 gxk_menu_popup_pushed_in (GtkMenu         *menu,
                           gint             pushed_x,
@@ -3612,7 +3337,6 @@ gxk_menu_popup_pushed_in (GtkMenu         *menu,
   pdata->pushed_in = TRUE;
   gtk_menu_popup (menu, NULL, NULL, menu_position_func, pdata, mouse_button, time);
 }
-
 static GtkWidget*
 widget_find_level_ordered (GtkWidget   *widget,
                            const gchar *name)
@@ -3651,7 +3375,6 @@ widget_find_level_ordered (GtkWidget   *widget,
     }
   return NULL;
 }
-
 /**
  * @param toplevel	valid GtkWidget
  * @param name	name of the widget being looked for
@@ -3672,10 +3395,8 @@ gxk_widget_find_level_ordered (GtkWidget   *toplevel,
 {
   g_return_val_if_fail (GTK_IS_WIDGET (toplevel), NULL);
   g_return_val_if_fail (name != NULL, NULL);
-
   return widget_find_level_ordered (toplevel, name);
 }
-
 /**
  * @param widget	valid GtkWidget
  *
@@ -3704,7 +3425,6 @@ gxk_widget_get_attach_toplevel (GtkWidget *widget)
   } while (parent);
   return widget;
 }
-
 static void
 widget_add_font_requisition (GtkWidget      *widget,
                              GtkRequisition *requisition)
@@ -3719,7 +3439,6 @@ widget_add_font_requisition (GtkWidget      *widget,
   requisition->width += PANGO_PIXELS (points);
   pango_font_metrics_unref (metrics);
 }
-
 /**
  * @param widget	valid GtkWidget
  * @param n_chars	number of characters to request space for
@@ -3742,7 +3461,6 @@ gxk_widget_add_font_requisition (GtkWidget       *widget,
     g_signal_connect_after (widget, "size-request", G_CALLBACK (widget_add_font_requisition), NULL);
   gtk_widget_queue_resize (widget);
 }
-
 /**
  * @param widget	valid GtkWidget
  * @return		custom options set on the widget
@@ -3756,7 +3474,6 @@ gxk_widget_get_options (gpointer widget)
   g_return_val_if_fail (GTK_IS_WIDGET (widget), NULL);
   return (const char*) g_object_get_data ((GObject*) widget, "GxkWidget-options");
 }
-
 /**
  * @param widget	valid GtkWidget
  * @param option	option to add to widget
@@ -3798,7 +3515,6 @@ gxk_widget_add_option (gpointer         widget,
       g_object_set_data_full ((GObject*) widget, "GxkWidget-options", s, g_free);
     }
 }
-
 /**
  * @param widget	valid GtkWidget
  * @param option	option to check for
@@ -3815,19 +3531,15 @@ gxk_widget_check_option (gpointer         widget,
   options = (const char*) g_object_get_data ((GObject*) widget, "GxkWidget-options");
   return g_option_check (options, option);
 }
-
 GtkWidget*
 gxk_file_selection_split (GtkFileSelection *fs,
 			  GtkWidget       **bbox_p)
 {
   GtkWidget *main_vbox;
   GtkWidget *hbox;
-
   g_return_val_if_fail (GTK_IS_FILE_SELECTION (fs), NULL);
-
   /* nuke GUI junk */
   gtk_file_selection_hide_fileop_buttons (fs);
-
   /* fix spacing and borders */
   gtk_container_set_border_width (GTK_CONTAINER (fs), 0);
   gtk_widget_ref (fs->main_vbox);
@@ -3846,11 +3558,9 @@ gxk_file_selection_split (GtkFileSelection *fs,
 			      NULL);
   gtk_box_pack_start (GTK_BOX (main_vbox), fs->main_vbox, TRUE, TRUE, 0);
   gtk_widget_unref (fs->main_vbox);
-
   /* fixup focus and default widgets */
   gtk_widget_grab_default (fs->ok_button);
   gtk_widget_grab_focus (fs->selection_entry);
-
   /* use an ordinary HBox as button container */
   gtk_widget_hide (fs->ok_button->parent);
   hbox = gtk_widget_new (GTK_TYPE_HBOX,
@@ -3865,19 +3575,15 @@ gxk_file_selection_split (GtkFileSelection *fs,
     gtk_box_pack_end (GTK_BOX (main_vbox), hbox, FALSE, TRUE, 0);
   gtk_widget_reparent (fs->ok_button, hbox);
   gtk_widget_reparent (fs->cancel_button, hbox);
-
   /* fix the action_area packing so we can customize children */
   gtk_box_set_child_packing (GTK_BOX (fs->action_area->parent),
 			     fs->action_area,
 			     FALSE, TRUE,
 			     5, GTK_PACK_START);
-
   /* fs life cycle */
   g_signal_connect_object (main_vbox, "destroy", G_CALLBACK (gtk_widget_destroy), fs, G_CONNECT_SWAPPED);
-
   return main_vbox;
 }
-
 /**
  * @param fs	valid GtkFileSelection
  * @return		new toplevel VBox of the file selection
@@ -3895,18 +3601,14 @@ GtkWidget*
 gxk_file_selection_heal (GtkFileSelection *fs)
 {
   GtkWidget *any, *main_box;
-
   main_box = gxk_file_selection_split (fs, NULL);
-
   /* add obligatory button seperator */
   any = (GtkWidget*) g_object_new (GTK_TYPE_HSEPARATOR,
                                    "visible", TRUE,
                                    NULL);
   gtk_box_pack_end (GTK_BOX (main_box), any, FALSE, TRUE, 0);
-
   return main_box;
 }
-
 /* --- zlib support --- */
 #include <zlib.h>
 gchar*
@@ -3919,7 +3621,6 @@ gxk_zfile_uncompress (guint                uncompressed_size,
   guint8 *text = (guint8*) g_malloc (len);
   gint result;
   const gchar *err;
-
   result = uncompress (text, &dlen, cdata, cdata_size);
   switch (result)
     {
@@ -3945,7 +3646,6 @@ gxk_zfile_uncompress (guint                uncompressed_size,
     }
   if (err)
     g_error ("while decompressing (%p, %u): %s", cdata, cdata_size, err);
-
   text[dlen] = 0;
   return (char*) text;
 }

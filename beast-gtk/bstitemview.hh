@@ -1,11 +1,8 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #ifndef __BST_ITEM_VIEW_H__
 #define __BST_ITEM_VIEW_H__
-
 #include	"bstutils.hh"
-
 G_BEGIN_DECLS
-
 /* --- Gtk+ type macros --- */
 #define	BST_TYPE_ITEM_VIEW	      (bst_item_view_get_type ())
 #define	BST_ITEM_VIEW(object)	      (GTK_CHECK_CAST ((object), BST_TYPE_ITEM_VIEW, BstItemView))
@@ -13,22 +10,16 @@ G_BEGIN_DECLS
 #define	BST_IS_ITEM_VIEW(object)      (GTK_CHECK_TYPE ((object), BST_TYPE_ITEM_VIEW))
 #define	BST_IS_ITEM_VIEW_CLASS(klass) (GTK_CHECK_CLASS_TYPE ((klass), BST_TYPE_ITEM_VIEW))
 #define BST_ITEM_VIEW_GET_CLASS(obj)  (GTK_CHECK_GET_CLASS ((obj), BST_TYPE_ITEM_VIEW, BstItemViewClass))
-
 #define	BST_ITEM_VIEW_TREE_HEIGHT     (120)
-
-
 /* --- structures & typedefs --- */
 typedef	struct	_BstItemView		BstItemView;
 typedef	struct	_BstItemViewClass	BstItemViewClass;
 struct _BstItemView
 {
   GtkAlignment	  parent_object;
-
   GtkTreeView    *tree;
   GxkListWrapper *wlist;
-
   GtkWidget	 *pview;
-
   SfiProxy	 container;
   SfiProxy	 auto_select;
   GtkWidget    **op_widgets;
@@ -36,9 +27,7 @@ struct _BstItemView
 struct _BstItemViewClass
 {
   GtkAlignmentClass parent_class;
-
   const gchar	   *item_type;
-
   void	      (*set_container)	(BstItemView	*self,
 				 SfiProxy	 new_container);
   void	      (*listen_on)	(BstItemView	*self,
@@ -46,8 +35,6 @@ struct _BstItemViewClass
   void	      (*unlisten_on)	(BstItemView	*self,
 				 SfiProxy	 item);
 };
-
-
 /* --- prototypes --- */
 GType		bst_item_view_get_type		(void);
 void		bst_item_view_select		(BstItemView	*item_view,
@@ -77,8 +64,5 @@ void		bst_item_view_enable_param_view	(BstItemView    *self,
                                                  gboolean        enabled);
 GtkTreeModel* bst_item_view_adapt_list_wrapper	(BstItemView	*self,
 						 GxkListWrapper *lwrapper);
-
-
 G_END_DECLS
-
 #endif /* __BST_ITEM_VIEW_H__ */

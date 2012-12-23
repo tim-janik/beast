@@ -1,6 +1,5 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bstbseutils.hh"
-
 /* --- BEAST utilities --- */
 BseErrorType
 bst_project_restore_from_file (SfiProxy        project,
@@ -34,7 +33,6 @@ bst_project_restore_from_file (SfiProxy        project,
     bse_project_clean_dirty (project);
   return error;
 }
-
 BseErrorType
 bst_project_import_midi_file (SfiProxy        project,
                               const gchar    *file_name)
@@ -55,7 +53,6 @@ bst_project_import_midi_file (SfiProxy        project,
       }
   return error;
 }
-
 const gchar*
 bst_procedure_get_title (const gchar *procedure)
 {
@@ -67,7 +64,5 @@ bst_procedure_get_title (const gchar *procedure)
     }
   return NULL;
 }
-
-
 /* --- generated code --- */
 #include "bstgenbseapi.cc"

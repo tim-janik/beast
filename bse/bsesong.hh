@@ -1,13 +1,8 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #ifndef __BSE_SONG_H__
 #define __BSE_SONG_H__
-
 #include        <bse/bsesnet.hh>
-
-
 G_BEGIN_DECLS
-
-
 /* --- BSE type macros --- */
 #define BSE_TYPE_SONG              (BSE_TYPE_ID (BseSong))
 #define BSE_SONG(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), BSE_TYPE_SONG, BseSong))
@@ -15,8 +10,6 @@ G_BEGIN_DECLS
 #define BSE_IS_SONG(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), BSE_TYPE_SONG))
 #define BSE_IS_SONG_CLASS(class)   (G_TYPE_CHECK_CLASS_TYPE ((class), BSE_TYPE_SONG))
 #define BSE_SONG_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), BSE_TYPE_SONG, BseSongClass))
-
-
 /* --- BseSong object --- */
 typedef struct {
   BseSource *constant;
@@ -25,29 +18,21 @@ typedef struct {
 struct _BseSong
 {
   BseSNet           parent_instance;
-  
   guint		    tpqn;		/* ticks per querter note */
   guint		    numerator;
   guint		    denominator;
   gfloat            bpm;
-
   BseMusicalTuningType musical_tuning;
-  
   SfiRing          *parts;              /* of type BsePart* */
   SfiRing          *busses;             /* of type BseBus* */
   BseBus           *solo_bus;
-
   BseSource	   *postprocess;
   BseSource	   *output;
-
   BseSNet          *pnet;
-
   /* song position pointer */
   SfiInt	    last_position;
   guint		    position_handler;
-
   BseMidiReceiver  *midi_receiver_SL;
-
   /* fields protected by sequencer mutex */
   gdouble	    tpsi_SL;		/* ticks per stamp increment (sample) */
   SfiRing	   *tracks_SL;		/* of type BseTrack* */
@@ -67,8 +52,6 @@ struct _BseSongClass
 {
   BseSNetClass parent_class;
 };
-
-
 /* --- prototypes --- */
 BseSong*	bse_song_lookup			(BseProject	*project,
 						 const gchar	*name);
@@ -82,7 +65,5 @@ BseBus*         bse_song_find_master            (BseSong        *self);
 BseSource*      bse_song_ensure_master          (BseSong        *self);
 void            bse_song_set_solo_bus           (BseSong        *self,
                                                  BseBus         *bus);
-
 G_END_DECLS
-
 #endif /* __BSE_SONG_H__ */

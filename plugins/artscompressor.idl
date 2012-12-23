@@ -1,9 +1,7 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include <bse/bse.idl>
-
 namespace Bse {
 namespace Arts {
-
 class Compressor : Effect {
   Info    icon       = "icons/compressor.png";
   Info    authors    = "Matthias Kretz, Stefan Westerfeld";
@@ -33,7 +31,6 @@ class Compressor : Effect {
   IStream audio_in2  = (_("Audio In2"), _("Audio input 2"));
   OStream audio_out1 = (_("Audio Out1"), _("Compressed audio output 1"));
   OStream audio_out2 = (_("Audio Out2"), _("Compressed audio output 2"));
-
   group _("Parameters") {
     Real attack       = Real (_("Attack [ms]"), _("Set the attack time in milliseconds"), 10.0, 0.1, 250.0, 10.0, STANDARD ":scale");
     Real release      = Real (_("Release [ms]"), _("Set the release time in milliseconds"), 10.0, 0.1, 250.0, 10.0, STANDARD ":scale");
@@ -48,8 +45,6 @@ class Compressor : Effect {
     Real output       = Real (NULL, NULL, 1, 0.1, 10.0, 1, "w");
   };
 };
-
 }; // Arts
 }; // Bse
-
 /* vim:set ts=8 sw=2 sts=2 syntax=cpp: */

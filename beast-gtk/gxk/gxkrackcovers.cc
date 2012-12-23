@@ -1,5 +1,4 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
-
 /* --- functions --- */
 static GtkWidget*
 rack_cover_create (GtkWidget *rtable)
@@ -27,39 +26,30 @@ rack_cover_create (GtkWidget *rtable)
   GdkPixmap *pixmap;
   GdkBitmap *mask;
   GtkWidget *pix;
-  
   pixmap = gdk_pixmap_colormap_create_from_xpm_d (NULL, gtk_widget_get_colormap (rtable), &mask, NULL, (gchar**) rivet_xpm);
   pix = gtk_pixmap_new (pixmap, mask);
   gtk_widget_show (pix);
   gtk_table_attach (table, pix, 0, 1, 0, 1, GTK_SHRINK, GTK_SHRINK, 0, 0);
-  
   pixmap = gdk_pixmap_colormap_create_from_xpm_d (NULL, gtk_widget_get_colormap (rtable), &mask, NULL, (gchar**) rivet_xpm);
   pix = gtk_pixmap_new (pixmap, mask);
   gtk_widget_show (pix);
   gtk_table_attach (table, pix, 2, 3, 2, 3, GTK_SHRINK, GTK_SHRINK, 0, 0);
-  
   pixmap = gdk_pixmap_colormap_create_from_xpm_d (NULL, gtk_widget_get_colormap (rtable), &mask, NULL, (gchar**) rivet_xpm);
   pix = gtk_pixmap_new (pixmap, mask);
   gtk_widget_show (pix);
   gtk_table_attach (table, pix, 0, 1, 2, 3, GTK_SHRINK, GTK_SHRINK, 0, 0);
-  
   pixmap = gdk_pixmap_colormap_create_from_xpm_d (NULL, gtk_widget_get_colormap (rtable), &mask, NULL, (gchar**) rivet_xpm);
   pix = gtk_pixmap_new (pixmap, mask);
   gtk_widget_show (pix);
   gtk_table_attach (table, pix, 2, 3, 0, 1, GTK_SHRINK, GTK_SHRINK, 0, 0);
-  
   gdk_pixmap_unref (pixmap);
   gdk_pixmap_unref (mask);
-  
   pix = (GtkWidget*) g_object_new (GTK_TYPE_ALIGNMENT, "visible", TRUE, NULL);
   gtk_table_attach (table, pix, 1, 2, 1, 2, GTK_EXPAND, GTK_EXPAND, 0, 0);
-
   g_object_ref (cover);
   gtk_object_sink (GTK_OBJECT (cover));
-  
   return cover;
 }
-
 static void
 rack_cover_grow_area_horizontal (GxkRackTable *rtable,
 				 guint         col,
@@ -69,7 +59,6 @@ rack_cover_grow_area_horizontal (GxkRackTable *rtable,
 {
   GtkTable *table = GTK_TABLE (rtable);
   guint i, j;
-  
   for (i = 1; col + i < table->ncols; i++)
     if (gxk_rack_table_check_cell (rtable, col + i, row))
       break;
@@ -79,7 +68,6 @@ rack_cover_grow_area_horizontal (GxkRackTable *rtable,
   *hspan = i;
   *vspan = j;
 }
-
 static void
 rack_cover_grow_area_vertical (GxkRackTable *rtable,
 			       guint         col,
@@ -89,7 +77,6 @@ rack_cover_grow_area_vertical (GxkRackTable *rtable,
 {
   GtkTable *table = GTK_TABLE (rtable);
   guint i, j;
-  
   for (j = 1; row + j < table->nrows; j++)
     if (gxk_rack_table_check_cell (rtable, col, row + j))
       break;
@@ -99,7 +86,6 @@ rack_cover_grow_area_vertical (GxkRackTable *rtable,
   *hspan = i;
   *vspan = j;
 }
-
 static GSList*
 rack_cover_add_plates (GxkRackTable *rtable)
 {
@@ -108,7 +94,6 @@ rack_cover_add_plates (GxkRackTable *rtable)
   guint i, j;
   guint k, l, m, n;
   GSList *plate_list = NULL;
-  
   if (0)
     {
       /* grab the first free cell and start growing a cover from it.
@@ -121,13 +106,11 @@ rack_cover_add_plates (GxkRackTable *rtable)
             {
               rack_cover_grow_area_vertical (rtable, i, j, &k, &l);
               rack_cover_grow_area_horizontal (rtable, i, j, &m, &n);
-              
               if (m * n > k * l)
                 {
                   k = m;
                   l = n;
                 }
-              
               cover = rack_cover_create (GTK_WIDGET (rtable));
               plate_list = g_slist_prepend (plate_list, cover);
               gxk_rack_table_attach (rtable, cover, i, j, k, l);

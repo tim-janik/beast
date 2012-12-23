@@ -1,27 +1,20 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "sfimemory.hh"
 #include <string.h>
-
-
 #define PREALLOC                (8)
 #define SIMPLE_CACHE_SIZE       (64)
 #define TS8_SIZE                (MAX (sizeof (GTrashStack), 8))
 #define DBG8_SIZE               (MAX (sizeof (gsize), 8))
-
-
 /* --- variables --- */
 static BirnetMutex     global_memory_mutex = { 0, };
 static GTrashStack *simple_cache[SIMPLE_CACHE_SIZE] = { 0, 0, 0, /* ... */ };
 static gulong       memory_allocated = 0;
-
-
 /* --- functions --- */
 gulong
 sfi_alloc_upper_power2 (const gulong number)
 {
   return number ? 1 << g_bit_storage (number - 1) : 0;
 }
-
 #if 0
 static inline gpointer
 low_alloc (gsize mem_size)
@@ -59,7 +52,6 @@ low_alloc (gsize mem_size)
     }
   return mem;
 }
-
 static inline void
 low_free (gsize    mem_size,
 	  gpointer mem)
@@ -94,58 +86,46 @@ low_free (gsize    mem_size,
   g_free (mem);
 }
 #endif
-
 gpointer
 sfi_alloc_memblock (gsize block_size)
 {
   uint8 *cmem;
   size_t *debug_size;
-
   g_return_val_if_fail (block_size >= sizeof (gpointer), NULL);	/* cache-link size */
-
   cmem = (uint8*) low_alloc (block_size + DBG8_SIZE);
   debug_size = (gsize*) cmem;
   *debug_size = block_size;
   cmem += DBG8_SIZE;
-
   return cmem;
 }
-
 void
 sfi_free_memblock (gsize    block_size,
 		   gpointer mem)
 {
   size_t *debug_size;
   uint8 *cmem;
-  
   g_return_if_fail (mem != NULL);
-  
   cmem = (uint8*) mem;
   cmem -= DBG8_SIZE;
   debug_size = (gsize*) cmem;
   if (block_size != *debug_size)
     g_printerr ("%s: in memory block at (%p): block_size=%zd != *debug_size=%zd\n", G_STRLOC, mem, block_size, *debug_size);
-  
   low_free (block_size + DBG8_SIZE, cmem);
 }
-
 void
 sfi_alloc_report (void)
 {
   guint cell, cached = 0;
-  
   sfi_mutex_lock (&global_memory_mutex);
   for (cell = 0; cell < SIMPLE_CACHE_SIZE; cell++)
     {
       GTrashStack *trash = simple_cache[cell];
       guint memsize, n = 0;
-      
       while (trash)
 	{
 	  n++;
 	  trash = trash->next;
 	}
-      
       if (n)
 	{
 	  memsize = (cell + 1) << 3;
@@ -156,27 +136,21 @@ sfi_alloc_report (void)
   g_message ("%lu bytes allocated from system, %u bytes unused in cache", memory_allocated, cached);
   sfi_mutex_unlock (&global_memory_mutex);
 }
-
 gpointer
 sfi_alloc_memblock0 (gsize block_size)
 {
   gpointer mem = sfi_alloc_memblock (block_size);
-  
   memset (mem, 0, block_size);
-  
   return mem;
 }
-
 void
 _sfi_free_node_list (gpointer mem,
 		     gsize    node_size)
 {
   struct LinkedData { gpointer data; LinkedData *next; };
   LinkedData *tmp, *node = (LinkedData*) mem;
-
   g_return_if_fail (node != NULL);
   g_return_if_fail (node_size >= 2 * sizeof (gpointer));
-
   /* FIXME: this can be optimized to an O(1) operation with T-style links in mem-caches */
   do
     {
@@ -186,7 +160,6 @@ _sfi_free_node_list (gpointer mem,
     }
   while (node);
 }
-
 void
 _sfi_init_memory (void)
 {

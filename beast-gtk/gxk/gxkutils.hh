@@ -1,18 +1,13 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #ifndef __GXK_UTILS_H__
 #define __GXK_UTILS_H__
-
 #include        <gxk/gxkglobals.hh>
-
 G_BEGIN_DECLS
-
 /* --- generated includes --- */
 /* type IDs */
 #include <gxk/gxkgentypes.h>
 /* marshallers */
 #include <gxk/gxkmarshal.h>
-
-
 /* --- Gtk+ workarounds and amendments --- */
 gboolean        gxk_widget_ancestry_viewable       (GtkWidget       *widget);
 void            gxk_cell_editable_is_focus_handler (GtkCellEditable *ecell);
@@ -93,7 +88,6 @@ void            gxk_expander_connect_to_widget     (GtkWidget       *expander,
                                                     GtkWidget       *widget);
 void            gxk_label_set_attributes           (GtkLabel        *label,
                                                     ...);
-
 guint           gxk_container_get_insertion_slot   (GtkContainer    *container);
 void            gxk_container_slot_reorder_child   (GtkContainer    *container,
                                                     GtkWidget       *widget,
@@ -106,14 +100,10 @@ gboolean        gxk_grab_pointer_and_keyboard      (GdkWindow    *window,
                                                     guint32       time);
 void            gxk_ungrab_pointer_and_keyboard    (GdkWindow    *window,
                                                     guint32       time);
-
-
 /* --- GtkFileSelection workarounds --- */
 GtkWidget*	gxk_file_selection_heal		(GtkFileSelection	 *fs);
 GtkWidget*	gxk_file_selection_split	(GtkFileSelection	 *fs,
 						 GtkWidget		**bbox);
-
-
 /* --- GObject convenience --- */
 typedef struct {
   const char   *type_name;
@@ -135,21 +125,15 @@ glong	g_object_get_long		(gpointer		 object,
 					 const gchar		*name);
 #define	g_object_set_int		g_object_set_long	// FIXME
 #define	g_object_get_int		g_object_get_long	// FIXME
-
-
 /* --- UTF8 helpers --- */
 gchar*	     gxk_convert_latin1_to_utf8	     (const gchar    *string);
 gchar*	     gxk_filename_to_utf8	     (const gchar    *string);
 const gchar* gxk_factory_path_get_leaf       (const gchar    *path);
 gchar*       gxk_factory_path_unescape_uline (const gchar    *path);
-
-
 /* --- Gtk+ Utilities --- */
 void	 gxk_widget_viewable_changed	        (GtkWidget   *widget);
 gboolean gxk_widget_viewable		        (GtkWidget   *widget);
 void     gxk_widget_attached_hierarchy_changed  (GtkWidget   *widget);
-
-
 /* --- Gdk convenience --- */
 #define	GXK_DEFAULT_CURSOR	GDK_LAST_CURSOR	///< Indicates default (inherited) cursor
 void	 gxk_window_set_cursor_type	(GdkWindow		*window,
@@ -171,7 +155,6 @@ void	 gxk_color_alloc		(GdkColormap		*colormap,
 GdkColor gdk_color_from_rgb             (guint                   rgb_value);
 GdkColor gdk_color_from_argb            (guint                   rgb_value);
 GdkColor gdk_color_from_rgba            (guint                   rgb_value);
-
 /* --- Colors --- */
 typedef struct {
   double value;
@@ -187,7 +170,6 @@ guint           gxk_color_dots_interpolate      (GxkColorDots       *cdots,
                                                  double              value,
                                                  double              saturation);
 void            gxk_color_dots_destroy          (GxkColorDots       *cdots);
-
 /* --- Gtk convenience --- */
 #define GTK_STYLE_THICKNESS(s,xy)	((s)-> xy##thickness)
 void         gxk_widget_make_insensitive          (GtkWidget        *widget);
@@ -221,12 +203,10 @@ GtkWidget*   gxk_scrolled_window_create           (GtkWidget        *child,
                                                    GtkShadowType     shadow_type,
                                                    gdouble           xrequest,
                                                    gdouble           yrequest);
-
 /* functions to affect a widget tree's toplevel */
 void         gxk_toplevel_delete                  (GtkWidget        *widget);
 void         gxk_toplevel_hide                    (GtkWidget        *widget);
 void         gxk_toplevel_activate_default        (GtkWidget        *widget);
-
 /* widget utilities */
 GtkWidget*   gxk_parent_find_descendant           (GtkWidget        *parent,
                                                    GType             descendant_type);
@@ -246,7 +226,6 @@ void         gxk_widget_activate_accel_group      (GtkWidget        *widget,
 void         gxk_size_group                       (GtkSizeGroupMode  sgmode,
                                                    gpointer          first_widget,
                                                    ...) G_GNUC_NULL_TERMINATED;
-
 /* tree view convenience */
 gint	           gxk_tree_spath_index0		(const gchar		*strpath);
 gboolean           gxk_tree_model_get_iter              (GtkTreeModel           *tree_model,
@@ -295,7 +274,6 @@ void	           gxk_tree_view_column_set_tip_title	(GtkTreeViewColumn      *tree
                                                          const gchar	        *tooltip);
 void	           gxk_tree_view_set_editable      	(GtkTreeView            *tview,
                                                          gboolean                maybe_editable);
-
 /* tree selection convenience */
 void   gxk_tree_selection_select_spath   (GtkTreeSelection      *selection,
 					  const gchar           *str_path);
@@ -327,7 +305,6 @@ void     gxk_tree_view_focus_row	 (GtkTreeView		*tree,
 gboolean gxk_tree_view_is_row_selected	 (GtkTreeView		*tree,
 					  gint			 row);
 gint     gxk_tree_view_get_selected_row	 (GtkTreeView		*tree);
-
 /* --- signal convenience --- */
 gboolean	gxk_signal_handler_exists	(gpointer	 instance,
 						 const gchar	*detailed_signal,
@@ -337,14 +314,9 @@ gboolean	gxk_signal_handler_pending	(gpointer	 instance,
 						 const gchar	*detailed_signal,
 						 GCallback	 callback,
 						 gpointer	 data);
-
-
 /* --- zlib support --- */
 gchar*  gxk_zfile_uncompress    (guint                uncompressed_size,
                                  const unsigned char *cdata,
                                  guint                cdata_size);
-
-
 G_END_DECLS
-
 #endif /* __GXK_UTILS_H__ */

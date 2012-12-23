@@ -1,23 +1,17 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bstutils.hh"	/* for the knob pixbuf */
 #include "bstknob.hh"
-
 #include <gtk/gtkmain.h>
 #include <gtk/gtksignal.h>
 #include <math.h>
 #include <stdio.h>
-
-
 #define SCROLL_DELAY_LENGTH	300
 #define SQR(x)  ((x) * (x))
-
 enum {
   MOUSE_SETUP,
   MOUSE_MOVE,
   MOUSE_JUMP
 };
-
-
 /* --- prototypes --- */
 static void	bst_knob_paint			    (BstKnob	    *knob);
 static gboolean bst_knob_timer                      (gpointer        data);
@@ -30,56 +24,45 @@ static void     bst_knob_adjustment_changed         (GtkAdjustment  *adjustment,
                                                      gpointer        data);
 static void     bst_knob_adjustment_value_changed   (GtkAdjustment  *adjustment,
                                                      gpointer        data);
-
 /* --- functions --- */
 G_DEFINE_TYPE (BstKnob, bst_knob, GTK_TYPE_IMAGE);
-
 static void
 bst_knob_destroy (GtkObject *object)
 {
   BstKnob *knob = BST_KNOB (object);
-
   if (knob->timer)
     {
       gtk_timeout_remove (knob->timer);
       knob->timer = 0;
     }
-  
   if (knob->adjustment)
     {
       gtk_object_unref (knob->adjustment);
       knob->adjustment = NULL;
     }
-
   if (knob->pixbuf)
     {
       g_object_unref (knob->pixbuf);
       knob->pixbuf = NULL;
     }
-  
   /* chain parent class' handler */
   GTK_OBJECT_CLASS (bst_knob_parent_class)->destroy (object);
 }
-
 static void
 bst_knob_size_request (GtkWidget      *widget,
 			GtkRequisition *requisition)
 {
   // BstKnob *knob = BST_KNOB (widget);
-
   /* chain parent class' handler */
   GTK_WIDGET_CLASS (bst_knob_parent_class)->size_request (widget, requisition);
 }
-
 static void
 bst_knob_size_allocate (GtkWidget     *widget,
                         GtkAllocation *allocation)
 {
   BstKnob *knob = BST_KNOB (widget);
-
   /* chain parent class' handler */
   GTK_WIDGET_CLASS (bst_knob_parent_class)->size_allocate (widget, allocation);
-
   /* position widget's window accordingly
    */
   if (GTK_WIDGET_REALIZED (widget))
@@ -87,17 +70,14 @@ bst_knob_size_allocate (GtkWidget     *widget,
 			    widget->allocation.x, widget->allocation.y,
 			    widget->allocation.width, widget->allocation.height);
 }
-
 static void
 bst_knob_realize (GtkWidget *widget)
 {
   BstKnob *knob = BST_KNOB (widget);
   GdkWindowAttr attributes;
   gint attributes_mask;
-
   /* chain parent class' handler */
   GTK_WIDGET_CLASS (bst_knob_parent_class)->realize (widget);
-
   attributes.window_type = GDK_WINDOW_CHILD;
   attributes.x = widget->allocation.x;
   attributes.y = widget->allocation.y;
@@ -110,62 +90,47 @@ bst_knob_realize (GtkWidget *widget)
 			    GDK_POINTER_MOTION_MASK |
 			    GDK_POINTER_MOTION_HINT_MASK);
   attributes_mask = GDK_WA_X | GDK_WA_Y;
-
   knob->iwindow = gdk_window_new (gtk_widget_get_parent_window (widget),
 				  &attributes, attributes_mask);
   gdk_window_set_user_data (knob->iwindow, knob);
 }
-
 static void
 bst_knob_unrealize (GtkWidget *widget)
 {
   BstKnob *knob = BST_KNOB (widget);
-
   gdk_window_set_user_data (knob->iwindow, NULL);
   gdk_window_destroy (knob->iwindow);
   knob->iwindow = NULL;
-
   /* chain parent class' handler */
   GTK_WIDGET_CLASS (bst_knob_parent_class)->unrealize (widget);
 }
-
 static void
 bst_knob_map (GtkWidget *widget)
 {
   BstKnob *knob = BST_KNOB (widget);
-
   GTK_WIDGET_CLASS (bst_knob_parent_class)->map (widget);
-
   gdk_window_show (knob->iwindow);
 }
-
 static void
 bst_knob_unmap (GtkWidget *widget)
 {
   BstKnob *knob = BST_KNOB (widget);
-
   gdk_window_hide (knob->iwindow);
-
   GTK_WIDGET_CLASS (bst_knob_parent_class)->unmap (widget);
 }
-
 static gint
 bst_knob_expose (GtkWidget      *widget,
 		 GdkEventExpose *event)
 {
   BstKnob *knob = BST_KNOB (widget);
-
   /* chain parent class' handler */
   GTK_WIDGET_CLASS (bst_knob_parent_class)->expose_event (widget, event);
-
   /* we ignore intermediate expose events
    */
   if (event->count == 0)
     bst_knob_paint (knob);
-
   return TRUE;
 }
-
 static void
 bst_knob_paint (BstKnob *knob)
 {
@@ -175,16 +140,13 @@ bst_knob_paint (BstKnob *knob)
   gint pointer_width = 3;
   gint line_width = 1;
   GdkPoint points[5];
-  
   /* compute center */
   xc = widget->allocation.width / 2 + widget->allocation.x + knob->xofs;
   yc = widget->allocation.height / 2 + widget->allocation.y + knob->yofs;
-
   /* compute pointer coords */
   angle = knob->arc_start - knob->arc_dist * knob->angle_range;
   s = sin (angle);
   c = cos (angle);
-
   /* draw the pointer */
   radius = knob->furrow_radius;
   gdk_gc_set_line_attributes (gc, 2, GDK_LINE_SOLID, GDK_CAP_BUTT, GDK_JOIN_MITER);
@@ -198,7 +160,6 @@ bst_knob_paint (BstKnob *knob)
 		 xc + c * radius, yc - s * radius,
 		 xc, yc);
   gdk_gc_set_line_attributes (gc, 0, GDK_LINE_SOLID, GDK_CAP_BUTT, GDK_JOIN_MITER);
-
   radius = knob->dot_radius;
   dw = (knob->dot_radius - knob->furrow_radius) * 0.75;
   gdk_draw_arc (widget->window, gc,
@@ -206,8 +167,6 @@ bst_knob_paint (BstKnob *knob)
 		xc + c * radius - dw, yc - s * radius - dw,
 		2 * dw, 2 * dw,
 		0.0 * 64, 360. * 64);
-  
-
   if (0)
     {
       points[0].x = xc + s * pointer_width + 0.5;
@@ -220,19 +179,16 @@ bst_knob_paint (BstKnob *knob)
       points[3].y = points[0].y - s * radius + 0.5;
       points[4].x = points[0].x;
       points[4].y = points[0].y;
-      
       gdk_gc_set_line_attributes (gc, line_width, GDK_LINE_SOLID, GDK_CAP_BUTT, GDK_JOIN_MITER);
       gdk_draw_polygon (widget->window, gc, TRUE, points, 5);
       gdk_gc_set_line_attributes (gc, 0, GDK_LINE_SOLID, GDK_CAP_BUTT, GDK_JOIN_MITER);
     }
 }
-
 static gint
 bst_knob_button_press (GtkWidget      *widget,
 			GdkEventButton *event)
 {
   BstKnob *knob = BST_KNOB (widget);
-
   if (!knob->button)
     {
       if (event->button == 1)
@@ -246,63 +202,48 @@ bst_knob_button_press (GtkWidget      *widget,
 	  bst_knob_mouse_update (knob, event->x, event->y, MOUSE_JUMP);
 	}
     }
-
   return TRUE;
 }
-
 static gint
 bst_knob_motion_notify (GtkWidget      *widget,
 			 GdkEventMotion *event)
 {
   BstKnob *knob = BST_KNOB (widget);
-  
   if (knob->button != 0 && event->window == knob->iwindow)
     {
       if (event->is_hint)
         gdk_window_get_pointer (widget->window, NULL, NULL, NULL);
-      
       bst_knob_mouse_update (knob, event->x, event->y, knob->button == 1 ? MOUSE_MOVE : MOUSE_JUMP);
     }
-  
   return TRUE;
 }
-
 static gint
 bst_knob_button_release (GtkWidget      *widget,
 			  GdkEventButton *event)
 {
   BstKnob *knob = BST_KNOB (widget);
-  
   if (knob->button == event->button)
     {
       GtkAdjustment *adjustment = GTK_ADJUSTMENT (knob->adjustment);
-
       bst_knob_mouse_update (knob, event->x, event->y, knob->button == 1 ? MOUSE_MOVE : MOUSE_JUMP);
-
       knob->button = 0;
-      
       if (knob->timer)
 	{
 	  gtk_timeout_remove (knob->timer);
 	  knob->timer = 0;
 	}
-      
       if (knob->old_value != adjustment->value)
         gtk_adjustment_value_changed (GTK_ADJUSTMENT (knob->adjustment));
     }
-  
   return TRUE;
 }
-
 static double   /* expresses arc2 relative to arc1 */
 arc_diff (double arc1,
 	  double arc2)
 {
   const double _2pi = M_PI * 2.0;
   double diff;
-
   diff = arc2 - arc1;
-
   if (diff > _2pi)
     {
       double f = floor (diff / _2pi);
@@ -317,10 +258,8 @@ arc_diff (double arc1,
     diff -= _2pi;
   else if (diff < -M_PI)
     diff += _2pi;
-
   return diff;
 }
-
 static void
 bst_knob_mouse_update (BstKnob *knob,
 		       gint     x,
@@ -331,14 +270,11 @@ bst_knob_mouse_update (BstKnob *knob,
   GtkWidget *widget = GTK_WIDGET (knob);
   gdouble angle, diff, dist, sensitivity = 0.001;
   gint xc, yc;
-  
   /* figure the arc's center */
   xc = widget->allocation.width / 2;
   yc = widget->allocation.height / 2;
-  
   /* calculate the angle of the pointer */
   angle = atan2 (yc - y, x - xc);
-  
   switch (mode)
     {
       gdouble sdiff, ediff;
@@ -368,13 +304,10 @@ bst_knob_mouse_update (BstKnob *knob,
       knob->angle_range = angle / knob->arc_dist;
       break;
     }
-  
   /* constrained to the valid area of the arc */
   knob->angle_range = CLAMP (knob->angle_range, 0, 1.0);
-  
   /* compute new adjustment value, translated to its lower...upper range */
   adjustment->value = adjustment->lower + knob->angle_range * (adjustment->upper - adjustment->page_size - adjustment->lower);
-  
   /* if the adjustment value changed:
    * - for continuous updates: emit the GtkAdjustment::value_changed signal
    * - for delayed updates: install a timer to emit the changed signal, if
@@ -392,12 +325,10 @@ bst_knob_mouse_update (BstKnob *knob,
 	      /* restart timer, so the delay interval starts from scratch */
               if (knob->timer)
                 gtk_timeout_remove (knob->timer);
-              
               knob->timer = gtk_timeout_add (SCROLL_DELAY_LENGTH,
                                              bst_knob_timer,
                                              knob);
             }
-	  
 	  /* immediately update the widget, so the GUI is responsive and
 	   * not delayed like the ::value_changed signal
 	   */
@@ -405,66 +336,48 @@ bst_knob_mouse_update (BstKnob *knob,
         }
     }
 }
-
 static gboolean
 bst_knob_timer (gpointer data)
 {
   BstKnob *knob;
-  
   GDK_THREADS_ENTER ();
-  
   knob = BST_KNOB (data);
-  
   gtk_adjustment_value_changed (GTK_ADJUSTMENT (knob->adjustment));
-  
   knob->timer = 0;
-  
   GDK_THREADS_LEAVE ();
-  
   return FALSE;
 }
-
 GtkWidget*
 bst_knob_new (GtkAdjustment *adjustment)
 {
   GtkWidget *knob;
-  
   if (adjustment)
     g_return_val_if_fail (GTK_IS_ADJUSTMENT (adjustment), NULL);
   else
     adjustment = (GtkAdjustment*) gtk_adjustment_new (0.0, 0.0, 250.0, 0.0, 0.0, 0.0);
-  
   knob = gtk_widget_new (BST_TYPE_KNOB, NULL);
-  
   bst_knob_set_adjustment (BST_KNOB (knob), adjustment);
-  
   return knob;
 }
-
 GtkAdjustment*
 bst_knob_get_adjustment (BstKnob *knob)
 {
   g_return_val_if_fail (BST_IS_KNOB (knob), NULL);
-  
   return GTK_ADJUSTMENT (knob->adjustment);
 }
-
 void
 bst_knob_set_update_policy (BstKnob      *knob,
 			     GtkUpdateType policy)
 {
   g_return_if_fail (BST_IS_KNOB (knob));
-  
   if (knob->update_policy != policy)
     {
       knob->update_policy = policy;
-      
       /* remove a pending timer if necessary */
       if (knob->timer)
 	{
 	  gtk_timeout_remove (knob->timer);
 	  knob->timer = 0;
-
 	  /* perform pending notification */
 	  if (policy == GTK_UPDATE_CONTINUOUS &&
 	      knob->old_value != GTK_ADJUSTMENT (knob->adjustment)->value)
@@ -472,25 +385,20 @@ bst_knob_set_update_policy (BstKnob      *knob,
 	}
     }
 }
-
 void
 bst_knob_set_adjustment (BstKnob      *knob,
 			  GtkAdjustment *adjustment)
 {
   g_return_if_fail (BST_IS_KNOB (knob));
   g_return_if_fail (GTK_IS_ADJUSTMENT (adjustment));
-  
   if (knob->adjustment)
     {
       gtk_signal_disconnect_by_data (knob->adjustment, knob);
       gtk_object_unref (knob->adjustment);
     }
-  
   knob->adjustment = GTK_OBJECT (adjustment);
-  
   gtk_object_ref (knob->adjustment);
   gtk_object_sink (knob->adjustment);
-  
   gtk_signal_connect (knob->adjustment,
                       "changed",
                       GTK_SIGNAL_FUNC (bst_knob_adjustment_changed),
@@ -499,26 +407,20 @@ bst_knob_set_adjustment (BstKnob      *knob,
                       "value_changed",
                       GTK_SIGNAL_FUNC (bst_knob_adjustment_value_changed),
                       knob);
-  
   knob->old_value = adjustment->value;
   knob->old_lower = adjustment->lower;
   knob->old_upper = adjustment->upper;
   knob->old_page_size = adjustment->page_size;
-  
   bst_knob_update (knob);
 }
-
 static void
 bst_knob_adjustment_changed (GtkAdjustment *adjustment,
 			      gpointer       data)
 {
   BstKnob *knob;
-  
   g_return_if_fail (GTK_IS_ADJUSTMENT (adjustment));
   g_return_if_fail (data != NULL);
-  
   knob = BST_KNOB (data);
-  
   if (knob->old_value != adjustment->value ||
       knob->old_lower != adjustment->lower ||
       knob->old_upper != adjustment->upper ||
@@ -528,44 +430,33 @@ bst_knob_adjustment_changed (GtkAdjustment *adjustment,
       knob->old_lower = adjustment->lower;
       knob->old_upper = adjustment->upper;
       knob->old_page_size = adjustment->page_size;
-
       bst_knob_update (knob);
     }
 }
-
 static void
 bst_knob_adjustment_value_changed (GtkAdjustment *adjustment,
 				    gpointer       data)
 {
   BstKnob *knob;
-  
   g_return_if_fail (GTK_IS_ADJUSTMENT (adjustment));
   g_return_if_fail (data != NULL);
-  
   knob = BST_KNOB (data);
-  
   if (knob->old_value != adjustment->value)
     {
       knob->old_value = adjustment->value;
-
       bst_knob_update (knob);
     }
 }
-
 static void
 bst_knob_update (BstKnob *knob)
 {
   GtkAdjustment *adjustment;
   GtkWidget *widget;
   gdouble new_value;
-  
   g_return_if_fail (BST_IS_KNOB (knob));
-  
   widget = GTK_WIDGET (knob);
   adjustment = GTK_ADJUSTMENT (knob->adjustment);
-  
   new_value = CLAMP (adjustment->value, adjustment->lower, adjustment->upper - adjustment->page_size);
-
   if (new_value != adjustment->value)
     {
       if (0)
@@ -574,18 +465,14 @@ bst_knob_update (BstKnob *knob)
       adjustment->value = new_value;
       gtk_adjustment_value_changed (GTK_ADJUSTMENT (knob->adjustment));
     }
-  
   knob->angle_range = ((adjustment->value - adjustment->lower) /
 		       (adjustment->upper - adjustment->page_size - adjustment->lower));
-  
   gtk_widget_queue_draw (widget);
 }
-
 static void
 bst_knob_init (BstKnob *knob)
 {
   gfloat w, h, radius;
-
   knob->update_policy = GTK_UPDATE_CONTINUOUS;
   knob->button = 0;
   knob->arc_start = 1.25 * M_PI;	/* 0 .. 2*M_PI */
@@ -599,7 +486,6 @@ bst_knob_init (BstKnob *knob)
   knob->adjustment = NULL;
   knob->pixbuf = (GdkPixbuf*) g_object_ref (bst_pixbuf_knob ());
   g_assert (knob->pixbuf);
-
   gtk_image_set_from_pixbuf (GTK_IMAGE (knob), knob->pixbuf);
   w = gdk_pixbuf_get_width (knob->pixbuf);
   h = gdk_pixbuf_get_height (knob->pixbuf);
@@ -609,15 +495,12 @@ bst_knob_init (BstKnob *knob)
   knob->xofs = 1;
   knob->yofs = 0;
 }
-
 static void
 bst_knob_class_init (BstKnobClass *klass)
 {
   GtkObjectClass *object_class = GTK_OBJECT_CLASS (klass);
   GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (klass);
-
   object_class->destroy = bst_knob_destroy;
-  
   widget_class->size_request = bst_knob_size_request;
   widget_class->size_allocate = bst_knob_size_allocate;
   widget_class->realize = bst_knob_realize;
@@ -628,7 +511,6 @@ bst_knob_class_init (BstKnobClass *klass)
   widget_class->button_press_event = bst_knob_button_press;
   widget_class->button_release_event = bst_knob_button_release;
   widget_class->motion_notify_event = bst_knob_motion_notify;
-
   /* sets text[PRELIGHT] to red */
   gtk_rc_parse_string ("style'BstKnobClass-style'{text[PRELIGHT]={1.,0.,0.}}"
 		       "widget_class'*BstKnob'style'BstKnobClass-style'");

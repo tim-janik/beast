@@ -1,14 +1,10 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #ifndef __BSE_SCRIPT_HELPER_H__
 #define __BSE_SCRIPT_HELPER_H__
-
 #include        <bse/bseprocedure.hh>
-
 #ifdef __cplusplus
 extern "C" {
 #endif /* __cplusplus */
-
-
 /* --- typedefs & structures --- */
 typedef struct
 {
@@ -21,8 +17,6 @@ typedef struct
   BseProcedureClass parent_class;
   BseScriptData    *sdata;
 } BseScriptProcedureClass;
-
-
 /* --- API --- */
 GType		bse_script_proc_register	(const gchar	*script_file,
 						 const gchar	*name,
@@ -41,9 +35,7 @@ GValue*		bse_script_check_client_msg	(SfiGlueDecoder *decoder,
 						 BseJanitor	*janitor,
 						 const gchar    *message,
 						 const GValue   *value);
-
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */
-
 #endif /* __BSE_SCRIPT_HELPER_H__ */

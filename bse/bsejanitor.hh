@@ -1,11 +1,8 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #ifndef __BSE_JANITOR_H__
 #define __BSE_JANITOR_H__
-
 #include <bse/bseitem.hh>
-
 G_BEGIN_DECLS
-
 /* --- object type macros --- */
 #define BSE_TYPE_JANITOR              (BSE_TYPE_ID (BseJanitor))
 #define BSE_JANITOR(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), BSE_TYPE_JANITOR, BseJanitor))
@@ -13,8 +10,6 @@ G_BEGIN_DECLS
 #define BSE_IS_JANITOR(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), BSE_TYPE_JANITOR))
 #define BSE_IS_JANITOR_CLASS(class)   (G_TYPE_CHECK_CLASS_TYPE ((class), BSE_TYPE_JANITOR))
 #define BSE_JANITOR_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), BSE_TYPE_JANITOR, BseJanitorClass))
-
-
 /* --- object structures --- */
 struct _BseJanitor
 {
@@ -43,8 +38,6 @@ typedef struct {
   gchar *name;
   gchar *blurb;
 } BseJanitorAction;
-
-
 /* --- prototypes --- */
 BseJanitor*  bse_janitor_new		(SfiComPort	*port);
 void	     bse_janitor_kill   	(BseJanitor	*self);
@@ -64,9 +57,6 @@ void	     bse_janitor_remove_action	(BseJanitor	*self,
 					 const gchar	*action);
 void	     bse_janitor_trigger_action	(BseJanitor	*self,
 					 const gchar	*action);
-
 G_END_DECLS
-
 #endif /* __BSE_JANITOR_H__ */
-
 /* vim:set ts=8 sts=2 sw=2: */

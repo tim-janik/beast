@@ -4,7 +4,6 @@
 #include "bsestorage.hh"
 #include <sfi/gbsearcharray.hh>
 #include <string.h>
-
 typedef struct {
   const gchar *path;
   SfiRec      *rec;
@@ -17,8 +16,6 @@ struct _BseParasite {
   GBSearchArray *nodes;
   GBSearchArray *crefs;
 };
-
-
 /* --- prototypes --- */
 static gint parasite_node_cmp  (gconstpointer  bsn1,
                                 gconstpointer  bsn2);
@@ -36,8 +33,6 @@ static void parasite_ref_seq   (BseItem       *item,
 static void parasite_unref_seq (BseItem       *item,
                                 const gchar   *path,
                                 SfiSeq        *seq);
-
-
 /* --- variables --- */
 static guint    signal_parasites_added = 0;
 static guint    signal_parasite_changed = 0;
@@ -51,8 +46,6 @@ static const GBSearchConfig bconfig_crefs = {
   parasite_cref_cmp,
   G_BSEARCH_ARRAY_AUTO_SHRINK
 };
-
-
 /* --- functions --- */
 void
 bse_item_class_add_parasite_signals (BseItemClass *klass)
@@ -63,7 +56,6 @@ bse_item_class_add_parasite_signals (BseItemClass *klass)
   signal_parasite_changed = bse_object_class_add_dsignal (object_class, "parasite-changed",
                                                           G_TYPE_NONE, 1, G_TYPE_STRING | G_SIGNAL_TYPE_STATIC_SCOPE);
 }
-
 static gint
 parasite_node_cmp (gconstpointer  bsn1,
                    gconstpointer  bsn2)
@@ -72,7 +64,6 @@ parasite_node_cmp (gconstpointer  bsn1,
   const Node *n2 = (const Node*) bsn2;
   return strcmp (n1->path, n2->path);
 }
-
 static void
 parasite_init (BseItem *item)
 {
@@ -81,7 +72,6 @@ parasite_init (BseItem *item)
   item->parasite->nodes = g_bsearch_array_create (&bconfig_nodes);
   item->parasite->crefs = g_bsearch_array_create (&bconfig_crefs);
 }
-
 static gint
 parasite_cref_cmp (gconstpointer  bsn1,
                    gconstpointer  bsn2)
@@ -90,7 +80,6 @@ parasite_cref_cmp (gconstpointer  bsn1,
   const CRef *r2 = (const CRef*) bsn2;
   return G_BSEARCH_ARRAY_CMP (r1->link, r2->link);
 }
-
 static void
 parasite_uncross_object (BseItem *item,
                          BseItem *link)
@@ -106,7 +95,6 @@ parasite_uncross_object (BseItem *item,
       cref = (CRef*) g_bsearch_array_lookup (item->parasite->crefs, &bconfig_crefs, &key);
     }
 }
-
 static void
 parasite_ref_object (BseItem     *item,
                      const gchar *path,
@@ -123,7 +111,6 @@ parasite_ref_object (BseItem     *item,
     }
   cref->paths = g_slist_prepend (cref->paths, (gchar*) g_intern_string (path));
 }
-
 static void
 parasite_unref_object (BseItem     *item,
                        const gchar *path,
@@ -143,7 +130,6 @@ parasite_unref_object (BseItem     *item,
       bse_item_cross_unlink (item, link, parasite_uncross_object);
     }
 }
-
 static inline void
 parasite_ref_value (BseItem      *item,
                     const gchar  *path,
@@ -168,7 +154,6 @@ parasite_ref_value (BseItem      *item,
         parasite_ref_seq (item, path, cseq);
     }
 }
-
 static inline void
 parasite_unref_value (BseItem      *item,
                       const gchar  *path,
@@ -193,7 +178,6 @@ parasite_unref_value (BseItem      *item,
         parasite_unref_seq (item, path, cseq);
     }
 }
-
 static void
 parasite_ref_seq (BseItem     *item,
                   const gchar *path,
@@ -203,7 +187,6 @@ parasite_ref_seq (BseItem     *item,
   for (i = 0; i < seq->n_elements; i++)
     parasite_ref_value (item, path, seq->elements + i);
 }
-
 static void
 parasite_unref_seq (BseItem     *item,
                     const gchar *path,
@@ -213,7 +196,6 @@ parasite_unref_seq (BseItem     *item,
   for (i = 0; i < seq->n_elements; i++)
     parasite_unref_value (item, path, seq->elements + i);
 }
-
 static void
 parasite_ref_rec (BseItem     *item,
                   const gchar *path,
@@ -223,7 +205,6 @@ parasite_ref_rec (BseItem     *item,
   for (i = 0; i < rec->n_fields; i++)
     parasite_ref_value (item, path, rec->fields + i);
 }
-
 static void
 parasite_unref_rec (BseItem     *item,
                     const gchar *path,
@@ -233,7 +214,6 @@ parasite_unref_rec (BseItem     *item,
   for (i = 0; i < rec->n_fields; i++)
     parasite_unref_value (item, path, rec->fields + i);
 }
-
 void
 bse_item_set_parasite (BseItem        *item,
                        const gchar    *parasite_path,
@@ -291,7 +271,6 @@ bse_item_set_parasite (BseItem        *item,
   if (((GObject*) item)->ref_count)
     g_signal_emit (item, signal_parasite_changed, g_quark_from_string (parasite_path), parasite_path);
 }
-
 SfiRec*
 bse_item_get_parasite (BseItem        *item,
                        const gchar    *parasite_path)
@@ -306,7 +285,6 @@ bse_item_get_parasite (BseItem        *item,
     }
   return NULL;
 }
-
 static void
 undo_set_parasite (BseUndoStep  *ustep,
                    BseUndoStack *ustack)
@@ -316,7 +294,6 @@ undo_set_parasite (BseUndoStep  *ustep,
   SfiRec *rec = (SfiRec*) ustep->data[2].v_pointer;
   bse_item_set_parasite (item, path, rec);
 }
-
 static void
 unde_free_parasite (BseUndoStep *ustep)
 {
@@ -325,7 +302,6 @@ unde_free_parasite (BseUndoStep *ustep)
   if (rec)
     sfi_rec_unref (rec);
 }
-
 void
 bse_item_backup_parasite (BseItem        *item,
                           const gchar    *parasite_path,
@@ -343,7 +319,6 @@ bse_item_backup_parasite (BseItem        *item,
   bse_undo_stack_push (ustack, ustep);
   bse_item_undo_close (ustack);
 }
-
 void
 bse_item_delete_parasites (BseItem *item)
 {
@@ -362,7 +337,6 @@ bse_item_delete_parasites (BseItem *item)
       item->parasite = NULL;
     }
 }
-
 SfiRing*
 bse_item_list_parasites (BseItem     *item,
                          const gchar *parent_path)
@@ -392,7 +366,6 @@ bse_item_list_parasites (BseItem     *item,
     }
   return ring;
 }
-
 const gchar*
 bse_item_create_parasite_name (BseItem        *item,
                                const gchar    *path_prefix)
@@ -419,21 +392,15 @@ bse_item_create_parasite_name (BseItem        *item,
     }
   return NULL;
 }
-
-
 /* --- old parasites --- */
 #define MAX_PARASITE_VALUES (1024) /* (2 << 24) */
 #define parse_or_return         bse_storage_scanner_parse_or_return
 #define peek_or_return          bse_storage_scanner_peek_or_return
-
-
 /* --- types --- */
 enum
 {
   PARASITE_FLOAT		= 'f',
 };
-
-
 /* --- structures --- */
 typedef struct _ParasiteList ParasiteList;
 typedef struct _Parasite     Parasite;
@@ -449,12 +416,8 @@ struct _ParasiteList
   guint    n_parasites;
   Parasite parasites[1];
 };
-
-
 /* --- variables --- */
 static GQuark quark_parasite_list = 0;
-
-
 /* --- functions --- */
 void
 bse_parasite_store (BseObject  *object,
@@ -467,10 +430,8 @@ bse_parasite_store (BseObject  *object,
     {
       Parasite *parasite = list->parasites + n;
       gchar *name;
-
       if (!parasite->n_values)
 	continue;
-
       bse_storage_break (storage);
       name = g_strescape (g_quark_to_string (parasite->quark), NULL);
       bse_storage_printf (storage, "(parasite %c \"%s\"",
@@ -501,19 +462,16 @@ bse_parasite_store (BseObject  *object,
       bse_storage_putc (storage, ')');
     }
 }
-
 static void
 parasite_list_free (gpointer data)
 {
   ParasiteList *list = (ParasiteList*) data;
   guint i;
-  
   for (i = 0; i < list->n_parasites; i++)
     if (list->parasites[i].n_values)
       g_free (list->parasites[i].data);
   g_free (list);
 }
-
 static Parasite*
 fetch_parasite (BseObject *object,
 		GQuark     quark,
@@ -536,23 +494,18 @@ fetch_parasite (BseObject *object,
 	{
 	  if (!quark_parasite_list)
 	    quark_parasite_list = g_quark_from_static_string ("BseParasiteList");
-	  
 	  if (olist)
 	    g_object_steal_qdata ((GObject*) object, quark_parasite_list);
 	  g_object_set_qdata_full ((GObject*) object, quark_parasite_list, list, parasite_list_free);
 	}
-      
       list->parasites[i].quark = quark;
       list->parasites[i].type = type;
       list->parasites[i].n_values = 0;
       list->parasites[i].data = NULL;
-      
       return list->parasites + i;
     }
-  
   return NULL;
 }
-
 static void
 delete_parasite (BseObject *object,
 		 GQuark     quark,
@@ -577,7 +530,6 @@ delete_parasite (BseObject *object,
   else if (list->n_parasites == 0)
     g_object_set_qdata ((GObject*) object, quark_parasite_list, NULL);
 }
-
 GTokenType
 bse_parasite_restore (BseObject  *object,
 		      BseStorage *storage)
@@ -587,31 +539,25 @@ bse_parasite_restore (BseObject  *object,
   GTokenType ttype;
   guint n_values;
   gpointer data;
-
   /* check identifier */
   if (g_scanner_peek_next_token (scanner) != G_TOKEN_IDENTIFIER ||
       !bse_string_equals ("parasite", scanner->next_value.v_identifier))
     return SFI_TOKEN_UNMATCHED;
-
   /* eat "parasite" identifier */
   g_scanner_get_next_token (scanner);
-
   /* parse parasite type */
   g_scanner_get_next_token (scanner);
   if (!(scanner->token >= 'a' && scanner->token <= 'z'))
     return G_TOKEN_CHAR;
   ttype = scanner->token;
-
   /* parse parasite name */
   if (g_scanner_get_next_token (scanner) != G_TOKEN_STRING)
     return G_TOKEN_STRING;
   quark = g_quark_from_string (scanner->value.v_string);
-
   switch ((uint) ttype)
     {
       guint i;
       gfloat *floats;
-
     case PARASITE_FLOAT:
       if (g_scanner_get_next_token (scanner) != G_TOKEN_INT)
 	return G_TOKEN_INT;
@@ -623,7 +569,6 @@ bse_parasite_restore (BseObject  *object,
 	{
 	  gboolean negate = FALSE;
 	  gfloat vfloat;
-
 	  if (g_scanner_get_next_token (scanner) == '-')
 	    {
 	      g_scanner_get_next_token (scanner);
@@ -662,7 +607,6 @@ bse_parasite_restore (BseObject  *object,
   /* read closing brace */
   return g_scanner_get_next_token (scanner) == ')' ? G_TOKEN_NONE : GTokenType (')');
 }
-
 void
 bse_parasite_set_floats (BseObject   *object,
 			 const gchar *name,
@@ -674,7 +618,6 @@ bse_parasite_set_floats (BseObject   *object,
   g_return_if_fail (n_values < MAX_PARASITE_VALUES);
   if (n_values)
     g_return_if_fail (float_values != NULL);
-  
   if (!n_values)
     delete_parasite (object, g_quark_try_string (name), PARASITE_FLOAT);
   else
@@ -683,7 +626,6 @@ bse_parasite_set_floats (BseObject   *object,
 					   g_quark_from_string (name),
 					   PARASITE_FLOAT,
 					   TRUE);
-      
       if (parasite->n_values != n_values)
 	{
 	  if (parasite->n_values)
@@ -694,7 +636,6 @@ bse_parasite_set_floats (BseObject   *object,
       memcpy (parasite->data, float_values, n_values * sizeof (gfloat));
     }
 }
-
 SfiFBlock*
 bse_parasite_get_floats (BseObject   *object,
 			 const gchar *name)

@@ -1,8 +1,6 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bstitemseqdialog.hh"
 #include "bsttreestores.hh"
-
-
 /* --- prototypes --- */
 static void     bst_item_seq_dialog_activate          (BstItemSeqDialog *self);
 static gboolean bst_item_seq_dialog_delete_event      (GtkWidget        *widget,
@@ -11,22 +9,16 @@ static void     bst_item_seq_dialog_setup             (BstItemSeqDialog *self,
                                                        gpointer          parent_widget,
                                                        const gchar      *title,
                                                        SfiProxy          proxy);
-
-
 /* --- functions --- */
 G_DEFINE_TYPE (BstItemSeqDialog, bst_item_seq_dialog, GXK_TYPE_DIALOG);
-
 static void
 bst_item_seq_dialog_finalize (GObject *object)
 {
   BstItemSeqDialog *self = BST_ITEM_SEQ_DIALOG (object);
-
   bst_item_seq_dialog_setup (self, NULL, NULL, 0);
-
   /* chain parent class' handler */
   G_OBJECT_CLASS (bst_item_seq_dialog_parent_class)->finalize (object);
 }
-
 static gboolean
 bst_item_seq_dialog_delete_event (GtkWidget   *widget,
                                   GdkEventAny *event)
@@ -44,7 +36,6 @@ bst_item_seq_dialog_delete_event (GtkWidget   *widget,
   /* chain parent class' handler */
   return GTK_WIDGET_CLASS (bst_item_seq_dialog_parent_class)->delete_event (widget, event);
 }
-
 static void
 parent_window_destroyed (BstItemSeqDialog *self)
 {
@@ -58,7 +49,6 @@ parent_window_destroyed (BstItemSeqDialog *self)
   gtk_widget_hide (GTK_WIDGET (self));
   bst_item_seq_dialog_setup (self, NULL, NULL, 0);
 }
-
 static void
 bst_item_seq_dialog_setup (BstItemSeqDialog *self,
                            gpointer          parent_widget,
@@ -66,29 +56,22 @@ bst_item_seq_dialog_setup (BstItemSeqDialog *self,
                            SfiProxy          proxy)
 {
   GtkWindow *window = GTK_WINDOW (self);
-  
   g_return_if_fail (BST_IS_ITEM_SEQ_DIALOG (self));
-  
   GxkFreeFunc selected_cleanup = self->selected_cleanup;
   self->selected_callback = NULL;
   self->selected_cleanup = NULL;
   if (selected_cleanup)
     selected_cleanup (self->selected_data);
-
   gtk_widget_hide (GTK_WIDGET (self));
-
   /* reset proxy handling */
   bst_window_sync_title_to_proxy (self, proxy, title);
-
   /* cleanup connections to old parent_window */
   if (self->parent_window)
     g_signal_handlers_disconnect_by_func (self->parent_window, (void*) parent_window_destroyed, self);
   if (window->group)
     gtk_window_group_remove_window (window->group, window);
   gtk_window_set_transient_for (window, NULL);
-
   self->parent_window = parent_widget ? (GtkWindow*) gtk_widget_get_ancestor ((GtkWidget*) parent_widget, GTK_TYPE_WINDOW) : NULL;
-
   /* setup connections to new parent_window */
   if (self->parent_window)
     {
@@ -99,11 +82,9 @@ bst_item_seq_dialog_setup (BstItemSeqDialog *self,
                                G_CALLBACK (parent_window_destroyed),
                                self, G_CONNECT_SWAPPED);
     }
-
   /* allow activation */
   self->ignore_activate = FALSE;
 }
-
 static BstItemSeqDialog*
 bst_item_seq_dialog_singleton (void)
 {
@@ -112,7 +93,6 @@ bst_item_seq_dialog_singleton (void)
     ts_singleton = (BstItemSeqDialog*) g_object_new (BST_TYPE_ITEM_SEQ_DIALOG, NULL);
   return ts_singleton;
 }
-
 GtkWidget*
 bst_item_seq_dialog_popup (gpointer     parent_widget,
                            SfiProxy     item,
@@ -130,14 +110,11 @@ bst_item_seq_dialog_popup (gpointer     parent_widget,
   GtkWidget *widget = GTK_WIDGET (self);
   GxkDialog *dialog = GXK_DIALOG (self);
   GtkWidget *radget = gxk_dialog_get_child (dialog);
-
   bst_item_seq_dialog_setup (self, NULL, NULL, 0);
-
   g_object_set (gxk_radget_find (radget, "candidate-label"), "label", candidate_label, NULL);
   g_object_set (gxk_radget_find (radget, "item-label"), "label", item_label, NULL);
   gxk_widget_set_tooltip (gxk_radget_find (radget, "candidate-view"), candidate_tooltip);
   gxk_widget_set_tooltip (gxk_radget_find (radget, "item-view"), item_tooltip);
-
   /* construct add/remove button tooltips */
   gchar *string;
   string = g_strdup_printf (_("Adds the selection from the \"%s\" list to the \"%s\" list"), candidate_label, item_label);
@@ -146,7 +123,6 @@ bst_item_seq_dialog_popup (gpointer     parent_widget,
   string = g_strdup_printf (_("Removes the selection from the \"%s\" list"), item_label);
   gxk_widget_set_tooltip (gxk_radget_find (radget, "button-remove"), string);
   g_free (string);
-
   bst_item_seq_dialog_set (self, candidates, items);
   bst_item_seq_dialog_setup (self, parent_widget,
                              /* TRANSLATORS: this is a dialog title and %s is replaced by an object name */
@@ -156,21 +132,17 @@ bst_item_seq_dialog_popup (gpointer     parent_widget,
   self->selected_data = selected_data;
   self->selected_cleanup = selected_cleanup;
   gxk_widget_showraise (widget);
-
   return widget;
 }
-
 void
 bst_item_seq_dialog_set (BstItemSeqDialog *self,
                          BseItemSeq       *candidates,
                          BseItemSeq       *iseq)
 {
   g_return_if_fail (BST_IS_ITEM_SEQ_DIALOG (self));
-
   bst_item_seq_store_set (self->candidate_store, candidates);
   bst_item_seq_store_set (self->item_store, iseq);
 }
-
 static gboolean
 bst_item_seq_dialog_sensitize_idle (gpointer data)
 {
@@ -205,13 +177,11 @@ bst_item_seq_dialog_sensitize_idle (gpointer data)
   GDK_THREADS_LEAVE();
   return FALSE;
 }
-
 static void
 bst_item_seq_dialog_queue_sensitize (BstItemSeqDialog *self)
 {
   g_idle_add (bst_item_seq_dialog_sensitize_idle, g_object_ref (self));
 }
-
 static void
 bst_item_seq_dialog_up (BstItemSeqDialog *self)
 {
@@ -226,7 +196,6 @@ bst_item_seq_dialog_up (BstItemSeqDialog *self)
       gxk_tree_view_select_index (gtk_tree_selection_get_tree_view (self->item_sel), row);
     }
 }
-
 static void
 bst_item_seq_dialog_down (BstItemSeqDialog *self)
 {
@@ -241,7 +210,6 @@ bst_item_seq_dialog_down (BstItemSeqDialog *self)
       gxk_tree_view_select_index (gtk_tree_selection_get_tree_view (self->item_sel), row);
     }
 }
-
 static void
 bst_item_seq_dialog_add (BstItemSeqDialog *self)
 {
@@ -257,7 +225,6 @@ bst_item_seq_dialog_add (BstItemSeqDialog *self)
       gxk_tree_view_select_index (gtk_tree_selection_get_tree_view (self->item_sel), row);
     }
 }
-
 static void
 bst_item_seq_dialog_remove (BstItemSeqDialog *self)
 {
@@ -273,13 +240,11 @@ bst_item_seq_dialog_remove (BstItemSeqDialog *self)
       gxk_tree_view_select_index (gtk_tree_selection_get_tree_view (self->candidate_sel), row);
     }
 }
-
 static void
 bst_item_seq_dialog_activate (BstItemSeqDialog *self)
 {
   if (self->ignore_activate)
     return;
-
   /* ignore_activate guards against multiple clicks */
   self->ignore_activate = TRUE;
   BstItemSeqDialogSelected selected_callback = self->selected_callback;
@@ -295,15 +260,12 @@ bst_item_seq_dialog_activate (BstItemSeqDialog *self)
     }
   if (selected_cleanup)
     selected_cleanup (selected_data);
-
   gxk_toplevel_delete (GTK_WIDGET (self));
 }
-
 static void
 bst_item_seq_dialog_init (BstItemSeqDialog *self)
 {
   GtkTreeView *tview;
-
   /* configure self */
   g_object_set (self,
                 "flags", (GXK_DIALOG_HIDE_ON_DELETE |
@@ -312,11 +274,9 @@ bst_item_seq_dialog_init (BstItemSeqDialog *self)
                           GXK_DIALOG_MODAL),
                 NULL);
   gxk_dialog_set_sizes (GXK_DIALOG (self), 550, 300, 600, 320);
-  
   /* dialog contents */
   GxkRadget *radget = gxk_radget_create ("beast", "item-seq-box", NULL);
   gxk_dialog_set_child (GXK_DIALOG (self), (GtkWidget*) radget);
-
   /* candidate store and selection setup */
   self->candidate_store = bst_item_seq_store_new (TRUE);
   tview = (GtkTreeView*) gxk_radget_find (radget, "candidate-view");
@@ -338,7 +298,6 @@ bst_item_seq_dialog_init (BstItemSeqDialog *self)
                                    NULL, NULL, G_CONNECT_SWAPPED);
   /* make row connections */
   g_signal_connect_object (tview, "row_activated", G_CALLBACK (gtk_button_clicked), gxk_radget_find (radget, "button-add"), G_CONNECT_SWAPPED);
-  
   /* item store and selection setup */
   self->item_store = bst_item_seq_store_new (FALSE);
   tview = (GtkTreeView*) gxk_radget_find (radget, "item-view");
@@ -360,11 +319,9 @@ bst_item_seq_dialog_init (BstItemSeqDialog *self)
                                    NULL, NULL, G_CONNECT_SWAPPED);
   /* make row connections */
   g_signal_connect_object (tview, "row_activated", G_CALLBACK (gtk_button_clicked), gxk_radget_find (radget, "button-remove"), G_CONNECT_SWAPPED);
-
   /* provide buttons */
   self->ok = gxk_dialog_default_action_swapped (GXK_DIALOG (self), BST_STOCK_OK, (void*) bst_item_seq_dialog_activate, self);
   gxk_dialog_action (GXK_DIALOG (self), BST_STOCK_CANCEL, (void*) gxk_toplevel_delete, self);
-
   /* connect buttons */
   g_signal_connect_object (gxk_radget_find (radget, "button-add"), "clicked", G_CALLBACK (bst_item_seq_dialog_add), self, G_CONNECT_SWAPPED);
   g_signal_connect_object (gxk_radget_find (radget, "button-remove"), "clicked", G_CALLBACK (bst_item_seq_dialog_remove), self, G_CONNECT_SWAPPED);
@@ -372,14 +329,11 @@ bst_item_seq_dialog_init (BstItemSeqDialog *self)
   g_signal_connect_object (gxk_radget_find (radget, "button-down"), "clicked", G_CALLBACK (bst_item_seq_dialog_down), self, G_CONNECT_SWAPPED);
   bst_item_seq_dialog_queue_sensitize (self);
 }
-
 static void
 bst_item_seq_dialog_class_init (BstItemSeqDialogClass *klass)
 {
   GObjectClass *gobject_class = G_OBJECT_CLASS (klass);
   GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (klass);
-  
   gobject_class->finalize = bst_item_seq_dialog_finalize;
-
   widget_class->delete_event = bst_item_seq_dialog_delete_event;
 }

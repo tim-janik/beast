@@ -5,13 +5,10 @@
 #include <bse/bseloader.hh>
 #include <bse/bsewave.hh>
 #include "bsecxxplugin.hh"
-
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
 #include <errno.h>
-
-
 /* --- auxlillary functions --- */
 static BseErrorType
 load_file (BseWaveRepo *wrepo,
@@ -37,13 +34,9 @@ load_file (BseWaveRepo *wrepo,
   g_object_unref (wave);
   return error;
 }
-
-
 /* --- procedures --- */
 AUTHORS	= "Tim Janik <timj@gtk.org>";
 LICENSE = "GNU Lesser General Public License";
-
-
 METHOD (BseWaveRepo, load-file) {
   HELP	= "Load wave from file";
   IN    = bse_param_spec_object ("wave_repo", "Wave Repo", NULL,
@@ -64,23 +57,18 @@ BODY (BseProcedureClass *proc,
   BseUndoStack *ustack;
   BseErrorType error;
   BseWave *wave;
-  
   /* check parameters */
   if (!BSE_IS_WAVE_REPO (self) || !file_name)
     return BSE_ERROR_PROC_PARAM_INVAL;
-  
   ustack = bse_item_undo_open (self, "load-wave");
   error = load_file (self, file_name, &wave);
   if (wave)
     bse_item_push_undo_proc (self, "remove-wave", wave);
   bse_item_undo_close (ustack);
-  
   /* set output parameters */
   g_value_set_enum (out_values++, error);
-  
   return BSE_ERROR_NONE;
 }
-
 METHOD (BseWaveRepo, remove-wave) {
   HELP  = "Remove a wave from repository";
   IN    = bse_param_spec_object ("wave_repo", "Wave Repo", NULL,
@@ -95,12 +83,10 @@ METHOD (BseWaveRepo, remove-wave) {
   BseWaveRepo *self = (BseWaveRepo*) bse_value_get_object (in_values++);
   BseItem *child    = (BseItem*) bse_value_get_object (in_values++);
   BseUndoStack *ustack;
-
   /* check parameters */
   if (!BSE_IS_WAVE_REPO (self) || !BSE_IS_WAVE (child) ||
       child->parent != BSE_ITEM (self))
     return BSE_ERROR_PROC_PARAM_INVAL;
-  
   /* action */
   ustack = bse_item_undo_open (self, "remove-wave %s", bse_object_debug_name (child));
   /* remove object references */
@@ -111,10 +97,8 @@ METHOD (BseWaveRepo, remove-wave) {
   bse_container_remove_backedup (BSE_CONTAINER (self), child, ustack);
   /* done */
   bse_item_undo_close (ustack);
-  
   return BSE_ERROR_NONE;
 }
-
 PROCEDURE (bse-sample-file-info, "Sample File Info") {
   HELP	= "Load sample file info from file";
   IN	= sfi_pspec_string ("file_name", "File Name", "The file to load info from",
@@ -129,11 +113,9 @@ BODY (BseProcedureClass *proc,
   const char *filename = sfi_value_get_string (in_values++);
   BseWaveFileInfo *wfi = NULL;
   struct stat sbuf = { 0, };
-
   /* check parameters */
   if (!filename)
     return BSE_ERROR_PROC_PARAM_INVAL;
-
   /* construct info */
   BseSampleFileInfo info = { 0, };
   info.file = (char*) filename;
@@ -153,14 +135,11 @@ BODY (BseProcedureClass *proc,
 	  info.loader = (gchar*) bse_wave_file_info_loader (wfi);
 	}
     }
-
   /* set output parameters */
   bse_value_set_boxed (out_values++, &info);
-
   /* cleanup */
   bse_string_seq_free (info.waves);
   if (wfi)
     bse_wave_file_info_unref (wfi);
-
   return BSE_ERROR_NONE;
 }

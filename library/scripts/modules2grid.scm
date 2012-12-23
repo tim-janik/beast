@@ -1,5 +1,4 @@
 ;; CC0 Public Domain: http://creativecommons.org/publicdomain/zero/1.0/
-
 ;; (bse-script-register <func> <options> <category> <blurb> <author> <license> ARGS...)
 (bse-script-register 'modules2grid
 		     ""
@@ -9,7 +8,6 @@
 		     "Tim Janik"
 		     "Provided \"as is\", WITHOUT ANY WARRANTY;"
 		     (bse-param-snet (N_ "Synth Net")))
-
 (define (modules2grid snet)
   (if (not (bse-is-snet snet))
       (bse-exit-error 'text1 (_"No valid synthesis network supplied")))

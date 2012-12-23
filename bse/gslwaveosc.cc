@@ -5,20 +5,14 @@
 #include "bseengine.hh"	/* for bse_engine_sample_freq() */
 #include "bsemain.hh"
 #include <string.h>
-
 static SFI_MSG_TYPE_DEFINE (debug_waveosc, "waveosc", SFI_MSG_DEBUG, NULL);
 #define DEBUG(...)      sfi_debug (debug_waveosc, __VA_ARGS__)
-
 #define FRAC_SHIFT		(16)
 #define FRAC_MASK		((1 << FRAC_SHIFT) - 1)
 #define	SIGNAL_LEVEL_INVAL	(-2.0)	/* trigger level-changed checks */
-
-
 /* --- prototype --- */
 static void	wave_osc_transform_filter	(GslWaveOscData *wosc,
 						 gfloat          play_freq);
-
-
 /* --- generated function variants --- */
 #define WOSC_MIX_VARIANT_INVAL  (0xffffffff)
 #define WOSC_MIX_WITH_SYNC      (1)
@@ -81,8 +75,6 @@ static void	wave_osc_transform_filter	(GslWaveOscData *wosc,
 #define WOSC_MIX_VARIANT_NAME	wosc_process_____
 #define WOSC_MIX_VARIANT	(0                  | 0                  | 0                 | 0                   )
 #include "gslwaveosc-aux.cc"
-
-
 /* --- functions --- */
 gboolean
 gsl_wave_osc_process (GslWaveOscData *wosc,
@@ -93,21 +85,17 @@ gsl_wave_osc_process (GslWaveOscData *wosc,
 		      gfloat         *mono_out)
 {
   guint mode = 0;
-
   g_return_val_if_fail (wosc != NULL, FALSE);
   g_return_val_if_fail (n_values > 0, FALSE);
   g_return_val_if_fail (mono_out != NULL, FALSE);
-
   if (UNLIKELY (!wosc->config.lookup_wchunk))
     return FALSE;
-
   /* mode changes:
    * freq_in:	if (freq_in) last_freq=inval else set_filter()
    * sync_in:	last_sync=0
    * mod_in:	if (mod_in) last_mod=0 else if (freq_in) last_freq=inval else transform_filter()
    * exp_mod:	n/a
    */
-
   if (sync_in)
     mode |= WOSC_MIX_WITH_SYNC;
   if (freq_in)
@@ -116,12 +104,10 @@ gsl_wave_osc_process (GslWaveOscData *wosc,
     mode |= WOSC_MIX_WITH_MOD;
   if (wosc->config.exponential_fm)
     mode |= WOSC_MIX_WITH_EXP_FM;
-
   /* adapt to mode changes */
   if (UNLIKELY (mode != wosc->last_mode))
     {
       guint mask = wosc->last_mode ^ mode;
-
       if (mask & WOSC_MIX_WITH_SYNC)
 	wosc->last_sync_level = 0;
       if (mask & WOSC_MIX_WITH_FREQ)
@@ -142,14 +128,12 @@ gsl_wave_osc_process (GslWaveOscData *wosc,
 	}
       wosc->last_mode = mode;
     }
-
   /* auto-trigger after reset */
   if (!sync_in && wosc->last_sync_level < 0.5)
     {
       gsl_wave_osc_retrigger (wosc, freq_in ? BSE_SIGNAL_TO_FREQ (*freq_in) : wosc->config.cfreq);
       wosc->last_sync_level = 1.0;
     }
-
   switch (mode)
     {
     case 0                  | 0                  | 0                 | 0:
@@ -195,12 +179,10 @@ gsl_wave_osc_process (GslWaveOscData *wosc,
     default:
       g_assert_not_reached ();
     }
-
   if (wosc->y[0] != 0.0 &&
       !(fabs (wosc->y[0]) > BSE_SIGNAL_EPSILON && fabs (wosc->y[0]) < BSE_SIGNAL_KAPPA))
     {
       guint i;
-
       DEBUG ("clearing filter state at:\n");
       for (i = 0; i < GSL_WAVE_OSC_FILTER_ORDER; i++)
 	{
@@ -213,14 +195,11 @@ gsl_wave_osc_process (GslWaveOscData *wosc,
     }
   g_assert (!BSE_DOUBLE_IS_NANINF (wosc->y[0]));
   g_assert (!BSE_DOUBLE_IS_SUBNORMAL (wosc->y[0]));
-
   wosc->done = (wosc->block.is_silent &&   /* FIXME, let filter state run out? */
 		((wosc->block.play_dir < 0 && wosc->block.offset < 0) ||
 		 (wosc->block.play_dir > 0 && wosc->block.offset > wosc->wchunk->wave_length)));
-
   return TRUE;
 }
-
 void
 gsl_wave_osc_set_filter (GslWaveOscData *wosc,
 			 gfloat          play_freq,
@@ -229,17 +208,13 @@ gsl_wave_osc_set_filter (GslWaveOscData *wosc,
   gfloat zero_padding = 2;
   gfloat step;
   guint i, istep;
-
   g_return_if_fail (play_freq > 0);
-
   if (UNLIKELY (!wosc->config.lookup_wchunk))
     return;
-
   wosc->step_factor = zero_padding * wosc->wchunk->mix_freq * wosc->wchunk->fine_tune_factor;
   wosc->step_factor /= wosc->wchunk->osc_freq * wosc->mix_freq;
   step = wosc->step_factor * play_freq;
   istep = step * (FRAC_MASK + 1.) + 0.5;
-
   if (istep != wosc->istep)
     {
       gfloat nyquist_fact = 2.0 * PI / wosc->mix_freq, cutoff_freq = 18000, stop_freq = MAX (wosc->wchunk->mix_freq / 2, 24000);
@@ -250,12 +225,9 @@ gsl_wave_osc_set_filter (GslWaveOscData *wosc,
       /* the following frequencies are 2pi relative, where 2*PI=mix-freq */
       gfloat freq_r = stop_freq * nyquist_fact * filt_fact;
       gfloat freq_c = cutoff_freq * nyquist_fact * filt_fact;
-
       /* FIXME: this should store filter roots and poles, so modulation does lp->lp transform */
-
       wosc->istep = istep;
       gsl_filter_tscheb2_lp (GSL_WAVE_OSC_FILTER_ORDER, freq_c, freq_r / freq_c, 0.18, wosc->a, wosc->b);
-
       /* Scale to compensate for zero-padding.
        * Adjust volume of the chunk according to its volume adjustment.
        */
@@ -264,13 +236,11 @@ gsl_wave_osc_set_filter (GslWaveOscData *wosc,
       for (i = 0; i < (GSL_WAVE_OSC_FILTER_ORDER + 1) / 2; i++)     /* reverse bs */
 	{
 	  gfloat t = wosc->b[GSL_WAVE_OSC_FILTER_ORDER - i];
-
 	  wosc->b[GSL_WAVE_OSC_FILTER_ORDER - i] = wosc->b[i];
 	  wosc->b[i] = t;
 	}
       DEBUG ("filter: fc=%f fr=%f st=%f is=%u\n", freq_c/PI*2, freq_r/PI*2, step, wosc->istep);
     }
-
   if (clear_state)
     {
       /* clear filter state */
@@ -279,14 +249,12 @@ gsl_wave_osc_set_filter (GslWaveOscData *wosc,
       wosc->cur_pos = 0;    /* might want to initialize with istep? */
     }
 }
-
 static void
 wave_osc_transform_filter (GslWaveOscData *wosc,
 			   gfloat          play_freq)
 {
   gfloat step;
   guint istep;
-
   step = wosc->step_factor * play_freq;
   istep = step * (FRAC_MASK + 1.) + 0.5;
   if (istep != wosc->istep)
@@ -295,27 +263,22 @@ wave_osc_transform_filter (GslWaveOscData *wosc,
       /* transform filter poles and roots, normalize filter, update a[] and b[] */
     }
 }
-
 GslLong
 gsl_wave_osc_cur_pos (GslWaveOscData *wosc)
 {
   g_return_val_if_fail (wosc != NULL, -1);
-
   if (wosc->wchunk)
     return wosc->block.offset;
   else
     return wosc->config.start_offset;
 }
-
 void
 gsl_wave_osc_retrigger (GslWaveOscData *wosc,
 			gfloat          base_freq)
 {
   g_return_if_fail (wosc != NULL);
-
   if (UNLIKELY (!wosc->config.lookup_wchunk))
     return;
-
   if (wosc->wchunk)
     gsl_wave_chunk_unuse_block (wosc->wchunk, &wosc->block);
   wosc->wchunk = wosc->config.lookup_wchunk (wosc->config.wchunk_data, base_freq, 1); // FIXME: velocity=1 hardcoded
@@ -323,22 +286,18 @@ gsl_wave_osc_retrigger (GslWaveOscData *wosc,
   wosc->block.offset = wosc->config.start_offset;
   gsl_wave_chunk_use_block (wosc->wchunk, &wosc->block);
   wosc->x = wosc->block.start + CLAMP (wosc->config.channel, 0, wosc->wchunk->n_channels - 1);
-
   DEBUG ("wave lookup: want=%f got=%f length=%llu\n",
 	 base_freq, wosc->wchunk->osc_freq, wosc->wchunk->wave_length);
-
   wosc->last_freq_level = BSE_SIGNAL_FROM_FREQ (base_freq);
   wosc->last_mod_level = 0;
   gsl_wave_osc_set_filter (wosc, base_freq, TRUE);
 }
-
 void
 gsl_wave_osc_config (GslWaveOscData   *wosc,
 		     GslWaveOscConfig *config)
 {
   g_return_if_fail (wosc != NULL);
   g_return_if_fail (config != NULL);
-
   if (wosc->config.wchunk_data != config->wchunk_data ||
       wosc->config.lookup_wchunk != config->lookup_wchunk ||
       wosc->config.channel != config->channel)
@@ -364,12 +323,10 @@ gsl_wave_osc_config (GslWaveOscData   *wosc,
 	}
     }
 }
-
 void
 gsl_wave_osc_reset (GslWaveOscData *wosc)
 {
   g_return_if_fail (wosc != NULL);
-
   gsl_wave_osc_set_filter (wosc, wosc->config.cfreq, TRUE);
   wosc->last_mode = 0;
   wosc->last_sync_level = 0;
@@ -377,23 +334,18 @@ gsl_wave_osc_reset (GslWaveOscData *wosc)
   wosc->last_mod_level = 0;
   wosc->done = FALSE;
 }
-
 void
 gsl_wave_osc_init (GslWaveOscData *wosc)
 {
   g_return_if_fail (wosc != NULL);
-
   g_assert (GSL_WAVE_OSC_FILTER_ORDER <= BSE_CONFIG (wave_chunk_padding));
-
   memset (wosc, 0, sizeof (GslWaveOscData));
   wosc->mix_freq = bse_engine_sample_freq ();
 }
-
 void
 gsl_wave_osc_shutdown (GslWaveOscData *wosc)
 {
   g_return_if_fail (wosc != NULL);
-  
   if (wosc->wchunk)
     gsl_wave_chunk_unuse_block (wosc->wchunk, &wosc->block);
   memset (wosc, 0xaa, sizeof (GslWaveOscData));

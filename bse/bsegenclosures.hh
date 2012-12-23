@@ -1,4 +1,3 @@
-
 /* Void0Closure */
 template<class T>
 class Void0Closure : public CxxClosure {
@@ -20,7 +19,6 @@ template<class T>
 Void0Closure<T>* Closure (T *t, void (T::*f) ()) {
   return new Void0Closure<T> (t, f);
 }
-
 /* Void1Closure */
 template<class T, typename A1>
 class Void1Closure : public CxxClosure {
@@ -43,7 +41,6 @@ template<class T, typename A1>
 Void1Closure<T, A1>* Closure (T *t, void (T::*f) (A1)) {
   return new Void1Closure<T, A1> (t, f);
 }
-
 /* Void2Closure */
 template<class T, typename A1, typename A2>
 class Void2Closure : public CxxClosure {
@@ -66,7 +63,6 @@ template<class T, typename A1, typename A2>
 Void2Closure<T, A1, A2>* Closure (T *t, void (T::*f) (A1, A2)) {
   return new Void2Closure<T, A1, A2> (t, f);
 }
-
 /* Void3Closure */
 template<class T, typename A1, typename A2, typename A3>
 class Void3Closure : public CxxClosure {
@@ -89,7 +85,6 @@ template<class T, typename A1, typename A2, typename A3>
 Void3Closure<T, A1, A2, A3>* Closure (T *t, void (T::*f) (A1, A2, A3)) {
   return new Void3Closure<T, A1, A2, A3> (t, f);
 }
-
 /* Void4Closure */
 template<class T, typename A1, typename A2, typename A3, typename A4>
 class Void4Closure : public CxxClosure {
@@ -112,7 +107,6 @@ template<class T, typename A1, typename A2, typename A3, typename A4>
 Void4Closure<T, A1, A2, A3, A4>* Closure (T *t, void (T::*f) (A1, A2, A3, A4)) {
   return new Void4Closure<T, A1, A2, A3, A4> (t, f);
 }
-
 /* Void5Closure */
 template<class T, typename A1, typename A2, typename A3, typename A4, typename A5>
 class Void5Closure : public CxxClosure {
@@ -135,7 +129,6 @@ template<class T, typename A1, typename A2, typename A3, typename A4, typename A
 Void5Closure<T, A1, A2, A3, A4, A5>* Closure (T *t, void (T::*f) (A1, A2, A3, A4, A5)) {
   return new Void5Closure<T, A1, A2, A3, A4, A5> (t, f);
 }
-
 /* Void6Closure */
 template<class T, typename A1, typename A2, typename A3, typename A4, typename A5, typename A6>
 class Void6Closure : public CxxClosure {
@@ -158,7 +151,6 @@ template<class T, typename A1, typename A2, typename A3, typename A4, typename A
 Void6Closure<T, A1, A2, A3, A4, A5, A6>* Closure (T *t, void (T::*f) (A1, A2, A3, A4, A5, A6)) {
   return new Void6Closure<T, A1, A2, A3, A4, A5, A6> (t, f);
 }
-
 /* Void7Closure */
 template<class T, typename A1, typename A2, typename A3, typename A4, typename A5, typename A6, typename A7>
 class Void7Closure : public CxxClosure {
@@ -181,7 +173,6 @@ template<class T, typename A1, typename A2, typename A3, typename A4, typename A
 Void7Closure<T, A1, A2, A3, A4, A5, A6, A7>* Closure (T *t, void (T::*f) (A1, A2, A3, A4, A5, A6, A7)) {
   return new Void7Closure<T, A1, A2, A3, A4, A5, A6, A7> (t, f);
 }
-
 /* Void8Closure */
 template<class T, typename A1, typename A2, typename A3, typename A4, typename A5, typename A6, typename A7, typename A8>
 class Void8Closure : public CxxClosure {
@@ -204,7 +195,6 @@ template<class T, typename A1, typename A2, typename A3, typename A4, typename A
 Void8Closure<T, A1, A2, A3, A4, A5, A6, A7, A8>* Closure (T *t, void (T::*f) (A1, A2, A3, A4, A5, A6, A7, A8)) {
   return new Void8Closure<T, A1, A2, A3, A4, A5, A6, A7, A8> (t, f);
 }
-
 /* Ret0Closure */
 template<typename R, class T>
 class Ret0Closure : public CxxClosure {
@@ -227,7 +217,6 @@ template<typename R, class T>
 Ret0Closure<R, T>* Closure (T *t, R (T::*f) ()) {
   return new Ret0Closure<R, T> (t, f);
 }
-
 /* Ret1Closure */
 template<typename R, class T, typename A1>
 class Ret1Closure : public CxxClosure {
@@ -251,7 +240,6 @@ template<typename R, class T, typename A1>
 Ret1Closure<R, T, A1>* Closure (T *t, R (T::*f) (A1)) {
   return new Ret1Closure<R, T, A1> (t, f);
 }
-
 /* Ret2Closure */
 template<typename R, class T, typename A1, typename A2>
 class Ret2Closure : public CxxClosure {
@@ -275,7 +263,6 @@ template<typename R, class T, typename A1, typename A2>
 Ret2Closure<R, T, A1, A2>* Closure (T *t, R (T::*f) (A1, A2)) {
   return new Ret2Closure<R, T, A1, A2> (t, f);
 }
-
 /* Ret3Closure */
 template<typename R, class T, typename A1, typename A2, typename A3>
 class Ret3Closure : public CxxClosure {
@@ -299,7 +286,6 @@ template<typename R, class T, typename A1, typename A2, typename A3>
 Ret3Closure<R, T, A1, A2, A3>* Closure (T *t, R (T::*f) (A1, A2, A3)) {
   return new Ret3Closure<R, T, A1, A2, A3> (t, f);
 }
-
 /* Ret4Closure */
 template<typename R, class T, typename A1, typename A2, typename A3, typename A4>
 class Ret4Closure : public CxxClosure {
@@ -323,7 +309,6 @@ template<typename R, class T, typename A1, typename A2, typename A3, typename A4
 Ret4Closure<R, T, A1, A2, A3, A4>* Closure (T *t, R (T::*f) (A1, A2, A3, A4)) {
   return new Ret4Closure<R, T, A1, A2, A3, A4> (t, f);
 }
-
 /* Ret5Closure */
 template<typename R, class T, typename A1, typename A2, typename A3, typename A4, typename A5>
 class Ret5Closure : public CxxClosure {
@@ -347,7 +332,6 @@ template<typename R, class T, typename A1, typename A2, typename A3, typename A4
 Ret5Closure<R, T, A1, A2, A3, A4, A5>* Closure (T *t, R (T::*f) (A1, A2, A3, A4, A5)) {
   return new Ret5Closure<R, T, A1, A2, A3, A4, A5> (t, f);
 }
-
 /* Ret6Closure */
 template<typename R, class T, typename A1, typename A2, typename A3, typename A4, typename A5, typename A6>
 class Ret6Closure : public CxxClosure {
@@ -371,7 +355,6 @@ template<typename R, class T, typename A1, typename A2, typename A3, typename A4
 Ret6Closure<R, T, A1, A2, A3, A4, A5, A6>* Closure (T *t, R (T::*f) (A1, A2, A3, A4, A5, A6)) {
   return new Ret6Closure<R, T, A1, A2, A3, A4, A5, A6> (t, f);
 }
-
 /* Ret7Closure */
 template<typename R, class T, typename A1, typename A2, typename A3, typename A4, typename A5, typename A6, typename A7>
 class Ret7Closure : public CxxClosure {
@@ -395,7 +378,6 @@ template<typename R, class T, typename A1, typename A2, typename A3, typename A4
 Ret7Closure<R, T, A1, A2, A3, A4, A5, A6, A7>* Closure (T *t, R (T::*f) (A1, A2, A3, A4, A5, A6, A7)) {
   return new Ret7Closure<R, T, A1, A2, A3, A4, A5, A6, A7> (t, f);
 }
-
 /* Ret8Closure */
 template<typename R, class T, typename A1, typename A2, typename A3, typename A4, typename A5, typename A6, typename A7, typename A8>
 class Ret8Closure : public CxxClosure {

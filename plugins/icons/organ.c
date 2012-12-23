@@ -1,5 +1,4 @@
 /* GdkPixbuf RGBA C-Source image dump 1-byte-run-length-encoded */
-
 static const guint8 organ_icon[] = 
 { ""
   /* Pixbuf magic (0x47646b50) */
@@ -515,5 +514,3 @@ static const guint8 organ_icon[] =
   "9r\377\243\230\270\377\254\240\276\377~w\240\377PN\202\377}v\236\377"
   "\244\232\271\377qk\227\377@@w\377\266\252\304\377~w\240\377FDz\377\215"
   "\204\251\300\217\206\253\377LJ\177\377\204\0\0\0\0"};
-
-

@@ -1,15 +1,10 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #ifndef __BSE_CXX_VALUE_H__
 #define __BSE_CXX_VALUE_H__
-
 #include <bse/bsecxxutils.hh>
-
 namespace Bse {
-
 class CxxBase; // prototype CxxBase since we deal with pointers thereof
-
 /* Generic Value keeping, basically a convenient wrapper around GValue */
-
 struct Value : GValue {
   bool                  get_bool    () const { return get_num(); }
   SfiInt                get_int     () const { return get_num(); }
@@ -41,8 +36,5 @@ struct Value : GValue {
   void operator=   (SfiReal       r) { set_real (r); }
   void operator=   (const String &s) { set_string (s.c_str()); }
 };
-
 } // Bse
-
-
 #endif /* __BSE_CXX_VALUE_H__ */

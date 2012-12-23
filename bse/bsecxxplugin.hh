@@ -1,24 +1,19 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #ifndef __BSE_CXX_PLUGIN_H__
 #define __BSE_CXX_PLUGIN_H__
-
 #include <bse/bsecxxmodule.hh>
 #include <bse/bseexports.hh>
 #include <bse/bseparam.hh>
 #include <bse/bsecategories.hh>
 #include <bse/bseplugin.hh>
 #include <sfi/sficxx.hh>
-
 namespace Bse {
-
 /* --- frequently used constants --- */
 const SfiInt  KAMMER_NOTE = SFI_KAMMER_NOTE;
 const SfiInt  KAMMER_OCTAVE = SFI_KAMMER_OCTAVE;
 const SfiReal KAMMER_FREQ = BSE_KAMMER_FREQUENCY;
 const SfiInt  MIN_FINE_TUNE = BSE_MIN_FINE_TUNE;
 const SfiInt  MAX_FINE_TUNE = BSE_MAX_FINE_TUNE;
-
-
 /* -- export identity --- */
 /* provide plugin export identity, preceeding all type exports */
 #ifndef BSE_COMPILATION
@@ -32,7 +27,6 @@ extern "C" {
 extern ::BseExportIdentity bse_builtin_export_identity; /* sync with bseplugin.hh */
 };
 #endif
-
 // == Resident Type Plugin Registration ==
 #define BSE_RESIDENT_TYPE_DEF(Object, func, anc, category, blurb, icon) \
   static GType func##_get_type () {                                     \
@@ -62,7 +56,6 @@ extern ::BseExportIdentity bse_builtin_export_identity; /* sync with bseplugin.h
   } static Sfi::Init func##__onload_ (func##__onload);
 #define BSE_RESIDENT_SOURCE_DEF(Object, func, category, blurb, icon)    \
   BSE_RESIDENT_TYPE_DEF(Object, func, BSE_TYPE_SOURCE, category, blurb, icon)
-
 /* --- hook registration --- */
 /* hook registration is based on a static ExportTypeKeeper
  * object, which provides the hook's get_type() implementation and
@@ -97,7 +90,6 @@ extern ::BseExportIdentity bse_builtin_export_identity; /* sync with bseplugin.h
   ::Bse::ExportTypeKeeper                                               \
          bse_type_keeper__7##HookType (bse_export_node<HookType>,       \
                                        BSE_CXX_EXPORT_IDENTITY);
-
 /* --- enum registration --- */
 /* enum registration is based on a static ExportTypeKeeper
  * object, which provides the enum's get_type() implementation and
@@ -151,7 +143,6 @@ EnumValue (int         int_value,
   value.value_nick = const_cast<char*> (value_nick);
   return value;
 }
-
 /* --- record registration --- */
 /* record registration is based on a static ExportTypeKeeper
  * object, which provides the record's get_type() implementation and
@@ -189,8 +180,6 @@ EnumValue (int         int_value,
   ::Bse::ExportTypeKeeper                                               \
          bse_type_keeper__1##RecordType (bse_export_node<RecordType>,   \
                                          BSE_CXX_EXPORT_IDENTITY);
-
-
 /* --- sequence registration --- */
 /* sequence registration works similar to record registration */
 #define BSE_CXX_DECLARED_SEQUENCE_TYPE(NameSpace,SequenceType)                  \
@@ -225,8 +214,6 @@ EnumValue (int         int_value,
   ::Bse::ExportTypeKeeper                                                       \
          bse_type_keeper__2##SequenceType (bse_export_node<SequenceType>,       \
                                            BSE_CXX_EXPORT_IDENTITY);
-
-
 /* --- procedure registration --- */
 /* procedure registration works similar to enum registration. */
 #define BSE_CXX_DECLARED_PROC_TYPE(NameSpace,ProcType)                          \
@@ -260,8 +247,6 @@ EnumValue (int         int_value,
   ::Bse::ExportTypeKeeper                                                       \
          bse_type_keeper__9##ProcType (bse_export_node<Procedure::ProcType>,    \
                                    BSE_CXX_EXPORT_IDENTITY);
-
-
 /* --- class registration --- */
 /* class registration works similar to enum registration.
  * in addition, we need to define a couple trampoline functions to make
@@ -308,8 +293,6 @@ EnumValue (int         int_value,
 /* implement static_data portions used by auto-generated classes */
 #define BSE_CXX_DEFINE_STATIC_DATA(ObjectType)                                  \
   ObjectType::StaticData ObjectType::static_data;
-
-
 /* --- type keeper for export nodes --- */
 class ExportTypeKeeper
 {
@@ -334,15 +317,11 @@ public:
   }
   const GType get_type()        { return enode->type; }
 };
-
 } // Bse
-
 /* include generated C++ core types */
 #include <bse/bsecore.genidl.hh>        /* includes bsecxxplugin.hh itself */
-
 /* define types dependant on bsecore.idl */
 namespace Bse {
-
 /* --- trampoline templates --- */
 template<class ObjectType, typename PropertyID> static void
 cxx_get_candidates_trampoline (BseItem               *item,
@@ -362,7 +341,5 @@ cxx_get_candidates_trampoline (BseItem               *item,
   if (cxxpc)
     pch.steal();        /* steal to avoid destruction */
 }
-
 } // Bse
-
 #endif /* __BSE_CXX_PLUGIN_H__ */

@@ -1,16 +1,13 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #ifndef __BIRNET_CDEFS_H__
 #define __BIRNET_CDEFS_H__
-
 #include <stdbool.h>
 #include <stddef.h>			/* NULL */
 #include <sys/types.h>			/* uint, ssize */
 #include <limits.h>                     /* {INT|CHAR|...}_{MIN|MAX} */
 #include <float.h>                      /* {FLT|DBL}_{MIN|MAX|EPSILON} */
 #include <birnet/birnetconfig.h>
-
 BIRNET_EXTERN_C_BEGIN();
-
 /* --- standard macros --- */
 #ifndef FALSE
 #  define FALSE					false
@@ -58,13 +55,11 @@ BIRNET_EXTERN_C_BEGIN();
 #  define UINT64_MAX    (INT64_MAX * 2ULL + 1ULL)
 #endif
 #endif
-
 /* --- likelyness hinting --- */
 #define	BIRNET__BOOL(expr)		__extension__ ({ bool _birnet__bool; if (expr) _birnet__bool = 1; else _birnet__bool = 0; _birnet__bool; })
 #define	BIRNET_ISLIKELY(expr)		__builtin_expect (BIRNET__BOOL (expr), 1)
 #define	BIRNET_UNLIKELY(expr)		__builtin_expect (BIRNET__BOOL (expr), 0)
 #define	BIRNET_LIKELY			BIRNET_ISLIKELY
-
 /* --- assertions and runtime errors --- */
 #define BIRNET_RETURN_IF_FAIL(e)	do { if (BIRNET_ISLIKELY (e)) break; BIRNET__RUNTIME_PROBLEM ('R', BIRNET_LOG_DOMAIN, __FILE__, __LINE__, BIRNET_SIMPLE_FUNCTION, "%s", #e); return; } while (0)
 #define BIRNET_RETURN_VAL_IF_FAIL(e,v)	do { if (BIRNET_ISLIKELY (e)) break; BIRNET__RUNTIME_PROBLEM ('R', BIRNET_LOG_DOMAIN, __FILE__, __LINE__, BIRNET_SIMPLE_FUNCTION, "%s", #e); return v; } while (0)
@@ -73,7 +68,6 @@ BIRNET_EXTERN_C_BEGIN();
 #define BIRNET_WARNING(...)		do { BIRNET__RUNTIME_PROBLEM ('W', BIRNET_LOG_DOMAIN, __FILE__, __LINE__, BIRNET_SIMPLE_FUNCTION, __VA_ARGS__); } while (0)
 #define BIRNET_ERROR(...)		do { BIRNET__RUNTIME_PROBLEM ('E', BIRNET_LOG_DOMAIN, __FILE__, __LINE__, BIRNET_SIMPLE_FUNCTION, __VA_ARGS__); BIRNET_ABORT_NORETURN(); } while (0)
 #define BIRNET_ABORT_NORETURN()		birnet_abort_noreturn()
-
 /* --- convenient aliases --- */
 #ifdef  _BIRNET_SOURCE_EXTENSIONS
 #define	ISLIKELY		BIRNET_ISLIKELY
@@ -86,7 +80,6 @@ BIRNET_EXTERN_C_BEGIN();
 #define	WARNING			BIRNET_WARNING
 #define	ERROR			BIRNET_ERROR
 #endif /* _BIRNET_SOURCE_EXTENSIONS */
-
 /* --- preprocessor pasting --- */
 #define BIRNET_CPP_PASTE4i(a,b,c,d)             a ## b ## c ## d  /* twofold indirection is required to expand macros like __LINE__ */
 #define BIRNET_CPP_PASTE4(a,b,c,d)              BIRNET_CPP_PASTE4i (a,b,c,d)
@@ -98,7 +91,6 @@ BIRNET_EXTERN_C_BEGIN();
 #define BIRNET_STATIC_ASSERT(expr)              BIRNET_STATIC_ASSERT_NAMED (expr, compile_time_assertion_failed)
 #define BIRNET_STARTUP_ASSERTi(e, _N)           namespace { static struct _N { inline _N() { BIRNET_ASSERT (e); } } _N; }
 #define BIRNET_STARTUP_ASSERT(expr)             BIRNET_STARTUP_ASSERTi (expr, BIRNET_CPP_PASTE2 (StartupAssertion, __LINE__))
-
 /* --- attributes --- */
 #if     __GNUC__ > 3 || (__GNUC__ == 3 && __GNUC_MINOR__ >= 3)
 #define BIRNET_PRETTY_FUNCTION                  (__PRETTY_FUNCTION__)
@@ -139,7 +131,6 @@ BIRNET_EXTERN_C_BEGIN();
 #else
 #define	BIRNET_SIMPLE_FUNCTION			BIRNET_PRETTY_FUNCTION
 #endif
-
 /* --- provide canonical integer types --- */
 #if 	BIRNET_SIZEOF_SYS_TYPESH_UINT == 0
 typedef unsigned int		uint;	/* for systems that don't define uint in types.h */
@@ -169,8 +160,6 @@ BIRNET_STATIC_ASSERT (sizeof (BirnetInt32) == 4);
 BIRNET_STATIC_ASSERT (sizeof (BirnetInt64) == 8);
 typedef BirnetUInt32		BirnetUnichar;
 BIRNET_STATIC_ASSERT (sizeof (BirnetUnichar) == 4);
-
-
 /* --- path handling --- */
 #ifdef	BIRNET_OS_WIN32
 #define BIRNET_DIR_SEPARATOR		  '\\'
@@ -185,7 +174,6 @@ BIRNET_STATIC_ASSERT (sizeof (BirnetUnichar) == 4);
 #endif	/* !BIRNET_OS_WIN32 */
 #define	BIRNET_IS_DIR_SEPARATOR(c)    	  ((c) == BIRNET_DIR_SEPARATOR)
 #define BIRNET_IS_SEARCHPATH_SEPARATOR(c) ((c) == BIRNET_SEARCHPATH_SEPARATOR)
-
 /* --- initialization --- */
 typedef struct {
   bool stand_alone;		/* "stand-alone": no rcfiles, boot scripts, etc. */
@@ -193,13 +181,11 @@ typedef struct {
   bool test_slow;		/* run slow tests */
   bool test_perf;		/* run benchmarks, test performance */
 } BirnetInitSettings;
-
 typedef struct {
   const char *value_name;     	/* value list ends with value_name == NULL */
   const char *value_string;
   long double value_num;     	/* valid if value_string == NULL */
 } BirnetInitValue;
-
 /* --- CPU info --- */
 typedef struct {
   /* architecture name */
@@ -211,7 +197,6 @@ typedef struct {
   uint x86_mmx : 1, x86_mmxext : 1, x86_3dnow : 1, x86_3dnowext : 1;
   uint x86_sse : 1, x86_sse2   : 1, x86_sse3  : 1, x86_sse4     : 1;
 } BirnetCPUInfo;
-
 /* --- Thread info --- */
 typedef enum {
   BIRNET_THREAD_UNKNOWN    = '?',
@@ -235,7 +220,6 @@ typedef struct {
   BirnetUInt64		cutime;        	/* user time of dead children */
   BirnetUInt64		cstime;		/* system time of dead children */
 } BirnetThreadInfo;
-
 /* --- threading ABI --- */
 typedef struct _BirnetThread BirnetThread;
 typedef void (*BirnetThreadFunc)   (void *user_data);
@@ -347,7 +331,6 @@ typedef struct {
 					     BirnetInt64 	max_useconds);
   void              (*cond_destroy)         (BirnetCond        *cond);
 } BirnetThreadTable;
-
 /* --- implementation bits --- */
 /* the above macros rely on a problem handler macro: */
 // BIRNET__RUNTIME_PROBLEM(ErrorWarningReturnAssertNotreach,domain,file,line,funcname,exprformat,...); // noreturn cases: 'E', 'A', 'N'
@@ -363,7 +346,5 @@ extern inline void birnet_abort_noreturn (void) { while (1) *(void*volatile*)0; 
 #define BIRNET_MEMORY_BARRIER_RW(tht)   do { } while (0)
 #endif         
 BIRNET_EXTERN_C_END();
-
 #endif /* __BIRNET_CDEFS_H__ */
-
 /* vim:set ts=8 sts=2 sw=2: */

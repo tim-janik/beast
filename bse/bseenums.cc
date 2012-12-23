@@ -2,10 +2,8 @@
 #include "bseenums.hh"
 #include "gslcommon.hh"
 #include <errno.h>
-
 /* include generated enum value arrays and *.h files the enums steam from */
 #include "bseenum_arrays.cc"
-
 /* --- functions --- */
 void
 bse_type_register_enums (void)
@@ -21,7 +19,6 @@ bse_type_register_enums (void)
   };
   uint n_enums = sizeof (enums) / sizeof (enums[0]);
   uint i;
-  
   for (i = 0; i < n_enums; i++)
     {
       if (enums[i].parent_type == G_TYPE_ENUM)
@@ -36,42 +33,32 @@ bse_type_register_enums (void)
 	g_assert_not_reached ();
     }
 }
-
 /* BseErrorType is a static type */
 static GEnumClass *bse_error_class = NULL;
-
 const char*
 bse_error_name (BseErrorType error_value)
 {
   GEnumValue *ev;
-  
   if (!bse_error_class)
     bse_error_class = (GEnumClass*) g_type_class_ref (BSE_TYPE_ERROR_TYPE);
-  
   ev = g_enum_get_value (bse_error_class, error_value);
   return ev ? ev->value_name : NULL;
 }
-
 const char*
 bse_error_nick (BseErrorType error_value)
 {
   GEnumValue *ev;
-  
   if (!bse_error_class)
     bse_error_class = (GEnumClass*) g_type_class_ref (BSE_TYPE_ERROR_TYPE);
-  
   ev = g_enum_get_value (bse_error_class, error_value);
   return ev ? ev->value_nick : NULL;
 }
-
 const char*
 bse_error_blurb (BseErrorType error_value)
 {
   GEnumValue *ev;
-  
   if (!bse_error_class)
     bse_error_class = (GEnumClass*) g_type_class_ref (BSE_TYPE_ERROR_TYPE);
-  
   switch (error_value)
     {
     case BSE_ERROR_NONE:                        return _("Everything went well");
@@ -151,11 +138,9 @@ bse_error_blurb (BseErrorType error_value)
     case BSE_ERROR_INVALID_DURATION:		return _("Invalid duration");
     case BSE_ERROR_INVALID_OVERLAP:		return _("Invalid overlap");
     }
-  
   ev = g_enum_get_value (bse_error_class, error_value);
   return ev ? ev->value_nick : NULL;
 }
-
 BseErrorType
 bse_error_from_errno (int             v_errno,
 		      BseErrorType    fallback)

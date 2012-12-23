@@ -5,18 +5,14 @@
 #include <string.h>
 #include <errno.h>
 #include <zlib.h>
-
 namespace Birnet {
-
 static bool use_compression = FALSE;
 static bool use_base_name = FALSE;
-
 typedef struct {
   uint pos;
   bool pad;
 } Config;
 static Config config_init = { 0, 0 };
-
 static inline void
 print_uchar (Config *config,
 	     uint8 d)
@@ -58,7 +54,6 @@ print_uchar (Config *config,
   config->pad = FALSE;
   return;
 }
-
 #define to_upper(c)     ((c) >='a' && (c) <='z' ? (c) - 'a' + 'A' : (c))
 #define is_alnum(c)     (((c) >='A' && (c) <='Z') || ((c) >='a' && (c) <='z') || ((c) >='0' && (c) <='9'))
 static String
@@ -72,7 +67,6 @@ to_cupper (const String &str)
       s[i] = '_';
   return s;
 }
-
 static void
 gen_zfile (const char *name,
 	   const char *file)
@@ -96,10 +90,8 @@ gen_zfile (const char *name,
       dlen += fread (data + dlen, 1, mlen - dlen, f);
     }
   while (!feof (f));
-
   if (ferror (f))
     BIRNET_ERROR ("failed to read from \"%s\": %s", file, string_from_errno (errno).c_str());
-
   if (use_compression)
     {
       int result;
@@ -130,30 +122,24 @@ gen_zfile (const char *name,
       clen = dlen;
       cdata = data;
     }
-
   g_print ("/* birnet-zintern file dump of %s */\n", file);
-
   config = config_init;
   printf ("#define %s_NAME \"", to_cupper (name).c_str());
   for (i = 0; i < fname.size(); i++)
     print_uchar (&config, fname[i]);
   printf ("\"\n");
-
   printf ("#define %s_SIZE (%u)\n", to_cupper (name).c_str(), dlen);
-
   config = config_init;
   printf ("static const unsigned char %s_DATA[%lu + 1] =\n", to_cupper (name).c_str(), clen);
   printf ("( \"");
   for (i = 0; i < clen; i++)
     print_uchar (&config, cdata[i]);
   printf ("\");\n");
-
   fclose (f);
   g_free (data);
   if (cdata != data)
     g_free (cdata);
 }
-
 static int
 help (char *arg)
 {
@@ -165,19 +151,16 @@ help (char *arg)
   g_printerr ("containing inlined data blocks of the files given.\n");
   return arg != NULL;
 }
-
 extern "C" int
 main (int   argc,
       char *argv[])
 {
   GSList *plist = NULL;
-
   InitValue ivalues[] = {
     { "stand-alone", "true" },
     { NULL }
   };
   birnet_init (&argc, &argv, NULL, ivalues);
-
   for (int i = 1; i < argc; i++)
     {
       if (strcmp ("-z", argv[i]) == 0)
@@ -195,10 +178,8 @@ main (int   argc,
       else
 	plist = g_slist_append (plist, argv[i]);
     }
-  
   if (argc <= 1)
     return help (NULL);
-
   while (plist && plist->next)
     {
       const char *name = (char*) plist->data;
@@ -211,8 +192,6 @@ main (int   argc,
       g_slist_free_1 (tmp);
       gen_zfile (name, file);
     }
-
   return 0;
 }
-
 } // Birnet

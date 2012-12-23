@@ -1,9 +1,7 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "davbassfilter.genidl.hh"
-
 namespace Bse {
 namespace Dav {
-
 class BassFilter : public BassFilterBase {
   class Module : public SynthesisModule {
     /* proeprties */
@@ -67,12 +65,10 @@ class BassFilter : public BassFilterBase {
       filt_reso = props->reso_perc * 0.01;
       env_mod = props->env_mod * 0.01;
       env_decay = props->env_decay * 0.01;
-
       recalc_resonance();
       recalc_filter();
       recalc_decay();
       recalc_a_b();
-
       if (props->trigger)
         {
           /* Reset filter delta freq. */
@@ -159,9 +155,7 @@ public:
   /* implement creation and config methods for synthesis Module */
   BSE_EFFECT_INTEGRATE_MODULE (BassFilter, Module, BassFilterProperties);
 };
-
 BSE_CXX_DEFINE_EXPORTS();
 BSE_CXX_REGISTER_EFFECT (BassFilter);
-
 } // Dav
 } // Bse

@@ -1,8 +1,6 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bstprofiler.hh"
 #include <string.h>
-
-
 /* --- thread view --- */
 enum {
   TCOL_NAME,
@@ -14,16 +12,12 @@ enum {
   TCOL_STIME,
   N_TCOLS
 };
-
-
 /* --- variables --- */
 static GtkWidget     *profiler_dialog = NULL;
 static GxkRadget     *profiler = NULL;
 static guint          timer_id = 0;
 static guint          n_thread_infos = 0;
 static BseThreadInfo *thread_infos = NULL;
-
-
 /* --- funtions --- */
 #if 0
 static gchar
@@ -43,7 +37,6 @@ char_state_from_thread_state (BseThreadState thread_state)
     }
 }
 #endif
-
 static BseThreadState
 thread_state_from_char_state (gchar thread_state)
 {
@@ -60,7 +53,6 @@ thread_state_from_char_state (gchar thread_state)
     case SFI_THREAD_DEAD:       return BSE_THREAD_STATE_DEAD;
     }
 }
-
 static void
 thread_info_cell_fill_value (GtkWidget *profiler,
                              guint      column,
@@ -93,7 +85,6 @@ thread_info_cell_fill_value (GtkWidget *profiler,
       break;
     }
 }
-
 static void
 update_infos (GSList         *slist,
               GxkListWrapper *lw)
@@ -155,7 +146,6 @@ update_infos (GSList         *slist,
       gxk_list_wrapper_notify_change (lw, n - 1);
     }
 }
-
 static void
 profiler_update (void)
 {
@@ -185,7 +175,6 @@ profiler_update (void)
   g_slist_free (slist);
   sfi_thread_info_free (si);
 }
-
 static gboolean
 profiler_timer (gpointer data)
 {
@@ -199,7 +188,6 @@ profiler_timer (gpointer data)
   GDK_THREADS_LEAVE ();
   return visible;
 }
-
 GtkWidget*
 bst_profiler_window_get (void)
 {

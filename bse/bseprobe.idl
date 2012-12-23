@@ -1,8 +1,6 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include <bse/bsecxxmodule.idl>
-
 namespace Bse {
-
 record ProbeFeatures {
   Bool          probe_range;
   Bool          probe_energie;
@@ -23,7 +21,6 @@ record Probe {
 sequence ProbeSeq {
   Probe probes;
 };
-
 record ProbeRequest {
   Source        source;
   Int           channel_id;
@@ -33,12 +30,10 @@ record ProbeRequest {
 sequence ProbeRequestSeq {
   ProbeRequest probe_requests;
 };
-
 void source_request_probes (Source          source,
                             Int             ochannel_id,
                             ProbeFeatures   probe_features);
 void source_mass_request   (ProbeRequestSeq prseq);
 Num  source_get_tick_stamp (Source          obj);
 Int  source_get_mix_freq   (Source          obj);
-
 };

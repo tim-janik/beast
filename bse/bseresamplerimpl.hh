@@ -1,7 +1,6 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #ifndef __BSE_RESAMPLER_TCC__
 #define __BSE_RESAMPLER_TCC__
-
 #include <vector>
 #include <bse/bseresampler.hh>
 #include <birnet/birnet.hh>
@@ -12,7 +11,6 @@
 #ifdef __SSE__
 #include <xmmintrin.h>
 #endif
-
 namespace Bse {
 namespace Resampler {
 using std::vector;
@@ -20,7 +18,6 @@ using std::min;
 using std::max;
 using std::copy;
 using Birnet::AlignedArray;
-
 /* see: http://ds9a.nl/gcc-simd/ */
 union F4Vector 
 {
@@ -29,7 +26,6 @@ union F4Vector
   __m128 v;   // vector of four single floats
 #endif
 };
-
 /**
  * FIR filter routine
  *
@@ -55,7 +51,6 @@ fir_process_one_sample (const float *input,
     out += input[i] * taps[i];
   return out;
 }
-
 /**
  * FIR filter routine for 4 samples simultaneously
  *
@@ -80,12 +75,10 @@ fir_process_4samples_sse (const float *input,
   const F4Vector *input_v = reinterpret_cast<const F4Vector *> (input);
   const F4Vector *sse_taps_v = reinterpret_cast<const F4Vector *> (sse_taps);
   F4Vector out0_v, out1_v, out2_v, out3_v;
-  
   out0_v.v = _mm_mul_ps (input_v[0].v, sse_taps_v[0].v);
   out1_v.v = _mm_mul_ps (input_v[0].v, sse_taps_v[1].v);
   out2_v.v = _mm_mul_ps (input_v[0].v, sse_taps_v[2].v);
   out3_v.v = _mm_mul_ps (input_v[0].v, sse_taps_v[3].v);
-  
   for (guint i = 1; i < (order + 6) / 4; i++)
     {
       out0_v.v = _mm_add_ps (out0_v.v, _mm_mul_ps (input_v[i].v, sse_taps_v[i * 4 + 0].v));
@@ -93,7 +86,6 @@ fir_process_4samples_sse (const float *input,
       out2_v.v = _mm_add_ps (out2_v.v, _mm_mul_ps (input_v[i].v, sse_taps_v[i * 4 + 2].v));
       out3_v.v = _mm_add_ps (out3_v.v, _mm_mul_ps (input_v[i].v, sse_taps_v[i * 4 + 3].v));
     }
-  
   *out0 = out0_v.f[0] + out0_v.f[1] + out0_v.f[2] + out0_v.f[3];
   *out1 = out1_v.f[0] + out1_v.f[1] + out1_v.f[2] + out1_v.f[3];
   *out2 = out2_v.f[0] + out2_v.f[1] + out2_v.f[2] + out2_v.f[3];
@@ -102,8 +94,6 @@ fir_process_4samples_sse (const float *input,
   g_assert_not_reached();
 #endif
 }
-
-
 /**
  * fir_compute_sse_taps takes a normal vector of FIR taps as argument and
  * computes a specially scrambled version of these taps, ready to be used
@@ -127,17 +117,14 @@ fir_compute_sse_taps (const vector<float>& taps)
 {
   const int order = taps.size();
   vector<float> sse_taps ((order + 6) / 4 * 16);
-  
   for (int j = 0; j < 4; j++)
     for (int i = 0; i < order; i++)
       {
 	int k = i + j;
 	sse_taps[(k / 4) * 16 + (k % 4) + j * 4] = taps[i];
       }
-  
   return sse_taps;
 }
-
 /**
  * This function tests the SSEified FIR filter code (that is, the reordering
  * done by fir_compute_sse_taps and the actual computation implemented in
@@ -154,13 +141,11 @@ fir_test_filter_sse (bool        verbose,
   int errors = 0;
   if (verbose)
     printf ("testing SSE filter implementation:\n\n");
-
   for (guint order = 0; order < max_order; order++)
     {
       vector<float> taps (order);
       for (guint i = 0; i < order; i++)
 	taps[i] = i + 1;
-
       AlignedArray<float,16> sse_taps (fir_compute_sse_taps (taps));
       if (verbose)
 	{
@@ -174,18 +159,15 @@ fir_test_filter_sse (bool        verbose,
 	    }
 	  printf ("\n\n");
 	}
-
       AlignedArray<float,16> random_mem (order + 4);
       for (guint i = 0; i < order + 4; i++)
 	random_mem[i] = 1.0 - rand() / (0.5 * RAND_MAX);
-
       /* FIXME: the problem with this test is that we explicitely test SSE code
        * here, but the test case is not compiled with -msse within the BEAST tree
        */
       float out[4];
       fir_process_4samples_sse (&random_mem[0], &sse_taps[0], order,
 	                        &out[0], &out[1], &out[2], &out[3]);
-
       double avg_diff = 0.0;
       for (int i = 0; i < 4; i++)
 	{
@@ -203,10 +185,8 @@ fir_test_filter_sse (bool        verbose,
     printf ("*** %d errors detected\n", errors);
   else
     printf ("filter implementation ok.\n");
-
   return (errors == 0);
 }
-
 /**
  * Factor 2 upsampling of a data stream
  *
@@ -226,12 +206,10 @@ protected:
                             float       *output)
   {
     const guint H = (ORDER / 2); /* half the filter length */
-    
     output[1] = input[H];
     output[3] = input[H + 1];
     output[5] = input[H + 2];
     output[7] = input[H + 3];
-    
     fir_process_4samples_sse (input, &sse_taps[0], ORDER, &output[0], &output[2], &output[4], &output[6]);
   }
   /* slow convolution */
@@ -302,13 +280,11 @@ public:
 		 float       *output)
   {
     const uint history_todo = min (n_input_samples, ORDER - 1);
-    
     copy (input, input + history_todo, &history[ORDER - 1]);
     process_block_aligned (&history[0], history_todo, output);
     if (n_input_samples > history_todo)
       {
 	process_block_unaligned (input, n_input_samples - history_todo, &output [2 * history_todo]);
-        
 	// build new history from new input
 	copy (input + n_input_samples - history_todo, input + n_input_samples, &history[0]);
       }
@@ -333,7 +309,6 @@ public:
     return order() - 1;
   }
 };
-
 /**
  * Factor 2 downsampling of a data stream
  *
@@ -354,9 +329,7 @@ class Downsampler2 : public Resampler2 {
 			    float       *output)
   {
     const guint H = (ORDER / 2) - 1; /* half the filter length */
-    
     fir_process_4samples_sse (input_even, &sse_taps[0], ORDER, &output[0], &output[1], &output[2], &output[3]);
-    
     output[0] += 0.5 * input_odd[H * ODD_STEPPING];
     output[1] += 0.5 * input_odd[(H + 1) * ODD_STEPPING];
     output[2] += 0.5 * input_odd[(H + 2) * ODD_STEPPING];
@@ -368,7 +341,6 @@ class Downsampler2 : public Resampler2 {
                             const float *input_odd)
   {
     const guint H = (ORDER / 2) - 1; /* half the filter length */
-    
     return fir_process_one_sample<float> (&input_even[0], &taps[0], ORDER) + 0.5 * input_odd[H * ODD_STEPPING];
   }
   template<int ODD_STEPPING> void
@@ -441,16 +413,12 @@ public:
 		 float       *output)
   {
     g_assert ((n_input_samples & 1) == 0);
-    
     const uint BLOCKSIZE = 1024;
-    
     F4Vector  block[BLOCKSIZE / 4]; /* using F4Vector ensures 16-byte alignment */
     float    *input_even = &block[0].f[0];
-    
     while (n_input_samples)
       {
 	uint n_input_todo = min (n_input_samples, BLOCKSIZE * 2);
-        
         /* since the halfband filter contains zeros every other sample
 	 * and since we're using SSE instructions, which expect the
 	 * data to be consecutively represented in memory, we prepare
@@ -465,20 +433,15 @@ public:
 	 * is only required for SSE instructions
 	 */
 	deinterleave2 (input, n_input_todo, input_even);
-        
 	const float       *input_odd = input + 1; /* we process this one with a stepping of 2 */
-        
 	const uint n_output_todo = n_input_todo / 2;
 	const uint history_todo = min (n_output_todo, ORDER - 1);
-        
 	copy (input_even, input_even + history_todo, &history_even[ORDER - 1]);
 	deinterleave2 (input_odd, history_todo * 2, &history_odd[ORDER - 1]);
-        
 	process_block_aligned <1> (&history_even[0], &history_odd[0], output, history_todo);
 	if (n_output_todo > history_todo)
 	  {
 	    process_block_unaligned<2> (input_even, input_odd, &output[history_todo], n_output_todo - history_todo);
-            
 	    // build new history from new input (here: history_todo == ORDER - 1)
 	    copy (input_even + n_output_todo - history_todo, input_even + n_output_todo, &history_even[0]);
 	    deinterleave2 (input_odd + n_input_todo - history_todo * 2, history_todo * 2, &history_odd[0]); /* FIXME: can be optimized */
@@ -490,7 +453,6 @@ public:
 	    g_memmove (&history_even[0], &history_even[n_output_todo], sizeof (history_even[0]) * (ORDER - 1));
 	    g_memmove (&history_odd[0], &history_odd[n_output_todo], sizeof (history_odd[0]) * (ORDER - 1));
 	  }
-        
 	n_input_samples -= n_input_todo;
 	input += n_input_todo;
 	output += n_output_todo;
@@ -510,7 +472,6 @@ public:
     return order() / 2 - 0.5;
   }
 };
-
 template<bool USE_SSE> Resampler2*
 Resampler2::create_impl (BseResampler2Mode      mode,
 	                 BseResampler2Precision precision)
@@ -541,8 +502,6 @@ Resampler2::create_impl (BseResampler2Mode      mode,
     }
   return 0;
 }
-
 } // Resampler
 } // Bse
-
 #endif /* __BSE_RESAMPLER_TCC__ */

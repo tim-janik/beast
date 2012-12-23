@@ -1,15 +1,11 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #ifndef __SFI_GLUE_CODEC_H__
 #define __SFI_GLUE_CODEC_H__
-
 #include <sfi/sfiglue.hh>
 #include <sfi/sficomport.hh>
-
 #ifdef __cplusplus
 extern "C" {
 #endif /* __cplusplus */
-
-
 /* --- encoder API --- */
 typedef struct
 {
@@ -21,15 +17,11 @@ typedef struct
 } SfiGlueEncoder;
 /* encode glue layer API calls and pass them on to remote server */
 SfiGlueContext*	sfi_glue_encoder_context	(SfiComPort	*port);
-
-
 #if 0
 GValue*		sfi_glue_encode_message		(guint		 log_level,
 						 const gchar	*format,
 						 ...) G_GNUC_PRINTF (2,3);
 #endif
-
-
 /* --- decoder API --- */
 typedef struct _SfiGlueDecoder SfiGlueDecoder;
 typedef GValue*	(*SfiGlueDecoderClientMsg)	(SfiGlueDecoder	*decoder,
@@ -59,8 +51,6 @@ SfiRing*	sfi_glue_decoder_list_poll_fds	(SfiGlueDecoder	*decoder);
 gboolean	sfi_glue_decoder_pending	(SfiGlueDecoder	*decoder);
 void		sfi_glue_decoder_dispatch	(SfiGlueDecoder	*decoder);
 void		sfi_glue_decoder_destroy	(SfiGlueDecoder	*decoder);
-
-
 /* --- implementation details --- */
 typedef enum /*< skip >*/
 {
@@ -86,13 +76,8 @@ typedef enum /*< skip >*/
   SFI_GLUE_CODEC_PROXY_PROCESSED_NOTIFY,	/* one-way */
   SFI_GLUE_CODEC_CLIENT_MSG
 } SfiGlueCodecCommands;
-
-
-
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */
-
 #endif /* __SFI_GLUE_CODEC_H__ */
-
 /* vim:set ts=8 sts=2 sw=2: */

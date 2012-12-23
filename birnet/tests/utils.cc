@@ -1,8 +1,6 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include <birnet/birnettests.h>
-
 using namespace Birnet;
-
 struct Foo
 {
   static int destructor_calls;
@@ -18,12 +16,10 @@ struct Foo
     destructor_calls++;
   }
 };
-
 template<class T, int N>
 void aligned_array_test()
 {
   const size_t cache_line_size = 64; // sync with Birnet::malloc_aligned
-
   size_t len = g_random_int_range (1, 1000);
   AlignedArray<T, N> array (len);
   TCHECK (array.size() == len);
@@ -34,9 +30,7 @@ void aligned_array_test()
     TCHECK (size_t (&array[0]) % cache_line_size == 0);
   TOK();
 };
-
 int Foo::destructor_calls = 0;
-
 static void
 test_aligned_array (void)
 {
@@ -76,12 +70,10 @@ test_aligned_array (void)
   TOK();
   TDONE();
 }
-
 int
 main (int   argc,
       char *argv[])
 {
   birnet_init_test (&argc, &argv);
-
   test_aligned_array();
 }

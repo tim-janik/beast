@@ -1,15 +1,11 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bsesubsynth.hh"
-
 #include "bsecategories.hh"
 #include "bsecsynth.hh"
 #include "bseproject.hh"
 #include "bsemidireceiver.hh"
 #include "bseengine.hh"
-
 #include <string.h>
-
-
 /* --- parameters --- */
 enum
 {
@@ -19,8 +15,6 @@ enum
   PARAM_IPORT_NAME,
   PARAM_OPORT_NAME
 };
-
-
 /* --- prototypes --- */
 static void	 bse_sub_synth_init		(BseSubSynth		*scard);
 static void	 bse_sub_synth_class_init	(BseSubSynthClass	*klass);
@@ -48,24 +42,18 @@ static void  bse_sub_synth_update_port_contexts (BseSubSynth		*self,
 						 const gchar		*new_name,
 						 gboolean		 is_input,
 						 guint			 port);
-
-
 /* --- variables --- */
 static gpointer		 parent_class = NULL;
-
-
 /* --- functions --- */
 BSE_BUILTIN_TYPE (BseSubSynth)
 {
   static const GTypeInfo sub_synth_info = {
     sizeof (BseSubSynthClass),
-    
     (GBaseInitFunc) NULL,
     (GBaseFinalizeFunc) NULL,
     (GClassInitFunc) bse_sub_synth_class_init,
     (GClassFinalizeFunc) NULL,
     NULL /* class_data */,
-    
     sizeof (BseSubSynth),
     0 /* n_preallocs */,
     (GInstanceInitFunc) bse_sub_synth_init,
@@ -80,39 +68,31 @@ BSE_BUILTIN_TYPE (BseSubSynth)
   bse_categories_register_stock_module (N_("/Virtualization/Virtual Sub Synth"), type, virtual_synth_pixstream);
   return type;
 }
-
 static void
 bse_sub_synth_init (BseSubSynth *self)
 {
   guint i;
-  
   self->snet = NULL;
   self->null_shortcut = FALSE;
-
   self->input_ports = g_new (gchar*, BSE_SOURCE_N_ICHANNELS (self));
   for (i = 0; i < BSE_SOURCE_N_ICHANNELS (self); i++)
     self->input_ports[i] = g_strdup_printf ("synth_in_%u", i + 1);
-
   self->output_ports = g_new (gchar*, BSE_SOURCE_N_OCHANNELS (self));
   for (i = 0; i < BSE_SOURCE_N_OCHANNELS (self); i++)
     self->output_ports[i] = g_strdup_printf ("synth_out_%u", i + 1);
 }
-
 static void
 bse_sub_synth_dispose (GObject *object)
 {
   BseSubSynth *self = BSE_SUB_SYNTH (object);
-  
   if (self->snet)
     {
       g_object_unref (self->snet);
       self->snet = NULL;
     }
-  
   /* chain parent class' handler */
   G_OBJECT_CLASS (parent_class)->dispose (object);
 }
-
 static void
 bse_sub_synth_finalize (GObject *object)
 {
@@ -127,7 +107,6 @@ bse_sub_synth_finalize (GObject *object)
   /* chain parent class' handler */
   G_OBJECT_CLASS (parent_class)->finalize (object);
 }
-
 static void
 bse_sub_synth_get_candidates (BseItem               *item,
                               guint                  param_id,
@@ -146,24 +125,20 @@ bse_sub_synth_get_candidates (BseItem               *item,
       break;
     }
 }
-
 static gboolean
 find_name (BseSubSynth *self,
 	   const gchar *name,
 	   gboolean     is_input)
 {
   guint i;
-  
   for (i = 0; i < (is_input ? BSE_SOURCE_N_ICHANNELS (self) : BSE_SOURCE_N_OCHANNELS (self)); i++)
     {
       gchar *test = is_input ? self->input_ports[i] : self->output_ports[i];
-      
       if (test && strcmp (test, name) == 0)
 	return TRUE;
     }
   return FALSE;
 }
-
 static gchar*
 dup_name_unique (BseSubSynth *self,
 		 const gchar *tmpl,
@@ -171,7 +146,6 @@ dup_name_unique (BseSubSynth *self,
 {
   gchar *name = g_strdup (tmpl);
   guint i = 1;
-  
   while (find_name (self, name, is_input))
     {
       g_free (name);
@@ -179,7 +153,6 @@ dup_name_unique (BseSubSynth *self,
     }
   return name;
 }
-
 static void
 sub_synth_uncross_snet (BseItem *owner,
                         BseItem *ref_item)
@@ -187,7 +160,6 @@ sub_synth_uncross_snet (BseItem *owner,
   BseSubSynth *self = BSE_SUB_SYNTH (owner);
   bse_item_set (self, "snet", NULL, NULL);
 }
-
 static void
 bse_sub_synth_set_property (GObject      *object,
 			    guint         param_id,
@@ -195,7 +167,6 @@ bse_sub_synth_set_property (GObject      *object,
 			    GParamSpec   *pspec)
 {
   BseSubSynth *self = BSE_SUB_SYNTH (object);
-  
   switch (param_id)
     {
       guint indx, n;
@@ -249,7 +220,6 @@ bse_sub_synth_set_property (GObject      *object,
 	}
     }
 }
-
 static void
 bse_sub_synth_get_property (GObject    *object,
 			    guint       param_id,
@@ -257,7 +227,6 @@ bse_sub_synth_get_property (GObject    *object,
 			    GParamSpec *pspec)
 {
   BseSubSynth *self = BSE_SUB_SYNTH (object);
-  
   switch (param_id)
     {
       guint indx, n;
@@ -288,29 +257,23 @@ bse_sub_synth_get_property (GObject    *object,
       break;
     }
 }
-
 void
 bse_sub_synth_set_midi_channel (BseSubSynth     *self,
                                 guint            midi_channel)
 {
   g_return_if_fail (BSE_IS_SUB_SYNTH (self));
-  
   self->midi_channel = midi_channel;
 }
-
 void
 bse_sub_synth_set_null_shortcut (BseSubSynth *self,
                                  gboolean     enabled)
 {
   g_return_if_fail (BSE_IS_SUB_SYNTH (self));
-
   self->null_shortcut = enabled != FALSE;
 }
-
 typedef struct {
   guint  synth_context_handle;
 } ModData;
-
 static void
 bse_sub_synth_context_create (BseSource *source,
 			      guint      context_handle,
@@ -324,7 +287,6 @@ bse_sub_synth_context_create (BseSource *source,
   BseModule *imodule = bse_module_new_virtual (BSE_SOURCE_N_ICHANNELS (self), mdata_in, g_free);
   BseModule *omodule = bse_module_new_virtual (BSE_SOURCE_N_OCHANNELS (self), mdata_out, g_free);
   guint foreign_context_handle = 0, shortcut = FALSE;
-
   /* create new context for foreign synth */
   if (snet && g_slist_find (recursion_stack, source))
     {
@@ -344,29 +306,23 @@ bse_sub_synth_context_create (BseSource *source,
     }
   else
     shortcut = self->null_shortcut;
-
   mdata_in->synth_context_handle = foreign_context_handle;
   mdata_out->synth_context_handle = foreign_context_handle;
-  
   /* setup module i/o streams with BseSource i/o channels */
   bse_source_set_context_imodule (source, context_handle, imodule);
   bse_source_set_context_omodule (source, context_handle, omodule);
-  
   /* commit modules to engine */
   bse_trans_add (trans, bse_job_integrate (imodule));
   bse_trans_add (trans, bse_job_integrate (omodule));
-  
   if (shortcut)
     {
       guint i;
       for (i = 0; i < MIN (BSE_SOURCE_N_ICHANNELS (self), BSE_SOURCE_N_OCHANNELS (self)); i++)
         bse_trans_add (trans, bse_job_connect (imodule, i, omodule, i));
     }
-
   /* chain parent class' handler */
   BSE_SOURCE_CLASS (parent_class)->context_create (source, context_handle, trans);
 }
-
 static void
 bse_sub_synth_context_connect (BseSource *source,
 			       guint      context_handle,
@@ -375,7 +331,6 @@ bse_sub_synth_context_connect (BseSource *source,
   BseSubSynth *self = BSE_SUB_SYNTH (source);
   BseSNet *snet = self->snet;
   guint i;
-  
   /* connect module to sub synthesizer */
   if (snet)
     {
@@ -383,7 +338,6 @@ bse_sub_synth_context_connect (BseSource *source,
       BseModule *omodule = bse_source_get_context_omodule (source, context_handle);
       ModData *mdata_in = (ModData*) imodule->user_data;
       guint foreign_context_handle = mdata_in->synth_context_handle;
-
       if (foreign_context_handle)
 	{
 	  bse_source_connect_context (BSE_SOURCE (snet), foreign_context_handle, trans);
@@ -393,11 +347,9 @@ bse_sub_synth_context_connect (BseSource *source,
             bse_snet_set_oport_dest (snet, self->output_ports[i], foreign_context_handle, omodule, i, trans);
 	}
     }
-  
   /* chain parent class' handler */
   BSE_SOURCE_CLASS (parent_class)->context_connect (source, context_handle, trans);
 }
-
 static void
 bse_sub_synth_context_dismiss (BseSource *source,
 			       guint      context_handle,
@@ -405,13 +357,11 @@ bse_sub_synth_context_dismiss (BseSource *source,
 {
   BseSubSynth *self = BSE_SUB_SYNTH (source);
   BseSNet *snet = self->snet;
-  
   if (snet)
     {
       BseModule *imodule = bse_source_get_context_imodule (source, context_handle);
       ModData *mdata_in = (ModData*) imodule->user_data;
       guint i, foreign_context_handle = mdata_in->synth_context_handle;
-
       if (foreign_context_handle)
 	{
 	  for (i = 0; i < BSE_SOURCE_N_ICHANNELS (self); i++)
@@ -421,11 +371,9 @@ bse_sub_synth_context_dismiss (BseSource *source,
 	  bse_source_dismiss_context (BSE_SOURCE (snet), foreign_context_handle, trans);
 	}
     }
-  
   /* chain parent class' handler */
   BSE_SOURCE_CLASS (parent_class)->context_dismiss (source, context_handle, trans);
 }
-
 static void
 bse_sub_synth_update_port_contexts (BseSubSynth *self,
 				    const gchar *old_name,
@@ -437,9 +385,7 @@ bse_sub_synth_update_port_contexts (BseSubSynth *self,
   BseSource *source = BSE_SOURCE (self);
   BseTrans *trans = bse_trans_open ();
   guint *cids, n, i;
-  
   g_return_if_fail (BSE_SOURCE_PREPARED (self));
-  
   cids = bse_source_context_ids (source, &n);
   for (i = 0; i < n; i++)
     if (is_input)
@@ -447,7 +393,6 @@ bse_sub_synth_update_port_contexts (BseSubSynth *self,
 	BseModule *imodule = bse_source_get_context_imodule (source, cids[i]);
 	ModData *mdata_in = (ModData*) imodule->user_data;
 	guint foreign_context_handle = mdata_in->synth_context_handle;
-
 	if (foreign_context_handle)
 	  {
 	    bse_snet_set_iport_src (snet, old_name, foreign_context_handle, NULL, port, trans);
@@ -459,7 +404,6 @@ bse_sub_synth_update_port_contexts (BseSubSynth *self,
 	BseModule *omodule = bse_source_get_context_omodule (source, cids[i]);
 	ModData *mdata_in = (ModData*) omodule->user_data;
         guint foreign_context_handle = mdata_in->synth_context_handle;
-
         if (foreign_context_handle)
 	  {
 	    bse_snet_set_oport_dest (snet, old_name, foreign_context_handle, NULL, port, trans);
@@ -469,7 +413,6 @@ bse_sub_synth_update_port_contexts (BseSubSynth *self,
   g_free (cids);
   bse_trans_commit (trans);
 }
-
 static void
 bse_sub_synth_class_init (BseSubSynthClass *klass)
 {
@@ -478,20 +421,15 @@ bse_sub_synth_class_init (BseSubSynthClass *klass)
   BseItemClass *item_class = BSE_ITEM_CLASS (klass);
   BseSourceClass *source_class = BSE_SOURCE_CLASS (klass);
   guint channel_id, i;
-  
   parent_class = g_type_class_peek_parent (klass);
-  
   gobject_class->set_property = bse_sub_synth_set_property;
   gobject_class->get_property = bse_sub_synth_get_property;
   gobject_class->dispose = bse_sub_synth_dispose;
   gobject_class->finalize = bse_sub_synth_finalize;
-  
   item_class->get_candidates = bse_sub_synth_get_candidates;
-  
   source_class->context_create = bse_sub_synth_context_create;
   source_class->context_connect = bse_sub_synth_context_connect;
   source_class->context_dismiss = bse_sub_synth_context_dismiss;
-  
   bse_object_class_add_param (object_class, _("Assignments"),
 			      PARAM_SNET,
 			      bse_param_spec_object ("snet", _("Synthesizer"),
@@ -500,7 +438,6 @@ bse_sub_synth_class_init (BseSubSynthClass *klass)
   for (i = 0; i < 8; i++)
     {
       gchar *ident, *label, *value;
-      
       ident = g_strdup_printf ("in_port_%u", i + 1);
       label = g_strdup_printf (_("Input Port %u"), i + 1);
       value = g_strdup_printf ("synth_in_%u", i + 1);
@@ -510,7 +447,6 @@ bse_sub_synth_class_init (BseSubSynthClass *klass)
       g_free (ident);
       g_free (label);
       g_free (value);
-      
       ident = g_strdup_printf ("out_port_%u", i + 1);
       label = g_strdup_printf (_("Output Port %u"), i + 1);
       value = g_strdup_printf ("synth_out_%u", i + 1);
@@ -520,14 +456,12 @@ bse_sub_synth_class_init (BseSubSynthClass *klass)
       g_free (ident);
       g_free (label);
       g_free (value);
-      
       ident = g_strdup_printf ("input-%u", i + 1);
       label = g_strdup_printf (_("Virtual input %u"), i + 1);
       channel_id = bse_source_class_add_ichannel (source_class, ident, label, NULL);
       g_assert (channel_id == i);
       g_free (ident);
       g_free (label);
-      
       ident = g_strdup_printf ("output-%u", i + 1);
       label = g_strdup_printf (_("Virtual output %u"), i + 1);
       channel_id = bse_source_class_add_ochannel (source_class, ident, label, NULL);

@@ -1,8 +1,6 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
-
 namespace Bse {
 using namespace Sfi;
-
 /* param options */
 Const READWRITE       = ":r:w:";
 Const STORAGE         = ":r:w:S:";
@@ -39,7 +37,6 @@ ConstIdent NOTE_A   = SFI_NOTE_A;
 ConstIdent NOTE_Ais = SFI_NOTE_Ais;
 ConstIdent NOTE_Bes = SFI_NOTE_Bes;
 ConstIdent NOTE_B   = SFI_NOTE_B;
-
 /* standard sequences */
 sequence IntSeq {
   Int    ints;
@@ -47,11 +44,9 @@ sequence IntSeq {
 sequence TypeSeq {
   String types;
 };
-
 sequence StringSeq {
   String strings;
 };
-
 /* musical tunings: http://en.wikipedia.org/wiki/Musical_tuning */
 choice MusicalTuningType {
   /* Equal Temperament: http://en.wikipedia.org/wiki/Equal_temperament */
@@ -128,7 +123,6 @@ choice MusicalTuningType {
                                              "This is attempted by tuning upwards from C a sequence of six pure fourths, "
                                              "as well as six equally imperfect fifths.")),
 };
-
 /* various MIDI specific definitions */
 choice MidiSignalType {
   /* special cased signals */
@@ -310,7 +304,6 @@ choice MidiSignalType {
   MIDI_SIGNAL_CONTROL_126                     = (254, _("Control 126 Monophonic Voices Mode")),
   MIDI_SIGNAL_CONTROL_127                     = (255, _("Control 127 Polyphonic Mode On ITrigger")),
 };
-
 choice MidiControlType {
   /* special cased signals */
   MIDI_CONTROL_NONE                           = (Neutral, _("None")),
@@ -479,7 +472,6 @@ choice MidiControlType {
   MIDI_CONTROL_126                             = (254, _("Control 126 Monophonic Voices Mode")),
   MIDI_CONTROL_127                             = (255, _("Control 127 Polyphonic Mode On ITrigger")),
 };
-
 choice MidiChannelEventType {
   MIDI_EVENT_NONE = Neutral,
   /* channel voice messages */
@@ -503,7 +495,6 @@ choice MidiChannelEventType {
   MIDI_EVENT_ACTIVE_SENSING,
   MIDI_EVENT_SYSTEM_RESET,
 };
-
 record MidiChannelEvent
 {
   MidiChannelEventType  event_type;
@@ -526,18 +517,14 @@ record MidiChannelEvent
   /* song select */
   Int                   song_number     = ("Song Number", "", 0, 0, 0x7f, 0x10, ":readwrite");
 };
-
 sequence NoteSeq {
   Int    notes   = Note ("Note", "", KAMMER_NOTE, ":readwrite"); /* FIXME: s/notes/note/ for pspecs, but not the C API */
 };
-
 class Item;
-
 sequence ItemSeq {
   Info   blurb = ("A list of BSE items or derived types.");
   Item   items;
 };
-
 record PropertyCandidates {
   Info    blurb      = ("A strcuture describing tentative property values.");
   String  label;
@@ -545,7 +532,6 @@ record PropertyCandidates {
   ItemSeq items;
   TypeSeq partitions = ("Type Partitions", "List of types which may logically partition the list of items by type discrimination", STANDARD);
 };
-
 record PartNote
 {
   Info     blurb        = "Part specific note representation";
@@ -558,12 +544,10 @@ record PartNote
   Real     velocity     = ("Velocity", "", 1, 0, 1.0, 0.1, ":readwrite");
   Bool     selected     = ("Selected", "", FALSE, ":readwrite");
 };
-
 sequence PartNoteSeq {
   Info     blurb = "A list of part notes";
   PartNote pnotes;
 };
-
 record PartControl
 {
   Info           blurb        = "Part specific control event representation";
@@ -573,12 +557,10 @@ record PartControl
   Real           value        = ("Value", "", 0, -1, +1, 0.1, ":readwrite");
   Bool           selected     = ("Selected", "", FALSE, ":readwrite");
 };
-
 sequence PartControlSeq {
   Info blurb = "A list of part control events";
   PartControl pcontrols;
 };
-
 record NoteDescription
 {
   MusicalTuningType musical_tuning;
@@ -598,13 +580,11 @@ record NoteDescription
                            "key values. The max_fine_tune and kammer_note fields are constants, which "
                            "are provided for compatibility reasons and will vanish in future APIs.";
 };
-
 record NoteSequence
 {
   Int     offset = Note ("Note Offset", "Center/base note", KAMMER_NOTE, ":readwrite");
   NoteSeq notes  = ("Notes", "Sequence of notes", ":readwrite");
 };
-
 record Icon
 {
   Info   blurb           = "BSE icon representation.";
@@ -613,7 +593,6 @@ record Icon
   Int    height          = ("Height", "Height in pixels or 0 for no icon", 0, 0, MAXINT, 1, ":readwrite");
   BBlock pixels          = ("Pixels", "Pixel array of width*height*bytes_per_pixel bytes", ":readwrite");
 };
-
 record Category
 {
   Int    category_id = ("Category ID", NULL, 1, 1, G_MAXINT, 1, ":readwrite");
@@ -623,25 +602,20 @@ record Category
   String type;
   Icon   icon;
 };
-
 sequence CategorySeq {
   Category cats;
 };
-
 record Dot
 {
   Real  x;
   Real  y;
 };
-
 sequence DotSeq {
   Dot dots;
 };
-
 /* BSE Part structures */
 class Part;
 class Track;
-
 record PartLink {
   Track track;
   Int   tick     = ("Tick", NULL, 0, 0, G_MAXINT, 384, STANDARD);
@@ -652,9 +626,7 @@ record PartLink {
 sequence PartLinkSeq {
   PartLink plinks;
 };
-
 /* BSE Track structures */
-
 record TrackPart {
   Int           tick     = ("Tick", NULL, 0, 0, G_MAXINT, 384, STANDARD);
   Part          part;
@@ -663,7 +635,6 @@ record TrackPart {
 sequence TrackPartSeq {
   TrackPart tparts;
 };
-
 /* BSE Song timing structure */
 record SongTiming {
   /* song position timing applies to */
@@ -679,7 +650,6 @@ record SongTiming {
   /* playback timing */
   Real  stamp_ticks = ("Ticks per stamp increment (valid only during playback)", NULL, 384, 1, G_MAXINT, 12, STANDARD);
 };
-
 record SampleFileInfo {
   String        file    = ("Filename", NULL, NULL, STANDARD);
   Int           size    = ("File Size", NULL, 0, 0, G_MAXINT, 0, STANDARD);
@@ -688,9 +658,7 @@ record SampleFileInfo {
   StringSeq     waves   = (NULL, NULL, STANDARD);
   Int           error   = ("BseErrorType", NULL, 0, 0, G_MAXINT, 0, STANDARD); // FIXME: use BseErrorType here
 };
-
 class Janitor;
-
 /* user messages */
 choice MsgType {
   MSG_NONE = Neutral,
@@ -716,7 +684,6 @@ record Message {
   String        process;
   Int           pid;
 };
-
 /* thread info */
 choice ThreadState {
   THREAD_STATE_UNKNOWN,
@@ -756,7 +723,6 @@ record ThreadTotals {
   ThreadInfoSeq synthesis;
 };
 ThreadTotals    collect_thread_totals ();
-
 /* BSE Global Config */
 record GConfig {
   group _("Synthesis Settings") {
@@ -812,7 +778,5 @@ record GConfig {
                               NULL, STANDARD ":searchpath");
   };
 };
-
 };
-
 /* vim:set ts=8 sts=2 sw=2 syntax=cpp: */

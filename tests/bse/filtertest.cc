@@ -13,17 +13,14 @@
 #include <errno.h>
 #include <stdlib.h>
 #include <stdio.h>
-
 using std::string;
 using std::vector;
 using std::set;
 using std::min;
 using std::max;
-
 struct Options {
   bool                    dump_gnuplot_data;
   string		  program_name;
-
   Options() :
     dump_gnuplot_data (false),
     program_name ("filtertest")
@@ -31,7 +28,6 @@ struct Options {
   }
   void parse (int *argc_p, char **argv_p[]);
 } options;
-
 static void
 usage ()
 {
@@ -52,7 +48,6 @@ usage ()
   printf ("  ls filtertest_*.gp\n");
   printf ("  gnuplot filtertest_bw8.gp\n");
 }
-
 static bool
 check_arg (uint         argc,
            char        *argv[],
@@ -62,11 +57,9 @@ check_arg (uint         argc,
 {
   g_return_val_if_fail (opt != NULL, false);
   g_return_val_if_fail (*nth < argc, false);
-
   const char *arg = argv[*nth];
   if (!arg)
     return false;
-
   uint opt_len = strlen (opt);
   if (strcmp (arg, opt) == 0)
     {
@@ -96,11 +89,9 @@ check_arg (uint         argc,
     }
   else
     return false;
-
   usage();
   exit (1);
 }
-
 void
 Options::parse (int   *argc_p,
                 char **argv_p[])
@@ -108,9 +99,7 @@ Options::parse (int   *argc_p,
   guint argc = *argc_p;
   gchar **argv = *argv_p;
   unsigned int i;
-
   g_return_if_fail (argc >= 0);
-
   for (i = 1; i < argc; i++)
     {
       //const char *opt_arg;
@@ -131,7 +120,6 @@ Options::parse (int   *argc_p,
 	  dump_gnuplot_data = true;
 	}
     }
-
   /* resort argc/argv */
   guint e = 1;
   for (i = 1; i < argc; i++)
@@ -143,7 +131,6 @@ Options::parse (int   *argc_p,
       }
   *argc_p = e;
 }
-
 class FilterTest
 {
 public:
@@ -152,14 +139,12 @@ public:
     TEST_COMPUTED_RESPONSE = 1,
     TEST_SCANNED_RESPONSE = 2
   };
-
 private:
   struct Band {
     double freq_start;
     double freq_end;
     double min_resp_db;
     double max_resp_db;
-
     Band (double freq_start,
 	  double freq_end,
 	  double min_resp_db,
@@ -171,7 +156,6 @@ private:
     {
     }
   };
-
   string         m_name;
   guint          m_order;
   string         m_gp_short_name;
@@ -179,17 +163,14 @@ private:
   set<double>    m_gp_arrows;
   set<double>    m_gp_lines;
   vector<Band>	 m_spec_bands;
-
   static const double FS = 10000.0;
   static const double MIN_DB = -1000;
   static const double DB_EPSILON = 0.01;  /* for comparisions */
-
   double
   response (double f) const
   {
     double u = 2.0 * PI * f / FS;
     std::complex<double> z (cos (u), sin (u)); /* exp( j omega T ) */
-
     guint o = m_order;
     std::complex<double> num = m_a[o], den = m_b[o]; 
     while (o--)
@@ -200,7 +181,6 @@ private:
     std::complex<double> w = num / den;
     return abs (w);
   }
-
   double
   scan_response (double f) const
   {
@@ -208,7 +188,6 @@ private:
     f = min (f, MAX_SCAN_FREQ);
     return gsl_filter_sine_scan (m_order, &m_a[0], &m_b[0], f, FS);
   }
-
   void
   check_response_db (double   freq,
                      double   min_resp_db,
@@ -238,13 +217,10 @@ private:
 	      guint	  scan_points) const
   {
     const double delta_f = (FS / 2) / scan_points;
-
     g_return_if_fail (band.freq_start <= band.freq_end);
     g_return_if_fail (band.freq_end <= FS/2);
-
     TPRINT ("checking band: response in interval [%f..%f] should be in interval [%f..%f] dB\n",
 	    band.freq_start, band.freq_end, band.min_resp_db, band.max_resp_db);
-
     int tok = 0;
     int tok_dots = int ((FS / delta_f) / 50) + 1;
     for (double f = band.freq_start; f < band.freq_end; f += delta_f)
@@ -253,7 +229,6 @@ private:
 	  TOK();
 	check_response_db (f, band.min_resp_db, band.max_resp_db, test_mode);
       }
-
     if (band.freq_start != band.freq_end)
       check_response_db (band.freq_end, band.min_resp_db, band.max_resp_db, test_mode);
   }
@@ -266,14 +241,12 @@ public:
     m_order (order),
     m_gp_short_name (gp_short_name)
   {
-
     for (guint i = 0; i < m_order * 2 + 2; i += 2)
       {
 	m_b.push_back (coefficients[i]);
 	m_a.push_back (coefficients[i+1]);
       }
   }
-  
   /* construction phase: used to add a passband to the specification */
   void
   add_passband (double freq_start,
@@ -285,7 +258,6 @@ public:
     m_gp_lines.insert (ripple_db);
     m_spec_bands.push_back (Band (freq_start, freq_end, ripple_db, 0));
   }
-
   /* construction phase: used to add a stopband to the specification */
   void
   add_stopband (double freq_start,
@@ -297,7 +269,6 @@ public:
     m_gp_lines.insert (ripple_db);
     m_spec_bands.push_back (Band (freq_start, freq_end, MIN_DB, ripple_db));
   }
-
   /* actually check filter against specification */
   void
   perform_checks (TestMode test_mode,
@@ -318,10 +289,8 @@ public:
                      guint         scan_points = 1000)
   {
     const double delta_f = (FS / 2) / scan_points;
-
     string data_filename = filename_prefix + m_gp_short_name + ".data";
     string gp_filename = filename_prefix + m_gp_short_name + ".gp";
-
     FILE *data_file = fopen (data_filename.c_str(), "w");
     if (!data_file)
       {
@@ -338,7 +307,6 @@ public:
 	return false;
       }
     g_printerr ("creating gnuplot files '%s', '%s'... ", gp_filename.c_str(), data_filename.c_str());
-
     for (double f = 0; f < FS/2; f += delta_f)
       {
 	fprintf (data_file, "%f %f %f\n", f, bse_db_from_factor (response (f), -1000),
@@ -362,15 +330,12 @@ public:
       fprintf (gp_file, ", %f", *li);
     fprintf (gp_file, "\n");
     fprintf (gp_file, "pause -1\n");
-
     fclose (gp_file);
     fclose (data_file);
-
     g_printerr ("ok.\n");
     return 0;
   }
 };
-
 void
 setup_all_filter_tests (vector<FilterTest>& filter_tests)
 {
@@ -387,7 +352,6 @@ setup_all_filter_tests (vector<FilterTest>& filter_tests)
         -1.22466701861471700258E-02,    +1.81747200996105646997E-02,	// BSEcxxmgc
         +8.61368381197359644919E-04,    +2.27184001245132058747E-03,	// BSEcxxmgc
     };  // BSEcxxmgc
-
     FilterTest bw8 ("Butterworth Lowpass 2000 Hz", 8, coeffs, "bw8");
     bw8.add_passband (0, 2000, bse_db_from_factor (1/sqrt(2), -30));
     bw8.add_stopband (3500, 5000, -68);
@@ -410,10 +374,8 @@ setup_all_filter_tests (vector<FilterTest>& filter_tests)
         -1.85052119790466007565E+00,    +1.77484258573414174429E-03,	// BSEcxxmgc
         +2.41243520047625281677E-01,    +1.05368736204784763100E-03,	// BSEcxxmgc
     };  // BSEcxxmgc
-
     FilterTest ell12 ("Elliptic Lowpass 2000 Hz", 12, coeffs, "ell12");
     ell12.add_passband (0, 2000, -0.5);
-
     /* FIXME: we should get better results (= -96 dB) if we implement this filter with cascading lowpasses */
     ell12.add_stopband (2160, 5000, -96);
     filter_tests.push_back (ell12);
@@ -430,7 +392,6 @@ setup_all_filter_tests (vector<FilterTest>& filter_tests)
         +1.11977829190352773381E+00,    +2.49374875432628329008E+00,	// BSEcxxmgc
         -1.17830171950224868449E-01,    -3.56249822046611874793E-01,	// BSEcxxmgc
     };  // BSEcxxmgc
-
     FilterTest chp7 ("Chebychev Highpass 600 Hz", 7, coeffs, "chp7");
     chp7.add_passband (600, 5000, -0.1);
     chp7.add_stopband (0, 250, -70);
@@ -459,7 +420,6 @@ setup_all_filter_tests (vector<FilterTest>& filter_tests)
         -9.75781955236953990607E-19,    +0.00000000000000000000E+00,	// BSEcxxmgc
         +3.55580604257624494427E-04,    -1.06539452359780476010E-03,	// BSEcxxmgc
     };  // BSEcxxmgc
-
     FilterTest bbp18 ("Butterworth Bandpass 1500-3500 Hz", 18, coeffs, "bbp18");
     bbp18.add_passband (1500, 3500, bse_db_from_factor (1/sqrt(2), -30));
     bbp18.add_stopband (0, 1000, -49.5);
@@ -482,7 +442,6 @@ setup_all_filter_tests (vector<FilterTest>& filter_tests)
     filter_tests.push_back (ebsh4);
   }
 }
-
 void
 check_computed_response (const vector<FilterTest>& filter_tests)
 {
@@ -490,7 +449,6 @@ check_computed_response (const vector<FilterTest>& filter_tests)
   for (vector<FilterTest>::const_iterator fi = filter_tests.begin(); fi != filter_tests.end(); fi++)
     fi->perform_checks (FilterTest::TEST_COMPUTED_RESPONSE, 10000);
 }
-
 void
 check_scanned_response (const vector<FilterTest>& filter_tests)
 {
@@ -498,21 +456,18 @@ check_scanned_response (const vector<FilterTest>& filter_tests)
   for (vector<FilterTest>::const_iterator fi = filter_tests.begin(); fi != filter_tests.end(); fi++)
     fi->perform_checks (FilterTest::TEST_SCANNED_RESPONSE, 67);  /* prime number scan points */
 }
-
 void
 dump_gnuplot_data (vector<FilterTest>& filter_tests)
 {
   for (vector<FilterTest>::iterator fi = filter_tests.begin(); fi != filter_tests.end(); fi++)
     fi->dump_gnuplot_data ("filtertest_");
 }
-
 int
 main (int     argc,
       char  **argv)
 {
   bse_init_test (&argc, &argv, NULL);
   options.parse (&argc, &argv);
-
   if (argc > 1)
     {
       int a;
@@ -521,10 +476,8 @@ main (int     argc,
       g_printerr ("%s: use the --help option for help.\n", options.program_name.c_str());
       return 1;
     }
-
   vector<FilterTest> filter_tests;
   setup_all_filter_tests (filter_tests);
-
   if (options.dump_gnuplot_data)
     {
       dump_gnuplot_data (filter_tests);

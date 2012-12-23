@@ -1,5 +1,4 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
-
 /* --- string parameters --- */
 static void
 param_entry_changed (GtkWidget *entry,
@@ -17,7 +16,6 @@ param_entry_changed (GtkWidget *entry,
       gxk_param_apply_value (param);
     }
 }
-
 static GtkWidget*
 param_entry_create (GxkParam    *param,
                     const gchar *tooltip,
@@ -35,14 +33,12 @@ param_entry_create (GxkParam    *param,
   gxk_widget_add_option (widget, "hexpand", "+");
   return widget;
 }
-
 static void
 param_entry_update (GxkParam  *param,
 		    GtkWidget *widget)
 {
   gxk_param_entry_set_text (param, widget, g_value_get_string (&param->value));
 }
-
 static GxkParamEditor param_entry = {
   { "entry",            N_("Text Entry"), },
   { G_TYPE_STRING, },

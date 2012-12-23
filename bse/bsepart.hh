@@ -1,12 +1,9 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #ifndef __BSE_PART_H__
 #define __BSE_PART_H__
-
 #include <bse/bseitem.hh>
 #include <sfi/gbsearcharray.hh>
-
 G_BEGIN_DECLS
-
 /* --- object type macros --- */
 #define BSE_TYPE_PART                   (BSE_TYPE_ID (BsePart))
 #define BSE_PART(object)                (G_TYPE_CHECK_INSTANCE_CAST ((object), BSE_TYPE_PART, BsePart))
@@ -14,8 +11,6 @@ G_BEGIN_DECLS
 #define BSE_IS_PART(object)             (G_TYPE_CHECK_INSTANCE_TYPE ((object), BSE_TYPE_PART))
 #define BSE_IS_PART_CLASS(class)        (G_TYPE_CHECK_CLASS_TYPE ((class), BSE_TYPE_PART))
 #define BSE_PART_GET_CLASS(object)      (G_TYPE_INSTANCE_GET_CLASS ((object), BSE_TYPE_PART, BsePartClass))
-
-
 /* --- typedefs & structures --- */
 typedef struct {
   GBSearchArray *bsa;
@@ -26,23 +21,18 @@ typedef struct {
 struct _BsePart
 {
   BseItem             parent_instance;
-
   const double       *semitone_table; // [-132..+132] only updated when not playing
-
   /* id -> tick lookups */
   guint               n_ids;
   guint              *ids;
   guint               last_id;        /* head of free id list */
-
   /* control events */
   BsePartControls     controls;
   /* notes */
   guint               n_channels;
   BsePartNoteChannel *channels;
-
   /* one after any tick used by controls or notes */
   guint               last_tick_SL;
-
   /* queued updates */
   guint               links_queued : 1;
   guint               range_queued : 1;
@@ -54,7 +44,6 @@ struct _BsePart
 struct _BsePartClass
 {
   BseItemClass parent_class;
-
   void  (*range_changed)        (BsePart        *part,
                                  guint           tick,
                                  guint           duration,
@@ -67,8 +56,6 @@ typedef enum    /*< skip >*/
   BSE_PART_EVENT_CONTROL,
   BSE_PART_EVENT_NOTE
 } BsePartEventType;
-
-
 /* --- functions --- */
 #define            bse_part_transpose_factor(          part, index /* -132..+132*/)     ((part)->semitone_table[index])
 void               bse_part_set_semitone_table        (BsePart           *self,
@@ -175,15 +162,12 @@ typedef struct {
 BsePartEventType   bse_part_query_event         (BsePart           *self,
                                                  guint              id,
                                                  BsePartQueryEvent *equery);
-
-
 /* --- implementation details --- */
 #define BSE_PART_MAX_CHANNELS           (0x1024)
 #define BSE_PART_MAX_TICK               (0x7fffffff)
 #define BSE_PART_INVAL_TICK_FLAG        (0x80000000)
 #define BSE_PART_NOTE_CONTROL(ctype)    ((ctype) == BSE_MIDI_SIGNAL_VELOCITY || \
                                          (ctype) == BSE_MIDI_SIGNAL_FINE_TUNE)
-
 /* --- BsePartControlChannel --- */
 typedef struct _BsePartEventControl BsePartEventControl;
 typedef struct
@@ -199,7 +183,6 @@ struct _BsePartEventControl
   guint                  ctype; /* BseMidiSignalType */
   gfloat                 value;         /* -1 .. 1 */
 };
-
 void                 bse_part_controls_init            (BsePartControls     *self);
 BsePartTickNode*     bse_part_controls_lookup          (BsePartControls     *self,
                                                         guint                tick);
@@ -235,8 +218,6 @@ void                 bse_part_controls_remove          (BsePartControls     *sel
                                                         guint                tick,
                                                         BsePartEventControl *cev);
 void                 bse_part_controls_destroy         (BsePartControls     *self);
-
-
 /* --- BsePartNoteChannel --- */
 typedef struct _BsePartEventNote BsePartEventNote;
 struct _BsePartEventNote
@@ -250,14 +231,12 @@ struct _BsePartEventNote
   gint                   fine_tune;
   gfloat                 velocity;      /* 0 .. 1 */
 };
-
 #define BSE_PART_NOTE_N_CROSSINGS(note)         ((note)->crossings ? (note)->crossings[0] : 0)
 #define BSE_PART_NOTE_CROSSING(note,j)          ((note)->crossings[1 + (j)])
 #define BSE_PART_SEMITONE_FACTOR(part,noteval)  (bse_part_transpose_factor ((part), CLAMP ((noteval), SFI_MIN_NOTE, SFI_MAX_NOTE) - SFI_KAMMER_NOTE))
 #define BSE_PART_NOTE_FREQ(part,note)           (BSE_KAMMER_FREQUENCY *                                 \
                                                  BSE_PART_SEMITONE_FACTOR ((part), (note)->note) *      \
                                                  bse_cent_tune_fast ((note)->fine_tune))
-
 void              bse_part_note_channel_init          (BsePartNoteChannel *self);
 BsePartEventNote* bse_part_note_channel_lookup        (BsePartNoteChannel *self,
                                                        guint               tick);
@@ -281,7 +260,5 @@ void              bse_part_note_channel_change_note   (BsePartNoteChannel *self,
 void              bse_part_note_channel_remove        (BsePartNoteChannel *self,
                                                        guint               tick);
 void              bse_part_note_channel_destroy       (BsePartNoteChannel *self);
-
 G_END_DECLS
-
 #endif /* __BSE_PART_H__ */

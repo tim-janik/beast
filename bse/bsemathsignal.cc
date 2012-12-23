@@ -1,7 +1,5 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bsemathsignal.hh"
-
-
 /* --- frequency modulation --- */
 void
 bse_frequency_modulator (const BseFrequencyModulator *fm,
@@ -12,11 +10,9 @@ bse_frequency_modulator (const BseFrequencyModulator *fm,
 {
   float *bound, fine_tune, fm_strength;
   gboolean with_fine_tune;
-
   fine_tune = bse_cent_tune_fast (fm->fine_tune);
   with_fine_tune = fm->fine_tune != 0;
   fm_strength = fm->fm_strength;
-  
   bound = fm_buffer + n_values;
   if (ifreq && ifmod)
     {
@@ -46,7 +42,6 @@ bse_frequency_modulator (const BseFrequencyModulator *fm,
   else if (ifmod)
     {
       float signal_freq = fm->signal_freq * fine_tune;
-
       if (fm->exponential_fm)
 	do {
 	  *fm_buffer++ = signal_freq * bse_approx5_exp2 (fm_strength * *ifmod++);
@@ -70,51 +65,40 @@ bse_frequency_modulator (const BseFrequencyModulator *fm,
   else
     {
       float signal_freq = fm->signal_freq * fine_tune;
-
       do {
 	*fm_buffer++ = signal_freq;
       } while (fm_buffer < bound);
     }
 }
-
-
 /* --- windows --- */
 double
 bse_window_bartlett (double x)	/* triangle */
 {
   if (fabs (x) > 1)
     return 0;
-
   return 1.0 - fabs (x);
 }
-
 double
 bse_window_blackman (double x)
 {
   if (fabs (x) > 1)
     return 0;
-
   return 0.42 + 0.5 * cos (PI * x) + 0.08 * cos (2.0 * PI * x);
 }
-
 double
 bse_window_cos (double x)	/* von Hann window */
 {
   if (fabs (x) > 1)
     return 0;
-
   return 0.5 * cos (x * PI) + 0.5;
 }
-
 double
 bse_window_hamming (double x)	/* sharp (rectangle) cutoffs at boundaries */
 {
   if (fabs (x) > 1)
     return 0;
-
   return 0.54 + 0.46 * cos (PI * x);
 }
-
 double
 bse_window_sinc (double x)	/* noramlied C. Lanczos window */
 {
@@ -126,7 +110,6 @@ bse_window_sinc (double x)	/* noramlied C. Lanczos window */
   else
     return sin (x) / x;
 }
-
 double
 bse_window_rect (double x)	/* a square */
 {
@@ -134,12 +117,9 @@ bse_window_rect (double x)	/* a square */
     return 0;
   return 1.0;
 }
-
 /*
 cos_roll_off(x)= x>fh?0:x<fl?1:cos(pi/2.*((fl-x)/(fh-fl))) 
 */
-
-
 /* --- fine tune factors for -100..+100 cent --- */
 static const double cent_table201[100 + 1 + 100] = {
   /* 2^(1/1200*-100) .. 2^(1/1200*0) .. 2^(1/1200*+100) */
@@ -196,7 +176,6 @@ static const double cent_table201[100 + 1 + 100] = {
   1.05762877449345591872, 1.05823986130118871317, 1.05885130118846660974, 1.05946309435929526456, /* 2^(1/1200*100) */
 };
 const double * const bse_cent_table = cent_table201 + 100;
-
 /**
  * @param fine_tune	fine tuning in cent
  * @return		a factor corresponding to this
@@ -211,12 +190,10 @@ bse_cent_tune (double fine_tune)
 {
   return exp (fine_tune * BSE_LN_2_POW_1_DIV_1200_d);
 }
-
 /* --- musical tuning systems --- */
 #define SCALED_INTERVAL(scale, F1, F2, F3, F4, F5, F6, F7, F8, F9, F10, F11, F12)       \
   scale * (F1), scale * (F2), scale * (F3), scale * (F4), scale * (F5), scale * (F6),   \
   scale * (F7), scale * (F8), scale * (F9), scale * (F10), scale * (F11), scale * (F12)
-
 // http://en.wikipedia.org/wiki/Equal_temperament
 static const double semitone_table265_equal_temperament_12_tet[132 + 1 + 132] = {
 #define EQTEMP_12_TET(scale)                                                    \
@@ -236,7 +213,6 @@ static const double semitone_table265_equal_temperament_12_tet[132 + 1 + 132] = 
   EQTEMP_12_TET (1024.0),               2048.0, /* 2^11 */
 #undef EQTEMP_12_TET
 };
-
 // http://en.wikipedia.org/wiki/Equal_temperament
 static const double semitone_table265_equal_temperament_7_tet[132 + 1 + 132] = {
 #define EQTEMP_7_TET(scale)                                                     \
@@ -264,7 +240,6 @@ static const double semitone_table265_equal_temperament_7_tet[132 + 1 + 132] = {
   EQTEMP_7_TET (1024.0),                2048.0, /* 2^11 */
 #undef EQTEMP_7_TET
 };
-
 // http://en.wikipedia.org/wiki/Equal_temperament
 static const double semitone_table265_equal_temperament_5_tet[132 + 1 + 132] = {
 #define EQTEMP_5_TET(scale)                                                     \
@@ -292,7 +267,6 @@ static const double semitone_table265_equal_temperament_5_tet[132 + 1 + 132] = {
   EQTEMP_5_TET (1024.0),                2048.0, /* 2^11 */
 #undef EQTEMP_5_TET
 };
-
 // http://en.wikipedia.org/wiki/Diatonic_scale
 static const double semitone_table265_diatonic_scale[132 + 1 + 132] = {
 #define DIATONIC_SCALE(scale)                                                   \
@@ -310,7 +284,6 @@ static const double semitone_table265_diatonic_scale[132 + 1 + 132] = {
   DIATONIC_SCALE (1024.0),              2048.0, /* 2^11 */
 #undef DIATONIC_SCALE
 };
-
 // http://en.wikipedia.org/wiki/Just_intonation#Indian_scales
 static const double semitone_table265_indian_scale[132 + 1 + 132] = {
 #define INDIAN_SCALE(scale)                                             \
@@ -328,7 +301,6 @@ static const double semitone_table265_indian_scale[132 + 1 + 132] = {
   INDIAN_SCALE (1024.0),                2048.0, /* 2^11 */
 #undef INDIAN_SCALE
 };
-
 // http://en.wikipedia.org/wiki/Pythagorean_tuning
 static const double semitone_table265_pythagorean_tuning[132 + 1 + 132] = {
 #define PYTHAGOREAN_TUNING(scale)                                       \
@@ -346,7 +318,6 @@ static const double semitone_table265_pythagorean_tuning[132 + 1 + 132] = {
   PYTHAGOREAN_TUNING (1024.0),          2048.0, /* 2^11 */
 #undef PYTHAGOREAN_TUNING
 };
-
 // http://en.wikipedia.org/wiki/Pentatonic_scale
 static const double semitone_table265_pentatonic_5_limit[132 + 1 + 132] = {
 #define PENTATONIC_5_LIMIT(scale)                                       \
@@ -364,7 +335,6 @@ static const double semitone_table265_pentatonic_5_limit[132 + 1 + 132] = {
   PENTATONIC_5_LIMIT (1024.0),          2048.0, /* 2^11 */
 #undef PENTATONIC_5_LIMIT
 };
-
 // http://en.wikipedia.org/wiki/Pentatonic_scale
 static const double semitone_table265_pentatonic_blues[132 + 1 + 132] = {
 #define PENTATONIC_BLUES(scale)                                         \
@@ -382,7 +352,6 @@ static const double semitone_table265_pentatonic_blues[132 + 1 + 132] = {
   PENTATONIC_BLUES (1024.0),            2048.0, /* 2^11 */
 #undef PENTATONIC_BLUES
 };
-
 // http://en.wikipedia.org/wiki/Pentatonic_scale
 static const double semitone_table265_pentatonic_gogo[132 + 1 + 132] = {
 #define PENTATONIC_GOGO(scale)                                          \
@@ -400,7 +369,6 @@ static const double semitone_table265_pentatonic_gogo[132 + 1 + 132] = {
   PENTATONIC_GOGO (1024.0),             2048.0, /* 2^11 */
 #undef PENTATONIC_GOGO
 };
-
 // http://en.wikipedia.org/wiki/Quarter-comma_meantone
 static const double semitone_table265_quarter_comma_meantone[132 + 1 + 132] = {
 #define QCOMMA_MEANTONE(scale)                                                          \
@@ -427,7 +395,6 @@ static const double semitone_table265_quarter_comma_meantone[132 + 1 + 132] = {
   QCOMMA_MEANTONE (1024.0),             2048.0, /* 2^11 */
 #undef QCOMMA_MEANTONE
 };
-
 // http://de.wikipedia.org/wiki/Silbermann-Sorge-Temperatur
 static const double semitone_table265_silbermann_sorge_temperament[132 + 1 + 132] = {
 #define SILBERMANN_SORGE(scale)                                                 \
@@ -454,11 +421,9 @@ static const double semitone_table265_silbermann_sorge_temperament[132 + 1 + 132
   SILBERMANN_SORGE (1024.0),            2048.0, /* 2^11 */
 #undef SILBERMANN_SORGE
 };
-
 #define SQRT2_2 1.4142135623730950488016887242097       /* 2^0.5 */
 #define SQRT4_2 1.1892071150027210667174999705605       /* 2^0.25 */
 #define SQRT4_8 1.6817928305074290860622509524664       /* 8^0.25 */
-
 // http://en.wikipedia.org/wiki/Werckmeister_temperament
 static const double semitone_table265_werckmeister3_temperament[132 + 1 + 132] = {
 #define WMEISTER3_TEMPERAMENT(scale)                                            \
@@ -478,10 +443,8 @@ static const double semitone_table265_werckmeister3_temperament[132 + 1 + 132] =
   WMEISTER3_TEMPERAMENT (1024.0),       2048.0, /* 2^11 */
 #undef WMEISTER3_TEMPERAMENT
 };
-
 #define SQRT3_2 1.2599210498948731647672106072782       /* 2^(1/3) */
 #define SQRT3_4 1.5874010519681994747517056392723       /* 4^(1/3) */
-
 // http://en.wikipedia.org/wiki/Werckmeister_temperament
 static const double semitone_table265_werckmeister4_temperament[132 + 1 + 132] = {
 #define WMEISTER4_TEMPERAMENT(scale)                                            \
@@ -501,7 +464,6 @@ static const double semitone_table265_werckmeister4_temperament[132 + 1 + 132] =
   WMEISTER4_TEMPERAMENT (1024.0),       2048.0, /* 2^11 */
 #undef WMEISTER4_TEMPERAMENT
 };
-
 // http://en.wikipedia.org/wiki/Werckmeister_temperament
 static const double semitone_table265_werckmeister5_temperament[132 + 1 + 132] = {
 #define WMEISTER5_TEMPERAMENT(scale)                                            \
@@ -520,7 +482,6 @@ static const double semitone_table265_werckmeister5_temperament[132 + 1 + 132] =
   WMEISTER5_TEMPERAMENT (1024.0),       2048.0, /* 2^11 */
 #undef WMEISTER5_TEMPERAMENT
 };
-
 // http://en.wikipedia.org/wiki/Werckmeister_temperament
 static const double semitone_table265_werckmeister6_temperament[132 + 1 + 132] = {
 #define WMEISTER6_TEMPERAMENT(scale)                                            \
@@ -539,7 +500,6 @@ static const double semitone_table265_werckmeister6_temperament[132 + 1 + 132] =
   WMEISTER6_TEMPERAMENT (1024.0),       2048.0, /* 2^11 */
 #undef WMEISTER6_TEMPERAMENT
 };
-
 // http://en.wikipedia.org/wiki/Johann_Philipp_Kirnberger_temperament
 static const double semitone_table265_kirnberger_temperament[132 + 1 + 132] = {
 #define KBERGER3_TEMPERAMENT(scale)                                             \
@@ -558,7 +518,6 @@ static const double semitone_table265_kirnberger_temperament[132 + 1 + 132] = {
   KBERGER3_TEMPERAMENT (1024.0),        2048.0, /* 2^11 */
 #undef KBERGER3_TEMPERAMENT
 };
-
 // http://en.wikipedia.org/wiki/Young_temperament
 static const double semitone_table265_young_temperament[132 + 1 + 132] = {
 #define YOUNG_TEMPERAMENT(scale)                                                \
@@ -585,7 +544,6 @@ static const double semitone_table265_young_temperament[132 + 1 + 132] = {
   YOUNG_TEMPERAMENT (1024.0),           2048.0, /* 2^11 */
 #undef YOUNG_TEMPERAMENT
 };
-
 const double*
 bse_semitone_table_from_tuning (BseMusicalTuningType musical_tuning)
 {
@@ -632,7 +590,6 @@ bse_semitone_table_from_tuning (BseMusicalTuningType musical_tuning)
       return 132 + semitone_table265_young_temperament;
     }
 }
-
 double
 bse_transpose_factor (BseMusicalTuningType musical_tuning,
                       int                  index /* [-132..+132] */)
@@ -640,11 +597,9 @@ bse_transpose_factor (BseMusicalTuningType musical_tuning,
   const double *table = bse_semitone_table_from_tuning (musical_tuning);
   return table[CLAMP (index, -132, +132)];
 }
-
 /* --- cents & init --- */
 void
 _bse_init_signal (void) { /* FIXME: remove */ }
-
 /* --- bse_approx_atan1() --- */
 double
 bse_approx_atan1_prescale (double boost_amount)
@@ -652,21 +607,14 @@ bse_approx_atan1_prescale (double boost_amount)
   double max_boost_factor = 100;	/* atan1(x*100) gets pretty close to 1 for x=1 */
   double recip_tan_1_div_0_75 = 0.24202942695518667705824990442766; /* 1/tan(1/0.75) */
   double scale;
-
   g_return_val_if_fail (boost_amount >= 0 && boost_amount <= 1.0, 1.0);
-
   /* scale boost_amount from [0..1] to -1..1 */
   boost_amount = boost_amount * 2 - 1.0;
-
   /* prescale factor for atan1(x*prescale), ranges from 1/max_boost_factor..max_boost_factor */
   scale = pow (max_boost_factor, tan (boost_amount / 0.75) * recip_tan_1_div_0_75);
-
   /* atan1_prescale(ba)=100 ** (tan ((ba*2-1) / 0.75) * 0.24202942695518667705824990442766) */
-
   return scale;
 }
-
-
 /* --- exp2f() approximation taylor coefficients finder --- */
 #if 0
 #include <stdio.h>
@@ -675,7 +623,6 @@ exp2coeff (int n)
 {
   double r = 1;
   int i;
-
   for (i = 1; i <= n; i++)
     {
       r *= BSE_LN2;
@@ -689,10 +636,8 @@ main (int   argc,
       char *argv[])
 {
   int i;
-
   for (i = 0; i < 20; i++)
     printf ("#define EXP2_TAYLOR_COEFF_%u\t(%.40f)\n", i, exp2coeff (i));
-
   return 0;
 }
 /* test/bench program */
@@ -703,7 +648,6 @@ main (int   argc,
       char *argv[])
 {
   double x, dummy = 0, l = 4;
-
   if (1)	/* print errors */
     for (x = -3; x < 3.01; x += 0.1)
       {
@@ -711,17 +655,13 @@ main (int   argc,
 		 x, exp (x * BSE_LN2) - bse_approx5_exp2 (x),
 		 exp (x * BSE_LN2), bse_approx5_exp2 (x));
       }
-
   if (0)	/* bench test */
     for (x = -l; x < l; x += 0.000001)
       {
 	dummy += bse_approx5_exp2 (x);
 	// dummy += exp2f (x);
       }
-
   g_print ("%f\r                            \n", dummy);
-
   return 0;
 }
 #endif  /* coeff generation */
-

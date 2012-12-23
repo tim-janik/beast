@@ -15,8 +15,6 @@
 #include "bseengine.hh"	// FIXME: for bse_engine_sample_freq()
 #include "bsecxxplugin.hh"
 #include <string.h>
-
-
 enum
 {
   PROP_0,
@@ -32,48 +30,37 @@ enum
   PROP_LOOP_RIGHT,
   PROP_TICK_POINTER,
 };
-
-
 /* --- prototypes --- */
 static void         bse_song_update_tpsi_SL   (BseSong            *song);
 static void         bse_song_class_init       (BseSongClass       *klass);
 static void         bse_song_init             (BseSong            *song);
-
-
 /* --- variables --- */
 static GTypeClass *parent_class = NULL;
 static guint       signal_pointer_changed = 0;
-
-
 /* --- functions --- */
 BSE_BUILTIN_TYPE (BseSong)
 {
   static const GTypeInfo song_info = {
     sizeof (BseSongClass),
-    
     (GBaseInitFunc) NULL,
     (GBaseFinalizeFunc) NULL,
     (GClassInitFunc) bse_song_class_init,
     (GClassFinalizeFunc) NULL,
     NULL /* class_data */,
-    
     sizeof (BseSong),
     0 /* n_preallocs */,
     (GInstanceInitFunc) bse_song_init,
   };
-  
   return bse_type_register_static (BSE_TYPE_SNET,
 				   "BseSong",
 				   "BSE Song type",
                                    __FILE__, __LINE__,
                                    &song_info);
 }
-
 void
 bse_song_timing_get_default (BseSongTiming *timing)
 {
   g_return_if_fail (timing != NULL);
-
   timing->tick = 0;
   timing->bpm = 120;
   timing->numerator = 4;
@@ -82,37 +69,30 @@ bse_song_timing_get_default (BseSongTiming *timing)
   timing->tpt = timing->tpqn * 4 * timing->numerator / timing->denominator;
   timing->stamp_ticks = 0;
 }
-
 static void
 bse_song_release_children (BseContainer *container)
 {
   BseSong *self = BSE_SONG (container);
-
   while (self->busses)
     bse_container_remove_item (container, (BseItem*) self->busses->data);
   while (self->parts)
     bse_container_remove_item (container, (BseItem*) self->parts->data);
   while (self->tracks_SL)
     bse_container_remove_item (container, (BseItem*) self->tracks_SL->data);
-
   /* chain parent class' handler */
   BSE_CONTAINER_CLASS (parent_class)->release_children (container);
 }
-
 static void
 bse_song_finalize (GObject *object)
 {
   BseSong *self = BSE_SONG (object);
-
   bse_container_remove_item (BSE_CONTAINER (self), BSE_ITEM (self->postprocess));
   self->postprocess = NULL;
   bse_container_remove_item (BSE_CONTAINER (self), BSE_ITEM (self->output));
   self->output = NULL;
-  
   /* chain parent class' handler */
   G_OBJECT_CLASS (parent_class)->finalize (object);
 }
-
 static void
 bse_song_get_candidates (BseItem               *item,
                          guint                  param_id,
@@ -131,7 +111,6 @@ bse_song_get_candidates (BseItem               *item,
       break;
     }
 }
-
 static void
 song_uncross_pnet (BseItem *owner,
                    BseItem *ref_item)
@@ -139,7 +118,6 @@ song_uncross_pnet (BseItem *owner,
   BseSong *self = BSE_SONG (owner);
   bse_item_set (self, "pnet", NULL, NULL);
 }
-
 static void
 bse_song_set_property (GObject      *object,
 		       guint         param_id,
@@ -258,7 +236,6 @@ bse_song_set_property (GObject      *object,
       break;
     }
 }
-
 static void
 bse_song_get_property (GObject     *object,
 		       guint        param_id,
@@ -303,7 +280,6 @@ bse_song_get_property (GObject     *object,
       break;
     }
 }
-
 void
 bse_song_get_timing (BseSong       *self,
 		     guint          tick,
@@ -311,7 +287,6 @@ bse_song_get_timing (BseSong       *self,
 {
   g_return_if_fail (BSE_IS_SONG (self));
   g_return_if_fail (timing != NULL);
-
   timing->tick = 0;
   timing->bpm = self->bpm;
   timing->numerator = self->numerator;
@@ -323,51 +298,40 @@ bse_song_get_timing (BseSong       *self,
   else /* see update_tpsi */
     timing->stamp_ticks = timing->tpqn * timing->bpm / (60.0 * bse_engine_sample_freq());
 }
-
 BseSong*
 bse_song_lookup (BseProject  *project,
 		 const gchar *name)
 {
   BseItem *item;
-  
   g_return_val_if_fail (BSE_IS_PROJECT (project), NULL);
   g_return_val_if_fail (name != NULL, NULL);
-  
   item = bse_container_lookup_item (BSE_CONTAINER (project), name);
-  
   return BSE_IS_SONG (item) ? BSE_SONG (item) : NULL;
 }
-
 static void
 bse_song_set_parent (BseItem *item,
                      BseItem *parent)
 {
   BseSong *self = BSE_SONG (item);
-
   if (self->midi_receiver_SL)
     {
       bse_midi_receiver_unref (self->midi_receiver_SL);
       self->midi_receiver_SL = NULL;
     }
-
   /* chain parent class' handler */
   BSE_ITEM_CLASS (parent_class)->set_parent (item, parent);
-
   if (parent)
     {
       BseProject *project = BSE_PROJECT (parent);
       self->midi_receiver_SL = bse_midi_receiver_ref (project->midi_receiver);
     }
 }
-
 static void
 bse_song_add_item (BseContainer *container,
 		   BseItem	*item)
 {
   BseSong *self = BSE_SONG (container);
-
   BSE_SEQUENCER_LOCK ();
-
   if (g_type_is_a (BSE_OBJECT_TYPE (item), BSE_TYPE_TRACK))
     self->tracks_SL = sfi_ring_append (self->tracks_SL, item);
   else if (g_type_is_a (BSE_OBJECT_TYPE (item), BSE_TYPE_PART))
@@ -376,12 +340,9 @@ bse_song_add_item (BseContainer *container,
     self->busses = sfi_ring_append (self->busses, item);
   else
     /* parent class manages other BseSources */ ;
-
   /* chain parent class' add_item handler */
   BSE_CONTAINER_CLASS (parent_class)->add_item (container, item);
-
   BSE_SEQUENCER_UNLOCK ();
-
   if (g_type_is_a (BSE_OBJECT_TYPE (item), BSE_TYPE_TRACK))
     bse_track_add_modules (BSE_TRACK (item), container, self->midi_receiver_SL);
   else if (g_type_is_a (BSE_OBJECT_TYPE (item), BSE_TYPE_BUS))
@@ -390,7 +351,6 @@ bse_song_add_item (BseContainer *container,
       bse_bus_create_stack (bus);
     }
 }
-
 static void
 bse_song_forall_items (BseContainer	 *container,
 		       BseForallItemsFunc func,
@@ -398,7 +358,6 @@ bse_song_forall_items (BseContainer	 *container,
 {
   BseSong *self = BSE_SONG (container);
   SfiRing *ring;
-
   /* iterate over non-source children */
   ring = self->parts;
   while (ring)
@@ -408,17 +367,14 @@ bse_song_forall_items (BseContainer	 *container,
       if (!func (item, data))
 	return;
     }
-
   /* parent class iterates over BseSources children */
   BSE_CONTAINER_CLASS (parent_class)->forall_items (container, func, data);
 }
-
 static void
 bse_song_remove_item (BseContainer *container,
 		      BseItem	   *item)
 {
   BseSong *self = BSE_SONG (container);
-  
   if (g_type_is_a (BSE_OBJECT_TYPE (item), BSE_TYPE_TRACK))
     {
       SfiRing *ring, *tmp;
@@ -448,16 +404,13 @@ bse_song_remove_item (BseContainer *container,
     }
   else
     /* parent class manages BseSources */;
-
   /* chain parent class' remove_item handler */
   BSE_CONTAINER_CLASS (parent_class)->remove_item (container, item);
 }
-
 static gboolean
 song_position_handler (gpointer data)
 {
   BseSong *self = BSE_SONG (data);
-
   if (uint (self->last_position) != self->tick_SL)
     {
       BSE_SEQUENCER_LOCK ();
@@ -467,7 +420,6 @@ song_position_handler (gpointer data)
     }
   return TRUE;
 }
-
 static void
 bse_song_update_tpsi_SL (BseSong *self)
 {
@@ -480,24 +432,18 @@ bse_song_update_tpsi_SL (BseSong *self)
   self->tpsi_SL = tpsi;
   BSE_SEQUENCER_UNLOCK ();
 }
-
 static void
 bse_song_prepare (BseSource *source)
 {
   BseSong *self = BSE_SONG (source);
-
   bse_object_lock (BSE_OBJECT (self));
   self->sequencer_underrun_detected_SL = FALSE;
-
   /* chain parent class' handler */
   BSE_SOURCE_CLASS (parent_class)->prepare (source);
-
   bse_song_update_tpsi_SL (self);
-
   if (!self->position_handler)
     self->position_handler = bse_idle_timed (50000, song_position_handler, self);
 }
-
 static void
 bse_song_context_create (BseSource *source,
 			 guint      context_handle,
@@ -507,41 +453,31 @@ bse_song_context_create (BseSource *source,
   BseSNet *snet = BSE_SNET (self);
   BseMidiContext mcontext = bse_snet_get_midi_context (snet, context_handle);
   SfiRing *ring;
-
   /* chain parent class' handler */
   BSE_SOURCE_CLASS (parent_class)->context_create (source, context_handle, trans);
-
   if (!bse_snet_context_is_branch (snet, context_handle))       /* catch recursion */
     for (ring = self->tracks_SL; ring; ring = sfi_ring_walk (ring, self->tracks_SL))
       bse_track_clone_voices ((BseTrack*) ring->data, snet, context_handle, mcontext, trans);
 }
-
 static void
 bse_song_reset (BseSource *source)
 {
   BseSong *self = BSE_SONG (source);
-
   bse_sequencer_remove_song (self),
-  
   /* chain parent class' handler */
   BSE_SOURCE_CLASS (parent_class)->reset (source);
-
   g_assert (self->sequencer_start_request_SL == 0);
   /* outside of sequencer reach, so no locks needed */
   self->sequencer_start_SL = 0;
   self->sequencer_done_SL = 0;
-
   if (self->position_handler)
     {
       bse_idle_remove (self->position_handler);
       self->position_handler = 0;
     }
-
   bse_object_unlock (BSE_OBJECT (self));
-
   g_object_notify ((GObject*) self, "tick-pointer");
 }
-
 BseSource*
 bse_song_create_summation (BseSong *self)
 {
@@ -553,7 +489,6 @@ bse_song_create_summation (BseSong *self)
   bse_snet_intern_child (BSE_SNET (self), summation);
   return summation;
 }
-
 BseBus*
 bse_song_find_master (BseSong *self)
 {
@@ -565,7 +500,6 @@ bse_song_find_master (BseSong *self)
     return BSE_BUS (osource);
   return NULL;
 }
-
 void
 bse_song_set_solo_bus (BseSong        *self,
                        BseBus         *bus)
@@ -578,61 +512,47 @@ bse_song_set_solo_bus (BseSong        *self,
   for (ring = self->busses; ring; ring = sfi_ring_walk (ring, self->busses))
     bse_bus_change_solo ((BseBus*) ring->data, self->solo_bus && ring->data != self->solo_bus && ring->data != master);
 }
-
 static void
 bse_song_init (BseSong *self)
 {
   BseSNet *snet = BSE_SNET (self);
   BseSongTiming timing;
-
   bse_song_timing_get_default (&timing);
-
   BSE_OBJECT_UNSET_FLAGS (self, BSE_SNET_FLAG_USER_SYNTH);
   BSE_OBJECT_SET_FLAGS (self, BSE_SUPER_FLAG_NEEDS_CONTEXT);
-
   self->musical_tuning = BSE_MUSICAL_TUNING_12_TET;
-
   self->tpqn = timing.tpqn;
   self->numerator = timing.numerator;
   self->denominator = timing.denominator;
   self->bpm = timing.bpm;
-  
   self->parts = NULL;
   self->busses = NULL;
-
   self->pnet = NULL;
-
   self->last_position = -1;
   self->position_handler = 0;
-
   self->tracks_SL = NULL;
   self->loop_enabled_SL = 0;
   self->loop_left_SL = -1;
   self->loop_right_SL = -1;
-
   /* post processing slot */
   self->postprocess = (BseSource*) bse_container_new_child (BSE_CONTAINER (self), BSE_TYPE_SUB_SYNTH, "uname", "Postprocess", NULL);
   bse_snet_intern_child (snet, self->postprocess);
   bse_sub_synth_set_null_shortcut (BSE_SUB_SYNTH (self->postprocess), TRUE);
-
   /* output */
   self->output = (BseSource*) bse_container_new_child (BSE_CONTAINER (self), BSE_TYPE_PCM_OUTPUT, NULL);
   bse_snet_intern_child (snet, self->output);
-
   /* postprocess <-> output */
   bse_source_must_set_input (self->output, BSE_PCM_OUTPUT_ICHANNEL_LEFT,
 			     self->postprocess, 0);
   bse_source_must_set_input (self->output, BSE_PCM_OUTPUT_ICHANNEL_RIGHT,
 			     self->postprocess, 1);
 }
-
 static const gchar*
 master_bus_name (void)
 {
   /* TRANSLATORS: this is the name of the master mixer bus. i.e. the final audio output bus. */
   return _("Master");
 }
-
 BseSource*
 bse_song_ensure_master (BseSong *self)
 {
@@ -647,7 +567,6 @@ bse_song_ensure_master (BseSong *self)
     }
   return child;
 }
-
 static void
 bse_song_compat_finish (BseSuper       *super,
                         guint           vmajor,
@@ -655,10 +574,8 @@ bse_song_compat_finish (BseSuper       *super,
                         guint           vmicro)
 {
   BseSong *self = BSE_SONG (super);
-
   /* chain parent class' handler */
   BSE_SUPER_CLASS (parent_class)->compat_finish (super, vmajor, vminor, vmicro);
-
   /* fixup old non-mixer songs */
   if (BSE_VERSION_CMP (vmajor, vminor, vmicro, 0, 6, 2) <= 0)
     {
@@ -693,7 +610,6 @@ bse_song_compat_finish (BseSuper       *super,
         }
     }
 }
-
 static void
 bse_song_class_init (BseSongClass *klass)
 {
@@ -704,29 +620,21 @@ bse_song_class_init (BseSongClass *klass)
   BseContainerClass *container_class = BSE_CONTAINER_CLASS (klass);
   BseSuperClass *super_class = BSE_SUPER_CLASS (klass);
   BseSongTiming timing;
-
   parent_class = (GTypeClass*) g_type_class_peek_parent (klass);
-  
   gobject_class->set_property = bse_song_set_property;
   gobject_class->get_property = bse_song_get_property;
   gobject_class->finalize = bse_song_finalize;
-  
   item_class->set_parent = bse_song_set_parent;
   item_class->get_candidates = bse_song_get_candidates;
-
   source_class->prepare = bse_song_prepare;
   source_class->context_create = bse_song_context_create;
   source_class->reset = bse_song_reset;
-  
   container_class->add_item = bse_song_add_item;
   container_class->remove_item = bse_song_remove_item;
   container_class->forall_items = bse_song_forall_items;
   container_class->release_children = bse_song_release_children;
-
   super_class->compat_finish = bse_song_compat_finish;
-
   bse_song_timing_get_default (&timing);
-
   bse_object_class_add_param (object_class, _("Tuning"),
 			      PROP_MUSICAL_TUNING,
                               bse_param_spec_enum ("musical_tuning", _("Musical Tuning"),
@@ -736,7 +644,6 @@ bse_song_class_init (BseSongClass *klass)
                                                      "tuning system defines the number and spacing of frequency values applied."),
                                                    BSE_MUSICAL_TUNING_12_TET, BSE_TYPE_MUSICAL_TUNING_TYPE,
                                                    SFI_PARAM_STANDARD ":unprepared:skip-default"));
-
   bse_object_class_add_param (object_class, _("Timing"),
 			      PROP_TPQN,
 			      sfi_pspec_int ("tpqn", _("Ticks"), _("Number of ticks per quarter note"),
@@ -784,7 +691,6 @@ bse_song_class_init (BseSongClass *klass)
 			      sfi_pspec_int ("tick_pointer", NULL, NULL,
 					     -1, -1, G_MAXINT, 384,
 					     SFI_PARAM_READWRITE ":skip-undo"));
-
   signal_pointer_changed = bse_object_class_add_signal (object_class, "pointer-changed",
 							G_TYPE_NONE, 1, SFI_TYPE_INT);
 }

@@ -1,5 +1,4 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
-
 #include <bse/bseresampler.hh>
 #include <bse/bsemathsignal.hh>
 #include <bse/bsemain.hh>
@@ -10,18 +9,15 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <assert.h>
-
 using Bse::Resampler::Resampler2;
 using Birnet::AlignedArray;
 using std::vector;
 using std::max;
 using std::min;
-
 struct Options
 {
   size_t test_size;
   size_t rand_samples;
-
   // default test parameters
   Options() :
     test_size (512),
@@ -29,34 +25,28 @@ struct Options
   {
   }
 } options;
-
 class ResamplerTest
 {
 public:
   double passband_err;
   double stopband_err;
   double max_error;
-
   void  check_spectrum (const vector<float>& impulse_response, int p);
   void  check_resampler_up (BseResampler2Precision precision);
   void  check_resampler_down (BseResampler2Precision precision);
 };
-
 void
 ResamplerTest::check_spectrum (const vector<float>& impulse_response, int p)
 {
   vector<double> fft_in (4096), spect (fft_in.size());
-
   for (size_t i = 0; i < min (impulse_response.size(), fft_in.size()); i++)
     {
       fft_in[i] = impulse_response[i] / 2;
     }
   gsl_power2_fftar (fft_in.size(), &fft_in[0], &spect[0]);
   spect[1] = 0; // special packing
-
   passband_err = 0;
   stopband_err = 0;
-
   for (size_t i = 0; i < 4096; i += 2)
     {
       const double re = spect[i], im = spect[i + 1];
@@ -68,7 +58,6 @@ ResamplerTest::check_spectrum (const vector<float>& impulse_response, int p)
         stopband_err = max (stopband_err, fabs (mag));
     }
 }
-
 void
 ResamplerTest::check_resampler_up (BseResampler2Precision precision)
 {
@@ -76,7 +65,6 @@ ResamplerTest::check_resampler_up (BseResampler2Precision precision)
   AlignedArray<float,16> input (options.test_size);
   AlignedArray<float,16> output (options.test_size * 2);
   vector< vector<float> > results;
-
   for (size_t i = 0; i < (options.test_size / 2); i++)
     {
       input[i] = 1;
@@ -95,7 +83,6 @@ ResamplerTest::check_resampler_up (BseResampler2Precision precision)
   for (size_t i = 0; i < options.rand_samples; i++)
     input[i] = g_random_double_range (-1, 1);
   ups->process_block (&input[0], input.size(), &output[0]);
-
   max_error = 0;
   for (size_t j = 0; j < output.size(); j++)
     {
@@ -108,7 +95,6 @@ ResamplerTest::check_resampler_up (BseResampler2Precision precision)
     }
   check_spectrum (results[0], precision);
 }
-
 void
 ResamplerTest::check_resampler_down (BseResampler2Precision precision)
 {
@@ -116,7 +102,6 @@ ResamplerTest::check_resampler_down (BseResampler2Precision precision)
   AlignedArray<float,16> input (options.test_size * 2);
   AlignedArray<float,16> output (options.test_size);
   vector< vector<float> > results;
-
   for (size_t i = 0; i < (options.test_size / 2); i++)
     {
       input[i] = 1;
@@ -143,7 +128,6 @@ ResamplerTest::check_resampler_down (BseResampler2Precision precision)
         }
       max_error = max (fabs (output[j] - acc), max_error);
     }
-
   /* The downsampler convolves the input with an FIR filter to achieve a
    * lowpass filter around half the sampling frequency. Since it throws
    * away every second sample, we need to merge the impulse responses
@@ -158,7 +142,6 @@ ResamplerTest::check_resampler_down (BseResampler2Precision precision)
     }
   check_spectrum (merged_ir, precision);
 }
-
 static double
 band_err (BseResampler2Precision p)
 {
@@ -177,38 +160,30 @@ band_err (BseResampler2Precision p)
       default:                          g_assert_not_reached();
     }
 }
-
 static void
 run_tests (const char *label)
 {
   BseResampler2Precision p = BSE_RESAMPLER2_PREC_96DB;  // should not be equal to the first resampler precision
-
   for (int i = 0; i < 32; i++)
     {
       BseResampler2Precision new_p = Resampler2::find_precision_for_bits (i);
       if (new_p != p)
         {
           p = new_p;
-
           TSTART ("Resampler %s Precision %d", label, p);
-
           ResamplerTest rt_up;
           rt_up.check_resampler_up (p);
-
           TASSERT (bse_db_from_factor (rt_up.max_error, -200) < -125);
           TASSERT (bse_db_from_factor (rt_up.passband_err, -200) < band_err (p));
           TASSERT (bse_db_from_factor (rt_up.stopband_err, -200) < band_err (p));
-
           //printf ("## UP   %d %.17g %.17g %.17g\n", p, bse_db_from_factor (rt_up.max_error, -200),
                                                     //bse_db_from_factor (rt_up.passband_err, -200),
                                                     //bse_db_from_factor (rt_up.stopband_err, -200));
           ResamplerTest rt_down;
           rt_down.check_resampler_down (p);
-
           TASSERT (bse_db_from_factor (rt_up.max_error, -200) < -125);
           TASSERT (bse_db_from_factor (rt_up.passband_err, -200) < band_err (p));
           TASSERT (bse_db_from_factor (rt_up.stopband_err, -200) < band_err (p));
-
           //printf ("## DOWN %d %.17g %.17g %.17g\n", p, bse_db_from_factor (rt_down.max_error, -200),
                                                     //bse_db_from_factor (rt_down.passband_err, -200),
                                                     //bse_db_from_factor (rt_down.stopband_err, -200));
@@ -216,7 +191,6 @@ run_tests (const char *label)
         }
     }
 }
-
 int
 main (int argc, char **argv)
 {
@@ -234,7 +208,6 @@ main (int argc, char **argv)
   g_print ("Resampler test parameters: test_size=%zd rand_samples=%zd\n",
            options.test_size, options.rand_samples);
   run_tests ("FPU");
-
   /* load plugins */
   SfiInitValue config[] = {
     { "load-core-plugins", "1" },

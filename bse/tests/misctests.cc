@@ -4,9 +4,7 @@
 #include <sfi/sfitests.hh>
 #include <bse/bsemathsignal.hh>
 #include <bse/bsecxxplugin.hh> // for generated types
-
 #define	FLF	"26.20"
-
 static void
 check_cent_tune_fast (void)
 {
@@ -21,7 +19,6 @@ check_cent_tune_fast (void)
     }
   TDONE();
 }
-
 static void
 check_cent_tune (void)
 {
@@ -37,7 +34,6 @@ check_cent_tune (void)
     }
   TDONE();
 }
-
 static void
 check_equal_tempered_tuning (void)
 {
@@ -53,7 +49,6 @@ check_equal_tempered_tuning (void)
     }
   TDONE();
 }
-
 static void
 check_tuning_monotony (BseMusicalTuningType musical_tuning)
 {
@@ -69,7 +64,6 @@ check_tuning_monotony (BseMusicalTuningType musical_tuning)
       }
   TDONE();
 }
-
 static void
 check_freq_vs_notes (BseMusicalTuningType musical_tuning)
 {
@@ -105,21 +99,17 @@ check_freq_vs_notes (BseMusicalTuningType musical_tuning)
     }
   TDONE();
 }
-
 int
 main (gint   argc,
       gchar *argv[])
 {
   bse_init_test (&argc, &argv, NULL);
-
   check_cent_tune();
   check_cent_tune_fast();
   check_equal_tempered_tuning();
-
   BseMusicalTuningType last_tuning = BSE_MUSICAL_TUNING_YOUNG;
   /* check last tuning value by asserting defaulting behavior of succeding values */
   TCHECK (bse_semitone_table_from_tuning (BseMusicalTuningType (last_tuning + 1)) == bse_semitone_table_from_tuning (BseMusicalTuningType (0)));
-
   /* check monotonic musical tuning systems */
   for (int j = BSE_MUSICAL_TUNING_12_TET; j <= last_tuning; j++)
     {
@@ -128,6 +118,5 @@ main (gint   argc,
       check_tuning_monotony (musical_tuning);
       check_freq_vs_notes (musical_tuning);
     }
-
   return 0;
 }

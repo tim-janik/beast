@@ -1,12 +1,9 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #ifndef __BSE_NOTE_H__
 #define __BSE_NOTE_H__
-
 #include        <bse/bseglobals.hh>
 #include        <bse/bsetype.hh>
-
 G_BEGIN_DECLS
-
 /* --- import Sfi macros --- */
 #define BSE_MIN_NOTE            SFI_MIN_NOTE
 #define BSE_MAX_NOTE            SFI_MAX_NOTE
@@ -22,8 +19,6 @@ G_BEGIN_DECLS
 #define bse_note_from_string    sfi_note_from_string
 #define bse_note_to_string      sfi_note_to_string
 #define bse_note_examine        sfi_note_examine
-
-
 /* --- construct notes --- */
 #define BSE_NOTE_OCTAVE(n)              SFI_NOTE_OCTAVE (n)
 #define BSE_NOTE_SEMITONE(n)            SFI_NOTE_SEMITONE (n)
@@ -48,8 +43,6 @@ G_BEGIN_DECLS
 #define BSE_NOTE_SHIFT(n,ht_i)          SFI_NOTE_SHIFT (n, ht_i)
 #define BSE_NOTE_OCTAVE_UP(n)           (BSE_NOTE_SHIFT ((n), +12))
 #define BSE_NOTE_OCTAVE_DOWN(n)         (BSE_NOTE_SHIFT ((n), -12))
-
-
 /* --- functions --- */
 int             bse_note_from_freq                      (BseMusicalTuningType   musical_tuning,
                                                          double                 freq);
@@ -63,8 +56,6 @@ double          bse_note_to_freq                        (BseMusicalTuningType   
 double          bse_note_to_tuned_freq                  (BseMusicalTuningType   musical_tuning,
                                                          int                    note,
                                                          int                    fine_tune);
-
-
 /* --- freq array --- */
 typedef struct BseFreqArray BseFreqArray;
 BseFreqArray*   bse_freq_array_new              (guint           prealloc);
@@ -87,7 +78,5 @@ void            bse_freq_array_set              (BseFreqArray   *farray,
 gboolean        bse_freq_arrays_match_freq      (gfloat          match_freq,
                                                  BseFreqArray   *inclusive_set,
                                                  BseFreqArray   *exclusive_set);
-
 G_END_DECLS
-
 #endif /* __BSE_NOTE_H__ */

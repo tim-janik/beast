@@ -1,6 +1,5 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "gslcommon.hh"
-
 #include "gsldatacache.hh"
 #include <unistd.h>
 #include <sys/utsname.h>
@@ -12,14 +11,10 @@
 #include <sys/poll.h>
 #include <sys/stat.h>
 #include <sys/time.h>
-
-
 /* --- variables --- */
 volatile guint64     bse_engine_exvar_tick_stamp = 0;   /* initialized to 1 upon gsl_init(), so 0==invalid */
 static guint64	     tick_stamp_system_time = 0;
 static guint         global_tick_stamp_leaps = 0;
-
-
 /* --- tick stamps --- */
 static BirnetMutex     global_tick_stamp_mutex = { 0, };
 /**
@@ -43,14 +38,11 @@ guint64
 gsl_tick_stamp (void)
 {
   guint64 stamp;
-
   GSL_SPIN_LOCK (&global_tick_stamp_mutex);
   stamp = bse_engine_exvar_tick_stamp;
   GSL_SPIN_UNLOCK (&global_tick_stamp_mutex);
-
   return stamp;
 }
-
 void
 _gsl_tick_stamp_set_leap (guint ticks)
 {
@@ -58,7 +50,6 @@ _gsl_tick_stamp_set_leap (guint ticks)
   global_tick_stamp_leaps = ticks;
   GSL_SPIN_UNLOCK (&global_tick_stamp_mutex);
 }
-
 /**
  * @return Current tick stamp and system time in micro seconds
  *
@@ -69,34 +60,26 @@ GslTickStampUpdate
 gsl_tick_stamp_last (void)
 {
   GslTickStampUpdate ustamp;
-
   GSL_SPIN_LOCK (&global_tick_stamp_mutex);
   ustamp.tick_stamp = bse_engine_exvar_tick_stamp;
   ustamp.system_time = tick_stamp_system_time;
   GSL_SPIN_UNLOCK (&global_tick_stamp_mutex);
-
   return ustamp;
 }
-
 void
 _gsl_tick_stamp_inc (void)
 {
   volatile guint64 newstamp;
   guint64 systime;
-
   g_return_if_fail (global_tick_stamp_leaps > 0);
-
   systime = sfi_time_system ();
   newstamp = bse_engine_exvar_tick_stamp + global_tick_stamp_leaps;
-
   GSL_SPIN_LOCK (&global_tick_stamp_mutex);
   bse_engine_exvar_tick_stamp = newstamp;
   tick_stamp_system_time = systime;
   GSL_SPIN_UNLOCK (&global_tick_stamp_mutex);
-
   sfi_thread_emit_wakeups (newstamp);
 }
-
 /**
  * @param tick_stamp tick stamp update to trigger wakeup
  * Wakeup the currently running thread upon the last global tick stamp
@@ -109,33 +92,26 @@ void
 gsl_thread_awake_before (guint64 tick_stamp)
 {
   g_return_if_fail (tick_stamp > 0);
-
   if (tick_stamp > global_tick_stamp_leaps)
     sfi_thread_awake_after (tick_stamp - global_tick_stamp_leaps);
   else
     sfi_thread_awake_after (tick_stamp);
 }
-
-
 /* --- misc --- */
 const gchar*
 gsl_byte_order_to_string (guint byte_order)
 {
   g_return_val_if_fail (byte_order == G_LITTLE_ENDIAN || byte_order == G_BIG_ENDIAN, NULL);
-
   if (byte_order == G_LITTLE_ENDIAN)
     return "little-endian";
   if (byte_order == G_BIG_ENDIAN)
     return "big-endian";
-
   return NULL;
 }
-
 guint
 gsl_byte_order_from_string (const gchar *string)
 {
   g_return_val_if_fail (string != NULL, 0);
-
   while (*string == ' ')
     string++;
   if (strncasecmp (string, "little", 6) == 0)
@@ -144,7 +120,6 @@ gsl_byte_order_from_string (const gchar *string)
     return G_BIG_ENDIAN;
   return 0;
 }
-
 BseErrorType
 gsl_file_check (const gchar *file_name,
 		const gchar *mode)
@@ -153,7 +128,6 @@ gsl_file_check (const gchar *file_name,
     return BSE_ERROR_NONE;
   return gsl_error_from_errno (errno, BSE_ERROR_FILE_OPEN_FAILED);
 }
-
 BseErrorType
 gsl_error_from_errno (gint         sys_errno,
 		      BseErrorType fallback)
@@ -192,7 +166,6 @@ gsl_error_from_errno (gint         sys_errno,
     default:            return fallback;
     }
 }
-
 static guint
 score_error (BseErrorType error)
 {
@@ -211,7 +184,6 @@ score_error (BseErrorType error)
       return i;
   return i;
 }
-
 BseErrorType
 gsl_error_select (guint           n_errors,
                   BseErrorType    first_error,
@@ -246,8 +218,6 @@ gsl_error_select (guint           n_errors,
   g_free (errors);
   return e;
 }
-
-
 /* --- progress notification --- */
 GslProgressState
 gsl_progress_state (gpointer        data,
@@ -264,7 +234,6 @@ gsl_progress_state (gpointer        data,
   pstate.epsilon *= 0.5;
   return pstate;
 }
-
 void
 gsl_progress_notify (GslProgressState *pstate,
                      gfloat            pval,
@@ -272,9 +241,7 @@ gsl_progress_notify (GslProgressState *pstate,
                      ...)
 {
   gboolean need_update;
-
   g_return_if_fail (pstate != NULL);
-
   if (pval >= 0)
     {
       pval = CLAMP (pval, 0, 100);
@@ -285,7 +252,6 @@ gsl_progress_notify (GslProgressState *pstate,
       pval = -1;
       need_update = TRUE;
     }
-
   if (need_update && pstate->pfunc)
     {
       gchar *detail = NULL;
@@ -303,12 +269,10 @@ gsl_progress_notify (GslProgressState *pstate,
       g_free (detail);
     }
 }
-
 void
 gsl_progress_wipe (GslProgressState *pstate)
 {
   g_return_if_fail (pstate != NULL);
-
   if (pstate->wipe_length)
     {
       char *wstr = (char*) g_malloc (pstate->wipe_length + 1 + 1);
@@ -320,7 +284,6 @@ gsl_progress_wipe (GslProgressState *pstate)
       pstate->wipe_length = 0;
     }
 }
-
 guint
 gsl_progress_printerr (gpointer          message,
                        gfloat            pval,
@@ -343,14 +306,12 @@ gsl_progress_printerr (gpointer          message,
   g_free (str);
   return l;
 }
-
 /* --- global initialization --- */
 void
 gsl_init (void)
 {
   g_return_if_fail (bse_engine_exvar_tick_stamp == 0);  /* assert single initialization */
   bse_engine_exvar_tick_stamp = 1;
-
   /* initialize subsystems */
   sfi_mutex_init (&global_tick_stamp_mutex);
   _gsl_init_fd_pool ();

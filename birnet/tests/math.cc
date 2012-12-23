@@ -2,10 +2,8 @@
 //#define TEST_VERBOSE
 #include <birnet/birnettests.h>
 #include <birnet/birnet.hh>
-
 namespace {
 using namespace Birnet;
-
 static void
 test_dtoi()
 {
@@ -146,19 +144,14 @@ test_dtoi()
   TASSERT (ifloor (-1125899906842624.7) == -1125899906842625LL);
   TDONE();
 }
-
 } // Anon
-
 int
 main (int   argc,
       char *argv[])
 {
   birnet_init_test (&argc, &argv);
-
   if (init_settings().test_quick)
     test_dtoi();
-  
   return 0;
 }
-
 /* vim:set ts=8 sts=2 sw=2: */

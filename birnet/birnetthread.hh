@@ -1,13 +1,9 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #ifndef __BIRNET_THREAD_XX_HH__
 #define __BIRNET_THREAD_XX_HH__
-
 #include <birnet/birnetutils.hh>
-
 namespace Birnet {
-
 class Thread;
-
 class Mutex {
   BirnetMutex mutex;
   friend class Cond;
@@ -19,7 +15,6 @@ public:
   bool          trylock ()                      { return 0 == ThreadTable.mutex_trylock (&mutex); /* TRUE indicates success */ }
   /*Des*/       ~Mutex  ();
 };
-
 class RecMutex {
   BirnetRecMutex rmutex;
   BIRNET_PRIVATE_CLASS_COPY (RecMutex);
@@ -30,7 +25,6 @@ public:
   bool          trylock   ()                    { return 0 == ThreadTable.rec_mutex_trylock (&rmutex); /* TRUE indicates success */ }
   /*Des*/       ~RecMutex ();
 };
-
 class Cond {
   BirnetCond cond;
   BIRNET_PRIVATE_CLASS_COPY (Cond);
@@ -43,7 +37,6 @@ public:
                                int64 max_usecs) { ThreadTable.cond_wait_timed (&cond, &m.mutex, max_usecs); }
   /*Des*/       ~Cond         ();
 };
-
 namespace Atomic {
 inline void    read_barrier  (void)                                { BIRNET_MEMORY_BARRIER_RO (ThreadTable); }
 inline void    write_barrier (void)                                { BIRNET_MEMORY_BARRIER_WO (ThreadTable); }
@@ -70,7 +63,6 @@ inline V*      ptr_get       (V* volatile const *ptr_addr)      { return (V*) Th
 template<class V>
 inline bool    ptr_cas       (V* volatile *ptr_adr, V *o, V *n) { return ThreadTable.atomic_pointer_cas ((void**) ptr_adr, (void*) o, (void*) n); }
 } // Atomic
-
 class OwnedMutex {
   BirnetRecMutex    m_rec_mutex;
   Thread * volatile m_owner;
@@ -84,7 +76,6 @@ public:
   inline bool    mine       ();
   /*Des*/       ~OwnedMutex ();
 };
-
 class Thread : public virtual ReferenceCountImpl {
 protected:
   explicit              Thread          (const String      &name);
@@ -144,7 +135,6 @@ protected:
   static void threadxx_wrap   (BirnetThread *cthread);
   static void threadxx_delete (void         *cxxthread);
 };
-
 /**
  * The AutoLocker class locks mutex like objects on construction, and automatically
  * unlocks on destruction. So putting an AutoLocker object on the stack conveniently
@@ -194,9 +184,7 @@ public:
   inline void                   relock      ()                                { locker()->lock(); lcount++; }
   inline void                   unlock      ()                                { BIRNET_ASSERT (lcount > 0); lcount--; locker()->unlock(); }
 };
-
 namespace Atomic {
-
 template<typename T>
 class RingBuffer {
   const uint    m_size;
@@ -295,9 +283,7 @@ public:
     return orig_length - length;
   }
 };
-
 } // Atomic
-
 /* --- implementation --- */
 inline void
 OwnedMutex::lock ()
@@ -305,7 +291,6 @@ OwnedMutex::lock ()
   ThreadTable.rec_mutex_lock (&m_rec_mutex);
   Atomic::ptr_set (&m_owner, &Thread::self());
 }
-
 inline bool
 OwnedMutex::trylock ()
 {
@@ -317,28 +302,22 @@ OwnedMutex::trylock ()
   else
     return false;
 }
-
 inline void
 OwnedMutex::unlock ()
 {
   Atomic::ptr_set (&m_owner, (Thread*) 0);
   ThreadTable.rec_mutex_unlock (&m_rec_mutex);
 }
-
 inline Thread*
 OwnedMutex::owner ()
 {
   return Atomic::ptr_get (&m_owner);
 }
-
 inline bool
 OwnedMutex::mine ()
 {
   return Atomic::ptr_get (&m_owner) == &Thread::self();
 }
-
 } // Birnet
-
 #endif /* __BIRNET_THREAD_XX_HH__ */
-
 /* vim:set ts=8 sts=2 sw=2: */

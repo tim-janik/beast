@@ -1,15 +1,11 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "gxkstatusbar.hh"
-
 #include <gdk/gdkkeysyms.h>
 #include <math.h>
 #include <string.h>
 #include "gxkdialog.hh"
-
-
 #define LONGEST_TIMEOUT         (2147483647 /* 2^31-1 */)
 #define PERC_CMP(f1, f2)        (fabs ((f1) - (f2)) < 1e-7)
-
 /* --- prototypes --- */
 static GxkStatusBar*    status_bar_get_current  (void);
 static void             status_bar_queue_clear  (GxkStatusBar   *sbar,
@@ -18,20 +14,16 @@ static void             status_bar_set          (GxkStatusBar   *sbar,
                                                  gfloat          percentage,
                                                  const gchar    *message,
                                                  const gchar    *status_msg);
-
-
 /* --- variables --- */
 static GQuark     quark_status_bar = 0;
 static GSList    *status_window_stack = NULL;
 static gboolean   error_bell_enabled = TRUE;
-
 /* --- functions --- */
 void
 gxk_status_enable_error_bell (gboolean enable_error_bell)
 {
   error_bell_enabled = enable_error_bell != FALSE;
 }
-
 static void
 status_bar_remove_timer (GxkStatusBar *sbar)
 {
@@ -41,19 +33,16 @@ status_bar_remove_timer (GxkStatusBar *sbar)
       sbar->timer_id = 0;
     }
 }
-
 static void
 sbar_free (gpointer data)
 {
   GxkStatusBar *sbar = (GxkStatusBar*) data;
-  
   status_bar_remove_timer (sbar);
   g_object_unref (sbar->pbar);
   g_object_unref (sbar->message);
   g_object_unref (sbar->status);
   g_free (sbar);
 }
-
 /**
  * @return		status bar container
  *
@@ -65,10 +54,8 @@ gxk_status_bar_create (void)
 {
   GtkWidget *obox, *hbox;
   GxkStatusBar *sbar = g_new0 (GxkStatusBar, 1);
-  
   if (!quark_status_bar)
     quark_status_bar = g_quark_from_static_string ("GxkStatusBar");
-  
   sbar->sbar = (GtkWidget*) g_object_new (GTK_TYPE_FRAME,
                                           "visible", FALSE,
                                           "shadow", GTK_SHADOW_OUT,
@@ -92,7 +79,6 @@ gxk_status_bar_create (void)
   gtk_progress_set_format_string (sbar->prog, "%p %%");
   gtk_progress_set_show_text (sbar->prog, TRUE);
   gtk_box_pack_start (GTK_BOX (obox), GTK_WIDGET (sbar->pbar), FALSE, TRUE, 0);
-  
   hbox = (GtkWidget*) g_object_new (GTK_TYPE_HBOX,
                                     "visible", TRUE,
                                     "homogeneous", FALSE,
@@ -111,7 +97,6 @@ gxk_status_bar_create (void)
                                            "xalign", 1.0,
                                            NULL);
   gtk_box_pack_end (GTK_BOX (hbox), GTK_WIDGET (sbar->status), FALSE, TRUE, GTK_STYLE_THICKNESS (hbox->style, y));
-  
   g_object_ref (sbar->pbar);
   g_object_ref (sbar->message);
   g_object_ref (sbar->status);
@@ -119,35 +104,28 @@ gxk_status_bar_create (void)
   sbar->timer_id = 0;
   status_bar_queue_clear (sbar, 0);
   g_object_set_qdata_full (G_OBJECT (sbar->sbar), quark_status_bar, sbar, sbar_free);
-  
   return sbar->sbar;
 }
-
 static gboolean
 status_bar_clear_handler (gpointer data)
 {
   GxkStatusBar *sbar = (GxkStatusBar*) data;
-
   GDK_THREADS_ENTER ();
   sbar->timer_id = 0;
   status_bar_set (sbar, GXK_STATUS_IDLE, NULL, NULL);
   GDK_THREADS_LEAVE ();
-  
   return FALSE;
 }
-
 static void
 status_bar_queue_clear (GxkStatusBar *sbar,
                         guint         msecs)
 {
   status_bar_remove_timer (sbar);
-  
   if (!msecs)
     status_bar_set (sbar, GXK_STATUS_IDLE, NULL, NULL);
   else
     sbar->timer_id = g_timeout_add (msecs, status_bar_clear_handler, sbar);
 }
-
 /**
  * Clear the current status bar.
  */
@@ -155,11 +133,9 @@ void
 gxk_status_clear (void)
 {
   GxkStatusBar *sbar = status_bar_get_current ();
-  
   if (sbar)
     status_bar_queue_clear (sbar, 0);
 }
-
 static void
 status_bar_set (GxkStatusBar *sbar,
                 gfloat        percentage,
@@ -171,12 +147,10 @@ status_bar_set (GxkStatusBar *sbar,
   gfloat fraction = 0;
   gboolean activity_pulse = FALSE;
   gboolean beep = FALSE;                /* flag beeps for errors */
-  
   if (PERC_CMP (percentage, GXK_STATUS_IDLE_HINT) && !sbar->is_idle)
     return;             /* don't override existing status */
   if (!message) /* clear */
     percentage = GXK_STATUS_IDLE;
-  
   sbar->is_idle = FALSE;
   if (PERC_CMP (percentage, GXK_STATUS_IDLE))
     {
@@ -243,7 +217,6 @@ status_bar_set (GxkStatusBar *sbar,
 #endif
     }
 }
-
 /**
  * @param percentage	progress percentage
  * @param message	message to be displayed
@@ -261,11 +234,9 @@ gxk_status_set (gfloat       percentage,
                 const gchar *status_msg)
 {
   GxkStatusBar *sbar = status_bar_get_current ();
-  
   if (sbar)
     status_bar_set (sbar, percentage, message, status_msg);
 }
-
 /**
  * @param percentage	progress percentage
  * @param status_msg	error status
@@ -281,21 +252,17 @@ gxk_status_printf (gfloat       percentage,
                    ...)
 {
   GxkStatusBar *sbar = status_bar_get_current ();
-  
   if (sbar)
     {
       gchar *buffer;
       va_list args;
-      
       va_start (args, message_fmt);
       buffer = g_strdup_vprintf (message_fmt, args);
       va_end (args);
-      
       status_bar_set (sbar, percentage, buffer, status_msg);
       g_free (buffer);
     }
 }
-
 /**
  * @param libc_errno	errno value
  * @param message_fmt	printf style message to be displayed
@@ -309,16 +276,13 @@ gxk_status_errnoprintf (gint         libc_errno,
 			...)
 {
   GxkStatusBar *sbar = status_bar_get_current ();
-  
   if (sbar)
     {
       gchar *buffer;
       va_list args;
-      
       va_start (args, message_fmt);
       buffer = g_strdup_vprintf (message_fmt, args);
       va_end (args);
-
       if (libc_errno)
 	status_bar_set (sbar, GXK_STATUS_ERROR, buffer, g_strerror (libc_errno));
       else
@@ -326,7 +290,6 @@ gxk_status_errnoprintf (gint         libc_errno,
       g_free (buffer);
     }
 }
-
 /**
  * @param widget	status bar window
  *
@@ -339,11 +302,9 @@ gxk_status_window_push (gpointer widget)
   g_return_if_fail (GTK_IS_WIDGET (widget));
   widget = gtk_widget_get_toplevel ((GtkWidget*) widget);
   g_return_if_fail (GTK_IS_WINDOW (widget) == TRUE);
-  
   gtk_widget_ref ((GtkWidget*) widget);
   status_window_stack = g_slist_prepend (status_window_stack, widget);
 }
-
 /**
  * Pop the most recently pushed window from the status bar
  * window stack.
@@ -352,25 +313,20 @@ void
 gxk_status_window_pop (void)
 {
   g_return_if_fail (status_window_stack != NULL);
-  
   gtk_widget_unref ((GtkWidget*) status_window_stack->data);
   status_window_stack = g_slist_remove (status_window_stack, status_window_stack->data);
 }
-
 static GxkStatusBar*
 status_bar_get_current (void)
 {
   GxkDialog *dialog;
   GSList *slist;
-  
   for (slist = status_window_stack; slist; slist = slist->next)
     {
       dialog = GXK_DIALOG (slist->data);
-      
       if (dialog->status_bar && GTK_WIDGET_DRAWABLE (dialog->status_bar))
         return (GxkStatusBar*) g_object_get_qdata (G_OBJECT (dialog->status_bar), quark_status_bar);
     }
   dialog = gxk_dialog_get_status_window ();
-  
   return dialog ? (GxkStatusBar*) g_object_get_qdata (G_OBJECT (dialog->status_bar), quark_status_bar) : NULL;
 }

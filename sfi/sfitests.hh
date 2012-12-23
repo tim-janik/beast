@@ -1,10 +1,8 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #ifndef __SFI_TESTS_H__
 #define __SFI_TESTS_H__
-
 #include <sfi/sfi.hh>
 #include <birnet/birnettests.h>
-
 /* --- test initialization --- */
 static void BIRNET_UNUSED
 sfi_init_test (int          *argcp,
@@ -40,7 +38,5 @@ sfi_init_test (int          *argcp,
   /* check NULL definition, especially for 64bit */
   BIRNET_ASSERT (sizeof (NULL) == sizeof (void*));
 }
-
 #endif /* __SFI_TESTS_H__ */
-
 /* vim:set ts=8 sts=2 sw=2: */

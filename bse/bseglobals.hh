@@ -1,14 +1,11 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #ifndef __BSE_GLOBALS_H__
 #define __BSE_GLOBALS_H__
-
 #include <bse/bsedefs.hh>
 #include <bse/bsemath.hh>
 #include <bse/bsenote.hh>
 #include <bse/bseconstvalues.hh>
-
 G_BEGIN_DECLS
-
 /* --- time ranges --- */ // FIXME: BSE_TIME_RANGE is deprecated
 typedef enum
 {
@@ -20,8 +17,6 @@ typedef enum
 #define	BSE_TIME_RANGE_MEDIUM_ms	(1000.0 *  10.0)
 #define	BSE_TIME_RANGE_LONG_ms		(1000.0 * 200.0)
 glong	bse_time_range_to_ms		(BseTimeRangeType	time_range);
-
-
 /* --- async handlers --- */
 /* most important, used for immediate async execution */
 #define	BSE_PRIORITY_NOW		(-G_MAXINT / 2)
@@ -54,8 +49,6 @@ gboolean  bse_idle_remove	(guint		id);
 guint	  bse_idle_timed	(guint64	usec_delay,
 				 GSourceFunc    function,
 				 gpointer       data);
-
-
 /* semitone factorization tables, i.e.
  * Index                     Factor
  * (SFI_KAMMER_NOTE - 12) -> 0.5
@@ -64,17 +57,12 @@ guint	  bse_idle_timed	(guint64	usec_delay,
  * etc...
  */
 #define	BSE_TRANSPOSE_FACTOR(st)	(bse_transpose_factor (CLAMP (st, -132, +132)))	/* BSE_MAX_TRANSPOSE */
-
-
 /* --- prototypes --- */
 void		bse_globals_init	(void);
-
 /* --- decibel conversion --- */
 gdouble	bse_db_to_factor	(gdouble	dB);
 gdouble	bse_db_from_factor	(gdouble	factor,
                                  gdouble	min_dB);
 #define	BSE_MINDB               (-96)   /* 32bit:-192 24bit:-144 16bit:-96 */
-
 G_END_DECLS
-
 #endif /* __BSE_GLOBALS_H__ */

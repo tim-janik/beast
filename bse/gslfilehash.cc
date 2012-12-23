@@ -1,69 +1,54 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "gslfilehash.hh"
-
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
 #include <fcntl.h>
 #include <string.h>
 #include <errno.h>
-
-
 /* macros */
 #if (GLIB_SIZEOF_LONG > 4)
 #define HASH_LONG(l)	(l + (guint64 (l) >> 32))
 #else
 #define HASH_LONG(l)	(l)
 #endif
-
-
 /* --- variables --- */
 static BirnetMutex    fdpool_mutex = { 0, };
 static GHashTable *hfile_ht = NULL;
-
-
 /* --- functions --- */
 static guint
 hfile_hash (gconstpointer key)
 {
   const GslHFile *hfile = (const GslHFile*) key;
   guint h;
-  
   h = HASH_LONG (hfile->mtime);
   h ^= g_str_hash (hfile->file_name);
   h ^= HASH_LONG (hfile->n_bytes);
-  
   return h;
 }
-
 static gboolean
 hfile_equals (gconstpointer key1,
 	      gconstpointer key2)
 {
   const GslHFile *hfile1 = (const GslHFile*) key1;
   const GslHFile *hfile2 = (const GslHFile*) key2;
-  
   return (hfile1->mtime == hfile2->mtime &&
 	  hfile1->n_bytes == hfile2->n_bytes &&
 	  strcmp (hfile1->file_name, hfile2->file_name) == 0);
 }
-
 void
 _gsl_init_fd_pool (void)
 {
   g_assert (hfile_ht == NULL);
-  
   sfi_mutex_init (&fdpool_mutex);
   hfile_ht = g_hash_table_new (hfile_hash, hfile_equals);
 }
-
 static gboolean
 stat_file (const gchar *file_name,
 	   GTime       *mtime,
 	   GslLong     *n_bytes)
 {
   struct stat statbuf = { 0, };
-  
   if (stat (file_name, &statbuf) < 0)
     return FALSE;	/* have errno */
   if (mtime)
@@ -72,7 +57,6 @@ stat_file (const gchar *file_name,
     *n_bytes = statbuf.st_size;
   return TRUE;
 }
-
 /**
  * @param file_name     name of the file to open
  * @returns             a new opened GslHFile or NULL if an error occoured (errno set)
@@ -90,14 +74,11 @@ gsl_hfile_open (const gchar *file_name)
 {
   GslHFile key, *hfile;
   gint ret_errno;
-  
   errno = EFAULT;
   g_return_val_if_fail (file_name != NULL, NULL);
-  
   key.file_name = (gchar*) file_name;
   if (!stat_file (file_name, &key.mtime, &key.n_bytes))
     return NULL;	/* errno from stat() */
-  
   sfi_mutex_lock (&fdpool_mutex);
   hfile = (GslHFile*) g_hash_table_lookup (hfile_ht, &key);
   if (hfile)
@@ -110,7 +91,6 @@ gsl_hfile_open (const gchar *file_name)
   else
     {
       gint fd;
-      
       fd = open (file_name, O_RDONLY | O_NOCTTY, 0);
       if (fd >= 0)
 	{
@@ -130,11 +110,9 @@ gsl_hfile_open (const gchar *file_name)
 	ret_errno = errno;
     }
   sfi_mutex_unlock (&fdpool_mutex);
-  
   errno = ret_errno;
   return hfile;
 }
-
 /**
  * @param hfile     valid GslHFile
  *
@@ -145,10 +123,8 @@ void
 gsl_hfile_close (GslHFile *hfile)
 {
   gboolean destroy = FALSE;
-  
   g_return_if_fail (hfile != NULL);
   g_return_if_fail (hfile->ocount > 0);
-  
   sfi_mutex_lock (&fdpool_mutex);
   sfi_mutex_lock (&hfile->mutex);
   if (hfile->ocount > 1)
@@ -166,7 +142,6 @@ gsl_hfile_close (GslHFile *hfile)
     }
   sfi_mutex_unlock (&hfile->mutex);
   sfi_mutex_unlock (&fdpool_mutex);
-  
   if (destroy)
     {
       sfi_mutex_destroy (&hfile->mutex);
@@ -176,7 +151,6 @@ gsl_hfile_close (GslHFile *hfile)
     }
   errno = 0;
 }
-
 /**
  * @param hfile   valid GslHFile
  * @param offset  offset in bytes within 0 and file end
@@ -195,7 +169,6 @@ gsl_hfile_pread (GslHFile *hfile,
 {
   GslLong ret_bytes = -1;
   gint ret_errno;
-  
   errno = EFAULT;
   g_return_val_if_fail (hfile != NULL, -1);
   g_return_val_if_fail (hfile->ocount > 0, -1);
@@ -206,7 +179,6 @@ gsl_hfile_pread (GslHFile *hfile,
       return 0;
     }
   g_return_val_if_fail (bytes != NULL, -1);
-  
   sfi_mutex_lock (&hfile->mutex);
   if (hfile->ocount)
     {
@@ -250,11 +222,9 @@ gsl_hfile_pread (GslHFile *hfile,
   else
     ret_errno = EFAULT;
   sfi_mutex_unlock (&hfile->mutex);
-  
   errno = ret_errno;
   return ret_bytes;
 }
-
 /**
  * @param hfile  valid GslHFile
  * @return offset of first zero byte or -1
@@ -268,11 +238,9 @@ gsl_hfile_zoffset (GslHFile *hfile)
   GslLong zoffset, l;
   guint8 sdata[1024], *p;
   gboolean seen_zero = FALSE;
-
   errno = EFAULT;
   g_return_val_if_fail (hfile != NULL, -1);
   g_return_val_if_fail (hfile->ocount > 0, -1);
-
   sfi_mutex_lock (&hfile->mutex);
   if (hfile->zoffset > -2) /* got valid offset already */
     {
@@ -287,7 +255,6 @@ gsl_hfile_zoffset (GslHFile *hfile)
     }
   hfile->ocount += 1; /* keep open for a while */
   sfi_mutex_unlock (&hfile->mutex);
-
   /* seek to literal '\0' */
   zoffset = 0;
   do
@@ -300,7 +267,6 @@ gsl_hfile_zoffset (GslHFile *hfile)
 	  gsl_hfile_close (hfile);
 	  return -1;
 	}
-
       p = (guint8*) memchr (sdata, 0, l);
       seen_zero = p != NULL;
       zoffset += seen_zero ? p - sdata : l;
@@ -308,17 +274,13 @@ gsl_hfile_zoffset (GslHFile *hfile)
   while (!seen_zero && l);
   if (!seen_zero)
     zoffset = -1;
-
   sfi_mutex_lock (&hfile->mutex);
   if (hfile->zoffset < -1)
     hfile->zoffset = zoffset;
   sfi_mutex_unlock (&hfile->mutex);
-
   gsl_hfile_close (hfile);
-
   return zoffset;
 }
-
 /**
  * @param file_name name of the file to open
  * @return          a new opened #GslRFile or NULL if an error occoured (errno set)
@@ -333,7 +295,6 @@ gsl_rfile_open (const gchar *file_name)
 {
   GslHFile *hfile = gsl_hfile_open (file_name);
   GslRFile *rfile;
-
   if (!hfile)
     rfile = NULL;
   else
@@ -344,7 +305,6 @@ gsl_rfile_open (const gchar *file_name)
     }
   return rfile;
 }
-
 /**
  * @param rfile   valid #GslRFile
  * @return        the file name used to open this file
@@ -356,11 +316,9 @@ gsl_rfile_name (GslRFile *rfile)
 {
   errno = EFAULT;
   g_return_val_if_fail (rfile != NULL, NULL);
-
   errno = 0;
   return rfile->hfile->file_name;
 }
-
 /**
  * @param rfile   valid GslRFile
  * @param offset  new seek position within 0 and gsl_rfile_length()+1
@@ -373,17 +331,13 @@ gsl_rfile_seek_set (GslRFile *rfile,
 		    GslLong   offset)
 {
   GslLong l;
-
   errno = EFAULT;
   g_return_val_if_fail (rfile != NULL, 0);
-
   l = rfile->hfile->n_bytes;
   rfile->offset = CLAMP (offset, 0, l);
-
   errno = 0;
   return rfile->offset;
 }
-
 /**
  * @param rfile   valid GslRFile
  * @return current position within 0 and gsl_rfile_length()
@@ -395,11 +349,9 @@ gsl_rfile_position (GslRFile *rfile)
 {
   errno = EFAULT;
   g_return_val_if_fail (rfile != NULL, 0);
-
   errno = 0;
   return rfile->offset;
 }
-
 /**
  * @param rfile   valid GslRFile
  * @return total length of the GslRFile in bytes
@@ -410,16 +362,12 @@ GslLong
 gsl_rfile_length (GslRFile *rfile)
 {
   GslLong l;
-
   errno = EFAULT;
   g_return_val_if_fail (rfile != NULL, 0);
-
   l = rfile->hfile->n_bytes;
-
   errno = 0;
   return l;
 }
-
 /**
  * @param rfile   valid GslRFile
  * @param offset  offset in bytes within 0 and gsl_rfile_length()
@@ -437,10 +385,8 @@ gsl_rfile_pread (GslRFile *rfile,
 {
   errno = EFAULT;
   g_return_val_if_fail (rfile != NULL, -1);
-
   return gsl_hfile_pread (rfile->hfile, offset, n_bytes, bytes);
 }
-
 /**
  * @param rfile   valid GslRFile
  * @param n_bytes number of bytes to read
@@ -456,16 +402,13 @@ gsl_rfile_read (GslRFile *rfile,
 		gpointer  bytes)
 {
   GslLong l;
-
   errno = EFAULT;
   g_return_val_if_fail (rfile != NULL, -1);
-
   l = gsl_hfile_pread (rfile->hfile, rfile->offset, n_bytes, bytes);
   if (l > 0)
     rfile->offset += l;
   return l;
 }
-
 /**
  * @param rfile  valid GslRFile
  *
@@ -476,7 +419,6 @@ gsl_rfile_close (GslRFile *rfile)
 {
   errno = EFAULT;
   g_return_if_fail (rfile != NULL);
-  
   gsl_hfile_close (rfile->hfile);
   sfi_delete_struct (GslRFile, rfile);
   errno = 0;

@@ -1,6 +1,4 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
-
-
 /* --- searchpath editor --- */
 #include "bstauxdialogs.hh"
 #include "bstfiledialog.hh"
@@ -15,7 +13,6 @@ param_searchpath_change_value (GtkWidget *entry)
       gxk_param_apply_value (param);
     }
 }
-
 static void
 param_searchpath_assign (GtkWidget  *dialog,
                          gchar     **strings,
@@ -27,7 +24,6 @@ param_searchpath_assign (GtkWidget  *dialog,
   g_free (paths);
   param_searchpath_change_value (widget);
 }
-
 static void
 param_searchpath_popup_remove (GtkWidget *widget)
 {
@@ -46,7 +42,6 @@ param_searchpath_popup_remove (GtkWidget *widget)
       gxk_widget_showraise (dialog);
     }
 }
-
 static void
 param_searchpath_add (GtkWidget   *dialog,
                       const gchar *file,
@@ -59,7 +54,6 @@ param_searchpath_add (GtkWidget   *dialog,
   g_free (str);
   param_searchpath_change_value (widget);
 }
-
 static void
 param_searchpath_popup_add (GtkWidget *widget)
 {
@@ -70,7 +64,6 @@ param_searchpath_popup_add (GtkWidget *widget)
       bst_file_dialog_set_handler (BST_FILE_DIALOG (dialog), param_searchpath_add, widget, NULL);
     }
 }
-
 static void
 param_searchpath_replace (GtkWidget   *dialog,
                           const gchar *file,
@@ -80,7 +73,6 @@ param_searchpath_replace (GtkWidget   *dialog,
   gtk_entry_set_text (GTK_ENTRY (widget), file);
   param_searchpath_change_value (widget);
 }
-
 static void
 param_searchpath_popup_replace (GtkWidget *widget)
 {
@@ -91,7 +83,6 @@ param_searchpath_popup_replace (GtkWidget *widget)
       bst_file_dialog_set_handler (BST_FILE_DIALOG (dialog), param_searchpath_replace, widget, NULL);
     }
 }
-
 static GtkWidget*
 param_searchpath_create (GxkParam    *param,
                          const gchar *tooltip,
@@ -127,7 +118,6 @@ param_searchpath_create (GxkParam    *param,
   gxk_widget_add_option (box, "hexpand", "+");
   return box;
 }
-
 static GxkParamEditor param_searchpath = {
   { "searchpath",       N_("Searchpath Text Entry"), },
   { G_TYPE_STRING, },

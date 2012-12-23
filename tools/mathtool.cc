@@ -8,22 +8,15 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
 #define PREC    "15"
-
-
 static void	usage (void)	G_GNUC_NORETURN;
-
 static void  ring_test (void);
-
 static guint         shift_argc = 0;
 static const gchar **shift_argv = NULL;
-
 static const gchar*
 shift (void)
 {
   const gchar *arg;
-  
   if (shift_argc > 1)
     {
       shift_argc--;
@@ -39,10 +32,8 @@ static const gchar*
 pshift (void)
 {
   const gchar *arg = shift ();
-  
   return arg ? arg : "";
 }
-
 int
 main (int   argc,
       char *argv[])
@@ -53,10 +44,8 @@ main (int   argc,
   const gchar *filter_label = 0;
   gdouble *a, *b;
   guint i, order = 0;
-  
   shift_argc = argc;
   shift_argv = (const gchar**) argv;
-
   /* init */
   SfiInitValue values[] = {
     { "stand-alone",            "true" }, /* no rcfiles etc. */
@@ -66,14 +55,11 @@ main (int   argc,
     { NULL }
   };
   bse_init_inprocess (&argc, &argv, NULL, values);
-
   arg = shift ();
   if (!arg)
     usage ();
-  
  restart:
   a = b = 0;
-  
   if (strcmp (arg, "approx5-exp2-run") == 0)
     {
       gfloat f;
@@ -95,17 +81,14 @@ main (int   argc,
   else if (strcmp (arg, "wave-scan") == 0)
     {
       const gchar *file = pshift ();
-      
       while (file)
 	{
 	  BseWaveFileInfo *fi;
 	  BseErrorType error;
-	  
 	  fi = bse_wave_file_info_load (file, &error);
 	  if (fi)
 	    {
 	      guint i;
-	      
 	      g_print ("Loader \"%s\" found %u waves in \"%s\":\n", fi->loader->name, fi->n_waves, file);
 	      for (i = 0; i < fi->n_waves; i++)
 		g_print ("%u) %s\n", i + 1, fi->waves[i].name);
@@ -121,7 +104,6 @@ main (int   argc,
   else if (strcmp (arg, "file-test") == 0)
     {
       const gchar *file = pshift ();
-      
       g_print ("file test for \"%s\":\n", file);
       g_print ("  is readable   : %s\n", bse_error_blurb (gsl_file_check (file, "r")));
       g_print ("  is writable   : %s\n", bse_error_blurb (gsl_file_check (file, "w")));
@@ -141,7 +123,6 @@ main (int   argc,
       x = atof (pshift ());
       y = atof (pshift ());
       z = atof (pshift ());
-      
       g_print ("rf(%f, %f, %f) = %."PREC"f\n", x, y, z, gsl_ellip_rf (x, y, z));
     }
   else if (strcmp (arg, "F") == 0)
@@ -149,7 +130,6 @@ main (int   argc,
       double phi, ak;
       phi = atof (pshift ());
       ak = atof (pshift ());
-      
       g_print ("F(%f, %f) = %."PREC"f\n", phi, ak, gsl_ellip_F (phi, ak));
     }
   else if (strcmp (arg, "sn") == 0)
@@ -157,7 +137,6 @@ main (int   argc,
       double u, emmc;
       u = atof (pshift ());
       emmc = atof (pshift ());
-      
       g_print ("sn(%f, %f) = %."PREC"f\n", u, emmc, gsl_ellip_sn (u, emmc));
     }
   else if (strcmp (arg, "snc") == 0)
@@ -167,7 +146,6 @@ main (int   argc,
       u.im = atof (pshift ());
       emmc.re = atof (pshift ());
       emmc.im = atof (pshift ());
-      
       g_print ("snc(%s, %s) = %s\n",
 	       bse_complex_str (u),
 	       bse_complex_str (emmc),
@@ -180,7 +158,6 @@ main (int   argc,
       u.im = atof (pshift ());
       k2.re = atof (pshift ());
       k2.im = atof (pshift ());
-      
       g_print ("sci_snc(%s, %s) = %s\n",
 	       bse_complex_str (u),
 	       bse_complex_str (k2),
@@ -191,7 +168,6 @@ main (int   argc,
       double y, emmc;
       y = atof (pshift ());
       emmc = atof (pshift ());
-      
       g_print ("asn(%f, %f) = %."PREC"f\n", y, emmc, gsl_ellip_asn (y, emmc));
     }
   else if (strcmp (arg, "asnc") == 0)
@@ -201,7 +177,6 @@ main (int   argc,
       y.im = atof (pshift ());
       emmc.re = atof (pshift ());
       emmc.im = atof (pshift ());
-      
       g_print ("asnc(%s, %s) = %s\n",
 	       bse_complex_str (y), bse_complex_str (emmc),
 	       bse_complex_str (bse_complex_ellip_asn (y, emmc)));
@@ -252,7 +227,6 @@ main (int   argc,
 	  {
 	    BseComplex root, roots[100];
 	    guint i;
-	    
 	    if (*arg == 'r')
 	      {
 		g_print ("#roots:\n");
@@ -364,7 +338,6 @@ main (int   argc,
       f *= PI / 2.;
       a = g_new (gdouble, order + 1);
       b = g_new (gdouble, order + 1);
-      
       gsl_filter_butter_hp (order, f, e, a, b);
       g_print ("# Highpass Butterworth filter order=%u freq=%f epsilon(s^2)=%f norm0=%f:\n",
 	       order, f, e,
@@ -382,7 +355,6 @@ main (int   argc,
       f2 *= PI / 2.;
       a = g_new (gdouble, order + 1);
       b = g_new (gdouble, order + 1);
-      
       gsl_filter_butter_bp (order, f1, f2, e, a, b);
       g_print ("# Bandpass Butterworth filter order=%u freq1=%f freq2=%f epsilon(s^2)=%f norm0=%f:\n",
 	       order, f1, f2, e,
@@ -400,7 +372,6 @@ main (int   argc,
       f2 *= PI / 2.;
       a = g_new (gdouble, order + 1);
       b = g_new (gdouble, order + 1);
-      
       gsl_filter_butter_bs (order, f1, f2, e, a, b);
       g_print ("# Bandstop Butterworth filter order=%u freq1=%f freq2=%f epsilon(s^2)=%f norm0=%f:\n",
 	       order, f1, f2, e,
@@ -416,7 +387,6 @@ main (int   argc,
       f *= PI / 2.;
       a = g_new (gdouble, order + 1);
       b = g_new (gdouble, order + 1);
-      
       gsl_filter_tscheb1_lp (order, f, e, a, b);
       g_print ("# Lowpass Tschebyscheff Type1 order=%u freq=%f epsilon(s^2)=%f norm0=%f:\n",
 	       order, f, e,
@@ -430,10 +400,8 @@ main (int   argc,
       f = atof (pshift ());
       e = atof (pshift ());
       f *= PI / 2.;
-      
       a = g_new (gdouble, order + 1);
       b = g_new (gdouble, order + 1);
-      
       gsl_filter_tscheb1_hp (order, f, e, a, b);
       g_print ("# Highpass Tschebyscheff Type1 order=%u freq=%f epsilon(s^2)=%f norm0=%f:\n",
 	       order, f, e,
@@ -449,10 +417,8 @@ main (int   argc,
       e = atof (pshift ());
       fc *= PI / 2.;
       fr *= PI / 2.;
-      
       a = g_new (gdouble, order + 1);
       b = g_new (gdouble, order + 1);
-      
       gsl_filter_tscheb1_bs (order, fc, fr, e, a, b);
       g_print ("# Bandstop Tschebyscheff Type1 order=%u freq_c=%f freq_r=%f epsilon(s^2)=%f norm=%f:\n",
 	       order, fc, fr, e,
@@ -468,10 +434,8 @@ main (int   argc,
       e = atof (pshift ());
       fc *= PI / 2.;
       fr *= PI / 2.;
-      
       a = g_new (gdouble, order + 1);
       b = g_new (gdouble, order + 1);
-      
       gsl_filter_tscheb1_bp (order, fc, fr, e, a, b);
       g_print ("# Bandpass Tschebyscheff Type1 order=%u freq_c=%f freq_r=%f epsilon(s^2)=%f norm=%f:\n",
 	       order, fc, fr, e,
@@ -486,10 +450,8 @@ main (int   argc,
       st = atof (pshift ());
       e = atof (pshift ());
       f *= PI / 2.;
-      
       a = g_new (gdouble, order + 1);
       b = g_new (gdouble, order + 1);
-      
       gsl_filter_tscheb2_lp (order, f, st, e, a, b);
       g_print ("# Lowpass Tschebyscheff Type2 order=%u freq=%f steepness=%f (%f) epsilon(s^2)=%f norm=%f:\n",
 	       order, f, st, f * (1.+st), e,
@@ -504,10 +466,8 @@ main (int   argc,
       st = atof (pshift ());
       e = atof (pshift ());
       f *= PI / 2.;
-      
       a = g_new (gdouble, order + 1);
       b = g_new (gdouble, order + 1);
-      
       gsl_filter_tscheb2_hp (order, f, st, e, a, b);
       g_print ("# Highpass Tschebyscheff Type2 order=%u freq=%f steepness=%f (%f, %f) epsilon(s^2)=%f norm=%f:\n",
 	       order, f, st, PI - f, (PI - f) * (1.+st), e,
@@ -524,10 +484,8 @@ main (int   argc,
       e = atof (pshift ());
       f1 *= PI / 2.;
       f2 *= PI / 2.;
-      
       a = g_new (gdouble, order + 1);
       b = g_new (gdouble, order + 1);
-      
       gsl_filter_tscheb2_bp (order, f1, f2, st, e, a, b);
       g_print ("# Bandpass Tschebyscheff Type2 order=%u freq1=%f freq2=%f steepness=%f epsilon(s^2)=%f norm=%f:\n",
 	       order, f1, f2, st, e,
@@ -544,10 +502,8 @@ main (int   argc,
       e = atof (pshift ());
       f1 *= PI / 2.;
       f2 *= PI / 2.;
-      
       a = g_new (gdouble, order + 1);
       b = g_new (gdouble, order + 1);
-      
       gsl_filter_tscheb2_bs (order, f1, f2, st, e, a, b);
       g_print ("# Bandstop Tschebyscheff Type2 order=%u freq1=%f freq2=%f steepness=%f epsilon(s^2)=%f norm=%f:\n",
 	       order, f1, f2, st, e,
@@ -562,17 +518,14 @@ main (int   argc,
     {
       unsigned int iorder = atoi (pshift ());
       unsigned int n_points = 0;
-      
       double *freq = g_newa (double, argc / 2 + 1);
       double *value = g_newa (double, argc / 2 + 1);
       double *a = g_newa (double, iorder);
       const char *f, *v;
-      
       do
 	{
 	  f = pshift ();
 	  v = pshift ();
-	  
 	  if (f[0] && v[0])
 	    {
 	      freq[n_points] = atof (f) * PI;
@@ -581,17 +534,14 @@ main (int   argc,
 	    }
 	}
       while (f[0] && v[0]);
-      
       gsl_filter_fir_approx (iorder, a, n_points, freq, value, FALSE);
       g_print ("FIR%u(z)=%s\n", iorder, bse_poly_str (iorder, a, "z"));
     }
   else
     usage ();
-  
   if (a && b)
     {
       gdouble freq;
-      
       if (filter_mode == FILTER_SCAN)
 	{
 	  freq = 0.001;
@@ -612,14 +562,11 @@ main (int   argc,
       g_free (a);
       g_free (b);
     }
-  
   arg = shift ();
   if (arg)
     goto restart;
-  
   return 0;
 }
-
 static void
 usage (void)
 {
@@ -659,7 +606,6 @@ usage (void)
   g_print ("  poly | polyr | polyp                      polynom test (+roots or +poles)\n");
   exit (1);
 }
-
 static void
 print_int_ring (SfiRing *ring)
 {
@@ -669,7 +615,6 @@ print_int_ring (SfiRing *ring)
     g_print ("%c", char (size_t (node->data)));
   g_print ("}");
 }
-
 static gint
 ints_cmp (gconstpointer d1,
 	  gconstpointer d2,
@@ -679,7 +624,6 @@ ints_cmp (gconstpointer d1,
   size_t i2 = size_t (d2);
   return i1 < i2 ? -1 : i1 > i2;
 }
-
 static void
 ring_test (void)
 {
@@ -702,7 +646,6 @@ ring_test (void)
     { 26, 'z', 'y', 'x', 'w', 'v', 'u', 't', 's', 'r', 'q', 'p', 'o', 'n', 'm'
       ,   'l', 'k', 'j', 'i', 'h', 'g', 'f', 'e', 'd', 'c', 'b', 'a', },
   };
-
   for (uint n = 0; n < G_N_ELEMENTS (data_array); n++)
     {
       uint l = data_array[n][0];
@@ -718,6 +661,4 @@ ring_test (void)
       sfi_ring_free (ring);
     }
 }
-
-
 /* vim:set ts=8 sts=2 sw=2: */

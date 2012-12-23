@@ -1,11 +1,8 @@
 // CC0 Public Domain: http://creativecommons.org/publicdomain/zero/1.0/
 #include "bsefilter.hh"
 #include <birnet/birnet.hh>
-
 using namespace Birnet;
-
 extern "C" {
-
 const gchar*
 bse_iir_filter_kind_string (BseIIRFilterKind fkind)
 {
@@ -19,7 +16,6 @@ bse_iir_filter_kind_string (BseIIRFilterKind fkind)
     default:                            return "?unknown?";
     }
 }
-
 const gchar*
 bse_iir_filter_type_string (BseIIRFilterType ftype)
 {
@@ -32,7 +28,6 @@ bse_iir_filter_type_string (BseIIRFilterType ftype)
     default:                            return "?unknown?";
     }
 }
-
 gchar*
 bse_iir_filter_request_string (const BseIIRFilterRequest *ifr)
 {
@@ -53,7 +48,6 @@ bse_iir_filter_request_string (const BseIIRFilterRequest *ifr)
     s += " stopband-edge=" + string_from_float (ifr->stopband_edge);
   return g_strdup (s.c_str());
 }
-
 gchar*
 bse_iir_filter_design_string (const BseIIRFilterDesign *fid)
 {
@@ -93,7 +87,6 @@ bse_iir_filter_design_string (const BseIIRFilterDesign *fid)
 #endif
   return g_strdup (s.c_str());
 }
-
 bool
 bse_iir_filter_design (const BseIIRFilterRequest  *filter_request,
                        BseIIRFilterDesign         *filter_design)
@@ -104,5 +97,4 @@ bse_iir_filter_design (const BseIIRFilterRequest  *filter_request,
     return _bse_filter_design_ellf (filter_request, filter_design);
   return false;
 }
-
 } // C

@@ -4,12 +4,9 @@
 #include <vorbis/codec.h>
 #include <string.h>
 #include <errno.h>
-
 static SFI_MSG_TYPE_DEFINE (debug_vorbis, "vorbis", SFI_MSG_DEBUG, NULL);
 #define DEBUG(...)      sfi_debug (debug_vorbis, __VA_ARGS__)
 #define DIAG(...)       sfi_diag (__VA_ARGS__)
-
-
 /* --- structures --- */
 typedef struct {
   guint length;
@@ -42,8 +39,6 @@ struct _GslVorbisCutter
   vorbis_comment        vcomment;
   vorbis_dsp_state      vdsp;
 };
-
-
 /* --- miscellaneous --- */
 static const gchar*
 ov_error_blurb (gint ov_error)
@@ -67,7 +62,6 @@ ov_error_blurb (gint ov_error)
     default:            return "Unknown failure";
     }
 }
-
 static void
 enqueue_page (SfiRing **dblocks,
               ogg_page *opage)
@@ -81,8 +75,6 @@ enqueue_page (SfiRing **dblocks,
   memcpy (dblock->data, opage->body, dblock->length);
   *dblocks = sfi_ring_append (*dblocks, dblock);
 }
-
-
 /* --- cutter API --- */
 GslVorbisCutter*
 gsl_vorbis_cutter_new (void)
@@ -104,18 +96,15 @@ gsl_vorbis_cutter_new (void)
   vorbis_comment_init (&self->vcomment);
   return self;
 }
-
 void
 gsl_vorbis_cutter_set_cutpoint (GslVorbisCutter    *self,
                                 GslVorbisCutterMode cutmode,
                                 SfiNum              cutpoint)
 {
   g_return_if_fail (self != NULL);
-
   /* cutpoint is interpreted as last_sample + 1,
    * i.e. sample[cutpoint] is removed for SAMPLE_BOUNDARY
    */
-
   switch (cutpoint > 0 ? cutmode : 0)
     {
     case GSL_VORBIS_CUTTER_SAMPLE_BOUNDARY:
@@ -130,36 +119,28 @@ gsl_vorbis_cutter_set_cutpoint (GslVorbisCutter    *self,
       break;
     }
 }
-
 void
 gsl_vorbis_cutter_filter_serialno (GslVorbisCutter        *self,
                                    guint                   serialno)
 {
   g_return_if_fail (self != NULL);
-
   /* only read an input Ogg/Vorbis stream with serial number "serialno" */
-
   self->filtered_serialno = serialno;
   self->filter_serialno = TRUE;
 }
-
 void
 gsl_vorbis_cutter_force_serialno (GslVorbisCutter        *self,
                                   guint                   serialno)
 {
   g_return_if_fail (self != NULL);
-
   /* change the Ogg/Vorbis stream serial number on output to "serialno" */
-
   self->forced_serialno = serialno;
   self->force_serialno = TRUE;
 }
-
 void
 gsl_vorbis_cutter_destroy (GslVorbisCutter *self)
 {
   g_return_if_fail (self != NULL);
-  
   /* cleanup codec state */
   if (self->vorbis_initialized)
     vorbis_dsp_clear (&self->vdsp);
@@ -175,7 +156,6 @@ gsl_vorbis_cutter_destroy (GslVorbisCutter *self)
   /* cleanup self */
   g_free (self);
 }
-
 static void
 vorbis_cutter_abort (GslVorbisCutter *self)
 {
@@ -184,24 +164,19 @@ vorbis_cutter_abort (GslVorbisCutter *self)
     g_free (sfi_ring_pop_head (&self->dblocks));
   self->eos = TRUE;
 }
-
 gboolean
 gsl_vorbis_cutter_ogg_eos (GslVorbisCutter *self)
 {
   g_return_val_if_fail (self != NULL, FALSE);
-
   return self->eos && !self->dblocks;
 }
-
 guint
 gsl_vorbis_cutter_read_ogg (GslVorbisCutter *self,
                             guint            n_bytes,
                             guint8          *bytes)
 {
   guint8 *ubytes = bytes;
-
   g_return_val_if_fail (self != NULL, 0);
-
   while (n_bytes && self->dblocks)
     {
       CDataBlock *dblock = (CDataBlock*) self->dblocks->data;
@@ -218,7 +193,6 @@ gsl_vorbis_cutter_read_ogg (GslVorbisCutter *self,
     }
   return bytes - ubytes;
 }
-
 static void
 vorbis_cutter_process_paket (GslVorbisCutter *self,
                              ogg_packet      *opacket)
@@ -352,7 +326,6 @@ vorbis_cutter_process_paket (GslVorbisCutter *self,
       self->eos = opacket->e_o_s > 0;
     }
 }
-
 void
 gsl_vorbis_cutter_write_ogg (GslVorbisCutter *self,
                              guint            n_bytes,
@@ -363,7 +336,6 @@ gsl_vorbis_cutter_write_ogg (GslVorbisCutter *self,
     g_return_if_fail (bytes != NULL);
   else
     return;
-
   if (!self->eos)
     {
       ogg_page opage;

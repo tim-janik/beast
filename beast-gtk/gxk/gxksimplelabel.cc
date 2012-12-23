@@ -4,7 +4,6 @@
 #include <gdk/gdkkeysyms.h>
 #include <pango/pango.h>
 #include <libintl.h>
-
 enum {
   PROP_0,
   PROP_LABEL,
@@ -15,7 +14,6 @@ enum {
   PROP_MNEMONIC_KEYVAL,
   PROP_MNEMONIC_WIDGET
 };
-
 /* --- prototypes --- */
 static void     simple_label_class_init           (GxkSimpleLabelClass *klass);
 static void     simple_label_init                 (GxkSimpleLabel      *label);
@@ -49,11 +47,8 @@ static gboolean simple_label_mnemonic_activate    (GtkWidget           *widget,
                                                    gboolean             group_cycling);
 static void     simple_label_setup_mnemonic       (GxkSimpleLabel      *label,
                                                    guint                last_key);
-
 /* --- variables --- */
 static gpointer parent_class = NULL;
-
-
 /* --- functions --- */
 GType
 gxk_simple_label_get_type (void)
@@ -77,22 +72,17 @@ gxk_simple_label_get_type (void)
     }
   return label_type;
 }
-
 static void
 simple_label_class_init (GxkSimpleLabelClass *klass)
 {
   GObjectClass *gobject_class = G_OBJECT_CLASS (klass);
   GtkObjectClass *object_class = GTK_OBJECT_CLASS (klass);
   GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (klass);
-  
   parent_class = g_type_class_peek_parent (klass);
-  
   gobject_class->set_property = simple_label_set_property;
   gobject_class->get_property = simple_label_get_property;
   gobject_class->finalize = simple_label_finalize;
-  
   object_class->destroy = simple_label_destroy;
-  
   widget_class->size_request = simple_label_size_request;
   widget_class->style_set = simple_label_style_set;
   widget_class->direction_changed = simple_label_direction_changed;
@@ -100,7 +90,6 @@ simple_label_class_init (GxkSimpleLabelClass *klass)
   widget_class->hierarchy_changed = simple_label_hierarchy_changed;
   widget_class->screen_changed = simple_label_screen_changed;
   widget_class->mnemonic_activate = simple_label_mnemonic_activate;
-  
   g_object_class_install_property (gobject_class,
                                    PROP_LABEL,
                                    g_param_spec_string ("label", _("Label"), _("The text of the label"),
@@ -137,13 +126,11 @@ simple_label_class_init (GxkSimpleLabelClass *klass)
                                                           "key is pressed"),
                                                         GTK_TYPE_WIDGET, G_PARAM_READWRITE));
 }
-
 static void
 simple_label_init (GxkSimpleLabel *self)
 {
   GTK_WIDGET_SET_FLAGS (self, GTK_NO_WINDOW);
   gtk_widget_show (GTK_WIDGET (self));
-  
   self->jtype = GTK_JUSTIFY_LEFT;
   self->layout = NULL;
   self->text = g_strdup ("");
@@ -155,7 +142,6 @@ simple_label_init (GxkSimpleLabel *self)
   self->label = g_strdup ("");
   gxk_simple_label_recalculate (self);
 }
-
 static void 
 simple_label_set_property (GObject      *object,
                            guint         prop_id,
@@ -212,7 +198,6 @@ simple_label_set_property (GObject      *object,
       break;
     }
 }
-
 static void 
 simple_label_get_property (GObject     *object,
                            guint        prop_id,
@@ -220,9 +205,7 @@ simple_label_get_property (GObject     *object,
                            GParamSpec  *pspec)
 {
   GxkSimpleLabel *label;
-  
   label = GXK_SIMPLE_LABEL (object);
-  
   switch (prop_id)
     {
     case PROP_LABEL:
@@ -248,7 +231,6 @@ simple_label_get_property (GObject     *object,
       break;
     }
 }
-
 static void
 simple_label_destroy (GtkObject *object)
 {
@@ -256,7 +238,6 @@ simple_label_destroy (GtkObject *object)
   gxk_simple_label_set_mnemonic_widget (self, NULL);
   GTK_OBJECT_CLASS (parent_class)->destroy (object);
 }
-
 static void
 simple_label_finalize (GObject *object)
 {
@@ -269,7 +250,6 @@ simple_label_finalize (GObject *object)
   g_free (self->text);
   G_OBJECT_CLASS (parent_class)->finalize (object);
 }
-
 static gboolean
 simple_label_mnemonic_activate (GtkWidget *widget,
                                 gboolean   group_cycling)
@@ -277,7 +257,6 @@ simple_label_mnemonic_activate (GtkWidget *widget,
   GtkWidget *parent = widget->parent;
   if (GXK_SIMPLE_LABEL (widget)->mnemonic_widget)
     return gtk_widget_mnemonic_activate (GXK_SIMPLE_LABEL (widget)->mnemonic_widget, group_cycling);
-  
   /* Try to find the widget to activate by traversing the
    * widget's ancestry.
    */
@@ -299,13 +278,11 @@ simple_label_mnemonic_activate (GtkWidget *widget,
         }
       parent = parent->parent;
     }
-  
   /* barf if there was nothing to activate */
   g_warning ("Couldn't find a target for a mnemonic activation.");
   gdk_display_beep (gtk_widget_get_display (widget));
   return FALSE;
 }
-
 static void
 simple_label_setup_mnemonic (GxkSimpleLabel *self,
                              guint           last_key)
@@ -329,7 +306,6 @@ simple_label_setup_mnemonic (GxkSimpleLabel *self,
       self->mnemonic_window = GTK_WINDOW (toplevel);
     }
 }
-
 static void
 simple_label_hierarchy_changed (GtkWidget *widget,
                                 GtkWidget *old_toplevel)
@@ -337,24 +313,20 @@ simple_label_hierarchy_changed (GtkWidget *widget,
   GxkSimpleLabel *self = GXK_SIMPLE_LABEL (widget);
   simple_label_setup_mnemonic (self, self->mnemonic_keyval);
 }
-
 static void
 simple_label_screen_changed (GtkWidget *widget,
                              GdkScreen *old_screen)
 {
   gxk_simple_label_recalculate (GXK_SIMPLE_LABEL (widget));
 }
-
 static void
 label_mnemonic_widget_weak_notify (gpointer      data,
                                    GObject      *where_the_object_was)
 {
   GxkSimpleLabel *label = (GxkSimpleLabel*) data;
-  
   label->mnemonic_widget = NULL;
   g_object_notify (G_OBJECT (label), "mnemonic_widget");
 }
-
 void
 gxk_simple_label_set_mnemonic_widget (GxkSimpleLabel  *self,
                                       GtkWidget       *widget)
@@ -362,7 +334,6 @@ gxk_simple_label_set_mnemonic_widget (GxkSimpleLabel  *self,
   g_return_if_fail (GXK_IS_SIMPLE_LABEL (self));
   if (widget)
     g_return_if_fail (GTK_IS_WIDGET (widget));
-  
   if (self->mnemonic_widget)
     g_object_weak_unref (G_OBJECT (self->mnemonic_widget),
                          label_mnemonic_widget_weak_notify,
@@ -374,7 +345,6 @@ gxk_simple_label_set_mnemonic_widget (GxkSimpleLabel  *self,
                        self);
   g_object_notify ((GObject*) self, "mnemonic_widget");
 }
-
 static PangoAttrList*
 simple_label_pattern_to_attrs (GxkSimpleLabel *self,
                                const gchar    *pattern)
@@ -383,9 +353,7 @@ simple_label_pattern_to_attrs (GxkSimpleLabel *self,
   const char *p = self->text;
   const char *q = pattern;
   PangoAttrList *attrs;
-  
   attrs = pango_attr_list_new ();
-  
   while (1)
     {
       while (*p && *q && *q != '_')
@@ -399,22 +367,18 @@ simple_label_pattern_to_attrs (GxkSimpleLabel *self,
           p = g_utf8_next_char (p);
           q++;
         }
-      
       if (p > start)
         {
           PangoAttribute *attr = pango_attr_underline_new (PANGO_UNDERLINE_LOW);
           attr->start_index = start - self->text;
           attr->end_index = p - self->text;
-          
           pango_attr_list_insert (attrs, attr);
         }
       else
         break;
     }
-  
   return attrs;
 }
-
 static void
 simple_label_set_pattern_internal (GxkSimpleLabel *self,
                                    const gchar    *pattern)
@@ -424,7 +388,6 @@ simple_label_set_pattern_internal (GxkSimpleLabel *self,
     pango_attr_list_unref (self->effective_attrs);
   self->effective_attrs = attrs;
 }
-
 static void
 simple_label_set_uline_text_internal (GxkSimpleLabel *self,
                                       const gchar    *str)
@@ -436,7 +399,6 @@ simple_label_set_uline_text_internal (GxkSimpleLabel *self,
   gchar *pattern_dest = pattern;
   const gchar *src = str;
   gboolean underscore = FALSE;
-  
   /* Split text into the base text and a separate pattern
    * of underscores.
    */
@@ -482,15 +444,12 @@ simple_label_set_uline_text_internal (GxkSimpleLabel *self,
     }
   *dest = 0;
   *pattern_dest = 0;
-  
   g_free (self->text);
   self->text = new_str;
   simple_label_set_pattern_internal (self, pattern);
   g_free (pattern);
-  
   self->mnemonic_keyval = accel_key;
 }
-
 static void
 gxk_simple_label_recalculate (GxkSimpleLabel *self)
 {
@@ -517,7 +476,6 @@ gxk_simple_label_recalculate (GxkSimpleLabel *self)
     }
   gtk_widget_queue_resize (GTK_WIDGET (self));
 }
-
 static void
 label_ensure_layout (GxkSimpleLabel *self)
 {
@@ -545,7 +503,6 @@ label_ensure_layout (GxkSimpleLabel *self)
   pango_layout_set_text (self->layout, self->text, -1);
   self->needs_cutting = self->auto_cut;
 }
-
 static inline gint
 label_allocation_width (GxkSimpleLabel *self)
 {
@@ -553,7 +510,6 @@ label_allocation_width (GxkSimpleLabel *self)
   GtkMisc *misc = GTK_MISC (self);
   return MAX (widget->allocation.width - 2 * misc->xpad, 1);
 }
-
 static inline gint
 label_allocation_height (GxkSimpleLabel *self)
 {
@@ -561,7 +517,6 @@ label_allocation_height (GxkSimpleLabel *self)
   GtkMisc *misc = GTK_MISC (self);
   return MAX (widget->allocation.height - 2 * misc->ypad, 1);
 }
-
 static void
 label_cut_layout (GxkSimpleLabel *self)
 {
@@ -589,14 +544,12 @@ label_cut_layout (GxkSimpleLabel *self)
       pango_layout_get_extents (self->layout, NULL, &logical_rect);
     }
 }
-
 static void
 simple_label_size_request (GtkWidget      *widget,
                            GtkRequisition *requisition)
 {
   GxkSimpleLabel *self = GXK_SIMPLE_LABEL (widget);
   PangoRectangle logical_rect;
-  
   if (self->layout)
     {
       g_object_unref (self->layout);
@@ -607,7 +560,6 @@ simple_label_size_request (GtkWidget      *widget,
   requisition->width = PANGO_PIXELS (logical_rect.width) + 2 * GTK_MISC (self)->xpad;
   requisition->height = PANGO_PIXELS (logical_rect.height) + 2 * GTK_MISC (self)->ypad;
 }
-
 static void 
 simple_label_style_set (GtkWidget *widget,
                         GtkStyle  *previous_style)
@@ -615,7 +567,6 @@ simple_label_style_set (GtkWidget *widget,
   GxkSimpleLabel *self = GXK_SIMPLE_LABEL (widget);
   gxk_simple_label_recalculate (self);
 }
-
 static void 
 simple_label_direction_changed (GtkWidget        *widget,
                                 GtkTextDirection previous_dir)
@@ -625,7 +576,6 @@ simple_label_direction_changed (GtkWidget        *widget,
     pango_layout_context_changed (self->layout);
   GTK_WIDGET_CLASS (parent_class)->direction_changed (widget, previous_dir);
 }
-
 static void
 get_layout_location (GxkSimpleLabel *self,
                      gint           *xp,
@@ -640,19 +590,16 @@ get_layout_location (GxkSimpleLabel *self,
   pango_layout_get_extents (self->layout, NULL, &logical_rect);
   gint rwidth = MIN (widget->requisition.width, PANGO_PIXELS (logical_rect.width));
   gint rheight = MIN (widget->requisition.height, PANGO_PIXELS (logical_rect.height));
-  
   x = widget->allocation.x + xpad + GTK_MISC (self)->xalign * MAX (label_allocation_width (self) - rwidth, 0);
   y = widget->allocation.y + ypad + GTK_MISC (self)->yalign * MAX (label_allocation_height (self) - rheight, 0);
   *xp = x;
   *yp = y;
 }
-
 static gint
 simple_label_expose (GtkWidget      *widget,
                      GdkEventExpose *event)
 {
   GxkSimpleLabel *self = GXK_SIMPLE_LABEL (widget);
-  
   label_ensure_layout (self);
   if (self->needs_cutting)
     {

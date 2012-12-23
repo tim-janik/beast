@@ -10,12 +10,8 @@
 #include "bseproject.hh"
 #include "bsestorage.hh"
 #include "bsecxxplugin.hh"
-
-
 #define parse_or_return         bse_storage_scanner_parse_or_return
 #define peek_or_return          bse_storage_scanner_peek_or_return
-
-
 /* --- parameters --- */
 enum
 {
@@ -30,15 +26,10 @@ enum
   PROP_RIGHT_VOLUME,
   PROP_MASTER_OUTPUT,
 };
-
-
 /* --- prototypes --- */
 static gboolean bse_bus_ensure_summation (BseBus *self);
-
 /* --- variables --- */
 static gpointer		 bus_parent_class = NULL;
-
-
 /* --- functions --- */
 static void
 bse_bus_init (BseBus *self)
@@ -50,7 +41,6 @@ bse_bus_init (BseBus *self)
   self->saved_sync = self->synced;
   bse_sub_synth_set_null_shortcut (BSE_SUB_SYNTH (self), TRUE);
 }
-
 static void
 bse_bus_dispose (GObject *object)
 {
@@ -59,10 +49,8 @@ bse_bus_dispose (GObject *object)
     bse_bus_disconnect (self, BSE_ITEM (self->inputs->data));
   /* chain parent class' handler */
   G_OBJECT_CLASS (bus_parent_class)->dispose (object);
-
   g_assert (self->bus_outputs == NULL);
 }
-
 static void
 bse_bus_finalize (GObject *object)
 {
@@ -73,7 +61,6 @@ bse_bus_finalize (GObject *object)
   /* chain parent class' handler */
   G_OBJECT_CLASS (bus_parent_class)->finalize (object);
 }
-
 static BseBus*
 get_master (BseBus *self)
 {
@@ -85,7 +72,6 @@ get_master (BseBus *self)
     }
   return NULL;
 }
-
 static void
 bus_list_input_candidates (BseBus     *self,
                            BseItemSeq *iseq)
@@ -97,7 +83,6 @@ bus_list_input_candidates (BseBus     *self,
   if (master)
     bse_item_seq_remove (iseq, BSE_ITEM (master));
 }
-
 void
 bse_bus_or_track_list_output_candidates (BseItem    *trackbus,
                                          BseItemSeq *iseq)
@@ -105,7 +90,6 @@ bse_bus_or_track_list_output_candidates (BseItem    *trackbus,
   if (BSE_IS_BUS (trackbus) || BSE_IS_TRACK (trackbus))
     bse_item_gather_items_typed (trackbus, iseq, BSE_TYPE_BUS, BSE_TYPE_SONG, FALSE);
 }
-
 static void
 bse_bus_get_candidates (BseItem               *item,
                         guint                  param_id,
@@ -142,7 +126,6 @@ bse_bus_get_candidates (BseItem               *item,
       break;
     }
 }
-
 static gboolean
 bse_bus_editable_property (BseObject      *object,
                            guint           param_id,
@@ -165,7 +148,6 @@ bse_bus_editable_property (BseObject      *object,
     }
   return TRUE;
 }
-
 static void
 bus_disconnect_outputs (BseBus *self)
 {
@@ -179,7 +161,6 @@ bus_disconnect_outputs (BseBus *self)
   g_object_notify (G_OBJECT (self), "master-output");   /* master may have changed */
   g_object_notify (G_OBJECT (self), "solo");            /* master may have changed */
 }
-
 static void
 song_connect_master (BseSong        *song,
                      BseBus         *bus)
@@ -194,7 +175,6 @@ song_connect_master (BseSong        *song,
       g_object_notify (G_OBJECT (bus), "solo");
     }
 }
-
 static gdouble
 center_volume (gdouble volume1,
                gdouble volume2)
@@ -209,7 +189,6 @@ center_volume (gdouble volume1,
   else
     return (volume1 + volume2) * 0.5;
 }
-
 static void
 bus_volume_changed (BseBus *self)
 {
@@ -233,7 +212,6 @@ bus_volume_changed (BseBus *self)
       g_object_set (self->bmodule, "volume1", v1, "volume2", v2, NULL);
     }
 }
-
 void
 bse_bus_or_track_set_outputs (BseItem        *trackbus,
                               BseItemSeq     *outputs_iseq)
@@ -274,7 +252,6 @@ bse_bus_or_track_set_outputs (BseItem        *trackbus,
   *pbus_outputs = sfi_ring_reorder (*pbus_outputs, saved_outputs);
   sfi_ring_free (saved_outputs);
 }
-
 static void
 bse_bus_set_property (GObject      *object,
                       guint         param_id,
@@ -398,7 +375,6 @@ bse_bus_set_property (GObject      *object,
       break;
     }
 }
-
 static void
 bse_bus_get_property (GObject    *object,
                       guint       param_id,
@@ -468,7 +444,6 @@ bse_bus_get_property (GObject    *object,
       break;
     }
 }
-
 void
 bse_bus_change_solo (BseBus         *self,
                      gboolean        solo_muted)
@@ -478,26 +453,20 @@ bse_bus_change_solo (BseBus         *self,
   g_object_notify (G_OBJECT (self), "solo");
   g_object_notify (G_OBJECT (self), "mute");
 }
-
 static void
 bse_bus_set_parent (BseItem *item,
                     BseItem *parent)
 {
   BseBus *self = BSE_BUS (item);
   self->solo_muted = FALSE;
-
   if (item->parent)
     bse_object_unproxy_notifies (item->parent, self, "notify::outputs");
-
   /* chain parent class' handler */
   BSE_ITEM_CLASS (bus_parent_class)->set_parent (item, parent);
-
   if (item->parent)
     bse_object_proxy_notifies (item->parent, self, "notify::outputs");
-
   while (self->inputs)
     bse_bus_disconnect (self, BSE_ITEM (self->inputs->data));
-  
   if (self->summation)
     {
       BseItem *sitem = BSE_ITEM (self->summation);
@@ -513,7 +482,6 @@ bse_bus_set_parent (BseItem *item,
       g_warning ("Bus[%p] has snet[%p] in set-parent", self, BSE_SUB_SYNTH (self)->snet);
     }
 }
-
 static void
 bse_bus_prepare (BseSource *source)
 {
@@ -521,7 +489,6 @@ bse_bus_prepare (BseSource *source)
   /* chain parent class' handler */
   BSE_SOURCE_CLASS (bus_parent_class)->prepare (source);
 }
-
 static void
 bse_bus_context_create (BseSource *source,
                         guint      context_handle,
@@ -531,7 +498,6 @@ bse_bus_context_create (BseSource *source,
   /* chain parent class' handler */
   BSE_SOURCE_CLASS (bus_parent_class)->context_create (source, context_handle, trans);
 }
-
 static void
 bse_bus_context_connect (BseSource *source,
                          guint      context_handle,
@@ -541,7 +507,6 @@ bse_bus_context_connect (BseSource *source,
   /* chain parent class' handler */
   BSE_SOURCE_CLASS (bus_parent_class)->context_connect (source, context_handle, trans);
 }
-
 static void
 bse_bus_reset (BseSource *source)
 {
@@ -549,7 +514,6 @@ bse_bus_reset (BseSource *source)
   /* chain parent class' handler */
   BSE_SOURCE_CLASS (bus_parent_class)->reset (source);
 }
-
 gboolean
 bse_bus_get_stack (BseBus        *self,
                    BseContainer **snetp,
@@ -592,7 +556,6 @@ bse_bus_get_stack (BseBus        *self,
     }
   return FALSE;
 }
-
 static gboolean
 bse_bus_ensure_summation (BseBus *self)
 {
@@ -611,7 +574,6 @@ bse_bus_ensure_summation (BseBus *self)
     }
   return self->summation != NULL;
 }
-
 static void
 trackbus_update_outputs (BseItem *trackbus,
                          BseBus  *added,
@@ -627,7 +589,6 @@ trackbus_update_outputs (BseItem *trackbus,
   else
     BSE_BUS (trackbus)->bus_outputs = outputs;
 }
-
 static void
 bus_uncross_input (BseItem *owner,
                    BseItem *item)
@@ -638,7 +599,6 @@ bus_uncross_input (BseItem *owner,
   else /* IS_BUS */
     bse_item_exec_void (owner, "disconnect-bus", item);
 }
-
 BseErrorType
 bse_bus_connect (BseBus  *self,
                  BseItem *trackbus)
@@ -662,7 +622,6 @@ bse_bus_connect (BseBus  *self,
   else
     return BSE_ERROR_SOURCE_CONNECTION_INVALID;
 }
-
 BseErrorType
 bse_bus_connect_unchecked (BseBus  *self,
                            BseItem *trackbus)
@@ -691,7 +650,6 @@ bse_bus_connect_unchecked (BseBus  *self,
     }
   return error;
 }
-
 BseErrorType
 bse_bus_disconnect (BseBus  *self,
                     BseItem *trackbus)
@@ -716,19 +674,16 @@ bse_bus_disconnect (BseBus  *self,
   g_object_notify (G_OBJECT (trackbus), "outputs");
   return error1 ? error1 : error2;
 }
-
 SfiRing*
 bse_bus_list_inputs (BseBus *self)
 {
   return sfi_ring_copy (self->inputs);
 }
-
 SfiRing*
 bse_bus_list_outputs (BseBus *self)
 {
   return sfi_ring_copy (self->bus_outputs);
 }
-
 static void
 bus_restore_add_input (gpointer     data,
                        BseStorage  *storage,
@@ -738,7 +693,6 @@ bus_restore_add_input (gpointer     data,
 {
   BseBus *self = BSE_BUS (from_item);
   BseSource *osource = to_item ? BSE_SOURCE (to_item) : NULL;
-
   if (error)
     bse_storage_warn (storage, "failed to add input to mixer bus \"%s\": %s", BSE_OBJECT_UNAME (self), error);
   else
@@ -756,7 +710,6 @@ bus_restore_add_input (gpointer     data,
                           bse_error_blurb (cerror));
     }
 }
-
 static void
 bus_restore_start (BseObject  *object,
                    BseStorage *storage)
@@ -767,14 +720,12 @@ bus_restore_start (BseObject  *object,
   self->synced = FALSE;
   BSE_OBJECT_CLASS (bus_parent_class)->restore_start (object, storage);
 }
-
 static GTokenType
 bus_restore_private (BseObject  *object,
                      BseStorage *storage,
                      GScanner   *scanner)
 {
   BseBus *self = BSE_BUS (object);
-
   if (g_scanner_peek_next_token (scanner) == G_TOKEN_IDENTIFIER &&
       bse_string_equals ("bus-input", scanner->next_value.v_identifier))
     {
@@ -790,7 +741,6 @@ bus_restore_private (BseObject  *object,
   else /* chain parent class' handler */
     return BSE_OBJECT_CLASS (bus_parent_class)->restore_private (object, storage, scanner);
 }
-
 static void
 bus_restore_finish (BseObject *object,
                     guint      vmajor,
@@ -804,17 +754,14 @@ bus_restore_finish (BseObject *object,
                 NULL);
   BSE_OBJECT_CLASS (bus_parent_class)->restore_finish (object, vmajor, vminor, vmicro);
 }
-
 static void
 bus_store_private (BseObject  *object,
                    BseStorage *storage)
 {
   BseBus *self = BSE_BUS (object);
-
   /* chain parent class' handler */
   if (BSE_OBJECT_CLASS (bus_parent_class)->store_private)
     BSE_OBJECT_CLASS (bus_parent_class)->store_private (object, storage);
-
   SfiRing *inputs = bse_bus_list_inputs (self);
   while (inputs)
     {
@@ -825,7 +772,6 @@ bus_store_private (BseObject  *object,
       bse_storage_printf (storage, ")");
     }
 }
-
 static void
 bse_bus_class_init (BseBusClass *klass)
 {
@@ -834,28 +780,22 @@ bse_bus_class_init (BseBusClass *klass)
   BseItemClass *item_class = BSE_ITEM_CLASS (klass);
   BseSourceClass *source_class = BSE_SOURCE_CLASS (klass);
   guint channel_id;
-  
   bus_parent_class = g_type_class_peek_parent (klass);
-  
   gobject_class->set_property = bse_bus_set_property;
   gobject_class->get_property = bse_bus_get_property;
   gobject_class->dispose = bse_bus_dispose;
   gobject_class->finalize = bse_bus_finalize;
-  
   object_class->editable_property = bse_bus_editable_property;
   object_class->store_private = bus_store_private;
   object_class->restore_start = bus_restore_start;
   object_class->restore_private = bus_restore_private;
   object_class->restore_finish = bus_restore_finish;
-
   item_class->set_parent = bse_bus_set_parent;
   item_class->get_candidates = bse_bus_get_candidates;
-  
   source_class->prepare = bse_bus_prepare;
   source_class->context_create = bse_bus_context_create;
   source_class->context_connect = bse_bus_context_connect;
   source_class->reset = bse_bus_reset;
-  
   bse_object_class_add_param (object_class, _("Adjustments"), PROP_MUTE,
                               sfi_pspec_bool ("mute", _("Mute"), _("Mute: turn off the bus volume"), FALSE, SFI_PARAM_STANDARD ":skip-default"));
   bse_object_class_add_param (object_class, _("Adjustments"), PROP_SOLO,
@@ -889,7 +829,6 @@ bse_bus_class_init (BseBusClass *klass)
 			      PROP_MASTER_OUTPUT,
 			      sfi_pspec_bool ("master-output", _("Master Output"), NULL,
                                               FALSE, SFI_PARAM_STORAGE ":skip-default"));
-
   channel_id = bse_source_class_add_ichannel (source_class, "left-audio-in", _("Left Audio In"), _("Left channel input"));
   g_assert (channel_id == BSE_BUS_ICHANNEL_LEFT);
   channel_id = bse_source_class_add_ichannel (source_class, "right-audio-in", _("Right Audio In"), _("Right channel input"));
@@ -899,7 +838,6 @@ bse_bus_class_init (BseBusClass *klass)
   channel_id = bse_source_class_add_ochannel (source_class, "right-audio-out", _("Right Audio Out"), _("Right channel output"));
   g_assert (channel_id == BSE_BUS_OCHANNEL_RIGHT);
 }
-
 BSE_BUILTIN_TYPE (BseBus)
 {
   static const GTypeInfo bus_info = {

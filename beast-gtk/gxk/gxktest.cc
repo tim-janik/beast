@@ -4,12 +4,8 @@
 #include "gxkrackeditor.hh"
 #include "gxkrackitem.hh"
 #include "gxkscrollcanvas.hh"
-
-
 /* --- prototype --- */
 static void     rack_test (void);
-
-
 /* --- variables --- */
 static guint led_colors[] = {
   GXK_LED_OFF,
@@ -25,19 +21,14 @@ static guint led_colors[] = {
   GXK_LED_OFF,
   GXK_LED_BLUE,
 };
-
-
 /* --- prototypes --- */
 static void scroll_canvas_test (void);
-
-
 /* --- functions --- */
 static gint
 led_timer (gpointer data)
 {
   GxkLed *led = (GxkLed*) data;
   static guint led_cindex = 0;
-
   GDK_THREADS_ENTER ();
   led_cindex++;
   led_cindex %= G_N_ELEMENTS (led_colors);
@@ -45,7 +36,6 @@ led_timer (gpointer data)
   GDK_THREADS_LEAVE ();
   return TRUE;
 }
-
 int
 main (int   argc,
       char *argv[])
@@ -53,22 +43,17 @@ main (int   argc,
   GtkWidget *led, *polygon1, *polygon2, *polygon, *box, *box2;
   GxkPolygonArc arcs[64];
   guint i;
-  
   /* GLib's thread and object systems */
   g_thread_init (NULL);
   g_type_init ();
-  
   /* initialize Gtk+ and go into threading mode */
   gtk_init (&argc, &argv);
   g_set_prgname ("GxkTest");	/* overriding Gdk's program name */
   GDK_THREADS_ENTER ();
-  
   /* initialize Gtk+ Extension Kit */
   gxk_init ();
-
   scroll_canvas_test ();
   rack_test ();
-
   /* test polygons */
   {
     GxkPolygonLine lines[] = {
@@ -88,7 +73,6 @@ main (int   argc,
     GxkPolygonGraph graph = { G_N_ELEMENTS (lines), lines, 0, NULL };
     polygon1 = (GtkWidget*) gxk_polygon_new (&graph);
   }
-  
   {
     GxkPolygonLine lines[] = {
       { 0.0, 0.9, 0.5, 0.5 }, /* \ */
@@ -111,7 +95,6 @@ main (int   argc,
   arcs[i++] = (GxkPolygonArc) { 0.5, 0.5, 0.3, 0.3, 0, +360 }; /* O */
   arcs[i++] = (GxkPolygonArc) { 0.5, 0.5, 0.1, 0.1, 0, -360 }; /* o */
   gxk_polygon_set_arcs (GXK_POLYGON (polygon2), i, arcs);
-  
   box = (GtkWidget*) g_object_new (GTK_TYPE_VBOX,
                                    "visible", TRUE,
                                    NULL);
@@ -121,37 +104,26 @@ main (int   argc,
                                     "visible", TRUE,
                                     NULL);
   gtk_box_pack_start (GTK_BOX (box), box2, FALSE, FALSE, 5);
-
   polygon = (GtkWidget*) gxk_polygon_new (&gxk_polygon_power);
   gtk_box_pack_start (GTK_BOX (box2), polygon, FALSE, FALSE, 5);
-  
   polygon = (GtkWidget*) gxk_polygon_new (&gxk_polygon_stop);
   gtk_box_pack_start (GTK_BOX (box2), polygon, FALSE, FALSE, 5);
-
   polygon = (GtkWidget*) gxk_polygon_new (&gxk_polygon_first);
   gtk_box_pack_start (GTK_BOX (box2), polygon, FALSE, FALSE, 5);
-
   polygon = (GtkWidget*) gxk_polygon_new (&gxk_polygon_previous);
   gtk_box_pack_start (GTK_BOX (box2), polygon, FALSE, FALSE, 5);
-  
   polygon = (GtkWidget*) gxk_polygon_new (&gxk_polygon_rewind);
   gtk_box_pack_start (GTK_BOX (box2), polygon, FALSE, FALSE, 5);
-  
   polygon = (GtkWidget*) gxk_polygon_new (&gxk_polygon_play);
   gtk_box_pack_start (GTK_BOX (box2), polygon, FALSE, FALSE, 5);
-  
   polygon = (GtkWidget*) gxk_polygon_new (&gxk_polygon_pause);
   gtk_box_pack_start (GTK_BOX (box2), polygon, FALSE, FALSE, 5);
-  
   polygon = (GtkWidget*) gxk_polygon_new (&gxk_polygon_forward);
   gtk_box_pack_start (GTK_BOX (box2), polygon, FALSE, FALSE, 5);
-  
   polygon = (GtkWidget*) gxk_polygon_new (&gxk_polygon_next);
   gtk_box_pack_start (GTK_BOX (box2), polygon, FALSE, FALSE, 5);
-
   polygon = (GtkWidget*) gxk_polygon_new (&gxk_polygon_last);
   gtk_box_pack_start (GTK_BOX (box2), polygon, FALSE, FALSE, 5);
-  
   {
     GxkPolygonLine lines[] = {
       { 0.25, 0.25, 0.75, 0.25 }, /* right */
@@ -164,7 +136,6 @@ main (int   argc,
   }
   // gxk_polygon_set_length (GXK_POLYGON (polygon), 21);
   gtk_box_pack_start (GTK_BOX (box2), polygon, FALSE, FALSE, 5);
-  
   led = (GtkWidget*) gxk_led_new (0x13f4e5);
   gtk_box_pack_start (GTK_BOX (box), led, TRUE, TRUE, 5);
   g_object_new (GTK_TYPE_WINDOW,
@@ -176,13 +147,10 @@ main (int   argc,
                 "sensitive", FALSE,
                 NULL);
   g_timeout_add (400, led_timer, led);
-
   /* start main loop */
   gtk_main ();
-
   return 0;
 }
-
 static void
 toggle_edit_mode (GtkToggleButton *tb,
                   GxkRackTable    *rtable)
@@ -193,13 +161,11 @@ toggle_edit_mode (GtkToggleButton *tb,
   else
     gxk_rack_table_cover_up (rtable);
 }
-
 static void G_GNUC_NORETURN
 exit_program ()
 {
   exit (0);
 }
-
 static void
 rack_test (void)
 {
@@ -245,9 +211,7 @@ rack_test (void)
   /* start main loop */
   gtk_main ();
 }
-
 static GxkScrollCanvasLayout faked_layout = { 10, 10, 10, 10, 32, 320, 20, 200 };
-
 static void
 toggle_panel_sizes (GtkToggleButton *tb,
                     GxkScrollCanvas *scc)
@@ -267,14 +231,12 @@ toggle_panel_sizes (GtkToggleButton *tb,
     }
   gtk_widget_queue_resize ((GtkWidget*) scc);
 }
-
 static void
 faked_scroll_canvas_get_layout (GxkScrollCanvas        *self,
                                 GxkScrollCanvasLayout  *layout)
 {
   *layout = faked_layout;
 }
-
 static void
 scroll_canvas_test (void)
 {

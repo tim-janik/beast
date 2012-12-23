@@ -3,12 +3,8 @@
 #include <bse/bseprocedure.hh>
 #include <bse/bsecontainer.hh>
 #include "bsecxxplugin.hh"
-
-
 AUTHORS	= "Tim Janik <timj@gtk.org>";
 LICENSE = "GNU Lesser General Public License";
-
-
 METHOD (BseContainer, list-children) {
   HELP	= _("Retrieve all immediate children of a container");
   IN	= bse_param_spec_object ("container", NULL, NULL, BSE_TYPE_CONTAINER, SFI_PARAM_STANDARD);
@@ -19,17 +15,13 @@ METHOD (BseContainer, list-children) {
 {
   /* extract parameter values */
   BseContainer *container = (BseContainer*) bse_value_get_object (in_values++);
-
   /* check parameters */
   if (!BSE_IS_CONTAINER (container))
     return BSE_ERROR_PROC_PARAM_INVAL;
-  
   /* set output parameters */
   bse_value_take_boxed (out_values++, bse_container_list_children (container));
-  
   return BSE_ERROR_NONE;
 }
-
 METHOD (BseContainer, lookup-item) {
   HELP	= ("Find an immediate child of a container from its uname (the uname "
 	   "is the name of the item, unique between all immediate children of a container).");
@@ -43,17 +35,13 @@ METHOD (BseContainer, lookup-item) {
   /* extract parameter values */
   BseContainer *container = (BseContainer*) bse_value_get_object (in_values++);
   const char *uname       = sfi_value_get_string (in_values++);
-
   /* check parameters */
   if (!BSE_IS_CONTAINER (container) || !uname)
     return BSE_ERROR_PROC_PARAM_INVAL;
-  
   /* set output parameters */
   bse_value_set_object (out_values++, bse_container_lookup_item (container, uname));
-  
   return BSE_ERROR_NONE;
 }
-
 METHOD (BseContainer, get-item) {
   HELP  = "Retrieve a containers immediate child from it's sequential id.";
   IN	= bse_param_spec_object ("container", NULL, NULL, BSE_TYPE_CONTAINER, SFI_PARAM_STANDARD);
@@ -71,13 +59,10 @@ METHOD (BseContainer, get-item) {
   const char *type_name   = sfi_value_get_string (in_values++);
   guint seqid             = sfi_value_get_int (in_values++);
   GType type = type_name ? g_type_from_name (type_name) : 0;
-
   /* check parameters */
   if (!BSE_IS_CONTAINER (container) || !g_type_is_a (type, BSE_TYPE_ITEM))
     return BSE_ERROR_PROC_PARAM_INVAL;
-
   /* set output parameters */
   bse_value_set_object (out_values++, bse_container_get_item (container, type, seqid));
-
   return BSE_ERROR_NONE;
 }

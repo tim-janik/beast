@@ -53,11 +53,9 @@ double sinh(), cosh(), atan(), exp();
 #else
 #include <math.h>
 #endif
-
 #define code_printf(...)     fprintf (stdout, __VA_ARGS__)
 #define ellf_printf(...)     fprintf (stderr, __VA_ARGS__)
 #define ellf_debugf(...)     fprintf (stderr, __VA_ARGS__)
-
 /* === ellf.doc - start === */
 /*                        ellf.c
  * This program calculates design coefficients for
@@ -259,17 +257,14 @@ double sinh(), cosh(), atan(), exp();
  * may fail on many systems.  Verify that they are supposed
  * to work on your computer.
  */
-
 /* Constant definitions for math error conditions
  */
-
 #define DOMAIN		1	/* argument domain error */
 #define SING		2	/* argument singularity */
 #define OVERFLOW	3	/* overflow range error */
 #define UNDERFLOW	4	/* underflow range error */
 #define TLOSS		5	/* total loss of precision */
 #define PLOSS		6	/* partial loss of precision */
-
 #define EDOM		33
 #define ERANGE		34
 /* Complex numeral.  */
@@ -278,7 +273,6 @@ typedef struct
   double r;
   double i;
 } cmplx;
-
 /* Type of computer arithmetic is
  * UNKnown arithmetic, invokes coefficients given in
  * normal decimal format.  Beware of range boundary
@@ -286,26 +280,19 @@ typedef struct
  * roundoff problems in pow.c:
  * (Sun SPARCstation, i386)
  */
-
 /* Define to support tiny denormal numbers, else undefine. */
 #define DENORMAL 1
-
 /* Define to ask for infinity support, else undefine. */
 /* #define INFINITIES 1 */
-
 /* Define to ask for support of numbers that are Not-a-Number,
    else undefine.  This may automatically define INFINITIES in some files. */
 /* #define NANS 1 */
-
 /* Define to distinguish between -0.0 and +0.0.  */
 #define MINUSZERO 1
-
 /* Define 1 for ANSI C atan2() function
    See atan.c and clog.c. */
 #define ANSIC 1
-
 int mtherr ( char *, int );
-
 /* Variable for error reporting.  See mtherr.c.  */
 extern int merror;
 /* === mconf.h - end === */
@@ -363,9 +350,7 @@ extern int merror;
  *
  * These lists are subject to change.
  */
-
 /*							const.c */
-
 #if 1
 double MACHEP =  1.11022302462515654042E-16;   /* 2**-53 */
 #else
@@ -407,8 +392,6 @@ double NEGZERO = -0.0;
 #else
 double NEGZERO = 0.0;
 #endif
-
-
 /* === const.c - end === */
 /* === protos.h - start === */
 /*
@@ -417,7 +400,6 @@ double NEGZERO = 0.0;
  *
  *   Created: Sun Jan  9 15:07:08 2000
  */
-
 extern double Cabs ( cmplx *z );
 extern void Cadd ( cmplx *a, cmplx *b, cmplx *c );
 extern double cay ( double q );
@@ -442,7 +424,6 @@ extern int spln ( void );
 extern int zplna ( void );
 extern int zplnb ( void );
 extern int zplnc ( void );
-
 /* === protos.h - end === */
 /* === cmplx.c - start === */
 /*							cmplx.c
@@ -508,18 +489,13 @@ extern int zplnc ( void );
 /*				cmplx.c
  * complex number arithmetic
  */
-
-
 void Cdiv ( cmplx *, cmplx *, cmplx * );
 void Cadd ( cmplx *, cmplx *, cmplx * );
-
 extern double MAXNUM, MACHEP, PI, PIO2, INFINITY, NAN;
-
 cmplx czero = {0.0, 0.0};
 extern cmplx czero;
 cmplx cone = {1.0, 0.0};
 extern cmplx cone;
-
 /*	c = b + a	*/
 void Cadd( a, b, c )
      register cmplx *a, *b;
@@ -528,8 +504,6 @@ void Cadd( a, b, c )
   c->r = b->r + a->r;
   c->i = b->i + a->i;
 }
-
-
 /*	c = b - a	*/
 void Csub( a, b, c )
      register cmplx *a, *b;
@@ -538,7 +512,6 @@ void Csub( a, b, c )
   c->r = b->r - a->r;
   c->i = b->i - a->i;
 }
-
 /*	c = b * a */
 void Cmul( a, b, c )
      register cmplx *a, *b;
@@ -549,21 +522,15 @@ void Cmul( a, b, c )
   c->i = b->r * a->i  +  b->i * a->r;
   c->r = y;
 }
-
-
-
 /*	c = b / a */
 void Cdiv( a, b, c )
      register cmplx *a, *b;
      cmplx *c;
 {
   double y, p, q, w;
-  
-  
   y = a->r * a->r  +  a->i * a->i;
   p = b->r * a->r  +  b->i * a->i;
   q = b->i * a->r  -  b->r * a->i;
-  
   if( y < 1.0 )
     {
       w = MAXNUM * y;
@@ -578,17 +545,13 @@ void Cdiv( a, b, c )
   c->r = p/y;
   c->i = q/y;
 }
-
-
 /*	b = a
         Caution, a `short' is assumed to be 16 bits wide.  */
-
 void Cmov( a, b )
      void *a, *b;
 {
   register short *pa, *pb;
   int i;
-  
   pa = (short *) a;
   pb = (short *) b;
   i = 8;
@@ -596,16 +559,12 @@ void Cmov( a, b )
     *pb++ = *pa++;
   while( --i );
 }
-
-
 void Cneg( a )
      register cmplx *a;
 {
-  
   a->r = -a->r;
   a->i = -a->i;
 }
-
 /*							Cabs()
  *
  *	Complex absolute value
@@ -643,65 +602,51 @@ void Cneg( a )
  *    DEC       -30,+30     30000       3.2e-17     9.2e-18
  *    IEEE      -10,+10    100000       2.7e-16     6.9e-17
  */
-
 #define PREC 27
 #define MAXEXP 1024
 #define MINEXP -1077
-
-
 double Cabs( z )
      register cmplx *z;
 {
   double x, y, b, re, im;
   int ex, ey, e;
-  
 #ifdef INFINITIES
   /* Note, Cabs(INFINITY,NAN) = INFINITY. */
   if( z->r == INFINITY || z->i == INFINITY
       || z->r == -INFINITY || z->i == -INFINITY )
     return( INFINITY );
 #endif
-  
 #ifdef NANS
   if( isnan(z->r) )
     return(z->r);
   if( isnan(z->i) )
     return(z->i);
 #endif
-  
   re = fabs( z->r );
   im = fabs( z->i );
-  
   if( re == 0.0 )
     return( im );
   if( im == 0.0 )
     return( re );
-  
   /* Get the exponents of the numbers */
   x = frexp( re, &ex );
   y = frexp( im, &ey );
-  
   /* Check if one number is tiny compared to the other */
   e = ex - ey;
   if( e > PREC )
     return( re );
   if( e < -PREC )
     return( im );
-  
   /* Find approximate exponent e of the geometric mean. */
   e = (ex + ey) >> 1;
-  
   /* Rescale so mean is about 1 */
   x = ldexp( re, -e );
   y = ldexp( im, -e );
-  
   /* Hypotenuse of the right triangle */
   b = sqrt( x * x  +  y * y );
-  
   /* Compute the exponent of the answer. */
   y = frexp( b, &ey );
   ey = e + ey;
-  
   /* Check it for overflow and underflow. */
   if( ey > MAXEXP )
     {
@@ -710,12 +655,10 @@ double Cabs( z )
     }
   if( ey < MINEXP )
     return(0.0);
-  
   /* Undo the scaling */
   b = ldexp( b, e );
   return( b );
 }
-
 /*							Csqrt()
  *
  *	Complex square root
@@ -762,16 +705,13 @@ double Cabs( z )
  * Also tested by Csqrt( z ) = z, and tested by arguments
  * close to the real axis.
  */
-
 void Csqrt( z, w )
      cmplx *z, *w;
 {
   cmplx q, s;
   double x, y, r, t;
-  
   x = z->r;
   y = z->i;
-  
   if( y == 0.0 )
     {
       if( x < 0.0 )
@@ -787,8 +727,6 @@ void Csqrt( z, w )
           return;
         }
     }
-  
-  
   if( x == 0.0 )
     {
       r = fabs(y);
@@ -800,7 +738,6 @@ void Csqrt( z, w )
       w->i = r;
       return;
     }
-  
   /* Approximate  sqrt(x^2+y^2) - x  =  y^2/2x - y^4/24x^3 + ... .
    * The relative error in the first term is approximately y^2/12x^2 .
    */
@@ -814,7 +751,6 @@ void Csqrt( z, w )
       r = Cabs(z);
       t = 0.5*(r - x);
     }
-  
   r = sqrt(t);
   q.i = r;
   q.r = y/(2.0*r);
@@ -824,18 +760,14 @@ void Csqrt( z, w )
   w->r *= 0.5;
   w->i *= 0.5;
 }
-
-
 double hypot( x, y )
      double x, y;
 {
   cmplx z;
-  
   z.r = x;
   z.i = y;
   return( Cabs(&z) );
 }
-
 /* === cmplx.c - end === */
 /* === ellik.c - start === */
 /*							ellik.c
@@ -884,19 +816,15 @@ double hypot( x, y )
  *
  *
  */
-
 /*	Incomplete elliptic integral of first kind	*/
-
 extern double ellpk ( double );
 double ellik ( double, double );
 extern double PI, PIO2, MACHEP, MAXNUM;
-
 double ellik( phi, m )
      double phi, m;
 {
   double a, b, c, e, temp, t, K;
   int d, mod, sign, npio2;
-  
   if( m == 0.0 )
     return( phi );
   a = 1.0 - m;
@@ -946,7 +874,6 @@ double ellik( phi, m )
   c = sqrt(m);
   d = 1;
   mod = 0;
-  
   while( fabs(c/a) > MACHEP )
     {
       temp = b/a;
@@ -959,16 +886,13 @@ double ellik( phi, m )
       b = temp;
       d += d;
     }
-  
   temp = (atan(t) + mod * PI)/(d * a);
-  
  done:
   if( sign < 0 )
     temp = -temp;
   temp += npio2 * K;
   return( temp );
 }
-
 /* === ellik.c - end === */
 /* === ellpe.c - start === */
 /*							ellpe.c
@@ -1023,9 +947,7 @@ double ellik( phi, m )
  *
  */
 /*							ellpe.c		*/
-
 /* Elliptic integral of second kind */
-
 static double P_ellpe[] = {
   1.53552577301013293365E-4,
   2.50888492163602060990E-3,
@@ -1051,15 +973,11 @@ static double Q_ellpe[] = {
   9.37499997197644278445E-2,
   2.49999999999888314361E-1
 };
-
-
 extern double polevl ( double, double[], int );
 extern double log ( double );
-
 double ellpe(x)
      double x;
 {
-  
   if( (x <= 0.0) || (x > 1.0) )
     {
       if( x == 0.0 )
@@ -1125,12 +1043,8 @@ double ellpe(x)
  * Accuracy deteriorates when u is large.
  *
  */
-
 /*							ellpj.c		*/
-
-
 extern double PIO2, MACHEP;
-
 int ellpj( u, m, sn, cn, dn, ph )
      double u, m;
      double *sn, *cn, *dn, *ph;
@@ -1138,10 +1052,7 @@ int ellpj( u, m, sn, cn, dn, ph )
   double ai, b, phi, t, twon;
   double a[9], c[9];
   int i;
-  
-  
   /* Check for special cases */
-  
   if( m < 0.0 || m > 1.0 )
     {
       mtherr( "ellpj", DOMAIN );
@@ -1162,7 +1073,6 @@ int ellpj( u, m, sn, cn, dn, ph )
       *dn = 1.0 - 0.5*m*t*t;
       return(0);
     }
-  
   if( m >= 0.9999999999 )
     {
       ai = 0.25 * (1.0-m);
@@ -1177,15 +1087,12 @@ int ellpj( u, m, sn, cn, dn, ph )
       *dn = phi + ai * (twon + u);
       return(0);
     }
-  
-  
   /*	A. G. M. scale		*/
   a[0] = 1.0;
   b = sqrt(1.0 - m);
   c[0] = sqrt(m);
   twon = 1.0;
   i = 0;
-  
   while( fabs(c[i]/a[i]) > MACHEP )
     {
       if( i > 7 )
@@ -1201,9 +1108,7 @@ int ellpj( u, m, sn, cn, dn, ph )
       b = t;
       twon *= 2.0;
     }
-  
  done:
-  
   /* backward recurrence */
   phi = twon * a[i] * u;
   do
@@ -1213,7 +1118,6 @@ int ellpj( u, m, sn, cn, dn, ph )
       phi = (asin(t) + phi)/2.0;
     }
   while( --i );
-  
   *sn = sin(phi);
   t = cos(phi);
   *cn = t;
@@ -1276,11 +1180,7 @@ int ellpj( u, m, sn, cn, dn, ph )
  * ellpk domain       x<0, x>1           0.0
  *
  */
-
 /*							ellpk.c */
-
-
-
 static double P_ellpk[] =
 {
   1.37982864606273237150E-4,
@@ -1295,7 +1195,6 @@ static double P_ellpk[] =
   9.65735902811690126535E-2,
   1.38629436111989062502E0
 };
-
 static double Q_ellpk[] =
 {
   2.94078955048598507511E-5,
@@ -1311,22 +1210,18 @@ static double Q_ellpk[] =
   4.99999999999999999821E-1
 };
 static double C1 = 1.3862943611198906188E0; /* log(4) */
-
 extern double polevl ( double, double[], int );
 extern double p1evl ( double, double[], int );
 extern double log ( double );
 extern double MACHEP, MAXNUM;
-
 double ellpk(x)
      double x;
 {
-  
   if( (x < 0.0) || (x > 1.0) )
     {
       mtherr( "ellpk", DOMAIN );
       return( 0.0 );
     }
-  
   if( x > MACHEP )
     {
       return( polevl(x,P_ellpk,10) - log(x) * polevl(x,Q_ellpk,10) );
@@ -1395,12 +1290,8 @@ double ellpk(x)
  * mconf.h
  *
  */
-
-
 #include <stdio.h>
-
 int merror = 0;
-
 /* Notice: the order of appearance of the following
  * messages is bound to the error codes defined
  * in mconf.h.
@@ -1414,29 +1305,23 @@ static char *ermsg[7] = {
   "total loss of precision",
   "partial loss of precision"
 };
-
-
 int mtherr( name, code )
      char *name;
      int code;
 {
-  
   /* Display string passed by calling program,
    * which is supposed to be the name of the
    * function in which the error occurred:
    */
   ellf_debugf ( "\n%s ", name );
-  
   /* Set global error message word */
   merror = code;
-  
   /* Display error message defined
    * by the code argument.
    */
   if( (code <= 0) || (code >= 7) )
     code = 0;
   ellf_debugf ( "%s error\n", ermsg[code] );
-  
   /* Return to calling
    * program
    */
@@ -1487,8 +1372,6 @@ int mtherr( name, code )
  * program in microcode or assembly language.
  *
  */
-
-
 double polevl( x, coef, N )
      double x;
      double coef[];
@@ -1497,24 +1380,19 @@ double polevl( x, coef, N )
   double ans;
   int i;
   double *p;
-  
   p = coef;
   ans = *p++;
   i = N;
-  
   do
     ans = ans * x  +  *p++;
   while( --i );
-  
   return( ans );
 }
-
 /*							p1evl()	*/
 /*                                          N
  * Evaluate polynomial when coefficient of x  is 1.0.
  * Otherwise same as polevl.
  */
-
 double p1evl( x, coef, N )
      double x;
      double coef[];
@@ -1523,15 +1401,12 @@ double p1evl( x, coef, N )
   double ans;
   double *p;
   int i;
-  
   p = coef;
   ans = x + *p++;
   i = N-1;
-  
   do
     ans = ans * x  + *p++;
   while( --i );
-  
   return( ans );
 }
 /* === polevl.c - end === */
@@ -1540,20 +1415,12 @@ double p1evl( x, coef, N )
  * 
  * Read ellf.doc before attempting to compile this program.
  */
-
-
 #include <stdio.h>
 #include <stdlib.h>
-
 /* size of arrays: */
 #define ARRSIZ 300
-
-
 /* System configurations */
-
-
 extern double PI, PIO2, MACHEP, MAXNUM;
-
 static double aa[ARRSIZ];
 static double pp[ARRSIZ];
 static double y[ARRSIZ];
@@ -1626,13 +1493,10 @@ static int np = 0;
 static int nz = 0;
 static int type = 1;
 static int kind = 1;
-
 static char wkind[] =
 {"Filter kind:\n1 Butterworth\n2 Chebyshev\n3 Elliptic\n"};
-
 static char salut[] =
 {"Filter shape:\n1 low pass\n2 band pass\n3 high pass\n4 band stop\n"};
-
 enum {
   BUTTERWORTH = 1,
   CHEBYSHEV = 2,
@@ -1644,7 +1508,6 @@ enum {
   HIGH_PASS = 3,
   BAND_STOP = 4
 };
-
 extern double Cabs ( cmplx *z );
 extern void Cadd ( cmplx *a, cmplx *b, cmplx *c );
 extern void Cdiv ( cmplx *a, cmplx *b, cmplx *c );
@@ -1667,10 +1530,8 @@ int zplnb ( void );
 int zplnc ( void );
 int quadf ( double, double, int );
 double response ( double, double );
-
 #define MIN(a,b) ((a) <= (b) ? (a) : (b))
 #define MAX(a,b) ((a) >= (b) ? (a) : (b))
-     
 static void
 print_z_fraction_before_zplnc (void) /* must be called *before* zplnc() */
 {
@@ -1679,7 +1540,6 @@ print_z_fraction_before_zplnc (void) /* must be called *before* zplnc() */
     zgain = 1.0;
   else
     zgain = an / (pn * scale);
-  
   const char *kind_string = kind == 1 ? "BSE_IIR_FILTER_BUTTERWORTH" : kind == 2 ? "BSE_IIR_FILTER_CHEBYSHEV1" : "BSE_IIR_FILTER_ELLIPTIC";
   const char *type_string = (type == 1 ? "BSE_IIR_FILTER_LOW_PASS" : type == 2 ? "BSE_IIR_FILTER_BAND_PASS" :
                              type == 3 ? "BSE_IIR_FILTER_HIGH_PASS" : "BSE_IIR_FILTER_BAND_STOP");
@@ -1723,7 +1583,6 @@ print_z_fraction_before_zplnc (void) /* must be called *before* zplnc() */
   code_printf ("    index++;\n");
   code_printf ("  }\n");
 }
-
 static inline unsigned int
 quick_rand32 (void)
 {
@@ -1731,7 +1590,6 @@ quick_rand32 (void)
   accu = 1664525 * accu + 1013904223;
   return accu + lrand48();
 }
-
 static inline double
 quick_rand_range (double s, double e)
 {
@@ -1744,7 +1602,6 @@ quick_rand_range (double s, double e)
   while (rand_double1 > 1); // fix rounding errors
   return s + rand_double1 * (e - s);
 }
-
 typedef struct {
   int    kind, type;
   double order;
@@ -1754,9 +1611,7 @@ typedef struct {
   double passband_edge2;
   double stopband_edge_or_db;
 } EllfInput;
-
 static void main_ellf (const EllfInput *einput);
-
 static void
 generate_filters_brute_force (void)
 {
@@ -1776,7 +1631,6 @@ generate_filters_brute_force (void)
     max_order_index = filter_orders[oix] ? oix : max_order_index;
   int rand_order_width = (32 - filter_orders[max_order_index]);
   double pbe1;
-  
 #if 1
   einput.kind = BUTTERWORTH;
   for (oix = 0; oix < n_orders; oix++)
@@ -1798,7 +1652,6 @@ generate_filters_brute_force (void)
           }
       }
 #endif
-  
 #if 1
   einput.kind = CHEBYSHEV;
   for (oix = 0; oix < n_orders; oix++)
@@ -1822,7 +1675,6 @@ generate_filters_brute_force (void)
           }
       }
 #endif
-  
 #if 1
   einput.kind = ELLIPTIC;
   for (oix = 0; oix < n_orders; oix++)
@@ -1850,7 +1702,6 @@ generate_filters_brute_force (void)
       }
 #endif
 }
-
 int
 main (int   argc,
       char *argv[])
@@ -1862,7 +1713,6 @@ main (int   argc,
     srand48 (tv.tv_usec + (tv.tv_sec << 16));
     srand (lrand48());
   }
-  
   if (argc >= 2 && strcmp (argv[1], "--test-code") == 0)
     {
       generate_filters_brute_force();
@@ -1871,7 +1721,6 @@ main (int   argc,
     main_ellf (NULL);
   return 0;
 }
-
 /* Get a number from keyboard.
  * Display previous value and keep it if user just hits <CR>.
  */
@@ -1879,16 +1728,13 @@ int
 getnum (char *line, double *val, const double *einput)
 {
   char s[40];
-  
   ellf_debugf ( "%s = %.9E ? ", line, *val );
-
   if (einput)
     {
       *val = *einput;
       ellf_debugf ( "%.9E\n", *val );
       return 0;
     }
-
   if (!fgets (s, sizeof (s), stdin))
     exit (0);
   if( s[0] != '\0' )
@@ -1898,16 +1744,12 @@ getnum (char *line, double *val, const double *einput)
     }
   return 0;
 }
-
 static void
 main_ellf (const EllfInput *einput)
 {
   char str[80];
-  
   dbfac = 10.0/log(10.0);
-  
  top:
-  
   ellf_debugf ( "%s ? ", wkind );	/* ask for filter kind */
   if (einput)
     kind = einput->kind;
@@ -1920,7 +1762,6 @@ main_ellf (const EllfInput *einput)
   ellf_debugf ( "%d\n", kind );
   if( (kind <= 0) || (kind > 3) )
     exit(0);
-  
   ellf_debugf ( "%s ? ", salut );	/* ask for filter type */
   if (einput)
     type = einput->type;
@@ -1933,7 +1774,6 @@ main_ellf (const EllfInput *einput)
   ellf_debugf ( "%d\n", type );
   if( (type <= 0) || (type > 4) )
     exit(0);
-  
   getnum( "Order of filter", &rn, einput ? &einput->order : NULL); /* see below for getnum() */
   n = rn;
   if( n <= 0 )
@@ -1959,7 +1799,6 @@ main_ellf (const EllfInput *einput)
         {
           /* For Chebyshev filter, ripples go from 1.0 to 1/sqrt(1+eps^2) */
           phi = exp( 0.5*dbr/dbfac );
-          
           if( (n & 1) == 0 )
             scale = phi;
           else
@@ -1974,16 +1813,13 @@ main_ellf (const EllfInput *einput)
           eps = sqrt( eps - 1.0 );
         }
     }
-  
   getnum( "Sampling frequency", &fs, einput ? &einput->sampling_frequency : NULL);
   if( fs <= 0.0 )
     {
       ellf_debugf ("? Need sampling-frequency > 0\n");
       goto specerr;
     }
-  
   fnyq = 0.5 * fs;
-  
   getnum( "Passband edge", &f2, einput ? &einput->passband_edge : NULL);
   if( (f2 <= 0.0))
     {
@@ -1995,7 +1831,6 @@ main_ellf (const EllfInput *einput)
       ellf_debugf ("? Need passband-edge < nyquist frequency (%f)\n", fnyq);
       goto specerr;
     }
-  
   if( (type & 1) == 0 )
     {
       getnum( "Other passband edge", &f1, einput ? &einput->passband_edge2 : NULL);
@@ -2014,7 +1849,6 @@ main_ellf (const EllfInput *einput)
     {
       f1 = 0.0;
     }
-  
   if( f2 < f1 )
     {
       a = f2;
@@ -2045,8 +1879,6 @@ main_ellf (const EllfInput *einput)
       wc = c;
       /*ellf_debugf( "cos( 1/2 (Whigh-Wlow) T ) = %.5e, wc = %.5e\n", cang, wc );*/
     }
-  
-  
   if( kind == 3 )
     { /* elliptic */
       cgam = cos( (a+f1) * PI / fs ) / cang;
@@ -2089,13 +1921,11 @@ main_ellf (const EllfInput *einput)
               goto specerr;
             }
           break;
-          
 	case 2:
           if( (f3 > f2) || (f3 < f1) )
             break;
           ellf_debugf ("? Need stopband_edge < passband_edge or stopband_edge > passband_edge2\n");
           goto specerr;
-          
 	case 3:
           if( f3 >= f2 )
             {
@@ -2103,7 +1933,6 @@ main_ellf (const EllfInput *einput)
               goto specerr;
             }
           break;
-          
 	case 4:
           if( (f3 <= f1) || (f3 >= f2) )
             {
@@ -2115,7 +1944,6 @@ main_ellf (const EllfInput *einput)
       ang = f3 * PI / fs;
       cang = cos(ang);
       sang = sin(ang);
-      
       if( type & 1 )
 	{
           wr = sang/(cang*c);
@@ -2127,7 +1955,6 @@ main_ellf (const EllfInput *einput)
           cang = q;
           wr = (cgam - cang)/(sang * c);
 	}
-      
       if( type >= 3 )
 	wr = 1.0/wr;
       if( wr < 0.0 )
@@ -2135,10 +1962,8 @@ main_ellf (const EllfInput *einput)
       y[0] = 1.0;
       y[1] = wr;
       cbp = wr;
-      
       if( type >= 3 )
 	y[1] = 1.0/y[1];
-      
       if( type & 1 )
 	{
           for( i=1; i<=2; i++ )
@@ -2170,7 +1995,6 @@ main_ellf (const EllfInput *einput)
       if( (2*n+2) > ARRSIZ )
 	goto toosml;
     }
-  
   /* Transformation from low-pass to band-pass critical frequencies
    *
    * Center frequency
@@ -2184,7 +2008,6 @@ main_ellf (const EllfInput *einput)
    *  Wanalog = -----------------------------------
    *                        sin( Wdigital T )
    */
-  
   if( kind == 2 )
     { /* Chebyshev */
       a = PI * (a+f1) / fs ;
@@ -2200,17 +2023,13 @@ main_ellf (const EllfInput *einput)
       cbp = (cgam - cos(a))/sin(a);
       scale = 1.0;
     }
-  
   ellf_debugf ("State: gain_scale=%.20g ripple_epsilon=%.20g nyquist_frequency=%.20g " // BSE info 
                "tan_angle_frequency=%.20g stopband_edge=%.20g wc=%.20g wr=%.20g cgam=%.20g\n",
                scale, eps, fnyq,
                c, f3, wc, wr, cgam);
-  
   spln();		/* find s plane poles and zeros */
-  
   if( ((type & 1) == 0) && ((4*n+2) > ARRSIZ) )
     goto toosml;
-  
   zplna();	/* convert s plane to z plane */
   zplnb();
   ellf_debugf ("an=%.20g pn=%.20g scale=%.20g\n", an, pn, scale); // BSE info
@@ -2221,7 +2040,6 @@ main_ellf (const EllfInput *einput)
     return;
   else
     goto top;
-  
  toosml:
   ellf_debugf ( "Cannot continue, storage arrays too small\n" );
   if (einput)
@@ -2229,10 +2047,8 @@ main_ellf (const EllfInput *einput)
   else
     goto top;
 }
-
 int lampln()
 {
-  
   wc = 1.0;
   k = wc/wr;
   m = k * k;
@@ -2270,10 +2086,6 @@ int lampln()
   u = u * Kk / (rn * Kk1);	/* or, u = u * Kpk / Kpk1 */
   return 0;
 }
-
-
-
-
 /* calculate s plane poles and zeros, normalized to wc = 1 */
 int spln()
 {
@@ -2446,12 +2258,6 @@ int spln()
     }
   return 0;
 }
-
-
-
-
-
-
 /*		cay()
  *
  * Find parameter corresponding to given nome by expansion
@@ -2479,18 +2285,15 @@ double cay(q)
 {
   double a, b, p, r;
   double t1, t2;
-  
   a = 1.0;
   b = 1.0;
   r = 1.0;
   p = q;
-  
   do
     {
       r *= p;
       a += 2.0 * r;
       t1 = fabs( r/a );
-      
       r *= p;
       b += r;
       p *= q;
@@ -2499,41 +2302,30 @@ double cay(q)
 	t1 = t2;
     }
   while( t1 > MACHEP );
-  
   a = b/a;
   a = 4.0 * sqrt(q) * a * a;	/* see above formulas, solved for m */
   return(a);
 }
-
-
-
-
 /*		zpln.c
  * Program to convert s plane poles and zeros to the z plane.
  */
-
 extern cmplx cone;
-
 int zplna()
 {
   cmplx r, cnum, cden, cwc, ca, cb, b4ac;
   double C;
-  
   if( kind == 3 )
     C = c;
   else
     C = wc;
-  
   for( i=0; i<ARRSIZ; i++ )
     {
       z[i].r = 0.0;
       z[i].i = 0.0;
     }
-  
   nc = np;
   jt = -1;
   ii = -1;
-  
   for( icnt=0; icnt<2; icnt++ )
     {
       /* The maps from s plane to z plane */
@@ -2543,7 +2335,6 @@ int zplna()
           ii = ir + 1;
           r.r = zs[ir];
           r.i = zs[ii];
-          
           switch( type )
             {
             case 1:
@@ -2570,7 +2361,6 @@ int zplna()
                   z[jt].i = -z[jt-1 ].i;
                 }
               break;
-              
             case 2:
             case 4:
               /* Substitute  s - r  =>  s/wc - r
@@ -2631,7 +2421,6 @@ int zplna()
             } /* end switch */
 	}
       while( --nc > 0 );
-      
       if( icnt == 0 )
 	{
           zord = jt+1;
@@ -2647,17 +2436,11 @@ int zplna()
     } /* end for() loop */
   return 0;
 }
-
-
-
-
 int zplnb()
 {
   cmplx lin[2];
-  
   lin[1].r = 1.0;
   lin[1].i = 0.0;
-  
   if( kind != 3 )
     { /* Butterworth or Chebyshev */
       /* generate the remaining zeros */
@@ -2695,7 +2478,6 @@ int zplnb()
         }
     }
   ellf_debugf ( "order = %d\n", zord );
-  
   /* Expand the poles and zeros into numerator and
    * denominator polynomials
    */
@@ -2733,10 +2515,8 @@ int zplnb()
     {
     case 3:
       a = -1.0;
-      
     case 1:
     case 4:
-      
       pn = 1.0;
       an = 1.0;
       for( j=1; j<=zord; j++ )
@@ -2745,7 +2525,6 @@ int zplnb()
           an = a * an + aa[j];
         }
       break;
-      
     case 2:
       gam = PI/2.0 - asin( cgam );  /* = acos( cgam ) */
       mh = zord/2;
@@ -2770,23 +2549,19 @@ int zplnb()
     }
   return 0;
 }
-
 int zplnc()
 {
-  
   gain = an/(pn*scale);
   if( (kind != 3) && (pn == 0) )
     gain = 1.0;
   ellf_printf( "constant gain factor %23.13E\n", gain );
   for( j=0; j<=zord; j++ )
     pp[j] = gain * pp[j];
-  
   ellf_printf( "z plane Denominator      Numerator\n" );
   for( j=0; j<=zord; j++ )
     {
       ellf_printf( "%2d %17.9E %17.9E\n", j, aa[j], pp[j] );
     }
-
   /* I /think/ at this point the polynomial is factorized in 2nd order filters,
    * so that it can be implemented without stability problems -- stw
    */
@@ -2811,10 +2586,6 @@ int zplnc()
     }
   return 0;
 }
-
-
-
-
 /* display quadratic factors
  */
 int quadf( x, y, pzflg )
@@ -2822,7 +2593,6 @@ int quadf( x, y, pzflg )
      int pzflg;	/* 1 if poles, 0 if zeros */
 {
   double a, b, r, f, g, g0;
-  
   if( y > 1.0e-16 )
     {
       a = -2.0 * x;
@@ -2855,7 +2625,6 @@ int quadf( x, y, pzflg )
       g = 1.0 - a;
       g0 = 1.0 + a;
     }
-  
   if( pzflg )
     {
       if( g != 0.0 )
@@ -2870,16 +2639,12 @@ int quadf( x, y, pzflg )
   ellf_printf( "f0 %16.8E  gain %12.4E  DC gain %12.4E\n\n", f, g, g0 );
   return 0;
 }
-
-
-
 /* Print table of filter frequency response
  */
 void
 print_filter_table (void)
 {
   double f, limit = 0.05 * fnyq * 21;
-  
   for (f=0; f < limit; f += limit / 21.)
     {
       double r = response( f, gain );
@@ -2891,8 +2656,6 @@ print_filter_table (void)
       // f = f + 0.05 * fnyq;
     }
 }
-
-
 /* Calculate frequency response at f Hz
  * mulitplied by amp
  */
@@ -2902,12 +2665,10 @@ double response( f, amp )
   cmplx x, num, den, w;
   double u;
   int j;
-  
   /* exp( j omega T ) */
   u = 2.0 * PI * f /fs;
   x.r = cos(u);
   x.i = sin(u);
-  
   num.r = 1.0;
   num.i = 0.0;
   den.r = 1.0;
@@ -2925,7 +2686,5 @@ double response( f, amp )
   u = Cabs( &w );
   return(u);
 }
-
 /* === ellf.c - end === */
-
 /* compile with: gcc -Wall -O2 -g -ffloat-store bse-ellf.c -lm -o bse-ellf */

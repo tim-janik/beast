@@ -1,11 +1,8 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #ifndef __BST_DB_METER_H__
 #define __BST_DB_METER_H__
-
 #include "bstutils.hh"
-
 G_BEGIN_DECLS
-
 /* --- DB Setup --- */
 typedef struct {
   double db;
@@ -40,7 +37,6 @@ double          bst_db_setup_get_pixel          (BstDBSetup     *dbsetup,
                                                  double          dbvalue);
 double          bst_db_setup_get_dbvalue        (BstDBSetup     *dbsetup,
                                                  double          pixel);
-
 /* --- type macros --- */
 #define BST_TYPE_DB_LABELING              (bst_db_labeling_get_type ())
 #define BST_DB_LABELING(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), BST_TYPE_DB_LABELING, BstDBLabeling))
@@ -62,7 +58,6 @@ void            bst_db_labeling_setup           (BstDBLabeling  *self,
                                                  BstDBSetup     *db_setup);
 void            bst_db_labeling_set_border      (BstDBLabeling  *self,
                                                  guint           border);
-
 /* --- type macros --- */
 #define BST_TYPE_DB_BEAM              (bst_db_beam_get_type ())
 #define BST_DB_BEAM(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), BST_TYPE_DB_BEAM, BstDBBeam))
@@ -86,7 +81,6 @@ void            bst_db_beam_set_border  (BstDBBeam      *self,
                                          guint           border);
 void            bst_db_beam_set_value   (BstDBBeam      *self,
                                          double          db);
-
 /* --- type macros --- */
 #define BST_TYPE_DB_METER                 (bst_db_meter_get_type ())
 #define BST_DB_METER(object)              (G_TYPE_CHECK_INSTANCE_CAST ((object), BST_TYPE_DB_METER, BstDBMeter))
@@ -94,7 +88,6 @@ void            bst_db_beam_set_value   (BstDBBeam      *self,
 #define BST_IS_DB_METER(object)           (G_TYPE_CHECK_INSTANCE_TYPE ((object), BST_TYPE_DB_METER))
 #define BST_IS_DB_METER_CLASS(klass)      (G_TYPE_CHECK_CLASS_TYPE ((klass), BST_TYPE_DB_METER))
 #define BST_DB_METER_GET_CLASS(object)    (G_TYPE_INSTANCE_GET_CLASS ((object), BST_TYPE_DB_METER, BstDBMeterClass))
-
 /* --- API --- */
 typedef struct {
   GtkAlignment     parent_instance;
@@ -127,7 +120,5 @@ BstDBLabeling*  bst_db_meter_get_labeling       (BstDBMeter     *self,
                                                  guint           nth);
 void            bst_db_scale_hook_up_param      (GtkRange       *range,
                                                  GxkParam       *param);
-
 G_END_DECLS
-
 #endif /* __BST_DB_METER_H__ */

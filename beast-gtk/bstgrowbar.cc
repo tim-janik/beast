@@ -8,17 +8,13 @@
 #include <gtk/gtkhscrollbar.h>
 #include <gtk/gtkvscrollbar.h>
 #include <gxk/gxkutils.hh>
-
-
 /* --- prototypes --- */
 static gboolean draw_grow_sign   (GtkWidget *widget, GdkEventExpose *event, BstGrowBar *self);
 static gboolean draw_shrink_sign (GtkWidget *widget, GdkEventExpose *event, BstGrowBar *self);
 static void     grow_range       (GtkWidget *widget, BstGrowBar *self);
 static void     shrink_range     (GtkWidget *widget, BstGrowBar *self);
-
 /* --- BstGrowBar --- */
 G_DEFINE_DATA_TYPE (BstGrowBar, bst_grow_bar, GTK_TYPE_ALIGNMENT);
-
 static void
 bst_grow_bar_init (BstGrowBar      *self,
                    BstGrowBarClass *klass)
@@ -77,7 +73,6 @@ bst_grow_bar_init (BstGrowBar      *self,
                              NULL,
                              _("Grow the scrollable area"));
 }
-
 static void
 bst_grow_bar_finalize (GObject *object)
 {
@@ -88,17 +83,14 @@ bst_grow_bar_finalize (GObject *object)
   /* chain parent class handler */
   G_OBJECT_CLASS (bst_grow_bar_parent_class)->finalize (object);
 }
-
 static void
 bst_grow_bar_class_init (BstGrowBarClass *klass,
                          gpointer         class_data)
 {
   GObjectClass *gobject_class = G_OBJECT_CLASS (klass);
   // GtkBarClass *bar_class = GTK_BAR_CLASS (klass);
-
   gobject_class->finalize = bst_grow_bar_finalize;
 }
-
 static gboolean
 draw_grow_sign (GtkWidget      *widget,
                 GdkEventExpose *event,
@@ -114,7 +106,6 @@ draw_grow_sign (GtkWidget      *widget,
                       widget->allocation.x, widget->allocation.y + p, widget->allocation.width, l);
   return FALSE;
 }
-
 static gboolean
 draw_shrink_sign (GtkWidget      *widget,
                   GdkEventExpose *event,
@@ -126,7 +117,6 @@ draw_shrink_sign (GtkWidget      *widget,
                       widget->allocation.x, widget->allocation.y + p, widget->allocation.width, l);
   return FALSE;
 }
-
 static void
 grow_range (GtkWidget  *widget,
             BstGrowBar *self)
@@ -140,7 +130,6 @@ grow_range (GtkWidget  *widget,
       gtk_adjustment_changed (adj);
     }
 }
-
 static void
 shrink_range (GtkWidget  *widget,
               BstGrowBar *self)
@@ -159,20 +148,17 @@ shrink_range (GtkWidget  *widget,
         gtk_adjustment_value_changed (adj);
     }
 }
-
 void
 bst_grow_bar_set_adjustment (BstGrowBar     *self,
                              GtkAdjustment  *adj)
 {
   gtk_range_set_adjustment (self->range, adj);
 }
-
 GtkAdjustment*
 bst_grow_bar_get_adjustment (BstGrowBar *self)
 {
   return gtk_range_get_adjustment (self->range);
 }
-
 void
 bst_grow_bar_set_tooltips (BstGrowBar     *self,
                            const gchar    *shrink_tip,
@@ -183,31 +169,24 @@ bst_grow_bar_set_tooltips (BstGrowBar     *self,
   gxk_widget_set_tooltip (GTK_WIDGET (self->range), scroll_tip);
   gxk_widget_set_tooltip (self->growb, grow_tip);
 }
-
 /* --- BstHGrowBar --- */
 G_DEFINE_TYPE (BstHGrowBar, bst_hgrow_bar, BST_TYPE_GROW_BAR);
-
 static void
 bst_hgrow_bar_init (BstHGrowBar *self)
 {
 }
-
 static void
 bst_hgrow_bar_class_init (BstHGrowBarClass *klass)
 {
   BstGrowBarClass *grow_bar_class = BST_GROW_BAR_CLASS (klass);
   grow_bar_class->is_horizontal = TRUE;
 }
-
-
 /* --- BstVGrowBar --- */
 G_DEFINE_TYPE (BstVGrowBar, bst_vgrow_bar, BST_TYPE_GROW_BAR);
-
 static void
 bst_vgrow_bar_init (BstVGrowBar *self)
 {
 }
-
 static void
 bst_vgrow_bar_class_init (BstVGrowBarClass *klass)
 {

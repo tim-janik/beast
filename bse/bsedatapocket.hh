@@ -1,11 +1,8 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #ifndef __BSE_DATA_POCKET_H__
 #define __BSE_DATA_POCKET_H__
-
 #include        <bse/bsesuper.hh>
-
 G_BEGIN_DECLS
-
 /* --- object type macros --- */
 #define BSE_TYPE_DATA_POCKET              (BSE_TYPE_ID (BseDataPocket))
 #define BSE_DATA_POCKET(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), BSE_TYPE_DATA_POCKET, BseDataPocket))
@@ -13,8 +10,6 @@ G_BEGIN_DECLS
 #define BSE_IS_DATA_POCKET(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), BSE_TYPE_DATA_POCKET))
 #define BSE_IS_DATA_POCKET_CLASS(class)   (G_TYPE_CHECK_CLASS_TYPE ((class), BSE_TYPE_DATA_POCKET))
 #define BSE_DATA_POCKET_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), BSE_TYPE_DATA_POCKET, BseDataPocketClass))
-
-
 /* --- data types --- */
 typedef enum	/*< skip >*/
 {
@@ -25,8 +20,6 @@ typedef enum	/*< skip >*/
   BSE_DATA_POCKET_STRING	= 's',
   BSE_DATA_POCKET_OBJECT	= 'o'
 } BseDataPocketType;
-
-
 /* --- BseDataPocket structs --- */
 typedef struct _BseDataPocket		BseDataPocket;
 typedef struct _BseDataPocketClass	BseDataPocketClass;
@@ -50,19 +43,15 @@ typedef struct
 struct _BseDataPocket
 {
   BseItem	      parent_object;
-
   guint		      need_store;	/* for BSE_ITEM_FLAG_AGGREGATE */
   GSList	     *cr_items;
-  
   guint		      free_id;
-
   guint		      n_entries;
   BseDataPocketEntry *entries;
 };
 struct _BseDataPocketClass
 {
   BseItemClass	parent_class;
-
   void	(*entry_added)	 (BseDataPocket	*pocket,
 			  guint		 entry_id);
   void	(*entry_removed) (BseDataPocket	*pocket,
@@ -70,8 +59,6 @@ struct _BseDataPocketClass
   void	(*entry_changed) (BseDataPocket	*pocket,
 			  guint		 entry_id);
 };
-
-
 /* --- prototypes --- */
 guint	 _bse_data_pocket_create_entry	(BseDataPocket	   *pocket);
 gboolean _bse_data_pocket_delete_entry	(BseDataPocket	   *pocket,
@@ -85,7 +72,5 @@ gchar	 _bse_data_pocket_entry_get	(BseDataPocket	    *pocket,
 					 guint		     id,
 					 GQuark		     data_quark,
 					 BseDataPocketValue *value);
-
 G_END_DECLS
-
 #endif /* __BSE_DATA_POCKET_H__ */

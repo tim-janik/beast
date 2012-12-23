@@ -1,6 +1,5 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bseplugin.hh"
-
 #include "bsecategories.hh"
 #include "bseprocedure.hh"
 #include "bseobject.hh"
@@ -11,12 +10,8 @@
 #include <fcntl.h>
 #include <errno.h>
 #include <unistd.h>
-
-
 static SFI_MSG_TYPE_DEFINE (debug_plugins, "plugins", SFI_MSG_DEBUG, NULL);
 #define DEBUG(...)      sfi_debug (debug_plugins, __VA_ARGS__)
-
-
 /* --- prototypes --- */
 static void	    bse_plugin_init		(BsePlugin	  *plugin);
 static void	    bse_plugin_class_init	(BsePluginClass	  *klass);
@@ -30,13 +25,10 @@ static void         bse_plugin_init_types       (BsePlugin        *plugin);
 static void         bse_plugin_reinit_types     (BsePlugin        *plugin);
 static void         bse_plugin_uninit_types     (BsePlugin        *plugin);
 static void	    type_plugin_iface_init	(GTypePluginClass *iface);
-
 /* --- variables --- */
 static GSList       *bse_plugins = NULL;
 static BseExportNode builtin_export_chain_head = { NULL, BSE_EXPORT_NODE_LINK, };
 BseExportIdentity    bse_builtin_export_identity = BSE_EXPORT_IDENTITY (builtin_export_chain_head);
-
-
 /* --- functions --- */
 BSE_BUILTIN_TYPE (BsePlugin)
 {
@@ -60,7 +52,6 @@ BSE_BUILTIN_TYPE (BsePlugin)
   g_type_add_interface_static (plugin_type, G_TYPE_TYPE_PLUGIN, &iface_info);
   return plugin_type;
 }
-
 static void
 type_plugin_iface_init (GTypePluginClass *iface)
 {
@@ -68,43 +59,33 @@ type_plugin_iface_init (GTypePluginClass *iface)
   iface->unuse_plugin = bse_plugin_unuse;
   iface->complete_type_info = bse_plugin_complete_info;
 }
-
 static void
 bse_plugin_dispose (GObject *object)
 {
   BsePlugin *plugin = BSE_PLUGIN (object);
-
   if (plugin->gmodule || plugin->use_count || plugin->n_types)
     g_warning ("%s: plugin partially initialized during destruciton", G_STRFUNC);
-  
   /* chain parent class handler */
   G_OBJECT_CLASS (g_type_class_peek_parent (BSE_PLUGIN_GET_CLASS (plugin)))->dispose (object);
 }
-
 static void
 bse_plugin_finalize (GObject *object)
 {
   BsePlugin *plugin = BSE_PLUGIN (object);
-
   if (plugin->gmodule || plugin->use_count || plugin->n_types)
     g_warning ("%s: plugin partially initialized during destruciton", G_STRFUNC);
-  
   /* chain parent class handler */
   G_OBJECT_CLASS (g_type_class_peek_parent (BSE_PLUGIN_GET_CLASS (plugin)))->finalize (object);
-
   g_free (plugin->fname);
   g_free (plugin->types);
 }
-
 static void
 bse_plugin_class_init (BsePluginClass *klass)
 {
   GObjectClass *gobject_class = G_OBJECT_CLASS (klass);
-  
   gobject_class->dispose = bse_plugin_dispose;
   gobject_class->finalize = bse_plugin_finalize;
 }
-
 static void
 bse_plugin_init (BsePlugin *plugin)
 {
@@ -118,9 +99,7 @@ bse_plugin_init (BsePlugin *plugin)
   plugin->n_types = 0;
   plugin->types = NULL;
 }
-
 #include "bsebuiltin_externs.cc" // include extern declarations of builtin init functions
-
 void
 bse_plugin_init_builtins (void)
 {
@@ -132,7 +111,6 @@ bse_plugin_init_builtins (void)
       };
       static const guint n_builtin_inits = G_N_ELEMENTS (builtin_inits);
       guint i;
-
       /* initialize builtin types via pseudo plugin handle */
       for (i = 0; i < n_builtin_inits; i++)
 	{
@@ -163,7 +141,6 @@ bse_plugin_init_builtins (void)
         }
     }
 }
-
 static guint64
 runtime_export_config (void)
 {
@@ -187,16 +164,13 @@ runtime_export_config (void)
     emask |= BSE_EXPORT_FLAG_SSE4;
   return emask;
 }
-
 static BsePlugin *startup_plugin = NULL;
-
 void
 bse_plugin_make_resident()
 {
   g_assert (startup_plugin != NULL);
   startup_plugin->resident_types = TRUE;
 }
-
 BsePlugin*
 bse_exports__add_node (const BseExportIdentity *identity,
                        BseExportNode           *enode)
@@ -217,7 +191,6 @@ bse_exports__add_node (const BseExportIdentity *identity,
     }
   return startup_plugin;
 }
-
 static const char*
 plugin_check_identity (BsePlugin *plugin, GModule *gmodule)
 {
@@ -237,15 +210,12 @@ plugin_check_identity (BsePlugin *plugin, GModule *gmodule)
           plugin->force_clean = true;
         }
     }
-
   if (!plugin->version_match)
     return "Invalid BSE Plugin Version";
   if (plugin->missing_export_flags)
     return "Incompatible CPU requirements";
-
   return NULL;
 }
-
 static void
 bse_plugin_use (GTypePlugin *gplugin)
 {
@@ -266,13 +236,11 @@ bse_plugin_use (GTypePlugin *gplugin)
 	g_error ("failed to reinitialize plugin \"%s\": %s", plugin->fname, cerror);
       if (!plugin->chain)
 	g_error ("failed to reinitialize plugin \"%s\": %s", plugin->fname, "empty plugin");
-
       bse_plugin_reinit_types (plugin);
     }
   else
     plugin->use_count++;
 }
-
 void
 bse_exports__del_node (BsePlugin               *plugin,
                        BseExportNode           *enode)
@@ -294,32 +262,25 @@ bse_exports__del_node (BsePlugin               *plugin,
       }
   g_warning ("%s: plugin attempt to unregister invalid export node: %s", plugin->fname, enode->name);
 }
-
 static void
 bse_plugin_unload (BsePlugin *plugin)
 {
   g_return_if_fail (plugin->gmodule != NULL && plugin->fname != NULL);
   g_return_if_fail (plugin->use_count == 0);
   g_return_if_fail (plugin->resident_types == 0);
-
   bse_plugin_uninit_types (plugin);
   g_module_close ((GModule*) plugin->gmodule);
   plugin->gmodule = NULL;
-
   /* reset plugin local pointers */
   if (plugin->force_clean)
     plugin->chain = NULL;
-
   DEBUG ("unloaded-plugin: %s", plugin->fname);
 }
-
 static void
 bse_plugin_unuse (GTypePlugin *gplugin)
 {
   BsePlugin *plugin = BSE_PLUGIN (gplugin);
-  
   g_return_if_fail (plugin->use_count > 0);
-  
   plugin->use_count--;
   if (!plugin->use_count)
     {
@@ -333,7 +294,6 @@ bse_plugin_unuse (GTypePlugin *gplugin)
     }
   g_object_unref (G_OBJECT (plugin));
 }
-
 static void
 bse_plugin_uninit_types (BsePlugin *plugin)
 {
@@ -351,7 +311,6 @@ bse_plugin_uninit_types (BsePlugin *plugin)
         }
     }
 }
-
 static void
 bse_plugin_complete_info (GTypePlugin     *gplugin,
 			  GType            type,
@@ -360,10 +319,8 @@ bse_plugin_complete_info (GTypePlugin     *gplugin,
 {
   BsePlugin *plugin = BSE_PLUGIN (gplugin);
   BseExportNode *node;
-
   g_return_if_fail (plugin != NULL);
   g_return_if_fail (plugin->use_count > 0);
-  
   for (node = plugin->chain; node && node->ntype; node = node->next)
     if (node->type == type)
       {
@@ -402,14 +359,12 @@ bse_plugin_complete_info (GTypePlugin     *gplugin,
   if (!node || node->type != type)
     g_error ("%s: unable to complete type from plugin: %s", plugin->fname, g_type_name (type));
 }
-
 static void
 bse_plugin_reinit_types (BsePlugin *plugin)
 {
   guint n = plugin->n_types;
   GType *types = (GType*) g_memdup (plugin->types, sizeof (plugin->types[0]) * n);
   BseExportNode *node;
-
   for (node = plugin->chain; node && node->ntype; node = node->next)
     {
       GType type = node->name ? g_type_from_name (node->name) : 0;
@@ -442,12 +397,10 @@ bse_plugin_reinit_types (BsePlugin *plugin)
     g_warning ("%s: plugin failed to reregister type: %s", plugin->fname, g_type_name (types[n]));
   g_free (types);
 }
-
 static void
 bse_plugin_init_types (BsePlugin *plugin)
 {
   BseExportNode *node;
-
   /* check type uniqueness */
   for (node = plugin->chain; node && node->ntype; node = node->next)
     switch (node->ntype)
@@ -486,7 +439,6 @@ bse_plugin_init_types (BsePlugin *plugin)
         break;
       default: ;
       }
-
   /* register BSE module types */
   for (node = plugin->chain; node && node->ntype; node = node->next)
     {
@@ -563,7 +515,6 @@ bse_plugin_init_types (BsePlugin *plugin)
         }
     }
 }
-
 static inline BsePlugin*
 bse_plugin_find (GModule *gmodule)
 {
@@ -575,7 +526,6 @@ bse_plugin_find (GModule *gmodule)
     }
   return NULL;
 }
-
 const gchar*
 bse_plugin_check_load (const gchar *const_file_name)
 {
@@ -583,9 +533,7 @@ bse_plugin_check_load (const gchar *const_file_name)
   GModule *gmodule;
   gchar *error = NULL;
   const gchar *cerror = NULL;
-  
   g_return_val_if_fail (const_file_name != NULL, NULL);
-
   if (0)        /* want to read .la files? */
     {
       const gint TOKEN_DLNAME = G_TOKEN_LAST + 1;
@@ -596,18 +544,15 @@ bse_plugin_check_load (const gchar *const_file_name)
         return (errno == ENOENT || errno == ENOTDIR || errno == ELOOP ?
                 bse_error_blurb (BSE_ERROR_FILE_NOT_FOUND) :
                 "Unable to access plugin");
-      
       /* and search libtool's dlname specification */
       scanner = g_scanner_new64 (NULL);
       g_scanner_input_file (scanner, fd);
       scanner->config->symbol_2_token = TRUE;
       g_scanner_add_symbol (scanner, "dlname", GUINT_TO_POINTER (TOKEN_DLNAME));
-      
       /* skip ahead */
       while (!g_scanner_eof (scanner) &&
              g_scanner_peek_next_token (scanner) != TOKEN_DLNAME)
         g_scanner_get_next_token (scanner);
-      
       /* parse dlname */
       if (g_scanner_get_next_token (scanner) != TOKEN_DLNAME ||
           g_scanner_get_next_token (scanner) != '=' ||
@@ -615,10 +560,8 @@ bse_plugin_check_load (const gchar *const_file_name)
         {
           g_scanner_destroy (scanner);
           close (fd);
-          
           return "Plugin's dlname broken";
         }
-      
       /* construct real module name */
       if (g_path_is_absolute (scanner->value.v_string))
         file_name = g_strdup (scanner->value.v_string);
@@ -633,9 +576,7 @@ bse_plugin_check_load (const gchar *const_file_name)
     }
   else
     file_name = g_strdup (const_file_name);
-
   DEBUG ("register: %s", file_name);
-
   /* load module */
   BsePlugin *plugin = (BsePlugin*) g_object_new (BSE_TYPE_PLUGIN, NULL);
   plugin->fname = g_strdup (file_name);
@@ -659,7 +600,6 @@ bse_plugin_check_load (const gchar *const_file_name)
       g_object_unref (plugin);
       return cerror;
     }
-
   /* verify plugin identity (BSE + version) */
   cerror = plugin_check_identity (plugin, gmodule);
   if (cerror)
@@ -670,16 +610,13 @@ bse_plugin_check_load (const gchar *const_file_name)
       g_object_unref (plugin);
       return cerror;
     }
-
   /* create plugin if this is a BSE plugin with valid type chain */
   if (plugin->chain)
     {
       plugin->fname = file_name;
       plugin->gmodule = gmodule;
-
       /* register BSE module types */
       bse_plugin_init_types (plugin);
-
       bse_plugins = g_slist_prepend (bse_plugins, plugin);
       if (plugin->use_count == 0)
         bse_plugin_unload (plugin);
@@ -699,12 +636,9 @@ bse_plugin_check_load (const gchar *const_file_name)
       g_free (file_name);
       g_object_unref (plugin);
     }
-
   return error;
 }
-
 #include "topconfig.h"
-
 static bool
 plugin_extension_filter (const char  *fname,
                          guint        n,
@@ -722,13 +656,11 @@ plugin_extension_filter (const char  *fname,
       return true;
   return false;
 }
-
 #ifdef WIN32
 #define PLUGIN_EXTENSION ".dll"
 #else
 #define PLUGIN_EXTENSION ".so"
 #endif
-
 SfiRing*
 bse_plugin_path_list_files (gboolean include_drivers,
                             gboolean include_plugins)

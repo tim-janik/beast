@@ -1,15 +1,9 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "gxkimagecache.hh"
 #include <string.h>
-
-
 #define MAX_CACHE_FILL  0
-
-
 /* --- variables --- */
 static GSList *image_cache = NULL;
-
-
 /* --- functions --- */
 static inline void
 desaturate (GdkColor tint,
@@ -25,7 +19,6 @@ desaturate (GdkColor tint,
   *green = saturation * *green + (1.0 - saturation) * g;
   *blue = saturation * *blue + (1.0 - saturation) * b;
 }
-
 static GdkPixbuf*
 load_pixbuf (const char *file_name,
              GError    **errorp)
@@ -43,7 +36,6 @@ load_pixbuf (const char *file_name,
   /* try to load from disk */
   return gdk_pixbuf_new_from_file (file_name, errorp);
 }
-
 static GxkImageCacheItem*
 image_cache_create_item (const gchar    *file_name,
                          GdkColor        tint,
@@ -90,7 +82,6 @@ image_cache_create_item (const gchar    *file_name,
   image_cache = g_slist_append (image_cache, citem);
   return citem;
 }
-
 static void
 image_cache_item_unuse (GxkImageCacheItem *citem)
 {
@@ -123,7 +114,6 @@ image_cache_item_unuse (GxkImageCacheItem *citem)
       /* nothing to free */
     }
 }
-
 static GxkImageCacheItem*
 image_cache_find_item (const gchar    *file_name,
                        GdkColor        tint,
@@ -144,7 +134,6 @@ image_cache_find_item (const gchar    *file_name,
     }
   return NULL;
 }
-
 GdkPixmap*
 gxk_image_cache_use_pixmap (const gchar    *file_name,
                             GdkColor        tint,
@@ -164,7 +153,6 @@ gxk_image_cache_use_pixmap (const gchar    *file_name,
     }
   return NULL;
 }
-
 void
 gxk_image_cache_unuse_pixmap (GdkPixmap *pixmap)
 {

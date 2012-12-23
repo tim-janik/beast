@@ -1,13 +1,9 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #ifndef __BSE_MIDI_CONTROLLER_H__
 #define __BSE_MIDI_CONTROLLER_H__
-
 #include <bse/bsesource.hh>
 #include <bse/bsemidievent.hh>
-
 G_BEGIN_DECLS
-
-
 /* --- object type macros --- */
 #define BSE_TYPE_MIDI_CONTROLLER	      (BSE_TYPE_ID (BseMidiController))
 #define BSE_MIDI_CONTROLLER(object)	      (G_TYPE_CHECK_INSTANCE_CAST ((object), BSE_TYPE_MIDI_CONTROLLER, BseMidiController))
@@ -15,15 +11,12 @@ G_BEGIN_DECLS
 #define BSE_IS_CONTROLLER(object)	      (G_TYPE_CHECK_INSTANCE_TYPE ((object), BSE_TYPE_MIDI_CONTROLLER))
 #define BSE_IS_CONTROLLER_CLASS(class)	      (G_TYPE_CHECK_CLASS_TYPE ((class), BSE_TYPE_MIDI_CONTROLLER))
 #define BSE_MIDI_CONTROLLER_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), BSE_TYPE_MIDI_CONTROLLER, BseMidiControllerClassOut))
-
-
 /* --- BseMidiController source --- */
 typedef struct _BseMidiController      BseMidiController;
 typedef struct _BseMidiControllerClass BseMidiControllerClass;
 struct _BseMidiController
 {
   BseSource          parent_object;
-  
   guint		     midi_channel;
   BseMidiSignalType  controls[4];
 };
@@ -31,8 +24,6 @@ struct _BseMidiControllerClass
 {
   BseSourceClass  parent_class;
 };
-
-
 /* --- channels --- */
 enum
 {
@@ -42,8 +33,5 @@ enum
   BSE_MIDI_CONTROLLER_OCHANNEL_CONTROL4,
   BSE_MIDI_CONTROLLER_N_OCHANNELS
 };
-
-
 G_END_DECLS
-
 #endif /* __BSE_MIDI_CONTROLLER_H__ */

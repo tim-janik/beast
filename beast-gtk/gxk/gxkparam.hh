@@ -1,14 +1,10 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #ifndef __GXK_PARAM_H__
 #define __GXK_PARAM_H__
-
 #include "gxkutils.hh"
-
 G_BEGIN_DECLS
-
 /* --- macros --- */
 #define GXK_IS_PARAM(p) (p && G_IS_PARAM_SPEC (p->pspec))
-
 /* --- typedefs, structures & enums --- */
 typedef struct _GxkParamBinding GxkParamBinding;
 typedef struct {
@@ -48,7 +44,6 @@ struct _GxkParamBinding
 };
 typedef void    (*GxkParamUpdateFunc)   (GxkParam       *param,
                                          GtkObject      *object);
-
 /* --- functions --- */
 GxkParam*     gxk_param_new                 (GParamSpec         *pspec,
                                              GxkParamBinding    *binding,
@@ -73,8 +68,6 @@ void          gxk_param_set_devel_tips      (gboolean            enabled);
 void          gxk_param_destroy             (GxkParam           *param);
 void          gxk_object_set_param_callback (GtkObject          *object,
                                              GxkParamUpdateFunc  ufunc);
-
-
 /* --- param value binding --- */
 typedef void (*GxkParamValueNotify)    (gpointer             notify_data,
                                         GxkParam            *param);
@@ -84,15 +77,12 @@ GxkParam* gxk_param_new_value          (GParamSpec          *pspec,
 GxkParam* gxk_param_new_constant_value (GParamSpec          *pspec,
                                         GxkParamValueNotify  notify,
                                         gpointer             notify_data);
-
 /* --- param object binding --- */
 GxkParam* gxk_param_new_object          (GParamSpec         *pspec,
                                          GObject            *object);
 void      gxk_param_set_object          (GxkParam           *param,
                                          GObject            *object);
 GObject*  gxk_param_get_object          (GxkParam           *param);
-
-
 /* --- param view/editor --- */
 typedef struct {
   const char *name, *nick;
@@ -128,7 +118,6 @@ const gchar* gxk_param_lookup_editor      (const gchar     *editor_name,
 GtkWidget*   gxk_param_create_editor      (GxkParam        *param,
                                            const gchar     *editor_name);
 void         gxk_param_editor_debug_score (GParamSpec      *pspec);
-
 /* --- param editor size groups --- */
 typedef struct {
   guint may_resize : 1;                 /* whether the specified chars/digits may be adjusted */
@@ -153,8 +142,6 @@ void                       gxk_param_set_size_group    (GxkParam                
 const GxkParamEditorSizes* gxk_param_get_editor_sizes  (GxkParam                  *param);
 guint                      gxk_param_get_digits        (gdouble                    value,
                                                         guint                      base);
-
-
 /* --- param implementation utils --- */
 gboolean       gxk_param_entry_key_press        (GtkEntry    *entry,
                                                  GdkEventKey *event);
@@ -171,9 +158,6 @@ GtkAdjustment* gxk_param_get_adjustment_with_stepping (GxkParam  *param,
                                                        gdouble    pstepping);
 GtkAdjustment* gxk_param_get_log_adjustment           (GxkParam  *param);
 GtkAdjustment* gxk_param_get_decibel_adjustment       (GxkParam  *param);
-
 G_END_DECLS
-
 #endif /* __GXK_PARAM_H__ */
-
 /* vim:set ts=8 sts=2 sw=2: */

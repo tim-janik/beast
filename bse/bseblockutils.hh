@@ -1,12 +1,9 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #ifndef __BSE_BLOCK_UTILS_H__
 #define __BSE_BLOCK_UTILS_H__
-
 #include <wchar.h> /* wmemset */
 #include <bse/bseieee754.hh>
-
 G_BEGIN_DECLS
-
 /* --- C API --- */
 const
 char*   bse_block_impl_name                       (void);
@@ -57,13 +54,10 @@ float   bse_block_calc_float_range_and_square_sum (guint          n_values,
                                                    const float   *ivalues,
 	                                           float         *min_value,
 	                                           float         *max_value);
-
 G_END_DECLS
-
 #ifdef  __cplusplus
 #include <bse/bseresampler.hh>
 namespace Bse {
-
 /* --- C++ API --- */
 class Block {
 public:
@@ -111,16 +105,12 @@ public:
                                               const float    *ivalues,
 					      float&          min_value,
 					      float&          max_value)     { return singleton->range_and_square_sum (n_values, ivalues, min_value, max_value); }
-
   typedef Resampler::Resampler2 Resampler2;
   static inline
   Resampler2*           create_resampler2    (BseResampler2Mode      mode,
                                               BseResampler2Precision precision)	  { return singleton->create_resampler2 (mode, precision); }
   static inline
   bool                  test_resampler2	     (bool                   verbose)	  { return singleton->test_resampler2 (verbose); }
-
-
-    
   class Impl {
   protected:
     virtual      ~Impl                  ();
@@ -168,7 +158,6 @@ public:
 private:
   static Impl  *singleton;
 };
-
 /* --- C++ implementation bits --- */
 inline void
 Block::fill (guint           n_values,
@@ -180,7 +169,6 @@ Block::fill (guint           n_values,
   const union { float f; guint32 vuint32; } u = { value };
   wmemset ((wchar_t*) values, u.vuint32, n_values);
 }
-
 inline void
 Block::fill (guint           n_values,
              guint32        *values,
@@ -189,7 +177,6 @@ Block::fill (guint           n_values,
   BIRNET_STATIC_ASSERT (sizeof (wchar_t) == 4);
   wmemset ((wchar_t*) values, value, n_values);
 }
-
 inline void
 Block::copy (guint          n_values,
              guint32       *values,
@@ -198,7 +185,6 @@ Block::copy (guint          n_values,
   BIRNET_STATIC_ASSERT (sizeof (wchar_t) == 4);
   wmemcpy ((wchar_t*) values, (const wchar_t*) ivalues, n_values);
 }
-
 inline void
 Block::copy (guint         n_values,
              gfloat       *values,
@@ -208,13 +194,10 @@ Block::copy (guint         n_values,
   BIRNET_STATIC_ASSERT (sizeof (wchar_t) == 4);
   wmemcpy ((wchar_t*) values, (const wchar_t*) ivalues, n_values);
 }
-
 } // Bse
 #endif  /* __cplusplus */
-
 /* --- C implementation bits --- */
 G_BEGIN_DECLS
-
 static inline void
 bse_block_fill_uint32 (guint    n_values,
 		       guint32 *values,
@@ -223,7 +206,6 @@ bse_block_fill_uint32 (guint    n_values,
   BIRNET_STATIC_ASSERT (sizeof (wchar_t) == 4);
   wmemset ((wchar_t*) values, vuint32, n_values);
 }
-
 static inline void
 bse_block_fill_float (guint	   n_values,
 		      float       *values,
@@ -234,7 +216,6 @@ bse_block_fill_float (guint	   n_values,
   BIRNET_STATIC_ASSERT (sizeof (wchar_t) == 4);
   wmemset ((wchar_t*) values, u.vuint32, n_values);
 }
-
 static inline void
 bse_block_copy_uint32 (guint	      n_values,
 		       guint32       *values,
@@ -243,7 +224,6 @@ bse_block_copy_uint32 (guint	      n_values,
   BIRNET_STATIC_ASSERT (sizeof (wchar_t) == 4);
   wmemcpy ((wchar_t*) values, (const wchar_t*) ivalues, n_values);
 }
-
 static inline void
 bse_block_copy_float (guint	    n_values,
 		      gfloat       *values,
@@ -253,7 +233,5 @@ bse_block_copy_float (guint	    n_values,
   BIRNET_STATIC_ASSERT (sizeof (wchar_t) == 4);
   wmemcpy ((wchar_t*) values, (const wchar_t*) ivalues, n_values);
 }
-
 G_END_DECLS
-
 #endif /* __BSE_BLOCK_UTILS_H__ */

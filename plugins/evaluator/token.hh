@@ -1,13 +1,9 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
-
 #ifndef BSE_EVALUATOR_TOKEN_H
 #define BSE_EVALUATOR_TOKEN_H
-
 #include <string>
-
 namespace Bse {
 namespace EvaluatorUtils {
-
 struct Token {
     enum TokenType {
 	NONE, 
@@ -20,20 +16,16 @@ struct Token {
 	NUMBER,
 	VARIABLE
     } type;
-
     double value;
     int reg;
-
     Token(TokenType type = NONE, double value = 0.0)
 	: type (type), value (value)
     {
     }
-
     bool is_operator() const
     {
 	return operator_precedence() != -1;
     }
-
     int operator_precedence() const
     {
 	/* higher numbers mean higher precedence */
@@ -48,7 +40,6 @@ struct Token {
 	    default:	        return -1;
 	}
     }
-
     std::string str() const
     {
 	switch(type)
@@ -65,8 +56,6 @@ struct Token {
 	}
     }
 };
-
 }
 }
-
 #endif

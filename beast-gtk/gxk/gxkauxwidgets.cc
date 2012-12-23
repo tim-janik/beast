@@ -2,7 +2,6 @@
 #include "gxkauxwidgets.hh"
 #include "gxkstock.hh"
 #include <gdk/gdkkeysyms.h>
-
 /* --- GxkMenuItem --- */
 enum {
   MENU_ITEM_PROP_0,
@@ -14,7 +13,6 @@ enum {
   MENU_ITEM_PROP_TITLE_STYLE,
   MENU_ITEM_PROP_RIGHT_JUSTIFY
 };
-
 static void     gxk_menu_item_class_init           (GxkMenuItemClass    *klass);
 static void     gxk_menu_item_set_property         (GObject             *object,
                                                     guint                param_id,
@@ -31,7 +29,6 @@ menu_item_keep_menubar_image (GtkImageMenuItem *imitem)
       !g_object_get_long (imitem, "gxk-keep-menubar-image"))
     gtk_image_menu_item_set_image (imitem, NULL);
 }
-
 static void
 gxk_menu_item_set_property (GObject      *object,
                             guint         param_id,
@@ -118,7 +115,6 @@ gxk_menu_item_set_property (GObject      *object,
       break;
     }
 }
-
 static void
 gxk_menu_item_get_property (GObject    *object,
                             guint       param_id,
@@ -133,14 +129,12 @@ gxk_menu_item_get_property (GObject    *object,
       break;
     }
 }
-
 static void
 gxk_menu_item_init (GxkMenuItem *self)
 {
   g_signal_connect (self, "parent-set", G_CALLBACK (menu_item_keep_menubar_image), NULL);
   g_signal_connect (self, "check-resize", G_CALLBACK (menu_item_keep_menubar_image), NULL);         
 }
-
 static void
 gxk_menu_item_class_init (GxkMenuItemClass *klass)
 {
@@ -162,7 +156,6 @@ gxk_menu_item_class_init (GxkMenuItemClass *klass)
   g_object_class_install_property (gobject_class, MENU_ITEM_PROP_TITLE_STYLE,
                                    g_param_spec_boolean ("title-style", NULL, NULL, FALSE, G_PARAM_WRITABLE));
 }
-
 GType
 gxk_menu_item_get_type (void)
 {
@@ -184,15 +177,12 @@ gxk_menu_item_get_type (void)
     }
   return type;
 }
-
 /* --- scrolled window --- */
 G_DEFINE_TYPE (GxkScrolledWindow, gxk_scrolled_window, GTK_TYPE_SCROLLED_WINDOW);
-
 static void
 gxk_scrolled_window_init (GxkScrolledWindow *self)
 {
 }
-
 enum {
   SCROLLED_WINDOW_PROP_0,
   SCROLLED_WINDOW_PROP_SPARE_SPACE,
@@ -217,7 +207,6 @@ gxk_scrolled_window_set_property (GObject      *object,
       break;
     }
 }
-
 static void
 gxk_scrolled_window_class_init (GxkScrolledWindowClass *klass)
 {
@@ -227,7 +216,6 @@ gxk_scrolled_window_class_init (GxkScrolledWindowClass *klass)
                                    g_param_spec_boolean ("spare-space", NULL, NULL, FALSE, G_PARAM_WRITABLE));
   GTK_SCROLLED_WINDOW_CLASS (klass)->scrollbar_spacing = 1;
 }
-
 /* --- GxkFreeRadioButton --- */
 static void
 gxk_free_radio_button_class_init (GxkFreeRadioButtonClass *klass)
@@ -237,7 +225,6 @@ gxk_free_radio_button_class_init (GxkFreeRadioButtonClass *klass)
   button_class->clicked = GTK_BUTTON_CLASS (gtk_check_button_class)->clicked;
   g_type_class_unref (gtk_check_button_class);
 }
-
 GType
 gxk_free_radio_button_get_type (void)
 {
@@ -259,8 +246,6 @@ gxk_free_radio_button_get_type (void)
     }
   return type;
 }
-
-
 /* --- GxkImage --- */
 enum {
   IMAGE_PROP_0,
@@ -271,7 +256,6 @@ static void     gxk_image_set_property         (GObject             *object,
                                                 guint                param_id,
                                                 const GValue        *value,
                                                 GParamSpec          *pspec);
-
 static void
 gxk_image_set_property (GObject      *object,
                         guint         param_id,
@@ -292,7 +276,6 @@ gxk_image_set_property (GObject      *object,
       break;
     }
 }
-
 static void
 gxk_image_class_init (GxkImageClass *klass)
 {
@@ -301,7 +284,6 @@ gxk_image_class_init (GxkImageClass *klass)
   g_object_class_install_property (gobject_class, IMAGE_PROP_STOCK_SIZE,
                                    g_param_spec_string ("stock-size", NULL, NULL, NULL, G_PARAM_WRITABLE));
 }
-
 GType
 gxk_image_get_type (void)
 {
@@ -323,8 +305,6 @@ gxk_image_get_type (void)
     }
   return type;
 }
-
-
 /* --- GxkWidgetPatcher --- */
 static void   gxk_widget_patcher_class_init     (GxkWidgetPatcherClass  *klass);
 static void   gxk_widget_patcher_set_property   (GObject                *object,
@@ -340,7 +320,6 @@ widget_patcher_unref (gpointer data)
   GDK_THREADS_LEAVE ();
   return FALSE;
 }
-
 enum {
   PATCHER_PROP_0,
   PATCHER_PROP_TOOLTIP,
@@ -589,7 +568,6 @@ widget_patcher_adopt (GxkRadget          *radget,
   g_idle_add (widget_patcher_unref, self);      /* takes over initial ref count */
   return FALSE; /* no support for packing options */
 }
-
 GType
 gxk_widget_patcher_get_type (void)
 {
@@ -611,14 +589,12 @@ gxk_widget_patcher_get_type (void)
     }
   return type;
 }
-
 static GParamSpec*
 widget_patcher_find_prop (GTypeClass  *klass,
                           const gchar *prop_name)
 {
   return g_object_class_find_property (G_OBJECT_CLASS (klass), prop_name);
 }
-
 static GxkRadget*
 widget_patcher_create (GType               type,
                        const gchar        *name,
@@ -628,7 +604,6 @@ widget_patcher_create (GType               type,
 {
   return g_object_newv (type, n_construct_params, construct_params);
 }
-
 static const GxkRadgetType widget_patcher_def = {
   widget_patcher_find_prop,
   widget_patcher_create,
@@ -638,11 +613,8 @@ static const GxkRadgetType widget_patcher_def = {
   NULL,         /* set_pack */
 };
 const GxkRadgetType *gxk_widget_patcher_def = &widget_patcher_def;
-
-
 /* --- back shade --- */
 G_DEFINE_TYPE (GxkBackShade, gxk_back_shade, GTK_TYPE_ALIGNMENT);
-
 /* color converion code stolen from gtkstyle.c */
 static void
 rgb_to_hls (gdouble  red,
@@ -676,7 +648,6 @@ rgb_to_hls (gdouble  red,
   *l_p = l;
   *s_p = s;
 }
-
 static void
 hls_to_rgb (gdouble  hue,		/* 0..360 */
             gdouble  lightness,		/* 0..1 */
@@ -699,7 +670,6 @@ hls_to_rgb (gdouble  hue,		/* 0..360 */
       else
         m2 = lightness + saturation - lightness * saturation;
       gdouble m1 = 2 * lightness - m2;
-
       chue = hue + 120;
       while (chue > 360)
         chue -= 360;
@@ -713,7 +683,6 @@ hls_to_rgb (gdouble  hue,		/* 0..360 */
         *r_p = m1 + (m2 - m1) * (240 - chue) / 60;
       else
         *r_p = m1;
-
       chue = hue;
       while (chue > 360)
         chue -= 360;
@@ -727,7 +696,6 @@ hls_to_rgb (gdouble  hue,		/* 0..360 */
         *g_p = m1 + (m2 - m1) * (240 - chue) / 60;
       else
         *g_p = m1;
-
       chue = hue - 120;
       while (chue > 360)
         chue -= 360;
@@ -743,7 +711,6 @@ hls_to_rgb (gdouble  hue,		/* 0..360 */
         *b_p = m1;
     }
 }
-
 static void
 color_shade (GdkColor *color,
              gdouble   k)
@@ -760,7 +727,6 @@ color_shade (GdkColor *color,
   color->green = g * 65535.;
   color->blue = b * 65535.;
 }
-
 static GdkGC*
 get_darkened_gc (GdkWindow *window,
                  GdkColor  *srccolor,
@@ -773,7 +739,6 @@ get_darkened_gc (GdkWindow *window,
   gdk_gc_set_rgb_fg_color (gc, &color);
   return gc;
 }
-
 static gboolean
 back_shade_expose_event (GtkWidget      *widget,
                          GdkEventExpose *event)
@@ -789,13 +754,11 @@ back_shade_expose_event (GtkWidget      *widget,
   /* chain to parent */
   return GTK_WIDGET_CLASS (gxk_back_shade_parent_class)->expose_event (widget, event);
 }
-
 static void
 gxk_back_shade_init (GxkBackShade *self)
 {
   GTK_WIDGET_SET_FLAGS (self, GTK_VISIBLE);
 }
-
 static void
 gxk_back_shade_class_init (GxkBackShadeClass *klass)
 {

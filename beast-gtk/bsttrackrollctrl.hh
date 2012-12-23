@@ -1,12 +1,8 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #ifndef __BST_TRACK_ROLL_CONTROLLER_H__
 #define __BST_TRACK_ROLL_CONTROLLER_H__
-
-
 #include "bsttrackroll.hh"
-
 G_BEGIN_DECLS
-
 typedef struct _BstTrackRollUtil BstTrackRollUtil;
 typedef struct {
   /* misc data */
@@ -27,8 +23,6 @@ typedef struct {
   GxkActionGroup   *hpanel_rtools;
   GxkActionGroup   *quant_rtools;
 } BstTrackRollController;
-
-
 /* --- API --- */
 BstTrackRollController*	bst_track_roll_controller_new		(BstTrackRoll		*troll);
 BstTrackRollController*	bst_track_roll_controller_ref		(BstTrackRollController	*self);
@@ -42,8 +36,5 @@ guint		bst_track_roll_controller_quantize		(BstTrackRollController *self,
 GxkActionList*  bst_track_roll_controller_canvas_actions        (BstTrackRollController *self);
 GxkActionList*  bst_track_roll_controller_hpanel_actions        (BstTrackRollController *self);
 GxkActionList*  bst_track_roll_controller_quant_actions         (BstTrackRollController *self);
-
-
 G_END_DECLS
-
 #endif /* __BST_TRACK_ROLL_CONTROLLER_H__ */

@@ -1,15 +1,12 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #ifndef __SFI_WRAPPER_H__
 #define __SFI_WRAPPER_H__
-
 #include <stdbool.h>
 #include <sfi/glib-extra.hh>
 #include <birnet/birnetcdefs.h> /* include glib before birnet for G_LOG_DOMAIN */
-
 /* sfiwrapper.h is a thin C language wrapper around C++ features
  * provided by libbirnet.
  */
-
 /* --- short integer types --- */
 #ifdef __cplusplus
 #include <birnet/birnetutils.hh>
@@ -33,9 +30,7 @@ typedef BirnetInt32   int32;
 typedef BirnetInt64   int64;
 typedef BirnetUnichar unichar;
 #endif
-
 BIRNET_EXTERN_C_BEGIN();
-
 /* --- initialization --- */
 typedef struct
 {
@@ -50,22 +45,17 @@ void    sfi_init        (int            *argcp,
 bool    sfi_init_value_bool   (SfiInitValue *value);
 double  sfi_init_value_double (SfiInitValue *value);
 gint64  sfi_init_value_int    (SfiInitValue *value);
-
 typedef BirnetInitSettings SfiInitSettings;
 SfiInitSettings sfi_init_settings (void);
-
 /* --- CPU Info --- */
 typedef BirnetCPUInfo SfiCPUInfo;
-
 SfiCPUInfo sfi_cpu_info	   (void);
 gchar*     sfi_cpu_info_string (const SfiCPUInfo *cpu_info);
-
 /* --- file tests --- */
 bool	birnet_file_check (const char *file,
 			   const char *mode);
 bool	birnet_file_equals (const char *file1,
 			    const char *file2);
-
 /* --- messaging --- */
 typedef enum {
   SFI_MSG_NONE   = 0,   /* always off */
@@ -111,7 +101,6 @@ SfiMsgType      sfi_msg_type_register           (const char     *ident,
 #define         SFI_MSG_SECONDARY                SFI_MSG_TEXT2 /* alias */
 #define         SFI_MSG_DETAIL                   SFI_MSG_TEXT3 /* alias */
 #define         SFI_MSG_TYPE_DEFINE(variable, ident, default_ouput, label) SFI_MSG__TYPEDEF (variable, ident, default_ouput, label)
-
 /* --- messaging implementation --- */
 typedef struct SfiMsgPart SfiMsgPart;
 SfiMsgPart*     sfi_msg_part_printf     (uint8          msg_part_id,
@@ -136,7 +125,6 @@ void            sfi_msg_display_printf  (const char    *log_domain,
   static void BIRNET_CONSTRUCTOR \
   BIRNET_CPP_PASTE4 (__sfi_msg_type__init, __LINE__, __, variable) (void) \
   { variable = sfi_msg_type_register (identifier, default_ouput, label); }
-
 /* --- debug channels --- */
 typedef struct SfiDebugChannel SfiDebugChannel;
 SfiDebugChannel* sfi_debug_channel_from_file_async (const char      *file_name);
@@ -145,7 +133,6 @@ void             sfi_debug_channel_printf          (SfiDebugChannel *debug_chann
                                                     const char      *format,
                                                     ...) G_GNUC_PRINTF (3, 4);
 void             sfi_debug_channel_destroy         (SfiDebugChannel *debug_channel);
-
 /* --- url handling --- */
 void sfi_url_show                   	(const char           *url);
 void sfi_url_show_with_cookie       	(const char           *url,
@@ -155,10 +142,8 @@ bool sfi_url_test_show              	(const char           *url);
 bool sfi_url_test_show_with_cookie	(const char           *url,
 					 const char           *url_title,
 					 const char           *cookie);
-
 /* --- cleanup handlers --- */
 void birnet_cleanup_force_handlers     (void); // FIXME: remove
-
 /* --- threading API --- */
 typedef BirnetThread   		SfiThread;
 typedef void         	      (*SfiThreadFunc)   (void *user_data);
@@ -239,7 +224,6 @@ SfiThread* sfi_thread_run			(const char   *name, /* new + start */
 #define sfi_atomic_uint_cas(atmc,oval,nval)	(sfi_thread_table->atomic_uint_cas (atmc, oval, nval))
 #define sfi_atomic_uint_add(atmc,diff)		(sfi_thread_table->atomic_uint_add (atmc, diff))
 #define sfi_atomic_uint_swap_add(atmc,diff)	(sfi_thread_table->atomic_uint_swap_add (atmc, diff))
-
 /* --- implementation bits --- */
 extern const BirnetThreadTable *sfi_thread_table;
 #define SFI_MUTEX__DECLARE_INITIALIZED(mutexname)                        	\
@@ -268,9 +252,6 @@ void sfi_runtime_problem (char        ewran_tag,
 			  const char *funcname,
 			  const char *msgformat,
 			  ...) BIRNET_PRINTF (6, 7);
-
 BIRNET_EXTERN_C_END();
-
 #endif /* __SFI_WRAPPER_H__ */
-
 /* vim:set ts=8 sts=2 sw=2: */

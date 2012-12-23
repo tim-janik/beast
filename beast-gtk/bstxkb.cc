@@ -1,21 +1,14 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bstxkb.hh"
-
 #include "topconfig.h"
 #include <string.h>
-
 #ifdef	BST_WITH_XKB
-
 #include <X11/Xlib.h>
 #include <X11/XKBlib.h>
 #include <X11/extensions/XKBgeom.h>
-
-
 /* --- variables --- */
 static Display   *bst_xkb_display = NULL;
 static XkbDescPtr bst_xkb_desc = NULL;
-
-
 /* --- functions --- */
 gboolean
 bst_xkb_open (const gchar *const_display,
@@ -25,10 +18,8 @@ bst_xkb_open (const gchar *const_display,
   int ext_base_event, ext_base_error, ext_status;
   int ext_major = XkbMajorVersion;
   int ext_minor = XkbMinorVersion;
-
   g_return_val_if_fail (display != NULL, FALSE);
   g_return_val_if_fail (bst_xkb_display == NULL, FALSE);
-
   bst_xkb_display = XkbOpenDisplay (display,
 				    &ext_base_event,
 				    &ext_base_error,
@@ -62,41 +53,32 @@ bst_xkb_open (const gchar *const_display,
       XCloseDisplay (bst_xkb_display);
       bst_xkb_display = NULL;
     }
-
   return bst_xkb_desc != NULL;
 }
-
 void
 bst_xkb_close (void)
 {
   g_return_if_fail (bst_xkb_display != NULL);
-
   XkbFreeKeyboard (bst_xkb_desc, XkbAllComponentsMask, True);
   bst_xkb_desc = NULL;
   XCloseDisplay (bst_xkb_display);
   bst_xkb_display = NULL;
 }
-
 const gchar*
 bst_xkb_get_symbol (gboolean physical)
 {
   gchar *name;
-
   g_return_val_if_fail (bst_xkb_desc != NULL, NULL);
-
   if (physical)
     name = bst_xkb_desc->names->phys_symbols ? XGetAtomName (bst_xkb_display, bst_xkb_desc->names->phys_symbols) : "";
   else
     name = bst_xkb_desc->names->symbols ? XGetAtomName (bst_xkb_display, bst_xkb_desc->names->symbols) : "";
-
   return name;
 }
-
 void
 bst_xkb_dump (void)
 {
   g_return_if_fail (bst_xkb_desc != NULL);
-  
   g_message ("XKB: keycodes: %s types: %s "
 	     "symbols: %s phys_symbols: %s "
 	     "geo-name: %s",
@@ -105,7 +87,6 @@ bst_xkb_dump (void)
 	     bst_xkb_desc->names->symbols ? XGetAtomName (bst_xkb_display, bst_xkb_desc->names->symbols) : "<>",
 	     bst_xkb_desc->names->phys_symbols ? XGetAtomName (bst_xkb_display, bst_xkb_desc->names->phys_symbols) : "<>",
 	     bst_xkb_desc->geom->name ? XGetAtomName (bst_xkb_display, bst_xkb_desc->geom->name) : "<>");
-  
   /* Tim Janik <timj@gtk.org>:
    *   keycodes: xfree86 types: complete
    *   symbols: en_US(pc102)_de(nodeadkeys) phys_symbols: en_US(pc102)_de(nodeadkeys)
@@ -128,7 +109,6 @@ bst_xkb_dump (void)
    *   geo-name: pc(pc101)
    */
 }
-
 #else  /* !BST_WITH_XKB */
 gboolean
 bst_xkb_open  (const gchar *display,
@@ -149,9 +129,7 @@ bst_xkb_get_symbol (gboolean physical)
 {
   return NULL;
 }
-
 #endif /* !BST_WITH_XKB */
-
 void
 bst_xkb_parse_symbol (const gchar *const_symbol,
 		      gchar      **encoding_p,
@@ -160,9 +138,7 @@ bst_xkb_parse_symbol (const gchar *const_symbol,
 		      gchar      **variant_p)
 {
   const char *s, *e, *symbol = const_symbol ? (gchar*) const_symbol : "";
-
   e = symbol + strlen (symbol);
-
   s = strchr (symbol, '(');
   if (encoding_p)
     *encoding_p = s ? g_strndup (symbol, s - symbol) : *symbol ? g_strdup (symbol) : NULL;

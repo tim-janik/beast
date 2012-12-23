@@ -1,6 +1,5 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bstutils.hh"
-
 #include "bstgconfig.hh"
 #include "bstmenus.hh"
 #include "bsttrackview.hh"
@@ -19,29 +18,19 @@
 #include <errno.h>
 #include <unistd.h>
 #include <string.h>
-
-
 /* --- generated enums --- */
 #include "bstenum_arrays.cc"     /* enum string value arrays plus include directives */
-
-
 /* --- prototypes --- */
 static void     _bst_init_idl                   (void);
-
-
 /* --- variables --- */
 static GtkIconFactory *stock_icon_factory = NULL;
-
-
 /* --- functions --- */
 void
 _bst_init_utils (void)
 {
   g_assert (stock_icon_factory == NULL);
-  
   stock_icon_factory = gtk_icon_factory_new ();
   gtk_icon_factory_add_default (stock_icon_factory);
-  
   /* initialize generated type ids */
   {
     static struct {
@@ -56,7 +45,6 @@ _bst_init_utils (void)
     for (i = 0; i < sizeof (builtin_info) / sizeof (builtin_info[0]); i++)
       {
         GType type_id = 0;
-        
         if (builtin_info[i].parent == G_TYPE_ENUM)
           type_id = g_enum_register_static (builtin_info[i].type_name, (const GEnumValue*) builtin_info[i].pointer1);
         else if (builtin_info[i].parent == G_TYPE_FLAGS)
@@ -67,18 +55,14 @@ _bst_init_utils (void)
         *builtin_info[i].type_id = type_id;
       }
   }
-  
   /* initialize IDL types */
   _bst_init_idl ();
-  
   /* initialize stock icons (included above) */
   {
     /* generated stock icons */
 #include "beast-gtk/icons/bst-stock-gen.cc"
-    
     gxk_stock_register_icons (G_N_ELEMENTS (stock_icons), stock_icons);
   }
-  
   /* initialize stock actions */
   {
     static const GxkStockItem stock_items[] = {
@@ -92,7 +76,6 @@ _bst_init_utils (void)
     gxk_stock_register_items (G_N_ELEMENTS (stock_items), stock_items);
   }
 }
-
 #include "beast-gtk/dialogs/beast-xml-zfiles.cc"
 void
 _bst_init_radgets (void)
@@ -121,7 +104,6 @@ _bst_init_radgets (void)
   gxk_radget_parse_text ("beast", text, -1, NULL, NULL);
   g_free (text);
 }
-
 GtkWidget*
 bst_stock_button (const gchar *stock_id)
 {
@@ -129,7 +111,6 @@ bst_stock_button (const gchar *stock_id)
   gtk_widget_show_all (w);
   return w;
 }
-
 GtkWidget*
 bst_stock_dbutton (const gchar *stock_id)
 {
@@ -137,7 +118,6 @@ bst_stock_dbutton (const gchar *stock_id)
   g_object_set (w, "can-default", TRUE, NULL);
   return w;
 }
-
 GtkWidget*
 bst_stock_icon_button (const gchar *stock_id)
 {
@@ -149,7 +129,6 @@ bst_stock_icon_button (const gchar *stock_id)
   gtk_widget_show_all (w);
   return w;
 }
-
 void
 bst_stock_register_icon (const gchar    *stock_id,
                          guint           bytes_per_pixel,
@@ -160,7 +139,6 @@ bst_stock_register_icon (const gchar    *stock_id,
 {
   g_return_if_fail (bytes_per_pixel == 3 || bytes_per_pixel == 4);
   g_return_if_fail (width > 0 && height > 0 && rowstride >= width * bytes_per_pixel);
-  
   if (!gtk_icon_factory_lookup (stock_icon_factory, stock_id))
     {
       GdkPixbuf *pixbuf = gdk_pixbuf_new_from_data ((guchar*) g_memdup (pixels, rowstride * height),
@@ -174,8 +152,6 @@ bst_stock_register_icon (const gchar    *stock_id,
       gtk_icon_set_unref (iset);
     }
 }
-
-
 /* --- beast/bse specific extensions --- */
 void
 bst_status_eprintf (BseErrorType error,
@@ -184,23 +160,19 @@ bst_status_eprintf (BseErrorType error,
 {
   gchar *buffer;
   va_list args;
-  
   va_start (args, message_fmt);
   buffer = g_strdup_vprintf (message_fmt, args);
   va_end (args);
-  
   if (error)
     gxk_status_set (GXK_STATUS_ERROR, buffer, bse_error_blurb (error));
   else
     gxk_status_set (GXK_STATUS_DONE, buffer, NULL);
   g_free (buffer);
 }
-
 void
 bst_gui_error_bell (gpointer widget)
 {
   g_return_if_fail (GTK_IS_WIDGET (widget));
-
   if (GTK_WIDGET_DRAWABLE (widget) && BST_GUI_ENABLE_ERROR_BELL)
     {
 #if GTK_CHECK_VERSION (2, 12, 0)
@@ -210,30 +182,25 @@ bst_gui_error_bell (gpointer widget)
 #endif
     }
 }
-
 typedef struct {
   GtkWindow *window;
   SfiProxy   proxy;
   gchar     *title1;
   gchar     *title2;
 } TitleSync;
-
 static void
 sync_title (TitleSync *tsync)
 {
   const gchar *name = bse_item_get_name (tsync->proxy);
   gchar *s;
-  
   s = g_strconcat (tsync->title1, name ? name : "<NULL>", tsync->title2, NULL);
   g_object_set (tsync->window, "title", s, NULL);
   g_free (s);
 }
-
 static void
 free_title_sync (gpointer data)
 {
   TitleSync *tsync = (TitleSync*) data;
-  
   bse_proxy_disconnect (tsync->proxy,
                         "any_signal", sync_title, tsync,
                         NULL);
@@ -241,14 +208,12 @@ free_title_sync (gpointer data)
   g_free (tsync->title2);
   g_free (tsync);
 }
-
 void
 bst_window_sync_title_to_proxy (gpointer     window,
                                 SfiProxy     proxy,
                                 const gchar *title_format)
 {
   const char *p;
-
   g_return_if_fail (GTK_IS_WINDOW (window));
   if (proxy)
     {
@@ -276,16 +241,13 @@ bst_window_sync_title_to_proxy (gpointer     window,
       g_object_set (window, "title", title_format, NULL);
     }
 }
-
 typedef struct {
   gboolean       (*handler) (gpointer data);
   gpointer         data;
   void           (*free_func) (gpointer data);
 } BackgroundHandler;
-
 static SfiRing *background_handlers1 = NULL;
 static SfiRing *background_handlers2 = NULL;
-
 static gboolean
 bst_background_handlers_timeout (gpointer timeout_data)
 {
@@ -326,7 +288,6 @@ bst_background_handlers_timeout (gpointer timeout_data)
                         bst_background_handlers_timeout, NULL, NULL);
   return FALSE;
 }
-
 static void
 bst_background_handler_add (gboolean       (*handler) (gpointer data),
                             gpointer         data,
@@ -347,7 +308,6 @@ bst_background_handler_add (gboolean       (*handler) (gpointer data),
   else
     background_handlers2 = sfi_ring_append (background_handlers2, bgh);
 }
-
 void
 bst_background_handler1_add (gboolean       (*handler) (gpointer data),
                              gpointer         data,
@@ -355,7 +315,6 @@ bst_background_handler1_add (gboolean       (*handler) (gpointer data),
 {
   bst_background_handler_add (handler, data, free_func, 1);
 }
-
 void
 bst_background_handler2_add (gboolean       (*handler) (gpointer data),
                              gpointer         data,
@@ -363,7 +322,6 @@ bst_background_handler2_add (gboolean       (*handler) (gpointer data),
 {
   bst_background_handler_add (handler, data, free_func, 2);
 }
-
 /* --- packing utilities --- */
 #define SPACING 3
 static void
@@ -433,7 +391,6 @@ bst_util_pack (GtkWidget   *widget,
       location = va_arg (args, gchar*);
     }
 }
-
 GtkWidget*
 bst_vpack (const gchar *first_location,
            ...)
@@ -448,7 +405,6 @@ bst_vpack (const gchar *first_location,
   gtk_widget_show_all (box);
   return box;
 }
-
 GtkWidget*
 bst_hpack (const gchar *first_location,
            ...)
@@ -463,7 +419,6 @@ bst_hpack (const gchar *first_location,
   gtk_widget_show_all (box);
   return box;
 }
-
 GtkWidget*
 bst_vpack0 (const gchar *first_location,
             ...)
@@ -478,7 +433,6 @@ bst_vpack0 (const gchar *first_location,
   gtk_widget_show_all (box);
   return box;
 }
-
 GtkWidget*
 bst_hpack0 (const gchar *first_location,
             ...)
@@ -493,7 +447,6 @@ bst_hpack0 (const gchar *first_location,
   gtk_widget_show_all (box);
   return box;
 }
-
 void
 bst_action_list_add_cat (GxkActionList          *alist,
                          BseCategory            *cat,
@@ -504,7 +457,6 @@ bst_action_list_add_cat (GxkActionList          *alist,
                          gpointer                user_data)
 {
   const gchar *p, *stock_id;
-
   if (cat->icon)
     {
       bst_stock_register_icon (cat->category, cat->icon->bytes_per_pixel,
@@ -515,20 +467,17 @@ bst_action_list_add_cat (GxkActionList          *alist,
     }
   else
     stock_id = stock_fallback;
-
   p = cat->category[0] == '/' ? cat->category + 1 : cat->category;
   while (skip_levels--)
     {
       const gchar *d = strchr (p, '/');
       p = d ? d + 1 : p;
     }
-
   gxk_action_list_add_translated (alist, NULL, p, NULL,
                                   gxk_factory_path_get_leaf (cat->category),
                                   cat->category_id, stock_id,
                                   acheck, aexec, user_data);
 }
-
 GxkActionList*
 bst_action_list_from_cats_pred (BseCategorySeq  *cseq,
                                 guint            skip_levels,
@@ -541,15 +490,12 @@ bst_action_list_from_cats_pred (BseCategorySeq  *cseq,
 {
   GxkActionList *alist = gxk_action_list_create ();
   guint i;
-
   g_return_val_if_fail (cseq != NULL, alist);
-
   for (i = 0; i < cseq->n_cats; i++)
     if (!predicate || predicate (predicate_data, cseq->cats[i]))
       bst_action_list_add_cat (alist, cseq->cats[i], skip_levels, stock_fallback, acheck, aexec, user_data);
   return alist;
 }
-
 GxkActionList*
 bst_action_list_from_cats (BseCategorySeq         *cseq,
                            guint                   skip_levels,
@@ -560,8 +506,6 @@ bst_action_list_from_cats (BseCategorySeq         *cseq,
 {
   return bst_action_list_from_cats_pred (cseq, skip_levels, stock_fallback, acheck, aexec, user_data, NULL, NULL);
 }
-
-
 /* --- field mask --- */
 static GQuark gmask_quark = 0;
 typedef struct {
@@ -576,12 +520,10 @@ typedef struct {
   guint        gpack : 8;
 } GMask;
 #define GMASK_GET(o)    ((GMask*) g_object_get_qdata (G_OBJECT (o), gmask_quark))
-
 static void
 gmask_destroy (gpointer data)
 {
   GMask *gmask = (GMask*) data;
-  
   if (gmask->parent)
     g_object_unref (gmask->parent);
   if (gmask->prompt)
@@ -595,33 +537,26 @@ gmask_destroy (gpointer data)
   g_free (gmask->tip);
   g_free (gmask);
 }
-
 static gpointer
 gmask_form (GtkWidget   *parent,
             GtkWidget   *action,
             BstGMaskPack gpack)
 {
   GMask *gmask;
-  
   g_return_val_if_fail (GTK_IS_TABLE (parent), NULL);
   g_return_val_if_fail (GTK_IS_WIDGET (action), NULL);
-  
   if (!gmask_quark)
     gmask_quark = g_quark_from_static_string ("GMask");
-  
   gmask = GMASK_GET (action);
   g_return_val_if_fail (gmask == NULL, NULL);
-  
   gmask = g_new0 (GMask, 1);
   g_object_set_qdata_full (G_OBJECT (action), gmask_quark, gmask, gmask_destroy);
   gmask->parent = (GtkWidget*) g_object_ref (parent);
   gtk_object_sink (GTK_OBJECT (parent));
   gmask->action = action;
   gmask->gpack = gpack;
-  
   return action;
 }
-
 /**
  * @param border_width	   Border width of this GUI mask
  * @param dislodge_columns Provide expandable space between columns
@@ -646,10 +581,8 @@ bst_gmask_container_create (guint    border_width,
                                          NULL);
   if (dislodge_columns)
     g_object_set_data (G_OBJECT (container), "GMask-dislodge", GUINT_TO_POINTER (TRUE));
-  
   return container;
 }
-
 /**
  * @param gmask_container    container created with bst_gmask_container_create()
  * @param action             valid GtkWidget
@@ -684,7 +617,6 @@ bst_gmask_form (GtkWidget   *gmask_container,
 {
   return (BstGMask*) gmask_form (gmask_container, action, gpack);
 }
-
 /**
  * @param mask	   valid BstGMask
  * @param tip_text tooltip text
@@ -696,15 +628,12 @@ bst_gmask_set_tip (BstGMask    *mask,
                    const gchar *tip_text)
 {
   GMask *gmask;
-  
   g_return_if_fail (GTK_IS_WIDGET (mask));
   gmask = GMASK_GET (mask);
   g_return_if_fail (gmask != NULL);
-  
   g_free (gmask->tip);
   gmask->tip = g_strdup (tip_text);
 }
-
 /**
  * @param mask	 valid BstGMask
  * @param widget valid GtkWidget
@@ -716,18 +645,15 @@ bst_gmask_set_prompt (BstGMask *mask,
                       gpointer  widget)
 {
   GMask *gmask;
-  
   g_return_if_fail (GTK_IS_WIDGET (mask));
   gmask = GMASK_GET (mask);
   g_return_if_fail (gmask != NULL);
   g_return_if_fail (GTK_IS_WIDGET (widget));
-  
   if (gmask->prompt)
     g_object_unref (gmask->prompt);
   gmask->prompt = (GtkWidget*) g_object_ref (widget);
   gtk_object_sink (GTK_OBJECT (widget));
 }
-
 /**
  * @param mask	 valid BstGMask
  * @param widget valid GtkWidget
@@ -739,18 +665,15 @@ bst_gmask_set_aux1 (BstGMask *mask,
                     gpointer  widget)
 {
   GMask *gmask;
-  
   g_return_if_fail (GTK_IS_WIDGET (mask));
   gmask = GMASK_GET (mask);
   g_return_if_fail (gmask != NULL);
   g_return_if_fail (GTK_IS_WIDGET (widget));
-  
   if (gmask->aux1)
     g_object_unref (gmask->aux1);
   gmask->aux1 = (GtkWidget*) g_object_ref (widget);
   gtk_object_sink (GTK_OBJECT (widget));
 }
-
 /**
  * @param mask	 valid BstGMask
  * @param widget valid GtkWidget
@@ -764,18 +687,15 @@ bst_gmask_set_aux2 (BstGMask *mask,
                     gpointer  widget)
 {
   GMask *gmask;
-  
   g_return_if_fail (GTK_IS_WIDGET (mask));
   gmask = GMASK_GET (mask);
   g_return_if_fail (gmask != NULL);
   g_return_if_fail (GTK_IS_WIDGET (widget));
-  
   if (gmask->aux2)
     g_object_unref (gmask->aux2);
   gmask->aux2 = (GtkWidget*) g_object_ref (widget);
   gtk_object_sink (GTK_OBJECT (widget));
 }
-
 /**
  * @param mask	 valid BstGMask
  * @param widget valid GtkWidget
@@ -787,18 +707,15 @@ bst_gmask_set_aux3 (BstGMask *mask,
                     gpointer  widget)
 {
   GMask *gmask;
-  
   g_return_if_fail (GTK_IS_WIDGET (mask));
   gmask = GMASK_GET (mask);
   g_return_if_fail (gmask != NULL);
   g_return_if_fail (GTK_IS_WIDGET (widget));
-  
   if (gmask->aux3)
     g_object_unref (gmask->aux3);
   gmask->aux3 = (GtkWidget*) g_object_ref (widget);
   gtk_object_sink (GTK_OBJECT (widget));
 }
-
 /**
  * @param mask	 valid BstGMask
  * @param column column number
@@ -811,14 +728,11 @@ bst_gmask_set_column (BstGMask *mask,
                       guint     column)
 {
   GMask *gmask;
-  
   g_return_if_fail (GTK_IS_WIDGET (mask));
   gmask = GMASK_GET (mask);
   g_return_if_fail (gmask != NULL);
-  
   gmask->column = column;
 }
-
 /**
  * @param mask	valid BstGMask
  * @return	the requested GtkWidget or NULL
@@ -829,14 +743,11 @@ GtkWidget*
 bst_gmask_get_prompt (BstGMask *mask)
 {
   GMask *gmask;
-  
   g_return_val_if_fail (GTK_IS_WIDGET (mask), NULL);
   gmask = GMASK_GET (mask);
   g_return_val_if_fail (gmask != NULL, NULL);
-  
   return gmask->prompt;
 }
-
 /**
  * @param mask	valid BstGMask
  * @return	the requested GtkWidget or NULL
@@ -847,14 +758,11 @@ GtkWidget*
 bst_gmask_get_aux1 (BstGMask *mask)
 {
   GMask *gmask;
-  
   g_return_val_if_fail (GTK_IS_WIDGET (mask), NULL);
   gmask = GMASK_GET (mask);
   g_return_val_if_fail (gmask != NULL, NULL);
-  
   return gmask->aux1;
 }
-
 /**
  * @param mask	valid BstGMask
  * @return	the requested GtkWidget or NULL
@@ -865,14 +773,11 @@ GtkWidget*
 bst_gmask_get_aux2 (BstGMask *mask)
 {
   GMask *gmask;
-  
   g_return_val_if_fail (GTK_IS_WIDGET (mask), NULL);
   gmask = GMASK_GET (mask);
   g_return_val_if_fail (gmask != NULL, NULL);
-  
   return gmask->aux2;
 }
-
 /**
  * @param mask	valid BstGMask
  * @return	the requested GtkWidget or NULL
@@ -883,14 +788,11 @@ GtkWidget*
 bst_gmask_get_aux3 (BstGMask *mask)
 {
   GMask *gmask;
-  
   g_return_val_if_fail (GTK_IS_WIDGET (mask), NULL);
   gmask = GMASK_GET (mask);
   g_return_val_if_fail (gmask != NULL, NULL);
-  
   return gmask->aux3;
 }
-
 /**
  * @param mask	valid BstGMask
  * @return	the requested GtkWidget or NULL
@@ -901,14 +803,11 @@ GtkWidget*
 bst_gmask_get_action (BstGMask *mask)
 {
   GMask *gmask;
-  
   g_return_val_if_fail (GTK_IS_WIDGET (mask), NULL);
   gmask = GMASK_GET (mask);
   g_return_val_if_fail (gmask != NULL, NULL);
-  
   return gmask->action;
 }
-
 /**
  * @param mask	valid BstGMask
  * @param func	foreach function as: void func(GtkWidget*, gpointer data);
@@ -924,12 +823,10 @@ bst_gmask_foreach (BstGMask *mask,
 {
   GMask *gmask;
   GtkCallback callback = GtkCallback (func);
-  
   g_return_if_fail (GTK_IS_WIDGET (mask));
   gmask = GMASK_GET (mask);
   g_return_if_fail (gmask != NULL);
   g_return_if_fail (func != NULL);
-  
   if (gmask->prompt)
     callback (gmask->prompt, data);
   if (gmask->aux1)
@@ -941,13 +838,11 @@ bst_gmask_foreach (BstGMask *mask,
   if (gmask->action)
     callback (gmask->action, data);
 }
-
 static GtkWidget*
 get_toplevel_and_set_tip (GtkWidget   *widget,
                           const gchar *tip)
 {
   GtkWidget *last;
-  
   if (!widget)
     return NULL;
   else if (!tip)
@@ -971,7 +866,6 @@ get_toplevel_and_set_tip (GtkWidget   *widget,
   gxk_widget_set_tooltip (widget, tip);
   return widget;
 }
-
 static guint
 table_max_bottom_row (GtkTable *table,
                       guint     left_col,
@@ -979,17 +873,14 @@ table_max_bottom_row (GtkTable *table,
 {
   guint max_bottom = 0;
   GList *list;
-  
   for (list = table->children; list; list = list->next)
     {
       GtkTableChild *child = (GtkTableChild*) list->data;
-
       if (child->left_attach < right_col && child->right_attach > left_col)
         max_bottom = MAX (max_bottom, child->bottom_attach);
     }
   return max_bottom;
 }
-
 /**
  * @param mask	valid BstGMask
  *
@@ -1006,11 +897,9 @@ bst_gmask_pack (BstGMask *mask)
   gboolean dummy_aux2 = FALSE;
   guint row, n, c, dislodge_columns;
   GMask *gmask;
-  
   g_return_if_fail (GTK_IS_WIDGET (mask));
   gmask = GMASK_GET (mask);
   g_return_if_fail (gmask != NULL);
-  
   /* GUI mask layout:
    * row: |Prompt|Aux1| Aux2 |Aux3| PreAction#Action#PostAction|
    * FILL: allocate all possible (Pre/Post)Action space to the action widget
@@ -1018,7 +907,6 @@ bst_gmask_pack (BstGMask *mask)
    * BIG: allocate maximum (left extendeded) possible space to Action
    * Aux2 expands automatically
    */
-  
   /* retrieve children and set tips */
   prompt = get_toplevel_and_set_tip (gmask->prompt, gmask->tip);
   aux1 = get_toplevel_and_set_tip (gmask->aux1, gmask->tip);
@@ -1027,13 +915,11 @@ bst_gmask_pack (BstGMask *mask)
   action = get_toplevel_and_set_tip (gmask->action, gmask->tip);
   dislodge_columns = g_object_get_data (G_OBJECT (gmask->parent), "GMask-dislodge") != NULL;
   table = GTK_TABLE (gmask->parent);
-  
   /* ensure expansion happens outside of columns */
   if (dislodge_columns)
     {
       gchar *dummy_name = g_strdup_printf ("GMask-dummy-dislodge-%u", MAX (gmask->column, 1) - 1);
       GtkWidget *dislodge = (GtkWidget*) g_object_get_data (G_OBJECT (table), dummy_name);
-      
       if (!dislodge)
         {
           dislodge = (GtkWidget*) g_object_new (GTK_TYPE_ALIGNMENT, "visible", TRUE, NULL);
@@ -1043,7 +929,6 @@ bst_gmask_pack (BstGMask *mask)
         }
       g_free (dummy_name);
     }
-  
   /* pack gmask children, options: GTK_EXPAND, GTK_SHRINK, GTK_FILL */
   gboolean span_multi_columns = aux2 && gmask->gpack == BST_GMASK_MULTI_SPAN;
   c = span_multi_columns ? 0 : 6 * gmask->column;
@@ -1064,7 +949,6 @@ bst_gmask_pack (BstGMask *mask)
     {
       char *dummy_name = g_strdup_printf ("GMask-dummy-aux2-%u", gmask->column);
       aux2 = (GtkWidget*) g_object_get_data (G_OBJECT (table), dummy_name);
-
       /* need to have at least 1 (dummy) aux2-child per table column to eat up
        * expanding space in this column if !dislodge_columns
        */
@@ -1146,7 +1030,6 @@ bst_gmask_pack (BstGMask *mask)
   if (c)
     gtk_table_set_col_spacing (table, c - 1, 5); /* spacing between gmask columns */
 }
-
 /**
  * @param gmask_container container created with bst_gmask_container_create()
  * @param column	  column number for bst_gmask_set_column()
@@ -1168,7 +1051,6 @@ bst_gmask_quick (GtkWidget   *gmask_container,
                  const gchar *tip_text)
 {
   BstGMask *mask = bst_gmask_form (gmask_container, (GtkWidget*) action, BST_GMASK_INTERLEAVE);
-
   if (prompt)
     bst_gmask_set_prompt (mask, g_object_new (GTK_TYPE_LABEL,
                                               "visible", TRUE,
@@ -1178,11 +1060,8 @@ bst_gmask_quick (GtkWidget   *gmask_container,
     bst_gmask_set_tip (mask, tip_text);
   bst_gmask_set_column (mask, column);
   bst_gmask_pack (mask);
-  
   return mask;
 }
-
-
 /* --- named children --- */
 static GQuark quark_container_named_children = 0;
 typedef struct {
@@ -1192,7 +1071,6 @@ static void
 nchildren_free (gpointer data)
 {
   NChildren *children = (NChildren*) data;
-  
   g_datalist_clear (&children->qdata);
   g_free (children);
 }
@@ -1207,16 +1085,13 @@ bst_container_set_named_child (GtkWidget *container,
                                GtkWidget *child)
 {
   NChildren *children;
-  
   g_return_if_fail (GTK_IS_CONTAINER (container));
   g_return_if_fail (qname > 0);
   g_return_if_fail (GTK_IS_WIDGET (child));
   if (child)
     g_return_if_fail (gtk_widget_is_ancestor (child, container));
-  
   if (!quark_container_named_children)
     quark_container_named_children = g_quark_from_static_string ("BstContainer-named_children");
-  
   children = (NChildren*) g_object_get_qdata (G_OBJECT (container), quark_container_named_children);
   if (!children)
     {
@@ -1230,21 +1105,17 @@ bst_container_set_named_child (GtkWidget *container,
   g_object_ref (child);
   g_datalist_id_set_data_full (&children->qdata, qname, child, g_object_unref);
 }
-
 GtkWidget*
 bst_container_get_named_child (GtkWidget *container,
                                GQuark     qname)
 {
   NChildren *children;
-  
   g_return_val_if_fail (GTK_IS_CONTAINER (container), NULL);
   g_return_val_if_fail (qname > 0, NULL);
-  
   children = quark_container_named_children ? (NChildren*) g_object_get_qdata (G_OBJECT (container), quark_container_named_children) : NULL;
   if (children)
     {
       GtkWidget *child = (GtkWidget*) g_datalist_id_get_data (&children->qdata, qname);
-      
       if (child && !gtk_widget_is_ancestor (child, container))
         {
           /* got removed meanwhile */
@@ -1255,7 +1126,6 @@ bst_container_get_named_child (GtkWidget *container,
     }
   return NULL;
 }
-
 GtkWidget*
 bst_xpm_view_create (const gchar **xpm,
                      GtkWidget    *colormap_widget)
@@ -1263,10 +1133,8 @@ bst_xpm_view_create (const gchar **xpm,
   GtkWidget *pix;
   GdkPixmap *pixmap;
   GdkBitmap *mask;
-  
   g_return_val_if_fail (xpm != NULL, NULL);
   g_return_val_if_fail (GTK_IS_WIDGET (colormap_widget), NULL);
-  
   pixmap = gdk_pixmap_colormap_create_from_xpm_d (NULL, gtk_widget_get_colormap (colormap_widget),
                                                   &mask, NULL, (gchar**) xpm);
   pix = gtk_pixmap_new (pixmap, mask);
@@ -1277,8 +1145,6 @@ bst_xpm_view_create (const gchar **xpm,
                   NULL);
   return pix;
 }
-
-
 /* --- misc utils --- */
 gint
 bst_fft_size_to_int (BstFFTSize fft_size)
@@ -1325,7 +1191,6 @@ bst_fft_size_to_int (BstFFTSize fft_size)
     default:                      return 0;
     }
 }
-
 BstFFTSize
 bst_fft_size_from_int (guint sz)
 {
@@ -1380,18 +1245,14 @@ bst_fft_size_from_int (guint sz)
     }
   return sizes[offset].fft_size;
 }
-
 #include <sfi/sfistore.hh>
-
 gchar*
 bst_file_scan_find_key (const gchar *file,
                         const gchar *key,
                         const gchar *value_prefix)
 {
   SfiRStore *rstore;
-  
   g_return_val_if_fail (file != NULL, NULL);
-  
   rstore = sfi_rstore_new_open (file);
   if (rstore)
     {
@@ -1421,12 +1282,8 @@ bst_file_scan_find_key (const gchar *file,
   else
     return NULL;
 }
-
-
 /* --- generated marshallers --- */
 #include "bstmarshal.cc"
-
-
 /* --- IDL pspecs --- */
 #define sfidl_pspec_Bool(group, name, nick, blurb, dflt, hints) \
   sfi_pspec_set_group (sfi_pspec_bool (name, nick, blurb, dflt, hints), group)

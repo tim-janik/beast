@@ -4,7 +4,6 @@
 #include "gxkauxwidgets.hh"
 #include <gdk/gdkkeysyms.h>
 #include <string.h>
-
 enum {
   MENU_BUTTON_PROP_0,
   MENU_BUTTON_PROP_CAN_FOCUS,
@@ -14,19 +13,13 @@ enum {
   MENU_BUTTON_PROP_RELIEF,
   MENU_BUTTON_PROP_MODE
 };
-
 /* --- prototypes --- */
 static void     menu_button_remove_contents             (GxkMenuButton  *self);
 static void     menu_button_layout                      (GxkMenuButton  *self);
-
-
 /* --- variables --- */
 static guint menu_button_signal_changed = 0;
-
-
 /* --- functions --- */
 G_DEFINE_TYPE (GxkMenuButton, gxk_menu_button, GTK_TYPE_EVENT_BOX);
-
 static void
 menu_button_save_snapshot (GxkMenuButton *self)
 {
@@ -73,7 +66,6 @@ menu_button_save_snapshot (GxkMenuButton *self)
   gdk_window_show (self->bwindow);
   gdk_window_clear (self->bwindow);
 }
-
 static void
 menu_button_restore_backing (GxkMenuButton *self)
 {
@@ -86,7 +78,6 @@ menu_button_restore_backing (GxkMenuButton *self)
   if (self->button)
     gtk_button_set_relief (GTK_BUTTON (self->button), self->relief);
 }
-
 static void
 menu_button_grab_focus (GxkMenuButton *self)
 {
@@ -95,7 +86,6 @@ menu_button_grab_focus (GxkMenuButton *self)
   else if (self->button)
     gtk_widget_grab_focus (self->button);
 }
-
 static void
 menu_button_popup (GxkMenuButton *self,
                    guint          button,
@@ -147,7 +137,6 @@ menu_button_popup (GxkMenuButton *self,
   if (menu_item)
     gtk_menu_shell_select_item (GTK_MENU_SHELL (self->menu), menu_item);
 }
-
 static gboolean
 menu_button_button_press (GtkWidget      *widget,
                           GdkEventButton *event)
@@ -158,7 +147,6 @@ menu_button_button_press (GtkWidget      *widget,
     menu_button_popup (self, event->button, event->time);
   return TRUE;
 }
-
 static GtkWidget*
 menu_find_sibling (GtkMenu *menu,
                    gpointer old_child,
@@ -178,7 +166,6 @@ menu_find_sibling (GtkMenu *menu,
     }
   return NULL;
 }
-
 static gboolean
 menu_button_key_press (GtkWidget   *widget,
                        GdkEventKey *event)
@@ -208,7 +195,6 @@ menu_button_key_press (GtkWidget   *widget,
     }
   return FALSE;
 }
-
 static gboolean
 menu_button_mnemonic_activate (GtkWidget *widget,
                                gboolean   group_cycling)
@@ -217,7 +203,6 @@ menu_button_mnemonic_activate (GtkWidget *widget,
   menu_button_grab_focus (self);
   return TRUE;
 }
-
 static void
 menu_button_proxy_state (GxkMenuButton *self)
 {
@@ -226,7 +211,6 @@ menu_button_proxy_state (GxkMenuButton *self)
   if (self->image)
     gtk_widget_set_sensitive (self->image, GTK_WIDGET_IS_SENSITIVE (self->menu_item));
 }
-
 static void
 menu_button_max_size (GxkMenuButton *self)
 {
@@ -261,7 +245,6 @@ menu_button_max_size (GxkMenuButton *self)
                     NULL);
     }
 }
-
 static void
 menu_button_remove_contents (GxkMenuButton *self)
 {
@@ -289,7 +272,6 @@ menu_button_remove_contents (GxkMenuButton *self)
       gxk_widget_set_tooltip (GTK_WIDGET (self), NULL);
     }
 }
-
 void
 gxk_menu_button_update (GxkMenuButton *self)
 {
@@ -346,7 +328,6 @@ gxk_menu_button_update (GxkMenuButton *self)
   if (old_menu_item != self->menu_item)
     g_signal_emit (self, menu_button_signal_changed, 0);
 }
-
 static void
 menu_button_detacher (GtkWidget *widget,
                       GtkMenu   *menu)
@@ -359,7 +340,6 @@ menu_button_detacher (GtkWidget *widget,
   self->menu = NULL;
   g_object_notify ((GObject*) self, "menu");
 }
-
 static void
 menu_button_assortment_added (gpointer                client_data,
                               GtkWindow              *window,
@@ -375,7 +355,6 @@ menu_button_assortment_added (gpointer                client_data,
       g_object_set (self, "menu", menu, NULL);
     }
 }
-
 static void
 menu_button_hierarchy_changed (GtkWidget        *widget,
                                GtkWidget        *previous_toplevel)
@@ -392,7 +371,6 @@ menu_button_hierarchy_changed (GtkWidget        *widget,
         gxk_window_add_assortment_client (GTK_WINDOW (toplevel), menu_button_assortment_added, NULL, self);
     }
 }
-
 static void
 gxk_menu_button_set_property (GObject      *object,
                               guint         param_id,
@@ -475,7 +453,6 @@ gxk_menu_button_set_property (GObject      *object,
       break;
     }
 }
-
 static void
 gxk_menu_button_get_property (GObject    *object,
                               guint       param_id,
@@ -508,7 +485,6 @@ gxk_menu_button_get_property (GObject    *object,
       break;
     }
 }
-
 static void
 menu_button_dispose (GObject *object)
 {
@@ -519,7 +495,6 @@ menu_button_dispose (GObject *object)
   self->assortment_name = NULL;
   G_OBJECT_CLASS (gxk_menu_button_parent_class)->dispose (object);
 }
-
 static void
 menu_button_finalize (GObject *object)
 {
@@ -530,9 +505,7 @@ menu_button_finalize (GObject *object)
   self->assortment_name = NULL;
   G_OBJECT_CLASS (gxk_menu_button_parent_class)->finalize (object);
 }
-
 #define FOCUS_SHADOW  (GTK_SHADOW_IN /* anything != NONE */)
-
 static void
 menu_button_focus_changed (GxkMenuButton *self)
 {
@@ -540,7 +513,6 @@ menu_button_focus_changed (GxkMenuButton *self)
     gtk_frame_set_shadow_type (GTK_FRAME (self->fframe),
                                GTK_WIDGET_HAS_FOCUS (self) ? FOCUS_SHADOW : GTK_SHADOW_NONE);
 }
-
 static GtkWidget*
 menu_button_create_button (GxkMenuButton *self,
                            gpointer       child)
@@ -557,7 +529,6 @@ menu_button_create_button (GxkMenuButton *self,
   g_signal_connect_swapped (self->button, "key-press-event", G_CALLBACK (menu_button_key_press), self);
   return self->button;
 }
-
 static gboolean
 focus_frame_expose_event (GtkWidget      *widget,
                           GdkEventExpose *event)
@@ -576,7 +547,6 @@ focus_frame_expose_event (GtkWidget      *widget,
     gtk_container_propagate_expose (GTK_CONTAINER (frame), child, event);
   return TRUE;  /* skip normal frame drawing code */
 }
-
 static void
 menu_button_layout (GxkMenuButton *self)
 {
@@ -732,7 +702,6 @@ menu_button_layout (GxkMenuButton *self)
   gtk_widget_show_all (GTK_WIDGET (GTK_BIN (self)->child));
   menu_button_focus_changed (self);
 }
-
 static void
 gxk_menu_button_init (GxkMenuButton *self)
 {
@@ -740,7 +709,6 @@ gxk_menu_button_init (GxkMenuButton *self)
   g_signal_connect (self, "focus-in-event", G_CALLBACK (menu_button_focus_changed), NULL);
   g_signal_connect (self, "focus-out-event", G_CALLBACK (menu_button_focus_changed), NULL);
 }
-
 static void
 gxk_menu_button_class_init (GxkMenuButtonClass *klass)
 {

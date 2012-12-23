@@ -1,12 +1,8 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #ifndef __SFI_RING_H__
 #define __SFI_RING_H__
-
 #include <sfi/sfitypes.hh>
-
 G_BEGIN_DECLS;
-
-
 /* --- basic comparisons --- */
 typedef gint (*SfiCompareFunc)		(gconstpointer   value1,
 					 gconstpointer   value2,
@@ -14,8 +10,6 @@ typedef gint (*SfiCompareFunc)		(gconstpointer   value1,
 gint     sfi_pointer_cmp             	(gconstpointer   value1,
 					 gconstpointer   value2,
 					 gpointer        dummy);
-
-
 /* --- ring (circular-list) --- */
 typedef gpointer (*SfiRingDataFunc)	(gpointer	 data,
 					 gpointer	 func_data);
@@ -75,7 +69,6 @@ gpointer    sfi_ring_pop_tail           (SfiRing             **head);
 void        sfi_ring_free               (SfiRing             *head);
 void        sfi_ring_free_deep          (SfiRing             *head,
 					 GDestroyNotify          data_destroy);
-
 SfiRing* sfi_ring_from_list           	(GList       	*list);
 SfiRing* sfi_ring_from_list_and_free	(GList          *list);
 SfiRing* sfi_ring_from_slist            (GSList         *slist);
@@ -83,8 +76,6 @@ SfiRing* sfi_ring_from_slist_and_free	(GSList         *slist);
 #define     sfi_ring_tail(head)            	((head) ? (head)->prev : NULL)
 #define     sfi_ring_walk(node,head_bound) 	((node)->next != (head_bound) ? (node)->next : NULL)
 #define     sfi_ring_next(node,head_bound)  	 sfi_ring_walk (node, head_bound)
-
-
 /* ring-modifying cmp-based operations */
 SfiRing* sfi_ring_insert_sorted		(SfiRing        	*head,
 					 gpointer       	 insertion_data,
@@ -156,9 +147,6 @@ gpointer    sfi_ring_min            	(const SfiRing  	*head,
 gpointer    sfi_ring_max           	(const SfiRing  	*head,
                                          SfiCompareFunc 	 cmp,
                                          gpointer       	 data);
-
 G_END_DECLS;
-
 #endif /* __SFI_RING_H__ */
-
 /* vim:set ts=8 sts=2 sw=2: */

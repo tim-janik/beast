@@ -6,13 +6,9 @@
 // This code is public domain
 #include <bse/bseplugin.hh>
 #include <bse/bseieee754.hh>
-
 #ifndef _denormals_
 #define _denormals_
-
 // #define undenormalise(sample) if(((*(unsigned int*)&sample)&0x7f800000)==0) sample=0.0f
 #define undenormalise(sample)	BSE_FLOAT_FLUSH (sample)
-
 #endif//_denormals_
-
 //ends

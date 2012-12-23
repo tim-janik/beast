@@ -1,12 +1,9 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #ifndef __BSE_ENGINE_NODE_H__
 #define __BSE_ENGINE_NODE_H__
-
 #include "bseengine.hh"
 #include "gslcommon.hh"
-
 G_BEGIN_DECLS
-
 #define	ENGINE_NODE(module)		((EngineNode*) (module))
 #define ENGINE_NODE_N_OSTREAMS(node)	((node)->module.klass->n_ostreams)
 #define ENGINE_NODE_N_ISTREAMS(node)	((node)->module.klass->n_istreams)
@@ -23,12 +20,9 @@ G_BEGIN_DECLS
 #define	ENGINE_NODE_LOCK(node)		sfi_rec_mutex_lock (&(node)->rec_mutex)
 #define	ENGINE_NODE_UNLOCK(node)	sfi_rec_mutex_unlock (&(node)->rec_mutex)
 #define	ENGINE_MODULE_IS_VIRTUAL(mod)	(ENGINE_NODE_IS_VIRTUAL (ENGINE_NODE (mod)))
-
-
 /* --- typedefs --- */
 typedef struct _EngineNode     EngineNode;
 typedef struct _EngineSchedule EngineSchedule;
-
 /* --- transactions --- */
 typedef union  _EngineTimedJob EngineTimedJob;
 typedef enum /*< skip >*/
@@ -139,8 +133,6 @@ union _EngineTimedJob
     BseEngineAccessFunc access_func;
   }                     access;
 };
-
-
 /* --- module nodes --- */
 typedef struct
 {
@@ -166,35 +158,28 @@ typedef struct
 struct _EngineNode		/* fields sorted by order of processing access */
 {
   BseModule	 module;
-  
   BirnetRecMutex	 rec_mutex;	/* processing lock */
   guint64	 counter;	/* <= GSL_TICK_STAMP */
   EngineInput	*inputs;	/* [ENGINE_NODE_N_ISTREAMS()] */
   EngineJInput **jinputs;	/* [ENGINE_NODE_N_JSTREAMS()][jstream->jcount] */
   EngineOutput	*outputs;	/* [ENGINE_NODE_N_OSTREAMS()] */
-  
   /* timed jobs */
   EngineTimedJob *flow_jobs;			/* active jobs */
   EngineTimedJob *probe_jobs;		        /* probe requests */
   EngineTimedJob *boundary_jobs;		/* active jobs */
   EngineTimedJob *tjob_head, *tjob_tail;	/* trash list */
-  
   /* suspend/activation time */
   guint64        next_active;           /* result of suspend state updates */
-  
   /* master-node-list */
   EngineNode	*mnl_next;
   EngineNode	*mnl_prev;
   guint		 integrated : 1;
   guint		 virtual_node : 1;
-  
   guint		 is_consumer : 1;
-  
   /* suspension */
   guint		 update_suspend : 1;	/* whether suspend state needs updating */
   guint		 in_suspend_call : 1;	/* recursion barrier during suspend state updates */
   guint		 needs_reset : 1;	/* flagged at resumption */
-  
   /* scheduler */
   guint		 cleared_ostreams : 1;	/* whether ostream[].connected was cleared already */
   guint		 sched_tag : 1;		/* whether this node is contained in the schedule */
@@ -204,7 +189,5 @@ struct _EngineNode		/* fields sorted by order of processing access */
   EngineNode	*toplevel_next;	        /* master-consumer-list, FIXME: overkill, using a SfiRing is good enough */
   SfiRing	*output_nodes;	        /* EngineNode* ring of nodes in ->outputs[] */
 };
-
 G_END_DECLS
-
 #endif /* __BSE_ENGINE_NODE_H__ */

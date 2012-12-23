@@ -26,15 +26,12 @@ typedef struct
 #define	BSE_MIX_RAMP_WITH_DEC	(16)
 #define BSE_MIX_EPSILON         (1e-8 /* threshold, coined for 24 bit */)
 #endif	/* __BSE_MIX_RAMP_AUX__ */
-
-
 #define	CHECK_GATE		(BSE_MIX_VARIANT & (BSE_MIX_RAMP_WITH_GATE | BSE_MIX_RAMP_WITH_IGATE))
 #define	CHECK_TRIG		(BSE_MIX_VARIANT & BSE_MIX_RAMP_WITH_TRIG)
 #define	STEP_UP			(BSE_MIX_VARIANT & BSE_MIX_RAMP_WITH_INC)
 #define	STEP_DOWN		(BSE_MIX_VARIANT & BSE_MIX_RAMP_WITH_DEC)
 #define GATE_CHECK(v)		((BSE_MIX_VARIANT & BSE_MIX_RAMP_WITH_IGATE) ? (v) >= 0.5 : (v) < 0.5)
 #define RAISING_EDGE(v1,v2)	((v1) < (v2))
-
 static inline BseMixRampState
 BSE_MIX_VARIANT_NAME (BseMixRampLinear *ramp)
 {
@@ -48,7 +45,6 @@ BSE_MIX_VARIANT_NAME (BseMixRampLinear *ramp)
   register gfloat value = ramp->level;
   gfloat level_step = ramp->level_step;
   gfloat eps = STEP_DOWN ? ramp->level_border + BSE_MIX_EPSILON : ramp->level_border - BSE_MIX_EPSILON;
-  
   if (wave_out >= bound)
     return BSE_MIX_RAMP_REACHED_BOUND;
   do
@@ -58,7 +54,6 @@ BSE_MIX_VARIANT_NAME (BseMixRampLinear *ramp)
       if (CHECK_TRIG)
 	{
 	  gfloat trig_val = *ramp->trig_in;
-
 	  if (RAISING_EDGE (ramp->last_trigger, trig_val))
 	    {
 	      ramp->last_trigger = trig_val;
@@ -86,7 +81,6 @@ BSE_MIX_VARIANT_NAME (BseMixRampLinear *ramp)
   RETURN (BSE_MIX_RAMP_REACHED_BOUND);
 #undef	RETURN
 }
-
 #undef	CHECK_GATE
 #undef	CHECK_TRIG
 #undef	STEP_UP

@@ -3,9 +3,5 @@
 #include        <bse/bseprocedure.hh>
 #include        <bse/bsecsynth.hh>
 #include        <bse/bsemain.hh>
-
-
 AUTHORS = "Tim Janik <timj@gtk.org>";
 LICENSE = "GNU Lesser General Public License";
-
-

@@ -1,11 +1,7 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
-
 #include <bse/bsecore.idl>
-
 namespace Bse { class Effect; }; // FIXME: bad workaround
-
 namespace Bse {
-
 class BusModule : Effect {
   Info    authors    = "Tim Janik";
   Info    license    = _("GNU Lesser General Public License");
@@ -21,5 +17,4 @@ class BusModule : Effect {
     Real  volume2    = (NULL, NULL, 1, 0, 1000, 10, STANDARD); /* volume factor */
   };
 };
-
 };

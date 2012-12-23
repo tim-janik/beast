@@ -1,125 +1,104 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "birnetutf8.hh"
 #include <glib.h>
-
 namespace Birnet {
 namespace Unichar {
-
 /* --- unichar ctype.h equivalents --- */
 bool
 isalnum (unichar uc)
 {
   return g_unichar_isalnum (uc);
 }
-
 bool
 isalpha (unichar uc)
 {
   return g_unichar_isalpha (uc);
 }
-
 bool
 iscntrl (unichar uc)
 {
   return g_unichar_iscntrl (uc);
 }
-
 bool
 isdigit (unichar uc)
 {
   return g_unichar_isdigit (uc);
 }
-
 int
 digit_value (unichar uc)
 {
   return g_unichar_digit_value (uc);
 }
-
 bool
 isgraph (unichar uc)
 {
   return g_unichar_isgraph (uc);
 }
-
 bool
 islower (unichar uc)
 {
   return g_unichar_islower (uc);
 }
-
 unichar
 tolower (unichar uc)
 {
   return g_unichar_tolower (uc);
 }
-
 bool
 isprint (unichar uc)
 {
   return g_unichar_isprint (uc);
 }
-
 bool
 ispunct (unichar uc)
 {
   return g_unichar_ispunct (uc);
 }
-
 bool
 isspace (unichar uc)
 {
   return g_unichar_isspace (uc);
 }
-
 bool
 isupper (unichar uc)
 {
   return g_unichar_isupper (uc);
 }
-
 unichar
 toupper (unichar uc)
 {
   return g_unichar_toupper (uc);
 }
-
 bool
 isxdigit (unichar uc)
 {
   return g_unichar_isxdigit (uc);
 }
-
 int
 xdigit_value (unichar uc)
 {
   return g_unichar_xdigit_value (uc);
 }
-
 bool
 istitle (unichar uc)
 {
   return g_unichar_istitle (uc);
 }
-
 unichar
 totitle (unichar uc)
 {
   return g_unichar_totitle (uc);
 }
-
 bool
 isdefined (unichar uc)
 {
   return g_unichar_isdefined (uc);
 }
-
 bool
 iswide (unichar uc)
 {
   return g_unichar_iswide (uc);
 }
-
 bool
 iswide_cjk (unichar uc)
 {
@@ -129,19 +108,16 @@ iswide_cjk (unichar uc)
   return false;
 #endif
 }
-
 Type
 get_type (unichar uc)
 {
   return Type (g_unichar_type (uc));
 }
-
 BreakType
 get_break (unichar uc)
 {
   return BreakType (g_unichar_break_type (uc));
 }
-
 /* --- ensure castable Birnet::Unichar::Type --- */
 BIRNET_STATIC_ASSERT (Unichar::CONTROL == (int) G_UNICODE_CONTROL);
 BIRNET_STATIC_ASSERT (Unichar::FORMAT == (int) G_UNICODE_FORMAT);
@@ -173,7 +149,6 @@ BIRNET_STATIC_ASSERT (Unichar::OTHER_SYMBOL == (int) G_UNICODE_OTHER_SYMBOL);
 BIRNET_STATIC_ASSERT (Unichar::LINE_SEPARATOR == (int) G_UNICODE_LINE_SEPARATOR);
 BIRNET_STATIC_ASSERT (Unichar::PARAGRAPH_SEPARATOR == (int) G_UNICODE_PARAGRAPH_SEPARATOR);
 BIRNET_STATIC_ASSERT (Unichar::SPACE_SEPARATOR == (int) G_UNICODE_SPACE_SEPARATOR);
-
 /* --- ensure castable Birnet::Unichar::BreakType --- */
 BIRNET_STATIC_ASSERT (Unichar::BREAK_MANDATORY == (int) G_UNICODE_BREAK_MANDATORY);
 BIRNET_STATIC_ASSERT (Unichar::BREAK_CARRIAGE_RETURN == (int) G_UNICODE_BREAK_CARRIAGE_RETURN);
@@ -214,7 +189,6 @@ BIRNET_STATIC_ASSERT (Unichar::BREAK_HANGUL_LV_SYLLABLE == (int) G_UNICODE_BREAK
 BIRNET_STATIC_ASSERT (Unichar::BREAK_HANGUL_LVT_SYLLABLE == (int) G_UNICODE_BREAK_HANGUL_LVT_SYLLABLE);
 #endif
 } // Unichar
-
 /* --- UTF-8 movement --- */
 const int8 utf8_skip_table[256] = {
   1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
@@ -226,7 +200,6 @@ const int8 utf8_skip_table[256] = {
   2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,
   3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,4,4,4,4,4,4,4,4,5,5,5,5,6,6,1,1
 };
-
 static inline const int8
 utf8_char_length (const uint8 c)
 {
@@ -238,14 +211,12 @@ utf8_length_bits (const uint8 l)
   const uint length_bits[] = { 0x00, 0x00, 0xc0, 0xe0, 0xf0, 0xf8, 0xfc, };
   return l <= 6 ? length_bits[l] : 0;
 }
-
 static inline const uint8
 utf8_char_mask (const uint8 c)
 {
   const uint8 char_masks[8] = { 0x00, 0x7f, 0x1f, 0x0f, 0x07, 0x03, 0x01, 0x00 };
   return char_masks[utf8_skip_table[c]];
 }
-
 static inline uint8
 utf8_length_from_unichar (unichar uc)
 {
@@ -257,7 +228,6 @@ utf8_length_from_unichar (unichar uc)
   l += uc >= 0x04000000; /* 6 */
   return l;
 }
-
 unichar
 utf8_to_unichar (const char *str)
 {
@@ -275,7 +245,6 @@ utf8_to_unichar (const char *str)
     }
   return uc;
 }
-
 int
 utf8_from_unichar (unichar uc,
                    char    str[8])
@@ -293,7 +262,6 @@ utf8_from_unichar (unichar uc,
   str[i] = uc | utf8_length_bits (l); /* i == 0 */
   return l;
 }
-
 bool
 utf8_validate (const String   &strng,
                int            *bound)
@@ -306,5 +274,4 @@ utf8_validate (const String   &strng,
     *bound = !gb ? end - c : -1;
   return gb != false;
 }
-
 } // Birnet

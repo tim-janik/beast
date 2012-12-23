@@ -1,6 +1,5 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bsemidisynth.hh"
-
 #include "bsemidievent.hh"	/* BSE_MIDI_MAX_CHANNELS */
 #include "bsemidivoice.hh"
 #include "bsemidireceiver.hh"
@@ -13,8 +12,6 @@
 #include <time.h>
 #include <fcntl.h>
 #include <unistd.h>
-
-
 /* --- parameters --- */
 enum
 {
@@ -28,8 +25,6 @@ enum
   PROP_VOLUME_PERC,
   PROP_AUTO_ACTIVATE
 };
-
-
 /* --- prototypes --- */
 static void         bse_midi_synth_class_init          (BseMidiSynthClass *klass);
 static void         bse_midi_synth_init                (BseMidiSynth      *msynth);
@@ -46,90 +41,70 @@ static void         bse_midi_synth_context_create      (BseSource         *sourc
                                                         guint              context_handle,
                                                         BseTrans          *trans);
 static void         bse_misi_synth_update_midi_channel (BseMidiSynth      *self);
-
-
-
 /* --- variables --- */
 static GTypeClass     *parent_class = NULL;
-
-
 /* --- functions --- */
 BSE_BUILTIN_TYPE (BseMidiSynth)
 {
   GType midi_synth_type;
-  
   static const GTypeInfo snet_info = {
     sizeof (BseMidiSynthClass),
-    
     (GBaseInitFunc) NULL,
     (GBaseFinalizeFunc) NULL,
     (GClassInitFunc) bse_midi_synth_class_init,
     (GClassFinalizeFunc) NULL,
     NULL /* class_data */,
-    
     sizeof (BseMidiSynth),
     0,
     (GInstanceInitFunc) bse_midi_synth_init,
   };
-  
   midi_synth_type = bse_type_register_static (BSE_TYPE_SNET,
 					      "BseMidiSynth",
 					      "BSE Midi Synthesizer",
                                               __FILE__, __LINE__,
                                               &snet_info);
-  
   return midi_synth_type;
 }
-
 static void
 bse_midi_synth_init (BseMidiSynth *self)
 {
   BseSNet *snet = BSE_SNET (self);
-
   BSE_OBJECT_UNSET_FLAGS (self, BSE_SNET_FLAG_USER_SYNTH);
   BSE_OBJECT_SET_FLAGS (self, BSE_SUPER_FLAG_NEEDS_CONTEXT);
   self->midi_channel_id = 1;
   self->n_voices = 16;
   self->volume_factor = bse_db_to_factor (0);
-  
   /* midi voice modules */
   self->voice_input = (BseSource*) bse_container_new_child (BSE_CONTAINER (self), BSE_TYPE_MIDI_VOICE_INPUT, NULL);
   bse_snet_intern_child (snet, self->voice_input);
   self->voice_switch = (BseSource*) bse_container_new_child (BSE_CONTAINER (self), BSE_TYPE_MIDI_VOICE_SWITCH, NULL);
   bse_snet_intern_child (snet, self->voice_switch);
   bse_midi_voice_input_set_voice_switch (BSE_MIDI_VOICE_INPUT (self->voice_input), BSE_MIDI_VOICE_SWITCH (self->voice_switch));
-  
   /* context merger */
   self->context_merger = (BseSource*) bse_container_new_child (BSE_CONTAINER (self), BSE_TYPE_CONTEXT_MERGER, NULL);
   bse_snet_intern_child (snet, self->context_merger);
-  
   /* midi voice switch <-> context merger */
   bse_source_must_set_input (self->context_merger, 0,
                              self->voice_switch, BSE_MIDI_VOICE_SWITCH_OCHANNEL_LEFT);
   bse_source_must_set_input (self->context_merger, 1,
                              self->voice_switch, BSE_MIDI_VOICE_SWITCH_OCHANNEL_RIGHT);
-
   /* post processing slot */
   self->postprocess = (BseSource*) bse_container_new_child (BSE_CONTAINER (self), BSE_TYPE_SUB_SYNTH, "uname", "Postprocess", NULL);
   bse_snet_intern_child (snet, self->postprocess);
   bse_sub_synth_set_null_shortcut (BSE_SUB_SYNTH (self->postprocess), TRUE);
-
   /* context merger <-> postprocess */
   bse_source_must_set_input (self->postprocess, 0,
                              self->context_merger, 0);
   bse_source_must_set_input (self->postprocess, 1,
                              self->context_merger, 1);
-
   /* output */
   self->output = (BseSource*) bse_container_new_child (BSE_CONTAINER (self), BSE_TYPE_PCM_OUTPUT, NULL);
   bse_snet_intern_child (snet, self->output);
-  
   /* postprocess <-> output */
   bse_source_must_set_input (self->output, BSE_PCM_OUTPUT_ICHANNEL_LEFT,
                              self->postprocess, 0);
   bse_source_must_set_input (self->output, BSE_PCM_OUTPUT_ICHANNEL_RIGHT,
                              self->postprocess, 1);
-  
   /* sub synth */
   self->sub_synth = (BseSource*) bse_container_new_child (BSE_CONTAINER (self), BSE_TYPE_SUB_SYNTH,
                                                           "in_port_1", "frequency",
@@ -142,7 +117,6 @@ bse_midi_synth_init (BseMidiSynth *self)
                                                           "out_port_4", "synth-done",
                                                           NULL);
   bse_snet_intern_child (snet, self->sub_synth);
-
   /* voice input <-> sub-synth */
   bse_source_must_set_input (self->sub_synth, 0,
                              self->voice_input, BSE_MIDI_VOICE_INPUT_OCHANNEL_FREQUENCY);
@@ -152,7 +126,6 @@ bse_midi_synth_init (BseMidiSynth *self)
                              self->voice_input, BSE_MIDI_VOICE_INPUT_OCHANNEL_VELOCITY);
   bse_source_must_set_input (self->sub_synth, 3,
                              self->voice_input, BSE_MIDI_VOICE_INPUT_OCHANNEL_AFTERTOUCH);
-  
   /* sub-synth <-> voice switch */
   bse_source_must_set_input (self->voice_switch, BSE_MIDI_VOICE_SWITCH_ICHANNEL_LEFT,
                              self->sub_synth, 0);
@@ -160,10 +133,8 @@ bse_midi_synth_init (BseMidiSynth *self)
                              self->sub_synth, 1);
   bse_source_must_set_input (self->voice_switch, BSE_MIDI_VOICE_SWITCH_ICHANNEL_DISCONNECT,
                              self->sub_synth, 3);
-
   bse_misi_synth_update_midi_channel (self);
 }
-
 static void
 bse_misi_synth_update_midi_channel (BseMidiSynth      *self)
 {
@@ -174,12 +145,10 @@ bse_misi_synth_update_midi_channel (BseMidiSynth      *self)
       bse_midi_voice_switch_set_midi_channel (BSE_MIDI_VOICE_SWITCH (self->voice_switch), self->midi_channel_id);
     }
 }
-
 static void
 bse_midi_synth_finalize (GObject *object)
 {
   BseMidiSynth *self = BSE_MIDI_SYNTH (object);
-  
   bse_container_remove_item (BSE_CONTAINER (self), BSE_ITEM (self->voice_input));
   self->voice_input = NULL;
   bse_container_remove_item (BSE_CONTAINER (self), BSE_ITEM (self->voice_switch));
@@ -192,11 +161,9 @@ bse_midi_synth_finalize (GObject *object)
   self->output = NULL;
   bse_container_remove_item (BSE_CONTAINER (self), BSE_ITEM (self->sub_synth));
   self->sub_synth = NULL;
-  
   /* chain parent class' handler */
   G_OBJECT_CLASS (parent_class)->finalize (object);
 }
-
 static void
 bse_midi_synth_get_candidates (BseItem               *item,
                                guint                  param_id,
@@ -219,7 +186,6 @@ bse_midi_synth_get_candidates (BseItem               *item,
       break;
     }
 }
-
 static void
 midi_synth_uncross_snet (BseItem *owner,
                          BseItem *ref_item)
@@ -227,7 +193,6 @@ midi_synth_uncross_snet (BseItem *owner,
   BseMidiSynth *self = BSE_MIDI_SYNTH (owner);
   bse_item_set (self, "snet", NULL, NULL);
 }
-
 static void
 midi_synth_uncross_pnet (BseItem *owner,
                          BseItem *ref_item)
@@ -235,7 +200,6 @@ midi_synth_uncross_pnet (BseItem *owner,
   BseMidiSynth *self = BSE_MIDI_SYNTH (owner);
   bse_item_set (self, "pnet", NULL, NULL);
 }
-
 static void
 bse_midi_synth_set_property (GObject      *object,
 			     guint         param_id,
@@ -326,7 +290,6 @@ bse_midi_synth_set_property (GObject      *object,
       break;
     }
 }
-
 static void
 bse_midi_synth_get_property (GObject    *object,
 			     guint       param_id,
@@ -362,7 +325,6 @@ bse_midi_synth_get_property (GObject    *object,
       break;
     }
 }
-
 static void
 bse_midi_synth_context_create (BseSource *source,
 			       guint      context_handle,
@@ -370,21 +332,17 @@ bse_midi_synth_context_create (BseSource *source,
 {
   BseMidiSynth *self = BSE_MIDI_SYNTH (source);
   BseSNet *snet = BSE_SNET (self);
-  
   /* chain parent class' handler */
   BSE_SOURCE_CLASS (parent_class)->context_create (source, context_handle, trans);
-  
   if (!bse_snet_context_is_branch (snet, context_handle))	/* catch recursion */
     {
       BseMidiContext mcontext = bse_snet_get_midi_context (snet, context_handle);
       guint i;
       for (i = 0; i < self->n_voices; i++)
 	bse_snet_context_clone_branch (snet, context_handle, self->context_merger, mcontext, trans);
-
       bse_midi_receiver_channel_enable_poly (mcontext.midi_receiver, mcontext.midi_channel);
     }
 }
-
 static void
 bse_midi_synth_context_dismiss (BseSource *source,
                                 guint      context_handle,
@@ -392,17 +350,14 @@ bse_midi_synth_context_dismiss (BseSource *source,
 {
   BseMidiSynth *self = BSE_MIDI_SYNTH (source);
   BseSNet *snet = BSE_SNET (self);
-
   /* chain parent class' handler */
   BSE_SOURCE_CLASS (parent_class)->context_dismiss (source, context_handle, trans);
-
   if (!bse_snet_context_is_branch (snet, context_handle))
     {
       BseMidiContext mcontext = bse_snet_get_midi_context (snet, context_handle);
       bse_midi_receiver_channel_disable_poly (mcontext.midi_receiver, mcontext.midi_channel);
     }
 }
-
 static void
 bse_midi_synth_class_init (BseMidiSynthClass *klass)
 {
@@ -410,16 +365,13 @@ bse_midi_synth_class_init (BseMidiSynthClass *klass)
   BseObjectClass *object_class = BSE_OBJECT_CLASS (klass);
   BseItemClass *item_class = BSE_ITEM_CLASS (klass);
   BseSourceClass *source_class = BSE_SOURCE_CLASS (klass);
-
   parent_class = (GTypeClass*) g_type_class_peek_parent (klass);
   gobject_class->set_property = bse_midi_synth_set_property;
   gobject_class->get_property = bse_midi_synth_get_property;
   gobject_class->finalize = bse_midi_synth_finalize;
   item_class->get_candidates = bse_midi_synth_get_candidates;
-
   source_class->context_create = bse_midi_synth_context_create;
   source_class->context_dismiss = bse_midi_synth_context_dismiss;
-
   bse_object_class_add_param (object_class, _("MIDI Instrument"),
 			      PROP_MIDI_CHANNEL,
 			      sfi_pspec_int ("midi_channel", _("MIDI Channel"), NULL,

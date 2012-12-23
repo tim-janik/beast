@@ -1,17 +1,12 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #ifndef __BSE_UTILS_H__
 #define __BSE_UTILS_H__
-
 #include <bse/bseenums.hh>
 #include <bse/bseglobals.hh>
 #include <bse/bsecompat.hh>
-
 G_BEGIN_DECLS
-
 /* --- C++ helper declaration --- */
 void    bse_cxx_init      (void);
-
-
 /* --- record utils --- */
 BseNoteDescription* bse_note_description             (BseMusicalTuningType   musical_tuning,
                                                       int                    note,
@@ -43,16 +38,12 @@ void                bse_item_seq_remove              (BseItemSeq            *ise
                                                       BseItem               *item);
 SfiRing*            bse_item_seq_to_ring             (BseItemSeq            *iseq);
 BseItemSeq*         bse_item_seq_from_ring           (SfiRing               *ring);
-
-
 /* --- debugging --- */
 void    bse_debug_dump_floats   (guint   debug_stream,
                                  guint   n_channels,
                                  guint   mix_freq,
                                  guint   n_values,
                                  gfloat *values);
-
-
 /* --- balance calculation --- */
 /* levels are 0..100, balance is -100..+100 */
 double  bse_balance_get         (double  level1,
@@ -60,17 +51,11 @@ double  bse_balance_get         (double  level1,
 void    bse_balance_set         (double  balance,
                                  double *level1,
                                  double *level2);
-
-
 /* --- icons --- */
 BseIcon* bse_icon_from_pixstream (const guint8     *pixstream);
-
-
 /* --- ID allocator --- */
 gulong	bse_id_alloc	(void);
 void	bse_id_free	(gulong	id);
-
-
 /* --- string array manipulation --- */
 gchar**       bse_xinfos_add_value              (gchar          **xinfos,
                                                  const gchar     *key,
@@ -95,8 +80,6 @@ gchar**       bse_xinfos_dup_consolidated       (gchar          **xinfos,
                                                  gboolean         copy_interns);
 gint          bse_xinfo_stub_compare            (const gchar     *xinfo1,  /* must contain '=' */
                                                  const gchar     *xinfo2); /* must contain '=' */
-
-
 /* --- miscellaeous --- */
 guint		bse_string_hash			(gconstpointer   string);
 gint		bse_string_equals		(gconstpointer	 string1,
@@ -104,8 +87,6 @@ gint		bse_string_equals		(gconstpointer	 string1,
 const gchar*    bse_intern_path_user_data       (const gchar    *dir);
 const gchar*    bse_intern_default_author	(void);
 const gchar*    bse_intern_default_license	(void);
-
-
 /* --- bbuffer utils --- */
 #define BSE_BBUFFER_SIZE        (128)
 void	bse_bbuffer_puts	(gchar       	 bbuffer[BSE_BBUFFER_SIZE],
@@ -120,7 +101,5 @@ bse_bbuffer_putc (gchar bbuffer[BSE_BBUFFER_SIZE],
   bbuffer[0] = character;
   bbuffer[1] = 0;
 }
-
 G_END_DECLS
-
 #endif /* __BSE_UTILS_H__ */

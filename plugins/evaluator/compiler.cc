@@ -1,13 +1,10 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
-
 #include "compiler.hh"
 #include <assert.h>
 #include <ctype.h>
-
 using std::vector;
 using std::string;
 using namespace Bse::EvaluatorUtils;
-
 string Compiler::tokenize(Symbols& symbols, const vector<char>& code_without_nl, vector<Token>& tokens)
 {
     enum {
@@ -15,12 +12,9 @@ string Compiler::tokenize(Symbols& symbols, const vector<char>& code_without_nl,
 	stNumber,
 	stVariable
     } state = stNeutral;
-
     string currentToken;
-
     vector<char> code = code_without_nl;
     code.push_back('\n');
-
     vector<char>::const_iterator ci = code.begin();
     while (ci != code.end())
     {
@@ -67,7 +61,6 @@ string Compiler::tokenize(Symbols& symbols, const vector<char>& code_without_nl,
 	    else
 	    {
 		char s[2] = { *ci, 0 };
-
 		return "can't interpret '" + string(s) + "'";
 	    }
 	    ci++;
@@ -103,26 +96,22 @@ string Compiler::tokenize(Symbols& symbols, const vector<char>& code_without_nl,
     }
     return "";
 }
-
 Compiler::Compiler(Symbols& symbols, const vector<Token>& tokens)
     : symbols(symbols), tokens(tokens)
 {
     for(unsigned int i = 0; i < tokens.size(); i++)
 	done.push_back(false);
 }
-
 int Compiler::compile(int begin, int size, vector<Instruction>& instructions)
 {
     int reg = -1;
     int end = begin+size;
-
     printf("compiling [%d:%d] : ", begin, end);
     for(int i=begin;i<end;i++)
     {
 	printf("<%s> ",tokens[i].str().c_str());
     }
     printf("\n");
-
     if (size == 1)
     {
 	if (tokens[begin].type == Token::NUMBER)
@@ -162,11 +151,9 @@ int Compiler::compile(int begin, int size, vector<Instruction>& instructions)
 	    if (tokens[i].type == Token::LEFT_PAREN)
 		plevel++;
 	}
-
 	printf("best is %d\n", best);
 	if (best == -1)
 	    break;
-
 	if (size >= 2 && tokens[best].type == Token::LEFT_PAREN && tokens[end-1].type == Token::RIGHT_PAREN)
 	{
 	    if (best == begin) /* (expr) */
@@ -215,7 +202,6 @@ int Compiler::compile(int begin, int size, vector<Instruction>& instructions)
 	{
 	    compile(begin,best-begin,instructions);
 	    reg = compile(best+1,end-best-1,instructions);
-
 	    done[best] = true;
 	}
 	else
@@ -226,34 +212,28 @@ int Compiler::compile(int begin, int size, vector<Instruction>& instructions)
     }
     assert(reg != -1 || size == 0);
     return reg;
-
     /*
     // evaluate expression:
     // 1. treeify
     // 2. evaluate LHS => tmp1
     // 3. evaluate RHS => tmp2
     // 4. result = OP tmp1 tmp2
-
     if (tokens[0].type == Token::NUMBER
     &&  tokens[1].type == Token::PLUS
     &&  tokens[2].type == Token::NUMBER)
     {
 	int reg1 = symbols.alloc();
 	int reg2 = symbols.alloc();
-
 	instructions.push_back (Instruction::rv(Instruction::SET, reg1, tokens[0].value));
 	instructions.push_back (Instruction::rv(Instruction::SET, reg2, tokens[2].value));
 	instructions.push_back (Instruction::rr(Instruction::ADD, reg1, reg2));
-
 	// result in reg1
     }
     */
 }
-
 string Compiler::compile(Symbols& symbols, const vector<Token>& tokens, vector<Instruction>& instructions)
 {
     Compiler c(symbols, tokens);
     c.compile(0, tokens.size(), instructions);
-
     return "";
 }

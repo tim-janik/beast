@@ -1,12 +1,9 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #ifndef __DAV_CANYON_DELAY_H__
 #define __DAV_CANYON_DELAY_H__
-
 #include <bse/bseplugin.hh>
 #include <bse/bsesource.hh>
-
 G_BEGIN_DECLS
-
 /* --- object type macros --- */
 #define DAV_TYPE_CANYON_DELAY              (dav_canyon_delay_get_type())
 #define DAV_CANYON_DELAY(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), DAV_TYPE_CANYON_DELAY, DavCanyonDelay))
@@ -14,7 +11,6 @@ G_BEGIN_DECLS
 #define DAV_IS_CANYON_DELAY(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), DAV_TYPE_CANYON_DELAY))
 #define DAV_IS_CANYON_DELAY_CLASS(class)   (G_TYPE_CHECK_CLASS_TYPE ((class), DAV_TYPE_CANYON_DELAY))
 #define DAV_CANYON_DELAY_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), DAV_TYPE_CANYON_DELAY, DavCanyonDelayClass))
-
 /* --- DavCanyonDelay source --- */
 typedef struct {
   gdouble l_to_r_mag;
@@ -29,7 +25,6 @@ typedef struct {
 typedef struct
 {
   BseSource parent_object;
-
   gdouble l_to_r_seconds;
   gdouble l_to_r_feedback;
   gdouble r_to_l_seconds;
@@ -49,8 +44,6 @@ typedef struct {
 typedef struct {
   BseSourceClass parent_class;
 } DavCanyonDelayClass;
-
-
 /* --- channels --- */
 enum
 {
@@ -64,9 +57,5 @@ enum
   DAV_CANYON_DELAY_OCHANNEL_RIGHT,
   DAV_CANYON_DELAY_N_OCHANNELS
 };
-
-
-
 G_END_DECLS
-
 #endif /* __DAV_CANYON_DELAY_H__ */

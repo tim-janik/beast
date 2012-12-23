@@ -1,11 +1,8 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #ifndef __BST_USER_MESSAGE_H__
 #define __BST_USER_MESSAGE_H__
-
 #include	"bstutils.hh"
-
 G_BEGIN_DECLS
-
 /* --- structures --- */
 typedef enum {
   BST_MSG_NONE          = SFI_MSG_NONE,
@@ -17,14 +14,12 @@ typedef enum {
   BST_MSG_DIAG          = SFI_MSG_DIAG,
   BST_MSG_DEBUG         = SFI_MSG_DEBUG,
 } BstMsgType;
-
 typedef struct {
   guint             id;
   gchar            *text;
   gchar            *stock_icon;
   gchar            *options;
 } BstMsgBit;
-
 typedef struct {
   const char    *log_domain;
   BstMsgType     type;
@@ -41,13 +36,11 @@ typedef struct {
   guint          n_msg_bits;
   BstMsgBit    **msg_bits;
 } BstMessage;
-
 typedef struct {
   guint        type;
   const gchar *ident;
   const gchar *label; /* maybe NULL */
 } BstMsgID;
-
 /* --- prototypes --- */
 void              bst_message_connect_to_server	(void);
 void              bst_message_dialogs_popdown	(void);
@@ -87,7 +80,5 @@ BstMsgBit*        bst_msg_bit_create_choice     (guint                   id,
                                                      __result = bst_message_dialog_display (BIRNET_LOG_DOMAIN,  \
                                                                  __mt, BIRNET_ARRAY_SIZE (__ba), __ba); }       \
                                                    __result; })
-
 G_END_DECLS
-
 #endif	/* __BST_USER_MESSAGE_H__ */

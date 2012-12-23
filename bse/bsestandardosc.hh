@@ -1,12 +1,9 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #ifndef __BSE_STANDARD_OSC_H__
 #define __BSE_STANDARD_OSC_H__
-
 #include <bse/bsesource.hh>
 #include <bse/gsloscillator.hh>
-
 G_BEGIN_DECLS
-
 /* --- object type macros --- */
 #define BSE_TYPE_STANDARD_OSC              (BSE_TYPE_ID (BseStandardOsc))
 #define BSE_STANDARD_OSC(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), BSE_TYPE_STANDARD_OSC, BseStandardOsc))
@@ -14,8 +11,6 @@ G_BEGIN_DECLS
 #define BSE_IS_STANDARD_OSC(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), BSE_TYPE_STANDARD_OSC))
 #define BSE_IS_STANDARD_OSC_CLASS(class)   (G_TYPE_CHECK_CLASS_TYPE ((class), BSE_TYPE_STANDARD_OSC))
 #define BSE_STANDARD_OSC_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), BSE_TYPE_STANDARD_OSC, BseStandardOscClass))
-
-
 /* --- wave forms --- */
 typedef enum
 {
@@ -29,15 +24,12 @@ typedef enum
   BSE_STANDARD_OSC_SQUARE	= GSL_OSC_WAVE_SQUARE,		/*< nick=Square >*/
   BSE_STANDARD_OSC_PULSE	= GSL_OSC_WAVE_PULSE_SAW	/*< nick=Pulse >*/
 } BseStandardOscWaveType;
-
-
 /* --- BseStandardOsc source --- */
 typedef struct _BseStandardOsc      BseStandardOsc;
 typedef struct _BseStandardOscClass BseStandardOscClass;
 struct _BseStandardOsc
 {
   BseSource		 parent_object;
-
   BseStandardOscWaveType wave;
   GslOscConfig		 config;
   int                    transpose;
@@ -48,8 +40,6 @@ struct _BseStandardOscClass
 {
   BseSourceClass parent_class;
 };
-
-
 /* --- channels --- */
 enum
 {
@@ -65,7 +55,5 @@ enum
   BSE_STANDARD_OSC_OCHANNEL_SYNC,
   BSE_STANDARD_OSC_N_OCHANNELS
 };
-
 G_END_DECLS
-
 #endif /* __BSE_STANDARD_OSC_H__ */

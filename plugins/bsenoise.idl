@@ -1,8 +1,6 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include <bse/bsecxxmodule.idl>
-
 namespace Bse {
-
 class Noise : Effect {
   Info    icon        = "icons/noise.png";
   Info    authors     = "Tim Janik";
@@ -11,5 +9,4 @@ class Noise : Effect {
   Info    blurb       = _("Noise is a generator of (supposedly) white noise");
   OStream noise_out   = (_("Noise Out"), _("Noise Output"));
 };
-
 } // Bse

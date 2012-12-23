@@ -1,17 +1,13 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #ifndef __BSE_CXX_ARG_H__
 #define __BSE_CXX_ARG_H__
-
 #include <bse/bsecxxvalue.hh>
-
 /* Closure Argument implementation. For a given type, these templates
  * provide a class Arg with get() and set() functions on class Value,
  * and a token() function which returns a single character string to
  * identify the argument type.
  */
-
 namespace Bse {
-
 /* default Arg type, this either supports a CxxBase* pointer or errors out */
 template<typename T>
 struct Arg {
@@ -44,8 +40,6 @@ private:
   }
 };
 const String tokenize_gtype (GType t);
-
-
 /* specialize Arg template for standard primitive types */
 #define BSE__SPECIALIZE(TYPE, vtype, tok, GCast, SCast) \
 template<> struct Arg<TYPE> {                           \
@@ -88,8 +82,5 @@ BSE__SPECIALIZE(BseObject*,           object, "O", reinterpret_cast<BseObject*>,
 BSE__SPECIALIZE(BseItem*,             object, "O", reinterpret_cast<BseItem*>, reinterpret_cast<GObject*>);
 BSE__SPECIALIZE(BseSource*,           object, "O", reinterpret_cast<BseSource*>, reinterpret_cast<GObject*>);
 #undef BSE__SPECIALIZE
-
 } // Bse
-
-
 #endif /* __BSE_CXX_ARG_H__ */

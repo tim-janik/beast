@@ -9,13 +9,9 @@
 #include <fcntl.h>
 #include <sys/time.h>
 #include <sys/resource.h>
-
-
 /* --- prototypes --- */
 static GList*	wire_find_link	(GList	*list,
 				 guint	 request);
-
-
 /* --- functions --- */
 static void
 nonblock_fd (gint fd)
@@ -26,15 +22,12 @@ nonblock_fd (gint fd)
       do
 	d_long = fcntl (fd, F_GETFL);
       while (d_long < 0 && errno == EINTR);
-      
       d_long |= O_NONBLOCK;
-      
       do
 	r = fcntl (fd, F_SETFL, d_long);
       while (r < 0 && errno == EINTR);
     }
 }
-
 SfiComWire*
 sfi_com_wire_from_child (const gchar *ident,
 			 gint         remote_input,
@@ -45,9 +38,7 @@ sfi_com_wire_from_child (const gchar *ident,
 			 gint         remote_pid)
 {
   SfiComWire *wire;
-  
   g_return_val_if_fail (ident != NULL, NULL);
-  
   wire = g_new0 (SfiComWire, 1);
   if (remote_pid > 1)
     wire->ident = g_strdup_printf ("%s[%u]", ident, remote_pid);
@@ -72,75 +63,60 @@ sfi_com_wire_from_child (const gchar *ident,
   nonblock_fd (wire->standard_input);
   nonblock_fd (wire->standard_output);
   nonblock_fd (wire->standard_error);
-  
   return wire;
 }
-
 SfiComWire*
 sfi_com_wire_from_pipe (const gchar *ident,
 			gint         remote_input,
 			gint         remote_output)
 {
   g_return_val_if_fail (ident != NULL, NULL);
-  
   return sfi_com_wire_from_child (ident,
 				  remote_input,
 				  remote_output,
 				  -1, -1, -1, -1);
 }
-
 static SfiComMsg*
 alloc_msg (SfiComMsgType type)
 {
   SfiComMsg *msg = g_new (SfiComMsg, 1);
-  
   msg->magic = BSE_MAGIC_BSEm;
   msg->mlength = 0;
   msg->type = type;
-  
   return msg;
 }
-
 static gchar*
 free_msg_skel (SfiComMsg *msg)
 {
   gchar *content = msg->message;
-  
   g_free (msg);
   return content;
 }
-
 static void
 free_msg (SfiComMsg *msg)
 {
   g_free (free_msg_skel (msg));
 }
-
 static void
 wire_write_remote (SfiComWire *wire)
 {
   guint8 *buf = wire->obuffer;
-  
   if (wire->obp - buf && wire->remote_output >= 0)
     {
       gint n;
-      
       do
 	{
 	  n = write (wire->remote_output, buf, wire->obp - buf);
 	  buf += MAX (n, 0);
 	}
       while (n < 0 && errno == EINTR);
-      
       if (n == 0 || (n < 0 && errno != EINTR && errno != EAGAIN))
 	wire->remote_output_broke = TRUE;
-      
       n = wire->obp - buf;
       g_memmove (wire->obuffer, buf, n);
       wire->obp = wire->obuffer + n;
     }
 }
-
 static inline uint8*
 put_uint32 (gpointer p,
 	    guint32  val)
@@ -149,15 +125,12 @@ put_uint32 (gpointer p,
   *ip++ = GUINT32_TO_BE (val);
   return (uint8*) ip;
 }
-
 static void
 wire_send (SfiComWire *wire,
 	   SfiComMsg  *msg)
 {
   guint strl;
-  
   g_return_if_fail (msg->mlength == 0);
-  
   strl = strlen (msg->message) + 1;	/* include trailing 0 */
   msg->mlength = (4 +	/* magic */
 		  4 + 	/* mlength */
@@ -179,7 +152,6 @@ wire_send (SfiComWire *wire,
   wire->obp += strl;
   wire_write_remote (wire);
 }
-
 static void
 wire_read_remote (SfiComWire *wire)
 {
@@ -187,7 +159,6 @@ wire_read_remote (SfiComWire *wire)
     {
       guint read_size = 8192;
       gint n;
-      
       if (wire->ibound - wire->ibp < read_size)
 	{
 	  guint l = wire->ibp - wire->ibuffer;
@@ -195,20 +166,17 @@ wire_read_remote (SfiComWire *wire)
 	  wire->ibp = wire->ibuffer + l;
 	  wire->ibound = wire->ibp + read_size;
 	}
-      
       do
 	{
 	  n = read (wire->remote_input, wire->ibp, wire->ibound - wire->ibp);
 	  wire->ibp += MAX (n, 0);
 	}
       while (n < 0 && errno == EINTR);
-      
       /* n==0 on pipes/fifos means remote closed the connection (end-of-file) */
       if (n == 0 || (n < 0 && errno != EINTR && errno != EAGAIN))
 	wire->remote_input_broke = TRUE;
     }
 }
-
 static inline uint8*
 get_uint32 (gpointer p,
 	    guint32 *val)
@@ -218,18 +186,15 @@ get_uint32 (gpointer p,
   *val = GUINT32_FROM_BE (v);
   return (uint8*) ip;
 }
-
 static void
 wire_receive (SfiComWire *wire)
 {
   wire_read_remote (wire);
-  
   if (wire->ibp >= wire->ibuffer + 4 + 4 + 4)	/* magic + mlength + type */
     {
       guint8 *p = wire->ibuffer;
       guint32 magic, mlength, type;
       guint mheader_length = 4 + 4 + 4 + 4, max_mlength = 4 * 1024 * 1024;
-      
       p = get_uint32 (p, &magic);
       p = get_uint32 (p, &mlength);
       p = get_uint32 (p, &type);
@@ -249,7 +214,6 @@ wire_receive (SfiComWire *wire)
       else if (mlength <= wire->ibp - wire->ibuffer)
 	{
 	  guint strl = mlength - mheader_length;	/* >= 1 */
-	  
 	  switch (type)
 	    {
 	      SfiComMsg *msg;
@@ -301,7 +265,6 @@ wire_receive (SfiComWire *wire)
 	}
     }
 }
-
 static inline gboolean	/* returns: connection_alive */
 wire_read_gstring (SfiComWire *wire,
 		   gint        fd,
@@ -310,7 +273,6 @@ wire_read_gstring (SfiComWire *wire,
   uint l = gstring->len;
   char *pos, *bound;
   int n;
-
   g_string_set_size (gstring, l + 8192);
   pos = gstring->str + l;
   bound = gstring->str + gstring->len;
@@ -321,11 +283,9 @@ wire_read_gstring (SfiComWire *wire,
     }
   while (n < 0 && errno == EINTR);
   g_string_set_size (gstring, pos - gstring->str);
-
   /* n==0 on pipes/fifos means remote closed the connection (end-of-file) */
   return n > 0 || (n < 0 && (errno == EINTR || errno == EAGAIN));
 }
-
 static void
 wire_capture (SfiComWire *wire)
 {
@@ -336,7 +296,6 @@ wire_capture (SfiComWire *wire)
     if (!wire_read_gstring (wire, wire->standard_error, wire->gstring_stderr))
       wire->standard_error_broke = TRUE;
 }
-
 static inline void
 wire_update_alive (SfiComWire *wire)
 {
@@ -347,7 +306,6 @@ wire_update_alive (SfiComWire *wire)
       wire->standard_error_broke)
     wire->connected = FALSE;
 }
-
 static GList*
 wire_find_link (GList *list,
 		guint  request)
@@ -360,55 +318,42 @@ wire_find_link (GList *list,
     }
   return NULL;
 }
-
 static guint
 wire_alloc_request (SfiComWire *wire)
 {
   guint request = (rand () << 16) ^ rand ();
-  
   while (request == 0 || wire_find_link (wire->orequests, request))
     request++;
-  
   return request;
 }
-
 guint
 sfi_com_wire_send_request (SfiComWire  *wire,
 			   const gchar *request_msg)
 {
   SfiComMsg *msg;
   guint request;
-  
   g_return_val_if_fail (wire != NULL, 0);
   g_return_val_if_fail (request_msg != NULL, 0);
-  
   request = wire_alloc_request (wire);
   msg = alloc_msg (SFI_COM_MSG_REQUEST);
   msg->request = request;
   msg->message = g_strdup (request_msg);
-  
   wire->orequests = g_list_prepend (wire->orequests, msg);
   wire_send (wire, msg);
-  
   wire_update_alive (wire);
-  
   return request;
 }
-
 gchar*
 sfi_com_wire_receive_result (SfiComWire *wire,
 			     guint       request)
 {
   GList *out_link, *in_link;
-  
   g_return_val_if_fail (wire != NULL, NULL);
   g_return_val_if_fail (request > 0, NULL);
   out_link = wire_find_link (wire->orequests, request);
   g_return_val_if_fail (out_link != NULL, NULL);
-  
   wire_receive (wire);
   wire_update_alive (wire);
-  
   in_link = wire_find_link (wire->iresults, request);
   if (in_link)
     {
@@ -422,46 +367,37 @@ sfi_com_wire_receive_result (SfiComWire *wire,
   else
     return NULL;
 }
-
 void
 sfi_com_wire_forget_request (SfiComWire *wire,
 			     guint       request)
 {
   GList *out_link;
-
   g_return_if_fail (wire != NULL);
   g_return_if_fail (request > 0);
   out_link = wire_find_link (wire->orequests, request);
   g_return_if_fail (out_link != NULL);
-
   SfiComMsg *omsg = (SfiComMsg*) out_link->data;
   wire->orequests = g_list_delete_link (wire->orequests, out_link);
   free_msg (omsg);
 }
-
 guint
 sfi_com_wire_peek_first_result (SfiComWire *wire)
 {
   g_return_val_if_fail (wire != NULL, 0);
-
   SfiComMsg *msg = (SfiComMsg*) (wire->iresults ? wire->iresults->data : NULL);
   return msg ? msg->request : 0;
 }
-
 const gchar*
 sfi_com_wire_receive_request (SfiComWire *wire,
 			      guint      *request_p)
 {
   g_return_val_if_fail (wire != NULL, NULL);
   g_return_val_if_fail (request_p != NULL, NULL);
-
   wire_receive (wire);
   wire_update_alive (wire);
-
   if (wire->irequests)
     {
       SfiComMsg *msg = (SfiComMsg*) wire->irequests->data;
-
       wire->irequests = g_list_remove (wire->irequests, msg);
       if (msg->request == 0)
 	{
@@ -472,7 +408,6 @@ sfi_com_wire_receive_request (SfiComWire *wire,
 	}
       wire->rrequests = g_list_prepend (wire->rrequests, msg);
       *request_p = msg->request;
-      
       return msg->message;
     }
   else
@@ -481,7 +416,6 @@ sfi_com_wire_receive_request (SfiComWire *wire,
       return NULL;
     }
 }
-
 void
 sfi_com_wire_send_result (SfiComWire  *wire,
 			  guint        request,
@@ -489,42 +423,33 @@ sfi_com_wire_send_result (SfiComWire  *wire,
 {
   SfiComMsg *msg;
   GList *received_link;
-  
   g_return_if_fail (wire != NULL);
   g_return_if_fail (request > 0);
   g_return_if_fail (result_msg != NULL);
   received_link = wire_find_link (wire->rrequests, request);
   g_return_if_fail (received_link != NULL);
-
   msg = alloc_msg (SFI_COM_MSG_RESULT);
   msg->request = request;
   msg->message = g_strdup (result_msg);
   wire_send (wire, msg);
-
   free_msg ((SfiComMsg*) received_link->data);
   wire->rrequests = g_list_delete_link (wire->rrequests, received_link);
   free_msg (msg);
-
   wire_update_alive (wire);
 }
-
 void
 sfi_com_wire_discard_request (SfiComWire *wire,
 			      guint       request)
 {
   GList *received_link;
-
   g_return_if_fail (wire != NULL);
   g_return_if_fail (request > 0);
   received_link = wire_find_link (wire->rrequests, request);
   g_return_if_fail (received_link != NULL);
-
   free_msg ((SfiComMsg*) received_link->data);
   wire->rrequests = g_list_delete_link (wire->rrequests, received_link);
-
   wire_update_alive (wire);
 }
-
 static gboolean
 wire_default_dispatch (gpointer     data,
 		       guint        request,
@@ -535,7 +460,6 @@ wire_default_dispatch (gpointer     data,
   sfi_com_wire_discard_request (wire, request);
   return TRUE;
 }
-
 void
 sfi_com_wire_set_dispatcher (SfiComWire    *wire,
 			     SfiComDispatch dispatch_func,
@@ -543,7 +467,6 @@ sfi_com_wire_set_dispatcher (SfiComWire    *wire,
 			     GDestroyNotify destroy_data)
 {
   g_return_if_fail (wire != NULL);
-  
   if (wire->destroy_data)
     wire->destroy_data (wire->dispatch_data);
   if (dispatch_func)
@@ -559,47 +482,39 @@ sfi_com_wire_set_dispatcher (SfiComWire    *wire,
       wire->destroy_data = NULL;
     }
 }
-
 void
 sfi_com_wire_dispatch (SfiComWire  *wire,
 		       guint        request)
 {
   GList *received_link;
   gboolean handled;
-
   g_return_if_fail (wire != NULL);
   g_return_if_fail (request > 0);
   received_link = wire_find_link (wire->rrequests, request);
   g_return_if_fail (received_link != NULL);
-
   SfiComMsg *msg = (SfiComMsg*) received_link->data;
   handled = wire->dispatch_func (wire->dispatch_data, msg->request, msg->message, wire);
   if (!handled)
     wire_default_dispatch (NULL, msg->request, msg->message, wire);
 }
-
 gboolean
 sfi_com_wire_need_dispatch (SfiComWire *wire)
 {
   g_return_val_if_fail (wire != NULL, FALSE);
-  
   return wire->iresults || wire->irequests || wire->gstring_stdout->len || wire->gstring_stderr->len;
 }
-
 gint*
 sfi_com_wire_get_read_fds (SfiComWire *wire,
 			   guint      *n_fds_p)
 {
   g_return_val_if_fail (wire != NULL, NULL);
   g_return_val_if_fail (n_fds_p != NULL, NULL);
-  
   if (wire->remote_input >= 0 ||
       wire->standard_output >= 0 ||
       wire->standard_error >= 0)
     {
       guint n_fds = 0;
       gint *fds = g_new (gint, 3);
-      
       if (wire->remote_input >= 0)
 	fds[n_fds++] = wire->remote_input;
       if (wire->standard_output >= 0)
@@ -615,19 +530,16 @@ sfi_com_wire_get_read_fds (SfiComWire *wire,
       return NULL;
     }
 }
-
 gint*
 sfi_com_wire_get_write_fds (SfiComWire *wire,
 			    guint      *n_fds_p)
 {
   g_return_val_if_fail (wire != NULL, NULL);
   g_return_val_if_fail (n_fds_p != NULL, NULL);
-  
   if (wire->obp - wire->obuffer && wire->remote_output >= 0)
     {
       guint n_fds = 0;
       gint *fds = g_new (gint, 1);
-      
       fds[n_fds++] = wire->remote_output;
       *n_fds_p = n_fds;
       return fds;
@@ -638,14 +550,12 @@ sfi_com_wire_get_write_fds (SfiComWire *wire,
       return NULL;
     }
 }
-
 GPollFD*
 sfi_com_wire_get_poll_fds (SfiComWire *wire,
 			   guint      *n_pfds_p)
 {
   g_return_val_if_fail (wire != NULL, NULL);
   g_return_val_if_fail (n_pfds_p != NULL, NULL);
-  
   if (wire->remote_input >= 0 ||
       wire->standard_output >= 0 ||
       wire->standard_error >= 0 ||
@@ -653,7 +563,6 @@ sfi_com_wire_get_poll_fds (SfiComWire *wire,
     {
       guint n_pfds = 0;
       GPollFD *pfds = g_new0 (GPollFD, 3 + 1);
-      
       if (wire->remote_input >= 0)
 	{
 	  pfds[n_pfds].fd = wire->remote_input;
@@ -686,17 +595,14 @@ sfi_com_wire_get_poll_fds (SfiComWire *wire,
       return NULL;
     }
 }
-
 void
 sfi_com_wire_process_io (SfiComWire *wire)
 {
   g_return_if_fail (wire != NULL);
-  
   wire_capture (wire);
   wire_write_remote (wire);
   wire_read_remote (wire);
   wire_capture (wire);
-  
   if (wire->remote_input_broke)
     {
       if (wire->remote_input >= 0)
@@ -728,13 +634,11 @@ sfi_com_wire_process_io (SfiComWire *wire)
       wire->standard_error = -1;
     }
 }
-
 void
 sfi_com_wire_close_remote (SfiComWire *wire,
 			   gboolean    terminate)
 {
   g_return_if_fail (wire != NULL);
-  
   wire->connected = FALSE;
   if (wire->remote_input >= 0)
     close (wire->remote_input);
@@ -755,14 +659,11 @@ sfi_com_wire_close_remote (SfiComWire *wire,
     kill (wire->remote_pid, SIGTERM);
   wire->remote_pid = -1;
 }
-
 void
 sfi_com_wire_destroy (SfiComWire *wire)
 {
   GList *list;
-  
   g_return_if_fail (wire != NULL);
-  
   sfi_com_wire_set_dispatcher (wire, NULL, NULL, NULL);
   sfi_com_wire_close_remote (wire, TRUE);
   for (list = wire->orequests; list; list = list->next)
@@ -784,14 +685,11 @@ sfi_com_wire_destroy (SfiComWire *wire)
   g_free (wire->ident);
   g_free (wire);
 }
-
 gboolean
 sfi_com_wire_receive_dispatch (SfiComWire *wire)
 {
   guint request;
-  
   g_return_val_if_fail (wire != NULL, FALSE);
-  
   if (sfi_com_wire_receive_request (wire, &request))
     {
       sfi_com_wire_dispatch (wire, request);
@@ -800,21 +698,17 @@ sfi_com_wire_receive_dispatch (SfiComWire *wire)
   else
     return FALSE;
 }
-
 void
 sfi_com_wire_select (SfiComWire *wire,
 		     guint       timeout)
 {
   uint i, n;
   struct timeval tv;
-
   g_return_if_fail (wire != NULL);
-
   fd_set rfds, wfds, efds;
   FD_ZERO (&rfds);
   FD_ZERO (&wfds);
   FD_ZERO (&efds);
-
   int max_fd = 0, *fds = sfi_com_wire_get_read_fds (wire, &n);
   for (i = 0; i < n; i++)
     {
@@ -823,7 +717,6 @@ sfi_com_wire_select (SfiComWire *wire,
       max_fd = MAX (max_fd, fds[i]);
     }
   g_free (fds);
-  
   fds = sfi_com_wire_get_write_fds (wire, &n);
   for (i = 0; i < n; i++)
     {
@@ -832,12 +725,10 @@ sfi_com_wire_select (SfiComWire *wire,
       max_fd = MAX (max_fd, fds[i]);
     }
   g_free (fds);
-  
   tv.tv_usec = (timeout % 1000) * 1000;
   tv.tv_sec = timeout / 1000;
   select (max_fd + 1, &rfds, &wfds, NULL, &tv);
 }
-
 gchar*
 sfi_com_wire_ping_pong (SfiComWire  *wire,
 			const gchar *ping,
@@ -845,74 +736,59 @@ sfi_com_wire_ping_pong (SfiComWire  *wire,
 {
   guint request;
   gchar *pong;
-  
   g_return_val_if_fail (wire != NULL, NULL);
   g_return_val_if_fail (ping != NULL, NULL);
-  
   request = sfi_com_wire_send_request (wire, ping);
   pong = sfi_com_wire_receive_result (wire, request);
   if (pong)
     return pong;
-  
   sfi_com_wire_select (wire, timeout / 4);
   sfi_com_wire_process_io (wire);
   pong = sfi_com_wire_receive_result (wire, request);
   if (pong)
     return pong;
-  
   sfi_com_wire_select (wire, timeout / 4);
   sfi_com_wire_process_io (wire);
   pong = sfi_com_wire_receive_result (wire, request);
   if (pong)
     return pong;
-  
   sfi_com_wire_select (wire, timeout / 4);
   sfi_com_wire_process_io (wire);
   pong = sfi_com_wire_receive_result (wire, request);
   if (pong)
     return pong;
-  
   sfi_com_wire_select (wire, timeout / 4);
   sfi_com_wire_process_io (wire);
   pong = sfi_com_wire_receive_result (wire, request);
   if (pong)
     return pong;
-  
   sfi_com_wire_forget_request (wire, request);
   return NULL;
 }
-
-
 /* --- fork/exec --- */
 static gchar *spawn_current_dir = NULL;
-
 void
 sfi_com_set_spawn_dir (const gchar *cwd)
 {
   g_free (spawn_current_dir);
   spawn_current_dir = g_strdup (cwd);
 }
-
 static void
 unset_cloexec (gint fd)
 {
   gint r;
-  
   do
     r = fcntl (fd, F_SETFD, 0 /* FD_CLOEXEC */);
   while (r < 0 && errno == EINTR);
 }
-
 typedef struct {
   gint keepexec1;
   gint keepexec2;
 } ChildSetupData;
-
 static void
 pre_exec_child_setup (gpointer data)
 {
   ChildSetupData *cdata = (ChildSetupData*) data;
-
   if (cdata->keepexec1)
     unset_cloexec (cdata->keepexec1);
   if (cdata->keepexec2)
@@ -920,7 +796,6 @@ pre_exec_child_setup (gpointer data)
   /* drop scheduling priorities if we have any */
   setpriority (PRIO_PROCESS, getpid(), 0);
 }
-
 const char*
 sfi_com_spawn_async (const gchar *executable,
 		     gint        *child_pid,
@@ -940,13 +815,11 @@ sfi_com_spawn_async (const gchar *executable,
   const char *reterr = NULL;
   GError *error = NULL;
   uint l;
-
   g_return_val_if_fail (executable != NULL, NULL);
   if (command_fd_option)
     g_return_val_if_fail (command_fd_option && command_input && command_output, NULL);
   else
     g_return_val_if_fail (!command_fd_option && !command_input && !command_output, NULL);
-
   if (command_fd_option)
     {
       if (pipe (command_output_pipe) < 0 || pipe (command_input_pipe) < 0)
@@ -968,7 +841,6 @@ sfi_com_spawn_async (const gchar *executable,
     }
   cargs = sfi_ring_prepend (cargs, g_strdup_printf (/*"SFI-Spawn:%s"*/"%s", executable));
   cargs = sfi_ring_prepend (cargs, g_strdup (executable));
-
   l = sfi_ring_length (cargs) + sfi_ring_length (args);
   argv = g_new (gchar*, l + 1);
   argp = argv;
@@ -977,7 +849,6 @@ sfi_com_spawn_async (const gchar *executable,
   for (ring = args; ring; ring = sfi_ring_walk (ring, args))
     *argp++ = (char*) ring->data;
   *argp = NULL;
-
   if (!g_spawn_async_with_pipes (spawn_current_dir, argv, NULL,
                                  GSpawnFlags (G_SPAWN_DO_NOT_REAP_CHILD |
                                               /* G_SPAWN_CHILD_INHERITS_STDIN | */
@@ -1006,7 +877,6 @@ sfi_com_spawn_async (const gchar *executable,
 	*standard_error = -1;
       goto cleanup;
     }
-
  cleanup:
   g_free (argv);
   for (ring = cargs; ring; ring = sfi_ring_walk (ring, cargs))
@@ -1022,6 +892,5 @@ sfi_com_spawn_async (const gchar *executable,
       *command_input = command_input_pipe[1];
       *command_output = command_output_pipe[0];
     }
-
   return reterr;
 }

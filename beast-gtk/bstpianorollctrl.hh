@@ -1,11 +1,8 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #ifndef __BST_PIANO_ROLL_CONTROLLER_H__
 #define __BST_PIANO_ROLL_CONTROLLER_H__
-
 #include "bstpianoroll.hh"
-
 G_BEGIN_DECLS
-
 typedef struct {
   /* misc data */
   guint		   ref_count;
@@ -27,8 +24,6 @@ typedef struct {
   guint64          cached_stamp;
   guint            cached_n_notes;
 } BstPianoRollController;
-
-
 /* --- API --- */
 BstPianoRollController*	bst_piano_roll_controller_new		 (BstPianoRoll		 *proll);
 BstPianoRollController*	bst_piano_roll_controller_ref		 (BstPianoRollController *self);
@@ -48,8 +43,5 @@ void			bst_piano_roll_controller_paste		 (BstPianoRollController *self);
 gboolean                bst_piano_roll_controller_clipboard_full (BstPianoRollController *self);
 gboolean                bst_piano_roll_controller_has_selection  (BstPianoRollController *self,
                                                                   guint64                 action_stamp);
-
-
 G_END_DECLS
-
 #endif /* __BST_PIANO_ROLL_CONTROLLER_H__ */

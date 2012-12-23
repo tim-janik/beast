@@ -2,12 +2,8 @@
 #include        <bse/bseplugin.hh>
 #include        <bse/bseprocedure.hh>
 #include        <bse/bseenums.hh>
-
-
 AUTHORS	= "Tim Janik <timj@gtk.org>";
 LICENSE = "GNU Lesser General Public License";
-
-
 PROCEDURE (bse-error-name, "Error Name") {
   HELP	= "Retrieve the name of an error value";
   IN	= bse_param_spec_genum ("error", "Error", NULL,
@@ -21,17 +17,12 @@ PROCEDURE (bse-error-name, "Error Name") {
 {
   /* extract parameter values */
   BseErrorType error = (BseErrorType) g_value_get_enum (in_values++);
-  
   /* check parameters */
-  
   /* action */
-  
   /* set output parameters */
   g_value_set_string (out_values++, bse_error_name (error));
-  
   return BSE_ERROR_NONE;
 }
-
 PROCEDURE (bse-error-blurb, "Error Blurb") {
   HELP	= "Retrieve the description of an error value";
   IN	= bse_param_spec_genum ("error", "Error", NULL,
@@ -45,13 +36,9 @@ PROCEDURE (bse-error-blurb, "Error Blurb") {
 {
   /* extract parameter values */
   BseErrorType error = (BseErrorType) g_value_get_enum (in_values++);
-  
   /* check parameters */
-  
   /* action */
-  
   /* set output parameters */
   g_value_set_string (out_values++, bse_error_blurb (error));
-  
   return BSE_ERROR_NONE;
 }

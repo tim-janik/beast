@@ -1,11 +1,9 @@
 ;; CC0 Public Domain: http://creativecommons.org/publicdomain/zero/1.0
-
 ;;
 ;; usage: bsescm -s noteplaytest.scm <instrument> <note> <time_ms>
 ;;
 ;; plays instrument at the specified frequency for the specified amount of time in ms
 ;;
-
 (define (load-wave wave-repo wave-file)
   (let*
     ((error (bse-wave-repo-load-file wave-repo wave-file)))
@@ -15,7 +13,6 @@
 	      (string-append "FAILED: " wave-file ": " (bse-error-blurb error))
 	      (string-append "OK:     " wave-file)))
 	  (newline)))
-
 (define (play-project project)
   (begin
     (display "playing project: ")
@@ -38,7 +35,6 @@
       (display "done.")
       (newline)
       )))
-
 (define (test-play-note instrument note time_ms)
   (let*
     ((project (bse-server-use-new-project bse-server "testproject"))
@@ -53,5 +49,4 @@
     (bse-track-ensure-output track)
     (bse-item-set track "wave" (car (bse-container-list-children wave-repo)))
     (play-project project)))
-
 (apply test-play-note (cdr (command-line)))

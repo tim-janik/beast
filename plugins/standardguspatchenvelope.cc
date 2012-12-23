@@ -4,18 +4,14 @@
 #include "standardguspatchenvelope.genidl.hh"
 #include <bse/gslwavechunk.hh>
 #include <bse/bsemathsignal.hh>
-
 using namespace std;
 using namespace Sfi;
-
 namespace Bse {
 namespace Standard {
-
 class GusPatchEnvelope : public GusPatchEnvelopeBase {
   /* properties (used to pass "global" envelope data into the modules) */
   struct Properties : public GusPatchEnvelopeProperties {
     BseWaveIndex *wave_index;
-
     Properties (GusPatchEnvelope *envelope)
       : GusPatchEnvelopeProperties (envelope),
         wave_index (envelope->wave_index)
@@ -31,38 +27,31 @@ class GusPatchEnvelope : public GusPatchEnvelopeBase {
     bool retrigger;
     gfloat last_retrigger_level;
     bool in_attack_or_sustain_phase;
-
     vector<float> envelope_rates;
     vector<float> envelope_offsets;
     bool envelope_valid;
     int envelope_phase;
     float current_envelope_rate;
-
   public:
     Module() : wave_index (NULL), wave_chunk (NULL)
     {
       /* other relevant data members will be initialized in reset() */
     }
-
     void
     config (Properties *properties)
     {
       wave_index = properties->wave_index;
     }
-
     void
     reset()
     {
       envelope_valid = false;
       retrigger = true;
       wave_chunk = 0;
-
       envelope_value = 0.0;
       last_retrigger_level = 0.0;
     }
-
     enum EnvelopeConversion { CONVERT_RATE, CONVERT_OFFSET };
-
     float
     convert_envelope_value (EnvelopeConversion convert, guint8 byte)
     {
@@ -70,26 +59,21 @@ class GusPatchEnvelope : public GusPatchEnvelopeBase {
 	{
 	  /* conversion code copied from Timidity++ */
 	  gint32 r;
-
 	  r = 3 - ((byte >> 6) & 0x3);
 	  r *= 3;
 	  r = (gint32)(byte & 0x3f) << r; /* 6.9 fixed point */
-
 	  return (r * 44100.0) / (mix_freq() * 2048.0 * 1024.0);
 	}
       return byte / 256.0;
     }
-
     void
     parse_envelope_floats (vector<float>& values, const gchar *key, EnvelopeConversion convert)
     {
       values.clear();
-
       const char *parse_me = bse_xinfos_get_value (wave_chunk->dcache->dhandle->setup.xinfos, key);
       if (parse_me)
 	{
 	  string val_string;
-
 	  for (char c; (c = *parse_me); parse_me++)
 	    {
 	      if ((c >= '0' && c <= '9') || c == '.')
@@ -105,25 +89,21 @@ class GusPatchEnvelope : public GusPatchEnvelopeBase {
 	  values.push_back (convert_envelope_value (convert, atoi (val_string.c_str())));
 	}
     }
-
     void
     update_envelope (gfloat frequency)
     {
       envelope_valid = false;
       envelope_phase = 0;
       in_attack_or_sustain_phase = true;
-
       wave_chunk = bse_wave_index_lookup_best (wave_index, frequency, 1); // FIXME: velocity=1 hardcoded
       if (wave_chunk)
 	{
 	  parse_envelope_floats (envelope_rates, "gus-patch-envelope-rates", CONVERT_RATE);
 	  parse_envelope_floats (envelope_offsets, "gus-patch-envelope-offsets", CONVERT_OFFSET);
-
 	  if (envelope_rates.size() == 6 && envelope_offsets.size() == 6)
 	    {
 	      envelope_valid = true;
 	      current_envelope_rate = envelope_rates[0];
-
 	      /*
 	      printf ("envelope:\n");
 	      printf ("  wave-format=%s\n", bse_xinfos_get_value (wave_chunk->dcache->dhandle->setup.xinfos, "gus-patch-wave-format"));
@@ -133,17 +113,14 @@ class GusPatchEnvelope : public GusPatchEnvelopeBase {
 	    }
 	}
     }
-
     void
     increment_envelope_phase()
     {
       envelope_phase++;
       current_envelope_rate = envelope_rates[envelope_phase];
-
       if (envelope_offsets[envelope_phase] < envelope_value)
 	current_envelope_rate *= -1;
     }
-
     void
     process (unsigned int n_values)
     {
@@ -153,7 +130,6 @@ class GusPatchEnvelope : public GusPatchEnvelopeBase {
 	  update_envelope (frequency[0]);
 	  retrigger = false;
 	}
-
       /* optimize me: we need 4 cases */
       if (ostream (OCHANNEL_AUDIO_OUT1).connected || ostream (OCHANNEL_AUDIO_OUT2).connected)
         {
@@ -166,7 +142,6 @@ class GusPatchEnvelope : public GusPatchEnvelopeBase {
 	      gfloat *out1 = ostream (OCHANNEL_AUDIO_OUT1).values, *bound = out1 + n_values;
 	      gfloat *out2 = ostream (OCHANNEL_AUDIO_OUT2).values;
 	      gfloat *done = ostream (OCHANNEL_DONE_OUT).values;
-
 	      while (out1 < bound)
 		{
 		  /* handle retrigger signal (works even within blocks) */
@@ -174,24 +149,19 @@ class GusPatchEnvelope : public GusPatchEnvelopeBase {
 		  if (UNLIKELY (BSE_SIGNAL_RAISING_EDGE (last_retrigger_level, retrigger_level)))
 		    {
 		      guint position = out1 - (bound - n_values);
-
 		      update_envelope (frequency[position]);
 		      last_retrigger_level = retrigger_level;
 		    }
-
 		  bool gate_active = (*gate++ > 0.5);
 		  gdouble output;
-
 		  if (envelope_valid)
 		    {
 		      if (gate_active)
 			{
 			  gdouble new_value = envelope_value + current_envelope_rate;
-
 			  if ((new_value > envelope_offsets[envelope_phase]) ^ (current_envelope_rate < 0))
 			    {
 			      envelope_value = envelope_offsets[envelope_phase];
-
 			      if (envelope_phase < 2)
 				increment_envelope_phase();
 			    }
@@ -216,16 +186,13 @@ class GusPatchEnvelope : public GusPatchEnvelopeBase {
 			      printf ("to exponential scale which is with approx: %f\n", bse_approx3_exp2 (envelope_value*6) / 64.0);
 			      */
 			      in_attack_or_sustain_phase = false;
-
 			      if (envelope_phase < 5)
 				increment_envelope_phase();
 			    }
-
 			  gdouble new_value = envelope_value + current_envelope_rate;
 			  if ((new_value > envelope_offsets[envelope_phase]) ^ (current_envelope_rate < 0))
 			    {
 			      envelope_value = envelope_offsets[envelope_phase];
-
 			      if (envelope_phase < 5)
 				increment_envelope_phase();
 			    }
@@ -242,9 +209,7 @@ class GusPatchEnvelope : public GusPatchEnvelopeBase {
 		      output = 1.0;
 		      *done++ = *audio_gate++ < 0.5;
 		    }
-
 		  output *= *in++;
-
 		  // FIXME: panning
 		  *out1++ = output;
 		  *out2++ = output;
@@ -258,14 +223,11 @@ class GusPatchEnvelope : public GusPatchEnvelopeBase {
         }
     }
   };
-
 public:
   BseWaveIndex *wave_index;
-
   GusPatchEnvelope() : wave_index (NULL)
   {
   }
-
   bool
   property_changed (GusPatchEnvelopePropertyID prop_id)
   {
@@ -277,13 +239,10 @@ public:
       }
     return false;
   }
-
   /* implement creation and config methods for synthesis Module */
   BSE_EFFECT_INTEGRATE_MODULE (GusPatchEnvelope, Module, Properties);
 };
-
 BSE_CXX_DEFINE_EXPORTS();
 BSE_CXX_REGISTER_EFFECT (GusPatchEnvelope);
-
 } // Standard
 } // Bse

@@ -1,9 +1,7 @@
 // CC0 Public Domain: http://creativecommons.org/publicdomain/zero/1.0/
 // TOYPROF - Poor man's profiling toy
 #include "toyprof.h"
-
 #ifdef	TOYPROF_GNUC_NO_INSTRUMENT	/* only have this if toyprof is enabled */
-
 /* --- configuration --- */
 /* TOYPROF_PENTIUM	- define this to 1 if you're going to run the compiled
  *			  program on an Intel Pentium(R) uni-processor machine.
@@ -27,8 +25,6 @@
 #define TOYPROF_AUTOSTART	1
 #define TOYPROF_DISABLE		1
 #define TOYPROF_EXIT		-1
-
-
 /* --- implementation --- */
 #define	_GNU_SOURCE
 #include <string.h>
@@ -43,8 +39,6 @@
 #include <fcntl.h>
 #include <link.h>
 #include <elf.h>
-
-
 /* --- common/useful macros --- */
 #ifndef	MAX
 #define MAX(a,b)	((a) > (b) ? (a) : (b))
@@ -69,15 +63,10 @@
 #define	TOYPROF_CHECK_ALLOC(mem)	({ if (!mem) TOYPROF_ABORT ("{m|re}alloc() failed"); })
 #define TOYPROF_SYMBOL_ALIAS(alias_name, symbol)	\
     extern __typeof (symbol) alias_name __attribute__ ((alias (#symbol)))
-
-
 /* --- time stamping --- */
 #if defined (TOYPROF_PENTIUM) && TOYPROF_PENTIUM == 1
-
 #define ToyprofStamp 		unsigned long long int
-
 #define	toyprof_clock_name()	("Pentium(R) RDTSC - CPU clock cycle counter")
-
 /* capturing time stamps via rdtsc can produce inaccurate results due
  * to parallel instruction execution. so we issue cpuid as serializaion
  * barrier first.
@@ -94,9 +83,7 @@
                                    (stamp) <<= 32;					\
                                    (stamp) += low;					\
 })
-
 #define toyprof_stamp_ticks()			(toyprof_stampfreq)
-
 /* special case (fstamp) > (lstamp), this should never happen
  * because we always stamp fstamp first, and invoke rdtsc after
  * a serialization barrier (cpuid). in case this still happens
@@ -110,9 +97,7 @@
     TOYPROF_ABORT ("pentium CPU clock warped backwards, running on SMP?");	\
   diff = (lstamp) - (fstamp); diff;						\
 })
-
 static unsigned long long int toyprof_stampfreq = 0;
-
 static void TOYPROF_GNUC_NO_INSTRUMENT
 toyprof_stampinit (void)
 {	/* grep "cpu MHz         : 551.256" from /proc/cpuinfo */
@@ -137,29 +122,19 @@ toyprof_stampinit (void)
   }
   TOYPROF_ASSERT (toyprof_stampfreq > 0);
 }
-
 #else /* !TOYPROF_PENTIUM */
-
 #define	ToyprofStamp		struct timeval
-
 #define	toyprof_clock_name()	("Glibc gettimeofday(2)")
-
 #define toyprof_stampinit()	/* nothing */
-
 #define	toyprof_stamp(st)	gettimeofday (&(st), 0)
-
 #define	toyprof_stamp_ticks()	(1000000)
-
 #define	toyprof_elapsed(fstamp, lstamp)	({							\
   unsigned long long int first = (fstamp).tv_sec * toyprof_stamp_ticks () + (fstamp).tv_usec;	\
   unsigned long long int last  = (lstamp).tv_sec * toyprof_stamp_ticks () + (lstamp).tv_usec;	\
   last -= first;										\
   last;												\
 })
-
 #endif  /* !TOYPROF_PENTIUM */
-
-
 /* --- profiling structures --- */
 typedef struct {
   void                  *cur_func, *call_site, *caller;
@@ -174,15 +149,11 @@ typedef struct {
   unsigned int   stack_length;
   void         **stack;
 } ToyprofRoot;
-
-
 /* --- prototypes --- */
 static int	toyprof_dladdr	(const void	*address,
 				 Dl_info	*info) TOYPROF_GNUC_NO_INSTRUMENT;
 static char*	toyprof_dlname	(void		*addr,
 				 int		*resolved_p) TOYPROF_GNUC_NO_INSTRUMENT;
-
-
 /* --- variables --- */
 static ToyprofRoot	toyprof_root = { 0, NULL, 0, NULL, };
 #ifdef	TOYPROF_AUTOSTART
@@ -190,14 +161,11 @@ static volatile ToyprofBehaviour toyprof_behaviour = TOYPROF_PROFILE_TIMING;
 #else
 static volatile ToyprofBehaviour toyprof_behaviour = TOYPROF_OFF;
 #endif
-
-
 /* --- functions --- */
 static inline unsigned long TOYPROF_GNUC_NO_INSTRUMENT
 toyprof_upper_power2 (unsigned long number)
 {
   unsigned long n_bits = 0;
-  
   /* this implements: number ? 1 << g_bit_storage (number - 1) : 0 */
   if (!number--)
     return 0;
@@ -209,13 +177,11 @@ toyprof_upper_power2 (unsigned long number)
   while (number);
   return 1 << n_bits;
 }
-
 static inline void TOYPROF_GNUC_NO_INSTRUMENT
 toyprof_push (ToyprofRoot *proot,
 	      void        *data)
 {
   unsigned int i, new_size;
-  
   i = proot->stack_length++;
   new_size = toyprof_upper_power2 (proot->stack_length);
   if (new_size != toyprof_upper_power2 (i))
@@ -228,14 +194,12 @@ toyprof_push (ToyprofRoot *proot,
 #define	toyprof_pop(proot)	({ (proot)->stack[--(proot)->stack_length]; })
 #define	toyprof_peek(proot)	((proot)->stack[(proot)->stack_length - 1])
 #define	toyprof_peekpeek(proot)	((proot)->stack[(proot)->stack_length - 2])
-
 static inline ToyprofEntry* TOYPROF_GNUC_NO_INSTRUMENT
 toyprof_insert (ToyprofRoot *proot,
 		unsigned int pos)
 {
   unsigned int index, new_size, old_size = proot->n_nodes;
   ToyprofEntry *node;
-  
   index = proot->n_nodes++;
   new_size = toyprof_upper_power2 (proot->n_nodes);
   if (new_size != toyprof_upper_power2 (old_size))
@@ -245,10 +209,8 @@ toyprof_insert (ToyprofRoot *proot,
     }
   node = proot->nodes + pos;
   memmove (node + 1, node, (index - pos) * sizeof (node[0]));
-  
   return node;
 }
-
 static inline ToyprofEntry* TOYPROF_GNUC_NO_INSTRUMENT
 toyprof_lookup (ToyprofRoot *proot,
 		void        *cur_func,
@@ -259,13 +221,11 @@ toyprof_lookup (ToyprofRoot *proot,
     {
       ToyprofEntry *check, *nodes = proot->nodes;
       unsigned int n_nodes = proot->n_nodes;
-      
       nodes -= 1;
       do
 	{
 	  register unsigned int i;
 	  register int cmp;
-	  
 	  i = (n_nodes + 1) >> 1;
 	  check = nodes + i;
 	  cmp = (cur_func < check->cur_func ? -1 :
@@ -288,7 +248,6 @@ toyprof_lookup (ToyprofRoot *proot,
     }
   return NULL;
 }
-
 void TOYPROF_GNUC_NO_INSTRUMENT
 toyprof_dump_stats (int fd)
 {
@@ -296,9 +255,7 @@ toyprof_dump_stats (int fd)
   double n_ticks;
   unsigned int i;
   ToyprofBehaviour saved_behaviour = toyprof_behaviour;
-
   toyprof_behaviour = 0;	/* stop profiling */
-  
   n_ticks = toyprof_stamp_ticks ();
   dprintf (fd, "\n");
   dprintf (fd, "TOYPROFMETA: device = %s\n", toyprof_clock_name ());
@@ -315,7 +272,6 @@ toyprof_dump_stats (int fd)
       ToyprofEntry *e = toyprof_root.nodes + i;
       char *name, *caller, *string;
       int nresolved, cresolved;
-      
       name = toyprof_dlname (e->cur_func, &nresolved);
       caller = toyprof_dlname (e->call_site, &cresolved);
       asprintf (&string, " %.16f  %.16f  %.16f  %llu",
@@ -330,16 +286,13 @@ toyprof_dump_stats (int fd)
       free (name);
       free (caller);
     }
-
   toyprof_behaviour = saved_behaviour;
 }
-
 static void TOYPROF_GNUC_NO_INSTRUMENT
 toyprof_atexit (void)
 {
   toyprof_dump_stats (2);
 }
-
 static void TOYPROF_GNUC_NO_INSTRUMENT TOYPROF_GNUC_UNUSED
 toyprof_func_enter (void *cur_func,
 		    void *call_site)
@@ -347,11 +300,9 @@ toyprof_func_enter (void *cur_func,
   ToyprofStamp stamp;
   void *caller;
   ToyprofEntry *e, *c;
-  
   toyprof_stamp (stamp);	/* stop timing */
   if (!toyprof_behaviour)
     return;
-  
   if (!toyprof_root.n_nodes)	/* initialization */
     {
       toyprof_stampinit ();
@@ -359,16 +310,13 @@ toyprof_func_enter (void *cur_func,
       toyprof_push (&toyprof_root, NULL); /* make peekpeek for caller's parent work */
       atexit (toyprof_atexit);
     }
-
   /* last function entry we recognized */
   caller = toyprof_peek (&toyprof_root);
-
   /* get profiling entry for this (function,caller) combination */
   e = toyprof_lookup (&toyprof_root, cur_func, caller, FALSE);
   if (!e || e->cur_func != cur_func || e->caller != caller)	/* none or inexact match */
     {
       unsigned int insertion_pos;
-
       /* no profiling entry found, need to insert a new one */
       if (e)
 	{
@@ -388,23 +336,17 @@ toyprof_func_enter (void *cur_func,
       if ((toyprof_behaviour & TOYPROF_TRACE_FUNCTIONS) == TOYPROF_TRACE_FUNCTIONS)
 	e->tmp_name = toyprof_dlname (e->cur_func, NULL);
     }
-
   /* update profiling stats for this function */
   e->n_calls += 1;
-
   /* update profiling stats for our caller (don't account child function time) */
   c = toyprof_lookup (&toyprof_root, caller, toyprof_peekpeek (&toyprof_root), TRUE);
   if (c)	/* might not have a caller, e.g. in main() */
     c->uticks += toyprof_elapsed (c->stamp, stamp);
-
   if ((toyprof_behaviour & TOYPROF_TRACE_FUNCTIONS) == TOYPROF_TRACE_FUNCTIONS)
     dprintf (2, "ENTER: %s\n", e->tmp_name);
-
   toyprof_push (&toyprof_root, cur_func);	/* preserve caller for next entry */
-
   toyprof_stamp (e->stamp);	/* start timing */
 }
-
 static void TOYPROF_GNUC_NO_INSTRUMENT TOYPROF_GNUC_UNUSED
 toyprof_func_exit (void *cur_func,
 		   void *call_site)
@@ -412,40 +354,31 @@ toyprof_func_exit (void *cur_func,
   ToyprofStamp stamp;
   void *caller;
   ToyprofEntry *e, *c;
-  
   toyprof_stamp (stamp);	/* stop timing */
   if (!toyprof_behaviour)
     return;
-
   toyprof_pop (&toyprof_root);	/* throw away preserved caller for entries */
-
   /* last function entry we recognized */
   caller = toyprof_peek (&toyprof_root);
-
   /* get profiling entry for this (function,caller) combination */
   e = toyprof_lookup (&toyprof_root, cur_func, caller, TRUE);
   /* if we got to this pair in _exit, we must have handled it in _entry */
   TOYPROF_ASSERT (e && e->cur_func == cur_func && e->caller == caller);
-
   /* update profiling stats for this function */
   e->uticks += toyprof_elapsed (e->stamp, stamp);
-  
   if ((toyprof_behaviour & TOYPROF_TRACE_FUNCTIONS) == TOYPROF_TRACE_FUNCTIONS)
     dprintf (2, "EXIT: %s (n_calls:%lld)\n", e->tmp_name, e->n_calls);
-
   /* update profiling stats for our caller (child exited, restart accounting) */
   c = toyprof_lookup (&toyprof_root, caller, toyprof_peekpeek (&toyprof_root), TRUE);
   if (c)
     toyprof_stamp (c->stamp);	/* start timing */
 }
-
 void TOYPROF_GNUC_NO_INSTRUMENT
 toyprof_set_profiling (ToyprofBehaviour behav)
 {
   toyprof_behaviour = behav & (TOYPROF_PROFILE_TIMING |
 			       TOYPROF_TRACE_FUNCTIONS);
 }
-
 static char* TOYPROF_GNUC_NO_INSTRUMENT
 toyprof_dlname (void *addr,
 		int  *resolved_p)
@@ -454,7 +387,6 @@ toyprof_dlname (void *addr,
   int result = toyprof_dladdr (addr, &dlinfo);
   char *name;
   int resolved = TRUE;
-  
   if (result)
     {
       if (dlinfo.dli_saddr == addr && dlinfo.dli_sname)
@@ -479,10 +411,8 @@ toyprof_dlname (void *addr,
     }
   if (resolved_p)
     *resolved_p = resolved;
-  
   return name;
 }
-
 static int TOYPROF_GNUC_NO_INSTRUMENT
 toyprof_dladdr (const void *sym_address,
 		Dl_info    *dlinfo)
@@ -493,7 +423,6 @@ toyprof_dladdr (const void *sym_address,
   ElfW(Sym) *sym, *symtab, *msym = NULL;
   ElfW(Addr) strtabsize;
   const char *mstrtab = NULL, *strtab;
-  
   /* let dladdr() fill in fbase and name */
   if (!dladdr (sym_address, dlinfo))
     return 0;
@@ -507,7 +436,6 @@ toyprof_dladdr (const void *sym_address,
       lmain = link;
   if (!link)	/* dladdr() returned main module */
     dlinfo->dli_fbase = (void*) lmain->l_addr;	/* always 0 */
-  
   /* now lets do our own run to find the correct module */
   best = NULL;
   for (link = _r_debug.r_map; link; link = link->l_next)
@@ -520,10 +448,8 @@ toyprof_dladdr (const void *sym_address,
     }
   if (!best)
     best = lmain;
-  
  next_module:
   link = best;
-  
   strtabsize = 0;
   strtab = NULL;
   symtab = NULL;
@@ -534,17 +460,14 @@ toyprof_dladdr (const void *sym_address,
       strtab = (void*) dyn->d_un.d_ptr;
     else if (dyn->d_tag == DT_STRSZ)
       strtabsize = dyn->d_un.d_val;
-  
   if (!strtab || !symtab || !strtabsize || (void*) strtab < (void*) symtab)
     return 1;
-  
   for (sym = symtab; (void*) sym < (void*) strtab; sym++)
     {
       if (0)
 	dprintf (2, "SYM: %5x %8x %5x %3x %3x %5x \"%s\"\n",
 		 sym->st_name, sym->st_value, sym->st_size, sym->st_info & 15,
 		 sym->st_other, sym->st_shndx, strtab + sym->st_name);
-      
       if (/* confine matches to symbol boundaries */
 	  addr >= sym->st_value + link->l_addr &&
 	  addr <= sym->st_value + link->l_addr + sym->st_size &&
@@ -559,18 +482,15 @@ toyprof_dladdr (const void *sym_address,
 	  msym = sym;
 	  mstrtab = strtab;
 	  mlink = link;
-	  
 	  // dprintf (2, "CANDIDATE(%p) \"%s\"\n", msym, msym ? mstrtab + msym->st_name : NULL);
 	}
     }
   // dprintf (2, "MATCH(%p) \"%s\"\n", msym, msym ? mstrtab + msym->st_name : NULL);
-  
   if (best != lmain)
     {
       best = lmain;
       goto next_module;
     }
-  
   if (msym)
     {
       if (dlinfo->dli_fbase != (void*) mlink->l_addr)
@@ -583,10 +503,8 @@ toyprof_dladdr (const void *sym_address,
     }
   return 1;
 }
-
 #if	!defined (TOYPROF_DISABLE) || TOYPROF_DISABLE == 0
 TOYPROF_SYMBOL_ALIAS (__cyg_profile_func_enter, toyprof_func_enter);
 TOYPROF_SYMBOL_ALIAS (__cyg_profile_func_exit, toyprof_func_exit);
 #endif
-
 #endif	/* TOYPROF_GNUC_NO_INSTRUMENT, enable toyprof check */

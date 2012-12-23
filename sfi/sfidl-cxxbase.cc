@@ -11,9 +11,7 @@
 #include "sfidl-options.hh"
 #include "sfidl-parser.hh"
 #include "sfiparams.hh" /* scatId (SFI_SCAT_*) */
-
 using namespace Sfidl;
-
 static String
 CxxNameToSymbol (const String &str)     // FIXME: need mammut renaming function
 {
@@ -24,7 +22,6 @@ CxxNameToSymbol (const String &str)     // FIXME: need mammut renaming function
       s[i] = '_';
   return s;
 }
-
 static vector<String>
 split_string (const String &ctype)      // FIXME: remove once we have general renamer
 {
@@ -42,7 +39,6 @@ split_string (const String &ctype)      // FIXME: remove once we have general re
   vs.push_back (type);
   return vs;
 }
-
 static String
 join_string (const vector<String> &vs,  // FIXME: remove once we have general renamer
              const String         &delim)
@@ -56,7 +52,6 @@ join_string (const vector<String> &vs,  // FIXME: remove once we have general re
     }
   return r;
 }
-
 static String
 UC_NAME (const String &cstr)    // FIXME: need mammut renaming function
 {
@@ -77,7 +72,6 @@ cUC_NAME (const String &cstr) // FIXME: need mammut renaming function
 {
   return g_intern_string (cstr.c_str());
 }
-
 static String // FIXME: need mammut renaming function
 UC_TYPE_NAME (const String &tname)
 {
@@ -88,13 +82,11 @@ UC_TYPE_NAME (const String &tname)
   String result = UC_NAME (nspace) + "_TYPE_" + UC_NAME (lname);
   return result;
 }
-
 static const char*
 cUC_TYPE_NAME (const String &cstr) // FIXME: need mammut renaming function
 {
   return g_intern_string (UC_TYPE_NAME (cstr).c_str());
 }
-
 /* produce type-system-independant pspec constructors */
 String
 CodeGeneratorCxxBase::untyped_pspec_constructor (const Param &param)
@@ -141,7 +133,6 @@ CodeGeneratorCxxBase::untyped_pspec_constructor (const Param &param)
     default:    return makeParamSpec (param);
     }
 }
-
 /* produce type-system-dependant pspec constructors */
 String
 CodeGeneratorCxxBase::typed_pspec_constructor (const Param &param)
@@ -201,5 +192,4 @@ CodeGeneratorCxxBase::typed_pspec_constructor (const Param &param)
     default:    return makeParamSpec (param);
     }
 }
-
 /* vim:set ts=8 sts=2 sw=2: */

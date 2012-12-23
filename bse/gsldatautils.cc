@@ -7,11 +7,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
-
-
 #define	BSIZE		GSL_DATA_HANDLE_PEEK_BUFFER	/* FIXME: global buffer size setting */
-
-
 /* --- functions --- */
 gfloat
 gsl_data_peek_value_f (GslDataHandle     *dhandle,
@@ -22,16 +18,13 @@ gsl_data_peek_value_f (GslDataHandle     *dhandle,
     {
       GslLong dhandle_length = dhandle->setup.n_values;
       GslLong inc, k, bsize = MIN (GSL_DATA_HANDLE_PEEK_BUFFER, dhandle_length);
-
       g_return_val_if_fail (pos >= 0 && pos < dhandle_length, 0);
-
       peekbuf->start = peekbuf->dir > 0 ? pos : peekbuf->dir < 0 ? pos - bsize + 1: pos - bsize / 2;
       peekbuf->end = MIN (peekbuf->start + bsize, dhandle_length);
       peekbuf->start = MAX (peekbuf->start, 0);
       for (k = peekbuf->start; k < peekbuf->end; k += inc)
 	{
 	  guint n_retries = 5;  /* FIXME: need global retry strategy */
-
 	  do
 	    inc = gsl_data_handle_read (dhandle, k, peekbuf->end - k, peekbuf->data + k - peekbuf->start);
 	  while (inc < 1 && n_retries-- && GSL_DATA_HANDLE_OPENED (dhandle));
@@ -45,7 +38,6 @@ gsl_data_peek_value_f (GslDataHandle     *dhandle,
     }
   return peekbuf->data[pos - peekbuf->start];
 }
-
 gint /* errno */
 gsl_data_handle_dump (GslDataHandle    *dhandle,
 		      gint	        fd,
@@ -53,32 +45,26 @@ gsl_data_handle_dump (GslDataHandle    *dhandle,
 		      guint             byte_order)
 {
   GslLong l, offs = 0;
-
   g_return_val_if_fail (dhandle != NULL, EINVAL);
   g_return_val_if_fail (GSL_DATA_HANDLE_OPENED (dhandle), EINVAL);
   g_return_val_if_fail (fd >= 0, EINVAL);
   g_return_val_if_fail (format > GSL_WAVE_FORMAT_NONE && format < GSL_WAVE_FORMAT_LAST, EINVAL);
   g_return_val_if_fail (!GSL_WAVE_FORMAT_IS_LAW (format), EINVAL);
   g_return_val_if_fail (byte_order == G_LITTLE_ENDIAN || byte_order == G_BIG_ENDIAN, EINVAL);
-
   l = dhandle->setup.n_values;
   while (l)
     {
       GslLong retry, j, n = MIN (l, GSL_DATA_HANDLE_PEEK_BUFFER);
       gfloat src[GSL_DATA_HANDLE_PEEK_BUFFER];
-
       retry = GSL_N_IO_RETRIES;
       do
 	n = gsl_data_handle_read (dhandle, offs, n, src);
       while (n < 1 && retry--);
       if (retry < 0)
 	return EIO;
-
       l -= n;
       offs += n;
-
       n = gsl_conv_from_float_clip (format, byte_order, src, src, n);
-
       do
 	j = write (fd, src, n);
       while (j < 0 && errno == EINTR);
@@ -87,7 +73,6 @@ gsl_data_handle_dump (GslDataHandle    *dhandle,
     }
   return 0;
 }
-
 static void
 write_bytes (gint        fd,
 	     guint       n_bytes,
@@ -95,15 +80,12 @@ write_bytes (gint        fd,
 {
   gint errold = errno;
   guint j;
-
   do
     j = write (fd, bytes, n_bytes);
   while (j < 0 && errno == EINTR);
-
   if (!errno)
     errno = errold;
 }
-
 static void
 write_uint32_le (gint    fd,
 		 guint32 val)
@@ -111,7 +93,6 @@ write_uint32_le (gint    fd,
   val = GUINT32_TO_LE (val);
   write_bytes (fd, 4, &val);
 }
-
 static void
 write_uint16_le (gint    fd,
 		 guint16 val)
@@ -119,7 +100,6 @@ write_uint16_le (gint    fd,
   val = GUINT16_TO_LE (val);
   write_bytes (fd, 2, &val);
 }
-
 gint /* errno */
 bse_wave_file_dump_header (gint           fd,
 			   guint	  n_data_bytes,
@@ -128,19 +108,16 @@ bse_wave_file_dump_header (gint           fd,
 			   guint          sample_freq)
 {
   guint byte_per_sample, byte_per_second, file_length;
-
   g_return_val_if_fail (fd >= 0, EINVAL);
   g_return_val_if_fail (n_data_bytes < 4294967296LLU - 44, EINVAL);
   g_return_val_if_fail (n_bits == 16 || n_bits == 8, EINVAL);
   g_return_val_if_fail (n_channels >= 1, EINVAL);
-
   file_length = 0; /* 4 + 4; */				/* 'RIFF' header is left out*/
   file_length += 4 + 4 + 4 + 2 + 2 + 4 + 4 + 2 + 2;	/* 'fmt ' header */
   file_length += 4 + 4;					/* 'data' header */
   file_length += n_data_bytes;
   byte_per_sample = (n_bits == 16 ? 2 : 1) * n_channels;
   byte_per_second = byte_per_sample * sample_freq;
-
   errno = 0;
   write_bytes (fd, 4, "RIFF");		/* main_chunk */
   write_uint32_le (fd, file_length);
@@ -155,27 +132,21 @@ bse_wave_file_dump_header (gint           fd,
   write_uint16_le (fd, n_bits);
   write_bytes (fd, 4, "data");		/* data chunk */
   write_uint32_le (fd, n_data_bytes);
-
   return errno;
 }
-
 gint /* errno */
 bse_wave_file_patch_length (gint           fd,
 			    guint	   n_data_bytes)
 {
   guint file_length;
   glong l;
-
   g_return_val_if_fail (fd >= 0, EINVAL);
   g_return_val_if_fail (n_data_bytes < 4294967296LLU - 44, EINVAL);
-
   file_length = 0; /* 4 + 4; */				/* 'RIFF' header is left out*/
   file_length += 4 + 4 + 4 + 2 + 2 + 4 + 4 + 2 + 2;	/* 'fmt ' header */
   file_length += 4 + 4;					/* 'data' header */
   file_length += n_data_bytes;
-
   errno = 0;
-
   do
     l = lseek (fd, 4, SEEK_SET);
   while (l < 0 && errno == EINTR);
@@ -184,7 +155,6 @@ bse_wave_file_patch_length (gint           fd,
   write_uint32_le (fd, file_length);
   if (errno)
     return errno;
-
   do
     l = lseek (fd, 40, SEEK_SET);
   while (l < 0 && errno == EINTR);
@@ -193,10 +163,8 @@ bse_wave_file_patch_length (gint           fd,
   write_uint32_le (fd, n_data_bytes);
   if (errno)
     return errno;
-
   return errno;
 }
-
 gint /* errno */
 bse_wave_file_dump_data (gint           fd,
 			 guint		n_bits,
@@ -219,7 +187,6 @@ bse_wave_file_dump_data (gint           fd,
   else
     return 0;
 }
-
 static gint /* errno */
 bse_wave_file_from_bbuffer (const char          *file_name,
                             guint                n_bits,
@@ -247,7 +214,6 @@ bse_wave_file_from_bbuffer (const char          *file_name,
     return errno ? errno : EIO;
   return 0;
 }
-
 gint /* errno */
 bse_wave_file_from_fbuffer (const char          *file_name,
                             guint                n_bits,
@@ -264,7 +230,6 @@ bse_wave_file_from_fbuffer (const char          *file_name,
   g_free (buffer);
   return retval;
 }
-
 gint /* errno */
 bse_wave_file_from_dbuffer (const char          *file_name,
                             guint                n_bits,
@@ -281,7 +246,6 @@ bse_wave_file_from_dbuffer (const char          *file_name,
   g_free (buffer);
   return retval;
 }
-
 gint /* errno */
 gsl_data_handle_dump_wav (GslDataHandle *dhandle,
 			  gint           fd,
@@ -290,25 +254,20 @@ gsl_data_handle_dump_wav (GslDataHandle *dhandle,
 			  guint          sample_freq)
 {
   guint data_length;
-
   g_return_val_if_fail (dhandle != NULL, EINVAL);
   g_return_val_if_fail (GSL_DATA_HANDLE_OPENED (dhandle), EINVAL);
   g_return_val_if_fail (fd >= 0, EINVAL);
   g_return_val_if_fail (n_bits == 16 || n_bits == 8, EINVAL);
   g_return_val_if_fail (n_channels >= 1, EINVAL);
-
   data_length = dhandle->setup.n_values * (n_bits == 16 ? 2 : 1);
-
   errno = 0;
   errno = bse_wave_file_dump_header (fd, data_length, n_bits, n_channels, sample_freq);
   if (errno)
     return errno;
-
   return gsl_data_handle_dump (dhandle, fd,
 			       n_bits > 8 ? GSL_WAVE_FORMAT_SIGNED_16 : GSL_WAVE_FORMAT_UNSIGNED_8,
 			       G_LITTLE_ENDIAN);
 }
-
 typedef struct {
   GslDataHandle    *dhandle;
   gboolean          opened;
@@ -316,7 +275,6 @@ typedef struct {
   guint             byte_order;
   guint             length;
 } WStoreContext;
-
 static void
 wstore_context_destroy (gpointer data)
 {
@@ -326,7 +284,6 @@ wstore_context_destroy (gpointer data)
   gsl_data_handle_unref (wc->dhandle);
   g_free (wc);
 }
-
 static gint /* -errno || length */
 wstore_context_reader (gpointer data,
 		       void    *buffer,
@@ -334,7 +291,6 @@ wstore_context_reader (gpointer data,
 {
   WStoreContext *wc = (WStoreContext*) data;
   GslLong l;
-
   if (!wc->opened)
     {
       BseErrorType error = gsl_data_handle_open (wc->dhandle);
@@ -342,11 +298,9 @@ wstore_context_reader (gpointer data,
 	return -ENOENT; /* approximation of OPEN_FAILED */
       wc->opened = TRUE;
     }
-
   blength /= 4;	/* we use buffer for floats */
   if (wc->length >= gsl_data_handle_length (wc->dhandle))
     return 0;	/* done */
-
   l = gsl_data_handle_read (wc->dhandle, wc->length, blength, (float*) buffer);
   if (l < 1)
     {
@@ -356,10 +310,8 @@ wstore_context_reader (gpointer data,
 	return -EIO;	/* bail out */
     }
   wc->length += l;
-
   return gsl_conv_from_float_clip (wc->format, wc->byte_order, (const float*) buffer, buffer, l);
 }
-
 void
 gsl_data_handle_dump_wstore (GslDataHandle    *dhandle,
 			     SfiWStore        *wstore,
@@ -367,10 +319,8 @@ gsl_data_handle_dump_wstore (GslDataHandle    *dhandle,
 			     guint             byte_order)
 {
   WStoreContext *wc;
-
   g_return_if_fail (dhandle != NULL);
   g_return_if_fail (wstore);
-
   wc = g_new0 (WStoreContext, 1);
   wc->dhandle = gsl_data_handle_ref (dhandle);
   wc->opened = FALSE;
@@ -378,7 +328,6 @@ gsl_data_handle_dump_wstore (GslDataHandle    *dhandle,
   wc->byte_order = byte_order;
   sfi_wstore_put_binary (wstore, wstore_context_reader, wc, wstore_context_destroy);
 }
-
 gboolean
 gsl_data_detect_signal (GslDataHandle *handle,
 			GslLong       *sigstart_p,
@@ -388,14 +337,11 @@ gsl_data_detect_signal (GslDataHandle *handle,
   gfloat signal_threshold = 16. * 16. * 16.;	/* noise level threshold */
   GslLong k, xcheck = -1, minsamp = -1, maxsamp = -2;
   GslDataPeekBuffer peek_buffer = { +1 /* incremental direction */, 0, };
-  
   g_return_val_if_fail (handle != NULL, FALSE);
   g_return_val_if_fail (GSL_DATA_HANDLE_OPENED (handle), FALSE);
   g_return_val_if_fail (sigstart_p || sigend_p, FALSE);
-
   /* keep open */
   gsl_data_handle_open (handle);
-
   /* find fadein/fadeout point */
   k = 0;
   level_4 = gsl_data_handle_peek_value (handle, k, &peek_buffer);
@@ -404,7 +350,6 @@ gsl_data_detect_signal (GslDataHandle *handle,
   for (; k < handle->setup.n_values; k++)
     {
       gfloat mean, needx, current;
-
       current = gsl_data_handle_peek_value (handle, k, &peek_buffer) * 32768.;
       if (xcheck < 0 && ABS (current) >= 16)
 	xcheck = k;
@@ -428,18 +373,14 @@ gsl_data_detect_signal (GslDataHandle *handle,
   if (xcheck - minsamp > 0)
     g_printerr("###################");
   g_printerr ("active area %lld .. %lld, signal>16 at: %lld\t diff: %lld\n",minsamp,maxsamp,xcheck, xcheck-minsamp);
-
   /* release open reference */
   gsl_data_handle_close (handle);
-
   if (sigstart_p)
     *sigstart_p = minsamp;
   if (sigend_p)
     *sigend_p = MAX (-1, maxsamp);
-
   return maxsamp >= minsamp;
 }
-
 double
 gsl_data_find_min_max (GslDataHandle          *handle,
                        double                 *dmin,
@@ -447,10 +388,8 @@ gsl_data_find_min_max (GslDataHandle          *handle,
 {
   g_return_val_if_fail (handle != NULL, 0);
   g_return_val_if_fail (GSL_DATA_HANDLE_OPENED (handle), 0);
-
   /* keep open */
   gsl_data_handle_open (handle);
-
   GslDataPeekBuffer peek_buffer = { +1 /* incremental direction */, 0, };
   double vmin = +DBL_MAX, vmax = -DBL_MAX;
   uint i;
@@ -466,7 +405,6 @@ gsl_data_find_min_max (GslDataHandle          *handle,
     *dmax = vmax;
   return MAX (fabs (vmin), fabs (vmax));
 }
-
 GslLong
 gsl_data_find_sample (GslDataHandle *dhandle,
 		      gfloat         min_value,
@@ -476,23 +414,18 @@ gsl_data_find_sample (GslDataHandle *dhandle,
 {
   GslDataPeekBuffer peekbuf = { 0, 0, 0, };
   GslLong i;
-
   g_return_val_if_fail (dhandle != NULL, -1);
   g_return_val_if_fail (direction == -1 || direction == +1, -1);
-
   if (gsl_data_handle_open (dhandle) != BSE_ERROR_NONE ||
       start_offset >= dhandle->setup.n_values)
     return -1;
-
   if (start_offset < 0)
     start_offset = dhandle->setup.n_values - 1;
-
   peekbuf.dir = direction;
   if (min_value <= max_value)
     for (i = start_offset; i < dhandle->setup.n_values && i >= 0; i += direction)
       {
 	gfloat val = gsl_data_handle_peek_value (dhandle, i, &peekbuf);
-
 	/* g_print ("(%lu): %f <= %f <= %f\n", i, min_value, val, max_value); */
 	if (val >= min_value && val <= max_value)
 	  break;
@@ -501,17 +434,13 @@ gsl_data_find_sample (GslDataHandle *dhandle,
     for (i = start_offset; i < dhandle->setup.n_values && i >= 0; i += direction)
       {
 	gfloat val = gsl_data_handle_peek_value (dhandle, i, &peekbuf);
-
 	/* g_print ("(%lu): %f > %f || %f < %f\n", i, val, max_value, val, min_value); */
 	if (val > min_value || val < max_value)
 	  break;
       }
-
   gsl_data_handle_close (dhandle);
-
   return i >= dhandle->setup.n_values ? -1: i;
 }
-
 static inline gdouble
 tailmatch_score_loop (GslDataHandle *shandle,
 		      GslDataHandle *dhandle,
@@ -521,28 +450,22 @@ tailmatch_score_loop (GslDataHandle *shandle,
   GslLong l, length = MIN (shandle->setup.n_values, dhandle->setup.n_values);
   gfloat v1[GSL_DATA_HANDLE_PEEK_BUFFER], v2[GSL_DATA_HANDLE_PEEK_BUFFER];
   gdouble score = 0;
-
   g_assert (start < length);
-
   for (l = start; l < length; )
     {
       GslLong b = MIN (GSL_DATA_HANDLE_PEEK_BUFFER, length - l);
-
       b = gsl_data_handle_read (shandle, l, b, v1);
       b = gsl_data_handle_read (dhandle, l, b, v2);
       g_assert (b >= 1);        // FIXME
       l += b;
-
       while (b--)
 	score += (v1[b] - v2[b]) * (v1[b] - v2[b]);
-
       /* for performance, prematurely abort */
       if (score > worst_score)
 	break;
     }
   return score;
 }
-
 gboolean
 gsl_data_find_tailmatch (GslDataHandle     *dhandle,
 			 const GslLoopSpec *lspec,
@@ -553,7 +476,6 @@ gsl_data_find_tailmatch (GslDataHandle     *dhandle,
   GslDataCache *dcache;
   GslLong length, offset, l, lsize, pcount, start = 0, end = 0;
   gdouble pbound, pval, best_score = GSL_MAXLONG;
-  
   g_return_val_if_fail (dhandle != NULL, FALSE);
   g_return_val_if_fail (lspec != NULL, FALSE);
   g_return_val_if_fail (loop_start_p != NULL, FALSE);
@@ -563,7 +485,6 @@ gsl_data_find_tailmatch (GslDataHandle     *dhandle,
   g_return_val_if_fail (lspec->min_loop >= 1, FALSE);
   g_return_val_if_fail (lspec->max_loop >= lspec->min_loop, FALSE);
   g_return_val_if_fail (lspec->tail_cut >= lspec->max_loop, FALSE);
-
   if (gsl_data_handle_open (dhandle) != BSE_ERROR_NONE)
     return FALSE;
   length = dhandle->setup.n_values;
@@ -585,7 +506,6 @@ gsl_data_find_tailmatch (GslDataHandle     *dhandle,
       gsl_data_handle_close (dhandle);
       return FALSE;
     }
-  
   dcache = gsl_data_cache_new (dhandle, 1);
   shandle = gsl_data_handle_new_dcached (dcache);
   gsl_data_cache_unref (dcache);
@@ -593,24 +513,20 @@ gsl_data_find_tailmatch (GslDataHandle     *dhandle,
   gsl_data_handle_close (dhandle);
   gsl_data_handle_unref (shandle);
   /* at this point, we just hold one open() count on shandle */
-  
   pbound = (lspec->max_loop - lspec->min_loop + 1.);
   pbound *= length / 100.;
   pval = 0;
   pcount = 100;
-
   for (lsize = lspec->min_loop; lsize <= lspec->max_loop; lsize++)
     {
       for (l = length - lsize; l >= 0; l--)
 	{
 	  GslDataHandle *lhandle = gsl_data_handle_new_looped (shandle, offset + l, offset + l + lsize - 1);
 	  gdouble score;
-	  
 	  gsl_data_handle_open (lhandle);
 	  score = tailmatch_score_loop (shandle, lhandle, offset + l, best_score);
 	  gsl_data_handle_close (lhandle);
 	  gsl_data_handle_unref (lhandle);
-	  
 	  if (score < best_score)
 	    {
 	      start = offset + l;
@@ -630,15 +546,11 @@ gsl_data_find_tailmatch (GslDataHandle     *dhandle,
 	}
     }
   gsl_data_handle_close (shandle);
-
   g_print ("\nhalted: %f: [0x%llx..0x%llx] (%llu)\n", best_score, start, end, end - start + 1);
-  
   *loop_start_p = start;
   *loop_end_p = end;
-
   return TRUE;
 }
-
 /**
  * @param handle   an open GslDataHandle
  * @param n_values amount of values to look for
@@ -658,22 +570,17 @@ gsl_data_find_block (GslDataHandle *handle,
 {
   GslDataPeekBuffer pbuf = { +1 /* random access: 0 */ };
   guint i;
-
   g_return_val_if_fail (handle != NULL, -1);
   g_return_val_if_fail (GSL_DATA_HANDLE_OPENED (handle), -1);
-
   if (n_values < 1)
     return -1;
   else
     g_return_val_if_fail (values != NULL, -1);
-
   for (i = 0; i < handle->setup.n_values; i++)
     {
       guint j;
-
       if (n_values > handle->setup.n_values - i)
 	return -1;
-
       for (j = 0; j < n_values; j++)
 	{
 	  if (fabs (values[j] - gsl_data_handle_peek_value (handle, i + j, &pbuf)) >= epsilon)
@@ -684,7 +591,6 @@ gsl_data_find_block (GslDataHandle *handle,
     }
   return -1;
 }
-
 /**
  * @param dhandle  valid and opened GslDataHandle
  * @param min_pos  position within @a dhandle
@@ -705,13 +611,11 @@ gsl_data_make_fade_ramp (GslDataHandle *handle,
   GslDataPeekBuffer peekbuf = { +1, 0, };
   gfloat ramp, rdelta, *values;
   GslLong l, i;
-
   g_return_val_if_fail (handle != NULL, NULL);
   g_return_val_if_fail (GSL_DATA_HANDLE_OPENED (handle), NULL);
   g_return_val_if_fail (min_pos >= 0 && max_pos >= 0, NULL);
   g_return_val_if_fail (min_pos < gsl_data_handle_n_values (handle), NULL);
   g_return_val_if_fail (max_pos < gsl_data_handle_n_values (handle), NULL);
-
   if (min_pos > max_pos)
     {
       l = min_pos;
@@ -727,7 +631,6 @@ gsl_data_make_fade_ramp (GslDataHandle *handle,
       rdelta = +1. / (gfloat) (l + 2);
       ramp = rdelta;
     }
-
   l += 1;
   values = g_new (gfloat, l);
   for (i = 0; i < l; i++)
@@ -735,13 +638,10 @@ gsl_data_make_fade_ramp (GslDataHandle *handle,
       values[i] = gsl_data_handle_peek_value (handle, min_pos + i, &peekbuf) * ramp;
       ramp += rdelta;
     }
-
   if (length_p)
     *length_p = l;
-
   return values;
 }
-
 /**
  * @param dhandle  valid and opened GslDataHandle
  * @param cconfig  clip configuration
@@ -763,7 +663,6 @@ gsl_data_clip_sample (GslDataHandle     *dhandle,
   g_return_val_if_fail (GSL_DATA_HANDLE_OPENED (dhandle), BSE_ERROR_INTERNAL);
   g_return_val_if_fail (cconfig != NULL, BSE_ERROR_INTERNAL);
   gboolean info = cconfig->produce_info != FALSE;
-
   SfiNum last_value = gsl_data_handle_n_values (dhandle);
   if (last_value < 1)
     {
@@ -773,7 +672,6 @@ gsl_data_clip_sample (GslDataHandle     *dhandle,
       return result->error;
     }
   last_value -= 1;
-  
   /* signal range detection */
   SfiNum head = gsl_data_find_sample (dhandle, +cconfig->threshold, -cconfig->threshold, 0, +1);
   if (head < 0)
@@ -786,7 +684,6 @@ gsl_data_clip_sample (GslDataHandle     *dhandle,
     }
   SfiNum tail = gsl_data_find_sample (dhandle, +cconfig->threshold, -cconfig->threshold,  -1, -1);
   g_assert (tail >= 0);
-  
   /* verify silence detection */
   if (last_value - tail < cconfig->tail_samples)
     {
@@ -806,7 +703,6 @@ gsl_data_clip_sample (GslDataHandle     *dhandle,
   result->head_detected = TRUE;
   if (info)
     sfi_info ("Silence detected: head_silence=%lld tail_silence=%llu", head, last_value - tail);
-  
   /* tail clipping protection */
   if (last_value - tail < cconfig->tail_silence)
     {
@@ -814,7 +710,6 @@ gsl_data_clip_sample (GslDataHandle     *dhandle,
         sfi_info ("Tail silence too short for clipping: silence_length=%lld minimum_length=%u", last_value - tail, cconfig->tail_silence);
       tail = last_value;
     }
-  
   /* padding */
   if (cconfig->pad_samples)
     {
@@ -824,7 +719,6 @@ gsl_data_clip_sample (GslDataHandle     *dhandle,
       if (info && otail != tail)
         sfi_info ("Padding Tail: old_tail=%lld tail=%llu padding=%lld", otail, tail, tail - otail);
     }
-  
   /* unclipped handles */
   if (head == 0 && last_value == tail)
     {
@@ -832,7 +726,6 @@ gsl_data_clip_sample (GslDataHandle     *dhandle,
       result->error = BSE_ERROR_NONE;
       return result->error;
     }
-
   /* clipping */
   GslDataHandle *clip_handle = gsl_data_handle_new_crop (dhandle, head, last_value - tail);
   gsl_data_handle_open (clip_handle);
@@ -842,14 +735,12 @@ gsl_data_clip_sample (GslDataHandle     *dhandle,
               gsl_data_handle_n_values (clip_handle) - gsl_data_handle_n_values (dhandle));
   result->clipped_head = head > 0;
   result->clipped_tail = last_value != tail;
-  
   /* fading */
   GslDataHandle *fade_handle;
   if (cconfig->fade_samples && head)
     {
       GslLong l;
       gfloat *ramp = gsl_data_make_fade_ramp (dhandle, MAX (head - 1 - (gint) cconfig->fade_samples, 0), head - 1, &l);
-
       /* strip initial ramp silence */
       gint j, bdepth = gsl_data_handle_bit_depth (dhandle);
       gdouble threshold = 1.0 / (((SfiNum) 1) << (bdepth ? bdepth : 16));
@@ -861,7 +752,6 @@ gsl_data_clip_sample (GslDataHandle     *dhandle,
           l -= j;
           g_memmove (ramp, ramp + j, l * sizeof (ramp[0]));
         }
-      
       fade_handle = gsl_data_handle_new_insert (clip_handle, gsl_data_handle_bit_depth (clip_handle), 0, l, ramp, g_free);
       gsl_data_handle_open (fade_handle);
       gsl_data_handle_unref (fade_handle);
@@ -873,7 +763,6 @@ gsl_data_clip_sample (GslDataHandle     *dhandle,
       fade_handle = clip_handle;
       gsl_data_handle_open (fade_handle);
     }
-  
   /* prepare result and cleanup */
   result->dhandle = gsl_data_handle_ref (fade_handle);
   gsl_data_handle_close (fade_handle);
@@ -881,5 +770,4 @@ gsl_data_clip_sample (GslDataHandle     *dhandle,
   result->error = BSE_ERROR_NONE;
   return result->error;
 }
-
 /* vim:set ts=8 sts=2 sw=2: */

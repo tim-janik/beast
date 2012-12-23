@@ -1,5 +1,4 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
-
 namespace Bst {
 /*
 choice Test1 {
@@ -11,17 +10,14 @@ record Test2 {
 };
 */
 using namespace Sfi;
-
 Const STORAGE = ":r:w:S:";
 Const STANDARD = STORAGE "G:";
-
 choice Direction {
   UP    = (_("Up"), _("Move upwards")),
   LEFT  = (_("Left"), _("Move to the left")),
   RIGHT = (_("Right"), _("Move to the right")),
   DOWN  = (_("Down"), _("Move downwards"))
 };
-
 choice FFTSize {
   FFT_SIZE_2     = (_("2 Value FFT Window"), _("A 2 value FFT window corresponds to a spectrum with 2 frequency peaks")),
   FFT_SIZE_4     = (_("4 Value FFT Window"), _("A 4 value FFT window corresponds to a spectrum with 3 frequency peaks")),
@@ -40,7 +36,6 @@ choice FFTSize {
   FFT_SIZE_32768 = (_("32768 Value FFT Window"), _("A 32768 value FFT window corresponds to a spectrum with 16385 frequency peaks")),
   FFT_SIZE_65536 = (_("65536 Value FFT Window"), _("A 65536 value FFT window corresponds to a spectrum with 32769 frequency peaks")),
 };
-
 choice NoteLength {
   NOTE_LENGTH_NONE      = (Neutral,    _("None"), _("Unspecified length")),
   NOTE_LENGTH_1         = (_("1/1"),   _("Whole note")),
@@ -68,7 +63,6 @@ choice NoteLength {
   NOTE_LENGTH_64T       = (_("1/64T"), _("Triplet sixty-fourth note")),
   NOTE_LENGTH_128T      = (_("1/128T"),_("Triplet hundred twenty-eighth note")),
 };
-
 choice RowShading {
   ROW_SHADING_NONE    = (Neutral,       _("None")),
   ROW_SHADING_2       = (_("2"),        _("Every second row")),
@@ -87,7 +81,6 @@ choice RowShading {
   ROW_SHADING_3_12    = (_("3 & 12"),   _("Every third and twelfth row")),
   ROW_SHADING_6_12    = (_("6 & 12"),   _("Every sixth and twelfth row")),
 };
-
 /* BEAST Global Config */
 record GConfig {
   String rc_version			= (NULL, _("Release counter"), NULL, STORAGE);
@@ -114,7 +107,6 @@ record GConfig {
                                            FALSE, STANDARD);
   };
 };
-
 /* skin config */
 record SkinConfig {
   String         skin_name   = (_("Skin Name"), _("Name for the current skin configuration (used for skin selections)."), NULL, STANDARD);
@@ -149,7 +141,6 @@ record SkinConfig {
     Int    controls_negative = (_("Negative Value Color"),  NULL, 0x0000ff, 0, 0xffffff, 0x010101, STANDARD ":rgb:hex");
   };
 };
-
 /* message filter */
 record MsgAbsorbString {
   String version;
@@ -159,7 +150,6 @@ record MsgAbsorbString {
 sequence MsgAbsorbStringSeq {
   MsgAbsorbString strings;
 };
-
 /* pattern editor key bindings */
 record KeyBindingItem {
   String key_name   = (NULL, NULL, NULL, STANDARD);
@@ -169,5 +159,4 @@ record KeyBindingItem {
 sequence KeyBindingItemSeq {
   KeyBindingItem items;
 };
-
 };

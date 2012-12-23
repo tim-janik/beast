@@ -1,15 +1,12 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "gxklogadjustment.hh"
 #include <math.h>
-
 /* --- functions --- */
 G_DEFINE_TYPE (GxkAdapterAdjustment, gxk_adapter_adjustment, GTK_TYPE_ADJUSTMENT);
-
 static void
 gxk_adapter_adjustment_init (GxkAdapterAdjustment *self)
 {
 }
-
 static void
 adapter_adjustment_destroy (GtkObject *object)
 {
@@ -19,7 +16,6 @@ adapter_adjustment_destroy (GtkObject *object)
   /* chain parent class handler */
   GTK_OBJECT_CLASS (gxk_adapter_adjustment_parent_class)->destroy (object);
 }
-
 static void
 adapter_adjustment_finalize (GObject *object)
 {
@@ -29,7 +25,6 @@ adapter_adjustment_finalize (GObject *object)
   /* chain parent class handler */
   G_OBJECT_CLASS (gxk_adapter_adjustment_parent_class)->finalize (object);
 }
-
 GtkAdjustment*
 gxk_adapter_adjustment_from_adj (GtkAdjustment           *client,
                                  GxkAdapterAdjustmentFunc conv_func,
@@ -43,7 +38,6 @@ gxk_adapter_adjustment_from_adj (GtkAdjustment           *client,
   gxk_adapter_adjustment_setup (self, conv_func, data, destroy);
   return GTK_ADJUSTMENT (self);
 }
-
 static inline gdouble
 adapter_adjustment_convert (GxkAdapterAdjustment           *self,
                             GxkAdapterAdjustmentConvertType convert_type,
@@ -54,13 +48,11 @@ adapter_adjustment_convert (GxkAdapterAdjustment           *self,
   else
     return value;
 }
-
 static void
 adapter_adjustment_changed (GtkAdjustment *adj)
 {
   GxkAdapterAdjustment *self = GXK_ADAPTER_ADJUSTMENT (adj);
   GtkAdjustment *client = self->client;
-  
   if (client && !self->block_client)
     {
       self->block_client++;
@@ -68,13 +60,11 @@ adapter_adjustment_changed (GtkAdjustment *adj)
       self->block_client--;
     }
 }
-
 static void
 adapter_adjustment_value_changed (GtkAdjustment *adj)
 {
   GxkAdapterAdjustment *self = GXK_ADAPTER_ADJUSTMENT (adj);
   GtkAdjustment *client = self->client;
-  
   adj->value = CLAMP (adj->value, adj->lower, adj->upper);
   if (client && !self->block_client)
     {
@@ -85,7 +75,6 @@ adapter_adjustment_value_changed (GtkAdjustment *adj)
       self->block_client--;
     }
 }
-
 static void
 adapter_adjustment_adjust_ranges (GxkAdapterAdjustment *self)
 {
@@ -124,13 +113,11 @@ adapter_adjustment_adjust_ranges (GxkAdapterAdjustment *self)
         }
     }
 }
-
 static void
 adapter_adjustment_client_value_changed (GxkAdapterAdjustment *self)
 {
   GtkAdjustment *adj = GTK_ADJUSTMENT (self);
   GtkAdjustment *client = self->client;
-  
   if (client)
     {
       adj->value = adapter_adjustment_convert (self, GXK_ADAPTER_ADJUSTMENT_CONVERT_FROM_CLIENT, client->value);
@@ -147,7 +134,6 @@ adapter_adjustment_client_value_changed (GxkAdapterAdjustment *self)
         }
     }
 }
-
 void
 gxk_adapter_adjustment_set_client (GxkAdapterAdjustment *self,
                                    GtkAdjustment        *client)
@@ -157,7 +143,6 @@ gxk_adapter_adjustment_set_client (GxkAdapterAdjustment *self,
     g_return_if_fail (GTK_IS_ADJUSTMENT (client));
   if (client)
     g_object_ref (client);
-  
   if (self->client)
     {
       g_signal_handlers_disconnect_by_func (self->client, (void*) adapter_adjustment_adjust_ranges, self);
@@ -174,11 +159,9 @@ gxk_adapter_adjustment_set_client (GxkAdapterAdjustment *self,
 			NULL);
       adapter_adjustment_adjust_ranges (self);
     }
-  
   if (client)
     g_object_unref (client);
 }
-
 void
 gxk_adapter_adjustment_setup (GxkAdapterAdjustment    *self,
                               GxkAdapterAdjustmentFunc conv_func,
@@ -198,22 +181,17 @@ gxk_adapter_adjustment_setup (GxkAdapterAdjustment    *self,
   if (G_OBJECT (self)->ref_count)       /* catch finalization */
     gtk_adjustment_value_changed (adj);
 }
-
 static void
 gxk_adapter_adjustment_class_init (GxkAdapterAdjustmentClass *klass)
 {
   GObjectClass *gobject_class = G_OBJECT_CLASS (klass);
   GtkObjectClass *object_class = GTK_OBJECT_CLASS (klass);
   GtkAdjustmentClass *adjustment_class = GTK_ADJUSTMENT_CLASS (klass);
-  
   gobject_class->finalize = adapter_adjustment_finalize;
-  
   object_class->destroy = adapter_adjustment_destroy;
-  
   adjustment_class->changed = adapter_adjustment_changed;
   adjustment_class->value_changed = adapter_adjustment_value_changed;
 }
-
 /* --- prototypes --- */
 static void log_adjustment_class_init           (GxkLogAdjustmentClass *klass);
 static void log_adjustment_init                 (GxkLogAdjustment      *self);
@@ -222,10 +200,8 @@ static void log_adjustment_changed              (GtkAdjustment         *adj);
 static void log_adjustment_value_changed        (GtkAdjustment         *adj);
 static void log_adjustment_adjust_ranges        (GxkLogAdjustment      *self);
 static void log_adjustment_client_value_changed (GxkLogAdjustment      *self);
-
 /* --- static variables --- */
 static gpointer		      ladj_parent_class = NULL;
-
 /* --- functions --- */
 GType
 gxk_log_adjustment_get_type (void)
@@ -248,35 +224,28 @@ gxk_log_adjustment_get_type (void)
     }
   return type;
 }
-
 static void
 log_adjustment_class_init (GxkLogAdjustmentClass *klass)
 {
   GtkObjectClass *object_class = GTK_OBJECT_CLASS (klass);
   GtkAdjustmentClass *adjustment_class = GTK_ADJUSTMENT_CLASS (klass);
-  
   ladj_parent_class = g_type_class_peek_parent (klass);
-  
   object_class->destroy = log_adjustment_destroy;
-  
   adjustment_class->changed = log_adjustment_changed;
   adjustment_class->value_changed = log_adjustment_value_changed;
 }
-
 static gdouble
 call_exp (GxkLogAdjustment *self,
 	  gdouble           x)
 {
   return pow (self->base, x);
 }
-
 static gdouble
 call_log (GxkLogAdjustment *self,
 	  gdouble           x)
 {
   return log (CLAMP (x, self->llimit, self->ulimit)) / self->base_ln;
 }
-
 static void
 log_adjustment_init (GxkLogAdjustment *self)
 {
@@ -284,31 +253,23 @@ log_adjustment_init (GxkLogAdjustment *self)
   self->client = NULL;
   gxk_log_adjustment_setup (self, 10000, 10, 4);
 }
-
 static void
 log_adjustment_destroy (GtkObject *object)
 {
   GxkLogAdjustment *self = GXK_LOG_ADJUSTMENT (object);
-  
   gxk_log_adjustment_set_client (self, NULL);
-  
   /* chain parent class handler */
   GTK_OBJECT_CLASS (ladj_parent_class)->destroy (object);
 }
-
 GtkAdjustment*
 gxk_log_adjustment_from_adj (GtkAdjustment *client)
 {
   GxkLogAdjustment *self;
-  
   g_return_val_if_fail (GTK_IS_ADJUSTMENT (client), NULL);
-  
   self = (GxkLogAdjustment*) g_object_new (GXK_TYPE_LOG_ADJUSTMENT, NULL);
   gxk_log_adjustment_set_client (self, client);
-  
   return GTK_ADJUSTMENT (self);
 }
-
 void
 gxk_log_adjustment_set_client (GxkLogAdjustment *self,
 			       GtkAdjustment    *client)
@@ -316,7 +277,6 @@ gxk_log_adjustment_set_client (GxkLogAdjustment *self,
   g_return_if_fail (GXK_IS_LOG_ADJUSTMENT (self));
   if (client)
     g_return_if_fail (GTK_IS_ADJUSTMENT (client));
-  
   g_object_ref (self);
   if (self->client)
     {
@@ -336,7 +296,6 @@ gxk_log_adjustment_set_client (GxkLogAdjustment *self,
     }
   g_object_unref (self);
 }
-
 void
 gxk_log_adjustment_setup (GxkLogAdjustment *self,
 			  gdouble           center,
@@ -344,11 +303,9 @@ gxk_log_adjustment_setup (GxkLogAdjustment *self,
 			  gdouble           n_steps)
 {
   GtkAdjustment *adj;
-  
   g_return_if_fail (GXK_IS_LOG_ADJUSTMENT (self));
   g_return_if_fail (n_steps > 0);
   g_return_if_fail (base > 0);
-  
   adj = GTK_ADJUSTMENT (self);
   self->center = center;
   self->n_steps = n_steps;
@@ -356,18 +313,15 @@ gxk_log_adjustment_setup (GxkLogAdjustment *self,
   self->base_ln = log (self->base);
   self->ulimit = pow (self->base, self->n_steps);
   self->llimit = 1.0 / self->ulimit;
-  
   adj->value = self->center;
   log_adjustment_adjust_ranges (self);
   gtk_adjustment_value_changed (adj);
 }
-
 static void
 log_adjustment_changed (GtkAdjustment *adj)
 {
   GxkLogAdjustment *self = GXK_LOG_ADJUSTMENT (adj);
   GtkAdjustment *client = self->client;
-  
   if (client && !self->block_client)
     {
       self->block_client++;
@@ -375,13 +329,11 @@ log_adjustment_changed (GtkAdjustment *adj)
       self->block_client--;
     }
 }
-
 static void
 log_adjustment_value_changed (GtkAdjustment *adj)
 {
   GxkLogAdjustment *self = GXK_LOG_ADJUSTMENT (adj);
   GtkAdjustment *client = self->client;
-  
   adj->value = CLAMP (adj->value, adj->lower, adj->upper);
   if (client && !self->block_client)
     {
@@ -391,18 +343,15 @@ log_adjustment_value_changed (GtkAdjustment *adj)
       self->block_client--;
     }
 }
-
 static void
 log_adjustment_adjust_ranges (GxkLogAdjustment *self)
 {
   GtkAdjustment *adj = GTK_ADJUSTMENT (self);
-  
   adj->upper = self->n_steps;
   adj->lower = -self->n_steps;
   adj->page_increment = (adj->upper - adj->lower) / (2.0 * self->n_steps);
   adj->step_increment = adj->page_increment / 100.0;
   adj->page_size = 0;
-  
   if (0)
     {
       GtkAdjustment *client = self->client;
@@ -412,7 +361,6 @@ log_adjustment_adjust_ranges (GxkLogAdjustment *self)
                   self->center,
                   client ? client->lower : -99.777, client ? client->upper : -99.777);
     }
-  
   if (!self->block_client)
     {
       self->block_client++;
@@ -420,22 +368,18 @@ log_adjustment_adjust_ranges (GxkLogAdjustment *self)
       self->block_client--;
     }
 }
-
 static void
 log_adjustment_client_value_changed (GxkLogAdjustment *self)
 {
   GtkAdjustment *adj = GTK_ADJUSTMENT (self);
   GtkAdjustment *client = self->client;
-  
   if (client)
     adj->value = call_log (self, client->value / self->center);
   adj->value = CLAMP (adj->value, adj->lower, adj->upper);
-  
   if (0)
     g_printerr ("ladj: client-value-changed: [%f %f] %g   CLIENT: [%f %f] %g\n",
                 adj->lower, adj->upper, adj->value,
                 client->lower, client->upper, client->value);
-  
   if (!self->block_client)
     {
       self->block_client++;

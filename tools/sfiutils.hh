@@ -1,20 +1,16 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #ifndef	__SFI_UTILS_H__
 #define	__SFI_UTILS_H__
-
 #include <math.h>
 #include <bse/gsldefs.hh>
 #include <sfi/sfi.hh>
-
 G_BEGIN_DECLS
-
 typedef struct
 {
   guint   line_number;
   guint   n_fields;
   gchar **fields;
 } SfiUtilFileEntry;
-
 typedef struct
 {
   guint             n_entries;
@@ -23,7 +19,6 @@ typedef struct
   gchar           **formats;
   gpointer          free1, free2;
 } SfiUtilFileList;
-
 /* value extraction from formats:
  * # <something>	-> value is <something>
  * <num>		-> value is <num> word of line
@@ -43,11 +38,8 @@ gchar*		 sfi_util_file_entry_get_string	(SfiUtilFileEntry	*entry,
 gdouble		 sfi_util_file_entry_get_num	(SfiUtilFileEntry	*line,
 						 const gchar		*format,
 						 gdouble	         dflt);
-
-
 gchar*		 sfi_util_file_name_subst_ext	(const gchar		*file_name,
 						 const gchar		*new_extension);
-
 typedef struct {
   gchar	        short_opt;
   gchar        *long_opt;
@@ -64,7 +56,6 @@ SfiRing*    sfi_arguments_parse_list	(gint            *argc_p,
 					 const SfiArgument *options);
 void	    sfi_arguments_collapse	(gint		 *argc_p,
 					 gchar	       ***argv_p);
-
 /* format for value extraction:
  * # <something>	-> string is <something>
  * n <nth>		-> <nth> number found in string
@@ -81,7 +72,5 @@ gboolean    sfi_arguments_read_num	(const gchar   **option,
 guint	    sfi_arguments_read_all_nums	(const gchar    *option,
 					 gdouble	*first,
 					 ...) G_GNUC_NULL_TERMINATED;
-
 G_END_DECLS
-
 #endif	/* __SFI_UTILS_H__ */

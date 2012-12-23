@@ -1,7 +1,6 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bstcluehunter.hh"
 #include <string.h>
-
 /* --- SfiProxy parameter editors --- */
 typedef struct {
   BseItemSeq *iseq;
@@ -17,7 +16,6 @@ param_proxy_free_population (gpointer p)
   bse_item_seq_free (pop->iseq);
   g_free (pop);
 }
-
 static void
 param_proxy_populate (GtkWidget *chunter,
 		      GxkParam  *param)
@@ -28,10 +26,8 @@ param_proxy_populate (GtkWidget *chunter,
   SfiProxy proxy;
   gchar *p;
   guint i, l;
-
   /* clear current list */
   bst_clue_hunter_remove_matches (ch, "*");
-
   /* list candidates */
   proxy = bst_param_get_proxy (param);
   if (proxy)
@@ -54,7 +50,6 @@ param_proxy_populate (GtkWidget *chunter,
   g_object_set_data_full (G_OBJECT (ch), "pop", pop, param_proxy_free_population);
   if (!pop)
     return;
-
   /* figure common prefix, aligned to path segment boundaries (':') */
   pop->prefix = g_strdup (pop->paths[0]);
   /* intersect */
@@ -82,12 +77,10 @@ param_proxy_populate (GtkWidget *chunter,
   g_free (pop->prefix);
   pop->prefix = p;
   l = pop->prefix ? strlen (pop->prefix) : 0;
-
   /* add unprefixed names to clue hunter */
   for (i = 0; pop->paths[i]; i++)
     bst_clue_hunter_add_string (ch, pop->paths[i] + l);
 }
-
 static void
 param_proxy_changed (GtkWidget *entry,
                      GxkParam  *param)
@@ -153,7 +146,6 @@ param_proxy_changed (GtkWidget *entry,
       g_free (string);
     }
 }
-
 SfiProxy
 bst_item_seq_list_match (GSList      *item_seq_slist,
                          const gchar *text)
@@ -184,7 +176,6 @@ bst_item_seq_list_match (GSList      *item_seq_slist,
   /* fallback to tail match, then case insensitive matches */
   return tmatch ? tmatch : cmatch ? cmatch : tcmatch;
 }
-
 static GtkWidget*
 param_proxy_create (GxkParam    *param,
                     const gchar *tooltip,
@@ -221,7 +212,6 @@ param_proxy_create (GxkParam    *param,
   gxk_widget_add_option (box, "hexpand", "+");
   return box;
 }
-
 static void
 param_proxy_update (GxkParam  *param,
 		    GtkWidget *box)
@@ -230,7 +220,6 @@ param_proxy_update (GxkParam  *param,
   const gchar *cstring = item ? bse_item_get_uname_path (item) : NULL;
   GtkWidget *entry = ((GtkBoxChild*) GTK_BOX (box)->children->data)->widget;
   GtkWidget *chunter = (GtkWidget*) bst_clue_hunter_from_entry (entry);
-
   if (cstring && chunter)
     {
       ParamProxyPopulation *pop = (ParamProxyPopulation*) g_object_get_data (G_OBJECT (chunter), "pop");
@@ -274,7 +263,6 @@ param_proxy_update (GxkParam  *param,
     gtk_entry_set_text (GTK_ENTRY (entry), "");
   gtk_editable_set_editable (GTK_EDITABLE (entry), param->editable);
 }
-
 static GxkParamEditor param_proxy = {
   { "proxy",            N_("Object Drop Down Box"), },
   { G_TYPE_POINTER,     "SfiProxy", },
