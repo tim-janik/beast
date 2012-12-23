@@ -16,10 +16,10 @@ freeverb_la_LIBADD  = $(top_builddir)/bse/libbse.la $(BSE_LIBS) -lm
 plugin_LTLIBRARIES = freeverb.la
 
 EXTRA_DIST += $(strip \
-	bsefreeverb.h \
-	bsefreeverbcpp.h \
-	denormals.h \
-	tuning.h \
+	bsefreeverb.hh \
+	bsefreeverbcpp.hh \
+	denormals.hh \
+	tuning.hh \
 	allpass.hpp \
 	comb.hpp \
 	revmodel.hpp \

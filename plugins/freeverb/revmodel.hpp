@@ -9,7 +9,7 @@
 
 #include "comb.hpp"
 #include "allpass.hpp"
-#include "tuning.h"
+#include "tuning.hh"
 
 class revmodel
 {

@@ -21,7 +21,7 @@
 
 #include <bse/bseplugin.hh>
 #include <bse/bsesource.hh>
-#include "bsefreeverbcpp.h"
+#include "bsefreeverbcpp.hh"
 
 G_BEGIN_DECLS
 
