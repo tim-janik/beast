@@ -1,7 +1,4 @@
 # BSE-Plugins - Better Sound Engine dynamic Plugins
-# Copyright (C) 2004-2011 Tim Janik
-#
-## GNU Lesser General Public License version 2 or any later version.
 include $(top_srcdir)/Makefile.decl
 
 INCLUDES += -I$(top_srcdir) -I. $(BSE_CFLAGS)
