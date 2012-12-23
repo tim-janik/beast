@@ -1,31 +1,4 @@
-/* GxkSimpleLabel - Small text-cutting label
- * Copyright (C) 2003 Tim Janik
- * Copyright (C) 1997-2000 the GTK+ Team and others
- * Copyright (C) 1995-1997 Peter Mattis, Spencer Kimball and Josh MacDonald
- * The GxkSimpleLabel code is derived from the GtkLabel implementation
- *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the Free
- * Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
- *
- * Changes relative to GtkLabel:
- * - lots of code got stripped (basically for selecting text and handling events)
- * - simple-label derives from GtkWidget instead of GtkMisc
- * - mnemonic activation works on activatable parents even if group cycling
- * - setting ::pattern properly unsets ::use-underline
- * - if ::auto-cut is TRUE, overfull text is cut-off
- * - the label is visible by default
- */
+// Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "gxksimplelabel.hh"
 #include <string.h>
 #include <gdk/gdkkeysyms.h>
