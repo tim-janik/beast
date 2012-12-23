@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
+# Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 # birnet/examples/mkhost.sh
-# Copyright (C) 2007 Tim Janik
 
 ARG0=$(basename $0)
 
