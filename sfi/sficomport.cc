@@ -14,10 +14,10 @@
  * A copy of the GNU Lesser General Public License should ship along
  * with this library; if not, see http://www.gnu.org/copyleft/.
  */
-#include "sficomport.h"
-#include "sfiprimitives.h"
-#include "sfiserial.h"
-#include "sfistore.h"
+#include "sficomport.hh"
+#include "sfiprimitives.hh"
+#include "sfiserial.hh"
+#include "sfistore.hh"
 #include <errno.h>
 #include <unistd.h>
 #include <string.h>

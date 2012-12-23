@@ -17,7 +17,7 @@
 #ifndef __BST_BSE_UTILS_H__
 #define __BST_BSE_UTILS_H__
 
-#include <sfi/sfi.h> /* needed by bstgenbseapi.h */
+#include <sfi/sfi.hh> /* needed by bstgenbseapi.h */
 
 G_BEGIN_DECLS
 

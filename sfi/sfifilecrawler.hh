@@ -17,8 +17,8 @@
 #ifndef __SFI_FILE_CRAWLER_H__
 #define __SFI_FILE_CRAWLER_H__
 
-#include <sfi/sfitypes.h>
-#include <sfi/sfiring.h>
+#include <sfi/sfitypes.hh>
+#include <sfi/sfiring.hh>
 
 G_BEGIN_DECLS
 

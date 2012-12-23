@@ -17,8 +17,8 @@
 #ifndef __SFI_PARAMS_H__
 #define __SFI_PARAMS_H__
 
-#include <sfi/sfivalues.h>
-#include <sfi/sfiprimitives.h>
+#include <sfi/sfivalues.hh>
+#include <sfi/sfiprimitives.hh>
 
 G_BEGIN_DECLS
 

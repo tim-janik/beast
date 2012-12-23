@@ -18,7 +18,7 @@
 #define __GSL_OSC_TABLE_H__
 
 #include <bse/gsldefs.h>
-#include <sfi/gbsearcharray.h>
+#include <sfi/gbsearcharray.hh>
 
 G_BEGIN_DECLS
 

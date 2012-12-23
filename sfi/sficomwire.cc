@@ -14,8 +14,8 @@
  * A copy of the GNU Lesser General Public License should ship along
  * with this library; if not, see http://www.gnu.org/copyleft/.
  */
-#include "sficomwire.h"
-#include "sfiprimitives.h"
+#include "sficomwire.hh"
+#include "sfiprimitives.hh"
 #include <errno.h>
 #include <unistd.h>
 #include <string.h>

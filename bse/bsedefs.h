@@ -22,9 +22,9 @@
 #undef   G_DISABLE_ASSERT
 #undef   G_DISABLE_CHECKS
 #include <libintl.h>
-#include <sfi/sfi.h>
-#include <sfi/sfistore.h>	// FIXME
-#include <sfi/sficomwire.h>	// FIXME
+#include <sfi/sfi.hh>
+#include <sfi/sfistore.hh>	// FIXME
+#include <sfi/sficomwire.hh>	// FIXME
 #include <bse/bseconfig.h>
 
 G_BEGIN_DECLS

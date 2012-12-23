@@ -17,9 +17,9 @@
 #ifndef __SFI_GLUE_H__
 #define __SFI_GLUE_H__
 
-#include <sfi/sfiprimitives.h>
-#include <sfi/sfiring.h>
-#include <sfi/sfiparams.h>
+#include <sfi/sfiprimitives.hh>
+#include <sfi/sfiring.hh>
+#include <sfi/sfiparams.hh>
 
 G_BEGIN_DECLS
 

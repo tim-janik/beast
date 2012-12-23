@@ -17,7 +17,7 @@
 #ifndef __SFI_VMARSHAL_H__
 #define __SFI_VMARSHAL_H__
 
-#include <sfi/sfitypes.h>
+#include <sfi/sfitypes.hh>
 
 G_BEGIN_DECLS
 

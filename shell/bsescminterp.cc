@@ -17,7 +17,7 @@
 #include <string.h>
 #include <errno.h>
 #include "bsescminterp.hh"
-#include <sfi/sficomwire.h>
+#include <sfi/sficomwire.hh>
 #include <bse/bseglue.h>
 
 /* Data types:

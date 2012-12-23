@@ -17,7 +17,7 @@
 #ifndef __SFI_GLUE_PROXY_H__
 #define __SFI_GLUE_PROXY_H__
 
-#include <sfi/sfiglue.h>
+#include <sfi/sfiglue.hh>
 
 G_BEGIN_DECLS
 

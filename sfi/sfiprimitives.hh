@@ -17,7 +17,7 @@
 #ifndef __SFI_PRIMITIVES_H__
 #define __SFI_PRIMITIVES_H__
 
-#include <sfi/sfivalues.h>
+#include <sfi/sfivalues.hh>
 
 G_BEGIN_DECLS
 

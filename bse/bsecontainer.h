@@ -20,7 +20,7 @@
 #define __BSE_CONTAINER_H__
 
 #include <bse/bsesource.h>
-#include <sfi/gbsearcharray.h>
+#include <sfi/gbsearcharray.hh>
 
 G_BEGIN_DECLS
 

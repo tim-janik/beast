@@ -19,7 +19,7 @@
 #include "gsldatahandle.h"
 #include "gsldatahandle-vorbis.h"
 #include "bsemath.h"
-#include <sfi/sfistore.h>
+#include <sfi/sfistore.hh>
 #include <fcntl.h>
 #include <unistd.h>
 #include <string.h>

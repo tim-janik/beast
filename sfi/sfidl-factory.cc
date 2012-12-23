@@ -15,7 +15,7 @@
  * with this library; if not, see http://www.gnu.org/copyleft/.
  */
 #include "sfidl-factory.hh"
-#include "glib-extra.h"
+#include "glib-extra.hh"
 #include <algorithm>
 
 using namespace Sfidl;

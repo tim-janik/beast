@@ -17,7 +17,7 @@
 #include "bseparasite.h"
 #include "bseundostack.h"
 #include "bsestorage.h"
-#include <sfi/gbsearcharray.h>
+#include <sfi/gbsearcharray.hh>
 #include <string.h>
 
 typedef struct {

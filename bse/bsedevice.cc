@@ -15,7 +15,7 @@
  * with this library; if not, see http://www.gnu.org/copyleft/.
  */
 #include "bsedevice.h"
-#include <sfi/gbsearcharray.h>
+#include <sfi/gbsearcharray.hh>
 
 /* --- functions --- */
 static void

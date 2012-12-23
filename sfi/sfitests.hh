@@ -17,7 +17,7 @@
 #ifndef __SFI_TESTS_H__
 #define __SFI_TESTS_H__
 
-#include <sfi/sfi.h>
+#include <sfi/sfi.hh>
 #include <birnet/birnettests.h>
 
 /* --- test initialization --- */

@@ -601,7 +601,7 @@ bst_key_binding_item_pspec (void)
 #include <fcntl.h>
 #include <errno.h>
 #include "topconfig.h"          /* BST_VERSION */
-#include <sfi/sfistore.h>       /* we rely on internal API here */
+#include <sfi/sfistore.hh>       /* we rely on internal API here */
 const gchar*
 bst_key_binding_rcfile (void)
 {

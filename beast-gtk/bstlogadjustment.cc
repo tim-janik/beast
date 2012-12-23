@@ -14,7 +14,7 @@
  * A copy of the GNU Lesser General Public License should ship along
  * with this library; if not, see http://www.gnu.org/copyleft/.
  */
-#include <sfi/glib-extra.h>
+#include <sfi/glib-extra.hh>
 #include "bstlogadjustment.h"
 
 #include <math.h>

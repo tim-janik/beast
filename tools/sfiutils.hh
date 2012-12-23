@@ -19,7 +19,7 @@
 
 #include <math.h>
 #include <bse/gsldefs.h>
-#include <sfi/sfi.h>
+#include <sfi/sfi.hh>
 
 G_BEGIN_DECLS
 

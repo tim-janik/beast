@@ -16,7 +16,7 @@
  */
 #include <bse/bsedefs.h>
 // #define TEST_VERBOSE
-#include <sfi/sfitests.h>
+#include <sfi/sfitests.hh>
 #include <bse/gsldatahandle.h>
 #include <bse/gsldatautils.h>
 #include <bse/bsemain.h>

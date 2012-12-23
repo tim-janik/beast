@@ -23,7 +23,7 @@
 #include "bsecxxutils.hh"
 #include "bsemidinotifier.h"
 #include <string.h>
-#include <sfi/gbsearcharray.h>
+#include <sfi/gbsearcharray.hh>
 #include <map>
 #include <set>
 

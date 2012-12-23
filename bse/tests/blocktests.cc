@@ -17,7 +17,7 @@
  */
 #include <bse/bseblockutils.hh>
 // #define TEST_VERBOSE
-#include <sfi/sfitests.h>
+#include <sfi/sfitests.hh>
 #include <bse/bsemain.h>
 #include "topconfig.h"
 

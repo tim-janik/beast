@@ -17,8 +17,8 @@
 #ifndef __GSL_DEFS_H__
 #define __GSL_DEFS_H__
 
-#include <sfi/sfi.h>
-#include <sfi/sfistore.h>
+#include <sfi/sfi.hh>
+#include <sfi/sfistore.hh>
 
 
 G_BEGIN_DECLS

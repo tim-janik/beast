@@ -17,26 +17,26 @@
 #ifndef __SFI_H__
 #define __SFI_H__
 
-/* no bin-compat: #include <sfi/sficomwire.h> */
-#include <sfi/sficomport.h>
-#include <sfi/sfifilecrawler.h>
-#include <sfi/sfiglue.h>
-#include <sfi/sfigluecodec.h>
-#include <sfi/sfiglueproxy.h>
-#include <sfi/sfimemory.h>
-#include <sfi/sfinote.h>
-#include <sfi/sfiparams.h>
-#include <sfi/sfiprimitives.h>
-#include <sfi/sfiring.h>
-/* #include <sfi/sfisclock.h> */
-#include <sfi/sfiserial.h>
-/* no bin-compat: #include <sfi/sfistore.h> */
-#include <sfi/sfitime.h>
-#include <sfi/sfitypes.h>
-#include <sfi/sfiustore.h>
-#include <sfi/sfivalues.h>
-#include <sfi/sfivmarshal.h>
-#include <sfi/sfiwrapper.h>
+/* no bin-compat: #include <sfi/sficomwire.hh> */
+#include <sfi/sficomport.hh>
+#include <sfi/sfifilecrawler.hh>
+#include <sfi/sfiglue.hh>
+#include <sfi/sfigluecodec.hh>
+#include <sfi/sfiglueproxy.hh>
+#include <sfi/sfimemory.hh>
+#include <sfi/sfinote.hh>
+#include <sfi/sfiparams.hh>
+#include <sfi/sfiprimitives.hh>
+#include <sfi/sfiring.hh>
+/* #include <sfi/sfisclock.hh> */
+#include <sfi/sfiserial.hh>
+/* no bin-compat: #include <sfi/sfistore.hh> */
+#include <sfi/sfitime.hh>
+#include <sfi/sfitypes.hh>
+#include <sfi/sfiustore.hh>
+#include <sfi/sfivalues.hh>
+#include <sfi/sfivmarshal.hh>
+#include <sfi/sfiwrapper.hh>
 
 #endif /* __SFI_H__ */
 

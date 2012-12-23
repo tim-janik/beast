@@ -15,8 +15,8 @@
  * with this library; if not, see http://www.gnu.org/copyleft/.
  */
 // #define TEST_VERBOSE
-#include <sfi/sfitests.h>
-#include <sfi/sfi.h>
+#include <sfi/sfitests.hh>
+#include <sfi/sfi.hh>
 
 static void
 print_ring_ints (SfiRing *ring)

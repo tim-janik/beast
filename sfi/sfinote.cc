@@ -16,7 +16,7 @@
  */
 #include <stdlib.h>
 #include <string.h>
-#include "sfinote.h"
+#include "sfinote.hh"
 
 #define to_lower(c)             ( \
         (guchar) (                                                      \

@@ -17,8 +17,8 @@
 #ifndef __SFI_TYPES_H__
 #define __SFI_TYPES_H__
 
-#include <sfi/glib-extra.h>
-#include <sfi/sfiwrapper.h>
+#include <sfi/glib-extra.hh>
+#include <sfi/sfiwrapper.hh>
 
 G_BEGIN_DECLS
 

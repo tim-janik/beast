@@ -14,8 +14,8 @@
  * A copy of the GNU Lesser General Public License should ship along
  * with this library; if not, see http://www.gnu.org/copyleft/.
  */
-#include "sfiustore.h"
-#include "sfimemory.h"
+#include "sfiustore.hh"
+#include "sfimemory.hh"
 
 /* --- strcutures --- */
 static inline SfiUStore*

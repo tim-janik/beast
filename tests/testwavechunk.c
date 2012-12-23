@@ -17,7 +17,7 @@
 #include <bse/gslwavechunk.h>
 #include <bse/gsldatahandle.h>
 #include <bse/bsemain.h>
-#include <sfi/sfitests.h>
+#include <sfi/sfitests.hh>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

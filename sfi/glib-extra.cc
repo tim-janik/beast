@@ -15,7 +15,7 @@
  * with this library; if not, see http://www.gnu.org/copyleft/.
  */
 #include <string.h>
-#include "glib-extra.h"
+#include "glib-extra.hh"
 
 
 void

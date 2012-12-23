@@ -32,7 +32,7 @@
 #include <stdlib.h>
 #include <sys/types.h>
 #include <unistd.h>
-#include <sfi/sfitests.h> /* sfti_test_init() */
+#include <sfi/sfitests.hh> /* sfti_test_init() */
 
 using namespace Birnet;
 

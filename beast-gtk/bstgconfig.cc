@@ -128,7 +128,7 @@ bst_gconfig_push_updates (void)
 #include <fcntl.h>
 #include <errno.h>
 #include "topconfig.h"		/* BST_VERSION */
-#include <sfi/sfistore.h>	/* we rely on internal API here */
+#include <sfi/sfistore.hh>	/* we rely on internal API here */
 static void
 accel_map_print (gpointer        data,
 		 const gchar    *accel_path,

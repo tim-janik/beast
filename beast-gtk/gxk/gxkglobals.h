@@ -17,7 +17,7 @@
 #ifndef __GXK_GLOBALS_H__
 #define __GXK_GLOBALS_H__
 
-#include <sfi/glib-extra.h>
+#include <sfi/glib-extra.hh>
 #include <gtk/gtk.h>
 
 G_BEGIN_DECLS

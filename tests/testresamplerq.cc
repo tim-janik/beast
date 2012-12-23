@@ -20,7 +20,7 @@
 #include <bse/bsemain.h>
 #include <bse/bseblockutils.hh>
 #include <bse/gslfft.h>
-#include <sfi/sfitests.h>
+#include <sfi/sfitests.hh>
 #include <birnet/birnet.hh>
 #include <stdlib.h>
 #include <stdio.h>

@@ -15,9 +15,9 @@
  * with this library; if not, see http://www.gnu.org/copyleft/.
  */
 #include "topconfig.h"
-#include "sfitime.h"
-#include "sfiring.h"
-#include "sfiprimitives.h"
+#include "sfitime.hh"
+#include "sfiring.hh"
+#include "sfiprimitives.hh"
 #include <sys/time.h>
 #include <string.h>
 #include <time.h>

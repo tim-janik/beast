@@ -17,8 +17,8 @@
 #ifndef __SFI_STORE_H__
 #define __SFI_STORE_H__
 
-#include <sfi/sfivalues.h>
-#include <sfi/sfiring.h>
+#include <sfi/sfivalues.hh>
+#include <sfi/sfiring.hh>
 
 G_BEGIN_DECLS
 

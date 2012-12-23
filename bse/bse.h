@@ -17,7 +17,7 @@
 #ifndef __BSE_H__
 #define __BSE_H__
 
-#include <sfi/sfi.h>
+#include <sfi/sfi.hh>
 #include <bse/bseconfig.h>
 
 G_BEGIN_DECLS

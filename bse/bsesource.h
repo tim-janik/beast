@@ -21,7 +21,7 @@
 
 #include <bse/bseitem.h>
 #include <bse/gsldefs.h>
-#include <sfi/gbsearcharray.h>
+#include <sfi/gbsearcharray.hh>
 
 G_BEGIN_DECLS
 

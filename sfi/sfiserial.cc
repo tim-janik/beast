@@ -16,10 +16,10 @@
  */
 #include <string.h>
 #include <stdio.h>      /* sscanf() */
-#include "sfiserial.h"
-#include "sfiparams.h"
-#include "sfitime.h"
-#include "sfinote.h"
+#include "sfiserial.hh"
+#include "sfiparams.hh"
+#include "sfitime.hh"
+#include "sfinote.hh"
 #include <stdlib.h>     // FIXME: remove "free"
 
 typedef std::string String; // FIXME

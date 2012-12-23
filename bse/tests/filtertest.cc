@@ -16,7 +16,7 @@
  */
 #include <bse/bsedefs.h>
 // #define TEST_VERBOSE
-#include <sfi/sfitests.h>
+#include <sfi/sfitests.hh>
 #include <bse/bsefilter.h>
 #include <bse/bsemain.h>
 #include <bse/gslfilter.h> // FIXME

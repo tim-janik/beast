@@ -18,7 +18,7 @@
 #define __BSE_PART_H__
 
 #include <bse/bseitem.h>
-#include <sfi/gbsearcharray.h>
+#include <sfi/gbsearcharray.hh>
 
 G_BEGIN_DECLS
 

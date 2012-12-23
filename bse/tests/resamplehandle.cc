@@ -18,7 +18,7 @@
 #include <bse/bsemathsignal.h>
 #include <bse/bsemain.h>
 // #define TEST_VERBOSE
-#include <sfi/sfitests.h>
+#include <sfi/sfitests.hh>
 #include <bse/gsldatautils.h>
 #include <bse/bseblockutils.hh>
 #include <stdlib.h>

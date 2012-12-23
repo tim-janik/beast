@@ -16,7 +16,7 @@
  */
 #include <bse/bsemain.h>
 // #define TEST_VERBOSE
-#include <sfi/sfitests.h>
+#include <sfi/sfitests.hh>
 #include <bse/bsemathsignal.h>
 #include <bse/bsecxxplugin.hh> // for generated types
 

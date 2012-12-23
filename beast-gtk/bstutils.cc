@@ -1396,7 +1396,7 @@ bst_fft_size_from_int (guint sz)
   return sizes[offset].fft_size;
 }
 
-#include <sfi/sfistore.h>
+#include <sfi/sfistore.hh>
 
 gchar*
 bst_file_scan_find_key (const gchar *file,

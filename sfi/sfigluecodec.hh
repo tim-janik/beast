@@ -17,8 +17,8 @@
 #ifndef __SFI_GLUE_CODEC_H__
 #define __SFI_GLUE_CODEC_H__
 
-#include <sfi/sfiglue.h>
-#include <sfi/sficomport.h>
+#include <sfi/sfiglue.hh>
+#include <sfi/sficomport.hh>
 
 #ifdef __cplusplus
 extern "C" {

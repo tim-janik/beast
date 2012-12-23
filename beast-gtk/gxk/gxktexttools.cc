@@ -17,7 +17,7 @@
 #include "gxktexttools.h"
 #include "gxkstock.h"
 #include "gxkradget.h"
-#include "sfi/sfiwrapper.h" /* for sfi_url_show() */
+#include "sfi/sfiwrapper.hh" /* for sfi_url_show() */
 #include <gdk/gdkkeysyms.h>
 #include <unistd.h>
 #include <stdlib.h>

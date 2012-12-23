@@ -18,7 +18,7 @@
 #define __SFI_WRAPPER_H__
 
 #include <stdbool.h>
-#include <sfi/glib-extra.h>
+#include <sfi/glib-extra.hh>
 #include <birnet/birnetcdefs.h> /* include glib before birnet for G_LOG_DOMAIN */
 
 /* sfiwrapper.h is a thin C language wrapper around C++ features
