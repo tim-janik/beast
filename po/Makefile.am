@@ -1,7 +1,4 @@
-## Process this file with automake to generate Makefile.in
-# Copyright (C) 2010 Tim Janik
-#
-# This work is provided "as is"; see: http://beast.testbit.eu/LICENSE-AS-IS
+# BEAST - Better Audio System
 include $(top_srcdir)/Makefile.decl
 AUTOMAKE_OPTIONS = -Wno-portability
 
