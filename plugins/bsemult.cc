@@ -14,7 +14,7 @@
  * A copy of the GNU Lesser General Public License should ship along
  * with this library; if not, see http://www.gnu.org/copyleft/.
  */
-#include "bsemult.h"
+#include "bsemult.hh"
 
 #include <bse/bseengine.hh>
 #include <bse/bsecxxplugin.hh>

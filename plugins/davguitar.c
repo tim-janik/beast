@@ -20,7 +20,7 @@
  */
 
 #include <stdlib.h>
-#include "davguitar.h"
+#include "davguitar.hh"
 
 /* --- parameters --- */
 enum

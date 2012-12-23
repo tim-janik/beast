@@ -14,7 +14,7 @@
  * A copy of the GNU Lesser General Public License should ship along
  * with this library; if not, see http://www.gnu.org/copyleft/.
  *
- * bsemixer.h: BSE Mixer - mix incoming signals
+ * bsemixer.hh: BSE Mixer - mix incoming signals
  */
 #ifndef __BSE_MIXER_H__
 #define __BSE_MIXER_H__

@@ -14,7 +14,7 @@
  * A copy of the GNU Lesser General Public License should ship along
  * with this library; if not, see http://www.gnu.org/copyleft/.
  *
- * bsemult.h: BSE Multiplier - fold incoming signals
+ * bsemult.hh: BSE Multiplier - fold incoming signals
  */
 #ifndef __BSE_MULT_H__
 #define __BSE_MULT_H__

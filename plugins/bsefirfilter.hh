@@ -14,7 +14,7 @@
  * A copy of the GNU Lesser General Public License should ship along
  * with this library; if not, see http://www.gnu.org/copyleft/.
  *
- * bsefirfilter.h: BSE Finite Impulse Response Filter
+ * bsefirfilter.hh: BSE Finite Impulse Response Filter
  */
 #ifndef __BSE_FIR_FILTER_H__
 #define __BSE_FIR_FILTER_H__

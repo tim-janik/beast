@@ -32,8 +32,8 @@ SFIDL_INC = --nostdinc -I$(top_srcdir) -I$(top_builddir)
 	$(SFIDL) --plugin  --macro $(<F) $(SFIDL_INC) -I$(top_builddir) $< > $@ || (rm $@ ; exit 1 )
 
 # == C++ Plugins ==
-cxx_plugin_headers = bseadder.h  bseatandistort.h  bsesimpleadsr.h  bsemixer.h  bsemult.h  bsesequencer.h  bseiirfilter.h	\
-		     davcanyondelay.h  davsyndrum.h  davxtalstrings.h
+cxx_plugin_headers = bseadder.hh bseatandistort.hh bsesimpleadsr.hh bsemixer.hh bsemult.hh bsesequencer.hh bseiirfilter.hh	\
+		     davcanyondelay.hh davsyndrum.hh davxtalstrings.hh
 cxx_plugin_sources = bseadder.cc bseatandistort.cc bsesimpleadsr.cc bsemixer.cc bsemult.cc bsesequencer.cc bseiirfilter.cc	\
 		     davcanyondelay.cc davsyndrum.cc davxtalstrings.cc
 cxx_plugin_extra   = bsesimpleadsr-aux.cc
