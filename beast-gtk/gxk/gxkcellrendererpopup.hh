@@ -17,7 +17,7 @@
 #ifndef __GXK_CELL_RENDERER_POPUP_H__
 #define __GXK_CELL_RENDERER_POPUP_H__
 
-#include <gxk/gxkutils.h>
+#include <gxk/gxkutils.hh>
 #include <gtk/gtkcellrenderertext.h>
 #include <gtk/gtkeventbox.h>
 

@@ -14,12 +14,12 @@
  * A copy of the GNU Lesser General Public License should ship along
  * with this library; if not, see http://www.gnu.org/copyleft/.
  */
-#include "gxkutils.h"
+#include "gxkutils.hh"
 #include "glewidgets.h"
-#include "gxkmenubutton.h"
-#include "gxkstock.h"
-#include "gxkcellrendererpopup.h"
-#include "gxkauxwidgets.h"
+#include "gxkmenubutton.hh"
+#include "gxkstock.hh"
+#include "gxkcellrendererpopup.hh"
+#include "gxkauxwidgets.hh"
 #include <string.h>
 #include <stdlib.h>
 

@@ -17,7 +17,7 @@
 #ifndef __GXK_RACK_TABLE_H__
 #define __GXK_RACK_TABLE_H__
 
-#include <gxk/gxkutils.h>
+#include <gxk/gxkutils.hh>
 
 G_BEGIN_DECLS
 

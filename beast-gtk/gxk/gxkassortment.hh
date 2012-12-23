@@ -17,7 +17,7 @@
 #ifndef __GXK_ASSORTMENT_H__
 #define __GXK_ASSORTMENT_H__
 
-#include "gxkutils.h"
+#include "gxkutils.hh"
 
 G_BEGIN_DECLS
 

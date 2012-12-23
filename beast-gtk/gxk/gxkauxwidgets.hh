@@ -17,8 +17,8 @@
 #ifndef __GXK_AUX_WIDGETS_H__
 #define __GXK_AUX_WIDGETS_H__
 
-#include "gxkutils.h"
-#include "gxkradget.h"
+#include "gxkutils.hh"
+#include "gxkradget.hh"
 
 G_BEGIN_DECLS
 

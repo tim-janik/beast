@@ -15,7 +15,7 @@
  * with this library; if not, see http://www.gnu.org/copyleft/.
  */
 #define _ISOC99_SOURCE  /* NAN, isfinite, isnan */
-#include "gxkspline.h"
+#include "gxkspline.hh"
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>

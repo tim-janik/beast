@@ -16,7 +16,7 @@
  */
 #include "bstrackview.h"
 #include "bstrackitem.h"
-#include "gxk/gxkrackeditor.h"
+#include "gxk/gxkrackeditor.hh"
 
 /* --- prototypes --- */
 static void     rack_view_class_init         (BstRackViewClass *klass);

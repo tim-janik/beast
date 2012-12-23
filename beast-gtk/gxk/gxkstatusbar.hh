@@ -17,7 +17,7 @@
 #ifndef __GXK_STATUS_BAR_H__
 #define __GXK_STATUS_BAR_H__
 
-#include <gxk/gxkutils.h>
+#include <gxk/gxkutils.hh>
 
 G_BEGIN_DECLS
 

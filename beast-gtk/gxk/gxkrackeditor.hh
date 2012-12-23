@@ -17,7 +17,7 @@
 #ifndef __GXK_RACK_EDITOR_H__
 #define __GXK_RACK_EDITOR_H__
 
-#include <gxk/gxkracktable.h>
+#include <gxk/gxkracktable.hh>
 
 G_BEGIN_DECLS
 

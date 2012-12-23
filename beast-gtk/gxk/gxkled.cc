@@ -14,7 +14,7 @@
  * A copy of the GNU Lesser General Public License should ship along
  * with this library; if not, see http://www.gnu.org/copyleft/.
  */
-#include "gxkled.h"
+#include "gxkled.hh"
 
 #include <math.h>
 

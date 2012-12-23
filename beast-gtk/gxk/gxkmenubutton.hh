@@ -17,8 +17,8 @@
 #ifndef __GXK_MENU_BUTTON_H__
 #define __GXK_MENU_BUTTON_H__
 
-#include "gxkutils.h"
-#include "gxkassortment.h"
+#include "gxkutils.hh"
+#include "gxkassortment.hh"
 
 G_BEGIN_DECLS
 

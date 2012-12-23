@@ -26,7 +26,7 @@
  * - if ::auto-cut is TRUE, overfull text is cut-off
  * - the label is visible by default
  */
-#include "gxksimplelabel.h"
+#include "gxksimplelabel.hh"
 #include <string.h>
 #include <gdk/gdkkeysyms.h>
 #include <pango/pango.h>

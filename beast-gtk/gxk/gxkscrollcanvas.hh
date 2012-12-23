@@ -17,7 +17,7 @@
 #ifndef __GXK_SCROLL_CANVAS_H__
 #define __GXK_SCROLL_CANVAS_H__
 
-#include <gxk/gxkutils.h>
+#include <gxk/gxkutils.hh>
 
 G_BEGIN_DECLS
 

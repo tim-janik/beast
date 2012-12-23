@@ -17,7 +17,7 @@
 #ifndef __BST_DEFS_H__
 #define __BST_DEFS_H__
 
-#include <gxk/gxk.h>
+#include <gxk/gxk.hh>
 #include <libintl.h>
 #include "bstzoomedwindow.h"
 

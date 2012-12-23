@@ -22,7 +22,7 @@
 #include <gtk/gtkbutton.h>
 #include <gtk/gtkhscrollbar.h>
 #include <gtk/gtkvscrollbar.h>
-#include <gxk/gxkutils.h>
+#include <gxk/gxkutils.hh>
 
 
 /* --- prototypes --- */

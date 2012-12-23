@@ -17,8 +17,8 @@
 #ifndef __GXK_RADGET_FACTORY_H__
 #define __GXK_RADGET_FACTORY_H__
 
-#include "gxkradget.h"
-#include "gxkaction.h"
+#include "gxkradget.hh"
+#include "gxkaction.hh"
 
 G_BEGIN_DECLS
 

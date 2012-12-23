@@ -17,7 +17,7 @@
 #ifndef __BST_CLUE_HUNTER_H__
 #define __BST_CLUE_HUNTER_H__
 
-#include <gxk/gxk.h>
+#include <gxk/gxk.hh>
 
 #ifdef __cplusplus
 extern "C" {

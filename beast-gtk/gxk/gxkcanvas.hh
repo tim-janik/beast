@@ -17,7 +17,7 @@
 #ifndef __GXK_CANVAS_H__
 #define __GXK_CANVAS_H__
 
-#include        <gxk/gxkglobals.h>
+#include        <gxk/gxkglobals.hh>
 #include        <libgnomecanvas/libgnomecanvas.h>
 
 G_BEGIN_DECLS

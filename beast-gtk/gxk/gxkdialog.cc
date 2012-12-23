@@ -14,10 +14,10 @@
  * A copy of the GNU Lesser General Public License should ship along
  * with this library; if not, see http://www.gnu.org/copyleft/.
  */
-#include "gxkdialog.h"
-#include "gxkradget.h"
-#include "gxkstock.h"
-#include "gxkstatusbar.h"
+#include "gxkdialog.hh"
+#include "gxkradget.hh"
+#include "gxkstock.hh"
+#include "gxkstatusbar.hh"
 #include <gdk/gdkkeysyms.h>
 #include <string.h>
 

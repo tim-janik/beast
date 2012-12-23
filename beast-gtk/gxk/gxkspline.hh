@@ -17,7 +17,7 @@
 #ifndef __GXK_SPLINE_H__
 #define __GXK_SPLINE_H__
 
-#include        <gxk/gxkglobals.h>
+#include        <gxk/gxkglobals.hh>
 
 G_BEGIN_DECLS
 

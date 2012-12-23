@@ -17,7 +17,7 @@
 #ifndef __GXK_TEXT_TOOLS_H__
 #define __GXK_TEXT_TOOLS_H__
 
-#include        "gxkutils.h"
+#include        "gxkutils.hh"
 
 G_BEGIN_DECLS
 

@@ -17,7 +17,7 @@
 #ifndef __GXK_LOG_ADJUSTMENT_H__
 #define __GXK_LOG_ADJUSTMENT_H__
 
-#include <gxk/gxkutils.h>
+#include <gxk/gxkutils.hh>
 
 G_BEGIN_DECLS
 

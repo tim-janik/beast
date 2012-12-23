@@ -17,7 +17,7 @@
 #ifndef __GXK_NOTEBOOK_H__
 #define __GXK_NOTEBOOK_H__
 
-#include "gxkassortment.h"
+#include "gxkassortment.hh"
 
 G_BEGIN_DECLS
 

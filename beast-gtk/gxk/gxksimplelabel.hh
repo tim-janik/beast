@@ -21,7 +21,7 @@
 #ifndef __GXK_SIMPLE_LABEL_H__
 #define __GXK_SIMPLE_LABEL_H__
 
-#include <gxk/gxkutils.h>
+#include <gxk/gxkutils.hh>
 
 G_BEGIN_DECLS
 
