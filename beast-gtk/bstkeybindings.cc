@@ -15,10 +15,10 @@
  * with this library; if not, see http://www.gnu.org/copyleft/.
  */
 #include "topconfig.h"  /* BST_PATH_KEYS */
-#include "bstkeybindings.h"
-#include "bstauxdialogs.h"
-#include "bstpatternctrl.h"
-#include "bstfiledialog.h"
+#include "bstkeybindings.hh"
+#include "bstauxdialogs.hh"
+#include "bstpatternctrl.hh"
+#include "bstfiledialog.hh"
 #include <string.h>
 
 enum {

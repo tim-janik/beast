@@ -14,11 +14,11 @@
  * A copy of the GNU Lesser General Public License should ship along
  * with this library; if not, see http://www.gnu.org/copyleft/.
  */
-#include "bstracktable.h"
+#include "bstracktable.hh"
 #if 0
-#include "bstrackitem.h"
+#include "bstrackitem.hh"
 #endif
-#include "bstutils.h"
+#include "bstutils.hh"
 #include <gtk/gtkalignment.h>
 #include <gtk/gtklabel.h>
 

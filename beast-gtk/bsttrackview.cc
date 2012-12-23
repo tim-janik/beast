@@ -14,11 +14,11 @@
  * A copy of the GNU Lesser General Public License should ship along
  * with this library; if not, see http://www.gnu.org/copyleft/.
  */
-#include "bsttrackview.h"
-#include "bstparam.h"
-#include "bstgrowbar.h"
-#include "bsttracksynthdialog.h"
-#include "bstitemseqdialog.h"
+#include "bsttrackview.hh"
+#include "bstparam.hh"
+#include "bstgrowbar.hh"
+#include "bsttracksynthdialog.hh"
+#include "bstitemseqdialog.hh"
 #include <stdlib.h> /* strtol */
 #include <string.h>
 

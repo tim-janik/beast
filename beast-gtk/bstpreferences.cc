@@ -14,14 +14,14 @@
  * A copy of the GNU Lesser General Public License should ship along
  * with this library; if not, see http://www.gnu.org/copyleft/.
  */
-#include "bstpreferences.h"
-#include "bstgconfig.h"
-#include "bstskinconfig.h"
-#include "bstkeybindings.h"
-#include "bstmsgabsorb.h"
-#include "bstpatternctrl.h"
+#include "bstpreferences.hh"
+#include "bstgconfig.hh"
+#include "bstskinconfig.hh"
+#include "bstkeybindings.hh"
+#include "bstmsgabsorb.hh"
+#include "bstpatternctrl.hh"
 #include "topconfig.h" /* BST_VERSION */
-#include "bstparam.h"
+#include "bstparam.hh"
 
 
 /* --- prototypes --- */

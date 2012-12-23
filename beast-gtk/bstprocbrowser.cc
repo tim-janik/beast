@@ -14,9 +14,9 @@
  * A copy of the GNU Lesser General Public License should ship along
  * with this library; if not, see http://www.gnu.org/copyleft/.
  */
-#include "bstprocbrowser.h"
+#include "bstprocbrowser.hh"
 
-#include "bstprocedure.h"
+#include "bstprocedure.hh"
 
 #if 0
 

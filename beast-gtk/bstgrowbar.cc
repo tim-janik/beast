@@ -15,8 +15,8 @@
  * with this library; if not, see http://www.gnu.org/copyleft/.
  */
 #include <sfi/glib-extra.hh>
-#include "bstgrowbar.h"
-#include "bstdefs.h"
+#include "bstgrowbar.hh"
+#include "bstdefs.hh"
 #include <gtk/gtkhbox.h>
 #include <gtk/gtkvbox.h>
 #include <gtk/gtkbutton.h>

@@ -14,11 +14,11 @@
  * A copy of the GNU Lesser General Public License should ship along
  * with this library; if not, see http://www.gnu.org/copyleft/.
  */
-#include "bstpartdialog.h"
-#include "bstprocedure.h"
-#include "bstmenus.h"
-#include "bstparam.h"
-#include "bstgrowbar.h"
+#include "bstpartdialog.hh"
+#include "bstprocedure.hh"
+#include "bstmenus.hh"
+#include "bstparam.hh"
+#include "bstgrowbar.hh"
 
 #define SCROLLBAR_SPACING (3) /* from gtkscrolledwindow.c:DEFAULT_SCROLLBAR_SPACING */
 

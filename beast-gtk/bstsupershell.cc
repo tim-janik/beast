@@ -14,16 +14,16 @@
  * A copy of the GNU Lesser General Public License should ship along
  * with this library; if not, see http://www.gnu.org/copyleft/.
  */
-#include "bstsupershell.h"
-#include "bstparamview.h"
-#include "bsttrackview.h"
-#include "bstpartview.h"
-#include "bstbusmixer.h"
-#include "bstbusview.h"
-#include "bstwaveview.h"
-#include "bstrackview.h"
-#include "bstsnetrouter.h"
-#include "bstgconfig.h"
+#include "bstsupershell.hh"
+#include "bstparamview.hh"
+#include "bsttrackview.hh"
+#include "bstpartview.hh"
+#include "bstbusmixer.hh"
+#include "bstbusview.hh"
+#include "bstwaveview.hh"
+#include "bstrackview.hh"
+#include "bstsnetrouter.hh"
+#include "bstgconfig.hh"
 #include <string.h>
 
 enum {

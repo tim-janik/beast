@@ -14,9 +14,9 @@
  * A copy of the GNU Lesser General Public License should ship along
  * with this library; if not, see http://www.gnu.org/copyleft/.
  */
-#include "bstscrollgraph.h"
-#include "bstsnifferscope.h" // FIXME: remove include
-#include "bstparam.h"
+#include "bstscrollgraph.hh"
+#include "bstsnifferscope.hh" // FIXME: remove include
+#include "bstparam.hh"
 #include <math.h>
 
 #define N_VALUES(scg)   ((scg)->n_points * (scg)->n_bars)

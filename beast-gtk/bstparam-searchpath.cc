@@ -17,8 +17,8 @@
 
 
 /* --- searchpath editor --- */
-#include "bstauxdialogs.h"
-#include "bstfiledialog.h"
+#include "bstauxdialogs.hh"
+#include "bstfiledialog.hh"
 static void
 param_searchpath_change_value (GtkWidget *entry)
 {

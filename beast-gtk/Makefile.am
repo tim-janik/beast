@@ -22,24 +22,24 @@ LIBS += # -lefence # -pg
 #
 # BEAST header files that don't get installed
 beast_headers = $(strip \
-	bsttrackrollctrl.h	bstxframe.h	bstscrollgraph.h 	\
-	bstdbmeter.h		bstbusmixer.h	bstbuseditor.h		bstitemseqdialog.h  \
-	bstcanvassource.h	bstapp.h	bstasciipixbuf.h	bstcanvaslink.h	    \
-	bstpatterncolumns.h	bstxkb.h	bstpatternview.h	bstpatternctrl.h    \
-	bstkeybindings.h	bstprofiler.h	bstgrowbar.h		bstbusview.h        \
-	bstpianorollctrl.h	bstpartview.h	bstpianoroll.h		bstplayback.h	    \
-	bsttrackroll.h		bstcluehunter.h	bstprojectctrl.h	bstcxxutils.h	    \
-	bstauxdialogs.h		bstsegment.h	bsteventrollctrl.h	bsteventroll.h	    \
-	bstsnifferscope.h	bstwaveview.h	bstfiledialog.h		bstgconfig.h	    \
-	bstlogadjustment.h	bstitemview.h	bstservermonitor.h	bstknob.h	    \
-	bstparamview.h		bstmenus.h	bstparam.h		bstpartdialog.h	    \
-	bstprocbrowser.h	bstqsampler.h	bstpreferences.h	bstprocedure.h	    \
-	bstrackeditor.h		bstrackitem.h	bstracktable.h		bstsequence.h	    \
-	bstsnetrouter.h		bstsplash.h	bsttrackview.h		bstsupershell.h	    \
-	bstusermessage.h	bstdial.h	bsttracksynthdialog.h	bstwaveeditor.h	    \
-	bstzoomedwindow.h	bstskinconfig.h	bstmsgabsorb.h		bstsampleeditor.h   \
-	bstrackview.h		bsttreestores.h	bstbseutils.h		bstutils.h	    \
-	bstdefs.h \
+	bsttrackrollctrl.hh	bstxframe.hh	bstscrollgraph.hh 	\
+	bstdbmeter.hh		bstbusmixer.hh	bstbuseditor.hh		bstitemseqdialog.hh  \
+	bstcanvassource.hh	bstapp.hh	bstasciipixbuf.hh	bstcanvaslink.hh	    \
+	bstpatterncolumns.hh	bstxkb.hh	bstpatternview.hh	bstpatternctrl.hh    \
+	bstkeybindings.hh	bstprofiler.hh	bstgrowbar.hh		bstbusview.hh        \
+	bstpianorollctrl.hh	bstpartview.hh	bstpianoroll.hh		bstplayback.hh	    \
+	bsttrackroll.hh		bstcluehunter.hh	bstprojectctrl.hh	bstcxxutils.hh	    \
+	bstauxdialogs.hh		bstsegment.hh	bsteventrollctrl.hh	bsteventroll.hh	    \
+	bstsnifferscope.hh	bstwaveview.hh	bstfiledialog.hh		bstgconfig.hh	    \
+	bstlogadjustment.hh	bstitemview.hh	bstservermonitor.hh	bstknob.hh	    \
+	bstparamview.hh		bstmenus.hh	bstparam.hh		bstpartdialog.hh	    \
+	bstprocbrowser.hh	bstqsampler.hh	bstpreferences.hh	bstprocedure.hh	    \
+	bstrackeditor.hh		bstrackitem.hh	bstracktable.hh		bstsequence.hh	    \
+	bstsnetrouter.hh		bstsplash.hh	bsttrackview.hh		bstsupershell.hh	    \
+	bstusermessage.hh	bstdial.hh	bsttracksynthdialog.hh	bstwaveeditor.hh	    \
+	bstzoomedwindow.hh	bstskinconfig.hh	bstmsgabsorb.hh		bstsampleeditor.hh   \
+	bstrackview.hh		bsttreestores.hh	bstbseutils.hh		bstutils.hh	    \
+	bstdefs.hh \
 )
 EXTRA_DIST += $(beast_headers)
 # BEAST sources to build the program from

@@ -14,15 +14,15 @@
  * A copy of the GNU Lesser General Public License should ship along
  * with this library; if not, see http://www.gnu.org/copyleft/.
  */
-#include "bstsnetrouter.h"
+#include "bstsnetrouter.hh"
 
 #include <math.h>
 #include <string.h>
-#include "bstcanvaslink.h"
-#include "bstmenus.h"
-#include "bstgconfig.h"
-#include "bstprocedure.h"
-#include "bstscrollgraph.h"
+#include "bstcanvaslink.hh"
+#include "bstmenus.hh"
+#include "bstgconfig.hh"
+#include "bstprocedure.hh"
+#include "bstscrollgraph.hh"
 #include <gdk/gdkkeysyms.h>
 
 

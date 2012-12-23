@@ -15,8 +15,8 @@
  * with this library; if not, see http://www.gnu.org/copyleft/.
  */
 #include <gtk/gtk.h>
-#include "bstracktable.h"
-#include "bstdial.h"
+#include "bstracktable.hh"
+#include "bstdial.hh"
 
 static GSList *plate_list = NULL;
 

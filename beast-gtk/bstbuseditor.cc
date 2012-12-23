@@ -14,10 +14,10 @@
  * A copy of the GNU Lesser General Public License should ship along
  * with this library; if not, see http://www.gnu.org/copyleft/.
  */
-#include "bstbuseditor.h"
-#include "bstparam.h"
-#include "bstitemseqdialog.h" // FIXME
-#include "bstsnifferscope.h" // FIXME
+#include "bstbuseditor.hh"
+#include "bstparam.hh"
+#include "bstitemseqdialog.hh" // FIXME
+#include "bstsnifferscope.hh" // FIXME
 
 
 /* --- prototypes --- */
