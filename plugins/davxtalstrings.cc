@@ -22,11 +22,11 @@
  * This software uses technology under patent US 4,649,783, which has
  * expired in May of 2004.
  */
-#include "davxtalstrings.h"
+#include "davxtalstrings.hh"
 #include <bse/bsecxxplugin.hh>
-#include <bse/bseengine.h>
-#include <bse/bsemathsignal.h>
-#include <bse/bsemain.h>
+#include <bse/bseengine.hh>
+#include <bse/bsemathsignal.hh>
+#include <bse/bsemain.hh>
 
 #include <string.h>
 

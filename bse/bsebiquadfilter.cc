@@ -14,11 +14,11 @@
  * A copy of the GNU Lesser General Public License should ship along
  * with this library; if not, see http://www.gnu.org/copyleft/.
  */
-#include "bsebiquadfilter.h"
+#include "bsebiquadfilter.hh"
 
-#include <bse/bsecategories.h>
-#include <bse/bseengine.h>
-#include <bse/bsemathsignal.h>
+#include <bse/bsecategories.hh>
+#include <bse/bseengine.hh>
+#include <bse/bsemathsignal.hh>
 
 static SFI_MSG_TYPE_DEFINE (debug_biquadfilter, "biquadfilter", SFI_MSG_DEBUG, NULL);
 #define	DEBUG(...)      sfi_debug (debug_biquadfilter, __VA_ARGS__)

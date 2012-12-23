@@ -14,9 +14,9 @@
  * A copy of the GNU Lesser General Public License should ship along
  * with this library; if not, see http://www.gnu.org/copyleft/.
  */
-#include "bstrackeditor.h"
+#include "bstrackeditor.hh"
 #if 0
-#include "bstrackitem.h"
+#include "bstrackitem.hh"
 #endif
 
 

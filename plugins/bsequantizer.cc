@@ -15,8 +15,8 @@
  * with this library; if not, see http://www.gnu.org/copyleft/.
  */
 #include "bsequantizer.genidl.hh"
-#include <bse/bseengine.h>
-#include <bse/bsemathsignal.h>
+#include <bse/bseengine.hh>
+#include <bse/bsemathsignal.hh>
 
 namespace Bse { namespace Standard {
 using namespace Birnet;

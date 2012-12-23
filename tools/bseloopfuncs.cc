@@ -15,7 +15,7 @@
  * with this library; if not, see http://www.gnu.org/copyleft/.
  */
 #include "bseloopfuncs.hh"
-#include <bse/gsldatacache.h>
+#include <bse/gsldatacache.hh>
 #include <string.h>
 #include <signal.h>    /* G_BREAKPOINT() */
 #include <stdio.h>

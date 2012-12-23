@@ -15,8 +15,8 @@
  * with this library; if not, see http://www.gnu.org/copyleft/.
  */
 #include "sfiutils.h"
-#include <bse/gslcommon.h>
-#include <bse/bsemath.h>
+#include <bse/gslcommon.hh>
+#include <bse/bsemath.hh>
 #include <string.h>
 #include <stdlib.h>
 #include <sys/types.h>

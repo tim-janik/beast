@@ -15,12 +15,12 @@
  * with this library; if not, see http://www.gnu.org/copyleft/.
  */
 #include "topconfig.h"
-#include "bstutils.h"
-#include "bse/bse.h"
-#include "bstdbmeter.h"
-#include "bstparam.h"
-#include "bstgconfig.h"
-#include "bstskinconfig.h"
+#include "bstutils.hh"
+#include "bse/bse.hh"
+#include "bstdbmeter.hh"
+#include "bstparam.hh"
+#include "bstgconfig.hh"
+#include "bstskinconfig.hh"
 
 /* --- FIXME: --- */
 gboolean            bst_developer_hints = FALSE;

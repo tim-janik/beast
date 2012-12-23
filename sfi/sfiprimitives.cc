@@ -16,9 +16,9 @@
  */
 #include <stdlib.h>
 #include <string.h>
-#include "sfiprimitives.h"
-#include "sfimemory.h"
-#include "sfiparams.h"
+#include "sfiprimitives.hh"
+#include "sfimemory.hh"
+#include "sfiparams.hh"
 
 
 /* --- SfiBBlock primitive type --- */

@@ -14,12 +14,12 @@
  * A copy of the GNU Lesser General Public License should ship along
  * with this library; if not, see http://www.gnu.org/copyleft/.
  */
-#include "bseloader.h"
-#include "bsemain.h"
-#include "gsldatahandle.h"
-#include "gsldatahandle-vorbis.h"
-#include "bsemath.h"
-#include <sfi/sfistore.h>
+#include "bseloader.hh"
+#include "bsemain.hh"
+#include "gsldatahandle.hh"
+#include "gsldatahandle-vorbis.hh"
+#include "bsemath.hh"
+#include <sfi/sfistore.hh>
 #include <fcntl.h>
 #include <unistd.h>
 #include <string.h>

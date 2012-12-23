@@ -14,13 +14,13 @@
  * A copy of the GNU Lesser General Public License should ship along
  * with this library; if not, see http://www.gnu.org/copyleft/.
  */
-#include "bseladspa.h"
-#include "bseladspamodule.h"
-#include "bsecategories.h"
+#include "bseladspa.hh"
+#include "bseladspamodule.hh"
+#include "bsecategories.hh"
 #include <birnet/birnet.hh>
 #include <string.h>
 
-#include "ladspa.h"
+#include "ladspa.hh"
 
 using namespace Birnet;
 

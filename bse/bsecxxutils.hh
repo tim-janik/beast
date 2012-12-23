@@ -17,7 +17,7 @@
 #ifndef __BSE_CXX_UTILS_H__
 #define __BSE_CXX_UTILS_H__
 
-#include <bse/bseutils.h>
+#include <bse/bseutils.hh>
 #include <sfi/sficxx.hh>
 #include <vector>
 #include <algorithm>

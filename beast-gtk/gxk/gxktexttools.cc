@@ -14,10 +14,10 @@
  * A copy of the GNU Lesser General Public License should ship along
  * with this library; if not, see http://www.gnu.org/copyleft/.
  */
-#include "gxktexttools.h"
-#include "gxkstock.h"
-#include "gxkradget.h"
-#include "sfi/sfiwrapper.h" /* for sfi_url_show() */
+#include "gxktexttools.hh"
+#include "gxkstock.hh"
+#include "gxkradget.hh"
+#include "sfi/sfiwrapper.hh" /* for sfi_url_show() */
 #include <gdk/gdkkeysyms.h>
 #include <unistd.h>
 #include <stdlib.h>

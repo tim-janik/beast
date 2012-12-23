@@ -18,11 +18,11 @@
 #define __BSE_CXX_MODULE_H__
 
 #include <bse/bsecxxbase.hh>
-#include <bse/bseieee754.h>
+#include <bse/bseieee754.hh>
 
 namespace Bse {
 
-/* enums/structures mirrored from bseengine.h */
+/* enums/structures mirrored from bseengine.hh */
 enum ProcessCost {
   NORMAL,
   CHEAP,

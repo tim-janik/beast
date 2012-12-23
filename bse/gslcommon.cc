@@ -14,9 +14,9 @@
  * A copy of the GNU Lesser General Public License should ship along
  * with this library; if not, see http://www.gnu.org/copyleft/.
  */
-#include "gslcommon.h"
+#include "gslcommon.hh"
 
-#include "gsldatacache.h"
+#include "gsldatacache.hh"
 #include <unistd.h>
 #include <sys/utsname.h>
 #include <string.h>

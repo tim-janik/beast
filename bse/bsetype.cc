@@ -14,9 +14,9 @@
  * A copy of the GNU Lesser General Public License should ship along
  * with this library; if not, see http://www.gnu.org/copyleft/.
  */
-#include "bsetype.h"
+#include "bsetype.hh"
 
-#include "bseplugin.h"
+#include "bseplugin.hh"
 #include <string.h>
 #include <gobject/gvaluecollector.h>
 

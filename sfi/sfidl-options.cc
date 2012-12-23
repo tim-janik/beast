@@ -18,7 +18,7 @@
 #include "sfidl-factory.hh"
 #include "sfidl-generator.hh"
 #include "topconfig.h"
-#include <sfi/glib-extra.h>
+#include <sfi/glib-extra.hh>
 #include <stdio.h>
 #include <string.h>
 

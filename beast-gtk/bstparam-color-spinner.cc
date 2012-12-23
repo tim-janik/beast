@@ -17,7 +17,7 @@
 
 
 /* --- color parameter editors --- */
-#include "bstauxdialogs.h"
+#include "bstauxdialogs.hh"
 static gint
 param_color_spinner_input (GtkSpinButton *spin_button,
                           gdouble       *svalue,

@@ -14,7 +14,7 @@
  * A copy of the GNU Lesser General Public License should ship along
  * with this library; if not, see http://www.gnu.org/copyleft/.
  */
-#include "bstmsgabsorb.h"
+#include "bstmsgabsorb.hh"
 #include <string.h>
 
 enum {
@@ -260,7 +260,7 @@ bst_msg_absorb_config_box_get (GtkWidget      *self)
 #include <fcntl.h>
 #include <errno.h>
 #include "topconfig.h"          /* BST_VERSION */
-#include <sfi/sfistore.h>       /* we rely on internal API here */
+#include <sfi/sfistore.hh>       /* we rely on internal API here */
 
 static BseErrorType
 bst_msg_absorb_config_dump (const gchar *file_name)

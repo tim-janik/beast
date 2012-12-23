@@ -18,14 +18,14 @@ DEFS += $(strip \
 noinst_LIBRARIES = libgxk.a
 
 gxk_headers = $(strip \
-	gxkled.h	gxkcanvas.h		gxkdialog.h	gxkauxwidgets.h \
-	gxkstatusbar.h	gxkstock.h		gxktexttools.h	gxklistwrapper.h \
-	gxkrackeditor.h	gxkutils.h		gxkpolygon.h	gxkcellrendererpopup.h \
-	gxkradget.h	gxkaction.h		gxkglobals.h	gxkradgetfactory.h \
-	glewidgets.h	gxkracktable.h		gxkrackitem.h	gxksimplelabel.h \
-	gxkparam.h	gxkscrollcanvas.h	gxkimagecache.h	gxklogadjustment.h \
-	gxkmenubutton.h	gxkspline.h		gxkassortment.h gxknotebook.h \
-	gxk.h \
+	gxkled.hh	gxkcanvas.hh		gxkdialog.hh	gxkauxwidgets.hh \
+	gxkstatusbar.hh	gxkstock.hh		gxktexttools.hh	gxklistwrapper.hh \
+	gxkrackeditor.hh	gxkutils.hh		gxkpolygon.hh	gxkcellrendererpopup.hh \
+	gxkradget.hh	gxkaction.hh		gxkglobals.hh	gxkradgetfactory.hh \
+	glewidgets.h	gxkracktable.hh		gxkrackitem.hh	gxksimplelabel.hh \
+	gxkparam.hh	gxkscrollcanvas.hh	gxkimagecache.hh	gxklogadjustment.hh \
+	gxkmenubutton.hh	gxkspline.hh		gxkassortment.hh gxknotebook.hh \
+	gxk.hh \
 )
 gxk_c_sources = $(strip \
 	gxkled.cc	gxkcanvas.cc		gxkdialog.cc	gxkauxwidgets.cc \

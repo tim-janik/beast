@@ -18,9 +18,9 @@
 #include <errno.h>
 #include <unistd.h>
 #include <guile/gh.h>
-#include <bse/bse.h>
-#include <bse/bsemain.h>  /* for bse_init_textdomain_only() */
-#include <sfi/sfistore.h> /* no bin-compat */
+#include <bse/bse.hh>
+#include <bse/bsemain.hh>  /* for bse_init_textdomain_only() */
+#include <sfi/sfistore.hh> /* no bin-compat */
 #include <sys/time.h>
 #include <libintl.h>
 #include <sys/resource.h>

@@ -14,22 +14,22 @@
  * A copy of the GNU Lesser General Public License should ship along
  * with this library; if not, see http://www.gnu.org/copyleft/.
  */
-#include "bstutils.h"
+#include "bstutils.hh"
 
-#include "bstgconfig.h"
-#include "bstmenus.h"
-#include "bsttrackview.h"
-#include "bstwaveview.h"
-#include "bstpartview.h"
-#include "bstbusmixer.h"
-#include "bstbuseditor.h"
-#include "bstbusview.h"
-#include "bstpianoroll.h"
-#include "bstpatternview.h"
-#include "bsteventroll.h"
-#include "bstgrowbar.h"
-#include "bstdbmeter.h"
-#include "bstscrollgraph.h"
+#include "bstgconfig.hh"
+#include "bstmenus.hh"
+#include "bsttrackview.hh"
+#include "bstwaveview.hh"
+#include "bstpartview.hh"
+#include "bstbusmixer.hh"
+#include "bstbuseditor.hh"
+#include "bstbusview.hh"
+#include "bstpianoroll.hh"
+#include "bstpatternview.hh"
+#include "bsteventroll.hh"
+#include "bstgrowbar.hh"
+#include "bstdbmeter.hh"
+#include "bstscrollgraph.hh"
 #include <fcntl.h>
 #include <errno.h>
 #include <unistd.h>
@@ -1396,7 +1396,7 @@ bst_fft_size_from_int (guint sz)
   return sizes[offset].fft_size;
 }
 
-#include <sfi/sfistore.h>
+#include <sfi/sfistore.hh>
 
 gchar*
 bst_file_scan_find_key (const gchar *file,

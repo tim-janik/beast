@@ -15,7 +15,7 @@
  * with this library; if not, see http://www.gnu.org/copyleft/.
  */
 #include "sficxx.hh"
-#include "sfi.h"
+#include "sfi.hh"
 
 namespace Sfi {
 

@@ -14,10 +14,10 @@
  * A copy of the GNU Lesser General Public License should ship along
  * with this library; if not, see http://www.gnu.org/copyleft/.
  */
-#include "sfiglue.h"
-#include "sfiparams.h"
-#include "sfiglueproxy.h"
-#include "sfiustore.h"
+#include "sfiglue.hh"
+#include "sfiparams.hh"
+#include "sfiglueproxy.hh"
+#include "sfiustore.hh"
 #include <string.h>
 #include <gobject/gvaluecollector.h>
 

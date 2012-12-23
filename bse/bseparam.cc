@@ -14,8 +14,8 @@
  * A copy of the GNU Lesser General Public License should ship along
  * with this library; if not, see http://www.gnu.org/copyleft/.
  */
-#include "bseparam.h"
-#include "bseobject.h"
+#include "bseparam.hh"
+#include "bseobject.hh"
 
 
 #define NULL_CHECKED(x)         ((x) && (x)[0] ? x : NULL)

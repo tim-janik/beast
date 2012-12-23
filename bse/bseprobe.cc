@@ -15,10 +15,10 @@
  * with this library; if not, see http://www.gnu.org/copyleft/.
  */
 #include "bseprobe.genidl.hh"
-#include "bseengine.h"
+#include "bseengine.hh"
 #include "bseblockutils.hh"
-#include "gslcommon.h" /* for gsl_tick_stamp() */
-#include "gslfft.h"
+#include "gslcommon.hh" /* for gsl_tick_stamp() */
+#include "gslfft.hh"
 #include <stdexcept>
 #include <set>
 using namespace std;
@@ -733,8 +733,8 @@ BSE_CXX_REGISTER_ALL_TYPES_FROM_BSEPROBE_IDL();
 
 } // Bse
 
-/* --- bsesource.h bits --- */
-extern "C" {    // from bsesource.h
+/* --- bsesource.hh bits --- */
+extern "C" {    // from bsesource.hh
 using namespace Bse;
 
 void

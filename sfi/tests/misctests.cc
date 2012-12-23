@@ -17,7 +17,7 @@
 #undef G_LOG_DOMAIN
 #define  G_LOG_DOMAIN __FILE__
 // #define TEST_VERBOSE
-#include <sfi/sfitests.h>
+#include <sfi/sfitests.hh>
 #include <unistd.h>
 #include <string.h>
 #include <signal.h>	/* G_BREAKPOINT() */

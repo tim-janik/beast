@@ -14,10 +14,10 @@
  * A copy of the GNU Lesser General Public License should ship along
  * with this library; if not, see http://www.gnu.org/copyleft/.
  */
-#include "bsestandardsynths.h"
+#include "bsestandardsynths.hh"
 
-#include "bsesnet.h"
-#include "bsestandardosc.h"
+#include "bsesnet.hh"
+#include "bsestandardosc.hh"
 #include <zlib.h>
 #include <string.h>
 

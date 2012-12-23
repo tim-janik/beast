@@ -14,10 +14,10 @@
  * A copy of the GNU Lesser General Public License should ship along
  * with this library; if not, see http://www.gnu.org/copyleft/.
  */
-#include "sfistore.h"
-#include "sfiprimitives.h"
-#include "sfiserial.h"
-#include "sfiparams.h"
+#include "sfistore.hh"
+#include "sfiprimitives.hh"
+#include "sfiserial.hh"
+#include "sfiparams.hh"
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>

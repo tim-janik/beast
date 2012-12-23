@@ -14,16 +14,16 @@
  * A copy of the GNU Lesser General Public License should ship along
  * with this library; if not, see http://www.gnu.org/copyleft/.
  */
-#include "bseitem.h"
-#include "bsesuper.h"
-#include "bsesnet.h"
-#include "bsestorage.h"
-#include "bseprocedure.h"
-#include "bsemain.h"
-#include "bseparasite.h"
-#include "bseproject.h"
-#include "bsesong.h" // for song->musical_tuning
-#include "bseundostack.h"
+#include "bseitem.hh"
+#include "bsesuper.hh"
+#include "bsesnet.hh"
+#include "bsestorage.hh"
+#include "bseprocedure.hh"
+#include "bsemain.hh"
+#include "bseparasite.hh"
+#include "bseproject.hh"
+#include "bsesong.hh" // for song->musical_tuning
+#include "bseundostack.hh"
 #include <gobject/gvaluecollector.h>
 #include <string.h>
 

@@ -16,11 +16,11 @@
  */
 
 #include <bse/bseresampler.hh>
-#include <bse/bsemathsignal.h>
-#include <bse/bsemain.h>
+#include <bse/bsemathsignal.hh>
+#include <bse/bsemain.hh>
 #include <bse/bseblockutils.hh>
-#include <bse/gslfft.h>
-#include <sfi/sfitests.h>
+#include <bse/gslfft.hh>
+#include <sfi/sfitests.hh>
 #include <birnet/birnet.hh>
 #include <stdlib.h>
 #include <stdio.h>

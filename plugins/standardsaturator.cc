@@ -15,8 +15,8 @@
  * with this library; if not, see http://www.gnu.org/copyleft/.
  */
 #include "standardsaturator.genidl.hh"
-#include <bse/bseengine.h>
-#include <bse/bsemathsignal.h>
+#include <bse/bseengine.hh>
+#include <bse/bsemathsignal.hh>
 
 #define TEST_GNUPLOT    0
 

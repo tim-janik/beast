@@ -15,12 +15,12 @@
  * with this library; if not, see http://www.gnu.org/copyleft/.
  */
 #include <string.h>
-#include "bsesource.h"
+#include "bsesource.hh"
 
-#include "bsecontainer.h"
-#include "bsestorage.h"
-#include "gslcommon.h"
-#include "bseengine.h"
+#include "bsecontainer.hh"
+#include "bsestorage.hh"
+#include "gslcommon.hh"
+#include "bseengine.hh"
 
 
 /* --- macros --- */

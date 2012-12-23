@@ -19,7 +19,7 @@
 #include <map>
 #include <algorithm>
 #include "sfidl-namespace.hh"
-#include <sfi/glib-extra.h>
+#include <sfi/glib-extra.hh>
 
 using namespace Sfidl;
 

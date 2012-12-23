@@ -14,10 +14,10 @@
  * A copy of the GNU Lesser General Public License should ship along
  * with this library; if not, see http://www.gnu.org/copyleft/.
  */
-#include <bse/gslcommon.h>
-#include <bse/bsemath.h>
-#include <bse/bsemain.h>
-#include <bse/gslfft.h>
+#include <bse/gslcommon.hh>
+#include <bse/bsemath.hh>
+#include <bse/bsemain.hh>
+#include <bse/gslfft.hh>
 // #define TEST_VERBOSE
 #include <birnet/birnettests.h>
 #include <sys/time.h>

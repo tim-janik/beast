@@ -15,11 +15,11 @@
  * with this library; if not, see http://www.gnu.org/copyleft/.
  */
 
-#include <bse/bseengine.h>
-#include <bse/bsemathsignal.h>
+#include <bse/bseengine.hh>
+#include <bse/bsemathsignal.hh>
 
-#include <bse/gsldatautils.h>
-#include <bse/gslfft.h>
+#include <bse/gsldatautils.hh>
+#include <bse/gslfft.hh>
 #include <stdio.h>
 #include <errno.h>
 #include <assert.h>

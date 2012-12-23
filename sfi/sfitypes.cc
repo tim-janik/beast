@@ -14,13 +14,13 @@
  * A copy of the GNU Lesser General Public License should ship along
  * with this library; if not, see http://www.gnu.org/copyleft/.
  */
-#include "sfitypes.h"
-#include "sfivalues.h"
-#include "sfiparams.h"
-#include "sfiprimitives.h"
-#include "sfitime.h"
-#include "sfiglue.h"
-#include "sfifilecrawler.h"
+#include "sfitypes.hh"
+#include "sfivalues.hh"
+#include "sfiparams.hh"
+#include "sfiprimitives.hh"
+#include "sfitime.hh"
+#include "sfiglue.hh"
+#include "sfifilecrawler.hh"
 #include <string.h>
 
 

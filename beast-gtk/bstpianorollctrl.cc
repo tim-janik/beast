@@ -14,8 +14,8 @@
  * A copy of the GNU Lesser General Public License should ship along
  * with this library; if not, see http://www.gnu.org/copyleft/.
  */
-#include "bstpianorollctrl.h"
-#include "bsteventrollctrl.h"
+#include "bstpianorollctrl.hh"
+#include "bsteventrollctrl.hh"
 
 
 #define NOTE_LENGTH(self)       ((self)->note_rtools->action_id)

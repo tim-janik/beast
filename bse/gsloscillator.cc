@@ -14,9 +14,9 @@
  * A copy of the GNU Lesser General Public License should ship along
  * with this library; if not, see http://www.gnu.org/copyleft/.
  */
-#include "gsloscillator.h"
+#include "gsloscillator.hh"
 
-#include "bsemathsignal.h"
+#include "bsemathsignal.hh"
 
 #define	SIGNAL_LEVEL_INVAL	(-2.0)	/* trigger level-changed checks */
 
@@ -87,7 +87,7 @@ osc_update_pwm_offset (GslOscData *osc,
                                 const gfloat*,const gfloat*,const gfloat*, \
 		                const gfloat*,gfloat*,gfloat*)
 #define	GSL_INCLUDER_FILE	"gsloscillator-aux.cc"
-#include "gslincluder.h"
+#include "gslincluder.hh"
 #undef	OSC_INCLUDER_FLAGS
 
 /* pulse width modulation oscillator variants */
@@ -99,7 +99,7 @@ osc_update_pwm_offset (GslOscData *osc,
                                 const gfloat*,const gfloat*,const gfloat*, \
 		                const gfloat*,gfloat*,gfloat*)
 #define	GSL_INCLUDER_FILE	"gsloscillator-aux.cc"
-#include "gslincluder.h"
+#include "gslincluder.hh"
 #undef	OSC_INCLUDER_FLAGS
 
 

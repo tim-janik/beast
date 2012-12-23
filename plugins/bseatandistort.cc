@@ -14,9 +14,9 @@
  * A copy of the GNU Lesser General Public License should ship along
  * with this library; if not, see http://www.gnu.org/copyleft/.
  */
-#include "bseatandistort.h"
-#include <bse/bseengine.h>
-#include <bse/bsemathsignal.h>
+#include "bseatandistort.hh"
+#include <bse/bseengine.hh>
+#include <bse/bsemathsignal.hh>
 #include <bse/bsecxxplugin.hh>
 
 

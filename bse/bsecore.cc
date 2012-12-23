@@ -14,11 +14,11 @@
  * A copy of the GNU Lesser General Public License should ship along
  * with this library; if not, see http://www.gnu.org/copyleft/.
  */
-#include "bsetype.h"        /* import all required types first */
-#include "bsepart.h"
-#include "bsemain.h"
-#include "bseengine.h"
-#include "bsesequencer.h"
+#include "bsetype.hh"        /* import all required types first */
+#include "bsepart.hh"
+#include "bsemain.hh"
+#include "bseengine.hh"
+#include "bsesequencer.hh"
 #include "bsecxxplugin.hh" /* includes bsecore.genidl.hh for us */
 
 namespace Bse {

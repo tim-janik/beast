@@ -9,13 +9,13 @@ INCLUDES += -I$(top_srcdir) -I$(top_builddir) $(SFI_CFLAGS)
 DEFS     += -DG_LOG_DOMAIN=\"SFI\" -DG_DISABLE_CONST_RETURNS
 
 sfi_public_headers = $(strip \
-	sfistore.h	sficomwire.h	sfifilecrawler.h \
-	glib-extra.h			sfiwrapper.h	 \
-	sfivmarshal.h	sfiglue.h	sfigluecodec.h	sfiglueproxy.h	\
-	sfinote.h	sfiparams.h	sfiprimitives.h	sfiserial.h	\
-	sfitime.h	sfitypes.h	sfivalues.h	sfiustore.h	\
-	sficxx.hh	sfiring.h	sfimemory.h	sficomport.h	\
-	sfitests.h	sfi.h						\
+	sfistore.hh	sficomwire.hh	sfifilecrawler.hh \
+	glib-extra.hh			sfiwrapper.hh	 \
+	sfivmarshal.hh	sfiglue.hh	sfigluecodec.hh	sfiglueproxy.hh	\
+	sfinote.hh	sfiparams.hh	sfiprimitives.hh	sfiserial.hh	\
+	sfitime.hh	sfitypes.hh	sfivalues.hh	sfiustore.hh	\
+	sficxx.hh	sfiring.hh	sfimemory.hh	sficomport.hh	\
+	sfitests.hh	sfi.hh						\
 )
 sfi_all_sources = $(strip \
 	sfistore.cc	sficomwire.cc	sfifilecrawler.cc \
@@ -27,7 +27,7 @@ sfi_all_sources = $(strip \
 	$(conditional_toyprof_sources)	\
 )
 sfi_extra_sources = $(strip \
-	gbsearcharray.h \
+	gbsearcharray.hh \
 )
 sfi_built_sources = $(strip \
 )

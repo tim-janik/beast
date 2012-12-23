@@ -14,9 +14,9 @@
  * A copy of the GNU Lesser General Public License should ship along
  * with this library; if not, see http://www.gnu.org/copyleft/.
  */
-#include "bsemidinotifier.h"
-#include "bsemain.h"
-#include "gslcommon.h"
+#include "bsemidinotifier.hh"
+#include "bsemain.hh"
+#include "gslcommon.hh"
 #include "bsecxxplugin.hh"
 
 

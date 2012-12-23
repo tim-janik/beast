@@ -14,7 +14,7 @@
  * A copy of the GNU Lesser General Public License should ship along
  * with this library; if not, see http://www.gnu.org/copyleft/.
  */
-#include "gslvorbis-cutter.h"
+#include "gslvorbis-cutter.hh"
 #include <ogg/ogg.h>
 #include <vorbis/codec.h>
 #include <string.h>

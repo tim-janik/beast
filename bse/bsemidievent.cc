@@ -14,11 +14,11 @@
  * A copy of the GNU Lesser General Public License should ship along
  * with this library; if not, see http://www.gnu.org/copyleft/.
  */
-#include "bsemidievent.h"
+#include "bsemidievent.hh"
 
-#include "bseglue.h"
-#include "gslcommon.h"
-#include "bseieee754.h"
+#include "bseglue.hh"
+#include "gslcommon.hh"
+#include "bseieee754.hh"
 #include "bsecxxplugin.hh"
 
 #include <errno.h>

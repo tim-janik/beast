@@ -17,7 +17,7 @@
 #ifndef __BSE_CXX_BASE_H__
 #define __BSE_CXX_BASE_H__
 
-#include <bse/bsesource.h>
+#include <bse/bsesource.hh>
 #include <bse/bsecxxvalue.hh>
 #include <bse/bsecxxclosure.hh>
 

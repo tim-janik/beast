@@ -14,12 +14,12 @@
  * A copy of the GNU Lesser General Public License should ship along
  * with this library; if not, see http://www.gnu.org/copyleft/.
  */
-#include "gsldatahandle.h"
+#include "gsldatahandle.hh"
 
-#include "gslcommon.h"
-#include "gsldatacache.h"
-#include "gsldatautils.h"
-#include "gslfilehash.h"
+#include "gslcommon.hh"
+#include "gsldatacache.hh"
+#include "gsldatautils.hh"
+#include "gslfilehash.hh"
 
 #include <string.h>
 #include <errno.h>

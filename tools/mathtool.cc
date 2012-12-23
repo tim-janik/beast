@@ -15,11 +15,11 @@
  * with this library; if not, see http://www.gnu.org/copyleft/.
  */
 #define GSL_EXTENSIONS
-#include <bse/bsemain.h>
-#include <bse/gslcommon.h>
-#include <bse/gslfilter.h>
-#include <bse/bseloader.h>
-#include <bse/bsemathsignal.h>
+#include <bse/bsemain.hh>
+#include <bse/gslcommon.hh>
+#include <bse/gslfilter.hh>
+#include <bse/bseloader.hh>
+#include <bse/bsemathsignal.hh>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

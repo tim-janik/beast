@@ -14,15 +14,15 @@
  * A copy of the GNU Lesser General Public License should ship along
  * with this library; if not, see http://www.gnu.org/copyleft/.
  */
-#include "bsepart.h"
-#include "bsemain.h"
-#include "bsestorage.h"
-#include "bsesong.h"
-#include "bsetrack.h"
+#include "bsepart.hh"
+#include "bsemain.hh"
+#include "bsestorage.hh"
+#include "bsesong.hh"
+#include "bsetrack.hh"
 #include "bsecxxplugin.hh"
-#include "gslcommon.h"
-#include "bsemathsignal.h" // bse_semitone_table
-#include "bseieee754.h"
+#include "gslcommon.hh"
+#include "bsemathsignal.hh" // bse_semitone_table
+#include "bseieee754.hh"
 #include <stdlib.h>
 #include <string.h>
 

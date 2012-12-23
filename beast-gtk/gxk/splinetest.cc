@@ -16,7 +16,7 @@
  */
 #define _ISOC99_SOURCE
 #include <math.h>
-#include "gxk/gxkspline.h"
+#include "gxk/gxkspline.hh"
 #include <stdlib.h>
 
 static void

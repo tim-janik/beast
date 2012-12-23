@@ -14,9 +14,9 @@
  * A copy of the GNU Lesser General Public License should ship along
  * with this library; if not, see http://www.gnu.org/copyleft/.
  */
-#include "bsteventroll.h"
-#include "bstasciipixbuf.h"
-#include "bstskinconfig.h"
+#include "bsteventroll.hh"
+#include "bstasciipixbuf.hh"
+#include "bstskinconfig.hh"
 #include <string.h>
 
 

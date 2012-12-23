@@ -40,7 +40,7 @@ public:
 };
 
 /* include generated CxxClosure* Closure (class T*, ... (T::*f) (...)); constructors */
-#include <bse/bsegenclosures.h>
+#include <bse/bsegenclosures.hh>
 
 } // Bse
 

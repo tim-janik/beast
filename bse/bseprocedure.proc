@@ -14,12 +14,12 @@
  * A copy of the GNU Lesser General Public License should ship along
  * with this library; if not, see http://www.gnu.org/copyleft/.
  */
-#include "bseplugin.h"
-#include "bseprocedure.h"
-#include "bsescripthelper.h"
-#include "bseserver.h"
-#include "bsemath.h"    /* bse_temp_freq */
-#include "bsemain.h"
+#include "bseplugin.hh"
+#include "bseprocedure.hh"
+#include "bsescripthelper.hh"
+#include "bseserver.hh"
+#include "bsemath.hh"    /* bse_temp_freq */
+#include "bsemain.hh"
 #include "bsecxxplugin.hh"
 #include <string.h>     /* strchr */
 #include <stdlib.h>     /* strtol */

@@ -14,20 +14,20 @@
  * A copy of the GNU Lesser General Public License should ship along
  * with this library; if not, see http://www.gnu.org/copyleft/.
  */
-#include <bse/bseplugin.h>
-#include <bse/bseprocedure.h>
-#include <bse/bseproject.h>
-#include <bse/bsestorage.h>
-#include <bse/bsesong.h>
-#include <bse/bseundostack.h>
-#include <bse/bsewaverepo.h>
-#include <bse/bsecsynth.h>
-#include <bse/bsemidisynth.h>
-#include <bse/bsedatapocket.h>
-#include <bse/bsemidifile.h>
-#include <bse/bsemidireceiver.h>
-#include <bse/bsemidinotifier.h>
-#include <bse/bseengine.h>
+#include <bse/bseplugin.hh>
+#include <bse/bseprocedure.hh>
+#include <bse/bseproject.hh>
+#include <bse/bsestorage.hh>
+#include <bse/bsesong.hh>
+#include <bse/bseundostack.hh>
+#include <bse/bsewaverepo.hh>
+#include <bse/bsecsynth.hh>
+#include <bse/bsemidisynth.hh>
+#include <bse/bsedatapocket.hh>
+#include <bse/bsemidifile.hh>
+#include <bse/bsemidireceiver.hh>
+#include <bse/bsemidinotifier.hh>
+#include <bse/bseengine.hh>
 #include "bsecxxplugin.hh"
 
 

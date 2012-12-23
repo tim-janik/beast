@@ -14,9 +14,9 @@
  * A copy of the GNU Lesser General Public License should ship along
  * with this library; if not, see http://www.gnu.org/copyleft/.
  */
-#include "bstfiledialog.h"
-#include "bstmenus.h"
-#include "bsttreestores.h"
+#include "bstfiledialog.hh"
+#include "bstmenus.hh"
+#include "bsttreestores.hh"
 #include <unistd.h>
 #include <stdio.h>
 #include <string.h>

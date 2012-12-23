@@ -14,14 +14,14 @@
  * A copy of the GNU Lesser General Public License should ship along
  * with this library; if not, see http://www.gnu.org/copyleft/.
  */
-#include "bsescripthelper.h"
+#include "bsescripthelper.hh"
 
 #include "topconfig.h"
-#include "bsecategories.h"
-#include "bsejanitor.h"
-#include "bseserver.h"
-#include "bseglue.h"
-#include "bsemain.h"
+#include "bsecategories.hh"
+#include "bsejanitor.hh"
+#include "bseserver.hh"
+#include "bseglue.hh"
+#include "bsemain.hh"
 #include <string.h>
 #include <stdlib.h>
 

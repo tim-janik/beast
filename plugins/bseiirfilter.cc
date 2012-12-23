@@ -14,9 +14,9 @@
  * A copy of the GNU Lesser General Public License should ship along
  * with this library; if not, see http://www.gnu.org/copyleft/.
  */
-#include "bseiirfilter.h"
-#include <bse/bseengine.h>
-#include <bse/gslfilter.h>
+#include "bseiirfilter.hh"
+#include <bse/bseengine.hh>
+#include <bse/gslfilter.hh>
 #include <bse/bsecxxplugin.hh>
 
 #include <string.h>

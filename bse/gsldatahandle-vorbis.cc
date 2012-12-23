@@ -14,9 +14,9 @@
  * A copy of the GNU Lesser General Public License should ship along
  * with this library; if not, see http://www.gnu.org/copyleft/.
  */
-#include "gsldatahandle-vorbis.h"
+#include "gsldatahandle-vorbis.hh"
 
-#include "gslfilehash.h"
+#include "gslfilehash.hh"
 #include <ogg/ogg.h>
 #include <vorbis/vorbisfile.h>
 #include <errno.h>
@@ -449,7 +449,7 @@ gsl_data_handle_new_ogg_vorbis_zoffset (const gchar *file_name,
 }
 
 /* --- writing vorbis files --- */
-#include "gslvorbis-cutter.h"
+#include "gslvorbis-cutter.hh"
 
 struct GslVorbis1Handle
 {

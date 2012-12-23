@@ -14,9 +14,9 @@
  * A copy of the GNU Lesser General Public License should ship along
  * with this library; if not, see http://www.gnu.org/copyleft/.
  */
-#include "sfifilecrawler.h"
-#include "sfiprimitives.h"
-#include "sfiwrapper.h"
+#include "sfifilecrawler.hh"
+#include "sfiprimitives.hh"
+#include "sfiwrapper.hh"
 #include "topconfig.h"
 #include <string.h>
 #include <sys/types.h>

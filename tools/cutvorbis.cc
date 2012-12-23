@@ -14,8 +14,8 @@
  * A copy of the GNU Lesser General Public License should ship along
  * with this library; if not, see http://www.gnu.org/copyleft/.
  */
-#include <bse/gslvorbis-cutter.h>
-#include <bse/bsemain.h>
+#include <bse/gslvorbis-cutter.hh>
+#include <bse/bsemain.hh>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>

@@ -14,15 +14,15 @@
  * A copy of the GNU Lesser General Public License should ship along
  * with this library; if not, see http://www.gnu.org/copyleft/.
  */
-#include "gxkradget.h"
-#include "gxkradgetfactory.h"
-#include "gxkauxwidgets.h"
-#include "gxkmenubutton.h"
-#include "gxknotebook.h"
+#include "gxkradget.hh"
+#include "gxkradgetfactory.hh"
+#include "gxkauxwidgets.hh"
+#include "gxkmenubutton.hh"
+#include "gxknotebook.hh"
 #include "glewidgets.h"
-#include "gxksimplelabel.h"
-#include "gxkracktable.h"
-#include "gxkrackitem.h"
+#include "gxksimplelabel.hh"
+#include "gxkracktable.hh"
+#include "gxkrackitem.hh"
 #include <libintl.h>
 #include <unistd.h>
 #include <sys/types.h>

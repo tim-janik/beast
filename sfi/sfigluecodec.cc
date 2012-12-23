@@ -16,8 +16,8 @@
  */
 #undef  G_LOG_DOMAIN
 #define	G_LOG_DOMAIN	"SFI-GLUE"
-#include "sfigluecodec.h"
-#include "sfiglueproxy.h"
+#include "sfigluecodec.hh"
+#include "sfiglueproxy.hh"
 
 
 /* --- prototypes --- */

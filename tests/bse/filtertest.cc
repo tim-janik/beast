@@ -18,10 +18,10 @@
 #include <vector>
 #include <set>
 #include <complex>
-#include <bse/bsemain.h>
-#include <bse/bsemath.h>
-#include <bse/bsemathsignal.h>
-#include <bse/gslfilter.h>
+#include <bse/bsemain.hh>
+#include <bse/bsemath.hh>
+#include <bse/bsemathsignal.hh>
+#include <bse/gslfilter.hh>
 //#define TEST_VERBOSE
 #include <birnet/birnettests.h>
 #include "topconfig.h"

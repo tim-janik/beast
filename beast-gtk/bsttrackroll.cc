@@ -14,8 +14,8 @@
  * A copy of the GNU Lesser General Public License should ship along
  * with this library; if not, see http://www.gnu.org/copyleft/.
  */
-#include "bsttrackroll.h"
-#include "bstsnifferscope.h"
+#include "bsttrackroll.hh"
+#include "bstsnifferscope.hh"
 #include <string.h>
 
 

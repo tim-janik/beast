@@ -16,7 +16,7 @@
  * with this library; if not, see http://www.gnu.org/copyleft/.
  */
 #include "bseresampler.hh"
-#include "gsldatahandle.h"
+#include "gsldatahandle.hh"
 #include <sfi/sficxx.hh>
 #include <vector>
 

@@ -14,8 +14,8 @@
  * A copy of the GNU Lesser General Public License should ship along
  * with this library; if not, see http://www.gnu.org/copyleft/.
  */
-#include "bseengine.h"
-#include "bsepcmdevice.h"
+#include "bseengine.hh"
+#include "bsepcmdevice.hh"
 
 
 /* --- typedefs & structures --- */

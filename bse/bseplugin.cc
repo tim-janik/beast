@@ -14,13 +14,13 @@
  * A copy of the GNU Lesser General Public License should ship along
  * with this library; if not, see http://www.gnu.org/copyleft/.
  */
-#include "bseplugin.h"
+#include "bseplugin.hh"
 
-#include "bsecategories.h"
-#include "bseprocedure.h"
-#include "bseobject.h"
-#include "bseenums.h"
-#include "bsemain.h"
+#include "bsecategories.hh"
+#include "bseprocedure.hh"
+#include "bseobject.hh"
+#include "bseenums.hh"
+#include "bsemain.hh"
 #include <gmodule.h>
 #include <string.h>
 #include <fcntl.h>

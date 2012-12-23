@@ -17,7 +17,7 @@
  */
 #include "artscompressor.genidl.hh"
 
-#include <bse/bsemath.h>
+#include <bse/bsemath.hh>
 #include <string.h>
 
 

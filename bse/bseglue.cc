@@ -14,12 +14,12 @@
  * A copy of the GNU Lesser General Public License should ship along
  * with this library; if not, see http://www.gnu.org/copyleft/.
  */
-#include "bseglue.h"
-#include "bseparam.h"
-#include "bseitem.h"
-#include "bseprocedure.h"
-#include "bsecategories.h"
-#include "bsemain.h"
+#include "bseglue.hh"
+#include "bseparam.hh"
+#include "bseitem.hh"
+#include "bseprocedure.hh"
+#include "bsecategories.hh"
+#include "bsemain.hh"
 #include <string.h>
 
 

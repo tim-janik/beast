@@ -14,11 +14,11 @@
  * A copy of the GNU Lesser General Public License should ship along
  * with this library; if not, see http://www.gnu.org/copyleft/.
  */
-#include "bstutils.h"
-#include "bstqsampler.h"
+#include "bstutils.hh"
+#include "bstqsampler.hh"
 // #include "bstcellptrack.h"
-// #include <bse/gsldatacache.h>
-// #include <bse/gsldatahandle.h>
+// #include <bse/gsldatacache.hh>
+// #include <bse/gsldatahandle.hh>
 #include <string.h>
 
 #include <math.h>
@@ -380,7 +380,7 @@ score_loop (GslDataHandle *shandle,
   return score;
 }
 
-#include <bse/gsldatautils.h>
+#include <bse/gsldatautils.hh>
 
 static void
 find (WaveView *view)

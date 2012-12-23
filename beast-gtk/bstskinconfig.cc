@@ -14,7 +14,7 @@
  * A copy of the GNU Lesser General Public License should ship along
  * with this library; if not, see http://www.gnu.org/copyleft/.
  */
-#include "bstskinconfig.h"
+#include "bstskinconfig.hh"
 #include <string.h>
 
 
@@ -201,7 +201,7 @@ bst_skin_config_notify (void)
 #include <fcntl.h>
 #include <errno.h>
 #include "topconfig.h"          /* BST_VERSION */
-#include <sfi/sfistore.h>       /* we rely on internal API here */
+#include <sfi/sfistore.hh>       /* we rely on internal API here */
 BseErrorType
 bst_skin_dump (const gchar *file_name)
 {

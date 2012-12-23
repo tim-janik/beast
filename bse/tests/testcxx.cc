@@ -15,7 +15,7 @@
  * with this library; if not, see http://www.gnu.org/copyleft/.
  */
 #include <bse/bsecxxbase.hh>
-#include <bse/bsemain.h>
+#include <bse/bsemain.hh>
 #include <bse/bsebusmodule.genidl.hh>
 
 namespace {

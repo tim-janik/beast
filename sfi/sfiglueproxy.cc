@@ -15,12 +15,12 @@
  * with this library; if not, see http://www.gnu.org/copyleft/.
  */
 #include <string.h>
-#include "sfiglueproxy.h"
-#include "sfiglue.h"
-#include "sfiustore.h"
-#include "sfivmarshal.h"
+#include "sfiglueproxy.hh"
+#include "sfiglue.hh"
+#include "sfiustore.hh"
+#include "sfivmarshal.hh"
 #include <gobject/gvaluecollector.h>
-#include <sfi/gbsearcharray.h>
+#include <sfi/gbsearcharray.hh>
 
 
 /* --- macros --- */

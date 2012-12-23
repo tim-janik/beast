@@ -19,7 +19,7 @@
 #define __BSE_BLOCK_UTILS_H__
 
 #include <wchar.h> /* wmemset */
-#include <bse/bseieee754.h>
+#include <bse/bseieee754.hh>
 
 G_BEGIN_DECLS
 

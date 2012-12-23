@@ -15,10 +15,10 @@
  * with this library; if not, see http://www.gnu.org/copyleft/.
  */
 #include <string.h>
-#include "sfiparams.h"
-#include "sfiprimitives.h"
-#include "sfinote.h"
-#include "sfitime.h"
+#include "sfiparams.hh"
+#include "sfiprimitives.hh"
+#include "sfinote.hh"
+#include "sfitime.hh"
 
 #define NULL_CHECKED(x)         ((x) && (x)[0] ? x : NULL)
 

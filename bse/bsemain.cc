@@ -14,25 +14,25 @@
  * A copy of the GNU Lesser General Public License should ship along
  * with this library; if not, see http://www.gnu.org/copyleft/.
  */
-#include "bsemain.h"
+#include "bsemain.hh"
 #include "topconfig.h"
-#include "bseserver.h"
-#include "bsesequencer.h"
-#include "bsejanitor.h"
-#include "bseplugin.h"
-#include "bsecategories.h"
-#include "bsemidireceiver.h"
-#include "bsemathsignal.h"
-#include "gsldatacache.h"
-#include "bsepcmdevice.h"
-#include "bsemididevice.h"
-#include "bseengine.h"
+#include "bseserver.hh"
+#include "bsesequencer.hh"
+#include "bsejanitor.hh"
+#include "bseplugin.hh"
+#include "bsecategories.hh"
+#include "bsemidireceiver.hh"
+#include "bsemathsignal.hh"
+#include "gsldatacache.hh"
+#include "bsepcmdevice.hh"
+#include "bsemididevice.hh"
+#include "bseengine.hh"
 #include "bseblockutils.hh" /* bse_block_impl_name() */
 #include <string.h>
 #include <stdlib.h>
 #include <sys/types.h>
 #include <unistd.h>
-#include <sfi/sfitests.h> /* sfti_test_init() */
+#include <sfi/sfitests.hh> /* sfti_test_init() */
 
 using namespace Birnet;
 
@@ -45,7 +45,7 @@ static void	bse_async_parse_args	(gint	        *argc_p,
 
 
 /* --- variables --- */
-/* from bse.h */
+/* from bse.hh */
 const guint		 bse_major_version = BSE_MAJOR_VERSION;
 const guint		 bse_minor_version = BSE_MINOR_VERSION;
 const guint		 bse_micro_version = BSE_MICRO_VERSION;

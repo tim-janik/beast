@@ -25,7 +25,7 @@
 #include "sfidl-namespace.hh"
 #include "sfidl-options.hh"
 #include "sfidl-parser.hh"
-#include "sfiparams.h" /* scatId (SFI_SCAT_*) */
+#include "sfiparams.hh" /* scatId (SFI_SCAT_*) */
 
 using namespace Sfidl;
 

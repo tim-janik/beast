@@ -14,11 +14,11 @@
  * A copy of the GNU Lesser General Public License should ship along
  * with this library; if not, see http://www.gnu.org/copyleft/.
  */
-#include "bsesnooper.h"
+#include "bsesnooper.hh"
 
-#include <bse/bseengine.h>
-#include <bse/bseieee754.h>
-#include <bse/bsecategories.h>
+#include <bse/bseengine.hh>
+#include <bse/bseieee754.hh>
+#include <bse/bsecategories.hh>
 
 
 enum {

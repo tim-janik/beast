@@ -14,9 +14,9 @@
  * A copy of the GNU Lesser General Public License should ship along
  * with this library; if not, see http://www.gnu.org/copyleft/.
  */
-#include "bstrackview.h"
-#include "bstrackitem.h"
-#include "gxk/gxkrackeditor.h"
+#include "bstrackview.hh"
+#include "bstrackitem.hh"
+#include "gxk/gxkrackeditor.hh"
 
 /* --- prototypes --- */
 static void     rack_view_class_init         (BstRackViewClass *klass);

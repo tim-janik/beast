@@ -14,10 +14,10 @@
  * A copy of the GNU Lesser General Public License should ship along
  * with this library; if not, see http://www.gnu.org/copyleft/.
  */
-#include "bsenote.h"
-#include "bseutils.h"
-#include "bseieee754.h"
-#include "bsemathsignal.h"
+#include "bsenote.hh"
+#include "bseutils.hh"
+#include "bseieee754.hh"
+#include "bsemathsignal.hh"
 #include <string.h>
 #include <birnet/birnet.hh>
 

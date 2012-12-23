@@ -14,20 +14,20 @@
  * A copy of the GNU Lesser General Public License should ship along
  * with this library; if not, see http://www.gnu.org/copyleft/.
  */
-#include "bsesong.h"
-#include "bsemathsignal.h"
-#include "bsetrack.h"
-#include "bsepart.h"
-#include "bsebus.h"
-#include "bsepcmoutput.h"
-#include "bseproject.h"
-#include "bsemidireceiver.h"
-#include "bsestorage.h"
-#include "bsemain.h"
-#include "bsecsynth.h"
-#include "bsesequencer.h"
-#include "bsesubsynth.h"
-#include "bseengine.h"	// FIXME: for bse_engine_sample_freq()
+#include "bsesong.hh"
+#include "bsemathsignal.hh"
+#include "bsetrack.hh"
+#include "bsepart.hh"
+#include "bsebus.hh"
+#include "bsepcmoutput.hh"
+#include "bseproject.hh"
+#include "bsemidireceiver.hh"
+#include "bsestorage.hh"
+#include "bsemain.hh"
+#include "bsecsynth.hh"
+#include "bsesequencer.hh"
+#include "bsesubsynth.hh"
+#include "bseengine.hh"	// FIXME: for bse_engine_sample_freq()
 #include "bsecxxplugin.hh"
 #include <string.h>
 

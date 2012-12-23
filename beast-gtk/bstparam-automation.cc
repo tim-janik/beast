@@ -17,7 +17,7 @@
 
 
 /* --- automation setup editor --- */
-#include "bstprocedure.h"
+#include "bstprocedure.hh"
 
 static void
 param_automation_dialog_cancel (GxkDialog *dialog)

@@ -14,12 +14,12 @@
  * A copy of the GNU Lesser General Public License should ship along
  * with this library; if not, see http://www.gnu.org/copyleft/.
  */
-#include	"bsepcmdevice-oss.h"
+#include	"bsepcmdevice-oss.hh"
 
 #include	"topconfig.h"
 
-#include	"gsldatautils.h"
-#include	"gslcommon.h" // FIXME: remove
+#include	"gsldatautils.hh"
+#include	"gslcommon.hh" // FIXME: remove
 
 #ifndef	BSE_PCM_DEVICE_CONF_OSS
 BSE_DUMMY_TYPE (BsePcmDeviceOSS);

@@ -14,15 +14,15 @@
  * A copy of the GNU Lesser General Public License should ship along
  * with this library; if not, see http://www.gnu.org/copyleft/.
  */
-#include <sfi/glib-extra.h>
-#include "bstgrowbar.h"
-#include "bstdefs.h"
+#include <sfi/glib-extra.hh>
+#include "bstgrowbar.hh"
+#include "bstdefs.hh"
 #include <gtk/gtkhbox.h>
 #include <gtk/gtkvbox.h>
 #include <gtk/gtkbutton.h>
 #include <gtk/gtkhscrollbar.h>
 #include <gtk/gtkvscrollbar.h>
-#include <gxk/gxkutils.h>
+#include <gxk/gxkutils.hh>
 
 
 /* --- prototypes --- */

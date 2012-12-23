@@ -6,9 +6,9 @@ include $(top_srcdir)/Makefile.decl
 
 SUBDIRS = icons zintern . tests
 
-# need -I$(top_srcdir) for <bse/bsedefs.h>
+# need -I$(top_srcdir) for <bse/bsedefs.hh>
 # need -I$(top_builddir) for <sfi/sficonfig.h>
-# need -I$(srcdir) for "bseserver.h" in .genprc.cc
+# need -I$(srcdir) for "bseserver.hh" in .genprc.cc
 # need -I. (builddir) for "bsecore.genidl.hh" in bsecore.cc
 INCLUDES += -I$(top_srcdir) -I$(top_builddir) -I$(srcdir) -I. $(BSE_CFLAGS) -DG_DISABLE_DEPRECATED -DG_DISABLE_CONST_RETURNS
 DEFS     += $(strip \
@@ -21,41 +21,41 @@ DEFS     += $(strip \
 #
 # BSE public header files
 bse_public_headers = $(strip \
-	gsldefs.h \
-	gslfft.h		gsloscillator.h	gsldatahandle.h	gslwavechunk.h \
-	gslfilter.h		gslcommon.h \
-	gsldatahandle-vorbis.h	gslvorbis-enc.h	gsldatacache.h	gslvorbis-cutter.h \
-	gsldatahandle-mad.h	           	gslfilehash.h	gsldatautils.h	\
-	gslwaveosc.h		gslosctable.h	gslmagic.h	\
+	gsldefs.hh \
+	gslfft.hh		gsloscillator.hh	gsldatahandle.hh	gslwavechunk.hh \
+	gslfilter.hh		gslcommon.hh \
+	gsldatahandle-vorbis.hh	gslvorbis-enc.hh	gsldatacache.hh	gslvorbis-cutter.hh \
+	gsldatahandle-mad.hh	           	gslfilehash.hh	gsldatautils.hh	\
+	gslwaveosc.hh		gslosctable.hh	gslmagic.hh	\
 	\
 	bsegentypes.h \
 	\
-	bse.h	bsedefs.h	bseexports.h	bseconfig.h	bsegenclosures.h \
-	bseincluder.h	ladspa.h	bseenginenode.h bseieee754.h \
+	bse.hh	bsedefs.hh	bseexports.hh	bseconfig.h	bsegenclosures.hh \
+	bseincluder.hh	ladspa.hh	bseenginenode.hh bseieee754.hh \
 	\
-	bseengine.h		bseenginemaster.h	bseengineschedule.h		bseengineutils.h \
-	bsebus.h		bsecategories.h 	\
-	bsefilter.h    		bsebiquadfilter.h	\
-	bseconstant.h		bseconstvalues.h	bsecontainer.h			bsecontextmerger.h \
-	bsedatapocket.h		bseeditablesample.h	bseenums.h			bsegconfig.h \
-	bseglobals.h		bseglue.h		bseitem.h			bsejanitor.h \
-	bsemain.h		bsemath.h		bsemathsignal.h			bseladspa.h \
-	bsemidicontroller.h	bsemididevice.h		bsedevice.h 			\
-	bsemididevice-null.h	bsemididevice-oss.h	bsemidievent.h			bsemidinotifier.h \
-	bsemidireceiver.h	bsemidisynth.h		bseobject.h			bsepart.h \
-	bsepcminput.h		bsepcmoutput.h		bseparam.h			bseparasite.h \
-	bsepcmdevice.h		bsepcmdevice-oss.h	bsepcmdevice-null.h		bseplugin.h \
-	bseprocedure.h		bseproject.h		bsescripthelper.h		bseserver.h \
-	bsesnet.h		bsesnooper.h		bsesong.h			bsesequencer.h \
-	bsesource.h		bsestandardosc.h	bsestandardsynths.h		bsestorage.h \
-	bseinstrumentoutput.h	bsesubiport.h		bseinstrumentinput.h		bsesuboport.h \
-	bsesubsynth.h		bsesuper.h		bsetrack.h			bsetype.h \
-	bseutils.h		bsemidivoice.h		bsewave.h			bsewaveosc.h \
-	bsecsynth.h		bsewaverepo.h		bseladspamodule.h		bsepcmwriter.h \
-	bsecompat.h		bseundostack.h		bsemidiinput.h			bsemididecoder.h \
-	bsenote.h		bsemidifile.h		bseblockutils.hh		\
+	bseengine.hh		bseenginemaster.hh	bseengineschedule.hh		bseengineutils.hh \
+	bsebus.hh		bsecategories.hh 	\
+	bsefilter.hh    		bsebiquadfilter.hh	\
+	bseconstant.hh		bseconstvalues.hh	bsecontainer.hh			bsecontextmerger.hh \
+	bsedatapocket.hh		bseeditablesample.hh	bseenums.hh			bsegconfig.hh \
+	bseglobals.hh		bseglue.hh		bseitem.hh			bsejanitor.hh \
+	bsemain.hh		bsemath.hh		bsemathsignal.hh			bseladspa.hh \
+	bsemidicontroller.hh	bsemididevice.hh		bsedevice.hh 			\
+	bsemididevice-null.hh	bsemididevice-oss.hh	bsemidievent.hh			bsemidinotifier.hh \
+	bsemidireceiver.hh	bsemidisynth.hh		bseobject.hh			bsepart.hh \
+	bsepcminput.hh		bsepcmoutput.hh		bseparam.hh			bseparasite.hh \
+	bsepcmdevice.hh		bsepcmdevice-oss.hh	bsepcmdevice-null.hh		bseplugin.hh \
+	bseprocedure.hh		bseproject.hh		bsescripthelper.hh		bseserver.hh \
+	bsesnet.hh		bsesnooper.hh		bsesong.hh			bsesequencer.hh \
+	bsesource.hh		bsestandardosc.hh	bsestandardsynths.hh		bsestorage.hh \
+	bseinstrumentoutput.hh	bsesubiport.hh		bseinstrumentinput.hh		bsesuboport.hh \
+	bsesubsynth.hh		bsesuper.hh		bsetrack.hh			bsetype.hh \
+	bseutils.hh		bsemidivoice.hh		bsewave.hh			bsewaveosc.hh \
+	bsecsynth.hh		bsewaverepo.hh		bseladspamodule.hh		bsepcmwriter.hh \
+	bsecompat.hh		bseundostack.hh		bsemidiinput.hh			bsemididecoder.hh \
+	bsenote.hh		bsemidifile.hh		bseblockutils.hh		\
 	bsecxxvalue.hh		bsecxxutils.hh		bsecxxbase.hh			bsecxxclosure.hh \
-	bsecxxarg.hh		bsecxxmodule.hh		bsecxxplugin.hh			bseloader.h \
+	bsecxxarg.hh		bsecxxmodule.hh		bsecxxplugin.hh			bseloader.hh \
 	bseresampler.hh		bseresamplerimpl.hh	\
 )
 # BSE C & C++ sources
@@ -126,7 +126,7 @@ EXTRA_DIST += $(strip \
 	bseconfig.h.in	bsepcmmodule.cc				\
 	bsewave.header						\
 	gsl-fftgen.pl	gsl-fftconf.sh	gsloscillator-aux.cc	\
-	gslincluder.h	gslwaveosc-aux.cc			\
+	gslincluder.hh	gslwaveosc-aux.cc			\
 )
 
 # -pthread -> -lpthread hack (required for libtool library linkage)
@@ -173,7 +173,7 @@ endif
 # gslfft.cc
 GENERATED += gslfft.cc
 $(srcdir)/gslfft.cc: @PERLRULE@ $(srcdir)/gsl-fftgen.pl $(srcdir)/gsl-fftconf.sh
-	$(srcdir)/gsl-fftconf.sh '$(PERL) $(srcdir)/gsl-fftgen.pl' \"gslfft.h\" >$@
+	$(srcdir)/gsl-fftconf.sh '$(PERL) $(srcdir)/gsl-fftgen.pl' \"gslfft.hh\" >$@
 # bsegentypes.h
 GENERATED_EXTRA_DIST += bsegentypes.h
 $(libbse_la_OBJECTS): bsegentypes.h

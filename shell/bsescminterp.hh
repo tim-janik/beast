@@ -17,7 +17,7 @@
 #ifndef __BSE_SCM_INTERP_H__
 #define __BSE_SCM_INTERP_H__
 
-#include <bse/bse.h>
+#include <bse/bse.hh>
 #include <guile/gh.h>
 
 G_BEGIN_DECLS

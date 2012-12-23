@@ -15,10 +15,10 @@
  * A copy of the GNU Lesser General Public License should ship along
  * with this library; if not, see http://www.gnu.org/copyleft/.
  */
-#include <bse/gsldatahandle.h>
-#include <bse/gsldatautils.h>
-#include <bse/bse.h>
-#include <bse/bsemain.h>
+#include <bse/gsldatahandle.hh>
+#include <bse/gsldatautils.hh>
+#include <bse/bse.hh>
+#include <bse/bsemain.hh>
 #include <stdlib.h>
 
 /* --- loop handle: reference code --- */

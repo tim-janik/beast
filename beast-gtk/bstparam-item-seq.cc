@@ -17,7 +17,7 @@
 
 
 /* --- item sequence editors --- */
-#include "bstitemseqdialog.h"
+#include "bstitemseqdialog.hh"
 static void
 param_item_seq_changed (gpointer             data,
                         BseItemSeq          *iseq,

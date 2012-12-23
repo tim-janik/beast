@@ -14,11 +14,11 @@
  * A copy of the GNU Lesser General Public License should ship along
  * with this library; if not, see http://www.gnu.org/copyleft/.
  */
-#include "bsemididevice-oss.h"
-#include "bseserver.h"
-#include "bsemididecoder.h"
-#include "gslcommon.h" // FIXME: remove
-#include "bsesequencer.h"
+#include "bsemididevice-oss.hh"
+#include "bseserver.hh"
+#include "bsemididecoder.hh"
+#include "gslcommon.hh" // FIXME: remove
+#include "bsesequencer.hh"
 #include "topconfig.h"
 
 #ifndef	BSE_MIDI_DEVICE_CONF_OSS

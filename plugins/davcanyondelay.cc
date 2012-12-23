@@ -15,11 +15,11 @@
  * A copy of the GNU Lesser General Public License should ship along
  * with this library; if not, see http://www.gnu.org/copyleft/.
  */
-#include "davcanyondelay.h"
+#include "davcanyondelay.hh"
 
-#include <bse/bseengine.h>
+#include <bse/bseengine.hh>
 #include <bse/bsecxxplugin.hh>
-#include <bse/bsemathsignal.h>
+#include <bse/bsemathsignal.hh>
 #include <string.h>
 
 

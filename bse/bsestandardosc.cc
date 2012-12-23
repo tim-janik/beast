@@ -14,10 +14,10 @@
  * A copy of the GNU Lesser General Public License should ship along
  * with this library; if not, see http://www.gnu.org/copyleft/.
  */
-#include "bsestandardosc.h"
-#include "bsecategories.h"
-#include "bseengine.h"
-#include "bsemathsignal.h"
+#include "bsestandardosc.hh"
+#include "bsecategories.hh"
+#include "bseengine.hh"
+#include "bsemathsignal.hh"
 
 
 #define	FRAC_N_BITS	(19)

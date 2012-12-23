@@ -14,11 +14,11 @@
  * A copy of the GNU Lesser General Public License should ship along
  * with this library; if not, see http://www.gnu.org/copyleft/.
  */
-#include "bsedatapocket.h"
+#include "bsedatapocket.hh"
 #include "bsecxxplugin.hh"
 
-#include "bsemain.h"
-#include "bsestorage.h"
+#include "bsemain.hh"
+#include "bsestorage.hh"
 
 #include <string.h>
 

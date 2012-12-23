@@ -15,10 +15,10 @@
  * with this library; if not, see http://www.gnu.org/copyleft/.
  */
 #include "topconfig.h"  /* BST_PATH_KEYS */
-#include "bstkeybindings.h"
-#include "bstauxdialogs.h"
-#include "bstpatternctrl.h"
-#include "bstfiledialog.h"
+#include "bstkeybindings.hh"
+#include "bstauxdialogs.hh"
+#include "bstpatternctrl.hh"
+#include "bstfiledialog.hh"
 #include <string.h>
 
 enum {
@@ -601,7 +601,7 @@ bst_key_binding_item_pspec (void)
 #include <fcntl.h>
 #include <errno.h>
 #include "topconfig.h"          /* BST_VERSION */
-#include <sfi/sfistore.h>       /* we rely on internal API here */
+#include <sfi/sfistore.hh>       /* we rely on internal API here */
 const gchar*
 bst_key_binding_rcfile (void)
 {

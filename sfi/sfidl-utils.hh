@@ -18,7 +18,7 @@
 #ifndef _SFIDL_UTILS_HH_
 #define _SFIDL_UTILS_HH_
 
-#include <sfi/glib-extra.h>
+#include <sfi/glib-extra.hh>
 #include <birnet/birnet.hh>
 #include <list>
 #include <vector>

@@ -18,8 +18,8 @@
 #define	__SFI_UTILS_H__
 
 #include <math.h>
-#include <bse/gsldefs.h>
-#include <sfi/sfi.h>
+#include <bse/gsldefs.hh>
+#include <sfi/sfi.hh>
 
 G_BEGIN_DECLS
 

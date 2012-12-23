@@ -15,7 +15,7 @@
  * with this library; if not, see http://www.gnu.org/copyleft/.
  */
 #include "bsecontribsampleandhold.genidl.hh"
-#include <bse/bseengine.h>
+#include <bse/bseengine.hh>
 
 namespace Bse { namespace Contrib {
 
