@@ -659,8 +659,7 @@ bse_object_remove_reemit (gpointer     src_object,
 	    {
 	      g_hash_table_remove (eclosures_ht, e);
 	      g_signal_handlers_disconnect_matched (e->src_object,
-                                                    GSignalMatchType (G_SIGNAL_MATCH_CLOSURE |
-                                                                      G_SIGNAL_MATCH_ID | G_SIGNAL_MATCH_DETAIL),
+                                                    G_SIGNAL_MATCH_CLOSURE | G_SIGNAL_MATCH_ID | G_SIGNAL_MATCH_DETAIL,
 						    e->src_signal, e->src_detail,
 						    &e->closure, NULL, NULL);
 	      g_closure_invalidate (&e->closure);

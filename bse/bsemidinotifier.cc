@@ -175,7 +175,7 @@ bse_midi_notifier_dispatch (BseMidiNotifier *self)
   if (!ring)
     return;
   uint need_emission = g_signal_handler_find (self,
-                                              GSignalMatchType (G_SIGNAL_MATCH_ID | G_SIGNAL_MATCH_UNBLOCKED),
+                                              G_SIGNAL_MATCH_ID | G_SIGNAL_MATCH_UNBLOCKED,
                                               signal_midi_event, 0, NULL, NULL, NULL);
   while (ring)
     {
