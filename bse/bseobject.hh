@@ -1,26 +1,4 @@
-/* BSE - Better Sound Engine
- * Copyright (C) 1997-1999, 2000-2003 Tim Janik
- *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * A copy of the GNU Lesser General Public License should ship along
- * with this library; if not, see http://www.gnu.org/copyleft/.
- *
- * bseobject.hh: basic object definition for the BSE object heirarchy
- * a bse object implements means
- * - of setting/retriving an object name and blurb
- * - to set generic keyed data
- * - to set/get certain properties, i.e. object members or properties
- * - to aid basic parsing/dumping facilities
- */
+// Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #ifndef __BSE_OBJECT_H__
 #define __BSE_OBJECT_H__
 

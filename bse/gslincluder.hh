@@ -1,10 +1,4 @@
-/* GSL - Generic Sound Layer
- *
- * This file is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- */
+// CC0 Public Domain: http://creativecommons.org/publicdomain/zero/1.0/
 
 #if 0
 /* script, used to create this file's contents:
