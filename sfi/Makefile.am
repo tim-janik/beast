@@ -1,7 +1,4 @@
 # SFI - Synthesis Fusion Kit Interface
-# Copyright (C) 2002 Tim Janik
-#
-## GNU Lesser General Public License version 2 or any later version.
 include $(top_srcdir)/Makefile.decl
 
 SUBDIRS   = . tests

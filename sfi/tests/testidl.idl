@@ -1,4 +1,5 @@
-/*   -*-mode: c++;-*- */
+// Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
+//-*-mode: c++;-*-
 namespace Test  // this comment tests C++ style comments
 {
 /* test string stuff */
