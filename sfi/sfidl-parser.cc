@@ -95,7 +95,7 @@ enum ExtraToken {
   TOKEN_ERROR
 };
 const char *token_symbols[] = {
-  "namespace", "class", "choice", "record", "sequence",
+  "namespace", "class", "enum", "record", "sequence",
   "property", "group", "using",
   "Const", "ConstIdent", "Info", "IStream", "JStream", "OStream",
   0
@@ -975,7 +975,7 @@ Parser::parseChoice ()
 {
   Choice choice;
   int value = 0, sequentialValue = 1;
-  DEBUG("parse choice\n");
+  DEBUG("parse enum\n");
   parse_or_return (TOKEN_CHOICE);
   parse_or_return (G_TOKEN_IDENTIFIER);
   choice.name = defineSymbol (scanner->value.v_identifier);

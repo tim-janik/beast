@@ -1,7 +1,7 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 namespace Bst {
 /*
-choice Test1 {
+enum Test1 {
   FOO1,
   FOO2,
 };
@@ -12,13 +12,13 @@ record Test2 {
 using namespace Sfi;
 Const STORAGE = ":r:w:S:";
 Const STANDARD = STORAGE "G:";
-choice Direction {
+enum Direction {
   UP    = (_("Up"), _("Move upwards")),
   LEFT  = (_("Left"), _("Move to the left")),
   RIGHT = (_("Right"), _("Move to the right")),
   DOWN  = (_("Down"), _("Move downwards"))
 };
-choice FFTSize {
+enum FFTSize {
   FFT_SIZE_2     = (_("2 Value FFT Window"), _("A 2 value FFT window corresponds to a spectrum with 2 frequency peaks")),
   FFT_SIZE_4     = (_("4 Value FFT Window"), _("A 4 value FFT window corresponds to a spectrum with 3 frequency peaks")),
   FFT_SIZE_8     = (_("8 Value FFT Window"), _("A 8 value FFT window corresponds to a spectrum with 5 frequency peaks")),
@@ -36,7 +36,7 @@ choice FFTSize {
   FFT_SIZE_32768 = (_("32768 Value FFT Window"), _("A 32768 value FFT window corresponds to a spectrum with 16385 frequency peaks")),
   FFT_SIZE_65536 = (_("65536 Value FFT Window"), _("A 65536 value FFT window corresponds to a spectrum with 32769 frequency peaks")),
 };
-choice NoteLength {
+enum NoteLength {
   NOTE_LENGTH_NONE      = (Neutral,    _("None"), _("Unspecified length")),
   NOTE_LENGTH_1         = (_("1/1"),   _("Whole note")),
   NOTE_LENGTH_2         = (_("1/2"),   _("Half note")),
@@ -63,7 +63,7 @@ choice NoteLength {
   NOTE_LENGTH_64T       = (_("1/64T"), _("Triplet sixty-fourth note")),
   NOTE_LENGTH_128T      = (_("1/128T"),_("Triplet hundred twenty-eighth note")),
 };
-choice RowShading {
+enum RowShading {
   ROW_SHADING_NONE    = (Neutral,       _("None")),
   ROW_SHADING_2       = (_("2"),        _("Every second row")),
   ROW_SHADING_4       = (_("4"),        _("Every fourth row")),

@@ -48,7 +48,7 @@ sequence StringSeq {
   String strings;
 };
 /* musical tunings: http://en.wikipedia.org/wiki/Musical_tuning */
-choice MusicalTuningType {
+enum MusicalTuningType {
   /* Equal Temperament: http://en.wikipedia.org/wiki/Equal_temperament */
   MUSICAL_TUNING_12_TET                 = (1, _("12 Tone Equal Temperament"),   // http://en.wikipedia.org/wiki/Equal_temperament
                                            _("The most common tuning system for modern Western music, "
@@ -124,7 +124,7 @@ choice MusicalTuningType {
                                              "as well as six equally imperfect fifths.")),
 };
 /* various MIDI specific definitions */
-choice MidiSignalType {
+enum MidiSignalType {
   /* special cased signals */
   MIDI_SIGNAL_PROGRAM                         = (1,   _("Program Change")),     /* 7bit */
   MIDI_SIGNAL_PRESSURE                        = (2,   _("Channel Pressure")),   /* 7bit */
@@ -304,7 +304,7 @@ choice MidiSignalType {
   MIDI_SIGNAL_CONTROL_126                     = (254, _("Control 126 Monophonic Voices Mode")),
   MIDI_SIGNAL_CONTROL_127                     = (255, _("Control 127 Polyphonic Mode On ITrigger")),
 };
-choice MidiControlType {
+enum MidiControlType {
   /* special cased signals */
   MIDI_CONTROL_NONE                           = (Neutral, _("None")),
   /* 14bit, continuous controls */
@@ -472,7 +472,7 @@ choice MidiControlType {
   MIDI_CONTROL_126                             = (254, _("Control 126 Monophonic Voices Mode")),
   MIDI_CONTROL_127                             = (255, _("Control 127 Polyphonic Mode On ITrigger")),
 };
-choice MidiChannelEventType {
+enum MidiChannelEventType {
   MIDI_EVENT_NONE = Neutral,
   /* channel voice messages */
   MIDI_EVENT_NOTE_OFF,
@@ -660,7 +660,7 @@ record SampleFileInfo {
 };
 class Janitor;
 /* user messages */
-choice MsgType {
+enum MsgType {
   MSG_NONE = Neutral,
   MSG_ALWAYS,
   MSG_ERROR,
@@ -685,7 +685,7 @@ record Message {
   Int           pid;
 };
 /* thread info */
-choice ThreadState {
+enum ThreadState {
   THREAD_STATE_UNKNOWN,
   THREAD_STATE_RUNNING,
   THREAD_STATE_SLEEPING,

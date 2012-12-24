@@ -6,12 +6,12 @@ namespace Test  // this comment tests C++ style comments
 Const ANSWER_A = "the answer to all questions";
 Const ANSWER_B = 42;
 Const ULTIMATE_ANSWER = (ANSWER_A " is " ANSWER_B);
-choice YesNoUndecided {
+enum YesNoUndecided {
   Undecided = (Neutral, "Undecided"),
         Yes = (1, "Yes"),
          No = (2, "No")
 };
-choice ExcessiveChoiceTest {
+enum ExcessiveChoiceTest {
   V0, 
   V2  = 2,
   V4  = "l4",

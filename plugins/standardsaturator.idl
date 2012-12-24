@@ -1,7 +1,7 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include <bse/bse.idl>
 namespace Bse { namespace Standard {
-choice SaturationType {
+enum SaturationType {
   SATURATE_TANH      = (_("TANH"),      _("Saturation via hyperbolic tangent function which is mostly linear for "
                                           "small levels while providing a soft curvature for high volume signals")),
   SATURATE_ATAN      = (_("ATAN"),      _("Saturation via arc tangent function which is reasonably linear in the "

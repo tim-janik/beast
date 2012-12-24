@@ -3,7 +3,7 @@
 namespace Namespace {
 using namespace Sfi;
 // test enum
-choice FunkynessType {
+enum FunkynessType {
   REALLY_FUNKY,
   MODERATELY_FUNKY,
   NON_FUNKY = (42, "No Funk At All"),

@@ -312,7 +312,7 @@ printChoices (void)
 	{
 	  /* enum definition */
 	  printIndent ();
-	  print ("choice %s {\n", removeBse(name).c_str());
+	  print ("enum %s {\n", removeBse(name).c_str());
           indent++;
 	  for (val = eclass->values; val->value_name; val++)
 	    {
