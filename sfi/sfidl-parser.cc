@@ -1031,34 +1031,26 @@ Parser::parseChoiceValue (ChoiceValue& comp, int& value, int& sequentialValue)
     YES,
     YES = 1,
     YES = "Yes",
-    YES = Neutral,
     YES = (1),
-    YES = (1, "Yes"),
-    YES = (Neutral, "Yes"),
-    YES = (1, "Yes", "this is the Yes value"),
-    YES = ("Yes", "this is the Yes value"),
+    YES = Enum (0, "Yes"), // neutral
+    YES = Enum (1, "Yes", "this is the Yes value"),
+    YES = Enum ("Yes", "this is the Yes value"),
   */
   if (g_scanner_peek_next_token (scanner) == GTokenType('='))
     {
       parse_or_return ('=');
-      if (g_scanner_peek_next_token (scanner) == GTokenType('('))
+      if (g_scanner_peek_next_token (scanner) == G_TOKEN_IDENTIFIER &&
+          strcmp (scanner->next_value.v_string, "Enum") == 0)
         {
-          bool need_arg = true;
+          parse_or_return (G_TOKEN_IDENTIFIER); // "Enum"
           parse_or_return ('(');
+          bool need_arg = true;
           if (g_scanner_peek_next_token (scanner) == G_TOKEN_INT)
             {
               parse_or_return (G_TOKEN_INT);
               value = scanner->value.v_int64;
-              if (g_scanner_peek_next_token (scanner) == ',')
-                parse_or_return (',');
-              else
-                need_arg = false;
-            }
-          else if (g_scanner_peek_next_token (scanner) == G_TOKEN_IDENTIFIER &&
-                   strcmp (scanner->next_value.v_string, "Neutral") == 0)
-            {
-              parse_or_return (G_TOKEN_IDENTIFIER);
-              comp.neutral = true;
+              if (value == 0)
+                comp.neutral = true;
               if (g_scanner_peek_next_token (scanner) == ',')
                 parse_or_return (',');
               else
@@ -1086,12 +1078,8 @@ Parser::parseChoiceValue (ChoiceValue& comp, int& value, int& sequentialValue)
         {
           parse_or_return (G_TOKEN_INT);
           value = scanner->value.v_int64;
-        }
-      else if (g_scanner_peek_next_token (scanner) == G_TOKEN_IDENTIFIER &&
-               strcmp (scanner->next_value.v_string, "Neutral") == 0)
-        {
-          parse_or_return (G_TOKEN_IDENTIFIER);
-          comp.neutral = true;
+          if (value == 0)
+            comp.neutral = true;
         }
       else if (g_scanner_peek_next_token (scanner) == G_TOKEN_IDENTIFIER &&
                strcmp (scanner->next_value.v_string, "_") == 0)

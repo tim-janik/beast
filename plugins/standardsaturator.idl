@@ -2,16 +2,16 @@
 #include <bse/bse.idl>
 namespace Bse { namespace Standard {
 enum SaturationType {
-  SATURATE_TANH      = (_("TANH"),      _("Saturation via hyperbolic tangent function which is mostly linear for "
-                                          "small levels while providing a soft curvature for high volume signals")),
-  SATURATE_ATAN      = (_("ATAN"),      _("Saturation via arc tangent function which is reasonably linear in the "
-                                          "lower 50% but develops a strong curvature above 80%")),
-  SATURATE_QUADRATIC = (_("Quadratic"), _("Saturation via quadratic approximation which keeps a "
-                                          "well-proportioned curvature across all levels")),
-  SATURATE_SOFT_KNEE = (_("Soft Knee"), _("Linear saturation with a soft knee transit into the clipping range "
-                                          "(equals hard clipping at 100%) which approaches quadratic curvature "
-                                          "for small levels")),
-  SATURATE_HARD      = (_("Hard"),      _("Hard saturation via clipping (prone to clicks)")),
+  SATURATE_TANH      = Enum (_("TANH"),      _("Saturation via hyperbolic tangent function which is mostly linear for "
+					       "small levels while providing a soft curvature for high volume signals")),
+  SATURATE_ATAN      = Enum (_("ATAN"),      _("Saturation via arc tangent function which is reasonably linear in the "
+					       "lower 50% but develops a strong curvature above 80%")),
+  SATURATE_QUADRATIC = Enum (_("Quadratic"), _("Saturation via quadratic approximation which keeps a "
+					       "well-proportioned curvature across all levels")),
+  SATURATE_SOFT_KNEE = Enum (_("Soft Knee"), _("Linear saturation with a soft knee transit into the clipping range "
+					       "(equals hard clipping at 100%) which approaches quadratic curvature "
+					       "for small levels")),
+  SATURATE_HARD      = Enum (_("Hard"),      _("Hard saturation via clipping (prone to clicks)")),
 };
 class Saturator : Bse::Effect {
   Info    category  = "/Distortion/Saturate";

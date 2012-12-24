@@ -319,10 +319,10 @@ printChoices (void)
 	      bool neutral = (!regular_choice && val == eclass->values);
 	      printIndent();
               if (neutral)
-                print ("%s = (Neutral, \"%s\"),\n", removeBse (val->value_name).c_str(),
+                print ("%s = Enum (0, \"%s\"),\n", removeBse (val->value_name).c_str(),
                        val->value_nick);
               else
-                print ("%s = (%d, \"%s\"),\n", removeBse (val->value_name).c_str(),
+                print ("%s = Enum (%d, \"%s\"),\n", removeBse (val->value_name).c_str(),
                        val->value, val->value_nick);
 	    }
           indent--;

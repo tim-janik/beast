@@ -6,7 +6,7 @@ using namespace Sfi;
 enum FunkynessType {
   REALLY_FUNKY,
   MODERATELY_FUNKY,
-  NON_FUNKY = (42, "No Funk At All"),
+  NON_FUNKY = Enum (42, "No Funk At All"),
 };
 // test record
 record TestRecord {
