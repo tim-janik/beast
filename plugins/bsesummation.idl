@@ -1,5 +1,5 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
-#include <bse/bsecxxmodule.idl>
+include "bse/bsecxxmodule.idl";
 namespace Bse {
 interface Summation : Effect {
   Info    icon        = "icons/summation.png";

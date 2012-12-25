@@ -1,5 +1,5 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
-#include <bse/bsecore.idl>
+include "bsecore.idl";
 namespace Bse { interface Effect; }; // FIXME: bad workaround
 namespace Bse {
 interface BusModule : Effect {

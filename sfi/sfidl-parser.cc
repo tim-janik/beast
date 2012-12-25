@@ -473,7 +473,7 @@ void Parser::preprocessContents (const String& input_filename)
 			break;
 	    case '<':	state = filenameIn2;
 			break;
-	    default:	g_printerr ("bad char after #include statement");
+	    default:	g_printerr ("bad char after include statement");
 			g_assert_not_reached (); // error handling!
 	    }
 	}
@@ -481,7 +481,7 @@ void Parser::preprocessContents (const String& input_filename)
 	   || (state == filenameIn2 && *i == '>'))
 	{
 	  String location;
-	  // #include "/usr/include/foo.idl" (absolute path includes)
+	  // include "/usr/include/foo.idl" (absolute path includes)
 	  if (g_path_is_absolute (filename.c_str()))
 	    {
 	      if (fileExists (filename))
@@ -489,15 +489,17 @@ void Parser::preprocessContents (const String& input_filename)
 	    }
 	  else
 	    {
-	      // #include "foo.idl" => search in local directory (relative to input_file)
+	      // include "foo.idl" => search in local directory (relative to input_file)
 	      if (state == filenameIn1)
 		{
-		  gchar *dir = g_path_get_dirname (input_filename.c_str());
-		  if (fileExists (dir + String(G_DIR_SEPARATOR_S) + filename))
-		    location = filename;
+		  char *dir = g_path_get_dirname (input_filename.c_str());
+                  String candidate = dir + String(G_DIR_SEPARATOR_S) + filename;
+		  const bool candidate_exists = fileExists (candidate);
+		  if (candidate_exists)
+		    location = candidate;
 		  g_free (dir);
 		}
-	      // all #include directives => search includepath with standard include dirs
+	      // all include directives => search includepath with standard include dirs
 	      if (location == "")
 		{
 		  vector<String>::const_iterator oi;
@@ -518,9 +520,17 @@ void Parser::preprocessContents (const String& input_filename)
 	      fprintf (stderr, "include file '%s' not found\n", filename.c_str());
 	      exit(1);
 	    }
+	  i++; // eat closing quote
+          if (match (i, " as implementation"))
+            {
+              i += 18;
+              includeImpl = true;
+            }
+          if (*i != ';')
+            g_error ("expected ';' after include statement");
+          i++; // eat semicolpon after include
 	  preprocess (location, includeImpl);
 	  state = idlCode;
-	  i++;
 	}
       else if(state == filenameIn1 || state == filenameIn2)
 	{
@@ -533,14 +543,14 @@ void Parser::preprocessContents (const String& input_filename)
 	}
       else if(state == lineStart) // check if we're on lineStart
 	{
-	  if(match(i,"#include-impl"))
+	  if (0 && match(i,"#include-impl")) // old syntax disabled
 	    {
 	      i += 13;
 	      state = filenameFind;
 	      filename = "";
 	      includeImpl = true;
 	    }
-	  else if(match(i,"#include"))
+	  else if(match(i,"include"))
 	    {
 	      i += 8;
 	      state = filenameFind;
