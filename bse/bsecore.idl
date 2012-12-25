@@ -567,13 +567,15 @@ record NoteSequence
   Int     offset = Note ("Note Offset", "Center/base note", KAMMER_NOTE, ":readwrite");
   NoteSeq notes  = ("Notes", "Sequence of notes", ":readwrite");
 };
+sequence PixelSeq {
+  Int	pixels;
+};
 record Icon
 {
-  Info   blurb           = "BSE icon representation.";
-  Int    bytes_per_pixel = ("Bytes Per Pixel", "Bytes Per Pixel (3:RGB, 4:RGBA, 0:NONE)", 4, 3, 4, 1, ":readwrite");
-  Int    width           = ("Width", "Width in pixels or 0 for no icon", 0, 0, MAXINT, 1, ":readwrite");
-  Int    height          = ("Height", "Height in pixels or 0 for no icon", 0, 0, MAXINT, 1, ":readwrite");
-  BBlock pixels          = ("Pixels", "Pixel array of width*height*bytes_per_pixel bytes", ":readwrite");
+  Info     blurb     = "BSE icon representation.";
+  Int      width     = ("Width", "Width in pixels or 0 for no icon", 0, 0, MAXINT, 1, ":readwrite");
+  Int      height    = ("Height", "Height in pixels or 0 for no icon", 0, 0, MAXINT, 1, ":readwrite");
+  PixelSeq pixel_seq = ("Pixels", "Pixel array of width*height ARGB pixels", ":readwrite");
 };
 record Category
 {

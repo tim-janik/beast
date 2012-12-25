@@ -506,12 +506,13 @@ bst_canvas_icon_set (GnomeCanvasItem *item,
 {
   GdkPixbuf *pixbuf;
   gboolean need_unref = FALSE;
-  if (icon && icon->pixels->bytes)
+  if (icon && icon->pixel_seq->n_pixels)
     {
+      g_assert (icon->width * icon->height == int (icon->pixel_seq->n_pixels));
       icon = bse_icon_copy_shallow (icon);
-      pixbuf = gdk_pixbuf_new_from_data (icon->pixels->bytes, GDK_COLORSPACE_RGB, icon->bytes_per_pixel == 4,
+      pixbuf = gdk_pixbuf_new_from_data ((guchar*) icon->pixel_seq->pixels, GDK_COLORSPACE_RGB, true,
 					 8, icon->width, icon->height,
-					 icon->width * icon->bytes_per_pixel,
+					 icon->width * 4,
 					 NULL, NULL);
       g_object_set_data_full (G_OBJECT (pixbuf),
 			      "BseIcon",

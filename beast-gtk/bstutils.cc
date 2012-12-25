@@ -459,10 +459,12 @@ bst_action_list_add_cat (GxkActionList          *alist,
   const gchar *p, *stock_id;
   if (cat->icon)
     {
-      bst_stock_register_icon (cat->category, cat->icon->bytes_per_pixel,
-                               cat->icon->width, cat->icon->height,
-                               cat->icon->width * cat->icon->bytes_per_pixel,
-                               cat->icon->pixels->bytes);
+      BseIcon *icon = cat->icon;
+      g_assert (icon->width * icon->height == int (icon->pixel_seq->n_pixels));
+      bst_stock_register_icon (cat->category, 4,
+                               icon->width, icon->height,
+                               icon->width * 4,
+                               (guchar*) icon->pixel_seq->pixels);
       stock_id = cat->category;
     }
   else

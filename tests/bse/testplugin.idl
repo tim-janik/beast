@@ -26,7 +26,7 @@ interface TestObject : Bse::Effect {
   property Int aninteger;
   property TestRecord r;
   property TestSequence s;
-  property BBlock bb;
+  // deprecated: property BBlock bb;
   property FBlock fb;
   property Rec rr;
   property Bse::Effect ef; // C++ Object 

@@ -742,7 +742,7 @@ bool Parser::parse (const String& filename)
   defineSymbol ("Num");
   defineSymbol ("Real");
   defineSymbol ("String");
-  defineSymbol ("BBlock");
+  // deprecated: defineSymbol ("BBlock");
   defineSymbol ("FBlock");
   defineSymbol ("Rec");
   leaveNamespace ();
