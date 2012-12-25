@@ -40,9 +40,9 @@ interface Compressor : Effect {
     Bool auto_output  = Bool (_("Auto Output"), _("Adjust the output amplification automatically according to threshold and ratio"), FALSE, GUI);
   };
   group "compat" {    /* compatibility properties */
-    Real threshold    = Real (NULL, NULL, 1, 0.00001, 1, 0.01, "w");
-    Real ratio        = Real (NULL, NULL, 0.8, 0.0, 1.0, 0.1, "w");
-    Real output       = Real (NULL, NULL, 1, 0.1, 10.0, 1, "w");
+    Real threshold    = Real ("", "", 1, 0.00001, 1, 0.01, "w");
+    Real ratio        = Real ("", "", 0.8, 0.0, 1.0, 0.1, "w");
+    Real output       = Real ("", "", 1, 0.1, 10.0, 1, "w");
   };
 };
 }; // Arts

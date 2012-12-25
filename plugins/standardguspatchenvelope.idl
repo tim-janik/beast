@@ -17,7 +17,7 @@ interface GusPatchEnvelope : Effect {
 			  "one (or for stereo two) BseWaveOsc(s) and their Gate Output Signal to this "
 			  "module.");
   group _("Properties") {
-    Wave    wave; // FIXME         = (_("Wave"),         _("GUS Patch to use for the Envelope Data"), NULL, STANDARD);
+    Wave    wave; // FIXME         = (_("Wave"),         _("GUS Patch to use for the Envelope Data"), "", STANDARD);
   };
   // inputs
   IStream frequency      = (_("Frequency"),    _("Frequency Input"));

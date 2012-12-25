@@ -481,7 +481,7 @@ record MidiChannelEvent
 {
   MidiChannelEventType  event_type;
   Int                   channel         = ("Channel", "", 0, 0, 99, 1, ":readwrite"); // FIXME: MAX_MIDI_CHANNEL
-  Num                   tick_stamp      = ("Time Stamp", NULL, 0, 0, SFI_MAXNUM, 0, STANDARD);
+  Num                   tick_stamp      = ("Time Stamp", "", 0, 0, SFI_MAXNUM, 0, STANDARD);
   /* note (on/off/pressure) */
   Real                  frequency       = Freq ("Frequency", "", KAMMER_FREQ, ":readwrite");
   Real                  velocity        = ("Velocity", "", 1, 0, 1.0, 0.1, ":readwrite");
@@ -577,7 +577,7 @@ record Icon
 };
 record Category
 {
-  Int    category_id = ("Category ID", NULL, 1, 1, G_MAXINT, 1, ":readwrite");
+  Int    category_id = ("Category ID", "", 1, 1, G_MAXINT, 1, ":readwrite");
   String category;
   Int    mindex;
   Int    lindex;
@@ -600,9 +600,9 @@ interface Part;
 interface Track;
 record PartLink {
   Track track;
-  Int   tick     = ("Tick", NULL, 0, 0, G_MAXINT, 384, STANDARD);
+  Int   tick     = ("Tick", "", 0, 0, G_MAXINT, 384, STANDARD);
   Part  part;
-  Int   duration = ("Duration", NULL, 0, 0, G_MAXINT, 384, STANDARD);
+  Int   duration = ("Duration", "", 0, 0, G_MAXINT, 384, STANDARD);
   // Int   count; /* 1 + repetitions */
 };
 sequence PartLinkSeq {
@@ -610,9 +610,9 @@ sequence PartLinkSeq {
 };
 /* BSE Track structures */
 record TrackPart {
-  Int           tick     = ("Tick", NULL, 0, 0, G_MAXINT, 384, STANDARD);
+  Int           tick     = ("Tick", "", 0, 0, G_MAXINT, 384, STANDARD);
   Part          part;
-  Int           duration = ("Duration", NULL, 0, 0, G_MAXINT, 384, STANDARD);
+  Int           duration = ("Duration", "", 0, 0, G_MAXINT, 384, STANDARD);
 };
 sequence TrackPartSeq {
   TrackPart tparts;
@@ -620,25 +620,25 @@ sequence TrackPartSeq {
 /* BSE Song timing structure */
 record SongTiming {
   /* song position timing applies to */
-  Int   tick        = ("Current tick", NULL, 0, 0, G_MAXINT, 384, STANDARD);
+  Int   tick        = ("Current tick", "", 0, 0, G_MAXINT, 384, STANDARD);
   /* tempo */
-  Real  bpm         = ("Beats per minute", NULL, 120, BSE_MIN_BPM, BSE_MAX_BPM, 10, STANDARD);
+  Real  bpm         = ("Beats per minute", "", 120, BSE_MIN_BPM, BSE_MAX_BPM, 10, STANDARD);
   /* signature */
   Int   numerator   = ("Numerator", "Number of notes per measure", 4, 1, 256, 2, STANDARD);
   Int   denominator = ("Denominator", "Type of notes counted per measure", 4, 1, 256, 2, STANDARD);
   /* sequencer timing */
-  Int   tpqn        = ("Ticks per quarter note", NULL, 384, 1, G_MAXINT, 12, STANDARD);
-  Int   tpt         = ("Ticks per tact", NULL, 384, 1, G_MAXINT, 12, STANDARD);
+  Int   tpqn        = ("Ticks per quarter note", "", 384, 1, G_MAXINT, 12, STANDARD);
+  Int   tpt         = ("Ticks per tact", "", 384, 1, G_MAXINT, 12, STANDARD);
   /* playback timing */
-  Real  stamp_ticks = ("Ticks per stamp increment (valid only during playback)", NULL, 384, 1, G_MAXINT, 12, STANDARD);
+  Real  stamp_ticks = ("Ticks per stamp increment (valid only during playback)", "", 384, 1, G_MAXINT, 12, STANDARD);
 };
 record SampleFileInfo {
-  String        file    = ("Filename", NULL, NULL, STANDARD);
-  Int           size    = ("File Size", NULL, 0, 0, G_MAXINT, 0, STANDARD);
-  Num           mtime   = ("Modification Time", NULL, 0, 0, SFI_MAXNUM, 0, STANDARD);
-  String        loader  = ("Loader", NULL, NULL, STANDARD);
-  StringSeq     waves   = (NULL, NULL, STANDARD);
-  Int           error   = ("BseErrorType", NULL, 0, 0, G_MAXINT, 0, STANDARD); // FIXME: use BseErrorType here
+  String        file    = ("Filename", "", "", STANDARD);
+  Int           size    = ("File Size", "", 0, 0, G_MAXINT, 0, STANDARD);
+  Num           mtime   = ("Modification Time", "", 0, 0, SFI_MAXNUM, 0, STANDARD);
+  String        loader  = ("Loader", "", "", STANDARD);
+  StringSeq     waves   = ("", "", STANDARD);
+  Int           error   = ("BseErrorType", "", 0, 0, G_MAXINT, 0, STANDARD); // FIXME: use BseErrorType here
 };
 interface Janitor;
 /* user messages */
@@ -678,7 +678,7 @@ enum ThreadState {
   THREAD_STATE_DEAD,
 };
 record ThreadInfo {
-  String      name      = (_("Thread Name"), NULL, NULL, STANDARD);
+  String      name      = (_("Thread Name"), "", "", STANDARD);
   ThreadState state     = (_("State"), _("The execution state of the thread"), THREAD_STATE_UNKNOWN, STANDARD);
   Int         thread_id = (_("Thread ID"), _("A unique number identifying this thread"),
                            0, 0, G_MAXINT, 1, STANDARD);
@@ -757,7 +757,7 @@ record GConfig {
                                                  "path is searched for in addition to the standard LADSPA location on this system. "
                                                  "LADSPA is the Linux Audio Developer's Simple Plugin API, more informations about "
                                                  "LADSPA plugins can be found at http://www.ladspa.org/."), G_SEARCHPATH_SEPARATOR_S),
-                              NULL, STANDARD ":searchpath");
+                              "", STANDARD ":searchpath");
   };
 };
 };

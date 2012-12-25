@@ -13,8 +13,8 @@ interface BusModule : Effect {
   group _("Volume") {
     // Real  volume1    = DBVolume (_("Left"), _("Volume adjustment of left channel"), 0, -96, +24, STANDARD);
     // Real  volume2    = DBVolume (_("Right"), _("Volume adjustment of right channel"), 0, -96, +24, STANDARD);
-    Real  volume1    = (NULL, NULL, 1, 0, 1000, 10, STANDARD); /* volume factor */
-    Real  volume2    = (NULL, NULL, 1, 0, 1000, 10, STANDARD); /* volume factor */
+    Real  volume1    = ("", "", 1, 0, 1000, 10, STANDARD); /* volume factor */
+    Real  volume2    = ("", "", 1, 0, 1000, 10, STANDARD); /* volume factor */
   };
 };
 };

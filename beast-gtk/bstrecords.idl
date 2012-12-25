@@ -83,7 +83,7 @@ enum RowShading {
 };
 /* BEAST Global Config */
 record GConfig {
-  String rc_version			= (NULL, _("Release counter"), NULL, STORAGE);
+  String rc_version			= ("", _("Release counter"), "", STORAGE);
   group "Synthesis Networks" {
     Int         snet_font_size          = (_("Font Size"), _("Font size in pixels for labels displayed in synthesis networks"),
                                            10, 1, 48, 2, STANDARD);
@@ -109,36 +109,36 @@ record GConfig {
 };
 /* skin config */
 record SkinConfig {
-  String         skin_name   = (_("Skin Name"), _("Name for the current skin configuration (used for skin selections)."), NULL, STANDARD);
+  String         skin_name   = (_("Skin Name"), _("Name for the current skin configuration (used for skin selections)."), "", STANDARD);
   group "Pattern Editor" {
-    String   pattern_image   = (_("Background Image"), _("Background image used by the pattern editor."), NULL, STANDARD ":filename:image");
+    String   pattern_image   = (_("Background Image"), _("Background image used by the pattern editor."), "", STANDARD ":filename:image");
     Real     pattern_shade   = (_("Image shade"), _("Percentage of background image pixel to blend over background color."), 2.5, 0, 100, 5, STANDARD ":scale");
-    Int      pattern_color   = (_("Background Color"),      NULL, 0xf5f3ed, 0, 0xffffff, 0x010101, STANDARD ":rgb:hex");
-    Int      pattern_scolor1 = (_("Background Shade 1"),    NULL, 0xd3d1cb, 0, 0xffffff, 0x010101, STANDARD ":rgb:hex");
-    Int      pattern_scolor2 = (_("Background Shade 2"),    NULL, 0xe0ded8, 0, 0xffffff, 0x010101, STANDARD ":rgb:hex");
-    Int      pattern_text0   = (_("Empty Field Color"),     NULL, 0x303030, 0, 0xffffff, 0x010101, STANDARD ":rgb:hex");
-    Int      pattern_text1   = (_("Text Color"),            NULL, 0x000000, 0, 0xffffff, 0x010101, STANDARD ":rgb:hex");
-    Int      pattern_vbar1   = (_("Vertical Bar Color"),    NULL, 0x7f7f7f, 0, 0xffffff, 0x010101, STANDARD ":rgb:hex");
+    Int      pattern_color   = (_("Background Color"),      "", 0xf5f3ed, 0, 0xffffff, 0x010101, STANDARD ":rgb:hex");
+    Int      pattern_scolor1 = (_("Background Shade 1"),    "", 0xd3d1cb, 0, 0xffffff, 0x010101, STANDARD ":rgb:hex");
+    Int      pattern_scolor2 = (_("Background Shade 2"),    "", 0xe0ded8, 0, 0xffffff, 0x010101, STANDARD ":rgb:hex");
+    Int      pattern_text0   = (_("Empty Field Color"),     "", 0x303030, 0, 0xffffff, 0x010101, STANDARD ":rgb:hex");
+    Int      pattern_text1   = (_("Text Color"),            "", 0x000000, 0, 0xffffff, 0x010101, STANDARD ":rgb:hex");
+    Int      pattern_vbar1   = (_("Vertical Bar Color"),    "", 0x7f7f7f, 0, 0xffffff, 0x010101, STANDARD ":rgb:hex");
   };
   group "Piano Roll" {
-    String       piano_image = (_("Background Image"), _("Background image used by the piano-roll editor."), NULL, STANDARD ":filename:image");
+    String       piano_image = (_("Background Image"), _("Background image used by the piano-roll editor."), "", STANDARD ":filename:image");
     Real         piano_shade = (_("Image shade"), _("Percentage of background image pixel to blend over background color."), 2.5, 0, 100, 5, STANDARD ":scale");
-    Int          piano_color = (_("Background Color"),      NULL, 0xf5f3ed, 0, 0xffffff, 0x010101, STANDARD ":rgb:hex");
-    Int          piano_hbar  = (_("Horizontal Bar Color"),  NULL, 0x7f7f7f, 0, 0xffffff, 0x010101, STANDARD ":rgb:hex");
-    Int          piano_vbar  = (_("Vertical Bar Color"),    NULL, 0x7f7f7f, 0, 0xffffff, 0x010101, STANDARD ":rgb:hex");
-    Int          piano_hgrid = (_("Horizontal Grid Color"), NULL, 0xbfbfbf, 0, 0xffffff, 0x010101, STANDARD ":rgb:hex");
-    Int          piano_vgrid = (_("Vertical Grid Color"),   NULL, 0xbfbfbf, 0, 0xffffff, 0x010101, STANDARD ":rgb:hex");
-    Int          piano_mbar  = (_("Middle Bar Color"),      NULL, 0xa0a0a0, 0, 0xffffff, 0x010101, STANDARD ":rgb:hex");
+    Int          piano_color = (_("Background Color"),      "", 0xf5f3ed, 0, 0xffffff, 0x010101, STANDARD ":rgb:hex");
+    Int          piano_hbar  = (_("Horizontal Bar Color"),  "", 0x7f7f7f, 0, 0xffffff, 0x010101, STANDARD ":rgb:hex");
+    Int          piano_vbar  = (_("Vertical Bar Color"),    "", 0x7f7f7f, 0, 0xffffff, 0x010101, STANDARD ":rgb:hex");
+    Int          piano_hgrid = (_("Horizontal Grid Color"), "", 0xbfbfbf, 0, 0xffffff, 0x010101, STANDARD ":rgb:hex");
+    Int          piano_vgrid = (_("Vertical Grid Color"),   "", 0xbfbfbf, 0, 0xffffff, 0x010101, STANDARD ":rgb:hex");
+    Int          piano_mbar  = (_("Middle Bar Color"),      "", 0xa0a0a0, 0, 0xffffff, 0x010101, STANDARD ":rgb:hex");
   };
   group "Control Events" {
-    String controls_image    = (_("Background Image"), _("Background image used by the control events editor."), NULL, STANDARD ":filename:image");
+    String controls_image    = (_("Background Image"), _("Background image used by the control events editor."), "", STANDARD ":filename:image");
     Real   controls_shade    = (_("Image shade"), _("Percentage of background image pixel to blend over background color."), 2.5, 0, 100, 5, STANDARD ":scale");
-    Int    controls_color    = (_("Background Color"),      NULL, 0xf5f3ed, 0, 0xffffff, 0x010101, STANDARD ":rgb:hex");
-    Int    controls_hbar     = (_("Horizontal Bar Color"),  NULL, 0x7f7f7f, 0, 0xffffff, 0x010101, STANDARD ":rgb:hex");
-    Int    controls_mbar     = (_("Middle Bar Color"),      NULL, 0xa0a0a0, 0, 0xffffff, 0x010101, STANDARD ":rgb:hex");
-    Int    controls_positive = (_("Positive Value Color"),  NULL, 0x0000ff, 0, 0xffffff, 0x010101, STANDARD ":rgb:hex");
-    Int    controls_zero     = (_("Zero Value Color"),      NULL, 0xff0000, 0, 0xffffff, 0x010101, STANDARD ":rgb:hex");
-    Int    controls_negative = (_("Negative Value Color"),  NULL, 0x0000ff, 0, 0xffffff, 0x010101, STANDARD ":rgb:hex");
+    Int    controls_color    = (_("Background Color"),      "", 0xf5f3ed, 0, 0xffffff, 0x010101, STANDARD ":rgb:hex");
+    Int    controls_hbar     = (_("Horizontal Bar Color"),  "", 0x7f7f7f, 0, 0xffffff, 0x010101, STANDARD ":rgb:hex");
+    Int    controls_mbar     = (_("Middle Bar Color"),      "", 0xa0a0a0, 0, 0xffffff, 0x010101, STANDARD ":rgb:hex");
+    Int    controls_positive = (_("Positive Value Color"),  "", 0x0000ff, 0, 0xffffff, 0x010101, STANDARD ":rgb:hex");
+    Int    controls_zero     = (_("Zero Value Color"),      "", 0xff0000, 0, 0xffffff, 0x010101, STANDARD ":rgb:hex");
+    Int    controls_negative = (_("Negative Value Color"),  "", 0x0000ff, 0, 0xffffff, 0x010101, STANDARD ":rgb:hex");
   };
 };
 /* message filter */
@@ -152,9 +152,9 @@ sequence MsgAbsorbStringSeq {
 };
 /* pattern editor key bindings */
 record KeyBindingItem {
-  String key_name   = (NULL, NULL, NULL, STANDARD);
-  String func_name  = (NULL, NULL, NULL, STANDARD);
-  Real   func_param = (NULL, NULL, 0, -1e37, 1e30, 100, STANDARD ":scale");
+  String key_name   = ("", "", "", STANDARD);
+  String func_name  = ("", "", "", STANDARD);
+  Real   func_param = ("", "", 0, -1e37, 1e30, 100, STANDARD ":scale");
 };
 sequence KeyBindingItemSeq {
   KeyBindingItem items;

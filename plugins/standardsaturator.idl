@@ -39,7 +39,7 @@ interface Saturator : Bse::Effect {
                                          _("Automatically adapt the output volume according to changes in saturation level"),
                                          TRUE, STANDARD);
     Real           output_volume = DBVolume (_("Output Volume"), _("Output stage amplification in decibel"), 0, 0, +42, "automate:" STANDARD);
-    // Bool        test_dump = Trigger ("Test Dump", NULL, GUI);
+    // Bool        test_dump = Trigger ("Test Dump", "", GUI);
   };
 };
 } } // Bse::Standard
