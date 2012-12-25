@@ -87,7 +87,7 @@ enum ExtraToken {
   TOKEN_GROUP,
   TOKEN_USING,
   TOKEN_CONST,
-  TOKEN_CONST_IDENT,
+  /*TOKEN_CONST_IDENT,*/
   TOKEN_INFO,
   TOKEN_ISTREAM,
   TOKEN_JSTREAM,
@@ -97,7 +97,7 @@ enum ExtraToken {
 const char *token_symbols[] = {
   "namespace", "interface", "enum", "record", "sequence",
   "property", "group", "using",
-  "Const", "ConstIdent", "Info", "IStream", "JStream", "OStream",
+  "Const", /*"ConstIdent",*/ "Info", "IStream", "JStream", "OStream",
   0
 };
 bool operator== (GTokenType t, ExtraToken e) { return (int) t == (int) e; }
@@ -826,14 +826,16 @@ GTokenType Parser::parseNamespace()
 		return expected_token;
 	    }
 	    break;
-	  case TOKEN_CONST_IDENT:
+#if 0
+        case TOKEN_CONST_IDENT:
 	    {
 	      GTokenType expected_token = parseConstant (true);
 	      if (expected_token != G_TOKEN_NONE)
 		return expected_token;
 	    }
 	    break;
-	  case TOKEN_USING:
+#endif
+        case TOKEN_USING:
 	    {
 	      parse_or_return (TOKEN_USING);
 	      parse_or_return (TOKEN_NAMESPACE);
@@ -925,7 +927,7 @@ GTokenType Parser::parseConstant (bool isident)
    */
   Constant cdef;
   if (isident)
-    parse_or_return (TOKEN_CONST_IDENT);
+    g_assert_not_reached (); /* parse_or_return (TOKEN_CONST_IDENT); */
   else
     parse_or_return (TOKEN_CONST);
   parse_or_return (G_TOKEN_IDENTIFIER);

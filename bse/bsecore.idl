@@ -19,24 +19,6 @@ Const MININT = -2147483648;
 Const MAXNUM = +9223372036854775807;
 Const MINNUM = -9223372036854775808;
 Const MINDB = -96; /* 32bit:-192 24bit:-144 16bit:-96 */
-/* note numbers */
-ConstIdent NOTE_C   = SFI_NOTE_C;
-ConstIdent NOTE_Cis = SFI_NOTE_Cis;
-ConstIdent NOTE_Des = SFI_NOTE_Des;
-ConstIdent NOTE_D   = SFI_NOTE_D;
-ConstIdent NOTE_Dis = SFI_NOTE_Dis;
-ConstIdent NOTE_Es  = SFI_NOTE_Es;
-ConstIdent NOTE_E   = SFI_NOTE_E;
-ConstIdent NOTE_F   = SFI_NOTE_F;
-ConstIdent NOTE_Fis = SFI_NOTE_Fis;
-ConstIdent NOTE_Ges = SFI_NOTE_Ges;
-ConstIdent NOTE_G   = SFI_NOTE_G;
-ConstIdent NOTE_Gis = SFI_NOTE_Gis;
-ConstIdent NOTE_As  = SFI_NOTE_As;
-ConstIdent NOTE_A   = SFI_NOTE_A;
-ConstIdent NOTE_Ais = SFI_NOTE_Ais;
-ConstIdent NOTE_Bes = SFI_NOTE_Bes;
-ConstIdent NOTE_B   = SFI_NOTE_B;
 /* standard sequences */
 sequence IntSeq {
   Int    ints;
