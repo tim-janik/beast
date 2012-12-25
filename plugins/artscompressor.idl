@@ -2,7 +2,7 @@
 #include <bse/bse.idl>
 namespace Bse {
 namespace Arts {
-class Compressor : Effect {
+interface Compressor : Effect {
   Info    icon       = "icons/compressor.png";
   Info    authors    = "Matthias Kretz, Stefan Westerfeld";
   Info    license    = _("GNU Lesser General Public License");

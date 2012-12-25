@@ -1,7 +1,7 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include <bse/bse.idl>
 namespace Bse { namespace Contrib {
-class SampleAndHold: Effect {
+interface SampleAndHold: Effect {
   Info icon             = "icons/sample+hold.png";
   Info authors		= _("Artem Popov");
   Info license          = _("GNU Lesser General Public License");

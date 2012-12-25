@@ -36,7 +36,7 @@ record RealDivision {
 };
 // no more Sfi:: prefixing beyond this line
 using namespace Sfi;
-class Blub {
+interface Blub {
   property Real x;
   // property "X-Group" Real y;
   group "Other Properties" {

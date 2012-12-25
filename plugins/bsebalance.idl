@@ -1,7 +1,7 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include <bse/bse.idl>
 namespace Bse {
-class Balance : Effect {
+interface Balance : Effect {
   Info    icon      = "icons/balance.png";
   Info    authors   = "Tim Janik";
   Info    license   = _("GNU Lesser General Public License");

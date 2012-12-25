@@ -1,7 +1,7 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include <bse/bsecxxmodule.idl>
 namespace Bse {
-class LatencyTest : Effect {
+interface LatencyTest : Effect {
   Info    authors     = "Stefan Westerfeld";
   Info    license     = _("GNU Lesser General Public License");
   Info    category    = _("/Misc/Latency Test");

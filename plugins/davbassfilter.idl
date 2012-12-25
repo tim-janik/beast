@@ -2,7 +2,7 @@
 #include <bse/bse.idl>
 namespace Bse {
 namespace Dav {
-class BassFilter : Effect {
+interface BassFilter : Effect {
   Info    icon      = "icons/davbassfilter.png";
   Info    authors   = "David A. Bartold, Tim Janik";
   Info    license   = _("GNU Lesser General Public License");

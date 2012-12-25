@@ -20,7 +20,7 @@ sequence TestSequence {
 // adds i and str to the record given by rec
 // TestRecord record_add (TestRecord rec, Int i, String str);
 // test effect
-class TestObject : Bse::Effect {
+interface TestObject : Bse::Effect {
   Info    category  = "/Test/Plugin";
   // required because otherwise the bse-plugin-generator generated thing doesn't compile
   property Int aninteger;

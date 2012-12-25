@@ -111,7 +111,7 @@ void setActiveInterface (const std::string& x, const std::string& parent)
           printIndent ();
           if (needTypes.count("Bse" + activeInterface) > 0)
             needClasses.insert(activeInterface);
-          print ("class %s", activeInterface.c_str ());
+          print ("interface %s", activeInterface.c_str ());
           if (parent != "")
             print (" : %s", parent.c_str());
           print (" {\n");
@@ -341,7 +341,7 @@ printForwardDecls ()
   for (ci = needClasses.begin(); ci != needClasses.end(); ci++)
     {
       printIndent();
-      print ("class %s;\n", ci->c_str());
+      print ("interface %s;\n", ci->c_str());
     }
 }
 int

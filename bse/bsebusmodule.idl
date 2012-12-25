@@ -1,8 +1,8 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include <bse/bsecore.idl>
-namespace Bse { class Effect; }; // FIXME: bad workaround
+namespace Bse { interface Effect; }; // FIXME: bad workaround
 namespace Bse {
-class BusModule : Effect {
+interface BusModule : Effect {
   Info    authors    = "Tim Janik";
   Info    license    = _("GNU Lesser General Public License");
   Info    blurb      = _("Synthesis module used internally by BseBus");

@@ -1,7 +1,7 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include <bse/bse.idl>
 namespace Bse { namespace Standard {
-class Quantizer : Bse::Effect {
+interface Quantizer : Bse::Effect {
   Info    category   = "/Distortion/Quantizer";
   Info    icon       = "icons/quantizer.png";
   Info    authors    = "Tim Janik";

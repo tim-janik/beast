@@ -1,7 +1,7 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include <bse/bsecxxmodule.idl>
 namespace Bse {
-class Summation : Effect {
+interface Summation : Effect {
   Info    icon        = "icons/summation.png";
   Info    authors     = "Tim Janik";
   Info    license     = _("GNU Lesser General Public License");

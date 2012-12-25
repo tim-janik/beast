@@ -520,7 +520,7 @@ record MidiChannelEvent
 sequence NoteSeq {
   Int    notes   = Note ("Note", "", KAMMER_NOTE, ":readwrite"); /* FIXME: s/notes/note/ for pspecs, but not the C API */
 };
-class Item;
+interface Item;
 sequence ItemSeq {
   Info   blurb = ("A list of BSE items or derived types.");
   Item   items;
@@ -614,8 +614,8 @@ sequence DotSeq {
   Dot dots;
 };
 /* BSE Part structures */
-class Part;
-class Track;
+interface Part;
+interface Track;
 record PartLink {
   Track track;
   Int   tick     = ("Tick", NULL, 0, 0, G_MAXINT, 384, STANDARD);
@@ -658,7 +658,7 @@ record SampleFileInfo {
   StringSeq     waves   = (NULL, NULL, STANDARD);
   Int           error   = ("BseErrorType", NULL, 0, 0, G_MAXINT, 0, STANDARD); // FIXME: use BseErrorType here
 };
-class Janitor;
+interface Janitor;
 /* user messages */
 enum MsgType {
   MSG_NONE = 0,

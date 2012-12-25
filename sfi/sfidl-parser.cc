@@ -95,7 +95,7 @@ enum ExtraToken {
   TOKEN_ERROR
 };
 const char *token_symbols[] = {
-  "namespace", "class", "enum", "record", "sequence",
+  "namespace", "interface", "enum", "record", "sequence",
   "property", "group", "using",
   "Const", "ConstIdent", "Info", "IStream", "JStream", "OStream",
   0

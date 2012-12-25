@@ -2,7 +2,7 @@
 #include <bse/bse.idl>
 namespace Bse {
 namespace Dav {
-class Organ : Effect {
+interface Organ : Effect {
   Info    icon      = "icons/organ.png";
   Info    authors   = "David A. Bartold";
   Info    license   = _("GNU Lesser General Public License");

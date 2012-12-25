@@ -1,10 +1,10 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include <bse/bsecore.idl>
 namespace Bse { // FIXME: bad workaround
-class Effect;
+interface Effect;
 };
 namespace Bse {
-class Amplifier : Effect {
+interface Amplifier : Effect {
   Info    icon      = "icons/ampctrl.png";
   Info    authors   = "Tim Janik";
   Info    license   = _("GNU Lesser General Public License");

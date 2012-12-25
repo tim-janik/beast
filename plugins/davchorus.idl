@@ -2,7 +2,7 @@
 #include <bse/bse.idl>
 namespace Bse {
 namespace Dav {
-class Chorus : Effect {
+interface Chorus : Effect {
   Info    icon      = "icons/chorus.png";
   Info    authors   = "David A. Bartold";
   Info    license   = _("GNU Lesser General Public License");

@@ -13,7 +13,7 @@ enum SaturationType {
 					       "for small levels")),
   SATURATE_HARD      = Enum (_("Hard"),      _("Hard saturation via clipping (prone to clicks)")),
 };
-class Saturator : Bse::Effect {
+interface Saturator : Bse::Effect {
   Info    category  = "/Distortion/Saturate";
   Info    icon      = "icons/saturate.png";
   Info    authors   = "Tim Janik";

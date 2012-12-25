@@ -1,9 +1,9 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include <bse/bsecxxmodule.idl>
 namespace Bse {
-class Wave;
+interface Wave;
 namespace Standard {
-class GusPatchEnvelope : Effect {
+interface GusPatchEnvelope : Effect {
   // Info    icon        = "icons/noise.png";
   Info    options     = "unstable";
   Info    authors     = "Stefan Westerfeld";
