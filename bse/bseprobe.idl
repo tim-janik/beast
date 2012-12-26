@@ -1,12 +1,14 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 include "bsecxxmodule.idl";
 namespace Bse {
-record ProbeFeatures {
+
+  record ProbeFeatures {
   Bool          probe_range;
   Bool          probe_energie;
   Bool          probe_samples;
   Bool          probe_fft;
 };
+
 record Probe {
   Int           channel_id;
   Num           block_stamp;
@@ -15,8 +17,8 @@ record Probe {
   Real          min;			// FIXME: rename to range_min
   Real          max;
   Real          energie;
-  FBlock        sample_data;
-  FBlock        fft_data;
+  FloatSeq      sample_data;
+  FloatSeq      fft_data;
 };
 sequence ProbeSeq {
   Probe probes;

@@ -1171,19 +1171,19 @@ qsampler_esample_filler (gpointer         data,
 			 BstQSampler     *qsampler)
 {
   ESampleFiller *fill = (ESampleFiller*) data;
-  SfiFBlock *fblock;
+  BseFloatSeq *fseq;
   voffset = voffset * fill->n_channels + fill->nth_channel;
-  fblock = bse_editable_sample_collect_stats (fill->esample,
-					      voffset,
-					      offset_scale * fill->n_channels,
-					      block_size * fill->n_channels,
-					      fill->n_channels,
-					      n_values);
+  fseq = bse_editable_sample_collect_stats (fill->esample,
+                                            voffset,
+                                            offset_scale * fill->n_channels,
+                                            block_size * fill->n_channels,
+                                            fill->n_channels,
+                                            n_values);
   uint i;
-  for (i = 0; i < fblock->n_values / 2; i++)
+  for (i = 0; i < fseq->n_values / 2; i++)
     {
-      values[i].min = fblock->values[i * 2] * 32767.9;
-      values[i].max = fblock->values[i * 2 + 1] * 32767.9;
+      values[i].min = fseq->values[i * 2] * 32767.9;
+      values[i].max = fseq->values[i * 2 + 1] * 32767.9;
     }
   return i;
 }

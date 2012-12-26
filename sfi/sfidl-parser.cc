@@ -743,7 +743,7 @@ bool Parser::parse (const String& filename)
   defineSymbol ("Real");
   defineSymbol ("String");
   // deprecated: defineSymbol ("BBlock");
-  defineSymbol ("FBlock");
+  // deprecated: defineSymbol ("FBlock");
   defineSymbol ("Rec");
   leaveNamespace ();
   GTokenType expected_token = G_TOKEN_NONE;

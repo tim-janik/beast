@@ -29,6 +29,9 @@ sequence TypeSeq {
 sequence StringSeq {
   String strings;
 };
+sequence FloatSeq {
+  Real values;
+};
 /* musical tunings: http://en.wikipedia.org/wiki/Musical_tuning */
 enum MusicalTuningType {
   /* Equal Temperament: http://en.wikipedia.org/wiki/Equal_temperament */

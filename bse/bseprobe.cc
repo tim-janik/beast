@@ -167,7 +167,7 @@ class ProbeQueue {
               rv[i] = ivalues[i] * blackman_window (i * reci_fft_size);
             gsl_power2_fftar (fft_size, rv, cv);
             probe.fft_data.resize (fft_size);
-            float *fvalues = probe.fft_data.fblock()->values;
+            double *fvalues = &probe.fft_data[0];
             reci_fft_size = 1.0 / fft_size;
             i = fft_size;
             while (i--) /* convert to float */
@@ -177,7 +177,7 @@ class ProbeQueue {
           {
             /* all raw floats are 0.0 and so will be the resulting fft */
             probe.fft_data.resize (fft_size);
-            bse_block_fill_float (fft_size, probe.fft_data.fblock()->values, 0.0);
+            bse_block_fill_0 (fft_size, &probe.fft_data[0]);
           }
         else
           probe_features.probe_fft = false;
@@ -190,9 +190,12 @@ class ProbeQueue {
         if (raw_floats)
           {
             /* if (probe_xrun) bse_block_fill_float (n_computed, raw_floats, 0.0); */
-            SfiFBlock *fblock = sfi_fblock_new_foreign (block_size, raw_floats, g_free);
+            probe.sample_data.resize (block_size);
+            double *fvalues = &probe.fft_data[0];
+            for (int i = 0; i < int (block_size); i++)
+              fvalues[i] = raw_floats[i];
+            g_free (raw_floats);
             raw_floats = NULL;
-            probe.sample_data.take (fblock);
           }
         else
           probe_features.probe_samples = false;

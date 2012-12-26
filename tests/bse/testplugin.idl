@@ -27,7 +27,7 @@ interface TestObject : Bse::Effect {
   property TestRecord r;
   property TestSequence s;
   // deprecated: property BBlock bb;
-  property FBlock fb;
+  // deprecated: property FBlock fb;
   property Rec rr;
   property Bse::Effect ef; // C++ Object 
   property Bse::Item it;   // C Object
