@@ -163,9 +163,9 @@ private:
   set<double>    m_gp_arrows;
   set<double>    m_gp_lines;
   vector<Band>	 m_spec_bands;
-  static const double FS = 10000.0;
-  static const double MIN_DB = -1000;
-  static const double DB_EPSILON = 0.01;  /* for comparisions */
+  static constexpr double FS = 10000.0;
+  static constexpr double MIN_DB = -1000;
+  static constexpr double DB_EPSILON = 0.01;  /* for comparisions */
   double
   response (double f) const
   {

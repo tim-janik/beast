@@ -126,6 +126,9 @@ AC_C_CONST
 AC_C_INLINE
 AC_HEADER_STDC
 
+# == C++11 ==
+MC_EVAR_ADD(CXXFLAGS, -std=gnu++0x, -std=gnu++0x -pthread)
+
 # Checks for programs
 AC_PROG_INSTALL
 AC_PROG_LN_S
