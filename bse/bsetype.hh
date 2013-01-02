@@ -81,23 +81,27 @@ void    bse_param_types_init			();
 #define BSE_GCONFIG(cfg) (bse_global_config->cfg)
 extern BseGConfig        *bse_global_config;    /* from bsegconfig.[hc] */
 /* --- provide IDL pspec initializers --- */
-#define sfidl_pspec_Bool(group, locfile, locline, name, nick, blurb, dflt, options) \
+#define sfidl_pspec_Bool sfidl_pspec_SfiBool
+#define sfidl_pspec_SfiBool(group, locfile, locline, name, nick, blurb, dflt, options) \
   sfi_pspec_set_group (sfi_pspec_bool (name, nick, blurb, dflt, options), group)
 #define sfidl_pspec_Bool_default(group, locfile, locline, name) \
   sfi_pspec_set_group (sfi_pspec_bool (name, NULL, NULL, FALSE, SFI_PARAM_STANDARD), group)
 #define sfidl_pspec_Trigger(group, locfile, locline, name, nick, blurb, options) \
   sfi_pspec_set_group (sfi_pspec_bool (name, nick, blurb, FALSE, "trigger:skip-undo:" options), group)
-#define sfidl_pspec_Int(group, locfile, locline, name, nick, blurb, dflt, min, max, step, options) \
+#define sfidl_pspec_Int sfidl_pspec_SfiInt
+#define sfidl_pspec_SfiInt(group, locfile, locline, name, nick, blurb, dflt, min, max, step, options) \
   sfi_pspec_set_group (sfi_pspec_int (name, nick, blurb, dflt, min, max, step, options), group)
 #define sfidl_pspec_Int_default(group, locfile, locline, name) \
   sfi_pspec_set_group (sfi_pspec_int (name, NULL, NULL, 0, G_MININT, G_MAXINT, 256, SFI_PARAM_STANDARD), group)
-#define sfidl_pspec_Num(group, locfile, locline, name, nick, blurb, dflt, min, max, step, options) \
+#define sfidl_pspec_Num sfidl_pspec_SfiNum
+#define sfidl_pspec_SfiNum(group, locfile, locline, name, nick, blurb, dflt, min, max, step, options) \
   sfi_pspec_set_group (sfi_pspec_num (name, nick, blurb, dflt, min, max, step, options), group)
 #define sfidl_pspec_Num_default(group, locfile, locline, name) \
   sfi_pspec_set_group (sfi_pspec_num (name, NULL, NULL, 0, SFI_MINNUM, SFI_MAXNUM, 1000, SFI_PARAM_STANDARD), group)
-#define sfidl_pspec_UInt(group, locfile, locline, name, nick, blurb, dflt, options) \
+#define sfidl_pspec_SfiUInt(group, locfile, locline, name, nick, blurb, dflt, options) \
   sfi_pspec_set_group (sfi_pspec_int (name, nick, blurb, dflt, 0, G_MAXINT, 1, options), group)
-#define sfidl_pspec_Real(group, locfile, locline, name, nick, blurb, dflt, min, max, step, options) \
+#define sfidl_pspec_Real sfidl_pspec_SfiReal
+#define sfidl_pspec_SfiReal(group, locfile, locline, name, nick, blurb, dflt, min, max, step, options) \
   sfi_pspec_set_group (sfi_pspec_real (name, nick, blurb, dflt, min, max, step, options), group)
 #define sfidl_pspec_Real_default(group, locfile, locline, name) \
   sfi_pspec_set_group (sfi_pspec_real (name, NULL, NULL, 0, -SFI_MAXREAL, SFI_MAXREAL, 10, SFI_PARAM_STANDARD), group)
@@ -126,7 +130,8 @@ extern BseGConfig        *bse_global_config;    /* from bsegconfig.[hc] */
   sfi_pspec_set_group (sfi_pspec_choice (name, nick, blurb, #dval, cvalues, SFI_PARAM_STANDARD), group)
 #define sfidl_pspec_Choice_default(group, locfile, locline, name, cvalues) \
   sfidl_pspec_Choice (group, locfile, locline, name, NULL, NULL, NULL, SFI_PARAM_STANDARD, cvalues)
-#define sfidl_pspec_String(group, locfile, locline, name, nick, blurb, dflt, options) \
+#define sfidl_pspec_String sfidl_pspec_SfiString
+#define sfidl_pspec_SfiString(group, locfile, locline, name, nick, blurb, dflt, options) \
   sfi_pspec_set_group (sfi_pspec_string (name, nick, blurb, dflt, options), group)
 #define sfidl_pspec_String_default(group, locfile, locline, name) \
   sfidl_pspec_String (group, locfile, locline, name, NULL, NULL, NULL, SFI_PARAM_STANDARD)

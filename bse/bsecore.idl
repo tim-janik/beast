@@ -483,24 +483,24 @@ enum MidiChannelEventType {
 record MidiChannelEvent
 {
   MidiChannelEventType  event_type;
-  Int                   channel         = ("Channel", "", 0, 0, 99, 1, ":readwrite"); // FIXME: MAX_MIDI_CHANNEL
-  Num                   tick_stamp      = ("Time Stamp", "", 0, 0, SFI_MAXNUM, 0, STANDARD);
+  Int                   channel         = SfiInt ("Channel", "", 0, 0, 99, 1, ":readwrite"); // FIXME: MAX_MIDI_CHANNEL
+  Num                   tick_stamp      = SfiNum ("Time Stamp", "", 0, 0, SFI_MAXNUM, 0, STANDARD);
   /* note (on/off/pressure) */
   Real                  frequency       = Freq ("Frequency", "", KAMMER_FREQ, ":readwrite");
-  Real                  velocity        = ("Velocity", "", 1, 0, 1.0, 0.1, ":readwrite");
+  Real                  velocity        = SfiReal ("Velocity", "", 1, 0, 1.0, 0.1, ":readwrite");
   /* control change */
-  Int                   control         = ("Control Number", "", 0, 0, 1024, 8, ":readwrite");
-  Real                  value           = ("Value", "", 0, -1, +1, 0.1, ":readwrite");
+  Int                   control         = SfiInt ("Control Number", "", 0, 0, 1024, 8, ":readwrite");
+  Real                  value           = SfiReal ("Value", "", 0, -1, +1, 0.1, ":readwrite");
   /* program change */
-  Int                   program         = ("Program", "", 0, 0, 0x7f, 0x10, ":readwrite");
+  Int                   program         = SfiInt ("Program", "", 0, 0, 0x7f, 0x10, ":readwrite");
   /* channel pressure */
-  Real                  intensity       = ("Intensity", "", 0, 0, 1.0, 0.1, ":readwrite");
+  Real                  intensity       = SfiReal ("Intensity", "", 0, 0, 1.0, 0.1, ":readwrite");
   /* pitch bend */
-  Real                  pitch_bend      = ("Pitch Bend", "", 0, -1, +1, 0.1, ":readwrite");
+  Real                  pitch_bend      = SfiReal ("Pitch Bend", "", 0, -1, +1, 0.1, ":readwrite");
   /* song pointer */
-  Int                   song_pointer    = ("Song Pointer", "", 0, 0, 0x3fff, 0x80, ":readwrite");
+  Int                   song_pointer    = SfiInt ("Song Pointer", "", 0, 0, 0x3fff, 0x80, ":readwrite");
   /* song select */
-  Int                   song_number     = ("Song Number", "", 0, 0, 0x7f, 0x10, ":readwrite");
+  Int                   song_number     = SfiInt ("Song Number", "", 0, 0, 0x7f, 0x10, ":readwrite");
 };
 sequence NoteSeq {
   Int    notes   = Note ("Note", "", KAMMER_NOTE, ":readwrite"); /* FIXME: s/notes/note/ for pspecs, but not the C API */
@@ -515,19 +515,19 @@ record PropertyCandidates {
   String  label;
   String  tooltip;
   ItemSeq items;
-  TypeSeq partitions = ("Type Partitions", "List of types which may logically partition the list of items by type discrimination", STANDARD);
+  TypeSeq partitions = SfiSeq ("Type Partitions", "List of types which may logically partition the list of items by type discrimination", STANDARD);
 };
 record PartNote
 {
   Info     blurb        = "Part specific note representation";
-  Int      id           = UInt ("ID", "", 0, ":readwrite");
-  Int      channel      = ("Channel", "", 0, 0, MAXINT, 1, ":readwrite");
-  Int      tick         = ("Tick", "", 0, 0, MAXINT, 1, ":readwrite");
-  Int      duration     = ("Duration", "Duration in number of ticks", 0, 0, MAXINT, 1, ":readwrite");
+  Int      id           = SfiUInt ("ID", "", 0, ":readwrite");
+  Int      channel      = SfiInt ("Channel", "", 0, 0, MAXINT, 1, ":readwrite");
+  Int      tick         = SfiInt ("Tick", "", 0, 0, MAXINT, 1, ":readwrite");
+  Int      duration     = SfiInt ("Duration", "Duration in number of ticks", 0, 0, MAXINT, 1, ":readwrite");
   Int      note         = Note ("Note", "", KAMMER_NOTE, ":readwrite");
-  Int      fine_tune    = ("Fine Tune", "", 0, MIN_FINE_TUNE, MAX_FINE_TUNE, 1, ":readwrite");
-  Real     velocity     = ("Velocity", "", 1, 0, 1.0, 0.1, ":readwrite");
-  Bool     selected     = ("Selected", "", FALSE, ":readwrite");
+  Int      fine_tune    = SfiInt ("Fine Tune", "", 0, MIN_FINE_TUNE, MAX_FINE_TUNE, 1, ":readwrite");
+  Real     velocity     = SfiReal ("Velocity", "", 1, 0, 1.0, 0.1, ":readwrite");
+  Bool     selected     = SfiBool ("Selected", "", FALSE, ":readwrite");
 };
 sequence PartNoteSeq {
   Info     blurb = "A list of part notes";
@@ -536,11 +536,11 @@ sequence PartNoteSeq {
 record PartControl
 {
   Info           blurb        = "Part specific control event representation";
-  Int            id           = UInt ("ID", "", 0, ":readwrite");
-  Int            tick         = ("Tick", "", 0, 0, MAXINT, 1, ":readwrite");
+  Int            id           = SfiUInt ("ID", "", 0, ":readwrite");
+  Int            tick         = SfiInt ("Tick", "", 0, 0, MAXINT, 1, ":readwrite");
   MidiSignalType control_type;
-  Real           value        = ("Value", "", 0, -1, +1, 0.1, ":readwrite");
-  Bool           selected     = ("Selected", "", FALSE, ":readwrite");
+  Real           value        = SfiReal ("Value", "", 0, -1, +1, 0.1, ":readwrite");
+  Bool           selected     = SfiBool ("Selected", "", FALSE, ":readwrite");
 };
 sequence PartControlSeq {
   Info blurb = "A list of part control events";
@@ -553,13 +553,13 @@ record NoteDescription
   Int    octave          = Octave ("Octave", "", KAMMER_OCTAVE, ":readwrite");
   Real   freq            = Freq ("Frequency", "", KAMMER_FREQ, ":readwrite");
   Int    fine_tune       = FineTune ("Fine Tune", "", ":readwrite");
-  Int    semitone        = Int ("Semitone", "", 0, 0, 11, 1, ":readwrite");
+  Int    semitone        = SfiInt ("Semitone", "", 0, 0, 11, 1, ":readwrite");
   Bool   upshift;
-  Int    letter          = Int ("Letter", "International abbreviation letter for this note", 64, 32, 126, 1, ":readwrite");
+  Int    letter          = SfiInt ("Letter", "International abbreviation letter for this note", 64, 32, 126, 1, ":readwrite");
   String name            = String ("Name", "", "", ":readwrite");
   /* constants */
-  Int    max_fine_tune   = Int ("Max Fine Tune", "", MAX_FINE_TUNE, MAX_FINE_TUNE, MAX_FINE_TUNE, 0, ":readable");
-  Int    kammer_note     = Int ("Kammer Note", "", KAMMER_NOTE, KAMMER_NOTE, KAMMER_NOTE, 0, ":readable");
+  Int    max_fine_tune   = SfiInt ("Max Fine Tune", "", MAX_FINE_TUNE, MAX_FINE_TUNE, MAX_FINE_TUNE, 0, ":readable");
+  Int    kammer_note     = SfiInt ("Kammer Note", "", KAMMER_NOTE, KAMMER_NOTE, KAMMER_NOTE, 0, ":readable");
   Info   blurb           = "A note description provides all necessary details about a specific note. "
                            "Various procedures exist to retrieve a note description; given different "
                            "key values. The max_fine_tune and kammer_note fields are constants, which "
@@ -568,7 +568,7 @@ record NoteDescription
 record NoteSequence
 {
   Int     offset = Note ("Note Offset", "Center/base note", KAMMER_NOTE, ":readwrite");
-  NoteSeq notes  = ("Notes", "Sequence of notes", ":readwrite");
+  NoteSeq notes  = SfiSeq ("Notes", "Sequence of notes", ":readwrite");
 };
 sequence PixelSeq {
   Int	pixels;
@@ -576,13 +576,13 @@ sequence PixelSeq {
 record Icon
 {
   Info     blurb     = "BSE icon representation.";
-  Int      width     = ("Width", "Width in pixels or 0 for no icon", 0, 0, MAXINT, 1, ":readwrite");
-  Int      height    = ("Height", "Height in pixels or 0 for no icon", 0, 0, MAXINT, 1, ":readwrite");
-  PixelSeq pixel_seq = ("Pixels", "Pixel array of width*height ARGB pixels", ":readwrite");
+  Int      width     = SfiInt ("Width", "Width in pixels or 0 for no icon", 0, 0, MAXINT, 1, ":readwrite");
+  Int      height    = SfiInt ("Height", "Height in pixels or 0 for no icon", 0, 0, MAXINT, 1, ":readwrite");
+  PixelSeq pixel_seq = SfiSeq ("Pixels", "Pixel array of width*height ARGB pixels", ":readwrite");
 };
 record Category
 {
-  Int    category_id = ("Category ID", "", 1, 1, G_MAXINT, 1, ":readwrite");
+  Int    category_id = SfiInt ("Category ID", "", 1, 1, G_MAXINT, 1, ":readwrite");
   String category;
   Int    mindex;
   Int    lindex;
@@ -605,9 +605,9 @@ interface Part;
 interface Track;
 record PartLink {
   Track track;
-  Int   tick     = ("Tick", "", 0, 0, G_MAXINT, 384, STANDARD);
+  Int   tick     = SfiInt ("Tick", "", 0, 0, G_MAXINT, 384, STANDARD);
   Part  part;
-  Int   duration = ("Duration", "", 0, 0, G_MAXINT, 384, STANDARD);
+  Int   duration = SfiInt ("Duration", "", 0, 0, G_MAXINT, 384, STANDARD);
   // Int   count; /* 1 + repetitions */
 };
 sequence PartLinkSeq {
@@ -615,9 +615,9 @@ sequence PartLinkSeq {
 };
 /* BSE Track structures */
 record TrackPart {
-  Int           tick     = ("Tick", "", 0, 0, G_MAXINT, 384, STANDARD);
+  Int           tick     = SfiInt ("Tick", "", 0, 0, G_MAXINT, 384, STANDARD);
   Part          part;
-  Int           duration = ("Duration", "", 0, 0, G_MAXINT, 384, STANDARD);
+  Int           duration = SfiInt ("Duration", "", 0, 0, G_MAXINT, 384, STANDARD);
 };
 sequence TrackPartSeq {
   TrackPart tparts;
@@ -625,25 +625,25 @@ sequence TrackPartSeq {
 /* BSE Song timing structure */
 record SongTiming {
   /* song position timing applies to */
-  Int   tick        = ("Current tick", "", 0, 0, G_MAXINT, 384, STANDARD);
+  Int   tick        = SfiInt ("Current tick", "", 0, 0, G_MAXINT, 384, STANDARD);
   /* tempo */
-  Real  bpm         = ("Beats per minute", "", 120, BSE_MIN_BPM, BSE_MAX_BPM, 10, STANDARD);
+  Real  bpm         = SfiReal ("Beats per minute", "", 120, BSE_MIN_BPM, BSE_MAX_BPM, 10, STANDARD);
   /* signature */
-  Int   numerator   = ("Numerator", "Number of notes per measure", 4, 1, 256, 2, STANDARD);
-  Int   denominator = ("Denominator", "Type of notes counted per measure", 4, 1, 256, 2, STANDARD);
+  Int   numerator   = SfiInt ("Numerator", "Number of notes per measure", 4, 1, 256, 2, STANDARD);
+  Int   denominator = SfiInt ("Denominator", "Type of notes counted per measure", 4, 1, 256, 2, STANDARD);
   /* sequencer timing */
-  Int   tpqn        = ("Ticks per quarter note", "", 384, 1, G_MAXINT, 12, STANDARD);
-  Int   tpt         = ("Ticks per tact", "", 384, 1, G_MAXINT, 12, STANDARD);
+  Int   tpqn        = SfiInt ("Ticks per quarter note", "", 384, 1, G_MAXINT, 12, STANDARD);
+  Int   tpt         = SfiInt ("Ticks per tact", "", 384, 1, G_MAXINT, 12, STANDARD);
   /* playback timing */
-  Real  stamp_ticks = ("Ticks per stamp increment (valid only during playback)", "", 384, 1, G_MAXINT, 12, STANDARD);
+  Real  stamp_ticks = SfiReal ("Ticks per stamp increment (valid only during playback)", "", 384, 1, G_MAXINT, 12, STANDARD);
 };
 record SampleFileInfo {
-  String        file    = ("Filename", "", "", STANDARD);
-  Int           size    = ("File Size", "", 0, 0, G_MAXINT, 0, STANDARD);
-  Num           mtime   = ("Modification Time", "", 0, 0, SFI_MAXNUM, 0, STANDARD);
-  String        loader  = ("Loader", "", "", STANDARD);
-  StringSeq     waves   = ("", "", STANDARD);
-  Int           error   = ("BseErrorType", "", 0, 0, G_MAXINT, 0, STANDARD); // FIXME: use BseErrorType here
+  String        file    = SfiString ("Filename", "", "", STANDARD);
+  Int           size    = SfiInt ("File Size", "", 0, 0, G_MAXINT, 0, STANDARD);
+  Num           mtime   = SfiNum ("Modification Time", "", 0, 0, SFI_MAXNUM, 0, STANDARD);
+  String        loader  = SfiString ("Loader", "", "", STANDARD);
+  StringSeq     waves   = SfiSeq ("", "", STANDARD);
+  Int           error   = SfiInt ("BseErrorType", "", 0, 0, G_MAXINT, 0, STANDARD); // FIXME: use BseErrorType here
 };
 interface Janitor;
 /* user messages */
@@ -683,22 +683,22 @@ enum ThreadState {
   THREAD_STATE_DEAD,
 };
 record ThreadInfo {
-  String      name      = (_("Thread Name"), "", "", STANDARD);
-  ThreadState state     = (_("State"), _("The execution state of the thread"), THREAD_STATE_UNKNOWN, STANDARD);
-  Int         thread_id = (_("Thread ID"), _("A unique number identifying this thread"),
+  String      name      = SfiString (_("Thread Name"), "", "", STANDARD);
+  ThreadState state     = SfiEnum (_("State"), _("The execution state of the thread"), THREAD_STATE_UNKNOWN, STANDARD);
+  Int         thread_id = SfiInt (_("Thread ID"), _("A unique number identifying this thread"),
                            0, 0, G_MAXINT, 1, STANDARD);
-  Int         priority  = (_("Priority"), _("The nice value of a thread, -20 indicates a high priority thread and "
+  Int         priority  = SfiInt (_("Priority"), _("The nice value of a thread, -20 indicates a high priority thread and "
                                             "+19 a low priority one that is 'nice' to others"),
                            0, -20, 19, 1, STANDARD);
-  Int         processor = (_("Processor"), _("The processor that this thread is currently being executed on"),
+  Int         processor = SfiInt (_("Processor"), _("The processor that this thread is currently being executed on"),
                            0, 0, MAXINT, 1, STANDARD);
-  Int         utime     = (_("User Time"), _("The CPU time spent executing instructions of this thread"),
+  Int         utime     = SfiInt (_("User Time"), _("The CPU time spent executing instructions of this thread"),
                            0, 0, MAXINT, 1, STANDARD);
-  Int         stime     = (_("System Time"), _("The CPU time spent in the system for this thread"),
+  Int         stime     = SfiInt (_("System Time"), _("The CPU time spent in the system for this thread"),
                            0, 0, MAXINT, 1, STANDARD);
-  Int         cutime    = (_("Child User Time"), _("The CPU time spent executing instructions of children of this thread"),
+  Int         cutime    = SfiInt (_("Child User Time"), _("The CPU time spent executing instructions of children of this thread"),
                            0, 0, MAXINT, 1, STANDARD);
-  Int         cstime    = (_("Child System Time"), _("The CPU time spent in the system for children of this thread"),
+  Int         cstime    = SfiInt (_("Child System Time"), _("The CPU time spent in the system for children of this thread"),
                            0, 0, MAXINT, 1, STANDARD);
 };
 sequence ThreadInfoSeq {
@@ -713,51 +713,51 @@ ThreadTotals    collect_thread_totals ();
 /* BSE Global Config */
 record GConfig {
   group _("Synthesis Settings") {
-    Int synth_latency           = (_("Latency [ms]"),
+    Int synth_latency           = SfiInt (_("Latency [ms]"),
                                    _("Processing duration between input and output of a single sample, smaller values increase CPU load"),
                                    50, 1, 2000, 5, STANDARD);
-    Int synth_mixing_freq       = (_("Synth Mixing Frequency"),
+    Int synth_mixing_freq       = SfiInt (_("Synth Mixing Frequency"),
                                    _("Synthesis mixing frequency, common values are: 22050, 44100, 48000"),
                                    44100, 8000, 192000, 0, STANDARD);
-    Int synth_control_freq      = (_("Synth Control Frequency"),
+    Int synth_control_freq      = SfiInt (_("Synth Control Frequency"),
                                    _("Frequency at which control values are evaluated, "
                                      "should be much smaller than Synth Mixing Frequency to reduce CPU load"),
                                    1000, 1, 192000, 0, STANDARD);
   };
   group _("MIDI") {
-    Bool invert_sustain = (_("Invert Sustain Pedal"),
+    Bool invert_sustain = SfiBool (_("Invert Sustain Pedal"),
                            _("Invert the state of sustain (damper) pedal so on/off meanings are reversed"),
                            FALSE, STANDARD);
   };
   group _("Default Values") {
-    String author_default  = (_("Default Author"), _("Default value for 'Author' fields"),
+    String author_default  = SfiString (_("Default Author"), _("Default value for 'Author' fields"),
 			      bse_intern_default_author(), STANDARD);
-    String license_default = (_("Default License"), _("Default value for 'License' fields"),
+    String license_default = SfiString (_("Default License"), _("Default value for 'License' fields"),
 			      bse_intern_default_license(), STANDARD);
   };
   group _("Search Paths") {
-    String sample_path     = (_("Sample Path"),
+    String sample_path     = SfiString (_("Sample Path"),
                               g_intern_printf (_("Search path of directories, seperated by \"%s\", used to find audio samples."),
                                                G_SEARCHPATH_SEPARATOR_S),
                               bse_intern_path_user_data ("/samples"), STANDARD ":searchpath");
-    String effect_path     = (_("Effect Path"),
+    String effect_path     = SfiString (_("Effect Path"),
                               g_intern_printf (_("Search path of directories, seperated by \"%s\", used to find BSE effect files."),
                                                G_SEARCHPATH_SEPARATOR_S),
                               bse_intern_path_user_data ("/effects"), STANDARD ":searchpath");
-    String instrument_path = (_("Instrument Path"),
+    String instrument_path = SfiString (_("Instrument Path"),
                               g_intern_printf (_("Search path of directories, seperated by \"%s\", used to find BSE instrument files."),
                                                G_SEARCHPATH_SEPARATOR_S),
                               bse_intern_path_user_data ("/instruments"), STANDARD ":searchpath");
-    String script_path     = (_("Script Path"),
+    String script_path     = SfiString (_("Script Path"),
                               g_intern_printf (_("Search path of directories, seperated by \"%s\", used to find BSE scheme scripts."),
                                                G_SEARCHPATH_SEPARATOR_S),
                               bse_intern_path_user_data ("/scripts"), STANDARD ":searchpath");
-    String plugin_path     = (_("Plugin Path"),
+    String plugin_path     = SfiString (_("Plugin Path"),
                               g_intern_printf (_("Search path of directories, seperated by \"%s\", used to find BSE plugins. This path "
                                                  "is searched for in addition to the standard BSE plugin location on this system."),
                                                G_SEARCHPATH_SEPARATOR_S),
                               bse_intern_path_user_data ("/plugins"), STANDARD ":searchpath");
-    String ladspa_path     = (_("LADSPA Path"),
+    String ladspa_path     = SfiString (_("LADSPA Path"),
                               g_intern_printf (_("Search path of directories, seperated by \"%s\", used to find LADSPA plugins. This "
                                                  "path is searched for in addition to the standard LADSPA location on this system. "
                                                  "LADSPA is the Linux Audio Developer's Simple Plugin API, more informations about "
