@@ -8,8 +8,8 @@ interface Chorus : Effect {
   Info    license   = _("GNU Lesser General Public License");
   Info    category  = _("/Enhance/Chorus");
   Info    blurb     = _("DavChorus adds more depth to sounds");
-  IStream audio_in  = (_("Audio In"), _("Audio input"));
-  OStream audio_out = (_("Audio Out"), _("Chorus audio output"));
+  IStream audio_in  = Stream (_("Audio In"), _("Audio input"));
+  OStream audio_out = Stream (_("Audio Out"), _("Chorus audio output"));
   group _("Parameters") {
     Real wet_out = Perc (_("Wet out [%]"), _("Set the amount of modified data to mix"), 50.0, STANDARD);
   };

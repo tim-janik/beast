@@ -25,12 +25,12 @@ interface Saturator : Bse::Effect {
                        "The output volume allows for extra amplification after the saturation stage. For saturation "
                        "types that allow overdrive signals past the saturation stage, an output volume greater than "
                        "0dB may result in overdrive signals as output of this module.");
-  IStream audio_in1  = ("Audio In1", "First Audio Input");
-  IStream audio_in2  = ("Audio In2", "Second Audio Input");
-  OStream audio_out1 = ("Audio Out1", "First Audio Output");
-  OStream audio_out2 = ("Audio Out2", "Second Audio Output");
+  IStream audio_in1  = Stream ("Audio In1", "First Audio Input");
+  IStream audio_in2  = Stream ("Audio In2", "Second Audio Input");
+  OStream audio_out1 = Stream ("Audio Out1", "First Audio Output");
+  OStream audio_out2 = Stream ("Audio Out2", "Second Audio Output");
   group "Saturation" {
-    SaturationType saturation    = (_("Saturation Type"), _("The type of saturation to be used"), SATURATE_TANH, STANDARD);
+    SaturationType saturation    = SfiEnum (_("Saturation Type"), _("The type of saturation to be used"), SATURATE_TANH, STANDARD);
     Real           level         = Perc (_("Level"),
                                          _("Normalization level of the saturation curve in percent, some saturation types still "
                                            "allow overdrive signals beyond this level"),

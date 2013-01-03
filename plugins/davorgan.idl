@@ -8,14 +8,14 @@ interface Organ : Effect {
   Info    license   = _("GNU Lesser General Public License");
   Info    category  = _("/Audio Sources/Organ");
   Info    blurb     = _("DavOrgan is a versatile additive organ synthesizer");
-  IStream freq_in   = (_("Freq In"), _("Frequency Input"));
-  OStream audio_out = (_("Audio Out"), _("Organ output"));
+  IStream freq_in   = Stream (_("Freq In"), _("Frequency Input"));
+  OStream audio_out = Stream (_("Audio Out"), _("Organ output"));
   group _("Base Frequency") {
     Real base_freq = Freq (_("Frequency"), _("Organ frequency in Hertz, i.e. the pitch of the base tone"),
                            BSE_KAMMER_FREQUENCY, STANDARD ":dial");
     Int  base_note = Note (_("Note"), _("Organ frequency as note, converted to Hertz according to the current musical tuning"),
 			   BSE_KAMMER_NOTE, GUI);
-    Int  transpose = Int (_("Transpose"), _("Transposition of the frequency in semitones"),
+    Int  transpose = SfiInt (_("Transpose"), _("Transposition of the frequency in semitones"),
                           0, BSE_MIN_TRANSPOSE, BSE_MAX_TRANSPOSE, 12, STANDARD ":dial:skip-default");
     Int  fine_tune = FineTune (_("Fine Tune"), _("Amount of detuning in cent (hundredth part of a semitone)"),
 			       STANDARD ":dial:skip-default");

@@ -7,6 +7,6 @@ interface Noise : Effect {
   Info    license     = _("GNU Lesser General Public License");
   Info    category    = _("/Audio Sources/Noise");
   Info    blurb       = _("Noise is a generator of (supposedly) white noise");
-  OStream noise_out   = (_("Noise Out"), _("Noise Output"));
+  OStream noise_out   = Stream (_("Noise Out"), _("Noise Output"));
 };
 } // Bse

@@ -1219,6 +1219,9 @@ Parser::parseStream (Stream&      stream,
   stream.ident = scanner->value.v_identifier;
   skip_ascii_at (scanner);
   parse_or_return ('=');
+  parse_or_return (G_TOKEN_IDENTIFIER);
+  if (strcmp (scanner->value.v_identifier, "Stream") != 0)
+    return G_TOKEN_IDENTIFIER;
   parse_or_return ('(');
   parse_istring_or_return (stream.label);
   parse_or_return (',');
