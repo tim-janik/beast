@@ -622,25 +622,6 @@ bse_string_equals (gconstpointer string1,
   else
     return string1 == string2;
 }
-const gchar*
-bse_intern_path_user_data (const gchar *dir)
-{
-  return g_intern_strconcat (BSE_PATH_USER_DATA ("/"), dir, NULL);
-}
-const gchar*
-bse_intern_default_author (void)
-{
-  const char *user = g_get_user_name();
-  const char *name = g_get_real_name();
-  if (name && user && name[0] && strcmp (user, name) != 0)
-    return g_intern_string (name);
-  return g_intern_static_string ("");
-}
-const gchar*
-bse_intern_default_license (void)
-{
-  return g_intern_static_string ("Creative Commons Attribution 2.5 (http://creativecommons.org/licenses/by/2.5/)");
-}
 void
 bse_bbuffer_puts (gchar        bbuffer[BSE_BBUFFER_SIZE],
 		  const gchar *string)

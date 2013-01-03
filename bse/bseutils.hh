@@ -84,9 +84,6 @@ gint          bse_xinfo_stub_compare            (const gchar     *xinfo1,  /* mu
 guint		bse_string_hash			(gconstpointer   string);
 gint		bse_string_equals		(gconstpointer	 string1,
 						 gconstpointer	 string2);
-const gchar*    bse_intern_path_user_data       (const gchar    *dir);
-const gchar*    bse_intern_default_author	(void);
-const gchar*    bse_intern_default_license	(void);
 /* --- bbuffer utils --- */
 #define BSE_BBUFFER_SIZE        (128)
 void	bse_bbuffer_puts	(gchar       	 bbuffer[BSE_BBUFFER_SIZE],

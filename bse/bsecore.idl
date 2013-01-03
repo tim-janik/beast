@@ -710,19 +710,32 @@ record ThreadTotals {
   ThreadInfoSeq synthesis;
 };
 ThreadTotals    collect_thread_totals ();
-/* BSE Global Config */
+
+// == BSE Global Config ==
+Const DEFAULT_AUTHOR  = "\357\277\271\357\277\272{{bse.idl/default-author}}\357\277\273";
+Const DEFAULT_LICENSE = "\357\277\271\357\277\272{{bse.idl/default-license}}\357\277\273";
+Const USER_DATA_PATH  = "\357\277\271\357\277\272{{bse.idl/user-data-path}}\357\277\273";
+Const DEFAULT_SAMPLE_PATH      = USER_DATA_PATH "samples";
+Const DEFAULT_EFFECTS_PATH     = USER_DATA_PATH "effects";
+Const DEFAULT_INSTRUMENTS_PATH = USER_DATA_PATH "instruments";
+Const DEFAULT_SCRIPTS_PATH     = USER_DATA_PATH "scripts";
+Const DEFAULT_PLUGINS_PATH     = USER_DATA_PATH "plugins";
+
 record GConfig {
   group _("Synthesis Settings") {
-    Int synth_latency           = SfiInt (_("Latency [ms]"),
-                                   _("Processing duration between input and output of a single sample, smaller values increase CPU load"),
-                                   50, 1, 2000, 5, STANDARD);
-    Int synth_mixing_freq       = SfiInt (_("Synth Mixing Frequency"),
-                                   _("Synthesis mixing frequency, common values are: 22050, 44100, 48000"),
-                                   44100, 8000, 192000, 0, STANDARD);
-    Int synth_control_freq      = SfiInt (_("Synth Control Frequency"),
-                                   _("Frequency at which control values are evaluated, "
-                                     "should be much smaller than Synth Mixing Frequency to reduce CPU load"),
-                                   1000, 1, 192000, 0, STANDARD);
+    Int synth_latency =
+      SfiInt (_("Latency [ms]"),
+	      _("Processing duration between input and output of a single sample, smaller values increase CPU load"),
+	      50, 1, 2000, 5, STANDARD);
+    Int synth_mixing_freq =
+      SfiInt (_("Synth Mixing Frequency"),
+	      _("Synthesis mixing frequency, common values are: 22050, 44100, 48000"),
+	      44100, 8000, 192000, 0, STANDARD);
+    Int synth_control_freq =
+      SfiInt (_("Synth Control Frequency"),
+	      _("Frequency at which control values are evaluated, "
+		"should be much smaller than Synth Mixing Frequency to reduce CPU load"),
+	      1000, 1, 192000, 0, STANDARD);
   };
   group _("MIDI") {
     Bool invert_sustain = SfiBool (_("Invert Sustain Pedal"),
@@ -731,39 +744,34 @@ record GConfig {
   };
   group _("Default Values") {
     String author_default  = SfiString (_("Default Author"), _("Default value for 'Author' fields"),
-			      bse_intern_default_author(), STANDARD);
+					DEFAULT_AUTHOR, STANDARD);
     String license_default = SfiString (_("Default License"), _("Default value for 'License' fields"),
-			      bse_intern_default_license(), STANDARD);
+					DEFAULT_LICENSE, STANDARD);
   };
   group _("Search Paths") {
     String sample_path     = SfiString (_("Sample Path"),
-                              g_intern_printf (_("Search path of directories, seperated by \"%s\", used to find audio samples."),
-                                               G_SEARCHPATH_SEPARATOR_S),
-                              bse_intern_path_user_data ("/samples"), STANDARD ":searchpath");
+					_("Search path of directories, seperated by \";\", used to find audio samples."),
+					DEFAULT_SAMPLE_PATH, STANDARD ":searchpath");
     String effect_path     = SfiString (_("Effect Path"),
-                              g_intern_printf (_("Search path of directories, seperated by \"%s\", used to find BSE effect files."),
-                                               G_SEARCHPATH_SEPARATOR_S),
-                              bse_intern_path_user_data ("/effects"), STANDARD ":searchpath");
+					_("Search path of directories, seperated by \";\", used to find BSE effect files."),
+					DEFAULT_EFFECTS_PATH, STANDARD ":searchpath");
     String instrument_path = SfiString (_("Instrument Path"),
-                              g_intern_printf (_("Search path of directories, seperated by \"%s\", used to find BSE instrument files."),
-                                               G_SEARCHPATH_SEPARATOR_S),
-                              bse_intern_path_user_data ("/instruments"), STANDARD ":searchpath");
+					_("Search path of directories, seperated by \";\", used to find BSE instrument files."),
+					DEFAULT_INSTRUMENTS_PATH, STANDARD ":searchpath");
     String script_path     = SfiString (_("Script Path"),
-                              g_intern_printf (_("Search path of directories, seperated by \"%s\", used to find BSE scheme scripts."),
-                                               G_SEARCHPATH_SEPARATOR_S),
-                              bse_intern_path_user_data ("/scripts"), STANDARD ":searchpath");
+					_("Search path of directories, seperated by \";\", used to find BSE scheme scripts."),
+					DEFAULT_SCRIPTS_PATH, STANDARD ":searchpath");
     String plugin_path     = SfiString (_("Plugin Path"),
-                              g_intern_printf (_("Search path of directories, seperated by \"%s\", used to find BSE plugins. This path "
-                                                 "is searched for in addition to the standard BSE plugin location on this system."),
-                                               G_SEARCHPATH_SEPARATOR_S),
-                              bse_intern_path_user_data ("/plugins"), STANDARD ":searchpath");
+					_("Search path of directories, seperated by \";\", used to find BSE plugins. This path "
+					  "is searched for in addition to the standard BSE plugin location on this system."),
+					DEFAULT_PLUGINS_PATH, STANDARD ":searchpath");
     String ladspa_path     = SfiString (_("LADSPA Path"),
-                              g_intern_printf (_("Search path of directories, seperated by \"%s\", used to find LADSPA plugins. This "
-                                                 "path is searched for in addition to the standard LADSPA location on this system. "
-                                                 "LADSPA is the Linux Audio Developer's Simple Plugin API, more informations about "
-                                                 "LADSPA plugins can be found at http://www.ladspa.org/."), G_SEARCHPATH_SEPARATOR_S),
-                              "", STANDARD ":searchpath");
+					_("Search path of directories, seperated by \";\", used to find LADSPA plugins. This "
+					  "path is searched for in addition to the standard LADSPA location on this system. "
+					  "LADSPA is the Linux Audio Developer's Simple Plugin API, more informations about "
+					  "LADSPA plugins can be found at http://www.ladspa.org/."),
+					"", STANDARD ":searchpath");
   };
 };
-};
-/* vim:set ts=8 sts=2 sw=2 syntax=cpp: */
+
+} // Bse
