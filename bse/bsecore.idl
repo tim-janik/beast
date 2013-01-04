@@ -709,7 +709,7 @@ record ThreadTotals {
   ThreadInfo    sequencer;
   ThreadInfoSeq synthesis;
 };
-ThreadTotals    collect_thread_totals ();
+// bseprobe.idl: ThreadTotals collect_thread_totals ();
 
 // == BSE Global Config ==
 Const DEFAULT_AUTHOR  = "\357\277\271\357\277\272{{bse.idl/default-author}}\357\277\273";
