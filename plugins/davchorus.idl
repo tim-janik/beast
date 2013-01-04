@@ -1,5 +1,5 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
-include "bse/bse.idl";
+include "bse/bsecxxmodule.idl";
 namespace Bse {
 namespace Dav {
 interface Chorus : Effect {
