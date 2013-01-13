@@ -19,7 +19,7 @@ ring_LDADD   = $(progs_ldadd)
 TESTS	          += misctests
 misctests_SOURCES  = misctests.cc
 misctests_LDADD	   = $(progs_ldadd)
-$(srcdir)/misctests.c: testidl.h testidl.c
+$(srcdir)/misctests.cc: testidl.h testidl.c
 
 # testcxx
 TESTS	       += testcxx
