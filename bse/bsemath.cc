@@ -12,7 +12,7 @@ pretty_print_double (char  *str,
 		     double d)
 {
   char *s= str;
-  sprintf (s, "%."PRINTF_DIGITS"f", d);
+  sprintf (s, "%." PRINTF_DIGITS "f", d);
   while (*s)
     s++;
   while (s[-1] == '0' && s[-2] != '.')
