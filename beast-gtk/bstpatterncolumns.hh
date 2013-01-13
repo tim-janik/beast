@@ -145,15 +145,15 @@ gboolean          bst_pattern_column_has_notes      (BstPatternColumn *column);
 G_END_DECLS
 // == Flags Enumeration Operators in C++ ==
 #ifdef __cplusplus
-inline BstPatternLFlags  operator&  (BstPatternLFlags  s1, BstPatternLFlags s2) { return BstPatternLFlags (s1 & (long long unsigned) s2); }
-inline BstPatternLFlags& operator&= (BstPatternLFlags &s1, BstPatternLFlags s2) { s1 = s1 & s2; return s1; }
-inline BstPatternLFlags  operator|  (BstPatternLFlags  s1, BstPatternLFlags s2) { return BstPatternLFlags (s1 | (long long unsigned) s2); }
-inline BstPatternLFlags& operator|= (BstPatternLFlags &s1, BstPatternLFlags s2) { s1 = s1 | s2; return s1; }
-inline BstPatternLFlags  operator~  (BstPatternLFlags  s1)                      { return BstPatternLFlags (~(long long unsigned) s1); }
-inline BstPatternFunction  operator&  (BstPatternFunction  s1, BstPatternFunction s2) { return BstPatternFunction (s1 & (long long unsigned) s2); }
-inline BstPatternFunction& operator&= (BstPatternFunction &s1, BstPatternFunction s2) { s1 = s1 & s2; return s1; }
-inline BstPatternFunction  operator|  (BstPatternFunction  s1, BstPatternFunction s2) { return BstPatternFunction (s1 | (long long unsigned) s2); }
-inline BstPatternFunction& operator|= (BstPatternFunction &s1, BstPatternFunction s2) { s1 = s1 | s2; return s1; }
-inline BstPatternFunction  operator~  (BstPatternFunction  s1)                      { return BstPatternFunction (~(long long unsigned) s1); }
+constexpr BstPatternLFlags  operator&  (BstPatternLFlags  s1, BstPatternLFlags s2) { return BstPatternLFlags (s1 & (long long unsigned) s2); }
+inline    BstPatternLFlags& operator&= (BstPatternLFlags &s1, BstPatternLFlags s2) { s1 = s1 & s2; return s1; }
+constexpr BstPatternLFlags  operator|  (BstPatternLFlags  s1, BstPatternLFlags s2) { return BstPatternLFlags (s1 | (long long unsigned) s2); }
+inline    BstPatternLFlags& operator|= (BstPatternLFlags &s1, BstPatternLFlags s2) { s1 = s1 | s2; return s1; }
+constexpr BstPatternLFlags  operator~  (BstPatternLFlags  s1)                      { return BstPatternLFlags (~(long long unsigned) s1); }
+constexpr BstPatternFunction  operator&  (BstPatternFunction  s1, BstPatternFunction s2) { return BstPatternFunction (s1 & (long long unsigned) s2); }
+inline    BstPatternFunction& operator&= (BstPatternFunction &s1, BstPatternFunction s2) { s1 = s1 & s2; return s1; }
+constexpr BstPatternFunction  operator|  (BstPatternFunction  s1, BstPatternFunction s2) { return BstPatternFunction (s1 | (long long unsigned) s2); }
+inline    BstPatternFunction& operator|= (BstPatternFunction &s1, BstPatternFunction s2) { s1 = s1 | s2; return s1; }
+constexpr BstPatternFunction  operator~  (BstPatternFunction  s1)                      { return BstPatternFunction (~(long long unsigned) s1); }
 #endif // __cplusplus
 #endif /* __BST_PATTERN_COLUMNS_H__ */

@@ -104,10 +104,10 @@ void            bst_file_dialog_set_handler             (BstFileDialog    *self,
 G_END_DECLS
 // == Flags Enumeration Operators in C++ ==
 #ifdef __cplusplus
-inline BstFileDialogMode  operator&  (BstFileDialogMode  s1, BstFileDialogMode s2) { return BstFileDialogMode (s1 & (long long unsigned) s2); }
-inline BstFileDialogMode& operator&= (BstFileDialogMode &s1, BstFileDialogMode s2) { s1 = s1 & s2; return s1; }
-inline BstFileDialogMode  operator|  (BstFileDialogMode  s1, BstFileDialogMode s2) { return BstFileDialogMode (s1 | (long long unsigned) s2); }
-inline BstFileDialogMode& operator|= (BstFileDialogMode &s1, BstFileDialogMode s2) { s1 = s1 | s2; return s1; }
-inline BstFileDialogMode  operator~  (BstFileDialogMode  s1)                    { return BstFileDialogMode (~(long long unsigned) s1); }
+constexpr BstFileDialogMode  operator&  (BstFileDialogMode  s1, BstFileDialogMode s2) { return BstFileDialogMode (s1 & (long long unsigned) s2); }
+inline    BstFileDialogMode& operator&= (BstFileDialogMode &s1, BstFileDialogMode s2) { s1 = s1 & s2; return s1; }
+constexpr BstFileDialogMode  operator|  (BstFileDialogMode  s1, BstFileDialogMode s2) { return BstFileDialogMode (s1 | (long long unsigned) s2); }
+inline    BstFileDialogMode& operator|= (BstFileDialogMode &s1, BstFileDialogMode s2) { s1 = s1 | s2; return s1; }
+constexpr BstFileDialogMode  operator~  (BstFileDialogMode  s1)                    { return BstFileDialogMode (~(long long unsigned) s1); }
 #endif // __cplusplus
 #endif  /* __BST_FILE_DIALOG_H__ */

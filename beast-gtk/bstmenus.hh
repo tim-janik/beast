@@ -65,10 +65,10 @@ BstChoice* bst_choice_alloc               (BstChoiceFlags          type,
 G_END_DECLS
 // == Flags Enumeration Operators in C++ ==
 #ifdef __cplusplus
-inline BstChoiceFlags  operator&  (BstChoiceFlags  s1, BstChoiceFlags s2) { return BstChoiceFlags (s1 & (long long unsigned) s2); }
-inline BstChoiceFlags& operator&= (BstChoiceFlags &s1, BstChoiceFlags s2) { s1 = s1 & s2; return s1; }
-inline BstChoiceFlags  operator|  (BstChoiceFlags  s1, BstChoiceFlags s2) { return BstChoiceFlags (s1 | (long long unsigned) s2); }
-inline BstChoiceFlags& operator|= (BstChoiceFlags &s1, BstChoiceFlags s2) { s1 = s1 | s2; return s1; }
-inline BstChoiceFlags  operator~  (BstChoiceFlags  s1)                    { return BstChoiceFlags (~(long long unsigned) s1); }
+constexpr BstChoiceFlags  operator&  (BstChoiceFlags  s1, BstChoiceFlags s2) { return BstChoiceFlags (s1 & (long long unsigned) s2); }
+inline    BstChoiceFlags& operator&= (BstChoiceFlags &s1, BstChoiceFlags s2) { s1 = s1 & s2; return s1; }
+constexpr BstChoiceFlags  operator|  (BstChoiceFlags  s1, BstChoiceFlags s2) { return BstChoiceFlags (s1 | (long long unsigned) s2); }
+inline    BstChoiceFlags& operator|= (BstChoiceFlags &s1, BstChoiceFlags s2) { s1 = s1 | s2; return s1; }
+constexpr BstChoiceFlags  operator~  (BstChoiceFlags  s1)                    { return BstChoiceFlags (~(long long unsigned) s1); }
 #endif // __cplusplus
 #endif  /* __BST_MENUS_H__ */

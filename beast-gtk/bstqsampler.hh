@@ -43,11 +43,11 @@ typedef enum
   BST_QSAMPLER_DIRTY		= 1 << 7
 } BstQSamplerType;
 #ifdef __cplusplus
-inline BstQSamplerType  operator&  (BstQSamplerType  s1, BstQSamplerType s2) { return BstQSamplerType (s1 & (long long unsigned) s2); }
-inline BstQSamplerType& operator&= (BstQSamplerType &s1, BstQSamplerType s2) { s1 = s1 & s2; return s1; }
-inline BstQSamplerType  operator|  (BstQSamplerType  s1, BstQSamplerType s2) { return BstQSamplerType (s1 | (long long unsigned) s2); }
-inline BstQSamplerType& operator|= (BstQSamplerType &s1, BstQSamplerType s2) { s1 = s1 | s2; return s1; }
-inline BstQSamplerType  operator~  (BstQSamplerType  s1)                 { return BstQSamplerType (~(long long unsigned) s1); }
+constexpr BstQSamplerType  operator&  (BstQSamplerType  s1, BstQSamplerType s2) { return BstQSamplerType (s1 & (long long unsigned) s2); }
+inline    BstQSamplerType& operator&= (BstQSamplerType &s1, BstQSamplerType s2) { s1 = s1 & s2; return s1; }
+constexpr BstQSamplerType  operator|  (BstQSamplerType  s1, BstQSamplerType s2) { return BstQSamplerType (s1 | (long long unsigned) s2); }
+inline    BstQSamplerType& operator|= (BstQSamplerType &s1, BstQSamplerType s2) { s1 = s1 | s2; return s1; }
+constexpr BstQSamplerType  operator~  (BstQSamplerType  s1)                 { return BstQSamplerType (~(long long unsigned) s1); }
 #endif // __cplusplus
 typedef enum
 {
