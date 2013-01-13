@@ -83,10 +83,10 @@ void    gxk_text_buffer_add_textgets_to_view (GtkTextBuffer        *tbuffer,
 G_END_DECLS
 // == Flags Enumeration Operators in C++ ==
 #ifdef __cplusplus
-inline GxkScrollTextFlags  operator&  (GxkScrollTextFlags  s1, GxkScrollTextFlags s2) { return GxkScrollTextFlags (s1 & (long long unsigned) s2); }
-inline GxkScrollTextFlags& operator&= (GxkScrollTextFlags &s1, GxkScrollTextFlags s2) { s1 = s1 & s2; return s1; }
-inline GxkScrollTextFlags  operator|  (GxkScrollTextFlags  s1, GxkScrollTextFlags s2) { return GxkScrollTextFlags (s1 | (long long unsigned) s2); }
-inline GxkScrollTextFlags& operator|= (GxkScrollTextFlags &s1, GxkScrollTextFlags s2) { s1 = s1 | s2; return s1; }
-inline GxkScrollTextFlags  operator~  (GxkScrollTextFlags  s1)                 { return GxkScrollTextFlags (~(long long unsigned) s1); }
+constexpr GxkScrollTextFlags  operator&  (GxkScrollTextFlags  s1, GxkScrollTextFlags s2) { return GxkScrollTextFlags (s1 & (long long unsigned) s2); }
+inline    GxkScrollTextFlags& operator&= (GxkScrollTextFlags &s1, GxkScrollTextFlags s2) { s1 = s1 & s2; return s1; }
+constexpr GxkScrollTextFlags  operator|  (GxkScrollTextFlags  s1, GxkScrollTextFlags s2) { return GxkScrollTextFlags (s1 | (long long unsigned) s2); }
+inline    GxkScrollTextFlags& operator|= (GxkScrollTextFlags &s1, GxkScrollTextFlags s2) { s1 = s1 | s2; return s1; }
+constexpr GxkScrollTextFlags  operator~  (GxkScrollTextFlags  s1)                 { return GxkScrollTextFlags (~(long long unsigned) s1); }
 #endif // __cplusplus
 #endif /* __GXK_TEXT_TOOLS_H__ */

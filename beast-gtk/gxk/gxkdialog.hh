@@ -101,15 +101,15 @@ GtkWidget*	gxk_dialog_action_multi		(GxkDialog	    *dialog,
 G_END_DECLS
 // == Flags Enumeration Operators in C++ ==
 #ifdef __cplusplus
-inline GxkDialogFlags  operator&  (GxkDialogFlags  s1, GxkDialogFlags s2) { return GxkDialogFlags (s1 & (long long unsigned) s2); }
-inline GxkDialogFlags& operator&= (GxkDialogFlags &s1, GxkDialogFlags s2) { s1 = s1 & s2; return s1; }
-inline GxkDialogFlags  operator|  (GxkDialogFlags  s1, GxkDialogFlags s2) { return GxkDialogFlags (s1 | (long long unsigned) s2); }
-inline GxkDialogFlags& operator|= (GxkDialogFlags &s1, GxkDialogFlags s2) { s1 = s1 | s2; return s1; }
-inline GxkDialogFlags  operator~  (GxkDialogFlags  s1)                    { return GxkDialogFlags (~(long long unsigned) s1); }
-inline GxkDialogMultiFlags  operator&  (GxkDialogMultiFlags  s1, GxkDialogMultiFlags s2) { return GxkDialogMultiFlags (s1 & (long long unsigned) s2); }
-inline GxkDialogMultiFlags& operator&= (GxkDialogMultiFlags &s1, GxkDialogMultiFlags s2) { s1 = s1 & s2; return s1; }
-inline GxkDialogMultiFlags  operator|  (GxkDialogMultiFlags  s1, GxkDialogMultiFlags s2) { return GxkDialogMultiFlags (s1 | (long long unsigned) s2); }
-inline GxkDialogMultiFlags& operator|= (GxkDialogMultiFlags &s1, GxkDialogMultiFlags s2) { s1 = s1 | s2; return s1; }
-inline GxkDialogMultiFlags  operator~  (GxkDialogMultiFlags  s1)                    { return GxkDialogMultiFlags (~(long long unsigned) s1); }
+constexpr GxkDialogFlags  operator&  (GxkDialogFlags  s1, GxkDialogFlags s2) { return GxkDialogFlags (s1 & (long long unsigned) s2); }
+inline    GxkDialogFlags& operator&= (GxkDialogFlags &s1, GxkDialogFlags s2) { s1 = s1 & s2; return s1; }
+constexpr GxkDialogFlags  operator|  (GxkDialogFlags  s1, GxkDialogFlags s2) { return GxkDialogFlags (s1 | (long long unsigned) s2); }
+inline    GxkDialogFlags& operator|= (GxkDialogFlags &s1, GxkDialogFlags s2) { s1 = s1 | s2; return s1; }
+constexpr GxkDialogFlags  operator~  (GxkDialogFlags  s1)                    { return GxkDialogFlags (~(long long unsigned) s1); }
+constexpr GxkDialogMultiFlags  operator&  (GxkDialogMultiFlags  s1, GxkDialogMultiFlags s2) { return GxkDialogMultiFlags (s1 & (long long unsigned) s2); }
+inline    GxkDialogMultiFlags& operator&= (GxkDialogMultiFlags &s1, GxkDialogMultiFlags s2) { s1 = s1 & s2; return s1; }
+constexpr GxkDialogMultiFlags  operator|  (GxkDialogMultiFlags  s1, GxkDialogMultiFlags s2) { return GxkDialogMultiFlags (s1 | (long long unsigned) s2); }
+inline    GxkDialogMultiFlags& operator|= (GxkDialogMultiFlags &s1, GxkDialogMultiFlags s2) { s1 = s1 | s2; return s1; }
+constexpr GxkDialogMultiFlags  operator~  (GxkDialogMultiFlags  s1)                    { return GxkDialogMultiFlags (~(long long unsigned) s1); }
 #endif // __cplusplus
 #endif  /* __GXK_DIALOG_H__ */
