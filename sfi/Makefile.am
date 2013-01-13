@@ -62,16 +62,5 @@ sfidl_LDADD = $(SFI_LIBS) -lm $(top_builddir)/birnet/libbirnet.o # libsfi.la
 EXTRA_DIST += sfidl-generator.hh sfidl-namespace.hh sfidl-options.hh sfidl-parser.hh sfidl-factory.hh
 EXTRA_DIST += sfidl-cbase.hh sfidl-clientc.hh sfidl-clientcxx.hh sfidl-cxxbase.hh sfidl-hostc.hh sfidl-utils.hh
 
-#
-# TOYPROF: poor man's profiling toy
-#
-TOYPROF_H_SOURCES = toyprof.hh toyprof-mem.hh
-TOYPROF_C_SOURCES = toyprof.cc toyprof-mem.cc
-EXTRA_DIST += toyprof.pl toyprof.README $(TOYPROF_H_SOURCES)
-if IF_TOYPROF
-conditional_toyprof_sources = $(TOYPROF_C_SOURCES)
-endif
-
-
 EXTRA_DIST += $(sfi_public_headers) $(sfi_extra_sources) $(sfi_built_sources)
 MAINTAINERCLEANFILES += $(sfi_built_sources)
