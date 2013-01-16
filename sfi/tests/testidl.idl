@@ -6,20 +6,20 @@ namespace Test  // this comment tests C++ style comments
 Const ANSWER_A = "the answer to all questions";
 Const ANSWER_B = 42;
 Const ULTIMATE_ANSWER = (ANSWER_A " is " ANSWER_B);
-choice YesNoUndecided {
-  Undecided = (Neutral, "Undecided"),
-        Yes = (1, "Yes"),
-         No = (2, "No")
+enum YesNoUndecided {
+  Undecided = Enum (0, "Undecided"),
+        Yes = Enum (1, "Yes"),
+         No = Enum (2, "No")
 };
-choice ExcessiveChoiceTest {
+enum ExcessiveChoiceTest {
   V0, 
   V2  = 2,
   V4  = "l4",
   V6  = _("l6i"),
-  V8  = (8, "l8"),
-  V10 = (10, _("l10i")),
-  V12 = (12, "l12", _("b12")),
-  V14 = (14, _("l14i"), _("b14i")),
+  V8  = Enum (8, "l8"),
+  V10 = Enum (10, _("l10i")),
+  V12 = Enum (12, "l12", _("b12")),
+  V14 = Enum (14, _("l14i"), _("b14i")),
 };
 record Position {
   Sfi::Real x = ("X", "", 2.0, -10.0, 10.0, 1, ":readwrite");
@@ -36,7 +36,7 @@ record RealDivision {
 };
 // no more Sfi:: prefixing beyond this line
 using namespace Sfi;
-class Blub {
+interface Blub {
   property Real x;
   // property "X-Group" Real y;
   group "Other Properties" {

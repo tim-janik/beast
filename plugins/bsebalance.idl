@@ -1,7 +1,7 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
-#include <bse/bse.idl>
+include "bse/bsecxxmodule.idl";
 namespace Bse {
-class Balance : Effect {
+interface Balance : Effect {
   Info    icon      = "icons/balance.png";
   Info    authors   = "Tim Janik";
   Info    license   = _("GNU Lesser General Public License");
@@ -14,13 +14,13 @@ class Balance : Effect {
                         "To avoid aliasing artefacts for rapid balance changes, the control "
                         "signal is preprocessed by a simple lowpass filter with adjustable "
                         "cutoff frequency.");
-  IStream audio_in1  = (_("Audio In1"), _("First audio input"));
-  IStream audio_in2  = (_("Audio In2"), _("Second audio input"));
-  IStream ctrl_in1   = (_("Ctrl In1"), _("First control input"));
-  IStream ctrl_in2   = (_("Ctrl In2"), _("Second control input"));
-  OStream left_out   = (_("Left Out"), _("Left audio output"));
-  OStream mix_out    = (_("Mix Out"), _("Mixed audio output"));
-  OStream right_out  = (_("Right Out"), _("Right audio output"));
+  IStream audio_in1  = Stream (_("Audio In1"), _("First audio input"));
+  IStream audio_in2  = Stream (_("Audio In2"), _("Second audio input"));
+  IStream ctrl_in1   = Stream (_("Ctrl In1"), _("First control input"));
+  IStream ctrl_in2   = Stream (_("Ctrl In2"), _("Second control input"));
+  OStream left_out   = Stream (_("Left Out"), _("Left audio output"));
+  OStream mix_out    = Stream (_("Mix Out"), _("Mixed audio output"));
+  OStream right_out  = Stream (_("Right Out"), _("Right audio output"));
   group _("Audio Input") {
     Real  alevel1    = Perc (_("Input 1 [%]"), _("Attenuate the level of audio input 1"), 100, STANDARD);
     Real  alevel2    = Perc (_("Input 2 [%]"), _("Attenuate the level of audio input 2"), 100, STANDARD);
@@ -33,7 +33,7 @@ class Balance : Effect {
   };
   group _("Output Panning") {
     Real  ostrength  = Perc (_("Control Strength"), _("Adjust how much the control signals affect the output balance"), 100, STANDARD);
-    Real  lowpass    = Real (_("Lowpass [Hz]"), _("Lowpass filter frequency for the control signal"), 100, 100, 1000, 10, "scale:" STANDARD);
+    Real  lowpass    = SfiReal (_("Lowpass [Hz]"), _("Lowpass filter frequency for the control signal"), 100, 100, 1000, 10, "scale:" STANDARD);
     Real  obalance   = Balance (_("Output Balance"), _("Adjust output balance between left and right"), 0, STANDARD);
   };
 };

@@ -1,14 +1,14 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
-#include <bse/bse.idl>
+include "bse/bsecxxmodule.idl";
 namespace Bse { namespace Contrib {
-class SampleAndHold: Effect {
+interface SampleAndHold: Effect {
   Info icon             = "icons/sample+hold.png";
   Info authors		= _("Artem Popov");
   Info license          = _("GNU Lesser General Public License");
   Info category		= _("/Routing/Sample and Hold");
   Info blurb		= _("SampleAndHold samples the input signal when triggered and holds it until triggered again.");
-  IStream audio_in	= (_("Audio In"), _("Audio Input"));
-  IStream trigger_in	= (_("Trigger In"), _("Trigger Input"));
-  OStream audio_out	= (_("Audio Out"), _("Audio Output"));
+  IStream audio_in	= Stream (_("Audio In"), _("Audio Input"));
+  IStream trigger_in	= Stream (_("Trigger In"), _("Trigger Input"));
+  OStream audio_out	= Stream (_("Audio Out"), _("Audio Output"));
 };
 } } // Bse::Contrib

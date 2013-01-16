@@ -111,7 +111,7 @@ void setActiveInterface (const std::string& x, const std::string& parent)
           printIndent ();
           if (needTypes.count("Bse" + activeInterface) > 0)
             needClasses.insert(activeInterface);
-          print ("class %s", activeInterface.c_str ());
+          print ("interface %s", activeInterface.c_str ());
           if (parent != "")
             print (" : %s", parent.c_str());
           print (" {\n");
@@ -312,17 +312,17 @@ printChoices (void)
 	{
 	  /* enum definition */
 	  printIndent ();
-	  print ("choice %s {\n", removeBse(name).c_str());
+	  print ("enum %s {\n", removeBse(name).c_str());
           indent++;
 	  for (val = eclass->values; val->value_name; val++)
 	    {
 	      bool neutral = (!regular_choice && val == eclass->values);
 	      printIndent();
               if (neutral)
-                print ("%s = (Neutral, \"%s\"),\n", removeBse (val->value_name).c_str(),
+                print ("%s = Enum (0, \"%s\"),\n", removeBse (val->value_name).c_str(),
                        val->value_nick);
               else
-                print ("%s = (%d, \"%s\"),\n", removeBse (val->value_name).c_str(),
+                print ("%s = Enum (%d, \"%s\"),\n", removeBse (val->value_name).c_str(),
                        val->value, val->value_nick);
 	    }
           indent--;
@@ -341,7 +341,7 @@ printForwardDecls ()
   for (ci = needClasses.begin(); ci != needClasses.end(); ci++)
     {
       printIndent();
-      print ("class %s;\n", ci->c_str());
+      print ("interface %s;\n", ci->c_str());
     }
 }
 int

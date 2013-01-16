@@ -1,7 +1,7 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
-#include <bse/bsecxxbase.idl>
+include "bsecxxbase.idl";
 namespace Bse {
-class Effect : CxxBase {
+interface Effect : CxxBase {
   // Implementation fully manual
 };
 } // Bse

@@ -1,8 +1,8 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
-#include <bse/bse.idl>
+include "bse/bsecxxmodule.idl";
 namespace Bse {
 namespace Dav {
-class BassFilter : Effect {
+interface BassFilter : Effect {
   Info    icon      = "icons/davbassfilter.png";
   Info    authors   = "David A. Bartold, Tim Janik";
   Info    license   = _("GNU Lesser General Public License");
@@ -11,15 +11,15 @@ class BassFilter : Effect {
                         "on the VCF303 portions of gsyn v0.2. The filter algorithm is partly "
                         "based on the one described in \"Musical Applications of Microprocessors\" "
                         "by Hal Chamberlin.");
-  IStream audio_in   = (_("Audio In"), _("Audio input"));
-  IStream trigger_in = (_("Trigger In"), _("Trigger input"));
-  OStream audio_out  = (_("Audio Out"), _("Filtered audio output"));
+  IStream audio_in   = Stream (_("Audio In"), _("Audio input"));
+  IStream trigger_in = Stream (_("Trigger In"), _("Trigger input"));
+  OStream audio_out  = Stream (_("Audio Out"), _("Filtered audio output"));
   group _("Parameters") {
     Real cutoff_perc = Perc (_("Cutoff [%]"), _("Set the cutoff frequency percentage"), 50, STANDARD ":automate:");
     Real reso_perc   = Perc (_("Resonance [%]"), _("Set the amount of resonance in percent"), 99.5, STANDARD ":automate:");
     Real env_mod     = Perc (_("Envelope Modulation [%]"), _("Set the envelope magnitude in percent"), 90, STANDARD ":automate:");
     Real env_decay   = Perc (_("Decay [%]"), _("Set the decay length in percent"), 20, STANDARD ":automate:");
-    Bool trigger     = Trigger (_("Trigger filter"), NULL, GUI);
+    Bool trigger     = Trigger (_("Trigger filter"), "", GUI);
   };
 };
 } // Dav

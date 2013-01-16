@@ -1,12 +1,12 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
-#include <bse/bse.idl>
+include "bse/bse.idl";
 namespace Namespace {
 using namespace Sfi;
 // test enum
-choice FunkynessType {
+enum FunkynessType {
   REALLY_FUNKY,
   MODERATELY_FUNKY,
-  NON_FUNKY = (42, "No Funk At All"),
+  NON_FUNKY = Enum (42, "No Funk At All"),
 };
 // test record
 record TestRecord {
@@ -20,14 +20,14 @@ sequence TestSequence {
 // adds i and str to the record given by rec
 // TestRecord record_add (TestRecord rec, Int i, String str);
 // test effect
-class TestObject : Bse::Effect {
+interface TestObject : Bse::Effect {
   Info    category  = "/Test/Plugin";
   // required because otherwise the bse-plugin-generator generated thing doesn't compile
   property Int aninteger;
   property TestRecord r;
   property TestSequence s;
-  property BBlock bb;
-  property FBlock fb;
+  // deprecated: property BBlock bb;
+  // deprecated: property FBlock fb;
   property Rec rr;
   property Bse::Effect ef; // C++ Object 
   property Bse::Item it;   // C Object

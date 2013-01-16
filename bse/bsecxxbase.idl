@@ -1,10 +1,10 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
-#include <bse/bsecore.idl>
+include "bsecore.idl";
 namespace Bse { // FIXME: bad workarounds
-class Source;
+interface Source;
 }
 namespace Bse {
-class CxxBase : Source {
+interface CxxBase : Source {
   // Implementation fully manual
 };
 } // Bse

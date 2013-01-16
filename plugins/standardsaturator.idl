@@ -1,19 +1,19 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
-#include <bse/bse.idl>
+include "bse/bsecxxmodule.idl";
 namespace Bse { namespace Standard {
-choice SaturationType {
-  SATURATE_TANH      = (_("TANH"),      _("Saturation via hyperbolic tangent function which is mostly linear for "
-                                          "small levels while providing a soft curvature for high volume signals")),
-  SATURATE_ATAN      = (_("ATAN"),      _("Saturation via arc tangent function which is reasonably linear in the "
-                                          "lower 50% but develops a strong curvature above 80%")),
-  SATURATE_QUADRATIC = (_("Quadratic"), _("Saturation via quadratic approximation which keeps a "
-                                          "well-proportioned curvature across all levels")),
-  SATURATE_SOFT_KNEE = (_("Soft Knee"), _("Linear saturation with a soft knee transit into the clipping range "
-                                          "(equals hard clipping at 100%) which approaches quadratic curvature "
-                                          "for small levels")),
-  SATURATE_HARD      = (_("Hard"),      _("Hard saturation via clipping (prone to clicks)")),
+enum SaturationType {
+  SATURATE_TANH      = Enum (_("TANH"),      _("Saturation via hyperbolic tangent function which is mostly linear for "
+					       "small levels while providing a soft curvature for high volume signals")),
+  SATURATE_ATAN      = Enum (_("ATAN"),      _("Saturation via arc tangent function which is reasonably linear in the "
+					       "lower 50% but develops a strong curvature above 80%")),
+  SATURATE_QUADRATIC = Enum (_("Quadratic"), _("Saturation via quadratic approximation which keeps a "
+					       "well-proportioned curvature across all levels")),
+  SATURATE_SOFT_KNEE = Enum (_("Soft Knee"), _("Linear saturation with a soft knee transit into the clipping range "
+					       "(equals hard clipping at 100%) which approaches quadratic curvature "
+					       "for small levels")),
+  SATURATE_HARD      = Enum (_("Hard"),      _("Hard saturation via clipping (prone to clicks)")),
 };
-class Saturator : Bse::Effect {
+interface Saturator : Bse::Effect {
   Info    category  = "/Distortion/Saturate";
   Info    icon      = "icons/saturate.png";
   Info    authors   = "Tim Janik";
@@ -25,12 +25,12 @@ class Saturator : Bse::Effect {
                        "The output volume allows for extra amplification after the saturation stage. For saturation "
                        "types that allow overdrive signals past the saturation stage, an output volume greater than "
                        "0dB may result in overdrive signals as output of this module.");
-  IStream audio_in1  = ("Audio In1", "First Audio Input");
-  IStream audio_in2  = ("Audio In2", "Second Audio Input");
-  OStream audio_out1 = ("Audio Out1", "First Audio Output");
-  OStream audio_out2 = ("Audio Out2", "Second Audio Output");
+  IStream audio_in1  = Stream ("Audio In1", "First Audio Input");
+  IStream audio_in2  = Stream ("Audio In2", "Second Audio Input");
+  OStream audio_out1 = Stream ("Audio Out1", "First Audio Output");
+  OStream audio_out2 = Stream ("Audio Out2", "Second Audio Output");
   group "Saturation" {
-    SaturationType saturation    = (_("Saturation Type"), _("The type of saturation to be used"), SATURATE_TANH, STANDARD);
+    SaturationType saturation    = SfiEnum (_("Saturation Type"), _("The type of saturation to be used"), SATURATE_TANH, STANDARD);
     Real           level         = Perc (_("Level"),
                                          _("Normalization level of the saturation curve in percent, some saturation types still "
                                            "allow overdrive signals beyond this level"),
@@ -39,7 +39,7 @@ class Saturator : Bse::Effect {
                                          _("Automatically adapt the output volume according to changes in saturation level"),
                                          TRUE, STANDARD);
     Real           output_volume = DBVolume (_("Output Volume"), _("Output stage amplification in decibel"), 0, 0, +42, "automate:" STANDARD);
-    // Bool        test_dump = Trigger ("Test Dump", NULL, GUI);
+    // Bool        test_dump = Trigger ("Test Dump", "", GUI);
   };
 };
 } } // Bse::Standard

@@ -373,7 +373,7 @@ bst_scrollgraph_probes_notify (SfiProxy     source,
   if (probe && probe->probe_features->probe_fft && probe->fft_data->n_values == self->window_size)
     {
       gfloat *bar = BAR (self, self->n_bars - 1); /* update last bar */
-      SfiFBlock *fft = probe->fft_data;
+      BseFloatSeq *fft = probe->fft_data;
       for (i = 0; i < MIN (self->n_points, FFTSZ2POINTS (fft->n_values)); i++)
         {
           gfloat re, im;

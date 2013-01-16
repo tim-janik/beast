@@ -1,9 +1,9 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
-#include <bse/bsecxxmodule.idl>
+include "bse/bsecxxmodule.idl";
 namespace Bse {
-class Wave;
+interface Wave;
 namespace Standard {
-class GusPatchEnvelope : Effect {
+interface GusPatchEnvelope : Effect {
   // Info    icon        = "icons/noise.png";
   Info    options     = "unstable";
   Info    authors     = "Stefan Westerfeld";
@@ -17,18 +17,18 @@ class GusPatchEnvelope : Effect {
 			  "one (or for stereo two) BseWaveOsc(s) and their Gate Output Signal to this "
 			  "module.");
   group _("Properties") {
-    Wave    wave; // FIXME         = (_("Wave"),         _("GUS Patch to use for the Envelope Data"), NULL, STANDARD);
+    Wave    wave; // FIXME         = (_("Wave"),         _("GUS Patch to use for the Envelope Data"), "", STANDARD);
   };
   // inputs
-  IStream frequency      = (_("Frequency"),    _("Frequency Input"));
-  IStream gate_in        = (_("Gate In"),      _("Gate input (activates/deactivates envelope)"));
-  IStream retrigger_in   = (_("Retrigger In"), _("Retrigger input (raising edge retriggers envelope)"));
-  IStream audio_in       = (_("Audio In"),     _("Audio Input of the WaveOsc playing the patch"));
-  IStream audio_gate     = (_("Audio Gate"),   _("Gate Output of the WaveOsc playing the patch"));
+  IStream frequency      = Stream (_("Frequency"),    _("Frequency Input"));
+  IStream gate_in        = Stream (_("Gate In"),      _("Gate input (activates/deactivates envelope)"));
+  IStream retrigger_in   = Stream (_("Retrigger In"), _("Retrigger input (raising edge retriggers envelope)"));
+  IStream audio_in       = Stream (_("Audio In"),     _("Audio Input of the WaveOsc playing the patch"));
+  IStream audio_gate     = Stream (_("Audio Gate"),   _("Gate Output of the WaveOsc playing the patch"));
   // outputs
-  OStream audio_out1     = (_("Audio Out1"),   _("Envelope audio output 1 (left output signal)"));
-  OStream audio_out2     = (_("Audio Out2"),   _("Envelope audio output 2 (right output signal)"));
-  OStream done_out       = (_("Done Out"),     _("This signal goes high after the release phase has completed"));
+  OStream audio_out1     = Stream (_("Audio Out1"),   _("Envelope audio output 1 (left output signal)"));
+  OStream audio_out2     = Stream (_("Audio Out2"),   _("Envelope audio output 2 (right output signal)"));
+  OStream done_out       = Stream (_("Done Out"),     _("This signal goes high after the release phase has completed"));
 };
 } // Standard
 } // Bse

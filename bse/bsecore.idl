@@ -19,24 +19,6 @@ Const MININT = -2147483648;
 Const MAXNUM = +9223372036854775807;
 Const MINNUM = -9223372036854775808;
 Const MINDB = -96; /* 32bit:-192 24bit:-144 16bit:-96 */
-/* note numbers */
-ConstIdent NOTE_C   = SFI_NOTE_C;
-ConstIdent NOTE_Cis = SFI_NOTE_Cis;
-ConstIdent NOTE_Des = SFI_NOTE_Des;
-ConstIdent NOTE_D   = SFI_NOTE_D;
-ConstIdent NOTE_Dis = SFI_NOTE_Dis;
-ConstIdent NOTE_Es  = SFI_NOTE_Es;
-ConstIdent NOTE_E   = SFI_NOTE_E;
-ConstIdent NOTE_F   = SFI_NOTE_F;
-ConstIdent NOTE_Fis = SFI_NOTE_Fis;
-ConstIdent NOTE_Ges = SFI_NOTE_Ges;
-ConstIdent NOTE_G   = SFI_NOTE_G;
-ConstIdent NOTE_Gis = SFI_NOTE_Gis;
-ConstIdent NOTE_As  = SFI_NOTE_As;
-ConstIdent NOTE_A   = SFI_NOTE_A;
-ConstIdent NOTE_Ais = SFI_NOTE_Ais;
-ConstIdent NOTE_Bes = SFI_NOTE_Bes;
-ConstIdent NOTE_B   = SFI_NOTE_B;
 /* standard sequences */
 sequence IntSeq {
   Int    ints;
@@ -47,63 +29,66 @@ sequence TypeSeq {
 sequence StringSeq {
   String strings;
 };
+sequence FloatSeq {
+  Real values;
+};
 /* musical tunings: http://en.wikipedia.org/wiki/Musical_tuning */
-choice MusicalTuningType {
+enum MusicalTuningType {
   /* Equal Temperament: http://en.wikipedia.org/wiki/Equal_temperament */
-  MUSICAL_TUNING_12_TET                 = (1, _("12 Tone Equal Temperament"),   // http://en.wikipedia.org/wiki/Equal_temperament
+  MUSICAL_TUNING_12_TET            = Enum (1, _("12 Tone Equal Temperament"),   // http://en.wikipedia.org/wiki/Equal_temperament
                                            _("The most common tuning system for modern Western music, "
                                              "is the twelve-tone equal temperament, abbreviated as 12-TET, "
                                              "which divides the octave into 12 equal parts.")),
-  MUSICAL_TUNING_7_TET                  = (_("7 Tone Equal Temperament"),      // http://en.wikipedia.org/wiki/Equal_temperament
+  MUSICAL_TUNING_7_TET             = Enum (_("7 Tone Equal Temperament"),      // http://en.wikipedia.org/wiki/Equal_temperament
                                            _("A fairly common tuning system is the seven-tone equal temperament tuning system, "
                                              "abbreviated as 7-TET. It divides the octave into 7 equal parts using 171 cent steps.")),
-  MUSICAL_TUNING_5_TET                  = (_("5 Tone Equal Temperament"),      // http://en.wikipedia.org/wiki/Equal_temperament
+  MUSICAL_TUNING_5_TET             = Enum (_("5 Tone Equal Temperament"),      // http://en.wikipedia.org/wiki/Equal_temperament
                                            _("A fairly common tuning system is the five-tone equal temperament tuning system, "
                                              "abbreviated as 5-TET. It divides the octave into 5 equal parts using 240 cent steps.")),
   /* Rational Intonation: http://en.wikipedia.org/wiki/Just_intonation */
-  MUSICAL_TUNING_DIATONIC_SCALE         = (_("Diatonic Scale"),                 // http://en.wikipedia.org/wiki/Diatonic_scale
+  MUSICAL_TUNING_DIATONIC_SCALE    = Enum (_("Diatonic Scale"),                 // http://en.wikipedia.org/wiki/Diatonic_scale
                                            _("In music theory, a diatonic scale (also: heptatonia prima) is a seven-note "
                                              "musical scale comprising five whole-tone and two half-tone steps. "
                                              "The half tones are maximally separated, so between two half-tone steps "
                                              "there are either two or three whole tones, repeating per octave.")), // Werckmeister I
-  MUSICAL_TUNING_INDIAN_SCALE           = (_("Indian Scale"),                   // http://en.wikipedia.org/wiki/Just_intonation#Indian_scales
+  MUSICAL_TUNING_INDIAN_SCALE      = Enum (_("Indian Scale"),                   // http://en.wikipedia.org/wiki/Just_intonation#Indian_scales
                                            _("Diatonic scale used in Indian music with wolf interval at Dha, close to 3/2")),
-  MUSICAL_TUNING_PYTHAGOREAN_TUNING     = (_("Pythagorean Tuning"),             // http://en.wikipedia.org/wiki/Pythagorean_tuning
+  MUSICAL_TUNING_PYTHAGOREAN_TUNING= Enum (_("Pythagorean Tuning"),             // http://en.wikipedia.org/wiki/Pythagorean_tuning
                                            _("Pythagorean tuning is the oldest way of tuning the 12-note chromatic scale, "
                                              "in which the frequency relationships of all intervals are based on the ratio 3:2. "
                                              "Its discovery is generally credited to Pythagoras.")),
-  MUSICAL_TUNING_PENTATONIC_5_LIMIT     = (_("Pentatonic 5-limit"),             // http://en.wikipedia.org/wiki/Pentatonic_scale
+  MUSICAL_TUNING_PENTATONIC_5_LIMIT= Enum (_("Pentatonic 5-limit"),             // http://en.wikipedia.org/wiki/Pentatonic_scale
                                            _("Pentatonic scales are used in modern jazz and pop/rock contexts "
                                              "because they work exceedingly well over several chords diatonic "
                                              "to the same key, often better than the parent scale.")),
-  MUSICAL_TUNING_PENTATONIC_BLUES       = (_("Pentatonic Blues"),               // http://en.wikipedia.org/wiki/Pentatonic_scale
+  MUSICAL_TUNING_PENTATONIC_BLUES  = Enum (_("Pentatonic Blues"),               // http://en.wikipedia.org/wiki/Pentatonic_scale
                                            _("The blues scale is the minor pentatonic with an additional augmented fourth, "
                                              "which is referred to as the \"blues note\".")),
-  MUSICAL_TUNING_PENTATONIC_GOGO        = (_("Pentatonic Gogo"),                // http://en.wikipedia.org/wiki/Pentatonic_scale
+  MUSICAL_TUNING_PENTATONIC_GOGO   = Enum (_("Pentatonic Gogo"),                // http://en.wikipedia.org/wiki/Pentatonic_scale
                                            _("The Pentatonic Gogo scale is an anhemitonic pentatonic scale used to tune the "
                                              "instruments of the Gogo people of Tanzania.")),
   /* Meantone Temperament: http://en.wikipedia.org/wiki/Meantone_temperament */
-  MUSICAL_TUNING_QUARTER_COMMA_MEANTONE = (_("Quarter-Comma Meantone"),         // http://en.wikipedia.org/wiki/Quarter-comma_meantone
+  MUSICAL_TUNING_QUARTER_COMMA_MEANTONE = Enum (_("Quarter-Comma Meantone"),         // http://en.wikipedia.org/wiki/Quarter-comma_meantone
                                            _("Quarter-comma meantone was the most common meantone temperament in the "
                                              "sixteenth and seventeenth centuries and sometimes used later.")), // Werckmeister II
-  MUSICAL_TUNING_SILBERMANN_SORGE       = (_("Silbermann-Sorge Temperament"),   // http://de.wikipedia.org/wiki/Silbermann-Sorge-Temperatur
+  MUSICAL_TUNING_SILBERMANN_SORGE  = Enum (_("Silbermann-Sorge Temperament"),   // http://de.wikipedia.org/wiki/Silbermann-Sorge-Temperatur
                                            _("The Silbermann-Sorge temperament is a meantone temperament used for "
                                              "Baroque era organs by Gottfried Silbermann.")),
   /* Well Temperament: http://en.wikipedia.org/wiki/Well_temperament */
-  MUSICAL_TUNING_WERCKMEISTER_3         = (_("Werckmeister III"),               // http://en.wikipedia.org/wiki/Werckmeister_temperament
+  MUSICAL_TUNING_WERCKMEISTER_3    = Enum (_("Werckmeister III"),               // http://en.wikipedia.org/wiki/Werckmeister_temperament
                                            _("This tuning uses mostly pure (perfect) fifths, as in Pythagorean tuning, but each "
                                              "of the fifths C-G, G-D, D-A and B-F# is made smaller, i.e. tempered by 1/4 comma. "
                                              "Werckmeister designated this tuning as particularly suited for playing chromatic music.")),
-  MUSICAL_TUNING_WERCKMEISTER_4         = (_("Werckmeister IV"),                // http://en.wikipedia.org/wiki/Werckmeister_temperament
+  MUSICAL_TUNING_WERCKMEISTER_4    = Enum (_("Werckmeister IV"),                // http://en.wikipedia.org/wiki/Werckmeister_temperament
                                            _("In this tuning the fifths C-G, D-A, E-B, F#-C#, and Bb-F are tempered narrow by 1/3 comma, "
                                              "and the fifths G#-D# and Eb-Bb are widened by 1/3 comma. The other fifths are pure. "
                                              "Most of its intervals are close to sixth-comma meantone. "
                                              "Werckmeister designed this tuning for playing mainly diatonic music.")),
-  MUSICAL_TUNING_WERCKMEISTER_5         = (_("Werckmeister V"),                 // http://en.wikipedia.org/wiki/Werckmeister_temperament
+  MUSICAL_TUNING_WERCKMEISTER_5    = Enum (_("Werckmeister V"),                 // http://en.wikipedia.org/wiki/Werckmeister_temperament
                                            _("In this tuning the fifths D-A, A-E, F#-C#, C#-G#, and F-C are narrowed by 1/4 comma, "
                                              "and the fifth G#-D# is widened by 1/4 comma. The other fifths are pure. "
                                              "This temperament is closer to equal temperament than Werckmeister III or IV.")),
-  MUSICAL_TUNING_WERCKMEISTER_6         = (_("Werckmeister VI"),                // http://en.wikipedia.org/wiki/Werckmeister_temperament
+  MUSICAL_TUNING_WERCKMEISTER_6    = Enum (_("Werckmeister VI"),                // http://en.wikipedia.org/wiki/Werckmeister_temperament
                                            _("This tuning is also known as Septenarius tuning is based on a division of the monochord "
                                              "length into 196 = 7 * 7 * 4 parts. "
                                              "The resulting scale has rational frequency relationships, but in practice involves pure "
@@ -111,369 +96,369 @@ choice MusicalTuningType {
                                              "Werckmeister described the Septenarius as a \"temperament which has nothing at all to do "
                                              "with the divisions of the comma, nevertheless in practice so correct that one can be really "
                                              "satisfied with it\".")),
-  MUSICAL_TUNING_KIRNBERGER_3           = (_("Kirnberger III"),                 // http://en.wikipedia.org/wiki/Johann_Philipp_Kirnberger_temperament
+  MUSICAL_TUNING_KIRNBERGER_3      = Enum (_("Kirnberger III"),                 // http://en.wikipedia.org/wiki/Johann_Philipp_Kirnberger_temperament
                                            _("Kirnberger's method of compensating for and closing the circle of fifths is to split the \"wolf\" "
                                              "interval known to those who have used meantone temperaments between four fifths instead, "
                                              "allowing for four 1/4-comma wolves to take their place. "
                                              "1/4-comma wolves are used extensively in meantone and are much easier to tune and to listen to. "
                                              "Therefore, only one third remains pure (between C and E).")),
-  MUSICAL_TUNING_YOUNG                  = (_("Young Temperament"),              // http://en.wikipedia.org/wiki/Young_temperament
+  MUSICAL_TUNING_YOUNG             = Enum (_("Young Temperament"),              // http://en.wikipedia.org/wiki/Young_temperament
                                            _("Thomas Young devised a form of musical tuning to make the harmony most perfect in those keys which "
                                              "are the most frequently used (give better major thirds in those keys), but to not have any unplayable keys. "
                                              "This is attempted by tuning upwards from C a sequence of six pure fourths, "
                                              "as well as six equally imperfect fifths.")),
 };
 /* various MIDI specific definitions */
-choice MidiSignalType {
+enum MidiSignalType {
   /* special cased signals */
-  MIDI_SIGNAL_PROGRAM                         = (1,   _("Program Change")),     /* 7bit */
-  MIDI_SIGNAL_PRESSURE                        = (2,   _("Channel Pressure")),   /* 7bit */
-  MIDI_SIGNAL_PITCH_BEND                      = (3,   _("Pitch Bend")),         /* 14bit */
-  MIDI_SIGNAL_VELOCITY                        = (4,   _("Note Velocity")),
-  MIDI_SIGNAL_FINE_TUNE                       = (5,   _("Note Fine Tune")),
+  MIDI_SIGNAL_PROGRAM                         = Enum (1,   _("Program Change")),     /* 7bit */
+  MIDI_SIGNAL_PRESSURE                        = Enum (2,   _("Channel Pressure")),   /* 7bit */
+  MIDI_SIGNAL_PITCH_BEND                      = Enum (3,   _("Pitch Bend")),         /* 14bit */
+  MIDI_SIGNAL_VELOCITY                        = Enum (4,   _("Note Velocity")),
+  MIDI_SIGNAL_FINE_TUNE                       = Enum (5,   _("Note Fine Tune")),
   /* 14bit, continuous controls */
-  MIDI_SIGNAL_CONTINUOUS_0                    = (64,  _("Bank Select")),
-  MIDI_SIGNAL_CONTINUOUS_1                    = (65,  _("Modulation Depth")),
-  MIDI_SIGNAL_CONTINUOUS_2                    = (66,  _("Breath Control")),
-  MIDI_SIGNAL_CONTINUOUS_3                    = (67,  _("Continuous 3")),
-  MIDI_SIGNAL_CONTINUOUS_4                    = (68,  _("Foot Controller")),
-  MIDI_SIGNAL_CONTINUOUS_5                    = (69,  _("Portamento Time")),
-  MIDI_SIGNAL_CONTINUOUS_6                    = (70,  _("Data Entry")),
-  MIDI_SIGNAL_CONTINUOUS_7                    = (71,  _("Volume")),
-  MIDI_SIGNAL_CONTINUOUS_8                    = (72,  _("Balance")),
-  MIDI_SIGNAL_CONTINUOUS_9                    = (73,  _("Continuous 9")),
-  MIDI_SIGNAL_CONTINUOUS_10                   = (74,  _("Panorama")),
-  MIDI_SIGNAL_CONTINUOUS_11                   = (75,  _("Expression")),
-  MIDI_SIGNAL_CONTINUOUS_12                   = (76,  _("Effect Control 1")),
-  MIDI_SIGNAL_CONTINUOUS_13                   = (77,  _("Effect Control 2")),
-  MIDI_SIGNAL_CONTINUOUS_14                   = (78,  _("Continuous 14")),
-  MIDI_SIGNAL_CONTINUOUS_15                   = (79,  _("Continuous 15")),
-  MIDI_SIGNAL_CONTINUOUS_16                   = (80,  _("General Purpose Controller 1")),
-  MIDI_SIGNAL_CONTINUOUS_17                   = (81,  _("General Purpose Controller 2")),
-  MIDI_SIGNAL_CONTINUOUS_18                   = (82,  _("General Purpose Controller 3")),
-  MIDI_SIGNAL_CONTINUOUS_19                   = (83,  _("General Purpose Controller 4")),
-  MIDI_SIGNAL_CONTINUOUS_20                   = (84,  _("Continuous 20")),
-  MIDI_SIGNAL_CONTINUOUS_21                   = (85,  _("Continuous 21")),
-  MIDI_SIGNAL_CONTINUOUS_22                   = (86,  _("Continuous 22")),
-  MIDI_SIGNAL_CONTINUOUS_23                   = (87,  _("Continuous 23")),
-  MIDI_SIGNAL_CONTINUOUS_24                   = (88,  _("Continuous 24")),
-  MIDI_SIGNAL_CONTINUOUS_25                   = (89,  _("Continuous 25")),
-  MIDI_SIGNAL_CONTINUOUS_26                   = (90,  _("Continuous 26")),
-  MIDI_SIGNAL_CONTINUOUS_27                   = (91,  _("Continuous 27")),
-  MIDI_SIGNAL_CONTINUOUS_28                   = (92,  _("Continuous 28")),
-  MIDI_SIGNAL_CONTINUOUS_29                   = (93,  _("Continuous 29")),
-  MIDI_SIGNAL_CONTINUOUS_30                   = (94,  _("Continuous 30")),
-  MIDI_SIGNAL_CONTINUOUS_31                   = (95,  _("Continuous 31")),
+  MIDI_SIGNAL_CONTINUOUS_0                    = Enum (64,  _("Bank Select")),
+  MIDI_SIGNAL_CONTINUOUS_1                    = Enum (65,  _("Modulation Depth")),
+  MIDI_SIGNAL_CONTINUOUS_2                    = Enum (66,  _("Breath Control")),
+  MIDI_SIGNAL_CONTINUOUS_3                    = Enum (67,  _("Continuous 3")),
+  MIDI_SIGNAL_CONTINUOUS_4                    = Enum (68,  _("Foot Controller")),
+  MIDI_SIGNAL_CONTINUOUS_5                    = Enum (69,  _("Portamento Time")),
+  MIDI_SIGNAL_CONTINUOUS_6                    = Enum (70,  _("Data Entry")),
+  MIDI_SIGNAL_CONTINUOUS_7                    = Enum (71,  _("Volume")),
+  MIDI_SIGNAL_CONTINUOUS_8                    = Enum (72,  _("Balance")),
+  MIDI_SIGNAL_CONTINUOUS_9                    = Enum (73,  _("Continuous 9")),
+  MIDI_SIGNAL_CONTINUOUS_10                   = Enum (74,  _("Panorama")),
+  MIDI_SIGNAL_CONTINUOUS_11                   = Enum (75,  _("Expression")),
+  MIDI_SIGNAL_CONTINUOUS_12                   = Enum (76,  _("Effect Control 1")),
+  MIDI_SIGNAL_CONTINUOUS_13                   = Enum (77,  _("Effect Control 2")),
+  MIDI_SIGNAL_CONTINUOUS_14                   = Enum (78,  _("Continuous 14")),
+  MIDI_SIGNAL_CONTINUOUS_15                   = Enum (79,  _("Continuous 15")),
+  MIDI_SIGNAL_CONTINUOUS_16                   = Enum (80,  _("General Purpose Controller 1")),
+  MIDI_SIGNAL_CONTINUOUS_17                   = Enum (81,  _("General Purpose Controller 2")),
+  MIDI_SIGNAL_CONTINUOUS_18                   = Enum (82,  _("General Purpose Controller 3")),
+  MIDI_SIGNAL_CONTINUOUS_19                   = Enum (83,  _("General Purpose Controller 4")),
+  MIDI_SIGNAL_CONTINUOUS_20                   = Enum (84,  _("Continuous 20")),
+  MIDI_SIGNAL_CONTINUOUS_21                   = Enum (85,  _("Continuous 21")),
+  MIDI_SIGNAL_CONTINUOUS_22                   = Enum (86,  _("Continuous 22")),
+  MIDI_SIGNAL_CONTINUOUS_23                   = Enum (87,  _("Continuous 23")),
+  MIDI_SIGNAL_CONTINUOUS_24                   = Enum (88,  _("Continuous 24")),
+  MIDI_SIGNAL_CONTINUOUS_25                   = Enum (89,  _("Continuous 25")),
+  MIDI_SIGNAL_CONTINUOUS_26                   = Enum (90,  _("Continuous 26")),
+  MIDI_SIGNAL_CONTINUOUS_27                   = Enum (91,  _("Continuous 27")),
+  MIDI_SIGNAL_CONTINUOUS_28                   = Enum (92,  _("Continuous 28")),
+  MIDI_SIGNAL_CONTINUOUS_29                   = Enum (93,  _("Continuous 29")),
+  MIDI_SIGNAL_CONTINUOUS_30                   = Enum (94,  _("Continuous 30")),
+  MIDI_SIGNAL_CONTINUOUS_31                   = Enum (95,  _("Continuous 31")),
   /* 14bit, special cased signals */
-  MIDI_SIGNAL_CONSTANT_HIGH                   = (96,  _("Constant HIGH")),
-  MIDI_SIGNAL_CONSTANT_CENTER                 = (97,  _("Constant CENTER")),
-  MIDI_SIGNAL_CONSTANT_LOW                    = (98,  _("Constant LOW")),
-  MIDI_SIGNAL_CONSTANT_NEGATIVE_CENTER        = (99,  _("Constant Negative CENTER")),
-  MIDI_SIGNAL_CONSTANT_NEGATIVE_HIGH          = (100, _("Constant Negative HIGH")),
-  MIDI_SIGNAL_PARAMETER                       = (101, _("Registered Parameter")),
-  MIDI_SIGNAL_NON_PARAMETER                   = (102, _("Non-Registered Parameter")),
+  MIDI_SIGNAL_CONSTANT_HIGH                   = Enum (96,  _("Constant HIGH")),
+  MIDI_SIGNAL_CONSTANT_CENTER                 = Enum (97,  _("Constant CENTER")),
+  MIDI_SIGNAL_CONSTANT_LOW                    = Enum (98,  _("Constant LOW")),
+  MIDI_SIGNAL_CONSTANT_NEGATIVE_CENTER        = Enum (99,  _("Constant Negative CENTER")),
+  MIDI_SIGNAL_CONSTANT_NEGATIVE_HIGH          = Enum (100, _("Constant Negative HIGH")),
+  MIDI_SIGNAL_PARAMETER                       = Enum (101, _("Registered Parameter")),
+  MIDI_SIGNAL_NON_PARAMETER                   = Enum (102, _("Non-Registered Parameter")),
   /* 7bit, literal channel controls, MSB values */
-  MIDI_SIGNAL_CONTROL_0                       = (128, _("Control 0 Bank Select MSB")),
-  MIDI_SIGNAL_CONTROL_1                       = (129, _("Control 1 Modulation Depth MSB")),
-  MIDI_SIGNAL_CONTROL_2                       = (130, _("Control 2 Breath Control MSB")),
-  MIDI_SIGNAL_CONTROL_3                       = (131, _("control-3")),
-  MIDI_SIGNAL_CONTROL_4                       = (132, _("Control 4 Foot Controller MSB")),
-  MIDI_SIGNAL_CONTROL_5                       = (133, _("Control 5 Portamento Time MSB")),
-  MIDI_SIGNAL_CONTROL_6                       = (134, _("Control 6 Data Entry MSB")),
-  MIDI_SIGNAL_CONTROL_7                       = (135, _("Control 7 Volume MSB")),
-  MIDI_SIGNAL_CONTROL_8                       = (136, _("Control 8 Balance MSB")),
-  MIDI_SIGNAL_CONTROL_9                       = (137, _("control-9")),
-  MIDI_SIGNAL_CONTROL_10                      = (138, _("Control 10 Panorama MSB")),
-  MIDI_SIGNAL_CONTROL_11                      = (139, _("Control 11 Expression MSB")),
-  MIDI_SIGNAL_CONTROL_12                      = (140, _("Control 12 Effect Control 1 MSB")),
-  MIDI_SIGNAL_CONTROL_13                      = (141, _("Control 13 Effect Control 2 MSB")),
-  MIDI_SIGNAL_CONTROL_14                      = (142, _("control-14")),
-  MIDI_SIGNAL_CONTROL_15                      = (143, _("control-15")),
-  MIDI_SIGNAL_CONTROL_16                      = (144, _("Control 16 General Purpose Controller 1 MSB")),
-  MIDI_SIGNAL_CONTROL_17                      = (145, _("Control 17 General Purpose Controller 2 MSB")),
-  MIDI_SIGNAL_CONTROL_18                      = (146, _("Control 18 General Purpose Controller 3 MSB")),
-  MIDI_SIGNAL_CONTROL_19                      = (147, _("Control 19 General Purpose Controller 4 MSB")),
-  MIDI_SIGNAL_CONTROL_20                      = (148, _("control-20")),
-  MIDI_SIGNAL_CONTROL_21                      = (149, _("control-21")),
-  MIDI_SIGNAL_CONTROL_22                      = (150, _("control-22")),
-  MIDI_SIGNAL_CONTROL_23                      = (151, _("control-23")),
-  MIDI_SIGNAL_CONTROL_24                      = (152, _("control-24")),
-  MIDI_SIGNAL_CONTROL_25                      = (153, _("control-25")),
-  MIDI_SIGNAL_CONTROL_26                      = (154, _("control-26")),
-  MIDI_SIGNAL_CONTROL_27                      = (155, _("control-27")),
-  MIDI_SIGNAL_CONTROL_28                      = (156, _("control-28")),
-  MIDI_SIGNAL_CONTROL_29                      = (157, _("control-29")),
-  MIDI_SIGNAL_CONTROL_30                      = (158, _("control-30")),
-  MIDI_SIGNAL_CONTROL_31                      = (159, _("control-31")),
+  MIDI_SIGNAL_CONTROL_0                       = Enum (128, _("Control 0 Bank Select MSB")),
+  MIDI_SIGNAL_CONTROL_1                       = Enum (129, _("Control 1 Modulation Depth MSB")),
+  MIDI_SIGNAL_CONTROL_2                       = Enum (130, _("Control 2 Breath Control MSB")),
+  MIDI_SIGNAL_CONTROL_3                       = Enum (131, _("control-3")),
+  MIDI_SIGNAL_CONTROL_4                       = Enum (132, _("Control 4 Foot Controller MSB")),
+  MIDI_SIGNAL_CONTROL_5                       = Enum (133, _("Control 5 Portamento Time MSB")),
+  MIDI_SIGNAL_CONTROL_6                       = Enum (134, _("Control 6 Data Entry MSB")),
+  MIDI_SIGNAL_CONTROL_7                       = Enum (135, _("Control 7 Volume MSB")),
+  MIDI_SIGNAL_CONTROL_8                       = Enum (136, _("Control 8 Balance MSB")),
+  MIDI_SIGNAL_CONTROL_9                       = Enum (137, _("control-9")),
+  MIDI_SIGNAL_CONTROL_10                      = Enum (138, _("Control 10 Panorama MSB")),
+  MIDI_SIGNAL_CONTROL_11                      = Enum (139, _("Control 11 Expression MSB")),
+  MIDI_SIGNAL_CONTROL_12                      = Enum (140, _("Control 12 Effect Control 1 MSB")),
+  MIDI_SIGNAL_CONTROL_13                      = Enum (141, _("Control 13 Effect Control 2 MSB")),
+  MIDI_SIGNAL_CONTROL_14                      = Enum (142, _("control-14")),
+  MIDI_SIGNAL_CONTROL_15                      = Enum (143, _("control-15")),
+  MIDI_SIGNAL_CONTROL_16                      = Enum (144, _("Control 16 General Purpose Controller 1 MSB")),
+  MIDI_SIGNAL_CONTROL_17                      = Enum (145, _("Control 17 General Purpose Controller 2 MSB")),
+  MIDI_SIGNAL_CONTROL_18                      = Enum (146, _("Control 18 General Purpose Controller 3 MSB")),
+  MIDI_SIGNAL_CONTROL_19                      = Enum (147, _("Control 19 General Purpose Controller 4 MSB")),
+  MIDI_SIGNAL_CONTROL_20                      = Enum (148, _("control-20")),
+  MIDI_SIGNAL_CONTROL_21                      = Enum (149, _("control-21")),
+  MIDI_SIGNAL_CONTROL_22                      = Enum (150, _("control-22")),
+  MIDI_SIGNAL_CONTROL_23                      = Enum (151, _("control-23")),
+  MIDI_SIGNAL_CONTROL_24                      = Enum (152, _("control-24")),
+  MIDI_SIGNAL_CONTROL_25                      = Enum (153, _("control-25")),
+  MIDI_SIGNAL_CONTROL_26                      = Enum (154, _("control-26")),
+  MIDI_SIGNAL_CONTROL_27                      = Enum (155, _("control-27")),
+  MIDI_SIGNAL_CONTROL_28                      = Enum (156, _("control-28")),
+  MIDI_SIGNAL_CONTROL_29                      = Enum (157, _("control-29")),
+  MIDI_SIGNAL_CONTROL_30                      = Enum (158, _("control-30")),
+  MIDI_SIGNAL_CONTROL_31                      = Enum (159, _("control-31")),
   /* 7bit, literal channel controls, LSB values */
-  MIDI_SIGNAL_CONTROL_32                      = (160, _("Control 32 Bank Select LSB")),
-  MIDI_SIGNAL_CONTROL_33                      = (161, _("Control 33 Modulation Depth LSB")),
-  MIDI_SIGNAL_CONTROL_34                      = (162, _("Control 34 Breath Control LSB")),
-  MIDI_SIGNAL_CONTROL_35                      = (163, _("control-35")),
-  MIDI_SIGNAL_CONTROL_36                      = (164, _("Control 36 Foot Controller LSB")),
-  MIDI_SIGNAL_CONTROL_37                      = (165, _("Control 37 Portamento Time LSB")),
-  MIDI_SIGNAL_CONTROL_38                      = (166, _("Control 38 Data Entry LSB")),
-  MIDI_SIGNAL_CONTROL_39                      = (167, _("Control 39 Volume LSB")),
-  MIDI_SIGNAL_CONTROL_40                      = (168, _("Control 40 Balance LSB")),
-  MIDI_SIGNAL_CONTROL_41                      = (169, _("control-41")),
-  MIDI_SIGNAL_CONTROL_42                      = (170, _("Control 42 Panorama LSB")),
-  MIDI_SIGNAL_CONTROL_43                      = (171, _("Control 43 Expression LSB")),
-  MIDI_SIGNAL_CONTROL_44                      = (172, _("Control 44 Effect Control 1 LSB")),
-  MIDI_SIGNAL_CONTROL_45                      = (173, _("Control 45 Effect Control 2 LSB")),
-  MIDI_SIGNAL_CONTROL_46                      = (174, _("control-46")),
-  MIDI_SIGNAL_CONTROL_47                      = (175, _("control-47")),
-  MIDI_SIGNAL_CONTROL_48                      = (176, _("Control 48 General Purpose Controller 1 LSB")),
-  MIDI_SIGNAL_CONTROL_49                      = (177, _("Control 49 General Purpose Controller 2 LSB")),
-  MIDI_SIGNAL_CONTROL_50                      = (178, _("Control 50 General Purpose Controller 3 LSB")),
-  MIDI_SIGNAL_CONTROL_51                      = (179, _("Control 51 General Purpose Controller 4 LSB")),
-  MIDI_SIGNAL_CONTROL_52                      = (180, _("control-52")),
-  MIDI_SIGNAL_CONTROL_53                      = (181, _("control-53")),
-  MIDI_SIGNAL_CONTROL_54                      = (182, _("control-54")),
-  MIDI_SIGNAL_CONTROL_55                      = (183, _("control-55")),
-  MIDI_SIGNAL_CONTROL_56                      = (184, _("control-56")),
-  MIDI_SIGNAL_CONTROL_57                      = (185, _("control-57")),
-  MIDI_SIGNAL_CONTROL_58                      = (186, _("control-58")),
-  MIDI_SIGNAL_CONTROL_59                      = (187, _("control-59")),
-  MIDI_SIGNAL_CONTROL_60                      = (188, _("control-60")),
-  MIDI_SIGNAL_CONTROL_61                      = (189, _("control-61")),
-  MIDI_SIGNAL_CONTROL_62                      = (190, _("control-62")),
-  MIDI_SIGNAL_CONTROL_63                      = (191, _("control-63")),
+  MIDI_SIGNAL_CONTROL_32                      = Enum (160, _("Control 32 Bank Select LSB")),
+  MIDI_SIGNAL_CONTROL_33                      = Enum (161, _("Control 33 Modulation Depth LSB")),
+  MIDI_SIGNAL_CONTROL_34                      = Enum (162, _("Control 34 Breath Control LSB")),
+  MIDI_SIGNAL_CONTROL_35                      = Enum (163, _("control-35")),
+  MIDI_SIGNAL_CONTROL_36                      = Enum (164, _("Control 36 Foot Controller LSB")),
+  MIDI_SIGNAL_CONTROL_37                      = Enum (165, _("Control 37 Portamento Time LSB")),
+  MIDI_SIGNAL_CONTROL_38                      = Enum (166, _("Control 38 Data Entry LSB")),
+  MIDI_SIGNAL_CONTROL_39                      = Enum (167, _("Control 39 Volume LSB")),
+  MIDI_SIGNAL_CONTROL_40                      = Enum (168, _("Control 40 Balance LSB")),
+  MIDI_SIGNAL_CONTROL_41                      = Enum (169, _("control-41")),
+  MIDI_SIGNAL_CONTROL_42                      = Enum (170, _("Control 42 Panorama LSB")),
+  MIDI_SIGNAL_CONTROL_43                      = Enum (171, _("Control 43 Expression LSB")),
+  MIDI_SIGNAL_CONTROL_44                      = Enum (172, _("Control 44 Effect Control 1 LSB")),
+  MIDI_SIGNAL_CONTROL_45                      = Enum (173, _("Control 45 Effect Control 2 LSB")),
+  MIDI_SIGNAL_CONTROL_46                      = Enum (174, _("control-46")),
+  MIDI_SIGNAL_CONTROL_47                      = Enum (175, _("control-47")),
+  MIDI_SIGNAL_CONTROL_48                      = Enum (176, _("Control 48 General Purpose Controller 1 LSB")),
+  MIDI_SIGNAL_CONTROL_49                      = Enum (177, _("Control 49 General Purpose Controller 2 LSB")),
+  MIDI_SIGNAL_CONTROL_50                      = Enum (178, _("Control 50 General Purpose Controller 3 LSB")),
+  MIDI_SIGNAL_CONTROL_51                      = Enum (179, _("Control 51 General Purpose Controller 4 LSB")),
+  MIDI_SIGNAL_CONTROL_52                      = Enum (180, _("control-52")),
+  MIDI_SIGNAL_CONTROL_53                      = Enum (181, _("control-53")),
+  MIDI_SIGNAL_CONTROL_54                      = Enum (182, _("control-54")),
+  MIDI_SIGNAL_CONTROL_55                      = Enum (183, _("control-55")),
+  MIDI_SIGNAL_CONTROL_56                      = Enum (184, _("control-56")),
+  MIDI_SIGNAL_CONTROL_57                      = Enum (185, _("control-57")),
+  MIDI_SIGNAL_CONTROL_58                      = Enum (186, _("control-58")),
+  MIDI_SIGNAL_CONTROL_59                      = Enum (187, _("control-59")),
+  MIDI_SIGNAL_CONTROL_60                      = Enum (188, _("control-60")),
+  MIDI_SIGNAL_CONTROL_61                      = Enum (189, _("control-61")),
+  MIDI_SIGNAL_CONTROL_62                      = Enum (190, _("control-62")),
+  MIDI_SIGNAL_CONTROL_63                      = Enum (191, _("control-63")),
   /* 7bit, literal channel controls */
-  MIDI_SIGNAL_CONTROL_64                      = (192, _("Control 64 Damper Pedal Switch (Sustain)")),
-  MIDI_SIGNAL_CONTROL_65                      = (193, _("Control 65 Portamento Switch")),
-  MIDI_SIGNAL_CONTROL_66                      = (194, _("Control 66 Sustenuto Switch")),
-  MIDI_SIGNAL_CONTROL_67                      = (195, _("Control 67 Soft Switch")),
-  MIDI_SIGNAL_CONTROL_68                      = (196, _("Control 68 Legato Pedal Switch")),
-  MIDI_SIGNAL_CONTROL_69                      = (197, _("Control 69 Hold Pedal Switch")),
-  MIDI_SIGNAL_CONTROL_70                      = (198, _("Control 70 Sound Variation")),
-  MIDI_SIGNAL_CONTROL_71                      = (199, _("Control 71 Filter Resonance (Timbre)")),
-  MIDI_SIGNAL_CONTROL_72                      = (200, _("Control 72 Sound Release Time")),
-  MIDI_SIGNAL_CONTROL_73                      = (201, _("Control 73 Sound Attack Time")),
-  MIDI_SIGNAL_CONTROL_74                      = (202, _("Control 74 Sound Brightness")),
-  MIDI_SIGNAL_CONTROL_75                      = (203, _("Control 75 Sound Decay Time")),
-  MIDI_SIGNAL_CONTROL_76                      = (204, _("Control 76 Vibrato Rate")),
-  MIDI_SIGNAL_CONTROL_77                      = (205, _("Control 77 Vibrato Depth")),
-  MIDI_SIGNAL_CONTROL_78                      = (206, _("Control 78 Vibrato Delay")),
-  MIDI_SIGNAL_CONTROL_79                      = (207, _("Control 79 Sound Control 10")),
-  MIDI_SIGNAL_CONTROL_80                      = (208, _("Control 80 General Purpose Switch 5")),
-  MIDI_SIGNAL_CONTROL_81                      = (209, _("Control 81 General Purpose Switch 6")),
-  MIDI_SIGNAL_CONTROL_82                      = (210, _("Control 82 General Purpose Switch 7")),
-  MIDI_SIGNAL_CONTROL_83                      = (211, _("Control 83 General Purpose Switch 8")),
-  MIDI_SIGNAL_CONTROL_84                      = (212, _("Control 84 Portamento Control (Note)")),
-  MIDI_SIGNAL_CONTROL_85                      = (213, _("control-85")),
-  MIDI_SIGNAL_CONTROL_86                      = (214, _("control-86")),
-  MIDI_SIGNAL_CONTROL_87                      = (215, _("control-87")),
-  MIDI_SIGNAL_CONTROL_88                      = (216, _("control-88")),
-  MIDI_SIGNAL_CONTROL_89                      = (217, _("control-89")),
-  MIDI_SIGNAL_CONTROL_90                      = (218, _("control-90")),
-  MIDI_SIGNAL_CONTROL_91                      = (219, _("Control 91 Reverb Depth")),
-  MIDI_SIGNAL_CONTROL_92                      = (220, _("Control 92 Tremolo Depth")),
-  MIDI_SIGNAL_CONTROL_93                      = (221, _("Control 93 Chorus Depth")),
-  MIDI_SIGNAL_CONTROL_94                      = (222, _("Control 93 Detune Depth")),
-  MIDI_SIGNAL_CONTROL_95                      = (223, _("Control 95 Phase Depth")),
-  MIDI_SIGNAL_CONTROL_96                      = (224, _("Control 96 Data Increment Trigger")),
-  MIDI_SIGNAL_CONTROL_97                      = (225, _("Control 97 Data Decrement Trigger")),
-  MIDI_SIGNAL_CONTROL_98                      = (226, _("Control 98 Non-Registered Parameter MSB")),
-  MIDI_SIGNAL_CONTROL_99                      = (227, _("Control 99 Non-Registered Parameter LSB")),
-  MIDI_SIGNAL_CONTROL_100                     = (228, _("Control 100 Registered Parameter MSB")),
-  MIDI_SIGNAL_CONTROL_101                     = (229, _("Control 101 Registered Parameter LSB")),
-  MIDI_SIGNAL_CONTROL_102                     = (230, _("control-102")),
-  MIDI_SIGNAL_CONTROL_103                     = (231, _("control-103")),
-  MIDI_SIGNAL_CONTROL_104                     = (232, _("control-104")),
-  MIDI_SIGNAL_CONTROL_105                     = (233, _("control-105")),
-  MIDI_SIGNAL_CONTROL_106                     = (234, _("control-106")),
-  MIDI_SIGNAL_CONTROL_107                     = (235, _("control-107")),
-  MIDI_SIGNAL_CONTROL_108                     = (236, _("control-108")),
-  MIDI_SIGNAL_CONTROL_109                     = (237, _("control-109")),
-  MIDI_SIGNAL_CONTROL_110                     = (238, _("control-110")),
-  MIDI_SIGNAL_CONTROL_111                     = (239, _("control-111")),
-  MIDI_SIGNAL_CONTROL_112                     = (240, _("control-112")),
-  MIDI_SIGNAL_CONTROL_113                     = (241, _("control-113")),
-  MIDI_SIGNAL_CONTROL_114                     = (242, _("control-114")),
-  MIDI_SIGNAL_CONTROL_115                     = (243, _("control-115")),
-  MIDI_SIGNAL_CONTROL_116                     = (244, _("control-116")),
-  MIDI_SIGNAL_CONTROL_117                     = (245, _("control-117")),
-  MIDI_SIGNAL_CONTROL_118                     = (246, _("control-118")),
-  MIDI_SIGNAL_CONTROL_119                     = (247, _("control-119")),
-  MIDI_SIGNAL_CONTROL_120                     = (248, _("Control 120 All Sound Off ITrigger")),
-  MIDI_SIGNAL_CONTROL_121                     = (249, _("Control 121 All Controllers Off ITrigger")),
-  MIDI_SIGNAL_CONTROL_122                     = (250, _("Control 122 Local Control Switch")),
-  MIDI_SIGNAL_CONTROL_123                     = (251, _("Control 123 All Notes Off ITrigger")),
-  MIDI_SIGNAL_CONTROL_124                     = (252, _("Control 124 Omni Mode Off ITrigger")),
-  MIDI_SIGNAL_CONTROL_125                     = (253, _("Control 125 Omni Mode On ITrigger")),
-  MIDI_SIGNAL_CONTROL_126                     = (254, _("Control 126 Monophonic Voices Mode")),
-  MIDI_SIGNAL_CONTROL_127                     = (255, _("Control 127 Polyphonic Mode On ITrigger")),
+  MIDI_SIGNAL_CONTROL_64                      = Enum (192, _("Control 64 Damper Pedal Switch (Sustain)")),
+  MIDI_SIGNAL_CONTROL_65                      = Enum (193, _("Control 65 Portamento Switch")),
+  MIDI_SIGNAL_CONTROL_66                      = Enum (194, _("Control 66 Sustenuto Switch")),
+  MIDI_SIGNAL_CONTROL_67                      = Enum (195, _("Control 67 Soft Switch")),
+  MIDI_SIGNAL_CONTROL_68                      = Enum (196, _("Control 68 Legato Pedal Switch")),
+  MIDI_SIGNAL_CONTROL_69                      = Enum (197, _("Control 69 Hold Pedal Switch")),
+  MIDI_SIGNAL_CONTROL_70                      = Enum (198, _("Control 70 Sound Variation")),
+  MIDI_SIGNAL_CONTROL_71                      = Enum (199, _("Control 71 Filter Resonance (Timbre)")),
+  MIDI_SIGNAL_CONTROL_72                      = Enum (200, _("Control 72 Sound Release Time")),
+  MIDI_SIGNAL_CONTROL_73                      = Enum (201, _("Control 73 Sound Attack Time")),
+  MIDI_SIGNAL_CONTROL_74                      = Enum (202, _("Control 74 Sound Brightness")),
+  MIDI_SIGNAL_CONTROL_75                      = Enum (203, _("Control 75 Sound Decay Time")),
+  MIDI_SIGNAL_CONTROL_76                      = Enum (204, _("Control 76 Vibrato Rate")),
+  MIDI_SIGNAL_CONTROL_77                      = Enum (205, _("Control 77 Vibrato Depth")),
+  MIDI_SIGNAL_CONTROL_78                      = Enum (206, _("Control 78 Vibrato Delay")),
+  MIDI_SIGNAL_CONTROL_79                      = Enum (207, _("Control 79 Sound Control 10")),
+  MIDI_SIGNAL_CONTROL_80                      = Enum (208, _("Control 80 General Purpose Switch 5")),
+  MIDI_SIGNAL_CONTROL_81                      = Enum (209, _("Control 81 General Purpose Switch 6")),
+  MIDI_SIGNAL_CONTROL_82                      = Enum (210, _("Control 82 General Purpose Switch 7")),
+  MIDI_SIGNAL_CONTROL_83                      = Enum (211, _("Control 83 General Purpose Switch 8")),
+  MIDI_SIGNAL_CONTROL_84                      = Enum (212, _("Control 84 Portamento Control (Note)")),
+  MIDI_SIGNAL_CONTROL_85                      = Enum (213, _("control-85")),
+  MIDI_SIGNAL_CONTROL_86                      = Enum (214, _("control-86")),
+  MIDI_SIGNAL_CONTROL_87                      = Enum (215, _("control-87")),
+  MIDI_SIGNAL_CONTROL_88                      = Enum (216, _("control-88")),
+  MIDI_SIGNAL_CONTROL_89                      = Enum (217, _("control-89")),
+  MIDI_SIGNAL_CONTROL_90                      = Enum (218, _("control-90")),
+  MIDI_SIGNAL_CONTROL_91                      = Enum (219, _("Control 91 Reverb Depth")),
+  MIDI_SIGNAL_CONTROL_92                      = Enum (220, _("Control 92 Tremolo Depth")),
+  MIDI_SIGNAL_CONTROL_93                      = Enum (221, _("Control 93 Chorus Depth")),
+  MIDI_SIGNAL_CONTROL_94                      = Enum (222, _("Control 93 Detune Depth")),
+  MIDI_SIGNAL_CONTROL_95                      = Enum (223, _("Control 95 Phase Depth")),
+  MIDI_SIGNAL_CONTROL_96                      = Enum (224, _("Control 96 Data Increment Trigger")),
+  MIDI_SIGNAL_CONTROL_97                      = Enum (225, _("Control 97 Data Decrement Trigger")),
+  MIDI_SIGNAL_CONTROL_98                      = Enum (226, _("Control 98 Non-Registered Parameter MSB")),
+  MIDI_SIGNAL_CONTROL_99                      = Enum (227, _("Control 99 Non-Registered Parameter LSB")),
+  MIDI_SIGNAL_CONTROL_100                     = Enum (228, _("Control 100 Registered Parameter MSB")),
+  MIDI_SIGNAL_CONTROL_101                     = Enum (229, _("Control 101 Registered Parameter LSB")),
+  MIDI_SIGNAL_CONTROL_102                     = Enum (230, _("control-102")),
+  MIDI_SIGNAL_CONTROL_103                     = Enum (231, _("control-103")),
+  MIDI_SIGNAL_CONTROL_104                     = Enum (232, _("control-104")),
+  MIDI_SIGNAL_CONTROL_105                     = Enum (233, _("control-105")),
+  MIDI_SIGNAL_CONTROL_106                     = Enum (234, _("control-106")),
+  MIDI_SIGNAL_CONTROL_107                     = Enum (235, _("control-107")),
+  MIDI_SIGNAL_CONTROL_108                     = Enum (236, _("control-108")),
+  MIDI_SIGNAL_CONTROL_109                     = Enum (237, _("control-109")),
+  MIDI_SIGNAL_CONTROL_110                     = Enum (238, _("control-110")),
+  MIDI_SIGNAL_CONTROL_111                     = Enum (239, _("control-111")),
+  MIDI_SIGNAL_CONTROL_112                     = Enum (240, _("control-112")),
+  MIDI_SIGNAL_CONTROL_113                     = Enum (241, _("control-113")),
+  MIDI_SIGNAL_CONTROL_114                     = Enum (242, _("control-114")),
+  MIDI_SIGNAL_CONTROL_115                     = Enum (243, _("control-115")),
+  MIDI_SIGNAL_CONTROL_116                     = Enum (244, _("control-116")),
+  MIDI_SIGNAL_CONTROL_117                     = Enum (245, _("control-117")),
+  MIDI_SIGNAL_CONTROL_118                     = Enum (246, _("control-118")),
+  MIDI_SIGNAL_CONTROL_119                     = Enum (247, _("control-119")),
+  MIDI_SIGNAL_CONTROL_120                     = Enum (248, _("Control 120 All Sound Off ITrigger")),
+  MIDI_SIGNAL_CONTROL_121                     = Enum (249, _("Control 121 All Controllers Off ITrigger")),
+  MIDI_SIGNAL_CONTROL_122                     = Enum (250, _("Control 122 Local Control Switch")),
+  MIDI_SIGNAL_CONTROL_123                     = Enum (251, _("Control 123 All Notes Off ITrigger")),
+  MIDI_SIGNAL_CONTROL_124                     = Enum (252, _("Control 124 Omni Mode Off ITrigger")),
+  MIDI_SIGNAL_CONTROL_125                     = Enum (253, _("Control 125 Omni Mode On ITrigger")),
+  MIDI_SIGNAL_CONTROL_126                     = Enum (254, _("Control 126 Monophonic Voices Mode")),
+  MIDI_SIGNAL_CONTROL_127                     = Enum (255, _("Control 127 Polyphonic Mode On ITrigger")),
 };
-choice MidiControlType {
+enum MidiControlType {
   /* special cased signals */
-  MIDI_CONTROL_NONE                           = (Neutral, _("None")),
+  MIDI_CONTROL_NONE                            = Enum (0, _("None")),
   /* 14bit, continuous controls */
-  MIDI_CONTROL_CONTINUOUS_0                    = (64,  _("Bank Select"), _("Continuous MIDI Control #1 - Bank Select")),
-  MIDI_CONTROL_CONTINUOUS_1                    = (65,  _("Modulation Depth")),
-  MIDI_CONTROL_CONTINUOUS_2                    = (66,  _("Breath Control")),
-  MIDI_CONTROL_CONTINUOUS_3                    = (67,  _("Continuous 3")),
-  MIDI_CONTROL_CONTINUOUS_4                    = (68,  _("Foot Controller")),
-  MIDI_CONTROL_CONTINUOUS_5                    = (69,  _("Portamento Time")),
-  MIDI_CONTROL_CONTINUOUS_6                    = (70,  _("Data Entry")),
-  MIDI_CONTROL_CONTINUOUS_7                    = (71,  _("Volume")),
-  MIDI_CONTROL_CONTINUOUS_8                    = (72,  _("Balance")),
-  MIDI_CONTROL_CONTINUOUS_9                    = (73,  _("Continuous 9")),
-  MIDI_CONTROL_CONTINUOUS_10                   = (74,  _("Panorama")),
-  MIDI_CONTROL_CONTINUOUS_11                   = (75,  _("Expression")),
-  MIDI_CONTROL_CONTINUOUS_12                   = (76,  _("Effect Control 1")),
-  MIDI_CONTROL_CONTINUOUS_13                   = (77,  _("Effect Control 2")),
-  MIDI_CONTROL_CONTINUOUS_14                   = (78,  _("Continuous 14")),
-  MIDI_CONTROL_CONTINUOUS_15                   = (79,  _("Continuous 15")),
-  MIDI_CONTROL_CONTINUOUS_16                   = (80,  _("General Purpose Controller 1")),
-  MIDI_CONTROL_CONTINUOUS_17                   = (81,  _("General Purpose Controller 2")),
-  MIDI_CONTROL_CONTINUOUS_18                   = (82,  _("General Purpose Controller 3")),
-  MIDI_CONTROL_CONTINUOUS_19                   = (83,  _("General Purpose Controller 4")),
-  MIDI_CONTROL_CONTINUOUS_20                   = (84,  _("Continuous 20")),
-  MIDI_CONTROL_CONTINUOUS_21                   = (85,  _("Continuous 21")),
-  MIDI_CONTROL_CONTINUOUS_22                   = (86,  _("Continuous 22")),
-  MIDI_CONTROL_CONTINUOUS_23                   = (87,  _("Continuous 23")),
-  MIDI_CONTROL_CONTINUOUS_24                   = (88,  _("Continuous 24")),
-  MIDI_CONTROL_CONTINUOUS_25                   = (89,  _("Continuous 25")),
-  MIDI_CONTROL_CONTINUOUS_26                   = (90,  _("Continuous 26")),
-  MIDI_CONTROL_CONTINUOUS_27                   = (91,  _("Continuous 27")),
-  MIDI_CONTROL_CONTINUOUS_28                   = (92,  _("Continuous 28")),
-  MIDI_CONTROL_CONTINUOUS_29                   = (93,  _("Continuous 29")),
-  MIDI_CONTROL_CONTINUOUS_30                   = (94,  _("Continuous 30")),
-  MIDI_CONTROL_CONTINUOUS_31                   = (95,  _("Continuous 31")),
+  MIDI_CONTROL_CONTINUOUS_0                    = Enum (64,  _("Bank Select"), _("Continuous MIDI Control #1 - Bank Select")),
+  MIDI_CONTROL_CONTINUOUS_1                    = Enum (65,  _("Modulation Depth")),
+  MIDI_CONTROL_CONTINUOUS_2                    = Enum (66,  _("Breath Control")),
+  MIDI_CONTROL_CONTINUOUS_3                    = Enum (67,  _("Continuous 3")),
+  MIDI_CONTROL_CONTINUOUS_4                    = Enum (68,  _("Foot Controller")),
+  MIDI_CONTROL_CONTINUOUS_5                    = Enum (69,  _("Portamento Time")),
+  MIDI_CONTROL_CONTINUOUS_6                    = Enum (70,  _("Data Entry")),
+  MIDI_CONTROL_CONTINUOUS_7                    = Enum (71,  _("Volume")),
+  MIDI_CONTROL_CONTINUOUS_8                    = Enum (72,  _("Balance")),
+  MIDI_CONTROL_CONTINUOUS_9                    = Enum (73,  _("Continuous 9")),
+  MIDI_CONTROL_CONTINUOUS_10                   = Enum (74,  _("Panorama")),
+  MIDI_CONTROL_CONTINUOUS_11                   = Enum (75,  _("Expression")),
+  MIDI_CONTROL_CONTINUOUS_12                   = Enum (76,  _("Effect Control 1")),
+  MIDI_CONTROL_CONTINUOUS_13                   = Enum (77,  _("Effect Control 2")),
+  MIDI_CONTROL_CONTINUOUS_14                   = Enum (78,  _("Continuous 14")),
+  MIDI_CONTROL_CONTINUOUS_15                   = Enum (79,  _("Continuous 15")),
+  MIDI_CONTROL_CONTINUOUS_16                   = Enum (80,  _("General Purpose Controller 1")),
+  MIDI_CONTROL_CONTINUOUS_17                   = Enum (81,  _("General Purpose Controller 2")),
+  MIDI_CONTROL_CONTINUOUS_18                   = Enum (82,  _("General Purpose Controller 3")),
+  MIDI_CONTROL_CONTINUOUS_19                   = Enum (83,  _("General Purpose Controller 4")),
+  MIDI_CONTROL_CONTINUOUS_20                   = Enum (84,  _("Continuous 20")),
+  MIDI_CONTROL_CONTINUOUS_21                   = Enum (85,  _("Continuous 21")),
+  MIDI_CONTROL_CONTINUOUS_22                   = Enum (86,  _("Continuous 22")),
+  MIDI_CONTROL_CONTINUOUS_23                   = Enum (87,  _("Continuous 23")),
+  MIDI_CONTROL_CONTINUOUS_24                   = Enum (88,  _("Continuous 24")),
+  MIDI_CONTROL_CONTINUOUS_25                   = Enum (89,  _("Continuous 25")),
+  MIDI_CONTROL_CONTINUOUS_26                   = Enum (90,  _("Continuous 26")),
+  MIDI_CONTROL_CONTINUOUS_27                   = Enum (91,  _("Continuous 27")),
+  MIDI_CONTROL_CONTINUOUS_28                   = Enum (92,  _("Continuous 28")),
+  MIDI_CONTROL_CONTINUOUS_29                   = Enum (93,  _("Continuous 29")),
+  MIDI_CONTROL_CONTINUOUS_30                   = Enum (94,  _("Continuous 30")),
+  MIDI_CONTROL_CONTINUOUS_31                   = Enum (95,  _("Continuous 31")),
   /* 7bit, literal channel controls, MSB values */
-  MIDI_CONTROL_0                               = (128, _("Control 0 Bank Select MSB")),
-  MIDI_CONTROL_1                               = (129, _("Control 1 Modulation Depth MSB")),
-  MIDI_CONTROL_2                               = (130, _("Control 2 Breath Control MSB")),
-  MIDI_CONTROL_3                               = (131, _("control-3")),
-  MIDI_CONTROL_4                               = (132, _("Control 4 Foot Controller MSB")),
-  MIDI_CONTROL_5                               = (133, _("Control 5 Portamento Time MSB")),
-  MIDI_CONTROL_6                               = (134, _("Control 6 Data Entry MSB")),
-  MIDI_CONTROL_7                               = (135, _("Control 7 Volume MSB")),
-  MIDI_CONTROL_8                               = (136, _("Control 8 Balance MSB")),
-  MIDI_CONTROL_9                               = (137, _("control-9")),
-  MIDI_CONTROL_10                              = (138, _("Control 10 Panorama MSB")),
-  MIDI_CONTROL_11                              = (139, _("Control 11 Expression MSB")),
-  MIDI_CONTROL_12                              = (140, _("Control 12 Effect Control 1 MSB")),
-  MIDI_CONTROL_13                              = (141, _("Control 13 Effect Control 2 MSB")),
-  MIDI_CONTROL_14                              = (142, _("control-14")),
-  MIDI_CONTROL_15                              = (143, _("control-15")),
-  MIDI_CONTROL_16                              = (144, _("Control 16 General Purpose Controller 1 MSB")),
-  MIDI_CONTROL_17                              = (145, _("Control 17 General Purpose Controller 2 MSB")),
-  MIDI_CONTROL_18                              = (146, _("Control 18 General Purpose Controller 3 MSB")),
-  MIDI_CONTROL_19                              = (147, _("Control 19 General Purpose Controller 4 MSB")),
-  MIDI_CONTROL_20                              = (148, _("control-20")),
-  MIDI_CONTROL_21                              = (149, _("control-21")),
-  MIDI_CONTROL_22                              = (150, _("control-22")),
-  MIDI_CONTROL_23                              = (151, _("control-23")),
-  MIDI_CONTROL_24                              = (152, _("control-24")),
-  MIDI_CONTROL_25                              = (153, _("control-25")),
-  MIDI_CONTROL_26                              = (154, _("control-26")),
-  MIDI_CONTROL_27                              = (155, _("control-27")),
-  MIDI_CONTROL_28                              = (156, _("control-28")),
-  MIDI_CONTROL_29                              = (157, _("control-29")),
-  MIDI_CONTROL_30                              = (158, _("control-30")),
-  MIDI_CONTROL_31                              = (159, _("control-31")),
+  MIDI_CONTROL_0                               = Enum (128, _("Control 0 Bank Select MSB")),
+  MIDI_CONTROL_1                               = Enum (129, _("Control 1 Modulation Depth MSB")),
+  MIDI_CONTROL_2                               = Enum (130, _("Control 2 Breath Control MSB")),
+  MIDI_CONTROL_3                               = Enum (131, _("control-3")),
+  MIDI_CONTROL_4                               = Enum (132, _("Control 4 Foot Controller MSB")),
+  MIDI_CONTROL_5                               = Enum (133, _("Control 5 Portamento Time MSB")),
+  MIDI_CONTROL_6                               = Enum (134, _("Control 6 Data Entry MSB")),
+  MIDI_CONTROL_7                               = Enum (135, _("Control 7 Volume MSB")),
+  MIDI_CONTROL_8                               = Enum (136, _("Control 8 Balance MSB")),
+  MIDI_CONTROL_9                               = Enum (137, _("control-9")),
+  MIDI_CONTROL_10                              = Enum (138, _("Control 10 Panorama MSB")),
+  MIDI_CONTROL_11                              = Enum (139, _("Control 11 Expression MSB")),
+  MIDI_CONTROL_12                              = Enum (140, _("Control 12 Effect Control 1 MSB")),
+  MIDI_CONTROL_13                              = Enum (141, _("Control 13 Effect Control 2 MSB")),
+  MIDI_CONTROL_14                              = Enum (142, _("control-14")),
+  MIDI_CONTROL_15                              = Enum (143, _("control-15")),
+  MIDI_CONTROL_16                              = Enum (144, _("Control 16 General Purpose Controller 1 MSB")),
+  MIDI_CONTROL_17                              = Enum (145, _("Control 17 General Purpose Controller 2 MSB")),
+  MIDI_CONTROL_18                              = Enum (146, _("Control 18 General Purpose Controller 3 MSB")),
+  MIDI_CONTROL_19                              = Enum (147, _("Control 19 General Purpose Controller 4 MSB")),
+  MIDI_CONTROL_20                              = Enum (148, _("control-20")),
+  MIDI_CONTROL_21                              = Enum (149, _("control-21")),
+  MIDI_CONTROL_22                              = Enum (150, _("control-22")),
+  MIDI_CONTROL_23                              = Enum (151, _("control-23")),
+  MIDI_CONTROL_24                              = Enum (152, _("control-24")),
+  MIDI_CONTROL_25                              = Enum (153, _("control-25")),
+  MIDI_CONTROL_26                              = Enum (154, _("control-26")),
+  MIDI_CONTROL_27                              = Enum (155, _("control-27")),
+  MIDI_CONTROL_28                              = Enum (156, _("control-28")),
+  MIDI_CONTROL_29                              = Enum (157, _("control-29")),
+  MIDI_CONTROL_30                              = Enum (158, _("control-30")),
+  MIDI_CONTROL_31                              = Enum (159, _("control-31")),
   /* 7bit, literal channel controls, LSB values */
-  MIDI_CONTROL_32                              = (160, _("Control 32 Bank Select LSB")),
-  MIDI_CONTROL_33                              = (161, _("Control 33 Modulation Depth LSB")),
-  MIDI_CONTROL_34                              = (162, _("Control 34 Breath Control LSB")),
-  MIDI_CONTROL_35                              = (163, _("control-35")),
-  MIDI_CONTROL_36                              = (164, _("Control 36 Foot Controller LSB")),
-  MIDI_CONTROL_37                              = (165, _("Control 37 Portamento Time LSB")),
-  MIDI_CONTROL_38                              = (166, _("Control 38 Data Entry LSB")),
-  MIDI_CONTROL_39                              = (167, _("Control 39 Volume LSB")),
-  MIDI_CONTROL_40                              = (168, _("Control 40 Balance LSB")),
-  MIDI_CONTROL_41                              = (169, _("control-41")),
-  MIDI_CONTROL_42                              = (170, _("Control 42 Panorama LSB")),
-  MIDI_CONTROL_43                              = (171, _("Control 43 Expression LSB")),
-  MIDI_CONTROL_44                              = (172, _("Control 44 Effect Control 1 LSB")),
-  MIDI_CONTROL_45                              = (173, _("Control 45 Effect Control 2 LSB")),
-  MIDI_CONTROL_46                              = (174, _("control-46")),
-  MIDI_CONTROL_47                              = (175, _("control-47")),
-  MIDI_CONTROL_48                              = (176, _("Control 48 General Purpose Controller 1 LSB")),
-  MIDI_CONTROL_49                              = (177, _("Control 49 General Purpose Controller 2 LSB")),
-  MIDI_CONTROL_50                              = (178, _("Control 50 General Purpose Controller 3 LSB")),
-  MIDI_CONTROL_51                              = (179, _("Control 51 General Purpose Controller 4 LSB")),
-  MIDI_CONTROL_52                              = (180, _("control-52")),
-  MIDI_CONTROL_53                              = (181, _("control-53")),
-  MIDI_CONTROL_54                              = (182, _("control-54")),
-  MIDI_CONTROL_55                              = (183, _("control-55")),
-  MIDI_CONTROL_56                              = (184, _("control-56")),
-  MIDI_CONTROL_57                              = (185, _("control-57")),
-  MIDI_CONTROL_58                              = (186, _("control-58")),
-  MIDI_CONTROL_59                              = (187, _("control-59")),
-  MIDI_CONTROL_60                              = (188, _("control-60")),
-  MIDI_CONTROL_61                              = (189, _("control-61")),
-  MIDI_CONTROL_62                              = (190, _("control-62")),
-  MIDI_CONTROL_63                              = (191, _("control-63")),
+  MIDI_CONTROL_32                              = Enum (160, _("Control 32 Bank Select LSB")),
+  MIDI_CONTROL_33                              = Enum (161, _("Control 33 Modulation Depth LSB")),
+  MIDI_CONTROL_34                              = Enum (162, _("Control 34 Breath Control LSB")),
+  MIDI_CONTROL_35                              = Enum (163, _("control-35")),
+  MIDI_CONTROL_36                              = Enum (164, _("Control 36 Foot Controller LSB")),
+  MIDI_CONTROL_37                              = Enum (165, _("Control 37 Portamento Time LSB")),
+  MIDI_CONTROL_38                              = Enum (166, _("Control 38 Data Entry LSB")),
+  MIDI_CONTROL_39                              = Enum (167, _("Control 39 Volume LSB")),
+  MIDI_CONTROL_40                              = Enum (168, _("Control 40 Balance LSB")),
+  MIDI_CONTROL_41                              = Enum (169, _("control-41")),
+  MIDI_CONTROL_42                              = Enum (170, _("Control 42 Panorama LSB")),
+  MIDI_CONTROL_43                              = Enum (171, _("Control 43 Expression LSB")),
+  MIDI_CONTROL_44                              = Enum (172, _("Control 44 Effect Control 1 LSB")),
+  MIDI_CONTROL_45                              = Enum (173, _("Control 45 Effect Control 2 LSB")),
+  MIDI_CONTROL_46                              = Enum (174, _("control-46")),
+  MIDI_CONTROL_47                              = Enum (175, _("control-47")),
+  MIDI_CONTROL_48                              = Enum (176, _("Control 48 General Purpose Controller 1 LSB")),
+  MIDI_CONTROL_49                              = Enum (177, _("Control 49 General Purpose Controller 2 LSB")),
+  MIDI_CONTROL_50                              = Enum (178, _("Control 50 General Purpose Controller 3 LSB")),
+  MIDI_CONTROL_51                              = Enum (179, _("Control 51 General Purpose Controller 4 LSB")),
+  MIDI_CONTROL_52                              = Enum (180, _("control-52")),
+  MIDI_CONTROL_53                              = Enum (181, _("control-53")),
+  MIDI_CONTROL_54                              = Enum (182, _("control-54")),
+  MIDI_CONTROL_55                              = Enum (183, _("control-55")),
+  MIDI_CONTROL_56                              = Enum (184, _("control-56")),
+  MIDI_CONTROL_57                              = Enum (185, _("control-57")),
+  MIDI_CONTROL_58                              = Enum (186, _("control-58")),
+  MIDI_CONTROL_59                              = Enum (187, _("control-59")),
+  MIDI_CONTROL_60                              = Enum (188, _("control-60")),
+  MIDI_CONTROL_61                              = Enum (189, _("control-61")),
+  MIDI_CONTROL_62                              = Enum (190, _("control-62")),
+  MIDI_CONTROL_63                              = Enum (191, _("control-63")),
   /* 7bit, literal channel controls */
-  MIDI_CONTROL_64                              = (192, _("Control 64 Damper Pedal Switch (Sustain)")),
-  MIDI_CONTROL_65                              = (193, _("Control 65 Portamento Switch")),
-  MIDI_CONTROL_66                              = (194, _("Control 66 Sustenuto Switch")),
-  MIDI_CONTROL_67                              = (195, _("Control 67 Soft Switch")),
-  MIDI_CONTROL_68                              = (196, _("Control 68 Legato Pedal Switch")),
-  MIDI_CONTROL_69                              = (197, _("Control 69 Hold Pedal Switch")),
-  MIDI_CONTROL_70                              = (198, _("Control 70 Sound Variation")),
-  MIDI_CONTROL_71                              = (199, _("Control 71 Filter Resonance (Timbre)")),
-  MIDI_CONTROL_72                              = (200, _("Control 72 Sound Release Time")),
-  MIDI_CONTROL_73                              = (201, _("Control 73 Sound Attack Time")),
-  MIDI_CONTROL_74                              = (202, _("Control 74 Sound Brightness")),
-  MIDI_CONTROL_75                              = (203, _("Control 75 Sound Decay Time")),
-  MIDI_CONTROL_76                              = (204, _("Control 76 Vibrato Rate")),
-  MIDI_CONTROL_77                              = (205, _("Control 77 Vibrato Depth")),
-  MIDI_CONTROL_78                              = (206, _("Control 78 Vibrato Delay")),
-  MIDI_CONTROL_79                              = (207, _("Control 79 Sound Control 10")),
-  MIDI_CONTROL_80                              = (208, _("Control 80 General Purpose Switch 5")),
-  MIDI_CONTROL_81                              = (209, _("Control 81 General Purpose Switch 6")),
-  MIDI_CONTROL_82                              = (210, _("Control 82 General Purpose Switch 7")),
-  MIDI_CONTROL_83                              = (211, _("Control 83 General Purpose Switch 8")),
-  MIDI_CONTROL_84                              = (212, _("Control 84 Portamento Control (Note)")),
-  MIDI_CONTROL_85                              = (213, _("control-85")),
-  MIDI_CONTROL_86                              = (214, _("control-86")),
-  MIDI_CONTROL_87                              = (215, _("control-87")),
-  MIDI_CONTROL_88                              = (216, _("control-88")),
-  MIDI_CONTROL_89                              = (217, _("control-89")),
-  MIDI_CONTROL_90                              = (218, _("control-90")),
-  MIDI_CONTROL_91                              = (219, _("Control 91 Reverb Depth")),
-  MIDI_CONTROL_92                              = (220, _("Control 92 Tremolo Depth")),
-  MIDI_CONTROL_93                              = (221, _("Control 93 Chorus Depth")),
-  MIDI_CONTROL_94                              = (222, _("Control 93 Detune Depth")),
-  MIDI_CONTROL_95                              = (223, _("Control 95 Phase Depth")),
-  MIDI_CONTROL_96                              = (224, _("Control 96 Data Increment Trigger")),
-  MIDI_CONTROL_97                              = (225, _("Control 97 Data Decrement Trigger")),
-  MIDI_CONTROL_98                              = (226, _("Control 98 Non-Registered Parameter MSB")),
-  MIDI_CONTROL_99                              = (227, _("Control 99 Non-Registered Parameter LSB")),
-  MIDI_CONTROL_100                             = (228, _("Control 100 Registered Parameter MSB")),
-  MIDI_CONTROL_101                             = (229, _("Control 101 Registered Parameter LSB")),
-  MIDI_CONTROL_102                             = (230, _("control-102")),
-  MIDI_CONTROL_103                             = (231, _("control-103")),
-  MIDI_CONTROL_104                             = (232, _("control-104")),
-  MIDI_CONTROL_105                             = (233, _("control-105")),
-  MIDI_CONTROL_106                             = (234, _("control-106")),
-  MIDI_CONTROL_107                             = (235, _("control-107")),
-  MIDI_CONTROL_108                             = (236, _("control-108")),
-  MIDI_CONTROL_109                             = (237, _("control-109")),
-  MIDI_CONTROL_110                             = (238, _("control-110")),
-  MIDI_CONTROL_111                             = (239, _("control-111")),
-  MIDI_CONTROL_112                             = (240, _("control-112")),
-  MIDI_CONTROL_113                             = (241, _("control-113")),
-  MIDI_CONTROL_114                             = (242, _("control-114")),
-  MIDI_CONTROL_115                             = (243, _("control-115")),
-  MIDI_CONTROL_116                             = (244, _("control-116")),
-  MIDI_CONTROL_117                             = (245, _("control-117")),
-  MIDI_CONTROL_118                             = (246, _("control-118")),
-  MIDI_CONTROL_119                             = (247, _("control-119")),
-  MIDI_CONTROL_120                             = (248, _("Control 120 All Sound Off ITrigger")),
-  MIDI_CONTROL_121                             = (249, _("Control 121 All Controllers Off ITrigger")),
-  MIDI_CONTROL_122                             = (250, _("Control 122 Local Control Switch")),
-  MIDI_CONTROL_123                             = (251, _("Control 123 All Notes Off ITrigger")),
-  MIDI_CONTROL_124                             = (252, _("Control 124 Omni Mode Off ITrigger")),
-  MIDI_CONTROL_125                             = (253, _("Control 125 Omni Mode On ITrigger")),
-  MIDI_CONTROL_126                             = (254, _("Control 126 Monophonic Voices Mode")),
-  MIDI_CONTROL_127                             = (255, _("Control 127 Polyphonic Mode On ITrigger")),
+  MIDI_CONTROL_64                              = Enum (192, _("Control 64 Damper Pedal Switch (Sustain)")),
+  MIDI_CONTROL_65                              = Enum (193, _("Control 65 Portamento Switch")),
+  MIDI_CONTROL_66                              = Enum (194, _("Control 66 Sustenuto Switch")),
+  MIDI_CONTROL_67                              = Enum (195, _("Control 67 Soft Switch")),
+  MIDI_CONTROL_68                              = Enum (196, _("Control 68 Legato Pedal Switch")),
+  MIDI_CONTROL_69                              = Enum (197, _("Control 69 Hold Pedal Switch")),
+  MIDI_CONTROL_70                              = Enum (198, _("Control 70 Sound Variation")),
+  MIDI_CONTROL_71                              = Enum (199, _("Control 71 Filter Resonance (Timbre)")),
+  MIDI_CONTROL_72                              = Enum (200, _("Control 72 Sound Release Time")),
+  MIDI_CONTROL_73                              = Enum (201, _("Control 73 Sound Attack Time")),
+  MIDI_CONTROL_74                              = Enum (202, _("Control 74 Sound Brightness")),
+  MIDI_CONTROL_75                              = Enum (203, _("Control 75 Sound Decay Time")),
+  MIDI_CONTROL_76                              = Enum (204, _("Control 76 Vibrato Rate")),
+  MIDI_CONTROL_77                              = Enum (205, _("Control 77 Vibrato Depth")),
+  MIDI_CONTROL_78                              = Enum (206, _("Control 78 Vibrato Delay")),
+  MIDI_CONTROL_79                              = Enum (207, _("Control 79 Sound Control 10")),
+  MIDI_CONTROL_80                              = Enum (208, _("Control 80 General Purpose Switch 5")),
+  MIDI_CONTROL_81                              = Enum (209, _("Control 81 General Purpose Switch 6")),
+  MIDI_CONTROL_82                              = Enum (210, _("Control 82 General Purpose Switch 7")),
+  MIDI_CONTROL_83                              = Enum (211, _("Control 83 General Purpose Switch 8")),
+  MIDI_CONTROL_84                              = Enum (212, _("Control 84 Portamento Control (Note)")),
+  MIDI_CONTROL_85                              = Enum (213, _("control-85")),
+  MIDI_CONTROL_86                              = Enum (214, _("control-86")),
+  MIDI_CONTROL_87                              = Enum (215, _("control-87")),
+  MIDI_CONTROL_88                              = Enum (216, _("control-88")),
+  MIDI_CONTROL_89                              = Enum (217, _("control-89")),
+  MIDI_CONTROL_90                              = Enum (218, _("control-90")),
+  MIDI_CONTROL_91                              = Enum (219, _("Control 91 Reverb Depth")),
+  MIDI_CONTROL_92                              = Enum (220, _("Control 92 Tremolo Depth")),
+  MIDI_CONTROL_93                              = Enum (221, _("Control 93 Chorus Depth")),
+  MIDI_CONTROL_94                              = Enum (222, _("Control 93 Detune Depth")),
+  MIDI_CONTROL_95                              = Enum (223, _("Control 95 Phase Depth")),
+  MIDI_CONTROL_96                              = Enum (224, _("Control 96 Data Increment Trigger")),
+  MIDI_CONTROL_97                              = Enum (225, _("Control 97 Data Decrement Trigger")),
+  MIDI_CONTROL_98                              = Enum (226, _("Control 98 Non-Registered Parameter MSB")),
+  MIDI_CONTROL_99                              = Enum (227, _("Control 99 Non-Registered Parameter LSB")),
+  MIDI_CONTROL_100                             = Enum (228, _("Control 100 Registered Parameter MSB")),
+  MIDI_CONTROL_101                             = Enum (229, _("Control 101 Registered Parameter LSB")),
+  MIDI_CONTROL_102                             = Enum (230, _("control-102")),
+  MIDI_CONTROL_103                             = Enum (231, _("control-103")),
+  MIDI_CONTROL_104                             = Enum (232, _("control-104")),
+  MIDI_CONTROL_105                             = Enum (233, _("control-105")),
+  MIDI_CONTROL_106                             = Enum (234, _("control-106")),
+  MIDI_CONTROL_107                             = Enum (235, _("control-107")),
+  MIDI_CONTROL_108                             = Enum (236, _("control-108")),
+  MIDI_CONTROL_109                             = Enum (237, _("control-109")),
+  MIDI_CONTROL_110                             = Enum (238, _("control-110")),
+  MIDI_CONTROL_111                             = Enum (239, _("control-111")),
+  MIDI_CONTROL_112                             = Enum (240, _("control-112")),
+  MIDI_CONTROL_113                             = Enum (241, _("control-113")),
+  MIDI_CONTROL_114                             = Enum (242, _("control-114")),
+  MIDI_CONTROL_115                             = Enum (243, _("control-115")),
+  MIDI_CONTROL_116                             = Enum (244, _("control-116")),
+  MIDI_CONTROL_117                             = Enum (245, _("control-117")),
+  MIDI_CONTROL_118                             = Enum (246, _("control-118")),
+  MIDI_CONTROL_119                             = Enum (247, _("control-119")),
+  MIDI_CONTROL_120                             = Enum (248, _("Control 120 All Sound Off ITrigger")),
+  MIDI_CONTROL_121                             = Enum (249, _("Control 121 All Controllers Off ITrigger")),
+  MIDI_CONTROL_122                             = Enum (250, _("Control 122 Local Control Switch")),
+  MIDI_CONTROL_123                             = Enum (251, _("Control 123 All Notes Off ITrigger")),
+  MIDI_CONTROL_124                             = Enum (252, _("Control 124 Omni Mode Off ITrigger")),
+  MIDI_CONTROL_125                             = Enum (253, _("Control 125 Omni Mode On ITrigger")),
+  MIDI_CONTROL_126                             = Enum (254, _("Control 126 Monophonic Voices Mode")),
+  MIDI_CONTROL_127                             = Enum (255, _("Control 127 Polyphonic Mode On ITrigger")),
 };
-choice MidiChannelEventType {
-  MIDI_EVENT_NONE = Neutral,
+enum MidiChannelEventType {
+  MIDI_EVENT_NONE = 0,
   /* channel voice messages */
   MIDI_EVENT_NOTE_OFF,
   MIDI_EVENT_NOTE_ON,
@@ -498,29 +483,29 @@ choice MidiChannelEventType {
 record MidiChannelEvent
 {
   MidiChannelEventType  event_type;
-  Int                   channel         = ("Channel", "", 0, 0, 99, 1, ":readwrite"); // FIXME: MAX_MIDI_CHANNEL
-  Num                   tick_stamp      = ("Time Stamp", NULL, 0, 0, SFI_MAXNUM, 0, STANDARD);
+  Int                   channel         = SfiInt ("Channel", "", 0, 0, 99, 1, ":readwrite"); // FIXME: MAX_MIDI_CHANNEL
+  Num                   tick_stamp      = SfiNum ("Time Stamp", "", 0, 0, SFI_MAXNUM, 0, STANDARD);
   /* note (on/off/pressure) */
   Real                  frequency       = Freq ("Frequency", "", KAMMER_FREQ, ":readwrite");
-  Real                  velocity        = ("Velocity", "", 1, 0, 1.0, 0.1, ":readwrite");
+  Real                  velocity        = SfiReal ("Velocity", "", 1, 0, 1.0, 0.1, ":readwrite");
   /* control change */
-  Int                   control         = ("Control Number", "", 0, 0, 1024, 8, ":readwrite");
-  Real                  value           = ("Value", "", 0, -1, +1, 0.1, ":readwrite");
+  Int                   control         = SfiInt ("Control Number", "", 0, 0, 1024, 8, ":readwrite");
+  Real                  value           = SfiReal ("Value", "", 0, -1, +1, 0.1, ":readwrite");
   /* program change */
-  Int                   program         = ("Program", "", 0, 0, 0x7f, 0x10, ":readwrite");
+  Int                   program         = SfiInt ("Program", "", 0, 0, 0x7f, 0x10, ":readwrite");
   /* channel pressure */
-  Real                  intensity       = ("Intensity", "", 0, 0, 1.0, 0.1, ":readwrite");
+  Real                  intensity       = SfiReal ("Intensity", "", 0, 0, 1.0, 0.1, ":readwrite");
   /* pitch bend */
-  Real                  pitch_bend      = ("Pitch Bend", "", 0, -1, +1, 0.1, ":readwrite");
+  Real                  pitch_bend      = SfiReal ("Pitch Bend", "", 0, -1, +1, 0.1, ":readwrite");
   /* song pointer */
-  Int                   song_pointer    = ("Song Pointer", "", 0, 0, 0x3fff, 0x80, ":readwrite");
+  Int                   song_pointer    = SfiInt ("Song Pointer", "", 0, 0, 0x3fff, 0x80, ":readwrite");
   /* song select */
-  Int                   song_number     = ("Song Number", "", 0, 0, 0x7f, 0x10, ":readwrite");
+  Int                   song_number     = SfiInt ("Song Number", "", 0, 0, 0x7f, 0x10, ":readwrite");
 };
 sequence NoteSeq {
   Int    notes   = Note ("Note", "", KAMMER_NOTE, ":readwrite"); /* FIXME: s/notes/note/ for pspecs, but not the C API */
 };
-class Item;
+interface Item;
 sequence ItemSeq {
   Info   blurb = ("A list of BSE items or derived types.");
   Item   items;
@@ -530,19 +515,19 @@ record PropertyCandidates {
   String  label;
   String  tooltip;
   ItemSeq items;
-  TypeSeq partitions = ("Type Partitions", "List of types which may logically partition the list of items by type discrimination", STANDARD);
+  TypeSeq partitions = SfiSeq ("Type Partitions", "List of types which may logically partition the list of items by type discrimination", STANDARD);
 };
 record PartNote
 {
   Info     blurb        = "Part specific note representation";
-  Int      id           = UInt ("ID", "", 0, ":readwrite");
-  Int      channel      = ("Channel", "", 0, 0, MAXINT, 1, ":readwrite");
-  Int      tick         = ("Tick", "", 0, 0, MAXINT, 1, ":readwrite");
-  Int      duration     = ("Duration", "Duration in number of ticks", 0, 0, MAXINT, 1, ":readwrite");
+  Int      id           = SfiUInt ("ID", "", 0, ":readwrite");
+  Int      channel      = SfiInt ("Channel", "", 0, 0, MAXINT, 1, ":readwrite");
+  Int      tick         = SfiInt ("Tick", "", 0, 0, MAXINT, 1, ":readwrite");
+  Int      duration     = SfiInt ("Duration", "Duration in number of ticks", 0, 0, MAXINT, 1, ":readwrite");
   Int      note         = Note ("Note", "", KAMMER_NOTE, ":readwrite");
-  Int      fine_tune    = ("Fine Tune", "", 0, MIN_FINE_TUNE, MAX_FINE_TUNE, 1, ":readwrite");
-  Real     velocity     = ("Velocity", "", 1, 0, 1.0, 0.1, ":readwrite");
-  Bool     selected     = ("Selected", "", FALSE, ":readwrite");
+  Int      fine_tune    = SfiInt ("Fine Tune", "", 0, MIN_FINE_TUNE, MAX_FINE_TUNE, 1, ":readwrite");
+  Real     velocity     = SfiReal ("Velocity", "", 1, 0, 1.0, 0.1, ":readwrite");
+  Bool     selected     = SfiBool ("Selected", "", FALSE, ":readwrite");
 };
 sequence PartNoteSeq {
   Info     blurb = "A list of part notes";
@@ -551,11 +536,11 @@ sequence PartNoteSeq {
 record PartControl
 {
   Info           blurb        = "Part specific control event representation";
-  Int            id           = UInt ("ID", "", 0, ":readwrite");
-  Int            tick         = ("Tick", "", 0, 0, MAXINT, 1, ":readwrite");
+  Int            id           = SfiUInt ("ID", "", 0, ":readwrite");
+  Int            tick         = SfiInt ("Tick", "", 0, 0, MAXINT, 1, ":readwrite");
   MidiSignalType control_type;
-  Real           value        = ("Value", "", 0, -1, +1, 0.1, ":readwrite");
-  Bool           selected     = ("Selected", "", FALSE, ":readwrite");
+  Real           value        = SfiReal ("Value", "", 0, -1, +1, 0.1, ":readwrite");
+  Bool           selected     = SfiBool ("Selected", "", FALSE, ":readwrite");
 };
 sequence PartControlSeq {
   Info blurb = "A list of part control events";
@@ -568,13 +553,13 @@ record NoteDescription
   Int    octave          = Octave ("Octave", "", KAMMER_OCTAVE, ":readwrite");
   Real   freq            = Freq ("Frequency", "", KAMMER_FREQ, ":readwrite");
   Int    fine_tune       = FineTune ("Fine Tune", "", ":readwrite");
-  Int    semitone        = Int ("Semitone", "", 0, 0, 11, 1, ":readwrite");
+  Int    semitone        = SfiInt ("Semitone", "", 0, 0, 11, 1, ":readwrite");
   Bool   upshift;
-  Int    letter          = Int ("Letter", "International abbreviation letter for this note", 64, 32, 126, 1, ":readwrite");
+  Int    letter          = SfiInt ("Letter", "International abbreviation letter for this note", 64, 32, 126, 1, ":readwrite");
   String name            = String ("Name", "", "", ":readwrite");
   /* constants */
-  Int    max_fine_tune   = Int ("Max Fine Tune", "", MAX_FINE_TUNE, MAX_FINE_TUNE, MAX_FINE_TUNE, 0, ":readable");
-  Int    kammer_note     = Int ("Kammer Note", "", KAMMER_NOTE, KAMMER_NOTE, KAMMER_NOTE, 0, ":readable");
+  Int    max_fine_tune   = SfiInt ("Max Fine Tune", "", MAX_FINE_TUNE, MAX_FINE_TUNE, MAX_FINE_TUNE, 0, ":readable");
+  Int    kammer_note     = SfiInt ("Kammer Note", "", KAMMER_NOTE, KAMMER_NOTE, KAMMER_NOTE, 0, ":readable");
   Info   blurb           = "A note description provides all necessary details about a specific note. "
                            "Various procedures exist to retrieve a note description; given different "
                            "key values. The max_fine_tune and kammer_note fields are constants, which "
@@ -583,19 +568,21 @@ record NoteDescription
 record NoteSequence
 {
   Int     offset = Note ("Note Offset", "Center/base note", KAMMER_NOTE, ":readwrite");
-  NoteSeq notes  = ("Notes", "Sequence of notes", ":readwrite");
+  NoteSeq notes  = SfiSeq ("Notes", "Sequence of notes", ":readwrite");
+};
+sequence PixelSeq {
+  Int	pixels;
 };
 record Icon
 {
-  Info   blurb           = "BSE icon representation.";
-  Int    bytes_per_pixel = ("Bytes Per Pixel", "Bytes Per Pixel (3:RGB, 4:RGBA, 0:NONE)", 4, 3, 4, 1, ":readwrite");
-  Int    width           = ("Width", "Width in pixels or 0 for no icon", 0, 0, MAXINT, 1, ":readwrite");
-  Int    height          = ("Height", "Height in pixels or 0 for no icon", 0, 0, MAXINT, 1, ":readwrite");
-  BBlock pixels          = ("Pixels", "Pixel array of width*height*bytes_per_pixel bytes", ":readwrite");
+  Info     blurb     = "BSE icon representation.";
+  Int      width     = SfiInt ("Width", "Width in pixels or 0 for no icon", 0, 0, MAXINT, 1, ":readwrite");
+  Int      height    = SfiInt ("Height", "Height in pixels or 0 for no icon", 0, 0, MAXINT, 1, ":readwrite");
+  PixelSeq pixel_seq = SfiSeq ("Pixels", "Pixel array of width*height ARGB pixels", ":readwrite");
 };
 record Category
 {
-  Int    category_id = ("Category ID", NULL, 1, 1, G_MAXINT, 1, ":readwrite");
+  Int    category_id = SfiInt ("Category ID", "", 1, 1, G_MAXINT, 1, ":readwrite");
   String category;
   Int    mindex;
   Int    lindex;
@@ -614,13 +601,13 @@ sequence DotSeq {
   Dot dots;
 };
 /* BSE Part structures */
-class Part;
-class Track;
+interface Part;
+interface Track;
 record PartLink {
   Track track;
-  Int   tick     = ("Tick", NULL, 0, 0, G_MAXINT, 384, STANDARD);
+  Int   tick     = SfiInt ("Tick", "", 0, 0, G_MAXINT, 384, STANDARD);
   Part  part;
-  Int   duration = ("Duration", NULL, 0, 0, G_MAXINT, 384, STANDARD);
+  Int   duration = SfiInt ("Duration", "", 0, 0, G_MAXINT, 384, STANDARD);
   // Int   count; /* 1 + repetitions */
 };
 sequence PartLinkSeq {
@@ -628,9 +615,9 @@ sequence PartLinkSeq {
 };
 /* BSE Track structures */
 record TrackPart {
-  Int           tick     = ("Tick", NULL, 0, 0, G_MAXINT, 384, STANDARD);
+  Int           tick     = SfiInt ("Tick", "", 0, 0, G_MAXINT, 384, STANDARD);
   Part          part;
-  Int           duration = ("Duration", NULL, 0, 0, G_MAXINT, 384, STANDARD);
+  Int           duration = SfiInt ("Duration", "", 0, 0, G_MAXINT, 384, STANDARD);
 };
 sequence TrackPartSeq {
   TrackPart tparts;
@@ -638,30 +625,30 @@ sequence TrackPartSeq {
 /* BSE Song timing structure */
 record SongTiming {
   /* song position timing applies to */
-  Int   tick        = ("Current tick", NULL, 0, 0, G_MAXINT, 384, STANDARD);
+  Int   tick        = SfiInt ("Current tick", "", 0, 0, G_MAXINT, 384, STANDARD);
   /* tempo */
-  Real  bpm         = ("Beats per minute", NULL, 120, BSE_MIN_BPM, BSE_MAX_BPM, 10, STANDARD);
+  Real  bpm         = SfiReal ("Beats per minute", "", 120, BSE_MIN_BPM, BSE_MAX_BPM, 10, STANDARD);
   /* signature */
-  Int   numerator   = ("Numerator", "Number of notes per measure", 4, 1, 256, 2, STANDARD);
-  Int   denominator = ("Denominator", "Type of notes counted per measure", 4, 1, 256, 2, STANDARD);
+  Int   numerator   = SfiInt ("Numerator", "Number of notes per measure", 4, 1, 256, 2, STANDARD);
+  Int   denominator = SfiInt ("Denominator", "Type of notes counted per measure", 4, 1, 256, 2, STANDARD);
   /* sequencer timing */
-  Int   tpqn        = ("Ticks per quarter note", NULL, 384, 1, G_MAXINT, 12, STANDARD);
-  Int   tpt         = ("Ticks per tact", NULL, 384, 1, G_MAXINT, 12, STANDARD);
+  Int   tpqn        = SfiInt ("Ticks per quarter note", "", 384, 1, G_MAXINT, 12, STANDARD);
+  Int   tpt         = SfiInt ("Ticks per tact", "", 384, 1, G_MAXINT, 12, STANDARD);
   /* playback timing */
-  Real  stamp_ticks = ("Ticks per stamp increment (valid only during playback)", NULL, 384, 1, G_MAXINT, 12, STANDARD);
+  Real  stamp_ticks = SfiReal ("Ticks per stamp increment (valid only during playback)", "", 384, 1, G_MAXINT, 12, STANDARD);
 };
 record SampleFileInfo {
-  String        file    = ("Filename", NULL, NULL, STANDARD);
-  Int           size    = ("File Size", NULL, 0, 0, G_MAXINT, 0, STANDARD);
-  Num           mtime   = ("Modification Time", NULL, 0, 0, SFI_MAXNUM, 0, STANDARD);
-  String        loader  = ("Loader", NULL, NULL, STANDARD);
-  StringSeq     waves   = (NULL, NULL, STANDARD);
-  Int           error   = ("BseErrorType", NULL, 0, 0, G_MAXINT, 0, STANDARD); // FIXME: use BseErrorType here
+  String        file    = SfiString ("Filename", "", "", STANDARD);
+  Int           size    = SfiInt ("File Size", "", 0, 0, G_MAXINT, 0, STANDARD);
+  Num           mtime   = SfiNum ("Modification Time", "", 0, 0, SFI_MAXNUM, 0, STANDARD);
+  String        loader  = SfiString ("Loader", "", "", STANDARD);
+  StringSeq     waves   = SfiSeq ("", "", STANDARD);
+  Int           error   = SfiInt ("BseErrorType", "", 0, 0, G_MAXINT, 0, STANDARD); // FIXME: use BseErrorType here
 };
-class Janitor;
+interface Janitor;
 /* user messages */
-choice MsgType {
-  MSG_NONE = Neutral,
+enum MsgType {
+  MSG_NONE = 0,
   MSG_ALWAYS,
   MSG_ERROR,
   MSG_WARNING,
@@ -685,7 +672,7 @@ record Message {
   Int           pid;
 };
 /* thread info */
-choice ThreadState {
+enum ThreadState {
   THREAD_STATE_UNKNOWN,
   THREAD_STATE_RUNNING,
   THREAD_STATE_SLEEPING,
@@ -696,22 +683,22 @@ choice ThreadState {
   THREAD_STATE_DEAD,
 };
 record ThreadInfo {
-  String      name      = (_("Thread Name"), NULL, NULL, STANDARD);
-  ThreadState state     = (_("State"), _("The execution state of the thread"), THREAD_STATE_UNKNOWN, STANDARD);
-  Int         thread_id = (_("Thread ID"), _("A unique number identifying this thread"),
+  String      name      = SfiString (_("Thread Name"), "", "", STANDARD);
+  ThreadState state     = SfiEnum (_("State"), _("The execution state of the thread"), THREAD_STATE_UNKNOWN, STANDARD);
+  Int         thread_id = SfiInt (_("Thread ID"), _("A unique number identifying this thread"),
                            0, 0, G_MAXINT, 1, STANDARD);
-  Int         priority  = (_("Priority"), _("The nice value of a thread, -20 indicates a high priority thread and "
+  Int         priority  = SfiInt (_("Priority"), _("The nice value of a thread, -20 indicates a high priority thread and "
                                             "+19 a low priority one that is 'nice' to others"),
                            0, -20, 19, 1, STANDARD);
-  Int         processor = (_("Processor"), _("The processor that this thread is currently being executed on"),
+  Int         processor = SfiInt (_("Processor"), _("The processor that this thread is currently being executed on"),
                            0, 0, MAXINT, 1, STANDARD);
-  Int         utime     = (_("User Time"), _("The CPU time spent executing instructions of this thread"),
+  Int         utime     = SfiInt (_("User Time"), _("The CPU time spent executing instructions of this thread"),
                            0, 0, MAXINT, 1, STANDARD);
-  Int         stime     = (_("System Time"), _("The CPU time spent in the system for this thread"),
+  Int         stime     = SfiInt (_("System Time"), _("The CPU time spent in the system for this thread"),
                            0, 0, MAXINT, 1, STANDARD);
-  Int         cutime    = (_("Child User Time"), _("The CPU time spent executing instructions of children of this thread"),
+  Int         cutime    = SfiInt (_("Child User Time"), _("The CPU time spent executing instructions of children of this thread"),
                            0, 0, MAXINT, 1, STANDARD);
-  Int         cstime    = (_("Child System Time"), _("The CPU time spent in the system for children of this thread"),
+  Int         cstime    = SfiInt (_("Child System Time"), _("The CPU time spent in the system for children of this thread"),
                            0, 0, MAXINT, 1, STANDARD);
 };
 sequence ThreadInfoSeq {
@@ -722,61 +709,69 @@ record ThreadTotals {
   ThreadInfo    sequencer;
   ThreadInfoSeq synthesis;
 };
-ThreadTotals    collect_thread_totals ();
-/* BSE Global Config */
+// bseprobe.idl: ThreadTotals collect_thread_totals ();
+
+// == BSE Global Config ==
+Const DEFAULT_AUTHOR  = "\357\277\271\357\277\272{{bse.idl/default-author}}\357\277\273";
+Const DEFAULT_LICENSE = "\357\277\271\357\277\272{{bse.idl/default-license}}\357\277\273";
+Const USER_DATA_PATH  = "\357\277\271\357\277\272{{bse.idl/user-data-path}}\357\277\273";
+Const DEFAULT_SAMPLE_PATH      = USER_DATA_PATH "samples";
+Const DEFAULT_EFFECTS_PATH     = USER_DATA_PATH "effects";
+Const DEFAULT_INSTRUMENTS_PATH = USER_DATA_PATH "instruments";
+Const DEFAULT_SCRIPTS_PATH     = USER_DATA_PATH "scripts";
+Const DEFAULT_PLUGINS_PATH     = USER_DATA_PATH "plugins";
+
 record GConfig {
   group _("Synthesis Settings") {
-    Int synth_latency           = (_("Latency [ms]"),
-                                   _("Processing duration between input and output of a single sample, smaller values increase CPU load"),
-                                   50, 1, 2000, 5, STANDARD);
-    Int synth_mixing_freq       = (_("Synth Mixing Frequency"),
-                                   _("Synthesis mixing frequency, common values are: 22050, 44100, 48000"),
-                                   44100, 8000, 192000, 0, STANDARD);
-    Int synth_control_freq      = (_("Synth Control Frequency"),
-                                   _("Frequency at which control values are evaluated, "
-                                     "should be much smaller than Synth Mixing Frequency to reduce CPU load"),
-                                   1000, 1, 192000, 0, STANDARD);
+    Int synth_latency =
+      SfiInt (_("Latency [ms]"),
+	      _("Processing duration between input and output of a single sample, smaller values increase CPU load"),
+	      50, 1, 2000, 5, STANDARD);
+    Int synth_mixing_freq =
+      SfiInt (_("Synth Mixing Frequency"),
+	      _("Synthesis mixing frequency, common values are: 22050, 44100, 48000"),
+	      44100, 8000, 192000, 0, STANDARD);
+    Int synth_control_freq =
+      SfiInt (_("Synth Control Frequency"),
+	      _("Frequency at which control values are evaluated, "
+		"should be much smaller than Synth Mixing Frequency to reduce CPU load"),
+	      1000, 1, 192000, 0, STANDARD);
   };
   group _("MIDI") {
-    Bool invert_sustain = (_("Invert Sustain Pedal"),
+    Bool invert_sustain = SfiBool (_("Invert Sustain Pedal"),
                            _("Invert the state of sustain (damper) pedal so on/off meanings are reversed"),
                            FALSE, STANDARD);
   };
   group _("Default Values") {
-    String author_default  = (_("Default Author"), _("Default value for 'Author' fields"),
-			      bse_intern_default_author(), STANDARD);
-    String license_default = (_("Default License"), _("Default value for 'License' fields"),
-			      bse_intern_default_license(), STANDARD);
+    String author_default  = SfiString (_("Default Author"), _("Default value for 'Author' fields"),
+					DEFAULT_AUTHOR, STANDARD);
+    String license_default = SfiString (_("Default License"), _("Default value for 'License' fields"),
+					DEFAULT_LICENSE, STANDARD);
   };
   group _("Search Paths") {
-    String sample_path     = (_("Sample Path"),
-                              g_intern_printf (_("Search path of directories, seperated by \"%s\", used to find audio samples."),
-                                               G_SEARCHPATH_SEPARATOR_S),
-                              bse_intern_path_user_data ("/samples"), STANDARD ":searchpath");
-    String effect_path     = (_("Effect Path"),
-                              g_intern_printf (_("Search path of directories, seperated by \"%s\", used to find BSE effect files."),
-                                               G_SEARCHPATH_SEPARATOR_S),
-                              bse_intern_path_user_data ("/effects"), STANDARD ":searchpath");
-    String instrument_path = (_("Instrument Path"),
-                              g_intern_printf (_("Search path of directories, seperated by \"%s\", used to find BSE instrument files."),
-                                               G_SEARCHPATH_SEPARATOR_S),
-                              bse_intern_path_user_data ("/instruments"), STANDARD ":searchpath");
-    String script_path     = (_("Script Path"),
-                              g_intern_printf (_("Search path of directories, seperated by \"%s\", used to find BSE scheme scripts."),
-                                               G_SEARCHPATH_SEPARATOR_S),
-                              bse_intern_path_user_data ("/scripts"), STANDARD ":searchpath");
-    String plugin_path     = (_("Plugin Path"),
-                              g_intern_printf (_("Search path of directories, seperated by \"%s\", used to find BSE plugins. This path "
-                                                 "is searched for in addition to the standard BSE plugin location on this system."),
-                                               G_SEARCHPATH_SEPARATOR_S),
-                              bse_intern_path_user_data ("/plugins"), STANDARD ":searchpath");
-    String ladspa_path     = (_("LADSPA Path"),
-                              g_intern_printf (_("Search path of directories, seperated by \"%s\", used to find LADSPA plugins. This "
-                                                 "path is searched for in addition to the standard LADSPA location on this system. "
-                                                 "LADSPA is the Linux Audio Developer's Simple Plugin API, more informations about "
-                                                 "LADSPA plugins can be found at http://www.ladspa.org/."), G_SEARCHPATH_SEPARATOR_S),
-                              NULL, STANDARD ":searchpath");
+    String sample_path     = SfiString (_("Sample Path"),
+					_("Search path of directories, seperated by \";\", used to find audio samples."),
+					DEFAULT_SAMPLE_PATH, STANDARD ":searchpath");
+    String effect_path     = SfiString (_("Effect Path"),
+					_("Search path of directories, seperated by \";\", used to find BSE effect files."),
+					DEFAULT_EFFECTS_PATH, STANDARD ":searchpath");
+    String instrument_path = SfiString (_("Instrument Path"),
+					_("Search path of directories, seperated by \";\", used to find BSE instrument files."),
+					DEFAULT_INSTRUMENTS_PATH, STANDARD ":searchpath");
+    String script_path     = SfiString (_("Script Path"),
+					_("Search path of directories, seperated by \";\", used to find BSE scheme scripts."),
+					DEFAULT_SCRIPTS_PATH, STANDARD ":searchpath");
+    String plugin_path     = SfiString (_("Plugin Path"),
+					_("Search path of directories, seperated by \";\", used to find BSE plugins. This path "
+					  "is searched for in addition to the standard BSE plugin location on this system."),
+					DEFAULT_PLUGINS_PATH, STANDARD ":searchpath");
+    String ladspa_path     = SfiString (_("LADSPA Path"),
+					_("Search path of directories, seperated by \";\", used to find LADSPA plugins. This "
+					  "path is searched for in addition to the standard LADSPA location on this system. "
+					  "LADSPA is the Linux Audio Developer's Simple Plugin API, more informations about "
+					  "LADSPA plugins can be found at http://www.ladspa.org/."),
+					"", STANDARD ":searchpath");
   };
 };
-};
-/* vim:set ts=8 sts=2 sw=2 syntax=cpp: */
+
+} // Bse

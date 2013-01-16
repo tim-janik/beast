@@ -265,14 +265,13 @@ bse_icon_from_pixdata (const BsePixdata *pixdata)
   if (!pixdata->encoded_pix_data)
     return NULL;
   icon = bse_icon_new ();
-  icon->bytes_per_pixel = bpp;
   icon->width = pixdata->width;
   icon->height = pixdata->height;
-  sfi_bblock_resize (icon->pixels, icon->width * icon->height * icon->bytes_per_pixel);
+  bse_pixel_seq_resize (icon->pixel_seq, icon->width * icon->height);
+  guint8 *image_buffer = (guint8*) icon->pixel_seq->pixels;
   if (encoding == BSE_PIXDATA_1BYTE_RLE)
     {
       const guint8 *rle_buffer = pixdata->encoded_pix_data;
-      guint8 *image_buffer = icon->pixels->bytes;
       guint8 *image_limit = image_buffer + icon->width * icon->height * bpp;
       while (image_buffer < image_limit)
 	{
@@ -288,7 +287,8 @@ bse_icon_from_pixdata (const BsePixdata *pixdata)
 		do
 		  {
 		    memcpy (image_buffer, rle_buffer, 3);
-		    image_buffer += 3;
+                    image_buffer[3] = 0xff;
+		    image_buffer += 4;
 		  }
 		while (--length);
 	      else
@@ -306,7 +306,12 @@ bse_icon_from_pixdata (const BsePixdata *pixdata)
 	      check_overrun = image_buffer + length > image_limit;
 	      if (check_overrun)
 		length = image_limit - image_buffer;
-	      memcpy (image_buffer, rle_buffer, length);
+              for (uint i = 0; i < length / bpp; i++)
+                {
+                  memcpy (image_buffer + i * 4, rle_buffer + i * bpp, bpp);
+                  if (bpp == 3)
+                    *(image_buffer + i * 4 + 3) = 0xff;
+                }
 	      image_buffer += length;
 	      rle_buffer += length;
 	    }
@@ -315,7 +320,7 @@ bse_icon_from_pixdata (const BsePixdata *pixdata)
         }
     }
   else
-    memcpy (icon->pixels->bytes, pixdata->encoded_pix_data, icon->width * icon->height * bpp);
+    memcpy (image_buffer, pixdata->encoded_pix_data, icon->width * icon->height * bpp);
   return icon;
 }
 static inline const guint8 *
@@ -616,25 +621,6 @@ bse_string_equals (gconstpointer string1,
     return strcmp ((const char*) string1, (const char*) string2) == 0;
   else
     return string1 == string2;
-}
-const gchar*
-bse_intern_path_user_data (const gchar *dir)
-{
-  return g_intern_strconcat (BSE_PATH_USER_DATA ("/"), dir, NULL);
-}
-const gchar*
-bse_intern_default_author (void)
-{
-  const char *user = g_get_user_name();
-  const char *name = g_get_real_name();
-  if (name && user && name[0] && strcmp (user, name) != 0)
-    return g_intern_string (name);
-  return g_intern_static_string ("");
-}
-const gchar*
-bse_intern_default_license (void)
-{
-  return g_intern_static_string ("Creative Commons Attribution 2.5 (http://creativecommons.org/licenses/by/2.5/)");
 }
 void
 bse_bbuffer_puts (gchar        bbuffer[BSE_BBUFFER_SIZE],

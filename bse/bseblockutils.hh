@@ -3,8 +3,13 @@
 #define __BSE_BLOCK_UTILS_H__
 #include <wchar.h> /* wmemset */
 #include <bse/bseieee754.hh>
-G_BEGIN_DECLS
+
+
+template<class TYPE> inline
+void    bse_block_fill_0                          (size_t        n_values,        /* 4-byte variant of memset */
+                                                   TYPE         *values);
 /* --- C API --- */
+G_BEGIN_DECLS
 const
 char*   bse_block_impl_name                       (void);
 static inline
@@ -12,7 +17,7 @@ void    bse_block_fill_uint32                     (guint          n_values,     
                                                    guint32       *values,
                                                    guint32        vuint32);
 static inline
-void    bse_block_fill_float                      (guint	  n_values,       /* 4-byte variant of memset for floats */
+void    bse_block_fill_float                      (uint	          n_values,       /* 4-byte variant of memset for floats */
                                                    float         *values,
                                                    const float    value);
 static inline
@@ -234,4 +239,29 @@ bse_block_copy_float (guint	    n_values,
   wmemcpy ((wchar_t*) values, (const wchar_t*) ivalues, n_values);
 }
 G_END_DECLS
+
+// == C++ Implementations ==
+template<class TYPE> inline void
+bse_block_fill_0 (size_t n_values, TYPE *values)
+{
+  size_t n_bytes = n_values * sizeof (TYPE);
+  char *p = (char*) values;
+  uint r = size_t (p) & 3;
+  if (UNLIKELY (r))
+    {
+      r = MIN (r, n_values);    // rest for pointer alignment
+      memset (p, 0, r);
+      p += r;
+      n_bytes -= r;
+    }
+  const size_t n_aligned = n_bytes / 4;
+  wmemset ((wchar_t*) p, 0, n_aligned);
+  n_bytes -= n_aligned * 4;
+  if (UNLIKELY (n_bytes))
+    {
+      p += n_aligned * 4;
+      memset (p, 0, n_bytes);
+    }
+}
+
 #endif /* __BSE_BLOCK_UTILS_H__ */

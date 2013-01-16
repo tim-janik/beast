@@ -87,7 +87,7 @@ enum ExtraToken {
   TOKEN_GROUP,
   TOKEN_USING,
   TOKEN_CONST,
-  TOKEN_CONST_IDENT,
+  /*TOKEN_CONST_IDENT,*/
   TOKEN_INFO,
   TOKEN_ISTREAM,
   TOKEN_JSTREAM,
@@ -95,9 +95,9 @@ enum ExtraToken {
   TOKEN_ERROR
 };
 const char *token_symbols[] = {
-  "namespace", "class", "choice", "record", "sequence",
+  "namespace", "interface", "enum", "record", "sequence",
   "property", "group", "using",
-  "Const", "ConstIdent", "Info", "IStream", "JStream", "OStream",
+  "Const", /*"ConstIdent",*/ "Info", "IStream", "JStream", "OStream",
   0
 };
 bool operator== (GTokenType t, ExtraToken e) { return (int) t == (int) e; }
@@ -473,7 +473,7 @@ void Parser::preprocessContents (const String& input_filename)
 			break;
 	    case '<':	state = filenameIn2;
 			break;
-	    default:	g_printerr ("bad char after #include statement");
+	    default:	g_printerr ("bad char after include statement");
 			g_assert_not_reached (); // error handling!
 	    }
 	}
@@ -481,7 +481,7 @@ void Parser::preprocessContents (const String& input_filename)
 	   || (state == filenameIn2 && *i == '>'))
 	{
 	  String location;
-	  // #include "/usr/include/foo.idl" (absolute path includes)
+	  // include "/usr/include/foo.idl" (absolute path includes)
 	  if (g_path_is_absolute (filename.c_str()))
 	    {
 	      if (fileExists (filename))
@@ -489,15 +489,17 @@ void Parser::preprocessContents (const String& input_filename)
 	    }
 	  else
 	    {
-	      // #include "foo.idl" => search in local directory (relative to input_file)
+	      // include "foo.idl" => search in local directory (relative to input_file)
 	      if (state == filenameIn1)
 		{
-		  gchar *dir = g_path_get_dirname (input_filename.c_str());
-		  if (fileExists (dir + String(G_DIR_SEPARATOR_S) + filename))
-		    location = filename;
+		  char *dir = g_path_get_dirname (input_filename.c_str());
+                  String candidate = dir + String(G_DIR_SEPARATOR_S) + filename;
+		  const bool candidate_exists = fileExists (candidate);
+		  if (candidate_exists)
+		    location = candidate;
 		  g_free (dir);
 		}
-	      // all #include directives => search includepath with standard include dirs
+	      // all include directives => search includepath with standard include dirs
 	      if (location == "")
 		{
 		  vector<String>::const_iterator oi;
@@ -518,9 +520,17 @@ void Parser::preprocessContents (const String& input_filename)
 	      fprintf (stderr, "include file '%s' not found\n", filename.c_str());
 	      exit(1);
 	    }
+	  i++; // eat closing quote
+          if (match (i, " as implementation"))
+            {
+              i += 18;
+              includeImpl = true;
+            }
+          if (*i != ';')
+            g_error ("expected ';' after include statement");
+          i++; // eat semicolpon after include
 	  preprocess (location, includeImpl);
 	  state = idlCode;
-	  i++;
 	}
       else if(state == filenameIn1 || state == filenameIn2)
 	{
@@ -533,14 +543,14 @@ void Parser::preprocessContents (const String& input_filename)
 	}
       else if(state == lineStart) // check if we're on lineStart
 	{
-	  if(match(i,"#include-impl"))
+	  if (0 && match(i,"#include-impl")) // old syntax disabled
 	    {
 	      i += 13;
 	      state = filenameFind;
 	      filename = "";
 	      includeImpl = true;
 	    }
-	  else if(match(i,"#include"))
+	  else if(match(i,"include"))
 	    {
 	      i += 8;
 	      state = filenameFind;
@@ -732,8 +742,8 @@ bool Parser::parse (const String& filename)
   defineSymbol ("Num");
   defineSymbol ("Real");
   defineSymbol ("String");
-  defineSymbol ("BBlock");
-  defineSymbol ("FBlock");
+  // deprecated: defineSymbol ("BBlock");
+  // deprecated: defineSymbol ("FBlock");
   defineSymbol ("Rec");
   leaveNamespace ();
   GTokenType expected_token = G_TOKEN_NONE;
@@ -816,14 +826,16 @@ GTokenType Parser::parseNamespace()
 		return expected_token;
 	    }
 	    break;
-	  case TOKEN_CONST_IDENT:
+#if 0
+        case TOKEN_CONST_IDENT:
 	    {
 	      GTokenType expected_token = parseConstant (true);
 	      if (expected_token != G_TOKEN_NONE)
 		return expected_token;
 	    }
 	    break;
-	  case TOKEN_USING:
+#endif
+        case TOKEN_USING:
 	    {
 	      parse_or_return (TOKEN_USING);
 	      parse_or_return (TOKEN_NAMESPACE);
@@ -915,7 +927,7 @@ GTokenType Parser::parseConstant (bool isident)
    */
   Constant cdef;
   if (isident)
-    parse_or_return (TOKEN_CONST_IDENT);
+    g_assert_not_reached (); /* parse_or_return (TOKEN_CONST_IDENT); */
   else
     parse_or_return (TOKEN_CONST);
   parse_or_return (G_TOKEN_IDENTIFIER);
@@ -975,7 +987,7 @@ Parser::parseChoice ()
 {
   Choice choice;
   int value = 0, sequentialValue = 1;
-  DEBUG("parse choice\n");
+  DEBUG("parse enum\n");
   parse_or_return (TOKEN_CHOICE);
   parse_or_return (G_TOKEN_IDENTIFIER);
   choice.name = defineSymbol (scanner->value.v_identifier);
@@ -1031,34 +1043,26 @@ Parser::parseChoiceValue (ChoiceValue& comp, int& value, int& sequentialValue)
     YES,
     YES = 1,
     YES = "Yes",
-    YES = Neutral,
     YES = (1),
-    YES = (1, "Yes"),
-    YES = (Neutral, "Yes"),
-    YES = (1, "Yes", "this is the Yes value"),
-    YES = ("Yes", "this is the Yes value"),
+    YES = Enum (0, "Yes"), // neutral
+    YES = Enum (1, "Yes", "this is the Yes value"),
+    YES = Enum ("Yes", "this is the Yes value"),
   */
   if (g_scanner_peek_next_token (scanner) == GTokenType('='))
     {
       parse_or_return ('=');
-      if (g_scanner_peek_next_token (scanner) == GTokenType('('))
+      if (g_scanner_peek_next_token (scanner) == G_TOKEN_IDENTIFIER &&
+          strcmp (scanner->next_value.v_string, "Enum") == 0)
         {
-          bool need_arg = true;
+          parse_or_return (G_TOKEN_IDENTIFIER); // "Enum"
           parse_or_return ('(');
+          bool need_arg = true;
           if (g_scanner_peek_next_token (scanner) == G_TOKEN_INT)
             {
               parse_or_return (G_TOKEN_INT);
               value = scanner->value.v_int64;
-              if (g_scanner_peek_next_token (scanner) == ',')
-                parse_or_return (',');
-              else
-                need_arg = false;
-            }
-          else if (g_scanner_peek_next_token (scanner) == G_TOKEN_IDENTIFIER &&
-                   strcmp (scanner->next_value.v_string, "Neutral") == 0)
-            {
-              parse_or_return (G_TOKEN_IDENTIFIER);
-              comp.neutral = true;
+              if (value == 0)
+                comp.neutral = true;
               if (g_scanner_peek_next_token (scanner) == ',')
                 parse_or_return (',');
               else
@@ -1086,12 +1090,8 @@ Parser::parseChoiceValue (ChoiceValue& comp, int& value, int& sequentialValue)
         {
           parse_or_return (G_TOKEN_INT);
           value = scanner->value.v_int64;
-        }
-      else if (g_scanner_peek_next_token (scanner) == G_TOKEN_IDENTIFIER &&
-               strcmp (scanner->next_value.v_string, "Neutral") == 0)
-        {
-          parse_or_return (G_TOKEN_IDENTIFIER);
-          comp.neutral = true;
+          if (value == 0)
+            comp.neutral = true;
         }
       else if (g_scanner_peek_next_token (scanner) == G_TOKEN_IDENTIFIER &&
                strcmp (scanner->next_value.v_string, "_") == 0)
@@ -1219,6 +1219,9 @@ Parser::parseStream (Stream&      stream,
   stream.ident = scanner->value.v_identifier;
   skip_ascii_at (scanner);
   parse_or_return ('=');
+  parse_or_return (G_TOKEN_IDENTIFIER);
+  if (strcmp (scanner->value.v_identifier, "Stream") != 0)
+    return G_TOKEN_IDENTIFIER;
   parse_or_return ('(');
   parse_istring_or_return (stream.label);
   parse_or_return (',');

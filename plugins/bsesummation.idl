@@ -1,7 +1,7 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
-#include <bse/bsecxxmodule.idl>
+include "bse/bsecxxmodule.idl";
 namespace Bse {
-class Summation : Effect {
+interface Summation : Effect {
   Info    icon        = "icons/summation.png";
   Info    authors     = "Tim Janik";
   Info    license     = _("GNU Lesser General Public License");
@@ -11,10 +11,10 @@ class Summation : Effect {
                           "similarly, 'Audio Sum2' is the accumulatiuon signal of all streams connected to 'Audio In2'. "
                           "A difference signal between 'Audio Sum1' and 'Audio Sum2' is also "
                           "generated and is available at 'Audio Diff'.");
-  JStream audio_in1   = (_("Audio In1"), _("Audio input 1"));
-  JStream audio_in2   = (_("Audio In2"), _("Audio input 2"));
-  OStream audio_out1  = (_("Audio Sum1"), _("Accumulated audio output 1"));
-  OStream audio_diff  = (_("Audio Diff"), _("Difference between audio outputs 1 and 2"));
-  OStream audio_out2  = (_("Audio Sum2"), _("Accumulated audio output 2"));
+  JStream audio_in1   = Stream (_("Audio In1"), _("Audio input 1"));
+  JStream audio_in2   = Stream (_("Audio In2"), _("Audio input 2"));
+  OStream audio_out1  = Stream (_("Audio Sum1"), _("Accumulated audio output 1"));
+  OStream audio_diff  = Stream (_("Audio Diff"), _("Difference between audio outputs 1 and 2"));
+  OStream audio_out2  = Stream (_("Audio Sum2"), _("Accumulated audio output 2"));
 };
 } // Bse

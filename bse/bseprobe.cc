@@ -4,6 +4,8 @@
 #include "bseblockutils.hh"
 #include "gslcommon.hh" /* for gsl_tick_stamp() */
 #include "gslfft.hh"
+#include "bsemain.hh"
+#include "bsesequencer.hh"
 #include <stdexcept>
 #include <set>
 using namespace std;
@@ -167,7 +169,7 @@ class ProbeQueue {
               rv[i] = ivalues[i] * blackman_window (i * reci_fft_size);
             gsl_power2_fftar (fft_size, rv, cv);
             probe.fft_data.resize (fft_size);
-            float *fvalues = probe.fft_data.fblock()->values;
+            double *fvalues = &probe.fft_data[0];
             reci_fft_size = 1.0 / fft_size;
             i = fft_size;
             while (i--) /* convert to float */
@@ -177,7 +179,7 @@ class ProbeQueue {
           {
             /* all raw floats are 0.0 and so will be the resulting fft */
             probe.fft_data.resize (fft_size);
-            bse_block_fill_float (fft_size, probe.fft_data.fblock()->values, 0.0);
+            bse_block_fill_0 (fft_size, &probe.fft_data[0]);
           }
         else
           probe_features.probe_fft = false;
@@ -190,9 +192,12 @@ class ProbeQueue {
         if (raw_floats)
           {
             /* if (probe_xrun) bse_block_fill_float (n_computed, raw_floats, 0.0); */
-            SfiFBlock *fblock = sfi_fblock_new_foreign (block_size, raw_floats, g_free);
+            probe.sample_data.resize (block_size);
+            double *fvalues = &probe.fft_data[0];
+            for (int i = 0; i < int (block_size); i++)
+              fvalues[i] = raw_floats[i];
+            g_free (raw_floats);
             raw_floats = NULL;
-            probe.sample_data.take (fblock);
           }
         else
           probe_features.probe_samples = false;
@@ -691,6 +696,68 @@ source_get_mix_freq::exec (BseSource *self)
     throw std::runtime_error ("invalid arguments");
   return BSE_SOURCE_PREPARED (self) ? bse_engine_sample_freq() : 0;
 }
+
+ThreadTotalsHandle
+collect_thread_totals::exec ()
+{
+  struct Sub {
+    static ThreadState convert (BirnetThreadState ts)
+    {
+      switch (ts)
+        {
+        default:
+        case BIRNET_THREAD_UNKNOWN:     return THREAD_STATE_UNKNOWN;
+        case BIRNET_THREAD_RUNNING:     return THREAD_STATE_RUNNING;
+        case BIRNET_THREAD_SLEEPING:    return THREAD_STATE_SLEEPING;
+        case BIRNET_THREAD_DISKWAIT:    return THREAD_STATE_DISKWAIT;
+        case BIRNET_THREAD_TRACED:      return THREAD_STATE_TRACED;
+        case BIRNET_THREAD_PAGING:      return THREAD_STATE_PAGING;
+        case BIRNET_THREAD_ZOMBIE:      return THREAD_STATE_ZOMBIE;
+        case BIRNET_THREAD_DEAD:        return THREAD_STATE_DEAD;
+        }
+    }
+    static void assign (ThreadInfoHandle &th,
+                        BirnetThreadInfo    *ti)
+    {
+      th->name = ti->name;
+      th->thread_id = ti->thread_id;
+      th->state = convert (ti->state);
+      th->priority = ti->priority;
+      th->processor = ti->processor;
+      th->utime = ti->utime;
+      th->stime = ti->stime;
+      th->cutime = ti->cutime;
+      th->cstime = ti->cstime;
+    }
+  };
+  ThreadTotalsHandle tth (Sfi::INIT_DEFAULT);
+  BirnetThreadInfo *ti;
+  ti = sfi_thread_info_collect (bse_main_thread);
+  tth->main = ThreadInfoHandle (Sfi::INIT_DEFAULT);
+  Sub::assign (tth->main, ti);
+  sfi_thread_info_free (ti);
+  if (bse_sequencer_thread)
+    {
+      ti = sfi_thread_info_collect (bse_sequencer_thread);
+      tth->sequencer = ThreadInfoHandle (Sfi::INIT_DEFAULT);
+      Sub::assign (tth->sequencer, ti);
+      sfi_thread_info_free (ti);
+    }
+  guint n;
+  BirnetThread **t;
+  t = bse_engine_get_threads (&n);
+  for (guint i = 0; i < n; i++)
+    {
+      ti = sfi_thread_info_collect (t[i]);
+      tth->synthesis.resize (i + 1);
+      tth->synthesis[i] = ThreadInfoHandle (Sfi::INIT_DEFAULT);
+      Sub::assign (tth->synthesis[i], ti);
+      sfi_thread_info_free (ti);
+    }
+  g_free (t);
+  return tth;
+}
+
 } // Procedure
 /* export definitions follow */
 BSE_CXX_DEFINE_EXPORTS();

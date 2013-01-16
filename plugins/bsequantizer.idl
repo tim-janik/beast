@@ -1,19 +1,19 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
-#include <bse/bse.idl>
+include "bse/bsecxxmodule.idl";
 namespace Bse { namespace Standard {
-class Quantizer : Bse::Effect {
+interface Quantizer : Bse::Effect {
   Info    category   = "/Distortion/Quantizer";
   Info    icon       = "icons/quantizer.png";
   Info    authors    = "Tim Janik";
   Info    blurb      = _("The Quantizer plugin quantizes the input signals according to a configurable step setting. "
                          "This simulates low quality digital signal transfer paths or ancient computer hardware.");
   group _("Quantization") {
-    Real qsteps       = Real (_("Quantization Steps"), _("The number of different steps the output signal is quantized to."), 256, 1, 4294967296, 256, STANDARD ":scale");
-    Real qstep_powers = Real (_("Bit Depth"),          _("The number of bits the quantization steps correspond to."), 8, 0, 32, 0.0625, GUI ":scale");
+    Real qsteps       = SfiReal (_("Quantization Steps"), _("The number of different steps the output signal is quantized to."), 256, 1, 4294967296, 256, STANDARD ":scale");
+    Real qstep_powers = SfiReal (_("Bit Depth"),          _("The number of bits the quantization steps correspond to."), 8, 0, 32, 0.0625, GUI ":scale");
   };
-  IStream audio_in1  = ("Audio In1",  "Audio Input 1");
-  IStream audio_in2  = ("Audio In2",  "Audio Input 2");
-  OStream audio_out1 = ("Audio Out1", "Audio Output 1");
-  OStream audio_out2 = ("Audio Out2", "Audio Output 2");
+  IStream audio_in1  = Stream ("Audio In1",  "Audio Input 1");
+  IStream audio_in2  = Stream ("Audio In2",  "Audio Input 2");
+  OStream audio_out1 = Stream ("Audio Out1", "Audio Output 1");
+  OStream audio_out2 = Stream ("Audio Out2", "Audio Output 2");
 };
 } } // Bse::Standard
