@@ -27,18 +27,68 @@ static gboolean alsa_midi_io_handler            (gpointer                data,
 BSE_RESIDENT_TYPE_DEF (BseMidiDeviceALSA, bse_midi_device_alsa, BSE_TYPE_MIDI_DEVICE, NULL,
                        "MIDI driver implementation for the Advanced Linux Sound Architecture "
                        "(http://alsa-project.org/alsa-doc/alsa-lib/midi.html)", NULL);
+
 /* --- variables --- */
 static gpointer parent_class = NULL;
+
 /* --- functions --- */
 static void
 bse_midi_device_alsa_init (BseMidiDeviceALSA *self)
 {
 }
+
+static std::string
+substitute_string (const std::string &from, const std::string &to, const std::string &input)
+{
+  std::string::size_type l = 0;
+  std::string target;
+  for (std::string::size_type i = input.find (from, 0); i != std::string::npos; l = i + 1, i = input.find (from, l))
+    {
+      target.append (input, l, i - l);
+      target.append (to);
+    }
+  target.append (input, l, input.size() - l);
+  return target;
+}
+
+static SfiRing*
+list_midi_devices (BseDevice *device, SfiRing *ring, const char *device_group)
+{
+  void **nhints = NULL;
+  if (snd_device_name_hint (-1, "rawmidi", &nhints) < 0)
+    return ring;
+  for (void **hint = nhints; *hint; hint++)
+    {
+      char *name = snd_device_name_get_hint (*hint, "NAME");
+      char *desc = snd_device_name_get_hint (*hint, "DESC");
+      char *ioid = snd_device_name_get_hint (*hint, "IOID");
+      const char *cioid = ioid ? ioid : "Duplex";
+      if (name && desc && strcmp (cioid, device_group) == 0)
+        {
+          std::string blurb = substitute_string ("\n", " ", desc);
+          BseDeviceEntry *entry = bse_device_group_entry_new (device, g_strdup (name), g_strdup (device_group),
+                                                              g_strdup_printf ("%s - %s", name, blurb.c_str()));
+          ring = sfi_ring_append (ring, entry);
+        }
+      if (name) free (name);
+      if (desc) free (desc);
+      if (ioid) free (ioid);
+    }
+  snd_device_name_free_hint (nhints);
+  return ring;
+}
+
 #define alsa_alloca0(struc)     ({ struc##_t *ptr = (struc##_t*) alloca (struc##_sizeof()); memset (ptr, 0, struc##_sizeof()); ptr; })
+
 static SfiRing*
 bse_midi_device_alsa_list_devices (BseDevice *device)
 {
   SfiRing *ring = NULL;
+  // find and enlist Duplex and Output devices, 'default' should be amongst these
+  ring = list_midi_devices (device, ring, "Duplex");
+  ring = list_midi_devices (device, ring, "Output");
+  ring = list_midi_devices (device, ring, "Input");
+  // walk and enlist devices from all sound cards
   snd_ctl_card_info_t *cinfo = alsa_alloca0 (snd_ctl_card_info);
   snd_rawmidi_info_t *winfo = alsa_alloca0 (snd_rawmidi_info);
   snd_rawmidi_info_t *rinfo = alsa_alloca0 (snd_rawmidi_info);
