@@ -414,7 +414,7 @@ bst_canvas_link_event (GnomeCanvasItem *item,
   switch (event->type)
     {
     case GDK_BUTTON_PRESS:
-      if (event->button.button == 2)
+      if (bst_mouse_button_move (event))
 	{
 	  GdkCursor *fleur;
 	  if (clink->ocsource)
@@ -466,7 +466,7 @@ bst_canvas_link_event (GnomeCanvasItem *item,
 	}
       break;
     case GDK_BUTTON_RELEASE:
-      if (event->button.button == 2 && clink->in_move)
+      if (bst_mouse_button_move (event) && clink->in_move)
 	{
 	  clink->in_move = FALSE;
 	  gnome_canvas_item_ungrab (item, event->button.time);

@@ -494,7 +494,7 @@ bst_snet_router_root_event (BstSNetRouter   *self,
         }
       at_channel = ochannel != ~uint (0) || ichannel != ~uint (0);
       if (event->type == GDK_BUTTON_PRESS &&
-          event->button.button == 1 &&
+          bst_mouse_button_activate (event) &&
           ROUTER_TOOL (self) == 0)                                      /* start link (or popup property dialog) */
         {
           g_return_val_if_fail (self->tmp_line == NULL, FALSE);
@@ -533,7 +533,7 @@ bst_snet_router_root_event (BstSNetRouter   *self,
             }
           else if (csource && csource->source != self->snet)
             {
-              if (event->button.state & GDK_SHIFT_MASK)
+              if (bst_mouse_button_activate2 (event))
                 bst_canvas_source_toggle_info (csource);
               else
                 bst_canvas_source_toggle_params (csource);
@@ -542,7 +542,7 @@ bst_snet_router_root_event (BstSNetRouter   *self,
             bst_canvas_link_toggle_view (clink);
           handled = TRUE;
         }
-      else if (event->button.button == 1 && ROUTER_TOOL (self) == ROUTER_TOOL_CREATE_LINK) /* finish link */
+      else if (bst_mouse_button_activate (event) && ROUTER_TOOL (self) == ROUTER_TOOL_CREATE_LINK) /* finish link */
         {
           if (event->type == GDK_BUTTON_RELEASE && csource == self->drag_csource &&
               self->drag_channel == (self->drag_is_input ? ichannel : ochannel))
@@ -552,7 +552,7 @@ bst_snet_router_root_event (BstSNetRouter   *self,
           else
             {
               BseErrorType error;
-              if (!csource || (self->drag_is_input ? ochannel : ichannel) == ~0)
+              if (!csource || (self->drag_is_input ? ochannel : ichannel) == ~uint (0))
                 error = self->drag_is_input ? BSE_ERROR_SOURCE_NO_SUCH_OCHANNEL : BSE_ERROR_SOURCE_NO_SUCH_ICHANNEL;
               else if (self->drag_is_input)
                 error = bse_source_set_input_by_id (self->drag_csource->source, self->drag_channel,
@@ -567,7 +567,7 @@ bst_snet_router_root_event (BstSNetRouter   *self,
             }
           handled = TRUE;
         }
-      else if (event->type == GDK_BUTTON_PRESS && event->button.button == 3)    /* module context menu */
+      else if (event->type == GDK_BUTTON_PRESS && bst_mouse_button_context (event))    /* module context menu */
         {
           if (csource)
             {
@@ -680,7 +680,7 @@ bst_snet_router_event (GtkWidget *widget,
   switch (event->type)
     {
     case GDK_BUTTON_PRESS:
-      if (event->button.button == 1 &&
+      if (bst_mouse_button_activate1 (event) &&
           ROUTER_TOOL (self) &&
           ROUTER_TOOL (self) != ROUTER_TOOL_CREATE_LINK) /* add new source */
         {
@@ -707,7 +707,7 @@ bst_snet_router_event (GtkWidget *widget,
           self->world_y = 0;
           bst_status_eprintf (error, _("Insert Module"));
         }
-      else if (event->button.button != 1 && ROUTER_TOOL (self) == ROUTER_TOOL_CREATE_LINK)
+      else if (!bst_mouse_button_activate1 (event) && ROUTER_TOOL (self) == ROUTER_TOOL_CREATE_LINK)
         {
           /* disturbing button presses, reset stuff */
           handled = TRUE;
@@ -743,7 +743,7 @@ bst_snet_router_button_press (GtkWidget      *widget,
   gboolean handled;
   /* chain parent class' handler */
   handled = GTK_WIDGET_CLASS (bst_snet_router_parent_class)->button_press_event (widget, event);
-  if (!handled && event->button == 3 && self->canvas_popup)
+  if (!handled && bst_mouse_button_context (event) && self->canvas_popup)
     gxk_menu_popup (self->canvas_popup,
                     event->x_root, event->y_root,
                     event->button, event->time);

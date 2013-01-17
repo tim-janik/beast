@@ -811,7 +811,7 @@ bst_canvas_source_event (GnomeCanvasItem *item,
   switch (event->type)
     {
     case GDK_BUTTON_PRESS:
-      if (!csource->in_move && event->button.button == 2)
+      if (!csource->in_move && bst_mouse_button_move (event))
 	{
 	  GdkCursor *fleur = gdk_cursor_new (GDK_FLEUR);
 	  if (gnome_canvas_item_grab (item,
@@ -868,7 +868,7 @@ bst_canvas_source_event (GnomeCanvasItem *item,
 	}
       break;
     case GDK_BUTTON_RELEASE:
-      if (event->button.button == 2 && csource->in_move)
+      if (bst_mouse_button_move (event) && csource->in_move)
 	{
           bse_item_ungroup_undo (csource->source);
 	  csource->in_move = FALSE;

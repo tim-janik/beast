@@ -70,6 +70,7 @@ void       bst_stock_register_icon      (const gchar  *stock_id,
                                          guint         height,
                                          guint         rowstride,
                                          const guint8 *pixels);
+
 /* --- pixbuf shortcuts --- */
 #define bst_pixbuf_no_icon()    gxk_stock_fallback_pixbuf (BST_STOCK_NO_ICON)
 #define bst_pixbuf_ladspa()     gxk_stock_fallback_pixbuf (BST_STOCK_LADSPA)
@@ -197,4 +198,19 @@ BstGConfig*     bst_gconfig_get_global (void);
 void            _bst_init_utils         (void);
 void            _bst_init_radgets       (void);
 G_END_DECLS
+
+
+// == mouse button checks ==
+bool            bst_mouse_button_activate       (GdkEvent       *event);
+bool            bst_mouse_button_activate1      (GdkEvent       *event);
+bool            bst_mouse_button_activate2      (GdkEvent       *event);
+bool            bst_mouse_button_context        (GdkEvent       *event);
+bool            bst_mouse_button_move           (GdkEvent       *event);
+inline bool     bst_mouse_button_activate       (GdkEventButton *event) { return bst_mouse_button_activate ((GdkEvent*) event); }
+inline bool     bst_mouse_button_activate1      (GdkEventButton *event) { return bst_mouse_button_activate1 ((GdkEvent*) event); }
+inline bool     bst_mouse_button_activate2      (GdkEventButton *event) { return bst_mouse_button_activate2 ((GdkEvent*) event); }
+inline bool     bst_mouse_button_context        (GdkEventButton *event) { return bst_mouse_button_context ((GdkEvent*) event); }
+inline bool     bst_mouse_button_move           (GdkEventButton *event) { return bst_mouse_button_move ((GdkEvent*) event); }
+
+
 #endif /* __BST_UTILS_H__ */

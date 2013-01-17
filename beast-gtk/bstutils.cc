@@ -152,6 +152,7 @@ bst_stock_register_icon (const gchar    *stock_id,
       gtk_icon_set_unref (iset);
     }
 }
+
 /* --- beast/bse specific extensions --- */
 void
 bst_status_eprintf (BseErrorType error,
@@ -1335,3 +1336,46 @@ bst_file_scan_find_key (const gchar *file,
   sfi_pspec_set_group (sfi_pspec_proxy (name, NULL, NULL, SFI_PARAM_STANDARD), group)
 /* --- generated type IDs and SFIDL types --- */
 #include "bstgentypes.cc"       /* type id defs */
+
+// == mouse button checks ==
+static bool
+shift_event (GdkEvent *event)
+{
+  return (event->button.state & GDK_SHIFT_MASK) != 0;
+}
+
+static bool
+button_event (GdkEvent *event)
+{
+  return event->type == GDK_BUTTON_PRESS || event->type == GDK_BUTTON_RELEASE;
+}
+
+bool
+bst_mouse_button_activate (GdkEvent *event)
+{
+  return button_event (event) && event->button.button == 1;
+}
+
+bool
+bst_mouse_button_activate1 (GdkEvent *event)
+{
+  return !shift_event (event) && button_event (event) && event->button.button == 1;
+}
+
+bool
+bst_mouse_button_activate2 (GdkEvent *event)
+{
+  return shift_event (event) && button_event (event) && event->button.button == 1;
+}
+
+bool
+bst_mouse_button_move (GdkEvent *event)
+{
+  return button_event (event) && event->button.button == 2;
+}
+
+bool
+bst_mouse_button_context (GdkEvent *event)
+{
+  return button_event (event) && event->button.button == 3;
+}
