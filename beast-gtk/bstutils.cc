@@ -1345,6 +1345,12 @@ shift_event (GdkEvent *event)
 }
 
 static bool
+alt_event (GdkEvent *event)
+{
+  return (event->button.state & GDK_MOD1_MASK) != 0;
+}
+
+static bool
 button_event (GdkEvent *event)
 {
   return event->type == GDK_BUTTON_PRESS || event->type == GDK_BUTTON_RELEASE;
@@ -1371,7 +1377,8 @@ bst_mouse_button_activate2 (GdkEvent *event)
 bool
 bst_mouse_button_move (GdkEvent *event)
 {
-  return button_event (event) && event->button.button == 2;
+  return button_event (event) && (event->button.button == 2 ||
+                                  (alt_event (event) && event->button.button == 1));
 }
 
 bool
