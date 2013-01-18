@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast.HEAD.ne\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-12-23 18:34+0100\n"
+"POT-Creation-Date: 2013-01-18 03:53+0100\n"
 "PO-Revision-Date: 2006-09-01 14:55+0545\n"
 "Last-Translator: Mahesh subedi <submanesh@hotmail.com>\n"
 "Language-Team: Nepali <info@mpp.org.np>\n"
@@ -113,7 +113,7 @@ msgstr "MIDI नियन्त्रणबाट: %s स्वचालन %s:"
 msgid "%s: automation from MIDI control: %s (MIDI channel: %d)"
 msgstr "MIDI नियन्त्रणबाट: %s स्वचालन %s: (MIDI च्यानल: %d)"
 
-#: beast-gtk/bstcanvassource.cc:864
+#: beast-gtk/bstcanvassource.cc:865
 msgid "(Hint)"
 msgstr "(सूचक)"
 
@@ -356,7 +356,7 @@ msgid "12"
 msgstr "१२"
 
 #. Equal Temperament: http://en.wikipedia.org/wiki/Equal_temperament
-#: bse/bsecore.idl:53
+#: bse/bsecore.idl:38
 msgid "12 Tone Equal Temperament"
 msgstr ""
 
@@ -512,7 +512,7 @@ msgstr ""
 msgid "5 1/3rd Harmonic"
 msgstr ""
 
-#: bse/bsecore.idl:60
+#: bse/bsecore.idl:45
 msgid "5 Tone Equal Temperament"
 msgstr ""
 
@@ -536,7 +536,7 @@ msgstr "६४ मान FFT सञ्झ्याल"
 msgid "65536 Value FFT Window"
 msgstr "६५५३६ मान FFT सञ्झ्याल"
 
-#: bse/bsecore.idl:57
+#: bse/bsecore.idl:42
 msgid "7 Tone Equal Temperament"
 msgstr ""
 
@@ -639,7 +639,7 @@ msgid ""
 msgstr "८१९२ मान FFT सञ्झ्याल ४०९७ आवृति पिकसँगको स्पेकट्रममा अनुरूप हुन्छ"
 
 #. http://en.wikipedia.org/wiki/Equal_temperament
-#: bse/bsecore.idl:61
+#: bse/bsecore.idl:46
 msgid ""
 "A fairly common tuning system is the five-tone equal temperament tuning "
 "system, abbreviated as 5-TET. It divides the octave into 5 equal parts using "
@@ -647,7 +647,7 @@ msgid ""
 msgstr ""
 
 #. http://en.wikipedia.org/wiki/Equal_temperament
-#: bse/bsecore.idl:58
+#: bse/bsecore.idl:43
 msgid ""
 "A fairly common tuning system is the seven-tone equal temperament tuning "
 "system, abbreviated as 7-TET. It divides the octave into 7 equal parts using "
@@ -664,7 +664,7 @@ msgid ""
 "to underline"
 msgstr " _ क्यारेक्टरसँगको स्ट्रिङको स्थितिले कच गरिने पाठको क्यारेक्टरसँग अनुरूप हुन्छ"
 
-#: bse/bsecore.idl:701
+#: bse/bsecore.idl:688
 msgid "A unique number identifying this thread"
 msgstr "अद्वितिय नम्बरले यो थ्रेडलाई चिनाउँदछ"
 
@@ -827,7 +827,7 @@ msgid "Adjustments"
 msgstr "समायोजन"
 
 #. TRANSLATORS: keep this text to 70 chars in width
-#: drivers/bsemididevice-alsa.cc:264
+#: drivers/bsemididevice-alsa.cc:314
 #, c-format
 msgid ""
 "Advanced Linux Sound Architecture MIDI driver, using\n"
@@ -857,7 +857,7 @@ msgstr ""
 "  SUBDEV - 'hw'जस्तो प्लगइनहरूका लागि उपयन्त्र नम्बर\n"
 
 #. TRANSLATORS: keep this text to 70 chars in width
-#: drivers/bsepcmdevice-alsa.cc:501
+#: drivers/bsepcmdevice-alsa.cc:549
 #, c-format
 msgid ""
 "Advanced Linux Sound Architecture PCM driver, using\n"
@@ -1331,7 +1331,7 @@ msgstr "पियानो-रोल सम्पादनकद्वारा 
 msgid "Bad loopback"
 msgstr "खराब लूपब्याक"
 
-#: bse/bsecore.idl:143 bse/bsecore.idl:319 plugins/bseamplifier.idl:33
+#: bse/bsecore.idl:128 bse/bsecore.idl:304 plugins/bseamplifier.idl:33
 #: plugins/bseamplifier.idl:38 plugins/bsebalance.idl:27
 #: plugins/bsebalance.idl:32
 msgid "Balance"
@@ -1346,7 +1346,7 @@ msgid "Balance control input levels"
 msgstr "नियन्त्रण आगत तहको सन्तुलन गर्दछ"
 
 #. 14bit, continuous controls
-#: bse/bsecore.idl:135 bse/bsecore.idl:311
+#: bse/bsecore.idl:120 bse/bsecore.idl:296
 msgid "Bank Select"
 msgstr "बैंक चयन"
 
@@ -1387,7 +1387,7 @@ msgstr "बुस्ट"
 msgid "Brass Sounds"
 msgstr ""
 
-#: bse/bsecore.idl:137 bse/bsecore.idl:313
+#: bse/bsecore.idl:122 bse/bsecore.idl:298
 msgid "Breath Control"
 msgstr "श्वास नियन्त्रण"
 
@@ -1506,12 +1506,12 @@ msgstr ""
 msgid "Channel"
 msgstr "च्यानल"
 
-#: beast-gtk/bstsnetrouter.cc:1013
+#: beast-gtk/bstsnetrouter.cc:1015
 msgid "Channel Hints"
 msgstr "च्यानल सङ्केत"
 
 #. 7bit
-#: bse/bsecore.idl:130
+#: bse/bsecore.idl:115
 msgid "Channel Pressure"
 msgstr "च्यानल दवाब"
 
@@ -1539,11 +1539,11 @@ msgstr "च्यानल %u [फ्लोट]"
 msgid "Check/ToggleRadio Button"
 msgstr "जाँच्नुहोस्/रेडियो बटन टगल गर्नुहोस्"
 
-#: bse/bsecore.idl:714
+#: bse/bsecore.idl:701
 msgid "Child System Time"
 msgstr "शाखा प्रणाली समय"
 
-#: bse/bsecore.idl:712
+#: bse/bsecore.idl:699
 msgid "Child User Time"
 msgstr "शाखा प्रयोगकर्ता समय"
 
@@ -1586,7 +1586,7 @@ msgid "Color Entry"
 msgstr "रङ प्रविष्टि"
 
 #: beast-gtk/bstitemview.cc:158 beast-gtk/bsttrackview.cc:551
-#: bse/bseobject.cc:724
+#: bse/bseobject.cc:723
 msgid "Comment"
 msgstr "टिप्पणी"
 
@@ -1613,24 +1613,24 @@ msgstr "बाँन्की सम्पादकको स्तम्भ स
 msgid "Const Out%u"
 msgstr "अचल निर्गत %u"
 
-#: bse/bsecore.idl:169
+#: bse/bsecore.idl:154
 msgid "Constant CENTER"
 msgstr "अचल केन्द्र"
 
 #. 14bit, special cased signals
-#: bse/bsecore.idl:168
+#: bse/bsecore.idl:153
 msgid "Constant HIGH"
 msgstr "अचल उच्च"
 
-#: bse/bsecore.idl:170
+#: bse/bsecore.idl:155
 msgid "Constant LOW"
 msgstr "अचल तल्लो"
 
-#: bse/bsecore.idl:171
+#: bse/bsecore.idl:156
 msgid "Constant Negative CENTER"
 msgstr "अचल नकरात्मक केन्द्र"
 
-#: bse/bsecore.idl:172
+#: bse/bsecore.idl:157
 msgid "Constant Negative HIGH"
 msgstr "अचल नकरात्मक उच्च"
 
@@ -1658,71 +1658,71 @@ msgstr ""
 msgid "Contents"
 msgstr "सामग्री"
 
-#: bse/bsecore.idl:149 bse/bsecore.idl:325
+#: bse/bsecore.idl:134 bse/bsecore.idl:310
 msgid "Continuous 14"
 msgstr "लगातार १४"
 
-#: bse/bsecore.idl:150 bse/bsecore.idl:326
+#: bse/bsecore.idl:135 bse/bsecore.idl:311
 msgid "Continuous 15"
 msgstr "लगातार १५"
 
-#: bse/bsecore.idl:155 bse/bsecore.idl:331
+#: bse/bsecore.idl:140 bse/bsecore.idl:316
 msgid "Continuous 20"
 msgstr "लगातार २०"
 
-#: bse/bsecore.idl:156 bse/bsecore.idl:332
+#: bse/bsecore.idl:141 bse/bsecore.idl:317
 msgid "Continuous 21"
 msgstr "लगातार २१"
 
-#: bse/bsecore.idl:157 bse/bsecore.idl:333
+#: bse/bsecore.idl:142 bse/bsecore.idl:318
 msgid "Continuous 22"
 msgstr "लगातार २२"
 
-#: bse/bsecore.idl:158 bse/bsecore.idl:334
+#: bse/bsecore.idl:143 bse/bsecore.idl:319
 msgid "Continuous 23"
 msgstr "लगातार २३"
 
-#: bse/bsecore.idl:159 bse/bsecore.idl:335
+#: bse/bsecore.idl:144 bse/bsecore.idl:320
 msgid "Continuous 24"
 msgstr "लगातार २४"
 
-#: bse/bsecore.idl:160 bse/bsecore.idl:336
+#: bse/bsecore.idl:145 bse/bsecore.idl:321
 msgid "Continuous 25"
 msgstr "लगातार २५"
 
-#: bse/bsecore.idl:161 bse/bsecore.idl:337
+#: bse/bsecore.idl:146 bse/bsecore.idl:322
 msgid "Continuous 26"
 msgstr "लगातार २६"
 
-#: bse/bsecore.idl:162 bse/bsecore.idl:338
+#: bse/bsecore.idl:147 bse/bsecore.idl:323
 msgid "Continuous 27"
 msgstr "लगातार २७"
 
-#: bse/bsecore.idl:163 bse/bsecore.idl:339
+#: bse/bsecore.idl:148 bse/bsecore.idl:324
 msgid "Continuous 28"
 msgstr "लगातार २८"
 
-#: bse/bsecore.idl:164 bse/bsecore.idl:340
+#: bse/bsecore.idl:149 bse/bsecore.idl:325
 msgid "Continuous 29"
 msgstr "लगातार २९"
 
-#: bse/bsecore.idl:138 bse/bsecore.idl:314
+#: bse/bsecore.idl:123 bse/bsecore.idl:299
 msgid "Continuous 3"
 msgstr "लगातार ३"
 
-#: bse/bsecore.idl:165 bse/bsecore.idl:341
+#: bse/bsecore.idl:150 bse/bsecore.idl:326
 msgid "Continuous 30"
 msgstr "लगातार ३०"
 
-#: bse/bsecore.idl:166 bse/bsecore.idl:342
+#: bse/bsecore.idl:151 bse/bsecore.idl:327
 msgid "Continuous 31"
 msgstr "लगातार ३१"
 
-#: bse/bsecore.idl:144 bse/bsecore.idl:320
+#: bse/bsecore.idl:129 bse/bsecore.idl:305
 msgid "Continuous 9"
 msgstr "लगातार ९"
 
-#: bse/bsecore.idl:311
+#: bse/bsecore.idl:296
 msgid "Continuous MIDI Control #1 - Bank Select"
 msgstr "निरन्तर मिडि नियन्त्रण #1 - बैक चय"
 
@@ -1731,293 +1731,293 @@ msgid "Contributions made by:"
 msgstr "योगदानकर्ता:"
 
 #. 7bit, literal channel controls, MSB values
-#: bse/bsecore.idl:176 bse/bsecore.idl:344
+#: bse/bsecore.idl:161 bse/bsecore.idl:329
 msgid "Control 0 Bank Select MSB"
 msgstr "नियन्त्रण ० बैंक छनोट MSB"
 
-#: bse/bsecore.idl:177 bse/bsecore.idl:345
+#: bse/bsecore.idl:162 bse/bsecore.idl:330
 msgid "Control 1 Modulation Depth MSB"
 msgstr "नियन्त्रण १ मोडुलेसन गहिराइ MSB"
 
-#: bse/bsecore.idl:186 bse/bsecore.idl:354
+#: bse/bsecore.idl:171 bse/bsecore.idl:339
 msgid "Control 10 Panorama MSB"
 msgstr "नियन्त्रण १० पानोरामा MSB"
 
-#: bse/bsecore.idl:278 bse/bsecore.idl:446
+#: bse/bsecore.idl:263 bse/bsecore.idl:431
 msgid "Control 100 Registered Parameter MSB"
 msgstr "नियन्त्रण १०० दर्ता भएको परामिति MSB"
 
-#: bse/bsecore.idl:279 bse/bsecore.idl:447
+#: bse/bsecore.idl:264 bse/bsecore.idl:432
 msgid "Control 101 Registered Parameter LSB"
 msgstr "नियन्त्रण १०१ दर्ता भएको परामिति LSB"
 
-#: bse/bsecore.idl:187 bse/bsecore.idl:355
+#: bse/bsecore.idl:172 bse/bsecore.idl:340
 msgid "Control 11 Expression MSB"
 msgstr "नियन्त्रण ११ अभिव्यक्ति MSB"
 
-#: bse/bsecore.idl:188 bse/bsecore.idl:356
+#: bse/bsecore.idl:173 bse/bsecore.idl:341
 msgid "Control 12 Effect Control 1 MSB"
 msgstr "नियन्त्रण १२ प्रभाव नियन्त्रण १ MSB"
 
-#: bse/bsecore.idl:298 bse/bsecore.idl:466
+#: bse/bsecore.idl:283 bse/bsecore.idl:451
 msgid "Control 120 All Sound Off ITrigger"
 msgstr "नियन्त्रण १२० सबै आवाज बन्द आइ ट्रिग्गर"
 
-#: bse/bsecore.idl:299 bse/bsecore.idl:467
+#: bse/bsecore.idl:284 bse/bsecore.idl:452
 msgid "Control 121 All Controllers Off ITrigger"
 msgstr "नियन्त्रण १२१ सबै नियन्त्रक बन्द आइ ट्रिग्गर"
 
-#: bse/bsecore.idl:300 bse/bsecore.idl:468
+#: bse/bsecore.idl:285 bse/bsecore.idl:453
 msgid "Control 122 Local Control Switch"
 msgstr "नियन्त्रण १२२ स्थानीय नियन्त्रण स्विच"
 
-#: bse/bsecore.idl:301 bse/bsecore.idl:469
+#: bse/bsecore.idl:286 bse/bsecore.idl:454
 msgid "Control 123 All Notes Off ITrigger"
 msgstr "नियन्त्रण १२३ सबै द्रष्टव्यहरू बन्द आई ट्रिग्गर"
 
-#: bse/bsecore.idl:302 bse/bsecore.idl:470
+#: bse/bsecore.idl:287 bse/bsecore.idl:455
 msgid "Control 124 Omni Mode Off ITrigger"
 msgstr "नियन्त्रण १२४ ओम्नि मोड बन्द आई ट्रिग्गर"
 
-#: bse/bsecore.idl:303 bse/bsecore.idl:471
+#: bse/bsecore.idl:288 bse/bsecore.idl:456
 msgid "Control 125 Omni Mode On ITrigger"
 msgstr "नियन्त्रण १२५ ओम्नि मोड खुला आइ ट्रिग्गर"
 
-#: bse/bsecore.idl:304 bse/bsecore.idl:472
+#: bse/bsecore.idl:289 bse/bsecore.idl:457
 msgid "Control 126 Monophonic Voices Mode"
 msgstr "नियन्त्रण १२६ मोनोफोनिक स्वरको मोड"
 
-#: bse/bsecore.idl:305 bse/bsecore.idl:473
+#: bse/bsecore.idl:290 bse/bsecore.idl:458
 msgid "Control 127 Polyphonic Mode On ITrigger"
 msgstr "नियन्त्रण १२७ पोलिफोनिक मोड खुला आइ ट्रिग्गर"
 
-#: bse/bsecore.idl:189 bse/bsecore.idl:357
+#: bse/bsecore.idl:174 bse/bsecore.idl:342
 msgid "Control 13 Effect Control 2 MSB"
 msgstr "नियन्त्रण १३ प्रभाव नियन्त्रण २ MSB"
 
-#: bse/bsecore.idl:192 bse/bsecore.idl:360
+#: bse/bsecore.idl:177 bse/bsecore.idl:345
 msgid "Control 16 General Purpose Controller 1 MSB"
 msgstr "नियन्त्रण १६ साधारण उद्देश्य नियन्त्रक १ MSB"
 
-#: bse/bsecore.idl:193 bse/bsecore.idl:361
+#: bse/bsecore.idl:178 bse/bsecore.idl:346
 msgid "Control 17 General Purpose Controller 2 MSB"
 msgstr "नियन्त्रण १७ साधारण उद्देश्य नियन्त्रक २ MSB"
 
-#: bse/bsecore.idl:194 bse/bsecore.idl:362
+#: bse/bsecore.idl:179 bse/bsecore.idl:347
 msgid "Control 18 General Purpose Controller 3 MSB"
 msgstr "नियन्त्रण १८ साधारण उद्देश्य नियन्त्रक ३ MSB"
 
-#: bse/bsecore.idl:195 bse/bsecore.idl:363
+#: bse/bsecore.idl:180 bse/bsecore.idl:348
 msgid "Control 19 General Purpose Controller 4 MSB"
 msgstr "नियन्त्रण १९ साधारण उद्देश्य नियन्त्रक ४ MSB"
 
-#: bse/bsecore.idl:178 bse/bsecore.idl:346
+#: bse/bsecore.idl:163 bse/bsecore.idl:331
 msgid "Control 2 Breath Control MSB"
 msgstr "नियन्त्रण २ श्वास नियन्त्रण MSB"
 
 #. 7bit, literal channel controls, LSB values
-#: bse/bsecore.idl:209 bse/bsecore.idl:377
+#: bse/bsecore.idl:194 bse/bsecore.idl:362
 msgid "Control 32 Bank Select LSB"
 msgstr "नियन्त्रण ३२ बैंक छनोट LSB"
 
-#: bse/bsecore.idl:210 bse/bsecore.idl:378
+#: bse/bsecore.idl:195 bse/bsecore.idl:363
 msgid "Control 33 Modulation Depth LSB"
 msgstr "नियन्त्रण ३३ मोडुलेसन गहिराइ LSB"
 
-#: bse/bsecore.idl:211 bse/bsecore.idl:379
+#: bse/bsecore.idl:196 bse/bsecore.idl:364
 msgid "Control 34 Breath Control LSB"
 msgstr "नियन्त्रण ३४ श्वास नियन्त्रण LSB"
 
-#: bse/bsecore.idl:213 bse/bsecore.idl:381
+#: bse/bsecore.idl:198 bse/bsecore.idl:366
 msgid "Control 36 Foot Controller LSB"
 msgstr "नियन्त्रण ३६ पाद नियन्त्रक LSB"
 
-#: bse/bsecore.idl:214 bse/bsecore.idl:382
+#: bse/bsecore.idl:199 bse/bsecore.idl:367
 msgid "Control 37 Portamento Time LSB"
 msgstr "नियन्त्रण ३७ पोर्टामेन्टो समय LSB"
 
-#: bse/bsecore.idl:215 bse/bsecore.idl:383
+#: bse/bsecore.idl:200 bse/bsecore.idl:368
 msgid "Control 38 Data Entry LSB"
 msgstr "नियन्त्रण ३८ डेटा प्रविष्टि LSB"
 
-#: bse/bsecore.idl:216 bse/bsecore.idl:384
+#: bse/bsecore.idl:201 bse/bsecore.idl:369
 msgid "Control 39 Volume LSB"
 msgstr "नियन्त्रण ३९ ध्वनि LSB"
 
-#: bse/bsecore.idl:180 bse/bsecore.idl:348
+#: bse/bsecore.idl:165 bse/bsecore.idl:333
 msgid "Control 4 Foot Controller MSB"
 msgstr "नियन्त्रण ४ पाद नियन्त्रक MSB"
 
-#: bse/bsecore.idl:217 bse/bsecore.idl:385
+#: bse/bsecore.idl:202 bse/bsecore.idl:370
 msgid "Control 40 Balance LSB"
 msgstr "नियन्त्रण ४० सन्तुलन LSB"
 
-#: bse/bsecore.idl:219 bse/bsecore.idl:387
+#: bse/bsecore.idl:204 bse/bsecore.idl:372
 msgid "Control 42 Panorama LSB"
 msgstr "नियन्त्रण ४२ पानोरामा LSB"
 
-#: bse/bsecore.idl:220 bse/bsecore.idl:388
+#: bse/bsecore.idl:205 bse/bsecore.idl:373
 msgid "Control 43 Expression LSB"
 msgstr "नियन्त्रण ४३ अभिव्यक्त्ति LSB"
 
-#: bse/bsecore.idl:221 bse/bsecore.idl:389
+#: bse/bsecore.idl:206 bse/bsecore.idl:374
 msgid "Control 44 Effect Control 1 LSB"
 msgstr "नियन्त्रण ४४ प्रभाव नियन्त्रण १ LSB"
 
-#: bse/bsecore.idl:222 bse/bsecore.idl:390
+#: bse/bsecore.idl:207 bse/bsecore.idl:375
 msgid "Control 45 Effect Control 2 LSB"
 msgstr "नियन्त्रण ४५ प्रभाव नियन्त्रण २ LSB"
 
-#: bse/bsecore.idl:225 bse/bsecore.idl:393
+#: bse/bsecore.idl:210 bse/bsecore.idl:378
 msgid "Control 48 General Purpose Controller 1 LSB"
 msgstr "नियन्त्रण ४८ साधारण उद्देश्य नियन्त्रक १ LSB"
 
-#: bse/bsecore.idl:226 bse/bsecore.idl:394
+#: bse/bsecore.idl:211 bse/bsecore.idl:379
 msgid "Control 49 General Purpose Controller 2 LSB"
 msgstr "नियन्त्रण ४९ साधारण उद्देश्य नियन्त्रक २ LSB"
 
-#: bse/bsecore.idl:181 bse/bsecore.idl:349
+#: bse/bsecore.idl:166 bse/bsecore.idl:334
 msgid "Control 5 Portamento Time MSB"
 msgstr "नियन्त्रण ५ पोर्टामेन्टो समय MSB"
 
-#: bse/bsecore.idl:227 bse/bsecore.idl:395
+#: bse/bsecore.idl:212 bse/bsecore.idl:380
 msgid "Control 50 General Purpose Controller 3 LSB"
 msgstr "नियन्त्रण ५० साधारण उद्देश्य नियन्त्रक ३ LSB"
 
-#: bse/bsecore.idl:228 bse/bsecore.idl:396
+#: bse/bsecore.idl:213 bse/bsecore.idl:381
 msgid "Control 51 General Purpose Controller 4 LSB"
 msgstr "नियन्त्रण ५१ साधारण उद्देश्य नियन्त्रक ४ LSB"
 
-#: bse/bsecore.idl:182 bse/bsecore.idl:350
+#: bse/bsecore.idl:167 bse/bsecore.idl:335
 msgid "Control 6 Data Entry MSB"
 msgstr "नियन्त्रण ६ डेटा नियन्त्रक MSB"
 
 #. 7bit, literal channel controls
-#: bse/bsecore.idl:242 bse/bsecore.idl:410
+#: bse/bsecore.idl:227 bse/bsecore.idl:395
 msgid "Control 64 Damper Pedal Switch (Sustain)"
 msgstr "नियन्त्रण ६४ ड्याम्पर पेडल स्विच (सुस्टेन)"
 
-#: bse/bsecore.idl:243 bse/bsecore.idl:411
+#: bse/bsecore.idl:228 bse/bsecore.idl:396
 msgid "Control 65 Portamento Switch"
 msgstr "नियन्त्रण ६५ पोर्टामेन्टो स्विच"
 
-#: bse/bsecore.idl:244 bse/bsecore.idl:412
+#: bse/bsecore.idl:229 bse/bsecore.idl:397
 msgid "Control 66 Sustenuto Switch"
 msgstr "नियन्त्रण ६६ सुस्टेनुटो स्विच"
 
-#: bse/bsecore.idl:245 bse/bsecore.idl:413
+#: bse/bsecore.idl:230 bse/bsecore.idl:398
 msgid "Control 67 Soft Switch"
 msgstr "नियन्त्रण ६७ नरम स्विच"
 
-#: bse/bsecore.idl:246 bse/bsecore.idl:414
+#: bse/bsecore.idl:231 bse/bsecore.idl:399
 msgid "Control 68 Legato Pedal Switch"
 msgstr "नियन्त्रण ६८ लेगाटो पेडल स्विच"
 
-#: bse/bsecore.idl:247 bse/bsecore.idl:415
+#: bse/bsecore.idl:232 bse/bsecore.idl:400
 msgid "Control 69 Hold Pedal Switch"
 msgstr "नियन्त्रण ६९ होल्ड पेडल स्विच"
 
-#: bse/bsecore.idl:183 bse/bsecore.idl:351
+#: bse/bsecore.idl:168 bse/bsecore.idl:336
 msgid "Control 7 Volume MSB"
 msgstr "नियन्त्रण ७ ध्वनि MSB"
 
-#: bse/bsecore.idl:248 bse/bsecore.idl:416
+#: bse/bsecore.idl:233 bse/bsecore.idl:401
 msgid "Control 70 Sound Variation"
 msgstr "नियन्त्रण ७० आवाज विविधता"
 
-#: bse/bsecore.idl:249 bse/bsecore.idl:417
+#: bse/bsecore.idl:234 bse/bsecore.idl:402
 msgid "Control 71 Filter Resonance (Timbre)"
 msgstr "नियन्त्रण ७१ फोल्टर प्रतिध्वनी (टिम्ब्रे)"
 
-#: bse/bsecore.idl:250 bse/bsecore.idl:418
+#: bse/bsecore.idl:235 bse/bsecore.idl:403
 msgid "Control 72 Sound Release Time"
 msgstr "नियन्त्रण ७२ आवाज छाडिएको समय"
 
-#: bse/bsecore.idl:251 bse/bsecore.idl:419
+#: bse/bsecore.idl:236 bse/bsecore.idl:404
 msgid "Control 73 Sound Attack Time"
 msgstr "नियन्त्रण ७३ आवाज आक्रामक समय"
 
-#: bse/bsecore.idl:252 bse/bsecore.idl:420
+#: bse/bsecore.idl:237 bse/bsecore.idl:405
 msgid "Control 74 Sound Brightness"
 msgstr "नियन्त्रण ७४ आवाज चम्किलो"
 
-#: bse/bsecore.idl:253 bse/bsecore.idl:421
+#: bse/bsecore.idl:238 bse/bsecore.idl:406
 msgid "Control 75 Sound Decay Time"
 msgstr "नियन्त्रण ७५ आवाज डिके समय"
 
-#: bse/bsecore.idl:254 bse/bsecore.idl:422
+#: bse/bsecore.idl:239 bse/bsecore.idl:407
 msgid "Control 76 Vibrato Rate"
 msgstr "नियन्त्रण ७६ आन्दोलक दर"
 
-#: bse/bsecore.idl:255 bse/bsecore.idl:423
+#: bse/bsecore.idl:240 bse/bsecore.idl:408
 msgid "Control 77 Vibrato Depth"
 msgstr "नियन्त्रण ७७ आन्दोलक गहिराइ"
 
-#: bse/bsecore.idl:256 bse/bsecore.idl:424
+#: bse/bsecore.idl:241 bse/bsecore.idl:409
 msgid "Control 78 Vibrato Delay"
 msgstr "नियन्त्रण ७८ आन्दोलक ढिलाइ"
 
-#: bse/bsecore.idl:257 bse/bsecore.idl:425
+#: bse/bsecore.idl:242 bse/bsecore.idl:410
 msgid "Control 79 Sound Control 10"
 msgstr "नियन्त्रण ७९ आवाज नियन्त्रण १०"
 
-#: bse/bsecore.idl:184 bse/bsecore.idl:352
+#: bse/bsecore.idl:169 bse/bsecore.idl:337
 msgid "Control 8 Balance MSB"
 msgstr "नियन्त्रण ८ सन्तुलन MSB"
 
-#: bse/bsecore.idl:258 bse/bsecore.idl:426
+#: bse/bsecore.idl:243 bse/bsecore.idl:411
 msgid "Control 80 General Purpose Switch 5"
 msgstr "नियन्त्रण ८० साधारण उद्देश्य स्विच ५"
 
-#: bse/bsecore.idl:259 bse/bsecore.idl:427
+#: bse/bsecore.idl:244 bse/bsecore.idl:412
 msgid "Control 81 General Purpose Switch 6"
 msgstr "नियन्त्रण ८१ साधारण उद्देश्य स्विच ६"
 
-#: bse/bsecore.idl:260 bse/bsecore.idl:428
+#: bse/bsecore.idl:245 bse/bsecore.idl:413
 msgid "Control 82 General Purpose Switch 7"
 msgstr "नियन्त्रण ८२ साधारण उद्देश्य स्विच ७"
 
-#: bse/bsecore.idl:261 bse/bsecore.idl:429
+#: bse/bsecore.idl:246 bse/bsecore.idl:414
 msgid "Control 83 General Purpose Switch 8"
 msgstr "नियन्त्रण ८३ साधारण उद्देश्य स्विच ८"
 
-#: bse/bsecore.idl:262 bse/bsecore.idl:430
+#: bse/bsecore.idl:247 bse/bsecore.idl:415
 msgid "Control 84 Portamento Control (Note)"
 msgstr "नियन्त्रण ८४ पोर्टामेन्टो नियन्त्रण (द्रष्टव्य)"
 
-#: bse/bsecore.idl:269 bse/bsecore.idl:437
+#: bse/bsecore.idl:254 bse/bsecore.idl:422
 msgid "Control 91 Reverb Depth"
 msgstr "नियन्त्रण ९१ रिभर्ब गहिराइ"
 
-#: bse/bsecore.idl:270 bse/bsecore.idl:438
+#: bse/bsecore.idl:255 bse/bsecore.idl:423
 msgid "Control 92 Tremolo Depth"
 msgstr "नियन्त्रण ९२ ट्रेमोलो गहिराइ"
 
-#: bse/bsecore.idl:271 bse/bsecore.idl:439
+#: bse/bsecore.idl:256 bse/bsecore.idl:424
 msgid "Control 93 Chorus Depth"
 msgstr "नियन्त्रण ९३ कोरस गहिराइ"
 
-#: bse/bsecore.idl:272 bse/bsecore.idl:440
+#: bse/bsecore.idl:257 bse/bsecore.idl:425
 msgid "Control 93 Detune Depth"
 msgstr "नियन्त्रण ९३ डेट्युन गहिराइ"
 
-#: bse/bsecore.idl:273 bse/bsecore.idl:441
+#: bse/bsecore.idl:258 bse/bsecore.idl:426
 msgid "Control 95 Phase Depth"
 msgstr "नियन्त्रण ९५ फेज गहिराइ"
 
-#: bse/bsecore.idl:274 bse/bsecore.idl:442
+#: bse/bsecore.idl:259 bse/bsecore.idl:427
 msgid "Control 96 Data Increment Trigger"
 msgstr "नियन्त्रण ९६ डेटा इन्क्रिमेन्ट ट्रिग्गर"
 
-#: bse/bsecore.idl:275 bse/bsecore.idl:443
+#: bse/bsecore.idl:260 bse/bsecore.idl:428
 msgid "Control 97 Data Decrement Trigger"
 msgstr "नियन्त्रण ९७ डेटा डिक्रिमेन्ट ट्रिग्गर"
 
-#: bse/bsecore.idl:276 bse/bsecore.idl:444
+#: bse/bsecore.idl:261 bse/bsecore.idl:429
 msgid "Control 98 Non-Registered Parameter MSB"
 msgstr "नियन्त्रण ९८ दर्ता नभएको परामिति MSB"
 
-#: bse/bsecore.idl:277 bse/bsecore.idl:445
+#: bse/bsecore.idl:262 bse/bsecore.idl:430
 msgid "Control 99 Non-Registered Parameter LSB"
 msgstr "नियन्त्रण ९९ दर्ता नभएको परामिति LSB"
 
@@ -2174,7 +2174,7 @@ msgstr "यन्त्र, मोड"
 msgid "DSP Engine..."
 msgstr "DSP इन्जिन..."
 
-#: bse/bsecore.idl:141 bse/bsecore.idl:317
+#: bse/bsecore.idl:126 bse/bsecore.idl:302
 msgid "Data Entry"
 msgstr "डेटा प्रविष्टि"
 
@@ -2361,13 +2361,13 @@ msgid "Dialogs"
 msgstr "संवाद"
 
 #. Rational Intonation: http://en.wikipedia.org/wiki/Just_intonation
-#: bse/bsecore.idl:64
+#: bse/bsecore.idl:49
 #, fuzzy
 msgid "Diatonic Scale"
 msgstr "ठाडो मापन"
 
 #. http://en.wikipedia.org/wiki/Just_intonation#Indian_scales
-#: bse/bsecore.idl:70
+#: bse/bsecore.idl:55
 msgid ""
 "Diatonic scale used in Indian music with wolf interval at Dha, close to 3/2"
 msgstr ""
@@ -2598,15 +2598,15 @@ msgstr "सम्पादन/सार्नुहोस्/मेनु (म�
 msgid "Editor"
 msgstr "सम्पादक"
 
-#: bse/bsecore.idl:147 bse/bsecore.idl:323
+#: bse/bsecore.idl:132 bse/bsecore.idl:308
 msgid "Effect Control 1"
 msgstr "प्रभाव नियन्त्रण १"
 
-#: bse/bsecore.idl:148 bse/bsecore.idl:324
+#: bse/bsecore.idl:133 bse/bsecore.idl:309
 msgid "Effect Control 2"
 msgstr "प्रभाव नियन्त्रण २"
 
-#: bse/bsecore.idl:756
+#: bse/bsecore.idl:755
 msgid "Effect Path"
 msgstr "प्रभाव बाटो"
 
@@ -2776,7 +2776,7 @@ msgstr "एक्सपोनेन्शल FM"
 msgid "Export Audio"
 msgstr "अडियो निर्यात गर्नुहोस्"
 
-#: bse/bsecore.idl:146 bse/bsecore.idl:322
+#: bse/bsecore.idl:131 bse/bsecore.idl:307
 msgid "Expression"
 msgstr "अभिव्यक्ति"
 
@@ -3071,7 +3071,7 @@ msgstr "वर्णको साइज"
 msgid "Font size in pixels for labels displayed in synthesis networks"
 msgstr "सिन्थेसिस सञ्जालमा प्रर्दशित लेबुलका लागि पिक्सेलमा फन्ट साइज"
 
-#: bse/bsecore.idl:139 bse/bsecore.idl:315
+#: bse/bsecore.idl:124 bse/bsecore.idl:300
 msgid "Foot Controller"
 msgstr "पाद नियन्त्रक"
 
@@ -3079,7 +3079,7 @@ msgstr "पाद नियन्त्रक"
 msgid "Format"
 msgstr "ढाँचा"
 
-#: bse/bseobject.cc:724
+#: bse/bseobject.cc:723
 msgid "Free form comment or description"
 msgstr ""
 
@@ -3209,19 +3209,19 @@ msgstr ""
 msgid "Gate input (activates/deactivates envelope)"
 msgstr "आगत गेट (खाम सक्रिय/असक्रिय पार्छ)"
 
-#: bse/bsecore.idl:151 bse/bsecore.idl:327
+#: bse/bsecore.idl:136 bse/bsecore.idl:312
 msgid "General Purpose Controller 1"
 msgstr "साधारण उद्देश्य नियन्त्रक १"
 
-#: bse/bsecore.idl:152 bse/bsecore.idl:328
+#: bse/bsecore.idl:137 bse/bsecore.idl:313
 msgid "General Purpose Controller 2"
 msgstr "साधारण उद्देश्य नियन्त्रक २"
 
-#: bse/bsecore.idl:153 bse/bsecore.idl:329
+#: bse/bsecore.idl:138 bse/bsecore.idl:314
 msgid "General Purpose Controller 3"
 msgstr "साधारण उद्देश्य नियन्त्रक ३"
 
-#: bse/bsecore.idl:154 bse/bsecore.idl:330
+#: bse/bsecore.idl:139 bse/bsecore.idl:315
 msgid "General Purpose Controller 4"
 msgstr "साधारण उद्देश्य नियन्त्रक ४"
 
@@ -3384,7 +3384,7 @@ msgid "Importing MIDI file `%s'"
 msgstr "MIDI फाइल `%s' आयात हुँदैछ"
 
 #. http://en.wikipedia.org/wiki/Diatonic_scale
-#: bse/bsecore.idl:65
+#: bse/bsecore.idl:50
 msgid ""
 "In music theory, a diatonic scale (also: heptatonia prima) is a seven-note "
 "musical scale comprising five whole-tone and two half-tone steps. The half "
@@ -3393,7 +3393,7 @@ msgid ""
 msgstr ""
 
 #. http://en.wikipedia.org/wiki/Werckmeister_temperament
-#: bse/bsecore.idl:98
+#: bse/bsecore.idl:83
 msgid ""
 "In this tuning the fifths C-G, D-A, E-B, F#-C#, and Bb-F are tempered narrow "
 "by 1/3 comma, and the fifths G#-D# and Eb-Bb are widened by 1/3 comma. The "
@@ -3403,7 +3403,7 @@ msgid ""
 msgstr ""
 
 #. http://en.wikipedia.org/wiki/Werckmeister_temperament
-#: bse/bsecore.idl:103
+#: bse/bsecore.idl:88
 msgid ""
 "In this tuning the fifths D-A, A-E, F#-C#, C#-G#, and F-C are narrowed by "
 "1/4 comma, and the fifth G#-D# is widened by 1/4 comma. The other fifths are "
@@ -3412,7 +3412,7 @@ msgid ""
 msgstr ""
 
 #. Werckmeister I
-#: bse/bsecore.idl:69
+#: bse/bsecore.idl:54
 #, fuzzy
 msgid "Indian Scale"
 msgstr "ठाडो मापन"
@@ -3431,7 +3431,7 @@ msgstr "ओस्सिलेटर तरङ्ग फारमको प्र
 msgid "Initializers"
 msgstr "इनिसियलाइजर"
 
-#: beast-gtk/bstcanvassource.cc:851 beast-gtk/bstsnetrouter.cc:951
+#: beast-gtk/bstcanvassource.cc:852 beast-gtk/bstsnetrouter.cc:951
 msgid "Input"
 msgstr "आगत"
 
@@ -3570,7 +3570,7 @@ msgstr "अशं घुसाउनुहोस्/सम्पादन गर
 msgid "Insert/resize/move notes (mouse button 1 and 2)"
 msgstr "घुसाउनुहोस्/रिसाइज गर्नुहोस्/द्रष्टव्य सार्नुहोस् (माउस बटन १ र २)"
 
-#: bse/bsecore.idl:760
+#: bse/bsecore.idl:758
 msgid "Instrument Path"
 msgstr "बाजा बाटो"
 
@@ -3670,12 +3670,12 @@ msgstr "कुञ्जी बाइन्डिङ"
 msgid "Key combinations used to activate a function"
 msgstr "कुञ्जी संयोजन कार्य सक्रिय गर्न प्रयोग हुन्छ"
 
-#: bse/bsecore.idl:114
+#: bse/bsecore.idl:99
 msgid "Kirnberger III"
 msgstr ""
 
 #. http://en.wikipedia.org/wiki/Johann_Philipp_Kirnberger_temperament
-#: bse/bsecore.idl:115
+#: bse/bsecore.idl:100
 msgid ""
 "Kirnberger's method of compensating for and closing the circle of fifths is "
 "to split the \"wolf\" interval known to those who have used meantone "
@@ -3693,7 +3693,7 @@ msgstr "नब"
 msgid "Knob (Logarithmic)"
 msgstr "नब (लोगारिथ्मिक)"
 
-#: bse/bsecore.idl:773
+#: bse/bsecore.idl:768
 msgid "LADSPA Path"
 msgstr "LADSPA बाटो"
 
@@ -3710,7 +3710,7 @@ msgstr "लेबुल"
 msgid "Last modification time"
 msgstr "अन्तिम संशोधन समय"
 
-#: bse/bsecore.idl:729
+#: bse/bsecore.idl:727
 msgid "Latency [ms]"
 msgstr "ल्याटेन्स  [ms]"
 
@@ -4180,7 +4180,7 @@ msgstr "मोड्युलेसन आगत"
 msgid "Modulation"
 msgstr "मोडुलेसन"
 
-#: bse/bsecore.idl:136 bse/bsecore.idl:312
+#: bse/bsecore.idl:121 bse/bsecore.idl:297
 msgid "Modulation Depth"
 msgstr "मोडुलेसन गहिराइ"
 
@@ -4322,7 +4322,7 @@ msgid "N Wait Spins"
 msgstr ""
 
 #: beast-gtk/bstfiledialog.cc:106 beast-gtk/bstitemview.cc:155
-#: beast-gtk/bsttrackview.cc:530 bse/bseobject.cc:714
+#: beast-gtk/bsttrackview.cc:530 bse/bseobject.cc:713
 msgid "Name"
 msgstr "नाम"
 
@@ -4502,13 +4502,13 @@ msgstr "हल्ला निर्गत"
 msgid "Noise is a generator of (supposedly) white noise"
 msgstr "सेतो हल्ला (अनुमानित) को जेनरेटर हल्ला हो"
 
-#: bse/bsecore.idl:174
+#: bse/bsecore.idl:159
 msgid "Non-Registered Parameter"
 msgstr "दर्ता नगिएको परामिति"
 
 #. special cased signals
 #: beast-gtk/bsteventrollctrl.cc:36 beast-gtk/bstpianorollctrl.cc:36
-#: beast-gtk/bstrecords.idl:40 beast-gtk/bstrecords.idl:67 bse/bsecore.idl:309
+#: beast-gtk/bstrecords.idl:40 beast-gtk/bstrecords.idl:67 bse/bsecore.idl:294
 msgid "None"
 msgstr "कुनै पनि होइन"
 
@@ -4547,7 +4547,7 @@ msgstr "द्रष्टव्य वेग"
 msgid "Note Entry"
 msgstr "द्रष्टब्य प्रविष्टि"
 
-#: bse/bsecore.idl:133
+#: bse/bsecore.idl:118
 msgid "Note Fine Tune"
 msgstr "द्रष्टव्य राम्रो धून"
 
@@ -4568,7 +4568,7 @@ msgid "Note Sync Signal"
 msgstr "द्रष्टव्य सिन्क सङ्केत"
 
 #. 14bit
-#: bse/bsecore.idl:132
+#: bse/bsecore.idl:117
 msgid "Note Velocity"
 msgstr "द्रष्टव्य वेग"
 
@@ -4786,7 +4786,7 @@ msgstr "अन्य स्रोत"
 msgid "Out of memory"
 msgstr "स्मृति बाहिरको"
 
-#: beast-gtk/bstcanvassource.cc:860 beast-gtk/bstsnetrouter.cc:955
+#: beast-gtk/bstcanvassource.cc:861 beast-gtk/bstsnetrouter.cc:955
 #: plugins/bseamplifier.idl:45
 msgid "Output"
 msgstr "निर्गत"
@@ -4855,7 +4855,7 @@ msgstr "PCM आगत मोड्युल"
 msgid "PID:     %u\n"
 msgstr "पिड:     %u\n"
 
-#: drivers/bsemididevice-alsa.cc:262 drivers/bsepcmdevice-alsa.cc:499
+#: drivers/bsemididevice-alsa.cc:312 drivers/bsepcmdevice-alsa.cc:547
 msgid "PLUGIN:CARD,DEV,SUBDEV"
 msgstr "PLUGIN:CARD,DEV,SUBDEV"
 
@@ -4867,7 +4867,7 @@ msgstr "PWM भित्र"
 msgid "Palette"
 msgstr "रङदानी"
 
-#: bse/bsecore.idl:145 bse/bsecore.idl:321
+#: bse/bsecore.idl:130 bse/bsecore.idl:306
 msgid "Panorama"
 msgstr "प्यानोरामा"
 
@@ -4932,20 +4932,20 @@ msgstr "बाँन्की"
 msgid "Pattern Editor Layout"
 msgstr "सम्पादक बाँन्की सजावट"
 
-#: bse/bsecore.idl:75
+#: bse/bsecore.idl:60
 msgid "Pentatonic 5-limit"
 msgstr ""
 
-#: bse/bsecore.idl:79
+#: bse/bsecore.idl:64
 msgid "Pentatonic Blues"
 msgstr ""
 
-#: bse/bsecore.idl:82
+#: bse/bsecore.idl:67
 msgid "Pentatonic Gogo"
 msgstr ""
 
 #. http://en.wikipedia.org/wiki/Pentatonic_scale
-#: bse/bsecore.idl:76
+#: bse/bsecore.idl:61
 msgid ""
 "Pentatonic scales are used in modern jazz and pop/rock contexts because they "
 "work exceedingly well over several chords diatonic to the same key, often "
@@ -4983,7 +4983,7 @@ msgid "Piano Notes"
 msgstr "पियानो द्रष्टव्य"
 
 #. 7bit
-#: bse/bsecore.idl:131
+#: bse/bsecore.idl:116
 msgid "Pitch Bend"
 msgstr "पिच बेन्ड"
 
@@ -5025,7 +5025,7 @@ msgstr "बढेको कुनामा प्लक स्ट्रिङ"
 msgid "Pluck the string"
 msgstr "प्लेब्याक सेटिङ"
 
-#: bse/bsecore.idl:768
+#: bse/bsecore.idl:764
 msgid "Plugin Path"
 msgstr "प्लगइन बाटो"
 
@@ -5037,7 +5037,7 @@ msgstr "प्लगइन"
 msgid "Popup Options"
 msgstr "पपअप विकल्प"
 
-#: bse/bsecore.idl:140 bse/bsecore.idl:316
+#: bse/bsecore.idl:125 bse/bsecore.idl:301
 msgid "Portamento Time"
 msgstr "पोर्टामेन्टो समय"
 
@@ -5072,7 +5072,7 @@ msgstr "असायामिक EOF"
 msgid "Preview"
 msgstr "पूर्वावलोकन"
 
-#: bse/bsecore.idl:703
+#: bse/bsecore.idl:690
 msgid "Priority"
 msgstr "प्राथमिकता"
 
@@ -5115,14 +5115,14 @@ msgstr ""
 msgid "Process: %s\n"
 msgstr "प्रकृया: %s\n"
 
-#: bse/bsecore.idl:730
+#: bse/bsecore.idl:728
 msgid ""
 "Processing duration between input and output of a single sample, smaller "
 "values increase CPU load"
 msgstr ""
 "एकल नमूनाको निर्गत र आगत बिचको प्रकृया अवधि, साना मानहरूले CPU लोडको भार बढाउँछ"
 
-#: bse/bsecore.idl:706
+#: bse/bsecore.idl:693
 msgid "Processor"
 msgstr "प्रोसेसर"
 
@@ -5131,7 +5131,7 @@ msgid "Profiler"
 msgstr "प्रोफाइलर"
 
 #. special cased signals
-#: bse/bsecore.idl:129
+#: bse/bsecore.idl:114
 msgid "Program Change"
 msgstr "कार्यक्रम परिवर्तन"
 
@@ -5193,12 +5193,12 @@ msgstr "प्लस चौडाइ"
 msgid "Pulse Width Modulation Input"
 msgstr "प्लस चौडाइ मोड्युलेसन आगत"
 
-#: bse/bsecore.idl:71
+#: bse/bsecore.idl:56
 msgid "Pythagorean Tuning"
 msgstr ""
 
 #. http://en.wikipedia.org/wiki/Pythagorean_tuning
-#: bse/bsecore.idl:72
+#: bse/bsecore.idl:57
 msgid ""
 "Pythagorean tuning is the oldest way of tuning the 12-note chromatic scale, "
 "in which the frequency relationships of all intervals are based on the ratio "
@@ -5300,13 +5300,13 @@ msgid "Quarter note"
 msgstr "चौथाइ द्रष्टव्य"
 
 #. Meantone Temperament: http://en.wikipedia.org/wiki/Meantone_temperament
-#: bse/bsecore.idl:86
+#: bse/bsecore.idl:71
 #, fuzzy
 msgid "Quarter-Comma Meantone"
 msgstr "चौथाइ द्रष्टव्य"
 
 #. http://en.wikipedia.org/wiki/Quarter-comma_meantone
-#: bse/bsecore.idl:87
+#: bse/bsecore.idl:72
 msgid ""
 "Quarter-comma meantone was the most common meantone temperament in the "
 "sixteenth and seventeenth centuries and sometimes used later."
@@ -5394,7 +5394,7 @@ msgstr ""
 msgid "Reflection cutoff frequency"
 msgstr "काटिएको आवृतिमा पासब्यान्ड घट्छ"
 
-#: bse/bsecore.idl:173
+#: bse/bsecore.idl:158
 msgid "Registered Parameter"
 msgstr "दर्ता गरिएको परामिति"
 
@@ -5728,7 +5728,7 @@ msgstr "परियोजना `%s' बचत हुँदैछ"
 msgid "Script"
 msgstr "स्क्रिप्ट"
 
-#: bse/bsecore.idl:764
+#: bse/bsecore.idl:761
 msgid "Script Path"
 msgstr "स्क्रिप्ट बाटो"
 
@@ -5760,51 +5760,50 @@ msgstr "दायाँ स्क्रोल गर्नुहोस्"
 msgid "Search Paths"
 msgstr "खोजी बाटो"
 
-#: bse/bsecore.idl:757
-#, c-format
+#: bse/bsecore.idl:756
+#, fuzzy
 msgid ""
-"Search path of directories, seperated by \"%s\", used to find BSE effect "
+"Search path of directories, seperated by \";\", used to find BSE effect "
 "files."
 msgstr ""
 "BSE प्रभाव फाइलहरू फेला पार्न प्रयोग हुने,\"%s\" बाट छुट्ट्याइएको डाइरेक्टरीको बाटो खोजी "
 "गर्नुहोस्"
 
-#: bse/bsecore.idl:761
-#, c-format
+#: bse/bsecore.idl:759
+#, fuzzy
 msgid ""
-"Search path of directories, seperated by \"%s\", used to find BSE instrument "
+"Search path of directories, seperated by \";\", used to find BSE instrument "
 "files."
 msgstr ""
 "BSE फाइलहरू फेला पार्न प्रयोग हुने, \"%s\" बाट छुट्ट्याइएको डाइरेक्टरीको बाटो खोजी "
 "गर्नुहोस्"
 
-#: bse/bsecore.idl:769
-#, c-format
+#: bse/bsecore.idl:765
+#, fuzzy
 msgid ""
-"Search path of directories, seperated by \"%s\", used to find BSE plugins. "
+"Search path of directories, seperated by \";\", used to find BSE plugins. "
 "This path is searched for in addition to the standard BSE plugin location on "
 "this system."
 msgstr ""
 "\"%s\", बाट छुट्ट्याइएको, BSE प्लगइन फेला पार्न प्रयोग हुने डाइरेक्टरी बाटो खोजी गर्नुहोस् "
 "। यो प्रणालीमा स्ट्यान्डर्ड BSE प्लगइन स्थानमा थपका लागि खोजी गरिन्छ"
 
-#: bse/bsecore.idl:765
-#, c-format
+#: bse/bsecore.idl:762
+#, fuzzy
 msgid ""
-"Search path of directories, seperated by \"%s\", used to find BSE scheme "
+"Search path of directories, seperated by \";\", used to find BSE scheme "
 "scripts."
 msgstr ""
 "\"%s\" बाट छुट्ट्याइएको, BSE योजना स्किम फेला पार्न प्रयोग हुने, डाइरेक्टरी बाटो खोजी "
 "गर्नुहोस्"
 
-#: bse/bsecore.idl:774
-#, c-format
+#: bse/bsecore.idl:769
+#, fuzzy
 msgid ""
-"Search path of directories, seperated by \"%s\", used to find LADSPA "
-"plugins. This path is searched for in addition to the standard LADSPA "
-"location on this system. LADSPA is the Linux Audio Developer's Simple Plugin "
-"API, more informations about LADSPA plugins can be found at http://www."
-"ladspa.org/."
+"Search path of directories, seperated by \";\", used to find LADSPA plugins. "
+"This path is searched for in addition to the standard LADSPA location on "
+"this system. LADSPA is the Linux Audio Developer's Simple Plugin API, more "
+"informations about LADSPA plugins can be found at http://www.ladspa.org/."
 msgstr ""
 "\"%s\" बाट छुट्याइएको, यो प्रणालीमा थपमा स्टान्डर्ड LADSPA स्थान खोजी गर्न प्रयोग "
 "गरिने डाइरेक्टरीहरूको बाटो खोजी गर्नुहोस् । मानक LADSPA स्थानमा थपको रूपमा खोजी गरिन्छ "
@@ -5812,9 +5811,9 @@ msgstr ""
 "थप सूचना http://www.ladspa.org/ मा फेला पार्न सक्नुहुन्छ ।"
 
 #: bse/bsecore.idl:753
-#, c-format
+#, fuzzy
 msgid ""
-"Search path of directories, seperated by \"%s\", used to find audio samples."
+"Search path of directories, seperated by \";\", used to find audio samples."
 msgstr ""
 "\"%s\", बाट छुट्ट्याइएको, अडियो नमूनाहरू फेला पार्न प्रयोग गरिने, डाइरेक्टरीको बाटो "
 "खोजी गर्नुहोस्"
@@ -6038,7 +6037,7 @@ msgid "Signal Outputs"
 msgstr "सङ्केत आगत"
 
 #. Werckmeister II
-#: bse/bsecore.idl:89
+#: bse/bsecore.idl:74
 msgid "Silbermann-Sorge Temperament"
 msgstr ""
 
@@ -6228,7 +6227,7 @@ msgstr "प्लेब्याक सुरु हुँदैछ"
 msgid "Startup"
 msgstr "सुरुवात"
 
-#: bse/bsecore.idl:700
+#: bse/bsecore.idl:687
 msgid "State"
 msgstr "स्थिति"
 
@@ -6340,7 +6339,7 @@ msgstr "सिन्थ गरियो"
 msgid "Synth Input"
 msgstr "सिन्थ आगत"
 
-#: bse/bsecore.idl:732
+#: bse/bsecore.idl:731
 msgid "Synth Mixing Frequency"
 msgstr "सिन्थ मिश्रण आवृति"
 
@@ -6354,11 +6353,11 @@ msgstr "सिन्थ गरियो"
 msgid "Synthesis Modules"
 msgstr "सिन्थेसिस मोड्युल"
 
-#: bse/bsecore.idl:728
+#: bse/bsecore.idl:725
 msgid "Synthesis Settings"
 msgstr "सिन्थेसिस सेटिङ"
 
-#: bse/bsecore.idl:733
+#: bse/bsecore.idl:732
 msgid "Synthesis mixing frequency, common values are: 22050, 44100, 48000"
 msgstr "सिन्थेसिस मिश्रण आवृति, साझा मानहरू: २२०५०, ४४१००, ४८०००"
 
@@ -6418,7 +6417,7 @@ msgstr "सिन्थेसाइजर चयन: %s"
 msgid "Synthesizer: %s"
 msgstr "सिन्थेसाइजर: %s"
 
-#: bse/bsecore.idl:710
+#: bse/bsecore.idl:697
 msgid "System Time"
 msgstr "प्रणाली समय"
 
@@ -6455,19 +6454,19 @@ msgstr "पाठको रङ"
 msgid "Text Entry"
 msgstr "पाठ प्रविष्टि"
 
-#: bse/bsecore.idl:712
+#: bse/bsecore.idl:699
 msgid "The CPU time spent executing instructions of children of this thread"
 msgstr "CPU को समय जुन यो थ्रेडका लागि शाखाको निर्देशनमा ब्यतित हुन्छ"
 
-#: bse/bsecore.idl:708
+#: bse/bsecore.idl:695
 msgid "The CPU time spent executing instructions of this thread"
 msgstr "CPU को समय यो थ्रेडको निर्देशनको बेला कार्यान्वयन हुन्छ"
 
-#: bse/bsecore.idl:714
+#: bse/bsecore.idl:701
 msgid "The CPU time spent in the system for children of this thread"
 msgstr "यो थ्रेड शाखाका लागि ब्यतित CPU को समय"
 
-#: bse/bsecore.idl:710
+#: bse/bsecore.idl:697
 msgid "The CPU time spent in the system for this thread"
 msgstr "CPU को समय जुन यो थ्रेडको प्रणालीमा बित्दछ"
 
@@ -6478,7 +6477,7 @@ msgid ""
 msgstr ""
 
 #. http://en.wikipedia.org/wiki/Pentatonic_scale
-#: bse/bsecore.idl:83
+#: bse/bsecore.idl:68
 msgid ""
 "The Pentatonic Gogo scale is an anhemitonic pentatonic scale used to tune "
 "the instruments of the Gogo people of Tanzania."
@@ -6492,7 +6491,7 @@ msgid ""
 msgstr ""
 
 #. http://de.wikipedia.org/wiki/Silbermann-Sorge-Temperatur
-#: bse/bsecore.idl:90
+#: bse/bsecore.idl:75
 msgid ""
 "The Silbermann-Sorge temperament is a meantone temperament used for Baroque "
 "era organs by Gottfried Silbermann."
@@ -6520,7 +6519,7 @@ msgid "The audio channel to play, usually 1 is left, 2 is right"
 msgstr "अडियो च्यानल सुरु गर्नका लागि, खासगरी १ बायाँ हो, २ दायाँ हो"
 
 #. http://en.wikipedia.org/wiki/Pentatonic_scale
-#: bse/bsecore.idl:80
+#: bse/bsecore.idl:65
 msgid ""
 "The blues scale is the minor pentatonic with an additional augmented fourth, "
 "which is referred to as the \"blues note\"."
@@ -6530,7 +6529,7 @@ msgstr ""
 msgid "The direction of cell movement each time an event or note was edited"
 msgstr "घटना वा द्रष्टव्य सम्पादन गरिने प्रत्येक समयमा कक्षको ड्राइभरो दिशा"
 
-#: bse/bsecore.idl:700
+#: bse/bsecore.idl:687
 msgid "The execution state of the thread"
 msgstr "थ्रेडको कार्यान्वयन स्थिति"
 
@@ -6585,14 +6584,14 @@ msgid "The mnemonic accelerator key for this label"
 msgstr "यो लेबुलका लागि एम्नेमोनिक गतिबर्धक कुञ्जी"
 
 #. http://en.wikipedia.org/wiki/Equal_temperament
-#: bse/bsecore.idl:54
+#: bse/bsecore.idl:39
 msgid ""
 "The most common tuning system for modern Western music, is the twelve-tone "
 "equal temperament, abbreviated as 12-TET, which divides the octave into 12 "
 "equal parts."
 msgstr ""
 
-#: bse/bsecore.idl:703
+#: bse/bsecore.idl:690
 msgid ""
 "The nice value of a thread, -20 indicates a high priority thread and +19 a "
 "low priority one that is 'nice' to others"
@@ -6626,7 +6625,7 @@ msgid ""
 "The port name is a unique name to establish input<->output port relationships"
 msgstr "आगत<->निर्गत पोर्ट सम्बन्ध स्थापना गर्न पोर्टको नाम अद्वितिय नाम छ"
 
-#: bse/bsecore.idl:706
+#: bse/bsecore.idl:693
 msgid "The processor that this thread is currently being executed on"
 msgstr "प्रक्रिया जुन यो थ्रेड हालमा कार्यान्वयन हुन्छ"
 
@@ -6731,7 +6730,7 @@ msgid "This signal goes high after the release phase has completed"
 msgstr "छाडिएको समय सकिएपछि यो सङ्केत उच्च हुन्छ"
 
 #. http://en.wikipedia.org/wiki/Werckmeister_temperament
-#: bse/bsecore.idl:107
+#: bse/bsecore.idl:92
 msgid ""
 "This tuning is also known as Septenarius tuning is based on a division of "
 "the monochord length into 196 = 7 * 7 * 4 parts. The resulting scale has "
@@ -6742,7 +6741,7 @@ msgid ""
 msgstr ""
 
 #. http://en.wikipedia.org/wiki/Werckmeister_temperament
-#: bse/bsecore.idl:94
+#: bse/bsecore.idl:79
 msgid ""
 "This tuning uses mostly pure (perfect) fifths, as in Pythagorean tuning, but "
 "each of the fifths C-G, G-D, D-A and B-F# is made smaller, i.e. tempered by "
@@ -6751,7 +6750,7 @@ msgid ""
 msgstr ""
 
 #. http://en.wikipedia.org/wiki/Young_temperament
-#: bse/bsecore.idl:121
+#: bse/bsecore.idl:106
 msgid ""
 "Thomas Young devised a form of musical tuning to make the harmony most "
 "perfect in those keys which are the most frequently used (give better major "
@@ -6760,7 +6759,7 @@ msgid ""
 "as six equally imperfect fifths."
 msgstr ""
 
-#: bse/bsecore.idl:701
+#: bse/bsecore.idl:688
 msgid "Thread ID"
 msgstr "थ्रेड ID"
 
@@ -6768,7 +6767,7 @@ msgstr "थ्रेड ID"
 msgid "Thread ID (on some systems the process ID)"
 msgstr "थ्रेड आई डी (केही प्रणालीमा प्रकृया आई डी)"
 
-#: beast-gtk/bstprofiler.cc:220 bse/bsecore.idl:699
+#: beast-gtk/bstprofiler.cc:220 bse/bsecore.idl:686
 msgid "Thread Name"
 msgstr "थ्रेड नाम"
 
@@ -6800,7 +6799,7 @@ msgstr "समय"
 msgid "Toggle Button"
 msgstr "टगल बटन"
 
-#: beast-gtk/bstsnetrouter.cc:1013
+#: beast-gtk/bstsnetrouter.cc:1015
 msgid "Toggle channel name hints"
 msgstr "च्यानल नाम सङ्केत टगल गर्नुहोस्"
 
@@ -6959,7 +6958,7 @@ msgstr "फिल्टर नगरिएको अडियो सङ्के
 msgid "Unfiltered Input"
 msgstr "फिल्टर नगरिएको आगत"
 
-#: bse/bseobject.cc:714
+#: bse/bseobject.cc:713
 msgid "Unique name of this object"
 msgstr ""
 
@@ -6995,8 +6994,8 @@ msgstr "माथि"
 msgid "Update Percentage"
 msgstr ""
 
-#: beast-gtk/bstutils.cc:257 beast-gtk/bstutils.cc:279
-#: beast-gtk/bstutils.cc:282
+#: beast-gtk/bstutils.cc:258 beast-gtk/bstutils.cc:280
+#: beast-gtk/bstutils.cc:283
 msgid "Updating View"
 msgstr "दृश्य अद्यावधिक गर्दैछ"
 
@@ -7016,7 +7015,7 @@ msgstr "दायाँ लुप सूचक समायोजन गर्�
 msgid "Use underline"
 msgstr "कच प्रयोग गर्नुहोस्"
 
-#: bse/bsecore.idl:708
+#: bse/bsecore.idl:695
 msgid "User Time"
 msgstr "प्रयोगकर्ता समय"
 
@@ -7102,7 +7101,7 @@ msgstr "अवास्तविक आगत %u"
 msgid "Virtual output %u"
 msgstr "अवास्तविक निर्गत %u"
 
-#: bse/bsebusmodule.idl:13 bse/bsecore.idl:142 bse/bsecore.idl:318
+#: bse/bsebusmodule.idl:13 bse/bsecore.idl:127 bse/bsecore.idl:303
 msgid "Volume"
 msgstr "भोल्युम"
 
@@ -7163,19 +7162,19 @@ msgid "Waves"
 msgstr "तरङ्ग"
 
 #. Well Temperament: http://en.wikipedia.org/wiki/Well_temperament
-#: bse/bsecore.idl:93
+#: bse/bsecore.idl:78
 msgid "Werckmeister III"
 msgstr ""
 
-#: bse/bsecore.idl:97
+#: bse/bsecore.idl:82
 msgid "Werckmeister IV"
 msgstr ""
 
-#: bse/bsecore.idl:102
+#: bse/bsecore.idl:87
 msgid "Werckmeister V"
 msgstr ""
 
-#: bse/bsecore.idl:106
+#: bse/bsecore.idl:91
 msgid "Werckmeister VI"
 msgstr ""
 
@@ -7215,7 +7214,7 @@ msgstr "एक्सटाल स्ट्रिङ निर्गत"
 msgid "You probably want to start this script from a part editor."
 msgstr ""
 
-#: bse/bsecore.idl:120
+#: bse/bsecore.idl:105
 msgid "Young Temperament"
 msgstr ""
 
@@ -7491,227 +7490,227 @@ msgstr "अवास्तविकता"
 msgid "connection terminated"
 msgstr "जडान समाप्त"
 
-#: bse/bsecore.idl:280 bse/bsecore.idl:448
+#: bse/bsecore.idl:265 bse/bsecore.idl:433
 msgid "control-102"
 msgstr "नियन्त्रण-१०२"
 
-#: bse/bsecore.idl:281 bse/bsecore.idl:449
+#: bse/bsecore.idl:266 bse/bsecore.idl:434
 msgid "control-103"
 msgstr "नियन्त्रण-१०३"
 
-#: bse/bsecore.idl:282 bse/bsecore.idl:450
+#: bse/bsecore.idl:267 bse/bsecore.idl:435
 msgid "control-104"
 msgstr "नियन्त्रण-१०४"
 
-#: bse/bsecore.idl:283 bse/bsecore.idl:451
+#: bse/bsecore.idl:268 bse/bsecore.idl:436
 msgid "control-105"
 msgstr "नियन्त्रण-१०५"
 
-#: bse/bsecore.idl:284 bse/bsecore.idl:452
+#: bse/bsecore.idl:269 bse/bsecore.idl:437
 msgid "control-106"
 msgstr "नियन्त्रण-१०६"
 
-#: bse/bsecore.idl:285 bse/bsecore.idl:453
+#: bse/bsecore.idl:270 bse/bsecore.idl:438
 msgid "control-107"
 msgstr "नियन्त्रण-१०७"
 
-#: bse/bsecore.idl:286 bse/bsecore.idl:454
+#: bse/bsecore.idl:271 bse/bsecore.idl:439
 msgid "control-108"
 msgstr "नियन्त्रण-१०८"
 
-#: bse/bsecore.idl:287 bse/bsecore.idl:455
+#: bse/bsecore.idl:272 bse/bsecore.idl:440
 msgid "control-109"
 msgstr "नियन्त्रण-१०९"
 
-#: bse/bsecore.idl:288 bse/bsecore.idl:456
+#: bse/bsecore.idl:273 bse/bsecore.idl:441
 msgid "control-110"
 msgstr "नियन्त्रण-११०"
 
-#: bse/bsecore.idl:289 bse/bsecore.idl:457
+#: bse/bsecore.idl:274 bse/bsecore.idl:442
 msgid "control-111"
 msgstr "नियन्त्रण-१११"
 
-#: bse/bsecore.idl:290 bse/bsecore.idl:458
+#: bse/bsecore.idl:275 bse/bsecore.idl:443
 msgid "control-112"
 msgstr "नियन्त्रण-११२"
 
-#: bse/bsecore.idl:291 bse/bsecore.idl:459
+#: bse/bsecore.idl:276 bse/bsecore.idl:444
 msgid "control-113"
 msgstr "नियन्त्रण-११३"
 
-#: bse/bsecore.idl:292 bse/bsecore.idl:460
+#: bse/bsecore.idl:277 bse/bsecore.idl:445
 msgid "control-114"
 msgstr "नियन्त्रण-११४"
 
-#: bse/bsecore.idl:293 bse/bsecore.idl:461
+#: bse/bsecore.idl:278 bse/bsecore.idl:446
 msgid "control-115"
 msgstr "नियन्त्रण-११५"
 
-#: bse/bsecore.idl:294 bse/bsecore.idl:462
+#: bse/bsecore.idl:279 bse/bsecore.idl:447
 msgid "control-116"
 msgstr "नियन्त्रण-११६"
 
-#: bse/bsecore.idl:295 bse/bsecore.idl:463
+#: bse/bsecore.idl:280 bse/bsecore.idl:448
 msgid "control-117"
 msgstr "नियन्त्रण-११७"
 
-#: bse/bsecore.idl:296 bse/bsecore.idl:464
+#: bse/bsecore.idl:281 bse/bsecore.idl:449
 msgid "control-118"
 msgstr "नियन्त्रण-११८"
 
-#: bse/bsecore.idl:297 bse/bsecore.idl:465
+#: bse/bsecore.idl:282 bse/bsecore.idl:450
 msgid "control-119"
 msgstr "नियन्त्रण-११९"
 
-#: bse/bsecore.idl:190 bse/bsecore.idl:358
+#: bse/bsecore.idl:175 bse/bsecore.idl:343
 msgid "control-14"
 msgstr "नियन्त्रण-१४"
 
-#: bse/bsecore.idl:191 bse/bsecore.idl:359
+#: bse/bsecore.idl:176 bse/bsecore.idl:344
 msgid "control-15"
 msgstr "नियन्त्रण-१५"
 
-#: bse/bsecore.idl:196 bse/bsecore.idl:364
+#: bse/bsecore.idl:181 bse/bsecore.idl:349
 msgid "control-20"
 msgstr "नियन्त्रण-२०"
 
-#: bse/bsecore.idl:197 bse/bsecore.idl:365
+#: bse/bsecore.idl:182 bse/bsecore.idl:350
 msgid "control-21"
 msgstr "नियन्त्रण-२१"
 
-#: bse/bsecore.idl:198 bse/bsecore.idl:366
+#: bse/bsecore.idl:183 bse/bsecore.idl:351
 msgid "control-22"
 msgstr "नियन्त्रण-२२"
 
-#: bse/bsecore.idl:199 bse/bsecore.idl:367
+#: bse/bsecore.idl:184 bse/bsecore.idl:352
 msgid "control-23"
 msgstr "नियन्त्रण-२३"
 
-#: bse/bsecore.idl:200 bse/bsecore.idl:368
+#: bse/bsecore.idl:185 bse/bsecore.idl:353
 msgid "control-24"
 msgstr "नियन्त्रण-२४"
 
-#: bse/bsecore.idl:201 bse/bsecore.idl:369
+#: bse/bsecore.idl:186 bse/bsecore.idl:354
 msgid "control-25"
 msgstr "नियन्त्रण-२५"
 
-#: bse/bsecore.idl:202 bse/bsecore.idl:370
+#: bse/bsecore.idl:187 bse/bsecore.idl:355
 msgid "control-26"
 msgstr "नियन्त्रण-२६"
 
-#: bse/bsecore.idl:203 bse/bsecore.idl:371
+#: bse/bsecore.idl:188 bse/bsecore.idl:356
 msgid "control-27"
 msgstr "नियन्त्रण-२७"
 
-#: bse/bsecore.idl:204 bse/bsecore.idl:372
+#: bse/bsecore.idl:189 bse/bsecore.idl:357
 msgid "control-28"
 msgstr "नियन्त्रण-२८"
 
-#: bse/bsecore.idl:205 bse/bsecore.idl:373
+#: bse/bsecore.idl:190 bse/bsecore.idl:358
 msgid "control-29"
 msgstr "नियन्त्रण-२९"
 
-#: bse/bsecore.idl:179 bse/bsecore.idl:347
+#: bse/bsecore.idl:164 bse/bsecore.idl:332
 msgid "control-3"
 msgstr "नियन्त्रण-३"
 
-#: bse/bsecore.idl:206 bse/bsecore.idl:374
+#: bse/bsecore.idl:191 bse/bsecore.idl:359
 msgid "control-30"
 msgstr "नियन्त्रण-३०"
 
-#: bse/bsecore.idl:207 bse/bsecore.idl:375
+#: bse/bsecore.idl:192 bse/bsecore.idl:360
 msgid "control-31"
 msgstr "नियन्त्रण-३१"
 
-#: bse/bsecore.idl:212 bse/bsecore.idl:380
+#: bse/bsecore.idl:197 bse/bsecore.idl:365
 msgid "control-35"
 msgstr "नियन्त्रण-३५"
 
-#: bse/bsecore.idl:218 bse/bsecore.idl:386
+#: bse/bsecore.idl:203 bse/bsecore.idl:371
 msgid "control-41"
 msgstr "नियन्त्रण-४१"
 
-#: bse/bsecore.idl:223 bse/bsecore.idl:391
+#: bse/bsecore.idl:208 bse/bsecore.idl:376
 msgid "control-46"
 msgstr "नियन्त्रण-४६"
 
-#: bse/bsecore.idl:224 bse/bsecore.idl:392
+#: bse/bsecore.idl:209 bse/bsecore.idl:377
 msgid "control-47"
 msgstr "नियन्त्रण-४७"
 
-#: bse/bsecore.idl:229 bse/bsecore.idl:397
+#: bse/bsecore.idl:214 bse/bsecore.idl:382
 msgid "control-52"
 msgstr "नियन्त्रण-५२"
 
-#: bse/bsecore.idl:230 bse/bsecore.idl:398
+#: bse/bsecore.idl:215 bse/bsecore.idl:383
 msgid "control-53"
 msgstr "नियन्त्रण-५३"
 
-#: bse/bsecore.idl:231 bse/bsecore.idl:399
+#: bse/bsecore.idl:216 bse/bsecore.idl:384
 msgid "control-54"
 msgstr "नियन्त्रण-५४"
 
-#: bse/bsecore.idl:232 bse/bsecore.idl:400
+#: bse/bsecore.idl:217 bse/bsecore.idl:385
 msgid "control-55"
 msgstr "नियन्त्रण-५५"
 
-#: bse/bsecore.idl:233 bse/bsecore.idl:401
+#: bse/bsecore.idl:218 bse/bsecore.idl:386
 msgid "control-56"
 msgstr "नियन्त्रण-५६"
 
-#: bse/bsecore.idl:234 bse/bsecore.idl:402
+#: bse/bsecore.idl:219 bse/bsecore.idl:387
 msgid "control-57"
 msgstr "नियन्त्रण-५७"
 
-#: bse/bsecore.idl:235 bse/bsecore.idl:403
+#: bse/bsecore.idl:220 bse/bsecore.idl:388
 msgid "control-58"
 msgstr "नियन्त्रण-५८"
 
-#: bse/bsecore.idl:236 bse/bsecore.idl:404
+#: bse/bsecore.idl:221 bse/bsecore.idl:389
 msgid "control-59"
 msgstr "नियन्त्रण-५९"
 
-#: bse/bsecore.idl:237 bse/bsecore.idl:405
+#: bse/bsecore.idl:222 bse/bsecore.idl:390
 msgid "control-60"
 msgstr "नियन्त्रण-६०"
 
-#: bse/bsecore.idl:238 bse/bsecore.idl:406
+#: bse/bsecore.idl:223 bse/bsecore.idl:391
 msgid "control-61"
 msgstr "नियन्त्रण-६१"
 
-#: bse/bsecore.idl:239 bse/bsecore.idl:407
+#: bse/bsecore.idl:224 bse/bsecore.idl:392
 msgid "control-62"
 msgstr "नियन्त्रण-६२"
 
-#: bse/bsecore.idl:240 bse/bsecore.idl:408
+#: bse/bsecore.idl:225 bse/bsecore.idl:393
 msgid "control-63"
 msgstr "नियन्त्रण-६३"
 
-#: bse/bsecore.idl:263 bse/bsecore.idl:431
+#: bse/bsecore.idl:248 bse/bsecore.idl:416
 msgid "control-85"
 msgstr "नियन्त्रण-८५"
 
-#: bse/bsecore.idl:264 bse/bsecore.idl:432
+#: bse/bsecore.idl:249 bse/bsecore.idl:417
 msgid "control-86"
 msgstr "नियन्त्रण-८६"
 
-#: bse/bsecore.idl:265 bse/bsecore.idl:433
+#: bse/bsecore.idl:250 bse/bsecore.idl:418
 msgid "control-87"
 msgstr "नियन्त्रण-८७"
 
-#: bse/bsecore.idl:266 bse/bsecore.idl:434
+#: bse/bsecore.idl:251 bse/bsecore.idl:419
 msgid "control-88"
 msgstr "नियन्त्रण-८८"
 
-#: bse/bsecore.idl:267 bse/bsecore.idl:435
+#: bse/bsecore.idl:252 bse/bsecore.idl:420
 msgid "control-89"
 msgstr "नियन्त्रण-८९"
 
-#: bse/bsecore.idl:185 bse/bsecore.idl:353
+#: bse/bsecore.idl:170 bse/bsecore.idl:338
 msgid "control-9"
 msgstr "नियन्त्रण-९"
 
-#: bse/bsecore.idl:268 bse/bsecore.idl:436
+#: bse/bsecore.idl:253 bse/bsecore.idl:421
 msgid "control-90"
 msgstr "नियन्त्रण-९०"
 
