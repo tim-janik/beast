@@ -21,7 +21,7 @@ AC_PREREQ(2.57)
 #
 BSE_MAJOR_VERSION=0
 BSE_MINOR_VERSION=7
-BSE_MICRO_VERSION=7
+BSE_MICRO_VERSION=8
 BSE_INTERFACE_AGE=0
 BSE_BINARY_AGE=0
 dnl#
@@ -210,7 +210,7 @@ AC_DEFUN([AC_I18N_REQUIREMENTS],
 AC_DEFUN([AC_SFI_REQUIREMENTS],
 [
     dnl # check for GLib libs, libbirnet already provides gthread-2.0 and glib-2.0
-    PKG_CHECK_MODULES(GLIB_GOMT, glib-2.0 >= 2.6.4 gobject-2.0 gmodule-no-export-2.0)
+    PKG_CHECK_MODULES(GLIB_GOMT, glib-2.0 >= 2.32.3 gobject-2.0 gmodule-no-export-2.0)
     AC_SUBST(GLIB_GOMT_CFLAGS)
     AC_SUBST(GLIB_GOMT_LIBS)
     SFI_CFLAGS="$BIRNET_CFLAGS $GLIB_GOMT_CFLAGS"
@@ -234,8 +234,8 @@ AC_DEFUN([AC_BSE_REQUIREMENTS],
     AC_DEFINE_UNQUOTED(BSE_VERSION, "$BSE_VERSION", [BSE Version])
 
     dnl # --- Ogg/Vorbis check ---
-    PKG_CHECK_MODULES(OV, ogg >= 1.0.0 vorbis >= 1.0.0 vorbisfile >= 1.0.0 vorbisenc >= 1.0.0)
-    
+    PKG_CHECK_MODULES(OV, ogg >= 1.2.2 vorbis >= 1.3.2 vorbisfile >= 1.3.2 vorbisenc >= 1.3.2)
+
     dnl # --- libmad MPEG decoder check ---
     dnl # libmad doesn't come with a mad.pc file (just its debian package)
     dnl # PKG_CHECK_MODULES(MAD, mad >= 0.14.2,
