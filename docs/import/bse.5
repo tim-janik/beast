@@ -25,24 +25,24 @@ Updated: 2011-01-25 <br/>
 </p>
 <h2> <span class="mw-headline" id="DESCRIPTION"> DESCRIPTION </span></h2>
 <p>	The <b>bse</b> file format is used by the <a href="http://testbit.eu/index.php?title=Bse&amp;action=edit&amp;redlink=1" class="new" title="Bse (page does not exist)">bse</a> library and dependent programs to save
-<a href="http://testbit.eu/index.php?title=Bse&amp;action=edit&amp;redlink=1" class="new" title="Bse (page does not exist)">bse</a> projects, songs, instruments and sample collections.
-The <a href="http://testbit.eu/index.php?title=Bse&amp;action=edit&amp;redlink=1" class="new" title="Bse (page does not exist)">bse</a> scheme shell <a href="http://testbit.eu/Bsescm.1" title="Bsescm.1">bsescm.1</a> is able to play back <b>bse</b> files directly.
+	<a href="http://testbit.eu/index.php?title=Bse&amp;action=edit&amp;redlink=1" class="new" title="Bse (page does not exist)">bse</a> projects, songs, instruments and sample collections.
+	The <a href="http://testbit.eu/index.php?title=Bse&amp;action=edit&amp;redlink=1" class="new" title="Bse (page does not exist)">bse</a> scheme shell <a href="http://testbit.eu/Bsescm.1" title="Bsescm.1">bsescm.1</a> is able to play back <b>bse</b> files directly.
 </p>
 <h2> <span class="mw-headline" id="FORMAT"> FORMAT </span></h2>
-<p>	<a href="http://testbit.eu/index.php?title=Bse&amp;action=edit&amp;redlink=1" class="new" title="Bse (page does not exist)">bse</a> files start out with a special magic string "; BseProject\n" and then contain nested
-expressions in scheme syntax using the ASCII charset.
-Binary data may be appended to a <i>.bse</i> file if it is seperated from the preceeding
-ASCII test by one or more literal NUL characters ('\0').
-This mechanism is used to store arbitrary binary data like <i>.WAV</i> or Ogg/Vorbis files
-in <a href="http://testbit.eu/index.php?title=Bse&amp;action=edit&amp;redlink=1" class="new" title="Bse (page does not exist)">bse</a> projects, while keeping the actuall content user editable (text editors that preserve
-binary sections have to be used, such as vi(1) or emacs(1)).
+<p>	<a href="http://testbit.eu/index.php?title=Bse&amp;action=edit&amp;redlink=1" class="new" title="Bse (page does not exist)">bse</a> files start out with a special magic string "; BseProject\n" and then contain nested 
+	expressions in scheme syntax using the ASCII charset.
+	Binary data may be appended to a <i>.bse</i> file if it is seperated from the preceeding
+	ASCII test by one or more literal NUL characters ('\0').
+	This mechanism is used to store arbitrary binary data like <i>.WAV</i> or Ogg/Vorbis files
+	in <a href="http://testbit.eu/index.php?title=Bse&amp;action=edit&amp;redlink=1" class="new" title="Bse (page does not exist)">bse</a> projects, while keeping the actuall content user editable (text editors that preserve
+	binary sections have to be used, such as vi(1) or emacs(1)).
 </p>
 <h2> <span class="mw-headline" id="COMPATIBILITY"> COMPATIBILITY </span></h2>
 <p>	The exact format and sets of objects and properties used in a <b>bse</b> file depend highly
-on the library version that was used to save the file. Compatibility functions are supplied
-by the library itself, so old <b>bse</b> files can be converted when the file is loaded.
-To enable this mechanism, all <b>bse</b> files contain a <b>"bse-version"</b> directive which
-indicates the <b>bse</b> file format version of the supplied content.
+	on the library version that was used to save the file. Compatibility functions are supplied
+	by the library itself, so old <b>bse</b> files can be converted when the file is loaded.
+	To enable this mechanism, all <b>bse</b> files contain a <b>"bse-version"</b> directive which
+	indicates the <b>bse</b> file format version of the supplied content.
 </p>
 <h2> <span class="mw-headline" id="SEE_ALSO"> SEE ALSO </span></h2>
 <p><a href="http://testbit.eu/Beast.1" title="Beast.1">beast.1</a>,
@@ -57,4 +57,5 @@ Post-expand include size: 15/2097152 bytes
 Template argument size: 0/2097152 bytes
 Expensive parser function count: 0/100
 -->
-<!-- Saved in parser cache with key mediawikidb:pcache:idhash:62-1!*!0!!en!*!* and timestamp 20121024165007 -->
+
+<!-- Saved in parser cache with key mediawikidb:pcache:idhash:62-1!*!0!!en!*!* and timestamp 20130118024137 -->

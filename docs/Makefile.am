@@ -85,7 +85,7 @@ HREFS = 's,&lt;\(\(http\|ftp\)s\?:[^<>]\+\)&gt;,\&lt;<a href="\1">\1</a>\&gt;,g'
 
 # == File Checks ==
 MISSING_MSG = "  Some files hosted online appear missing or outdated; please issue: make import  "
-CURRENTNESS = 21600 # 21600 seconds = 6 hours
+CURRENTNESS = 86400 # 86400 seconds = 24 hours
 check-aging-files: check-missing-files
 	$(Q) LAST=`cd $(srcdir) && test -e import/stamp && cat import/stamp || echo 0` ; NOW=`date +%s` \
 	; test $$(($$NOW - $$LAST)) -lt $(CURRENTNESS) || { \
