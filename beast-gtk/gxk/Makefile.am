@@ -1,7 +1,4 @@
 # GXK - Gtk+ Extension Kit
-# Copyright (C) 2002 Tim Janik
-#
-## GNU Lesser General Public License version 2 or any later version.
 include $(top_srcdir)/Makefile.decl
 
 SUBDIRS =
@@ -18,29 +15,29 @@ DEFS += $(strip \
 noinst_LIBRARIES = libgxk.a
 
 gxk_headers = $(strip \
-	gxkled.h	gxkcanvas.h		gxkdialog.h	gxkauxwidgets.h \
-	gxkstatusbar.h	gxkstock.h		gxktexttools.h	gxklistwrapper.h \
-	gxkrackeditor.h	gxkutils.h		gxkpolygon.h	gxkcellrendererpopup.h \
-	gxkradget.h	gxkaction.h		gxkglobals.h	gxkradgetfactory.h \
-	glewidgets.h	gxkracktable.h		gxkrackitem.h	gxksimplelabel.h \
-	gxkparam.h	gxkscrollcanvas.h	gxkimagecache.h	gxklogadjustment.h \
-	gxkmenubutton.h	gxkspline.h		gxkassortment.h gxknotebook.h \
-	gxk.h \
+	gxkled.hh	gxkcanvas.hh		gxkdialog.hh	gxkauxwidgets.hh \
+	gxkstatusbar.hh	gxkstock.hh		gxktexttools.hh	gxklistwrapper.hh \
+	gxkrackeditor.hh	gxkutils.hh		gxkpolygon.hh	gxkcellrendererpopup.hh \
+	gxkradget.hh	gxkaction.hh		gxkglobals.hh	gxkradgetfactory.hh \
+	glewidgets.h	gxkracktable.hh		gxkrackitem.hh	gxksimplelabel.hh \
+	gxkparam.hh	gxkscrollcanvas.hh	gxkimagecache.hh	gxklogadjustment.hh \
+	gxkmenubutton.hh	gxkspline.hh		gxkassortment.hh gxknotebook.hh \
+	gxk.hh \
 )
 gxk_c_sources = $(strip \
-	gxkled.c	gxkcanvas.c		gxkdialog.c	gxkauxwidgets.c \
-	gxkstatusbar.c	gxkstock.c		gxktexttools.c	gxklistwrapper.c \
-	gxkrackeditor.c	gxkutils.c		gxkpolygon.c	gxkcellrendererpopup.c \
-	gxkradget.c	gxkaction.c		gxkglobals.c	gxkradgetfactory.c \
-	glewidgets.c	gxkracktable.c		gxkrackitem.c	gxksimplelabel.c \
-	gxkparam.c	gxkscrollcanvas.c	gxkimagecache.c	gxklogadjustment.c \
-	gxkmenubutton.c	gxkspline.c		gxkassortment.c gxknotebook.c \
+	gxkled.cc	gxkcanvas.cc		gxkdialog.cc	gxkauxwidgets.cc \
+	gxkstatusbar.cc	gxkstock.cc		gxktexttools.cc	gxklistwrapper.cc \
+	gxkrackeditor.cc	gxkutils.cc		gxkpolygon.cc	gxkcellrendererpopup.cc \
+	gxkradget.cc	gxkaction.cc		gxkglobals.cc	gxkradgetfactory.cc \
+	glewidgets.c	gxkracktable.cc		gxkrackitem.cc	gxksimplelabel.cc \
+	gxkparam.cc	gxkscrollcanvas.cc	gxkimagecache.cc	gxklogadjustment.cc \
+	gxkmenubutton.cc	gxkspline.cc		gxkassortment.cc gxknotebook.cc \
 )
 gxk_extra_sources = $(strip \
-	gxkparam-entry.c	gxkparam-label.c	\
-	gxkparam-scale.c	gxkparam-spinner.c	\
-	gxkparam-toggle.c	\
-	gxkrackcovers.c		\
+	gxkparam-entry.cc	gxkparam-label.cc	\
+	gxkparam-scale.cc	gxkparam-spinner.cc	\
+	gxkparam-toggle.cc	\
+	gxkrackcovers.cc		\
 	gxkmarshal.list		\
 )
 
@@ -72,10 +69,10 @@ stamp-gxkgentypes.h: @PERLRULE@ $(gxk_headers)
 	&& (cmp -s xgen-$(@F) $(srcdir)/gxkgentypes.h || cp xgen-$(@F) $(srcdir)/gxkgentypes.h) \
 	&& rm -f xgen-$(@F) \
 	&& echo timestamp > $(@F)
-# gxkgentypes.c
-GENERATED_CLEANFILES += gxkgentypes.c
-$(libgxk_a_OBJECTS): gxkgentypes.c
-gxkgentypes.c: $(gxk_headers)
+# gxkgentypes.cc
+GENERATED_CLEANFILES += gxkgentypes.cc
+$(libgxk_a_OBJECTS): gxkgentypes.cc
+gxkgentypes.cc: $(gxk_headers)
 	( \
 	  cd $(srcdir) \
 	  && $(GLIB_MKENUMS) \
@@ -104,10 +101,10 @@ gxkmarshal.h: gxkmarshal.list
 	) > xgen-$(@F) \
 	&& cp xgen-$(@F) $@ \
 	&& rm -f xgen-$(@F)
-# gxkmarshal.c
-GENERATED_CLEANFILES += gxkmarshal.c
-$(libgxk_a_OBJECTS): gxkmarshal.c
-gxkmarshal.c: gxkmarshal.list
+# gxkmarshal.cc
+GENERATED_CLEANFILES += gxkmarshal.cc
+$(libgxk_a_OBJECTS): gxkmarshal.cc
+gxkmarshal.cc: gxkmarshal.list
 	( \
 	  cd $(srcdir) \
 	  && glib-genmarshal --prefix=gxk_marshal gxkmarshal.list --body \
@@ -126,11 +123,11 @@ progs_LDADD     = $(strip					\
 
 
 noinst_PROGRAMS += gxktest
-gxktest_SOURCES  = gxktest.c dummy.cc
+gxktest_SOURCES  = gxktest.cc
 gxktest_LDADD    = $(progs_LDADD)
 
 noinst_PROGRAMS   += splinetest
-splinetest_SOURCES = splinetest.c dummy.cc
+splinetest_SOURCES = splinetest.cc
 splinetest_LDADD   = $(progs_LDADD)
 
 

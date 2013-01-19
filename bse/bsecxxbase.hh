@@ -1,31 +1,12 @@
-/* BSE - Better Sound Engine
- * Copyright (C) 2003 Tim Janik
- *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * A copy of the GNU Lesser General Public License should ship along
- * with this library; if not, see http://www.gnu.org/copyleft/.
- */
+// Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #ifndef __BSE_CXX_BASE_H__
 #define __BSE_CXX_BASE_H__
-
-#include <bse/bsesource.h>
+#include <bse/bsesource.hh>
 #include <bse/bsecxxvalue.hh>
 #include <bse/bsecxxclosure.hh>
-
 namespace Bse {
 #define BSE_CXX_INSTANCE_OFFSET    BSE_CXX_SIZEOF (BseSource)
-
 #define BSE_TYPE_CXX_BASE        (BSE_CXX_TYPE_GET_REGISTERED (Bse, CxxBase))
-
 class CxxBaseClass : public BseSourceClass {
 public:
   void  add_param     (const char  *group,
@@ -101,9 +82,7 @@ public:
                                      guint          vminor,
                                      guint          vmicro);
   virtual         ~CxxBase          ();
-
   static void     class_init        (CxxBaseClass *klass);
-
   static inline bool instance_is_a  (CxxBase       *cbase,
                                      GType          iface_type)
   {
@@ -115,7 +94,6 @@ public:
     else
       return FALSE;
   }
-
   template<class OType> static inline OType*
   value_get_gobject (const GValue *v)
   {
@@ -158,7 +136,6 @@ public:
     const Casted *self = static_cast<const Casted*> (obj);
     value_set_object (value, self);
   }
-
   class Pointer {
     CxxBase *p;
   public:
@@ -181,14 +158,12 @@ public:
 static inline CxxBase::Pointer cast (CxxBase *c) { return CxxBase::Pointer (c); }
 /* match from-GObject* casts: */
 template<class T> CxxBase*     cast (T *t)       { return CxxBase::cast (t); }
-
 /* --- trampoline templates --- */
 template<class ObjectType> static void
 cxx_class_init_trampoline (CxxBaseClass *klass)
 {
   ObjectType::class_init (klass);
 }
-
 template<class ObjectType> static void
 cxx_instance_init_trampoline (GTypeInstance *instance,
                               gpointer       g_class)
@@ -196,7 +171,6 @@ cxx_instance_init_trampoline (GTypeInstance *instance,
   if (G_TYPE_FROM_INSTANCE (instance) == G_TYPE_FROM_CLASS (g_class))
     new (BSE_CXX_INSTANCE_OFFSET + (char*) instance) ObjectType ();
 }
-
 template<class ObjectType, typename PropertyID> static void
 cxx_get_property_trampoline (GObject    *o,
                              guint       prop_id,
@@ -210,7 +184,6 @@ cxx_get_property_trampoline (GObject    *o,
     (void) static_cast<void (ObjectType::*) (PropertyID, Value&, GParamSpec*)> (&ObjectType::get_property);
   instance->get_property (static_cast<PropertyID> (prop_id), *v, pspec);
 }
-
 template<class ObjectType, typename PropertyID> static void
 cxx_set_property_trampoline (GObject      *o,
                              guint         prop_id,
@@ -224,7 +197,6 @@ cxx_set_property_trampoline (GObject      *o,
     (void) static_cast<void (ObjectType::*) (PropertyID, const Value&, GParamSpec*)> (&ObjectType::set_property);
   instance->set_property (static_cast<PropertyID> (prop_id), *v, pspec);
 }
-
 template<class ObjectType, typename PropertyID> static gboolean
 cxx_editable_property_trampoline (BseObject    *o,
                                   guint         prop_id,
@@ -236,13 +208,11 @@ cxx_editable_property_trampoline (BseObject    *o,
     (void) static_cast<bool (ObjectType::*) (PropertyID, GParamSpec*)> (&ObjectType::editable_property);
   return instance->editable_property (static_cast<PropertyID> (prop_id), pspec);
 }
-
 template<class ObjectType, typename PropertyID> static void
 cxx_get_candidates_trampoline (BseItem               *item,
                                guint                  prop_id,
                                BsePropertyCandidates *pc,
                                GParamSpec            *pspec);   /* defined in bsecxxplugin.hh */
-
 template<class ObjectType, typename PropertyID> static void
 cxx_property_updated_trampoline (BseSource             *source,
                                  guint                  prop_id,
@@ -256,8 +226,5 @@ cxx_property_updated_trampoline (BseSource             *source,
     (void) static_cast<void (ObjectType::*) (PropertyID, guint64, double, GParamSpec*)> (&ObjectType::property_updated);
   instance->property_updated (static_cast<PropertyID> (prop_id), tick_stamp, prop_value, pspec);
 }
-
 } // Bse
-
-
 #endif /* __BSE_CXX_BASE_H__ */

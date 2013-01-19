@@ -1,28 +1,11 @@
-/* BSE - Better Sound Engine	-*-mode: c;-*-
- * Copyright (C) 2002-2003 Tim Janik
- *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * A copy of the GNU Lesser General Public License should ship along
- * with this library; if not, see http://www.gnu.org/copyleft/.
- */
-#include <bse/bseplugin.h>
-#include <bse/bsewaveosc.h>
-#include <bse/bseprocedure.h>
-#include <bse/bseeditablesample.h>
-
+// Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
+#include <bse/bseplugin.hh>
+#include <bse/bsewaveosc.hh>
+#include <bse/bseprocedure.hh>
+#include <bse/bseeditablesample.hh>
+#include "bsecxxplugin.hh"
 AUTHORS	= "Tim Janik <timj@gtk.org>";
 LICENSE = "GNU Lesser General Public License";
-
-
 METHOD (BseWaveOsc, request-pcm-position) {
   HELP	= "Request emission of the ::notify_pcm_position signal.";
   IN	= bse_param_spec_object ("wosc", NULL, "Wave Oscilator",
@@ -32,17 +15,13 @@ METHOD (BseWaveOsc, request-pcm-position) {
 	GValue            *out_values)
 {
   /* extract parameter values */
-  BseWaveOsc *self = bse_value_get_object (in_values++);
-  
+  BseWaveOsc *self = (BseWaveOsc*) bse_value_get_object (in_values++);
   /* check parameters */
   if (!BSE_IS_WAVE_OSC (self))
     return BSE_ERROR_PROC_PARAM_INVAL;
-  
   bse_wave_osc_request_pcm_position (self);
-  
   return BSE_ERROR_NONE;
 }
-
 PROCEDURE (bse-wave-osc-mass-seek-perc, "Seek Wave Oscillators") {
   HELP	= "Seek a list of wave oscillators to a pcm position given in percentage. The oscillators will seek to the given position syncronously.";
   IN    = bse_param_spec_boxed ("wosc-seq", "Wave Oscilators", NULL, BSE_TYPE_ITEM_SEQ, SFI_PARAM_STANDARD); // FIXME: using BseItemSeq because BseWaveOscSeq requires idl+C++
@@ -54,10 +33,10 @@ PROCEDURE (bse-wave-osc-mass-seek-perc, "Seek Wave Oscillators") {
 	GValue            *out_values)
 {
   /* extract parameter values */
-  BseItemSeq *iseq = bse_value_get_boxed (in_values++);
+  BseItemSeq *iseq = (BseItemSeq*) bse_value_get_boxed (in_values++);
   gfloat      pos  = sfi_value_get_real (in_values++);
   guint i, n = iseq ? iseq->n_items : 0;
-  BseWaveOsc **woscs = g_alloca (sizeof (BseWaveOsc*) * n);
+  BseWaveOsc **woscs = (BseWaveOsc**) g_alloca (sizeof (BseWaveOsc*) * n);
   for (i = 0; i < n; i++)
     if (!BSE_IS_WAVE_OSC (iseq->items[i]))      /* check parameters */
       return BSE_ERROR_PROC_PARAM_INVAL;
@@ -65,10 +44,8 @@ PROCEDURE (bse-wave-osc-mass-seek-perc, "Seek Wave Oscillators") {
       woscs[i] = (BseWaveOsc*) iseq->items[i];
   if (n)
     bse_wave_osc_mass_seek (n, woscs, pos);
-  
   return BSE_ERROR_NONE;
 }
-
 METHOD (BseWaveOsc, set-from-editable-sample) {
   HELP	= "Set wave to play from editable sample, bypassing undo and storage mechanisms.";
   IN	= bse_param_spec_object ("wosc", NULL, "Wave Oscilator",
@@ -80,14 +57,11 @@ METHOD (BseWaveOsc, set-from-editable-sample) {
 	GValue            *out_values)
 {
   /* extract parameter values */
-  BseWaveOsc *self           = bse_value_get_object (in_values++);
-  BseEditableSample *esample = bse_value_get_object (in_values++);
-
+  BseWaveOsc *self = (BseWaveOsc*) bse_value_get_object (in_values++);
+  BseEditableSample *esample = (BseEditableSample*) bse_value_get_object (in_values++);
   /* check parameters */
   if (!BSE_IS_WAVE_OSC (self))
     return BSE_ERROR_PROC_PARAM_INVAL;
-  
   bse_wave_osc_set_from_esample (self, esample);
-  
   return BSE_ERROR_NONE;
 }

@@ -1,26 +1,10 @@
-/* BSE - Better Sound Engine	-*-mode: c;-*-
- * Copyright (C) 2003 Tim Janik
- *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * A copy of the GNU Lesser General Public License should ship along
- * with this library; if not, see http://www.gnu.org/copyleft/.
- */
-#include <bse/bseparasite.h>
-#include <bse/bseprocedure.h>
-#include <bse/bseexports.h>
-
+// Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
+#include <bse/bseparasite.hh>
+#include <bse/bseprocedure.hh>
+#include <bse/bseexports.hh>
+#include "bsecxxplugin.hh"
 AUTHORS	= "Tim Janik <timj@gtk.org>";
 LICENSE = "GNU Lesser General Public License";
-
 METHOD (BseItem, list-parasites) {
   HELP	= "List parasites within a parasite path segment.";
   IN    = bse_param_spec_object ("item", _("Item"), NULL, BSE_TYPE_ITEM, SFI_PARAM_STANDARD);
@@ -30,7 +14,7 @@ METHOD (BseItem, list-parasites) {
 	const GValue      *in_values,
 	GValue            *out_values)
 {
-  BseItem     *item = g_value_get_object (in_values++);
+  BseItem *item = (BseItem*) g_value_get_object (in_values++);
   const gchar *path = g_value_get_string (in_values++);
   SfiRing *ring;
   BseStringSeq *sseq;
@@ -39,11 +23,10 @@ METHOD (BseItem, list-parasites) {
   sseq = bse_string_seq_new ();
   ring = bse_item_list_parasites (item, path);
   while (ring)
-    bse_string_seq_append (sseq, sfi_ring_pop_head (&ring));
+    bse_string_seq_append (sseq, (const char*) sfi_ring_pop_head (&ring));
   bse_value_take_boxed (out_values++, sseq);
   return BSE_ERROR_NONE;
 }
-
 METHOD (BseItem, get-parasite) {
   SfiRecFields zero_fields = { 0, };
   HELP	= "Retrieve a parasite from an item.";
@@ -54,14 +37,13 @@ METHOD (BseItem, get-parasite) {
 	const GValue      *in_values,
 	GValue            *out_values)
 {
-  BseItem     *item = g_value_get_object (in_values++);
+  BseItem *item = (BseItem*) g_value_get_object (in_values++);
   const gchar *path = g_value_get_string (in_values++);
   if (!BSE_IS_ITEM (item))
     return BSE_ERROR_PROC_PARAM_INVAL;
   sfi_value_set_rec (out_values++, bse_item_get_parasite (item, path));
   return BSE_ERROR_NONE;
 }
-
 METHOD (BseItem, set-parasite) {
   SfiRecFields zero_fields = { 0, };
   HELP	= "Set or change a parasite on an item.";
@@ -72,7 +54,7 @@ METHOD (BseItem, set-parasite) {
 	const GValue      *in_values,
 	GValue            *out_values)
 {
-  BseItem     *item = g_value_get_object (in_values++);
+  BseItem *item = (BseItem*) g_value_get_object (in_values++);
   const gchar *path = g_value_get_string (in_values++);
   SfiRec      *rec  = sfi_value_get_rec (in_values++);
   if (!BSE_IS_ITEM (item))
@@ -80,7 +62,6 @@ METHOD (BseItem, set-parasite) {
   bse_item_set_parasite (item, path, rec);
   return BSE_ERROR_NONE;
 }
-
 METHOD (BseItem, add-parasite) {
   SfiRecFields zero_fields = { 0, };
   HELP	= "Add a new parasite to an item.";
@@ -91,7 +72,7 @@ METHOD (BseItem, add-parasite) {
 	const GValue      *in_values,
 	GValue            *out_values)
 {
-  BseItem     *item = g_value_get_object (in_values++);
+  BseItem *item = (BseItem*) g_value_get_object (in_values++);
   const gchar *path = g_value_get_string (in_values++);
   SfiRec      *rec  = sfi_value_get_rec (in_values++);
   if (!BSE_IS_ITEM (item))

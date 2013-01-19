@@ -1,34 +1,16 @@
-/* TestPlugin - used to test the C++ language binding
- * Copyright (C) 2003 Stefan Westerfeld <stefan@space.twc.de>
- *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * A copy of the GNU Lesser General Public License should ship along
- * with this library; if not, see http://www.gnu.org/copyleft/.
- */
+// Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bse/bsecxxmodule.hh"
 #include "testplugin.genidl.hh"
 #include <stdexcept>
 #include <math.h>
 #include <string.h>
-
 namespace Namespace {
 using namespace std;
 using namespace Bse;
-
 class TestObject : public TestObjectBase
 {
 public:
   //BSE_EFFECT_INTEGRATE_MODULE (TestObject, Module, Properties);
-
 #if 0
   /* FIXME */
   Bse::SynthesisModule* create_module(unsigned int, BseTrans*)
@@ -36,7 +18,6 @@ public:
     g_assert_not_reached ();
     return 0;
   }
-
   /* FIXME */
   Bse::SynthesisModule::Accessor* module_configurator()
   {
@@ -49,7 +30,6 @@ public:
   void (* get_module_auto_update())(BseModule*, void*) { return 0; }
 #endif
 };
-
 SfiInt
 Procedure::test_exception::exec (SfiInt        i,
                                  TestObject*   o,
@@ -64,14 +44,11 @@ Procedure::test_exception::exec (SfiInt        i,
     throw std::runtime_error ("object pointer is NULL");
   return i + bar;
 }
-
 BSE_CXX_DEFINE_EXPORTS();
 BSE_CXX_REGISTER_ENUM (FunkynessType);
 BSE_CXX_REGISTER_RECORD (TestRecord);
 BSE_CXX_REGISTER_SEQUENCE (TestSequence);
 BSE_CXX_REGISTER_EFFECT (TestObject);
 BSE_CXX_REGISTER_PROCEDURE (test_exception);
-
 } // Test
-
 /* vim:set ts=8 sw=2 sts=2: */

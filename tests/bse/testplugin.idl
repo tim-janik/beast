@@ -1,63 +1,39 @@
-/* TestPlugin - used to test the C++ language binding           -*-mode: c++;-*-
- * Copyright (C) 2003 Stefan Westerfeld <stefan@space.twc.de>
- *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * A copy of the GNU Lesser General Public License should ship along
- * with this library; if not, see http://www.gnu.org/copyleft/.
- */
-#include <bse/bse.idl>
-
+// Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
+include "bse/bse.idl";
 namespace Namespace {
-
 using namespace Sfi;
-
 // test enum
-choice FunkynessType {
+enum FunkynessType {
   REALLY_FUNKY,
   MODERATELY_FUNKY,
-  NON_FUNKY = (42, "No Funk At All"),
+  NON_FUNKY = Enum (42, "No Funk At All"),
 };
-
 // test record
 record TestRecord {
   Int           i;
   String        str;
   FunkynessType funky;
 };
-
 sequence TestSequence {
   TestRecord tr;
 };
-
 // adds i and str to the record given by rec
 // TestRecord record_add (TestRecord rec, Int i, String str);
-
 // test effect
-class TestObject : Bse::Effect {
+interface TestObject : Bse::Effect {
   Info    category  = "/Test/Plugin";
   // required because otherwise the bse-plugin-generator generated thing doesn't compile
   property Int aninteger;
   property TestRecord r;
   property TestSequence s;
-  property BBlock bb;
-  property FBlock fb;
+  // deprecated: property BBlock bb;
+  // deprecated: property FBlock fb;
   property Rec rr;
   property Bse::Effect ef; // C++ Object 
   property Bse::Item it;   // C Object
 };
-
 // test procedure
 Int test_exception (Int i, TestObject o, Int bar, FunkynessType ft) {
   Info category = "/Toys/Test Exception";
 }
-
 };

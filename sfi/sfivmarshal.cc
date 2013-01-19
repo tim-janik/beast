@@ -1,21 +1,5 @@
-/* SFI - Synthesis Fusion Kit Interface
- * Copyright (C) 2002 Tim Janik
- *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * A copy of the GNU Lesser General Public License should ship along
- * with this library; if not, see http://www.gnu.org/copyleft/.
- */
-#include "sfivmarshal.h"
-
+// Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
+#include "sfivmarshal.hh"
 #ifdef G_ENABLE_DEBUG
 #define g_marshal_value_peek_boolean(v)  g_value_get_boolean (v)
 #define g_marshal_value_peek_char(v)     g_value_get_char (v)
@@ -59,18 +43,14 @@
 #define g_marshal_value_peek_pointer(v)  (v)->data[0].v_pointer
 #define g_marshal_value_peek_object(v)   (v)->data[0].v_pointer
 #endif /* !G_ENABLE_DEBUG */
-
 typedef union {
   guint64 v64;	/* 2 (10) */
   guint32 v32;	/* 1 (01) */
   double  vdbl; /* 3 (11) */
   void   *vpt;
 } Arg;
-
 typedef void (*VMarshal) (void *func, void *arg0, Arg *alist);
-
 static VMarshal	sfi_vmarshal_switch	(guint sig);
-
 static inline uint
 put_val (Arg          *a,
 	 const GValue *value)
@@ -113,7 +93,6 @@ put_val (Arg          *a,
     }
   return t;
 }
-
 void
 sfi_vmarshal_void (void          *func,
 		   void          *arg0,
@@ -124,9 +103,7 @@ sfi_vmarshal_void (void          *func,
   Arg alist[SFI_VMARSHAL_MAX_ARGS + 1];
   guint32 sig;
   guint i;
-
   g_return_if_fail (n_args <= SFI_VMARSHAL_MAX_ARGS);
-
   sig = 0;
   for (i = 0; i < n_args; i++)
     {
@@ -149,10 +126,8 @@ sfi_vmarshal_void (void          *func,
     }
   else
     alist[SFI_VMARSHAL_MAX_ARGS].vpt = data;
-
   sfi_vmarshal_switch (sig) (func, arg0, alist);
 }
-
 static void /* 1 */
 sfi_vmarshal_11111 (void *func, void *arg0, Arg *alist)
 {

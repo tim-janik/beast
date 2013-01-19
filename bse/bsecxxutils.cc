@@ -1,28 +1,10 @@
-/* BSE - Better Sound Engine
- * Copyright (C) 2003 Tim Janik
- *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * A copy of the GNU Lesser General Public License should ship along
- * with this library; if not, see http://www.gnu.org/copyleft/.
- */
+// Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bsecxxutils.hh"
-
 #include "bsecxxbase.hh"
-#include "bsecategories.h"
+#include "bsecategories.hh"
 #include <list>
 using namespace std;
-
 namespace Bse {
-
 /* --- functions --- */
 struct TypeRegistry::TypeEntry {
   guint               instance_size;
@@ -54,9 +36,7 @@ struct TypeRegistry::TypeEntry {
     this->flags = flags;
   }
 };
-  
 static list<TypeRegistry::TypeEntry> *type_entries = NULL;
-
 TypeRegistry::TypeRegistry (guint             instance_size,
                             const gchar      *name,
                             const gchar      *parent,
@@ -71,10 +51,8 @@ TypeRegistry::TypeRegistry (guint             instance_size,
                    (GClassInitFunc) class_init,
                    iinit, flags);
   entry.reg = this;
-
   if (!type_entries)
     type_entries = new list<TypeEntry>();
-
   list<TypeEntry>::iterator li;
   for (li = type_entries->begin(); li != type_entries->end(); li++)
     if (strcmp (li->name, parent) == 0)
@@ -84,7 +62,6 @@ TypeRegistry::TypeRegistry (guint             instance_size,
   else  // parent not found in list
     type_entries->push_front (entry);
 }
-
 void
 TypeRegistry::init_types()
 {
@@ -92,7 +69,6 @@ TypeRegistry::init_types()
     {
       TypeRegistry *self = li->reg;
       GTypeInfo info = { 0, };
-
       info.class_size = BSE_CXX_COMMON_CLASS_SIZE;
       info.base_init = li->binit;
       info.class_init = li->cinit;
@@ -111,7 +87,6 @@ TypeRegistry::init_types()
   delete type_entries;
   type_entries = NULL;
 }
-
 static void
 bse_terminate_handler ()
 {
@@ -128,7 +103,6 @@ bse_terminate_handler ()
     g_error ("aborting due to uncaught exception");
   }
 }
-
 static void
 init_exception_handler ()
 {
@@ -140,12 +114,10 @@ init_exception_handler ()
   set_terminate (bse_terminate_handler);
 #endif
 }
-
 extern "C" void
-bse_cxx_init (void)  // prototyped in bseutils.h
+bse_cxx_init (void)  // prototyped in bseutils.hh
 {
   init_exception_handler ();
   Bse::TypeRegistry::init_types();
 }
-
 } // Bse

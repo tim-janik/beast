@@ -1,44 +1,25 @@
-/* SSE optimized FIR Resampling code
- * Copyright (C) 2006 Stefan Westerfeld
- *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * A copy of the GNU Lesser General Public License should ship along
- * with this library; if not, see http://www.gnu.org/copyleft/.
- */
+// Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include <bse/bseresampler.hh>
 #include <bse/bseresamplerimpl.hh>
 #include <bse/bseblockutils.hh>
 #include <birnet/birnettests.h>
-#include <bse/bsemain.h>
-#include <bse/bsemath.h>
-#include <bse/bsemathsignal.h>
-#include <bse/gslfft.h>
+#include <bse/bsemain.hh>
+#include <bse/bsemath.hh>
+#include <bse/bsemathsignal.hh>
+#include <bse/gslfft.hh>
 #include "topconfig.h"
-
 #include <stdio.h>
 #include <math.h>
 #include <sys/time.h>
 #include <time.h>
-
 #include <string>
 #include <vector>
-
 using std::string;
 using std::vector;
 using std::min;
 using std::max;
 using std::copy;
 using namespace Bse::Resampler;
-
 enum TestType
 {
   TEST_NONE,
@@ -49,7 +30,6 @@ enum TestType
   TEST_IMPULSE,
   TEST_FILTER_IMPL
 } test_type = TEST_NONE;
-
 enum ResampleType
 {
   RES_DOWNSAMPLE,
@@ -57,7 +37,6 @@ enum ResampleType
   RES_SUBSAMPLE,
   RES_OVERSAMPLE
 } resample_type = RES_UPSAMPLE;
-
 struct Options {
   guint			  block_size;
   double		  frequency;
@@ -69,7 +48,6 @@ struct Options {
   BseResampler2Precision  precision;
   bool                    filter_impl_verbose;
   string		  program_name;
-
   Options() :
     block_size (128),
     frequency (440.0),
@@ -85,7 +63,6 @@ struct Options {
   }
   void parse (int *argc_p, char **argv_p[]);
 } options;
-
 static void
 usage ()
 {
@@ -139,10 +116,7 @@ usage ()
   printf ("  # plot the errors occuring in this frequency scan with gnuplot, including the max threshold\n");
   printf ("  testresampler accuracy --precision=20 --freq-scan=50,18000,50 --freq-scan-verbose --max-threshold=110 --up > x\n");
   printf ("  gnuplot <(echo 'plot [0:][:0] \"x\" with lines, -110; pause -1')\n");
-
 }
-
-
 static bool
 check_arg (uint         argc,
            char        *argv[],
@@ -152,11 +126,9 @@ check_arg (uint         argc,
 {
   g_return_val_if_fail (opt != NULL, false);
   g_return_val_if_fail (*nth < argc, false);
-
   const char *arg = argv[*nth];
   if (!arg)
     return false;
-
   uint opt_len = strlen (opt);
   if (strcmp (arg, opt) == 0)
     {
@@ -186,11 +158,9 @@ check_arg (uint         argc,
     }
   else
     return false;
-
   usage();
   exit (1);
 }
-
 void
 Options::parse (int   *argc_p,
                 char **argv_p[])
@@ -198,16 +168,13 @@ Options::parse (int   *argc_p,
   guint argc = *argc_p;
   gchar **argv = *argv_p;
   unsigned int i;
-
   g_return_if_fail (argc >= 0);
-
   /*  I am tired of seeing .libs/lt-bsefcompare all the time,
    *  but basically this should be done (to allow renaming the binary):
    *
   if (argc && argv[0])
     program_name = argv[0];
   */
-
   for (i = 1; i < argc; i++)
     {
       const char *opt_arg;
@@ -231,7 +198,6 @@ Options::parse (int   *argc_p,
 	      block_size++;
 	      g_printerr ("testresampler: block size needs to be even (fixed: using %d as block size)\n", block_size);
 	    }
-
 	  if (block_size < 2)
 	    {
 	      block_size = 2;
@@ -263,7 +229,6 @@ Options::parse (int   *argc_p,
 	  gchar *fmin = strtok (oa, ",");
 	  gchar *fmax = fmin ? strtok (NULL, ",") : NULL;
 	  gchar *finc = fmax ? strtok (NULL, ",") : NULL;
-
 	  if (finc)
 	    {
 	      freq_min = g_ascii_strtod (fmin, NULL);
@@ -299,7 +264,6 @@ Options::parse (int   *argc_p,
       else if (check_arg (argc, argv, &i, "--oversample"))
         resample_type = RES_OVERSAMPLE;
     }
-
   /* resort argc/argv */
   guint e = 1;
   for (i = 1; i < argc; i++)
@@ -311,22 +275,18 @@ Options::parse (int   *argc_p,
       }
   *argc_p = e;
 }
-
 int
 test_filter_impl()
 {
   return Bse::Block::test_resampler2 (options.filter_impl_verbose) ? 0 : 1;
 }
-
 double
 gettime ()
 {
   timeval tv;
   gettimeofday (&tv, 0);
-
   return tv.tv_sec + tv.tv_usec / 1000000.0;
 }
-
 template <int TEST, int RESAMPLE> int
 perform_test()
 {
@@ -345,17 +305,13 @@ perform_test()
    */
   Resampler2 *ups = Resampler2::create (BSE_RESAMPLER2_MODE_UPSAMPLE, options.precision);
   Resampler2 *downs = Resampler2::create (BSE_RESAMPLER2_MODE_DOWNSAMPLE, options.precision);
-
   F4Vector in_v[block_size / 2 + 3], out_v[block_size / 2 + 3], out2_v[block_size / 2 + 3];
   float *input = &in_v[0].f[0], *output = &out_v[0].f[0], *output2 = &out2_v[0].f[0]; /* ensure aligned data */
-
   if (TEST == TEST_PERFORMANCE)
     {
       const gdouble test_frequency = options.frequency;
-
       for (unsigned int i = 0; i < block_size; i++)
 	input[i] = sin (i * test_frequency / 44100.0 * 2 * M_PI);
-
       double start_time = gettime();
       long long k = 0;
       for (int i = 0; i < 500000; i++)
@@ -399,7 +355,6 @@ perform_test()
       const double freq_max = freq_scanning ? options.freq_max : 1.5 * options.frequency;
       const double freq_inc = freq_scanning ? options.freq_inc : options.frequency;
       vector<double> error_spectrum_error;
-
       if (TEST == TEST_ACCURACY)
 	{
 	  if (freq_scanning)
@@ -408,9 +363,7 @@ perform_test()
 	  else
 	    printf ("#   input frequency used to perform test = %.2f Hz (SR = 44100.0 Hz)\n", options.frequency);
 	}
-
       double max_diff = 0;
-
       /* for getting the last frequency in ranges like [ 50, 18000, 50 ] scanned,
        * even in the presence of rounding errors, we add 1 Hz to the end frequency
        */
@@ -419,20 +372,16 @@ perform_test()
 	  long long k = 0;
 	  double phase = 0, output_phase = 0;
 	  double test_frequency_max_diff = 0; /* for monitoring frequency scanning */
-
 	  while (k < 20000)
 	    {
 	      guint misalign = rand() % 4;
               if (block_size <= misalign)
                 continue;
-
 	      int bs = rand() % (block_size + 1 - misalign);
               if (bs < 2)
                 continue;
-
 	      if (RESAMPLE == RES_DOWNSAMPLE || RESAMPLE == RES_SUBSAMPLE)
 		bs -= bs & 1;
-
 	      for (int i = 0; i < bs; i++)
 		{
 		  input[i+misalign] = sin (phase);
@@ -452,14 +401,12 @@ perform_test()
 		  if (RESAMPLE == RES_OVERSAMPLE)
 		    downs->process_block (output, bs * 2, output2);
 		}
-
 	      /* validate output */
 	      double sin_shift;
 	      double freq_factor;
 	      double correct_volume;
 	      unsigned int out_bs;
 	      float *check = output;
-
 	      if (RESAMPLE == RES_UPSAMPLE)
 		{
 		  sin_shift = ups->delay();
@@ -490,7 +437,6 @@ perform_test()
 		  out_bs = bs;
 		  correct_volume = (test_frequency < (44100/4)) ? 1 : 0;
 		}
-
 	      for (unsigned int i = 0; i < out_bs; i++, k++)
 		{
 		  if (k > (ups->order() * 4))
@@ -499,7 +445,6 @@ perform_test()
 		       * different frequency and is phase shifted a bit.
 		       */
 		      double correct_output = sin (output_phase - sin_shift * 2 * freq_factor * test_frequency / 44100.0 * M_PI);
-
 		      /* For some frequencies the expected output signal amplitude is
 		       * zero, because it needed to be filtered out; this fact is
 		       * taken into account here.
@@ -547,11 +492,9 @@ perform_test()
 	    {
 	      double fft_error[FFT_SIZE];
 	      double normalize = 0;
-
 	      for (guint i = 0; i < FFT_SIZE; i++)
 		{
 		  double w = bse_window_blackman (double (2 * i - FFT_SIZE) / FFT_SIZE);
-
 		  normalize += w;
 		  error_spectrum_error[i] *= w;
 		}
@@ -561,22 +504,18 @@ perform_test()
 	      normalize /= FFT_SIZE;
 	      gsl_power2_fftar (FFT_SIZE, &error_spectrum_error[0], fft_error);
 	      fft_error[1] = 0; // we don't process the extra value at FS/2
-
 	      /* Normalization 2: the FFT produces FFT_SIZE/2 complex output values.
 	       */
 	      normalize *= (FFT_SIZE / 2);
-
 	      double freq_scale = 1; /* subsample + oversample */
 	      if (RESAMPLE == RES_UPSAMPLE)
 		freq_scale = 2;
 	      else if (RESAMPLE == RES_DOWNSAMPLE)
 		freq_scale = 0.5;
-
 	      for (guint i = 0; i < FFT_SIZE/2; i++)
 		{
 		  double normalized_error = bse_complex_abs (bse_complex (fft_error[i * 2], fft_error[i * 2 + 1])) / normalize;
 		  double normalized_error_db = 20 * log (normalized_error) / log (10);
-
 		  printf ("%f %f\n", i / double (FFT_SIZE) * 44100 * freq_scale, normalized_error_db);
 		}
 	    }
@@ -591,7 +530,6 @@ perform_test()
 	  output[i] = 0;
 	  output2[i] = 0;
 	}
-
       if (RESAMPLE == RES_DOWNSAMPLE || RESAMPLE == RES_SUBSAMPLE)
 	{
 	  downs->process_block (input, block_size, output);
@@ -604,11 +542,9 @@ perform_test()
 	  if (RESAMPLE == RES_OVERSAMPLE)
 	    downs->process_block (output, block_size * 2, output2);
 	}
-
       float *check = output;
       if (RESAMPLE == RES_OVERSAMPLE || RESAMPLE == RES_SUBSAMPLE)
 	check = output2;
-
       for (unsigned int i = 0; i < block_size; i++)
 	printf ("%.17f\n", check[i]);
     }
@@ -616,12 +552,10 @@ perform_test()
   delete downs;
   return 0;
 }
-
 template <int TEST> int
 perform_test ()
 {
   const char *instruction_set = Bse::Block::impl_name();
-
   switch (resample_type)
     {
     case RES_DOWNSAMPLE:  printf ("for factor 2 downsampling using %s instructions\n", instruction_set);
@@ -636,7 +570,6 @@ perform_test ()
 			  return 1;
     }
 }
-
 int
 perform_test()
 {
@@ -651,7 +584,6 @@ perform_test()
     default:		      usage(); return 1;
     }
 }
-
 int
 main (int argc, char **argv)
 {
@@ -661,7 +593,6 @@ main (int argc, char **argv)
   for (int i = 0; i < argc; i++)
     if (strcmp (argv[i], "--fpu") == 0)
       argv[i] = g_strdup ("--bse-force-fpu"); /* leak, but we don't care */
-
   /* load plugins */
   SfiInitValue config[] = {
 	{ "load-core-plugins", "1" },
@@ -669,7 +600,6 @@ main (int argc, char **argv)
   };
   bse_init_test (&argc, &argv, config);
   options.parse (&argc, &argv);
-
   if (argc == 2)
     {
       string command = argv[1];

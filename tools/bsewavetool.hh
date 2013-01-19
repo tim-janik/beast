@@ -1,30 +1,13 @@
-/* BseWaveTool - BSE Wave creation tool
- * Copyright (C) 2001-2004 Tim Janik
- *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * A copy of the GNU Lesser General Public License should ship along
- * with this library; if not, see http://www.gnu.org/copyleft/.
- */
-#include <bse/gsldatahandle.h>
-#include <bse/gslwavechunk.h>
+// Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
+#include <bse/gsldatahandle.hh>
+#include <bse/gslwavechunk.hh>
 #include "bseloopfuncs.hh"
 #include "bwtwave.hh"
 #include <unistd.h>
 #include <typeinfo>
 #include <string>
-
 namespace BseWaveTool {
 using namespace std;
-
 /* --- command + registry --- */
 class Command {
 public:
@@ -38,5 +21,4 @@ public:
   virtual      ~Command    ()                   {}
   static list<Command*> registry;
 };
-
 } // BseWaveTool

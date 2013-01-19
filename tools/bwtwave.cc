@@ -1,24 +1,9 @@
-/* BseWaveTool - BSE Wave manipulation tool             -*-mode: c++;-*-
- * Copyright (C) 2001-2004 Tim Janik
- *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * A copy of the GNU Lesser General Public License should ship along
- * with this library; if not, see http://www.gnu.org/copyleft/.
- */
+// Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bwtwave.hh"
-#include <bse/bsemath.h>
-#include <bse/gsldatautils.h>
-#include <bse/gsldatahandle-vorbis.h>
-#include <bse/bseloader.h>
+#include <bse/bsemath.hh>
+#include <bse/gsldatautils.hh>
+#include <bse/gsldatahandle-vorbis.hh>
+#include <bse/bseloader.hh>
 #include <bse/bsecxxutils.hh>
 #include <sys/stat.h>
 #include <unistd.h>
@@ -28,15 +13,11 @@
 #include <algorithm>
 #include <vector>
 #include <map>
-
-
 namespace BseWaveTool {
-
 WaveChunk::WaveChunk ()
 {
   dhandle = NULL;
 }
-
 WaveChunk&
 WaveChunk::operator= (const WaveChunk &rhs)
 {
@@ -45,14 +26,12 @@ WaveChunk::operator= (const WaveChunk &rhs)
     gsl_data_handle_open (dhandle);
   return *this;
 }
-
 WaveChunk::WaveChunk (const WaveChunk &rhs)
 {
   *this = rhs;
   if (dhandle)
     gsl_data_handle_open (dhandle);
 }
-
 BseErrorType
 WaveChunk::change_dhandle (GslDataHandle *xhandle,
                            gdouble        osc_freq,
@@ -80,7 +59,6 @@ WaveChunk::change_dhandle (GslDataHandle *xhandle,
   else
     return error;
 }
-
 BseErrorType
 WaveChunk::set_dhandle_from_file (const string &fname,
                                   gdouble       osc_freq,
@@ -104,13 +82,11 @@ WaveChunk::set_dhandle_from_file (const string &fname,
   else
     return error;
 }
-
 WaveChunk::~WaveChunk ()
 {
   if (dhandle)
     gsl_data_handle_close (dhandle);
 }
-
 Wave::Wave (const gchar    *wave_name,
             guint           n_ch,
             gchar         **xinfos) :
@@ -119,13 +95,11 @@ Wave::Wave (const gchar    *wave_name,
   wave_xinfos (bse_xinfos_dup_consolidated (xinfos, FALSE))
 {
 }
-
 BseErrorType
 Wave::add_chunk (GslDataHandle  *dhandle,
                  gchar         **xinfos)
 {
   g_return_val_if_fail (dhandle != NULL, BSE_ERROR_INTERNAL);
-
   if (xinfos)
     {
       GslDataHandle *tmp_handle = gsl_data_handle_new_add_xinfos (dhandle, xinfos);
@@ -134,7 +108,6 @@ Wave::add_chunk (GslDataHandle  *dhandle,
     }
   else
     gsl_data_handle_ref (dhandle);
-
   BseErrorType error = gsl_data_handle_open (dhandle);
   if (!error)
     {
@@ -145,7 +118,6 @@ Wave::add_chunk (GslDataHandle  *dhandle,
   gsl_data_handle_unref (dhandle);
   return error;
 }
-
 void
 Wave::set_xinfo (const gchar    *key,
                  const gchar    *value)
@@ -155,7 +127,6 @@ Wave::set_xinfo (const gchar    *key,
   else
     wave_xinfos = bse_xinfos_del_value (wave_xinfos, key);
 }
-
 void
 Wave::set_chunks_xinfo (const gchar    *key,
                         const gchar    *value,
@@ -184,7 +155,6 @@ Wave::set_chunks_xinfo (const gchar    *key,
         wchunk.dhandle = tmp_handle;
       }
 }
-
 GslDataHandle*
 Wave::lookup (gfloat osc_freq)
 {
@@ -193,14 +163,12 @@ Wave::lookup (gfloat osc_freq)
       return it->dhandle;
   return NULL;
 }
-
 static int
 compare_floats (float f1,
                 float f2)
 {
   return f1 < f2 ? -1 : f1 > f2;
 }
-
 bool
 Wave::match (const WaveChunk &wchunk,
              vector<float>   &sorted_freqs)
@@ -217,13 +185,11 @@ Wave::match (const WaveChunk &wchunk,
     return true;
   return false;
 }
-
 void
 Wave::remove (list<WaveChunk>::iterator it)
 {
   chunks.erase (it);
 }
-
 void
 Wave::sort ()
 {
@@ -245,12 +211,10 @@ Wave::sort ()
   chunks.assign (vwc.begin(), vwc.end());
 #endif
 }
-
 BseErrorType
 Wave::store (const string file_name)
 {
   g_return_val_if_fail (file_name.c_str() != NULL, BSE_ERROR_INTERNAL);
-
   /* save to temporary file */
   gint fd;
   gchar *temp_file = NULL;
@@ -267,7 +231,6 @@ Wave::store (const string file_name)
       g_free (temp_file);
       return bse_error_from_errno (errno, BSE_ERROR_FILE_OPEN_FAILED);
     }
-
   /* figure default mix_freq */
   guint n_raw_handles = 0;
   map<float, guint> mf_counters;
@@ -298,7 +261,6 @@ Wave::store (const string file_name)
         max_count = it->second;
         dfl_mix_freq = it->first;
       }
-
   /* dump wave header */
   SfiWStore *wstore = sfi_wstore_new ();
   wstore->comment_start = '#';
@@ -331,7 +293,6 @@ Wave::store (const string file_name)
           g_free (ckey);
         }
   g_strfreev (xinfos);
-
   /* dump chunks */
   for (list<WaveChunk>::iterator it = chunks.begin(); it != chunks.end(); it++)
     {
@@ -346,7 +307,6 @@ Wave::store (const string file_name)
           sfi_wstore_putf (wstore, gsl_data_handle_osc_freq (chunk->dhandle));
           sfi_wstore_puts (wstore, "\n");
         }
-      
       GslDataHandle *dhandle, *tmp_handle = chunk->dhandle;
       do        /* skip comment or cache handles */
         {
@@ -374,7 +334,6 @@ Wave::store (const string file_name)
               sfi_wstore_puts (wstore, "\n");
             }
         }
-
       if (chunk->dhandle->setup.xinfos)
         for (guint i = 0; chunk->dhandle->setup.xinfos[i]; i++)
           if (chunk->dhandle->setup.xinfos[i][0] != '.')
@@ -397,17 +356,14 @@ Wave::store (const string file_name)
                 }
               g_free (ckey);
             }
-
       sfi_wstore_puts (wstore, "  }\n");
     }
-
   sfi_wstore_puts (wstore, "}\n");
   gint nerrno = sfi_wstore_flush_fd (wstore, fd);
   BseErrorType error = bse_error_from_errno (-nerrno, BSE_ERROR_FILE_WRITE_FAILED);
   if (close (fd) < 0 && error == BSE_ERROR_NONE)
     error = bse_error_from_errno (errno, BSE_ERROR_FILE_WRITE_FAILED);
   sfi_wstore_destroy (wstore);
-
   /* replace output file by temporary file */
   if (error != BSE_ERROR_NONE)
     {
@@ -419,13 +375,10 @@ Wave::store (const string file_name)
       unlink (temp_file);
     }
   g_free (temp_file);
-
   return error;
 }
-
 Wave::~Wave ()
 {
   g_strfreev (wave_xinfos);
 }
-
 } // BseWaveTool

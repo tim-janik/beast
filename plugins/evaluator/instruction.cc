@@ -1,24 +1,6 @@
-/*
- * Copyright (C) 2003 Stefan Westerfeld <stefan@space.twc.de>
- *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * A copy of the GNU Lesser General Public License should ship along
- * with this library; if not, see http://www.gnu.org/copyleft/.
- */
-
+// Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "instruction.hh"
-
 using namespace Bse::EvaluatorUtils;
-
 Instruction Instruction::rr(Instruction::Type ins, int reg1, int reg2)
 {
     Instruction i;
@@ -27,7 +9,6 @@ Instruction Instruction::rr(Instruction::Type ins, int reg1, int reg2)
     i.p2.reg = reg2;
     return i;
 }
-
 Instruction Instruction::rv(Instruction::Type ins, int reg, double val)
 {
     Instruction i;
@@ -36,7 +17,6 @@ Instruction Instruction::rv(Instruction::Type ins, int reg, double val)
     i.p2.val = val;
     return i;
 }
-
 void Instruction::rw_registers(int& read1, int& read2, int& write1, int& write2) const
 {
     read1 = read2 = write1 = write2 = -1;
@@ -60,7 +40,6 @@ void Instruction::rw_registers(int& read1, int& read2, int& write1, int& write2)
 	read1 = write1 = p1.reg;
     }
 }
-
 void Instruction::print(const Symbols& symbols) const
 {
     switch(ins)
@@ -80,5 +59,4 @@ void Instruction::print(const Symbols& symbols) const
 		    break;
     }
 }
-
 /* vim:set ts=8 sw=4 sts=4: */

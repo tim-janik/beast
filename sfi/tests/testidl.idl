@@ -1,63 +1,54 @@
-/*   -*-mode: c++;-*- */
+// Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
+//-*-mode: c++;-*-
 namespace Test  // this comment tests C++ style comments
 {
 /* test string stuff */
 Const ANSWER_A = "the answer to all questions";
 Const ANSWER_B = 42;
 Const ULTIMATE_ANSWER = (ANSWER_A " is " ANSWER_B);
-
-choice YesNoUndecided {
-  Undecided = (Neutral, "Undecided"),
-        Yes = (1, "Yes"),
-         No = (2, "No")
+enum YesNoUndecided {
+  Undecided = Enum (0, "Undecided"),
+        Yes = Enum (1, "Yes"),
+         No = Enum (2, "No")
 };
-
-choice ExcessiveChoiceTest {
+enum ExcessiveChoiceTest {
   V0, 
   V2  = 2,
   V4  = "l4",
   V6  = _("l6i"),
-  V8  = (8, "l8"),
-  V10 = (10, _("l10i")),
-  V12 = (12, "l12", _("b12")),
-  V14 = (14, _("l14i"), _("b14i")),
+  V8  = Enum (8, "l8"),
+  V10 = Enum (10, _("l10i")),
+  V12 = Enum (12, "l12", _("b12")),
+  V14 = Enum (14, _("l14i"), _("b14i")),
 };
-
 record Position {
   Sfi::Real x = ("X", "", 2.0, -10.0, 10.0, 1, ":readwrite");
   Sfi::Real y = ("Y", "", 3.0, -10.0, 10.0, 1, ":readwrite");
   YesNoUndecided relevant = ("Relevant", "", "test-yes", ":readwrite");
 };
-
 record SickGenericThings {
   // $GROUP = "foo";
   Sfi::Rec   rec   = ("Rec", "", ":readwrite");
 };
-
 record RealDivision {
   // computation result should be 3.14
   Sfi::Real pi = ("PI", "", 314.0 / 100.0, 3, 4, 0.1, ":readwrite");
 };
-
 // no more Sfi:: prefixing beyond this line
 using namespace Sfi;
-
-class Blub {
+interface Blub {
   property Real x;
   // property "X-Group" Real y;
   group "Other Properties" {
     Num z;
   };
 };
-
 sequence PositionSeq {
   Position positions = ("Position", "", ":readwrite");
 };
-
 /* test that C++ style commments are properly ignored within strings */
 Const CXX_COMMENT_TEST_1 = "Foo // bar";
 Const CXX_COMMENT_TEST_2 = "Foo \" // bar";
 Const CXX_COMMENT_TEST_3 = "Foo \\";//bar
-
 };
 /* vim:set ts=8 sts=2 sw=2 syntax=cpp: */

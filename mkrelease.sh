@@ -287,6 +287,10 @@ done
   msg "Checking for even revision in version $VERSION..."
   test "$REVISION" = `echo "$REVISION / 2 * 2" | bc` && ok \
     || fail "note: refusing to release development version with odd revision: $REVISION"
+  msg "Checking master to be the current branch..."
+  CBRANCH=`git name-rev --always --name-only HEAD`
+  test "$CBRANCH" = master && ok \
+    || fail "note: expecting releases to be made from 'master' branch"
   msg "Checking HEAD to match upstream repository..."
   HBRANCH=`git symbolic-ref HEAD | sed s,^refs/heads/,,`
   HREMOTE=`git config --get "branch.$HBRANCH.remote"`
@@ -299,7 +303,7 @@ done
               "  $TCOMMIT != ${RCOMMIT:-<unknown-ref>}"
   }
   msg "Checking remote for unique release tarball..."
-  ssh "$REMOTE_HOST" test ! -e "$REMOTE_PATH$TARBALL" && ok \
+  ssh -x "$REMOTE_HOST" test ! -e "$REMOTE_PATH$TARBALL" && ok \
     || fail "note: file already exists: $REMOTE_HOST:$REMOTE_PATH$TARBALL"
   # planned steps
   msg2 "* Planned: tag HEAD as '$VERSION' release..."
@@ -336,7 +340,7 @@ done
   msg_ "* Uploading release tarball $TARBALL..."
   rsync -lpt --delay-updates "$TARBALL" "$REMOTE_HOST:$REMOTE_PATH" && ok \
     || fail "note: rsync transfer failed"
-  RLS=$(ssh "$REMOTE_HOST" ls -l \`readlink -f "$REMOTE_PATH/$TARBALL"\`)
+  RLS=$(ssh -x "$REMOTE_HOST" ls -l \`readlink -f "$REMOTE_PATH/$TARBALL"\`)
   msg2 ">" "$RLS"
   # push notes
   $needs_head_push && \

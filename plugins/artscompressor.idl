@@ -1,26 +1,8 @@
-/* ArtsCompressor - aRts Compressor Effect                        -*-mode: c++;-*-
- * Copyright (C) 2001 Matthias Kretz <kretz@kde.org>
- * Copyright (C) 2003-2004 Stefan Westerfeld <stefan@space.twc.de>
- *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * A copy of the GNU Lesser General Public License should ship along
- * with this library; if not, see http://www.gnu.org/copyleft/.
- */
-#include <bse/bse.idl>
-
+// Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
+include "bse/bsecxxmodule.idl";
 namespace Bse {
 namespace Arts {
-
-class Compressor : Effect {
+interface Compressor : Effect {
   Info    icon       = "icons/compressor.png";
   Info    authors    = "Matthias Kretz, Stefan Westerfeld";
   Info    license    = _("GNU Lesser General Public License");
@@ -45,27 +27,24 @@ class Compressor : Effect {
 			 "the music have been reduced in volume, we can now amplify everything, without risking distortion or clipping. "
 			 "This has the overall effect of the music sounding louder. In our example, an output "
 			 "amplification of 5 dB would be okay, if the input signal never exceeded 0 dB.");
-  IStream audio_in1  = (_("Audio In1"), _("Audio input 1"));
-  IStream audio_in2  = (_("Audio In2"), _("Audio input 2"));
-  OStream audio_out1 = (_("Audio Out1"), _("Compressed audio output 1"));
-  OStream audio_out2 = (_("Audio Out2"), _("Compressed audio output 2"));
-
+  IStream audio_in1  = Stream (_("Audio In1"), _("Audio input 1"));
+  IStream audio_in2  = Stream (_("Audio In2"), _("Audio input 2"));
+  OStream audio_out1 = Stream (_("Audio Out1"), _("Compressed audio output 1"));
+  OStream audio_out2 = Stream (_("Audio Out2"), _("Compressed audio output 2"));
   group _("Parameters") {
-    Real attack       = Real (_("Attack [ms]"), _("Set the attack time in milliseconds"), 10.0, 0.1, 250.0, 10.0, STANDARD ":scale");
-    Real release      = Real (_("Release [ms]"), _("Set the release time in milliseconds"), 10.0, 0.1, 250.0, 10.0, STANDARD ":scale");
+    Real attack       = SfiReal (_("Attack [ms]"), _("Set the attack time in milliseconds"), 10.0, 0.1, 250.0, 10.0, STANDARD ":scale");
+    Real release      = SfiReal (_("Release [ms]"), _("Set the release time in milliseconds"), 10.0, 0.1, 250.0, 10.0, STANDARD ":scale");
     Real threshold_db = Gain (_("Threshold [dB]"), _("Only parts louder than threshold are compressed"), 0, -100, 0, 1, STANDARD ":scale");
-    Real ratio_to_one = Real (_("Ratio [x:1]"), _("Set the compression ratio to x:1"), 2, 1.0, 20.0, 1, STANDARD ":scale");
+    Real ratio_to_one = SfiReal (_("Ratio [x:1]"), _("Set the compression ratio to x:1"), 2, 1.0, 20.0, 1, STANDARD ":scale");
     Real output_db    = Gain (_("Output [dB]"), _("Set the output amplification"), 0, -20, 20, 1, STANDARD ":scale");
     Bool auto_output  = Bool (_("Auto Output"), _("Adjust the output amplification automatically according to threshold and ratio"), FALSE, GUI);
   };
   group "compat" {    /* compatibility properties */
-    Real threshold    = Real (NULL, NULL, 1, 0.00001, 1, 0.01, "w");
-    Real ratio        = Real (NULL, NULL, 0.8, 0.0, 1.0, 0.1, "w");
-    Real output       = Real (NULL, NULL, 1, 0.1, 10.0, 1, "w");
+    Real threshold    = SfiReal ("", "", 1, 0.00001, 1, 0.01, "w");
+    Real ratio        = SfiReal ("", "", 0.8, 0.0, 1.0, 0.1, "w");
+    Real output       = SfiReal ("", "", 1, 0.1, 10.0, 1, "w");
   };
 };
-
 }; // Arts
 }; // Bse
-
 /* vim:set ts=8 sw=2 sts=2 syntax=cpp: */

@@ -1,21 +1,6 @@
-/* GSL - Generic Sound Layer
- * Copyright (C) 2003 Tim Janik
- *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * A copy of the GNU Lesser General Public License should ship along
- * with this library; if not, see http://www.gnu.org/copyleft/.
- */
-#include <bse/gslvorbis-cutter.h>
-#include <bse/bsemain.h>
+// Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
+#include <bse/gslvorbis-cutter.hh>
+#include <bse/bsemain.hh>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
@@ -23,12 +8,10 @@
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
-
 static GslVorbisCutterMode cutmode = GSL_VORBIS_CUTTER_NONE;
 static SfiNum              cutpoint = 0;
 static guint               filtered_serialno = 0;
 static gboolean            filter_serialno = FALSE;
-
 static void
 parse_args (int    *argc_p,
             char ***argv_p)
@@ -77,7 +60,6 @@ parse_args (int    *argc_p,
       }
   *argc_p = e;
 }
-
 int
 main (int   argc,
       char *argv[])
@@ -85,7 +67,6 @@ main (int   argc,
   const gchar *ifile, *ofile;
   GslVorbisCutter *cutter;
   gint ifd, ofd;
-
   /* initialization */
   SfiInitValue values[] = {
     { "stand-alone",            "true" }, /* no rcfiles etc. */
@@ -95,7 +76,6 @@ main (int   argc,
     { NULL }
   };
   bse_init_inprocess (&argc, &argv, "BseCutVorbis", values);
-
   /* arguments */
   parse_args (&argc, &argv);
   if (argc != 3)
@@ -109,12 +89,10 @@ main (int   argc,
     }
   ifile = argv[1];
   ofile = argv[2];
-
   cutter = gsl_vorbis_cutter_new ();
   gsl_vorbis_cutter_set_cutpoint (cutter, cutmode, cutpoint);
   if (filter_serialno)
     gsl_vorbis_cutter_filter_serialno (cutter, filtered_serialno);
-
   ifd = open (ifile, O_RDONLY);
   if (ifd < 0)
     {
@@ -127,7 +105,6 @@ main (int   argc,
       g_printerr ("Error: failed to open \"%s\": %s\n", ofile, g_strerror (errno));
       exit (1);
     }
-
   while (!gsl_vorbis_cutter_ogg_eos (cutter))
     {
       guint blength = 8192, n, j;
@@ -154,7 +131,6 @@ main (int   argc,
           exit (1);
         }
     }
-
   close (ifd);
   if (close (ofd) < 0)
     {
@@ -162,6 +138,5 @@ main (int   argc,
       exit (1);
     }
   g_print ("done\n");
-
   return 0;
 }

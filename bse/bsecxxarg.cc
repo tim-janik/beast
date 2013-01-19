@@ -1,30 +1,10 @@
-/* BSE - Better Sound Engine
- * Copyright (C) 2003 Tim Janik
- *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * A copy of the GNU Lesser General Public License should ship along
- * with this library; if not, see http://www.gnu.org/copyleft/.
- */
+// Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bsecxxarg.hh"
 #include "bsecxxbase.hh"
-
 namespace {
 using namespace Bse;
-
 } // namespace
-
-
 namespace Bse {
-
 const String
 tokenize_gtype (GType t)
 {
@@ -46,5 +26,4 @@ tokenize_gtype (GType t)
       throw InvalidArgument (G_STRLOC);
     }
 }
-
 } // Bse

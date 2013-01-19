@@ -1,20 +1,5 @@
-/* SFI - Synthesis Fusion Kit Interface
- * Copyright (C) 2002-2007 Stefan Westerfeld
- *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * A copy of the GNU Lesser General Public License should ship along
- * with this library; if not, see http://www.gnu.org/copyleft/.
- */
-#include <sfi/glib-extra.h>
+// Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
+#include <sfi/glib-extra.hh>
 #include <fcntl.h>
 #include <stdio.h>
 #include <unistd.h>
@@ -28,13 +13,10 @@
 #include <set>
 #include <stack>
 #include <algorithm>
-
 namespace {
-
 using namespace Sfidl;
 using std::set;
 using std::stack;
-
 /* As opposed to the birnet function string_from_double, we use "%.17e"
  * (instead of "%.17g"). This keeps doubles in param specs like (50.0/100.0)
  * intact, because the C++ compiler will still recognize that we have doubles
@@ -51,7 +33,6 @@ string_with_exponent_from_double (double value)
   g_ascii_formatd (buffer, G_ASCII_DTOSTR_BUF_SIZE, "%.17e", value);
   return buffer;
 }
-
 /* --- variables --- */
 static  GScannerConfig  scanner_config_template = {
   const_cast<gchar *>   /* FIXME: glib should use const gchar* here */
@@ -71,9 +52,7 @@ static  GScannerConfig  scanner_config_template = {
    G_CSET_A_2_Z
    )                    /* cset_identifier_nth */,
   0			/* cpair_comment_single */,
-  
   TRUE                  /* case_sensitive */,
-  
   TRUE                  /* skip_comment_multi */,
   TRUE                  /* skip_comment_single */,
   TRUE                  /* scan_comment_multi */,
@@ -96,11 +75,8 @@ static  GScannerConfig  scanner_config_template = {
   FALSE                 /* scope_0_fallback */,
   TRUE                  /* store_int64 */,
 };
-
 /* --- defines --- */
-
 #define DEBUG(x)         // dprintf(2,"%s",x)
-
 enum ExtraToken {
   TOKEN_NAMESPACE = G_TOKEN_LAST + 1,
   TOKEN_CLASS,
@@ -111,23 +87,20 @@ enum ExtraToken {
   TOKEN_GROUP,
   TOKEN_USING,
   TOKEN_CONST,
-  TOKEN_CONST_IDENT,
+  /*TOKEN_CONST_IDENT,*/
   TOKEN_INFO,
   TOKEN_ISTREAM,
   TOKEN_JSTREAM,
   TOKEN_OSTREAM,
   TOKEN_ERROR
 };
-
 const char *token_symbols[] = {
-  "namespace", "class", "choice", "record", "sequence",
+  "namespace", "interface", "enum", "record", "sequence",
   "property", "group", "using",
-  "Const", "ConstIdent", "Info", "IStream", "JStream", "OStream",
+  "Const", /*"ConstIdent",*/ "Info", "IStream", "JStream", "OStream",
   0
 };
-
 bool operator== (GTokenType t, ExtraToken e) { return (int) t == (int) e; }
-
 #define parse_or_return(token)  G_STMT_START{ \
   GTokenType _t = GTokenType(token); \
   if (g_scanner_get_next_token (scanner) != _t) \
@@ -194,35 +167,28 @@ bool operator== (GTokenType t, ExtraToken e) { return (int) t == (int) e; }
     return G_TOKEN_FLOAT; \
   if (negate) f = -f; \
 }G_STMT_END
-
 } // nanespace Anon
-
 /* --- methods --- */
-
 bool Parser::isChoice(const String& type) const
 {
   map<String,int>::const_iterator i = typeMap.find (type);
   return (i != typeMap.end()) && ((i->second & (~tdProto)) == tdChoice);
 }
-
 bool Parser::isSequence(const String& type) const
 {
   map<String,int>::const_iterator i = typeMap.find (type);
   return (i != typeMap.end()) && ((i->second & (~tdProto)) == tdSequence);
 }
-
 bool Parser::isRecord(const String& type) const
 {
   map<String,int>::const_iterator i = typeMap.find (type);
   return (i != typeMap.end()) && ((i->second & (~tdProto)) == tdRecord);
 }
-
 bool Parser::isClass(const String& type) const
 {
   map<String,int>::const_iterator i = typeMap.find (type);
   return (i != typeMap.end()) && ((i->second & (~tdProto)) == tdClass);
 }
-
 Type Parser::typeOf (const String& type) const
 {
   if (type == "void")	      return VOID;
@@ -241,85 +207,65 @@ Type Parser::typeOf (const String& type) const
   g_error (("invalid type: " + type).c_str());
   return VOID;
 }
-
 Sequence Parser::findSequence(const String& name) const
 {
   vector<Sequence>::const_iterator i;
-  
   for (i=sequences.begin(); i != sequences.end(); i++)
     if (i->name == name)
       return *i;
-  
   return Sequence();
 }
-
 Record Parser::findRecord(const String& name) const
 {
   vector<Record>::const_iterator i;
-  
   for (i=records.begin(); i != records.end(); i++)
     if (i->name == name)
       return *i;
-  
   return Record();
 }
-
 const Class*
 Parser::findClass (const String& name) const
 {
   for (vector<Class>::const_iterator ci = classes.begin(); ci != classes.end(); ci++)
     if (ci->name == name)
       return &*ci;
-
   return 0;
 }
-
 Parser::Parser () : options (*Options::the())
 {
   scanner = g_scanner_new64 (&scanner_config_template);
-  
   for (int n = 0; token_symbols[n]; n++)
     g_scanner_add_symbol (scanner, token_symbols[n], GUINT_TO_POINTER (G_TOKEN_LAST + 1 + n));
-  
   scanner->max_parse_errors = 10;
   scanner->parse_errors = 0;
   scanner->msg_handler = scannerMsgHandler;
   scanner->user_data = this;
 }
-
 void Parser::printError (const gchar *format, ...)
 {
   va_list args;
   gchar *string;
-  
   va_start (args, format);
   string = g_strdup_vprintf (format, args);
   va_end (args);
-  
   if (scanner->parse_errors < scanner->max_parse_errors)
     g_scanner_error (scanner, "%s", string);
-  
   g_free (string);
 }
-
 void Parser::printWarning (const gchar *format, ...)
 {
   va_list args;
   gchar *string;
-  
   va_start (args, format);
   string = g_strdup_vprintf (format, args);
   va_end (args);
-  
   g_scanner_warn (scanner, "%s", string);
   g_free (string);
 }
-
 void Parser::scannerMsgHandler (GScanner *scanner, gchar *message, gboolean is_error)
 {
   g_return_if_fail (scanner != NULL);
   g_return_if_fail (scanner->user_data != NULL);
-
   Parser *parser = static_cast<Parser *>(scanner->user_data);
   if (scanner->line > 0 && parser->scannerLineInfo.size() >= scanner->line)
     {
@@ -336,19 +282,15 @@ void Parser::scannerMsgHandler (GScanner *scanner, gchar *message, gboolean is_e
     fprintf (stderr, "warning: ");
   fprintf (stderr, "%s\n", message);
 }
-
 /* --- preprocessing related functions --- */
-
 template<class Iterator>
 static bool match(Iterator start, const char *string)
 {
   /* FIXME: can we exceed the bounds of the input vector? */
   while(*string && *start)
     if(*string++ != *start++) return false;
-
   return (*string == 0);
 }
-
 static bool fileExists(const String& filename)
 {
   FILE *test = fopen(filename.c_str(),"r");
@@ -359,7 +301,6 @@ static bool fileExists(const String& filename)
     }
   return false;
 }
-
 static void loadFile (FILE *file, vector<char>& v)
 {
   char buffer[1024];
@@ -367,7 +308,6 @@ static void loadFile (FILE *file, vector<char>& v)
   while (!feof (file) && (l = fread(buffer,1,1024,file)) > 0)
     v.insert(v.end(),buffer, buffer+l);
 }
-
 static void loadFile(const char *filename, vector<char>& v)
 {
   if (strcmp (filename, "-") == 0) /* stdin */
@@ -377,28 +317,22 @@ static void loadFile(const char *filename, vector<char>& v)
   else
     {
       FILE *file = fopen (filename,"r");
-
       if (!file)
 	{
 	  fprintf(stderr,"file '%s' not found\n",filename);
 	  exit(1);
 	}
-
       loadFile (file, v);
       fclose (file);
     }
 }
-
 bool Parser::haveIncluded (const String& filename) const
 {
   vector<String>::const_iterator i;
-
   for(i = includes.begin();i != includes.end();i++)
     if(*i == filename) return true;
-
   return false;
 }
-
 static void collectImplIncludes (set<String>& result,
 				 const String& root,
 				 map<String, set<String> >& implIncludeMap)
@@ -406,49 +340,40 @@ static void collectImplIncludes (set<String>& result,
   if (result.count (root) == 0)
     {
       result.insert (root);
-
       set<String>::const_iterator si;
       for (si = implIncludeMap[root].begin(); si != implIncludeMap[root].end(); si++)
 	collectImplIncludes (result, *si, implIncludeMap);
     }
 }
-
 void Parser::preprocess (const String& filename, bool includeImpl)
 {
   static stack<String> includeStack;
   static map<String, set<String> > implIncludeMap;
-
   // make a note whenever "file 1" implincludes "file 2"
   if (!includeStack.empty() && includeImpl)
     implIncludeMap[includeStack.top()].insert(filename);
-
   // do the actual preprocessing on the file
   if (!haveIncluded (filename))
     {
       includes.push_back (filename);
-
       includeStack.push (filename);
       preprocessContents (filename);
       includeStack.pop ();
     }
-
   // on the outer level compute which code to build
   if (includeStack.empty())
     {
       set<String> implIncludes;
       collectImplIncludes (implIncludes, filename, implIncludeMap);
       implIncludeMap.clear();
-
       vector<LineInfo>::iterator li;
       for (li = scannerLineInfo.begin(); li != scannerLineInfo.end(); li++)
 	li->isInclude = (implIncludes.count (li->filename) == 0);
-
       vector<Pragma>::iterator pi;
       for (pi = pragmas.begin(); pi != pragmas.end(); pi++)
 	pi->fromInclude = (implIncludes.count (pi->filename) == 0);
     }
 }
-
 void Parser::preprocessContents (const String& input_filename)
 {
   Pragma pragma;
@@ -460,15 +385,12 @@ void Parser::preprocessContents (const String& input_filename)
       filenameFind, filenameIn1, filenameIn2,
       inString, inStringEscape, inPragma
     } state = lineStart;
-
   LineInfo linfo;
   linfo.line = 1;
   linfo.filename = input_filename;
-
   vector<char> input;
   loadFile (input_filename.c_str(), input);
   input.push_back('\n'); // line number counting assumes files end with a newline
-
   vector<char>::iterator i = input.begin();
   while(i != input.end())
     {
@@ -547,12 +469,11 @@ void Parser::preprocessContents (const String& input_filename)
 	    case ' ':	// skip whitespaces
 	    case '\t':
 	      break;
-
 	    case '"':	state = filenameIn1;
 			break;
 	    case '<':	state = filenameIn2;
 			break;
-	    default:	g_printerr ("bad char after #include statement");
+	    default:	g_printerr ("bad char after include statement");
 			g_assert_not_reached (); // error handling!
 	    }
 	}
@@ -560,7 +481,7 @@ void Parser::preprocessContents (const String& input_filename)
 	   || (state == filenameIn2 && *i == '>'))
 	{
 	  String location;
-	  // #include "/usr/include/foo.idl" (absolute path includes)
+	  // include "/usr/include/foo.idl" (absolute path includes)
 	  if (g_path_is_absolute (filename.c_str()))
 	    {
 	      if (fileExists (filename))
@@ -568,15 +489,17 @@ void Parser::preprocessContents (const String& input_filename)
 	    }
 	  else
 	    {
-	      // #include "foo.idl" => search in local directory (relative to input_file)
+	      // include "foo.idl" => search in local directory (relative to input_file)
 	      if (state == filenameIn1)
 		{
-		  gchar *dir = g_path_get_dirname (input_filename.c_str());
-		  if (fileExists (dir + String(G_DIR_SEPARATOR_S) + filename))
-		    location = filename;
+		  char *dir = g_path_get_dirname (input_filename.c_str());
+                  String candidate = dir + String(G_DIR_SEPARATOR_S) + filename;
+		  const bool candidate_exists = fileExists (candidate);
+		  if (candidate_exists)
+		    location = candidate;
 		  g_free (dir);
 		}
-	      // all #include directives => search includepath with standard include dirs
+	      // all include directives => search includepath with standard include dirs
 	      if (location == "")
 		{
 		  vector<String>::const_iterator oi;
@@ -597,10 +520,17 @@ void Parser::preprocessContents (const String& input_filename)
 	      fprintf (stderr, "include file '%s' not found\n", filename.c_str());
 	      exit(1);
 	    }
+	  i++; // eat closing quote
+          if (match (i, " as implementation"))
+            {
+              i += 18;
+              includeImpl = true;
+            }
+          if (*i != ';')
+            g_error ("expected ';' after include statement");
+          i++; // eat semicolpon after include
 	  preprocess (location, includeImpl);
-
 	  state = idlCode;
-	  i++;
 	}
       else if(state == filenameIn1 || state == filenameIn2)
 	{
@@ -613,14 +543,14 @@ void Parser::preprocessContents (const String& input_filename)
 	}
       else if(state == lineStart) // check if we're on lineStart
 	{
-	  if(match(i,"#include-impl"))
+	  if (0 && match(i,"#include-impl")) // old syntax disabled
 	    {
 	      i += 13;
 	      state = filenameFind;
 	      filename = "";
 	      includeImpl = true;
 	    }
-	  else if(match(i,"#include"))
+	  else if(match(i,"include"))
 	    {
 	      i += 8;
 	      state = filenameFind;
@@ -657,15 +587,12 @@ void Parser::preprocessContents (const String& input_filename)
 	}
     }
 }
-
 bool Parser::insideInclude () const
 {
   int scanner_line = scanner->line - 1;
   g_return_val_if_fail (scanner_line >= 0 && scanner_line < (gint) scannerLineInfo.size(), false);
-
   return scannerLineInfo[scanner_line].isInclude;
 }
-
 /*
  * This gets the #pragma lines, which should look like this in the input file:
  *
@@ -681,11 +608,9 @@ vector<Pragma> Parser::getPragmas (const String& binding) const
     {
       enum { expectSfidl, expectBinding, expectColons, goodMatch, badMatch } state = expectSfidl;
       Pragma p = *pi;
-
       for (String::const_iterator ti = pi->text.begin(); ti != pi->text.end();)
 	{
 	  unsigned int chars_left = pi->text.end() - ti;
-
 	   if (state == goodMatch)
 	    {
 	      /* copy actual pragma content (stripped of SFIDL Binding::) */
@@ -724,16 +649,13 @@ vector<Pragma> Parser::getPragmas (const String& binding) const
 	  resultPragmas.push_back (p);
 	}
     }
-
   return resultPragmas;
 }
-
 bool Pragma::getString (const String& key, String& value)
 {
   bool result = false;
   GScanner *scanner = g_scanner_new64 (&scanner_config_template);
   g_scanner_input_text (scanner, text.c_str(), text.size());
-
   if (g_scanner_get_next_token (scanner) == G_TOKEN_IDENTIFIER)
     {
       if (scanner->value.v_identifier == key)
@@ -748,9 +670,7 @@ bool Pragma::getString (const String& key, String& value)
   g_scanner_destroy (scanner);
   return result;
 }
-
 namespace {
-
 /*
  * comparation class, used to sort classes in such an order that bases
  * classes appear before derived classes
@@ -759,11 +679,9 @@ class ClassCompare {
 public:
   const Parser& parser;
   map<String, int> inheritanceLevel;
-
   ClassCompare (const Parser& parser) : parser (parser)
   {
     vector<Class>::const_iterator ci;
-
     /*
      * precompute the inheritance levels, as the classes data structure within the
      * parser will be modified by sort() during sorting with ClassCompare ; besides,
@@ -772,7 +690,6 @@ public:
     for (ci = parser.getClasses().begin(); ci != parser.getClasses().end(); ci++)
       computeInheritanceLevel (*ci);
   }
-
   int computeInheritanceLevel (const Class& cdef)
   {
     int& level = inheritanceLevel[cdef.name];
@@ -786,7 +703,6 @@ public:
       }
     return level;
   }
-
   /* return true if c1 is to be placed before c2 */
   bool operator()(const Class& c1, const Class& c2)
   {
@@ -797,11 +713,8 @@ public:
     return c1.name < c2.name;
   }
 };
-
 } // namespace Anon
-
 /* --- parsing functions --- */
-
 bool Parser::parse (const String& filename)
 {
   /* preprocess (throws includes into contents, removes C-style comments) */
@@ -821,9 +734,7 @@ bool Parser::parse (const String& filename)
       g_free (dir);
     }
   /* FIXME: we leak scanner->input_name later on */
-
   currentNamespace = &rootNamespace;
-
   /* define primitive types into the basic namespace */
   enterNamespace ("Sfi");
   defineSymbol ("Bool");
@@ -831,17 +742,14 @@ bool Parser::parse (const String& filename)
   defineSymbol ("Num");
   defineSymbol ("Real");
   defineSymbol ("String");
-  defineSymbol ("BBlock");
-  defineSymbol ("FBlock");
+  // deprecated: defineSymbol ("BBlock");
+  // deprecated: defineSymbol ("FBlock");
   defineSymbol ("Rec");
   leaveNamespace ();
-
   GTokenType expected_token = G_TOKEN_NONE;
-  
   while (!g_scanner_eof (scanner) && expected_token == G_TOKEN_NONE)
     {
       g_scanner_get_next_token (scanner);
-      
       if (scanner->token == G_TOKEN_EOF)
         break;
       else if (scanner->token == TOKEN_NAMESPACE)
@@ -849,31 +757,24 @@ bool Parser::parse (const String& filename)
       else
         expected_token = G_TOKEN_EOF; /* '('; */
     }
-  
   if (expected_token != G_TOKEN_NONE && expected_token != (GTokenType)TOKEN_ERROR)
     {
       g_scanner_unexp_token (scanner, expected_token, NULL, NULL, NULL, NULL, TRUE);
       return false;
     }
-
   if (scanner->parse_errors > 0)
     return false;
-
   /* postprocessing of the data structures: */
   sort (classes.begin(), classes.end(), ClassCompare (*this));
   return true;
 }
-
 GTokenType Parser::parseNamespace()
 {
   DEBUG("parse namespace\n");
   parse_or_return (G_TOKEN_IDENTIFIER);
-
   if (!enterNamespace (scanner->value.v_identifier))
     return GTokenType (TOKEN_ERROR);
-  
   parse_or_return (G_TOKEN_LEFT_CURLY);
-
   bool ready = false;
   do
     {
@@ -913,7 +814,6 @@ GTokenType Parser::parseNamespace()
 	      GTokenType expected_token = parseMethod (procedure);
 	      if (expected_token != G_TOKEN_NONE)
 		return expected_token;
-
 	      procedure.name = defineSymbol (procedure.name.c_str());
 	      procedure.file = fileName();
 	      addProcedureTodo (procedure);
@@ -926,22 +826,22 @@ GTokenType Parser::parseNamespace()
 		return expected_token;
 	    }
 	    break;
-	  case TOKEN_CONST_IDENT:
+#if 0
+        case TOKEN_CONST_IDENT:
 	    {
 	      GTokenType expected_token = parseConstant (true);
 	      if (expected_token != G_TOKEN_NONE)
 		return expected_token;
 	    }
 	    break;
-	  case TOKEN_USING:
+#endif
+        case TOKEN_USING:
 	    {
 	      parse_or_return (TOKEN_USING);
 	      parse_or_return (TOKEN_NAMESPACE);
 	      parse_or_return (G_TOKEN_IDENTIFIER);
-
 	      if (!usingNamespace (scanner->value.v_identifier))
 		return GTokenType (TOKEN_ERROR);
-
 	      parse_or_return (';');
 	    }
 	    break;
@@ -958,18 +858,13 @@ GTokenType Parser::parseNamespace()
 	}
     }
   while (!ready);
-  
   parse_or_return (G_TOKEN_RIGHT_CURLY);
-
   /* semicolon after namespaces is optional (like in C++) */
   if (g_scanner_peek_next_token (scanner) == GTokenType(';'))
     parse_or_return (';');
-  
   leaveNamespace();
-  
   return G_TOKEN_NONE;
 }
-
 GTokenType Parser::parseTypeName (String& type)
 {
   parse_or_return (G_TOKEN_IDENTIFIER);
@@ -979,21 +874,16 @@ GTokenType Parser::parseTypeName (String& type)
       parse_or_return (':');
       parse_or_return (':');
       type += "::";
-
       parse_or_return (G_TOKEN_IDENTIFIER);
       type += scanner->value.v_identifier;
     }
-
   String qtype = qualifySymbol (type.c_str());
-
   if (qtype == "")
     printError ("can't find prior definition for type '%s'", type.c_str());
   else
     type = qtype;
-
   return G_TOKEN_NONE;
 }
-
 GTokenType Parser::parseStringOrConst (String &s)
 {
   if (g_scanner_peek_next_token (scanner) == G_TOKEN_IDENTIFIER)
@@ -1001,7 +891,6 @@ GTokenType Parser::parseStringOrConst (String &s)
       GTokenType expected_token = parseTypeName (s);
       if (expected_token != G_TOKEN_NONE)
 	return expected_token;
-
       for(vector<Constant>::iterator ci = constants.begin(); ci != constants.end(); ci++)
 	{
 	  if (ci->name == s &&
@@ -1027,29 +916,24 @@ GTokenType Parser::parseStringOrConst (String &s)
 	}
       printError("undeclared constant %s used", s.c_str());
     }
-
   parse_or_return (G_TOKEN_STRING);
   s = scanner->value.v_string;
   return G_TOKEN_NONE;
 }
-
 GTokenType Parser::parseConstant (bool isident)
 {
   /*
    * constant BAR = 3;
    */
   Constant cdef;
-
   if (isident)
-    parse_or_return (TOKEN_CONST_IDENT);
+    g_assert_not_reached (); /* parse_or_return (TOKEN_CONST_IDENT); */
   else
     parse_or_return (TOKEN_CONST);
   parse_or_return (G_TOKEN_IDENTIFIER);
   cdef.name = defineSymbol (scanner->value.v_identifier);
   cdef.file = fileName();
-  
   parse_or_return ('=');
-
   /* handle ConstIdent */
   if (isident)
     {
@@ -1060,9 +944,7 @@ GTokenType Parser::parseConstant (bool isident)
       addConstantTodo (cdef);
       return G_TOKEN_NONE;
     }
-
   GTokenType t = g_scanner_peek_next_token (scanner);
-
   /* allow positive/negative prefixing */
   bool negate = FALSE;
   while (t == '+' || t == '-')
@@ -1071,11 +953,9 @@ GTokenType Parser::parseConstant (bool isident)
       negate = negate ^ (t == '-');
       t = g_scanner_peek_next_token (scanner);
     }
-
   if (t == G_TOKEN_INT)
   {
     parse_or_return (G_TOKEN_INT);
-
     cdef.type = Constant::tInt;
     cdef.i = scanner->value.v_int64;
     if (negate)
@@ -1084,7 +964,6 @@ GTokenType Parser::parseConstant (bool isident)
   else if (t == G_TOKEN_FLOAT)
   {
     parse_or_return (G_TOKEN_FLOAT);
-
     cdef.type = Constant::tFloat;
     cdef.f = scanner->value.v_float;
     if (negate)
@@ -1093,7 +972,6 @@ GTokenType Parser::parseConstant (bool isident)
   else if (!negate)
   {
     parse_string_or_return (cdef.str);
-
     cdef.type = Constant::tString;
   }
   else
@@ -1101,18 +979,15 @@ GTokenType Parser::parseConstant (bool isident)
     return G_TOKEN_FLOAT;
   }
   parse_or_return (';');
-
   addConstantTodo (cdef);
   return G_TOKEN_NONE;
 }
-
 GTokenType
 Parser::parseChoice ()
 {
   Choice choice;
   int value = 0, sequentialValue = 1;
-  DEBUG("parse choice\n");
-  
+  DEBUG("parse enum\n");
   parse_or_return (TOKEN_CHOICE);
   parse_or_return (G_TOKEN_IDENTIFIER);
   choice.name = defineSymbol (scanner->value.v_identifier);
@@ -1127,27 +1002,22 @@ Parser::parseChoice ()
   while (g_scanner_peek_next_token (scanner) == G_TOKEN_IDENTIFIER)
     {
       ChoiceValue comp;
-      
       GTokenType expected_token = parseChoiceValue (comp, value, sequentialValue);
       if (expected_token != G_TOKEN_NONE)
 	return expected_token;
-      
       choice.contents.push_back(comp);
     }
   parse_or_return (G_TOKEN_RIGHT_CURLY);
   parse_or_return (';');
-  
   addChoiceTodo (choice);
   return G_TOKEN_NONE;
 }
-
 static void
 skip_ascii_at (GScanner *scanner)
 {
   if (g_scanner_peek_next_token (scanner) == '@')
     g_scanner_get_next_token (scanner);
 }
-
 #define to_lower(c)                             ( \
         (guchar) (                                                      \
           ( (((guchar)(c))>='A' && ((guchar)(c))<='Z') * ('a'-'A') ) |  \
@@ -1156,8 +1026,6 @@ skip_ascii_at (GScanner *scanner)
           ((guchar)(c))                                                 \
         )                                                               \
 )
-
-
 GTokenType
 Parser::parseChoiceValue (ChoiceValue& comp, int& value, int& sequentialValue)
 {
@@ -1171,39 +1039,30 @@ Parser::parseChoiceValue (ChoiceValue& comp, int& value, int& sequentialValue)
     if (comp.name[i] != ':' || comp.name[i + 1] != ':')
       str += comp.name[i] == ':' ? '_' : to_lower(comp.name[i]);
   comp.label = g_type_name_to_sname (str.c_str());
-  
   /*
     YES,
     YES = 1,
     YES = "Yes",
-    YES = Neutral,
     YES = (1),
-    YES = (1, "Yes"),
-    YES = (Neutral, "Yes"),
-    YES = (1, "Yes", "this is the Yes value"),
-    YES = ("Yes", "this is the Yes value"),
+    YES = Enum (0, "Yes"), // neutral
+    YES = Enum (1, "Yes", "this is the Yes value"),
+    YES = Enum ("Yes", "this is the Yes value"),
   */
   if (g_scanner_peek_next_token (scanner) == GTokenType('='))
     {
       parse_or_return ('=');
-      if (g_scanner_peek_next_token (scanner) == GTokenType('('))
+      if (g_scanner_peek_next_token (scanner) == G_TOKEN_IDENTIFIER &&
+          strcmp (scanner->next_value.v_string, "Enum") == 0)
         {
-          bool need_arg = true;
+          parse_or_return (G_TOKEN_IDENTIFIER); // "Enum"
           parse_or_return ('(');
+          bool need_arg = true;
           if (g_scanner_peek_next_token (scanner) == G_TOKEN_INT)
             {
               parse_or_return (G_TOKEN_INT);
               value = scanner->value.v_int64;
-              if (g_scanner_peek_next_token (scanner) == ',')
-                parse_or_return (',');
-              else
-                need_arg = false;
-            }
-          else if (g_scanner_peek_next_token (scanner) == G_TOKEN_IDENTIFIER &&
-                   strcmp (scanner->next_value.v_string, "Neutral") == 0)
-            {
-              parse_or_return (G_TOKEN_IDENTIFIER);
-              comp.neutral = true;
+              if (value == 0)
+                comp.neutral = true;
               if (g_scanner_peek_next_token (scanner) == ',')
                 parse_or_return (',');
               else
@@ -1231,12 +1090,8 @@ Parser::parseChoiceValue (ChoiceValue& comp, int& value, int& sequentialValue)
         {
           parse_or_return (G_TOKEN_INT);
           value = scanner->value.v_int64;
-        }
-      else if (g_scanner_peek_next_token (scanner) == G_TOKEN_IDENTIFIER &&
-               strcmp (scanner->next_value.v_string, "Neutral") == 0)
-        {
-          parse_or_return (G_TOKEN_IDENTIFIER);
-          comp.neutral = true;
+          if (value == 0)
+            comp.neutral = true;
         }
       else if (g_scanner_peek_next_token (scanner) == G_TOKEN_IDENTIFIER &&
                strcmp (scanner->next_value.v_string, "_") == 0)
@@ -1250,26 +1105,21 @@ Parser::parseChoiceValue (ChoiceValue& comp, int& value, int& sequentialValue)
       else
         return G_TOKEN_INT;
     }
-
   comp.value = value++;
   if (comp.neutral)
     comp.sequentialValue = 0;
   else
     comp.sequentialValue = sequentialValue++;
-  
   if (g_scanner_peek_next_token (scanner) == GTokenType(','))
     parse_or_return (',');
   else
     peek_or_return ('}');
-  
   return G_TOKEN_NONE;
 }
-
 GTokenType Parser::parseRecord ()
 {
   Record record;
   DEBUG("parse record\n");
-  
   parse_or_return (TOKEN_RECORD);
   parse_or_return (G_TOKEN_IDENTIFIER);
   record.name = defineSymbol (scanner->value.v_identifier);
@@ -1281,7 +1131,6 @@ GTokenType Parser::parseRecord ()
       return G_TOKEN_NONE;
     }
   parse_or_return (G_TOKEN_LEFT_CURLY);
-  
   bool ready = false;
   while (!ready)
     {
@@ -1291,11 +1140,9 @@ GTokenType Parser::parseRecord ()
         case G_TOKEN_IDENTIFIER:
           {
             Param def;
-            
             expected_token = parseRecordField (def, "");
             if (expected_token != G_TOKEN_NONE)
               return expected_token;
-            
             if (def.type != "")
               record.contents.push_back(def);
           }
@@ -1331,97 +1178,78 @@ GTokenType Parser::parseRecord ()
     }
   parse_or_return (G_TOKEN_RIGHT_CURLY);
   parse_or_return (';');
-  
   addRecordTodo (record);
   return G_TOKEN_NONE;
 }
-
 GTokenType Parser::parseRecordField (Param& def, const IString& group)
 {
   /* FooVolumeType volume_type; */
   /* float         volume_perc @= ("Volume[%]", "Set how loud something is",
      50, 0.0, 100.0, 5.0,
      ":dial:readwrite"); */
-  
   GTokenType expected_token = parseTypeName (def.type);
   if (expected_token != G_TOKEN_NONE)
     return expected_token;
-
   def.pspec = NamespaceHelper::nameOf (def.type); // FIXME: correct?
   def.group = group;
   def.line = scanner->line;
-  
   parse_or_return (G_TOKEN_IDENTIFIER);
   def.name = scanner->value.v_identifier;
   def.file = fileName();
-  
   /* the hints are optional */
   skip_ascii_at (scanner);
   if (g_scanner_peek_next_token (scanner) == '=')
     {
       g_scanner_get_next_token (scanner);
-      
       GTokenType expected_token = parseParamHints (def);
       if (expected_token != G_TOKEN_NONE)
 	return expected_token;
     }
-  
   parse_or_return (';');
   return G_TOKEN_NONE;
 }
-
 GTokenType
 Parser::parseStream (Stream&      stream,
                      Stream::Type stype)
 {
   /* OStream wave_out @= ("Audio Out", "Wave Output"); */
-
   stream.type = stype;
   stream.line = scanner->line;
-
   parse_or_return (G_TOKEN_IDENTIFIER);
   stream.ident = scanner->value.v_identifier;
-
   skip_ascii_at (scanner);
   parse_or_return ('=');
-
+  parse_or_return (G_TOKEN_IDENTIFIER);
+  if (strcmp (scanner->value.v_identifier, "Stream") != 0)
+    return G_TOKEN_IDENTIFIER;
   parse_or_return ('(');
   parse_istring_or_return (stream.label);
   parse_or_return (',');
   parse_istring_or_return (stream.blurb);
   parse_or_return (')');
-
   parse_or_return (';');
   return G_TOKEN_NONE;
 }
-
 /* like g_scanner_get_token, but accepts ':' within identifiers */
 static GTokenType
 scanner_get_next_token_with_colon_identifiers (GScanner *scanner)
 {
   char *cset_identifier_first_orig = scanner->config->cset_identifier_first;
   char *cset_identifier_nth_orig   = scanner->config->cset_identifier_nth;
-
   String identifier_first_with_colon = cset_identifier_first_orig + String (":");
   String identifier_nth_with_colon = cset_identifier_nth_orig + String (":");
-
   scanner->config->cset_identifier_first = const_cast<char *>(identifier_first_with_colon.c_str());
   scanner->config->cset_identifier_nth   = const_cast<char *>(identifier_nth_with_colon.c_str());
-
   GTokenType token = g_scanner_get_next_token (scanner);
-
   scanner->config->cset_identifier_first = cset_identifier_first_orig;
   scanner->config->cset_identifier_nth   = cset_identifier_nth_orig;
-
   return token;
 }
-
 /* returns true for C++ style identifiers (Foo::BAR) - only the colons are checked, not individual chars */
 static bool
 isCxxTypeName (const String& str)
 {
   enum { valid, colon1, colon2, invalid } state = valid;
-
   for (String::const_iterator i = str.begin(); i != str.end(); i++)
     {
       if (state == valid)
@@ -1446,13 +1274,11 @@ isCxxTypeName (const String& str)
     }
   return (state == valid) && (str.size() != 0);
 }
-
 static bool
 makeLiteralOptions (const String& options, String& literal_options)
 {
   bool failed = false;
   bool in_string = false;
-
   /*
    * this does handle
    *
@@ -1476,7 +1302,6 @@ makeLiteralOptions (const String& options, String& literal_options)
       if (*oi == '\\')
 	{
 	  last_was_backslash = true;
-
 	  if ((oi + 1) != options.end())      // unescape stuff
 	    oi++;
 	  else
@@ -1505,13 +1330,10 @@ makeLiteralOptions (const String& options, String& literal_options)
 		    break;
 	}
     }
-
   if (failed)
     literal_options = ""; // what we've got so far might be unusable
-
   return !failed;
 }
-
 GTokenType Parser::parseParamHints (Param &def)
 {
   if (g_scanner_peek_next_token (scanner) == G_TOKEN_IDENTIFIER)
@@ -1519,9 +1341,7 @@ GTokenType Parser::parseParamHints (Param &def)
       parse_or_return (G_TOKEN_IDENTIFIER);
       def.pspec = scanner->value.v_identifier;
     }
-
   parse_or_return ('(');
-
   int bracelevel = 1;
   String args;
   String current_arg;
@@ -1531,7 +1351,6 @@ GTokenType Parser::parseParamHints (Param &def)
       GTokenType t = scanner_get_next_token_with_colon_identifiers (scanner);
       String token_as_string;
       bool current_arg_complete = false;
-
       if (int (t) > 0 && int (t) <= 255)
 	{
 	  token_as_string = char (t);
@@ -1563,13 +1382,11 @@ GTokenType Parser::parseParamHints (Param &def)
 	    if (isCxxTypeName (scanner->value.v_identifier))
 	      {
 		String coname = qualifySymbol (scanner->value.v_identifier);
-
 		/* FIXME: there should be a generic const_to_string() function */
 		for (ci = constants.begin(); ci != constants.end(); ci++)
 		  if (ci->name == coname)
 		    break;
 	      }
-
             if (ci == constants.end())
               token_as_string = scanner->value.v_identifier;
             else switch (ci->type)
@@ -1628,7 +1445,6 @@ GTokenType Parser::parseParamHints (Param &def)
     printWarning ("can't parse option string: %s", def.options.c_str());
   return G_TOKEN_NONE;
 }
-
 GTokenType Parser::parseInfoOptional (Map<String,IString>& infos)
 {
   /*
@@ -1639,32 +1455,27 @@ GTokenType Parser::parseInfoOptional (Map<String,IString>& infos)
   {
     String  key;
     IString value;
-
     parse_or_return (TOKEN_INFO);
     parse_or_return (G_TOKEN_IDENTIFIER);
     key = scanner->value.v_identifier;
     parse_or_return ('=');
     parse_istring_or_return (value);
     parse_or_return (';');
-
     for (guint i = 0; i < key.size(); i++)
       key[i] = to_lower (key[i]);
     infos[key] = value;
   }
   return G_TOKEN_NONE;
 }
-
 GTokenType Parser::parseSequence ()
 {
   GTokenType expected_token;
   Sequence sequence;
-
   /*
    * sequence IntSeq {
    *   Int ints @= (...);
    * };
    */
-  
   parse_or_return (TOKEN_SEQUENCE);
   parse_or_return (G_TOKEN_IDENTIFIER);
   sequence.name = defineSymbol (scanner->value.v_identifier);
@@ -1676,36 +1487,28 @@ GTokenType Parser::parseSequence ()
       return G_TOKEN_NONE;
     }
   parse_or_return ('{');
-
   expected_token = parseInfoOptional (sequence.infos);
   if (expected_token != G_TOKEN_NONE)
     return expected_token;
-
   expected_token = parseRecordField (sequence.content, "");
   if (expected_token != G_TOKEN_NONE)
     return expected_token;
-
   expected_token = parseInfoOptional (sequence.infos);
   if (expected_token != G_TOKEN_NONE)
     return expected_token;
-
   parse_or_return ('}');
   parse_or_return (';');
-  
   addSequenceTodo (sequence);
   return G_TOKEN_NONE;
 }
-
 GTokenType Parser::parseClass ()
 {
   Class cdef;
   DEBUG("parse class\n");
-  
   parse_or_return (TOKEN_CLASS);
   parse_or_return (G_TOKEN_IDENTIFIER);
   cdef.name = defineSymbol (scanner->value.v_identifier);
   cdef.file = fileName();
-  
   if (g_scanner_peek_next_token (scanner) == GTokenType(';'))
     {
       parse_or_return (';');
@@ -1715,12 +1518,10 @@ GTokenType Parser::parseClass ()
   if (g_scanner_peek_next_token (scanner) == GTokenType(':'))
     {
       parse_or_return (':');
-      
       GTokenType expected_token = parseTypeName (cdef.inherits);
       if (expected_token != G_TOKEN_NONE)
 	return expected_token;
     }
-  
   parse_or_return ('{');
   while (g_scanner_peek_next_token (scanner) != G_TOKEN_RIGHT_CURLY)
     {
@@ -1733,7 +1534,6 @@ GTokenType Parser::parseClass ()
 	    GTokenType expected_token = parseMethod (method);
 	    if (expected_token != G_TOKEN_NONE)
 	      return expected_token;
-            
 	    if (method.result.type == "signal")
 	      cdef.signals.push_back(method);
 	    else
@@ -1750,13 +1550,10 @@ GTokenType Parser::parseClass ()
         case TOKEN_PROPERTY: /* FIXME: remove me due to deprecated syntax */
 	  {
 	    parse_or_return (TOKEN_PROPERTY);
-
 	    Param property;
-
 	    expected_token = parseRecordField (property, "");  // no i18n support, deprecated
 	    if (expected_token != G_TOKEN_NONE)
 	      return expected_token;
-            
 	    cdef.properties.push_back (property);
 	  }
 	  break;
@@ -1792,7 +1589,6 @@ GTokenType Parser::parseClass ()
             GTokenType expected_token = parseStream (stream, stype);
             if (expected_token != G_TOKEN_NONE)
               return expected_token;
-            
             switch (stream.type) {
             case Stream::IStream: cdef.istreams.push_back (stream); break;
             case Stream::JStream: cdef.jstreams.push_back (stream); break;
@@ -1806,11 +1602,9 @@ GTokenType Parser::parseClass ()
     }
   parse_or_return ('}');
   parse_or_return (';');
-  
   addClassTodo (cdef);
   return G_TOKEN_NONE;
 }
-
 GTokenType Parser::parseMethod (Method& method)
 {
   peek_or_return (G_TOKEN_IDENTIFIER);
@@ -1829,33 +1623,25 @@ GTokenType Parser::parseMethod (Method& method)
       GTokenType expected_token = parseTypeName (method.result.type);
       if (expected_token != G_TOKEN_NONE)
 	return expected_token;
-
       method.result.name = "result";
       method.result.file = fileName();
     }
-
   method.result.pspec = NamespaceHelper::nameOf (method.result.type); // FIXME: correct?
-
   parse_or_return (G_TOKEN_IDENTIFIER);
   method.name = scanner->value.v_identifier;
   method.file = fileName();
-  
   parse_or_return ('(');
   while (g_scanner_peek_next_token (scanner) == G_TOKEN_IDENTIFIER)
     {
       Param def;
-
       GTokenType expected_token = parseTypeName (def.type);
       if (expected_token != G_TOKEN_NONE)
 	return expected_token;
-
       def.pspec = NamespaceHelper::nameOf (def.type); // FIXME: correct?
-  
       parse_or_return (G_TOKEN_IDENTIFIER);
       def.name = scanner->value.v_identifier;
       def.file = fileName();
       method.params.push_back(def);
-
       if (g_scanner_peek_next_token (scanner) != GTokenType(')'))
 	{
 	  parse_or_return (',');
@@ -1863,13 +1649,11 @@ GTokenType Parser::parseMethod (Method& method)
 	}
     }
   parse_or_return (')');
-
   if (g_scanner_peek_next_token (scanner) == GTokenType(';'))
     {
       parse_or_return (';');
       return G_TOKEN_NONE;
     }
-
   parse_or_return ('{');
   while (g_scanner_peek_next_token (scanner) == G_TOKEN_IDENTIFIER ||
          g_scanner_peek_next_token (scanner) == TOKEN_INFO)
@@ -1883,10 +1667,8 @@ GTokenType Parser::parseMethod (Method& method)
       else
 	{
 	  Param *pd = 0;
-
 	  parse_or_return (G_TOKEN_IDENTIFIER);
 	  String inout = scanner->value.v_identifier;
-
 	  if (inout == "Out")
 	  {
 	    parse_or_return (G_TOKEN_IDENTIFIER);
@@ -1908,34 +1690,26 @@ GTokenType Parser::parseMethod (Method& method)
 	    printError("In or Out expected in method/procedure details");
 	    return G_TOKEN_IDENTIFIER;
 	  }
-
 	  if (!pd)
 	  {
 	    printError("can't associate method/procedure parameter details");
 	    return G_TOKEN_IDENTIFIER;
 	  }
-
 	  pd->line = scanner->line;
-
           skip_ascii_at (scanner);
 	  parse_or_return ('=');
-
 	  GTokenType expected_token = parseParamHints (*pd);
 	  if (expected_token != G_TOKEN_NONE)
 	    return expected_token;
-
 	  parse_or_return (';');
 	}
     }
   parse_or_return ('}');
-
   return G_TOKEN_NONE;
 }
-
 void Parser::addConstantTodo(const Constant& constant)
 {
   constants.push_back(constant);
-  
   if (insideInclude ())
     {
       includedNames.push_back (constant.name);
@@ -1945,11 +1719,9 @@ void Parser::addConstantTodo(const Constant& constant)
       types.push_back (constant.name);
     }
 }
-
 void Parser::addChoiceTodo(const Choice& choice)
 {
   choices.push_back(choice);
-  
   if (insideInclude ())
     {
       includedNames.push_back (choice.name);
@@ -1960,11 +1732,9 @@ void Parser::addChoiceTodo(const Choice& choice)
     }
   addType (choice.name, tdChoice);
 }
-
 void Parser::addRecordTodo(const Record& record)
 {
   records.push_back(record);
-  
   if (insideInclude ())
     {
       includedNames.push_back (record.name);
@@ -1975,11 +1745,9 @@ void Parser::addRecordTodo(const Record& record)
     }
   addType (record.name, tdRecord);
 }
-
 void Parser::addSequenceTodo(const Sequence& sequence)
 {
   sequences.push_back(sequence);
-  
   if (insideInclude ())
     {
       includedNames.push_back (sequence.name);
@@ -1990,11 +1758,9 @@ void Parser::addSequenceTodo(const Sequence& sequence)
     }
   addType (sequence.name, tdSequence);
 }
-
 void Parser::addClassTodo(const Class& cdef)
 {
   classes.push_back(cdef);
-  
   if (insideInclude ())
     {
       includedNames.push_back (cdef.name);
@@ -2005,11 +1771,9 @@ void Parser::addClassTodo(const Class& cdef)
     }
   addType (cdef.name, tdClass);
 }
-
 void Parser::addProcedureTodo(const Method& pdef)
 {
   procedures.push_back(pdef);
-  
   if (insideInclude ())
     {
       includedNames.push_back (pdef.name);
@@ -2019,20 +1783,16 @@ void Parser::addProcedureTodo(const Method& pdef)
       types.push_back (pdef.name);
     }
 }
-
 bool Parser::fromInclude(const String& type) const
 {
   vector<String>::const_iterator ii;
-
   for (ii = includedNames.begin(); ii != includedNames.end(); ii++)
     if (*ii == type) return true;
   return false;
 }
-
 void Parser::addType (const String& type, TypeDeclaration typeDecl)
 {
   int& m = typeMap[type];
-
   if (m == 0)
     {
       m = typeDecl;
@@ -2050,11 +1810,9 @@ void Parser::addType (const String& type, TypeDeclaration typeDecl)
       printError ("double definition of '%s' as different types", type.c_str());
     }
 }
-
 void Parser::addPrototype (const String& type, TypeDeclaration typeDecl)
 {
   int& m = typeMap[type];
-
   if (m == 0)
     {
       m = typeDecl | tdProto;
@@ -2072,7 +1830,6 @@ void Parser::addPrototype (const String& type, TypeDeclaration typeDecl)
       printError ("double definition of '%s' as different types", type.c_str());
     }
 }
-
 String Parser::defineSymbol (const String& name)
 {
   Symbol *sym = currentNamespace->find (name);
@@ -2084,15 +1841,12 @@ String Parser::defineSymbol (const String& name)
     }
   return sym->fullName();
 }
-
 static list<String>
 symbolToList (const String& symbol)
 {
   list<String> result;
   String current;
-
   g_return_val_if_fail (isCxxTypeName (symbol), result);
-  
   for (String::const_iterator si = symbol.begin(); si != symbol.end(); si++)
     {
       if (*si != ':')
@@ -2103,15 +1857,12 @@ symbolToList (const String& symbol)
 	{
 	  if (current != "")
 	    result.push_back(current);
-	  
 	  current = "";
 	}
     }
-  
   result.push_back(current);
   return result;
 }
-
 static Symbol*
 matchSymbol (const list<String>& nlist, Namespace *ns)
 {
@@ -2123,7 +1874,6 @@ matchSymbol (const list<String>& nlist, Namespace *ns)
     }
   return symbol;
 }
-
 static void
 appendUnique (list<Symbol *>& symbols, Symbol *sym)
 {
@@ -2132,7 +1882,6 @@ appendUnique (list<Symbol *>& symbols, Symbol *sym)
       return;
   symbols.push_back (sym);
 }
-
 static void
 qualifyHelper (const String& name, Namespace *ns,
                list<Symbol *>& alternatives, set<Namespace *>& done)
@@ -2140,46 +1889,36 @@ qualifyHelper (const String& name, Namespace *ns,
   /* prevent searching the same namespace twice */
   if (done.count (ns)) return;
   done.insert (ns);
-
   /* try to find the symbol in the current namespace */
   list<String> nlist = symbolToList (name);
   Symbol *symbol = matchSymbol (nlist, ns);
   if (symbol)
     appendUnique (alternatives, symbol);
-
   /* try to find the symbol in the parent namespace */
   Namespace *parent_ns = dynamic_cast<Namespace *> (ns->parent);
   if (parent_ns)
     qualifyHelper (name, parent_ns, alternatives, done);
-
   /* try to find the symbol in one of the namespaces used via "using namespace" */
   for (vector<Namespace *>::iterator ni = ns->used.begin(); ni != ns->used.end(); ni++)
     qualifyHelper (name, *ni, alternatives, done);
 }
-
 Symbol *Parser::qualifyHelper (const String& name)
 {
   set<Namespace *> done;
   list<Symbol *> alternatives;
-
   ::qualifyHelper (name, currentNamespace, alternatives, done);
-
   /* no match? */
   if (alternatives.empty())
     return 0;
-
   /* good match? */
   if (alternatives.front()->parent == currentNamespace || alternatives.size() == 1)
     return alternatives.front();
-
   /* multiple equally valid candidates? */
   printError ("there are multiple valid interpretations of %s in this context", name.c_str());
   for (list<Symbol *>::iterator ai = alternatives.begin(); ai != alternatives.end(); ai++)
     printError (" - it could be %s", (*ai)->fullName().c_str());
-
   return 0;
 }
-
 String Parser::qualifySymbol (const String& name)
 {
   Symbol *sym = qualifyHelper (name);
@@ -2188,7 +1927,6 @@ String Parser::qualifySymbol (const String& name)
   else
     return "";
 }
-
 bool Parser::enterNamespace (const String& name)
 {
   Symbol *symbol = currentNamespace->find (name);
@@ -2210,14 +1948,12 @@ bool Parser::enterNamespace (const String& name)
     }
   return true;
 }
-
 void Parser::leaveNamespace ()
 {
   currentNamespace = dynamic_cast<Namespace *>(currentNamespace->parent);
   if (!currentNamespace)
     g_error ("fatal: leaveNamespace called without corresponding enterNamespace");
 }
-
 bool Parser::usingNamespace (const String& name)
 {
   Symbol *sym = qualifyHelper (name);
@@ -2226,7 +1962,6 @@ bool Parser::usingNamespace (const String& name)
       printError ("%s is an undeclared namespace (can't be used)", name.c_str());
       return false;
     }
-
   Namespace *ns = dynamic_cast<Namespace *> (sym);
   if (!ns)
     {
@@ -2236,12 +1971,10 @@ bool Parser::usingNamespace (const String& name)
   currentNamespace->used.push_back (ns);
   return true;
 }
-
 /*
  * the beginnings of an alternate datastructure - currently only used for namespace
  * lookups
  */
-
 String Symbol::fullName ()
 {
   if (parent && parent->fullName() != "")
@@ -2249,7 +1982,6 @@ String Symbol::fullName ()
   else
     return name;
 }
-
 Symbol *Symbol::find (const String& name)
 {
   for (vector<Symbol *>::iterator ci = children.begin(); ci != children.end(); ci++)
@@ -2257,29 +1989,22 @@ Symbol *Symbol::find (const String& name)
       if ((*ci)->name == name)
 	return (*ci);
     }
-
   return 0;
 }
-
 bool Symbol::insert (Symbol *symbol)
 {
   if (find (symbol->name))
     return false;
-
   children.push_back (symbol);
   symbol->parent = this;
-
   return true;
 }
-
 Symbol::Symbol() : parent (0)
 {
 }
-
 Symbol::~Symbol()
 {
   for (vector<Symbol *>::iterator ci = children.begin(); ci != children.end(); ci++)
     delete *ci;
 }
-
 /* vim:set ts=8 sts=2 sw=2: */

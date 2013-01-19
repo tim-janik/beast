@@ -1,34 +1,15 @@
-/* Birnet
- * Copyright (C) 2006 Tim Janik
- *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * A copy of the GNU Lesser General Public License should ship along
- * with this library; if not, see http://www.gnu.org/copyleft/.
- */
+// Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #ifndef __BIRNET_MATH_HH__
 #define __BIRNET_MATH_HH__
-
 #include <birnet/birnetutils.hh>
 #include <math.h>
-
 namespace Birnet {
-
 /* --- double to integer --- */
 inline int      dtoi32 (double d) BIRNET_CONST;
 inline int64    dtoi64 (double d) BIRNET_CONST;
 inline int64    iround (double d) BIRNET_CONST;
 inline int64    ifloor (double d) BIRNET_CONST;
 inline int64    iceil  (double d) BIRNET_CONST;
-
 /* --- implementation bits --- */
 inline int BIRNET_CONST
 _dtoi32_generic (double d)
@@ -72,8 +53,6 @@ dtoi64 (double d)
 inline int64 BIRNET_CONST iround (double d) { return dtoi64 (round (d)); }
 inline int64 BIRNET_CONST ifloor (double d) { return dtoi64 (floor (d)); }
 inline int64 BIRNET_CONST iceil  (double d) { return dtoi64 (ceil (d)); }
-
 } // Birnet
-
 #endif /* __BIRNET_MATH_HH__ */
 /* vim:set ts=8 sts=2 sw=2: */

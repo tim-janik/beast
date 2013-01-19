@@ -1,19 +1,4 @@
-/* SFI - Synthesis Fusion Kit Interface
- * Copyright (C) 2002-2007 Stefan Westerfeld
- *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * A copy of the GNU Lesser General Public License should ship along
- * with this library; if not, see http://www.gnu.org/copyleft/.
- */
+// Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "sfidl-cxxbase.hh"
 #include "sfidl-factory.hh"
 #include <fcntl.h>
@@ -25,10 +10,8 @@
 #include "sfidl-namespace.hh"
 #include "sfidl-options.hh"
 #include "sfidl-parser.hh"
-#include "sfiparams.h" /* scatId (SFI_SCAT_*) */
-
+#include "sfiparams.hh" /* scatId (SFI_SCAT_*) */
 using namespace Sfidl;
-
 static String
 CxxNameToSymbol (const String &str)     // FIXME: need mammut renaming function
 {
@@ -39,7 +22,6 @@ CxxNameToSymbol (const String &str)     // FIXME: need mammut renaming function
       s[i] = '_';
   return s;
 }
-
 static vector<String>
 split_string (const String &ctype)      // FIXME: remove once we have general renamer
 {
@@ -57,7 +39,6 @@ split_string (const String &ctype)      // FIXME: remove once we have general re
   vs.push_back (type);
   return vs;
 }
-
 static String
 join_string (const vector<String> &vs,  // FIXME: remove once we have general renamer
              const String         &delim)
@@ -71,7 +52,6 @@ join_string (const vector<String> &vs,  // FIXME: remove once we have general re
     }
   return r;
 }
-
 static String
 UC_NAME (const String &cstr)    // FIXME: need mammut renaming function
 {
@@ -92,7 +72,6 @@ cUC_NAME (const String &cstr) // FIXME: need mammut renaming function
 {
   return g_intern_string (cstr.c_str());
 }
-
 static String // FIXME: need mammut renaming function
 UC_TYPE_NAME (const String &tname)
 {
@@ -103,13 +82,11 @@ UC_TYPE_NAME (const String &tname)
   String result = UC_NAME (nspace) + "_TYPE_" + UC_NAME (lname);
   return result;
 }
-
 static const char*
 cUC_TYPE_NAME (const String &cstr) // FIXME: need mammut renaming function
 {
   return g_intern_string (UC_TYPE_NAME (cstr).c_str());
 }
-
 /* produce type-system-independant pspec constructors */
 String
 CodeGeneratorCxxBase::untyped_pspec_constructor (const Param &param)
@@ -156,7 +133,6 @@ CodeGeneratorCxxBase::untyped_pspec_constructor (const Param &param)
     default:    return makeParamSpec (param);
     }
 }
-
 /* produce type-system-dependant pspec constructors */
 String
 CodeGeneratorCxxBase::typed_pspec_constructor (const Param &param)
@@ -216,5 +192,4 @@ CodeGeneratorCxxBase::typed_pspec_constructor (const Param &param)
     default:    return makeParamSpec (param);
     }
 }
-
 /* vim:set ts=8 sts=2 sw=2: */

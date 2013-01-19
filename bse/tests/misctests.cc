@@ -1,27 +1,10 @@
-/* BSE - Better Sound Engine
- * Copyright (C) 2001, 2002, 2006 Tim Janik
- *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * A copy of the GNU Lesser General Public License should ship along
- * with this library; if not, see http://www.gnu.org/copyleft/.
- */
-#include <bse/bsemain.h>
+// Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
+#include <bse/bsemain.hh>
 // #define TEST_VERBOSE
-#include <sfi/sfitests.h>
-#include <bse/bsemathsignal.h>
+#include <sfi/sfitests.hh>
+#include <bse/bsemathsignal.hh>
 #include <bse/bsecxxplugin.hh> // for generated types
-
 #define	FLF	"26.20"
-
 static void
 check_cent_tune_fast (void)
 {
@@ -36,7 +19,6 @@ check_cent_tune_fast (void)
     }
   TDONE();
 }
-
 static void
 check_cent_tune (void)
 {
@@ -52,7 +34,6 @@ check_cent_tune (void)
     }
   TDONE();
 }
-
 static void
 check_equal_tempered_tuning (void)
 {
@@ -68,7 +49,6 @@ check_equal_tempered_tuning (void)
     }
   TDONE();
 }
-
 static void
 check_tuning_monotony (BseMusicalTuningType musical_tuning)
 {
@@ -84,7 +64,6 @@ check_tuning_monotony (BseMusicalTuningType musical_tuning)
       }
   TDONE();
 }
-
 static void
 check_freq_vs_notes (BseMusicalTuningType musical_tuning)
 {
@@ -98,7 +77,7 @@ check_freq_vs_notes (BseMusicalTuningType musical_tuning)
           int note, fine_tune;
           int verbose = 0;
           if (verbose)
-            g_print ("compose  : note=%4d fine_tune=%4d freq=%"FLF"f\n", j, k, freq);
+            g_print ("compose  : note=%4d fine_tune=%4d freq=%" FLF "f\n", j, k, freq);
           f = freq;
           note = bse_note_from_freq (musical_tuning, freq);
           TCHECK (note != BSE_NOTE_VOID);
@@ -107,7 +86,7 @@ check_freq_vs_notes (BseMusicalTuningType musical_tuning)
           double freq_error = freq - f;
           double freq_ratio = MAX (freq, f) / MIN (freq, f);
           if (verbose)
-            g_print ("decompose: note=%4d fine_tune=%4d freq=%"FLF"f   (diff=%"FLF"f)\n", note, fine_tune, freq, freq - f);
+            g_print ("decompose: note=%4d fine_tune=%4d freq=%" FLF "f   (diff=%" FLF "f)\n", note, fine_tune, freq, freq - f);
           if (ABS (k) < 11)
             TCHECK (note == j);
           if (musical_tuning == BSE_MUSICAL_TUNING_12_TET)
@@ -120,21 +99,17 @@ check_freq_vs_notes (BseMusicalTuningType musical_tuning)
     }
   TDONE();
 }
-
 int
 main (gint   argc,
       gchar *argv[])
 {
   bse_init_test (&argc, &argv, NULL);
-
   check_cent_tune();
   check_cent_tune_fast();
   check_equal_tempered_tuning();
-
   BseMusicalTuningType last_tuning = BSE_MUSICAL_TUNING_YOUNG;
   /* check last tuning value by asserting defaulting behavior of succeding values */
   TCHECK (bse_semitone_table_from_tuning (BseMusicalTuningType (last_tuning + 1)) == bse_semitone_table_from_tuning (BseMusicalTuningType (0)));
-
   /* check monotonic musical tuning systems */
   for (int j = BSE_MUSICAL_TUNING_12_TET; j <= last_tuning; j++)
     {
@@ -143,6 +118,5 @@ main (gint   argc,
       check_tuning_monotony (musical_tuning);
       check_freq_vs_notes (musical_tuning);
     }
-
   return 0;
 }

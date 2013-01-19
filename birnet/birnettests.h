@@ -1,36 +1,15 @@
-/* BirnetTests - Utilities for writing test programs
- * Copyright (C) 2006 Tim Janik
- * Copyright (C) 2006 Stefan Westerfeld
- *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * A copy of the GNU Lesser General Public License should ship along
- * with this library; if not, see http://www.gnu.org/copyleft/.
- */
+// Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #ifdef  __cplusplus
 #include <birnet/birnet.hh>
 #else
 #include <birnet/birnetconfig.h>
 #endif
-
 /* this file may be included by C programs */
-
 #include <glib.h>
 #include <string.h>
 #include <signal.h>    /* G_BREAKPOINT() */
-
 BIRNET_EXTERN_C_BEGIN();
-
 /* === auxillary macros for test programs === */
-
 /* provide dummy i18n function for test programs */
 #ifndef	  _
 #  define _(x) 		(x)
@@ -38,7 +17,6 @@ BIRNET_EXTERN_C_BEGIN();
 #  define N_(x)		(x)
 #  define U_(x)		(x)
 #endif
-
 /* --- macros --- */
 /* macros used for testing.
  * note that g_print() does fflush(stdout) automatically.
@@ -75,7 +53,6 @@ typedef void (*BirnetTAbort) (void*);
 #define TDONE()         	do { g_printerr ("]\n");                /* test outro */ \
                                      TABORT_set (NULL, NULL); } while(0)
 #endif
-
 /* --- performance --- */
 typedef enum {
   TUNIT_NONE		= 0,
@@ -103,7 +80,6 @@ typedef enum {
   TUNIT_FILE		= 0x0008,	/* FILE */
 } TUnitType;
 #define	TUNIT(unit1,per_unit2)		((TUnitType) (0x00010000 * (uint) TUNIT_ ## per_unit2 | (uint) TUNIT_ ## unit1))
-
 static const char*
 treport_unit (uint tunit)
 {
@@ -123,7 +99,6 @@ treport_unit (uint tunit)
     };
 }
 static void treport_generic (const char *perf_name, double amount, TUnitType amount_unit, int bias);
-
 static void BIRNET_UNUSED
 treport_title (const char *perf_name)
 {
@@ -174,7 +149,6 @@ treport_generic (const char *perf_name,
 	   amount_unit > 0xffff ? '/' : ' ',
 	   treport_unit (amount_unit >> 16));
 }
-
 /* --- macro details --- */
 static void
 tabort_handler (bool   set_values,
@@ -193,13 +167,11 @@ tabort_handler (bool   set_values,
       *data_loc = g_dataset_get_data ((void*) g_dataset_destroy, "birnet-tabort-data");
     }
 }
-
 #define TABORT_set(func,data)           do {            \
   void *__tabort_func = (void*) func;                   \
   void *__tabort_data = (void*) data;                   \
   tabort_handler (1, &__tabort_func, &__tabort_data);   \
 } while (0)
-
 #define TABORT_call()                   do {            \
   void *__tabort_func = NULL, *__tabort_data = NULL;    \
   tabort_handler (0, &__tabort_func, &__tabort_data);   \
@@ -207,13 +179,11 @@ tabort_handler (bool   set_values,
     ((BirnetTAbort) __tabort_func) (__tabort_data);     \
   G_BREAKPOINT();                                       \
 } while (0)
-
 #define TSTART_impl(postfix, ...)	do {		\
   char *_test_name_ = g_strdup_printf (__VA_ARGS__);	\
   g_printerr ("%s%s", _test_name_, postfix);		\
   g_free (_test_name_);					\
 } while (0)
-
 #define TASSERT_impl(mark, code, show)	do {		\
   if (code) {						\
     if (show >= 2)					\
@@ -227,7 +197,6 @@ tabort_handler (bool   set_values,
            #code);					\
   TABORT_call(); }                                      \
 } while (0)
-
 #define TASSERT_CMP_impl(mark, a, cmp, b, show)	do {	\
   double __tassert_va = a; double __tassert_vb = b;	\
   if (a cmp b) {					\
@@ -247,7 +216,6 @@ tabort_handler (bool   set_values,
               __tassert_va, #cmp, __tassert_vb); 	\
   TABORT_call(); }                                      \
 } while (0)
-
 #define TERROR_impl(mark, ...)	do {			\
   g_printerr ("%s", mark);				\
   char *_error_msg_ = g_strdup_printf (__VA_ARGS__);	\
@@ -258,7 +226,6 @@ tabort_handler (bool   set_values,
   g_free (_error_msg_);					\
   TABORT_call();                                        \
 } while (0)
-
 /**
  * TEST_CALIBRATION() - This macro is used to calculate the number of
  * repetitions needed for execution of a test routine, so that the total
@@ -318,7 +285,6 @@ tabort_handler (bool   set_values,
   dups = MAX ((guint) (dups * factor), 1);                                              \
   dups;                                                                                 \
 })
-
 /* --- C++ test initialization --- */
 #ifdef  __cplusplus
 namespace Birnet {
@@ -346,5 +312,4 @@ birnet_init_test (int    *argc,
 }
 } // Birnet
 #endif
-
 BIRNET_EXTERN_C_END();

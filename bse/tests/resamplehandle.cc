@@ -1,43 +1,24 @@
-/* BSE Resampling Datahandles Test
- * Copyright (C) 2001-2006 Tim Janik
- * Copyright (C) 2006 Stefan Westerfeld
- * 
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * A copy of the GNU Lesser General Public License should ship along
- * with this library; if not, see http://www.gnu.org/copyleft/.
- */
-#include <bse/bsemathsignal.h>
-#include <bse/bsemain.h>
+// Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
+#include <bse/bsemathsignal.hh>
+#include <bse/bsemain.hh>
 // #define TEST_VERBOSE
-#include <sfi/sfitests.h>
-#include <bse/gsldatautils.h>
+#include <sfi/sfitests.hh>
+#include <bse/gsldatautils.hh>
 #include <bse/bseblockutils.hh>
 #include <stdlib.h>
 #include <vector>
 #include <string>
 #include <map>
-
 using std::vector;
 using std::string;
 using std::max;
 using std::min;
 using std::map;
-
 static void
 read_through (GslDataHandle *handle)
 {
   int64 n_values = gsl_data_handle_n_values (handle);
   int64 offset = 0;
-
   while (offset < n_values)
     {
       gfloat values[1024];
@@ -45,10 +26,8 @@ read_through (GslDataHandle *handle)
       g_assert (values_read > 0);
       offset += values_read;
     }
-
   g_assert (offset == n_values);
 }
-
 static double
 check (const char           *up_down,
        const char           *channels,
@@ -64,9 +43,7 @@ check (const char           *up_down,
   char *samplestr = g_strdup_printf ("ResampleHandle-%s%02d%s", up_down, bits, channels);
   char *streamstr = g_strdup_printf ("CPU Resampling %s%02d%s", up_down, bits, channels);
   TSTART ("%s (%s)", samplestr, cpu_type);
-
   TASSERT (input.size() % n_channels == 0);
-  
   GslDataHandle *ihandle = gsl_data_handle_new_mem (n_channels, 32, 44100, 440, input.size(), &input[0], NULL);
   GslDataHandle *rhandle;
   if (resampler_mode == BSE_RESAMPLER2_MODE_UPSAMPLE)
@@ -80,12 +57,9 @@ check (const char           *up_down,
       rhandle = bse_data_handle_new_downsample2 (ihandle, precision_bits); 
     }
   gsl_data_handle_unref (ihandle);
-
   BseErrorType error = gsl_data_handle_open (rhandle);
   TASSERT (error == 0);
-
   double worst_diff, worst_diff_db;
-
   /* Read through the datahandle linearily _twice_, and compare expected output
    * with actual output, to determine whether the actual output is correct.
    *
@@ -112,7 +86,6 @@ check (const char           *up_down,
       TPRINT ("linear(%dst read) read worst_diff = %f (%f dB)\n", repeat, worst_diff, worst_diff_db);
       TASSERT (worst_diff_db < max_db);
     }
-
   /* test seeking */
   worst_diff = 0.0;
   const uint count = sfi_init_settings().test_slow ? 300 : 100;
@@ -120,7 +93,6 @@ check (const char           *up_down,
     {
       int64 start = rand() % rhandle->setup.n_values;
       int64 len = rand() % 1024;
-
       GslDataPeekBuffer peek_buffer = { +1 /* incremental direction */, 0, };
       for (int64 i = start; i < std::min (start + len, rhandle->setup.n_values); i++)
 	{
@@ -131,9 +103,7 @@ check (const char           *up_down,
   worst_diff_db = bse_db_from_factor (worst_diff, -200);
   TPRINT ("seek worst_diff = %f (%f dB)\n", worst_diff, worst_diff_db);
   TASSERT (worst_diff_db < max_db);
-
   TDONE();
-
   /* test speed */
   double samples_per_second = 0;
   if (sfi_init_settings().test_perf)
@@ -141,7 +111,6 @@ check (const char           *up_down,
       const guint RUNS = 10;
       GTimer *timer = g_timer_new();
       const guint dups = TEST_CALIBRATION (50.0, read_through (rhandle));
-      
       double m = 9e300;
       for (guint i = 0; i < RUNS; i++)
         {
@@ -160,16 +129,12 @@ check (const char           *up_down,
       //TPRINT ("  which means the resampler can process %.2f 44100 Hz streams simultaneusly\n", samples_per_second / 44100.0);
       //TPRINT ("  or one 44100 Hz stream takes %f %% CPU usage\n", 100.0 / (samples_per_second / 44100.0));
     }
-
   gsl_data_handle_close (rhandle);
   gsl_data_handle_unref (rhandle);
-
   g_free (samplestr);
   g_free (streamstr);
-
   return samples_per_second / 44100.0;
 }
-
 template<typename Sample> static void
 generate_test_signal (vector<Sample> &signal,
 		      const size_t    signal_length,
@@ -182,25 +147,21 @@ generate_test_signal (vector<Sample> &signal,
   if (cached_window.empty())
     {
       cached_window.resize (signal_length);
-
       for (size_t i = 0; i < signal_length; i++)
         {
           double wpos = (i * 2 - double (signal_length)) / signal_length;
           cached_window[i] = bse_window_blackman (wpos);
         }
     }
-
   string signal_cache_key = Birnet::string_printf ("%zd/%.1f/%.1f/%.1f", signal_length, sample_rate, frequency1, frequency2);
   static map<string, vector<Sample> > signal_cache;
   vector<Sample>& cached_signal = signal_cache[signal_cache_key];
-
   if (cached_signal.empty())
     {
       for (size_t i = 0; i < signal_length; i++)
         {
           double phase1 = i * 2 * M_PI * frequency1 / sample_rate;
           cached_signal.push_back (sin (phase1) * cached_window[i]);
-
           if (frequency2 > 0)   /* stereo */
             {
               double phase2 = i * 2 * M_PI * frequency2 / sample_rate;
@@ -210,7 +171,6 @@ generate_test_signal (vector<Sample> &signal,
     }
   signal = cached_signal;
 }
-
 static void
 run_tests (const char *run_type)
 {
@@ -229,13 +189,11 @@ run_tests (const char *run_type)
     { 24, -125, -125, -134, -131 },
     { 0, 0, 0 }
   };
-
   for (int p = 0; params[p].bits; p++)
     {
       const int LEN = 44100 / 2;  /* 500ms test signal */
       vector<float> input;
       vector<double> expected;
-
       // mono upsampling test
       if (!sfi_init_settings().test_quick)
         {
@@ -246,7 +204,6 @@ run_tests (const char *run_type)
                  params[p].bits, params[p].mono_upsample_db);
           // g_printerr ("    ===> speed is equivalent to %.2f simultaneous 44100 Hz streams\n", streams);
         }
-      
       // stereo upsampling test
       if (1)
         {
@@ -257,7 +214,6 @@ run_tests (const char *run_type)
                  params[p].bits, params[p].stereo_upsample_db);
           // g_printerr ("    ===> speed is equivalent to %.2f simultaneous 44100 Hz streams\n", streams);
         }
-      
       // mono downsampling test
       if (!sfi_init_settings().test_quick)
         {
@@ -268,7 +224,6 @@ run_tests (const char *run_type)
                  params[p].bits, params[p].mono_downsample_db);
           // g_printerr ("    ===> speed is equivalent to %.2f simultaneous 44100 Hz streams\n", streams);
         }
-      
       // stereo downsampling test
       if (1)
         {
@@ -281,7 +236,6 @@ run_tests (const char *run_type)
         }
     }
 }
-
 static void
 test_c_api (const char *run_type)
 {
@@ -292,12 +246,9 @@ test_c_api (const char *run_type)
   float out[OUTPUT_SIZE];
   double error = 0;
   int i;
-
   for (i = 0; i < INPUT_SIZE; i++)
     in[i] = sin (i * 440 * 2 * M_PI / 44100) * bse_window_blackman ((double) (i * 2 - INPUT_SIZE) / INPUT_SIZE);
-
   bse_resampler2_process_block (resampler, in, INPUT_SIZE, out);
-
   int delay = bse_resampler2_delay (resampler);
   for (i = 0; i < 2048; i++)
     {
@@ -305,16 +256,12 @@ test_c_api (const char *run_type)
 	              * bse_window_blackman ((double) ((i - delay) * 2 - OUTPUT_SIZE) / OUTPUT_SIZE);
       error = MAX (error, fabs (out[i] - expected));
     }
-
   double error_db = bse_db_from_factor (error, -200);
-
   bse_resampler2_destroy (resampler);
-
   TPRINT ("Test C API delta: %f\n", error_db);
   TASSERT (error_db < -95);
   TDONE();
 }
-
 static void
 test_delay_compensation (const char *run_type)
 {
@@ -336,32 +283,25 @@ test_delay_compensation (const char *run_type)
     { 134, BSE_RESAMPLER2_MODE_DOWNSAMPLE, BSE_RESAMPLER2_PREC_144DB },
     { -1, }
   };
-
   using Bse::Resampler::Resampler2;
   TSTART ("Resampler Delay Compensation (%s)", run_type);
-
   for (guint p = 0; params[p].error_db > 0; p++)
     {
       /* setup test signal and empty output signal space */
       const int INPUT_SIZE = 44100 * 4, OUTPUT_SIZE = INPUT_SIZE * 2;
-
       vector<float> in (INPUT_SIZE);
       vector<float> out (OUTPUT_SIZE);
-
       generate_test_signal (in, INPUT_SIZE, 44100, 440);
-
       /* up/downsample test signal */
       Resampler2 *resampler = Resampler2::create (params[p].mode,
                                                   params[p].precision);
       resampler->process_block (&in[0], INPUT_SIZE, &out[0]);
-
       /* setup increments for comparision loop */
       size_t iinc = 1, jinc = 1;
       if (params[p].mode == BSE_RESAMPLER2_MODE_UPSAMPLE)
 	jinc = 2;
       else
 	iinc = 2;
-
       /* compensate resampler delay by incrementing comparision start offset */
       double delay = resampler->delay();
       size_t i = 0, j = (int) round (delay * 2);
@@ -373,7 +313,6 @@ test_delay_compensation (const char *run_type)
 	  j += 2;
 	}
       j /= 2;
-
       /* actually compare source and resampled signal (one with a stepping of 2) */
       double error = 0;
       while (i < in.size() && j < out.size())
@@ -381,9 +320,7 @@ test_delay_compensation (const char *run_type)
 	  error = MAX (error, fabs (out[j] - in[i]));
 	  i += iinc; j += jinc;
 	}
-
       delete resampler;
-
       /* check error against bound */
       double error_db = bse_db_from_factor (error, -250);
       TPRINT ("Resampler Delay Compensation delta: %f\n", error_db);
@@ -391,18 +328,15 @@ test_delay_compensation (const char *run_type)
     }
   TDONE();
 }
-
 static void
 test_state_length (const char *run_type)
 {
   TSTART ("Resampler State Length Info (%s)", run_type);
-
   //-----------------------------------------------------------------------------------
   // usampling
   //-----------------------------------------------------------------------------------
   {
     const guint period_size = 107;
-
     /* fill input with 2 periods of a sine wave, so that while at the start and
      * at the end clicks occur (because the unwindowed signal is assumed to 0 by
      * the resamplehandle), in the middle 1 period can be found that is clickless
@@ -410,17 +344,14 @@ test_state_length (const char *run_type)
     vector<float> input (period_size * 2);
     for (size_t i = 0; i < input.size(); i++)
       input[i] = sin (i * 2 * M_PI / period_size);
-
     const guint precision_bits = 16;
     GslDataHandle *ihandle = gsl_data_handle_new_mem (1, 32, 44100, 440, input.size(), &input[0], NULL);
     GslDataHandle *rhandle = bse_data_handle_new_upsample2 (ihandle, precision_bits);
     BseErrorType open_error = gsl_data_handle_open (rhandle);
     TASSERT (open_error == 0);
     TASSERT (gsl_data_handle_get_state_length (ihandle) == 0);
-
     // determine how much of the end of the signal is "unusable" due to the resampler state:
     const int64 state_length = gsl_data_handle_get_state_length (rhandle);
-
     /* read resampled signal in the range unaffected by the resampler state (that
      * is: not at the directly at the beginning, and not directly at the end)
      */
@@ -444,14 +375,11 @@ test_state_length (const char *run_type)
     double error_db = bse_db_from_factor (error, -200);
     TASSERT (error_db < -97);
   }
-
   //-----------------------------------------------------------------------------------
   // downsampling
   //-----------------------------------------------------------------------------------
-
   {
     const guint period_size = 190;
-
     /* fill input with 2 periods of a sine wave, so that while at the start and
      * at the end clicks occur (because the unwindowed signal is assumed to 0 by
      * the resamplehandle), in the middle 1 period can be found that is clickless
@@ -459,17 +387,14 @@ test_state_length (const char *run_type)
     vector<float> input (period_size * 2);
     for (size_t i = 0; i < input.size(); i++)
       input[i] = sin (i * 2 * M_PI / period_size);
-
     const guint precision_bits = 16;
     GslDataHandle *ihandle = gsl_data_handle_new_mem (1, 32, 44100, 440, input.size(), &input[0], NULL);
     GslDataHandle *rhandle = bse_data_handle_new_downsample2 (ihandle, precision_bits);
     BseErrorType open_error = gsl_data_handle_open (rhandle);
     TASSERT (open_error == 0);
     TASSERT (gsl_data_handle_get_state_length (ihandle) == 0);
-
     // determine how much of the end of the signal is "unusable" due to the resampler state:
     const int64 state_length = gsl_data_handle_get_state_length (rhandle);
-
     /* read resampled signal in the range unaffected by the resampler state (that
      * is: not at the directly at the beginning, and not directly at the end)
      */
@@ -495,8 +420,6 @@ test_state_length (const char *run_type)
   }
   TDONE();
 }
-
-
 int
 main (int   argc,
       char *argv[])
@@ -508,12 +431,10 @@ main (int   argc,
     treport_cpu_name (cname);
     g_free (cname);
   }
-  
   test_c_api ("FPU");
   test_delay_compensation ("FPU");
   test_state_length ("FPU");
   run_tests ("FPU");
-
   /* load plugins */
   SfiInitValue config[] = {
     { "load-core-plugins", "1" },
@@ -523,11 +444,9 @@ main (int   argc,
   /* check for possible specialization */
   if (Bse::Block::default_singleton() == Bse::Block::current_singleton())
     return 0;   /* nothing changed */
-
   test_c_api ("SSE");
   test_delay_compensation ("SSE");
   test_state_length ("SSE");
   run_tests ("SSE");
-
   return 0;
 }

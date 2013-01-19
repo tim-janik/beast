@@ -1,40 +1,20 @@
-/* BSE - Better Sound Engine                        -*-mode: c++;-*-
- * Copyright (C) 2004 Tim Janik
- *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * A copy of the GNU Lesser General Public License should ship along
- * with this library; if not, see http://www.gnu.org/copyleft/.
- */
-
-#include <bse/bsecore.idl>
-
-namespace Bse { class Effect; }; // FIXME: bad workaround
-
+// Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
+include "bsecore.idl";
+namespace Bse { interface Effect; }; // FIXME: bad workaround
 namespace Bse {
-
-class BusModule : Effect {
+interface BusModule : Effect {
   Info    authors    = "Tim Janik";
   Info    license    = _("GNU Lesser General Public License");
   Info    blurb      = _("Synthesis module used internally by BseBus");
-  IStream audio_in1  = (_("Audio In1"), _("First audio input"));
-  IStream audio_in2  = (_("Audio In2"), _("Second audio input"));
-  OStream audio_out1 = (_("Audio Out1"), _("First audio output"));
-  OStream audio_out2 = (_("Audio Out2"), _("Second audio output"));
+  IStream audio_in1  = Stream (_("Audio In1"), _("First audio input"));
+  IStream audio_in2  = Stream (_("Audio In2"), _("Second audio input"));
+  OStream audio_out1 = Stream (_("Audio Out1"), _("First audio output"));
+  OStream audio_out2 = Stream (_("Audio Out2"), _("Second audio output"));
   group _("Volume") {
     // Real  volume1    = DBVolume (_("Left"), _("Volume adjustment of left channel"), 0, -96, +24, STANDARD);
     // Real  volume2    = DBVolume (_("Right"), _("Volume adjustment of right channel"), 0, -96, +24, STANDARD);
-    Real  volume1    = (NULL, NULL, 1, 0, 1000, 10, STANDARD); /* volume factor */
-    Real  volume2    = (NULL, NULL, 1, 0, 1000, 10, STANDARD); /* volume factor */
+    Real  volume1    = SfiReal ("", "", 1, 0, 1000, 10, STANDARD); /* volume factor */
+    Real  volume2    = SfiReal ("", "", 1, 0, 1000, 10, STANDARD); /* volume factor */
   };
 };
-
 };

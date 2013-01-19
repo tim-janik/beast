@@ -1,20 +1,4 @@
-/* suidmain - suid wrapper to acquire capabilities and drop root suid
- *
- * This software is provided "as is"; redistribution and modification
- * is permitted, provided that the following disclaimer is retained.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- * In no event shall the authors or contributors be liable for any
- * direct, indirect, incidental, special, exemplary, or consequential
- * damages (including, but not limited to, procurement of substitute
- * goods or services; loss of use, data, or profits; or business
- * interruption) however caused and on any theory of liability, whether
- * in contract, strict liability, or tort (including negligence or
- * otherwise) arising in any way out of the use of this software, even
- * if advised of the possibility of such damage.
- */
+// CC0 Public Domain: http://creativecommons.org/publicdomain/zero/1.0/
 #include "topconfig.h"  /* holds HAVE_SETEUID etc... */
 #include "suidmain.h"
 #include <sys/time.h>
@@ -24,9 +8,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <errno.h>
-
 static int original_priority = 0;
-
 static int      /* returns 0 for success */
 adjust_priority (void)
 {
@@ -38,7 +20,6 @@ adjust_priority (void)
       /* not really fatal */
       original_priority = 0;
     }
-
   /* improve priority */
   if (original_priority > -10)
     {
@@ -51,10 +32,8 @@ adjust_priority (void)
     }
   if (errno != 0)
     return errno;       /* failed */
-
   return 0;
 }
-
 int
 main (int    argc,
       char **argv)
@@ -62,10 +41,8 @@ main (int    argc,
   const char *executable = NULL;
   int euid = geteuid ();
   int uid = getuid ();
-
   /* call privileged code */
   int priority_error = adjust_priority (); /* sets original_priority */
-
   /* drop root privileges if running setuid root as soon as possible */
   if (euid != uid)
     {
@@ -83,17 +60,13 @@ main (int    argc,
           _exit (255);
         }
     }
-
   /* non-priviledged code */
-
   /* make sure we have a program name */
   if (argc < 1)
     return -1;
-
   /* give notice about errors */
   if (euid == 0 && priority_error)
     fprintf (stderr, "%s: failed to renice process: %s\n", argv[0], strerror (priority_error));
-
   /* parse -N and -n options */
   int i, dropped_priority = -2147483647;
   for (i = 1; i < argc; i++)
@@ -122,14 +95,11 @@ main (int    argc,
       dropped_priority = original_priority;
     else if (custom_check_arg_stopper (argv[i]))        /* check for "--" and similar args */
       break;
-
   /* handle -N and -n options */
   if (dropped_priority != -2147483647)
     setpriority (PRIO_PROCESS, getpid(), dropped_priority);
-
   /* find executable */
   executable = custom_find_executable (&argc, &argv);
-
   /* exec */
   argv[0] = (char*) executable;
   execv (executable, argv);

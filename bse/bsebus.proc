@@ -1,31 +1,12 @@
-/* BSE - Better Sound Engine	-*-mode: c;-*-
- * Copyright (C) 2004 Tim Janik
- *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * A copy of the GNU Lesser General Public License should ship along
- * with this library; if not, see http://www.gnu.org/copyleft/.
- */
-#include <bse/bseplugin.h>
-#include <bse/bseprocedure.h>
-#include <bse/bsebus.h>
-#include <bse/bsetrack.h>
-#include <bse/bsesong.h>
-#include <bse/bseundostack.h>
-
-
+// Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
+#include <bse/bseplugin.hh>
+#include <bse/bseprocedure.hh>
+#include <bse/bsebus.hh>
+#include <bse/bsetrack.hh>
+#include <bse/bsesong.hh>
+#include <bse/bseundostack.hh>
 AUTHORS	= "Tim Janik <timj@gtk.org>";
 LICENSE = "Copyright (C) 2004 Tim Janik";
-
-
 METHOD (BseBus, connect-track) {
   HELP  = _("Add a track to the input list of a bus.");
   IN    = bse_param_spec_object ("sbus", NULL, NULL, BSE_TYPE_BUS, SFI_PARAM_STANDARD);
@@ -38,14 +19,12 @@ BODY (BseProcedureClass *proc,
       GValue            *out_values)
 {
   /* extract parameter values */
-  BseBus *self = bse_value_get_object (in_values++);
-  BseTrack   *track = bse_value_get_object (in_values++);
+  BseBus *self = (BseBus*) bse_value_get_object (in_values++);
+  BseTrack *track = (BseTrack*) bse_value_get_object (in_values++);
   BseErrorType error = BSE_ERROR_NONE;
-
   /* check parameters */
   if (!BSE_IS_BUS (self) || !BSE_IS_TRACK (track))
     return BSE_ERROR_PROC_PARAM_INVAL;
-
   /* action */
   if (!BSE_ITEM (self)->parent || BSE_ITEM (self)->parent != BSE_ITEM (track)->parent)
     error = BSE_ERROR_SOURCE_PARENT_MISMATCH;
@@ -55,13 +34,10 @@ BODY (BseProcedureClass *proc,
       if (!error)
         bse_item_push_undo_proc (self, "disconnect-track", track);
     }
-
   /* set output parameters */
   g_value_set_enum (out_values++, error);
-
   return BSE_ERROR_NONE;
 }
-
 METHOD (BseBus, disconnect-track) {
   HELP  = _("Remove a track from the input list of a bus.");
   IN    = bse_param_spec_object ("sbus", NULL, NULL, BSE_TYPE_BUS, SFI_PARAM_STANDARD);
@@ -74,14 +50,12 @@ BODY (BseProcedureClass *proc,
       GValue            *out_values)
 {
   /* extract parameter values */
-  BseBus *self = bse_value_get_object (in_values++);
-  BseTrack   *track = bse_value_get_object (in_values++);
+  BseBus *self = (BseBus*) bse_value_get_object (in_values++);
+  BseTrack *track = (BseTrack*) bse_value_get_object (in_values++);
   BseErrorType error = BSE_ERROR_NONE;
-
   /* check parameters */
   if (!BSE_IS_BUS (self) || !BSE_IS_TRACK (track))
     return BSE_ERROR_PROC_PARAM_INVAL;
-
   /* action */
   if (!BSE_ITEM (self)->parent || BSE_ITEM (self)->parent != BSE_ITEM (track)->parent)
     error = BSE_ERROR_SOURCE_PARENT_MISMATCH;
@@ -91,13 +65,10 @@ BODY (BseProcedureClass *proc,
       if (!error)
         bse_item_push_undo_proc (self, "connect-track", track);
     }
-
   /* set output parameters */
   g_value_set_enum (out_values++, error);
-
   return BSE_ERROR_NONE;
 }
-
 METHOD (BseBus, connect-bus) {
   HELP  = _("Add a bus to the input list of a bus.");
   IN    = bse_param_spec_object ("sbus", NULL, NULL, BSE_TYPE_BUS, SFI_PARAM_STANDARD);
@@ -110,14 +81,12 @@ BODY (BseProcedureClass *proc,
       GValue            *out_values)
 {
   /* extract parameter values */
-  BseBus *self = bse_value_get_object (in_values++);
-  BseBus *bus = bse_value_get_object (in_values++);
+  BseBus *self = (BseBus*) bse_value_get_object (in_values++);
+  BseBus *bus = (BseBus*) bse_value_get_object (in_values++);
   BseErrorType error = BSE_ERROR_NONE;
-
   /* check parameters */
   if (!BSE_IS_BUS (self) || !BSE_IS_BUS (bus))
     return BSE_ERROR_PROC_PARAM_INVAL;
-
   /* action */
   if (!BSE_ITEM (self)->parent || BSE_ITEM (self)->parent != BSE_ITEM (bus)->parent)
     error = BSE_ERROR_SOURCE_PARENT_MISMATCH;
@@ -127,13 +96,10 @@ BODY (BseProcedureClass *proc,
       if (!error)
         bse_item_push_undo_proc (self, "disconnect-bus", bus);
     }
-
   /* set output parameters */
   g_value_set_enum (out_values++, error);
-
   return BSE_ERROR_NONE;
 }
-
 METHOD (BseBus, disconnect-bus) {
   HELP  = _("Remove a bus from the input list of a bus.");
   IN    = bse_param_spec_object ("sbus", NULL, NULL, BSE_TYPE_BUS, SFI_PARAM_STANDARD);
@@ -146,14 +112,12 @@ BODY (BseProcedureClass *proc,
       GValue            *out_values)
 {
   /* extract parameter values */
-  BseBus *self = bse_value_get_object (in_values++);
-  BseBus     *bus = bse_value_get_object (in_values++);
+  BseBus *self = (BseBus*) bse_value_get_object (in_values++);
+  BseBus *bus = (BseBus*) bse_value_get_object (in_values++);
   BseErrorType error = BSE_ERROR_NONE;
-
   /* check parameters */
   if (!BSE_IS_BUS (self) || !BSE_IS_BUS (bus))
     return BSE_ERROR_PROC_PARAM_INVAL;
-
   /* action */
   if (!BSE_ITEM (self)->parent || BSE_ITEM (self)->parent != BSE_ITEM (bus)->parent)
     error = BSE_ERROR_SOURCE_PARENT_MISMATCH;
@@ -163,13 +127,10 @@ BODY (BseProcedureClass *proc,
       if (!error)
         bse_item_push_undo_proc (self, "connect-bus", bus);
     }
-  
   /* set output parameters */
   g_value_set_enum (out_values++, error);
-  
   return BSE_ERROR_NONE;
 }
-
 METHOD (BseBus, ensure-output) {
   HELP  = _("Ensure that a bus has an output connection.");
   IN    = bse_param_spec_object ("bus", NULL, NULL, BSE_TYPE_BUS, SFI_PARAM_STANDARD);
@@ -181,13 +142,11 @@ BODY (BseProcedureClass *proc,
       GValue            *out_values)
 {
   /* extract parameter values */
-  BseBus *self = bse_value_get_object (in_values++);
+  BseBus *self = (BseBus*) bse_value_get_object (in_values++);
   BseErrorType error = BSE_ERROR_NONE;
-
   /* check parameters */
   if (!BSE_IS_BUS (self))
     return BSE_ERROR_PROC_PARAM_INVAL;
-
   /* action */
   BseItem *parent = BSE_ITEM (self)->parent;
   if (BSE_IS_SONG (parent) && !self->bus_outputs)
@@ -201,9 +160,7 @@ BODY (BseProcedureClass *proc,
             bse_item_push_undo_proc (master, "disconnect-bus", self);
         }
     }
-
   /* set output parameters */
   g_value_set_enum (out_values++, error);
-  
   return BSE_ERROR_NONE;
 }

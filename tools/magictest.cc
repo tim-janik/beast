@@ -1,28 +1,12 @@
-/* BSE - Better Sound Engine
- * Copyright (C) 2000-2003 Tim Janik
- *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * A copy of the GNU Lesser General Public License should ship along
- * with this library; if not, see http://www.gnu.org/copyleft/.
- */
-#include <bse/bsemain.h>
+// Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
+#include <bse/bsemain.hh>
 #include "topconfig.h"
-#include <bse/gslmagic.h>
-#include <bse/gslcommon.h>
-#include <bse/bseloader.h>
-#include <bse/gsldatahandle.h>
+#include <bse/gslmagic.hh>
+#include <bse/gslcommon.hh>
+#include <bse/bseloader.hh>
+#include <bse/gsldatahandle.hh>
 #include <stdio.h>
 #include <string.h>
-
 static gint
 help (gchar *arg)
 {
@@ -30,15 +14,13 @@ help (gchar *arg)
   fprintf (stderr, "       -p         include plugins\n");
   fprintf (stderr, "       -t         test loading file info\n");
   fprintf (stderr, "       -h         guess what ;)\n");
-  
   return arg != NULL;
 }
-
 int
 main (gint   argc,
       gchar *argv[])
 {
-  static gchar *magic_presets[][2] = {
+  static const char *magic_presets[][2] = {
     /* some test entries, order is important for some cases */
     { "Berkeley DB 2.X Hash/Little Endian",	"12 lelong 0x061561", },
     { "MS-DOS executable (EXE)",		"0 string MZ", },
@@ -58,22 +40,19 @@ main (gint   argc,
   guint i;
   SfiRing *magic_list = NULL;
   gboolean test_open = FALSE;
-
   /* initialization */
   SfiInitValue values[] = {
     { "stand-alone",            "true" }, /* no rcfiles etc. */
     { NULL }
   };
   bse_init_inprocess (&argc, &argv, "BseMagicTest", values);
-  
   for (i = 0; i < n_magic_presets; i++)
     magic_list = sfi_ring_append (magic_list,
-				  gsl_magic_create (magic_presets[i][0],
+				  gsl_magic_create ((void*) magic_presets[i][0],
 						    0,
 						    0,
 						    magic_presets[i][1]));
-  
-  for (i = 1; i < argc; i++)
+  for (i = 1; i < uint (argc); i++)
     {
       if (strcmp ("-p", argv[i]) == 0)
 	; // FIXME: bsw_register_plugins (BSE_PATH_PLUGINS, FALSE, NULL, NULL, NULL);
@@ -89,10 +68,9 @@ main (gint   argc,
 	  GslMagic *magic = gsl_magic_list_match_file (magic_list, argv[i]);
 	  guint l = strlen (argv[i]);
 	  gchar *pad;
-	  
 	  g_print ("%s:", argv[i]);
 	  pad = g_strnfill (MAX (40, l) - l, ' ');
-	  g_print (pad);
+	  g_print ("%s", pad);
 	  g_free (pad);
 	  if (!magic && !loader)
 	    g_print (" no magic/loader found");
@@ -119,6 +97,5 @@ main (gint   argc,
 	  g_print ("\n");
 	}
     }
-  
   return 0;
 }

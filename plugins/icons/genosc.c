@@ -1,5 +1,4 @@
 /* GIMP RGBA C-Source image dump 1-byte-run-length-encoded (genosc.c) */
-
 #define GEN_OSC_IMAGE_WIDTH (64)
 #define GEN_OSC_IMAGE_HEIGHT (64)
 #define GEN_OSC_IMAGE_BYTES_PER_PIXEL (4) /* 3:RGB, 4:RGBA */
@@ -96,4 +95,3 @@ static const guint8 GEN_OSC_IMAGE_rle_pixel_data[2186] =
  "\0\0\0\34\256\0\0\0\0\1\0\0\0\34\202\0\0\0U\205\0\0\0\252\1\0\0\0q\202\0\0"
  "\0U\1\0\0\0\34\377\0\0\0\0\377\0\0\0\0\377\0\0\0\0\377\0\0\0\0\377\0\0\0\0"
  "\241\0\0\0\0");
-

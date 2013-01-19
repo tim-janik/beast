@@ -1,48 +1,41 @@
-/* GSL-GENFFT - Power2 FFT C Code Generator
- * Copyright (C) 2001-2002 Tim Janik
- *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * A copy of the GNU Lesser General Public License should ship along
- * with this library; if not, see http://www.gnu.org/copyleft/.
- */
-#include <bse/gslcommon.h>
-#include <bse/bsemath.h>
-#include <bse/bsemain.h>
-#include <bse/gslfft.h>
+// Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
+#include <bse/gslcommon.hh>
+#include <bse/bsemath.hh>
+#include <bse/bsemain.hh>
+#include <bse/gslfft.hh>
 // #define TEST_VERBOSE
 #include <birnet/birnettests.h>
 #include <sys/time.h>
 #include <stdlib.h>
 #include <string.h>
-
-
 #define	MAX_FFT_SIZE	(65536 * 2) //  * 8 * 8
+#define	MAX_DFT_SIZE	(1024 * 2) //  * 8 * 8
 #define	EPSILON		(4.8e-6)
-
-
+#define REF_ANALYSIS   (-1)
+#define REF_SYNTHESIS  (1)
 /* --- prototypes --- */
 static void	reference_power2_fftc	(unsigned int       n_values,
 					 const double      *rivalues_in,
 					 double            *rivalues_out,
 					 int                esign);
+static void	reference_dftc	        (unsigned int       n_values,
+					 const double      *rivalues_in,
+					 double            *rivalues_out);
 static void	fill_rand		(guint		    n,
 					 double		   *a);
+static void	scale_block    		(guint		    n,
+					 double		   *a,
+                                         double             factor);
 static double	diff			(guint   	    m,
 					 guint   	    p,
 					 double 	   *a1,
 					 double 	   *a2,
 					 const gchar  	   *str);
-
-
+static void     make_real               (guint              n,
+                                         double            *a);
+static void     extract_real            (guint              n,
+                                         const double      *a,
+                                         double            *b);
 /* --- functions --- */
 int
 main (int   argc,
@@ -50,30 +43,25 @@ main (int   argc,
 {
   struct timeval tv;
   guint i;
-  
   /* initialize */
   bse_init_test (&argc, &argv, NULL);
-
   /* initialize random numbers */
   gettimeofday (&tv, NULL);
   srand (tv.tv_sec ^ tv.tv_usec);
-  
-  double ref_fft_in[MAX_FFT_SIZE] = { 0, };
-  double ref_fft_aout[MAX_FFT_SIZE] = { 0, };
-  double ref_fft_sout[MAX_FFT_SIZE] = { 0, };
-  double ref_fft_back[MAX_FFT_SIZE] = { 0, };
-  double work_fft_in[MAX_FFT_SIZE] = { 0, };
-  double work_fft_aout[MAX_FFT_SIZE] = { 0, };
-  double work_fft_sout[MAX_FFT_SIZE] = { 0, };
-  double work_fft_back[MAX_FFT_SIZE] = { 0, };
-
+  static double ref_fft_in[MAX_FFT_SIZE] = { 0, };
+  static double ref_fft_aout[MAX_FFT_SIZE] = { 0, };
+  static double ref_fft_sout[MAX_FFT_SIZE] = { 0, };
+  static double ref_fft_back[MAX_FFT_SIZE] = { 0, };
+  static double work_fft_in[MAX_FFT_SIZE] = { 0, };
+  static double work_fft_aout[MAX_FFT_SIZE] = { 0, };
+  static double work_fft_sout[MAX_FFT_SIZE] = { 0, };
+  static double work_fft_back[MAX_FFT_SIZE] = { 0, };
+  static double scaled_fft_back[MAX_FFT_SIZE] = { 0, };
   /* run tests */
-  for (i = 2; i <= MAX_FFT_SIZE >> 1; i <<= 1)
+  for (i = 8; i <= MAX_FFT_SIZE >> 1; i <<= 1)
     {
       double d;
-      
       TSTART ("Testing fft code for size %u", i);
-
       /* setup reference and work fft records */
       fill_rand (i << 1, ref_fft_in);
       // memset (ref_fft_aout, 0, MAX_FFT_SIZE * sizeof (ref_fft_aout[0]));
@@ -83,15 +71,16 @@ main (int   argc,
       // memset (work_fft_aout, 0, MAX_FFT_SIZE * sizeof (work_fft_aout[0]));
       // memset (work_fft_sout, 0, MAX_FFT_SIZE * sizeof (work_fft_sout[0]));
       // memset (work_fft_back, 0, MAX_FFT_SIZE * sizeof (work_fft_sout[0]));
-      reference_power2_fftc (i, ref_fft_in, ref_fft_aout, +1);
-      reference_power2_fftc (i, ref_fft_in, ref_fft_sout, -1);
-      reference_power2_fftc (i, ref_fft_aout, ref_fft_back, -1);
-
+      reference_power2_fftc (i, ref_fft_in, ref_fft_aout, REF_ANALYSIS);
+      reference_power2_fftc (i, ref_fft_in, ref_fft_sout, REF_SYNTHESIS);
+      reference_power2_fftc (i, ref_fft_aout, ref_fft_back, REF_SYNTHESIS);
+      scale_block (i << 1, ref_fft_back, 1.0 / i);
       /* perform fft test */
       gsl_power2_fftac (i, work_fft_in, work_fft_aout);
       gsl_power2_fftsc (i, work_fft_in, work_fft_sout);
       gsl_power2_fftsc (i, work_fft_aout, work_fft_back);
-
+      scale_block (i << 1, work_fft_back, 1.0 / i);
+      gsl_power2_fftsc_scale (i, work_fft_aout, scaled_fft_back);
       /* check differences */
       d = diff (i << 1, 0, ref_fft_in, work_fft_in, "Checking input record");
       if (d)
@@ -118,17 +107,75 @@ main (int   argc,
 	TERROR ("Error sum in analysis FFT exceeds epsilon: %g > %g", d, EPSILON);
       else
         TOK();
+      d = diff (i << 1, 0, work_fft_in, scaled_fft_back, "GSL analysis and scaled re-synthesis");
+      if (fabs (d) > EPSILON)
+	TERROR ("Error sum in analysis FFT exceeds epsilon: %g > %g", d, EPSILON);
+      else
+        TOK();
       d = diff (i << 1, 0, ref_fft_back, work_fft_back, "Reference re-synthesis vs. GSL");
+      if (fabs (d) > EPSILON)
+	TERROR ("Error sum in analysis FFT exceeds epsilon: %g > %g", d, EPSILON);
+      else
+        TOK();
+      d = diff (i << 1, 0, ref_fft_back, scaled_fft_back, "Reference re-synthesis vs. scaled GSL");
+      if (fabs (d) > EPSILON)
+	TERROR ("Error sum in analysis FFT exceeds epsilon: %g > %g", d, EPSILON);
+      else
+        TOK();
+      /* test with real data */
+      make_real (i << 1, ref_fft_in);
+      extract_real (i << 1, ref_fft_in, work_fft_in);
+      reference_power2_fftc (i, ref_fft_in, ref_fft_aout, REF_ANALYSIS);
+      ref_fft_aout[1] = ref_fft_aout[i]; /* special packing for purely real FFTs */
+      /* perform real fft test */
+      gsl_power2_fftar (i, work_fft_in, work_fft_aout);
+      gsl_power2_fftsr (i, work_fft_aout, work_fft_back);
+      scale_block (i, work_fft_back, 1.0 / i);
+      gsl_power2_fftsr_scale (i, work_fft_aout, scaled_fft_back);
+      d = diff (i, 0, ref_fft_aout, work_fft_aout, "Reference real analysis vs. real GSL");
+      if (fabs (d) > EPSILON)
+	TERROR ("Error sum in analysis FFT exceeds epsilon: %g > %g", d, EPSILON);
+      else
+        TOK();
+      d = diff (i, 0, work_fft_in, scaled_fft_back, "Real input vs. scaled real GSL resynthesis");
+      if (fabs (d) > EPSILON)
+	TERROR ("Error sum in analysis FFT exceeds epsilon: %g > %g", d, EPSILON);
+      else
+        TOK();
+      d = diff (i, 0, work_fft_in, work_fft_back, "Real input vs. real GSL resynthesis");
       if (fabs (d) > EPSILON)
 	TERROR ("Error sum in analysis FFT exceeds epsilon: %g > %g", d, EPSILON);
       else
         TOK();
       TDONE();
     }
-
+  static double dft_in[MAX_DFT_SIZE] = { 0, };
+  static double dft_aout[MAX_DFT_SIZE] = { 0, };
+  /* test reference fft against reference dft */
+  for (i = 2; i <= MAX_DFT_SIZE >> 1; i <<= 1)
+    {
+      double d;
+      TSTART ("Checking reference fft for size %u", i);
+      /* setup reference and work fft records */
+      fill_rand (i << 1, ref_fft_in);
+      memcpy (dft_in, ref_fft_in, MAX_DFT_SIZE * sizeof (dft_in[0]));
+      reference_power2_fftc (i, ref_fft_in, ref_fft_aout, REF_ANALYSIS);
+      reference_dftc (i, dft_in, dft_aout);
+      /* check differences */
+      d = diff (i << 1, 0, ref_fft_in, dft_in, "Checking input record");
+      if (d)
+	TERROR ("Input record was modified");
+      else
+        TOK();
+      d = diff (i << 1, 0, ref_fft_aout, dft_aout, "Reference FFT analysis against reference DFT analysis");
+      if (fabs (d) > EPSILON)
+        TERROR ("Error sum in analysis FFT exceeds epsilon: %g > %g", d, EPSILON);
+      else
+        TOK();
+      TDONE();
+    }
   return 0;
 }
-
 static void
 fill_rand (guint   n,
 	   double *a)
@@ -136,7 +183,31 @@ fill_rand (guint   n,
   while (n--)
     a[n] = -1. + 2. * rand() / (RAND_MAX + 1.0);
 }
-
+static void
+make_real (guint              n,
+           double            *a)
+{
+  guint x;
+  for (x = 1; x < n; x += 2)
+    a[x] = 0; /* eliminate complex part */
+}
+static void
+extract_real (guint              n,
+              const double      *a,
+              double            *b)
+{
+  guint x;
+  for (x = 0; x < n; x += 2)
+    *b++ = a[x]; /* extract real part */
+}
+static void
+scale_block (guint    n,
+	     double  *a,
+             double   factor)
+{
+  while (n--)
+    a[n] *= factor;
+}
 static double
 diff (guint         m,
       guint         p,
@@ -146,7 +217,6 @@ diff (guint         m,
 {
   double d = 0, max = 0, min = 1e+32;
   guint n;
-
   TPRINT ("%s\n", str);
   for (n = 0; n < m; n++)
     {
@@ -169,8 +239,6 @@ diff (guint         m,
           g_bit_storage (1. / max));
   return d;
 }
-
-
 /* --- fft implementation --- */
 #define BUTTERFLY_XY(X1re,X1im,X2re,X2im,Y1re,Y1im,Y2re,Y2im,Wre,Wim) { \
   register double T1re, T1im, T2re, T2im; \
@@ -236,7 +304,6 @@ diff (guint         m,
   Wre += T1re;       \
   Wim += T1im;       \
 }
-
 static inline void
 reference_bitreverse_fft2analysis (const unsigned int n,
 				   const double      *X,
@@ -244,7 +311,6 @@ reference_bitreverse_fft2analysis (const unsigned int n,
 {
   const unsigned int n2 = n >> 1, n1 = n + n2, max = n >> 2;
   unsigned int i, r;
-  
   BUTTERFLY_10 (X[0], X[1],
 		X[n], X[n + 1],
 		Y[0], Y[1],
@@ -262,14 +328,12 @@ reference_bitreverse_fft2analysis (const unsigned int n,
   for (i = 1, r = 0; i < max; i++)
     {
       unsigned int k, j = n >> 1;
-
       while (r >= j)
 	{
 	  r -= j;
 	  j >>= 1;
 	}
       r |= j;
-
       k = r >> 1;
       j = i << 3;
       BUTTERFLY_10 (X[k], X[k + 1],
@@ -286,7 +350,6 @@ reference_bitreverse_fft2analysis (const unsigned int n,
 		    __1, __0);
     }
 }
-
 static inline void
 reference_bitreverse_fft2synthesis (const unsigned int n,
 				    const double      *X,
@@ -295,8 +358,7 @@ reference_bitreverse_fft2synthesis (const unsigned int n,
   const unsigned int n2 = n >> 1, n1 = n + n2, max = n >> 2;
   unsigned int i, r;
   double scale = n;
-
-  scale = 1.0 / scale;
+  scale = 1; /* set to 1.0 / scale to get scaled synthesis */
   BUTTERFLY_10scale (X[0], X[1],
 		     X[n], X[n + 1],
 		     Y[0], Y[1],
@@ -314,14 +376,12 @@ reference_bitreverse_fft2synthesis (const unsigned int n,
   for (i = 1, r = 0; i < max; i++)
     {
       unsigned int k, j = n >> 1;
-
       while (r >= j)
 	{
 	  r -= j;
 	  j >>= 1;
 	}
       r |= j;
-
       k = r >> 1;
       j = i << 3;
       BUTTERFLY_10scale (X[k], X[k + 1],
@@ -338,7 +398,6 @@ reference_bitreverse_fft2synthesis (const unsigned int n,
 			 scale);
     }
 }
-
 static void
 reference_power2_fftc (unsigned int  n_values,
 		       const double *rivalues_in,
@@ -349,33 +408,27 @@ reference_power2_fftc (unsigned int  n_values,
   double theta = esign < 0 ? -3.1415926535897932384626433832795029 : 3.1415926535897932384626433832795029;
   unsigned int block_size = 2 << 1;
   double last_sin;
-
   if (esign > 0)
     reference_bitreverse_fft2analysis (n_values, rivalues_in, rivalues);
   else
     reference_bitreverse_fft2synthesis (n_values, rivalues_in, rivalues);
   theta *= (double) 1.0 / 2.;
   last_sin = sin (theta);
-
   if (n_values < 4)
     return;
-  
   do
     {
       double Dre, Dim, Wre, Wim;
       unsigned int k, i, half_block = block_size >> 1;
       unsigned int block_size2 = block_size << 1;
-
       theta *= 0.5;
       Dim = last_sin;
       last_sin = sin (theta);
       Dre = last_sin * last_sin * -2.;
-      
       /* loop over first coefficient in each block ==> w == {1,0} */
       for (i = 0; i < n_values2; i += block_size2)
 	{
 	  unsigned int v1 = i, v2 = i + block_size;
-
           BUTTERFLY_10 (rivalues[v1], rivalues[v1 + 1],
                         rivalues[v2], rivalues[v2 + 1],
                         rivalues[v1], rivalues[v1 + 1],
@@ -391,7 +444,6 @@ reference_power2_fftc (unsigned int  n_values,
 	  for (i = k; i < n_values2; i += block_size2)
 	    {
 	      unsigned int v1 = i, v2 = i + block_size;
-	      
               BUTTERFLY_XY (rivalues[v1], rivalues[v1 + 1],
                             rivalues[v2], rivalues[v2 + 1],
                             rivalues[v1], rivalues[v1 + 1],
@@ -408,7 +460,6 @@ reference_power2_fftc (unsigned int  n_values,
 	    for (i = k; i < n_values2; i += block_size2)
 	      {
 	        unsigned int v1 = i, v2 = i + block_size;
-	      
                 BUTTERFLY_01 (rivalues[v1], rivalues[v1 + 1],
                               rivalues[v2], rivalues[v2 + 1],
                               rivalues[v1], rivalues[v1 + 1],
@@ -419,7 +470,6 @@ reference_power2_fftc (unsigned int  n_values,
 	    for (i = k; i < n_values2; i += block_size2)
 	      {
 	        unsigned int v1 = i, v2 = i + block_size;
-	      
                 BUTTERFLY_0m (rivalues[v1], rivalues[v1 + 1],
                               rivalues[v2], rivalues[v2 + 1],
                               rivalues[v1], rivalues[v1 + 1],
@@ -446,7 +496,6 @@ reference_power2_fftc (unsigned int  n_values,
 	  for (i = k; i < n_values2; i += block_size2)
 	    {
 	      unsigned int v1 = i, v2 = i + block_size;
-
               BUTTERFLY_XY (rivalues[v1], rivalues[v1 + 1],
                             rivalues[v2], rivalues[v2 + 1],
                             rivalues[v1], rivalues[v1 + 1],
@@ -458,4 +507,32 @@ reference_power2_fftc (unsigned int  n_values,
       block_size = block_size2;
     }
   while (block_size <= n_values);
+}
+/*--------------- reference DFT -----------------*/
+static BseComplex
+complex_exp (BseComplex z)
+{
+  /* also found in g++-4.2 C++ complex numbers */
+  return bse_complex_polar (exp(z.re), z.im);
+}
+void
+reference_dftc (unsigned int       n_values,
+		const double      *rivalues_in,
+		double            *rivalues_out)
+{
+  /* http://en.wikipedia.org/wiki/Discrete_Fourier_transform says:
+   *
+   * out[k] = SUM{n=0..N-1} (in[n] * exp (-2 * pi * j / N * k * n))
+   */
+  guint k, n;
+  for (k = 0; k < n_values; k++)
+    {
+      BseComplex result = { 0, 0 };
+      for (n = 0; n < n_values; n++)
+        result = bse_complex_add (result,
+                                  bse_complex_mul (bse_complex (rivalues_in[n * 2], rivalues_in[n * 2 + 1]),
+                                                   complex_exp (bse_complex (0, -2 * PI / n_values * ((k * n) % n_values)))));
+      rivalues_out[k * 2]     = result.re;
+      rivalues_out[k * 2 + 1] = result.im;
+    }
 }

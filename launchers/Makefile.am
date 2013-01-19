@@ -1,7 +1,4 @@
-# launchers - program starters
-# Copyright (C) 2004 Tim Janik
-#
-## GNU Lesser General Public License version 2 or any later version.
+# launchers - Beast program starters
 include $(top_srcdir)/Makefile.decl
 
 INCLUDES += -I$(top_srcdir) -I$(top_builddir) -I. $(LAUNCHER_CFLAGS) -DG_DISABLE_CONST_RETURNS

@@ -1,26 +1,8 @@
-/* Birnet
- * Copyright (C) 2006 Tim Janik
- *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * A copy of the GNU Lesser General Public License should ship along
- * with this library; if not, see http://www.gnu.org/copyleft/.
- */
+// Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "birnetthread.hh"
 #include <list>
-
 #define birnet_threads_initialized()    ISLIKELY ((void*) ThreadTable.mutex_lock != (void*) ThreadTable.mutex_unlock)
-
 namespace Birnet {
-
 /* --- Thread::ThreadWrapperInternal --- */
 struct Thread::ThreadWrapperInternal : public Thread {
   ThreadWrapperInternal (BirnetThread *bthread) :
@@ -61,28 +43,24 @@ struct Thread::ThreadWrapperInternal : public Thread {
     unref (self);
   }
 };
-
 /* --- ThreadWrapperInternal (public version of Thread::ThreadWrapperInternal --- */
 struct ThreadDescendant : public Thread {
   typedef ThreadWrapperInternal PublicThreadWrapperInternal;
   ThreadDescendant (const String &name) : Thread (name) {}
 };
 typedef ThreadDescendant::PublicThreadWrapperInternal ThreadWrapperInternal;
-
 /* --- Thread methods --- */
 void
 Thread::threadxx_wrap (BirnetThread *cthread)
 {
   ThreadWrapperInternal::thread_from_c (cthread);
 }
-
 void
 Thread::threadxx_delete (void *cxxthread)
 {
   Thread *thread = reinterpret_cast<Thread*> (cxxthread);
   ThreadWrapperInternal::thread_reset_c (thread);
 }
-
 Thread::Thread (BirnetThread* thread) :
   bthread (NULL)
 {
@@ -97,7 +75,6 @@ Thread::Thread (BirnetThread* thread) :
     ; /* invalid object state; this should be reaped by thread_from_c() */
   ThreadTable.thread_unref (thread);
 }
-
 static BirnetThread*
 bthread_create_for_thread (const String &name,
                            void         *threadxx)
@@ -108,11 +85,9 @@ bthread_create_for_thread (const String &name,
   ThreadTable.thread_ref_sink (bthread);
   return bthread;
 }
-
 Thread::Thread (const String &_name) :
   bthread (bthread_create_for_thread (_name, this))
 {}
-
 Thread::~Thread ()
 {
   if (bthread)  /* can be NULL in thread_from_c() */
@@ -121,7 +96,6 @@ Thread::~Thread ()
       ThreadTable.thread_unref (bthread);
     }
 }
-
 void
 Thread::start ()
 {
@@ -133,80 +107,67 @@ Thread::start ()
         ThreadTable.thread_yield();
     }
 }
-
 void
 Thread::emit_wakeups (uint64 stamp)
 {
   ThreadTable.thread_emit_wakeups (stamp);
 }
-
 int
 Thread::pid () const
 {
   return ThreadTable.thread_pid (bthread);
 }
-
 String
 Thread::name () const
 {
   return ThreadTable.thread_name (bthread);
 }
-
 void
 Thread::queue_abort ()
 {
   ThreadTable.thread_queue_abort (bthread);
 }
-
 void
 Thread::abort ()
 {
   ThreadTable.thread_abort (bthread);
 }
-
 bool
 Thread::aborted ()
 {
   return ThreadTable.thread_get_aborted (bthread);
 }
-
 void
 Thread::wakeup ()
 {
   ThreadTable.thread_wakeup (bthread);
 }
-
 bool
 Thread::running ()
 {
   return ThreadTable.thread_get_running (bthread);
 }
-
 void
 Thread::wait_for_exit ()
 {
   ThreadTable.thread_wait_for_exit (bthread);
 }
-
 Thread&
 Thread::self ()
 {
   Thread *thread = (Thread*) ThreadTable.thread_selfxx();
   return *thread;
 }
-
 String
 Thread::Self::name ()
 {
   return ThreadTable.thread_name (ThreadTable.thread_self());
 }
-
 void
 Thread::Self::name (const String &name)
 {
   ThreadTable.thread_set_name (name.c_str());
 }
-
 /**
  * @param max_useconds  maximum amount of micro seconds to sleep (-1 for infinite time)
  * @param returns       TRUE while the thread should continue execution
@@ -218,25 +179,21 @@ Thread::Self::sleep (long max_useconds)
 {
   return ThreadTable.thread_sleep (max_useconds);
 }
-
 bool
 Thread::Self::aborted ()
 {
   return ThreadTable.thread_aborted();
 }
-
 int
 Thread::Self::pid ()
 {
   return ThreadTable.thread_pid (ThreadTable.thread_self());
 }
-
 void
 Thread::Self::awake_after (uint64 stamp)
 {
   ThreadTable.thread_awake_after (stamp);
 }
-
 void
 Thread::Self::set_wakeup (BirnetThreadWakeup   wakeup_func,
                           void                *wakeup_data,
@@ -244,27 +201,22 @@ Thread::Self::set_wakeup (BirnetThreadWakeup   wakeup_func,
 {
   ThreadTable.thread_set_wakeup (wakeup_func, wakeup_data, destroy_data);
 }
-
 OwnedMutex&
 Thread::Self::owned_mutex ()
 {
   return self().m_omutex;
 }
-
 void
 Thread::Self::yield ()
 {
   ThreadTable.thread_yield ();
 }
-
 void
 Thread::Self::exit (void *retval)
 {
   ThreadTable.thread_exit (retval);
 }
-
 static const BirnetMutex zero_mutex = { 0, };
-
 Mutex::Mutex () :
   mutex (zero_mutex)
 {
@@ -273,7 +225,6 @@ Mutex::Mutex () :
   else
     ThreadTable.mutex_chain4init (&mutex);
 }
-
 Mutex::~Mutex ()
 {
   if (birnet_threads_initialized())
@@ -281,9 +232,7 @@ Mutex::~Mutex ()
   else
     ThreadTable.mutex_unchain (&mutex);
 }
-
 static const BirnetRecMutex zero_rec_mutex = { { 0, }, };
-
 RecMutex::RecMutex () :
   rmutex (zero_rec_mutex)
 {
@@ -292,7 +241,6 @@ RecMutex::RecMutex () :
   else
     ThreadTable.rec_mutex_chain4init (&rmutex);
 }
-
 RecMutex::~RecMutex ()
 {
   if (birnet_threads_initialized())
@@ -300,9 +248,7 @@ RecMutex::~RecMutex ()
   else
     ThreadTable.rec_mutex_unchain (&rmutex);
 }
-
 static const BirnetCond zero_cond = { 0, };
-
 Cond::Cond () :
   cond (zero_cond)
 {
@@ -311,7 +257,6 @@ Cond::Cond () :
   else
     ThreadTable.cond_chain4init (&cond);
 }
-
 Cond::~Cond ()
 {
   if (birnet_threads_initialized())
@@ -319,7 +264,6 @@ Cond::~Cond ()
   else
     ThreadTable.cond_unchain (&cond);
 }
-
 OwnedMutex::OwnedMutex () :
   m_rec_mutex (zero_rec_mutex),
   m_owner (NULL)
@@ -329,7 +273,6 @@ OwnedMutex::OwnedMutex () :
   else
     ThreadTable.rec_mutex_chain4init (&m_rec_mutex);
 }
-
 OwnedMutex::~OwnedMutex()
 {
   BIRNET_ASSERT (m_owner == NULL);
@@ -338,5 +281,4 @@ OwnedMutex::~OwnedMutex()
   else
     ThreadTable.rec_mutex_unchain (&m_rec_mutex);
 }
-
 } // Birnet

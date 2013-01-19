@@ -1,5 +1,4 @@
 /* GdkPixbuf RGBA C-Source image dump 1-byte-run-length-encoded */
-
 #ifdef __SUNPRO_C
 #pragma align 4 (sub_pixstream)
 #endif
@@ -203,5 +202,3 @@ static const guint8 sub_pixstream[] =
   "\377\307\253\253\377\311\256\256\377\314\262\262\377\316\265\265\377"
   "\320\271\271\377\323\274\274\377\325\300\300\377\327\303\303\377\377"
   "\0\0\0\0\313\0\0\0\0"};
-
-

@@ -1,48 +1,27 @@
-/* BSE - Better Sound Engine
- * Copyright (C) 2003 Tim Janik
- *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * A copy of the GNU Lesser General Public License should ship along
- * with this library; if not, see http://www.gnu.org/copyleft/.
- */
+// Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bsecxxmodule.hh"
-#include "bseengine.h"
-#include "bsemidireceiver.h"
-#include "bsesnet.h"
-
+#include "bseengine.hh"
+#include "bsemidireceiver.hh"
+#include "bsesnet.hh"
 namespace Bse {
-
 static const ClassInfo class_info (NULL, "BseEffect implements an abstract C++ effect base.", __FILE__, __LINE__);
 BSE_CXX_TYPE_REGISTER_ABSTRACT (Effect, "BseCxxBase", &class_info);
-
 Effect::Effect() :
   last_module_update (0)
 {
 }
-
 void
 Effect::set_property (guint        prop_id,
                       const Value &value,
                       GParamSpec  *pspec)
 {
 }
-
 void
 Effect::get_property (guint       prop_id,
                       Value      &value,
                       GParamSpec *pspec)
 {
 }
-
 static void
 access_trampoline (BseModule *module,
                    gpointer   data)
@@ -51,14 +30,12 @@ access_trampoline (BseModule *module,
   SynthesisModule *m = static_cast<SynthesisModule*> (module->user_data);
   (*clo) (m);
 }
-
 static void
 access_data_free (gpointer data)
 {
   SynthesisModule::Closure *clo = static_cast<SynthesisModule::Closure*> (data);
   delete clo;
 }
-
 void
 Effect::update_modules (BseTrans *trans)
 {
@@ -75,20 +52,16 @@ Effect::update_modules (BseTrans *trans)
         }
     }
 }
-
 SynthesisModule::SynthesisModule()
 {
   intern_module = NULL;
 }
-
 void
 SynthesisModule::set_module (BseModule *engine_module)
 {
   g_return_if_fail (intern_module == NULL);
   g_return_if_fail (engine_module != NULL);
-  
   intern_module = engine_module;
-
   /* assert validity of the above casts */
   BIRNET_STATIC_ASSERT (sizeof   (JStream)                    == sizeof   (BseJStream));
   BIRNET_STATIC_ASSERT (offsetof (JStream, values)            == offsetof (BseJStream, values));
@@ -97,20 +70,17 @@ SynthesisModule::set_module (BseModule *engine_module)
   BIRNET_STATIC_ASSERT (sizeof (((JStream*)0)->n_connections) == sizeof (((BseJStream*)0)->n_connections));
   BIRNET_STATIC_ASSERT (offsetof (JStream, jcount)            == offsetof (BseJStream, jcount));
   BIRNET_STATIC_ASSERT (sizeof (((JStream*)0)->jcount)        == sizeof (((BseJStream*)0)->jcount));
-  
   BIRNET_STATIC_ASSERT (sizeof   (IStream)                == sizeof   (BseIStream));
   BIRNET_STATIC_ASSERT (offsetof (IStream, values)        == offsetof (BseIStream, values));
   BIRNET_STATIC_ASSERT (sizeof (((IStream*)0)->values)    == sizeof (((BseIStream*)0)->values));
   BIRNET_STATIC_ASSERT (offsetof (IStream, connected)     == offsetof (BseIStream, connected));
   BIRNET_STATIC_ASSERT (sizeof (((IStream*)0)->connected) == sizeof (((BseIStream*)0)->connected));
-  
   BIRNET_STATIC_ASSERT (sizeof   (OStream)                == sizeof   (BseOStream));
   BIRNET_STATIC_ASSERT (offsetof (OStream, values)        == offsetof (BseOStream, values));
   BIRNET_STATIC_ASSERT (sizeof (((OStream*)0)->values)    == sizeof (((BseOStream*)0)->values));
   BIRNET_STATIC_ASSERT (offsetof (OStream, connected)     == offsetof (BseOStream, connected));
   BIRNET_STATIC_ASSERT (sizeof (((OStream*)0)->connected) == sizeof (((BseOStream*)0)->connected));
 }
-
 void
 SynthesisModule::ostream_set (uint         ostream_index,
                               const float *values)
@@ -118,23 +88,19 @@ SynthesisModule::ostream_set (uint         ostream_index,
   BseModule *m = engine_module();
   m->ostreams[ostream_index].values = const_cast<float*> (values);
 }
-
 const float*
 SynthesisModule::const_values (float value)
 {
   return bse_engine_const_values (value);
 }
-
 SynthesisModule::~SynthesisModule()
 {
 }
-
 const ProcessCost
 SynthesisModule::cost()
 {
   return NORMAL;
 }
-
 static void
 process_module (BseModule *engine_module,
                 guint      n_values)
@@ -142,14 +108,12 @@ process_module (BseModule *engine_module,
   SynthesisModule *m = static_cast<SynthesisModule*> (engine_module->user_data);
   m->process (n_values);
 }
-
 static void
 reset_module (BseModule *engine_module)
 {
   SynthesisModule *m = static_cast<SynthesisModule*> (engine_module->user_data);
   m->reset();
 }
-
 static void
 delete_module (gpointer        data,
                const BseModuleClass *klass)
@@ -157,7 +121,6 @@ delete_module (gpointer        data,
   SynthesisModule *m = static_cast<SynthesisModule*> (data);
   delete m;
 }
-
 static BseCostType
 module_flags_from_process_cost (ProcessCost cost)
 {
@@ -169,7 +132,6 @@ module_flags_from_process_cost (ProcessCost cost)
     case NORMAL:        return BSE_COST_NORMAL;
     }
 }
-
 const BseModuleClass*
 Effect::create_engine_class (SynthesisModule *sample_module,
                              int              cost,
@@ -200,7 +162,6 @@ Effect::create_engine_class (SynthesisModule *sample_module,
     }
   return source_class->engine_class;
 }
-
 struct HandlerData {
   SynthesisModule::AutoUpdate auto_update;
   double minimum, maximum;
@@ -221,7 +182,6 @@ struct HandlerData {
     delete hd;
   }
 };
-
 static void
 auto_update_data_free (gpointer data)   /* UserThread */
 {
@@ -239,7 +199,6 @@ auto_update_data_free (gpointer data)   /* UserThread */
     }
   delete adata;
 }
-
 static void
 midi_control_handler (gpointer                  handler_data,  /* MIDI Device Thread (and possibly others) */
                       guint64                   tick_stamp,
@@ -272,7 +231,6 @@ midi_control_handler (gpointer                  handler_data,  /* MIDI Device Th
                                         adata,
                                         i + 1 >= n_mcdatas ? auto_update_data_free : NULL));
 }
-
 static void
 get_midi_control_range (GParamSpec *pspec,
                         double     &minimum,
@@ -304,7 +262,6 @@ get_midi_control_range (GParamSpec *pspec,
       maximum = nspec->maximum;
     }
 }
-
 struct HandlerSetup {
   Effect                *effect;
   bool                   add_handler;
@@ -320,7 +277,6 @@ struct HandlerSetup {
     g_free (hs);
   }
 };
-
 static void
 handler_setup_func (BseModule      *module,   /* Engine Thread */
                     gpointer        data)
@@ -358,7 +314,6 @@ handler_setup_func (BseModule      *module,   /* Engine Thread */
                                                 hs->aprops[i].pspec,
                                                 module);
 }
-
 BseModule*
 Effect::integrate_engine_module (uint           context_handle,
                                  BseTrans      *trans)
@@ -386,7 +341,6 @@ Effect::integrate_engine_module (uint           context_handle,
     }
   return engine_module;
 }
-
 void
 Effect::dismiss_engine_module (BseModule       *engine_module,
                                guint            context_handle,
@@ -414,28 +368,23 @@ Effect::dismiss_engine_module (BseModule       *engine_module,
       bse_trans_add (trans, bse_job_discard (engine_module));
     }
 }
-
 uint
 Effect::block_size() const
 {
   g_return_val_if_fail (is_prepared(), 0);
-
   return bse_engine_block_size();
 }
-
 uint
 Effect::max_block_size() const
 {
   return BSE_STREAM_MAX_VALUES;
 }
-
 BseMusicalTuningType
 Effect::current_musical_tuning() const
 {
   BseSource *source = cast (const_cast <Effect*> (this));
   return bse_item_current_musical_tuning (BSE_ITEM (source));
 }
-
 void
 Effect::class_init (CxxBaseClass *klass)
 {
@@ -450,17 +399,14 @@ Effect::class_init (CxxBaseClass *klass)
       CxxBase *base = cast (source);
       Effect *self = static_cast<Effect*> (base);
       BseModule *engine_module = self->integrate_engine_module (context_handle, trans);
-      
       /* setup module i/o streams with BseSource i/o channels */
       bse_source_set_context_module (source, context_handle, engine_module);
-      
       /* reset module */
       bse_trans_add (trans, bse_job_force_reset (engine_module));
       /* configure module */
       SynthesisModule::Closure *clo = self->make_module_config_closure();
       if (clo)
         bse_trans_add (trans, bse_job_access (engine_module, access_trampoline, clo, access_data_free));
-      
       /* chain parent class' handler */
       BSE_SOURCE_CLASS (effect_parent_class)->context_create (source, context_handle, trans);
     }
@@ -482,9 +428,7 @@ Effect::class_init (CxxBaseClass *klass)
           engine_module = bse_source_get_context_omodule (source, context_handle);
           bse_source_set_context_omodule (source, context_handle, NULL);
         }
-
       self->dismiss_engine_module (engine_module, context_handle, trans);
-
       /* chain parent class' handler */
       BSE_SOURCE_CLASS (effect_parent_class)->context_dismiss (source, context_handle, trans);
     }
@@ -492,13 +436,10 @@ Effect::class_init (CxxBaseClass *klass)
     {
       CxxBase *base = cast (source);
       Effect *self = static_cast<Effect*> (base);
-
       /* invoke code that the effect might want to execute before prepare */
       self->prepare1();
-
       /* chain parent class' handler */
       BSE_SOURCE_CLASS (effect_parent_class)->prepare (source);
-
       /* invoke code that the effect might want to execute after prepare */
       self->prepare2();
     }
@@ -506,24 +447,19 @@ Effect::class_init (CxxBaseClass *klass)
     {
       CxxBase *base = cast (source);
       Effect *self = static_cast<Effect*> (base);
-
       /* invoke code that the effect might want to execute before reset */
       self->reset1();
-
       /* chain parent class' handler */
       BSE_SOURCE_CLASS (effect_parent_class)->reset (source);
-
       /* invoke code that the effect might want to execute after reset */
       self->reset2();
     }
   };
   BseSourceClass *source_class = klass;
-
   effect_parent_class = g_type_class_peek_parent (klass);
   source_class->context_create = Trampoline::effect_context_create;
   source_class->context_dismiss = Trampoline::effect_context_dismiss;
   source_class->prepare = Trampoline::effect_prepare;
   source_class->reset = Trampoline::effect_reset;
 }
-
 } // Bse

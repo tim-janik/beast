@@ -1,24 +1,7 @@
-/* BSE - Better Sound Engine
- * Copyright (C) 2002, 2003 Tim Janik
- *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * A copy of the GNU Lesser General Public License should ship along
- * with this library; if not, see http://www.gnu.org/copyleft/.
- */
-#include "bsecompat.h"
-#include "bsestorage.h"
+// Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
+#include "bsecompat.hh"
+#include "bsestorage.hh"
 #include <string.h>
-
-
 /* --- functions --- */
 gchar*
 bse_compat_rewrite_type_name (BseStorage    *storage,
@@ -49,7 +32,6 @@ bse_compat_rewrite_type_name (BseStorage    *storage,
       return g_strdup (type_changes[i].new_type);
   return NULL;
 }
-
 gchar*
 bse_compat_rewrite_ichannel_ident (BseStorage    *storage,
                                    const gchar   *type_name,
@@ -74,7 +56,6 @@ bse_compat_rewrite_ichannel_ident (BseStorage    *storage,
       return g_strdup (ichannel_changes[i].new_channel);
   return NULL;
 }
-
 gchar*
 bse_compat_rewrite_ochannel_ident (BseStorage    *storage,
                                    const gchar   *type_name,

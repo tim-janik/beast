@@ -1,27 +1,9 @@
-/* DavGuitar - DAV Physical Modelling Acoustic Guitar Synthesizer
- * Copyright (c) 2000 David A. Bartold
- *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * A copy of the GNU Lesser General Public License should ship along
- * with this library; if not, see http://www.gnu.org/copyleft/.
- */
-
+// Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 /* This software uses technology under patent US 4,649,783, which has
  * expired in May of 2004.
  */
-
 #include <stdlib.h>
-#include "davguitar.h"
-
+#include "davguitar.hh"
 /* --- parameters --- */
 enum
 {
@@ -50,8 +32,6 @@ enum
   PARAM_METALLIC_FACTOR,
   PARAM_SNAP_FACTOR
 };
-
-
 /* --- prototypes --- */
 static void	   dav_guitar_init	       (DavGuitar	*guitar);
 static void	   dav_guitar_class_init       (DavGuitarClass	*guitar);
@@ -71,55 +51,44 @@ static BseChunk*   dav_guitar_calc_chunk       (BseSource	*source,
 						guint		  ochannel_id);
 static void	   dav_guitar_reset	       (BseSource	*source);
 static inline void dav_guitar_update_locals    (DavGuitar       *guitar);
-
-
 /* --- variables --- */
 static GType		 type_id_guitar = 0;
 static gpointer		 parent_class = NULL;
 static const GTypeInfo	 type_info_guitar = {
   sizeof (DavGuitarClass),
-  
   (GBaseInitFunc) NULL,
   (GBaseFinalizeFunc) NULL,
   (GClassInitFunc) dav_guitar_class_init,
   (GClassFinalizeFunc) dav_guitar_class_finalize,
   NULL /* class_data */,
-  
   sizeof (DavGuitar),
   0 /* n_preallocs */,
   (GInstanceInitFunc) dav_guitar_init,
 };
-
-
 /* --- functions --- */
 static void
 wave_guide_unstop (WaveGuide *wave)
 {
   wave->lowpass_coeff = pow (0.5, 1.0 / (wave->freq * 0.02));
 }
-
 static void
 wave_guide_stop (WaveGuide *wave)
 {
   wave->lowpass_coeff = pow (0.5, 1.0 / (wave->freq * 0.002));
 }
-
 static void
 wave_guide_set_freq (WaveGuide *wave,
                      double     frq)
 {
   guint i;
-  
   wave->freq = frq;
   wave->pos = 0;
   wave->wavelen = (int) (bse_engine_sample_freq() / frq);
   wave->lowpass_data = 0.0;
   wave_guide_unstop (wave);
-  
   for (i = 0; i < wave->wavelen; i++)
     wave->data[i] = 0.0;
 }
-
 static void
 wave_guide_pluck (WaveGuide *wave,
 		  gfloat     metallic_factor,
@@ -128,77 +97,61 @@ wave_guide_pluck (WaveGuide *wave,
 {
   guint i;
   guint pivot;
-  
   wave->lowpass_data = 0.0;
   wave_guide_unstop (wave);
-  
   /* Initialize wave guide (i.e. string) by setting it to random data. */
-  
   /* Create envelope. */
   pivot = wave->wavelen / 5;
-  
   for (i = 0; i <= pivot; i++)
     wave->data[i] = ((float) i) / pivot;
-  
   for (; i < wave->wavelen; i++)
     wave->data[i] = ((float) (wave->wavelen - i - 1)) / (wave->wavelen - pivot - 1);
-  
   /* Add some snap. */
   for (i = 0; i < wave->wavelen; i++)
     wave->data[i] = pow (wave->data[i], snap_factor * 10.0F + 1.0F);
-  
   /* Add static to displacements. */
   for (i = 0; i < wave->wavelen; i++)
     wave->data[i] = wave->data[i] * (1.0F - metallic_factor) +
       ((rand() & 1) ? -1.0F : 1.0F) * metallic_factor;
-  
   /* Set velocity. */
   for (i = 0; i < wave->wavelen; i++)
     wave->data[i] *= trigger_vel;
 }
-
 static void
 wave_guide_init (WaveGuide *wave, float frq)
 {
   wave->data = g_new0 (gfloat, (bse_engine_sample_freq() + 49) / 50);
   wave_guide_set_freq (wave, frq);
 }
-
 static void
 wave_guide_free (WaveGuide *wave)
 {
   g_free (wave->data);
   wave->data = NULL;
 }
-
 static void
 wave_guide_prepare (WaveGuide *wave)
 {
   wave_guide_free (wave);
   wave_guide_init (wave, wave->freq);
 }
-
 static inline gint
 fast_mod (gint x, gint y)
 {
   return (x >= y) ? x - y : x;
 }
-
 static inline void
 wave_guide_advance (WaveGuide *wave)
 {
   wave->lowpass_data = wave->lowpass_data * (1.0F - wave->lowpass_coeff) + wave->data[wave->pos] * wave->lowpass_coeff;
   wave->data[wave->pos] = wave->lowpass_data;
-  
   wave->pos = ((wave->pos + 1) == wave->wavelen) ? 0 : wave->pos + 1;
 }
-
 static inline int
 wave_guide_get_pos (WaveGuide *wave, int x)
 {
   return fast_mod (wave->pos + x, wave->wavelen);
 }
-
 static void
 add_string_param (BseObjectClass *object_class,
 		  gchar		 *name,
@@ -216,23 +169,19 @@ add_string_param (BseObjectClass *object_class,
 						  50.0, 2000.0,
 						  freq_value, 0.1,
 						  BSE_PARAM_DEFAULT | BSE_PARAM_HINT_DIAL));
-  
   bse_object_class_add_param (object_class, name, note_enum,
 			      bse_param_spec_note (note_param, "Note", NULL,
 						 BSE_NOTE_G (-2), BSE_NOTE_B (3),
 						 note_value, 1, FALSE,
 						 BSE_PARAM_GUI));
-  
   bse_object_class_add_param (object_class, name, trigger_enum,
 			      sfi_pspec_bool (trigger_param, "Trigger Hit", "Pluck the string",
 						   FALSE, BSE_PARAM_GUI));
 }
-
 static inline void
 dav_guitar_update_locals (DavGuitar *guitar)
 {
 }
-
 static void
 dav_guitar_class_init (DavGuitarClass *class)
 {
@@ -240,18 +189,13 @@ dav_guitar_class_init (DavGuitarClass *class)
   BseObjectClass *object_class = BSE_OBJECT_CLASS (class);
   BseSourceClass *source_class = BSE_SOURCE_CLASS (class);
   guint ochannel_id;
-  
   parent_class = g_type_class_peek (BSE_TYPE_SOURCE);
-  
   gobject_class->set_property = dav_guitar_set_property;
   gobject_class->get_property = dav_guitar_get_property;
-
   object_class->destroy = dav_guitar_do_destroy;
-  
   source_class->prepare = dav_guitar_prepare;
   source_class->calc_chunk = dav_guitar_calc_chunk;
   source_class->reset = dav_guitar_reset;
-  
   add_string_param (object_class, "String 1",
 		    "freq_1", PARAM_FREQ_1, 97.998859,	"note_1", PARAM_NOTE_1, BSE_NOTE_G (-1), "trigger_1", PARAM_TRIGGER_1);
   add_string_param (object_class, "String 2",
@@ -264,42 +208,34 @@ dav_guitar_class_init (DavGuitarClass *class)
 		    "freq_5", PARAM_FREQ_5, 246.941651, "note_5", PARAM_NOTE_5, BSE_NOTE_B (0),	 "trigger_5", PARAM_TRIGGER_5);
   add_string_param (object_class, "String 6",
 		    "freq_6", PARAM_FREQ_6, 391.995436, "note_6", PARAM_NOTE_6, BSE_NOTE_G (1),	 "trigger_6", PARAM_TRIGGER_6);
-  
   bse_object_class_add_param (object_class, "Global Control", PARAM_TRIGGER_VEL,
 			      bse_param_spec_float ("trigger_vel", "Trigger Velocity [%]",
 						  "Set the velocity of the string pluck",
 						  0.0, 100.0, 100.0, 10.0,
 						  BSE_PARAM_GUI | BSE_PARAM_HINT_SCALE));
-  
   bse_object_class_add_param (object_class, "Global Control", PARAM_TRIGGER_ALL,
 			      sfi_pspec_bool ("trigger_all", "Trigger Hit All", "Strum guitar",
 						   FALSE, BSE_PARAM_GUI));
-  
   bse_object_class_add_param (object_class, "Global Control", PARAM_STOP_ALL,
 			      sfi_pspec_bool ("stop_all", "Stop All", "Stop all the strings from vibrating",
 						   FALSE, BSE_PARAM_GUI));
-  
   bse_object_class_add_param (object_class, "Flavour", PARAM_METALLIC_FACTOR,
 			      bse_param_spec_float ("metallic_factor", "Metallic Factor [%]",
 						  "Set the metallicness of the string",
 						  0.0, 100.0, 16.0, 0.25,
 						  BSE_PARAM_DEFAULT | BSE_PARAM_HINT_SCALE));
-  
   bse_object_class_add_param (object_class, "Flavour", PARAM_SNAP_FACTOR,
 			      bse_param_spec_float ("snap_factor", "Snap Factor [%]",
 						  "Set the snappiness of the string",
 						  0.0, 100.0, 34.0, 0.25,
 						  BSE_PARAM_DEFAULT | BSE_PARAM_HINT_SCALE));
-  
   ochannel_id = bse_source_class_add_ochannel (source_class, "mono-out", _("Guitar Output"));
   g_assert (ochannel_id == DAV_GUITAR_OCHANNEL_MONO);
 }
-
 static void
 dav_guitar_class_finalize (DavGuitarClass *class)
 {
 }
-
 static void
 dav_guitar_init (DavGuitar *guitar)
 {
@@ -308,7 +244,6 @@ dav_guitar_init (DavGuitar *guitar)
   guitar->trigger_vel = 1.0;
   guitar->metallic_factor = 0.16;
   guitar->snap_factor = 0.34;
-  
   wave_guide_init (&guitar->strings[0], 097.998859); /* G */
   wave_guide_init (&guitar->strings[1], 123.470825); /* B */
   wave_guide_init (&guitar->strings[2], 146.832384); /* D */
@@ -316,58 +251,43 @@ dav_guitar_init (DavGuitar *guitar)
   wave_guide_init (&guitar->strings[4], 246.941651); /* B */
   wave_guide_init (&guitar->strings[5], 391.995436); /* G */
   wave_guide_init (&guitar->body, 50.0);
-  
   dav_guitar_update_locals (guitar);
 }
-
 static void
 dav_guitar_do_destroy (BseObject *object)
 {
   DavGuitar *guitar;
   int i;
-  
   guitar = DAV_GUITAR (object);
-  
   for (i = 0; i < 6; i++)
     wave_guide_free (&guitar->strings[i]);
-  
   wave_guide_free (&guitar->body);
-  
   /* chain parent class' destroy handler */
   BSE_OBJECT_CLASS (parent_class)->destroy (object);
 }
-
 static void
 dav_guitar_trigger_string (DavGuitar *guitar, int str)
 {
   g_return_if_fail (DAV_IS_GUITAR (guitar));
-  
   wave_guide_pluck (&guitar->strings[str], guitar->metallic_factor, guitar->snap_factor, guitar->trigger_vel);
   wave_guide_unstop (&guitar->body);
 }
-
 static void
 dav_guitar_trigger (DavGuitar *guitar)
 {
   guint i;
-  
   for (i = 0; i < 6; i++)
     wave_guide_pluck (&guitar->strings[i], guitar->metallic_factor, guitar->snap_factor, guitar->trigger_vel);
-  
   wave_guide_unstop (&guitar->body);
 }
-
 static void
 dav_guitar_stop (DavGuitar *guitar)
 {
   guint i;
-  
   for (i = 0; i < 6; i++)
     wave_guide_stop (&guitar->strings[i]);
-  
   wave_guide_stop (&guitar->body);
 }
-
 static void
 dav_guitar_set_property (DavGuitar   *guitar,
 			 guint        param_id,
@@ -457,13 +377,11 @@ dav_guitar_set_property (DavGuitar   *guitar,
     case PARAM_SNAP_FACTOR:
       guitar->snap_factor = g_value_get_float (value) / 100.0;
       break;
-      
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (guitar, param_id, pspec);
       break;
     }
 }
-
 static void
 dav_guitar_get_property (DavGuitar   *guitar,
 			 guint        param_id,
@@ -541,59 +459,46 @@ dav_guitar_get_property (DavGuitar   *guitar,
     case PARAM_SNAP_FACTOR:
       g_value_set_float (value, guitar->snap_factor * 100.0);
       break;
-      
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (guitar, param_id, pspec);
       break;
     }
 }
-
 static void
 dav_guitar_prepare (BseSource *source,
 		    BseIndex index)
 {
   DavGuitar *guitar = DAV_GUITAR (source);
   int i;
-  
   guitar->hipass_coeff = pow (0.5, 20.0 / bse_engine_sample_freq());
   guitar->hipass_data = 0.0;
-  
   wave_guide_prepare (&guitar->body);
-  
   for (i = 0; i < 6; i++)
     {
       wave_guide_prepare (&guitar->strings[i]);
       guitar->body_taps[i] = ((i + 1) * (guitar->body.wavelen - 1)) / 7;
     }
-  
   dav_guitar_update_locals (guitar);
-  
   /* chain parent class' handler */
   BSE_SOURCE_CLASS (parent_class)->prepare (source, index);
 }
-
 static inline void
 resonate (DavGuitar *guitar, float factor, int n)
 {
   int body_pos;
   float vel;
   WaveGuide *body, *string;
-  
   body = &guitar->body;
   string = &guitar->strings[n];
-  
   /* Find position on body. */
   body_pos = wave_guide_get_pos (body, guitar->body_taps[n]);
-  
   /* Linearly approximate the force of an imaginary
      spring connected between those two points. */
   vel = (string->data[string->pos] - body->data[body_pos]) * factor;
-  
   /* Modify positions. */
   string->data[string->pos] -= vel;
   body->data[body_pos] += vel;
 }
-
 static BseChunk*
 dav_guitar_calc_chunk (BseSource *source,
 		       guint ochannel_id)
@@ -602,40 +507,31 @@ dav_guitar_calc_chunk (BseSource *source,
   BseSampleValue *hunk;
   gfloat sample;
   guint i, j;
-  
   g_return_val_if_fail (ochannel_id == DAV_GUITAR_OCHANNEL_MONO, NULL);
-  
   hunk = bse_hunk_alloc (1);
-  
   for (i = 0; i < BSE_TRACK_LENGTH; i++)
     {
       /* Get sample from body and hipass it to remove DC offset. */
       sample = guitar->body.data[guitar->body.pos] * 25.0F;
       guitar->hipass_data = guitar->hipass_data * guitar->hipass_coeff + sample * (1.0F - guitar->hipass_coeff);
-      
       /* Store sample. */
       hunk[i] = BSE_CLIP_SAMPLE_VALUE ((sample - guitar->hipass_data) * BSE_MAX_SAMPLE_VALUE_f);
-      
       /* Resonate strings + body and advance waves one position. */
       for (j = 0; j < 6; j++)
 	{
 	  resonate (guitar, 0.01, j);
 	  wave_guide_advance (&guitar->strings[j]);
 	}
-      
       wave_guide_advance (&guitar->body);
     }
-  
   return bse_chunk_new_orphan (1, hunk);
 }
-
 static void
 dav_guitar_reset (BseSource *source)
 {
   /* chain parent class' handler */
   BSE_SOURCE_CLASS (parent_class)->reset (source);
 }
-
 /* --- Export to DAV --- */
 BSE_EXPORTS_BEGIN ();
 BSE_EXPORT_OBJECTS = {

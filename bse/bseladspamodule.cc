@@ -1,27 +1,10 @@
-/* BseLadspaModule - BSE Ladspa Module
- * Copyright (C) 2003 Tim Janik
- *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * A copy of the GNU Lesser General Public License should ship along
- * with this library; if not, see http://www.gnu.org/copyleft/.
- */
-#include "bseladspamodule.h"
+// Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
+#include "bseladspamodule.hh"
 #include "bseblockutils.hh"
-#include "bsecategories.h"
-#include "bseengine.h"
-#include "bsemathsignal.h"
+#include "bsecategories.hh"
+#include "bseengine.hh"
+#include "bsemathsignal.hh"
 #include <string.h>
-
-
 /* --- prototypes --- */
 static void	bse_ladspa_module_class_init	 (BseLadspaModuleClass	*klass);
 static void     ladspa_derived_init		 (BseLadspaModule	*self);
@@ -38,32 +21,25 @@ static void	ladspa_derived_context_create	 (BseSource		*source,
 						  uint			 context_handle,
 						  BseTrans		*trans);
 static void	bse_ladspa_module_class_init_from_info (BseLadspaModuleClass *ladspa_module_class);
-
-
 /* --- variables --- */
 static void    *derived_parent_class = NULL;
 static GQuark   quark_value_index = 0;
 static GQuark   quark_notify_sibling = 0;
-
-
 /* --- functions --- */
 BSE_BUILTIN_TYPE (BseLadspaModule)
 {
   static const GTypeInfo type_info = {
     sizeof (BseLadspaModuleClass),
-    
     (GBaseInitFunc) NULL,
     (GBaseFinalizeFunc) NULL,
     (GClassInitFunc) bse_ladspa_module_class_init,
     (GClassFinalizeFunc) NULL,
     NULL /* class_data */,
-    
     sizeof (BseLadspaModule),
     0 /* n_preallocs */,
     (GInstanceInitFunc) NULL,
   };
   GType type;
-  
   type = bse_type_register_static (BSE_TYPE_SOURCE,
 				   "BseLadspaModule",
 				   "LADSPA Module base type",
@@ -71,42 +47,32 @@ BSE_BUILTIN_TYPE (BseLadspaModule)
                                    &type_info);
   return type;
 }
-
 static void
 bse_ladspa_module_class_init (BseLadspaModuleClass *klass)
 {
   quark_value_index = g_quark_from_static_string ("BseLadspaValueIndex");
   quark_notify_sibling = g_quark_from_static_string ("BseLadspaNotifySibling");
-
   klass->bli = NULL;
 }
-
 static void
 ladspa_derived_class_init (BseLadspaModuleClass *klass,
 			   void                 *class_data)
 {
   GObjectClass *gobject_class = G_OBJECT_CLASS (klass);
   BseSourceClass *source_class = BSE_SOURCE_CLASS (klass);
-
   derived_parent_class = g_type_class_peek_parent (klass);
-
   g_assert (class_data != NULL);
   klass->bli = (BseLadspaInfo*) class_data;
-
   gobject_class->finalize = ladspa_derived_finalize;
-
   source_class->context_create = ladspa_derived_context_create;
-
   bse_ladspa_module_class_init_from_info (klass);
 }
-
 static void
 ladspa_derived_class_finalize (BseLadspaModuleClass *klass,
 			       void                 *class_data)
 {
   g_free (klass->gsl_class);
 }
-
 void
 bse_ladspa_module_derived_type_info (GType                  type,
 				     BseLadspaInfo         *bli,
@@ -120,7 +86,6 @@ bse_ladspa_module_derived_type_info (GType                  type,
   type_info->instance_size = sizeof (BseLadspaModule);
   type_info->instance_init = (GInstanceInitFunc) ladspa_derived_init;
 }
-
 static void
 bse_ladspa_module_class_init_from_info (BseLadspaModuleClass *ladspa_module_class)
 {
@@ -129,14 +94,11 @@ bse_ladspa_module_class_init_from_info (BseLadspaModuleClass *ladspa_module_clas
   BseSourceClass *source_class = BSE_SOURCE_CLASS (ladspa_module_class);
   BseLadspaInfo *bli = ladspa_module_class->bli;
   uint ochannel, ichannel, i;
-  
   g_assert (ladspa_module_class->bli != NULL &&
 	    gobject_class->set_property == NULL &&
 	    gobject_class->get_property == NULL);
-
   gobject_class->set_property = ladspa_derived_set_property;
   gobject_class->get_property = ladspa_derived_get_property;
-  
   for (i = 0; i < bli->n_cports; i++)
     {
       BseLadspaPort *port = bli->cports + i;
@@ -229,7 +191,6 @@ bse_ladspa_module_class_init_from_info (BseLadspaModuleClass *ladspa_module_clas
 	  bse_object_class_add_param (object_class, group, bli->n_cports + i + 1, pspec2);
 	}
     }
-
   for (i = 0; i < bli->n_aports; i++)
     {
       BseLadspaPort *port = bli->aports + i;
@@ -239,7 +200,6 @@ bse_ladspa_module_class_init_from_info (BseLadspaModuleClass *ladspa_module_clas
 	ochannel = bse_source_class_add_ochannel (source_class, port->ident, port->name, NULL);
     }
 }
-
 static float
 ladspa_value_get_float (BseLadspaModule *self,
                         const GValue    *value,
@@ -261,7 +221,6 @@ ladspa_value_get_float (BseLadspaModule *self,
       return 0;
     }
 }
-
 static void
 ladspa_value_set_float (BseLadspaModule *self,
                         GValue          *value,
@@ -286,7 +245,6 @@ ladspa_value_set_float (BseLadspaModule *self,
       g_assert_not_reached ();
     }
 }
-
 static void
 ladspa_derived_init (BseLadspaModule *self)
 {
@@ -304,7 +262,6 @@ ladspa_derived_init (BseLadspaModule *self)
       g_value_unset (&tmp);
     }
 }
-
 static void
 ladspa_derived_finalize (GObject *object)
 {
@@ -312,7 +269,6 @@ ladspa_derived_finalize (GObject *object)
   g_free (self->cvalues);
   G_OBJECT_CLASS (derived_parent_class)->finalize (object);
 }
-
 static void
 ladspa_derived_get_property (GObject    *object,
 			     uint        param_id,
@@ -326,7 +282,6 @@ ladspa_derived_get_property (GObject    *object,
     i = (ptrdiff_t) g_param_spec_get_qdata (pspec, quark_value_index);
   ladspa_value_set_float (self, value, klass->bli->cports + i, self->cvalues[i]);
 }
-
 typedef struct
 {
   BseLadspaInfo *bli;
@@ -337,7 +292,6 @@ typedef struct
 } LadspaData;
 #define	LADSPA_DATA_SIZE(bli)	  (sizeof (LadspaData) + (MAX (bli->n_cports, 1) - 1) * sizeof (float))
 #define	LADSPA_CVALUES_COUNT(bli) (bli->n_cports /* * sizeof (float) */)
-
 static void
 ladspa_module_access (BseModule *module,        /* EngineThread */
 		      void      *data)
@@ -347,7 +301,6 @@ ladspa_module_access (BseModule *module,        /* EngineThread */
   /* this runs in the Gsl Engine threads */
   bse_block_copy_float (LADSPA_CVALUES_COUNT (ldata->bli), ldata->cvalues, cdata->cvalues);
 }
-
 static void
 ladspa_derived_set_property (GObject      *object,
 			     uint          param_id,
@@ -375,7 +328,6 @@ ladspa_derived_set_property (GObject      *object,
 				 NULL);
     }
 }
-
 static void
 ladspa_module_reset (BseModule *module)
 {
@@ -389,7 +341,6 @@ ladspa_module_reset (BseModule *module)
       ldata->activated = TRUE;
     }
 }
-
 static void
 ladspa_module_process (BseModule *module,
 		       uint       n_values)
@@ -429,7 +380,6 @@ ladspa_module_process (BseModule *module,
 	nos++;
       }
 }
-
 static void
 ladspa_module_free_data (void                 *data,
 			 const BseModuleClass *klass)
@@ -443,7 +393,6 @@ ladspa_module_free_data (void                 *data,
   ldata->handle = NULL;
   g_free (ldata->ibuffers);
 }
-
 static void
 ladspa_derived_context_create (BseSource *source,
 			       uint       context_handle,
@@ -465,7 +414,6 @@ ladspa_derived_context_create (BseSource *source,
   LadspaData *ldata = (LadspaData*) g_malloc0 (LADSPA_DATA_SIZE (bli));
   BseModule *module;
   uint i, nis;
-
   ldata->bli = bli;
   /* setup audio streams */
   if (!klass->gsl_class)
@@ -493,11 +441,9 @@ ladspa_derived_context_create (BseSource *source,
   for (i = 0, nis = 0; i < bli->n_aports; i++)
     if (bli->aports[i].input)
       bli->connect_port (ldata->handle, bli->aports[i].port_index, ldata->ibuffers + nis++ * bse_engine_block_size ());
-  
   module = bse_module_new (klass->gsl_class, ldata);
   bse_source_set_context_module (source, context_handle, module);
   bse_trans_add (trans, bse_job_integrate (module));
-  
   /* chain parent class' handler */
   BSE_SOURCE_CLASS (derived_parent_class)->context_create (source, context_handle, trans);
 }

@@ -1,30 +1,9 @@
-/* BSE - Better Sound Engine
- * Copyright (C) 1998-2003 Tim Janik
- *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * A copy of the GNU Lesser General Public License should ship along
- * with this library; if not, see http://www.gnu.org/copyleft/.
- */
-#include "bseenums.h"
-#include "gslcommon.h"
+// Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
+#include "bseenums.hh"
+#include "gslcommon.hh"
 #include <errno.h>
-
-/* --- prototypes --- */
-extern "C" void	bse_type_register_enums		(void);
-
-
 /* include generated enum value arrays and *.h files the enums steam from */
-#include "bseenum_arrays.c"
-
+#include "bseenum_arrays.cc"
 /* --- functions --- */
 void
 bse_type_register_enums (void)
@@ -36,11 +15,10 @@ bse_type_register_enums (void)
     void       *values;
   } enums[] = {
     /* include generated enum list */
-#include "bseenum_list.c"
+#include "bseenum_list.cc"
   };
   uint n_enums = sizeof (enums) / sizeof (enums[0]);
   uint i;
-  
   for (i = 0; i < n_enums; i++)
     {
       if (enums[i].parent_type == G_TYPE_ENUM)
@@ -55,42 +33,32 @@ bse_type_register_enums (void)
 	g_assert_not_reached ();
     }
 }
-
 /* BseErrorType is a static type */
 static GEnumClass *bse_error_class = NULL;
-
 const char*
 bse_error_name (BseErrorType error_value)
 {
   GEnumValue *ev;
-  
   if (!bse_error_class)
     bse_error_class = (GEnumClass*) g_type_class_ref (BSE_TYPE_ERROR_TYPE);
-  
   ev = g_enum_get_value (bse_error_class, error_value);
   return ev ? ev->value_name : NULL;
 }
-
 const char*
 bse_error_nick (BseErrorType error_value)
 {
   GEnumValue *ev;
-  
   if (!bse_error_class)
     bse_error_class = (GEnumClass*) g_type_class_ref (BSE_TYPE_ERROR_TYPE);
-  
   ev = g_enum_get_value (bse_error_class, error_value);
   return ev ? ev->value_nick : NULL;
 }
-
 const char*
 bse_error_blurb (BseErrorType error_value)
 {
   GEnumValue *ev;
-  
   if (!bse_error_class)
     bse_error_class = (GEnumClass*) g_type_class_ref (BSE_TYPE_ERROR_TYPE);
-  
   switch (error_value)
     {
     case BSE_ERROR_NONE:                        return _("Everything went well");
@@ -170,11 +138,9 @@ bse_error_blurb (BseErrorType error_value)
     case BSE_ERROR_INVALID_DURATION:		return _("Invalid duration");
     case BSE_ERROR_INVALID_OVERLAP:		return _("Invalid overlap");
     }
-  
   ev = g_enum_get_value (bse_error_class, error_value);
   return ev ? ev->value_nick : NULL;
 }
-
 BseErrorType
 bse_error_from_errno (int             v_errno,
 		      BseErrorType    fallback)

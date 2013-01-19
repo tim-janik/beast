@@ -1,7 +1,4 @@
 # SFI - Synthesis Fusion Kit Interface
-# Copyright (C) 2002 Tim Janik
-#
-## GNU Lesser General Public License version 2 or any later version.
 include $(top_srcdir)/Makefile.decl
 
 SUBDIRS   = . tests
@@ -9,17 +6,17 @@ INCLUDES += -I$(top_srcdir) -I$(top_builddir) $(SFI_CFLAGS)
 DEFS     += -DG_LOG_DOMAIN=\"SFI\" -DG_DISABLE_CONST_RETURNS
 
 sfi_public_headers = $(strip \
-	sfistore.h	sficomwire.h	sfifilecrawler.h \
-	glib-extra.h			sfiwrapper.h	 \
-	sfivmarshal.h	sfiglue.h	sfigluecodec.h	sfiglueproxy.h	\
-	sfinote.h	sfiparams.h	sfiprimitives.h	sfiserial.h	\
-	sfitime.h	sfitypes.h	sfivalues.h	sfiustore.h	\
-	sficxx.hh	sfiring.h	sfimemory.h	sficomport.h	\
-	sfitests.h	sfi.h						\
+	sfistore.hh	sficomwire.hh	sfifilecrawler.hh \
+	glib-extra.hh			sfiwrapper.hh	 \
+	sfivmarshal.hh	sfiglue.hh	sfigluecodec.hh	sfiglueproxy.hh	\
+	sfinote.hh	sfiparams.hh	sfiprimitives.hh	sfiserial.hh	\
+	sfitime.hh	sfitypes.hh	sfivalues.hh	sfiustore.hh	\
+	sficxx.hh	sfiring.hh	sfimemory.hh	sficomport.hh	\
+	sfitests.hh	sfi.hh						\
 )
 sfi_all_sources = $(strip \
 	sfistore.cc	sficomwire.cc	sfifilecrawler.cc \
-	glib-extra.c			sfiwrapper.cc	sfiprimitives.cc \
+	glib-extra.cc			sfiwrapper.cc	sfiprimitives.cc \
 	sfivmarshal.cc	sfiglue.cc	sfigluecodec.cc	sfiglueproxy.cc	\
 	sfinote.cc	sfiparams.cc			sfiserial.cc	\
 	sfitime.cc	sfitypes.cc	sfivalues.cc	sfiustore.cc	\
@@ -27,7 +24,7 @@ sfi_all_sources = $(strip \
 	$(conditional_toyprof_sources)	\
 )
 sfi_extra_sources = $(strip \
-	gbsearcharray.h \
+	gbsearcharray.hh \
 )
 sfi_built_sources = $(strip \
 )
@@ -57,25 +54,13 @@ CLEANFILES += libsfi.o libsfi.lo
 # source files
 common_idl_sources = sfidl-generator.cc sfidl-namespace.cc sfidl-options.cc sfidl-parser.cc \
   sfidl-factory.cc sfidl-typelist.cc sfidl-cbase.cc sfidl-clientc.cc sfidl-clientcxx.cc sfidl-corec.cc \
-  sfidl-corecxx.cc sfidl-cxxbase.cc sfidl-hostc.cc glib-extra.c
+  sfidl-corecxx.cc sfidl-cxxbase.cc sfidl-hostc.cc sfidl-utils.cc
 
 bin_PROGRAMS = sfidl
 sfidl_SOURCES = sfidl.cc $(common_idl_sources)
 sfidl_LDADD = $(SFI_LIBS) -lm $(top_builddir)/birnet/libbirnet.o # libsfi.la
-sfidl_CFLAGS = $(AM_CFLAGS) # hack to cause glib-extra.c to be compiled twice (work around automake)
 EXTRA_DIST += sfidl-generator.hh sfidl-namespace.hh sfidl-options.hh sfidl-parser.hh sfidl-factory.hh
 EXTRA_DIST += sfidl-cbase.hh sfidl-clientc.hh sfidl-clientcxx.hh sfidl-cxxbase.hh sfidl-hostc.hh sfidl-utils.hh
-
-#
-# TOYPROF: poor man's profiling toy
-#
-TOYPROF_H_SOURCES = toyprof.h toyprof-mem.h
-TOYPROF_C_SOURCES = toyprof.c toyprof-mem.c
-EXTRA_DIST += toyprof.pl toyprof.README $(TOYPROF_H_SOURCES)
-if IF_TOYPROF
-conditional_toyprof_sources = $(TOYPROF_C_SOURCES)
-endif
-
 
 EXTRA_DIST += $(sfi_public_headers) $(sfi_extra_sources) $(sfi_built_sources)
 MAINTAINERCLEANFILES += $(sfi_built_sources)

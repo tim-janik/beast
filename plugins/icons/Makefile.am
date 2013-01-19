@@ -1,7 +1,4 @@
 # BSE-Plugins - Better Sound Engine dynamic Plugins
-# Copyright (C) 1998-2006 Tim Janik
-#
-## GNU Lesser General Public License version 2 or any later version.
 include $(top_srcdir)/Makefile.decl
 
 icon_pattern = *.c *.png *.xcf

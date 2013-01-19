@@ -1,36 +1,20 @@
-/* BSE - Better Sound Engine
- * Copyright (C) 2003-2006 Tim Janik
- *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * A copy of the GNU Lesser General Public License should ship along
- * with this library; if not, see http://www.gnu.org/copyleft/.
- */
+// Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bseprobe.genidl.hh"
-#include "bseengine.h"
+#include "bseengine.hh"
 #include "bseblockutils.hh"
-#include "gslcommon.h" /* for gsl_tick_stamp() */
-#include "gslfft.h"
+#include "gslcommon.hh" /* for gsl_tick_stamp() */
+#include "gslfft.hh"
+#include "bsemain.hh"
+#include "bsesequencer.hh"
 #include <stdexcept>
 #include <set>
 using namespace std;
 using namespace Sfi;
-
 namespace { // Anon
 using namespace Bse;
-
 /* --- variables --- */
 static guint    MAX_QUEUE_LENGTH = 3; // or, for 20ms: (int) (bse_engine_sample_freq() * 0.020 / bse_engine_block_size() + 0.5)
 static guint    bse_source_signal_probes = 0;
-
 /* --- functions --- */
 static inline double
 blackman_window (double x)
@@ -42,8 +26,6 @@ blackman_window (double x)
     return 0;
   return 0.42 - 0.5 * cos (PI * x * 2) + 0.08 * cos (4 * PI * x);
 }
-
-
 /* --- ProbeQueue --- */
 class SourceProbes;
 class ProbeQueue {
@@ -187,7 +169,7 @@ class ProbeQueue {
               rv[i] = ivalues[i] * blackman_window (i * reci_fft_size);
             gsl_power2_fftar (fft_size, rv, cv);
             probe.fft_data.resize (fft_size);
-            float *fvalues = probe.fft_data.fblock()->values;
+            double *fvalues = &probe.fft_data[0];
             reci_fft_size = 1.0 / fft_size;
             i = fft_size;
             while (i--) /* convert to float */
@@ -197,7 +179,7 @@ class ProbeQueue {
           {
             /* all raw floats are 0.0 and so will be the resulting fft */
             probe.fft_data.resize (fft_size);
-            bse_block_fill_float (fft_size, probe.fft_data.fblock()->values, 0.0);
+            bse_block_fill_0 (fft_size, &probe.fft_data[0]);
           }
         else
           probe_features.probe_fft = false;
@@ -210,9 +192,12 @@ class ProbeQueue {
         if (raw_floats)
           {
             /* if (probe_xrun) bse_block_fill_float (n_computed, raw_floats, 0.0); */
-            SfiFBlock *fblock = sfi_fblock_new_foreign (block_size, raw_floats, g_free);
+            probe.sample_data.resize (block_size);
+            double *fvalues = &probe.fft_data[0];
+            for (int i = 0; i < int (block_size); i++)
+              fvalues[i] = raw_floats[i];
+            g_free (raw_floats);
             raw_floats = NULL;
-            probe.sample_data.take (fblock);
           }
         else
           probe_features.probe_samples = false;
@@ -330,8 +315,6 @@ public:
 private:
   BIRNET_PRIVATE_CLASS_COPY (ProbeQueue);
 };
-
-
 /* --- SourceProbes --- */
 class SourceProbes {
   typedef std::set<ProbeQueue*, ProbeQueue::KeyLesser> ProbeQueueSet;
@@ -576,17 +559,14 @@ public:
 };
 SfiRing *SourceProbes::bse_probe_sources = NULL;
 guint    SourceProbes::bse_idle_handler_id = 0;
-
 void
 ProbeQueue::queue_probes_update (uint probe_queue_length)
 {
   probes.queue_probes_update (probe_queue_length);
 }
-
 /* --- unprepared probing --- */
 static SfiRing *bse_dummy_sources = NULL;
 static guint    bse_dummy_prober_id = 0;
-
 static gboolean
 bse_dummy_prober (gpointer data)
 {
@@ -601,7 +581,6 @@ bse_dummy_prober (gpointer data)
   bse_dummy_prober_id = 0;
   return FALSE;
 }
-
 void
 SourceProbes::queue_probe_request (guint                 n_channels,
                                    const ProbeFeatures **channel_features,
@@ -626,12 +605,9 @@ SourceProbes::queue_probe_request (guint                 n_channels,
         pqueue->queue_probe_request (*channel_features[i]);
       }
 }
-
 } // Anon
-
 namespace Bse {
 namespace Procedure {
-
 void
 source_request_probes::exec (BseSource                 *source,
                              Int                        ochannel_id,
@@ -646,14 +622,12 @@ source_request_probes::exec (BseSource                 *source,
   prs += rq;
   source_mass_request::exec (prs);
 }
-
 static guint
 fft_align (guint bsize)
 {
   bsize = 1 << (g_bit_storage (bsize) - 1);
   return CLAMP (bsize, 4, 65536);
 }
-
 void
 source_mass_request::exec (const ProbeRequestSeq &cprseq)
 {
@@ -710,13 +684,11 @@ source_mass_request::exec (const ProbeRequestSeq &cprseq)
       channel_features = NULL;
     }
 }
-
 Num
 source_get_tick_stamp::exec (BseSource *self)
 {
   return gsl_tick_stamp ();
 }
-
 Int
 source_get_mix_freq::exec (BseSource *self)
 {
@@ -725,18 +697,75 @@ source_get_mix_freq::exec (BseSource *self)
   return BSE_SOURCE_PREPARED (self) ? bse_engine_sample_freq() : 0;
 }
 
-} // Procedure
+ThreadTotalsHandle
+collect_thread_totals::exec ()
+{
+  struct Sub {
+    static ThreadState convert (BirnetThreadState ts)
+    {
+      switch (ts)
+        {
+        default:
+        case BIRNET_THREAD_UNKNOWN:     return THREAD_STATE_UNKNOWN;
+        case BIRNET_THREAD_RUNNING:     return THREAD_STATE_RUNNING;
+        case BIRNET_THREAD_SLEEPING:    return THREAD_STATE_SLEEPING;
+        case BIRNET_THREAD_DISKWAIT:    return THREAD_STATE_DISKWAIT;
+        case BIRNET_THREAD_TRACED:      return THREAD_STATE_TRACED;
+        case BIRNET_THREAD_PAGING:      return THREAD_STATE_PAGING;
+        case BIRNET_THREAD_ZOMBIE:      return THREAD_STATE_ZOMBIE;
+        case BIRNET_THREAD_DEAD:        return THREAD_STATE_DEAD;
+        }
+    }
+    static void assign (ThreadInfoHandle &th,
+                        BirnetThreadInfo    *ti)
+    {
+      th->name = ti->name;
+      th->thread_id = ti->thread_id;
+      th->state = convert (ti->state);
+      th->priority = ti->priority;
+      th->processor = ti->processor;
+      th->utime = ti->utime;
+      th->stime = ti->stime;
+      th->cutime = ti->cutime;
+      th->cstime = ti->cstime;
+    }
+  };
+  ThreadTotalsHandle tth (Sfi::INIT_DEFAULT);
+  BirnetThreadInfo *ti;
+  ti = sfi_thread_info_collect (bse_main_thread);
+  tth->main = ThreadInfoHandle (Sfi::INIT_DEFAULT);
+  Sub::assign (tth->main, ti);
+  sfi_thread_info_free (ti);
+  if (bse_sequencer_thread)
+    {
+      ti = sfi_thread_info_collect (bse_sequencer_thread);
+      tth->sequencer = ThreadInfoHandle (Sfi::INIT_DEFAULT);
+      Sub::assign (tth->sequencer, ti);
+      sfi_thread_info_free (ti);
+    }
+  guint n;
+  BirnetThread **t;
+  t = bse_engine_get_threads (&n);
+  for (guint i = 0; i < n; i++)
+    {
+      ti = sfi_thread_info_collect (t[i]);
+      tth->synthesis.resize (i + 1);
+      tth->synthesis[i] = ThreadInfoHandle (Sfi::INIT_DEFAULT);
+      Sub::assign (tth->synthesis[i], ti);
+      sfi_thread_info_free (ti);
+    }
+  g_free (t);
+  return tth;
+}
 
+} // Procedure
 /* export definitions follow */
 BSE_CXX_DEFINE_EXPORTS();
 BSE_CXX_REGISTER_ALL_TYPES_FROM_BSEPROBE_IDL();
-
 } // Bse
-
-/* --- bsesource.h bits --- */
-extern "C" {    // from bsesource.h
+/* --- bsesource.hh bits --- */
+extern "C" {    // from bsesource.hh
 using namespace Bse;
-
 void
 bse_source_clear_probes (BseSource *source)
 {
@@ -745,7 +774,6 @@ bse_source_clear_probes (BseSource *source)
   source->probes = NULL;
   delete probes;
 }                          
-
 void
 bse_source_probes_modules_changed (BseSource *source)
 {
@@ -753,7 +781,6 @@ bse_source_probes_modules_changed (BseSource *source)
   probes->reset_omodules();
   // FIXME: remove: probes->queue_probes_update (1);
 }
-
 void
 bse_source_class_add_probe_signals (BseSourceClass *klass)
 {
@@ -761,5 +788,4 @@ bse_source_class_add_probe_signals (BseSourceClass *klass)
   BseObjectClass *object_class = BSE_OBJECT_CLASS (klass);
   bse_source_signal_probes = bse_object_class_add_signal (object_class, "probes", G_TYPE_NONE, 1, BSE_TYPE_PROBE_SEQ);
 }
-
 };

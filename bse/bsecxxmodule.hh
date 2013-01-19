@@ -1,28 +1,10 @@
-/* BSE - Better Sound Engine
- * Copyright (C) 2003 Tim Janik
- *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * A copy of the GNU Lesser General Public License should ship along
- * with this library; if not, see http://www.gnu.org/copyleft/.
- */
+// Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #ifndef __BSE_CXX_MODULE_H__
 #define __BSE_CXX_MODULE_H__
-
 #include <bse/bsecxxbase.hh>
-#include <bse/bseieee754.h>
-
+#include <bse/bseieee754.hh>
 namespace Bse {
-
-/* enums/structures mirrored from bseengine.h */
+/* enums/structures mirrored from bseengine.hh */
 enum ProcessCost {
   NORMAL,
   CHEAP,
@@ -42,9 +24,7 @@ struct OStream {
   float        *values;
   gboolean      connected;
 };
-
 class Effect;
-
 class SynthesisModule {
   template<class T, typename P> class ClosureP1; /* 1-argument member function closure */
   BseModule     *intern_module;
@@ -101,7 +81,6 @@ protected:
     static void auto_update_accessor (BseModule*, gpointer);
   };
 };
-
 #define BSE_TYPE_EFFECT         (BSE_CXX_TYPE_GET_REGISTERED (Bse, Effect))
 class EffectBase : public CxxBase {};
 class Effect : public EffectBase {
@@ -144,7 +123,6 @@ public:
   virtual void  prepare2()      { /* override this to do something after parent class prepare */ }
   virtual void  reset1()        { /* override this to do something before parent class dismiss */ }
   virtual void  reset2()        { /* override this to do something after parent class dismiss */ }
-  
   static void               class_init                 (CxxBaseClass    *klass);
 protected:
   const BseModuleClass*     create_engine_class        (SynthesisModule *sample_module,
@@ -204,8 +182,6 @@ auto_update_accessor (BseModule *bmodule,
                       gpointer   data)
 {
 }
-
-
 /* --- implementation details --- */
 namespace externC { extern "C" {
 extern guint bse_engine_exvar_sample_freq;
@@ -279,7 +255,5 @@ SynthesisModule::make_closure (void   (C::*method) (D*),
   ClosureP1<C,D> *ac = new ClosureP1<C,D> (method, d);
   return ac;
 }
-
 } // Bse
-
 #endif /* __BSE_CXX_MODULE_H__ */

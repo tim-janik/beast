@@ -1,38 +1,20 @@
-/* BSE - Better Sound Engine
- * Copyright (C) 2003 Tim Janik
- *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * A copy of the GNU Lesser General Public License should ship along
- * with this library; if not, see http://www.gnu.org/copyleft/.
- */
-#include "bsemidifile.h"
-#include "bsemididecoder.h"
-#include "bseitem.h"
-#include "gslcommon.h"
+// Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
+#include "bsemidifile.hh"
+#include "bsemididecoder.hh"
+#include "bseitem.hh"
+#include "gslcommon.hh"
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <unistd.h>
 #include <string.h>
 #include <errno.h>
-
 static SFI_MSG_TYPE_DEFINE (debug_midi_file, "midi-file", SFI_MSG_DEBUG, NULL);
 #define DEBUG(...)      sfi_debug (debug_midi_file, __VA_ARGS__)
-
 typedef struct {
   uint32       type;   /* four letter chunk identifier */
   uint32       length; /* length of data to follow, big-endian */
 } ChunkHeader;
-
 typedef struct {
   ChunkHeader   chunk;          /* 'MThd' */
   /* data section */
@@ -40,8 +22,6 @@ typedef struct {
   uint16        n_tracks;       /* always 1 for single-track */
   uint16        division;       /* if 0x8000 is set => SMPTE, ticks-per-quarter-note otherwise */
 } SMFHeader;
-
-
 /* --- functions --- */
 static uint
 dummy_read (int  fd,
@@ -58,7 +38,6 @@ dummy_read (int  fd,
     }
   return total;
 }
-
 static BseErrorType
 smf_read_header (int        fd,
                  SMFHeader *header)
@@ -116,7 +95,6 @@ smf_read_header (int        fd,
     }
   return BSE_ERROR_NONE;
 }
-
 static BseErrorType
 smf_read_track (BseMidiFile    *smf,
                 int             fd,
@@ -156,7 +134,6 @@ smf_read_track (BseMidiFile    *smf,
     }
   return BSE_ERROR_NONE;
 }
-
 BseMidiFile*
 bse_midi_file_load (const char   *file_name,
                     BseErrorType *error_p)
@@ -172,14 +149,12 @@ bse_midi_file_load (const char   *file_name,
       *error_p = gsl_error_from_errno (errno, BSE_ERROR_FILE_OPEN_FAILED);
       return NULL;
     }
-
   *error_p = smf_read_header (fd, &header);
   if (*error_p)
     {
       close (fd);
       return NULL;
     }
-
   smf = (BseMidiFile*) g_malloc0 (sizeof (BseMidiFile) + header.n_tracks * sizeof (smf->tracks[0]));
   smf->musical_tuning = BSE_MUSICAL_TUNING_12_TET;
 #if 0
@@ -229,7 +204,6 @@ bse_midi_file_load (const char   *file_name,
   *error_p = BSE_ERROR_NONE;
   return smf;
 }
-
 void
 bse_midi_file_free (BseMidiFile *smf)
 {
@@ -241,7 +215,6 @@ bse_midi_file_free (BseMidiFile *smf)
     g_free (smf->tracks[i].events);
   g_free (smf);
 }
-
 void
 bse_midi_file_add_part_events (BseMidiFile *smf,
                                uint         nth_track,
@@ -328,7 +301,6 @@ bse_midi_file_add_part_events (BseMidiFile *smf,
         }
     }
 }
-
 void
 bse_midi_file_setup_song (BseMidiFile    *smf,
                           BseSong        *song)

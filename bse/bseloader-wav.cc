@@ -1,53 +1,27 @@
-/* GSL - Generic Sound Layer
- * Copyright (C) 1998-2005 Tim Janik
- *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * A copy of the GNU Lesser General Public License should ship along
- * with this library; if not, see http://www.gnu.org/copyleft/.
- */
-#include "bseloader.h"
-
-#include "gsldatahandle.h"
-
+// Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
+#include "bseloader.hh"
+#include "gsldatahandle.hh"
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <unistd.h>
 #include <string.h>
 #include <errno.h>
-
-
 #define FORMAT_IS_ALAW(f)       ((f) == 0x0006  /* Microsoft ALAW */ || \
                                  (f) == 0x0102) /* IBM ALAW */
 #define FORMAT_IS_ULAW(f)       ((f) == 0x0007  /* Microsoft MULAW */ || \
                                  (f) == 0x0101) /* IBM MULAW */
-
-
 /* load routine for the RIFF/WAVE sample format
  * ref.: C't 01/1993 pp. 213
  */
-
 typedef guint32 DWord;
 typedef guint16 Word;
 #define	DWORD_FROM_BE	GUINT32_FROM_BE
 #define	DWORD_FROM_LE	GUINT32_FROM_LE
 #define	WORD_FROM_LE	GUINT16_FROM_LE
-
-
 /* --- debugging and errors --- */
 static SFI_MSG_TYPE_DEFINE (debug_wav, "wav", SFI_MSG_DEBUG, NULL);
 #define WAV_DEBUG(...)  sfi_debug (debug_wav, __VA_ARGS__)
-
-
 /* --- functions --- */
 typedef struct
 {
@@ -60,9 +34,7 @@ wav_read_header (int        fd,
 		 WavHeader *header)
 {
   uint n_bytes;
-  
   memset (header, 0, sizeof (*header));
-  
   /* read header contents */
   n_bytes = 4 + 4 + 4;
   g_assert (n_bytes == sizeof (*header));
@@ -71,12 +43,10 @@ wav_read_header (int        fd,
       WAV_DEBUG ("failed to read WavHeader: %s", g_strerror (errno));
       return gsl_error_from_errno (errno, BSE_ERROR_IO);
     }
-  
   /* endianess corrections */
   header->main_chunk = DWORD_FROM_BE (header->main_chunk);
   header->file_length = DWORD_FROM_LE (header->file_length);
   header->chunk_type = DWORD_FROM_BE (header->chunk_type);
-  
   /* validation */
   if (header->main_chunk != ('R' << 24 | 'I' << 16 | 'F' << 8 | 'F'))
     {
@@ -93,10 +63,8 @@ wav_read_header (int        fd,
       WAV_DEBUG ("unmatched token 'WAVE'");
       return BSE_ERROR_FORMAT_INVALID;
     }
-  
   return BSE_ERROR_NONE;
 }
-
 typedef struct
 {
   DWord sub_chunk;              /* 'fmt ', big endian as int */
@@ -113,9 +81,7 @@ wav_read_fmt_header (int        fd,
 		     FmtHeader *header)
 {
   uint n_bytes;
-  
   memset (header, 0, sizeof (*header));
-  
   /* read header contents */
   n_bytes = 4 + 4 + 2 + 2 + 4 + 4 + 2 + 2;
   g_assert (n_bytes == sizeof (*header));
@@ -124,7 +90,6 @@ wav_read_fmt_header (int        fd,
       WAV_DEBUG ("failed to read FmtHeader");
       return gsl_error_from_errno (errno, BSE_ERROR_IO);
     }
-  
   /* endianess corrections */
   header->sub_chunk = DWORD_FROM_BE (header->sub_chunk);
   header->length = DWORD_FROM_LE (header->length);
@@ -134,7 +99,6 @@ wav_read_fmt_header (int        fd,
   header->byte_per_second = DWORD_FROM_LE (header->byte_per_second);
   header->byte_per_sample = WORD_FROM_LE (header->byte_per_sample);
   header->bit_per_sample = WORD_FROM_LE (header->bit_per_sample);
-  
   /* validation */
   if (header->sub_chunk != ('f' << 24 | 'm' << 16 | 't' << 8 | ' '))
     {
@@ -185,15 +149,12 @@ wav_read_fmt_header (int        fd,
   if (header->length > 16)
     {
       uint n;
-      
       WAV_DEBUG ("skipping %u bytes of overlong WAVE header", header->length - 16);
-      
       n = header->length - 16;
       while (n)
 	{
 	  guint8 junk[64];
 	  uint l = MIN (n, 64);
-	  
 	  l = read (fd, junk, l);
 	  if (l < 1 || l > n)
 	    {
@@ -203,10 +164,8 @@ wav_read_fmt_header (int        fd,
 	  n -= l;
 	}
     }
-  
   return BSE_ERROR_NONE;
 }
-
 typedef struct
 {
   DWord data_chunk;             /* 'data', big endian as int */
@@ -218,9 +177,7 @@ wav_read_data_header (int         fd,
 		      uint        byte_alignment)
 {
   uint n_bytes;
-  
   memset (header, 0, sizeof (*header));
-  
   /* read header contents */
   n_bytes = 4 + 4;
   g_assert (n_bytes == sizeof (*header));
@@ -229,24 +186,20 @@ wav_read_data_header (int         fd,
       WAV_DEBUG ("failed to read DataHeader");
       return gsl_error_from_errno (errno, BSE_ERROR_IO);
     }
-  
   /* endianess corrections */
   header->data_chunk = DWORD_FROM_BE (header->data_chunk);
   header->data_length = DWORD_FROM_LE (header->data_length);
-  
   /* validation */
   if (header->data_chunk != ('d' << 24 | 'a' << 16 | 't' << 8 | 'a'))
     {
       uint8 chunk[5];
       char *esc;
-      
       chunk[0] = header->data_chunk >> 24;
       chunk[1] = (header->data_chunk >> 16) & 0xff;
       chunk[2] = (header->data_chunk >> 8) & 0xff;
       chunk[3] = header->data_chunk & 0xff;
       chunk[4] = 0;
       esc = g_strescape ((char*) chunk, NULL);
-      
       /* skip chunk and retry */
       WAV_DEBUG ("ignoring sub-chunk '%s'", esc);
       g_free (esc);
@@ -263,16 +216,13 @@ wav_read_data_header (int         fd,
 		 header->data_length, header->data_length % byte_alignment);
       return BSE_ERROR_FORMAT_INVALID;
     }
-  
   return BSE_ERROR_NONE;
 }
-
 typedef struct
 {
   BseWaveFileInfo wfi;
   int             fd;
 } FileInfo;
-
 static BseWaveFileInfo*
 wav_load_file_info (void         *data,
 		    const char   *file_name,
@@ -281,43 +231,36 @@ wav_load_file_info (void         *data,
   WavHeader wav_header;
   FileInfo *fi;
   int fd;
-  
   fd = open (file_name, O_RDONLY);
   if (fd < 0)
     {
       *error_p = gsl_error_from_errno (errno, BSE_ERROR_FILE_OPEN_FAILED);
       return NULL;
     }
-  
   *error_p = wav_read_header (fd, &wav_header);
   if (*error_p)
     {
       close (fd);
       return NULL;
     }
-  
   fi = sfi_new_struct0 (FileInfo, 1);
   fi->wfi.n_waves = 1;
   fi->wfi.waves = (BseWaveFileInfo::Wave*) g_malloc0 (sizeof (fi->wfi.waves[0]) * fi->wfi.n_waves);
   const char *dsep = strrchr (file_name, G_DIR_SEPARATOR);
   fi->wfi.waves[0].name = g_strdup (dsep ? dsep + 1 : file_name);
   fi->fd = fd;
-  
   return &fi->wfi;
 }
-
 static void
 wav_free_file_info (void            *data,
 		    BseWaveFileInfo *file_info)
 {
   FileInfo *fi = (FileInfo*) file_info;
-  
   g_free (fi->wfi.waves[0].name);
   g_free (fi->wfi.waves);
   close (fi->fd);
   sfi_delete_struct (FileInfo, fi);
 }
-
 typedef struct
 {
   BseWaveDsc        wdsc;
@@ -325,7 +268,6 @@ typedef struct
   GslLong           n_values;
   GslWaveFormatType format;
 } WaveDsc;
-
 static BseWaveDsc*
 wav_load_wave_dsc (void            *data,
 		   BseWaveFileInfo *file_info,
@@ -338,20 +280,16 @@ wav_load_wave_dsc (void            *data,
   WaveDsc *dsc;
   GslWaveFormatType format;
   GslLong data_offset, data_width;
-  
   g_return_val_if_fail (nth_wave == 0, NULL);
-  
   if (lseek (fi->fd, sizeof (WavHeader), SEEK_SET) != sizeof (WavHeader))
     {
       WAV_DEBUG ("failed to seek to end of WavHeader");
       *error_p = gsl_error_from_errno (errno, BSE_ERROR_IO);
       return NULL;
     }
-  
   *error_p = wav_read_fmt_header (fi->fd, &fmt_header);
   if (*error_p)
     return NULL;
-  
   data_width = (fmt_header.bit_per_sample + 7) / 8;
   *error_p = wav_read_data_header (fi->fd, &data_header, data_width * fmt_header.n_channels);
   data_offset = lseek (fi->fd, 0, SEEK_CUR);
@@ -362,7 +300,6 @@ wav_load_wave_dsc (void            *data,
     }
   if (*error_p)
     return NULL;
-
   if (fmt_header.bit_per_sample == 8 && FORMAT_IS_ALAW (fmt_header.format))
     format = GSL_WAVE_FORMAT_ALAW;
   else if (fmt_header.bit_per_sample == 8 && FORMAT_IS_ULAW (fmt_header.format))
@@ -393,7 +330,6 @@ wav_load_wave_dsc (void            *data,
   if (0)
     WAV_DEBUG ("n_channels: %d sample_freq: %d bit_width: %u",
 	       fmt_header.n_channels, fmt_header.sample_freq, fmt_header.bit_per_sample);
-  
   dsc = sfi_new_struct0 (WaveDsc, 1);
   dsc->wdsc.name = g_strdup (fi->wfi.waves[0].name);
   dsc->wdsc.n_channels = fmt_header.n_channels;
@@ -404,10 +340,8 @@ wav_load_wave_dsc (void            *data,
   dsc->data_offset = data_offset;
   dsc->n_values = data_header.data_length / data_width;
   dsc->format = format;
-  
   return &dsc->wdsc;
 }
-
 static void
 wav_free_wave_dsc (void       *data,
 		   BseWaveDsc *wave_dsc)
@@ -420,7 +354,6 @@ wav_free_wave_dsc (void       *data,
   g_free (dsc->wdsc.name);
   sfi_delete_struct (WaveDsc, dsc);
 }
-
 static GslDataHandle*
 wav_create_chunk_handle (void         *data,
 			 BseWaveDsc   *wave_dsc,
@@ -429,9 +362,7 @@ wav_create_chunk_handle (void         *data,
 {
   WaveDsc *dsc = (WaveDsc*) wave_dsc;
   GslDataHandle *dhandle;
-  
   g_return_val_if_fail (nth_chunk == 0, NULL);
-  
   dhandle = gsl_wave_handle_new (dsc->wdsc.file_info->file_name,
 				 dsc->wdsc.n_channels,
 				 dsc->format, G_LITTLE_ENDIAN,
@@ -441,7 +372,6 @@ wav_create_chunk_handle (void         *data,
                                  dsc->wdsc.chunks[nth_chunk].xinfos);
   return dhandle;
 }
-
 void
 _gsl_init_loader_wav (void)
 {
@@ -488,9 +418,7 @@ _gsl_init_loader_wav (void)
     wav_create_chunk_handle,
   };
   static gboolean initialized = FALSE;
-  
   g_assert (initialized == FALSE);
   initialized = TRUE;
-  
   bse_loader_register (&loader);
 }

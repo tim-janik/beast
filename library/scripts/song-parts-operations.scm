@@ -1,25 +1,7 @@
-;; 
-;; Copyright (C) 2003 Stefan Westerfeld, stefan@space.twc.de
-;; 
-;; This software is provided "as is"; redistribution and modification
-;; is permitted, provided that the following disclaimer is retained.
-;;
-;; This software is distributed in the hope that it will be useful,
-;; but WITHOUT ANY WARRANTY; without even the implied warranty of
-;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-;; In no event shall the authors or contributors be liable for any
-;; direct, indirect, incidental, special, exemplary, or consequential
-;; damages (including, but not limited to, procurement of substitute
-;; goods or services; loss of use, data, or profits; or business
-;; interruption) however caused and on any theory of liability, whether
-;; in contract, strict liability, or tort (including negligence or
-;; otherwise) arising in any way out of the use of this software, even
-;; if advised of the possibility of such damage.
-
+;; CC0 Public Domain: http://creativecommons.org/publicdomain/zero/1.0/
 ;;
 ;; (bse-script-register <func> <options> <category> <blurb> <author> <license> ARGS...)
 ;;
-
 (bse-script-register 'song-parts-crop
 		     ""
                      (N_ "/Song/Crop parts (loop range)")
@@ -28,7 +10,6 @@
 		     "Stefan Westerfeld"
 		     "Provided \"as is\", WITHOUT ANY WARRANTY"
 		     (bse-param-song (N_ "Song")))
-
 (bse-script-register 'song-parts-duplicate
 		     ""
                      (N_ "/Song/Duplicate parts (loop range)")
@@ -37,7 +18,6 @@
 		     "Stefan Westerfeld"
 		     "Provided \"as is\", WITHOUT ANY WARRANTY"
 		     (bse-param-song (N_ "Song")))
-
 ;; common code for duplicate & crop:
 ;; error checking, computing boundaries, undo, applying algorithm to each track
 (define (song-parts-operation song errtitle operation)
@@ -62,7 +42,6 @@
 			'text2 (_ "The loop range of the specified song contains no parts "
 				  "or is unset, so no parts can be identified to operate on.")
 			'check (_ "Show messages about empty part range")))))
-
 ;; algorithm for cropping parts
 (define (song-parts-crop song)
   (song-parts-operation song (_ "Failed to crop part range.")
@@ -74,7 +53,6 @@
 						         (bse-track-remove-tick track tick))
 				        ((>= tick start) (bse-track-remove-tick track tick)))))
         (bse-track-list-parts track)))))
-
 ;; algorithm for duplication of parts
 (define (song-parts-duplicate song)
   (song-parts-operation song (_ "Failed to duplicate part range.")
@@ -86,5 +64,4 @@
 						         (bse-track-remove-tick track tick))
 				        ((>= tick start) (bse-track-insert-part track (+ tick len) part)))))
         (reverse (bse-track-list-parts track))))))
-
 ;; vim:set sw=2 sts=2 ts=8:

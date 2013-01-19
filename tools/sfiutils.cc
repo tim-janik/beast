@@ -1,29 +1,13 @@
-/* SFI - Synthesis Fusion Kit Interface
- * Copyright (C) 2000-2004 Tim Janik
- *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * A copy of the GNU Lesser General Public License should ship along
- * with this library; if not, see http://www.gnu.org/copyleft/.
- */
+// Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "sfiutils.h"
-#include <bse/gslcommon.h>
-#include <bse/bsemath.h>
+#include <bse/gslcommon.hh>
+#include <bse/bsemath.hh>
 #include <string.h>
 #include <stdlib.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <unistd.h>
-
 /* --- option parser (YES!) --- */
 static SfiRing*
 parse_arguments (gint              *argc_p,
@@ -38,18 +22,14 @@ parse_arguments (gint              *argc_p,
   guint *lengths = alloca (sizeof (guint) * n_arguments);
   guint i, k, l, missing = n_arguments, extraneous = n_arguments;
   SfiRing *ring = NULL;
-  
   for (i = 0; i < n_arguments; i++)
     {
       g_return_val_if_fail (arguments[i].value_p != NULL, NULL);
-      
       lengths[i] = arguments[i].long_opt ? strlen (arguments[i].long_opt) : 0;
     }
-  
   for (i = 1; i < argc; i++)
     {
       gchar *opt = argv[i];
-      
       l = strlen (opt);
       if (l > 2 && opt[0] == '-' && opt[1] == '-')
         {
@@ -93,7 +73,6 @@ parse_arguments (gint              *argc_p,
       if (opt[0] == '-')
         {
           gboolean found_short = FALSE;
-          
           if (opt[1] == '-' && !opt[2])         /* abort on "--" */
             break;
           opt += 1;
@@ -159,7 +138,6 @@ parse_arguments (gint              *argc_p,
         }
       argv[i] = NULL;
     }
-  
   /* handle errors */
   if (unknown_short || missing < n_arguments || extraneous < n_arguments || extraneous_arg)
     {
@@ -178,12 +156,9 @@ parse_arguments (gint              *argc_p,
         g_printerr ("extraneous argument: \"%s\"\n", extraneous_arg);
       exit (127);
     }
-  
   sfi_arguments_collapse (argc_p, argv_p);
-  
   return ring;
 }
-
 void
 sfi_arguments_parse (gint              *argc_p,
                      gchar           ***argv_p,
@@ -192,7 +167,6 @@ sfi_arguments_parse (gint              *argc_p,
 {
   parse_arguments (argc_p, argv_p, n_arguments, arguments, FALSE);
 }
-
 SfiRing*
 sfi_arguments_parse_list (gint              *argc_p,
                           gchar           ***argv_p,
@@ -201,14 +175,12 @@ sfi_arguments_parse_list (gint              *argc_p,
 {
   return parse_arguments (argc_p, argv_p, n_arguments, arguments, TRUE);
 }
-
 void
 sfi_arguments_collapse (gint    *argc_p,
                         gchar ***argv_p)
 {
   gchar **argv = *argv_p;
   guint argc = *argc_p, e, i;
-  
   e = 1;
   for (i = 1; i < argc; i++)
     if (argv[i])
@@ -219,17 +191,13 @@ sfi_arguments_collapse (gint    *argc_p,
       }
   *argc_p = e;
 }
-
-
 gchar*
 sfi_util_file_name_subst_ext (const gchar *file_name,
                               const gchar *new_extension)
 {
   gchar *p, *name;
-  
   g_return_val_if_fail (file_name != NULL, NULL);
   g_return_val_if_fail (new_extension != NULL, NULL);
-  
   name = g_strdup (file_name);
   p = strrchr (name, '.');
   if (p && p > name)
@@ -237,23 +205,18 @@ sfi_util_file_name_subst_ext (const gchar *file_name,
   p = g_strconcat (name, new_extension, NULL);
   g_free (name);
   name = p;
-  
   return name;
 }
-
-
 /* --- word splitter --- */
 static guint
 upper_power2 (guint number)
 {
   return number ? 1 << g_bit_storage (number - 1) : 0;
 }
-
 static void
 free_entry (SfiUtilFileList *flist)
 {
   guint i, j;
-  
   for (i = 0; i < flist->n_entries; i++)
     {
       for (j = 0; j < flist->entries[i].n_fields; j++)
@@ -262,7 +225,6 @@ free_entry (SfiUtilFileList *flist)
     }
   g_free (flist->entries);
 }
-
 void
 sfi_util_file_list_free (SfiUtilFileList *flist)
 {
@@ -272,7 +234,6 @@ sfi_util_file_list_free (SfiUtilFileList *flist)
   g_free (flist->free2);
   g_free (flist);
 }
-
 SfiUtilFileList*
 sfi_util_file_list_read (gint fd)
 {
@@ -282,7 +243,6 @@ sfi_util_file_list_read (gint fd)
   gboolean line_start = TRUE;
   gchar *cset_identifier;
   guint i;
-  
   scanner = g_scanner_new64 (NULL);
   scanner->config->cset_skip_characters = " \t\r";      /* parse "\n" */
   scanner->config->scan_identifier_1char = TRUE;
@@ -312,7 +272,6 @@ sfi_util_file_list_read (gint fd)
             {
               guint old_size = upper_power2 (flist.n_entries);
               guint new_size = upper_power2 (++flist.n_entries);
-              
               if (new_size >= old_size)
                 flist.entries = g_renew (SfiUtilFileEntry, flist.entries, new_size);
               entry = flist.entries + flist.n_entries - 1;
@@ -324,7 +283,6 @@ sfi_util_file_list_read (gint fd)
             {
               guint old_size = upper_power2 (entry->n_fields);
               guint new_size = upper_power2 (++entry->n_fields);
-              
               if (new_size >= old_size)
                 entry->fields = g_renew (gchar*, entry->fields, entry->n_fields);
               entry->fields[entry->n_fields - 1] = g_strdup (scanner->value.v_string);
@@ -340,10 +298,8 @@ sfi_util_file_list_read (gint fd)
     }
   g_scanner_destroy (scanner);
   g_free (cset_identifier);
-  
   return g_memdup (&flist, sizeof (flist));
 }
-
 SfiUtilFileList*
 sfi_util_file_list_read_simple (const gchar *file_name,
                                 guint        n_formats,
@@ -353,10 +309,8 @@ sfi_util_file_list_read_simple (const gchar *file_name,
   gchar *s;
   guint i;
   gint fd;
-  
   g_return_val_if_fail (file_name != NULL, NULL);
   g_return_val_if_fail (n_formats < 1000, NULL);
-  
   fd = open (file_name, O_RDONLY);
   if (fd < 0)
     return NULL;
@@ -364,7 +318,6 @@ sfi_util_file_list_read_simple (const gchar *file_name,
   close (fd);
   if (!flist)
     return NULL;
-  
   flist->n_formats = n_formats;
   flist->formats = g_new (gchar*, flist->n_formats);
   s = g_new (gchar, flist->n_formats * 4);
@@ -383,7 +336,6 @@ sfi_util_file_list_read_simple (const gchar *file_name,
   for (i = 0; s && *s && i < flist->n_formats; i++)
     {
       gchar *next = strchr (s, ':');
-      
       if (next)
         *next++ = 0;
       flist->formats[i] = s;
@@ -391,15 +343,12 @@ sfi_util_file_list_read_simple (const gchar *file_name,
     }
   return flist;
 }
-
-
 /* --- formatted field extraction --- */
 static gdouble
 str2num (const gchar *str,
          guint        nth)
 {
   gchar *num_any = ".0123456789", *num_first = num_any + 1;
-  
   while (nth--)
     {
       /* skip number */
@@ -417,7 +366,6 @@ str2num (const gchar *str,
     return atof (str);
   return BSE_DOUBLE_NAN;
 }
-
 const gchar*
 sfi_util_file_entry_get_field (SfiUtilFileEntry *entry,
                                const gchar     **format_p)
@@ -425,7 +373,6 @@ sfi_util_file_entry_get_field (SfiUtilFileEntry *entry,
   const gchar *format = *format_p;
   gchar *field, *ep = NULL;
   glong fnum;
-  
   *format_p = NULL;
   if (*format == '#')
     return format + 1;
@@ -437,14 +384,12 @@ sfi_util_file_entry_get_field (SfiUtilFileEntry *entry,
     *format_p = ep;
   return field;
 }
-
 gchar*
 sfi_util_file_entry_get_string (SfiUtilFileEntry *entry,
                                 const gchar      *format,
                                 const gchar      *dflt)
 {
   const gchar *field;
-  
   field = sfi_util_file_entry_get_field (entry, &format);
   if (!field)
     return g_strdup (dflt);
@@ -452,7 +397,6 @@ sfi_util_file_entry_get_string (SfiUtilFileEntry *entry,
     sfi_error ("Invalid chunk format given: ...%s", format);
   return g_strdup (field);
 }
-
 gdouble
 sfi_util_file_entry_get_num (SfiUtilFileEntry *entry,
                              const gchar      *format,
@@ -461,7 +405,6 @@ sfi_util_file_entry_get_num (SfiUtilFileEntry *entry,
   const gchar *field = sfi_util_file_entry_get_field (entry, &format);
   gchar *base, *ep = NULL;
   gdouble d = dflt;
-  
   if (!field)
     return d;
   if (format)
@@ -494,7 +437,6 @@ sfi_util_file_entry_get_num (SfiUtilFileEntry *entry,
     d = str2num (field, 0);
   return d;
 }
-
 gdouble
 sfi_arguments_extract_num (const gchar *string,
                            const gchar *format,
@@ -503,7 +445,6 @@ sfi_arguments_extract_num (const gchar *string,
 {
   gchar *base, *ep = NULL;
   gdouble d = dflt;
-  
   if (!string)
     return d;
   if (format)
@@ -551,7 +492,6 @@ sfi_arguments_extract_num (const gchar *string,
   *counter += 1;
   return d;
 }
-
 gboolean
 sfi_arguments_read_num (const gchar **option,
                         gdouble      *num)
@@ -559,7 +499,6 @@ sfi_arguments_read_num (const gchar **option,
   const gchar *opt, *spaces = " \t\n";
   gchar *p = NULL;
   gdouble d;
-  
   if (!option)
     return FALSE;
   if (!*option)
@@ -599,7 +538,6 @@ sfi_arguments_read_num (const gchar **option,
   *num = d;
   return TRUE;          /* any, valid */
 }
-
 guint
 sfi_arguments_read_all_nums (const gchar *option,
                              gdouble     *first,
@@ -608,7 +546,6 @@ sfi_arguments_read_all_nums (const gchar *option,
   va_list args;
   gdouble *d;
   guint n = 0;
-  
   va_start (args, first);
   d = first;
   while (d)

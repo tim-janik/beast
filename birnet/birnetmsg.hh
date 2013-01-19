@@ -1,27 +1,9 @@
-/* Birnet
- * Copyright (C) 2006 Tim Janik
- *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * A copy of the GNU Lesser General Public License should ship along
- * with this library; if not, see http://www.gnu.org/copyleft/.
- */
+// Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #ifndef __BIRNET_MSG_HH__
 #define __BIRNET_MSG_HH__
-
 #include <birnet/birnetutils.hh>
 #include <stdarg.h>
-
 namespace Birnet {
-
 /* --- messaging --- */
 struct Msg {
   /* message parts */
@@ -155,7 +137,6 @@ public:
     BIRNET_PRIVATE_CLASS_COPY (CustomType);
   };
 };
-
 /* --- inline implementations --- */
 inline bool
 Msg::check (Type mtype)
@@ -165,7 +146,6 @@ Msg::check (Type mtype)
           mtype < n_msg_types &&
           (msg_type_bits[mtype / 8] & (1 << mtype % 8)));
 }
-
 inline void
 Msg::display (Type        message_type,
               const Part &p0, const Part &p1,
@@ -178,7 +158,6 @@ Msg::display (Type        message_type,
   if (check (message_type))
     display_aparts (BIRNET_LOG_DOMAIN, message_type, p0, p1, p2, p3, p4, p5, p6, p7, p8, p9);
 }
-
 inline void
 Msg::display (const CustomType   &message_type,
               const char         *format,
@@ -192,8 +171,6 @@ Msg::display (const CustomType   &message_type,
       va_end (args);
     }
 }
-
 } // Birnet
-
 #endif /* __BIRNET_MSG_HH__ */
 /* vim:set ts=8 sts=2 sw=2: */

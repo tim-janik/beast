@@ -1,7 +1,4 @@
 # BEAST - Better Audio System
-# Copyright (C) 2003 Tim Janik
-#
-## GNU Lesser General Public License version 2 or any later version.
 include $(top_srcdir)/Makefile.decl
 
 INCLUDES += -I$(top_srcdir) -I$(top_builddir) $(BSE_CFLAGS) -DG_DISABLE_DEPRECATED -DG_DISABLE_CONST_RETURNS
@@ -15,11 +12,11 @@ ZFILE_DEFS = $(strip \
 )
 
 gen_sources = xgen-bzc xgen-bzh
-CLEANFILES += $(gen_sources) bse-zfile.c bse-zfile.h
-noinst_DATA = bse-zfile.c # bse-zfile.h
+CLEANFILES += $(gen_sources) bse-zfile.cc bse-zfile.h
+noinst_DATA = bse-zfile.cc # bse-zfile.h
 EXTRA_DIST += $(filter %.bse, $(ZFILE_DEFS))
 
-bse-zfile.c:	$(top_builddir)/birnet/birnet-zintern $(srcdir)/*.bse # bse-zfile.h
+bse-zfile.cc:	$(top_builddir)/birnet/birnet-zintern $(srcdir)/*.bse # bse-zfile.h
 	$(top_builddir)/birnet/birnet-zintern -b -z $(ZFILE_DEFS) > xgen-bzc		\
 	&& echo "static const BseZFile bse_zfiles[] = {" >> xgen-bzc			\
 	&& for i in $(filter-out %.bse, $(ZFILE_DEFS)) ; do				\

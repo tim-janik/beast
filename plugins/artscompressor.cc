@@ -1,37 +1,16 @@
-/* ArtsCompressor - aRts Compressor Effect
- * Copyright (C) 2001 Matthias Kretz <kretz@kde.org>
- * Copyright (C) 2003-2004 Stefan Westerfeld <stefan@space.twc.de>
- *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * A copy of the GNU Lesser General Public License should ship along
- * with this library; if not, see http://www.gnu.org/copyleft/.
- */
+// Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "artscompressor.genidl.hh"
-
-#include <bse/bsemath.h>
+#include <bse/bsemath.hh>
 #include <string.h>
-
-
 namespace Bse {
 namespace Arts {
 using namespace std;
-
 /*
  * constants
  */
 #define LN2                        (BSE_LN2)    /* ln(2) */
 static const double MUG_CORR_FACT = 0.4;	/* makeup gain correction factor (from jamin-0.9.0 source)
 						 * dampens the makeup gain correction to stop it over correcting */
-
 class Compressor : public CompressorBase
 {
   /*
@@ -58,7 +37,6 @@ class Compressor : public CompressorBase
       threshold = comp_db2linear (threshold_db);
       ratio = 1 / params->ratio_to_one;
       output = comp_db2linear (params->output_db);
-     
       /* compute half-life times: using max ensures that computing the attack- and releasefactor will
        *  (a) not result in division by zero
        *  (b) result in a value <= 1.0, where 1.0 means: adapt volume immediately, without half-life time
@@ -86,17 +64,14 @@ class Compressor : public CompressorBase
     {
       double volume_db = comp_linear2db (volume);
       double output_signal = comp_db2linear ((volume_db - threshold_db) * ratio + threshold_db) / volume * input_signal * output;
-
       return output_signal;
     }
-
     static const int CHANNEL_A1 = 1;
     static const int CHANNEL_A2 = 2;
     static const int CHANNELS_A1n_A2n = 0;
     static const int CHANNELS_A1y_A2n = CHANNEL_A1;
     static const int CHANNELS_A1n_A2y = CHANNEL_A2;
     static const int CHANNELS_A1y_A2y = CHANNEL_A1 + CHANNEL_A2;
-
     template<int channels> void
     process_loop (unsigned int samples)
     {
@@ -104,7 +79,6 @@ class Compressor : public CompressorBase
       const float *invalue2 = istream (ICHANNEL_AUDIO_IN2).values;
       float *outvalue1 = ostream (OCHANNEL_AUDIO_OUT1).values;
       float *outvalue2 = ostream (OCHANNEL_AUDIO_OUT2).values;
-      
       for( unsigned int i = 0; i < samples; i++ ) {
 	double delta = 0.0;
 	switch (channels)
@@ -118,12 +92,10 @@ class Compressor : public CompressorBase
 	  case CHANNELS_A1y_A2y: delta = max (fabs (invalue1[i]), fabs (invalue2[i])) - volume;
 				 break;
 	  }
-
 	if( delta > 0.0 )
 	  volume += attackfactor * delta;
 	else
 	  volume += releasefactor * delta;
-        
 	if (volume > threshold)
 	  {
 	    if (channels & CHANNEL_A1)
@@ -214,18 +186,13 @@ public:
   {
     if (prop_id == PROP_OUTPUT_DB && auto_output)
       return false;
-
     return true;
   }
   BSE_EFFECT_INTEGRATE_MODULE (Compressor, Module, CompressorProperties);
 };
-
 BSE_CXX_DEFINE_EXPORTS();
 BSE_CXX_REGISTER_EFFECT (Compressor);
-
 // printf ("input: %f dB (%f), output: %f dB (%f)\n", comp_linear2db (volume), volume, comp_linear2db (compress (volume)), compress (volume));
-
 } // Arts
 } // Bse
-
 /* vim:set ts=8 sw=2 sts=2: */

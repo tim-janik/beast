@@ -1,20 +1,4 @@
-/* BSE - Better Sound Engine
- * Copyright (C) 2006 Tim Janik
- * Copyright (C) 2006 Stefan Westerfeld
- *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * A copy of the GNU Lesser General Public License should ship along
- * with this library; if not, see http://www.gnu.org/copyleft/.
- */
+// Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include <bse/bsecxxplugin.hh>
 #include <bse/bseblockutils.hh>
 #include <bse/bseresampler.hh>
@@ -23,18 +7,14 @@
 #error  SSE support is required for this plugin.
 #endif
 #include <xmmintrin.h>
-
 #define ALIGNMENT16(pointer) (0xf & (ptrdiff_t) (pointer))
 #define ALIGNED16(pointer)   (!ALIGNMENT16 (pointer))
 #ifndef _mm_extract_ss
 #define _mm_extract_ss(_M128)   ({ float result; _mm_store_ss (&result, _M128); result; })
 #endif
-
 namespace {
-
 using std::max;
 using std::min;
-
 class BlockImpl : virtual public Bse::Block::Impl {
   virtual const char*
   impl_name ()
@@ -163,7 +143,6 @@ class BlockImpl : virtual public Bse::Block::Impl {
     if (LIKELY (n_values))
       {
 	minv = maxv = ivalues[0];
-
 	guint upos = 0, n_vectors = 0;
 	if (LIKELY (n_values > 8))
 	  {
@@ -257,7 +236,6 @@ class BlockImpl : virtual public Bse::Block::Impl {
     if (LIKELY (n_values))
       {
 	minv = maxv = ivalues[0];
-
 	guint upos = 0, n_vectors = 0;
 	if (LIKELY (n_values > 8))
 	  {
@@ -350,9 +328,7 @@ public:
 };
 static BlockImpl sse_block_impl;
 } // Anon
-
 namespace Bse {
-
 class CoreHook {
 public:
   void
@@ -361,8 +337,6 @@ public:
     sse_block_impl.hookup();
   }
 };
-
 BSE_CXX_DEFINE_EXPORTS();
 BSE_CXX_REGISTER_STATIC_HOOK (CoreHook);
-
 } // Bse

@@ -1,28 +1,10 @@
-/* BSE - Better Sound Engine	-*-mode: c;-*-
- * Copyright (C) 2003 Tim Janik
- *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * A copy of the GNU Lesser General Public License should ship along
- * with this library; if not, see http://www.gnu.org/copyleft/.
- */
-#include <bse/bsecategories.h>
-#include <bse/bseprocedure.h>
-#include <bse/bseplugin.h>
-
-
+// Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
+#include <bse/bsecategories.hh>
+#include <bse/bseprocedure.hh>
+#include <bse/bseplugin.hh>
+#include "bsecxxplugin.hh"
 AUTHORS	= "Tim Janik <timj@gtk.org>";
 LICENSE	= "GNU Lesser General Public License";
-
-
 PROCEDURE (bse-categories-match-typed, "Categories/Match Typed") {
   HELP  = "List BSE categories according to a pattern and type match.";
   IN	= sfi_pspec_string ("pattern", "Pattern", "Pattern to match category, supports '*' and '?' wildcards.",
@@ -36,26 +18,21 @@ BODY (BseProcedureClass *proc,
       GValue            *out_values)
 {
   /* extract parameter values */
-  gchar *pattern   = sfi_value_get_string (in_values++);
-  gchar *type_name = sfi_value_get_string (in_values++);
-  GType  type      = type_name ? g_type_from_name (type_name) : 0;
+  const char *pattern   = sfi_value_get_string (in_values++);
+  const char *type_name = sfi_value_get_string (in_values++);
+  GType  type     = type_name ? g_type_from_name (type_name) : 0;
   BseCategorySeq *cseq = NULL;
-  
   /* check parameters */
   if (!pattern)
     return BSE_ERROR_PROC_PARAM_INVAL;
-  
   if (type)
     cseq = bse_categories_match_typed (pattern, type);
   if (!cseq)
     cseq = bse_category_seq_new ();
-  
   /* set output parameters */
   bse_value_take_boxed (out_values++, cseq);
-  
   return BSE_ERROR_NONE;
 }
-
 PROCEDURE (bse-categories-match, "Categories/Match") {
   HELP  = "List BSE categories according to a pattern match.";
   IN	= sfi_pspec_string ("pattern", "Pattern", "Pattern to match category, supports '*' and '?' wildcards.",
@@ -67,23 +44,18 @@ BODY (BseProcedureClass *proc,
       GValue            *out_values)
 {
   /* extract parameter values */
-  gchar *pattern   = sfi_value_get_string (in_values++);
+  const char *pattern   = sfi_value_get_string (in_values++);
   BseCategorySeq *cseq = NULL;
-  
   /* check parameters */
   if (!pattern)
     return BSE_ERROR_PROC_PARAM_INVAL;
-  
   cseq = bse_categories_match_typed (pattern, 0);
   if (!cseq)
     cseq = bse_category_seq_new ();
-  
   /* set output parameters */
   bse_value_take_boxed (out_values++, cseq);
-  
   return BSE_ERROR_NONE;
 }
-
 PROCEDURE (bse-category-from-id, "Categories/From ID") {
   HELP  = "Find a BSE category from it's unique ID.";
   IN	= sfi_pspec_int ("category_id", "Category ID", NULL,
@@ -97,25 +69,21 @@ BODY (BseProcedureClass *proc,
   /* extract parameter values */
   guint id = sfi_value_get_int (in_values++);
   BseCategory *cat;
-
   cat = bse_category_from_id (id);
-  
   /* set output parameters */
   bse_value_take_boxed (out_values++, cat);
-  
   return BSE_ERROR_NONE;
 }
-
 static gboolean
 categories_check_method (BseCategory *cat,
                          gpointer     data)
 {
-  GType *type_p = data;
+  GType *type_p = (GType*) data;
   GType ptype = g_type_from_name (cat->type);
   gboolean match = FALSE;
   if (BSE_TYPE_IS_PROCEDURE (ptype))
     {
-      BseProcedureClass *proc = g_type_class_ref (ptype);
+      BseProcedureClass *proc = (BseProcedureClass*) g_type_class_ref (ptype);
       if (proc->n_in_pspecs >= 1 &&
           g_type_is_a (G_PARAM_SPEC_VALUE_TYPE (proc->in_pspecs[0]), *type_p))
         match = TRUE;
@@ -123,7 +91,6 @@ categories_check_method (BseCategory *cat,
     }
   return match;
 }
-
 PROCEDURE (bse-categories-match-method, "Categories/Match Method") {
   HELP  = "List BSE categories according to a pattern, of type procedure and applying to a certain object type.";
   IN	= sfi_pspec_string ("pattern", "Pattern", "Pattern to match category, supports '*' and '?' wildcards.",
@@ -137,21 +104,17 @@ BODY (BseProcedureClass *proc,
       GValue            *out_values)
 {
   /* extract parameter values */
-  gchar *pattern   = sfi_value_get_string (in_values++);
-  gchar *type_name = sfi_value_get_string (in_values++);
+  const char *pattern   = sfi_value_get_string (in_values++);
+  const char *type_name = sfi_value_get_string (in_values++);
   GType  type      = type_name ? g_type_from_name (type_name) : 0;
   BseCategorySeq *cseq = NULL;
-  
   /* check parameters */
   if (!pattern)
     return BSE_ERROR_PROC_PARAM_INVAL;
-  
   cseq = bse_categories_match (pattern, BSE_TYPE_PROCEDURE, categories_check_method, &type);
   if (!cseq)
     cseq = bse_category_seq_new ();
-  
   /* set output parameters */
   bse_value_take_boxed (out_values++, cseq);
-  
   return BSE_ERROR_NONE;
 }

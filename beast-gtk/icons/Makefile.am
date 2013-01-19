@@ -1,7 +1,4 @@
 # BEAST - Better Audio System
-# Copyright (C) 1998-2002 Tim Janik
-#
-## GNU Lesser General Public License version 2 or any later version.
 include $(top_srcdir)/Makefile.decl
 
 SRC_IMAGES = $(strip		\
@@ -134,11 +131,11 @@ STOCK_IMAGE_DEFS = $(strip						\
 )
 
 gen_sources = xgen-bsgc xgen-bsgh
-CLEANFILES += $(gen_sources) bst-stock-gen.c bst-stock-gen.h
-noinst_DATA = bst-stock-gen.c bst-stock-gen.h
+CLEANFILES += $(gen_sources) bst-stock-gen.cc bst-stock-gen.h
+noinst_DATA = bst-stock-gen.cc bst-stock-gen.h
 EXTRA_DIST += $(SRC_IMAGES) $(filter-out STOCK_%, $(STOCK_IMAGE_DEFS))
 
-bst-stock-gen.c:	$(srcdir)/*.png bst-stock-gen.h
+bst-stock-gen.cc: $(srcdir)/*.png bst-stock-gen.h
 	gdk-pixbuf-csource --build-list $(STOCK_IMAGE_DEFS) > xgen-bsgc		\
 	&& echo "static const GxkStockIcon stock_icons[] = {" >> xgen-bsgc	\
 	&& for i in $(filter STOCK_%, $(STOCK_IMAGE_DEFS)) ; do			\
@@ -148,7 +145,7 @@ bst-stock-gen.c:	$(srcdir)/*.png bst-stock-gen.h
 	&& cp xgen-bsgc $@							\
 	&& rm -f xgen-bsgc
 
-bst-stock-gen.h:	$(srcdir)/*.png
+bst-stock-gen.h: $(srcdir)/*.png
 	for i in $(filter STOCK_%, $(STOCK_IMAGE_DEFS)) ; do			\
 		echo "#define BST_$$i                \"BST_$$i\"" >> xgen-bsgh;	\
 	done									\

@@ -1,43 +1,25 @@
-/* BSE - Better Sound Engine
- * Copyright (C) 2006 Tim Janik
- *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * A copy of the GNU Lesser General Public License should ship along
- * with this library; if not, see http://www.gnu.org/copyleft/.
- */
-#include <bse/bsedefs.h>
+// Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
+#include <bse/bsedefs.hh>
 // #define TEST_VERBOSE
-#include <sfi/sfitests.h>
-#include <bse/bsefilter.h>
-#include <bse/bsemain.h>
-#include <bse/gslfilter.h> // FIXME
-#include <bse/bseglobals.h> // FIXME
+#include <sfi/sfitests.hh>
+#include <bse/bsefilter.hh>
+#include <bse/bsemain.hh>
+#include <bse/gslfilter.hh> // FIXME
+#include <bse/bseglobals.hh> // FIXME
 #include "topconfig.h"
 #include <math.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <complex>
-
 typedef std::complex<double> Complex;
 using namespace Birnet;
 using std::max;
 using std::min;
-
 static inline double
 sqr (register double a)
 {
   return a * a;
 }
-
 static inline uint
 complex_find_nearest (const BseComplex *zp,
                       uint              n_zps,
@@ -61,7 +43,6 @@ complex_find_nearest (const BseComplex *zp,
     }
   return j;
 }
-
 static double
 compare_zeros (uint              n_zeros,
                const BseComplex *czeros,
@@ -81,13 +62,11 @@ compare_zeros (uint              n_zeros,
     }
   return max_eps;
 }
-
 static double
 to_db (double response)
 {
   return response <= 0.0 ? -999.99 : max (BSE_DECIBEL20_FACTOR * log (response), -999.99);
 }
-
 static double
 filter_zp_response (const BseIIRFilterDesign *fdes,
                     double                    freq)
@@ -114,7 +93,6 @@ filter_zp_response (const BseIIRFilterDesign *fdes,
   (void) freq_phase;
   return freq_magnitude;
 }
-
 bool
 bse_iir_filter_dump_gnuplot (const BseIIRFilterDesign *fdes,
                              const char               *fname,
@@ -135,20 +113,17 @@ bse_iir_filter_dump_gnuplot (const BseIIRFilterDesign *fdes,
       fclose (df);
       return false;
     }
-
   const double nyquist = 0.5 * fdes->sampling_frequency;
   const double delta = nyquist / scan_points;
   for (double f = 0; f < nyquist; f += delta)
     fprintf (df, "%.17g %.17g %.17g\n", f,
              to_db (filter_zp_response (fdes, f)),
              to_db (filter_zp_response (fdes, f)));
-
   //gchar *nstr = bse_poly_str (fdes->order, (double*) fdes->zn, "z");
   //gchar *dstr = bse_poly_str (fdes->order, (double*) fdes->zd, "z");
   //fprintf (gf, "H(z)=%s/%s\n", nstr, dstr);
   //g_free (nstr);
   //g_free (dstr);
-
   fprintf (gf, "dB(x)=20*log(abs(x))/log(10)\n");
   fprintf (gf, "Z(x)=exp({0,-1}*x) # gnuplot variable x for H(z)\n");
   fprintf (gf, "set samples 10000  # increase accuracy\n");
@@ -169,7 +144,6 @@ bse_iir_filter_dump_gnuplot (const BseIIRFilterDesign *fdes,
   fclose (df);
   return true;
 }
-
 static void
 noexit_dump_iir_filter_gnuplot (const BseIIRFilterRequest *fireq,
                                 const BseIIRFilterDesign  *fdes,
@@ -203,7 +177,6 @@ noexit_dump_iir_filter_gnuplot (const BseIIRFilterRequest *fireq,
   g_printerr ("Design: %s\n", bse_iir_filter_design_string (fdes));
   g_printerr ("GnuplotDump: wrote %s.gp and %s.dat use: gnuplot %s.gp\n", fname, fname, fname);
 }
-
 static void
 exit_with_iir_filter_gnuplot (const BseIIRFilterRequest *fireq,
                               const BseIIRFilterDesign  *fdes,
@@ -218,7 +191,6 @@ exit_with_iir_filter_gnuplot (const BseIIRFilterRequest *fireq,
   noexit_dump_iir_filter_gnuplot (fireq, fdes, fname, passband_ripple_db, passband_edge, passband_edge2, stopband_db, stopband_edge, stopband_edge2);
   exit (0);
 }
-
 static double
 max_band_damping_zp (const BseIIRFilterDesign *fdes,
                      double                    start_freq,
@@ -238,7 +210,6 @@ max_band_damping_zp (const BseIIRFilterDesign *fdes,
       g_printerr ("PassBandZPDB: %f: %f\n", f, to_db (filter_zp_response (fdes, f)));
   return to_db (eps);
 }
-
 static double
 min_band_damping_zp (const BseIIRFilterDesign *fdes,
                      double                    start_freq,
@@ -258,7 +229,6 @@ min_band_damping_zp (const BseIIRFilterDesign *fdes,
       g_printerr ("PassBandZPDB: %f: %f\n", f, to_db (filter_zp_response (fdes, f)));
   return to_db (eps);
 }
-
 static double
 max_band_damping (const BseIIRFilterDesign *fdes,
                   double                    start_freq,
@@ -267,7 +237,6 @@ max_band_damping (const BseIIRFilterDesign *fdes,
   // double res1 = max_band_damping_ztrans (fdes, start_freq, end_freq);
   return max_band_damping_zp (fdes, MIN (start_freq, end_freq), MAX (start_freq, end_freq));
 }
-
 static double
 min_band_damping (const BseIIRFilterDesign *fdes,
                   double                    start_freq,
@@ -276,7 +245,6 @@ min_band_damping (const BseIIRFilterDesign *fdes,
   // double res1 = min_band_damping_ztrans (fdes, start_freq, end_freq);
   return min_band_damping_zp (fdes, MIN (start_freq, end_freq), MAX (start_freq, end_freq));
 }
-
 static void
 print_filter_on_abort (void *data)
 {
@@ -287,7 +255,6 @@ print_filter_on_abort (void *data)
                                   -fabs(req->passband_ripple_db), req->passband_edge, req->passband_edge2,
                                   req->stopband_db != 0 ? req->stopband_db : NAN, req->stopband_edge, NAN);
 }
-
 static void
 butterwoth_tests ()
 {
@@ -302,7 +269,6 @@ butterwoth_tests ()
   abort_data[1] = &fdes;
   TABORT_HANDLER (print_filter_on_abort, abort_data);
   TOK();
-
   {
     req.type = BSE_IIR_FILTER_LOW_PASS;
     req.order = 8;
@@ -321,7 +287,6 @@ butterwoth_tests ()
     if (0)
       exit_with_iir_filter_gnuplot (&req, &fdes, "tmpfilter", -3.0103, 2000, NAN, -68, 3500);
   }
-  
   {
     req.type = BSE_IIR_FILTER_HIGH_PASS;
     req.order = 7;
@@ -335,7 +300,6 @@ butterwoth_tests ()
     if (0)
       exit_with_iir_filter_gnuplot (&req, &fdes, "tmpfilter", -3.0103, 2000, NAN, -80, 600);
   }
-
   {
     req.type = BSE_IIR_FILTER_BAND_PASS;
     req.order = 9;
@@ -351,7 +315,6 @@ butterwoth_tests ()
     if (0)
       exit_with_iir_filter_gnuplot (&req, &fdes, "tmpfilter", -3.0103, 1500, 3500, -49.5, 1000, 4000);
   }
-  
   {
     req.type = BSE_IIR_FILTER_BAND_STOP;
     req.order = 14;
@@ -367,11 +330,9 @@ butterwoth_tests ()
     if (0)
       exit_with_iir_filter_gnuplot (&req, &fdes, "tmpfilter", -3.0103, 1000, 4000, -77, 1500, 3500);
   }
-
   TOK();
   TDONE();
 }
-
 static void
 chebychev1_tests ()
 {
@@ -386,7 +347,6 @@ chebychev1_tests ()
   TABORT_HANDLER (print_filter_on_abort, abort_data);
   const double gaineps = 1e-7;
   TOK();
-
   {
     req.type = BSE_IIR_FILTER_LOW_PASS;
     req.order = 8;
@@ -401,7 +361,6 @@ chebychev1_tests ()
     if (0)
       exit_with_iir_filter_gnuplot (&req, &fdes, "tmpfilter", -1.55, 3000, NAN, -80, 5000);
   }
-
   {
     req.type = BSE_IIR_FILTER_HIGH_PASS;
     req.order = 7;
@@ -416,7 +375,6 @@ chebychev1_tests ()
     if (0)
       exit_with_iir_filter_gnuplot (&req, &fdes, "tmpfilter", -0.1, 600, NAN, -70, 250);
   }
-
   {
     req.type = BSE_IIR_FILTER_BAND_PASS;
     req.order = 10;
@@ -433,7 +391,6 @@ chebychev1_tests ()
     if (0)
       exit_with_iir_filter_gnuplot (&req, &fdes, "tmpfilter", -1.801, 3500, 9500, -55, 3000, 10200);
   }
-  
   {
     req.type = BSE_IIR_FILTER_BAND_STOP;
     req.order = 13;
@@ -450,11 +407,9 @@ chebychev1_tests ()
     if (0)
       exit_with_iir_filter_gnuplot (&req, &fdes, "tmpfilter", -1.001, 8000, 12000, -78, 8500, 11500);
   }
-
   TOK();
   TDONE();
 }
-
 typedef struct {
   const BseIIRFilterRequest *filter_request;
   double                     gain;
@@ -465,19 +420,16 @@ typedef struct {
   const double              *filter_coefficients;
   uint                       n_filter_coefficients;
 } FilterSetup;
-
 static void generic_filter_tests   (const char                *test_name,
                                     const uint                 n_filters,
                                     const FilterSetup         *filters,
                                     uint                       tick_count = 1,
                                     uint                       skip_count = 0);
-
 static void
 test_problem_candidates ()
 {
   FilterSetup filters[1000] = { { 0, } };
   uint index = 0;
-
   { // ellf gain is too high
     static const BseIIRFilterRequest filter_request = {
       /* kind = */               BSE_IIR_FILTER_ELLIPTIC,
@@ -526,7 +478,6 @@ test_problem_candidates ()
     filters[index].gain = +1.12649838606861938e-01;
     index++;
   }
-
   if (0) { // FIXME: bse gain = 4.3037825362077964
     static const BseIIRFilterRequest filter_request = {
       /* kind = */               BSE_IIR_FILTER_ELLIPTIC,
@@ -543,11 +494,9 @@ test_problem_candidates ()
     filters[index].gain = -3.83263619423376167e-01;
     index++;
   }
-
   /* and test them */
   generic_filter_tests ("Problem Filters", index, filters);
 }
-
 static void
 random_filter_tests ()
 {
@@ -569,10 +518,8 @@ random_filter_tests ()
   double pbe1;
   FilterSetup filters[100000] = { { 0, }, };
   uint filter_index, skip_count = 6;
-
   if (sfi_init_settings().test_quick)
     n_orders = 9;
-
 #define MAKE_FILTER(frequest, filter_type) do                                   \
   {                                                                             \
     if (!filters[filter_index].filter_request)                                  \
@@ -583,7 +530,6 @@ random_filter_tests ()
     rqcopy->type = filter_type;                                                 \
     filter_index++;                                                             \
   } while (0)
-
   /* generate filter requirements */
   filter_index = 0;
   frequest.kind = BSE_IIR_FILTER_BUTTERWORTH;
@@ -607,7 +553,6 @@ random_filter_tests ()
       }
   /* design and test filters */
   generic_filter_tests ("Random Butterworth", filter_index, filters, skip_count);
-
   /* generate filter requirements */
   filter_index = 0;
   frequest.kind = BSE_IIR_FILTER_CHEBYSHEV1;
@@ -635,7 +580,6 @@ random_filter_tests ()
       }
   /* design and test filters */
   generic_filter_tests ("Random Chebyshev1", filter_index, filters, skip_count);
-
   /* generate filter requirements */
   filter_index = 0;
   frequest.kind = BSE_IIR_FILTER_ELLIPTIC;
@@ -668,7 +612,6 @@ random_filter_tests ()
       }
   /* design and test filters */
   generic_filter_tests ("Random Elliptic (dB)", filter_index, filters, skip_count);
-  
   /* generate filter requirements */
   filter_index = 0;
   frequest.kind = BSE_IIR_FILTER_ELLIPTIC;
@@ -703,30 +646,24 @@ random_filter_tests ()
       }
   /* design and test filters */
   generic_filter_tests ("Random Elliptic (Hz)", filter_index, filters, skip_count);
-
 #undef MAKE_FILTER
 }
-
 static void
 test_filter_catalog ()
 {
   FilterSetup filters[100000] = { { 0, } };
   uint index = 0;
-
   /* include predesigned filters */
 #include "filtercatalog.cc"
-
   uint skip_count = 0, tick_count = 3;
   if (sfi_init_settings().test_quick)
     {
       tick_count = 1;
       skip_count = 17;
     }
-
   /* test predesigned filters */
   generic_filter_tests ("Filter Catalog", index, filters, tick_count, skip_count);
 }
-
 static void
 generic_filter_tests (const char        *test_name,
                       const uint         n_filters,
@@ -823,7 +760,6 @@ generic_filter_tests (const char        *test_name,
     }
   TDONE();
 }
-
 int
 main (int    argc,
       char **argv)

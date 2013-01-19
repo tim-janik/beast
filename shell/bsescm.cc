@@ -1,45 +1,24 @@
-/* BSE-SCM - Better Sound Engine Scheme Wrapper
- * Copyright (C) 2002 Tim Janik
- *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * A copy of the GNU Lesser General Public License should ship along
- * with this library; if not, see http://www.gnu.org/copyleft/.
- */
+// Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include <string.h>
 #include <errno.h>
 #include <unistd.h>
 #include <guile/gh.h>
-#include <bse/bse.h>
-#include <bse/bsemain.h>  /* for bse_init_textdomain_only() */
-#include <sfi/sfistore.h> /* no bin-compat */
+#include <bse/bse.hh>
+#include <bse/bsemain.hh>  /* for bse_init_textdomain_only() */
+#include <sfi/sfistore.hh> /* no bin-compat */
 #include <sys/time.h>
 #include <libintl.h>
 #include <sys/resource.h>
 #include "bsescminterp.hh"
 #include "topconfig.h"
-
 #define	PRG_NAME	"bsescm"
-
 #define BSE_EXIT_STATUS 102
-
-
 /* --- prototypes --- */
 static void	gh_main			(gint	 argc,
 					 gchar	*argv[]);
 static void	shell_parse_args	(gint    *argc_p,
 					 gchar ***argv_p);
 static void     shell_print_usage       (void);
-
-
 /* --- variables --- */
 static gint            bse_scm_pipe[2] = { -1, -1 };
 static gchar          *bse_scm_eval_expr = NULL;
@@ -49,7 +28,6 @@ static gboolean        bse_scm_auto_play = TRUE;
 static SfiComPort     *bse_scm_port = NULL;
 static SfiGlueContext *bse_scm_context = NULL;
 static const gchar    *boot_script_path = BSE_PATH_SCRIPTS;
-
 /* --- functions --- */
 static void
 port_closed (SfiComPort *port,
@@ -59,33 +37,33 @@ port_closed (SfiComPort *port,
   if (port)
     exit (BSE_EXIT_STATUS);
 }
-
+static void
+dummy_dispatch (void *foo)
+{
+  // nothing to do
+}
 int
 main (int   argc,
       char *argv[])
 {
   const gchar *env_str;
-
+  GSource *source;
   sfi_init (&argc, &argv, "BSESCM", NULL);
   bse_init_textdomain_only();
   setlocale (LC_ALL, "");
-
   env_str = g_getenv ("BSESCM_SLEEP4GDB");
   if (env_str && atoi (env_str) >= 3)
     {
       g_message ("going into sleep mode due to debugging request (pid=%u)", getpid ());
       g_usleep (2147483647);
     }
-
   shell_parse_args (&argc, &argv);
-
   if (env_str && (atoi (env_str) >= 2 ||
                   (atoi (env_str) >= 1 && !bse_scm_enable_register)))
     {
       g_message ("going into sleep mode due to debugging request (pid=%u)", getpid ());
       g_usleep (2147483647);
     }
-
   if (bse_scm_pipe[0] >= 0 && bse_scm_pipe[1] >= 0)
     {
       bse_scm_port = sfi_com_port_from_pipe (PRG_NAME, bse_scm_pipe[0], bse_scm_pipe[1]);
@@ -97,23 +75,22 @@ main (int   argc,
 	}
       bse_scm_context = sfi_glue_encoder_context (bse_scm_port);
     }
-
   if (!bse_scm_context)
     {
       /* start our own core thread */
       bse_init_async (&argc, &argv, "BSESCM", NULL);
       bse_scm_context = bse_init_glue_context (PRG_NAME);
     }
-
   /* now that the BSE thread runs, drop scheduling priorities if we have any */
   setpriority (PRIO_PROCESS, getpid(), 0);
-
+  /* setup main context to be able to wait for events from bse in bse_scm_context_iteration */
+  sfi_thread_set_wakeup (BirnetThreadWakeup (g_main_context_wakeup), g_main_context_default(), NULL);
+  source = g_source_simple (G_PRIORITY_DEFAULT, GSourcePending (sfi_glue_context_pending), dummy_dispatch, NULL, NULL, NULL);
+  g_source_attach (source, NULL);
+  g_source_unref (source);
   gh_enter (argc, argv, gh_main);
-
   return 0;
 }
-
-
 static void
 gh_main (int   argc,
 	 char *argv[])
@@ -124,14 +101,11 @@ gh_main (int   argc,
   else
     bse_scm_enable_server (TRUE);
   sfi_glue_context_push (bse_scm_context);
-
   /* initialize interpreter */
   bse_scm_interp_init ();
-
   /* exec Bse Scheme bootup code */
   const gchar *boot_script = g_intern_printf ("%s/%s", boot_script_path, "bse-scm-glue.boot");
   gh_load (boot_script);
-
   /* eval, auto-play or interactive */
   if (bse_scm_eval_expr)
     gh_eval_str (bse_scm_eval_expr);
@@ -167,7 +141,6 @@ gh_main (int   argc,
           gh_repl (argc, argv);
         }
     }
-
   /* shutdown */
   sfi_glue_context_pop ();
   if (bse_scm_port)
@@ -177,7 +150,6 @@ gh_main (int   argc,
     }
   sfi_glue_context_destroy (bse_scm_context);
 }
-
 static void
 shell_parse_args (gint    *argc_p,
 		  gchar ***argv_p)
@@ -186,7 +158,6 @@ shell_parse_args (gint    *argc_p,
   gchar **argv = *argv_p;
   guint i, e;
   gboolean initialize_bse_and_exit = FALSE;
-
   for (i = 1; i < argc; i++)
     {
       if (strcmp (argv[i], "--") == 0 ||
@@ -196,7 +167,6 @@ shell_parse_args (gint    *argc_p,
       else if (strcmp (argv[i], "--g-fatal-warnings") == 0)
 	{
 	  GLogLevelFlags fatal_mask;
-
 	  fatal_mask = g_log_set_always_fatal (GLogLevelFlags (G_LOG_FATAL_MASK));
           fatal_mask = GLogLevelFlags (fatal_mask | G_LOG_LEVEL_WARNING | G_LOG_LEVEL_CRITICAL);
 	  g_log_set_always_fatal (fatal_mask);
@@ -308,7 +278,6 @@ shell_parse_args (gint    *argc_p,
           exit (0);
         }
     }
-  
   e = 1;
   for (i = 1; i < argc; i++)
     if (argv[i])
@@ -318,14 +287,12 @@ shell_parse_args (gint    *argc_p,
           argv[i] = NULL;
       }
   *argc_p = e;
-
   if (initialize_bse_and_exit)
     {
       bse_init_async (argc_p, argv_p, "BSESCM", NULL);
       exit (0);
     }
 }
-
 static void
 shell_print_usage (void)
 {

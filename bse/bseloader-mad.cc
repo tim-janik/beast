@@ -1,27 +1,9 @@
-/* GSL - Generic Sound Layer
- * Copyright (C) 2002-2005 Tim Janik
- *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * A copy of the GNU Lesser General Public License should ship along
- * with this library; if not, see http://www.gnu.org/copyleft/.
- */
+// Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "topconfig.h"
-#include "bse/bseloader.h"
-#include "gsldatahandle-mad.h"
-
+#include "bse/bseloader.hh"
+#include "gsldatahandle-mad.hh"
 #include <unistd.h>
 #include <string.h>
-
-
 /* --- structures --- */
 typedef struct
 {
@@ -30,8 +12,6 @@ typedef struct
   float	          mix_freq;
   float	          osc_freq;
 } FileInfo;
-
-
 /* --- functions --- */
 static BseWaveFileInfo*
 mad_load_file_info (void         *data,
@@ -42,14 +22,12 @@ mad_load_file_info (void         *data,
   uint n_channels;
   float mix_freq;
   BseErrorType error;
-
   error = gsl_data_handle_mad_testopen (file_name, &n_channels, &mix_freq);
   if (error)
     {
       *error_p = error;
       return NULL;
     }
-
   fi = sfi_new_struct0 (FileInfo, 1);
   fi->wfi.n_waves = 1;	/* we support only a single MPEG stream */
   fi->wfi.waves = (BseWaveFileInfo::Wave*) g_malloc0 (sizeof (fi->wfi.waves[0]) * fi->wfi.n_waves);
@@ -58,23 +36,19 @@ mad_load_file_info (void         *data,
   fi->n_channels = n_channels;
   fi->mix_freq = mix_freq;
   fi->osc_freq = 440.0;	/* FIXME */
-
   return &fi->wfi;
 }
-
 static void
 mad_free_file_info (void            *data,
 		    BseWaveFileInfo *file_info)
 {
   FileInfo *fi = (FileInfo*) file_info;
   uint i;
-
   for (i = 0; i < fi->wfi.n_waves; i++)
     g_free (fi->wfi.waves[i].name);
   g_free (fi->wfi.waves);
   sfi_delete_struct (FileInfo, fi);
 }
-
 static BseWaveDsc*
 mad_load_wave_dsc (void            *data,
 		   BseWaveFileInfo *file_info,
@@ -83,17 +57,14 @@ mad_load_wave_dsc (void            *data,
 {
   FileInfo *fi = (FileInfo*) file_info;
   BseWaveDsc *wdsc = sfi_new_struct0 (BseWaveDsc, 1);
-
   wdsc->name = g_strdup (fi->wfi.waves[0].name);
   wdsc->n_channels = fi->n_channels;
   wdsc->n_chunks = 1;
   wdsc->chunks = g_new0 (BseWaveChunkDsc, 1);
   wdsc->chunks[0].osc_freq = fi->osc_freq;
   wdsc->chunks[0].mix_freq = fi->mix_freq;
-
   return wdsc;
 }
-
 static void
 mad_free_wave_dsc (void       *data,
 		   BseWaveDsc *wdsc)
@@ -105,7 +76,6 @@ mad_free_wave_dsc (void       *data,
   g_free (wdsc->name);
   sfi_delete_struct (BseWaveDsc, wdsc);
 }
-
 static GslDataHandle*
 mad_create_chunk_handle (void         *data,
 			 BseWaveDsc   *wdsc,
@@ -114,9 +84,7 @@ mad_create_chunk_handle (void         *data,
 {
   FileInfo *fi = (FileInfo*) wdsc->file_info;
   GslDataHandle *dhandle;
-
   g_return_val_if_fail (nth_chunk == 0, NULL);
-
   dhandle = gsl_data_handle_new_mad_err (fi->wfi.file_name, wdsc->chunks[0].osc_freq, error_p);
   if (dhandle && wdsc->chunks[0].xinfos)
     {
@@ -128,8 +96,6 @@ mad_create_chunk_handle (void         *data,
     *error_p = BSE_ERROR_FILE_OPEN_FAILED;
   return dhandle;
 }
-
-
 #define	MAGIC_MPEG_HEADER	 "0 beshort   &0xffe0\n" /* MPEG */		\
                                  "2 ubyte&0x0c <0x0c\n"	 /* valid samplefreq */	\
                                  "2 ubyte&0xf0 <0xf0\n"	 /* valid bitrate */
@@ -171,7 +137,6 @@ mad_create_chunk_handle (void         *data,
 #define	MAGIC_MPEG_ID3		("0  string  ID3\n"	/* ID3v2 tag for mp3 */	\
                                  "3  ubyte   <0xff\n"	/* major version */	\
                                  "4  ubyte   <0xff\n"	/* revision */)
-
 void
 _gsl_init_loader_mad (void)
 {
@@ -209,10 +174,8 @@ _gsl_init_loader_mad (void)
     mad_create_chunk_handle,
   };
   static gboolean initialized = FALSE;
-
   g_assert (initialized == FALSE);
   initialized = TRUE;
-
   if (BSE_HAVE_LIBMAD)
     bse_loader_register (&loader);
 }

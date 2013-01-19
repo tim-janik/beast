@@ -1,7 +1,5 @@
 # Birnet
 # Copyright (C) 2006 Tim Janik
-#
-## GNU Lesser General Public License version 2 or any later version.
 include $(top_srcdir)/Makefile.decl
 
 INCLUDES       += -I$(top_srcdir) -I$(top_builddir) -I. $(SFI_CFLAGS)
@@ -14,14 +12,14 @@ SFIDL 		  = $(top_builddir)/sfi/sfidl
 
 # ring
 TESTS       += ring
-ring_SOURCES = ring.c dummy.cc
+ring_SOURCES = ring.cc
 ring_LDADD   = $(progs_ldadd)
 
 # misctests
 TESTS	          += misctests
-misctests_SOURCES  = misctests.c dummy.cc
+misctests_SOURCES  = misctests.cc
 misctests_LDADD	   = $(progs_ldadd)
-$(srcdir)/misctests.c: testidl.h testidl.c
+$(srcdir)/misctests.cc: testidl.h testidl.c
 
 # testcxx
 TESTS	       += testcxx
@@ -35,7 +33,7 @@ testsfidl_SOURCES = testsfidl.cc \
 			../sfidl-generator.cc ../sfidl-namespace.cc ../sfidl-options.cc ../sfidl-parser.cc \
 			../sfidl-factory.cc ../sfidl-typelist.cc ../sfidl-cbase.cc ../sfidl-clientc.cc \
 			../sfidl-clientcxx.cc ../sfidl-corec.cc ../sfidl-corecxx.cc ../sfidl-cxxbase.cc \
-			../sfidl-hostc.cc ../glib-extra.c
+			../sfidl-hostc.cc ../glib-extra.cc
 testsfidl_LDADD   = $(progs_nosfi_ldadd)
 $(srcdir)/testsfidl.cc: testidl.h testidl.c
 

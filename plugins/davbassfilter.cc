@@ -1,31 +1,7 @@
-/* DavBassFilter - DAV Bass Filter
- * Copyright (c) 1999, 2000 David A. Bartold, 2003 Tim Janik
- *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * A copy of the GNU Lesser General Public License should ship along
- * with this library; if not, see http://www.gnu.org/copyleft/.
- *
- *
- * This is a TB-303 filter clone based on the VCF303 portions of
- * gsyn v0.2.  Code in update_locals() is copyright (c) 1998 Andy Sloane.
- *
- * Filter algorithm in function recalc_a_b() is based on the one
- * described in Musical Applications of Microprocessors by Hal Chamberlin.
- */
+// Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "davbassfilter.genidl.hh"
-
 namespace Bse {
 namespace Dav {
-
 class BassFilter : public BassFilterBase {
   class Module : public SynthesisModule {
     /* proeprties */
@@ -89,12 +65,10 @@ class BassFilter : public BassFilterBase {
       filt_reso = props->reso_perc * 0.01;
       env_mod = props->env_mod * 0.01;
       env_decay = props->env_decay * 0.01;
-
       recalc_resonance();
       recalc_filter();
       recalc_decay();
       recalc_a_b();
-
       if (props->trigger)
         {
           /* Reset filter delta freq. */
@@ -181,9 +155,7 @@ public:
   /* implement creation and config methods for synthesis Module */
   BSE_EFFECT_INTEGRATE_MODULE (BassFilter, Module, BassFilterProperties);
 };
-
 BSE_CXX_DEFINE_EXPORTS();
 BSE_CXX_REGISTER_EFFECT (BassFilter);
-
 } // Dav
 } // Bse

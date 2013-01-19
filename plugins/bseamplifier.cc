@@ -1,24 +1,7 @@
-/* BSE - Better Sound Engine
- * Copyright (C) 2002, 2003 Tim Janik
- *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * A copy of the GNU Lesser General Public License should ship along
- * with this library; if not, see http://www.gnu.org/copyleft/.
- */
+// Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bseamplifier.genidl.hh"
-#include <bse/bsemathsignal.h>
-
+#include <bse/bsemathsignal.hh>
 namespace Bse {
-
 class Amplifier : public AmplifierBase {
   /* amplifier module implementation */
   class Module : public SynthesisModule {
@@ -89,7 +72,6 @@ class Amplifier : public AmplifierBase {
                 cv_sum = cl1 * *cv1in++;
               else if (CCASE == CCASE_C1n_C2y)
                 cv_sum = cl2 * *cv2in++;
-
               if (G_UNLIKELY (cv_sum < 0))
                 cv_sum = 0;
               else
@@ -100,7 +82,6 @@ class Amplifier : public AmplifierBase {
               if (G_UNLIKELY (cv_sum > 1.0))
                 cv_sum = 1.0;
             }
-
           double au_out; // never unused
           if (ACASE == ACASE_A1b_A2b)	        /* audio input, au1 and/or au2 */
             au_out = al1 * *au1in++ + al2 * *au2in++;
@@ -108,7 +89,6 @@ class Amplifier : public AmplifierBase {
             au_out = al1 * *au1in++;
           else if (ACASE == ACASE_A1n_A2y)
             au_out = al2 * *au2in++;
-
           au_out *= cv_sum;
           *audio_out++ = au_out;
         }
@@ -142,7 +122,6 @@ class Amplifier : public AmplifierBase {
         simple_control = true;
       if (!simple_control && ctrl_exp)
         mode |= WITH_EXP_CONTROLS;
-
       if (simple_control)
         switch (mode)
           {
@@ -156,7 +135,7 @@ class Amplifier : public AmplifierBase {
 #define BSE_INCLUDER_MATCH(n)   (n >= 0 && n <= 31 && (n & ACASE_MASK) != ACASE_A1n_A2n)
 #define BSE_INCLUDER_FUNC(n)    process_loop <n, false>
 #define BSE_INCLUDER_ARGS(n)    (n_values)
-#include <bse/bseincluder.h>
+#include <bse/bseincluder.hh>
           }
     }
   };
@@ -249,9 +228,6 @@ public:
   /* implement creation and config methods for synthesis Module */
   BSE_EFFECT_INTEGRATE_MODULE (Amplifier, Module, AmplifierProperties);
 };
-
 BSE_CXX_DEFINE_EXPORTS();
 BSE_CXX_REGISTER_EFFECT (Amplifier);
-
 } // Bse
-

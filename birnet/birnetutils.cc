@@ -1,19 +1,4 @@
-/* Birnet
- * Copyright (C) 2005-2006 Tim Janik
- *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * A copy of the GNU Lesser General Public License should ship along
- * with this library; if not, see http://www.gnu.org/copyleft/.
- */
+// Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include <glib.h>
 #include "birnetutils.hh"
 #include "birnetutf8.hh"
@@ -32,27 +17,20 @@
 #include <signal.h>
 #include <string.h>
 #include <stdio.h>
-
 #ifndef _
 #define _(s)    s
 #endif
-
 namespace Birnet {
-
 static Msg::CustomType debug_browser ("browser", Msg::DEBUG);
-
 static const InitSettings *birnet_init_settings = NULL;
-
 InitSettings
 init_settings ()
 {
   return *birnet_init_settings;
 }
-
 /* --- InitHooks --- */
 static void    (*run_init_hooks) () = NULL;
 static InitHook *init_hooks = NULL;
-
 InitHook::InitHook (InitHookFunc _func,
                     int          _priority) :
   next (NULL), priority (_priority), hook (_func)
@@ -63,7 +41,6 @@ InitHook::InitHook (InitHookFunc _func,
   init_hooks = this;
   run_init_hooks = invoke_hooks;
 }
-
 void
 InitHook::invoke_hooks (void)
 {
@@ -82,13 +59,11 @@ InitHook::invoke_hooks (void)
   for (std::vector<InitHook*>::iterator it = hv.begin(); it != hv.end(); it++)
     (*it)->hook();
 }
-
 /* --- initialization --- */
 static InitSettings global_init_settings = {
   false,        /* stand_alone */
   false,        /* perf_test */
 };
-
 static void
 birnet_parse_settings_and_args (InitValue *value,
                                 int       *argc_p,
@@ -153,7 +128,6 @@ birnet_parse_settings_and_args (InitValue *value,
       }
   *argc_p = e;
 }
-
 void
 birnet_init (int        *argcp,
              char     ***argvp,
@@ -163,7 +137,6 @@ birnet_init (int        *argcp,
   /* mandatory initial initialization */
   if (!g_threads_got_initialized)
     g_thread_init (NULL);
-
   /* update program/application name upon repeated initilization */
   char *prg_name = argcp && *argcp ? g_path_get_basename ((*argvp)[0]) : NULL;
   if (birnet_init_settings != NULL)
@@ -175,7 +148,6 @@ birnet_init (int        *argcp,
         g_set_application_name (app_name);
       return;   /* simply ignore repeated initializations */
     }
-
   /* normal initialization */
   birnet_init_settings = &global_init_settings;
   birnet_parse_settings_and_args (ivalues, argcp, argvp);
@@ -184,7 +156,6 @@ birnet_init (int        *argcp,
   g_free (prg_name);
   if (app_name && (!g_get_application_name() || g_get_application_name() == g_get_prgname()))
     g_set_application_name (app_name);
-
   /* initialize random numbers */
   {
     struct timeval tv;
@@ -192,14 +163,12 @@ birnet_init (int        *argcp,
     srand48 (tv.tv_usec + (tv.tv_sec << 16));
     srand (lrand48());
   }
-
   /* initialize sub systems */
   _birnet_init_cpuinfo();
   _birnet_init_threads();
   if (run_init_hooks)
     run_init_hooks();
 }
-
 bool
 init_value_bool (InitValue *value)
 {
@@ -216,7 +185,6 @@ init_value_bool (InitValue *value)
   else
     return ABS (value->value_num) >= 0.5;
 }
-
 double
 init_value_double (InitValue *value)
 {
@@ -224,7 +192,6 @@ init_value_double (InitValue *value)
     return g_strtod (value->value_string, NULL);
   return value->value_num;
 }
-
 int64
 init_value_int (InitValue *value)
 {
@@ -232,7 +199,6 @@ init_value_int (InitValue *value)
     return strtoll (value->value_string, NULL, 0);
   return int64 (value->value_num + 0.5);
 }
-
 /* --- limits.h & float.h checks --- */
 /* assert several assumptions the code makes */
 BIRNET_STATIC_ASSERT (CHAR_BIT     == +8);
@@ -257,14 +223,12 @@ BIRNET_STARTUP_ASSERT (DBL_EPSILON  <= 1E-9);
 BIRNET_STATIC_ASSERT (LDBL_MIN     <= 1E-37);
 BIRNET_STATIC_ASSERT (LDBL_MAX     >= 1E+37);
 BIRNET_STATIC_ASSERT (LDBL_EPSILON <= 1E-9);
-
 /* --- assertions/warnings/errors --- */
 void
 raise_sigtrap ()
 {
   raise (SIGTRAP);
 }
-
 static void
 stderr_print (bool        bail_out,
               const char *prefix,
@@ -299,7 +263,6 @@ stderr_print (bool        bail_out,
   fputs (msg.c_str(), stderr);
   fflush (stderr);
 }
-
 void
 birnet_runtime_problem (char        ewran_tag,
                         const char *domain,
@@ -314,7 +277,6 @@ birnet_runtime_problem (char        ewran_tag,
   birnet_runtime_problemv (ewran_tag, domain, file, line, funcname, msgformat, args);
   va_end (args);
 }
-
 void
 birnet_runtime_problemv (char        ewran_tag,
                          const char *domain,
@@ -359,23 +321,19 @@ birnet_runtime_problemv (char        ewran_tag,
       abort();
     }
 }
-
 /* --- VirtualTypeid --- */
 VirtualTypeid::~VirtualTypeid ()
 { /* virtual destructor ensures vtable */ }
-
 String
 VirtualTypeid::typeid_name ()
 {
   return typeid (*this).name();
 }
-
 String
 VirtualTypeid::typeid_pretty_name ()
 {
   return cxx_demangle (typeid (*this).name());
 }
-
 String
 VirtualTypeid::cxx_demangle (const char *mangled_identifier)
 {
@@ -386,7 +344,6 @@ VirtualTypeid::cxx_demangle (const char *mangled_identifier)
     free (malloced_result);
   return result;
 }
-
 /* --- string utils --- */
 String
 string_tolower (const String &str)
@@ -396,7 +353,6 @@ string_tolower (const String &str)
     s[i] = Unichar::tolower (s[i]);
   return s;
 }
-
 String
 string_toupper (const String &str)
 {
@@ -405,7 +361,6 @@ string_toupper (const String &str)
     s[i] = Unichar::toupper (s[i]);
   return s;
 }
-
 String
 string_totitle (const String &str)
 {
@@ -414,7 +369,6 @@ string_totitle (const String &str)
     s[i] = Unichar::totitle (s[i]);
   return s;
 }
-
 String
 string_printf (const char *format,
                ...)
@@ -426,7 +380,6 @@ string_printf (const char *format,
   va_end (args);
   return str;
 }
-
 String
 string_vprintf (const char *format,
                 va_list     vargs)
@@ -441,7 +394,6 @@ string_vprintf (const char *format,
   else
     return format;
 }
-
 String
 string_strip (const String &str)
 {
@@ -453,7 +405,6 @@ string_strip (const String &str)
     start++;
   return String (cstr + start, end - start);
 }
-
 bool
 string_to_bool (const String &string)
 {
@@ -483,13 +434,11 @@ string_to_bool (const String &string)
            p[0] == 'f' || p[0] == 'F' ||
            p[0] == 'n' || p[0] == 'N');
 }
-
 String
 string_from_bool (bool value)
 {
   return String (value ? "1" : "0");
 }
-
 uint64
 string_to_uint (const String &string,
                 uint          base)
@@ -500,13 +449,11 @@ string_to_uint (const String &string,
   bool hex = p[0] == '0' && (p[1] == 'X' || p[1] == 'x');
   return strtoull (hex ? p + 2 : p, NULL, hex ? 16 : base);
 }
-
 String
 string_from_uint (uint64 value)
 {
   return string_printf ("%llu", value);
 }
-
 bool
 string_has_int (const String &string)
 {
@@ -515,7 +462,6 @@ string_has_int (const String &string)
     p++;
   return p[0] >= '0' && p[0] <= '9';
 }
-
 int64
 string_to_int (const String &string,
                uint          base)
@@ -526,19 +472,16 @@ string_to_int (const String &string,
   bool hex = p[0] == '0' && (p[1] == 'X' || p[1] == 'x');
   return strtoll (hex ? p + 2 : p, NULL, hex ? 16 : base);
 }
-
 String
 string_from_int (int64 value)
 {
   return string_printf ("%lld", value);
 }
-
 double
 string_to_double (const String &string)
 {
   return g_ascii_strtod (string.c_str(), NULL);
 }
-
 String
 string_from_float (float value)
 {
@@ -546,7 +489,6 @@ string_from_float (float value)
   g_ascii_formatd (numbuf, G_ASCII_DTOSTR_BUF_SIZE, "%.7g", value);
   return String (numbuf);
 }
-
 String
 string_from_double (double value)
 {
@@ -554,7 +496,6 @@ string_from_double (double value)
   g_ascii_formatd (numbuf, G_ASCII_DTOSTR_BUF_SIZE, "%.17g", value);
   return String (numbuf);
 }
-
 vector<double>
 string_to_vector (const String &string)
 {
@@ -591,7 +532,6 @@ string_to_vector (const String &string)
   // printf ("vector: %d: %s\n", dvec.size(), string_from_vector (dvec).c_str());
   return dvec;
 }
-
 String
 string_from_vector (const vector<double> &dvec,
                     const String         &delim)
@@ -605,7 +545,6 @@ string_from_vector (const vector<double> &dvec,
     }
   return s;
 }
-
 String
 string_from_errno (int errno_val)
 {
@@ -615,7 +554,6 @@ string_from_errno (int errno_val)
     return strerror (errno_val);
   return buffer;
 }
-
 bool
 string_is_uuid (const String &uuid_string) /* check uuid formatting */
 {
@@ -638,21 +576,18 @@ string_is_uuid (const String &uuid_string) /* check uuid formatting */
       return false;
   return true;
 }
-
 int
 string_cmp_uuid (const String &uuid_string1,
                  const String &uuid_string2) /* -1=smaller, 0=equal, +1=greater (assuming valid uuid strings) */
 {
   return strcasecmp (uuid_string1.c_str(), uuid_string2.c_str()); /* good enough for numeric equality and defines stable order */
 }
-
 /* --- file utils --- */
 /**
  * @namespace Birnet::Path
  * The Birnet::Path namespace covers function for file path manipulation and evaluation.
  */
 namespace Path {
-
 const String
 dirname (const String &path)
 {
@@ -664,7 +599,6 @@ dirname (const String &path)
     base--;
   return String (filename, base - filename + 1);
 }
-
 const String
 basename (const String &path)
 {
@@ -674,20 +608,17 @@ basename (const String &path)
     return filename;
   return String (base + 1);
 }
-
 bool
 isabs (const String &path)
 {
   return g_path_is_absolute (path.c_str());
 }
-
 const String
 skip_root (const String &path)
 {
   const char *frag = g_path_skip_root (path.c_str());
   return frag;
 }
-
 const String
 join (const String &frag0, const String &frag1,
       const String &frag2, const String &frag3,
@@ -707,13 +638,11 @@ join (const String &frag0, const String &frag1,
   g_free (cpath);
   return path;
 }
-
 static int
 errno_check_file (const char *file_name,
                   const char *mode)
 {
   uint access_mask = 0, nac = 0;
-  
   if (strchr (mode, 'e'))       /* exists */
     nac++, access_mask |= F_OK;
   if (strchr (mode, 'r'))       /* readable */
@@ -723,13 +652,11 @@ errno_check_file (const char *file_name,
   bool check_exec = strchr (mode, 'x') != NULL;
   if (check_exec)               /* executable */
     nac++, access_mask |= X_OK;
-  
   /* on some POSIX systems, X_OK may succeed for root without any
    * executable bits set, so we also check via stat() below.
    */
   if (nac && access (file_name, access_mask) < 0)
     return -errno;
-  
   bool check_file = strchr (mode, 'f') != NULL;     /* open as file */
   bool check_dir  = strchr (mode, 'd') != NULL;     /* open as directory */
   bool check_link = strchr (mode, 'l') != NULL;     /* open as link */
@@ -737,11 +664,9 @@ errno_check_file (const char *file_name,
   bool check_block = strchr (mode, 'b') != NULL;    /* open as block device */
   bool check_pipe = strchr (mode, 'p') != NULL;     /* open as pipe */
   bool check_socket = strchr (mode, 's') != NULL;   /* open as socket */
-  
   if (check_exec || check_file || check_dir || check_link || check_char || check_block || check_pipe || check_socket)
     {
       struct stat st;
-      
       if (check_link)
         {
           if (lstat (file_name, &st) < 0)
@@ -749,7 +674,6 @@ errno_check_file (const char *file_name,
         }
       else if (stat (file_name, &st) < 0)
         return -errno;
-      
       if (0)
         g_printerr ("file-check(\"%s\",\"%s\"): %s%s%s%s%s%s%s\n",
                     file_name, mode,
@@ -760,7 +684,6 @@ errno_check_file (const char *file_name,
                     S_ISBLK (st.st_mode) ? "b" : "",
                     S_ISFIFO (st.st_mode) ? "p" : "",
                     S_ISSOCK (st.st_mode) ? "s" : "");
-      
       if (S_ISDIR (st.st_mode) && (check_file || check_link || check_char || check_block || check_pipe))
         return -EISDIR;
       if (check_file && !S_ISREG (st.st_mode))
@@ -780,10 +703,8 @@ errno_check_file (const char *file_name,
       if (check_exec && !(st.st_mode & (S_IXUSR | S_IXGRP | S_IXOTH)))
         return -EACCES; /* for root executable, any +x bit is good enough */
     }
-  
   return 0;
 }
-
 /**
  * @param file  possibly relative filename
  * @param mode  feature string
@@ -812,7 +733,6 @@ check (const String &file,
   errno = err < 0 ? -err : 0;
   return errno == 0;
 }
-
 /**
  * @param file1  possibly relative filename
  * @param file2  possibly relative filename
@@ -841,15 +761,12 @@ equals (const String &file1,
           st1.st_ino  == st2.st_ino &&
           st1.st_rdev == st2.st_rdev);
 }
-
 } // Path
-
 /* --- Deletable --- */
 Deletable::~Deletable ()
 {
   invoke_deletion_hooks();
 }
-
 /**
  * @param deletable     possible Deletable* handle
  * @return              TRUE if the hook was added
@@ -868,7 +785,6 @@ Deletable::DeletionHook::deletable_add_hook (Deletable *deletable)
     }
   return false;
 }
-
 /**
  * @param deletable     possible Deletable* handle
  * @return              TRUE if the hook was removed
@@ -887,27 +803,23 @@ Deletable::DeletionHook::deletable_remove_hook (Deletable *deletable)
     }
   return false;
 }
-
 Deletable::DeletionHook::~DeletionHook ()
 {
   if (this->next || this->prev)
     g_error ("%s: hook is being destroyed but not unlinked: %p", G_STRFUNC, this);
 }
-
 #if 0
 static struct {
   Mutex                                         mutex;
   std::map<Deletable*,Deletable::DeletionHook*> dmap;
 } deletable_maps[19]; /* use prime size for hashing, sum up to roughly 1k (use 83 for 4k) */
 #endif
-
 #define DELETABLE_MAP_HASH      (19)    /* use prime size for hashing, sum up to roughly 1k (use 83 for 4k) */
 struct DeletableMap {
   Mutex                                         mutex;
   std::map<Deletable*,Deletable::DeletionHook*> dmap;
 };
 static DeletableMap * volatile deletable_maps = NULL;
-
 static inline void
 auto_init_deletable_maps (void)
 {
@@ -918,7 +830,6 @@ auto_init_deletable_maps (void)
         delete dmaps;
     }
 }
-
 /**
  * @param hook  valid deletion hook
  *
@@ -952,7 +863,6 @@ Deletable::add_deletion_hook (DeletionHook *hook)
   hook->monitoring_deletable (*this);
   //g_printerr ("DELETABLE-ADD(%p,%p)\n", this, hook);
 }
-
 /**
  * @param hook  valid deletion hook
  *
@@ -979,7 +889,6 @@ Deletable::remove_deletion_hook (DeletionHook *hook)
   deletable_maps[hashv].mutex.unlock();
   //g_printerr ("DELETABLE-REM(%p,%p)\n", this, hook);
 }
-
 /**
  * Invoke all deletion hooks installed on this deletable.
  */
@@ -1019,33 +928,27 @@ Deletable::invoke_deletion_hooks()
         }
     }
 }
-
 /* --- ReferenceCountImpl --- */
 void
 ReferenceCountImpl::ref_diag (const char *msg) const
 {
   fprintf (stderr, "%s: this=%p ref_count=%d floating=%d", msg ? msg : "ReferenceCountImpl", this, ref_count(), floating());
 }
-
 void
 ReferenceCountImpl::finalize ()
 {}
-
 void
 ReferenceCountImpl::delete_this ()
 {
   delete this;
 }
-
 ReferenceCountImpl::~ReferenceCountImpl ()
 {
   BIRNET_ASSERT (ref_count() == 0);
 }
-
 /* --- DataList --- */
 DataList::NodeBase::~NodeBase ()
 {}
-
 void
 DataList::set_data (NodeBase *node)
 {
@@ -1057,7 +960,6 @@ DataList::set_data (NodeBase *node)
   node->next = nodes;
   nodes = node;
 }
-
 DataList::NodeBase*
 DataList::get_data (DataKey<void> *key) const
 {
@@ -1067,7 +969,6 @@ DataList::get_data (DataKey<void> *key) const
       return it;
   return NULL;
 }
-
 DataList::NodeBase*
 DataList::rip_data (DataKey<void> *key)
 {
@@ -1085,7 +986,6 @@ DataList::rip_data (DataKey<void> *key)
       }
   return NULL;
 }
-
 void
 DataList::clear_like_destructor()
 {
@@ -1097,12 +997,10 @@ DataList::clear_like_destructor()
       delete it;
     }
 }
-
 DataList::~DataList()
 {
   clear_like_destructor();
 }
-
 /* --- url handling --- */
 bool
 url_test_show (const char *url)
@@ -1190,7 +1088,6 @@ url_test_show (const char *url)
     www_browsers[i].disabled = false;
   return false;
 }
-
 static void
 browser_launch_warning (const char *url)
 {
@@ -1200,7 +1097,6 @@ browser_launch_warning (const char *url)
                 Msg::Text2 (_("No suitable web browser executable could be found to be executed and to display the URL: %s"), url),
                 Msg::Check (_("Show messages about web browser launch problems")));
 }
-
 void
 url_show (const char *url)
 {
@@ -1208,7 +1104,6 @@ url_show (const char *url)
   if (!success)
     browser_launch_warning (url);
 }
-
 static void
 unlink_file_name (gpointer data)
 {
@@ -1216,7 +1111,6 @@ unlink_file_name (gpointer data)
   while (unlink (file_name) < 0 && errno == EINTR);
   g_free (file_name);
 }
-
 static const gchar*
 url_create_redirect (const char    *url,
                      const char    *url_title,
@@ -1269,7 +1163,6 @@ url_create_redirect (const char    *url,
   cleanup_add (60 * 1000, unlink_file_name, tname); /* free tname */
   return tname;
 }
-
 bool
 url_test_show_with_cookie (const char *url,
                            const char *url_title,
@@ -1281,7 +1174,6 @@ url_test_show_with_cookie (const char *url,
   else
     return url_test_show (url);
 }
-
 void
 url_show_with_cookie (const char *url,
                       const char *url_title,
@@ -1291,17 +1183,14 @@ url_show_with_cookie (const char *url,
   if (!success)
     browser_launch_warning (url);
 }
-
 /* --- cleanups --- */
 typedef struct {
   uint           id;
   GDestroyNotify handler;
   void          *data;
 } Cleanup;
-
 static Mutex cleanup_mutex;
 static GSList *cleanup_list = NULL;
-
 static void
 cleanup_exec_Lm (Cleanup *cleanup)
 {
@@ -1314,7 +1203,6 @@ cleanup_exec_Lm (Cleanup *cleanup)
   handler (data);
   cleanup_mutex.lock();
 }
-
 /**
  * Force all cleanup handlers (see birnet_cleanup_add()) to be immediately
  * executed. This function should be called at program exit to execute
@@ -1328,7 +1216,6 @@ cleanup_force_handlers (void)
     cleanup_exec_Lm ((Cleanup*) cleanup_list->data);
   cleanup_mutex.unlock();
 }
-
 static gboolean
 cleanup_exec (gpointer data)
 {
@@ -1337,7 +1224,6 @@ cleanup_exec (gpointer data)
   cleanup_mutex.unlock();
   return FALSE;
 }
-
 /**
  * @param timeout_ms    timeout in milliseconds
  * @param handler       cleanup handler to run
@@ -1362,7 +1248,6 @@ cleanup_add (guint          timeout_ms,
   cleanup_mutex.unlock();
   return cleanup->id;
 }
-
 /* --- string utils --- */
 void
 memset4 (guint32        *mem,
@@ -1374,7 +1259,6 @@ memset4 (guint32        *mem,
   BIRNET_STATIC_ASSERT (sizeof (wchar_t) == 4);
   wmemset ((wchar_t*) mem, filler, length);
 }
-
 /* --- memory utils --- */
 void*
 malloc_aligned (gsize	  total_size,
@@ -1383,12 +1267,10 @@ malloc_aligned (gsize	  total_size,
 {
   const bool  alignment_power_of_2 = (alignment & (alignment - 1)) == 0;
   const gsize cache_line_size = 64; // ensure that no false sharing will occur (at begin and end of data)
-
   if (alignment_power_of_2)
     {
       // for power of 2 alignment, we guarantee also cache line alignment
       alignment = std::max (alignment, cache_line_size);
-
       uint8 *aligned_mem = (uint8 *) g_malloc (total_size + (alignment - 1) + (cache_line_size - 1));
       *free_pointer = aligned_mem;
       if ((ptrdiff_t) aligned_mem % alignment)
@@ -1406,10 +1288,8 @@ malloc_aligned (gsize	  total_size,
       return aligned_mem;
     }
 }
-
 /* --- zintern support --- */
 #include <zlib.h>
-
 /**
  * @param decompressed_size exact size of the decompressed data to be returned
  * @param cdata             compressed data block
@@ -1437,7 +1317,6 @@ zintern_decompress (unsigned int          decompressed_size,
   uint8 *text = (uint8*) g_try_malloc (len);
   if (!text)
     return NULL;        /* handle ENOMEM gracefully */
-  
   int64 result = uncompress (text, &dlen, cdata, cdata_size);
   const char *err;
   switch (result)
@@ -1466,15 +1345,12 @@ zintern_decompress (unsigned int          decompressed_size,
     }
   if (err)
     g_error ("failed to decompress (%p, %u): %s", cdata, cdata_size, err);
-  
   text[dlen] = 0;
   return text;          /* success */
 }
-
 void
 zintern_free (uint8 *dc_data)
 {
   g_free (dc_data);
 }
-
 } // Birnet

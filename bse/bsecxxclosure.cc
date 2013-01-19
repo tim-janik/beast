@@ -1,43 +1,21 @@
-/* BSE - Better Sound Engine
- * Copyright (C) 2003 Tim Janik
- *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * A copy of the GNU Lesser General Public License should ship along
- * with this library; if not, see http://www.gnu.org/copyleft/.
- */
+// Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #if defined BSE_COMPILATION
 #include "bsecxxclosure.hh"
-
 namespace Bse {
-
 CxxClosure::CxxClosure()
   : glib_closure (NULL), sig_tokens ()
 {
 }
-
 CxxClosure::~CxxClosure()
 {
 }
-
 GClosure*
 CxxClosure::gclosure()
 {
   return glib_closure;
 }
-
 } // Bse
-
-#else /* !BSE_COMPILATION */    // program to generate bsegenclosures.h
-
+#else /* !BSE_COMPILATION */    // program to generate bsegenclosures.hh
 #include <string>
 #include <stdio.h>
 using namespace std;
@@ -48,7 +26,6 @@ String (long long int i)
   sprintf (buf, "%lld", i);
   return string (buf);
 }
-
 void
 print_closure (bool withreturn,
                int  n_args)
@@ -130,7 +107,6 @@ print_closure (bool withreturn,
   printf ("  return new %s%uClosure<%s> (t, f);\n", rpref, n_args, tmplargs);
   printf ("}\n");
 }
-
 int
 main (int argc,
       char *argv[])

@@ -1,5 +1,4 @@
 /* GdkPixbuf RGBA C-Source image dump 1-byte-run-length-encoded */
-
 static const guint8 drum_icon[] = 
 { ""
   /* Pixbuf magic (0x47646b50) */
@@ -493,5 +492,3 @@ static const guint8 drum_icon[] =
   "&\323\244\274A\330\247\272W\336\251\271h\344\254\270t\352\256\266|\360"
   "\261\265\177\364\262\264~\363\262\264x\355\257\266n\347\255\267`\341"
   "\252\270M\333\250\2724\325\245\273\27\377\0\0\0\0\231\0\0\0\0"};
-
-

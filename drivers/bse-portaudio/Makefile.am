@@ -1,8 +1,4 @@
 # BSE-PortAudio - Better Sound Engine PortAudio Driver Package
-# Copyright (C) 2004 Tim Janik
-# Copyright (C) 2004 Stefan Westerfeld
-#
-## GNU Lesser General Public License version 2 or any later version.
 
 INCLUDES = -I$(srcdir) -I$(top_builddir) $(BSE_CFLAGS)
 # we specify the logging domain here

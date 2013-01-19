@@ -1,32 +1,13 @@
-/* Birnet
- * Copyright (C) 2005-2006 Tim Janik
- * Copyright (C) 2010 Stefan Westerfeld
- *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * A copy of the GNU Lesser General Public License should ship along
- * with this library; if not, see http://www.gnu.org/copyleft/.
- */
+// Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #ifndef __BIRNET_UTILS_XX_HH__
 #define __BIRNET_UTILS_XX_HH__
-
 #include <birnet/birnetcdefs.h>
 #include <glib.h> /* g_free */
 #include <string>
 #include <vector>
 #include <map>
 #include <stdarg.h>
-
 namespace Birnet {
-
 /* --- short integer types --- */
 typedef BirnetUInt8   uint8;
 typedef BirnetUInt16  uint16;
@@ -37,7 +18,6 @@ typedef BirnetInt16   int16;
 typedef BirnetInt32   int32;
 typedef BirnetInt64   int64;
 typedef BirnetUnichar unichar;
-
 /* --- convenient stdc++ types --- */
 typedef std::string String;
 using std::vector;
@@ -52,7 +32,6 @@ public:
   String        typeid_pretty_name ();
   static String cxx_demangle       (const char *mangled_identifier);
 };
-
 /* --- implement assertion macros --- */
 #ifndef BIRNET__RUNTIME_PROBLEM
 #define BIRNET__RUNTIME_PROBLEM(ErrorWarningReturnAssertNotreach,domain,file,line,funcname,...) \
@@ -72,7 +51,6 @@ void birnet_runtime_problemv (char        ewran_tag,
                               const char *funcname,
                               const char *msgformat,
                               va_list     msgargs);
-
 /* --- private copy constructor and assignment operator --- */
 #define BIRNET_PRIVATE_CLASS_COPY(Class)        private: Class (const Class&); Class& operator= (const Class&);
 #ifdef  _BIRNET_SOURCE_EXTENSIONS
@@ -80,7 +58,6 @@ void birnet_runtime_problemv (char        ewran_tag,
 #define return_if_fail                          g_return_if_fail
 #define return_val_if_fail                      g_return_val_if_fail
 #endif  /* _BIRNET_SOURCE_EXTENSIONS */
-
 /* --- initialization --- */
 typedef BirnetInitValue    InitValue;
 typedef BirnetInitSettings InitSettings;
@@ -92,7 +69,6 @@ void         birnet_init       (int        *argcp,
 bool         init_value_bool   (InitValue  *value);
 double       init_value_double (InitValue  *value);
 int64        init_value_int    (InitValue  *value);
-
 /* --- initialization hooks --- */
 class InitHook {
   typedef void (*InitHookFunc) (void);
@@ -105,7 +81,6 @@ public:
   explicit InitHook (InitHookFunc _func,
                      int          _priority = 0);
 };
-
 /* --- assertions/warnings/errors --- */
 void    raise_sigtrap           ();
 #if (defined __i386__ || defined __x86_64__) && defined __GNUC__ && __GNUC__ >= 2
@@ -115,10 +90,8 @@ extern inline void BREAKPOINT() { __asm__ __volatile__ ("bpt"); }
 #else   /* !__i386__ && !__alpha__ */
 extern inline void BREAKPOINT() { raise_sigtrap(); }
 #endif  /* __i386__ */
-
 /* --- threading implementaiton bit --- */
 extern BirnetThreadTable ThreadTable; /* private, provided by birnetthreadimpl.cc */
-
 /* --- string functionality --- */
 String  			string_tolower           (const String &str);
 String  			string_toupper           (const String &str);
@@ -165,7 +138,6 @@ String  			string_from_errno        (int         errno_val);
 bool                            string_is_uuid           (const String &uuid_string); /* check uuid formatting */
 int                             string_cmp_uuid          (const String &uuid_string1,
                                                           const String &uuid_string2); /* -1=smaller, 0=equal, +1=greater (assuming valid uuid strings) */
-
 /* --- file/path functionality --- */
 namespace Path {
 const String    dirname   (const String &path);
@@ -185,7 +157,6 @@ bool            check     (const String &file,
 bool            equals    (const String &file1,
                            const String &file2);
 } // Path
-
 /* --- url handling --- */
 void url_show                   (const char           *url);
 void url_show_with_cookie       (const char           *url,
@@ -195,13 +166,11 @@ bool url_test_show              (const char           *url);
 bool url_test_show_with_cookie  (const char	      *url,
                                  const char           *url_title,
                                  const char           *cookie);
-
 /* --- cleanup registration --- */
 uint cleanup_add                (uint                  timeout_ms,
                                  void                (*destroy_data) (void*),
                                  void                 *data);
 void cleanup_force_handlers     (void);
-
 /* --- string utils --- */
 void memset4		        (uint32              *mem,
                                  uint32               filler,
@@ -210,16 +179,13 @@ void memset4		        (uint32              *mem,
 void* malloc_aligned            (size_t                total_size,
                                  size_t                alignment,
                                  uint8               **free_pointer);
-
 /* --- C++ demangling --- */
 char*   cxx_demangle	        (const char  *mangled_identifier); /* in birnetutilsxx.cc */
-
 /* --- zintern support --- */
 uint8*  zintern_decompress      (unsigned int          decompressed_size,
                                  const unsigned char  *cdata,
                                  unsigned int          cdata_size);
 void    zintern_free            (uint8                *dc_data);
-
 /* --- template errors --- */
 namespace TEMPLATE_ERROR {
 // to error out, call invalid_type<YourInvalidType>();
@@ -227,7 +193,6 @@ template<typename Type> void invalid_type () { bool force_compiler_error = void 
 // to error out, derive from InvalidType<YourInvalidType>
 template<typename Type> class InvalidType;
 }
-
 /* --- Deletable --- */
 /**
  * Deletable is a virtual base class that can be derived from (usually with
@@ -265,7 +230,6 @@ protected:
   void           invoke_deletion_hooks ();
   virtual       ~Deletable             ();
 };
-
 /* --- ReferenceCountImpl --- */
 class ReferenceCountImpl : public virtual Deletable
 {
@@ -365,7 +329,6 @@ template<class Obj> static void unref    (Obj &obj) { obj.unref(); }
 template<class Obj> static void unref    (Obj *obj) { obj->unref(); }
 template<class Obj> static void sink     (Obj &obj) { obj.ref_sink(); obj.unref(); }
 template<class Obj> static void sink     (Obj *obj) { obj->ref_sink(); obj->unref(); }
-
 /* --- Binary Lookups --- */
 template<typename RandIter, class Cmp, typename Arg, int case_lookup_or_sibling_or_insertion>
 static inline std::pair<RandIter,bool>
@@ -435,7 +398,6 @@ binary_lookup (RandIter  begin,
   /* return end or exact match */
   return binary_lookup_fuzzy<RandIter,Cmp,Arg,0> (begin, end, cmp_elements, arg).first;
 }
-
 /* --- generic named data --- */
 template<typename Type>
 class DataKey {
@@ -448,7 +410,6 @@ public:
   virtual void    destroy    (Type data)        { /* destruction hook */ }
   virtual        ~DataKey    ()                 {}
 };
-
 class DataList {
   class NodeBase {
   protected:
@@ -547,7 +508,6 @@ private:
   NodeBase* get_data (DataKey<void> *key) const;
   NodeBase* rip_data (DataKey<void> *key);
 };
-
 /* --- DataListContainer --- */
 class DataListContainer {
   DataList data_list;
@@ -558,14 +518,12 @@ public: /* generic data API */
   template<typename Type> inline Type swap_data   (DataKey<Type> *key)            { return data_list.swap (key); }
   template<typename Type> inline void delete_data (DataKey<Type> *key)            { data_list.del (key); }
 };
-
 /* --- class to allocate aligned memory --- */
 template<class T, int ALIGN>
 class AlignedArray {
   unsigned char *unaligned_mem;
   T *data;
   size_t n_elements;
-
   void
   allocate_aligned_data()
   {
@@ -579,7 +537,6 @@ public:
     n_elements (elements.size())
   {
     allocate_aligned_data();
-
     for (size_t i = 0; i < n_elements; i++)
       new (data + i) T (elements[i]);
   }
@@ -587,7 +544,6 @@ public:
     n_elements (n_elements)
   {
     allocate_aligned_data();
-
     for (size_t i = 0; i < n_elements; i++)
       new (data + i) T();
   }
@@ -596,7 +552,6 @@ public:
     /* C++ destruction order: last allocated element is deleted first */
     while (n_elements)
       data[--n_elements].~T();
-
     g_free (unaligned_mem);
   }
   T&
@@ -615,12 +570,8 @@ public:
     return n_elements;
   }
 };
-
-
 /* --- implementation --- */
 void _birnet_init_threads (void);
-
 } // Birnet
-
 #endif /* __BIRNET_UTILS_XX_HH__ */
 /* vim:set ts=8 sts=2 sw=2: */

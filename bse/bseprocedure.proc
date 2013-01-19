@@ -1,32 +1,15 @@
-/* BSE - Better Sound Engine        -*-mode: c;-*-
- * Copyright (C) 2002 Tim Janik
- *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * A copy of the GNU Lesser General Public License should ship along
- * with this library; if not, see http://www.gnu.org/copyleft/.
- */
-#include "bseplugin.h"
-#include "bseprocedure.h"
-#include "bsescripthelper.h"
-#include "bseserver.h"
-#include "bsemath.h"    /* bse_temp_freq */
-#include "bsemain.h"
+// Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
+#include "bseplugin.hh"
+#include "bseprocedure.hh"
+#include "bsescripthelper.hh"
+#include "bseserver.hh"
+#include "bsemath.hh"    /* bse_temp_freq */
+#include "bsemain.hh"
+#include "bsecxxplugin.hh"
 #include <string.h>     /* strchr */
 #include <stdlib.h>     /* strtol */
-
-
 AUTHORS = "Tim Janik <timj@gtk.org>";
 LICENSE = "GNU Lesser General Public License";
-
 PROCEDURE (bse-note-to-freq, "Note to Freq") {
   HELP  = "Retrieve the frequency of a certain note.";
   IN    = bse_param_spec_enum ("musical_tuning", "Musical Tuning", NULL,
@@ -41,12 +24,11 @@ PROCEDURE (bse-note-to-freq, "Note to Freq") {
         GValue            *out_values)
 {
   /* extract parameter values */
-  BseMusicalTuningType musical_tuning = g_value_get_enum (in_values++);
+  BseMusicalTuningType musical_tuning = (BseMusicalTuningType) g_value_get_enum (in_values++);
   int                  note           = sfi_value_get_int (in_values++);
   int                  fine_tune      = sfi_value_get_int (in_values++);
   BseNoteDescription *info;
   gfloat freq;
-  
   /* action */
   info = bse_note_description (musical_tuning, note, fine_tune);
   if (!info->name)
@@ -54,13 +36,10 @@ PROCEDURE (bse-note-to-freq, "Note to Freq") {
   else
     freq = info->freq;
   bse_note_description_free (info);
-  
   /* set out params */
   sfi_value_set_real (out_values++, freq);
-  
   return BSE_ERROR_NONE;
 }
-
 PROCEDURE (bse-note-from-freq, "Note from Freq") {
   HELP  = "Retrieve the note of a certain frequency.";
   IN    = bse_param_spec_enum ("musical_tuning", "Musical Tuning", NULL,
@@ -74,15 +53,12 @@ PROCEDURE (bse-note-from-freq, "Note from Freq") {
         GValue            *out_values)
 {
   /* extract parameter values */
-  BseMusicalTuningType musical_tuning = g_value_get_enum (in_values++);
+  BseMusicalTuningType musical_tuning = (BseMusicalTuningType) g_value_get_enum (in_values++);
   float                frequency      = sfi_value_get_real (in_values++);
-  
   /* set out params */
   sfi_value_set_int (out_values++, bse_note_from_freq (musical_tuning, frequency));
-  
   return BSE_ERROR_NONE;
 }
-
 PROCEDURE (bse-note-describe, "Describe Note") {
   HELP	= "Describe a note, providing information about its octave, semitone, frequency, etc.";
   IN    = bse_param_spec_enum ("musical_tuning", "Musical Tuning", NULL,
@@ -97,16 +73,13 @@ BODY (BseProcedureClass *proc,
       GValue            *out_values)
 {
   /* extract parameter values */
-  BseMusicalTuningType musical_tuning = g_value_get_enum (in_values++);
+  BseMusicalTuningType musical_tuning = (BseMusicalTuningType) g_value_get_enum (in_values++);
   int                  note	      = sfi_value_get_int (in_values++);
   int                  fine_tune      = sfi_value_get_int (in_values++);
-  
   /* describe note */
   bse_value_take_boxed (out_values++, bse_note_description (musical_tuning, note, fine_tune));
-  
   return BSE_ERROR_NONE;
 }
-
 PROCEDURE (bse-note-describe-from-freq, "Describe Note From Freq") {
   HELP	= "Describe a note, given its frequency.";
   IN    = bse_param_spec_enum ("musical_tuning", "Musical Tuning", NULL,
@@ -123,17 +96,14 @@ BODY (BseProcedureClass *proc,
       GValue            *out_values)
 {
   /* extract parameter values */
-  BseMusicalTuningType musical_tuning = g_value_get_enum (in_values++);
+  BseMusicalTuningType musical_tuning = (BseMusicalTuningType) g_value_get_enum (in_values++);
   float                freq	      = sfi_value_get_real (in_values++);
   gint note;
-  
   /* describe note */
   note = bse_note_from_freq (musical_tuning, freq);
   bse_value_take_boxed (out_values++, bse_note_description (musical_tuning, note, 0));
-  
   return BSE_ERROR_NONE;
 }
-
 PROCEDURE (bse-note-from-string, "Note From String") {
   HELP	= "Describe a note, given its name and octave offset.";
   IN    = bse_param_spec_enum ("musical_tuning", "Musical Tuning", NULL,
@@ -148,17 +118,14 @@ BODY (BseProcedureClass *proc,
       GValue            *out_values)
 {
   /* extract parameter values */
-  BseMusicalTuningType musical_tuning = g_value_get_enum (in_values++);
-  char                *name           = sfi_value_get_string (in_values++);
+  BseMusicalTuningType musical_tuning = (BseMusicalTuningType) g_value_get_enum (in_values++);
+  const char *name = sfi_value_get_string (in_values++);
   gint note;
-  
   /* describe note */
   note = bse_note_from_string (name);
   bse_value_take_boxed (out_values++, bse_note_description (musical_tuning, note, 0));
-  
   return BSE_ERROR_NONE;
 }
-
 PROCEDURE (bse-note-construct, "Note Construction") {
   HELP	= "Describe a note, given its semitone, octave and fine tune.";
   IN    = bse_param_spec_enum ("musical_tuning", "Musical Tuning", NULL,
@@ -176,19 +143,16 @@ BODY (BseProcedureClass *proc,
       GValue            *out_values)
 {
   /* extract parameter values */
-  BseMusicalTuningType musical_tuning = g_value_get_enum (in_values++);
+  BseMusicalTuningType musical_tuning = (BseMusicalTuningType) g_value_get_enum (in_values++);
   guint                semitone	      = sfi_value_get_int (in_values++);
   int                  octave	      = sfi_value_get_int (in_values++);
   int                  fine_tune      = sfi_value_get_int (in_values++);
   int note;
-  
   /* describe note */
   note = BSE_NOTE_GENERIC (octave, semitone);
   bse_value_take_boxed (out_values++, bse_note_description (musical_tuning, note, fine_tune));
-  
   return BSE_ERROR_NONE;
 }
-
 PROCEDURE (bse-type-options, "Type Options") {
   HELP  = "Retrieve the options of a specific type.";
   IN    = sfi_pspec_string ("type", NULL, NULL, NULL, SFI_PARAM_STANDARD);
@@ -198,21 +162,16 @@ PROCEDURE (bse-type-options, "Type Options") {
         GValue            *out_values)
 {
   /* extract parameter values */
-  gchar *stype = sfi_value_get_string (in_values++);
+  const char *stype = sfi_value_get_string (in_values++);
   GType type;
-
   /* check parameters */
   if (!stype)
     return BSE_ERROR_PROC_PARAM_INVAL;
-
   type = g_type_from_name (stype);
-
   /* set out params */
   sfi_value_set_string (out_values++, type ? bse_type_get_options (type) : NULL);
-
   return BSE_ERROR_NONE;
 }
-
 PROCEDURE (bse-type-blurb, "Type Blurb") {
   HELP  = "Retrieve the description of a specific type.";
   IN    = sfi_pspec_string ("type", NULL, NULL, NULL, SFI_PARAM_STANDARD);
@@ -222,21 +181,16 @@ PROCEDURE (bse-type-blurb, "Type Blurb") {
         GValue            *out_values)
 {
   /* extract parameter values */
-  gchar *stype = sfi_value_get_string (in_values++);
+  const char *stype = sfi_value_get_string (in_values++);
   GType type;
-
   /* check parameters */
   if (!stype)
     return BSE_ERROR_PROC_PARAM_INVAL;
-
   type = g_type_from_name (stype);
-
   /* set out params */
   sfi_value_set_string (out_values++, type ? bse_type_get_blurb (type) : NULL);
-
   return BSE_ERROR_NONE;
 }
-
 PROCEDURE (bse-type-authors, "Type Authors") {
   HELP  = "Retrieve the authors who implemented a specific type.";
   IN    = sfi_pspec_string ("type", NULL, NULL, NULL, SFI_PARAM_STANDARD);
@@ -246,21 +200,16 @@ PROCEDURE (bse-type-authors, "Type Authors") {
         GValue            *out_values)
 {
   /* extract parameter values */
-  gchar *stype = sfi_value_get_string (in_values++);
+  const char *stype = sfi_value_get_string (in_values++);
   GType type;
-
   /* check parameters */
   if (!stype)
     return BSE_ERROR_PROC_PARAM_INVAL;
-
   type = g_type_from_name (stype);
-
   /* set out params */
   sfi_value_set_string (out_values++, type ? bse_type_get_authors (type) : NULL);
-
   return BSE_ERROR_NONE;
 }
-
 PROCEDURE (bse-type-license, "Type License") {
   HELP  = "Retrieve the license of a type impementation.";
   IN    = sfi_pspec_string ("type", NULL, NULL, NULL, SFI_PARAM_STANDARD);
@@ -270,26 +219,21 @@ PROCEDURE (bse-type-license, "Type License") {
         GValue            *out_values)
 {
   /* extract parameter values */
-  gchar *stype = sfi_value_get_string (in_values++);
+  const char *stype = sfi_value_get_string (in_values++);
   GType type;
-
   /* check parameters */
   if (!stype)
     return BSE_ERROR_PROC_PARAM_INVAL;
-
   type = g_type_from_name (stype);
-
   /* set out params */
   sfi_value_set_string (out_values++, type ? bse_type_get_license (type) : NULL);
-
   return BSE_ERROR_NONE;
 }
-
 static gdouble
 str2num (const gchar *str,
          guint        nth)
 {
-  gchar *num_any = ".0123456789", *num_first = num_any + 1;
+  const char *num_any = ".0123456789", *num_first = num_any + 1;
   while (nth--)
     {
       /* skip number */
@@ -307,7 +251,6 @@ str2num (const gchar *str,
     return g_strtod (str, NULL);
   return 0; /* no number */
 }
-
 PROCEDURE (bse-string-extract-number, "String Extract Number") {
   HELP  = "Retrieve numbers from a string.";
   IN    = sfi_pspec_string ("string", NULL, NULL, NULL, SFI_PARAM_STANDARD);
@@ -320,12 +263,11 @@ PROCEDURE (bse-string-extract-number, "String Extract Number") {
         GValue            *out_values)
 {
   /* extract parameter values */
-  gchar *string   = sfi_value_get_string (in_values++);
-  gchar *format   = sfi_value_get_string (in_values++);
+  const char *string   = sfi_value_get_string (in_values++);
+  const char *format   = sfi_value_get_string (in_values++);
   SfiReal aux_base = sfi_value_get_real (in_values++);
   SfiReal dflt     = sfi_value_get_real (in_values++);
   SfiReal number = dflt;
-
   if (string)
     {
       if (format)

@@ -1,27 +1,10 @@
-/* BSE - Better Sound Engine
- * Copyright (C) 2002, 2003 Tim Janik
- *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * A copy of the GNU Lesser General Public License should ship along
- * with this library; if not, see http://www.gnu.org/copyleft/.
- */
-#include "bsenote.h"
-#include "bseutils.h"
-#include "bseieee754.h"
-#include "bsemathsignal.h"
+// Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
+#include "bsenote.hh"
+#include "bseutils.hh"
+#include "bseieee754.hh"
+#include "bsemathsignal.hh"
 #include <string.h>
 #include <birnet/birnet.hh>
-
-
 /* --- functions --- */
 namespace {
 struct FreqCmp {
@@ -33,7 +16,6 @@ struct FreqCmp {
   }
 };
 } // Anon
-
 int
 bse_note_from_freq (BseMusicalTuningType musical_tuning,
                     double               freq)
@@ -67,7 +49,6 @@ bse_note_from_freq (BseMusicalTuningType musical_tuning,
     return BSE_NOTE_VOID;
   return CLAMP (note, BSE_MIN_NOTE, BSE_MAX_NOTE);
 }
-
 int
 bse_note_from_freq_bounded (BseMusicalTuningType musical_tuning,
                             double               freq)
@@ -78,7 +59,6 @@ bse_note_from_freq_bounded (BseMusicalTuningType musical_tuning,
   else
     return freq > BSE_KAMMER_FREQUENCY ? BSE_MAX_NOTE : BSE_MIN_NOTE;
 }
-
 int
 bse_note_fine_tune_from_note_freq (BseMusicalTuningType musical_tuning,
                                    int                  note,
@@ -88,10 +68,8 @@ bse_note_fine_tune_from_note_freq (BseMusicalTuningType musical_tuning,
   freq /= BSE_KAMMER_FREQUENCY * semitone_factor;
   double d = log (freq) / BSE_LN_2_POW_1_DIV_1200_d;
   int fine_tune = bse_ftoi (d);
-
   return CLAMP (fine_tune, BSE_MIN_FINE_TUNE, BSE_MAX_FINE_TUNE);
 }
-
 double
 bse_note_to_freq (BseMusicalTuningType musical_tuning,
                   int                  note)
@@ -101,7 +79,6 @@ bse_note_to_freq (BseMusicalTuningType musical_tuning,
   double semitone_factor = bse_transpose_factor (musical_tuning, note - SFI_KAMMER_NOTE);
   return BSE_KAMMER_FREQUENCY * semitone_factor;
 }
-
 double
 bse_note_to_tuned_freq (BseMusicalTuningType musical_tuning,
                         int                  note,
@@ -112,63 +89,49 @@ bse_note_to_tuned_freq (BseMusicalTuningType musical_tuning,
   double semitone_factor = bse_transpose_factor (musical_tuning, note - SFI_KAMMER_NOTE);
   return BSE_KAMMER_FREQUENCY * semitone_factor * bse_cent_tune_fast (fine_tune);
 }
-
-
 /* --- freq array --- */
 struct BseFreqArray {
   guint    n_values;
   guint    n_prealloced;
   gdouble *values;
 };
-
 BseFreqArray*
 bse_freq_array_new (guint prealloc)
 {
   BseFreqArray *farray = g_new0 (BseFreqArray, 1);
-  
   farray->n_prealloced = prealloc;
   farray->values = g_new0 (gdouble, farray->n_prealloced);
-  
   return farray;
 }
-
 void
 bse_freq_array_free (BseFreqArray *farray)
 {
   g_return_if_fail (farray != NULL);
-  
   g_free (farray->values);
   g_free (farray);
 }
-
 guint
 bse_freq_array_n_values (BseFreqArray *farray)
 {
   g_return_val_if_fail (farray != NULL, 0);
-
   return farray->n_values;
 }
-
 gdouble
 bse_freq_array_get (BseFreqArray *farray,
                     guint         index)
 {
   g_return_val_if_fail (farray != NULL, 0);
   g_return_val_if_fail (index < farray->n_values, 0);
-  
   return farray->values[index];
 }
-
 void
 bse_freq_array_insert (BseFreqArray *farray,
                        guint         index,
                        gdouble       value)
 {
   guint i;
-  
   g_return_if_fail (farray != NULL);
   g_return_if_fail (index <= farray->n_values);
-  
   i = farray->n_values;
   i = farray->n_values += 1;
   if (farray->n_values > farray->n_prealloced)
@@ -181,14 +144,12 @@ bse_freq_array_insert (BseFreqArray *farray,
              i - index);
   farray->values[index] = value;
 }
-
 void
 bse_freq_array_append (BseFreqArray *farray,
                        gdouble       value)
 {
   bse_freq_array_insert (farray, farray->n_values, value);
 }
-
 void
 bse_freq_array_set (BseFreqArray *farray,
                     guint         index,
@@ -196,33 +157,26 @@ bse_freq_array_set (BseFreqArray *farray,
 {
   g_return_if_fail (farray != NULL);
   g_return_if_fail (index < farray->n_values);
-  
   farray->values[index] = value;
 }
-
 gboolean
 bse_freq_arrays_match_freq (gfloat        match_freq,
                             BseFreqArray *inclusive_set,
                             BseFreqArray *exclusive_set)
 {
   guint i;
-  
   if (exclusive_set)
     for (i = 0; i < exclusive_set->n_values; i++)
       {
 	gdouble *value = exclusive_set->values + i;
-        
 	if (fabs (*value - match_freq) < BSE_FREQUENCY_EPSILON)
 	  return FALSE;
       }
-  
   if (!inclusive_set)
     return TRUE;
-  
   for (i = 0; i < inclusive_set->n_values; i++)
     {
       gdouble *value = inclusive_set->values + i;
-      
       if (fabs (*value - match_freq) < BSE_FREQUENCY_EPSILON)
 	return TRUE;
     }

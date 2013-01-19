@@ -1,23 +1,5 @@
-/* BseFIRFilter - BSE Finite Impulse Response Filter
- * Copyright (C) 1999 Tim Janik
- *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * A copy of the GNU Lesser General Public License should ship along
- * with this library; if not, see http://www.gnu.org/copyleft/.
- */
-#include "bsefirfilter.h"
-
-
-
+// Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
+#include "bsefirfilter.hh"
 /* --- parameters --- */
 enum
 {
@@ -31,8 +13,6 @@ enum
   PARAM_CUT_OFF_FREQ,
   PARAM_CUT_OFF_NOTE
 };
-
-
 /* --- prototypes --- */
 static void	   bse_fir_filter_init		 (BseFIRFilter	    *fir_filter);
 static void	   bse_fir_filter_class_init	 (BseFIRFilterClass *class);
@@ -52,26 +32,20 @@ static BseChunk*   bse_fir_filter_calc_chunk	 (BseSource	    *source,
 						  guint		     ochannel_id);
 static void	   bse_fir_filter_reset		 (BseSource	    *source);
 static inline void bse_fir_filter_update_locals	 (BseFIRFilter	    *filter);
-
-
 /* --- variables --- */
 static GType		 type_id_fir_filter = 0;
 static gpointer		 parent_class = NULL;
 static const GTypeInfo type_info_fir_filter = {
   sizeof (BseFIRFilterClass),
-  
   (GBaseInitFunc) NULL,
   (GBaseFinalizeFunc) NULL,
   (GClassInitFunc) bse_fir_filter_class_init,
   (GClassFinalizeFunc) bse_fir_filter_class_finalize,
   NULL /* class_data */,
-  
   sizeof (BseFIRFilter),
   0 /* n_preallocs */,
   (GInstanceInitFunc) bse_fir_filter_init,
 };
-
-
 /* --- functions --- */
 static void
 bse_fir_filter_class_init (BseFIRFilterClass *class)
@@ -80,18 +54,13 @@ bse_fir_filter_class_init (BseFIRFilterClass *class)
   BseObjectClass *object_class = BSE_OBJECT_CLASS (class);
   BseSourceClass *source_class = BSE_SOURCE_CLASS (class);
   guint ochannel_id, ichannel_id;
-  
   parent_class = g_type_class_peek (BSE_TYPE_SOURCE);
-  
   gobject_class->set_property = bse_fir_filter_set_property;
   gobject_class->get_property = bse_fir_filter_get_property;
-
   object_class->destroy = bse_fir_filter_do_destroy;
-  
   source_class->prepare = bse_fir_filter_prepare;
   source_class->calc_chunk = bse_fir_filter_calc_chunk;
   source_class->reset = bse_fir_filter_reset;
-  
   bse_object_class_add_param (object_class, "Filter Type",
 			      PARAM_ALLPASS,
 			      sfi_pspec_bool ("allpass", "AllPass", NULL,
@@ -137,19 +106,16 @@ bse_fir_filter_class_init (BseFIRFilterClass *class)
 						 bse_note_from_freq (BSE_KAMMER_FREQ / 2), 1,
 						 TRUE,
 						 BSE_PARAM_GUI));
-  
   ochannel_id = bse_source_class_add_ochannel (source_class, "mono_out", _("Mono Out"), _("Mono Filtered Output"), 1);
   g_assert (ochannel_id == BSE_FIR_FILTER_OCHANNEL_MONO);
   ichannel_id = bse_source_class_add_ichannel (source_class, "mono_in", _("Mono In"), _("Mono Signal Input"), 1, 1);
   g_assert (ichannel_id == BSE_FIR_FILTER_ICHANNEL_MONO);
   // BSE_SOURCE_CLASS_ICHANNEL_DEF (class, BSE_FIR_FILTER_ICHANNEL_MONO)->history = 2;
 }
-
 static void
 bse_fir_filter_class_finalize (BseFIRFilterClass *class)
 {
 }
-
 static void
 bse_fir_filter_init (BseFIRFilter *filter)
 {
@@ -163,35 +129,28 @@ bse_fir_filter_init (BseFIRFilter *filter)
   filter->history_pos = 0;
   filter->history = NULL;
 }
-
 static void
 bse_fir_filter_do_destroy (BseObject *object)
 {
   BseFIRFilter *fir_filter;
-  
   fir_filter = BSE_FIR_FILTER (object);
-  
   /* chain parent class' destroy handler */
   BSE_OBJECT_CLASS (parent_class)->destroy (object);
 }
-
 static inline void
 bse_fir_filter_update_locals (BseFIRFilter *filter)
 {
   gint i;
-  
   if (BSE_SOURCE_PREPARED (filter))
     {
       gdouble d, c;
       gint z = filter->n_coeffs;
-      
       filter->n_coeffs = MIN (filter->degree, BSE_TRACK_LENGTH) * 2 + 1;
       filter->history = g_renew (BseSampleValue, filter->history, filter->n_coeffs);
       for (i = z; i < filter->n_coeffs; i++)
 	filter->history[i] = 0;
       z = filter->n_coeffs / 2;
       filter->history_pos %= filter->n_coeffs;
-      
       /* setup allpass
        */
       g_free (filter->coeffs);
@@ -199,7 +158,6 @@ bse_fir_filter_update_locals (BseFIRFilter *filter)
       for (i = 0; i < filter->n_coeffs; i++)
 	filter->coeffs[i] = 0;
       filter->coeffs[z] = 1;
-      
       /* setup lowpass (precalculate highpass)
        */
       if (filter->filter_type == BSE_FIR_FILTER_LOWPASS ||
@@ -215,12 +173,10 @@ bse_fir_filter_update_locals (BseFIRFilter *filter)
 	      else
 		{
 		  gdouble k = i - z;
-		  
 		  filter->coeffs[i] = d * sin (c * k) / (c * k);
 		}
 	    }
 	}
-      
       if (filter->lanczos_smoothing)
 	{
 	  c = z;
@@ -228,12 +184,10 @@ bse_fir_filter_update_locals (BseFIRFilter *filter)
 	  for (i = 0; i < filter->n_coeffs; i++)
 	    {
 	      gdouble k = (i - z);
-	      
 	      if (k)
 		filter->coeffs[i] *= sin (c * k) / (c * k);
 	    }
 	}
-      
       if (filter->hann_smoothing)
 	{
 	  c = z;
@@ -241,11 +195,9 @@ bse_fir_filter_update_locals (BseFIRFilter *filter)
 	  for (i = 0; i < filter->n_coeffs; i++)
 	    {
 	      gdouble k = (i - z);
-	      
 	      filter->coeffs[i] *= 0.5 * (1.0 + cos (c * k));
 	    }
 	}
-      
       /* setup highpass (from lowpass)
        */
       if (filter->filter_type == BSE_FIR_FILTER_HIGHPASS)
@@ -256,7 +208,6 @@ bse_fir_filter_update_locals (BseFIRFilter *filter)
 	    else
 	      filter->coeffs[i] = - filter->coeffs[i];
 	  }
-      
 #if 0
       for (i = 0; i < filter->n_coeffs; i++)
 	g_print ("a[%d]=%f ", i - z, filter->coeffs[i]);
@@ -264,7 +215,6 @@ bse_fir_filter_update_locals (BseFIRFilter *filter)
 #endif
     }
 }
-
 static void
 bse_fir_filter_set_property (BseFIRFilter *filter,
 			     guint         param_id,
@@ -272,7 +222,6 @@ bse_fir_filter_set_property (BseFIRFilter *filter,
 			     GParamSpec   *pspec)
 {
   BseFIRFilterType filter_type = BSE_FIR_FILTER_ALLPASS;
-  
   switch (param_id)
     {
       guint v_uint;
@@ -323,7 +272,6 @@ bse_fir_filter_set_property (BseFIRFilter *filter,
       break;
     }
 }
-
 static void
 bse_fir_filter_get_property (BseFIRFilter *filter,
 			     guint         param_id,
@@ -361,19 +309,15 @@ bse_fir_filter_get_property (BseFIRFilter *filter,
       break;
     }
 }
-
 static void
 bse_fir_filter_prepare (BseSource *source,
 			BseIndex   index)
 {
   BseFIRFilter *filter = BSE_FIR_FILTER (source);
-  
   bse_fir_filter_update_locals (filter);
-  
   /* chain parent class' handler */
   BSE_SOURCE_CLASS (parent_class)->prepare (source, index);
 }
-
 static BseChunk*
 bse_fir_filter_calc_chunk (BseSource *source,
 			   guint      ochannel_id)
@@ -384,22 +328,16 @@ bse_fir_filter_calc_chunk (BseSource *source,
   BseSampleValue *hunk, *ihunk, *hvals;
   gfloat *coeffs;
   guint i, n_coeffs, history_pos;
-  
   g_return_val_if_fail (ochannel_id == BSE_FIR_FILTER_OCHANNEL_MONO, NULL);
-  
   input = bse_source_get_input (source, BSE_FIR_FILTER_ICHANNEL_MONO); /* mono */
   if (!input) /* silence */
     return bse_chunk_new_static_zero (1);
-  
   ichunk = bse_source_ref_chunk (input->osource, input->ochannel_id, source->index);
   bse_chunk_complete_hunk (ichunk);
   ihunk = ichunk->hunk;
-  
   if (filter->filter_type == BSE_FIR_FILTER_ALLPASS)
     return ichunk;
-  
   hunk = bse_hunk_alloc (1);
-  
   n_coeffs = filter->n_coeffs;
   coeffs = filter->coeffs;
   history_pos = filter->history_pos;
@@ -408,42 +346,33 @@ bse_fir_filter_calc_chunk (BseSource *source,
     {
       gfloat *a;
       guint n;
-      
       a = coeffs;
       hunk[i] = 0;
       for (n = history_pos; n < n_coeffs; n++)
 	hunk[i] += (BseSampleValue) (*(a++) * hvals[n]);
       for (n = 0; n < history_pos; n++)
 	hunk[i] += (BseSampleValue) (*(a++) * hvals[n]);
-      
       hvals[history_pos++] = ihunk[i];
       if (history_pos >= n_coeffs)
 	history_pos -= n_coeffs;
     }
   filter->history_pos = history_pos;
-  
   bse_chunk_unref (ichunk);
-  
   return bse_chunk_new_orphan (1, hunk);
 }
-
 static void
 bse_fir_filter_reset (BseSource *source)
 {
   BseFIRFilter *filter = BSE_FIR_FILTER (source);
-  
   filter->n_coeffs = 0;
   g_free (filter->coeffs);
   filter->coeffs = NULL;
   filter->history_pos = 0;
   g_free (filter->history);
   filter->history = NULL;
-  
   /* chain parent class' handler */
   BSE_SOURCE_CLASS (parent_class)->reset (source);
 }
-
-
 /* --- Export to BSE --- */
 #include "./icons/filter.c"
 BSE_EXPORTS_BEGIN ();

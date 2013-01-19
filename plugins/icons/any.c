@@ -1,5 +1,4 @@
 /* GIMP RGBA C-Source image dump 1-byte-run-length-encoded (any.c) */
-
 #define TEST_IMAGE_WIDTH (64)
 #define TEST_IMAGE_HEIGHT (64)
 #define TEST_IMAGE_BYTES_PER_PIXEL (4) /* 3:RGB, 4:RGBA */
@@ -288,4 +287,3 @@ static const guint8 TEST_IMAGE_rle_pixel_data[8305] =
  "\254r\35\35\326n\31\31\376\\\23\23\357W\21\21\324[\23\23\254[\25\25c\267\0"
  "\0\0\0\11\6\1\1\3K\21\21'K\22\22`J\21\21\206G\17\17\2519\13\13\233;\13\13"
  "\204?\15\15`A\17\17$\377\0\0\0\0\236\0\0\0\0");
-

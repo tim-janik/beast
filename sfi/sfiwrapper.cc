@@ -1,23 +1,7 @@
-/* SfiWrapper - Birnet C wrapper
- * Copyright (C) 2006 Tim Janik
- *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * A copy of the GNU Lesser General Public License should ship along
- * with this library; if not, see http://www.gnu.org/copyleft/.
- */
-#include "sfiwrapper.h"
+// Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
+#include "sfiwrapper.hh"
 #include <birnet/birnet.hh>
 #include <errno.h>
-
 /* --- initialization --- */
 void
 sfi_init (int            *argcp,
@@ -31,44 +15,37 @@ sfi_init (int            *argcp,
   BIRNET_STATIC_ASSERT (offsetof (SfiInitValue, value_num) == offsetof (BirnetInitValue, value_num));
   Birnet::birnet_init (argcp, argvp, app_name, (BirnetInitValue*) sivalues);
 }
-
 bool
 sfi_init_value_bool (SfiInitValue *value)
 {
   return Birnet::init_value_bool ((BirnetInitValue*) value);
 }
-
 double
 sfi_init_value_double (SfiInitValue *value)
 {
   return Birnet::init_value_double ((BirnetInitValue*) value);
 }
-
 gint64
 sfi_init_value_int (SfiInitValue *value)
 {
   return Birnet::init_value_int ((BirnetInitValue*) value);
 }
-
 SfiInitSettings
 sfi_init_settings (void)
 {
   return ::Birnet::init_settings();
 }
-
 /* --- CPU Info --- */
 SfiCPUInfo
 sfi_cpu_info (void)
 {
   return ::Birnet::cpu_info();
 }
-
 gchar*
 sfi_cpu_info_string (const SfiCPUInfo *cpu_info)
 {
   return g_strdup (::Birnet::cpu_info_string (*cpu_info).c_str());
 }
-
 /* --- file testing --- */
 bool
 birnet_file_check (const char *file,
@@ -76,14 +53,12 @@ birnet_file_check (const char *file,
 {
   return Birnet::Path::check (file ? file : "", mode ? mode : "");
 }
-
 bool
 birnet_file_equals (const char *file1,
                     const char *file2)
 {
   return Birnet::Path::equals (file1 ? file1 : "", file2 ? file2 : "");
 }
-
 /* --- message handling --- */
 SfiMsgType
 sfi_msg_type_register (const gchar *ident,
@@ -100,55 +75,46 @@ sfi_msg_type_register (const gchar *ident,
   BIRNET_STATIC_ASSERT (Birnet::Msg::DEBUG == (uint) SFI_MSG_DEBUG);
   return (SfiMsgType) Birnet::Msg::register_type (ident, Birnet::Msg::Type (default_ouput), label);
 }
-
 bool
 sfi_msg_check (SfiMsgType mtype)
 {
   return Birnet::Msg::check (Birnet::Msg::Type (mtype));
 }
-
 void
 sfi_msg_enable (SfiMsgType mtype)
 {
   return Birnet::Msg::enable (Birnet::Msg::Type (mtype));
 }
-
 void
 sfi_msg_disable (SfiMsgType mtype)
 {
   return Birnet::Msg::disable (Birnet::Msg::Type (mtype));
 }
-
 void
 sfi_msg_allow (const gchar *ident_list)
 {
   return Birnet::Msg::allow_msgs (ident_list);
 }
-
 void
 sfi_msg_deny (const gchar *ident_list)
 {
   return Birnet::Msg::deny_msgs (ident_list);
 }
-
 const char*
 sfi_msg_type_ident (SfiMsgType mtype)
 {
   return Birnet::Msg::type_ident (Birnet::Msg::Type (mtype));
 }
-
 const char*
 sfi_msg_type_label (SfiMsgType mtype)
 {
   return Birnet::Msg::type_label (Birnet::Msg::Type (mtype));
 }
-
 SfiMsgType
 sfi_msg_lookup_type (const char *ident)
 {
   return (SfiMsgType) Birnet::Msg::lookup_type (ident);
 }
-
 SfiMsgPart*
 sfi_msg_part_printf (uint8          msg_part_id,
                      const char    *format,
@@ -174,7 +140,6 @@ sfi_msg_part_printf (uint8          msg_part_id,
   errno = saved_errno;
   return (SfiMsgPart*) part;
 }
-
 void
 sfi_msg_display_parts (const char     *log_domain,
                        SfiMsgType      mtype,
@@ -192,7 +157,6 @@ sfi_msg_display_parts (const char     *log_domain,
   Birnet::Msg::display_parts (log_domain, Birnet::Msg::Type (mtype), parts);
   errno = saved_errno;
 }
-
 /**
  * @param log_domain    log domain
  * @param level         one of SFI_MSG_ERROR, SFI_MSG_WARNING, SFI_MSG_INFO, SFI_MSG_DIAG or SFI_MSG_DEBUG
@@ -225,7 +189,6 @@ sfi_msg_display_printf (const char    *log_domain,
   Birnet::Msg::display_parts (log_domain, Birnet::Msg::Type (mtype), parts);
   errno = saved_errno;
 }
-
 /* --- debug channels --- */
 SfiDebugChannel*
 sfi_debug_channel_from_file_async (const char *file_name)
@@ -234,7 +197,6 @@ sfi_debug_channel_from_file_async (const char *file_name)
   ref_sink (self);
   return (SfiDebugChannel*) self;
 }
-
 void
 sfi_debug_channel_printf (SfiDebugChannel *debug_channel,
                           const char      *dummy,
@@ -247,21 +209,18 @@ sfi_debug_channel_printf (SfiDebugChannel *debug_channel,
   self->printf_valist (format, a);
   va_end (a);
 }
-
 void
 sfi_debug_channel_destroy (SfiDebugChannel *debug_channel)
 {
   Birnet::DebugChannel *self = (Birnet::DebugChannel*) debug_channel;
   unref (self);
 }
-
 /* --- url handling --- */
 void
 sfi_url_show (const char *url)
 {
   return Birnet::url_show (url);
 }
-
 void
 sfi_url_show_with_cookie (const char *url,
                           const char *url_title,
@@ -269,13 +228,11 @@ sfi_url_show_with_cookie (const char *url,
 {
   return Birnet::url_show_with_cookie (url, url_title, cookie);
 }
-
 bool
 sfi_url_test_show (const char *url)
 {
   return Birnet::url_test_show (url);
 }
-
 bool
 sfi_url_test_show_with_cookie (const char *url,
                                const char *url_title,
@@ -283,14 +240,12 @@ sfi_url_test_show_with_cookie (const char *url,
 {
   return Birnet::url_test_show_with_cookie (url, url_title, cookie);
 }
-
 /* --- cleanup handlers --- */
 void
 birnet_cleanup_force_handlers (void)
 {
   return Birnet::cleanup_force_handlers();
 }
-
 /* --- threading API --- */
 SfiThread*
 sfi_thread_run (const gchar  *name,
@@ -298,7 +253,6 @@ sfi_thread_run (const gchar  *name,
                 gpointer      user_data)
 {
   g_return_val_if_fail (name && name[0], NULL);
-  
   SfiThread *thread = sfi_thread_new (name);
   sfi_thread_ref_sink (thread);
   if (sfi_thread_start (thread, func, user_data))
@@ -309,10 +263,8 @@ sfi_thread_run (const gchar  *name,
       return NULL;
     }
 }
-
 /* for the sfi_thread_table initialization to work, Birnet::ThreadTable must not be a reference */
 extern "C" const BirnetThreadTable *sfi_thread_table = &::Birnet::ThreadTable;
-
 void
 sfi_runtime_problem (char        ewran_tag,
                      const char *domain,
@@ -327,5 +279,4 @@ sfi_runtime_problem (char        ewran_tag,
   ::Birnet::birnet_runtime_problemv (ewran_tag, domain, file, line, funcname, msgformat, args);
   va_end (args);
 }
-
 /* vim:set ts=8 sts=2 sw=2: */

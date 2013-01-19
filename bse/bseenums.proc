@@ -1,28 +1,9 @@
-/* BSE - Better Sound Engine	-*-mode: c;-*-
- * Copyright (C) 2000-2001 Tim Janik
- *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * A copy of the GNU Lesser General Public License should ship along
- * with this library; if not, see http://www.gnu.org/copyleft/.
- */
-#include        <bse/bseplugin.h>
-#include        <bse/bseprocedure.h>
-#include        <bse/bseenums.h>
-
-
+// Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
+#include        <bse/bseplugin.hh>
+#include        <bse/bseprocedure.hh>
+#include        <bse/bseenums.hh>
 AUTHORS	= "Tim Janik <timj@gtk.org>";
 LICENSE = "GNU Lesser General Public License";
-
-
 PROCEDURE (bse-error-name, "Error Name") {
   HELP	= "Retrieve the name of an error value";
   IN	= bse_param_spec_genum ("error", "Error", NULL,
@@ -35,18 +16,13 @@ PROCEDURE (bse-error-name, "Error Name") {
 	GValue            *out_values)
 {
   /* extract parameter values */
-  BseErrorType error = g_value_get_enum (in_values++);
-  
+  BseErrorType error = (BseErrorType) g_value_get_enum (in_values++);
   /* check parameters */
-  
   /* action */
-  
   /* set output parameters */
   g_value_set_string (out_values++, bse_error_name (error));
-  
   return BSE_ERROR_NONE;
 }
-
 PROCEDURE (bse-error-blurb, "Error Blurb") {
   HELP	= "Retrieve the description of an error value";
   IN	= bse_param_spec_genum ("error", "Error", NULL,
@@ -59,14 +35,10 @@ PROCEDURE (bse-error-blurb, "Error Blurb") {
 	GValue            *out_values)
 {
   /* extract parameter values */
-  BseErrorType error = g_value_get_enum (in_values++);
-  
+  BseErrorType error = (BseErrorType) g_value_get_enum (in_values++);
   /* check parameters */
-  
   /* action */
-  
   /* set output parameters */
   g_value_set_string (out_values++, bse_error_blurb (error));
-  
   return BSE_ERROR_NONE;
 }

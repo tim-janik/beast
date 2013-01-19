@@ -1,28 +1,9 @@
-/* BSE - Better Sound Engine	-*-mode: c;-*-
- * Copyright (C) 2002 Tim Janik
- *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * A copy of the GNU Lesser General Public License should ship along
- * with this library; if not, see http://www.gnu.org/copyleft/.
- */
-#include <bse/bseplugin.h>
-#include <bse/bseprocedure.h>
-#include <bse/bsecontainer.h>
-
-
+// Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
+#include <bse/bseplugin.hh>
+#include <bse/bseprocedure.hh>
+#include <bse/bsecontainer.hh>
 AUTHORS	= "Tim Janik <timj@gtk.org>";
 LICENSE = "GNU Lesser General Public License";
-
-
 PROCEDURE (bse-proxy-check, "Proxy Check") {
   HELP	= "Check whether a proxy has a certain type.";
   IN	= bse_param_spec_object ("item", "Item", "The Item",
@@ -36,21 +17,17 @@ PROCEDURE (bse-proxy-check, "Proxy Check") {
 	GValue            *out_values)
 {
   /* extract parameter values */
-  BseItem *item    = bse_value_get_object (in_values++);
-  gchar *type_name = sfi_value_get_string (in_values++);
+  BseItem *item = (BseItem*) bse_value_get_object (in_values++);
+  const char *type_name = sfi_value_get_string (in_values++);
   GType type;
   gboolean is_a;
-  
   /* check parameters */
   if (!type_name)
     type_name = "";
-  
   /* action */
   type = g_type_from_name (type_name);
   is_a = item && g_type_is_a (G_OBJECT_TYPE (item), type);
-  
   /* set output parameters */
   sfi_value_set_bool (out_values++, is_a);
-  
   return BSE_ERROR_NONE;
 }

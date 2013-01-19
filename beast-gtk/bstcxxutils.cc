@@ -1,25 +1,8 @@
-/* BEAST - Better Audio System
- * Copyright (C) 2006 Tim Janik
- *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * A copy of the GNU Lesser General Public License should ship along
- * with this library; if not, see http://www.gnu.org/copyleft/.
- */
-#include "bstcxxutils.h"
-#include "bstusermessage.h"
+// Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
+#include "bstcxxutils.hh"
+#include "bstusermessage.hh"
 #include <birnet/birnet.hh>
-
 using namespace Birnet;
-
 static void
 bstcxx_message_handler (const char              *domain,
                         Msg::Type                mtype,
@@ -60,13 +43,11 @@ bstcxx_message_handler (const char              *domain,
   msg.msg_bits = NULL;
   bst_message_handler (&msg);
 }
-
 extern "C" void
 bst_message_handler_install (void)
 {
   Msg::set_thread_handler (bstcxx_message_handler);
 }
-
 extern "C" void
 bst_message_handler_uninstall (void)
 {

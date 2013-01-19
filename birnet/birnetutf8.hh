@@ -1,26 +1,8 @@
-/* BirnetUtf8 - UTF-8 utilities
- * Copyright (C) 2006 Tim Janik
- *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * A copy of the GNU Lesser General Public License should ship along
- * with this library; if not, see http://www.gnu.org/copyleft/.
- */
+// Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #ifndef __BIRNET_UTF8_HH__
 #define __BIRNET_UTF8_HH__
-
 #include <birnet/birnetutils.hh>
-
 namespace Birnet {
-
 namespace Unichar {
 inline bool isvalid      (unichar uc) BIRNET_CONST;
 bool        isalnum      (unichar uc) BIRNET_CONST;
@@ -71,9 +53,7 @@ typedef enum {
   BREAK_HANGUL_T_JAMO,    BREAK_HANGUL_LV_SYLLABLE, BREAK_HANGUL_LVT_SYLLABLE
 } BreakType;
 BreakType get_break  (unichar uc) BIRNET_CONST;
-
 } // Unichar
-
 /* --- UTF-8 movement --- */
 inline const char*    utf8_next         (const char     *c);
 inline char*          utf8_next         (char           *c);
@@ -97,7 +77,6 @@ int                   utf8_from_unichar (unichar         uc,
                                          char            str[8]);
 bool                  utf8_validate     (const String   &string,
                                          int            *bound = NULL);
-
 /* --- implementation bits --- */
 namespace Unichar {
 inline bool
@@ -114,21 +93,17 @@ isvalid (unichar uc)
   return true;
 }
 } // Unichar
-
 extern const int8 utf8_skip_table[256];
-
 inline const char*
 utf8_next (const char *c)
 {
   return c + utf8_skip_table[(uint8) *c];
 }
-
 inline char*
 utf8_next (char *c)
 {
   return c + utf8_skip_table[(uint8) *c];
 }
-
 inline const char*
 utf8_prev (const char *c)
 {
@@ -137,7 +112,6 @@ utf8_prev (const char *c)
   while ((*c & 0xc0) == 0x80);
   return c;
 }
-
 inline char*
 utf8_prev (char *c)
 {
@@ -146,7 +120,6 @@ utf8_prev (char *c)
   while ((*c & 0xc0) == 0x80);
   return c;
 }
-
 inline const char*
 utf8_find_next (const char *c,
                 const char *bound)
@@ -157,14 +130,12 @@ utf8_find_next (const char *c,
     while ((!bound || c < bound) && (*c & 0xc0) == 0x80);
   return !bound || c < bound ? c : NULL;
 }
-
 inline char*
 utf8_find_next (char       *c,
                 const char *bound)
 {
   return const_cast<char*> (utf8_find_next (const_cast<const char*> (c), bound));
 }
-
 inline const char*
 utf8_find_prev (const char     *start,
                 const char     *current)
@@ -174,14 +145,12 @@ utf8_find_prev (const char     *start,
   while (current >= start && (*current & 0xc0) == 0x80);
   return current >= start ? current : NULL;
 }
-
 inline char*
 utf8_find_prev (const char     *start,
                 char           *current)
 {
   return const_cast<char*> (utf8_find_prev (start, const_cast<const char*> (current)));
 }
-
 inline const char*
 utf8_align (const char     *start,
             const char     *current)
@@ -190,21 +159,17 @@ utf8_align (const char     *start,
     current--;
   return current;
 }
-
 inline char*
 utf8_align (const char *start,
             char       *current)
 {
   return const_cast<char*> (utf8_align (start, const_cast<const char*> (current)));
 }
-
 inline bool
 utf8_aligned (const char *c)
 {
   return (*c & 0xc0) == 0x80;
 }
-
 } // Birnet
-
 #endif /* __BIRNET_UTF8_HH__ */
 /* vim:set ts=8 sts=2 sw=2: */

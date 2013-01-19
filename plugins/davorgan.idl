@@ -1,39 +1,21 @@
-/* DavOrgan - DAV Additive Organ Synthesizer            -*-mode: c++;-*-
- * Copyright (c) 1999, 2000, 2002 David A. Bartold and Tim Janik
- * Copyright (c) 2006-2007 Stefan Westerfeld
- *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * A copy of the GNU Lesser General Public License should ship along
- * with this library; if not, see http://www.gnu.org/copyleft/.
- */
-#include <bse/bse.idl>
-
+// Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
+include "bse/bsecxxmodule.idl";
 namespace Bse {
 namespace Dav {
-
-class Organ : Effect {
+interface Organ : Effect {
   Info    icon      = "icons/organ.png";
   Info    authors   = "David A. Bartold";
   Info    license   = _("GNU Lesser General Public License");
   Info    category  = _("/Audio Sources/Organ");
   Info    blurb     = _("DavOrgan is a versatile additive organ synthesizer");
-  IStream freq_in   = (_("Freq In"), _("Frequency Input"));
-  OStream audio_out = (_("Audio Out"), _("Organ output"));
+  IStream freq_in   = Stream (_("Freq In"), _("Frequency Input"));
+  OStream audio_out = Stream (_("Audio Out"), _("Organ output"));
   group _("Base Frequency") {
     Real base_freq = Freq (_("Frequency"), _("Organ frequency in Hertz, i.e. the pitch of the base tone"),
                            BSE_KAMMER_FREQUENCY, STANDARD ":dial");
     Int  base_note = Note (_("Note"), _("Organ frequency as note, converted to Hertz according to the current musical tuning"),
 			   BSE_KAMMER_NOTE, GUI);
-    Int  transpose = Int (_("Transpose"), _("Transposition of the frequency in semitones"),
+    Int  transpose = SfiInt (_("Transpose"), _("Transposition of the frequency in semitones"),
                           0, BSE_MIN_TRANSPOSE, BSE_MAX_TRANSPOSE, 12, STANDARD ":dial:skip-default");
     Int  fine_tune = FineTune (_("Fine Tune"), _("Amount of detuning in cent (hundredth part of a semitone)"),
 			       STANDARD ":dial:skip-default");
@@ -52,6 +34,5 @@ class Organ : Effect {
     Bool flute = Bool (_("Flute Sounds"), _("Add flute sounds"), false, STANDARD);
   };
 };
-
 } // Dav
 } // Bse

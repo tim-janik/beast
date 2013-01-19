@@ -1,4 +1,5 @@
 #!/usr/bin/perl -w
+# Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 
 use Cwd 'abs_path';
 
@@ -34,7 +35,7 @@ sub func_name {
 
 if ($gen_externs) {
     for (@ARGV) {
-	print "BseExportNode* ". func_name ($_) ." (void);\n";
+	print "extern \"C\" BseExportNode* ". func_name ($_) ." (void);\n";
     }
     exit 0;
 } elsif ($gen_funcs) {
@@ -311,8 +312,7 @@ my $func = func_name ($file);
 if ($funcname) {
     $func = func_name ($funcname);
 }
-print "BseExportNode* $func (void);\n";
-print "BseExportNode* $func (void)\n{\n  return $last_node;\n}\n";
+print "extern \"C\" BseExportNode* $func (void)\n{\n  return $last_node;\n}\n";
 
 
 print "\n/*\n * Generated data ends here\n */\n";
