@@ -87,7 +87,7 @@ all-docs: $(git_stamp) doxygen.cfg
 # upload release versions directly, otherwise upload as latest/
 upload: all
 	$(Q) test "${REL_VERSION}" != "${DSC_VERSION}" || { set -x ; \
-	  rsync -zaHP --del "html/${DOC_VERSION}"  "testbit:/srv/dev/html/beast/${DOC_VERSION}" ; }
+	  rsync -zaHP --del "html/${DOC_VERSION}"  "testbit:/srv/dev/html/beast/" ; }
 	$(Q) test "${REL_VERSION}" = "${DSC_VERSION}" || { set -x ; \
 	  rsync -zaHP --del "html/${DOC_VERSION}/"  "testbit:/srv/dev/html/beast/latest/" ; }
 
