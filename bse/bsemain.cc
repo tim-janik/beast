@@ -216,9 +216,9 @@ bse_init_core (void)
   /* dump device list */
   if (bse_main_args->dump_driver_list)
     {
-      g_printerr (_("\nAvailable PCM drivers:\n"));
+      g_printerr ("%s", _("\nAvailable PCM drivers:\n"));
       bse_device_dump_list (BSE_TYPE_PCM_DEVICE, "  ", TRUE, NULL, NULL);
-      g_printerr (_("\nAvailable MIDI drivers:\n"));
+      g_printerr ("%s", _("\nAvailable MIDI drivers:\n"));
       bse_device_dump_list (BSE_TYPE_MIDI_DEVICE, "  ", TRUE, NULL, NULL);
     }
 }

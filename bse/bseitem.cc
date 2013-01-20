@@ -743,7 +743,7 @@ undo_call_proc (BseUndoStep  *ustep,
     {
       const char *packed_item_pointer = g_value_get_string (ivalues + 0);
       BseItem *item = (BseItem*) bse_undo_pointer_unpack (packed_item_pointer, ustack);
-      BseUndoStack *redo_stack = (BseUndoStack*) bse_item_undo_open (item, BSE_PROCEDURE_NAME (proc));
+      BseUndoStack *redo_stack = (BseUndoStack*) bse_item_undo_open (item, "%s", BSE_PROCEDURE_NAME (proc));
       BseUndoStep *redo_step;
       redo_step = bse_undo_step_new (undo_call_proc, unde_free_proc, 3);
       redo_step->data[0].v_pointer = proc;

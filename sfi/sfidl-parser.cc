@@ -204,7 +204,7 @@ Type Parser::typeOf (const String& type) const
   if (isSequence (type))      return SEQUENCE;
   if (isRecord (type))	      return RECORD;
   if (isClass (type))	      return OBJECT;
-  g_error (("invalid type: " + type).c_str());
+  g_error ("%s", ("invalid type: " + type).c_str());
   return VOID;
 }
 Sequence Parser::findSequence(const String& name) const

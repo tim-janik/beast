@@ -37,7 +37,7 @@ Value::get_string () const
 {
   GValue *v = gvalue();
   if (SFI_VALUE_HOLDS_STRING (v))
-    return sfi_value_get_string (v);
+    return  sfi_value_get_string (v);
   else if (SFI_VALUE_HOLDS_CHOICE (v))
     return sfi_value_get_choice (v);
   else
