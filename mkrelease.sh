@@ -295,7 +295,7 @@ done
   HBRANCH=`git symbolic-ref HEAD | sed s,^refs/heads/,,`
   HREMOTE=`git config --get "branch.$HBRANCH.remote"`
   H_MERGE=`git config --get "branch.$HBRANCH.merge"`
-  test -z "$HBRANCH" -o -z "$HREMOTE" -o -z "$H_MERGE" && skip || {
+  skip || { # test -z "$HBRANCH" -o -z "$HREMOTE" -o -z "$H_MERGE" && skip || {
     RCOMMIT=`git ls-remote "$HREMOTE" "$H_MERGE" | sed 's/^\([[:alnum:]]\+\).*/\1/'`
     TCOMMIT=`git rev-list -n1 HEAD`
     test "$TCOMMIT" = "$RCOMMIT" && ok \
