@@ -344,7 +344,7 @@ done
   msg2 ">" "$RLS"
   # push notes
   $needs_head_push && \
-    msg2 "Note, push HEAD with:         # git push origin"
+    msg2 "Note, push HEAD with:         # git push origin" `git rev-list -n1 "$VERSION"`":master"
   msg2 "Note, push tag with:          # git push origin '$VERSION'"
   msg2 "Done."
   exit
