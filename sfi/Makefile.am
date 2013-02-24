@@ -2,8 +2,9 @@
 include $(top_srcdir)/Makefile.decl
 
 SUBDIRS   = . tests
-INCLUDES += -I$(top_srcdir) -I$(top_builddir) $(SFI_CFLAGS)
-DEFS     += -DG_LOG_DOMAIN=\"SFI\" -DG_DISABLE_CONST_RETURNS
+INCLUDES    += -I$(top_srcdir) -I$(top_builddir) $(SFI_CFLAGS)
+DEFS        += -DG_LOG_DOMAIN=\"SFI\" -DG_DISABLE_CONST_RETURNS
+AM_CXXFLAGS  = $(SFI_CFLAGS) $(RAPICORN_CFLAGS) -DRAPICORN_CONVENIENCE
 
 sfi_public_headers = $(strip \
 	sfistore.hh	sficomwire.hh	sfifilecrawler.hh \

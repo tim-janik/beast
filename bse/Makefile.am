@@ -7,11 +7,12 @@ SUBDIRS = icons zintern . tests
 # need -I$(top_builddir) for <sfi/sficonfig.h>
 # need -I$(srcdir) for "bseserver.hh" in .genprc.cc
 # need -I. (builddir) for "bsecore.genidl.hh" in bsecore.cc
-INCLUDES += -I$(top_srcdir) -I$(top_builddir) -I$(srcdir) -I. $(BSE_CFLAGS) -DG_DISABLE_DEPRECATED -DG_DISABLE_CONST_RETURNS
+INCLUDES += -I$(top_srcdir) -I$(top_builddir) -I$(srcdir) -I.
 DEFS     += $(strip \
 	$(patsubst %, -DG_LOG_DOMAIN=\"BSE\" -DBSE_COMPILATION, \
 	              $(filter $(<F), $(bse_sources) $(bse_sources))) \
 )
+AM_CXXFLAGS  = $(BSE_CFLAGS) $(RAPICORN_CFLAGS) -DRAPICORN_CONVENIENCE -DG_DISABLE_DEPRECATED -DG_DISABLE_CONST_RETURNS
 
 #
 # setup source file variables

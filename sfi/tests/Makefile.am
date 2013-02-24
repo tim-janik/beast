@@ -2,8 +2,9 @@
 # Copyright (C) 2006 Tim Janik
 include $(top_srcdir)/Makefile.decl
 
-INCLUDES       += -I$(top_srcdir) -I$(top_builddir) -I. $(SFI_CFLAGS)
-DEFS	       += -DG_LOG_DOMAIN='"$(basename $(@F))"' -DPARANOID # -DG_DISABLE_CONST_RETURNS
+INCLUDES    += -I$(top_srcdir) -I$(top_builddir) -I.
+DEFS	    += -DG_LOG_DOMAIN='"$(basename $(@F))"' -DPARANOID # -DG_DISABLE_CONST_RETURNS
+AM_CXXFLAGS  = $(SFI_CFLAGS) $(RAPICORN_CFLAGS) -DRAPICORN_CONVENIENCE
 
 noinst_PROGRAMS   = $(ALLTESTS)
 progs_nosfi_ldadd = $(top_builddir)/birnet/libbirnet.o $(SFI_LIBS) -lm

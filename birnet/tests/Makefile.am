@@ -2,8 +2,9 @@
 # Copyright (C) 2006 Tim Janik
 include $(top_srcdir)/Makefile.decl
 
-INCLUDES       += -I$(top_srcdir) -I$(top_builddir) -I. $(BIRNET_CFLAGS)
-DEFS	       += -DBIRNET_LOG_DOMAIN='"$(basename $(@F))"' -DPARANOID -DG_DISABLE_CONST_RETURNS
+INCLUDES    += -I$(top_srcdir) -I$(top_builddir) -I.
+DEFS	    += -DBIRNET_LOG_DOMAIN='"$(basename $(@F))"' -DPARANOID -DG_DISABLE_CONST_RETURNS
+AM_CXXFLAGS  = $(RAPICORN_CFLAGS) -DRAPICORN_CONVENIENCE $(BIRNET_CFLAGS)
 
 noinst_PROGRAMS  = $(ALLTESTS)
 progs_ldadd 	 = $(top_builddir)/birnet/libbirnet.o $(BIRNET_LIBS) -lm

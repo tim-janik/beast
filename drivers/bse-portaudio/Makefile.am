@@ -1,8 +1,9 @@
 # BSE-PortAudio - Better Sound Engine PortAudio Driver Package
 
-INCLUDES = -I$(srcdir) -I$(top_builddir) $(BSE_CFLAGS)
-# we specify the logging domain here
-DEFS = $(strip -DG_LOG_DOMAIN=\"BSE-PortAudio\")
+INCLUDES    += -I$(srcdir) -I$(top_builddir)
+DEFS        += $(strip -DG_LOG_DOMAIN=\"BSE-PortAudio\")
+AM_CXXFLAGS  = $(BSE_CFLAGS)
+
 # make automake1.9 happy
 EXTRA_DIST =
 

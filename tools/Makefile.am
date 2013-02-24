@@ -3,8 +3,9 @@ include $(top_srcdir)/Makefile.decl
 
 SUBDIRS = . scripts
 
-INCLUDES += -I$(top_srcdir) -I$(top_builddir) $(BSE_CFLAGS)
-DEFS += -DG_LOG_DOMAIN=\"BSE-TOOLS\" -DG_DISABLE_CONST_RETURNS
+INCLUDES    += -I$(top_srcdir) -I$(top_builddir)
+DEFS        += -DG_LOG_DOMAIN=\"BSE-TOOLS\" -DG_DISABLE_CONST_RETURNS
+AM_CXXFLAGS  = $(BSE_CFLAGS) $(RAPICORN_CFLAGS) -DRAPICORN_CONVENIENCE
 
 noinst_PROGRAMS = $(ALLTESTS)
 progs_ldadd     = $(top_builddir)/bse/libbse.la $(BSE_LIBS)
