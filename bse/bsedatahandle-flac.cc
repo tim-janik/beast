@@ -61,11 +61,19 @@ private:
       }
     return FLAC__STREAM_DECODER_WRITE_STATUS_CONTINUE;
   }
+
+  // pass error status from flac callback to caller
+  bool                              m_error_occurred;
+  FLAC__StreamDecoderErrorStatus    m_error_status;
+
   static void
   flac_error_callback (const FLAC__StreamDecoder     *decoder,
                        FLAC__StreamDecoderErrorStatus status,
                        void                          *client_data)
   {
+    DataHandleFlac *dh = static_cast<DataHandleFlac *> (client_data);
+    dh->m_error_occurred = true;
+    dh->m_error_status = status;
   }
 
 protected:
@@ -143,7 +151,11 @@ public:
     if (voffset >= m_buffer_start + m_buffer.size())
       {
         // try to read on, probably we'll have just the samples we need, then
-        FLAC__bool mdok = FLAC__stream_decoder_process_single (m_decoder);
+        m_error_occurred = false;
+        FLAC__bool decode_ok = FLAC__stream_decoder_process_single (m_decoder);
+
+        if (!decode_ok || m_error_occurred)
+          return -1;
       }
 
     if (voffset >= m_buffer_start && voffset < m_buffer_start + m_buffer.size())
@@ -155,8 +167,9 @@ public:
       }
 
     // need to seek to get to the right location
+    m_error_occurred = false;
     FLAC__bool seek_ok = FLAC__stream_decoder_seek_absolute (m_decoder, voffset / m_n_channels);
-    if (!seek_ok)
+    if (!seek_ok || m_error_occurred)
       return -1;
 
     if (voffset == m_buffer_start)
