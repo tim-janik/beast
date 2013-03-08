@@ -115,6 +115,7 @@ static void
 bse_sound_font_osc_init (BseSoundFontOsc *self)
 {
   memset (&self->config, 0, sizeof (self->config));
+  self->config.silence_bound = bse_engine_sample_freq() * 0.020;  /* output is zero for 20 ms => set done output */
   self->preset = NULL;
 }
 
@@ -400,7 +401,7 @@ sound_font_osc_process (BseModule *module,
 	sfrepo->n_silence_samples[sfrepo->channel_map[flmod->config.osc_id]] += n_values;
       else
 	sfrepo->n_silence_samples[sfrepo->channel_map[flmod->config.osc_id]] = 0;
-      float done = (sfrepo->n_silence_samples[sfrepo->channel_map[flmod->config.osc_id]] > 1024 && sfrepo->fluid_events == NULL) ? 1.0 : 0.0;
+      float done = (sfrepo->n_silence_samples[sfrepo->channel_map[flmod->config.osc_id]] > flmod->config.silence_bound && sfrepo->fluid_events == NULL) ? 1.0 : 0.0;
       BSE_MODULE_OSTREAM (module, BSE_SOUND_FONT_OSC_OCHANNEL_DONE_OUT).values = bse_engine_const_values (done);
     }
 

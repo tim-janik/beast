@@ -38,6 +38,7 @@ struct _BseSoundFontOscConfig
   int			sfont_id;
   int			bank;
   int			program;
+  int                   silence_bound;
   BseSoundFontRepo     *sfrepo;
 
   int                   update_preset;  /* preset changed indicator */
