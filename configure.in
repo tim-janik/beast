@@ -237,6 +237,12 @@ AC_DEFUN([AC_BSE_REQUIREMENTS],
     dnl # --- FLAC check ---
     PKG_CHECK_MODULES(FLAC, flac)
 
+    dnl # old FLAC versions use "-I/usr/.../include/FLAC" as pkg-config --cflags
+    dnl # new FLAC versions use "-I/usr/.../include" as pkg-config --cflags
+    dnl #
+    dnl # to support both, we strip /FLAC from FLAC_CFLAGS and use #include <FLAC/foo.h>
+    FLAC_CFLAGS=`echo $FLAC_CLFAGS | $SED "s/FLAC$//"`
+
     dnl # --- libmad MPEG decoder check ---
     dnl # libmad doesn't come with a mad.pc file (just its debian package)
     dnl # PKG_CHECK_MODULES(MAD, mad >= 0.14.2,

@@ -1,10 +1,10 @@
-  #include "bseloader.h"
-  #include <stdio.h>
-  #include <errno.h>
-  #include <string.h>
-  #include <vector>
-  #include <string>
-  #include <FLAC/stream_decoder.h>
+#include "bseloader.hh"
+#include <stdio.h>
+#include <errno.h>
+#include <string.h>
+#include <vector>
+#include <string>
+#include <FLAC/stream_decoder.h>
 
 namespace {
 

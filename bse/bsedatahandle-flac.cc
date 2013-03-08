@@ -14,16 +14,16 @@
  * A copy of the GNU Lesser General Public License should ship along
  * with this library; if not, see http://www.gnu.org/copyleft/.
  */
-#include "gsldatahandle.h"
-#include "gsldatautils.h"
-#include "gslfilter.h"
+#include "gsldatahandle.hh"
+#include "gsldatautils.hh"
+#include "gslfilter.hh"
 #include "bseblockutils.hh"
 #include <complex>
 #include <vector>
 #include <string.h>
 #include <stdio.h>
 #include <math.h>
-#include "stream_decoder.h"
+#include <FLAC/stream_decoder.h>
 
 namespace Bse {
 
