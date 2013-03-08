@@ -114,6 +114,7 @@ public:
     if (!m_decoder)
       return BSE_ERROR_IO;
 
+    m_error_occurred = false;
     int err = FLAC__stream_decoder_init_file (m_decoder, m_file_name.c_str(),
                                               flac_write_callback, NULL, flac_error_callback, this);
     if (err != 0)
@@ -126,6 +127,9 @@ public:
     } while (FLAC__stream_decoder_get_channels (m_decoder) == 0 && mdok);
 
     if (FLAC__stream_decoder_get_channels (m_decoder) == 0)
+      return BSE_ERROR_IO;
+
+    if (m_error_occurred)
       return BSE_ERROR_IO;
 
     m_n_channels = setup->n_channels = FLAC__stream_decoder_get_channels (m_decoder);
