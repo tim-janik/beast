@@ -12,6 +12,76 @@
 
 #include <string.h>
 
+/*------------------------------------------------------------------------------------------------
+ * overview of how soundfont support is implemented
+ *------------------------------------------------------------------------------------------------
+ * what we want:
+ *  - use existing soundfonts & fluidsynth replay code
+ *  - be able to use soundfont presets (instruments) instead of synthesis instruments on a
+ *    per-track basis
+ *  - multiple tracks should be able to share the same soundfont (as these are huge)
+ *  - use the standard beast mixer with tracks that use soundfonts
+ *
+ * To be able to use the fluidsynth API, and let fluidsynth render the output,
+ * this code will simply relay the events from the midi receiver to the
+ * fluidsynth engine using bse_midi_receiver_add_event_handler. The fluidsynth
+ * engine itself has no concept of what tracks exist in BEAST. In fact, to be
+ * able to share the same soundfont for many tracks, we have to pass all events
+ * from all tracks that use the same soundfont to fluidsynth in one step.
+ *
+ * To be able to still get many mixer tracks, the code below will create
+ * multiple fluidsynth channels, each containing the sample data for one beast
+ * track. This make post-processing networks and using the beast mixer work.
+ * However, we cannot use fluidsynth effects. This is because fluidsynth can
+ * only render one effect track containing the accumulated effects of all input
+ * events, whereas we want to be able to process every beast track seperately.
+ *
+ * However this limitation can be workarounded by using beast to render the
+ * effects, either in per-beast-track postprocessing networks or using per-song
+ * post-processing network.
+ *
+ * Now that we have a mapping from the midi events to the fluidsynth output
+ * tracks, the only thing that needs to be done is getting the sample data into
+ * the bse engine. To do that, we create standard engine modules. These do not
+ * compute any sample data.  Instead, they just access memory that is shared
+ * between all osc modules. The first sound font osc module that is scheduled
+ * by the engine calls process_fluid_L, to update the shared memory containing
+ * the fluidsynth output. All other sound font osc engine modules that are
+ * called after that simply read the samples that was already computed when the
+ * first engine module's process function was called.
+ *
+ * The check:
+ *
+ *   gint64 now_tick_stamp = GSL_TICK_STAMP;
+ *   if (sfrepo->channel_values_tick_stamp != now_tick_stamp)
+ *        ...
+ *
+ * ensures this. Here the shared state is managed by the sound font repo, and
+ * only updated once for all sound font engine modules. Locking is used to
+ * ensure that there are no races,
+ *
+ *   bse_sound_font_repo_lock_fluid_synth (sfrepo); 
+ *
+ * ensures that there is always at most one sound font engine module that has access
+ * to the shared state, and so the actual fluidsynth code to process the events and
+ * update the shared sample data is also executed exactly once.
+ *
+ * Note that IF the bse engine WOULD use multiple CPUs (it currently doesn't),
+ * the locking forces the sound font osc engine modules to wait for the
+ * computation of the first module that got the lock. This may be undesirable
+ * since it could block the computations on all CPUs, although other engine
+ * modules that are unrelated to fluidsynth could be processed. One possibility
+ * to solve this problem would be to enhance the engine and allow the sound
+ * font osc modules to use some "CPU affinity" setting which lets the engine
+ * know that all these modules should be processed on the same CPU.
+ *
+ * CPU affinity will also enhance performance (with a muli core bse engine)
+ * since then the actual fluid synth rendering code will always run on the same
+ * CPU (instead of the CPU that the first engine module runs on, which will can
+ * change from engine block to engine block).
+ *------------------------------------------------------------------------------------------------
+ */
+
 /* --- parameters --- */
 enum
 {
