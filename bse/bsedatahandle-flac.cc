@@ -136,9 +136,9 @@ public:
   }
 
   int64
-  read (int64  voffset,
-	int64  n_values,
-	float *values)
+  read_samples (int64  voffset,
+	        int64  n_values,
+	        float *values)
   {
     if (voffset >= m_buffer_start + m_buffer.size())
       {
@@ -160,7 +160,7 @@ public:
       return -1;
 
     if (voffset == m_buffer_start)
-      return read (voffset, n_values, values);    // will work this time, since we have the right samples now
+      return read_samples (voffset, n_values, values);    // will work this time, since we have the right samples now
 
     return 0;
   }
@@ -218,7 +218,7 @@ private:
 	   int64          n_values,
 	   gfloat        *values)
   {
-    return dh_cast (dhandle)->read (voffset, n_values, values);
+    return dh_cast (dhandle)->read_samples (voffset, n_values, values);
   }
 };
 
