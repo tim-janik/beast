@@ -7,7 +7,7 @@
 #include "bstbusview.hh"
 #include "bstwaveview.hh"
 #include "bstrackview.hh"
-#include "bstsoundfontview.h"
+#include "bstsoundfontview.hh"
 #include "bstsnetrouter.hh"
 #include "bstgconfig.hh"
 #include <string.h>

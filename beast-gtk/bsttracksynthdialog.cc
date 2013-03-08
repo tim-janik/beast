@@ -106,7 +106,7 @@ bst_track_synth_dialog_init (BstTrackSynthDialog *self)
   gxk_notebook_append (self->notebook, self->wpage, "wave", TRUE);
   bst_wave_view_set_editable (BST_WAVE_VIEW (self->wpage), FALSE);
   /* sound font view */
-  self->sfont_page = g_object_new (BST_TYPE_SOUND_FONT_VIEW, "visible", TRUE, NULL);
+  self->sfont_page = (GtkWidget *) g_object_new (BST_TYPE_SOUND_FONT_VIEW, "visible", TRUE, NULL);
   gxk_notebook_append (self->notebook, self->sfont_page, "sound_font", TRUE);
 
   /* provide buttons */

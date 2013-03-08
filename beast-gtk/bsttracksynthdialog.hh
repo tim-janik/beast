@@ -4,7 +4,7 @@
 
 #include "bstutils.hh"
 #include "bstwaveview.hh"
-#include "bstsoundfontview.h"
+#include "bstsoundfontview.hh"
 
 G_BEGIN_DECLS
 

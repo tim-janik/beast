@@ -5,7 +5,7 @@
 #include "bstmenus.hh"
 #include "bsttrackview.hh"
 #include "bstwaveview.hh"
-#include "bstsoundfontview.h"
+#include "bstsoundfontview.hh"
 #include "bstpartview.hh"
 #include "bstbusmixer.hh"
 #include "bstbuseditor.hh"

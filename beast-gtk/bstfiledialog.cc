@@ -232,7 +232,7 @@ bst_file_dialog_global_sound_font (void)
 {
   static BstFileDialog *singleton = NULL;
   if (!singleton)
-    singleton = g_object_new (BST_TYPE_FILE_DIALOG, NULL);
+    singleton = (BstFileDialog*) g_object_new (BST_TYPE_FILE_DIALOG, NULL);
   return singleton;
 }
 

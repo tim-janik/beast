@@ -43,7 +43,7 @@ beast-gtk/bstrecords.idl
 beast-gtk/bstsampleeditor.cc
 beast-gtk/bstscrollgraph.cc
 beast-gtk/bstsnetrouter.cc
-beast-gtk/bstsoundfontview.c
+beast-gtk/bstsoundfontview.cc
 beast-gtk/bstsupershell.cc
 beast-gtk/bsttrackrollctrl.cc
 beast-gtk/bsttracksynthdialog.cc
@@ -92,7 +92,7 @@ bse/bseserver.cc
 bse/bsesnooper.cc
 bse/bsesong.cc
 bse/bsesong.proc
-bse/bsesoundfontosc.c
+bse/bsesoundfontosc.cc
 bse/bsesource.proc
 bse/bsestandardosc.cc
 bse/bsesubiport.cc

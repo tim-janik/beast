@@ -1,23 +1,7 @@
-/* BEAST - Bedevilled Audio System
- * Copyright (C) 1998-2003 Tim Janik
- * Copyright (C) 2009 Stefan Westerfeld
- *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * A copy of the GNU Lesser General Public License should ship along
- * with this library; if not, see http://www.gnu.org/copyleft/.
- */
-#include "bstsoundfontview.h"
-#include "bstsoundfontpresetview.h"
-#include "bstfiledialog.h"
+// Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
+#include "bstsoundfontview.hh"
+#include "bstsoundfontpresetview.hh"
+#include "bstfiledialog.hh"
 
 /* --- prototypes --- */
 
@@ -51,9 +35,9 @@ static const GxkStockAction sound_font_view_actions[] = {
 G_DEFINE_TYPE (BstSoundFontView, bst_sound_font_view, BST_TYPE_ITEM_VIEW);
 
 static void
-bst_sound_font_view_class_init (BstSoundFontViewClass *class)
+bst_sound_font_view_class_init (BstSoundFontViewClass *klass)
 {
-  BstItemViewClass *item_view_class = BST_ITEM_VIEW_CLASS (class);
+  BstItemViewClass *item_view_class = BST_ITEM_VIEW_CLASS (klass);
 
   item_view_class->item_type = "BseSoundFont";
 }
@@ -75,7 +59,7 @@ bst_sound_font_view_init (BstSoundFontView *self)
                               G_N_ELEMENTS (sound_font_view_actions), sound_font_view_actions,
                               NULL, sound_font_view_action_check, sound_font_view_action_exec);
   /* setup tree view */
-  GtkTreeView *tview = gxk_radget_find (radget, "tree-view");
+  GtkTreeView *tview = (GtkTreeView *) gxk_radget_find (radget, "tree-view");
   bst_item_view_complete_tree (iview, tview);
 
   g_object_connect (gtk_tree_view_get_selection (tview),
@@ -84,7 +68,7 @@ bst_sound_font_view_init (BstSoundFontView *self)
 
 
   /* setup preset view */
-  GtkTreeView *pview = gxk_radget_find (radget, "preset-view");
+  GtkTreeView *pview = (GtkTreeView *) gxk_radget_find (radget, "preset-view");
   self->preset_view = BST_SOUND_FONT_PRESET_VIEW (bst_sound_font_preset_view_new());
   bst_item_view_complete_tree (BST_ITEM_VIEW (self->preset_view), pview);
 }
