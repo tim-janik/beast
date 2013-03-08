@@ -46,7 +46,7 @@ bse_public_headers = $(strip \
 	bsesnet.hh		bsesnooper.hh		bsesong.hh			bsesequencer.hh \
 	bsesource.hh		bsestandardosc.hh	bsestandardsynths.hh		bsestorage.hh \
 	bseinstrumentoutput.hh	bsesubiport.hh		bseinstrumentinput.hh		bsesuboport.hh \
-        bsesoundfont.h          bsesoundfontpreset.h    bsesoundfontosc.h               \
+        bsesoundfont.hh         bsesoundfontpreset.hh   bsesoundfontosc.hh              bsesoundfontrepo.hh \
 	bsesubsynth.hh		bsesuper.hh		bsetrack.hh			bsetype.hh \
 	bseutils.hh		bsemidivoice.hh		bsewave.hh			bsewaveosc.hh \
 	bsecsynth.hh		bsewaverepo.hh		bseladspamodule.hh		bsepcmwriter.hh \
@@ -79,8 +79,7 @@ bse_sources = $(strip \
 	bsepcmdevice.cc		bsepcmdevice-oss.cc	bsepcmdevice-null.cc		bseplugin.cc \
 	bseprocedure.cc		bseproject.cc		bsescripthelper.cc		bseserver.cc \
 	bsesnet.cc		bsesnooper.cc		bsesong.cc			bsesequencer.cc \
-        bsesoundfont.c          bsesoundfontrepo.c      bsesoundfontpreset.c            bsesoundfontosc.c \
-	bsesoundfontrepo.c	bsesoundfont.c		bsesoundfontpreset.c		bsesoundfontosc.c \
+	bsesoundfontrepo.cc	bsesoundfont.cc		bsesoundfontpreset.cc		bsesoundfontosc.cc \
 	bsesource.cc		bsestandardosc.cc	bsestandardsynths.cc		bsestorage.cc \
 	bseinstrumentoutput.cc	bsesubiport.cc		bseinstrumentinput.cc		bsesuboport.cc \
 	bsesubsynth.cc		bsesuper.cc		bsetrack.cc			bsetype.cc \

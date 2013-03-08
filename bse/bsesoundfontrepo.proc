@@ -14,11 +14,11 @@
  * A copy of the GNU Lesser General Public License should ship along
  * with this library; if not, see http://www.gnu.org/copyleft/.
  */
-#include <bse/bseplugin.h>
-#include <bse/bseprocedure.h>
-#include <bse/bsesoundfontrepo.h>
-#include <bse/bsesoundfont.h>
-#include <bse/bseloader.h>
+#include <bse/bseplugin.hh>
+#include <bse/bseprocedure.hh>
+#include <bse/bsesoundfontrepo.hh>
+#include <bse/bsesoundfont.hh>
+#include <bse/bseloader.hh>
 
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -33,7 +33,7 @@ load_file (BseSoundFontRepo *sfrepo,
            BseSoundFont    **sound_font_p)
 {
   gchar *fname = g_path_get_basename (file_name);
-  BseSoundFont *sound_font = g_object_new (BSE_TYPE_SOUND_FONT, "uname", fname, NULL);
+  BseSoundFont *sound_font = (BseSoundFont *) g_object_new (BSE_TYPE_SOUND_FONT, "uname", fname, NULL);
   g_free (fname);
   bse_container_add_item (BSE_CONTAINER (sfrepo), BSE_ITEM (sound_font));
 
@@ -74,7 +74,7 @@ BODY (BseProcedureClass *proc,
 {
   /* extract parameter values */
   BseSoundFontRepo *self    = (BseSoundFontRepo*) bse_value_get_object (in_values++);
-  gchar *file_name          = sfi_value_get_string (in_values++);
+  const gchar *file_name    = sfi_value_get_string (in_values++);
   BseUndoStack *ustack;
   BseErrorType error;
   BseSoundFont *sound_font;

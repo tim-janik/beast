@@ -1,30 +1,14 @@
-/* BseSoundFontOsc - BSE Fluid Synth
- * Copyright (C) 1999-2002 Tim Janik
- * Copyright (C) 2009 Stefan Westerfeld
- *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * A copy of the GNU Lesser General Public License should ship along
- * with this library; if not, see http://www.gnu.org/copyleft/.
- */
-#include "bsesoundfontosc.h"
+// Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
+#include "bsesoundfontosc.hh"
 
-#include <bse/bsecategories.h>
-#include <bse/bseengine.h>
-#include <bse/bseproject.h>
-#include <bse/bsesoundfontrepo.h>
-#include <bse/bsesoundfont.h>
-#include <bse/bsesnet.h>
-#include <bse/bsemidireceiver.h>
-#include "gslcommon.h"
+#include <bse/bsecategories.hh>
+#include <bse/bseengine.hh>
+#include <bse/bseproject.hh>
+#include <bse/bsesoundfontrepo.hh>
+#include <bse/bsesoundfont.hh>
+#include <bse/bsesnet.hh>
+#include <bse/bsemidireceiver.hh>
+#include "gslcommon.hh"
 
 #include <string.h>
 
@@ -38,7 +22,7 @@ enum
 
 /* --- prototypes --- */
 static void	 bse_sound_font_osc_init	  (BseSoundFontOsc	 *sound_font_osc);
-static void	 bse_sound_font_osc_class_init	  (BseSoundFontOscClass	 *class);
+static void	 bse_sound_font_osc_class_init	  (BseSoundFontOscClass	 *klass);
 static void	 bse_sound_font_osc_set_property  (GObject		 *object,
 						   guint	          param_id,
 						   const GValue		 *value,
@@ -94,15 +78,15 @@ BSE_BUILTIN_TYPE (BseSoundFontOsc)
 }
 
 static void
-bse_sound_font_osc_class_init (BseSoundFontOscClass *class)
+bse_sound_font_osc_class_init (BseSoundFontOscClass *klass)
 {
-  GObjectClass *gobject_class = G_OBJECT_CLASS (class);
-  BseObjectClass *object_class = BSE_OBJECT_CLASS (class);
-  BseSourceClass *source_class = BSE_SOURCE_CLASS (class);
-  BseItemClass *item_class = BSE_ITEM_CLASS (class);
+  GObjectClass *gobject_class = G_OBJECT_CLASS (klass);
+  BseObjectClass *object_class = BSE_OBJECT_CLASS (klass);
+  BseSourceClass *source_class = BSE_SOURCE_CLASS (klass);
+  BseItemClass *item_class = BSE_ITEM_CLASS (klass);
   guint ochannel;
 
-  parent_class = g_type_class_peek_parent (class);
+  parent_class = g_type_class_peek_parent (klass);
 
   gobject_class->set_property = bse_sound_font_osc_set_property;
   gobject_class->get_property = bse_sound_font_osc_get_property;
@@ -201,7 +185,7 @@ bse_sound_font_osc_set_property (GObject      *object,
     {
       BseSoundFontPreset *preset;
     case PARAM_PRESET:
-      preset = bse_value_get_object (value);
+      preset = BSE_SOUND_FONT_PRESET (bse_value_get_object (value));
       if (preset != self->preset)
         {
           self->preset = preset;
@@ -289,7 +273,7 @@ bse_sound_font_osc_update_modules (BseSoundFontOsc *sound_font_osc,
 static void
 sound_font_osc_reset (BseModule *module)
 {
-  SoundFontOscModule *flmod = module->user_data;
+  SoundFontOscModule *flmod = (SoundFontOscModule *) module->user_data;
 
   flmod->last_update_preset = -1;
 }
@@ -301,8 +285,8 @@ process_fluid_L (BseSoundFontRepo   *sfrepo,
 	         fluid_synth_t	    *fluid_synth,
                  guint64	     now_tick_stamp)
 {
-  float **channel_values_left = g_alloca (sfrepo->n_fluid_channels * sizeof (float *));
-  float **channel_values_right = g_alloca (sfrepo->n_fluid_channels * sizeof (float *));
+  float **channel_values_left = (float **) g_alloca (sfrepo->n_fluid_channels * sizeof (float *));
+  float **channel_values_right = (float **) g_alloca (sfrepo->n_fluid_channels * sizeof (float *));
   float null_fx[BSE_STREAM_MAX_VALUES];
   float *channel_fx_null[2] = { null_fx, null_fx };
   int i;
@@ -379,7 +363,7 @@ static void
 sound_font_osc_process (BseModule *module,
 		        guint      n_values)
 {
-  SoundFontOscModule *flmod = module->user_data;
+  SoundFontOscModule *flmod = (SoundFontOscModule *) module->user_data;
   BseSoundFontRepo *sfrepo = flmod->config.sfrepo;
   fluid_synth_t *fluid_synth = bse_sound_font_repo_lock_fluid_synth (sfrepo);
   guint i;
@@ -442,7 +426,7 @@ sound_font_osc_process_midi (gpointer            null,
                              const BseMidiEvent *event,
                              BseTrans           *trans)
 {
-  SoundFontOscModule *flmod = module->user_data;
+  SoundFontOscModule *flmod = (SoundFontOscModule *) module->user_data;
   bse_sound_font_repo_lock_fluid_synth (flmod->config.sfrepo);
   int note = bse_note_from_freq (BSE_MUSICAL_TUNING_12_TET, event->data.note.frequency);
   BseFluidEvent *fluid_event = NULL;
@@ -520,7 +504,7 @@ event_handler_setup_func (BseModule *module,
                                        ehs->module);
 
   /* setup program before first midi event */
-  SoundFontOscModule *flmod = module->user_data;
+  SoundFontOscModule *flmod = (SoundFontOscModule *) module->user_data;
 
   BseFluidEvent *fluid_event = g_new0 (BseFluidEvent, 1);
   fluid_event->command = BSE_FLUID_SYNTH_PROGRAM_SELECT;
@@ -601,7 +585,7 @@ bse_sound_font_osc_context_dismiss (BseSource		 *source,
   while (node)
     {
       SfiRing *next_node = sfi_ring_walk (node, fluid_events);
-      BseFluidEvent *event = node->data;
+      BseFluidEvent *event = (BseFluidEvent *) node->data;
       if (event->channel == self->config.sfrepo->channel_map[self->config.osc_id])
 	{
 	  g_free (event);

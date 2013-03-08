@@ -1,27 +1,11 @@
-/* BSE - Bedevilled Sound Engine
- * Copyright (C) 1997-1999, 2000-2005 Tim Janik
- * Copyright (C) 2009 Stefan Westerfeld
- *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * A copy of the GNU Lesser General Public License should ship along
- * with this library; if not, see http://www.gnu.org/copyleft/.
- */
-#include "bsesoundfontpreset.h"
-#include "bsemain.h"
-#include "bsestorage.h"
-#include "bseprocedure.h"
-#include "gsldatahandle.h"
-#include "bseserver.h"
-#include "bseloader.h"
+// Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
+#include "bsesoundfontpreset.hh"
+#include "bsemain.hh"
+#include "bsestorage.hh"
+#include "bseprocedure.hh"
+#include "gsldatahandle.hh"
+#include "bseserver.hh"
+#include "bseloader.hh"
 
 #include <string.h>
 #include <fluidsynth.h>
@@ -29,7 +13,7 @@
 #define parse_or_return         bse_storage_scanner_parse_or_return
 
 /* --- variables --- */
-static GTypeClass *parent_class = NULL;
+static void       *parent_class = NULL;
 static GQuark      quark_program = 0;
 static GQuark      quark_bank = 0;
 
@@ -63,7 +47,7 @@ bse_sound_font_preset_store_private (BseObject  *object,
   bse_storage_printf (storage, "(program %d)", self->program);
 }
 
-static SfiTokenType
+static GTokenType
 bse_sound_font_preset_restore_private (BseObject  *object,
 			               BseStorage *storage,
                                        GScanner   *scanner)
@@ -152,12 +136,12 @@ bse_sound_font_preset_finalize (GObject *object)
 }
 
 static void
-bse_sound_font_preset_class_init (BseSoundFontPresetClass *class)
+bse_sound_font_preset_class_init (BseSoundFontPresetClass *klass)
 {
-  GObjectClass *gobject_class = G_OBJECT_CLASS (class);
-  BseObjectClass *object_class = BSE_OBJECT_CLASS (class);
+  GObjectClass *gobject_class = G_OBJECT_CLASS (klass);
+  BseObjectClass *object_class = BSE_OBJECT_CLASS (klass);
 
-  parent_class = g_type_class_peek_parent (class);
+  parent_class = g_type_class_peek_parent (klass);
 
   gobject_class->set_property = bse_sound_font_preset_set_property;
   gobject_class->get_property = bse_sound_font_preset_get_property;

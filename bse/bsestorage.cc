@@ -1746,7 +1746,7 @@ wstore_blob_reader (gpointer data,
 		    void    *buffer,
 		    guint    blength)
 {
-  WStoreBlob *wsb = data;
+  WStoreBlob *wsb = (WStoreBlob *) data;
   if (wsb->fd == -1)
     {
       do
@@ -1771,7 +1771,7 @@ wstore_blob_reader (gpointer data,
 static void
 wstore_blob_destroy (gpointer data)
 {
-  WStoreBlob *wblob = data;
+  WStoreBlob *wblob = (WStoreBlob *) data;
   if (wblob->fd >= 0)
     close (wblob->fd);
   bse_storage_blob_unref (wblob->blob);

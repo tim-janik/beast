@@ -16,7 +16,7 @@
 #include "bsemidinotifier.hh"
 #include "gslcommon.hh"
 #include "bseengine.hh"
-#include "bsesoundfontrepo.h"
+#include "bsesoundfontrepo.hh"
 #include <string.h>
 #include <stdlib.h>
 #include <fcntl.h>
@@ -182,12 +182,12 @@ bse_project_init (BseProject *self,
   self->midi_receiver = bse_midi_receiver_new ("BseProjectReceiver");
   bse_midi_receiver_enter_farm (self->midi_receiver);
   /* we always have a wave-repo */
-  BseWaveRepo *wrepo = bse_container_new_child (BSE_CONTAINER (self), BSE_TYPE_WAVE_REPO,
-                                                "uname", "Wave-Repository",
-                                                NULL);
-  BseSoundFontRepo *sfrepo = bse_container_new_child (BSE_CONTAINER (self), BSE_TYPE_SOUND_FONT_REPO,
-                                                      "uname", "Sound-Font-Repository",
-                                                      NULL);
+  BseWaveRepo *wrepo = (BseWaveRepo*) bse_container_new_child (BSE_CONTAINER (self), BSE_TYPE_WAVE_REPO,
+                                                               "uname", "Wave-Repository",
+                                                               NULL);
+  BseSoundFontRepo *sfrepo = (BseSoundFontRepo*) bse_container_new_child (BSE_CONTAINER (self), BSE_TYPE_SOUND_FONT_REPO,
+                                                                          "uname", "Sound-Font-Repository",
+                                                                          NULL);
   /* with fixed uname */
   BSE_OBJECT_SET_FLAGS (wrepo, BSE_OBJECT_FLAG_FIXED_UNAME);
   BSE_OBJECT_SET_FLAGS (sfrepo, BSE_OBJECT_FLAG_FIXED_UNAME);
@@ -654,7 +654,7 @@ bse_project_get_sound_font_repo (BseProject *self)
   GSList *slist;
   for (slist = self->supers; slist; slist = slist->next)
     if (BSE_IS_SOUND_FONT_REPO (slist->data))
-      return slist->data;
+      return (BseSoundFontRepo *) slist->data;
   return NULL;
 }
 

@@ -1,24 +1,8 @@
-/* BSE - Bedevilled Sound Engine
- * Copyright (C) 1996-1999, 2000-2003 Tim Janik
- * Copyright (C) 2009 Stefan Westerfeld
- *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * A copy of the GNU Lesser General Public License should ship along
- * with this library; if not, see http://www.gnu.org/copyleft/.
- */
-#include        "bsesoundfontrepo.h"
-#include        "bsesoundfont.h"
-#include        "bsesoundfontpreset.h"
-#include        "bsedefs.h"
+// Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
+#include        "bsesoundfontrepo.hh"
+#include        "bsesoundfont.hh"
+#include        "bsesoundfontpreset.hh"
+#include        "bsedefs.hh"
 #include        "bseblockutils.hh"
 
 
@@ -30,7 +14,7 @@ enum
 
 
 /* --- prototypes --- */
-static void	bse_sound_font_repo_class_init		(BseSoundFontRepoClass	*class);
+static void	bse_sound_font_repo_class_init		(BseSoundFontRepoClass	*klass);
 static void	bse_sound_font_repo_init		(BseSoundFontRepo	*wrepo);
 static void	bse_sound_font_repo_dispose		(GObject		*object);
 static void     bse_sound_font_repo_release_children    (BseContainer		*container);
@@ -53,7 +37,7 @@ static void     bse_sound_font_repo_prepare      (BseSource             *source)
 
 
 /* --- variables --- */
-static GTypeClass     *parent_class = NULL;
+static gpointer parent_class = NULL;
 
 
 /* --- functions --- */
@@ -84,13 +68,13 @@ BSE_BUILTIN_TYPE (BseSoundFontRepo)
 }
 
 static void
-bse_sound_font_repo_class_init (BseSoundFontRepoClass *class)
+bse_sound_font_repo_class_init (BseSoundFontRepoClass *klass)
 {
-  GObjectClass *gobject_class = G_OBJECT_CLASS (class);
-  BseContainerClass *container_class = BSE_CONTAINER_CLASS (class);
-  BseSourceClass *source_class = BSE_SOURCE_CLASS (class);
+  GObjectClass *gobject_class = G_OBJECT_CLASS (klass);
+  BseContainerClass *container_class = BSE_CONTAINER_CLASS (klass);
+  BseSourceClass *source_class = BSE_SOURCE_CLASS (klass);
 
-  parent_class = g_type_class_peek_parent (class);
+  parent_class = g_type_class_peek_parent (klass);
 
   gobject_class->set_property = bse_sound_font_repo_set_property;
   gobject_class->get_property = bse_sound_font_repo_get_property;
@@ -201,7 +185,7 @@ bse_sound_font_repo_release_children (BseContainer *container)
   BseSoundFontRepo *sfrepo = BSE_SOUND_FONT_REPO (container);
 
   while (sfrepo->sound_fonts)
-    bse_container_remove_item (container, sfrepo->sound_fonts->data);
+    bse_container_remove_item (container, BSE_ITEM (sfrepo->sound_fonts->data));
 
   /* chain parent class' handler */
   BSE_CONTAINER_CLASS (parent_class)->release_children (container);
@@ -308,7 +292,7 @@ bse_sound_font_repo_forall_items (BseContainer      *container,
     {
       BseItem *item;
 
-      item = list->data;
+      item = BSE_ITEM (list->data);
       list = list->next;
       if (!func (item, data))
 	return;
@@ -332,9 +316,10 @@ bse_sound_font_repo_remove_item (BseContainer *container,
 }
 
 static gboolean
-gather_presets (BseItem  *item,
-                gpointer  items)
+gather_presets (BseItem    *item,
+                void       *pitems)
 {
+  BseItemSeq *items = (BseItemSeq *) pitems;
   if (BSE_IS_SOUND_FONT (item) || BSE_IS_SOUND_FONT_REPO (item))
     bse_container_forall_items (BSE_CONTAINER (item), gather_presets, items);
   else if (BSE_IS_SOUND_FONT_PRESET (item))
@@ -379,7 +364,7 @@ bse_sound_font_repo_add_osc (BseSoundFontRepo *sfrepo,
     }
   sfrepo->oscs = (BseSoundFontOsc **)g_realloc (sfrepo->oscs, sizeof (BseSoundFontOsc *) * (i + 1));
   sfrepo->oscs[i] = osc;
-  sfrepo->channel_map = g_realloc (sfrepo->channel_map, sizeof (guint) * (i + 1));
+  sfrepo->channel_map = (guint *) g_realloc (sfrepo->channel_map, sizeof (guint) * (i + 1));
   return sfrepo->n_oscs++;
 }
 

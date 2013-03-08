@@ -6,7 +6,7 @@
 #include <bse/bsesong.hh>
 #include <bse/bseundostack.hh>
 #include <bse/bsewaverepo.hh>
-#include <bse/bsesoundfontrepo.h>
+#include <bse/bsesoundfontrepo.hh>
 #include <bse/bsecsynth.hh>
 #include <bse/bsemidisynth.hh>
 #include <bse/bsedatapocket.hh>
@@ -298,7 +298,7 @@ METHOD (BseProject, get-sound-font-repo) {
         GValue            *out_values)
 {
   /* extract parameter values */
-  BseProject *project = bse_value_get_object (in_values++);
+  BseProject *project = BSE_PROJECT (bse_value_get_object (in_values++));
   BseSoundFontRepo *sfrepo = NULL;
 
   /* check parameters */

@@ -15,9 +15,9 @@
 #include "bsemidivoice.hh"
 #include "bsemidireceiver.hh"
 #include "bsewaverepo.hh"
-#include "bsesoundfontrepo.h"
-#include "bsesoundfontpreset.h"
-#include "bsesoundfont.h"
+#include "bsesoundfontrepo.hh"
+#include "bsesoundfontpreset.hh"
+#include "bsesoundfont.hh"
 #include "bsecxxplugin.hh"
 
 #include <string.h>
@@ -484,7 +484,7 @@ clear_snet_and_wave_and_sfpreset (BseTrack *self)
       bse_object_unproxy_notifies (self->sound_font_preset, self, "changed");
       bse_item_cross_unlink (BSE_ITEM (self), BSE_ITEM (self->sound_font_preset), track_uncross_sound_font_preset);
       self->sound_font_preset = NULL;
-      g_object_notify (self, "sound_font_preset");
+      g_object_notify ((GObject *) self, "sound_font_preset");
     }
   if (self->sound_font_net)
     {
@@ -552,7 +552,7 @@ bse_track_set_property (GObject      *object,
     case PROP_SOUND_FONT_PRESET:
       if (!self->sub_synth || !BSE_SOURCE_PREPARED (self->sub_synth))
 	{
-	  BseSoundFontPreset *sound_font_preset = bse_value_get_object (value);
+	  BseSoundFontPreset *sound_font_preset = (BseSoundFontPreset *) bse_value_get_object (value);
 	  if (sound_font_preset || self->sound_font_preset)
 	    {
 	      clear_snet_and_wave_and_sfpreset (self);

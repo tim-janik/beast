@@ -1,27 +1,11 @@
-/* BSE - Bedevilled Sound Engine
- * Copyright (C) 1996-1999, 2000-2003 Tim Janik
- * Copyright (C) 2009 Stefan Westerfeld
- *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * A copy of the GNU Lesser General Public License should ship along
- * with this library; if not, see http://www.gnu.org/copyleft/.
- */
-#ifndef	__BSE_SOUND_FONT_REPO_H__
-#define	__BSE_SOUND_FONT_REPO_H__
+// Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
+#ifndef	__BSE_SOUND_FONT_REPO_HH__
+#define	__BSE_SOUND_FONT_REPO_HH__
 
-#include	<bse/bsesuper.h>
+#include	<bse/bsesuper.hh>
 #include        <fluidsynth.h>
-#include        <bse/bsesoundfontosc.h>
-#include        <bse/bseengine.h>
+#include        <bse/bsesoundfontosc.hh>
+#include        <bse/bseengine.hh>
 
 
 G_BEGIN_DECLS
@@ -91,4 +75,4 @@ void           bse_sound_font_repo_remove_osc         (BseSoundFontRepo *sfrepo,
 
 G_END_DECLS
 
-#endif /* __BSE_SOUND_FONT_REPO_H__ */
+#endif /* __BSE_SOUND_FONT_REPO_HH__ */

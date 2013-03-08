@@ -1,29 +1,13 @@
-/* BSE - Bedevilled Sound Engine
- * Copyright (C) 1997-1999, 2000-2005 Tim Janik
- * Copyright (C) 2009 Stefan Westerfeld
- *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * A copy of the GNU Lesser General Public License should ship along
- * with this library; if not, see http://www.gnu.org/copyleft/.
- */
-#include "bsesoundfont.h"
-#include "bsesoundfontrepo.h"
-#include "bsesoundfontpreset.h"
-#include "bsemain.h"
-#include "bsestorage.h"
-#include "bseprocedure.h"
-#include "gsldatahandle.h"
-#include "bseserver.h"
-#include "bseloader.h"
+// Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
+#include "bsesoundfont.hh"
+#include "bsesoundfontrepo.hh"
+#include "bsesoundfontpreset.hh"
+#include "bsemain.hh"
+#include "bsestorage.hh"
+#include "bseprocedure.hh"
+#include "gsldatahandle.hh"
+#include "bseserver.hh"
+#include "bseloader.hh"
 
 #include <string.h>
 
@@ -38,7 +22,7 @@ enum {
 
 
 /* --- variables --- */
-static GTypeClass *parent_class = NULL;
+static void       *parent_class = NULL;
 static GQuark      quark_load_sound_font = 0;
 
 
@@ -155,9 +139,10 @@ bse_sound_font_load_blob (BseSoundFont    *self,
 	  fluid_sfont->iteration_start (fluid_sfont);
 	  while (fluid_sfont->iteration_next (fluid_sfont, &fluid_preset))
 	    {
-	      BseSoundFontPreset *sound_font_preset = g_object_new (BSE_TYPE_SOUND_FONT_PRESET,
-								    "uname", fluid_preset.get_name (&fluid_preset),
-								    NULL);
+	      BseSoundFontPreset *sound_font_preset;
+              sound_font_preset = (BseSoundFontPreset *) g_object_new (BSE_TYPE_SOUND_FONT_PRESET,
+								       "uname", fluid_preset.get_name (&fluid_preset),
+								       NULL);
 	      bse_container_add_item (BSE_CONTAINER (self), BSE_ITEM (sound_font_preset));
 	      bse_sound_font_preset_init_preset (sound_font_preset, &fluid_preset);
 	    }
@@ -219,7 +204,7 @@ bse_sound_font_store_private (BseObject  *object,
     }
 }
 
-static SfiTokenType
+static GTokenType
 bse_sound_font_restore_private (BseObject  *object,
 			        BseStorage *storage,
                                 GScanner   *scanner)
@@ -258,7 +243,7 @@ bse_sound_font_restore_private (BseObject  *object,
       if (g_scanner_peek_next_token (scanner) != ')')
 	{
 	  bse_storage_blob_unref (blob);
-	  return ')';
+	  return GTokenType (')');
 	}
       parse_or_return (scanner, ')');
       error = bse_sound_font_load_blob (sound_font, blob, FALSE);
@@ -304,7 +289,7 @@ bse_sound_font_forall_items (BseContainer      *container,
     {
       BseItem *item;
 
-      item = list->data;
+      item = BSE_ITEM (list->data);
       list = list->next;
       if (!func (item, data))
 	return;
@@ -333,7 +318,7 @@ bse_sound_font_release_children (BseContainer *container)
   BseSoundFont *self = BSE_SOUND_FONT (container);
 
   while (self->presets)
-    bse_container_remove_item (container, self->presets->data);
+    bse_container_remove_item (container, BSE_ITEM (self->presets->data));
 
   /* chain parent class' handler */
   BSE_CONTAINER_CLASS (parent_class)->release_children (container);
@@ -341,13 +326,13 @@ bse_sound_font_release_children (BseContainer *container)
 
 
 static void
-bse_sound_font_class_init (BseSoundFontClass *class)
+bse_sound_font_class_init (BseSoundFontClass *klass)
 {
-  GObjectClass *gobject_class = G_OBJECT_CLASS (class);
-  BseObjectClass *object_class = BSE_OBJECT_CLASS (class);
-  BseContainerClass *container_class = BSE_CONTAINER_CLASS (class);
+  GObjectClass *gobject_class = G_OBJECT_CLASS (klass);
+  BseObjectClass *object_class = BSE_OBJECT_CLASS (klass);
+  BseContainerClass *container_class = BSE_CONTAINER_CLASS (klass);
 
-  parent_class = g_type_class_peek_parent (class);
+  parent_class = g_type_class_peek_parent (klass);
 
   gobject_class->set_property = bse_sound_font_set_property;
   gobject_class->get_property = bse_sound_font_get_property;
