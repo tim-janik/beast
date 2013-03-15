@@ -1,3 +1,4 @@
+// Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bseloader.hh"
 #include <stdio.h>
 #include <errno.h>
@@ -77,11 +78,11 @@ struct FileInfo
     /* free BseWaveDsc */
     for (guint i = 0; i < wdsc.n_chunks; i++)
       g_strfreev (wdsc.chunks[i].xinfos);
-    
+
     g_strfreev (wdsc.xinfos);
     g_free (wdsc.name);
     g_free (wdsc.chunks);
-    
+
     /* free BseWaveFileInfo */
     if (wfi.waves)
       {
@@ -104,7 +105,7 @@ flac_load_file_info (gpointer      data,
       delete file_info;
       return NULL;
     }
-  
+
   return &file_info->wfi;
 }
 
@@ -139,10 +140,10 @@ flac_create_chunk_handle (gpointer      data,
 			  BseErrorType *error_p)
 {
   g_return_val_if_fail (nth_chunk == 0, NULL);
-  
+
   FileInfo *file_info = reinterpret_cast<FileInfo*> (wave_dsc->file_info);
   const BseWaveChunkDsc *chunk = &wave_dsc->chunks[nth_chunk];
-  
+
   GslDataHandle *dhandle;
   dhandle = bse_data_handle_new_flac (file_info->wfi.file_name,
 				      chunk->osc_freq);
@@ -173,9 +174,9 @@ bse_init_loader_flac (void)
     flac_create_chunk_handle,
   };
   static gboolean initialized = FALSE;
-  
+
   g_assert (initialized == FALSE);
   initialized = TRUE;
-  
+
   bse_loader_register (&loader);
 }
