@@ -195,7 +195,7 @@ progs_LDADD     = $(strip                                       \
 )
 
 noinst_PROGRAMS += tsmview
-tsmview_SOURCES  = tsmview.cc cxxdummy.cc
+tsmview_SOURCES  = tsmview.cc
 tsmview_LDADD    = $(progs_LDADD)
 
 noinst_PROGRAMS += testgui
