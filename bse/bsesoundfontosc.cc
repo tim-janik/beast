@@ -52,7 +52,7 @@
  *
  * The check:
  *
- *   gint64 now_tick_stamp = GSL_TICK_STAMP;
+ *   gint64 now_tick_stamp = Bse::TickStamp::current();
  *   if (sfrepo->channel_values_tick_stamp != now_tick_stamp)
  *        ...
  *
@@ -444,7 +444,7 @@ sound_font_osc_process (BseModule *module,
 						flmod->config.sfont_id, flmod->config.bank, flmod->config.program);
       flmod->last_update_preset = flmod->config.update_preset;
     }
-  gint64 now_tick_stamp = GSL_TICK_STAMP;
+  gint64 now_tick_stamp = Bse::TickStamp::current();
   if (sfrepo->channel_values_tick_stamp != now_tick_stamp)
     process_fluid_L (sfrepo, fluid_synth, now_tick_stamp);
 
