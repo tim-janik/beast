@@ -409,7 +409,7 @@ pcm_pos_access (BseModule *module,      /* EngineThread */
 {
   GslWaveOscData *wosc = (GslWaveOscData*) module->user_data;
   PcmPos *pos = (PcmPos*) data;
-  pos->stamp = GSL_TICK_STAMP;
+  pos->stamp = Bse::TickStamp::current();
   pos->module_pcm_position = gsl_wave_osc_cur_pos (wosc);
   if (pos->perc >= 0 && wosc->wchunk)
     {

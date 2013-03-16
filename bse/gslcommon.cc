@@ -11,12 +11,48 @@
 #include <sys/poll.h>
 #include <sys/stat.h>
 #include <sys/time.h>
-/* --- variables --- */
-volatile guint64     bse_engine_exvar_tick_stamp = 0;   /* initialized to 1 upon gsl_init(), so 0==invalid */
-static guint64	     tick_stamp_system_time = 0;
-static guint         global_tick_stamp_leaps = 0;
-/* --- tick stamps --- */
-static BirnetMutex     global_tick_stamp_mutex = { 0, };
+
+namespace Bse {
+
+// == TickStamp ==
+static Rapicorn::Mutex          global_tick_stamp_mutex;
+static uint64	                tick_stamp_system_time = 0;
+static uint64                   tick_stamp_leaps = 0;
+Rapicorn::Atomic<uint64>        TickStamp::global_tick_stamp = 0;       // initialized to 1 from gsl_init(), so 0 == invalid
+static std::list<TickStampWakeupP> tick_stamp_wakeups;
+
+void
+TickStamp::_init_forgsl()
+{
+  g_return_if_fail (global_tick_stamp == 0);    // assert we're uninitialized
+  global_tick_stamp = 1;
+}
+
+void
+TickStamp::_set_leap (uint64 ticks)
+{
+  Rapicorn::ScopedLock<Rapicorn::Mutex> locker (global_tick_stamp_mutex);
+  tick_stamp_leaps = ticks;
+}
+
+void
+TickStamp::_increment ()
+{
+  g_return_if_fail (tick_stamp_leaps > 0);
+  volatile guint64 newstamp;
+  uint64 systime;
+  systime = sfi_time_system ();
+  newstamp = global_tick_stamp + tick_stamp_leaps;
+  {
+    Rapicorn::ScopedLock<Rapicorn::Mutex> locker (global_tick_stamp_mutex);
+    global_tick_stamp = newstamp;
+    tick_stamp_system_time = systime;
+  }
+  struct Internal : Wakeup { using Wakeup::_emit_wakeups; };
+  Internal::_emit_wakeups (newstamp);
+}
+
+#ifdef  RAPICORN_DOXYGEN
 /**
  * @return GSL's execution tick stamp as unsigned 64bit integer
  *
@@ -29,74 +65,109 @@ static BirnetMutex     global_tick_stamp_mutex = { 0, };
  * sfi_thread_awake_before(). Tick stamp updating occours at
  * GSL engine block processing boundaries, so code that can
  * guarantee to not run across those boundaries (for instance
- * BseProcessFunc() functions) may use the macro GSL_TICK_STAMP
+ * BseProcessFunc() functions) may use the macro Bse::TickStamp::current()
  * to retrieve the current tick in a faster manner (not involving
  * mutex locking). See also bse_module_tick_stamp().
  * This function is MT-safe and may be called from any thread.
  */
-guint64
-gsl_tick_stamp (void)
-{
-  guint64 stamp;
-  GSL_SPIN_LOCK (&global_tick_stamp_mutex);
-  stamp = bse_engine_exvar_tick_stamp;
-  GSL_SPIN_UNLOCK (&global_tick_stamp_mutex);
-  return stamp;
-}
-void
-_gsl_tick_stamp_set_leap (guint ticks)
-{
-  GSL_SPIN_LOCK (&global_tick_stamp_mutex);
-  global_tick_stamp_leaps = ticks;
-  GSL_SPIN_UNLOCK (&global_tick_stamp_mutex);
-}
+uint64 TickStamp::current () { ... }
+#endif
+
 /**
  * @return Current tick stamp and system time in micro seconds
  *
  * Get the system time of the last GSL global tick stamp update.
  * This function is MT-safe and may be called from any thread.
  */
-GslTickStampUpdate
-gsl_tick_stamp_last (void)
+TickStamp::Update
+TickStamp::get_last()
 {
-  GslTickStampUpdate ustamp;
-  GSL_SPIN_LOCK (&global_tick_stamp_mutex);
-  ustamp.tick_stamp = bse_engine_exvar_tick_stamp;
+  Update ustamp;
+  Rapicorn::ScopedLock<Rapicorn::Mutex> locker (global_tick_stamp_mutex);
+  ustamp.tick_stamp = global_tick_stamp;
   ustamp.system_time = tick_stamp_system_time;
-  GSL_SPIN_UNLOCK (&global_tick_stamp_mutex);
   return ustamp;
 }
-void
-_gsl_tick_stamp_inc (void)
+
+TickStamp::Wakeup::Wakeup (const std::function<void()> &wakeup) :
+  wakeup_ (wakeup), awake_stamp_ (0)
+{}
+
+TickStampWakeupP
+TickStamp::create_wakeup (const std::function<void()> &wakeup)
 {
-  volatile guint64 newstamp;
-  guint64 systime;
-  g_return_if_fail (global_tick_stamp_leaps > 0);
-  systime = sfi_time_system ();
-  newstamp = bse_engine_exvar_tick_stamp + global_tick_stamp_leaps;
-  GSL_SPIN_LOCK (&global_tick_stamp_mutex);
-  bse_engine_exvar_tick_stamp = newstamp;
-  tick_stamp_system_time = systime;
-  GSL_SPIN_UNLOCK (&global_tick_stamp_mutex);
-  sfi_thread_emit_wakeups (newstamp);
+  struct WakeupImpl : TickStamp::Wakeup {
+    WakeupImpl (const std::function<void()> &wakeup) :
+      Wakeup (wakeup)
+    {}
+  };
+  auto wp = std::make_shared<WakeupImpl> (wakeup);
+  return wp;
 }
+
 /**
- * @param tick_stamp tick stamp update to trigger wakeup
+ * @param stamp stamp to trigger wakeup
+ *
+ * Wake the current thread up at a future tick increment which exceeds @a stamp.
+ */
+void
+TickStamp::Wakeup::awake_after (uint64 stamp)
+{
+  Rapicorn::ScopedLock<Rapicorn::Mutex> locker (global_tick_stamp_mutex);
+  if (!awake_stamp_ && stamp)
+    {
+      tick_stamp_wakeups.push_back (shared_from_this());
+      awake_stamp_ = stamp;
+    }
+  else if (!stamp && awake_stamp_)
+    {
+      tick_stamp_wakeups.remove (shared_from_this());
+      awake_stamp_ = 0;
+    }
+  else if (awake_stamp_ && stamp)
+    awake_stamp_ = MIN (awake_stamp_, stamp);
+}
+
+/**
+ * @param stamp tick stamp update to trigger wakeup
+ *
  * Wakeup the currently running thread upon the last global tick stamp
- * update (see gsl_tick_stamp()) that happens prior to updating the
+ * update (see Bse::TickStamp::current()) that happens prior to updating the
  * global tick stamp to @a tick_stamp.
  * (If the moment of wakeup has already passed by, the thread is
  * woken up at the next global tick stamp update.)
  */
 void
-gsl_thread_awake_before (guint64 tick_stamp)
+TickStamp::Wakeup::awake_before (uint64 stamp)
 {
-  g_return_if_fail (tick_stamp > 0);
-  if (tick_stamp > global_tick_stamp_leaps)
-    sfi_thread_awake_after (tick_stamp - global_tick_stamp_leaps);
-  else
-    sfi_thread_awake_after (tick_stamp);
+  g_return_if_fail (stamp > 0);
+  if (stamp > tick_stamp_leaps)
+    stamp -= tick_stamp_leaps;
+  awake_after (stamp);
 }
+
+void
+TickStamp::Wakeup::_emit_wakeups (uint64 wakeup_stamp)
+{
+  Rapicorn::ScopedLock<Rapicorn::Mutex> locker (global_tick_stamp_mutex);
+  std::list<TickStampWakeupP> list, notifies;
+  list.swap (tick_stamp_wakeups);
+  for (auto it : list)
+    if (it->awake_stamp_ > wakeup_stamp)
+      tick_stamp_wakeups.push_back (it);
+    else // awake_stamp_ <= wakeup_stamp
+      notifies.push_back (it);
+  for (auto it : notifies)
+    if (it->wakeup_)
+      {
+        it->awake_stamp_ = 0;
+        it->wakeup_();
+      }
+}
+
+} // Bse
+
+
 /* --- misc --- */
 const gchar*
 gsl_byte_order_to_string (guint byte_order)
@@ -310,10 +381,10 @@ gsl_progress_printerr (gpointer          message,
 void
 gsl_init (void)
 {
-  g_return_if_fail (bse_engine_exvar_tick_stamp == 0);  /* assert single initialization */
-  bse_engine_exvar_tick_stamp = 1;
+  g_return_if_fail (Bse::TickStamp::current() == 0);     // assert single initialization
+  struct Internal : Bse::TickStamp { using TickStamp::_init_forgsl; };
+  Internal::_init_forgsl();
   /* initialize subsystems */
-  sfi_mutex_init (&global_tick_stamp_mutex);
   _gsl_init_fd_pool ();
   _gsl_init_data_caches ();
   _gsl_init_loader_gslwave ();

@@ -2,7 +2,7 @@
 #include "bseprobe.genidl.hh"
 #include "bseengine.hh"
 #include "bseblockutils.hh"
-#include "gslcommon.hh" /* for gsl_tick_stamp() */
+#include "gslcommon.hh" /* for Bse::TickStamp::current() */
 #include "gslfft.hh"
 #include "bsemain.hh"
 #include "bsesequencer.hh"
@@ -687,7 +687,7 @@ source_mass_request::exec (const ProbeRequestSeq &cprseq)
 Num
 source_get_tick_stamp::exec (BseSource *self)
 {
-  return gsl_tick_stamp ();
+  return Bse::TickStamp::current();
 }
 Int
 source_get_mix_freq::exec (BseSource *self)

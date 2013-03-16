@@ -278,7 +278,7 @@ _engine_pop_job (gboolean update_commit_stamp)
 	  cqueue_trans_pending_tail = NULL;
           cqueue_trans_job = cqueue_trans_active_head ? cqueue_trans_active_head->jobs_head : NULL;
           if (!cqueue_trans_job && update_commit_stamp)
-            cqueue_commit_base_stamp = gsl_tick_stamp();        /* last job has been handed out */
+            cqueue_commit_base_stamp = Bse::TickStamp::current();        /* last job has been handed out */
 	  GSL_SPIN_UNLOCK (&cqueue_trans);
 	  sfi_cond_broadcast (&cqueue_trans_cond);
 	}
@@ -301,7 +301,7 @@ _engine_pop_job (gboolean update_commit_stamp)
 	  cqueue_trans_pending_tail = NULL;
           cqueue_trans_job = cqueue_trans_active_head ? cqueue_trans_active_head->jobs_head : NULL;
           if (!cqueue_trans_job && update_commit_stamp)
-            cqueue_commit_base_stamp = gsl_tick_stamp();        /* last job has been handed out */
+            cqueue_commit_base_stamp = Bse::TickStamp::current();        /* last job has been handed out */
 	  GSL_SPIN_UNLOCK (&cqueue_trans);
 	}
     }

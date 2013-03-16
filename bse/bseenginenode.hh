@@ -159,7 +159,7 @@ struct _EngineNode		/* fields sorted by order of processing access */
 {
   BseModule	 module;
   BirnetRecMutex	 rec_mutex;	/* processing lock */
-  guint64	 counter;	/* <= GSL_TICK_STAMP */
+  guint64	 counter;	/* <= Bse::TickStamp::current() */
   EngineInput	*inputs;	/* [ENGINE_NODE_N_ISTREAMS()] */
   EngineJInput **jinputs;	/* [ENGINE_NODE_N_JSTREAMS()][jstream->jcount] */
   EngineOutput	*outputs;	/* [ENGINE_NODE_N_OSTREAMS()] */

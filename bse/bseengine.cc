@@ -69,9 +69,9 @@ bse_module_new (const BseModuleClass *klass,
  * @return		the module's tick stamp, indicating its process status
  *
  * Any thread may call this function on a valid engine module.
- * The module specific tick stamp is updated to gsl_tick_stamp() +
+ * The module specific tick stamp is updated to Bse::TickStamp::current() +
  * @a n_values every time its BseProcessFunc() function was
- * called. See also gsl_tick_stamp().
+ * called. See also Bse::TickStamp::current().
  * This function is MT-safe and may be called from any thread.
  */
 guint64
@@ -499,7 +499,7 @@ bse_job_flow_access (BseModule    *module,
   BseJob *job;
   g_return_val_if_fail (module != NULL, NULL);
   g_return_val_if_fail (ENGINE_MODULE_IS_VIRTUAL (module) == FALSE, NULL);
-  g_return_val_if_fail (tick_stamp < GSL_MAX_TICK_STAMP, NULL);
+  g_return_val_if_fail (tick_stamp < Bse::TickStamp::max_stamp(), NULL);
   g_return_val_if_fail (access_func != NULL, NULL);
   EngineTimedJob *tjob = (EngineTimedJob*) g_malloc0 (sizeof (tjob->access));
   tjob->type = ENGINE_JOB_FLOW_JOB;
@@ -540,7 +540,7 @@ bse_job_boundary_access (BseModule    *module,
   BseJob *job;
   g_return_val_if_fail (module != NULL, NULL);
   g_return_val_if_fail (ENGINE_MODULE_IS_VIRTUAL (module) == FALSE, NULL);
-  g_return_val_if_fail (tick_stamp < GSL_MAX_TICK_STAMP, NULL);
+  g_return_val_if_fail (tick_stamp < Bse::TickStamp::max_stamp(), NULL);
   g_return_val_if_fail (access_func != NULL, NULL);
   EngineTimedJob *tjob = (EngineTimedJob*) g_malloc0 (sizeof (tjob->access));
   tjob->type = ENGINE_JOB_BOUNDARY_JOB;
@@ -609,7 +609,7 @@ bse_job_suspend_now (BseModule *module)
   BseJob *job = sfi_new_struct0 (BseJob, 1);
   job->job_id = ENGINE_JOB_SUSPEND;
   job->tick.node = ENGINE_NODE (module);
-  job->tick.stamp = GSL_MAX_TICK_STAMP;
+  job->tick.stamp = Bse::TickStamp::max_stamp();
   return job;
 }
 /**
@@ -633,7 +633,7 @@ bse_job_resume_at (BseModule *module,
 {
   g_return_val_if_fail (module != NULL, NULL);
   g_return_val_if_fail (ENGINE_MODULE_IS_VIRTUAL (module) == FALSE, NULL);
-  g_return_val_if_fail (tick_stamp < GSL_MAX_TICK_STAMP, NULL);
+  g_return_val_if_fail (tick_stamp < Bse::TickStamp::max_stamp(), NULL);
   BseJob *job = sfi_new_struct0 (BseJob, 1);
   job->job_id = ENGINE_JOB_RESUME;
   job->tick.node = ENGINE_NODE (module);
@@ -863,7 +863,7 @@ bse_trans_merge (BseTrans *trans1,
  * Close the transaction and commit it to the engine. The engine
  * will execute the jobs contained in this transaction as soon as
  * it has completed its current processing cycle, at which point
- * gsl_tick_stamp() matches the returned tick stamp.
+ * Bse::TickStamp::current() matches the returned tick stamp.
  * The jobs will be executed in the exact order they were added
  * to the transaction.
  * This function is MT-safe and may be called from any thread.
@@ -930,7 +930,7 @@ bse_trans_commit_delayed (BseTrans *trans,
 {
   g_return_if_fail (trans != NULL);
   g_return_if_fail (trans->comitted == FALSE);
-  if (tick_stamp <= gsl_tick_stamp ())
+  if (tick_stamp <= Bse::TickStamp::current())
     bse_trans_commit (trans);
   else
     {
@@ -1110,7 +1110,7 @@ guint			bse_engine_exvar_control_mask = 0;
  * @a sample_freq. It determines how often control values are to be
  * checked when calculating blocks of sample values.
  * The block size determines the amount by which the global tick
- * stamp (see gsl_tick_stamp()) is updated everytime the whole
+ * stamp (see Bse::TickStamp::current()) is updated everytime the whole
  * module network completed processing block size values.
  * This function is MT-safe and may be called prior to engine initialization.
  */
@@ -1228,8 +1228,8 @@ bse_engine_configure (guint            latency_ms,
       bse_engine_exvar_sample_freq = sample_freq;
       bse_engine_exvar_control_mask = control_raster - 1;
       /* fixup timer */
-      _gsl_tick_stamp_set_leap (bse_engine_block_size());
-      _gsl_tick_stamp_inc ();   /* ensure stamp validity (>0 and systime mark) */
+      Bse::TickStamp::_set_leap (bse_engine_block_size());
+      Bse::TickStamp::_increment(); // ensure stamp validity (>0 and systime mark)
       success = TRUE;
     }
   /* unblock master */
@@ -1380,7 +1380,7 @@ bse_engine_get_threads (guint *n_threads)
 guint64
 bse_engine_tick_stamp_from_systime (guint64 systime)
 {
-  GslTickStampUpdate ustamp = gsl_tick_stamp_last ();
+  Bse::TickStamp::Update ustamp = Bse::TickStamp::get_last ();
   guint64 tick_stamp;
   /* FIXME: we should add special guards here
    * for sfi_time_system() - ustamp.system_time ~> (44100 / bse_engine_block_size ())
@@ -1407,7 +1407,7 @@ bse_engine_tick_stamp_from_systime (guint64 systime)
 	     "  last-update-systime   = %llu\n"
 	     "  last-update-tickstamp = %llu\n"
 	     "  sample-freq           = %u\n",
-	     tick_stamp, systime, sfi_time_system (), gsl_tick_stamp (),
+	     tick_stamp, systime, sfi_time_system (), Bse::TickStamp::get_current (),
 	     ustamp.system_time, ustamp.tick_stamp,
 	     bse_engine_sample_freq ());
 #endif

@@ -15,15 +15,18 @@
 #include <errno.h>
 #include <string.h>
 #include <vector>
+using namespace std;    // FIXME
+
 /* due to a linker/compiler bug on SuSE 9.2, we need to
  * define extern "C" symbols outside of any C++ namespace,
  * in order for C code to link against it.
  */
 extern "C" { BirnetThread *bse_sequencer_thread = NULL; }
-using namespace std;
+
 #define CHECKTRACE()    UNLIKELY (bse_trace_args.sequencer)
 #define SEQTRACE(...)   do { if (CHECKTRACE()) sfi_debug_channel_printf (bse_trace_args.sequencer, NULL, __VA_ARGS__); } while (0)
 #define	BSE_SEQUENCER_FUTURE_BLOCKS    (7)
+
 /* --- prototypes --- */
 static void	bse_sequencer_thread_main	(gpointer	 data);
 static void	bse_sequencer_process_song_SL	(BseSong	*song,
@@ -32,6 +35,7 @@ static void	bse_sequencer_process_song_SL	(BseSong	*song,
 static BseSequencer    *global_sequencer = NULL;
 static BirnetCond          current_watch_cond = { 0, };
 static gint             sequencer_wake_up_pipe[2] = { -1, -1 };
+
 /* --- functions --- */
 extern "C" void
 bse_sequencer_init_thread (void)
@@ -46,15 +50,16 @@ bse_sequencer_init_thread (void)
   fcntl (sequencer_wake_up_pipe[1], F_SETFL, O_NONBLOCK | flags);
   /* initialize BseSequencer */
   static BseSequencer sseq = { 0, };
-  sseq.stamp = gsl_tick_stamp ();
+  sseq.stamp = Bse::TickStamp::current();
   g_assert (sseq.stamp > 0);
   global_sequencer = &sseq;
   bse_sequencer_thread = sfi_thread_run ("Sequencer", bse_sequencer_thread_main, NULL);
   if (!bse_sequencer_thread)
     g_error ("failed to create sequencer thread");
 }
-static void
-sequencer_wake_up (gpointer wake_up_data)
+
+void
+bse_sequencer_wakeup ()
 {
   guint8 wake_up_message = 'W';
   gint err;
@@ -62,6 +67,7 @@ sequencer_wake_up (gpointer wake_up_data)
     err = write (sequencer_wake_up_pipe[1], &wake_up_message, 1);
   while (err < 0 && errno == EINTR);
 }
+
 namespace { // Anon
 class PollPool {
 public:
@@ -221,7 +227,7 @@ bse_sequencer_remove_io_watch (BseIOWatch      watch_func,
     {
       removal_success = sequencer_poll_pool.remove_watch (watch_func, watch_data);
       /* wake up sequencer thread, so it stops polling on fds it doesn't own anymore */
-      sfi_thread_wakeup (bse_sequencer_thread);
+      bse_sequencer_wakeup();
     }
   BSE_SEQUENCER_UNLOCK ();
   if (!removal_success)
@@ -297,7 +303,7 @@ bse_sequencer_start_song (BseSong        *song,
     }
   global_sequencer->songs = sfi_ring_append (global_sequencer->songs, song);
   BSE_SEQUENCER_UNLOCK ();
-  sfi_thread_wakeup (bse_sequencer_thread);
+  bse_sequencer_wakeup();
 }
 extern "C" void
 bse_sequencer_remove_song (BseSong *song)
@@ -351,7 +357,7 @@ extern "C" gboolean
 bse_sequencer_thread_lagging (guint n_blocks)
 {
   /* return whether the sequencer lags for n_blocks future stamps */
-  const guint64 cur_stamp = gsl_tick_stamp ();
+  const guint64 cur_stamp = Bse::TickStamp::current();
   guint64 next_stamp = cur_stamp + n_blocks * bse_engine_block_size();
   BSE_SEQUENCER_LOCK ();
   gboolean lagging = global_sequencer->stamp < next_stamp;
@@ -361,13 +367,13 @@ bse_sequencer_thread_lagging (guint n_blocks)
 static void
 bse_sequencer_thread_main (gpointer data)
 {
-  SEQTRACE ("SEQ:thrdstrt: now=%llu", gsl_tick_stamp());
-  sfi_thread_set_wakeup (sequencer_wake_up, NULL, NULL);
+  SEQTRACE ("SEQ:thrdstrt: now=%llu", Bse::TickStamp::current());
+  Bse::TickStampWakeupP wakeup = Bse::TickStamp::create_wakeup (bse_sequencer_wakeup);
   bse_message_setup_thread_handler();
   BSE_SEQUENCER_LOCK ();
   do
     {
-      const guint64 cur_stamp = gsl_tick_stamp ();
+      const guint64 cur_stamp = Bse::TickStamp::current();
       guint64 next_stamp = cur_stamp + BSE_SEQUENCER_FUTURE_BLOCKS * bse_engine_block_size();
       SfiRing *ring;
       for (ring = global_sequencer->songs; ring; ring = sfi_ring_walk (ring, global_sequencer->songs))
@@ -412,11 +418,11 @@ bse_sequencer_thread_main (gpointer data)
 	    }
 	}
       global_sequencer->stamp = next_stamp;
-      sfi_thread_awake_after (cur_stamp + bse_engine_block_size ());
+      wakeup->awake_after (cur_stamp + bse_engine_block_size ());
     }
   while (bse_sequencer_poll_Lm (-1));
   BSE_SEQUENCER_UNLOCK ();
-  SEQTRACE ("SEQ:thrdstop: now=%llu", gsl_tick_stamp());
+  SEQTRACE ("SEQ:thrdstop: now=%llu", Bse::TickStamp::current());
 }
 static void
 bse_sequencer_process_track_SL (BseTrack        *track,
@@ -506,13 +512,13 @@ bse_sequencer_process_track_SL (BseTrack        *track,
   if (!part && next)
     {
       part = bse_track_get_part_SL (track, next, &start, &next);
-      SEQTRACE ("SEQ:trackjmp: tick=%u fast forward to first part part=%p now=%llu", start_tick, part, gsl_tick_stamp());
+      SEQTRACE ("SEQ:trackjmp: tick=%u fast forward to first part part=%p now=%llu", start_tick, part, Bse::TickStamp::current());
     }
   if (!part || (next == 0 && start + part->last_tick_SL < start_tick))
     {
       track->track_done_SL = !bse_midi_receiver_voices_pending (midi_receiver, track->midi_channel_SL);
       SEQTRACE ("SEQ:trackchk: tick=%u next=%u part=%p done=%u now=%llu", // part==NULL || start + (part ? part->last_tick_SL : 0) < start_tick
-                start_tick, next, part, track->track_done_SL, gsl_tick_stamp());
+                start_tick, next, part, track->track_done_SL, Bse::TickStamp::current());
       part = NULL;
     }
   while (part && start < bound)
@@ -563,9 +569,9 @@ bse_sequencer_process_part_SL (BsePart         *part,
           if (CHECKTRACE())
             {
               SEQTRACE ("SEQ:note-on:  tick=%llu midinote=%-3d velocity=%02x freq=% 10f now=%llu",
-                        eon->delta_time,  note->note, bse_ftoi (note->velocity * 128), freq, gsl_tick_stamp());
+                        eon->delta_time,  note->note, bse_ftoi (note->velocity * 128), freq, Bse::TickStamp::current());
               SEQTRACE ("SEQ:note-off: tick=%llu midinote=%-3d velocity=%02x freq=% 10f now=%llu",
-                        eoff->delta_time, note->note, bse_ftoi (note->velocity * 128), freq, gsl_tick_stamp());
+                        eoff->delta_time, note->note, bse_ftoi (note->velocity * 128), freq, Bse::TickStamp::current());
             }
           note++;
         }
@@ -582,7 +588,7 @@ bse_sequencer_process_part_SL (BsePart         *part,
                                                        BseMidiSignalType (cev->ctype), cev->value);
           bse_midi_receiver_push_event (midi_receiver, event);
           SEQTRACE ("SEQ:control:  tick=%llu midisignal=%-3d value=%f now=%llu",
-                    event->delta_time, cev->ctype, cev->value, gsl_tick_stamp());
+                    event->delta_time, cev->ctype, cev->value, Bse::TickStamp::current());
         }
       node++;
     }

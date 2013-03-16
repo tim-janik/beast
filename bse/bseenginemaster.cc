@@ -238,7 +238,7 @@ node_peek_flow_job_stamp (EngineNode *node)
   EngineTimedJob *tjob = node->flow_jobs;
   if (UNLIKELY (tjob != NULL))
     return tjob->tick_stamp;
-  return GSL_MAX_TICK_STAMP;
+  return Bse::TickStamp::max_stamp();
 }
 static inline guint64
 node_peek_boundary_job_stamp (EngineNode *node)
@@ -246,7 +246,7 @@ node_peek_boundary_job_stamp (EngineNode *node)
   EngineTimedJob *tjob = node->boundary_jobs;
   if (UNLIKELY (tjob != NULL))
     return tjob->tick_stamp;
-  return GSL_MAX_TICK_STAMP;
+  return Bse::TickStamp::max_stamp();
 }
 /* --- job processing --- */
 static void
@@ -281,7 +281,7 @@ master_process_job (BseJob *job)
       _engine_mnl_integrate (node);
       if (ENGINE_NODE_IS_CONSUMER (node))
 	add_consumer (node);
-      node->counter = GSL_TICK_STAMP;
+      node->counter = Bse::TickStamp::current();
       NODE_FLAG_RECONNECT (node);
       node->local_active = 0;   /* by default not suspended */
       node->update_suspend = TRUE;
@@ -334,10 +334,10 @@ master_process_job (BseJob *job)
 	}
       else
 	_engine_mnl_remove (node);
-      node->counter = GSL_MAX_TICK_STAMP;
+      node->counter = Bse::TickStamp::max_stamp();
       /* nuke pending timed jobs */
       do
-        tjob = node_pop_flow_job (node, GSL_MAX_TICK_STAMP);
+        tjob = node_pop_flow_job (node, Bse::TickStamp::max_stamp());
       while (tjob);
       /* nuke probe jobs */
       if (node->probe_jobs)
@@ -353,7 +353,7 @@ master_process_job (BseJob *job)
       /* nuke boundary jobs */
       if (node->boundary_jobs)
         do
-          tjob = node_pop_boundary_job (node, GSL_MAX_TICK_STAMP, sfi_ring_find (boundary_node_list, node));
+          tjob = node_pop_boundary_job (node, Bse::TickStamp::max_stamp(), sfi_ring_find (boundary_node_list, node));
         while (tjob);
       _engine_node_collect_jobs (node);
       break;
@@ -483,14 +483,14 @@ master_process_job (BseJob *job)
       node = job->data.node;
       JOB_DEBUG ("reset(%p)", node);
       g_return_if_fail (node->integrated == TRUE);
-      node->counter = GSL_TICK_STAMP;
+      node->counter = Bse::TickStamp::current();
       node->needs_reset = TRUE;
       break;
     case ENGINE_JOB_ACCESS:
       node = job->access.node;
       JOB_DEBUG ("access node(%p): %p(%p)", node, job->access.access_func, job->access.data);
       g_return_if_fail (node->integrated == TRUE);
-      node->counter = GSL_TICK_STAMP;
+      node->counter = Bse::TickStamp::current();
       job->access.access_func (&node->module, job->access.data);
       break;
     case ENGINE_JOB_PROBE_JOB:
@@ -632,8 +632,8 @@ master_tick_stamp_inc (void)
 {
   Timer *timer, *last = NULL;
   guint64 new_stamp;
-  _gsl_tick_stamp_inc ();
-  new_stamp = GSL_TICK_STAMP;
+  Bse::TickStamp::_increment();
+  new_stamp = Bse::TickStamp::current();
   timer = master_timer_list;
   while (timer)
     {
@@ -743,7 +743,7 @@ static void
 master_process_locked_node (EngineNode *node,
 			    guint       n_values)
 {
-  const guint64 current_stamp = GSL_TICK_STAMP;
+  const guint64 current_stamp = Bse::TickStamp::current();
   guint64 next_counter, new_counter, final_counter = current_stamp + n_values;
   guint i, j, diff;
   bool needs_probe_reset = node->probe_jobs != NULL;
@@ -820,7 +820,7 @@ static gboolean gsl_profile_modules = 0;	/* set to 1 in gdb to get profile outpu
 static void
 master_process_flow (void)
 {
-  const guint64 current_stamp = GSL_TICK_STAMP;
+  const guint64 current_stamp = Bse::TickStamp::current();
   guint n_values = bse_engine_block_size();
   guint64 final_counter = current_stamp + n_values;
   guint64 profile_maxtime = 0;
@@ -981,7 +981,7 @@ _engine_master_check (const BseEngineLoop *loop)
 void
 _engine_master_dispatch_jobs (void)
 {
-  const guint64 current_stamp = GSL_TICK_STAMP;
+  const guint64 current_stamp = Bse::TickStamp::current();
   guint64 last_block_tick = current_stamp + bse_engine_block_size() - 1;
   BseJob *job = _engine_pop_job (boundary_node_list == NULL);
   /* here, we have to process _all_ pending jobs in a row. a popped job

@@ -654,7 +654,7 @@ bse_project_state_changed (BseProject     *self,
   self->state = state;
   if (self->state == BSE_PROJECT_ACTIVE && self->deactivate_usecs >= 0)
     {
-      SfiTime stamp = gsl_tick_stamp ();
+      SfiTime stamp = Bse::TickStamp::current();
       SfiTime delay_usecs = 0;
       if (SfiTime (self->deactivate_min_tick) > stamp)
 	delay_usecs = (self->deactivate_min_tick - stamp) * 1000000 / bse_engine_sample_freq ();
