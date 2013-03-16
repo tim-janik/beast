@@ -66,16 +66,18 @@ bse_pcm_device_null_close (BseDevice *device)
   BSE_PCM_DEVICE (device)->handle = NULL;
   g_free (null);
 }
+
 static gboolean
 null_device_check_io (BsePcmHandle *handle,
                       glong        *timeoutp)
 {
   /* keep the sequencer busy or we will constantly timeout */
-  bse_sequencer_wakeup();
+  Bse::Sequencer::instance().wakeup();
   *timeoutp = 1;
   /* ensure sequencer fairness */
-  return !bse_sequencer_thread_lagging (2);
+  return !Bse::Sequencer::instance().thread_lagging (2);
 }
+
 static guint
 null_device_latency (BsePcmHandle *handle)
 {

@@ -32,8 +32,6 @@ void            bse_message_to_default_handler   (const BseMessage *msg);
 /* --- global macros --- */
 #define	BSE_THREADS_ENTER()			// bse_main_global_lock ()
 #define	BSE_THREADS_LEAVE()			// bse_main_global_unlock ()
-#define	BSE_SEQUENCER_LOCK()			sfi_mutex_lock (&bse_main_sequencer_mutex)
-#define	BSE_SEQUENCER_UNLOCK()			sfi_mutex_unlock (&bse_main_sequencer_mutex)
 #define	BSE_DBG_EXT     			(bse_main_args->debug_extensions != FALSE)
 #define	BSE_CONFIG(field)			(bse_main_args->field)
 /* --- argc/argv overide settings --- */
@@ -79,7 +77,6 @@ void    _bse_init_c_wrappers    ();
 extern BseMainArgs     *bse_main_args;
 extern BseTraceArgs     bse_trace_args;
 extern GMainContext    *bse_main_context;
-extern BirnetMutex	bse_main_sequencer_mutex;
 
 G_END_DECLS
 

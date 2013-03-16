@@ -35,7 +35,6 @@ const guint		 bse_interface_age = BSE_INTERFACE_AGE;
 const guint		 bse_binary_age = BSE_BINARY_AGE;
 const gchar		*bse_version = BSE_VERSION;
 GMainContext            *bse_main_context = NULL;
-BirnetMutex	         bse_main_sequencer_mutex = { 0, };
 static volatile gboolean bse_initialization_stage = 0;
 static gboolean          textdomain_setup = FALSE;
 static BseMainArgs       default_main_args = {
@@ -180,7 +179,6 @@ static void
 bse_init_core (void)
 {
   /* global threading things */
-  sfi_mutex_init (&bse_main_sequencer_mutex);
   bse_main_context = g_main_context_new ();
   sfi_thread_set_wakeup ((BirnetThreadWakeup) g_main_context_wakeup,
 			 bse_main_context, NULL);
@@ -334,7 +332,8 @@ bse_main_loop (Rapicorn::AsyncBlockingQueue<int> *init_queue)
   Bse::TaskRegistry::add ("BSE Core", Rapicorn::ThisThread::process_pid(), Rapicorn::ThisThread::thread_pid());
   bse_init_core ();
   // start other threads
-  bse_sequencer_init_thread ();
+  struct Internal : Bse::Sequencer { using Bse::Sequencer::_init_threaded; };
+  Internal::_init_threaded();
   // complete initialization
   bse_initialization_stage++;   // = 2
   init_queue->push ('B');       // signal completion to caller

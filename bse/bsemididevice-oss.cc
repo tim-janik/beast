@@ -152,7 +152,7 @@ bse_midi_device_oss_open (BseDevice     *device,
       GPollFD pfd = { 0, };
       pfd.fd = oss->fd;
       pfd.events = G_IO_IN;
-      bse_sequencer_add_io_watch (1, &pfd, oss_midi_io_handler, oss);
+      Bse::Sequencer::instance().add_io_watch (1, &pfd, oss_midi_io_handler, oss);
     }
   else
     {
@@ -171,7 +171,7 @@ bse_midi_device_oss_close (BseDevice *device)
   BSE_MIDI_DEVICE (device)->handle = NULL;
   g_assert (handle->running_thread == FALSE);
   /* midi_handle_abort_wait (handle); */
-  bse_sequencer_remove_io_watch (oss_midi_io_handler, oss);
+  Bse::Sequencer::instance().remove_io_watch (oss_midi_io_handler, oss);
   (void) close (oss->fd);
   g_free (oss);
 }
