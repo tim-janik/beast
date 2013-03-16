@@ -47,7 +47,7 @@ progs_ldadd     = $(top_builddir)/bse/libbse.la $(BSE_LIBS)
 # testwavechunk
 TESTS                += testwavechunk
 SLOWTESTS            += testwavechunk
-testwavechunk_SOURCES = testwavechunk.c cxxdummy.cc
+testwavechunk_SOURCES = testwavechunk.cc
 testwavechunk_LDADD = $(progs_ldadd)
 # perftest
 TESTS           += perftest

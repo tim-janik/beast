@@ -265,7 +265,7 @@ multi_channel_test_one (int pingpong,
   const int LOOP_COUNT = 20;
   const int LOOP_TYPE = pingpong ? GSL_WAVE_LOOP_PINGPONG : GSL_WAVE_LOOP_JUMP;
   size_t my_data_length = channels * frames;
-  float *my_data = malloc (my_data_length * sizeof (float));
+  float *my_data = (float*) malloc (my_data_length * sizeof (float));
   int p, c;
   for (p = 0; p < frames; p++)
     for (c = 0; c < channels; c++)
@@ -275,12 +275,12 @@ multi_channel_test_one (int pingpong,
   gsl_data_handle_unref (myhandle);
   wchunk = gsl_wave_chunk_new (dcache,
                                44100.0, 44.0,
-                               LOOP_TYPE, loop_start * channels, loop_end * channels, LOOP_COUNT);
+                               GslWaveLoopType (LOOP_TYPE), loop_start * channels, loop_end * channels, LOOP_COUNT);
   error = gsl_wave_chunk_open (wchunk);
   if (error)
     g_error ("failed to open wave chunk: %s", bse_error_blurb (error));
   gsl_wave_chunk_unref (wchunk);
-  float *expect = malloc (my_data_length * sizeof (float) * (LOOP_COUNT + 1));
+  float *expect = (float*) malloc (my_data_length * sizeof (float) * (LOOP_COUNT + 1));
   float *ep = expect;
   int l;
   ep = gen_expect (ep, 0, loop_start, channels);
