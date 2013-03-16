@@ -7,7 +7,7 @@ DEFS	    += @DEFINE__FILE_DIR__@ -DBIRNET_LOG_DOMAIN='"$(basename $(@F))"' -DPAR
 AM_CXXFLAGS  = $(RAPICORN_CFLAGS) -DRAPICORN_CONVENIENCE $(BIRNET_CFLAGS)
 
 noinst_PROGRAMS  = $(ALLTESTS)
-progs_ldadd 	 = $(top_builddir)/birnet/libbirnet.o $(BIRNET_LIBS) -lm
+progs_ldadd 	 = $(top_builddir)/birnet/libbirnet.o $(RAPICORN_LIBS) $(BIRNET_LIBS) -lm
 
 TESTS		+= infotest
 infotest_SOURCES = infotest.cc
@@ -23,10 +23,6 @@ strings_LDADD	 = $(progs_ldadd)
 TESTS		+= systest
 systest_SOURCES  = systest.cc
 systest_LDADD	 = $(progs_ldadd)
-TESTS		+= threads
-PERFTESTS       += threads
-threads_SOURCES	 = threads.cc
-threads_LDADD	 = $(progs_ldadd)
 TESTS		+= sorting
 SLOWTESTS       += sorting
 sorting_SOURCES  = sorting.cc
