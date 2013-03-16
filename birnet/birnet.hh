@@ -8,7 +8,6 @@
 #include <birnet/birnetmath.hh>
 #include <birnet/birnetutf8.hh>
 #include <birnet/birnetutils.hh>
-#include <birnet/birnetthread.hh>
 /**
  * @namespace Birnet
  * Library with utility functions, carried forward in Rapicorn: http://dev.testbit.eu/rapicorn/latest/

@@ -2,7 +2,6 @@
 #include <glib.h>
 #include "birnetutils.hh"
 #include "birnetutf8.hh"
-#include "birnetthread.hh"
 #include "birnetmsg.hh"
 #include "birnetcpu.hh"
 #include <unistd.h>
@@ -134,6 +133,7 @@ birnet_init (int        *argcp,
              const char *app_name,
              InitValue   ivalues[])
 {
+
   /* mandatory initial initialization */
   if (!g_threads_got_initialized)
     g_thread_init (NULL);
@@ -165,7 +165,6 @@ birnet_init (int        *argcp,
   }
   /* initialize sub systems */
   _birnet_init_cpuinfo();
-  _birnet_init_threads();
   if (run_init_hooks)
     run_init_hooks();
 }
@@ -816,17 +815,17 @@ static struct {
 #endif
 #define DELETABLE_MAP_HASH      (19)    /* use prime size for hashing, sum up to roughly 1k (use 83 for 4k) */
 struct DeletableMap {
-  Mutex                                         mutex;
+  Rapicorn::Mutex                               mutex;
   std::map<Deletable*,Deletable::DeletionHook*> dmap;
 };
-static DeletableMap * volatile deletable_maps = NULL;
+static Rapicorn::Atomic<DeletableMap*> deletable_maps = NULL;
 static inline void
 auto_init_deletable_maps (void)
 {
   if (UNLIKELY (deletable_maps == NULL))
     {
       DeletableMap *dmaps = new DeletableMap[DELETABLE_MAP_HASH];
-      if (!Atomic::ptr_cas (&deletable_maps, (DeletableMap*) NULL, dmaps))
+      if (!deletable_maps.cas ((DeletableMap*) NULL, dmaps))
         delete dmaps;
     }
 }
@@ -928,24 +927,7 @@ Deletable::invoke_deletion_hooks()
         }
     }
 }
-/* --- ReferenceCountImpl --- */
-void
-ReferenceCountImpl::ref_diag (const char *msg) const
-{
-  fprintf (stderr, "%s: this=%p ref_count=%d floating=%d", msg ? msg : "ReferenceCountImpl", this, ref_count(), floating());
-}
-void
-ReferenceCountImpl::finalize ()
-{}
-void
-ReferenceCountImpl::delete_this ()
-{
-  delete this;
-}
-ReferenceCountImpl::~ReferenceCountImpl ()
-{
-  BIRNET_ASSERT (ref_count() == 0);
-}
+
 /* --- DataList --- */
 DataList::NodeBase::~NodeBase ()
 {}
@@ -1189,7 +1171,7 @@ typedef struct {
   GDestroyNotify handler;
   void          *data;
 } Cleanup;
-static Mutex cleanup_mutex;
+static Rapicorn::Mutex cleanup_mutex;
 static GSList *cleanup_list = NULL;
 static void
 cleanup_exec_Lm (Cleanup *cleanup)

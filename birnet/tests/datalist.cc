@@ -80,14 +80,6 @@ data_list_test ()
     data_list_test_strings (r);
   }
   TDONE();
-  TSTART ("DataList-threaded");
-  {
-    Thread &thread = Thread::self();
-    data_list_test_strings (thread);
-    data_list_test_ints (thread);
-    data_list_test_strings (thread);
-  }
-  TDONE();
 }
 } // anon
 int
