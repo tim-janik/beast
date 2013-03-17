@@ -6,6 +6,8 @@
 #include <string>
 #include <string.h>
 #include <new>
+
+/// The Sfi namespace contains utilities for synthesis.
 namespace Sfi {
 typedef SfiBool   Bool;    // FIXME: use bool instead?
 typedef SfiInt    Int;
