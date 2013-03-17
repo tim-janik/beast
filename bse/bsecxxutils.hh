@@ -6,7 +6,8 @@
 #include <vector>
 #include <algorithm>
 namespace Bse {
-/* --- Procedure namespace work arounds --- */
+
+/// The Procedure namespace contains procedure/IDL helpers.
 namespace Procedure {
 typedef SfiBool     Bool;
 typedef SfiInt      Int;
