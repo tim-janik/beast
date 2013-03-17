@@ -1,6 +1,9 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 include "bse/bsecxxmodule.idl";
-namespace Bse { namespace Standard {
+namespace Bse {
+
+/// The Standard namespace contains BSE standard modules.
+namespace Standard {
 enum SaturationType {
   SATURATE_TANH      = Enum (_("TANH"),      _("Saturation via hyperbolic tangent function which is mostly linear for "
 					       "small levels while providing a soft curvature for high volume signals")),
@@ -13,6 +16,7 @@ enum SaturationType {
 					       "for small levels")),
   SATURATE_HARD      = Enum (_("Hard"),      _("Hard saturation via clipping (prone to clicks)")),
 };
+
 interface Saturator : Bse::Effect {
   Info    category  = "/Distortion/Saturate";
   Info    icon      = "icons/saturate.png";
