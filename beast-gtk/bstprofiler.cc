@@ -37,22 +37,7 @@ char_state_from_thread_state (BseThreadState thread_state)
     }
 }
 #endif
-static BseThreadState
-thread_state_from_char_state (gchar thread_state)
-{
-  switch (thread_state)
-    {
-    default:
-    case SFI_THREAD_UNKNOWN:    return BSE_THREAD_STATE_UNKNOWN;
-    case SFI_THREAD_RUNNING:    return BSE_THREAD_STATE_RUNNING;
-    case SFI_THREAD_SLEEPING:   return BSE_THREAD_STATE_SLEEPING;
-    case SFI_THREAD_DISKWAIT:   return BSE_THREAD_STATE_DISKWAIT;
-    case SFI_THREAD_TRACED:     return BSE_THREAD_STATE_TRACED;
-    case SFI_THREAD_PAGING:     return BSE_THREAD_STATE_PAGING;
-    case SFI_THREAD_ZOMBIE:     return BSE_THREAD_STATE_ZOMBIE;
-    case SFI_THREAD_DEAD:       return BSE_THREAD_STATE_DEAD;
-    }
-}
+
 static void
 thread_info_cell_fill_value (GtkWidget *profiler,
                              guint      column,
@@ -85,6 +70,7 @@ thread_info_cell_fill_value (GtkWidget *profiler,
       break;
     }
 }
+
 static void
 update_infos (GSList         *slist,
               GxkListWrapper *lw)
@@ -146,26 +132,48 @@ update_infos (GSList         *slist,
       gxk_list_wrapper_notify_change (lw, n - 1);
     }
 }
+
+static BseThreadState
+convert_thread_state (Rapicorn::TaskStatus::State ts)
+{
+  switch (ts)
+    {
+    default:
+    case Rapicorn::TaskStatus::UNKNOWN:     return BSE_THREAD_STATE_UNKNOWN;
+    case Rapicorn::TaskStatus::RUNNING:     return BSE_THREAD_STATE_RUNNING;
+    case Rapicorn::TaskStatus::SLEEPING:    return BSE_THREAD_STATE_SLEEPING;
+    case Rapicorn::TaskStatus::DISKWAIT:    return BSE_THREAD_STATE_DISKWAIT;
+    case Rapicorn::TaskStatus::STOPPED:     return BSE_THREAD_STATE_TRACED;     // T - BSD:stopped, Linux:traced
+    case Rapicorn::TaskStatus::PAGING:      return BSE_THREAD_STATE_PAGING;
+    case Rapicorn::TaskStatus::ZOMBIE:      return BSE_THREAD_STATE_ZOMBIE;
+    case Rapicorn::TaskStatus::DEBUG:       return BSE_THREAD_STATE_DEAD;       // X - BSD:debug, Linux:dead
+    }
+}
+
 static void
 profiler_update (void)
 {
+  static Rapicorn::TaskStatus *gui_task_status = NULL;
   GxkListWrapper *lwrapper = (GxkListWrapper*) g_object_get_data ((GObject*) profiler_dialog, "list-wrapper");
   BseThreadTotals *tt = bse_collect_thread_totals ();
-  sfi_thread_sleep (0); /* update accounting for self */
-  BirnetThreadInfo *si = sfi_thread_info_collect (sfi_thread_self());
+  if (!gui_task_status)
+    {
+      gui_task_status = new Rapicorn::TaskStatus (Rapicorn::ThisThread::process_pid(), Rapicorn::ThisThread::thread_pid());
+      gui_task_status->name = "Beast GUI";
+    }
+  gui_task_status->update();
   BseThreadInfo bi = { 0, };
+  bi.name = const_cast<char*> (gui_task_status->name.c_str());
+  bi.thread_id = gui_task_status->task_id;
+  bi.state = convert_thread_state (gui_task_status->state);
+  bi.priority = gui_task_status->priority;
+  bi.processor = gui_task_status->processor;
+  bi.utime = gui_task_status->utime;
+  bi.stime = gui_task_status->stime;
+  bi.cutime = gui_task_status->cutime;
+  bi.cstime = gui_task_status->cstime;
   GSList *slist = NULL;
-  guint i;
-  bi.name = si->name;
-  bi.thread_id = si->thread_id;
-  bi.state = thread_state_from_char_state (si->state);
-  bi.priority = si->priority;
-  bi.processor = si->processor;
-  bi.utime = si->utime;
-  bi.stime = si->stime;
-  bi.cutime = si->cutime;
-  bi.cstime = si->cstime;
-  for (i = 0; i < tt->synthesis->n_thread_infos; i++)
+  for (uint i = 0; i < tt->synthesis->n_thread_infos; i++)
     slist = g_slist_prepend (slist, tt->synthesis->thread_infos[i]);
   if (tt->sequencer)
     slist = g_slist_prepend (slist, tt->sequencer);
@@ -174,8 +182,8 @@ profiler_update (void)
   slist = g_slist_prepend (slist, &bi);
   update_infos (slist, lwrapper);
   g_slist_free (slist);
-  sfi_thread_info_free (si);
 }
+
 static gboolean
 profiler_timer (gpointer data)
 {
