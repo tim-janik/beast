@@ -4,18 +4,19 @@
 #include	<bse/bse.hh>	/* initialization */
 #include        <bse/bsetype.hh>
 G_BEGIN_DECLS
-/* --- initialization --- */
+
+// == BSE Initialization ==
 void		bse_init_textdomain_only (void);
-#if 0	// prototyped in bse.hh */
 void		bse_init_async		(gint		*argc,
 					 gchar	      ***argv,
 					 const char     *app_name,
-					 SfiInitValue    values[]);
-SfiGlueContext* bse_init_glue_context	(const gchar    *client);
+					 SfiInitValue    values[]);             // prototyped in bse.hh
+SfiGlueContext* bse_init_glue_context	(const gchar    *client);               // prototyped in bse.hh
 const char*     bse_check_version	(guint		 required_major,
                                          guint		 required_minor,
-                                         guint		 required_micro);
-#endif
+                                         guint		 required_micro);       // prototyped in bse.hh
+
+
 /* initialization for internal utilities */
 void		bse_init_inprocess	(gint		*argc,
 					 gchar	      ***argv,

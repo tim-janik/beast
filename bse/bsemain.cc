@@ -20,7 +20,7 @@
 #include <sfi/sfitests.hh> /* sfti_test_init() */
 using namespace Birnet;
 /* --- prototypes --- */
-static void	bse_main_loop		(gpointer	 data);
+static void	bse_main_loop		(Rapicorn::AsyncBlockingQueue<int> *init_queue);
 static void	bse_async_parse_args	(gint	        *argc_p,
 					 gchar	      ***argv_p,
                                          BseMainArgs    *margs,
@@ -57,7 +57,8 @@ static BseMainArgs       default_main_args = {
 };
 BseMainArgs             *bse_main_args = NULL;
 BseTraceArgs             bse_trace_args = { NULL, };
-/* --- functions --- */
+
+// == BSE Initialization ==
 void
 bse_init_textdomain_only (void)
 {
@@ -65,19 +66,23 @@ bse_init_textdomain_only (void)
   bind_textdomain_codeset (BSE_GETTEXT_DOMAIN, "UTF-8");
   textdomain_setup = TRUE;
 }
+
 const gchar*
 bse_gettext (const gchar *text)
 {
   g_assert (textdomain_setup == TRUE);
   return dgettext (BSE_GETTEXT_DOMAIN, text);
 }
+
+static std::thread async_bse_thread;
+
 void
 bse_init_async (gint           *argc,
 		gchar        ***argv,
                 const char     *app_name,
                 SfiInitValue    values[])
 {
-  BirnetThread *thread;
+  assert (async_bse_thread.get_id() == std::thread::id());      // no async_bse_thread started
   bse_init_textdomain_only();
   if (bse_initialization_stage != 0)
     g_error ("%s() may only be called once", "bse_init_async");
@@ -98,18 +103,18 @@ bse_init_async (gint           *argc,
 	g_set_prgname (**argv);
       bse_async_parse_args (argc, argv, bse_main_args, values);
     }
-  /* start main BSE thread */
-  thread = sfi_thread_run ("BSE Core", bse_main_loop, sfi_thread_self ());
-  if (!thread)
-    g_error ("failed to start seperate thread for BSE core");
-  /* wait for initialization completion of the core thread */
-  while (bse_initialization_stage < 2)
-    sfi_thread_sleep (-1);
+  // start main BSE thread
+  auto *init_queue = new Rapicorn::AsyncBlockingQueue<int>();
+  async_bse_thread = std::thread (bse_main_loop, init_queue);
+  // wait for initialization completion of the core thread
+  int msg = init_queue->pop();
+  assert (msg == 'B');
+  delete init_queue;
+  async_bse_thread.detach();    // FIXME: rather join on exit
 }
+
 const char*
-bse_check_version (guint required_major,
-		   guint required_minor,
-		   guint required_micro)
+bse_check_version (uint required_major, uint required_minor, uint required_micro)
 {
   if (required_major > BSE_MAJOR_VERSION)
     return "BSE version too old (major mismatch)";
@@ -125,6 +130,7 @@ bse_check_version (guint required_major,
     return "BSE version too old (micro mismatch)";
   return NULL;
 }
+
 typedef struct {
   SfiGlueContext *context;
   const gchar *client;
@@ -323,17 +329,17 @@ bse_init_test (gint           *argc,
   bse_init_intern (argc, argv, NULL, values, true);
 }
 static void
-bse_main_loop (gpointer data)
+bse_main_loop (Rapicorn::AsyncBlockingQueue<int> *init_queue)
 {
-  BirnetThread *client = (BirnetThread*) data;
   bse_main_thread = sfi_thread_self ();
   bse_init_core ();
-  /* start other threads */
+  // start other threads
   bse_sequencer_init_thread ();
-  /* notify client about completion */
-  bse_initialization_stage++;   /* =2 */
-  sfi_thread_wakeup (client);
-  /* and away into the main loop */
+  // complete initialization
+  bse_initialization_stage++;   // = 2
+  init_queue->push ('B');       // signal completion to caller
+  init_queue = NULL;            // completion invalidates init_queue
+  // Bse Core Event Loop
   do
     {
       g_main_context_pending (bse_main_context);
