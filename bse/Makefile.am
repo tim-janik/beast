@@ -138,7 +138,7 @@ libbseincludedir       	     = $(includedir)/bse
 libbseinclude_HEADERS        = $(bse_public_headers) bse.idl $(bse_idl_sources) bsehack.idl $(idl_dummy_files)
 nodist_libbseinclude_HEADERS = bsecore.genidl.hh
 libbse_la_SOURCES            = $(bse_sources) $(bse_proc_gen_sources)
-libbse_la_LIBADD             = $(top_builddir)/birnet/libbirnet.o $(top_builddir)/sfi/libsfi.o $(BSE_LIBS) $(SFI_LIBS)
+libbse_la_LIBADD             = $(top_builddir)/birnet/libbirnet.o $(top_builddir)/sfi/libsfi.o $(BSE_LIBS) $(SFI_LIBS) $(RAPICORN_LIBS)
 libbse_la_LDFLAGS            = $(strip				\
 	-Wl,--version-script=$(srcdir)/ldscript.map		\
 	-version-info $(LT_CURRENT):$(LT_REVISION):$(LT_AGE)	\
