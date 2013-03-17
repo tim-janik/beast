@@ -169,7 +169,8 @@ profiler_update (void)
     slist = g_slist_prepend (slist, tt->synthesis->thread_infos[i]);
   if (tt->sequencer)
     slist = g_slist_prepend (slist, tt->sequencer);
-  slist = g_slist_prepend (slist, tt->main);
+  if (tt->main)
+    slist = g_slist_prepend (slist, tt->main);
   slist = g_slist_prepend (slist, &bi);
   update_infos (slist, lwrapper);
   g_slist_free (slist);
