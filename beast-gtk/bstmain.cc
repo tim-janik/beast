@@ -78,8 +78,9 @@ main (int   argc,
   gettimeofday (&tv, NULL);
   srand48 (tv.tv_usec + (tv.tv_sec << 16));
   srand (tv.tv_usec + (tv.tv_sec << 16));
-  /* initialize GLib guts */
-  // toyprof_init_glib_memtable ("/tmp/beast-leak.debug", 10 /* SIGUSR1 */);
+
+  // initialize threading and GLib types
+  Bse::TaskRegistry::add ("Beast GUI", Rapicorn::ThisThread::process_pid(), Rapicorn::ThisThread::thread_pid());
   g_thread_init (NULL);
   g_type_init ();
   /* initialize Birnet/Sfi */
@@ -371,8 +372,8 @@ main (int   argc,
 	g_warning ("failed to save rc-file \"%s\": %s", file_name, bse_error_blurb (error));
       g_free (file_name);
     }
-  /* perform necessary cleanup cycles
-   */
+
+  // perform necessary cleanup cycles
   GDK_THREADS_LEAVE ();
   while (g_main_iteration (FALSE))
     {
@@ -380,10 +381,15 @@ main (int   argc,
       sfi_glue_gc_run ();
       GDK_THREADS_LEAVE ();
     }
+
+  // misc cleanups
   birnet_cleanup_force_handlers();
   bse_object_debug_leaks ();
+  Bse::TaskRegistry::remove (Rapicorn::ThisThread::thread_pid());
+
   return 0;
 }
+
 static void
 bst_early_parse_args (int    *argc_p,
 		      char ***argv_p)
