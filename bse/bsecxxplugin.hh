@@ -319,8 +319,8 @@ public:
 };
 } // Bse
 /* include generated C++ core types */
-#include <bse/bsecore.genidl.hh>        /* includes bsecxxplugin.hh itself */
-/* define types dependant on bsecore.idl */
+#include <bse/bsebasics.genidl.hh>        /* includes bsecxxplugin.hh itself */
+/* define types dependant on bsebasics.idl */
 namespace Bse {
 /* --- trampoline templates --- */
 template<class ObjectType, typename PropertyID> static void

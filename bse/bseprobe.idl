@@ -39,6 +39,6 @@ void source_mass_request   (ProbeRequestSeq prseq);
 Num  source_get_tick_stamp (Source          obj);
 Int  source_get_mix_freq   (Source          obj);
 
-ThreadTotals collect_thread_totals (); // from: bsecore.idl
+ThreadTotals collect_thread_totals (); // from: bsebasics.idl
 
 };

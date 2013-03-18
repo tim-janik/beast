@@ -6,7 +6,7 @@ SUBDIRS = icons zintern . tests
 # need -I$(top_srcdir) for <bse/bsedefs.hh>
 # need -I$(top_builddir) for <sfi/sficonfig.h>
 # need -I$(srcdir) for "bseserver.hh" in .genprc.cc
-# need -I. (builddir) for "bsecore.genidl.hh" in bsecore.cc
+# need -I. (builddir) for "bsebasics.genidl.hh" in bsebasics.cc
 INCLUDES += -I$(top_srcdir) -I$(top_builddir) -I$(srcdir) -I.
 DEFS     += @DEFINE__FILE_DIR__@ $(strip \
 	$(patsubst %, -DG_LOG_DOMAIN=\"BSE\" -DBSE_COMPILATION, \
@@ -91,19 +91,19 @@ bse_sources = $(strip \
 	bseloader-aiff.cc	bseloader-guspatch.cc	bseloader-oggvorbis.cc		bseloader-bsewave.cc \
 	bseloader-mad.cc	bseloader-wav.cc	\
 	bsebusmodule.cc		\
-	bsecore.cc		\
+	bsebasics.cc		\
 	bseprobe.cc		\
 )
 # BSE Synthesis Modules
 bse_idl_sources =
 bse_idl_sources += bsebusmodule.idl
 $(srcdir)/bsebusmodule.cc: bsebusmodule.genidl.hh
-bse_idl_sources += bsecore.idl
-$(srcdir)/bsecxxplugin.cc: bsecore.genidl.hh
+bse_idl_sources += bsebasics.idl
+$(srcdir)/bsecxxplugin.cc: bsebasics.genidl.hh
 bse_idl_sources += bseprobe.idl
 $(srcdir)/bseprobe.cc: bseprobe.genidl.hh
 idl_built_sources = $(bse_idl_sources:.idl=.genidl.hh)
-$(srcdir)/bsebus.cc: bsecore.genidl.hh
+$(srcdir)/bsebus.cc: bsebasics.genidl.hh
 # idl files not used for build rules
 idl_dummy_files = $(strip	\
 	bsecxxmodule.idl	\
@@ -119,7 +119,7 @@ bse_proc_sources = $(strip \
 bse_proc_gen_sources = $(bse_proc_sources:.proc=.genprc.cc)
 # non-compile and non-install sources required
 EXTRA_DIST += $(strip \
-	bsecore.idl	bse.idl					\
+	bsebasics.idl	bse.idl					\
 	mktypes.pl	mkcalls.pl	mkcproc.pl		\
 	bseconfig.h.in	bsepcmmodule.cc				\
 	bsewave.header						\
@@ -136,7 +136,7 @@ pthread_2_lpthread = $(if $(findstring -pthread, $1), -lpthread)
 lib_LTLIBRARIES              = libbse.la
 libbseincludedir       	     = $(includedir)/bse
 libbseinclude_HEADERS        = $(bse_public_headers) bse.idl $(bse_idl_sources) bsehack.idl $(idl_dummy_files)
-nodist_libbseinclude_HEADERS = bsecore.genidl.hh
+nodist_libbseinclude_HEADERS = bsebasics.genidl.hh
 libbse_la_SOURCES            = $(bse_sources) $(bse_proc_gen_sources)
 libbse_la_LIBADD             = $(top_builddir)/birnet/libbirnet.o $(top_builddir)/sfi/libsfi.o $(BSE_LIBS) $(SFI_LIBS) $(RAPICORN_LIBS)
 libbse_la_LDFLAGS            = $(strip				\
@@ -176,7 +176,7 @@ $(srcdir)/gslfft.cc: @PERLRULE@ $(srcdir)/gsl-fftgen.pl $(srcdir)/gsl-fftconf.sh
 GENERATED_EXTRA_DIST += bsegentypes.h
 $(libbse_la_OBJECTS): bsegentypes.h
 bsegentypes.h: @PERLRULE@ mktypes.pl $(filter-out bsegentypes.cc, $(bse_sources)) $(filter-out bsegentypes.h, $(bse_public_headers))
-bsegentypes.h: @PERLRULE@ bsecore.idl $(SFIDL)
+bsegentypes.h: @PERLRULE@ bsebasics.idl $(SFIDL)
 	( \
 	  cd $(srcdir) \
 	  && $(GLIB_MKENUMS) \
@@ -186,14 +186,14 @@ bsegentypes.h: @PERLRULE@ bsecore.idl $(SFIDL)
 	      $(filter-out bsegentypes.h, $(bse_public_headers)) \
 	  && $(PERL) mktypes.pl --externs $(filter-out bsegentypes.cc, $(bse_sources)) \
 	) > xgen-$(@F) \
-	&& $(SFIDL) $(SFIDL_INC) --core-c --header $(srcdir)/bsecore.idl >> xgen-$(@F) \
+	&& $(SFIDL) $(SFIDL_INC) --core-c --header $(srcdir)/bsebasics.idl >> xgen-$(@F) \
 	&& (cmp -s xgen-$(@F) $(srcdir)/bsegentypes.h || cp xgen-$(@F) $(srcdir)/bsegentypes.h) \
 	&& rm -f xgen-$(@F)
 $(bse_sources): bsegentypes.h
 # bsegentypes.cc
 GENERATED_EXTRA_DIST += bsegentypes.cc
 $(libbse_la_OBJECTS): bsegentypes.cc
-bsegentypes.cc: @PERLRULE@ bsegentypes.h mktypes.pl bsecore.idl $(SFIDL)
+bsegentypes.cc: @PERLRULE@ bsegentypes.h mktypes.pl bsebasics.idl $(SFIDL)
 	( \
 	  cd $(srcdir) \
 	  && $(GLIB_MKENUMS) \
@@ -258,12 +258,12 @@ bsebuiltin_array.cc: @PERLRULE@ $(bse_proc_gen_sources) mkcproc.pl
 	&& $(PERL) mkcproc.pl --functions $(bse_proc_gen_sources) > xgen-$(@F) \
 	&& cp xgen-$(@F) $(@F) \
 	&& rm -f xgen-$(@F)
-# bsegencore.cc
-GENERATED_CLEANFILES += bsegencore.cc
-$(srcdir)/bsecore.cc: bsegencore.cc
-bsegencore.cc: bsecore.idl $(SFIDL) bsecore.genidl.hh
+# bsegenbasics.cc
+GENERATED_CLEANFILES += bsegenbasics.cc
+$(srcdir)/bsebasics.cc: bsegenbasics.cc
+bsegenbasics.cc: bsebasics.idl $(SFIDL) bsebasics.genidl.hh
 	cd . \
-	&& $(SFIDL) $(SFIDL_INC) --core-c --source --init sfidl_types_init $(srcdir)/bsecore.idl >> xgen-$(@F) \
+	&& $(SFIDL) $(SFIDL_INC) --core-c --source --init sfidl_types_init $(srcdir)/bsebasics.idl >> xgen-$(@F) \
 	&& cp xgen-$(@F) $(@F) \
 	&& rm -f xgen-$(@F)
 # setup generation of C++ objects from idl files
@@ -275,7 +275,7 @@ bsegencore.cc: bsecore.idl $(SFIDL) bsecore.genidl.hh
 # this file describes the BSE public API and needs to be generated at the
 # end of the build process
 #
-bsehack.idl: bsecore.idl bseprocidl
+bsehack.idl: bsebasics.idl bseprocidl
 	grep -v bsehack.idl $(srcdir)/bse.idl | $(SFIDL) $(SFIDL_INC) --list-types - > xgen-2-$(@F)
 	echo "/* this file was generated from make $< */" > xgen-$(@F) \
 	&& ./bseprocidl xgen-2-$(@F) >> xgen-$(@F) \
