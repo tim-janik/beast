@@ -1,5 +1,6 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bsemain.hh"
+#include "bsecore.hh"
 #include "topconfig.h"
 #include "bseserver.hh"
 #include "bsesequencer.hh"
@@ -35,7 +36,6 @@ const guint		 bse_binary_age = BSE_BINARY_AGE;
 const gchar		*bse_version = BSE_VERSION;
 GMainContext            *bse_main_context = NULL;
 BirnetMutex	         bse_main_sequencer_mutex = { 0, };
-BirnetThread            *bse_main_thread = NULL;
 static volatile gboolean bse_initialization_stage = 0;
 static gboolean          textdomain_setup = FALSE;
 static BseMainArgs       default_main_args = {
@@ -331,7 +331,7 @@ bse_init_test (gint           *argc,
 static void
 bse_main_loop (Rapicorn::AsyncBlockingQueue<int> *init_queue)
 {
-  bse_main_thread = sfi_thread_self ();
+  Bse::TaskRegistry::add ("BSE Core", Rapicorn::ThisThread::process_pid(), Rapicorn::ThisThread::thread_pid());
   bse_init_core ();
   // start other threads
   bse_sequencer_init_thread ();
@@ -346,6 +346,7 @@ bse_main_loop (Rapicorn::AsyncBlockingQueue<int> *init_queue)
       g_main_context_iteration (bse_main_context, TRUE);
     }
   while (!sfi_thread_aborted ());
+  Bse::TaskRegistry::remove (Rapicorn::ThisThread::thread_pid());
 }
 guint
 bse_main_getpid (void)

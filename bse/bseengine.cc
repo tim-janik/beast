@@ -1,11 +1,13 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bseengine.hh"
+#include "bsecore.hh"
 #include "gslcommon.hh"
 #include "bseengineutils.hh"
 #include "bseenginemaster.hh"
 #include <fcntl.h>
 #include <errno.h>
 #include <unistd.h>
+
 static SFI_MSG_TYPE_DEFINE (debug_engine, "engine", SFI_MSG_DEBUG, NULL);
 #define DEBUG(...)      sfi_debug (debug_engine, __VA_ARGS__)
 /* some systems don't have ERESTART (which is what linux returns for system
@@ -1074,6 +1076,7 @@ bse_module_new_virtual (guint       n_iostreams,
 static void
 slave (gpointer data)
 {
+  Bse::TaskRegistry::add ("DSP Slave", Rapicorn::ThisThread::process_pid(), Rapicorn::ThisThread::thread_pid());
   gboolean run = TRUE;
   while (run)
     {
@@ -1088,6 +1091,7 @@ slave (gpointer data)
       bse_trans_commit (trans);
       g_usleep (1000*500);
     }
+  Bse::TaskRegistry::remove (Rapicorn::ThisThread::thread_pid());
 }
 /* --- setup & trigger --- */
 static gboolean		bse_engine_initialized = FALSE;

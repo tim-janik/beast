@@ -367,6 +367,7 @@ bse_sequencer_thread_lagging (guint n_blocks)
 static void
 bse_sequencer_thread_main (gpointer data)
 {
+  Bse::TaskRegistry::add ("Sequencer", Rapicorn::ThisThread::process_pid(), Rapicorn::ThisThread::thread_pid());
   SEQTRACE ("SEQ:thrdstrt: now=%llu", Bse::TickStamp::current());
   Bse::TickStampWakeupP wakeup = Bse::TickStamp::create_wakeup (bse_sequencer_wakeup);
   bse_message_setup_thread_handler();
@@ -423,6 +424,7 @@ bse_sequencer_thread_main (gpointer data)
   while (bse_sequencer_poll_Lm (-1));
   BSE_SEQUENCER_UNLOCK ();
   SEQTRACE ("SEQ:thrdstop: now=%llu", Bse::TickStamp::current());
+  Bse::TaskRegistry::remove (Rapicorn::ThisThread::thread_pid());
 }
 static void
 bse_sequencer_process_track_SL (BseTrack        *track,

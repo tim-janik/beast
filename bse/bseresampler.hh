@@ -34,6 +34,8 @@ G_END_DECLS
 #ifdef __cplusplus
 #include <vector>
 namespace Bse {
+
+/// The Resampler namespace contains interfaces for factor 2 resampling.
 namespace Resampler {
 /**
  * Interface for factor 2 resampling classes

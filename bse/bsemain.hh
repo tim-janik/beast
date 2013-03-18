@@ -16,7 +16,6 @@ const char*     bse_check_version	(guint		 required_major,
                                          guint		 required_minor,
                                          guint		 required_micro);       // prototyped in bse.hh
 
-
 /* initialization for internal utilities */
 void		bse_init_inprocess	(gint		*argc,
 					 gchar	      ***argv,
@@ -69,16 +68,19 @@ typedef struct {
   SfiRing              *pcm_drivers;
   SfiRing              *midi_drivers;
 } BseMainArgs;
+
 /* --- debuging channels --- */
 typedef struct {
   SfiDebugChannel       *sequencer;     /* --bse-trace-sequencer */
 } BseTraceArgs;
+
 /* --- internal --- */
 void    _bse_init_c_wrappers    ();
 extern BseMainArgs     *bse_main_args;
 extern BseTraceArgs     bse_trace_args;
 extern GMainContext    *bse_main_context;
 extern BirnetMutex	bse_main_sequencer_mutex;
-extern BirnetThread    *bse_main_thread;
+
 G_END_DECLS
+
 #endif /* __BSE_MAIN_H__ */

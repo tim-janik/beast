@@ -1043,6 +1043,7 @@ _engine_master_dispatch (void)
 void
 bse_engine_master_thread (EngineMasterData *mdata)
 {
+  Bse::TaskRegistry::add ("DSP #1", Rapicorn::ThisThread::process_pid(), Rapicorn::ThisThread::thread_pid());
   bse_message_setup_thread_handler ();
   /* assert pollfd equality, since we're simply casting structures */
   BIRNET_STATIC_ASSERT (sizeof (struct pollfd) == sizeof (GPollFD));
@@ -1089,5 +1090,6 @@ bse_engine_master_thread (EngineMasterData *mdata)
       if (bse_engine_has_garbage ())
 	sfi_thread_wakeup (mdata->user_thread);
     }
+  Bse::TaskRegistry::remove (Rapicorn::ThisThread::thread_pid());
 }
 /* vim:set ts=8 sts=2 sw=2: */
