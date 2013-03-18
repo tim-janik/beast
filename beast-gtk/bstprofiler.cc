@@ -1,6 +1,10 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bstprofiler.hh"
+#include "bse/bse.hh"
 #include <string.h>
+
+using Rapicorn::TaskStatus;     // FIXME
+
 /* --- thread view --- */
 enum {
   TCOL_NAME,
@@ -12,52 +16,35 @@ enum {
   TCOL_STIME,
   N_TCOLS
 };
+
 /* --- variables --- */
 static GtkWidget     *profiler_dialog = NULL;
 static GxkRadget     *profiler = NULL;
 static guint          timer_id = 0;
-static guint          n_thread_infos = 0;
-static BseThreadInfo *thread_infos = NULL;
-/* --- funtions --- */
-#if 0
-static gchar
-char_state_from_thread_state (BseThreadState thread_state)
-{
-  switch (thread_state)
-    {
-    default:
-    case BSE_THREAD_STATE_UNKNOWN:      return SFI_THREAD_UNKNOWN;
-    case BSE_THREAD_STATE_RUNNING:      return SFI_THREAD_RUNNING;
-    case BSE_THREAD_STATE_SLEEPING:     return SFI_THREAD_SLEEPING;
-    case BSE_THREAD_STATE_DISKWAIT:     return SFI_THREAD_DISKWAIT;
-    case BSE_THREAD_STATE_TRACED:       return SFI_THREAD_TRACED;
-    case BSE_THREAD_STATE_PAGING:       return SFI_THREAD_PAGING;
-    case BSE_THREAD_STATE_ZOMBIE:       return SFI_THREAD_ZOMBIE;
-    case BSE_THREAD_STATE_DEAD:         return SFI_THREAD_DEAD;
-    }
-}
-#endif
+static std::vector<TaskStatus> cached_task_list;
 
+/* --- funtions --- */
 static void
 thread_info_cell_fill_value (GtkWidget *profiler,
                              guint      column,
                              guint      row,
                              GValue    *value)
 {
-  BseThreadInfo *info = thread_infos + row;
+  g_return_if_fail (row < cached_task_list.size());
+  TaskStatus *info = &cached_task_list[row];
   switch (column)
     {
     case TCOL_NAME:
-      sfi_value_take_string (value, g_strdup_printf ("%s", info->name));
+      sfi_value_take_string (value, g_strdup_printf ("%s", info->name.c_str()));
       break;
     case TCOL_PROC:
       sfi_value_take_string (value, info->processor ? g_strdup_printf ("%d", info->processor) : g_strdup (""));
       break;
     case TCOL_TID:
-      sfi_value_take_string (value, info->thread_id ? g_strdup_printf ("%u", info->thread_id) : g_strdup (""));
+      sfi_value_take_string (value, info->task_id ? g_strdup_printf ("%u", info->task_id) : g_strdup (""));
       break;
     case TCOL_PRIO:
-      sfi_value_take_string (value, info->thread_id ? g_strdup_printf ("%d", info->priority) : g_strdup (""));
+      sfi_value_take_string (value, info->task_id ? g_strdup_printf ("%d", info->priority) : g_strdup (""));
       break;
     case TCOL_PERC:
       sfi_value_take_string (value, g_strdup_printf ("%5.2f%%", (info->utime + info->stime) * 0.0001));
@@ -72,122 +59,42 @@ thread_info_cell_fill_value (GtkWidget *profiler,
 }
 
 static void
-update_infos (GSList         *slist,
-              GxkListWrapper *lw)
-{
-  guint i, n = g_slist_length (slist) + 1;
-  while (n_thread_infos > n)
-    {
-      BseThreadInfo *info = thread_infos + --n_thread_infos;
-      g_free (info->name);
-      gxk_list_wrapper_notify_delete (lw, n_thread_infos);
-    }
-  if (n > n_thread_infos)
-    {
-      thread_infos = g_renew (BseThreadInfo, thread_infos, n);
-      guint delta = n - n_thread_infos;
-      memset (thread_infos + n_thread_infos, 0, sizeof (thread_infos[0]) * delta);
-      n_thread_infos = n;
-      gxk_list_wrapper_notify_append (lw, delta);
-    }
-  BseThreadInfo *totals = thread_infos + n - 1;
-  gboolean totals_changed = !totals->name;
-  totals->utime = 0;
-  totals->stime = 0;
-  totals->priority = G_MAXINT;
-  for (i = 0; i < n - 1; i++)
-    {
-      BseThreadInfo *oinfo = thread_infos + i;
-      BseThreadInfo *ninfo = (BseThreadInfo*) slist->data;
-      slist = slist->next;
-      if (!oinfo->name || strcmp (oinfo->name, ninfo->name) ||
-          oinfo->thread_id != ninfo->thread_id ||
-          oinfo->state != ninfo->state ||
-          oinfo->priority != ninfo->priority ||
-          oinfo->processor != ninfo->processor ||
-          oinfo->utime != ninfo->utime ||
-          oinfo->stime != ninfo->stime)
-        {
-          g_free (oinfo->name);
-          oinfo->name = g_strdup (ninfo->name);
-          oinfo->thread_id = ninfo->thread_id;
-          oinfo->state = ninfo->state;
-          oinfo->priority = ninfo->priority;
-          oinfo->processor = ninfo->processor;
-          oinfo->utime = ninfo->utime;
-          oinfo->stime = ninfo->stime;
-          gxk_list_wrapper_notify_change (lw, i);
-          totals_changed = TRUE;
-        }
-      totals->utime += oinfo->utime;
-      totals->stime += oinfo->stime;
-      totals->priority = MIN (oinfo->priority, totals->priority);
-    }
-  if (totals_changed)
-    {
-      g_free (totals->name);
-      totals->name = g_strdup (_("Totals"));
-      totals->state = BSE_THREAD_STATE_RUNNING;
-      totals->processor = 0;
-      gxk_list_wrapper_notify_change (lw, n - 1);
-    }
-}
-
-static BseThreadState
-convert_thread_state (Rapicorn::TaskStatus::State ts)
-{
-  switch (ts)
-    {
-    default:
-    case Rapicorn::TaskStatus::UNKNOWN:     return BSE_THREAD_STATE_UNKNOWN;
-    case Rapicorn::TaskStatus::RUNNING:     return BSE_THREAD_STATE_RUNNING;
-    case Rapicorn::TaskStatus::SLEEPING:    return BSE_THREAD_STATE_SLEEPING;
-    case Rapicorn::TaskStatus::DISKWAIT:    return BSE_THREAD_STATE_DISKWAIT;
-    case Rapicorn::TaskStatus::STOPPED:     return BSE_THREAD_STATE_TRACED;     // T - BSD:stopped, Linux:traced
-    case Rapicorn::TaskStatus::PAGING:      return BSE_THREAD_STATE_PAGING;
-    case Rapicorn::TaskStatus::ZOMBIE:      return BSE_THREAD_STATE_ZOMBIE;
-    case Rapicorn::TaskStatus::DEBUG:       return BSE_THREAD_STATE_DEAD;       // X - BSD:debug, Linux:dead
-    }
-}
-
-static void
 profiler_update (void)
 {
-  static Rapicorn::TaskStatus *gui_task_status = NULL;
   GxkListWrapper *lwrapper = (GxkListWrapper*) g_object_get_data ((GObject*) profiler_dialog, "list-wrapper");
-  BseThreadTotals *tt = bse_collect_thread_totals ();
-  if (!gui_task_status)
+  // update and fetch stats
+  Bse::TaskRegistry::update();
+  std::vector<TaskStatus> tasks = Bse::TaskRegistry::list();
+  cached_task_list = tasks;                             // keep local copy for list wrapper updates
+  cached_task_list.push_back (TaskStatus (0, 0));       // add one spare for Totals
+  // update stats in list
+  if (cached_task_list.size() != lwrapper->n_rows)
     {
-      gui_task_status = new Rapicorn::TaskStatus (Rapicorn::ThisThread::process_pid(), Rapicorn::ThisThread::thread_pid());
-      gui_task_status->name = "Beast GUI";
+      for (size_t i = cached_task_list.size(); i < lwrapper->n_rows; i++)
+        gxk_list_wrapper_notify_delete (lwrapper, lwrapper->n_rows - 1);
+      if (cached_task_list.size() > lwrapper->n_rows)
+        gxk_list_wrapper_notify_append (lwrapper, cached_task_list.size() - lwrapper->n_rows);
     }
-  gui_task_status->update();
-  BseThreadInfo bi = { 0, };
-  bi.name = const_cast<char*> (gui_task_status->name.c_str());
-  bi.thread_id = gui_task_status->task_id;
-  bi.state = convert_thread_state (gui_task_status->state);
-  bi.priority = gui_task_status->priority;
-  bi.processor = gui_task_status->processor;
-  bi.utime = gui_task_status->utime;
-  bi.stime = gui_task_status->stime;
-  bi.cutime = gui_task_status->cutime;
-  bi.cstime = gui_task_status->cstime;
-  GSList *slist = NULL;
-  for (uint i = 0; i < tt->synthesis->n_thread_infos; i++)
-    slist = g_slist_prepend (slist, tt->synthesis->thread_infos[i]);
-  if (tt->sequencer)
-    slist = g_slist_prepend (slist, tt->sequencer);
-  if (tt->main)
-    slist = g_slist_prepend (slist, tt->main);
-  slist = g_slist_prepend (slist, &bi);
-  update_infos (slist, lwrapper);
-  g_slist_free (slist);
+  TaskStatus &totals = cached_task_list[cached_task_list.size() - 1];
+  totals.name = _("Totals");
+  totals.priority = G_MAXINT;
+  totals.state = TaskStatus::RUNNING;
+  totals.processor = 0;
+  for (size_t i = 0; i < tasks.size(); i++)
+    {
+      const TaskStatus &ninfo = tasks[i];
+      gxk_list_wrapper_notify_change (lwrapper, i);
+      totals.utime += ninfo.utime;
+      totals.stime += ninfo.stime;
+      totals.priority = MIN (ninfo.priority, totals.priority);
+    }
+  gxk_list_wrapper_notify_change (lwrapper, cached_task_list.size() - 1);
 }
 
 static gboolean
 profiler_timer (gpointer data)
 {
-  gboolean visible;
+  bool visible;
   GDK_THREADS_ENTER ();
   visible = profiler_dialog && GTK_WIDGET_VISIBLE (profiler_dialog);
   if (visible)
@@ -197,6 +104,7 @@ profiler_timer (gpointer data)
   GDK_THREADS_LEAVE ();
   return visible;
 }
+
 GtkWidget*
 bst_profiler_window_get (void)
 {
