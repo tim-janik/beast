@@ -1096,7 +1096,7 @@ slave (gpointer data)
 /* --- setup & trigger --- */
 static gboolean		bse_engine_initialized = FALSE;
 static gboolean		bse_engine_threaded = FALSE;
-static BirnetThread       *master_thread = NULL;
+static BirnetThread    *master_thread = NULL;
 static EngineMasterData master_data;
 guint			bse_engine_exvar_block_size = 0;
 guint			bse_engine_exvar_sample_freq = 0;
@@ -1339,6 +1339,7 @@ bse_engine_check (const BseEngineLoop *loop)
   else
     return bse_engine_has_garbage ();
 }
+
 /**
  *
  * Perform necessary work the engine has to handle
@@ -1358,20 +1359,7 @@ bse_engine_dispatch (void)
   if (bse_engine_has_garbage ())	/* prevent extra mutex locking */
     bse_engine_user_thread_collect ();
 }
-BirnetThread**
-bse_engine_get_threads (guint *n_threads)
-{
-  BirnetThread **t;
-  if (!master_thread)
-    {
-      *n_threads = 0;
-      return NULL;
-    }
-  *n_threads = 1;
-  t = g_new0 (BirnetThread*, 2);
-  t[0] = master_thread;
-  return t;
-}
+
 /**
  * @param systime	System time in micro seconds.
  * @return		Engine tick stamp value
