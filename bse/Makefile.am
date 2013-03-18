@@ -30,7 +30,7 @@ bse_public_headers = $(strip \
 	\
 	bse.hh	bsedefs.hh	bseexports.hh	bseconfig.h	bsegenclosures.hh \
 	bseincluder.hh	ladspa.hh	bseenginenode.hh bseieee754.hh \
-	\
+	bsecore.hh		\
 	bseengine.hh		bseenginemaster.hh	bseengineschedule.hh		bseengineutils.hh \
 	bsebus.hh		bsecategories.hh 	\
 	bsefilter.hh    		bsebiquadfilter.hh	\
@@ -63,7 +63,7 @@ bse_sources = $(strip \
 	gsldatahandle-vorbis.cc	gslvorbis-enc.cc	gsldatacache.cc	gslvorbis-cutter.cc \
 	gsldatahandle-mad.cc	           	gslfilehash.cc	gsldatautils.cc	\
 	gslwaveosc.cc		gslosctable.cc	gslmagic.cc	                 \
-	\
+	bsecore.cc		\
 	bseengine.cc		bseenginemaster.cc	bseengineschedule.cc		bseengineutils.cc \
 	bsebus.cc		bsecategories.cc 	\
 	bsefilter.cc   		bsebiquadfilter.cc	bsefilter-ellf.cc	\

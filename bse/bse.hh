@@ -1,8 +1,11 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #ifndef __BSE_H__
 #define __BSE_H__
+
 #include <sfi/sfi.hh>
 #include <bse/bseconfig.h>
+#include <bse/bsecore.hh>
+
 G_BEGIN_DECLS
 /* initialize BSE and start the core thread */
 void		bse_init_async		(gint		 *argc,
@@ -22,4 +25,5 @@ const char*          bse_check_version	(guint           required_major,
 					 guint           required_minor,
 					 guint           required_micro);
 G_END_DECLS
+
 #endif /* __BSE_H__ */
