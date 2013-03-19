@@ -14,6 +14,7 @@ using Rapicorn::EventFd;
 using Rapicorn::Spinlock;
 using Rapicorn::Mutex;
 using Rapicorn::Cond;
+using Rapicorn::AsyncBlockingQueue;
 
 };
 
