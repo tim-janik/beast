@@ -118,7 +118,7 @@ public:
       return BSE_ERROR_IO;
 
     m_n_channels = setup->n_channels = FLAC__stream_decoder_get_channels (m_decoder);
-    setup->n_values = FLAC__stream_decoder_get_total_samples (m_decoder);
+    setup->n_values = FLAC__stream_decoder_get_total_samples (m_decoder) * m_n_channels;
     setup->bit_depth = FLAC__stream_decoder_get_bits_per_sample (m_decoder);
     setup->mix_freq = FLAC__stream_decoder_get_sample_rate (m_decoder);
     setup->xinfos = bse_xinfos_add_float (setup->xinfos, "osc-freq", m_osc_freq);
