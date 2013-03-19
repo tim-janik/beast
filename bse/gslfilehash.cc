@@ -13,8 +13,8 @@
 #define HASH_LONG(l)	(l)
 #endif
 /* --- variables --- */
-static BirnetMutex    fdpool_mutex = { 0, };
-static GHashTable *hfile_ht = NULL;
+static Bse::Mutex fdpool_mutex;
+static GHashTable     *hfile_ht = NULL;
 /* --- functions --- */
 static guint
 hfile_hash (gconstpointer key)
@@ -40,7 +40,6 @@ void
 _gsl_init_fd_pool (void)
 {
   g_assert (hfile_ht == NULL);
-  sfi_mutex_init (&fdpool_mutex);
   hfile_ht = g_hash_table_new (hfile_hash, hfile_equals);
 }
 static gboolean
@@ -79,13 +78,13 @@ gsl_hfile_open (const gchar *file_name)
   key.file_name = (gchar*) file_name;
   if (!stat_file (file_name, &key.mtime, &key.n_bytes))
     return NULL;	/* errno from stat() */
-  sfi_mutex_lock (&fdpool_mutex);
+  fdpool_mutex.lock();
   hfile = (GslHFile*) g_hash_table_lookup (hfile_ht, &key);
   if (hfile)
     {
-      sfi_mutex_lock (&hfile->mutex);
+      hfile->mutex.lock();
       hfile->ocount++;
-      sfi_mutex_unlock (&hfile->mutex);
+      hfile->mutex.unlock();
       ret_errno = 0;
     }
   else
@@ -95,6 +94,7 @@ gsl_hfile_open (const gchar *file_name)
       if (fd >= 0)
 	{
 	  hfile = sfi_new_struct0 (GslHFile, 1);
+          new (&hfile->mutex) Bse::Mutex();
 	  hfile->file_name = g_strdup (file_name);
 	  hfile->mtime = key.mtime;
 	  hfile->n_bytes = key.n_bytes;
@@ -102,14 +102,13 @@ gsl_hfile_open (const gchar *file_name)
 	  hfile->fd = fd;
 	  hfile->ocount = 1;
 	  hfile->zoffset = -2;
-	  sfi_mutex_init (&hfile->mutex);
 	  g_hash_table_insert (hfile_ht, hfile, hfile);
 	  ret_errno = 0;
 	}
       else
 	ret_errno = errno;
     }
-  sfi_mutex_unlock (&fdpool_mutex);
+  fdpool_mutex.unlock();
   errno = ret_errno;
   return hfile;
 }
@@ -125,8 +124,8 @@ gsl_hfile_close (GslHFile *hfile)
   gboolean destroy = FALSE;
   g_return_if_fail (hfile != NULL);
   g_return_if_fail (hfile->ocount > 0);
-  sfi_mutex_lock (&fdpool_mutex);
-  sfi_mutex_lock (&hfile->mutex);
+  fdpool_mutex.lock();
+  hfile->mutex.lock();
   if (hfile->ocount > 1)
     hfile->ocount--;
   else
@@ -140,13 +139,13 @@ gsl_hfile_close (GslHFile *hfile)
 	  destroy = TRUE;
 	}
     }
-  sfi_mutex_unlock (&hfile->mutex);
-  sfi_mutex_unlock (&fdpool_mutex);
+  hfile->mutex.unlock();
+  fdpool_mutex.unlock();
   if (destroy)
     {
-      sfi_mutex_destroy (&hfile->mutex);
       close (hfile->fd);
       g_free (hfile->file_name);
+      hfile->mutex.~Mutex();
       sfi_delete_struct (GslHFile, hfile);
     }
   errno = 0;
@@ -179,7 +178,7 @@ gsl_hfile_pread (GslHFile *hfile,
       return 0;
     }
   g_return_val_if_fail (bytes != NULL, -1);
-  sfi_mutex_lock (&hfile->mutex);
+  hfile->mutex.lock();
   if (hfile->ocount)
     {
       if (hfile->cpos != offset)
@@ -188,7 +187,7 @@ gsl_hfile_pread (GslHFile *hfile,
 	  if (hfile->cpos < 0 && errno != EINVAL)
 	    {
 	      ret_errno = errno;
-	      sfi_mutex_unlock (&hfile->mutex);
+	      hfile->mutex.unlock();
 	      errno = ret_errno;
 	      return -1;
 	    }
@@ -221,7 +220,7 @@ gsl_hfile_pread (GslHFile *hfile,
     }
   else
     ret_errno = EFAULT;
-  sfi_mutex_unlock (&hfile->mutex);
+  hfile->mutex.unlock();
   errno = ret_errno;
   return ret_bytes;
 }
@@ -241,20 +240,20 @@ gsl_hfile_zoffset (GslHFile *hfile)
   errno = EFAULT;
   g_return_val_if_fail (hfile != NULL, -1);
   g_return_val_if_fail (hfile->ocount > 0, -1);
-  sfi_mutex_lock (&hfile->mutex);
+  hfile->mutex.lock();
   if (hfile->zoffset > -2) /* got valid offset already */
     {
       zoffset = hfile->zoffset;
-      sfi_mutex_unlock (&hfile->mutex);
+      hfile->mutex.unlock();
       return zoffset;
     }
   if (!hfile->ocount) /* bad */
     {
-      sfi_mutex_unlock (&hfile->mutex);
+      hfile->mutex.unlock();
       return -1;
     }
   hfile->ocount += 1; /* keep open for a while */
-  sfi_mutex_unlock (&hfile->mutex);
+  hfile->mutex.unlock();
   /* seek to literal '\0' */
   zoffset = 0;
   do
@@ -274,10 +273,10 @@ gsl_hfile_zoffset (GslHFile *hfile)
   while (!seen_zero && l);
   if (!seen_zero)
     zoffset = -1;
-  sfi_mutex_lock (&hfile->mutex);
+  hfile->mutex.lock();
   if (hfile->zoffset < -1)
     hfile->zoffset = zoffset;
-  sfi_mutex_unlock (&hfile->mutex);
+  hfile->mutex.unlock();
   gsl_hfile_close (hfile);
   return zoffset;
 }
