@@ -1,7 +1,6 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include <glib.h>
 #include "birnetmsg.hh"
-#include "birnetthread.hh"
 #include <syslog.h>
 #include <errno.h>
 #include <string.h>
@@ -30,8 +29,8 @@ Msg::Part::setup (uint8       _ptype,
   g_free (s);
 }
 const Msg::Part &Msg::empty_part = Part();
-volatile int    Msg::n_msg_types = 0;
-uint8 *volatile Msg::msg_type_bits = NULL;
+Rapicorn::Atomic<int>    Msg::n_msg_types = 0;
+Rapicorn::Atomic<uint8*> Msg::msg_type_bits = NULL;
 struct MsgType {
   /* this structure cannot use C++ types because it's not properly constructed */
   const char *ident;
@@ -40,7 +39,7 @@ struct MsgType {
   Msg::Type   default_type;
   bool        enabled;
 };
-static Mutex    msg_mutex;
+static Rapicorn::Mutex msg_mutex;
 static MsgType* msg_types = NULL; /* cannot use a vector<> here, because of constructor ordering */
 static bool     msg_log_to_stderr = true;
 static uint     msg_syslog_priority = 0; // LOG_USER | LOG_INFO;
@@ -147,15 +146,13 @@ Msg::register_type (const char *ident,
     default_ouput = NONE;
   /* lock messages */
   uint8 *old_mbits = NULL;
-  if (ThreadTable.mutex_lock)
-    msg_mutex.lock();
+  msg_mutex.lock();
   /* allow duplicate registration */
   for (int i = 0; i < n_msg_types; i++)
     if (strcmp (msg_types[i].ident, ident) == 0)
       {
         /* found duplicate */
-        if (ThreadTable.mutex_unlock)
-          msg_mutex.unlock();
+        msg_mutex.unlock();
         return Type (i);
       }
   /* add new message type */
@@ -170,20 +167,19 @@ Msg::register_type (const char *ident,
       mflags[new_flags_size - 1] = 0;
       old_mbits = msg_type_bits;
       /* we are holding a lock in the multi-threaded case so no need for compare_and_swap */
-      Atomic::ptr_set (&msg_type_bits, mflags);
+      msg_type_bits = mflags;
     }
   msg_types = g_renew (MsgType, msg_types, n_mtypes);
   memset (&msg_types[mtype], 0, sizeof (msg_types[mtype]));
   msg_types[mtype].ident = g_strdup (ident);
   msg_types[mtype].label = g_strdup (label ? label : "");
   msg_types[mtype].default_type = default_ouput; /* couple to default_ouput */
-  Atomic::int_set (&n_msg_types, n_mtypes); /* only ever grows */
+  n_msg_types = n_mtypes; /* only ever grows */
   /* adjust msg type config (after n_msg_types was incremented) */
   set_msg_type_L (mtype, msg_types[default_ouput].flags, msg_types[default_ouput].enabled);
   // FIXME: msg_type_bits should be registered as hazard pointer so we don't g_free() while other threads read old_mbits[*]
   g_free (old_mbits);
-  if (ThreadTable.mutex_unlock)
-    msg_mutex.unlock();
+  msg_mutex.unlock();
   return mtype;
 }
 static struct AutoConstruct {
@@ -203,7 +199,7 @@ static struct AutoConstruct {
 Msg::Type
 Msg::lookup_type (const String &ident)
 {
-  AutoLocker locker (msg_mutex);
+  Rapicorn::ScopedLock<Rapicorn::Mutex> locker (msg_mutex);
   for (int i = 0; i < n_msg_types; i++)
     if (ident == msg_types[i].ident)
       return Type (i);
@@ -212,14 +208,14 @@ Msg::lookup_type (const String &ident)
 void
 Msg::enable (Type mtype)
 {
-  AutoLocker locker (msg_mutex);
+  Rapicorn::ScopedLock<Rapicorn::Mutex> locker (msg_mutex);
   if (mtype > 1 && mtype < (int) n_msg_types)
     set_msg_type_L (mtype, msg_types[mtype].flags, true);
 }
 void
 Msg::disable (Type mtype)
 {
-  AutoLocker locker (msg_mutex);
+  Rapicorn::ScopedLock<Rapicorn::Mutex> locker (msg_mutex);
   if (mtype > 1 && mtype < (int) n_msg_types)
     set_msg_type_L (mtype, msg_types[mtype].flags, false);
 }
@@ -234,7 +230,7 @@ Msg::disable (Type mtype)
 const char*
 Msg::type_ident (Type mtype)
 {
-  AutoLocker locker (msg_mutex);
+  Rapicorn::ScopedLock<Rapicorn::Mutex> locker (msg_mutex);
   if (mtype >= 0 && mtype < n_msg_types)
     return msg_types[mtype].ident;
   return NULL;
@@ -251,7 +247,7 @@ Msg::type_ident (Type mtype)
 const char*
 Msg::type_label (Type mtype)
 {
-  AutoLocker locker (msg_mutex);
+  Rapicorn::ScopedLock<Rapicorn::Mutex> locker (msg_mutex);
   if (mtype >= 0 && mtype < n_msg_types)
     return msg_types[mtype].label;
   return NULL;
@@ -259,8 +255,8 @@ Msg::type_label (Type mtype)
 uint32
 Msg::type_flags (Type mtype)
 {
+  Rapicorn::ScopedLock<Rapicorn::Mutex> locker (msg_mutex);
   uint flags = 0;
-  AutoLocker locker (msg_mutex);
   if (mtype >= 0 && mtype < n_msg_types)
     flags = msg_types[mtype].flags;
   return flags;
@@ -270,7 +266,7 @@ Msg::configure (Type                mtype,
                 LogFlags            log_mask,
                 const String       &logfile)
 {
-  AutoLocker locker (msg_mutex);
+  Rapicorn::ScopedLock<Rapicorn::Mutex> locker (msg_mutex);
   if (mtype > 1 && mtype < n_msg_types)
     set_msg_type_L (mtype, log_mask, msg_types[mtype].enabled);
 }
@@ -317,7 +313,7 @@ Msg::key_list_change_L (const String &keylist,
 void
 Msg::allow_msgs (const String &key)
 {
-  AutoLocker locker (msg_mutex);
+  Rapicorn::ScopedLock<Rapicorn::Mutex> locker (msg_mutex);
   if (key.size())
     key_list_change_L (key, true);
 #if 0
@@ -331,7 +327,7 @@ Msg::allow_msgs (const String &key)
 void
 Msg::deny_msgs (const String &key)
 {
-  AutoLocker locker (msg_mutex);
+  Rapicorn::ScopedLock<Rapicorn::Mutex> locker (msg_mutex);
   if (key.size())
     key_list_change_L (key, false);
 }
@@ -340,7 +336,7 @@ Msg::configure_stdlog (bool                redirect_stdlog_to_stderr,
                        const String       &stdlog_filename,
                        uint                syslog_priority)
 {
-  AutoLocker locker (msg_mutex);
+  Rapicorn::ScopedLock<Rapicorn::Mutex> locker (msg_mutex);
   msg_log_to_stderr = redirect_stdlog_to_stderr;
   if (msg_log_file && msg_log_file != stdout && msg_log_file != stderr)
     fclose (msg_log_file);
@@ -351,6 +347,7 @@ Msg::configure_stdlog (bool                redirect_stdlog_to_stderr,
     msg_log_file = fopen (stdlog_filename.c_str(), "a");
   msg_syslog_priority = syslog_priority;
 }
+
 static String
 prgname (bool maystrip)
 {
@@ -362,6 +359,7 @@ prgname (bool maystrip)
     }
   return pname;
 }
+
 static String
 log_prefix (const String &prg_name,
             uint          pid,
@@ -389,7 +387,9 @@ log_prefix (const String &prg_name,
   /* ... */
   return str;
 }
-static DataKey<Msg::Handler> msg_thread_handler_key;
+
+static Rapicorn::DataKey<Msg::Handler> msg_thread_handler_key;
+
 /**
  * @param handler       a valid Msg::Handler or NULL
  *
@@ -402,9 +402,10 @@ static DataKey<Msg::Handler> msg_thread_handler_key;
 void
 Msg::set_thread_handler (Handler handler)
 {
-  Thread &self = Thread::self();
+  Rapicorn::ThreadInfo &self = Rapicorn::ThreadInfo::self();
   self.set_data (&msg_thread_handler_key, handler);
 }
+
 void
 Msg::display_parts (const char         *domain,
                     Type                message_type,
@@ -430,7 +431,7 @@ Msg::display_parts (const char         *domain,
       bool   is_debug = message_type == DEBUG, is_diag = message_type == DIAG;
       String label = type_label (message_type);
       String prefix = log_prefix (prgname (is_debug),                                   /* strip prgname path for debugging */
-                                  Thread::Self::pid(),                                  /* always print pid */
+                                  Rapicorn::ThisThread::thread_pid(),                   /* always print pid */
                                   is_debug ? "" : domain,                               /* print domain except when debugging */
                                   is_debug || is_diag ? "" : label,                     /* print translated message type execpt for debug/diagnosis */
                                   is_debug ? ident : "");                               /* print identifier if debugging */
@@ -462,7 +463,7 @@ Msg::display_parts (const char         *domain,
   if (msg_log_file && (actions & LOG_TO_STDLOG))
     {
       String prefix = log_prefix (prgname (false),                                      /* printf fully qualified program name */
-                                  Thread::Self::pid(),                                  /* always print pid */
+                                  Rapicorn::ThisThread::thread_pid(),                   /* always print pid */
                                   domain,                                               /* always print log domain */
                                   "",                                                   /* skip translated message type */
                                   ident);                                               /* print machine readable message type */
@@ -478,7 +479,7 @@ Msg::display_parts (const char         *domain,
   /* log to log handler */
   if (actions & LOG_TO_HANDLER)
     {
-      Thread &self = Thread::self();
+      Rapicorn::ThreadInfo &self = Rapicorn::ThreadInfo::self();
       Handler log_handler = self.get_data (&msg_thread_handler_key);
       if (!log_handler)
         log_handler = default_handler;
