@@ -139,6 +139,10 @@ birnet_init (int        *argcp,
     g_thread_init (NULL);
   /* update program/application name upon repeated initilization */
   char *prg_name = argcp && *argcp ? g_path_get_basename ((*argvp)[0]) : NULL;
+
+  // ensure we have Rapicorn setup early
+  Rapicorn::init_core (app_name ? app_name : prg_name, argcp, *argvp);
+
   if (birnet_init_settings != NULL)
     {
       if (prg_name && !g_get_prgname ())
