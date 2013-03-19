@@ -12,8 +12,6 @@ void		_engine_master_dispatch		(void);
 
 namespace Bse {
 
-using Rapicorn::EventFd;    // FIXME
-
 class MasterThread {
   std::thread           thread_;
   EventFd               event_fd_;

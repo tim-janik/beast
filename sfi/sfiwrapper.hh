@@ -4,6 +4,20 @@
 #include <stdbool.h>
 #include <sfi/glib-extra.hh>
 #include <birnet/birnetcdefs.h> /* include glib before birnet for G_LOG_DOMAIN */
+#include <birnet/birnetutils.hh>
+
+// FIXME: Introduce symbols from Rapicorn to ease transition.
+namespace Bse {
+
+using Rapicorn::ThreadInfo;
+using Rapicorn::EventFd;
+using Rapicorn::Spinlock;
+using Rapicorn::Mutex;
+using Rapicorn::Cond;
+
+};
+
+
 /* sfiwrapper.h is a thin C language wrapper around C++ features
  * provided by libbirnet.
  */

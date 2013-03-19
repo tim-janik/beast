@@ -5,10 +5,6 @@
 
 namespace Bse {
 
-using Rapicorn::Mutex;    // FIXME
-using Rapicorn::Cond;    // FIXME
-using Rapicorn::EventFd;    // FIXME
-
 /** Note and MIDI sequencer.
  * The sequencer processes notes from parts and MIDI input and generates events for the synthesis engine.
  */
