@@ -114,6 +114,7 @@ noinst_PROGRAMS = $(ALLTESTS)
 progs_LDADD     = $(strip					\
 	libgxk.a $(GXK_LIBS) 					\
 	$(top_builddir)/sfi/libsfi.o $(SFI_LIBS) 		\
+	$(RAPICORN_LIBS) 					\
 	$(top_builddir)/birnet/libbirnet.o $(BIRNET_LIBS)	\
 )
 
