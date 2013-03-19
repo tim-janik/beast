@@ -1,6 +1,7 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bseengine.hh"
 #include "bsecore.hh"
+#include "bsemain.hh"
 #include "gslcommon.hh"
 #include "bseengineutils.hh"
 #include "bseenginemaster.hh"
@@ -9,7 +10,9 @@
 #include <unistd.h>
 
 static SFI_MSG_TYPE_DEFINE (debug_engine, "engine", SFI_MSG_DEBUG, NULL);
+#undef DEBUG // FIXME
 #define DEBUG(...)      sfi_debug (debug_engine, __VA_ARGS__)
+
 /* some systems don't have ERESTART (which is what linux returns for system
  * calls on pipes which are being interrupted). most probably just use EINTR,
  * and maybe some can return both. so we check for both in the below code,
@@ -18,8 +21,10 @@ static SFI_MSG_TYPE_DEFINE (debug_engine, "engine", SFI_MSG_DEBUG, NULL);
 #ifndef ERESTART
 #define ERESTART        EINTR
 #endif
+
 /* --- prototypes --- */
 static void wakeup_master (void);
+
 /* --- UserThread --- */
 /**
  * @param klass	the BseModuleClass which determines the module's behaviour
@@ -1096,8 +1101,7 @@ slave (gpointer data)
 /* --- setup & trigger --- */
 static gboolean		bse_engine_initialized = FALSE;
 static gboolean		bse_engine_threaded = FALSE;
-static BirnetThread    *master_thread = NULL;
-static EngineMasterData master_data;
+static Bse::MasterThread *master_thread = NULL;
 guint			bse_engine_exvar_block_size = 0;
 guint			bse_engine_exvar_sample_freq = 0;
 guint			bse_engine_exvar_control_mask = 0;
@@ -1275,43 +1279,18 @@ bse_engine_init (gboolean run_threaded)
   bse_engine_threaded = run_threaded;
   if (bse_engine_threaded)
     {
-      gint err = pipe (master_data.wakeup_pipe);
-      master_data.user_thread = sfi_thread_self ();
-      if (!err)
-	{
-	  glong d_long = fcntl (master_data.wakeup_pipe[0], F_GETFL, 0);
-	  /* DEBUG ("master_wpipe-readfd, blocking=%ld", d_long & O_NONBLOCK); */
-	  d_long |= O_NONBLOCK;
-	  err = fcntl (master_data.wakeup_pipe[0], F_SETFL, d_long);
-	}
-      if (!err)
-	{
-	  glong d_long = fcntl (master_data.wakeup_pipe[1], F_GETFL, 0);
-	  /* DEBUG ("master_wpipe-writefd, blocking=%ld", d_long & O_NONBLOCK); */
-	  d_long |= O_NONBLOCK;
-	  err = fcntl (master_data.wakeup_pipe[1], F_SETFL, d_long);
-	}
-      if (err)
-	g_error ("failed to create wakeup pipe: %s", g_strerror (errno));
-      master_thread = sfi_thread_run ("DSP #1", (BirnetThreadFunc) bse_engine_master_thread, &master_data);
-      if (!master_thread)
-	g_error ("failed to create master thread");
-      if (0)
-	sfi_thread_run ("DSP #2", slave, NULL);
+      master_thread = new Bse::MasterThread (bse_main_wakeup);
+      (void) slave; // FIXME: start slave ("DSP #2")
     }
 }
+
 static void
 wakeup_master (void)
 {
-  if (master_thread)
-    {
-      guint8 data = 'W';
-      gint l;
-      do
-	l = write (master_data.wakeup_pipe[1], &data, 1);
-      while (l < 0 && (errno == EINTR || errno == ERESTART));
-    }
+  g_return_if_fail (master_thread != NULL);
+  master_thread->wakeup();
 }
+
 gboolean
 bse_engine_prepare (BseEngineLoop *loop)
 {
