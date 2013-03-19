@@ -26,6 +26,8 @@ void		bse_init_test		(gint		*argc,
 					 SfiInitValue    values[]);
 /* BSE thread pid (or 0) */
 guint           bse_main_getpid         (void);
+void            bse_main_wakeup         ();
+
 /* messaging */
 void            bse_message_setup_thread_handler (void);
 void            bse_message_to_default_handler   (const BseMessage *msg);

@@ -175,6 +175,14 @@ bse_init_glue_context (const gchar *client)
   while (!adata.context);
   return adata.context;
 }
+
+void
+bse_main_wakeup ()
+{
+  g_return_if_fail (bse_main_context != NULL);
+  g_main_context_wakeup (bse_main_context);
+}
+
 static void
 bse_init_core (void)
 {
