@@ -127,7 +127,7 @@ CLEANFILES += birnetconfig.h
 $(libbirnet_la_OBJECTS): birnetconfig.h
 
 noinst_PROGRAMS = $(ALLTESTS)
-progs_ldadd     = libbirnet.o $(BIRNET_LIBS) -lm
+progs_ldadd     = libbirnet.o $(BIRNET_LIBS) $(RAPICORN_LIBS) -lm
 
 noinst_PROGRAMS       += birnet-zintern
 birnet_zintern_SOURCES = birnet-zintern.cc
