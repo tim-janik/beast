@@ -10,8 +10,6 @@
 #include "bsemain.hh"
 #include "bseieee754.hh"
 #include <sys/poll.h>
-#include <unistd.h>
-#include <fcntl.h>
 #include <errno.h>
 #include <string.h>
 #include <vector>
@@ -26,18 +24,7 @@ using Rapicorn::ThreadInfo; // FIXME
 
 Sequencer              *Sequencer::singleton_ = NULL;
 Mutex                   Sequencer::sequencer_mutex_;
-static int              sequencer_wake_up_pipe[2] = { -1, -1 };
 static ThreadInfo      *sequencer_thread_self = NULL;
-
-void
-Sequencer::wakeup ()
-{
-  uint8 wake_up_message = 'W';
-  int err;
-  do
-    err = write (sequencer_wake_up_pipe[1], &wake_up_message, 1);
-  while (err < 0 && errno == EINTR);
-}
 
 class Sequencer::PollPool {
 public:
@@ -204,12 +191,12 @@ Sequencer::remove_io_watch (BseIOWatch watch_func, void *watch_data)
 bool
 Sequencer::pool_poll_Lm (gint timeout_ms)
 {
-  guint n_pfds = poll_pool_->get_n_pfds() + 1;  /* one for the wake-up pipe */
+  uint n_pfds = poll_pool_->get_n_pfds() + 1;   // one for the wake-up event_fd_
   GPollFD *pfds = g_newa (GPollFD, n_pfds);
-  pfds[0].fd = sequencer_wake_up_pipe[0];
+  pfds[0].fd = event_fd_.inputfd();
   pfds[0].events = G_IO_IN;
   pfds[0].revents = 0;
-  poll_pool_->fill_pfds (n_pfds - 1, pfds + 1); /* rest used for io watch array */
+  poll_pool_->fill_pfds (n_pfds - 1, pfds + 1); // rest used for io watch array
   BSE_SEQUENCER_UNLOCK();
   int result = poll ((struct pollfd*) pfds, n_pfds, timeout_ms);
   if (result < 0 && errno != EINTR)
@@ -217,9 +204,7 @@ Sequencer::pool_poll_Lm (gint timeout_ms)
   BSE_SEQUENCER_LOCK();
   if (result > 0 && pfds[0].revents)
     {
-      guint8 buffer[256];
-      const size_t unused = read (sequencer_wake_up_pipe[0], buffer, 256);      // eat wake up message
-      (void) unused;
+      event_fd_.flush();                        // eat wake up message
       result -= 1;
     }
   if (result > 0)
@@ -550,14 +535,10 @@ Sequencer::Sequencer() :
   stamp_ = Bse::TickStamp::current();
   assert (stamp_ > 0);
 
-  if (pipe (sequencer_wake_up_pipe) < 0)
-    g_error ("failed to create sequencer wake-up pipe: %s", strerror (errno));
-  long flags = fcntl (sequencer_wake_up_pipe[0], F_GETFL, 0);
-  fcntl (sequencer_wake_up_pipe[0], F_SETFL, O_NONBLOCK | flags);
-  flags = fcntl (sequencer_wake_up_pipe[1], F_GETFL, 0);
-  fcntl (sequencer_wake_up_pipe[1], F_SETFL, O_NONBLOCK | flags);
-
   poll_pool_ = new PollPool;
+
+  if (event_fd_.open() != 0)
+    g_error ("failed to create sequencer wake-up pipe: %s", strerror (errno));
 }
 
 void

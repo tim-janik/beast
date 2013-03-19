@@ -7,6 +7,7 @@ namespace Bse {
 
 using Rapicorn::Mutex;    // FIXME
 using Rapicorn::Cond;    // FIXME
+using Rapicorn::EventFd;    // FIXME
 
 /** Note and MIDI sequencer.
  * The sequencer processes notes from parts and MIDI input and generates events for the synthesis engine.
@@ -19,6 +20,7 @@ class Sequencer {
   SfiRing   *songs_;
   Cond       watch_cond_;
   PollPool  *poll_pool_;
+  EventFd    event_fd_;
   std::thread thread_;
 private:
   void          sequencer_thread ();
@@ -35,12 +37,12 @@ private:
 protected:
   static void   _init_threaded  ();
 public:
-  void          wakeup          ();
   void          add_io_watch    (uint n_pfds, const GPollFD *pfds, BseIOWatch watch_func, void *watch_data);
   void          remove_io_watch (BseIOWatch watch_func, void *watch_data);
   void          start_song	(BseSong *song, uint64 start_stamp);
   void          remove_song	(BseSong *song);
   bool          thread_lagging  (uint n_blocks);
+  void          wakeup          ()      { event_fd_.wakeup(); }
   static Mutex& sequencer_mutex ()      { return sequencer_mutex_; }
   static Sequencer& instance    ()      { return *singleton_; }
 };
