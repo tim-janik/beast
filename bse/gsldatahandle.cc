@@ -22,7 +22,7 @@ gsl_data_handle_common_init (GslDataHandle *dhandle,
   g_return_val_if_fail (dhandle->name == NULL, FALSE);
   g_return_val_if_fail (dhandle->ref_count == 0, FALSE);
   dhandle->name = g_strdup (file_name);
-  sfi_mutex_init (&dhandle->mutex);
+  new (&dhandle->spinlock) Bse::Spinlock();
   dhandle->ref_count = 1;
   dhandle->open_count = 0;
   memset (&dhandle->setup, 0, sizeof (dhandle->setup));
@@ -33,9 +33,9 @@ gsl_data_handle_ref (GslDataHandle *dhandle)
 {
   g_return_val_if_fail (dhandle != NULL, NULL);
   g_return_val_if_fail (dhandle->ref_count > 0, NULL);
-  GSL_SPIN_LOCK (&dhandle->mutex);
+  dhandle->spinlock.lock();
   dhandle->ref_count++;
-  GSL_SPIN_UNLOCK (&dhandle->mutex);
+  dhandle->spinlock.unlock();
   return dhandle;
 }
 void
@@ -46,7 +46,7 @@ gsl_data_handle_common_free (GslDataHandle *dhandle)
   g_return_if_fail (dhandle->ref_count == 0);
   g_free (dhandle->name);
   dhandle->name = NULL;
-  sfi_mutex_destroy (&dhandle->mutex);
+  dhandle->spinlock.~Spinlock();
 }
 void
 gsl_data_handle_unref (GslDataHandle *dhandle)
@@ -54,10 +54,10 @@ gsl_data_handle_unref (GslDataHandle *dhandle)
   gboolean destroy;
   g_return_if_fail (dhandle != NULL);
   g_return_if_fail (dhandle->ref_count > 0);
-  GSL_SPIN_LOCK (&dhandle->mutex);
+  dhandle->spinlock.lock();
   dhandle->ref_count--;
   destroy = dhandle->ref_count == 0;
-  GSL_SPIN_UNLOCK (&dhandle->mutex);
+  dhandle->spinlock.unlock();
   if (destroy)
     {
       g_return_if_fail (dhandle->open_count == 0);
@@ -69,7 +69,7 @@ gsl_data_handle_open (GslDataHandle *dhandle)
 {
   g_return_val_if_fail (dhandle != NULL, BSE_ERROR_INTERNAL);
   g_return_val_if_fail (dhandle->ref_count > 0, BSE_ERROR_INTERNAL);
-  GSL_SPIN_LOCK (&dhandle->mutex);
+  dhandle->spinlock.lock();
   if (dhandle->open_count == 0)
     {
       GslDataHandleSetup setup = { 0, };
@@ -84,7 +84,7 @@ gsl_data_handle_open (GslDataHandle *dhandle)
 	}
       if (error)
 	{
-	  GSL_SPIN_UNLOCK (&dhandle->mutex);
+	  dhandle->spinlock.unlock();
           if (setup.xinfos)
             g_warning ("%s: leaking xinfos after open() (%p)", "GslDataHandle", dhandle->vtable->open);
 	  return error;
@@ -95,7 +95,7 @@ gsl_data_handle_open (GslDataHandle *dhandle)
     }
   else
     dhandle->open_count++;
-  GSL_SPIN_UNLOCK (&dhandle->mutex);
+  dhandle->spinlock.unlock();
   return BSE_ERROR_NONE;
 }
 void
@@ -105,7 +105,7 @@ gsl_data_handle_close (GslDataHandle *dhandle)
   g_return_if_fail (dhandle != NULL);
   g_return_if_fail (dhandle->ref_count > 0);
   g_return_if_fail (dhandle->open_count > 0);
-  GSL_SPIN_LOCK (&dhandle->mutex);
+  dhandle->spinlock.lock();
   dhandle->open_count--;
   need_unref = !dhandle->open_count;
   if (!dhandle->open_count)
@@ -115,7 +115,7 @@ gsl_data_handle_close (GslDataHandle *dhandle)
         g_warning ("%s: leaking xinfos after close() (%p)", "GslDataHandle", dhandle->vtable->close);
       memset (&dhandle->setup, 0, sizeof (dhandle->setup));
     }
-  GSL_SPIN_UNLOCK (&dhandle->mutex);
+  dhandle->spinlock.unlock();
   if (need_unref)
     gsl_data_handle_unref (dhandle);
 }
@@ -134,18 +134,18 @@ gsl_data_handle_read (GslDataHandle *dhandle,
   g_return_val_if_fail (values != NULL, -1);
   g_return_val_if_fail (value_offset < dhandle->setup.n_values, -1);
   n_values = MIN (n_values, dhandle->setup.n_values - value_offset);
-  GSL_SPIN_LOCK (&dhandle->mutex);
+  dhandle->spinlock.lock();
   l = dhandle->vtable->read (dhandle, value_offset, n_values, values);
-  GSL_SPIN_UNLOCK (&dhandle->mutex);
+  dhandle->spinlock.unlock();
   return l;
 }
 GslDataHandle*
 gsl_data_handle_get_source (GslDataHandle *dhandle)
 {
   g_return_val_if_fail (dhandle != NULL, NULL);
-  GSL_SPIN_LOCK (&dhandle->mutex);
+  dhandle->spinlock.lock();
   GslDataHandle *src_handle = dhandle->vtable->get_source ? dhandle->vtable->get_source (dhandle) : NULL;
-  GSL_SPIN_UNLOCK (&dhandle->mutex);
+  dhandle->spinlock.unlock();
   return src_handle;
 }
 /**
@@ -176,9 +176,9 @@ gsl_data_handle_get_state_length (GslDataHandle *dhandle)
 {
   g_return_val_if_fail (dhandle != NULL, -1);
   g_return_val_if_fail (dhandle->open_count > 0, -1);
-  GSL_SPIN_LOCK (&dhandle->mutex);
+  dhandle->spinlock.lock();
   int64 state_length = dhandle->vtable->get_state_length ? dhandle->vtable->get_state_length (dhandle) : 0;
-  GSL_SPIN_UNLOCK (&dhandle->mutex);
+  dhandle->spinlock.unlock();
   return state_length;
 }
 int64
@@ -187,9 +187,9 @@ gsl_data_handle_length (GslDataHandle *dhandle)
   int64 l;
   g_return_val_if_fail (dhandle != NULL, 0);
   g_return_val_if_fail (dhandle->open_count > 0, 0);
-  GSL_SPIN_LOCK (&dhandle->mutex);
+  dhandle->spinlock.lock();
   l = dhandle->open_count ? dhandle->setup.n_values : 0;
-  GSL_SPIN_UNLOCK (&dhandle->mutex);
+  dhandle->spinlock.unlock();
   return l;
 }
 guint
@@ -198,9 +198,9 @@ gsl_data_handle_n_channels (GslDataHandle *dhandle)
   guint n;
   g_return_val_if_fail (dhandle != NULL, 0);
   g_return_val_if_fail (dhandle->open_count > 0, 0);
-  GSL_SPIN_LOCK (&dhandle->mutex);
+  dhandle->spinlock.lock();
   n = dhandle->open_count ? dhandle->setup.n_channels : 0;
-  GSL_SPIN_UNLOCK (&dhandle->mutex);
+  dhandle->spinlock.unlock();
   return n;
 }
 guint
@@ -222,9 +222,9 @@ gsl_data_handle_osc_freq (GslDataHandle *dhandle)
 {
   g_return_val_if_fail (dhandle != NULL, 0);
   g_return_val_if_fail (dhandle->open_count > 0, 0);
-  GSL_SPIN_LOCK (&dhandle->mutex);
+  dhandle->spinlock.lock();
   gfloat f = bse_xinfos_get_float (dhandle->setup.xinfos, "osc-freq");
-  GSL_SPIN_UNLOCK (&dhandle->mutex);
+  dhandle->spinlock.unlock();
   return f;
 }
 gfloat
@@ -232,9 +232,9 @@ gsl_data_handle_volume (GslDataHandle *dhandle)
 {
   g_return_val_if_fail (dhandle != NULL, 0);
   g_return_val_if_fail (dhandle->open_count > 0, 0);
-  GSL_SPIN_LOCK (&dhandle->mutex);
+  dhandle->spinlock.lock();
   gfloat f = bse_xinfos_get_float (dhandle->setup.xinfos, "volume");
-  GSL_SPIN_UNLOCK (&dhandle->mutex);
+  dhandle->spinlock.unlock();
   /* no (or invalid) volume setting means that we replay without scaling */
   if (f <= 0 || f > 1.0)
     f = 1.0;
@@ -245,9 +245,9 @@ gsl_data_handle_fine_tune (GslDataHandle *dhandle)
 {
   g_return_val_if_fail (dhandle != NULL, 0);
   g_return_val_if_fail (dhandle->open_count > 0, 0);
-  GSL_SPIN_LOCK (&dhandle->mutex);
+  dhandle->spinlock.lock();
   gfloat f = bse_xinfos_get_float (dhandle->setup.xinfos, "fine-tune");
-  GSL_SPIN_UNLOCK (&dhandle->mutex);
+  dhandle->spinlock.unlock();
   return f;
 }
 const gchar*
