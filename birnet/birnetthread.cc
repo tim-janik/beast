@@ -107,11 +107,6 @@ Thread::start ()
         ThreadTable.thread_yield();
     }
 }
-void
-Thread::emit_wakeups (uint64 stamp)
-{
-  ThreadTable.thread_emit_wakeups (stamp);
-}
 int
 Thread::pid () const
 {
@@ -136,11 +131,6 @@ bool
 Thread::aborted ()
 {
   return ThreadTable.thread_get_aborted (bthread);
-}
-void
-Thread::wakeup ()
-{
-  ThreadTable.thread_wakeup (bthread);
 }
 bool
 Thread::running ()
@@ -188,18 +178,6 @@ int
 Thread::Self::pid ()
 {
   return ThreadTable.thread_pid (ThreadTable.thread_self());
-}
-void
-Thread::Self::awake_after (uint64 stamp)
-{
-  ThreadTable.thread_awake_after (stamp);
-}
-void
-Thread::Self::set_wakeup (BirnetThreadWakeup   wakeup_func,
-                          void                *wakeup_data,
-                          void               (*destroy_data) (void*))
-{
-  ThreadTable.thread_set_wakeup (wakeup_func, wakeup_data, destroy_data);
 }
 OwnedMutex&
 Thread::Self::owned_mutex ()

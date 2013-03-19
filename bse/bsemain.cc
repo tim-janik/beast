@@ -181,8 +181,6 @@ bse_init_core (void)
 {
   /* global threading things */
   bse_main_context = g_main_context_new ();
-  sfi_thread_set_wakeup ((BirnetThreadWakeup) g_main_context_wakeup,
-			 bse_main_context, NULL);
   bse_message_setup_thread_handler();
   /* initialize basic components */
   bse_globals_init ();

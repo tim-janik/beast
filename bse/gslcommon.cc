@@ -54,20 +54,21 @@ TickStamp::_increment ()
 
 #ifdef  RAPICORN_DOXYGEN
 /**
- * @return GSL's execution tick stamp as unsigned 64bit integer
+ * Retrieve BSE execution tick stamp as unsigned 64bit integer.
  *
- * Retrieve the global GSL tick counter stamp.
- * GSL increments its global tick stamp at certain intervals,
+ * Returns the global GSL tick counter stamp.
+ * BSE increments its global tick stamp at certain intervals,
  * by specific amounts (refer to bse_engine_init() for further
  * details). The tick stamp is a non-wrapping, unsigned 64bit
- * integer greater than 0. Threads can schedule sleep interruptions
- * at certain tick stamps with sfi_thread_awake_after() and
- * sfi_thread_awake_before(). Tick stamp updating occours at
- * GSL engine block processing boundaries, so code that can
- * guarantee to not run across those boundaries (for instance
- * BseProcessFunc() functions) may use the macro Bse::TickStamp::current()
- * to retrieve the current tick in a faster manner (not involving
- * mutex locking). See also bse_module_tick_stamp().
+ * integer greater than 0.
+ * Threads can schedule sleep interruptions at certain tick
+ * stamps with awake_after() and awake_before().
+ * Tick stamp updating occours at BSE engine block processing
+ * boundaries, so code that can guarantee to not run across
+ * those boundaries (for instance BseProcessFunc() functions)
+ * may use Bse::TickStamp::current() to retrieve the current
+ * tick in a fast manner (not involving mutex locking).
+ * See also bse_module_tick_stamp().
  * This function is MT-safe and may be called from any thread.
  */
 uint64 TickStamp::current () { ... }

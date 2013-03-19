@@ -162,7 +162,6 @@ void birnet_cleanup_force_handlers     (void); // FIXME: remove
 /* --- threading API --- */
 typedef BirnetThread   		SfiThread;
 typedef void         	      (*SfiThreadFunc)   (void *user_data);
-typedef void         	      (*SfiThreadWakeup) (void *wakeup_data);
 typedef BirnetCond     		SfiCond;
 typedef BirnetMutex    		SfiMutex;
 typedef BirnetRecMutex 		SfiRecMutex;
@@ -209,10 +208,6 @@ SfiThread* sfi_thread_run			(const char   *name, /* new + start */
 #define sfi_thread_get_name(thrd)		(sfi_thread_table->thread_name (thrd))
 #define sfi_thread_set_name(name)		(sfi_thread_table->thread_set_name (name))
 #define sfi_thread_sleep(usecs)			(sfi_thread_table->thread_sleep (usecs))
-#define sfi_thread_wakeup(thrd)			(sfi_thread_table->thread_wakeup (thrd))
-#define sfi_thread_awake_after(stamp)		(sfi_thread_table->thread_awake_after (stamp))
-#define sfi_thread_emit_wakeups(stamp)		(sfi_thread_table->thread_emit_wakeups (stamp))
-#define sfi_thread_set_wakeup(func,udata,dstry)	(sfi_thread_table->thread_set_wakeup (func, udata, dstry))
 #define sfi_thread_abort(thrd)			(sfi_thread_table->thread_abort (thrd))
 #define sfi_thread_queue_abort(thrd)		(sfi_thread_table->thread_queue_abort (thrd))
 #define sfi_thread_aborted()			(sfi_thread_table->thread_aborted ())

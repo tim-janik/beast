@@ -77,14 +77,13 @@ main (int   argc,
     }
   if (!bse_scm_context)
     {
-      /* start our own core thread */
+      // start our own core thread
       Bse::init_async (&argc, &argv, "BSESCM", NULL);
+      // allow g_main_context_wakeup to interrupt sleeps in bse_scm_context_iteration
       bse_scm_context = Bse::init_glue_context (PRG_NAME, []() { g_main_context_wakeup (g_main_context_default()); });
     }
   /* now that the BSE thread runs, drop scheduling priorities if we have any */
   setpriority (PRIO_PROCESS, getpid(), 0);
-  /* setup main context to be able to wait for events from bse in bse_scm_context_iteration */
-  sfi_thread_set_wakeup (BirnetThreadWakeup (g_main_context_wakeup), g_main_context_default(), NULL);
   source = g_source_simple (G_PRIORITY_DEFAULT, GSourcePending (sfi_glue_context_pending), dummy_dispatch, NULL, NULL, NULL);
   g_source_attach (source, NULL);
   g_source_unref (source);

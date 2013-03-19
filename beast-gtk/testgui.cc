@@ -77,7 +77,6 @@ main (int   argc,
   sfi_msg_allow ("misc");
   /* ensure SFI can wake us up */
   sfi_thread_set_name ("TestGUI");
-  sfi_thread_set_wakeup ((BirnetThreadWakeup) g_main_context_wakeup, g_main_context_default (), NULL);
   /* initialize Gtk+ and enter threading mode */
   gtk_init (&argc, &argv);
   g_set_prgname ("testgui");            /* override Gdk's program name */

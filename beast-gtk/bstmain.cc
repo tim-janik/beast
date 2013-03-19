@@ -90,7 +90,6 @@ main (int   argc,
   sfi_msg_allow ("misc");
   /* ensure SFI can wake us up */
   sfi_thread_set_name ("Beast GUI");
-  sfi_thread_set_wakeup ((BirnetThreadWakeup) bst_main_loop_wakeup, NULL, NULL);
   /* initialize Gtk+ and go into threading mode */
   bst_early_parse_args (&argc, &argv);
   if (bst_debug_extensions)

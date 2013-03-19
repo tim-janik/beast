@@ -88,14 +88,12 @@ public:
   void                  queue_abort     ();
   void                  abort           ();
   bool                  aborted         ();
-  void                  wakeup          ();
   bool                  running         ();
   void                  wait_for_exit   ();
   /* event loop */
   void                  exec_loop       ();
   void                  quit_loop       ();
   /* global methods */
-  static void           emit_wakeups    (uint64             stamp);
   static Thread&        self            ();
   /* Self thread */
   struct Self {
@@ -104,10 +102,6 @@ public:
     static bool         sleep           (long               max_useconds);
     static bool         aborted         ();
     static int          pid             ();
-    static void         awake_after     (uint64             stamp);
-    static void         set_wakeup      (BirnetThreadWakeup wakeup_func,
-                                         void              *wakeup_data,
-                                         void             (*destroy_data) (void*));
     static OwnedMutex&  owned_mutex     ();
     static void         yield           ();
     static void         exit            (void              *retval = NULL) BIRNET_NORETURN;

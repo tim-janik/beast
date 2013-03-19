@@ -147,10 +147,9 @@ static void
 test_thread (gpointer data)
 {
   guint *tdata = (guint*) data;
-  sfi_thread_sleep (-1);
   *tdata += 1;
   while (!sfi_thread_aborted ())
-    sfi_thread_sleep (-1);
+    sfi_thread_sleep (1);
   TACK ();
 }
 static void
@@ -168,8 +167,6 @@ test_threads (void)
   sfi_mutex_destroy (&test_mutex);
   thread = sfi_thread_run ("sfi-test-thread", test_thread, &thread_data);
   TASSERT (thread != NULL);
-  TASSERT (thread_data == 0);
-  sfi_thread_wakeup (thread);
   sfi_thread_abort (thread);
   TASSERT (thread_data > 0);
   sfi_thread_unref (thread);
@@ -569,7 +566,6 @@ check_thread_wrapper_compilation (void)
   const char *name = NULL;
   void *udata = NULL;
   BirnetThreadFunc thread_func = NULL;
-  BirnetThreadWakeup wakeup_func = NULL;
   GDestroyNotify dstry = NULL;
   BirnetInt64 stamp = 31;
   BirnetThreadInfo *tinfo;
@@ -585,10 +581,6 @@ check_thread_wrapper_compilation (void)
   name = sfi_thread_get_name (thrd);
   sfi_thread_set_name (name);
   sfi_thread_sleep (usecs);
-  sfi_thread_wakeup (thrd);
-  sfi_thread_awake_after (stamp);
-  sfi_thread_emit_wakeups (stamp);
-  sfi_thread_set_wakeup (wakeup_func, udata, dstry);
   sfi_thread_abort (thrd);
   sfi_thread_queue_abort (thrd);
   boolv = sfi_thread_aborted ();
