@@ -20,6 +20,7 @@
 #include <unistd.h>
 #include <sfi/sfitests.hh> /* sfti_test_init() */
 using namespace Birnet;
+
 /* --- prototypes --- */
 static void	bse_main_loop		(Rapicorn::AsyncBlockingQueue<int> *init_queue);
 static void	bse_async_parse_args	(gint	        *argc_p,
@@ -76,10 +77,7 @@ bse_gettext (const gchar *text)
 static std::thread async_bse_thread;
 
 void
-bse_init_async (gint           *argc,
-		gchar        ***argv,
-                const char     *app_name,
-                SfiInitValue    values[])
+_bse_init_async (int *argc, char ***argv, const char *app_name, SfiInitValue values[])
 {
   assert (async_bse_thread.get_id() == std::thread::id());      // no async_bse_thread started
   bse_init_textdomain_only();
@@ -130,50 +128,45 @@ bse_check_version (uint required_major, uint required_minor, uint required_micro
   return NULL;
 }
 
-typedef struct {
-  SfiGlueContext *context;
+struct AsyncData {
   const gchar *client;
-  BirnetThread *thread;
-} AsyncData;
+  const std::function<void()> &caller_wakeup;
+  Rapicorn::AsyncBlockingQueue<SfiGlueContext*> result_queue;
+};
+
 static gboolean
 async_create_context (gpointer data)
 {
   AsyncData *adata = (AsyncData*) data;
   SfiComPort *port1, *port2;
-  sfi_com_port_create_linked ("Client", adata->thread, &port1,
-			      "Server", sfi_thread_self (), &port2);
-  adata->context = sfi_glue_encoder_context (port1);
+  sfi_com_port_create_linked ("Client", adata->caller_wakeup, &port1,
+			      "Server", bse_main_wakeup, &port2);
+  SfiGlueContext *context = sfi_glue_encoder_context (port1);
   bse_janitor_new (port2);
-  /* wakeup client */
-  sfi_thread_wakeup (adata->thread);
-  return FALSE; /* single-shot */
+  adata->result_queue.push (context);
+  return false; // run-once
 }
+
 SfiGlueContext*
-bse_init_glue_context (const gchar *client)
+_bse_glue_context_create (const char *client, const std::function<void()> &caller_wakeup)
 {
-  AsyncData adata = { 0, };
-  GSource *source;
-  g_return_val_if_fail (client != NULL, NULL);
-  /* function runs in user threads and queues handler in BSE thread to create context */
+  g_return_val_if_fail (client && caller_wakeup, NULL);
+  AsyncData adata = { client, caller_wakeup };
+  // function runs in user threads and queues handler in BSE thread to create context
   if (bse_initialization_stage < 2)
-    g_error ("%s() called without prior %s()",
-	     "bse_init_glue_context",
-	     "bse_init_async");
-  /* queue handler to create context */
-  source = g_idle_source_new ();
+    g_error ("%s: called without prior %s()", __func__, "Bse::init_async");
+  // queue handler to create context
+  GSource *source = g_idle_source_new ();
   g_source_set_priority (source, G_PRIORITY_HIGH);
   adata.client = client;
-  adata.thread = sfi_thread_self ();
   g_source_set_callback (source, async_create_context, &adata, NULL);
   g_source_attach (source, bse_main_context);
   g_source_unref (source);
-  /* wake up BSE thread */
+  // wake up BSE thread
   g_main_context_wakeup (bse_main_context);
-  /* wait til context creation */
-  do
-    sfi_thread_sleep (-1);
-  while (!adata.context);
-  return adata.context;
+  // receive result asynchronously
+  SfiGlueContext *context = adata.result_queue.pop();
+  return context;
 }
 
 void

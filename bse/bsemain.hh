@@ -7,11 +7,8 @@ G_BEGIN_DECLS
 
 // == BSE Initialization ==
 void		bse_init_textdomain_only (void);
-void		bse_init_async		(gint		*argc,
-					 gchar	      ***argv,
-					 const char     *app_name,
-					 SfiInitValue    values[]);             // prototyped in bse.hh
-SfiGlueContext* bse_init_glue_context	(const gchar    *client);               // prototyped in bse.hh
+void		_bse_init_async		 (int *argc, char ***argv, const char *app_name, SfiInitValue values[]);
+SfiGlueContext* _bse_glue_context_create (const char *client, const std::function<void()> &caller_wakeup);
 const char*     bse_check_version	(guint		 required_major,
                                          guint		 required_minor,
                                          guint		 required_micro);       // prototyped in bse.hh

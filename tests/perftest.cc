@@ -15,12 +15,12 @@ gettime ()
   gettimeofday (&tv, 0);
   return double(tv.tv_sec) + double(tv.tv_usec) * (1.0 / 1000000.0);
 }
-int main(int argc, char **argv)
+int main (int argc, char **argv)
 {
   std::set_terminate (__gnu_cxx::__verbose_terminate_handler);
-  bse_init_async (&argc, &argv, "Perftest", NULL);
+  Bse::init_async (&argc, &argv, "Perftest", NULL);
   sfi_msg_allow ("misc");
-  bse_context = bse_init_glue_context (argv[0]);
+  bse_context = Bse::init_glue_context (argv[0], []() { g_main_context_wakeup (g_main_context_default()); });
   sfi_glue_context_push (bse_context);
   printf ("%s: testing remote glue layer calls via C++ interface:\n", argv[0]);
   const int max_calls = 30000;

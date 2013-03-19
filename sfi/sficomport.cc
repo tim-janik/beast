@@ -13,6 +13,7 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 static SFI_MSG_TYPE_DEFINE (debug_comport, "comport", SFI_MSG_DEBUG, NULL);
+#undef DEBUG // FIXME
 #define DEBUG(...)              sfi_debug (debug_comport, __VA_ARGS__)
 #define MASS_DEBUG(...) // DEBUG (__VA_ARGS__)          // log every communicated value
 /* define the io bottle neck (for writes) to a small value
@@ -97,23 +98,18 @@ sfi_com_port_from_pipe (const gchar *ident,
 				  -1);
 }
 void
-sfi_com_port_create_linked (const gchar *ident1,
-			    BirnetThread   *thread1,
-			    SfiComPort **port1,
-			    const gchar *ident2,
-			    BirnetThread   *thread2,
-			    SfiComPort **port2)
+sfi_com_port_create_linked (const gchar *ident1, std::function<void()> wakeup1, SfiComPort **port1,
+			    const gchar *ident2, std::function<void()> wakeup2, SfiComPort **port2)
 {
   SfiComPortLink *link;
-  g_return_if_fail (thread1 && ident1);
-  g_return_if_fail (thread2 && ident2);
+  g_return_if_fail (wakeup1 && ident1);
+  g_return_if_fail (wakeup2 && ident2);
   g_return_if_fail (port1 && port2);
-  link = g_new0 (SfiComPortLink, 1);
-  sfi_mutex_init (&link->mutex);
+  link = new SfiComPortLink();
   link->port1 = sfi_com_port_from_child (ident1, -1, -1, -1);
-  link->thread1 = thread1;
+  link->wakeup1 = wakeup1;
   link->port2 = sfi_com_port_from_child (ident2, -1, -1, -1);
-  link->thread2 = thread2;
+  link->wakeup2 = wakeup2;
   link->ref_count = 2;
   link->port1->link = link;
   link->port1->connected = TRUE;
@@ -121,7 +117,6 @@ sfi_com_port_create_linked (const gchar *ident1,
   link->port2->connected = TRUE;
   *port1 = link->port1;
   *port2 = link->port2;
-  sfi_cond_init (&link->wcond);
 }
 static void
 sfi_com_port_link_destroy (SfiComPortLink *link)
@@ -132,9 +127,7 @@ sfi_com_port_link_destroy (SfiComPortLink *link)
     sfi_value_free ((GValue*) sfi_ring_pop_head (&link->p1queue));
   while (link->p2queue)
     sfi_value_free ((GValue*) sfi_ring_pop_head (&link->p2queue));
-  sfi_mutex_destroy (&link->mutex);
-  sfi_cond_destroy (&link->wcond);
-  g_free (link);
+  delete link;
 }
 SfiComPort*
 sfi_com_port_ref (SfiComPort *port)
@@ -210,21 +203,21 @@ sfi_com_port_close_remote (SfiComPort *port,
   if (port->link)
     {
       SfiComPortLink *link = port->link;
-      gboolean need_destroy;
-      sfi_mutex_lock (&link->mutex);
+      bool need_destroy;
+      link->mutex.lock();
       if (port == link->port1)
 	{
 	  link->port1 = NULL;
-	  link->thread1 = NULL;
+	  link->wakeup1 = NULL;
 	}
       else
 	{
 	  link->port2 = NULL;
-	  link->thread2 = NULL;
+	  link->wakeup2 = NULL;
 	}
       link->ref_count--;
       need_destroy = link->ref_count == 0;
-      sfi_mutex_unlock (&link->mutex);
+      link->mutex.unlock();
       port->link = NULL;
       if (need_destroy)
 	sfi_com_port_link_destroy (port->link);
@@ -335,23 +328,23 @@ sfi_com_port_send_bulk (SfiComPort   *port,
       SfiComPortLink *link = port->link;
       gboolean first = port == link->port1;
       SfiRing *target = NULL;
-      BirnetThread *thread = NULL;
+      std::function<void()> wakeup;
       /* guard caller against receiver messing with value */
       for (ring = value_ring; ring; ring = sfi_ring_next (ring, value_ring))
         target = sfi_ring_append (target, sfi_value_clone_deep ((GValue*) ring->data));
-      sfi_mutex_lock (&link->mutex);
+      link->mutex.lock();
       if (first)
 	link->p1queue = sfi_ring_concat (link->p1queue, target);
       else
 	link->p2queue = sfi_ring_concat (link->p2queue, target);
       if (link->waiting)
-	sfi_cond_signal (&link->wcond);
+        link->wcond.signal();
       else
-	thread = first ? link->thread2 : link->thread1;
-      sfi_mutex_unlock (&link->mutex);
+	wakeup = first ? link->wakeup2 : link->wakeup1;
+      link->mutex.unlock();
       MASS_DEBUG ("[%s: sent values]", port->ident);
-      if (thread)
-	sfi_thread_wakeup (thread);
+      if (wakeup)
+        wakeup();
     }
   else
     for (ring = value_ring; ring; ring = sfi_ring_next (ring, value_ring))
@@ -516,7 +509,7 @@ sfi_com_port_recv_intern (SfiComPort *port,
   if (!port->rvalues && port->link)
     {
       SfiComPortLink *link = port->link;
-      sfi_mutex_lock (&link->mutex);
+      link->mutex.lock();
     refetch:
       if (port == link->port1)
 	port->rvalues = link->p2queue, link->p2queue = NULL;
@@ -525,11 +518,11 @@ sfi_com_port_recv_intern (SfiComPort *port,
       if (!port->rvalues && blocking)
 	{
 	  link->waiting = TRUE;
-	  sfi_cond_wait (&link->wcond, &link->mutex);
+	  link->wcond.wait (link->mutex);
 	  link->waiting = FALSE;
 	  goto refetch;
 	}
-      sfi_mutex_unlock (&link->mutex);
+      link->mutex.unlock();
     }
   else if (!port->rvalues)
     {

@@ -78,8 +78,8 @@ main (int   argc,
   if (!bse_scm_context)
     {
       /* start our own core thread */
-      bse_init_async (&argc, &argv, "BSESCM", NULL);
-      bse_scm_context = bse_init_glue_context (PRG_NAME);
+      Bse::init_async (&argc, &argv, "BSESCM", NULL);
+      bse_scm_context = Bse::init_glue_context (PRG_NAME, []() { g_main_context_wakeup (g_main_context_default()); });
     }
   /* now that the BSE thread runs, drop scheduling priorities if we have any */
   setpriority (PRIO_PROCESS, getpid(), 0);
@@ -289,7 +289,7 @@ shell_parse_args (gint    *argc_p,
   *argc_p = e;
   if (initialize_bse_and_exit)
     {
-      bse_init_async (argc_p, argv_p, "BSESCM", NULL);
+      Bse::init_async (argc_p, argv_p, "BSESCM", NULL);
       exit (0);
     }
 }

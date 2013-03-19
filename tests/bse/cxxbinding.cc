@@ -20,9 +20,9 @@ main (int   argc,
       char *argv[])
 {
   std::set_terminate (__gnu_cxx::__verbose_terminate_handler);
-  bse_init_async (&argc, &argv, "CxxBindingTest", NULL);
+  Bse::init_async (&argc, &argv, "CxxBindingTest", NULL);
   sfi_msg_allow ("misc");
-  bse_context = bse_init_glue_context (argv[0]);
+  bse_context = Bse::init_glue_context (argv[0], []() { g_main_context_wakeup (g_main_context_default()); });
   sfi_glue_context_push (bse_context);
   g_print ("type_blurb(BseContainer)=%s\n", type_blurb("BseContainer").c_str());
   const gchar *file_name = "empty.ogg";

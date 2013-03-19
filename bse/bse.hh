@@ -7,13 +7,7 @@
 #include <bse/bsecore.hh>
 
 G_BEGIN_DECLS
-/* initialize BSE and start the core thread */
-void		bse_init_async		(gint		 *argc,
-					 gchar	       ***argv,
-					 const char     *app_name,
-					 SfiInitValue    values[]);
-/* provide SFI glue layer context for BSE */
-SfiGlueContext*	bse_init_glue_context	(const gchar	*client);
+
 /* library versioning */
 extern const guint   bse_major_version;
 extern const guint   bse_minor_version;

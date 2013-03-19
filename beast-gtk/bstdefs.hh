@@ -62,10 +62,14 @@ typedef enum /*< skip >*/
 #define BEAST_GETTEXT_DOMAIN (NULL)
 #define _(str)	dgettext (BEAST_GETTEXT_DOMAIN, str)
 #define N_(str)	(str)
+
 /* --- internal stuff --- */
 void    beast_show_about_box (void);
+void    bst_main_loop_wakeup    ();
 extern gboolean bst_developer_hints;
 extern gboolean bst_debug_extensions;
 extern gboolean bst_main_loop_running;
+
 G_END_DECLS
+
 #endif /* __BST_DEFS_H__ */

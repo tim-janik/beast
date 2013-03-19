@@ -19,6 +19,12 @@ public:
   static List  list    ();              ///< Retrieve a copy to the list of all tasks in registry.
 };
 
+// == BSE Initialization ==
+
+SfiGlueContext*	init_glue_context   (const gchar *client, const std::function<void()> &caller_wakeup);
+void		init_async	    (int *argc, char ***argv, const char *app_name, SfiInitValue values[]);
+
+
 } // Bse
 
 #endif /* __BSE_CORE_HH__ */
