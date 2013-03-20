@@ -7,11 +7,6 @@ G_BEGIN_DECLS
 /* --- initialization --- */
 void			gsl_init	(void);
 
-#define	GSL_SPIN_LOCK	sfi_mutex_lock
-#define	GSL_SPIN_UNLOCK	sfi_mutex_unlock
-#define	GSL_SYNC_LOCK	sfi_mutex_lock
-#define	GSL_SYNC_UNLOCK	sfi_mutex_unlock
-
 /* --- misc --- */
 const gchar* gsl_byte_order_to_string   (guint           byte_order);
 guint        gsl_byte_order_from_string (const gchar    *string);
