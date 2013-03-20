@@ -45,7 +45,7 @@ struct _BseStorageItemLink
 };
 struct _BseStorageBlob
 {
-  SfiMutex    mutex;
+  Bse::Mutex  mutex;
   char       *file_name;
   int	      ref_count;
   gboolean    is_temp_file;
@@ -1620,9 +1620,9 @@ bse_storage_blob_ref (BseStorageBlob *blob)
   g_return_val_if_fail (blob != NULL, NULL);
   g_return_val_if_fail (blob->ref_count > 0, NULL);
 
-  GSL_SPIN_LOCK (&blob->mutex);
+  blob->mutex.lock();
   blob->ref_count++;
-  GSL_SPIN_UNLOCK (&blob->mutex);
+  blob->mutex.unlock();
 
   return blob;
 }
@@ -1633,9 +1633,9 @@ bse_storage_blob_file_name (BseStorageBlob *blob)
   g_return_val_if_fail (blob != NULL, NULL);
   g_return_val_if_fail (blob->ref_count > 0, NULL);
 
-  GSL_SPIN_LOCK (&blob->mutex);
+  blob->mutex.lock();
   const gchar *file_name = blob->file_name;
-  GSL_SPIN_UNLOCK (&blob->mutex);
+  blob->mutex.unlock();
 
   return file_name;
 }
@@ -1646,10 +1646,10 @@ bse_storage_blob_unref (BseStorageBlob *blob)
   g_return_if_fail (blob != NULL);
   g_return_if_fail (blob->ref_count > 0);
 
-  GSL_SPIN_LOCK (&blob->mutex);
+  blob->mutex.lock();
   blob->ref_count--;
   gboolean destroy = blob->ref_count == 0;
-  GSL_SPIN_UNLOCK (&blob->mutex);
+  blob->mutex.unlock();
   if (destroy)
     {
       if (blob->is_temp_file)
@@ -1657,10 +1657,10 @@ bse_storage_blob_unref (BseStorageBlob *blob)
 	  unlink (blob->file_name);
 	  /* FIXME: check error code and do what? */
 	}
-      sfi_mutex_destroy (&blob->mutex);
       g_free (blob->file_name);
       blob->file_name = NULL;
       bse_id_free (blob->id);
+      blob->mutex.~Mutex();
       g_free (blob);
     }
 }
@@ -1702,11 +1702,11 @@ bse_storage_blob_new_from_file (const char *file_name,
                                 gboolean    is_temp_file)
 {
   BseStorageBlob *blob = g_new0 (BseStorageBlob, 1);
+  new (&blob->mutex) Bse::Mutex();
   blob->file_name = g_strdup (file_name);
   blob->ref_count = 1;
   blob->is_temp_file = is_temp_file;
   blob->id = bse_id_alloc();
-  sfi_mutex_init (&blob->mutex);
   return blob;
 }
 
@@ -1716,9 +1716,9 @@ bse_storage_blob_is_temp_file (BseStorageBlob *blob)
   g_return_val_if_fail (blob != NULL, FALSE);
   g_return_val_if_fail (blob->ref_count > 0, FALSE);
 
-  GSL_SPIN_LOCK (&blob->mutex);
+  blob->mutex.lock();
   gboolean is_temp_file = blob->is_temp_file;
-  GSL_SPIN_UNLOCK (&blob->mutex);
+  blob->mutex.unlock();
 
   return is_temp_file;
 }
