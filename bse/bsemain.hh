@@ -21,8 +21,6 @@ void		bse_init_inprocess	(gint		*argc,
 void		bse_init_test		(gint		*argc,
 					 gchar	      ***argv,
 					 SfiInitValue    values[]);
-/* BSE thread pid (or 0) */
-guint           bse_main_getpid         (void);
 void            bse_main_wakeup         ();
 
 /* messaging */

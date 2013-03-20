@@ -337,22 +337,14 @@ bse_main_loop (Rapicorn::AsyncBlockingQueue<int> *init_queue)
   init_queue->push ('B');       // signal completion to caller
   init_queue = NULL;            // completion invalidates init_queue
   // Bse Core Event Loop
-  do
+  while (true)                  // FIXME: missing exit handler
     {
       g_main_context_pending (bse_main_context);
       g_main_context_iteration (bse_main_context, TRUE);
     }
-  while (!sfi_thread_aborted ());
   Bse::TaskRegistry::remove (Rapicorn::ThisThread::thread_pid());
 }
-guint
-bse_main_getpid (void)
-{
-  if (bse_initialization_stage >= 2)
-    return sfi_thread_self_pid ();
-  else
-    return 0;
-}
+
 static gboolean
 core_thread_send_message_async (gpointer data)
 {
@@ -361,6 +353,7 @@ core_thread_send_message_async (gpointer data)
   bse_message_free (umsg);
   return FALSE;
 }
+
 /**
  * BSE log handler, suitable for sfi_msg_set_thread_handler().
  * This function is MT-safe and may be called from any thread.
@@ -407,11 +400,12 @@ bse_msg_handler (const char              *domain,
   umsg->config_check = g_strdup (checkmsg.c_str());
   umsg->janitor = NULL;
   g_free (umsg->process);
-  umsg->process = g_strdup (sfi_thread_get_name (NULL));
-  umsg->pid = sfi_thread_get_pid (NULL);
+  umsg->process = g_strdup (Rapicorn::ThisThread::name().c_str());
+  umsg->pid = Rapicorn::ThisThread::thread_pid();
   /* queue an idle handler in the BSE Core thread */
   bse_idle_next (core_thread_send_message_async, umsg);
 }
+
 void
 bse_message_setup_thread_handler (void)
 {
