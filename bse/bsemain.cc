@@ -197,7 +197,6 @@ bse_init_core (void)
   /* initialize GSL components */
   gsl_init ();
   /* remaining BSE components */
-  _bse_midi_init ();
   bse_plugin_init_builtins ();
   /* initialize C wrappers around C++ generated types */
   _bse_init_c_wrappers ();
