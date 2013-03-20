@@ -36,7 +36,7 @@ struct _BseSoundFontRepo
 {
   BseSuper	     parent_object;
 
-  BirnetMutex	     fluid_synth_mutex;
+  Bse::Mutex	     fluid_synth_mutex;
   fluid_settings_t  *fluid_settings;
   fluid_synth_t     *fluid_synth;
   SfiRing           *fluid_events;
