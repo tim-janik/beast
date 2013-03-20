@@ -14,7 +14,7 @@ G_BEGIN_DECLS
 struct _BsePcmWriter
 {
   BseItem	parent_instance;
-  BirnetMutex	mutex;
+  Bse::Mutex	mutex;
   guint		open : 1;
   guint		broken : 1;
   gint		fd;
