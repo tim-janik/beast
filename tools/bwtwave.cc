@@ -3,6 +3,7 @@
 #include <bse/bsemath.hh>
 #include <bse/gsldatautils.hh>
 #include <bse/gsldatahandle-vorbis.hh>
+#include <bse/bsedatahandle-flac.hh>
 #include <bse/bseloader.hh>
 #include <bse/bsecxxutils.hh>
 #include <sys/stat.h>
@@ -14,6 +15,7 @@
 #include <vector>
 #include <map>
 
+using Bse::Flac1Handle;
 
 namespace BseWaveTool {
 
@@ -340,10 +342,17 @@ Wave::store (const string file_name)
         }
       while (tmp_handle);
       GslVorbis1Handle *vhandle = gsl_vorbis1_handle_new (dhandle, gsl_vorbis_make_serialno());
+      Flac1Handle      *flac_handle = Flac1Handle::create (dhandle);
       if (vhandle)      /* save already compressed Ogg/Vorbis data */
         {
           sfi_wstore_puts (wstore, "    vorbis-link = ");
           gsl_vorbis1_handle_put_wstore (vhandle, wstore);
+          sfi_wstore_puts (wstore, "\n");
+        }
+      else if (flac_handle)
+        {
+          sfi_wstore_puts (wstore, "    flac-link = ");
+          flac_handle->put_wstore (wstore);
           sfi_wstore_puts (wstore, "\n");
         }
       else

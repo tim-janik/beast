@@ -55,7 +55,7 @@ bse_public_headers = $(strip \
 	bsenote.hh		bsemidifile.hh		bseblockutils.hh		\
 	bsecxxvalue.hh		bsecxxutils.hh		bsecxxbase.hh			bsecxxclosure.hh \
 	bsecxxarg.hh		bsecxxmodule.hh		bsecxxplugin.hh			bseloader.hh \
-	bseresampler.hh		bseresamplerimpl.hh	\
+	bseresampler.hh		bseresamplerimpl.hh	bsedatahandle-flac.hh           \
 	testobject.hh		\
 )
 # BSE C & C++ sources

@@ -3,6 +3,7 @@
 #include "bseitem.hh"
 #include "gsldatahandle.hh"
 #include "gsldatahandle-vorbis.hh"
+#include "bsedatahandle-flac.hh"
 #include "gsldatautils.hh"
 #include "gslcommon.hh"
 #include "bseproject.hh"
@@ -13,6 +14,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
+
+using Bse::Flac1Handle;
+
 /* --- macros --- */
 #define parse_or_return sfi_scanner_parse_or_return
 #define peek_or_return  sfi_scanner_peek_or_return
@@ -65,6 +69,7 @@ static GTokenType compat_parse_data_handle         (BseStorage       *self,
 static gpointer parent_class = NULL;
 static GQuark   quark_raw_data_handle = 0;
 static GQuark   quark_vorbis_data_handle = 0;
+static GQuark   quark_flac_data_handle = 0;
 static GQuark   quark_dblock_data_handle = 0;
 static GQuark   quark_bse_storage_binary_v0 = 0;
 
@@ -101,6 +106,7 @@ bse_storage_class_init (BseStorageClass *klass)
 
   quark_raw_data_handle = g_quark_from_static_string ("raw-data-handle");
   quark_vorbis_data_handle = g_quark_from_static_string ("vorbis-data-handle");
+  quark_flac_data_handle = g_quark_from_static_string ("flac-data-handle");
   quark_dblock_data_handle = g_quark_from_static_string ("dblock-data-handle");
   quark_bse_storage_binary_v0 = g_quark_from_static_string ("BseStorageBinaryV0");
 
@@ -1322,6 +1328,7 @@ bse_storage_put_data_handle (BseStorage    *self,
     }
   while (tmp_handle);   /* skip comment or cache handles */
   GslVorbis1Handle *vhandle = gsl_vorbis1_handle_new (test_handle, gsl_vorbis_make_serialno());
+  Flac1Handle      *flac_handle = Flac1Handle::create (dhandle);
   if (vhandle)  /* save already compressed Ogg/Vorbis data */
     {
       bse_storage_break (self);
@@ -1330,6 +1337,17 @@ bse_storage_put_data_handle (BseStorage    *self,
       bse_storage_push_level (self);
       bse_storage_break (self);
       gsl_vorbis1_handle_put_wstore (vhandle, self->wstore);
+      bse_storage_pop_level (self);
+      bse_storage_putc (self, ')');
+    }
+  else if (flac_handle) /* save flac compressed handle */
+    {
+      bse_storage_break (self);
+      bse_storage_printf (self, "(%s ", g_quark_to_string (quark_flac_data_handle));
+      bse_storage_putf (self, gsl_data_handle_osc_freq (dhandle));
+      bse_storage_push_level (self);
+      bse_storage_break (self);
+      flac_handle->put_wstore (self->wstore);
       bse_storage_pop_level (self);
       bse_storage_putc (self, ')');
     }
@@ -1434,11 +1452,12 @@ parse_raw_data_handle (BseStorage     *self,
   return G_TOKEN_NONE;
 }
 static GTokenType
-parse_vorbis_data_handle (BseStorage     *self,
-                          GslDataHandle **data_handle_p,
-                          guint          *n_channels_p,
-                          gfloat         *mix_freq_p,
-                          gfloat         *osc_freq_p)
+parse_vorbis_or_flac_data_handle (BseStorage     *self,
+                                  GQuark          quark,
+                                  GslDataHandle **data_handle_p,
+                                  guint          *n_channels_p,
+                                  gfloat         *mix_freq_p,
+                                  gfloat         *osc_freq_p)
 {
   GScanner *scanner = bse_storage_get_scanner (self);
   GTokenType token;
@@ -1467,8 +1486,20 @@ parse_vorbis_data_handle (BseStorage     *self,
   else
     {
       gfloat mix_freq;
-      *data_handle_p = gsl_data_handle_new_ogg_vorbis_zoffset (self->rstore->fname, osc_freq,
-                                                               offset, length, n_channels_p, &mix_freq);
+      if (quark == quark_vorbis_data_handle)
+        {
+          *data_handle_p = gsl_data_handle_new_ogg_vorbis_zoffset (self->rstore->fname, osc_freq,
+                                                                   offset, length, n_channels_p, &mix_freq);
+        }
+      else if (quark == quark_flac_data_handle)
+        {
+          *data_handle_p = bse_data_handle_new_flac_zoffset (self->rstore->fname, osc_freq,
+                                                             offset, length, n_channels_p, &mix_freq);
+        }
+      else
+        {
+          return bse_storage_warn_skip (self, "unknown compressed data handle type in parse_vorbis_or_flac_data_handle");
+        }
       if (osc_freq <= 0 || mix_freq < 4000 || osc_freq >= mix_freq / 2)
         return bse_storage_warn_skip (self, "invalid oscillating/mixing frequencies: %.7g/%.7g", osc_freq, mix_freq);
       if (mix_freq_p)
@@ -1484,7 +1515,8 @@ bse_storage_match_data_handle (BseStorage *self,
       quark == quark_dblock_data_handle)
     return TRUE;
   if (quark == quark_raw_data_handle ||
-      quark == quark_vorbis_data_handle)
+      quark == quark_vorbis_data_handle ||
+      quark == quark_flac_data_handle)
     return TRUE;
   return FALSE;
 }
@@ -1513,8 +1545,8 @@ parse_data_handle_trampoline (BseStorage     *self,
     return parse_dblock_data_handle (self, data_handle_p, n_channels_p, mix_freq_p, osc_freq_p);
   if (quark == quark_raw_data_handle)
     return parse_raw_data_handle (self, data_handle_p, n_channels_p, mix_freq_p, osc_freq_p);
-  else if (quark == quark_vorbis_data_handle)
-    return parse_vorbis_data_handle (self, data_handle_p, n_channels_p, mix_freq_p, osc_freq_p);
+  else if (quark == quark_vorbis_data_handle || quark == quark_flac_data_handle)
+    return parse_vorbis_or_flac_data_handle (self, quark, data_handle_p, n_channels_p, mix_freq_p, osc_freq_p);
   if (BSE_STORAGE_COMPAT (self, 0, 5, 1) && quark == quark_bse_storage_binary_v0)
     return compat_parse_data_handle (self, data_handle_p, n_channels_p, mix_freq_p, osc_freq_p);
   bse_storage_error (self, "unknown data handle keyword: %s", scanner->value.v_identifier);
