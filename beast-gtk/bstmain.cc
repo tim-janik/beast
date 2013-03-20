@@ -82,14 +82,14 @@ main (int   argc,
   srand (tv.tv_usec + (tv.tv_sec << 16));
 
   // initialize threading and GLib types
-  Bse::TaskRegistry::add ("Beast GUI", Rapicorn::ThisThread::process_pid(), Rapicorn::ThisThread::thread_pid());
+  Rapicorn::ThreadInfo::self().name ("Beast GUI");
+  Bse::TaskRegistry::add (Rapicorn::ThreadInfo::self().name(), Rapicorn::ThisThread::process_pid(), Rapicorn::ThisThread::thread_pid());
   g_thread_init (NULL);
   g_type_init ();
   /* initialize Birnet/Sfi */
   sfi_init (&argc, &argv, _("BEAST"), NULL);  /* application name is user visible */       
   sfi_msg_allow ("misc");
   /* ensure SFI can wake us up */
-  sfi_thread_set_name ("Beast GUI");
   /* initialize Gtk+ and go into threading mode */
   bst_early_parse_args (&argc, &argv);
   if (bst_debug_extensions)
