@@ -13,6 +13,7 @@ using Rapicorn::ThreadInfo;
 using Rapicorn::EventFd;
 using Rapicorn::Spinlock;
 using Rapicorn::Mutex;
+using Rapicorn::RECURSIVE_LOCK;
 using Rapicorn::Cond;
 using Rapicorn::AsyncBlockingQueue;
 

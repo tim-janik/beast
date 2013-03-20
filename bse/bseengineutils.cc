@@ -81,7 +81,6 @@ bse_engine_free_node (EngineNode *node)
   g_return_if_fail (node->boundary_jobs == NULL);
   g_return_if_fail (node->tjob_head == NULL);
   g_return_if_fail (node->probe_jobs == NULL);
-  sfi_rec_mutex_destroy (&node->rec_mutex);
   if (node->module.ostreams)
     {
       /* bse_engine_block_size() may have changed since allocation */
@@ -105,6 +104,7 @@ bse_engine_free_node (EngineNode *node)
     }
   klass = node->module.klass;
   user_data = node->module.user_data;
+  node->rec_mutex.~Mutex();
   sfi_delete_struct (EngineNode, node);
   /* allow the free function to free the klass as well */
   if (klass->free)

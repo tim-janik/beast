@@ -62,7 +62,7 @@ bse_module_new (const BseModuleClass *klass,
   node->outputs = ENGINE_NODE_N_OSTREAMS (node) ? sfi_new_struct0 (EngineOutput, ENGINE_NODE_N_OSTREAMS (node)) : NULL;
   node->output_nodes = NULL;
   node->integrated = FALSE;
-  sfi_rec_mutex_init (&node->rec_mutex);
+  new (&node->rec_mutex) Bse::Mutex (Bse::RECURSIVE_LOCK);
   for (i = 0; i < ENGINE_NODE_N_OSTREAMS (node); i++)
     node->outputs[i].buffer = node->module.ostreams[i].values;
   node->flow_jobs = NULL;
