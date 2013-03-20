@@ -165,10 +165,10 @@ bse_engine_free_transaction (BseTrans *trans)
   sfi_delete_struct (BseTrans, trans);
 }
 /* --- job transactions --- */
-static BirnetMutex        cqueue_trans = { 0, };
+static Bse::Mutex      cqueue_trans_mutex;
 static BseTrans       *cqueue_trans_pending_head = NULL;
 static BseTrans       *cqueue_trans_pending_tail = NULL;
-static BirnetCond         cqueue_trans_cond = { 0, };
+static Bse::Cond       cqueue_trans_cond;
 static BseTrans       *cqueue_trans_trash_head = NULL;
 static BseTrans       *cqueue_trans_trash_tail = NULL;
 static BseTrans       *cqueue_trans_active_head = NULL;
@@ -183,7 +183,7 @@ _engine_enqueue_trans (BseTrans *trans)
   g_return_val_if_fail (trans != NULL, 0);
   g_return_val_if_fail (trans->comitted == TRUE, 0);
   g_return_val_if_fail (trans->jobs_head != NULL, 0);
-  GSL_SPIN_LOCK (&cqueue_trans);
+  cqueue_trans_mutex.lock();
   if (cqueue_trans_pending_tail)
     {
       cqueue_trans_pending_tail->cqt_next = trans;
@@ -193,17 +193,17 @@ _engine_enqueue_trans (BseTrans *trans)
     cqueue_trans_pending_head = trans;
   cqueue_trans_pending_tail = trans;
   guint64 base_stamp = cqueue_commit_base_stamp;
-  GSL_SPIN_UNLOCK (&cqueue_trans);
-  sfi_cond_broadcast (&cqueue_trans_cond);
+  cqueue_trans_mutex.unlock();
+  cqueue_trans_cond.broadcast();
   return base_stamp + bse_engine_block_size();  /* returns tick_stamp of when this transaction takes effect */
 }
 void
 _engine_wait_on_trans (void)
 {
-  GSL_SPIN_LOCK (&cqueue_trans);
+  cqueue_trans_mutex.lock();
   while (cqueue_trans_pending_head || cqueue_trans_active_head)
-    sfi_cond_wait (&cqueue_trans_cond, &cqueue_trans);
-  GSL_SPIN_UNLOCK (&cqueue_trans);
+    cqueue_trans_cond.wait (cqueue_trans_mutex);
+  cqueue_trans_mutex.unlock();
 }
 gboolean
 _engine_job_pending (void)
@@ -211,9 +211,9 @@ _engine_job_pending (void)
   gboolean pending = cqueue_trans_job != NULL;
   if (!pending)
     {
-      GSL_SPIN_LOCK (&cqueue_trans);
+      cqueue_trans_mutex.lock();
       pending = cqueue_trans_pending_head != NULL;
-      GSL_SPIN_UNLOCK (&cqueue_trans);
+      cqueue_trans_mutex.unlock();
     }
   return pending;
 }
@@ -224,14 +224,14 @@ _engine_free_trans (BseTrans *trans)
   g_return_if_fail (trans->comitted == FALSE);
   if (trans->jobs_tail)
     g_return_if_fail (trans->jobs_tail->next == NULL);  /* paranoid */
-  GSL_SPIN_LOCK (&cqueue_trans);
+  cqueue_trans_mutex.lock();
   trans->cqt_next = NULL;
   if (cqueue_trans_trash_tail)
     cqueue_trans_trash_tail->cqt_next = trans;
   else
     cqueue_trans_trash_head = trans;
   cqueue_trans_trash_tail = trans;
-  GSL_SPIN_UNLOCK (&cqueue_trans);
+  cqueue_trans_mutex.unlock();
 }
 BseJob*
 _engine_pop_job (gboolean update_commit_stamp)
@@ -251,7 +251,7 @@ _engine_pop_job (gboolean update_commit_stamp)
       engine_fetch_process_queue_trash_jobs_U (&trash_tjobs_head, &trash_tjobs_tail);
       if (cqueue_trans_active_head)	/* currently processing transaction */
 	{
-	  GSL_SPIN_LOCK (&cqueue_trans);
+	  cqueue_trans_mutex.lock();
           if (trash_tjobs_head)        /* move trash user jobs */
             {
               trash_tjobs_tail->next = NULL;
@@ -279,12 +279,12 @@ _engine_pop_job (gboolean update_commit_stamp)
           cqueue_trans_job = cqueue_trans_active_head ? cqueue_trans_active_head->jobs_head : NULL;
           if (!cqueue_trans_job && update_commit_stamp)
             cqueue_commit_base_stamp = Bse::TickStamp::current();        /* last job has been handed out */
-	  GSL_SPIN_UNLOCK (&cqueue_trans);
-	  sfi_cond_broadcast (&cqueue_trans_cond);
+	  cqueue_trans_mutex.unlock();
+	  cqueue_trans_cond.broadcast();
 	}
       else	/* not currently processing a transaction */
 	{
-	  GSL_SPIN_LOCK (&cqueue_trans);
+	  cqueue_trans_mutex.lock();
           if (trash_tjobs_head)                                 /* move trash user jobs */
             {
               trash_tjobs_tail->next = NULL;
@@ -302,7 +302,7 @@ _engine_pop_job (gboolean update_commit_stamp)
           cqueue_trans_job = cqueue_trans_active_head ? cqueue_trans_active_head->jobs_head : NULL;
           if (!cqueue_trans_job && update_commit_stamp)
             cqueue_commit_base_stamp = Bse::TickStamp::current();        /* last job has been handed out */
-	  GSL_SPIN_UNLOCK (&cqueue_trans);
+	  cqueue_trans_mutex.unlock();
 	}
     }
   /* pick new job and out of here */
@@ -331,12 +331,12 @@ bse_engine_user_thread_collect (void)
 {
   BseTrans *trans;
   EngineTimedJob *tjobs;
-  GSL_SPIN_LOCK (&cqueue_trans);
+  cqueue_trans_mutex.lock();
   tjobs = cqueue_tjobs_trash_head;
   cqueue_tjobs_trash_head = cqueue_tjobs_trash_tail = NULL;
   trans = cqueue_trans_trash_head;
   cqueue_trans_trash_head = cqueue_trans_trash_tail = NULL;
-  GSL_SPIN_UNLOCK (&cqueue_trans);
+  cqueue_trans_mutex.unlock();
   while (tjobs)
     {
       EngineTimedJob *tjob = tjobs;
@@ -361,11 +361,11 @@ bse_engine_has_garbage (void)
   return cqueue_tjobs_trash_head || cqueue_trans_trash_head;
 }
 /* --- node processing queue --- */
-static BirnetMutex       pqueue_mutex = { 0, };
+static Bse::Mutex        pqueue_mutex;
 static EngineSchedule   *pqueue_schedule = NULL;
 static guint             pqueue_n_nodes = 0;
 static guint             pqueue_n_cycles = 0;
-static BirnetCond	 pqueue_done_cond = { 0, };
+static Bse::Cond	 pqueue_done_cond;
 static EngineTimedJob   *pqueue_trash_tjobs_head = NULL;
 static EngineTimedJob   *pqueue_trash_tjobs_tail = NULL;
 static inline void
@@ -374,7 +374,7 @@ engine_fetch_process_queue_trash_jobs_U (EngineTimedJob **trash_tjobs_head,
 {
   if (G_UNLIKELY (pqueue_trash_tjobs_head != NULL))
     {
-      GSL_SPIN_LOCK (&pqueue_mutex);
+      pqueue_mutex.lock();
       *trash_tjobs_head = pqueue_trash_tjobs_head;
       *trash_tjobs_tail = pqueue_trash_tjobs_tail;
       pqueue_trash_tjobs_head = pqueue_trash_tjobs_tail = NULL;
@@ -384,7 +384,7 @@ engine_fetch_process_queue_trash_jobs_U (EngineTimedJob **trash_tjobs_head,
        * schedule is currently set.
        */
       g_assert (pqueue_schedule == NULL);
-      GSL_SPIN_UNLOCK (&pqueue_mutex);
+      pqueue_mutex.unlock();
     }
   else
     *trash_tjobs_head = *trash_tjobs_tail = NULL;
@@ -394,26 +394,26 @@ _engine_set_schedule (EngineSchedule *sched)
 {
   g_return_if_fail (sched != NULL);
   g_return_if_fail (sched->secured == TRUE);
-  GSL_SPIN_LOCK (&pqueue_mutex);
+  pqueue_mutex.lock();
   if (UNLIKELY (pqueue_schedule != NULL))
     {
-      GSL_SPIN_UNLOCK (&pqueue_mutex);
+      pqueue_mutex.unlock();
       g_warning (G_STRLOC ": schedule already set");
       return;
     }
   pqueue_schedule = sched;
   sched->in_pqueue = TRUE;
-  GSL_SPIN_UNLOCK (&pqueue_mutex);
+  pqueue_mutex.unlock();
 }
 void
 _engine_unset_schedule (EngineSchedule *sched)
 {
   EngineTimedJob *trash_tjobs_head, *trash_tjobs_tail;
   g_return_if_fail (sched != NULL);
-  GSL_SPIN_LOCK (&pqueue_mutex);
+  pqueue_mutex.lock();
   if (UNLIKELY (pqueue_schedule != sched))
     {
-      GSL_SPIN_UNLOCK (&pqueue_mutex);
+      pqueue_mutex.unlock();
       g_warning (G_STRLOC ": schedule(%p) not currently set", sched);
       return;
     }
@@ -425,28 +425,28 @@ _engine_unset_schedule (EngineSchedule *sched)
   trash_tjobs_head = pqueue_trash_tjobs_head;
   trash_tjobs_tail = pqueue_trash_tjobs_tail;
   pqueue_trash_tjobs_head = pqueue_trash_tjobs_tail = NULL;
-  GSL_SPIN_UNLOCK (&pqueue_mutex);
+  pqueue_mutex.unlock();
   if (trash_tjobs_head) /* move trash user jobs */
     {
-      GSL_SPIN_LOCK (&cqueue_trans);
+      cqueue_trans_mutex.lock();
       trash_tjobs_tail->next = NULL;
       if (cqueue_tjobs_trash_tail)
         cqueue_tjobs_trash_tail->next = trash_tjobs_head;
       else
         cqueue_tjobs_trash_head = trash_tjobs_head;
       cqueue_tjobs_trash_tail = trash_tjobs_tail;
-      GSL_SPIN_UNLOCK (&cqueue_trans);
+      cqueue_trans_mutex.unlock();
     }
 }
 EngineNode*
 _engine_pop_unprocessed_node (void)
 {
   EngineNode *node;
-  GSL_SPIN_LOCK (&pqueue_mutex);
+  pqueue_mutex.lock();
   node = pqueue_schedule ? _engine_schedule_pop_node (pqueue_schedule) : NULL;
   if (node)
     pqueue_n_nodes += 1;
-  GSL_SPIN_UNLOCK (&pqueue_mutex);
+  pqueue_mutex.unlock();
   if (node)
     ENGINE_NODE_LOCK (node);
   return node;
@@ -470,9 +470,9 @@ void
 _engine_node_collect_jobs (EngineNode *node)
 {
   g_return_if_fail (node != NULL);
-  GSL_SPIN_LOCK (&pqueue_mutex);
+  pqueue_mutex.lock();
   collect_user_jobs_L (node);
-  GSL_SPIN_UNLOCK (&pqueue_mutex);
+  pqueue_mutex.unlock();
 }
 void
 _engine_push_processed_node (EngineNode *node)
@@ -480,14 +480,14 @@ _engine_push_processed_node (EngineNode *node)
   g_return_if_fail (node != NULL);
   g_return_if_fail (pqueue_n_nodes > 0);
   g_return_if_fail (ENGINE_NODE_IS_SCHEDULED (node));
-  GSL_SPIN_LOCK (&pqueue_mutex);
+  pqueue_mutex.lock();
   g_assert (pqueue_n_nodes > 0);        /* paranoid */
   collect_user_jobs_L (node);
   pqueue_n_nodes -= 1;
   ENGINE_NODE_UNLOCK (node);
   if (!pqueue_n_nodes && !pqueue_n_cycles && BSE_ENGINE_SCHEDULE_NONPOPABLE (pqueue_schedule))
-    sfi_cond_signal (&pqueue_done_cond);
-  GSL_SPIN_UNLOCK (&pqueue_mutex);
+    pqueue_done_cond.signal();
+  pqueue_mutex.unlock();
 }
 SfiRing*
 _engine_pop_unprocessed_cycle (void)
@@ -504,10 +504,10 @@ _engine_push_processed_cycle (SfiRing *cycle)
 void
 _engine_wait_on_unprocessed (void)
 {
-  GSL_SPIN_LOCK (&pqueue_mutex);
+  pqueue_mutex.lock();
   while (pqueue_n_nodes || pqueue_n_cycles || !BSE_ENGINE_SCHEDULE_NONPOPABLE (pqueue_schedule))
-    sfi_cond_wait (&pqueue_done_cond, &pqueue_mutex);
-  GSL_SPIN_UNLOCK (&pqueue_mutex);
+    pqueue_done_cond.wait (pqueue_mutex);
+  pqueue_mutex.unlock();
 }
 /* -- master node list --- */
 static EngineNode      *master_node_list_head = NULL;
@@ -590,9 +590,9 @@ _engine_mnl_node_changed (EngineNode *node)
     }
   if (UNLIKELY (node->tjob_head != NULL))
     {
-      GSL_SPIN_LOCK (&pqueue_mutex);
+      pqueue_mutex.lock();
       collect_user_jobs_L (node);
-      GSL_SPIN_UNLOCK (&pqueue_mutex);
+      pqueue_mutex.unlock();
     }
 }
 /* --- const value blocks --- */
@@ -733,18 +733,3 @@ _engine_recycle_const_values (gboolean nuke_all)
     }
   cvalue_array.n_nodes = e;
 }
-/* --- initialization --- */
-void
-bse_engine_reinit_utils (void)
-{
-  static gboolean initialized = FALSE;
-  if (!initialized)
-    {
-      initialized = TRUE;
-      sfi_mutex_init (&cqueue_trans);
-      sfi_cond_init (&cqueue_trans_cond);
-      sfi_mutex_init (&pqueue_mutex);
-      sfi_cond_init (&pqueue_done_cond);
-    }
-}
-/* vim:set ts=8 sts=2 sw=2: */

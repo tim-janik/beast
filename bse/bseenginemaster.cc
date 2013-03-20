@@ -265,12 +265,12 @@ master_process_job (BseJob *job)
       JOB_DEBUG ("sync");
       master_need_reflow |= TRUE;
       master_schedule_discard();
-      GSL_SPIN_LOCK (job->sync.lock_mutex);
+      job->sync.lock_mutex->lock();
       *job->sync.lock_p = TRUE;
-      sfi_cond_signal (job->sync.lock_cond);
+      job->sync.lock_cond->signal();
       while (*job->sync.lock_p)
-        sfi_cond_wait (job->sync.lock_cond, job->sync.lock_mutex);
-      GSL_SPIN_UNLOCK (job->sync.lock_mutex);
+        job->sync.lock_cond->wait (*job->sync.lock_mutex);
+      job->sync.lock_mutex->unlock();
       break;
     case ENGINE_JOB_INTEGRATE:
       node = job->data.node;

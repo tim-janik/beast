@@ -63,9 +63,9 @@ struct _BseJob
       gchar	     *message;
     } data;
     struct {
-      BirnetMutex  *lock_mutex;
-      BirnetCond   *lock_cond;
-      gboolean  *lock_p;
+      Bse::Mutex   *lock_mutex;
+      Bse::Cond    *lock_cond;
+      gboolean     *lock_p;
     } sync;
     struct {
       EngineNode     *node;

@@ -892,10 +892,10 @@ bse_trans_commit (BseTrans *trans)
   return exec_tick_stamp;
 }
 typedef struct {
-  BseTrans *trans;
-  guint64   tick_stamp;
-  BirnetCond   cond;
-  BirnetMutex  mutex;
+  BseTrans  *trans;
+  guint64    tick_stamp;
+  Bse::Cond  cond;
+  Bse::Mutex mutex;
 } DTrans;
 static gboolean
 dtrans_timer (gpointer timer_data,
@@ -913,10 +913,10 @@ dtrans_timer (gpointer timer_data,
 	}
       else
 	bse_trans_commit (data->trans);
-      sfi_mutex_lock (&data->mutex);
+      data->mutex.lock();
       data->trans = NULL;
-      sfi_mutex_unlock (&data->mutex);
-      sfi_cond_signal (&data->cond);
+      data->mutex.unlock();
+      data->cond.signal();
       return FALSE;
     }
   return TRUE;
@@ -945,16 +945,12 @@ bse_trans_commit_delayed (BseTrans *trans,
       DTrans data = { 0, };
       data.trans = trans;
       data.tick_stamp = tick_stamp;
-      sfi_cond_init (&data.cond);
-      sfi_mutex_init (&data.mutex);
       bse_trans_add (wtrans, bse_job_add_timer (dtrans_timer, &data, NULL));
-      sfi_mutex_lock (&data.mutex);
+      data.mutex.lock();
       bse_trans_commit (wtrans);
       while (data.trans)
-	sfi_cond_wait (&data.cond, &data.mutex);
-      sfi_mutex_unlock (&data.mutex);
-      sfi_cond_destroy (&data.cond);
-      sfi_mutex_destroy (&data.mutex);
+	data.cond.wait (data.mutex);
+      data.mutex.unlock();
     }
 }
 /**
@@ -1189,8 +1185,8 @@ bse_engine_configure (guint            latency_ms,
                       guint            sample_freq,
                       guint            control_freq)
 {
-  static BirnetMutex sync_mutex = { 0, };
-  static BirnetCond  sync_cond = { 0, };
+  static Bse::Mutex sync_mutex;
+  static Bse::Cond sync_cond;
   static gboolean sync_lock = FALSE;
   guint block_size, control_raster, success = FALSE;
   BseTrans *trans;
@@ -1206,7 +1202,7 @@ bse_engine_configure (guint            latency_ms,
   if (_engine_mnl_head() || sync_lock)
     return FALSE;
   /* block master */
-  GSL_SPIN_LOCK (&sync_mutex);
+  sync_mutex.lock();
   job = sfi_new_struct0 (BseJob, 1);
   job->job_id = ENGINE_JOB_SYNC;
   job->sync.lock_mutex = &sync_mutex;
@@ -1224,8 +1220,8 @@ bse_engine_configure (guint            latency_ms,
       sync_lock = TRUE;
     }
   while (!sync_lock)
-    sfi_cond_wait (&sync_cond, &sync_mutex);
-  GSL_SPIN_UNLOCK (&sync_mutex);
+    sync_cond.wait (sync_mutex);
+  sync_mutex.unlock();
   if (!_engine_mnl_head())
     {
       /* cleanup */
@@ -1241,10 +1237,10 @@ bse_engine_configure (guint            latency_ms,
       success = TRUE;
     }
   /* unblock master */
-  GSL_SPIN_LOCK (&sync_mutex);
+  sync_mutex.lock();
   sync_lock = FALSE;
-  sfi_cond_signal (&sync_cond);
-  GSL_SPIN_UNLOCK (&sync_mutex);
+  sync_cond.signal();
+  sync_mutex.unlock();
   /* ensure SYNC job got collected */
   bse_engine_wait_on_trans();
   bse_engine_user_thread_collect();
@@ -1271,8 +1267,6 @@ bse_engine_init (gboolean run_threaded)
   g_assert (&BSE_MODULE_GET_ISTREAMSP ((BseModule*) 42) == (void*) &((BseModule*) 42)->istreams);
   g_assert (&BSE_MODULE_GET_JSTREAMSP ((BseModule*) 42) == (void*) &((BseModule*) 42)->jstreams);
   g_assert (&BSE_MODULE_GET_OSTREAMSP ((BseModule*) 42) == (void*) &((BseModule*) 42)->ostreams);
-  /* initialize components */
-  bse_engine_reinit_utils();
   /* first configure */
   bse_engine_configure (50, 44100, 50);
   /* then setup threading */
