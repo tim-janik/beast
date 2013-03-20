@@ -43,7 +43,7 @@ sfi_glue_context_push (SfiGlueContext *context)
   g_return_if_fail (context != NULL);
   g_return_if_fail (context->table.destroy != NULL);
 
-  Rapicorn::ThreadInfo &self = Rapicorn::ThreadInfo::self();
+  Bse::ThreadInfo &self = Bse::ThreadInfo::self();
   SfiRing *context_stack = self.swap_data (&context_stack_key, (SfiRing*) NULL); // prevents deletion
   context_stack = sfi_ring_prepend (context_stack, context);
   self.set_data (&context_stack_key, context_stack);
@@ -52,7 +52,7 @@ sfi_glue_context_push (SfiGlueContext *context)
 SfiGlueContext*
 sfi_glue_context_current (void)
 {
-  Rapicorn::ThreadInfo &self = Rapicorn::ThreadInfo::self();
+  Bse::ThreadInfo &self = Bse::ThreadInfo::self();
   SfiRing *context_stack = self.get_data (&context_stack_key);
   return (SfiGlueContext*) (context_stack ? context_stack->data : NULL);
 }
@@ -60,7 +60,7 @@ sfi_glue_context_current (void)
 void
 sfi_glue_context_pop (void)
 {
-  Rapicorn::ThreadInfo &self = Rapicorn::ThreadInfo::self();
+  Bse::ThreadInfo &self = Bse::ThreadInfo::self();
   SfiRing *context_stack = self.swap_data (&context_stack_key, (SfiRing*) NULL); // prevents deletion
   g_return_if_fail (context_stack != NULL);
   context_stack = sfi_ring_remove_node (context_stack, context_stack);

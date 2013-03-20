@@ -48,7 +48,7 @@ struct SfiComPort {
 
 struct SfiComPortLink
 {
-  Rapicorn::Mutex       mutex;
+  Bse::Mutex            mutex;
   guint                 ref_count;
   SfiComPort           *port1;
   std::function<void()> wakeup1;
@@ -56,7 +56,7 @@ struct SfiComPortLink
   std::function<void()> wakeup2;
   SfiRing              *p1queue;
   SfiRing              *p2queue;
-  Rapicorn::Cond        wcond;
+  Bse::Cond             wcond;
   bool                  waiting;
 };
 
