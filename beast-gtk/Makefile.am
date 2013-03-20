@@ -189,6 +189,7 @@ beast_vOBJECTS  = $(beast___BIN_VERSION__OBJECTS)
 noinst_PROGRAMS = $(ALLTESTS)
 progs_LDADD     = $(strip                                       \
 	$(BEAST_LIBS) 						\
+	 $(RAPICORN_LIBS)					\
 	./gxk/libgxk.a $(GXK_LIBS)                              \
 	$(top_builddir)/bse/libbse.la $(BSE_LIBS)               \
 )
