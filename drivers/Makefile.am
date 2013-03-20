@@ -2,7 +2,7 @@
 include $(top_srcdir)/Makefile.decl
 
 INCLUDES    += -I$(top_srcdir) -I.
-DEFS         = $(strip -DG_LOG_DOMAIN=\"BSE-ALSA\")
+DEFS        += @DEFINE__FILE_DIR__@ $(strip -DG_LOG_DOMAIN=\"BSE-ALSA\")
 AM_CXXFLAGS  = $(BSE_CFLAGS) $(RAPICORN_CFLAGS) -DRAPICORN_CONVENIENCE
 
 # Plugin bsedevice-alsa

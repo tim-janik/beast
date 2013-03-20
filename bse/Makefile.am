@@ -8,7 +8,7 @@ SUBDIRS = icons zintern . tests
 # need -I$(srcdir) for "bseserver.hh" in .genprc.cc
 # need -I. (builddir) for "bsecore.genidl.hh" in bsecore.cc
 INCLUDES += -I$(top_srcdir) -I$(top_builddir) -I$(srcdir) -I.
-DEFS     += $(strip \
+DEFS     += @DEFINE__FILE_DIR__@ $(strip \
 	$(patsubst %, -DG_LOG_DOMAIN=\"BSE\" -DBSE_COMPILATION, \
 	              $(filter $(<F), $(bse_sources) $(bse_sources))) \
 )

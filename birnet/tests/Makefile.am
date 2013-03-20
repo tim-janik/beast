@@ -3,7 +3,7 @@
 include $(top_srcdir)/Makefile.decl
 
 INCLUDES    += -I$(top_srcdir) -I$(top_builddir) -I.
-DEFS	    += -DBIRNET_LOG_DOMAIN='"$(basename $(@F))"' -DPARANOID -DG_DISABLE_CONST_RETURNS
+DEFS	    += @DEFINE__FILE_DIR__@ -DBIRNET_LOG_DOMAIN='"$(basename $(@F))"' -DPARANOID -DG_DISABLE_CONST_RETURNS
 AM_CXXFLAGS  = $(RAPICORN_CFLAGS) -DRAPICORN_CONVENIENCE $(BIRNET_CFLAGS)
 
 noinst_PROGRAMS  = $(ALLTESTS)

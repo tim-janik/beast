@@ -4,7 +4,7 @@ include $(top_srcdir)/Makefile.decl
 SUBDIRS =
 
 INCLUDES    += -I$(top_srcdir) -I$(top_builddir)
-DEFS        += -DG_LOG_DOMAIN=\"BSE-TEST\" # -DG_DISABLE_CONST_RETURNS
+DEFS        += @DEFINE__FILE_DIR__@ -DG_LOG_DOMAIN=\"BSE-TEST\" # -DG_DISABLE_CONST_RETURNS
 AM_CXXFLAGS  = $(BSE_CFLAGS) $(SFI_CFLAGS) $(RAPICORN_CFLAGS) -DRAPICORN_CONVENIENCE
 
 EXTRA_DIST += arrows.gp filter-defs.gp

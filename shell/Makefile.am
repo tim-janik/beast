@@ -2,7 +2,7 @@
 include $(top_srcdir)/Makefile.decl
 
 INCLUDES += -I$(top_srcdir) -I. -I$(top_builddir)
-DEFS += $(strip                       	\
+DEFS += @DEFINE__FILE_DIR__@ $(strip                       	\
 	-DG_LOG_DOMAIN=\"BSESCM\"      	\
 	$(SUIDMAIN_DEFS)                \
 )
