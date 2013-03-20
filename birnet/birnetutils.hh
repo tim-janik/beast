@@ -2,6 +2,7 @@
 #ifndef __BIRNET_UTILS_XX_HH__
 #define __BIRNET_UTILS_XX_HH__
 #include <birnet/birnetcdefs.h>
+#include <rapicorn.hh>
 #include <glib.h> /* g_free */
 #include <string>
 #include <vector>
@@ -84,11 +85,11 @@ public:
 /* --- assertions/warnings/errors --- */
 void    raise_sigtrap           ();
 #if (defined __i386__ || defined __x86_64__) && defined __GNUC__ && __GNUC__ >= 2
-extern inline void BREAKPOINT() { __asm__ __volatile__ ("int $03"); }
+//extern inline void BREAKPOINT() { __asm__ __volatile__ ("int $03"); }
 #elif defined __alpha__ && !defined __osf__ && defined __GNUC__ && __GNUC__ >= 2
-extern inline void BREAKPOINT() { __asm__ __volatile__ ("bpt"); }
+//extern inline void BREAKPOINT() { __asm__ __volatile__ ("bpt"); }
 #else   /* !__i386__ && !__alpha__ */
-extern inline void BREAKPOINT() { raise_sigtrap(); }
+//extern inline void BREAKPOINT() { raise_sigtrap(); }
 #endif  /* __i386__ */
 /* --- threading implementaiton bit --- */
 extern BirnetThreadTable ThreadTable; /* private, provided by birnetthreadimpl.cc */

@@ -2,8 +2,9 @@
 include $(top_srcdir)/Makefile.decl
 
 SUBDIRS   = . tests
-INCLUDES += -I$(top_srcdir) -I$(top_builddir) $(SFI_CFLAGS)
-DEFS     += -DG_LOG_DOMAIN=\"SFI\" -DG_DISABLE_CONST_RETURNS
+INCLUDES    += -I$(top_srcdir) -I$(top_builddir) $(SFI_CFLAGS)
+DEFS        += @DEFINE__FILE_DIR__@ -DG_LOG_DOMAIN=\"SFI\" -DG_DISABLE_CONST_RETURNS
+AM_CXXFLAGS  = $(SFI_CFLAGS) $(RAPICORN_CFLAGS) -DRAPICORN_CONVENIENCE
 
 sfi_public_headers = $(strip \
 	sfistore.hh	sficomwire.hh	sfifilecrawler.hh \
@@ -58,7 +59,7 @@ common_idl_sources = sfidl-generator.cc sfidl-namespace.cc sfidl-options.cc sfid
 
 bin_PROGRAMS = sfidl
 sfidl_SOURCES = sfidl.cc $(common_idl_sources)
-sfidl_LDADD = $(SFI_LIBS) -lm $(top_builddir)/birnet/libbirnet.o # libsfi.la
+sfidl_LDADD = $(SFI_LIBS) -lm $(top_builddir)/birnet/libbirnet.o $(RAPICORN_LIBS)
 EXTRA_DIST += sfidl-generator.hh sfidl-namespace.hh sfidl-options.hh sfidl-parser.hh sfidl-factory.hh
 EXTRA_DIST += sfidl-cbase.hh sfidl-clientc.hh sfidl-clientcxx.hh sfidl-cxxbase.hh sfidl-hostc.hh sfidl-utils.hh
 

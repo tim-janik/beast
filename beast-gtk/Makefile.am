@@ -3,15 +3,15 @@ include $(top_srcdir)/Makefile.decl
 
 SUBDIRS = gxk dialogs icons
 
-INCLUDES += -I$(top_srcdir) -I$(top_builddir) -I$(srcdir) -I. $(BEAST_CFLAGS) -DG_DISABLE_CONST_RETURNS -DGTK_ENABLE_BROKEN
-# -DGTK_DISABLE_DEPRECATED -DGTK_DISABLE_COMPAT_H
+INCLUDES    += -I$(top_srcdir) -I$(top_builddir) -I$(srcdir) -I.
+DEFS        += @DEFINE__FILE_DIR__@ -DG_LOG_DOMAIN="\"BEAST\""
+AM_CXXFLAGS  = $(BEAST_CFLAGS) $(GXK_CFLAGS) $(BSE_CFLAGS) $(RAPICORN_CFLAGS) -DRAPICORN_CONVENIENCE \
+			-DG_DISABLE_CONST_RETURNS -DGTK_ENABLE_BROKEN # -DGTK_DISABLE_DEPRECATED -DGTK_DISABLE_COMPAT_H
 
-# we specify the logging domain here
-DEFS += -DG_LOG_DOMAIN="\"BEAST\""
 
 # special profiling hooks
 PROFILE_SOURCE = # profile.cc
-DEFS += # $(subst profile.cc, -pg -a, $(findstring profile.cc, $(<F)))
+DEFS += @DEFINE__FILE_DIR__@ # $(subst profile.cc, -pg -a, $(findstring profile.cc, $(<F)))
 LIBS += # -lefence # -pg 
 
 #
@@ -189,6 +189,7 @@ beast_vOBJECTS  = $(beast___BIN_VERSION__OBJECTS)
 noinst_PROGRAMS = $(ALLTESTS)
 progs_LDADD     = $(strip                                       \
 	$(BEAST_LIBS) 						\
+	 $(RAPICORN_LIBS)					\
 	./gxk/libgxk.a $(GXK_LIBS)                              \
 	$(top_builddir)/bse/libbse.la $(BSE_LIBS)               \
 )

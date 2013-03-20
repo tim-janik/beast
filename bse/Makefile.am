@@ -7,11 +7,12 @@ SUBDIRS = icons zintern . tests
 # need -I$(top_builddir) for <sfi/sficonfig.h>
 # need -I$(srcdir) for "bseserver.hh" in .genprc.cc
 # need -I. (builddir) for "bsecore.genidl.hh" in bsecore.cc
-INCLUDES += -I$(top_srcdir) -I$(top_builddir) -I$(srcdir) -I. $(BSE_CFLAGS) -DG_DISABLE_DEPRECATED -DG_DISABLE_CONST_RETURNS
-DEFS     += $(strip \
+INCLUDES += -I$(top_srcdir) -I$(top_builddir) -I$(srcdir) -I.
+DEFS     += @DEFINE__FILE_DIR__@ $(strip \
 	$(patsubst %, -DG_LOG_DOMAIN=\"BSE\" -DBSE_COMPILATION, \
 	              $(filter $(<F), $(bse_sources) $(bse_sources))) \
 )
+AM_CXXFLAGS  = $(BSE_CFLAGS) $(RAPICORN_CFLAGS) -DRAPICORN_CONVENIENCE -DG_DISABLE_DEPRECATED -DG_DISABLE_CONST_RETURNS
 
 #
 # setup source file variables
@@ -137,7 +138,7 @@ libbseincludedir       	     = $(includedir)/bse
 libbseinclude_HEADERS        = $(bse_public_headers) bse.idl $(bse_idl_sources) bsehack.idl $(idl_dummy_files)
 nodist_libbseinclude_HEADERS = bsecore.genidl.hh
 libbse_la_SOURCES            = $(bse_sources) $(bse_proc_gen_sources)
-libbse_la_LIBADD             = $(top_builddir)/birnet/libbirnet.o $(top_builddir)/sfi/libsfi.o $(BSE_LIBS) $(SFI_LIBS)
+libbse_la_LIBADD             = $(top_builddir)/birnet/libbirnet.o $(top_builddir)/sfi/libsfi.o $(BSE_LIBS) $(SFI_LIBS) $(RAPICORN_LIBS)
 libbse_la_LDFLAGS            = $(strip				\
 	-Wl,--version-script=$(srcdir)/ldscript.map		\
 	-version-info $(LT_CURRENT):$(LT_REVISION):$(LT_AGE)	\

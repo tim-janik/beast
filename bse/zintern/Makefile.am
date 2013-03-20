@@ -1,7 +1,8 @@
 # BEAST - Better Audio System
 include $(top_srcdir)/Makefile.decl
 
-INCLUDES += -I$(top_srcdir) -I$(top_builddir) $(BSE_CFLAGS) -DG_DISABLE_DEPRECATED -DG_DISABLE_CONST_RETURNS
+INCLUDES    += -I$(top_srcdir) -I$(top_builddir)
+AM_CXXFLAGS += $(BSE_CFLAGS) -DG_DISABLE_DEPRECATED -DG_DISABLE_CONST_RETURNS
 
 ZFILE_DEFS = $(strip \
 	gus-patch		$(srcdir)/gus-patch.bse		\

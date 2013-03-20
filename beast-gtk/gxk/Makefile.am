@@ -3,14 +3,10 @@ include $(top_srcdir)/Makefile.decl
 
 SUBDIRS =
 
-INCLUDES += -I$(top_srcdir) -I$(top_builddir) -I$(top_srcdir)/beast-gtk -I$(top_builddir)/beast-gtk -I$(srcdir) $(GXK_CFLAGS) # -I.. for <gxk/*.h> includes
-
-DEFS += $(strip \
-	-DGTK_DISABLE_COMPAT_H 	\
-	-DGXK_COMPILATION	\
-	-DG_LOG_DOMAIN=\"GXK\" 	\
-)
-# -DGTK_DISABLE_DEPRECATED -DG_DISABLE_CONST_RETURNS -DGTK_ENABLE_BROKEN
+INCLUDES    += -I$(top_srcdir) -I$(top_builddir) -I$(top_srcdir)/beast-gtk -I$(top_builddir)/beast-gtk -I$(srcdir) # -I.. for <gxk/*.h> includes
+DEFS        += @DEFINE__FILE_DIR__@ -DGTK_DISABLE_COMPAT_H -DGXK_COMPILATION -DG_LOG_DOMAIN=\"GXK\" # -DGTK_DISABLE_DEPRECATED -DG_DISABLE_CONST_RETURNS -DGTK_ENABLE_BROKEN
+AM_CXXFLAGS  = $(GXK_CFLAGS) $(BSE_CFLAGS) $(RAPICORN_CFLAGS) -DRAPICORN_CONVENIENCE
+AM_CFLAGS    = $(GXK_CFLAGS)
 
 noinst_LIBRARIES = libgxk.a
 
@@ -118,6 +114,7 @@ noinst_PROGRAMS = $(ALLTESTS)
 progs_LDADD     = $(strip					\
 	libgxk.a $(GXK_LIBS) 					\
 	$(top_builddir)/sfi/libsfi.o $(SFI_LIBS) 		\
+	$(RAPICORN_LIBS) 					\
 	$(top_builddir)/birnet/libbirnet.o $(BIRNET_LIBS)	\
 )
 
