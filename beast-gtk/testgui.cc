@@ -75,9 +75,6 @@ main (int   argc,
   /* initialize Sfi */
   sfi_init (&argc, &argv, "TestGUI", NULL);
   sfi_msg_allow ("misc");
-  /* ensure SFI can wake us up */
-  sfi_thread_set_name ("TestGUI");
-  sfi_thread_set_wakeup ((BirnetThreadWakeup) g_main_context_wakeup, g_main_context_default (), NULL);
   /* initialize Gtk+ and enter threading mode */
   gtk_init (&argc, &argv);
   g_set_prgname ("testgui");            /* override Gdk's program name */
@@ -95,8 +92,8 @@ main (int   argc,
   _bst_gconfig_init ();
   _bst_skin_config_init ();
   /* start BSE core and connect */
-  bse_init_async (&argc, &argv, "TestGUI", NULL);
-  sfi_glue_context_push (bse_init_glue_context ("TestGUI"));
+  Bse::init_async (&argc, &argv, "TestGUI", NULL);
+  sfi_glue_context_push (Bse::init_glue_context ("TestGUI", []() { g_main_context_wakeup (g_main_context_default()); }));
   GSource *source = g_source_simple (G_PRIORITY_HIGH - 100,
                                      (GSourcePending) sfi_glue_context_pending,
                                      (GSourceDispatch) sfi_glue_context_dispatch,

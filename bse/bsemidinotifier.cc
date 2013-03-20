@@ -242,8 +242,9 @@ bse_midi_notifiers_attach_source (void)
   g_source_set_priority (source, BSE_PRIORITY_NORMAL);
   g_source_attach (source, bse_main_context);
 }
+
 void
 bse_midi_notifiers_wakeup (void)
 {
-  g_main_context_wakeup (bse_main_context);
+  bse_main_wakeup();
 }

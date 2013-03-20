@@ -1,6 +1,6 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 
-include "bsecore.idl" as implementation;
+include "bsebasics.idl" as implementation;
 include "bsecxxbase.idl" as implementation;
 include "bsecxxmodule.idl" as implementation;
 include "bseprobe.idl" as implementation;

@@ -156,10 +156,10 @@ master_jdisconnect_node (EngineNode *node,
 static void
 master_disconnect_node_outputs (EngineNode *src_node, EngineNode *dest_node)
 {
-  for (int i = 0; i < ENGINE_NODE_N_ISTREAMS (dest_node); i++)
+  for (uint i = 0; i < ENGINE_NODE_N_ISTREAMS (dest_node); i++)
     if (dest_node->inputs[i].src_node == src_node)
       master_idisconnect_node (dest_node, i);
-  for (int j = 0; j < ENGINE_NODE_N_JSTREAMS (dest_node); j++)
+  for (uint j = 0; j < ENGINE_NODE_N_JSTREAMS (dest_node); j++)
     for (uint i = 0; i < dest_node->module.jstreams[j].jcount; i++)
       if (dest_node->jinputs[j][i].src_node == src_node)
 	master_jdisconnect_node (dest_node, j, i--);
@@ -238,7 +238,7 @@ node_peek_flow_job_stamp (EngineNode *node)
   EngineTimedJob *tjob = node->flow_jobs;
   if (UNLIKELY (tjob != NULL))
     return tjob->tick_stamp;
-  return GSL_MAX_TICK_STAMP;
+  return Bse::TickStamp::max_stamp();
 }
 static inline guint64
 node_peek_boundary_job_stamp (EngineNode *node)
@@ -246,7 +246,7 @@ node_peek_boundary_job_stamp (EngineNode *node)
   EngineTimedJob *tjob = node->boundary_jobs;
   if (UNLIKELY (tjob != NULL))
     return tjob->tick_stamp;
-  return GSL_MAX_TICK_STAMP;
+  return Bse::TickStamp::max_stamp();
 }
 /* --- job processing --- */
 static void
@@ -265,12 +265,12 @@ master_process_job (BseJob *job)
       JOB_DEBUG ("sync");
       master_need_reflow |= TRUE;
       master_schedule_discard();
-      GSL_SPIN_LOCK (job->sync.lock_mutex);
+      job->sync.lock_mutex->lock();
       *job->sync.lock_p = TRUE;
-      sfi_cond_signal (job->sync.lock_cond);
+      job->sync.lock_cond->signal();
       while (*job->sync.lock_p)
-        sfi_cond_wait (job->sync.lock_cond, job->sync.lock_mutex);
-      GSL_SPIN_UNLOCK (job->sync.lock_mutex);
+        job->sync.lock_cond->wait (*job->sync.lock_mutex);
+      job->sync.lock_mutex->unlock();
       break;
     case ENGINE_JOB_INTEGRATE:
       node = job->data.node;
@@ -281,7 +281,7 @@ master_process_job (BseJob *job)
       _engine_mnl_integrate (node);
       if (ENGINE_NODE_IS_CONSUMER (node))
 	add_consumer (node);
-      node->counter = GSL_TICK_STAMP;
+      node->counter = Bse::TickStamp::current();
       NODE_FLAG_RECONNECT (node);
       node->local_active = 0;   /* by default not suspended */
       node->update_suspend = TRUE;
@@ -334,10 +334,10 @@ master_process_job (BseJob *job)
 	}
       else
 	_engine_mnl_remove (node);
-      node->counter = GSL_MAX_TICK_STAMP;
+      node->counter = Bse::TickStamp::max_stamp();
       /* nuke pending timed jobs */
       do
-        tjob = node_pop_flow_job (node, GSL_MAX_TICK_STAMP);
+        tjob = node_pop_flow_job (node, Bse::TickStamp::max_stamp());
       while (tjob);
       /* nuke probe jobs */
       if (node->probe_jobs)
@@ -353,7 +353,7 @@ master_process_job (BseJob *job)
       /* nuke boundary jobs */
       if (node->boundary_jobs)
         do
-          tjob = node_pop_boundary_job (node, GSL_MAX_TICK_STAMP, sfi_ring_find (boundary_node_list, node));
+          tjob = node_pop_boundary_job (node, Bse::TickStamp::max_stamp(), sfi_ring_find (boundary_node_list, node));
         while (tjob);
       _engine_node_collect_jobs (node);
       break;
@@ -483,14 +483,14 @@ master_process_job (BseJob *job)
       node = job->data.node;
       JOB_DEBUG ("reset(%p)", node);
       g_return_if_fail (node->integrated == TRUE);
-      node->counter = GSL_TICK_STAMP;
+      node->counter = Bse::TickStamp::current();
       node->needs_reset = TRUE;
       break;
     case ENGINE_JOB_ACCESS:
       node = job->access.node;
       JOB_DEBUG ("access node(%p): %p(%p)", node, job->access.access_func, job->access.data);
       g_return_if_fail (node->integrated == TRUE);
-      node->counter = GSL_TICK_STAMP;
+      node->counter = Bse::TickStamp::current();
       job->access.access_func (&node->module, job->access.data);
       break;
     case ENGINE_JOB_PROBE_JOB:
@@ -632,8 +632,8 @@ master_tick_stamp_inc (void)
 {
   Timer *timer, *last = NULL;
   guint64 new_stamp;
-  _gsl_tick_stamp_inc ();
-  new_stamp = GSL_TICK_STAMP;
+  Bse::TickStamp::_increment();
+  new_stamp = Bse::TickStamp::current();
   timer = master_timer_list;
   while (timer)
     {
@@ -743,7 +743,7 @@ static void
 master_process_locked_node (EngineNode *node,
 			    guint       n_values)
 {
-  const guint64 current_stamp = GSL_TICK_STAMP;
+  const guint64 current_stamp = Bse::TickStamp::current();
   guint64 next_counter, new_counter, final_counter = current_stamp + n_values;
   guint i, j, diff;
   bool needs_probe_reset = node->probe_jobs != NULL;
@@ -820,7 +820,7 @@ static gboolean gsl_profile_modules = 0;	/* set to 1 in gdb to get profile outpu
 static void
 master_process_flow (void)
 {
-  const guint64 current_stamp = GSL_TICK_STAMP;
+  const guint64 current_stamp = Bse::TickStamp::current();
   guint n_values = bse_engine_block_size();
   guint64 final_counter = current_stamp + n_values;
   guint64 profile_maxtime = 0;
@@ -981,7 +981,7 @@ _engine_master_check (const BseEngineLoop *loop)
 void
 _engine_master_dispatch_jobs (void)
 {
-  const guint64 current_stamp = GSL_TICK_STAMP;
+  const guint64 current_stamp = Bse::TickStamp::current();
   guint64 last_block_tick = current_stamp + bse_engine_block_size() - 1;
   BseJob *job = _engine_pop_job (boundary_node_list == NULL);
   /* here, we have to process _all_ pending jobs in a row. a popped job
@@ -1040,10 +1040,24 @@ _engine_master_dispatch (void)
   if (master_need_process)
     master_process_flow ();
 }
-void
-bse_engine_master_thread (EngineMasterData *mdata)
+
+namespace Bse {
+
+MasterThread::MasterThread (const std::function<void()> &caller_wakeup) :
+  caller_wakeup_ (caller_wakeup)
 {
+  assert (caller_wakeup_ != NULL);
+  if (event_fd_.open() != 0)
+    g_error ("failed to create engine wake-up pipe: %s", strerror (errno));
+  thread_ = std::thread (&MasterThread::master_thread, this); // FIXME: join on exit
+}
+
+void
+MasterThread::master_thread()
+{
+  Bse::TaskRegistry::add ("DSP #1", Rapicorn::ThisThread::process_pid(), Rapicorn::ThisThread::thread_pid());
   bse_message_setup_thread_handler ();
+
   /* assert pollfd equality, since we're simply casting structures */
   BIRNET_STATIC_ASSERT (sizeof (struct pollfd) == sizeof (GPollFD));
   BIRNET_STATIC_ASSERT (G_STRUCT_OFFSET (GPollFD, fd) == G_STRUCT_OFFSET (struct pollfd, fd));
@@ -1052,22 +1066,24 @@ bse_engine_master_thread (EngineMasterData *mdata)
   BIRNET_STATIC_ASSERT (sizeof (((GPollFD*) 0)->events) == sizeof (((struct pollfd*) 0)->events));
   BIRNET_STATIC_ASSERT (G_STRUCT_OFFSET (GPollFD, revents) == G_STRUCT_OFFSET (struct pollfd, revents));
   BIRNET_STATIC_ASSERT (sizeof (((GPollFD*) 0)->revents) == sizeof (((struct pollfd*) 0)->revents));
+
   /* add the thread wakeup pipe to master pollfds,
    * so we get woken  up in time.
    */
-  master_pollfds[0].fd = mdata->wakeup_pipe[0];
+  master_pollfds[0].fd = event_fd_.inputfd();
   master_pollfds[0].events = G_IO_IN;
   master_n_pollfds = 1;
   master_pollfds_changed = TRUE;
   toyprof_stampinit ();
-  while (!sfi_thread_aborted ())        /* also updates accounting information */
+  while (1)
     {
       BseEngineLoop loop;
-      gboolean need_dispatch;
+      bool need_dispatch;
       need_dispatch = _engine_master_prepare (&loop);
+      master_pollfds[0].revents = 0;
       if (!need_dispatch)
 	{
-	  gint err = poll ((struct pollfd*) loop.fds, loop.n_fds, loop.timeout);
+	  int err = poll ((struct pollfd*) loop.fds, loop.n_fds, loop.timeout);
 	  if (err >= 0)
 	    loop.revents_filled = TRUE;
 	  else if (errno != EINTR)
@@ -1077,17 +1093,13 @@ bse_engine_master_thread (EngineMasterData *mdata)
 	}
       if (need_dispatch)
 	_engine_master_dispatch ();
-      /* clear wakeup pipe */
-      {
-	guint8 data[64];
-	gint l;
-	do
-	  l = read (mdata->wakeup_pipe[0], data, sizeof (data));
-	while ((l < 0 && errno == EINTR) || l == sizeof (data));
-      }
-      /* wakeup user thread if necessary */
+      if (master_pollfds[0].revents)    // need to clear wakeup pipe
+        event_fd_.flush();
+      // wakeup user thread if necessary
       if (bse_engine_has_garbage ())
-	sfi_thread_wakeup (mdata->user_thread);
+	caller_wakeup_();
     }
+  Bse::TaskRegistry::remove (Rapicorn::ThisThread::thread_pid());
 }
-/* vim:set ts=8 sts=2 sw=2: */
+
+} // Bse

@@ -6,7 +6,7 @@
 #define TS8_SIZE                (MAX (sizeof (GTrashStack), 8))
 #define DBG8_SIZE               (MAX (sizeof (gsize), 8))
 /* --- variables --- */
-static BirnetMutex     global_memory_mutex = { 0, };
+static Rapicorn::Mutex global_memory_mutex;
 static GTrashStack *simple_cache[SIMPLE_CACHE_SIZE] = { 0, 0, 0, /* ... */ };
 static gulong       memory_allocated = 0;
 /* --- functions --- */
@@ -116,7 +116,7 @@ void
 sfi_alloc_report (void)
 {
   guint cell, cached = 0;
-  sfi_mutex_lock (&global_memory_mutex);
+  global_memory_mutex.lock();
   for (cell = 0; cell < SIMPLE_CACHE_SIZE; cell++)
     {
       GTrashStack *trash = simple_cache[cell];
@@ -134,7 +134,7 @@ sfi_alloc_report (void)
 	}
     }
   g_message ("%lu bytes allocated from system, %u bytes unused in cache", memory_allocated, cached);
-  sfi_mutex_unlock (&global_memory_mutex);
+  global_memory_mutex.unlock();
 }
 gpointer
 sfi_alloc_memblock0 (gsize block_size)
@@ -159,12 +159,4 @@ _sfi_free_node_list (gpointer mem,
       node = tmp;
     }
   while (node);
-}
-void
-_sfi_init_memory (void)
-{
-  gboolean initialized = FALSE;
-  g_assert (initialized == FALSE);
-  initialized = TRUE;
-  sfi_mutex_init (&global_memory_mutex);
 }

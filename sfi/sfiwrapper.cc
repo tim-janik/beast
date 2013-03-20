@@ -240,31 +240,14 @@ sfi_url_test_show_with_cookie (const char *url,
 {
   return Birnet::url_test_show_with_cookie (url, url_title, cookie);
 }
+
 /* --- cleanup handlers --- */
 void
 birnet_cleanup_force_handlers (void)
 {
   return Birnet::cleanup_force_handlers();
 }
-/* --- threading API --- */
-SfiThread*
-sfi_thread_run (const gchar  *name,
-                SfiThreadFunc func,
-                gpointer      user_data)
-{
-  g_return_val_if_fail (name && name[0], NULL);
-  SfiThread *thread = sfi_thread_new (name);
-  sfi_thread_ref_sink (thread);
-  if (sfi_thread_start (thread, func, user_data))
-    return thread;
-  else
-    {
-      sfi_thread_unref (thread);
-      return NULL;
-    }
-}
-/* for the sfi_thread_table initialization to work, Birnet::ThreadTable must not be a reference */
-extern "C" const BirnetThreadTable *sfi_thread_table = &::Birnet::ThreadTable;
+
 void
 sfi_runtime_problem (char        ewran_tag,
                      const char *domain,

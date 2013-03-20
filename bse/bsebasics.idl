@@ -671,45 +671,6 @@ record Message {
   String        process;
   Int           pid;
 };
-/* thread info */
-enum ThreadState {
-  THREAD_STATE_UNKNOWN,
-  THREAD_STATE_RUNNING,
-  THREAD_STATE_SLEEPING,
-  THREAD_STATE_DISKWAIT,
-  THREAD_STATE_TRACED,
-  THREAD_STATE_PAGING,
-  THREAD_STATE_ZOMBIE,
-  THREAD_STATE_DEAD,
-};
-record ThreadInfo {
-  String      name      = SfiString (_("Thread Name"), "", "", STANDARD);
-  ThreadState state     = SfiEnum (_("State"), _("The execution state of the thread"), THREAD_STATE_UNKNOWN, STANDARD);
-  Int         thread_id = SfiInt (_("Thread ID"), _("A unique number identifying this thread"),
-                           0, 0, G_MAXINT, 1, STANDARD);
-  Int         priority  = SfiInt (_("Priority"), _("The nice value of a thread, -20 indicates a high priority thread and "
-                                            "+19 a low priority one that is 'nice' to others"),
-                           0, -20, 19, 1, STANDARD);
-  Int         processor = SfiInt (_("Processor"), _("The processor that this thread is currently being executed on"),
-                           0, 0, MAXINT, 1, STANDARD);
-  Int         utime     = SfiInt (_("User Time"), _("The CPU time spent executing instructions of this thread"),
-                           0, 0, MAXINT, 1, STANDARD);
-  Int         stime     = SfiInt (_("System Time"), _("The CPU time spent in the system for this thread"),
-                           0, 0, MAXINT, 1, STANDARD);
-  Int         cutime    = SfiInt (_("Child User Time"), _("The CPU time spent executing instructions of children of this thread"),
-                           0, 0, MAXINT, 1, STANDARD);
-  Int         cstime    = SfiInt (_("Child System Time"), _("The CPU time spent in the system for children of this thread"),
-                           0, 0, MAXINT, 1, STANDARD);
-};
-sequence ThreadInfoSeq {
-  ThreadInfo thread_infos;
-};
-record ThreadTotals {
-  ThreadInfo    main;
-  ThreadInfo    sequencer;
-  ThreadInfoSeq synthesis;
-};
-// bseprobe.idl: ThreadTotals collect_thread_totals ();
 
 // == BSE Global Config ==
 Const DEFAULT_AUTHOR  = "\357\277\271\357\277\272{{bse.idl/default-author}}\357\277\273";

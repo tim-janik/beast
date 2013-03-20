@@ -4,7 +4,6 @@
 #include <bse/bseenginenode.hh>
 G_BEGIN_DECLS
 /* --- UserThread --- */
-void            bse_engine_reinit_utils         (void);
 void		_engine_free_trans		(BseTrans      *trans);
 BseOStream*	_engine_alloc_ostreams		(guint		n);
 #if 0	/* bseengine.hh: */

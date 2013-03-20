@@ -1,6 +1,9 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 include "bse/bsecxxmodule.idl";
-namespace Bse { namespace Contrib {
+namespace Bse {
+
+/// The Contrib namespace contains contributed BSE modules.
+namespace Contrib {
 interface SampleAndHold: Effect {
   Info icon             = "icons/sample+hold.png";
   Info authors		= _("Artem Popov");

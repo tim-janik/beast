@@ -30,7 +30,7 @@ struct _BsePcmHandle
   guint			 n_channels;    /* should be req_n_channels */
   guint 		 mix_freq;      /* should be req_mix_freq within 1% tolerance */
   guint                  block_length;  /* in frames, filled in after open() before i/o */
-  BirnetMutex		 mutex;
+  Bse::Spinlock 	 spinlock;
   gsize	   (*read)	(BsePcmHandle		*handle,
 			 gfloat			*values);       /* n_channels * block_length values */
   void	   (*write)	(BsePcmHandle		*handle,

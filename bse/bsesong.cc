@@ -463,8 +463,8 @@ static void
 bse_song_reset (BseSource *source)
 {
   BseSong *self = BSE_SONG (source);
-  bse_sequencer_remove_song (self),
-  /* chain parent class' handler */
+  Bse::Sequencer::instance().remove_song (self);
+  // chain parent class' handler
   BSE_SOURCE_CLASS (parent_class)->reset (source);
   g_assert (self->sequencer_start_request_SL == 0);
   /* outside of sequencer reach, so no locks needed */

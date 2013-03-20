@@ -5,12 +5,15 @@
 #include <birnet/birnet.hh>
 #include <list>
 #include <vector>
+
+/// The Sfidl namespace contains implementation and API of the Sfi IDL compiler.
 namespace Sfidl {
 /* lots of helpers like string_from_int, but also typedefs like String */
 using namespace Birnet;
 /* common data structures */
 using std::list;
 using std::vector;
-}
+} // Sfidl
+
 #endif /* _SFIDL_UTILS_HH_ */
 /* vim:set ts=8 sts=2 sw=2: */

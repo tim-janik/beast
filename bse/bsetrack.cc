@@ -6,7 +6,7 @@
 #include "bsewave.hh"
 #include "bsepart.hh"
 #include "bsebus.hh"
-#include "bsemain.hh"
+#include "bsesequencer.hh"
 #include "gslcommon.hh"
 #include "bsesubsynth.hh"
 #include "bseproject.hh"

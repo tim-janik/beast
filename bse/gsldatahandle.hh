@@ -21,7 +21,7 @@ struct _GslDataHandle
   GslDataHandleFuncs *vtable;
   gchar		     *name;
   /* common members */
-  BirnetMutex	      mutex;
+  Bse::Spinlock       spinlock;
   guint		      ref_count;
   guint		      open_count;
   /* opened data handle setup (open_count > 0) */

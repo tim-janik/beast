@@ -13,7 +13,7 @@ typedef struct {
   GslLong  n_bytes;
   /*< private >*/
   GslLong  cpos;
-  BirnetMutex mutex;
+  Bse::Mutex mutex;
   gint     fd;
   guint    ocount;
   GslLong  zoffset;

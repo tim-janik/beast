@@ -94,8 +94,8 @@ protected:
                                       va_list             args);
   BIRNET_PRIVATE_CLASS_COPY (Msg);
 private:
-  static volatile int    n_msg_types;
-  static uint8 *volatile msg_type_bits;
+  static Rapicorn::Atomic<int>    n_msg_types;
+  static Rapicorn::Atomic<uint8*> msg_type_bits;
   static void            init_standard_types ();
   static void            key_list_change_L   (const String &keylist,
                                               bool          isenabled);

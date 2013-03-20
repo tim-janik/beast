@@ -654,7 +654,7 @@ bse_project_state_changed (BseProject     *self,
   self->state = state;
   if (self->state == BSE_PROJECT_ACTIVE && self->deactivate_usecs >= 0)
     {
-      SfiTime stamp = gsl_tick_stamp ();
+      SfiTime stamp = Bse::TickStamp::current();
       SfiTime delay_usecs = 0;
       if (SfiTime (self->deactivate_min_tick) > stamp)
 	delay_usecs = (self->deactivate_min_tick - stamp) * 1000000 / bse_engine_sample_freq ();
@@ -749,7 +749,7 @@ bse_project_start_playback (BseProject *self)
     bse_project_state_changed (self, BSE_PROJECT_PLAYING);
   /* then, start the sequencer */
   while (songs)
-    bse_sequencer_start_song ((BseSong*) sfi_ring_pop_head (&songs), 0);
+    Bse::Sequencer::instance().start_song ((BseSong*) sfi_ring_pop_head (&songs), 0);
 }
 void
 bse_project_stop_playback (BseProject *self)
@@ -765,7 +765,7 @@ bse_project_stop_playback (BseProject *self)
     {
       BseSuper *super = BSE_SUPER (slist->data);
       if (BSE_IS_SONG (super))
-        bse_sequencer_remove_song (BSE_SONG (super));
+        Bse::Sequencer::instance().remove_song (BSE_SONG (super));
       if (super->context_handle != ~uint (0) && BSE_SUPER_NEEDS_CONTEXT (super))
 	{
 	  BseSource *source = BSE_SOURCE (super);

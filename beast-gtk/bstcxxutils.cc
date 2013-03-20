@@ -37,8 +37,8 @@ bstcxx_message_handler (const char              *domain,
   msg.details = details.c_str();
   msg.config_check = checkmsg.c_str();
   msg.janitor = bse_script_janitor();
-  msg.process = sfi_thread_get_name (NULL);
-  msg.pid = sfi_thread_get_pid (NULL);
+  msg.process = g_strdup (Rapicorn::ThisThread::name().c_str());
+  msg.pid = Rapicorn::ThisThread::thread_pid();
   msg.n_msg_bits = 0;
   msg.msg_bits = NULL;
   bst_message_handler (&msg);

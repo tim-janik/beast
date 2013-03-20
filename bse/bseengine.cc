@@ -1,13 +1,18 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bseengine.hh"
+#include "bsecore.hh"
+#include "bsemain.hh"
 #include "gslcommon.hh"
 #include "bseengineutils.hh"
 #include "bseenginemaster.hh"
 #include <fcntl.h>
 #include <errno.h>
 #include <unistd.h>
+
 static SFI_MSG_TYPE_DEFINE (debug_engine, "engine", SFI_MSG_DEBUG, NULL);
+#undef DEBUG // FIXME
 #define DEBUG(...)      sfi_debug (debug_engine, __VA_ARGS__)
+
 /* some systems don't have ERESTART (which is what linux returns for system
  * calls on pipes which are being interrupted). most probably just use EINTR,
  * and maybe some can return both. so we check for both in the below code,
@@ -16,8 +21,10 @@ static SFI_MSG_TYPE_DEFINE (debug_engine, "engine", SFI_MSG_DEBUG, NULL);
 #ifndef ERESTART
 #define ERESTART        EINTR
 #endif
+
 /* --- prototypes --- */
 static void wakeup_master (void);
+
 /* --- UserThread --- */
 /**
  * @param klass	the BseModuleClass which determines the module's behaviour
@@ -55,7 +62,7 @@ bse_module_new (const BseModuleClass *klass,
   node->outputs = ENGINE_NODE_N_OSTREAMS (node) ? sfi_new_struct0 (EngineOutput, ENGINE_NODE_N_OSTREAMS (node)) : NULL;
   node->output_nodes = NULL;
   node->integrated = FALSE;
-  sfi_rec_mutex_init (&node->rec_mutex);
+  new (&node->rec_mutex) Bse::Mutex (Bse::RECURSIVE_LOCK);
   for (i = 0; i < ENGINE_NODE_N_OSTREAMS (node); i++)
     node->outputs[i].buffer = node->module.ostreams[i].values;
   node->flow_jobs = NULL;
@@ -69,9 +76,9 @@ bse_module_new (const BseModuleClass *klass,
  * @return		the module's tick stamp, indicating its process status
  *
  * Any thread may call this function on a valid engine module.
- * The module specific tick stamp is updated to gsl_tick_stamp() +
+ * The module specific tick stamp is updated to Bse::TickStamp::current() +
  * @a n_values every time its BseProcessFunc() function was
- * called. See also gsl_tick_stamp().
+ * called. See also Bse::TickStamp::current().
  * This function is MT-safe and may be called from any thread.
  */
 guint64
@@ -499,7 +506,7 @@ bse_job_flow_access (BseModule    *module,
   BseJob *job;
   g_return_val_if_fail (module != NULL, NULL);
   g_return_val_if_fail (ENGINE_MODULE_IS_VIRTUAL (module) == FALSE, NULL);
-  g_return_val_if_fail (tick_stamp < GSL_MAX_TICK_STAMP, NULL);
+  g_return_val_if_fail (tick_stamp < Bse::TickStamp::max_stamp(), NULL);
   g_return_val_if_fail (access_func != NULL, NULL);
   EngineTimedJob *tjob = (EngineTimedJob*) g_malloc0 (sizeof (tjob->access));
   tjob->type = ENGINE_JOB_FLOW_JOB;
@@ -540,7 +547,7 @@ bse_job_boundary_access (BseModule    *module,
   BseJob *job;
   g_return_val_if_fail (module != NULL, NULL);
   g_return_val_if_fail (ENGINE_MODULE_IS_VIRTUAL (module) == FALSE, NULL);
-  g_return_val_if_fail (tick_stamp < GSL_MAX_TICK_STAMP, NULL);
+  g_return_val_if_fail (tick_stamp < Bse::TickStamp::max_stamp(), NULL);
   g_return_val_if_fail (access_func != NULL, NULL);
   EngineTimedJob *tjob = (EngineTimedJob*) g_malloc0 (sizeof (tjob->access));
   tjob->type = ENGINE_JOB_BOUNDARY_JOB;
@@ -609,7 +616,7 @@ bse_job_suspend_now (BseModule *module)
   BseJob *job = sfi_new_struct0 (BseJob, 1);
   job->job_id = ENGINE_JOB_SUSPEND;
   job->tick.node = ENGINE_NODE (module);
-  job->tick.stamp = GSL_MAX_TICK_STAMP;
+  job->tick.stamp = Bse::TickStamp::max_stamp();
   return job;
 }
 /**
@@ -633,7 +640,7 @@ bse_job_resume_at (BseModule *module,
 {
   g_return_val_if_fail (module != NULL, NULL);
   g_return_val_if_fail (ENGINE_MODULE_IS_VIRTUAL (module) == FALSE, NULL);
-  g_return_val_if_fail (tick_stamp < GSL_MAX_TICK_STAMP, NULL);
+  g_return_val_if_fail (tick_stamp < Bse::TickStamp::max_stamp(), NULL);
   BseJob *job = sfi_new_struct0 (BseJob, 1);
   job->job_id = ENGINE_JOB_RESUME;
   job->tick.node = ENGINE_NODE (module);
@@ -863,7 +870,7 @@ bse_trans_merge (BseTrans *trans1,
  * Close the transaction and commit it to the engine. The engine
  * will execute the jobs contained in this transaction as soon as
  * it has completed its current processing cycle, at which point
- * gsl_tick_stamp() matches the returned tick stamp.
+ * Bse::TickStamp::current() matches the returned tick stamp.
  * The jobs will be executed in the exact order they were added
  * to the transaction.
  * This function is MT-safe and may be called from any thread.
@@ -885,10 +892,10 @@ bse_trans_commit (BseTrans *trans)
   return exec_tick_stamp;
 }
 typedef struct {
-  BseTrans *trans;
-  guint64   tick_stamp;
-  BirnetCond   cond;
-  BirnetMutex  mutex;
+  BseTrans  *trans;
+  guint64    tick_stamp;
+  Bse::Cond  cond;
+  Bse::Mutex mutex;
 } DTrans;
 static gboolean
 dtrans_timer (gpointer timer_data,
@@ -906,10 +913,10 @@ dtrans_timer (gpointer timer_data,
 	}
       else
 	bse_trans_commit (data->trans);
-      sfi_mutex_lock (&data->mutex);
+      data->mutex.lock();
       data->trans = NULL;
-      sfi_mutex_unlock (&data->mutex);
-      sfi_cond_signal (&data->cond);
+      data->mutex.unlock();
+      data->cond.signal();
       return FALSE;
     }
   return TRUE;
@@ -930,7 +937,7 @@ bse_trans_commit_delayed (BseTrans *trans,
 {
   g_return_if_fail (trans != NULL);
   g_return_if_fail (trans->comitted == FALSE);
-  if (tick_stamp <= gsl_tick_stamp ())
+  if (tick_stamp <= Bse::TickStamp::current())
     bse_trans_commit (trans);
   else
     {
@@ -938,16 +945,12 @@ bse_trans_commit_delayed (BseTrans *trans,
       DTrans data = { 0, };
       data.trans = trans;
       data.tick_stamp = tick_stamp;
-      sfi_cond_init (&data.cond);
-      sfi_mutex_init (&data.mutex);
       bse_trans_add (wtrans, bse_job_add_timer (dtrans_timer, &data, NULL));
-      sfi_mutex_lock (&data.mutex);
+      data.mutex.lock();
       bse_trans_commit (wtrans);
       while (data.trans)
-	sfi_cond_wait (&data.cond, &data.mutex);
-      sfi_mutex_unlock (&data.mutex);
-      sfi_cond_destroy (&data.cond);
-      sfi_mutex_destroy (&data.mutex);
+	data.cond.wait (data.mutex);
+      data.mutex.unlock();
     }
 }
 /**
@@ -1074,6 +1077,7 @@ bse_module_new_virtual (guint       n_iostreams,
 static void
 slave (gpointer data)
 {
+  Bse::TaskRegistry::add ("DSP Slave", Rapicorn::ThisThread::process_pid(), Rapicorn::ThisThread::thread_pid());
   gboolean run = TRUE;
   while (run)
     {
@@ -1088,12 +1092,12 @@ slave (gpointer data)
       bse_trans_commit (trans);
       g_usleep (1000*500);
     }
+  Bse::TaskRegistry::remove (Rapicorn::ThisThread::thread_pid());
 }
 /* --- setup & trigger --- */
 static gboolean		bse_engine_initialized = FALSE;
 static gboolean		bse_engine_threaded = FALSE;
-static BirnetThread       *master_thread = NULL;
-static EngineMasterData master_data;
+static Bse::MasterThread *master_thread = NULL;
 guint			bse_engine_exvar_block_size = 0;
 guint			bse_engine_exvar_sample_freq = 0;
 guint			bse_engine_exvar_control_mask = 0;
@@ -1110,7 +1114,7 @@ guint			bse_engine_exvar_control_mask = 0;
  * @a sample_freq. It determines how often control values are to be
  * checked when calculating blocks of sample values.
  * The block size determines the amount by which the global tick
- * stamp (see gsl_tick_stamp()) is updated everytime the whole
+ * stamp (see Bse::TickStamp::current()) is updated everytime the whole
  * module network completed processing block size values.
  * This function is MT-safe and may be called prior to engine initialization.
  */
@@ -1181,8 +1185,8 @@ bse_engine_configure (guint            latency_ms,
                       guint            sample_freq,
                       guint            control_freq)
 {
-  static BirnetMutex sync_mutex = { 0, };
-  static BirnetCond  sync_cond = { 0, };
+  static Bse::Mutex sync_mutex;
+  static Bse::Cond sync_cond;
   static gboolean sync_lock = FALSE;
   guint block_size, control_raster, success = FALSE;
   BseTrans *trans;
@@ -1198,7 +1202,7 @@ bse_engine_configure (guint            latency_ms,
   if (_engine_mnl_head() || sync_lock)
     return FALSE;
   /* block master */
-  GSL_SPIN_LOCK (&sync_mutex);
+  sync_mutex.lock();
   job = sfi_new_struct0 (BseJob, 1);
   job->job_id = ENGINE_JOB_SYNC;
   job->sync.lock_mutex = &sync_mutex;
@@ -1216,8 +1220,8 @@ bse_engine_configure (guint            latency_ms,
       sync_lock = TRUE;
     }
   while (!sync_lock)
-    sfi_cond_wait (&sync_cond, &sync_mutex);
-  GSL_SPIN_UNLOCK (&sync_mutex);
+    sync_cond.wait (sync_mutex);
+  sync_mutex.unlock();
   if (!_engine_mnl_head())
     {
       /* cleanup */
@@ -1228,15 +1232,15 @@ bse_engine_configure (guint            latency_ms,
       bse_engine_exvar_sample_freq = sample_freq;
       bse_engine_exvar_control_mask = control_raster - 1;
       /* fixup timer */
-      _gsl_tick_stamp_set_leap (bse_engine_block_size());
-      _gsl_tick_stamp_inc ();   /* ensure stamp validity (>0 and systime mark) */
+      Bse::TickStamp::_set_leap (bse_engine_block_size());
+      Bse::TickStamp::_increment(); // ensure stamp validity (>0 and systime mark)
       success = TRUE;
     }
   /* unblock master */
-  GSL_SPIN_LOCK (&sync_mutex);
+  sync_mutex.lock();
   sync_lock = FALSE;
-  sfi_cond_signal (&sync_cond);
-  GSL_SPIN_UNLOCK (&sync_mutex);
+  sync_cond.signal();
+  sync_mutex.unlock();
   /* ensure SYNC job got collected */
   bse_engine_wait_on_trans();
   bse_engine_user_thread_collect();
@@ -1263,51 +1267,24 @@ bse_engine_init (gboolean run_threaded)
   g_assert (&BSE_MODULE_GET_ISTREAMSP ((BseModule*) 42) == (void*) &((BseModule*) 42)->istreams);
   g_assert (&BSE_MODULE_GET_JSTREAMSP ((BseModule*) 42) == (void*) &((BseModule*) 42)->jstreams);
   g_assert (&BSE_MODULE_GET_OSTREAMSP ((BseModule*) 42) == (void*) &((BseModule*) 42)->ostreams);
-  /* initialize components */
-  bse_engine_reinit_utils();
   /* first configure */
   bse_engine_configure (50, 44100, 50);
   /* then setup threading */
   bse_engine_threaded = run_threaded;
   if (bse_engine_threaded)
     {
-      gint err = pipe (master_data.wakeup_pipe);
-      master_data.user_thread = sfi_thread_self ();
-      if (!err)
-	{
-	  glong d_long = fcntl (master_data.wakeup_pipe[0], F_GETFL, 0);
-	  /* DEBUG ("master_wpipe-readfd, blocking=%ld", d_long & O_NONBLOCK); */
-	  d_long |= O_NONBLOCK;
-	  err = fcntl (master_data.wakeup_pipe[0], F_SETFL, d_long);
-	}
-      if (!err)
-	{
-	  glong d_long = fcntl (master_data.wakeup_pipe[1], F_GETFL, 0);
-	  /* DEBUG ("master_wpipe-writefd, blocking=%ld", d_long & O_NONBLOCK); */
-	  d_long |= O_NONBLOCK;
-	  err = fcntl (master_data.wakeup_pipe[1], F_SETFL, d_long);
-	}
-      if (err)
-	g_error ("failed to create wakeup pipe: %s", g_strerror (errno));
-      master_thread = sfi_thread_run ("DSP #1", (BirnetThreadFunc) bse_engine_master_thread, &master_data);
-      if (!master_thread)
-	g_error ("failed to create master thread");
-      if (0)
-	sfi_thread_run ("DSP #2", slave, NULL);
+      master_thread = new Bse::MasterThread (bse_main_wakeup);
+      (void) slave; // FIXME: start slave ("DSP #2")
     }
 }
+
 static void
 wakeup_master (void)
 {
-  if (master_thread)
-    {
-      guint8 data = 'W';
-      gint l;
-      do
-	l = write (master_data.wakeup_pipe[1], &data, 1);
-      while (l < 0 && (errno == EINTR || errno == ERESTART));
-    }
+  g_return_if_fail (master_thread != NULL);
+  master_thread->wakeup();
 }
+
 gboolean
 bse_engine_prepare (BseEngineLoop *loop)
 {
@@ -1335,6 +1312,7 @@ bse_engine_check (const BseEngineLoop *loop)
   else
     return bse_engine_has_garbage ();
 }
+
 /**
  *
  * Perform necessary work the engine has to handle
@@ -1354,20 +1332,7 @@ bse_engine_dispatch (void)
   if (bse_engine_has_garbage ())	/* prevent extra mutex locking */
     bse_engine_user_thread_collect ();
 }
-BirnetThread**
-bse_engine_get_threads (guint *n_threads)
-{
-  BirnetThread **t;
-  if (!master_thread)
-    {
-      *n_threads = 0;
-      return NULL;
-    }
-  *n_threads = 1;
-  t = g_new0 (BirnetThread*, 2);
-  t[0] = master_thread;
-  return t;
-}
+
 /**
  * @param systime	System time in micro seconds.
  * @return		Engine tick stamp value
@@ -1380,7 +1345,7 @@ bse_engine_get_threads (guint *n_threads)
 guint64
 bse_engine_tick_stamp_from_systime (guint64 systime)
 {
-  GslTickStampUpdate ustamp = gsl_tick_stamp_last ();
+  Bse::TickStamp::Update ustamp = Bse::TickStamp::get_last ();
   guint64 tick_stamp;
   /* FIXME: we should add special guards here
    * for sfi_time_system() - ustamp.system_time ~> (44100 / bse_engine_block_size ())
@@ -1407,7 +1372,7 @@ bse_engine_tick_stamp_from_systime (guint64 systime)
 	     "  last-update-systime   = %llu\n"
 	     "  last-update-tickstamp = %llu\n"
 	     "  sample-freq           = %u\n",
-	     tick_stamp, systime, sfi_time_system (), gsl_tick_stamp (),
+	     tick_stamp, systime, sfi_time_system (), Bse::TickStamp::get_current (),
 	     ustamp.system_time, ustamp.tick_stamp,
 	     bse_engine_sample_freq ());
 #endif

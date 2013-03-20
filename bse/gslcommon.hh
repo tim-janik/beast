@@ -6,21 +6,7 @@
 G_BEGIN_DECLS
 /* --- initialization --- */
 void			gsl_init	(void);
-/* --- tick stamps --- */
-typedef struct {
-  guint64 tick_stamp;
-  guint64 system_time;
-} GslTickStampUpdate;
-guint64		   gsl_tick_stamp	(void);
-guint64		   gsl_time_system	(void);
-GslTickStampUpdate gsl_tick_stamp_last	(void);
-#define		   GSL_TICK_STAMP	(_GSL_TICK_STAMP_VAL ())
-#define		   GSL_MAX_TICK_STAMP	(18446744073709551615LLU /* 2^64-1*/)
-void		gsl_thread_awake_before	(guint64	 tick_stamp);
-#define	GSL_SPIN_LOCK	sfi_mutex_lock
-#define	GSL_SPIN_UNLOCK	sfi_mutex_unlock
-#define	GSL_SYNC_LOCK	sfi_mutex_lock
-#define	GSL_SYNC_UNLOCK	sfi_mutex_unlock
+
 /* --- misc --- */
 const gchar* gsl_byte_order_to_string   (guint           byte_order);
 guint        gsl_byte_order_from_string (const gchar    *string);
@@ -39,7 +25,8 @@ typedef guint (*GslProgressFunc)        (gpointer          data,
                                          GslProgressState *pstate);
 struct _GslProgressState
 {
-  guint           wipe_length, precision;
+  uint            wipe_length;
+  int             precision;
   gfloat          pval, epsilon;
   gpointer        pdata;
   GslProgressFunc pfunc;
@@ -57,8 +44,6 @@ guint            gsl_progress_printerr  (gpointer          message,
                                          const gchar      *detail,
                                          GslProgressState *pstate);
 /* --- implementation details --- */
-void	       _gsl_tick_stamp_inc	(void);
-void	       _gsl_tick_stamp_set_leap (guint		 ticks);
 void	_gsl_init_fd_pool		(void);
 void	_gsl_init_data_caches		(void);
 void	_gsl_init_loader_gslwave	(void);
@@ -68,7 +53,42 @@ void	_gsl_init_loader_oggvorbis	(void);
 void	_gsl_init_loader_mad		(void);
 void	bse_init_loader_gus_patch	(void);
 #define		GSL_N_IO_RETRIES	(5)
-#define		_GSL_TICK_STAMP_VAL()	(bse_engine_exvar_tick_stamp + 0)
-extern volatile guint64	bse_engine_exvar_tick_stamp;
 G_END_DECLS
+
+
+namespace Bse {
+
+// == TickStamp ==
+class TickStamp {
+  static Rapicorn::Atomic<uint64> global_tick_stamp;
+protected:
+  static void           _init_forgsl  ();
+public:
+  class Wakeup : public std::enable_shared_from_this<Wakeup> {
+    std::function<void()> wakeup_;
+    uint64                awake_stamp_;
+  protected:
+    explicit            Wakeup (const std::function<void()> &wakeup);
+    static void         _emit_wakeups   (uint64 wakeup_stamp);
+  public:
+    void                awake_after     (uint64 stamp);
+    void                awake_before    (uint64 stamp);
+  };
+  typedef std::shared_ptr<Wakeup> WakeupP;
+  struct Update {
+    uint64 tick_stamp;
+    uint64 system_time;
+  };
+  static Update         get_last        ();
+  static WakeupP        create_wakeup   (const std::function<void()> &wakeup);
+  static inline uint64  current         ()      { return global_tick_stamp; }
+  static inline uint64  max_stamp       ()      { return 18446744073709551615LLU; } ///< Maximum stamp value, 2^64-1.
+  static void	        _increment      ();
+  static void	        _set_leap       (uint64 ticks);
+};
+typedef TickStamp::WakeupP TickStampWakeupP;
+
+} // Bse
+
+
 #endif /* __GSL_COMMON_H__ */

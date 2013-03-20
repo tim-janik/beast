@@ -242,7 +242,7 @@ bse_midi_device_alsa_open (BseDevice     *device,
               if (wn && snd_rawmidi_poll_descriptors (alsa->write_handle, pfds + alsa->total_pfds, wn) >= 0)
                 alsa->total_pfds += wn;
               if (alsa->total_pfds)
-                bse_sequencer_add_io_watch (alsa->total_pfds, (GPollFD*) pfds, alsa_midi_io_handler, alsa);
+                Bse::Sequencer::instance().add_io_watch (alsa->total_pfds, (GPollFD*) pfds, alsa_midi_io_handler, alsa);
             }
         }
     }
@@ -264,7 +264,7 @@ bse_midi_device_alsa_close (BseDevice *device)
   AlsaMidiHandle *alsa = (AlsaMidiHandle*) BSE_MIDI_DEVICE (device)->handle;
   BSE_MIDI_DEVICE (device)->handle = NULL;
   if (alsa->total_pfds)
-    bse_sequencer_remove_io_watch (alsa_midi_io_handler, alsa);
+    Bse::Sequencer::instance().remove_io_watch (alsa_midi_io_handler, alsa);
   if (alsa->read_handle)
     snd_rawmidi_close (alsa->read_handle);
   if (alsa->write_handle)
