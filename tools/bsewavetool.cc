@@ -1914,11 +1914,13 @@ public:
 
 class NormalizeCmd : public Command {
   bool all_chunks;
+  bool use_volume_xinfo;
   vector<gfloat> freq_list;
 public:
   NormalizeCmd (const char *command_name) :
     Command (command_name),
-    all_chunks (false)
+    all_chunks (false),
+    use_volume_xinfo (false)
   {}
   void
   blurb (bool bshort)
@@ -1933,6 +1935,7 @@ public:
     g_print ("    -m <midi-note>      alternative way to specify oscillator frequency\n");
     g_print ("    --chunk-key <key>   select wave chunk using chunk key from list-chunks\n");
     g_print ("    --all-chunks        try to normalize all chunks\n");
+    g_print ("    --volume-xinfo      keep original sample data, only set volume xinfo\n");
     /*       "**********1*********2*********3*********4*********5*********6*********7*********" */
   }
   guint
@@ -1958,17 +1961,27 @@ public:
       if (all_chunks || wave->match (*it, freq_list))
         {
           WaveChunk *chunk = &*it;
-          sfi_info ("NORMALIZE: chunk %f", gsl_data_handle_osc_freq (chunk->dhandle));
+          const double osc_freq = gsl_data_handle_osc_freq (chunk->dhandle);
+          sfi_info ("NORMALIZE: chunk %f", osc_freq);
           double absmax = gsl_data_find_min_max (chunk->dhandle, NULL, NULL);
           gchar **xinfos = bse_xinfos_dup_consolidated (chunk->dhandle->setup.xinfos, FALSE);
           BseErrorType error = BSE_ERROR_NONE;
           if (absmax > 4.6566e-10) /* 32bit threshold */
             {
-              GslDataHandle *shandle = gsl_data_handle_new_scale (chunk->dhandle, 1. / absmax);
-              error = chunk->change_dhandle (shandle, gsl_data_handle_osc_freq (chunk->dhandle), xinfos);
-              if (error)
-                sfi_error ("level normalizeping failed: %s", bse_error_blurb (error));
-              gsl_data_handle_unref (shandle);
+              if (use_volume_xinfo)
+                {
+                  gchar buffer[G_ASCII_DTOSTR_BUF_SIZE * 2 + 1024];
+                  g_ascii_dtostr (buffer, sizeof (buffer), 1. / absmax);
+                  wave->set_chunk_xinfo (osc_freq, "volume", buffer);
+                }
+              else
+                {
+                  GslDataHandle *shandle = gsl_data_handle_new_scale (chunk->dhandle, 1. / absmax);
+                  error = chunk->change_dhandle (shandle, gsl_data_handle_osc_freq (chunk->dhandle), xinfos);
+                  if (error)
+                    sfi_error ("level normalizeping failed: %s", bse_error_blurb (error));
+                  gsl_data_handle_unref (shandle);
+                }
             }
           g_strfreev (xinfos);
           if (error && !skip_errors)
@@ -2015,6 +2028,8 @@ public:
       {
 	if (parse_chunk_selection (argv, i, argc, all_chunks, freq_list))
 	  seen_selection = true;
+        else if (parse_bool_option (argv, i, "--volume-xinfo"))
+          use_volume_xinfo = true;
       }
     return !seen_selection ? 1 : 0; /* # args missing */
   }
