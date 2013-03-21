@@ -244,7 +244,7 @@ gsl_data_handle_volume (GslDataHandle *dhandle)
   gfloat f = bse_xinfos_get_float (dhandle->setup.xinfos, "volume");
   dhandle->spinlock.unlock();
   /* no (or invalid) volume setting means that we replay without scaling */
-  if (f <= 0 || f > 1.0)
+  if (f <= 0)
     f = 1.0;
   return f;
 }
