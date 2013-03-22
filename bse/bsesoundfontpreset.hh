@@ -15,21 +15,13 @@ G_BEGIN_DECLS
 #define BSE_IS_SOUND_FONT_PRESET_CLASS(class)	(G_TYPE_CHECK_CLASS_TYPE ((class), BSE_TYPE_SOUND_FONT_PRESET))
 #define BSE_SOUND_FONT_PRESET_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), BSE_TYPE_SOUND_FONT_PRESET, BseSoundFontPresetClass))
 
-
-/* --- BseSoundFontPreset --- */
-struct _BseSoundFontPreset
-{
-  BseItem	parent_object;
+struct BseSoundFontPreset : BseItem {
   int           program;
   int           bank;
 };
-struct _BseSoundFontPresetClass
-{
-  BseItemClass  parent_class;
-};
+struct BseSoundFontPresetClass : BseItemClass
+{};
 
-
-/* --- prototypes -- */
 void   bse_sound_font_preset_init_preset (BseSoundFontPreset *self,
 					  fluid_preset_t     *fluid_preset);
 

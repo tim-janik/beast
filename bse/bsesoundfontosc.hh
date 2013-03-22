@@ -9,10 +9,6 @@
 extern "C" {
 #endif /* __cplusplus */
 
-
-
-
-/* --- object type macros --- */
 #define BSE_TYPE_SOUND_FONT_OSC		      (BSE_TYPE_ID (BseSoundFontOsc))
 #define BSE_SOUND_FONT_OSC(object)	      (G_TYPE_CHECK_INSTANCE_CAST ((object), BSE_TYPE_SOUND_FONT_OSC, BseSoundFontOsc))
 #define BSE_SOUND_FONT_OSC_CLASS(class)	      (G_TYPE_CHECK_CLASS_CAST ((class), BSE_TYPE_SOUND_FONT_OSC, BseSoundFontOscClass))
@@ -28,12 +24,7 @@ enum
   BSE_SOUND_FONT_OSC_N_OCHANNELS
 };
 
-/* --- BseSoundFontOsc source --- */
-typedef struct _BseSoundFontOsc	      BseSoundFontOsc;
-typedef struct _BseSoundFontOscClass  BseSoundFontOscClass;
-typedef struct _BseSoundFontOscConfig BseSoundFontOscConfig;
-struct _BseSoundFontOscConfig
-{
+struct BseSoundFontOscConfig {
   int			osc_id;
   int			sfont_id;
   int			bank;
@@ -43,18 +34,12 @@ struct _BseSoundFontOscConfig
 
   int                   update_preset;  /* preset changed indicator */
 };
-struct _BseSoundFontOsc
-{
-  BseSource		parent_object;
+struct BseSoundFontOsc : BseSource {
   BseSoundFontPreset   *preset;
   BseSoundFontOscConfig	config;
 };
-struct _BseSoundFontOscClass
-{
-  BseSourceClass parent_class;
-};
-
-
+struct BseSoundFontOscClass : BseSourceClass
+{};
 
 #ifdef __cplusplus
 }

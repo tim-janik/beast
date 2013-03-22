@@ -15,23 +15,15 @@ G_BEGIN_DECLS
 #define BSE_IS_SOUND_FONT_CLASS(class)	  (G_TYPE_CHECK_CLASS_TYPE ((class), BSE_TYPE_SOUND_FONT))
 #define BSE_SOUND_FONT_GET_CLASS(object)  (G_TYPE_INSTANCE_GET_CLASS ((object), BSE_TYPE_SOUND_FONT, BseSoundFontClass))
 
-
-/* --- BseSoundFont --- */
-struct _BseSoundFont
-{
-  BseContainer	     parent_object;
+struct BseSoundFont : BseContainer {
   BseStorageBlob    *blob;
   int                sfont_id;
   BseSoundFontRepo  *sfrepo;
   GList             *presets;
 };
-struct _BseSoundFontClass
-{
-  BseContainerClass  parent_class;
-};
+struct BseSoundFontClass : BseContainerClass
+{};
 
-
-/* --- prototypes -- */
 BseErrorType    bse_sound_font_load_blob	(BseSoundFont       *sound_font,
 						 BseStorageBlob     *blob,
 						 gboolean            init_presets);

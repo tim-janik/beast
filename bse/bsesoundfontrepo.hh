@@ -7,11 +7,8 @@
 #include        <bse/bsesoundfontosc.hh>
 #include        <bse/bseengine.hh>
 
-
 G_BEGIN_DECLS
 
-
-/* --- object type macros --- */
 #define BSE_TYPE_SOUND_FONT_REPO	        (BSE_TYPE_ID (BseSoundFontRepo))
 #define BSE_SOUND_FONT_REPO(object)	        (G_TYPE_CHECK_INSTANCE_CAST ((object), BSE_TYPE_SOUND_FONT_REPO, BseSoundFontRepo))
 #define BSE_SOUND_FONT_REPO_CLASS(class)	(G_TYPE_CHECK_CLASS_CAST ((class), BSE_TYPE_SOUND_FONT_REPO, BseSoundFontRepoClass))
@@ -19,12 +16,9 @@ G_BEGIN_DECLS
 #define BSE_IS_SOUND_FONT_REPO_CLASS(class)	(G_TYPE_CHECK_CLASS_TYPE ((class), BSE_TYPE_SOUND_FONT_REPO))
 #define BSE_SOUND_FONT_REPO_GET_CLASS(object)	(G_TYPE_INSTANCE_GET_CLASS ((object), BSE_TYPE_SOUND_FONT_REPO, BseSoundFontRepoClass))
 
-
-/* --- BseSoundFontRepo object --- */
 #define BSE_FLUID_SYNTH_PROGRAM_SELECT -1
-typedef struct _BseFluidEvent BseFluidEvent;
-struct _BseFluidEvent
-{
+
+struct BseFluidEvent {
   guint64            tick_stamp;
   int                channel;
   int		     command;
@@ -32,10 +26,8 @@ struct _BseFluidEvent
   int		     arg2;
   int                sfont_id;	  /* required for program selection only */
 };
-struct _BseSoundFontRepo
-{
-  BseSuper	     parent_object;
 
+struct BseSoundFontRepo : BseSuper {
   Bse::Mutex	     fluid_synth_mutex;
   fluid_settings_t  *fluid_settings;
   fluid_synth_t     *fluid_synth;
@@ -57,10 +49,8 @@ struct _BseSoundFontRepo
   GList             *sound_fonts;
 };
 
-struct _BseSoundFontRepoClass
-{
-  BseSuperClass  parent_class;
-};
+struct BseSoundFontRepoClass : BseSuperClass
+{};
 
 
 /* --- prototypes --- */
