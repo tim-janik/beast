@@ -5,7 +5,7 @@
 #ifdef __cplusplus
 extern "C" {
 #endif /* __cplusplus */
-/* --- type macros --- */
+
 #define BSE_TYPE_IIR_FILTER              (bse_iir_filter_get_type())
 #define BSE_IIR_FILTER(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), BSE_TYPE_IIR_FILTER, BseIIRFilter))
 #define BSE_IIR_FILTER_CLASS(class)      (G_TYPE_CHECK_CLASS_CAST ((class), BSE_TYPE_IIR_FILTER, BseIIRFilterClass))
@@ -13,17 +13,12 @@ extern "C" {
 #define BSE_IS_IIR_FILTER_CLASS(class)   (G_TYPE_CHECK_CLASS_TYPE ((class), BSE_TYPE_IIR_FILTER))
 #define BSE_IIR_FILTER_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), BSE_TYPE_IIR_FILTER, BseIIRFilterClass))
 #define	BSE_IIR_FILTER_MAX_ORDER	 (18)
-/* --- BseIIRFilter source --- */
-typedef struct _BseIIRFilter      BseIIRFilter;
-typedef struct _BseIIRFilterClass BseIIRFilterClass;
-typedef struct
-{
+
+struct BseIIRFilterVars {
   gdouble a[BSE_IIR_FILTER_MAX_ORDER];
   gdouble b[BSE_IIR_FILTER_MAX_ORDER];
-} BseIIRFilterVars;
-struct _BseIIRFilter
-{
-  BseSource	parent_object;
+};
+struct BseIIRFilter : BseSource {
   BseIIRFilterAlgorithm filter_algo;
   BseIIRFilterType      filter_type;
   guint		        algo_type_change : 1;
@@ -34,11 +29,9 @@ struct _BseIIRFilter
   gdouble	a[BSE_IIR_FILTER_MAX_ORDER + 1];
   gdouble	b[BSE_IIR_FILTER_MAX_ORDER + 1];
 };
-struct _BseIIRFilterClass
-{
-  BseSourceClass parent_class;
-};
-/* --- channels --- */
+struct BseIIRFilterClass : BseSourceClass
+{};
+
 enum
 {
   BSE_IIR_FILTER_ICHANNEL_MONO,
@@ -49,6 +42,7 @@ enum
   BSE_IIR_FILTER_OCHANNEL_MONO,
   BSE_IIR_FILTER_N_OCHANNELS
 };
+
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */

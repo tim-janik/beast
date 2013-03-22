@@ -14,20 +14,14 @@ extern "C" {
 #define BSE_IS_MIXER_CLASS(class)   (G_TYPE_CHECK_CLASS_TYPE ((class), BSE_TYPE_MIXER))
 #define BSE_MIXER_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), BSE_TYPE_MIXER, BseMixerClass))
 #define	BSE_MIXER_N_INPUTS	(4)
-/* --- BseMixer source --- */
-typedef struct _BseMixer      BseMixer;
-typedef struct _BseMixerClass BseMixerClass;
-struct _BseMixer
-{
-  BseSource       parent_object;
-  gfloat	  master_volume_factor;
-  gfloat          volume_factors[BSE_MIXER_N_INPUTS];
+
+struct BseMixer : BseSource {
+  float master_volume_factor;
+  float volume_factors[BSE_MIXER_N_INPUTS];
 };
-struct _BseMixerClass
-{
-  BseSourceClass parent_class;
-};
-/* --- channels --- */
+struct BseMixerClass : BseSourceClass
+{};
+
 enum
 {
   BSE_MIXER_OCHANNEL_MONO
