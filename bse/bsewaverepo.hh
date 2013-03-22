@@ -10,16 +10,13 @@ G_BEGIN_DECLS
 #define BSE_IS_WAVE_REPO(object)	(G_TYPE_CHECK_INSTANCE_TYPE ((object), BSE_TYPE_WAVE_REPO))
 #define BSE_IS_WAVE_REPO_CLASS(class)	(G_TYPE_CHECK_CLASS_TYPE ((class), BSE_TYPE_WAVE_REPO))
 #define BSE_WAVE_REPO_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), BSE_TYPE_WAVE_REPO, BseWaveRepoClass))
-/* --- BseWaveRepo object --- */
-struct _BseWaveRepo
-{
-  BseSuper	 parent_object;
+
+struct BseWaveRepo : BseSuper {
   GList		*waves;
 };
-struct _BseWaveRepoClass
-{
-  BseSuperClass parent_class;
-};
-/* --- prototypes --- */
+struct BseWaveRepoClass : BseSuperClass
+{};
+
 G_END_DECLS
+
 #endif /* __BSE_WAVE_REPO_H__ */

@@ -11,17 +11,12 @@ G_BEGIN_DECLS
 #define BSE_IS_INPUT_CLASS(class)	       (G_TYPE_CHECK_CLASS_TYPE ((class), BSE_TYPE_INSTRUMENT_INPUT))
 #define BSE_INSTRUMENT_INPUT_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), BSE_TYPE_INSTRUMENT_INPUT, BseInstrumentInputClass))
 /* --- BseInstrumentInput source --- */
-typedef struct _BseInstrumentInput      BseInstrumentInput;
-typedef struct _BseInstrumentInputClass BseInstrumentInputClass;
-struct _BseInstrumentInput
-{
-  BseSubIPort parent_object;
-};
-struct _BseInstrumentInputClass
-{
-  BseSubIPortClass parent_class;
-};
-/* --- channels --- */
+
+struct BseInstrumentInput : BseSubIPort
+{};
+struct BseInstrumentInputClass : BseSubIPortClass
+{};
+
 enum
 {
   BSE_INSTRUMENT_INPUT_OCHANNEL_FREQUENCY,
@@ -29,5 +24,6 @@ enum
   BSE_INSTRUMENT_INPUT_OCHANNEL_VELOCITY,
   BSE_INSTRUMENT_INPUT_OCHANNEL_AFTERTOUCH
 };
+
 G_END_DECLS
 #endif /* __BSE_INSTRUMENT_INPUT_H__ */

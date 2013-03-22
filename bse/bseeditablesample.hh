@@ -16,16 +16,12 @@ extern "C" {
 /* --- object flagss --- */
 #define BSE_EDITABLE_SAMPLE_OPENED(obj)       (BSE_EDITABLE_SAMPLE (obj)->open_count > 0)
 #define BSE_EDITABLE_SAMPLE_FLAGS_USHIFT	(BSE_ITEM_FLAGS_USHIFT + 0)
-/* --- structures --- */
-struct _BseEditableSample
-{
-  BseItem	 parent_object;
+
+struct BseEditableSample : BseItem {
   guint		 open_count;
   GslWaveChunk	*wchunk;
 };
-struct _BseEditableSampleClass
-{
-  BseItemClass	parent_class;
+struct BseEditableSampleClass : BseItemClass {
   void	(*changed) (BseEditableSample	*sample);
 };
 void	bse_editable_sample_set_wchunk	(BseEditableSample	*self,

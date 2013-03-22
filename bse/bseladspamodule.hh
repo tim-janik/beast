@@ -12,16 +12,10 @@ G_BEGIN_DECLS
 #define BSE_IS_LADSPA_MODULE_CLASS(class)   (G_TYPE_CHECK_CLASS_TYPE ((class), BSE_TYPE_LADSPA_MODULE))
 #define BSE_LADSPA_MODULE_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), BSE_TYPE_LADSPA_MODULE, BseLadspaModuleClass))
 /* --- BseLadspaModule --- */
-typedef struct _BseLadspaModule      BseLadspaModule;
-typedef struct _BseLadspaModuleClass BseLadspaModuleClass;
-struct _BseLadspaModule
-{
-  BseSource  parent_instance;
+struct BseLadspaModule : BseSource {
   gfloat    *cvalues;
 };
-struct _BseLadspaModuleClass
-{
-  BseSourceClass parent_class;
+struct BseLadspaModuleClass : BseSourceClass {
   BseLadspaInfo *bli;
   BseModuleClass *gsl_class;
 };

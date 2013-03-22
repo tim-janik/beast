@@ -11,10 +11,8 @@ G_BEGIN_DECLS
 #define BSE_IS_PLUGIN(plugin)        (G_TYPE_CHECK_INSTANCE_TYPE ((plugin), BSE_TYPE_PLUGIN))
 #define BSE_IS_PLUGIN_CLASS(class)   (G_TYPE_CHECK_CLASS_TYPE ((class), BSE_TYPE_PLUGIN))
 #define BSE_PLUGIN_GET_CLASS(plugin) (G_TYPE_INSTANCE_GET_CLASS ((plugin), BSE_TYPE_PLUGIN, BsePluginClass))
-/* --- BsePlugin --- */
-struct _BsePlugin
-{
-  GObject	 parent_instance;
+
+struct BsePlugin : GObject {
   gchar		*fname;
   gpointer	 gmodule;
   guint64        missing_export_flags;
@@ -26,11 +24,9 @@ struct _BsePlugin
   guint		 n_types;
   GType  	*types;
 };
-struct _BsePluginClass
-{
-  GObjectClass	parent_class;
-};
-/* --- prototypes --- */
+struct BsePluginClass : GObjectClass
+{};
+
 SfiRing*	bse_plugin_path_list_files	(gboolean        include_drivers,
                                                  gboolean        include_plugins);
 const gchar*	bse_plugin_check_load		(const gchar	*file_name);

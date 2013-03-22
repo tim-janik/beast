@@ -21,17 +21,16 @@ typedef enum	/*< skip >*/
   BSE_DATA_POCKET_OBJECT	= 'o'
 } BseDataPocketType;
 /* --- BseDataPocket structs --- */
-typedef struct _BseDataPocket		BseDataPocket;
-typedef struct _BseDataPocketClass	BseDataPocketClass;
-typedef union {
+struct BseDataPocket;
+struct BseDataPocketClass;
+union BseDataPocketValue {
   guint64  v_int64;
   guint    v_int;
   gfloat   v_float;
   gchar   *v_string;
   BseItem *v_object;
-} BseDataPocketValue;
-typedef struct
-{
+};
+struct BseDataPocketEntry {
   guint	               id;
   guint	               n_items;
   struct Item {
@@ -39,19 +38,15 @@ typedef struct
     gchar              type;
     BseDataPocketValue value;
   }	              *items;
-} BseDataPocketEntry;
-struct _BseDataPocket
-{
-  BseItem	      parent_object;
+};
+struct BseDataPocket : BseItem {
   guint		      need_store;	/* for BSE_ITEM_FLAG_AGGREGATE */
   GSList	     *cr_items;
   guint		      free_id;
   guint		      n_entries;
   BseDataPocketEntry *entries;
 };
-struct _BseDataPocketClass
-{
-  BseItemClass	parent_class;
+struct BseDataPocketClass : BseItemClass {
   void	(*entry_added)	 (BseDataPocket	*pocket,
 			  guint		 entry_id);
   void	(*entry_removed) (BseDataPocket	*pocket,
@@ -59,6 +54,7 @@ struct _BseDataPocketClass
   void	(*entry_changed) (BseDataPocket	*pocket,
 			  guint		 entry_id);
 };
+
 /* --- prototypes --- */
 guint	 _bse_data_pocket_create_entry	(BseDataPocket	   *pocket);
 gboolean _bse_data_pocket_delete_entry	(BseDataPocket	   *pocket,

@@ -18,13 +18,8 @@ typedef enum	/*< skip >*/
   BSE_PCM_CMODE_MONO	= 1,
   BSE_PCM_CMODE_STEREO
 } BsePcmChannelMode;
-/* --- BsePcmDevice structs --- */
-typedef struct _BsePcmStatus		BsePcmStatus;
-typedef struct _BsePcmHandle		BsePcmHandle;
-typedef struct _BsePcmDevice		BsePcmDevice;
-typedef struct _BsePcmDeviceClass	BsePcmDeviceClass;
-struct _BsePcmHandle
-{
+
+struct BsePcmHandle {
   guint			 readable : 1;
   guint			 writable : 1;
   guint			 n_channels;    /* should be req_n_channels */
@@ -39,9 +34,7 @@ struct _BsePcmHandle
                          glong                  *timeoutp);
   guint    (*latency)   (BsePcmHandle           *handle);
 };
-struct _BsePcmDevice
-{
-  BseDevice		parent_instance;
+struct BsePcmDevice : BseDevice {
   /* requested caps */
   guint			req_n_channels;
   guint                 req_mix_freq;
@@ -50,11 +43,9 @@ struct _BsePcmDevice
   /* operational handle */
   BsePcmHandle	       *handle;
 };
-struct _BsePcmDeviceClass
-{
-  BseDeviceClass	parent_class;
-};
-/* --- prototypes --- */
+struct BsePcmDeviceClass : BseDeviceClass
+{};
+
 void		bse_pcm_device_request		(BsePcmDevice		*pdev,
 						 guint			 n_channels,
                                                  guint                   mix_freq,

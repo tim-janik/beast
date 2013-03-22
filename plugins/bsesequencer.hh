@@ -13,19 +13,17 @@ extern "C" {
 #define BSE_IS_SEQUENCER(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), BSE_TYPE_SEQUENCER))
 #define BSE_IS_SEQUENCER_CLASS(class)   (G_TYPE_CHECK_CLASS_TYPE ((class), BSE_TYPE_SEQUENCER))
 #define BSE_SEQUENCER_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), BSE_TYPE_SEQUENCER, BseSequencerClass))
-/* --- BseSequencer source --- */
-typedef struct _BseSequencer   BseSequencer;
-typedef struct _BseSourceClass BseSequencerClass;
-struct _BseSequencer
-{
-  BseSource        parent_object;
+
+struct BseSequencer : BseSource {
   gfloat	   counter;
   gint		   transpose;
   BseNoteSequence *sdata;
   guint		   n_freq_values;
   gfloat	  *freq_values;
 };
-/* --- channels --- */
+struct BseSequencerClass : BseSourceClass
+{};
+
 enum
 {
   BSE_SEQUENCER_OCHANNEL_FREQ,

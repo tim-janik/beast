@@ -4,7 +4,9 @@
 #include <bse/bseitem.hh>
 #include <bse/gsldefs.hh>
 #include <sfi/gbsearcharray.hh>
+
 G_BEGIN_DECLS
+
 /* --- BseSource type macros --- */
 #define BSE_TYPE_SOURCE              (BSE_TYPE_ID (BseSource))
 #define BSE_SOURCE(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), BSE_TYPE_SOURCE, BseSource))
@@ -41,7 +43,7 @@ G_BEGIN_DECLS
                                            0xffffffff)
 #define	BSE_SOURCE_JSTREAM_FLAG		  ((guint) 1 << 31)
 #define BSE_SOURCE_PRIVATE_INPUTS(src)    ((BSE_OBJECT_FLAGS (src) & BSE_SOURCE_FLAG_PRIVATE_INPUTS) != 0)
-/* --- BseSource flags --- */
+
 typedef enum	/*< skip >*/
 {
   BSE_SOURCE_FLAG_PRIVATE_INPUTS	= 1 << (BSE_ITEM_FLAGS_USHIFT + 0),
@@ -49,39 +51,23 @@ typedef enum	/*< skip >*/
   BSE_SOURCE_FLAG_COLLECTED		= 1 << (BSE_ITEM_FLAGS_USHIFT + 2)
 } BseSourceFlags;
 #define BSE_SOURCE_FLAGS_USHIFT        (BSE_ITEM_FLAGS_USHIFT + 3)
-/* --- typedefs & structures --- */
-typedef union  _BseSourceInput		BseSourceInput;
-typedef struct _BseSourceOutput		BseSourceOutput;
-typedef struct _BseSourceChannelDefs	BseSourceChannelDefs;
+
 typedef struct _BseSourceProbes		BseSourceProbes;
 typedef void (*BseSourceFreeContextData) (BseSource *source,
 					  gpointer   data,
 					  BseTrans  *trans);
-struct _BseSourceOutput
-{
+struct BseSourceOutput {
   BseSource *osource;
   guint      ochannel;
 };
-union _BseSourceInput
-{
+union BseSourceInput {
   BseSourceOutput    idata;
   struct {
     guint	     n_joints;
     BseSourceOutput *joints;
   }                  jdata;
 };
-struct _BseSource
-{
-  BseItem               parent_object;
-  BseSourceChannelDefs *channel_defs;
-  BseSourceInput       *inputs;	/* [n_ichannels] */
-  GSList	       *outputs;
-  GBSearchArray        *contexts; /* bsearch array of type BseSourceContext */
-  SfiReal		pos_x, pos_y;
-  BseSourceProbes      *probes;
-};
-struct _BseSourceChannelDefs
-{
+struct BseSourceChannelDefs {
   guint   n_ichannels;
   gchar **ichannel_idents;
   gchar **ichannel_labels;
@@ -93,9 +79,15 @@ struct _BseSourceChannelDefs
   gchar **ochannel_labels;
   gchar **ochannel_blurbs;
 };
-struct _BseSourceClass
-{
-  BseItemClass		 parent_class;
+struct BseSource : BseItem {
+  BseSourceChannelDefs *channel_defs;
+  BseSourceInput       *inputs;	/* [n_ichannels] */
+  GSList	       *outputs;
+  GBSearchArray        *contexts; /* bsearch array of type BseSourceContext */
+  SfiReal		pos_x, pos_y;
+  BseSourceProbes      *probes;
+};
+struct BseSourceClass : BseItemClass {
   BseSourceChannelDefs	 channel_defs;
   void          (*property_updated)     (BseSource      *source,        /* overridable method */
                                          guint           property_id,
@@ -127,7 +119,7 @@ struct _BseSourceClass
   SfiRing        *unprepared_properties;
   SfiRing        *automation_properties;
 };
-/* --- prototypes -- */
+
 guint		bse_source_find_ichannel	(BseSource	*source,
 						 const gchar    *ichannel_ident);
 guint		bse_source_find_ochannel	(BseSource	*source,

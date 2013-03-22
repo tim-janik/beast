@@ -14,17 +14,14 @@ extern "C" {
 #define BSE_CONSTANT_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), BSE_TYPE_CONSTANT, BseConstantClass))
 #define	BSE_CONSTANT_N_OUTPUTS	(4)
 /* --- BseConstant source --- */
-typedef struct _BseConstant      BseConstant;
-typedef struct _BseConstantClass BseConstantClass;
-struct _BseConstant
-{
-  BseSource       parent_object;
+struct BseConstant;
+struct BseConstantClass;
+struct BseConstant : BseSource {
   gfloat	  constants[BSE_CONSTANT_N_OUTPUTS];
 };
-struct _BseConstantClass
-{
-  BseSourceClass parent_class;
-};
+struct BseConstantClass : BseSourceClass
+{};
+
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */

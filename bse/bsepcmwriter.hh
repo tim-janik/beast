@@ -11,9 +11,7 @@ G_BEGIN_DECLS
 #define BSE_IS_PCM_WRITER_CLASS(class)   (G_TYPE_CHECK_CLASS_TYPE ((class), BSE_TYPE_PCM_WRITER))
 #define BSE_PCM_WRITER_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), BSE_TYPE_PCM_WRITER, BsePcmWriterClass))
 /* --- BsePcmWriter  --- */
-struct _BsePcmWriter
-{
-  BseItem	parent_instance;
+struct BsePcmWriter : BseItem {
   Bse::Mutex	mutex;
   guint		open : 1;
   guint		broken : 1;
@@ -21,11 +19,9 @@ struct _BsePcmWriter
   uint64	n_bytes;
   uint64        recorded_maximum;
 };
-struct _BsePcmWriterClass
-{
-  BseItemClass		parent_class;
-};
-/* --- prototypes --- */
+struct BsePcmWriterClass : BseItemClass
+{};
+
 BseErrorType	bse_pcm_writer_open		(BsePcmWriter		*pdev,
 						 const gchar		*file,
 						 guint			 n_channels,

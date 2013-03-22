@@ -11,19 +11,13 @@ G_BEGIN_DECLS
 #define BSE_IS_INPUT(object)	         (G_TYPE_CHECK_INSTANCE_TYPE ((object), BSE_TYPE_MIDI_INPUT))
 #define BSE_IS_INPUT_CLASS(class)	 (G_TYPE_CHECK_CLASS_TYPE ((class), BSE_TYPE_MIDI_INPUT))
 #define BSE_MIDI_INPUT_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), BSE_TYPE_MIDI_INPUT, BseMidiInputClassOut))
-/* --- BseMidiInput source --- */
-typedef struct _BseMidiInput      BseMidiInput;
-typedef struct _BseMidiInputClass BseMidiInputClass;
-struct _BseMidiInput
-{
-  BseSource          parent_object;
+
+struct BseMidiInput : BseSource {
   guint		     midi_channel;
 };
-struct _BseMidiInputClass
-{
-  BseSourceClass  parent_class;
-};
-/* --- channels --- */
+struct BseMidiInputClass : BseSourceClass
+{};
+
 enum
 {
   BSE_MIDI_INPUT_OCHANNEL_FREQUENCY,

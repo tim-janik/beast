@@ -11,15 +11,11 @@ G_BEGIN_DECLS
 #define BSE_IS_PCM_DEVICE_NULL_CLASS(class)   (G_TYPE_CHECK_CLASS_TYPE ((class), BSE_TYPE_PCM_DEVICE_NULL))
 #define BSE_PCM_DEVICE_NULL_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), BSE_TYPE_PCM_DEVICE_NULL, BsePcmDeviceNullClass))
 /* --- BsePcmDeviceNull object --- */
-typedef struct _BsePcmDeviceNull      BsePcmDeviceNull;
-typedef struct _BsePcmDeviceNullClass BsePcmDeviceNullClass;
-struct _BsePcmDeviceNull
-{
-  BsePcmDevice parent_object;
-};
-struct _BsePcmDeviceNullClass
-{
-  BsePcmDeviceClass parent_class;
-};
+
+struct BsePcmDeviceNull : BsePcmDevice
+{};
+struct BsePcmDeviceNullClass : BsePcmDeviceClass
+{};
+
 G_END_DECLS
 #endif /* __BSE_PCM_DEVICE_NULL_H__ */

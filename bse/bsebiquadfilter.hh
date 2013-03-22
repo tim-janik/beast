@@ -26,11 +26,9 @@ typedef enum    /* skip */
   BSE_BIQUAD_FILTER_NORM_PEAK_GAIN	= GSL_BIQUAD_NORMALIZE_PEAK_GAIN
 } BseBiquadFilterNorm;
 /* --- BseBiquadFilter source --- */
-typedef struct _BseBiquadFilter      BseBiquadFilter;
-typedef struct _BseBiquadFilterClass BseBiquadFilterClass;
-struct _BseBiquadFilter
-{
-  BseSource	parent_object;
+struct BseBiquadFilter;
+struct BseBiquadFilterClass;
+struct BseBiquadFilter : BseSource {
   BseBiquadFilterType filter_type;
   guint		      type_change : 1;
   guint		      exponential_fm : 1;
@@ -41,10 +39,9 @@ struct _BseBiquadFilter
   gfloat	      gain;
   gfloat	      gain_strength;
 };
-struct _BseBiquadFilterClass
-{
-  BseSourceClass parent_class;
-};
+struct BseBiquadFilterClass : BseSourceClass
+{};
+
 /* --- channels --- */
 enum
 {

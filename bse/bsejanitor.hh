@@ -11,9 +11,7 @@ G_BEGIN_DECLS
 #define BSE_IS_JANITOR_CLASS(class)   (G_TYPE_CHECK_CLASS_TYPE ((class), BSE_TYPE_JANITOR))
 #define BSE_JANITOR_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), BSE_TYPE_JANITOR, BseJanitorClass))
 /* --- object structures --- */
-struct _BseJanitor
-{
-  BseItem         parent_instance;
+struct BseJanitor : BseItem {
   guint		  port_closed : 1;
   guint		  force_kill : 1;
   guint		  force_normal_exit : 1;
@@ -29,15 +27,14 @@ struct _BseJanitor
   gint           exit_code;
   gchar         *exit_reason;
 };
-struct _BseJanitorClass
-{
-  BseItemClass parent_class;
-};
-typedef struct {
+struct BseJanitorClass : BseItemClass
+{};
+struct BseJanitorAction {
   GQuark action;
   gchar *name;
   gchar *blurb;
-} BseJanitorAction;
+};
+
 /* --- prototypes --- */
 BseJanitor*  bse_janitor_new		(SfiComPort	*port);
 void	     bse_janitor_kill   	(BseJanitor	*self);
