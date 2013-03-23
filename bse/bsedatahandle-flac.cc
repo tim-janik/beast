@@ -112,16 +112,20 @@ private:
                        void                       *client_data)
   {
     DataHandleFlac *dh = static_cast<DataHandleFlac *> (client_data);
-    dh->m_buffer_start = frame->header.number.sample_number * frame->header.channels;
-    dh->m_buffer.clear();
+    const int channels = frame->header.channels;
+    dh->m_buffer_start = frame->header.number.sample_number * channels;
+    dh->m_buffer.resize (frame->header.blocksize * channels);
 
-    // scale with 1/32768 for 16 bit, 1/(2^23) for 24 bit
+    // scale with 1/32768 for 16 bit, 1/(2^23) for 24 bit; interleave channels
     double scale = 2.0 / (1 << frame->header.bits_per_sample);
-    for (int i = 0; i < frame->header.blocksize; i++)
+    for (int ch = 0; ch < channels; ch++)
       {
-        // interleave channels
-        for (int ch = 0; ch < frame->header.channels; ch++)
-          dh->m_buffer.push_back (buffer[ch][i] * scale);
+        int x = ch;
+        for (size_t i = 0; i < frame->header.blocksize; i++)
+          {
+            dh->m_buffer[x] = buffer[ch][i] * scale;
+            x += channels;
+          }
       }
     return FLAC__STREAM_DECODER_WRITE_STATUS_CONTINUE;
   }
