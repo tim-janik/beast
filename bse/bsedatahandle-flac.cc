@@ -257,7 +257,7 @@ public:
 	        int64  n_values,
 	        float *values)
   {
-    if (voffset >= m_buffer_start + m_buffer.size())
+    if (voffset >= m_buffer_start + (int64) m_buffer.size())
       {
         // try to read on, probably we'll have just the samples we need, then
         m_error_occurred = false;
@@ -267,7 +267,7 @@ public:
           return -1;
       }
 
-    if (voffset >= m_buffer_start && voffset < m_buffer_start + m_buffer.size())
+    if (voffset >= m_buffer_start && voffset < m_buffer_start + (int64) m_buffer.size())
       {
         int64 buffer_offset = voffset - m_buffer_start;
         n_values = MIN (n_values, m_buffer.size() - buffer_offset);

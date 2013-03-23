@@ -54,9 +54,10 @@ struct FileInfo
       }
 
     /* decode enough to figure out channel count */
+    FLAC__bool mdok;
     do {
-      FLAC__bool mdok = FLAC__stream_decoder_process_single (decoder);
-    } while (FLAC__stream_decoder_get_channels (decoder) == 0);
+      mdok = FLAC__stream_decoder_process_single (decoder);
+    } while (FLAC__stream_decoder_get_channels (decoder) == 0 && mdok);
 
     /* allocate and fill BseWaveFileInfo */
     wfi.n_waves = 1;
