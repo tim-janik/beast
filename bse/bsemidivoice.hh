@@ -17,23 +17,19 @@ G_BEGIN_DECLS
 #define BSE_IS_MIDI_VOICE_SWITCH(object)	(G_TYPE_CHECK_INSTANCE_TYPE ((object), BSE_TYPE_MIDI_VOICE_SWITCH))
 #define BSE_IS_MIDI_VOICE_SWITCH_CLASS(class)   (G_TYPE_CHECK_CLASS_TYPE ((class), BSE_TYPE_MIDI_VOICE_SWITCH))
 #define BSE_MIDI_VOICE_SWITCH_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), BSE_TYPE_MIDI_VOICE_SWITCH, BseMidiVoiceSwitchClass))
-/* --- object structures --- */
-typedef struct _BseMidiVoiceInput  BseMidiVoiceInput;
-typedef struct _BseMidiVoiceSwitch BseMidiVoiceSwitch;
-typedef struct _BseSourceClass     BseMidiVoiceInputClass;
-typedef struct _BseSourceClass     BseMidiVoiceSwitchClass;
-struct _BseMidiVoiceInput
-{
-  BseSource	parent_object;
-  BseMidiVoiceSwitch *voice_switch;
-};
-struct _BseMidiVoiceSwitch
-{
-  BseSource      parent_object;
+
+struct BseMidiVoiceSwitch : BseSource {
   guint		 midi_channel;
   GSList        *midi_voices;
 };
-/* --- prototypes --- */
+struct BseMidiVoiceSwitchClass : BseSourceClass
+{};
+struct BseMidiVoiceInput : BseSource {
+  BseMidiVoiceSwitch *voice_switch;
+};
+struct BseMidiVoiceInputClass : BseSourceClass
+{};
+
 void           bse_midi_voice_switch_set_midi_channel (BseMidiVoiceSwitch *self,
                                                        guint               midi_channel);
 BseMidiContext bse_midi_voice_switch_ref_poly_voice   (BseMidiVoiceSwitch *self,

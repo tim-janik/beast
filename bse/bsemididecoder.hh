@@ -15,9 +15,8 @@ typedef enum {
   BSE_MIDI_DECODER_DATA,        /* left_bytes != 0 */
   BSE_MIDI_DECODER_DONE,
 } BseMidiDecoderState;
-struct _BseMidiDecoder
-{
-  SfiRing         *events;      /* BseMidiEvent* */
+struct BseMidiDecoder {
+  SfiRing             *events;      /* BseMidiEvent* */
   /* configuration */
   BseMusicalTuningType musical_tuning;
   uint                 auto_queue : 1;

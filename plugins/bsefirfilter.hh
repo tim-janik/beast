@@ -13,12 +13,8 @@ extern "C" {
 #define BSE_IS_FIR_FILTER(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), BSE_TYPE_FIR_FILTER))
 #define BSE_IS_FIR_FILTER_CLASS(class)   (G_TYPE_CHECK_CLASS_TYPE ((class), BSE_TYPE_FIR_FILTER))
 #define BSE_FIR_FILTER_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), BSE_TYPE_FIR_FILTER, BseFIRFilterClass))
-/* --- BseFIRFilter source --- */
-typedef struct _BseFIRFilter      BseFIRFilter;
-typedef struct _BseFIRFilterClass BseFIRFilterClass;
-struct _BseFIRFilter
-{
-  BseSource       parent_object;
+
+struct BseFIRFilter : BseSource {
   guint16 degree;
   guint   filter_type : 8;
   guint   lanczos_smoothing : 1;
@@ -29,18 +25,16 @@ struct _BseFIRFilter
   guint           history_pos;
   BseSampleValue *history;
 };
-struct _BseFIRFilterClass
-{
-  BseSourceClass parent_class;
-};
-/* --- enums --- */
+struct BseFIRFilterClass : BseSourceClass
+{};
+
 typedef enum
 {
   BSE_FIR_FILTER_ALLPASS,
   BSE_FIR_FILTER_LOWPASS,
   BSE_FIR_FILTER_HIGHPASS
 } BseFIRFilterType;
-/* --- channels --- */
+
 enum
 {
   BSE_FIR_FILTER_OCHANNEL_NONE,

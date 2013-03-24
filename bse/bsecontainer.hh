@@ -18,14 +18,10 @@ typedef gboolean (*BseForallItemsFunc) (BseItem	 *item,
 typedef gboolean (*BseForallCrossFunc) (BseItem	 *owner,
 					BseItem  *link,
 					gpointer  data);
-struct _BseContainer
-{
-  BseSource	parent_instance;
+struct BseContainer : BseSource {
   guint		n_items;	/* paranoid checks */
 };
-struct _BseContainerClass
-{
-  BseSourceClass  parent_class;
+struct BseContainerClass : BseSourceClass {
   void		(*add_item)		(BseContainer		*container,
 					 BseItem		*item);
   void		(*remove_item)		(BseContainer		*container,

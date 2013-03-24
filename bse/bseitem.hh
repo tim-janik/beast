@@ -21,17 +21,14 @@ typedef enum                            /*< skip >*/
   BSE_ITEM_FLAG_INTERN_BRANCH   = 1 << (BSE_OBJECT_FLAGS_USHIFT + 2)
 } BseItemFlags;
 #define BSE_ITEM_FLAGS_USHIFT          (BSE_OBJECT_FLAGS_USHIFT + 3)
-/* --- BseItem object --- */
-struct _BseItem
-{
-  BseObject     parent_object;
+
+struct BseItem : BseObject {
   guint         use_count;
   BseItem      *parent;
   BseParasite  *parasite;
 };
-struct _BseItemClass
-{
-  BseObjectClass parent_class;
+
+struct BseItemClass : BseObjectClass {
   void          (*get_candidates) (BseItem               *item,
                                    guint                  param_id,
                                    BsePropertyCandidates *pc,

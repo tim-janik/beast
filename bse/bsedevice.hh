@@ -23,18 +23,12 @@ typedef enum    /*< skip >*/
 } BseDeviceFlags;
 #define BSE_DEVICE_FLAGS_USHIFT (BSE_OBJECT_FLAGS_USHIFT + 3)
 /* --- BseDevice structs --- */
-typedef struct _BseDevice       BseDevice;
-typedef struct _BseDeviceClass  BseDeviceClass;
-struct _BseDevice
-{
-  BseObject              parent_object;
+struct BseDevice : BseObject {
   /* valid while BSE_DEVICE_OPEN() */
   gchar                 *open_device_name;
   gchar                 *open_device_args;
 };
-struct _BseDeviceClass
-{
-  BseObjectClass        parent_class;
+struct BseDeviceClass : BseObjectClass {
   gint                  driver_rating;
   const gchar          *driver_name;
   const gchar          *driver_syntax;
@@ -49,13 +43,14 @@ struct _BseDeviceClass
   void                (*pre_close)     (BseDevice    *device);
   void                (*close)         (BseDevice    *device);
 };
-typedef struct {
+struct BseDeviceEntry {
   BseDevice      *device;
   gchar          *device_args;
   gchar          *device_blurb;
   gchar          *device_group; /* usually NULL */
   gchar          *device_error; /* if device_name == NULL */
-} BseDeviceEntry;
+};
+
 /* --- prototypes --- */
 void            bse_device_class_setup     (gpointer        klass,
                                             gint            rating,

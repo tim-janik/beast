@@ -11,10 +11,8 @@ G_BEGIN_DECLS
 #define BSE_IS_MIDI_SYNTH(object)	 (G_TYPE_CHECK_INSTANCE_TYPE ((object), BSE_TYPE_MIDI_SYNTH))
 #define BSE_IS_MIDI_SYNTH_CLASS(class)	 (G_TYPE_CHECK_CLASS_TYPE ((class), BSE_TYPE_MIDI_SYNTH))
 #define BSE_MIDI_SYNTH_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), BSE_TYPE_MIDI_SYNTH, BseMidiSynthClass))
-/* --- BseMidiSynth object --- */
-struct _BseMidiSynth
-{
-  BseSNet	 parent_object;
+
+struct BseMidiSynth : BseSNet {
   guint		 midi_channel_id;
   guint		 n_voices;
   gfloat	 volume_factor;         /* 1-based factor */
@@ -27,9 +25,8 @@ struct _BseMidiSynth
   BseSource	*output;
   BseSource	*sub_synth;
 };
-struct _BseMidiSynthClass
-{
-  BseSNetClass parent_class;
-};
+struct BseMidiSynthClass : BseSNetClass
+{};
+
 G_END_DECLS
 #endif /* __BSE_MIDI_SYNTH_H__ */

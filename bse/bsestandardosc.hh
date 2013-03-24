@@ -4,14 +4,14 @@
 #include <bse/bsesource.hh>
 #include <bse/gsloscillator.hh>
 G_BEGIN_DECLS
-/* --- object type macros --- */
+
 #define BSE_TYPE_STANDARD_OSC              (BSE_TYPE_ID (BseStandardOsc))
 #define BSE_STANDARD_OSC(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), BSE_TYPE_STANDARD_OSC, BseStandardOsc))
 #define BSE_STANDARD_OSC_CLASS(class)      (G_TYPE_CHECK_CLASS_CAST ((class), BSE_TYPE_STANDARD_OSC, BseStandardOscClass))
 #define BSE_IS_STANDARD_OSC(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), BSE_TYPE_STANDARD_OSC))
 #define BSE_IS_STANDARD_OSC_CLASS(class)   (G_TYPE_CHECK_CLASS_TYPE ((class), BSE_TYPE_STANDARD_OSC))
 #define BSE_STANDARD_OSC_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), BSE_TYPE_STANDARD_OSC, BseStandardOscClass))
-/* --- wave forms --- */
+
 typedef enum
 {
   BSE_STANDARD_OSC_SINE		= GSL_OSC_WAVE_SINE,		/*< nick=Sine >*/
@@ -24,23 +24,17 @@ typedef enum
   BSE_STANDARD_OSC_SQUARE	= GSL_OSC_WAVE_SQUARE,		/*< nick=Square >*/
   BSE_STANDARD_OSC_PULSE	= GSL_OSC_WAVE_PULSE_SAW	/*< nick=Pulse >*/
 } BseStandardOscWaveType;
-/* --- BseStandardOsc source --- */
-typedef struct _BseStandardOsc      BseStandardOsc;
-typedef struct _BseStandardOscClass BseStandardOscClass;
-struct _BseStandardOsc
-{
-  BseSource		 parent_object;
+
+struct BseStandardOsc : BseSource {
   BseStandardOscWaveType wave;
   GslOscConfig		 config;
   int                    transpose;
   gfloat                 fm_strength;
   gfloat                 n_octaves;
 };
-struct _BseStandardOscClass
-{
-  BseSourceClass parent_class;
-};
-/* --- channels --- */
+struct BseStandardOscClass : BseSourceClass
+{};
+
 enum
 {
   BSE_STANDARD_OSC_ICHANNEL_FREQ,

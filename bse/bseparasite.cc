@@ -12,7 +12,7 @@ typedef struct {
   BseItem *link;
   GSList  *paths; /* contains ref-counted const gchar* */
 } CRef;
-struct _BseParasite {
+struct BseParasite {
   GBSearchArray *nodes;
   GBSearchArray *crefs;
 };

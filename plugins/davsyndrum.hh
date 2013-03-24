@@ -11,23 +11,21 @@ G_BEGIN_DECLS
 #define DAV_IS_SYN_DRUM(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), DAV_TYPE_SYN_DRUM))
 #define DAV_IS_SYN_DRUM_CLASS(class)   (G_TYPE_CHECK_CLASS_TYPE ((class), DAV_TYPE_SYN_DRUM))
 #define DAV_SYN_DRUM_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), DAV_TYPE_SYN_DRUM, DavSynDrumClass))
-/* --- DavSynDrum source --- */
-typedef struct {
+
+struct DavSynDrumParams {
   gfloat freq;
   gfloat trigger_vel;
   gfloat ratio;
   gfloat res; /* sample rate specific */
-} DavSynDrumParams;
-typedef struct {
-  BseSource        parent_object;
+};
+struct DavSynDrum : BseSource {
   DavSynDrumParams params; /* .res is unused (due to its sample rate dependency) */
   gfloat           half;
   gboolean         force_trigger;
-} DavSynDrum;
-typedef struct {
-  BseSourceClass parent_class;
-} DavSynDrumClass;
-typedef struct {
+};
+struct DavSynDrumClass : BseSourceClass
+{};
+struct DavSynDrumModule {
   DavSynDrumParams params;
   gfloat last_trigger_level;
   gfloat spring_vel;
@@ -35,8 +33,8 @@ typedef struct {
   gfloat env;
   gfloat freq_rad;
   gfloat freq_shift;
-} DavSynDrumModule;
-/* --- channels --- */
+};
+
 enum
 {
   DAV_SYN_DRUM_ICHANNEL_FREQ,

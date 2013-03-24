@@ -31,17 +31,12 @@ typedef enum				/*< skip >*/
 #define BSE_OBJECT_FLAGS_USHIFT	    (3)
 #define BSE_OBJECT_FLAGS_MAX_SHIFT  (16)
 /* --- typedefs & structures --- */
-struct _BseObject
-{
-  GObject		 parent_instance;
-  /* pack into one guint */
+struct BseObject : GObject {
   guint16		 flags;
   guint16		 lock_count;
   guint			 unique_id;
 };
-struct _BseObjectClass
-{
-  GObjectClass		 parent_class;
+struct BseObjectClass : GObjectClass {
   gboolean              (*editable_property)    (BseObject      *object, /* for set_property/get_property implementations */
                                                  guint           param_id,
                                                  GParamSpec     *pspec);

@@ -11,9 +11,7 @@ G_BEGIN_DECLS
 #define BSE_IS_BUS_CLASS(class)    (G_TYPE_CHECK_CLASS_TYPE ((class), BSE_TYPE_BUS))
 #define BSE_BUS_GET_CLASS(object)  (G_TYPE_INSTANCE_GET_CLASS ((object), BSE_TYPE_BUS, BseBusClass))
 /* --- BseBus source --- */
-struct _BseBus
-{
-  BseSubSynth   parent_object;
+struct BseBus : BseSubSynth {
   SfiRing      *inputs;
   double        left_volume;
   double        right_volume;
@@ -28,10 +26,9 @@ struct _BseBus
   BseSource   **effects;        /* slot maybe NULL */
   SfiRing      *bus_outputs;    /* maintained by bsebus.[hc] */
 };
-struct _BseBusClass
-{
-  BseSubSynthClass parent_class;
-};
+struct BseBusClass : BseSubSynthClass
+{};
+
 /* --- API --- */
 BseErrorType    bse_bus_connect                 (BseBus         *self,
                                                  BseItem        *item);

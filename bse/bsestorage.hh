@@ -37,9 +37,7 @@ typedef void (*BseStorageRestoreLink)   (gpointer        data,
                                          BseItem        *from_item,
                                          BseItem        *to_item,
                                          const gchar    *error);
-struct _BseStorage
-{
-  BseObject              parent_instance;
+struct BseStorage : BseObject {
   /* writing */
   SfiWStore             *wstore;
   SfiPPool              *stored_items;
@@ -61,10 +59,9 @@ struct _BseStorage
   gfloat                 osc_freq;
   guint                  n_channels;
 };
-struct _BseStorageClass
-{
-  BseObjectClass parent_class;
-};
+struct BseStorageClass : BseObjectClass
+{};
+
 /* --- compatibility file parsing --- */
 void         bse_storage_compat_dhreset         (BseStorage             *self);
 void         bse_storage_compat_dhmixf          (BseStorage             *self,

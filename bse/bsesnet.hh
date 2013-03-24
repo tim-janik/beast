@@ -12,15 +12,14 @@ G_BEGIN_DECLS
 #define BSE_IS_SNET_CLASS(class)   (G_TYPE_CHECK_CLASS_TYPE ((class), BSE_TYPE_SNET))
 #define BSE_SNET_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), BSE_TYPE_SNET, BseSNetClass))
 #define BSE_SNET_USER_SYNTH(src)   ((BSE_OBJECT_FLAGS (src) & BSE_SNET_FLAG_USER_SYNTH) != 0)
-/* --- BseSNet flags --- */
+
 typedef enum	/*< skip >*/
 {
   BSE_SNET_FLAG_USER_SYNTH	= 1 << (BSE_SUPER_FLAGS_USHIFT + 0)
 } BseSNetFlags;
 #define BSE_SNET_FLAGS_USHIFT	(BSE_SUPER_FLAGS_USHIFT + 1)
-/* --- BseSNet object --- */
-typedef struct
-{
+
+struct BseSNetPort {
   gchar     *name;
   guint      context : 31;
   guint	     input : 1;
@@ -28,10 +27,9 @@ typedef struct
   guint	     src_ostream;
   BseModule *dest_imodule;	/* input */
   guint	     dest_istream;
-} BseSNetPort;
-struct _BseSNet
-{
-  BseSuper	 parent_object;
+};
+
+struct BseSNet : BseSuper {
   SfiRing	*sources;	/* of type BseSource* */
   SfiRing	*isources;	/* internal (protected) sources */
   GSList	*iport_names;
@@ -40,16 +38,15 @@ struct _BseSNet
   GSList	*tmp_context_children;
   guint		 port_unregistered_id;
 };
-struct _BseSNetClass
-{
-  BseSuperClass parent_class;
-};
-struct _BseMidiContext {
+struct BseSNetClass : BseSuperClass
+{};
+
+struct BseMidiContext {
   BseMidiReceiver *midi_receiver;
   guint            midi_channel;
   guint            voice_id;
 };
-/* --- prototypes --- */
+
 guint            bse_snet_create_context        (BseSNet         *snet,
                                                  BseMidiContext   mcontext,
                                                  BseTrans        *trans);

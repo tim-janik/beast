@@ -12,14 +12,11 @@ G_BEGIN_DECLS
 #define BSE_CSYNTH_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), BSE_TYPE_CSYNTH, BseCSynthClass))
 #define BSE_CSYNTH_USER_SYNTH(src)   ((BSE_OBJECT_FLAGS (src) & BSE_CSYNTH_FLAG_USER_SYNTH) != 0)
 /* --- BseCSynth object --- */
-struct _BseCSynth
-{
-  BseSNet       parent_object;
-};
-struct _BseCSynthClass
-{
-  BseSNetClass parent_class;
-};
+struct BseCSynth : BseSNet
+{};
+struct BseCSynthClass : BseSNetClass
+{};
+
 /* --- prototypes --- */
 G_END_DECLS
 #endif /* __BSE_CSYNTH_H__ */

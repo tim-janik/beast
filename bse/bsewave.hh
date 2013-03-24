@@ -10,20 +10,17 @@ G_BEGIN_DECLS
 #define BSE_IS_WAVE(object)	   (G_TYPE_CHECK_INSTANCE_TYPE ((object), BSE_TYPE_WAVE))
 #define BSE_IS_WAVE_CLASS(class)   (G_TYPE_CHECK_CLASS_TYPE ((class), BSE_TYPE_WAVE))
 #define BSE_WAVE_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), BSE_TYPE_WAVE, BseWaveClass))
-/* --- BseWave --- */
-typedef struct _BseWaveClass      BseWaveClass;
-typedef struct {
+
+struct BseWaveEntry {
   GslWaveChunk *wchunk;
   gfloat        osc_freq;
   gfloat        velocity; /* 0..1 */
-} BseWaveEntry;
-typedef struct {
+};
+struct BseWaveIndex {
   guint		n_entries;
   BseWaveEntry  entries[1];     /* flexible array */
-} BseWaveIndex;
-struct _BseWave
-{
-  BseSource	     parent_object;
+};
+struct BseWave : BseSource {
   /* requested BseModule indices */
   guint		     request_count;
   GSList	    *index_list;
@@ -39,11 +36,9 @@ struct _BseWave
   SfiRing           *wave_chunks;       /* data=GslWaveChunk* */
   SfiRing           *open_handles;      /* data=GslDataHandle* */
 };
-struct _BseWaveClass
-{
-  BseSourceClass parent_class;
-};
-/* --- prototypes -- */
+struct BseWaveClass : BseSourceClass
+{};
+
 void		bse_wave_clear                  (BseWave	*wave);
 BseErrorType	bse_wave_load_wave_file		(BseWave	*wave,
 						 const gchar	*file_name,

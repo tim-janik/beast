@@ -1082,8 +1082,8 @@ MidiChannel::debug_notes (guint64          tick_stamp,
 } // namespace anon
 /* --- BseMidiReceiver C API --- */
 extern "C" {
-struct _BseMidiReceiver : public MidiReceiver {
-  explicit _BseMidiReceiver () :
+struct BseMidiReceiver : public MidiReceiver {
+  explicit BseMidiReceiver () :
     MidiReceiver () {}
 };
 /* --- prototypes --- */
