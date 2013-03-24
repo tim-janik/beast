@@ -47,6 +47,7 @@ usage() {
 	                        (e.g. configure.ac:MICRO)
 	  -B <A,B,C...>		ignored names for "contributors"
 	  -C <NEWS>		file with ignored C strings for "contributors"
+	  --first-parent	use git log with --first-parent
 	  -R <revision>		revision range for "ChangeLog" generation
 	                        last release revision for "news" (auto)
 	  -T <disttarball>	name of distribution tarball (from Makefile)
@@ -66,10 +67,12 @@ REVISIONVAR=
 CONTRBLACK=
 CONTRCFILE=/dev/null
 CONTREXIT=0
+FIRST=
 parse_options=1
 while test $# -ne 0 -a $parse_options = 1; do
   case "$1" in
     -h|--help)	usage 0 ;;
+    --first-parent) FIRST=--first-parent ;;
     -B)		CONTRBLACK="$2" ; shift ;;
     -C)		CONTRCFILE="$2" ; shift ;;
     -E)		REVISIONVAR="$2" ; shift ;;
@@ -108,7 +111,7 @@ done
     die 9 "Failed to create temporary file"
   trap "rm -f $TEMPF" 0 HUP INT QUIT TRAP USR1 PIPE TERM
   # Generate ChangeLog with -prefixed records
-  git log --no-merges --date=short --pretty='%ad  %an 	# %h%n%n%s%n%n%b' --abbrev=11 ${R_REVISION:-HEAD} \
+  git log $FIRST --no-merges --date=short --pretty='%ad  %an 	# %h%n%n%s%n%n%b' --abbrev=11 ${R_REVISION:-HEAD} \
   | {
     # Tab-indent ChangeLog, except for record start
     sed 's/^/	/; s/^	//; /^[ 	]*<unknown>$/d'
@@ -175,8 +178,8 @@ done
   [ -n "$XCOMMIT" ] && XCOMMIT="`git name-rev --tags --always --name-only $XCOMMIT`" # beautify
   [ -n "$XCOMMIT" ] && XCOMMIT="$XCOMMIT^!" # turn into exclude pattern
   # list news, excluding history reachable from previous releases
-  echo "# git log --date=short --pretty='%s    # %cd %an %h%d' --reverse HEAD $XCOMMIT"
-  git log --date=short --pretty='%s    # %cd %an %h%d' --reverse HEAD $XCOMMIT | cat
+  echo "# git log $FIRST --date=short --pretty='%s    # %cd %an %h%d' --reverse HEAD $XCOMMIT"
+  git log $FIRST --date=short --pretty='%s    # %cd %an %h%d' --reverse HEAD $XCOMMIT | cat
   exit
 }
 
