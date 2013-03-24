@@ -46,6 +46,7 @@ usage() {
 	  -E <FILE:VAR>         revision variable to increment during "upload"
 	                        (e.g. configure.ac:MICRO)
 	  -B <A,B,C...>		ignored names for "contributors"
+	  --body		include commit body for "news"
 	  -C <NEWS>		file with ignored C strings for "contributors"
 	  --first-parent	use git log with --first-parent
 	  -R <revision>		revision range for "ChangeLog" generation
@@ -62,6 +63,7 @@ EOF
 unset COMMAND
 VERSION=_parse
 TARBALL=_parse
+BODY=false
 REMOTE_URL=
 REVISIONVAR=
 CONTRBLACK=
@@ -74,6 +76,7 @@ while test $# -ne 0 -a $parse_options = 1; do
     -h|--help)	usage 0 ;;
     --first-parent) FIRST=--first-parent ;;
     -B)		CONTRBLACK="$2" ; shift ;;
+    --body)	BODY=true ;;
     -C)		CONTRCFILE="$2" ; shift ;;
     -E)		REVISIONVAR="$2" ; shift ;;
     -R)		R_REVISION="$2" ; shift ;;
@@ -178,8 +181,12 @@ done
   [ -n "$XCOMMIT" ] && XCOMMIT="`git name-rev --tags --always --name-only $XCOMMIT`" # beautify
   [ -n "$XCOMMIT" ] && XCOMMIT="$XCOMMIT^!" # turn into exclude pattern
   # list news, excluding history reachable from previous releases
-  echo "# git log $FIRST --date=short --pretty='%s    # %cd %an %h%d' --reverse HEAD $XCOMMIT"
-  git log $FIRST --date=short --pretty='%s    # %cd %an %h%d' --reverse HEAD $XCOMMIT | cat
+  echo "# git log $FIRST --reverse HEAD $XCOMMIT"
+  if $BODY ; then
+    git log $FIRST --date=short --pretty='%s    # %cd %an %h%d%n%b' --reverse HEAD $XCOMMIT | sed '/^$/d'
+  else
+    git log $FIRST --date=short --pretty='%s    # %cd %an %h%d' --reverse HEAD $XCOMMIT | cat
+  fi
   exit
 }
 
