@@ -37,7 +37,7 @@ EXTRA_DIST  += ChangeLog mkrelease.sh
 
 # --- release helpers ---
 release-news:
-	@$(srcdir)/mkrelease.sh news
+	@$(srcdir)/mkrelease.sh news --first-parent --body
 release-check:
 	@echo "Checking for unlisted contributors..."
 	@$(srcdir)/mkrelease.sh contributors -X -B timj,stw -C $(srcdir)/beast-gtk/bstmain.c
