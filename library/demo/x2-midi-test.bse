@@ -1,6 +1,6 @@
 ; BseProject
 
-(bse-version "0.7.1")
+(bse-version "0.8.0")
 
 (container-child "BseWaveRepo::Wave-Repository"
   (modification-time "2007-02-07 20:09:07")
@@ -8,7 +8,7 @@
   (license "Provided \"as is\", WITHOUT ANY WARRANTY (http://beast.testbit.eu/LICENSE-AS-IS)")
   (author "Tim Janik"))
 (container-child "BseCSynth::Simple String"
-  (modification-time "2007-02-07 20:09:07")
+  (modification-time "2013-03-24 16:48:41")
   (creation-time "2002-01-12 12:42:55")
   (license "Provided \"as is\", WITHOUT ANY WARRANTY (http://beast.testbit.eu/LICENSE-AS-IS)")
   (author "Tim Janik")
@@ -101,7 +101,7 @@
   (volume-f 1)
   (snet (link 1 "Simple String"))
   (n-voices 16)
-  (modification-time "2007-02-07 20:09:07")
+  (modification-time "2013-03-24 16:48:41")
   (creation-time "2004-12-16 01:28:22")
   (license "Provided \"as is\", WITHOUT ANY WARRANTY (http://beast.testbit.eu/LICENSE-AS-IS)")
   (author "Tim Janik"))

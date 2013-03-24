@@ -1,15 +1,15 @@
 ; BseProject
 
-(bse-version "0.7.1")
+(bse-version "0.8.0")
 
 (container-child "BseWaveRepo::Wave-Repository"
-  (modification-time "2006-12-23 14:38:01")
+  (modification-time "2013-03-24 18:52:13")
   (creation-time "2006-12-23 14:38:01")
   (license "Creative Commons Attribution 2.5 (http://creativecommons.org/licenses/by/2.5/)")
   (author "Tim Janik"))
 (container-child "BseCSynth::Sum-Diff-Test"
   (auto-activate #t)
-  (modification-time "2006-12-23 14:38:04")
+  (modification-time "2013-03-24 18:52:13")
   (creation-time "2006-12-23 14:38:04")
   (license "Provided \"as is\", WITHOUT ANY WARRANTY (http://beast.testbit.eu/LICENSE-AS-IS)")
   (author "Tim Janik")
@@ -58,7 +58,7 @@
   (container-child "BseAmplifier::50%"
     (master-volume 1)
     (base-level 50)
-    (ostrength 100)
+    (ostrength 50)
     (ctrl-exp #f)
     (ctrl-mul #t)
     (clevel2 100)

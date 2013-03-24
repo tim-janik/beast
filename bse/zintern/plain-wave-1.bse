@@ -1,6 +1,6 @@
 ; BseProject
 
-(bse-version "0.7.2")
+(bse-version "0.8.0")
 
 (container-child "BseCSynth::%bse-intern-plain-wave-1"
   (modification-time "2007-09-22 14:35:56")

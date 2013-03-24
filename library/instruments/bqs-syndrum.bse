@@ -1,9 +1,9 @@
 ; BseProject
 
-(bse-version "0.7.2")
+(bse-version "0.8.0")
 
 (container-child "BseCSynth::BQS SynDrum"
-  (modification-time "2007-09-20 22:25:54")
+  (modification-time "2013-03-24 16:48:38")
   (creation-time "2006-04-07 20:44:57")
   (license "Provided \"as is\", WITHOUT ANY WARRANTY (http://beast.testbit.eu/LICENSE-AS-IS)")
   (author "Tim Janik")

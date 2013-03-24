@@ -1,9 +1,9 @@
 ; BseProject
 
-(bse-version "0.7.1")
+(bse-version "0.8.0")
 
 (container-child "BseWaveRepo::Wave-Repository"
-  (modification-time "2006-10-21 19:32:55")
+  (modification-time "2013-03-24 18:55:22")
   (creation-time "2006-10-21 19:13:44")
   (license "Creative Commons Attribution 2.5 (http://creativecommons.org/licenses/by/2.5/)")
   (author "Stefan Westerfeld"))
@@ -12,11 +12,11 @@
   (denominator 4)
   (numerator 4)
   (tpqn 384)
-  (modification-time "2006-10-21 19:32:55")
+  (modification-time "2013-03-24 18:55:22")
   (creation-time "2006-10-21 19:13:49")
   (license "Creative Commons Attribution 2.5 (http://creativecommons.org/licenses/by/2.5/)")
-  (blurb "Melody based on BWV 147 Herz und Mund und Tat und Leben / Jesus bleibet meine Freude")
   (author "Johann-Sebastian Bach, Stefan Westerfeld")
+  (blurb "Melody based on BWV 147 Herz und Mund und Tat und Leben / Jesus bleibet meine Freude")
   (container-child "BsePart::Part-1"
     (n-channels 1)
     (insert-notes 0
@@ -110,7 +110,7 @@
     (snet (link 2 "BQS Organ"))
     (insert-part 10368 (link 1 "Part-2"))))
 (container-child "BseCSynth::BQS Organ"
-  (modification-time "2006-10-21 19:32:55")
+  (modification-time "2013-03-24 18:55:22")
   (creation-time "2006-04-07 20:44:57")
   (license "Provided \"as is\", WITHOUT ANY WARRANTY (http://beast.testbit.eu/LICENSE-AS-IS)")
   (author "Tim Janik")
@@ -123,9 +123,9 @@
     (source-input "synth-done" (link 1 "SimpleADSR-1") "done-out"))
   (container-child "BseInstrumentInput::InstrumentInput-1"
     (pos-x -4))
-  (container-child "DavOrgan::DavOrgan-1"
-    (reed #f)
+  (container-child "BseDavOrgan::DavOrgan-1"
     (flute #f)
+    (reed #f)
     (brass #f)
     (harm5 54.651165008544922)
     (harm4 61.860466003417969)
@@ -140,7 +140,7 @@
   (container-child "BseAmplifier::Amplifier-1"
     (master-volume 1)
     (base-level 0)
-    (ostrength 100)
+    (ostrength 50)
     (ctrl-exp #f)
     (ctrl-mul #t)
     (clevel2 100)
@@ -159,7 +159,7 @@
     (pos-x -2)
     (source-input "gate-in" (link 1 "InstrumentInput-1") "gate")))
 (container-child "BseCSynth::BQS Organ-1"
-  (modification-time "2006-10-21 19:32:55")
+  (modification-time "2013-03-24 18:55:22")
   (creation-time "2006-04-07 20:44:57")
   (license "Provided \"as is\", WITHOUT ANY WARRANTY (http://beast.testbit.eu/LICENSE-AS-IS)")
   (author "Tim Janik")
@@ -172,9 +172,9 @@
     (source-input "synth-done" (link 1 "SimpleADSR-1") "done-out"))
   (container-child "BseInstrumentInput::InstrumentInput-1"
     (pos-x -4))
-  (container-child "DavOrgan::DavOrgan-1"
-    (reed #t)
+  (container-child "BseDavOrgan::DavOrgan-1"
     (flute #f)
+    (reed #t)
     (brass #t)
     (harm5 34.482759237289429)
     (harm4 88.505744934082031)
@@ -191,7 +191,7 @@
   (container-child "BseAmplifier::Amplifier-1"
     (master-volume 1)
     (base-level 0)
-    (ostrength 100)
+    (ostrength 50)
     (ctrl-exp #f)
     (ctrl-mul #t)
     (clevel2 100)
@@ -210,7 +210,7 @@
     (pos-x -2)
     (source-input "gate-in" (link 1 "InstrumentInput-1") "gate")))
 (container-child "BseCSynth::BQS Organ-2"
-  (modification-time "2006-10-21 19:32:55")
+  (modification-time "2013-03-24 18:55:22")
   (creation-time "2006-04-07 20:44:57")
   (license "Provided \"as is\", WITHOUT ANY WARRANTY (http://beast.testbit.eu/LICENSE-AS-IS)")
   (author "Tim Janik")
@@ -223,9 +223,9 @@
     (source-input "synth-done" (link 1 "SimpleADSR-1") "done-out"))
   (container-child "BseInstrumentInput::InstrumentInput-1"
     (pos-x -4))
-  (container-child "DavOrgan::DavOrgan-1"
-    (reed #f)
+  (container-child "BseDavOrgan::DavOrgan-1"
     (flute #t)
+    (reed #f)
     (brass #f)
     (harm5 32.18390941619873)
     (harm4 73.563218116760254)
@@ -241,7 +241,7 @@
   (container-child "BseAmplifier::Amplifier-1"
     (master-volume 1)
     (base-level 0)
-    (ostrength 100)
+    (ostrength 50)
     (ctrl-exp #f)
     (ctrl-mul #t)
     (clevel2 100)

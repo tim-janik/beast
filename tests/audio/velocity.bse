@@ -1,13 +1,17 @@
 ; BseProject
 
-(bse-version "0.7.0")
+(bse-version "0.8.0")
 
 (container-child "BseWaveRepo::Wave-Repository"
-  (modification-time "2006-05-15 21:00:19")
-  (creation-time "2003-07-07 14:47:23"))
+  (modification-time "2013-03-24 18:54:51")
+  (creation-time "2003-07-07 14:47:23")
+  (license "Creative Commons Attribution 2.5 (http://creativecommons.org/licenses/by/2.5/)")
+  (author "Tim Janik"))
 (container-child "BseCSynth::Unnamed-1"
-  (modification-time "2006-05-15 21:00:19")
+  (modification-time "2013-03-24 18:54:51")
   (creation-time "2003-07-08 15:36:27")
+  (license "Creative Commons Attribution 2.5 (http://creativecommons.org/licenses/by/2.5/)")
+  (author "Tim Janik")
   (container-child "BseInstrumentOutput::BseSubInstrument-1"
     (pos-y -0.46)
     (pos-x 3.15)
@@ -41,7 +45,7 @@
   (container-child "BseAmplifier::BseAmplifier-1"
     (master-volume 1)
     (base-level 0)
-    (ostrength 100)
+    (ostrength 50)
     (ctrl-exp #f)
     (ctrl-mul #t)
     (clevel2 100)
@@ -80,8 +84,10 @@
     (pos-x -4.6)
     (source-input "freq-in" (link 1 "BseSubKeyboard-1") "frequency")))
 (container-child "BseCSynth::PostSynth"
-  (modification-time "2006-05-15 21:00:19")
+  (modification-time "2013-03-24 18:54:51")
   (creation-time "2003-07-08 00:34:37")
+  (license "Creative Commons Attribution 2.5 (http://creativecommons.org/licenses/by/2.5/)")
+  (author "Tim Janik")
   (container-child "BseSubIPort::BseSubIPort-1"
     (pos-y 2)
     (pos-x -6))
@@ -106,10 +112,10 @@
   (denominator 4)
   (numerator 4)
   (tpqn 384)
-  (modification-time "2006-05-15 21:00:19")
+  (modification-time "2013-03-24 18:54:51")
   (creation-time "2003-07-16 03:32:08")
+  (license "Creative Commons Attribution 2.5 (http://creativecommons.org/licenses/by/2.5/)")
   (author "Tim Janik")
-  (blurb "")
   (container-child "BsePart::Melody"
     (n-channels 1)
     (insert-notes 0
@@ -200,7 +206,7 @@
     (sync #f)
     (bus-input (link 1 "Track-02"))))
 (container-child "BseCSynth::BQS SynDrum"
-  (modification-time "2006-05-15 21:00:19")
+  (modification-time "2013-03-24 18:54:51")
   (creation-time "2006-04-07 20:44:57")
   (license "Provided \"as is\", WITHOUT ANY WARRANTY (http://beast.testbit.eu/LICENSE-AS-IS)")
   (author "Tim Janik")
@@ -216,7 +222,7 @@
   (container-child "BseAmplifier::Amplifier-1"
     (master-volume 1)
     (base-level 0)
-    (ostrength 100)
+    (ostrength 50)
     (ctrl-exp #f)
     (ctrl-mul #t)
     (clevel2 100)

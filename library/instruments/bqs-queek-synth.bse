@@ -1,9 +1,9 @@
 ; BseProject
 
-(bse-version "0.7.2")
+(bse-version "0.8.0")
 
 (container-child "BseCSynth::BQS Queek Synth"
-  (modification-time "2007-09-20 22:25:44")
+  (modification-time "2013-03-24 16:48:37")
   (creation-time "1990-07-20 07:09:22")
   (license "Provided \"as is\", WITHOUT ANY WARRANTY (http://beast.testbit.eu/LICENSE-AS-IS)")
   (author "Tim Janik")

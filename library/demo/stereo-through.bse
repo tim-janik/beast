@@ -1,6 +1,6 @@
 ; BseProject
 
-(bse-version "0.7.0")
+(bse-version "0.8.0")
 
 (container-child "BseCSynth::Stereo-Through"
   (auto-activate #t)

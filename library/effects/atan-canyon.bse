@@ -1,9 +1,9 @@
 ; BseProject
 
-(bse-version "0.7.0")
+(bse-version "0.8.0")
 
 (container-child "BseCSynth::Atan Canyon"
-  (modification-time "2006-07-08 23:37:13")
+  (modification-time "2013-03-24 16:48:33")
   (creation-time "2003-10-25 21:02:35")
   (license "Provided \"as is\", WITHOUT ANY WARRANTY (http://beast.testbit.eu/LICENSE-AS-IS)")
   (author "Stefan Westerfeld, Tim Janik")

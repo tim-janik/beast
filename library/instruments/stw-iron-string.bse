@@ -1,9 +1,9 @@
 ; BseProject
 
-(bse-version "0.7.2")
+(bse-version "0.8.0")
 
 (container-child "BseCSynth::STW Iron String"
-  (modification-time "2007-09-20 22:24:53")
+  (modification-time "2013-03-24 16:48:40")
   (creation-time "2003-10-04 16:36:52")
   (license "Provided \"as is\", WITHOUT ANY WARRANTY (http://beast.testbit.eu/LICENSE-AS-IS)")
   (author "Stefan Westerfeld")

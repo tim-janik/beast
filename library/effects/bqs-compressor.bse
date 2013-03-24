@@ -1,9 +1,9 @@
 ; BseProject
 
-(bse-version "0.7.0")
+(bse-version "0.8.0")
 
 (container-child "BseCSynth::BQS Compressor"
-  (modification-time "2006-07-12 12:45:01")
+  (modification-time "2013-03-24 16:48:34")
   (creation-time "2003-10-18 01:55:54")
   (license "Provided \\\"as is\\\", WITHOUT ANY WARRANTY (http://beast.testbit.eu/LICENSE-AS-IS)")
   (author "Stefan Westerfeld")
