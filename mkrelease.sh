@@ -157,25 +157,26 @@ done
   TAGS=`git tag -l | grep '^[0-9.]*$'`
   # collect release tags in linear history
   if [ "${#R_REVISION[@]}" = 0 ] ; then # R_REVISION is unset
-    XTAG=
+    XCOMMIT=	# prune commit, newest commit reachable from previous releases (merge base with HEAD)
     for t in $TAGS ; do
       # release tag?
       if git cat-file tag $t | sed '1,/^$/d' | head -n1 | grep -qi '\breleased\?\b' ; then
-        # in linear history?
-	TCOMMIT=`git rev-list -n1 $t`
-	[ `git merge-base HEAD $t` = $TCOMMIT ] && {
-	  # keep newest tag
-	  [ -n "$XTAG" -a "`git merge-base ${XTAG:-$t} $t`" = $TCOMMIT ] || XTAG="$t"
+	TCOMMIT=`git rev-list -n1 $t`		# commit ID from tag
+	MCOMMIT=`git merge-base HEAD $t`	# find history reachable from tag
+        # update XCOMMIT if MCOMMIT is newer
+	[ -n "$MCOMMIT" ] && {
+	  [ -z "$XCOMMIT" ] || [ "`git merge-base $XCOMMIT $MCOMMIT`" = $XCOMMIT ] && XCOMMIT="$MCOMMIT"
 	}
       fi
     done
   else
-    XTAG="$R_REVISION"
+    XCOMMIT="$R_REVISION"
   fi
-  [ -n "$XTAG" ] && XTAG="$XTAG^!" # turn into exclude pattern
-  # list news, excluding existing tags
-  echo "# git log --date=short --pretty='%s    # %cd %an %h%d' --reverse HEAD $XTAG"
-  git log --date=short --pretty='%s    # %cd %an %h%d' --reverse HEAD $XTAG | cat
+  [ -n "$XCOMMIT" ] && XCOMMIT="`git name-rev --tags --always --name-only $XCOMMIT`" # beautify
+  [ -n "$XCOMMIT" ] && XCOMMIT="$XCOMMIT^!" # turn into exclude pattern
+  # list news, excluding history reachable from previous releases
+  echo "# git log --date=short --pretty='%s    # %cd %an %h%d' --reverse HEAD $XCOMMIT"
+  git log --date=short --pretty='%s    # %cd %an %h%d' --reverse HEAD $XCOMMIT | cat
   exit
 }
 
