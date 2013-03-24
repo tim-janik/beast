@@ -140,11 +140,11 @@ redo_notify (BseProject     *project,
 {
   g_object_notify ((GObject*) project, "dirty");
 }
+
 static void
 bse_project_init (BseProject *self,
 		  gpointer    rclass)
 {
-  BseWaveRepo *wrepo;
   self->state = BSE_PROJECT_INACTIVE;
   self->supers = NULL;
   self->items = NULL;
@@ -156,10 +156,11 @@ bse_project_init (BseProject *self,
   self->midi_receiver = bse_midi_receiver_new ("BseProjectReceiver");
   bse_midi_receiver_enter_farm (self->midi_receiver);
   /* we always have a wave-repo */
-  wrepo = (BseWaveRepo*) bse_container_new_child (BSE_CONTAINER (self), BSE_TYPE_WAVE_REPO, "uname", "Wave-Repository", NULL);
+  BseWaveRepo *wrepo = (BseWaveRepo*) bse_container_new_child (BSE_CONTAINER (self), BSE_TYPE_WAVE_REPO, "uname", "Wave-Repository", NULL);
   /* with fixed uname */
   BSE_OBJECT_SET_FLAGS (wrepo, BSE_OBJECT_FLAG_FIXED_UNAME);
 }
+
 static void
 bse_project_set_property (GObject                *object,
                           guint                   param_id,

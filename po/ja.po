@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast 0.6.2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-01-18 03:53+0100\n"
+"POT-Creation-Date: 2013-03-24 19:11+0000\n"
 "PO-Revision-Date: 2004-08-06 19:59+0200\n"
 "Last-Translator: Satoru SATOH <ss@gnome.gr.jp>\n"
 "Language-Team: Japanese <translation@gnome.gr.jp>\n"
@@ -16,14 +16,14 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: bse/bsemain.cc:221
+#: bse/bsemain.cc:223
 #, fuzzy
 msgid ""
 "\n"
 "Available MIDI drivers:\n"
 msgstr "利用可能なアイテム:"
 
-#: bse/bsemain.cc:219
+#: bse/bsemain.cc:221
 #, fuzzy
 msgid ""
 "\n"
@@ -197,11 +197,11 @@ msgstr ""
 msgid "/Project/Toys/Progressor..."
 msgstr ""
 
-#: plugins/bseamplifier.idl:11
+#: plugins/bseamplifier.idl:14
 msgid "/Routing/Amplifier"
 msgstr "/ルーティング/アンプ"
 
-#: plugins/bsecontribsampleandhold.idl:8
+#: plugins/bsecontribsampleandhold.idl:11
 #, fuzzy
 msgid "/Routing/Sample and Hold"
 msgstr "/ルーティング/アンプ"
@@ -348,7 +348,7 @@ msgid "12"
 msgstr "12"
 
 #. Equal Temperament: http://en.wikipedia.org/wiki/Equal_temperament
-#: bse/bsecore.idl:38
+#: bse/bsebasics.idl:38
 msgid "12 Tone Equal Temperament"
 msgstr ""
 
@@ -504,7 +504,7 @@ msgstr ""
 msgid "5 1/3rd Harmonic"
 msgstr ""
 
-#: bse/bsecore.idl:45
+#: bse/bsebasics.idl:45
 msgid "5 Tone Equal Temperament"
 msgstr ""
 
@@ -528,7 +528,7 @@ msgstr "64 値 FFT ウィンドウ"
 msgid "65536 Value FFT Window"
 msgstr "65536 値 FFT ウィンドウ"
 
-#: bse/bsecore.idl:42
+#: bse/bsebasics.idl:42
 msgid "7 Tone Equal Temperament"
 msgstr ""
 
@@ -631,7 +631,7 @@ msgid ""
 msgstr "4097 周波数ピークのスペクトルに対する 8192 値 FFT ウィンドウ"
 
 #. http://en.wikipedia.org/wiki/Equal_temperament
-#: bse/bsecore.idl:46
+#: bse/bsebasics.idl:46
 msgid ""
 "A fairly common tuning system is the five-tone equal temperament tuning "
 "system, abbreviated as 5-TET. It divides the octave into 5 equal parts using "
@@ -639,7 +639,7 @@ msgid ""
 msgstr ""
 
 #. http://en.wikipedia.org/wiki/Equal_temperament
-#: bse/bsecore.idl:43
+#: bse/bsebasics.idl:43
 msgid ""
 "A fairly common tuning system is the seven-tone equal temperament tuning "
 "system, abbreviated as 7-TET. It divides the octave into 7 equal parts using "
@@ -656,10 +656,6 @@ msgid ""
 "to underline"
 msgstr "テキスト内の _ の付く文字の位置"
 
-#: bse/bsecore.idl:688
-msgid "A unique number identifying this thread"
-msgstr "このスレッドを識別する固有な番号"
-
 #: beast-gtk/bstsnetrouter.cc:953
 msgid "ADSR"
 msgstr "ADSR"
@@ -668,7 +664,7 @@ msgstr "ADSR"
 msgid "ADSR Envelope Generator"
 msgstr "ADSR エンベロープジェネレータ"
 
-#: plugins/standardsaturator.idl:7
+#: plugins/standardsaturator.idl:10
 msgid "ATAN"
 msgstr ""
 
@@ -778,7 +774,7 @@ msgstr "周波数レベル閾値を調整"
 msgid "Adjust how much the control signals affect the output balance"
 msgstr "出力バランスに影響させるコントロール信号を調整"
 
-#: plugins/bseamplifier.idl:46
+#: plugins/bseamplifier.idl:49
 msgid "Adjust how much the control signals affect the output volume"
 msgstr "コントロール信号の出力音量に対する影響がどれぐらいか調整"
 
@@ -893,7 +889,7 @@ msgid "All"
 msgstr ""
 
 #. ALWAYS (always enabled)
-#: birnet/birnetmsg.cc:90
+#: birnet/birnetmsg.cc:89
 msgid "Always"
 msgstr ""
 
@@ -902,7 +898,7 @@ msgstr ""
 msgid "Amount of detuning in cent (hundredth part of a semitone)"
 msgstr ""
 
-#: plugins/bseamplifier.idl:29
+#: plugins/bseamplifier.idl:32
 msgid "Amplified audio output"
 msgstr "アンプオーディオ出力"
 
@@ -944,7 +940,7 @@ msgstr "パターンエディタ配置に設定変更を適用"
 msgid "Array of column types"
 msgstr "カラムタイプ配列"
 
-#: plugins/bsecontribsampleandhold.idl:6
+#: plugins/bsecontribsampleandhold.idl:9
 msgid "Artem Popov"
 msgstr ""
 
@@ -993,19 +989,19 @@ msgstr "アタック [ms]"
 msgid "Attack-Decay-Sustain-Release envelope output"
 msgstr "アタック-減衰-サスティン-リリースエンベロープ出力"
 
-#: plugins/bseamplifier.idl:31 plugins/bsebalance.idl:25
+#: plugins/bseamplifier.idl:34 plugins/bsebalance.idl:25
 msgid "Attenuate the level of audio input 1"
 msgstr "オーティオ入力 1 のレベルを下げる"
 
-#: plugins/bseamplifier.idl:32 plugins/bsebalance.idl:26
+#: plugins/bseamplifier.idl:35 plugins/bsebalance.idl:26
 msgid "Attenuate the level of audio input 2"
 msgstr "オーティオ入力 2 のレベルを下げる"
 
-#: plugins/bseamplifier.idl:36 plugins/bsebalance.idl:30
+#: plugins/bseamplifier.idl:39 plugins/bsebalance.idl:30
 msgid "Attenuate the level of control input 1"
 msgstr "コントロール入力 1 のレベルを下げる"
 
-#: plugins/bseamplifier.idl:37 plugins/bsebalance.idl:31
+#: plugins/bseamplifier.idl:40 plugins/bsebalance.idl:31
 msgid "Attenuate the level of control input 2"
 msgstr "コントロール入力 2 のレベルを下げる"
 
@@ -1025,7 +1021,7 @@ msgid "Audio Gate"
 msgstr "オーティオ出力"
 
 #: bse/bsebiquadfilter.cc:153 plugins/bseatandistort.cc:55
-#: plugins/bsecontribsampleandhold.idl:10 plugins/bseiirfilter.cc:101
+#: plugins/bsecontribsampleandhold.idl:13 plugins/bseiirfilter.cc:101
 #: plugins/davbassfilter.idl:14 plugins/davchorus.idl:11
 #: plugins/standardguspatchenvelope.idl:26
 msgid "Audio In"
@@ -1037,13 +1033,13 @@ msgid "Audio In%u"
 msgstr "オーディオ入力%u"
 
 #: bse/bsebusmodule.idl:9 plugins/artscompressor.idl:30 plugins/bseadder.cc:59
-#: plugins/bseamplifier.idl:25 plugins/bsebalance.idl:17 plugins/bsemult.cc:28
+#: plugins/bseamplifier.idl:28 plugins/bsebalance.idl:17 plugins/bsemult.cc:28
 #: plugins/bsesummation.idl:14
 msgid "Audio In1"
 msgstr "オーティオ ln1"
 
 #: bse/bsebusmodule.idl:10 plugins/artscompressor.idl:31
-#: plugins/bseadder.cc:61 plugins/bseamplifier.idl:26
+#: plugins/bseadder.cc:61 plugins/bseamplifier.idl:29
 #: plugins/bsebalance.idl:18 plugins/bsemult.cc:30 plugins/bsesummation.idl:15
 msgid "Audio In2"
 msgstr "オーティオ ln2"
@@ -1056,8 +1052,8 @@ msgstr "オーディオ入力 3"
 msgid "Audio In4"
 msgstr "オーディオ入力 4"
 
-#: plugins/bseamplifier.idl:30 plugins/bsebalance.idl:24
-#: plugins/bsecontribsampleandhold.idl:10
+#: plugins/bseamplifier.idl:33 plugins/bsebalance.idl:24
+#: plugins/bsecontribsampleandhold.idl:13
 msgid "Audio Input"
 msgstr "オーティオ入力"
 
@@ -1086,8 +1082,8 @@ msgid "Audio Input of the WaveOsc playing the patch"
 msgstr ""
 
 #: bse/bsebiquadfilter.cc:161 bse/bsestandardosc.cc:171 bse/bsewaveosc.cc:524
-#: plugins/bseadder.cc:63 plugins/bseamplifier.idl:29
-#: plugins/bseatandistort.cc:57 plugins/bsecontribsampleandhold.idl:12
+#: plugins/bseadder.cc:63 plugins/bseamplifier.idl:32
+#: plugins/bseatandistort.cc:57 plugins/bsecontribsampleandhold.idl:15
 #: plugins/bseiirfilter.cc:103 plugins/bsemixer.cc:75 plugins/bsemult.cc:36
 #: plugins/davbassfilter.idl:16 plugins/davchorus.idl:12
 #: plugins/davorgan.idl:12 plugins/davsyndrum.cc:92
@@ -1108,7 +1104,7 @@ msgstr "オーティオ出力"
 msgid "Audio Out2"
 msgstr "オーティオ出力"
 
-#: plugins/bseadder.cc:63 plugins/bsecontribsampleandhold.idl:12
+#: plugins/bseadder.cc:63 plugins/bsecontribsampleandhold.idl:15
 #: plugins/bsemult.cc:36
 msgid "Audio Output"
 msgstr "オーディオ出力"
@@ -1160,7 +1156,7 @@ msgstr "作者"
 msgid "Authors:"
 msgstr "作者:"
 
-#: plugins/artscompressor.idl:40 plugins/standardsaturator.idl:38
+#: plugins/artscompressor.idl:40 plugins/standardsaturator.idl:42
 #, fuzzy
 msgid "Auto Output"
 msgstr "オーディオ出力"
@@ -1176,7 +1172,7 @@ msgid ""
 "automatic driver selection."
 msgstr ""
 
-#: plugins/standardsaturator.idl:39
+#: plugins/standardsaturator.idl:43
 msgid ""
 "Automatically adapt the output volume according to changes in saturation "
 "level"
@@ -1208,37 +1204,37 @@ msgstr "利用可能なシンセサイザ"
 msgid "Available Waves"
 msgstr "利用可能な波形"
 
-#: beast-gtk/bstprofiler.cc:225
+#: beast-gtk/bstprofiler.cc:142
 msgid ""
 "Average number of milliseconds per second of system CPU time used by thread"
 msgstr "スレッドが使用するシステム CPU 時間の平均(msec/sec)"
 
-#: beast-gtk/bstprofiler.cc:224
+#: beast-gtk/bstprofiler.cc:141
 msgid ""
 "Average number of milliseconds per second of user CPU time used by thread"
 msgstr "スレッドが使用するユーザー CPU 時間の平均(msec/sec)"
 
 #. initialize Birnet/Sfi
 #. Name
-#: beast-gtk/bstmain.cc:86 data/beast.desktop.in:4
+#: beast-gtk/bstmain.cc:91 data/beast.desktop.in:4
 msgid "BEAST"
 msgstr "BEAST"
 
-#: beast-gtk/bstmain.cc:827
+#: beast-gtk/bstmain.cc:862
 msgid "BEAST About"
 msgstr "BEAST の情報"
 
-#: beast-gtk/bstmain.cc:106
+#: beast-gtk/bstmain.cc:108
 msgid "BEAST Startup"
 msgstr "BEAST 起動"
 
-#: beast-gtk/bstmain.cc:828
+#: beast-gtk/bstmain.cc:863
 #, c-format
 msgid "BEAST Version %s"
 msgstr "BEAST バージョン %s"
 
 #. start BSE core and connect
-#: beast-gtk/bstmain.cc:137
+#: beast-gtk/bstmain.cc:139
 msgid "BSE Core"
 msgstr "BSE コア"
 
@@ -1288,22 +1284,22 @@ msgstr "ピアノロールエディタの背景画像"
 msgid "Bad loopback"
 msgstr "不正なループバック"
 
-#: bse/bsecore.idl:128 bse/bsecore.idl:304 plugins/bseamplifier.idl:33
-#: plugins/bseamplifier.idl:38 plugins/bsebalance.idl:27
+#: bse/bsebasics.idl:128 bse/bsebasics.idl:304 plugins/bseamplifier.idl:36
+#: plugins/bseamplifier.idl:41 plugins/bsebalance.idl:27
 #: plugins/bsebalance.idl:32
 msgid "Balance"
 msgstr "バランス"
 
-#: plugins/bseamplifier.idl:33 plugins/bsebalance.idl:27
+#: plugins/bseamplifier.idl:36 plugins/bsebalance.idl:27
 msgid "Balance audio input levels"
 msgstr "オーティオ入力レベルをバランス"
 
-#: plugins/bseamplifier.idl:38 plugins/bsebalance.idl:32
+#: plugins/bseamplifier.idl:41 plugins/bsebalance.idl:32
 msgid "Balance control input levels"
 msgstr "コントロール入力レベルをバランス"
 
 #. 14bit, continuous controls
-#: bse/bsecore.idl:120 bse/bsecore.idl:296
+#: bse/bsebasics.idl:120 bse/bsebasics.idl:296
 msgid "Bank Select"
 msgstr "バンク選択"
 
@@ -1316,11 +1312,11 @@ msgstr "ベース周波数"
 msgid "Base Octave"
 msgstr "基音"
 
-#: plugins/bseamplifier.idl:47
+#: plugins/bseamplifier.idl:50
 msgid "Base Volume"
 msgstr "ベース音量"
 
-#: plugins/bseamplifier.idl:47
+#: plugins/bseamplifier.idl:50
 msgid "Base amplification (the control signal adds up to this)"
 msgstr "ベースアンプ (加えられるコントロール信号)"
 
@@ -1344,11 +1340,11 @@ msgstr "ブースト"
 msgid "Brass Sounds"
 msgstr ""
 
-#: bse/bsecore.idl:122 bse/bsecore.idl:298
+#: bse/bsebasics.idl:122 bse/bsebasics.idl:298
 msgid "Breath Control"
 msgstr "ブレスコントロール"
 
-#: plugins/bseamplifier.idl:12
+#: plugins/bseamplifier.idl:15
 msgid ""
 "BseAmplifier provides input signal controlled amplification or attenuation. "
 "It supports two control inputs and two audio inputs which are mixed together "
@@ -1408,16 +1404,16 @@ msgstr ""
 msgid "COLUMN TYPES:"
 msgstr "カラムタイプ:"
 
-#: beast-gtk/bstprofiler.cc:240
+#: beast-gtk/bstprofiler.cc:157
 msgid "CPU the thread is currently running on"
 msgstr "スレッドの実行されている CPU"
 
-#: beast-gtk/bstprofiler.cc:240
+#: beast-gtk/bstprofiler.cc:157
 #, fuzzy
 msgid "CPU#"
 msgstr "CPU%"
 
-#: beast-gtk/bstprofiler.cc:223
+#: beast-gtk/bstprofiler.cc:140
 msgid "CPU%"
 msgstr "CPU%"
 
@@ -1470,7 +1466,7 @@ msgid "Channel Hints"
 msgstr "チャネルヒント"
 
 #. 7bit
-#: bse/bsecore.idl:115
+#: bse/bsebasics.idl:115
 msgid "Channel Pressure"
 msgstr "チャネル圧力"
 
@@ -1498,14 +1494,6 @@ msgstr "チャネル%u [浮動小数]"
 #, fuzzy
 msgid "Check/ToggleRadio Button"
 msgstr "切り替えボタン"
-
-#: bse/bsecore.idl:701
-msgid "Child System Time"
-msgstr "子システム時間"
-
-#: bse/bsecore.idl:699
-msgid "Child User Time"
-msgstr "子ユーザー時間"
 
 #: beast-gtk/bstscrollgraph.cc:510
 msgid "Choose display scrolling direction"
@@ -1575,24 +1563,24 @@ msgstr "パターンエディタのカラム配置を設定"
 msgid "Const Out%u"
 msgstr "一定出力%u"
 
-#: bse/bsecore.idl:154
+#: bse/bsebasics.idl:154
 msgid "Constant CENTER"
 msgstr "一定(中)"
 
 #. 14bit, special cased signals
-#: bse/bsecore.idl:153
+#: bse/bsebasics.idl:153
 msgid "Constant HIGH"
 msgstr "一定(高)"
 
-#: bse/bsecore.idl:155
+#: bse/bsebasics.idl:155
 msgid "Constant LOW"
 msgstr "一定(低)"
 
-#: bse/bsecore.idl:156
+#: bse/bsebasics.idl:156
 msgid "Constant Negative CENTER"
 msgstr ""
 
-#: bse/bsecore.idl:157
+#: bse/bsebasics.idl:157
 msgid "Constant Negative HIGH"
 msgstr ""
 
@@ -1619,366 +1607,366 @@ msgstr ""
 msgid "Contents"
 msgstr "内容"
 
-#: bse/bsecore.idl:134 bse/bsecore.idl:310
+#: bse/bsebasics.idl:134 bse/bsebasics.idl:310
 msgid "Continuous 14"
 msgstr ""
 
-#: bse/bsecore.idl:135 bse/bsecore.idl:311
+#: bse/bsebasics.idl:135 bse/bsebasics.idl:311
 msgid "Continuous 15"
 msgstr ""
 
-#: bse/bsecore.idl:140 bse/bsecore.idl:316
+#: bse/bsebasics.idl:140 bse/bsebasics.idl:316
 msgid "Continuous 20"
 msgstr ""
 
-#: bse/bsecore.idl:141 bse/bsecore.idl:317
+#: bse/bsebasics.idl:141 bse/bsebasics.idl:317
 msgid "Continuous 21"
 msgstr ""
 
-#: bse/bsecore.idl:142 bse/bsecore.idl:318
+#: bse/bsebasics.idl:142 bse/bsebasics.idl:318
 msgid "Continuous 22"
 msgstr ""
 
-#: bse/bsecore.idl:143 bse/bsecore.idl:319
+#: bse/bsebasics.idl:143 bse/bsebasics.idl:319
 msgid "Continuous 23"
 msgstr ""
 
-#: bse/bsecore.idl:144 bse/bsecore.idl:320
+#: bse/bsebasics.idl:144 bse/bsebasics.idl:320
 msgid "Continuous 24"
 msgstr ""
 
-#: bse/bsecore.idl:145 bse/bsecore.idl:321
+#: bse/bsebasics.idl:145 bse/bsebasics.idl:321
 msgid "Continuous 25"
 msgstr ""
 
-#: bse/bsecore.idl:146 bse/bsecore.idl:322
+#: bse/bsebasics.idl:146 bse/bsebasics.idl:322
 msgid "Continuous 26"
 msgstr ""
 
-#: bse/bsecore.idl:147 bse/bsecore.idl:323
+#: bse/bsebasics.idl:147 bse/bsebasics.idl:323
 msgid "Continuous 27"
 msgstr ""
 
-#: bse/bsecore.idl:148 bse/bsecore.idl:324
+#: bse/bsebasics.idl:148 bse/bsebasics.idl:324
 msgid "Continuous 28"
 msgstr ""
 
-#: bse/bsecore.idl:149 bse/bsecore.idl:325
+#: bse/bsebasics.idl:149 bse/bsebasics.idl:325
 msgid "Continuous 29"
 msgstr ""
 
-#: bse/bsecore.idl:123 bse/bsecore.idl:299
+#: bse/bsebasics.idl:123 bse/bsebasics.idl:299
 msgid "Continuous 3"
 msgstr ""
 
-#: bse/bsecore.idl:150 bse/bsecore.idl:326
+#: bse/bsebasics.idl:150 bse/bsebasics.idl:326
 msgid "Continuous 30"
 msgstr ""
 
-#: bse/bsecore.idl:151 bse/bsecore.idl:327
+#: bse/bsebasics.idl:151 bse/bsebasics.idl:327
 msgid "Continuous 31"
 msgstr ""
 
-#: bse/bsecore.idl:129 bse/bsecore.idl:305
+#: bse/bsebasics.idl:129 bse/bsebasics.idl:305
 msgid "Continuous 9"
 msgstr ""
 
-#: bse/bsecore.idl:296
+#: bse/bsebasics.idl:296
 msgid "Continuous MIDI Control #1 - Bank Select"
 msgstr "連続 MIDI コントロール #1 - バンク選択"
 
-#: beast-gtk/bstmain.cc:829
+#: beast-gtk/bstmain.cc:864
 msgid "Contributions made by:"
 msgstr "貢献した人々:"
 
 #. 7bit, literal channel controls, MSB values
-#: bse/bsecore.idl:161 bse/bsecore.idl:329
+#: bse/bsebasics.idl:161 bse/bsebasics.idl:329
 msgid "Control 0 Bank Select MSB"
 msgstr "コントロール 0 バンク選択 MSB"
 
-#: bse/bsecore.idl:162 bse/bsecore.idl:330
+#: bse/bsebasics.idl:162 bse/bsebasics.idl:330
 msgid "Control 1 Modulation Depth MSB"
 msgstr "コントロール 1 変調深度 MSB"
 
-#: bse/bsecore.idl:171 bse/bsecore.idl:339
+#: bse/bsebasics.idl:171 bse/bsebasics.idl:339
 msgid "Control 10 Panorama MSB"
 msgstr "コントロール 10 パノラマ MSB"
 
-#: bse/bsecore.idl:263 bse/bsecore.idl:431
+#: bse/bsebasics.idl:263 bse/bsebasics.idl:431
 msgid "Control 100 Registered Parameter MSB"
 msgstr "コントロール 100 登録済みのパラメータ MSB"
 
-#: bse/bsecore.idl:264 bse/bsecore.idl:432
+#: bse/bsebasics.idl:264 bse/bsebasics.idl:432
 msgid "Control 101 Registered Parameter LSB"
 msgstr "コントロール 101 登録済みのパラメータ LSB"
 
-#: bse/bsecore.idl:172 bse/bsecore.idl:340
+#: bse/bsebasics.idl:172 bse/bsebasics.idl:340
 msgid "Control 11 Expression MSB"
 msgstr "コントロール 11 エクスプレッション MSB"
 
-#: bse/bsecore.idl:173 bse/bsecore.idl:341
+#: bse/bsebasics.idl:173 bse/bsebasics.idl:341
 msgid "Control 12 Effect Control 1 MSB"
 msgstr "コントロール 12 エフェクトコントロール 1 MSB"
 
-#: bse/bsecore.idl:283 bse/bsecore.idl:451
+#: bse/bsebasics.idl:283 bse/bsebasics.idl:451
 msgid "Control 120 All Sound Off ITrigger"
 msgstr "コントロール 120 全サウンドオフ ITrigger"
 
-#: bse/bsecore.idl:284 bse/bsecore.idl:452
+#: bse/bsebasics.idl:284 bse/bsebasics.idl:452
 msgid "Control 121 All Controllers Off ITrigger"
 msgstr "コントロール 121 全コントローラオフ ITrigger"
 
-#: bse/bsecore.idl:285 bse/bsecore.idl:453
+#: bse/bsebasics.idl:285 bse/bsebasics.idl:453
 msgid "Control 122 Local Control Switch"
 msgstr "コントロール 122 ローカルコントロールスウィッチ"
 
-#: bse/bsecore.idl:286 bse/bsecore.idl:454
+#: bse/bsebasics.idl:286 bse/bsebasics.idl:454
 msgid "Control 123 All Notes Off ITrigger"
 msgstr "コントロール 123 全ノートオフ ITrigger"
 
-#: bse/bsecore.idl:287 bse/bsecore.idl:455
+#: bse/bsebasics.idl:287 bse/bsebasics.idl:455
 msgid "Control 124 Omni Mode Off ITrigger"
 msgstr "コントロール 124 オムニモードオフ ITrigger"
 
-#: bse/bsecore.idl:288 bse/bsecore.idl:456
+#: bse/bsebasics.idl:288 bse/bsebasics.idl:456
 msgid "Control 125 Omni Mode On ITrigger"
 msgstr "コントロール 125 オムニモードオン ITrigger"
 
-#: bse/bsecore.idl:289 bse/bsecore.idl:457
+#: bse/bsebasics.idl:289 bse/bsebasics.idl:457
 msgid "Control 126 Monophonic Voices Mode"
 msgstr "コントロール 126 モノラル音声モード"
 
-#: bse/bsecore.idl:290 bse/bsecore.idl:458
+#: bse/bsebasics.idl:290 bse/bsebasics.idl:458
 msgid "Control 127 Polyphonic Mode On ITrigger"
 msgstr "コントロール 127 多声モードオン ITrigger"
 
-#: bse/bsecore.idl:174 bse/bsecore.idl:342
+#: bse/bsebasics.idl:174 bse/bsebasics.idl:342
 msgid "Control 13 Effect Control 2 MSB"
 msgstr "コントロール 13 エフェクトコントロール 2 MSB"
 
-#: bse/bsecore.idl:177 bse/bsecore.idl:345
+#: bse/bsebasics.idl:177 bse/bsebasics.idl:345
 msgid "Control 16 General Purpose Controller 1 MSB"
 msgstr "コントロール 16 汎用コントローラ 1 MSB"
 
-#: bse/bsecore.idl:178 bse/bsecore.idl:346
+#: bse/bsebasics.idl:178 bse/bsebasics.idl:346
 msgid "Control 17 General Purpose Controller 2 MSB"
 msgstr "コントロール 17 汎用コントローラ 2 MSB"
 
-#: bse/bsecore.idl:179 bse/bsecore.idl:347
+#: bse/bsebasics.idl:179 bse/bsebasics.idl:347
 msgid "Control 18 General Purpose Controller 3 MSB"
 msgstr "コントロール 18 汎用コントローラ 3 MSB"
 
-#: bse/bsecore.idl:180 bse/bsecore.idl:348
+#: bse/bsebasics.idl:180 bse/bsebasics.idl:348
 msgid "Control 19 General Purpose Controller 4 MSB"
 msgstr "コントロール 19 汎用コントローラ 4 MSB"
 
-#: bse/bsecore.idl:163 bse/bsecore.idl:331
+#: bse/bsebasics.idl:163 bse/bsebasics.idl:331
 msgid "Control 2 Breath Control MSB"
 msgstr "コントロール 2 ブレスコントロール MSB"
 
 #. 7bit, literal channel controls, LSB values
-#: bse/bsecore.idl:194 bse/bsecore.idl:362
+#: bse/bsebasics.idl:194 bse/bsebasics.idl:362
 msgid "Control 32 Bank Select LSB"
 msgstr "コントロール 32 バンク選択 LSB"
 
-#: bse/bsecore.idl:195 bse/bsecore.idl:363
+#: bse/bsebasics.idl:195 bse/bsebasics.idl:363
 msgid "Control 33 Modulation Depth LSB"
 msgstr "コントロール 33 変調深度 LSB"
 
-#: bse/bsecore.idl:196 bse/bsecore.idl:364
+#: bse/bsebasics.idl:196 bse/bsebasics.idl:364
 msgid "Control 34 Breath Control LSB"
 msgstr "コントロール 34 ブレスコントロール LSB"
 
-#: bse/bsecore.idl:198 bse/bsecore.idl:366
+#: bse/bsebasics.idl:198 bse/bsebasics.idl:366
 msgid "Control 36 Foot Controller LSB"
 msgstr "コントロール 36 フットコントローラ LSB"
 
-#: bse/bsecore.idl:199 bse/bsecore.idl:367
+#: bse/bsebasics.idl:199 bse/bsebasics.idl:367
 msgid "Control 37 Portamento Time LSB"
 msgstr "コントロール 37 ポルタメント時間 LSB"
 
-#: bse/bsecore.idl:200 bse/bsecore.idl:368
+#: bse/bsebasics.idl:200 bse/bsebasics.idl:368
 msgid "Control 38 Data Entry LSB"
 msgstr "コントロール 38 データエントリ LSB"
 
-#: bse/bsecore.idl:201 bse/bsecore.idl:369
+#: bse/bsebasics.idl:201 bse/bsebasics.idl:369
 msgid "Control 39 Volume LSB"
 msgstr "コントロール 39 音量 LSB"
 
-#: bse/bsecore.idl:165 bse/bsecore.idl:333
+#: bse/bsebasics.idl:165 bse/bsebasics.idl:333
 msgid "Control 4 Foot Controller MSB"
 msgstr "コントロール 4 フットコントローラ MSB"
 
-#: bse/bsecore.idl:202 bse/bsecore.idl:370
+#: bse/bsebasics.idl:202 bse/bsebasics.idl:370
 msgid "Control 40 Balance LSB"
 msgstr "コントロール 40 バランス LSB"
 
-#: bse/bsecore.idl:204 bse/bsecore.idl:372
+#: bse/bsebasics.idl:204 bse/bsebasics.idl:372
 msgid "Control 42 Panorama LSB"
 msgstr "コントロール 42 パノラマ LSB"
 
-#: bse/bsecore.idl:205 bse/bsecore.idl:373
+#: bse/bsebasics.idl:205 bse/bsebasics.idl:373
 msgid "Control 43 Expression LSB"
 msgstr "コントロール 43 エクスプレッション LSB"
 
-#: bse/bsecore.idl:206 bse/bsecore.idl:374
+#: bse/bsebasics.idl:206 bse/bsebasics.idl:374
 msgid "Control 44 Effect Control 1 LSB"
 msgstr "コントロール 44 エフェクトコントロール 1 LSB"
 
-#: bse/bsecore.idl:207 bse/bsecore.idl:375
+#: bse/bsebasics.idl:207 bse/bsebasics.idl:375
 msgid "Control 45 Effect Control 2 LSB"
 msgstr "コントロール 45 エフェクトコントロール 2 LSB"
 
-#: bse/bsecore.idl:210 bse/bsecore.idl:378
+#: bse/bsebasics.idl:210 bse/bsebasics.idl:378
 msgid "Control 48 General Purpose Controller 1 LSB"
 msgstr "コントロール 48 汎用コントローラ 1 LSB"
 
-#: bse/bsecore.idl:211 bse/bsecore.idl:379
+#: bse/bsebasics.idl:211 bse/bsebasics.idl:379
 msgid "Control 49 General Purpose Controller 2 LSB"
 msgstr "コントロール 49 汎用コントローラ 2 LSB"
 
-#: bse/bsecore.idl:166 bse/bsecore.idl:334
+#: bse/bsebasics.idl:166 bse/bsebasics.idl:334
 msgid "Control 5 Portamento Time MSB"
 msgstr "コントロール 5 ポルタメント時間 MSB"
 
-#: bse/bsecore.idl:212 bse/bsecore.idl:380
+#: bse/bsebasics.idl:212 bse/bsebasics.idl:380
 msgid "Control 50 General Purpose Controller 3 LSB"
 msgstr "コントロール 50 汎用コントローラ 3 LSB"
 
-#: bse/bsecore.idl:213 bse/bsecore.idl:381
+#: bse/bsebasics.idl:213 bse/bsebasics.idl:381
 msgid "Control 51 General Purpose Controller 4 LSB"
 msgstr "コントロール 51 汎用コントローラ 4 LSB"
 
-#: bse/bsecore.idl:167 bse/bsecore.idl:335
+#: bse/bsebasics.idl:167 bse/bsebasics.idl:335
 msgid "Control 6 Data Entry MSB"
 msgstr "コントロール 6 データエントリ MSB"
 
 #. 7bit, literal channel controls
-#: bse/bsecore.idl:227 bse/bsecore.idl:395
+#: bse/bsebasics.idl:227 bse/bsebasics.idl:395
 msgid "Control 64 Damper Pedal Switch (Sustain)"
 msgstr "コントロール 64 ダンパーペダルスウィッチ(サスティン)"
 
-#: bse/bsecore.idl:228 bse/bsecore.idl:396
+#: bse/bsebasics.idl:228 bse/bsebasics.idl:396
 msgid "Control 65 Portamento Switch"
 msgstr "コントロール 65 ポルタメントスウィッチ"
 
-#: bse/bsecore.idl:229 bse/bsecore.idl:397
+#: bse/bsebasics.idl:229 bse/bsebasics.idl:397
 msgid "Control 66 Sustenuto Switch"
 msgstr "コントロール 66 サスティヌートスウィッチ"
 
-#: bse/bsecore.idl:230 bse/bsecore.idl:398
+#: bse/bsebasics.idl:230 bse/bsebasics.idl:398
 msgid "Control 67 Soft Switch"
 msgstr "コントロール 67 ソフトスウィッチ"
 
-#: bse/bsecore.idl:231 bse/bsecore.idl:399
+#: bse/bsebasics.idl:231 bse/bsebasics.idl:399
 msgid "Control 68 Legato Pedal Switch"
 msgstr "コントロール 68 レガートペダルスウィッチ"
 
-#: bse/bsecore.idl:232 bse/bsecore.idl:400
+#: bse/bsebasics.idl:232 bse/bsebasics.idl:400
 msgid "Control 69 Hold Pedal Switch"
 msgstr "コントロール 69 ホールドペダルスウィッチ"
 
-#: bse/bsecore.idl:168 bse/bsecore.idl:336
+#: bse/bsebasics.idl:168 bse/bsebasics.idl:336
 msgid "Control 7 Volume MSB"
 msgstr "コントロール 7 音量 MSB"
 
-#: bse/bsecore.idl:233 bse/bsecore.idl:401
+#: bse/bsebasics.idl:233 bse/bsebasics.idl:401
 msgid "Control 70 Sound Variation"
 msgstr "コントロール 70 サウンドバリエーション"
 
-#: bse/bsecore.idl:234 bse/bsecore.idl:402
+#: bse/bsebasics.idl:234 bse/bsebasics.idl:402
 msgid "Control 71 Filter Resonance (Timbre)"
 msgstr "コントロール 71 フィルターレゾナンス (音色)"
 
-#: bse/bsecore.idl:235 bse/bsecore.idl:403
+#: bse/bsebasics.idl:235 bse/bsebasics.idl:403
 msgid "Control 72 Sound Release Time"
 msgstr "コントロール 72 サウンドリリース時間"
 
-#: bse/bsecore.idl:236 bse/bsecore.idl:404
+#: bse/bsebasics.idl:236 bse/bsebasics.idl:404
 msgid "Control 73 Sound Attack Time"
 msgstr "コントロール 73 サウンドアタック時間"
 
-#: bse/bsecore.idl:237 bse/bsecore.idl:405
+#: bse/bsebasics.idl:237 bse/bsebasics.idl:405
 msgid "Control 74 Sound Brightness"
 msgstr "コントロール 74 サウンド明度"
 
-#: bse/bsecore.idl:238 bse/bsecore.idl:406
+#: bse/bsebasics.idl:238 bse/bsebasics.idl:406
 msgid "Control 75 Sound Decay Time"
 msgstr "コントロール 75 サウンドディケイ時間"
 
-#: bse/bsecore.idl:239 bse/bsecore.idl:407
+#: bse/bsebasics.idl:239 bse/bsebasics.idl:407
 msgid "Control 76 Vibrato Rate"
 msgstr "コントロール 76 バイブレート比率"
 
-#: bse/bsecore.idl:240 bse/bsecore.idl:408
+#: bse/bsebasics.idl:240 bse/bsebasics.idl:408
 msgid "Control 77 Vibrato Depth"
 msgstr "コントロール 77 バイブレート深度"
 
-#: bse/bsecore.idl:241 bse/bsecore.idl:409
+#: bse/bsebasics.idl:241 bse/bsebasics.idl:409
 msgid "Control 78 Vibrato Delay"
 msgstr "コントロール 78 バイブレートディレイ"
 
-#: bse/bsecore.idl:242 bse/bsecore.idl:410
+#: bse/bsebasics.idl:242 bse/bsebasics.idl:410
 msgid "Control 79 Sound Control 10"
 msgstr "コントロール 79 サウンドコントロール 10"
 
-#: bse/bsecore.idl:169 bse/bsecore.idl:337
+#: bse/bsebasics.idl:169 bse/bsebasics.idl:337
 msgid "Control 8 Balance MSB"
 msgstr "コントロール 8 バランス MSB"
 
-#: bse/bsecore.idl:243 bse/bsecore.idl:411
+#: bse/bsebasics.idl:243 bse/bsebasics.idl:411
 msgid "Control 80 General Purpose Switch 5"
 msgstr "コントロール 80 汎用スウィッチ 5"
 
-#: bse/bsecore.idl:244 bse/bsecore.idl:412
+#: bse/bsebasics.idl:244 bse/bsebasics.idl:412
 msgid "Control 81 General Purpose Switch 6"
 msgstr "コントロール 81 汎用スウィッチ 6"
 
-#: bse/bsecore.idl:245 bse/bsecore.idl:413
+#: bse/bsebasics.idl:245 bse/bsebasics.idl:413
 msgid "Control 82 General Purpose Switch 7"
 msgstr "コントロール 82 汎用スウィッチ 7"
 
-#: bse/bsecore.idl:246 bse/bsecore.idl:414
+#: bse/bsebasics.idl:246 bse/bsebasics.idl:414
 msgid "Control 83 General Purpose Switch 8"
 msgstr "コントロール 83 汎用スウィッチ 8"
 
-#: bse/bsecore.idl:247 bse/bsecore.idl:415
+#: bse/bsebasics.idl:247 bse/bsebasics.idl:415
 msgid "Control 84 Portamento Control (Note)"
 msgstr "コントロール 84 ポルタメントコントロール (ノート)"
 
-#: bse/bsecore.idl:254 bse/bsecore.idl:422
+#: bse/bsebasics.idl:254 bse/bsebasics.idl:422
 msgid "Control 91 Reverb Depth"
 msgstr "コントロール 91 リバーブ深度"
 
-#: bse/bsecore.idl:255 bse/bsecore.idl:423
+#: bse/bsebasics.idl:255 bse/bsebasics.idl:423
 msgid "Control 92 Tremolo Depth"
 msgstr "コントロール 92 トレモロ深度"
 
-#: bse/bsecore.idl:256 bse/bsecore.idl:424
+#: bse/bsebasics.idl:256 bse/bsebasics.idl:424
 msgid "Control 93 Chorus Depth"
 msgstr "コントロール 93 コーラス深度"
 
-#: bse/bsecore.idl:257 bse/bsecore.idl:425
+#: bse/bsebasics.idl:257 bse/bsebasics.idl:425
 msgid "Control 93 Detune Depth"
 msgstr "コントロール 93 デチューン深度"
 
-#: bse/bsecore.idl:258 bse/bsecore.idl:426
+#: bse/bsebasics.idl:258 bse/bsebasics.idl:426
 msgid "Control 95 Phase Depth"
 msgstr "コントロール 95 位相深度"
 
-#: bse/bsecore.idl:259 bse/bsecore.idl:427
+#: bse/bsebasics.idl:259 bse/bsebasics.idl:427
 msgid "Control 96 Data Increment Trigger"
 msgstr "コントロール 96 データ増分トリガー"
 
-#: bse/bsecore.idl:260 bse/bsecore.idl:428
+#: bse/bsebasics.idl:260 bse/bsebasics.idl:428
 msgid "Control 97 Data Decrement Trigger"
 msgstr "コントロール 97 データ減分トリガー"
 
-#: bse/bsecore.idl:261 bse/bsecore.idl:429
+#: bse/bsebasics.idl:261 bse/bsebasics.idl:429
 msgid "Control 98 Non-Registered Parameter MSB"
 msgstr "コントロール 98 未登録のパラメータ MSB"
 
-#: bse/bsecore.idl:262 bse/bsecore.idl:430
+#: bse/bsebasics.idl:262 bse/bsebasics.idl:430
 msgid "Control 99 Non-Registered Parameter LSB"
 msgstr "コントロール 99 未登録のパラメータ LSB"
 
@@ -1993,11 +1981,11 @@ msgstr "コントロール入力"
 msgid "Control Automation: %s"
 msgstr "コントロール自動化: %s"
 
-#: plugins/bseamplifier.idl:35 plugins/bsebalance.idl:29
+#: plugins/bseamplifier.idl:38 plugins/bsebalance.idl:29
 msgid "Control Input"
 msgstr "コントロール入力"
 
-#: plugins/bseamplifier.idl:46 plugins/bsebalance.idl:35
+#: plugins/bseamplifier.idl:49 plugins/bsebalance.idl:35
 msgid "Control Strength"
 msgstr "コントロールの強さ"
 
@@ -2070,11 +2058,11 @@ msgid ""
 "backwards accordingly."
 msgstr ""
 
-#: plugins/bseamplifier.idl:27 plugins/bsebalance.idl:19
+#: plugins/bseamplifier.idl:30 plugins/bsebalance.idl:19
 msgid "Ctrl In1"
 msgstr "Ctrl In1"
 
-#: plugins/bseamplifier.idl:28 plugins/bsebalance.idl:20
+#: plugins/bseamplifier.idl:31 plugins/bsebalance.idl:20
 msgid "Ctrl In2"
 msgstr "Ctrl In2"
 
@@ -2136,7 +2124,7 @@ msgstr "DEVICE.MODE"
 msgid "DSP Engine..."
 msgstr "DSP エンジン..."
 
-#: bse/bsecore.idl:126 bse/bsecore.idl:302
+#: bse/bsebasics.idl:126 bse/bsebasics.idl:302
 msgid "Data Entry"
 msgstr "日時エントリ"
 
@@ -2171,26 +2159,26 @@ msgstr "減衰 [%]"
 msgid "Decay [%]"
 msgstr "減衰 [%]"
 
-#: bse/bsecore.idl:746
+#: bse/bsebasics.idl:707
 #, fuzzy
 msgid "Default Author"
 msgstr "作者"
 
-#: bse/bsecore.idl:748
+#: bse/bsebasics.idl:709
 #, fuzzy
 msgid "Default License"
 msgstr "ライセンス"
 
-#: bse/bsecore.idl:745
+#: bse/bsebasics.idl:706
 #, fuzzy
 msgid "Default Values"
 msgstr "値を表示"
 
-#: bse/bsecore.idl:746
+#: bse/bsebasics.idl:707
 msgid "Default value for 'Author' fields"
 msgstr ""
 
-#: bse/bsecore.idl:748
+#: bse/bsebasics.idl:709
 msgid "Default value for 'License' fields"
 msgstr ""
 
@@ -2307,7 +2295,7 @@ msgid "Device or resource busy"
 msgstr "デバイスが使用中"
 
 #. DIAG (enabled)
-#: birnet/birnetmsg.cc:110
+#: birnet/birnetmsg.cc:109
 msgid "Diagnostic"
 msgstr "診断"
 
@@ -2320,18 +2308,18 @@ msgid "Dial (Logarithmic)"
 msgstr "ダイアル (対数)"
 
 #. listen to BseServer notification
-#: beast-gtk/bstmain.cc:212
+#: beast-gtk/bstmain.cc:214
 msgid "Dialogs"
 msgstr "ダイアログ"
 
 #. Rational Intonation: http://en.wikipedia.org/wiki/Just_intonation
-#: bse/bsecore.idl:49
+#: bse/bsebasics.idl:49
 #, fuzzy
 msgid "Diatonic Scale"
 msgstr "垂直方向スケール"
 
 #. http://en.wikipedia.org/wiki/Just_intonation#Indian_scales
-#: bse/bsecore.idl:55
+#: bse/bsebasics.idl:55
 msgid ""
 "Diatonic scale used in Indian music with wolf interval at Dha, close to 3/2"
 msgstr ""
@@ -2350,7 +2338,7 @@ msgstr ""
 
 #. syntax
 #. TRANSLATORS: keep this text to 70 chars in width
-#: bse/bsepcmdevice-null.cc:117
+#: bse/bsepcmdevice-null.cc:119
 msgid ""
 "Discard all PCM output and provide zero blocks as input. This\n"
 "driver is not part of the automatic PCM device selection list.\n"
@@ -2559,15 +2547,15 @@ msgstr "編集/移動/メニュー (マウスボタン 1-3)"
 msgid "Editor"
 msgstr "エディタ"
 
-#: bse/bsecore.idl:132 bse/bsecore.idl:308
+#: bse/bsebasics.idl:132 bse/bsebasics.idl:308
 msgid "Effect Control 1"
 msgstr "エフェクトコントロール 1"
 
-#: bse/bsecore.idl:133 bse/bsecore.idl:309
+#: bse/bsebasics.idl:133 bse/bsebasics.idl:309
 msgid "Effect Control 2"
 msgstr "エフェクトコントロール 2"
 
-#: bse/bsecore.idl:755
+#: bse/bsebasics.idl:716
 msgid "Effect Path"
 msgstr "エフェクトパス"
 
@@ -2637,7 +2625,7 @@ msgid "Epsilon"
 msgstr "イプシロン"
 
 #. ERROR (enabled)
-#: birnet/birnetmsg.cc:94
+#: birnet/birnetmsg.cc:93
 #, fuzzy
 msgid "Error"
 msgstr "エラー"
@@ -2726,7 +2714,7 @@ msgstr "'%s' を実行"
 msgid "Executing procedure '%s' from script '%s'."
 msgstr ""
 
-#: plugins/bseamplifier.idl:43
+#: plugins/bseamplifier.idl:46
 msgid "Exponential Control"
 msgstr "指数コントロール"
 
@@ -2738,7 +2726,7 @@ msgstr "指数関数 FM"
 msgid "Export Audio"
 msgstr "オーディオにエクスポート"
 
-#: bse/bsecore.idl:131 bse/bsecore.idl:307
+#: bse/bsebasics.idl:131 bse/bsebasics.idl:307
 msgid "Expression"
 msgstr "表現"
 
@@ -2780,22 +2768,22 @@ msgstr ""
 msgid "Failed to execute script procedure '%s': %s"
 msgstr "出力ファイル \"%s\" を開くのに失敗: %s"
 
-#: birnet/birnetutils.cc:1096
+#: birnet/birnetutils.cc:1078
 msgid "Failed to launch a web browser executable"
 msgstr ""
 
-#: beast-gtk/bstmain.cc:277
+#: beast-gtk/bstmain.cc:295
 #, fuzzy, c-format
 msgid "Failed to load project \"%s\": %s"
 msgstr "出力ファイル \"%s\" を開くのに失敗: %s"
 
-#: beast-gtk/bstfiledialog.cc:670 beast-gtk/bstmain.cc:241
-#: beast-gtk/bstmain.cc:258
+#: beast-gtk/bstfiledialog.cc:670 beast-gtk/bstmain.cc:243
+#: beast-gtk/bstmain.cc:260
 #, fuzzy, c-format
 msgid "Failed to load wave file \"%s\": %s"
 msgstr "出力ファイル \"%s\" を開くのに失敗: %s"
 
-#: beast-gtk/bstmain.cc:283
+#: beast-gtk/bstmain.cc:301
 #, fuzzy, c-format
 msgid "Failed to merge project \"%s\": %s"
 msgstr "出力ファイル \"%s\" を開くのに失敗: %s"
@@ -2992,7 +2980,7 @@ msgstr ""
 msgid "Fine Tune"
 msgstr "微細調整"
 
-#: bse/bsebusmodule.idl:9 plugins/bseamplifier.idl:25
+#: bse/bsebusmodule.idl:9 plugins/bseamplifier.idl:28
 #: plugins/bsebalance.idl:17
 msgid "First audio input"
 msgstr "第一オーティオ入力"
@@ -3002,7 +2990,7 @@ msgstr "第一オーティオ入力"
 msgid "First audio output"
 msgstr "第一オーティオ入力"
 
-#: plugins/bseamplifier.idl:27 plugins/bsebalance.idl:19
+#: plugins/bseamplifier.idl:30 plugins/bsebalance.idl:19
 msgid "First control input"
 msgstr "第一コントロール入力"
 
@@ -3030,7 +3018,7 @@ msgstr "フォントサイズ"
 msgid "Font size in pixels for labels displayed in synthesis networks"
 msgstr "シンセネットワーク内に表示されるラベルのフォントサイズ(ピクセル)"
 
-#: bse/bsecore.idl:124 bse/bsecore.idl:300
+#: bse/bsebasics.idl:124 bse/bsebasics.idl:300
 msgid "Foot Controller"
 msgstr "フットコントローラ"
 
@@ -3085,7 +3073,7 @@ msgstr "周波数"
 msgid "Frequency Signal"
 msgstr "周波数信号"
 
-#: bse/bsecore.idl:736
+#: bse/bsebasics.idl:697
 msgid ""
 "Frequency at which control values are evaluated, should be much smaller than "
 "Synth Mixing Frequency to reduce CPU load"
@@ -3119,8 +3107,8 @@ msgid "Functions to be activated for a key binding"
 msgstr "ショートカットに対して有効にされる機能"
 
 #: bse/bsebusmodule.idl:7 plugins/artscompressor.idl:8
-#: plugins/bseamplifier.idl:10 plugins/bsebalance.idl:7
-#: plugins/bsecontribsampleandhold.idl:7 plugins/bsenoise.idl:7
+#: plugins/bseamplifier.idl:13 plugins/bsebalance.idl:7
+#: plugins/bsecontribsampleandhold.idl:10 plugins/bsenoise.idl:7
 #: plugins/bsesummation.idl:7 plugins/davbassfilter.idl:8
 #: plugins/davchorus.idl:8 plugins/davorgan.idl:8
 #: plugins/standardguspatchenvelope.idl:10
@@ -3168,19 +3156,19 @@ msgstr ""
 msgid "Gate input (activates/deactivates envelope)"
 msgstr "ゲート入力 (活性/不活性エンベロープ)"
 
-#: bse/bsecore.idl:136 bse/bsecore.idl:312
+#: bse/bsebasics.idl:136 bse/bsebasics.idl:312
 msgid "General Purpose Controller 1"
 msgstr "汎用コントローラ 1"
 
-#: bse/bsecore.idl:137 bse/bsecore.idl:313
+#: bse/bsebasics.idl:137 bse/bsebasics.idl:313
 msgid "General Purpose Controller 2"
 msgstr "汎用コントローラ 2"
 
-#: bse/bsecore.idl:138 bse/bsecore.idl:314
+#: bse/bsebasics.idl:138 bse/bsebasics.idl:314
 msgid "General Purpose Controller 3"
 msgstr "汎用コントローラ 3"
 
-#: bse/bsecore.idl:139 bse/bsecore.idl:315
+#: bse/bsebasics.idl:139 bse/bsebasics.idl:315
 msgid "General Purpose Controller 4"
 msgstr "汎用コントローラ 4"
 
@@ -3236,11 +3224,11 @@ msgstr "水平方向ズーム"
 msgid "Half note"
 msgstr "半ノート"
 
-#: plugins/standardsaturator.idl:14
+#: plugins/standardsaturator.idl:17
 msgid "Hard"
 msgstr ""
 
-#: plugins/standardsaturator.idl:14
+#: plugins/standardsaturator.idl:17
 msgid "Hard saturation via clipping (prone to clicks)"
 msgstr ""
 
@@ -3345,7 +3333,7 @@ msgid "Importing MIDI file `%s'"
 msgstr "MIDI ファイル '%s' をインポート中"
 
 #. http://en.wikipedia.org/wiki/Diatonic_scale
-#: bse/bsecore.idl:50
+#: bse/bsebasics.idl:50
 msgid ""
 "In music theory, a diatonic scale (also: heptatonia prima) is a seven-note "
 "musical scale comprising five whole-tone and two half-tone steps. The half "
@@ -3354,7 +3342,7 @@ msgid ""
 msgstr ""
 
 #. http://en.wikipedia.org/wiki/Werckmeister_temperament
-#: bse/bsecore.idl:83
+#: bse/bsebasics.idl:83
 msgid ""
 "In this tuning the fifths C-G, D-A, E-B, F#-C#, and Bb-F are tempered narrow "
 "by 1/3 comma, and the fifths G#-D# and Eb-Bb are widened by 1/3 comma. The "
@@ -3364,7 +3352,7 @@ msgid ""
 msgstr ""
 
 #. http://en.wikipedia.org/wiki/Werckmeister_temperament
-#: bse/bsecore.idl:88
+#: bse/bsebasics.idl:88
 msgid ""
 "In this tuning the fifths D-A, A-E, F#-C#, C#-G#, and F-C are narrowed by "
 "1/4 comma, and the fifth G#-D# is widened by 1/4 comma. The other fifths are "
@@ -3373,13 +3361,13 @@ msgid ""
 msgstr ""
 
 #. Werckmeister I
-#: bse/bsecore.idl:54
+#: bse/bsebasics.idl:54
 #, fuzzy
 msgid "Indian Scale"
 msgstr "垂直方向スケール"
 
 #. INFO (enabled)
-#: birnet/birnetmsg.cc:106
+#: birnet/birnetmsg.cc:105
 #, fuzzy
 msgid "Information"
 msgstr "不正なオーバーラップ"
@@ -3389,7 +3377,7 @@ msgid "Initial phase of the oscillator wave form (cycle offset in degree)"
 msgstr ""
 
 #. BEAST initialization
-#: beast-gtk/bstmain.cc:116
+#: beast-gtk/bstmain.cc:118
 msgid "Initializers"
 msgstr "初期化"
 
@@ -3397,12 +3385,12 @@ msgstr "初期化"
 msgid "Input"
 msgstr "入力"
 
-#: plugins/bseamplifier.idl:31 plugins/bseamplifier.idl:36
+#: plugins/bseamplifier.idl:34 plugins/bseamplifier.idl:39
 #: plugins/bsebalance.idl:25 plugins/bsebalance.idl:30
 msgid "Input 1 [%]"
 msgstr "入力 1 [%]"
 
-#: plugins/bseamplifier.idl:32 plugins/bseamplifier.idl:37
+#: plugins/bseamplifier.idl:35 plugins/bseamplifier.idl:40
 #: plugins/bsebalance.idl:26 plugins/bsebalance.idl:31
 msgid "Input 2 [%]"
 msgstr "入力 2 [%]"
@@ -3533,7 +3521,7 @@ msgstr "パートを挿入/編集/移動 (マウスボタン1, 2)"
 msgid "Insert/resize/move notes (mouse button 1 and 2)"
 msgstr "ノートを挿入/リサイズ/移動(マウスボタン 1, 2)"
 
-#: bse/bsecore.idl:758
+#: bse/bsebasics.idl:719
 msgid "Instrument Path"
 msgstr "インストゥルメントパス"
 
@@ -3592,7 +3580,7 @@ msgstr "不正なシンセモジュールタイプ"
 msgid "Invert"
 msgstr "挿入"
 
-#: bse/bsecore.idl:741
+#: bse/bsebasics.idl:702
 msgid "Invert Sustain Pedal"
 msgstr "サスティンペダルを反転"
 
@@ -3601,7 +3589,7 @@ msgstr "サスティンペダルを反転"
 msgid "Invert the current selection"
 msgstr "選択をクリア"
 
-#: bse/bsecore.idl:742
+#: bse/bsebasics.idl:703
 msgid ""
 "Invert the state of sustain (damper) pedal so on/off meanings are reversed"
 msgstr "サスティン(ダンパー)ペダルのオン/オフを反転"
@@ -3637,12 +3625,12 @@ msgstr "キーボードショートカット"
 msgid "Key combinations used to activate a function"
 msgstr "機能を有効にするショートカット"
 
-#: bse/bsecore.idl:99
+#: bse/bsebasics.idl:99
 msgid "Kirnberger III"
 msgstr ""
 
 #. http://en.wikipedia.org/wiki/Johann_Philipp_Kirnberger_temperament
-#: bse/bsecore.idl:100
+#: bse/bsebasics.idl:100
 msgid ""
 "Kirnberger's method of compensating for and closing the circle of fifths is "
 "to split the \"wolf\" interval known to those who have used meantone "
@@ -3661,11 +3649,11 @@ msgstr "ノブ"
 msgid "Knob (Logarithmic)"
 msgstr "ノブ (対数"
 
-#: bse/bsecore.idl:768
+#: bse/bsebasics.idl:729
 msgid "LADSPA Path"
 msgstr "LADSPA パス"
 
-#: beast-gtk/bstmain.cc:172
+#: beast-gtk/bstmain.cc:174
 msgid "LADSPA Plugins"
 msgstr "LADSPA プラグイン"
 
@@ -3678,11 +3666,11 @@ msgstr "ラベル"
 msgid "Last modification time"
 msgstr "最終更新日時"
 
-#: bse/bsecore.idl:727
+#: bse/bsebasics.idl:688
 msgid "Latency [ms]"
 msgstr "レイテンシ [ms]"
 
-#: birnet/birnetutils.cc:1095
+#: birnet/birnetutils.cc:1077
 msgid "Launch Web Browser"
 msgstr ""
 
@@ -3757,7 +3745,7 @@ msgstr "左チャネル出力"
 msgid "Left to Right"
 msgstr "左オーディオ入力"
 
-#: plugins/standardsaturator.idl:34
+#: plugins/standardsaturator.idl:38
 msgid "Level"
 msgstr "レベル"
 
@@ -3773,7 +3761,7 @@ msgstr "ライセンス"
 msgid "License:"
 msgstr "ライセンス:"
 
-#: plugins/standardsaturator.idl:11
+#: plugins/standardsaturator.idl:14
 msgid ""
 "Linear saturation with a soft knee transit into the clipping range (equals "
 "hard clipping at 100%) which approaches quadratic curvature for small levels"
@@ -3888,7 +3876,7 @@ msgstr "インストゥルメントフォルダからシンセサイザメッシ
 msgid "Load..."
 msgstr "読み込み..."
 
-#: beast-gtk/bstmain.cc:237 beast-gtk/bstmain.cc:239
+#: beast-gtk/bstmain.cc:239 beast-gtk/bstmain.cc:241
 #, c-format
 msgid "Loading \"%s\""
 msgstr "\"%s\" を読み込み中"
@@ -3903,7 +3891,7 @@ msgstr "スキン `%s' を読み込み"
 msgid "Loading wave `%s'"
 msgstr "WAVE '%s' を読み込み中"
 
-#: beast-gtk/bstmain.cc:219
+#: beast-gtk/bstmain.cc:221
 msgid "Loading..."
 msgstr "読み込み中..."
 
@@ -3947,7 +3935,7 @@ msgstr "低周波数パス [Hz]"
 msgid "Lowpass filter frequency for the control signal"
 msgstr "コントロール信号の低周波数パスフィルタ周波数"
 
-#: bse/bsecore.idl:740
+#: bse/bsebasics.idl:701
 msgid "MIDI"
 msgstr "MIDI"
 
@@ -3988,7 +3976,7 @@ msgid "MIDI Tracker, Music Composition and Modular Synthesis Application"
 msgstr "MIDI トラッカー、音楽編集そしてモジュールシンセサイザアプリケーション"
 
 #: bse/bseserver.cc:470
-msgid "MIDI input or oputput is not available."
+msgid "MIDI input or output is not available."
 msgstr ""
 
 #: beast-gtk/bstpatterncolumns.cc:648
@@ -4009,7 +3997,7 @@ msgstr "主音量"
 msgid "Master Output"
 msgstr "主出力"
 
-#: plugins/bseamplifier.idl:48
+#: plugins/bseamplifier.idl:51
 msgid "Master Volume"
 msgstr "主音量"
 
@@ -4160,7 +4148,7 @@ msgstr "変調入力"
 msgid "Modulation"
 msgstr "変調"
 
-#: bse/bsecore.idl:121 bse/bsecore.idl:297
+#: bse/bsebasics.idl:121 bse/bsebasics.idl:297
 msgid "Modulation Depth"
 msgstr "変調深度"
 
@@ -4267,7 +4255,7 @@ msgstr "右へ移動"
 msgid "Move upwards"
 msgstr "上へ移動"
 
-#: plugins/bseamplifier.idl:39
+#: plugins/bseamplifier.idl:42
 msgid "Multiply Controls"
 msgstr "コントロールを掛け合せ"
 
@@ -4338,7 +4326,7 @@ msgstr "新しいビュー"
 #. "'X' - thread exited"),
 #. NULL, NULL, 0);
 #.
-#: beast-gtk/bstprofiler.cc:239
+#: beast-gtk/bstprofiler.cc:156
 msgid "Nice"
 msgstr "Nice"
 
@@ -4435,7 +4423,7 @@ msgstr "そのようなシンセモジュールはありません"
 msgid "No such wave"
 msgstr "そのようなイベントはありません"
 
-#: birnet/birnetutils.cc:1097
+#: birnet/birnetutils.cc:1079
 #, c-format
 msgid ""
 "No suitable web browser executable could be found to be executed and to "
@@ -4481,13 +4469,14 @@ msgstr "ノイズ出力"
 msgid "Noise is a generator of (supposedly) white noise"
 msgstr ""
 
-#: bse/bsecore.idl:159
+#: bse/bsebasics.idl:159
 msgid "Non-Registered Parameter"
 msgstr "未登録のパラメータ"
 
 #. special cased signals
 #: beast-gtk/bsteventrollctrl.cc:36 beast-gtk/bstpianorollctrl.cc:36
-#: beast-gtk/bstrecords.idl:40 beast-gtk/bstrecords.idl:67 bse/bsecore.idl:294
+#: beast-gtk/bstrecords.idl:40 beast-gtk/bstrecords.idl:67
+#: bse/bsebasics.idl:294
 msgid "None"
 msgstr "なし"
 
@@ -4495,7 +4484,7 @@ msgstr "なし"
 msgid "Norm Type"
 msgstr "基準タイプ"
 
-#: plugins/standardsaturator.idl:35
+#: plugins/standardsaturator.idl:39
 msgid ""
 "Normalization level of the saturation curve in percent, some saturation "
 "types still allow overdrive signals beyond this level"
@@ -4526,7 +4515,7 @@ msgstr "ノートヴェロシティ"
 msgid "Note Entry"
 msgstr "ノートエントリ"
 
-#: bse/bsecore.idl:118
+#: bse/bsebasics.idl:118
 msgid "Note Fine Tune"
 msgstr "ノート微細調整"
 
@@ -4547,7 +4536,7 @@ msgid "Note Sync Signal"
 msgstr "ノート同期信号"
 
 #. 14bit
-#: bse/bsecore.idl:117
+#: bse/bsebasics.idl:117
 msgid "Note Velocity"
 msgstr "ノートヴェロシティ"
 
@@ -4757,7 +4746,7 @@ msgid "Out of memory"
 msgstr ""
 
 #: beast-gtk/bstcanvassource.cc:861 beast-gtk/bstsnetrouter.cc:955
-#: plugins/bseamplifier.idl:45
+#: plugins/bseamplifier.idl:48
 msgid "Output"
 msgstr "出力"
 
@@ -4787,7 +4776,7 @@ msgstr "入力信号"
 msgid "Output Signals"
 msgstr "出力信号"
 
-#: plugins/standardsaturator.idl:41
+#: plugins/standardsaturator.idl:45
 #, fuzzy
 msgid "Output Volume"
 msgstr "左音量"
@@ -4801,7 +4790,7 @@ msgstr "出力"
 msgid "Output port name to interface from"
 msgstr "インターフェースする出力ポート名"
 
-#: plugins/bseamplifier.idl:48 plugins/standardsaturator.idl:41
+#: plugins/bseamplifier.idl:51 plugins/standardsaturator.idl:45
 #, fuzzy
 msgid "Output stage amplification in decibel"
 msgstr "出力ステージアンプ"
@@ -4840,7 +4829,7 @@ msgstr "PWM 入力"
 msgid "Palette"
 msgstr "パレット"
 
-#: bse/bsecore.idl:130 bse/bsecore.idl:306
+#: bse/bsebasics.idl:130 bse/bsebasics.idl:306
 msgid "Panorama"
 msgstr "パノラマ"
 
@@ -4905,27 +4894,27 @@ msgstr "パターン"
 msgid "Pattern Editor Layout"
 msgstr "パターンエディタ配置"
 
-#: bse/bsecore.idl:60
+#: bse/bsebasics.idl:60
 msgid "Pentatonic 5-limit"
 msgstr ""
 
-#: bse/bsecore.idl:64
+#: bse/bsebasics.idl:64
 msgid "Pentatonic Blues"
 msgstr ""
 
-#: bse/bsecore.idl:67
+#: bse/bsebasics.idl:67
 msgid "Pentatonic Gogo"
 msgstr ""
 
 #. http://en.wikipedia.org/wiki/Pentatonic_scale
-#: bse/bsecore.idl:61
+#: bse/bsebasics.idl:61
 msgid ""
 "Pentatonic scales are used in modern jazz and pop/rock contexts because they "
 "work exceedingly well over several chords diatonic to the same key, often "
 "better than the parent scale."
 msgstr ""
 
-#: beast-gtk/bstprofiler.cc:223
+#: beast-gtk/bstprofiler.cc:140
 msgid "Percentage of CPU usage"
 msgstr "CPU 使用量(%)"
 
@@ -4956,7 +4945,7 @@ msgid "Piano Notes"
 msgstr "ピアノノート"
 
 #. 7bit
-#: bse/bsecore.idl:116
+#: bse/bsebasics.idl:116
 msgid "Pitch Bend"
 msgstr "ピッチベンド"
 
@@ -4999,11 +4988,11 @@ msgstr "レイズ端でストリングスをヒット"
 msgid "Pluck the string"
 msgstr "再生"
 
-#: bse/bsecore.idl:764
+#: bse/bsebasics.idl:725
 msgid "Plugin Path"
 msgstr "プラグインパス"
 
-#: beast-gtk/bstmain.cc:155
+#: beast-gtk/bstmain.cc:157
 msgid "Plugins"
 msgstr "プラグイン"
 
@@ -5011,7 +5000,7 @@ msgstr "プラグイン"
 msgid "Popup Options"
 msgstr "ポップアップオプション"
 
-#: bse/bsecore.idl:125 bse/bsecore.idl:301
+#: bse/bsebasics.idl:125 bse/bsebasics.idl:301
 msgid "Portamento Time"
 msgstr "ポルタメント時間"
 
@@ -5045,10 +5034,6 @@ msgstr ""
 #: beast-gtk/bstsampleeditor.cc:448
 msgid "Preview"
 msgstr "テスト再生"
-
-#: bse/bsecore.idl:690
-msgid "Priority"
-msgstr "プライオリティ"
 
 #: beast-gtk/bstapp.cc:929
 msgid "Procedure Browser"
@@ -5087,7 +5072,7 @@ msgstr "プロセスは現在ビュジーです"
 msgid "Process: %s\n"
 msgstr "プロセッサ: %s\n"
 
-#: bse/bsecore.idl:728
+#: bse/bsebasics.idl:689
 msgid ""
 "Processing duration between input and output of a single sample, smaller "
 "values increase CPU load"
@@ -5095,16 +5080,12 @@ msgstr ""
 "サンプル一つの入出力の間での処理遅延時間。より小さくなるほど CPU 負荷を増大さ"
 "せる"
 
-#: bse/bsecore.idl:693
-msgid "Processor"
-msgstr "プロセッサ"
-
-#: beast-gtk/bstapp.cc:109 beast-gtk/bstprofiler.cc:199
+#: beast-gtk/bstapp.cc:109 beast-gtk/bstprofiler.cc:116
 msgid "Profiler"
 msgstr "プロファイラ"
 
 #. special cased signals
-#: bse/bsecore.idl:114
+#: bse/bsebasics.idl:114
 msgid "Program Change"
 msgstr "プロパティ変更"
 
@@ -5166,12 +5147,12 @@ msgstr "パルス幅"
 msgid "Pulse Width Modulation Input"
 msgstr "パルス幅変調入力"
 
-#: bse/bsecore.idl:56
+#: bse/bsebasics.idl:56
 msgid "Pythagorean Tuning"
 msgstr ""
 
 #. http://en.wikipedia.org/wiki/Pythagorean_tuning
-#: bse/bsecore.idl:57
+#: bse/bsebasics.idl:57
 msgid ""
 "Pythagorean tuning is the oldest way of tuning the 12-note chromatic scale, "
 "in which the frequency relationships of all intervals are based on the ratio "
@@ -5218,7 +5199,7 @@ msgstr "Q: なし"
 msgid "Q: Tact"
 msgstr "Q: タクト"
 
-#: plugins/standardsaturator.idl:9
+#: plugins/standardsaturator.idl:12
 msgid "Quadratic"
 msgstr ""
 
@@ -5273,20 +5254,20 @@ msgid "Quarter note"
 msgstr "4 分ノート"
 
 #. Meantone Temperament: http://en.wikipedia.org/wiki/Meantone_temperament
-#: bse/bsecore.idl:71
+#: bse/bsebasics.idl:71
 #, fuzzy
 msgid "Quarter-Comma Meantone"
 msgstr "4 分ノート"
 
 #. http://en.wikipedia.org/wiki/Quarter-comma_meantone
-#: bse/bsecore.idl:72
+#: bse/bsebasics.idl:72
 msgid ""
 "Quarter-comma meantone was the most common meantone temperament in the "
 "sixteenth and seventeenth centuries and sometimes used later."
 msgstr ""
 
 #. parse rc file
-#: beast-gtk/bstmain.cc:123
+#: beast-gtk/bstmain.cc:125
 msgid "RC Files"
 msgstr "初期化ファイル"
 
@@ -5369,7 +5350,7 @@ msgstr ""
 msgid "Reflection cutoff frequency"
 msgstr "カットオフ周波数でのパスバンドフォールオフ"
 
-#: bse/bsecore.idl:158
+#: bse/bsebasics.idl:158
 msgid "Registered Parameter"
 msgstr "登録されたパラメータ"
 
@@ -5602,11 +5583,11 @@ msgstr "/ルーティング/アンプ"
 msgid "Row Shading"
 msgstr "隠す列数"
 
-#: beast-gtk/bstprofiler.cc:225
+#: beast-gtk/bstprofiler.cc:142
 msgid "STime"
 msgstr "STime"
 
-#: bse/bsecore.idl:752
+#: bse/bsebasics.idl:713
 msgid "Sample Path"
 msgstr "サンプルパス"
 
@@ -5615,30 +5596,30 @@ msgstr "サンプルパス"
 msgid "Sample or instrument name"
 msgstr "インストゥルメントを保存"
 
-#: plugins/bsecontribsampleandhold.idl:9
+#: plugins/bsecontribsampleandhold.idl:12
 msgid ""
 "SampleAndHold samples the input signal when triggered and holds it until "
 "triggered again."
 msgstr ""
 
-#: plugins/standardsaturator.idl:33
+#: plugins/standardsaturator.idl:37
 #, fuzzy
 msgid "Saturation Type"
 msgstr "作成日時"
 
-#: plugins/standardsaturator.idl:7
+#: plugins/standardsaturator.idl:10
 msgid ""
 "Saturation via arc tangent function which is reasonably linear in the lower "
 "50% but develops a strong curvature above 80%"
 msgstr ""
 
-#: plugins/standardsaturator.idl:5
+#: plugins/standardsaturator.idl:8
 msgid ""
 "Saturation via hyperbolic tangent function which is mostly linear for small "
 "levels while providing a soft curvature for high volume signals"
 msgstr ""
 
-#: plugins/standardsaturator.idl:9
+#: plugins/standardsaturator.idl:12
 msgid ""
 "Saturation via quadratic approximation which keeps a well-proportioned "
 "curvature across all levels"
@@ -5704,12 +5685,12 @@ msgid "Saving project `%s'"
 msgstr "プロジェクト '%s' を保存中"
 
 #. SCRIPT (enabled)
-#: birnet/birnetmsg.cc:102
+#: birnet/birnetmsg.cc:101
 #, fuzzy
 msgid "Script"
 msgstr "スクリプト"
 
-#: bse/bsecore.idl:761
+#: bse/bsebasics.idl:722
 msgid "Script Path"
 msgstr "スクリプトパス"
 
@@ -5718,7 +5699,7 @@ msgstr "スクリプトパス"
 msgid "Script execution error."
 msgstr "プロセス実行を中止"
 
-#: beast-gtk/bstmain.cc:197
+#: beast-gtk/bstmain.cc:199
 msgid "Scripts"
 msgstr "スクリプト"
 
@@ -5738,11 +5719,11 @@ msgstr "スクロールしない"
 msgid "Scroll Right"
 msgstr "右へスクロール"
 
-#: bse/bsecore.idl:751
+#: bse/bsebasics.idl:712
 msgid "Search Paths"
 msgstr "検索パス"
 
-#: bse/bsecore.idl:756
+#: bse/bsebasics.idl:717
 #, fuzzy
 msgid ""
 "Search path of directories, seperated by \";\", used to find BSE effect "
@@ -5751,7 +5732,7 @@ msgstr ""
 "BSE エフェクトファイルをみつけるための \"%s\" で区切られたディレクトリの検索"
 "パス"
 
-#: bse/bsecore.idl:759
+#: bse/bsebasics.idl:720
 #, fuzzy
 msgid ""
 "Search path of directories, seperated by \";\", used to find BSE instrument "
@@ -5760,7 +5741,7 @@ msgstr ""
 "BSE インストゥルメントファイルをみつけるための \"%s\" で区切られたディレクト"
 "リの検索パス"
 
-#: bse/bsecore.idl:765
+#: bse/bsebasics.idl:726
 #, fuzzy
 msgid ""
 "Search path of directories, seperated by \";\", used to find BSE plugins. "
@@ -5770,7 +5751,7 @@ msgstr ""
 "BSE プラグインをみつけるための \"%s\" で区切られたディレクトリの検索パスシス"
 "テムの標準 BSE プラグイン配置場所に加えてこのパスも検索されます"
 
-#: bse/bsecore.idl:762
+#: bse/bsebasics.idl:723
 #, fuzzy
 msgid ""
 "Search path of directories, seperated by \";\", used to find BSE scheme "
@@ -5779,7 +5760,7 @@ msgstr ""
 "BSE スキームスクリプトをみつけるための \"%s\" で区切られたディレクトリの検索"
 "パス"
 
-#: bse/bsecore.idl:769
+#: bse/bsebasics.idl:730
 #, fuzzy
 msgid ""
 "Search path of directories, seperated by \";\", used to find LADSPA plugins. "
@@ -5792,7 +5773,7 @@ msgstr ""
 "は Linux Audio Developer's Simple Plugin API の略ですが、LADSPA プラグインに"
 "ついての詳細な情報は http://www.ladspa.org/ にあります"
 
-#: bse/bsecore.idl:753
+#: bse/bsebasics.idl:714
 #, fuzzy
 msgid ""
 "Search path of directories, seperated by \";\", used to find audio samples."
@@ -5802,7 +5783,7 @@ msgstr "音声サンプルをみつけるための \"%s\" で区切られたデ�
 msgid "Searchpath Text Entry"
 msgstr "検索パス テキストエントリ"
 
-#: bse/bsebusmodule.idl:10 plugins/bseamplifier.idl:26
+#: bse/bsebusmodule.idl:10 plugins/bseamplifier.idl:29
 #: plugins/bsebalance.idl:18
 msgid "Second audio input"
 msgstr "第二オーティオ入力"
@@ -5812,7 +5793,7 @@ msgstr "第二オーティオ入力"
 msgid "Second audio output"
 msgstr "第二オーティオ入力"
 
-#: plugins/bseamplifier.idl:28 plugins/bsebalance.idl:20
+#: plugins/bseamplifier.idl:31 plugins/bsebalance.idl:20
 msgid "Second control input"
 msgstr "第二コントロール入力"
 
@@ -5988,7 +5969,7 @@ msgstr "オーディオ録音障害についてのメッセージを表示"
 msgid "Show messages about empty part range"
 msgstr "オーディオ録音障害についてのメッセージを表示"
 
-#: birnet/birnetutils.cc:1098
+#: birnet/birnetutils.cc:1080
 #, fuzzy
 msgid "Show messages about web browser launch problems"
 msgstr "オーディオ録音障害についてのメッセージを表示"
@@ -6022,7 +6003,7 @@ msgid "Signal Outputs"
 msgstr "信号出力"
 
 #. Werckmeister II
-#: bse/bsecore.idl:74
+#: bse/bsebasics.idl:74
 msgid "Silbermann-Sorge Temperament"
 msgstr ""
 
@@ -6084,7 +6065,7 @@ msgstr ""
 msgid "Snoop Signal"
 msgstr "信号をスヌープ"
 
-#: plugins/standardsaturator.idl:11
+#: plugins/standardsaturator.idl:14
 msgid "Soft Knee"
 msgstr ""
 
@@ -6126,7 +6107,7 @@ msgid "Spin Button (Logarithmic)"
 msgstr "スピンボタン(対数)"
 
 #. show splash images
-#: beast-gtk/bstmain.cc:126
+#: beast-gtk/bstmain.cc:128
 msgid "Splash Image"
 msgstr "スプラッシュイメージ"
 
@@ -6210,13 +6191,9 @@ msgstr "開始:"
 msgid "Starting Playback"
 msgstr "再生を開始"
 
-#: beast-gtk/bstmain.cc:113
+#: beast-gtk/bstmain.cc:115
 msgid "Startup"
 msgstr "起動"
-
-#: bse/bsecore.idl:687
-msgid "State"
-msgstr "状態"
 
 #: beast-gtk/bstpatternctrl.cc:99
 msgid "Steps"
@@ -6273,7 +6250,7 @@ msgid "Swap input with output channels when displaying synthesis modules?"
 msgstr ""
 "シンセモジュールを表示しているときに入力を出力チャネルに切り替えるかどうか"
 
-#: plugins/bseamplifier.idl:40
+#: plugins/bseamplifier.idl:43
 msgid ""
 "Switch the two control inputs to work like a chain of gain controls, rather "
 "than mixing them together, weighted by balance."
@@ -6315,7 +6292,7 @@ msgstr "同期出力"
 msgid "Syncronize left and right volume"
 msgstr "左右の音量を同期"
 
-#: bse/bsecore.idl:735
+#: bse/bsebasics.idl:696
 msgid "Synth Control Frequency"
 msgstr "シンセコントロール周波数"
 
@@ -6327,7 +6304,7 @@ msgstr "シンセ完了"
 msgid "Synth Input"
 msgstr "シンセ入力"
 
-#: bse/bsecore.idl:731
+#: bse/bsebasics.idl:692
 msgid "Synth Mixing Frequency"
 msgstr "シンセミキサ周波数"
 
@@ -6341,11 +6318,11 @@ msgstr "シンセ完了"
 msgid "Synthesis Modules"
 msgstr "シンセモジュール"
 
-#: bse/bsecore.idl:725
+#: bse/bsebasics.idl:686
 msgid "Synthesis Settings"
 msgstr "シンセ設定"
 
-#: bse/bsecore.idl:732
+#: bse/bsebasics.idl:693
 msgid "Synthesis mixing frequency, common values are: 22050, 44100, 48000"
 msgstr "シンセミキサ周波数。通常値: 22050, 44100, 48000"
 
@@ -6406,15 +6383,11 @@ msgstr "シンセサイザー: %s"
 msgid "Synthesizer: %s"
 msgstr "シンセサイザー: %s"
 
-#: bse/bsecore.idl:697
-msgid "System Time"
-msgstr "システム時間"
-
-#: plugins/standardsaturator.idl:5
+#: plugins/standardsaturator.idl:8
 msgid "TANH"
 msgstr ""
 
-#: beast-gtk/bstprofiler.cc:222
+#: beast-gtk/bstprofiler.cc:139
 msgid "TID"
 msgstr "TID"
 
@@ -6443,22 +6416,6 @@ msgstr "文字色"
 msgid "Text Entry"
 msgstr "テキストエントリ"
 
-#: bse/bsecore.idl:699
-msgid "The CPU time spent executing instructions of children of this thread"
-msgstr "スレッドの子の命令を実行するのにかかった CPU 時間"
-
-#: bse/bsecore.idl:695
-msgid "The CPU time spent executing instructions of this thread"
-msgstr "スレッドの命令を実行するのにかかった CPU 時間"
-
-#: bse/bsecore.idl:701
-msgid "The CPU time spent in the system for children of this thread"
-msgstr "スレッドの子についてシステムが要した CPU 時間"
-
-#: bse/bsecore.idl:697
-msgid "The CPU time spent in the system for this thread"
-msgstr "スレッドについてシステムが要した CPU 時間"
-
 #: bse/bsesource.proc:625
 msgid ""
 "The MIDI Channel from which automation events should be received, 0 "
@@ -6466,7 +6423,7 @@ msgid ""
 msgstr ""
 
 #. http://en.wikipedia.org/wiki/Pentatonic_scale
-#: bse/bsecore.idl:68
+#: bse/bsebasics.idl:68
 msgid ""
 "The Pentatonic Gogo scale is an anhemitonic pentatonic scale used to tune "
 "the instruments of the Gogo people of Tanzania."
@@ -6480,7 +6437,7 @@ msgid ""
 msgstr ""
 
 #. http://de.wikipedia.org/wiki/Silbermann-Sorge-Temperatur
-#: bse/bsecore.idl:75
+#: bse/bsebasics.idl:75
 msgid ""
 "The Silbermann-Sorge temperament is a meantone temperament used for Baroque "
 "era organs by Gottfried Silbermann."
@@ -6506,7 +6463,7 @@ msgid "The audio channel to play, usually 1 is left, 2 is right"
 msgstr ""
 
 #. http://en.wikipedia.org/wiki/Pentatonic_scale
-#: bse/bsecore.idl:65
+#: bse/bsebasics.idl:65
 msgid ""
 "The blues scale is the minor pentatonic with an additional augmented fourth, "
 "which is referred to as the \"blues note\"."
@@ -6515,10 +6472,6 @@ msgstr ""
 #: beast-gtk/bstpatternctrl.cc:105
 msgid "The direction of cell movement each time an event or note was edited"
 msgstr "イベントまたはノートが編集される度のセルの移動の方向"
-
-#: bse/bsecore.idl:687
-msgid "The execution state of the thread"
-msgstr "スレッドの実行状態"
 
 #: plugins/davcanyondelay.cc:61
 msgid "The feedback amount; a negative feedback inverts the signal"
@@ -6571,20 +6524,12 @@ msgid "The mnemonic accelerator key for this label"
 msgstr "このラベルのニーモニックショートカットキー"
 
 #. http://en.wikipedia.org/wiki/Equal_temperament
-#: bse/bsecore.idl:39
+#: bse/bsebasics.idl:39
 msgid ""
 "The most common tuning system for modern Western music, is the twelve-tone "
 "equal temperament, abbreviated as 12-TET, which divides the octave into 12 "
 "equal parts."
 msgstr ""
-
-#: bse/bsecore.idl:690
-msgid ""
-"The nice value of a thread, -20 indicates a high priority thread and +19 a "
-"low priority one that is 'nice' to others"
-msgstr ""
-"スレッドの nice 値。-20 は他よりも最も高い優先度を、+19 は最も低い優先度を示"
-"す"
 
 #: plugins/bsequantizer.idl:12
 msgid "The number of bits the quantization steps correspond to."
@@ -6611,10 +6556,6 @@ msgstr ""
 msgid ""
 "The port name is a unique name to establish input<->output port relationships"
 msgstr "入出力ポートの関係を確立するためにポート名として固有な名前を与えます"
-
-#: bse/bsecore.idl:693
-msgid "The processor that this thread is currently being executed on"
-msgstr "スレッドの実行されているプロセッサ"
 
 #: beast-gtk/bstapp.cc:584
 msgid "The project has been modified."
@@ -6675,7 +6616,7 @@ msgstr ""
 msgid "The type of filter to use"
 msgstr "使用するフィルターの種類"
 
-#: plugins/standardsaturator.idl:33
+#: plugins/standardsaturator.idl:37
 #, fuzzy
 msgid "The type of saturation to be used"
 msgstr "使用するフィルターの種類"
@@ -6717,7 +6658,7 @@ msgid "This signal goes high after the release phase has completed"
 msgstr "リリース位相完了後にこの信号が高となる"
 
 #. http://en.wikipedia.org/wiki/Werckmeister_temperament
-#: bse/bsecore.idl:92
+#: bse/bsebasics.idl:92
 msgid ""
 "This tuning is also known as Septenarius tuning is based on a division of "
 "the monochord length into 196 = 7 * 7 * 4 parts. The resulting scale has "
@@ -6728,7 +6669,7 @@ msgid ""
 msgstr ""
 
 #. http://en.wikipedia.org/wiki/Werckmeister_temperament
-#: bse/bsecore.idl:79
+#: bse/bsebasics.idl:79
 msgid ""
 "This tuning uses mostly pure (perfect) fifths, as in Pythagorean tuning, but "
 "each of the fifths C-G, G-D, D-A and B-F# is made smaller, i.e. tempered by "
@@ -6737,7 +6678,7 @@ msgid ""
 msgstr ""
 
 #. http://en.wikipedia.org/wiki/Young_temperament
-#: bse/bsecore.idl:106
+#: bse/bsebasics.idl:106
 msgid ""
 "Thomas Young devised a form of musical tuning to make the harmony most "
 "perfect in those keys which are the most frequently used (give better major "
@@ -6746,19 +6687,15 @@ msgid ""
 "as six equally imperfect fifths."
 msgstr ""
 
-#: bse/bsecore.idl:688
-msgid "Thread ID"
-msgstr "スレッド ID"
-
-#: beast-gtk/bstprofiler.cc:222
+#: beast-gtk/bstprofiler.cc:139
 msgid "Thread ID (on some systems the process ID)"
 msgstr "スレッド ID (システムによってはプロセス ID)"
 
-#: beast-gtk/bstprofiler.cc:220 bse/bsecore.idl:686
+#: beast-gtk/bstprofiler.cc:137
 msgid "Thread Name"
 msgstr "スレッド名"
 
-#: beast-gtk/bstprofiler.cc:239
+#: beast-gtk/bstprofiler.cc:156
 msgid "Thread priority from -20 (high) to +19 (low)"
 msgstr "スレッド優先度(-20:最高 〜 +19:最低)"
 
@@ -6792,7 +6729,7 @@ msgstr "切り替えボタン"
 msgid "Toggle channel name hints"
 msgstr "チャネル名ヒントを切り替え"
 
-#: plugins/bseamplifier.idl:43
+#: plugins/bseamplifier.idl:46
 msgid "Toggle exponential and linear control response"
 msgstr "指数/線形コントロール応答を切り替え"
 
@@ -6814,7 +6751,7 @@ msgstr ""
 msgid "Too many open files in system"
 msgstr ""
 
-#: beast-gtk/bstprofiler.cc:143
+#: beast-gtk/bstprofiler.cc:79
 msgid "Totals"
 msgstr "総計"
 
@@ -6854,12 +6791,12 @@ msgstr "トリガー入力"
 msgid "Trigger Hit"
 msgstr "トリガー入力"
 
-#: plugins/bsecontribsampleandhold.idl:11 plugins/davbassfilter.idl:15
+#: plugins/bsecontribsampleandhold.idl:14 plugins/davbassfilter.idl:15
 #: plugins/davsyndrum.cc:90 plugins/davxtalstrings.cc:119
 msgid "Trigger In"
 msgstr "トリガー入力"
 
-#: plugins/bsecontribsampleandhold.idl:11
+#: plugins/bsecontribsampleandhold.idl:14
 #, fuzzy
 msgid "Trigger Input"
 msgstr "トリガー入力"
@@ -6919,7 +6856,7 @@ msgstr "タイミング"
 msgid "Type"
 msgstr "タイプ"
 
-#: beast-gtk/bstprofiler.cc:224
+#: beast-gtk/bstprofiler.cc:141
 msgid "UTime"
 msgstr "UTime"
 
@@ -7006,10 +6943,6 @@ msgstr "右ループポインタを調整するための水平ルーラーを使
 msgid "Use underline"
 msgstr "下線を利用"
 
-#: bse/bsecore.idl:695
-msgid "User Time"
-msgstr "ユーザー時間"
-
 #: beast-gtk/bstsampleeditor.cc:403 beast-gtk/bstwaveeditor.cc:167
 msgid "VScale:"
 msgstr "垂直方向スケール:"
@@ -7092,7 +7025,7 @@ msgstr "仮想入力 %u"
 msgid "Virtual output %u"
 msgstr "仮想出力 %u"
 
-#: bse/bsebusmodule.idl:13 bse/bsecore.idl:127 bse/bsecore.idl:303
+#: bse/bsebasics.idl:127 bse/bsebasics.idl:303 bse/bsebusmodule.idl:13
 msgid "Volume"
 msgstr "音量"
 
@@ -7109,7 +7042,7 @@ msgid "WAVE File"
 msgstr "WAVE ファイル"
 
 #. WARNING (enabled)
-#: birnet/birnetmsg.cc:98
+#: birnet/birnetmsg.cc:97
 msgid "Warning"
 msgstr "警告"
 
@@ -7153,19 +7086,19 @@ msgid "Waves"
 msgstr "Wave ファイル"
 
 #. Well Temperament: http://en.wikipedia.org/wiki/Well_temperament
-#: bse/bsecore.idl:78
+#: bse/bsebasics.idl:78
 msgid "Werckmeister III"
 msgstr ""
 
-#: bse/bsecore.idl:82
+#: bse/bsebasics.idl:82
 msgid "Werckmeister IV"
 msgstr ""
 
-#: bse/bsecore.idl:87
+#: bse/bsebasics.idl:87
 msgid "Werckmeister V"
 msgstr ""
 
-#: bse/bsecore.idl:91
+#: bse/bsebasics.idl:91
 msgid "Werckmeister VI"
 msgstr ""
 
@@ -7207,7 +7140,7 @@ msgstr "XtalStrings 出力"
 msgid "You probably want to start this script from a part editor."
 msgstr ""
 
-#: bse/bsecore.idl:105
+#: bse/bsebasics.idl:105
 msgid "Young Temperament"
 msgstr ""
 
@@ -7224,7 +7157,7 @@ msgstr "ズーム"
 msgid "Zoom:"
 msgstr "ズーム:"
 
-#: bse/bsepcmdevice-null.cc:115
+#: bse/bsepcmdevice-null.cc:117
 msgid "[nosleep]"
 msgstr ""
 
@@ -7485,231 +7418,231 @@ msgstr "仮想化(_V)"
 msgid "connection terminated"
 msgstr ""
 
-#: bse/bsecore.idl:265 bse/bsecore.idl:433
+#: bse/bsebasics.idl:265 bse/bsebasics.idl:433
 msgid "control-102"
 msgstr "コントロール 102"
 
-#: bse/bsecore.idl:266 bse/bsecore.idl:434
+#: bse/bsebasics.idl:266 bse/bsebasics.idl:434
 msgid "control-103"
 msgstr "コントロール 103"
 
-#: bse/bsecore.idl:267 bse/bsecore.idl:435
+#: bse/bsebasics.idl:267 bse/bsebasics.idl:435
 msgid "control-104"
 msgstr "コントロール 104"
 
-#: bse/bsecore.idl:268 bse/bsecore.idl:436
+#: bse/bsebasics.idl:268 bse/bsebasics.idl:436
 msgid "control-105"
 msgstr "コントロール 105"
 
-#: bse/bsecore.idl:269 bse/bsecore.idl:437
+#: bse/bsebasics.idl:269 bse/bsebasics.idl:437
 msgid "control-106"
 msgstr "コントロール 106"
 
-#: bse/bsecore.idl:270 bse/bsecore.idl:438
+#: bse/bsebasics.idl:270 bse/bsebasics.idl:438
 msgid "control-107"
 msgstr "コントロール 107"
 
-#: bse/bsecore.idl:271 bse/bsecore.idl:439
+#: bse/bsebasics.idl:271 bse/bsebasics.idl:439
 msgid "control-108"
 msgstr "コントロール 108"
 
-#: bse/bsecore.idl:272 bse/bsecore.idl:440
+#: bse/bsebasics.idl:272 bse/bsebasics.idl:440
 msgid "control-109"
 msgstr "コントロール 109"
 
-#: bse/bsecore.idl:273 bse/bsecore.idl:441
+#: bse/bsebasics.idl:273 bse/bsebasics.idl:441
 msgid "control-110"
 msgstr "コントロール 110"
 
-#: bse/bsecore.idl:274 bse/bsecore.idl:442
+#: bse/bsebasics.idl:274 bse/bsebasics.idl:442
 msgid "control-111"
 msgstr "コントロール 111"
 
-#: bse/bsecore.idl:275 bse/bsecore.idl:443
+#: bse/bsebasics.idl:275 bse/bsebasics.idl:443
 msgid "control-112"
 msgstr "コントロール 112"
 
-#: bse/bsecore.idl:276 bse/bsecore.idl:444
+#: bse/bsebasics.idl:276 bse/bsebasics.idl:444
 msgid "control-113"
 msgstr "コントロール 113"
 
-#: bse/bsecore.idl:277 bse/bsecore.idl:445
+#: bse/bsebasics.idl:277 bse/bsebasics.idl:445
 msgid "control-114"
 msgstr "コントロール 114"
 
-#: bse/bsecore.idl:278 bse/bsecore.idl:446
+#: bse/bsebasics.idl:278 bse/bsebasics.idl:446
 msgid "control-115"
 msgstr "コントロール 115"
 
-#: bse/bsecore.idl:279 bse/bsecore.idl:447
+#: bse/bsebasics.idl:279 bse/bsebasics.idl:447
 msgid "control-116"
 msgstr "コントロール 116"
 
-#: bse/bsecore.idl:280 bse/bsecore.idl:448
+#: bse/bsebasics.idl:280 bse/bsebasics.idl:448
 msgid "control-117"
 msgstr "コントロール 117"
 
-#: bse/bsecore.idl:281 bse/bsecore.idl:449
+#: bse/bsebasics.idl:281 bse/bsebasics.idl:449
 msgid "control-118"
 msgstr "コントロール 118"
 
-#: bse/bsecore.idl:282 bse/bsecore.idl:450
+#: bse/bsebasics.idl:282 bse/bsebasics.idl:450
 msgid "control-119"
 msgstr "コントロール 119"
 
-#: bse/bsecore.idl:175 bse/bsecore.idl:343
+#: bse/bsebasics.idl:175 bse/bsebasics.idl:343
 msgid "control-14"
 msgstr "コントロール 14"
 
-#: bse/bsecore.idl:176 bse/bsecore.idl:344
+#: bse/bsebasics.idl:176 bse/bsebasics.idl:344
 msgid "control-15"
 msgstr "コントロール 14"
 
-#: bse/bsecore.idl:181 bse/bsecore.idl:349
+#: bse/bsebasics.idl:181 bse/bsebasics.idl:349
 msgid "control-20"
 msgstr "コントロール 20"
 
-#: bse/bsecore.idl:182 bse/bsecore.idl:350
+#: bse/bsebasics.idl:182 bse/bsebasics.idl:350
 msgid "control-21"
 msgstr "コントロール 21"
 
-#: bse/bsecore.idl:183 bse/bsecore.idl:351
+#: bse/bsebasics.idl:183 bse/bsebasics.idl:351
 msgid "control-22"
 msgstr "コントロール 22"
 
-#: bse/bsecore.idl:184 bse/bsecore.idl:352
+#: bse/bsebasics.idl:184 bse/bsebasics.idl:352
 msgid "control-23"
 msgstr "コントロール 23"
 
-#: bse/bsecore.idl:185 bse/bsecore.idl:353
+#: bse/bsebasics.idl:185 bse/bsebasics.idl:353
 msgid "control-24"
 msgstr "コントロール 24"
 
-#: bse/bsecore.idl:186 bse/bsecore.idl:354
+#: bse/bsebasics.idl:186 bse/bsebasics.idl:354
 msgid "control-25"
 msgstr "コントロール 25"
 
-#: bse/bsecore.idl:187 bse/bsecore.idl:355
+#: bse/bsebasics.idl:187 bse/bsebasics.idl:355
 msgid "control-26"
 msgstr "コントロール 26"
 
-#: bse/bsecore.idl:188 bse/bsecore.idl:356
+#: bse/bsebasics.idl:188 bse/bsebasics.idl:356
 msgid "control-27"
 msgstr "コントロール 27"
 
-#: bse/bsecore.idl:189 bse/bsecore.idl:357
+#: bse/bsebasics.idl:189 bse/bsebasics.idl:357
 msgid "control-28"
 msgstr "コントロール 28"
 
-#: bse/bsecore.idl:190 bse/bsecore.idl:358
+#: bse/bsebasics.idl:190 bse/bsebasics.idl:358
 msgid "control-29"
 msgstr "コントロール 29"
 
-#: bse/bsecore.idl:164 bse/bsecore.idl:332
+#: bse/bsebasics.idl:164 bse/bsebasics.idl:332
 msgid "control-3"
 msgstr "コントローラ 3"
 
-#: bse/bsecore.idl:191 bse/bsecore.idl:359
+#: bse/bsebasics.idl:191 bse/bsebasics.idl:359
 msgid "control-30"
 msgstr "コントロール 30"
 
-#: bse/bsecore.idl:192 bse/bsecore.idl:360
+#: bse/bsebasics.idl:192 bse/bsebasics.idl:360
 msgid "control-31"
 msgstr "コントロール 31"
 
-#: bse/bsecore.idl:197 bse/bsecore.idl:365
+#: bse/bsebasics.idl:197 bse/bsebasics.idl:365
 msgid "control-35"
 msgstr "コントロール 35"
 
-#: bse/bsecore.idl:203 bse/bsecore.idl:371
+#: bse/bsebasics.idl:203 bse/bsebasics.idl:371
 msgid "control-41"
 msgstr "コントロール 41"
 
-#: bse/bsecore.idl:208 bse/bsecore.idl:376
+#: bse/bsebasics.idl:208 bse/bsebasics.idl:376
 msgid "control-46"
 msgstr "コントロール 46"
 
-#: bse/bsecore.idl:209 bse/bsecore.idl:377
+#: bse/bsebasics.idl:209 bse/bsebasics.idl:377
 msgid "control-47"
 msgstr "コントロール 47"
 
-#: bse/bsecore.idl:214 bse/bsecore.idl:382
+#: bse/bsebasics.idl:214 bse/bsebasics.idl:382
 msgid "control-52"
 msgstr "コントロール 52"
 
-#: bse/bsecore.idl:215 bse/bsecore.idl:383
+#: bse/bsebasics.idl:215 bse/bsebasics.idl:383
 msgid "control-53"
 msgstr "コントロール 53"
 
-#: bse/bsecore.idl:216 bse/bsecore.idl:384
+#: bse/bsebasics.idl:216 bse/bsebasics.idl:384
 msgid "control-54"
 msgstr "コントロール 54"
 
-#: bse/bsecore.idl:217 bse/bsecore.idl:385
+#: bse/bsebasics.idl:217 bse/bsebasics.idl:385
 msgid "control-55"
 msgstr "コントロール 55"
 
-#: bse/bsecore.idl:218 bse/bsecore.idl:386
+#: bse/bsebasics.idl:218 bse/bsebasics.idl:386
 msgid "control-56"
 msgstr "コントロール 56"
 
-#: bse/bsecore.idl:219 bse/bsecore.idl:387
+#: bse/bsebasics.idl:219 bse/bsebasics.idl:387
 msgid "control-57"
 msgstr "コントロール 57"
 
-#: bse/bsecore.idl:220 bse/bsecore.idl:388
+#: bse/bsebasics.idl:220 bse/bsebasics.idl:388
 msgid "control-58"
 msgstr "コントロール 58"
 
-#: bse/bsecore.idl:221 bse/bsecore.idl:389
+#: bse/bsebasics.idl:221 bse/bsebasics.idl:389
 msgid "control-59"
 msgstr "コントロール 59"
 
-#: bse/bsecore.idl:222 bse/bsecore.idl:390
+#: bse/bsebasics.idl:222 bse/bsebasics.idl:390
 msgid "control-60"
 msgstr "コントロール 60"
 
-#: bse/bsecore.idl:223 bse/bsecore.idl:391
+#: bse/bsebasics.idl:223 bse/bsebasics.idl:391
 msgid "control-61"
 msgstr "コントロール 61"
 
-#: bse/bsecore.idl:224 bse/bsecore.idl:392
+#: bse/bsebasics.idl:224 bse/bsebasics.idl:392
 msgid "control-62"
 msgstr "コントロール 62"
 
-#: bse/bsecore.idl:225 bse/bsecore.idl:393
+#: bse/bsebasics.idl:225 bse/bsebasics.idl:393
 msgid "control-63"
 msgstr "コントロール 63"
 
-#: bse/bsecore.idl:248 bse/bsecore.idl:416
+#: bse/bsebasics.idl:248 bse/bsebasics.idl:416
 msgid "control-85"
 msgstr "コントロール 85"
 
-#: bse/bsecore.idl:249 bse/bsecore.idl:417
+#: bse/bsebasics.idl:249 bse/bsebasics.idl:417
 msgid "control-86"
 msgstr "コントロール 86"
 
-#: bse/bsecore.idl:250 bse/bsecore.idl:418
+#: bse/bsebasics.idl:250 bse/bsebasics.idl:418
 msgid "control-87"
 msgstr "コントロール 87"
 
-#: bse/bsecore.idl:251 bse/bsecore.idl:419
+#: bse/bsebasics.idl:251 bse/bsebasics.idl:419
 msgid "control-88"
 msgstr "コントロール 88"
 
-#: bse/bsecore.idl:252 bse/bsecore.idl:420
+#: bse/bsebasics.idl:252 bse/bsebasics.idl:420
 msgid "control-89"
 msgstr "コントロール 89"
 
-#: bse/bsecore.idl:170 bse/bsecore.idl:338
+#: bse/bsebasics.idl:170 bse/bsebasics.idl:338
 msgid "control-9"
 msgstr "コントロール 9"
 
-#: bse/bsecore.idl:253 bse/bsecore.idl:421
+#: bse/bsebasics.idl:253 bse/bsebasics.idl:421
 msgid "control-90"
 msgstr "コントロール 90"
 
-#: tools/bsewavetool.cc:1176
+#: tools/bsewavetool.cc:1178
 #, fuzzy, c-format
 msgid "failed to add wave chunk from file \"%s\": %s"
 msgstr "出力ファイル \"%s\" を開くのに失敗: %s"
@@ -7742,6 +7675,9 @@ msgstr "処理中"
 
 #~ msgid "/Misc/Sniffer"
 #~ msgstr "/その他/スニファ"
+
+#~ msgid "A unique number identifying this thread"
+#~ msgstr "このスレッドを識別する固有な番号"
 
 #~ msgid "Adjust pattern length"
 #~ msgstr "パターン長を調整"
@@ -7789,6 +7725,12 @@ msgstr "処理中"
 #~ msgstr ""
 #~ "BseSniffer でクライアント側信号スコープを実行するのに必要なデータを取得で"
 #~ "きます"
+
+#~ msgid "Child System Time"
+#~ msgstr "子システム時間"
+
+#~ msgid "Child User Time"
+#~ msgstr "子ユーザー時間"
 
 #~ msgid "Compressed left audio output"
 #~ msgstr "圧縮された左オーディオ出力"
@@ -7892,6 +7834,12 @@ msgstr "処理中"
 #~ msgid "Perform exponential frequency modulationinstead of linear"
 #~ msgstr "線形の代わりに指数関数的周波数変調を実行"
 
+#~ msgid "Priority"
+#~ msgstr "プライオリティ"
+
+#~ msgid "Processor"
+#~ msgstr "プロセッサ"
+
 #~ msgid "Properties:"
 #~ msgstr "プロパティ:"
 
@@ -7935,6 +7883,9 @@ msgstr "処理中"
 #~ msgid "Specify project tab width in pixels"
 #~ msgstr "プロジェクトタブ幅をピクセル数で指定"
 
+#~ msgid "State"
+#~ msgstr "状態"
+
 #~ msgid "Status"
 #~ msgstr "ステータス"
 
@@ -7953,14 +7904,48 @@ msgstr "処理中"
 #~ msgid "Synthesis Network"
 #~ msgstr "シンセネットワーク"
 
+#~ msgid "System Time"
+#~ msgstr "システム時間"
+
 #~ msgid "Tab Width"
 #~ msgstr "タブ幅"
+
+#~ msgid "The CPU time spent executing instructions of children of this thread"
+#~ msgstr "スレッドの子の命令を実行するのにかかった CPU 時間"
+
+#~ msgid "The CPU time spent executing instructions of this thread"
+#~ msgstr "スレッドの命令を実行するのにかかった CPU 時間"
+
+#~ msgid "The CPU time spent in the system for children of this thread"
+#~ msgstr "スレッドの子についてシステムが要した CPU 時間"
+
+#~ msgid "The CPU time spent in the system for this thread"
+#~ msgstr "スレッドについてシステムが要した CPU 時間"
+
+#~ msgid "The execution state of the thread"
+#~ msgstr "スレッドの実行状態"
+
+#~ msgid ""
+#~ "The nice value of a thread, -20 indicates a high priority thread and +19 "
+#~ "a low priority one that is 'nice' to others"
+#~ msgstr ""
+#~ "スレッドの nice 値。-20 は他よりも最も高い優先度を、+19 は最も低い優先度を"
+#~ "示す"
+
+#~ msgid "The processor that this thread is currently being executed on"
+#~ msgstr "スレッドの実行されているプロセッサ"
 
 #~ msgid "The source code"
 #~ msgstr "ソースコード"
 
 #~ msgid "The synthesis network to interface to"
 #~ msgstr "インターフェースするシンセネットワーク"
+
+#~ msgid "Thread ID"
+#~ msgstr "スレッド ID"
+
+#~ msgid "User Time"
+#~ msgstr "ユーザー時間"
 
 #~ msgid "Volume [dB] Steps"
 #~ msgstr "音量[dB]ステップ"

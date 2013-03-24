@@ -36,6 +36,7 @@ static gboolean     register_core_plugins = TRUE;
 static gboolean     register_ladspa_plugins = TRUE;
 static gboolean     register_scripts = TRUE;
 static gboolean     may_auto_update_bse_rc_file = TRUE;
+static bool         rewrite_bse_file = false;
 
 /* --- functions --- */
 static void
@@ -261,11 +262,27 @@ main (int   argc,
 	    }
           continue;
 	}
-      /* load/merge projects */
+      // load/merge projects
       if (!app || !merge_with_last)
         {
           SfiProxy project = bse_server_use_new_project (BSE_SERVER, argv[i]);
           BseErrorType error = bst_project_restore_from_file (project, argv[i], TRUE, TRUE);
+          if (rewrite_bse_file)
+            {
+              Rapicorn::printerr ("%s: loading: %s\n", argv[i], bse_error_blurb (error));
+              if (error)
+                exit (1);
+              if (unlink (argv[i]) < 0)
+                {
+                  perror (Rapicorn::string_printf ("%s: failed to remove", argv[i]).c_str());
+                  exit (2);
+                }
+              error = bse_project_store_bse (project, 0, argv[i], TRUE);
+              Rapicorn::printerr ("%s: writing: %s\n", argv[i], bse_error_blurb (error));
+              if (error)
+                exit (3);
+              exit (0);
+            }
           if (!error || error == BSE_ERROR_FILE_NOT_FOUND)
             {
               error = BseErrorType (0);
@@ -511,6 +528,11 @@ bst_early_parse_args (int    *argc_p,
 	  arg_force_xkb = TRUE;
           argv[i] = NULL;
 	}
+      else if (strcmp ("--rewrite-bse-file", argv[i]) == 0)
+        {
+          rewrite_bse_file = true;
+          argv[i] = NULL;
+        }
       else if (strcmp (argv[i], "-n") == 0 && i + 1 < argc)
         { /* handled by priviledged launcher */
           argv[i++] = NULL;

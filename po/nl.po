@@ -12,7 +12,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: nl\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-01-18 03:53+0100\n"
+"POT-Creation-Date: 2013-03-24 19:11+0000\n"
 "PO-Revision-Date: 2006-10-04 12:02+0200\n"
 "Last-Translator: Tino Meinen <a.t.meinen@chello.nl>\n"
 "Language-Team: Dutch <vertaling@vrijschrift.org>\n"
@@ -21,7 +21,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: bse/bsemain.cc:221
+#: bse/bsemain.cc:223
 msgid ""
 "\n"
 "Available MIDI drivers:\n"
@@ -30,7 +30,7 @@ msgstr ""
 "Beschikbare MIDI stuurprogramma's:\n"
 
 # beschikbare geluiden
-#: bse/bsemain.cc:219
+#: bse/bsemain.cc:221
 msgid ""
 "\n"
 "Available PCM drivers:\n"
@@ -216,11 +216,11 @@ msgstr ""
 msgid "/Project/Toys/Progressor..."
 msgstr ""
 
-#: plugins/bseamplifier.idl:11
+#: plugins/bseamplifier.idl:14
 msgid "/Routing/Amplifier"
 msgstr "/Routing/Versterker"
 
-#: plugins/bsecontribsampleandhold.idl:8
+#: plugins/bsecontribsampleandhold.idl:11
 #, fuzzy
 msgid "/Routing/Sample and Hold"
 msgstr "/Routing/Versterker"
@@ -368,7 +368,7 @@ msgid "12"
 msgstr "12"
 
 #. Equal Temperament: http://en.wikipedia.org/wiki/Equal_temperament
-#: bse/bsecore.idl:38
+#: bse/bsebasics.idl:38
 msgid "12 Tone Equal Temperament"
 msgstr ""
 
@@ -524,7 +524,7 @@ msgstr ""
 msgid "5 1/3rd Harmonic"
 msgstr ""
 
-#: bse/bsecore.idl:45
+#: bse/bsebasics.idl:45
 msgid "5 Tone Equal Temperament"
 msgstr ""
 
@@ -548,7 +548,7 @@ msgstr "64-waarde FFT-venster"
 msgid "65536 Value FFT Window"
 msgstr "65536-waarde FFT-venster"
 
-#: bse/bsecore.idl:42
+#: bse/bsebasics.idl:42
 msgid "7 Tone Equal Temperament"
 msgstr ""
 
@@ -683,7 +683,7 @@ msgstr ""
 "frequentiepieken"
 
 #. http://en.wikipedia.org/wiki/Equal_temperament
-#: bse/bsecore.idl:46
+#: bse/bsebasics.idl:46
 msgid ""
 "A fairly common tuning system is the five-tone equal temperament tuning "
 "system, abbreviated as 5-TET. It divides the octave into 5 equal parts using "
@@ -691,7 +691,7 @@ msgid ""
 msgstr ""
 
 #. http://en.wikipedia.org/wiki/Equal_temperament
-#: bse/bsecore.idl:43
+#: bse/bsebasics.idl:43
 msgid ""
 "A fairly common tuning system is the seven-tone equal temperament tuning "
 "system, abbreviated as 7-TET. It divides the octave into 7 equal parts using "
@@ -710,10 +710,6 @@ msgstr ""
 "Een tekenreeks met _ tekens in posities corresponderend met tekens in de te "
 "onderstrepen tekst"
 
-#: bse/bsecore.idl:688
-msgid "A unique number identifying this thread"
-msgstr "Een uniek nummer ter identificatie van deze thread"
-
 #: beast-gtk/bstsnetrouter.cc:953
 msgid "ADSR"
 msgstr "ADSR"
@@ -723,7 +719,7 @@ msgstr "ADSR"
 msgid "ADSR Envelope Generator"
 msgstr "ADSR Envelope-generator"
 
-#: plugins/standardsaturator.idl:7
+#: plugins/standardsaturator.idl:10
 msgid "ATAN"
 msgstr ""
 
@@ -831,7 +827,7 @@ msgid "Adjust how much the control signals affect the output balance"
 msgstr ""
 "Instellen in welke mate de controle-signalen de uitgangsbalans beïnvloeden"
 
-#: plugins/bseamplifier.idl:46
+#: plugins/bseamplifier.idl:49
 msgid "Adjust how much the control signals affect the output volume"
 msgstr ""
 "Instellen in welke mate de controlesignalen het uitgangsvolume beïnvloeden"
@@ -981,7 +977,7 @@ msgid "All"
 msgstr "Alles"
 
 #. ALWAYS (always enabled)
-#: birnet/birnetmsg.cc:90
+#: birnet/birnetmsg.cc:89
 msgid "Always"
 msgstr ""
 
@@ -990,7 +986,7 @@ msgstr ""
 msgid "Amount of detuning in cent (hundredth part of a semitone)"
 msgstr "Valsheid in cent (honderste deel van een een halve noot)"
 
-#: plugins/bseamplifier.idl:29
+#: plugins/bseamplifier.idl:32
 msgid "Amplified audio output"
 msgstr "Versterkte audio uitgang"
 
@@ -1037,7 +1033,7 @@ msgstr "Configuratiewijzigingen toepassen op de layout van de patroon-editor"
 msgid "Array of column types"
 msgstr "Matrix van kolomtypes"
 
-#: plugins/bsecontribsampleandhold.idl:6
+#: plugins/bsecontribsampleandhold.idl:9
 msgid "Artem Popov"
 msgstr ""
 
@@ -1119,19 +1115,19 @@ msgid "Attack-Decay-Sustain-Release envelope output"
 msgstr "Attack-Decay-Sustain-Release envelope uitgang"
 
 # attenuate=verzachten, afzwakken, verdunnen
-#: plugins/bseamplifier.idl:31 plugins/bsebalance.idl:25
+#: plugins/bseamplifier.idl:34 plugins/bsebalance.idl:25
 msgid "Attenuate the level of audio input 1"
 msgstr "Het niveau van audio ingang 1 verzwakken"
 
-#: plugins/bseamplifier.idl:32 plugins/bsebalance.idl:26
+#: plugins/bseamplifier.idl:35 plugins/bsebalance.idl:26
 msgid "Attenuate the level of audio input 2"
 msgstr "Het niveau van audio ingang 2 verzwakken"
 
-#: plugins/bseamplifier.idl:36 plugins/bsebalance.idl:30
+#: plugins/bseamplifier.idl:39 plugins/bsebalance.idl:30
 msgid "Attenuate the level of control input 1"
 msgstr "Het niveau van controle-ingang 1 verzwakken"
 
-#: plugins/bseamplifier.idl:37 plugins/bsebalance.idl:31
+#: plugins/bseamplifier.idl:40 plugins/bsebalance.idl:31
 msgid "Attenuate the level of control input 2"
 msgstr "Het niveau van controle-ingang 2 verzwakken"
 
@@ -1151,7 +1147,7 @@ msgid "Audio Gate"
 msgstr "Audio uit"
 
 #: bse/bsebiquadfilter.cc:153 plugins/bseatandistort.cc:55
-#: plugins/bsecontribsampleandhold.idl:10 plugins/bseiirfilter.cc:101
+#: plugins/bsecontribsampleandhold.idl:13 plugins/bseiirfilter.cc:101
 #: plugins/davbassfilter.idl:14 plugins/davchorus.idl:11
 #: plugins/standardguspatchenvelope.idl:26
 msgid "Audio In"
@@ -1163,13 +1159,13 @@ msgid "Audio In%u"
 msgstr "Audio in%u"
 
 #: bse/bsebusmodule.idl:9 plugins/artscompressor.idl:30 plugins/bseadder.cc:59
-#: plugins/bseamplifier.idl:25 plugins/bsebalance.idl:17 plugins/bsemult.cc:28
+#: plugins/bseamplifier.idl:28 plugins/bsebalance.idl:17 plugins/bsemult.cc:28
 #: plugins/bsesummation.idl:14
 msgid "Audio In1"
 msgstr "Audio in1"
 
 #: bse/bsebusmodule.idl:10 plugins/artscompressor.idl:31
-#: plugins/bseadder.cc:61 plugins/bseamplifier.idl:26
+#: plugins/bseadder.cc:61 plugins/bseamplifier.idl:29
 #: plugins/bsebalance.idl:18 plugins/bsemult.cc:30 plugins/bsesummation.idl:15
 msgid "Audio In2"
 msgstr "Audio in2"
@@ -1182,8 +1178,8 @@ msgstr "Audio In3"
 msgid "Audio In4"
 msgstr "Audio In4"
 
-#: plugins/bseamplifier.idl:30 plugins/bsebalance.idl:24
-#: plugins/bsecontribsampleandhold.idl:10
+#: plugins/bseamplifier.idl:33 plugins/bsebalance.idl:24
+#: plugins/bsecontribsampleandhold.idl:13
 msgid "Audio Input"
 msgstr "Audio ingang"
 
@@ -1212,8 +1208,8 @@ msgid "Audio Input of the WaveOsc playing the patch"
 msgstr ""
 
 #: bse/bsebiquadfilter.cc:161 bse/bsestandardosc.cc:171 bse/bsewaveosc.cc:524
-#: plugins/bseadder.cc:63 plugins/bseamplifier.idl:29
-#: plugins/bseatandistort.cc:57 plugins/bsecontribsampleandhold.idl:12
+#: plugins/bseadder.cc:63 plugins/bseamplifier.idl:32
+#: plugins/bseatandistort.cc:57 plugins/bsecontribsampleandhold.idl:15
 #: plugins/bseiirfilter.cc:103 plugins/bsemixer.cc:75 plugins/bsemult.cc:36
 #: plugins/davbassfilter.idl:16 plugins/davchorus.idl:12
 #: plugins/davorgan.idl:12 plugins/davsyndrum.cc:92
@@ -1232,7 +1228,7 @@ msgstr "Audio uit1"
 msgid "Audio Out2"
 msgstr "Audio uit2"
 
-#: plugins/bseadder.cc:63 plugins/bsecontribsampleandhold.idl:12
+#: plugins/bseadder.cc:63 plugins/bsecontribsampleandhold.idl:15
 #: plugins/bsemult.cc:36
 msgid "Audio Output"
 msgstr "Audio uitgang"
@@ -1283,7 +1279,7 @@ msgstr "Auteur"
 msgid "Authors:"
 msgstr "Auteurs:"
 
-#: plugins/artscompressor.idl:40 plugins/standardsaturator.idl:38
+#: plugins/artscompressor.idl:40 plugins/standardsaturator.idl:42
 msgid "Auto Output"
 msgstr "Audio uitgang"
 
@@ -1302,7 +1298,7 @@ msgstr ""
 "Auto is een speciaal stuurprogramma; het fungeert als een\n"
 "verzamelnaam voor automatische stuurprogrammaselectie"
 
-#: plugins/standardsaturator.idl:39
+#: plugins/standardsaturator.idl:43
 msgid ""
 "Automatically adapt the output volume according to changes in saturation "
 "level"
@@ -1335,13 +1331,13 @@ msgstr "Beschikbare synthesizers"
 msgid "Available Waves"
 msgstr "Beschikbare waves"
 
-#: beast-gtk/bstprofiler.cc:225
+#: beast-gtk/bstprofiler.cc:142
 msgid ""
 "Average number of milliseconds per second of system CPU time used by thread"
 msgstr ""
 "Gemiddeld aantal milliseconden systeem-processortijd gebruikt door de thread"
 
-#: beast-gtk/bstprofiler.cc:224
+#: beast-gtk/bstprofiler.cc:141
 msgid ""
 "Average number of milliseconds per second of user CPU time used by thread"
 msgstr ""
@@ -1350,25 +1346,25 @@ msgstr ""
 
 #. initialize Birnet/Sfi
 #. Name
-#: beast-gtk/bstmain.cc:86 data/beast.desktop.in:4
+#: beast-gtk/bstmain.cc:91 data/beast.desktop.in:4
 msgid "BEAST"
 msgstr "BEAST"
 
-#: beast-gtk/bstmain.cc:827
+#: beast-gtk/bstmain.cc:862
 msgid "BEAST About"
 msgstr "BEAST info"
 
-#: beast-gtk/bstmain.cc:106
+#: beast-gtk/bstmain.cc:108
 msgid "BEAST Startup"
 msgstr "BEAST Opstartprocedure"
 
-#: beast-gtk/bstmain.cc:828
+#: beast-gtk/bstmain.cc:863
 #, c-format
 msgid "BEAST Version %s"
 msgstr "BEAST versie %s"
 
 #. start BSE core and connect
-#: beast-gtk/bstmain.cc:137
+#: beast-gtk/bstmain.cc:139
 msgid "BSE Core"
 msgstr "BSE kern"
 
@@ -1418,22 +1414,22 @@ msgstr "Achtergrondafbeelding gebruikt voor de pianorol-editor."
 msgid "Bad loopback"
 msgstr "Onjuidyr loopback"
 
-#: bse/bsecore.idl:128 bse/bsecore.idl:304 plugins/bseamplifier.idl:33
-#: plugins/bseamplifier.idl:38 plugins/bsebalance.idl:27
+#: bse/bsebasics.idl:128 bse/bsebasics.idl:304 plugins/bseamplifier.idl:36
+#: plugins/bseamplifier.idl:41 plugins/bsebalance.idl:27
 #: plugins/bsebalance.idl:32
 msgid "Balance"
 msgstr "Balans"
 
-#: plugins/bseamplifier.idl:33 plugins/bsebalance.idl:27
+#: plugins/bseamplifier.idl:36 plugins/bsebalance.idl:27
 msgid "Balance audio input levels"
 msgstr "Audio ingang balans"
 
-#: plugins/bseamplifier.idl:38 plugins/bsebalance.idl:32
+#: plugins/bseamplifier.idl:41 plugins/bsebalance.idl:32
 msgid "Balance control input levels"
 msgstr "Controle-ingang balans"
 
 #. 14bit, continuous controls
-#: bse/bsecore.idl:120 bse/bsecore.idl:296
+#: bse/bsebasics.idl:120 bse/bsebasics.idl:296
 msgid "Bank Select"
 msgstr "Bank select"
 
@@ -1446,11 +1442,11 @@ msgstr "Basisfrequentie"
 msgid "Base Octave"
 msgstr "Bas-octaaf"
 
-#: plugins/bseamplifier.idl:47
+#: plugins/bseamplifier.idl:50
 msgid "Base Volume"
 msgstr "Bas-volume"
 
-#: plugins/bseamplifier.idl:47
+#: plugins/bseamplifier.idl:50
 msgid "Base amplification (the control signal adds up to this)"
 msgstr "Bas-versterking (het controlesignaal wordt hier aan toegevoegd)"
 
@@ -1476,11 +1472,11 @@ msgstr "Versterken"
 msgid "Brass Sounds"
 msgstr ""
 
-#: bse/bsecore.idl:122 bse/bsecore.idl:298
+#: bse/bsebasics.idl:122 bse/bsebasics.idl:298
 msgid "Breath Control"
 msgstr "Adembeheersing"
 
-#: plugins/bseamplifier.idl:12
+#: plugins/bseamplifier.idl:15
 msgid ""
 "BseAmplifier provides input signal controlled amplification or attenuation. "
 "It supports two control inputs and two audio inputs which are mixed together "
@@ -1546,15 +1542,15 @@ msgstr "CODEC-mislukking"
 msgid "COLUMN TYPES:"
 msgstr "COLUMN TYPES:"
 
-#: beast-gtk/bstprofiler.cc:240
+#: beast-gtk/bstprofiler.cc:157
 msgid "CPU the thread is currently running on"
 msgstr "Processor waarop momenteel de tread wordt uitgevoerd"
 
-#: beast-gtk/bstprofiler.cc:240
+#: beast-gtk/bstprofiler.cc:157
 msgid "CPU#"
 msgstr "CPU#"
 
-#: beast-gtk/bstprofiler.cc:223
+#: beast-gtk/bstprofiler.cc:140
 msgid "CPU%"
 msgstr "CPU%"
 
@@ -1609,7 +1605,7 @@ msgid "Channel Hints"
 msgstr "Kanaalhints"
 
 #. 7bit
-#: bse/bsecore.idl:115
+#: bse/bsebasics.idl:115
 msgid "Channel Pressure"
 msgstr "Kanaaldruk"
 
@@ -1636,14 +1632,6 @@ msgstr "Kanaal%u [float]"
 #: beast-gtk/gxk/gxkparam-toggle.cc:60
 msgid "Check/ToggleRadio Button"
 msgstr "Vinkje/schakelknop"
-
-#: bse/bsecore.idl:701
-msgid "Child System Time"
-msgstr "Dochter systeemtijd"
-
-#: bse/bsecore.idl:699
-msgid "Child User Time"
-msgstr "Dochter gebruikerstijd"
 
 #: beast-gtk/bstscrollgraph.cc:510
 msgid "Choose display scrolling direction"
@@ -1711,24 +1699,24 @@ msgstr "De kolomindeling van de patroon-editor configureren"
 msgid "Const Out%u"
 msgstr "Const uit%u"
 
-#: bse/bsecore.idl:154
+#: bse/bsebasics.idl:154
 msgid "Constant CENTER"
 msgstr "Constant MIDDEN"
 
 #. 14bit, special cased signals
-#: bse/bsecore.idl:153
+#: bse/bsebasics.idl:153
 msgid "Constant HIGH"
 msgstr "Constant HOOG"
 
-#: bse/bsecore.idl:155
+#: bse/bsebasics.idl:155
 msgid "Constant LOW"
 msgstr "Constant LAAG"
 
-#: bse/bsecore.idl:156
+#: bse/bsebasics.idl:156
 msgid "Constant Negative CENTER"
 msgstr "Constant negatief MIDDEN"
 
-#: bse/bsecore.idl:157
+#: bse/bsebasics.idl:157
 msgid "Constant Negative HIGH"
 msgstr "Constant negatief HOOG"
 
@@ -1756,368 +1744,368 @@ msgstr ""
 msgid "Contents"
 msgstr "Inhoud"
 
-#: bse/bsecore.idl:134 bse/bsecore.idl:310
+#: bse/bsebasics.idl:134 bse/bsebasics.idl:310
 msgid "Continuous 14"
 msgstr "Continue 14"
 
-#: bse/bsecore.idl:135 bse/bsecore.idl:311
+#: bse/bsebasics.idl:135 bse/bsebasics.idl:311
 msgid "Continuous 15"
 msgstr "Continue 15"
 
-#: bse/bsecore.idl:140 bse/bsecore.idl:316
+#: bse/bsebasics.idl:140 bse/bsebasics.idl:316
 msgid "Continuous 20"
 msgstr "Continue 20"
 
-#: bse/bsecore.idl:141 bse/bsecore.idl:317
+#: bse/bsebasics.idl:141 bse/bsebasics.idl:317
 msgid "Continuous 21"
 msgstr "Continue 21"
 
-#: bse/bsecore.idl:142 bse/bsecore.idl:318
+#: bse/bsebasics.idl:142 bse/bsebasics.idl:318
 msgid "Continuous 22"
 msgstr "Continue 22"
 
-#: bse/bsecore.idl:143 bse/bsecore.idl:319
+#: bse/bsebasics.idl:143 bse/bsebasics.idl:319
 msgid "Continuous 23"
 msgstr "Continue 23"
 
-#: bse/bsecore.idl:144 bse/bsecore.idl:320
+#: bse/bsebasics.idl:144 bse/bsebasics.idl:320
 msgid "Continuous 24"
 msgstr "Continue 24"
 
-#: bse/bsecore.idl:145 bse/bsecore.idl:321
+#: bse/bsebasics.idl:145 bse/bsebasics.idl:321
 msgid "Continuous 25"
 msgstr "Continue 25"
 
-#: bse/bsecore.idl:146 bse/bsecore.idl:322
+#: bse/bsebasics.idl:146 bse/bsebasics.idl:322
 msgid "Continuous 26"
 msgstr "Continue 26"
 
-#: bse/bsecore.idl:147 bse/bsecore.idl:323
+#: bse/bsebasics.idl:147 bse/bsebasics.idl:323
 msgid "Continuous 27"
 msgstr "Continue 27"
 
-#: bse/bsecore.idl:148 bse/bsecore.idl:324
+#: bse/bsebasics.idl:148 bse/bsebasics.idl:324
 msgid "Continuous 28"
 msgstr "Continue 28"
 
-#: bse/bsecore.idl:149 bse/bsecore.idl:325
+#: bse/bsebasics.idl:149 bse/bsebasics.idl:325
 msgid "Continuous 29"
 msgstr "Continue 29"
 
-#: bse/bsecore.idl:123 bse/bsecore.idl:299
+#: bse/bsebasics.idl:123 bse/bsebasics.idl:299
 msgid "Continuous 3"
 msgstr "Continue 3"
 
-#: bse/bsecore.idl:150 bse/bsecore.idl:326
+#: bse/bsebasics.idl:150 bse/bsebasics.idl:326
 msgid "Continuous 30"
 msgstr "Continue 30"
 
-#: bse/bsecore.idl:151 bse/bsecore.idl:327
+#: bse/bsebasics.idl:151 bse/bsebasics.idl:327
 msgid "Continuous 31"
 msgstr "Continue 31"
 
-#: bse/bsecore.idl:129 bse/bsecore.idl:305
+#: bse/bsebasics.idl:129 bse/bsebasics.idl:305
 msgid "Continuous 9"
 msgstr "Continue 9"
 
-#: bse/bsecore.idl:296
+#: bse/bsebasics.idl:296
 msgid "Continuous MIDI Control #1 - Bank Select"
 msgstr "Continue MIDI controle #1 - Bank select"
 
-#: beast-gtk/bstmain.cc:829
+#: beast-gtk/bstmain.cc:864
 msgid "Contributions made by:"
 msgstr "Met dank aan:"
 
 #. 7bit, literal channel controls, MSB values
-#: bse/bsecore.idl:161 bse/bsecore.idl:329
+#: bse/bsebasics.idl:161 bse/bsebasics.idl:329
 msgid "Control 0 Bank Select MSB"
 msgstr "Controle 0 Bank Select MSB"
 
-#: bse/bsecore.idl:162 bse/bsecore.idl:330
+#: bse/bsebasics.idl:162 bse/bsebasics.idl:330
 msgid "Control 1 Modulation Depth MSB"
 msgstr "Controle 1 Modulatie-sterkte MSB"
 
-#: bse/bsecore.idl:171 bse/bsecore.idl:339
+#: bse/bsebasics.idl:171 bse/bsebasics.idl:339
 msgid "Control 10 Panorama MSB"
 msgstr "Controle 10 Panorama MSB"
 
-#: bse/bsecore.idl:263 bse/bsecore.idl:431
+#: bse/bsebasics.idl:263 bse/bsebasics.idl:431
 msgid "Control 100 Registered Parameter MSB"
 msgstr "Control 100 Geregistreerde parameter MSB"
 
-#: bse/bsecore.idl:264 bse/bsecore.idl:432
+#: bse/bsebasics.idl:264 bse/bsebasics.idl:432
 msgid "Control 101 Registered Parameter LSB"
 msgstr "Control 101 Geregistreerde parameter LSB"
 
-#: bse/bsecore.idl:172 bse/bsecore.idl:340
+#: bse/bsebasics.idl:172 bse/bsebasics.idl:340
 msgid "Control 11 Expression MSB"
 msgstr "Controle 11 Expressie MSB"
 
-#: bse/bsecore.idl:173 bse/bsecore.idl:341
+#: bse/bsebasics.idl:173 bse/bsebasics.idl:341
 msgid "Control 12 Effect Control 1 MSB"
 msgstr "Controle 12 Effect-controle 1 MSB"
 
-#: bse/bsecore.idl:283 bse/bsecore.idl:451
+#: bse/bsebasics.idl:283 bse/bsebasics.idl:451
 msgid "Control 120 All Sound Off ITrigger"
 msgstr "Controle 120 Alle geluid uit ITrigger"
 
-#: bse/bsecore.idl:284 bse/bsecore.idl:452
+#: bse/bsebasics.idl:284 bse/bsebasics.idl:452
 msgid "Control 121 All Controllers Off ITrigger"
 msgstr "Controle 121 Alle controllers uit ITrigger"
 
-#: bse/bsecore.idl:285 bse/bsecore.idl:453
+#: bse/bsebasics.idl:285 bse/bsebasics.idl:453
 msgid "Control 122 Local Control Switch"
 msgstr "Controle 122 Locale controle wisselaar"
 
-#: bse/bsecore.idl:286 bse/bsecore.idl:454
+#: bse/bsebasics.idl:286 bse/bsebasics.idl:454
 msgid "Control 123 All Notes Off ITrigger"
 msgstr "Controle 123 Alle noten uit ITrigger"
 
-#: bse/bsecore.idl:287 bse/bsecore.idl:455
+#: bse/bsebasics.idl:287 bse/bsebasics.idl:455
 msgid "Control 124 Omni Mode Off ITrigger"
 msgstr "Controle 124 Omni Mode uit ITrigger"
 
-#: bse/bsecore.idl:288 bse/bsecore.idl:456
+#: bse/bsebasics.idl:288 bse/bsebasics.idl:456
 msgid "Control 125 Omni Mode On ITrigger"
 msgstr "Controle 125 Omni Mode aan ITrigger"
 
-#: bse/bsecore.idl:289 bse/bsecore.idl:457
+#: bse/bsebasics.idl:289 bse/bsebasics.idl:457
 msgid "Control 126 Monophonic Voices Mode"
 msgstr "Controle 126 Monofonische stemmen Modus"
 
-#: bse/bsecore.idl:290 bse/bsecore.idl:458
+#: bse/bsebasics.idl:290 bse/bsebasics.idl:458
 msgid "Control 127 Polyphonic Mode On ITrigger"
 msgstr "Controle 127 Polyfonische Modus aan ITrigger"
 
-#: bse/bsecore.idl:174 bse/bsecore.idl:342
+#: bse/bsebasics.idl:174 bse/bsebasics.idl:342
 msgid "Control 13 Effect Control 2 MSB"
 msgstr "Controle 13 Effect-controle 2 MSB"
 
-#: bse/bsecore.idl:177 bse/bsecore.idl:345
+#: bse/bsebasics.idl:177 bse/bsebasics.idl:345
 msgid "Control 16 General Purpose Controller 1 MSB"
 msgstr "Controle 16 Algemene bedieningsknop 1 MSB"
 
-#: bse/bsecore.idl:178 bse/bsecore.idl:346
+#: bse/bsebasics.idl:178 bse/bsebasics.idl:346
 msgid "Control 17 General Purpose Controller 2 MSB"
 msgstr "Controle 17 Algemene bedieningsknop 2 MSB"
 
-#: bse/bsecore.idl:179 bse/bsecore.idl:347
+#: bse/bsebasics.idl:179 bse/bsebasics.idl:347
 msgid "Control 18 General Purpose Controller 3 MSB"
 msgstr "Controle 18 Algemene bedieningsknop 3 MSB"
 
-#: bse/bsecore.idl:180 bse/bsecore.idl:348
+#: bse/bsebasics.idl:180 bse/bsebasics.idl:348
 msgid "Control 19 General Purpose Controller 4 MSB"
 msgstr "Controle 97 Algemene bedieningsknop 4 MSB"
 
-#: bse/bsecore.idl:163 bse/bsecore.idl:331
+#: bse/bsebasics.idl:163 bse/bsebasics.idl:331
 msgid "Control 2 Breath Control MSB"
 msgstr "Controle 2 Ademcontrole MSB"
 
 #. 7bit, literal channel controls, LSB values
-#: bse/bsecore.idl:194 bse/bsecore.idl:362
+#: bse/bsebasics.idl:194 bse/bsebasics.idl:362
 msgid "Control 32 Bank Select LSB"
 msgstr "Controle 32 Bank Select LSB"
 
-#: bse/bsecore.idl:195 bse/bsecore.idl:363
+#: bse/bsebasics.idl:195 bse/bsebasics.idl:363
 msgid "Control 33 Modulation Depth LSB"
 msgstr "Controle 33 Modulatie-sterkte LSB"
 
 # adembeheersing
-#: bse/bsecore.idl:196 bse/bsecore.idl:364
+#: bse/bsebasics.idl:196 bse/bsebasics.idl:364
 msgid "Control 34 Breath Control LSB"
 msgstr "Controle 34 Ademcontrole LSB"
 
-#: bse/bsecore.idl:198 bse/bsecore.idl:366
+#: bse/bsebasics.idl:198 bse/bsebasics.idl:366
 msgid "Control 36 Foot Controller LSB"
 msgstr "Controle 36 Voetbediening LSB"
 
-#: bse/bsecore.idl:199 bse/bsecore.idl:367
+#: bse/bsebasics.idl:199 bse/bsebasics.idl:367
 msgid "Control 37 Portamento Time LSB"
 msgstr "Controle 37 Portamentotijd LSB"
 
-#: bse/bsecore.idl:200 bse/bsecore.idl:368
+#: bse/bsebasics.idl:200 bse/bsebasics.idl:368
 msgid "Control 38 Data Entry LSB"
 msgstr "Controle 38 Data-invoer LSB"
 
-#: bse/bsecore.idl:201 bse/bsecore.idl:369
+#: bse/bsebasics.idl:201 bse/bsebasics.idl:369
 msgid "Control 39 Volume LSB"
 msgstr "Controle 39 Geluidssterkte LSB"
 
-#: bse/bsecore.idl:165 bse/bsecore.idl:333
+#: bse/bsebasics.idl:165 bse/bsebasics.idl:333
 msgid "Control 4 Foot Controller MSB"
 msgstr "Controle 4 Voetbediening MSB"
 
-#: bse/bsecore.idl:202 bse/bsecore.idl:370
+#: bse/bsebasics.idl:202 bse/bsebasics.idl:370
 msgid "Control 40 Balance LSB"
 msgstr "Controle 40 Balans LSB"
 
-#: bse/bsecore.idl:204 bse/bsecore.idl:372
+#: bse/bsebasics.idl:204 bse/bsebasics.idl:372
 msgid "Control 42 Panorama LSB"
 msgstr "Controle 42 Panorama LSB"
 
-#: bse/bsecore.idl:205 bse/bsecore.idl:373
+#: bse/bsebasics.idl:205 bse/bsebasics.idl:373
 msgid "Control 43 Expression LSB"
 msgstr "Controle 43 Expressie LSB"
 
-#: bse/bsecore.idl:206 bse/bsecore.idl:374
+#: bse/bsebasics.idl:206 bse/bsebasics.idl:374
 msgid "Control 44 Effect Control 1 LSB"
 msgstr "Controle 44 Effect-controle 1 LSB"
 
-#: bse/bsecore.idl:207 bse/bsecore.idl:375
+#: bse/bsebasics.idl:207 bse/bsebasics.idl:375
 msgid "Control 45 Effect Control 2 LSB"
 msgstr "Controle 45 Effect-controle 2 LSB"
 
-#: bse/bsecore.idl:210 bse/bsecore.idl:378
+#: bse/bsebasics.idl:210 bse/bsebasics.idl:378
 msgid "Control 48 General Purpose Controller 1 LSB"
 msgstr "Controle 48 Algemene bedieningsknop 1 LSB"
 
-#: bse/bsecore.idl:211 bse/bsecore.idl:379
+#: bse/bsebasics.idl:211 bse/bsebasics.idl:379
 msgid "Control 49 General Purpose Controller 2 LSB"
 msgstr "Controle 49 Algemene bedieningsknop 2 LSB"
 
-#: bse/bsecore.idl:166 bse/bsecore.idl:334
+#: bse/bsebasics.idl:166 bse/bsebasics.idl:334
 msgid "Control 5 Portamento Time MSB"
 msgstr "Controle 5 Portamentotijd MSB"
 
-#: bse/bsecore.idl:212 bse/bsecore.idl:380
+#: bse/bsebasics.idl:212 bse/bsebasics.idl:380
 msgid "Control 50 General Purpose Controller 3 LSB"
 msgstr "Controle 50 Algemene bedieningsknop 3 LSB"
 
-#: bse/bsecore.idl:213 bse/bsecore.idl:381
+#: bse/bsebasics.idl:213 bse/bsebasics.idl:381
 msgid "Control 51 General Purpose Controller 4 LSB"
 msgstr "Controle 51 Algemene bedieningsknop 4 LSB"
 
-#: bse/bsecore.idl:167 bse/bsecore.idl:335
+#: bse/bsebasics.idl:167 bse/bsebasics.idl:335
 msgid "Control 6 Data Entry MSB"
 msgstr "Controle 6 Data-invoer MSB"
 
 #. 7bit, literal channel controls
-#: bse/bsecore.idl:227 bse/bsecore.idl:395
+#: bse/bsebasics.idl:227 bse/bsebasics.idl:395
 msgid "Control 64 Damper Pedal Switch (Sustain)"
 msgstr "Controle 64 Demperpedaal (Sustain)"
 
-#: bse/bsecore.idl:228 bse/bsecore.idl:396
+#: bse/bsebasics.idl:228 bse/bsebasics.idl:396
 msgid "Control 65 Portamento Switch"
 msgstr "Controle 65 Portamento-wisselaar"
 
-#: bse/bsecore.idl:229 bse/bsecore.idl:397
+#: bse/bsebasics.idl:229 bse/bsebasics.idl:397
 msgid "Control 66 Sustenuto Switch"
 msgstr "Controle 66 Sustenuto-wisselaar"
 
-#: bse/bsecore.idl:230 bse/bsecore.idl:398
+#: bse/bsebasics.idl:230 bse/bsebasics.idl:398
 msgid "Control 67 Soft Switch"
 msgstr "Controle 67 Zacht-wisselaar"
 
-#: bse/bsecore.idl:231 bse/bsecore.idl:399
+#: bse/bsebasics.idl:231 bse/bsebasics.idl:399
 msgid "Control 68 Legato Pedal Switch"
 msgstr "Controle 68 Legato-pedaal wisselaar"
 
-#: bse/bsecore.idl:232 bse/bsecore.idl:400
+#: bse/bsebasics.idl:232 bse/bsebasics.idl:400
 msgid "Control 69 Hold Pedal Switch"
 msgstr "Controle 69 Pedaal-houden wisselaar"
 
-#: bse/bsecore.idl:168 bse/bsecore.idl:336
+#: bse/bsebasics.idl:168 bse/bsebasics.idl:336
 msgid "Control 7 Volume MSB"
 msgstr "Controle 7 Geluidssterkte MSB"
 
-#: bse/bsecore.idl:233 bse/bsecore.idl:401
+#: bse/bsebasics.idl:233 bse/bsebasics.idl:401
 msgid "Control 70 Sound Variation"
 msgstr "Controle 70 Geluidsvariatie"
 
-#: bse/bsecore.idl:234 bse/bsecore.idl:402
+#: bse/bsebasics.idl:234 bse/bsebasics.idl:402
 msgid "Control 71 Filter Resonance (Timbre)"
 msgstr "Controle 71 Filter-resonantie (Geluidskleur)"
 
-#: bse/bsecore.idl:235 bse/bsecore.idl:403
+#: bse/bsebasics.idl:235 bse/bsebasics.idl:403
 msgid "Control 72 Sound Release Time"
 msgstr "Controle 72 Sound-release tijd"
 
-#: bse/bsecore.idl:236 bse/bsecore.idl:404
+#: bse/bsebasics.idl:236 bse/bsebasics.idl:404
 msgid "Control 73 Sound Attack Time"
 msgstr "Controle 73 Sound-attack tijd"
 
-#: bse/bsecore.idl:237 bse/bsecore.idl:405
+#: bse/bsebasics.idl:237 bse/bsebasics.idl:405
 msgid "Control 74 Sound Brightness"
 msgstr "Controle 74 Sound-brightness"
 
-#: bse/bsecore.idl:238 bse/bsecore.idl:406
+#: bse/bsebasics.idl:238 bse/bsebasics.idl:406
 msgid "Control 75 Sound Decay Time"
 msgstr "Controle 75 Sound-decay tijd"
 
-#: bse/bsecore.idl:239 bse/bsecore.idl:407
+#: bse/bsebasics.idl:239 bse/bsebasics.idl:407
 msgid "Control 76 Vibrato Rate"
 msgstr "Controle 76 Vibrato-frequentie"
 
-#: bse/bsecore.idl:240 bse/bsecore.idl:408
+#: bse/bsebasics.idl:240 bse/bsebasics.idl:408
 msgid "Control 77 Vibrato Depth"
 msgstr "Controle 77 Vibrato-sterkte"
 
-#: bse/bsecore.idl:241 bse/bsecore.idl:409
+#: bse/bsebasics.idl:241 bse/bsebasics.idl:409
 msgid "Control 78 Vibrato Delay"
 msgstr "Controle 78 Vibrato-vertraging"
 
-#: bse/bsecore.idl:242 bse/bsecore.idl:410
+#: bse/bsebasics.idl:242 bse/bsebasics.idl:410
 msgid "Control 79 Sound Control 10"
 msgstr "Control 79 Sound Controle 10"
 
-#: bse/bsecore.idl:169 bse/bsecore.idl:337
+#: bse/bsebasics.idl:169 bse/bsebasics.idl:337
 msgid "Control 8 Balance MSB"
 msgstr "Controle 8 Balans MSB"
 
-#: bse/bsecore.idl:243 bse/bsecore.idl:411
+#: bse/bsebasics.idl:243 bse/bsebasics.idl:411
 msgid "Control 80 General Purpose Switch 5"
 msgstr "Controle 80 Algemene bedieningswisselaar 5"
 
-#: bse/bsecore.idl:244 bse/bsecore.idl:412
+#: bse/bsebasics.idl:244 bse/bsebasics.idl:412
 msgid "Control 81 General Purpose Switch 6"
 msgstr "Controle 81 Algemene bedieningswisselaar 6"
 
-#: bse/bsecore.idl:245 bse/bsecore.idl:413
+#: bse/bsebasics.idl:245 bse/bsebasics.idl:413
 msgid "Control 82 General Purpose Switch 7"
 msgstr "Controle 82 Algemene bedieningswisselaar 7"
 
-#: bse/bsecore.idl:246 bse/bsecore.idl:414
+#: bse/bsebasics.idl:246 bse/bsebasics.idl:414
 msgid "Control 83 General Purpose Switch 8"
 msgstr "Controle 83 Algemene bedieningswisselaar 8"
 
-#: bse/bsecore.idl:247 bse/bsecore.idl:415
+#: bse/bsebasics.idl:247 bse/bsebasics.idl:415
 msgid "Control 84 Portamento Control (Note)"
 msgstr "Controle 84 Portamento controle (Noot)"
 
-#: bse/bsecore.idl:254 bse/bsecore.idl:422
+#: bse/bsebasics.idl:254 bse/bsebasics.idl:422
 msgid "Control 91 Reverb Depth"
 msgstr "Controle-91 Galm-sterkte"
 
-#: bse/bsecore.idl:255 bse/bsecore.idl:423
+#: bse/bsebasics.idl:255 bse/bsebasics.idl:423
 msgid "Control 92 Tremolo Depth"
 msgstr "Controle 92 Tremolo-sterkte"
 
-#: bse/bsecore.idl:256 bse/bsecore.idl:424
+#: bse/bsebasics.idl:256 bse/bsebasics.idl:424
 msgid "Control 93 Chorus Depth"
 msgstr "Controle 93 Chorus-sterkte"
 
 # ontstemmen?
-#: bse/bsecore.idl:257 bse/bsecore.idl:425
+#: bse/bsebasics.idl:257 bse/bsebasics.idl:425
 msgid "Control 93 Detune Depth"
 msgstr "Controle 93 Detune-sterte"
 
-#: bse/bsecore.idl:258 bse/bsecore.idl:426
+#: bse/bsebasics.idl:258 bse/bsebasics.idl:426
 msgid "Control 95 Phase Depth"
 msgstr "Controle 95 Phase-sterkte"
 
-#: bse/bsecore.idl:259 bse/bsecore.idl:427
+#: bse/bsebasics.idl:259 bse/bsebasics.idl:427
 msgid "Control 96 Data Increment Trigger"
 msgstr "Controle 96 Data Increment Trigger"
 
-#: bse/bsecore.idl:260 bse/bsecore.idl:428
+#: bse/bsebasics.idl:260 bse/bsebasics.idl:428
 msgid "Control 97 Data Decrement Trigger"
 msgstr "Controle 97 Data Decrement Trigger"
 
-#: bse/bsecore.idl:261 bse/bsecore.idl:429
+#: bse/bsebasics.idl:261 bse/bsebasics.idl:429
 msgid "Control 98 Non-Registered Parameter MSB"
 msgstr "Control 98 Niet-geregistreerde parameter MSB"
 
-#: bse/bsecore.idl:262 bse/bsecore.idl:430
+#: bse/bsebasics.idl:262 bse/bsebasics.idl:430
 msgid "Control 99 Non-Registered Parameter LSB"
 msgstr "Control 99 Niet-geregistreerde parameter LSB"
 
@@ -2132,11 +2120,11 @@ msgstr "Bedieningsautomatisering"
 msgid "Control Automation: %s"
 msgstr "Bedieningsautomatisering: %s"
 
-#: plugins/bseamplifier.idl:35 plugins/bsebalance.idl:29
+#: plugins/bseamplifier.idl:38 plugins/bsebalance.idl:29
 msgid "Control Input"
 msgstr "Controle-ingang"
 
-#: plugins/bseamplifier.idl:46 plugins/bsebalance.idl:35
+#: plugins/bseamplifier.idl:49 plugins/bsebalance.idl:35
 msgid "Control Strength"
 msgstr "Mate van controle"
 
@@ -2214,11 +2202,11 @@ msgid ""
 "backwards accordingly."
 msgstr ""
 
-#: plugins/bseamplifier.idl:27 plugins/bsebalance.idl:19
+#: plugins/bseamplifier.idl:30 plugins/bsebalance.idl:19
 msgid "Ctrl In1"
 msgstr "Ctrl in1"
 
-#: plugins/bseamplifier.idl:28 plugins/bsebalance.idl:20
+#: plugins/bseamplifier.idl:31 plugins/bsebalance.idl:20
 msgid "Ctrl In2"
 msgstr "Ctrl in2"
 
@@ -2280,7 +2268,7 @@ msgstr "APPARAAT,MODUS"
 msgid "DSP Engine..."
 msgstr "DSP motor..."
 
-#: bse/bsecore.idl:126 bse/bsecore.idl:302
+#: bse/bsebasics.idl:126 bse/bsebasics.idl:302
 msgid "Data Entry"
 msgstr "Datainvoer"
 
@@ -2316,23 +2304,23 @@ msgstr "Decay [%]"
 msgid "Decay [%]"
 msgstr "Decay [%]"
 
-#: bse/bsecore.idl:746
+#: bse/bsebasics.idl:707
 msgid "Default Author"
 msgstr "Standaard auteur"
 
-#: bse/bsecore.idl:748
+#: bse/bsebasics.idl:709
 msgid "Default License"
 msgstr "Standaard licentie"
 
-#: bse/bsecore.idl:745
+#: bse/bsebasics.idl:706
 msgid "Default Values"
 msgstr "Standaardwaardes"
 
-#: bse/bsecore.idl:746
+#: bse/bsebasics.idl:707
 msgid "Default value for 'Author' fields"
 msgstr "Standaardwaarde voor ‘Auteur’"
 
-#: bse/bsecore.idl:748
+#: bse/bsebasics.idl:709
 msgid "Default value for 'License' fields"
 msgstr "Standaardwaarde voor ‘Licentie’"
 
@@ -2450,7 +2438,7 @@ msgid "Device or resource busy"
 msgstr "Apparaat of bron bezet"
 
 #. DIAG (enabled)
-#: birnet/birnetmsg.cc:110
+#: birnet/birnetmsg.cc:109
 msgid "Diagnostic"
 msgstr "Diagnostiek"
 
@@ -2464,18 +2452,18 @@ msgid "Dial (Logarithmic)"
 msgstr "Wijzerplaat (logaritmisch)"
 
 #. listen to BseServer notification
-#: beast-gtk/bstmain.cc:212
+#: beast-gtk/bstmain.cc:214
 msgid "Dialogs"
 msgstr "Dialoogvensters"
 
 #. Rational Intonation: http://en.wikipedia.org/wiki/Just_intonation
-#: bse/bsecore.idl:49
+#: bse/bsebasics.idl:49
 #, fuzzy
 msgid "Diatonic Scale"
 msgstr "Verticale schaal"
 
 #. http://en.wikipedia.org/wiki/Just_intonation#Indian_scales
-#: bse/bsecore.idl:55
+#: bse/bsebasics.idl:55
 msgid ""
 "Diatonic scale used in Indian music with wolf interval at Dha, close to 3/2"
 msgstr ""
@@ -2494,7 +2482,7 @@ msgstr "Wijzigingen verwerpen"
 
 #. syntax
 #. TRANSLATORS: keep this text to 70 chars in width
-#: bse/bsepcmdevice-null.cc:117
+#: bse/bsepcmdevice-null.cc:119
 msgid ""
 "Discard all PCM output and provide zero blocks as input. This\n"
 "driver is not part of the automatic PCM device selection list.\n"
@@ -2707,15 +2695,15 @@ msgstr "Bewerken/Verplaatsen/Menu (muisknop 1-3)"
 msgid "Editor"
 msgstr "Editor"
 
-#: bse/bsecore.idl:132 bse/bsecore.idl:308
+#: bse/bsebasics.idl:132 bse/bsebasics.idl:308
 msgid "Effect Control 1"
 msgstr "Effect controle 1"
 
-#: bse/bsecore.idl:133 bse/bsecore.idl:309
+#: bse/bsebasics.idl:133 bse/bsebasics.idl:309
 msgid "Effect Control 2"
 msgstr "Effect controle 2"
 
-#: bse/bsecore.idl:755
+#: bse/bsebasics.idl:716
 msgid "Effect Path"
 msgstr "Effectenpad"
 
@@ -2791,7 +2779,7 @@ msgid "Epsilon"
 msgstr "Epsilon"
 
 #. ERROR (enabled)
-#: birnet/birnetmsg.cc:94
+#: birnet/birnetmsg.cc:93
 msgid "Error"
 msgstr "Fout"
 
@@ -2881,7 +2869,7 @@ msgstr "‘%s’ uitvoeren"
 msgid "Executing procedure '%s' from script '%s'."
 msgstr "Uitvoeren van procedure ‘%s’ uit script ‘%s’."
 
-#: plugins/bseamplifier.idl:43
+#: plugins/bseamplifier.idl:46
 msgid "Exponential Control"
 msgstr "Exponentiële controle"
 
@@ -2893,7 +2881,7 @@ msgstr "Exponentiële FM"
 msgid "Export Audio"
 msgstr "Audio exporteren"
 
-#: bse/bsecore.idl:131 bse/bsecore.idl:307
+#: bse/bsebasics.idl:131 bse/bsebasics.idl:307
 msgid "Expression"
 msgstr "Uitdrukking"
 
@@ -2938,22 +2926,22 @@ msgstr "Detecteren van (begin van) header mislukt"
 msgid "Failed to execute script procedure '%s': %s"
 msgstr "Uitvoeren van scriptprocedure ‘%s’ is mislukt: %s"
 
-#: birnet/birnetutils.cc:1096
+#: birnet/birnetutils.cc:1078
 msgid "Failed to launch a web browser executable"
 msgstr ""
 
-#: beast-gtk/bstmain.cc:277
+#: beast-gtk/bstmain.cc:295
 #, c-format
 msgid "Failed to load project \"%s\": %s"
 msgstr "Laden van project ‘%s’ is mislukt: %s"
 
-#: beast-gtk/bstfiledialog.cc:670 beast-gtk/bstmain.cc:241
-#: beast-gtk/bstmain.cc:258
+#: beast-gtk/bstfiledialog.cc:670 beast-gtk/bstmain.cc:243
+#: beast-gtk/bstmain.cc:260
 #, c-format
 msgid "Failed to load wave file \"%s\": %s"
 msgstr "Laden van wave-bestand \"%s\" mislukt: %s"
 
-#: beast-gtk/bstmain.cc:283
+#: beast-gtk/bstmain.cc:301
 #, c-format
 msgid "Failed to merge project \"%s\": %s"
 msgstr "Samenvoegen van project ‘%s’ is mislukt: %s"
@@ -3157,7 +3145,7 @@ msgstr ""
 msgid "Fine Tune"
 msgstr "Fijnstelling"
 
-#: bse/bsebusmodule.idl:9 plugins/bseamplifier.idl:25
+#: bse/bsebusmodule.idl:9 plugins/bseamplifier.idl:28
 #: plugins/bsebalance.idl:17
 msgid "First audio input"
 msgstr "Eerste audio ingang"
@@ -3167,7 +3155,7 @@ msgstr "Eerste audio ingang"
 msgid "First audio output"
 msgstr "Eerste audio ingang"
 
-#: plugins/bseamplifier.idl:27 plugins/bsebalance.idl:19
+#: plugins/bseamplifier.idl:30 plugins/bsebalance.idl:19
 msgid "First control input"
 msgstr "Eerste controle-ingang"
 
@@ -3199,7 +3187,7 @@ msgstr ""
 "netwerken"
 
 # klopt dit in deze context?
-#: bse/bsecore.idl:124 bse/bsecore.idl:300
+#: bse/bsebasics.idl:124 bse/bsebasics.idl:300
 msgid "Foot Controller"
 msgstr "Voetbediening"
 
@@ -3254,7 +3242,7 @@ msgstr "Frequentie"
 msgid "Frequency Signal"
 msgstr "Frequentie signaal"
 
-#: bse/bsecore.idl:736
+#: bse/bsebasics.idl:697
 msgid ""
 "Frequency at which control values are evaluated, should be much smaller than "
 "Synth Mixing Frequency to reduce CPU load"
@@ -3291,8 +3279,8 @@ msgid "Functions to be activated for a key binding"
 msgstr "Functies die bij een toetsbinding geactiveerd worden"
 
 #: bse/bsebusmodule.idl:7 plugins/artscompressor.idl:8
-#: plugins/bseamplifier.idl:10 plugins/bsebalance.idl:7
-#: plugins/bsecontribsampleandhold.idl:7 plugins/bsenoise.idl:7
+#: plugins/bseamplifier.idl:13 plugins/bsebalance.idl:7
+#: plugins/bsecontribsampleandhold.idl:10 plugins/bsenoise.idl:7
 #: plugins/bsesummation.idl:7 plugins/davbassfilter.idl:8
 #: plugins/davchorus.idl:8 plugins/davorgan.idl:8
 #: plugins/standardguspatchenvelope.idl:10
@@ -3341,19 +3329,19 @@ msgid "Gate input (activates/deactivates envelope)"
 msgstr "Gate ingang (activeert/deactiveert envelope)"
 
 # Bedieningsknop/bedienaar/controller/controleknop
-#: bse/bsecore.idl:136 bse/bsecore.idl:312
+#: bse/bsebasics.idl:136 bse/bsebasics.idl:312
 msgid "General Purpose Controller 1"
 msgstr "Algemene bedieningsknop 1"
 
-#: bse/bsecore.idl:137 bse/bsecore.idl:313
+#: bse/bsebasics.idl:137 bse/bsebasics.idl:313
 msgid "General Purpose Controller 2"
 msgstr "Algemene bedieningsknop 2"
 
-#: bse/bsecore.idl:138 bse/bsecore.idl:314
+#: bse/bsebasics.idl:138 bse/bsebasics.idl:314
 msgid "General Purpose Controller 3"
 msgstr "Algemene bedieningsknop 3"
 
-#: bse/bsecore.idl:139 bse/bsecore.idl:315
+#: bse/bsebasics.idl:139 bse/bsebasics.idl:315
 msgid "General Purpose Controller 4"
 msgstr "Algemene bedieningsknop 4"
 
@@ -3409,11 +3397,11 @@ msgstr "HZoom"
 msgid "Half note"
 msgstr "Halve noot"
 
-#: plugins/standardsaturator.idl:14
+#: plugins/standardsaturator.idl:17
 msgid "Hard"
 msgstr ""
 
-#: plugins/standardsaturator.idl:14
+#: plugins/standardsaturator.idl:17
 msgid "Hard saturation via clipping (prone to clicks)"
 msgstr ""
 
@@ -3518,7 +3506,7 @@ msgid "Importing MIDI file `%s'"
 msgstr "Invoegen MIDI-bestand `%s'"
 
 #. http://en.wikipedia.org/wiki/Diatonic_scale
-#: bse/bsecore.idl:50
+#: bse/bsebasics.idl:50
 msgid ""
 "In music theory, a diatonic scale (also: heptatonia prima) is a seven-note "
 "musical scale comprising five whole-tone and two half-tone steps. The half "
@@ -3527,7 +3515,7 @@ msgid ""
 msgstr ""
 
 #. http://en.wikipedia.org/wiki/Werckmeister_temperament
-#: bse/bsecore.idl:83
+#: bse/bsebasics.idl:83
 msgid ""
 "In this tuning the fifths C-G, D-A, E-B, F#-C#, and Bb-F are tempered narrow "
 "by 1/3 comma, and the fifths G#-D# and Eb-Bb are widened by 1/3 comma. The "
@@ -3537,7 +3525,7 @@ msgid ""
 msgstr ""
 
 #. http://en.wikipedia.org/wiki/Werckmeister_temperament
-#: bse/bsecore.idl:88
+#: bse/bsebasics.idl:88
 msgid ""
 "In this tuning the fifths D-A, A-E, F#-C#, C#-G#, and F-C are narrowed by "
 "1/4 comma, and the fifth G#-D# is widened by 1/4 comma. The other fifths are "
@@ -3546,13 +3534,13 @@ msgid ""
 msgstr ""
 
 #. Werckmeister I
-#: bse/bsecore.idl:54
+#: bse/bsebasics.idl:54
 #, fuzzy
 msgid "Indian Scale"
 msgstr "Verticale schaal"
 
 #. INFO (enabled)
-#: birnet/birnetmsg.cc:106
+#: birnet/birnetmsg.cc:105
 msgid "Information"
 msgstr "Informatie"
 
@@ -3562,7 +3550,7 @@ msgstr "Beginfase van de oscillator-golfvorm (faseverschuiving in graden)"
 
 # betere vertaling?
 #. BEAST initialization
-#: beast-gtk/bstmain.cc:116
+#: beast-gtk/bstmain.cc:118
 msgid "Initializers"
 msgstr "Initialisators"
 
@@ -3570,12 +3558,12 @@ msgstr "Initialisators"
 msgid "Input"
 msgstr "Invoer"
 
-#: plugins/bseamplifier.idl:31 plugins/bseamplifier.idl:36
+#: plugins/bseamplifier.idl:34 plugins/bseamplifier.idl:39
 #: plugins/bsebalance.idl:25 plugins/bsebalance.idl:30
 msgid "Input 1 [%]"
 msgstr "Ingang 1 [%]"
 
-#: plugins/bseamplifier.idl:32 plugins/bseamplifier.idl:37
+#: plugins/bseamplifier.idl:35 plugins/bseamplifier.idl:40
 #: plugins/bsebalance.idl:26 plugins/bsebalance.idl:31
 msgid "Input 2 [%]"
 msgstr "Ingang 2 [%]"
@@ -3708,7 +3696,7 @@ msgstr "Delen invoegen/bewerken/verplaatsen (muisknop 1 en 2)"
 msgid "Insert/resize/move notes (mouse button 1 and 2)"
 msgstr "Noten invoegen/bewerken/verplaatsen (muisknop 1 en 2)"
 
-#: bse/bsecore.idl:758
+#: bse/bsebasics.idl:719
 msgid "Instrument Path"
 msgstr "Instrumentenpad"
 
@@ -3765,7 +3753,7 @@ msgstr "Ongeldig type synthesemodule"
 msgid "Invert"
 msgstr "Omkeren"
 
-#: bse/bsecore.idl:741
+#: bse/bsebasics.idl:702
 msgid "Invert Sustain Pedal"
 msgstr "Inverse sustain-pedaal"
 
@@ -3773,7 +3761,7 @@ msgstr "Inverse sustain-pedaal"
 msgid "Invert the current selection"
 msgstr "De huidige selectie omkeren"
 
-#: bse/bsecore.idl:742
+#: bse/bsebasics.idl:703
 msgid ""
 "Invert the state of sustain (damper) pedal so on/off meanings are reversed"
 msgstr ""
@@ -3811,12 +3799,12 @@ msgstr "Toetsbinding"
 msgid "Key combinations used to activate a function"
 msgstr "Gebruikte toetscombinaties om een functie te activeren"
 
-#: bse/bsecore.idl:99
+#: bse/bsebasics.idl:99
 msgid "Kirnberger III"
 msgstr ""
 
 #. http://en.wikipedia.org/wiki/Johann_Philipp_Kirnberger_temperament
-#: bse/bsecore.idl:100
+#: bse/bsebasics.idl:100
 msgid ""
 "Kirnberger's method of compensating for and closing the circle of fifths is "
 "to split the \"wolf\" interval known to those who have used meantone "
@@ -3834,11 +3822,11 @@ msgstr "Knop"
 msgid "Knob (Logarithmic)"
 msgstr "Knop (logaritmisch)"
 
-#: bse/bsecore.idl:768
+#: bse/bsebasics.idl:729
 msgid "LADSPA Path"
 msgstr "LADSPA-pad"
 
-#: beast-gtk/bstmain.cc:172
+#: beast-gtk/bstmain.cc:174
 msgid "LADSPA Plugins"
 msgstr "LADSPA plugins"
 
@@ -3851,11 +3839,11 @@ msgstr "Label"
 msgid "Last modification time"
 msgstr "Laatste modificatietijd"
 
-#: bse/bsecore.idl:727
+#: bse/bsebasics.idl:688
 msgid "Latency [ms]"
 msgstr "Vertraging [ms]"
 
-#: birnet/birnetutils.cc:1095
+#: birnet/birnetutils.cc:1077
 msgid "Launch Web Browser"
 msgstr ""
 
@@ -3930,7 +3918,7 @@ msgstr "Linker kanaaluitgang"
 msgid "Left to Right"
 msgstr "Linker audio ingang"
 
-#: plugins/standardsaturator.idl:34
+#: plugins/standardsaturator.idl:38
 msgid "Level"
 msgstr "Niveau"
 
@@ -3947,7 +3935,7 @@ msgstr "Licentie"
 msgid "License:"
 msgstr "Licentie:"
 
-#: plugins/standardsaturator.idl:11
+#: plugins/standardsaturator.idl:14
 msgid ""
 "Linear saturation with a soft knee transit into the clipping range (equals "
 "hard clipping at 100%) which approaches quadratic curvature for small levels"
@@ -4073,7 +4061,7 @@ msgstr "Synthesizernet laden uit de insturmentenmap"
 msgid "Load..."
 msgstr "Laden..."
 
-#: beast-gtk/bstmain.cc:237 beast-gtk/bstmain.cc:239
+#: beast-gtk/bstmain.cc:239 beast-gtk/bstmain.cc:241
 #, c-format
 msgid "Loading \"%s\""
 msgstr "Bezig met laden van \"%s\""
@@ -4088,7 +4076,7 @@ msgstr "Laden van skin `%s'"
 msgid "Loading wave `%s'"
 msgstr "Laden van wave `%s'"
 
-#: beast-gtk/bstmain.cc:219
+#: beast-gtk/bstmain.cc:221
 msgid "Loading..."
 msgstr "Bezig met laden..."
 
@@ -4138,7 +4126,7 @@ msgstr "Lowpass [Hz]"
 msgid "Lowpass filter frequency for the control signal"
 msgstr "Lowpass filterfrequentie voor het controlesignaal"
 
-#: bse/bsecore.idl:740
+#: bse/bsebasics.idl:701
 msgid "MIDI"
 msgstr "MIDI"
 
@@ -4180,7 +4168,8 @@ msgstr "MIDI tracker, muziekcompositie en modulaire synthese"
 
 # BUG: MIDI input or oputput is not available.
 #: bse/bseserver.cc:470
-msgid "MIDI input or oputput is not available."
+#, fuzzy
+msgid "MIDI input or output is not available."
 msgstr "MINI invoer of uitvoer beschikbaar."
 
 #: beast-gtk/bstpatterncolumns.cc:648
@@ -4202,7 +4191,7 @@ msgstr "Master"
 msgid "Master Output"
 msgstr "Master-uitgang"
 
-#: plugins/bseamplifier.idl:48
+#: plugins/bseamplifier.idl:51
 msgid "Master Volume"
 msgstr "Master-volume"
 
@@ -4350,7 +4339,7 @@ msgstr "Mod In"
 msgid "Modulation"
 msgstr "Modulatie"
 
-#: bse/bsecore.idl:121 bse/bsecore.idl:297
+#: bse/bsebasics.idl:121 bse/bsebasics.idl:297
 msgid "Modulation Depth"
 msgstr "Modulatie-sterkte"
 
@@ -4459,7 +4448,7 @@ msgstr "Naar rechts verplaatsen"
 msgid "Move upwards"
 msgstr "Omhoog verplaatsen"
 
-#: plugins/bseamplifier.idl:39
+#: plugins/bseamplifier.idl:42
 msgid "Multiply Controls"
 msgstr "Controle vermenigvuldigen"
 
@@ -4532,7 +4521,7 @@ msgstr "Nieuw Beeld"
 #. "'X' - thread exited"),
 #. NULL, NULL, 0);
 #.
-#: beast-gtk/bstprofiler.cc:239
+#: beast-gtk/bstprofiler.cc:156
 msgid "Nice"
 msgstr "Nice"
 
@@ -4632,7 +4621,7 @@ msgstr "Zo'n synthesemodule bestaat niet"
 msgid "No such wave"
 msgstr "Wave bestaat niet"
 
-#: birnet/birnetutils.cc:1097
+#: birnet/birnetutils.cc:1079
 #, c-format
 msgid ""
 "No suitable web browser executable could be found to be executed and to "
@@ -4680,13 +4669,14 @@ msgstr "Ruis uitgang"
 msgid "Noise is a generator of (supposedly) white noise"
 msgstr "Ruis is een generator van (verondersteld) witte ruis"
 
-#: bse/bsecore.idl:159
+#: bse/bsebasics.idl:159
 msgid "Non-Registered Parameter"
 msgstr "Niet geregistreerde parameter"
 
 #. special cased signals
 #: beast-gtk/bsteventrollctrl.cc:36 beast-gtk/bstpianorollctrl.cc:36
-#: beast-gtk/bstrecords.idl:40 beast-gtk/bstrecords.idl:67 bse/bsecore.idl:294
+#: beast-gtk/bstrecords.idl:40 beast-gtk/bstrecords.idl:67
+#: bse/bsebasics.idl:294
 msgid "None"
 msgstr "Geen"
 
@@ -4694,7 +4684,7 @@ msgstr "Geen"
 msgid "Norm Type"
 msgstr "Norm type"
 
-#: plugins/standardsaturator.idl:35
+#: plugins/standardsaturator.idl:39
 msgid ""
 "Normalization level of the saturation curve in percent, some saturation "
 "types still allow overdrive signals beyond this level"
@@ -4726,7 +4716,7 @@ msgstr "Note velocity"
 msgid "Note Entry"
 msgstr "Noot invoer"
 
-#: bse/bsecore.idl:118
+#: bse/bsebasics.idl:118
 msgid "Note Fine Tune"
 msgstr "Toonfijnstelling"
 
@@ -4749,7 +4739,7 @@ msgstr "Note sync signaal"
 
 # nootsnelheid
 #. 14bit
-#: bse/bsecore.idl:117
+#: bse/bsebasics.idl:117
 msgid "Note Velocity"
 msgstr "Note velocity"
 
@@ -4976,7 +4966,7 @@ msgid "Out of memory"
 msgstr "Geen vrij geheugen meer"
 
 #: beast-gtk/bstcanvassource.cc:861 beast-gtk/bstsnetrouter.cc:955
-#: plugins/bseamplifier.idl:45
+#: plugins/bseamplifier.idl:48
 msgid "Output"
 msgstr "Uitvoer"
 
@@ -5005,7 +4995,7 @@ msgstr "Uitgangsignaal monitor"
 msgid "Output Signals"
 msgstr "Uitgangsignalen"
 
-#: plugins/standardsaturator.idl:41
+#: plugins/standardsaturator.idl:45
 #, fuzzy
 msgid "Output Volume"
 msgstr "Volume links"
@@ -5018,7 +5008,7 @@ msgstr "Uitvoer [dB]"
 msgid "Output port name to interface from"
 msgstr "Naam van uitgangspoort waar verbinding vandaan komt"
 
-#: plugins/bseamplifier.idl:48 plugins/standardsaturator.idl:41
+#: plugins/bseamplifier.idl:51 plugins/standardsaturator.idl:45
 msgid "Output stage amplification in decibel"
 msgstr "Versterkingstrap op uitgang in decibel"
 
@@ -5056,7 +5046,7 @@ msgstr "PWM In"
 msgid "Palette"
 msgstr "Palet"
 
-#: bse/bsecore.idl:130 bse/bsecore.idl:306
+#: bse/bsebasics.idl:130 bse/bsebasics.idl:306
 msgid "Panorama"
 msgstr "Panorama"
 
@@ -5121,27 +5111,27 @@ msgstr "Patroon"
 msgid "Pattern Editor Layout"
 msgstr "Patroon-editor indeling"
 
-#: bse/bsecore.idl:60
+#: bse/bsebasics.idl:60
 msgid "Pentatonic 5-limit"
 msgstr ""
 
-#: bse/bsecore.idl:64
+#: bse/bsebasics.idl:64
 msgid "Pentatonic Blues"
 msgstr ""
 
-#: bse/bsecore.idl:67
+#: bse/bsebasics.idl:67
 msgid "Pentatonic Gogo"
 msgstr ""
 
 #. http://en.wikipedia.org/wiki/Pentatonic_scale
-#: bse/bsecore.idl:61
+#: bse/bsebasics.idl:61
 msgid ""
 "Pentatonic scales are used in modern jazz and pop/rock contexts because they "
 "work exceedingly well over several chords diatonic to the same key, often "
 "better than the parent scale."
 msgstr ""
 
-#: beast-gtk/bstprofiler.cc:223
+#: beast-gtk/bstprofiler.cc:140
 msgid "Percentage of CPU usage"
 msgstr "Percentage processorgebruik"
 
@@ -5177,7 +5167,7 @@ msgstr "Pianotonen"
 
 # toonhoogte buigen
 #. 7bit
-#: bse/bsecore.idl:116
+#: bse/bsebasics.idl:116
 msgid "Pitch Bend"
 msgstr "Pitch Bend"
 
@@ -5222,11 +5212,11 @@ msgstr "De snaar tokkelen op de stijgende kant"
 msgid "Pluck the string"
 msgstr "Afspeelinstellingen"
 
-#: bse/bsecore.idl:764
+#: bse/bsebasics.idl:725
 msgid "Plugin Path"
 msgstr "Pluginspad"
 
-#: beast-gtk/bstmain.cc:155
+#: beast-gtk/bstmain.cc:157
 msgid "Plugins"
 msgstr "Plugins"
 
@@ -5234,7 +5224,7 @@ msgstr "Plugins"
 msgid "Popup Options"
 msgstr "Popup-opties"
 
-#: bse/bsecore.idl:125 bse/bsecore.idl:301
+#: bse/bsebasics.idl:125 bse/bsebasics.idl:301
 msgid "Portamento Time"
 msgstr "Portamentotijd"
 
@@ -5269,10 +5259,6 @@ msgstr "Voortijdig bestandseinde"
 #: beast-gtk/bstsampleeditor.cc:448
 msgid "Preview"
 msgstr "Voorbeeld"
-
-#: bse/bsecore.idl:690
-msgid "Priority"
-msgstr "Prioriteit"
 
 #: beast-gtk/bstapp.cc:929
 msgid "Procedure Browser"
@@ -5313,7 +5299,7 @@ msgstr ""
 msgid "Process: %s\n"
 msgstr "Proces:    %s\n"
 
-#: bse/bsecore.idl:728
+#: bse/bsebasics.idl:689
 msgid ""
 "Processing duration between input and output of a single sample, smaller "
 "values increase CPU load"
@@ -5321,19 +5307,14 @@ msgstr ""
 "Procestijd tussen de invoer en uitvoer van een enkele sample. Kleinere "
 "waarden geven een hogere CPU-belasting"
 
-# rekeneenheid
-#: bse/bsecore.idl:693
-msgid "Processor"
-msgstr "Processor"
-
 # wat is een goede vertaling hiervoor?
-#: beast-gtk/bstapp.cc:109 beast-gtk/bstprofiler.cc:199
+#: beast-gtk/bstapp.cc:109 beast-gtk/bstprofiler.cc:116
 msgid "Profiler"
 msgstr "Profiler"
 
 # midi-term
 #. special cased signals
-#: bse/bsecore.idl:114
+#: bse/bsebasics.idl:114
 msgid "Program Change"
 msgstr "Program change"
 
@@ -5400,12 +5381,12 @@ msgstr "Pulsbreedte"
 msgid "Pulse Width Modulation Input"
 msgstr "Pulsbreedte modulatie-ingang"
 
-#: bse/bsecore.idl:56
+#: bse/bsebasics.idl:56
 msgid "Pythagorean Tuning"
 msgstr ""
 
 #. http://en.wikipedia.org/wiki/Pythagorean_tuning
-#: bse/bsecore.idl:57
+#: bse/bsebasics.idl:57
 msgid ""
 "Pythagorean tuning is the oldest way of tuning the 12-note chromatic scale, "
 "in which the frequency relationships of all intervals are based on the ratio "
@@ -5454,7 +5435,7 @@ msgstr "Q: Geen"
 msgid "Q: Tact"
 msgstr "Q: Maat"
 
-#: plugins/standardsaturator.idl:9
+#: plugins/standardsaturator.idl:12
 msgid "Quadratic"
 msgstr ""
 
@@ -5513,20 +5494,20 @@ msgid "Quarter note"
 msgstr "Kwartnoot"
 
 #. Meantone Temperament: http://en.wikipedia.org/wiki/Meantone_temperament
-#: bse/bsecore.idl:71
+#: bse/bsebasics.idl:71
 #, fuzzy
 msgid "Quarter-Comma Meantone"
 msgstr "Kwartnoot"
 
 #. http://en.wikipedia.org/wiki/Quarter-comma_meantone
-#: bse/bsecore.idl:72
+#: bse/bsebasics.idl:72
 msgid ""
 "Quarter-comma meantone was the most common meantone temperament in the "
 "sixteenth and seventeenth centuries and sometimes used later."
 msgstr ""
 
 #. parse rc file
-#: beast-gtk/bstmain.cc:123
+#: beast-gtk/bstmain.cc:125
 msgid "RC Files"
 msgstr "RC bestanden"
 
@@ -5612,7 +5593,7 @@ msgstr ""
 msgid "Reflection cutoff frequency"
 msgstr "Passband falloff bij cutoff-frequentie"
 
-#: bse/bsecore.idl:158
+#: bse/bsebasics.idl:158
 msgid "Registered Parameter"
 msgstr "Geregistreerde parameter"
 
@@ -5849,11 +5830,11 @@ msgstr "/Routing/Versterker"
 msgid "Row Shading"
 msgstr "Rijschaduw"
 
-#: beast-gtk/bstprofiler.cc:225
+#: beast-gtk/bstprofiler.cc:142
 msgid "STime"
 msgstr "Stijd"
 
-#: bse/bsecore.idl:752
+#: bse/bsebasics.idl:713
 msgid "Sample Path"
 msgstr "Samplespad"
 
@@ -5861,30 +5842,30 @@ msgstr "Samplespad"
 msgid "Sample or instrument name"
 msgstr "Sample of naam van instrument"
 
-#: plugins/bsecontribsampleandhold.idl:9
+#: plugins/bsecontribsampleandhold.idl:12
 msgid ""
 "SampleAndHold samples the input signal when triggered and holds it until "
 "triggered again."
 msgstr ""
 
-#: plugins/standardsaturator.idl:33
+#: plugins/standardsaturator.idl:37
 #, fuzzy
 msgid "Saturation Type"
 msgstr "Aanmaaktijd"
 
-#: plugins/standardsaturator.idl:7
+#: plugins/standardsaturator.idl:10
 msgid ""
 "Saturation via arc tangent function which is reasonably linear in the lower "
 "50% but develops a strong curvature above 80%"
 msgstr ""
 
-#: plugins/standardsaturator.idl:5
+#: plugins/standardsaturator.idl:8
 msgid ""
 "Saturation via hyperbolic tangent function which is mostly linear for small "
 "levels while providing a soft curvature for high volume signals"
 msgstr ""
 
-#: plugins/standardsaturator.idl:9
+#: plugins/standardsaturator.idl:12
 msgid ""
 "Saturation via quadratic approximation which keeps a well-proportioned "
 "curvature across all levels"
@@ -5947,11 +5928,11 @@ msgid "Saving project `%s'"
 msgstr "Opslaan van project `%s'"
 
 #. SCRIPT (enabled)
-#: birnet/birnetmsg.cc:102
+#: birnet/birnetmsg.cc:101
 msgid "Script"
 msgstr "Script"
 
-#: bse/bsecore.idl:761
+#: bse/bsebasics.idl:722
 msgid "Script Path"
 msgstr "Scriptspad"
 
@@ -5959,7 +5940,7 @@ msgstr "Scriptspad"
 msgid "Script execution error."
 msgstr "Uitvoering van script is foutgegaan."
 
-#: beast-gtk/bstmain.cc:197
+#: beast-gtk/bstmain.cc:199
 msgid "Scripts"
 msgstr "Scripts"
 
@@ -5979,11 +5960,11 @@ msgstr "Niet schuiven"
 msgid "Scroll Right"
 msgstr "Rechts schuiven"
 
-#: bse/bsecore.idl:751
+#: bse/bsebasics.idl:712
 msgid "Search Paths"
 msgstr "Zoekpaden"
 
-#: bse/bsecore.idl:756
+#: bse/bsebasics.idl:717
 #, fuzzy
 msgid ""
 "Search path of directories, seperated by \";\", used to find BSE effect "
@@ -5991,7 +5972,7 @@ msgid ""
 msgstr ""
 "Zoekpad voor BSE-effecten. Pad bestaat uit mappen gescheiden door \"%s\"."
 
-#: bse/bsecore.idl:759
+#: bse/bsebasics.idl:720
 #, fuzzy
 msgid ""
 "Search path of directories, seperated by \";\", used to find BSE instrument "
@@ -5999,7 +5980,7 @@ msgid ""
 msgstr ""
 "Zoekpad voor BSE-instrumenten. Pad bestaat uit mappen gescheiden door \"%s\"."
 
-#: bse/bsecore.idl:765
+#: bse/bsebasics.idl:726
 #, fuzzy
 msgid ""
 "Search path of directories, seperated by \";\", used to find BSE plugins. "
@@ -6010,7 +5991,7 @@ msgstr ""
 "pad wordt doorzocht in aanvulling op de standaard BSE-plugin locatie op dit "
 "systeem."
 
-#: bse/bsecore.idl:762
+#: bse/bsebasics.idl:723
 #, fuzzy
 msgid ""
 "Search path of directories, seperated by \";\", used to find BSE scheme "
@@ -6019,7 +6000,7 @@ msgstr ""
 "Zoekpad voor BSE-scheme-scripts. Pad bestaat uit mappen gescheiden door \"%s"
 "\"."
 
-#: bse/bsecore.idl:769
+#: bse/bsebasics.idl:730
 #, fuzzy
 msgid ""
 "Search path of directories, seperated by \";\", used to find LADSPA plugins. "
@@ -6032,7 +6013,7 @@ msgstr ""
 "systeem. LADSPA is de Linux Audio Developer's Simple Plugin API. Meer "
 "informatie over LADSPA-plugins vindt u op http://www.ladspa.org/"
 
-#: bse/bsecore.idl:753
+#: bse/bsebasics.idl:714
 #, fuzzy
 msgid ""
 "Search path of directories, seperated by \";\", used to find audio samples."
@@ -6042,7 +6023,7 @@ msgstr "Zoekpad voor samples. Pad bestaat uit mappen gescheiden door \"%s\"."
 msgid "Searchpath Text Entry"
 msgstr "Zoekpad tekstinvoer"
 
-#: bse/bsebusmodule.idl:10 plugins/bseamplifier.idl:26
+#: bse/bsebusmodule.idl:10 plugins/bseamplifier.idl:29
 #: plugins/bsebalance.idl:18
 msgid "Second audio input"
 msgstr "Tweede audio ingang"
@@ -6052,7 +6033,7 @@ msgstr "Tweede audio ingang"
 msgid "Second audio output"
 msgstr "Tweede audio ingang"
 
-#: plugins/bseamplifier.idl:28 plugins/bsebalance.idl:20
+#: plugins/bseamplifier.idl:31 plugins/bsebalance.idl:20
 msgid "Second control input"
 msgstr "Tweede controle-ingang"
 
@@ -6230,7 +6211,7 @@ msgid "Show messages about empty part range"
 msgstr "Berichten tonen bij problemen met opname van geluid"
 
 # invoer/opname
-#: birnet/birnetutils.cc:1098
+#: birnet/birnetutils.cc:1080
 #, fuzzy
 msgid "Show messages about web browser launch problems"
 msgstr "Berichten tonen bij problemen met opname van geluid"
@@ -6264,7 +6245,7 @@ msgid "Signal Outputs"
 msgstr "Signaal uitvoer"
 
 #. Werckmeister II
-#: bse/bsecore.idl:74
+#: bse/bsebasics.idl:74
 msgid "Silbermann-Sorge Temperament"
 msgstr ""
 
@@ -6326,7 +6307,7 @@ msgstr ""
 msgid "Snoop Signal"
 msgstr "Afgesnoept signaal"
 
-#: plugins/standardsaturator.idl:11
+#: plugins/standardsaturator.idl:14
 msgid "Soft Knee"
 msgstr ""
 
@@ -6371,7 +6352,7 @@ msgid "Spin Button (Logarithmic)"
 msgstr "Spinknop (logaritmisch)"
 
 #. show splash images
-#: beast-gtk/bstmain.cc:126
+#: beast-gtk/bstmain.cc:128
 msgid "Splash Image"
 msgstr "Intro-afbeelding"
 
@@ -6456,13 +6437,9 @@ msgstr "Start:"
 msgid "Starting Playback"
 msgstr "Afspelen starten"
 
-#: beast-gtk/bstmain.cc:113
+#: beast-gtk/bstmain.cc:115
 msgid "Startup"
 msgstr "Opstarten"
-
-#: bse/bsecore.idl:687
-msgid "State"
-msgstr "Status"
 
 #: beast-gtk/bstpatternctrl.cc:99
 msgid "Steps"
@@ -6519,7 +6496,7 @@ msgstr "IO wisselen"
 msgid "Swap input with output channels when displaying synthesis modules?"
 msgstr "Uitvoer<"
 
-#: plugins/bseamplifier.idl:40
+#: plugins/bseamplifier.idl:43
 msgid ""
 "Switch the two control inputs to work like a chain of gain controls, rather "
 "than mixing them together, weighted by balance."
@@ -6560,7 +6537,7 @@ msgstr "Synchronisatie-uitgang"
 msgid "Syncronize left and right volume"
 msgstr "Geluidssterkte links en rechts synchroniseren"
 
-#: bse/bsecore.idl:735
+#: bse/bsebasics.idl:696
 msgid "Synth Control Frequency"
 msgstr "Controlefrequentie synthese"
 
@@ -6573,7 +6550,7 @@ msgstr "Synth voltooid"
 msgid "Synth Input"
 msgstr "Synth invoer"
 
-#: bse/bsecore.idl:731
+#: bse/bsebasics.idl:692
 msgid "Synth Mixing Frequency"
 msgstr "Mixfrequentie synthese"
 
@@ -6587,11 +6564,11 @@ msgstr "Synth voltooid"
 msgid "Synthesis Modules"
 msgstr "Synthesemodules"
 
-#: bse/bsecore.idl:725
+#: bse/bsebasics.idl:686
 msgid "Synthesis Settings"
 msgstr "Synthese-instellingen"
 
-#: bse/bsecore.idl:732
+#: bse/bsebasics.idl:693
 msgid "Synthesis mixing frequency, common values are: 22050, 44100, 48000"
 msgstr ""
 "De mixfrequentie voor de synthese, veelgebruikte waarden zijn: 22050, 44100, "
@@ -6660,15 +6637,11 @@ msgstr "Synthesizer selectie: %s"
 msgid "Synthesizer: %s"
 msgstr "Synthesizer: %s"
 
-#: bse/bsecore.idl:697
-msgid "System Time"
-msgstr "Systeemtijd"
-
-#: plugins/standardsaturator.idl:5
+#: plugins/standardsaturator.idl:8
 msgid "TANH"
 msgstr ""
 
-#: beast-gtk/bstprofiler.cc:222
+#: beast-gtk/bstprofiler.cc:139
 msgid "TID"
 msgstr "TID"
 
@@ -6700,27 +6673,6 @@ msgstr "Kleur tekst"
 msgid "Text Entry"
 msgstr "Tekstinvoer"
 
-#: bse/bsecore.idl:699
-msgid "The CPU time spent executing instructions of children of this thread"
-msgstr ""
-"De CPU-tijd die wordt gebruikt bij het uitvoeren van de instructies van de "
-"dochters van deze 'thread'"
-
-#: bse/bsecore.idl:695
-msgid "The CPU time spent executing instructions of this thread"
-msgstr ""
-"De CPU-tijd die wordt gebruikt bij het uitvoeren van de instructies van deze "
-"'thread'"
-
-#: bse/bsecore.idl:701
-msgid "The CPU time spent in the system for children of this thread"
-msgstr ""
-"De CPU-tijd die wordt gebruikt in het systeem voor dochters van deze 'thread'"
-
-#: bse/bsecore.idl:697
-msgid "The CPU time spent in the system for this thread"
-msgstr "De CPU-tijd die wordt gebruikt in het systeem voor deze 'thread'"
-
 #: bse/bsesource.proc:625
 msgid ""
 "The MIDI Channel from which automation events should be received, 0 "
@@ -6728,7 +6680,7 @@ msgid ""
 msgstr ""
 
 #. http://en.wikipedia.org/wiki/Pentatonic_scale
-#: bse/bsecore.idl:68
+#: bse/bsebasics.idl:68
 msgid ""
 "The Pentatonic Gogo scale is an anhemitonic pentatonic scale used to tune "
 "the instruments of the Gogo people of Tanzania."
@@ -6742,7 +6694,7 @@ msgid ""
 msgstr ""
 
 #. http://de.wikipedia.org/wiki/Silbermann-Sorge-Temperatur
-#: bse/bsecore.idl:75
+#: bse/bsebasics.idl:75
 msgid ""
 "The Silbermann-Sorge temperament is a meantone temperament used for Baroque "
 "era organs by Gottfried Silbermann."
@@ -6770,7 +6722,7 @@ msgid "The audio channel to play, usually 1 is left, 2 is right"
 msgstr "Het te beluisteren geluidskanaal, gewoonlijk is 1 links en 2 rechts"
 
 #. http://en.wikipedia.org/wiki/Pentatonic_scale
-#: bse/bsecore.idl:65
+#: bse/bsebasics.idl:65
 msgid ""
 "The blues scale is the minor pentatonic with an additional augmented fourth, "
 "which is referred to as the \"blues note\"."
@@ -6779,10 +6731,6 @@ msgstr ""
 #: beast-gtk/bstpatternctrl.cc:105
 msgid "The direction of cell movement each time an event or note was edited"
 msgstr "De verschuivingsrichting nadat een 'event' of noot is bewerkt"
-
-#: bse/bsecore.idl:687
-msgid "The execution state of the thread"
-msgstr "De uitvoeringsstatus van de 'thread'"
 
 #: plugins/davcanyondelay.cc:61
 msgid "The feedback amount; a negative feedback inverts the signal"
@@ -6836,20 +6784,12 @@ msgid "The mnemonic accelerator key for this label"
 msgstr "De sneltoets voor dit label"
 
 #. http://en.wikipedia.org/wiki/Equal_temperament
-#: bse/bsecore.idl:39
+#: bse/bsebasics.idl:39
 msgid ""
 "The most common tuning system for modern Western music, is the twelve-tone "
 "equal temperament, abbreviated as 12-TET, which divides the octave into 12 "
 "equal parts."
 msgstr ""
-
-#: bse/bsecore.idl:690
-msgid ""
-"The nice value of a thread, -20 indicates a high priority thread and +19 a "
-"low priority one that is 'nice' to others"
-msgstr ""
-"De 'nice'-waarde van een 'thread', -20 beteknt hoge prioriteit en +19 een "
-"lage prioriteit, dus eentje die 'aardig' is voor anderen"
 
 #: plugins/bsequantizer.idl:12
 msgid "The number of bits the quantization steps correspond to."
@@ -6882,10 +6822,6 @@ msgid ""
 msgstr ""
 "De poortnaam is een unieke naam om een relatie ingangspoort<->uitgangspoort "
 "tot stand te brengen"
-
-#: bse/bsecore.idl:693
-msgid "The processor that this thread is currently being executed on"
-msgstr "De processor waarop deze 'thread' momenteel wordt uitgevoerd"
 
 #: beast-gtk/bstapp.cc:584
 msgid "The project has been modified."
@@ -6946,7 +6882,7 @@ msgstr ""
 msgid "The type of filter to use"
 msgstr "Het soort filter om te gebruiken"
 
-#: plugins/standardsaturator.idl:33
+#: plugins/standardsaturator.idl:37
 #, fuzzy
 msgid "The type of saturation to be used"
 msgstr "Het soort filter om te gebruiken"
@@ -6991,7 +6927,7 @@ msgid "This signal goes high after the release phase has completed"
 msgstr "Dit signaal gaat op hoog nadat de release-fase is voltooid"
 
 #. http://en.wikipedia.org/wiki/Werckmeister_temperament
-#: bse/bsecore.idl:92
+#: bse/bsebasics.idl:92
 msgid ""
 "This tuning is also known as Septenarius tuning is based on a division of "
 "the monochord length into 196 = 7 * 7 * 4 parts. The resulting scale has "
@@ -7002,7 +6938,7 @@ msgid ""
 msgstr ""
 
 #. http://en.wikipedia.org/wiki/Werckmeister_temperament
-#: bse/bsecore.idl:79
+#: bse/bsebasics.idl:79
 msgid ""
 "This tuning uses mostly pure (perfect) fifths, as in Pythagorean tuning, but "
 "each of the fifths C-G, G-D, D-A and B-F# is made smaller, i.e. tempered by "
@@ -7011,7 +6947,7 @@ msgid ""
 msgstr ""
 
 #. http://en.wikipedia.org/wiki/Young_temperament
-#: bse/bsecore.idl:106
+#: bse/bsebasics.idl:106
 msgid ""
 "Thomas Young devised a form of musical tuning to make the harmony most "
 "perfect in those keys which are the most frequently used (give better major "
@@ -7020,21 +6956,16 @@ msgid ""
 "as six equally imperfect fifths."
 msgstr ""
 
-# draad?
-#: bse/bsecore.idl:688
-msgid "Thread ID"
-msgstr "Thread-ID"
-
-#: beast-gtk/bstprofiler.cc:222
+#: beast-gtk/bstprofiler.cc:139
 msgid "Thread ID (on some systems the process ID)"
 msgstr "Thread ID (op bepaalde systemen de proces ID)"
 
 # draad?
-#: beast-gtk/bstprofiler.cc:220 bse/bsecore.idl:686
+#: beast-gtk/bstprofiler.cc:137
 msgid "Thread Name"
 msgstr "Thread-naam"
 
-#: beast-gtk/bstprofiler.cc:239
+#: beast-gtk/bstprofiler.cc:156
 msgid "Thread priority from -20 (high) to +19 (low)"
 msgstr "Thread prioriteit van -20 (hoog) naar +19 (laag)"
 
@@ -7067,7 +6998,7 @@ msgstr "Schakelknop"
 msgid "Toggle channel name hints"
 msgstr "Kanaalnaam hints schakelen"
 
-#: plugins/bseamplifier.idl:43
+#: plugins/bseamplifier.idl:46
 msgid "Toggle exponential and linear control response"
 msgstr "Exponentiële en lineaire controle-respons schakelen"
 
@@ -7091,7 +7022,7 @@ msgstr "Te veel geopende bestanden"
 msgid "Too many open files in system"
 msgstr "Te veel geopende bestanden in het systeem"
 
-#: beast-gtk/bstprofiler.cc:143
+#: beast-gtk/bstprofiler.cc:79
 msgid "Totals"
 msgstr "Totalen"
 
@@ -7132,12 +7063,12 @@ msgstr "Trigger in"
 msgid "Trigger Hit"
 msgstr "Trigger ingang"
 
-#: plugins/bsecontribsampleandhold.idl:11 plugins/davbassfilter.idl:15
+#: plugins/bsecontribsampleandhold.idl:14 plugins/davbassfilter.idl:15
 #: plugins/davsyndrum.cc:90 plugins/davxtalstrings.cc:119
 msgid "Trigger In"
 msgstr "Trigger in"
 
-#: plugins/bsecontribsampleandhold.idl:11
+#: plugins/bsecontribsampleandhold.idl:14
 #, fuzzy
 msgid "Trigger Input"
 msgstr "Trigger ingang"
@@ -7198,7 +7129,7 @@ msgid "Type"
 msgstr "Type"
 
 # gebuikerstijd
-#: beast-gtk/bstprofiler.cc:224
+#: beast-gtk/bstprofiler.cc:141
 msgid "UTime"
 msgstr "Gtijd"
 
@@ -7287,10 +7218,6 @@ msgstr ""
 msgid "Use underline"
 msgstr "Onderstrepen gebruiken"
 
-#: bse/bsecore.idl:695
-msgid "User Time"
-msgstr "Gebruikerstijd"
-
 #: beast-gtk/bstsampleeditor.cc:403 beast-gtk/bstwaveeditor.cc:167
 msgid "VScale:"
 msgstr "Vschaal:"
@@ -7373,7 +7300,7 @@ msgstr "Virtuele ingang %u"
 msgid "Virtual output %u"
 msgstr "Virtuele uitgang %u"
 
-#: bse/bsebusmodule.idl:13 bse/bsecore.idl:127 bse/bsecore.idl:303
+#: bse/bsebasics.idl:127 bse/bsebasics.idl:303 bse/bsebusmodule.idl:13
 msgid "Volume"
 msgstr "Geluidsterkte"
 
@@ -7390,7 +7317,7 @@ msgid "WAVE File"
 msgstr "WAVE bestand"
 
 #. WARNING (enabled)
-#: birnet/birnetmsg.cc:98
+#: birnet/birnetmsg.cc:97
 msgid "Warning"
 msgstr "Waarschuwing"
 
@@ -7437,19 +7364,19 @@ msgid "Waves"
 msgstr "Waves"
 
 #. Well Temperament: http://en.wikipedia.org/wiki/Well_temperament
-#: bse/bsecore.idl:78
+#: bse/bsebasics.idl:78
 msgid "Werckmeister III"
 msgstr ""
 
-#: bse/bsecore.idl:82
+#: bse/bsebasics.idl:82
 msgid "Werckmeister IV"
 msgstr ""
 
-#: bse/bsecore.idl:87
+#: bse/bsebasics.idl:87
 msgid "Werckmeister V"
 msgstr ""
 
-#: bse/bsecore.idl:91
+#: bse/bsebasics.idl:91
 msgid "Werckmeister VI"
 msgstr ""
 
@@ -7489,7 +7416,7 @@ msgstr "XtalStrings uitgang"
 msgid "You probably want to start this script from a part editor."
 msgstr ""
 
-#: bse/bsecore.idl:105
+#: bse/bsebasics.idl:105
 msgid "Young Temperament"
 msgstr ""
 
@@ -7506,7 +7433,7 @@ msgstr "Zoomen"
 msgid "Zoom:"
 msgstr "Zoomen:"
 
-#: bse/bsepcmdevice-null.cc:115
+#: bse/bsepcmdevice-null.cc:117
 msgid "[nosleep]"
 msgstr ""
 
@@ -7771,231 +7698,231 @@ msgstr "_Virtualisatie"
 msgid "connection terminated"
 msgstr "verbinding verbroken"
 
-#: bse/bsecore.idl:265 bse/bsecore.idl:433
+#: bse/bsebasics.idl:265 bse/bsebasics.idl:433
 msgid "control-102"
 msgstr "controle-102"
 
-#: bse/bsecore.idl:266 bse/bsecore.idl:434
+#: bse/bsebasics.idl:266 bse/bsebasics.idl:434
 msgid "control-103"
 msgstr "controle-103"
 
-#: bse/bsecore.idl:267 bse/bsecore.idl:435
+#: bse/bsebasics.idl:267 bse/bsebasics.idl:435
 msgid "control-104"
 msgstr "controle-104"
 
-#: bse/bsecore.idl:268 bse/bsecore.idl:436
+#: bse/bsebasics.idl:268 bse/bsebasics.idl:436
 msgid "control-105"
 msgstr "controle-105"
 
-#: bse/bsecore.idl:269 bse/bsecore.idl:437
+#: bse/bsebasics.idl:269 bse/bsebasics.idl:437
 msgid "control-106"
 msgstr "controle-106"
 
-#: bse/bsecore.idl:270 bse/bsecore.idl:438
+#: bse/bsebasics.idl:270 bse/bsebasics.idl:438
 msgid "control-107"
 msgstr "controle-107"
 
-#: bse/bsecore.idl:271 bse/bsecore.idl:439
+#: bse/bsebasics.idl:271 bse/bsebasics.idl:439
 msgid "control-108"
 msgstr "controle-108"
 
-#: bse/bsecore.idl:272 bse/bsecore.idl:440
+#: bse/bsebasics.idl:272 bse/bsebasics.idl:440
 msgid "control-109"
 msgstr "controle-109"
 
-#: bse/bsecore.idl:273 bse/bsecore.idl:441
+#: bse/bsebasics.idl:273 bse/bsebasics.idl:441
 msgid "control-110"
 msgstr "controle-110"
 
-#: bse/bsecore.idl:274 bse/bsecore.idl:442
+#: bse/bsebasics.idl:274 bse/bsebasics.idl:442
 msgid "control-111"
 msgstr "controle-111"
 
-#: bse/bsecore.idl:275 bse/bsecore.idl:443
+#: bse/bsebasics.idl:275 bse/bsebasics.idl:443
 msgid "control-112"
 msgstr "controle-112"
 
-#: bse/bsecore.idl:276 bse/bsecore.idl:444
+#: bse/bsebasics.idl:276 bse/bsebasics.idl:444
 msgid "control-113"
 msgstr "controle-113"
 
-#: bse/bsecore.idl:277 bse/bsecore.idl:445
+#: bse/bsebasics.idl:277 bse/bsebasics.idl:445
 msgid "control-114"
 msgstr "controle-114"
 
-#: bse/bsecore.idl:278 bse/bsecore.idl:446
+#: bse/bsebasics.idl:278 bse/bsebasics.idl:446
 msgid "control-115"
 msgstr "controle-115"
 
-#: bse/bsecore.idl:279 bse/bsecore.idl:447
+#: bse/bsebasics.idl:279 bse/bsebasics.idl:447
 msgid "control-116"
 msgstr "controle-116"
 
-#: bse/bsecore.idl:280 bse/bsecore.idl:448
+#: bse/bsebasics.idl:280 bse/bsebasics.idl:448
 msgid "control-117"
 msgstr "controle-117"
 
-#: bse/bsecore.idl:281 bse/bsecore.idl:449
+#: bse/bsebasics.idl:281 bse/bsebasics.idl:449
 msgid "control-118"
 msgstr "controle-118"
 
-#: bse/bsecore.idl:282 bse/bsecore.idl:450
+#: bse/bsebasics.idl:282 bse/bsebasics.idl:450
 msgid "control-119"
 msgstr "controle-119"
 
-#: bse/bsecore.idl:175 bse/bsecore.idl:343
+#: bse/bsebasics.idl:175 bse/bsebasics.idl:343
 msgid "control-14"
 msgstr "controle-14"
 
-#: bse/bsecore.idl:176 bse/bsecore.idl:344
+#: bse/bsebasics.idl:176 bse/bsebasics.idl:344
 msgid "control-15"
 msgstr "controle-15"
 
-#: bse/bsecore.idl:181 bse/bsecore.idl:349
+#: bse/bsebasics.idl:181 bse/bsebasics.idl:349
 msgid "control-20"
 msgstr "controle-20"
 
-#: bse/bsecore.idl:182 bse/bsecore.idl:350
+#: bse/bsebasics.idl:182 bse/bsebasics.idl:350
 msgid "control-21"
 msgstr "controle-21"
 
-#: bse/bsecore.idl:183 bse/bsecore.idl:351
+#: bse/bsebasics.idl:183 bse/bsebasics.idl:351
 msgid "control-22"
 msgstr "controle-22"
 
-#: bse/bsecore.idl:184 bse/bsecore.idl:352
+#: bse/bsebasics.idl:184 bse/bsebasics.idl:352
 msgid "control-23"
 msgstr "controle-23"
 
-#: bse/bsecore.idl:185 bse/bsecore.idl:353
+#: bse/bsebasics.idl:185 bse/bsebasics.idl:353
 msgid "control-24"
 msgstr "controle-24"
 
-#: bse/bsecore.idl:186 bse/bsecore.idl:354
+#: bse/bsebasics.idl:186 bse/bsebasics.idl:354
 msgid "control-25"
 msgstr "controle-25"
 
-#: bse/bsecore.idl:187 bse/bsecore.idl:355
+#: bse/bsebasics.idl:187 bse/bsebasics.idl:355
 msgid "control-26"
 msgstr "controle-26"
 
-#: bse/bsecore.idl:188 bse/bsecore.idl:356
+#: bse/bsebasics.idl:188 bse/bsebasics.idl:356
 msgid "control-27"
 msgstr "controle-27"
 
-#: bse/bsecore.idl:189 bse/bsecore.idl:357
+#: bse/bsebasics.idl:189 bse/bsebasics.idl:357
 msgid "control-28"
 msgstr "controle-28"
 
-#: bse/bsecore.idl:190 bse/bsecore.idl:358
+#: bse/bsebasics.idl:190 bse/bsebasics.idl:358
 msgid "control-29"
 msgstr "controle-29"
 
-#: bse/bsecore.idl:164 bse/bsecore.idl:332
+#: bse/bsebasics.idl:164 bse/bsebasics.idl:332
 msgid "control-3"
 msgstr "controle-3"
 
-#: bse/bsecore.idl:191 bse/bsecore.idl:359
+#: bse/bsebasics.idl:191 bse/bsebasics.idl:359
 msgid "control-30"
 msgstr "controle-30"
 
-#: bse/bsecore.idl:192 bse/bsecore.idl:360
+#: bse/bsebasics.idl:192 bse/bsebasics.idl:360
 msgid "control-31"
 msgstr "controle-31"
 
-#: bse/bsecore.idl:197 bse/bsecore.idl:365
+#: bse/bsebasics.idl:197 bse/bsebasics.idl:365
 msgid "control-35"
 msgstr "controle-35"
 
-#: bse/bsecore.idl:203 bse/bsecore.idl:371
+#: bse/bsebasics.idl:203 bse/bsebasics.idl:371
 msgid "control-41"
 msgstr "controle-41"
 
-#: bse/bsecore.idl:208 bse/bsecore.idl:376
+#: bse/bsebasics.idl:208 bse/bsebasics.idl:376
 msgid "control-46"
 msgstr "controle-46"
 
-#: bse/bsecore.idl:209 bse/bsecore.idl:377
+#: bse/bsebasics.idl:209 bse/bsebasics.idl:377
 msgid "control-47"
 msgstr "controle-47"
 
-#: bse/bsecore.idl:214 bse/bsecore.idl:382
+#: bse/bsebasics.idl:214 bse/bsebasics.idl:382
 msgid "control-52"
 msgstr "controle-52"
 
-#: bse/bsecore.idl:215 bse/bsecore.idl:383
+#: bse/bsebasics.idl:215 bse/bsebasics.idl:383
 msgid "control-53"
 msgstr "controle-53"
 
-#: bse/bsecore.idl:216 bse/bsecore.idl:384
+#: bse/bsebasics.idl:216 bse/bsebasics.idl:384
 msgid "control-54"
 msgstr "controle-54"
 
-#: bse/bsecore.idl:217 bse/bsecore.idl:385
+#: bse/bsebasics.idl:217 bse/bsebasics.idl:385
 msgid "control-55"
 msgstr "controle-55"
 
-#: bse/bsecore.idl:218 bse/bsecore.idl:386
+#: bse/bsebasics.idl:218 bse/bsebasics.idl:386
 msgid "control-56"
 msgstr "controle-56"
 
-#: bse/bsecore.idl:219 bse/bsecore.idl:387
+#: bse/bsebasics.idl:219 bse/bsebasics.idl:387
 msgid "control-57"
 msgstr "controle-57"
 
-#: bse/bsecore.idl:220 bse/bsecore.idl:388
+#: bse/bsebasics.idl:220 bse/bsebasics.idl:388
 msgid "control-58"
 msgstr "controle-58"
 
-#: bse/bsecore.idl:221 bse/bsecore.idl:389
+#: bse/bsebasics.idl:221 bse/bsebasics.idl:389
 msgid "control-59"
 msgstr "controle-59"
 
-#: bse/bsecore.idl:222 bse/bsecore.idl:390
+#: bse/bsebasics.idl:222 bse/bsebasics.idl:390
 msgid "control-60"
 msgstr "controle-60"
 
-#: bse/bsecore.idl:223 bse/bsecore.idl:391
+#: bse/bsebasics.idl:223 bse/bsebasics.idl:391
 msgid "control-61"
 msgstr "controle-61"
 
-#: bse/bsecore.idl:224 bse/bsecore.idl:392
+#: bse/bsebasics.idl:224 bse/bsebasics.idl:392
 msgid "control-62"
 msgstr "controle-62"
 
-#: bse/bsecore.idl:225 bse/bsecore.idl:393
+#: bse/bsebasics.idl:225 bse/bsebasics.idl:393
 msgid "control-63"
 msgstr "controle-63"
 
-#: bse/bsecore.idl:248 bse/bsecore.idl:416
+#: bse/bsebasics.idl:248 bse/bsebasics.idl:416
 msgid "control-85"
 msgstr "controle-85"
 
-#: bse/bsecore.idl:249 bse/bsecore.idl:417
+#: bse/bsebasics.idl:249 bse/bsebasics.idl:417
 msgid "control-86"
 msgstr "controle-86"
 
-#: bse/bsecore.idl:250 bse/bsecore.idl:418
+#: bse/bsebasics.idl:250 bse/bsebasics.idl:418
 msgid "control-87"
 msgstr "controle-87"
 
-#: bse/bsecore.idl:251 bse/bsecore.idl:419
+#: bse/bsebasics.idl:251 bse/bsebasics.idl:419
 msgid "control-88"
 msgstr "controle-88"
 
-#: bse/bsecore.idl:252 bse/bsecore.idl:420
+#: bse/bsebasics.idl:252 bse/bsebasics.idl:420
 msgid "control-89"
 msgstr "controle-89"
 
-#: bse/bsecore.idl:170 bse/bsecore.idl:338
+#: bse/bsebasics.idl:170 bse/bsebasics.idl:338
 msgid "control-9"
 msgstr "controle-9"
 
-#: bse/bsecore.idl:253 bse/bsecore.idl:421
+#: bse/bsebasics.idl:253 bse/bsebasics.idl:421
 msgid "control-90"
 msgstr "controle-90"
 
-#: tools/bsewavetool.cc:1176
+#: tools/bsewavetool.cc:1178
 #, c-format
 msgid "failed to add wave chunk from file \"%s\": %s"
 msgstr "Toevoegen van stukje wave-bestand uit ‘%s’ is mislukt: %s"
@@ -8086,6 +8013,9 @@ msgstr "verwerken"
 #~ msgid "/_Edit"
 #~ msgstr "/_Bewerken"
 
+#~ msgid "A unique number identifying this thread"
+#~ msgstr "Een uniek nummer ter identificatie van deze thread"
+
 #~ msgid "Adjust pattern length"
 #~ msgstr "Op dit moment ben ik te oud om het project te laden :-(<"
 
@@ -8134,6 +8064,12 @@ msgstr "verwerken"
 
 #~ msgid "Bus Gain [float]"
 #~ msgstr "Bus gain [float]"
+
+#~ msgid "Child System Time"
+#~ msgstr "Dochter systeemtijd"
+
+#~ msgid "Child User Time"
+#~ msgstr "Dochter gebruikerstijd"
 
 #~ msgid "Compressed left audio output"
 #~ msgstr "Gecomprimeerde linker audio uitgang"
@@ -8289,6 +8225,13 @@ msgstr "verwerken"
 #~ "  MODUS    - rw = lezen/schrijven, ro = alleen lezen,\n"
 #~ "             wo = alleen schrijven\n"
 
+#~ msgid "Priority"
+#~ msgstr "Prioriteit"
+
+# rekeneenheid
+#~ msgid "Processor"
+#~ msgstr "Processor"
+
 #~ msgid "Properties:"
 #~ msgstr "Eigenschappen:"
 
@@ -8328,6 +8271,9 @@ msgstr "verwerken"
 #~ msgid "Specify project tab width in pixels"
 #~ msgstr "Geef de tabbreedte van het project in pixels"
 
+#~ msgid "State"
+#~ msgstr "Status"
+
 #~ msgid "Status"
 #~ msgstr "Status"
 
@@ -8350,14 +8296,55 @@ msgstr "verwerken"
 #~ msgid "Synthesis Network"
 #~ msgstr "Synthese netwerk"
 
+#~ msgid "System Time"
+#~ msgstr "Systeemtijd"
+
 #~ msgid "Tab Width"
 #~ msgstr "Tabbreedte"
+
+#~ msgid "The CPU time spent executing instructions of children of this thread"
+#~ msgstr ""
+#~ "De CPU-tijd die wordt gebruikt bij het uitvoeren van de instructies van "
+#~ "de dochters van deze 'thread'"
+
+#~ msgid "The CPU time spent executing instructions of this thread"
+#~ msgstr ""
+#~ "De CPU-tijd die wordt gebruikt bij het uitvoeren van de instructies van "
+#~ "deze 'thread'"
+
+#~ msgid "The CPU time spent in the system for children of this thread"
+#~ msgstr ""
+#~ "De CPU-tijd die wordt gebruikt in het systeem voor dochters van deze "
+#~ "'thread'"
+
+#~ msgid "The CPU time spent in the system for this thread"
+#~ msgstr "De CPU-tijd die wordt gebruikt in het systeem voor deze 'thread'"
+
+#~ msgid "The execution state of the thread"
+#~ msgstr "De uitvoeringsstatus van de 'thread'"
+
+#~ msgid ""
+#~ "The nice value of a thread, -20 indicates a high priority thread and +19 "
+#~ "a low priority one that is 'nice' to others"
+#~ msgstr ""
+#~ "De 'nice'-waarde van een 'thread', -20 beteknt hoge prioriteit en +19 een "
+#~ "lage prioriteit, dus eentje die 'aardig' is voor anderen"
+
+#~ msgid "The processor that this thread is currently being executed on"
+#~ msgstr "De processor waarop deze 'thread' momenteel wordt uitgevoerd"
 
 #~ msgid "The source code"
 #~ msgstr "De broncode"
 
 #~ msgid "The synthesis network to interface to"
 #~ msgstr "Het synthese-netwerk waarmee gewerkt wordt"
+
+# draad?
+#~ msgid "Thread ID"
+#~ msgstr "Thread-ID"
+
+#~ msgid "User Time"
+#~ msgstr "Gebruikerstijd"
 
 #~ msgid "Volume [dB] Steps"
 #~ msgstr "Volume-stappen [dB]"
