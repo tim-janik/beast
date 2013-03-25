@@ -10,13 +10,6 @@
 
 namespace {
 
-static void
-flac_error_callback (const FLAC__StreamDecoder     *decoder,
-                     FLAC__StreamDecoderErrorStatus status,
-                     void                          *client_data)
-{
-}
-
 static FLAC__StreamDecoderWriteStatus
 flac_write_callback (const FLAC__StreamDecoder  *decoder,
                      const FLAC__Frame          *frame,
@@ -30,6 +23,20 @@ struct FileInfo
 {
   BseWaveFileInfo wfi;
   BseWaveDsc      wdsc;
+
+  // pass error status from flac callback to caller
+  bool                              error_occurred;
+  FLAC__StreamDecoderErrorStatus    error_status;
+
+  static void
+  flac_error_callback (const FLAC__StreamDecoder     *decoder,
+                       FLAC__StreamDecoderErrorStatus status,
+                       void                          *client_data)
+  {
+    FileInfo *fi = static_cast<FileInfo *> (client_data);
+    fi->error_occurred = true;
+    fi->error_status = status;
+  }
 
   FileInfo (const gchar  *file_name,
             BseErrorType *error_p)
@@ -46,7 +53,9 @@ struct FileInfo
         *error_p = BSE_ERROR_INTERNAL;  // should not happen
         return;
       }
-    int r = FLAC__stream_decoder_init_file (decoder, file_name, flac_write_callback, NULL, flac_error_callback, NULL);
+
+    error_occurred = false;
+    int r = FLAC__stream_decoder_init_file (decoder, file_name, flac_write_callback, NULL, flac_error_callback, this);
     if (r != 0)
       {
         *error_p = gsl_error_from_errno (errno, BSE_ERROR_FILE_OPEN_FAILED);
@@ -58,6 +67,12 @@ struct FileInfo
     do {
       mdok = FLAC__stream_decoder_process_single (decoder);
     } while (FLAC__stream_decoder_get_channels (decoder) == 0 && mdok);
+
+    if (error_occurred || FLAC__stream_decoder_get_channels (decoder) == 0)
+      {
+        *error_p = BSE_ERROR_IO;
+        return;
+      }
 
     /* allocate and fill BseWaveFileInfo */
     wfi.n_waves = 1;
