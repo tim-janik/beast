@@ -13,6 +13,7 @@ DEFS     += @DEFINE__FILE_DIR__@ $(strip \
 	              $(filter $(<F), $(bse_sources) $(bse_sources))) \
 )
 AM_CXXFLAGS  = $(BSE_CFLAGS) $(RAPICORN_CFLAGS) -DRAPICORN_CONVENIENCE -DG_DISABLE_DEPRECATED -DG_DISABLE_CONST_RETURNS
+AIDACC_VDEBUG = $(AIDACC) $(if $(findstring 1, $(V)), --aida-debug)
 
 #
 # setup source file variables
@@ -323,3 +324,9 @@ noinst_PROGRAMS += bseinfo
 bseinfo_SOURCES  = bseinfo.cc
 bseinfo_LDADD    = $(progs_LDADD)
 
+# == Tests ==
+check-oldidl: oldidl.idl AuxTypes.py
+	@echo "  CHECK " $<
+	$(Q) $(AIDACC_VDEBUG) -x $(srcdir)/AuxTypes.py $<
+.PHONY: check-oldidl
+check-local: check-oldidl
