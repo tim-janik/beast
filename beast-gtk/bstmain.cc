@@ -790,6 +790,7 @@ beast_show_about_box (void)
     "Tuomas Kuosmanen",
     "Ville P\xc3\xa4tsi",
     /* general code and fixes */
+    "Alessio Treglia",
     "Alper Ersoy",
     "Ben Collver",
     "Hanno Behrens",
