@@ -70,7 +70,7 @@ bse_constant_class_init (BseConstantClass *klass)
     {
       gchar *ident, *label, *blurb, *group = g_strdup_printf (_("Constant Output %u"), i);
       ident = g_strdup_printf ("value_%u", i);
-      label = g_strdup_printf (_("Value [float]"));
+      label = g_strdup_printf ("%s", _("Value [float]"));
       bse_object_class_add_param (object_class, group, PARAM_VALUE + (i - 1) * 3,
 				  sfi_pspec_real (ident, label, _("Constant signal value"),
 						  1.0, -1.0, 1.0, 0.01,
@@ -78,7 +78,7 @@ bse_constant_class_init (BseConstantClass *klass)
       g_free (ident);
       g_free (label);
       ident = g_strdup_printf ("frequency_%u", i);
-      label = g_strdup_printf (_("Frequency"));
+      label = g_strdup_printf ("%s", _("Frequency"));
       bse_object_class_add_param (object_class, group, PARAM_FREQ + (i - 1) * 3,
 				  sfi_pspec_log_scale (ident, label, _("Constant signal value interpreted as frequency value in Hertz"),
 						       BSE_MAX_FREQUENCY,
@@ -89,7 +89,7 @@ bse_constant_class_init (BseConstantClass *klass)
       g_free (ident);
       g_free (label);
       ident = g_strdup_printf ("note_%u", i);
-      label = g_strdup_printf (_("Note"));
+      label = g_strdup_printf ("%s", _("Note"));
       bse_object_class_add_param (object_class, group, PARAM_NOTE + (i - 1) * 3,
 				  sfi_pspec_note (ident, label, _("Constant signal value as note, converted to Hertz according to the current musical tuning"),
 						  SFI_KAMMER_NOTE, SFI_MIN_NOTE, SFI_MAX_NOTE,
@@ -216,11 +216,6 @@ bse_constant_update_modules (BseConstant *constant,
 			       sizeof (constant->constants),
 			       trans);
 }
-typedef struct {
-  guint  index;
-  guint  n_values;
-  gfloat constants[BSE_CONSTANT_N_OUTPUTS];
-} FlowAccessData;
 static void
 constant_process (BseModule *module,
 		  guint      n_values)

@@ -363,7 +363,7 @@ determine_suspension_state (EngineNode *node,
     {
       node->in_suspend_call = TRUE;
       SfiRing *ring;    /* calculate outer suspend constraints */
-      stamp = ENGINE_NODE_IS_CONSUMER (node) ? 0 : GSL_MAX_TICK_STAMP;
+      stamp = ENGINE_NODE_IS_CONSUMER (node) ? 0 : Bse::TickStamp::max_stamp();
       gboolean keep_state = FALSE;
       for (ring = node->output_nodes; ring; ring = sfi_ring_walk (ring, node->output_nodes))
         {
@@ -687,7 +687,7 @@ subschedule_query_node (EngineSchedule *schedule,
 	guint child_ostream = node->jinputs[j][i].real_stream;
 	subschedule_child (schedule, node, query, child, child_ostream);
       }
-  node->counter = GSL_TICK_STAMP;
+  node->counter = Bse::TickStamp::current();
   node->sched_recurse_tag = FALSE;
   /* SCHED_DEBUG ("sched_done(%p)", node); */
 }

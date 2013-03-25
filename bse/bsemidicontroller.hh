@@ -11,20 +11,14 @@ G_BEGIN_DECLS
 #define BSE_IS_CONTROLLER(object)	      (G_TYPE_CHECK_INSTANCE_TYPE ((object), BSE_TYPE_MIDI_CONTROLLER))
 #define BSE_IS_CONTROLLER_CLASS(class)	      (G_TYPE_CHECK_CLASS_TYPE ((class), BSE_TYPE_MIDI_CONTROLLER))
 #define BSE_MIDI_CONTROLLER_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), BSE_TYPE_MIDI_CONTROLLER, BseMidiControllerClassOut))
-/* --- BseMidiController source --- */
-typedef struct _BseMidiController      BseMidiController;
-typedef struct _BseMidiControllerClass BseMidiControllerClass;
-struct _BseMidiController
-{
-  BseSource          parent_object;
+
+struct BseMidiController : BseSource {
   guint		     midi_channel;
   BseMidiSignalType  controls[4];
 };
-struct _BseMidiControllerClass
-{
-  BseSourceClass  parent_class;
-};
-/* --- channels --- */
+struct BseMidiControllerClass : BseSourceClass
+{};
+
 enum
 {
   BSE_MIDI_CONTROLLER_OCHANNEL_CONTROL1,

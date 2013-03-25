@@ -27,31 +27,46 @@ sfi_glue_context_common_init (SfiGlueContext            *context,
   context->pending_events = NULL;
   context->gc_hash = glue_gc_hash_table_new ();
 }
+
+class RingPtrDataKey : public Rapicorn::DataKey<SfiRing*> {
+  virtual void destroy (SfiRing *ring) override
+  {
+    if (ring)
+      sfi_ring_free (ring);
+  }
+};
+static RingPtrDataKey context_stack_key;
+
 void
 sfi_glue_context_push (SfiGlueContext *context)
 {
   g_return_if_fail (context != NULL);
   g_return_if_fail (context->table.destroy != NULL);
-  sfi_thread_set_qdata_full (quark_context_stack,
-			     sfi_ring_prepend ((SfiRing*) sfi_thread_steal_qdata (quark_context_stack),
-					       context),
-			     (GDestroyNotify) sfi_ring_free);
+
+  Bse::ThreadInfo &self = Bse::ThreadInfo::self();
+  SfiRing *context_stack = self.swap_data (&context_stack_key, (SfiRing*) NULL); // prevents deletion
+  context_stack = sfi_ring_prepend (context_stack, context);
+  self.set_data (&context_stack_key, context_stack);
 }
+
 SfiGlueContext*
 sfi_glue_context_current (void)
 {
-  SfiRing *context_stack = (SfiRing*) sfi_thread_get_qdata (quark_context_stack);
+  Bse::ThreadInfo &self = Bse::ThreadInfo::self();
+  SfiRing *context_stack = self.get_data (&context_stack_key);
   return (SfiGlueContext*) (context_stack ? context_stack->data : NULL);
 }
+
 void
 sfi_glue_context_pop (void)
 {
-  SfiRing *context_stack = (SfiRing*) sfi_thread_steal_qdata (quark_context_stack);
+  Bse::ThreadInfo &self = Bse::ThreadInfo::self();
+  SfiRing *context_stack = self.swap_data (&context_stack_key, (SfiRing*) NULL); // prevents deletion
   g_return_if_fail (context_stack != NULL);
-  sfi_thread_set_qdata_full (quark_context_stack,
-			     sfi_ring_remove_node (context_stack, context_stack),
-			     (GDestroyNotify) sfi_ring_free);
+  context_stack = sfi_ring_remove_node (context_stack, context_stack);
+  self.set_data (&context_stack_key, context_stack);
 }
+
 SfiRing*
 sfi_glue_context_list_poll_fds (void)
 {

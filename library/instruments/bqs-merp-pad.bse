@@ -1,9 +1,9 @@
 ; BseProject
 
-(bse-version "0.7.2")
+(bse-version "0.8.0")
 
 (container-child "BseCSynth::BQS Merp Pad"
-  (modification-time "2007-09-20 22:24:12")
+  (modification-time "2013-03-24 16:48:35")
   (creation-time "2002-01-12 12:42:55")
   (license "Provided \"as is\", WITHOUT ANY WARRANTY (http://beast.testbit.eu/LICENSE-AS-IS)")
   (author "Tim Janik")

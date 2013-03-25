@@ -14,6 +14,7 @@ site site-preview site-update site-update-all site-update-pages site-update-gall
 
 # extra dependencies
 configure: birnet/acbirnet.m4 birnet/configure.inc
+MAINTAINERCLEANFILES += configure
 
 EXTRA_DIST += $(strip		\
 	TODO			\
@@ -36,12 +37,12 @@ EXTRA_DIST  += ChangeLog mkrelease.sh
 
 # --- release helpers ---
 release-news:
-	@$(srcdir)/mkrelease.sh news
+	@$(srcdir)/mkrelease.sh news --first-parent --body
 release-check:
 	@echo "Checking for unlisted contributors..."
 	@$(srcdir)/mkrelease.sh contributors -X -B timj,stw -C $(srcdir)/beast-gtk/bstmain.c
 release-upload: ChangeLog
-	$(srcdir)/mkrelease.sh upload -U dist.testbit.eu:dist/beast/v0.7/ -E configure.in:BSE_MICRO_VERSION
+	$(srcdir)/mkrelease.sh upload -U dist.testbit.eu:dist/beast/v0.8/ -E configure.in:BSE_MICRO_VERSION
 .PHONY: release-news release-check release-upload
 
 # == Dist Fixes ==

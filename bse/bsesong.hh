@@ -11,13 +11,11 @@ G_BEGIN_DECLS
 #define BSE_IS_SONG_CLASS(class)   (G_TYPE_CHECK_CLASS_TYPE ((class), BSE_TYPE_SONG))
 #define BSE_SONG_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), BSE_TYPE_SONG, BseSongClass))
 /* --- BseSong object --- */
-typedef struct {
+struct BseSongVoice {
   BseSource *constant;
   BseSource *sub_synth;
-} BseSongVoice;
-struct _BseSong
-{
-  BseSNet           parent_instance;
+};
+struct BseSong : BseSNet {
   guint		    tpqn;		/* ticks per querter note */
   guint		    numerator;
   guint		    denominator;
@@ -48,11 +46,9 @@ struct _BseSong
   SfiInt	    loop_left_SL;	/* left loop tick */
   SfiInt	    loop_right_SL;	/* left loop tick */
 };
-struct _BseSongClass
-{
-  BseSNetClass parent_class;
-};
-/* --- prototypes --- */
+struct BseSongClass : BseSNetClass
+{};
+
 BseSong*	bse_song_lookup			(BseProject	*project,
 						 const gchar	*name);
 void		bse_song_stop_sequencing_SL	(BseSong	*self);
@@ -65,5 +61,7 @@ BseBus*         bse_song_find_master            (BseSong        *self);
 BseSource*      bse_song_ensure_master          (BseSong        *self);
 void            bse_song_set_solo_bus           (BseSong        *self,
                                                  BseBus         *bus);
+
 G_END_DECLS
+
 #endif /* __BSE_SONG_H__ */

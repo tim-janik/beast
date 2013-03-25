@@ -1,9 +1,9 @@
 ; BseProject
 
-(bse-version "0.7.2")
+(bse-version "0.8.0")
 
 (container-child "BseCSynth::BQS Organ"
-  (modification-time "2007-09-20 22:25:10")
+  (modification-time "2013-03-24 16:48:36")
   (creation-time "2006-04-07 20:44:57")
   (license "Provided \"as is\", WITHOUT ANY WARRANTY (http://beast.testbit.eu/LICENSE-AS-IS)")
   (author "Tim Janik")
@@ -16,9 +16,9 @@
     (source-input "synth-done" (link 1 "SimpleADSR-1") "done-out"))
   (container-child "BseInstrumentInput::InstrumentInput-1"
     (pos-x -4))
-  (container-child "DavOrgan::DavOrgan-1"
-    (reed #f)
+  (container-child "BseDavOrgan::DavOrgan-1"
     (flute #f)
+    (reed #f)
     (brass #f)
     (harm5 54.651165008544922)
     (harm4 61.860466003417969)

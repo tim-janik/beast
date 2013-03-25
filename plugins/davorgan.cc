@@ -50,7 +50,7 @@ class Organ : public OrganBase {
     static Tables*
     ref (uint rate)
     {
-      AutoLocker locker (table_mutex);
+      Bse::ScopedLock<Rapicorn::Mutex> locker (table_mutex);
       if (table_map[rate])
 	table_map[rate]->m_ref_count++;
       else
@@ -61,7 +61,7 @@ class Organ : public OrganBase {
     unref()
     {
       return_if_fail (m_ref_count > 0);
-      AutoLocker locker (table_mutex);
+      Bse::ScopedLock<Rapicorn::Mutex> locker (table_mutex);
       if (--m_ref_count == 0)
 	{
 	  table_map[m_rate] = 0;
@@ -245,9 +245,11 @@ public:
   /* implement creation and config methods for synthesis Module */
   BSE_EFFECT_INTEGRATE_MODULE (Organ, Module, Properties);
 };
+
 map<uint, Organ::Tables*> Organ::Tables::table_map;
 Mutex                     Organ::Tables::table_mutex;
+
 BSE_CXX_DEFINE_EXPORTS();
 BSE_CXX_REGISTER_EFFECT (Organ);
-} // Dav
-} // Bse
+
+} } // Bse::Dav

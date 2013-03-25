@@ -16,9 +16,8 @@ typedef enum {
   BSE_PROJECT_ACTIVE,
   BSE_PROJECT_PLAYING
 } BseProjectState;
-struct _BseProject
-{
-  BseContainer	      parent_object;
+
+struct BseProject : BseContainer {
   GSList	     *supers;
   GSList	     *items;
   guint               in_undo : 1;
@@ -31,11 +30,9 @@ struct _BseProject
   guint64	      deactivate_min_tick;
   BseMidiReceiver    *midi_receiver;
 };
-struct _BseProjectClass
-{
-  BseContainerClass parent_class;
-};
-/* --- prototypes --- */
+struct BseProjectClass : BseContainerClass
+{};
+
 BseErrorType	bse_project_activate		(BseProject	*project);
 void		bse_project_start_playback	(BseProject	*project);
 void		bse_project_stop_playback	(BseProject	*project);

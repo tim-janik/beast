@@ -63,13 +63,13 @@ beast-gtk/gxk/gxksimplelabel.cc
 birnet/birnetmsg.cc
 birnet/birnetutils.cc
 bse/bseautodoc.cc
+bse/bsebasics.idl
 bse/bsebiquadfilter.cc
 bse/bsebus.cc
 bse/bsebusmodule.idl
 bse/bsebus.proc
 bse/bseconstant.cc
 bse/bsecontainer.proc
-bse/bsecore.idl
 bse/bsedevice.cc
 bse/bseenums.cc
 bse/bseinstrumentinput.cc

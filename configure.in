@@ -20,8 +20,8 @@ AC_PREREQ(2.57)
 # BSE version numbers
 #
 BSE_MAJOR_VERSION=0
-BSE_MINOR_VERSION=7
-BSE_MICRO_VERSION=8
+BSE_MINOR_VERSION=8
+BSE_MICRO_VERSION=0
 BSE_INTERFACE_AGE=0
 BSE_BINARY_AGE=0
 dnl#
@@ -58,6 +58,12 @@ AC_SUBST(LT_RELEASE)
 AC_SUBST(LT_CURRENT)
 AC_SUBST(LT_REVISION)
 AC_SUBST(LT_AGE)
+if test 1 = $(($BSE_MICRO_VERSION & 1)) ; then
+  DEFINE__FILE_DIR__='-D__FILE_DIR__=\"${abs_srcdir}\"'
+else
+  DEFINE__FILE_DIR__='-D__FILE_DIR__=\"beast/${subdir}\"'
+fi
+AC_SUBST(DEFINE__FILE_DIR__)
 
 dnl # figure debugging default, prior to $ac_help setup
 dnl
@@ -126,7 +132,9 @@ AC_C_CONST
 AC_C_INLINE
 AC_HEADER_STDC
 
-# == C++11 ==
+# == Compiler Flags ==
+MC_EVAR_ADD(CFLAGS, -Werror=format-security, -Werror=format-security)
+MC_EVAR_ADD(CXXFLAGS, -Werror=format-security, -Werror=format-security)
 MC_EVAR_ADD(CXXFLAGS, -std=gnu++0x, -std=gnu++0x -pthread)
 
 # Checks for programs
@@ -232,6 +240,9 @@ AC_DEFUN([AC_BSE_REQUIREMENTS],
 [
     dnl # --- BSE version ---
     AC_DEFINE_UNQUOTED(BSE_VERSION, "$BSE_VERSION", [BSE Version])
+
+    dnl # require Rapicorn
+    PKG_CHECK_MODULES(RAPICORN, rapicorn1303 >= 13.03.0)
 
     dnl # --- Ogg/Vorbis check ---
     PKG_CHECK_MODULES(OV, ogg >= 1.2.2 vorbis >= 1.3.2 vorbisfile >= 1.3.2 vorbisenc >= 1.3.2)

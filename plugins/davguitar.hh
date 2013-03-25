@@ -13,21 +13,15 @@ extern "C" {
 #define DAV_IS_GUITAR(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), DAV_TYPE_GUITAR))
 #define DAV_IS_GUITAR_CLASS(class)   (G_TYPE_CHECK_CLASS_TYPE ((class), DAV_TYPE_GUITAR))
 #define DAV_GUITAR_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), DAV_TYPE_GUITAR, DavGuitarClass))
-/* --- DavGuitar source --- */
-typedef struct _DavGuitar      DavGuitar;
-typedef struct _DavGuitarClass DavGuitarClass;
-typedef struct _WaveGuide WaveGuide;
-struct _WaveGuide
-{
+
+struct WaveGuide {
   gfloat  freq;
   gfloat  lowpass_data, lowpass_coeff;
   gint    wavelen;
   gint    pos;
   gfloat *data;
 };
-struct _DavGuitar
-{
-  BseSource parent_object;
+struct DavGuitar : BseSource {
   gfloat hipass_data, hipass_coeff;
   gint      body_taps[6];
   WaveGuide strings[6];
@@ -36,16 +30,15 @@ struct _DavGuitar
   gfloat    metallic_factor;
   gfloat    snap_factor;
 };
-struct _DavGuitarClass
-{
-  BseSourceClass parent_class;
-};
-/* --- channels --- */
+struct DavGuitarClass : BseSourceClass
+{};
+
 enum
 {
   DAV_GUITAR_OCHANNEL_NONE,
   DAV_GUITAR_OCHANNEL_MONO
 };
+
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */

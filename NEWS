@@ -1,3 +1,13 @@
+Overview of Changes in BEAST/BSE 0.8.0:		(2013-03-25)
+
+* Added use of the Rapicorn library, require version 13.0.0.
+* Adapted IDL types to other projects.
+* Adapted code to make use of C++11 and STL threads.
+* Various performance improvements through EventFD, Spinlocks, lambdas, etc.
+* Major documentation improvements, see: http://dev.testbit.eu/beast/latest/
+* Fixed printf format-security issues (#665097). [Alessio Treglia]
+* Lots of code cleanups, licensing cleanups.
+
 Overview of Changes in BEAST/BSE 0.7.8:
 
 * Wave oscillator fixes for 96k samples (bug #612281). [stw]

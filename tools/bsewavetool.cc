@@ -18,6 +18,8 @@
 #include <vector>
 #include <map>
 #include <algorithm>
+
+/// The BseWaveTool namespace contains all functions of the bse wave tool utility.
 namespace BseWaveTool {
 using namespace Birnet;
 #define PRG_NAME        ("bsewavetool")

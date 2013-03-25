@@ -12,16 +12,12 @@ G_BEGIN_DECLS
 #define BSE_CONTEXT_MERGER_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), BSE_TYPE_CONTEXT_MERGER, BseContextMergerClass))
 #define BSE_CONTEXT_MERGER_N_IOPORTS (8)
 /* --- object structures --- */
-struct _BseContextMerger
-{
-  BseSource parent_instance;
+struct BseContextMerger : BseSource {
   guint merge_context;
 };
-struct _BseContextMergerClass
-{
-  BseSourceClass parent_class;
-};
-/* --- API --- */
+struct BseContextMergerClass : BseSourceClass
+{};
+
 void	bse_context_merger_set_merge_context	(BseContextMerger	*self,
 						 guint			 merge_context);
 G_END_DECLS

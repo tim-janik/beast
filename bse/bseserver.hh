@@ -12,10 +12,8 @@ G_BEGIN_DECLS
 #define BSE_IS_SERVER(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), BSE_TYPE_SERVER))
 #define BSE_IS_SERVER_CLASS(class)   (G_TYPE_CHECK_CLASS_TYPE ((class), BSE_TYPE_SERVER))
 #define BSE_SERVER_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), BSE_TYPE_SERVER, BseServerClass))
-/* --- BseServer object --- */
-struct _BseServer
-{
-  BseContainer     parent_object;
+
+struct BseServer : BseContainer {
   GSource	  *engine_source;
   GList	          *projects;
   GSList	  *children;
@@ -31,11 +29,9 @@ struct _BseServer
   BseMidiDevice	  *midi_device;
   GSList	  *watch_list;
 };
-struct _BseServerClass
-{
-  BseContainerClass parent_class;
-};
-/* --- prototypes --- */
+struct BseServerClass : BseContainerClass
+{};
+
 BseServer*	bse_server_get				(void);
 BseProject*	bse_server_create_project		(BseServer	*server,
 							 const gchar	*name);

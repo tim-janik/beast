@@ -70,9 +70,9 @@ BIRNET_EXTERN_C_BEGIN();
 #define BIRNET_ABORT_NORETURN()		birnet_abort_noreturn()
 /* --- convenient aliases --- */
 #ifdef  _BIRNET_SOURCE_EXTENSIONS
-#define	ISLIKELY		BIRNET_ISLIKELY
-#define	UNLIKELY		BIRNET_UNLIKELY
-#define	LIKELY			BIRNET_LIKELY
+//#define	ISLIKELY		BIRNET_ISLIKELY
+//#define	UNLIKELY		BIRNET_UNLIKELY
+//#define	LIKELY			BIRNET_LIKELY
 #define	RETURN_IF_FAIL		BIRNET_RETURN_IF_FAIL
 #define	RETURN_VAL_IF_FAIL	BIRNET_RETURN_VAL_IF_FAIL
 #define	ASSERT_NOT_REACHED	BIRNET_ASSERT_NOT_REACHED
@@ -197,140 +197,6 @@ typedef struct {
   uint x86_mmx : 1, x86_mmxext : 1, x86_3dnow : 1, x86_3dnowext : 1;
   uint x86_sse : 1, x86_sse2   : 1, x86_sse3  : 1, x86_sse4     : 1;
 } BirnetCPUInfo;
-/* --- Thread info --- */
-typedef enum {
-  BIRNET_THREAD_UNKNOWN    = '?',
-  BIRNET_THREAD_RUNNING    = 'R',
-  BIRNET_THREAD_SLEEPING   = 'S',
-  BIRNET_THREAD_DISKWAIT   = 'D',
-  BIRNET_THREAD_TRACED     = 'T',
-  BIRNET_THREAD_PAGING     = 'W',
-  BIRNET_THREAD_ZOMBIE     = 'Z',
-  BIRNET_THREAD_DEAD       = 'X',
-} BirnetThreadState;
-typedef struct {
-  int                	thread_id;
-  char                 *name;
-  uint                 	aborted : 1;
-  BirnetThreadState     state;
-  int                  	priority;      	/* nice value */
-  int                  	processor;     	/* running processor # */
-  BirnetUInt64         	utime;		/* user time */
-  BirnetUInt64         	stime;         	/* system time */
-  BirnetUInt64		cutime;        	/* user time of dead children */
-  BirnetUInt64		cstime;		/* system time of dead children */
-} BirnetThreadInfo;
-/* --- threading ABI --- */
-typedef struct _BirnetThread BirnetThread;
-typedef void (*BirnetThreadFunc)   (void *user_data);
-typedef void (*BirnetThreadWakeup) (void *wakeup_data);
-typedef union {
-  void	     *cond_pointer;
-  BirnetUInt8 cond_dummy[MAX (8, BIRNET_SIZEOF_PTH_COND_T)];
-  long long int align;
-} BirnetCond;
-typedef union {
-  void	     *mutex_pointer;
-  BirnetUInt8 mutex_dummy[MAX (8, BIRNET_SIZEOF_PTH_MUTEX_T)];
-  long long int align;
-} BirnetMutex;
-typedef struct {
-  BirnetMutex   mutex;
-  BirnetThread *owner;
-  uint 		depth;
-} BirnetRecMutex;
-typedef struct {
-  void              (*mutex_chain4init)     (BirnetMutex       *mutex);
-  void              (*mutex_unchain)        (BirnetMutex       *mutex);
-  void              (*rec_mutex_chain4init) (BirnetRecMutex    *mutex);
-  void              (*rec_mutex_unchain)    (BirnetRecMutex    *mutex);
-  void              (*cond_chain4init)      (BirnetCond        *cond);
-  void              (*cond_unchain)         (BirnetCond        *cond);
-  void		    (*atomic_pointer_set)   (volatile void     *atomic,
-					     volatile void     *value);
-  void*		    (*atomic_pointer_get)   (volatile void     *atomic);
-  int/*bool*/	    (*atomic_pointer_cas)   (volatile void     *atomic,
-					     volatile void     *oldval,
-					     volatile void     *newval);
-  void		    (*atomic_int_set)	    (volatile int      *atomic,
-					     int                newval);
-  int		    (*atomic_int_get)	    (volatile int      *atomic);
-  int/*bool*/	    (*atomic_int_cas)	    (volatile int      *atomic,
-					     int           	oldval,
-					     int           	newval);
-  void		    (*atomic_int_add)	    (volatile int      *atomic,
-					     int           	diff);
-  int		    (*atomic_int_swap_add)  (volatile int      *atomic,
-					     int           	diff);
-  void		    (*atomic_uint_set)	    (volatile uint     *atomic,
-					     uint               newval);
-  uint		    (*atomic_uint_get)	    (volatile uint     *atomic);
-  int/*bool*/	    (*atomic_uint_cas)	    (volatile uint     *atomic,
-					     uint           	oldval,
-					     uint           	newval);
-  void		    (*atomic_uint_add)	    (volatile uint     *atomic,
-					     uint           	diff);
-  uint		    (*atomic_uint_swap_add) (volatile uint     *atomic,
-					     uint           	diff);
-  BirnetThread*     (*thread_new)           (const char        *name);
-  BirnetThread*     (*thread_ref)           (BirnetThread      *thread);
-  BirnetThread*     (*thread_ref_sink)      (BirnetThread      *thread);
-  void              (*thread_unref)         (BirnetThread      *thread);
-  bool              (*thread_start)         (BirnetThread      *thread,
-					     BirnetThreadFunc 	func,
-					     void              *user_data);
-  BirnetThread*     (*thread_self)          (void);
-  void*             (*thread_selfxx)        (void);
-  void*             (*thread_getxx)         (BirnetThread      *thread);
-  bool              (*thread_setxx)         (BirnetThread      *thread,
-					     void              *xxdata);
-  int               (*thread_pid)           (BirnetThread      *thread);
-  const char*       (*thread_name)          (BirnetThread      *thread);
-  void              (*thread_set_name)      (const char        *newname);
-  bool		    (*thread_sleep)	    (BirnetInt64        max_useconds);
-  void		    (*thread_wakeup)	    (BirnetThread      *thread);
-  void		    (*thread_awake_after)   (BirnetUInt64       stamp);
-  void		    (*thread_emit_wakeups)  (BirnetUInt64       wakeup_stamp);
-  void		    (*thread_set_wakeup)    (BirnetThreadWakeup wakeup_func,
-					     void              *wakeup_data,
-					     void             (*destroy_data) (void*));
-  void              (*thread_abort) 	    (BirnetThread      *thread);
-  void              (*thread_queue_abort)   (BirnetThread      *thread);
-  bool              (*thread_aborted)	    (void);
-  bool		    (*thread_get_aborted)   (BirnetThread      *thread);
-  bool	            (*thread_get_running)   (BirnetThread      *thread);
-  void		    (*thread_wait_for_exit) (BirnetThread      *thread);
-  void              (*thread_yield)         (void);
-  void              (*thread_exit)          (void              *retval) BIRNET_NORETURN;
-  void              (*thread_set_handle)    (BirnetThread      *handle);
-  BirnetThread*     (*thread_get_handle)    (void);
-  BirnetThreadInfo* (*info_collect)         (BirnetThread      *thread);
-  void              (*info_free)            (BirnetThreadInfo  *info);
-  void*		    (*qdata_get)	    (uint               glib_quark);
-  void		    (*qdata_set)	    (uint               glib_quark,
-					     void              *data,
-                                             void             (*destroy_data) (void*));
-  void*		    (*qdata_steal)	    (uint		glib_quark);
-  void              (*mutex_init)           (BirnetMutex       *mutex);
-  void              (*mutex_lock)           (BirnetMutex       *mutex);
-  int               (*mutex_trylock)        (BirnetMutex       *mutex); /* 0==has_lock */
-  void              (*mutex_unlock)         (BirnetMutex       *mutex);
-  void              (*mutex_destroy)        (BirnetMutex       *mutex);
-  void              (*rec_mutex_init)       (BirnetRecMutex    *mutex);
-  void              (*rec_mutex_lock)       (BirnetRecMutex    *mutex);
-  int               (*rec_mutex_trylock)    (BirnetRecMutex    *mutex); /* 0==has_lock */
-  void              (*rec_mutex_unlock)     (BirnetRecMutex    *mutex);
-  void              (*rec_mutex_destroy)    (BirnetRecMutex    *mutex);
-  void              (*cond_init)            (BirnetCond        *cond);
-  void              (*cond_signal)          (BirnetCond        *cond);
-  void              (*cond_broadcast)       (BirnetCond        *cond);
-  void              (*cond_wait)            (BirnetCond        *cond,
-					     BirnetMutex       *mutex);
-  void		    (*cond_wait_timed)      (BirnetCond        *cond,
-					     BirnetMutex       *mutex,
-					     BirnetInt64 	max_useconds);
-  void              (*cond_destroy)         (BirnetCond        *cond);
-} BirnetThreadTable;
 /* --- implementation bits --- */
 /* the above macros rely on a problem handler macro: */
 // BIRNET__RUNTIME_PROBLEM(ErrorWarningReturnAssertNotreach,domain,file,line,funcname,exprformat,...); // noreturn cases: 'E', 'A', 'N'

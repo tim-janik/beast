@@ -3,9 +3,10 @@
 #include "bsecxxbase.hh"
 #include "bsecategories.hh"
 #include <list>
-using namespace std;
+using namespace std;    // FIXME
+
 namespace Bse {
-/* --- functions --- */
+
 struct TypeRegistry::TypeEntry {
   guint               instance_size;
   const gchar        *name;
@@ -36,7 +37,9 @@ struct TypeRegistry::TypeEntry {
     this->flags = flags;
   }
 };
+
 static list<TypeRegistry::TypeEntry> *type_entries = NULL;
+
 TypeRegistry::TypeRegistry (guint             instance_size,
                             const gchar      *name,
                             const gchar      *parent,
@@ -62,6 +65,7 @@ TypeRegistry::TypeRegistry (guint             instance_size,
   else  // parent not found in list
     type_entries->push_front (entry);
 }
+
 void
 TypeRegistry::init_types()
 {
@@ -87,37 +91,12 @@ TypeRegistry::init_types()
   delete type_entries;
   type_entries = NULL;
 }
-static void
-bse_terminate_handler ()
-{
-  try {
-    throw;      // rethrow
-  }
-  catch (Exception &e) {
-    g_error ("aborting due to exception: %s [in %s]", e.what(), e.where());
-  }
-  catch (std::exception &e) {
-    g_error ("aborting due to exception: %s", e.what());
-  }
-  catch (...) {
-    g_error ("aborting due to uncaught exception");
-  }
-}
-static void
-init_exception_handler ()
-{
-#if 0
-  unexpected_handler former = set_unexpected (bse_unexpected_handler);
-  if (former != std::unexpected)
-    set_unexpected (former);
-#else
-  set_terminate (bse_terminate_handler);
-#endif
-}
+
 extern "C" void
 bse_cxx_init (void)  // prototyped in bseutils.hh
 {
-  init_exception_handler ();
+  // FIXME: delete: init_exception_handler ();
   Bse::TypeRegistry::init_types();
 }
+
 } // Bse

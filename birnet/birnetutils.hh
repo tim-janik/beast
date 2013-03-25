@@ -2,6 +2,7 @@
 #ifndef __BIRNET_UTILS_XX_HH__
 #define __BIRNET_UTILS_XX_HH__
 #include <birnet/birnetcdefs.h>
+#include <rapicorn.hh>
 #include <glib.h> /* g_free */
 #include <string>
 #include <vector>
@@ -84,14 +85,12 @@ public:
 /* --- assertions/warnings/errors --- */
 void    raise_sigtrap           ();
 #if (defined __i386__ || defined __x86_64__) && defined __GNUC__ && __GNUC__ >= 2
-extern inline void BREAKPOINT() { __asm__ __volatile__ ("int $03"); }
+//extern inline void BREAKPOINT() { __asm__ __volatile__ ("int $03"); }
 #elif defined __alpha__ && !defined __osf__ && defined __GNUC__ && __GNUC__ >= 2
-extern inline void BREAKPOINT() { __asm__ __volatile__ ("bpt"); }
+//extern inline void BREAKPOINT() { __asm__ __volatile__ ("bpt"); }
 #else   /* !__i386__ && !__alpha__ */
-extern inline void BREAKPOINT() { raise_sigtrap(); }
+//extern inline void BREAKPOINT() { raise_sigtrap(); }
 #endif  /* __i386__ */
-/* --- threading implementaiton bit --- */
-extern BirnetThreadTable ThreadTable; /* private, provided by birnetthreadimpl.cc */
 /* --- string functionality --- */
 String  			string_tolower           (const String &str);
 String  			string_toupper           (const String &str);
@@ -230,105 +229,10 @@ protected:
   void           invoke_deletion_hooks ();
   virtual       ~Deletable             ();
 };
+
 /* --- ReferenceCountImpl --- */
-class ReferenceCountImpl : public virtual Deletable
-{
-  volatile mutable uint32 ref_field;
-  static const uint32     FLOATING_FLAG = 1 << 31;
-  inline bool
-  ref_cas (uint32       oldv,
-           uint32       newv) const
-  {
-    return ThreadTable.atomic_uint_cas (&ref_field, oldv, newv);
-  }
-  inline uint32
-  ref_get() const
-  {
-    return ThreadTable.atomic_uint_get (&ref_field);
-  }
-protected:
-  inline uint32
-  ref_count() const
-  {
-    return ref_get() & ~FLOATING_FLAG;
-  }
-public:
-  ReferenceCountImpl() :
-    ref_field (FLOATING_FLAG + 1)
-  {}
-  bool
-  floating() const
-  {
-    return 0 != (ref_get() & FLOATING_FLAG);
-  }
-  void
-  ref() const
-  {
-    BIRNET_ASSERT (ref_count() > 0);
-    uint32 old_ref, new_ref;
-    do {
-      old_ref = ref_get();
-      new_ref = old_ref + 1;
-      BIRNET_ASSERT (new_ref & ~FLOATING_FLAG); /* catch overflow */
-    } while (!ref_cas (old_ref, new_ref));
-  }
-  void
-  ref_sink() const
-  {
-    BIRNET_ASSERT (ref_count() > 0);
-    ref();
-    uint32 old_ref, new_ref;
-    do {
-      old_ref = ref_get();
-      new_ref = old_ref & ~FLOATING_FLAG;
-    } while (!ref_cas (old_ref, new_ref));
-    if (old_ref & FLOATING_FLAG)
-      unref();
-  }
-  bool
-  finalizing() const
-  {
-    return ref_count() < 1;
-  }
-  void
-  unref() const
-  {
-    BIRNET_ASSERT (ref_count() > 0);
-    uint32 old_ref, new_ref;
-    do {
-      old_ref = ref_get();
-      BIRNET_ASSERT (old_ref & ~FLOATING_FLAG); /* catch underflow */
-      new_ref = old_ref - 1;
-    } while (!ref_cas (old_ref, new_ref));
-    if (0 == (new_ref & ~FLOATING_FLAG))
-      {
-        ReferenceCountImpl *self = const_cast<ReferenceCountImpl*> (this);
-        self->finalize();
-        self->delete_this(); // effectively: delete this;
-      }
-  }
-  void                            ref_diag (const char *msg = NULL) const;
-  template<class Obj> static Obj& ref      (Obj &obj) { obj.ref();       return obj; }
-  template<class Obj> static Obj* ref      (Obj *obj) { obj->ref();      return obj; }
-  template<class Obj> static Obj& ref_sink (Obj &obj) { obj.ref_sink();  return obj; }
-  template<class Obj> static Obj* ref_sink (Obj *obj) { obj->ref_sink(); return obj; }
-  template<class Obj> static void unref    (Obj &obj) { obj.unref(); }
-  template<class Obj> static void unref    (Obj *obj) { obj->unref(); }
-  template<class Obj> static void sink     (Obj &obj) { obj.ref_sink(); obj.unref(); }
-  template<class Obj> static void sink     (Obj *obj) { obj->ref_sink(); obj->unref(); }
-protected:
-  virtual void finalize           ();
-  virtual void delete_this        ();
-  virtual     ~ReferenceCountImpl ();
-};
-template<class Obj> static Obj& ref      (Obj &obj) { obj.ref();       return obj; }
-template<class Obj> static Obj* ref      (Obj *obj) { obj->ref();      return obj; }
-template<class Obj> static Obj& ref_sink (Obj &obj) { obj.ref_sink();  return obj; }
-template<class Obj> static Obj* ref_sink (Obj *obj) { obj->ref_sink(); return obj; }
-template<class Obj> static void unref    (Obj &obj) { obj.unref(); }
-template<class Obj> static void unref    (Obj *obj) { obj->unref(); }
-template<class Obj> static void sink     (Obj &obj) { obj.ref_sink(); obj.unref(); }
-template<class Obj> static void sink     (Obj *obj) { obj->ref_sink(); obj->unref(); }
+typedef Rapicorn::ReferenceCountable ReferenceCountImpl;
+
 /* --- Binary Lookups --- */
 template<typename RandIter, class Cmp, typename Arg, int case_lookup_or_sibling_or_insertion>
 static inline std::pair<RandIter,bool>
@@ -570,8 +474,7 @@ public:
     return n_elements;
   }
 };
-/* --- implementation --- */
-void _birnet_init_threads (void);
+
 } // Birnet
 #endif /* __BIRNET_UTILS_XX_HH__ */
 /* vim:set ts=8 sts=2 sw=2: */

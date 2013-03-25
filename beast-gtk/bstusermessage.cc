@@ -659,8 +659,8 @@ bst_message_dialog_display (const char     *log_domain,
   msg.ident = sfi_msg_type_ident (SfiMsgType (mtype));
   msg.label = sfi_msg_type_label (SfiMsgType (mtype));
   msg.janitor = bse_script_janitor();
-  msg.process = sfi_thread_get_name (NULL);
-  msg.pid = sfi_thread_get_pid (NULL);
+  msg.process = g_strdup (Rapicorn::ThisThread::name().c_str());
+  msg.pid = Rapicorn::ThisThread::thread_pid();
   msg.n_msg_bits = 0;
   msg.msg_bits = NULL;
   /* collect msg bits */

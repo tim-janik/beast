@@ -1,6 +1,5 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "birnetdebugtools.hh"
-#include "birnetthread.hh"
 #include <syslog.h>
 #include <errno.h>
 #include <stdio.h>
@@ -12,22 +11,22 @@ DebugChannel::DebugChannel()
 {}
 DebugChannel::~DebugChannel ()
 {}
-struct DebugChannelFileAsync : public virtual DebugChannel, public virtual Thread {
-  FILE                    *fout;
-  uint                     skip_count;
-  Atomic::RingBuffer<char> aring;
+struct DebugChannelFileAsync : public virtual DebugChannel {
+  FILE                  *fout_;
+  Rapicorn::Atomic<uint> skip_count_;
+  std::thread            thread_;
+  Rapicorn::AsyncRingBuffer<char> aring_;
   ~DebugChannelFileAsync()
   {
-    if (fout)
-      fclose (fout);
+    if (fout_)
+      fclose (fout_);
   }
   DebugChannelFileAsync (const String &filename) :
-    Thread ("DebugChannelFileAsync::logger"),
-    fout (NULL), skip_count (0), aring (65536)
+    fout_ (NULL), skip_count_ (0), aring_ (65536)
   {
-    fout = fopen (filename.c_str(), "w");
-    if (fout)
-      start();
+    fout_ = fopen (filename.c_str(), "w");
+    if (fout_)
+      thread_ = std::thread (&DebugChannelFileAsync::run, this);
   }
   virtual void
   printf_valist (const char *format,
@@ -46,39 +45,39 @@ struct DebugChannelFileAsync : public virtual DebugChannel, public virtual Threa
           }
         if (false) // skip trailing 0 in ring buffer
           buffer[l++] = 0;
-        uint n = aring.write (l, buffer, false);
+        uint n = aring_.write (l, buffer, false);
         if (!n)
-          Atomic::uint_swap_add (&skip_count, 1);
+          skip_count_ += 1;
       }
   }
   virtual void
   run ()
   {
-    do
+    while (1)
       {
         char buffer[65536];
         uint n;
         do
           {
-            n = aring.read (sizeof (buffer), buffer);
+            n = aring_.read (sizeof (buffer), buffer);
             if (n)
               {
-                fwrite (buffer, n, 1, fout);
-                fflush (fout);
+                fwrite (buffer, n, 1, fout_);
+                fflush (fout_);
               }
             else
               {
                 uint j;
                 do
-                  j = Atomic::uint_get (&skip_count);
-                while (!Atomic::uint_cas (&skip_count, j, 0));
+                  j = skip_count_;
+                while (!skip_count_.cas (j, 0));
                 if (j)
-                  fprintf (fout, "...[skipped %u messages]\n", j);
+                  fprintf (fout_, "...[skipped %u messages]\n", j);
               }
           }
         while (n);
+        std::this_thread::sleep_for (std::chrono::milliseconds (15));
       }
-    while (Thread::Self::sleep (15 * 1000));
   }
 };
 DebugChannel*

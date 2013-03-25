@@ -445,9 +445,9 @@ janitor_idle_clean_jsource (void *data)
     {
       self->exit_code = 256; /* exit code used for signals */
       if (port->exit_signal_sent && port->sigkill_sent)
-        self->exit_reason = g_strdup_printf (_("killed by janitor"));
+        self->exit_reason = g_strdup_printf ("%s", _("killed by janitor"));
       else if (port->exit_signal_sent && port->sigterm_sent)
-        self->exit_reason = g_strdup_printf (_("connection terminated"));
+        self->exit_reason = g_strdup_printf ("%s", _("connection terminated"));
       else if (port->exit_signal && port->dumped_core)
         self->exit_reason = g_strdup_printf (_("%s (core dumped)"), g_strsignal (port->exit_signal));
       else if (port->exit_signal)
@@ -473,7 +473,7 @@ janitor_idle_clean_jsource (void *data)
     {
       /* not a janitor for a remote process */
       self->exit_code = -256;
-      self->exit_reason = g_strdup_printf ("unknown intern termination");
+      self->exit_reason = g_strdup_printf ("%s", "unknown intern termination");
     }
   sfi_com_port_unref (port);
   self->port = NULL;

@@ -1,15 +1,15 @@
 ; BseProject
 
-(bse-version "0.7.0")
+(bse-version "0.8.0")
 
 (container-child "BseWaveRepo::Wave-Repository"
-  (modification-time "2006-07-08 23:51:00")
+  (modification-time "2013-03-24 18:57:02")
   (creation-time "2002-02-06 14:05:19")
   (license "Provided \"as is\", WITHOUT ANY WARRANTY (http://beast.testbit.eu/LICENSE-AS-IS)")
   (author "Tim Janik"))
 (container-child "BseCSynth::Simple-Loop"
   (auto-activate #t)
-  (modification-time "2006-07-08 23:51:00")
+  (modification-time "2013-03-24 18:57:02")
   (creation-time "2002-02-06 14:05:24")
   (license "Provided \"as is\", WITHOUT ANY WARRANTY (http://beast.testbit.eu/LICENSE-AS-IS)")
   (author "Tim Janik")
@@ -62,11 +62,11 @@
     (source-input "audio-in1" (link 1 "DrumTrigger") "ctrl-out")
     (source-input "audio-in2" (link 1 "DrumAdder") "audio-out"))
   (container-child "BseFreeVerb::FreeVerb"
-    (width 46.153852343559265)
+    (width 46.153850555419922)
     (dry-level 0.82516998052597046)
-    (wet-level 1.090910017490387)
-    (damping 93.706291913986206)
-    (room-size 0.79986000103550303)
+    (wet-level 1.0909099578857422)
+    (damping 93.706291198730469)
+    (room-size 0.79986000061035156)
     (pos-y 0.445)
     (pos-x 0.095)
     (source-input "left-audio-in" (link 1 "Amplifier") "audio-out")
@@ -93,9 +93,9 @@
     (pos-x -4.71)
     (source-input "freq-in" (link 1 "Sequencer") "freq-out")
     (source-input "trigger-in" (link 1 "Sequencer") "note-sync"))
-  (container-child "DavOrgan::Organ"
-    (reed #f)
+  (container-child "BseDavOrgan::Organ"
     (flute #f)
+    (reed #f)
     (brass #t)
     (harm5 100)
     (harm4 97.802197933197021)

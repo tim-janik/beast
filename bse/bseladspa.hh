@@ -12,23 +12,21 @@ G_BEGIN_DECLS
 #define BSE_IS_LADSPA_PLUGIN_CLASS(class)   (G_TYPE_CHECK_CLASS_TYPE ((class), BSE_TYPE_LADSPA_PLUGIN))
 #define BSE_LADSPA_PLUGIN_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), BSE_TYPE_LADSPA_PLUGIN, BseLadspaPluginClass))
 /* --- BseLadspaPlugin --- */
-typedef struct _BseLadspaInfo        BseLadspaInfo;
+struct BseLadspaInfo;
 typedef struct {
   GType          type;
   BseLadspaInfo *info;
 } BseLadspaTypeInfo;
-typedef struct {
-  GObject            parent_instance;
+struct BseLadspaPlugin : GObject {
   gchar             *fname;
   GModule           *gmodule;
   guint	             use_count;
   guint              n_types;
   BseLadspaTypeInfo *types;
-} BseLadspaPlugin;
-typedef struct {
-  GObjectClass parent_class;
-} BseLadspaPluginClass;
-typedef struct {
+};
+struct BseLadspaPluginClass : GObjectClass
+{};
+struct BseLadspaPort {
   gchar        *ident;
   const gchar  *name;
   gfloat	minimum;
@@ -44,9 +42,8 @@ typedef struct {
   guint		frequency : 1;		/* provide logarithmic frequency slider */
   guint		logarithmic : 1;
   guint		concert_a : 1;		/* default to 440Hz concert A */
-} BseLadspaPort;
-struct _BseLadspaInfo
-{
+};
+struct BseLadspaInfo {
   gchar         *file_path;		/* fully qualified file path and name */
   gchar	        *ident;			/* unique identifier */
   guint          plugin_id;		/* unique plugin type ID */
@@ -72,7 +69,7 @@ struct _BseLadspaInfo
   void	       (*deactivate)	(gpointer	instance);
   void	       (*cleanup)	(gpointer	instance);
 };
-/* --- public API --- */
+
 BseLadspaInfo*	bse_ladspa_info_assemble	  (const gchar		*file_path,
 						   gconstpointer	 ladspa_descriptor);
 void		bse_ladspa_info_free		  (BseLadspaInfo	*bli);

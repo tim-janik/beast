@@ -46,7 +46,9 @@ usage() {
 	  -E <FILE:VAR>         revision variable to increment during "upload"
 	                        (e.g. configure.ac:MICRO)
 	  -B <A,B,C...>		ignored names for "contributors"
+	  --body		include commit body for "news"
 	  -C <NEWS>		file with ignored C strings for "contributors"
+	  --first-parent	use git log with --first-parent
 	  -R <revision>		revision range for "ChangeLog" generation
 	                        last release revision for "news" (auto)
 	  -T <disttarball>	name of distribution tarball (from Makefile)
@@ -61,16 +63,20 @@ EOF
 unset COMMAND
 VERSION=_parse
 TARBALL=_parse
+BODY=false
 REMOTE_URL=
 REVISIONVAR=
 CONTRBLACK=
 CONTRCFILE=/dev/null
 CONTREXIT=0
+FIRST=
 parse_options=1
 while test $# -ne 0 -a $parse_options = 1; do
   case "$1" in
     -h|--help)	usage 0 ;;
+    --first-parent) FIRST=--first-parent ;;
     -B)		CONTRBLACK="$2" ; shift ;;
+    --body)	BODY=true ;;
     -C)		CONTRCFILE="$2" ; shift ;;
     -E)		REVISIONVAR="$2" ; shift ;;
     -R)		R_REVISION="$2" ; shift ;;
@@ -108,7 +114,7 @@ done
     die 9 "Failed to create temporary file"
   trap "rm -f $TEMPF" 0 HUP INT QUIT TRAP USR1 PIPE TERM
   # Generate ChangeLog with -prefixed records
-  git log --date=short --pretty='%ad  %an 	# %h%n%n%s%n%n%b' --abbrev=11 ${R_REVISION:-HEAD} \
+  git log $FIRST --no-merges --date=short --pretty='%ad  %an 	# %h%n%n%s%n%n%b' --abbrev=11 ${R_REVISION:-HEAD} \
   | {
     # Tab-indent ChangeLog, except for record start
     sed 's/^/	/; s/^	//; /^[ 	]*<unknown>$/d'
@@ -157,25 +163,30 @@ done
   TAGS=`git tag -l | grep '^[0-9.]*$'`
   # collect release tags in linear history
   if [ "${#R_REVISION[@]}" = 0 ] ; then # R_REVISION is unset
-    XTAG=
+    XCOMMIT=	# prune commit, newest commit reachable from previous releases (merge base with HEAD)
     for t in $TAGS ; do
       # release tag?
       if git cat-file tag $t | sed '1,/^$/d' | head -n1 | grep -qi '\breleased\?\b' ; then
-        # in linear history?
-	TCOMMIT=`git rev-list -n1 $t`
-	[ `git merge-base HEAD $t` = $TCOMMIT ] && {
-	  # keep newest tag
-	  [ -n "$XTAG" -a "`git merge-base ${XTAG:-$t} $t`" = $TCOMMIT ] || XTAG="$t"
+	TCOMMIT=`git rev-list -n1 $t`		# commit ID from tag
+	MCOMMIT=`git merge-base HEAD $t`	# find history reachable from tag
+        # update XCOMMIT if MCOMMIT is newer
+	[ -n "$MCOMMIT" ] && {
+	  [ -z "$XCOMMIT" ] || [ "`git merge-base $XCOMMIT $MCOMMIT`" = $XCOMMIT ] && XCOMMIT="$MCOMMIT"
 	}
       fi
     done
   else
-    XTAG="$R_REVISION"
+    XCOMMIT="$R_REVISION"
   fi
-  [ -n "$XTAG" ] && XTAG="$XTAG^!" # turn into exclude pattern
-  # list news, excluding existing tags
-  echo "# git log --date=short --pretty='%s    # %cd %an %h%d' --reverse HEAD $XTAG"
-  git log --date=short --pretty='%s    # %cd %an %h%d' --reverse HEAD $XTAG | cat
+  [ -n "$XCOMMIT" ] && XCOMMIT="`git name-rev --tags --always --name-only $XCOMMIT`" # beautify
+  [ -n "$XCOMMIT" ] && XCOMMIT="$XCOMMIT^!" # turn into exclude pattern
+  # list news, excluding history reachable from previous releases
+  echo "# git log $FIRST --reverse HEAD $XCOMMIT"
+  if $BODY ; then
+    git log $FIRST --date=short --pretty='%s    # %cd %an %h%d%n%b' --reverse HEAD $XCOMMIT | sed '/^$/d'
+  else
+    git log $FIRST --date=short --pretty='%s    # %cd %an %h%d' --reverse HEAD $XCOMMIT | cat
+  fi
   exit
 }
 
@@ -295,7 +306,7 @@ done
   HBRANCH=`git symbolic-ref HEAD | sed s,^refs/heads/,,`
   HREMOTE=`git config --get "branch.$HBRANCH.remote"`
   H_MERGE=`git config --get "branch.$HBRANCH.merge"`
-  test -z "$HBRANCH" -o -z "$HREMOTE" -o -z "$H_MERGE" && skip || {
+  skip || { # test -z "$HBRANCH" -o -z "$HREMOTE" -o -z "$H_MERGE" && skip || {
     RCOMMIT=`git ls-remote "$HREMOTE" "$H_MERGE" | sed 's/^\([[:alnum:]]\+\).*/\1/'`
     TCOMMIT=`git rev-list -n1 HEAD`
     test "$TCOMMIT" = "$RCOMMIT" && ok \
@@ -344,8 +355,10 @@ done
   msg2 ">" "$RLS"
   # push notes
   $needs_head_push && \
-    msg2 "Note, push HEAD with:         # git push origin"
-  msg2 "Note, push tag with:          # git push origin '$VERSION'"
+    CHASH=`git rev-list -n1 "$VERSION"`
+    msg2 "Note, push HEAD with:      # git push origin $CHASH:master"
+    msg2 "Note, update 'devel' with: # git checkout devel && git merge --ff-only $CHASH"
+  msg2 "Note, push tag with:       # git push origin '$VERSION'"
   msg2 "Done."
   exit
 }

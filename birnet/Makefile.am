@@ -2,8 +2,9 @@
 include $(top_srcdir)/Makefile.decl
 
 SUBDIRS		= . tests
-INCLUDES       += -I$(top_srcdir) -I$(top_builddir) -I$(srcdir) -I. $(BIRNET_CFLAGS)
-DEFS            = -DBIRNET_LOG_DOMAIN=\"BIRNET\" -D_BIRNET_SOURCE_EXTENSIONS
+INCLUDES       += -I$(top_srcdir) -I$(top_builddir) -I$(srcdir) -I.
+DEFS           += @DEFINE__FILE_DIR__@ -DBIRNET_LOG_DOMAIN=\"BIRNET\" -D_BIRNET_SOURCE_EXTENSIONS
+AM_CXXFLAGS	= $(RAPICORN_CFLAGS) -DRAPICORN_CONVENIENCE $(BIRNET_CFLAGS)
 GLIB_MKENUMS    = glib-mkenums
 
 birnet_headers = $(strip 		\
@@ -13,17 +14,14 @@ birnet_headers = $(strip 		\
 	birnetdebugtools.hh		\
 	birnetmsg.hh			\
 	birnettests.h			\
-	birnetthread.hh			\
 	birnetmath.hh			\
 	birnetutf8.hh			\
 	birnetutils.hh			\
 )
 birnet_sources = $(strip 		\
-	birnetthreadimpl.cc		\
 	birnetcpu.cc			\
 	birnetdebugtools.cc		\
 	birnetmsg.cc			\
-	birnetthread.cc			\
 	birnetmath.cc			\
 	birnetutf8.cc			\
 	birnetutils.cc			\
@@ -45,7 +43,7 @@ libbirnetincludedir        = $(includedir)/birnet
 libbirnetinclude_HEADERS   = $(birnet_headers) $(birnet_generated_headers)
 libbirnet_la_SOURCES       = $(birnet_sources)
 libbirnet_la_DEPENDENCIES  =
-libbirnet_la_LIBADD        = $(BIRNET_LIBS) -lm
+libbirnet_la_LIBADD        = $(RAPICORN_LIBS) $(BIRNET_LIBS) -lm
 libbirnet_la_LDFLAGS       = -no-undefined # -Wl,-Bsymbolic
 # keep this .o rule in sync with the corresponding .la rule from Makefile.in
 libbirnet.o: $(libbirnet_la_OBJECTS) $(libbirnet_la_DEPENDENCIES)
@@ -126,7 +124,7 @@ CLEANFILES += birnetconfig.h
 $(libbirnet_la_OBJECTS): birnetconfig.h
 
 noinst_PROGRAMS = $(ALLTESTS)
-progs_ldadd     = libbirnet.o $(BIRNET_LIBS) -lm
+progs_ldadd     = libbirnet.o $(BIRNET_LIBS) $(RAPICORN_LIBS) -lm
 
 noinst_PROGRAMS       += birnet-zintern
 birnet_zintern_SOURCES = birnet-zintern.cc

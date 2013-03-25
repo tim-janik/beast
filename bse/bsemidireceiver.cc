@@ -14,14 +14,18 @@ namespace {
 using namespace Bse;
 using namespace Birnet;
 using namespace std;
+
 static SFI_MSG_TYPE_DEFINE (debug_midi_receiver, "midi-receiver", SFI_MSG_DEBUG, NULL);
+#undef DEBUG // FIXME
 #define DEBUG(...)              sfi_debug (debug_midi_receiver, __VA_ARGS__)
 static SFI_MSG_TYPE_DEFINE (debug_midi_events, "midi-events", SFI_MSG_DEBUG, NULL);
 #define DEBUG_EVENTS(...)       sfi_debug (debug_midi_events, __VA_ARGS__)
+
 /* --- variables --- */
-static BirnetMutex                         global_midi_mutex = { 0, };
-#define	BSE_MIDI_RECEIVER_LOCK()        GSL_SPIN_LOCK (&global_midi_mutex)
-#define	BSE_MIDI_RECEIVER_UNLOCK()      GSL_SPIN_UNLOCK (&global_midi_mutex)
+static Bse::Mutex global_midi_mutex;
+#define	BSE_MIDI_RECEIVER_LOCK()        global_midi_mutex.lock()
+#define	BSE_MIDI_RECEIVER_UNLOCK()      global_midi_mutex.unlock()
+
 /********************************************************************************
  *
  * Busy/idle states of a voice input and correspondance with table entries:
@@ -1078,23 +1082,18 @@ MidiChannel::debug_notes (guint64          tick_stamp,
 } // namespace anon
 /* --- BseMidiReceiver C API --- */
 extern "C" {
-struct _BseMidiReceiver : public MidiReceiver {
-  explicit _BseMidiReceiver () :
+struct BseMidiReceiver : public MidiReceiver {
+  explicit BseMidiReceiver () :
     MidiReceiver () {}
 };
 /* --- prototypes --- */
 static gint	midi_receiver_process_event_L  (BseMidiReceiver        *self,
 						guint64                 max_tick_stamp);
+
 /* --- variables --- */
 static vector<BseMidiReceiver*> farm_residents;
+
 /* --- function --- */
-void
-_bse_midi_init (void)
-{
-  static gboolean initialized = FALSE;
-  g_assert (initialized++ == FALSE);
-  sfi_mutex_init (&global_midi_mutex);
-}
 static gint
 events_cmp (gconstpointer a,
             gconstpointer b,

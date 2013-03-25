@@ -1,15 +1,19 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #ifndef __SFI_COM_PORT_H__
 #define __SFI_COM_PORT_H__
+
 #include <sfi/sfitypes.hh>
 #include <sfi/sfiring.hh>
+
 G_BEGIN_DECLS
+
 #define	SFI_COM_PORT_MAGIC	(0x42534500 /* "BSE\0" */)
-typedef struct _SfiComPortLink SfiComPortLink;
-typedef struct _SfiComPort     SfiComPort;
-typedef void (*SfiComPortClosedFunc)	(SfiComPort	*port,
-					 gpointer	 close_data);
-struct _SfiComPort {
+
+struct SfiComPort;
+struct SfiComPortLink;
+typedef void (*SfiComPortClosedFunc) (SfiComPort *port, void *close_data);
+
+struct SfiComPort {
   gchar    *ident;
   guint     ref_count;
   GPollFD   pfd[2];	/* 0 = remote in, 1 = remote out */
@@ -41,19 +45,21 @@ struct _SfiComPort {
   gint	    exit_code;
   gint	    exit_signal;
 };
-struct _SfiComPortLink
+
+struct SfiComPortLink
 {
-  BirnetMutex    mutex;
-  guint       ref_count;
-  SfiComPort *port1;
-  BirnetThread  *thread1;
-  SfiComPort *port2;
-  BirnetThread  *thread2;
-  SfiRing    *p1queue;
-  SfiRing    *p2queue;
-  gboolean    waiting;
-  BirnetCond     wcond;
+  Bse::Mutex            mutex;
+  guint                 ref_count;
+  SfiComPort           *port1;
+  std::function<void()> wakeup1;
+  SfiComPort           *port2;
+  std::function<void()> wakeup2;
+  SfiRing              *p1queue;
+  SfiRing              *p2queue;
+  Bse::Cond             wcond;
+  bool                  waiting;
 };
+
 /* create ports */
 SfiComPort*	sfi_com_port_from_pipe		(const gchar	*ident,
 						 gint		 remote_input,
@@ -64,10 +70,10 @@ SfiComPort*	sfi_com_port_from_child		(const gchar	*ident,
 						 gint		 remote_pid);
 /* create linked ports */
 void		sfi_com_port_create_linked	(const gchar	*ident1,
-						 BirnetThread	*thread1,
+                                                 std::function<void()> wakeup1,
 						 SfiComPort    **port1,
 						 const gchar	*ident2,
-						 BirnetThread	*thread2,
+                                                 std::function<void()> wakeup2,
 						 SfiComPort    **port2);
 SfiComPort*	sfi_com_port_ref		(SfiComPort	*port);
 void		sfi_com_port_unref		(SfiComPort	*port);
@@ -92,5 +98,7 @@ void		sfi_com_port_close_remote	(SfiComPort	*port,
 void		sfi_com_port_reap_child 	(SfiComPort	*port,
 						 gboolean	 kill_child);
 gboolean	sfi_com_port_test_reap_child 	(SfiComPort	*port);
+
 G_END_DECLS
+
 #endif /* __SFI_COM_PORT_H__ */

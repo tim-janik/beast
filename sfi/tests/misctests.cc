@@ -143,38 +143,6 @@ test_com_ports (void)
   sfi_com_port_unref (port2);
   TDONE ();
 }
-static void
-test_thread (gpointer data)
-{
-  guint *tdata = (guint*) data;
-  sfi_thread_sleep (-1);
-  *tdata += 1;
-  while (!sfi_thread_aborted ())
-    sfi_thread_sleep (-1);
-  TACK ();
-}
-static void
-test_threads (void)
-{
-  static BirnetMutex test_mutex;
-  guint thread_data = 0;
-  BirnetThread *thread;
-  gboolean locked;
-  TSTART ("Threading");
-  sfi_mutex_init (&test_mutex);
-  locked = sfi_mutex_trylock (&test_mutex);
-  TASSERT (locked);
-  sfi_mutex_unlock (&test_mutex);
-  sfi_mutex_destroy (&test_mutex);
-  thread = sfi_thread_run ("sfi-test-thread", test_thread, &thread_data);
-  TASSERT (thread != NULL);
-  TASSERT (thread_data == 0);
-  sfi_thread_wakeup (thread);
-  sfi_thread_abort (thread);
-  TASSERT (thread_data > 0);
-  sfi_thread_unref (thread);
-  TDONE ();
-}
 #define SCANNER_ASSERT64(scanner, printout, token, text, svalue) { \
   g_scanner_input_text (scanner, text, strlen (text)); \
   TASSERT (g_scanner_get_next_token (scanner) == token); \
@@ -535,92 +503,7 @@ test_notes (void)
   g_free (error);
   TDONE ();
 }
-static SFI_MUTEX_DECLARE_INITIALIZED (test_mutex);
-static SFI_REC_MUTEX_DECLARE_INITIALIZED (test_rec_mutex);
-static SFI_COND_DECLARE_INITIALIZED (test_cond);
-static void
-check_thread_wrapper_compilation (void)
-{
-  return;
-  /* this code doesn't need to run, just to compile */
-  BirnetMutex *mtx = NULL;
-  BirnetRecMutex *rmtx = NULL;
-  BirnetCond *cond = NULL;
-  BirnetInt64 usecs = 27;
-  bool boolv;
-  sfi_mutex_init (mtx);
-  sfi_mutex_lock (mtx);
-  boolv = sfi_mutex_trylock (mtx);
-  TASSERT (boolv == false);
-  sfi_mutex_unlock (mtx);
-  sfi_mutex_destroy (mtx);
-  sfi_rec_mutex_init (rmtx);
-  sfi_rec_mutex_lock (rmtx);
-  boolv = sfi_rec_mutex_trylock (rmtx);
-  sfi_rec_mutex_unlock (rmtx);
-  sfi_rec_mutex_destroy (rmtx);
-  sfi_cond_init (cond);
-  sfi_cond_signal (cond);
-  sfi_cond_broadcast (cond);
-  sfi_cond_wait (cond, mtx);
-  sfi_cond_wait_timed (cond, mtx, usecs);
-  sfi_cond_destroy (cond);
-  BirnetThread *thrd = NULL;
-  const char *name = NULL;
-  void *udata = NULL;
-  BirnetThreadFunc thread_func = NULL;
-  BirnetThreadWakeup wakeup_func = NULL;
-  GDestroyNotify dstry = NULL;
-  BirnetInt64 stamp = 31;
-  BirnetThreadInfo *tinfo;
-  thrd = sfi_thread_new (name);
-  thrd = sfi_thread_ref (thrd);
-  thrd = sfi_thread_ref_sink (thrd);
-  sfi_thread_unref (thrd);
-  sfi_thread_start (thrd, thread_func, udata);
-  thrd = sfi_thread_self ();
-  int pid1 = sfi_thread_self_pid ();
-  int pid2 = sfi_thread_get_pid (thrd);
-  TASSERT (pid1 == pid2);
-  name = sfi_thread_get_name (thrd);
-  sfi_thread_set_name (name);
-  sfi_thread_sleep (usecs);
-  sfi_thread_wakeup (thrd);
-  sfi_thread_awake_after (stamp);
-  sfi_thread_emit_wakeups (stamp);
-  sfi_thread_set_wakeup (wakeup_func, udata, dstry);
-  sfi_thread_abort (thrd);
-  sfi_thread_queue_abort (thrd);
-  boolv = sfi_thread_aborted ();
-  boolv = sfi_thread_get_aborted (thrd);
-  boolv = sfi_thread_get_running (thrd);
-  sfi_thread_wait_for_exit (thrd);
-  sfi_thread_yield ();
-  tinfo = sfi_thread_info_collect (thrd);
-  sfi_thread_info_free (tinfo);
-  GQuark quark = 0;
-  udata = sfi_thread_get_qdata (quark);
-  sfi_thread_set_qdata_full (quark, udata, dstry);
-  sfi_thread_set_qdata (quark, udata);
-  udata = sfi_thread_steal_qdata (quark);
-  int diff = +17;
-  volatile int  iatmc, ival = 3, ioval = 4, inval = 5;
-  volatile uint uatmc, uval = 3, uoval = 4, unval = 5;
-  volatile void *patmc, *pval = (void*) 1, *poval = (void*) 2, *pnval = (void*) 3;
-  sfi_atomic_pointer_set (&patmc, pval);
-  pval = sfi_atomic_pointer_get (&patmc);
-  boolv = sfi_atomic_pointer_cas (&patmc, poval, pnval);
-  sfi_atomic_int_set (&iatmc, ival);
-  ival = sfi_atomic_int_get (&iatmc);
-  boolv = sfi_atomic_int_cas (&iatmc, ioval, inval);
-  sfi_atomic_int_add (&iatmc, diff);
-  ival = sfi_atomic_int_swap_add (&iatmc, diff);
-  sfi_atomic_uint_set (&uatmc, uval);
-  uval = sfi_atomic_uint_get (&uatmc);
-  boolv = sfi_atomic_uint_cas (&uatmc, uoval, unval);
-  sfi_atomic_uint_add (&uatmc, diff);
-  uval = sfi_atomic_uint_swap_add (&uatmc, diff);
-}
+
 static void
 test_renames (void)
 {
@@ -862,7 +745,6 @@ main (int   argc,
       generate_vmarshal_code ();
       return 0;
     }
-  check_thread_wrapper_compilation ();
   test_notes ();
   test_time ();
   test_renames ();
@@ -872,7 +754,6 @@ main (int   argc,
   test_typed_serialization (SERIAL_TEST_PSPEC);
   test_vmarshals ();
   test_com_ports ();
-  test_threads ();
   test_sfidl_seq ();
   test_messages();
   test_misc ();

@@ -4,18 +4,15 @@
 #include	<bse/bse.hh>	/* initialization */
 #include        <bse/bsetype.hh>
 G_BEGIN_DECLS
-/* --- initialization --- */
+
+// == BSE Initialization ==
 void		bse_init_textdomain_only (void);
-#if 0	// prototyped in bse.hh */
-void		bse_init_async		(gint		*argc,
-					 gchar	      ***argv,
-					 const char     *app_name,
-					 SfiInitValue    values[]);
-SfiGlueContext* bse_init_glue_context	(const gchar    *client);
+void		_bse_init_async		 (int *argc, char ***argv, const char *app_name, SfiInitValue values[]);
+SfiGlueContext* _bse_glue_context_create (const char *client, const std::function<void()> &caller_wakeup);
 const char*     bse_check_version	(guint		 required_major,
                                          guint		 required_minor,
-                                         guint		 required_micro);
-#endif
+                                         guint		 required_micro);       // prototyped in bse.hh
+
 /* initialization for internal utilities */
 void		bse_init_inprocess	(gint		*argc,
 					 gchar	      ***argv,
@@ -24,16 +21,14 @@ void		bse_init_inprocess	(gint		*argc,
 void		bse_init_test		(gint		*argc,
 					 gchar	      ***argv,
 					 SfiInitValue    values[]);
-/* BSE thread pid (or 0) */
-guint           bse_main_getpid         (void);
+void            bse_main_wakeup         ();
+
 /* messaging */
 void            bse_message_setup_thread_handler (void);
 void            bse_message_to_default_handler   (const BseMessage *msg);
 /* --- global macros --- */
 #define	BSE_THREADS_ENTER()			// bse_main_global_lock ()
 #define	BSE_THREADS_LEAVE()			// bse_main_global_unlock ()
-#define	BSE_SEQUENCER_LOCK()			sfi_mutex_lock (&bse_main_sequencer_mutex)
-#define	BSE_SEQUENCER_UNLOCK()			sfi_mutex_unlock (&bse_main_sequencer_mutex)
 #define	BSE_DBG_EXT     			(bse_main_args->debug_extensions != FALSE)
 #define	BSE_CONFIG(field)			(bse_main_args->field)
 /* --- argc/argv overide settings --- */
@@ -68,16 +63,18 @@ typedef struct {
   SfiRing              *pcm_drivers;
   SfiRing              *midi_drivers;
 } BseMainArgs;
+
 /* --- debuging channels --- */
 typedef struct {
   SfiDebugChannel       *sequencer;     /* --bse-trace-sequencer */
 } BseTraceArgs;
+
 /* --- internal --- */
 void    _bse_init_c_wrappers    ();
 extern BseMainArgs     *bse_main_args;
 extern BseTraceArgs     bse_trace_args;
 extern GMainContext    *bse_main_context;
-extern BirnetMutex	bse_main_sequencer_mutex;
-extern BirnetThread    *bse_main_thread;
+
 G_END_DECLS
+
 #endif /* __BSE_MAIN_H__ */

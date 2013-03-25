@@ -10,18 +10,12 @@ G_BEGIN_DECLS
 #define BSE_IS_OUTPUT(object)	                (G_TYPE_CHECK_INSTANCE_TYPE ((object), BSE_TYPE_INSTRUMENT_OUTPUT))
 #define BSE_IS_OUTPUT_CLASS(class)	        (G_TYPE_CHECK_CLASS_TYPE ((class), BSE_TYPE_INSTRUMENT_OUTPUT))
 #define BSE_INSTRUMENT_OUTPUT_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), BSE_TYPE_INSTRUMENT_OUTPUT, BseInstrumentOutputClass))
-/* --- BseInstrumentOutput source --- */
-typedef struct _BseInstrumentOutput      BseInstrumentOutput;
-typedef struct _BseInstrumentOutputClass BseInstrumentOutputClass;
-struct _BseInstrumentOutput
-{
-  BseSubOPort parent_object;
-};
-struct _BseInstrumentOutputClass
-{
-  BseSubOPortClass parent_class;
-};
-/* --- channels --- */
+
+struct BseInstrumentOutput : BseSubOPort
+{};
+struct BseInstrumentOutputClass : BseSubOPortClass
+{};
+
 enum
 {
   BSE_INSTRUMENT_OUTPUT_ICHANNEL_LEFT,

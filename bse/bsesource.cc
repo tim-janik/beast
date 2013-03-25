@@ -326,7 +326,7 @@ source_notify_properties (BseSource *self)
   source_class_collect_properties (BSE_SOURCE_GET_CLASS (self));
   SfiRing *ring;
   for (ring = klass->unprepared_properties; ring; ring = sfi_ring_walk (ring, klass->unprepared_properties))
-    g_object_notify ((GObject*) self, G_PARAM_SPEC (ring->data)->name);
+    g_object_notify (self, G_PARAM_SPEC (ring->data)->name);
 }
 static gint
 contexts_compare (gconstpointer bsearch_node1, /* key */
@@ -347,13 +347,13 @@ bse_source_prepare (BseSource *source)
   g_return_if_fail (!BSE_SOURCE_PREPARED (source));
   g_return_if_fail (source->contexts == NULL);
   g_object_ref (source);
-  g_object_freeze_notify (G_OBJECT (source));
+  g_object_freeze_notify (source);
   source_class_collect_properties (BSE_SOURCE_GET_CLASS (source));
   source->contexts = g_bsearch_array_create (&context_config);
-  BSE_OBJECT_SET_FLAGS (source, BSE_SOURCE_FLAG_PREPARED);      /* guard properties from _before_ preapre() */
+  BSE_OBJECT_SET_FLAGS (source, BSE_SOURCE_FLAG_PREPARED);      /* guard properties from _before_ prepare() */
   BSE_SOURCE_GET_CLASS (source)->prepare (source);
   source_notify_properties (source);
-  g_object_thaw_notify (G_OBJECT (source));
+  g_object_thaw_notify (source);
   g_object_unref (source);
 }
 static void
@@ -368,7 +368,7 @@ bse_source_reset (BseSource *source)
   g_return_if_fail (BSE_SOURCE_PREPARED (source));
   g_return_if_fail (source->contexts != NULL);
   g_object_ref (source);
-  g_object_freeze_notify (G_OBJECT (source));
+  g_object_freeze_notify (source);
   n_contexts = BSE_SOURCE_N_CONTEXTS (source);
   if (n_contexts)
     {
@@ -387,7 +387,7 @@ bse_source_reset (BseSource *source)
   g_bsearch_array_free (source->contexts, &context_config);
   source->contexts = NULL;
   source_notify_properties (source);
-  g_object_thaw_notify (G_OBJECT (source));
+  g_object_thaw_notify (source);
   g_object_unref (source);
 }
 static gint
@@ -430,7 +430,7 @@ bse_source_set_automation_property (BseSource        *source,
   SfiRing *ring = sfi_ring_find (BSE_SOURCE_GET_CLASS (source)->automation_properties, pspec);
   if (!ring)    /* !pspec or pspec not found */
     return BSE_ERROR_INVALID_PROPERTY;
-  GBSearchArray *aparray = (GBSearchArray*) g_object_get_data (G_OBJECT (source), "BseSource-AutomationProperties"), *oarray = aparray;
+  GBSearchArray *aparray = (GBSearchArray*) g_object_get_data (source, "BseSource-AutomationProperties"), *oarray = aparray;
   if (!aparray)
     aparray = g_bsearch_array_create (&aprop_bconfig);
   BseAutomationProperty key = { pspec, }, *ap = (BseAutomationProperty*) g_bsearch_array_lookup (aparray, &aprop_bconfig, &key);
@@ -443,15 +443,15 @@ bse_source_set_automation_property (BseSource        *source,
     }
   if (oarray != aparray)
     {
-      g_object_steal_data ((GObject*) source, "BseSource-AutomationProperties");
-      g_object_set_data_full ((GObject*) source, "BseSource-AutomationProperties", aparray, aprop_array_free);
+      g_object_steal_data (source, "BseSource-AutomationProperties");
+      g_object_set_data_full (source, "BseSource-AutomationProperties", aparray, aprop_array_free);
     }
   if (ap->midi_channel != midi_channel ||
       ap->signal_type != signal_type)
     {
       ap->midi_channel = midi_channel;
       ap->signal_type = signal_type;
-      g_object_notify ((GObject*) source, pspec->name);
+      g_object_notify (source, pspec->name);
     }
   return BSE_ERROR_NONE;
 }
@@ -466,7 +466,7 @@ bse_source_get_automation_property (BseSource         *source,
   GParamSpec *pspec = g_object_class_find_property (G_OBJECT_GET_CLASS (source), prop_name);
   if (pspec)
     {
-      GBSearchArray *aparray = (GBSearchArray*) g_object_get_data ((GObject*) source, "BseSource-AutomationProperties");
+      GBSearchArray *aparray = (GBSearchArray*) g_object_get_data (source, "BseSource-AutomationProperties");
       if (aparray)
         {
           BseAutomationProperty key = { pspec, }, *ap = (BseAutomationProperty*) g_bsearch_array_lookup (aparray, &aprop_bconfig, &key);
@@ -489,7 +489,7 @@ bse_source_get_automation_properties (BseSource        *source,
   g_return_val_if_fail (BSE_IS_SOURCE (source), NULL);
   if (n_props)
     {
-      GBSearchArray *aparray = (GBSearchArray*) g_object_get_data ((GObject*) source, "BseSource-AutomationProperties");
+      GBSearchArray *aparray = (GBSearchArray*) g_object_get_data (source, "BseSource-AutomationProperties");
       if (aparray)
         {
           *n_props = g_bsearch_array_get_n_nodes (aparray);

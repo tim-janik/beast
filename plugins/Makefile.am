@@ -3,7 +3,9 @@ include $(top_srcdir)/Makefile.decl
 
 SUBDIRS = icons . freeverb # evaluator
 
-INCLUDES += -I$(top_srcdir) -I. $(BSE_CFLAGS) -DG_LOG_DOMAIN="\"$(strip $(basename $(<F)))\""
+INCLUDES    += -I$(top_srcdir) -I.
+DEFS        += @DEFINE__FILE_DIR__@ -DG_LOG_DOMAIN="\"$(strip $(basename $(<F)))\""
+AM_CXXFLAGS  = $(BSE_CFLAGS) $(RAPICORN_CFLAGS) -DRAPICORN_CONVENIENCE -D_BIRNET_SOURCE_EXTENSIONS
 
 # == IDL C++ Plugins ==
 idl_plugins = $(strip			\

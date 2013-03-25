@@ -1,9 +1,9 @@
 ; BseProject
 
-(bse-version "0.7.1")
+(bse-version "0.8.0")
 
 (container-child "BseWaveRepo::Wave-Repository"
-  (modification-time "2007-01-24 22:31:26")
+  (modification-time "2013-03-24 18:56:25")
   (creation-time "2003-10-04 18:06:50")
   (license "Green OpenMusic License (http://openmusic.linuxtag.org)")
   (author "Tim Janik"))
@@ -14,7 +14,7 @@
   (denominator 4)
   (numerator 4)
   (tpqn 384)
-  (modification-time "2007-01-24 22:31:26")
+  (modification-time "2013-03-24 18:56:25")
   (creation-time "2003-10-04 18:10:14")
   (license "Provided \\\"as is\\\", WITHOUT ANY WARRANTY (http://beast.testbit.eu/LICENSE-AS-IS)")
   (author "Stefan Westerfeld")
@@ -91,14 +91,14 @@
     (snet (link 2 "XtalStringBass"))
     (insert-part 0 (link 1 "Part-2"))))
 (container-child "BseCSynth::XtalString"
-  (modification-time "2007-01-24 22:31:26")
+  (modification-time "2013-03-24 18:56:25")
   (creation-time "2003-10-04 20:36:52")
   (license "Provided \\\"as is\\\", WITHOUT ANY WARRANTY (http://beast.testbit.eu/LICENSE-AS-IS)")
   (author "Stefan Westerfeld")
   (container-child "BseAmplifier::BseAmplifier-1"
     (master-volume 1)
     (base-level 0)
-    (ostrength 100)
+    (ostrength 50)
     (ctrl-exp #f)
     (ctrl-mul #t)
     (clevel2 100)
@@ -150,14 +150,14 @@
     (pos-x 2.51)
     (source-input "audio-in1" (link 1 "BseAmplifier-1") "audio-out")))
 (container-child "BseCSynth::XtalStringBass"
-  (modification-time "2007-01-24 22:31:56")
+  (modification-time "2013-03-24 18:56:25")
   (creation-time "2003-10-04 20:36:52")
   (license "Provided \\\"as is\\\", WITHOUT ANY WARRANTY (http://beast.testbit.eu/LICENSE-AS-IS)")
   (author "Stefan Westerfeld")
   (container-child "BseAmplifier::BseAmplifier-1"
     (master-volume 1)
     (base-level 0)
-    (ostrength 100)
+    (ostrength 50)
     (ctrl-exp #f)
     (ctrl-mul #t)
     (clevel2 100)

@@ -1,6 +1,6 @@
 ; BseProject
 
-(bse-version "0.7.1")
+(bse-version "0.8.0")
 
 (container-child "BseWaveRepo::Wave-Repository"
   (modification-time "2007-06-21 15:36:17")
@@ -8,7 +8,7 @@
   (license "Creative Commons Attribution 2.5 (http://creativecommons.org/licenses/by/2.5/)")
   (author "Stefan Westerfeld"))
 (container-child "BseCSynth::BQS Organ"
-  (modification-time "2007-06-21 15:37:22")
+  (modification-time "2013-03-24 16:48:49")
   (creation-time "2006-04-07 20:44:57")
   (license "Provided \"as is\", WITHOUT ANY WARRANTY (http://beast.testbit.eu/LICENSE-AS-IS)")
   (author "Tim Janik")
@@ -21,9 +21,9 @@
     (source-input "synth-done" (link 1 "SimpleADSR-1") "done-out"))
   (container-child "BseInstrumentInput::InstrumentInput-1"
     (pos-x -4))
-  (container-child "DavOrgan::DavOrgan-1"
-    (reed #f)
+  (container-child "BseDavOrgan::DavOrgan-1"
     (flute #f)
+    (reed #f)
     (brass #f)
     (harm5 0)
     (harm4 0)
@@ -38,7 +38,7 @@
   (container-child "BseAmplifier::Amplifier-1"
     (master-volume 7.9432823472428158)
     (base-level 0)
-    (ostrength 100)
+    (ostrength 50)
     (ctrl-exp #f)
     (ctrl-mul #t)
     (clevel2 100)
@@ -62,7 +62,7 @@
   (denominator 4)
   (numerator 4)
   (tpqn 384)
-  (modification-time "2007-06-21 15:38:11")
+  (modification-time "2013-03-24 16:48:49")
   (creation-time "2007-06-21 15:38:11")
   (license "Creative Commons Attribution 2.5 (http://creativecommons.org/licenses/by/2.5/)")
   (author "Stefan Westerfeld")
@@ -103,7 +103,7 @@
     (insert-part 0 (link 1 "Part-2"))
     (insert-part 6144 (link 1 "Part-2"))))
 (container-child "BseCSynth::BQS Compressor"
-  (modification-time "2007-06-21 15:41:35")
+  (modification-time "2013-03-24 16:48:49")
   (creation-time "2003-10-18 01:55:54")
   (license "Provided \\\"as is\\\", WITHOUT ANY WARRANTY (http://beast.testbit.eu/LICENSE-AS-IS)")
   (author "Stefan Westerfeld")

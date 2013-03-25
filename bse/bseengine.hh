@@ -190,6 +190,7 @@ guint64    bse_engine_tick_stamp_from_systime (guint64       systime);
 #define    bse_engine_control_raster()        (1 + (const guint) bse_engine_exvar_control_mask)
 #define    bse_engine_control_mask()          (0 + (const guint) bse_engine_exvar_control_mask)
 #define    BSE_CONTROL_CHECK(index)           ((bse_engine_control_mask() & (index)) == 0)
+
 /* --- thread handling --- */
 typedef struct
 {
@@ -199,13 +200,15 @@ typedef struct
   GPollFD      *fds;
   gboolean      revents_filled;
 } BseEngineLoop;
-BirnetThread** bse_engine_get_threads            (guint               *n_threads);
+
 gboolean    bse_engine_prepare                (BseEngineLoop       *loop);
 gboolean    bse_engine_check                  (const BseEngineLoop *loop);
 void        bse_engine_dispatch               (void);
+
 /*< private >*/
 extern guint    bse_engine_exvar_block_size;
 extern guint    bse_engine_exvar_sample_freq;
 extern guint    bse_engine_exvar_control_mask;
+
 G_END_DECLS
 #endif /* __BSE_ENGINE_H__ */

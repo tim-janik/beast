@@ -40,11 +40,13 @@ bse_pcm_writer_class_init (BsePcmWriterClass *klass)
   parent_class = g_type_class_peek_parent (klass);
   gobject_class->finalize = bse_pcm_writer_finalize;
 }
+
 static void
 bse_pcm_writer_init (BsePcmWriter *self)
 {
-  sfi_mutex_init (&self->mutex);
+  new (&self->mutex) Bse::Mutex();
 }
+
 static void
 bse_pcm_writer_finalize (GObject *object)
 {
@@ -56,8 +58,9 @@ bse_pcm_writer_finalize (GObject *object)
     }
   /* chain parent class' handler */
   G_OBJECT_CLASS (parent_class)->finalize (object);
-  sfi_mutex_destroy (&self->mutex);
+  self->mutex.~Mutex();
 }
+
 BseErrorType
 bse_pcm_writer_open (BsePcmWriter *self,
 		     const gchar  *file,
@@ -71,26 +74,26 @@ bse_pcm_writer_open (BsePcmWriter *self,
   g_return_val_if_fail (file != NULL, BSE_ERROR_INTERNAL);
   g_return_val_if_fail (n_channels > 0, BSE_ERROR_INTERNAL);
   g_return_val_if_fail (sample_freq >= 1000, BSE_ERROR_INTERNAL);
-  sfi_mutex_lock (&self->mutex);
+  self->mutex.lock();
   self->n_bytes = 0;
   self->recorded_maximum = recorded_maximum;
   fd = open (file, O_WRONLY | O_CREAT | O_TRUNC, 0666);
   if (fd < 0)
     {
-      sfi_mutex_unlock (&self->mutex);
+      self->mutex.unlock();
       return bse_error_from_errno (errno, BSE_ERROR_FILE_OPEN_FAILED);
     }
   errno = bse_wave_file_dump_header (fd, 0x7fff0000, 16, n_channels, sample_freq);
   if (errno)
     {
       close (fd);
-      sfi_mutex_unlock (&self->mutex);
+      self->mutex.unlock();
       return bse_error_from_errno (errno, BSE_ERROR_FILE_OPEN_FAILED);
     }
   self->fd = fd;
   self->open = TRUE;
   self->broken = FALSE;
-  sfi_mutex_unlock (&self->mutex);
+  self->mutex.unlock();
   return BSE_ERROR_NONE;
 }
 void
@@ -98,12 +101,12 @@ bse_pcm_writer_close (BsePcmWriter *self)
 {
   g_return_if_fail (BSE_IS_PCM_WRITER (self));
   g_return_if_fail (self->open);
-  sfi_mutex_lock (&self->mutex);
+  self->mutex.lock();
   bse_wave_file_patch_length (self->fd, self->n_bytes);
   close (self->fd);
   self->fd = -1;
   self->open = FALSE;
-  sfi_mutex_unlock (&self->mutex);
+  self->mutex.unlock();
   errno = 0;
 }
 static gboolean
@@ -123,7 +126,7 @@ bse_pcm_writer_write (BsePcmWriter *self,
     g_return_if_fail (values != NULL);
   else
     return;
-  sfi_mutex_lock (&self->mutex);
+  self->mutex.lock();
   const uint bw = 2; /* 16bit */
   if (!self->broken && (!self->recorded_maximum || self->n_bytes < bw * self->recorded_maximum))
     {
@@ -152,5 +155,5 @@ bse_pcm_writer_write (BsePcmWriter *self,
 	  self->broken = TRUE;
 	}
     }
-  sfi_mutex_unlock (&self->mutex);
+  self->mutex.unlock();
 }

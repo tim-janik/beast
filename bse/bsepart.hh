@@ -12,15 +12,13 @@ G_BEGIN_DECLS
 #define BSE_IS_PART_CLASS(class)        (G_TYPE_CHECK_CLASS_TYPE ((class), BSE_TYPE_PART))
 #define BSE_PART_GET_CLASS(object)      (G_TYPE_INSTANCE_GET_CLASS ((object), BSE_TYPE_PART, BsePartClass))
 /* --- typedefs & structures --- */
-typedef struct {
+struct BsePartControls {
   GBSearchArray *bsa;
-} BsePartControls;
-typedef struct {
+};
+struct BsePartNoteChannel {
   GBSearchArray *bsa;
-} BsePartNoteChannel;
-struct _BsePart
-{
-  BseItem             parent_instance;
+};
+struct BsePart : BseItem {
   const double       *semitone_table; // [-132..+132] only updated when not playing
   /* id -> tick lookups */
   guint               n_ids;
@@ -41,9 +39,7 @@ struct _BsePart
   gint                range_min_note;
   gint                range_max_note;
 };
-struct _BsePartClass
-{
-  BseItemClass parent_class;
+struct BsePartClass : BseItemClass {
   void  (*range_changed)        (BsePart        *part,
                                  guint           tick,
                                  guint           duration,
@@ -56,7 +52,7 @@ typedef enum    /*< skip >*/
   BSE_PART_EVENT_CONTROL,
   BSE_PART_EVENT_NOTE
 } BsePartEventType;
-/* --- functions --- */
+
 #define            bse_part_transpose_factor(          part, index /* -132..+132*/)     ((part)->semitone_table[index])
 void               bse_part_set_semitone_table        (BsePart           *self,
                                                        const double      *semitone_table);
@@ -141,7 +137,7 @@ gboolean           bse_part_set_note_selected         (BsePart           *self,
 gboolean           bse_part_set_control_selected      (BsePart           *self,
                                                        guint              id,
                                                        gboolean           selected);
-typedef struct {
+struct BsePartQueryEvent {
   guint             id;
   BsePartEventType  event_type;
   guint             channel;
@@ -158,7 +154,8 @@ typedef struct {
   /* control */
   BseMidiSignalType control_type;
   gfloat            control_value;
-} BsePartQueryEvent;
+};
+
 BsePartEventType   bse_part_query_event         (BsePart           *self,
                                                  guint              id,
                                                  BsePartQueryEvent *equery);
@@ -169,20 +166,19 @@ BsePartEventType   bse_part_query_event         (BsePart           *self,
 #define BSE_PART_NOTE_CONTROL(ctype)    ((ctype) == BSE_MIDI_SIGNAL_VELOCITY || \
                                          (ctype) == BSE_MIDI_SIGNAL_FINE_TUNE)
 /* --- BsePartControlChannel --- */
-typedef struct _BsePartEventControl BsePartEventControl;
-typedef struct
-{
+struct BsePartEventControl;
+struct BsePartTickNode {
   guint                tick;
   BsePartEventControl *events;
-} BsePartTickNode;
-struct _BsePartEventControl
-{
+};
+struct BsePartEventControl {
   BsePartEventControl   *next;
   guint                  id : 31;
   guint                  selected : 1;
   guint                  ctype; /* BseMidiSignalType */
   gfloat                 value;         /* -1 .. 1 */
 };
+
 void                 bse_part_controls_init            (BsePartControls     *self);
 BsePartTickNode*     bse_part_controls_lookup          (BsePartControls     *self,
                                                         guint                tick);
@@ -218,10 +214,8 @@ void                 bse_part_controls_remove          (BsePartControls     *sel
                                                         guint                tick,
                                                         BsePartEventControl *cev);
 void                 bse_part_controls_destroy         (BsePartControls     *self);
-/* --- BsePartNoteChannel --- */
-typedef struct _BsePartEventNote BsePartEventNote;
-struct _BsePartEventNote
-{
+
+struct BsePartEventNote {
   guint                  tick;
   guint                  id : 31;
   guint                  selected : 1;
@@ -260,5 +254,7 @@ void              bse_part_note_channel_change_note   (BsePartNoteChannel *self,
 void              bse_part_note_channel_remove        (BsePartNoteChannel *self,
                                                        guint               tick);
 void              bse_part_note_channel_destroy       (BsePartNoteChannel *self);
+
 G_END_DECLS
+
 #endif /* __BSE_PART_H__ */

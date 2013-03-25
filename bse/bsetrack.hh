@@ -12,15 +12,13 @@ G_BEGIN_DECLS
 #define BSE_IS_TRACK(object)	    (G_TYPE_CHECK_INSTANCE_TYPE ((object), BSE_TYPE_TRACK))
 #define BSE_IS_TRACK_CLASS(class)   (G_TYPE_CHECK_CLASS_TYPE ((class), BSE_TYPE_TRACK))
 #define BSE_TRACK_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), BSE_TYPE_TRACK, BseTrackClass))
-/* --- BseTrack --- */
-typedef struct {
+
+struct BseTrackEntry {
   guint    tick;
   guint    id;
   BsePart *part;
-} BseTrackEntry;
-struct _BseTrack
-{
-  BseContextMerger parent_instance;
+};
+struct BseTrack : BseContextMerger {
   guint            channel_id;
   guint		   max_voices;
   BseSNet	  *snet;
@@ -41,10 +39,9 @@ struct _BseTrack
   guint            midi_channel_SL;
   gboolean	   track_done_SL;
 };
-struct _BseTrackClass
-{
-  BseContextMergerClass parent_class;
-};
+struct BseTrackClass : BseContextMergerClass
+{};
+
 /* --- prototypes -- */
 void	bse_track_add_modules		(BseTrack		*self,
 					 BseContainer		*container,

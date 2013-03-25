@@ -36,6 +36,8 @@ static gboolean     register_core_plugins = TRUE;
 static gboolean     register_ladspa_plugins = TRUE;
 static gboolean     register_scripts = TRUE;
 static gboolean     may_auto_update_bse_rc_file = TRUE;
+static bool         rewrite_bse_file = false;
+
 /* --- functions --- */
 static void
 server_registration (SfiProxy     server,
@@ -55,6 +57,7 @@ server_registration (SfiProxy     server,
 	g_message ("failed to register \"%s\": %s", what, error);
     }
 }
+
 int
 main (int   argc,
       char *argv[])
@@ -78,17 +81,16 @@ main (int   argc,
   gettimeofday (&tv, NULL);
   srand48 (tv.tv_usec + (tv.tv_sec << 16));
   srand (tv.tv_usec + (tv.tv_sec << 16));
-  /* initialize GLib guts */
-  // toyprof_init_glib_memtable ("/tmp/beast-leak.debug", 10 /* SIGUSR1 */);
+
+  // initialize threading and GLib types
+  Rapicorn::ThreadInfo::self().name ("Beast GUI");
+  Bse::TaskRegistry::add (Rapicorn::ThreadInfo::self().name(), Rapicorn::ThisThread::process_pid(), Rapicorn::ThisThread::thread_pid());
   g_thread_init (NULL);
   g_type_init ();
   /* initialize Birnet/Sfi */
   sfi_init (&argc, &argv, _("BEAST"), NULL);  /* application name is user visible */       
   sfi_msg_allow ("misc");
   /* ensure SFI can wake us up */
-  sfi_thread_set_name ("Beast GUI");
-  sfi_thread_set_wakeup ((BirnetThreadWakeup) g_main_context_wakeup,
-			 g_main_context_default (), NULL);
   /* initialize Gtk+ and go into threading mode */
   bst_early_parse_args (&argc, &argv);
   if (bst_debug_extensions)
@@ -135,8 +137,8 @@ main (int   argc,
     }
   /* start BSE core and connect */
   bst_splash_update_item (beast_splash, _("BSE Core"));
-  bse_init_async (&argc, &argv, "BEAST", config);
-  sfi_glue_context_push (bse_init_glue_context ("BEAST"));
+  Bse::init_async (&argc, &argv, "BEAST", config);
+  sfi_glue_context_push (Bse::init_glue_context ("BEAST", bst_main_loop_wakeup));
   source = g_source_simple (GDK_PRIORITY_EVENTS, // G_PRIORITY_HIGH - 100,
 			    (GSourcePending) sfi_glue_context_pending,
 			    (GSourceDispatch) sfi_glue_context_dispatch,
@@ -260,11 +262,27 @@ main (int   argc,
 	    }
           continue;
 	}
-      /* load/merge projects */
+      // load/merge projects
       if (!app || !merge_with_last)
         {
           SfiProxy project = bse_server_use_new_project (BSE_SERVER, argv[i]);
           BseErrorType error = bst_project_restore_from_file (project, argv[i], TRUE, TRUE);
+          if (rewrite_bse_file)
+            {
+              Rapicorn::printerr ("%s: loading: %s\n", argv[i], bse_error_blurb (error));
+              if (error)
+                exit (1);
+              if (unlink (argv[i]) < 0)
+                {
+                  perror (Rapicorn::string_printf ("%s: failed to remove", argv[i]).c_str());
+                  exit (2);
+                }
+              error = bse_project_store_bse (project, 0, argv[i], TRUE);
+              Rapicorn::printerr ("%s: writing: %s\n", argv[i], bse_error_blurb (error));
+              if (error)
+                exit (3);
+              exit (0);
+            }
           if (!error || error == BSE_ERROR_FILE_NOT_FOUND)
             {
               error = BseErrorType (0);
@@ -309,7 +327,7 @@ main (int   argc,
         "<tagdef name=\"mono\" family=\"monospace\"/>"
         "<span tag=\"title\">BEAST/BSE " BST_VERSION " Release Notes</span>"
         "<newline/><newline/>"
-        "The 0.7 development series of Beast focusses on improving usability and ease of music production. "
+        "This development series of Beast focusses on improving interoperability and feature integration. "
         "<newline/><newline/>"
         "Feedback is very much appreciated, please take the opportunity and provide your comments "
         "and questions in online forums like the Beast "
@@ -371,8 +389,8 @@ main (int   argc,
 	g_warning ("failed to save rc-file \"%s\": %s", file_name, bse_error_blurb (error));
       g_free (file_name);
     }
-  /* perform necessary cleanup cycles
-   */
+
+  // perform necessary cleanup cycles
   GDK_THREADS_LEAVE ();
   while (g_main_iteration (FALSE))
     {
@@ -380,10 +398,22 @@ main (int   argc,
       sfi_glue_gc_run ();
       GDK_THREADS_LEAVE ();
     }
+
+  // misc cleanups
   birnet_cleanup_force_handlers();
   bse_object_debug_leaks ();
+  Bse::TaskRegistry::remove (Rapicorn::ThisThread::thread_pid());
+
   return 0;
 }
+
+/// wake up the main context used by the Beast main event looop.
+void
+bst_main_loop_wakeup ()
+{
+  g_main_context_wakeup (g_main_context_default ());
+}
+
 static void
 bst_early_parse_args (int    *argc_p,
 		      char ***argv_p)
@@ -498,6 +528,11 @@ bst_early_parse_args (int    *argc_p,
 	  arg_force_xkb = TRUE;
           argv[i] = NULL;
 	}
+      else if (strcmp ("--rewrite-bse-file", argv[i]) == 0)
+        {
+          rewrite_bse_file = true;
+          argv[i] = NULL;
+        }
       else if (strcmp (argv[i], "-n") == 0 && i + 1 < argc)
         { /* handled by priviledged launcher */
           argv[i++] = NULL;
@@ -624,7 +659,7 @@ bst_early_parse_args (int    *argc_p,
   *argc_p = e;
   if (initialize_bse_and_exit)
     {
-      bse_init_async (argc_p, argv_p, "BEAST", NULL);
+      Bse::init_async (argc_p, argv_p, "BEAST", NULL);
       exit (0);
     }
 }
@@ -634,8 +669,8 @@ bst_exit_print_version (void)
   const gchar *c;
   gchar *freeme = NULL;
   /* hack: start BSE, so we can query it for paths, works since we immediately exit() afterwards */
-  bse_init_async (NULL, NULL, "BEAST", NULL);
-  sfi_glue_context_push (bse_init_glue_context ("BEAST"));
+  Bse::init_async (NULL, NULL, "BEAST", NULL);
+  sfi_glue_context_push (Bse::init_glue_context ("BEAST", bst_main_loop_wakeup));
   g_print ("BEAST version %s (%s)\n", BST_VERSION, BST_VERSION_HINT);
   g_print ("Libraries: ");
   g_print ("GLib %u.%u.%u", glib_major_version, glib_minor_version, glib_micro_version);
@@ -755,6 +790,7 @@ beast_show_about_box (void)
     "Tuomas Kuosmanen",
     "Ville P\xc3\xa4tsi",
     /* general code and fixes */
+    "Alessio Treglia",
     "Alper Ersoy",
     "Ben Collver",
     "Hanno Behrens",

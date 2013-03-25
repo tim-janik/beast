@@ -11,30 +11,24 @@ G_BEGIN_DECLS
 #define BSE_IS_SIMPLE_ADSR(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), BSE_TYPE_SIMPLE_ADSR))
 #define BSE_IS_SIMPLE_ADSR_CLASS(class)   (G_TYPE_CHECK_CLASS_TYPE ((class), BSE_TYPE_SIMPLE_ADSR))
 #define BSE_SIMPLE_ADSR_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), BSE_TYPE_SIMPLE_ADSR, BseSimpleADSRClass))
-/* --- BseSimpleADSR source --- */
-typedef struct _BseSimpleADSR      BseSimpleADSR;
-typedef struct _BseSimpleADSRClass BseSimpleADSRClass;
-typedef struct {
-  gfloat	  attack_level;
-  gfloat	  attack_inc;
-  gfloat	  decay_dec;
-  gfloat	  sustain_level;
-  gfloat	  release_dec;
-} BseSimpleADSRVars;
-struct _BseSimpleADSR
-{
-  BseSource         parent_object;
-  gfloat	    attack_time;
-  gfloat	    decay_time;
-  gfloat	    sustain_level;
-  gfloat	    release_time;
+
+struct BseSimpleADSRVars {
+  float	  attack_level;
+  float	  attack_inc;
+  float	  decay_dec;
+  float	  sustain_level;
+  float	  release_dec;
+};
+struct BseSimpleADSR : BseSource {
+  float	    attack_time;
+  float	    decay_time;
+  float	    sustain_level;
+  float	    release_time;
   BseTimeRangeType  time_range;
 };
-struct _BseSimpleADSRClass
-{
-  BseSourceClass parent_class;
-};
-/* --- channels --- */
+struct BseSimpleADSRClass : BseSourceClass
+{};
+
 enum
 {
   BSE_SIMPLE_ADSR_ICHANNEL_GATE,

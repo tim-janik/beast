@@ -12,24 +12,20 @@ G_BEGIN_DECLS
 #define BSE_SUPER_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), BSE_TYPE_SUPER, BseSuperClass))
 /* --- BseSuper member macros --- */
 #define BSE_SUPER_NEEDS_CONTEXT(object)		  ((BSE_OBJECT_FLAGS (object) & BSE_SUPER_FLAG_NEEDS_CONTEXT) != 0)
-/* --- bse super flags --- */
+
 typedef enum                            /*< skip >*/
 {
   BSE_SUPER_FLAG_NEEDS_CONTEXT		 = 1 << (BSE_CONTAINER_FLAGS_USHIFT + 0),
 } BseSuperFlags;
 #define BSE_SUPER_FLAGS_USHIFT	       (BSE_CONTAINER_FLAGS_USHIFT + 1)
-/* --- BseSuper object --- */
-struct _BseSuper
-{
-  BseContainer	 parent_object;
+
+struct BseSuper : BseContainer {
   SfiTime	 creation_time;
   SfiTime	 mod_time;
   /* for BseProject */
   guint          context_handle;
 };
-struct _BseSuperClass
-{
-  BseContainerClass parent_class;
+struct BseSuperClass : BseContainerClass {
   void		(*modified)		(BseSuper	*super,
 					 SfiTime	 stamp);
   void          (*compat_finish)        (BseSuper       *super,
@@ -37,5 +33,6 @@ struct _BseSuperClass
                                          guint           vminor,
                                          guint           vmicro);
 };
+
 G_END_DECLS
 #endif /* __BSE_SUPER_H__ */

@@ -1,9 +1,9 @@
 ; BseProject
 
-(bse-version "0.7.2")
+(bse-version "0.8.0")
 
 (container-child "BseCSynth::BQS Bass Drum E8012"
-  (modification-time "2007-09-20 22:24:03")
+  (modification-time "2013-03-24 16:48:35")
   (creation-time "2006-01-21 00:44:24")
   (license "Provided \"as is\", WITHOUT ANY WARRANTY (http://beast.testbit.eu/LICENSE-AS-IS)")
   (author "Tim Janik, Stefan Westerfeld")

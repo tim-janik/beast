@@ -1,6 +1,6 @@
 ; BseProject
 
-(bse-version "0.7.2")
+(bse-version "0.8.0")
 
 (container-child "BseWaveRepo::Wave-Repository"
   (modification-time "2010-03-04 10:33:32")

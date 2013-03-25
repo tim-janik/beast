@@ -5,8 +5,7 @@
 #include <bse/gslwavechunk.hh>
 G_BEGIN_DECLS
 /* --- structures --- */
-struct _BseWaveFileInfo
-{
+struct BseWaveFileInfo {
   guint	   n_waves;
   struct Wave {
     gchar *name;
@@ -62,8 +61,7 @@ typedef enum /*< skip >*/
   BSE_LOADER_NO_FLAGS              = 0,
   BSE_LOADER_SKIP_PRECEEDING_NULLS = 1 << 0
 } BseLoaderFlags;
-struct _BseLoader
-{
+struct BseLoader {
   const gchar *name;		/* format/loader name, e.g. "BseWave" or "WAVE audio, RIFF (little-endian)" */
   /* at least one of the
    * following three must

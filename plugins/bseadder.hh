@@ -13,20 +13,14 @@ extern "C" {
 #define BSE_IS_ADDER(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), BSE_TYPE_ADDER))
 #define BSE_IS_ADDER_CLASS(class)   (G_TYPE_CHECK_CLASS_TYPE ((class), BSE_TYPE_ADDER))
 #define BSE_ADDER_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), BSE_TYPE_ADDER, BseAdderClass))
-/* --- BseAdder source --- */
-typedef struct _BseAdder      BseAdder;
-typedef struct _BseAdderClass BseAdderClass;
-struct _BseAdder
-{
-  BseSource       parent_object;
+
+struct BseAdder : BseSource {
   gboolean	  subtract;
 };
-struct _BseAdderClass
-{
-  BseSourceClass parent_class;
+struct BseAdderClass : BseSourceClass {
   BseIcon	*sub_icon;
 };
-/* --- channels --- */
+
 enum
 {
   BSE_ADDER_JCHANNEL_AUDIO1,

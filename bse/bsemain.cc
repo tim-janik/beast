@@ -1,5 +1,6 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bsemain.hh"
+#include "bsecore.hh"
 #include "topconfig.h"
 #include "bseserver.hh"
 #include "bsesequencer.hh"
@@ -19,8 +20,9 @@
 #include <unistd.h>
 #include <sfi/sfitests.hh> /* sfti_test_init() */
 using namespace Birnet;
+
 /* --- prototypes --- */
-static void	bse_main_loop		(gpointer	 data);
+static void	bse_main_loop		(Rapicorn::AsyncBlockingQueue<int> *init_queue);
 static void	bse_async_parse_args	(gint	        *argc_p,
 					 gchar	      ***argv_p,
                                          BseMainArgs    *margs,
@@ -34,8 +36,6 @@ const guint		 bse_interface_age = BSE_INTERFACE_AGE;
 const guint		 bse_binary_age = BSE_BINARY_AGE;
 const gchar		*bse_version = BSE_VERSION;
 GMainContext            *bse_main_context = NULL;
-BirnetMutex	         bse_main_sequencer_mutex = { 0, };
-BirnetThread            *bse_main_thread = NULL;
 static volatile gboolean bse_initialization_stage = 0;
 static gboolean          textdomain_setup = FALSE;
 static BseMainArgs       default_main_args = {
@@ -57,7 +57,8 @@ static BseMainArgs       default_main_args = {
 };
 BseMainArgs             *bse_main_args = NULL;
 BseTraceArgs             bse_trace_args = { NULL, };
-/* --- functions --- */
+
+// == BSE Initialization ==
 void
 bse_init_textdomain_only (void)
 {
@@ -65,19 +66,20 @@ bse_init_textdomain_only (void)
   bind_textdomain_codeset (BSE_GETTEXT_DOMAIN, "UTF-8");
   textdomain_setup = TRUE;
 }
+
 const gchar*
 bse_gettext (const gchar *text)
 {
   g_assert (textdomain_setup == TRUE);
   return dgettext (BSE_GETTEXT_DOMAIN, text);
 }
+
+static std::thread async_bse_thread;
+
 void
-bse_init_async (gint           *argc,
-		gchar        ***argv,
-                const char     *app_name,
-                SfiInitValue    values[])
+_bse_init_async (int *argc, char ***argv, const char *app_name, SfiInitValue values[])
 {
-  BirnetThread *thread;
+  assert (async_bse_thread.get_id() == std::thread::id());      // no async_bse_thread started
   bse_init_textdomain_only();
   if (bse_initialization_stage != 0)
     g_error ("%s() may only be called once", "bse_init_async");
@@ -98,18 +100,18 @@ bse_init_async (gint           *argc,
 	g_set_prgname (**argv);
       bse_async_parse_args (argc, argv, bse_main_args, values);
     }
-  /* start main BSE thread */
-  thread = sfi_thread_run ("BSE Core", bse_main_loop, sfi_thread_self ());
-  if (!thread)
-    g_error ("failed to start seperate thread for BSE core");
-  /* wait for initialization completion of the core thread */
-  while (bse_initialization_stage < 2)
-    sfi_thread_sleep (-1);
+  // start main BSE thread
+  auto *init_queue = new Rapicorn::AsyncBlockingQueue<int>();
+  async_bse_thread = std::thread (bse_main_loop, init_queue);
+  // wait for initialization completion of the core thread
+  int msg = init_queue->pop();
+  assert (msg == 'B');
+  delete init_queue;
+  async_bse_thread.detach();    // FIXME: rather join on exit
 }
+
 const char*
-bse_check_version (guint required_major,
-		   guint required_minor,
-		   guint required_micro)
+bse_check_version (uint required_major, uint required_minor, uint required_micro)
 {
   if (required_major > BSE_MAJOR_VERSION)
     return "BSE version too old (major mismatch)";
@@ -125,59 +127,60 @@ bse_check_version (guint required_major,
     return "BSE version too old (micro mismatch)";
   return NULL;
 }
-typedef struct {
-  SfiGlueContext *context;
+
+struct AsyncData {
   const gchar *client;
-  BirnetThread *thread;
-} AsyncData;
+  const std::function<void()> &caller_wakeup;
+  Rapicorn::AsyncBlockingQueue<SfiGlueContext*> result_queue;
+};
+
 static gboolean
 async_create_context (gpointer data)
 {
   AsyncData *adata = (AsyncData*) data;
   SfiComPort *port1, *port2;
-  sfi_com_port_create_linked ("Client", adata->thread, &port1,
-			      "Server", sfi_thread_self (), &port2);
-  adata->context = sfi_glue_encoder_context (port1);
+  sfi_com_port_create_linked ("Client", adata->caller_wakeup, &port1,
+			      "Server", bse_main_wakeup, &port2);
+  SfiGlueContext *context = sfi_glue_encoder_context (port1);
   bse_janitor_new (port2);
-  /* wakeup client */
-  sfi_thread_wakeup (adata->thread);
-  return FALSE; /* single-shot */
+  adata->result_queue.push (context);
+  return false; // run-once
 }
+
 SfiGlueContext*
-bse_init_glue_context (const gchar *client)
+_bse_glue_context_create (const char *client, const std::function<void()> &caller_wakeup)
 {
-  AsyncData adata = { 0, };
-  GSource *source;
-  g_return_val_if_fail (client != NULL, NULL);
-  /* function runs in user threads and queues handler in BSE thread to create context */
+  g_return_val_if_fail (client && caller_wakeup, NULL);
+  AsyncData adata = { client, caller_wakeup };
+  // function runs in user threads and queues handler in BSE thread to create context
   if (bse_initialization_stage < 2)
-    g_error ("%s() called without prior %s()",
-	     "bse_init_glue_context",
-	     "bse_init_async");
-  /* queue handler to create context */
-  source = g_idle_source_new ();
+    g_error ("%s: called without prior %s()", __func__, "Bse::init_async");
+  // queue handler to create context
+  GSource *source = g_idle_source_new ();
   g_source_set_priority (source, G_PRIORITY_HIGH);
   adata.client = client;
-  adata.thread = sfi_thread_self ();
   g_source_set_callback (source, async_create_context, &adata, NULL);
   g_source_attach (source, bse_main_context);
   g_source_unref (source);
-  /* wake up BSE thread */
+  // wake up BSE thread
   g_main_context_wakeup (bse_main_context);
-  /* wait til context creation */
-  do
-    sfi_thread_sleep (-1);
-  while (!adata.context);
-  return adata.context;
+  // receive result asynchronously
+  SfiGlueContext *context = adata.result_queue.pop();
+  return context;
 }
+
+void
+bse_main_wakeup ()
+{
+  g_return_if_fail (bse_main_context != NULL);
+  g_main_context_wakeup (bse_main_context);
+}
+
 static void
 bse_init_core (void)
 {
   /* global threading things */
-  sfi_mutex_init (&bse_main_sequencer_mutex);
   bse_main_context = g_main_context_new ();
-  sfi_thread_set_wakeup ((BirnetThreadWakeup) g_main_context_wakeup,
-			 bse_main_context, NULL);
   bse_message_setup_thread_handler();
   /* initialize basic components */
   bse_globals_init ();
@@ -194,7 +197,6 @@ bse_init_core (void)
   /* initialize GSL components */
   gsl_init ();
   /* remaining BSE components */
-  _bse_midi_init ();
   bse_plugin_init_builtins ();
   /* initialize C wrappers around C++ generated types */
   _bse_init_c_wrappers ();
@@ -216,9 +218,9 @@ bse_init_core (void)
   /* dump device list */
   if (bse_main_args->dump_driver_list)
     {
-      g_printerr (_("\nAvailable PCM drivers:\n"));
+      g_printerr ("%s", _("\nAvailable PCM drivers:\n"));
       bse_device_dump_list (BSE_TYPE_PCM_DEVICE, "  ", TRUE, NULL, NULL);
-      g_printerr (_("\nAvailable MIDI drivers:\n"));
+      g_printerr ("%s", _("\nAvailable MIDI drivers:\n"));
       bse_device_dump_list (BSE_TYPE_MIDI_DEVICE, "  ", TRUE, NULL, NULL);
     }
 }
@@ -323,32 +325,26 @@ bse_init_test (gint           *argc,
   bse_init_intern (argc, argv, NULL, values, true);
 }
 static void
-bse_main_loop (gpointer data)
+bse_main_loop (Rapicorn::AsyncBlockingQueue<int> *init_queue)
 {
-  BirnetThread *client = (BirnetThread*) data;
-  bse_main_thread = sfi_thread_self ();
+  Bse::TaskRegistry::add ("BSE Core", Rapicorn::ThisThread::process_pid(), Rapicorn::ThisThread::thread_pid());
   bse_init_core ();
-  /* start other threads */
-  bse_sequencer_init_thread ();
-  /* notify client about completion */
-  bse_initialization_stage++;   /* =2 */
-  sfi_thread_wakeup (client);
-  /* and away into the main loop */
-  do
+  // start other threads
+  struct Internal : Bse::Sequencer { using Bse::Sequencer::_init_threaded; };
+  Internal::_init_threaded();
+  // complete initialization
+  bse_initialization_stage++;   // = 2
+  init_queue->push ('B');       // signal completion to caller
+  init_queue = NULL;            // completion invalidates init_queue
+  // Bse Core Event Loop
+  while (true)                  // FIXME: missing exit handler
     {
       g_main_context_pending (bse_main_context);
       g_main_context_iteration (bse_main_context, TRUE);
     }
-  while (!sfi_thread_aborted ());
+  Bse::TaskRegistry::remove (Rapicorn::ThisThread::thread_pid());
 }
-guint
-bse_main_getpid (void)
-{
-  if (bse_initialization_stage >= 2)
-    return sfi_thread_self_pid ();
-  else
-    return 0;
-}
+
 static gboolean
 core_thread_send_message_async (gpointer data)
 {
@@ -357,6 +353,7 @@ core_thread_send_message_async (gpointer data)
   bse_message_free (umsg);
   return FALSE;
 }
+
 /**
  * BSE log handler, suitable for sfi_msg_set_thread_handler().
  * This function is MT-safe and may be called from any thread.
@@ -403,11 +400,12 @@ bse_msg_handler (const char              *domain,
   umsg->config_check = g_strdup (checkmsg.c_str());
   umsg->janitor = NULL;
   g_free (umsg->process);
-  umsg->process = g_strdup (sfi_thread_get_name (NULL));
-  umsg->pid = sfi_thread_get_pid (NULL);
+  umsg->process = g_strdup (Rapicorn::ThisThread::name().c_str());
+  umsg->pid = Rapicorn::ThisThread::thread_pid();
   /* queue an idle handler in the BSE Core thread */
   bse_idle_next (core_thread_send_message_async, umsg);
 }
+
 void
 bse_message_setup_thread_handler (void)
 {

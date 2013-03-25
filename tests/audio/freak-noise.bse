@@ -1,15 +1,15 @@
 ; BseProject
 
-(bse-version "0.7.1")
+(bse-version "0.8.0")
 
 (container-child "BseWaveRepo::Wave-Repository"
-  (modification-time "2007-02-05 03:18:14")
+  (modification-time "2013-03-24 18:56:48")
   (creation-time "2002-02-06 02:35:04")
   (license "")
   (author ""))
 (container-child "BseCSynth::Unnamed"
   (auto-activate #t)
-  (modification-time "2007-02-05 03:18:14")
+  (modification-time "2013-03-24 18:56:48")
   (creation-time "2002-02-06 02:35:11")
   (license "")
   (author "")

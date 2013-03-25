@@ -11,20 +11,16 @@ G_BEGIN_DECLS
 #define BSE_IS_PCM_INPUT_CLASS(class)	(G_TYPE_CHECK_CLASS_TYPE ((class), BSE_TYPE_PCM_INPUT))
 #define BSE_PCM_INPUT_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), BSE_TYPE_PCM_INPUT, BsePcmInputClass))
 /* --- BsePcmInput source --- */
-typedef struct _BsePcmInput      BsePcmInput;
-typedef struct _BsePcmInputClass BsePcmInputClass;
-struct _BsePcmInput
+
+struct BsePcmInput : BseSource
 {
-  BseSource       parent_object;
   gfloat	  volume_factor;
   /* PREPARED */
   BseModule	 *uplink;
 };
-struct _BsePcmInputClass
-{
-  BseSourceClass     parent_class;
-};
-/* --- channels --- */
+struct BsePcmInputClass : BseSourceClass
+{};
+
 enum
 {
   BSE_PCM_INPUT_OCHANNEL_LEFT,
