@@ -327,7 +327,7 @@ main (int   argc,
         "<tagdef name=\"mono\" family=\"monospace\"/>"
         "<span tag=\"title\">BEAST/BSE " BST_VERSION " Release Notes</span>"
         "<newline/><newline/>"
-        "The 0.7 development series of Beast focusses on improving usability and ease of music production. "
+        "This development series of Beast focusses on improving interoperability and feature integration. "
         "<newline/><newline/>"
         "Feedback is very much appreciated, please take the opportunity and provide your comments "
         "and questions in online forums like the Beast "
