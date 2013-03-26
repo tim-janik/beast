@@ -288,6 +288,18 @@ noinst_DATA = bsehack.idl
 
 # == BSE IDL API (AIDA) ==
 AUXTYPES_PY = $(srcdir)/AuxTypes.py
+bseclientapi.hh: $(srcdir)/../bse/bseapi.idl $(AUXTYPES_PY)
+	$(AM_V_GEN)
+	$(Q) ${AIDACC} -x CxxStub -x $(AUXTYPES_PY) -G clienthh -G iface-postfix=Iface \
+	  -G cppguard=__BST_BSECLIENTAPI_HH_ $< -o xgen-$(@F)
+	$(Q) mv xgen-$(@F) $@
+GENERATED += bseclientapi.hh
+bseclientapi.cc: $(srcdir)/../bse/bseapi.idl $(AUXTYPES_PY)
+	$(AM_V_GEN)
+	$(Q) ${AIDACC} -x CxxStub -x $(AUXTYPES_PY) -G clientcc -G iface-postfix=Iface \
+	  -G cppguard=__BST_BSECLIENTAPI_CC_ $< -o xgen-$(@F)
+	$(Q) mv xgen-$(@F) $@
+GENERATED += bseclientapi.cc
 bseserverapi.hh: $(srcdir)/bseapi.idl $(AUXTYPES_PY)
 	$(AM_V_GEN)
 	$(Q) ${AIDACC} -x CxxStub -x $(AUXTYPES_PY) -G serverhh -G iface-postfix=Iface \
@@ -301,7 +313,9 @@ bseserverapi.cc: $(srcdir)/bseapi.idl $(AUXTYPES_PY)
 	$(Q) mv xgen-$(@F) $@
 GENERATED += bseserverapi.cc
 
+
 # == GENERATED targets ==
+bseutils.lo: $(GENERATED)	# need dependency to force file generation
 generated: clean-generated $(GENERATED)
 	$(Q) $(MAKE) $(AM_MAKEFLAGS) clean-generated
 	$(Q) $(MAKE) generated-files
@@ -310,7 +324,6 @@ clean-generated:
 	rm -f $(GENERATED) stamp-*
 clean-local: clean-generated
 .PHONY: clean-generated generated-files generated
-bseutils.lo: $(GENERATED)	# need dependency to force file generation
 
 #
 # private (birnet) dependancy to make TAGS file after each build
