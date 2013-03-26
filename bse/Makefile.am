@@ -104,6 +104,7 @@ $(srcdir)/bsecxxplugin.cc: bsebasics.genidl.hh
 bse_idl_sources += bseprobe.idl
 $(srcdir)/bseprobe.cc: bseprobe.genidl.hh
 idl_built_sources = $(bse_idl_sources:.idl=.genidl.hh)
+GENERATED += $(idl_built_sources)
 $(srcdir)/bsebus.cc: bsebasics.genidl.hh
 # idl files not used for build rules
 idl_dummy_files = $(strip	\
@@ -285,14 +286,31 @@ bsehack.idl: bsebasics.idl bseprocidl
 CLEANFILES += bsehack.idl
 noinst_DATA = bsehack.idl
 
-#
-# convenience targets for generated source files
-#
-.PHONY: generated clean-generated
-clean-generated: clean
-	rm -f $(GENERATED)
-generated: clean-generated $(GENERATED) $(idl_built_sources)
+# == BSE IDL API (AIDA) ==
+AUXTYPES_PY = $(srcdir)/AuxTypes.py
+bseserverapi.hh: $(srcdir)/bseapi.idl $(AUXTYPES_PY)
+	$(AM_V_GEN)
+	$(Q) ${AIDACC} -x CxxStub -x $(AUXTYPES_PY) -G serverhh -G iface-postfix=Iface \
+	  -G cppguard=__BST_BSESERVERAPI_HH_ $< -o xgen-$(@F)
+	$(Q) mv xgen-$(@F) $@
+GENERATED += bseserverapi.hh
+bseserverapi.cc: $(srcdir)/bseapi.idl $(AUXTYPES_PY)
+	$(AM_V_GEN)
+	$(Q) ${AIDACC} -x CxxStub -x $(AUXTYPES_PY) -G servercc -G iface-postfix=Iface \
+	  -G cppguard=__BST_BSESERVERAPI_CC_ $< -o xgen-$(@F)
+	$(Q) mv xgen-$(@F) $@
+GENERATED += bseserverapi.cc
 
+# == GENERATED targets ==
+generated: clean-generated $(GENERATED)
+	$(Q) $(MAKE) $(AM_MAKEFLAGS) clean-generated
+	$(Q) $(MAKE) generated-files
+generated-files: $(GENERATED)
+clean-generated:
+	rm -f $(GENERATED) stamp-*
+clean-local: clean-generated
+.PHONY: clean-generated generated-files generated
+bseutils.lo: $(GENERATED)	# need dependency to force file generation
 
 #
 # private (birnet) dependancy to make TAGS file after each build
