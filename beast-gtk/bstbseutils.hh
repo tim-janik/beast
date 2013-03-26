@@ -1,9 +1,9 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #ifndef __BST_BSE_UTILS_H__
 #define __BST_BSE_UTILS_H__
-#include <sfi/sfi.hh> /* needed by bstgenbseapi.h */
+#include <sfi/sfi.hh> /* needed by bstoldbseapi.h */
 G_BEGIN_DECLS
-#include "bstgenbseapi.h" /* include this within extern "C" */
+#include "bstoldbseapi.h" /* include this within extern "C" */
 /* --- BSE utilities --- */
 #define BSE_SERVER                              (1 /* HACK */ )
 #define bse_proxy_set_property                  sfi_glue_proxy_set_property

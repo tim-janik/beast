@@ -134,25 +134,25 @@ bstenum_list.cc: $(beast_headers)
 	    $(beast_headers) ) > xgen-$(@F) \
 	&& cp xgen-$(@F) $@ \
 	&& rm -f xgen-$(@F)
-# bstgenbseapi.h
-GENERATED_CLEANFILES += bstgenbseapi.h
-CLEANFILES += stamp-bstgenbseapi.h
-$(beast_vOBJECTS): bstgenbseapi.h
-bstgenbseapi.h: stamp-bstgenbseapi.h ;
-stamp-bstgenbseapi.h: $(top_srcdir)/bse/*.idl $(top_builddir)/bse/*.idl $(SFIDL)
+# bstoldbseapi.h
+GENERATED_CLEANFILES += bstoldbseapi.h
+CLEANFILES += stamp-bstoldbseapi.h
+$(beast_vOBJECTS): bstoldbseapi.h
+bstoldbseapi.h: stamp-bstoldbseapi.h ;
+stamp-bstoldbseapi.h: $(top_srcdir)/bse/*.idl $(top_builddir)/bse/*.idl $(SFIDL)
 	cd . \
 	&& $(SFIDL) $(SFIDL_INC) --client-c --header --prefix beast_ $(top_srcdir)/bse/bse.idl >> xgen-$(@F) \
-	&& (cmp -s xgen-$(@F) bstgenbseapi.h || cp xgen-$(@F) bstgenbseapi.h) \
+	&& (cmp -s xgen-$(@F) bstoldbseapi.h || cp xgen-$(@F) bstoldbseapi.h) \
 	&& rm -f xgen-$(@F) \
 	&& echo timestamp > $@
-# bstgenbseapi.cc
-GENERATED_CLEANFILES += bstgenbseapi.cc
-$(beast_vOBJECTS): bstgenbseapi.cc
-bstgenbseapi.cc: bstgenbseapi.h $(top_srcdir)/bse/*.idl $(top_builddir)/bse/*.idl $(SFIDL)
+# bstoldbseapi.cc
+GENERATED_CLEANFILES += bstoldbseapi.cc
+$(beast_vOBJECTS): bstoldbseapi.cc
+bstoldbseapi.cc: bstoldbseapi.h $(top_srcdir)/bse/*.idl $(top_builddir)/bse/*.idl $(SFIDL)
 	cd .	\
-	&& echo -e "/* #include \"bstgenbseapi.h\" */\n" > xgen-$(@F) \
+	&& echo -e "/* #include \"bstoldbseapi.h\" */\n" > xgen-$(@F) \
 	&& $(SFIDL) $(SFIDL_INC) --client-c --source --prefix beast_ $(top_srcdir)/bse/bse.idl >> xgen-$(@F) \
-	&& cp xgen-$(@F) bstgenbseapi.cc \
+	&& cp xgen-$(@F) bstoldbseapi.cc \
 	&& rm -f xgen-$(@F)
 # bstmarshal.h
 GENERATED_CLEANFILES += bstmarshal.h
