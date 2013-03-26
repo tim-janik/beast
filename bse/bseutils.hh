@@ -1,10 +1,16 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #ifndef __BSE_UTILS_H__
 #define __BSE_UTILS_H__
+
+#include <bse/bseclientapi.hh>
+#include <bse/bseserverapi.hh>
+
 #include <bse/bseenums.hh>
 #include <bse/bseglobals.hh>
 #include <bse/bsecompat.hh>
+
 G_BEGIN_DECLS
+
 /* --- C++ helper declaration --- */
 void    bse_cxx_init      (void);
 /* --- record utils --- */

@@ -6,4 +6,7 @@
 
 namespace Bse {
 
+interface Server {
+};
+
 } // Bse
