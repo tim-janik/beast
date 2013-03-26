@@ -1,0 +1,9 @@
+// Licensed GNU LGPL v3 or later: http://www.gnu.org/licenses/lgpl.html -*-mode:c++;-*-
+/**
+ * @file
+ * @brief Public BSE interface classes.
+ */
+
+namespace Bse {
+
+} // Bse
