@@ -729,10 +729,8 @@ bst_exit_print_version (void)
   g_print ("\n");
   g_print ("Compiled for %s %s SSE plugins.\n", BST_ARCH_NAME, BSE_WITH_SSE_FLAGS ? "with" : "without");
   g_print ("Intrinsic code selected according to runtime CPU detection:\n");
-  const SfiCPUInfo cpu_info = sfi_cpu_info();
-  gchar *cpu_blurb = sfi_cpu_info_string (&cpu_info);
-  g_print ("%s", cpu_blurb);
-  g_free (cpu_blurb);
+  const Rapicorn::CPUInfo cpu_info = Rapicorn::cpu_info();
+  g_print ("%s", cpu_info_string (cpu_info).c_str());
   g_print ("\n");
   g_print ("Prefix:          %s\n", BST_PATH_PREFIX);
   g_print ("Doc Path:        %s\n", BST_PATH_DOCS);
