@@ -243,6 +243,7 @@ AC_DEFUN([AC_BSE_REQUIREMENTS],
 
     dnl # require Rapicorn
     PKG_CHECK_MODULES(RAPICORN, rapicorn1303 >= 13.03.1)
+    MC_ASSERT_PROG(AIDACC, aidacc-1303, [aidacc gets shipped with Rapicorn])
 
     dnl # --- Ogg/Vorbis check ---
     PKG_CHECK_MODULES(OV, ogg >= 1.2.2 vorbis >= 1.3.2 vorbisfile >= 1.3.2 vorbisenc >= 1.3.2)

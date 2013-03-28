@@ -19,12 +19,16 @@
 #include <sys/time.h>
 #include <sys/resource.h>
 // #include "sfi/toyprof-mem.h"
+
 extern "C" void bse_object_debug_leaks (void); // FIXME
+
 /* --- prototypes --- */
 static void			bst_early_parse_args	(gint        *argc_p,
 							 gchar     ***argv_p);
 static void			bst_print_blurb		(void);
 static void			bst_exit_print_version	(void);
+static void                     bst_init_aida_idl       ();
+
 /* --- variables --- */
 gboolean            bst_developer_hints = FALSE;
 gboolean            bst_debug_extensions = FALSE;
@@ -354,9 +358,14 @@ main (int   argc,
       update_rc_files = TRUE;
       bst_gconfig_set_rc_version (BST_VERSION);
     }
+
   /* release splash grab */
   gtk_widget_hide (beast_splash);
   bst_splash_release_grab (beast_splash);
+
+  // hook up Bse aida IDL with main loop
+  bst_init_aida_idl();
+
   /* away into the main loop */
   while (bst_main_loop_running)
     {
@@ -412,6 +421,35 @@ void
 bst_main_loop_wakeup ()
 {
   g_main_context_wakeup (g_main_context_default ());
+}
+
+static void
+echo_test_handler (const std::string &msg)
+{
+  g_print ("BST-Thread: got signal with message: %s\n", msg.c_str());
+}
+
+static void
+bst_init_aida_idl()
+{
+  // hook Aida connection into our main loop
+  Bse::AidaGlibSource *source = Bse::AidaGlibSource::create (Bse::ServerH::__aida_connection__());
+  g_source_set_priority (source, G_PRIORITY_DEFAULT);
+  g_source_attach (source, g_main_context_default());
+  // fetch initial remote object reference
+  auto aidabsekeys = Rapicorn::string_split ("CxxStub:AidaServerConnection:idl_file=\\bbse/bseapi.idl", ":");
+  Rapicorn::Aida::SmartHandle smh = Bse::ServerH::__aida_connection__()->remote_origin (aidabsekeys);
+  Bse::ServerH server = Rapicorn::Aida::ObjectBroker::smart_handle_down_cast<Bse::ServerH> (smh);
+  g_assert (server != NULL);
+
+  // performa Bse Aida test
+  if (0)
+    {
+      Bse::TestObjectH test = server.get_test_object();
+      test.sig_echo_reply() += echo_test_handler;
+      const int test_result = test.echo_test ("foo");
+      g_assert (test_result == 3);
+    }
 }
 
 static void
@@ -663,6 +701,7 @@ bst_early_parse_args (int    *argc_p,
       exit (0);
     }
 }
+
 static void G_GNUC_NORETURN
 bst_exit_print_version (void)
 {
@@ -717,6 +756,7 @@ bst_exit_print_version (void)
   g_free (freeme);
   exit (0);
 }
+
 static void
 bst_print_blurb (void)
 {
@@ -775,6 +815,7 @@ bst_print_blurb (void)
   g_print ("  --g-fatal-warnings      Make warnings fatal (abort)\n");
   g_print ("  --sync                  Do all X calls synchronously\n");
 }
+
 void
 beast_show_about_box (void)
 {

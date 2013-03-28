@@ -65,4 +65,4 @@ bst_procedure_get_title (const gchar *procedure)
   return NULL;
 }
 /* --- generated code --- */
-#include "bstgenbseapi.cc"
+#include "bstoldbseapi.cc"

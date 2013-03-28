@@ -644,3 +644,6 @@ bse_bbuffer_printf (gchar        bbuffer[BSE_BBUFFER_SIZE],
   va_end (args);
   return l;
 }
+
+#include "bseclientapi.cc"
+#include "bseserverapi.cc"      // build AIDA IDL stubs

@@ -1,0 +1,54 @@
+// Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
+
+// Deprecated compatibility types
+namespace Sfi {
+typedef bool    Bool;
+typedef int32   Int;
+typedef int64   Num;
+typedef float64 Real;
+Const SFI_MAXNUM = 9223372036854775807;
+Const KAMMER_FREQ = 440.0;
+Const BSE_KAMMER_FREQUENCY = KAMMER_FREQ;
+Const KAMMER_NOTE = 69; // MIDI A'
+Const BSE_KAMMER_NOTE = KAMMER_NOTE;
+Const KAMMER_OCTAVE = 1; // Octave for MIDI A'
+Const MAX_FINE_TUNE = 100;
+Const MIN_FINE_TUNE = -100;
+Const MAXINT32 = +4294967295;
+Const MAXINT31 = +2147483647;
+Const MININT31 = -2147483648;
+Const G_MAXINT = MAXINT31;
+Const BSE_MAX_BPM = 1024;
+Const BSE_MIN_BPM = 1;
+Const BSE_MIN_TRANSPOSE = -72;
+Const BSE_MAX_TRANSPOSE = +72;
+} // Sfi
+
+namespace Bse {
+
+// ConstIdent NOTE_C   = SFI_NOTE_C;
+// ConstIdent NOTE_Cis = SFI_NOTE_Cis;
+// ConstIdent NOTE_Des = SFI_NOTE_Des;
+// ConstIdent NOTE_D   = SFI_NOTE_D;
+// ConstIdent NOTE_Dis = SFI_NOTE_Dis;
+// ConstIdent NOTE_Es  = SFI_NOTE_Es;
+// ConstIdent NOTE_E   = SFI_NOTE_E;
+// ConstIdent NOTE_F   = SFI_NOTE_F;
+// ConstIdent NOTE_Fis = SFI_NOTE_Fis;
+// ConstIdent NOTE_Ges = SFI_NOTE_Ges;
+// ConstIdent NOTE_G   = SFI_NOTE_G;
+// ConstIdent NOTE_Gis = SFI_NOTE_Gis;
+// ConstIdent NOTE_As  = SFI_NOTE_As;
+// ConstIdent NOTE_A   = SFI_NOTE_A;
+// ConstIdent NOTE_Ais = SFI_NOTE_Ais;
+// ConstIdent NOTE_Bes = SFI_NOTE_Bes;
+// ConstIdent NOTE_B   = SFI_NOTE_B;
+
+} // Bse
+
+// Bse constants, enums, sequences, record
+include "bsebasics.idl" as implementation;
+
+// Prototypes for Source, CxxBase, Effect, really unfinished
+include "bsecxxbase.idl" as implementation;
+include "bsecxxmodule.idl" as implementation;

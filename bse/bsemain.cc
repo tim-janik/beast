@@ -27,6 +27,10 @@ static void	bse_async_parse_args	(gint	        *argc_p,
 					 gchar	      ***argv_p,
                                          BseMainArgs    *margs,
                                          SfiInitValue    values[]);
+namespace Bse {
+static void     init_aida_idl ();
+} // Bse
+
 /* --- variables --- */
 /* from bse.hh */
 const guint		 bse_major_version = BSE_MAJOR_VERSION;
@@ -324,6 +328,7 @@ bse_init_test (gint           *argc,
 {
   bse_init_intern (argc, argv, NULL, values, true);
 }
+
 static void
 bse_main_loop (Rapicorn::AsyncBlockingQueue<int> *init_queue)
 {
@@ -332,6 +337,8 @@ bse_main_loop (Rapicorn::AsyncBlockingQueue<int> *init_queue)
   // start other threads
   struct Internal : Bse::Sequencer { using Bse::Sequencer::_init_threaded; };
   Internal::_init_threaded();
+  // allow aida IDL remoting
+  Bse::init_aida_idl();
   // complete initialization
   bse_initialization_stage++;   // = 2
   init_queue->push ('B');       // signal completion to caller
@@ -668,3 +675,18 @@ bse_async_parse_args (gint           *argc_p,
   /* non-configurable config updates */
   margs->n_processors = get_n_processors ();
 }
+
+namespace Bse {
+
+static void
+init_aida_idl ()
+{
+  // hook Aida connection into our main loop
+  AidaGlibSource *source = AidaGlibSource::create (Bse::ServerIface::__aida_connection__());
+  g_source_set_priority (source, BSE_PRIORITY_GLUE);
+  g_source_attach (source, bse_main_context);
+  // provide initial remote object reference
+  Bse::ServerIface::__aida_connection__()->remote_origin (&Bse::ServerImpl::instance());
+}
+
+} // Bse

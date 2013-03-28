@@ -3,6 +3,7 @@
 #define __BSE_CORE_HH__
 
 #include <bse/bse.hh>
+#include <bse/bseclientapi.hh>
 
 /// The Bse namespace contains all functions of the synthesis engine.
 namespace Bse {
@@ -24,6 +25,11 @@ public:
 SfiGlueContext*	init_glue_context   (const gchar *client, const std::function<void()> &caller_wakeup);
 void		init_async	    (int *argc, char ***argv, const char *app_name, SfiInitValue values[]);
 
+/// A GSource implementation to attach an Aida::BaseConnection to a Glib main loop.
+class AidaGlibSource : public GSource {
+public:
+  static AidaGlibSource* create (Rapicorn::Aida::BaseConnection *connection);
+};
 
 } // Bse
 

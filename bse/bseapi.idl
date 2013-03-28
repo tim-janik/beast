@@ -1,0 +1,23 @@
+// Licensed GNU LGPL v3 or later: http://www.gnu.org/licenses/lgpl.html -*-mode:c++;-*-
+/**
+ * @file
+ * @brief Public BSE interface classes.
+ */
+
+namespace Bse {
+
+/// Object to carry out IDL, API, signal, etc tests.
+interface TestObject {
+  int32         echo_test       (String msg) = 0;       ///< Echo custom message to stdout.
+  signal void   echo_reply      (String msg);           ///< Signal emitted in response to echo_test().
+};
+
+/** Main Bse remote origin object.
+ * The Bse::Server object controls the main BSE thread and keeps track of all objects
+ * used in the BSE context.
+ */
+interface Server {
+  TestObject    get_test_object () = 0;                 ///< Retrieve object for API, signal, etc tests.
+};
+
+} // Bse
