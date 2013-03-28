@@ -1,9 +1,9 @@
 ; BseProject
 
-(bse-version "0.7.2")
+(bse-version "0.8.1")
 
 (container-child "BseCSynth::%bse-intern-sound-font-snet"
-  (modification-time "2009-03-14 14:23:28")
+  (modification-time "2013-03-28 16:44:04")
   (creation-time "2003-04-27 20:45:24")
   (license "Provided \"as is\", WITHOUT ANY WARRANTY (http://beast.gtk.org/LICENSE-AS-IS)")
   (author "Tim Janik, Stefan Westerfeld")
