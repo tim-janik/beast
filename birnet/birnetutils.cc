@@ -3,7 +3,6 @@
 #include "birnetutils.hh"
 #include "birnetutf8.hh"
 #include "birnetmsg.hh"
-#include "birnetcpu.hh"
 #include <unistd.h>
 #include <errno.h>
 #include <sys/types.h>
@@ -168,7 +167,6 @@ birnet_init (int        *argcp,
     srand (lrand48());
   }
   /* initialize sub systems */
-  _birnet_init_cpuinfo();
   if (run_init_hooks)
     run_init_hooks();
 }

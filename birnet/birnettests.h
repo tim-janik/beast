@@ -303,8 +303,7 @@ birnet_init_test (int    *argc,
   birnet_init (argc, argv, NULL, ivalues);
   unsigned int flags = g_log_set_always_fatal ((GLogLevelFlags) G_LOG_FATAL_MASK);
   g_log_set_always_fatal ((GLogLevelFlags) (flags | G_LOG_LEVEL_WARNING | G_LOG_LEVEL_CRITICAL));
-  CPUInfo ci = cpu_info();
-  treport_cpu_name (ci.machine);
+  // treport_cpu_name (ci.machine);
   if (init_settings().test_perf)
     g_printerr ("PERF: %s\n", g_get_prgname());
   else
