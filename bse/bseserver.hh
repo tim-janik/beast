@@ -1,10 +1,13 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #ifndef __BSE_SERVER_H__
 #define __BSE_SERVER_H__
-#include        <bse/bsesuper.hh>
-#include        <bse/bsepcmdevice.hh>
-#include        <bse/bsemididevice.hh>
+#include <bse/bsesuper.hh>
+#include <bse/bsepcmdevice.hh>
+#include <bse/bsemididevice.hh>
+#include <bse/testobject.hh>
+
 G_BEGIN_DECLS
+
 /* --- BSE type macros --- */
 #define BSE_TYPE_SERVER              (BSE_TYPE_ID (BseServer))
 #define BSE_SERVER(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), BSE_TYPE_SERVER, BseServer))
@@ -103,4 +106,20 @@ void		bse_server_queue_kill_wire		(BseServer	    *server,
 							 SfiComWire	    *wire);
 void		bse_server_notify_gconfig		(BseServer	    *server);
 G_END_DECLS
+
+
+namespace Bse {
+
+class ServerImpl : public ServerIface {
+  TestObjectImplP    test_object_;
+protected:
+  explicit           ServerImpl ();
+  virtual           ~ServerImpl ();
+public:
+  virtual TestObjectIface* get_test_object ();
+  static ServerImpl&       instance        ();
+};
+
+} // Bse
+
 #endif /* __BSE_SERVER_H__ */

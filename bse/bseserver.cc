@@ -1021,3 +1021,38 @@ engine_shutdown (BseServer *server)
   // FIXME: need to be able to completely unintialize engine here
   bse_gconfig_unlock ();
 }
+
+
+namespace Bse {
+
+ServerImpl::ServerImpl ()
+{}
+
+ServerImpl::~ServerImpl ()
+{}
+
+TestObjectIface*
+ServerImpl::get_test_object ()
+{
+  if (!test_object_)
+    test_object_ = std::make_shared<TestObjectImpl>();
+  return &*test_object_;
+}
+
+ServerImpl&
+ServerImpl::instance()
+{
+  static Rapicorn::Atomic<ServerImpl*> instance_ = NULL;
+  if (LIKELY (instance_ != NULL))
+    return *instance_;
+  static Mutex instance_mutex;
+  ScopedLock<Mutex> locker (instance_mutex);
+  if (!instance_)
+    {
+      static uint64 instance_space[sizeof (*instance_) / sizeof (uint64)];
+      instance_ = new (instance_space) ServerImpl();
+    }
+  return *instance_;
+}
+
+} // Bse
