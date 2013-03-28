@@ -8,10 +8,11 @@
 #include <birnet/birnetmath.hh>
 #include <birnet/birnetutf8.hh>
 #include <birnet/birnetutils.hh>
-/**
- * @namespace Birnet
- * Library with utility functions, carried forward in Rapicorn: http://dev.testbit.eu/rapicorn/latest/
- */
-namespace Birnet {}
+
+// We're migrating to Bse for everything and use Rapicorn core for the lower level stuff
+#include <rapicorn-core.hh>
+namespace Bse {
+using namespace Rapicorn;
+} // Bse
+
 #endif /* __BIRNET_H__ */
-/* vim:set ts=8 sts=2 sw=2: */
