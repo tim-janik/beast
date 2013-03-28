@@ -63,10 +63,6 @@ double  sfi_init_value_double (SfiInitValue *value);
 gint64  sfi_init_value_int    (SfiInitValue *value);
 typedef BirnetInitSettings SfiInitSettings;
 SfiInitSettings sfi_init_settings (void);
-/* --- CPU Info --- */
-typedef BirnetCPUInfo SfiCPUInfo;
-SfiCPUInfo sfi_cpu_info	   (void);
-gchar*     sfi_cpu_info_string (const SfiCPUInfo *cpu_info);
 /* --- file tests --- */
 bool	birnet_file_check (const char *file,
 			   const char *mode);

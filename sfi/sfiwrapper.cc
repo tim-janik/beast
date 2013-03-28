@@ -35,17 +35,6 @@ sfi_init_settings (void)
 {
   return ::Birnet::init_settings();
 }
-/* --- CPU Info --- */
-SfiCPUInfo
-sfi_cpu_info (void)
-{
-  return ::Birnet::cpu_info();
-}
-gchar*
-sfi_cpu_info_string (const SfiCPUInfo *cpu_info)
-{
-  return g_strdup (::Birnet::cpu_info_string (*cpu_info).c_str());
-}
 /* --- file testing --- */
 bool
 birnet_file_check (const char *file,
