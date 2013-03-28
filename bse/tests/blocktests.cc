@@ -497,7 +497,7 @@ main (int   argc,
   /* usually we'd call bse_init_test() here, but we have tests to rnu before plugins are loaded */
   sfi_init_test (&argc, &argv, NULL);
   { /* bse_init_test() usually does this for us */
-    SfiCPUInfo ci = sfi_cpu_info();
+    Bse::CPUInfo ci = Bse::cpu_info();
     char *cname = g_strdup_printf ("%s+%s", ci.machine, bse_block_impl_name());
     treport_cpu_name (cname);
     g_free (cname);

@@ -11,7 +11,10 @@
 #include <errno.h>
 #include <unistd.h>
 static SFI_MSG_TYPE_DEFINE (debug_plugins, "plugins", SFI_MSG_DEBUG, NULL);
+
+#undef DEBUG    // FIXME
 #define DEBUG(...)      sfi_debug (debug_plugins, __VA_ARGS__)
+
 /* --- prototypes --- */
 static void	    bse_plugin_init		(BsePlugin	  *plugin);
 static void	    bse_plugin_class_init	(BsePluginClass	  *klass);
@@ -144,7 +147,7 @@ bse_plugin_init_builtins (void)
 static guint64
 runtime_export_config (void)
 {
-  SfiCPUInfo cinfo = sfi_cpu_info();
+  const Bse::CPUInfo cinfo = Rapicorn::cpu_info();
   guint64 emask = 0;
   if (cinfo.x86_mmx)
     emask |= BSE_EXPORT_FLAG_MMX;
@@ -160,7 +163,7 @@ runtime_export_config (void)
     emask |= BSE_EXPORT_FLAG_SSE2;
   if (cinfo.x86_sse3 && cinfo.x86_ssesys)
     emask |= BSE_EXPORT_FLAG_SSE3;
-  if (cinfo.x86_sse4 && cinfo.x86_ssesys)
+  if (cinfo.x86_sse4_2 && cinfo.x86_ssesys)
     emask |= BSE_EXPORT_FLAG_SSE4;
   return emask;
 }
@@ -701,7 +704,7 @@ bse_plugin_path_list_files (gboolean include_drivers,
     }
   if (true)
     {
-      const SfiCPUInfo cpu_info = sfi_cpu_info();
+      const Bse::CPUInfo cpu_info = Rapicorn::cpu_info();
       const char *exts[] = { ".FPU" PLUGIN_EXTENSION, ".FPU.la", PLUGIN_EXTENSION, ".la", };
       if (BSE_WITH_SSE_FLAGS && !bse_main_args->force_fpu &&
           cpu_info.x86_mmx && cpu_info.x86_sse && cpu_info.x86_ssesys)

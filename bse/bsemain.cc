@@ -306,7 +306,7 @@ bse_init_intern (gint           *argc,
     }
   if (as_test)
     {
-      SfiCPUInfo ci = sfi_cpu_info();
+      Bse::CPUInfo ci = Rapicorn::cpu_info();
       char *cname = g_strdup_printf ("%s+%s", ci.machine, bse_block_impl_name());
       treport_cpu_name (cname);
       g_free (cname);
