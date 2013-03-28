@@ -24,7 +24,7 @@ bse_note_from_freq (BseMusicalTuningType musical_tuning,
   const double *table = bse_semitone_table_from_tuning (musical_tuning);
   const double *start = table - 132;
   const double *end = table + 1 + 132;
-  const double *m = Birnet::binary_lookup_sibling (start, end, FreqCmp(), freq);
+  const double *m = Bse::binary_lookup_sibling (start, end, FreqCmp(), freq);
   if (m == end)
     return BSE_NOTE_VOID;
   /* improve from sibling to nearest */
