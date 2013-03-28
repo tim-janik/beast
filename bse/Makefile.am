@@ -56,6 +56,7 @@ bse_public_headers = $(strip \
 	bsecxxvalue.hh		bsecxxutils.hh		bsecxxbase.hh			bsecxxclosure.hh \
 	bsecxxarg.hh		bsecxxmodule.hh		bsecxxplugin.hh			bseloader.hh \
 	bseresampler.hh		bseresamplerimpl.hh	\
+	testobject.hh		\
 )
 # BSE C & C++ sources
 bse_sources = $(strip \
@@ -94,6 +95,7 @@ bse_sources = $(strip \
 	bsebusmodule.cc		\
 	bsebasics.cc		\
 	bseprobe.cc		\
+	testobject.cc		\
 )
 # BSE Synthesis Modules
 bse_idl_sources =
