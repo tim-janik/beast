@@ -8,7 +8,7 @@ namespace Birnet {
 inline int      dtoi32 (double d) BIRNET_CONST;
 inline int64    dtoi64 (double d) BIRNET_CONST;
 inline int64    iround (double d) BIRNET_CONST;
-inline int64    ifloor (double d) BIRNET_CONST;
+// inline int64    ifloor (double d) BIRNET_CONST;
 inline int64    iceil  (double d) BIRNET_CONST;
 /* --- implementation bits --- */
 inline int BIRNET_CONST
