@@ -3,7 +3,6 @@
 #define __BIRNET_UTILS_XX_HH__
 #include <birnet/birnetcdefs.h>
 #include <rapicorn.hh>
-#include <glib.h> /* g_free */
 #include <string>
 #include <vector>
 #include <map>
@@ -42,6 +41,7 @@ void birnet_runtime_problemv (char        ewran_tag,
                               const char *funcname,
                               const char *msgformat,
                               va_list     msgargs);
+
 /* --- private copy constructor and assignment operator --- */
 #define BIRNET_PRIVATE_CLASS_COPY(Class)        private: Class (const Class&); Class& operator= (const Class&);
 #ifdef  _BIRNET_SOURCE_EXTENSIONS
@@ -49,6 +49,7 @@ void birnet_runtime_problemv (char        ewran_tag,
 #define return_if_fail                          g_return_if_fail
 #define return_val_if_fail                      g_return_val_if_fail
 #endif  /* _BIRNET_SOURCE_EXTENSIONS */
+
 /* --- initialization --- */
 typedef BirnetInitValue    InitValue;
 typedef BirnetInitSettings InitSettings;
@@ -73,26 +74,6 @@ public:
                      int          _priority = 0);
 };
 
-/* --- file/path functionality --- */
-namespace Path {
-const String    dirname   (const String &path);
-const String    basename  (const String &path);
-bool            isabs     (const String &path);
-const String    skip_root (const String &path);
-const String    join      (const String &frag0, const String &frag1,
-                           const String &frag2 = "", const String &frag3 = "",
-                           const String &frag4 = "", const String &frag5 = "",
-                           const String &frag6 = "", const String &frag7 = "",
-                           const String &frag8 = "", const String &frag9 = "",
-                           const String &frag10 = "", const String &frag11 = "",
-                           const String &frag12 = "", const String &frag13 = "",
-                           const String &frag14 = "", const String &frag15 = "");
-bool            check     (const String &file,
-                           const String &mode);
-bool            equals    (const String &file1,
-                           const String &file2);
-} // Path
-
 /* --- url handling --- */
 void url_show                   (const char           *url);
 void url_show_with_cookie       (const char           *url,
@@ -102,33 +83,6 @@ bool url_test_show              (const char           *url);
 bool url_test_show_with_cookie  (const char	      *url,
                                  const char           *url_title,
                                  const char           *cookie);
-
-/* --- cleanup registration --- */
-uint cleanup_add                (uint                  timeout_ms,
-                                 void                (*destroy_data) (void*),
-                                 void                 *data);
-void cleanup_force_handlers     (void);
-
-/* --- string utils --- */
-void memset4		        (uint32              *mem,
-                                 uint32               filler,
-                                 uint                 length);
-
-/* --- zintern support --- */
-uint8*  zintern_decompress      (unsigned int          decompressed_size,
-                                 const unsigned char  *cdata,
-                                 unsigned int          cdata_size);
-void    zintern_free            (uint8                *dc_data);
-
-/* --- template errors --- */
-namespace TEMPLATE_ERROR {
-// to error out, call invalid_type<YourInvalidType>();
-template<typename Type> void invalid_type () { bool force_compiler_error = void (0); }
-// to error out, derive from InvalidType<YourInvalidType>
-template<typename Type> class InvalidType;
-}
-
-typedef Rapicorn::ReferenceCountable ReferenceCountImpl;
 
 } // Birnet
 

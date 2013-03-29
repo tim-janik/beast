@@ -4,7 +4,7 @@
 #include <birnet/birnetutils.hh>
 #include <stdarg.h>
 namespace Birnet {
-class DebugChannel : public virtual ReferenceCountImpl {
+class DebugChannel : public virtual ReferenceCountable {
   BIRNET_PRIVATE_CLASS_COPY (DebugChannel);
 protected:
   explicit              DebugChannel        ();

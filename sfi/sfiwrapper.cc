@@ -230,13 +230,6 @@ sfi_url_test_show_with_cookie (const char *url,
   return Birnet::url_test_show_with_cookie (url, url_title, cookie);
 }
 
-/* --- cleanup handlers --- */
-void
-birnet_cleanup_force_handlers (void)
-{
-  return Birnet::cleanup_force_handlers();
-}
-
 void
 sfi_runtime_problem (char        ewran_tag,
                      const char *domain,

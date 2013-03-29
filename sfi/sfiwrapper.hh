@@ -154,8 +154,6 @@ bool sfi_url_test_show              	(const char           *url);
 bool sfi_url_test_show_with_cookie	(const char           *url,
 					 const char           *url_title,
 					 const char           *cookie);
-/* --- cleanup handlers --- */
-void birnet_cleanup_force_handlers     (void); // FIXME: remove
 
 #ifndef BIRNET__RUNTIME_PROBLEM
 #define BIRNET__RUNTIME_PROBLEM(ErrorWarningReturnAssertNotreach,domain,file,line,funcname,...) \

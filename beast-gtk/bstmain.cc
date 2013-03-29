@@ -409,7 +409,7 @@ main (int   argc,
     }
 
   // misc cleanups
-  birnet_cleanup_force_handlers();
+  Rapicorn::cleanup_force_handlers();
   bse_object_debug_leaks ();
   Bse::TaskRegistry::remove (Rapicorn::ThisThread::thread_pid());
 
