@@ -12,6 +12,3 @@ progs_ldadd 	 = $(top_builddir)/birnet/libbirnet.o $(RAPICORN_LIBS) $(BIRNET_LIB
 TESTS		+= systest
 systest_SOURCES  = systest.cc
 systest_LDADD	 = $(progs_ldadd)
-TESTS		+= utils
-utils_SOURCES    = utils.cc
-utils_LDADD	 = $(progs_ldadd)
