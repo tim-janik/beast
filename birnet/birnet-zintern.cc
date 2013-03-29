@@ -61,8 +61,8 @@ to_cupper (const String &str)
 {
   String s (str);
   for (uint i = 0; i < s.size(); i++)
-    if (Unichar::isalnum (s[i]))
-      s[i] = Unichar::toupper (s[i]);
+    if (Rapicorn::Unicode::isalnum (s[i]))
+      s[i] = Rapicorn::Unicode::toupper (s[i]);
     else
       s[i] = '_';
   return s;
