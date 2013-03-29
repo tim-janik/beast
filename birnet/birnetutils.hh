@@ -18,30 +18,11 @@ using namespace Rapicorn;
 namespace Birnet {
 using namespace Rapicorn;
 
-/* --- short integer types --- */
-typedef BirnetUInt8   uint8;
-typedef BirnetUInt16  uint16;
-typedef BirnetUInt32  uint32;
-typedef BirnetUInt64  uint64;
-typedef BirnetInt8    int8;
-typedef BirnetInt16   int16;
-typedef BirnetInt32   int32;
-typedef BirnetInt64   int64;
-typedef BirnetUnichar unichar;
-/* --- convenient stdc++ types --- */
-typedef std::string String;
 using std::vector;
 using std::map;
 using std::min;
 using std::max;
-class VirtualTypeid {
-protected:
-  virtual      ~VirtualTypeid      ();
-public:
-  String        typeid_name        ();
-  String        typeid_pretty_name ();
-  static String cxx_demangle       (const char *mangled_identifier);
-};
+
 /* --- implement assertion macros --- */
 #ifndef BIRNET__RUNTIME_PROBLEM
 #define BIRNET__RUNTIME_PROBLEM(ErrorWarningReturnAssertNotreach,domain,file,line,funcname,...) \
@@ -91,15 +72,6 @@ public:
   explicit InitHook (InitHookFunc _func,
                      int          _priority = 0);
 };
-/* --- assertions/warnings/errors --- */
-void    raise_sigtrap           ();
-#if (defined __i386__ || defined __x86_64__) && defined __GNUC__ && __GNUC__ >= 2
-//extern inline void BREAKPOINT() { __asm__ __volatile__ ("int $03"); }
-#elif defined __alpha__ && !defined __osf__ && defined __GNUC__ && __GNUC__ >= 2
-//extern inline void BREAKPOINT() { __asm__ __volatile__ ("bpt"); }
-#else   /* !__i386__ && !__alpha__ */
-//extern inline void BREAKPOINT() { raise_sigtrap(); }
-#endif  /* __i386__ */
 
 /* --- file/path functionality --- */
 namespace Path {
@@ -120,6 +92,7 @@ bool            check     (const String &file,
 bool            equals    (const String &file1,
                            const String &file2);
 } // Path
+
 /* --- url handling --- */
 void url_show                   (const char           *url);
 void url_show_with_cookie       (const char           *url,
@@ -129,26 +102,24 @@ bool url_test_show              (const char           *url);
 bool url_test_show_with_cookie  (const char	      *url,
                                  const char           *url_title,
                                  const char           *cookie);
+
 /* --- cleanup registration --- */
 uint cleanup_add                (uint                  timeout_ms,
                                  void                (*destroy_data) (void*),
                                  void                 *data);
 void cleanup_force_handlers     (void);
+
 /* --- string utils --- */
 void memset4		        (uint32              *mem,
                                  uint32               filler,
                                  uint                 length);
-/* --- memory utils --- */
-void* malloc_aligned            (size_t                total_size,
-                                 size_t                alignment,
-                                 uint8               **free_pointer);
-/* --- C++ demangling --- */
-char*   cxx_demangle	        (const char  *mangled_identifier); /* in birnetutilsxx.cc */
+
 /* --- zintern support --- */
 uint8*  zintern_decompress      (unsigned int          decompressed_size,
                                  const unsigned char  *cdata,
                                  unsigned int          cdata_size);
 void    zintern_free            (uint8                *dc_data);
+
 /* --- template errors --- */
 namespace TEMPLATE_ERROR {
 // to error out, call invalid_type<YourInvalidType>();
@@ -156,220 +127,10 @@ template<typename Type> void invalid_type () { bool force_compiler_error = void 
 // to error out, derive from InvalidType<YourInvalidType>
 template<typename Type> class InvalidType;
 }
-/* --- Deletable --- */
-/**
- * Deletable is a virtual base class that can be derived from (usually with
- * public virtual) to ensure an object has a vtable and a virtual destructor.
- * Also, it allows deletion hooks to be called during the objects destructor,
- * by deriving from Birnet::Deletable::DeletionHook. No extra per-object space is
- * consumed to allow deletion hooks, which makes Deletable a suitable base
- * type for classes that may or may not need this feature (e.g. objects that
- * can but often aren't used for signal handler connections).
- */
-struct Deletable : public virtual VirtualTypeid {
-  /**
-   * DeletionHook is the base implementation class for hooks which are hooked
-   * up into the deletion phase of a Birnet::Deletable.
-   */
-  class DeletionHook {
-    DeletionHook    *prev;
-    DeletionHook    *next;
-    friend class Deletable;
-  protected:
-    virtual     ~DeletionHook          (); /* { if (deletable) deletable_remove_hook (deletable); deletable = NULL; } */
-    virtual void monitoring_deletable  (Deletable &deletable) = 0;
-    virtual void dismiss_deletable     () = 0;
-  public:
-    explicit     DeletionHook          () : prev (NULL), next (NULL) {}
-    bool         deletable_add_hook    (void      *any)              { return false; }
-    bool         deletable_add_hook    (Deletable *deletable);
-    bool         deletable_remove_hook (void      *any)              { return false; }
-    bool         deletable_remove_hook (Deletable *deletable);
-  };
-private:
-  void           add_deletion_hook     (DeletionHook *hook);
-  void           remove_deletion_hook  (DeletionHook *hook);
-protected:
-  void           invoke_deletion_hooks ();
-  virtual       ~Deletable             ();
-};
 
-/* --- ReferenceCountImpl --- */
 typedef Rapicorn::ReferenceCountable ReferenceCountImpl;
 
-/* --- generic named data --- */
-template<typename Type>
-class DataKey {
-private:
-  /*Copy*/        DataKey    (const DataKey&);
-  DataKey&        operator=  (const DataKey&);
-public:
-  /* explicit */  DataKey    ()                 { }
-  virtual Type    fallback   ()                 { Type d = Type(); return d; }
-  virtual void    destroy    (Type data)        { /* destruction hook */ }
-  virtual        ~DataKey    ()                 {}
-};
-class DataList {
-  class NodeBase {
-  protected:
-    NodeBase      *next;
-    DataKey<void> *key;
-    explicit       NodeBase (DataKey<void> *k) : next (NULL), key (k) {}
-    virtual       ~NodeBase ();
-    friend         class DataList;
-  };
-  template<typename T>
-  class Node : public NodeBase {
-    T data;
-  public:
-    T        get_data ()     { return data; }
-    T        swap     (T d)  { T result = data; data = d; return result; }
-    virtual ~Node()
-    {
-      if (key)
-        {
-          DataKey<T> *dkey = reinterpret_cast<DataKey<T>*> (key);
-          dkey->destroy (data);
-        }
-    }
-    explicit Node (DataKey<T> *k,
-                   T           d) :
-      NodeBase (reinterpret_cast<DataKey<void>*> (k)),
-      data (d)
-    {}
-  };
-  NodeBase *nodes;
-public:
-  DataList() :
-    nodes (NULL)
-  {}
-  template<typename T> void
-  set (DataKey<T> *key,
-       T           data)
-  {
-    Node<T> *node = new Node<T> (key, data);
-    set_data (node);
-  }
-  template<typename T> T
-  get (DataKey<T> *key) const
-  {
-    NodeBase *nb = get_data (reinterpret_cast<DataKey<void>*> (key));
-    if (nb)
-      {
-        Node<T> *node = reinterpret_cast<Node<T>*> (nb);
-        return node->get_data();
-      }
-    else
-      return key->fallback();
-  }
-  template<typename T> T
-  swap (DataKey<T> *key,
-        T           data)
-  {
-    NodeBase *nb = get_data (reinterpret_cast<DataKey<void>*> (key));
-    if (nb)
-      {
-        Node<T> *node = reinterpret_cast<Node<T>*> (nb);
-        return node->swap (data);
-      }
-    else
-      {
-        set (key, data);
-        return key->fallback();
-      }
-  }
-  template<typename T> T
-  swap (DataKey<T> *key)
-  {
-    NodeBase *nb = rip_data (reinterpret_cast<DataKey<void>*> (key));
-    if (nb)
-      {
-        Node<T> *node = reinterpret_cast<Node<T>*> (nb);
-        T d = node->get_data();
-        nb->key = NULL; // rip key to prevent data destruction
-        delete nb;
-        return d;
-      }
-    else
-      return key->fallback();
-  }
-  template<typename T> void
-  del (DataKey<T> *key)
-  {
-    NodeBase *nb = rip_data (reinterpret_cast<DataKey<void>*> (key));
-    if (nb)
-      delete nb;
-  }
-  void clear_like_destructor();
-  ~DataList();
-private:
-  void      set_data (NodeBase      *node);
-  NodeBase* get_data (DataKey<void> *key) const;
-  NodeBase* rip_data (DataKey<void> *key);
-};
-/* --- DataListContainer --- */
-class DataListContainer {
-  DataList data_list;
-public: /* generic data API */
-  template<typename Type> inline void set_data    (DataKey<Type> *key, Type data) { data_list.set (key, data); }
-  template<typename Type> inline Type get_data    (DataKey<Type> *key) const      { return data_list.get (key); }
-  template<typename Type> inline Type swap_data   (DataKey<Type> *key, Type data) { return data_list.swap (key, data); }
-  template<typename Type> inline Type swap_data   (DataKey<Type> *key)            { return data_list.swap (key); }
-  template<typename Type> inline void delete_data (DataKey<Type> *key)            { data_list.del (key); }
-};
-/* --- class to allocate aligned memory --- */
-template<class T, int ALIGN>
-class AlignedArray {
-  unsigned char *unaligned_mem;
-  T *data;
-  size_t n_elements;
-  void
-  allocate_aligned_data()
-  {
-    BIRNET_ASSERT ((ALIGN % sizeof (T)) == 0);
-    data = reinterpret_cast<T *> (malloc_aligned (n_elements * sizeof (T), ALIGN, &unaligned_mem));
-  }
-  /* no copy constructor and no assignment operator */
-  BIRNET_PRIVATE_CLASS_COPY (AlignedArray);
-public:
-  AlignedArray (const vector<T>& elements) :
-    n_elements (elements.size())
-  {
-    allocate_aligned_data();
-    for (size_t i = 0; i < n_elements; i++)
-      new (data + i) T (elements[i]);
-  }
-  AlignedArray (size_t n_elements) :
-    n_elements (n_elements)
-  {
-    allocate_aligned_data();
-    for (size_t i = 0; i < n_elements; i++)
-      new (data + i) T();
-  }
-  ~AlignedArray()
-  {
-    /* C++ destruction order: last allocated element is deleted first */
-    while (n_elements)
-      data[--n_elements].~T();
-    g_free (unaligned_mem);
-  }
-  T&
-  operator[] (size_t pos)
-  {
-    return data[pos];
-  }
-  const T&
-  operator[] (size_t pos) const
-  {
-    return data[pos];
-  }
-  size_t
-  size()
-  {
-    return n_elements;
-  }
-};
-
 } // Birnet
+
 #endif /* __BIRNET_UTILS_XX_HH__ */
 /* vim:set ts=8 sts=2 sw=2: */

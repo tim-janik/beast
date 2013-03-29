@@ -223,12 +223,8 @@ BIRNET_STARTUP_ASSERT (DBL_EPSILON  <= 1E-9);
 BIRNET_STATIC_ASSERT (LDBL_MIN     <= 1E-37);
 BIRNET_STATIC_ASSERT (LDBL_MAX     >= 1E+37);
 BIRNET_STATIC_ASSERT (LDBL_EPSILON <= 1E-9);
+
 /* --- assertions/warnings/errors --- */
-void
-raise_sigtrap ()
-{
-  raise (SIGTRAP);
-}
 static void
 stderr_print (bool        bail_out,
               const char *prefix,
@@ -320,29 +316,6 @@ birnet_runtime_problemv (char        ewran_tag,
       BREAKPOINT();
       abort();
     }
-}
-/* --- VirtualTypeid --- */
-VirtualTypeid::~VirtualTypeid ()
-{ /* virtual destructor ensures vtable */ }
-String
-VirtualTypeid::typeid_name ()
-{
-  return typeid (*this).name();
-}
-String
-VirtualTypeid::typeid_pretty_name ()
-{
-  return cxx_demangle (typeid (*this).name());
-}
-String
-VirtualTypeid::cxx_demangle (const char *mangled_identifier)
-{
-  int status = 0;
-  char *malloced_result = abi::__cxa_demangle (mangled_identifier, NULL, NULL, &status);
-  String result = malloced_result && !status ? malloced_result : mangled_identifier;
-  if (malloced_result)
-    free (malloced_result);
-  return result;
 }
 
 /* --- file utils --- */
@@ -525,228 +498,7 @@ equals (const String &file1,
           st1.st_rdev == st2.st_rdev);
 }
 } // Path
-/* --- Deletable --- */
-Deletable::~Deletable ()
-{
-  invoke_deletion_hooks();
-}
-/**
- * @param deletable     possible Deletable* handle
- * @return              TRUE if the hook was added
- *
- * Adds the deletion hook to @a deletable if it is non NULL.
- * The deletion hook is asserted to be so far uninstalled.
- * This function is MT-safe and may be called from any thread.
- */
-bool
-Deletable::DeletionHook::deletable_add_hook (Deletable *deletable)
-{
-  if (deletable)
-    {
-      deletable->add_deletion_hook (this);
-      return true;
-    }
-  return false;
-}
-/**
- * @param deletable     possible Deletable* handle
- * @return              TRUE if the hook was removed
- *
- * Removes the deletion hook from @a deletable if it is non NULL.
- * The deletion hook is asserted to be installed on @a deletable.
- * This function is MT-safe and may be called from any thread.
- */
-bool
-Deletable::DeletionHook::deletable_remove_hook (Deletable *deletable)
-{
-  if (deletable)
-    {
-      deletable->remove_deletion_hook (this);
-      return true;
-    }
-  return false;
-}
-Deletable::DeletionHook::~DeletionHook ()
-{
-  if (this->next || this->prev)
-    g_error ("%s: hook is being destroyed but not unlinked: %p", G_STRFUNC, this);
-}
-#if 0
-static struct {
-  Mutex                                         mutex;
-  std::map<Deletable*,Deletable::DeletionHook*> dmap;
-} deletable_maps[19]; /* use prime size for hashing, sum up to roughly 1k (use 83 for 4k) */
-#endif
-#define DELETABLE_MAP_HASH      (19)    /* use prime size for hashing, sum up to roughly 1k (use 83 for 4k) */
-struct DeletableMap {
-  Rapicorn::Mutex                               mutex;
-  std::map<Deletable*,Deletable::DeletionHook*> dmap;
-};
-static Rapicorn::Atomic<DeletableMap*> deletable_maps = NULL;
-static inline void
-auto_init_deletable_maps (void)
-{
-  if (UNLIKELY (deletable_maps == NULL))
-    {
-      DeletableMap *dmaps = new DeletableMap[DELETABLE_MAP_HASH];
-      if (!deletable_maps.cas ((DeletableMap*) NULL, dmaps))
-        delete dmaps;
-    }
-}
-/**
- * @param hook  valid deletion hook
- *
- * Add an uninstalled deletion hook to the deletable.
- * This function is MT-safe and may be called from any thread.
- */
-void
-Deletable::add_deletion_hook (DeletionHook *hook)
-{
-  auto_init_deletable_maps();
-  uint32 hashv = ((gsize) (void*) this) % DELETABLE_MAP_HASH;
-  deletable_maps[hashv].mutex.lock();
-  BIRNET_ASSERT (hook);
-  BIRNET_ASSERT (!hook->next);
-  BIRNET_ASSERT (!hook->prev);
-  std::map<Deletable*,DeletionHook*>::iterator it;
-  it = deletable_maps[hashv].dmap.find (this);
-  if (it != deletable_maps[hashv].dmap.end() && it->second)
-    {
-      hook->prev = it->second->prev;
-      hook->next = it->second;
-      hook->prev->next = hook;
-      hook->next->prev = hook;
-      it->second = hook;
-    }
-  else if (it != deletable_maps[hashv].dmap.end())
-    it->second = hook->prev = hook->next = hook;
-  else
-    deletable_maps[hashv].dmap[this] = hook->prev = hook->next = hook;
-  deletable_maps[hashv].mutex.unlock();
-  hook->monitoring_deletable (*this);
-  //g_printerr ("DELETABLE-ADD(%p,%p)\n", this, hook);
-}
-/**
- * @param hook  valid deletion hook
- *
- * Remove a previously added deletion hook.
- * This function is MT-safe and may be called from any thread.
- */
-void
-Deletable::remove_deletion_hook (DeletionHook *hook)
-{
-  auto_init_deletable_maps();
-  uint32 hashv = ((gsize) (void*) this) % DELETABLE_MAP_HASH;
-  deletable_maps[hashv].mutex.lock();
-  BIRNET_ASSERT (hook);
-  BIRNET_ASSERT (hook->next && hook->prev);
-  hook->next->prev = hook->prev;
-  hook->prev->next = hook->next;
-  std::map<Deletable*,DeletionHook*>::iterator it;
-  it = deletable_maps[hashv].dmap.find (this);
-  BIRNET_ASSERT (it != deletable_maps[hashv].dmap.end());
-  if (it->second == hook)
-    it->second = hook->next != hook ? hook->next : NULL;
-  hook->prev = NULL;
-  hook->next = NULL;
-  deletable_maps[hashv].mutex.unlock();
-  //g_printerr ("DELETABLE-REM(%p,%p)\n", this, hook);
-}
-/**
- * Invoke all deletion hooks installed on this deletable.
- */
-void
-Deletable::invoke_deletion_hooks()
-{
-  auto_init_deletable_maps();
-  uint32 hashv = ((gsize) (void*) this) % DELETABLE_MAP_HASH;
-  while (TRUE)
-    {
-      /* lookup hook list */
-      deletable_maps[hashv].mutex.lock();
-      std::map<Deletable*,DeletionHook*>::iterator it;
-      DeletionHook *hooks;
-      it = deletable_maps[hashv].dmap.find (this);
-      if (it != deletable_maps[hashv].dmap.end())
-        {
-          hooks = it->second;
-          deletable_maps[hashv].dmap.erase (it);
-        }
-      else
-        hooks = NULL;
-      deletable_maps[hashv].mutex.unlock();
-      /* we're done if all hooks have been procesed */
-      if (!hooks)
-        break;
-      /* process hooks */
-      while (hooks)
-        {
-          DeletionHook *hook = hooks;
-          hook->next->prev = hook->prev;
-          hook->prev->next = hook->next;
-          hooks = hook->next != hook ? hook->next : NULL;
-          hook->prev = hook->next = NULL;
-          //g_printerr ("DELETABLE-DISMISS(%p,%p)\n", this, hook);
-          hook->dismiss_deletable();
-        }
-    }
-}
 
-/* --- DataList --- */
-DataList::NodeBase::~NodeBase ()
-{}
-void
-DataList::set_data (NodeBase *node)
-{
-  /* delete old node */
-  NodeBase *it = rip_data (node->key);
-  if (it)
-    delete it;
-  /* prepend node */
-  node->next = nodes;
-  nodes = node;
-}
-DataList::NodeBase*
-DataList::get_data (DataKey<void> *key) const
-{
-  NodeBase *it;
-  for (it = nodes; it; it = it->next)
-    if (it->key == key)
-      return it;
-  return NULL;
-}
-DataList::NodeBase*
-DataList::rip_data (DataKey<void> *key)
-{
-  NodeBase *last = NULL, *it;
-  for (it = nodes; it; last = it, it = last->next)
-    if (it->key == key)
-      {
-        /* unlink existing node */
-        if (last)
-          last->next = it->next;
-        else
-          nodes = it->next;
-        it->next = NULL;
-        return it;
-      }
-  return NULL;
-}
-void
-DataList::clear_like_destructor()
-{
-  while (nodes)
-    {
-      NodeBase *it = nodes;
-      nodes = it->next;
-      it->next = NULL;
-      delete it;
-    }
-}
-DataList::~DataList()
-{
-  clear_like_destructor();
-}
 /* --- url handling --- */
 bool
 url_test_show (const char *url)
@@ -1005,35 +757,7 @@ memset4 (guint32        *mem,
   BIRNET_STATIC_ASSERT (sizeof (wchar_t) == 4);
   wmemset ((wchar_t*) mem, filler, length);
 }
-/* --- memory utils --- */
-void*
-malloc_aligned (gsize	  total_size,
-                gsize	  alignment,
-                guint8	**free_pointer)
-{
-  const bool  alignment_power_of_2 = (alignment & (alignment - 1)) == 0;
-  const gsize cache_line_size = 64; // ensure that no false sharing will occur (at begin and end of data)
-  if (alignment_power_of_2)
-    {
-      // for power of 2 alignment, we guarantee also cache line alignment
-      alignment = std::max (alignment, cache_line_size);
-      uint8 *aligned_mem = (uint8 *) g_malloc (total_size + (alignment - 1) + (cache_line_size - 1));
-      *free_pointer = aligned_mem;
-      if ((ptrdiff_t) aligned_mem % alignment)
-        aligned_mem += alignment - (ptrdiff_t) aligned_mem % alignment;
-      return aligned_mem;
-    }
-  else
-    {
-      uint8 *aligned_mem = (uint8 *) g_malloc (total_size + (alignment - 1) + (cache_line_size - 1) * 2);
-      *free_pointer = aligned_mem;
-      if ((ptrdiff_t) aligned_mem % cache_line_size)
-        aligned_mem += cache_line_size - (ptrdiff_t) aligned_mem % cache_line_size;
-      if ((ptrdiff_t) aligned_mem % alignment)
-        aligned_mem += alignment - (ptrdiff_t) aligned_mem % alignment;
-      return aligned_mem;
-    }
-}
+
 /* --- zintern support --- */
 #include <zlib.h>
 /**
