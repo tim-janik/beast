@@ -438,9 +438,9 @@ sfi_serialize_primitives (SfiSCategory scat,
 	      guint i;
 	      gstring_puts (gstring, "(");
 	      if (fblock->n_values)
-		gstring_printf (gstring, "%.9g", fblock->values[0]);
+                g_string_append (gstring, Bse::string_printf ("%.9g", fblock->values[0]).c_str());
 	      for (i = 1; i < fblock->n_values; i++)
-		gstring_printf (gstring, " %.9g", fblock->values[i]);
+                g_string_append (gstring, Bse::string_printf (" %.9g", fblock->values[i]).c_str());
 	      gstring_puts (gstring, ")");
 	    }
 	}
