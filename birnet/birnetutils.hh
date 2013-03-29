@@ -8,7 +8,16 @@
 #include <vector>
 #include <map>
 #include <stdarg.h>
+
+// We're migrating to Bse for everything and use Rapicorn core for the lower level stuff
+#include <rapicorn-core.hh>
+namespace Bse {
+using namespace Rapicorn;
+} // Bse
+
 namespace Birnet {
+using namespace Rapicorn;
+
 /* --- short integer types --- */
 typedef BirnetUInt8   uint8;
 typedef BirnetUInt16  uint16;
@@ -91,52 +100,7 @@ void    raise_sigtrap           ();
 #else   /* !__i386__ && !__alpha__ */
 //extern inline void BREAKPOINT() { raise_sigtrap(); }
 #endif  /* __i386__ */
-/* --- string functionality --- */
-String  			string_tolower           (const String &str);
-String  			string_toupper           (const String &str);
-String  			string_totitle           (const String &str);
-String  			string_printf            (const char *format, ...) BIRNET_PRINTF (1, 2);
-String  			string_vprintf           (const char *format, va_list vargs);
-String  			string_strip             (const String &str);
-bool    			string_to_bool           (const String &string);
-String  			string_from_bool         (bool value);
-uint64  			string_to_uint           (const String &string, uint base = 10);
-String  			string_from_uint         (uint64 value);
-bool    			string_has_int           (const String &string);
-int64   			string_to_int            (const String &string, uint base = 10);
-String  			string_from_int          (int64 value);
-String  			string_from_float        (float value);
-double  			string_to_double         (const String &string);
-String                          string_from_double       (double value);
-inline String                   string_from_float        (double value)         { return string_from_double (value); }
-inline double                   string_to_float          (const String &string) { return string_to_double (string); }
-template<typename Type> Type    string_to_type           (const String &string);
-template<typename Type> String  string_from_type         (Type          value);
-template<> inline double        string_to_type<double>   (const String &string) { return string_to_double (string); }
-template<> inline String        string_from_type<double> (double         value) { return string_from_double (value); }
-template<> inline float         string_to_type<float>    (const String &string) { return string_to_float (string); }
-template<> inline String        string_from_type<float>  (float         value)  { return string_from_float (value); }
-template<> inline bool          string_to_type<bool>     (const String &string) { return string_to_bool (string); }
-template<> inline String        string_from_type<bool>   (bool         value)   { return string_from_bool (value); }
-template<> inline int16         string_to_type<int16>    (const String &string) { return string_to_int (string); }
-template<> inline String        string_from_type<int16>  (int16         value)  { return string_from_int (value); }
-template<> inline uint16        string_to_type<uint16>   (const String &string) { return string_to_uint (string); }
-template<> inline String        string_from_type<uint16> (uint16        value)  { return string_from_uint (value); }
-template<> inline int           string_to_type<int>      (const String &string) { return string_to_int (string); }
-template<> inline String        string_from_type<int>    (int         value)    { return string_from_int (value); }
-template<> inline uint          string_to_type<uint>     (const String &string) { return string_to_uint (string); }
-template<> inline String        string_from_type<uint>   (uint           value) { return string_from_uint (value); }
-template<> inline int64         string_to_type<int64>    (const String &string) { return string_to_int (string); }
-template<> inline String        string_from_type<int64>  (int64         value)  { return string_from_int (value); }
-template<> inline uint64        string_to_type<uint64>   (const String &string) { return string_to_uint (string); }
-template<> inline String        string_from_type<uint64> (uint64         value) { return string_from_uint (value); }
-vector<double>                  string_to_vector         (const String         &string);
-String                          string_from_vector       (const vector<double> &dvec,
-                                                          const String         &delim = " ");
-String  			string_from_errno        (int         errno_val);
-bool                            string_is_uuid           (const String &uuid_string); /* check uuid formatting */
-int                             string_cmp_uuid          (const String &uuid_string1,
-                                                          const String &uuid_string2); /* -1=smaller, 0=equal, +1=greater (assuming valid uuid strings) */
+
 /* --- file/path functionality --- */
 namespace Path {
 const String    dirname   (const String &path);
