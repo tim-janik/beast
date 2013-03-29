@@ -56,7 +56,7 @@ UNPORTED = $(strip		\
 
 # === plugin build rule setup ===
 plugins_ldflags 	  = -avoid-version
-plugins_libs    	  = $(top_builddir)/bse/libbse.la $(BSE_LIBS) -lm
+plugins_libs    	  = $(top_builddir)/bse/libbse.la $(RAPICORN_LIBS) $(BSE_LIBS) -lm
 plugins_built_sources 	  = 	# listed in Makefile.plugins
 CLEANFILES 		 += $(plugins_built_sources)
 # .FPU plugins
