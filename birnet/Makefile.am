@@ -13,13 +13,11 @@ birnet_headers = $(strip 		\
 	birnetdebugtools.hh		\
 	birnetmsg.hh			\
 	birnettests.h			\
-	birnetmath.hh			\
 	birnetutils.hh			\
 )
 birnet_sources = $(strip 		\
 	birnetdebugtools.cc		\
 	birnetmsg.cc			\
-	birnetmath.cc			\
 	birnetutils.cc			\
 )
 birnet_private_headers = $(strip 	\
