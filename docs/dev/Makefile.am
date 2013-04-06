@@ -1,4 +1,5 @@
 # Build and upload development documentation
+include $(top_srcdir)/Makefile.decl
 
 all: build-stamp
 build-stamp:
