@@ -313,7 +313,7 @@ birnet_runtime_problemv (char        ewran_tag,
   g_free (msg);
   if (noreturn_case)
     {
-      BREAKPOINT();
+      RAPICORN_BREAKPOINT();
       abort();
     }
 }
