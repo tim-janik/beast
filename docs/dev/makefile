@@ -60,16 +60,23 @@ LINK_PROJECT_NAME = \
 	-e 's|<div id="projectname">BEAST/BSE|<div id="projectname"><a href="http://beast.testbit.eu">BEAST/BSE</a>|'
 R_ACCESSKEY_AS_F = -e 's/(<input [^>]*id="MSearchField"[^>]*accesskey=")S"/\1F"/'
 
+download: download-local
+download-local:
+	$(Q) wget --progress=dot --output-document=- http://dev.testbit.eu/rapicorn/latest/tagfile.xml > tmp-tagfile-rapicorn.xml
+	$(Q) mv tmp-tagfile-rapicorn.xml tagfile-rapicorn.xml
+
 all-docs: $(git_stamp) doxygen.cfg
 	$(GPRINT) "TIDY" "Temporaries..."
 	$(Q) rm -rf html.tmp/ && mkdir -p html.tmp/
 	$(Q) $(MAKE) $(SRCTREE)
 	$(GPRINT) "GEN" "HTML Documentation..."
+	$(Q) test -e tagfile-rapicorn.xml || touch tagfile-rapicorn.xml
 	$(Q) (cat doxygen.cfg \
 	&& echo "STRIP_FROM_PATH  = `pwd`/$(SRCTREE)" \
 	&& echo "INPUT		  = $(SRCTREE)/" \
 	&& echo "EXAMPLE_PATH	  = $(top_srcdir)/" \
 	&& echo "OUTPUT_DIRECTORY = html.tmp/" \
+	&& echo "TAGFILES         = tagfile-rapicorn.xml=http://dev.testbit.eu/rapicorn/latest/" \
 	&& echo -n "PROJECT_NUMBER = $(PRJ_VERSION)" \
 	) | nice $(DOXYGEN) - >error.log 2>&1
 	$(Q) test ! -s error.log && rm -f error.log \
