@@ -6,10 +6,25 @@
 #include <birnet/birnetcdefs.h> /* include glib before birnet for G_LOG_DOMAIN */
 #include <birnet/birnetutils.hh>
 
-// FIXME: Introduce symbols from Rapicorn to ease transition.
 namespace Bse {
 
-};
+// == Likelyness Hinting ==
+#define BSE_ISLIKELY(expr)      RAPICORN_ISLIKELY(expr) ///< Compiler hint that @a expr is likely to be true.
+#define BSE_UNLIKELY(expr)      RAPICORN_UNLIKELY(expr) ///< Compiler hint that @a expr is unlikely to be true.
+#define BSE_LIKELY              BSE_ISLIKELY            ///< Compiler hint that @a expr is likely to be true.
+
+// == Debugging ==
+/// Issue a general purpose debugging message, configurable via #$BSE_DEBUG.
+#define BSE_DEBUG(...)          do { if (BSE_UNLIKELY (Bse::_cached_bse_debug)) Bse::bse_debug (NULL, RAPICORN_PRETTY_FILE, __LINE__, __VA_ARGS__); } while (0)
+/// Issue a debugging message if debugging for @a key is enabled via #$BSE_DEBUG.
+#define BSE_KEY_DEBUG(key,...)  do { if (BSE_UNLIKELY (Bse::_cached_bse_debug)) Bse::bse_debug (key, RAPICORN_PRETTY_FILE, __LINE__, __VA_ARGS__); } while (0)
+extern bool volatile _cached_bse_debug;
+void        bse_debug         (const char*, const char*, int, const char*, ...) RAPICORN_PRINTF (4, 5);
+bool       _bse_debug_enabled (const char *key);
+inline bool bse_debug_enabled (const char *key = NULL) { return BSE_UNLIKELY (_cached_bse_debug) && _bse_debug_enabled (key); }
+bool        bse_flipper_check (const char *key);
+
+} // Bse
 
 /* sfiwrapper.h is a thin C language wrapper around C++ features
  * provided by libbirnet.
