@@ -1,7 +1,10 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bseengineschedule.hh"
 #include "bseengineutils.hh"
-static SFI_MSG_TYPE_DEFINE (debug_sched, "sched", SFI_MSG_DEBUG, NULL);
+
+#define SCHED_DEBUG(...) BSE_KEY_DEBUG ("sched", __VA_ARGS__)
+#define CHECK_DEBUG()    Bse::bse_debug_enabled ("sched")
+
 /* --- prototypes --- */
 static void	schedule_node		(EngineSchedule	*schedule,
 					 EngineNode	*node,
@@ -246,7 +249,7 @@ _engine_schedule_secure (EngineSchedule *sched)
   g_return_if_fail (sched->secured == FALSE);
   sched->secured = TRUE;
   sched->cur_leaf_level = sched->leaf_levels;
-  if (sfi_msg_check (debug_sched))
+  if (CHECK_DEBUG())
     _engine_schedule_debug_dump (sched);
 }
 static void

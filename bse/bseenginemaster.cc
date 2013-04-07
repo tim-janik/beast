@@ -12,10 +12,10 @@
 #include <sys/poll.h>
 #include <sys/time.h>
 #include <errno.h>
-static SFI_MSG_TYPE_DEFINE (debug_job, "job", SFI_MSG_DEBUG, NULL);
-#define JOB_DEBUG(...)  sfi_debug (debug_job, __VA_ARGS__)
-static SFI_MSG_TYPE_DEFINE (debug_tjob, "tjob", SFI_MSG_DEBUG, NULL);
-#define TJOB_DEBUG(...) sfi_debug (debug_tjob, __VA_ARGS__)
+
+#define JOB_DEBUG(...)  BSE_KEY_DEBUG ("job", __VA_ARGS__)
+#define TJOB_DEBUG(...) BSE_KEY_DEBUG ("tjob", __VA_ARGS__)
+
 #define	NODE_FLAG_RECONNECT(node)  G_STMT_START { /*(node)->needs_reset = TRUE*/; } G_STMT_END
 /* --- time stamping (debugging) --- */
 #define	ToyprofStamp		struct timeval
