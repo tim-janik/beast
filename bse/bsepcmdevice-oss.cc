@@ -25,8 +25,9 @@ BSE_DUMMY_TYPE (BsePcmDeviceOSS);
 #else
 #error	unsupported byte order in G_BYTE_ORDER
 #endif
-static SFI_MSG_TYPE_DEFINE (debug_pcm, "pcm", SFI_MSG_DEBUG, NULL);
-#define DEBUG(...)      sfi_debug (debug_pcm, __VA_ARGS__)
+
+#define PDEBUG(...)     BSE_KEY_DEBUG ("pcm", __VA_ARGS__)
+
 /* --- OSS PCM handle --- */
 typedef struct
 {
@@ -190,7 +191,7 @@ bse_pcm_device_oss_open (BseDevice     *device,
       g_free (oss->frag_buf);
       g_free (oss);
     }
-  DEBUG ("OSS: opening \"%s\" readable=%d writable=%d: %s", dname, require_readable, require_writable, bse_error_blurb (error));
+  PDEBUG ("OSS: opening \"%s\" readable=%d writable=%d: %s", dname, require_readable, require_writable, bse_error_blurb (error));
   return error;
 }
 static void
@@ -298,15 +299,15 @@ oss_device_setup (OSSHandle *oss,
       req_queue_length = MIN (req_queue_length, oss->queue_length);
       oss->queue_length = CLAMP (25 * handle->mix_freq / 1000, req_queue_length, oss->queue_length);
     }
-  DEBUG ("OSS: setup: w=%d r=%d n_channels=%d mix_freq=%u queue=%u nfrags=%u fsize=%u bufsz=%u",
-         handle->writable,
-         handle->readable,
-         handle->n_channels,
-         handle->mix_freq,
-         oss->queue_length,
-         oss->n_frags,
-         oss->frag_size / oss->frame_size,
-         info.bytes / oss->frame_size);
+  PDEBUG ("OSS: setup: w=%d r=%d n_channels=%d mix_freq=%u queue=%u nfrags=%u fsize=%u bufsz=%u",
+          handle->writable,
+          handle->readable,
+          handle->n_channels,
+          handle->mix_freq,
+          oss->queue_length,
+          oss->n_frags,
+          oss->frag_size / oss->frame_size,
+          info.bytes / oss->frame_size);
   return BSE_ERROR_NONE;
 }
 static void
@@ -355,7 +356,7 @@ oss_device_retrigger (OSSHandle *oss)
   while (n < 0 && errno == EAGAIN); /* retry on signals */
   g_free (silence);
   glong d_long = fcntl (oss->fd, F_GETFL);
-  DEBUG ("OSS: retriggering device (blocking=%u, r=%d, w=%d)...", (int) !(d_long & O_NONBLOCK), handle->readable, handle->writable);
+  PDEBUG ("OSS: retriggering device (blocking=%u, r=%d, w=%d)...", (int) !(d_long & O_NONBLOCK), handle->readable, handle->writable);
   oss->needs_trigger = FALSE;
 }
 static gboolean

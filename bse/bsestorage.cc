@@ -14,9 +14,9 @@
 #include <string.h>
 #include <errno.h>
 /* --- macros --- */
-#define DEBUG           sfi_nodebug
 #define parse_or_return sfi_scanner_parse_or_return
 #define peek_or_return  sfi_scanner_peek_or_return
+
 /* --- typedefs --- */
 struct _BseStorageDBlock
 {
@@ -422,11 +422,13 @@ bse_storage_item_get_compat_type (BseItem *item)
     type = G_OBJECT_TYPE_NAME (item);
   return type;
 }
+
 typedef struct {
   BseContainer *container;
   gchar        *uname;
   BseItem      *item;
 } UNameChild;
+
 static guint
 uname_child_hash (gconstpointer uc)
 {
@@ -435,6 +437,7 @@ uname_child_hash (gconstpointer uc)
   h ^= G_HASH_LONG ((long) uchild->container);
   return h;
 }
+
 static gint
 uname_child_equals (gconstpointer uc1,
                     gconstpointer uc2)
@@ -444,6 +447,7 @@ uname_child_equals (gconstpointer uc1,
   return (bse_string_equals (uchild1->uname, uchild2->uname) &&
           uchild1->container == uchild2->container);
 }
+
 static void
 uname_child_free (gpointer uc)
 {
@@ -453,6 +457,7 @@ uname_child_free (gpointer uc)
   g_object_unref (uchild->item);
   g_free (uchild);
 }
+
 static void
 storage_path_table_insert (BseStorage   *self,
                            BseContainer *container,
@@ -474,8 +479,9 @@ storage_path_table_insert (BseStorage   *self,
   if (uchild->item)
     g_object_unref (uchild->item);
   uchild->item = (BseItem*) g_object_ref (item);
-  DEBUG ("INSERT: (%p,%s) => %p", container, uname, item);
+  // DEBUG ("INSERT: (%p,%s) => %p", container, uname, item);
 }
+
 static inline BseItem*
 storage_path_table_lookup (BseStorage   *self,
                            BseContainer *container,
@@ -485,7 +491,7 @@ storage_path_table_lookup (BseStorage   *self,
   key.container = container;
   key.uname = (gchar*) uname;
   uchild = (UNameChild*) g_hash_table_lookup (self->path_table, &key);
-  DEBUG ("LOOKUP: (%p,%s) => %p", container, uname, uchild ? uchild->item : NULL);
+  // DEBUG ("LOOKUP: (%p,%s) => %p", container, uname, uchild ? uchild->item : NULL);
   if (uchild)
     return uchild->item;
   /* we resort to container lookups in case
@@ -494,6 +500,7 @@ storage_path_table_lookup (BseStorage   *self,
    */
   return bse_container_lookup_item (container, uname);
 }
+
 static BseItem*
 storage_path_table_resolve_upath (BseStorage   *self,
                                   BseContainer *container,

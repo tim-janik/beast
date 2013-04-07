@@ -5,11 +5,13 @@
 #include "bseengine.hh"	/* for bse_engine_sample_freq() */
 #include "bsemain.hh"
 #include <string.h>
-static SFI_MSG_TYPE_DEFINE (debug_waveosc, "waveosc", SFI_MSG_DEBUG, NULL);
-#define DEBUG(...)      sfi_debug (debug_waveosc, __VA_ARGS__)
+
+#define WDEBUG(...)     BSE_KEY_DEBUG ("waveosc", __VA_ARGS__)
+
 #define FRAC_SHIFT		(16)
 #define FRAC_MASK		((1 << FRAC_SHIFT) - 1)
 #define	SIGNAL_LEVEL_INVAL	(-2.0)	/* trigger level-changed checks */
+
 /* --- prototype --- */
 static void	wave_osc_transform_filter	(GslWaveOscData *wosc,
 						 gfloat          play_freq);
@@ -183,10 +185,10 @@ gsl_wave_osc_process (GslWaveOscData *wosc,
       !(fabs (wosc->y[0]) > BSE_SIGNAL_EPSILON && fabs (wosc->y[0]) < BSE_SIGNAL_KAPPA))
     {
       guint i;
-      DEBUG ("clearing filter state at:\n");
+      WDEBUG ("clearing filter state at:\n");
       for (i = 0; i < GSL_WAVE_OSC_FILTER_ORDER; i++)
 	{
-	  DEBUG ("%u) %+.38f\n", i, wosc->y[i]);
+	  WDEBUG ("%u) %+.38f\n", i, wosc->y[i]);
 	  if (BSE_DOUBLE_IS_INF (wosc->y[0]) || fabs (wosc->y[0]) > BSE_SIGNAL_KAPPA)
 	    wosc->y[i] = BSE_DOUBLE_SIGN (wosc->y[0]) ? -1.0 : 1.0;
 	  else
@@ -239,7 +241,7 @@ gsl_wave_osc_set_filter (GslWaveOscData *wosc,
 	  wosc->b[GSL_WAVE_OSC_FILTER_ORDER - i] = wosc->b[i];
 	  wosc->b[i] = t;
 	}
-      DEBUG ("filter: fc=%f fr=%f st=%f is=%u\n", freq_c/PI*2, freq_r/PI*2, step, wosc->istep);
+      WDEBUG ("filter: fc=%f fr=%f st=%f is=%u\n", freq_c/PI*2, freq_r/PI*2, step, wosc->istep);
     }
   if (clear_state)
     {
@@ -286,8 +288,7 @@ gsl_wave_osc_retrigger (GslWaveOscData *wosc,
   wosc->block.offset = wosc->config.start_offset;
   gsl_wave_chunk_use_block (wosc->wchunk, &wosc->block);
   wosc->x = wosc->block.start + CLAMP (wosc->config.channel, 0, wosc->wchunk->n_channels - 1);
-  DEBUG ("wave lookup: want=%f got=%f length=%llu\n",
-	 base_freq, wosc->wchunk->osc_freq, wosc->wchunk->wave_length);
+  WDEBUG ("wave lookup: want=%f got=%f length=%llu\n", base_freq, wosc->wchunk->osc_freq, wosc->wchunk->wave_length);
   wosc->last_freq_level = BSE_SIGNAL_FROM_FREQ (base_freq);
   wosc->last_mod_level = 0;
   gsl_wave_osc_set_filter (wosc, base_freq, TRUE);

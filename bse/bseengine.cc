@@ -9,9 +9,7 @@
 #include <errno.h>
 #include <unistd.h>
 
-static SFI_MSG_TYPE_DEFINE (debug_engine, "engine", SFI_MSG_DEBUG, NULL);
-#undef DEBUG // FIXME
-#define DEBUG(...)      sfi_debug (debug_engine, __VA_ARGS__)
+#define EDEBUG(...)     BSE_KEY_DEBUG ("engine", __VA_ARGS__)
 
 /* some systems don't have ERESTART (which is what linux returns for system
  * calls on pipes which are being interrupted). most probably just use EINTR,
@@ -1245,10 +1243,10 @@ bse_engine_configure (guint            latency_ms,
   bse_engine_wait_on_trans();
   bse_engine_user_thread_collect();
   if (success)
-    DEBUG ("configured%s: mixfreq=%uHz bsize=%uvals craster=%u (cfreq=%f)",
-           bse_engine_threaded ? "(threaded)" : "",
-           bse_engine_sample_freq(), bse_engine_block_size(), bse_engine_control_raster(),
-           bse_engine_sample_freq() / (float) bse_engine_control_raster());
+    EDEBUG ("configured%s: mixfreq=%uHz bsize=%uvals craster=%u (cfreq=%f)",
+            bse_engine_threaded ? "(threaded)" : "",
+            bse_engine_sample_freq(), bse_engine_block_size(), bse_engine_control_raster(),
+            bse_engine_sample_freq() / (float) bse_engine_control_raster());
   return success;
 }
 /**

@@ -5,9 +5,11 @@
 #include <string.h>
 #include <vector>
 #include <string>
+
 #undef  WITH_GUSPATCH_XINFOS
-static SFI_MSG_TYPE_DEFINE (debug_guspatch, "guspatch", SFI_MSG_DEBUG, NULL);
-#define DEBUG(...)      sfi_debug (debug_guspatch, __VA_ARGS__)
+
+#define LDEBUG(...)     BSE_KEY_DEBUG ("loader", __VA_ARGS__)
+
 using std::vector;
 using std::string;
 /*
@@ -259,7 +261,7 @@ struct FileInfo
 	  {
 	    if (wave_format & PAT_FORMAT_LOOP_BACKWARDS)
 	      {
-		DEBUG ("unsupported loop type (backwards-pingpong)");
+		LDEBUG ("unsupported loop type (backwards-pingpong)");
 		return GSL_WAVE_LOOP_PINGPONG;
 	      }
 	    else
@@ -271,7 +273,7 @@ struct FileInfo
 	  {
 	    if (wave_format & PAT_FORMAT_LOOP_BACKWARDS)
 	      {
-		DEBUG ("unsupported loop type (backwards-jump)");
+		LDEBUG ("unsupported loop type (backwards-jump)");
 		return GSL_WAVE_LOOP_JUMP;
 	      }
 	    else
@@ -374,7 +376,7 @@ struct FileInfo
 	    fclose (patfile);
 	    return;
 	  }
-	DEBUG (" - read patch, srate = %d (%d bytes)", patch->sampleRate, patch->wavesize);
+	LDEBUG (" - read patch, srate = %d (%d bytes)", patch->sampleRate, patch->wavesize);
       }
     fclose (patfile);
     /* allocate and fill BseWaveFileInfo */
@@ -393,12 +395,12 @@ struct FileInfo
 	/* fill GslWaveChunk */
 	wdsc.chunks[i].mix_freq = patches[i]->sampleRate;
 	wdsc.chunks[i].osc_freq = patches[i]->origFreq / 1000.0;
-	DEBUG ("orig_freq = %f (%d)", patches[i]->origFreq / 1000.0, patches[i]->origFreq);
-	DEBUG ("min_freq = %f", patches[i]->minFreq / 1000.0);
-	DEBUG ("max_freq = %f", patches[i]->maxFreq / 1000.0);
-	DEBUG ("fine_tune = %d", patches[i]->fineTune);
-	DEBUG ("scale_freq = %d", patches[i]->freqScale);
-	DEBUG ("scale_factor = %d", patches[i]->freqScaleFactor);
+	LDEBUG ("orig_freq = %f (%d)", patches[i]->origFreq / 1000.0, patches[i]->origFreq);
+	LDEBUG ("min_freq = %f", patches[i]->minFreq / 1000.0);
+	LDEBUG ("max_freq = %f", patches[i]->maxFreq / 1000.0);
+	LDEBUG ("fine_tune = %d", patches[i]->fineTune);
+	LDEBUG ("scale_freq = %d", patches[i]->freqScale);
+	LDEBUG ("scale_factor = %d", patches[i]->freqScaleFactor);
 	/* fill xinfos */
 	char**& xinfos = wdsc.chunks[i].xinfos;
 	int frame_size = bytes_per_frame (patches[i]->waveFormat);
@@ -500,16 +502,16 @@ pat_create_chunk_handle (gpointer      data,
   FileInfo *file_info = reinterpret_cast<FileInfo*> (wave_dsc->file_info);
   const PatPatch *patch = file_info->patches[nth_chunk];
   const BseWaveChunkDsc *chunk = &wave_dsc->chunks[nth_chunk];
-  DEBUG ("pat loader chunk %d: gsl_wave_handle_new %s %d %d %d %f %f %u %d",
-         nth_chunk,
-         file_info->wfi.file_name,
-         wave_dsc->n_channels,
-         file_info->wave_format (patch->waveFormat),
-         G_LITTLE_ENDIAN,
-         chunk->mix_freq,
-         chunk->osc_freq,
-         file_info->data_offset (nth_chunk),
-         patch->wavesize / file_info->bytes_per_frame (patch->waveFormat));
+  LDEBUG ("pat loader chunk %d: gsl_wave_handle_new %s %d %d %d %f %f %u %d",
+          nth_chunk,
+          file_info->wfi.file_name,
+          wave_dsc->n_channels,
+          file_info->wave_format (patch->waveFormat),
+          G_LITTLE_ENDIAN,
+          chunk->mix_freq,
+          chunk->osc_freq,
+          file_info->data_offset (nth_chunk),
+          patch->wavesize / file_info->bytes_per_frame (patch->waveFormat));
   GslDataHandle *dhandle;
   dhandle = gsl_wave_handle_new (file_info->wfi.file_name,
 	                         wave_dsc->n_channels,
