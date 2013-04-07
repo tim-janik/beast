@@ -16,11 +16,13 @@
 #include "bsewaverepo.hh"
 #include "bsecxxplugin.hh"
 #include <string.h>
-static SFI_MSG_TYPE_DEFINE (debug_xref, "xref", SFI_MSG_DEBUG, NULL);
-#define XREF_DEBUG(...) sfi_debug (debug_xref, __VA_ARGS__)
+
+#define XREF_DEBUG(...) BSE_KEY_DEBUG ("xref", __VA_ARGS__)
+
 #define upper_power2(uint_n)	sfi_alloc_upper_power2 (MAX ((uint_n), 4))
 #define parse_or_return		bse_storage_scanner_parse_or_return
 #define peek_or_return		bse_storage_scanner_peek_or_return
+
 enum {
   PROP_0,
   PROP_MUTED,
@@ -31,6 +33,7 @@ enum {
   PROP_PNET,
   PROP_OUTPUTS
 };
+
 /* --- prototypes --- */
 static void         bse_track_class_init          (BseTrackClass *klass);
 static void         bse_track_init                (BseTrack      *self);

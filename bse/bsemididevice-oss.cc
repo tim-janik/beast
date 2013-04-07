@@ -5,6 +5,7 @@
 #include "gslcommon.hh" // FIXME: remove
 #include "bsesequencer.hh"
 #include "topconfig.h"
+
 #ifndef	BSE_MIDI_DEVICE_CONF_OSS
 BSE_DUMMY_TYPE (BseMidiDeviceOSS);
 #else   /* BSE_MIDI_DEVICE_CONF_OSS */
@@ -13,6 +14,7 @@ BSE_DUMMY_TYPE (BseMidiDeviceOSS);
 #elif HAVE_SOUNDCARD_H
 #include <soundcard.h>
 #endif
+
 #include <sys/ioctl.h>
 #include <sys/types.h>
 #include <sys/time.h>
@@ -20,14 +22,16 @@ BSE_DUMMY_TYPE (BseMidiDeviceOSS);
 #include <errno.h>
 #include <string.h>
 #include <fcntl.h>
-static SFI_MSG_TYPE_DEFINE (debug_midi, "midi", SFI_MSG_DEBUG, NULL);
-#define MIDI_DEBUG(...) sfi_debug (debug_midi, __VA_ARGS__)
+
+#define MDEBUG(...)     BSE_KEY_DEBUG ("midi-oss", __VA_ARGS__)
+
 /* --- structs --- */
 typedef struct
 {
   BseMidiHandle	handle;
   int		fd;
 } OSSHandle;
+
 /* --- prototypes --- */
 static gboolean         oss_midi_io_handler		(void          *data,
                                                          uint           n_pfds,
@@ -160,7 +164,7 @@ bse_midi_device_oss_open (BseDevice     *device,
 	close (oss->fd);
       g_free (oss);
     }
-  MIDI_DEBUG ("OSS: opening \"%s\" readable=%d writable=%d: %s", dname, require_readable, require_writable, bse_error_blurb (error));
+  MDEBUG ("opening \"%s\" readable=%d writable=%d: %s", dname, require_readable, require_writable, bse_error_blurb (error));
   return error;
 }
 static void

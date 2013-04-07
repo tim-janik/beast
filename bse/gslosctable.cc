@@ -4,8 +4,9 @@
 #include "bsemath.hh"
 #include "gslfft.hh"
 #include <string.h>
-static SFI_MSG_TYPE_DEFINE (debug_osc, "osc", SFI_MSG_DEBUG, NULL);
-#define OSC_DEBUG(...)  sfi_debug (debug_osc, __VA_ARGS__)
+
+#define ODEBUG(...)     BSE_KEY_DEBUG ("osc", __VA_ARGS__)
+
 #define	OSC_FREQ_EPSILON	(1e-3)	/* range within which frequencies are "equal" */
 /* compare mfreqs against each other, use an arbitrary sample rate
  * for which OSC_FREQ_EPSILON makes sense
@@ -156,20 +157,20 @@ osc_table_entry_lookup_best (const GslOscTable *table,
       if (i + 1 < g_bsearch_array_get_n_nodes (table->entry_array))
 	{
 	  ep = (OscTableEntry**) g_bsearch_array_get_nth (table->entry_array, &osc_taconfig, i + 1);
-	  OSC_DEBUG ("osc-lookup: want_freq=%f got_freq=%f (table=%p, i=%u, n=%u)",
-		     mfreq * table->mix_freq, (*ep)->mfreq * table->mix_freq,
-		     table, i + 1, g_bsearch_array_get_n_nodes (table->entry_array));
+	  ODEBUG ("osc-lookup: want_freq=%f got_freq=%f (table=%p, i=%u, n=%u)",
+                  mfreq * table->mix_freq, (*ep)->mfreq * table->mix_freq,
+                  table, i + 1, g_bsearch_array_get_n_nodes (table->entry_array));
 	}
       else	/* bad, might cause aliasing */
-	OSC_DEBUG ("osc-lookup: mismatch, aliasing possible: want_freq=%f got_freq=%f (table=%p, i=%u, n=%u)",
-		   mfreq * table->mix_freq, (*ep)->mfreq * table->mix_freq,
-		   table, i, g_bsearch_array_get_n_nodes (table->entry_array));
+	ODEBUG ("osc-lookup: mismatch, aliasing possible: want_freq=%f got_freq=%f (table=%p, i=%u, n=%u)",
+                mfreq * table->mix_freq, (*ep)->mfreq * table->mix_freq,
+                table, i, g_bsearch_array_get_n_nodes (table->entry_array));
     }
   else
-    OSC_DEBUG ("osc-lookup: want_freq=%f got_freq=%f (table=%p, i=%u, n=%u)",
-	       mfreq * table->mix_freq, (*ep)->mfreq * table->mix_freq,
-	       table, g_bsearch_array_get_index (table->entry_array, &osc_taconfig, ep),
-	       g_bsearch_array_get_n_nodes (table->entry_array));
+    ODEBUG ("osc-lookup: want_freq=%f got_freq=%f (table=%p, i=%u, n=%u)",
+            mfreq * table->mix_freq, (*ep)->mfreq * table->mix_freq,
+            table, g_bsearch_array_get_index (table->entry_array, &osc_taconfig, ep),
+            g_bsearch_array_get_n_nodes (table->entry_array));
   if (min_mfreq)
     {
       /* fetch mfreq from previous */
@@ -306,8 +307,8 @@ gsl_osc_table_create (gfloat         mix_freq,
 	  table->entry_array = g_bsearch_array_insert (table->entry_array, &osc_taconfig, &e);
 	}
       else if (e)
-	OSC_DEBUG ("not inserting existing entry (freq=%f) for freq %f (nyquist=%f)",
-		   e->mfreq * table->mix_freq, mfreq * table->mix_freq, nyquist);
+	ODEBUG ("not inserting existing entry (freq=%f) for freq %f (nyquist=%f)",
+                e->mfreq * table->mix_freq, mfreq * table->mix_freq, nyquist);
     }
   return table;
 }
@@ -345,7 +346,7 @@ gsl_osc_table_lookup (const GslOscTable	*table,
   else
     {
       /* shouldn't happen */
-      OSC_DEBUG ("table lookup revealed NULL, empty table?");
+      ODEBUG ("table lookup revealed NULL, empty table?");
       memset (wave, 0, sizeof (*wave));
     }
 }
@@ -367,7 +368,7 @@ gsl_osc_table_free (GslOscTable *table)
 void
 gsl_osc_cache_debug_dump (void)
 {
-  OSC_DEBUG ("left in cache: %u", g_bsearch_array_get_n_nodes (cache_entries));
+  ODEBUG ("left in cache: %u", g_bsearch_array_get_n_nodes (cache_entries));
 }
 void
 gsl_osc_wave_fill_buffer (GslOscWaveForm type,
