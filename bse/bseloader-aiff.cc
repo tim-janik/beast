@@ -9,14 +9,17 @@
 #include <unistd.h>
 #include <string.h>
 #include <errno.h>
+
+#define LDEBUG(...)     BSE_KEY_DEBUG ("aiff-loader", __VA_ARGS__)
+
 /* audio file loader for the FORM/AIFF sample format, according to:
  * "Audio Interchange File Format AIFF, A Standard for Sampled Sound Files, Version 1.3"
  */
+
 /* --- macros --- */
-static SFI_MSG_TYPE_DEFINE (debug_aiff, "aiff", SFI_MSG_DEBUG, NULL);
-#define AIFF_DEBUG(...)         sfi_debug (debug_aiff, __VA_ARGS__)
 #define AIFF_ULONG(a,b,c,d)     (((a) << 24) | ((b) << 16) | ((c) <<  8) | (d))
 #define AIFF_ID(str4)           AIFF_ULONG (str4[0], str4[1], str4[2], str4[3])
+
 /* --- structures & typedefs --- */
 typedef struct
 {
@@ -150,8 +153,8 @@ aiff_read_comm (int       fd,
       aiff_read_s16 (fd, &sample_size) < 0 ||
       aiff_read_f80 (fd, &sample_rate) < 0)
     return gsl_error_from_errno (errno, BSE_ERROR_FILE_READ_FAILED);
-  AIFF_DEBUG ("COMM: num_channels=%d num_sample_frames=%u sample_size=%d sample_rate=%f",
-              num_channels, num_sample_frames, sample_size, sample_rate);
+  LDEBUG ("COMM: num_channels=%d num_sample_frames=%u sample_size=%d sample_rate=%f",
+          num_channels, num_sample_frames, sample_size, sample_rate);
   if (num_channels <= 0 || sample_size <= 0 || sample_rate <= 0)
     return BSE_ERROR_DATA_CORRUPT;
   afile->n_channels = num_channels;
@@ -185,7 +188,7 @@ aiff_read_mark (int       fd,
       afile->markers[j].id = marker_id;
       afile->markers[j].pos = position;
       afile->markers[j].name = marker_name;
-      AIFF_DEBUG ("MARK: %u) >%u< \"%s\"", marker_id, position, marker_name);
+      LDEBUG ("MARK: %u) >%u< \"%s\"", marker_id, position, marker_name);
     }
   return BSE_ERROR_NONE;
 }
@@ -210,11 +213,11 @@ aiff_read_inst (int       fd,
   afile->instrument.release_loop_mode = GUINT16_FROM_BE (afile->instrument.release_loop_mode);
   afile->instrument.release_begin_id = GUINT16_FROM_BE (afile->instrument.release_begin_id);
   afile->instrument.release_end_id = GUINT16_FROM_BE (afile->instrument.release_end_id);
-  AIFF_DEBUG ("INST: N:%u<=%u%+d<=%u V:%u..%u G:%+ddB S:{%u:%u..%u} R:{%u:%u..%u}",
-              afile->instrument.low_note, afile->instrument.base_note, afile->instrument.detune, afile->instrument.high_note,
-              afile->instrument.low_velocity, afile->instrument.high_velocity, afile->instrument.gain_dB,
-              afile->instrument.sustain_loop_mode, afile->instrument.sustain_begin_id, afile->instrument.sustain_end_id,
-              afile->instrument.release_loop_mode, afile->instrument.release_begin_id, afile->instrument.release_end_id);
+  LDEBUG ("INST: N:%u<=%u%+d<=%u V:%u..%u G:%+ddB S:{%u:%u..%u} R:{%u:%u..%u}",
+          afile->instrument.low_note, afile->instrument.base_note, afile->instrument.detune, afile->instrument.high_note,
+          afile->instrument.low_velocity, afile->instrument.high_velocity, afile->instrument.gain_dB,
+          afile->instrument.sustain_loop_mode, afile->instrument.sustain_begin_id, afile->instrument.sustain_end_id,
+          afile->instrument.release_loop_mode, afile->instrument.release_begin_id, afile->instrument.release_end_id);
   return BSE_ERROR_NONE;
 }
 static BseErrorType
@@ -238,7 +241,7 @@ aiff_read_ssnd (int       fd,
     return BSE_ERROR_FORMAT_INVALID;
   afile->data_start = pos + alignment_offset;
   afile->data_size = chunk_size - 8 - alignment_offset;
-  AIFF_DEBUG ("SSND: pos:>%u< n_bytes:%u", afile->data_start, afile->data_size);
+  LDEBUG ("SSND: pos:>%u< n_bytes:%u", afile->data_start, afile->data_size);
   return BSE_ERROR_NONE;
 }
 static BseErrorType
@@ -256,7 +259,7 @@ aiff_append_string (int       fd,
     r = read (fd, string, chunk_size);
   while (r < 0 && errno == EINTR);
   string[r] = 0;
-  AIFF_DEBUG ("%c%c%c%c: %s", chunk_id >> 24, chunk_id >> 16 & 0xff, chunk_id >> 8 & 0xff, chunk_id & 0xff, string);
+  LDEBUG ("%c%c%c%c: %s", chunk_id >> 24, chunk_id >> 16 & 0xff, chunk_id >> 8 & 0xff, chunk_id & 0xff, string);
   *text = g_strconcat (old ? old : "", string, NULL);
   g_free (old);
   g_free (string);
@@ -296,8 +299,7 @@ aiff_file_load (int       fd,
         case AIFF_ULONG ('(','c',')',' '): error = aiff_append_string (fd, afile, chunk_id, chunk_size, &afile->copyright); break;
         case AIFF_ULONG ('A','N','N','O'): error = aiff_append_string (fd, afile, chunk_id, chunk_size, &afile->annotation); break;
         default:                           error = BSE_ERROR_NONE;      /* ignore unknown chunks */
-          AIFF_DEBUG ("%c%c%c%c: ignored...",
-                      chunk_id >> 24, chunk_id >> 16 & 0xff, chunk_id >> 8 & 0xff, chunk_id & 0xff);
+          LDEBUG ("%c%c%c%c: ignored...", chunk_id >> 24, chunk_id >> 16 & 0xff, chunk_id >> 8 & 0xff, chunk_id & 0xff);
         }
       if (error)
         return error;

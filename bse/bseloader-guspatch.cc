@@ -8,7 +8,7 @@
 
 #undef  WITH_GUSPATCH_XINFOS
 
-#define LDEBUG(...)     BSE_KEY_DEBUG ("loader", __VA_ARGS__)
+#define LDEBUG(...)     BSE_KEY_DEBUG ("gus-loader", __VA_ARGS__)
 
 using std::vector;
 using std::string;
@@ -34,10 +34,12 @@ fread_block (FILE *file,
              void *data)
 {
   if (fread (data, len, 1, file) != 1)
-    if (feof (file))
-      return BSE_ERROR_FILE_EOF;
-    else
-      return gsl_error_from_errno (errno, BSE_ERROR_FILE_READ_FAILED);
+    {
+      if (feof (file))
+        return BSE_ERROR_FILE_EOF;
+      else
+        return gsl_error_from_errno (errno, BSE_ERROR_FILE_READ_FAILED);
+    }
   return BSE_ERROR_NONE;
 }
 static inline BseErrorType
