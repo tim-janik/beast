@@ -9,15 +9,6 @@
 // FIXME: Introduce symbols from Rapicorn to ease transition.
 namespace Bse {
 
-using Rapicorn::ThreadInfo;
-using Rapicorn::EventFd;
-using Rapicorn::Spinlock;
-using Rapicorn::Mutex;
-using Rapicorn::RECURSIVE_LOCK;
-using Rapicorn::Cond;
-using Rapicorn::ScopedLock;
-using Rapicorn::AsyncBlockingQueue;
-
 };
 
 /* sfiwrapper.h is a thin C language wrapper around C++ features
