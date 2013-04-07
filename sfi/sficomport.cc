@@ -12,10 +12,9 @@
 #include <sys/time.h>
 #include <sys/types.h>
 #include <sys/wait.h>
-static SFI_MSG_TYPE_DEFINE (debug_comport, "comport", SFI_MSG_DEBUG, NULL);
-#undef DEBUG // FIXME
-#define DEBUG(...)              sfi_debug (debug_comport, __VA_ARGS__)
-#define MASS_DEBUG(...) // DEBUG (__VA_ARGS__)          // log every communicated value
+
+#define CDEBUG(...)     BSE_KEY_DEBUG ("comport", __VA_ARGS__)
+
 /* define the io bottle neck (for writes) to a small value
  * (e.g. 20) to trigger and test blocking IO on fast systems
  */
@@ -342,7 +341,7 @@ sfi_com_port_send_bulk (SfiComPort   *port,
       else
 	wakeup = first ? link->wakeup2 : link->wakeup1;
       link->mutex.unlock();
-      MASS_DEBUG ("[%s: sent values]", port->ident);
+      CDEBUG ("[%s: sent values]", port->ident);
       if (wakeup)
         wakeup();
     }
@@ -404,7 +403,7 @@ com_port_read_pending (SfiComPort *port)
 	  /* n==0 on pipes/fifos means remote closed the connection (end-of-file) */
 	  if (n == 0 || (n < 0 && errno != EINTR && errno != EAGAIN && errno != ERESTART))
 	    {
-	      DEBUG ("%s: during read: remote pipe closed", port->ident);
+	      CDEBUG ("%s: during read: remote pipe closed", port->ident);
 	      return FALSE;
 	    }
 	  /* check completed header */
@@ -454,7 +453,7 @@ com_port_read_pending (SfiComPort *port)
 	  /* n==0 on pipes/fifos means remote closed the connection (end-of-file) */
 	  if (n == 0 || (n < 0 && errno != EINTR && errno != EAGAIN && errno != ERESTART))
 	    {
-	      DEBUG ("%s: during read: remote pipe closed", port->ident);
+	      CDEBUG ("%s: during read: remote pipe closed", port->ident);
 	      return FALSE;
 	    }
 	}
@@ -505,7 +504,7 @@ static GValue*
 sfi_com_port_recv_intern (SfiComPort *port,
 			  gboolean    blocking)
 {
-  MASS_DEBUG ("[%s: START receiving]", port->ident);
+  CDEBUG ("[%s: START receiving]", port->ident);
   if (!port->rvalues && port->link)
     {
       SfiComPortLink *link = port->link;
@@ -561,7 +560,7 @@ sfi_com_port_recv_intern (SfiComPort *port,
           goto loop_blocking;
         }
     }
-  MASS_DEBUG ("[%s: DONE receiving]", port->ident);
+  CDEBUG ("[%s: DONE receiving]", port->ident);
   return port->connected ? (GValue*) sfi_ring_pop_head (&port->rvalues) : NULL;
 }
 GValue*
