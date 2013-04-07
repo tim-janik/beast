@@ -64,15 +64,9 @@ typedef struct {
   SfiRing              *midi_drivers;
 } BseMainArgs;
 
-/* --- debuging channels --- */
-typedef struct {
-  SfiDebugChannel       *sequencer;     /* --bse-trace-sequencer */
-} BseTraceArgs;
-
 /* --- internal --- */
 void    _bse_init_c_wrappers    ();
 extern BseMainArgs     *bse_main_args;
-extern BseTraceArgs     bse_trace_args;
 extern GMainContext    *bse_main_context;
 
 G_END_DECLS

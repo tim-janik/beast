@@ -2,7 +2,6 @@
 #ifndef __BIRNET_H__
 #define __BIRNET_H__
 #include <birnet/birnetconfig.h>
-#include <birnet/birnetdebugtools.hh>
 #include <birnet/birnetmsg.hh>
 #include <birnet/birnetutils.hh>
 

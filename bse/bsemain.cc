@@ -60,7 +60,6 @@ static BseMainArgs       default_main_args = {
   false,                // force_fpu
 };
 BseMainArgs             *bse_main_args = NULL;
-BseTraceArgs             bse_trace_args = { NULL, };
 
 // == BSE Initialization ==
 void
@@ -495,22 +494,6 @@ bse_async_parse_args (gint           *argc_p,
 	      argv[i++] = NULL;
 	      sfi_msg_deny (argv[i]);
 	    }
-	  argv[i] = NULL;
-	}
-      else if (strcmp ("--bse-trace-sequencer", argv[i]) == 0 ||
-	       strncmp ("--bse-trace-sequencer=", argv[i], 22) == 0)
-	{
-	  gchar *equal = argv[i] + 21;
-          const char *arg = NULL;
-	  if (*equal == '=')
-            arg = equal + 1;
-	  else if (i + 1 < argc)
-	    {
-	      argv[i++] = NULL;
-	      arg = argv[i];
-	    }
-          if (!bse_trace_args.sequencer && arg)
-            bse_trace_args.sequencer = sfi_debug_channel_from_file_async (arg);
 	  argv[i] = NULL;
 	}
       else if (strcmp ("--bse-latency", argv[i]) == 0 ||
