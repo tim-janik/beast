@@ -1,7 +1,6 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bstutils.hh"
 #include "bstcxxutils.hh"
-#include "bse/bse.hh"
 #include "bstapp.hh"
 #include "bstsplash.hh"
 #include "bstxkb.hh"
@@ -216,6 +215,10 @@ main (int   argc,
     }
   /* listen to BseServer notification */
   bst_splash_update_entity (beast_splash, _("Dialogs"));
+
+  // hook up Bse aida IDL with main loop
+  bst_init_aida_idl();
+
   bst_message_connect_to_server ();
   _bst_init_radgets ();
   /* install message dialog handler */
@@ -363,9 +366,6 @@ main (int   argc,
   gtk_widget_hide (beast_splash);
   bst_splash_release_grab (beast_splash);
 
-  // hook up Bse aida IDL with main loop
-  bst_init_aida_idl();
-
   /* away into the main loop */
   while (bst_main_loop_running)
     {
@@ -432,6 +432,7 @@ echo_test_handler (const std::string &msg)
 static void
 bst_init_aida_idl()
 {
+  assert (bse_server == NULL);
   // hook Aida connection into our main loop
   Bse::AidaGlibSource *source = Bse::AidaGlibSource::create (Bse::ServerH::__aida_connection__());
   g_source_set_priority (source, G_PRIORITY_DEFAULT);
@@ -439,13 +440,13 @@ bst_init_aida_idl()
   // fetch initial remote object reference
   auto aidabsekeys = Rapicorn::string_split ("CxxStub:AidaServerConnection:idl_file=\\bbse/bseapi.idl", ":");
   Rapicorn::Aida::SmartHandle smh = Bse::ServerH::__aida_connection__()->remote_origin (aidabsekeys);
-  Bse::ServerH server = Rapicorn::Aida::ObjectBroker::smart_handle_down_cast<Bse::ServerH> (smh);
-  g_assert (server != NULL);
+  bse_server = Rapicorn::Aida::ObjectBroker::smart_handle_down_cast<Bse::ServerH> (smh);
+  assert (bse_server != NULL);
 
   // performa Bse Aida test
   if (0)
     {
-      Bse::TestObjectH test = server.get_test_object();
+      Bse::TestObjectH test = bse_server.get_test_object();
       test.sig_echo_reply() += echo_test_handler;
       const int test_result = test.echo_test ("foo");
       g_assert (test_result == 3);

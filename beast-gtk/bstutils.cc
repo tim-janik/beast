@@ -20,10 +20,13 @@
 #include <string.h>
 /* --- generated enums --- */
 #include "bstenum_arrays.cc"     /* enum string value arrays plus include directives */
+
 /* --- prototypes --- */
 static void     _bst_init_idl                   (void);
 /* --- variables --- */
 static GtkIconFactory *stock_icon_factory = NULL;
+Bse::ServerH bse_server;
+
 /* --- functions --- */
 void
 _bst_init_utils (void)
