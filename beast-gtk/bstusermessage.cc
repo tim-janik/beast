@@ -623,7 +623,7 @@ text_concat (char *prefix,
 /**
  * bst_message_dialog_display
  * @param log_domain   log domain
- * @param level        one of %BST_MSG_ERROR, %BST_MSG_WARNING, %BST_MSG_INFO, %BST_MSG_DIAG
+ * @param mtype        one of %BST_MSG_ERROR, %BST_MSG_WARNING, %BST_MSG_INFO, %BST_MSG_DIAG
  * @param n_bits       number of message bits
  * @param bits         message bits from bst_msg_bit_printf
  *
@@ -740,9 +740,42 @@ server_script_error (SfiProxy     server,
   bst_message_handler (&msg);
   message_free_from_script (&msg);
 }
+
+static void
+server_user_message (const Bse::UserMessage &umsg)
+{
+  Rapicorn::Aida::EnumInfo einfo = Rapicorn::Aida::enum_info<Bse::UserMessageType> ();
+  auto convert_msg_type = [] (Bse::UserMessageType mtype) {
+    switch (mtype)
+      {
+      case Bse::ERROR:          return BST_MSG_ERROR;
+      case Bse::WARNING:        return BST_MSG_WARNING;
+      case Bse::INFO:           return BST_MSG_INFO;
+      case Bse::DEBUG:          return BST_MSG_DEBUG;
+      default:                  return BST_MSG_DIAG;
+      }
+  };
+  BstMessage msg = { 0, };
+  msg.log_domain = "BSE";
+  msg.type = convert_msg_type (umsg.type);
+  msg.title = umsg.title.c_str();
+  msg.primary = umsg.text1.c_str();
+  msg.secondary = umsg.text2.c_str();
+  msg.details = umsg.text3.c_str();
+  Bse::String cfg = Bse::string_printf (_("Show messages about %s"), umsg.label.c_str());
+  msg.config_check = cfg.c_str();
+  msg.ident = einfo.find_first (umsg.type)->name;
+  msg.label = NULL;
+  msg.janitor = 0;
+  msg.process = 0;
+  msg.pid = 0;
+  bst_message_handler (&msg);
+}
+
 void
 bst_message_connect_to_server (void)
 {
+  bse_server.sig_user_message() += server_user_message;
   bse_proxy_connect (BSE_SERVER,
 		     "signal::message", server_bse_message, NULL,
 		     "signal::script_start", server_script_start, NULL,
@@ -750,6 +783,7 @@ bst_message_connect_to_server (void)
 		     NULL);
   bse_proxy_set (BSE_SERVER, "log-messages", FALSE, NULL);
 }
+
 static int
 msg_id_compare (const void *v1, const void *v2)
 {
