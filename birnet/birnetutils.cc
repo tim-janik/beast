@@ -1,7 +1,6 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include <glib.h>
 #include "birnetutils.hh"
-#include "birnetmsg.hh"
 #include <unistd.h>
 #include <errno.h>
 #include <sys/types.h>
@@ -18,7 +17,6 @@
 #define _(s)    s
 #endif
 namespace Birnet {
-static Msg::CustomType debug_browser ("browser", Msg::DEBUG);
 static const InitSettings *birnet_init_settings = NULL;
 InitSettings
 init_settings ()
@@ -394,7 +392,7 @@ url_test_show (const char *url)
                                    NULL, /* child_pid */
                                    &error);
         g_free (string);
-        Msg::display (debug_browser, "show \"%s\": %s: %s", url, args[0], error ? error->message : fallback_error);
+        // FIXME: Msg::display (debug_browser, "show \"%s\": %s: %s", url, args[0], error ? error->message : fallback_error);
         g_clear_error (&error);
         if (success)
           return true;
@@ -408,11 +406,13 @@ url_test_show (const char *url)
 static void
 browser_launch_warning (const char *url)
 {
+#if 0 // FIXME
   Msg::display (Msg::WARNING,
                 Msg::Title (_("Launch Web Browser")),
                 Msg::Text1 (_("Failed to launch a web browser executable")),
                 Msg::Text2 (_("No suitable web browser executable could be found to be executed and to display the URL: %s"), url),
                 Msg::Check (_("Show messages about web browser launch problems")));
+#endif
 }
 void
 url_show (const char *url)

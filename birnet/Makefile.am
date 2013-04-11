@@ -10,12 +10,10 @@ GLIB_MKENUMS    = glib-mkenums
 birnet_headers = $(strip 		\
 	birnet.hh			\
 	birnetcdefs.h			\
-	birnetmsg.hh			\
 	birnettests.h			\
 	birnetutils.hh			\
 )
 birnet_sources = $(strip 		\
-	birnetmsg.cc			\
 	birnetutils.cc			\
 )
 birnet_private_headers = $(strip 	\
