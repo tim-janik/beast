@@ -334,7 +334,7 @@ all: # TAGS
 # other programs, we want to compile
 #
 noinst_PROGRAMS = $(ALLTESTS)
-progs_LDADD = libbse.la $(SFI_LIBS) -lm
+progs_LDADD = libbse.la $(RAPICORN_LIBS) $(SFI_LIBS) -lm
 # source files
 
 noinst_PROGRAMS   += bseprocidl
