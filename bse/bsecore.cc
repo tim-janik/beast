@@ -21,9 +21,9 @@ init_glue_context (const gchar *client, const std::function<void()> &caller_wake
  * from @a argc / @a argv.
  */
 void
-init_async (int *argc, char ***argv, const char *app_name, SfiInitValue values[])
+init_async (int *argc, char **argv, const char *app_name, const StringVector &args)
 {
-  _bse_init_async (argc, argv, app_name, values);
+  _bse_init_async (argc, argv, app_name, args);
 }
 
 // == TaskRegistry ==

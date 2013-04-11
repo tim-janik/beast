@@ -23,7 +23,7 @@ public:
 // == BSE Initialization ==
 
 SfiGlueContext*	init_glue_context   (const gchar *client, const std::function<void()> &caller_wakeup);
-void		init_async	    (int *argc, char ***argv, const char *app_name, SfiInitValue values[]);
+void		init_async	    (int *argc, char **argv, const char *app_name, const StringVector &args = StringVector());
 
 /// A GSource implementation to attach an Aida::BaseConnection to a Glib main loop.
 class AidaGlibSource : public GSource {

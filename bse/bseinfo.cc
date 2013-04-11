@@ -36,7 +36,7 @@ main (int   argc,
 {
   int j, k;
   g_thread_init (NULL);
-  bse_init_inprocess (&argc, &argv, "BseInfo", NULL);
+  bse_init_inprocess (&argc, argv, "BseInfo");
   g_print ("Rate relevant limits:\n");
   print_int       ("BSE_MIN_OCTAVE   ", BSE_MIN_OCTAVE);
   print_int       ("BSE_MAX_OCTAVE   ", BSE_MAX_OCTAVE);

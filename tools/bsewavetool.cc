@@ -58,14 +58,9 @@ main (int   argc,
   std::set_terminate (__gnu_cxx::__verbose_terminate_handler);
   /* initialization */
   int orig_argc = argc;
-  SfiInitValue values[] = {
-    { "stand-alone",            "true" }, /* no rcfiles etc. */
-    { "wave-chunk-padding",     NULL, 1, },
-    { "dcache-block-size",      NULL, 8192, },
-    { "dcache-cache-memory",    NULL, 5 * 1024 * 1024, },
-    { NULL }
-  };
-  bse_init_inprocess (&argc, &argv, "BseWaveTool", values);
+  bse_init_inprocess (&argc, argv, "BseWaveTool",
+                      Bse::cstrings_to_vector ("stand-alone=1", "wave-chunk-padding=1",
+                                               "dcache-block-size=8192", "dcache-cache-memory=5242880", NULL));
   /* pre-parse argument list to decide command */
   wavetool_parse_args (&argc, &argv);
   /* check args */

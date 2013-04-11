@@ -21,8 +21,7 @@
 extern "C" void bse_object_debug_leaks (void); // FIXME
 
 /* --- prototypes --- */
-static void			bst_early_parse_args	(gint        *argc_p,
-							 gchar     ***argv_p);
+static void			bst_early_parse_args	(int *argc_p, char **argv);
 static void			bst_print_blurb		(void);
 static void			bst_exit_print_version	(void);
 static void                     bst_init_aida_idl       ();
@@ -67,11 +66,6 @@ main (int   argc,
   GdkPixbufAnimation *anim;
   gchar *string;
   GSource *source;
-  char debugbool[2] = "0";
-  SfiInitValue config[] = {
-    { "debug-extensions", debugbool },
-    { NULL },
-  };
   guint i;
   /* initialize i18n */
   bindtextdomain (BST_GETTEXT_DOMAIN, BST_PATH_LOCALE);
@@ -93,9 +87,7 @@ main (int   argc,
   sfi_init (&argc, &argv, _("BEAST"), NULL);  /* application name is user visible */       
   /* ensure SFI can wake us up */
   /* initialize Gtk+ and go into threading mode */
-  bst_early_parse_args (&argc, &argv);
-  if (bst_debug_extensions)
-    debugbool[0] = '1';
+  bst_early_parse_args (&argc, argv);
   gtk_init (&argc, &argv);
   GDK_THREADS_ENTER ();
   /* initialize Gtk+ Extension Kit */
@@ -138,7 +130,8 @@ main (int   argc,
     }
   /* start BSE core and connect */
   bst_splash_update_item (beast_splash, _("BSE Core"));
-  Bse::init_async (&argc, &argv, "BEAST", config);
+  Bse::String bseoptions = Bse::string_printf ("debug-extensions=%d", bst_debug_extensions);
+  Bse::init_async (&argc, argv, "BEAST", Bse::string_split (bseoptions, ":"));
   sfi_glue_context_push (Bse::init_glue_context ("BEAST", bst_main_loop_wakeup));
   source = g_source_simple (GDK_PRIORITY_EVENTS, // G_PRIORITY_HIGH - 100,
 			    (GSourcePending) sfi_glue_context_pending,
@@ -448,13 +441,11 @@ bst_init_aida_idl()
 }
 
 static void
-bst_early_parse_args (int    *argc_p,
-		      char ***argv_p)
+bst_early_parse_args (int *argc_p, char **argv)
 {
-  guint argc = *argc_p;
-  gchar **argv = *argv_p;
-  guint i, e;
-  gboolean initialize_bse_and_exit = FALSE;
+  uint argc = *argc_p;
+  uint i, e;
+  bool initialize_bse_and_exit = false;
   for (i = 1; i < argc; i++)
     {
       if (strcmp (argv[i], "--") == 0)
@@ -639,7 +630,7 @@ bst_early_parse_args (int    *argc_p,
   *argc_p = e;
   if (initialize_bse_and_exit)
     {
-      Bse::init_async (argc_p, argv_p, "BEAST", NULL);
+      Bse::init_async (argc_p, argv, "BEAST");
       exit (0);
     }
 }
@@ -650,7 +641,7 @@ bst_exit_print_version (void)
   const gchar *c;
   gchar *freeme = NULL;
   /* hack: start BSE, so we can query it for paths, works since we immediately exit() afterwards */
-  Bse::init_async (NULL, NULL, "BEAST", NULL);
+  Bse::init_async (NULL, NULL, "BEAST");
   sfi_glue_context_push (Bse::init_glue_context ("BEAST", bst_main_loop_wakeup));
   g_print ("BEAST version %s (%s)\n", BST_VERSION, BST_VERSION_HINT);
   g_print ("Libraries: ");

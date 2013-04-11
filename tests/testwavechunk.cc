@@ -360,14 +360,8 @@ main (gint   argc,
       gchar *argv[])
 {
   /* init */
-  SfiInitValue ivalues[] = {
-    { "stand-alone",            "true" }, /* no rcfiles etc. */
-    { "wave-chunk-padding",     NULL, 1, },
-    { "wave_chunk_big_pad",     NULL, 2, },
-    { "dcache_block_size",      NULL, 16, },
-    { NULL }
-  };
-  bse_init_test (&argc, &argv, ivalues);
+  bse_init_test (&argc, argv, Bse::cstrings_to_vector ("stand-alone=1", "wave-chunk-padding=1", NULL));
+  // "wave-chunk-big-pad=2", "dcache-block-size=16"
   reversed_datahandle_test();
   simple_loop_tests();
   multi_channel_tests();

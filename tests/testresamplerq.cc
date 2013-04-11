@@ -209,11 +209,7 @@ main (int argc, char **argv)
            options.test_size, options.rand_samples);
   run_tests ("FPU");
   /* load plugins */
-  SfiInitValue config[] = {
-    { "load-core-plugins", "1" },
-    { NULL },
-  };
-  bse_init_test (&argc, &argv, config);
+  bse_init_test (&argc, argv, Bse::cstrings_to_vector ("load-core-plugins=1", NULL));
   /* check for possible specialization */
   if (Bse::Block::default_singleton() == Bse::Block::current_singleton())
     return 0;   /* nothing changed */

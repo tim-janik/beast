@@ -103,7 +103,7 @@ int
 main (gint   argc,
       gchar *argv[])
 {
-  bse_init_test (&argc, &argv, NULL);
+  bse_init_test (&argc, argv);
   check_cent_tune();
   check_cent_tune_fast();
   check_equal_tempered_tuning();

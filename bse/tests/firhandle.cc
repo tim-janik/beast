@@ -354,7 +354,7 @@ int
 main (int    argc,
       char **argv)
 {
-  bse_init_test (&argc, &argv, NULL);
+  bse_init_test (&argc, argv);
   test_with_sine_sweep (FIR_HIGHPASS);
   test_multi_channel (FIR_HIGHPASS);
   test_seek (FIR_HIGHPASS);

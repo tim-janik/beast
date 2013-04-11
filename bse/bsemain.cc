@@ -23,10 +23,7 @@ using namespace Birnet;
 
 /* --- prototypes --- */
 static void	bse_main_loop		(Rapicorn::AsyncBlockingQueue<int> *init_queue);
-static void	bse_async_parse_args	(gint	        *argc_p,
-					 gchar	      ***argv_p,
-                                         BseMainArgs    *margs,
-                                         SfiInitValue    values[]);
+static void	bse_async_parse_args	(int *argc_p, char **argv_p, BseMainArgs *margs, const Bse::StringVector &args);
 namespace Bse {
 static void     init_aida_idl ();
 } // Bse
@@ -43,7 +40,6 @@ GMainContext            *bse_main_context = NULL;
 static volatile gboolean bse_initialization_stage = 0;
 static gboolean          textdomain_setup = FALSE;
 static BseMainArgs       default_main_args = {
-  { 0, },               // BirnetInitSettings
   1,                    // n_processors
   64,                   // wave_chunk_padding
   256,                  // wave_chunk_big_pad
@@ -56,6 +52,7 @@ static BseMainArgs       default_main_args = {
   NULL,                 // override_plugin_globs
   NULL,                 // override_script_path
   NULL,			// override_sample_path
+  false,                // stand_alone
   true,                 // allow_randomization
   false,                // force_fpu
 };
@@ -80,7 +77,7 @@ bse_gettext (const gchar *text)
 static std::thread async_bse_thread;
 
 void
-_bse_init_async (int *argc, char ***argv, const char *app_name, SfiInitValue values[])
+_bse_init_async (int *argc, char **argv, const char *app_name, const Bse::StringVector &args)
 {
   assert (async_bse_thread.get_id() == std::thread::id());      // no async_bse_thread started
   bse_init_textdomain_only();
@@ -93,15 +90,14 @@ _bse_init_async (int *argc, char ***argv, const char *app_name, SfiInitValue val
   /* paranoid assertions */
   g_assert (G_BYTE_ORDER == G_LITTLE_ENDIAN || G_BYTE_ORDER == G_BIG_ENDIAN);
   /* initialize submodules */
-  sfi_init (argc, argv, app_name, values);
+  sfi_init (argc, &argv, app_name, NULL);
   bse_main_args = &default_main_args;
-  bse_main_args->birnet = sfi_init_settings();
   /* handle argument early*/
   if (argc && argv)
     {
       if (*argc && !g_get_prgname ())
-	g_set_prgname (**argv);
-      bse_async_parse_args (argc, argv, bse_main_args, values);
+	g_set_prgname (*argv);
+      bse_async_parse_args (argc, argv, bse_main_args, args);
     }
   // start main BSE thread
   auto *init_queue = new Rapicorn::AsyncBlockingQueue<int>();
@@ -244,11 +240,7 @@ server_registration (SfiProxy            server,
     }
 }
 static void
-bse_init_intern (gint           *argc,
-		 gchar        ***argv,
-                 const char     *app_name,
-		 SfiInitValue    values[],
-                 bool            as_test)
+bse_init_intern (int *argc, char **argv, const char *app_name, const Bse::StringVector &args, bool as_test)
 {
   bse_init_textdomain_only();
   if (bse_initialization_stage != 0)
@@ -260,17 +252,16 @@ bse_init_intern (gint           *argc,
   g_assert (G_BYTE_ORDER == G_LITTLE_ENDIAN || G_BYTE_ORDER == G_BIG_ENDIAN);
   /* initialize submodules */
   if (as_test)
-    sfi_init_test (argc, argv, values);
+    sfi_init_test (argc, &argv, NULL);
   else
-    sfi_init (argc, argv, app_name, values);
+    sfi_init (argc, &argv, app_name, NULL);
   bse_main_args = &default_main_args;
-  bse_main_args->birnet = sfi_init_settings();
   /* early argument handling */
   if (argc && argv)
     {
       if (*argc && !g_get_prgname ())
-	g_set_prgname (**argv);
-      bse_async_parse_args (argc, argv, bse_main_args, values);
+	g_set_prgname (*argv);
+      bse_async_parse_args (argc, argv, bse_main_args, args);
     }
   bse_init_core ();
   /* initialize core plugins & scripts */
@@ -309,20 +300,17 @@ bse_init_intern (gint           *argc,
     }
   // sfi_glue_gc_run ();
 }
+
 void
-bse_init_inprocess (gint           *argc,
-                    gchar        ***argv,
-                    const char     *app_name,
-                    SfiInitValue    values[])
+bse_init_inprocess (int *argc, char **argv, const char *app_name, const Bse::StringVector &args)
 {
-  bse_init_intern (argc, argv, app_name, values, false);
+  bse_init_intern (argc, argv, app_name, args, false);
 }
+
 void
-bse_init_test (gint           *argc,
-               gchar        ***argv,
-               SfiInitValue    values[])
+bse_init_test (int *argc, char **argv, const Bse::StringVector &args)
 {
-  bse_init_intern (argc, argv, NULL, values, true);
+  bse_init_intern (argc, argv, NULL, args, true);
 }
 
 static void
@@ -358,14 +346,48 @@ get_n_processors (void)
 #endif
   return 1;
 }
-static void
-bse_async_parse_args (gint           *argc_p,
-		      gchar        ***argv_p,
-                      BseMainArgs    *margs,
-                      SfiInitValue    values[])
+
+static bool
+parse_bool_option (const String &s, const char *arg, bool *boolp)
 {
-  guint argc = *argc_p;
-  gchar **argv = *argv_p;
+  const size_t length = strlen (arg);
+  if (s.size() > length && s[length] == '=' && strncmp (&s[0], arg, length) == 0)
+    {
+      *boolp = string_to_bool (s.substr (length + 1));
+      return true;
+    }
+  return false;
+}
+
+static bool
+parse_int_option (const String &s, const char *arg, int64 *ip)
+{
+  const size_t length = strlen (arg);
+  if (s.size() > length && s[length] == '=' && strncmp (&s[0], arg, length) == 0)
+    {
+      *ip = string_to_int (s.substr (length + 1));
+      return true;
+    }
+  return false;
+}
+
+static bool
+parse_float_option (const String &s, const char *arg, double *fp)
+{
+  const size_t length = strlen (arg);
+  if (s.size() > length && s[length] == '=' && strncmp (&s[0], arg, length) == 0)
+    {
+      *fp = string_to_float (s.substr (length + 1));
+      return true;
+    }
+  return false;
+}
+
+static void
+bse_async_parse_args (int *argc_p, char **argv_p, BseMainArgs *margs, const Bse::StringVector &args)
+{
+  uint argc = *argc_p;
+  char **argv = argv_p;
   /* this function is called before the main BSE thread is started,
    * so we can't use any BSE functions yet.
    */
@@ -502,35 +524,33 @@ bse_async_parse_args (gint           *argc_p,
           argv[i] = NULL;
       }
   *argc_p = e;
-  if (values)
+  for (auto arg : args)
     {
-      SfiInitValue *value = values;
-      while (value->value_name)
-        {
-          if (strcmp (value->value_name, "debug-extensions") == 0)
-            margs->debug_extensions |= sfi_init_value_bool (value);
-          else if (strcmp (value->value_name, "force-fpu") == 0)
-            margs->force_fpu |= sfi_init_value_bool (value);
-          else if (strcmp (value->value_name, "allow-randomization") == 0)
-            margs->allow_randomization |= sfi_init_value_bool (value);
-          else if (strcmp (value->value_name, "load-core-plugins") == 0)
-            margs->load_core_plugins |= sfi_init_value_bool (value);
-          else if (strcmp (value->value_name, "load-core-scripts") == 0)
-            margs->load_core_scripts |= sfi_init_value_bool (value);
-          else if (strcmp ("wave-chunk-padding", value->value_name) == 0)
-            margs->wave_chunk_padding = sfi_init_value_int (value);
-          else if (strcmp ("wave-chunk-big-pad", value->value_name) == 0)
-            margs->wave_chunk_big_pad = sfi_init_value_int (value);
-          else if (strcmp ("dcache-cache-memory", value->value_name) == 0)
-            margs->dcache_cache_memory = sfi_init_value_int (value);
-          else if (strcmp ("dcache-block-size", value->value_name) == 0)
-            margs->dcache_block_size = sfi_init_value_int (value);
-          else if (strcmp ("midi-kammer-note", value->value_name) == 0)
-            margs->midi_kammer_note = sfi_init_value_int (value);
-          else if (strcmp ("kammer-freq", value->value_name) == 0)
-            margs->kammer_freq = sfi_init_value_double (value);
-          value++;
-        }
+      bool b; double d; int64 i;
+      if      (parse_bool_option (arg, "stand-alone", &b))
+        margs->stand_alone |= b;
+      else if (parse_bool_option (arg, "allow-randomization", &b))
+        margs->allow_randomization |= b;
+      else if (parse_bool_option (arg, "force-fpu", &b))
+        margs->force_fpu |= b;
+      else if (parse_bool_option (arg, "load-core-plugins", &b))
+        margs->load_core_plugins |= b;
+      else if (parse_bool_option (arg, "load-core-scripts", &b))
+        margs->load_core_scripts |= b;
+      else if (parse_bool_option (arg, "debug-extensions", &b))
+        margs->debug_extensions |= b;
+      else if (parse_int_option (arg, "wave-chunk-padding", &i))
+        margs->wave_chunk_padding = i;
+      else if (parse_int_option (arg, "wave-chunk-big-pad", &i))
+        margs->wave_chunk_big_pad = i;
+      else if (parse_int_option (arg, "dcache-cache-memory", &i))
+        margs->dcache_cache_memory = i;
+      else if (parse_int_option (arg, "dcache-block-size", &i))
+        margs->dcache_block_size = i;
+      else if (parse_int_option (arg, "midi-kammer-note", &i))
+        margs->midi_kammer_note = i;
+      else if (parse_float_option (arg, "kammer-freq", &d))
+        margs->kammer_freq = d;
     }
   /* constrain (user) config */
   margs->wave_chunk_padding = MAX (1, margs->wave_chunk_padding);

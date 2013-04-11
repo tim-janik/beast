@@ -193,7 +193,7 @@ int
 main (int   argc,
       char *argv[])
 {
-  bse_init_test (&argc, &argv, NULL);
+  bse_init_test (&argc, argv);
   g_printerr ("Checking if your processor is in 'denormals are zero' (DAZ) mode... ");
   bool daz_mode = check_denormals_are_zero();
   g_printerr (daz_mode ? "yes - skipping subnormal elimination tests.\n" : "no.\n");

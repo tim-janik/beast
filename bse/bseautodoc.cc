@@ -493,23 +493,17 @@ main (gint   argc,
   gboolean gen_procs = FALSE;
   gboolean gen_structs = FALSE;
   gboolean gen_objects = FALSE;
-  char pluginbool[2] = "0";
-  char scriptbool[2] = "0";
-  SfiInitValue config[] = {
-    { "load-core-plugins", pluginbool },
-    { "load-core-scripts", scriptbool },
-    { NULL },
-  };
+  const char *pluginbool = "load-core-plugins=0";
+  const char *scriptbool = "load-core-scripts=0";
   g_thread_init (NULL);
   sfi_init (&argc, &argv, "BseAutoDoc", NULL);
   boxed_type_tag = g_quark_from_static_string ("bse-auto-doc-boxed-type-tag");
-  guint i;
-  for (i = 1; i < argc; i++)
+  for (int i = 1; i < argc; i++)
     {
       if (strcmp ("-p", argv[i]) == 0)
-        pluginbool[0] = '1';
+        pluginbool = "load-core-plugins=1";
       else if (strcmp ("-s", argv[i]) == 0)
-        scriptbool[0] = '1';
+        scriptbool = "load-core-scripts=1";
       else if (strcmp ("--bse-rcfile", argv[i]) == 0 && i + 1 < argc)
         {
           /* ignore, BSE handles this */
@@ -545,7 +539,7 @@ main (gint   argc,
       else
 	return help (argv[0], argv[i]);
     }
-  bse_init_inprocess (&argc, &argv, "BseAutoDoc", config);
+  bse_init_inprocess (&argc, argv, "BseAutoDoc", Bse::cstrings_to_vector (pluginbool, scriptbool, NULL));
   tag_all_boxed_pspecs ();
   if (gen_procs)
     show_procdoc ();

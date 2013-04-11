@@ -44,7 +44,7 @@ main (int   argc,
   struct timeval tv;
   guint i;
   /* initialize */
-  bse_init_test (&argc, &argv, NULL);
+  bse_init_test (&argc, argv);
   /* initialize random numbers */
   gettimeofday (&tv, NULL);
   srand (tv.tv_sec ^ tv.tv_usec);

@@ -168,7 +168,7 @@ main (int argc, char **argv)
   for (i = 0; i < n_channels * n_values; i++)
     values[i] = 1.0 - rand() / (0.5 * RAND_MAX);
   /* init bse */
-  bse_init_test (&argc, &argv, NULL);
+  bse_init_test (&argc, argv);
   /* test loophandle against the reference implementation */
   GslDataHandle *mem_handle = gsl_data_handle_new_mem (n_channels, 32, 44100, 440, n_values, values, NULL /* don't free */);
   check_loop (mem_handle, 0, n_values - 1);

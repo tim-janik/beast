@@ -764,7 +764,7 @@ int
 main (int    argc,
       char **argv)
 {
-  bse_init_test (&argc, &argv, NULL);
+  bse_init_test (&argc, argv);
   butterwoth_tests ();
   chebychev1_tests ();
   test_problem_candidates ();

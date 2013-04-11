@@ -172,7 +172,7 @@ bse_server_init (BseServer *self)
   main_thread_source_setup (self);
   /* read rc file */
   int fd = -1;
-  if (!bse_main_args->birnet.stand_alone &&
+  if (!bse_main_args->stand_alone &&
       bse_main_args->bse_rcfile &&
       bse_main_args->bse_rcfile[0])
     fd = open (bse_main_args->bse_rcfile, O_RDONLY, 0);

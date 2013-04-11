@@ -47,14 +47,9 @@ main (int   argc,
   shift_argc = argc;
   shift_argv = (const gchar**) argv;
   /* init */
-  SfiInitValue values[] = {
-    { "stand-alone",            "true" }, /* no rcfiles etc. */
-    { "wave-chunk-padding",     NULL, 1, },
-    { "dcache-block-size",      NULL, 8192, },
-    { "dcache-cache-memory",    NULL, 5 * 1024 * 1024, },
-    { NULL }
-  };
-  bse_init_inprocess (&argc, &argv, NULL, values);
+  bse_init_inprocess (&argc, argv, NULL,
+                      Bse::cstrings_to_vector ("stand-alone=1", "wave-chunk-padding=1",
+                                               "dcache-block-size=8192", "dcache-cache-memory=5242880", NULL));
   arg = shift ();
   if (!arg)
     usage ();

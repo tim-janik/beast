@@ -466,7 +466,7 @@ int
 main (int     argc,
       char  **argv)
 {
-  bse_init_test (&argc, &argv, NULL);
+  bse_init_test (&argc, argv);
   options.parse (&argc, &argv);
   if (argc > 1)
     {

@@ -594,11 +594,7 @@ main (int argc, char **argv)
     if (strcmp (argv[i], "--fpu") == 0)
       argv[i] = g_strdup ("--bse-force-fpu"); /* leak, but we don't care */
   /* load plugins */
-  SfiInitValue config[] = {
-	{ "load-core-plugins", "1" },
-	{ NULL },
-  };
-  bse_init_test (&argc, &argv, config);
+  bse_init_test (&argc, argv, Bse::cstrings_to_vector ("load-core-plugins=1", NULL));
   options.parse (&argc, &argv);
   if (argc == 2)
     {
