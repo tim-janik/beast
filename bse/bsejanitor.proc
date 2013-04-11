@@ -316,15 +316,24 @@ PROCEDURE (bse-script-send-message, "Script/Message") {
   const gchar *text3  = sfi_value_get_string (in_values++);
   const gchar *check  = sfi_value_get_string (in_values++);
 
-  Bse::printerr ("FIXME: mtype=%s\n", mtype);
-  if (text0)
+  auto stupid_convert = [] (char c) {
+    switch (c)
+      {
+      case 'E': case 'e':       return Bse::ERROR;
+      case 'W': case 'w':       return Bse::WARNING;
+      default:
+      case 'I': case 'i':       return Bse::INFO;
+      case 'D': case 'd':       return Bse::DEBUG;
+      }
+  };
+
+  if (text1)
     {
       using namespace Bse;
       UserMessage umsg;
-      umsg.type = Bse::WARNING;
-      umsg.title = text0;
-      if (text1)
-        umsg.text1 = text1;
+      umsg.type = stupid_convert (mtype ? mtype[0] : 0);
+      umsg.title = text0 ? text0 : "WARNING";
+      umsg.text1 = text1;
       if (text2)
         umsg.text2 = text2;
       if (text3)
