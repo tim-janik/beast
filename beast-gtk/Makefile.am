@@ -25,7 +25,7 @@ beast_headers = $(strip \
 	bstpatterncolumns.hh	bstxkb.hh	bstpatternview.hh	bstpatternctrl.hh    \
 	bstkeybindings.hh	bstprofiler.hh	bstgrowbar.hh		bstbusview.hh        \
 	bstpianorollctrl.hh	bstpartview.hh	bstpianoroll.hh		bstplayback.hh	    \
-	bsttrackroll.hh		bstcluehunter.hh	bstprojectctrl.hh	bstcxxutils.hh	    \
+	bsttrackroll.hh		bstcluehunter.hh	bstprojectctrl.hh	\
 	bstauxdialogs.hh		bstsegment.hh	bsteventrollctrl.hh	bsteventroll.hh	    \
 	bstsnifferscope.hh	bstwaveview.hh	bstfiledialog.hh		bstgconfig.hh	    \
 	bstlogadjustment.hh	bstitemview.hh	bstservermonitor.hh	bstknob.hh	    \
@@ -47,7 +47,7 @@ beast_sources = $(strip \
 	bstpatterncolumns.cc	bstxkb.cc	bstpatternview.cc	bstpatternctrl.cc   \
 	bstkeybindings.cc	bstprofiler.cc	bstgrowbar.cc		bstbusview.cc       \
 	bstpianorollctrl.cc	bstpartview.cc	bstpianoroll.cc		bstplayback.cc	    \
-	bsttrackroll.cc	       bstcluehunter.cc	bstprojectctrl.cc	bstcxxutils.cc	    \
+	bsttrackroll.cc	       bstcluehunter.cc	bstprojectctrl.cc	\
 	bstauxdialogs.cc	bstsegment.cc	bsteventrollctrl.cc	bsteventroll.cc	    \
 	bstsnifferscope.cc	bstwaveview.cc	bstfiledialog.cc	bstgconfig.cc	    \
 	bstlogadjustment.cc	bstitemview.cc	bstservermonitor.cc	bstknob.cc	    \

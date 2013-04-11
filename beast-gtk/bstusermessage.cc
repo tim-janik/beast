@@ -4,16 +4,35 @@
 #include "bstmsgabsorb.hh"
 #include <string.h>
 #include <errno.h>
+
 /* --- prototypes --- */
 static GtkWidget*	create_janitor_dialog	(SfiProxy	   janitor);
+
 /* --- variables --- */
 static GSList *msg_windows = NULL;
+
 /* --- functions --- */
+const char*
+bst_msg_type_ident (BstMsgType bmt)
+{
+  Rapicorn::Aida::EnumInfo einfo = Rapicorn::Aida::enum_info<Bse::UserMessageType> ();
+  const Rapicorn::Aida::EnumInfo::Value *ev = einfo.find_first (bmt);
+  if (ev)
+    return ev->name;
+  switch (bmt)
+    {
+    case BST_MSG_SCRIPT:        return "script";
+    default: ;
+    }
+  assert_unreached();
+}
+
 static void
 dialog_destroyed (GtkWidget *dialog)
 {
   msg_windows = g_slist_remove (msg_windows, dialog);
 }
+
 static inline gboolean
 hastext (const gchar *string)
 {
@@ -23,6 +42,7 @@ hastext (const gchar *string)
     string++;
   return string[0] != 0;
 }
+
 static gchar*
 message_title (const BstMessage *msg,
 	       const gchar     **stock,
@@ -40,16 +60,12 @@ message_title (const BstMessage *msg,
     case BST_MSG_SCRIPT:
       *stock = BST_STOCK_EXECUTE;
       break;
-    case BST_MSG_ALWAYS:
-    case BST_MSG_INFO:
-      *stock = BST_STOCK_INFO;
-      break;
-    default:
-    case BST_MSG_DIAG:
-      *stock = BST_STOCK_DIAG;
-      break;
     case BST_MSG_DEBUG:
       *stock = BST_STOCK_DIAG;
+      break;
+    default:
+    case BST_MSG_INFO:
+      *stock = BST_STOCK_INFO;
       break;
     }
   const gchar *message = msg->label ? msg->label : msg->ident;
@@ -382,8 +398,6 @@ bst_message_handler (const BstMessage *const_msg)
     msg.config_check = NULL;
   if (!msg.config_check && msg.type == BST_MSG_INFO)
     msg.config_check = _("Display dialogs with information messages");
-  if (!msg.config_check && msg.type == BST_MSG_DIAG)
-    msg.config_check = _("Display dialogs with dignostic messages");
   if (!msg.config_check && msg.type == BST_MSG_DEBUG)
     msg.config_check = _("Display dialogs with debugging messages");
   /* check the simple non-choice dialog types */
@@ -442,19 +456,7 @@ bst_message_handler (const BstMessage *const_msg)
     }
   return result;
 }
-static BstMsgType
-bst_msg_type_from_user_msg_type (BseMsgType utype)
-{
-  BIRNET_STATIC_ASSERT (BST_MSG_NONE    == (uint) BSE_MSG_NONE);
-  BIRNET_STATIC_ASSERT (BST_MSG_ALWAYS  == (uint) BSE_MSG_ALWAYS);
-  BIRNET_STATIC_ASSERT (BST_MSG_ERROR   == (uint) BSE_MSG_ERROR);
-  BIRNET_STATIC_ASSERT (BST_MSG_WARNING == (uint) BSE_MSG_WARNING);
-  BIRNET_STATIC_ASSERT (BST_MSG_SCRIPT  == (uint) BSE_MSG_SCRIPT);
-  BIRNET_STATIC_ASSERT (BST_MSG_INFO    == (uint) BSE_MSG_INFO);
-  BIRNET_STATIC_ASSERT (BST_MSG_DIAG    == (uint) BSE_MSG_DIAG);
-  BIRNET_STATIC_ASSERT (BST_MSG_DEBUG   == (uint) BSE_MSG_DEBUG);
-  return BstMsgType (utype);
-}
+
 static void
 message_fill_from_script (BstMessage    *msg,
                           BstMsgType     mtype,
@@ -466,8 +468,8 @@ message_fill_from_script (BstMessage    *msg,
 {
   msg->log_domain = NULL;
   msg->type = mtype;
-  msg->ident = sfi_msg_type_ident (SfiMsgType (msg->type));
-  msg->label = sfi_msg_type_label (SfiMsgType (msg->type));
+  msg->ident = bst_msg_type_ident (msg->type);
+  msg->label = bst_msg_type_ident (msg->type);
   const gchar *proc_title = NULL;
   if (hastext (proc_name))
     {
@@ -594,24 +596,7 @@ create_janitor_dialog (SfiProxy janitor)
   dialog_show_above_modals (dialog, FALSE);
   return GTK_WIDGET (dialog);
 }
-void
-bst_message_synth_msg_handler (const BseMessage *umsg)
-{
-  BstMessage msg = { 0, };
-  msg.log_domain = umsg->log_domain;
-  msg.type = bst_msg_type_from_user_msg_type (umsg->type);
-  msg.ident = sfi_msg_type_ident (SfiMsgType (msg.type));
-  msg.label = sfi_msg_type_label (SfiMsgType (msg.type));
-  msg.config_check = umsg->config_check;
-  msg.title = umsg->title;
-  msg.primary = umsg->primary;
-  msg.secondary = umsg->secondary;
-  msg.details = umsg->details;
-  msg.janitor = umsg->janitor;
-  msg.process = umsg->process;
-  msg.pid = umsg->pid;
-  bst_message_handler (&msg);
-}
+
 static char*
 text_concat (char *prefix,
              char *text)
@@ -656,8 +641,8 @@ bst_message_dialog_display (const char     *log_domain,
   BstMessage msg = { 0, };
   msg.log_domain = log_domain;
   msg.type = mtype;
-  msg.ident = sfi_msg_type_ident (SfiMsgType (mtype));
-  msg.label = sfi_msg_type_label (SfiMsgType (mtype));
+  msg.ident = bst_msg_type_ident (mtype);
+  msg.label = bst_msg_type_ident (mtype);
   msg.janitor = bse_script_janitor();
   msg.process = g_strdup (Rapicorn::ThisThread::name().c_str());
   msg.pid = Rapicorn::ThisThread::thread_pid();
@@ -712,14 +697,7 @@ bst_message_dialogs_popdown (void)
   while (msg_windows)
     gtk_widget_destroy ((GtkWidget*) msg_windows->data);
 }
-static void
-server_bse_message (SfiProxy        server,
-                    SfiRec         *bse_msg_rec)
-{
-  BseMessage *umsg = bse_message_from_rec (bse_msg_rec);
-  bst_message_synth_msg_handler (umsg);
-  bse_message_free (umsg);
-}
+
 static void
 server_script_start (SfiProxy server,
                      SfiProxy janitor)
@@ -750,9 +728,9 @@ server_user_message (const Bse::UserMessage &umsg)
       {
       case Bse::ERROR:          return BST_MSG_ERROR;
       case Bse::WARNING:        return BST_MSG_WARNING;
-      case Bse::INFO:           return BST_MSG_INFO;
       case Bse::DEBUG:          return BST_MSG_DEBUG;
-      default:                  return BST_MSG_DIAG;
+      default:
+      case Bse::INFO:           return BST_MSG_INFO;
       }
   };
   BstMessage msg = { 0, };
@@ -777,48 +755,8 @@ bst_message_connect_to_server (void)
 {
   bse_server.sig_user_message() += server_user_message;
   bse_proxy_connect (BSE_SERVER,
-		     "signal::message", server_bse_message, NULL,
 		     "signal::script_start", server_script_start, NULL,
 		     "signal::script_error", server_script_error, NULL,
 		     NULL);
   bse_proxy_set (BSE_SERVER, "log-messages", FALSE, NULL);
-}
-
-static int
-msg_id_compare (const void *v1, const void *v2)
-{
-  const BstMsgID *mid1 = (const BstMsgID*) v1;
-  const BstMsgID *mid2 = (const BstMsgID*) v2;
-  return strcmp (mid1->ident, mid2->ident);
-}
-const BstMsgID*
-bst_message_list_types (guint *n_types)
-{
-  static const BstMsgID *const_msg_ids = NULL;
-  static guint           const_n_msg_ids = 0;
-  if (!const_msg_ids)
-    {
-      BstMsgID *msg_ids = NULL;
-      guint i = 0;
-      const gchar *ident = sfi_msg_type_ident (SfiMsgType (i));
-      while (ident)
-        {
-          msg_ids = g_renew (BstMsgID, msg_ids, i + 1);
-          msg_ids[i].type = i;
-          msg_ids[i].ident = ident;
-          msg_ids[i].label = sfi_msg_type_label (SfiMsgType (msg_ids[i].type));
-          i++;
-          ident = sfi_msg_type_ident (SfiMsgType (i));
-        }
-      msg_ids = g_renew (BstMsgID, msg_ids, i + 1);
-      msg_ids[i].type = 0;
-      msg_ids[i].ident = NULL;
-      msg_ids[i].label = NULL;
-      qsort (msg_ids, i, sizeof (msg_ids[0]), msg_id_compare);
-      const_msg_ids = msg_ids;
-      const_n_msg_ids = i;
-    }
-  if (n_types)
-    *n_types = const_n_msg_ids;
-  return const_msg_ids;
 }

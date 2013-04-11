@@ -74,7 +74,6 @@ main (int   argc,
   g_type_init ();
   /* initialize Sfi */
   sfi_init (&argc, &argv, "TestGUI", NULL);
-  sfi_msg_allow ("misc");
   /* initialize Gtk+ and enter threading mode */
   gtk_init (&argc, &argv);
   g_set_prgname ("testgui");            /* override Gdk's program name */

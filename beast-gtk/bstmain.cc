@@ -1,6 +1,5 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bstutils.hh"
-#include "bstcxxutils.hh"
 #include "bstapp.hh"
 #include "bstsplash.hh"
 #include "bstxkb.hh"
@@ -92,7 +91,6 @@ main (int   argc,
   g_type_init ();
   /* initialize Birnet/Sfi */
   sfi_init (&argc, &argv, _("BEAST"), NULL);  /* application name is user visible */       
-  sfi_msg_allow ("misc");
   /* ensure SFI can wake us up */
   /* initialize Gtk+ and go into threading mode */
   bst_early_parse_args (&argc, &argv);
@@ -221,8 +219,6 @@ main (int   argc,
 
   bst_message_connect_to_server ();
   _bst_init_radgets ();
-  /* install message dialog handler */
-  bst_message_handler_install();
   /* open files given on command line */
   if (argc > 1)
     bst_splash_update_entity (beast_splash, _("Loading..."));
@@ -374,8 +370,6 @@ main (int   argc,
       g_main_iteration (TRUE);
       GDK_THREADS_ENTER ();
     }
-  /* take down GUI */
-  bst_message_handler_uninstall();
   bst_message_dialogs_popdown ();
   /* perform necessary cleanup cycles */
   GDK_THREADS_LEAVE ();
@@ -459,20 +453,7 @@ bst_early_parse_args (int    *argc_p,
 {
   guint argc = *argc_p;
   gchar **argv = *argv_p;
-  gchar *envar;
   guint i, e;
-  envar = getenv ("BST_DEBUG");
-  if (envar)
-    sfi_msg_allow (envar);
-  envar = getenv ("BST_NO_DEBUG");
-  if (envar)
-    sfi_msg_deny (envar);
-  envar = getenv ("BEAST_DEBUG");
-  if (envar)
-    sfi_msg_allow (envar);
-  envar = getenv ("BEAST_NO_DEBUG");
-  if (envar)
-    sfi_msg_deny (envar);
   gboolean initialize_bse_and_exit = FALSE;
   for (i = 1; i < argc; i++)
     {
@@ -521,46 +502,6 @@ bst_early_parse_args (int    *argc_p,
 	{
 	  bst_developer_hints = TRUE;
           argv[i] = NULL;
-	}
-      else if (strcmp ("--debug-list", argv[i]) == 0)
-	{
-	  const BstMsgID *mids = bst_message_list_types (NULL);
-	  guint j;
-	  g_print ("BEAST debug keys: all");
-	  for (j = 0; mids[j].ident; j++)
-            if (mids[j].type >= SFI_MSG_DEBUG && mids[j].label && mids[j].label[0])
-              g_print (", %s (%s)", mids[j].ident, mids[j].label);
-            else if (mids[j].type >= SFI_MSG_DEBUG)
-              g_print (", %s", mids[j].ident);
-	  g_print ("\n");
-	  exit (0);
-	  argv[i] = NULL;
-	}
-      else if (strcmp ("--debug", argv[i]) == 0 ||
-	       strncmp ("--debug=", argv[i], 8) == 0)
-	{
-	  gchar *equal = argv[i] + 7;
-	  if (*equal == '=')
-            sfi_msg_allow (equal + 1);
-	  else if (i + 1 < argc)
-	    {
-	      argv[i++] = NULL;
-	      sfi_msg_allow (argv[i]);
-	    }
-	  argv[i] = NULL;
-	}
-      else if (strcmp ("--no-debug", argv[i]) == 0 ||
-	       strncmp ("--no-debug=", argv[i], 11) == 0)
-	{
-	  gchar *equal = argv[i] + 10;
-	  if (*equal == '=')
-            sfi_msg_deny (equal + 1);
-	  else if (i + 1 < argc)
-	    {
-	      argv[i++] = NULL;
-	      sfi_msg_deny (argv[i]);
-	    }
-	  argv[i] = NULL;
 	}
       else if (strcmp ("--force-xkb", argv[i]) == 0)
 	{
@@ -792,9 +733,6 @@ bst_print_blurb (void)
   g_print ("                          option handling for --bse-pcm-driver\n");
   g_print ("  --bse-driver-list       List available PCM and MIDI drivers\n");
   g_print ("Development Options:\n");
-  g_print ("  --debug=KEYS            Enable specific debugging messages\n");
-  g_print ("  --no-debug=KEYS         Disable specific debugging messages\n");
-  g_print ("  --debug-list            List possible debug keys\n");
   g_print ("  -:[Flags]               [Flags] can be any combination of:\n");
   g_print ("                          f - fatal warnings\n");
   g_print ("                          N - disable script and plugin registration\n");
