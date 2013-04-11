@@ -9,6 +9,4 @@ AM_CXXFLAGS  = $(RAPICORN_CFLAGS) -DRAPICORN_CONVENIENCE $(BIRNET_CFLAGS)
 noinst_PROGRAMS  = $(ALLTESTS)
 progs_ldadd 	 = $(top_builddir)/birnet/libbirnet.o $(RAPICORN_LIBS) $(BIRNET_LIBS) -lm
 
-TESTS		+= systest
-systest_SOURCES  = systest.cc
-systest_LDADD	 = $(progs_ldadd)
+TESTS =
