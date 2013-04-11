@@ -19,7 +19,6 @@ int main (int argc, char **argv)
 {
   std::set_terminate (__gnu_cxx::__verbose_terminate_handler);
   Bse::init_async (&argc, &argv, "Perftest", NULL);
-  sfi_msg_allow ("misc");
   bse_context = Bse::init_glue_context (argv[0], []() { g_main_context_wakeup (g_main_context_default()); });
   sfi_glue_context_push (bse_context);
   printf ("%s: testing remote glue layer calls via C++ interface:\n", argv[0]);
