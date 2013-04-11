@@ -75,75 +75,12 @@ bool	birnet_file_check (const char *file,
 bool	birnet_file_equals (const char *file1,
 			    const char *file2);
 /* --- messaging --- */
-typedef enum {
-  SFI_MSG_NONE   = 0,   /* always off */
-  SFI_MSG_ALWAYS = 1,   /* always on */
-  SFI_MSG_ERROR,
-  SFI_MSG_WARNING,
-  SFI_MSG_SCRIPT,
-  SFI_MSG_INFO,
-  SFI_MSG_DIAG,
-  SFI_MSG_DEBUG
-} SfiMsgType;
-typedef enum {
-  SFI_MSG_TO_STDERR     = 1,
-  SFI_MSG_TO_STDLOG     = 2,
-  SFI_MSG_TO_HANDLER    = 4,
-} SfiMsgLogFlags;
-#define         sfi_error(...)                   sfi_msg_printf (SFI_MSG_ERROR, __VA_ARGS__)
-#define         sfi_warning(...)                 sfi_msg_printf (SFI_MSG_WARNING, __VA_ARGS__)
-#define         sfi_info(...)                    sfi_msg_printf (SFI_MSG_INFO, __VA_ARGS__)
-#define         sfi_diag(...)                    sfi_msg_printf (SFI_MSG_DIAG, __VA_ARGS__)
-#define         sfi_debug(lvl, ...)              sfi_msg_printf (lvl, __VA_ARGS__)
+#define         sfi_error(...)                   RAPICORN_FATAL (__VA_ARGS__)
+#define         sfi_warning(...)                 RAPICORN_CRITICAL (__VA_ARGS__)
+#define         sfi_info(...)                    BSE_DEBUG (__VA_ARGS__)
+#define         sfi_diag(...)                    BSE_DEBUG (__VA_ARGS__)
+#define         sfi_debug(lvl, ...)              BSE_DEBUG (__VA_ARGS__)
 #define         sfi_nodebug(lvl, ...)            do { /* nothing */ } while (0)
-bool            sfi_msg_check                   (SfiMsgType      mtype);
-void            sfi_msg_enable                  (SfiMsgType      mtype);
-void            sfi_msg_disable                 (SfiMsgType      mtype);
-void            sfi_msg_allow                   (const char     *ident_list);
-void            sfi_msg_deny                    (const char     *ident_list);
-const char*     sfi_msg_type_ident              (SfiMsgType      mtype);
-const char*     sfi_msg_type_label              (SfiMsgType      mtype);
-SfiMsgType      sfi_msg_lookup_type             (const char     *ident);
-SfiMsgType      sfi_msg_type_register           (const char     *ident,
-                                                 SfiMsgType      default_ouput,
-                                                 const char     *label);
-#define         sfi_msg_printf(level, ...)       SFI_MSG_PRINTF (level, __VA_ARGS__)    /* level, printf_format, ... */
-#define         sfi_msg_display(level, ...)      SFI_MSG_DISPLAY (level, __VA_ARGS__)   /* level, part, part, ... */
-#define         SFI_MSG_TEXT0(...)               sfi_msg_part_printf ('0', __VA_ARGS__) /* message title */
-#define         SFI_MSG_TEXT1(...)               sfi_msg_part_printf ('1', __VA_ARGS__) /* primary message */
-#define         SFI_MSG_TEXT2(...)               sfi_msg_part_printf ('2', __VA_ARGS__) /* secondary message */
-#define         SFI_MSG_TEXT3(...)               sfi_msg_part_printf ('3', __VA_ARGS__) /* message details */
-#define         SFI_MSG_CHECK(...)               sfi_msg_part_printf ('c', __VA_ARGS__) /* user switch */
-#define         SFI_MSG_TITLE                    SFI_MSG_TEXT0 /* alias */
-#define         SFI_MSG_PRIMARY                  SFI_MSG_TEXT1 /* alias */
-#define         SFI_MSG_SECONDARY                SFI_MSG_TEXT2 /* alias */
-#define         SFI_MSG_DETAIL                   SFI_MSG_TEXT3 /* alias */
-#define         SFI_MSG_TYPE_DEFINE(variable, ident, default_ouput, label) SFI_MSG__TYPEDEF (variable, ident, default_ouput, label)
-
-/* --- messaging implementation --- */
-typedef struct SfiMsgPart SfiMsgPart;
-SfiMsgPart*     sfi_msg_part_printf     (uint8          msg_part_id,
-                                         const char    *format,
-                                         ...) G_GNUC_PRINTF (2, 3);
-void            sfi_msg_display_parts   (const char     *log_domain,
-                                         SfiMsgType      mtype,
-                                         guint           n_mparts,
-                                         SfiMsgPart    **mparts);
-void            sfi_msg_display_printf  (const char    *log_domain,
-                                         SfiMsgType     mtype,
-                                         const char    *format,
-                                         ...) G_GNUC_PRINTF (3, 4);
-#define SFI_MSG_PRINTF(lvl, ...)        do { SfiMsgType __mt = lvl; if (sfi_msg_check (__mt)) \
-                                             sfi_msg_display_printf (BIRNET_LOG_DOMAIN, __mt, __VA_ARGS__); } while (0)
-#define SFI_MSG_DISPLAY(lvl, ...)       do { SfiMsgType __mt = lvl; if (sfi_msg_check (__mt)) { \
-                                               SfiMsgPart *__pa[] = { __VA_ARGS__ };            \
-                                               sfi_msg_display_parts (BIRNET_LOG_DOMAIN, __mt,  \
-                                                 BIRNET_ARRAY_SIZE (__pa), __pa); } } while (0)
-#define SFI_MSG__TYPEDEF(variable, identifier, default_ouput, label) \
-  SfiMsgType variable = (SfiMsgType) 0; \
-  static void BIRNET_CONSTRUCTOR \
-  BIRNET_CPP_PASTE4 (__sfi_msg_type__init, __LINE__, __, variable) (void) \
-  { variable = sfi_msg_type_register (identifier, default_ouput, label); }
 
 /* --- url handling --- */
 void sfi_url_show                   	(const char           *url);
@@ -155,17 +92,6 @@ bool sfi_url_test_show_with_cookie	(const char           *url,
 					 const char           *url_title,
 					 const char           *cookie);
 
-#ifndef BIRNET__RUNTIME_PROBLEM
-#define BIRNET__RUNTIME_PROBLEM(ErrorWarningReturnAssertNotreach,domain,file,line,funcname,...) \
-        sfi_runtime_problem (ErrorWarningReturnAssertNotreach, domain, file, line, funcname, __VA_ARGS__)
-#endif
-void sfi_runtime_problem (char        ewran_tag,
-			  const char *domain,
-			  const char *file,
-			  int         line,
-			  const char *funcname,
-			  const char *msgformat,
-			  ...) BIRNET_PRINTF (6, 7);
 BIRNET_EXTERN_C_END();
 #endif /* __SFI_WRAPPER_H__ */
 /* vim:set ts=8 sts=2 sw=2: */
