@@ -305,6 +305,9 @@ PROCEDURE (bse-script-send-message, "Script/Message") {
 {
   /* extract parameter values */
   BseJanitor *janitor = bse_janitor_get_current();
+  if (!BSE_IS_JANITOR (janitor) || !janitor->port || janitor->port_closed)
+    return BSE_ERROR_PROC_EXECUTION;
+
   const gchar *domain = sfi_value_get_string (in_values++);
   const gchar *mtype  = sfi_value_get_string (in_values++);
   const gchar *text0  = sfi_value_get_string (in_values++);
@@ -312,16 +315,27 @@ PROCEDURE (bse-script-send-message, "Script/Message") {
   const gchar *text2  = sfi_value_get_string (in_values++);
   const gchar *text3  = sfi_value_get_string (in_values++);
   const gchar *check  = sfi_value_get_string (in_values++);
-  SfiMsgType type  = mtype ? sfi_msg_lookup_type (mtype) : SfiMsgType (0);
-  /* check parameters */
-  if (!mtype || !(text1 || text2))
+
+  Bse::printerr ("FIXME: mtype=%s\n", mtype);
+  if (text0)
+    {
+      using namespace Bse;
+      UserMessage umsg;
+      umsg.type = Bse::WARNING;
+      umsg.title = text0;
+      if (text1)
+        umsg.text1 = text1;
+      if (text2)
+        umsg.text2 = text2;
+      if (text3)
+        umsg.text3 = text3;
+      if (check && check[0])
+        umsg.label = check;
+      ServerImpl::instance().send_user_message (umsg);
+      return BSE_ERROR_NONE;
+    }
+  else
     return BSE_ERROR_PROC_PARAM_INVAL;
-  /* check execution context */
-  if (!BSE_IS_JANITOR (janitor) || !janitor->port || janitor->port_closed)
-    return BSE_ERROR_PROC_EXECUTION;
-  /* action */
-  bse_server_message (bse_server_get (), domain, BseMsgType (type), text0, text1, text2, text3, check, janitor, NULL, janitor->port->remote_pid);
-  return BSE_ERROR_NONE;
 }
 PROCEDURE (bse-script-quit, "Script/Quit") {
   HELP  = "Exit a script succesfully (server side).";

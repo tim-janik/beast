@@ -184,7 +184,6 @@ bse_init_core (void)
 {
   /* global threading things */
   bse_main_context = g_main_context_new ();
-  bse_message_setup_thread_handler();
   /* initialize basic components */
   bse_globals_init ();
   _bse_init_signal();
@@ -240,8 +239,6 @@ server_registration (SfiProxy            server,
     single_thread_registration_done = TRUE;
   else
     {
-      //gchar *base = strrchr (what, '/');
-      //g_message (data, "%s", base ? base + 1 : what);
       if (error && error[0])
         sfi_diag ("failed to register \"%s\": %s", what, error);
     }
@@ -351,88 +348,6 @@ bse_main_loop (Rapicorn::AsyncBlockingQueue<int> *init_queue)
   Bse::TaskRegistry::remove (Rapicorn::ThisThread::thread_pid());
 }
 
-static gboolean
-core_thread_send_message_async (gpointer data)
-{
-  BseMessage *umsg = (BseMessage*) data;
-  bse_server_send_message (bse_server_get(), umsg);
-  bse_message_free (umsg);
-  return FALSE;
-}
-
-/**
- * BSE log handler, suitable for sfi_msg_set_thread_handler().
- * This function is MT-safe and may be called from any thread.
- */
-static void
-bse_msg_handler (const char              *domain,
-                 Msg::Type                mtype,
-                 const vector<Msg::Part> &parts)
-{
-  /* this function is called from multiple threads */
-  BIRNET_STATIC_ASSERT (BSE_MSG_NONE    == (int) Birnet::Msg::NONE);
-  BIRNET_STATIC_ASSERT (BSE_MSG_ALWAYS  == (int) Birnet::Msg::ALWAYS);
-  BIRNET_STATIC_ASSERT (BSE_MSG_ERROR   == (int) Birnet::Msg::ERROR);
-  BIRNET_STATIC_ASSERT (BSE_MSG_WARNING == (int) Birnet::Msg::WARNING);
-  BIRNET_STATIC_ASSERT (BSE_MSG_SCRIPT  == (int) Birnet::Msg::SCRIPT);
-  BIRNET_STATIC_ASSERT (BSE_MSG_INFO    == (int) Birnet::Msg::INFO);
-  BIRNET_STATIC_ASSERT (BSE_MSG_DIAG    == (int) Birnet::Msg::DIAG);
-  BIRNET_STATIC_ASSERT (BSE_MSG_DEBUG   == (int) Birnet::Msg::DEBUG);
-  String title, primary, secondary, details, checkmsg;
-  for (uint i = 0; i < parts.size(); i++)
-    switch (parts[i].ptype)
-      {
-      case '0': title     += (title.size()     ? "\n" : "") + parts[i].string; break;
-      case '1': primary   += (primary.size()   ? "\n" : "") + parts[i].string; break;
-      case '2': secondary += (secondary.size() ? "\n" : "") + parts[i].string; break;
-      case '3': details   += (details.size()   ? "\n" : "") + parts[i].string; break;
-      case 'c': checkmsg  += (checkmsg.size()  ? "\n" : "") + parts[i].string; break;
-      }
-  if (!primary.size() && !secondary.size())
-    return;
-  BseMessage *umsg = bse_message_new();
-  g_free (umsg->log_domain);
-  umsg->log_domain = g_strdup (domain);
-  umsg->type = BseMsgType (mtype);
-  g_free (umsg->title);
-  umsg->title = g_strdup (title.c_str());
-  g_free (umsg->primary);
-  umsg->primary = g_strdup (primary.c_str());
-  g_free (umsg->secondary);
-  umsg->secondary = g_strdup (secondary.c_str());
-  g_free (umsg->details);
-  umsg->details = g_strdup (details.c_str());
-  g_free (umsg->config_check);
-  umsg->config_check = g_strdup (checkmsg.c_str());
-  umsg->janitor = NULL;
-  g_free (umsg->process);
-  umsg->process = g_strdup (Rapicorn::ThisThread::name().c_str());
-  umsg->pid = Rapicorn::ThisThread::thread_pid();
-  /* queue an idle handler in the BSE Core thread */
-  bse_idle_next (core_thread_send_message_async, umsg);
-}
-
-void
-bse_message_setup_thread_handler (void)
-{
-  Birnet::Msg::set_thread_handler (bse_msg_handler);
-}
-void
-bse_message_to_default_handler (const BseMessage *msg)
-{
-  vector<Msg::Part> parts;
-  if (msg->title)
-    parts.push_back (Msg::Title (String (msg->title)));
-  if (msg->primary)
-    parts.push_back (Msg::Primary (String (msg->primary)));
-  if (msg->secondary)
-    parts.push_back (Msg::Secondary (String (msg->secondary)));
-  if (msg->details)
-    parts.push_back (Msg::Detail (String (msg->details)));
-  if (msg->config_check)
-    parts.push_back (Msg::Check (String (msg->config_check)));
-  Msg::default_handler (msg->log_domain, Msg::Type (msg->type), parts);
-}
 static guint
 get_n_processors (void)
 {
@@ -454,12 +369,6 @@ bse_async_parse_args (gint           *argc_p,
   /* this function is called before the main BSE thread is started,
    * so we can't use any BSE functions yet.
    */
-  gchar *envar = getenv ("BSE_DEBUG");
-  if (envar)
-    sfi_msg_allow (envar);
-  envar = getenv ("BSE_NO_DEBUG");
-  if (envar)
-    sfi_msg_deny (envar);
   guint i;
   for (i = 1; i < argc; i++)
     {
@@ -468,32 +377,6 @@ bse_async_parse_args (gint           *argc_p,
 	  GLogLevelFlags fatal_mask = (GLogLevelFlags) g_log_set_always_fatal ((GLogLevelFlags) G_LOG_FATAL_MASK);
 	  fatal_mask = (GLogLevelFlags) (fatal_mask | G_LOG_LEVEL_WARNING | G_LOG_LEVEL_CRITICAL);
 	  g_log_set_always_fatal (fatal_mask);
-	  argv[i] = NULL;
-	}
-      else if (strcmp ("--bse-debug", argv[i]) == 0 ||
-	       strncmp ("--bse-debug=", argv[i], 12) == 0)
-	{
-	  gchar *equal = argv[i] + 11;
-	  if (*equal == '=')
-            sfi_msg_allow (equal + 1);
-	  else if (i + 1 < argc)
-	    {
-	      argv[i++] = NULL;
-	      sfi_msg_allow (argv[i]);
-	    }
-	  argv[i] = NULL;
-	}
-      else if (strcmp ("--bse-no-debug", argv[i]) == 0 ||
-	       strncmp ("--bse-no-debug=", argv[i], 15) == 0)
-	{
-	  gchar *equal = argv[i] + 14;
-	  if (*equal == '=')
-            sfi_msg_deny (equal + 1);
-	  else if (i + 1 < argc)
-	    {
-	      argv[i++] = NULL;
-	      sfi_msg_deny (argv[i]);
-	    }
 	  argv[i] = NULL;
 	}
       else if (strcmp ("--bse-latency", argv[i]) == 0 ||

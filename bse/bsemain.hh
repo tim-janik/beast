@@ -23,9 +23,6 @@ void		bse_init_test		(gint		*argc,
 					 SfiInitValue    values[]);
 void            bse_main_wakeup         ();
 
-/* messaging */
-void            bse_message_setup_thread_handler (void);
-void            bse_message_to_default_handler   (const BseMessage *msg);
 /* --- global macros --- */
 #define	BSE_THREADS_ENTER()			// bse_main_global_lock ()
 #define	BSE_THREADS_LEAVE()			// bse_main_global_unlock ()

@@ -64,7 +64,6 @@ static void	engine_shutdown			(BseServer	   *server);
 /* --- variables --- */
 static GTypeClass *parent_class = NULL;
 static guint       signal_registration = 0;
-static guint       signal_message = 0;
 static guint       signal_script_start = 0;
 static guint       signal_script_error = 0;
 /* --- functions --- */
@@ -120,8 +119,6 @@ bse_server_class_init (BseServerClass *klass)
 						     BSE_TYPE_REGISTRATION_TYPE,
 						     G_TYPE_STRING | G_SIGNAL_TYPE_STATIC_SCOPE,
 						     G_TYPE_STRING | G_SIGNAL_TYPE_STATIC_SCOPE);
-  signal_message = bse_object_class_add_signal (object_class, "message",
-                                                G_TYPE_NONE, 1, BSE_TYPE_MESSAGE | G_SIGNAL_TYPE_STATIC_SCOPE);
   signal_script_start = bse_object_class_add_signal (object_class, "script-start",
 						     G_TYPE_NONE, 1,
 						     BSE_TYPE_JANITOR);
@@ -689,46 +686,7 @@ bse_server_script_error (BseServer   *server,
   g_signal_emit (server, signal_script_error, 0,
 		 script_name, proc_name, reason);
 }
-void
-bse_server_send_message (BseServer        *self,
-                         const BseMessage *umsg)
-{
-  g_return_if_fail (BSE_IS_SERVER (self));
-  g_return_if_fail (umsg != NULL);
-  g_signal_emit (self, signal_message, 0, umsg);
-  if (self->log_messages)
-    bse_message_to_default_handler (umsg);
-}
-void
-bse_server_message (BseServer          *server,
-                    const gchar        *log_domain,
-                    BseMsgType          msg_type,
-                    const gchar        *title,
-                    const gchar        *primary,
-                    const gchar        *secondary,
-                    const gchar        *details,
-                    const gchar        *config_blurb,
-                    BseJanitor         *janitor,
-                    const gchar        *process_name,
-                    gint                pid)
-{
-  g_return_if_fail (BSE_IS_SERVER (server));
-  g_return_if_fail (primary != NULL);
-  BseMessage umsg = { 0, };
-  umsg.log_domain = (char*) log_domain;
-  umsg.type = msg_type;
-  umsg.ident = (char*) sfi_msg_type_ident (SfiMsgType (msg_type));
-  umsg.label = (char*) sfi_msg_type_label (SfiMsgType (msg_type));
-  umsg.title = (char*) title;
-  umsg.primary = (char*) primary;
-  umsg.secondary = (char*) secondary;
-  umsg.details = (char*) details;
-  umsg.config_check = (char*) config_blurb;
-  umsg.janitor = janitor;
-  umsg.process = (char*) process_name;
-  umsg.pid = pid;
-  bse_server_send_message (server, &umsg);
-}
+
 void
 bse_server_add_io_watch (BseServer      *server,
 			 gint            fd,

@@ -329,7 +329,6 @@ Sequencer::sequencer_thread ()
   sequencer_thread_self = &ThreadInfo::self();
   SDEBUG ("thrdstrt: now=%llu", Bse::TickStamp::current());
   Bse::TickStampWakeupP wakeup = Bse::TickStamp::create_wakeup ([&]() { this->wakeup(); });
-  bse_message_setup_thread_handler();
   BSE_SEQUENCER_LOCK();
   do
     {

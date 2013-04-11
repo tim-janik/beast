@@ -1056,7 +1056,6 @@ void
 MasterThread::master_thread()
 {
   Bse::TaskRegistry::add ("DSP #1", Rapicorn::ThisThread::process_pid(), Rapicorn::ThisThread::thread_pid());
-  bse_message_setup_thread_handler ();
 
   /* assert pollfd equality, since we're simply casting structures */
   BIRNET_STATIC_ASSERT (sizeof (struct pollfd) == sizeof (GPollFD));
