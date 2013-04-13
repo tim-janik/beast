@@ -79,7 +79,10 @@ gen_zfile (const char *name,
   String fname = use_base_name ? Path::basename (file) : file;
   Config config;
   if (!f)
-    BIRNET_ERROR ("failed to open \"%s\": %s", file, string_from_errno (errno).c_str());
+    {
+      perror (string_printf ("failed to open \"%s\"", file).c_str());
+      exit (1);
+    }
   do
     {
       if (mlen <= dlen + 1024)
@@ -91,7 +94,10 @@ gen_zfile (const char *name,
     }
   while (!feof (f));
   if (ferror (f))
-    BIRNET_ERROR ("failed to read from \"%s\": %s", file, string_from_errno (errno).c_str());
+    {
+      perror (string_printf ("failed to read from \"%s\"", file).c_str());
+      exit (1);
+    }
   if (use_compression)
     {
       int result;
@@ -115,7 +121,10 @@ gen_zfile (const char *name,
 	  break;
 	}
       if (err)
-	BIRNET_ERROR ("while compressing \"%s\": %s", file, err);
+	{
+          g_printerr ("while compressing \"%s\": %s", file, err);
+          exit (2);
+        }
     }
   else
     {
@@ -156,11 +165,6 @@ main (int   argc,
       char *argv[])
 {
   GSList *plist = NULL;
-  InitValue ivalues[] = {
-    { "stand-alone", "true" },
-    { NULL }
-  };
-  birnet_init (&argc, &argv, NULL, ivalues);
   for (int i = 1; i < argc; i++)
     {
       if (strcmp ("-z", argv[i]) == 0)
