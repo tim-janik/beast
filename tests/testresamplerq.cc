@@ -5,15 +5,16 @@
 #include <bse/bseblockutils.hh>
 #include <bse/gslfft.hh>
 #include <sfi/sfitests.hh>
-#include <birnet/birnet.hh>
+#include <sfi/sfi.hh>
 #include <stdlib.h>
 #include <stdio.h>
 #include <assert.h>
 using Bse::Resampler::Resampler2;
-using Birnet::AlignedArray;
+using Rapicorn::AlignedArray;
 using std::vector;
 using std::max;
 using std::min;
+
 struct Options
 {
   size_t test_size;
