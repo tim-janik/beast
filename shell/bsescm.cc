@@ -47,7 +47,7 @@ main (int   argc,
 {
   const gchar *env_str;
   GSource *source;
-  sfi_init (&argc, &argv, "BSESCM", NULL);
+  sfi_init (&argc, argv, "BSESCM");
   bse_init_textdomain_only();
   setlocale (LC_ALL, "");
   env_str = g_getenv ("BSESCM_SLEEP4GDB");
@@ -225,12 +225,12 @@ shell_parse_args (int *argc_p, char **argv)
       else if (strcmp ("-p", argv[i]) == 0)
         {
           /* modify args for BSE */
-          argv[i] = "--bse-pcm-driver";
+          argv[i] = (char*) "--bse-pcm-driver";
         }
       else if (strcmp ("-m", argv[i]) == 0)
         {
           /* modify args for BSE */
-          argv[i] = "--bse-midi-driver";
+          argv[i] = (char*) "--bse-midi-driver";
         }
       else if (strcmp ("--bse-override-script-path", argv[i]) == 0 && i + 1 < argc)
         {

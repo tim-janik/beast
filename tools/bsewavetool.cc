@@ -7,7 +7,7 @@
 #include <bse/gslvorbis-enc.hh>
 #include <bse/gsldatahandle-vorbis.hh>
 #include <bse/bseresamplerimpl.hh>
-#include <birnet/birnettests.h>
+#include <rapicorn-test.hh>
 #include <stdlib.h>
 #include <errno.h>
 #include <string.h>
@@ -418,10 +418,10 @@ public:
     for (int i = 0; decode_test[i].key; i++)
       {
         WaveChunkKey key = WaveChunkKey (decode_test[i].key);
-        TCHECK (key.is_valid());
-        TCHECK (fabs ((decode_test[i].value - key.osc_freq()) / decode_test[i].value) < epsilon);
+        TASSERT (key.is_valid());
+        TASSERT (fabs ((decode_test[i].value - key.osc_freq()) / decode_test[i].value) < epsilon);
         if (i % 2 == 0)
-          TICK();
+          TOK();
       }
     TDONE();
     TSTART ("Encoding chunk keys");
@@ -430,10 +430,10 @@ public:
       {
         WaveChunkKey encoded_key (value);
         WaveChunkKey decoded_key (encoded_key.as_string());
-        TCHECK (decoded_key.is_valid());
-        TCHECK (fabs ((value - decoded_key.osc_freq()) / value) < epsilon);
+        TASSERT (decoded_key.is_valid());
+        TASSERT (fabs ((value - decoded_key.osc_freq()) / value) < epsilon);
         if (i++ % 150 == 0)
-          TICK();
+          TOK();
       }
     TDONE();
     TSTART ("Invalid chunk keys");

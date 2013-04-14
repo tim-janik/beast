@@ -1,7 +1,6 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include <bse/bsemathsignal.hh>
 #include <bse/bsemain.hh>
-// #define TEST_VERBOSE
 #include <sfi/sfitests.hh>
 #include <bse/gsldatautils.hh>
 #include <bse/bseblockutils.hh>
@@ -9,11 +8,13 @@
 #include <vector>
 #include <string>
 #include <map>
+
 using std::vector;
 using std::string;
 using std::max;
 using std::min;
 using std::map;
+
 static void
 read_through (GslDataHandle *handle)
 {
@@ -83,12 +84,12 @@ check (const char           *up_down,
 	  worst_diff = max (fabs (resampled - expected[i]), worst_diff);
 	}
       worst_diff_db = bse_db_from_factor (worst_diff, -200);
-      TPRINT ("linear(%dst read) read worst_diff = %f (%f dB)\n", repeat, worst_diff, worst_diff_db);
+      TOUT ("linear(%dst read) read worst_diff = %f (%f dB)\n", repeat, worst_diff, worst_diff_db);
       TASSERT (worst_diff_db < max_db);
     }
   /* test seeking */
   worst_diff = 0.0;
-  const uint count = sfi_init_settings().test_slow ? 300 : 100;
+  const uint count = Rapicorn::Test::slow() ? 300 : 100;
   for (uint j = 0; j < count; j++)
     {
       int64 start = rand() % rhandle->setup.n_values;
@@ -101,12 +102,12 @@ check (const char           *up_down,
 	}
     }
   worst_diff_db = bse_db_from_factor (worst_diff, -200);
-  TPRINT ("seek worst_diff = %f (%f dB)\n", worst_diff, worst_diff_db);
+  TOUT ("seek worst_diff = %f (%f dB)\n", worst_diff, worst_diff_db);
   TASSERT (worst_diff_db < max_db);
   TDONE();
   /* test speed */
   double samples_per_second = 0;
-  if (sfi_init_settings().test_perf)
+  if (Rapicorn::Test::slow())
     {
       const guint RUNS = 10;
       GTimer *timer = g_timer_new();
@@ -123,11 +124,11 @@ check (const char           *up_down,
             m = e;
         }
       samples_per_second = input.size() / (m / dups);
-      treport_maximized (samplestr, samples_per_second, TUNIT (SAMPLE, SECOND));
-      treport_maximized (streamstr, samples_per_second / 44100.0, TUNIT_STREAM);
-      //TPRINT ("  samples / second = %f\n", samples_per_second);
-      //TPRINT ("  which means the resampler can process %.2f 44100 Hz streams simultaneusly\n", samples_per_second / 44100.0);
-      //TPRINT ("  or one 44100 Hz stream takes %f %% CPU usage\n", 100.0 / (samples_per_second / 44100.0));
+      TMSG ("    %-28s : %+.14f samples/second", samplestr, samples_per_second);
+      TMSG ("    %-28s : %+.14f streams", streamstr, samples_per_second / 44100.0);
+      //TOUT ("  samples / second = %f\n", samples_per_second);
+      //TOUT ("  which means the resampler can process %.2f 44100 Hz streams simultaneusly\n", samples_per_second / 44100.0);
+      //TOUT ("  or one 44100 Hz stream takes %f %% CPU usage\n", 100.0 / (samples_per_second / 44100.0));
     }
   gsl_data_handle_close (rhandle);
   gsl_data_handle_unref (rhandle);
@@ -195,7 +196,7 @@ run_tests (const char *run_type)
       vector<float> input;
       vector<double> expected;
       // mono upsampling test
-      if (!sfi_init_settings().test_quick)
+      if (Rapicorn::Test::slow())
         {
           generate_test_signal (input, LEN, 44100, 440);
           generate_test_signal (expected, LEN * 2, 88200, 440);
@@ -215,7 +216,7 @@ run_tests (const char *run_type)
           // g_printerr ("    ===> speed is equivalent to %.2f simultaneous 44100 Hz streams\n", streams);
         }
       // mono downsampling test
-      if (!sfi_init_settings().test_quick)
+      if (Rapicorn::Test::slow())
         {
           generate_test_signal (input, LEN, 44100, 440);
           generate_test_signal (expected, LEN / 2, 22050, 440);
@@ -258,7 +259,7 @@ test_c_api (const char *run_type)
     }
   double error_db = bse_db_from_factor (error, -200);
   bse_resampler2_destroy (resampler);
-  TPRINT ("Test C API delta: %f\n", error_db);
+  TOUT ("Test C API delta: %f\n", error_db);
   TASSERT (error_db < -95);
   TDONE();
 }
@@ -323,7 +324,7 @@ test_delay_compensation (const char *run_type)
       delete resampler;
       /* check error against bound */
       double error_db = bse_db_from_factor (error, -250);
-      TPRINT ("Resampler Delay Compensation delta: %f\n", error_db);
+      TOUT ("Resampler Delay Compensation delta: %f\n", error_db);
       TASSERT (error_db < -params[p].error_db);
     }
   TDONE();
@@ -362,9 +363,9 @@ test_state_length (const char *run_type)
 	 * implement with a loop handle, and it is inefficient because we read the
 	 * samples one-by-one -> usually: don't use such code, always read in blocks */
 	int64 read_pos = (values_done + state_length) % (period_size * 2) + (period_size * 2 - state_length);
-	TCHECK (read_pos >= state_length);   /* check that input signal was long enough to be for this test */
+	TASSERT (read_pos >= state_length);   /* check that input signal was long enough to be for this test */
 	int64 values_read = gsl_data_handle_read (rhandle, read_pos, 1, &output[values_done]);
-	TCHECK (values_read == 1);
+	TASSERT (values_read == 1);
       }
     double error = 0;
     for (size_t i = 0; i < output.size(); i++)
@@ -405,9 +406,9 @@ test_state_length (const char *run_type)
 	 * implement with a loop handle, and it is inefficient because we read the
 	 * samples one-by-one -> usually: don't use such code, always read in blocks */
 	int64 read_pos = (values_done + state_length) % (period_size / 2) + (period_size / 2 - state_length);
-	TCHECK (read_pos >= state_length);   /* check that input signal was long enough to be for this test */
+	TASSERT (read_pos >= state_length);   /* check that input signal was long enough to be for this test */
 	int64 values_read = gsl_data_handle_read (rhandle, read_pos, 1, &output[values_done]);
-	TCHECK (values_read == 1);
+	TASSERT (values_read == 1);
       }
     double error = 0;
     for (size_t i = 0; i < output.size(); i++)
@@ -424,13 +425,11 @@ int
 main (int   argc,
       char *argv[])
 {
-  sfi_init_test (&argc, &argv, NULL);
-  { /* bse_init_test() usually does this for us */
-    Bse::CPUInfo ci = Bse::cpu_info();
-    char *cname = g_strdup_printf ("%s+%s", ci.machine, bse_block_impl_name());
-    treport_cpu_name (cname);
-    g_free (cname);
-  }
+  // usually we'd call bse_init_test() here, but we have tests to rnu before plugins are loaded
+  Rapicorn::init_core_test (RAPICORN_PRETTY_FILE, &argc, argv);
+  Bse::CPUInfo ci = Rapicorn::cpu_info(); // usually done by bse_init_test
+  TMSG ("  NOTE   Running on: %s+%s", ci.machine, bse_block_impl_name());
+
   test_c_api ("FPU");
   test_delay_compensation ("FPU");
   test_state_length ("FPU");

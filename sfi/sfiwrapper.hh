@@ -60,15 +60,8 @@ typedef struct
   const char *value_string;
   long double value_num;        /* valid if value_string == NULL */
 } SfiInitValue;
-void    sfi_init        (int            *argcp,
-			 char         ***argvp,
-			 const char     *app_name,
-			 SfiInitValue    sivalues[]);
-bool    sfi_init_value_bool   (SfiInitValue *value);
-double  sfi_init_value_double (SfiInitValue *value);
-gint64  sfi_init_value_int    (SfiInitValue *value);
-typedef BirnetInitSettings SfiInitSettings;
-SfiInitSettings sfi_init_settings (void);
+void sfi_init (int *argcp, char **argv, const char *app_name, const Bse::StringVector &args = Bse::StringVector());
+
 /* --- file tests --- */
 bool	birnet_file_check (const char *file,
 			   const char *mode);

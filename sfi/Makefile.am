@@ -21,7 +21,7 @@ sfi_all_sources = $(strip \
 	sfivmarshal.cc	sfiglue.cc	sfigluecodec.cc	sfiglueproxy.cc	\
 	sfinote.cc	sfiparams.cc			sfiserial.cc	\
 	sfitime.cc	sfitypes.cc	sfivalues.cc	sfiustore.cc	\
-	sficxx.cc	sfiring.cc	sfimemory.cc	sficomport.cc	\
+			sfiring.cc	sfimemory.cc	sficomport.cc	\
 	$(conditional_toyprof_sources)	\
 )
 sfi_extra_sources = $(strip \

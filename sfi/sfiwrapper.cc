@@ -1,6 +1,8 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "sfiwrapper.hh"
+#include "sficxx.hh"
 #include <birnet/birnet.hh>
+#include <rapicorn-test.hh>
 #include <errno.h>
 
 namespace Bse {
@@ -44,37 +46,22 @@ bse_flipper_check (const char *key)
 
 /* --- initialization --- */
 void
-sfi_init (int            *argcp,
-          char         ***argvp,
-          const char     *app_name,
-          SfiInitValue    sivalues[])
+sfi_init (int *argcp, char **argv, const char *app_name, const Bse::StringVector &args)
 {
-  BIRNET_STATIC_ASSERT (sizeof (SfiInitValue) == sizeof (BirnetInitValue));
-  BIRNET_STATIC_ASSERT (offsetof (SfiInitValue, value_name) == offsetof (BirnetInitValue, value_name));
-  BIRNET_STATIC_ASSERT (offsetof (SfiInitValue, value_string) == offsetof (BirnetInitValue, value_string));
-  BIRNET_STATIC_ASSERT (offsetof (SfiInitValue, value_num) == offsetof (BirnetInitValue, value_num));
-  Birnet::birnet_init (argcp, argvp, app_name, (BirnetInitValue*) sivalues);
+  char *prg_name = argcp && *argcp ? g_path_get_basename (argv[0]) : NULL;
+  if (args.size() == 1 && args[0] == "rapicorn-test-initialization=1")
+    Rapicorn::init_core_test (app_name ? app_name : prg_name, argcp, argv);
+  else
+    Rapicorn::init_core (app_name ? app_name : prg_name, argcp, argv);
+
+  g_type_init ();       /* just in case this hasn't been called already */
+  _sfi_init_values ();
+  _sfi_init_params ();
+  _sfi_init_time ();
+  _sfi_init_glue ();
+  _sfi_init_file_crawler ();
 }
-bool
-sfi_init_value_bool (SfiInitValue *value)
-{
-  return Birnet::init_value_bool ((BirnetInitValue*) value);
-}
-double
-sfi_init_value_double (SfiInitValue *value)
-{
-  return Birnet::init_value_double ((BirnetInitValue*) value);
-}
-gint64
-sfi_init_value_int (SfiInitValue *value)
-{
-  return Birnet::init_value_int ((BirnetInitValue*) value);
-}
-SfiInitSettings
-sfi_init_settings (void)
-{
-  return ::Birnet::init_settings();
-}
+
 /* --- file testing --- */
 bool
 birnet_file_check (const char *file,
@@ -114,19 +101,3 @@ sfi_url_test_show_with_cookie (const char *url,
 {
   return Birnet::url_test_show_with_cookie (url, url_title, cookie);
 }
-
-void
-sfi_runtime_problem (char        ewran_tag,
-                     const char *domain,
-                     const char *file,
-                     int         line,
-                     const char *funcname,
-                     const char *msgformat,
-                     ...)
-{
-  va_list args;
-  va_start (args, msgformat);
-  ::Birnet::birnet_runtime_problemv (ewran_tag, domain, file, line, funcname, msgformat, args);
-  va_end (args);
-}
-/* vim:set ts=8 sts=2 sw=2: */

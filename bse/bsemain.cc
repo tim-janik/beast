@@ -90,7 +90,7 @@ _bse_init_async (int *argc, char **argv, const char *app_name, const Bse::String
   /* paranoid assertions */
   g_assert (G_BYTE_ORDER == G_LITTLE_ENDIAN || G_BYTE_ORDER == G_BIG_ENDIAN);
   /* initialize submodules */
-  sfi_init (argc, &argv, app_name, NULL);
+  sfi_init (argc, argv, app_name);
   bse_main_args = &default_main_args;
   /* handle argument early*/
   if (argc && argv)
@@ -252,9 +252,9 @@ bse_init_intern (int *argc, char **argv, const char *app_name, const Bse::String
   g_assert (G_BYTE_ORDER == G_LITTLE_ENDIAN || G_BYTE_ORDER == G_BIG_ENDIAN);
   /* initialize submodules */
   if (as_test)
-    sfi_init_test (argc, &argv, NULL);
+    sfi_init_test (argc, argv);
   else
-    sfi_init (argc, &argv, app_name, NULL);
+    sfi_init (argc, argv, app_name);
   bse_main_args = &default_main_args;
   /* early argument handling */
   if (argc && argv)
@@ -294,9 +294,7 @@ bse_init_intern (int *argc, char **argv, const char *app_name, const Bse::String
   if (as_test)
     {
       Bse::CPUInfo ci = Rapicorn::cpu_info();
-      char *cname = g_strdup_printf ("%s+%s", ci.machine, bse_block_impl_name());
-      treport_cpu_name (cname);
-      g_free (cname);
+      TMSG ("  NOTE   Running on: %s+%s", ci.machine, bse_block_impl_name());
     }
   // sfi_glue_gc_run ();
 }

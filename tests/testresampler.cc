@@ -2,7 +2,7 @@
 #include <bse/bseresampler.hh>
 #include <bse/bseresamplerimpl.hh>
 #include <bse/bseblockutils.hh>
-#include <birnet/birnettests.h>
+#include <rapicorn-test.hh>
 #include <bse/bsemain.hh>
 #include <bse/bsemath.hh>
 #include <bse/bsemathsignal.hh>

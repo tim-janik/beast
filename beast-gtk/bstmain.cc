@@ -66,7 +66,6 @@ main (int   argc,
   GdkPixbufAnimation *anim;
   gchar *string;
   GSource *source;
-  guint i;
   /* initialize i18n */
   bindtextdomain (BST_GETTEXT_DOMAIN, BST_PATH_LOCALE);
   bind_textdomain_codeset (BST_GETTEXT_DOMAIN, "UTF-8");
@@ -84,7 +83,7 @@ main (int   argc,
   g_thread_init (NULL);
   g_type_init ();
   /* initialize Birnet/Sfi */
-  sfi_init (&argc, &argv, _("BEAST"), NULL);  /* application name is user visible */       
+  sfi_init (&argc, argv, "BEAST");
   /* ensure SFI can wake us up */
   /* initialize Gtk+ and go into threading mode */
   bst_early_parse_args (&argc, argv);
@@ -217,7 +216,7 @@ main (int   argc,
     bst_splash_update_entity (beast_splash, _("Loading..."));
   BstApp *app = NULL;
   gboolean merge_with_last = FALSE;
-  for (i = 1; i < argc; i++)
+  for (int i = 1; i < argc; i++)
     {
       bst_splash_update ();
       /* parse non-file args */
@@ -610,12 +609,12 @@ bst_early_parse_args (int *argc_p, char **argv)
       else if (strcmp ("-p", argv[i]) == 0)
         {
           /* modify args for BSE */
-          argv[i] = "--bse-pcm-driver";
+          argv[i] = (char*) "--bse-pcm-driver";
         }
       else if (strcmp ("-m", argv[i]) == 0)
         {
           /* modify args for BSE */
-          argv[i] = "--bse-midi-driver";
+          argv[i] = (char*) "--bse-midi-driver";
         }
     }
   gxk_param_set_devel_tips (bst_developer_hints);

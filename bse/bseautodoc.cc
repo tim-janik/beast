@@ -496,7 +496,7 @@ main (gint   argc,
   const char *pluginbool = "load-core-plugins=0";
   const char *scriptbool = "load-core-scripts=0";
   g_thread_init (NULL);
-  sfi_init (&argc, &argv, "BseAutoDoc", NULL);
+  bse_init_test (&argc, argv);
   boxed_type_tag = g_quark_from_static_string ("bse-auto-doc-boxed-type-tag");
   for (int i = 1; i < argc; i++)
     {

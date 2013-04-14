@@ -174,7 +174,7 @@ main (gint   argc,
   const char *scriptbool = "load-core-scripts=0";
   f_out = stdout;
   g_thread_init (NULL);
-  sfi_init (&argc, &argv, "BseQuery", NULL);
+  bse_init_test (&argc, argv);
   int i;
   for (i = 1; i < argc; i++)
     {

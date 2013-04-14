@@ -721,7 +721,7 @@ int
 main (int   argc,
       char *argv[])
 {
-  sfi_init_test (&argc, &argv, NULL);
+  sfi_init_test (&argc, argv);
   test_types_init ();
   if (0)
     {

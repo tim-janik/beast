@@ -185,7 +185,7 @@ int
 main (int   argc,
       char *argv[])
 {
-  sfi_init_test (&argc, &argv, NULL);
+  sfi_init_test (&argc, argv);
   test_sfi_ring();
   return 0;
 }
