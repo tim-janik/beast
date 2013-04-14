@@ -15,8 +15,3 @@ EXTRA_DIST += configure.inc acbirnet.m4
 
 noinst_PROGRAMS = $(ALLTESTS)
 progs_ldadd     = $(BIRNET_LIBS) $(RAPICORN_LIBS) -lm
-
-noinst_PROGRAMS       += birnet-zintern
-birnet_zintern_SOURCES = birnet-zintern.cc
-birnet_zintern_LDADD   = $(progs_ldadd)
-birnet_zintern_DEPS    = $(progs_deps)

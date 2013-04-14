@@ -3,6 +3,7 @@ include $(top_srcdir)/Makefile.decl
 
 INCLUDES    += -I$(top_srcdir) -I$(top_builddir)
 AM_CXXFLAGS += $(BSE_CFLAGS) -DG_DISABLE_DEPRECATED -DG_DISABLE_CONST_RETURNS
+ZINTERN      = rapicorn-zintern
 
 ZFILE_DEFS = $(strip \
 	gus-patch		$(srcdir)/gus-patch.bse		\
@@ -17,8 +18,8 @@ CLEANFILES += $(gen_sources) bse-zfile.cc bse-zfile.h
 noinst_DATA = bse-zfile.cc # bse-zfile.h
 EXTRA_DIST += $(filter %.bse, $(ZFILE_DEFS))
 
-bse-zfile.cc:	$(top_builddir)/birnet/birnet-zintern $(srcdir)/*.bse # bse-zfile.h
-	$(top_builddir)/birnet/birnet-zintern -b -z $(ZFILE_DEFS) > xgen-bzc		\
+bse-zfile.cc: $(srcdir)/*.bse # bse-zfile.h
+	$(ZINTERN) -b -z $(ZFILE_DEFS) > xgen-bzc					\
 	&& echo "static const BseZFile bse_zfiles[] = {" >> xgen-bzc			\
 	&& for i in $(filter-out %.bse, $(ZFILE_DEFS)) ; do				\
 		uname=$$(echo $$i | tr a-z- A-Z_);					\
