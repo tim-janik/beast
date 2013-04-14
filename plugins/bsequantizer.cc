@@ -2,8 +2,10 @@
 #include "bsequantizer.genidl.hh"
 #include <bse/bseengine.hh>
 #include <bse/bsemathsignal.hh>
-namespace Bse { namespace Standard {
-using namespace Birnet;
+
+namespace Bse {
+namespace Standard {
+
 class Quantizer : public QuantizerBase {
   class Module: public SynthesisModule {
     /* params */
