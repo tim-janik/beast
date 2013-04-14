@@ -154,7 +154,7 @@ generate_test_signal (vector<Sample> &signal,
           cached_window[i] = bse_window_blackman (wpos);
         }
     }
-  string signal_cache_key = Birnet::string_printf ("%zd/%.1f/%.1f/%.1f", signal_length, sample_rate, frequency1, frequency2);
+  string signal_cache_key = Rapicorn::string_printf ("%zd/%.1f/%.1f/%.1f", signal_length, sample_rate, frequency1, frequency2);
   static map<string, vector<Sample> > signal_cache;
   vector<Sample>& cached_signal = signal_cache[signal_cache_key];
   if (cached_signal.empty())

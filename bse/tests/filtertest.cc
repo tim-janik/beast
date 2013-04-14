@@ -11,15 +11,18 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <complex>
-typedef std::complex<double> Complex;
-using namespace Birnet;
+using namespace Rapicorn;
 using std::max;
 using std::min;
+
+typedef std::complex<double> Complex;
+
 static inline double
 sqr (register double a)
 {
   return a * a;
 }
+
 static inline uint
 complex_find_nearest (const BseComplex *zp,
                       uint              n_zps,

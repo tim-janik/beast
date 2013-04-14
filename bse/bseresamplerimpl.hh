@@ -3,7 +3,7 @@
 #define __BSE_RESAMPLER_TCC__
 #include <vector>
 #include <bse/bseresampler.hh>
-#include <birnet/birnet.hh>
+#include <sfi/sfi.hh>
 #include <math.h>
 #include <string.h>
 #include <stdlib.h>
@@ -17,7 +17,7 @@ using std::vector;
 using std::min;
 using std::max;
 using std::copy;
-using Birnet::AlignedArray;
+
 /* see: http://ds9a.nl/gcc-simd/ */
 union F4Vector 
 {

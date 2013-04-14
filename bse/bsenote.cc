@@ -4,7 +4,7 @@
 #include "bseieee754.hh"
 #include "bsemathsignal.hh"
 #include <string.h>
-#include <birnet/birnet.hh>
+#include <sfi/sfi.hh>
 /* --- functions --- */
 namespace {
 struct FreqCmp {

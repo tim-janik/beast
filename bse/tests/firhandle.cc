@@ -10,10 +10,12 @@
 #include <stdlib.h>
 #include <complex>
 #include <vector>
+using Rapicorn::string_printf;
+
 using std::vector;
 using std::min;
 using std::max;
-using Birnet::string_printf;
+
 static void
 read_through (GslDataHandle *handle)
 {

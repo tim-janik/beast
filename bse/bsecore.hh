@@ -7,7 +7,7 @@
 
 /// The Bse namespace contains all functions of the synthesis engine.
 namespace Bse {
-using namespace Birnet;         // FIXME: using Rapicorn
+using namespace Rapicorn;
 
 /// The task registry keeps track of runtime threads for profiling and statistical purposes.
 class TaskRegistry {            // FIXME: move this to IDL

@@ -1,8 +1,10 @@
 // CC0 Public Domain: http://creativecommons.org/publicdomain/zero/1.0/
 #include "bsefilter.hh"
-#include <birnet/birnet.hh>
-using namespace Birnet;
+#include <sfi/sfi.hh>
+using namespace Rapicorn;
+
 extern "C" {
+
 const gchar*
 bse_iir_filter_kind_string (BseIIRFilterKind fkind)
 {
@@ -97,4 +99,5 @@ bse_iir_filter_design (const BseIIRFilterRequest  *filter_request,
     return _bse_filter_design_ellf (filter_request, filter_design);
   return false;
 }
+
 } // C

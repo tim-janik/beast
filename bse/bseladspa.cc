@@ -2,10 +2,10 @@
 #include "bseladspa.hh"
 #include "bseladspamodule.hh"
 #include "bsecategories.hh"
-#include <birnet/birnet.hh>
+#include <sfi/sfi.hh>
 #include <string.h>
 #include "ladspa.hh"
-using namespace Birnet;
+using namespace Rapicorn;
 
 #define LDEBUG(...)     BSE_KEY_DEBUG ("ladspa", __VA_ARGS__)
 
@@ -58,6 +58,7 @@ ladspa_plugin_iface_init (GTypePluginClass *iface)
   iface->unuse_plugin = ladspa_plugin_unuse;
   iface->complete_type_info = ladspa_plugin_complete_info;
 }
+
 static void
 ladspa_plugin_use (GTypePlugin *gplugin)
 {
@@ -65,7 +66,7 @@ ladspa_plugin_use (GTypePlugin *gplugin)
   g_object_ref (self);
   if (!self->use_count)
     {
-      BIRNET_MAY_ALIAS LADSPA_Descriptor_Function ldf = NULL;
+      LADSPA_Descriptor_Function ldf = NULL;
       const gchar *error = NULL;
       self->use_count++;
       LDEBUG ("%s: reloading plugin", self->fname);
@@ -90,6 +91,7 @@ ladspa_plugin_use (GTypePlugin *gplugin)
   else
     self->use_count++;
 }
+
 static void
 ladspa_plugin_unload (BseLadspaPlugin *self)
 {
@@ -575,7 +577,7 @@ bse_ladspa_plugin_check_load (const gchar *file_name)
   if (!gmodule)
     return g_module_error ();
   /* check whether this is a LADSPA module */
-  BIRNET_MAY_ALIAS LADSPA_Descriptor_Function ldf = NULL;
+  LADSPA_Descriptor_Function ldf = NULL;
   if (!g_module_symbol (gmodule, "ladspa_descriptor", (void**) &ldf) || !ldf)
     {
       g_module_close (gmodule);

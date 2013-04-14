@@ -19,7 +19,7 @@
 #include <sys/types.h>
 #include <unistd.h>
 #include <sfi/sfitests.hh> /* sfti_test_init() */
-using namespace Birnet;
+using namespace Rapicorn;
 
 /* --- prototypes --- */
 static void	bse_main_loop		(Rapicorn::AsyncBlockingQueue<int> *init_queue);

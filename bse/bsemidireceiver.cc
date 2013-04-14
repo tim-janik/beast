@@ -12,7 +12,6 @@
 #include <set>
 namespace {
 using namespace Bse;
-using namespace Birnet;
 using namespace std;
 
 #define MDEBUG(...)     BSE_KEY_DEBUG ("midi-receiver", __VA_ARGS__)
