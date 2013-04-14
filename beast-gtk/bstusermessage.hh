@@ -74,7 +74,7 @@ BstMsgBit*        bst_msg_bit_create_choice     (guint                   id,
 #define BST_MSG_CHOICE_S(id, name, sticn, sens) bst_msg_bit_create_choice (id, name, sticn, (sens) ? "" : "I") /* insensitive */
 #define BST_MSG_DIALOG(lvl, ...)                ({ BstMsgType __mt = lvl; uint __result = 0;                  \
                                                    BstMsgBit *__ba[] = { __VA_ARGS__ };                       \
-                                                   __result = bst_message_dialog_display (BIRNET_LOG_DOMAIN,  \
+                                                   __result = bst_message_dialog_display ("BEAST",  \
                                                                __mt, RAPICORN_ARRAY_SIZE (__ba), __ba);         \
                                                    __result; })
 G_END_DECLS
