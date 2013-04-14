@@ -1,7 +1,7 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "sfiwrapper.hh"
 #include "sficxx.hh"
-#include <birnet/birnet.hh>
+#include <sfi/sfi.hh>
 #include <rapicorn-test.hh>
 #include <errno.h>
 
@@ -71,37 +71,37 @@ bool
 birnet_file_check (const char *file,
                    const char *mode)
 {
-  return Birnet::Path::check (file ? file : "", mode ? mode : "");
+  return Rapicorn::Path::check (file ? file : "", mode ? mode : "");
 }
 bool
 birnet_file_equals (const char *file1,
                     const char *file2)
 {
-  return Birnet::Path::equals (file1 ? file1 : "", file2 ? file2 : "");
+  return Rapicorn::Path::equals (file1 ? file1 : "", file2 ? file2 : "");
 }
 
 /* --- url handling --- */
 void
 sfi_url_show (const char *url)
 {
-  return Birnet::url_show (url);
+  return Rapicorn::url_show (url);
 }
 void
 sfi_url_show_with_cookie (const char *url,
                           const char *url_title,
                           const char *cookie)
 {
-  return Birnet::url_show_with_cookie (url, url_title, cookie);
+  return Rapicorn::url_show_with_cookie (url, url_title, cookie);
 }
 bool
 sfi_url_test_show (const char *url)
 {
-  return Birnet::url_test_show (url);
+  return Rapicorn::url_test_show (url);
 }
 bool
 sfi_url_test_show_with_cookie (const char *url,
                                const char *url_title,
                                const char *cookie)
 {
-  return Birnet::url_test_show_with_cookie (url, url_title, cookie);
+  return Rapicorn::url_test_show_with_cookie (url, url_title, cookie);
 }

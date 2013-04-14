@@ -5,7 +5,7 @@
 #include <sfi/sfi.hh>
 #include <rapicorn-test.hh>
 
-static void BIRNET_UNUSED
+static void RAPICORN_UNUSED
 sfi_init_test (int *argcp, char **argv)
 {
   sfi_init (argcp, argv, RAPICORN_PRETTY_FILE, Bse::cstrings_to_vector ("rapicorn-test-initialization=1", NULL));

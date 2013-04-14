@@ -3,10 +3,10 @@
 #define __SFI_WRAPPER_H__
 #include <stdbool.h>
 #include <sfi/glib-extra.hh>
-#include <birnet/birnetcdefs.h> /* include glib before birnet for G_LOG_DOMAIN */
-#include <birnet/birnetutils.hh>
+#include <rapicorn-core.hh>
 
 namespace Bse {
+using namespace Rapicorn;
 
 // == Likelyness Hinting ==
 #define BSE_ISLIKELY(expr)      RAPICORN_ISLIKELY(expr) ///< Compiler hint that @a expr is likely to be true.
@@ -26,32 +26,18 @@ bool        bse_flipper_check (const char *key);
 
 } // Bse
 
-/* sfiwrapper.h is a thin C language wrapper around C++ features
- * provided by libbirnet.
- */
+// sfiwrapper.h is a thin C language wrapper around C++ features
+
 /* --- short integer types --- */
-#ifdef __cplusplus
-#include <birnet/birnetutils.hh>
-using Birnet::uint8;
-using Birnet::uint16;
-using Birnet::uint32;
-using Birnet::uint64;
-using Birnet::int8;
-using Birnet::int16;
-using Birnet::int32;
-using Birnet::int64;
-using Birnet::unichar;
-#else
-typedef BirnetUInt8   uint8;
-typedef BirnetUInt16  uint16;
-typedef BirnetUInt32  uint32;
-typedef BirnetUInt64  uint64;
-typedef BirnetInt8    int8;
-typedef BirnetInt16   int16;
-typedef BirnetInt32   int32;
-typedef BirnetInt64   int64;
-typedef BirnetUnichar unichar;
-#endif
+using Rapicorn::uint8;
+using Rapicorn::uint16;
+using Rapicorn::uint32;
+using Rapicorn::uint64;
+using Rapicorn::int8;
+using Rapicorn::int16;
+using Rapicorn::int32;
+using Rapicorn::int64;
+using Rapicorn::unichar;
 
 extern "C" {
 
