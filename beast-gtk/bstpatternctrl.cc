@@ -367,10 +367,10 @@ struct ConstKeyBindingItem {
 static BstKeyBindingItem*
 BstKeyBindingItem_from_ConstKeyBindingItem (const ConstKeyBindingItem *ckb)
 {
-  BIRNET_STATIC_ASSERT (sizeof (ConstKeyBindingItem) == sizeof (BstKeyBindingItem));
-  BIRNET_STATIC_ASSERT (offsetof (ConstKeyBindingItem, key_name) == offsetof (BstKeyBindingItem, key_name));
-  BIRNET_STATIC_ASSERT (offsetof (ConstKeyBindingItem, func_name) == offsetof (BstKeyBindingItem, func_name));
-  BIRNET_STATIC_ASSERT (offsetof (ConstKeyBindingItem, func_param) == offsetof (BstKeyBindingItem, func_param));
+  RAPICORN_STATIC_ASSERT (sizeof (ConstKeyBindingItem) == sizeof (BstKeyBindingItem));
+  RAPICORN_STATIC_ASSERT (offsetof (ConstKeyBindingItem, key_name) == offsetof (BstKeyBindingItem, key_name));
+  RAPICORN_STATIC_ASSERT (offsetof (ConstKeyBindingItem, func_name) == offsetof (BstKeyBindingItem, func_name));
+  RAPICORN_STATIC_ASSERT (offsetof (ConstKeyBindingItem, func_param) == offsetof (BstKeyBindingItem, func_param));
   return (BstKeyBindingItem*) ckb;
 }
 BstKeyBinding*

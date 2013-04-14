@@ -75,7 +75,7 @@ BstMsgBit*        bst_msg_bit_create_choice     (guint                   id,
 #define BST_MSG_DIALOG(lvl, ...)                ({ BstMsgType __mt = lvl; uint __result = 0;                  \
                                                    BstMsgBit *__ba[] = { __VA_ARGS__ };                       \
                                                    __result = bst_message_dialog_display (BIRNET_LOG_DOMAIN,  \
-                                                               __mt, BIRNET_ARRAY_SIZE (__ba), __ba);         \
+                                                               __mt, RAPICORN_ARRAY_SIZE (__ba), __ba);         \
                                                    __result; })
 G_END_DECLS
 #endif	/* __BST_USER_MESSAGE_H__ */
