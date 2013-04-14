@@ -21,7 +21,8 @@
 
 /// The BseWaveTool namespace contains all functions of the bse wave tool utility.
 namespace BseWaveTool {
-using namespace Birnet;
+using namespace Bse;
+
 #define PRG_NAME        ("bsewavetool")
 #define	IROUND(dbl)	((int) (floor (dbl + 0.5)))
 /* --- prototypes --- */
@@ -2387,12 +2388,12 @@ public:
     BseErrorType error = gsl_data_handle_open (fir_handle);
     if (error)
       return error;
-    Birnet::int64 freq_inc = 5; // FIXME
+    int64 freq_inc = 5; // FIXME
     while (freq_inc * 1000 < gsl_data_handle_mix_freq (fir_handle))
       freq_inc *= 2;
     double	  best_diff_db = 100;
-    Birnet::int64 best_freq = 0;
-    for (Birnet::int64 freq = 0; freq < gsl_data_handle_mix_freq (fir_handle) / 2.0; freq += freq_inc)
+    int64 best_freq = 0;
+    for (int64 freq = 0; freq < gsl_data_handle_mix_freq (fir_handle) / 2.0; freq += freq_inc)
       {
 	double diff_db = fabs (bse_data_handle_fir_response_db (fir_handle, freq) + 48);
 	if (diff_db < best_diff_db)
