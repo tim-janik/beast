@@ -7,6 +7,6 @@ DEFS	    += @DEFINE__FILE_DIR__@ -DBIRNET_LOG_DOMAIN='"$(basename $(@F))"' -DPAR
 AM_CXXFLAGS  = $(RAPICORN_CFLAGS) -DRAPICORN_CONVENIENCE $(BIRNET_CFLAGS)
 
 noinst_PROGRAMS  = $(ALLTESTS)
-progs_ldadd 	 = $(top_builddir)/birnet/libbirnet.o $(RAPICORN_LIBS) $(BIRNET_LIBS) -lm
+progs_ldadd 	 = $(RAPICORN_LIBS) $(BIRNET_LIBS) -lm
 
 TESTS =

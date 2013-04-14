@@ -1,11 +1,12 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
-#include <birnet/birnet.hh>
+#include <rapicorn-core.hh>
 #include <glib.h>
 #include <stdio.h>
 #include <string.h>
 #include <errno.h>
 #include <zlib.h>
-namespace Birnet {
+using namespace Rapicorn;
+
 static bool use_compression = FALSE;
 static bool use_base_name = FALSE;
 typedef struct {
@@ -198,4 +199,3 @@ main (int   argc,
     }
   return 0;
 }
-} // Birnet
