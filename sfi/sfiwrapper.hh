@@ -52,7 +52,9 @@ typedef BirnetInt32   int32;
 typedef BirnetInt64   int64;
 typedef BirnetUnichar unichar;
 #endif
-BIRNET_EXTERN_C_BEGIN();
+
+extern "C" {
+
 /* --- initialization --- */
 typedef struct
 {
@@ -85,6 +87,7 @@ bool sfi_url_test_show_with_cookie	(const char           *url,
 					 const char           *url_title,
 					 const char           *cookie);
 
-BIRNET_EXTERN_C_END();
+} // "C"
+
 #endif /* __SFI_WRAPPER_H__ */
 /* vim:set ts=8 sts=2 sw=2: */
