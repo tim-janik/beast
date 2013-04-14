@@ -777,7 +777,7 @@ bse_scm_script_message (SCM s_type,
   BSE_SCM_DEFER_INTS ();
   SfiSeq *args = sfi_seq_new ();
   /* keep arguments in sync with bsejanitor.proc */
-  sfi_seq_append_string (args, BIRNET_LOG_DOMAIN);
+  sfi_seq_append_string (args, "BseScmShell");
   sfi_seq_append_string (args, mtype.c_str());
   sfi_seq_append_string (args, title);
   sfi_seq_append_string (args, primary);
