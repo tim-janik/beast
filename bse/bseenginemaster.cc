@@ -1058,13 +1058,13 @@ MasterThread::master_thread()
   Bse::TaskRegistry::add ("DSP #1", Rapicorn::ThisThread::process_pid(), Rapicorn::ThisThread::thread_pid());
 
   /* assert pollfd equality, since we're simply casting structures */
-  BIRNET_STATIC_ASSERT (sizeof (struct pollfd) == sizeof (GPollFD));
-  BIRNET_STATIC_ASSERT (G_STRUCT_OFFSET (GPollFD, fd) == G_STRUCT_OFFSET (struct pollfd, fd));
-  BIRNET_STATIC_ASSERT (sizeof (((GPollFD*) 0)->fd) == sizeof (((struct pollfd*) 0)->fd));
-  BIRNET_STATIC_ASSERT (G_STRUCT_OFFSET (GPollFD, events) == G_STRUCT_OFFSET (struct pollfd, events));
-  BIRNET_STATIC_ASSERT (sizeof (((GPollFD*) 0)->events) == sizeof (((struct pollfd*) 0)->events));
-  BIRNET_STATIC_ASSERT (G_STRUCT_OFFSET (GPollFD, revents) == G_STRUCT_OFFSET (struct pollfd, revents));
-  BIRNET_STATIC_ASSERT (sizeof (((GPollFD*) 0)->revents) == sizeof (((struct pollfd*) 0)->revents));
+  RAPICORN_STATIC_ASSERT (sizeof (struct pollfd) == sizeof (GPollFD));
+  RAPICORN_STATIC_ASSERT (G_STRUCT_OFFSET (GPollFD, fd) == G_STRUCT_OFFSET (struct pollfd, fd));
+  RAPICORN_STATIC_ASSERT (sizeof (((GPollFD*) 0)->fd) == sizeof (((struct pollfd*) 0)->fd));
+  RAPICORN_STATIC_ASSERT (G_STRUCT_OFFSET (GPollFD, events) == G_STRUCT_OFFSET (struct pollfd, events));
+  RAPICORN_STATIC_ASSERT (sizeof (((GPollFD*) 0)->events) == sizeof (((struct pollfd*) 0)->events));
+  RAPICORN_STATIC_ASSERT (G_STRUCT_OFFSET (GPollFD, revents) == G_STRUCT_OFFSET (struct pollfd, revents));
+  RAPICORN_STATIC_ASSERT (sizeof (((GPollFD*) 0)->revents) == sizeof (((struct pollfd*) 0)->revents));
 
   /* add the thread wakeup pipe to master pollfds,
    * so we get woken  up in time.

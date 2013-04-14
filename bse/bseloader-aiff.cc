@@ -198,7 +198,7 @@ aiff_read_inst (int       fd,
                 guint32   chunk_size)
 {
   int r;
-  BIRNET_STATIC_ASSERT (sizeof (afile->instrument) == 20);
+  RAPICORN_STATIC_ASSERT (sizeof (afile->instrument) == 20);
   if (chunk_size < 20)
     return BSE_ERROR_FORMAT_INVALID;
   do

@@ -63,23 +63,23 @@ SynthesisModule::set_module (BseModule *engine_module)
   g_return_if_fail (engine_module != NULL);
   intern_module = engine_module;
   /* assert validity of the above casts */
-  BIRNET_STATIC_ASSERT (sizeof   (JStream)                    == sizeof   (BseJStream));
-  BIRNET_STATIC_ASSERT (offsetof (JStream, values)            == offsetof (BseJStream, values));
-  BIRNET_STATIC_ASSERT (sizeof (((JStream*)0)->values)        == sizeof (((BseJStream*)0)->values));
-  BIRNET_STATIC_ASSERT (offsetof (JStream, n_connections)     == offsetof (BseJStream, n_connections));
-  BIRNET_STATIC_ASSERT (sizeof (((JStream*)0)->n_connections) == sizeof (((BseJStream*)0)->n_connections));
-  BIRNET_STATIC_ASSERT (offsetof (JStream, jcount)            == offsetof (BseJStream, jcount));
-  BIRNET_STATIC_ASSERT (sizeof (((JStream*)0)->jcount)        == sizeof (((BseJStream*)0)->jcount));
-  BIRNET_STATIC_ASSERT (sizeof   (IStream)                == sizeof   (BseIStream));
-  BIRNET_STATIC_ASSERT (offsetof (IStream, values)        == offsetof (BseIStream, values));
-  BIRNET_STATIC_ASSERT (sizeof (((IStream*)0)->values)    == sizeof (((BseIStream*)0)->values));
-  BIRNET_STATIC_ASSERT (offsetof (IStream, connected)     == offsetof (BseIStream, connected));
-  BIRNET_STATIC_ASSERT (sizeof (((IStream*)0)->connected) == sizeof (((BseIStream*)0)->connected));
-  BIRNET_STATIC_ASSERT (sizeof   (OStream)                == sizeof   (BseOStream));
-  BIRNET_STATIC_ASSERT (offsetof (OStream, values)        == offsetof (BseOStream, values));
-  BIRNET_STATIC_ASSERT (sizeof (((OStream*)0)->values)    == sizeof (((BseOStream*)0)->values));
-  BIRNET_STATIC_ASSERT (offsetof (OStream, connected)     == offsetof (BseOStream, connected));
-  BIRNET_STATIC_ASSERT (sizeof (((OStream*)0)->connected) == sizeof (((BseOStream*)0)->connected));
+  RAPICORN_STATIC_ASSERT (sizeof   (JStream)                    == sizeof   (BseJStream));
+  RAPICORN_STATIC_ASSERT (offsetof (JStream, values)            == offsetof (BseJStream, values));
+  RAPICORN_STATIC_ASSERT (sizeof (((JStream*)0)->values)        == sizeof (((BseJStream*)0)->values));
+  RAPICORN_STATIC_ASSERT (offsetof (JStream, n_connections)     == offsetof (BseJStream, n_connections));
+  RAPICORN_STATIC_ASSERT (sizeof (((JStream*)0)->n_connections) == sizeof (((BseJStream*)0)->n_connections));
+  RAPICORN_STATIC_ASSERT (offsetof (JStream, jcount)            == offsetof (BseJStream, jcount));
+  RAPICORN_STATIC_ASSERT (sizeof (((JStream*)0)->jcount)        == sizeof (((BseJStream*)0)->jcount));
+  RAPICORN_STATIC_ASSERT (sizeof   (IStream)                == sizeof   (BseIStream));
+  RAPICORN_STATIC_ASSERT (offsetof (IStream, values)        == offsetof (BseIStream, values));
+  RAPICORN_STATIC_ASSERT (sizeof (((IStream*)0)->values)    == sizeof (((BseIStream*)0)->values));
+  RAPICORN_STATIC_ASSERT (offsetof (IStream, connected)     == offsetof (BseIStream, connected));
+  RAPICORN_STATIC_ASSERT (sizeof (((IStream*)0)->connected) == sizeof (((BseIStream*)0)->connected));
+  RAPICORN_STATIC_ASSERT (sizeof   (OStream)                == sizeof   (BseOStream));
+  RAPICORN_STATIC_ASSERT (offsetof (OStream, values)        == offsetof (BseOStream, values));
+  RAPICORN_STATIC_ASSERT (sizeof (((OStream*)0)->values)    == sizeof (((BseOStream*)0)->values));
+  RAPICORN_STATIC_ASSERT (offsetof (OStream, connected)     == offsetof (BseOStream, connected));
+  RAPICORN_STATIC_ASSERT (sizeof (((OStream*)0)->connected) == sizeof (((BseOStream*)0)->connected));
 }
 void
 SynthesisModule::ostream_set (uint         ostream_index,

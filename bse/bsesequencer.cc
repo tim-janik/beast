@@ -119,13 +119,13 @@ public:
     watches.erase (watches.begin() + i);
     return true;
   }
-  BIRNET_STATIC_ASSERT (sizeof (GPollFD) == sizeof (struct pollfd));
-  BIRNET_STATIC_ASSERT (offsetof (GPollFD, fd) == offsetof (struct pollfd, fd));
-  BIRNET_STATIC_ASSERT (sizeof (((GPollFD*) 0)->fd) == sizeof (((struct pollfd*) 0)->fd));
-  BIRNET_STATIC_ASSERT (offsetof (GPollFD, events) == offsetof (struct pollfd, events));
-  BIRNET_STATIC_ASSERT (sizeof (((GPollFD*) 0)->events) == sizeof (((struct pollfd*) 0)->events));
-  BIRNET_STATIC_ASSERT (offsetof (GPollFD, revents) == offsetof (struct pollfd, revents));
-  BIRNET_STATIC_ASSERT (sizeof (((GPollFD*) 0)->revents) == sizeof (((struct pollfd*) 0)->revents));
+  RAPICORN_STATIC_ASSERT (sizeof (GPollFD) == sizeof (struct pollfd));
+  RAPICORN_STATIC_ASSERT (offsetof (GPollFD, fd) == offsetof (struct pollfd, fd));
+  RAPICORN_STATIC_ASSERT (sizeof (((GPollFD*) 0)->fd) == sizeof (((struct pollfd*) 0)->fd));
+  RAPICORN_STATIC_ASSERT (offsetof (GPollFD, events) == offsetof (struct pollfd, events));
+  RAPICORN_STATIC_ASSERT (sizeof (((GPollFD*) 0)->events) == sizeof (((struct pollfd*) 0)->events));
+  RAPICORN_STATIC_ASSERT (offsetof (GPollFD, revents) == offsetof (struct pollfd, revents));
+  RAPICORN_STATIC_ASSERT (sizeof (((GPollFD*) 0)->revents) == sizeof (((struct pollfd*) 0)->revents));
 };
 
 void

@@ -2,7 +2,9 @@
 #ifndef BSE_FILTER_H__
 #define BSE_FILTER_H__
 #include <bse/bsemath.hh>
-BIRNET_EXTERN_C_BEGIN();
+
+extern "C" {
+
 typedef enum /*< skip >*/
 {
   BSE_IIR_FILTER_BUTTERWORTH = 1,
@@ -74,5 +76,7 @@ gchar*	bse_iir_filter_string		(const BseIIRFilter         *filter);
 /* --- internal prototypes --- */
 bool	_bse_filter_design_ellf 	(const BseIIRFilterRequest      *ifr,
 					 BseIIRFilterDesign             *fid);
-BIRNET_EXTERN_C_END();
+
+} // "C"
+
 #endif /* BSE_FILTER_H__ */	/* vim:set ts=8 sw=2 sts=2: */

@@ -18,9 +18,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +3.37540151883546802e-01;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -44,9 +44,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +6.62459848116453198e-01;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -71,9 +71,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +4.56754761905262929e-01;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -97,9 +97,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +5.43245238094737126e-01;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -123,9 +123,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +5.79192220162268123e-01;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -149,9 +149,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +4.20807779837731821e-01;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -177,9 +177,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +3.80985929337916085e-01;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -204,9 +204,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +6.19014070662083915e-01;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -230,9 +230,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +8.63271264002680283e-01;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -256,9 +256,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +1.36728735997319772e-01;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -283,9 +283,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +1.31106439916625961e-01;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -310,9 +310,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +5.05001029045877625e-01;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -340,9 +340,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +1.58039328153201902e-01;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -368,9 +368,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +4.60461097729470303e-01;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -395,9 +395,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +3.91335772501768597e-01;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -422,9 +422,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +2.06572083826147945e-01;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -452,9 +452,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +8.27652299938871766e-02;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -480,9 +480,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +6.01652944416764535e-01;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -507,9 +507,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +8.00592403464569835e-01;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -534,9 +534,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +2.00833655642113085e-02;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -563,9 +563,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +4.95329963572531951e-02;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -592,9 +592,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +3.74452692590159453e-01;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -625,9 +625,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +1.26213850727657617e-01;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -655,9 +655,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +2.13943265364287677e-01;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -684,9 +684,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +2.56915601248463354e-01;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -713,9 +713,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +9.85311609239270525e-02;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -746,9 +746,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +2.61830551150999714e-02;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -776,9 +776,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +4.74795720675710187e-01;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -805,9 +805,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +7.29440722639082328e-01;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -834,9 +834,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +2.89819463372144315e-03;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -864,9 +864,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +1.85630106268971778e-02;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -894,9 +894,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +2.75413288072304363e-01;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -930,9 +930,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +1.40902570539989502e-01;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -962,9 +962,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +5.91304865620973785e-02;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -992,9 +992,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +1.67179268608489917e-01;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -1022,9 +1022,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +4.65829066364436689e-02;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -1058,9 +1058,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +1.61811893048955623e-02;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -1090,9 +1090,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +2.91905983648564904e-01;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -1120,9 +1120,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +6.62015837202617474e-01;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -1150,9 +1150,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +4.16599204406606360e-04;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -1182,9 +1182,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +6.93319613014260414e-03;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -1214,9 +1214,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +2.01885013869886415e-01;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -1254,9 +1254,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +1.48245394680078579e-01;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -1289,9 +1289,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +1.30759135923220436e-02;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -1321,9 +1321,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +1.08373702587479970e-01;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -1353,9 +1353,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +2.19396206884641676e-02;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -1392,9 +1392,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +5.21730632730634750e-03;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -1426,9 +1426,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +2.27039743057118409e-01;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -1458,9 +1458,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +5.99940204219629347e-01;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -1490,9 +1490,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +5.97957803700199797e-05;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -1523,9 +1523,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +2.58506418423726757e-03;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -1556,9 +1556,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +1.47732499549473567e-01;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -1598,9 +1598,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +1.17724405307388603e-03;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -1634,9 +1634,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +2.00347893071856464e-01;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -1667,9 +1667,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +7.01154134924536071e-02;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -1700,9 +1700,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +1.03128747626644052e-02;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -1742,9 +1742,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +2.99201195938670911e-03;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -1778,9 +1778,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +1.38500485056616773e-01;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -1816,9 +1816,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +4.02734998169869463e-01;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -1854,9 +1854,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +2.52599217264088717e-08;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -1911,9 +1911,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +3.45413139953903786e-10;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -1968,9 +1968,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +9.56509917634426046e-04;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -2058,9 +2058,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +1.99457235929087803e-06;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -2126,9 +2126,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +3.54855726173966059e-06;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -2158,9 +2158,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +1.08373702587479970e-01;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -2190,9 +2190,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +2.19396206884641676e-02;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -2229,9 +2229,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +2.71407163282520172e-03;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -2263,9 +2263,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +2.86148197308269014e-01;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -2304,9 +2304,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +3.29638801642986090e-01;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -2345,9 +2345,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +5.18651903664972026e-10;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -2407,9 +2407,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +1.77275246021120981e-11;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -2469,9 +2469,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +3.71108650178311674e-04;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -2569,9 +2569,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +1.32829452730899699e-06;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -2644,9 +2644,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +1.52755731467166356e-07;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -2691,9 +2691,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +1.35930924385637363e-03;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -2738,9 +2738,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +1.12780465012447030e-05;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -2807,9 +2807,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +6.18793122578616299e-07;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -2861,9 +2861,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +6.78179443895965059e-03;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -2900,9 +2900,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +3.64373550347606989e-01;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -2939,9 +2939,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +3.61969508002029511e-09;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -2992,9 +2992,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +6.72899928986409523e-09;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -3045,9 +3045,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +2.46489683728376126e-03;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -3126,9 +3126,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +4.40920010891226749e-08;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -3188,9 +3188,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +1.02013977043604502e-03;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -3244,9 +3244,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +9.75244137951506205e-05;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -3300,9 +3300,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +1.19013219412544242e-07;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -3387,9 +3387,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = -4.36492157414775845e-12;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -3453,9 +3453,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +1.13014417263094698e-02;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -3519,9 +3519,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +5.97907291843755365e-02;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -3585,9 +3585,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = -9.11864941901092943e-19;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -3641,9 +3641,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +9.29436797716207228e-10;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -3697,9 +3697,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +1.31140358434340032e-03;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -3784,9 +3784,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +8.29645076149898614e-12;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -3850,9 +3850,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +7.08132471292118384e-03;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -3904,9 +3904,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +1.51306260906793977e-04;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -3958,9 +3958,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +2.54142743143970424e-07;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -4042,9 +4042,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +2.07955818904662617e-09;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -4106,9 +4106,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +2.06266387635144991e-03;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -4138,9 +4138,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +5.99940204219629347e-01;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -4170,9 +4170,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +5.97957803700199797e-05;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -4196,9 +4196,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +8.23150343396322537e-01;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -4222,9 +4222,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +7.75779795766373459e-01;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -4250,9 +4250,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +7.40610328057684675e-01;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -4276,9 +4276,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +7.60465066178089177e-01;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -4302,9 +4302,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +9.79179743225903065e-01;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -4328,9 +4328,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +9.52382343396250608e-01;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -4356,9 +4356,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +9.07761151469635430e-01;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -4382,9 +4382,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +8.87114713894911144e-01;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -4408,9 +4408,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +9.91133476790830970e-01;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -4434,9 +4434,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +3.19831555625038400e-01;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -4461,9 +4461,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +1.81587456392766633e-01;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -4488,9 +4488,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +9.16245697428743400e-01;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -4518,9 +4518,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +7.85163808798271856e-01;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -4546,9 +4546,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +8.19459435962996863e-01;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -4573,9 +4573,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +5.59447794472910820e-01;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -4600,9 +4600,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +7.18356533915192608e-01;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -4630,9 +4630,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +6.57261247406877969e-01;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -4658,9 +4658,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +8.16210855964843662e-01;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -4685,9 +4685,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +9.61107297262236315e-01;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -4712,9 +4712,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +1.84104840596419073e-01;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -4741,9 +4741,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +2.44439262075616920e-01;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -4770,9 +4770,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +6.09346154482313773e-01;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -4804,9 +4804,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +1.87295049446138562e-01;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -4834,9 +4834,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +4.92646558401250712e-01;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -4863,9 +4863,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +6.27550790742955722e-01;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -4892,9 +4892,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +1.12156278153830793e-01;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -4925,9 +4925,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +4.29060859988502352e-02;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -4956,9 +4956,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +2.11787335757657430e-01;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -4985,9 +4985,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +7.49825516076879528e-01;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -5014,9 +5014,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +1.36318979016078479e-03;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -5044,9 +5044,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +4.13088578977193754e-02;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -5074,9 +5074,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +3.01283678880706784e-01;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -5110,9 +5110,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +1.36447648275324046e-01;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -5142,9 +5142,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +5.58090119290151482e-02;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -5172,9 +5172,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +6.66552593606517668e-02;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -5202,9 +5202,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +1.61575723543012195e-01;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -5238,9 +5238,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +1.27220936309724197e-01;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -5270,9 +5270,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +1.65711241787356883e-01;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -5300,9 +5300,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +6.65090476214504345e-01;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -5330,9 +5330,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +2.34969117118398224e-04;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -5362,9 +5362,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +2.99817868579073214e-03;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -5394,9 +5394,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +7.60587638782091041e-02;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -5433,9 +5433,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +5.82220596927068672e-03;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -5468,9 +5468,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +2.55412675774362614e-02;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -5500,9 +5500,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +1.96930124552868180e-01;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -5532,9 +5532,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +3.15618742589223317e-02;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -5571,9 +5571,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +9.28081791395474892e-03;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -5606,9 +5606,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +1.45959346871252227e-01;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -5638,9 +5638,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +7.45747761348582894e-01;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -5670,9 +5670,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +3.55241032433013804e-05;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -5718,9 +5718,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +3.68820307718988487e-09;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -5766,9 +5766,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +1.12338567615789375e-03;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -5838,9 +5838,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +3.31666019810090996e-11;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -5894,9 +5894,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +6.02719834522609174e-03;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -5938,9 +5938,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +3.50824617444961818e-04;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -5982,9 +5982,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +5.63847891820893790e-06;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -6045,9 +6045,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +5.73350924033648912e-08;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -6096,9 +6096,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +8.66741070629973090e-03;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -6155,9 +6155,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +4.50756046094664548e-02;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -6214,9 +6214,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +1.10486448244258902e-17;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -6274,9 +6274,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +8.99155719745799062e-15;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -6334,9 +6334,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +1.75140850869868934e-05;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -6430,9 +6430,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +2.37922922444923009e-09;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -6502,9 +6502,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +7.48689315686099660e-10;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -6562,9 +6562,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +1.71896090867014906e-07;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -6622,9 +6622,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +6.21631335901405301e-12;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -6718,9 +6718,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = -4.61783284442735292e-09;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -6790,9 +6790,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +5.72175301118364472e-04;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -6829,9 +6829,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +2.70474286362426819e-01;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -6868,9 +6868,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +1.40385544702971656e-11;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -6927,9 +6927,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +6.81264930136523702e-14;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -6986,9 +6986,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +4.03939027946469259e-05;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -7079,9 +7079,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = -2.25356084528303474e-15;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -7150,9 +7150,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +4.94636192353107521e-04;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -7186,9 +7186,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +9.59915644082888833e-03;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -7222,9 +7222,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +3.30609881641306664e-04;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -7270,9 +7270,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +3.35625550936256041e-06;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -7310,9 +7310,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +9.80896054221074010e-02;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -7378,9 +7378,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +1.56061539096145601e-02;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -7446,9 +7446,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = -5.40909398153520041e-18;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -7488,9 +7488,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +3.33234396414448601e-07;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -7530,9 +7530,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +1.50073438298753067e-02;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -7590,9 +7590,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +3.81267487468011344e-04;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -7638,9 +7638,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +1.05049924679677368e-04;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -7694,9 +7694,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +2.09635078610176968e-06;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -7750,9 +7750,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +2.93731414033303977e-10;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -7837,9 +7837,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = -1.16716279925472923e-10;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -7904,9 +7904,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +8.04765396796252902e-04;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -7970,9 +7970,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +1.55358323689597198e-02;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -8036,9 +8036,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +8.80794251931705654e-18;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -8072,9 +8072,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +1.49643272027668149e-05;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -8108,9 +8108,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +3.17239405223392334e-02;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -8156,9 +8156,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +1.34511086241150468e-03;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -8196,9 +8196,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +5.70167025675556195e-03;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -8240,9 +8240,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +2.81455229295657556e-04;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -8284,9 +8284,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +9.06710281570104483e-06;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -8347,9 +8347,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +1.19886966449359875e-07;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -8398,9 +8398,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +6.86430294412105572e-03;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -8466,9 +8466,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +1.06436015041719532e-02;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -8534,9 +8534,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = -5.00347283667759901e-19;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -8560,9 +8560,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +5.40425731313414648e-01;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -8586,9 +8586,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +5.69916402167475411e-01;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -8613,9 +8613,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +3.08758169139172811e-01;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -8639,9 +8639,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +5.29790673333825346e-01;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -8665,9 +8665,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +8.35968181124030818e-01;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -8691,9 +8691,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +9.45378094615245468e-01;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -8719,9 +8719,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +9.07748129438420204e-01;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -8745,9 +8745,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +8.99343810349388595e-01;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -8771,9 +8771,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +8.08288615717547287e-01;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -8797,9 +8797,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +1.30121968262457144e-01;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -8823,9 +8823,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +6.12818667772852405e-02;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -8849,9 +8849,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +5.99053590756029486e-01;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -8877,9 +8877,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +1.97986505755023329e-01;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -8905,9 +8905,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +9.21107872490095403e-01;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -8931,9 +8931,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +8.07344886769654435e-01;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -8957,9 +8957,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +5.48259582218060815e-01;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -8985,9 +8985,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +4.91387442474707115e-01;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -9013,9 +9013,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +6.81987718723703673e-01;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -9039,9 +9039,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +9.65113315659110960e-01;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -9065,9 +9065,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +2.92060085442872597e-02;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -9093,9 +9093,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +9.55910492130912365e-02;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -9121,9 +9121,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +4.71886494568098613e-01;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -9152,9 +9152,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +1.72258977699367433e-01;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -9183,9 +9183,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +1.91474742450869401e-01;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -9211,9 +9211,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +3.63120037176028310e-01;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -9239,9 +9239,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +1.99809503068459654e-01;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -9270,9 +9270,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +8.46445416424388281e-02;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -9300,9 +9300,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +5.53935498981032892e-01;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -9328,9 +9328,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +8.96544067031849412e-01;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -9356,9 +9356,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +6.07913001442034607e-04;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -9384,9 +9384,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +8.45961198911967943e-02;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -9412,9 +9412,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +5.07462327569859983e-01;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -9444,9 +9444,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +2.83534535683670985e-01;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -9476,9 +9476,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +1.59196042877524840e-01;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -9504,9 +9504,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +3.23728957494496039e-01;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -9532,9 +9532,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +2.13922352132165206e-01;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -9564,9 +9564,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +5.38237817002226726e-02;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -9596,9 +9596,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +2.02384828173368780e-01;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -9624,9 +9624,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +6.50915612395270737e-01;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -9652,9 +9652,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +7.79430231257714854e-03;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -9682,9 +9682,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +1.04177488946609396e-03;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -9712,9 +9712,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +1.99546589572024619e-01;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -9747,9 +9747,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +4.87225716837758754e-02;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -9781,9 +9781,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +6.05353895515744589e-01;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -9811,9 +9811,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +3.30484808688906839e-01;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -9841,9 +9841,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +5.99156819267973664e-02;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -9876,9 +9876,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +5.50236300520706538e-03;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -9911,9 +9911,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +1.22826843277113185e-01;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -9941,9 +9941,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +6.13301613593452921e-01;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -9971,9 +9971,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +2.19459510616865560e-03;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -10005,9 +10005,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +2.67506623154043811e-02;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -10039,9 +10039,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +2.05856337418330843e-01;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -10083,9 +10083,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +8.72689502316799435e-04;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -10127,9 +10127,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +1.23518368406856181e-02;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -10173,9 +10173,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +3.72914795429066387e-02;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -10219,9 +10219,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +6.62199600624911733e-03;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -10286,9 +10286,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +2.06886420201143830e-04;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -10353,9 +10353,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +6.08028816362609584e-03;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -10397,9 +10397,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +3.67426037578994336e-01;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -10441,9 +10441,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +1.16222122523705184e-04;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -10473,9 +10473,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +4.00669828907275699e-04;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -10505,9 +10505,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +6.90327089208617461e-02;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -10545,9 +10545,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +4.40665747020740559e-02;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -10585,9 +10585,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +4.50233687710491562e-03;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -10637,9 +10637,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +5.19741662039793599e-03;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -10689,9 +10689,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +3.96587404478231293e-04;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -10769,9 +10769,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = -4.08837156330568785e+00;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -10849,9 +10849,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +3.59854677196190798e-02;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -10897,9 +10897,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +3.63074659754293705e-01;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -10945,9 +10945,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +4.20975379016804541e-01;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -10975,9 +10975,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +8.15768625656146905e-03;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -11005,9 +11005,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +8.55959816117056321e-02;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -11040,9 +11040,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +1.33830258937214664e-02;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -11075,9 +11075,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +1.82860207862908554e-02;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -11113,9 +11113,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +1.88480433845004567e-03;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -11151,9 +11151,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +5.82851485436558593e-05;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -11202,9 +11202,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +1.96983321420811193e-06;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -11252,9 +11252,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +8.37790352843335584e-02;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -11286,9 +11286,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +3.87030317442550953e-01;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -11320,9 +11320,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +3.09842371397489955e-06;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -11364,9 +11364,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +2.11543529848209138e-06;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -11408,9 +11408,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +3.59381758762457185e-03;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -11471,9 +11471,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +6.92323009703125570e-04;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -11534,9 +11534,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +6.55133055675891703e-05;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -11568,9 +11568,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +2.34216637531503465e-02;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -11602,9 +11602,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +3.14691637160775285e-03;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -11646,9 +11646,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +1.50115682042890174e-02;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -11689,9 +11689,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +1.27709312150459386e-01;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -11719,9 +11719,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +5.54583105265337495e-01;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -11749,9 +11749,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +8.64673265239987682e-04;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -11795,9 +11795,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +1.70755131309589330e-06;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -11841,9 +11841,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +4.02045673538884395e-03;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -11909,9 +11909,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +4.97805445285997260e-03;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -11977,9 +11977,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +6.68177161151099243e-04;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -12029,9 +12029,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +1.62140751442509633e-02;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -12081,9 +12081,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +2.06976786939034501e-03;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -12160,9 +12160,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +5.13051707933898271e+00;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -12239,9 +12239,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +1.40680409573448982e-02;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -12271,9 +12271,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +5.44221321322100993e-01;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }
@@ -12303,9 +12303,9 @@
     };
     filters[index].filter_request = &filter_request;
     filters[index].gain = +2.41313643240746080e-05;
-    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;
+    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;
     filters[index].zeros = zeros;
-    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;
+    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;
     filters[index].poles = poles;
     index++;
   }

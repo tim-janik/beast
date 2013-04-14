@@ -16,7 +16,7 @@
 
 #define MDEBUG(...)     BSE_KEY_DEBUG ("mad", __VA_ARGS__)
 
-BIRNET_STATIC_ASSERT (BSE_HAVE_LIBMAD + 42); // assert BSE_HAVE_LIBMAD2 is defined
+RAPICORN_STATIC_ASSERT (BSE_HAVE_LIBMAD > 0); // ensure we can use libmad
 #if     BSE_HAVE_LIBMAD
 #include <mad.h>
 
