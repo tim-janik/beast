@@ -1947,6 +1947,8 @@ public:
       {
 	if (parse_chunk_selection (argv, i, argc, all_chunks, freq_list))
 	  seen_selection = true;
+        else if (parse_bool_option (argv, i, "--volume-xinfo"))
+          use_volume_xinfo = true;
       }
     return !seen_selection ? 1 : 0; /* # args missing */
   }
@@ -2028,8 +2030,6 @@ public:
       {
 	if (parse_chunk_selection (argv, i, argc, all_chunks, freq_list))
 	  seen_selection = true;
-        else if (parse_bool_option (argv, i, "--volume-xinfo"))
-          use_volume_xinfo = true;
       }
     return !seen_selection ? 1 : 0; /* # args missing */
   }
