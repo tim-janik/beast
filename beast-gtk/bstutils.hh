@@ -7,6 +7,11 @@
 #include "bstcluehunter.hh"
 /* generated type IDs, idl types */
 #include "bstgentypes.h"
+
+
+// == Bse Server (BSE remote origin) ==
+extern Bse::ServerH bse_server;
+
 G_BEGIN_DECLS
 /* --- GUI utilities --- */
 void           bst_status_eprintf             (BseErrorType     error,

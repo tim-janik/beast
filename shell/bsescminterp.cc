@@ -706,10 +706,10 @@ bse_scm_script_message (SCM s_type,
   /* figure message level */
   BSE_SCM_DEFER_INTS();
   gchar *strtype = strdup_from_scm (s_type);
-  SfiMsgType mtype = sfi_msg_lookup_type (strtype);
+  Bse::String mtype = strtype ? strtype : "";
   g_free (strtype);
   BSE_SCM_ALLOW_INTS();
-  if (!mtype)
+  if (!strtype)
     scm_wrong_type_arg ("bse-script-message", 2, s_type);
   /* figure argument list length */
   guint i = 0;
@@ -777,8 +777,8 @@ bse_scm_script_message (SCM s_type,
   BSE_SCM_DEFER_INTS ();
   SfiSeq *args = sfi_seq_new ();
   /* keep arguments in sync with bsejanitor.proc */
-  sfi_seq_append_string (args, BIRNET_LOG_DOMAIN);
-  sfi_seq_append_string (args, sfi_msg_type_ident (mtype));
+  sfi_seq_append_string (args, "BseScmShell");
+  sfi_seq_append_string (args, mtype.c_str());
   sfi_seq_append_string (args, title);
   sfi_seq_append_string (args, primary);
   sfi_seq_append_string (args, secondary);

@@ -7,7 +7,7 @@
 #include <bse/gslvorbis-enc.hh>
 #include <bse/gsldatahandle-vorbis.hh>
 #include <bse/bseresamplerimpl.hh>
-#include <birnet/birnettests.h>
+#include <rapicorn-test.hh>
 #include <stdlib.h>
 #include <errno.h>
 #include <string.h>
@@ -21,7 +21,8 @@
 
 /// The BseWaveTool namespace contains all functions of the bse wave tool utility.
 namespace BseWaveTool {
-using namespace Birnet;
+using namespace Bse;
+
 #define PRG_NAME        ("bsewavetool")
 #define	IROUND(dbl)	((int) (floor (dbl + 0.5)))
 /* --- prototypes --- */
@@ -49,37 +50,8 @@ Command::blurb (bool bshort)
   if (bshort)
     return;
 }
+
 /* --- main program --- */
-static void
-wavetool_message_handler (const char              *domain,
-                          Msg::Type                mtype,
-                          const vector<Msg::Part> &parts)
-{
-  if (mtype == Msg::INFO)
-    {
-      if (!silent_infos)
-        {
-          String title, primary, secondary, details, checkmsg;
-          for (uint i = 0; i < parts.size(); i++)
-            switch (parts[i].ptype)
-              {
-              case '0': title     += (title.size()     ? "\n" : "") + parts[i].string; break;
-              case '1': primary   += (primary.size()   ? "\n" : "") + parts[i].string; break;
-              case '2': secondary += (secondary.size() ? "\n" : "") + parts[i].string; break;
-              case '3': details   += (details.size()   ? "\n" : "") + parts[i].string; break;
-              case 'c': checkmsg  += (checkmsg.size()  ? "\n" : "") + parts[i].string; break;
-              }
-          if (primary.size())
-            g_printerr ("%s\n", primary.c_str());
-          if (secondary.size())
-            g_printerr ("%s\n", secondary.c_str());
-          if (details.size())
-            g_printerr ("%s\n", details.c_str());
-        }
-    }
-  else
-    Msg::default_handler (domain, mtype, parts);
-}
 extern "C" int
 main (int   argc,
       char *argv[])
@@ -87,17 +59,9 @@ main (int   argc,
   std::set_terminate (__gnu_cxx::__verbose_terminate_handler);
   /* initialization */
   int orig_argc = argc;
-  SfiInitValue values[] = {
-    { "stand-alone",            "true" }, /* no rcfiles etc. */
-    { "wave-chunk-padding",     NULL, 1, },
-    { "dcache-block-size",      NULL, 8192, },
-    { "dcache-cache-memory",    NULL, 5 * 1024 * 1024, },
-    { NULL }
-  };
-  bse_init_inprocess (&argc, &argv, "BseWaveTool", values);
-  Msg::allow_msgs ("main"); // FIXME
-  Msg::set_thread_handler (wavetool_message_handler);
-  Msg::configure (Msg::INFO, Msg::LOG_TO_HANDLER, "");
+  bse_init_inprocess (&argc, argv, "BseWaveTool",
+                      Bse::cstrings_to_vector ("stand-alone=1", "wave-chunk-padding=1",
+                                               "dcache-block-size=8192", "dcache-cache-memory=5242880", NULL));
   /* pre-parse argument list to decide command */
   wavetool_parse_args (&argc, &argv);
   /* check args */
@@ -455,10 +419,10 @@ public:
     for (int i = 0; decode_test[i].key; i++)
       {
         WaveChunkKey key = WaveChunkKey (decode_test[i].key);
-        TCHECK (key.is_valid());
-        TCHECK (fabs ((decode_test[i].value - key.osc_freq()) / decode_test[i].value) < epsilon);
+        TASSERT (key.is_valid());
+        TASSERT (fabs ((decode_test[i].value - key.osc_freq()) / decode_test[i].value) < epsilon);
         if (i % 2 == 0)
-          TICK();
+          TOK();
       }
     TDONE();
     TSTART ("Encoding chunk keys");
@@ -467,10 +431,10 @@ public:
       {
         WaveChunkKey encoded_key (value);
         WaveChunkKey decoded_key (encoded_key.as_string());
-        TCHECK (decoded_key.is_valid());
-        TCHECK (fabs ((value - decoded_key.osc_freq()) / value) < epsilon);
+        TASSERT (decoded_key.is_valid());
+        TASSERT (fabs ((value - decoded_key.osc_freq()) / value) < epsilon);
         if (i++ % 150 == 0)
-          TICK();
+          TOK();
       }
     TDONE();
     TSTART ("Invalid chunk keys");
@@ -533,10 +497,11 @@ verify_chunk_selection (const vector<float> &freq_list,
     {
       if (!wave->lookup (*fi))
         {
-          Msg::display (skip_errors ? Msg::WARNING : Msg::ERROR,
-                        Msg::Primary ("failed to find wave chunk with oscillator frequency: %.2f", *fi));
-          if (!skip_errors)
-            exit (1);
+          String msg = string_printf ("failed to find wave chunk with oscillator frequency: %.2f", *fi);
+          if (skip_errors)
+            sfi_warning ("%s", msg.c_str());
+          else
+            sfi_error ("%s", msg.c_str());
         }
     }
 }
@@ -546,14 +511,7 @@ wavetool_parse_args (int    *argc_p,
 {
   guint argc = *argc_p;
   gchar **argv = *argv_p;
-  gchar *envar;
   guint i;
-  envar = getenv ("BSEWAVETOOL_DEBUG");
-  if (envar)
-    Msg::allow_msgs (envar);
-  envar = getenv ("BSEWAVETOOL_NO_DEBUG");
-  if (envar)
-    Msg::deny_msgs (envar);
   for (i = 1; i < argc; i++)
     {
       const gchar *str = NULL;
@@ -562,16 +520,6 @@ wavetool_parse_args (int    *argc_p,
           argv[i] = NULL;
           break;
         }
-      else if (parse_bool_option (argv, i, "--debug-list"))
-        {
-          g_print ("debug keys: all");
-          g_print ("\n");
-          exit (0);
-        }
-      else if (parse_str_option (argv, i, "--debug", &str, argc))
-        Msg::allow_msgs (str);
-      else if (parse_str_option (argv, i, "--no-debug", &str, argc))
-        Msg::deny_msgs (str);
       else if (parse_bool_option (argv, i, "-h") ||
                parse_bool_option (argv, i, "--help"))
         {
@@ -1174,11 +1122,12 @@ public:
             }
           if (error)
             {
-              Msg::display (skip_errors ? Msg::WARNING : Msg::ERROR,
-                            Msg::Primary (_("failed to add wave chunk from file \"%s\": %s"),
-                                          ochunk.sample_file, bse_error_blurb (error)));
-              if (!skip_errors)
-                exit (1);
+              String msg = string_printf (_("failed to add wave chunk from file \"%s\": %s"),
+                                          ochunk.sample_file, bse_error_blurb (error));
+              if (skip_errors)
+                sfi_warning ("%s", msg.c_str());
+              else
+                sfi_error ("%s", msg.c_str());
             }
           g_strfreev (xinfos);
         }
@@ -2439,12 +2388,12 @@ public:
     BseErrorType error = gsl_data_handle_open (fir_handle);
     if (error)
       return error;
-    Birnet::int64 freq_inc = 5; // FIXME
+    int64 freq_inc = 5; // FIXME
     while (freq_inc * 1000 < gsl_data_handle_mix_freq (fir_handle))
       freq_inc *= 2;
     double	  best_diff_db = 100;
-    Birnet::int64 best_freq = 0;
-    for (Birnet::int64 freq = 0; freq < gsl_data_handle_mix_freq (fir_handle) / 2.0; freq += freq_inc)
+    int64 best_freq = 0;
+    for (int64 freq = 0; freq < gsl_data_handle_mix_freq (fir_handle) / 2.0; freq += freq_inc)
       {
 	double diff_db = fabs (bse_data_handle_fir_response_db (fir_handle, freq) + 48);
 	if (diff_db < best_diff_db)

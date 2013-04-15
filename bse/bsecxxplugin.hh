@@ -302,7 +302,7 @@ class ExportTypeKeeper
                                         ::BseExportNode           *enode);
   static void       plugin_cleanup     (BsePlugin                 *plugin,
                                         ::BseExportNode           *enode);
-  BIRNET_PRIVATE_CLASS_COPY (ExportTypeKeeper);
+  RAPICORN_CLASS_NON_COPYABLE (ExportTypeKeeper);
 public:
   ExportTypeKeeper (::BseExportNode* (*export_node) (),
                     ::BseExportIdentity *export_identity)

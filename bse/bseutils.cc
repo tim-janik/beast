@@ -250,7 +250,7 @@ bse_icon_from_pixdata (const BsePixdata *pixdata)
       pixdata->height < 1 || pixdata->height > 128)
     {
       g_warning ("%s(): `pixdata' exceeds dimension limits (%ux%u)",
-                 BIRNET_PRETTY_FUNCTION, pixdata->width, pixdata->height);
+                 RAPICORN_SIMPLE_FUNCTION, pixdata->width, pixdata->height);
       return NULL;
     }
   bpp = pixdata->type & BSE_PIXDATA_RGB_MASK;
@@ -259,7 +259,7 @@ bse_icon_from_pixdata (const BsePixdata *pixdata)
       (encoding && encoding != BSE_PIXDATA_1BYTE_RLE))
     {
       g_warning ("%s(): `pixdata' format/encoding unrecognized",
-                 BIRNET_PRETTY_FUNCTION);
+                 RAPICORN_SIMPLE_FUNCTION);
       return NULL;
     }
   if (!pixdata->encoded_pix_data)
@@ -316,7 +316,7 @@ bse_icon_from_pixdata (const BsePixdata *pixdata)
 	      rle_buffer += length;
 	    }
           if (check_overrun)
-            g_warning ("%s(): `pixdata' encoding screwed", BIRNET_PRETTY_FUNCTION);
+            g_warning ("%s(): `pixdata' encoding screwed", RAPICORN_SIMPLE_FUNCTION);
         }
     }
   else

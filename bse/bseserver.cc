@@ -16,8 +16,9 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <string.h>
-/* --- PCM BseModule implementations ---*/
 #include "bsepcmmodule.cc"
+using namespace Bse;
+
 /* --- parameters --- */
 enum
 {
@@ -63,7 +64,6 @@ static void	engine_shutdown			(BseServer	   *server);
 /* --- variables --- */
 static GTypeClass *parent_class = NULL;
 static guint       signal_registration = 0;
-static guint       signal_message = 0;
 static guint       signal_script_start = 0;
 static guint       signal_script_error = 0;
 /* --- functions --- */
@@ -119,8 +119,6 @@ bse_server_class_init (BseServerClass *klass)
 						     BSE_TYPE_REGISTRATION_TYPE,
 						     G_TYPE_STRING | G_SIGNAL_TYPE_STATIC_SCOPE,
 						     G_TYPE_STRING | G_SIGNAL_TYPE_STATIC_SCOPE);
-  signal_message = bse_object_class_add_signal (object_class, "message",
-                                                G_TYPE_NONE, 1, BSE_TYPE_MESSAGE | G_SIGNAL_TYPE_STATIC_SCOPE);
   signal_script_start = bse_object_class_add_signal (object_class, "script-start",
 						     G_TYPE_NONE, 1,
 						     BSE_TYPE_JANITOR);
@@ -174,7 +172,7 @@ bse_server_init (BseServer *self)
   main_thread_source_setup (self);
   /* read rc file */
   int fd = -1;
-  if (!bse_main_args->birnet.stand_alone &&
+  if (!bse_main_args->stand_alone &&
       bse_main_args->bse_rcfile &&
       bse_main_args->bse_rcfile[0])
     fd = open (bse_main_args->bse_rcfile, O_RDONLY, 0);
@@ -387,6 +385,7 @@ bse_server_start_recording (BseServer      *self,
       g_object_notify ((GObject*) self, "wave-file");
     }
 }
+
 void
 bse_server_require_pcm_input (BseServer *server)
 {
@@ -394,21 +393,26 @@ bse_server_require_pcm_input (BseServer *server)
     {
       server->pcm_input_checked = TRUE;
       if (!BSE_DEVICE_READABLE (server->pcm_device))
-        sfi_msg_display (SFI_MSG_WARNING,
-                         SFI_MSG_TITLE ("%s", _("Recording Audio Input")),
-                         SFI_MSG_TEXT1 ("%s", _("Failed to start recording from audio device.")),
-                         SFI_MSG_TEXT2 ("%s", _("An audio project is in use which processes an audio input signal, but the audio device "
-                                          "has not been opened in recording mode. "
-                                          "An audio signal of silence will be used instead of a recorded signal, "
-                                          "so playback operation may produce results not actually intended "
-                                          "(such as a silent output signal).")),
-                         SFI_MSG_TEXT3 (_("Audio device \"%s\" is not open for input, audio driver: %s=%s"),
-                                        BSE_DEVICE (server->pcm_device)->open_device_name,
-                                        BSE_DEVICE_GET_CLASS (server->pcm_device)->driver_name,
-                                        BSE_DEVICE (server->pcm_device)->open_device_args),
-                         SFI_MSG_CHECK ("%s", _("Show messages about audio input problems")));
+        {
+          UserMessage umsg;
+          umsg.type = Bse::WARNING;
+          umsg.title = _("Audio Recording Failed");
+          umsg.text1 = _("Failed to start recording from audio device.");
+          umsg.text2 = _("An audio project is in use which processes an audio input signal, but the audio device "
+                         "has not been opened in recording mode. "
+                         "An audio signal of silence will be used instead of a recorded signal, "
+                         "so playback operation may produce results not actually intended "
+                         "(such as a silent output signal).");
+          umsg.text3 = string_printf (_("Audio device \"%s\" is not open for input, audio driver: %s=%s"),
+                                      BSE_DEVICE (server->pcm_device)->open_device_name,
+                                      BSE_DEVICE_GET_CLASS (server->pcm_device)->driver_name,
+                                      BSE_DEVICE (server->pcm_device)->open_device_args);
+          umsg.label = _("audio input problems");
+          ServerImpl::instance().send_user_message (umsg);
+        }
     }
 }
+
 typedef struct {
   guint      n_channels;
   guint      mix_freq;
@@ -429,7 +433,7 @@ server_open_pcm_device (BseServer *server,
                         guint      block_size)
 {
   g_return_val_if_fail (server->pcm_device == NULL, BSE_ERROR_INTERNAL);
-  BseErrorType error = BSE_ERROR_NONE;
+  BseErrorType error = BSE_ERROR_UNKNOWN;
   PcmRequest pr;
   pr.n_channels = 2;
   pr.mix_freq = mix_freq;
@@ -443,13 +447,17 @@ server_open_pcm_device (BseServer *server,
                                                                bse_main_args->pcm_drivers,
                                                                pcm_request_callback, &pr, error ? NULL : &error);
   if (!server->pcm_device)
-    sfi_msg_display (SFI_MSG_ERROR,
-                     SFI_MSG_TITLE ("%s", _("No Audio")),
-                     SFI_MSG_TEXT1 ("%s", _("No available audio device was found.")),
-                     SFI_MSG_TEXT2 ("%s", _("No available audio device could be found and opened successfully. "
-                                            "Sorry, no fallback selection can be made for audio devices, giving up.")),
-                     SFI_MSG_TEXT3 (_("Failed to open PCM devices: %s"), bse_error_blurb (error)),
-                     SFI_MSG_CHECK ("%s", _("Show messages about PCM device selections problems")));
+    {
+      UserMessage umsg;
+      umsg.type = Bse::ERROR;
+      umsg.title = _("Audio I/O Failed");
+      umsg.text1 = _("No available audio device was found.");
+      umsg.text2 = _("No available audio device could be found and opened successfully. "
+                     "Sorry, no fallback selection can be made for audio devices, giving up.");
+      umsg.text3 = string_printf (_("Failed to open PCM devices: %s"), bse_error_blurb (error));
+      umsg.label = _("PCM device selections problems");
+      ServerImpl::instance().send_user_message (umsg);
+    }
   server->pcm_input_checked = FALSE;
   return server->pcm_device ? BSE_ERROR_NONE : error;
 }
@@ -464,14 +472,19 @@ server_open_midi_device (BseServer *server)
       SfiRing *ring = sfi_ring_prepend (NULL, (void*) "null");
       server->midi_device = (BseMidiDevice*) bse_device_open_best (BSE_TYPE_MIDI_DEVICE_NULL, TRUE, FALSE, ring, NULL, NULL, NULL);
       sfi_ring_free (ring);
+
       if (server->midi_device)
-        sfi_msg_display (SFI_MSG_WARNING,
-                         SFI_MSG_TITLE ("%s", _("No MIDI")),
-                         SFI_MSG_TEXT1 ("%s", _("MIDI input or output is not available.")),
-                         SFI_MSG_TEXT2 ("%s", _("No available MIDI device could be found and opened successfully. "
-                                                "Reverting to null device, no MIDI events will be received or sent.")),
-                         SFI_MSG_TEXT3 (_("Failed to open MIDI devices: %s"), bse_error_blurb (error)),
-                         SFI_MSG_CHECK ("%s", _("Show messages about MIDI device selections problems")));
+        {
+          UserMessage umsg;
+          umsg.type = Bse::WARNING;
+          umsg.title = _("MIDI I/O Failed");
+          umsg.text1 = _("MIDI input or output is not available.");
+          umsg.text2 = _("No available MIDI device could be found and opened successfully. "
+                         "Reverting to null device, no MIDI events will be received or sent.");
+          umsg.text3 = string_printf (_("Failed to open MIDI devices: %s"), bse_error_blurb (error));
+          umsg.label = _("MIDI device selections problems");
+          ServerImpl::instance().send_user_message (umsg);
+        }
     }
   return server->midi_device ? BSE_ERROR_NONE : error;
 }
@@ -520,13 +533,15 @@ bse_server_open_devices (BseServer *self)
                                        n_channels * bse_engine_sample_freq() * self->wave_seconds);
 	  if (error)
 	    {
-              sfi_msg_display (SFI_MSG_ERROR,
-                               SFI_MSG_TITLE ("%s", _("Start Disk Recording")),
-                               SFI_MSG_TEXT1 ("%s", _("Failed to start recording to disk.")),
-                               SFI_MSG_TEXT2 ("%s", _("An error occoured while opening the recording file, selecting a different "
-                                                      "file might fix this situation.")),
-                               SFI_MSG_TEXT3 (_("Failed to open file \"%s\" for output: %s"), self->wave_file, bse_error_blurb (error)),
-                               SFI_MSG_CHECK ("%s", _("Show recording file errors")));
+              UserMessage umsg;
+              umsg.type = Bse::ERROR;
+              umsg.title = _("Disk Recording Failed");
+              umsg.text1 = _("Failed to start PCM recording to disk.");
+              umsg.text2 = _("An error occoured while opening the recording file, selecting a different "
+                             "file might fix this situation.");
+              umsg.text3 = string_printf (_("Failed to open file \"%s\" for recording: %s"), self->wave_file, bse_error_blurb (error));
+              umsg.label = _("PCM recording errors");
+              ServerImpl::instance().send_user_message (umsg);
 	      g_object_unref (self->pcm_writer);
 	      self->pcm_writer = NULL;
 	    }
@@ -671,46 +686,7 @@ bse_server_script_error (BseServer   *server,
   g_signal_emit (server, signal_script_error, 0,
 		 script_name, proc_name, reason);
 }
-void
-bse_server_send_message (BseServer        *self,
-                         const BseMessage *umsg)
-{
-  g_return_if_fail (BSE_IS_SERVER (self));
-  g_return_if_fail (umsg != NULL);
-  g_signal_emit (self, signal_message, 0, umsg);
-  if (self->log_messages)
-    bse_message_to_default_handler (umsg);
-}
-void
-bse_server_message (BseServer          *server,
-                    const gchar        *log_domain,
-                    BseMsgType          msg_type,
-                    const gchar        *title,
-                    const gchar        *primary,
-                    const gchar        *secondary,
-                    const gchar        *details,
-                    const gchar        *config_blurb,
-                    BseJanitor         *janitor,
-                    const gchar        *process_name,
-                    gint                pid)
-{
-  g_return_if_fail (BSE_IS_SERVER (server));
-  g_return_if_fail (primary != NULL);
-  BseMessage umsg = { 0, };
-  umsg.log_domain = (char*) log_domain;
-  umsg.type = msg_type;
-  umsg.ident = (char*) sfi_msg_type_ident (SfiMsgType (msg_type));
-  umsg.label = (char*) sfi_msg_type_label (SfiMsgType (msg_type));
-  umsg.title = (char*) title;
-  umsg.primary = (char*) primary;
-  umsg.secondary = (char*) secondary;
-  umsg.details = (char*) details;
-  umsg.config_check = (char*) config_blurb;
-  umsg.janitor = janitor;
-  umsg.process = (char*) process_name;
-  umsg.pid = pid;
-  bse_server_send_message (server, &umsg);
-}
+
 void
 bse_server_add_io_watch (BseServer      *server,
 			 gint            fd,
@@ -1053,6 +1029,13 @@ ServerImpl::instance()
       instance_ = new (instance_space) ServerImpl();
     }
   return *instance_;
+}
+
+void
+ServerImpl::send_user_message (const UserMessage &umsg)
+{
+  assert_return (umsg.text1.empty() == false);
+  sig_user_message.emit (umsg);
 }
 
 } // Bse

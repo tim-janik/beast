@@ -3,8 +3,10 @@
 #include "bseproject.hh"
 #include "bsecontainer.hh"
 #include <string.h>
-static SFI_MSG_TYPE_DEFINE (debug_undo, "undo", SFI_MSG_DEBUG, NULL);
-#define DEBUG(...)      sfi_debug (debug_undo, __VA_ARGS__)
+
+#define UDEBUG(...)     BSE_KEY_DEBUG ("undo", __VA_ARGS__)
+#define CHECK_DEBUG()   Bse::bse_debug_enabled ("undo")
+
 /* --- functions --- */
 BseUndoStack*
 bse_undo_stack_dummy (void)
@@ -93,7 +95,7 @@ bse_undo_group_open (BseUndoStack   *self,
       self->group->stamp = 0;
       self->group->name = g_strdup (name);
       self->group->undo_steps = NULL;
-      DEBUG ("undo open: { // %s", name);
+      UDEBUG ("undo open: { // %s", name);
     }
   self->n_open_groups++;
   self->debug_names = g_slist_prepend (self->debug_names, g_strdup (name));
@@ -112,12 +114,12 @@ bse_undo_stack_push (BseUndoStack *self,
   g_return_if_fail (ustep != NULL);
   if (self->ignore_steps)
     {
-      DEBUG ("undo step:  -    ignored: ((BseUndoFunc) %p) (%s)", ustep->undo_func, debug_name);
+      UDEBUG ("undo step:  -    ignored: ((BseUndoFunc) %p) (%s)", ustep->undo_func, debug_name);
       bse_undo_step_free (ustep);
     }
   else
     {
-      DEBUG ("undo step:  *    ((BseUndoFunc) %p) (%s)", ustep->undo_func, debug_name);
+      UDEBUG ("undo step:  *    ((BseUndoFunc) %p) (%s)", ustep->undo_func, debug_name);
       ustep->debug_name = g_strdup (debug_name);
       self->group->undo_steps = sfi_ring_push_head (self->group->undo_steps, ustep);
     }
@@ -134,7 +136,7 @@ bse_undo_stack_push_add_on (BseUndoStack *self,
   /* add this step to the last undo step if we have one */
   if (self->group && self->group->undo_steps)
     {
-      DEBUG ("undo step:  *    ((BseUndoFunc) %p) [AddOn to current group]", ustep->undo_func);
+      UDEBUG ("undo step:  *    ((BseUndoFunc) %p) [AddOn to current group]", ustep->undo_func);
       ustep->debug_name = g_strdup ("AddOn");
       self->group->undo_steps = sfi_ring_push_head (self->group->undo_steps, ustep);
     }
@@ -142,13 +144,13 @@ bse_undo_stack_push_add_on (BseUndoStack *self,
     {
       BseUndoGroup *group = (BseUndoGroup*) self->undo_groups->data;    /* fetch last group */
       g_return_if_fail (group->undo_steps != NULL);     /* empty groups are not allowed */
-      DEBUG ("undo step:  *    ((BseUndoFunc) %p) [AddOn to last group]", ustep->undo_func);
+      UDEBUG ("undo step:  *    ((BseUndoFunc) %p) [AddOn to last group]", ustep->undo_func);
       ustep->debug_name = g_strdup ("AddOn");
       group->undo_steps = sfi_ring_push_head (group->undo_steps, ustep);
     }
   else
     {
-      DEBUG ("undo step:  -    ignored: ((BseUndoFunc) %p) [AddOn]", ustep->undo_func);
+      UDEBUG ("undo step:  -    ignored: ((BseUndoFunc) %p) [AddOn]", ustep->undo_func);
       bse_undo_step_free (ustep);
     }
 }
@@ -172,7 +174,7 @@ bse_undo_group_close (BseUndoStack *self)
           step_added = FALSE;
           g_free (self->group->name);
           g_free (self->group);
-          DEBUG ("undo skip  }");
+          UDEBUG ("undo skip  }");
         }
       else
         {
@@ -197,7 +199,7 @@ bse_undo_group_close (BseUndoStack *self)
               self->dirt_counter++;
             }
           bse_undo_stack_limit (self, self->max_steps);
-          DEBUG ("undo close }");
+          UDEBUG ("undo close }");
         }
       self->group = NULL;
       if (self->notify && step_added)
@@ -268,14 +270,14 @@ bse_undo_stack_undo (BseUndoStack *self)
     {
       self->n_undo_groups--;
       self->dirt_counter--;
-      DEBUG ("EXECUTE UNDO: %s", group->name);
-      if (sfi_msg_check (debug_undo))
+      UDEBUG ("EXECUTE UNDO: %s", group->name);
+      if (CHECK_DEBUG())
         {
           SfiRing *ring = group->undo_steps;
           for (ring = group->undo_steps; ring; ring = sfi_ring_walk (ring, group->undo_steps))
             {
               BseUndoStep *ustep = (BseUndoStep*) ring->data;
-              DEBUG ("   STEP UNDO: %s", ustep->debug_name);
+              UDEBUG ("   STEP UNDO: %s", ustep->debug_name);
             }
         }
       while (group->undo_steps)

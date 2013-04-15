@@ -1275,14 +1275,9 @@ main (int    argc,
       char **argv)
 {
   /* init */
-  SfiInitValue values[] = {
-    { "stand-alone",            "true" }, /* no rcfiles etc. */
-    { "wave-chunk-padding",     NULL, 1, },
-    { "dcache-block-size",      NULL, 8192, },
-    { "dcache-cache-memory",    NULL, 5 * 1024 * 1024, },
-    { NULL }
-  };
-  bse_init_inprocess (&argc, &argv, NULL, values);
+  bse_init_inprocess (&argc, argv, NULL,
+                      Bse::cstrings_to_vector ("stand-alone=1", "wave-chunk-padding=1",
+                                               "dcache-block-size=8192", "dcache-cache-memory=5242880", NULL));
   /* supported features */
   SpectrumFeature *spectrum_feature = new SpectrumFeature;
   ComplexSignalFeature *complex_signal_feature = new ComplexSignalFeature;

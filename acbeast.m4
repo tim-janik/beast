@@ -1,4 +1,4 @@
-dnl # Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
+dnl # Licensed GNU LGPL v2 or later: http://www.gnu.org/licenses/lgpl.html
 
 ## Portability defines that help interoperate with classic and modern autoconfs
 ifdef([AC_TR_SH],[
@@ -26,7 +26,7 @@ $1
 AC_DIVERT_POP()])])])
 
 
-dnl GLIB_SIZEOF (INCLUDES, TYPE, ALIAS [, CROSS-SIZE])
+dnl # GLIB_SIZEOF (INCLUDES, TYPE, ALIAS [, CROSS-SIZE])
 AC_DEFUN([GLIB_SIZEOF],
 [pushdef([glib_Sizeof], GLIB_TR_SH([glib_cv_sizeof_$3]))dnl
 AC_CACHE_CHECK([size of $2], glib_Sizeof,
@@ -52,7 +52,7 @@ popdef([glib_Sizeof])dnl
 ])
 
 
-dnl MC_IF_VAR_EQ(environment-variable, value [, equals-action] [, else-action])
+dnl # MC_IF_VAR_EQ(environment-variable, value [, equals-action] [, else-action])
 AC_DEFUN([MC_IF_VAR_EQ], [
 	case "$[$1]" in
 	"[$2]"[)]
@@ -65,7 +65,7 @@ AC_DEFUN([MC_IF_VAR_EQ], [
 ])
 
 
-dnl MC_STR_CONTAINS(src-string, sub-string [, contains-action] [, else-action])
+dnl # MC_STR_CONTAINS(src-string, sub-string [, contains-action] [, else-action])
 AC_DEFUN([MC_STR_CONTAINS], [
 	case "[$1]" in
 	*"[$2]"*[)]
@@ -77,17 +77,17 @@ AC_DEFUN([MC_STR_CONTAINS], [
 	esac
 ])
 
-dnl MC_EVAR_ADD(environment-variable, check-string, add-string)
+dnl # MC_EVAR_ADD(environment-variable, check-string, add-string)
 AC_DEFUN([MC_EVAR_ADD], [
 	MC_STR_CONTAINS($[$1], [$2], [$1]="$[$1]", [$1]="$[$1] [$3]")
 ])
-dnl MC_EVAR_SUPPLEMENT(environment-variable, check-string, add-string)
+dnl # MC_EVAR_SUPPLEMENT(environment-variable, check-string, add-string)
 AC_DEFUN([MC_EVAR_SUPPLEMENT], [
 	MC_STR_CONTAINS($[$1], [$2], [$1]="$[$1] [$3]", [$1]="$[$1]")
 ])
 
 
-dnl MC_CHECK_VERSION() extracts up to 6 decimal numbers out of given-version
+dnl # MC_CHECK_VERSION() extracts up to 6 decimal numbers out of given-version
 dnl and required-version, using any non-number letters as delimiters. it then
 dnl compares each of those 6 numbers in order 1..6 to each other, requirering
 dnl all of the 6 given-version numbers to be greater than, or at least equal
@@ -121,7 +121,7 @@ case $ac_vm in
 esac
 ])
 
-dnl MC_ASSERT_NONEMPTY(variable, program, srcpackage)
+dnl # MC_ASSERT_NONEMPTY(variable, program, srcpackage)
 AC_DEFUN([MC_ASSERT_NONEMPTY], [
     case "x$[$1]"y in
     xy)
@@ -130,28 +130,27 @@ AC_DEFUN([MC_ASSERT_NONEMPTY], [
     esac
 ])
 
-dnl Find program
-dnl MC_ASSERT_PROG(variable, program, srcpackage)
+dnl # MC_ASSERT_PROG(variable, program, srcpackage) - Find program
 AC_DEFUN([MC_ASSERT_PROG], [
-    AC_PATH_PROG([$1], [$2], no)
-    case "x$[$1]" in
-    xno)
+    AC_PATH_PROG([$1], [$2], missing!)
+    case "_$[$1]" in
+    '_missing!')
 	AC_MSG_ERROR([failed to find $2 which is required for a functional build. $3])
 	;;
     esac
 ])
-dnl MC_ASSERT_PROGS(variable, programs, srcpackage)
+dnl # MC_ASSERT_PROGS(variable, programs, srcpackage)
 AC_DEFUN([MC_ASSERT_PROGS], [
-    AC_PATH_PROGS([$1], [$2], no)
-    case "x$[$1]" in
-    xno)
+    AC_PATH_PROGS([$1], [$2], missing!)
+    case "_$[$1]" in
+    '_missing!')
 	AC_MSG_ERROR([failed to find any of ($2) which is required for a functional build. $3])
 	;;
     esac
 ])
 
-dnl MC_PKG_CONFIG_REQUIRE(package, version, clfgas-var, libs-var)
-dnl Find package through $PKG_CONFIG
+dnl # MC_PKG_CONFIG_REQUIRE(package, version, clfgas-var, libs-var)
+dnl # Find package through $PKG_CONFIG
 AC_DEFUN([MC_PKG_CONFIG_REQUIRE], [
     mc_PACKAGE="[$1]"
     mc_VERSION="[$2]"
@@ -169,8 +168,8 @@ AC_DEFUN([MC_PKG_CONFIG_REQUIRE], [
     unset mc_VERSION
 ])
 
-dnl Check whether cc accepts a certain option
-dnl MC_PROG_CC_SUPPORTS_OPTION(OPTIONS, ACTION-IF-FOUND [,ACTION-IF-NOT-FOUND])
+dnl # MC_PROG_CC_SUPPORTS_OPTION(OPTIONS, ACTION-IF-FOUND [,ACTION-IF-NOT-FOUND])
+dnl # Check whether cc accepts a certain option
 AC_DEFUN([MC_PROG_CC_SUPPORTS_OPTION], [
 AC_MSG_CHECKING([whether ${CC-cc} supports $1])
 echo >conftest.c;
@@ -184,6 +183,7 @@ fi
 rm -fr conftest*
 ])dnl
 
+dnl # MC_PROG_CC_WITH_CFLAGS()
 dnl # Setup CC with default CFLAGS value.
 AC_DEFUN([MC_PROG_CC_WITH_CFLAGS], [
 	MC_IF_VAR_EQ(CFLAGS, "", CFLAGS="-g")
@@ -209,13 +209,15 @@ AC_DEFUN([MC_PROG_CC_WITH_CFLAGS], [
 
 	dnl Further setup CFLAGS for GCC.
 	MC_IF_VAR_EQ(GCC, yes,
-		dnl Debugging
-		MC_EVAR_SUPPLEMENT(CFLAGS, -g, -ggdb3)
-		
-		dnl Sane Behaviour
+		dnl # Sane Behaviour
 		MC_EVAR_ADD(CFLAGS, -fno-cond-mismatch, -fno-cond-mismatch)
+		MC_PROG_CC_SUPPORTS_OPTION(-mcx16, MC_EVAR_ADD(CFLAGS, -mcx16, -mcx16))
+		MC_PROG_CC_SUPPORTS_OPTION(-rdynamic, MC_EVAR_ADD(CFLAGS, -rdynamic, -rdynamic))
 
-		dnl Warnings.
+		dnl # Debugging
+		MC_EVAR_SUPPLEMENT(CFLAGS, -g, -ggdb3)
+
+		dnl # Warnings.
 		MC_EVAR_ADD(CFLAGS, -Wall, -Wall)
 		MC_EVAR_ADD(CFLAGS, -Wmissing-prototypes, -Wmissing-prototypes)
 		MC_EVAR_ADD(CFLAGS, -Wmissing-declarations, -Wmissing-declarations)
@@ -225,7 +227,7 @@ AC_DEFUN([MC_PROG_CC_WITH_CFLAGS], [
 		    MC_EVAR_ADD(CFLAGS, -ansi, -ansi)
 		    MC_EVAR_ADD(CFLAGS, -pedantic, -pedantic)
 		)
-		dnl avoid lots of bogus warnings with string pointers
+		dnl # avoid lots of bogus warnings with string pointers
 		MC_PROG_CC_SUPPORTS_OPTION(-Wno-pointer-sign,
 		  MC_EVAR_ADD(CFLAGS, -Wno-pointer-sign, -Wno-pointer-sign))
 		dnl problematic, triggers warnings in glibc headers
@@ -241,7 +243,7 @@ AC_DEFUN([MC_PROG_CC_WITH_CFLAGS], [
   		MC_PROG_CC_SUPPORTS_OPTION($mc_opt_warn_no_return,
 		      MC_EVAR_ADD(CFLAGS, $mc_opt_warn_no_return, $mc_opt_warn_no_return))
 
-		dnl Optimizations
+		dnl # Optimizations
 		MC_EVAR_ADD(CFLAGS, -pipe, -pipe)
 		MC_EVAR_ADD(CFLAGS, -O, -O2)
 		MC_PROG_CC_SUPPORTS_OPTION(-ftracer,
@@ -251,11 +253,11 @@ AC_DEFUN([MC_PROG_CC_WITH_CFLAGS], [
 		    MC_EVAR_ADD(CFLAGS, -fno-keep-static-consts, -fno-keep-static-consts))
 		dnl MC_EVAR_ADD(CFLAGS, -freg-struct-return, -freg-struct-return) dnl buggy with gcc-3.2
 
-		dnl Fun options
+		dnl # Fun options
 		dnl MC_EVAR_ADD(CFLAGS, -Q, -Q)	dnl report each compiled function
 		dnl MC_EVAR_ADD(CFLAGS, -ftime-report, -ftime-report)
 		dnl MC_EVAR_ADD(CFLAGS, -fmem-report, -fmem-report)
-	,	
+	,
 		MC_IF_VAR_EQ(CFLAGS_include_O, yes,
 			MC_EVAR_ADD(CFLAGS, -O, -O2)
 		)
@@ -271,6 +273,7 @@ AC_DEFUN([MC_PROG_CC_SPECIAL_FLAGS], [
 	AC_MSG_RESULT($[$1])
 ])
 
+dnl # MC_PROG_CXX_WITH_CXXFLAGS()
 dnl # Setup CXX with default CXXFLAGS value.
 AC_DEFUN([MC_PROG_CXX_WITH_CXXFLAGS], [
 	MC_IF_VAR_EQ(CXXFLAGS, "", CXXFLAGS="-g")
@@ -282,7 +285,7 @@ AC_DEFUN([MC_PROG_CXX_WITH_CXXFLAGS], [
 	MC_STR_CONTAINS($CXXFLAGS, -O, CXXFLAGS_include_O=yes)
 	CXXFLAGS="$CXXFLAGS_saved"
 
-	dnl Setup CXXFLAGS for debugging.
+	dnl # Setup CXXFLAGS for debugging.
 	MC_IF_VAR_EQ(enable_debug, yes,
 		MC_IF_VAR_EQ(CXXFLAGS_include_g, yes,
 			MC_EVAR_ADD(CXXFLAGS, -g, -g)
@@ -294,15 +297,19 @@ AC_DEFUN([MC_PROG_CXX_WITH_CXXFLAGS], [
 		)
 	)
 
-	dnl Further setup CXXFLAGS for GXX.
+	dnl # Further setup CXXFLAGS for GXX.
 	MC_IF_VAR_EQ(GXX, yes,
+		dnl # Sane Behaviour
+                MC_PROG_CC_SUPPORTS_OPTION(-mcx16,    MC_EVAR_ADD(CXXFLAGS, -mcx16, -mcx16))
+		MC_PROG_CC_SUPPORTS_OPTION(-rdynamic, MC_EVAR_ADD(CXXFLAGS, -rdynamic, -rdynamic))
+
 		dnl # enable many useful warnings
 		MC_EVAR_ADD(CXXFLAGS, -Wall, -Wall)
 		MC_EVAR_ADD(CXXFLAGS, -Wdeprecated, -Wdeprecated)
 		MC_EVAR_ADD(CXXFLAGS, -Wno-cast-qual, -Wno-cast-qual)
 		dnl # MC_EVAR_ADD(CXXFLAGS, -Wmissing-prototypes, -Wmissing-prototypes)
 		dnl # MC_EVAR_ADD(CXXFLAGS, -Winline, -Winline)
-		
+
 		dnl # avoid bogus offsetof()-usage warnings
 		dnl MC_PROG_CC_SUPPORTS_OPTION(-Wno-invalid-offsetof,
 		dnl   MC_EVAR_ADD(CXXFLAGS, -Wno-invalid-offsetof, -Wno-invalid-offsetof))
@@ -331,7 +338,7 @@ AC_DEFUN([MC_PROG_CXX_WITH_CXXFLAGS], [
 		fi
 		dnl
 
-	,	
+	,
 		MC_IF_VAR_EQ(CXXFLAGS_include_O, yes,
 			MC_EVAR_ADD(CXXFLAGS, -O, -O2)
 		)

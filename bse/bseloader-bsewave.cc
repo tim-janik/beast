@@ -9,12 +9,12 @@
 #include <unistd.h>
 #include <string.h>
 #include <errno.h>
+
 #define parse_or_return(scanner, token) { GslWaveTokenType _t = GslWaveTokenType (token); \
                                           if (GslWaveTokenType (g_scanner_get_next_token (scanner)) != _t) \
                                             return _t; \
                                         }
-static SFI_MSG_TYPE_DEFINE (debug_bsewave, "bsewave", SFI_MSG_DEBUG, NULL);
-#define DEBUG(...)      sfi_debug (debug_bsewave, __VA_ARGS__)
+
 /* --- token types --- */
 typedef enum
 {

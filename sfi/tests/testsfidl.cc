@@ -1,17 +1,16 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #undef G_LOG_DOMAIN
 #define  G_LOG_DOMAIN __FILE__
-// #define TEST_VERBOSE
-#include <birnet/birnettests.h>
+#include <sfi/sfitests.hh>
 #include "../sfidl-generator.hh"
 #include "../sfidl-factory.hh"
 #include <stdio.h>
+
 using namespace Sfidl;
 using namespace std;
-#define ASSERT_EQ(got,expectedcstr) do {                                \
-  TPRINT ("{check equality: %s == %s}", expectedcstr, got.c_str());     \
-  TASSERT (expectedcstr == got);                                            \
-} while (0)
+
+#define ASSERT_EQ(got,expectedcstr)     TCMP (got, ==, expectedcstr)
+
 class TestCG : public CodeGenerator
 {
   string one, two, done;
@@ -89,6 +88,7 @@ public:
     return new TestCG (parser);
   }
 } static_factory;
+
 int
 main (int   argc,
       char *argv[])

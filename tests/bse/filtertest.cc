@@ -7,8 +7,7 @@
 #include <bse/bsemath.hh>
 #include <bse/bsemathsignal.hh>
 #include <bse/gslfilter.hh>
-//#define TEST_VERBOSE
-#include <birnet/birnettests.h>
+#include <rapicorn-test.hh>
 #include "topconfig.h"
 #include <errno.h>
 #include <stdlib.h>
@@ -208,8 +207,8 @@ private:
 	g_printerr ("\n*** check_response_db: computed response at frequency %f is %f\n", freq, resp);
 	g_printerr ("*** check_response_db: but should be in interval [%f..%f]\n", min_resp_db, max_resp_db);
       }
-    TCHECK (resp > min_resp_db - DB_EPSILON);
-    TCHECK (resp < max_resp_db + DB_EPSILON);
+    TASSERT (resp > min_resp_db - DB_EPSILON);
+    TASSERT (resp < max_resp_db + DB_EPSILON);
   }
   void
   check_band (const Band& band,
@@ -219,8 +218,8 @@ private:
     const double delta_f = (FS / 2) / scan_points;
     g_return_if_fail (band.freq_start <= band.freq_end);
     g_return_if_fail (band.freq_end <= FS/2);
-    TPRINT ("checking band: response in interval [%f..%f] should be in interval [%f..%f] dB\n",
-	    band.freq_start, band.freq_end, band.min_resp_db, band.max_resp_db);
+    TOUT ("checking band: response in interval [%f..%f] should be in interval [%f..%f] dB\n",
+          band.freq_start, band.freq_end, band.min_resp_db, band.max_resp_db);
     int tok = 0;
     int tok_dots = int ((FS / delta_f) / 50) + 1;
     for (double f = band.freq_start; f < band.freq_end; f += delta_f)
@@ -466,7 +465,7 @@ int
 main (int     argc,
       char  **argv)
 {
-  bse_init_test (&argc, &argv, NULL);
+  bse_init_test (&argc, argv);
   options.parse (&argc, &argv);
   if (argc > 1)
     {

@@ -41,7 +41,7 @@
 			'text1 errtitle
 			'text2 (_ "The loop range of the specified song contains no parts "
 				  "or is unset, so no parts can be identified to operate on.")
-			'check (_ "Show messages about empty part range")))))
+			'check (_ "empty part range")))))
 ;; algorithm for cropping parts
 (define (song-parts-crop song)
   (song-parts-operation song (_ "Failed to crop part range.")

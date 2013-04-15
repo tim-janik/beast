@@ -6,7 +6,7 @@
 #include <sys/types.h>
 #include <regex.h>
 
-using namespace Birnet;
+using namespace Rapicorn;
 
 // == Declarations ==
 static BseGConfig*    gconfig_from_rec  (SfiRec *rec);

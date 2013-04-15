@@ -3,8 +3,9 @@
 #include "bsesequencer.hh"
 #include "bseengine.hh"
 #include <string.h>
-static SFI_MSG_TYPE_DEFINE (debug_pcm, "pcm", SFI_MSG_DEBUG, NULL);
-#define DEBUG(...)      sfi_debug (debug_pcm, __VA_ARGS__)
+
+#define PDEBUG(...)     BSE_KEY_DEBUG ("pcm", __VA_ARGS__)
+
 typedef struct
 {
   BsePcmHandle handle;
@@ -56,7 +57,7 @@ bse_pcm_device_null_open (BseDevice     *device,
   else
     null->sleep_us = 10 * 1000;
   BSE_PCM_DEVICE (device)->handle = handle;
-  DEBUG ("NULL: opening PCM readable=%d writable=%d: %s", require_readable, require_writable, bse_error_blurb (BSE_ERROR_NONE));
+  PDEBUG ("NULL: opening PCM readable=%d writable=%d: %s", require_readable, require_writable, bse_error_blurb (BSE_ERROR_NONE));
   return BSE_ERROR_NONE;
 }
 static void

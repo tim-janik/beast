@@ -4,9 +4,9 @@
 #include <vorbis/codec.h>
 #include <string.h>
 #include <errno.h>
-static SFI_MSG_TYPE_DEFINE (debug_vorbis, "vorbis", SFI_MSG_DEBUG, NULL);
-#define DEBUG(...)      sfi_debug (debug_vorbis, __VA_ARGS__)
-#define DIAG(...)       sfi_diag (__VA_ARGS__)
+
+#define VDEBUG(...)     BSE_KEY_DEBUG ("vorbis", __VA_ARGS__)
+
 /* --- structures --- */
 typedef struct {
   guint length;
@@ -205,7 +205,7 @@ vorbis_cutter_process_paket (GslVorbisCutter *self,
       error = vorbis_synthesis_headerin (&self->vinfo, &self->vcomment, opacket);
       if (error < 0)
         {
-          DIAG ("ignoring packet preceeding Vorbis stream: %s", ov_error_blurb (error));
+          VDEBUG ("ignoring packet preceeding Vorbis stream: %s", ov_error_blurb (error));
         }
       else /* valid vorbis stream start */
         {
@@ -218,7 +218,7 @@ vorbis_cutter_process_paket (GslVorbisCutter *self,
       error = vorbis_synthesis_headerin (&self->vinfo, &self->vcomment, opacket);
       if (error < 0)
         {
-          DIAG ("invalid Vorbis (comment) header packet: %s", ov_error_blurb (error));
+          VDEBUG ("invalid Vorbis (comment) header packet: %s", ov_error_blurb (error));
           vorbis_cutter_abort (self);
         }
       else
@@ -228,7 +228,7 @@ vorbis_cutter_process_paket (GslVorbisCutter *self,
       error = vorbis_synthesis_headerin (&self->vinfo, &self->vcomment, opacket);
       if (error < 0)
         {
-          DIAG ("invalid Vorbis (codebook) header packet: %s", ov_error_blurb (error));
+          VDEBUG ("invalid Vorbis (codebook) header packet: %s", ov_error_blurb (error));
           vorbis_cutter_abort (self);
         }
       else
@@ -242,7 +242,7 @@ vorbis_cutter_process_paket (GslVorbisCutter *self,
     default:    /* audio packets */
       window = vorbis_packet_blocksize (&self->vinfo, opacket);
       if (window < 0)
-        DIAG ("skipping package: %s", ov_error_blurb (window));
+        VDEBUG ("skipping package: %s", ov_error_blurb (window));
       else
         {
           self->n_packets++;
@@ -259,10 +259,10 @@ vorbis_cutter_process_paket (GslVorbisCutter *self,
       if (self->n_packets > 3)  /* audio packet */
         {
           gboolean last_on_page = FALSE;
-          DEBUG ("packet[%d]: b_o_s=%ld e_o_s=%ld packetno=%ld pgran=%ld granule=%ld", self->n_packets - 1,
-                 opacket->b_o_s, opacket->e_o_s,
-                 opacket->packetno, opacket->granulepos,
-                 self->tracking_granule);
+          VDEBUG ("packet[%d]: b_o_s=%ld e_o_s=%ld packetno=%ld pgran=%ld granule=%ld", self->n_packets - 1,
+                  opacket->b_o_s, opacket->e_o_s,
+                  opacket->packetno, opacket->granulepos,
+                  self->tracking_granule);
           /* update packet granulepos */
           if (opacket->granulepos < 0)
             opacket->granulepos = self->tracking_granule;
@@ -270,7 +270,7 @@ vorbis_cutter_process_paket (GslVorbisCutter *self,
             {
               if (!opacket->e_o_s &&    /* catch granule mismatches (before end) */
                   self->tracking_granule != opacket->granulepos)
-                DIAG ("failed to track position of input ogg stream, output possibly corrupted");
+                VDEBUG ("failed to track position of input ogg stream, output possibly corrupted");
               self->tracking_granule = opacket->granulepos;
               last_on_page = TRUE;      /* only the last packet of a page has a granule */
             }
@@ -294,9 +294,9 @@ vorbis_cutter_process_paket (GslVorbisCutter *self,
               }
         }
       else
-        DEBUG ("packet[%d]: b_o_s=%ld e_o_s=%ld packetno=%ld pgran=%ld", self->n_packets - 1,
-               opacket->b_o_s, opacket->e_o_s,
-               opacket->packetno, opacket->granulepos);
+        VDEBUG ("packet[%d]: b_o_s=%ld e_o_s=%ld packetno=%ld pgran=%ld", self->n_packets - 1,
+                opacket->b_o_s, opacket->e_o_s,
+                opacket->packetno, opacket->granulepos);
       /* copy packet to output stream */
       ogg_stream_packetin (&self->ostream, opacket);
       /* write output stream (vorbis needs certain packets to be page-flushed) */

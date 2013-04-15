@@ -83,19 +83,6 @@ void		bse_server_script_error			(BseServer	    *server,
 							 const gchar	    *script_name,
 							 const gchar	    *proc_name,
 							 const gchar        *reason);
-void		bse_server_send_message	                (BseServer	    *server,
-                                                         const BseMessage   *umsg);
-void		bse_server_message		        (BseServer	    *server,
-                                                         const gchar        *log_domain,
-                                                         BseMsgType          msg_type,
-                                                         const gchar        *title,
-                                                         const gchar        *primary,
-                                                         const gchar        *secondary,
-                                                         const gchar        *details,
-                                                         const gchar        *config_blurb,
-                                                         BseJanitor         *janitor,
-                                                         const gchar        *process_name,
-                                                         gint                pid);
 BseErrorType	bse_server_run_remote			(BseServer	    *server,
 							 const gchar	    *process_name,
 							 SfiRing	    *params,
@@ -118,6 +105,7 @@ protected:
 public:
   virtual TestObjectIface* get_test_object ();
   static ServerImpl&       instance        ();
+  void                     send_user_message (const UserMessage &umsg);
 };
 
 } // Bse

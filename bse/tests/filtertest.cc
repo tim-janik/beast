@@ -11,15 +11,18 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <complex>
-typedef std::complex<double> Complex;
-using namespace Birnet;
+using namespace Rapicorn;
 using std::max;
 using std::min;
+
+typedef std::complex<double> Complex;
+
 static inline double
 sqr (register double a)
 {
   return a * a;
 }
+
 static inline uint
 complex_find_nearest (const BseComplex *zp,
                       uint              n_zps,
@@ -172,7 +175,7 @@ noexit_dump_iir_filter_gnuplot (const BseIIRFilterRequest *fireq,
     arrows[n_arrows++] = stopband_edge2;
   consts[n_consts++] = 0.0;
   bool success = bse_iir_filter_dump_gnuplot (fdes, fname, n_consts, consts, n_arrows, arrows, 55555);
-  BIRNET_ASSERT (success == true);
+  TASSERT (success == true);
   g_printerr ("Filter: %s\n", bse_iir_filter_request_string (fireq));
   g_printerr ("Design: %s\n", bse_iir_filter_design_string (fdes));
   g_printerr ("GnuplotDump: wrote %s.gp and %s.dat use: gnuplot %s.gp\n", fname, fname, fname);
@@ -245,16 +248,15 @@ min_band_damping (const BseIIRFilterDesign *fdes,
   // double res1 = min_band_damping_ztrans (fdes, start_freq, end_freq);
   return min_band_damping_zp (fdes, MIN (start_freq, end_freq), MAX (start_freq, end_freq));
 }
+
 static void
-print_filter_on_abort (void *data)
+print_filter_on_abort (const BseIIRFilterRequest &req, const BseIIRFilterDesign &fdes)
 {
-  void **adata = (void**) data;
-  const BseIIRFilterRequest *req = (BseIIRFilterRequest*) adata[0];
-  const BseIIRFilterDesign *fdes = (BseIIRFilterDesign*) adata[1];
-  noexit_dump_iir_filter_gnuplot (req, fdes, "tmpfilter",
-                                  -fabs(req->passband_ripple_db), req->passband_edge, req->passband_edge2,
-                                  req->stopband_db != 0 ? req->stopband_db : NAN, req->stopband_edge, NAN);
+  noexit_dump_iir_filter_gnuplot (&req, &fdes, "tmpfilter",
+                                  -fabs(req.passband_ripple_db), req.passband_edge, req.passband_edge2,
+                                  req.stopband_db != 0 ? req.stopband_db : NAN, req.stopband_edge, NAN);
 }
+
 static void
 butterwoth_tests ()
 {
@@ -264,10 +266,7 @@ butterwoth_tests ()
   BseIIRFilterDesign fdes;
   BseIIRFilterRequest req = { BseIIRFilterKind (0), };
   req.kind = BSE_IIR_FILTER_BUTTERWORTH;
-  void *abort_data[2];
-  abort_data[0] = (void*) &req;
-  abort_data[1] = &fdes;
-  TABORT_HANDLER (print_filter_on_abort, abort_data);
+  Test::set_assertion_hook ([&] () { print_filter_on_abort (req, fdes); });
   TOK();
   {
     req.type = BSE_IIR_FILTER_LOW_PASS;
@@ -281,9 +280,9 @@ butterwoth_tests ()
         g_printerr ("Design: %s\n", bse_iir_filter_design_string (&fdes));
       }
     TASSERT (success == true);
-    TASSERT_CMP (min_band_damping (&fdes, 0, 2000), <, gaineps);
-    TASSERT_CMP (max_band_damping (&fdes, 0, 2000), >, -3.0103);
-    TASSERT_CMP (min_band_damping (&fdes, 3500, 5000), <, -68);
+    TCMP (min_band_damping (&fdes, 0, 2000), <, gaineps);
+    TCMP (max_band_damping (&fdes, 0, 2000), >, -3.0103);
+    TCMP (min_band_damping (&fdes, 3500, 5000), <, -68);
     if (0)
       exit_with_iir_filter_gnuplot (&req, &fdes, "tmpfilter", -3.0103, 2000, NAN, -68, 3500);
   }
@@ -294,9 +293,9 @@ butterwoth_tests ()
     req.passband_edge = 2000;
     success = bse_iir_filter_design (&req, &fdes);
     TASSERT (success == true);
-    TASSERT_CMP (min_band_damping (&fdes, 2000, 5000), <, gaineps);
-    TASSERT_CMP (max_band_damping (&fdes, 2000, 5000), >, -3.0103);
-    TASSERT_CMP (min_band_damping (&fdes, 0,     600), <, -80);
+    TCMP (min_band_damping (&fdes, 2000, 5000), <, gaineps);
+    TCMP (max_band_damping (&fdes, 2000, 5000), >, -3.0103);
+    TCMP (min_band_damping (&fdes, 0,     600), <, -80);
     if (0)
       exit_with_iir_filter_gnuplot (&req, &fdes, "tmpfilter", -3.0103, 2000, NAN, -80, 600);
   }
@@ -308,10 +307,10 @@ butterwoth_tests ()
     req.passband_edge2 = 3500;
     success = bse_iir_filter_design (&req, &fdes);
     TASSERT (success == true);
-    TASSERT_CMP (min_band_damping (&fdes, 1500, 3500), <, gaineps);
-    TASSERT_CMP (max_band_damping (&fdes, 1500, 3500), >, -3.0103);
-    TASSERT_CMP (min_band_damping (&fdes, 0,    1000), <, -49.5);
-    TASSERT_CMP (min_band_damping (&fdes, 4000, 5000), <, -49.5);
+    TCMP (min_band_damping (&fdes, 1500, 3500), <, gaineps);
+    TCMP (max_band_damping (&fdes, 1500, 3500), >, -3.0103);
+    TCMP (min_band_damping (&fdes, 0,    1000), <, -49.5);
+    TCMP (min_band_damping (&fdes, 4000, 5000), <, -49.5);
     if (0)
       exit_with_iir_filter_gnuplot (&req, &fdes, "tmpfilter", -3.0103, 1500, 3500, -49.5, 1000, 4000);
   }
@@ -323,13 +322,14 @@ butterwoth_tests ()
     req.passband_edge2 = 4000;
     success = bse_iir_filter_design (&req, &fdes);
     TASSERT (success == true);
-    TASSERT_CMP (min_band_damping (&fdes, 0,    1000), <, gaineps);
-    TASSERT_CMP (max_band_damping (&fdes, 0,    1000), >, -3.0103);
-    TASSERT_CMP (min_band_damping (&fdes, 1500, 3500), <, -77);
-    TASSERT_CMP (max_band_damping (&fdes, 4000, 5000), >, -3.0103);
+    TCMP (min_band_damping (&fdes, 0,    1000), <, gaineps);
+    TCMP (max_band_damping (&fdes, 0,    1000), >, -3.0103);
+    TCMP (min_band_damping (&fdes, 1500, 3500), <, -77);
+    TCMP (max_band_damping (&fdes, 4000, 5000), >, -3.0103);
     if (0)
       exit_with_iir_filter_gnuplot (&req, &fdes, "tmpfilter", -3.0103, 1000, 4000, -77, 1500, 3500);
   }
+  Test::set_assertion_hook (NULL);
   TOK();
   TDONE();
 }
@@ -341,10 +341,7 @@ chebychev1_tests ()
   BseIIRFilterDesign fdes;
   BseIIRFilterRequest req = { BseIIRFilterKind (0), };
   req.kind = BSE_IIR_FILTER_CHEBYSHEV1;
-  void *abort_data[2];
-  abort_data[0] = (void*) &req;
-  abort_data[1] = &fdes;
-  TABORT_HANDLER (print_filter_on_abort, abort_data);
+  Test::set_assertion_hook ([&] () { print_filter_on_abort (req, fdes); });
   const double gaineps = 1e-7;
   TOK();
   {
@@ -355,9 +352,9 @@ chebychev1_tests ()
     req.passband_edge = 3000;
     success = bse_iir_filter_design (&req, &fdes);
     TASSERT (success == true);
-    TASSERT_CMP (min_band_damping (&fdes, 0, 3000), <, gaineps);
-    TASSERT_CMP (max_band_damping (&fdes, 0, 3000), >, -1.5501);
-    TASSERT_CMP (min_band_damping (&fdes, 5000, 10000), <, -80);
+    TCMP (min_band_damping (&fdes, 0, 3000), <, gaineps);
+    TCMP (max_band_damping (&fdes, 0, 3000), >, -1.5501);
+    TCMP (min_band_damping (&fdes, 5000, 10000), <, -80);
     if (0)
       exit_with_iir_filter_gnuplot (&req, &fdes, "tmpfilter", -1.55, 3000, NAN, -80, 5000);
   }
@@ -369,9 +366,9 @@ chebychev1_tests ()
     req.passband_edge = 600;
     success = bse_iir_filter_design (&req, &fdes);
     TASSERT (success == true);
-    TASSERT_CMP (min_band_damping (&fdes, 600, 5000), <, gaineps);
-    TASSERT_CMP (max_band_damping (&fdes, 600, 5000), >, -0.101);
-    TASSERT_CMP (min_band_damping (&fdes, 0,    250), <, -70);
+    TCMP (min_band_damping (&fdes, 600, 5000), <, gaineps);
+    TCMP (max_band_damping (&fdes, 600, 5000), >, -0.101);
+    TCMP (min_band_damping (&fdes, 0,    250), <, -70);
     if (0)
       exit_with_iir_filter_gnuplot (&req, &fdes, "tmpfilter", -0.1, 600, NAN, -70, 250);
   }
@@ -384,10 +381,10 @@ chebychev1_tests ()
     req.passband_edge2 = 9500;
     success = bse_iir_filter_design (&req, &fdes);
     TASSERT (success == true);
-    TASSERT_CMP (min_band_damping (&fdes,  3500,  9500), <, gaineps);
-    TASSERT_CMP (max_band_damping (&fdes,  3500,  9500), >, -1.801);
-    TASSERT_CMP (min_band_damping (&fdes,  0,     3000), <, -55);
-    TASSERT_CMP (min_band_damping (&fdes, 10200, 15000), <, -55);
+    TCMP (min_band_damping (&fdes,  3500,  9500), <, gaineps);
+    TCMP (max_band_damping (&fdes,  3500,  9500), >, -1.801);
+    TCMP (min_band_damping (&fdes,  0,     3000), <, -55);
+    TCMP (min_band_damping (&fdes, 10200, 15000), <, -55);
     if (0)
       exit_with_iir_filter_gnuplot (&req, &fdes, "tmpfilter", -1.801, 3500, 9500, -55, 3000, 10200);
   }
@@ -400,13 +397,14 @@ chebychev1_tests ()
     req.passband_edge2 = 12000;
     success = bse_iir_filter_design (&req, &fdes);
     TASSERT (success == true);
-    TASSERT_CMP (min_band_damping (&fdes, 0,      8000), <, gaineps);
-    TASSERT_CMP (max_band_damping (&fdes, 0,      8000), >, -1.001);
-    TASSERT_CMP (min_band_damping (&fdes,  8500, 11500), <, -78);
-    TASSERT_CMP (max_band_damping (&fdes, 12000, 20000), >, -1.001);
+    TCMP (min_band_damping (&fdes, 0,      8000), <, gaineps);
+    TCMP (max_band_damping (&fdes, 0,      8000), >, -1.001);
+    TCMP (min_band_damping (&fdes,  8500, 11500), <, -78);
+    TCMP (max_band_damping (&fdes, 12000, 20000), >, -1.001);
     if (0)
       exit_with_iir_filter_gnuplot (&req, &fdes, "tmpfilter", -1.001, 8000, 12000, -78, 8500, 11500);
   }
+  Test::set_assertion_hook (NULL);
   TOK();
   TDONE();
 }
@@ -518,7 +516,7 @@ random_filter_tests ()
   double pbe1;
   FilterSetup filters[100000] = { { 0, }, };
   uint filter_index, skip_count = 6;
-  if (sfi_init_settings().test_quick)
+  if (!Test::slow())
     n_orders = 9;
 #define MAKE_FILTER(frequest, filter_type) do                                   \
   {                                                                             \
@@ -656,7 +654,7 @@ test_filter_catalog ()
   /* include predesigned filters */
 #include "filtercatalog.cc"
   uint skip_count = 0, tick_count = 3;
-  if (sfi_init_settings().test_quick)
+  if (!Test::slow())
     {
       tick_count = 1;
       skip_count = 17;
@@ -675,27 +673,24 @@ generic_filter_tests (const char        *test_name,
   const double coefficients_epsilon = 1e-7;
   const double max_gain = 0.01; // maximum gain in passband
   TSTART ("%s", test_name);
-  void *abort_data[2];
-  TABORT_HANDLER (print_filter_on_abort, abort_data);
   skip_count = MAX (1, skip_count);
   for (i = 0; i < n_filters; i += 1 + g_random_int() % skip_count)
     {
       const BseIIRFilterRequest *req = filters[i].filter_request;
       BseIIRFilterDesign fdes;
-      abort_data[0] = (void*) req;
-      abort_data[1] = &fdes;
+      Test::set_assertion_hook ([&] () { print_filter_on_abort (*req, fdes); });
       bool success = bse_iir_filter_design (req, &fdes);
-      TCHECK (success == true);
+      TASSERT (success == true);
       if (filters[i].zeros)
-        TCHECK_CMP (filters[i].n_zeros, ==, fdes.n_zeros);
+        TCMP (filters[i].n_zeros, ==, fdes.n_zeros);
       if (filters[i].poles)
-        TCHECK_CMP (filters[i].n_poles, ==, fdes.n_poles);
+        TCMP (filters[i].n_poles, ==, fdes.n_poles);
       double zeps = filters[i].zeros ? compare_zeros (fdes.n_zeros, fdes.zz, filters[i].zeros) : 0;
       double peps = filters[i].poles ? compare_zeros (fdes.n_poles, fdes.zp, filters[i].poles) : 0;
-      TCHECK_CMP (zeps, <, coefficients_epsilon);
-      TCHECK_CMP (peps, <, coefficients_epsilon);
+      TCMP (zeps, <, coefficients_epsilon);
+      TCMP (peps, <, coefficients_epsilon);
       /* broad gain check */
-      TCHECK_CMP (min_band_damping (&fdes, 0, 0.5 * req->sampling_frequency), <, max_gain);
+      TCMP (min_band_damping (&fdes, 0, 0.5 * req->sampling_frequency), <, max_gain);
       /* finer gain checks */
       double passband_ripple_db = req->kind == BSE_IIR_FILTER_BUTTERWORTH ? -3.010299956639811952 : -req->passband_ripple_db;
       double stopband_db = req->kind == BSE_IIR_FILTER_ELLIPTIC && req->stopband_db < 0.0 ? req->stopband_db : 2.02 * passband_ripple_db;
@@ -703,68 +698,69 @@ generic_filter_tests (const char        *test_name,
       if (req->type == BSE_IIR_FILTER_LOW_PASS || req->type == BSE_IIR_FILTER_BAND_STOP)
         {
           double min_pass_damping = min_band_damping (&fdes, 0, req->passband_edge);
-          TCHECK_CMP (min_pass_damping, <, max_gain);
-          TCHECK_CMP (min_pass_damping, >, -0.01);
+          TCMP (min_pass_damping, <, max_gain);
+          TCMP (min_pass_damping, >, -0.01);
           double max_pass_damping = max_band_damping (&fdes, 0, req->passband_edge);
-          TCHECK_CMP (max_pass_damping, >, passband_ripple_db - 0.01);
-          TCHECK_CMP (max_pass_damping, <, passband_ripple_db * 0.9);
+          TCMP (max_pass_damping, >, passband_ripple_db - 0.01);
+          TCMP (max_pass_damping, <, passband_ripple_db * 0.9);
         }
       if (req->type == BSE_IIR_FILTER_LOW_PASS)
         {
           double max_stop_damping = max_band_damping (&fdes, 0.5 * req->sampling_frequency, 0.5 * req->sampling_frequency);
-          TCHECK_CMP (max_stop_damping, <, stopband_db * 0.98);
+          TCMP (max_stop_damping, <, stopband_db * 0.98);
         }
       if (req->type == BSE_IIR_FILTER_HIGH_PASS)
         {
           double min_pass_damping = min_band_damping (&fdes, req->passband_edge, 0.5 * req->sampling_frequency);
-          TCHECK_CMP (min_pass_damping, <, max_gain);
-          TCHECK_CMP (min_pass_damping, >, -0.01);
+          TCMP (min_pass_damping, <, max_gain);
+          TCMP (min_pass_damping, >, -0.01);
           double max_pass_damping = max_band_damping (&fdes, req->passband_edge, 0.5 * req->sampling_frequency);
-          TCHECK_CMP (max_pass_damping, >, passband_ripple_db - 0.01);
-          TCHECK_CMP (max_pass_damping, <, passband_ripple_db * 0.9);
+          TCMP (max_pass_damping, >, passband_ripple_db - 0.01);
+          TCMP (max_pass_damping, <, passband_ripple_db * 0.9);
           double max_stop_damping = max_band_damping (&fdes, 0, 0);
-          TCHECK_CMP (max_stop_damping, <, stopband_db * 0.98);
+          TCMP (max_stop_damping, <, stopband_db * 0.98);
         }
       if (req->type == BSE_IIR_FILTER_BAND_PASS)
         {
           double min_pass_damping = min_band_damping (&fdes, req->passband_edge, req->passband_edge2);
-          TCHECK_CMP (min_pass_damping, <, max_gain);
-          TCHECK_CMP (min_pass_damping, >, -0.01);
+          TCMP (min_pass_damping, <, max_gain);
+          TCMP (min_pass_damping, >, -0.01);
           double max_pass_damping = max_band_damping (&fdes, req->passband_edge, req->passband_edge2);
-          TCHECK_CMP (max_pass_damping, >, passband_ripple_db - 0.01);
-          TCHECK_CMP (max_pass_damping, <, passband_ripple_db * 0.9);
+          TCMP (max_pass_damping, >, passband_ripple_db - 0.01);
+          TCMP (max_pass_damping, <, passband_ripple_db * 0.9);
           double max_stop_damping0 = max_band_damping (&fdes, 0, 0);
-          TCHECK_CMP (max_stop_damping0, <, stopband_db * 0.98);
+          TCMP (max_stop_damping0, <, stopband_db * 0.98);
           double max_stop_damping2 = max_band_damping (&fdes, 0.5 * req->sampling_frequency, 0.5 * req->sampling_frequency);
-          TCHECK_CMP (max_stop_damping2, <, stopband_db * 0.98);
+          TCMP (max_stop_damping2, <, stopband_db * 0.98);
         }
       if (req->type == BSE_IIR_FILTER_BAND_STOP)
         {
           double min_pass_damping0 = min_band_damping (&fdes, 0, req->passband_edge);
-          TCHECK_CMP (min_pass_damping0, <, max_gain);
-          TCHECK_CMP (min_pass_damping0, >, -0.01);
+          TCMP (min_pass_damping0, <, max_gain);
+          TCMP (min_pass_damping0, >, -0.01);
           double max_pass_damping0 = max_band_damping (&fdes, 0, req->passband_edge);
-          TCHECK_CMP (max_pass_damping0, >, passband_ripple_db - 0.01);
-          TCHECK_CMP (max_pass_damping0, <, passband_ripple_db * 0.9);
+          TCMP (max_pass_damping0, >, passband_ripple_db - 0.01);
+          TCMP (max_pass_damping0, <, passband_ripple_db * 0.9);
           double min_pass_damping2 = min_band_damping (&fdes, req->passband_edge2, 0.5 * req->sampling_frequency);
-          TCHECK_CMP (min_pass_damping2, <, max_gain);
-          TCHECK_CMP (min_pass_damping2, >, -0.01);
+          TCMP (min_pass_damping2, <, max_gain);
+          TCMP (min_pass_damping2, >, -0.01);
           double max_pass_damping2 = max_band_damping (&fdes, req->passband_edge2, 0.5 * req->sampling_frequency);
-          TCHECK_CMP (max_pass_damping2, >, passband_ripple_db - 0.01);
-          TCHECK_CMP (max_pass_damping2, <, passband_ripple_db * 0.9);
+          TCMP (max_pass_damping2, >, passband_ripple_db - 0.01);
+          TCMP (max_pass_damping2, <, passband_ripple_db * 0.9);
           double max_stop_damping = max_band_damping (&fdes, fdes.center_frequency, fdes.center_frequency);
-          TCHECK_CMP (max_stop_damping, <, stopband_db * 0.98);
+          TCMP (max_stop_damping, <, stopband_db * 0.98);
         }
       if (i % tick_count == 0)
         TOK();
     }
+  Test::set_assertion_hook (NULL);
   TDONE();
 }
 int
 main (int    argc,
       char **argv)
 {
-  bse_init_test (&argc, &argv, NULL);
+  bse_init_test (&argc, argv);
   butterwoth_tests ();
   chebychev1_tests ();
   test_problem_candidates ();

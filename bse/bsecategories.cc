@@ -153,7 +153,7 @@ bse_categories_register (const gchar  *category,
 {
   CEntry *centry;
   g_return_if_fail (category != NULL);
-  centry = centry_new (BIRNET_PRETTY_FUNCTION, category, type);
+  centry = centry_new (RAPICORN_SIMPLE_FUNCTION, category, type);
   check_type (type);
   if (centry)
     {

@@ -21,7 +21,7 @@ sfi_all_sources = $(strip \
 	sfivmarshal.cc	sfiglue.cc	sfigluecodec.cc	sfiglueproxy.cc	\
 	sfinote.cc	sfiparams.cc			sfiserial.cc	\
 	sfitime.cc	sfitypes.cc	sfivalues.cc	sfiustore.cc	\
-	sficxx.cc	sfiring.cc	sfimemory.cc	sficomport.cc	\
+			sfiring.cc	sfimemory.cc	sficomport.cc	\
 	$(conditional_toyprof_sources)	\
 )
 sfi_extra_sources = $(strip \
@@ -59,7 +59,7 @@ common_idl_sources = sfidl-generator.cc sfidl-namespace.cc sfidl-options.cc sfid
 
 bin_PROGRAMS = sfidl
 sfidl_SOURCES = sfidl.cc $(common_idl_sources)
-sfidl_LDADD = $(SFI_LIBS) -lm $(top_builddir)/birnet/libbirnet.o $(RAPICORN_LIBS)
+sfidl_LDADD = $(SFI_LIBS) $(RAPICORN_LIBS) -lm
 EXTRA_DIST += sfidl-generator.hh sfidl-namespace.hh sfidl-options.hh sfidl-parser.hh sfidl-factory.hh
 EXTRA_DIST += sfidl-cbase.hh sfidl-clientc.hh sfidl-clientcxx.hh sfidl-cxxbase.hh sfidl-hostc.hh sfidl-utils.hh
 

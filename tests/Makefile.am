@@ -45,7 +45,7 @@ generated: clean-generated $(GENERATED)
 
 # === test programs ===
 noinst_PROGRAMS = $(ALLTESTS)
-progs_ldadd     = $(top_builddir)/bse/libbse.la $(BSE_LIBS)
+progs_ldadd     = $(top_builddir)/bse/libbse.la $(RAPICORN_LIBS) $(BSE_LIBS)
 
 # testwavechunk
 TESTS                += testwavechunk

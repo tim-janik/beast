@@ -170,16 +170,11 @@ main (gint   argc,
   gchar *show_synth = NULL;
   gchar *root_name = NULL;
   const char *iindent = "";
-  char pluginbool[2] = "0";
-  char scriptbool[2] = "0";
-  SfiInitValue config[] = {
-    { "load-core-plugins", pluginbool },
-    { "load-core-scripts", scriptbool },
-    { NULL },
-  };
+  const char *pluginbool = "load-core-plugins=0";
+  const char *scriptbool = "load-core-scripts=0";
   f_out = stdout;
   g_thread_init (NULL);
-  sfi_init (&argc, &argv, "BseQuery", NULL);
+  bse_init_test (&argc, argv);
   int i;
   for (i = 1; i < argc; i++)
     {
@@ -258,7 +253,7 @@ main (gint   argc,
 	  gen_procdoc = 1;
 	}
       else if (strcmp ("-p", argv[i]) == 0)
-        pluginbool[1] = '1';
+        pluginbool = "load-core-plugins=1";
       else if (strcmp ("-:f", argv[i]) == 0)
 	{
 	  g_log_set_always_fatal (GLogLevelFlags (G_LOG_LEVEL_WARNING | G_LOG_LEVEL_CRITICAL |
@@ -275,7 +270,7 @@ main (gint   argc,
       else
 	return help (argv[i]);
     }
-  bse_init_inprocess (&argc, &argv, "BseQuery", config);
+  bse_init_inprocess (&argc, argv, "BseQuery", Bse::cstrings_to_vector (pluginbool, scriptbool, NULL));
   if (root_name)
     root = g_type_from_name (root_name);
   else

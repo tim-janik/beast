@@ -41,11 +41,7 @@ main (gint   argc,
   SfiRing *magic_list = NULL;
   gboolean test_open = FALSE;
   /* initialization */
-  SfiInitValue values[] = {
-    { "stand-alone",            "true" }, /* no rcfiles etc. */
-    { NULL }
-  };
-  bse_init_inprocess (&argc, &argv, "BseMagicTest", values);
+  bse_init_inprocess (&argc, argv, "BseMagicTest", Bse::cstrings_to_vector ("stand-alone=1", NULL));
   for (i = 0; i < n_magic_presets; i++)
     magic_list = sfi_ring_append (magic_list,
 				  gsl_magic_create ((void*) magic_presets[i][0],

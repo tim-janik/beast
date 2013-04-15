@@ -1576,9 +1576,9 @@ print_z_fraction_before_zplnc (void) /* must be called *before* zplnc() */
   code_printf ("    };\n");
   code_printf ("    filters[index].filter_request = &filter_request;\n");
   code_printf ("    filters[index].gain = %+.17e;\n", zgain);
-  code_printf ("    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;\n");
+  code_printf ("    filters[index].n_zeros = RAPICORN_ARRAY_SIZE (zeros) / 2;\n");
   code_printf ("    filters[index].zeros = zeros;\n");
-  code_printf ("    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;\n");
+  code_printf ("    filters[index].n_poles = RAPICORN_ARRAY_SIZE (poles) / 2;\n");
   code_printf ("    filters[index].poles = poles;\n");
   code_printf ("    index++;\n");
   code_printf ("  }\n");

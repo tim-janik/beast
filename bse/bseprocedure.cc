@@ -7,12 +7,15 @@
 #include "bsestorage.hh"
 #include "bseexports.hh"
 #include <string.h>
-static SFI_MSG_TYPE_DEFINE (debug_procs, "procs", SFI_MSG_DEBUG, NULL);
-#define DEBUG(...)      sfi_debug (debug_procs, __VA_ARGS__)
+
+#define PDEBUG(...)     BSE_KEY_DEBUG ("procs", __VA_ARGS__)
+#define CHECK_DEBUG()   Bse::bse_debug_enabled ("procs")
+#define HACK_DEBUG /* very slow and leaks memory */ while (0) g_printerr
+
 /* --- macros --- */
 #define parse_or_return         bse_storage_scanner_parse_or_return
 #define peek_or_return          bse_storage_scanner_peek_or_return
-#define HACK_DEBUG /* very slow and leaks memory */ while (0) g_printerr
+
 /* --- prototypes --- */
 static void     bse_procedure_base_init           (BseProcedureClass        *proc);
 static void     bse_procedure_base_finalize       (BseProcedureClass        *proc);
@@ -212,13 +215,13 @@ bse_procedure_call (BseProcedureClass  *proc,
     error = BSE_ERROR_PROC_PARAM_INVAL;
   else
     {
-      if (sfi_msg_check (debug_procs))
+      if (CHECK_DEBUG())
         {
           if (proc->n_in_pspecs && G_TYPE_IS_OBJECT (G_PARAM_SPEC_VALUE_TYPE (proc->in_pspecs[0])))
-            DEBUG ("executing procedure \"%s\" on object %s",
-                   BSE_PROCEDURE_NAME (proc), bse_object_debug_name (g_value_get_object (ivalues + 0)));
+            PDEBUG ("executing procedure \"%s\" on object %s",
+                    BSE_PROCEDURE_NAME (proc), bse_object_debug_name (g_value_get_object (ivalues + 0)));
           else
-            DEBUG ("executing procedure \"%s\"", BSE_PROCEDURE_NAME (proc));
+            PDEBUG ("executing procedure \"%s\"", BSE_PROCEDURE_NAME (proc));
         }
       if (marshal)
         error = marshal (marshal_data, proc, ivalues, ovalues);
@@ -301,7 +304,7 @@ bse_procedure_call_collect (BseProcedureClass  *proc,
 {
   guint i, bail_out = FALSE;
   BseErrorType error = BSE_ERROR_NONE;
-  HACK_DEBUG ("call %s: ", BSE_PROCEDURE_NAME (proc));
+  PDEBUG ("call %s: ", BSE_PROCEDURE_NAME (proc));
   /* collect first arg */
   if (first_value && first_value != ivalues) /* may skip this since bse_procedure_call() does extra validation */
     {
@@ -360,7 +363,7 @@ bse_procedure_call_collect (BseProcedureClass  *proc,
         error = BSE_ERROR_PROC_PARAM_INVAL;
       else
         error = bse_procedure_call (proc, ivalues, ovalues, marshal, marshal_data);
-      HACK_DEBUG ("  call result: %s", bse_error_blurb (error));
+      PDEBUG ("  call result: %s", bse_error_blurb (error));
       signal_exec_status (error, proc, ovalues);
       /* free input arguments */
       for (i = 0; i < proc->n_in_pspecs; i++)
@@ -386,7 +389,7 @@ bse_procedure_call_collect (BseProcedureClass  *proc,
         }
     }
   else
-    HACK_DEBUG ("  call skipped");
+    PDEBUG ("  call skipped");
   return error;
 }
 /**

@@ -1,7 +1,7 @@
 # BEAST - Better Audio System
 include $(top_srcdir)/Makefile.decl
 
-SUBDIRS = images
+SUBDIRS = images dev
 
 # = Build & Dist Items =
 # manual pages to be installed, downloaded from beast.testbit.eu

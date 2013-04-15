@@ -313,7 +313,7 @@ public:
     }
   };
 private:
-  BIRNET_PRIVATE_CLASS_COPY (ProbeQueue);
+  RAPICORN_CLASS_NON_COPYABLE (ProbeQueue);
 };
 /* --- SourceProbes --- */
 class SourceProbes {
@@ -404,7 +404,7 @@ private:
     {
       g_assert (ostreams == NULL);
     }
-    BIRNET_PRIVATE_CLASS_COPY (ProbeData);
+    RAPICORN_CLASS_NON_COPYABLE (ProbeData);
   };
   void
   handle_probe (ProbeData   &pdata,

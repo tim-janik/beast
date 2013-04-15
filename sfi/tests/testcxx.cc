@@ -1,24 +1,30 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #undef G_LOG_DOMAIN
 #define  G_LOG_DOMAIN __FILE__
-// #define TEST_VERBOSE
-#include <birnet/birnettests.h>
+#include <sfi/sfitests.hh>
 #include "../sficxx.hh"
 #include <stdio.h>
+
 using namespace Sfi;
+
 struct Bar {
   int i;
 };
+
 typedef Sequence<Bar> BarSeq;
 typedef Sequence<Int> IntSeq;
+
 typedef struct {
   guint n_elements;
   Int  *elements;
 } CIntSeq;
+
 int
 main (int   argc,
       char *argv[])
 {
+  sfi_init_test (&argc, argv);
+
   TSTART ("Test String");
   TASSERT (sizeof (String) == sizeof (const char*));
   String s1 = "huhu";

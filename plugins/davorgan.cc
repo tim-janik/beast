@@ -3,10 +3,10 @@
 #include <bse/bsemathsignal.hh>
 #include <bse/bsemain.hh>
 #include <vector>
+
 namespace Bse {
 namespace Dav {
-using namespace Birnet;  // FIXME: move to Bse namespace
-using Birnet::uint32;    // FIXME: move to Bse header
+
 class Organ : public OrganBase {
   /* per mix_freq() tables */
   class Tables
@@ -60,7 +60,7 @@ class Organ : public OrganBase {
     void
     unref()
     {
-      return_if_fail (m_ref_count > 0);
+      return_unless (m_ref_count > 0);
       Bse::ScopedLock<Rapicorn::Mutex> locker (table_mutex);
       if (--m_ref_count == 0)
 	{

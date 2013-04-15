@@ -68,14 +68,9 @@ main (int   argc,
   GslVorbisCutter *cutter;
   gint ifd, ofd;
   /* initialization */
-  SfiInitValue values[] = {
-    { "stand-alone",            "true" }, /* no rcfiles etc. */
-    { "wave-chunk-padding",     NULL, 1, },
-    { "dcache-block-size",      NULL, 8192, },
-    { "dcache-cache-memory",    NULL, 5 * 1024 * 1024, },
-    { NULL }
-  };
-  bse_init_inprocess (&argc, &argv, "BseCutVorbis", values);
+  bse_init_inprocess (&argc, argv, "BseCutVorbis",
+                      Bse::cstrings_to_vector ("stand-alone=1", "wave-chunk-padding=1",
+                                               "dcache-block-size=8192", "dcache-cache-memory=5242880", NULL));
   /* arguments */
   parse_args (&argc, &argv);
   if (argc != 3)

@@ -3,11 +3,11 @@
 #include <bse/bsemath.hh>
 #include <bse/bsemain.hh>
 #include <bse/gslfft.hh>
-// #define TEST_VERBOSE
-#include <birnet/birnettests.h>
+#include <rapicorn-test.hh>
 #include <sys/time.h>
 #include <stdlib.h>
 #include <string.h>
+
 #define	MAX_FFT_SIZE	(65536 * 2) //  * 8 * 8
 #define	MAX_DFT_SIZE	(1024 * 2) //  * 8 * 8
 #define	EPSILON		(4.8e-6)
@@ -44,7 +44,7 @@ main (int   argc,
   struct timeval tv;
   guint i;
   /* initialize */
-  bse_init_test (&argc, &argv, NULL);
+  bse_init_test (&argc, argv);
   /* initialize random numbers */
   gettimeofday (&tv, NULL);
   srand (tv.tv_sec ^ tv.tv_usec);
@@ -84,42 +84,42 @@ main (int   argc,
       /* check differences */
       d = diff (i << 1, 0, ref_fft_in, work_fft_in, "Checking input record");
       if (d)
-	TERROR ("Reference record was modified");
+	fatal ("Reference record was modified");
       else
         TOK();
       d = diff (i << 1, 0, ref_fft_aout, work_fft_aout, "Reference analysis against GSL analysis");
       if (fabs (d) > EPSILON)
-	TERROR ("Error sum in analysis FFT exceeds epsilon: %g > %g", d, EPSILON);
+	fatal ("Error sum in analysis FFT exceeds epsilon: %g > %g", d, EPSILON);
       else
         TOK();
       d = diff (i << 1, 0, ref_fft_sout, work_fft_sout, "Reference synthesis against GSL synthesis");
       if (fabs (d) > EPSILON)
-	TERROR ("Error sum in analysis FFT exceeds epsilon: %g > %g", d, EPSILON);
+	fatal ("Error sum in analysis FFT exceeds epsilon: %g > %g", d, EPSILON);
       else
         TOK();
       d = diff (i << 1, 0, ref_fft_in, ref_fft_back, "Reference analysis and re-synthesis");
       if (fabs (d) > EPSILON)
-	TERROR ("Error sum in analysis FFT exceeds epsilon: %g > %g", d, EPSILON);
+	fatal ("Error sum in analysis FFT exceeds epsilon: %g > %g", d, EPSILON);
       else
         TOK();
       d = diff (i << 1, 0, work_fft_in, work_fft_back, "GSL analysis and re-synthesis");
       if (fabs (d) > EPSILON)
-	TERROR ("Error sum in analysis FFT exceeds epsilon: %g > %g", d, EPSILON);
+	fatal ("Error sum in analysis FFT exceeds epsilon: %g > %g", d, EPSILON);
       else
         TOK();
       d = diff (i << 1, 0, work_fft_in, scaled_fft_back, "GSL analysis and scaled re-synthesis");
       if (fabs (d) > EPSILON)
-	TERROR ("Error sum in analysis FFT exceeds epsilon: %g > %g", d, EPSILON);
+	fatal ("Error sum in analysis FFT exceeds epsilon: %g > %g", d, EPSILON);
       else
         TOK();
       d = diff (i << 1, 0, ref_fft_back, work_fft_back, "Reference re-synthesis vs. GSL");
       if (fabs (d) > EPSILON)
-	TERROR ("Error sum in analysis FFT exceeds epsilon: %g > %g", d, EPSILON);
+	fatal ("Error sum in analysis FFT exceeds epsilon: %g > %g", d, EPSILON);
       else
         TOK();
       d = diff (i << 1, 0, ref_fft_back, scaled_fft_back, "Reference re-synthesis vs. scaled GSL");
       if (fabs (d) > EPSILON)
-	TERROR ("Error sum in analysis FFT exceeds epsilon: %g > %g", d, EPSILON);
+	fatal ("Error sum in analysis FFT exceeds epsilon: %g > %g", d, EPSILON);
       else
         TOK();
       /* test with real data */
@@ -134,17 +134,17 @@ main (int   argc,
       gsl_power2_fftsr_scale (i, work_fft_aout, scaled_fft_back);
       d = diff (i, 0, ref_fft_aout, work_fft_aout, "Reference real analysis vs. real GSL");
       if (fabs (d) > EPSILON)
-	TERROR ("Error sum in analysis FFT exceeds epsilon: %g > %g", d, EPSILON);
+	fatal ("Error sum in analysis FFT exceeds epsilon: %g > %g", d, EPSILON);
       else
         TOK();
       d = diff (i, 0, work_fft_in, scaled_fft_back, "Real input vs. scaled real GSL resynthesis");
       if (fabs (d) > EPSILON)
-	TERROR ("Error sum in analysis FFT exceeds epsilon: %g > %g", d, EPSILON);
+	fatal ("Error sum in analysis FFT exceeds epsilon: %g > %g", d, EPSILON);
       else
         TOK();
       d = diff (i, 0, work_fft_in, work_fft_back, "Real input vs. real GSL resynthesis");
       if (fabs (d) > EPSILON)
-	TERROR ("Error sum in analysis FFT exceeds epsilon: %g > %g", d, EPSILON);
+	fatal ("Error sum in analysis FFT exceeds epsilon: %g > %g", d, EPSILON);
       else
         TOK();
       TDONE();
@@ -164,12 +164,12 @@ main (int   argc,
       /* check differences */
       d = diff (i << 1, 0, ref_fft_in, dft_in, "Checking input record");
       if (d)
-	TERROR ("Input record was modified");
+	fatal ("Input record was modified");
       else
         TOK();
       d = diff (i << 1, 0, ref_fft_aout, dft_aout, "Reference FFT analysis against reference DFT analysis");
       if (fabs (d) > EPSILON)
-        TERROR ("Error sum in analysis FFT exceeds epsilon: %g > %g", d, EPSILON);
+        fatal ("Error sum in analysis FFT exceeds epsilon: %g > %g", d, EPSILON);
       else
         TOK();
       TDONE();
@@ -217,12 +217,12 @@ diff (guint         m,
 {
   double d = 0, max = 0, min = 1e+32;
   guint n;
-  TPRINT ("%s\n", str);
+  TMSG ("%s\n", str);
   for (n = 0; n < m; n++)
     {
       double a =  ABS (a1[n] - a2[n]);
       if (n < p)
-	TPRINT ("%3u:%.3f) % 19.9f - % 19.9f = % 19.9f (% 19.9f)\n",
+	TMSG ("%3u:%.3f) % 19.9f - % 19.9f = % 19.9f (% 19.9f)\n",
                 n, ((float) n) / (float) m,
                 a1[n], a2[n],
                 a1[n] - a2[n],
@@ -231,12 +231,12 @@ diff (guint         m,
       max = MAX (max, a);
       min = MIN (min, a);
     }
-  TPRINT ("Diff sum: %.9f, ", d);
-  TPRINT ("min/av/max: %.9f %.9f %.9f, ", min, d / (double) m, max);
-  TPRINT ("noise: %u %u %u\n",
-          g_bit_storage (1. / min),
-          g_bit_storage (m / d),
-          g_bit_storage (1. / max));
+  TMSG ("Diff sum: %.9f, ", d);
+  TMSG ("min/av/max: %.9f %.9f %.9f, ", min, d / (double) m, max);
+  TMSG ("noise: %u %u %u\n",
+        g_bit_storage (1. / min),
+        g_bit_storage (m / d),
+        g_bit_storage (1. / max));
   return d;
 }
 /* --- fft implementation --- */

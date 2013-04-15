@@ -13,16 +13,18 @@
 #include <fcntl.h>
 #include <string.h>
 #include <errno.h>
-BIRNET_STATIC_ASSERT (BSE_HAVE_LIBMAD + 42); // assert BSE_HAVE_LIBMAD2 is defined
+
+#define MDEBUG(...)     BSE_KEY_DEBUG ("mad", __VA_ARGS__)
+
+RAPICORN_STATIC_ASSERT (BSE_HAVE_LIBMAD > 0); // ensure we can use libmad
 #if     BSE_HAVE_LIBMAD
 #include <mad.h>
-/* --- debugging and errors --- */
-static SFI_MSG_TYPE_DEFINE (debug_mad, "mad", SFI_MSG_DEBUG, NULL);
-#define MAD_DEBUG(...)  sfi_debug (debug_mad, __VA_ARGS__)
+
 /* --- defines --- */
 #define	FILE_BUFFER_SIZE	(1024 * 44)	/* approximately 1 second at 320 kbit */
 #define	SEEK_BY_READ_AHEAD(h)	(((h)->sample_rate / ((h)->frame_size * 2))) /* FIXME */
 #define	MAX_CHANNELS		(5)
+
 /* --- typedefs & structures --- */
 typedef struct
 {
@@ -138,7 +140,7 @@ check_frame_validity (MadHandle         *handle,
     }
   if (reason)
     {
-      MAD_DEBUG ("skipping frame: %s", reason);
+      MDEBUG ("skipping frame: %s", reason);
       return FALSE;
     }
   else
@@ -240,19 +242,19 @@ create_seek_table (MadHandle *handle,
 	  if (0)
 	    {
 	      if (mad_frame_decode (&handle->frame, &handle->stream) < 0)
-		MAD_DEBUG ("failed to read seektable frame: %s", mad_stream_errorstr (&handle->stream));
+		MDEBUG ("failed to read seektable frame: %s", mad_stream_errorstr (&handle->stream));
 	      mad_synth_frame (&handle->synth, &handle->frame);
-	      MAD_DEBUG ("frame(%u) PCM:%u => FILE:%u FDIFF:%d (%x %x %x) br:%lu time:%ld/%lu mode:%u ext:%u flags:0x%x phase:%u",
-			 i, i * handle->frame_size, this_pos, this_pos - seeks[MAX (i, 1) - 1],
-			 handle->stream.this_frame[0], handle->stream.this_frame[1],
-			 (handle->stream.this_frame[1] >> 1) & 3,
-			 handle->frame.header.bitrate,
-			 handle->frame.header.duration.seconds,
-			 handle->frame.header.duration.fraction,
-			 handle->frame.header.mode,
-			 handle->frame.header.mode_extension,
-			 handle->frame.header.flags,
-			 handle->synth.phase);
+	      MDEBUG ("frame(%u) PCM:%u => FILE:%u FDIFF:%d (%x %x %x) br:%lu time:%ld/%lu mode:%u ext:%u flags:0x%x phase:%u",
+                      i, i * handle->frame_size, this_pos, this_pos - seeks[MAX (i, 1) - 1],
+                      handle->stream.this_frame[0], handle->stream.this_frame[1],
+                      (handle->stream.this_frame[1] >> 1) & 3,
+                      handle->frame.header.bitrate,
+                      handle->frame.header.duration.seconds,
+                      handle->frame.header.duration.fraction,
+                      handle->frame.header.mode,
+                      handle->frame.header.mode_extension,
+                      handle->frame.header.flags,
+                      handle->synth.phase);
 	    }
 	}
       if (!handle->eof)
@@ -261,7 +263,7 @@ create_seek_table (MadHandle *handle,
 	  /* frame read failed for a reason other than eof */
           if (!handle->error)
             handle->error = BSE_ERROR_IO;
-	  MAD_DEBUG ("failed to read seektable frame: %s", handle->stream.error ? mad_stream_errorstr (&handle->stream) : bse_error_blurb (handle->error));
+	  MDEBUG ("failed to read seektable frame: %s", handle->stream.error ? mad_stream_errorstr (&handle->stream) : bse_error_blurb (handle->error));
 	  return NULL;
 	}
     }
@@ -345,7 +347,7 @@ dh_mad_open (GslDataHandle      *dhandle,
 	      error = BSE_ERROR_NO_SEEK_INFO;
 	      goto OPEN_FAILED;
 	    }
-	  MAD_DEBUG ("frames in seektable: %u", handle->n_seeks);
+	  MDEBUG ("frames in seektable: %u", handle->n_seeks);
 	}
     }
   /* validate/setup handle length */
@@ -420,22 +422,22 @@ dh_mad_read (GslDataHandle *dhandle,
 	  if (handle->accumulate_state_frames < 10)
 	    {
 	      handle->accumulate_state_frames++;
-	      MAD_DEBUG ("retrying seek with accumulate_state_frames=%d",
-			 handle->accumulate_state_frames);
+	      MDEBUG ("retrying seek with accumulate_state_frames=%d",
+                      handle->accumulate_state_frames);
 	      /* force dh_mad_read to retry the seek */
 	      dh_mad_coarse_seek (dhandle, 0);
 	      return dh_mad_read (dhandle, voffset, n_values, values);
 	    }
 	  else
 	    {
-	      MAD_DEBUG ("synthesizing frame failed, accumulate_state_frames is already %u: %s",
-			 handle->accumulate_state_frames, handle->stream.error ? mad_stream_errorstr (&handle->stream) : bse_error_blurb (handle->error));
+	      MDEBUG ("synthesizing frame failed, accumulate_state_frames is already %u: %s",
+                      handle->accumulate_state_frames, handle->stream.error ? mad_stream_errorstr (&handle->stream) : bse_error_blurb (handle->error));
 	      return -1;
 	    }
 	}
       else
 	{
-	  MAD_DEBUG ("failed to synthesize frame: %s", handle->stream.error ? mad_stream_errorstr (&handle->stream) : bse_error_blurb (handle->error));
+	  MDEBUG ("failed to synthesize frame: %s", handle->stream.error ? mad_stream_errorstr (&handle->stream) : bse_error_blurb (handle->error));
 	  return -1;
 	}
     }
@@ -515,15 +517,15 @@ dh_mad_coarse_seek (GslDataHandle *dhandle,
 	    {
 	      gboolean synth = i + 1 == handle->accumulate_state_frames;
 	      if (!pcm_frame_read (handle, synth) && handle->stream.error != MAD_ERROR_BADDATAPTR)
-		MAD_DEBUG ("failed to read frame ahead (%u) in coarse-seek: failed: %s", i,
-                           handle->stream.error ? mad_stream_errorstr (&handle->stream) : bse_error_blurb (handle->error));
+		MDEBUG ("failed to read frame ahead (%u) in coarse-seek: failed: %s", i,
+                        handle->stream.error ? mad_stream_errorstr (&handle->stream) : bse_error_blurb (handle->error));
 	    }
 	}
-      MAD_DEBUG ("seek-done: at %llu (f:%llu) want %llu (f:%llu) got %llu (f:%llu) diff %lld (diff-requested %lld)",
-		 opos, opos / handle->frame_size,
-		 pos, pos / handle->frame_size,
-		 handle->pcm_pos, handle->pcm_pos / handle->frame_size,
-		 handle->pcm_pos - opos, pos - opos);
+      MDEBUG ("seek-done: at %llu (f:%llu) want %llu (f:%llu) got %llu (f:%llu) diff %lld (diff-requested %lld)",
+              opos, opos / handle->frame_size,
+              pos, pos / handle->frame_size,
+              handle->pcm_pos, handle->pcm_pos / handle->frame_size,
+              handle->pcm_pos - opos, pos - opos);
     }
   return handle->pcm_pos * dhandle->setup.n_channels;
 }
@@ -601,7 +603,7 @@ dh_mad_new (const gchar  *file_name,
           *errorp = BSE_ERROR_NONE;
 	  return &handle->dhandle;
 	}
-      MAD_DEBUG ("failed to open \"%s\": %s", file_name, handle->stream.error ? mad_stream_errorstr (&handle->stream) : bse_error_blurb (error));
+      MDEBUG ("failed to open \"%s\": %s", file_name, handle->stream.error ? mad_stream_errorstr (&handle->stream) : bse_error_blurb (error));
       gsl_data_handle_unref (&handle->dhandle);
       *errorp = error;
       return NULL;
@@ -673,6 +675,7 @@ gsl_data_handle_mad_version (void)
   return NULL;
 }
 #endif	/* !BSE_HAVE_LIBMAD */
+
 GslDataHandle*
 gsl_data_handle_new_mad (const gchar  *file_name,
                          gfloat        osc_freq)

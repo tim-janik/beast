@@ -180,10 +180,10 @@ reversed_datahandle_test (void)
         {
           gfloat d1[8], d2[8];
           e = gsl_data_handle_read (myhandle, o, MIN (i, l), d1);
-          TCHECK (e == MIN (i, l));
+          TASSERT (e == MIN (i, l));
           e = gsl_data_handle_read (rhandle2, o, MIN (i, l), d2);
-          TCHECK (e == MIN (i, l));
-          TCHECK (memcmp (d1, d2, sizeof (d1[0]) * e) == 0);
+          TASSERT (e == MIN (i, l));
+          TASSERT (memcmp (d1, d2, sizeof (d1[0]) * e) == 0);
           l -= e;
           o += e;
         }
@@ -215,13 +215,13 @@ simple_loop_tests (void)
 static void
 brute_force_loop_tests (void)
 {
-  gint i, j, k, count = 6;
+  gint i, count = 6;
   for (i = 1; i <= count; i++)
     {
       TSTART ("brute force loop test %d/%d", i, 6);
-      for (j = 0; j < my_data_length - 1; j++)
+      for (uint j = 0; j < my_data_length - 1; j++)
         {
-          for (k = j + 1; k < my_data_length; k++)
+          for (uint k = j + 1; k < my_data_length; k++)
             {
               run_loop_test (GSL_WAVE_LOOP_JUMP, 1, j, k, i);
               run_loop_test (GSL_WAVE_LOOP_PINGPONG, 1, j, k, i);
@@ -312,7 +312,7 @@ multi_channel_test_one (int pingpong,
             max_diff = MAX (max_diff, fabs (*f - expect[pos]));
           pos++;
         }
-      TCHECK (max_diff < 1e-10);
+      TASSERT (max_diff < 1e-10);
       gsl_wave_chunk_unuse_block (wchunk, &block);
       block.offset = block.next_offset;
     }
@@ -360,18 +360,12 @@ main (gint   argc,
       gchar *argv[])
 {
   /* init */
-  SfiInitValue ivalues[] = {
-    { "stand-alone",            "true" }, /* no rcfiles etc. */
-    { "wave-chunk-padding",     NULL, 1, },
-    { "wave_chunk_big_pad",     NULL, 2, },
-    { "dcache_block_size",      NULL, 16, },
-    { NULL }
-  };
-  bse_init_test (&argc, &argv, ivalues);
+  bse_init_test (&argc, argv, Bse::cstrings_to_vector ("stand-alone=1", "wave-chunk-padding=1", NULL));
+  // "wave-chunk-big-pad=2", "dcache-block-size=16"
   reversed_datahandle_test();
   simple_loop_tests();
   multi_channel_tests();
-  if (sfi_init_settings().test_slow)
+  if (Rapicorn::Test::slow())
     brute_force_loop_tests();
   return 0;
 }

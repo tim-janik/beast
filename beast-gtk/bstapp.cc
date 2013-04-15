@@ -53,9 +53,7 @@ enum {
   ACTION_URL_ONLINE_DEMOS,
   ACTION_DEMO_DIALOG_ERROR,
   ACTION_DEMO_DIALOG_WARNING,
-  ACTION_DEMO_DIALOG_SCRIPT,
   ACTION_DEMO_DIALOG_INFO,
-  ACTION_DEMO_DIALOG_DIAG,
   ACTION_DEMO_DIALOG_DEBUG,
 };
 static const GxkStockAction file_open_actions[] = {
@@ -174,12 +172,8 @@ static const GxkStockAction demo_dialogs[] = {
     ACTION_DEMO_DIALOG_ERROR,   BST_STOCK_ERROR },
   { "Demo Warning Dialog",      NULL,           "Fire up a warning dialog for demonstration purposes",
     ACTION_DEMO_DIALOG_WARNING, BST_STOCK_WARNING },
-  { "Demo Script Dialog",       NULL,           "Fire up a script dialog for demonstration purposes",
-    ACTION_DEMO_DIALOG_SCRIPT,  BST_STOCK_EXECUTE },
   { "Demo Info Dialog",         NULL,           "Fire up an information dialog for demonstration purposes",
     ACTION_DEMO_DIALOG_INFO,    BST_STOCK_INFO },
-  { "Demo Diag Dialog",         NULL,           "Fire up a diagnostics dialog for demonstration purposes",
-    ACTION_DEMO_DIALOG_DIAG,    BST_STOCK_DIAG },
   { "Demo Debug Dialog",        NULL,           "Fire up a debug dialog for demonstration purposes",
     ACTION_DEMO_DIALOG_DEBUG,   BST_STOCK_DIAG },
 };
@@ -1025,18 +1019,14 @@ app_action_exec (gpointer data,
       break;
     case ACTION_DEMO_DIALOG_ERROR:
     case ACTION_DEMO_DIALOG_WARNING:
-    case ACTION_DEMO_DIALOG_SCRIPT:
     case ACTION_DEMO_DIALOG_INFO:
-    case ACTION_DEMO_DIALOG_DIAG:
     case ACTION_DEMO_DIALOG_DEBUG:
       switch (action)
         {
         default: /* silence compiler */
         case ACTION_DEMO_DIALOG_ERROR:   demo_type = BST_MSG_ERROR;   break;
         case ACTION_DEMO_DIALOG_WARNING: demo_type = BST_MSG_WARNING; break;
-        case ACTION_DEMO_DIALOG_SCRIPT:  demo_type = BST_MSG_SCRIPT;  break;
         case ACTION_DEMO_DIALOG_INFO:    demo_type = BST_MSG_INFO;    break;
-        case ACTION_DEMO_DIALOG_DIAG:    demo_type = BST_MSG_DIAG;    break;
         case ACTION_DEMO_DIALOG_DEBUG:   demo_type = BST_MSG_DEBUG;   break;
         }
       bst_msg_dialog (demo_type,
@@ -1046,7 +1036,8 @@ app_action_exec (gpointer data,
                                      "fired up for pure demonstration purposes. This is such a dialog, so if you "
                                      "are currently looking at a prominent warning or error message, there's no "
                                      "real merit to it."),
-                      BST_MSG_TEXT3 ("Demo-Dialog-Type: %s", sfi_msg_type_label (SfiMsgType (demo_type))));
+                      BST_MSG_TEXT3 ("Demo-Dialog-Type: %s",
+                                     Rapicorn::Aida::enum_info<Bse::UserMessageType>().find_first (demo_type)->name));
       break;
     default:
       g_assert_not_reached ();
@@ -1133,9 +1124,7 @@ app_action_check (gpointer data,
     case ACTION_URL_ONLINE_DEMOS:
     case ACTION_DEMO_DIALOG_ERROR:
     case ACTION_DEMO_DIALOG_WARNING:
-    case ACTION_DEMO_DIALOG_SCRIPT:
     case ACTION_DEMO_DIALOG_INFO:
-    case ACTION_DEMO_DIALOG_DIAG:
     case ACTION_DEMO_DIALOG_DEBUG:
       return TRUE;
     case BST_ACTION_EXIT:

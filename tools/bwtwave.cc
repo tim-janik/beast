@@ -174,7 +174,7 @@ Wave::match (const WaveChunk &wchunk,
              vector<float>   &sorted_freqs)
 {
   gfloat osc_freq = gsl_data_handle_osc_freq (wchunk.dhandle);
-  vector<float>::iterator it = Birnet::binary_lookup_sibling (sorted_freqs.begin(), sorted_freqs.end(), compare_floats, osc_freq);
+  vector<float>::iterator it = Bse::binary_lookup_sibling (sorted_freqs.begin(), sorted_freqs.end(), compare_floats, osc_freq);
   if (it == sorted_freqs.end())
     return false;
   if (fabs (*it - osc_freq) < 0.01)

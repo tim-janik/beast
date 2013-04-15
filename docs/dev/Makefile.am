@@ -1,4 +1,5 @@
 # Build and upload development documentation
+include $(top_srcdir)/Makefile.decl
 
 all: build-stamp
 build-stamp:
@@ -13,7 +14,7 @@ PRJ_VERSION   = $(shell sed -ne "/^[ \t]*VERSION[ \t]*=/ { s/^[^=]*=[ \t]*//; p;
 DOC_VERSION = $(or $(DSC_VERSION), $(PRJ_VERSION))
 SED_MKEVEN  = sed 's/1$$/0/;s/3$$/2/;s/5$$/4/;s/7$$/6/;s/9$$/8/'
 
-DOC_DIRS   = birnet/ sfi/ bse/ plugins/ plugins/freeverb/ beast-gtk/ beast-gtk/gxk/ launchers/ shell/ tools/
+DOC_DIRS   = sfi/ bse/ plugins/ plugins/freeverb/ beast-gtk/ beast-gtk/gxk/ launchers/ shell/ tools/
 DOCU_GLOBS  = *.dox *.py $(DOCU_HGLOBS)
 DOCU_HGLOBS = *.idl *.h *.H *.hh *.proc
 DOCU_CGLOBS = $(DOCU_GLOBS) *.c *.C *.cc
@@ -60,16 +61,23 @@ LINK_PROJECT_NAME = \
 	-e 's|<div id="projectname">BEAST/BSE|<div id="projectname"><a href="http://beast.testbit.eu">BEAST/BSE</a>|'
 R_ACCESSKEY_AS_F = -e 's/(<input [^>]*id="MSearchField"[^>]*accesskey=")S"/\1F"/'
 
+download: download-local
+download-local:
+	$(Q) wget --progress=dot --output-document=- http://dev.testbit.eu/rapicorn/latest/tagfile.xml > tmp-tagfile-rapicorn.xml
+	$(Q) mv tmp-tagfile-rapicorn.xml tagfile-rapicorn.xml
+
 all-docs: $(git_stamp) doxygen.cfg
 	$(GPRINT) "TIDY" "Temporaries..."
 	$(Q) rm -rf html.tmp/ && mkdir -p html.tmp/
 	$(Q) $(MAKE) $(SRCTREE)
 	$(GPRINT) "GEN" "HTML Documentation..."
+	$(Q) test -e tagfile-rapicorn.xml || touch tagfile-rapicorn.xml
 	$(Q) (cat doxygen.cfg \
 	&& echo "STRIP_FROM_PATH  = `pwd`/$(SRCTREE)" \
 	&& echo "INPUT		  = $(SRCTREE)/" \
 	&& echo "EXAMPLE_PATH	  = $(top_srcdir)/" \
 	&& echo "OUTPUT_DIRECTORY = html.tmp/" \
+	&& echo "TAGFILES         = tagfile-rapicorn.xml=http://dev.testbit.eu/rapicorn/latest/" \
 	&& echo -n "PROJECT_NUMBER = $(PRJ_VERSION)" \
 	) | nice $(DOXYGEN) - >error.log 2>&1
 	$(Q) test ! -s error.log && rm -f error.log \

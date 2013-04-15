@@ -3,8 +3,9 @@
 #include <bse/bsecategories.hh>
 #include <bse/bseengine.hh>
 #include <bse/bsemathsignal.hh>
-static SFI_MSG_TYPE_DEFINE (debug_biquadfilter, "biquadfilter", SFI_MSG_DEBUG, NULL);
-#define	DEBUG(...)      sfi_debug (debug_biquadfilter, __VA_ARGS__)
+
+#define FDEBUG(...)     BSE_KEY_DEBUG ("biquadfilter", __VA_ARGS__)
+
 #define FREQ_DELTA      0.1
 /* --- parameters --- */
 enum
@@ -319,18 +320,18 @@ bse_biquad_filter_update_modules (BseBiquadFilter *self)
 	  gsl_biquad_config_init (&c, GslBiquadType (self->filter_type), GslBiquadNormalize (self->norm_type));
 	  gsl_biquad_config_setup (&c, self->freq / nyquist_freq, self->gain, 0);
 	  gsl_biquad_filter_config (&biquad, &c, TRUE);
-	  DEBUG ("Bxx(z) = (%.14g + (%.14g + %.14g * z) * z) / (1 + (%.14g + %.14g * z) * z)\n",
-                 biquad.xc0, biquad.xc1, biquad.xc2, biquad.yc1, biquad.yc2);
+	  FDEBUG ("Bxx(z) = (%.14g + (%.14g + %.14g * z) * z) / (1 + (%.14g + %.14g * z) * z)\n",
+                  biquad.xc0, biquad.xc1, biquad.xc2, biquad.yc1, biquad.yc2);
 	  gsl_biquad_config_approx_gain (&c, self->gain);
 	  gsl_biquad_filter_config (&approx, &c, TRUE);
-	  DEBUG ("Byy(z) = (%.14g + (%.14g + %.14g * z) * z) / (1 + (%.14g + %.14g * z) * z)\n",
-                 approx.xc0, approx.xc1, approx.xc2, approx.yc1, approx.yc2);
-	  DEBUG ("Bdd(z) = (%.14g + (%.14g + %.14g * z) * z) / (1 + (%.14g + %.14g * z) * z)\n",
-                 biquad.xc0 - approx.xc0,
-                 biquad.xc1 - approx.xc1,
-                 biquad.xc2 - approx.xc2,
-                 biquad.yc1 - approx.yc1,
-                 biquad.yc2 - approx.yc2);
+	  FDEBUG ("Byy(z) = (%.14g + (%.14g + %.14g * z) * z) / (1 + (%.14g + %.14g * z) * z)\n",
+                  approx.xc0, approx.xc1, approx.xc2, approx.yc1, approx.yc2);
+	  FDEBUG ("Bdd(z) = (%.14g + (%.14g + %.14g * z) * z) / (1 + (%.14g + %.14g * z) * z)\n",
+                  biquad.xc0 - approx.xc0,
+                  biquad.xc1 - approx.xc1,
+                  biquad.xc2 - approx.xc2,
+                  biquad.yc1 - approx.yc1,
+                  biquad.yc2 - approx.yc2);
 	}
     }
 }

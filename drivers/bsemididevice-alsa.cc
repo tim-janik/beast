@@ -7,8 +7,9 @@
 #include <alsa/asoundlib.h>
 #include <string.h>
 #include <errno.h>
-static SFI_MSG_TYPE_DEFINE (debug_pcm, "midi", SFI_MSG_DEBUG, NULL);
-#define DEBUG(...) sfi_debug (debug_pcm, __VA_ARGS__)
+
+#define MDEBUG(...)     BSE_KEY_DEBUG ("midi-alsa", __VA_ARGS__)
+
 /* --- structs --- */
 typedef struct
 {
@@ -17,6 +18,7 @@ typedef struct
   snd_rawmidi_t  *write_handle;
   guint           total_pfds;
 } AlsaMidiHandle;
+
 /* --- prototypes --- */
 static void     bse_midi_device_alsa_class_init (BseMidiDeviceALSAClass *klass);
 static void     bse_midi_device_alsa_init       (BseMidiDeviceALSA      *self);
@@ -254,7 +256,7 @@ bse_midi_device_alsa_open (BseDevice     *device,
         snd_rawmidi_close (alsa->write_handle);
       g_free (alsa);
     }
-  DEBUG ("ALSA: opening MIDI \"%s\" readable=%d writable=%d: %s", dname, require_readable, require_writable, bse_error_blurb (error));
+  MDEBUG ("ALSA: opening MIDI \"%s\" readable=%d writable=%d: %s", dname, require_readable, require_writable, bse_error_blurb (error));
   g_free (dname);
   return error;
 }

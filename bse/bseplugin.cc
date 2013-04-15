@@ -10,8 +10,9 @@
 #include <fcntl.h>
 #include <errno.h>
 #include <unistd.h>
-static SFI_MSG_TYPE_DEFINE (debug_plugins, "plugins", SFI_MSG_DEBUG, NULL);
-#define DEBUG(...)      sfi_debug (debug_plugins, __VA_ARGS__)
+
+#define PDEBUG(...)     BSE_KEY_DEBUG ("plugins", __VA_ARGS__)
+
 /* --- prototypes --- */
 static void	    bse_plugin_init		(BsePlugin	  *plugin);
 static void	    bse_plugin_class_init	(BsePluginClass	  *klass);
@@ -144,7 +145,7 @@ bse_plugin_init_builtins (void)
 static guint64
 runtime_export_config (void)
 {
-  SfiCPUInfo cinfo = sfi_cpu_info();
+  const Bse::CPUInfo cinfo = Rapicorn::cpu_info();
   guint64 emask = 0;
   if (cinfo.x86_mmx)
     emask |= BSE_EXPORT_FLAG_MMX;
@@ -160,7 +161,7 @@ runtime_export_config (void)
     emask |= BSE_EXPORT_FLAG_SSE2;
   if (cinfo.x86_sse3 && cinfo.x86_ssesys)
     emask |= BSE_EXPORT_FLAG_SSE3;
-  if (cinfo.x86_sse4 && cinfo.x86_ssesys)
+  if (cinfo.x86_sse4_2 && cinfo.x86_ssesys)
     emask |= BSE_EXPORT_FLAG_SSE4;
   return emask;
 }
@@ -224,7 +225,7 @@ bse_plugin_use (GTypePlugin *gplugin)
   g_object_ref (G_OBJECT (plugin));
   if (!plugin->use_count)
     {
-      DEBUG ("reloading-plugin: %s", plugin->fname);
+      PDEBUG ("reloading-plugin: %s", plugin->fname);
       plugin->use_count++;
       startup_plugin = plugin;
       plugin->gmodule = g_module_open (plugin->fname, GModuleFlags (0)); /* reopen for use non-lazy */
@@ -274,7 +275,7 @@ bse_plugin_unload (BsePlugin *plugin)
   /* reset plugin local pointers */
   if (plugin->force_clean)
     plugin->chain = NULL;
-  DEBUG ("unloaded-plugin: %s", plugin->fname);
+  PDEBUG ("unloaded-plugin: %s", plugin->fname);
 }
 static void
 bse_plugin_unuse (GTypePlugin *gplugin)
@@ -576,7 +577,7 @@ bse_plugin_check_load (const gchar *const_file_name)
     }
   else
     file_name = g_strdup (const_file_name);
-  DEBUG ("register: %s", file_name);
+  PDEBUG ("register: %s", file_name);
   /* load module */
   BsePlugin *plugin = (BsePlugin*) g_object_new (BSE_TYPE_PLUGIN, NULL);
   plugin->fname = g_strdup (file_name);
@@ -586,7 +587,7 @@ bse_plugin_check_load (const gchar *const_file_name)
   if (!gmodule)
     {
       cerror = g_module_error ();
-      DEBUG ("error: %s: %s", file_name, cerror);
+      PDEBUG ("error: %s: %s", file_name, cerror);
       g_free (file_name);
       g_object_unref (plugin);
       return cerror;
@@ -595,7 +596,7 @@ bse_plugin_check_load (const gchar *const_file_name)
     {
       g_module_close (gmodule);
       cerror = "Plugin already loaded";
-      DEBUG ("error: %s: %s", file_name, cerror);
+      PDEBUG ("error: %s: %s", file_name, cerror);
       g_free (file_name);
       g_object_unref (plugin);
       return cerror;
@@ -605,7 +606,7 @@ bse_plugin_check_load (const gchar *const_file_name)
   if (cerror)
     {
       g_module_close (gmodule);
-      DEBUG ("error: %s: %s", file_name, cerror);
+      PDEBUG ("error: %s: %s", file_name, cerror);
       g_free (file_name);
       g_object_unref (plugin);
       return cerror;
@@ -632,7 +633,7 @@ bse_plugin_check_load (const gchar *const_file_name)
     {
       g_module_close (gmodule);
       error = NULL; /* empty plugin */
-      DEBUG ("plugin empty: %s", file_name);
+      PDEBUG ("plugin empty: %s", file_name);
       g_free (file_name);
       g_object_unref (plugin);
     }
@@ -701,7 +702,7 @@ bse_plugin_path_list_files (gboolean include_drivers,
     }
   if (true)
     {
-      const SfiCPUInfo cpu_info = sfi_cpu_info();
+      const Bse::CPUInfo cpu_info = Rapicorn::cpu_info();
       const char *exts[] = { ".FPU" PLUGIN_EXTENSION, ".FPU.la", PLUGIN_EXTENSION, ".la", };
       if (BSE_WITH_SSE_FLAGS && !bse_main_args->force_fpu &&
           cpu_info.x86_mmx && cpu_info.x86_sse && cpu_info.x86_ssesys)
@@ -716,7 +717,7 @@ bse_plugin_path_list_files (gboolean include_drivers,
         {
           char *name = (char*) fname->data;
           bool match = plugin_extension_filter (name, G_N_ELEMENTS (exts), exts);
-          DEBUG ("PluginExtensionFilter: %s: %s", name, match ? "(match)" : "(ignored)");
+          PDEBUG ("PluginExtensionFilter: %s: %s", name, match ? "(match)" : "(ignored)");
           if (match)
             ring = sfi_ring_append (ring, name);
           else

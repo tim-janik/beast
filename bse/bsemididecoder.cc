@@ -3,10 +3,12 @@
 #include "bsemidireceiver.hh"
 #include "bseengine.hh"
 #include <string.h>
-static SFI_MSG_TYPE_DEFINE (debug_midi_decoder, "midi-decoder", SFI_MSG_DEBUG, NULL);
-#define DEBUG(...)      sfi_debug (debug_midi_decoder, __VA_ARGS__)
+
+#define MDEBUG(...)     BSE_KEY_DEBUG ("midi-decoder", __VA_ARGS__)
+
 /* --- prototypes --- */
 static void     bse_midi_decoder_construct_event   (BseMidiDecoder *self);
+
 /* --- function --- */
 BseMidiDecoder*
 bse_midi_decoder_new (gboolean             auto_queue,
@@ -337,11 +339,11 @@ midi_decoder_extract_specific (BseMidiDecoder *self,
         event->data.note.velocity = 0;
       else /* note-on or key-pressure */
         event->data.note.velocity = ival * DR7F;
-      DEBUG ("ch-%02x: note-%s: freq=%.3f velocity=%.4f (%02x %02x)", event->channel,
-             event->status == BSE_MIDI_NOTE_ON ? "on " :
-             event->status == BSE_MIDI_NOTE_OFF ? "off" : "pressure",
-             event->data.note.frequency, event->data.note.velocity,
-             self->bytes[0], self->bytes[1]);
+      MDEBUG ("ch-%02x: note-%s: freq=%.3f velocity=%.4f (%02x %02x)", event->channel,
+              event->status == BSE_MIDI_NOTE_ON ? "on " :
+              event->status == BSE_MIDI_NOTE_OFF ? "off" : "pressure",
+              event->data.note.frequency, event->data.note.velocity,
+              self->bytes[0], self->bytes[1]);
       break;
     case BSE_MIDI_CONTROL_CHANGE:       /* 7bit ctl-nr, 7bit value */
       if (self->n_bytes < 2)
@@ -349,22 +351,22 @@ midi_decoder_extract_specific (BseMidiDecoder *self,
       event->data.control.control = self->bytes[0] & 0x7f;
       ival = self->bytes[1] & 0x7f;
       event->data.control.value = ival * DR7F;
-      DEBUG ("ch-%02x: control[%02u]: %.4f (0x%02x)", event->channel,
-             event->data.control.control,
-             event->data.control.value, ival);
+      MDEBUG ("ch-%02x: control[%02u]: %.4f (0x%02x)", event->channel,
+              event->data.control.control,
+              event->data.control.value, ival);
       break;
     case BSE_MIDI_PROGRAM_CHANGE:       /* 7bit prg-nr */
       if (self->n_bytes < 1)
         return FALSE;
       event->data.program = self->bytes[0] & 0x7f;
-      DEBUG ("ch-%02x: program-change: 0x%02x", event->channel, event->data.program);
+      MDEBUG ("ch-%02x: program-change: 0x%02x", event->channel, event->data.program);
       break;
     case BSE_MIDI_CHANNEL_PRESSURE:     /* 7bit intensity */
       if (self->n_bytes < 1)
         return FALSE;
       ival = self->bytes[0] & 0x7f;
       event->data.intensity = ival * DR7F;
-      DEBUG ("ch-%02x: channel-pressure: %.4f (0x%02x)", event->channel, event->data.intensity, ival);
+      MDEBUG ("ch-%02x: channel-pressure: %.4f (0x%02x)", event->channel, event->data.intensity, ival);
       break;
     case BSE_MIDI_PITCH_BEND:           /* 14bit signed: 7lsb, 7msb */
       if (self->n_bytes < 2)
@@ -374,7 +376,7 @@ midi_decoder_extract_specific (BseMidiDecoder *self,
       ival |= v << 7;
       ival -= 0x2000;   /* range=0..0x3fff, center=0x2000 */
       event->data.pitch_bend = ival * DR2000;
-      DEBUG ("ch-%02x: pitch-bend: %.4f (0x%04x)", event->channel, event->data.pitch_bend, ival);
+      MDEBUG ("ch-%02x: pitch-bend: %.4f (0x%04x)", event->channel, event->data.pitch_bend, ival);
       break;
     case BSE_MIDI_MULTI_SYS_EX_START:   /* BSE_MIDI_SYS_EX split across multiple events */
     case BSE_MIDI_MULTI_SYS_EX_NEXT:    /* continuation, last data byte of final packet is 0xF7 */
@@ -382,7 +384,7 @@ midi_decoder_extract_specific (BseMidiDecoder *self,
     case BSE_MIDI_SYS_EX:               /* data... (without final 0x7F) */
       event->data.sys_ex.n_bytes = self->n_bytes;
       event->data.sys_ex.bytes = self->bytes;
-      DEBUG ("ch-%02x: sys-ex: %u bytes", event->channel, self->n_bytes);
+      MDEBUG ("ch-%02x: sys-ex: %u bytes", event->channel, self->n_bytes);
       self->n_bytes = 0;
       self->bytes = NULL;
       break;
@@ -392,20 +394,20 @@ midi_decoder_extract_specific (BseMidiDecoder *self,
       event->data.song_pointer = self->bytes[0] & 0x7f;
       v = self->bytes[1] & 0x7f;
       event->data.song_pointer |= v << 7;
-      DEBUG ("ch-%02x: song-pointer: 0x%04x", event->channel, event->data.song_pointer);
+      MDEBUG ("ch-%02x: song-pointer: 0x%04x", event->channel, event->data.song_pointer);
       break;
     case BSE_MIDI_SONG_SELECT:          /* 7bit song-nr */
       if (self->n_bytes < 1)
         return FALSE;
       event->data.song_number = self->bytes[0] & 0x7f;
-      DEBUG ("ch-%02x: song-select: 0x%02x", event->channel, event->data.song_number);
+      MDEBUG ("ch-%02x: song-select: 0x%02x", event->channel, event->data.song_number);
       break;
     case BSE_MIDI_SEQUENCE_NUMBER:      /* 16bit sequence number (msb, lsb) */
       if (self->n_bytes < 2)
         return FALSE;
       event->data.sequence_number = self->bytes[0] << 8;
       event->data.sequence_number += self->bytes[1];
-      DEBUG ("ch-%02x: sequence-number: 0x%04x", event->channel, event->data.sequence_number);
+      MDEBUG ("ch-%02x: sequence-number: 0x%04x", event->channel, event->data.sequence_number);
       break;
     case BSE_MIDI_TEXT_EVENT:           /* 8bit text */
     case BSE_MIDI_COPYRIGHT_NOTICE:     /* 8bit text */
@@ -423,13 +425,13 @@ midi_decoder_extract_specific (BseMidiDecoder *self,
     case BSE_MIDI_TEXT_EVENT_0E:        /* 8bit text */
     case BSE_MIDI_TEXT_EVENT_0F:        /* 8bit text */
       event->data.text = g_strndup ((const char*) self->bytes, self->n_bytes);
-      DEBUG ("ch-%02x: text event (0x%02X): %s", event->channel, event->status, event->data.text);
+      MDEBUG ("ch-%02x: text event (0x%02X): %s", event->channel, event->status, event->data.text);
       break;
     case BSE_MIDI_CHANNEL_PREFIX:       /* 8bit channel number (0..15) */
       if (self->n_bytes < 1)
         return FALSE;
       event->data.zprefix = self->bytes[0];
-      DEBUG ("ch-XX: channel zprefix: %u", event->data.zprefix);
+      MDEBUG ("ch-XX: channel zprefix: %u", event->data.zprefix);
       break;
     case BSE_MIDI_SET_TEMPO:            /* 24bit usecs-per-quarter-note (msb first) */
       if (self->n_bytes < 3)
@@ -437,7 +439,7 @@ midi_decoder_extract_specific (BseMidiDecoder *self,
       event->data.usecs_pqn = self->bytes[0] << 16;
       event->data.usecs_pqn += self->bytes[1] << 8;
       event->data.usecs_pqn += self->bytes[2];
-      DEBUG ("ch-%02x: set-tempo: usecs-per-quarter-note=%u", event->channel, event->data.usecs_pqn);
+      MDEBUG ("ch-%02x: set-tempo: usecs-per-quarter-note=%u", event->channel, event->data.usecs_pqn);
       break;
     case BSE_MIDI_SMPTE_OFFSET:         /* 8bit hour, minute, second, frame, 100th-frame-fraction */
       if (self->n_bytes < 5)
@@ -447,9 +449,9 @@ midi_decoder_extract_specific (BseMidiDecoder *self,
       event->data.smpte_offset.second = self->bytes[2];
       event->data.smpte_offset.frame = self->bytes[3];
       event->data.smpte_offset.fraction = self->bytes[4];
-      DEBUG ("ch-%02x: smpte signature: hour=%u minute=%u second=%u frame=%u fraction=%u", event->channel,
-             event->data.smpte_offset.hour, event->data.smpte_offset.minute, event->data.smpte_offset.second,
-             event->data.smpte_offset.frame, event->data.smpte_offset.fraction);
+      MDEBUG ("ch-%02x: smpte signature: hour=%u minute=%u second=%u frame=%u fraction=%u", event->channel,
+              event->data.smpte_offset.hour, event->data.smpte_offset.minute, event->data.smpte_offset.second,
+              event->data.smpte_offset.frame, event->data.smpte_offset.fraction);
       break;
     case BSE_MIDI_TIME_SIGNATURE:       /* 8bit numerator, -ld(1/denominator), metro-clocks, 32nd-npq */
       if (self->n_bytes < 4)
@@ -458,9 +460,9 @@ midi_decoder_extract_specific (BseMidiDecoder *self,
       event->data.time_signature.denominator = 1 << self->bytes[1];
       event->data.time_signature.metro_clocks = self->bytes[2];
       event->data.time_signature.notated_32nd = self->bytes[3];
-      DEBUG ("ch-%02x: time signature: %u/%u metro=%u 32/4=%u", event->channel,
-             event->data.time_signature.numerator, event->data.time_signature.denominator,
-             event->data.time_signature.metro_clocks, event->data.time_signature.notated_32nd);
+      MDEBUG ("ch-%02x: time signature: %u/%u metro=%u 32/4=%u", event->channel,
+              event->data.time_signature.numerator, event->data.time_signature.denominator,
+              event->data.time_signature.metro_clocks, event->data.time_signature.notated_32nd);
       break;
     case BSE_MIDI_KEY_SIGNATURE:        /* 8bit sharpsflats, majorminor */
       if (self->n_bytes < 2)
@@ -472,13 +474,13 @@ midi_decoder_extract_specific (BseMidiDecoder *self,
         event->data.key_signature.n_sharps = v & 0x3f;
       event->data.key_signature.major_key = self->bytes[1] == 0;
       event->data.key_signature.minor_key = self->bytes[1] != 0;
-      DEBUG ("ch-%02x: key signature: flats=%u sharps=%u major-key=%u", event->channel,
-             event->data.key_signature.n_flats, event->data.key_signature.n_sharps, event->data.key_signature.major_key);
+      MDEBUG ("ch-%02x: key signature: flats=%u sharps=%u major-key=%u", event->channel,
+              event->data.key_signature.n_flats, event->data.key_signature.n_sharps, event->data.key_signature.major_key);
       break;
     case BSE_MIDI_SEQUENCER_SPECIFIC:   /* manufacturer specific sequencing data */
       event->data.sys_ex.n_bytes = self->n_bytes;
       event->data.sys_ex.bytes = self->bytes;
-      DEBUG ("ch-%02x: sequencer specific: %u bytes", event->channel, self->n_bytes);
+      MDEBUG ("ch-%02x: sequencer specific: %u bytes", event->channel, self->n_bytes);
       self->n_bytes = 0;
       self->bytes = NULL;
       break;

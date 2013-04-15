@@ -16,8 +16,7 @@
 /* --- prototypes --- */
 static void	gh_main			(gint	 argc,
 					 gchar	*argv[]);
-static void	shell_parse_args	(gint    *argc_p,
-					 gchar ***argv_p);
+static void	shell_parse_args	(int *argc_p, char **argv);
 static void     shell_print_usage       (void);
 /* --- variables --- */
 static gint            bse_scm_pipe[2] = { -1, -1 };
@@ -48,7 +47,7 @@ main (int   argc,
 {
   const gchar *env_str;
   GSource *source;
-  sfi_init (&argc, &argv, "BSESCM", NULL);
+  sfi_init (&argc, argv, "BSESCM");
   bse_init_textdomain_only();
   setlocale (LC_ALL, "");
   env_str = g_getenv ("BSESCM_SLEEP4GDB");
@@ -57,7 +56,7 @@ main (int   argc,
       g_message ("going into sleep mode due to debugging request (pid=%u)", getpid ());
       g_usleep (2147483647);
     }
-  shell_parse_args (&argc, &argv);
+  shell_parse_args (&argc, argv);
   if (env_str && (atoi (env_str) >= 2 ||
                   (atoi (env_str) >= 1 && !bse_scm_enable_register)))
     {
@@ -78,7 +77,7 @@ main (int   argc,
   if (!bse_scm_context)
     {
       // start our own core thread
-      Bse::init_async (&argc, &argv, "BSESCM", NULL);
+      Bse::init_async (&argc, argv, "BSESCM");
       // allow g_main_context_wakeup to interrupt sleeps in bse_scm_context_iteration
       bse_scm_context = Bse::init_glue_context (PRG_NAME, []() { g_main_context_wakeup (g_main_context_default()); });
     }
@@ -150,13 +149,11 @@ gh_main (int   argc,
   sfi_glue_context_destroy (bse_scm_context);
 }
 static void
-shell_parse_args (gint    *argc_p,
-		  gchar ***argv_p)
+shell_parse_args (int *argc_p, char **argv)
 {
-  guint argc = *argc_p;
-  gchar **argv = *argv_p;
-  guint i, e;
-  gboolean initialize_bse_and_exit = FALSE;
+  uint argc = *argc_p;
+  uint i, e;
+  bool initialize_bse_and_exit = false;
   for (i = 1; i < argc; i++)
     {
       if (strcmp (argv[i], "--") == 0 ||
@@ -228,12 +225,12 @@ shell_parse_args (gint    *argc_p,
       else if (strcmp ("-p", argv[i]) == 0)
         {
           /* modify args for BSE */
-          argv[i] = "--bse-pcm-driver";
+          argv[i] = (char*) "--bse-pcm-driver";
         }
       else if (strcmp ("-m", argv[i]) == 0)
         {
           /* modify args for BSE */
-          argv[i] = "--bse-midi-driver";
+          argv[i] = (char*) "--bse-midi-driver";
         }
       else if (strcmp ("--bse-override-script-path", argv[i]) == 0 && i + 1 < argc)
         {
@@ -288,7 +285,7 @@ shell_parse_args (gint    *argc_p,
   *argc_p = e;
   if (initialize_bse_and_exit)
     {
-      Bse::init_async (argc_p, argv_p, "BSESCM", NULL);
+      Bse::init_async (argc_p, argv, "BSESCM");
       exit (0);
     }
 }

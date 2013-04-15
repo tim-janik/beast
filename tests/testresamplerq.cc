@@ -5,15 +5,16 @@
 #include <bse/bseblockutils.hh>
 #include <bse/gslfft.hh>
 #include <sfi/sfitests.hh>
-#include <birnet/birnet.hh>
+#include <sfi/sfi.hh>
 #include <stdlib.h>
 #include <stdio.h>
 #include <assert.h>
 using Bse::Resampler::Resampler2;
-using Birnet::AlignedArray;
+using Rapicorn::AlignedArray;
 using std::vector;
 using std::max;
 using std::min;
+
 struct Options
 {
   size_t test_size;
@@ -194,7 +195,11 @@ run_tests (const char *label)
 int
 main (int argc, char **argv)
 {
-  sfi_init_test (&argc, &argv, NULL);
+  // usually we'd call bse_init_test() here, but we have tests to rnu before plugins are loaded
+  Rapicorn::init_core_test (RAPICORN_PRETTY_FILE, &argc, argv);
+  Bse::CPUInfo ci = Rapicorn::cpu_info(); // usually done by bse_init_test
+  TMSG ("  NOTE   Running on: %s+%s", ci.machine, bse_block_impl_name());
+
   if (argc > 1)
     {
       options.test_size = atoi (argv[1]);
@@ -208,12 +213,9 @@ main (int argc, char **argv)
   g_print ("Resampler test parameters: test_size=%zd rand_samples=%zd\n",
            options.test_size, options.rand_samples);
   run_tests ("FPU");
+
   /* load plugins */
-  SfiInitValue config[] = {
-    { "load-core-plugins", "1" },
-    { NULL },
-  };
-  bse_init_test (&argc, &argv, config);
+  bse_init_test (&argc, argv, Bse::cstrings_to_vector ("load-core-plugins=1", NULL));
   /* check for possible specialization */
   if (Bse::Block::default_singleton() == Bse::Block::current_singleton())
     return 0;   /* nothing changed */

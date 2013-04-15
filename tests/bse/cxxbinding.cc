@@ -20,8 +20,7 @@ main (int   argc,
       char *argv[])
 {
   std::set_terminate (__gnu_cxx::__verbose_terminate_handler);
-  Bse::init_async (&argc, &argv, "CxxBindingTest", NULL);
-  sfi_msg_allow ("misc");
+  Bse::init_async (&argc, argv, "CxxBindingTest");
   bse_context = Bse::init_glue_context (argv[0], []() { g_main_context_wakeup (g_main_context_default()); });
   sfi_glue_context_push (bse_context);
   g_print ("type_blurb(BseContainer)=%s\n", type_blurb("BseContainer").c_str());

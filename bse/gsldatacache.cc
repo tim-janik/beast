@@ -52,7 +52,7 @@ _gsl_init_data_caches (void)
   static gboolean initialized = FALSE;
   g_assert (initialized == FALSE);
   initialized++;
-  BIRNET_STATIC_ASSERT (AGE_EPSILON < LOW_PERSISTENCY_RESIDENT_SET);
+  RAPICORN_STATIC_ASSERT (AGE_EPSILON < LOW_PERSISTENCY_RESIDENT_SET);
 }
 GslDataCache*
 gsl_data_cache_new (GslDataHandle *dhandle,
