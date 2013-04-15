@@ -186,7 +186,7 @@ public:
   {
     m_decoder = FLAC__stream_decoder_new();
     if (!m_decoder)
-      return BSE_ERROR_IO;
+      return BSE_ERROR_FILE_OPEN_FAILED;
 
     m_rfile = gsl_rfile_open (m_file_name.c_str());
     if (!m_rfile)
@@ -220,19 +220,19 @@ public:
                                                 file_eof_callback,
                                                 flac_write_callback, NULL, flac_error_callback, this);
     if (err != 0)
-      return BSE_ERROR_IO;
+      return BSE_ERROR_FILE_OPEN_FAILED;
 
     /* decode enough to figure out number of channels */
     FLAC__bool mdok;
-    do {
+    do
       mdok = FLAC__stream_decoder_process_single (m_decoder);
-    } while (FLAC__stream_decoder_get_channels (m_decoder) == 0 && mdok);
+    while (FLAC__stream_decoder_get_channels (m_decoder) == 0 && mdok);
 
     if (FLAC__stream_decoder_get_channels (m_decoder) == 0)
-      return BSE_ERROR_IO;
+      return BSE_ERROR_WRONG_N_CHANNELS;
 
     if (m_error_occurred)
-      return BSE_ERROR_IO;
+      return BSE_ERROR_NO_HEADER;
 
     m_n_channels = setup->n_channels = FLAC__stream_decoder_get_channels (m_decoder);
     setup->n_values = FLAC__stream_decoder_get_total_samples (m_decoder) * m_n_channels;
@@ -315,7 +315,7 @@ public:
     return m_file_byte_size;
   }
 private:
-/* for the "C" API (vtable) */
+  /* for the "C" API (vtable) */
   static BseErrorType
   dh_open (GslDataHandle *dhandle, GslDataHandleSetup *setup)
   {
