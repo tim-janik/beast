@@ -14,12 +14,9 @@
 namespace Bse {
 
 using std::vector;
-using std::string;
 using std::min;
 
-namespace {
-  enum FlacZOffset { NO_ZOFFSET, ADD_ZOFFSET };
-}
+enum FlacZOffset { NO_ZOFFSET, ADD_ZOFFSET };
 
 class DataHandleFlac;
 
@@ -31,9 +28,9 @@ struct CDataHandleFlac : public GslDataHandle
 
 class DataHandleFlac {
 private:
-// ***************************** virtual file I/O ********************************
-  GslLong   m_file_byte_offset;
-  GslLong   m_file_byte_size;
+  // ***************************** virtual file I/O ********************************
+  int64     m_file_byte_offset;
+  int64     m_file_byte_size;
   GslRFile *m_rfile;
 
   static FLAC__StreamDecoderReadStatus
@@ -45,7 +42,7 @@ private:
     DataHandleFlac *dh = static_cast<DataHandleFlac *> (client_data);
 
     const size_t bytes_to_eof = dh->m_file_byte_size - (gsl_rfile_position (dh->m_rfile) - dh->m_file_byte_offset);
-    GslLong l = gsl_rfile_read (dh->m_rfile, MIN (*bytes, bytes_to_eof), buffer);
+    int64 l = gsl_rfile_read (dh->m_rfile, MIN (*bytes, bytes_to_eof), buffer);
     if (l < 0)
       return FLAC__STREAM_DECODER_READ_STATUS_ABORT;
 
@@ -148,21 +145,21 @@ protected:
   CDataHandleFlac	m_dhandle;
   int                   m_n_channels;
   bool			m_init_ok;
-  string                m_file_name;
+  String                m_file_name;
   FLAC__StreamDecoder  *m_decoder;
   int64                 m_buffer_start;
   vector<float>         m_buffer;
   float                 m_osc_freq;
   FlacZOffset           m_init_add_zoffset;
-  GslLong               m_init_byte_offset;
-  GslLong               m_init_byte_size;
+  int64                 m_init_byte_offset;
+  int64                 m_init_byte_size;
 
 public:
-  DataHandleFlac (const string& file_name,
+  DataHandleFlac (const String& file_name,
 		  float         osc_freq,
                   FlacZOffset   add_zoffset,
-                  GslLong       byte_offset = -1,
-                  GslLong       byte_size = -1) :
+                  int64         byte_offset = -1,
+                  int64         byte_size = -1) :
     m_init_ok (false),
     m_decoder (NULL),
     m_init_add_zoffset (add_zoffset),
@@ -253,11 +250,9 @@ public:
   }
 
   int64
-  read_samples (int64  voffset,
-	        int64  n_values,
-	        float *values)
+  read_samples (int64 voffset, int64 n_values, float *values)
   {
-    if (voffset >= m_buffer_start + (int64) m_buffer.size())
+    if (voffset >= m_buffer_start + int64 (m_buffer.size()))
       {
         // try to read on, probably we'll have just the samples we need, then
         m_error_occurred = false;
@@ -267,10 +262,10 @@ public:
           return -1;
       }
 
-    if (voffset >= m_buffer_start && voffset < m_buffer_start + (int64) m_buffer.size())
+    if (voffset >= m_buffer_start && voffset < m_buffer_start + int64 (m_buffer.size()))
       {
         int64 buffer_offset = voffset - m_buffer_start;
-        n_values = MIN (n_values, m_buffer.size() - buffer_offset);
+        n_values = MIN (size_t (n_values), m_buffer.size() - buffer_offset);
         std::copy (m_buffer.begin() + buffer_offset, m_buffer.begin() + buffer_offset + n_values, values);
         return n_values;
       }
@@ -309,12 +304,12 @@ public:
     return static_cast<CDataHandleFlac *> (dhandle)->cxx_dh;
   }
 
-  GslLong
+  int64
   file_byte_offset()
   {
     return m_file_byte_offset;
   }
-  GslLong
+  int64
   file_byte_size()
   {
     return m_file_byte_size;
@@ -337,10 +332,7 @@ private:
     delete dh_cast (dhandle);
   }
   static int64
-  dh_read (GslDataHandle *dhandle,
-	   int64          voffset,
-	   int64          n_values,
-	   gfloat        *values)
+  dh_read (GslDataHandle *dhandle, int64 voffset, int64 n_values, float *values)
   {
     return dh_cast (dhandle)->read_samples (voffset, n_values, values);
   }
@@ -371,8 +363,8 @@ bse_data_handle_new_flac (const char    *file_name,
 GslDataHandle*
 bse_data_handle_new_flac_zoffset (const char *file_name,
                                   float       osc_freq,
-                                  GslLong     byte_offset,
-                                  GslLong     byte_size,
+                                  int64       byte_offset,
+                                  int64       byte_size,
                                   uint       *n_channels_p,
                                   gfloat     *mix_freq_p)
 {
