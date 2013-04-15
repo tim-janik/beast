@@ -1,8 +1,7 @@
-# Birnet
-# GNU Lesser General Public License version 2 or any later version.
+# Licensed GNU LGPL v2 or later: http://www.gnu.org/licenses/lgpl.html
 
 # include various m4 macros
-builtin(include, birnet/acbirnet.m4)dnl
+m4_include(acbeast.m4)
 m4_include(autotools/glib-gettext.m4)
 
 
@@ -156,19 +155,6 @@ MC_IF_VAR_EQ(GXX, yes,,
 # require pkg-config
 MC_ASSERT_PROG(PKG_CONFIG, pkg-config, [pkg-config can be found at http://www.freedesktop.org/software/pkgconfig/])
 
-
-dnl #
-dnl # Include sub-package macro definitions
-dnl #
-builtin(include, birnet/configure.inc)dnl
-#include(birnet/configure.inc)
-AC_DEFUN([DUMMY_DEFS],
-[
-    # work around stupid automake (doesn't figure includes)
-    AC_SUBST(BIRNET_CFLAGS)
-    AC_SUBST(BIRNET_LIBS)
-])
-
 dnl #
 dnl # Define package requirements.
 dnl #
@@ -217,12 +203,12 @@ AC_DEFUN([AC_I18N_REQUIREMENTS],
 ])
 AC_DEFUN([AC_SFI_REQUIREMENTS],
 [
-    dnl # check for GLib libs, libbirnet already provides gthread-2.0 and glib-2.0
-    PKG_CHECK_MODULES(GLIB_GOMT, glib-2.0 >= 2.32.3 gobject-2.0 gmodule-no-export-2.0)
+    dnl # check for GLib libs
+    PKG_CHECK_MODULES(GLIB_GOMT, glib-2.0 >= 2.32.3 gobject-2.0 gmodule-no-export-2.0 gthread-2.0)
     AC_SUBST(GLIB_GOMT_CFLAGS)
     AC_SUBST(GLIB_GOMT_LIBS)
-    SFI_CFLAGS="$BIRNET_CFLAGS $GLIB_GOMT_CFLAGS"
-    SFI_LIBS="$BIRNET_LIBS $GLIB_GOMT_LIBS"
+    SFI_CFLAGS="$GLIB_GOMT_CFLAGS"
+    SFI_LIBS="$GLIB_GOMT_LIBS"
     AC_SUBST(SFI_CFLAGS)
     AC_SUBST(SFI_LIBS)
 
@@ -658,9 +644,6 @@ fi
 AC_SUBST(PERLRULE)
 AM_CONDITIONAL(WITH_PERLRULE, [test "$PERLRULE" != "#"])
 
-# Check sub-package requirements
-AC_BIRNET_REQUIREMENTS
-
 # Check requirement sets
 AC_I18N_REQUIREMENTS
 AC_SFI_REQUIREMENTS
@@ -694,8 +677,6 @@ Makefile
 data/Makefile
 data/bse.pc
 data/beast.applications
-birnet/Makefile
-birnet/tests/Makefile
 sfi/Makefile
 sfi/tests/Makefile
 bse/bseconfig.h
