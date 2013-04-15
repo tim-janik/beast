@@ -1,6 +1,8 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bsebalance.genidl.hh"
+
 namespace Bse {
+
 class Balance : public BalanceBase {
   /* balance module implementation */
   class Module : public SynthesisModule {
@@ -95,6 +97,8 @@ public:
   /* implement creation and config methods for synthesis Module */
   BSE_EFFECT_INTEGRATE_MODULE (Balance, Module, BalanceProperties);
 };
+
 BSE_CXX_DEFINE_EXPORTS();
 BSE_CXX_REGISTER_EFFECT (Balance);
+
 } // Bse

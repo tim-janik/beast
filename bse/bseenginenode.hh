@@ -1,9 +1,12 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #ifndef __BSE_ENGINE_NODE_H__
 #define __BSE_ENGINE_NODE_H__
+
 #include "bseengine.hh"
 #include "gslcommon.hh"
+
 G_BEGIN_DECLS
+
 #define	ENGINE_NODE(module)		((EngineNode*) (module))
 #define ENGINE_NODE_N_OSTREAMS(node)	((node)->module.klass->n_ostreams)
 #define ENGINE_NODE_N_ISTREAMS(node)	((node)->module.klass->n_istreams)
@@ -20,9 +23,12 @@ G_BEGIN_DECLS
 #define	ENGINE_NODE_LOCK(node)		(node)->rec_mutex.lock()
 #define	ENGINE_NODE_UNLOCK(node)	(node)->rec_mutex.unlock()
 #define	ENGINE_MODULE_IS_VIRTUAL(mod)	(ENGINE_NODE_IS_VIRTUAL (ENGINE_NODE (mod)))
+
+
 /* --- typedefs --- */
 typedef struct _EngineNode     EngineNode;
 typedef struct _EngineSchedule EngineSchedule;
+
 /* --- transactions --- */
 typedef union  _EngineTimedJob EngineTimedJob;
 typedef enum /*< skip >*/
@@ -133,6 +139,8 @@ union _EngineTimedJob
     BseEngineAccessFunc access_func;
   }                     access;
 };
+
+
 /* --- module nodes --- */
 typedef struct
 {
@@ -189,5 +197,7 @@ struct _EngineNode		/* fields sorted by order of processing access */
   EngineNode	*toplevel_next;	        /* master-consumer-list, FIXME: overkill, using a SfiRing is good enough */
   SfiRing	*output_nodes;	        /* EngineNode* ring of nodes in ->outputs[] */
 };
+
 G_END_DECLS
+
 #endif /* __BSE_ENGINE_NODE_H__ */

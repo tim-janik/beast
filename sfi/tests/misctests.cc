@@ -7,6 +7,7 @@
 #include <string.h>
 #include <signal.h>	/* G_BREAKPOINT() */
 #include <math.h>
+
 /* provide IDL type initializers */
 #define sfidl_pspec_Real(group, name, nick, blurb, dflt, min, max, step, hints)  \
   sfi_pspec_real (name, nick, blurb, dflt, min, max, step, hints)
@@ -14,12 +15,15 @@
   sfi_pspec_rec (name, nick, blurb, fields, hints)
 #define sfidl_pspec_Choice(group, name, nick, blurb, default_value, hints, choices) \
   sfi_pspec_choice (name, nick, blurb, default_value, choices, hints)
+
 /* FIXME: small hackery */
 #define sfidl_pspec_Rec(group, name, nick, blurb, hints)            \
   sfi_pspec_int (name, nick, blurb, 0, 0, 0, 0, hints)
 #define sfidl_pspec_PSpec(group, name, nick, blurb, hints)            \
   sfi_pspec_int (name, nick, blurb, 0, 0, 0, 0, hints)
+
 #include "testidl.h"
+
 static void
 test_misc (void)
 {
@@ -80,6 +84,7 @@ test_time (void)
     }
   TDONE ();
 }
+
 static void
 test_com_ports (void)
 {
@@ -142,6 +147,7 @@ test_com_ports (void)
   TASSERT (scanner->value.v_float == svalue); \
   TASSERT (g_scanner_get_next_token (scanner) == '#'); \
 }
+
 static void
 test_scanner64 (void)
 {
@@ -272,6 +278,7 @@ serialize_cmp (GValue     *value,
   sfi_value_free (value);
   sfi_pspec_sink (pspec);
 }
+
 static void
 test_typed_serialization (SerialTest test_type)
 {
@@ -452,6 +459,7 @@ test_typed_serialization (SerialTest test_type)
   sfi_rec_unref (rec);
   TDONE ();
 }
+
 static void
 test_notes (void)
 {
@@ -550,6 +558,7 @@ generate_vmarshal (guint sig)
   else
     g_print ("    case 0x%03x: return sfi_vmarshal_%s; /* %u */\n", sig, s, vmarshal_count);
 }
+
 static void
 generate_vmarshal_loop (void)
 {
@@ -580,6 +589,7 @@ generate_vmarshal_loop (void)
 	}
     }
 }
+
 static void
 generate_vmarshal_code (void)
 {
@@ -638,6 +648,8 @@ test_vmarshals (void)
   TDONE ();
   sfi_seq_unref (seq);
 }
+
+
 static void
 test_sfidl_seq (void)
 {
@@ -739,8 +751,11 @@ main (int   argc,
   test_com_ports ();
   test_sfidl_seq ();
   test_misc ();
+
   return 0;
 }
+
 /* distcc preprocessing test */
 const char *test_distcc_strings = "ÿÿÿÿ";
+
 /* vim:set ts=8 sts=2 sw=2: */

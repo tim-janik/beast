@@ -1,4 +1,5 @@
 /* GIMP RGBA C-Source image dump 1-byte-run-length-encoded (pipe.c) */
+
 #define PIPE_WIDTH (64)
 #define PIPE_HEIGHT (64)
 #define PIPE_BYTES_PER_PIXEL (4) /* 3:RGB, 4:RGBA */
@@ -557,3 +558,4 @@ static const guint8 PIPE_rle_pixel_data[11744] =
  "\375\375\375\0\205\376\376\376\0\224\375\375\375\0\227\376\376\376\0\214\375"
  "\375\375\0\214\376\376\376\0\216\375\375\375\0\377\376\376\376\0\216\376\376"
  "\376\0");
+

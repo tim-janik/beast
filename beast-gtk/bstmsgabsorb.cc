@@ -1,21 +1,25 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bstmsgabsorb.hh"
 #include <string.h>
+
 enum {
   MCOL_CHECK,
   MCOL_BLURB,
   MCOL_VERSION,
   N_MCOLS
 };
+
 /* --- variables --- */
 static BstMsgAbsorbStringSeq *global_msg_absorb_config = NULL;
 static GParamSpec             *pspec_msg_absorb_config = NULL;
 static gboolean                msg_absorb_config_loaded = FALSE;
+
 /* --- functions --- */
 void
 _bst_msg_absorb_config_init (void)
 {
   g_return_if_fail (global_msg_absorb_config == NULL);
+
   /* global config record description */
   pspec_msg_absorb_config = sfi_pspec_seq ("beast-msg-absorb-config-v1", NULL, NULL,
                                            sfi_pspec_rec ("mstring", NULL, NULL, bst_msg_absorb_string_fields, SFI_PARAM_STANDARD),
@@ -34,11 +38,13 @@ _bst_msg_absorb_config_init (void)
   sfi_value_free (value);
   sfi_seq_unref (seq);
 }
+
 GParamSpec*
 bst_msg_absorb_config_pspec (void)
 {
   return pspec_msg_absorb_config;
 }
+
 BstMsgAbsorbStringSeq*
 bst_msg_absorb_config_get_global (void)
 {
@@ -46,6 +52,7 @@ bst_msg_absorb_config_get_global (void)
     bst_msg_absorb_config_load();
   return global_msg_absorb_config;
 }
+
 static void
 set_msg_absorb_config (BstMsgAbsorbStringSeq *msg_absorb_config)
 {
@@ -53,17 +60,21 @@ set_msg_absorb_config (BstMsgAbsorbStringSeq *msg_absorb_config)
   global_msg_absorb_config = msg_absorb_config;
   bst_msg_absorb_string_seq_free (oldconfig);
 }
+
 void
 bst_msg_absorb_config_apply (SfiSeq *src_seq)
 {
   g_return_if_fail (src_seq != NULL);
+
   SfiSeq *seq = sfi_seq_copy_deep (src_seq);
   sfi_seq_validate (seq, bst_msg_absorb_config_pspec());
   BstMsgAbsorbStringSeq *mconfig = bst_msg_absorb_string_seq_from_seq (seq);
   sfi_seq_unref (seq);
   set_msg_absorb_config (mconfig);
 }
+
 # include "topconfig.h" /* BST_VERSION */
+
 gboolean
 bst_msg_absorb_config_match (const gchar *config_blurb)
 {
@@ -74,6 +85,7 @@ bst_msg_absorb_config_match (const gchar *config_blurb)
       return !mstrings->strings[i]->enabled;
   return FALSE;
 }
+
 void
 bst_msg_absorb_config_update (const gchar *config_blurb)
 {
@@ -95,6 +107,7 @@ bst_msg_absorb_config_update (const gchar *config_blurb)
   if (changed)
     bst_msg_absorb_config_save();
 }
+
 gboolean
 bst_msg_absorb_config_adjust (const gchar    *config_blurb,
                               gboolean        enabled,
@@ -128,6 +141,7 @@ bst_msg_absorb_config_adjust (const gchar    *config_blurb,
     }
   return FALSE;
 }
+
 static void
 msg_absorb_string_seq_fill_value (GtkWidget      *self,
                                   guint           column,
@@ -155,6 +169,7 @@ msg_absorb_string_seq_fill_value (GtkWidget      *self,
       break;
     }
 }
+
 static void
 msg_absorb_string_toggled (GtkCellRendererToggle *cell,
                            const gchar           *strpath,
@@ -169,6 +184,7 @@ msg_absorb_string_toggled (GtkCellRendererToggle *cell,
       gtk_cell_renderer_toggle_set_active (cell, mass->strings[i]->enabled);
     }
 }
+
 GtkWidget*
 bst_msg_absorb_config_box (void)
 {
@@ -201,6 +217,7 @@ bst_msg_absorb_config_box (void)
   gtk_tree_view_set_expander_column (tview, col); /* where to put unused expander space */
   return (GtkWidget*) self;
 }
+
 void
 bst_msg_absorb_config_box_set (GtkWidget             *self,
                                BstMsgAbsorbStringSeq *mass)
@@ -215,30 +232,37 @@ bst_msg_absorb_config_box_set (GtkWidget             *self,
   gxk_list_wrapper_notify_clear (GXK_LIST_WRAPPER (model));
   gxk_list_wrapper_notify_append (GXK_LIST_WRAPPER (model), mass->n_strings);
 }
+
 BstMsgAbsorbStringSeq*
 bst_msg_absorb_config_box_get (GtkWidget      *self)
 {
   BstMsgAbsorbStringSeq *mass = (BstMsgAbsorbStringSeq*) g_object_get_data ((GObject*) self, "BstMsgAbsorbStringSeq");
   return mass;
 }
+
 /* --- config file --- */
 #include <unistd.h>
 #include <fcntl.h>
 #include <errno.h>
 #include "topconfig.h"          /* BST_VERSION */
 #include <sfi/sfistore.hh>       /* we rely on internal API here */
+
 static BseErrorType
 bst_msg_absorb_config_dump (const gchar *file_name)
 {
   g_return_val_if_fail (file_name != NULL, BSE_ERROR_INTERNAL);
+
   sfi_make_dirname_path (file_name);
   gint fd = open (file_name,
                   O_WRONLY | O_CREAT | O_TRUNC, /* O_EXCL, */
                   0666);
   if (fd < 0)
     return errno == EEXIST ? BSE_ERROR_FILE_EXISTS : BSE_ERROR_IO;
+
   SfiWStore *wstore = sfi_wstore_new ();
+
   sfi_wstore_printf (wstore, "; message-absorb-config-file for BEAST v%s\n", BST_VERSION);
+
   /* store config */
   sfi_wstore_puts (wstore, "\n");
   SfiSeq *seq = bst_msg_absorb_string_seq_to_seq (bst_msg_absorb_config_get_global());
@@ -247,11 +271,14 @@ bst_msg_absorb_config_dump (const gchar *file_name)
   sfi_value_free (value);
   sfi_seq_unref (seq);
   sfi_wstore_puts (wstore, "\n");
+
   /* flush buffers to file */
   sfi_wstore_flush_fd (wstore, fd);
   sfi_wstore_destroy (wstore);
+
   return close (fd) < 0 ? BSE_ERROR_IO : BSE_ERROR_NONE;
 }
+
 void
 bst_msg_absorb_config_save (void)
 {
@@ -261,6 +288,7 @@ bst_msg_absorb_config_save (void)
     sfi_diag ("Failed to save config-file \"%s\": %s", file_name, bse_error_blurb (error));
   g_free (file_name);
 }
+
 static GTokenType
 msg_absorb_config_try_statement (gpointer   context_data,
                                  SfiRStore *rstore,
@@ -282,10 +310,12 @@ msg_absorb_config_try_statement (gpointer   context_data,
   else
     return SFI_TOKEN_UNMATCHED;
 }
+
 static BseErrorType
 bst_msg_absorb_config_parse (const gchar *file_name)
 {
   g_return_val_if_fail (file_name != NULL, BSE_ERROR_INTERNAL);
+
   gchar *absname = sfi_path_get_filename (file_name, NULL);
   gint fd = open (absname, O_RDONLY, 0);
   if (fd < 0)
@@ -294,6 +324,7 @@ bst_msg_absorb_config_parse (const gchar *file_name)
       return (errno == ENOENT || errno == ENOTDIR || errno == ELOOP ?
               BSE_ERROR_FILE_NOT_FOUND : BSE_ERROR_IO);
     }
+
   SfiRStore *rstore = sfi_rstore_new ();
   sfi_rstore_input_fd (rstore, fd, absname);
   BseErrorType error = BSE_ERROR_NONE;
@@ -304,6 +335,7 @@ bst_msg_absorb_config_parse (const gchar *file_name)
   g_free (absname);
   return error;
 }
+
 static gboolean
 parse_version (const gchar *version,
                glong       *vmajorp,
@@ -336,6 +368,7 @@ parse_version (const gchar *version,
   g_free (vstring);
   return FALSE;
 }
+
 static gint
 string_versions_compare (const gchar *version1,
                          const gchar *version2)
@@ -347,6 +380,7 @@ string_versions_compare (const gchar *version1,
           (vminor1 != vminor2) ? (vminor1 > vminor2 ? +1 : -1) :
           (vmicro1 < vmicro2 ? -1 : vmicro1 > vmicro2));
 }
+
 void
 bst_msg_absorb_config_load (void)
 {

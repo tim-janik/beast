@@ -1,8 +1,11 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #ifndef __BST_EVENT_ROLL_H__
 #define __BST_EVENT_ROLL_H__
+
 #include	"bstsegment.hh"
+
 G_BEGIN_DECLS
+
 /* --- type macros --- */
 #define BST_TYPE_EVENT_ROLL              (bst_event_roll_get_type ())
 #define BST_EVENT_ROLL(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), BST_TYPE_EVENT_ROLL, BstEventRoll))
@@ -10,9 +13,13 @@ G_BEGIN_DECLS
 #define BST_IS_EVENT_ROLL(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), BST_TYPE_EVENT_ROLL))
 #define BST_IS_EVENT_ROLL_CLASS(klass)   (G_TYPE_CHECK_CLASS_TYPE ((klass), BST_TYPE_EVENT_ROLL))
 #define BST_EVENT_ROLL_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), BST_TYPE_EVENT_ROLL, BstEventRollClass))
+
+
 /* --- typedefs & enums --- */
 typedef struct _BstEventRoll        BstEventRoll;
 typedef struct _BstEventRollClass   BstEventRollClass;
+
+
 /* --- structures & typedefs --- */
 typedef struct {
   GXK_SCROLL_CANVAS_DRAG_FIELDS;
@@ -30,9 +37,11 @@ typedef struct {
 struct _BstEventRoll
 {
   GxkScrollCanvas parent_instance;
+
   SfiProxy	 proxy;
   BseMidiSignalType control_type;
   GtkWidget     *child;
+
   /* horizontal layout */
   guint		 ppqn;		/* parts per quarter note */
   guint		 qnpt;		/* quarter notes per tact */
@@ -40,15 +49,19 @@ struct _BstEventRoll
   gfloat	 hzoom;
   guint		 draw_qn_grid : 1;
   guint		 draw_qqn_grid : 1;
+
   /* drag data */
   guint		start_valid : 1;
   guint	        start_tick;
   gfloat        start_value;
+
   /* vpanel width sync */
   gint         (*fetch_vpanel_width) (gpointer data);
   gpointer       fetch_vpanel_width_data;
+
   /* line drawing */
   BstSegment     segment;
+
   /* selection rectangle */
   guint		 selection_tick;
   guint		 selection_duration;
@@ -58,6 +71,7 @@ struct _BstEventRoll
 struct _BstEventRollClass
 {
   GxkScrollCanvasClass parent_class;
+
   void		(*canvas_drag)			(BstEventRoll	  *self,
 						 BstEventRollDrag *drag);
   void		(*canvas_clicked)		(BstEventRoll	  *eroll,
@@ -72,6 +86,8 @@ struct _BstEventRollClass
 						 gfloat            value,
 						 GdkEvent	  *event);
 };
+
+
 /* --- prototypes --- */
 GType       bst_event_roll_get_type              (void);
 void        bst_event_roll_set_proxy             (BstEventRoll   *self,
@@ -99,5 +115,7 @@ void        bst_event_roll_segment_tick_range    (BstEventRoll   *self,
 gdouble     bst_event_roll_segment_value         (BstEventRoll   *self,
                                                   guint           tick);
 void        bst_event_roll_clear_segment         (BstEventRoll   *self);
+
 G_END_DECLS
+
 #endif /* __BST_EVENT_ROLL_H__ */

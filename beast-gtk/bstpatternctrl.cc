@@ -3,9 +3,13 @@
 #include "bstkeybindings.hh"
 #include <gdk/gdkkeysyms.h>
 #include <string.h>
+
+
 /* --- prototypes --- */
 static gboolean pattern_controller_key_press    (BstPatternController   *self,
                                                  GdkEventKey            *event);
+
+
 /* --- functions --- */
 static void
 pattern_controller_vraster_notify (gpointer             notify_data,
@@ -49,6 +53,7 @@ pattern_controller_vraster_notify (gpointer             notify_data,
   bst_pattern_view_vsetup (pview, pview->tpqn, pview->tpt / pview->tpqn,
                            pview->max_ticks, vraster);
 }
+
 static void
 pattern_controller_row_shading_notify (gpointer  notify_data,
                                        GxkParam *param)
@@ -85,12 +90,15 @@ pattern_controller_row_shading_notify (gpointer  notify_data,
       }
   bst_pattern_view_set_shading (pview, r1, r2, r3, r4);
 }
+
 BstPatternController*
 bst_pattern_controller_new (BstPatternView         *pview,
                             GxkActionGroup         *quant_rtools)
 {
   BstPatternController *self;
+
   g_return_val_if_fail (BST_IS_PATTERN_VIEW (pview), NULL);
+
   self = g_new0 (BstPatternController, 1);
   self->vraster = gxk_param_new_value (sfi_pspec_choice ("vertical-raster", _("VZoom"),
                                                          _("The tick/note length per line"),
@@ -120,6 +128,7 @@ bst_pattern_controller_new (BstPatternView         *pview,
                                            pattern_controller_row_shading_notify, self);
   self->pview = pview;
   self->ref_count = 1;
+
   self->ref_count++;
   g_signal_connect_data (pview, "key-press-event",
                          G_CALLBACK (pattern_controller_key_press),
@@ -128,22 +137,28 @@ bst_pattern_controller_new (BstPatternView         *pview,
   self->quant_rtools = quant_rtools ? (GxkActionGroup*) g_object_ref (quant_rtools) : NULL;
   pattern_controller_vraster_notify (self, NULL);
   pattern_controller_row_shading_notify (self, NULL);
+
   gxk_scroll_canvas_set_canvas_cursor (GXK_SCROLL_CANVAS (pview), GDK_XTERM);
   return self;
 }
+
 BstPatternController*
 bst_pattern_controller_ref (BstPatternController   *self)
 {
   g_return_val_if_fail (self != NULL, NULL);
   g_return_val_if_fail (self->ref_count >= 1, NULL);
+
   self->ref_count++;
+
   return self;
 }
+
 void
 bst_pattern_controller_unref (BstPatternController   *self)
 {
   g_return_if_fail (self != NULL);
   g_return_if_fail (self->ref_count >= 1);
+
   self->ref_count--;
   if (!self->ref_count)
     {
@@ -160,6 +175,7 @@ bst_pattern_controller_unref (BstPatternController   *self)
       g_free (self);
     }
 }
+
 static gboolean
 pattern_controller_key_press (BstPatternController *self,
                               GdkEventKey          *event)
@@ -274,6 +290,7 @@ pattern_controller_key_press (BstPatternController *self,
     }
   return handled;
 }
+
 static const BstKeyBindingFunction*
 pattern_controller_get_functions (gboolean want_piano,
                                   guint   *n_p)
@@ -359,6 +376,7 @@ pattern_controller_get_functions (gboolean want_piano,
       return generic_funcs;
     }
 }
+
 struct ConstKeyBindingItem {
   const char* key_name;
   const char* func_name;
@@ -373,6 +391,7 @@ BstKeyBindingItem_from_ConstKeyBindingItem (const ConstKeyBindingItem *ckb)
   RAPICORN_STATIC_ASSERT (offsetof (ConstKeyBindingItem, func_param) == offsetof (BstKeyBindingItem, func_param));
   return (BstKeyBindingItem*) ckb;
 }
+
 BstKeyBinding*
 bst_pattern_controller_default_generic_keys (void)
 {
@@ -486,6 +505,7 @@ bst_pattern_controller_default_generic_keys (void)
     }
   return &kbinding;
 }
+
 BstKeyBinding*
 bst_pattern_controller_default_piano_keys (void)
 {
@@ -508,6 +528,7 @@ bst_pattern_controller_default_piano_keys (void)
     }
   return &kbinding;
 }
+
 BstKeyBinding*
 bst_pattern_controller_generic_keys (void)
 {
@@ -524,6 +545,7 @@ bst_pattern_controller_generic_keys (void)
     }
   return &kbinding;
 }
+
 BstKeyBinding*
 bst_pattern_controller_piano_keys (void)
 {

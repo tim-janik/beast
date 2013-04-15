@@ -1,4 +1,6 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
+
+
 /* --- item sequence editors --- */
 #include "bstitemseqdialog.hh"
 static void
@@ -15,6 +17,7 @@ param_item_seq_changed (gpointer             data,
       gxk_param_apply_value (param);
     }
 }
+
 static void
 param_item_seq_popup_editor (GtkWidget *widget,
                              GxkParam  *param)
@@ -33,6 +36,7 @@ param_item_seq_popup_editor (GtkWidget *widget,
       bse_item_seq_free (iseq);
     }
 }
+
 static GtkWidget*
 param_item_seq_create (GxkParam    *param,
                        const gchar *tooltip,
@@ -72,6 +76,7 @@ param_item_seq_create (GxkParam    *param,
   /* gxk_widget_add_option (box, "hexpand", "+"); */
   return widget;
 }
+
 static void
 param_item_seq_update (GxkParam  *param,
                        GtkWidget *widget)
@@ -120,6 +125,7 @@ param_item_seq_update (GxkParam  *param,
                 NULL);
   g_free (content);
 }
+
 static GxkParamEditor param_item_seq = {
   { "item-list",        N_("Item List"), },
   { G_TYPE_BOXED,       "SfiSeq", },

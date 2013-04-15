@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "sfinote.hh"
+
 #define to_lower(c)             ( \
         (guchar) (                                                      \
           ( (((guchar)(c))>='A' && ((guchar)(c))<='Z') * ('a'-'A') ) |  \
@@ -9,6 +10,8 @@
         )                                                               \
 )
 #define is_note_letter(c)       (strchr ("cdefgabh", to_lower (c)) != NULL) /* + german alias */
+
+
 /* --- variables --- */
 static const struct {
   const char *name;
@@ -41,12 +44,15 @@ static const gchar *sfi_note_name_table[12] = {
   "C", "Cis", "D", "Dis", "E", "F",
   "Fis", "G", "Gis", "A", "Ais", "B",
 };
+
+
 /* --- functions --- */
 SfiInt
 sfi_note_from_string (const gchar *note_string)
 {
   return sfi_note_from_string_err (note_string, NULL);
 }
+
 SfiInt
 sfi_note_from_string_err (const gchar *note_string,
 			  gchar      **error_p)
@@ -54,17 +60,21 @@ sfi_note_from_string_err (const gchar *note_string,
   char *string, *freeme;
   int fits, note, sharp = 0;
   uint i;
+
   if (error_p)
     *error_p = NULL;
   g_return_val_if_fail (note_string != NULL, SFI_NOTE_VOID);
+
   string = freeme = g_strdup_stripped (note_string);
   g_ascii_strdown (string, -1);
+
   note = SFI_NOTE_VOID;
   if (strcmp (string, "void") == 0)	/* *valid* SFI_NOTE_VOID path */
     {
       g_free (freeme);
       return note;
     }
+
   if (string[0] == '#' && is_note_letter (string[1]))   /* #C-0 */
     {
       sharp++;
@@ -76,6 +86,7 @@ sfi_note_from_string_err (const gchar *note_string,
       string[1] = string[0];
       string++;
     }
+
   fits = FALSE;
   for (i = 0; i < G_N_ELEMENTS (sfi_note_table); i++)
     {
@@ -86,11 +97,13 @@ sfi_note_from_string_err (const gchar *note_string,
       if (fits)
 	break;
     }
+
   note = SFI_KAMMER_NOTE;		/* *invalid* note value */
   if (fits)
     {
       char *s;
       int o;
+
       if (*(string + strlen (sfi_note_table[i].name)))
 	{
 	  o = strtol (string + strlen (sfi_note_table[i].name), &s, 10);
@@ -99,20 +112,26 @@ sfi_note_from_string_err (const gchar *note_string,
 	}
       else
 	o = 0;
+
       if (fits)
 	note = SFI_NOTE_CLAMP (sfi_note_table[i].note + sharp + o * 12);
     }
+
   g_free (freeme);
+
   if (!fits && error_p)
     *error_p = g_strdup_printf ("invalid note specification: %s", note_string);
+
   return note;
 }
+
 gchar*
 sfi_note_to_string (SfiInt note)
 {
   if (SFI_NOTE_IS_VALID (note))
     {
       gint ht = 0, o = 0;
+
       sfi_note_examine (note, &o, &ht, NULL, NULL);
       if (o)
 	return g_strdup_printf ("%s%+d", sfi_note_name_table[ht], o);
@@ -122,6 +141,7 @@ sfi_note_to_string (SfiInt note)
   else
     return g_strdup ("void");
 }
+
 void
 sfi_note_examine (gint      note,
 		  gint     *octave_p,
@@ -132,11 +152,14 @@ sfi_note_examine (gint      note,
   static const gint8 semitone_flags[12] = { 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 1, 0 };
   guint semitone;
   gint octave;
+
   g_return_if_fail (SFI_NOTE_IS_VALID (note));
+
   semitone = note % 12 + (9 - (SFI_KAMMER_NOTE % 12));
   note -= semitone;
   octave = note - (SFI_KAMMER_NOTE - 9);
   octave = octave / 12 + SFI_KAMMER_OCTAVE;
+
   if (octave_p)
     *octave_p = octave;
   if (semitone_p)

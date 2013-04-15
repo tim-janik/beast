@@ -34,5 +34,6 @@ interface Organ : Effect {
     Bool flute = Bool (_("Flute Sounds"), _("Add flute sounds"), false, STANDARD);
   };
 };
+
 } // Dav
 } // Bse

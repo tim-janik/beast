@@ -1,11 +1,15 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #ifndef __BSE_MIXER_H__
 #define __BSE_MIXER_H__
+
 #include <bse/bseplugin.hh>
 #include <bse/bsesource.hh>
+
 #ifdef __cplusplus
 extern "C" {
 #endif /* __cplusplus */
+
+
 /* --- object type macros --- */
 #define BSE_TYPE_MIXER              (bse_mixer_get_type())
 #define BSE_MIXER(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), BSE_TYPE_MIXER, BseMixer))

@@ -1,9 +1,15 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bstasciipixbuf.hh"
+
+
 /* --- prototypes --- */
 static GdkPixbuf*	ascii_pixbuf_create	(void);
+
+
 /* --- variables --- */
 static GdkPixbuf *ascii_pixbuf = NULL;
+
+
 /* --- functions --- */
 void
 bst_ascii_pixbuf_ref (void)
@@ -16,14 +22,17 @@ bst_ascii_pixbuf_ref (void)
   else
     g_object_ref (ascii_pixbuf);
 }
+
 static void
 bst_ascii_pixbuf_child_destroy (guint8  *pixels,
 				gpointer data)
 {
   GdkPixbuf *pixbuf = (GdkPixbuf*) data;
+
   g_return_if_fail (pixbuf == ascii_pixbuf);
   g_object_unref (pixbuf);
 }
+
 GdkPixbuf*
 bst_ascii_pixbuf_new (gchar character,
 		      guint char_width,
@@ -32,7 +41,9 @@ bst_ascii_pixbuf_new (gchar character,
   GdkPixbuf *pixbuf;
   guint width, i;
   guint8 *pixels;
+
   g_return_val_if_fail (character >= 32 && character <= 126, NULL);
+
   bst_ascii_pixbuf_ref ();
   width = gdk_pixbuf_get_width (ascii_pixbuf);
   width /= 126 - 32 + 1;
@@ -52,19 +63,26 @@ bst_ascii_pixbuf_new (gchar character,
   if (char_width != width || char_height != gdk_pixbuf_get_height (pixbuf))
     {
       GdkPixbuf *tmp_pixbuf = pixbuf;
+
       pixbuf = gdk_pixbuf_scale_simple (pixbuf, char_width, char_height, GDK_INTERP_HYPER);
       g_object_unref (tmp_pixbuf);
     }
   bst_ascii_pixbuf_unref ();
+
   return pixbuf;
 }
+
 void
 bst_ascii_pixbuf_unref (void)
 {
   g_return_if_fail (ascii_pixbuf != NULL);
+
   g_object_unref (ascii_pixbuf);
 }
+
+
 /* --- image data --- */
+
 /* inlined pixbuf image containing character bitmaps for ascii 32 up to ascii 126.
  * created with the gimp, by drawing a text string:
  *   for i in `seq 32 126` ; do OCT=`printf '\%o' $i` ; echo -ne "$OCT" ; done ; echo
@@ -73,7 +91,10 @@ bst_ascii_pixbuf_unref (void)
  * into an apropriate size.
  * image size is width=95*12 by height=24, characters are 12 pixels wide
  */
+
+
 /* GdkPixbuf RGB C-Source image dump 1-byte-run-length-encoded */
+
 static const guint8 ascii_font_pixdata[] = 
 { ""
   /* Pixbuf magic (0x47646b50) */
@@ -719,6 +740,8 @@ static const guint8 ascii_font_pixdata[] =
   "\336\0\0\0\0\202\0\0\0\377\236\0\0\0\0\202\0\0\0\377\377\0\0\0\0\377"
   "\0\0\0\0\377\0\0\0\0\377\0\0\0\0\377\0\0\0\0\377\0\0\0\0\377\0\0\0\0"
   "\377\0\0\0\0\377\0\0\0\0\232\0\0\0\0"};
+
+
 static GdkPixbuf*
 ascii_pixbuf_create (void)
 {

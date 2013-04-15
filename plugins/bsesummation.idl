@@ -17,4 +17,5 @@ interface Summation : Effect {
   OStream audio_diff  = Stream (_("Audio Diff"), _("Difference between audio outputs 1 and 2"));
   OStream audio_out2  = Stream (_("Audio Sum2"), _("Accumulated audio output 2"));
 };
+
 } // Bse

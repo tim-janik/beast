@@ -1,8 +1,10 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #ifndef __GXK_H__
 #define __GXK_H__
+
 #include <sfi/glib-extra.hh>
 #include <gtk/gtk.h>
+
 #include <gxk/glewidgets.h>
 #include <gxk/gxkaction.hh>
 #include <gxk/gxkassortment.hh>
@@ -29,4 +31,5 @@
 #include <gxk/gxkstock.hh>
 #include <gxk/gxktexttools.hh>
 #include <gxk/gxkutils.hh>
+
 #endif /* __GXK_H__ */

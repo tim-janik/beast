@@ -1,8 +1,11 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #ifndef __BSE_FREE_VERB_CPP_H__
 #define __BSE_FREE_VERB_CPP_H__
+
 #include <glib.h>
+
 G_BEGIN_DECLS
+
 typedef struct
 {
   /* runtime parameters */
@@ -27,6 +30,7 @@ typedef struct
   gpointer obj;
   BseFreeVerbConfig saved_config;
 } BseFreeVerbCpp;
+
 void   bse_free_verb_cpp_create		(BseFreeVerbCpp		*cpp);
 void   bse_free_verb_cpp_configure	(BseFreeVerbCpp		*cpp,
 					 BseFreeVerbConfig	*config);
@@ -43,5 +47,9 @@ void   bse_free_verb_cpp_save_config	(BseFreeVerbCpp		*cpp,
 					 BseFreeVerbConfig	*config);
 void   bse_free_verb_cpp_restore_config	(BseFreeVerbCpp		*cpp,
 					 BseFreeVerbConfig	*config);
+
+
 G_END_DECLS
+
+
 #endif /* __BSE_FREE_VERB_CPP_H__ */

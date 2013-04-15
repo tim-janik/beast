@@ -1,9 +1,13 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
+
+
 #define CHECK_SYNC		(WOSC_MIX_VARIANT & WOSC_MIX_WITH_SYNC)
 #define CHECK_FREQ		(WOSC_MIX_VARIANT & WOSC_MIX_WITH_FREQ)
 #define CHECK_MOD		(WOSC_MIX_VARIANT & WOSC_MIX_WITH_MOD)
 #define EXPONENTIAL_FM		(WOSC_MIX_VARIANT & WOSC_MIX_WITH_EXP_FM)
 #define DIRSTRIDE(b)		(b->dirstride)	 /* changes according to n_channels and directions */
+
+
 static void
 WOSC_MIX_VARIANT_NAME (GslWaveOscData *wosc,
 		       guint           n_values,
@@ -20,6 +24,7 @@ WOSC_MIX_VARIANT_NAME (GslWaveOscData *wosc,
   gdouble *a = wosc->a, *b = wosc->b, *y = wosc->y;
   gfloat *boundary = block->end;
   guint wosc_j = wosc->j;
+
   /* do the mixing */
   wave_boundary = wave_out + n_values;
   do
@@ -85,16 +90,19 @@ WOSC_MIX_VARIANT_NAME (GslWaveOscData *wosc,
 	      wave_osc_transform_filter (wosc, BSE_SIGNAL_TO_FREQ (freq_level));
 	    }
 	}
+
       /* process filter while necesary */
       while (wosc->cur_pos >= (FRAC_MASK + 1) << 1)
 	{
 	  double c, c0, c1, c2, c3, c4, c5, c6, c7, c8;
 	  double d, d0, d1, d2, d3, d4, d5, d6, d7;
 	  gfloat *x;
+
 	  if (UNLIKELY ((block->dirstride > 0 && wosc->x >= boundary) ||
 		        (block->dirstride < 0 && wosc->x <= boundary)))       /* wchunk block boundary */
 	    {
 	      GslLong next_offset = block->next_offset;
+
 	      gsl_wave_chunk_unuse_block (wosc->wchunk, block);
 	      block->play_dir = wosc->config.play_dir;
 	      block->offset = next_offset;
@@ -102,6 +110,7 @@ WOSC_MIX_VARIANT_NAME (GslWaveOscData *wosc,
 	      wosc->x = block->start + CLAMP (wosc->config.channel, 0, wosc->wchunk->n_channels - 1);
 	      boundary = block->end;
 	    }
+
 	  x = wosc->x;
 	  d0 = b[0] * y[wosc_j]; wosc_j++; wosc_j &= 0x7;
 	  d1 = b[1] * y[wosc_j]; wosc_j++; wosc_j &= 0x7;
@@ -137,6 +146,7 @@ WOSC_MIX_VARIANT_NAME (GslWaveOscData *wosc,
 	  wosc->x += DIRSTRIDE (block);
 	  wosc->cur_pos -= (FRAC_MASK + 1) << 1;
 	}
+
       /* interpolate filter output from current pos
        * wosc->cur_pos >> FRAC_SHIFT is 1 or 0;
        */
@@ -154,6 +164,7 @@ WOSC_MIX_VARIANT_NAME (GslWaveOscData *wosc,
 	  ffrac *= 1. / (FRAC_MASK + 1.);
 	  *wave_out++ = y[k & 0x7] * (1.0 - ffrac) + y[(k + 1) & 0x7] * ffrac;
 	}
+
       /* increment */
       wosc->cur_pos += wosc->istep;
     }
@@ -163,10 +174,12 @@ WOSC_MIX_VARIANT_NAME (GslWaveOscData *wosc,
   wosc->last_freq_level = last_freq_level;
   wosc->last_mod_level = last_mod_level;
 }
+
 #undef CHECK_SYNC
 #undef CHECK_FREQ
 #undef CHECK_MOD
 #undef EXPONENTIAL_FM
 #undef DIRSTRIDE
+
 #undef WOSC_MIX_VARIANT
 #undef WOSC_MIX_VARIANT_NAME

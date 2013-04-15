@@ -8,6 +8,9 @@
 #include <bse/bseengine.hh>
 #include <bse/gslwavechunk.hh>
 #include <bse/gslfilter.hh>
+
+
+
 /* --- parameters --- */
 enum
 {
@@ -18,6 +21,8 @@ enum
   PARAM_FM_EXP,
   PARAM_FM_OCTAVES
 };
+
+
 /* --- prototypes --- */
 static void     bse_wave_osc_init               (BseWaveOsc             *self);
 static void     bse_wave_osc_class_init         (BseWaveOscClass        *klass);
@@ -36,25 +41,32 @@ static void     bse_wave_osc_context_create     (BseSource              *source,
                                                  BseTrans               *trans);
 static void   bse_wave_osc_update_config_wchunk (BseWaveOsc             *self);
 static void     bse_wave_osc_update_modules     (BseWaveOsc             *self);
+
+
 /* --- variables --- */
 static gpointer parent_class = NULL;
 static guint    signal_notify_pcm_position = 0;
+
+
 /* --- functions --- */
 BSE_BUILTIN_TYPE (BseWaveOsc)
 {
   static const GTypeInfo type_info = {
     sizeof (BseWaveOscClass),
+
     (GBaseInitFunc) NULL,
     (GBaseFinalizeFunc) NULL,
     (GClassInitFunc) bse_wave_osc_class_init,
     (GClassFinalizeFunc) NULL,
     NULL /* class_data */,
+
     sizeof (BseWaveOsc),
     0 /* n_preallocs */,
     (GInstanceInitFunc) bse_wave_osc_init,
   };
 #include "./icons/waveosc.c"
   GType type;
+
   type = bse_type_register_static (BSE_TYPE_SOURCE,
                                    "BseWaveOsc",
                                    "BseWaveOsc is a wave based oscillator module. "
@@ -68,6 +80,7 @@ BSE_BUILTIN_TYPE (BseWaveOsc)
   bse_categories_register_stock_module(N_("/Audio Sources/Wave Oscillator"), type, waveosc_pixstream);
   return type;
 }
+
 static void
 bse_wave_osc_init (BseWaveOsc *self)
 {
@@ -84,6 +97,7 @@ bse_wave_osc_init (BseWaveOsc *self)
   self->config.exponential_fm = FALSE;
   self->config.cfreq = 440.;
 }
+
 static void
 bse_wave_osc_get_candidates (BseItem               *item,
                              guint                  param_id,
@@ -108,6 +122,7 @@ bse_wave_osc_get_candidates (BseItem               *item,
       break;
     }
 }
+
 static void
 wave_osc_uncross_wave (BseItem *owner,
                        BseItem *ref_item)
@@ -115,6 +130,7 @@ wave_osc_uncross_wave (BseItem *owner,
   BseWaveOsc *self = BSE_WAVE_OSC (owner);
   bse_item_set (self, "wave", NULL, NULL);
 }
+
 static void
 clear_wave_and_esample (BseWaveOsc *self)
 {
@@ -137,6 +153,7 @@ clear_wave_and_esample (BseWaveOsc *self)
       bse_wave_drop_index (wave);
       g_object_notify ((GObject*) self, "wave");
     }
+
   if (self->esample_wchunk)
     {
       GslWaveChunk *esample_wchunk = self->esample_wchunk;
@@ -153,15 +170,18 @@ clear_wave_and_esample (BseWaveOsc *self)
       gsl_wave_chunk_close (esample_wchunk);
     }
 }
+
 void
 bse_wave_osc_set_from_esample (BseWaveOsc        *self,
                                BseEditableSample *esample)
 {
   g_return_if_fail (BSE_WAVE_OSC (self));
+
   clear_wave_and_esample (self);
   if (esample)
     {
       g_return_if_fail (BSE_EDITABLE_SAMPLE (esample));
+
       if (esample->wchunk && gsl_wave_chunk_open (esample->wchunk) == BSE_ERROR_NONE)
         {
           self->esample_wchunk = esample->wchunk;
@@ -172,6 +192,7 @@ bse_wave_osc_set_from_esample (BseWaveOsc        *self,
         }
     }
 }
+
 static void
 bse_wave_osc_set_property (GObject      *object,
                            guint         param_id,
@@ -179,6 +200,7 @@ bse_wave_osc_set_property (GObject      *object,
                            GParamSpec   *pspec)
 {
   BseWaveOsc *self = BSE_WAVE_OSC (object);
+
   switch (param_id)
     {
       BseWave *wave;
@@ -238,6 +260,7 @@ bse_wave_osc_set_property (GObject      *object,
       break;
     }
 }
+
 static void
 bse_wave_osc_get_property (GObject    *object,
                            guint       param_id,
@@ -245,6 +268,7 @@ bse_wave_osc_get_property (GObject    *object,
                            GParamSpec *pspec)
 {
   BseWaveOsc *self = BSE_WAVE_OSC (object);
+
   switch (param_id)
     {
     case PARAM_WAVE:
@@ -267,33 +291,43 @@ bse_wave_osc_get_property (GObject    *object,
       break;
     }
 }
+
 static void
 bse_wave_osc_dispose (GObject *object)
 {
   BseWaveOsc *self = BSE_WAVE_OSC (object);
+
   clear_wave_and_esample (self);
+
   /* chain parent class' handler */
   G_OBJECT_CLASS (parent_class)->dispose (object);
 }
+
 static void
 bse_wave_osc_finalize (GObject *object)
 {
   BseWaveOsc *self = BSE_WAVE_OSC (object);
+
   if (self->esample_wchunk)
     gsl_wave_chunk_close (self->esample_wchunk);
   self->esample_wchunk = NULL;
+
   /* chain parent class' handler */
   G_OBJECT_CLASS (parent_class)->finalize (object);
 }
+
 static void
 wosc_access (BseModule *module,
              gpointer   data)
 {
   GslWaveOscData *wosc = (GslWaveOscData*) module->user_data;
   GslWaveOscConfig *config = (GslWaveOscConfig*) data;
+
   /* this runs in the Gsl Engine threads */
+
   gsl_wave_osc_config (wosc, config);
 }
+
 static GslWaveChunk*
 wchunk_from_data (gpointer wchunk_data,
                   gfloat   freq,
@@ -301,12 +335,14 @@ wchunk_from_data (gpointer wchunk_data,
 {
   return (GslWaveChunk*) wchunk_data;
 }
+
 static inline GslWaveChunk*
 wave_index_lookup_best (void *data, float freq, float vel)
 {
   BseWaveIndex *wave = (BseWaveIndex*) data;
   return bse_wave_index_lookup_best (wave, freq, vel);
 }
+
 static void
 bse_wave_osc_update_config_wchunk (BseWaveOsc *self)
 {
@@ -325,6 +361,7 @@ bse_wave_osc_update_config_wchunk (BseWaveOsc *self)
       self->config.lookup_wchunk = wchunk_from_data;
     }
 }
+
 static void
 bse_wave_osc_update_modules (BseWaveOsc *self)
 {
@@ -335,6 +372,7 @@ bse_wave_osc_update_modules (BseWaveOsc *self)
                                g_free,
                                NULL);
 }
+
 static void
 wosc_free (gpointer        data,
            const BseModuleClass *klass)
@@ -343,12 +381,14 @@ wosc_free (gpointer        data,
   gsl_wave_osc_shutdown (wosc);
   g_free (wosc);
 }
+
 static void
 wosc_process (BseModule *module,
               guint      n_values)
 {
   GslWaveOscData *wosc = (GslWaveOscData*) module->user_data;
   gfloat gate, done;
+
   gsl_wave_osc_process (wosc,
                         n_values,
                         (BSE_MODULE_ISTREAM (module, BSE_WAVE_OSC_ICHANNEL_FREQ).connected ?
@@ -358,17 +398,20 @@ wosc_process (BseModule *module,
                         (BSE_MODULE_ISTREAM (module, BSE_WAVE_OSC_ICHANNEL_SYNC).connected ?
                          BSE_MODULE_IBUFFER (module, BSE_WAVE_OSC_ICHANNEL_SYNC) : NULL),
                         BSE_MODULE_OBUFFER (module, BSE_WAVE_OSC_OCHANNEL_WAVE));
+
   gate = wosc->done ? 0.0 : 1.0;
   done = wosc->done ? 1.0 : 0.0;
   module->ostreams[BSE_WAVE_OSC_OCHANNEL_GATE].values = bse_engine_const_values (gate);
   module->ostreams[BSE_WAVE_OSC_OCHANNEL_DONE].values = bse_engine_const_values (done);
 }
+
 static void
 wosc_reset (BseModule *module)
 {
   GslWaveOscData *wosc = (GslWaveOscData*) module->user_data;
   gsl_wave_osc_reset (wosc);
 }
+
 static void
 bse_wave_osc_context_create (BseSource *source,
                              guint      context_handle,
@@ -418,16 +461,20 @@ pcm_pos_access (BseModule *module,      /* EngineThread */
       gsl_wave_osc_config (wosc, &config);
     }
 }
+
 static void
 pcm_pos_access_free (gpointer data)     /* UserThread */
 {
   PcmPos *pos = (PcmPos*) data;
   BseWaveOsc *self = pos->wosc;
+
   if (pos->perc < 0)
     g_signal_emit (self, signal_notify_pcm_position, 0, pos->stamp, pos->module_pcm_position);
+
   g_object_unref (self);
   g_free (pos);
 }
+
 void
 bse_wave_osc_mass_seek (guint              n_woscs,
                         BseWaveOsc       **woscs,
@@ -454,10 +501,12 @@ bse_wave_osc_mass_seek (guint              n_woscs,
     }
   bse_trans_commit (trans);
 }
+
 void
 bse_wave_osc_request_pcm_position (BseWaveOsc *self)
 {
   g_return_if_fail (BSE_IS_WAVE_OSC (self));
+
   if (BSE_SOURCE_PREPARED (self))
     {
       PcmPos *pos = g_new (PcmPos, 1);
@@ -470,6 +519,7 @@ bse_wave_osc_request_pcm_position (BseWaveOsc *self)
                                  NULL);
     }
 }
+
 static void
 bse_wave_osc_class_init (BseWaveOscClass *klass)
 {
@@ -478,13 +528,18 @@ bse_wave_osc_class_init (BseWaveOscClass *klass)
   BseItemClass *item_class = BSE_ITEM_CLASS (klass);
   BseSourceClass *source_class = BSE_SOURCE_CLASS (klass);
   guint ochannel, ichannel;
+
   parent_class = g_type_class_peek_parent (klass);
+
   gobject_class->set_property = bse_wave_osc_set_property;
   gobject_class->get_property = bse_wave_osc_get_property;
   gobject_class->finalize = bse_wave_osc_finalize;
   gobject_class->dispose = bse_wave_osc_dispose;
+
   item_class->get_candidates = bse_wave_osc_get_candidates;
+
   source_class->context_create = bse_wave_osc_context_create;
+
   bse_object_class_add_param (object_class, _("Wave"),
                               PARAM_WAVE,
                               bse_param_spec_object ("wave", _("Wave"), _("Wave used as oscillator source"),
@@ -511,10 +566,12 @@ bse_wave_osc_class_init (BseWaveOscClass *klass)
                                               _("Number of octaves to be affected by exponential frequency modulation"),
                                               1.0, 0, 3.0, 0.01,
                                               SFI_PARAM_STANDARD ":scale"));
+
   signal_notify_pcm_position = bse_object_class_add_signal (object_class, "notify_pcm_position",
                                                             G_TYPE_NONE, 2,
                                                             SFI_TYPE_NUM,
                                                             G_TYPE_INT);
+
   ichannel = bse_source_class_add_ichannel (source_class, "freq-in", _("Freq In"), _("Frequency Input"));
   g_assert (ichannel == BSE_WAVE_OSC_ICHANNEL_FREQ);
   ichannel = bse_source_class_add_ichannel (source_class, "sync-in", _("Sync In"), _("Syncronization Input"));

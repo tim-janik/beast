@@ -17,6 +17,8 @@ BseErrorType gsl_error_select           (guint           n_errors,
                                          ...);
 BseErrorType gsl_file_check		(const gchar	*file_name,
 					 const gchar	*mode);
+
+
 /* --- progress notification --- */
 typedef struct _GslProgressState GslProgressState;
 typedef guint (*GslProgressFunc)        (gpointer          data,
@@ -43,6 +45,8 @@ guint            gsl_progress_printerr  (gpointer          message,
                                          gfloat            pval,
                                          const gchar      *detail,
                                          GslProgressState *pstate);
+
+
 /* --- implementation details --- */
 void	_gsl_init_fd_pool		(void);
 void	_gsl_init_data_caches		(void);

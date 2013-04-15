@@ -4,8 +4,12 @@
 #include <bse/bsepart.hh>
 #include <bse/bsesong.hh>
 #include "bsecxxplugin.hh"
+
+
 AUTHORS	= "Tim Janik <timj@gtk.org>";
 LICENSE = "GNU Lesser General Public License";
+
+
 METHOD (BsePart, insert-note-auto) {
   HELP	= "Insert a new note into a part with automatic channel selection.";
   IN	= bse_param_spec_object ("part", "Part", NULL,
@@ -36,19 +40,24 @@ BODY (BseProcedureClass *proc,
   gfloat   velocity  = sfi_value_get_real (in_values++);
   BseUndoStack *ustack;
   guint id;
+
   /* check parameters */
   if (!BSE_IS_PART (self))
     return BSE_ERROR_PROC_PARAM_INVAL;
+
   /* action */
   ustack = bse_item_undo_open (self, "insert-note-auto");
   id = bse_part_insert_note (self, ~0, tick, duration, note, fine_tune, velocity);
   if (id)
     bse_item_push_undo_proc (self, "delete-event", id);
   bse_item_undo_close (ustack);
+
   /* set output parameters */
   sfi_value_set_int (out_values++, id);
+
   return BSE_ERROR_NONE;
 }
+
 METHOD (BsePart, insert-note) {
   HELP	= "Insert a new note into a part.";
   IN	= bse_param_spec_object ("part", "Part", NULL,
@@ -82,19 +91,24 @@ BODY (BseProcedureClass *proc,
   gfloat   velocity  = sfi_value_get_real (in_values++);
   BseUndoStack *ustack;
   guint id;
+
   /* check parameters */
   if (!BSE_IS_PART (self))
     return BSE_ERROR_PROC_PARAM_INVAL;
+
   /* action */
   ustack = bse_item_undo_open (self, "insert-note");
   id = bse_part_insert_note (self, channel, tick, duration, note, fine_tune, velocity);
   if (id)
     bse_item_push_undo_proc (self, "delete-event", id);
   bse_item_undo_close (ustack);
+
   /* set output parameters */
   sfi_value_set_int (out_values++, id);
+
   return BSE_ERROR_NONE;
 }
+
 METHOD (BsePart, insert-control) {
   HELP	= "Insert a new control event into a part.";
   IN	= bse_param_spec_object ("part", "Part", NULL,
@@ -121,19 +135,24 @@ BODY (BseProcedureClass *proc,
   gfloat   value     = sfi_value_get_real (in_values++);
   BseUndoStack *ustack;
   guint id;
+
   /* check parameters */
   if (!BSE_IS_PART (self))
     return BSE_ERROR_PROC_PARAM_INVAL;
+
   /* action */
   ustack = bse_item_undo_open (self, "insert-event");
   id = bse_part_insert_control (self, tick, BseMidiSignalType (ctype), value);
   if (id)
     bse_item_push_undo_proc (self, "delete-event", id);
   bse_item_undo_close (ustack);
+
   /* set output parameters */
   sfi_value_set_int (out_values++, id);
+
   return BSE_ERROR_NONE;
 }
+
 METHOD (BsePart, change-note) {
   HELP	= "Change an existing note within a part.";
   IN	= bse_param_spec_object ("part", "Part", NULL,
@@ -168,9 +187,11 @@ BODY (BseProcedureClass *proc,
   gfloat   velocity  = sfi_value_get_real (in_values++);
   gboolean success = FALSE;
   BsePartQueryEvent equery;
+
   /* check parameters */
   if (!BSE_IS_PART (self))
     return BSE_ERROR_PROC_PARAM_INVAL;
+
   /* action */
   if (bse_part_query_event (self, id, &equery) == BSE_PART_EVENT_NOTE)
     {
@@ -188,10 +209,13 @@ BODY (BseProcedureClass *proc,
         success = TRUE;
       bse_item_undo_close (ustack);
     }
+
   /* set output parameters */
   g_value_set_enum (out_values++, success ? BSE_ERROR_NONE : BSE_ERROR_NO_EVENT);
+
   return BSE_ERROR_NONE;
 }
+
 METHOD (BsePart, change-control) {
   HELP	= "Change an existing control event within a part.";
   IN	= bse_param_spec_object ("part", "Part", NULL,
@@ -222,9 +246,11 @@ BODY (BseProcedureClass *proc,
   gfloat   value = sfi_value_get_real (in_values++);
   BsePartQueryEvent equery;
   gboolean success = FALSE;
+
   /* check parameters */
   if (!BSE_IS_PART (self))
     return BSE_ERROR_PROC_PARAM_INVAL;
+
   /* action */
   bse_part_query_event (self, id, &equery);
   if (equery.event_type == BSE_PART_EVENT_CONTROL && !BSE_PART_NOTE_CONTROL (ctype))
@@ -260,10 +286,13 @@ BODY (BseProcedureClass *proc,
           }
       bse_item_undo_close (ustack);
     }
+
   /* set output parameters */
   g_value_set_enum (out_values++, success ? BSE_ERROR_NONE : BSE_ERROR_NO_EVENT);
+
   return BSE_ERROR_NONE;
 }
+
 METHOD (BsePart, delete-event) {
   HELP	= "Delete an existing event from a part.";
   IN	= bse_param_spec_object ("part", "Part", NULL,
@@ -283,9 +312,11 @@ BODY (BseProcedureClass *proc,
   guint    id	    = sfi_value_get_int (in_values++);
   BsePartQueryEvent equery;
   gboolean deleted = FALSE;
+
   /* check parameters */
   if (!BSE_IS_PART (self))
     return BSE_ERROR_PROC_PARAM_INVAL;
+
   /* action */
   bse_part_query_event (self, id, &equery);
   if (equery.event_type == BSE_PART_EVENT_NOTE)
@@ -305,10 +336,13 @@ BODY (BseProcedureClass *proc,
         bse_item_push_undo_proc (self, "insert-control", equery.tick, equery.control_type, equery.control_value);
       bse_item_undo_close (ustack);
     }
+
   /* set output parameters */
   g_value_set_enum (out_values++, deleted ? BSE_ERROR_NONE : BSE_ERROR_NO_EVENT);
+
   return BSE_ERROR_NONE;
 }
+
 METHOD (BsePart, is-event-selected) {
   HELP	= "Check whether an event is selected.";
   IN	= bse_param_spec_object ("part", "Part", NULL,
@@ -327,16 +361,21 @@ BODY (BseProcedureClass *proc,
   guint    id	    = sfi_value_get_int (in_values++);
   gboolean selected = FALSE;
   BsePartQueryEvent equery;
+
   /* check parameters */
   if (!BSE_IS_PART (self))
     return BSE_ERROR_PROC_PARAM_INVAL;
+
   /* action */
   if (bse_part_query_event (self, id, &equery) != BSE_PART_EVENT_NONE)
     selected = equery.selected;
+
   /* set output parameters */
   sfi_value_set_bool (out_values++, selected);
+
   return BSE_ERROR_NONE;
 }
+
 METHOD (BsePart, list-notes-crossing) {
   HELP	= "List all notes within or crossing a tick range.";
   IN	= bse_param_spec_object ("part", "Part", NULL,
@@ -356,13 +395,17 @@ BODY (BseProcedureClass *proc,
   BsePart *self = (BsePart*) bse_value_get_object (in_values++);
   guint    tick	    = sfi_value_get_int (in_values++);
   guint    duration = sfi_value_get_int (in_values++);
+
   /* check parameters */
   if (!BSE_IS_PART (self))
     return BSE_ERROR_PROC_PARAM_INVAL;
+
   /* action */
   bse_value_take_boxed (out_values++, bse_part_list_notes (self, ~0, tick, duration, BSE_MIN_NOTE, BSE_MAX_NOTE, TRUE));
+
   return BSE_ERROR_NONE;
 }
+
 METHOD (BsePart, list-notes-within) {
   HELP	= "List all notes within a tick range.";
   IN	= bse_param_spec_object ("part", "Part", NULL,
@@ -385,13 +428,17 @@ BODY (BseProcedureClass *proc,
   guint    channel  = sfi_value_get_int (in_values++);
   guint    tick	    = sfi_value_get_int (in_values++);
   guint    duration = sfi_value_get_int (in_values++);
+
   /* check parameters */
   if (!BSE_IS_PART (self))
     return BSE_ERROR_PROC_PARAM_INVAL;
+
   /* action */
   bse_value_take_boxed (out_values++, bse_part_list_notes (self, channel, tick, duration, BSE_MIN_NOTE, BSE_MAX_NOTE, FALSE));
+
   return BSE_ERROR_NONE;
 }
+
 METHOD (BsePart, list-controls) {
   HELP	= "List all control events within a tick range.";
   IN	= bse_param_spec_object ("part", "Part", NULL,
@@ -415,13 +462,17 @@ BODY (BseProcedureClass *proc,
   guint    tick	     = sfi_value_get_int (in_values++);
   guint    duration  = sfi_value_get_int (in_values++);
   guint    ctype     = g_value_get_enum (in_values++);
+
   /* check parameters */
   if (!BSE_IS_PART (self))
     return BSE_ERROR_PROC_PARAM_INVAL;
+
   /* action */
   bse_value_take_boxed (out_values++, bse_part_list_controls (self, ~0, tick, duration, BseMidiSignalType (ctype)));
+
   return BSE_ERROR_NONE;
 }
+
 METHOD (BsePart, queue-notes) {
   HELP	= "Queue updates for all notes starting within the given rectangle.";
   IN	= bse_param_spec_object ("part", "Part", NULL,
@@ -445,13 +496,17 @@ BODY (BseProcedureClass *proc,
   guint    duration = sfi_value_get_int (in_values++);
   gint     min_note = sfi_value_get_note (in_values++);
   gint     max_note = sfi_value_get_note (in_values++);
+
   /* check parameters */
   if (!BSE_IS_PART (self))
     return BSE_ERROR_PROC_PARAM_INVAL;
+
   /* action */
   bse_part_queue_notes_within (self, tick, duration, min_note, max_note);
+
   return BSE_ERROR_NONE;
 }
+
 METHOD (BsePart, queue-controls) {
   HELP	= "Queue updates for all control events and notes starting within the given range.";
   IN	= bse_param_spec_object ("part", "Part", NULL,
@@ -469,13 +524,17 @@ BODY (BseProcedureClass *proc,
   BsePart *self = (BsePart*) bse_value_get_object (in_values++);
   guint    tick	    = sfi_value_get_int (in_values++);
   guint    duration = sfi_value_get_int (in_values++);
+
   /* check parameters */
   if (!BSE_IS_PART (self))
     return BSE_ERROR_PROC_PARAM_INVAL;
+
   /* action */
   bse_part_queue_controls (self, tick, duration);
+
   return BSE_ERROR_NONE;
 }
+
 METHOD (BsePart, list-selected-notes) {
   HELP	= "List all currently selected notes.";
   IN	= bse_param_spec_object ("part", "Part", NULL,
@@ -489,13 +548,17 @@ BODY (BseProcedureClass *proc,
 {
   /* extract parameter values */
   BsePart *self = (BsePart*) bse_value_get_object (in_values++);
+
   /* check parameters */
   if (!BSE_IS_PART (self))
     return BSE_ERROR_PROC_PARAM_INVAL;
+
   /* action */
   bse_value_take_boxed (out_values++, bse_part_list_selected_notes (self));
+
   return BSE_ERROR_NONE;
 }
+
 METHOD (BsePart, list-selected-controls) {
   HELP	= "List all currently selected control events of a specific type.";
   IN	= bse_param_spec_object ("part", "Part", NULL,
@@ -513,13 +576,17 @@ BODY (BseProcedureClass *proc,
   /* extract parameter values */
   BsePart *self = (BsePart*) bse_value_get_object (in_values++);
   guint    ctype    = g_value_get_enum (in_values++);
+
   /* check parameters */
   if (!BSE_IS_PART (self))
     return BSE_ERROR_PROC_PARAM_INVAL;
+
   /* action */
   bse_value_take_boxed (out_values++, bse_part_list_selected_controls (self, BseMidiSignalType (ctype)));
+
   return BSE_ERROR_NONE;
 }
+
 METHOD (BsePart, check-overlap) {
   HELP	= "Check whether a note would overlap with neighbours.";
   IN	= bse_param_spec_object ("part", "Part", NULL,
@@ -541,13 +608,17 @@ BODY (BseProcedureClass *proc,
   guint    tick	    = sfi_value_get_int (in_values++);
   guint    duration = sfi_value_get_int (in_values++);
   gint     note     = sfi_value_get_note (in_values++);
+
   /* check parameters */
   if (!BSE_IS_PART (self))
     return BSE_ERROR_PROC_PARAM_INVAL;
+
   /* action */
   bse_value_take_boxed (out_values++, bse_part_list_notes (self, ~0, tick, duration, note, note, TRUE));
+
   return BSE_ERROR_NONE;
 }
+
 METHOD (BsePart, get-notes) {
   HELP	= "Retrieve all notes of specific frequency at or crossing a specific tick.";
   IN	= bse_param_spec_object ("part", "Part", NULL,
@@ -567,13 +638,17 @@ BODY (BseProcedureClass *proc,
   BsePart *self = (BsePart*) bse_value_get_object (in_values++);
   guint    tick	    = sfi_value_get_int (in_values++);
   gint     note     = sfi_value_get_note (in_values++);
+
   /* check parameters */
   if (!BSE_IS_PART (self))
     return BSE_ERROR_PROC_PARAM_INVAL;
+
   /* action */
   bse_value_take_boxed (out_values++, bse_part_list_notes (self, ~0, tick, 1, note, note, TRUE));
+
   return BSE_ERROR_NONE;
 }
+
 METHOD (BsePart, get-controls) {
   HELP	= "Retrieve all control events of a specific type at specified tick.";
   IN	= bse_param_spec_object ("part", "Part", NULL,
@@ -594,13 +669,17 @@ BODY (BseProcedureClass *proc,
   BsePart *self = (BsePart*) bse_value_get_object (in_values++);
   guint    tick	    = sfi_value_get_int (in_values++);
   guint    ctype    = g_value_get_enum (in_values++);
+
   /* check parameters */
   if (!BSE_IS_PART (self))
     return BSE_ERROR_PROC_PARAM_INVAL;
+
   /* action */
   bse_value_take_boxed (out_values++, bse_part_list_controls (self, ~0, tick, 1, BseMidiSignalType (ctype)));
+
   return BSE_ERROR_NONE;
 }
+
 METHOD (BsePart, get-channel-controls) {
   HELP	= "Retrieve all control events of a specific type within range of a channel.";
   IN	= bse_param_spec_object ("part", "Part", NULL,
@@ -627,13 +706,17 @@ BODY (BseProcedureClass *proc,
   guint    tick	    = sfi_value_get_int (in_values++);
   guint    duration = sfi_value_get_int (in_values++);
   guint    ctype    = g_value_get_enum (in_values++);
+
   /* check parameters */
   if (!BSE_IS_PART (self))
     return BSE_ERROR_PROC_PARAM_INVAL;
+
   /* action */
   bse_value_take_boxed (out_values++, bse_part_list_controls (self, channel, tick, duration, BseMidiSignalType (ctype)));
+
   return BSE_ERROR_NONE;
 }
+
 METHOD (BsePart, get-min-note) {
   HELP	= "Retrieve the minimum note supported in this part.";
   IN	= bse_param_spec_object ("part", "Part", NULL,
@@ -647,13 +730,17 @@ BODY (BseProcedureClass *proc,
 {
   /* extract parameter values */
   BsePart *self = (BsePart*) bse_value_get_object (in_values++);
+
   /* check parameters */
   if (!BSE_IS_PART (self))
     return BSE_ERROR_PROC_PARAM_INVAL;
+
   /* it doesn't currently make sense to restrict the standard note range */
   sfi_value_set_int (out_values++, BSE_MIN_NOTE);
+
   return BSE_ERROR_NONE;
 }
+
 METHOD (BsePart, get-max-note) {
   HELP	= "Retrieve the maximum note supported in this part.";
   IN	= bse_param_spec_object ("part", "Part", NULL,
@@ -667,13 +754,17 @@ BODY (BseProcedureClass *proc,
 {
   /* extract parameter values */
   BsePart *self = (BsePart*) bse_value_get_object (in_values++);
+
   /* check parameters */
   if (!BSE_IS_PART (self))
     return BSE_ERROR_PROC_PARAM_INVAL;
+
   /* it doesn't currently make sense to restrict the standard note range */
   sfi_value_set_int (out_values++, BSE_MAX_NOTE);
+
   return BSE_ERROR_NONE;
 }
+
 METHOD (BsePart, select-notes-exclusive) {
   HELP	= "Select all notes within rectangle and deselect all others.";
   IN	= bse_param_spec_object ("part", "Part", "Part",
@@ -697,12 +788,16 @@ BODY (BseProcedureClass *proc,
   guint duration  = sfi_value_get_int (in_values++);
   gint  min_note  = sfi_value_get_note (in_values++);
   gint  max_note  = sfi_value_get_note (in_values++);
+
   /* check parameters */
   if (!BSE_IS_PART (self))
     return BSE_ERROR_PROC_PARAM_INVAL;
+
   bse_part_select_notes_exclusive (self, ~0, tick, duration, min_note, max_note);
+
   return BSE_ERROR_NONE;
 }
+
 METHOD (BsePart, select-controls-exclusive) {
   HELP	= "Select all control events within range and deselect all others.";
   IN	= bse_param_spec_object ("part", "Part", "Part",
@@ -724,12 +819,16 @@ BODY (BseProcedureClass *proc,
   guint tick      = sfi_value_get_int (in_values++);
   guint duration  = sfi_value_get_int (in_values++);
   guint ctype     = g_value_get_enum (in_values++);
+
   /* check parameters */
   if (!BSE_IS_PART (self))
     return BSE_ERROR_PROC_PARAM_INVAL;
+
   bse_part_select_controls_exclusive (self, tick, duration, BseMidiSignalType (ctype));
+
   return BSE_ERROR_NONE;
 }
+
 METHOD (BsePart, select-controls) {
   HELP	= "Select all control events within range.";
   IN	= bse_param_spec_object ("part", "Part", "Part",
@@ -751,12 +850,16 @@ BODY (BseProcedureClass *proc,
   guint tick      = sfi_value_get_int (in_values++);
   guint duration  = sfi_value_get_int (in_values++);
   guint ctype     = g_value_get_enum (in_values++);
+
   /* check parameters */
   if (!BSE_IS_PART (self))
     return BSE_ERROR_PROC_PARAM_INVAL;
+
   bse_part_select_controls (self, tick, duration, BseMidiSignalType (ctype), TRUE);
+
   return BSE_ERROR_NONE;
 }
+
 METHOD (BsePart, select-notes) {
   HELP	= "Select all notes within rectangle.";
   IN	= bse_param_spec_object ("part", "Part", "Part",
@@ -780,12 +883,16 @@ BODY (BseProcedureClass *proc,
   guint duration  = sfi_value_get_int (in_values++);
   gint  min_note  = sfi_value_get_note (in_values++);
   gint  max_note  = sfi_value_get_note (in_values++);
+
   /* check parameters */
   if (!BSE_IS_PART (self))
     return BSE_ERROR_PROC_PARAM_INVAL;
+
   bse_part_select_notes (self, ~0, tick, duration, min_note, max_note, TRUE);
+
   return BSE_ERROR_NONE;
 }
+
 METHOD (BsePart, deselect-notes) {
   HELP	= "Deselect all notes within rectangle.";
   IN	= bse_param_spec_object ("part", "Part", "Part",
@@ -809,12 +916,16 @@ BODY (BseProcedureClass *proc,
   guint duration  = sfi_value_get_int (in_values++);
   gint  min_note  = sfi_value_get_note (in_values++);
   gint  max_note  = sfi_value_get_note (in_values++);
+
   /* check parameters */
   if (!BSE_IS_PART (self))
     return BSE_ERROR_PROC_PARAM_INVAL;
+
   bse_part_select_notes (self, ~0, tick, duration, min_note, max_note, FALSE);
+
   return BSE_ERROR_NONE;
 }
+
 METHOD (BsePart, deselect-controls) {
   HELP	= "Deselect all controls within given range.";
   IN	= bse_param_spec_object ("part", "Part", "Part",
@@ -836,12 +947,16 @@ BODY (BseProcedureClass *proc,
   guint tick      = sfi_value_get_int (in_values++);
   guint duration  = sfi_value_get_int (in_values++);
   guint ctype     = g_value_get_enum (in_values++);
+
   /* check parameters */
   if (!BSE_IS_PART (self))
     return BSE_ERROR_PROC_PARAM_INVAL;
+
   bse_part_select_controls (self, tick, duration, BseMidiSignalType (ctype), FALSE);
+
   return BSE_ERROR_NONE;
 }
+
 METHOD (BsePart, select-event) {
   HELP	= "Select an existing event.";
   IN	= bse_param_spec_object ("part", "Part", NULL,
@@ -857,9 +972,11 @@ BODY (BseProcedureClass *proc,
   BsePart *self = (BsePart*) bse_value_get_object (in_values++);
   guint    id	    = sfi_value_get_int (in_values++);
   BsePartQueryEvent equery;
+
   /* check parameters */
   if (!BSE_IS_PART (self))
     return BSE_ERROR_PROC_PARAM_INVAL;
+
   /* action */
   bse_part_query_event (self, id, &equery);
   if (equery.event_type == BSE_PART_EVENT_CONTROL)
@@ -870,6 +987,7 @@ BODY (BseProcedureClass *proc,
     return BSE_ERROR_PROC_PARAM_INVAL;
   return BSE_ERROR_NONE;
 }
+
 METHOD (BsePart, deselect-event) {
   HELP	= "Deselect an existing event.";
   IN	= bse_param_spec_object ("part", "Part", NULL,
@@ -885,9 +1003,11 @@ BODY (BseProcedureClass *proc,
   BsePart *self = (BsePart*) bse_value_get_object (in_values++);
   guint    id	    = sfi_value_get_int (in_values++);
   BsePartQueryEvent equery;
+
   /* check parameters */
   if (!BSE_IS_PART (self))
     return BSE_ERROR_PROC_PARAM_INVAL;
+
   /* action */
   bse_part_query_event (self, id, &equery);
   if (equery.event_type == BSE_PART_EVENT_CONTROL)
@@ -898,6 +1018,7 @@ BODY (BseProcedureClass *proc,
     return BSE_ERROR_PROC_PARAM_INVAL;
   return BSE_ERROR_NONE;
 }
+
 METHOD (BsePart, get-timing) {
   HELP  = "Retrieve song timing information at a specific tick.";
   IN    = bse_param_spec_object ("part", "Part", NULL, BSE_TYPE_PART, SFI_PARAM_STANDARD);
@@ -912,19 +1033,24 @@ METHOD (BsePart, get-timing) {
   SfiInt   tick = sfi_value_get_int (in_values++);
   BseItem *parent;
   BseSongTiming timing = { 0, };
+
   /* check parameters */
   if (!BSE_IS_PART (self))
     return BSE_ERROR_PROC_PARAM_INVAL;
+
   /* action */
   parent = BSE_ITEM (self)->parent;
   if (BSE_IS_SONG (parent))
     bse_song_get_timing (BSE_SONG (parent), tick, &timing);
   else
     bse_song_timing_get_default (&timing);
+
   /* set output parameters */
   bse_value_set_boxed (out_values++, &timing);
+
   return BSE_ERROR_NONE;
 }
+
 METHOD (BsePart, list-links) {
   HELP  = "List all places where parts are used (linked) from tracks, sorted by tick.";
   IN    = bse_param_spec_object ("part", "Part", NULL, BSE_TYPE_PART, SFI_PARAM_STANDARD);
@@ -937,10 +1063,13 @@ BODY (BseProcedureClass *proc,
 {
   /* extract parameter values */
   BsePart *self = (BsePart*) bse_value_get_object (in_values++);
+
   /* check parameters */
   if (!BSE_IS_PART (self))
     return BSE_ERROR_PROC_PARAM_INVAL;
+
   /* action */
   bse_value_take_boxed (out_values++, bse_part_list_links (self));
+
   return BSE_ERROR_NONE;
 }

@@ -23,6 +23,7 @@ record Probe {
 sequence ProbeSeq {
   Probe probes;
 };
+
 record ProbeRequest {
   Source        source;
   Int           channel_id;

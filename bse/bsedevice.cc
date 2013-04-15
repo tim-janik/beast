@@ -1,6 +1,7 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bsedevice.hh"
 #include <sfi/gbsearcharray.hh>
+
 /* --- functions --- */
 static void
 bse_device_init (BseDevice *self)
@@ -9,6 +10,7 @@ bse_device_init (BseDevice *self)
 				 BSE_DEVICE_FLAG_READABLE |
 				 BSE_DEVICE_FLAG_WRITABLE));
 }
+
 SfiRing*
 bse_device_list (BseDevice    *self)
 {
@@ -20,6 +22,7 @@ bse_device_list (BseDevice    *self)
     ring = sfi_ring_append (ring, bse_device_error_new (self, g_strdup_printf ("Driver not implemented")));
   return ring;
 }
+
 static char**
 device_split_args (const char   *arg_string,
                    uint         *n)
@@ -37,6 +40,7 @@ device_split_args (const char   *arg_string,
     }
   return strv;
 }
+
 static BseErrorType
 device_open_args (BseDevice      *self,
                   gboolean        need_readable,
@@ -51,6 +55,7 @@ device_open_args (BseDevice      *self,
                                              need_writable != FALSE,
                                              n, (const char**) args);
   g_strfreev (args);
+
   if (!error)
     {
       g_return_val_if_fail (BSE_DEVICE_OPEN (self), BSE_ERROR_INTERNAL);
@@ -62,14 +67,17 @@ device_open_args (BseDevice      *self,
     }
   else
     g_return_val_if_fail (!BSE_DEVICE_OPEN (self), BSE_ERROR_INTERNAL);
+
   if (!error && ((need_readable && !BSE_DEVICE_READABLE (self)) ||
                  (need_writable && !BSE_DEVICE_WRITABLE (self))))
     {
       bse_device_close (self);
       error = BSE_ERROR_DEVICE_NOT_AVAILABLE;
     }
+
   return error;
 }
+
 BseErrorType
 bse_device_open (BseDevice      *self,
                  gboolean        need_readable,
@@ -98,6 +106,7 @@ bse_device_open (BseDevice      *self,
     }
   return error;
 }
+
 void
 bse_device_set_opened (BseDevice      *self,
                        const char     *device_name,
@@ -117,22 +126,28 @@ bse_device_set_opened (BseDevice      *self,
   g_free (self->open_device_args);
   self->open_device_args = NULL;
 }
+
 void
 bse_device_close (BseDevice *self)
 {
   g_return_if_fail (BSE_IS_DEVICE (self));
   g_return_if_fail (BSE_DEVICE_OPEN (self));
+
   if (BSE_DEVICE_GET_CLASS (self)->pre_close)
     BSE_DEVICE_GET_CLASS (self)->pre_close (self);
+
   BSE_DEVICE_GET_CLASS (self)->close (self);
+
   g_free (self->open_device_name);
   self->open_device_name = NULL;
   g_free (self->open_device_args);
   self->open_device_args = NULL;
+
   BSE_OBJECT_UNSET_FLAGS (self, (BSE_DEVICE_FLAG_OPEN |
                                  BSE_DEVICE_FLAG_READABLE |
                                  BSE_DEVICE_FLAG_WRITABLE));
 }
+
 BseDeviceEntry*
 bse_device_entry_new (BseDevice      *device,
                       char           *orphan_args,
@@ -140,6 +155,7 @@ bse_device_entry_new (BseDevice      *device,
 {
   return bse_device_group_entry_new (device, orphan_args, NULL, orphan_blurb);
 }
+
 BseDeviceEntry*
 bse_device_group_entry_new (BseDevice      *device,
                             char           *orphan_args,
@@ -156,6 +172,7 @@ bse_device_group_entry_new (BseDevice      *device,
   g_free (orphan_group);
   return entry;
 }
+
 BseDeviceEntry*
 bse_device_error_new (BseDevice      *device,
                       char           *orphan_error)
@@ -166,6 +183,7 @@ bse_device_error_new (BseDevice      *device,
   g_free (orphan_error);
   return entry;
 }
+
 void
 bse_device_entry_free (BseDeviceEntry *entry)
 {
@@ -177,12 +195,14 @@ bse_device_entry_free (BseDeviceEntry *entry)
   g_free (entry->device_error);
   g_free (entry);
 }
+
 void
 bse_device_entry_list_free (SfiRing *ring)
 {
   while (ring)
     bse_device_entry_free ((BseDeviceEntry*) sfi_ring_pop_head (&ring));
 }
+
 static SfiRing*
 device_class_list_entries (GType    type,
                            void   (*request_callback) (BseDevice *device,
@@ -206,6 +226,7 @@ device_class_list_entries (GType    type,
   g_free (children);
   return ring;
 }
+
 static int
 device_entry_prio_cmp  (const void *value1,
                         const void *value2,
@@ -216,6 +237,7 @@ device_entry_prio_cmp  (const void *value1,
   return -G_BSEARCH_ARRAY_CMP (BSE_DEVICE_GET_CLASS (e1->device)->driver_rating,
                                BSE_DEVICE_GET_CLASS (e2->device)->driver_rating);
 }
+
 SfiRing*
 bse_device_class_list (GType    type,
                        void   (*request_callback) (BseDevice *device,
@@ -226,6 +248,7 @@ bse_device_class_list (GType    type,
   ring = sfi_ring_sort (ring, device_entry_prio_cmp, NULL);
   return ring;
 }
+
 void
 bse_device_class_setup (void          *klass_arg,
                         int            rating,
@@ -240,6 +263,7 @@ bse_device_class_setup (void          *klass_arg,
   klass->driver_syntax = syntax;
   klass->driver_blurb = blurb;
 }
+
 void
 bse_device_dump_list (GType           base_type,
                       const char     *indent,
@@ -308,6 +332,7 @@ bse_device_dump_list (GType           base_type,
   bse_device_entry_list_free (ring);
   g_free (indent2);
 }
+
 static SfiRing*
 device_classes_list (GType type,
                      int   min_rating)
@@ -325,12 +350,14 @@ device_classes_list (GType type,
   g_free (children);
   return ring;
 }
+
 static void
 device_classes_free (SfiRing *ring)
 {
   while (ring)
     g_type_class_unref (sfi_ring_pop_head (&ring));
 }
+
 static int
 device_classes_prio_cmp  (gconstpointer   value1,
                           gconstpointer   value2,
@@ -340,6 +367,7 @@ device_classes_prio_cmp  (gconstpointer   value1,
   const BseDeviceClass *c2 = (BseDeviceClass*) value2;
   return -G_BSEARCH_ARRAY_CMP (c1->driver_rating, c2->driver_rating);
 }
+
 BseDevice*
 bse_device_open_auto (GType           base_type,
                       gboolean        need_readable,
@@ -371,6 +399,7 @@ bse_device_open_auto (GType           base_type,
   device_classes_free (class_list);
   return device;
 }
+
 static SfiRing*
 auto_ring (void)
 {
@@ -381,6 +410,7 @@ auto_ring (void)
   ring.next = &ring;
   return &ring;
 }
+
 BseDevice*
 bse_device_open_best (GType           base_type,
                       gboolean        need_readable,
@@ -437,6 +467,7 @@ bse_device_open_best (GType           base_type,
   device_classes_free (class_list);
   return device;
 }
+
 static void
 bse_device_class_init (BseDeviceClass *klass)
 {
@@ -444,20 +475,25 @@ bse_device_class_init (BseDeviceClass *klass)
   klass->driver_rating = -1;
   klass->list_devices = NULL;
 }
+
 BSE_BUILTIN_TYPE (BseDevice)
 {
   static const GTypeInfo device_info = {
     sizeof (BseDeviceClass),
+
     (GBaseInitFunc) NULL,
     (GBaseFinalizeFunc) NULL,
     (GClassInitFunc) bse_device_class_init,
     (GClassFinalizeFunc) NULL,
     NULL /* class_data */,
+
     sizeof (BseDevice),
     0 /* n_preallocs */,
     (GInstanceInitFunc) bse_device_init,
   };
+
   g_assert (BSE_DEVICE_FLAGS_USHIFT < BSE_OBJECT_FLAGS_MAX_SHIFT);
+
   return bse_type_register_abstract (BSE_TYPE_OBJECT,
                                      "BseDevice",
                                      "Abstract device base type",

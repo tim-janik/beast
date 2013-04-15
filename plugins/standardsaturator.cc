@@ -2,8 +2,11 @@
 #include "standardsaturator.genidl.hh"
 #include <bse/bseengine.hh>
 #include <bse/bsemathsignal.hh>
+
 #define TEST_GNUPLOT    0
+
 namespace Bse { namespace Standard {
+
 class Saturator : public SaturatorBase {
   class Module: public SynthesisModule {
     SaturationType saturation;
@@ -237,6 +240,8 @@ public:
   /* implement creation and config methods for synthesis Module */
   BSE_EFFECT_INTEGRATE_MODULE (Saturator, Module, SaturatorProperties);
 };
+
 BSE_CXX_DEFINE_EXPORTS();
 BSE_CXX_REGISTER_ALL_TYPES_FROM_STANDARDSATURATOR_IDL();
+
 } } // Bse::Standard

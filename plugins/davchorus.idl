@@ -14,5 +14,6 @@ interface Chorus : Effect {
     Real wet_out = Perc (_("Wet out [%]"), _("Set the amount of modified data to mix"), 50.0, STANDARD);
   };
 };
+
 } // Dav
 } // Bse

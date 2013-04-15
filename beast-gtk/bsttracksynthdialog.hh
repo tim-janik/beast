@@ -1,9 +1,13 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #ifndef __BST_TRACK_SYNTH_DIALOG_H__
 #define __BST_TRACK_SYNTH_DIALOG_H__
+
 #include "bstutils.hh"
 #include "bstwaveview.hh"
+
 G_BEGIN_DECLS
+
+
 /* --- Gtk+ type macros --- */
 #define BST_TYPE_TRACK_SYNTH_DIALOG            (bst_track_synth_dialog_get_type ())
 #define BST_TRACK_SYNTH_DIALOG(object)         (G_TYPE_CHECK_INSTANCE_CAST ((object), BST_TYPE_TRACK_SYNTH_DIALOG, BstTrackSynthDialog))
@@ -11,6 +15,8 @@ G_BEGIN_DECLS
 #define BST_IS_TRACK_SYNTH_DIALOG(object)      (G_TYPE_CHECK_INSTANCE_TYPE ((object), BST_TYPE_TRACK_SYNTH_DIALOG))
 #define BST_IS_TRACK_SYNTH_DIALOG_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), BST_TYPE_TRACK_SYNTH_DIALOG))
 #define BST_TRACK_SYNTH_DIALOG_GET_CLASS(obj)  (G_TYPE_INSTANCE_GET_CLASS ((obj), BST_TYPE_TRACK_SYNTH_DIALOG, BstTrackSynthDialogClass))
+
+
 /* --- structures & typedefs --- */
 typedef struct _BstTrackSynthDialog      BstTrackSynthDialog;
 typedef struct _BstTrackSynthDialogClass BstTrackSynthDialogClass;
@@ -36,6 +42,8 @@ struct _BstTrackSynthDialogClass
 {
   GxkDialogClass parent_class;
 };
+
+
 /* --- prototypes --- */
 GType      bst_track_synth_dialog_get_type (void);
 GtkWidget* bst_track_synth_dialog_popup    (gpointer                     parent_widget,
@@ -52,5 +60,9 @@ GtkWidget* bst_track_synth_dialog_popup    (gpointer                     parent_
 void       bst_track_synth_dialog_set      (BstTrackSynthDialog         *self,
                                             BseItemSeq                  *iseq,
                                             SfiProxy                     wrepo);
+
+
+
 G_END_DECLS
+
 #endif /* __BST_TRACK_SYNTH_DIALOG_H__ */

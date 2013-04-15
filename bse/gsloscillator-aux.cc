@@ -1,4 +1,6 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
+
+
 #define	OSC_FLAGS		(GSL_INCLUDER_CASE | OSC_INCLUDER_FLAGS)
 #define ISYNC1_OSYNC0		((OSC_FLAGS & OSC_FLAG_ISYNC) && !(OSC_FLAGS & OSC_FLAG_OSYNC))
 #define ISYNC1_OSYNC1		((OSC_FLAGS & OSC_FLAG_ISYNC) && (OSC_FLAGS & OSC_FLAG_OSYNC))
@@ -10,6 +12,8 @@
 #define WITH_EMOD		(OSC_FLAGS & OSC_FLAG_EXP_MOD)
 #define WITH_PWM_MOD		(OSC_FLAGS & OSC_FLAG_PWM_MOD)
 #define PULSE_OSC		(OSC_FLAGS & OSC_FLAG_PULSE_OSC)
+
+
 static void
 GSL_INCLUDER_FUNC (GslOscData   *osc,
 		   guint         n_values,
@@ -31,14 +35,17 @@ GSL_INCLUDER_FUNC (GslOscData   *osc,
   gfloat posm_strength, self_posm_strength;
   gfloat *boundary = mono_out + n_values;
   GslOscWave *wave = &osc->wave;
+
   pos_inc = bse_dtoi (osc->last_freq_level * transpose * fine_tune * wave->freq_to_step);
   sync_pos = osc->config.phase * wave->phase_to_pos;
   posm_strength = pos_inc * osc->config.fm_strength;
   self_posm_strength = pos_inc * osc->config.self_fm_strength;
+
   /* do the mixing */
   do
     {
       gfloat v;
+
       /* handle syncs
        */
 #if (ISYNC1_OSYNC0)		/* input sync only */
@@ -70,6 +77,7 @@ GSL_INCLUDER_FUNC (GslOscData   *osc,
 	*sync_out++ = is_sync >= 2 ? 1.0 : 0.0;
       }
 #endif
+
       /* track frequency changes
        */
 #if (WITH_FREQ)
@@ -83,6 +91,7 @@ GSL_INCLUDER_FUNC (GslOscData   *osc,
 	      {
 		gdouble fcpos, flpos;
 		const gfloat *orig_values = wave->values;
+
 		fcpos = cur_pos * wave->ifrac_to_float;
 		flpos = last_pos * wave->ifrac_to_float;
 		gsl_osc_table_lookup (osc->config.table, transposed_freq, wave);
@@ -107,6 +116,7 @@ GSL_INCLUDER_FUNC (GslOscData   *osc,
 	  }
       }
 #endif
+
       /* track pulse witdh modulation
        */
 #if (WITH_PWM_MOD)
@@ -119,6 +129,7 @@ GSL_INCLUDER_FUNC (GslOscData   *osc,
 	  }
       }
 #endif
+
       /* output signal calculation
        */
 #if (PULSE_OSC)		/* pulse width modulation oscillator */
@@ -144,6 +155,7 @@ GSL_INCLUDER_FUNC (GslOscData   *osc,
       }
 #endif	/* v = value_out done */
       *mono_out++ = v;
+
       /* position increment
        */
 #if (WITH_OSYNC)
@@ -167,12 +179,14 @@ GSL_INCLUDER_FUNC (GslOscData   *osc,
 #endif
     }
   while (mono_out < boundary);
+
   osc->last_pos = WITH_OSYNC ? last_pos : cur_pos;
   osc->cur_pos = cur_pos;
   osc->last_sync_level = last_sync_level;
   osc->last_freq_level = last_freq_level;
   osc->last_pwm_level = last_pwm_level;
 }
+
 #undef ISYNC1_OSYNC0
 #undef ISYNC1_OSYNC1
 #undef ISYNC0_OSYNC1

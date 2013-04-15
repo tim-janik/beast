@@ -1,4 +1,5 @@
 /* GdkPixbuf RGBA C-Source image dump 1-byte-run-length-encoded */
+
 static const guint8 multiply_icon[] = 
 { ""
   /* Pixbuf magic (0x47646b50) */
@@ -107,3 +108,5 @@ static const guint8 multiply_icon[] =
   "\327\377\220\377\377\377\0\213\303\303\327\377\203\304\304\327\377\204"
   "\304\304\330\377\214\377\377\377\0\204\305\305\330\377\203\305\305\331"
   "\377\213\306\306\331\377\307\377\377\377\0"};
+
+

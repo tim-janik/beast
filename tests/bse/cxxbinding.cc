@@ -3,9 +3,12 @@
 #include <bse/bse.hh>
 #include <unistd.h>
 #include <stdio.h>
+
 static SfiGlueContext *bse_context = NULL;
+
 using namespace Bse;
 using namespace std;
+
 void do_sleep (int seconds)
 {
   /*
@@ -15,6 +18,7 @@ void do_sleep (int seconds)
   while (seconds > 0)
     seconds = sleep (seconds);
 }
+
 int
 main (int   argc,
       char *argv[])
@@ -38,30 +42,38 @@ main (int   argc,
     {
       g_print ("sample_file_info(\"%s\"): failed\n", file_name);
     }
+
   g_print ("error_blurb(ERROR_DEVICE_ASYNC): %s\n", error_blurb (ERROR_DEVICE_ASYNC).c_str());
+
   Server server = 1;    // FIXME: users may not hardcode this
+
   g_print ("server.get_custom_instrument_dir()=%s\n", server.get_custom_instrument_dir().c_str());
+
   GConfigHandle prefs = GConfig::from_rec (server.bse_preferences ());
   prefs->plugin_path = "./.libs/testplugin.so";
   SfiRec *rec = GConfig::to_rec (prefs);
   server.set_bse_preferences (rec);
   sfi_rec_unref (rec);
   prefs = GConfig::from_rec (server.bse_preferences());
+
   printf ("server.bse_preferences().plugin_path=%s\n", prefs->plugin_path.c_str());
   printf ("register core plugins...\n");
   server.register_core_plugins();
   printf ("waiting... (FIXME: need to connect to server signals here)\n");
   do_sleep (2);
   g_print ("done.\n");
+
   /* ... test plugin ... */
   Project test_project = server.use_new_project ("test_project");
   CSynth synth = test_project.create_csynth ("synth");
+
   g_print ("--- creating TestObject ---\n");
   Namespace::TestObject to = synth.create_source("NamespaceTestObject")._proxy(); // FIXME: dynamic_cast me
   if (to)
     g_print ("success creating TestObject: %ld\n", to._proxy());
   else
     g_error ("failed.");
+
   /* --- test procedures --- */
   g_print ("--- calling procedure test_exception() ---\n");
   g_print ("invoking as: result = test_exception (21, %ld, 42, \"moderately-funky\");\n", to._proxy());
@@ -86,6 +98,7 @@ main (int   argc,
     g_error ("failed (no result).");
   result = sfi_value_get_int (rvalue);
   g_print ("result=%d\n", result);
+
   /* --- test playback --- */
   file_name = "../test/test-song.bse";
   g_print ("--- playing %s... ---\n", file_name);
@@ -94,6 +107,8 @@ main (int   argc,
   project.play();
   sleep (3);
   g_print ("done.\n");
+
   sfi_glue_context_pop ();
 }
+
 /* vim:set ts=8 sts=2 sw=2: */

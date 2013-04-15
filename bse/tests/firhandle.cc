@@ -29,20 +29,26 @@ read_through (GslDataHandle *handle)
       g_assert (values_read > 0);
       offset += values_read;
     }
+
   g_assert (offset == n_values);
 }
+
 static double
 phase_diff (double p1,
             double p2)
 {
   double diff = p1 - p2;
+
   // normalize to range [-pi..pi]
   while (diff > M_PI)
     diff -= 2 * M_PI;
+
   while (diff < -M_PI)
     diff += 2 * M_PI;
+
   return diff;
 }
+
 static double
 band_min (const vector<double>& scanned_freq,
           const vector<double>& scanned_values,
@@ -50,6 +56,7 @@ band_min (const vector<double>& scanned_freq,
 	  double                end_freq)
 {
   g_assert (scanned_freq.size() == scanned_values.size());
+
   bool	  init = false;
   double  min_value = 1e19;
   for (size_t i = 0; i < scanned_values.size(); i++)
@@ -68,6 +75,7 @@ band_min (const vector<double>& scanned_freq,
   g_assert (init);
   return min_value;
 }
+
 static double
 band_max (const vector<double>& scanned_freq,
           const vector<double>& scanned_values,
@@ -75,6 +83,7 @@ band_max (const vector<double>& scanned_freq,
 	  double                end_freq)
 {
   g_assert (scanned_freq.size() == scanned_values.size());
+
   bool	  init = false;
   double  max_value = -1e19;
   for (size_t i = 0; i < scanned_values.size(); i++)
@@ -93,11 +102,13 @@ band_max (const vector<double>& scanned_freq,
   g_assert (init);
   return max_value;
 }
+
 enum FirHandleType
 {
   FIR_HIGHPASS,
   FIR_LOWPASS
 };
+
 static const char*
 handle_name (FirHandleType type)
 {
@@ -108,6 +119,7 @@ handle_name (FirHandleType type)
       default:		  g_assert_not_reached();
     }
 }
+
 static void
 test_with_sine_sweep (FirHandleType type)
 {
@@ -115,11 +127,14 @@ test_with_sine_sweep (FirHandleType type)
   vector<float> sweep_sin (50000);
   vector<float> sweep_cos (50000);
   vector<double> sweep_freq (50000);
+
   const double start_freq = 50;
   const double end_freq = 24000;
   const double mix_freq = 48000;
   const double octaves = log (end_freq / start_freq) / log (2);
+
   double phase = 0; 
+
   for (size_t i = 0; i < sweep_sin.size(); i++)
     {
       sweep_sin[i] = sin (phase);
@@ -129,11 +144,14 @@ test_with_sine_sweep (FirHandleType type)
       if (phase > 2.0 * M_PI)
 	phase -= 2.0 * M_PI;
     }
+
   GslDataHandle *ihandle_sin = gsl_data_handle_new_mem (1, 32, mix_freq, 440, sweep_sin.size(), &sweep_sin[0], NULL);
   GslDataHandle *ihandle_cos = gsl_data_handle_new_mem (1, 32, mix_freq, 440, sweep_cos.size(), &sweep_cos[0], NULL);
+
   const int order = 64;
   GslDataHandle *fir_handle_sin = NULL;
   GslDataHandle *fir_handle_cos = NULL;
+
   if (type == FIR_HIGHPASS)
     {
       fir_handle_sin = bse_data_handle_new_fir_highpass (ihandle_sin, 9000.0, order);
@@ -144,25 +162,31 @@ test_with_sine_sweep (FirHandleType type)
       fir_handle_sin = bse_data_handle_new_fir_lowpass (ihandle_sin, 6000.0, order);
       fir_handle_cos = bse_data_handle_new_fir_lowpass (ihandle_cos, 6000.0, order);
     }
+
   BseErrorType error;
   error = gsl_data_handle_open (fir_handle_sin);
   TASSERT (error == 0);
   error = gsl_data_handle_open (fir_handle_cos);
   TASSERT (error == 0);
+
   GslDataPeekBuffer peek_buffer_sin = { +1 /* incremental direction */, 0, };
   GslDataPeekBuffer peek_buffer_cos = { +1 /* incremental direction */, 0, };
+
   vector<double> scanned_freq, scanned_level_db, scanned_abs_phase_diff;
+
   for (size_t i = ((order + 2) / 2); i < sweep_sin.size() - ((order + 2) / 2); i++)
     {
       double filtered_sin = gsl_data_handle_peek_value (fir_handle_sin, i, &peek_buffer_sin);
       double filtered_cos = gsl_data_handle_peek_value (fir_handle_cos, i, &peek_buffer_cos);
       std::complex<double> filtered (filtered_sin, filtered_cos);
+
       // compute frequency response
       double level = abs (filtered);
       double level_db = bse_db_from_factor (level, -200);
       scanned_freq.push_back (sweep_freq[i]);
       scanned_level_db.push_back (level_db);
       // printf ("%f %.17g\n", sweep_freq[i], scanned_level_db.back());
+
       if ((i & 15) == 0)
 	{
 	  // check that theoretical and scanned response match
@@ -216,6 +240,7 @@ test_with_sine_sweep (FirHandleType type)
       const guint RUNS = 10;
       GTimer *timer = g_timer_new();
       const guint dups = TEST_CALIBRATION (50.0, read_through (fir_handle_sin));
+
       double m = 9e300;
       for (guint i = 0; i < RUNS; i++)
         {
@@ -236,6 +261,7 @@ test_with_sine_sweep (FirHandleType type)
             samples_per_second / 44100.0);
     }
 }
+
 static double
 raised_cosine_fade (int64 pos,
 		    int64 length,
@@ -248,6 +274,7 @@ raised_cosine_fade (int64 pos,
   else
     return (0.5 - cos (fade_factor * PI) * 0.5);
 }
+
 static void
 test_multi_channel (FirHandleType type)
 {
@@ -264,30 +291,38 @@ test_multi_channel (FirHandleType type)
       vector<double>  expected (input.size());
       vector<double>  freq (n_channels);
       vector<double>  phase (n_channels);
+
       for (int c = 0; c < n_channels; c++)
 	freq[c] = test_freqs [g_random_int_range (0, sizeof (test_freqs) / sizeof (test_freqs[0]))];
+
       for (size_t i = 0; i < input.size(); i++)
 	{
 	  const int	c           = i % n_channels;
 	  const double  fade_factor = raised_cosine_fade (i / n_channels, input.size() / n_channels, 500);
 	  const double  invalue     = sin (phase[c]) * fade_factor;
+
 	  input[i] = invalue;
 	  if ((freq[c] > cutoff_freq && type == FIR_HIGHPASS) || (freq[c] < cutoff_freq && type == FIR_LOWPASS))
 	    expected[i] = invalue;
+
 	  phase[c] += freq[c] / mix_freq * 2.0 * M_PI;
 	  if (phase[c] > 2.0 * M_PI)
 	    phase[c] -= 2.0 * M_PI;
 	}
+
       GslDataHandle *ihandle = gsl_data_handle_new_mem (n_channels, 32, mix_freq, 440, input.size(), &input[0], NULL);
       const int order = 116;
       GslDataHandle *fir_handle = NULL;
+
       if (type == FIR_HIGHPASS)
 	fir_handle = bse_data_handle_new_fir_highpass (ihandle, cutoff_freq, order);
       else
 	fir_handle = bse_data_handle_new_fir_lowpass (ihandle, cutoff_freq, order);
+
       BseErrorType error;
       error = gsl_data_handle_open (fir_handle);
       TASSERT (error == 0);
+
       for (int repeat = 1; repeat <= 2; repeat++)
 	{
 	  GslDataPeekBuffer peek_buffer = { +1 /* incremental direction */, 0, };
@@ -305,6 +340,7 @@ test_multi_channel (FirHandleType type)
     }
   TDONE();
 }
+
 static void
 test_seek (FirHandleType type)
 {
@@ -314,27 +350,35 @@ test_seek (FirHandleType type)
       const double    mix_freq = 48000;
       const double    cutoff_freq = 11000;
       const int       order = 28;
+
       vector<float>   input (1 * 2 * 3 * 3000); // can be divided by n_channels
       vector<float>   output (input.size());
+
       for (size_t i = 0; i < input.size(); i++)
         input[i] = g_random_int_range (-1, 1);
+
       GslDataHandle *ihandle = gsl_data_handle_new_mem (n_channels, 32, mix_freq, 440, input.size(), &input[0], NULL);
       GslDataHandle *fir_handle = NULL;
+
       if (type == FIR_HIGHPASS)
 	fir_handle = bse_data_handle_new_fir_highpass (ihandle, cutoff_freq, order);
       else
 	fir_handle = bse_data_handle_new_fir_lowpass (ihandle, cutoff_freq, order);
+
       BseErrorType error;
       error = gsl_data_handle_open (fir_handle);
       TASSERT (error == 0);
+
       GslDataPeekBuffer peek_buffer = { +1 /* incremental direction */, 0, };
       for (size_t i = 0; i < output.size(); i++)
         output[i] = gsl_data_handle_peek_value (fir_handle, i, &peek_buffer);
+
       for (int t = 0; t < 400; t++)
 	{
 	  int64 start = rand() % fir_handle->setup.n_values;
 	  int64 len = rand() % 1024;
 	  len = min (fir_handle->setup.n_values - start, len);
+
 	  float values[1024];
 	  int64 offset = 0;
 	  int64 values_todo = len;

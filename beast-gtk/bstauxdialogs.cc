@@ -1,6 +1,8 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bstauxdialogs.hh"
 #include <gdk/gdkkeysyms.h>
+
+
 /* --- list popup dialog --- */
 static GSList *list_popups = NULL;
 static void
@@ -14,11 +16,13 @@ tree_view_remove_selection (GtkTreeView *tview)
   else
     bst_gui_error_bell (tview);
 }
+
 static void
 widget_flag_data_valid (GtkWidget *dialog)
 {
   g_object_set_long (dialog, "data-valid", 1);
 }
+
 static void
 ensure_list_popups (void)
 {
@@ -65,11 +69,13 @@ ensure_list_popups (void)
       list_popups = g_slist_prepend (list_popups, dialog);
     }
 }
+
 typedef struct {
   GCallback      handler;
   gpointer       data;
   GDestroyNotify destroy;
 } CustomPopupData;
+
 static void
 bst_list_popup_hidden (GtkWidget       *dialog,
                        CustomPopupData *data)
@@ -100,6 +106,7 @@ bst_list_popup_hidden (GtkWidget       *dialog,
   g_free (data);
   list_popups = g_slist_prepend (list_popups, dialog);
 }
+
 GtkWidget*
 bst_list_popup_new (const gchar              *title,
                     GtkWidget                *transient_parent,
@@ -130,6 +137,7 @@ bst_list_popup_new (const gchar              *title,
     }
   return dialog;
 }
+
 void
 bst_list_popup_add (GtkWidget      *dialog,
                     const gchar    *string)
@@ -143,8 +151,11 @@ bst_list_popup_add (GtkWidget      *dialog,
                       0, string,
                       -1);
 }
+
+
 /* --- enable activates-default --- */
 static void     colorsel_enable_activates_default (GtkWidget *widget);
+
 static gboolean
 idle_activate_toplevel (gpointer data)
 {
@@ -155,6 +166,7 @@ idle_activate_toplevel (gpointer data)
   GDK_THREADS_LEAVE ();
   return FALSE;
 }
+
 static gboolean
 colorsel_drawing_area_key_event (GtkWidget *widget,
                                  GdkEvent  *event)
@@ -165,12 +177,14 @@ colorsel_drawing_area_key_event (GtkWidget *widget,
     g_idle_add (idle_activate_toplevel, g_object_ref (widget));
   return FALSE;
 }
+
 static void
 recurse_set_activates_default (GtkWidget *child,
                                gpointer   user_data)
 {
   colorsel_enable_activates_default (child);
 }
+
 static void
 colorsel_enable_activates_default (GtkWidget *widget)
 {
@@ -184,6 +198,8 @@ colorsel_enable_activates_default (GtkWidget *widget)
   if (GTK_IS_CONTAINER (widget))
     gtk_container_forall (GTK_CONTAINER (widget), recurse_set_activates_default, NULL);
 }
+
+
 /* --- color popup dialog --- */
 static GSList *color_popups = NULL;
 static void
@@ -215,6 +231,7 @@ ensure_color_popups (void)
       color_popups = g_slist_prepend (color_popups, dialog);
     }
 }
+
 static void
 color_popup_hidden (GtkWidget       *dialog,
                     CustomPopupData *data)
@@ -233,6 +250,7 @@ color_popup_hidden (GtkWidget       *dialog,
   g_free (data);
   color_popups = g_slist_prepend (color_popups, dialog);
 }
+
 GtkWidget*
 bst_color_popup_new (const gchar            *title,
                      GtkWidget              *transient_parent,
@@ -262,6 +280,8 @@ bst_color_popup_new (const gchar            *title,
     }
   return dialog;
 }
+
+
 /* --- key grabber dialog --- */
 gboolean
 bst_key_combo_valid (guint              keyval,
@@ -281,9 +301,11 @@ bst_key_combo_valid (guint              keyval,
       return TRUE;
   return FALSE;
 }
+
 static guint           grab_key_keyval;
 static GdkModifierType grab_key_modifier;
 static gboolean        grab_key_valid;
+
 static gboolean
 grab_key_event (GtkWidget *window,
                 GdkEvent  *event)
@@ -311,6 +333,7 @@ grab_key_event (GtkWidget *window,
     }
   return !GTK_WIDGET_VISIBLE (window);
 }
+
 gboolean
 bst_key_combo_popup (const gchar            *function,
                      guint                  *keyval,

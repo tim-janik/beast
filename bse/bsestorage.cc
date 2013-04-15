@@ -37,6 +37,8 @@ struct _BseStorageItemLink
   BseItem              *to_item;
   gchar                *error;
 };
+
+
 /* --- prototypes --- */
 static void       bse_storage_init                 (BseStorage       *self);
 static void       bse_storage_class_init           (BseStorageClass  *klass);
@@ -57,12 +59,16 @@ static GTokenType compat_parse_data_handle         (BseStorage       *self,
                                                     guint            *n_channels_p,
                                                     gfloat           *mix_freq_p,
                                                     gfloat           *osc_freq_p);
+
+
 /* --- variables --- */
 static gpointer parent_class = NULL;
 static GQuark   quark_raw_data_handle = 0;
 static GQuark   quark_vorbis_data_handle = 0;
 static GQuark   quark_dblock_data_handle = 0;
 static GQuark   quark_bse_storage_binary_v0 = 0;
+
+
 /* --- functions --- */
 BSE_BUILTIN_TYPE (BseStorage)
 {
@@ -77,23 +83,30 @@ BSE_BUILTIN_TYPE (BseStorage)
     0 /* n_preallocs */,
     (GInstanceInitFunc) bse_storage_init,
   };
+
   g_assert (BSE_STORAGE_FLAGS_USHIFT < BSE_OBJECT_FLAGS_MAX_SHIFT);
+
   return bse_type_register_static (BSE_TYPE_OBJECT, "BseStorage",
                                    "Storage object for item serialization",
                                    __FILE__, __LINE__,
                                    &storage_info);
 }
+
 static void
 bse_storage_class_init (BseStorageClass *klass)
 {
   GObjectClass *gobject_class = G_OBJECT_CLASS (klass);
+
   parent_class = g_type_class_peek_parent (klass);
+
   quark_raw_data_handle = g_quark_from_static_string ("raw-data-handle");
   quark_vorbis_data_handle = g_quark_from_static_string ("vorbis-data-handle");
   quark_dblock_data_handle = g_quark_from_static_string ("dblock-data-handle");
   quark_bse_storage_binary_v0 = g_quark_from_static_string ("BseStorageBinaryV0");
+
   gobject_class->finalize = bse_storage_finalize;
 }
+
 static void
 bse_storage_init (BseStorage *self)
 {
@@ -110,16 +123,21 @@ bse_storage_init (BseStorage *self)
   self->dblocks = NULL;
   self->n_dblocks = 0;
   self->free_me = NULL;
+
   bse_storage_reset (self);
 }
+
 static void
 bse_storage_finalize (GObject *object)
 {
   BseStorage *self = BSE_STORAGE (object);
+
   bse_storage_reset (self);
+
   /* chain parent class' handler */
   G_OBJECT_CLASS (parent_class)->finalize (object);
 }
+
 void
 bse_storage_turn_readable (BseStorage  *self,
                            const gchar *storage_name)
@@ -128,30 +146,37 @@ bse_storage_turn_readable (BseStorage  *self,
   const gchar *cmem;
   gchar *text;
   guint n_dblocks, l;
+
   g_return_if_fail (BSE_IS_STORAGE (self));
   g_return_if_fail (BSE_STORAGE_DBLOCK_CONTAINED (self));
   g_return_if_fail (self->wstore);
   g_return_if_fail (self->wstore->flushed == FALSE);
   g_return_if_fail (self->wstore->bblocks == NULL);
   g_return_if_fail (self->free_me == NULL);
+
   bse_storage_break (self);
+
   cmem = sfi_wstore_peek_text (self->wstore, &l);
   text = (char*) g_memdup (cmem, l + 1);
   dblocks = self->dblocks;
   n_dblocks = self->n_dblocks;
   self->dblocks = NULL;
   self->n_dblocks = 0;
+
   bse_storage_input_text (self, text, storage_name);
   self->free_me = text;
   self->dblocks = dblocks;
   self->n_dblocks = n_dblocks;
   BSE_OBJECT_SET_FLAGS (self, BSE_STORAGE_DBLOCK_CONTAINED);
 }
+
 void
 bse_storage_reset (BseStorage *self)
 {
   guint i;
+
   g_return_if_fail (BSE_IS_STORAGE (self));
+
   if (self->rstore)
     {
       bse_storage_finish_parsing (self);
@@ -163,6 +188,7 @@ bse_storage_reset (BseStorage *self)
         sfi_ppool_destroy (self->restorable_objects);
       self->restorable_objects = NULL;
     }
+
   if (self->wstore)
     sfi_wstore_destroy (self->wstore);
   self->wstore = NULL;
@@ -172,9 +198,11 @@ bse_storage_reset (BseStorage *self)
   if (self->referenced_items)
     sfi_ppool_destroy (self->referenced_items);
   self->referenced_items = NULL;
+
   self->major_version = BSE_MAJOR_VERSION;
   self->minor_version = BSE_MINOR_VERSION;
   self->micro_version = BSE_MICRO_VERSION;
+
   for (i = 0; i < self->n_dblocks; i++)
     {
       bse_id_free (self->dblocks[i].id);
@@ -185,10 +213,13 @@ bse_storage_reset (BseStorage *self)
   g_free (self->dblocks);
   self->dblocks = NULL;
   self->n_dblocks = 0;
+
   g_free (self->free_me);
   self->free_me = NULL;
+
   BSE_OBJECT_UNSET_FLAGS (self, BSE_STORAGE_MODE_MASK);
 }
+
 static gulong
 bse_storage_add_dblock (BseStorage    *self,
                         GslDataHandle *dhandle)
@@ -210,6 +241,7 @@ bse_storage_add_dblock (BseStorage    *self,
   self->dblocks[i].osc_freq = gsl_data_handle_osc_freq (dhandle);
   return self->dblocks[i].id;
 }
+
 static BseStorageDBlock*
 bse_storage_get_dblock (BseStorage    *self,
                         gulong         id)
@@ -220,11 +252,13 @@ bse_storage_get_dblock (BseStorage    *self,
       return self->dblocks + i;
   return NULL;
 }
+
 void
 bse_storage_prepare_write (BseStorage    *self,
                            BseStorageMode mode)
 {
   g_return_if_fail (BSE_IS_STORAGE (self));
+
   bse_storage_reset (self);
   self->wstore = sfi_wstore_new ();
   self->stored_items = sfi_ppool_new ();
@@ -236,14 +270,17 @@ bse_storage_prepare_write (BseStorage    *self,
   bse_storage_break (self);
   bse_storage_printf (self, "(bse-version \"%u.%u.%u\")\n\n", BSE_MAJOR_VERSION, BSE_MINOR_VERSION, BSE_MICRO_VERSION);
 }
+
 void
 bse_storage_input_text (BseStorage  *self,
                         const gchar *text,
                         const gchar *text_name)
 {
   g_return_if_fail (BSE_IS_STORAGE (self));
+
   if (!text)
     text = "";
+
   bse_storage_reset (self);
   self->rstore = sfi_rstore_new ();
   self->rstore->parser_this = self;
@@ -251,12 +288,14 @@ bse_storage_input_text (BseStorage  *self,
   self->path_table = g_hash_table_new_full (uname_child_hash, uname_child_equals, NULL, uname_child_free);
   self->restorable_objects = sfi_ppool_new ();
 }
+
 BseErrorType
 bse_storage_input_file (BseStorage  *self,
                         const gchar *file_name)
 {
   g_return_val_if_fail (BSE_IS_STORAGE (self), BSE_ERROR_INTERNAL);
   g_return_val_if_fail (file_name != NULL, BSE_ERROR_INTERNAL);
+
   bse_storage_reset (self);
   self->rstore = sfi_rstore_new_open (file_name);
   if (!self->rstore)
@@ -264,8 +303,10 @@ bse_storage_input_file (BseStorage  *self,
   self->rstore->parser_this = self;
   self->path_table = g_hash_table_new_full (uname_child_hash, uname_child_equals, NULL, uname_child_free);
   self->restorable_objects = sfi_ppool_new ();
+
   return BSE_ERROR_NONE;
 }
+
 static GTokenType
 storage_parse_bse_version (BseStorage *self)
 {
@@ -313,6 +354,7 @@ storage_parse_bse_version (BseStorage *self)
                 BSE_STORAGE_COMPAT (self, BSE_MAJOR_VERSION, BSE_MINOR_VERSION, BSE_MICRO_VERSION - 1));
   return G_TOKEN_NONE;
 }
+
 static BseStorageItemLink*
 storage_add_item_link (BseStorage           *self,
                        BseItem              *from_item,
@@ -326,8 +368,10 @@ storage_add_item_link (BseStorage           *self,
   ilink->restore_link = restore_link;
   ilink->data = data;
   ilink->error = error;
+
   return ilink;
 }
+
 void
 bse_storage_add_restorable (BseStorage             *self,
                             BseObject              *object)
@@ -337,8 +381,10 @@ bse_storage_add_restorable (BseStorage             *self,
   g_return_if_fail (self->restorable_objects);
   g_return_if_fail (BSE_IS_OBJECT (object));
   g_return_if_fail (BSE_OBJECT_IN_RESTORE (object));
+
   sfi_ppool_set (self->restorable_objects, object);
 }
+
 static gboolean
 storage_restorable_objects_foreach (gpointer        data,
                                     gpointer        pointer)
@@ -348,14 +394,17 @@ storage_restorable_objects_foreach (gpointer        data,
   bse_object_restore_finish (object, self->major_version, self->minor_version, self->micro_version);
   return TRUE;
 }
+
 void
 bse_storage_finish_parsing (BseStorage *self)
 {
   g_return_if_fail (BSE_IS_STORAGE (self));
   g_return_if_fail (self->rstore != NULL);
+
   while (self->item_links)
     {
       BseStorageItemLink *ilink = (BseStorageItemLink*) sfi_ring_pop_head (&self->item_links);
+
       if (ilink->error)
         {
           gchar *error = g_strdup_printf ("unable to resolve link path for item `%s': %s",
@@ -381,6 +430,7 @@ bse_storage_finish_parsing (BseStorage *self)
           BseItem *child = NULL, *parent = ilink->from_item;
           guint pbackup = ilink->pbackup;
           gchar *error = NULL;
+
           while (pbackup && parent)
             {
               pbackup--;
@@ -408,12 +458,14 @@ bse_storage_finish_parsing (BseStorage *self)
       g_free (ilink->upath);
       g_free (ilink);
     }
+
   /* finish restorables */
   sfi_ppool_foreach (self->restorable_objects, storage_restorable_objects_foreach, self);
   /* clear pool */
   sfi_ppool_destroy (self->restorable_objects);
   self->restorable_objects = sfi_ppool_new();
 }
+
 const gchar*
 bse_storage_item_get_compat_type (BseItem *item)
 {
@@ -522,6 +574,7 @@ storage_path_table_resolve_upath (BseStorage   *self,
   else
     return storage_path_table_lookup (self, container, upath);
 }
+
 static void
 item_link_resolved (gpointer     data,
                     BseStorage  *self,
@@ -961,6 +1014,7 @@ bse_storage_error (BseStorage  *self,
     g_printerr ("BseStorage: ERROR: while storing: %s\n", string);
   g_free (string);
 }
+
 static void
 bse_item_store_property (BseItem    *item,
                          BseStorage *storage,
@@ -998,6 +1052,7 @@ bse_source_store_automation (BseSource  *source,
                           midi_channel, sfi_enum2choice (control_type, BSE_TYPE_MIDI_CONTROL_TYPE));
     }
 }
+
 static void
 store_item_properties (BseItem    *item,
                        BseStorage *storage)
@@ -1165,6 +1220,7 @@ bse_storage_parse_xinfos (BseStorage *self,
   else
     return GTokenType ('(');
 }
+
 static GTokenType
 parse_dblock_data_handle (BseStorage     *self,
                           GslDataHandle **data_handle_p,
@@ -1240,6 +1296,7 @@ wstore_data_handle_reader (gpointer data,
   wh->length += n;
   return gsl_conv_from_float_clip (GslWaveFormatType (wh->format), wh->byte_order, (const float*) buffer, buffer, n);
 }
+
 void
 bse_storage_put_data_handle (BseStorage    *self,
                              guint          significant_bits,
@@ -1498,6 +1555,7 @@ bse_storage_flush_fd (BseStorage *self,
   gint nerrno = sfi_wstore_flush_fd (self->wstore, fd);
   return bse_error_from_errno (-nerrno, BSE_ERROR_FILE_WRITE_FAILED);
 }
+
 void
 bse_storage_compat_dhreset (BseStorage     *self)
 {
@@ -1523,6 +1581,7 @@ bse_storage_compat_dhchannels (BseStorage     *self,
 {
   self->n_channels = n_channels;
 }
+
 static GTokenType
 compat_parse_data_handle (BseStorage     *self,
                           GslDataHandle **data_handle_p,
@@ -1534,8 +1593,10 @@ compat_parse_data_handle (BseStorage     *self,
   GScanner *scanner = bse_storage_get_scanner (self);
   GTokenType token;
   gchar *string;
+
   parse_or_return (scanner, G_TOKEN_INT);
   offset = scanner->value.v_int64;
+
   parse_or_return (scanner, G_TOKEN_IDENTIFIER);
   string = scanner->value.v_identifier;
   if (string[0] == 'L' || string[0] == 'l')
@@ -1549,6 +1610,7 @@ compat_parse_data_handle (BseStorage     *self,
   if (string)
     {
       gchar *f = NULL;
+
       bytes_per_value = strtol (string + 2, &f, 10);
       if ((bytes_per_value != 1 && bytes_per_value != 2 && bytes_per_value != 4) ||
           (f && *f != 0))
@@ -1558,10 +1620,12 @@ compat_parse_data_handle (BseStorage     *self,
     return bse_storage_warn_skip (self,
                                   "unknown value type `%s' in binary data definition",
                                   scanner->value.v_identifier);
+
   parse_or_return (scanner, G_TOKEN_INT);
   length = scanner->value.v_int64;
   if (length < bytes_per_value)
     return G_TOKEN_INT;
+
   if (g_scanner_peek_next_token (scanner) == G_TOKEN_INT)
     {
       g_scanner_get_next_token (scanner);
@@ -1571,10 +1635,13 @@ compat_parse_data_handle (BseStorage     *self,
     }
   else
     vlength = length / bytes_per_value;
+
   parse_or_return (scanner, ')');
+
   token = sfi_rstore_ensure_bin_offset (self->rstore);
   if (token != G_TOKEN_NONE)
     return token;
+
   if (n_channels_p)
     *n_channels_p = self->n_channels;
   if (mix_freq_p)

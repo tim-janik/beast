@@ -1,8 +1,11 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #ifndef __BSE_BUS_H__
 #define __BSE_BUS_H__
+
 #include <bse/bsesubsynth.hh>
+
 G_BEGIN_DECLS
+
 /* --- object type macros --- */
 #define BSE_TYPE_BUS               (BSE_TYPE_ID (BseBus))
 #define BSE_BUS(object)            (G_TYPE_CHECK_INSTANCE_CAST ((object), BSE_TYPE_BUS, BseBus))
@@ -10,6 +13,8 @@ G_BEGIN_DECLS
 #define BSE_IS_BUS(object)         (G_TYPE_CHECK_INSTANCE_TYPE ((object), BSE_TYPE_BUS))
 #define BSE_IS_BUS_CLASS(class)    (G_TYPE_CHECK_CLASS_TYPE ((class), BSE_TYPE_BUS))
 #define BSE_BUS_GET_CLASS(object)  (G_TYPE_INSTANCE_GET_CLASS ((object), BSE_TYPE_BUS, BseBusClass))
+
+
 /* --- BseBus source --- */
 struct BseBus : BseSubSynth {
   SfiRing      *inputs;
@@ -56,6 +61,7 @@ void    bse_bus_or_track_list_output_candidates (BseItem        *trackbus,
                                                  BseItemSeq     *iseq);
 void    bse_bus_or_track_set_outputs            (BseItem        *trackbus,
                                                  BseItemSeq     *iseq);
+
 /* --- channels --- */
 enum
 {
@@ -69,5 +75,8 @@ enum
   BSE_BUS_OCHANNEL_RIGHT,
   BSE_BUS_N_OCHANNELS
 };
+
+
 G_END_DECLS
+
 #endif /* __BSE_BUS_H__ */

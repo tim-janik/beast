@@ -6,8 +6,12 @@
 #include <bse/bseundostack.hh>
 #include <bse/bseparasite.hh>	// FIXME
 #include "bsecxxplugin.hh"
+
+
 AUTHORS	= "Tim Janik <timj@gtk.org>";
 LICENSE = "GNU Lesser General Public License";
+
+
 METHOD (BseItem, get-type) {
   HELP	= "Retrieve an item's type name.";
   IN	= bse_param_spec_object ("item", "Item", NULL,
@@ -20,13 +24,17 @@ METHOD (BseItem, get-type) {
 {
   /* extract parameter values */
   BseItem *item = (BseItem*) bse_value_get_object (in_values++);
+
   /* check parameters */
   if (!BSE_IS_ITEM (item))
     return BSE_ERROR_PROC_PARAM_INVAL;
+
   /* set output parameters */
   sfi_value_set_static_string (out_values++, g_type_name (G_OBJECT_TYPE (item)));
+
   return BSE_ERROR_NONE;
 }
+
 METHOD (BseItem, get-type-name) {
   HELP	= "Retrieve an item's type name.";
   IN	= bse_param_spec_object ("item", "Item", NULL,
@@ -40,13 +48,17 @@ METHOD (BseItem, get-type-name) {
 {
   /* extract parameter values */
   BseItem *item = (BseItem*) bse_value_get_object (in_values++);
+
   /* check parameters */
   if (!BSE_IS_ITEM (item))
     return BSE_ERROR_PROC_PARAM_INVAL;
+
   /* set output parameters */
   sfi_value_set_string (out_values++, g_type_name (G_OBJECT_TYPE (item)));
+
   return BSE_ERROR_NONE;
 }
+
 METHOD (BseItem, get-type-blurb) {
   HELP	= "Retrieve an item's type description.";
   IN	= bse_param_spec_object ("item", "Item", NULL,
@@ -60,13 +72,17 @@ METHOD (BseItem, get-type-blurb) {
 {
   /* extract parameter values */
   BseItem *item = (BseItem*) bse_value_get_object (in_values++);
+
   /* check parameters */
   if (!BSE_IS_ITEM (item))
     return BSE_ERROR_PROC_PARAM_INVAL;
+
   /* set output parameters */
   sfi_value_set_string (out_values++, bse_type_get_blurb (G_OBJECT_TYPE (item)));
+
   return BSE_ERROR_NONE;
 }
+
 METHOD (BseItem, get-type-authors) {
   HELP	= "Retrieve authors of an item's type implementation.";
   IN	= bse_param_spec_object ("item", "Item", NULL,
@@ -80,13 +96,17 @@ METHOD (BseItem, get-type-authors) {
 {
   /* extract parameter values */
   BseItem *item = (BseItem*) bse_value_get_object (in_values++);
+
   /* check parameters */
   if (!BSE_IS_ITEM (item))
     return BSE_ERROR_PROC_PARAM_INVAL;
+
   /* set output parameters */
   sfi_value_set_string (out_values++, bse_type_get_authors (G_OBJECT_TYPE (item)));
+
   return BSE_ERROR_NONE;
 }
+
 METHOD (BseItem, get-type-license) {
   HELP	= "Retrieve the license for an item's type implementation.";
   IN	= bse_param_spec_object ("item", "Item", NULL,
@@ -100,13 +120,17 @@ METHOD (BseItem, get-type-license) {
 {
   /* extract parameter values */
   BseItem *item = (BseItem*) bse_value_get_object (in_values++);
+
   /* check parameters */
   if (!BSE_IS_ITEM (item))
     return BSE_ERROR_PROC_PARAM_INVAL;
+
   /* set output parameters */
   sfi_value_set_string (out_values++, bse_type_get_license (G_OBJECT_TYPE (item)));
+
   return BSE_ERROR_NONE;
 }
+
 METHOD (BseItem, get-parent) {
   HELP	= "Retrieve an item's parent.";
   IN	= bse_param_spec_object ("item", "Item", NULL,
@@ -119,13 +143,17 @@ METHOD (BseItem, get-parent) {
 {
   /* extract parameter values */
   BseItem *item = (BseItem*) bse_value_get_object (in_values++);
+
   /* check parameters */
   if (!BSE_IS_ITEM (item))
     return BSE_ERROR_PROC_PARAM_INVAL;
+
   /* set output parameters */
   bse_value_set_object (out_values++, item->parent);
+
   return BSE_ERROR_NONE;
 }
+
 METHOD (BseItem, get-project) {
   HELP	= "Retrieve an item's project.";
   IN	= bse_param_spec_object ("item", "Item", NULL,
@@ -138,13 +166,17 @@ METHOD (BseItem, get-project) {
 {
   /* extract parameter values */
   BseItem *item = (BseItem*) bse_value_get_object (in_values++);
+
   /* check parameters */
   if (!BSE_IS_ITEM (item))
     return BSE_ERROR_PROC_PARAM_INVAL;
+
   /* set output parameters */
   bse_value_set_object (out_values++, bse_item_get_project (item));
+
   return BSE_ERROR_NONE;
 }
+
 METHOD (BseItem, get-uname-path) {
   HELP	= "Retrieve the project relative uname path for this item.";
   IN	= bse_param_spec_object ("item", NULL, NULL,
@@ -158,15 +190,20 @@ METHOD (BseItem, get-uname-path) {
   /* extract parameter values */
   BseItem *item = (BseItem*) bse_value_get_object (in_values++);
   BseProject *project;
+
   /* check parameters */
   if (!BSE_IS_ITEM (item))
     return BSE_ERROR_PROC_PARAM_INVAL;
+
   project = bse_item_get_project (item);
+
   /* set output parameters */
   sfi_value_take_string (out_values++,
 			 project ? bse_container_make_upath (BSE_CONTAINER (project), item) : NULL);
+
   return BSE_ERROR_NONE;
 }
+
 METHOD (BseItem, internal) {
   HELP	= "Check whether an item is internal, i.e. owned by another non-internal item.";
   IN	= bse_param_spec_object ("item", "Item", NULL,
@@ -179,13 +216,17 @@ METHOD (BseItem, internal) {
 {
   /* extract parameter values */
   BseItem *item = (BseItem*) bse_value_get_object (in_values++);
+
   /* check parameters */
   if (!BSE_IS_ITEM (item))
     return BSE_ERROR_PROC_PARAM_INVAL;
+
   /* set output parameters */
   sfi_value_set_bool (out_values++, BSE_ITEM_INTERNAL (item));
+
   return BSE_ERROR_NONE;
 }
+
 METHOD (BseItem, use) {
   HELP	= "Increment use count to keep an item alive.";
   IN	= bse_param_spec_object ("item", "Item", NULL,
@@ -198,15 +239,20 @@ METHOD (BseItem, use) {
 {
   /* extract parameter values */
   BseItem *item = (BseItem*) bse_value_get_object (in_values++);
+
   /* check parameters */
   if (!BSE_IS_ITEM (item) || (!item->parent && !item->use_count))
     return BSE_ERROR_PROC_PARAM_INVAL;
+
   /* action */
   bse_item_use (item);
+
   /* set output parameters */
   bse_value_set_object (out_values++, item);
+
   return BSE_ERROR_NONE;
 }
+
 METHOD (BseItem, unuse) {
   HELP	= "Decrement use count for when an item is not needed anymore.";
   IN	= bse_param_spec_object ("item", "Item", NULL,
@@ -217,15 +263,20 @@ METHOD (BseItem, unuse) {
 {
   /* extract parameter values */
   BseItem *item = (BseItem*) bse_value_get_object (in_values++);
+
   /* check parameters */
   if (!BSE_IS_ITEM (item))
     return BSE_ERROR_PROC_PARAM_INVAL;
+
   /* action */
   if (item->use_count < 1)
     return BSE_ERROR_NOT_OWNER;
+
   bse_item_unuse (item);
+
   return BSE_ERROR_NONE;
 }
+
 METHOD (BseItem, set-name) {
   HELP	= "Set an item's name.";
   IN	= bse_param_spec_object ("item", "Item", NULL,
@@ -239,14 +290,19 @@ METHOD (BseItem, set-name) {
   /* extract parameter values */
   BseItem *item = (BseItem*) bse_value_get_object (in_values++);
   const gchar *name = g_value_get_string (in_values++);
+
   /* check parameters */
   if (!BSE_IS_ITEM (item))
     return BSE_ERROR_PROC_PARAM_INVAL;
+
   /* action */
   if (!bse_string_equals (name, BSE_OBJECT_UNAME (item)))
     bse_item_set (item, "uname", name, NULL);
+
   return BSE_ERROR_NONE;
 }
+
+
 METHOD (BseItem, get-name) {
   HELP	= "Retrieve an item's name.";
   IN	= bse_param_spec_object ("item", "Item", NULL,
@@ -259,13 +315,17 @@ METHOD (BseItem, get-name) {
 {
   /* extract parameter values */
   BseItem *item = (BseItem*) bse_value_get_object (in_values++);
+
   /* check parameters */
   if (!BSE_IS_ITEM (item))
     return BSE_ERROR_PROC_PARAM_INVAL;
+
   /* set output parameters */
   sfi_value_set_string (out_values++, BSE_OBJECT_UNAME (item));
+
   return BSE_ERROR_NONE;
 }
+
 METHOD (BseItem, get-name-or-type) {
   HELP	= "Retrieve an item's name or type if it has no name.";
   IN	= bse_param_spec_object ("item", "Item", NULL,
@@ -279,17 +339,21 @@ METHOD (BseItem, get-name-or-type) {
   /* extract parameter values */
   BseItem *item = (BseItem*) bse_value_get_object (in_values++);
   gchar *name = NULL;
+
   /* check parameters */
   if (!BSE_IS_ITEM (item))
     return BSE_ERROR_PROC_PARAM_INVAL;
+
   /* set output parameters */
   name = BSE_OBJECT_UNAME (item);
   if (name)
     sfi_value_set_string (out_values++, name);
   else
     sfi_value_set_string (out_values++, BSE_OBJECT_TYPE_NAME (item));
+
   return BSE_ERROR_NONE;
 }
+
 METHOD (BseItem, common-ancestor) {
   HELP	= "Retrieve the common ancestor of two items if there's any.";
   IN	= bse_param_spec_object ("item", "Item", "First item",
@@ -305,13 +369,17 @@ METHOD (BseItem, common-ancestor) {
   /* extract parameter values */
   BseItem *item = (BseItem*) bse_value_get_object (in_values++);
   BseItem *item2 = (BseItem*) bse_value_get_object (in_values++);
+
   /* check parameters */
   if (!BSE_IS_ITEM (item) || !BSE_IS_ITEM (item2))
     return BSE_ERROR_PROC_PARAM_INVAL;
+
   /* set output parameters */
   bse_value_set_object (out_values++, bse_item_common_ancestor (item, item2));
+
   return BSE_ERROR_NONE;
 }
+
 METHOD (BseItem, get-seqid) {
   HELP	= ("Retrieve an item's sequential ID. The sequential ID depends "
 	   "on the item's type an it's position inbetween siblings "
@@ -326,13 +394,17 @@ METHOD (BseItem, get-seqid) {
 {
   /* extract parameter values */
   BseItem *item = (BseItem*) bse_value_get_object (in_values++);
+
   /* check parameters */
   if (!BSE_IS_ITEM (item))
     return BSE_ERROR_PROC_PARAM_INVAL;
+
   /* set output parameters */
   sfi_value_set_int (out_values++, bse_item_get_seqid (item));
+
   return BSE_ERROR_NONE;
 }
+
 METHOD (BseItem, check-is-a) {
   HELP  = "Check whether an item has a certain type.";
   IN    = bse_param_spec_object ("item", "Item", "The Item",
@@ -350,16 +422,21 @@ METHOD (BseItem, check-is-a) {
   const char *type_name = sfi_value_get_string (in_values++);
   GType type;
   gboolean is_a;
+
   /* check parameters */
   if (!type_name)
     type_name = "";
+
   /* action */
   type = g_type_from_name (type_name);
   is_a = item && g_type_is_a (G_OBJECT_TYPE (item), type);
+
   /* set output parameters */
   sfi_value_set_bool (out_values++, is_a);
+
   return BSE_ERROR_NONE;
 }
+
 METHOD (BseItem, get-property-candidates) {
   HELP	= "Retrieve tentative values for an item or item sequence property.";
   IN	= bse_param_spec_object ("item", NULL, NULL,
@@ -374,9 +451,11 @@ METHOD (BseItem, get-property-candidates) {
   /* extract parameter values */
   BseItem *self = (BseItem*) bse_value_get_object (in_values++);
   const char   *property = sfi_value_get_string (in_values++);
+
   /* check parameters */
   if (!BSE_IS_ITEM (self) || !property)
     return BSE_ERROR_PROC_PARAM_INVAL;
+
   /* set output parameters */
   BsePropertyCandidates *pc = bse_property_candidates_new();
   if (!bse_item_get_candidates (self, property, pc))
@@ -385,8 +464,10 @@ METHOD (BseItem, get-property-candidates) {
       pc = NULL;
     }
   bse_value_take_boxed (out_values++, pc);
+
   return BSE_ERROR_NONE;
 }
+
 METHOD (BseItem, editable-property) {
   HELP	= "Test whether a property is editable according to object state and property options.";
   IN	= bse_param_spec_object ("item", NULL, NULL,
@@ -401,13 +482,17 @@ METHOD (BseItem, editable-property) {
   /* extract parameter values */
   BseItem *self = (BseItem*) bse_value_get_object (in_values++);
   const char   *property = sfi_value_get_string (in_values++);
+
   /* check parameters */
   if (!BSE_IS_ITEM (self) || !property)
     return BSE_ERROR_PROC_PARAM_INVAL;
+
   /* set output parameters */
   sfi_value_set_bool (out_values++, bse_object_editable_property (self, property));
+
   return BSE_ERROR_NONE;
 }
+
 METHOD (BseItem, get-icon) {
   HELP	= "Get the current icon of an item.";
   IN	= bse_param_spec_object ("item", NULL, NULL,
@@ -420,13 +505,17 @@ METHOD (BseItem, get-icon) {
 {
   /* extract parameter values */
   BseItem *self = (BseItem*) bse_value_get_object (in_values++);
+
   /* check parameters */
   if (!BSE_IS_ITEM (self))
     return BSE_ERROR_PROC_PARAM_INVAL;
+
   /* set output parameters */
   bse_value_set_boxed (out_values++, bse_object_get_icon (BSE_OBJECT (self)));
+
   return BSE_ERROR_NONE;
 }
+
 METHOD (BseItem, group-undo) {
   HELP	= "Request multiple modifying actions on an item to be grouped together as single undo operation.";
   IN	= bse_param_spec_object ("item", NULL, NULL,
@@ -441,14 +530,18 @@ METHOD (BseItem, group-undo) {
   BseItem *self = (BseItem*) bse_value_get_object (in_values++);
   const char *name       = sfi_value_get_string (in_values++);
   BseUndoStack *ustack;
+
   /* check parameters */
   if (!BSE_IS_ITEM (self) || !name)
     return BSE_ERROR_PROC_PARAM_INVAL;
+
   ustack = bse_item_undo_open (self, "item-group-undo");
   bse_undo_stack_add_merger (ustack, name);
   bse_item_undo_close (ustack);
+
   return BSE_ERROR_NONE;
 }
+
 METHOD (BseItem, ungroup-undo) {
   HELP	= "Ends the undo grouping opened up by a previous group-undo() call.";
   IN	= bse_param_spec_object ("item", NULL, NULL,
@@ -460,14 +553,18 @@ METHOD (BseItem, ungroup-undo) {
   /* extract parameter values */
   BseItem *self = (BseItem*) bse_value_get_object (in_values++);
   BseUndoStack *ustack;
+
   /* check parameters */
   if (!BSE_IS_ITEM (self))
     return BSE_ERROR_PROC_PARAM_INVAL;
+
   ustack = bse_item_undo_open (self, "item-ungroup-undo");
   bse_undo_stack_remove_merger (ustack);
   bse_item_undo_close (ustack);
+
   return BSE_ERROR_NONE;
 }
+
 METHOD (BseItem, undo) {
   HELP	= "Call the undo function of the project corresponding to this item if any.";
   IN	= bse_param_spec_object ("item", NULL, NULL,
@@ -479,14 +576,18 @@ METHOD (BseItem, undo) {
   /* extract parameter values */
   BseItem *self = (BseItem*) bse_value_get_object (in_values++);
   BseProject *project;
+
   /* check parameters */
   if (!BSE_IS_ITEM (self))
     return BSE_ERROR_PROC_PARAM_INVAL;
+
   project = bse_item_get_project (self);
   if (project)
     bse_item_exec_void (project, "undo");
+
   return BSE_ERROR_NONE;
 }
+
 METHOD (BseItem, redo) {
   HELP	= "Call the redo function of the project corresponding to this item if any.";
   IN	= bse_param_spec_object ("item", NULL, NULL,
@@ -498,14 +599,18 @@ METHOD (BseItem, redo) {
   /* extract parameter values */
   BseItem *self = (BseItem*) bse_value_get_object (in_values++);
   BseProject *project;
+
   /* check parameters */
   if (!BSE_IS_ITEM (self))
     return BSE_ERROR_PROC_PARAM_INVAL;
+
   project = bse_item_get_project (self);
   if (project)
     bse_item_exec_void (project, "redo");
+
   return BSE_ERROR_NONE;
 }
+
 METHOD (BseItem, clear-undo) {
   HELP	= "Call the clear-undo function of the project corresponding to this item if any.";
   IN	= bse_param_spec_object ("item", NULL, NULL,
@@ -517,14 +622,18 @@ METHOD (BseItem, clear-undo) {
   /* extract parameter values */
   BseItem *self = (BseItem*) bse_value_get_object (in_values++);
   BseProject *project;
+
   /* check parameters */
   if (!BSE_IS_ITEM (self))
     return BSE_ERROR_PROC_PARAM_INVAL;
+
   project = bse_item_get_project (self);
   if (project)
     bse_item_exec_void (project, "clear-undo");
+
   return BSE_ERROR_NONE;
 }
+
 METHOD (BseItem, undo-depth) {
   HELP  = "Call the undo-depth function of the project corresponding to this item if any.";
   IN    = bse_param_spec_object ("item", NULL, NULL,
@@ -539,16 +648,21 @@ METHOD (BseItem, undo-depth) {
   BseItem *self = (BseItem*) bse_value_get_object (in_values++);
   gint depth = 0;
   BseProject *project;
+
   /* check parameters */
   if (!BSE_IS_ITEM (self))
     return BSE_ERROR_PROC_PARAM_INVAL;
+
   project = bse_item_get_project (self);
   if (project)
     bse_item_exec (project, "undo-depth", &depth);
+
   /* set output parameters */
   sfi_value_set_int (out_values++, depth);
+
   return BSE_ERROR_NONE;
 }
+
 METHOD (BseItem, redo-depth) {
   HELP  = "Call the redo-depth function of the project corresponding to this item if any.";
   IN    = bse_param_spec_object ("item", NULL, NULL,

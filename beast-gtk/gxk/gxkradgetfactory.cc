@@ -1,6 +1,7 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "gxkradgetfactory.hh"
 #include <string.h>
+
 enum {
   PROP_0,
   PROP_NAME,
@@ -12,10 +13,14 @@ enum {
   PROP_ACTIVATABLE,
   PROP_REGULATE
 };
+
 /* --- static variables --- */
 static GQuark   quark_radget_factory_hook = 0;
+
+
 /* --- functions --- */
 G_DEFINE_TYPE (GxkRadgetFactory, gxk_radget_factory, G_TYPE_OBJECT);
+
 static void
 gxk_radget_factory_init (GxkRadgetFactory *self)
 {
@@ -25,12 +30,14 @@ gxk_radget_factory_init (GxkRadgetFactory *self)
   self->name = NULL;
   self->action_root = g_strdup (":xdef");
 }
+
 static gchar*
 value_dup_string_non_empty (const GValue *value)
 {
   const gchar *str = g_value_get_string (value);
   return str && str[0] ? g_strdup (str) : NULL;
 }
+
 static void
 gxk_radget_factory_set_property (GObject      *object,
                                  guint         param_id,
@@ -77,6 +84,7 @@ gxk_radget_factory_set_property (GObject      *object,
       break;
     }
 }
+
 static void
 gxk_radget_factory_get_property (GObject    *object,
                                  guint       param_id,
@@ -115,10 +123,12 @@ gxk_radget_factory_get_property (GObject    *object,
       break;
     }
 }
+
 static void
 gxk_radget_factory_finalize (GObject *object)
 {
   GxkRadgetFactory *self = GXK_RADGET_FACTORY (object);
+
   g_assert (self->window == NULL);
   g_datalist_clear (&self->branch_widgets);
   g_free (self->action_root);
@@ -134,10 +144,13 @@ gxk_radget_factory_finalize (GObject *object)
       GxkFactoryBranch *b = (GxkFactoryBranch*) g_slist_pop_head (&self->branches);
       g_object_unref (b);
     }
+
   g_return_if_fail (self->timer == 0);
+
   /* chain parent class' handler */
   G_OBJECT_CLASS (gxk_radget_factory_parent_class)->finalize (object);
 }
+
 static GxkRadget*
 radget_factory_retrieve_branch (GxkRadgetFactory *self,
                                 const gchar      *key_path,     /* uline_unescaped */
@@ -183,6 +196,7 @@ radget_factory_retrieve_branch (GxkRadgetFactory *self,
     }
   return radget;
 }
+
 static gboolean
 match_action_root (GxkRadgetFactory *self,
                    GtkWidget        *publisher)
@@ -209,6 +223,7 @@ match_action_root (GxkRadgetFactory *self,
     ancestor = gxk_widget_find_level_ordered ((GtkWidget*) self->window, self->action_root);
   return ancestor && gxk_widget_has_ancestor (publisher, ancestor);
 }
+
 static inline const gchar*
 strip_slashes (const gchar *string)
 {
@@ -216,6 +231,8 @@ strip_slashes (const gchar *string)
     string++;
   return string;
 }
+
+
 static void
 radget_factory_action_list_added (gpointer                client_data,
                                   GtkWindow              *window,
@@ -324,6 +341,7 @@ radget_factory_action_list_added (gpointer                client_data,
       g_free (path_prefix);
     }
 }
+
 static gboolean
 radget_factory_check_anchored (gpointer data)
 {
@@ -348,6 +366,7 @@ radget_factory_check_anchored (gpointer data)
   GDK_THREADS_LEAVE ();
   return FALSE;
 }
+
 void
 gxk_radget_factory_check_anchored (GxkRadgetFactory *self)
 {
@@ -356,6 +375,7 @@ gxk_radget_factory_check_anchored (GxkRadgetFactory *self)
                                    radget_factory_check_anchored,
                                    self, NULL);
 }
+
 static void
 destroy_factory_slist (gpointer data)
 {
@@ -368,13 +388,16 @@ destroy_factory_slist (gpointer data)
       g_object_unref (fact);
     }
 }
+
 void
 gxk_radget_factory_attach (GxkRadgetFactory *self,
                            GxkRadget        *radget)
 {
   GSList *slist;
+
   g_return_if_fail (self->radget == NULL);
   g_return_if_fail (GTK_IS_WIDGET (radget));
+
   g_object_ref (self);
   slist = (GSList*) g_object_steal_qdata ((GObject*) radget, quark_radget_factory_hook);
   slist = g_slist_prepend (slist, self);
@@ -386,14 +409,18 @@ gxk_radget_factory_attach (GxkRadgetFactory *self,
                            G_CALLBACK (gxk_radget_factory_check_anchored), self, G_CONNECT_SWAPPED);
   gxk_radget_factory_check_anchored (self);
 }
+
 static void
 gxk_radget_factory_class_init (GxkRadgetFactoryClass *klass)
 {
   GObjectClass *gobject_class = G_OBJECT_CLASS (klass);
+
   quark_radget_factory_hook = g_quark_from_static_string ("GxkRadgetFactory-hook");
+
   gobject_class->set_property = gxk_radget_factory_set_property;
   gobject_class->get_property = gxk_radget_factory_get_property;
   gobject_class->finalize = gxk_radget_factory_finalize;
+
   g_object_class_install_property (gobject_class, PROP_NAME,
                                    g_param_spec_string ("name", NULL, NULL, NULL, G_PARAM_READWRITE));
   g_object_class_install_property (gobject_class, PROP_ACTION_ROOT,
@@ -411,6 +438,8 @@ gxk_radget_factory_class_init (GxkRadgetFactoryClass *klass)
   g_object_class_install_property (gobject_class, PROP_REGULATE,
                                    g_param_spec_string ("regulate", NULL, NULL, NULL, G_PARAM_READWRITE));
 }
+
+
 /* --- radget type hooks --- */
 static GParamSpec*
 radget_factory_find_prop (GTypeClass  *klass,
@@ -418,6 +447,7 @@ radget_factory_find_prop (GTypeClass  *klass,
 {
   return g_object_class_find_property (G_OBJECT_CLASS (klass), prop_name);
 }
+
 static GxkRadget*
 radget_factory_create (GType               type,
                        const gchar        *name,
@@ -429,6 +459,7 @@ radget_factory_create (GType               type,
   g_object_set (widget, "name", name, NULL);
   return widget;
 }
+
 static gboolean
 radget_factory_adopt (GxkRadget          *radget,
                       GxkRadget          *parent,
@@ -441,6 +472,7 @@ radget_factory_adopt (GxkRadget          *radget,
   self->cslot = gxk_container_get_insertion_slot (GTK_CONTAINER (parent));
   return FALSE; /* no support for packing options */
 }
+
 static const GxkRadgetType radget_factory_def = {
   radget_factory_find_prop,
   radget_factory_create,
@@ -450,17 +482,22 @@ static const GxkRadgetType radget_factory_def = {
   NULL, /* set_pack */
 };
 const GxkRadgetType *gxk_radget_factory_def = &radget_factory_def;
+
+
 /* --- GxkFactoryBranch --- */
 G_DEFINE_TYPE (GxkFactoryBranch, gxk_factory_branch, G_TYPE_OBJECT);
+
 enum {
   FACTORY_BRANCH_PROP_0,
   FACTORY_BRANCH_PROP_ULINE_LABEL,
   FACTORY_BRANCH_PROP_KEY_LABEL
 };
+
 static void
 gxk_factory_branch_init (GxkFactoryBranch *self)
 {
 }
+
 static void
 gxk_factory_branch_set_property (GObject      *object,
                                  guint         param_id,
@@ -485,6 +522,7 @@ gxk_factory_branch_set_property (GObject      *object,
   if (!self->key_label && self->uline_label)
     self->key_label = g_strdup (self->uline_label);
 }
+
 static void
 gxk_factory_branch_finalize (GObject *object)
 {
@@ -495,17 +533,21 @@ gxk_factory_branch_finalize (GObject *object)
   /* chain parent class' handler */
   G_OBJECT_CLASS (gxk_factory_branch_parent_class)->finalize (object);
 }
+
 static void
 gxk_factory_branch_class_init (GxkFactoryBranchClass *klass)
 {
   GObjectClass *gobject_class = G_OBJECT_CLASS (klass);
+
   gobject_class->set_property = gxk_factory_branch_set_property;
   gobject_class->finalize = gxk_factory_branch_finalize;
+
   g_object_class_install_property (gobject_class, FACTORY_BRANCH_PROP_ULINE_LABEL,
                                    g_param_spec_string ("uline-label", NULL, NULL, NULL, G_PARAM_WRITABLE));
   g_object_class_install_property (gobject_class, FACTORY_BRANCH_PROP_KEY_LABEL,
                                    g_param_spec_string ("key-label", NULL, NULL, NULL, G_PARAM_WRITABLE));
 }
+
 /* --- GxkFactoryBranch radget type hooks --- */
 static GParamSpec*
 factory_branch_find_prop (GTypeClass  *klass,
@@ -513,6 +555,7 @@ factory_branch_find_prop (GTypeClass  *klass,
 {
   return g_object_class_find_property (G_OBJECT_CLASS (klass), prop_name);
 }
+
 static GxkRadget*
 factory_branch_create (GType               type,
                        const gchar        *name,
@@ -522,6 +565,7 @@ factory_branch_create (GType               type,
 {
   return g_object_newv (type, n_construct_params, construct_params);
 }
+
 static gboolean
 factory_branch_adopt (GxkRadget          *radget,
                       GxkRadget          *parent,
@@ -535,6 +579,7 @@ factory_branch_adopt (GxkRadget          *radget,
   factory->branches = g_slist_append (factory->branches, radget);
   return FALSE; /* no support for packing args */
 }
+
 static const GxkRadgetType factory_branch_def = {
   factory_branch_find_prop,
   factory_branch_create,

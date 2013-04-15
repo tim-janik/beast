@@ -1,8 +1,11 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #ifndef __BST_PATTERN_COLUMNS_H__
 #define __BST_PATTERN_COLUMNS_H__
+
 #include "bstutils.hh"
+
 G_BEGIN_DECLS
+
 /* --- enums --- */
 typedef enum /*< skip >*/
 {
@@ -71,6 +74,7 @@ typedef enum {
   BST_PATTERN_LFLAG_COL4        = 3 << 8,
   BST_PATTERN_LFLAG_COL_MASK    = (3 << 8),
 } BstPatternLFlags;
+
 /* --- typedefs & structures --- */
 typedef struct _BstPatternView        BstPatternView;
 typedef struct _BstPatternColumn      BstPatternColumn;
@@ -133,6 +137,7 @@ struct _BstPatternColumnClass
                                                  BstPatternFunction     *movement);
   void                  (*finalize)             (BstPatternColumn       *self);
 };
+
 void              bst_pattern_column_layouter_popup (BstPatternView   *pview);
 const gchar*      bst_pattern_layout_parse_column   (const gchar      *string,
                                                      BstPatternLType  *ltype,
@@ -142,7 +147,9 @@ BstPatternColumn* bst_pattern_column_create         (BstPatternLType   ltype,
                                                      gint              num,
                                                      BstPatternLFlags  lflags);
 gboolean          bst_pattern_column_has_notes      (BstPatternColumn *column);
+
 G_END_DECLS
+
 // == Flags Enumeration Operators in C++ ==
 #ifdef __cplusplus
 constexpr BstPatternLFlags  operator&  (BstPatternLFlags  s1, BstPatternLFlags s2) { return BstPatternLFlags (s1 & (long long unsigned) s2); }

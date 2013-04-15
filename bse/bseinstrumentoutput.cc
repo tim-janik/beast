@@ -1,17 +1,24 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bseinstrumentoutput.hh"
+
 #include "bsecategories.hh"
 #include "bsesnet.hh"
 #include "bseengine.hh"
+
 #include <string.h>
+
 /* --- parameters --- */
 enum
 {
   PROP_0,
   PROP_OPORT_NAME
 };
+
+
 /* --- variables --- */
 static void *parent_class = NULL;
+
+
 /* --- functions --- */
 static void
 bse_instrument_output_reset_names (BseInstrumentOutput *self)
@@ -20,6 +27,7 @@ bse_instrument_output_reset_names (BseInstrumentOutput *self)
   BseItem *item = BSE_ITEM (self);
   BseSNet *snet = item->parent ? BSE_SNET (item->parent) : NULL;
   const char *name;
+
   g_object_freeze_notify (G_OBJECT (self));
   name = BSE_SOURCE_ICHANNEL_IDENT (self, 0);
   if (strcmp (oport->output_ports[0], name) != 0 &&
@@ -43,26 +51,32 @@ bse_instrument_output_reset_names (BseInstrumentOutput *self)
                   "BseSubOPort::out_port_4", name, NULL);
   g_object_thaw_notify (G_OBJECT (self));
 }
+
 static void
 bse_instrument_output_init (BseInstrumentOutput *self)
 {
   bse_instrument_output_reset_names (self);
 }
+
 static void
 bse_instrument_output_set_parent (BseItem *item,
                                   BseItem *parent)
 {
   BseInstrumentOutput *self = BSE_INSTRUMENT_OUTPUT (item);
+
   if (item->parent)
     g_signal_handlers_disconnect_by_func (item->parent, (void*) bse_instrument_output_reset_names, self);
+
   /* chain parent class' handler */
   BSE_ITEM_CLASS (parent_class)->set_parent (item, parent);
+
   if (item->parent)
     g_signal_connect_swapped (item->parent, "port_unregistered",
 			      G_CALLBACK (bse_instrument_output_reset_names), self);
   else
     bse_instrument_output_reset_names (self);
 }
+
 static void
 bse_instrument_output_get_property (GObject *object, uint param_id, GValue *value, GParamSpec *pspec)
 {
@@ -73,6 +87,7 @@ bse_instrument_output_get_property (GObject *object, uint param_id, GValue *valu
       break;
     }
 }
+
 static void
 bse_instrument_output_class_init (BseInstrumentOutputClass *klass)
 {
@@ -81,9 +96,12 @@ bse_instrument_output_class_init (BseInstrumentOutputClass *klass)
   BseItemClass *item_class = BSE_ITEM_CLASS (klass);
   BseSourceClass *source_class = BSE_SOURCE_CLASS (klass);
   uint i, ichannel_id;
+
   parent_class = g_type_class_peek_parent (klass);
+
   gobject_class->get_property = bse_instrument_output_get_property;
   item_class->set_parent = bse_instrument_output_set_parent;
+
   /* assert parent class introduced enough ports */
   g_assert (BSE_SUB_OPORT_N_PORTS >= 4);
   /* override parent properties with NOP properties */
@@ -95,6 +113,7 @@ bse_instrument_output_class_init (BseInstrumentOutputClass *klass)
                                                     /* override parent property: 0 */ "r"));
       g_free (string);
     }
+
   ichannel_id = bse_source_class_add_ichannel (source_class, "left-audio", _("Left Audio"), _("Left Channel Output"));
   g_assert (ichannel_id == BSE_INSTRUMENT_OUTPUT_ICHANNEL_LEFT);
   ichannel_id = bse_source_class_add_ichannel (source_class, "right-audio", _("Right Audio"), _("Right Channel Output"));
@@ -104,15 +123,18 @@ bse_instrument_output_class_init (BseInstrumentOutputClass *klass)
   ichannel_id = bse_source_class_add_ichannel (source_class, "synth-done", _("Synth Done"), _("High indicates the instrument is done synthesizing"));
   g_assert (ichannel_id == BSE_INSTRUMENT_OUTPUT_ICHANNEL_DONE);
 }
+
 BSE_BUILTIN_TYPE (BseInstrumentOutput)
 {
   static const GTypeInfo type_info = {
     sizeof (BseInstrumentOutputClass),
+
     (GBaseInitFunc) NULL,
     (GBaseFinalizeFunc) NULL,
     (GClassInitFunc) bse_instrument_output_class_init,
     (GClassFinalizeFunc) NULL,
     NULL /* class_data */,
+
     sizeof (BseInstrumentOutput),
     0 /* n_preallocs */,
     (GInstanceInitFunc) bse_instrument_output_init,

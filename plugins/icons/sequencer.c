@@ -1,4 +1,5 @@
 /* GdkPixbuf RGBA C-Source image dump 1-byte-run-length-encoded */
+
 static const guint8 sequencer_icon[] = 
 { ""
   /* Pixbuf magic (0x47646b50) */
@@ -352,3 +353,5 @@ static const guint8 sequencer_icon[] =
   "\0&\0\0\0-\256\0\0\0.\2\0\0\0""2\0\0\0""0\202\0\0\0.\3\0\0\0""1\0\0\0"
   "6\0\0\0/\202\0\0\0.\4\0\0\0,\0\0\0!\0\0\0\12\0\0\0\1\377\0\0\0\0\1\0"
   "\0\0\0"};
+
+

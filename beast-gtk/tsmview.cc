@@ -1,8 +1,12 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include <gxk/gxk.hh>
+
 #include "topconfig.h"
+
 #include <string.h>
+
 #define PRGNAME "tsmview"
+
 /* --- functions --- */
 static GtkWidget*
 textget_handler (gpointer              user_data,
@@ -15,6 +19,7 @@ textget_handler (gpointer              user_data,
                                     "label", element_name,
                                     NULL);
 }
+
 int
 main (int   argc,
       char *argv[])
@@ -28,7 +33,9 @@ main (int   argc,
   g_type_init ();
   gtk_init (&argc, &argv);
   gxk_init ();
+
   gxk_text_register_textget_handler ("textget-label", textget_handler, NULL);
+
   for (i = 1; i < argc; i++)
     if (!flags && strcmp (argv[i], "--edit") == 0)
       {
@@ -59,18 +66,24 @@ main (int   argc,
 	title = g_strconcat (title, " ", argv[i], NULL);
 	g_free (str);
       }
+
   str = title;
   title = g_strdup ("tsmview");	// g_strconcat (title, " - tsmview", NULL);
   g_free (str);
+
   dialog = (GtkWidget*) gxk_dialog_new (NULL, NULL, GXK_DIALOG_DELETE_BUTTON, title, NULL);
   g_free (title);
+
   g_object_connect (dialog, "signal::destroy", gtk_main_quit, NULL, NULL);
+
   gxk_dialog_set_child (GXK_DIALOG (dialog), sctext);
+
   g_object_set (dialog,
 		"default_width", 560,
 		"default_height", 640,
 		"visible", TRUE,
 		NULL);
   gtk_main ();
+
   return 0;
 }

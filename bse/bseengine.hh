@@ -1,8 +1,11 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #ifndef __BSE_ENGINE_H__
 #define __BSE_ENGINE_H__
+
 #include <bse/bsedefs.hh>
+
 G_BEGIN_DECLS
+
 /* --- constants --- */
 #define BSE_STREAM_MAX_VALUES                   (1024 /* power of 2 and <= 16384 */)
 #define BSE_MODULE_N_OSTREAMS(module)           ((module)->klass->n_ostreams)
@@ -15,6 +18,8 @@ G_BEGIN_DECLS
 #define BSE_MODULE_JBUFFER(module, stream, con) (BSE_MODULE_JSTREAM ((module), (stream)).values[con])
 #define BSE_MODULE_OBUFFER(module, stream)      (BSE_MODULE_OSTREAM ((module), (stream)).values)
 #define BSE_ENGINE_MAX_POLLFDS                  (128)
+
+
 /* --- typedefs --- */
 typedef struct _BseJob                   BseJob;
 /* bsedefs.hh:
@@ -43,6 +48,7 @@ typedef guint    (*BseProcessDeferFunc) (BseModule     *module,
 typedef void     (*BseModuleResetFunc)  (BseModule     *module);
 typedef void     (*BseModuleFreeFunc)   (gpointer        data,
                                          const BseModuleClass *klass);
+
 typedef enum    /*< skip >*/
 {
   BSE_COST_NORMAL       = 0,
@@ -88,6 +94,8 @@ struct _BseOStream
   gfloat     *values;
   gboolean    connected;
 };
+
+
 /* --- interface (UserThread functions) --- */
 BseModule* bse_module_new               (const BseModuleClass *klass,
                                          gpointer              user_data);
@@ -163,8 +171,10 @@ void       bse_trans_commit_delayed     (BseTrans             *trans,
 void       bse_trans_dismiss            (BseTrans             *trans);
 void       bse_transact                 (BseJob               *job,
                                          ...) G_GNUC_NULL_TERMINATED;
+
 /* --- module utilities (EngineThread functions) --- */
 gfloat*    bse_engine_const_values      (gfloat                value);
+
 /* --- initialization & main loop --- */
 void       bse_engine_constrain         (guint                 latency_ms,
                                          guint                 sample_freq,
@@ -175,6 +185,7 @@ void       bse_engine_init              (gboolean              threaded);
 gboolean   bse_engine_configure         (guint                 latency_ms,
                                          guint                 sample_freq,
                                          guint                 control_freq);
+
 /* --- miscellaneous --- */
 gfloat*    bse_engine_const_zeros	      (guint	     smaller_than_BSE_STREAM_MAX_VALUES);
 gboolean   bse_engine_has_garbage             (void);

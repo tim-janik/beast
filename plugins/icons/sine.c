@@ -1,4 +1,5 @@
 /* GIMP RGBA C-Source image dump 1-byte-run-length-encoded (sine.c) */
+
 #define SINE_WIDTH (64)
 #define SINE_HEIGHT (64)
 #define SINE_BYTES_PER_PIXEL (4) /* 3:RGB, 4:RGBA */
@@ -45,3 +46,4 @@ static const guint8 SINE_rle_pixel_data[714] =
  "\1\361!\6P\266\0\0\0\0\1\361!\6[\207\361!\6\210\1\361!\6<\270\0\0\0\0\2\361"
  "!\6\34\361!\6c\203\361!\6\177\2\361!\6U\361!\6\34\377\0\0\0\0\377\0\0\0\0"
  "\377\0\0\0\0\377\0\0\0\0\377\0\0\0\0\377\0\0\0\0\377\0\0\0\0\227\0\0\0\0");
+

@@ -16,6 +16,8 @@
 #include "bstprofiler.hh"
 #include "bstusermessage.hh"
 #include <string.h>
+
+
 /* --- prototypes --- */
 static void           bst_app_run_script_proc     (gpointer     data,
                                                    gulong       category_id);
@@ -27,6 +29,8 @@ static gboolean       app_action_check            (gpointer     data,
                                                    gulong       action,
                                                    guint64      action_stamp);
 static void           bst_app_reload_pages        (BstApp      *self);
+
+
 /* --- menus --- */
 enum {
   ACTION_INTERNALS = BST_ACTION_APP_LAST,
@@ -177,10 +181,14 @@ static const GxkStockAction demo_dialogs[] = {
   { "Demo Debug Dialog",        NULL,           "Fire up a debug dialog for demonstration purposes",
     ACTION_DEMO_DIALOG_DEBUG,   BST_STOCK_DIAG },
 };
+
 /* --- variables --- */
 static BstAppClass    *bst_app_class = NULL;
+
+
 /* --- functions --- */
 G_DEFINE_TYPE (BstApp, bst_app, GXK_TYPE_DIALOG);
+
 static void
 bst_app_register (BstApp *app)
 {
@@ -199,7 +207,9 @@ bst_app_init (BstApp *self)
   GtkWidget *widget = GTK_WIDGET (self);
   BseCategorySeq *cseq;
   GxkActionList *al1, *al2;
+
   self->cookie = g_strdup ("");
+
   g_object_set (self,
                 "name", "BEAST-Application",
                 "allow_shrink", TRUE,
@@ -209,6 +219,7 @@ bst_app_init (BstApp *self)
   bst_app_register (self);
   self->box = gxk_radget_create ("beast", "application-box", NULL);
   gtk_container_add (GTK_CONTAINER (GXK_DIALOG (self)->vbox), (GtkWidget*) self->box);
+
   /* publish widget specific actions */
   gxk_widget_publish_actions (self, "file-open", G_N_ELEMENTS (file_open_actions), file_open_actions,
                               NULL, app_action_check, app_action_exec);
@@ -275,12 +286,15 @@ bst_app_init (BstApp *self)
   al1 = skin_entries_create (self);
   gxk_action_list_sort (al1);
   gxk_widget_publish_action_list (widget, "skin-options", al1);
+
   /* setup playback controls */
   self->pcontrols = (GtkWidget*) g_object_new (BST_TYPE_PROJECT_CTRL, NULL);
   gxk_radget_add (self->box, "control-area", self->pcontrols);
+
   /* setup project pages */
   self->ppages = gxk_assortment_new ();
   gxk_widget_publish_assortment (widget, "project-pages", self->ppages);
+
   /* setup WAVE file entry */
   // gxk_radget_add (self->box, "control-area", gxk_vseparator_space_new (TRUE));
   self->wave_file = bst_param_new_proxy (bse_proxy_get_pspec (BSE_SERVER, "wave_file"), BSE_SERVER);
@@ -293,6 +307,7 @@ bst_app_init (BstApp *self)
                                                                         NULL));
   gxk_radget_add (self->box, "export-area-file-entry", gxk_param_create_editor (self->wave_file, NULL));
   gxk_param_update (self->wave_file);
+
   /* setup the main notebook */
   self->notebook = (GtkNotebook*) gxk_radget_find (self->box, "main-notebook");
   gxk_nullify_in_object (self, &self->notebook);
@@ -300,17 +315,21 @@ bst_app_init (BstApp *self)
                     "swapped_signal_after::switch-page", gxk_widget_update_actions, self,
                     NULL);
 }
+
 static void
 bst_app_destroy (GtkObject *object)
 {
   BstApp *self = BST_APP (object);
+
   if (self->wave_file)
     {
       gxk_param_destroy (self->wave_file);
       self->wave_file = NULL;
     }
+
   if (self->rack_dialog)
     gtk_widget_destroy (self->rack_dialog);
+
   if (self->project)
     {
       if (self->pcontrols)
@@ -323,20 +342,26 @@ bst_app_destroy (GtkObject *object)
       bse_item_unuse (self->project);
       self->project = 0;
     }
+
   if (self->ppages)
     gxk_assortment_dispose (self->ppages);
+
   bst_app_unregister (self);
+
   GTK_OBJECT_CLASS (bst_app_parent_class)->destroy (object);
+
   if (!bst_app_class->apps && bst_app_class->seen_apps)
     {
       bst_app_class->seen_apps = FALSE;
       BST_MAIN_LOOP_QUIT ();
     }
 }
+
 static void
 bst_app_finalize (GObject *object)
 {
   BstApp *self = BST_APP (object);
+
   if (self->project)
     {
       bse_proxy_disconnect (self->project,
@@ -353,14 +378,18 @@ bst_app_finalize (GObject *object)
       self->ppages = NULL;
     }
   g_free (self->cookie);
+
   G_OBJECT_CLASS (bst_app_parent_class)->finalize (object);
 }
+
 BstApp*
 bst_app_new (SfiProxy project)
 {
   g_return_val_if_fail (BSE_IS_PROJECT (project), NULL);
+
   BstApp *self = (BstApp*) g_object_new (BST_TYPE_APP, NULL);
   gxk_dialog_set_sizes (GXK_DIALOG (self), 500, 400, 950, 800);
+
   self->project = project;
   bse_item_use (self->project);
   bse_proxy_connect (self->project,
@@ -372,25 +401,33 @@ bst_app_new (SfiProxy project)
   bst_window_sync_title_to_proxy (GXK_DIALOG (self), self->project, "%s");
   if (self->pcontrols)
     bst_project_ctrl_set_project (BST_PROJECT_CTRL (self->pcontrols), self->project);
+
   bst_app_reload_pages (self);
+
   /* update menu entries
    */
   gxk_widget_update_actions (self);
+
   return self;
 }
+
 BstApp*
 bst_app_find (SfiProxy project)
 {
   GSList *slist;
+
   g_return_val_if_fail (BSE_IS_PROJECT (project), NULL);
+
   for (slist = bst_app_class->apps; slist; slist = slist->next)
     {
       BstApp *app = (BstApp*) slist->data;
+
       if (app->project == project)
         return app;
     }
   return NULL;
 }
+
 static SfiProxy
 bst_app_get_current_super (BstApp *app)
 {
@@ -406,6 +443,7 @@ bst_app_get_current_super (BstApp *app)
     }
   return 0;
 }
+
 static gint
 proxy_rate_item (SfiProxy p)
 {
@@ -419,6 +457,7 @@ proxy_rate_item (SfiProxy p)
     return 3;
   return 5;
 }
+
 static void
 app_update_page_item (SfiProxy     item,
                       const gchar *property_name,
@@ -432,6 +471,7 @@ app_update_page_item (SfiProxy     item,
       gxk_assortment_changed (self->ppages, entry);
     }
 }
+
 static void
 ppage_item_free (gpointer user_data,
                  GObject *object,
@@ -444,6 +484,7 @@ ppage_item_free (gpointer user_data,
     gtk_widget_destroy (GTK_WIDGET (object));
   bse_item_unuse (item);
 }
+
 static void
 bst_app_add_page_item (BstApp  *self,
                        guint    position,
@@ -486,6 +527,7 @@ bst_app_add_page_item (BstApp  *self,
     g_object_unref (page);
   g_free (tip);
 }
+
 static gint
 proxyp_cmp_items (gconstpointer v1,
                   gconstpointer v2,
@@ -497,14 +539,17 @@ proxyp_cmp_items (gconstpointer v1,
     return 0;
   return proxy_rate_item (*p1) - proxy_rate_item (*p2);
 }
+
 static void
 bst_app_reload_pages (BstApp *self)
 {
   g_return_if_fail (BST_IS_APP (self));
+
   GtkWidget *old_focus = GTK_WINDOW (self)->focus_widget;
   if (old_focus)
     gtk_widget_ref (old_focus);
   SfiProxy old_item = self->ppages->selected ? (SfiProxy) self->ppages->selected->user_data : 0;
+
   /* collect page objects */
   BseItemSeq *iseq = bse_project_get_supers (self->project);
   SfiRing *ring, *proxies = NULL;
@@ -514,6 +559,7 @@ bst_app_reload_pages (BstApp *self)
       proxies = sfi_ring_append (proxies, iseq->items + i);
   /* sort proxies */
   proxies = sfi_ring_sort (proxies, proxyp_cmp_items, NULL);
+
   /* remove outdated project pages */
   SfiRing *outdated = NULL;
   GSList *slist;
@@ -534,6 +580,7 @@ bst_app_reload_pages (BstApp *self)
       GxkAssortmentEntry *entry = (GxkAssortmentEntry*) sfi_ring_pop_head (&outdated);
       gxk_assortment_remove (self->ppages, entry);
     }
+
   /* add missing project pages */
   SfiProxy first_unseen = 0, first_synth = 0;
   i = 0;
@@ -549,6 +596,7 @@ bst_app_reload_pages (BstApp *self)
       if (!first_synth && BSE_IS_SNET (item))
         first_synth = item;
     }
+
   /* select/restore current page */
   if (first_unseen && self->select_unseen_super)
     gxk_assortment_select_data (self->ppages, (void*) first_unseen);
@@ -566,6 +614,7 @@ bst_app_reload_pages (BstApp *self)
       gtk_widget_unref (old_focus);
     }
 }
+
 static gboolean
 bst_app_handle_delete_event (GtkWidget   *widget,
                              GdkEventAny *event)
@@ -595,23 +644,29 @@ bst_app_handle_delete_event (GtkWidget   *widget,
     gtk_widget_destroy (widget);
   return TRUE;
 }
+
 static void
 rebuild_super_shell (BstSuperShell *super_shell)
 {
   SfiProxy proxy;
+
   g_return_if_fail (BST_IS_SUPER_SHELL (super_shell));
+
   proxy = super_shell->super;
   bse_item_use (proxy);
   bst_super_shell_set_super (super_shell, 0);
   bst_super_shell_set_super (super_shell, proxy);
   bse_item_unuse (proxy);
 }
+
 typedef struct {
   gchar *file;
   gchar *name;
 } DemoEntry;
+
 static DemoEntry *demo_entries = NULL;
 static guint      n_demo_entries = 0;
+
 static int
 demo_entries_compare (const void *v1,
                       const void *v2)
@@ -620,6 +675,7 @@ demo_entries_compare (const void *v1,
   const DemoEntry *d2 = (const DemoEntry*) v2;
   return strcmp (d1->file, d2->file);
 }
+
 static void
 demo_entries_setup (void)
 {
@@ -650,6 +706,7 @@ demo_entries_setup (void)
       qsort (demo_entries, n_demo_entries, sizeof (demo_entries[0]), demo_entries_compare);
     }
 }
+
 static void
 demo_play_song (gpointer data,
                 gulong   callback_action)
@@ -671,6 +728,7 @@ demo_play_song (gpointer data,
     }
   bse_item_unuse (project);
 }
+
 static GxkActionList*
 demo_entries_create (BstApp *app)
 {
@@ -683,8 +741,10 @@ demo_entries_create (BstApp *app)
                                     NULL, demo_play_song, app);
   return alist;
 }
+
 static DemoEntry *skin_entries = NULL;
 static guint     n_skin_entries = 0;
+
 static void
 skin_entries_setup (void)
 {
@@ -715,6 +775,7 @@ skin_entries_setup (void)
         }
     }
 }
+
 static void
 load_skin (gpointer data,
            gulong   callback_action)
@@ -723,6 +784,7 @@ load_skin (gpointer data,
   BseErrorType error = bst_skin_parse (file_name);
   bst_status_eprintf (error, _("Loading skin `%s'"), file_name);
 }
+
 static GxkActionList*
 skin_entries_create (BstApp *app)
 {
@@ -735,6 +797,7 @@ skin_entries_create (BstApp *app)
                                     NULL, load_skin, app);
   return alist;
 }
+
 static void
 bst_app_run_script_proc (gpointer data,
                          gulong   category_id)
@@ -743,6 +806,7 @@ bst_app_run_script_proc (gpointer data,
   BseCategory *cat = bse_category_from_id (category_id);
   SfiProxy super = bst_app_get_current_super (self);
   const gchar *song = "", *wave_repo = "", *snet = "", *csynth = "";
+
   if (BSE_IS_SONG (super))
     song = "song";
   else if (BSE_IS_WAVE_REPO (super))
@@ -753,6 +817,7 @@ bst_app_run_script_proc (gpointer data,
       if (BSE_IS_CSYNTH (super))
         csynth = "custom-synth";
     }
+
   bst_procedure_exec_auto (cat->type,
                            "project", SFI_TYPE_PROXY, self->project,
                            song, SFI_TYPE_PROXY, super,
@@ -761,12 +826,14 @@ bst_app_run_script_proc (gpointer data,
                            csynth, SFI_TYPE_PROXY, super,
                            NULL);
 }
+
 void
 bst_app_show_release_notes (BstApp *app)
 {
   if (app_action_check (app, ACTION_HELP_RELEASE_NOTES, gxk_action_inc_cache_stamp()))
     app_action_exec (app, ACTION_HELP_RELEASE_NOTES);
 }
+
 static void
 app_action_exec (gpointer data,
                  gulong   action)
@@ -775,7 +842,9 @@ app_action_exec (gpointer data,
   BstApp *self = BST_APP (data);
   const gchar *docs_url = NULL, *docs_title = "";
   GtkWidget *widget = GTK_WIDGET (self);
+
   gxk_status_window_push (widget);
+
   switch (action)
     {
       SfiProxy proxy;
@@ -785,6 +854,7 @@ app_action_exec (gpointer data,
       if (bst_app_class)
         {
           GSList *slist, *free_slist = g_slist_copy (bst_app_class->apps);
+
           for (slist = free_slist; slist; slist = slist->next)
             gxk_toplevel_delete ((GtkWidget*) slist->data);
           g_slist_free (free_slist);
@@ -798,9 +868,11 @@ app_action_exec (gpointer data,
         {
           SfiProxy project = bse_server_use_new_project (BSE_SERVER, "Untitled.bse");
           BstApp *new_app;
+
           bse_project_get_wave_repo (project);
           new_app = bst_app_new (project);
           bse_item_unuse (project);
+
           gxk_idle_show_widget (GTK_WIDGET (new_app));
         }
       break;
@@ -875,6 +947,7 @@ app_action_exec (gpointer data,
           BstRackEditor *ed = (BstRackEditor*) g_object_new (BST_TYPE_RACK_EDITOR,
                                             "visible", TRUE,
                                             NULL);
+
           self->rack_editor = (GtkWidget*) g_object_connect (ed, "swapped_signal::destroy", g_nullify_pointer, &self->rack_editor, NULL);
           bst_rack_editor_set_rack_view (ed, bse_project_get_data_pocket (self->project, "BEAST-Rack-View"));
           self->rack_dialog = (GtkWidget*) gxk_dialog_new (&self->rack_dialog,
@@ -915,6 +988,7 @@ app_action_exec (gpointer data,
       if (!bst_proc_browser)
         {
           GtkWidget *widget;
+
           widget = bst_proc_browser_new ();
           gtk_widget_show (widget);
           bst_proc_browser = gxk_dialog_new (&bst_proc_browser,
@@ -1043,9 +1117,12 @@ app_action_exec (gpointer data,
       g_assert_not_reached ();
       break;
     }
+
   gxk_status_window_pop ();
+
   gxk_widget_update_actions_downwards (self);
 }
+
 static gboolean
 app_action_check (gpointer data,
                   gulong   action,
@@ -1139,15 +1216,21 @@ app_action_check (gpointer data,
       return FALSE;
     }
 }
+
 static void
 bst_app_class_init (BstAppClass *klass)
 {
   GObjectClass *gobject_class = G_OBJECT_CLASS (klass);
   GtkObjectClass *object_class = GTK_OBJECT_CLASS (klass);
   GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (klass);
+
   bst_app_class = klass;
+
   gobject_class->finalize = bst_app_finalize;
+
   object_class->destroy = bst_app_destroy;
+
   widget_class->delete_event = bst_app_handle_delete_event;
+
   klass->apps = NULL;
 }

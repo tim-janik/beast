@@ -28,5 +28,7 @@ using namespace Rapicorn;
 #include <sfi/sfivalues.hh>
 #include <sfi/sfivmarshal.hh>
 #include <sfi/sfiwrapper.hh>
+
 #endif /* __SFI_H__ */
+
 /* vim:set ts=8 sts=2 sw=2: */

@@ -1,9 +1,13 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #ifndef __GSL_OSC_TABLE_H__
 #define __GSL_OSC_TABLE_H__
+
 #include <bse/gsldefs.hh>
 #include <sfi/gbsearcharray.hh>
+
 G_BEGIN_DECLS
+
+
 /* --- structures & enums --- */
 typedef enum    /*< skip >*/
 {
@@ -18,12 +22,14 @@ typedef enum    /*< skip >*/
   GSL_OSC_WAVE_SQUARE,
   GSL_OSC_WAVE_PULSE_SAW
 } GslOscWaveForm;
+
 typedef struct
 {
   gfloat         mix_freq;
   GslOscWaveForm wave_form;
   GBSearchArray *entry_array;
 } GslOscTable;
+
 typedef struct
 {
   gfloat        min_freq;
@@ -38,6 +44,8 @@ typedef struct
   gfloat	ifrac_to_float;		/* frac -> 0..1 float */
   guint		min_pos, max_pos;	/* pulse extension */
 } GslOscWave;
+
+
 /* --- oscillator table --- */
 GslOscTable*    gsl_osc_table_create            (gfloat                  mix_freq,
 						 GslOscWaveForm          wave_form,
@@ -48,6 +56,8 @@ void            gsl_osc_table_lookup            (const GslOscTable      *table,
 						 gfloat                  freq,
 						 GslOscWave             *wave);
 void            gsl_osc_table_free              (GslOscTable            *table);
+
+
 /* --- oscillator wave utils --- */
 void            gsl_osc_wave_fill_buffer        (GslOscWaveForm          type,
 						 guint                   n_values,
@@ -67,5 +77,8 @@ void		gsl_osc_wave_adjust_range	(guint			 n_values,
 						 gfloat			 new_center,
 						 gfloat			 new_max);
 const gchar*	gsl_osc_wave_form_name		(GslOscWaveForm		 wave_form);
+
+
 G_END_DECLS
+
 #endif /* __GSL_OSC_TABLE_H__ */

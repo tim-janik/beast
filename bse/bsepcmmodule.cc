@@ -1,6 +1,8 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bseengine.hh"
 #include "bsepcmdevice.hh"
+
+
 /* --- typedefs & structures --- */
 typedef struct
 {
@@ -23,6 +25,8 @@ enum
   BSE_PCM_MODULE_OSTREAM_RIGHT,
   BSE_PCM_MODULE_N_OSTREAMS
 };
+
+
 /* --- prototypes --- */
 static BseModule*	bse_pcm_omodule_insert	(BsePcmHandle	*handle,
 						 BsePcmWriter	*writer,
@@ -33,6 +37,8 @@ static BseModule*	bse_pcm_imodule_insert	(BsePcmHandle	*handle,
 						 BseTrans	*trans);
 static void		bse_pcm_imodule_remove	(BseModule	*pcm_module,
 						 BseTrans	*trans);
+
+
 /* --- functions --- */
 static gboolean
 bse_pcm_module_poll (gpointer       data,
@@ -46,6 +52,7 @@ bse_pcm_module_poll (gpointer       data,
   BsePcmHandle *handle = mdata->handle;
   return bse_pcm_handle_check_io (handle, timeout_p);
 }
+
 static void
 bse_pcm_omodule_process (BseModule *module,
 			 guint      n_values)
@@ -55,7 +62,9 @@ bse_pcm_omodule_process (BseModule *module,
   gfloat *b = mdata->bound;
   const gfloat *src;
   guint i;
+
   g_return_if_fail (n_values == mdata->n_values / BSE_PCM_MODULE_N_JSTREAMS);
+
   if (BSE_MODULE_JSTREAM (module, BSE_PCM_MODULE_JSTREAM_LEFT).n_connections)
     src = BSE_MODULE_JBUFFER (module, BSE_PCM_MODULE_JSTREAM_LEFT, 0);
   else
@@ -68,6 +77,7 @@ bse_pcm_omodule_process (BseModule *module,
       d = mdata->buffer;
       do { *d += *src++; d += 2; } while (d < b);
     }
+
   if (BSE_MODULE_JSTREAM (module, BSE_PCM_MODULE_JSTREAM_RIGHT).n_connections)
     src = BSE_MODULE_JBUFFER (module, BSE_PCM_MODULE_JSTREAM_RIGHT, 0);
   else
@@ -80,18 +90,22 @@ bse_pcm_omodule_process (BseModule *module,
       d = mdata->buffer + 1;
       do { *d += *src++; d += 2; } while (d < b);
     }
+
   bse_pcm_handle_write (mdata->handle, mdata->n_values, mdata->buffer);
   if (mdata->pcm_writer)
     bse_pcm_writer_write (mdata->pcm_writer, mdata->n_values, mdata->buffer);
 }
+
 static void
 bse_pcm_module_data_free (gpointer        data,
 			  const BseModuleClass *klass)
 {
   BsePCMModuleData *mdata = (BsePCMModuleData*) data;
+
   g_free (mdata->buffer);
   g_free (mdata);
 }
+
 static BseModule*
 bse_pcm_omodule_insert (BsePcmHandle *handle,
 			BsePcmWriter *writer,
@@ -109,9 +123,11 @@ bse_pcm_omodule_insert (BsePcmHandle *handle,
   };
   BsePCMModuleData *mdata;
   BseModule *module;
+
   g_return_val_if_fail (handle != NULL, NULL);
   g_return_val_if_fail (handle->write != NULL, NULL);
   g_return_val_if_fail (trans != NULL, NULL);
+
   mdata = g_new0 (BsePCMModuleData, 1);
   mdata->n_values = bse_engine_block_size () * BSE_PCM_MODULE_N_JSTREAMS;
   mdata->buffer = g_new0 (gfloat, mdata->n_values);
@@ -119,32 +135,38 @@ bse_pcm_omodule_insert (BsePcmHandle *handle,
   mdata->handle = handle;
   mdata->pcm_writer = writer;
   module = bse_module_new (&pcm_omodule_class, mdata);
+
   bse_trans_add (trans,
 		 bse_job_integrate (module));
   bse_trans_add (trans,
 		 bse_job_set_consumer (module, TRUE));
   bse_trans_add (trans,
 		 bse_job_add_poll (bse_pcm_module_poll, mdata, NULL, 0, NULL));
+
   return module;
 }
+
 static void
 bse_pcm_omodule_remove (BseModule *pcm_module,
 			BseTrans  *trans)
 {
   g_return_if_fail (pcm_module != NULL);
   g_return_if_fail (trans != NULL);
+
   BsePCMModuleData *mdata = (BsePCMModuleData*) pcm_module->user_data;
   bse_trans_add (trans,
 		 bse_job_remove_poll (bse_pcm_module_poll, mdata));
   bse_trans_add (trans,
 		 bse_job_discard (pcm_module));
 }
+
 static gboolean
 pcm_imodule_check_input (gpointer data)         /* UserThread */
 {
   bse_server_require_pcm_input (bse_server_get());
   return FALSE;
 }
+
 static void
 bse_pcm_imodule_reset (BseModule *module)       /* EngineThread */
 {
@@ -156,6 +178,7 @@ bse_pcm_imodule_reset (BseModule *module)       /* EngineThread */
       bse_idle_now (pcm_imodule_check_input, NULL);
     }
 }
+
 static void
 bse_pcm_imodule_process (BseModule *module,     /* EngineThread */
 			 guint      n_values)
@@ -164,7 +187,9 @@ bse_pcm_imodule_process (BseModule *module,     /* EngineThread */
   gfloat *left = BSE_MODULE_OBUFFER (module, BSE_PCM_MODULE_OSTREAM_LEFT);
   gfloat *right = BSE_MODULE_OBUFFER (module, BSE_PCM_MODULE_OSTREAM_RIGHT);
   gsize l;
+
   g_return_if_fail (n_values <= mdata->n_values / BSE_PCM_MODULE_N_OSTREAMS);
+
   if (mdata->handle->readable)
     {
       l = bse_pcm_handle_read (mdata->handle, mdata->n_values, mdata->buffer);
@@ -172,6 +197,7 @@ bse_pcm_imodule_process (BseModule *module,     /* EngineThread */
     }
   else
     memset (mdata->buffer, 0, mdata->n_values * sizeof (gfloat));
+
   /* due to suspend/resume, we may be called with partial read requests */
   const gfloat *s = mdata->buffer + mdata->n_values - (n_values * BSE_PCM_MODULE_N_OSTREAMS);
   const gfloat *b = mdata->bound;
@@ -182,6 +208,7 @@ bse_pcm_imodule_process (BseModule *module,     /* EngineThread */
     }
   while (s < b);
 }
+
 static BseModule*
 bse_pcm_imodule_insert (BsePcmHandle *handle,
 			BseTrans     *trans)
@@ -198,9 +225,11 @@ bse_pcm_imodule_insert (BsePcmHandle *handle,
   };
   BsePCMModuleData *mdata;
   BseModule *module;
+
   g_return_val_if_fail (handle != NULL, NULL);
   g_return_val_if_fail (handle->write != NULL, NULL);
   g_return_val_if_fail (trans != NULL, NULL);
+
   mdata = g_new0 (BsePCMModuleData, 1);
   mdata->n_values = bse_engine_block_size () * BSE_PCM_MODULE_N_OSTREAMS;
   mdata->buffer = g_new0 (gfloat, mdata->n_values);
@@ -208,16 +237,20 @@ bse_pcm_imodule_insert (BsePcmHandle *handle,
   mdata->handle = handle;
   mdata->pcm_writer = NULL;
   module = bse_module_new (&pcm_imodule_class, mdata);
+
   bse_trans_add (trans,
 		 bse_job_integrate (module));
+
   return module;
 }
+
 static void
 bse_pcm_imodule_remove (BseModule *pcm_module,
 			BseTrans  *trans)
 {
   g_return_if_fail (pcm_module != NULL);
   g_return_if_fail (trans != NULL);
+
   bse_trans_add (trans,
 		 bse_job_discard (pcm_module));
 }

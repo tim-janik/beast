@@ -1,17 +1,25 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "gxkglobals.hh"
+
+
 /* --- variables --- */
 const GxkGlobals* gxk_globals = NULL;
+
+
 /* --- functions --- */
 void
 gxk_init (void)
 {
   static GxkGlobals globals = { NULL, };
+
   g_return_if_fail (gxk_globals == NULL);
+
   gxk_globals = &globals;
+
   globals.tooltips = gtk_tooltips_new ();
   g_object_ref (globals.tooltips);
   gtk_object_sink (GTK_OBJECT (globals.tooltips));
+
   gxk_init_utils ();
   gxk_init_params ();
   gxk_init_stock ();
@@ -19,6 +27,7 @@ gxk_init (void)
   gxk_init_assortments ();
   gxk_init_radget_types ();
 }
+
 gulong
 gxk_nullify_in_object (gpointer object,
                        gpointer _location)

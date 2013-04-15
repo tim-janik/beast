@@ -44,7 +44,11 @@ enum
   DAV_XTAL_STRINGS_OCHANNEL_MONO,
   DAV_XTAL_STRINGS_N_OCHANNELS
 };
+
+
+
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */
+
 #endif /* __DAV_XTAL_STRINGS_H__ */

@@ -1,8 +1,11 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #ifndef __GXK_POLYGON_H__
 #define __GXK_POLYGON_H__
+
 #include "gxkutils.hh"
+
 G_BEGIN_DECLS
+
 /* --- type macros --- */
 #define GXK_TYPE_POLYGON              (gxk_polygon_get_type ())
 #define GXK_POLYGON(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), GXK_TYPE_POLYGON, GxkPolygon))
@@ -10,6 +13,8 @@ G_BEGIN_DECLS
 #define GXK_IS_POLYGON(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), GXK_TYPE_POLYGON))
 #define GXK_IS_POLYGON_CLASS(klass)   (G_TYPE_CHECK_CLASS_TYPE ((klass), GXK_TYPE_POLYGON))
 #define GXK_POLYGON_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), GXK_TYPE_POLYGON, GxkPolygonClass))
+
+
 /* --- structures --- */
 typedef struct {
   gfloat x1, y1, x2, y2;
@@ -37,6 +42,8 @@ typedef struct {
   GxkPolygonArc  *arcs;
   guint		  length;
 } GxkPolygonGraph;
+
+
 /* --- prototypes --- */
 GType		gxk_polygon_get_type		(void);
 gpointer	gxk_polygon_new			(GxkPolygonGraph *polygon_graph);
@@ -60,5 +67,7 @@ extern GxkPolygonGraph gxk_polygon_play;
 extern GxkPolygonGraph gxk_polygon_forward;
 extern GxkPolygonGraph gxk_polygon_next;
 extern GxkPolygonGraph gxk_polygon_last;
+
 G_END_DECLS
+
 #endif  /* __GXK_POLYGON_H__ */

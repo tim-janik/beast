@@ -1,6 +1,10 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include	"bsteffectview.hh"
+
 #include	"bstparamview.hh"
+
+
+
 /* --- prototypes --- */
 static void	bst_effect_view_class_init	(BstEffectViewClass	*klass);
 static void	bst_effect_view_init		(BstEffectView		*effect_view);
@@ -15,14 +19,19 @@ static void	add_effect			(BstEffectView		*effect_view);
 static void	remove_effect			(BstEffectView		*effect_view);
 static void	alist_selection_changed		(BstEffectView		*effect_view);
 static void	plist_selection_changed		(BstEffectView		*effect_view);
+
+
 /* --- static variables --- */
 static gpointer		   parent_class = NULL;
 static BstEffectViewClass *bst_effect_view_class = NULL;
+
+
 /* --- functions --- */
 GtkType
 bst_effect_view_get_type (void)
 {
   static GtkType effect_view_type = 0;
+
   if (!effect_view_type)
     {
       GtkTypeInfo effect_view_info =
@@ -36,25 +45,34 @@ bst_effect_view_get_type (void)
 	/* reserved_2 */ NULL,
 	(GtkClassInitFunc) NULL,
       };
+
       effect_view_type = gtk_type_unique (GTK_TYPE_ALIGNMENT, &effect_view_info);
     }
+
   return effect_view_type;
 }
+
 static void
 bst_effect_view_class_init (BstEffectViewClass *klass)
 {
   GtkObjectClass *object_class = GTK_OBJECT_CLASS (klass);
+
   bst_effect_view_class = klass;
   parent_class = gtk_type_class (GTK_TYPE_ALIGNMENT);
+
   G_OBJECT_CLASS (klass)->finalize = bst_effect_view_finalize;
+
   object_class->destroy = bst_effect_view_destroy;
+
   klass->default_param_view_height = 60;
 }
+
 static void
 bst_effect_view_init (BstEffectView *effect_view)
 {
   GtkWidget *alist_box, *pbox, *bbox, *sc_win;
   GtkCList *clist;
+
   /* setup containers */
   effect_view->paned = gtk_widget_new (GTK_TYPE_HPANED,
 				       "visible", TRUE,
@@ -91,6 +109,7 @@ bst_effect_view_init (BstEffectView *effect_view)
 				      "yalign", 0.5,
 				      NULL),
 		      FALSE, TRUE, 0);
+
   /* setup lists */
   sc_win = gtk_widget_new (GTK_TYPE_SCROLLED_WINDOW,
 			   "visible", TRUE,
@@ -144,6 +163,7 @@ bst_effect_view_init (BstEffectView *effect_view)
   gtk_clist_set_column_auto_resize (clist, 0, TRUE);
   gtk_clist_column_titles_show (clist);
   gtk_clist_column_titles_passive (clist);
+
   /* setup param view */
   effect_view->param_view =  bst_param_view_new (0);
   gtk_widget_set (effect_view->param_view,
@@ -153,6 +173,7 @@ bst_effect_view_init (BstEffectView *effect_view)
 		  NULL);
   gtk_widget_ref (effect_view->param_view);
   bst_param_view_set_mask (BST_PARAM_VIEW (effect_view->param_view), BSE_TYPE_EFFECT, 0, NULL, NULL);
+
   /* setup buttons */
   effect_view->add_button = g_object_connect (gtk_widget_new (GTK_TYPE_BUTTON,
 							      "visible", TRUE,
@@ -172,38 +193,51 @@ bst_effect_view_init (BstEffectView *effect_view)
 						 "swapped_signal::clicked", remove_effect, effect_view,
 						 NULL);
   gtk_widget_ref (effect_view->remove_button);
+
   effect_view->pattern = NULL;
   effect_view->channel = 0;
   effect_view->row = 0;
 }
+
 static void
 bst_effect_view_destroy (GtkObject *object)
 {
   BstEffectView *effect_view = BST_EFFECT_VIEW (object);
+
   bst_effect_view_set_note (effect_view, NULL, 0, 0);
+
   GTK_OBJECT_CLASS (parent_class)->destroy (object);
 }
+
 static void
 bst_effect_view_finalize (GObject *object)
 {
   BstEffectView *effect_view = BST_EFFECT_VIEW (object);
+
   bst_effect_view_set_note (effect_view, NULL, 0, 0);
+
   gtk_widget_unref (effect_view->paned);
   gtk_widget_unref (effect_view->clist_aeffects);
   gtk_widget_unref (effect_view->clist_peffects);
   gtk_widget_unref (effect_view->param_view);
   gtk_widget_unref (effect_view->add_button);
   gtk_widget_unref (effect_view->remove_button);
+
   G_OBJECT_CLASS (parent_class)->finalize (object);
 }
+
 GtkWidget*
 bst_effect_view_new (BseSong *song)
 {
   GtkWidget *effect_view;
+
   g_return_val_if_fail (BSE_IS_SONG (song), NULL);
+
   effect_view = gtk_widget_new (BST_TYPE_EFFECT_VIEW, NULL);
+
   return effect_view;
 }
+
 void
 bst_effect_view_set_note (BstEffectView *effect_view,
 			  BsePattern    *pattern,
@@ -222,6 +256,7 @@ bst_effect_view_set_note (BstEffectView *effect_view,
       channel = 0;
       row = 0;
     }
+
   if (effect_view->pattern)
     {
       g_object_disconnect (effect_view->pattern,
@@ -241,6 +276,7 @@ bst_effect_view_set_note (BstEffectView *effect_view,
     }
   update_effect_lists (effect_view);
 }
+
 static void
 bst_effect_view_note_changed (BstEffectView *effect_view,
 			      guint          channel,
@@ -248,21 +284,26 @@ bst_effect_view_note_changed (BstEffectView *effect_view,
 			      BsePattern    *pattern)
 {
   g_return_if_fail (effect_view->pattern == pattern);
+
   if (channel == effect_view->channel && row == effect_view->row)
     update_effect_lists (effect_view);
 }
+
 static void
 update_effect_lists (BstEffectView *effect_view)
 {
   GtkCList *aclist = GTK_CLIST (effect_view->clist_aeffects);
   GtkCList *pclist = GTK_CLIST (effect_view->clist_peffects);
+
   if (aclist && pclist)
     {
       guint i, n_effects = 0, ptype = ~0;
+
       if (!aclist->selection)
 	{
 	  BseCategory *cats;
 	  guint n_cats;
+
 	  gtk_clist_freeze (aclist);
 	  gtk_clist_clear (aclist);
 	  cats = bse_categories_match_typed ("/Effect/""*", BSE_TYPE_EFFECT, &n_cats);
@@ -270,12 +311,14 @@ update_effect_lists (BstEffectView *effect_view)
 	    {
 	      gchar *name = cats[i].category + cats[i].mindex + 1;
 	      gint clist_row = gtk_clist_insert (aclist, 0, &name);
+
 	      gtk_clist_set_row_data (aclist, clist_row, (gpointer) cats[i].type);
 	    }
 	  g_free (cats);
 	  gtk_clist_select_row (aclist, 0, -1);
 	  gtk_clist_thaw (aclist);
 	}
+
       ptype = (GType) gtk_clist_get_selection_data (pclist, 0);
       gtk_clist_freeze (pclist);
       gtk_clist_clear (pclist);
@@ -293,9 +336,11 @@ update_effect_lists (BstEffectView *effect_view)
 							   effect_view->channel,
 							   effect_view->row,
 							   i);
+
 	  cats = bse_categories_from_type (BSE_OBJECT_TYPE (effect), &n_cats);
 	  name = cats ? cats[0].category + cats[0].mindex + 1 : g_type_name (BSE_OBJECT_TYPE (effect));
 	  g_free (cats);
+
 	  clist_row = gtk_clist_insert (pclist, 0, &name);
 	  gtk_clist_set_row_data (pclist, clist_row, GUINT_TO_POINTER (BSE_OBJECT_TYPE (effect)));
 	  if (BSE_OBJECT_TYPE (effect) == ptype)
@@ -308,29 +353,36 @@ update_effect_lists (BstEffectView *effect_view)
 	gtk_clist_select_row (pclist, 0, -1);
       gtk_clist_thaw (pclist);
     }
+
   alist_selection_changed (effect_view);
   plist_selection_changed (effect_view);
 }
+
 static void
 add_effect (BstEffectView *effect_view)
 {
   GtkCList *aclist = GTK_CLIST (effect_view->clist_aeffects);
+
   if (aclist && aclist->selection && effect_view->pattern)
     bse_pattern_note_actuate_effect (effect_view->pattern, effect_view->channel, effect_view->row,
 				     GPOINTER_TO_UINT (gtk_clist_get_selection_data (aclist, 0)));
 }
+
 static void
 remove_effect (BstEffectView *effect_view)
 {
   GtkCList *pclist = GTK_CLIST (effect_view->clist_peffects);
+
   if (pclist && pclist->selection && effect_view->pattern)
     bse_pattern_note_drop_effect (effect_view->pattern, effect_view->channel, effect_view->row,
 				  GPOINTER_TO_UINT (gtk_clist_get_selection_data (pclist, 0)));
 }
+
 static void
 alist_selection_changed (BstEffectView *effect_view)
 {
   GtkCList *aclist = GTK_CLIST (effect_view->clist_aeffects);
+
   if (effect_view->param_view && effect_view->pattern)
     {
       gpointer data = gtk_clist_get_selection_data (aclist, 0);
@@ -338,14 +390,17 @@ alist_selection_changed (BstEffectView *effect_view)
 							       effect_view->channel,
 							       effect_view->row,
 							       GPOINTER_TO_UINT (data)) : NULL;
+
       gtk_widget_set_sensitive (effect_view->add_button, effect == NULL);
     }
   gtk_clist_moveto_selection (aclist);
 }
+
 static void
 plist_selection_changed (BstEffectView *effect_view)
 {
   GtkCList *pclist = GTK_CLIST (effect_view->clist_peffects);
+
   if (effect_view->param_view && effect_view->pattern)
     {
       gpointer data = gtk_clist_get_selection_data (pclist, 0);
@@ -353,6 +408,7 @@ plist_selection_changed (BstEffectView *effect_view)
 							       effect_view->channel,
 							       effect_view->row,
 							       GPOINTER_TO_UINT (data)) : NULL;
+
       bst_param_view_set_object (BST_PARAM_VIEW (effect_view->param_view),
 				 effect ? BSE_OBJECT_ID (effect) : 0);
     }

@@ -27,6 +27,8 @@ struct OscTableEntry
   guint          n_values;
   float          values[1];		/* flexible array */
 };
+
+
 /* --- prototypes --- */
 static gint	cache_table_entry_locs_cmp	(gconstpointer	bsearch_node1, /* key */
 						 gconstpointer	bsearch_node2);
@@ -37,6 +39,8 @@ static void	osc_wave_extrema_pos		(guint		n_values,
 						 guint        *minp_p,
 						 guint        *maxp_p);
 void		gsl_osc_cache_debug_dump	(void);
+
+
 /* --- variables --- */
 static GBSearchArray       *cache_entries = NULL;
 static const GBSearchConfig cache_taconfig = {
@@ -49,6 +53,8 @@ static const GBSearchConfig osc_taconfig = {
   osc_table_entry_locs_cmp,
   0
 };
+
+
 /* --- functions --- */
 static gint
 cache_table_entry_locs_cmp (gconstpointer bsearch_node1, /* key */
@@ -58,6 +64,7 @@ cache_table_entry_locs_cmp (gconstpointer bsearch_node1, /* key */
   const OscTableEntry *const *ep2 = (const OscTableEntry*const*) bsearch_node2;
   const OscTableEntry *e1 = *ep1;
   const OscTableEntry *e2 = *ep2;
+
   if (e1->wave_form == e2->wave_form)
     {
       if (e1->filter_func == e2->filter_func)
@@ -68,6 +75,7 @@ cache_table_entry_locs_cmp (gconstpointer bsearch_node1, /* key */
   else
     return e1->wave_form > e2->wave_form ? 1 : -1;
 }
+
 static gint
 osc_table_entry_locs_cmp (gconstpointer bsearch_node1, /* key */
 			  gconstpointer bsearch_node2)
@@ -76,27 +84,33 @@ osc_table_entry_locs_cmp (gconstpointer bsearch_node1, /* key */
   const OscTableEntry *const *ep2 = (const OscTableEntry*const*) bsearch_node2;
   const OscTableEntry *e1 = *ep1;
   const OscTableEntry *e2 = *ep2;
+
   return G_BSEARCH_ARRAY_CMP (e1->mfreq, e2->mfreq);
 }
+
 static OscTableEntry*
 cache_table_entry_lookup_best (GslOscWaveForm wave_form,
 			       guint8*        filter_func,
 			       gfloat         mfreq)
 {
   OscTableEntry key, *k = &key, **ep1 = NULL, **ep2, **ep3 = NULL;
+
   key.mfreq = mfreq;
   key.wave_form = wave_form;
   key.filter_func = filter_func;
+
   /* get exact match or a match which is one off into either direction */
   ep2 = (OscTableEntry**) g_bsearch_array_lookup_sibling (cache_entries, &cache_taconfig, &k);
   if (ep2)
     {
       uint i = g_bsearch_array_get_index (cache_entries, &cache_taconfig, ep2);
+
       /* get siblings */
       if (i > 0)
 	ep1 = (OscTableEntry**) g_bsearch_array_get_nth (cache_entries, &cache_taconfig, i - 1);
       if (i + 1 < g_bsearch_array_get_n_nodes (cache_entries))
 	ep3 = (OscTableEntry**) g_bsearch_array_get_nth (cache_entries, &cache_taconfig, i + 1);
+
       /* get rid of invalid matches, i.e. ones with:
        * - a different wave
        * - a different filter
@@ -129,6 +143,7 @@ cache_table_entry_lookup_best (GslOscWaveForm wave_form,
 	    ep2 = NULL;	/* no valid match at all */
 	}
     }
+
   /* now figure best out of valid siblings */
   if (ep2)
     {
@@ -139,6 +154,7 @@ cache_table_entry_lookup_best (GslOscWaveForm wave_form,
     }
   return ep2 ? *ep2 : NULL;
 }
+
 static OscTableEntry*
 osc_table_entry_lookup_best (const GslOscTable *table,
 			     gfloat             mfreq,
@@ -146,11 +162,13 @@ osc_table_entry_lookup_best (const GslOscTable *table,
 {
   OscTableEntry key, *k = &key, **ep;
   uint i;
+
   /* get exact match or a match which is one off into either direction */
   key.mfreq = mfreq;
   ep = (OscTableEntry**) g_bsearch_array_lookup_sibling (table->entry_array, &osc_taconfig, &k);
   if (UNLIKELY (!ep))
     return NULL;	/* ugh, bad */
+
   if (mfreq > (*ep)->mfreq)	/* need better filter */
     {
       i = g_bsearch_array_get_index (table->entry_array, &osc_taconfig, ep);
@@ -178,18 +196,22 @@ osc_table_entry_lookup_best (const GslOscTable *table,
       if (i > 0)
 	{
 	  OscTableEntry **tp = (OscTableEntry**) g_bsearch_array_get_nth (table->entry_array, &osc_taconfig, i - 1);
+
 	  *min_mfreq = (*tp)->mfreq;
 	}
       else
 	*min_mfreq = 0;
     }
+
   return *ep;
 }
+
 static guint
 wave_table_size (GslOscWaveForm wave_form,
 		 gfloat         mfreq)
 {
   /* have to return power of 2, and honour 8 <= size */
+
   /* FIXME: decide on other table sizes
   10000: 256
     5000: 512
@@ -197,10 +219,13 @@ wave_table_size (GslOscWaveForm wave_form,
     1250: 2048
     GSL_OSC_WAVE_SAW_FALL always huge buffers to guarantee pulse width stepping granularity
   */
+
   if (wave_form == GSL_OSC_WAVE_SAW_FALL)
     return 8192;
+
   return 2048;
 }
+
 static void
 fft_filter (guint    n_values,
 	    gfloat  *values,	/* [0..n_values], n_values/2 complex values */
@@ -208,6 +233,7 @@ fft_filter (guint    n_values,
 	    double (*window) (double))
 {
   guint i;
+
   n_values >>= 1;
   scale_window /= (gdouble) n_values;
   for (i = 0; i <= n_values; i++)
@@ -217,18 +243,21 @@ fft_filter (guint    n_values,
       values[i * 2 + 1] *= w;
     }
 }
+
 static OscTableEntry*
 cache_table_ref_entry (GslOscWaveForm wave_form,
 		       double       (*filter_func) (double),
 		       gfloat         mfreq)
 {
   OscTableEntry *e = cache_table_entry_lookup_best (wave_form, (guint8*) filter_func, mfreq);
+
   if (e && !CACHE_MATCH_FREQ (mfreq, e->mfreq))
     e = NULL;
   if (!e)
     {
       guint size = wave_table_size (wave_form, mfreq);
       gfloat *values, *fft, step, min, max;
+
       /* size:
        * - OscTableEntry already contains the first float values
        * - we need n_values+1 adressable floats to provide values[0] == values[n_values]
@@ -241,6 +270,7 @@ cache_table_ref_entry (GslOscWaveForm wave_form,
       e->ref_count = 1;
       e->n_values = size;
       gsl_osc_wave_fill_buffer (e->wave_form, e->n_values, values);
+
       /* filter wave accordingly */
       gsl_osc_wave_extrema (e->n_values, values, &min, &max);
       fft = g_new (gfloat, e->n_values + 2);	/* [0..n_values] for n_values/2 complex freqs */
@@ -250,10 +280,13 @@ cache_table_ref_entry (GslOscWaveForm wave_form,
       gsl_power2_fftsr_scale_simple (e->n_values, fft, values);
       g_free (fft);
       gsl_osc_wave_normalize (e->n_values, values, (min + max) / 2, max);
+
       /* provide values[0]==values[n_values] */
       values[e->n_values] = values[0];
+
       /* pulse min/max pos extension */
       osc_wave_extrema_pos (e->n_values, values, &e->min_pos, &e->max_pos);
+
       /* insert into cache */
       cache_entries = g_bsearch_array_insert (cache_entries, &cache_taconfig, &e);
     }
@@ -261,10 +294,12 @@ cache_table_ref_entry (GslOscWaveForm wave_form,
     e->ref_count++;
   return e;
 }
+
 static void
 cache_table_unref_entry (OscTableEntry *e)
 {
   g_return_if_fail (e->ref_count > 0);
+
   e->ref_count -= 1;
   if (e->ref_count == 0)
     {
@@ -273,6 +308,7 @@ cache_table_unref_entry (OscTableEntry *e)
       cache_entries = g_bsearch_array_remove (cache_entries, &cache_taconfig, i);
     }
 }
+
 GslOscTable*
 gsl_osc_table_create (gfloat         mix_freq,
 		      GslOscWaveForm wave_form,
@@ -283,11 +319,14 @@ gsl_osc_table_create (gfloat         mix_freq,
   GslOscTable *table;
   gfloat nyquist;
   guint i;
+
   g_return_val_if_fail (mix_freq > 0, NULL);
   g_return_val_if_fail (n_freqs > 0, NULL);
   g_return_val_if_fail (freqs != NULL, NULL);
+
   if (!cache_entries)
     cache_entries = g_bsearch_array_create (&cache_taconfig);
+
   table = sfi_new_struct (GslOscTable, 1);
   table->mix_freq = mix_freq;
   table->wave_form = wave_form;
@@ -299,6 +338,7 @@ gsl_osc_table_create (gfloat         mix_freq,
     {
       OscTableEntry *e;
       gdouble mfreq = MIN (nyquist, freqs[i]);
+
       mfreq /= table->mix_freq;
       e = osc_table_entry_lookup_best (table, mfreq, NULL);
       if (!e || fabs (e->mfreq * table->mix_freq - mfreq * table->mix_freq) > OSC_FREQ_EPSILON)
@@ -310,8 +350,10 @@ gsl_osc_table_create (gfloat         mix_freq,
 	ODEBUG ("not inserting existing entry (freq=%f) for freq %f (nyquist=%f)",
                 e->mfreq * table->mix_freq, mfreq * table->mix_freq, nyquist);
     }
+
   return table;
 }
+
 void
 gsl_osc_table_lookup (const GslOscTable	*table,
 		      gfloat		 freq,
@@ -319,14 +361,17 @@ gsl_osc_table_lookup (const GslOscTable	*table,
 {
   OscTableEntry *e;
   gfloat mfreq, min_mfreq;
+
   g_return_if_fail (table != NULL);
   g_return_if_fail (wave != NULL);
+
   mfreq = freq / table->mix_freq;
   e = osc_table_entry_lookup_best (table, mfreq, &min_mfreq);
   if (e)
     {
       guint32 int_one;
       gfloat float_one;
+
       wave->min_freq = min_mfreq * table->mix_freq;
       wave->max_freq = e->mfreq * table->mix_freq;
       wave->n_values = e->n_values;
@@ -350,11 +395,14 @@ gsl_osc_table_lookup (const GslOscTable	*table,
       memset (wave, 0, sizeof (*wave));
     }
 }
+
 void
 gsl_osc_table_free (GslOscTable *table)
 {
   guint n;
+
   g_return_if_fail (table != NULL);
+
   n = g_bsearch_array_get_n_nodes (table->entry_array);
   while (n--)
     {
@@ -377,6 +425,7 @@ gsl_osc_wave_fill_buffer (GslOscWaveForm type,
 {
   const double max = n_values, hmax = max * 0.5, qmax = n_values * 0.25;
   const uint half = n_values / 2, quarter = half / 2;
+
   switch (type)
     {
       double frac, pos;
@@ -464,6 +513,7 @@ gsl_osc_wave_fill_buffer (GslOscWaveForm type,
       break;
     }
 }
+
 static void
 osc_wave_extrema_pos (guint          n_values,
 		      const gfloat *values,
@@ -472,6 +522,7 @@ osc_wave_extrema_pos (guint          n_values,
 {
   guint i, minp = 0, maxp = 0;
   gfloat min = values[0], max = min;
+
   for (i = 1; i < n_values; i++)
     {
       if (values[i] > max)
@@ -488,6 +539,7 @@ osc_wave_extrema_pos (guint          n_values,
   *minp_p = minp;
   *maxp_p = maxp;
 }
+
 void
 gsl_osc_wave_extrema (guint         n_values,
 		      const gfloat *values,
@@ -495,11 +547,14 @@ gsl_osc_wave_extrema (guint         n_values,
 		      gfloat       *max_p)
 {
   guint minp, maxp;
+
   g_return_if_fail (n_values > 0 && values != NULL && min_p != NULL && max_p != NULL);
+
   osc_wave_extrema_pos (n_values, values, &minp, &maxp);
   *min_p = values[minp];
   *max_p = values[maxp];
 }
+
 void
 gsl_osc_wave_adjust_range (guint   n_values,
 			   gfloat *values,
@@ -510,7 +565,9 @@ gsl_osc_wave_adjust_range (guint   n_values,
 {
   gfloat center;
   guint i;
+
   g_return_if_fail (n_values > 0 && values != NULL);
+
   center = (min + max) / 2;
   center = new_center - center;
   min = fabs (min + center);
@@ -524,6 +581,7 @@ gsl_osc_wave_adjust_range (guint   n_values,
   for (i = 0; i < n_values; i++)
     values[i] = (values[i] + center) * max;
 }
+
 void
 gsl_osc_wave_normalize (guint   n_values,
 			gfloat *values,
@@ -532,17 +590,22 @@ gsl_osc_wave_normalize (guint   n_values,
 {
   gfloat min, max;
   guint i;
+
   g_return_if_fail (n_values > 0 && values != NULL);
+
   min = values[0];
   max = min;
   for (i = 1; i < n_values; i++)
     {
       register gfloat v = values[i];
+
       max = MAX (max, v);
       min = MIN (min, v);
     }
+
   gsl_osc_wave_adjust_range (n_values, values, min, max, new_center, new_max);
 }
+
 const gchar*
 gsl_osc_wave_form_name (GslOscWaveForm wave_form)
 {

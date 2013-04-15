@@ -1,9 +1,14 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bsecategories.hh"
+
 #include "bseutils.hh"
 #include <string.h>
+
+
 /* --- defines --- */
 #define CATEGORIES_PRE_ALLOC  (16)
+
+
 /* --- structures --- */
 typedef struct _CEntry CEntry;
 struct _CEntry
@@ -15,27 +20,36 @@ struct _CEntry
   GType    type;
   BseIcon *icon;
 };
+
+
 /* --- variables --- */
 static CEntry    *cat_entries = NULL;
 static gboolean   cats_need_sort = FALSE;
 static guint      global_category_id = 1;
 static SfiUStore *category_ustore = NULL;
+
+
 /* --- functions --- */
 void
 _bse_init_categories (void)
 {
   g_return_if_fail (category_ustore == NULL);
+
   category_ustore = sfi_ustore_new ();
 }
+
 static inline CEntry*
 centry_find (GQuark quark)
 {
   CEntry *centry;
+
   for (centry = cat_entries; centry; centry = centry->next)
     if (centry->category == quark)
       return centry;
+
   return NULL;
 }
+
 static inline guint
 category_strip_toplevels (const gchar *category,
                           GType        type)
@@ -51,9 +65,11 @@ category_strip_toplevels (const gchar *category,
     {  6, "/Proc/", },
   };
   guint l = strlen (category);
+
   if (l > 10 && strncmp (category, "/Methods/", 8) == 0)
     {
       const gchar *p = category + 8;
+
       if (!BSE_TYPE_IS_PROCEDURE (type))
         return 0;
       p = strchr (p, '/');
@@ -66,6 +82,7 @@ category_strip_toplevels (const gchar *category,
         return 0;
       return 9;
     }
+
   if (BSE_TYPE_IS_PROCEDURE (type))
     {
       guint i;
@@ -74,14 +91,17 @@ category_strip_toplevels (const gchar *category,
             strncmp (category, scripts[i].prefix, scripts[i].length) == 0)
           return scripts[i].length;
     }
+
   return 0;
 }
+
 static guint
 leaf_index (const gchar *string)
 {
   gboolean in_quote = FALSE;
   guint pos = 0;
   const gchar *p;
+
   for (p = string; *p; p++)
     switch (*p)
       {
@@ -91,6 +111,7 @@ leaf_index (const gchar *string)
       }
   return pos;
 }
+
 static inline CEntry*
 centry_new (const gchar *caller,
 	    const gchar *category,
@@ -100,6 +121,7 @@ centry_new (const gchar *caller,
   CEntry *centry;
   GQuark quark;
   guint mindex;
+
   mindex = category_strip_toplevels (category, type);
   if (!mindex)
     {
@@ -112,9 +134,11 @@ centry_new (const gchar *caller,
       g_warning ("%s(): unable to add category duplicate `%s'", caller, category);
       return NULL;
     }
+
   if (!g_trash_stack_peek (&free_entries))
     {
       CEntry *limit;
+
       centry = g_new (CEntry, CATEGORIES_PRE_ALLOC);
       limit = centry + CATEGORIES_PRE_ALLOC - 1;
       while (centry < limit)
@@ -122,6 +146,7 @@ centry_new (const gchar *caller,
     }
   else
     centry = (CEntry*) g_trash_stack_pop (&free_entries);
+
   centry->next = cat_entries;
   cat_entries = centry;
   centry->category_id = global_category_id++;
@@ -129,9 +154,12 @@ centry_new (const gchar *caller,
   centry->mindex = mindex - 1;
   centry->lindex = leaf_index (category);
   centry->category = g_quark_from_string (category);
+
   cats_need_sort = TRUE;
+
   return centry;
 }
+
 static void
 check_type (GType type)
 {
@@ -145,6 +173,7 @@ check_type (GType type)
       g_free (x);
     }
 }
+
 void
 bse_categories_register (const gchar  *category,
                          const gchar  *i18n_category,
@@ -164,6 +193,7 @@ bse_categories_register (const gchar  *category,
         centry->icon = NULL;
     }
 }
+
 void
 bse_categories_register_stock_module (const gchar      *untranslated_category_trunk,
                                       GType             type,
@@ -174,6 +204,7 @@ bse_categories_register_stock_module (const gchar      *untranslated_category_tr
   const gchar *i18n_category = sfi_category_concat ("/Modules", _(untranslated_category_trunk));
   bse_categories_register (category, i18n_category, type, pixstream);
 }
+
 static gint
 centries_strorder (gconstpointer a,
 		   gconstpointer b)
@@ -182,15 +213,19 @@ centries_strorder (gconstpointer a,
   const CEntry *e2 = (const CEntry*) b;
   const char *c1 = g_quark_to_string (e1->category);
   const char *c2 = g_quark_to_string (e2->category);
+
   return strcmp (c2, c1);
 }
+
 static void
 cats_sort (void)
 {
   GSList *slist, *clist = NULL;
   CEntry *centry, *last;
+
   if (!cats_need_sort)
     return;
+
   for (centry = cat_entries; centry; centry = centry->next)
     clist = g_slist_prepend (clist, centry);
   clist = g_slist_sort (clist, centries_strorder);
@@ -203,8 +238,10 @@ cats_sort (void)
     }
   cat_entries = centry;
   g_slist_free (clist);
+
   cats_need_sort = FALSE;
 }
+
 static inline BseCategorySeq*
 categories_match (const gchar      *pattern,
 		  GType             base_type,
@@ -214,13 +251,16 @@ categories_match (const gchar      *pattern,
   BseCategorySeq *cseq = bse_category_seq_new ();
   GPatternSpec *pspec = g_pattern_spec_new (pattern);
   CEntry *centry;
+
   for (centry = cat_entries; centry; centry = centry->next)
     {
       const char *category = g_quark_to_string (centry->category);
+
       if (g_pattern_match_string (pspec, category) &&
 	  (!base_type || g_type_is_a (centry->type, base_type)))
 	{
 	  BseCategory cat = { 0, };
+
 	  cat.category = const_cast<char*> (category);
 	  cat.category_id = centry->category_id;
 	  cat.mindex = centry->mindex;
@@ -232,8 +272,10 @@ categories_match (const gchar      *pattern,
 	}
     }
   g_pattern_spec_free (pspec);
+
   return cseq;
 }
+
 BseCategorySeq*
 bse_categories_match (const gchar      *pattern,
                       GType             base_type,
@@ -241,25 +283,33 @@ bse_categories_match (const gchar      *pattern,
                       gpointer          data)
 {
   g_return_val_if_fail (pattern != NULL, NULL);
+
   cats_sort ();
+
   return categories_match (pattern, 0, check, data);
 }
+
 BseCategorySeq*
 bse_categories_match_typed (const gchar *pattern,
 			    GType        base_type)
 {
   g_return_val_if_fail (pattern != NULL, NULL);
+
   cats_sort ();
+
   return categories_match (pattern, base_type, NULL, NULL);
 }
+
 BseCategorySeq*
 bse_categories_from_type (GType type)
 {
   BseCategorySeq *cseq = bse_category_seq_new ();
+
   for (CEntry *centry = cat_entries; centry; centry = centry->next)
     if (centry->type == type)
       {
 	BseCategory cat = { 0, };
+
 	cat.category = const_cast<char*> (g_quark_to_string (centry->category));
 	cat.category_id = centry->category_id;
 	cat.mindex = centry->mindex;
@@ -270,11 +320,14 @@ bse_categories_from_type (GType type)
       }
   return cseq;
 }
+
 BseCategory*
 bse_category_from_id (guint id)
 {
   CEntry *centry;
+
   g_return_val_if_fail (id > 0, NULL);
+
   centry = (CEntry*) sfi_ustore_lookup (category_ustore, id);
   if (centry)
     {

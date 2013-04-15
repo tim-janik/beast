@@ -1,9 +1,13 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #ifndef __GXK_ASSORTMENT_H__
 #define __GXK_ASSORTMENT_H__
+
 #include "gxkutils.hh"
+
 G_BEGIN_DECLS
+
 #define GXK_ASSORTMENT_PRIORITY     (G_PRIORITY_HIGH - 10)
+
 /* --- assortment --- */
 #define GXK_TYPE_ASSORTMENT_ENTRY        (gxk_assortment_entry_get_type ())
 #define GXK_TYPE_ASSORTMENT              (gxk_assortment_get_type ())
@@ -44,6 +48,7 @@ typedef struct {
                                                  GxkAssortmentEntry     *entry);
   void          (*selection_changed)            (GxkAssortment          *self);
 } GxkAssortmentClass;
+
 /* --- assortment --- */
 GType           gxk_assortment_entry_get_type   (void);
 GType               gxk_assortment_get_type     (void);
@@ -72,6 +77,7 @@ void          gxk_assortment_select_data        (GxkAssortment          *self,
 void          gxk_assortment_unblock_selection  (GxkAssortment          *self);
 void          gxk_assortment_manage_menu        (GxkAssortment          *self,
                                                  GtkMenu                *menu);
+
 /* --- publishing --- */
 void    gxk_widget_publish_assortment           (gpointer                widget,
                                                  const gchar            *publishing_name,
@@ -86,5 +92,8 @@ void    gxk_window_add_assortment_client        (GtkWindow              *window,
                                                  gpointer                client_data);
 void    gxk_window_remove_assortment_client     (GtkWindow              *window,
                                                  gpointer                client_data);
+
+
 G_END_DECLS
+
 #endif /* __GXK_ASSORTMENT_H__ */

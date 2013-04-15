@@ -3,9 +3,13 @@
 #include "bsecategories.hh"
 #include "bseengine.hh"
 #include "bsemathsignal.hh"
+
+
 #define	FRAC_N_BITS	(19)
 #define	FRAC_BIT_MASK	((1 << FRAC_N_BITS) - 1)
 #define	TABLE_SIZE	(1 << (32 - FRAC_N_BITS))
+
+
 /* --- parameters --- */
 enum
 {
@@ -23,6 +27,8 @@ enum
   PROP_PULSE_WIDTH,
   PROP_PULSE_MOD_PERC
 };
+
+
 /* --- prototypes --- */
 static void	bse_standard_osc_init		(BseStandardOsc		*standard_osc);
 static void	bse_standard_osc_class_init	(BseStandardOscClass	*klass);
@@ -43,6 +49,8 @@ static void	bse_standard_osc_reset		(BseSource		*source);
 static void	bse_standard_osc_update_modules	(BseStandardOsc		*standard_osc,
 						 gboolean		 recreate_table,
 						 BseTrans		*trans);
+
+
 /* --- variables --- */
 static gpointer	    parent_class = NULL;
 static const gfloat osc_table_freqs[] = {
@@ -57,22 +65,27 @@ static const gfloat osc_table_freqs[] = {
   BSE_KAMMER_FREQUENCY * 8.0,
   BSE_KAMMER_FREQUENCY * 16.0
 };
+
+
 /* --- functions --- */
 BSE_BUILTIN_TYPE (BseStandardOsc)
 {
   static const GTypeInfo type_info = {
     sizeof (BseStandardOscClass),
+
     (GBaseInitFunc) NULL,
     (GBaseFinalizeFunc) NULL,
     (GClassInitFunc) bse_standard_osc_class_init,
     (GClassFinalizeFunc) bse_standard_osc_class_finalize,
     NULL /* class_data */,
+
     sizeof (BseStandardOsc),
     0 /* n_preallocs */,
     (GInstanceInitFunc) bse_standard_osc_init,
   };
 #include "./icons/osc.c"
   GType type;
+
   type = bse_type_register_static (BSE_TYPE_SOURCE,
 				   "BseStandardOsc",
 				   _("StandardOsc is the BSE basis oscillator which supports various types "
@@ -82,6 +95,7 @@ BSE_BUILTIN_TYPE (BseStandardOsc)
   bse_categories_register_stock_module (N_("/Audio Sources/Standard Oscillator"), type, osc_pixstream);
   return type;
 }
+
 static void
 bse_standard_osc_class_init (BseStandardOscClass *klass)
 {
@@ -89,12 +103,16 @@ bse_standard_osc_class_init (BseStandardOscClass *klass)
   BseObjectClass *object_class = BSE_OBJECT_CLASS (klass);
   BseSourceClass *source_class = BSE_SOURCE_CLASS (klass);
   guint ochannel, ichannel;
+
   parent_class = g_type_class_peek_parent (klass);
+
   gobject_class->set_property = bse_standard_osc_set_property;
   gobject_class->get_property = bse_standard_osc_get_property;
+
   source_class->prepare = bse_standard_osc_prepare;
   source_class->context_create = bse_standard_osc_context_create;
   source_class->reset = bse_standard_osc_reset;
+
   bse_object_class_add_param (object_class, _("Wave Form"),
 			      PROP_WAVE_FORM,
 			      bse_param_spec_genum ("wave_form", _("Wave"), _("Oscillator wave form"),
@@ -160,6 +178,7 @@ bse_standard_osc_class_init (BseStandardOscClass *klass)
                                                 "(Pulse has to be selected as wave form for this to take effect)"),
 					      0.0, 0.0, 100.0, 5.0,
 					      SFI_PARAM_STANDARD ":f:dial"));
+
   ichannel = bse_source_class_add_ichannel (source_class, "freq-in", _("Freq In"), _("Oscillating Frequency Input"));
   g_assert (ichannel == BSE_STANDARD_OSC_ICHANNEL_FREQ);
   ichannel = bse_source_class_add_ichannel (source_class, "freq-mod-in", _("Freq Mod In"), _("Frequency Modulation Input"));
@@ -173,10 +192,12 @@ bse_standard_osc_class_init (BseStandardOscClass *klass)
   ochannel = bse_source_class_add_ochannel (source_class, "sync-out", _("Sync Out"), _("Syncronization Output"));
   g_assert (ochannel == BSE_STANDARD_OSC_OCHANNEL_SYNC);
 }
+
 static void
 bse_standard_osc_class_finalize (BseStandardOscClass *klass)
 {
 }
+
 static void
 bse_standard_osc_init (BseStandardOsc *self)
 {
@@ -191,6 +212,7 @@ bse_standard_osc_init (BseStandardOsc *self)
   self->fm_strength = 0;
   self->n_octaves = 1;
 }
+
 static void
 bse_standard_osc_set_property (GObject      *object,
 			       guint         param_id,
@@ -198,6 +220,7 @@ bse_standard_osc_set_property (GObject      *object,
 			       GParamSpec   *pspec)
 {
   BseStandardOsc *self = BSE_STANDARD_OSC (object);
+
   switch (param_id)
     {
     case PROP_WAVE_FORM:
@@ -258,6 +281,7 @@ bse_standard_osc_set_property (GObject      *object,
       break;
     }
 }
+
 static void
 bse_standard_osc_get_property (GObject    *object,
 			       guint       param_id,
@@ -265,6 +289,7 @@ bse_standard_osc_get_property (GObject    *object,
 			       GParamSpec *pspec)
 {
   BseStandardOsc *self = BSE_STANDARD_OSC (object);
+
   switch (param_id)
     {
     case PROP_WAVE_FORM:
@@ -308,51 +333,63 @@ bse_standard_osc_get_property (GObject    *object,
       break;
     }
 }
+
 static void
 bse_standard_osc_prepare (BseSource *source)
 {
   BseStandardOsc *self = BSE_STANDARD_OSC (source);
+
   self->config.table = gsl_osc_table_create (bse_engine_sample_freq (),
 					     GslOscWaveForm (self->wave),
 					     bse_window_blackman,
 					     G_N_ELEMENTS (osc_table_freqs),
 					     osc_table_freqs);
   self->config.transpose_factor = bse_transpose_factor (bse_source_prepared_musical_tuning (BSE_SOURCE (self)), self->transpose);
+
   /* chain parent class' handler */
   BSE_SOURCE_CLASS (parent_class)->prepare (source);
 }
+
 typedef struct
 {
   GslOscConfig config;
   GslOscTable *old_osc_table;
 } OscConfigData;
+
 static void
 standard_osc_access (BseModule *module,
 		     gpointer   data)
 {
   GslOscData *osc = (GslOscData*) module->user_data;
   OscConfigData *cdata = (OscConfigData*) data;
+
   /* this runs in the Gsl Engine threads */
+
   gsl_osc_config (osc, &cdata->config);
 }
+
 static void
 standard_osc_access_free (gpointer data)
 {
   OscConfigData *cdata = (OscConfigData*) data;
+
   if (cdata->old_osc_table)
     gsl_osc_table_free (cdata->old_osc_table);
   g_free (cdata);
 }
+
 static void
 bse_standard_osc_update_modules (BseStandardOsc *self,
 				 gboolean	 recreate_table,
 				 BseTrans       *trans)
 {
   self->config.fm_strength = self->config.exponential_fm ? self->n_octaves : self->fm_strength;
+
   /* update modules in all contexts with the new vars */
   if (BSE_SOURCE_PREPARED (self))
     {
       OscConfigData cdata;
+
       self->config.transpose_factor = bse_transpose_factor (bse_source_prepared_musical_tuning (BSE_SOURCE (self)), self->transpose);
       cdata.config = self->config;
       if (recreate_table)
@@ -374,12 +411,15 @@ bse_standard_osc_update_modules (BseStandardOsc *self,
 				 trans);
     }
 }
+
 static void
 standard_osc_reset (BseModule *module)
 {
   GslOscData *osc = (GslOscData*) module->user_data;
+
   gsl_osc_reset (osc);
 }
+
 static void
 standard_osc_process (BseModule *module,
 		      guint      n_values)
@@ -391,12 +431,14 @@ standard_osc_process (BseModule *module,
   const gfloat *pwm_in = NULL;
   gfloat *osc_out = NULL;
   gfloat *sync_out = NULL;
+
   if (BSE_MODULE_OSTREAM (module, BSE_STANDARD_OSC_OCHANNEL_SYNC).connected)
     sync_out = BSE_MODULE_OBUFFER (module, BSE_STANDARD_OSC_OCHANNEL_SYNC);
   osc_out = BSE_MODULE_OBUFFER (module, BSE_STANDARD_OSC_OCHANNEL_OSC);
   if (!BSE_MODULE_OSTREAM (module, BSE_STANDARD_OSC_OCHANNEL_OSC).connected &&
       !sync_out)
     return;	/* nothing to process */
+
   if (BSE_MODULE_ISTREAM (module, BSE_STANDARD_OSC_ICHANNEL_FREQ).connected)
     freq_in = BSE_MODULE_IBUFFER (module, BSE_STANDARD_OSC_ICHANNEL_FREQ);
   if (BSE_MODULE_ISTREAM (module, BSE_STANDARD_OSC_ICHANNEL_FREQ_MOD).connected)
@@ -405,11 +447,13 @@ standard_osc_process (BseModule *module,
     sync_in = BSE_MODULE_IBUFFER (module, BSE_STANDARD_OSC_ICHANNEL_SYNC);
   if (BSE_MODULE_ISTREAM (module, BSE_STANDARD_OSC_ICHANNEL_PWM).connected)
     pwm_in = BSE_MODULE_IBUFFER (module, BSE_STANDARD_OSC_ICHANNEL_PWM);
+
   if (osc->config.table->wave_form == GSL_OSC_WAVE_PULSE_SAW)
     gsl_osc_process_pulse (osc, n_values, freq_in, mod_in, sync_in, pwm_in, osc_out, sync_out);
   else
     gsl_osc_process (osc, n_values, freq_in, mod_in, sync_in, osc_out, sync_out);
 }
+
 static void
 bse_standard_osc_context_create (BseSource *source,
 				 guint      context_handle,
@@ -428,22 +472,29 @@ bse_standard_osc_context_create (BseSource *source,
   BseStandardOsc *self = BSE_STANDARD_OSC (source);
   GslOscData *osc = g_new0 (GslOscData, 1);
   BseModule *module;
+
   gsl_osc_reset (osc);
   gsl_osc_config (osc, &self->config);
   module = bse_module_new (&sosc_class, osc);
+
   /* setup module i/o streams with BseSource i/o channels */
   bse_source_set_context_module (source, context_handle, module);
+
   /* commit module to engine */
   bse_trans_add (trans, bse_job_integrate (module));
+
   /* chain parent class' handler */
   BSE_SOURCE_CLASS (parent_class)->context_create (source, context_handle, trans);
 }
+
 static void
 bse_standard_osc_reset (BseSource *source)
 {
   BseStandardOsc *self = BSE_STANDARD_OSC (source);
+
   gsl_osc_table_free (self->config.table);
   self->config.table = NULL;
+
   /* chain parent class' handler */
   BSE_SOURCE_CLASS (parent_class)->reset (source);
 }

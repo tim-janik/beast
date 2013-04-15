@@ -21,6 +21,8 @@ enum
   PROP_FM_OCTAVES,
   PROP_GAIN_PERC
 };
+
+
 /* --- prototypes --- */
 static void	   bse_biquad_filter_init		(BseBiquadFilter	*self);
 static void	   bse_biquad_filter_class_init		(BseBiquadFilterClass	*klass);
@@ -36,35 +38,44 @@ static void	   bse_biquad_filter_context_create	(BseSource		*source,
 							 guint			 context_handle,
 							 BseTrans		*trans);
 static void	   bse_biquad_filter_update_modules	(BseBiquadFilter	*self);
+
+
 /* --- variables --- */
 static gpointer	       parent_class = NULL;
 static const GTypeInfo type_info_biquad_filter = {
   sizeof (BseBiquadFilterClass),
+
   (GBaseInitFunc) NULL,
   (GBaseFinalizeFunc) NULL,
   (GClassInitFunc) bse_biquad_filter_class_init,
   (GClassFinalizeFunc) NULL,
   NULL /* class_data */,
+
   sizeof (BseBiquadFilter),
   0 /* n_preallocs */,
   (GInstanceInitFunc) bse_biquad_filter_init,
 };
+
+
 /* --- functions --- */
 BSE_BUILTIN_TYPE (BseBiquadFilter)
 {
   static const GTypeInfo type_info = {
     sizeof (BseBiquadFilterClass),
+
     (GBaseInitFunc) NULL,
     (GBaseFinalizeFunc) NULL,
     (GClassInitFunc) bse_biquad_filter_class_init,
     (GClassFinalizeFunc) NULL,
     NULL /* class_data */,
+
     sizeof (BseBiquadFilter),
     0 /* n_preallocs */,
     (GInstanceInitFunc) bse_biquad_filter_init,
   };
 #include "./icons/biquad.c"
   GType type;
+
   type = bse_type_register_static (BSE_TYPE_SOURCE,
 				   "BseBiquadFilter",
 				   "BseBiquadFilter - an infinite impulse "
@@ -78,6 +89,7 @@ BSE_BUILTIN_TYPE (BseBiquadFilter)
   bse_categories_register_stock_module (N_("/Filters/Biquad Types"), type, biquad_pixstream);
   return type;
 }
+
 static void
 bse_biquad_filter_class_init (BseBiquadFilterClass *klass)
 {
@@ -85,10 +97,14 @@ bse_biquad_filter_class_init (BseBiquadFilterClass *klass)
   BseObjectClass *object_class = BSE_OBJECT_CLASS (klass);
   BseSourceClass *source_class = BSE_SOURCE_CLASS (klass);
   guint channel_id;
+
   parent_class = g_type_class_peek_parent (klass);
+
   gobject_class->set_property = bse_biquad_filter_set_property;
   gobject_class->get_property = bse_biquad_filter_get_property;
+
   source_class->context_create = bse_biquad_filter_context_create;
+
   bse_object_class_add_param (object_class, _("Filter"),
 			      PROP_FILTER_TYPE,
 			      bse_param_spec_genum ("filter_type", _("Filter Type"), _("The filter design type"),
@@ -151,6 +167,7 @@ bse_biquad_filter_class_init (BseBiquadFilterClass *klass)
 					      _("Strength of gain modulation"),
 					      0.0, 0.0, 100.0, 5.0,
 					      SFI_PARAM_STANDARD ":scale"));
+
   channel_id = bse_source_class_add_ichannel (source_class, "audio-in", _("Audio In"), _("Unfiltered Audio Signal"));
   g_assert (channel_id == BSE_BIQUAD_FILTER_ICHANNEL_AUDIO);
   channel_id = bse_source_class_add_ichannel (source_class, "freq-in", _("Freq In"), _("Center Frequency Input"));
@@ -162,6 +179,7 @@ bse_biquad_filter_class_init (BseBiquadFilterClass *klass)
   channel_id = bse_source_class_add_ochannel (source_class, "audio-out", _("Audio Out"), _("Filtered Audio Signal"));
   g_assert (channel_id == BSE_BIQUAD_FILTER_OCHANNEL_AUDIO);
 }
+
 static void
 bse_biquad_filter_init (BseBiquadFilter *self)
 {
@@ -175,6 +193,7 @@ bse_biquad_filter_init (BseBiquadFilter *self)
   self->gain = 3;
   self->gain_strength = 0.25;
 }
+
 static void
 bse_biquad_filter_set_property (GObject	     *object,
 				guint	      param_id,
@@ -182,6 +201,7 @@ bse_biquad_filter_set_property (GObject	     *object,
 				GParamSpec   *pspec)
 {
   BseBiquadFilter *self = BSE_BIQUAD_FILTER (object);
+
   switch (param_id)
     {
     case PROP_FILTER_TYPE:
@@ -229,6 +249,7 @@ bse_biquad_filter_set_property (GObject	     *object,
       break;
     }
 }
+
 static void
 bse_biquad_filter_get_property (GObject	   *object,
 				guint	    param_id,
@@ -236,6 +257,7 @@ bse_biquad_filter_get_property (GObject	   *object,
 				GParamSpec *pspec)
 {
   BseBiquadFilter *self = BSE_BIQUAD_FILTER (object);
+
   switch (param_id)
     {
     case PROP_FILTER_TYPE:
@@ -270,6 +292,7 @@ bse_biquad_filter_get_property (GObject	   *object,
       break;
     }
 }
+
 typedef struct {
   GslBiquadFilter       biquad;
   BseFrequencyModulator fm;
@@ -279,12 +302,14 @@ typedef struct {
   gfloat		gain_strength;
   guint			clear_state : 1;
 } FilterModule;
+
 static void
 biquad_filter_access (BseModule *module,
 		      gpointer   data)
 {
   FilterModule *fmod = (FilterModule*) module->user_data;
   const FilterModule *cfg = (const FilterModule*) data;
+
   fmod->fm = cfg->fm;
   fmod->config = cfg->config;
   fmod->base_freq = cfg->base_freq;
@@ -292,6 +317,7 @@ biquad_filter_access (BseModule *module,
   fmod->gain_strength = cfg->gain_strength;
   gsl_biquad_filter_config (&fmod->biquad, &fmod->config, cfg->clear_state);
 }
+
 static void
 bse_biquad_filter_update_modules (BseBiquadFilter *self)
 {
@@ -299,6 +325,7 @@ bse_biquad_filter_update_modules (BseBiquadFilter *self)
     {
       FilterModule *cfg = g_new0 (FilterModule, 1);
       gfloat nyquist_freq = 0.5 * bse_engine_sample_freq ();
+
       cfg->base_freq = MIN (self->freq, nyquist_freq);
       cfg->gain = self->gain;
       cfg->gain_strength = self->gain_strength;
@@ -335,14 +362,17 @@ bse_biquad_filter_update_modules (BseBiquadFilter *self)
 	}
     }
 }
+
 static void
 biquad_filter_reset (BseModule *module)
 {
   FilterModule *fmod = (FilterModule*) module->user_data;
   gfloat nyquist_freq = 0.5 * bse_engine_sample_freq ();
+
   gsl_biquad_config_setup (&fmod->config, fmod->base_freq / nyquist_freq, fmod->gain, 0);
   gsl_biquad_filter_config (&fmod->biquad, &fmod->config, TRUE);
 }
+
 static void
 biquad_filter_process (BseModule *module,
 		       guint      n_values)
@@ -352,6 +382,7 @@ biquad_filter_process (BseModule *module,
   gfloat *sig_out = BSE_MODULE_OBUFFER (module, BSE_BIQUAD_FILTER_OCHANNEL_AUDIO);
   gfloat *bound = sig_out + n_values;
   gboolean sig_out_as_freq = TRUE;
+
   if (BSE_MODULE_ISTREAM (module, BSE_BIQUAD_FILTER_ICHANNEL_FREQ).connected &&
       BSE_MODULE_ISTREAM (module, BSE_BIQUAD_FILTER_ICHANNEL_FREQ_MOD).connected)
     bse_frequency_modulator (&fmod->fm,
@@ -373,6 +404,7 @@ biquad_filter_process (BseModule *module,
 			     sig_out);
   else
     sig_out_as_freq = FALSE;
+
   if (BSE_MODULE_ISTREAM (module, BSE_BIQUAD_FILTER_ICHANNEL_GAIN_MOD).connected && sig_out_as_freq)
     {
       const gfloat *gain_in = BSE_MODULE_IBUFFER (module, BSE_BIQUAD_FILTER_ICHANNEL_GAIN_MOD);
@@ -383,6 +415,7 @@ biquad_filter_process (BseModule *module,
       do
 	{
 	  guint n = MIN (bound - sig_out, bse_engine_control_raster ());
+
 	  if (UNLIKELY (BSE_SIGNAL_FREQ_CHANGED (*sig_out, last_freq)))
 	    {
 	      last_freq = *sig_out;
@@ -416,6 +449,7 @@ biquad_filter_process (BseModule *module,
       do
 	{
           guint n = MIN (bound - sig_out, bse_engine_control_raster ());
+
           if (UNLIKELY (BSE_SIGNAL_FREQ_CHANGED (*sig_out, last_freq)))
 	    {
 	      last_freq = *sig_out;
@@ -436,6 +470,7 @@ biquad_filter_process (BseModule *module,
       do
 	{
           guint n = MIN (bound - sig_out, bse_engine_control_raster ());
+
 	  if (UNLIKELY (BSE_SIGNAL_GAIN_CHANGED (*gain_in, last_gain)))
 	    {
 	      last_gain = *gain_in;
@@ -452,6 +487,7 @@ biquad_filter_process (BseModule *module,
   else
     gsl_biquad_filter_eval (&fmod->biquad, n_values, audio_in, sig_out);
 }
+
 static void
 bse_biquad_filter_context_create (BseSource *source,
 				  guint      context_handle,
@@ -471,6 +507,7 @@ bse_biquad_filter_context_create (BseSource *source,
   FilterModule *fmod = g_new0 (FilterModule, 1);
   gfloat nyquist_freq = 0.5 * bse_engine_sample_freq ();
   BseModule *module;
+
   fmod->base_freq = MIN (self->freq, nyquist_freq);
   fmod->gain = self->gain;
   fmod->gain_strength = self->gain_strength;
@@ -481,11 +518,15 @@ bse_biquad_filter_context_create (BseSource *source,
   fmod->fm.fine_tune = 0;
   gsl_biquad_config_init (&fmod->config, GslBiquadType (self->filter_type), GslBiquadNormalize (self->norm_type));
   gsl_biquad_config_setup (&fmod->config, fmod->base_freq / nyquist_freq, fmod->gain, 0);
+
   module = bse_module_new (&biquad_filter_class, fmod);
+
   /* setup module i/o streams with BseSource i/o channels */
   bse_source_set_context_module (source, context_handle, module);
+
   /* commit module to engine */
   bse_trans_add (trans, bse_job_integrate (module));
+
   /* chain parent class' handler */
   BSE_SOURCE_CLASS (parent_class)->context_create (source, context_handle, trans);
 }

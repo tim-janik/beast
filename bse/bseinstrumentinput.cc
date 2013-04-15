@@ -1,17 +1,24 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bseinstrumentinput.hh"
+
 #include "bsecategories.hh"
 #include "bsesnet.hh"
 #include "bseengine.hh"
+
 #include <string.h>
+
 /* --- parameters --- */
 enum
 {
   PROP_0,
   PROP_IPORT_NAME
 };
+
+
 /* --- variables --- */
 static void *parent_class = NULL;
+
+
 /* --- functions --- */
 static void
 bse_instrument_input_reset_names (BseInstrumentInput *self)
@@ -20,6 +27,7 @@ bse_instrument_input_reset_names (BseInstrumentInput *self)
   BseItem *item = BSE_ITEM (self);
   BseSNet *snet = item->parent ? BSE_SNET (item->parent) : NULL;
   const char *name;
+
   g_object_freeze_notify (G_OBJECT (self));
   name = BSE_SOURCE_OCHANNEL_IDENT (self, 0);
   if (strcmp (iport->input_ports[0], name) != 0 &&
@@ -43,26 +51,32 @@ bse_instrument_input_reset_names (BseInstrumentInput *self)
                   "BseSubIPort::in_port_4", name, NULL);
   g_object_thaw_notify (G_OBJECT (self));
 }
+
 static void
 bse_instrument_input_init (BseInstrumentInput *self)
 {
   bse_instrument_input_reset_names (self);
 }
+
 static void
 bse_instrument_input_set_parent (BseItem *item,
                                  BseItem *parent)
 {
   BseInstrumentInput *self = BSE_INSTRUMENT_INPUT (item);
+
   if (item->parent)
     g_signal_handlers_disconnect_by_func (item->parent, (void*) bse_instrument_input_reset_names, self);
+
   /* chain parent class' handler */
   BSE_ITEM_CLASS (parent_class)->set_parent (item, parent);
+
   if (item->parent)
     g_signal_connect_swapped (item->parent, "port_unregistered",
 			      G_CALLBACK (bse_instrument_input_reset_names), self);
   else
     bse_instrument_input_reset_names (self);
 }
+
 static void
 bse_instrument_input_get_property (GObject *object, uint param_id, GValue *value, GParamSpec *pspec)
 {
@@ -73,6 +87,7 @@ bse_instrument_input_get_property (GObject *object, uint param_id, GValue *value
       break;
     }
 }
+
 static void
 bse_instrument_input_class_init (BseInstrumentInputClass *klass)
 {
@@ -81,9 +96,12 @@ bse_instrument_input_class_init (BseInstrumentInputClass *klass)
   BseItemClass *item_class = BSE_ITEM_CLASS (klass);
   BseSourceClass *source_class = BSE_SOURCE_CLASS (klass);
   uint i, ochannel_id;
+
   parent_class = g_type_class_peek_parent (klass);
+
   gobject_class->get_property = bse_instrument_input_get_property;
   item_class->set_parent = bse_instrument_input_set_parent;
+
   /* assert parent class introduced enough ports */
   g_assert (BSE_SUB_IPORT_N_PORTS >= 4);
   /* override parent properties with NOP properties */
@@ -95,6 +113,7 @@ bse_instrument_input_class_init (BseInstrumentInputClass *klass)
                                                     /* override parent property: 0 */ "r"));
       g_free (string);
     }
+
   ochannel_id = bse_source_class_add_ochannel (source_class, "frequency", _("Frequency"), _("Note Frequency"));
   g_assert (ochannel_id == BSE_INSTRUMENT_INPUT_OCHANNEL_FREQUENCY);
   ochannel_id = bse_source_class_add_ochannel (source_class, "gate", _("Gate"), _("High if the note is currently being pressed"));
@@ -104,15 +123,18 @@ bse_instrument_input_class_init (BseInstrumentInputClass *klass)
   ochannel_id = bse_source_class_add_ochannel (source_class, "aftertouch", _("Aftertouch"), _("Velocity while the note is pressed"));
   g_assert (ochannel_id == BSE_INSTRUMENT_INPUT_OCHANNEL_AFTERTOUCH);
 }
+
 BSE_BUILTIN_TYPE (BseInstrumentInput)
 {
   static const GTypeInfo type_info = {
     sizeof (BseInstrumentInputClass),
+
     (GBaseInitFunc) NULL,
     (GBaseFinalizeFunc) NULL,
     (GClassInitFunc) bse_instrument_input_class_init,
     (GClassFinalizeFunc) NULL,
     NULL /* class_data */,
+
     sizeof (BseInstrumentInput),
     0 /* n_preallocs */,
     (GInstanceInitFunc) bse_instrument_input_init,

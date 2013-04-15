@@ -8,7 +8,9 @@
 #include <string.h>
 #include <stdio.h>
 #include <errno.h>
+
 static int original_priority = 0;
+
 static int      /* returns 0 for success */
 adjust_priority (void)
 {
@@ -20,6 +22,7 @@ adjust_priority (void)
       /* not really fatal */
       original_priority = 0;
     }
+
   /* improve priority */
   if (original_priority > -10)
     {
@@ -32,8 +35,10 @@ adjust_priority (void)
     }
   if (errno != 0)
     return errno;       /* failed */
+
   return 0;
 }
+
 int
 main (int    argc,
       char **argv)
@@ -41,8 +46,10 @@ main (int    argc,
   const char *executable = NULL;
   int euid = geteuid ();
   int uid = getuid ();
+
   /* call privileged code */
   int priority_error = adjust_priority (); /* sets original_priority */
+
   /* drop root privileges if running setuid root as soon as possible */
   if (euid != uid)
     {
@@ -60,13 +67,17 @@ main (int    argc,
           _exit (255);
         }
     }
+
   /* non-priviledged code */
+
   /* make sure we have a program name */
   if (argc < 1)
     return -1;
+
   /* give notice about errors */
   if (euid == 0 && priority_error)
     fprintf (stderr, "%s: failed to renice process: %s\n", argv[0], strerror (priority_error));
+
   /* parse -N and -n options */
   int i, dropped_priority = -2147483647;
   for (i = 1; i < argc; i++)
@@ -95,11 +106,14 @@ main (int    argc,
       dropped_priority = original_priority;
     else if (custom_check_arg_stopper (argv[i]))        /* check for "--" and similar args */
       break;
+
   /* handle -N and -n options */
   if (dropped_priority != -2147483647)
     setpriority (PRIO_PROCESS, getpid(), dropped_priority);
+
   /* find executable */
   executable = custom_find_executable (&argc, &argv);
+
   /* exec */
   argv[0] = (char*) executable;
   execv (executable, argv);

@@ -1,13 +1,18 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #ifndef __GXK_RADGET_H__
 #define __GXK_RADGET_H__
+
 #include "gxkutils.hh"
+
 G_BEGIN_DECLS
+
 /* --- structures --- */
 #define GXK_RADGET    G_OBJECT
 #define GXK_IS_RADGET G_IS_OBJECT
 typedef void          GxkRadget;
 typedef struct _GxkRadgetArgs GxkRadgetArgs;
+
+
 /* --- radget args (aggregation of (name, value) pairs) --- */
 GxkRadgetArgs* gxk_radget_args          (const gchar         *name1,
                                          ...);
@@ -22,6 +27,8 @@ const gchar*   gxk_radget_args_get      (const GxkRadgetArgs *args,
 GxkRadgetArgs* gxk_radget_args_merge    (GxkRadgetArgs       *dest,
                                          const GxkRadgetArgs *source);
 void           gxk_radget_free_args     (GxkRadgetArgs       *args);
+
+
 /* --- radget functions --- */
 GxkRadget*    gxk_radget_create         (const gchar        *domain_name,
                                          const gchar        *name,
@@ -58,6 +65,8 @@ void          gxk_radget_add            (GxkRadget          *radget,
 void          gxk_radget_sensitize      (GxkRadget          *radget,
                                          const gchar        *name,
                                          gboolean            sensitive);
+
+
 /* --- radget types --- */
 typedef struct GxkRadgetData GxkRadgetData;
 typedef struct {
@@ -96,5 +105,7 @@ GxkRadgetArgs* gxk_radget_data_copy_call_args    (GxkRadgetData       *gdgdata);
 GxkRadget*     gxk_radget_data_get_scope_radget  (GxkRadgetData       *gdgdata);
 gchar*         gxk_radget_data_dup_expand        (GxkRadgetData       *gdgdata,
                                                   const gchar         *expression);
+
 G_END_DECLS
+
 #endif /* __GXK_RADGET_H__ */

@@ -1,9 +1,13 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #ifndef __BSE_MIDI_RECEIVER_H__
 #define __BSE_MIDI_RECEIVER_H__
+
 #include        <bse/bseobject.hh>
 #include        <bse/bsemidievent.hh>
+
 G_BEGIN_DECLS
+
+
 /* --- API --- */
 #define	BSE_MIDI_CONTROL_MODULE_N_CHANNELS		   (4)
 #define	BSE_MIDI_VOICE_MODULE_N_CHANNELS		   (4)

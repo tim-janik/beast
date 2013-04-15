@@ -54,8 +54,10 @@ TypeRegistry::TypeRegistry (guint             instance_size,
                    (GClassInitFunc) class_init,
                    iinit, flags);
   entry.reg = this;
+
   if (!type_entries)
     type_entries = new list<TypeEntry>();
+
   list<TypeEntry>::iterator li;
   for (li = type_entries->begin(); li != type_entries->end(); li++)
     if (strcmp (li->name, parent) == 0)
@@ -73,6 +75,7 @@ TypeRegistry::init_types()
     {
       TypeRegistry *self = li->reg;
       GTypeInfo info = { 0, };
+
       info.class_size = BSE_CXX_COMMON_CLASS_SIZE;
       info.base_init = li->binit;
       info.class_init = li->cinit;

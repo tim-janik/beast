@@ -1,8 +1,11 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #ifndef __BSE_CONTEXT_MERGER_H__
 #define __BSE_CONTEXT_MERGER_H__
+
 #include <bse/bsesource.hh>
+
 G_BEGIN_DECLS
+
 /* --- object type macros --- */
 #define BSE_TYPE_CONTEXT_MERGER              (BSE_TYPE_ID (BseContextMerger))
 #define BSE_CONTEXT_MERGER(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), BSE_TYPE_CONTEXT_MERGER, BseContextMerger))

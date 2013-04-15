@@ -36,6 +36,9 @@ static void     make_real               (guint              n,
 static void     extract_real            (guint              n,
                                          const double      *a,
                                          double            *b);
+
+
+
 /* --- functions --- */
 int
 main (int   argc,
@@ -57,11 +60,14 @@ main (int   argc,
   static double work_fft_sout[MAX_FFT_SIZE] = { 0, };
   static double work_fft_back[MAX_FFT_SIZE] = { 0, };
   static double scaled_fft_back[MAX_FFT_SIZE] = { 0, };
+
   /* run tests */
   for (i = 8; i <= MAX_FFT_SIZE >> 1; i <<= 1)
     {
       double d;
+
       TSTART ("Testing fft code for size %u", i);
+
       /* setup reference and work fft records */
       fill_rand (i << 1, ref_fft_in);
       // memset (ref_fft_aout, 0, MAX_FFT_SIZE * sizeof (ref_fft_aout[0]));
@@ -75,12 +81,14 @@ main (int   argc,
       reference_power2_fftc (i, ref_fft_in, ref_fft_sout, REF_SYNTHESIS);
       reference_power2_fftc (i, ref_fft_aout, ref_fft_back, REF_SYNTHESIS);
       scale_block (i << 1, ref_fft_back, 1.0 / i);
+
       /* perform fft test */
       gsl_power2_fftac (i, work_fft_in, work_fft_aout);
       gsl_power2_fftsc (i, work_fft_in, work_fft_sout);
       gsl_power2_fftsc (i, work_fft_aout, work_fft_back);
       scale_block (i << 1, work_fft_back, 1.0 / i);
       gsl_power2_fftsc_scale (i, work_fft_aout, scaled_fft_back);
+
       /* check differences */
       d = diff (i << 1, 0, ref_fft_in, work_fft_in, "Checking input record");
       if (d)
@@ -183,6 +191,7 @@ fill_rand (guint   n,
   while (n--)
     a[n] = -1. + 2. * rand() / (RAND_MAX + 1.0);
 }
+
 static void
 make_real (guint              n,
            double            *a)
@@ -191,6 +200,7 @@ make_real (guint              n,
   for (x = 1; x < n; x += 2)
     a[x] = 0; /* eliminate complex part */
 }
+
 static void
 extract_real (guint              n,
               const double      *a,
@@ -200,6 +210,8 @@ extract_real (guint              n,
   for (x = 0; x < n; x += 2)
     *b++ = a[x]; /* extract real part */
 }
+
+
 static void
 scale_block (guint    n,
 	     double  *a,
@@ -208,6 +220,7 @@ scale_block (guint    n,
   while (n--)
     a[n] *= factor;
 }
+
 static double
 diff (guint         m,
       guint         p,
@@ -239,6 +252,8 @@ diff (guint         m,
         g_bit_storage (1. / max));
   return d;
 }
+
+
 /* --- fft implementation --- */
 #define BUTTERFLY_XY(X1re,X1im,X2re,X2im,Y1re,Y1im,Y2re,Y2im,Wre,Wim) { \
   register double T1re, T1im, T2re, T2im; \
@@ -304,6 +319,7 @@ diff (guint         m,
   Wre += T1re;       \
   Wim += T1im;       \
 }
+
 static inline void
 reference_bitreverse_fft2analysis (const unsigned int n,
 				   const double      *X,
@@ -311,6 +327,7 @@ reference_bitreverse_fft2analysis (const unsigned int n,
 {
   const unsigned int n2 = n >> 1, n1 = n + n2, max = n >> 2;
   unsigned int i, r;
+
   BUTTERFLY_10 (X[0], X[1],
 		X[n], X[n + 1],
 		Y[0], Y[1],
@@ -328,12 +345,14 @@ reference_bitreverse_fft2analysis (const unsigned int n,
   for (i = 1, r = 0; i < max; i++)
     {
       unsigned int k, j = n >> 1;
+
       while (r >= j)
 	{
 	  r -= j;
 	  j >>= 1;
 	}
       r |= j;
+
       k = r >> 1;
       j = i << 3;
       BUTTERFLY_10 (X[k], X[k + 1],
@@ -350,6 +369,7 @@ reference_bitreverse_fft2analysis (const unsigned int n,
 		    __1, __0);
     }
 }
+
 static inline void
 reference_bitreverse_fft2synthesis (const unsigned int n,
 				    const double      *X,
@@ -358,6 +378,7 @@ reference_bitreverse_fft2synthesis (const unsigned int n,
   const unsigned int n2 = n >> 1, n1 = n + n2, max = n >> 2;
   unsigned int i, r;
   double scale = n;
+
   scale = 1; /* set to 1.0 / scale to get scaled synthesis */
   BUTTERFLY_10scale (X[0], X[1],
 		     X[n], X[n + 1],
@@ -376,12 +397,14 @@ reference_bitreverse_fft2synthesis (const unsigned int n,
   for (i = 1, r = 0; i < max; i++)
     {
       unsigned int k, j = n >> 1;
+
       while (r >= j)
 	{
 	  r -= j;
 	  j >>= 1;
 	}
       r |= j;
+
       k = r >> 1;
       j = i << 3;
       BUTTERFLY_10scale (X[k], X[k + 1],
@@ -398,6 +421,7 @@ reference_bitreverse_fft2synthesis (const unsigned int n,
 			 scale);
     }
 }
+
 static void
 reference_power2_fftc (unsigned int  n_values,
 		       const double *rivalues_in,
@@ -408,27 +432,33 @@ reference_power2_fftc (unsigned int  n_values,
   double theta = esign < 0 ? -3.1415926535897932384626433832795029 : 3.1415926535897932384626433832795029;
   unsigned int block_size = 2 << 1;
   double last_sin;
+
   if (esign > 0)
     reference_bitreverse_fft2analysis (n_values, rivalues_in, rivalues);
   else
     reference_bitreverse_fft2synthesis (n_values, rivalues_in, rivalues);
   theta *= (double) 1.0 / 2.;
   last_sin = sin (theta);
+
   if (n_values < 4)
     return;
+
   do
     {
       double Dre, Dim, Wre, Wim;
       unsigned int k, i, half_block = block_size >> 1;
       unsigned int block_size2 = block_size << 1;
+
       theta *= 0.5;
       Dim = last_sin;
       last_sin = sin (theta);
       Dre = last_sin * last_sin * -2.;
+
       /* loop over first coefficient in each block ==> w == {1,0} */
       for (i = 0; i < n_values2; i += block_size2)
 	{
 	  unsigned int v1 = i, v2 = i + block_size;
+
           BUTTERFLY_10 (rivalues[v1], rivalues[v1 + 1],
                         rivalues[v2], rivalues[v2 + 1],
                         rivalues[v1], rivalues[v1 + 1],
@@ -444,6 +474,7 @@ reference_power2_fftc (unsigned int  n_values,
 	  for (i = k; i < n_values2; i += block_size2)
 	    {
 	      unsigned int v1 = i, v2 = i + block_size;
+
               BUTTERFLY_XY (rivalues[v1], rivalues[v1 + 1],
                             rivalues[v2], rivalues[v2 + 1],
                             rivalues[v1], rivalues[v1 + 1],
@@ -460,6 +491,7 @@ reference_power2_fftc (unsigned int  n_values,
 	    for (i = k; i < n_values2; i += block_size2)
 	      {
 	        unsigned int v1 = i, v2 = i + block_size;
+
                 BUTTERFLY_01 (rivalues[v1], rivalues[v1 + 1],
                               rivalues[v2], rivalues[v2 + 1],
                               rivalues[v1], rivalues[v1 + 1],
@@ -470,6 +502,7 @@ reference_power2_fftc (unsigned int  n_values,
 	    for (i = k; i < n_values2; i += block_size2)
 	      {
 	        unsigned int v1 = i, v2 = i + block_size;
+
                 BUTTERFLY_0m (rivalues[v1], rivalues[v1 + 1],
                               rivalues[v2], rivalues[v2 + 1],
                               rivalues[v1], rivalues[v1 + 1],
@@ -496,6 +529,7 @@ reference_power2_fftc (unsigned int  n_values,
 	  for (i = k; i < n_values2; i += block_size2)
 	    {
 	      unsigned int v1 = i, v2 = i + block_size;
+
               BUTTERFLY_XY (rivalues[v1], rivalues[v1 + 1],
                             rivalues[v2], rivalues[v2 + 1],
                             rivalues[v1], rivalues[v1 + 1],
@@ -508,13 +542,16 @@ reference_power2_fftc (unsigned int  n_values,
     }
   while (block_size <= n_values);
 }
+
 /*--------------- reference DFT -----------------*/
+
 static BseComplex
 complex_exp (BseComplex z)
 {
   /* also found in g++-4.2 C++ complex numbers */
   return bse_complex_polar (exp(z.re), z.im);
 }
+
 void
 reference_dftc (unsigned int       n_values,
 		const double      *rivalues_in,
@@ -528,10 +565,12 @@ reference_dftc (unsigned int       n_values,
   for (k = 0; k < n_values; k++)
     {
       BseComplex result = { 0, 0 };
+
       for (n = 0; n < n_values; n++)
         result = bse_complex_add (result,
                                   bse_complex_mul (bse_complex (rivalues_in[n * 2], rivalues_in[n * 2 + 1]),
                                                    complex_exp (bse_complex (0, -2 * PI / n_values * ((k * n) % n_values)))));
+
       rivalues_out[k * 2]     = result.re;
       rivalues_out[k * 2 + 1] = result.im;
     }

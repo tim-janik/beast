@@ -1,11 +1,15 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include	"bsepcmdevice-oss.hh"
+
 #include	"topconfig.h"
+
 #include	"gsldatautils.hh"
 #include	"gslcommon.hh" // FIXME: remove
+
 #ifndef	BSE_PCM_DEVICE_CONF_OSS
 BSE_DUMMY_TYPE (BsePcmDeviceOSS);
 #else   /* BSE_PCM_DEVICE_CONF_OSS */
+
 #if HAVE_SYS_SOUNDCARD_H
 #include	<sys/soundcard.h>
 #elif HAVE_SOUNDCARD_H
@@ -18,6 +22,7 @@ BSE_DUMMY_TYPE (BsePcmDeviceOSS);
 #include	<string.h>
 #include	<errno.h>
 #include	<fcntl.h>
+
 #if	G_BYTE_ORDER == G_LITTLE_ENDIAN
 #define	AFMT_S16_HE	AFMT_S16_LE
 #elif	G_BYTE_ORDER == G_BIG_ENDIAN
@@ -43,6 +48,8 @@ typedef struct
   gboolean      hard_sync;
 } OSSHandle;
 #define	FRAG_BUF_SIZE(oss)	((oss)->frag_size * 4)
+
+
 /* --- prototypes --- */
 static BseErrorType oss_device_setup			(OSSHandle		*oss,
                                                          guint                   req_queue_length);
@@ -54,14 +61,19 @@ static void	    oss_device_write			(BsePcmHandle		*handle,
 static gboolean     oss_device_check_io                 (BsePcmHandle           *handle,
                                                          glong                  *timeoutp);
 static guint        oss_device_latency                  (BsePcmHandle           *handle);
+
+
 /* --- variables --- */
 static gpointer parent_class = NULL;
+
+
 /* --- functions --- */
 static void
 bse_pcm_device_oss_init (BsePcmDeviceOSS *oss)
 {
   oss->device_name = g_strdup (BSE_PCM_DEVICE_CONF_OSS);
 }
+
 static BseErrorType
 check_device_usage (const gchar *name,
                     const gchar *check_mode)
@@ -82,6 +94,7 @@ check_device_usage (const gchar *name,
     }
   return error;
 }
+
 static SfiRing*
 bse_pcm_device_oss_list_devices (BseDevice    *device)
 {
@@ -113,6 +126,7 @@ bse_pcm_device_oss_list_devices (BseDevice    *device)
     ring = sfi_ring_append (ring, bse_device_error_new (device, g_strdup_printf ("No devices found")));
   return ring;
 }
+
 static BseErrorType
 bse_pcm_device_oss_open (BseDevice     *device,
                          gboolean       require_readable,
@@ -143,6 +157,7 @@ bse_pcm_device_oss_open (BseDevice     *device,
     omode = require_readable && require_writable ? O_RDWR : require_readable ? O_RDONLY : O_WRONLY;
   OSSHandle *oss = g_new0 (OSSHandle, 1);
   BsePcmHandle *handle = &oss->handle;
+
   /* setup request */
   handle->n_channels = BSE_PCM_DEVICE (device)->req_n_channels;
   handle->mix_freq = BSE_PCM_DEVICE (device)->req_mix_freq;
@@ -151,6 +166,7 @@ bse_pcm_device_oss_open (BseDevice     *device,
   oss->fd = -1;
   oss->needs_trigger = TRUE;
   oss->hard_sync = hard_sync;
+
   /* try open */
   BseErrorType error;
   gint fd = -1;
@@ -170,6 +186,7 @@ bse_pcm_device_oss_open (BseDevice     *device,
     }
   else
     error = bse_error_from_errno (errno, BSE_ERROR_FILE_OPEN_FAILED);
+
   /* setup PCM handle or shutdown */
   if (!error)
     {
@@ -221,6 +238,7 @@ oss_device_setup (OSSHandle *oss,
   gint fd = oss->fd;
   glong d_long;
   gint d_int;
+
   /* to get usable low-latency behaviour with OSS, we
    * make the device blocking, choose small fragments
    * and read() the first fragment once available.
@@ -229,6 +247,7 @@ oss_device_setup (OSSHandle *oss,
   d_long &= ~O_NONBLOCK;
   if (fcntl (fd, F_SETFL, d_long))
     return BSE_ERROR_DEVICE_ASYNC;
+
   d_int = 0;
   if (ioctl (fd, SNDCTL_DSP_GETFMTS, &d_int) < 0)
     return BSE_ERROR_DEVICE_FORMAT;
@@ -239,18 +258,21 @@ oss_device_setup (OSSHandle *oss,
       d_int != AFMT_S16_HE)
     return BSE_ERROR_DEVICE_FORMAT;
   guint bytes_per_value = 2;
+
   d_int = handle->n_channels - 1;
   if (ioctl (fd, SNDCTL_DSP_STEREO, &d_int) < 0)
     return BSE_ERROR_DEVICE_CHANNELS;
   if (int (handle->n_channels) != d_int + 1)
     return BSE_ERROR_DEVICE_CHANNELS;
   oss->frame_size = handle->n_channels * bytes_per_value;
+
   d_int = handle->mix_freq;
   if (ioctl (fd, SNDCTL_DSP_SPEED, &d_int) < 0)
     return BSE_ERROR_DEVICE_FREQUENCY;
   handle->mix_freq = d_int;
   if (MAX (d_int, handle->mix_freq) - MIN (d_int, handle->mix_freq) > handle->mix_freq / 100)
     return BSE_ERROR_DEVICE_FREQUENCY;
+
   /* Note: fragment = n_fragments << 16;
    *       fragment |= g_bit_storage (fragment_size - 1);
    */
@@ -266,10 +288,12 @@ oss_device_setup (OSSHandle *oss,
   d_int = (oss->n_frags << 16) | g_bit_storage (oss->frag_size - 1);
   if (ioctl (fd, SNDCTL_DSP_SETFRAGMENT, &d_int) < 0)
     return BSE_ERROR_DEVICE_LATENCY;
+
   d_int = 0;
   if (ioctl (fd, SNDCTL_DSP_GETBLKSIZE, &d_int) < 0 ||
       d_int < 128 || d_int > 131072 || (d_int & 1))
     return BSE_ERROR_DEVICE_BUFFER;
+
   audio_buf_info info = { 0, };
   if (handle->writable && ioctl (fd, SNDCTL_DSP_GETOSPACE, &info) < 0)
     return BSE_ERROR_DEVICE_BUFFER;
@@ -284,6 +308,7 @@ oss_device_setup (OSSHandle *oss,
       sfi_diag ("OSS: buffer size (%d) differs from fragment space (%d)", info.bytes, info.fragstotal * info.fragsize);
       oss->queue_length = oss->n_frags * oss->frag_size / oss->frame_size;
     }
+
   if (handle->readable)
     {
       req_queue_length = MAX (req_queue_length, 3 * info.fragsize / oss->frame_size);   /* can't get better than 3 fragments */
@@ -327,6 +352,7 @@ oss_device_retrigger (OSSHandle *oss)
   if (oss->handle.writable)
     d_int |= PCM_ENABLE_OUTPUT;
   (void) ioctl (oss->fd, SNDCTL_DSP_SETTRIGGER, &d_int);
+
   /* Jaroslav Kysela <perex@jcu.cz>:
    *  Important sequence:
    *     1) turn on capture
@@ -348,6 +374,7 @@ oss_device_retrigger (OSSHandle *oss)
       FD_SET (oss->fd, &out_fds);
       select (oss->fd + 1, &in_fds, &out_fds, NULL, &tv);
     }
+
   /* provide latency buffering */
   gint size = oss->queue_length * oss->frame_size, n;
   guint8 *silence = (guint8*) g_malloc0 (size);
@@ -428,13 +455,16 @@ oss_device_check_io (BsePcmHandle *handle,
           goto handle_underrun;
         }
     }
+
   /* check whether processing is possible */
   if (n_capture_avail >= handle->block_length)
     return TRUE;        /* can process */
+
   /* check immediate processing need */
   guint fill_frames = n_total_playback - n_playback_avail;
   if (fill_frames <= oss->queue_length)
     return TRUE;        /* need process */
+
   /* calculate timeout until processing is possible/needed */
   guint diff_frames;
   if (handle->readable)
@@ -445,8 +475,10 @@ oss_device_check_io (BsePcmHandle *handle,
   /* OSS workaround for low latency */
   if (handle->readable)
     *timeoutp = 0;      /* prevent waiting in poll(), to force blocking read() */
+
   return *timeoutp == 0;
 }
+
 static guint
 oss_device_latency (BsePcmHandle *handle)
 {
@@ -484,6 +516,7 @@ oss_device_latency (BsePcmHandle *handle)
   /* return total latency in frames */
   return n_capture_avail + n_playback_filled;
 }
+
 static gsize
 oss_device_read (BsePcmHandle *handle,
 		 gfloat       *values)
@@ -495,12 +528,15 @@ oss_device_read (BsePcmHandle *handle,
   gpointer buf = oss->frag_buf;
   gfloat *dest = values;
   gsize n_left = n_values;
+
   g_return_val_if_fail (oss->frame_size == 4, 0);
+
   do
     {
       gsize n = MIN (buf_size, n_left << 1);
       gint16 *b, *s = (gint16*) buf;
       gssize l;
+
       do
 	l = read (fd, buf, n);
       while (l < 0 && errno == EINTR); /* don't mind signals */
@@ -517,8 +553,10 @@ oss_device_read (BsePcmHandle *handle,
     }
   while (n_left);
   oss->read_write_count += 1;
+
   return n_values;
 }
+
 static void
 oss_device_write (BsePcmHandle *handle,
 		  const gfloat *values)
@@ -529,14 +567,18 @@ oss_device_write (BsePcmHandle *handle,
   gsize buf_size = FRAG_BUF_SIZE (oss);
   gpointer buf = oss->frag_buf;
   const gfloat *s = values;
+
   if (handle->readable)
     while (oss->read_write_count < 1)
       oss_device_read (handle, NULL);   /* dummy read to sync device */
+
   g_return_if_fail (oss->frame_size == 4);
+
   do
     {
       gsize n = MIN (buf_size, n_values << 1);
       gssize l;
+
       gsl_conv_from_float_clip (GSL_WAVE_FORMAT_SIGNED_16,
 				G_BYTE_ORDER,
 				s,
@@ -553,13 +595,17 @@ oss_device_write (BsePcmHandle *handle,
   while (n_values);
   oss->read_write_count -= 1;
 }
+
 static void
 bse_pcm_device_oss_class_init (BsePcmDeviceOSSClass *klass)
 {
   GObjectClass *gobject_class = G_OBJECT_CLASS (klass);
   BseDeviceClass *device_class = BSE_DEVICE_CLASS (klass);
+
   parent_class = g_type_class_peek_parent (klass);
+
   gobject_class->finalize = bse_pcm_device_oss_finalize;
+
   device_class->list_devices = bse_pcm_device_oss_list_devices;
   bse_device_class_setup (klass,
                           BSE_RATING_DEFAULT,
@@ -574,20 +620,25 @@ bse_pcm_device_oss_class_init (BsePcmDeviceOSSClass *klass)
   device_class->open = bse_pcm_device_oss_open;
   device_class->close = bse_pcm_device_oss_close;
 }
+
 BSE_BUILTIN_TYPE (BsePcmDeviceOSS)
 {
   GType pcm_device_oss_type;
+
   static const GTypeInfo pcm_device_oss_info = {
     sizeof (BsePcmDeviceOSSClass),
+
     (GBaseInitFunc) NULL,
     (GBaseFinalizeFunc) NULL,
     (GClassInitFunc) bse_pcm_device_oss_class_init,
     (GClassFinalizeFunc) NULL,
     NULL /* class_data */,
+
     sizeof (BsePcmDeviceOSS),
     0 /* n_preallocs */,
     (GInstanceInitFunc) bse_pcm_device_oss_init,
   };
+
   pcm_device_oss_type = bse_type_register_static (BSE_TYPE_PCM_DEVICE,
 						  "BsePcmDeviceOSS",
 						  "PCM device implementation for OSS Lite /dev/dsp",
@@ -595,4 +646,5 @@ BSE_BUILTIN_TYPE (BsePcmDeviceOSS)
                                                   &pcm_device_oss_info);
   return pcm_device_oss_type;
 }
+
 #endif	/* BSE_PCM_DEVICE_CONF_OSS */

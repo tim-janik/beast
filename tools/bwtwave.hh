@@ -1,14 +1,17 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #ifndef __BWT_WAVE_H__
 #define __BWT_WAVE_H__
+
 #include <bse/gsldatahandle.hh>
 #include <bse/gslwavechunk.hh>
 #include <bse/bseenums.hh>
 #include <string>
 #include <list>
 #include <vector>
+
 namespace BseWaveTool {
 using namespace std;
+
 class WaveChunk {
 public:
   GslDataHandle  *dhandle; /* always open */
@@ -23,6 +26,7 @@ public:
                                          gchar        **xinfos);
   /*Des*/         ~WaveChunk();
 };
+
 struct Wave {
   guint           n_channels;
   string          name;
@@ -59,5 +63,7 @@ public:
   BseErrorType          store           (const string    file_name);
   /*Des*/               ~Wave           ();
 };
+
 } // BseWaveTool
+
 #endif /* __BWT_WAVE_H__ */

@@ -22,6 +22,8 @@ interface BassFilter : Effect {
     Bool trigger     = Trigger (_("Trigger filter"), "", GUI);
   };
 };
+
 } // Dav
 } // Bse
+
 /* vim:set ts=8 sw=2 sts=2 syntax=cpp: */

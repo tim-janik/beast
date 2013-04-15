@@ -1,9 +1,12 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #ifndef	__BSE_MIDI_SYNTH_H__
 #define	__BSE_MIDI_SYNTH_H__
+
 #include	<bse/bsesnet.hh>
 #include	<bse/bsesubsynth.hh>
+
 G_BEGIN_DECLS
+
 /* --- object type macros --- */
 #define BSE_TYPE_MIDI_SYNTH	         (BSE_TYPE_ID (BseMidiSynth))
 #define BSE_MIDI_SYNTH(object)	         (G_TYPE_CHECK_INSTANCE_CAST ((object), BSE_TYPE_MIDI_SYNTH, BseMidiSynth))

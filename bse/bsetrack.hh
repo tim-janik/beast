@@ -1,10 +1,13 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #ifndef __BSE_TRACK_H__
 #define __BSE_TRACK_H__
+
 #include <bse/bseitem.hh>
 #include <bse/bsesnet.hh>
 #include <bse/bsecontextmerger.hh>
+
 G_BEGIN_DECLS
+
 /* --- BSE type macros --- */
 #define BSE_TYPE_TRACK		    (BSE_TYPE_ID (BseTrack))
 #define BSE_TRACK(object)	    (G_TYPE_CHECK_INSTANCE_CAST ((object), BSE_TYPE_TRACK, BseTrack))
@@ -74,5 +77,7 @@ BsePart*	 bse_track_get_part_SL	(BseTrack		*self,
 					 guint			 tick,
 					 guint			*start,
 					 guint			*next);
+
 G_END_DECLS
+
 #endif /* __BSE_TRACK_H__ */

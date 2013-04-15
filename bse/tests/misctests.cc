@@ -4,7 +4,9 @@
 #include <sfi/sfitests.hh>
 #include <bse/bsemathsignal.hh>
 #include <bse/bsecxxplugin.hh> // for generated types
+
 #define	FLF	"26.20"
+
 static void
 check_cent_tune_fast (void)
 {
@@ -19,6 +21,7 @@ check_cent_tune_fast (void)
     }
   TDONE();
 }
+
 static void
 check_cent_tune (void)
 {
@@ -34,6 +37,7 @@ check_cent_tune (void)
     }
   TDONE();
 }
+
 static void
 check_equal_tempered_tuning (void)
 {
@@ -49,6 +53,7 @@ check_equal_tempered_tuning (void)
     }
   TDONE();
 }
+
 static void
 check_tuning_monotony (BseMusicalTuningType musical_tuning)
 {
@@ -64,6 +69,7 @@ check_tuning_monotony (BseMusicalTuningType musical_tuning)
       }
   TDONE();
 }
+
 static void
 check_freq_vs_notes (BseMusicalTuningType musical_tuning)
 {
@@ -120,5 +126,6 @@ main (gint   argc,
       check_tuning_monotony (musical_tuning);
       check_freq_vs_notes (musical_tuning);
     }
+
   return 0;
 }

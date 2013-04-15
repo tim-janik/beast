@@ -1,8 +1,11 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #ifndef __BST_PIANO_ROLL_H__
 #define __BST_PIANO_ROLL_H__
+
 #include        "bstutils.hh"
+
 G_BEGIN_DECLS
+
 /* --- type macros --- */
 #define BST_TYPE_PIANO_ROLL              (bst_piano_roll_get_type ())
 #define BST_PIANO_ROLL(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), BST_TYPE_PIANO_ROLL, BstPianoRoll))
@@ -10,6 +13,8 @@ G_BEGIN_DECLS
 #define BST_IS_PIANO_ROLL(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), BST_TYPE_PIANO_ROLL))
 #define BST_IS_PIANO_ROLL_CLASS(klass)   (G_TYPE_CHECK_CLASS_TYPE ((klass), BST_TYPE_PIANO_ROLL))
 #define BST_PIANO_ROLL_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), BST_TYPE_PIANO_ROLL, BstPianoRollClass))
+
+
 /* --- typedefs & enums --- */
 typedef struct _BstPianoRoll        BstPianoRoll;
 typedef struct _BstPianoRollClass   BstPianoRollClass;
@@ -19,6 +24,8 @@ typedef enum    /*< skip >*/
   BST_PIANO_ROLL_MARKER_POINTER,
   BST_PIANO_ROLL_MARKER_SELECT
 } BstPianoRollMarkerType;
+
+
 /* --- structures & typedefs --- */
 typedef struct {
   GXK_SCROLL_CANVAS_DRAG_FIELDS;
@@ -34,25 +41,31 @@ typedef struct {
 struct _BstPianoRoll
 {
   GxkScrollCanvas parent_instance;
+
   SfiProxy	 proxy;
   SfiProxy	 song;
   BsePartLinkSeq*plinks;
   gint		 min_note;
   gint		 max_note;
   guint		 vzoom;
+
   /* horizontal layout */
   guint		 ppqn;		/* parts per quarter note */
   guint		 qnpt;		/* quarter notes per tact */
   guint		 max_ticks;	/* in ticks */
   gfloat	 hzoom;
+
   /* last drag state */
   guint          start_tick;
   gint           start_note;
   guint          start_valid : 1;
+
   guint		 draw_qn_grid : 1;
   guint		 draw_qqn_grid : 1;
+
   /* slight hack */
   guint          release_closes_toplevel : 1;
+
   /* selection rectangle */
   int		 selection_tick;
   int		 selection_duration;
@@ -62,6 +75,7 @@ struct _BstPianoRoll
 struct _BstPianoRollClass
 {
   GxkScrollCanvasClass parent_class;
+
   void		(*canvas_drag)			(BstPianoRoll	  *self,
 						 BstPianoRollDrag *drag);
   void		(*canvas_clicked)		(BstPianoRoll	  *proll,
@@ -76,6 +90,8 @@ struct _BstPianoRollClass
 						 gint              note,
 						 GdkEvent	  *event);
 };
+
+
 /* --- prototypes --- */
 GType	bst_piano_roll_get_type			(void);
 void	bst_piano_roll_set_proxy		(BstPianoRoll	*self,
@@ -97,5 +113,8 @@ void    bst_piano_roll_set_marker               (BstPianoRoll          *self,
                                                  guint                  mark_index,
                                                  guint                  position,
                                                  BstPianoRollMarkerType mtype);
+
+
 G_END_DECLS
+
 #endif /* __BST_PIANO_ROLL_H__ */

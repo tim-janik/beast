@@ -1,4 +1,5 @@
 /* GdkPixbuf RGBA C-Source image dump 1-byte-run-length-encoded */
+
 static const guint8 strings_icon[] = 
 { ""
   /* Pixbuf magic (0x47646b50) */
@@ -253,3 +254,5 @@ static const guint8 strings_icon[] =
   "\377@J<\372)#\35\344\267\0\0\0\0\11\233oS\40\233oT\1\234pT\10\233oT\1"
   "\0\0\0\0WA2\36QC6\227\25\23\21\250\16\16\16!\271\0\0\0\0\1\233oS\1\377"
   "\0\0\0\0\243\0\0\0\0"};
+
+

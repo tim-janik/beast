@@ -1,4 +1,5 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
+
 /* --- time parameter editor --- */
 static void
 param_time_changed (GtkWidget *entry,
@@ -8,6 +9,7 @@ param_time_changed (GtkWidget *entry,
   sfi_value_set_time (&param->value, sfi_time_from_string (string));
   gxk_param_apply_value (param);
 }
+
 static GtkWidget*
 param_time_create (GxkParam    *param,
                    const gchar *tooltip,
@@ -23,6 +25,7 @@ param_time_create (GxkParam    *param,
   gxk_widget_set_tooltip (widget, tooltip);
   return widget;
 }
+
 static void
 param_time_update (GxkParam  *param,
 		   GtkWidget *widget)
@@ -31,6 +34,7 @@ param_time_update (GxkParam  *param,
   gxk_param_entry_set_text (param, widget, string);
   g_free (string);
 }
+
 static GxkParamEditor param_time = {
   { "time",             N_("Time Entry"), },
   { G_TYPE_INT64, },

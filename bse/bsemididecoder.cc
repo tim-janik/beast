@@ -16,6 +16,7 @@ bse_midi_decoder_new (gboolean             auto_queue,
                       BseMusicalTuningType musical_tuning)
 {
   BseMidiDecoder *self;
+
   self = g_new0 (BseMidiDecoder, 1);
   self->musical_tuning = musical_tuning;
   self->auto_queue = auto_queue != FALSE;
@@ -29,12 +30,15 @@ bse_midi_decoder_new (gboolean             auto_queue,
   self->left_bytes = 0;
   self->n_bytes = 0;
   self->bytes = NULL;
+
   return self;
 }
+
 void
 bse_midi_decoder_destroy (BseMidiDecoder *self)
 {
   g_return_if_fail (self != NULL);
+
   while (self->events)
     {
       BseMidiEvent *event = (BseMidiEvent*) sfi_ring_pop_head (&self->events);
@@ -43,12 +47,15 @@ bse_midi_decoder_destroy (BseMidiDecoder *self)
   g_free (self->bytes);
   g_free (self);
 }
+
 BseMidiEvent*
 bse_midi_decoder_pop_event (BseMidiDecoder *self)
 {
   g_return_val_if_fail (self != NULL, NULL);
+
   return (BseMidiEvent*) sfi_ring_pop_head (&self->events);
 }
+
 SfiRing*
 bse_midi_decoder_pop_event_list (BseMidiDecoder *self)
 {
@@ -58,6 +65,7 @@ bse_midi_decoder_pop_event_list (BseMidiDecoder *self)
   self->events = NULL;
   return events;
 }
+
 static inline const char*
 decoder_state_to_string (BseMidiDecoderState state)
 {
@@ -72,6 +80,7 @@ decoder_state_to_string (BseMidiDecoderState state)
     }
   return "unknown";
 }
+
 static void
 midi_decoder_advance_state (BseMidiDecoder *self)
 {
@@ -91,6 +100,7 @@ midi_decoder_advance_state (BseMidiDecoder *self)
   self->state = next_state;
   self->state_changed = TRUE;
 }
+
 static inline void
 midi_decoder_next_state (BseMidiDecoder     *self,
                          BseMidiDecoderState next_state)
@@ -99,11 +109,13 @@ midi_decoder_next_state (BseMidiDecoder     *self,
   while (self->state != next_state)
     midi_decoder_advance_state (self);
 }
+
 typedef struct {
   uint8 *bytes;
   uint8 *bound;
   uint64 delta_time;
 } Data;
+
 static inline void
 midi_decoder_parse_data (BseMidiDecoder *self,
                          Data           *d)
@@ -273,6 +285,7 @@ midi_decoder_parse_data (BseMidiDecoder *self,
       break;
     }
 }
+
 void
 bse_midi_decoder_push_data (BseMidiDecoder *self,
                             uint            n_bytes,
@@ -280,9 +293,11 @@ bse_midi_decoder_push_data (BseMidiDecoder *self,
                             uint64          usec_systime)
 {
   Data data;
+
   g_return_if_fail (self != NULL);
   if (n_bytes)
     g_return_if_fail (bytes != NULL);
+
   data.delta_time = bse_engine_tick_stamp_from_systime (usec_systime);
   data.bytes = bytes;
   data.bound = bytes + n_bytes;
@@ -291,6 +306,7 @@ bse_midi_decoder_push_data (BseMidiDecoder *self,
       self->state_changed = FALSE;
       midi_decoder_parse_data (self, &data);
     }
+
   if (self->auto_queue)
     {
       while (self->events)
@@ -302,6 +318,7 @@ bse_midi_decoder_push_data (BseMidiDecoder *self,
       bse_midi_receiver_farm_process_events (data.delta_time);
     }
 }
+
 void
 bse_midi_decoder_push_smf_data (BseMidiDecoder       *self,
                                 uint                  n_bytes,
@@ -313,6 +330,7 @@ bse_midi_decoder_push_smf_data (BseMidiDecoder       *self,
   g_return_if_fail (self->smf_support == TRUE);
   bse_midi_decoder_push_data (self, n_bytes, bytes, 0);
 }
+
 static inline gboolean
 midi_decoder_extract_specific (BseMidiDecoder *self,
                                BseMidiEvent   *event)
@@ -488,12 +506,14 @@ midi_decoder_extract_specific (BseMidiDecoder *self,
     }
   return TRUE;
 }
+
 static void
 bse_midi_decoder_construct_event (BseMidiDecoder *self)
 {
   BseMidiEvent *event = bse_midi_alloc_event ();
   g_return_if_fail (self->event_type >= 0x080);
   g_return_if_fail (self->left_bytes == 0);
+
   /* try to collapse multi packet sys-ex to normal sys-ex */
   if (self->event_type == BSE_MIDI_MULTI_SYS_EX_START &&
       self->n_bytes > 0 &&

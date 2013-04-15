@@ -52,6 +52,7 @@ low_alloc (gsize mem_size)
     }
   return mem;
 }
+
 static inline void
 low_free (gsize    mem_size,
 	  gpointer mem)
@@ -136,21 +137,27 @@ sfi_alloc_report (void)
   g_message ("%lu bytes allocated from system, %u bytes unused in cache", memory_allocated, cached);
   global_memory_mutex.unlock();
 }
+
 gpointer
 sfi_alloc_memblock0 (gsize block_size)
 {
   gpointer mem = sfi_alloc_memblock (block_size);
+
   memset (mem, 0, block_size);
+
   return mem;
 }
+
 void
 _sfi_free_node_list (gpointer mem,
 		     gsize    node_size)
 {
   struct LinkedData { gpointer data; LinkedData *next; };
   LinkedData *tmp, *node = (LinkedData*) mem;
+
   g_return_if_fail (node != NULL);
   g_return_if_fail (node_size >= 2 * sizeof (gpointer));
+
   /* FIXME: this can be optimized to an O(1) operation with T-style links in mem-caches */
   do
     {

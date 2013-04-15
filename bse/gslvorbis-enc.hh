@@ -1,8 +1,11 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #ifndef __GSL_VORBIS_ENC_H__
 #define __GSL_VORBIS_ENC_H__
+
 #include <bse/gslcommon.hh>
+
 G_BEGIN_DECLS
+
 /* --- typedefs & enums --- */
 typedef struct _GslVorbisEncoder GslVorbisEncoder;
 /* rough quality to bitrate mappings at 44.1kHz mono:
@@ -11,6 +14,7 @@ typedef struct _GslVorbisEncoder GslVorbisEncoder;
  *  1) 60kBit  4) 86kBit  7) 120kBit 10) 240kBit
  * oggenc defaults to a quality setting of 3.0
  */
+
 /* --- encoder API --- */
 GslVorbisEncoder* gsl_vorbis_encoder_new                (void);
 /* pre encoding */
@@ -52,7 +56,11 @@ guint             gsl_vorbis_encoder_read_ogg           (GslVorbisEncoder       
 gboolean          gsl_vorbis_encoder_ogg_eos            (GslVorbisEncoder       *self);
 /* cleanup */
 void              gsl_vorbis_encoder_destroy            (GslVorbisEncoder       *self);
+
 /* retrive vendor version string */
 gchar*            gsl_vorbis_encoder_version            (void);
+
+
 G_END_DECLS
+
 #endif /* __GSL_VORBIS_ENC_H__ */

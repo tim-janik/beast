@@ -153,17 +153,20 @@ class Organ : public OrganBase {
       *paccu += freq_256;
       while (*paccu >= mix_freq_256)
 	*paccu -= mix_freq_256;
+
       return table[*paccu >> 8];
     }
     inline uint
     dfreq_to_freq_256 (double dfreq)
     {
       dfreq *= m_transpose_factor * m_fine_tune_factor;
+
       /* Make sure that the actual sound generation code will only see
        * frequencies in the range [0, mix_freq/2]. We map negative frequencies
        * (like -440 Hz) to their positive equivalents (+440 Hz).
        */
       dfreq = min (fabs (dfreq), mix_freq() * 0.5);
+
       /* round frequency with dtoi during conversion from floating point to our
        * fixed point representation, in order to minimize the conversion error
        */
@@ -178,22 +181,27 @@ class Organ : public OrganBase {
       const float *ifreq = istream (ICHANNEL_FREQ_IN).values;
       float	  *ovalues = ostream (OCHANNEL_AUDIO_OUT).values;
       uint         freq_256;
+
       if (istream (ICHANNEL_FREQ_IN).connected)
 	freq_256 = dfreq_to_freq_256 (BSE_FREQ_FROM_VALUE (ifreq[0]));
       else
 	freq_256 = dfreq_to_freq_256 (m_base_freq);
+
       uint mix_freq_256 = mix_freq() * 256;
       uint freq_256_harm0 = freq_256 / 2;
       uint freq_256_harm1 = freq_256;
+
       if (m_brass)
 	{
 	  uint freq_256_harm2 = freq_256 * 2;
 	  uint freq_256_harm3 = freq_256_harm2 * 2;
 	  uint freq_256_harm4 = freq_256_harm3 * 2;
 	  uint freq_256_harm5 = freq_256_harm4 * 2;
+
 	  for (uint i = 0; i < n_values; i++)
 	    {
 	      float vaccu;
+
 	      vaccu  = table_pos (sine_table,  freq_256_harm0, mix_freq_256, &m_harm0_paccu) * m_harm0;
 	      vaccu += table_pos (sine_table,  freq_256_harm1, mix_freq_256, &m_harm1_paccu) * m_harm1;
 	      vaccu += table_pos (reed_table,  freq_256_harm2, mix_freq_256, &m_harm2_paccu) * m_harm2;
@@ -209,9 +217,11 @@ class Organ : public OrganBase {
 	  uint freq_256_harm3 = freq_256 * 2;
 	  uint freq_256_harm4 = freq_256 * 3;
 	  uint freq_256_harm5 = freq_256_harm3 * 2;
+
 	  for (uint i = 0; i < n_values; i++)
 	    {
 	      float vaccu;
+
 	      vaccu  = table_pos (sine_table,  freq_256_harm0, mix_freq_256, &m_harm0_paccu) * m_harm0;
 	      vaccu += table_pos (sine_table,  freq_256_harm1, mix_freq_256, &m_harm1_paccu) * m_harm1;
 	      vaccu += table_pos (sine_table,  freq_256_harm2, mix_freq_256, &m_harm2_paccu) * m_harm2;

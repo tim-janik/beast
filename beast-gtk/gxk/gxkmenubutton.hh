@@ -1,9 +1,12 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #ifndef __GXK_MENU_BUTTON_H__
 #define __GXK_MENU_BUTTON_H__
+
 #include "gxkutils.hh"
 #include "gxkassortment.hh"
+
 G_BEGIN_DECLS
+
 /* --- type macros --- */
 #define GXK_TYPE_MENU_BUTTON              (gxk_menu_button_get_type ())
 #define GXK_MENU_BUTTON(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), GXK_TYPE_MENU_BUTTON, GxkMenuButton))
@@ -34,5 +37,8 @@ typedef struct {
 typedef GtkEventBoxClass GxkMenuButtonClass;
 GType   gxk_menu_button_get_type          (void);
 void    gxk_menu_button_update            (GxkMenuButton *self);
+
+
 G_END_DECLS
+
 #endif /* __GXK_MENU_BUTTON_H__ */

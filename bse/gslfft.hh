@@ -1,10 +1,14 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #ifndef __GSL_FFT_H__
 #define __GSL_FFT_H__
+
 #include <bse/gsldefs.hh>
+
 #ifdef __cplusplus
 extern "C" {
 #endif /* __cplusplus */
+
+
 /**
  * @param n_values      Number of complex values
  * @param ri_values_in  Complex sample values [0..n_values*2-1]
@@ -42,6 +46,7 @@ extern "C" {
 void	gsl_power2_fftac (const uint         n_values,
 			  const double      *ri_values_in,
 			  double            *ri_values_out);
+
 /**
  * @param n_values      Number of complex values
  * @param ri_values_in  Complex frequency values [0..n_values*2-1]
@@ -65,6 +70,7 @@ void	gsl_power2_fftac (const uint         n_values,
 void	gsl_power2_fftsc (const uint         n_values,
 			  const double      *ri_values_in,
 			  double            *ri_values_out);
+
 /**
  * @param n_values      Number of complex values
  * @param ri_values_in  Complex frequency values [0..n_values*2-1]
@@ -116,6 +122,7 @@ void    gsl_power2_fftsc_scale (const unsigned int n_values,
 void	gsl_power2_fftar (const uint         n_values,
 			  const double      *r_values_in,
 			  double            *ri_values_out);
+
 /**
  * @param n_values     Number of real sample values
  * @param ri_values_in Complex frequency values [0..n_values-1]
@@ -139,6 +146,7 @@ void	gsl_power2_fftar (const uint         n_values,
 void	gsl_power2_fftsr (const unsigned int n_values,
 			  const double      *ri_values_in,
 			  double            *r_values_out);
+
 /**
  * @param n_values     Number of real sample values
  * @param ri_values_in Complex frequency values [0..n_values-1]
@@ -161,6 +169,8 @@ void	gsl_power2_fftsr (const unsigned int n_values,
 void	gsl_power2_fftsr_scale (const unsigned int n_values,
 			        const double      *ri_values_in,
 			        double            *r_values_out);
+
+
 /* --- convenience wrappers --- */
 void	gsl_power2_fftar_simple	(const uint         n_values,
 				 const float       *real_values,
@@ -171,7 +181,11 @@ void	gsl_power2_fftsr_simple	(const uint         n_values,
 void	gsl_power2_fftsr_scale_simple (const unsigned int n_values,
 				       const float	   *complex_values,
 				       float             *real_values);
+
+
+
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */
+
 #endif /* __GSL_FFT_H__ */   /* vim:set ts=8 sw=2 sts=2: */

@@ -8,16 +8,21 @@
 #include <string.h>
 #include <stdio.h>
 #include <math.h>
+
 namespace Bse {
+
 using std::vector;
 using std::min;
 typedef std::complex<double> Complex;
+
 class DataHandleFir;
+
 struct CDataHandleFir : public GslDataHandle
 {
   // back pointer to get casting right, even in presence of C++ vtable:
   DataHandleFir* cxx_dh;
 };
+
 class DataHandleFir {
 protected:
   CDataHandleFir	m_dhandle;
@@ -28,9 +33,11 @@ protected:
   int64                 m_block_size;
   int64                 m_history;
   bool			m_init_ok;
+
 protected:
   virtual void
   design_filter_coefficients (double mix_freq) = 0;
+
 public:
   DataHandleFir (GslDataHandle *src_handle,
 		 guint          order) :
@@ -39,11 +46,13 @@ public:
     m_init_ok (false)
   {
     g_return_if_fail (src_handle != NULL);
+
     memset (&m_dhandle, 0, sizeof (m_dhandle));
     m_init_ok = gsl_data_handle_common_init (&m_dhandle, NULL);
     if (m_init_ok)
       gsl_data_handle_ref (m_src_handle);
   }
+
   /* protected destructor: (use reference counting instead) */
   virtual
   ~DataHandleFir()
@@ -54,31 +63,38 @@ public:
 	gsl_data_handle_common_free (&m_dhandle);
       }
   }
+
   BseErrorType
   open (GslDataHandleSetup *setup)
   {
     BseErrorType error = gsl_data_handle_open (m_src_handle);
     if (error != BSE_ERROR_NONE)
       return error;
+
     /* !not! m_dhandle.setup; the framework magically ensures that *m_dhandle.setup
      * is initialized by whatever we write into *setup if open is successful
      */
     *setup = m_src_handle->setup; /* copies setup.xinfos by pointer */
     setup->bit_depth = 32;	  /* possibly increased by filtering */
+
     // since we need overlapping data for consecutive reads we buffer data locally
     m_block_size = 1024 * m_src_handle->setup.n_channels;
     m_history = ((m_a.size() + 1) / 2) * m_src_handle->setup.n_channels;
     m_input_data.resize (m_block_size + 2 * m_history);
     m_input_voffset = -2 * m_block_size;
+
     design_filter_coefficients (gsl_data_handle_mix_freq (m_src_handle));
+
     return BSE_ERROR_NONE;
   }
+
   void
   close()
   {
     m_dhandle.setup.xinfos = NULL;	/* cleanup pointer reference */
     gsl_data_handle_close (m_src_handle);
   }
+
   void
   fir_apply (guint        voffset,
 	     const guint  n_samples,
@@ -87,6 +103,7 @@ public:
     const guint channels = m_dhandle.setup.n_channels;
     const guint iorder = m_a.size();
     voffset += m_history - (iorder / 2) * channels;
+
     for (guint i = 0; i < n_samples; i++)
       {
 	gdouble accu = 0;
@@ -99,11 +116,13 @@ public:
 	*dest++ = accu;
       }
   }
+
   int64
   seek (int64 voffset)
   {
     int64 i = 0;
     g_return_val_if_fail (voffset % m_block_size == 0, -1);
+
     // if this is a consecutive read, the history can be built from the values
     // we already read last time
     if (m_input_voffset == voffset - m_block_size)
@@ -112,6 +131,7 @@ public:
 	Block::copy (overlap_values, &m_input_data[0], &m_input_data[m_input_data.size() - overlap_values]);
 	i += overlap_values;
       }
+
     while (i < static_cast<int64> (m_input_data.size()))
       {
 	int64 offset = voffset + i - m_history;
@@ -138,6 +158,7 @@ public:
     m_input_voffset = voffset;
     return 0;
   }
+
   int64
   read (int64  voffset,
 	int64  n_values,
@@ -145,31 +166,38 @@ public:
   {
     int64 ivoffset = voffset;
     ivoffset -= ivoffset % m_block_size;
+
     if (ivoffset != m_input_voffset)
       {
 	int64 l = seek (ivoffset);
 	if (l < 0)   // pass on errors
 	  return l;
       }
+
     g_assert (ivoffset == m_input_voffset);
+
     voffset -= ivoffset;
     n_values = min (n_values, m_block_size - voffset);
     fir_apply (voffset, n_values, values);
     return n_values;
   }
+
   int64
   get_state_length() const
   {
     int64 source_state_length = gsl_data_handle_get_state_length (m_src_handle);
     // m_src_handle must be opened and have valid state size
     g_return_val_if_fail (source_state_length >= 0, 0);  
+
     return source_state_length + m_history;
   }
+
   gdouble
   compute_fir_response_db (double freq) const
   {
     Complex z = std::exp (Complex (0, freq * 2 * PI / gsl_data_handle_mix_freq (m_src_handle)));
     Complex r = 0;
+
     for (guint i = 0; i < m_a.size(); i++)
       {
         r /= z;
@@ -177,6 +205,7 @@ public:
       }
     return bse_db_from_factor (abs (r), -200);
   }
+
   static GslDataHandle*
   dh_create (DataHandleFir *cxx_dh)
   {
@@ -189,6 +218,7 @@ public:
       dh_get_state_length,
       dh_destroy,
     };
+
     if (cxx_dh->m_init_ok)
       {
 	cxx_dh->m_dhandle.vtable = &dh_vtable;
@@ -237,10 +267,12 @@ private:
     return dh_cast (dhandle)->get_state_length();
   }
 };
+
 class DataHandleFirHighpass : public DataHandleFir
 {
 protected:
   gdouble m_cutoff_freq;
+
 public:
   DataHandleFirHighpass (GslDataHandle *src_handle,
 			 gdouble        cutoff_freq,
@@ -251,29 +283,37 @@ public:
     if (m_init_ok)
       m_dhandle.name = g_strconcat (m_src_handle->name, "// #highpass /", NULL);
   }
+
   virtual void
   design_filter_coefficients (double mix_freq)
   {
     const guint transfer_func_length = 4;
     double transfer_func_freqs[transfer_func_length];
     double transfer_func_values[transfer_func_length];
+
     transfer_func_freqs[0]  = 0;
     transfer_func_values[0] = 0;
+
     transfer_func_freqs[1]  = m_cutoff_freq / mix_freq * 2 * M_PI;
     transfer_func_values[1] = 0;
+
     transfer_func_freqs[2]  = m_cutoff_freq / mix_freq * 2 * M_PI;
     transfer_func_values[2] = 1.0; // 0 dB
+
     transfer_func_freqs[3]  = PI;
     transfer_func_values[3] = 1.0; // 0 dB
+
     gsl_filter_fir_approx (m_a.size() - 1, &m_a[0],
                            transfer_func_length, transfer_func_freqs, transfer_func_values,
 			   false); // interpolate dB
   }
 };
+
 class DataHandleFirLowpass : public DataHandleFir
 {
 protected:
   gdouble m_cutoff_freq;
+
 public:
   DataHandleFirLowpass (GslDataHandle *src_handle,
 			gdouble        cutoff_freq,
@@ -284,27 +324,36 @@ public:
     if (m_init_ok)
       m_dhandle.name = g_strconcat (m_src_handle->name, "// #lowpass /", NULL);
   }
+
   virtual void
   design_filter_coefficients (double mix_freq)
   {
     const guint transfer_func_length = 4;
     double transfer_func_freqs[transfer_func_length];
     double transfer_func_values[transfer_func_length];
+
     transfer_func_freqs[0]  = 1; // 0 dB
     transfer_func_values[0] = 1;
+
     transfer_func_freqs[1]  = m_cutoff_freq / mix_freq * 2 * M_PI;
     transfer_func_values[1] = 1; // 0 dB
+
     transfer_func_freqs[2]  = m_cutoff_freq / mix_freq * 2 * M_PI;
     transfer_func_values[2] = 0;
+
     transfer_func_freqs[3]  = PI;
     transfer_func_values[3] = 0;
+
     gsl_filter_fir_approx (m_a.size() - 1, &m_a[0],
                            transfer_func_length, transfer_func_freqs, transfer_func_values,
 			   false); // interpolate dB
   }
 };
+
 }
+
 using namespace Bse;
+
 /**
  * <pre>
  *           __________
@@ -326,6 +375,7 @@ bse_data_handle_new_fir_highpass (GslDataHandle *src_handle,
   DataHandleFir *cxx_dh = new DataHandleFirHighpass (src_handle, cutoff_freq, order);
   return DataHandleFir::dh_create (cxx_dh);
 }
+
 /**
  * <pre>
  * ______
@@ -347,6 +397,7 @@ bse_data_handle_new_fir_lowpass (GslDataHandle *src_handle,
   DataHandleFir *cxx_dh = new DataHandleFirLowpass (src_handle, cutoff_freq, order);
   return DataHandleFir::dh_create (cxx_dh);
 }
+
 extern "C" gdouble
 bse_data_handle_fir_response_db (GslDataHandle *fir_handle,
                                  gdouble        freq)

@@ -1,10 +1,14 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #ifndef __BST_RACK_TABLE_H__
 #define __BST_RACK_TABLE_H__
+
 #include "bstutils.hh"
+
 #ifdef __cplusplus
 extern "C" {
 #endif /* __cplusplus */
+
+
 /* --- type macros --- */
 #define BST_TYPE_RACK_TABLE              (bst_rack_table_get_type ())
 #define BST_RACK_TABLE(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), BST_TYPE_RACK_TABLE, BstRackTable))
@@ -12,6 +16,8 @@ extern "C" {
 #define BST_IS_RACK_TABLE(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), BST_TYPE_RACK_TABLE))
 #define BST_IS_RACK_TABLE_CLASS(klass)   (G_TYPE_CHECK_CLASS_TYPE ((klass), BST_TYPE_RACK_TABLE))
 #define BST_RACK_TABLE_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), BST_TYPE_RACK_TABLE, BstRackTableClass))
+
+
 /* --- structures & typedefs --- */
 typedef	struct _BstRackTable	  BstRackTable;
 typedef	struct _BstRackTableClass BstRackTableClass;
@@ -24,14 +30,18 @@ struct _BstRackChildInfo
 struct _BstRackTable
 {
   GtkTable       parent_object;
+
   GtkWidget	*drag_window;
+
   guint		 map_cols;
   guint		 map_rows;
   guint32	*child_map;
+
   guint		    cell_request_width;
   guint		    cell_request_height;
   guint		    cell_width;
   guint		    cell_height;
+
   GdkWindow	   *iwindow;
   guint		    edit_mode : 1;
   guint		    in_drag : 2;
@@ -46,11 +56,14 @@ struct _BstRackTable
 struct _BstRackTableClass
 {
   GtkTableClass parent_class;
+
   void	(*edit_mode_changed)	(BstRackTable	*rtable,
 				 gboolean	 edit_mode);
   void	(*child_changed)	(BstRackTable	*rtable,
 				 GtkWidget	*child);
 };
+
+
 /* --- prototypes --- */
 GtkType		bst_rack_table_get_type		(void);
 void		bst_rack_table_set_edit_mode	(BstRackTable	*rtable,
@@ -75,7 +88,9 @@ void		bst_rack_child_set_info		(GtkWidget	*widget,
 						 gint		 row,
 						 gint		 hspan,
 						 gint		 vspan);
+
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */
+
 #endif /* __BST_RACK_TABLE_H__ */

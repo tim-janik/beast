@@ -1,8 +1,12 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #ifndef __BSE_MIDI_DECODER_H__
 #define __BSE_MIDI_DECODER_H__
+
 #include        <bse/bsemidievent.hh>
+
 G_BEGIN_DECLS
+
+
 /* --- BSE MIDI structs --- */
 typedef enum {
   BSE_MIDI_DECODER_ZERO = 0,
@@ -33,6 +37,8 @@ struct BseMidiDecoder {
   uint                 n_bytes;
   uint8               *bytes;
 };
+
+
 /* --- API --- */
 BseMidiDecoder* bse_midi_decoder_new                      (gboolean              auto_queue,
                                                            gboolean              smf_support,
@@ -47,5 +53,7 @@ void            bse_midi_decoder_push_smf_data            (BseMidiDecoder       
                                                            uint8                *bytes);
 BseMidiEvent*   bse_midi_decoder_pop_event                (BseMidiDecoder       *self);
 SfiRing*        bse_midi_decoder_pop_event_list           (BseMidiDecoder       *self);
+
 G_END_DECLS
+
 #endif /* __BSE_MIDI_DECODER_H__ */

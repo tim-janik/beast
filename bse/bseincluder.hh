@@ -1,4 +1,5 @@
 // CC0 Public Domain: http://creativecommons.org/publicdomain/zero/1.0/
+
 /* use this file to implement:
  *   int i;
  *   foo<i> ();
@@ -12,11 +13,13 @@
  *   #include "bseincluder.hh"
  *   }
  */
+
 /* file contents created with:
  * for i in `seq 0 4096` ; do z=`printf '%4u' $i`; echo -e "#if BSE_INCLUDER_MATCH ($z)\n  " \
  * "BSE_INCLUDER_CASE ($z) BSE_INCLUDER_FUNC ($z) BSE_INCLUDER_ARGS ($z) " \
  * "BSE_INCLUDER_DONE ($z)\n#endif" ; done
  */
+
 #ifndef BSE_INCLUDER_CASE
 #  define BSE_INCLUDER_CASE(n)  case n:
 #endif
@@ -24,6 +27,7 @@
 #  define BSE_INCLUDER_DONE(n)  ; break;
 #endif
 /* all macros are auto-undefined at file end */
+
 #if BSE_INCLUDER_MATCH (   0)
   BSE_INCLUDER_CASE (   0) BSE_INCLUDER_FUNC (   0) BSE_INCLUDER_ARGS (   0) BSE_INCLUDER_DONE (   0)
 #endif
@@ -12315,6 +12319,7 @@
 #if BSE_INCLUDER_MATCH (4096)
   BSE_INCLUDER_CASE (4096) BSE_INCLUDER_FUNC (4096) BSE_INCLUDER_ARGS (4096) BSE_INCLUDER_DONE (4096)
 #endif
+
 #undef BSE_INCLUDER_MATCH
 #undef BSE_INCLUDER_CASE
 #undef BSE_INCLUDER_FUNC

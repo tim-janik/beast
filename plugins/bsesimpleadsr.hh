@@ -1,9 +1,12 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #ifndef __BSE_SIMPLE_ADSR_H__
 #define __BSE_SIMPLE_ADSR_H__
+
 #include <bse/bseplugin.hh>
 #include <bse/bsesource.hh>
+
 G_BEGIN_DECLS
+
 /* --- object type macros --- */
 #define BSE_TYPE_SIMPLE_ADSR              (bse_simple_adsr_get_type())
 #define BSE_SIMPLE_ADSR(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), BSE_TYPE_SIMPLE_ADSR, BseSimpleADSR))
@@ -41,5 +44,7 @@ enum
   BSE_SIMPLE_ADSR_OCHANNEL_DONE,
   BSE_SIMPLE_ADSR_N_OCHANNELS
 };
+
 G_END_DECLS
+
 #endif /* __BSE_SIMPLE_ADSR_H__ */

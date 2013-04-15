@@ -9,6 +9,9 @@
 #include <unistd.h>
 #include <string.h>
 #include <errno.h>
+
+
+
 /* --- structures --- */
 typedef struct {
   SfiStoreReadBin reader;
@@ -17,6 +20,8 @@ typedef struct {
   off_t		  patch_offset;
   off_t		  offset, length;
 } BBlock;
+
+
 /* --- writable store --- */
 SfiWStore*
 sfi_wstore_new (void)
@@ -28,10 +33,12 @@ sfi_wstore_new (void)
   wstore->comment_start = ';';
   return wstore;
 }
+
 void
 sfi_wstore_destroy (SfiWStore *wstore)
 {
   g_return_if_fail (wstore != NULL);
+
   g_string_free (wstore->text, TRUE);
   wstore->text = NULL;
   while (wstore->bblocks)
@@ -43,15 +50,18 @@ sfi_wstore_destroy (SfiWStore *wstore)
     }
   g_free (wstore);
 }
+
 static inline void
 sfi_wstore_text_changed (SfiWStore *wstore)
 {
   wstore->needs_break = wstore->text->len && wstore->text->str[wstore->text->len - 1] != '\n';
 }
+
 void
 sfi_wstore_break (SfiWStore *wstore)
 {
   g_return_if_fail (wstore != NULL);
+
   if (wstore->needs_break)
     {
       guint n;
@@ -62,24 +72,30 @@ sfi_wstore_break (SfiWStore *wstore)
 	g_string_append (wstore->text, "  ");
     }
 }
+
 void
 sfi_wstore_push_level (SfiWStore *wstore)
 {
   g_return_if_fail (wstore != NULL);
+
   wstore->indent += 2;
 }
+
 void
 sfi_wstore_pop_level (SfiWStore *wstore)
 {
   g_return_if_fail (wstore != NULL);
+
   if (wstore->indent >= 2)
     wstore->indent -= 2;
 }
+
 void
 sfi_wstore_puts (SfiWStore   *wstore,
 		 const gchar *string)
 {
   g_return_if_fail (wstore != NULL);
+
   if (string)
     {
       g_string_append (wstore->text, string);
@@ -87,14 +103,17 @@ sfi_wstore_puts (SfiWStore   *wstore,
         sfi_wstore_text_changed (wstore);
     }
 }
+
 void
 sfi_wstore_putc (SfiWStore *wstore,
 		 gchar	    character)
 {
   g_return_if_fail (wstore != NULL);
+
   g_string_append_c (wstore->text, character);
   sfi_wstore_text_changed (wstore);
 }
+
 void
 sfi_wstore_printf (SfiWStore   *wstore,
 		   const gchar *format,
@@ -102,48 +121,64 @@ sfi_wstore_printf (SfiWStore   *wstore,
 {
   gchar *buffer;
   va_list args;
+
   g_return_if_fail (wstore != NULL);
+
   const gchar *ldir = g_printf_find_localised_directive (format);
   if (ldir)
     g_warning ("%s: encountered localised directive \"%s\" in format string: \"%s\"", G_STRFUNC, ldir, format);
+
   va_start (args, format);
   buffer = g_strdup_vprintf (format, args);
   va_end (args);
+
   g_string_append (wstore->text, buffer);
   if (buffer[0])
     sfi_wstore_text_changed (wstore);
   g_free (buffer);
 }
+
 void
 sfi_wstore_putf (SfiWStore      *wstore,
                  gfloat          vfloat)
 {
   gchar numbuf[G_ASCII_DTOSTR_BUF_SIZE + 1] = "";
+
   g_return_if_fail (wstore != NULL);
+
   g_ascii_formatd (numbuf, G_ASCII_DTOSTR_BUF_SIZE, "%.7g", vfloat);
+
   sfi_wstore_puts (wstore, numbuf);
 }
+
 void
 sfi_wstore_putd (SfiWStore      *wstore,
                  gdouble         vdouble)
 {
   gchar numbuf[G_ASCII_DTOSTR_BUF_SIZE + 1] = "";
+
   g_return_if_fail (wstore != NULL);
+
   g_ascii_formatd (numbuf, G_ASCII_DTOSTR_BUF_SIZE, "%.17g", vdouble);
+
   sfi_wstore_puts (wstore, numbuf);
 }
+
 void
 sfi_wstore_put_value (SfiWStore	   *wstore,
 		      const GValue *value)
 {
   GString *gstring;
+
   g_return_if_fail (wstore != NULL);
   g_return_if_fail (G_IS_VALUE (value));
+
   gstring = g_string_new (NULL);
   sfi_value_store_typed (value, gstring);
   sfi_wstore_puts (wstore, gstring->str);
   g_string_free (gstring, TRUE);
 }
+
 void
 sfi_wstore_put_param (SfiWStore	   *wstore,
 		      const GValue *value,
@@ -151,13 +186,16 @@ sfi_wstore_put_param (SfiWStore	   *wstore,
 {
   GValue svalue = { 0, };
   GParamSpec *spspec;
+
   g_return_if_fail (wstore != NULL);
   g_return_if_fail (G_IS_VALUE (value));
   g_return_if_fail (G_IS_PARAM_SPEC (pspec));
+
   spspec = sfi_pspec_to_serializable (pspec);
   if (!spspec)          /* we really can't do anything here */
     g_error ("unable to (de-)serialize \"%s\" of type `%s'", pspec->name,
              g_type_name (G_PARAM_SPEC_VALUE_TYPE (pspec)));
+
   g_value_init (&svalue, G_PARAM_SPEC_VALUE_TYPE (spspec));
   if (sfi_value_transform (value, &svalue))
     {
@@ -184,6 +222,7 @@ sfi_wstore_put_param (SfiWStore	   *wstore,
   g_value_unset (&svalue);
   g_param_spec_unref (spspec);
 }
+
 void
 sfi_wstore_put_binary (SfiWStore      *wstore,
 		       SfiStoreReadBin reader,
@@ -191,27 +230,34 @@ sfi_wstore_put_binary (SfiWStore      *wstore,
 		       GDestroyNotify  destroy)
 {
   BBlock *bblock;
+
   g_return_if_fail (wstore != NULL);
   g_return_if_fail (wstore->flushed == FALSE);
   g_return_if_fail (reader != NULL);
+
   bblock = g_new0 (BBlock, 1);
   bblock->reader = reader;
   bblock->data = data;
   bblock->destroy = destroy;
   wstore->bblocks = sfi_ring_append (wstore->bblocks, bblock);
+
   sfi_wstore_puts (wstore, "(binary-appendix ");
   bblock->patch_offset = wstore->text->len;
   sfi_wstore_puts (wstore, "0x00000000 0x00000000)");
 }
+
 const gchar*
 sfi_wstore_peek_text (SfiWStore      *wstore,
                       guint          *length_p)
 {
   g_return_val_if_fail (wstore != NULL, NULL);
+
   if (length_p)
     *length_p = wstore->text->len;
+
   return wstore->text->str;
 }
+
 gint /* -errno */
 sfi_wstore_flush_fd (SfiWStore *wstore,
 		     gint      fd)
@@ -221,23 +267,29 @@ sfi_wstore_flush_fd (SfiWStore *wstore,
   SfiRing *ring;
   off_t text_offset, binary_offset;
   guint l;
+
   g_return_val_if_fail (wstore != NULL, -EINVAL);
   g_return_val_if_fail (wstore->flushed == FALSE, -EINVAL);
   g_return_val_if_fail (fd >= 0, -EINVAL);
+
   wstore->flushed = TRUE;
+
   sfi_wstore_break (wstore);
+
   /* save text offset */
   do
     text_offset = lseek (fd, 0, SEEK_CUR);
   while (text_offset < 0 && errno == EINTR);
   if (text_offset < 0 && errno)
     return -errno;
+
   /* dump text */
   do
     l = write (fd, wstore->text->str, wstore->text->len);
   while (l < 0 && errno == EINTR);
   if (l < 0 && errno)
     return -errno;
+
   /* binary data header */
   if (wstore->bblocks)
     {
@@ -250,6 +302,7 @@ sfi_wstore_flush_fd (SfiWStore *wstore,
       if (l < 0 && errno)
         return -errno;
     }
+
   /* save binary offset */
   do
     binary_offset = lseek (fd, 0, SEEK_CUR);
@@ -257,11 +310,13 @@ sfi_wstore_flush_fd (SfiWStore *wstore,
   /* binary_offset is position of the first byte *after* \000 */
   if (binary_offset < 0 && errno)
     return -errno;
+
   /* store binary data */
   for (ring = wstore->bblocks; ring; ring = sfi_ring_walk (ring, wstore->bblocks))
     {
       BBlock *bblock = (BBlock*) ring->data;
       int n;
+
       /* save block offset */
       do
 	bblock->offset = lseek (fd, 0, SEEK_CUR);
@@ -269,6 +324,7 @@ sfi_wstore_flush_fd (SfiWStore *wstore,
       bblock->length = 0;
       if (bblock->offset < 0 && errno)
         return -errno;
+
       /* dump binary */
       do
 	{
@@ -285,6 +341,7 @@ sfi_wstore_flush_fd (SfiWStore *wstore,
 	}
       while (n);
     }
+
   /* patch binary offsets and lengths */
   for (ring = wstore->bblocks; ring; ring = sfi_ring_walk (ring, wstore->bblocks))
     {
@@ -292,6 +349,7 @@ sfi_wstore_flush_fd (SfiWStore *wstore,
       off_t foff;
       gchar ptext[2 + 8 + 1 + 2 + 8 + 1];
       /*          0x *0* ' '  0x *0* '\0' */
+
       do
 	foff = lseek (fd, text_offset + bblock->patch_offset, SEEK_SET);
       while (foff < 0 && errno == EINTR);
@@ -306,14 +364,18 @@ sfi_wstore_flush_fd (SfiWStore *wstore,
       if (l < 0 && errno)
         return -errno;
     }
+
   /* finished successfully */
   return 0;
 }
+
+
 /* --- readable store --- */
 SfiRStore*
 sfi_rstore_new (void)
 {
   SfiRStore *rstore;
+
   rstore = g_new0 (SfiRStore, 1);
   rstore->scanner = g_scanner_new64 (sfi_storage_scanner_config);
   rstore->scanner->max_parse_errors = 1;
@@ -321,8 +383,10 @@ sfi_rstore_new (void)
   rstore->parser_this = rstore;
   rstore->close_fd = -1;
   rstore->bin_offset = -1;
+
   return rstore;
 }
+
 SfiRStore*
 sfi_rstore_new_open (const gchar *fname)
 {
@@ -359,16 +423,19 @@ sfi_rstore_new_open (const gchar *fname)
   /* preserve errno for NULL */
   return rstore;
 }
+
 void
 sfi_rstore_destroy (SfiRStore *rstore)
 {
   g_return_if_fail (rstore != NULL);
+
   if (rstore->close_fd >= 0)
     close (rstore->close_fd);
   g_scanner_destroy (rstore->scanner);
   g_free (rstore->fname);
   g_free (rstore);
 }
+
 void
 sfi_rstore_input_fd (SfiRStore   *rstore,
 		     gint         fd,
@@ -376,12 +443,14 @@ sfi_rstore_input_fd (SfiRStore   *rstore,
 {
   g_return_if_fail (rstore != NULL);
   g_return_if_fail (fd >= 0);
+
   g_free (rstore->fname);
   rstore->fname = g_strdup (fname ? fname : "<anon-fd>");
   rstore->scanner->input_name = rstore->fname;
   rstore->scanner->parse_errors = 0;
   g_scanner_input_file (rstore->scanner, fd);
 }
+
 void
 sfi_rstore_input_text (SfiRStore   *rstore,
 		       const gchar *text,
@@ -389,28 +458,36 @@ sfi_rstore_input_text (SfiRStore   *rstore,
 {
   g_return_if_fail (rstore != NULL);
   g_return_if_fail (text != NULL);
+
   g_free (rstore->fname);
   rstore->fname = g_strdup (text_name ? text_name : "<memory>");
   rstore->scanner->input_name = rstore->fname;
   rstore->scanner->parse_errors = 0;
   g_scanner_input_text (rstore->scanner, text, strlen (text));
 }
+
 gboolean
 sfi_rstore_eof (SfiRStore *rstore)
 {
   GScanner *scanner;
+
   g_return_val_if_fail (rstore != NULL, TRUE);
+
   scanner = rstore->scanner;
+
   return g_scanner_eof (scanner) || scanner->parse_errors >= scanner->max_parse_errors;
 }
+
 void
 sfi_rstore_error (SfiRStore   *rstore,
 		  const gchar *format,
 		  ...)
 {
   va_list args;
+
   g_return_if_fail (rstore);
   g_return_if_fail (format != NULL);
+
   va_start (args, format);
   if (rstore->scanner->parse_errors < rstore->scanner->max_parse_errors)
     {
@@ -420,16 +497,20 @@ sfi_rstore_error (SfiRStore   *rstore,
     }
   va_end (args);
 }
+
 void
 sfi_rstore_unexp_token (SfiRStore *rstore,
 			GTokenType expected_token)
 {
   GScanner *scanner;
+
   g_return_if_fail (rstore);
+
   scanner = rstore->scanner;
   if (scanner->parse_errors < scanner->max_parse_errors)
     {
       const char *message;
+
       if (scanner->parse_errors + 1 >= scanner->max_parse_errors)
         message = "aborting...";
       else
@@ -437,14 +518,17 @@ sfi_rstore_unexp_token (SfiRStore *rstore,
       g_scanner_unexp_token (scanner, expected_token, NULL, NULL, NULL, message, TRUE);
     }
 }
+
 void
 sfi_rstore_warn (SfiRStore   *rstore,
 		 const gchar *format,
 		 ...)
 {
   va_list args;
+
   g_return_if_fail (rstore);
   g_return_if_fail (format != NULL);
+
   va_start (args, format);
   if (rstore->scanner->parse_errors < rstore->scanner->max_parse_errors)
     {
@@ -454,12 +538,14 @@ sfi_rstore_warn (SfiRStore   *rstore,
     }
   va_end (args);
 }
+
 static GTokenType
 scanner_skip_statement (GScanner *scanner,
 			guint     level) /* == number of closing parens left to read */
 {
   g_return_val_if_fail (scanner != NULL, G_TOKEN_ERROR);
   g_return_val_if_fail (level > 0, G_TOKEN_ERROR);
+
   do
     {
       g_scanner_get_next_token (scanner);
@@ -481,14 +567,17 @@ scanner_skip_statement (GScanner *scanner,
   while (level);
   return G_TOKEN_NONE;
 }
+
 GTokenType
 sfi_rstore_warn_skip (SfiRStore   *rstore,
 		      const gchar *format,
 		      ...)
 {
   va_list args;
+
   g_return_val_if_fail (rstore, G_TOKEN_ERROR);
   g_return_val_if_fail (format != NULL, G_TOKEN_ERROR);
+
   va_start (args, format);
   if (rstore->scanner->parse_errors < rstore->scanner->max_parse_errors)
     {
@@ -498,8 +587,10 @@ sfi_rstore_warn_skip (SfiRStore   *rstore,
       g_free (string);
     }
   va_end (args);
+
   return scanner_skip_statement (rstore->scanner, 1);
 }
+
 void
 sfi_rstore_quick_scan (SfiRStore         *rstore,
                        const gchar       *identifier,
@@ -507,6 +598,7 @@ sfi_rstore_quick_scan (SfiRStore         *rstore,
                        gpointer           data)
 {
   g_return_if_fail (rstore);
+
   while (g_scanner_peek_next_token (rstore->scanner) == '(')
     {
       g_scanner_get_next_token (rstore->scanner);
@@ -522,6 +614,7 @@ sfi_rstore_quick_scan (SfiRStore         *rstore,
       scanner_skip_statement (rstore->scanner, 1);
     }
 }
+
 GTokenType
 sfi_rstore_parse_param (SfiRStore  *rstore,
 			GValue     *value,
@@ -530,13 +623,16 @@ sfi_rstore_parse_param (SfiRStore  *rstore,
   GParamSpec *spspec;
   GValue pvalue = { 0, };
   GTokenType token;
+
   g_return_val_if_fail (rstore != NULL, G_TOKEN_ERROR);
   g_return_val_if_fail (G_IS_VALUE (value), G_TOKEN_ERROR);
   g_return_val_if_fail (G_IS_PARAM_SPEC (pspec), G_TOKEN_ERROR);
+
   spspec = sfi_pspec_to_serializable (pspec);
   if (!spspec)          /* we really can't do anything here */
     g_error ("unable to (de-)serialize \"%s\" of type `%s'", pspec->name,
              g_type_name (G_PARAM_SPEC_VALUE_TYPE (pspec)));
+
   token = sfi_value_parse_param_rest (&pvalue, rstore->scanner, spspec);
   if (token == G_TOKEN_NONE)
     {
@@ -565,6 +661,7 @@ sfi_rstore_parse_param (SfiRStore  *rstore,
   g_param_spec_unref (spspec);
   return token;
 }
+
 static gboolean
 rstore_ensure_bin_offset (SfiRStore *rstore)
 {
@@ -575,6 +672,7 @@ rstore_ensure_bin_offset (SfiRStore *rstore)
       ssize_t l;
       gboolean seen_zero = FALSE;
       gint fd = rstore->scanner->input_fd;
+
       /* save current scanning offset */
       g_scanner_sync_file_offset (rstore->scanner);
       g_scanner_sync_file_offset (rstore->scanner);
@@ -583,6 +681,7 @@ rstore_ensure_bin_offset (SfiRStore *rstore)
       while (sc_offset < 0 && errno == EINTR);
       if (sc_offset < 0)
 	return FALSE;
+
       /* seek to literal '\0' */
       zero_offset = sc_offset;
       do
@@ -592,6 +691,7 @@ rstore_ensure_bin_offset (SfiRStore *rstore)
 	  while (l < 0 && errno == EINTR);
 	  if (l < 0)
 	    return FALSE;
+
 	  p = (uint8*) memchr (sdata, 0, l);
 	  seen_zero = p != NULL;
 	  zero_offset += seen_zero ? p - sdata : l;
@@ -599,6 +699,7 @@ rstore_ensure_bin_offset (SfiRStore *rstore)
       while (!seen_zero && l);
       if (!seen_zero)
 	return FALSE;
+
       /* restore scanning offset */
       rstore->bin_offset = zero_offset + 1;
       do
@@ -609,10 +710,12 @@ rstore_ensure_bin_offset (SfiRStore *rstore)
     }
   return TRUE;
 }
+
 GTokenType
 sfi_rstore_ensure_bin_offset (SfiRStore *rstore)
 {
   g_return_val_if_fail (rstore != NULL, G_TOKEN_ERROR);
+
   if (!rstore_ensure_bin_offset (rstore))
     {
       /* this is _bad_, we can't actually continue parsing after
@@ -623,13 +726,16 @@ sfi_rstore_ensure_bin_offset (SfiRStore *rstore)
     }
   return G_TOKEN_NONE;
 }
+
 guint64
 sfi_rstore_get_bin_offset (SfiRStore *rstore)
 {
   g_return_val_if_fail (rstore != NULL, 0);
   g_return_val_if_fail (rstore->bin_offset >= 0, 0);    /* sfi_rstore_ensure_bin_offset() must be called before hand */
+
   return rstore->bin_offset;
 }
+
 GTokenType
 sfi_rstore_parse_zbinary (SfiRStore *rstore,
                           SfiNum    *offset_p,
@@ -637,6 +743,7 @@ sfi_rstore_parse_zbinary (SfiRStore *rstore,
 {
   g_return_val_if_fail (rstore != NULL, G_TOKEN_ERROR);
   g_return_val_if_fail (offset_p && length_p, G_TOKEN_ERROR);
+
   if (g_scanner_get_next_token (rstore->scanner) != '(')
     return GTokenType ('(');
   if (g_scanner_get_next_token (rstore->scanner) != G_TOKEN_IDENTIFIER ||
@@ -654,6 +761,7 @@ sfi_rstore_parse_zbinary (SfiRStore *rstore,
   *length_p = length;
   return G_TOKEN_NONE;
 }
+
 GTokenType
 sfi_rstore_parse_binary (SfiRStore *rstore,
 			 SfiNum    *offset_p,
@@ -668,6 +776,7 @@ sfi_rstore_parse_binary (SfiRStore *rstore,
   *offset_p += rstore->bin_offset;
   return G_TOKEN_NONE;
 }
+
 GTokenType
 sfi_rstore_parse_until (SfiRStore     *rstore,
                         GTokenType     closing_token,
@@ -676,10 +785,13 @@ sfi_rstore_parse_until (SfiRStore     *rstore,
                         gpointer       user_data)
 {
   GScanner *scanner;
+
   g_return_val_if_fail (rstore != NULL, G_TOKEN_ERROR);
   g_return_val_if_fail (try_statement != NULL, G_TOKEN_ERROR);
   g_return_val_if_fail (closing_token == G_TOKEN_EOF || closing_token == ')', G_TOKEN_ERROR);
+
   scanner = rstore->scanner;
+
   /* we catch all SFI_TOKEN_UNMATCHED at this level. it is merely
    * a "magic" token value to implement the try_statement() semantics
    */
@@ -687,6 +799,7 @@ sfi_rstore_parse_until (SfiRStore     *rstore,
     {
       GTokenType expected_token;
       uint saved_line, saved_position;
+
       /* it is only useful to feature statements which
        * start out with an identifier (syntactically)
        */
@@ -715,8 +828,10 @@ sfi_rstore_parse_until (SfiRStore     *rstore,
       if (expected_token != G_TOKEN_NONE)
         return expected_token;
     }
+
   return scanner->token == closing_token ? G_TOKEN_NONE : closing_token;
 }
+
 guint
 sfi_rstore_parse_all (SfiRStore     *rstore,
 		      gpointer       context_data,
@@ -724,12 +839,16 @@ sfi_rstore_parse_all (SfiRStore     *rstore,
 		      gpointer       user_data)
 {
   GTokenType expected_token = G_TOKEN_NONE;
+
   g_return_val_if_fail (rstore != NULL, 1);
   g_return_val_if_fail (try_statement != NULL, 1);
+
   /* parse all statements */
   expected_token = sfi_rstore_parse_until (rstore, G_TOKEN_EOF, context_data, try_statement, user_data);
+
   /* report error if any */
   if (expected_token != G_TOKEN_NONE)
     sfi_rstore_unexp_token (rstore, expected_token);
+
   return rstore->scanner->parse_errors;
 }

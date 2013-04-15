@@ -1,4 +1,5 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
+
 namespace Bst {
 /*
 enum Test1 {
@@ -81,6 +82,7 @@ enum RowShading {
   ROW_SHADING_3_12    = Enum (_("3 & 12"),   _("Every third and twelfth row")),
   ROW_SHADING_6_12    = Enum (_("6 & 12"),   _("Every sixth and twelfth row")),
 };
+
 /* BEAST Global Config */
 record GConfig {
   String rc_version			= ("", _("Release counter"), "", STORAGE);
@@ -107,6 +109,7 @@ record GConfig {
                                            FALSE, STANDARD);
   };
 };
+
 /* skin config */
 record SkinConfig {
   String         skin_name   = (_("Skin Name"), _("Name for the current skin configuration (used for skin selections)."), "", STANDARD);
@@ -141,6 +144,7 @@ record SkinConfig {
     Int    controls_negative = (_("Negative Value Color"),  "", 0x0000ff, 0, 0xffffff, 0x010101, STANDARD ":rgb:hex");
   };
 };
+
 /* message filter */
 record MsgAbsorbString {
   String version;
@@ -150,6 +154,7 @@ record MsgAbsorbString {
 sequence MsgAbsorbStringSeq {
   MsgAbsorbString strings;
 };
+
 /* pattern editor key bindings */
 record KeyBindingItem {
   String key_name   = ("", "", "", STANDARD);
@@ -159,4 +164,5 @@ record KeyBindingItem {
 sequence KeyBindingItemSeq {
   KeyBindingItem items;
 };
+
 };

@@ -1,5 +1,6 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "gslcommon.hh"
+
 #include "gsldatacache.hh"
 #include <unistd.h>
 #include <sys/utsname.h>
@@ -192,6 +193,7 @@ gsl_byte_order_from_string (const gchar *string)
     return G_BIG_ENDIAN;
   return 0;
 }
+
 BseErrorType
 gsl_file_check (const gchar *file_name,
 		const gchar *mode)
@@ -200,6 +202,7 @@ gsl_file_check (const gchar *file_name,
     return BSE_ERROR_NONE;
   return gsl_error_from_errno (errno, BSE_ERROR_FILE_OPEN_FAILED);
 }
+
 BseErrorType
 gsl_error_from_errno (gint         sys_errno,
 		      BseErrorType fallback)
@@ -238,6 +241,7 @@ gsl_error_from_errno (gint         sys_errno,
     default:            return fallback;
     }
 }
+
 static guint
 score_error (BseErrorType error)
 {
@@ -256,6 +260,7 @@ score_error (BseErrorType error)
       return i;
   return i;
 }
+
 BseErrorType
 gsl_error_select (guint           n_errors,
                   BseErrorType    first_error,
@@ -290,6 +295,8 @@ gsl_error_select (guint           n_errors,
   g_free (errors);
   return e;
 }
+
+
 /* --- progress notification --- */
 GslProgressState
 gsl_progress_state (gpointer        data,
@@ -306,6 +313,7 @@ gsl_progress_state (gpointer        data,
   pstate.epsilon *= 0.5;
   return pstate;
 }
+
 void
 gsl_progress_notify (GslProgressState *pstate,
                      gfloat            pval,
@@ -313,7 +321,9 @@ gsl_progress_notify (GslProgressState *pstate,
                      ...)
 {
   gboolean need_update;
+
   g_return_if_fail (pstate != NULL);
+
   if (pval >= 0)
     {
       pval = CLAMP (pval, 0, 100);
@@ -324,6 +334,7 @@ gsl_progress_notify (GslProgressState *pstate,
       pval = -1;
       need_update = TRUE;
     }
+
   if (need_update && pstate->pfunc)
     {
       gchar *detail = NULL;
@@ -341,10 +352,12 @@ gsl_progress_notify (GslProgressState *pstate,
       g_free (detail);
     }
 }
+
 void
 gsl_progress_wipe (GslProgressState *pstate)
 {
   g_return_if_fail (pstate != NULL);
+
   if (pstate->wipe_length)
     {
       char *wstr = (char*) g_malloc (pstate->wipe_length + 1 + 1);
@@ -356,6 +369,7 @@ gsl_progress_wipe (GslProgressState *pstate)
       pstate->wipe_length = 0;
     }
 }
+
 guint
 gsl_progress_printerr (gpointer          message,
                        gfloat            pval,

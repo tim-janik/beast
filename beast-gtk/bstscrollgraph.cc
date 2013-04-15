@@ -3,6 +3,7 @@
 #include "bstsnifferscope.hh" // FIXME: remove include
 #include "bstparam.hh"
 #include <math.h>
+
 #define N_VALUES(scg)   ((scg)->n_points * (scg)->n_bars)
 #define VALUE(scg,b,p)  (BAR (scg, b)[(p)])
 #define BAR(scg,nth)    ((scg)->values + (scg)->n_points * (((scg)->bar_offset + (nth)) % (scg)->n_bars))
@@ -10,6 +11,7 @@
 #define VERTICAL(scg)   ((scg)->direction == BST_UP || (scg)->direction == BST_DOWN)
 #define FLIP(scg)       ((scg)->flip ^ HORIZONTAL (scg))
 #define FFTSZ2POINTS(k) ((k) / 2 + 1)
+
 enum {
   PROP_0,
   PROP_FLIP,
@@ -17,13 +19,16 @@ enum {
   PROP_BOOST,
   PROP_WINDOW_SIZE,
 };
+
 /* --- prototypes --- */
 static void     bst_scrollgraph_resize_values   (BstScrollgraph *self,
                                                  BstDirection    direction);
 static void     bst_scrollgraph_io_changed      (BstScrollgraph *self);
 static guint    signal_resize_values = 0;
+
 /* --- functions --- */
 G_DEFINE_TYPE (BstScrollgraph, bst_scrollgraph, GTK_TYPE_BIN);
+
 static void
 bst_scrollgraph_destroy (GtkObject *object)
 {
@@ -32,6 +37,7 @@ bst_scrollgraph_destroy (GtkObject *object)
   /* chain parent class' handler */
   GTK_OBJECT_CLASS (bst_scrollgraph_parent_class)->destroy (object);
 }
+
 static void
 bst_scrollgraph_finalize (GObject *object)
 {
@@ -41,12 +47,14 @@ bst_scrollgraph_finalize (GObject *object)
   /* chain parent class' handler */
   G_OBJECT_CLASS (bst_scrollgraph_parent_class)->finalize (object);
 }
+
 static void
 bst_scrollgraph_resize_values (BstScrollgraph *self,
                                BstDirection    direction)
 {
   g_signal_emit (self, signal_resize_values, 0, CLAMP (direction, BST_UP, BST_DOWN));
 }
+
 static void
 bst_scrollgraph_set_property (GObject      *object,
                               guint         prop_id,
@@ -80,6 +88,7 @@ bst_scrollgraph_set_property (GObject      *object,
       break;
     }
 }
+
 static void
 bst_scrollgraph_get_property (GObject     *object,
                               guint        prop_id,
@@ -106,13 +115,16 @@ bst_scrollgraph_get_property (GObject     *object,
       break;
     }
 }
+
 static void
 bst_scrollgraph_size_request (GtkWidget      *widget,
                               GtkRequisition *requisition)
 {
   BstScrollgraph *self = BST_SCROLLGRAPH (widget);
+
   /* chain parent class' handler */
   GTK_WIDGET_CLASS (bst_scrollgraph_parent_class)->size_request (widget, requisition);
+
   guint length = MIN (FFTSZ2POINTS (self->window_size), 480);
   if (HORIZONTAL (self))
     {
@@ -124,6 +136,7 @@ bst_scrollgraph_size_request (GtkWidget      *widget,
       requisition->height = length;
       requisition->width = FFTSZ2POINTS (self->window_size);
     }
+
   GtkBin *bin = GTK_BIN (self);
   if (bin->child && GTK_WIDGET_VISIBLE (bin->child))
     {
@@ -131,6 +144,7 @@ bst_scrollgraph_size_request (GtkWidget      *widget,
       gtk_widget_size_request (bin->child, &child_requisition);
     }
 }
+
 static void
 scrollgraph_resize_values (BstScrollgraph *self,
                            BstDirection    direction)
@@ -169,16 +183,21 @@ scrollgraph_resize_values (BstScrollgraph *self,
     }
   gtk_widget_queue_draw (widget);
 }
+
 static void
 bst_scrollgraph_size_allocate (GtkWidget     *widget,
                                GtkAllocation *allocation)
 {
   BstScrollgraph *self = BST_SCROLLGRAPH (widget);
+
   /* chain parent class' handler */
   GTK_WIDGET_CLASS (bst_scrollgraph_parent_class)->size_allocate (widget, allocation);
+
   if (self->canvas)
     gdk_window_move_resize (self->canvas, 0, 0, allocation->width, allocation->height);
+
   bst_scrollgraph_resize_values (self, self->direction);
+
   GtkBin *bin = GTK_BIN (self);
   if (bin->child && GTK_WIDGET_VISIBLE (bin->child))
     {
@@ -190,13 +209,16 @@ bst_scrollgraph_size_allocate (GtkWidget     *widget,
       gtk_widget_size_allocate (bin->child, &child_allocation);
     }
 }
+
 static void
 bst_scrollgraph_realize (GtkWidget *widget)
 {
   BstScrollgraph *self = BST_SCROLLGRAPH (widget);
   GdkWindowAttr attributes;
   gint attributes_mask;
+
   GTK_WIDGET_SET_FLAGS (widget, GTK_REALIZED);
+
   attributes.window_type = GDK_WINDOW_CHILD;
   attributes.x = widget->allocation.x;
   attributes.y = widget->allocation.y;
@@ -214,30 +236,38 @@ bst_scrollgraph_realize (GtkWidget *widget)
   gdk_window_set_user_data (widget->window, self);
   widget->style = gtk_style_attach (widget->style, widget->window);
   gtk_style_set_background (widget->style, widget->window, GTK_STATE_NORMAL);
+
   attributes.x = 0;
   attributes.y = 0;
   self->canvas = gdk_window_new (widget->window, &attributes, attributes_mask);
   gdk_window_set_user_data (self->canvas, self);
   gdk_window_set_background (self->canvas, &widget->style->black);
+
   self->pixbuf = gdk_pixbuf_new_from_data (g_new (guint8, self->n_points * 3),
                                            GDK_COLORSPACE_RGB, FALSE, 8,
                                            VERTICAL (self) ? self->n_points : 1,
                                            HORIZONTAL (self) ? self->n_points : 1,
                                            3, (GdkPixbufDestroyNotify) g_free, NULL);
+
   bst_scrollgraph_io_changed (self); /* show self->canvas if appropriate */
 }
+
 static void
 bst_scrollgraph_unrealize (GtkWidget *widget)
 {
   BstScrollgraph *self = BST_SCROLLGRAPH (widget);
+
   g_object_unref (self->pixbuf);
   self->pixbuf = NULL;
+
   gdk_window_set_user_data (self->canvas, NULL);
   gdk_window_destroy (self->canvas);
   self->canvas = NULL;
+
   /* chain parent class' handler */
   GTK_WIDGET_CLASS (bst_scrollgraph_parent_class)->unrealize (widget);
 }
+
 static void
 bst_scrollgraph_scroll_bars (BstScrollgraph *self)
 {
@@ -252,6 +282,7 @@ bst_scrollgraph_scroll_bars (BstScrollgraph *self)
         gdk_window_scroll (drawable, 0, self->direction == BST_UP ? -1 : 1);
     }
 }
+
 static GxkColorDots*
 create_color_dots (void)
 {
@@ -263,6 +294,7 @@ create_color_dots (void)
   };
   return gxk_color_dots_new (G_N_ELEMENTS (dots), dots);
 }
+
 static void
 bst_scrollgraph_draw_bar (BstScrollgraph *self,
                           guint           nth)
@@ -293,6 +325,7 @@ bst_scrollgraph_draw_bar (BstScrollgraph *self,
                                  gdk_pixbuf_get_height (self->pixbuf),
                                  GDK_RGB_DITHER_MAX, 0, 0);
 }
+
 static gint
 bst_scrollgraph_bar_from_coord (BstScrollgraph *self,
                                 gint            x,
@@ -309,6 +342,7 @@ bst_scrollgraph_bar_from_coord (BstScrollgraph *self,
     n = ((gint) self->n_bars) - 1 - n;
   return n;
 }
+
 static gint
 bst_scrollgraph_expose (GtkWidget      *widget,
                         GdkEventExpose *event)
@@ -337,6 +371,7 @@ bst_scrollgraph_expose (GtkWidget      *widget,
     }
   return GTK_WIDGET_CLASS (bst_scrollgraph_parent_class)->expose_event (widget, event);
 }
+
 void
 bst_scrollgraph_clear (BstScrollgraph *self)
 {
@@ -348,6 +383,7 @@ bst_scrollgraph_clear (BstScrollgraph *self)
       VALUE (self, i, j) = 0;
   gtk_widget_queue_draw (widget);
 }
+
 static void
 bst_scrollgraph_probes_notify (SfiProxy     source,
                                SfiSeq      *sseq,
@@ -393,6 +429,7 @@ bst_scrollgraph_probes_notify (SfiProxy     source,
   float mix_freq = bse_source_get_mix_freq (self->source);
   bst_source_queue_probe_request (self->source, self->ochannel, BST_SOURCE_PROBE_FFT, mix_freq / self->window_size);
 }
+
 static void
 bst_scrollgraph_io_changed (BstScrollgraph *self)
 {
@@ -404,6 +441,7 @@ bst_scrollgraph_io_changed (BstScrollgraph *self)
         gdk_window_hide (self->canvas);
     }
 }
+
 static void
 bst_scrollgraph_release_item (SfiProxy        item,
                               BstScrollgraph *self)
@@ -413,6 +451,7 @@ bst_scrollgraph_release_item (SfiProxy        item,
   if (self->delete_toplevel)
     gxk_toplevel_delete (GTK_WIDGET (self));
 }
+
 void
 bst_scrollgraph_set_source (BstScrollgraph *self,
                             SfiProxy        source,
@@ -444,6 +483,7 @@ bst_scrollgraph_set_source (BstScrollgraph *self,
       bst_scrollgraph_io_changed (self);
     }
 }
+
 static gboolean
 bst_scrollgraph_button_press (GtkWidget      *widget,
                               GdkEventButton *event)
@@ -451,6 +491,7 @@ bst_scrollgraph_button_press (GtkWidget      *widget,
   // BstScrollgraph *self = BST_SCROLLGRAPH (widget);
   return TRUE;
 }
+
 static gboolean
 bst_scrollgraph_motion_notify (GtkWidget      *widget,
                                GdkEventMotion *event)
@@ -458,6 +499,7 @@ bst_scrollgraph_motion_notify (GtkWidget      *widget,
   // BstScrollgraph *self = BST_SCROLLGRAPH (widget);
   return TRUE;
 }
+
 static gboolean
 bst_scrollgraph_button_release (GtkWidget      *widget,
                                 GdkEventButton *event)
@@ -465,6 +507,7 @@ bst_scrollgraph_button_release (GtkWidget      *widget,
   // BstScrollgraph *self = BST_SCROLLGRAPH (widget);
   return TRUE;
 }
+
 static void
 bst_scrollgraph_init (BstScrollgraph *self)
 {
@@ -484,16 +527,20 @@ bst_scrollgraph_init (BstScrollgraph *self)
   widget->allocation.width = 10; widget->allocation.height = 10; // FIXME: initial values for _resize()
   bst_scrollgraph_resize_values (self, BST_LEFT);
 }
+
 static void
 bst_scrollgraph_class_init (BstScrollgraphClass *klass)
 {
   GObjectClass *gobject_class = G_OBJECT_CLASS (klass);
   GtkObjectClass *object_class = GTK_OBJECT_CLASS (klass);
   GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (klass);
+
   gobject_class->set_property = bst_scrollgraph_set_property;
   gobject_class->get_property = bst_scrollgraph_get_property;
   gobject_class->finalize = bst_scrollgraph_finalize;
+
   object_class->destroy = bst_scrollgraph_destroy;
+
   widget_class->size_request = bst_scrollgraph_size_request;
   widget_class->size_allocate = bst_scrollgraph_size_allocate;
   widget_class->realize = bst_scrollgraph_realize;
@@ -502,7 +549,9 @@ bst_scrollgraph_class_init (BstScrollgraphClass *klass)
   widget_class->button_press_event = bst_scrollgraph_button_press;
   widget_class->button_release_event = bst_scrollgraph_button_release;
   widget_class->motion_notify_event = bst_scrollgraph_motion_notify;
+
   klass->resize_values = scrollgraph_resize_values;
+
   bst_object_class_install_property (gobject_class, _("Spectrograph"), PROP_FLIP,
                                      sfi_pspec_bool ("flip", _("Flip Spectrum"), _("Flip Spectrum display,  interchaging low and high frequencies"),
                                                      FALSE, SFI_PARAM_STANDARD));
@@ -521,6 +570,7 @@ bst_scrollgraph_class_init (BstScrollgraphClass *klass)
                                        bst_marshal_NONE__INT, // HACK: should use BstDirection enum type
                                        G_TYPE_NONE, 1, G_TYPE_INT);
 }
+
 static GxkParam*
 scrollgraph_build_param (BstScrollgraph *self,
                          const gchar    *property)
@@ -529,6 +579,7 @@ scrollgraph_build_param (BstScrollgraph *self,
   GxkParam *param = bst_param_new_object (pspec, G_OBJECT (self));
   return param;
 }
+
 static void
 scrollgraph_resize_rulers (BstScrollgraph *self,
                            BstDirection    direction,
@@ -576,6 +627,7 @@ scrollgraph_resize_rulers (BstScrollgraph *self,
       pango_font_description_free (pfd);
     }
 }
+
 static void
 scrollgraph_resize_alignment (BstScrollgraph *self,
                               BstDirection    direction,
@@ -587,12 +639,14 @@ scrollgraph_resize_alignment (BstScrollgraph *self,
                 "yscale", VERTICAL (self) ? 1.0 : 0.0,
                 NULL);
 }
+
 GtkWidget*
 bst_scrollgraph_build_dialog (GtkWidget   *alive_object,
                               SfiProxy     source,
                               guint        ochannel)
 {
   g_return_val_if_fail (BSE_IS_SOURCE (source), NULL);
+
   GxkRadget *radget = gxk_radget_create ("beast", "scrollgraph-dialog", NULL);
   BstScrollgraph *scg = (BstScrollgraph*) gxk_radget_find (radget, "scrollgraph");
   if (BST_IS_SCROLLGRAPH (scg))

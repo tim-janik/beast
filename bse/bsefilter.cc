@@ -18,6 +18,7 @@ bse_iir_filter_kind_string (BseIIRFilterKind fkind)
     default:                            return "?unknown?";
     }
 }
+
 const gchar*
 bse_iir_filter_type_string (BseIIRFilterType ftype)
 {
@@ -30,6 +31,7 @@ bse_iir_filter_type_string (BseIIRFilterType ftype)
     default:                            return "?unknown?";
     }
 }
+
 gchar*
 bse_iir_filter_request_string (const BseIIRFilterRequest *ifr)
 {
@@ -50,6 +52,7 @@ bse_iir_filter_request_string (const BseIIRFilterRequest *ifr)
     s += " stopband-edge=" + string_from_float (ifr->stopband_edge);
   return g_strdup (s.c_str());
 }
+
 gchar*
 bse_iir_filter_design_string (const BseIIRFilterDesign *fid)
 {
@@ -89,6 +92,7 @@ bse_iir_filter_design_string (const BseIIRFilterDesign *fid)
 #endif
   return g_strdup (s.c_str());
 }
+
 bool
 bse_iir_filter_design (const BseIIRFilterRequest  *filter_request,
                        BseIIRFilterDesign         *filter_design)

@@ -10,10 +10,13 @@
 #include "bstsnetrouter.hh"
 #include "bstgconfig.hh"
 #include <string.h>
+
 enum {
   PROP_0,
   PROP_SUPER
 };
+
+
 /* --- prototypes --- */
 static void	bst_super_shell_destroy		(GtkObject		*object);
 static void	bst_super_shell_finalize	(GObject		*object);
@@ -26,24 +29,34 @@ static void	bst_super_shell_get_property	(GObject         	*object,
 						 GValue          	*value,
 						 GParamSpec      	*pspec);
 static void     super_shell_add_views           (BstSuperShell          *self);
+
+
 /* --- static variables --- */
 static BstSuperShellClass *bst_super_shell_class = NULL;
+
+
 /* --- functions --- */
 G_DEFINE_TYPE (BstSuperShell, bst_super_shell, GTK_TYPE_VBOX);
+
 static void
 bst_super_shell_class_init (BstSuperShellClass *klass)
 {
   GObjectClass *gobject_class = G_OBJECT_CLASS (klass);
   GtkObjectClass *object_class = GTK_OBJECT_CLASS (klass);
+
   bst_super_shell_class = klass;
+
   gobject_class->set_property = bst_super_shell_set_property;
   gobject_class->get_property = bst_super_shell_get_property;
   gobject_class->finalize = bst_super_shell_finalize;
+
   object_class->destroy = bst_super_shell_destroy;
+
   g_object_class_install_property (gobject_class,
 				   PROP_SUPER,
 				   sfi_pspec_proxy ("super", NULL, NULL, SFI_PARAM_STANDARD));
 }
+
 static void
 bst_super_shell_init (BstSuperShell *self)
 {
@@ -55,6 +68,7 @@ bst_super_shell_init (BstSuperShell *self)
 		  "border_width", 0,
 		  NULL);
 }
+
 static void
 bst_super_shell_set_property (GObject         *object,
 			      guint            prop_id,
@@ -62,6 +76,7 @@ bst_super_shell_set_property (GObject         *object,
 			      GParamSpec      *pspec)
 {
   BstSuperShell *self = BST_SUPER_SHELL (object);
+
   switch (prop_id)
     {
     case PROP_SUPER:
@@ -72,6 +87,7 @@ bst_super_shell_set_property (GObject         *object,
       break;
     }
 }
+
 static void
 bst_super_shell_get_property (GObject         *object,
 			      guint            prop_id,
@@ -79,6 +95,7 @@ bst_super_shell_get_property (GObject         *object,
 			      GParamSpec      *pspec)
 {
   BstSuperShell *self = BST_SUPER_SHELL (object);
+
   switch (prop_id)
     {
     case PROP_SUPER:
@@ -89,20 +106,26 @@ bst_super_shell_get_property (GObject         *object,
       break;
     }
 }
+
 static void
 bst_super_shell_destroy (GtkObject *object)
 {
   BstSuperShell *self = BST_SUPER_SHELL (object);
+
   if (self->super)
     bst_super_shell_set_super (self, 0);
+
   GTK_OBJECT_CLASS (bst_super_shell_parent_class)->destroy (object);
 }
+
 static void
 bst_super_shell_finalize (GObject *object)
 {
   // BstSuperShell *self = BST_SUPER_SHELL (object);
+
   G_OBJECT_CLASS (bst_super_shell_parent_class)->finalize (object);
 }
+
 void
 bst_super_shell_set_super (BstSuperShell *self,
 			   SfiProxy       super)
@@ -110,6 +133,7 @@ bst_super_shell_set_super (BstSuperShell *self,
   g_return_if_fail (BST_IS_SUPER_SHELL (self));
   if (super)
     g_return_if_fail (BSE_IS_SUPER (super));
+
   if (super != self->super)
     {
       if (self->super)
@@ -125,16 +149,19 @@ bst_super_shell_set_super (BstSuperShell *self,
 	}
     }
 }
+
 GtkWidget*
 bst_super_shell_create_label (BstSuperShell *super_shell)
 {
   return gxk_notebook_create_tabulator ("SuperShell", NULL, NULL);
 }
+
 static void
 super_shell_build_song (BstSuperShell *self,
                         GtkNotebook   *notebook)
 {
   SfiProxy song = self->super;
+
   gtk_notebook_append_page (notebook,
                             bst_track_view_new (song),
                             gxk_notebook_create_tabulator (_("Tracks"), BST_STOCK_TRACKS, _("Tracks contain instrument definitions and parts with notes")));
@@ -157,12 +184,14 @@ super_shell_build_song (BstSuperShell *self,
                               gtk_widget_get_toplevel (GTK_WIDGET (bst_snet_router_build_page (song))),
                               gxk_notebook_create_tabulator (_("Routing"), BST_STOCK_MESH, NULL));
 }
+
 static void
 super_shell_build_snet (BstSuperShell *self,
                         GtkNotebook   *notebook)
 {
   SfiProxy snet = self->super;
   GtkWidget *param_view;
+
   if (BST_DBG_EXT && bse_snet_supports_user_synths (snet))
     gtk_notebook_append_page (notebook,
                               gtk_widget_get_toplevel (bst_rack_view_new (snet)),
@@ -176,11 +205,13 @@ super_shell_build_snet (BstSuperShell *self,
                             bst_param_view_new (snet),
                             gxk_notebook_create_tabulator (_("Properties"), BST_STOCK_PROPERTIES, _("Adjust overall synthesizer behaviour")));
 }
+
 static void
 super_shell_build_wave_repo (BstSuperShell *self,
                              GtkNotebook   *notebook)
 {
   SfiProxy wrepo = self->super;
+
   gtk_notebook_append_page (notebook,
                             bst_wave_view_new (wrepo),
                             gxk_notebook_create_tabulator (_("Waves"), BST_STOCK_MINI_WAVE_REPO, NULL));
@@ -188,6 +219,7 @@ super_shell_build_wave_repo (BstSuperShell *self,
                             bst_param_view_new (wrepo),
                             gxk_notebook_create_tabulator (_("Properties"), BST_STOCK_PROPERTIES, NULL));
 }
+
 static GtkNotebook*
 create_notebook (BstSuperShell *self)
 {
@@ -204,6 +236,7 @@ create_notebook (BstSuperShell *self)
                                         NULL);
   return notebook;
 }
+
 static void
 super_shell_add_views (BstSuperShell *self)
 {

@@ -20,6 +20,7 @@ pretty_print_double (char  *str,
   *s = 0;
   return s;
 }
+
 char*
 bse_complex_list (uint         n_points,
 		  BseComplex  *points,
@@ -29,6 +30,7 @@ bse_complex_list (uint         n_points,
   static char* rbuffer[RING_BUFFER_LENGTH] = { NULL, };
   char *s, *tbuffer = g_newa (char, (FLOAT_STRING_SIZE * 2 * n_points));
   uint i;
+
   rbi = (rbi + 1) % RING_BUFFER_LENGTH;
   if (rbuffer[rbi] != NULL)
     g_free (rbuffer[rbi]);
@@ -48,12 +50,14 @@ bse_complex_list (uint         n_points,
   rbuffer[rbi] = g_strdup (tbuffer);
   return rbuffer[rbi];
 }
+
 char*
 bse_complex_str (BseComplex c)
 {
   static uint rbi = 0;
   static char* rbuffer[RING_BUFFER_LENGTH] = { NULL, };
   char *s, tbuffer[FLOAT_STRING_SIZE * 2];
+
   rbi = (rbi + 1) % RING_BUFFER_LENGTH;
   if (rbuffer[rbi] != NULL)
     g_free (rbuffer[rbi]);
@@ -68,6 +72,7 @@ bse_complex_str (BseComplex c)
   rbuffer[rbi] = g_strdup (tbuffer);
   return rbuffer[rbi];
 }
+
 char*
 bse_poly_str (uint         degree,
 	      double      *a,
@@ -77,6 +82,7 @@ bse_poly_str (uint         degree,
   static char* rbuffer[RING_BUFFER_LENGTH] = { NULL, };
   char *s, *tbuffer = g_newa (char, degree * FLOAT_STRING_SIZE);
   uint i;
+
   if (!var)
     var = "x";
   rbi = (rbi + 1) % RING_BUFFER_LENGTH;
@@ -99,6 +105,7 @@ bse_poly_str (uint         degree,
   rbuffer[rbi] = g_strdup (tbuffer);
   return rbuffer[rbi];
 }
+
 char*
 bse_poly_str1 (uint         degree,
 	       double      *a,
@@ -108,6 +115,7 @@ bse_poly_str1 (uint         degree,
   static char* rbuffer[RING_BUFFER_LENGTH] = { NULL, };
   char *s, *tbuffer = g_newa (char, degree * FLOAT_STRING_SIZE);
   uint i, need_plus = 0;
+
   if (!var)
     var = "x";
   rbi = (rbi + 1) % RING_BUFFER_LENGTH;
@@ -152,15 +160,18 @@ bse_poly_str1 (uint         degree,
   rbuffer[rbi] = g_strdup (tbuffer);
   return rbuffer[rbi];
 }
+
 void
 bse_complex_gnuplot (const char  *file_name,
 		     uint         n_points,
 		     BseComplex  *points)
 {
   FILE *fout = fopen (file_name, "w");
+
   fputs (bse_complex_list (n_points, points, ""), fout);
   fclose (fout);
 }
+
 void
 bse_float_gnuplot (const char    *file_name,
                    double         xstart,
@@ -179,20 +190,25 @@ bse_float_gnuplot (const char    *file_name,
     }
   fclose (fout);
 }
+
 double
 bse_temp_freq (double kammer_freq,
 	       int    semitone_delta)
 {
   double factor;
+
   factor = pow (BSE_2_POW_1_DIV_12, semitone_delta);
+
   return kammer_freq * factor;
 }
+
 void
 bse_poly_from_re_roots (uint         degree,
 			double      *a,
 			BseComplex  *roots)
 {
   uint i;
+
   /* initialize polynomial */
   a[1] = 1;
   a[0] = -roots[0].re;
@@ -200,18 +216,21 @@ bse_poly_from_re_roots (uint         degree,
   for (i = 1; i < degree; i++)
     {
       uint j;
+
       a[i + 1] = a[i];
       for (j = i; j >= 1; j--)
 	a[j] = a[j - 1] - a[j] * roots[i].re;
       a[0] *= -roots[i].re;
     }
 }
+
 void
 bse_cpoly_from_roots (uint         degree,
 		      BseComplex  *c,
 		      BseComplex  *roots)
 {
   uint i;
+
   /* initialize polynomial */
   c[1].re = 1;
   c[1].im = 0;
@@ -222,12 +241,14 @@ bse_cpoly_from_roots (uint         degree,
     {
       BseComplex r = bse_complex (-roots[i].re, -roots[i].im);
       uint j;
+
       c[i + 1] = c[i];
       for (j = i; j >= 1; j--)
 	c[j] = bse_complex_add (c[j - 1], bse_complex_mul (c[j], r));
       c[0] = bse_complex_mul (c[0], r);
     }
 }
+
 gboolean
 bse_poly2_droots (double roots[2],
 		  double a,
@@ -236,16 +257,21 @@ bse_poly2_droots (double roots[2],
 {
   double square = b * b - 4.0 * a * c;
   double tmp;
+
   if (square < 0)
     return FALSE;
+
   if (b > 0)
     tmp = -b - sqrt (square);
   else
     tmp = -b + sqrt (square);
+
   roots[0] = tmp / (a + a);
   roots[1] = (c + c) / tmp;
+
   return TRUE;
 }
+
 double
 bse_bit_depth_epsilon (uint n_bits)
 {
@@ -287,8 +313,10 @@ bse_bit_depth_epsilon (uint n_bits)
     .0000000004656612873077392578124900000000,
     .0000000002328306436538696289062490000000,
   };
+
   return bit_epsilons[CLAMP (n_bits, 1, 32) - 1];
 }
+
 int
 bse_rand_bool (void)
 {

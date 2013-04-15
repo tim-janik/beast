@@ -1,8 +1,10 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bseresampler.hh"
 #include "bseblockutils.hh"
+
 namespace Bse {
 namespace Resampler {
+
 /* --- Resampler2 methods --- */
 Resampler2*
 Resampler2::create (BseResampler2Mode      mode,
@@ -10,8 +12,10 @@ Resampler2::create (BseResampler2Mode      mode,
 {
   return Block::create_resampler2 (mode, precision);
 }
+
 Resampler2::~Resampler2()
 {}
+
 BseResampler2Precision
 Resampler2::find_precision_for_bits (guint bits)
 {
@@ -25,11 +29,13 @@ Resampler2::find_precision_for_bits (guint bits)
     return BSE_RESAMPLER2_PREC_96DB;
   if (bits <= 20)
     return BSE_RESAMPLER2_PREC_120DB;
+
   /* thats the best precision we can deliver (and by the way also close to
    * the best precision possible with floats anyway)
    */
   return BSE_RESAMPLER2_PREC_144DB;
 }
+
 const char *
 Resampler2::precision_name (BseResampler2Precision precision)
 {
@@ -44,6 +50,7 @@ Resampler2::precision_name (BseResampler2Precision precision)
   default:			    return "unknown precision enum value";
   }
 }
+
 /* --- coefficient sets for Resampler2 --- */
 /* halfband FIR filter for factor 2 resampling, created with octave
  *
@@ -69,6 +76,7 @@ Resampler2::precision_name (BseResampler2Precision precision)
  * does only "almost" fulfill the spec, but its really really close
  * (no stopband ripple > -95 dB)
  */
+
 const double Resampler2::halfband_fir_96db_coeffs[32] =
 {
   -3.48616530828033e-05,
@@ -105,6 +113,7 @@ const double Resampler2::halfband_fir_96db_coeffs[32] =
   0.000112877490936177,
   -3.48616530827983e-05
 };
+
 /*   coefficients = 16
  *             x0 = 1.013
  *          alpha = 0.2
@@ -129,6 +138,7 @@ const double Resampler2::halfband_fir_48db_coeffs[16] =
   0.00566964586625899,
   -0.00270578824181638
 };
+
 /*   coefficients = 24
  *             x0 = 1.0105
  *          alpha = 0.93
@@ -161,6 +171,7 @@ const double Resampler2::halfband_fir_72db_coeffs[24] =
   0.000738054970125897,
   -0.0002622341634290046,
 };
+
 /*   coefficients = 42
  *             x0 = 1.0106
  *          alpha = 0.8
@@ -210,6 +221,7 @@ const double Resampler2::halfband_fir_120db_coeffs[42] = {
   -9.506281154917077e-06,
   2.359361930409472e-06
 };
+
 /*   coefficients = 52
  *             x0 = 1.0104
  *          alpha = 0.8
@@ -269,6 +281,7 @@ const double Resampler2::halfband_fir_144db_coeffs[52] = {
   8.762360674786308e-07,
   -1.841826652067372e-07,
 };
+
 /* linear interpolation coefficients; barely useful for actual audio use,
  * but useful for testing
  */
@@ -277,8 +290,11 @@ const double Resampler2::halfband_fir_linear_coeffs[2] = {
   /* here, a 0.5 coefficient will be used */
   0.25,
 };
+
+
 } // Resampler
 } // Bse
+
 /* --- Resampler2 C API --- */
 BseResampler2*
 bse_resampler2_create (BseResampler2Mode      mode,
@@ -286,11 +302,13 @@ bse_resampler2_create (BseResampler2Mode      mode,
 {
   return reinterpret_cast<BseResampler2 *> (Bse::Resampler::Resampler2::create (mode, precision));
 }
+
 void
 bse_resampler2_destroy (BseResampler2 *resampler)
 {
   delete reinterpret_cast<Bse::Resampler::Resampler2 *> (resampler);
 }
+
 void
 bse_resampler2_process_block (BseResampler2 *resampler,
                               const float   *input,
@@ -299,21 +317,25 @@ bse_resampler2_process_block (BseResampler2 *resampler,
 {
   reinterpret_cast<Bse::Resampler::Resampler2 *> (resampler)->process_block (input, n_input_samples, output);
 }
+
 guint
 bse_resampler2_order (BseResampler2 *resampler)
 {
   return reinterpret_cast<Bse::Resampler::Resampler2 *> (resampler)->order();
 }
+
 double
 bse_resampler2_delay (BseResampler2 *resampler)
 {
   return reinterpret_cast<Bse::Resampler::Resampler2 *> (resampler)->delay();
 }
+
 BseResampler2Precision
 bse_resampler2_find_precision_for_bits (guint bits)
 {
   return Bse::Resampler::Resampler2::find_precision_for_bits (bits);
 }
+
 const char*
 bse_resampler2_precision_name (BseResampler2Precision precision)
 {

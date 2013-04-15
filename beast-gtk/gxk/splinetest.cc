@@ -3,6 +3,7 @@
 #include <math.h>
 #include "gxk/gxkspline.hh"
 #include <stdlib.h>
+
 static void
 spline_test (GxkSpline *spline,
              guint      interval_steps,
@@ -26,6 +27,7 @@ spline_test (GxkSpline *spline,
           }
       }
 }
+
 static void
 print_spline (guint                   n_points,
               const GxkSplinePoint   *points,
@@ -40,6 +42,7 @@ print_spline (guint                   n_points,
   spline_test (spline, steps, swap);
   gxk_spline_free (spline);
 }
+
 int
 main (int   argc,
       char *argv[])
@@ -47,18 +50,23 @@ main (int   argc,
   /* GLib's thread and object systems */
   g_thread_init (NULL);
   g_type_init ();
+
   /* initialize Gtk+ and go into threading mode */
   gtk_init (&argc, &argv);
   g_set_prgname ("splinetest");	/* overriding Gdk's program name */
   GDK_THREADS_ENTER ();
+
   /* initialize Gtk+ Extension Kit */
   gxk_init ();
+
   /* usage: splinetest <variant123> <nsteps> */
+
   gint variant = 0, steps = 10;
   if (argc > 1)
     variant = atoi (argv[1]);
   if (argc > 2)
     steps = atoi (argv[2]);
+
   if (ABS (variant) == 1)
     {
       GxkSplinePoint points[] = {

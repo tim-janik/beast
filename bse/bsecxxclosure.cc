@@ -1,21 +1,28 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #if defined BSE_COMPILATION
 #include "bsecxxclosure.hh"
+
 namespace Bse {
+
 CxxClosure::CxxClosure()
   : glib_closure (NULL), sig_tokens ()
 {
 }
+
 CxxClosure::~CxxClosure()
 {
 }
+
 GClosure*
 CxxClosure::gclosure()
 {
   return glib_closure;
 }
+
 } // Bse
+
 #else /* !BSE_COMPILATION */    // program to generate bsegenclosures.hh
+
 #include <string>
 #include <stdio.h>
 using namespace std;
@@ -26,6 +33,7 @@ String (long long int i)
   sprintf (buf, "%lld", i);
   return string (buf);
 }
+
 void
 print_closure (bool withreturn,
                int  n_args)
@@ -107,6 +115,7 @@ print_closure (bool withreturn,
   printf ("  return new %s%uClosure<%s> (t, f);\n", rpref, n_args, tmplargs);
   printf ("}\n");
 }
+
 int
 main (int argc,
       char *argv[])

@@ -1,11 +1,15 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #ifndef __GSL_OSCILLATOR_H__
 #define __GSL_OSCILLATOR_H__
+
 #include <bse/gsldefs.hh>
 #include <bse/gslosctable.hh>
+
 #ifdef __cplusplus
 extern "C" {
 #endif /* __cplusplus */
+
+
 /* --- structures --- */
 typedef struct
 {
@@ -33,6 +37,8 @@ typedef struct
   guint32	 pwm_offset;
   gfloat	 pwm_max, pwm_center;
 } GslOscData;
+
+
 /* --- Oscillator --- */
 void	gsl_osc_config		(GslOscData	*osc,
 				 GslOscConfig	*config);
@@ -52,7 +58,12 @@ void	gsl_osc_process_pulse	(GslOscData	*osc,
 				 const gfloat	*ipwm,
 				 gfloat		*mono_out,
 				 gfloat		*sync_out);
+
+
+
+
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */
+
 #endif /* __GSL_OSCILLATOR_H__ */

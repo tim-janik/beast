@@ -6,7 +6,9 @@
 #include "sfitime.hh"
 #include "sfinote.hh"
 #include <stdlib.h>     // FIXME: remove "free"
+
 typedef std::string String; // FIXME
+
 /* --- parsing aids --- */
 #define MC(s)   const_cast<char*> (s)
 static const GScannerConfig storage_scanner_config = {
@@ -48,6 +50,7 @@ static const GScannerConfig storage_scanner_config = {
   TRUE			/* store_int64 */,
 };
 const GScannerConfig *sfi_storage_scanner_config = &storage_scanner_config;
+
 #define parse_or_return(scanner, token)  G_STMT_START{ \
   GScanner *__s = (scanner); int _t = (token); \
   if (g_scanner_get_next_token (__s) != _t) \
@@ -77,6 +80,7 @@ scanner_skip_statement (GScanner *scanner,
     }
   return G_TOKEN_NONE;
 }
+
 static String
 string_vprintf (const char *format, va_list vargs) // FIXME: move
 {
@@ -90,6 +94,7 @@ string_vprintf (const char *format, va_list vargs) // FIXME: move
   else
     return format;
 }
+
 static String
 string_printf (const char *format, ...) // FIXME: move
 {
@@ -100,6 +105,7 @@ string_printf (const char *format, ...) // FIXME: move
   va_end (args);
   return str;
 }
+
 static String
 string_to_cescape (const String &str)   // FIXME: move
 {
@@ -118,6 +124,7 @@ string_to_cescape (const String &str)   // FIXME: move
     }
   return buffer;
 }
+
 /* --- storage helpers --- */
 #define	gstring_puts(gstring, string)	g_string_append (gstring, string)
 #define	gstring_putc(gstring, vchar)	g_string_append_c (gstring, vchar)
@@ -135,6 +142,7 @@ gstring_break (GString  *gstring,
   g_free (s);
   *needs_break = FALSE;
 }
+
 static void
 gstring_check_break (GString  *gstring,
                      gboolean *needs_break,
@@ -143,6 +151,8 @@ gstring_check_break (GString  *gstring,
   if (*needs_break)
     gstring_break (gstring, needs_break, indent);
 }
+
+
 /* --- functions --- */
 static GTokenType
 sfi_scanner_parse_real_num (GScanner *scanner,
@@ -152,6 +162,7 @@ sfi_scanner_parse_real_num (GScanner *scanner,
   gboolean negate = FALSE;
   gdouble vdouble;
   guint64 ui64;
+
   g_scanner_get_next_token (scanner);
   if (scanner->token == '-')
     {
@@ -180,6 +191,7 @@ sfi_scanner_parse_real_num (GScanner *scanner,
     *real_p = negate ? -vdouble : vdouble;
   return G_TOKEN_NONE;
 }
+
 static void
 sfi_serialize_rec_typed (SfiRec  *rec,
 			 GString *gstring)
@@ -201,6 +213,7 @@ sfi_serialize_rec_typed (SfiRec  *rec,
       gstring_putc (gstring, ')');
     }
 }
+
 static GTokenType
 sfi_parse_rec_typed (GScanner *scanner,
 		     GValue   *value)
@@ -245,6 +258,7 @@ sfi_parse_rec_typed (GScanner *scanner,
     return GTokenType ('(');
   return G_TOKEN_NONE;
 }
+
 static GTokenType
 sfi_serialize_primitives (SfiSCategory scat,
 			  GValue      *value,
@@ -320,6 +334,7 @@ sfi_serialize_primitives (SfiSCategory scat,
       if (gstring)
 	{
 	  gchar numbuf[G_ASCII_DTOSTR_BUF_SIZE + 1] = "";
+
 	  if (g_option_check (hints, "f"))      /* float hint */
 	    gstring_puts (gstring, g_ascii_formatd (numbuf, G_ASCII_DTOSTR_BUF_SIZE, "%.7g", sfi_value_get_real (value)));
 	  else
@@ -557,13 +572,16 @@ sfi_serialize_primitives (SfiSCategory scat,
     }
   return G_TOKEN_NONE;
 }
+
 void
 sfi_value_store_typed (const GValue *value,
 		       GString      *gstring)
 {
   SfiSCategory scat;
+
   g_return_if_fail (G_IS_VALUE (value));
   g_return_if_fail (gstring != NULL);
+
   scat = SfiSCategory (sfi_categorize_type (G_VALUE_TYPE (value)) & SFI_SCAT_TYPE_MASK);
   switch (scat)
     {
@@ -614,12 +632,14 @@ sfi_value_store_typed (const GValue *value,
       g_error ("%s: unimplemented category (%u)", G_STRLOC, scat);
     }
 }
+
 GTokenType
 sfi_value_parse_typed (GValue   *value,
 		       GScanner *scanner)
 {
   g_return_val_if_fail (value != NULL && G_VALUE_TYPE (value) == 0, G_TOKEN_ERROR);
   g_return_val_if_fail (scanner != NULL, G_TOKEN_ERROR);
+
   parse_or_return (scanner, '(');
   char scat = g_scanner_get_next_token (scanner);
   if (!((scat >= 'a' && scat <= 'z') ||
@@ -686,6 +706,7 @@ sfi_value_parse_typed (GValue   *value,
     }
   return G_TOKEN_NONE;
 }
+
 static void
 value_store_param (const GValue *value,
 		   GString      *gstring,
@@ -695,6 +716,7 @@ value_store_param (const GValue *value,
 		   guint         indent)
 {
   SfiSCategory scat = sfi_categorize_pspec (pspec);
+
   gstring_check_break (gstring, needs_break, indent);
   switch (scat)
     {
@@ -785,6 +807,7 @@ value_store_param (const GValue *value,
       g_error ("%s: unimplemented category (%u)", G_STRLOC, scat);
     }
 }
+
 void
 sfi_value_store_param (const GValue *value,
                        GString      *gstring,
@@ -792,15 +815,18 @@ sfi_value_store_param (const GValue *value,
                        guint         indent)
 {
   gboolean needs_break = FALSE;
+
   g_return_if_fail (G_IS_VALUE (value));
   g_return_if_fail (gstring != NULL);
   g_return_if_fail (G_IS_PARAM_SPEC (pspec));
   g_return_if_fail (G_VALUE_HOLDS (value, G_PARAM_SPEC_VALUE_TYPE (pspec)));
+
   gstring_check_break (gstring, &needs_break, indent);
   gstring_printf (gstring, "(%s ", pspec->name);
   value_store_param (value, gstring, &needs_break, TRUE, pspec, indent + 2);
   gstring_putc (gstring, ')');
 }
+
 static GTokenType
 value_parse_param (GValue     *value,
 		   GScanner   *scanner,
@@ -808,6 +834,7 @@ value_parse_param (GValue     *value,
 		   gboolean    close_statement)
 {
   SfiSCategory scat;
+
   scat = sfi_categorize_pspec (pspec);
   switch (scat)
     {
@@ -918,6 +945,7 @@ value_parse_param (GValue     *value,
     parse_or_return (scanner, ')');
   return G_TOKEN_NONE;
 }
+
 GTokenType
 sfi_value_parse_param_rest (GValue     *value,
 			    GScanner   *scanner,
@@ -926,16 +954,21 @@ sfi_value_parse_param_rest (GValue     *value,
   g_return_val_if_fail (value != NULL && G_VALUE_TYPE (value) == 0, G_TOKEN_ERROR);
   g_return_val_if_fail (scanner != NULL, G_TOKEN_ERROR);
   g_return_val_if_fail (G_IS_PARAM_SPEC (pspec), G_TOKEN_ERROR);
+
   /* the scanner better be at the pspec name */
   g_return_val_if_fail (scanner->token == G_TOKEN_IDENTIFIER, G_TOKEN_ERROR);
   g_return_val_if_fail (strcmp (scanner->value.v_identifier, pspec->name) == 0, G_TOKEN_ERROR);
+
   g_value_init (value, G_PARAM_SPEC_VALUE_TYPE (pspec));
+
   return value_parse_param (value, scanner, pspec, TRUE);
 }
+
 gboolean
 sfi_serial_check_parse_null_token (GScanner *scanner)
 {
   g_return_val_if_fail (scanner != NULL, FALSE);
+
   if (scanner->token == '#' && g_scanner_peek_next_token (scanner) == 'f')
     {
       g_scanner_get_next_token (scanner);
@@ -944,6 +977,7 @@ sfi_serial_check_parse_null_token (GScanner *scanner)
   else
     return FALSE;
 }
+
 void
 sfi_value_store_stderr (const GValue *value)
 {

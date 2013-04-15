@@ -33,5 +33,8 @@ enum /*< skip >*/
   BSE_FREE_VERB_OCHANNEL_RIGHT,
   BSE_FREE_VERB_N_OCHANNELS
 };
+
+
 G_END_DECLS
+
 #endif /* __BSE_FREE_VERB_H__ */

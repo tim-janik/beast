@@ -1,9 +1,12 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #ifndef __BSE_PART_H__
 #define __BSE_PART_H__
+
 #include <bse/bseitem.hh>
 #include <sfi/gbsearcharray.hh>
+
 G_BEGIN_DECLS
+
 /* --- object type macros --- */
 #define BSE_TYPE_PART                   (BSE_TYPE_ID (BsePart))
 #define BSE_PART(object)                (G_TYPE_CHECK_INSTANCE_CAST ((object), BSE_TYPE_PART, BsePart))
@@ -11,6 +14,8 @@ G_BEGIN_DECLS
 #define BSE_IS_PART(object)             (G_TYPE_CHECK_INSTANCE_TYPE ((object), BSE_TYPE_PART))
 #define BSE_IS_PART_CLASS(class)        (G_TYPE_CHECK_CLASS_TYPE ((class), BSE_TYPE_PART))
 #define BSE_PART_GET_CLASS(object)      (G_TYPE_INSTANCE_GET_CLASS ((object), BSE_TYPE_PART, BsePartClass))
+
+
 /* --- typedefs & structures --- */
 struct BsePartControls {
   GBSearchArray *bsa;
@@ -159,12 +164,15 @@ struct BsePartQueryEvent {
 BsePartEventType   bse_part_query_event         (BsePart           *self,
                                                  guint              id,
                                                  BsePartQueryEvent *equery);
+
+
 /* --- implementation details --- */
 #define BSE_PART_MAX_CHANNELS           (0x1024)
 #define BSE_PART_MAX_TICK               (0x7fffffff)
 #define BSE_PART_INVAL_TICK_FLAG        (0x80000000)
 #define BSE_PART_NOTE_CONTROL(ctype)    ((ctype) == BSE_MIDI_SIGNAL_VELOCITY || \
                                          (ctype) == BSE_MIDI_SIGNAL_FINE_TUNE)
+
 /* --- BsePartControlChannel --- */
 struct BsePartEventControl;
 struct BsePartTickNode {
@@ -225,12 +233,14 @@ struct BsePartEventNote {
   gint                   fine_tune;
   gfloat                 velocity;      /* 0 .. 1 */
 };
+
 #define BSE_PART_NOTE_N_CROSSINGS(note)         ((note)->crossings ? (note)->crossings[0] : 0)
 #define BSE_PART_NOTE_CROSSING(note,j)          ((note)->crossings[1 + (j)])
 #define BSE_PART_SEMITONE_FACTOR(part,noteval)  (bse_part_transpose_factor ((part), CLAMP ((noteval), SFI_MIN_NOTE, SFI_MAX_NOTE) - SFI_KAMMER_NOTE))
 #define BSE_PART_NOTE_FREQ(part,note)           (BSE_KAMMER_FREQUENCY *                                 \
                                                  BSE_PART_SEMITONE_FACTOR ((part), (note)->note) *      \
                                                  bse_cent_tune_fast ((note)->fine_tune))
+
 void              bse_part_note_channel_init          (BsePartNoteChannel *self);
 BsePartEventNote* bse_part_note_channel_lookup        (BsePartNoteChannel *self,
                                                        guint               tick);

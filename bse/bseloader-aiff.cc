@@ -51,6 +51,8 @@ typedef struct
   uint    data_start;   /* file position */
   uint    data_size;    /* in bytes */
 } AiffFile;
+
+
 /* --- functions --- */
 static inline int
 aiff_read_u32 (int      fd,
@@ -63,6 +65,7 @@ aiff_read_u32 (int      fd,
   *data = GUINT32_FROM_BE (*data);
   return r;
 }
+
 static inline int
 aiff_read_s16 (int     fd,
                gint16 *data)
@@ -74,6 +77,7 @@ aiff_read_s16 (int     fd,
   *data = GINT16_FROM_BE (*data);
   return r;
 }
+
 static inline int
 aiff_read_u16 (int      fd,
                guint16 *data)
@@ -85,6 +89,7 @@ aiff_read_u16 (int      fd,
   *data = GUINT16_FROM_BE (*data);
   return r;
 }
+
 static inline int
 aiff_read_f80 (int     fd,
                double *data)
@@ -113,6 +118,7 @@ aiff_read_f80 (int     fd,
   *data = d;
   return r;
 }
+
 static inline int
 aiff_read_pstring (int    fd,
                    char **pstring)
@@ -138,6 +144,7 @@ aiff_read_pstring (int    fd,
   *pstring = string;
   return r;
 }
+
 static BseErrorType
 aiff_read_comm (int       fd,
                 AiffFile *afile,
@@ -163,6 +170,7 @@ aiff_read_comm (int       fd,
   afile->mix_freq = sample_rate;
   return BSE_ERROR_NONE;
 }
+
 static BseErrorType
 aiff_read_mark (int       fd,
                 AiffFile *afile,
@@ -192,6 +200,7 @@ aiff_read_mark (int       fd,
     }
   return BSE_ERROR_NONE;
 }
+
 static BseErrorType
 aiff_read_inst (int       fd,
                 AiffFile *afile,
@@ -220,6 +229,7 @@ aiff_read_inst (int       fd,
           afile->instrument.release_loop_mode, afile->instrument.release_begin_id, afile->instrument.release_end_id);
   return BSE_ERROR_NONE;
 }
+
 static BseErrorType
 aiff_read_ssnd (int       fd,
                 AiffFile *afile,
@@ -244,6 +254,7 @@ aiff_read_ssnd (int       fd,
   LDEBUG ("SSND: pos:>%u< n_bytes:%u", afile->data_start, afile->data_size);
   return BSE_ERROR_NONE;
 }
+
 static BseErrorType
 aiff_append_string (int       fd,
                     AiffFile *afile,
@@ -265,6 +276,7 @@ aiff_append_string (int       fd,
   g_free (string);
   return BSE_ERROR_NONE;
 }
+
 static BseErrorType
 aiff_file_load (int       fd,
                 AiffFile *afile)
@@ -278,6 +290,7 @@ aiff_file_load (int       fd,
     return gsl_error_from_errno (errno, BSE_ERROR_FILE_READ_FAILED);
   if (form_id != AIFF_ID ("FORM") || form_size < 4 || form_type != AIFF_ID ("AIFF"))
     return BSE_ERROR_FORMAT_UNKNOWN;
+
   afile->form_type = form_type;
   seek_pos = 12; /* we've read up 12 bytes so far */
   while (seek_pos < 8 + form_size)
@@ -311,6 +324,7 @@ aiff_file_load (int       fd,
     }
   return BSE_ERROR_NONE;
 }
+
 static void
 aiff_file_free (AiffFile *afile)
 {
@@ -324,11 +338,13 @@ aiff_file_free (AiffFile *afile)
   g_free (afile->annotation);
   g_free (afile);
 }
+
 typedef struct
 {
   BseWaveFileInfo wfi;
   AiffFile       *afile;
 } FileInfo;
+
 static BseWaveFileInfo*
 aiff_load_file_info (void         *data,
                      const char   *file_name,
@@ -379,18 +395,22 @@ aiff_load_file_info (void         *data,
   fi->wfi.waves[0].name = g_strdup (afile->name ? afile->name : str);
   g_free (str);
   fi->afile = afile;
+
   return &fi->wfi;
 }
+
 static void
 aiff_free_file_info (void            *data,
                      BseWaveFileInfo *file_info)
 {
   FileInfo *fi = (FileInfo*) file_info;
+
   aiff_file_free (fi->afile);
   g_free (fi->wfi.waves[0].name);
   g_free (fi->wfi.waves);
   sfi_delete_struct (FileInfo, fi);
 }
+
 typedef struct
 {
   BseWaveDsc wdsc;
@@ -398,6 +418,7 @@ typedef struct
   GslLong    n_values;
   GslWaveFormatType format;
 } WaveDsc;
+
 static BseWaveDsc*
 aiff_load_wave_dsc (void            *data,
                     BseWaveFileInfo *file_info,
@@ -407,7 +428,9 @@ aiff_load_wave_dsc (void            *data,
   FileInfo *fi = (FileInfo*) file_info;
   AiffFile *afile = fi->afile;
   WaveDsc *dsc;
+
   g_return_val_if_fail (nth_wave == 0, NULL);
+
   dsc = sfi_new_struct0 (WaveDsc, 1);
   dsc->wdsc.name = fi->wfi.waves[0].name;
   dsc->wdsc.n_channels = afile->n_channels;
@@ -452,19 +475,23 @@ aiff_load_wave_dsc (void            *data,
   dsc->n_values = afile->n_values;
   /* in aiff, data is left shifted up to byte boundary */
   dsc->format = afile->bit_depth > 8 ? GSL_WAVE_FORMAT_SIGNED_16 : GSL_WAVE_FORMAT_SIGNED_8;
+
   return &dsc->wdsc;
 }
+
 static void
 aiff_free_wave_dsc (void       *data,
                     BseWaveDsc *wave_dsc)
 {
   WaveDsc *dsc = (WaveDsc*) wave_dsc;
+
   uint i;
   for (i = 0; i < dsc->wdsc.n_chunks; i++)
     g_strfreev (dsc->wdsc.chunks[i].xinfos);
   g_free (dsc->wdsc.chunks);
   sfi_delete_struct (WaveDsc, dsc);
 }
+
 static GslDataHandle*
 aiff_create_chunk_handle (void         *data,
                           BseWaveDsc   *wave_dsc,
@@ -474,7 +501,9 @@ aiff_create_chunk_handle (void         *data,
   WaveDsc *dsc = (WaveDsc*) wave_dsc;
   FileInfo *fi = (FileInfo*) dsc->wdsc.file_info;
   GslDataHandle *dhandle;
+
   g_return_val_if_fail (nth_chunk == 0, NULL);
+
   dhandle = gsl_wave_handle_new (fi->wfi.file_name,
 				 dsc->wdsc.n_channels,
 				 dsc->format, G_BIG_ENDIAN,
@@ -484,6 +513,7 @@ aiff_create_chunk_handle (void         *data,
                                  dsc->wdsc.chunks[nth_chunk].xinfos);
   return dhandle;
 }
+
 void
 _gsl_init_loader_aiff (void)
 {
@@ -511,7 +541,9 @@ _gsl_init_loader_aiff (void)
     aiff_create_chunk_handle,
   };
   static gboolean initialized = FALSE;
+
   g_assert (initialized == FALSE);
   initialized = TRUE;
+
   bse_loader_register (&loader);
 }

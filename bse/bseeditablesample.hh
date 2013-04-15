@@ -1,11 +1,15 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #ifndef __BSE_EDITABLE_SAMPLE_H__
 #define __BSE_EDITABLE_SAMPLE_H__
+
 #include <bse/bsesuper.hh>
 #include <bse/gslwavechunk.hh>
+
 #ifdef __cplusplus
 extern "C" {
 #endif /* __cplusplus */
+
+
 /* --- object type macros --- */
 #define BSE_TYPE_EDITABLE_SAMPLE              (BSE_TYPE_ID (BseEditableSample))
 #define BSE_EDITABLE_SAMPLE(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), BSE_TYPE_EDITABLE_SAMPLE, BseEditableSample))

@@ -21,9 +21,11 @@ public:
   OptionVector getOptions()
   {
     OptionVector opts;
+
     opts.push_back (make_pair ("--one", true));
     opts.push_back (make_pair ("--two", true));
     opts.push_back (make_pair ("--done", false));
+
     return opts;
   }
   void setOption (const string& option, const string& value)
@@ -104,9 +106,11 @@ main (int   argc,
   fake_argv[4] = (char*) "--two=2";
   fake_argv[5] = (char*) "--done";
   options.parse (&fake_argc, &fake_argv, parser);
+
   TSTART ("Testing factory");
   TASSERT (options.codeGenerator != 0);
   TDONE();
+
   if (options.codeGenerator->run())
     {
       delete options.codeGenerator;
@@ -118,4 +122,5 @@ main (int   argc,
       return 1;
     }
 }
+
 /* vim:set ts=8 sts=2 sw=2: */

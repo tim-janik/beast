@@ -1,4 +1,5 @@
 /* GdkPixbuf RGBA C-Source image dump 1-byte-run-length-encoded */
+
 static const guint8 mixer_icon[] = 
 { ""
   /* Pixbuf magic (0x47646b50) */
@@ -179,3 +180,5 @@ static const guint8 mixer_icon[] =
   "\377\264\0\0\0\0\214\363\0\0\377\264\0\0\0\0\214\366\0\0\377\264\0\0"
   "\0\0\214\371\0\0\377\264\0\0\0\0\214\374\0\0\377\377\0\0\0\0\377\0\0"
   "\0\0\377\0\0\0\0\207\0\0\0\0"};
+
+

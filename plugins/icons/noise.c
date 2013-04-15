@@ -1,4 +1,5 @@
 /* GdkPixbuf RGBA C-Source image dump 1-byte-run-length-encoded */
+
 static const guint8 noise_icon[] = 
 { ""
   /* Pixbuf magic (0x47646b50) */
@@ -393,3 +394,5 @@ static const guint8 noise_icon[] =
   "Es\1\230\0\0\0\0\2025Dr\1\2027Fv\1\5""8Fw\2""8Gx\2""9Hy\2""9Hy\1""8F"
   "w\1\2026Es\1\266\0\0\0\0\2035Dr\1\2037Fv\1\3""6Es\1""5Dr\1""6Es\1\250"
   "\0\0\0\0"};
+
+

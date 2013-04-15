@@ -22,6 +22,7 @@ bse_midi_device_null_list_devices (BseDevice *device)
   ring = sfi_ring_append (ring, bse_device_entry_new (device, g_strdup_printf ("default"), NULL));
   return ring;
 }
+
 static BseErrorType
 bse_midi_device_null_open (BseDevice     *device,
                            gboolean       require_readable,
@@ -63,20 +64,25 @@ bse_midi_device_null_class_init (BseMidiDeviceNULLClass *klass)
   device_class->open = bse_midi_device_null_open;
   device_class->close = bse_midi_device_null_close;
 }
+
 BSE_BUILTIN_TYPE (BseMidiDeviceNULL)
 {
   GType type;
+
   static const GTypeInfo type_info = {
     sizeof (BseMidiDeviceNULLClass),
+
     (GBaseInitFunc) NULL,
     (GBaseFinalizeFunc) NULL,
     (GClassInitFunc) bse_midi_device_null_class_init,
     (GClassFinalizeFunc) NULL,
     NULL /* class_data */,
+
     sizeof (BseMidiDeviceNULL),
     0 /* n_preallocs */,
     (GInstanceInitFunc) bse_midi_device_null_init,
   };
+
   type = bse_type_register_static (BSE_TYPE_MIDI_DEVICE,
 				   "BseMidiDeviceNULL",
 				   "MIDI device implementation that does nothing",

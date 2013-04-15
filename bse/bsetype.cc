@@ -1,8 +1,11 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bsetype.hh"
+
 #include "bseplugin.hh"
 #include <string.h>
 #include <gobject/gvaluecollector.h>
+
+
 /* --- variables --- */
 static GQuark	quark_options = 0;
 static GQuark	quark_blurb = 0;
@@ -12,12 +15,15 @@ static GQuark	quark_authors = 0;
 static GQuark	quark_license = 0;
 static GQuark	quark_boxed_export_node = 0;
 GType bse_type_id_packed_pointer = 0;
+
+
 /* --- functions --- */
 const char*
 bse_type_get_options (GType   type)
 {
   return (const char*) g_type_get_qdata (type, quark_options);
 }
+
 void
 bse_type_add_options (GType        type,
                       const gchar *options)
@@ -25,21 +31,25 @@ bse_type_add_options (GType        type,
   g_return_if_fail (bse_type_get_options (type) == NULL);
   g_type_set_qdata (type, quark_options, g_strdup (options));
 }
+
 const gchar*
 bse_type_get_blurb (GType   type)
 {
   return (const char*) g_type_get_qdata (type, quark_blurb);
 }
+
 const gchar*
 bse_type_get_file (GType   type)
 {
   return (const char*) g_type_get_qdata (type, quark_loc_file);
 }
+
 guint
 bse_type_get_line (GType   type)
 {
   return (size_t) g_type_get_qdata (type, quark_loc_line);
 }
+
 void
 bse_type_add_blurb (GType        type,
 		    const gchar *blurb,
@@ -51,11 +61,13 @@ bse_type_add_blurb (GType        type,
   g_type_set_qdata (type, quark_loc_file, g_strdup (file));
   g_type_set_qdata (type, quark_loc_line, (void*) size_t (line));
 }
+
 const gchar*
 bse_type_get_authors (GType   type)
 {
   return (const char*) g_type_get_qdata (type, quark_authors);
 }
+
 void
 bse_type_add_authors (GType        type,
                       const gchar *authors)
@@ -63,11 +75,13 @@ bse_type_add_authors (GType        type,
   g_return_if_fail (bse_type_get_authors (type) == NULL);
   g_type_set_qdata (type, quark_authors, g_strdup (authors));
 }
+
 const gchar*
 bse_type_get_license (GType   type)
 {
   return (const char*) g_type_get_qdata (type, quark_license);
 }
+
 void
 bse_type_add_license (GType        type,
                       const gchar *license)
@@ -75,6 +89,7 @@ bse_type_add_license (GType        type,
   g_return_if_fail (bse_type_get_license (type) == NULL);
   g_type_set_qdata (type, quark_license, g_strdup (license));
 }
+
 GType
 bse_type_register_static (GType            parent_type,
 			  const gchar     *type_name,
@@ -84,6 +99,7 @@ bse_type_register_static (GType            parent_type,
                           const GTypeInfo *info)
 {
   GTypeInfo tmp_info;
+
   /* some builtin types have destructors eventhough they are registered
    * statically, compensate for that
    */
@@ -93,10 +109,13 @@ bse_type_register_static (GType            parent_type,
       tmp_info.class_finalize = NULL;
       info = &tmp_info;
     }
+
   const GType type = g_type_register_static (parent_type, type_name, info, GTypeFlags (0));
   bse_type_add_blurb (type, type_blurb, file, line);
+
   return type;
 }
+
 GType
 bse_type_register_abstract (GType            parent_type,
                             const gchar     *type_name,
@@ -106,6 +125,7 @@ bse_type_register_abstract (GType            parent_type,
                             const GTypeInfo *info)
 {
   GTypeInfo tmp_info;
+
   /* some builtin types have destructors eventhough they are registered
    * statically, compensate for that
    */
@@ -115,10 +135,12 @@ bse_type_register_abstract (GType            parent_type,
       tmp_info.class_finalize = NULL;
       info = &tmp_info;
     }
+
   const GType type = g_type_register_static (parent_type, type_name, info, G_TYPE_FLAG_ABSTRACT);
   bse_type_add_blurb (type, type_blurb, file, line);
   return type;
 }
+
 GType
 bse_type_register_dynamic (GType        parent_type,
 			   const gchar *type_name,
@@ -127,11 +149,13 @@ bse_type_register_dynamic (GType        parent_type,
   GType type = g_type_register_dynamic (parent_type, type_name, plugin, GTypeFlags (0));
   return type;
 }
+
 static void
 bse_boxed_value_init (GValue *value)
 {
   value->data[0].v_pointer = NULL;
 }
+
 static void
 bse_boxed_value_free (GValue *value)
 {
@@ -144,6 +168,7 @@ bse_boxed_value_free (GValue *value)
         g_critical ("%s: %s due to missing implementation: %s", G_STRFUNC, "leaking boxed structure", g_type_name (G_VALUE_TYPE (value)));
     }
 }
+
 static void
 bse_boxed_value_copy (const GValue *src_value,
                       GValue       *dest_value)
@@ -158,11 +183,13 @@ bse_boxed_value_copy (const GValue *src_value,
         g_critical ("%s: %s due to missing implementation: %s", G_STRFUNC, "not copying boxed structure", g_type_name (G_VALUE_TYPE (src_value)));
     }
 }
+
 static gpointer
 bse_boxed_value_peek_pointer (const GValue *value)
 {
   return value->data[0].v_pointer;
 }
+
 static gchar*
 bse_boxed_collect_value (GValue      *value,
                          guint        n_collect_values,
@@ -189,6 +216,7 @@ bse_boxed_collect_value (GValue      *value,
     }
   return NULL;
 }
+
 static gchar*
 bse_boxed_lcopy_value (const GValue *value,
                        guint         n_collect_values,
@@ -212,6 +240,7 @@ bse_boxed_lcopy_value (const GValue *value,
     }
   return NULL;
 }
+
 static void
 bse_boxed_to_record (const GValue *src_value,
                      GValue       *dest_value)
@@ -222,6 +251,7 @@ bse_boxed_to_record (const GValue *src_value,
   else
     g_critical ("%s: %s due to missing implementation: %s", G_STRFUNC, "not converting boxed structure", g_type_name (G_VALUE_TYPE (src_value)));
 }
+
 static void
 bse_boxed_from_record (const GValue *src_value,
                        GValue       *dest_value)
@@ -232,6 +262,7 @@ bse_boxed_from_record (const GValue *src_value,
   else
     g_critical ("%s: %s due to missing implementation: %s", G_STRFUNC, "not converting boxed structure", g_type_name (G_VALUE_TYPE (dest_value)));
 }
+
 GType
 bse_type_register_loadable_boxed (BseExportNodeBoxed *bnode,
                                   GTypePlugin        *plugin)
@@ -264,6 +295,7 @@ bse_type_register_loadable_boxed (BseExportNodeBoxed *bnode,
   g_return_val_if_fail (bnode->free != NULL, 0);
   g_return_val_if_fail (bnode->node.ntype == BSE_EXPORT_NODE_RECORD || bnode->node.ntype == BSE_EXPORT_NODE_SEQUENCE, 0);
   g_return_val_if_fail (g_type_from_name (bnode->node.name) == 0, 0);
+
   type = g_type_register_static (G_TYPE_BOXED, bnode->node.name, &info, GTypeFlags (0));
   if (bnode->boxed2recseq)
     g_value_register_transform_func (type,
@@ -277,6 +309,7 @@ bse_type_register_loadable_boxed (BseExportNodeBoxed *bnode,
                                      bse_boxed_from_record);
   return type;
 }
+
 void
 bse_type_reinit_boxed (BseExportNodeBoxed *bnode)
 {
@@ -293,6 +326,7 @@ bse_type_reinit_boxed (BseExportNodeBoxed *bnode)
     default:    g_assert_not_reached();
     }
 }
+
 void
 bse_type_uninit_boxed (BseExportNodeBoxed *bnode)
 {
@@ -310,6 +344,8 @@ bse_type_uninit_boxed (BseExportNodeBoxed *bnode)
     }
   g_type_set_qdata (bnode->node.type, quark_boxed_export_node, NULL);
 }
+
+
 /* --- customized pspec constructors --- */
 #define NULL_CHECKED(x)         ((x) && (x)[0] ? x : NULL)
 GParamSpec*
@@ -321,8 +357,10 @@ bse_param_spec_enum (const gchar    *name,
                      const gchar    *hints)
 {
   GParamSpec *pspec;
+
   g_return_val_if_fail (G_TYPE_IS_ENUM (enum_type), NULL);
   g_return_val_if_fail (enum_type != G_TYPE_ENUM, NULL);
+
   /* g_param_spec_enum() validates default_value, which we allways allow
    * to be 0, so we might need to adjust it to pass validation
    */
@@ -333,13 +371,19 @@ bse_param_spec_enum (const gchar    *name,
         default_value = enum_class->values[0].value;
       g_type_class_unref (enum_class);
     }
+
   pspec = g_param_spec_enum (name, NULL_CHECKED (nick), NULL_CHECKED (blurb), enum_type, default_value, GParamFlags (0));
   sfi_pspec_set_options (pspec, hints);
+
   return pspec;
 }
+
+
 /* --- SFIDL includes --- */
 /* include SFIDL generations */
 #include        "bsegentypes.cc"
+
+
 void
 bse_type_init (void)
 {
@@ -353,7 +397,9 @@ bse_type_init (void)
   const guint n_builtin_types = sizeof (builtin_types) / sizeof (builtin_types[0]);
   static GTypeFundamentalInfo finfo = { GTypeFundamentalFlags (0), };
   guint i;
+
   g_return_if_fail (quark_blurb == 0);
+
   /* type system initialization
    */
   quark_options = g_quark_from_static_string ("BseType-options");
@@ -364,10 +410,13 @@ bse_type_init (void)
   quark_license = g_quark_from_static_string ("BseType-license");
   quark_boxed_export_node = g_quark_from_static_string ("BseType-boxed-export-node");
   g_type_init ();
+
   /* initialize parameter types */
   bse_param_types_init ();
+
   /* initialize builtin enumerations */
   bse_type_register_enums ();
+
   /* BSE_TYPE_PROCEDURE
    */
   memset (&finfo, 0, sizeof (finfo));
@@ -377,11 +426,13 @@ bse_type_init (void)
   g_type_register_fundamental (BSE_TYPE_PROCEDURE, "BseProcedure", &info, &finfo, GTypeFlags (0));
   bse_type_add_blurb (BSE_TYPE_PROCEDURE, "BSE Procedure base type", __FILE__, __LINE__);
   g_assert (BSE_TYPE_PROCEDURE == g_type_from_name ("BseProcedure"));
+
   /* initialize extra types */
   {
     static const GTypeInfo dummy = { 0, };
     bse_type_id_packed_pointer = g_type_register_static (G_TYPE_STRING, "BseTypePackedPointer", &dummy, GTypeFlags (0));
   }
+
   /* initialize builtin class types */
   for (i = 0; i < n_builtin_types; i++)
     *(builtin_types[i].type_p) = builtin_types[i].register_type ();

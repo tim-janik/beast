@@ -1,4 +1,5 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
+
 /* Generate a string pluck sound using a modified Karplus-Strong algorithm
  * and then use Brensenham's algorithm to correct the frequency.
  *
@@ -10,7 +11,9 @@
 #include <bse/bseengine.hh>
 #include <bse/bsemathsignal.hh>
 #include <bse/bsemain.hh>
+
 #include <string.h>
+
 /* --- parameters --- */
 enum
 {
@@ -26,6 +29,8 @@ enum
   PARAM_METALLIC_FACTOR,
   PARAM_SNAP_FACTOR
 };
+
+
 /* --- prototypes --- */
 static void	   dav_xtal_strings_init	     (DavXtalStrings	   *self);
 static void	   dav_xtal_strings_class_init	     (DavXtalStringsClass  *klass);
@@ -43,6 +48,7 @@ static void	   dav_xtal_strings_context_create   (BseSource		   *source,
 						      BseTrans		   *trans);
 static void	   dav_xtal_strings_update_modules   (DavXtalStrings	   *self,
 						      gboolean		    trigger_now);
+
 // == Type Registration ==
 #include "./icons/strings.c"
 BSE_RESIDENT_SOURCE_DEF (DavXtalStrings, dav_xtal_strings, N_("Audio Sources/XtalStrings"),
@@ -50,8 +56,11 @@ BSE_RESIDENT_SOURCE_DEF (DavXtalStrings, dav_xtal_strings, N_("Audio Sources/Xta
                          "Karplus-Strong Algorithm. Commercial use of this module "
                          "until 2004 requires a license from Stanford University.",
                          strings_icon);
+
 /* --- variables --- */
 static gpointer	       parent_class = NULL;
+
+
 /* --- functions --- */
 static void
 dav_xtal_strings_class_init (DavXtalStringsClass *klass)
@@ -60,11 +69,15 @@ dav_xtal_strings_class_init (DavXtalStringsClass *klass)
   BseObjectClass *object_class = BSE_OBJECT_CLASS (klass);
   BseSourceClass *source_class = BSE_SOURCE_CLASS (klass);
   guint channel_id;
+
   parent_class = g_type_class_peek_parent (klass);
+
   gobject_class->set_property = dav_xtal_strings_set_property;
   gobject_class->get_property = dav_xtal_strings_get_property;
+
   source_class->prepare = dav_xtal_prepare;
   source_class->context_create = dav_xtal_strings_context_create;
+
   bse_object_class_add_param (object_class, _("Frequency"),
 			      PARAM_BASE_FREQ,
 			      bse_param_spec_freq ("base_freq", _("Frequency"),
@@ -114,6 +127,7 @@ dav_xtal_strings_class_init (DavXtalStringsClass *klass)
                                               _("Snappiness of the string"),
                                               34.0, 0.0, 100.0, 1,
                                               SFI_PARAM_STANDARD ":scale"));
+
   channel_id = bse_source_class_add_ichannel (source_class, "freq-in", _("Freq In"), _("Pluck frequency input"));
   g_assert (channel_id == DAV_XTAL_STRINGS_ICHANNEL_FREQ);
   channel_id = bse_source_class_add_ichannel (source_class, "trigger-in", _("Trigger In"), _("Pluck strings on raising edge"));
@@ -121,6 +135,7 @@ dav_xtal_strings_class_init (DavXtalStringsClass *klass)
   channel_id = bse_source_class_add_ochannel (source_class, "audio-out", _("Audio Out"), _("XtalStrings Output"));
   g_assert (channel_id == DAV_XTAL_STRINGS_OCHANNEL_MONO);
 }
+
 static void
 dav_xtal_strings_init (DavXtalStrings *self)
 {
@@ -136,10 +151,12 @@ dav_xtal_strings_init (DavXtalStrings *self)
   self->size = 1;
   self->pos = 0;
   self->count = 0;
+
   self->a = 0.0;
   self->damping_factor = 0.0;
 #endif
 }
+
 static void
 dav_xtal_strings_set_property (GObject      *object,
 			       guint         param_id,
@@ -195,6 +212,7 @@ dav_xtal_strings_set_property (GObject      *object,
       break;
     }
 }
+
 static void
 dav_xtal_strings_get_property (GObject    *object,
 			       guint       param_id,
@@ -239,6 +257,7 @@ dav_xtal_strings_get_property (GObject    *object,
       break;
     }
 }
+
 static void
 dav_xtal_prepare (BseSource *source)
 {
@@ -247,12 +266,14 @@ dav_xtal_prepare (BseSource *source)
   /* chain parent class' handler */
   BSE_SOURCE_CLASS (parent_class)->prepare (source);
 }
+
 static gfloat inline
 calc_factor (gfloat freq,
 	     gfloat t)
 {
   return pow (0.5, 1.0 / (freq * t));
 }
+
 /* mini random number generator (adapted from rapicorn), to generate deterministic
  * sequence of booleans when --bse-disable-randomization was used
  */
@@ -262,6 +283,7 @@ typedef struct
   guint32  seed;
   guint32  mask;
 } DavRand;
+
 static void 
 dav_rand_setup (DavRand *rand,
                 gboolean allow_randomization)
@@ -270,6 +292,7 @@ dav_rand_setup (DavRand *rand,
   rand->mask = 0;
   rand->allow_randomization = allow_randomization;
 }
+
 static gboolean
 dav_rand_bool (DavRand *rand)
 {
@@ -288,6 +311,7 @@ dav_rand_bool (DavRand *rand)
       return ((rand->seed & rand->mask) == 0);
     }
 }
+
 /* the GSL engine module that generates the signal, there may be many
  * modules per DavXtalStrings object
  */
@@ -301,6 +325,7 @@ typedef struct {
   gdouble	       last_transposed_trigger_freq;
   DavXtalStringsParams tparams;
 } XtalStringsModule;
+
 /* trigger a XtalStringsModule by altering its state.
  */
 static inline void
@@ -315,11 +340,14 @@ xmod_trigger (XtalStringsModule *xmod,
   trigger_freq *= bse_cent_tune_fast (xmod->tparams.fine_tune);
   trigger_freq = CLAMP (trigger_freq, 27.5, 4000.0);
   xmod->last_transposed_trigger_freq = trigger_freq;
+
   xmod->pos = 0;
   xmod->count = 0;
   xmod->size = (int) ((bse_engine_sample_freq() + trigger_freq - 1) / trigger_freq);
+
   xmod->a = calc_factor (trigger_freq, xmod->tparams.tension_decay);
   xmod->damping_factor = calc_factor (trigger_freq, xmod->tparams.note_decay);
+
   /* Create envelope. */
   int pivot = xmod->size / 5;
   int i;
@@ -327,9 +355,11 @@ xmod_trigger (XtalStringsModule *xmod,
     xmod->string[i] = ((float) i) / pivot;
   for (; i < xmod->size; i++)
     xmod->string[i] = ((float) (xmod->size - i - 1)) / (xmod->size - pivot - 1);
+
   /* Add some snap. */
   for (i = 0; i < xmod->size; i++)
     xmod->string[i] = pow (xmod->string[i], xmod->tparams.snap_factor * 10.0 + 1.0);
+
   /* Add static to displacements. */
   DavRand rand;
   dav_rand_setup (&rand, bse_main_args->allow_randomization);
@@ -340,6 +370,7 @@ xmod_trigger (XtalStringsModule *xmod,
   for (i = 0; i < xmod->size; i++)
     xmod->string[i] *= xmod->tparams.trigger_vel;
 }
+
 static void
 xmod_process (BseModule *module,
 	      guint      n_values)
@@ -351,8 +382,10 @@ xmod_process (BseModule *module,
   gfloat sample, last_trigger_level;
   guint real_freq_256, actual_freq_256;
   guint i;
+
   real_freq_256 = (int) (xmod->last_transposed_trigger_freq * 256);
   actual_freq_256 = (int) (bse_engine_sample_freq() * 256. / xmod->size);
+
   if (BSE_MODULE_ISTREAM (module, DAV_XTAL_STRINGS_ICHANNEL_FREQ).connected)
     freq_in = BSE_MODULE_IBUFFER (module, DAV_XTAL_STRINGS_ICHANNEL_FREQ);
   else
@@ -368,36 +401,45 @@ xmod_process (BseModule *module,
 	  actual_freq_256 = (int) (bse_engine_sample_freq() * 256. / xmod->size);
 	}
       last_trigger_level = trigger_in[i];
+
       /* Get next position. */
       pos2 = xmod->pos + 1;
       if (pos2 >= xmod->size)
 	pos2 = 0;
+
       /* Linearly interpolate sample. */
       sample = xmod->string[xmod->pos] * (1.0 - (((float) xmod->count) / actual_freq_256));
       sample += xmod->string[pos2] * (((float) xmod->count) / actual_freq_256);
+
       /* store sample, clipping is required as the algorithm generates
        * overshoot on purpose
        */
       wave_out[i] = CLAMP (sample, -1.0, +1.0);
+
       /* Use Bresenham's algorithm to advance to the next position. */
       xmod->count += real_freq_256;
       while (xmod->count >= actual_freq_256)
 	{
 	  xmod->d = ((xmod->d * (1.0 - xmod->a)) + (xmod->string[xmod->pos] * xmod->a)) * xmod->damping_factor;
 	  xmod->string[xmod->pos] = xmod->d;
+
 	  xmod->pos++;
 	  if (xmod->pos >= xmod->size)
 	    xmod->pos = 0;
+
 	  xmod->count -= actual_freq_256;
 	}
     }
   xmod->last_trigger_level = last_trigger_level;
 }
+
 #define	STRING_LENGTH()	((bse_engine_sample_freq() + 19) / 20)
+
 static void
 xmod_reset (BseModule *module)
 {
   XtalStringsModule *xmod = (XtalStringsModule*) module->user_data;
+
   /* this function is called whenever we need to start from scratch */
   memset (xmod->string, 0, STRING_LENGTH () * sizeof (xmod->string[0]));
   xmod->size = 1;
@@ -408,14 +450,17 @@ xmod_reset (BseModule *module)
   xmod->last_transposed_trigger_freq = 440.0;	/* just _some_ valid freq for the stepping */
   xmod->last_trigger_level = 0;
 }
+
 static void
 xmod_free (gpointer        data,
 	   const BseModuleClass *klass)
 {
   XtalStringsModule *xmod = (XtalStringsModule*) data;
+
   g_free (xmod->string);
   g_free (xmod);
 }
+
 static void
 dav_xtal_strings_context_create (BseSource *source,
 				 guint      context_handle,
@@ -434,17 +479,22 @@ dav_xtal_strings_context_create (BseSource *source,
   DavXtalStrings *self = DAV_XTAL_STRINGS (source);
   XtalStringsModule *xmod = g_new0 (XtalStringsModule, 1);
   BseModule *module;
+
   xmod->string = g_new0 (gfloat, STRING_LENGTH ());
   xmod->tparams = self->params;
   module = bse_module_new (&xmod_class, xmod);
   xmod_reset (module); /* value initialization */
+
   /* setup module i/o streams with BseSource i/o channels */
   bse_source_set_context_module (source, context_handle, module);
+
   /* commit module to engine */
   bse_trans_add (trans, bse_job_integrate (module));
+
   /* chain parent class' handler */
   BSE_SOURCE_CLASS (parent_class)->context_create (source, context_handle, trans);
 }
+
 /* update module configuration from a new set of DavXtalStringsParams
  */
 static void
@@ -453,10 +503,12 @@ xmod_access (BseModule *module,
 {
   XtalStringsModule *xmod = (XtalStringsModule*) module->user_data;
   DavXtalStringsParams *params = (DavXtalStringsParams*) data;
+
   xmod->tparams = *params;
   if (params->trigger_now)
     xmod_trigger (xmod, params->freq);
 }
+
 static void
 dav_xtal_strings_update_modules (DavXtalStrings *self,
 				 gboolean	 trigger_now)

@@ -23,6 +23,7 @@ void bse_main_wakeup    ();
 #define	BSE_THREADS_LEAVE()			// bse_main_global_unlock ()
 #define	BSE_DBG_EXT     			(bse_main_args->debug_extensions != FALSE)
 #define	BSE_CONFIG(field)			(bse_main_args->field)
+
 /* --- argc/argv overide settings --- */
 struct BseMainArgs {
   uint   	        n_processors;

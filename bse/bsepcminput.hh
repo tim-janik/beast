@@ -1,8 +1,11 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #ifndef __BSE_PCM_INPUT_H__
 #define __BSE_PCM_INPUT_H__
+
 #include <bse/bsesource.hh>
+
 G_BEGIN_DECLS
+
 /* --- object type macros --- */
 #define BSE_TYPE_PCM_INPUT		(BSE_TYPE_ID (BsePcmInput))
 #define BSE_PCM_INPUT(object)		(G_TYPE_CHECK_INSTANCE_CAST ((object), BSE_TYPE_PCM_INPUT, BsePcmInput))
@@ -27,5 +30,8 @@ enum
   BSE_PCM_INPUT_OCHANNEL_RIGHT,
   BSE_PCM_INPUT_N_OCHANNELS
 };
+
+
 G_END_DECLS
+
 #endif /* __BSE_PCM_INPUT_H__ */

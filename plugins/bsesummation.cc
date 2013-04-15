@@ -2,7 +2,9 @@
 #include "bsesummation.genidl.hh"
 using namespace std;
 using namespace Sfi;
+
 namespace Bse {
+
 class Summation : public SummationBase {
   class Summer : public SynthesisModule {
   public:
@@ -69,6 +71,8 @@ public:
   /* implement creation and config methods for synthesis Module */
   BSE_EFFECT_INTEGRATE_MODULE (Summation, Summer, SummationProperties);
 };
+
 BSE_CXX_DEFINE_EXPORTS();
 BSE_CXX_REGISTER_EFFECT (Summation);
+
 } // Bse

@@ -37,4 +37,5 @@ interface Balance : Effect {
     Real  obalance   = Balance (_("Output Balance"), _("Adjust output balance between left and right"), 0, STANDARD);
   };
 };
+
 };

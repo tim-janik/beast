@@ -2,6 +2,8 @@
 #include "bsttrackroll.hh"
 #include "bstsnifferscope.hh"
 #include <string.h>
+
+
 /* --- defines --- */
 /* accessors */
 #define	STYLE(self)		(GTK_WIDGET (self)->style)
@@ -27,6 +29,8 @@
 #define	PMARK_WIDTH(self)       (CMARK_WIDTH (self) + 3 * XTHICKNESS (self))
 /* appearance */
 #define TACT_HPIXELS		(50)	/* guideline */
+
+
 /* --- prototypes --- */
 static void	bst_track_roll_hsetup			(BstTrackRoll		*self,
 							 guint			 tpt,
@@ -36,23 +40,30 @@ static void	bst_track_roll_allocate_ecell		(BstTrackRoll		*self);
 static void     bst_track_roll_allocate_scope           (BstTrackRoll           *self,
                                                          GtkWidget              *child,
                                                          guint                   row);
+
+
 /* --- static variables --- */
 static guint	signal_select_row = 0;
 static guint	signal_drag = 0;
 static guint	signal_clicked = 0;
 static guint	signal_stop_edit = 0;
+
+
 /* --- functions --- */
 G_DEFINE_TYPE (BstTrackRoll, bst_track_roll, GXK_TYPE_SCROLL_CANVAS);
+
 enum {
   CINDEX_POS,
   CINDEX_LOOP,
   CINDEX_SELECT,
   CINDEX_COUNT
 };
+
 static void
 bst_track_roll_init (BstTrackRoll *self)
 {
   GxkScrollCanvas *scc = GXK_SCROLL_CANVAS (self);
+
   self->tpt = 384 * 4;
   self->max_ticks = 1;
   self->hzoom = 1;
@@ -65,11 +76,13 @@ bst_track_roll_init (BstTrackRoll *self)
   self->area_offset = 20;
   bst_track_roll_hsetup (self, 384 * 4, 800 * 384, 100);
 }
+
 static void
 bst_track_roll_destroy (GtkObject *object)
 {
   BstTrackRoll *self = BST_TRACK_ROLL (object);
   guint i;
+
   if (self->scope_update)
     {
       g_source_remove (self->scope_update);
@@ -80,24 +93,31 @@ bst_track_roll_destroy (GtkObject *object)
   g_free (self->scopes);
   self->scopes = NULL;
   self->n_scopes = 0;
+
   GTK_OBJECT_CLASS (bst_track_roll_parent_class)->destroy (object);
 }
+
 static void
 bst_track_roll_finalize (GObject *object)
 {
   BstTrackRoll *self = BST_TRACK_ROLL (object);
   guint i;
+
   bst_track_roll_setup (self, NULL, 0);
+
   if (self->scope_update)
     {
       g_source_remove (self->scope_update);
       self->scope_update = 0;
     }
+
   for (i = 0; i < self->n_scopes; i++)
     gtk_widget_unparent (self->scopes[i]);
   g_free (self->scopes);
+
   G_OBJECT_CLASS (bst_track_roll_parent_class)->finalize (object);
 }
+
 static void
 track_roll_forall (GtkContainer    *container,
                    gboolean         include_internals,
@@ -112,19 +132,24 @@ track_roll_forall (GtkContainer    *container,
   if (self->ecell && include_internals)
     callback ((GtkWidget*) self->ecell, callback_data);
 }
+
 static void
 track_roll_update_layout (BstTrackRoll *self,
 			  gboolean      queue_resize)
 {
   gint old_area_offset, dummy;
+
   old_area_offset = self->area_offset;
+
   if (self->tree)
     gxk_tree_view_get_bin_window_pos (self->tree, &dummy, &self->area_offset);
   else
     self->area_offset = 20;
+
   if (old_area_offset != self->area_offset && queue_resize)
     gtk_widget_queue_resize (GTK_WIDGET (self));
 }
+
 static void
 track_roll_get_layout (GxkScrollCanvas        *scc,
                        GxkScrollCanvasLayout  *layout)
@@ -138,6 +163,7 @@ track_roll_get_layout (GxkScrollCanvas        *scc,
   layout->canvas_width = 1 + 2 * XTHICKNESS (self) + 1;
   layout->canvas_height = 1;
 }
+
 static void
 track_roll_release_proxy (BstTrackRoll *self)
 {
@@ -147,6 +173,7 @@ track_roll_release_proxy (BstTrackRoll *self)
   bse_item_unuse (self->proxy);
   self->proxy = 0;
 }
+
 void
 bst_track_roll_setup (BstTrackRoll   *self,
                       GtkTreeView    *tree,
@@ -157,6 +184,7 @@ bst_track_roll_setup (BstTrackRoll   *self,
     g_return_if_fail (GTK_IS_TREE_VIEW (tree));
   if (song)
     g_return_if_fail (BSE_IS_SONG (song));
+
   if (self->tree)
     {
       g_object_disconnect_any (self->tree, (void*) gxk_scroll_canvas_reallocate, self);
@@ -170,6 +198,7 @@ bst_track_roll_setup (BstTrackRoll   *self,
                         "swapped_object_signal_after::size_allocate", gxk_scroll_canvas_reallocate, self,
                         NULL);
     }
+
   if (self->proxy)
     track_roll_release_proxy (self);
   self->proxy = song;
@@ -184,10 +213,12 @@ bst_track_roll_setup (BstTrackRoll   *self,
   bst_track_roll_queue_row_change (self, 0);
   gtk_widget_queue_resize (GTK_WIDGET (self));
 }
+
 void
 bst_track_roll_reselect (BstTrackRoll *self)
 {
   g_return_if_fail (BST_IS_TRACK_ROLL (self));
+
   if (self->tree)
     {
       bst_track_roll_set_prelight_row (self, gxk_tree_view_get_selected_row (self->tree));
@@ -197,25 +228,31 @@ bst_track_roll_reselect (BstTrackRoll *self)
   else
     bst_track_roll_set_prelight_row (self, 0xffffffff);
 }
+
 static gint
 ticks_to_pixels (BstTrackRoll *self,
 		 gint	       ticks)
 {
   gdouble tpt = self->tpt;
   gdouble tpixels = TACT_HPIXELS;
+
   /* compute pixel span of a tick range */
+
   tpixels *= self->hzoom / tpt * (gdouble) ticks;
   if (ticks)
     tpixels = MAX (tpixels, 1);
   return MIN (G_MAXINT, tpixels);
 }
+
 static gint
 pixels_to_ticks_unscrolled (BstTrackRoll *self,
                             gint	       pixels)
 {
   gdouble tpt = self->tpt;
   gdouble ticks = 1.0 / (gdouble) TACT_HPIXELS;
+
   /* compute tick span of a pixel range */
+
   ticks = ticks * tpt / self->hzoom * (gdouble) pixels;
   if (pixels > 0)
     ticks = MAX (ticks, 1);
@@ -223,30 +260,36 @@ pixels_to_ticks_unscrolled (BstTrackRoll *self,
     ticks = 0;
   return MIN (G_MAXINT, ticks);
 }
+
 static gint
 tick_to_coord (BstTrackRoll *self,
 	       gint	     tick)
 {
   return ticks_to_pixels (self, tick) - X_OFFSET (self);
 }
+
 static gint
 coord_to_tick (BstTrackRoll *self,
 	       gint	     x,
 	       gboolean	     right_bound)
 {
   guint tick;
+
   x += X_OFFSET (self);
   tick = pixels_to_ticks_unscrolled (self, x);
   if (right_bound)
     {
       guint tick2 = pixels_to_ticks_unscrolled (self, x + 1);
+
       if (tick2 > tick)
 	tick = tick2 - 1;
     }
   return tick;
 }
+
 #define	CROSSING_TACT4		(1)
 #define	CROSSING_TACT		(2)
+
 static guint
 coord_check_crossing (BstTrackRoll *self,
 		      gint	    x,
@@ -255,8 +298,10 @@ coord_check_crossing (BstTrackRoll *self,
   guint ltick = coord_to_tick (self, x, FALSE);
   guint rtick = coord_to_tick (self, x, TRUE);
   guint lq = 0, rq = 0;
+
   /* catch _at_ tick boundary as well */
   rtick += 1;
+
   switch (crossing)
     {
     case CROSSING_TACT4:
@@ -268,8 +313,10 @@ coord_check_crossing (BstTrackRoll *self,
       rq = rtick / self->tpt;
       break;
     }
+
   return lq != rq;
 }
+
 static gint
 coord_to_row (BstTrackRoll *self,
 	      gint          y,
@@ -284,6 +331,7 @@ coord_to_row (BstTrackRoll *self,
     row = y / 15; /* uneducated guess */
   return row;
 }
+
 static gboolean
 row_to_coords (BstTrackRoll *self,
 	       gint          row,
@@ -301,6 +349,7 @@ row_to_coords (BstTrackRoll *self,
       return TRUE;
     }
 }
+
 static SfiProxy
 row_to_track (BstTrackRoll *self,
 	      gint          row)
@@ -310,6 +359,7 @@ row_to_track (BstTrackRoll *self,
   else
     return 0;
 }
+
 static void
 track_roll_allocate_2markers (BstTrackRoll    *self,
                               GxkScrollMarker *marker)
@@ -327,6 +377,7 @@ track_roll_allocate_2markers (BstTrackRoll    *self,
                                   x - PMARK_WIDTH (self) / 2, 0,
                                   PMARK_WIDTH (self), ph);
 }
+
 static void
 track_roll_move_2markers (BstTrackRoll    *self,
                           GxkScrollMarker *marker)
@@ -336,6 +387,7 @@ track_roll_move_2markers (BstTrackRoll    *self,
   gxk_scroll_canvas_move_marker (scc, &marker[0], x - CMARK_WIDTH (self) / 2, 0);
   gxk_scroll_canvas_move_marker (scc, &marker[1], x - PMARK_WIDTH (self) / 2, 0);
 }
+
 static void
 track_roll_reallocate_contents (GxkScrollCanvas *scc,
                                 gint             xdiff,
@@ -364,11 +416,13 @@ track_roll_reallocate_contents (GxkScrollCanvas *scc,
           gtk_widget_size_allocate (widget, &allocation);
         }
     }
+
   for (i = 0; i < scc->n_markers; i += 2)
     if (xdiff || ydiff)
       track_roll_move_2markers (self, scc->markers + i);
     else
       track_roll_allocate_2markers (self, scc->markers + i);
+
   if (!xdiff && !ydiff)         /* real size-allocate */
     {
       guint i;
@@ -379,6 +433,7 @@ track_roll_reallocate_contents (GxkScrollCanvas *scc,
       bst_track_roll_reselect (self);
     }
 }
+
 static void
 scope_set_track (GtkWidget *scope,
                  SfiProxy   track)
@@ -388,24 +443,30 @@ scope_set_track (GtkWidget *scope,
     bst_sniffer_scope_set_sniffer (BST_SNIFFER_SCOPE (scope),
                                    bse_track_get_output_source (track));
 }
+
 static SfiProxy
 scope_get_track (GtkWidget *scope)
 {
   return g_object_get_long (scope, "BstTrackRoll-Track");
 }
+
 static gboolean
 track_roll_idle_update_scopes (gpointer data)
 {
   BstTrackRoll *self = BST_TRACK_ROLL (data);
   GSList *scope_list = NULL;
   guint i;
+
   GDK_THREADS_ENTER ();
   self->scope_update = 0;
+
   /* save existing scopes */
   for (i = 0; i < self->n_scopes; i++)
     scope_list = g_slist_prepend (scope_list, self->scopes[i]);
+
   /* reset scope list */
   self->n_scopes = 0;
+
   /* match or create needed scopes */
   if (self->get_track && GTK_WIDGET_REALIZED (self))
     for (i = 0; ; i++)
@@ -437,30 +498,36 @@ track_roll_idle_update_scopes (gpointer data)
         self->scopes = g_renew (GtkWidget*, self->scopes, self->n_scopes);
         self->scopes[i] = scope;
       }
+
   /* get rid of unneeded scopes */
   while (scope_list)
     {
       GtkWidget *child = (GtkWidget*) g_slist_pop_head (&scope_list);
       gtk_widget_unparent (child);
     }
+
   /* allocate scopes 'n stuff */
   gxk_scroll_canvas_reallocate (GXK_SCROLL_CANVAS (self));
   /* work around spurious redraw problems */
   gtk_widget_queue_draw (GTK_WIDGET (self));
+
   GDK_THREADS_LEAVE ();
   return FALSE;
 }
+
 static void
 queue_scope_update (BstTrackRoll *self)
 {
   if (!self->scope_update)
     self->scope_update = g_idle_add_full (GTK_PRIORITY_RESIZE - 1, track_roll_idle_update_scopes, self, NULL);
 }
+
 void
 bst_track_roll_check_update_scopes (BstTrackRoll *self)
 {
   guint i;
   g_return_if_fail (BST_IS_TRACK_ROLL (self));
+
   /* check whether scope update is necessary and schedule one */
   if (!GTK_WIDGET_REALIZED (self) || !self->get_track)
     {
@@ -483,25 +550,32 @@ bst_track_roll_check_update_scopes (BstTrackRoll *self)
       return;
     }
 }
+
 static void
 bst_track_roll_realize (GtkWidget *widget)
 {
   BstTrackRoll *self = BST_TRACK_ROLL (widget);
   guint i;
+
   GTK_WIDGET_CLASS (bst_track_roll_parent_class)->realize (widget);
+
   /* update children */
   for (i = 0; i < self->n_scopes; i++)
     gtk_widget_set_parent_window (self->scopes[i], VPANEL (self));
   if (self->ecell)
     gtk_widget_set_parent_window (GTK_WIDGET (self->ecell), CANVAS (self));
 }
+
 static void
 bst_track_roll_unrealize (GtkWidget *widget)
 {
   BstTrackRoll *self = BST_TRACK_ROLL (widget);
+
   bst_track_roll_abort_edit (self);
+
   GTK_WIDGET_CLASS (bst_track_roll_parent_class)->unrealize (widget);
 }
+
 static void
 bst_track_roll_draw_canvas (GxkScrollCanvas *scc,
                             GdkWindow       *drawable,
@@ -520,6 +594,7 @@ bst_track_roll_draw_canvas (GxkScrollCanvas *scc,
   // gint line_width = 0; /* line widths != 0 interfere with dash-settings on some X servers */
   GXK_SCROLL_CANVAS_CLASS (bst_track_roll_parent_class)->draw_canvas (scc, drawable, area);
   gdk_window_get_size (CANVAS (self), &width, &height);
+
   validrow = row_to_coords (self, row, &ry, &rheight);
   while (validrow && ry < area->y + area->height)
     {
@@ -574,11 +649,13 @@ bst_track_roll_draw_canvas (GxkScrollCanvas *scc,
       validrow = row_to_coords (self, ++row, &ry, &rheight);
     }
 }
+
 static void
 bst_track_roll_overlap_grow_hpanel_area (BstTrackRoll *self,
 					 GdkRectangle *area)
 {
   gint i, x = area->x, xbound = x + area->width;
+
   /* grow hpanel exposes by surrounding tacts */
   i = coord_to_tick (self, x, FALSE);
   i /= self->tpt;
@@ -591,9 +668,11 @@ bst_track_roll_overlap_grow_hpanel_area (BstTrackRoll *self,
   i += 2;               /* fudge 1 tact to the right (+1 for round-off) */
   i *= self->tpt;
   xbound = tick_to_coord (self, i);
+
   area->x = x;
   area->width = xbound - area->x;
 }
+
 static void
 bst_track_roll_draw_hpanel (GxkScrollCanvas *scc,
                             GdkWindow       *drawable,
@@ -606,6 +685,7 @@ bst_track_roll_draw_hpanel (GxkScrollCanvas *scc,
   gint i, width, height;
   gdk_window_get_size (drawable, &width, &height);
   bst_track_roll_overlap_grow_hpanel_area (self, area);
+
   /* tact numbers */
   for (i = area->x; i < area->x + area->width; i++)
     {
@@ -615,11 +695,14 @@ bst_track_roll_draw_hpanel (GxkScrollCanvas *scc,
       if (coord_check_crossing (self, i, CROSSING_TACT4))
 	{
 	  int next_pixel, tact4 = coord_to_tick (self, i, TRUE) + 1;
+
 	  tact4 /= (self->tpt * 4);
 	  next_pixel = tick_to_coord (self, (tact4 + 1) * (self->tpt * 4));
+
 	  g_snprintf (buffer, 64, "%u", tact4 * 4 + 1);
           pango_layout_set_text (PLAYOUT_HPANEL (self), buffer, -1);
           pango_layout_get_pixel_extents (PLAYOUT_HPANEL (self), NULL, &rect);
+
 	  /* draw this tact if there's enough space */
 	  if (i + rect.width / 2 < (i + next_pixel) / 2)
             gdk_draw_layout (drawable, draw_gc,
@@ -629,11 +712,14 @@ bst_track_roll_draw_hpanel (GxkScrollCanvas *scc,
       else if (self->draw_tact_grid && coord_check_crossing (self, i, CROSSING_TACT))
 	{
           int next_pixel, tact = coord_to_tick (self, i, TRUE) + 1;
+
 	  tact /= self->tpt;
 	  next_pixel = tick_to_coord (self, (tact + 1) * self->tpt);
+
 	  g_snprintf (buffer, 64, "%u", tact + 1);
           pango_layout_set_text (PLAYOUT_HPANEL (self), buffer, -1);
           pango_layout_get_pixel_extents (PLAYOUT_HPANEL (self), NULL, &rect);
+
 	  /* draw this tact if there's enough space */
 	  if (i + rect.width < (i + next_pixel) / 2)		/* don't half width, leave some more space */
             gdk_draw_layout (drawable, draw_gc,
@@ -642,6 +728,7 @@ bst_track_roll_draw_hpanel (GxkScrollCanvas *scc,
 	}
     }
 }
+
 static void
 bst_track_roll_allocate_scope (BstTrackRoll *self,
                                GtkWidget    *child,
@@ -667,6 +754,7 @@ bst_track_roll_allocate_scope (BstTrackRoll *self,
     }
   gtk_widget_size_allocate (child, &allocation);
 }
+
 static void
 bst_track_roll_draw_vpanel (GxkScrollCanvas *scc,
                             GdkWindow       *drawable,
@@ -678,6 +766,7 @@ bst_track_roll_draw_vpanel (GxkScrollCanvas *scc,
   gint ry, rheight, validrow, width, height;
   gdk_window_get_size (VPANEL (self), &width, &height);
   validrow = row_to_coords (self, row, &ry, &rheight);
+
   while (validrow && ry < area->y + area->height)
     {
       gdk_draw_rectangle (drawable,
@@ -697,6 +786,7 @@ bst_track_roll_draw_vpanel (GxkScrollCanvas *scc,
       validrow = row_to_coords (self, ++row, &ry, &rheight);
     }
 }
+
 static void
 bst_track_roll_draw_marker (GxkScrollCanvas *scc,
                             GdkWindow       *drawable,
@@ -726,6 +816,7 @@ bst_track_roll_draw_marker (GxkScrollCanvas *scc,
                     width == PMARK_WIDTH (self) ? GTK_SHADOW_IN : GTK_SHADOW_OUT, NULL, NULL, NULL,
                     x, y, width, height);
 }
+
 static void
 track_roll_adjustment_changed (GxkScrollCanvas *scc,
                                GtkAdjustment   *adj)
@@ -747,12 +838,14 @@ track_roll_adjustment_changed (GxkScrollCanvas *scc,
         }
     }
 }
+
 static void
 track_roll_update_adjustments (GxkScrollCanvas *scc,
                                gboolean         hadj,
                                gboolean         vadj)
 {
   BstTrackRoll *self = BST_TRACK_ROLL (scc);
+
   if (hadj)
     {
       double umin = ticks_to_pixels (self, self->max_ticks);                    /* lower bound for adj->upper based on max_ticks */
@@ -767,6 +860,7 @@ track_roll_update_adjustments (GxkScrollCanvas *scc,
     }
   GXK_SCROLL_CANVAS_CLASS (bst_track_roll_parent_class)->update_adjustments (scc, hadj, vadj);
 }
+
 static void
 bst_track_roll_hsetup (BstTrackRoll *self,
 		       guint	     tpt,
@@ -776,6 +870,7 @@ bst_track_roll_hsetup (BstTrackRoll *self,
   guint old_tpt = self->tpt;
   guint old_max_ticks = self->max_ticks;
   gdouble old_hzoom = self->hzoom;
+
   /* here, we setup all things necessary to determine our
    * horizontal layout. we have to avoid resizes at
    * least if just max_ticks changes, since the tick range
@@ -794,12 +889,14 @@ bst_track_roll_hsetup (BstTrackRoll *self,
       gxk_scroll_canvas_update_adjustments (GXK_SCROLL_CANVAS (self), TRUE, FALSE);
     }
 }
+
 gdouble
 bst_track_roll_set_hzoom (BstTrackRoll *self,
 			  gdouble       hzoom)
 {
   GxkScrollCanvas *scc = GXK_SCROLL_CANVAS (self);
   guint i;
+
   hzoom = CLAMP (hzoom, 0.1, 100);
   bst_track_roll_hsetup (self, self->tpt, self->max_ticks, hzoom / 50);
   /* readjust markers */
@@ -807,6 +904,7 @@ bst_track_roll_set_hzoom (BstTrackRoll *self,
     track_roll_allocate_2markers (self, scc->markers + i);
   return self->hzoom * 50;
 }
+
 static void
 track_roll_handle_drag (GxkScrollCanvas     *scc,
                         GxkScrollCanvasDrag *scc_drag,
@@ -856,6 +954,7 @@ track_roll_handle_drag (GxkScrollCanvas     *scc,
       g_signal_emit (self, signal_clicked, 0, drag->button, drag->start_row, drag->start_tick, event);
     }
 }
+
 static gboolean
 bst_track_roll_button_press (GtkWidget	    *widget,
 			     GdkEventButton *event)
@@ -865,24 +964,29 @@ bst_track_roll_button_press (GtkWidget	    *widget,
     bst_track_roll_stop_edit (self);
   return GTK_WIDGET_CLASS (bst_track_roll_parent_class)->button_press_event (widget, event);
 }
+
 void
 bst_track_roll_set_track_callback (BstTrackRoll   *self,
 				   gpointer        data,
 				   BstTrackRollTrackFunc get_track)
 {
   g_return_if_fail (BST_IS_TRACK_ROLL (self));
+
   self->proxy_data = data;
   self->get_track = get_track;
   gtk_widget_queue_draw (GTK_WIDGET (self));
   bst_track_roll_queue_row_change (self, 0);
 }
+
 void
 bst_track_roll_queue_row_change (BstTrackRoll *self,
                                  guint         row)
 {
   GxkScrollCanvas *scc;
   GdkRectangle rect;
+
   g_return_if_fail (BST_IS_TRACK_ROLL (self));
+
   scc = GXK_SCROLL_CANVAS (self);
   gxk_scroll_canvas_get_canvas_size (scc, &rect.width, &rect.height);
   rect.x = 0;
@@ -905,11 +1009,13 @@ bst_track_roll_queue_row_change (BstTrackRoll *self,
     }
   bst_track_roll_hsetup (self, self->tpt, last_tick + 1, self->hzoom);
 }
+
 void
 bst_track_roll_set_prelight_row (BstTrackRoll *self,
 				 guint         row)
 {
   g_return_if_fail (BST_IS_TRACK_ROLL (self));
+
   if (self->prelight_row != row)
     {
       gint clear_row = self->prelight_row;
@@ -918,6 +1024,7 @@ bst_track_roll_set_prelight_row (BstTrackRoll *self,
       bst_track_roll_queue_row_change (self, self->prelight_row);
     }
 }
+
 static void
 bst_track_roll_allocate_ecell (BstTrackRoll *self)
 {
@@ -944,6 +1051,7 @@ bst_track_roll_allocate_ecell (BstTrackRoll *self)
       gtk_widget_size_allocate (GTK_WIDGET (self->ecell), &allocation);
     }
 }
+
 void
 bst_track_roll_start_edit (BstTrackRoll    *self,
 			   guint            row,
@@ -952,12 +1060,14 @@ bst_track_roll_start_edit (BstTrackRoll    *self,
 			   GtkCellEditable *ecell)
 {
   gint ry, rheight, validrow;
+
   g_return_if_fail (BST_IS_TRACK_ROLL (self));
   g_return_if_fail (GTK_WIDGET_REALIZED (self));
   g_return_if_fail (GTK_IS_CELL_EDITABLE (ecell));
   g_return_if_fail (GTK_WIDGET_CAN_FOCUS (ecell));
   g_return_if_fail (GTK_WIDGET (ecell)->parent == NULL);
   g_return_if_fail (self->ecell == NULL);
+
   validrow = row_to_coords (self, row, &ry, &rheight);
   if (!validrow)
     {
@@ -977,6 +1087,7 @@ bst_track_roll_start_edit (BstTrackRoll    *self,
   gtk_cell_editable_start_editing (self->ecell, NULL);
   gtk_widget_grab_focus (GTK_WIDGET (self->ecell));
 }
+
 static void
 track_roll_stop_edit (BstTrackRoll *self,
 		      gboolean      canceled)
@@ -995,18 +1106,23 @@ track_roll_stop_edit (BstTrackRoll *self,
       self->ecell = NULL;
     }
 }
+
 void
 bst_track_roll_abort_edit (BstTrackRoll *self)
 {
   g_return_if_fail (BST_IS_TRACK_ROLL (self));
+
   track_roll_stop_edit (self, TRUE);
 }
+
 void
 bst_track_roll_stop_edit (BstTrackRoll *self)
 {
   g_return_if_fail (BST_IS_TRACK_ROLL (self));
+
   track_roll_stop_edit (self, FALSE);
 }
+
 void
 bst_track_roll_set_marker (BstTrackRoll          *self,
                            guint                  mark_index,
@@ -1017,6 +1133,7 @@ bst_track_roll_set_marker (BstTrackRoll          *self,
   GxkScrollMarker *marker;
   guint count;
   g_return_if_fail (mark_index > 0);
+
   marker = gxk_scroll_canvas_lookup_marker (scc, mark_index, &count);
   if (!marker && !mtype)
     return;
@@ -1035,7 +1152,9 @@ bst_track_roll_set_marker (BstTrackRoll          *self,
         }
       return;
     }
+
   g_return_if_fail (count == 2);
+
   marker[0].coords.x = position;
   marker[1].coords.x = position;
   if (marker[0].mtype != mtype || !marker[0].pixmap)
@@ -1047,6 +1166,7 @@ bst_track_roll_set_marker (BstTrackRoll          *self,
   else
     track_roll_move_2markers (self, marker);
 }
+
 static void
 bst_track_roll_class_init (BstTrackRollClass *klass)
 {
@@ -1060,12 +1180,17 @@ bst_track_roll_class_init (BstTrackRollClass *klass)
   GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (klass);
   GtkContainerClass *container_class = GTK_CONTAINER_CLASS (klass);
   GxkScrollCanvasClass *scroll_canvas_class = GXK_SCROLL_CANVAS_CLASS (klass);
+
   gobject_class->finalize = bst_track_roll_finalize;
+
   object_class->destroy = bst_track_roll_destroy;
+
   widget_class->realize = bst_track_roll_realize;
   widget_class->unrealize = bst_track_roll_unrealize;
   widget_class->button_press_event = bst_track_roll_button_press;
+
   container_class->forall = track_roll_forall;
+
   scroll_canvas_class->hscrollable = TRUE;
   scroll_canvas_class->vscrollable = TRUE;
   scroll_canvas_class->n_colors = CINDEX_COUNT;
@@ -1081,8 +1206,10 @@ bst_track_roll_class_init (BstTrackRollClass *klass)
   scroll_canvas_class->handle_drag = track_roll_handle_drag;
   scroll_canvas_class->image_tint = gdk_color_from_rgb (0x00ffffff);
   scroll_canvas_class->image_saturation = 0;
+
   klass->drag = NULL;
   klass->clicked = NULL;
+
   signal_select_row = g_signal_new ("select-row", G_OBJECT_CLASS_TYPE (klass),
 				    G_SIGNAL_RUN_LAST, G_STRUCT_OFFSET (BstTrackRollClass, select_row),
 				    NULL, NULL,

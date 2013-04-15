@@ -72,6 +72,7 @@ void		bse_server_add_io_watch			(BseServer	*server,
 void		bse_server_remove_io_watch		(BseServer	*server,
 							 BseIOWatch	 watch_func,
 							 gpointer	 data);
+
 /* --- internal --- */
 void		bse_server_registration			(BseServer          *server,
 							 BseRegistrationType rtype,

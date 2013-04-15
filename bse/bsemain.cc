@@ -213,6 +213,7 @@ bse_init_core (void)
           g_free (name);
         }
     }
+
   /* dump device list */
   if (bse_main_args->dump_driver_list)
     {
@@ -222,7 +223,9 @@ bse_init_core (void)
       bse_device_dump_list (BSE_TYPE_MIDI_DEVICE, "  ", TRUE, NULL, NULL);
     }
 }
+
 static gboolean single_thread_registration_done = FALSE;
+
 static void
 server_registration (SfiProxy            server,
                      BseRegistrationType rtype,
@@ -239,17 +242,21 @@ server_registration (SfiProxy            server,
         sfi_diag ("failed to register \"%s\": %s", what, error);
     }
 }
+
 static void
 bse_init_intern (int *argc, char **argv, const char *app_name, const Bse::StringVector &args, bool as_test)
 {
   bse_init_textdomain_only();
+
   if (bse_initialization_stage != 0)
     g_error ("%s() may only be called once", "bse_init_intern");
   bse_initialization_stage++;
   if (bse_initialization_stage != 1)
     g_error ("%s() may only be called once", "bse_init_intern");
+
   /* paranoid assertions */
   g_assert (G_BYTE_ORDER == G_LITTLE_ENDIAN || G_BYTE_ORDER == G_BIG_ENDIAN);
+
   /* initialize submodules */
   if (as_test)
     sfi_init_test (argc, argv);
@@ -263,7 +270,9 @@ bse_init_intern (int *argc, char **argv, const char *app_name, const Bse::String
 	g_set_prgname (*argv);
       bse_async_parse_args (argc, argv, bse_main_args, args);
     }
+
   bse_init_core ();
+
   /* initialize core plugins & scripts */
   if (bse_main_args->load_core_plugins || bse_main_args->load_core_scripts)
       g_object_connect (bse_server_get(), "signal::registration", server_registration, NULL, NULL);
@@ -511,8 +520,10 @@ bse_async_parse_args (int *argc_p, char **argv_p, BseMainArgs *margs, const Bse:
 	  argv[i] = NULL;
 	}
     }
+
   if (!margs->bse_rcfile)
     margs->bse_rcfile = g_strconcat (g_get_home_dir (), "/.bserc", NULL);
+
   guint e = 1;
   for (i = 1; i < argc; i++)
     if (argv[i])
@@ -550,12 +561,14 @@ bse_async_parse_args (int *argc_p, char **argv_p, BseMainArgs *margs, const Bse:
       else if (parse_float_option (arg, "kammer-freq", &d))
         margs->kammer_freq = d;
     }
+
   /* constrain (user) config */
   margs->wave_chunk_padding = MAX (1, margs->wave_chunk_padding);
   margs->wave_chunk_big_pad = MAX (2 * margs->wave_chunk_padding, margs->wave_chunk_big_pad);
   margs->dcache_block_size = MAX (2 * margs->wave_chunk_big_pad + sizeof (((GslDataCacheNode*) NULL)->data[0]), margs->dcache_block_size);
   margs->dcache_block_size = sfi_alloc_upper_power2 (margs->dcache_block_size - 1);
   /* margs->dcache_cache_memory = sfi_alloc_upper_power2 (margs->dcache_cache_memory); */
+
   /* non-configurable config updates */
   margs->n_processors = get_n_processors ();
 }

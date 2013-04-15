@@ -46,6 +46,7 @@ complex_find_nearest (const BseComplex *zp,
     }
   return j;
 }
+
 static double
 compare_zeros (uint              n_zeros,
                const BseComplex *czeros,
@@ -65,11 +66,13 @@ compare_zeros (uint              n_zeros,
     }
   return max_eps;
 }
+
 static double
 to_db (double response)
 {
   return response <= 0.0 ? -999.99 : max (BSE_DECIBEL20_FACTOR * log (response), -999.99);
 }
+
 static double
 filter_zp_response (const BseIIRFilterDesign *fdes,
                     double                    freq)
@@ -96,6 +99,7 @@ filter_zp_response (const BseIIRFilterDesign *fdes,
   (void) freq_phase;
   return freq_magnitude;
 }
+
 bool
 bse_iir_filter_dump_gnuplot (const BseIIRFilterDesign *fdes,
                              const char               *fname,
@@ -116,17 +120,20 @@ bse_iir_filter_dump_gnuplot (const BseIIRFilterDesign *fdes,
       fclose (df);
       return false;
     }
+
   const double nyquist = 0.5 * fdes->sampling_frequency;
   const double delta = nyquist / scan_points;
   for (double f = 0; f < nyquist; f += delta)
     fprintf (df, "%.17g %.17g %.17g\n", f,
              to_db (filter_zp_response (fdes, f)),
              to_db (filter_zp_response (fdes, f)));
+
   //gchar *nstr = bse_poly_str (fdes->order, (double*) fdes->zn, "z");
   //gchar *dstr = bse_poly_str (fdes->order, (double*) fdes->zd, "z");
   //fprintf (gf, "H(z)=%s/%s\n", nstr, dstr);
   //g_free (nstr);
   //g_free (dstr);
+
   fprintf (gf, "dB(x)=20*log(abs(x))/log(10)\n");
   fprintf (gf, "Z(x)=exp({0,-1}*x) # gnuplot variable x for H(z)\n");
   fprintf (gf, "set samples 10000  # increase accuracy\n");
@@ -147,6 +154,7 @@ bse_iir_filter_dump_gnuplot (const BseIIRFilterDesign *fdes,
   fclose (df);
   return true;
 }
+
 static void
 noexit_dump_iir_filter_gnuplot (const BseIIRFilterRequest *fireq,
                                 const BseIIRFilterDesign  *fdes,
@@ -180,6 +188,7 @@ noexit_dump_iir_filter_gnuplot (const BseIIRFilterRequest *fireq,
   g_printerr ("Design: %s\n", bse_iir_filter_design_string (fdes));
   g_printerr ("GnuplotDump: wrote %s.gp and %s.dat use: gnuplot %s.gp\n", fname, fname, fname);
 }
+
 static void
 exit_with_iir_filter_gnuplot (const BseIIRFilterRequest *fireq,
                               const BseIIRFilterDesign  *fdes,
@@ -194,6 +203,7 @@ exit_with_iir_filter_gnuplot (const BseIIRFilterRequest *fireq,
   noexit_dump_iir_filter_gnuplot (fireq, fdes, fname, passband_ripple_db, passband_edge, passband_edge2, stopband_db, stopband_edge, stopband_edge2);
   exit (0);
 }
+
 static double
 max_band_damping_zp (const BseIIRFilterDesign *fdes,
                      double                    start_freq,
@@ -213,6 +223,7 @@ max_band_damping_zp (const BseIIRFilterDesign *fdes,
       g_printerr ("PassBandZPDB: %f: %f\n", f, to_db (filter_zp_response (fdes, f)));
   return to_db (eps);
 }
+
 static double
 min_band_damping_zp (const BseIIRFilterDesign *fdes,
                      double                    start_freq,
@@ -232,6 +243,7 @@ min_band_damping_zp (const BseIIRFilterDesign *fdes,
       g_printerr ("PassBandZPDB: %f: %f\n", f, to_db (filter_zp_response (fdes, f)));
   return to_db (eps);
 }
+
 static double
 max_band_damping (const BseIIRFilterDesign *fdes,
                   double                    start_freq,
@@ -240,6 +252,7 @@ max_band_damping (const BseIIRFilterDesign *fdes,
   // double res1 = max_band_damping_ztrans (fdes, start_freq, end_freq);
   return max_band_damping_zp (fdes, MIN (start_freq, end_freq), MAX (start_freq, end_freq));
 }
+
 static double
 min_band_damping (const BseIIRFilterDesign *fdes,
                   double                    start_freq,
@@ -333,6 +346,7 @@ butterwoth_tests ()
   TOK();
   TDONE();
 }
+
 static void
 chebychev1_tests ()
 {
@@ -495,6 +509,7 @@ test_problem_candidates ()
   /* and test them */
   generic_filter_tests ("Problem Filters", index, filters);
 }
+
 static void
 random_filter_tests ()
 {
@@ -528,6 +543,7 @@ random_filter_tests ()
     rqcopy->type = filter_type;                                                 \
     filter_index++;                                                             \
   } while (0)
+
   /* generate filter requirements */
   filter_index = 0;
   frequest.kind = BSE_IIR_FILTER_BUTTERWORTH;
@@ -551,6 +567,7 @@ random_filter_tests ()
       }
   /* design and test filters */
   generic_filter_tests ("Random Butterworth", filter_index, filters, skip_count);
+
   /* generate filter requirements */
   filter_index = 0;
   frequest.kind = BSE_IIR_FILTER_CHEBYSHEV1;
@@ -578,6 +595,7 @@ random_filter_tests ()
       }
   /* design and test filters */
   generic_filter_tests ("Random Chebyshev1", filter_index, filters, skip_count);
+
   /* generate filter requirements */
   filter_index = 0;
   frequest.kind = BSE_IIR_FILTER_ELLIPTIC;
@@ -610,6 +628,7 @@ random_filter_tests ()
       }
   /* design and test filters */
   generic_filter_tests ("Random Elliptic (dB)", filter_index, filters, skip_count);
+
   /* generate filter requirements */
   filter_index = 0;
   frequest.kind = BSE_IIR_FILTER_ELLIPTIC;
@@ -756,6 +775,7 @@ generic_filter_tests (const char        *test_name,
   Test::set_assertion_hook (NULL);
   TDONE();
 }
+
 int
 main (int    argc,
       char **argv)

@@ -1,11 +1,17 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #ifndef __GSL_DATA_HANDLE_H__
 #define __GSL_DATA_HANDLE_H__
+
 #include <bse/bseutils.hh>
+
 G_BEGIN_DECLS
+
+
 /* --- macros --- */
 #define	GSL_DATA_HANDLE_OPENED(handle)	    (((GslDataHandle*) (handle))->open_count > 0)
 #define	GSL_DATA_HANDLE_READ_LINEAR(handle) (((GslDataHandle*) (handle))->vtable->coarse_seek != NULL)
+
+
 /* --- typedefs & structures --- */
 typedef struct {
   guint		n_channels;
@@ -42,6 +48,9 @@ struct _GslDataHandleFuncs
   int64          (*get_state_length)	(GslDataHandle	        *data_handle);
   void           (*destroy)		(GslDataHandle		*data_handle);
 };
+
+
+
 /* --- standard functions --- */
 GslDataHandle*	  gsl_data_handle_ref		    (GslDataHandle	  *dhandle);
 void		  gsl_data_handle_unref		    (GslDataHandle	  *dhandle);
@@ -90,11 +99,13 @@ GslDataHandle*	  gsl_data_handle_new_dcached	    (GslDataCache	  *dcache);
 GslDataHandle*	  gsl_data_handle_new_looped	    (GslDataHandle	  *src_handle,
 						     int64		   loop_first,
 						     int64		   loop_last);
+
 /* --- factor 2 resampling datahandles --- */
 GslDataHandle*	  bse_data_handle_new_upsample2	    (GslDataHandle  *src_handle,	// implemented in bsedatahandle-resample.cc
 						     int             precision_bits);
 GslDataHandle*	  bse_data_handle_new_downsample2   (GslDataHandle  *src_handle,
 						     int             precision_bits);	// implemented in bsedatahandle-resample.cc
+
 GslDataHandle*	  bse_data_handle_new_fir_highpass  (GslDataHandle *src_handle,		// implemented in bsedatahandle-fir.cc
 						     gdouble        cutoff_freq,
 						     guint          order);
@@ -103,12 +114,17 @@ GslDataHandle*	  bse_data_handle_new_fir_lowpass   (GslDataHandle *src_handle,		
 						     guint          order);
 gdouble           bse_data_handle_fir_response_db   (GslDataHandle *fir_handle,         // implemented in bsedatahandle-fir.cc
                                                      gdouble        freq);
+
+
+
 /* --- xinfo handling --- */
 GslDataHandle* gsl_data_handle_new_add_xinfos	    (GslDataHandle *src_handle,
 						     gchar        **xinfos);
 GslDataHandle* gsl_data_handle_new_remove_xinfos    (GslDataHandle *src_handle,
 						     gchar        **xinfos);
 GslDataHandle* gsl_data_handle_new_clear_xinfos	    (GslDataHandle *src_handle);
+
+
 /* --- wave specific functions --- */
 typedef enum    /*< skip >*/
 {
@@ -128,6 +144,7 @@ typedef enum    /*< skip >*/
   GSL_WAVE_FORMAT_LAST
 } GslWaveFormatType;
 #define GSL_WAVE_FORMAT_IS_LAW(f)       ((f) == GSL_WAVE_FORMAT_ALAW || (f) == GSL_WAVE_FORMAT_ULAW)
+
 const gchar*      gsl_wave_format_to_string     (GslWaveFormatType format);
 GslWaveFormatType gsl_wave_format_from_string   (const gchar      *string);
 GslDataHandle*	  gsl_wave_handle_new		(const gchar	  *file_name,
@@ -150,11 +167,18 @@ GslDataHandle*	  gsl_wave_handle_new_zoffset	(const gchar	  *file_name,
                                                  gchar           **xinfos);
 guint		  gsl_wave_format_bit_depth	(GslWaveFormatType format);
 guint		  gsl_wave_format_byte_width	(GslWaveFormatType format);
+
+
 /* --- data handle optimization jobs --- */
 gboolean	gsl_data_handle_needs_cache	(GslDataHandle	*data_handle);
+
+
 /* --- auxillary functions --- */
 gboolean	gsl_data_handle_common_init	(GslDataHandle	  *dhandle,
 						 const gchar	  *file_name);
 void		gsl_data_handle_common_free	(GslDataHandle	  *dhandle);
+
+
 G_END_DECLS
+
 #endif /* __GSL_DATA_HANDLE_H__ */

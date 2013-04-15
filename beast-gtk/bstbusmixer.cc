@@ -1,12 +1,16 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bstbusmixer.hh"
 #include "bstbuseditor.hh"
+
+
 /* --- prototypes --- */
 static void     bus_mixer_action_exec           (gpointer                data,
                                                  gulong                  action);
 static gboolean bus_mixer_action_check          (gpointer                data,
                                                  gulong                  action,
                                                  guint64                 action_stamp);
+
+
 /* --- bus actions --- */
 enum {
   ACTION_ADD_BUS,
@@ -16,11 +20,14 @@ static const GxkStockAction bus_mixer_actions[] = {
   { N_("Add"),          NULL,   N_("Add a new bus to the mixer"),        ACTION_ADD_BUS,        BST_STOCK_BUS_ADD },
   { N_("Delete"),       NULL,   N_("Delete the currently selected bus"), ACTION_DELETE_BUS,     BST_STOCK_TRASHCAN },
 };
+
+
 /* --- functions --- */
 G_DEFINE_TYPE (BstBusMixer, bst_bus_mixer, BST_TYPE_ITEM_VIEW);
 #define HPAD     (3)
 #define HSPACING (1)
 #define YPAD     (2 * HPAD)
+
 static gboolean
 canvas_box_expose_event (GtkWidget      *widget,
                          GdkEventExpose *event,
@@ -42,6 +49,7 @@ canvas_box_expose_event (GtkWidget      *widget,
     }
   return FALSE;
 }
+
 static void
 bus_mixer_add (BstBusMixer *self,
                GtkWidget   *widget)
@@ -51,6 +59,7 @@ bus_mixer_add (BstBusMixer *self,
   gtk_box_pack_start (self->hbox, widget, FALSE, TRUE, 0);
   gxk_widget_update_actions (self);
 }
+
 static void
 bst_bus_mixer_init (BstBusMixer *self)
 {
@@ -69,15 +78,20 @@ bst_bus_mixer_init (BstBusMixer *self)
   GxkRadget *bdesc = gxk_radget_create ("beast", "bus-description", NULL);
   bus_mixer_add (self, (GtkWidget*) bdesc);
 }
+
 GtkWidget*
 bst_bus_mixer_new (SfiProxy song)
 {
   GtkWidget *bus_mixer;
+
   g_return_val_if_fail (BSE_IS_SONG (song), NULL);
+
   bus_mixer = gtk_widget_new (BST_TYPE_BUS_MIXER, NULL);
   bst_item_view_set_container (BST_ITEM_VIEW (bus_mixer), song);
+
   return bus_mixer;
 }
+
 static void
 bus_mixer_item_added (SfiProxy     container,
                       SfiProxy     item,
@@ -92,6 +106,7 @@ bus_mixer_item_added (SfiProxy     container,
       bus_mixer_add (self, be);
     }
 }
+
 static void
 bus_mixer_item_removed (SfiProxy     unused1,
                         SfiProxy     item,
@@ -118,6 +133,7 @@ bus_mixer_item_removed (SfiProxy     unused1,
       gxk_widget_update_actions (self);
     }
 }
+
 static void
 bus_mixer_set_container (BstItemView *iview,
                          SfiProxy     container)
@@ -148,6 +164,7 @@ bus_mixer_set_container (BstItemView *iview,
         bus_mixer_item_added (iview->container, iseq->items[i], self);
     }
 }
+
 static void
 bus_mixer_action_exec (gpointer data,
                        gulong   action)
@@ -177,6 +194,7 @@ bus_mixer_action_exec (gpointer data,
     }
   gxk_widget_update_actions_downwards (self);
 }
+
 static gboolean
 bus_mixer_action_check (gpointer data,
                         gulong   action,
@@ -201,10 +219,12 @@ bus_mixer_action_check (gpointer data,
       return FALSE;
     }
 }
+
 static void
 bst_bus_mixer_class_init (BstBusMixerClass *klass)
 {
   BstItemViewClass *iview_class = BST_ITEM_VIEW_CLASS (klass);
+
   iview_class->item_type = "BseBus";
   iview_class->set_container = bus_mixer_set_container;
 }

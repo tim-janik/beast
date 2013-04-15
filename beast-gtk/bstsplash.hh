@@ -1,8 +1,11 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #ifndef __BST_SPLASH_H__
 #define __BST_SPLASH_H__
+
 #include        "bstutils.hh"
+
 G_BEGIN_DECLS
+
 /* --- type macros --- */
 #define BST_TYPE_SPLASH              (bst_splash_get_type ())
 #define BST_SPLASH(object)           (GTK_CHECK_CAST ((object), BST_TYPE_SPLASH, BstSplash))
@@ -10,15 +13,22 @@ G_BEGIN_DECLS
 #define BST_IS_SPLASH(object)        (GTK_CHECK_TYPE ((object), BST_TYPE_SPLASH))
 #define BST_IS_SPLASH_CLASS(klass)   (GTK_CHECK_CLASS_TYPE ((klass), BST_TYPE_SPLASH))
 #define BST_SPLASH_GET_CLASS(splash) (G_TYPE_INSTANCE_GET_CLASS ((splash), BST_TYPE_SPLASH, BstSplashClass))
+
+
 /* --- typedefs & enums --- */
 typedef struct  _BstSplash       BstSplash;
 typedef struct  _BstSplashClass  BstSplashClass;
+
+
 /* --- structures --- */
 struct _BstSplash
 {
   GtkWindow       window;
+
   GtkWidget	 *vbox;
+
   GtkWidget	 *splash_box;
+
   GtkWidget	 *entity;
   GtkWidget	 *item;
   GtkProgressBar *pbar;
@@ -35,6 +45,8 @@ struct _BstSplashClass
 {
   GtkWindowClass parent_class;
 };
+
+
 /* --- prototypes --- */
 GtkType		bst_splash_get_type		(void);
 GtkWidget*	bst_splash_new			(const gchar	*role,
@@ -59,5 +71,8 @@ void		bst_splash_update_item		(GtkWidget	*widget,
 						 ...) G_GNUC_PRINTF (2, 3);
 void            bst_splash_animate_strings      (GtkWidget      *splash,
                                                  const gchar   **strings);
+
+
 G_END_DECLS
+
 #endif  /* __BST_SPLASH_H__ */

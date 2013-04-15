@@ -1,9 +1,12 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bsestandardsynths.hh"
+
 #include "bsesnet.hh"
 #include "bsestandardosc.hh"
 #include <zlib.h>
 #include <string.h>
+
+
 /* --- typedef & structures --- */
 typedef struct {
   const gchar  *name;
@@ -11,10 +14,16 @@ typedef struct {
   const guint8 *cdata;
   guint         clength;
 } BseZFile;
+
+
 /* --- generated ZFiles --- */
 #include "bse/zintern/bse-zfile.cc"	/* bse_zfiles */
+
+
 /* --- variables --- */
 static GSList	*zfile_names = NULL;
+
+
 /* --- functions --- */
 static gchar*
 bse_zfile_uncompress (const BseZFile *zfile,
@@ -25,6 +34,7 @@ bse_zfile_uncompress (const BseZFile *zfile,
   guint8 *text = (guint8*) g_malloc (len);
   gint result;
   const gchar *err;
+
   if (zfile->clength)	/* indicates compresssion */
     result = uncompress (text, &dlen, zfile->cdata, zfile->clength);
   else
@@ -56,23 +66,28 @@ bse_zfile_uncompress (const BseZFile *zfile,
     }
   if (err)
     g_error ("while decompressing \"%s\": %s", zfile->name, err);
+
   text[dlen] = 0;
   if (text_len)
     *text_len = dlen;
   return (char*) text;
 }
+
 gchar*
 bse_standard_synth_inflate (const gchar *synth_name,
 			    guint       *text_len)
 {
   guint i;
+
   g_return_val_if_fail (synth_name != NULL, NULL);
+
   for (i = 0; i < G_N_ELEMENTS (bse_zfiles); i++)
     if (strcmp (synth_name, bse_zfiles[i].name) == 0)
       return bse_zfile_uncompress (bse_zfiles + i, text_len);
   g_warning ("unknown standard synth: %s", synth_name);
   return NULL;
 }
+
 GSList*
 bse_standard_synth_get_list (void)
 {

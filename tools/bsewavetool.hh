@@ -6,8 +6,10 @@
 #include <unistd.h>
 #include <typeinfo>
 #include <string>
+
 namespace BseWaveTool {
 using namespace std;
+
 /* --- command + registry --- */
 class Command {
 public:
@@ -21,4 +23,5 @@ public:
   virtual      ~Command    ()                   {}
   static list<Command*> registry;
 };
+
 } // BseWaveTool

@@ -49,6 +49,7 @@ block_shuffle (guint n_elements,
       elements[i] = tmp;
     }
 }
+
 static void
 build_ascending_random_block (guint  n_values,
                               float *fblock)
@@ -227,6 +228,7 @@ bench_fill (void)
   const guint dups = TEST_CALIBRATION (50.0, Bse::Block::fill (BLOCK_SIZE, fblock, 2.f));
   g_timer_stop (timer);
   double c = g_timer_elapsed (timer, NULL);
+
   double m = 9e300;
   for (guint i = 0; i < RUNS; i++)
     {
@@ -243,6 +245,7 @@ bench_fill (void)
     g_print ("FillBench:            %.6f msecs (test-duration: %.6f calibration: %.6f)\n",
              1000.0 * m / dups * BENCH_SCALE, m * RUNS, c);
 }
+
 static inline void
 bench_copy (void)
 {
@@ -254,6 +257,7 @@ bench_copy (void)
   const guint dups = TEST_CALIBRATION (50.0, Bse::Block::copy (BLOCK_SIZE, dest_fblock, src_fblock));
   g_timer_stop (timer);
   double c = g_timer_elapsed (timer, NULL);
+
   double m = 9e300;
   for (guint i = 0; i < RUNS; i++)
     {
@@ -271,6 +275,7 @@ bench_copy (void)
     g_print ("CopyBench:            %.6f msecs (test-duration: %.6f calibration: %.6f)\n",
              1000.0 * m / dups * BENCH_SCALE, m * RUNS, c);
 }
+
 static inline void
 bench_add (void)
 {
@@ -282,6 +287,7 @@ bench_add (void)
   const guint dups = TEST_CALIBRATION (50.0, Bse::Block::add (BLOCK_SIZE, fblock1, fblock2));
   g_timer_stop (timer);
   double c = g_timer_elapsed (timer, NULL);
+
   double m = 9e300;
   for (guint i = 0; i < RUNS; i++)
     {
@@ -298,6 +304,7 @@ bench_add (void)
     g_print ("AddBench:             %.6f msecs (test-duration: %.6f calibration: %.6f)\n",
              1000.0 * m / dups * BENCH_SCALE, m * RUNS, c);
 }
+
 static inline void
 bench_sub (void)
 {
@@ -309,6 +316,7 @@ bench_sub (void)
   const guint dups = TEST_CALIBRATION (50.0, Bse::Block::sub (BLOCK_SIZE, fblock1, fblock2));
   g_timer_stop (timer);
   double c = g_timer_elapsed (timer, NULL);
+
   double m = 9e300;
   for (guint i = 0; i < RUNS; i++)
     {
@@ -325,6 +333,7 @@ bench_sub (void)
     g_print ("SubBench:             %.6f msecs (test-duration: %.6f calibration: %.6f)\n",
              1000.0 * m / dups * BENCH_SCALE, m * RUNS, c);
 }
+
 static inline void
 bench_mul (void)
 {
@@ -336,6 +345,7 @@ bench_mul (void)
   const guint dups = TEST_CALIBRATION (50.0, Bse::Block::mul (BLOCK_SIZE, fblock1, fblock2));
   g_timer_stop (timer);
   double c = g_timer_elapsed (timer, NULL);
+
   double m = 9e300;
   for (guint i = 0; i < RUNS; i++)
     {
@@ -353,6 +363,7 @@ bench_mul (void)
     g_print ("MulBench:             %.6f msecs (test-duration: %.6f calibration: %.6f)\n",
              1000.0 * m / dups * BENCH_SCALE, m * RUNS, c);
 }
+
 static inline void
 bench_scale (void)
 {
@@ -364,6 +375,7 @@ bench_scale (void)
   const guint dups = TEST_CALIBRATION (50.0, Bse::Block::scale (BLOCK_SIZE, fblock1, fblock2, 2.f));
   g_timer_stop (timer);
   double c = g_timer_elapsed (timer, NULL);
+
   double m = 9e300;
   for (guint i = 0; i < RUNS; i++)
     {
@@ -380,21 +392,26 @@ bench_scale (void)
     g_print ("ScaleBench:           %.6f msecs (test-duration: %.6f calibration: %.6f)\n",
              1000.0 * m / dups * BENCH_SCALE, m * RUNS, c);
 }
+
 static inline void
 bench_range (void)
 {
   float fblock[BLOCK_SIZE];
   build_ascending_random_block (BLOCK_SIZE, fblock);
+
   float correct_min_value = fblock[0];
   float correct_max_value = fblock[BLOCK_SIZE - 1];
   float min_value, max_value;
+
   /* shuffle block into quasi random order */
   block_shuffle (BLOCK_SIZE, fblock);
+
   GTimer *timer = g_timer_new();
   g_timer_start (timer);
   const guint dups = TEST_CALIBRATION (50.0, Bse::Block::range (BLOCK_SIZE, fblock, min_value, max_value));
   g_timer_stop (timer);
   double c = g_timer_elapsed (timer, NULL);
+
   double m = 9e300;
   for (guint i = 0; i < RUNS; i++)
     {
@@ -413,6 +430,7 @@ bench_range (void)
     g_print ("RangeBench:           %.6f msecs (test-duration: %.6f calibration: %.6f)\n",
              1000.0 * m / dups * BENCH_SCALE, m * RUNS, c);
 }
+
 static inline void
 bench_square_sum (void)
 {
@@ -423,6 +441,7 @@ bench_square_sum (void)
   const guint dups = TEST_CALIBRATION (50.0, Bse::Block::square_sum (BLOCK_SIZE, fblock));
   g_timer_stop (timer);
   double c = g_timer_elapsed (timer, NULL);
+
   double m = 9e300;
   for (guint i = 0; i < RUNS; i++)
     {
@@ -439,21 +458,26 @@ bench_square_sum (void)
     g_print ("SquareSumBench:       %.6f msecs (test-duration: %.6f calibration: %.6f)\n",
              1000.0 * m / dups * BENCH_SCALE, m * RUNS, c);
 }
+
 static inline void
 bench_range_and_square_sum (void)
 {
   float fblock[BLOCK_SIZE];
   build_ascending_random_block (BLOCK_SIZE, fblock);
+
   float correct_min_value = fblock[0];
   float correct_max_value = fblock[BLOCK_SIZE - 1];
   float min_value, max_value;
+
   /* shuffle block into quasi random order */
   block_shuffle (BLOCK_SIZE, fblock);
+
   GTimer *timer = g_timer_new();
   g_timer_start (timer);
   const guint dups = TEST_CALIBRATION (50.0, Bse::Block::range_and_square_sum (BLOCK_SIZE, fblock, min_value, max_value));
   g_timer_stop (timer);
   double c = g_timer_elapsed (timer, NULL);
+
   double m = 9e300;
   for (guint i = 0; i < RUNS; i++)
     {
@@ -472,6 +496,7 @@ bench_range_and_square_sum (void)
     g_print ("Range+SquareSumBench: %.6f msecs (test-duration: %.6f calibration: %.6f)\n",
              1000.0 * m / dups * BENCH_SCALE, m * RUNS, c);
 }
+
 static void
 run_tests()
 {
@@ -497,6 +522,7 @@ run_tests()
       bench_range_and_square_sum();
     }
 }
+
 int
 main (int   argc,
       char *argv[])

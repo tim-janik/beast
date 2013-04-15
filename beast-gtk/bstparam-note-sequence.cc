@@ -1,5 +1,6 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bstsequence.hh"
+
 /* --- string parameters --- */
 static void
 param_note_sequence_changed (GtkWidget *swidget,
@@ -11,6 +12,7 @@ param_note_sequence_changed (GtkWidget *swidget,
       gxk_param_apply_value (param);
     }
 }
+
 static GtkWidget*
 param_note_sequence_create (GxkParam    *param,
                             const gchar *tooltip,
@@ -25,6 +27,7 @@ param_note_sequence_create (GxkParam    *param,
   gxk_widget_add_option (widget, "vexpand", "+");
   return widget;
 }
+
 static void
 param_note_sequence_update (GxkParam  *param,
 			    GtkWidget *widget)
@@ -37,6 +40,7 @@ param_note_sequence_update (GxkParam  *param,
       bse_note_sequence_free (nseq);
     }
 }
+
 static GxkParamEditor param_note_sequence = {
   { "note-sequence",    N_("Note Sequence Grid Editor"), },
   { G_TYPE_BOXED,       "SfiRec", },

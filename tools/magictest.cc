@@ -7,6 +7,7 @@
 #include <bse/gsldatahandle.hh>
 #include <stdio.h>
 #include <string.h>
+
 static gint
 help (gchar *arg)
 {
@@ -14,8 +15,10 @@ help (gchar *arg)
   fprintf (stderr, "       -p         include plugins\n");
   fprintf (stderr, "       -t         test loading file info\n");
   fprintf (stderr, "       -h         guess what ;)\n");
+
   return arg != NULL;
 }
+
 int
 main (gint   argc,
       gchar *argv[])
@@ -64,6 +67,7 @@ main (gint   argc,
 	  GslMagic *magic = gsl_magic_list_match_file (magic_list, argv[i]);
 	  guint l = strlen (argv[i]);
 	  gchar *pad;
+
 	  g_print ("%s:", argv[i]);
 	  pad = g_strnfill (MAX (40, l) - l, ' ');
 	  g_print ("%s", pad);
@@ -93,5 +97,6 @@ main (gint   argc,
 	  g_print ("\n");
 	}
     }
+
   return 0;
 }

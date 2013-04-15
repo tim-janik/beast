@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "bsefilter.hh"
+
 typedef struct {
   int    n_poles;
   int    n_zeros;
@@ -40,9 +41,11 @@ typedef struct {
   double  zn[BSE_IIR_CARRAY_SIZE];              /* numerator coefficients [order+1] */
   double  zd[BSE_IIR_CARRAY_SIZE];              /* denominator coefficients [order+1] */
 } EllfDesignState;
+
 #define MACHEP                  (BSE_DOUBLE_EPSILON)                    /* the machine roundoff error */
 #define PIO2                    (BSE_PI_DIV_2)                          /* pi/2 */
 #define MAXNUM                  (BSE_DOUBLE_MAX_NORMAL)                 /* 2**1024*(1-MACHEP) */
+
 #if 0
 #define error_printf(...)       fprintf (stderr, __VA_ARGS__)
 #define ellf_debugf(...)        fprintf (stderr, __VA_ARGS__)
@@ -54,8 +57,10 @@ typedef struct {
 #define ellf_outputf(...)       while (0) { printf (__VA_ARGS__); }
 #define ellf_inputf(...)        while (0) { printf (__VA_ARGS__); }
 #endif
+
 static const char* ellf_filter_design (const BseIIRFilterRequest *ifr,
                                        EllfDesignState           *ds);
+
 bool
 _bse_filter_design_ellf (const BseIIRFilterRequest      *ifr,
                          BseIIRFilterDesign             *fid)
@@ -97,6 +102,7 @@ _bse_filter_design_ellf (const BseIIRFilterRequest      *ifr,
     fid->center_frequency = 0.5 * fid->sampling_frequency / PI * (PIO2 - asin (ds.cgam));
   return true;
 }
+
 /* This code calculates design coefficients for
  * digital filters of the Butterworth, Chebyshev, or
  * elliptic varieties.
@@ -155,11 +161,13 @@ _bse_filter_design_ellf (const BseIIRFilterRequest      *ifr,
  * Functions, National Bureau of Standards AMS 55, 1964,
  * Chapters 16 and 17
  */
+
 /* --- prototypes --- */
 static double ellik  (double phi, double m); // incomplete elliptic integral of the first kind
 static double ellpk  (double x); // complete elliptic integral of the first kind
 static int    ellpj  (double u, double m, double *sn, double *cn, double *dn, double *ph); // Jacobian Elliptic Functions
 static int    math_set_error (char *name, int code);
+
 /* --- math errors --- */
 static int math_global_error = 0;
 #define MATH_ERROR_DOMAIN		1	/* argument domain error */
@@ -168,6 +176,7 @@ static int math_global_error = 0;
 #define MATH_ERROR_UNDERFLOW	        4	/* underflow range error */
 #define MATH_ERROR_TOTAL_LOSS		5	/* total loss of precision */
 #define MATH_ERROR_PARTIAL_LOSS		6	/* partial loss of precision */
+
 /* Common error handling routine
  *
  * SYNOPSIS:
@@ -216,24 +225,29 @@ math_set_error (char *name, int code)
     "total loss of precision",
     "partial loss of precision"
   };
+
   /* Display string passed by calling program,
    * which is supposed to be the name of the
    * function in which the error occurred:
    */
   error_printf ("\n%s ", name);
+
   /* Set global error message word */
   math_global_error = code;
+
   /* Display error message defined
    * by the code argument.
    */
   if ((code <= 0) || (code >= 7))
     code = 0;
   error_printf ("%s error\n", ermsg[code]);
+
   /* Return to calling
    * program
    */
   return 0;
 }
+
 /* --- elliptic functions --- */
 /* ellik.c - Incomplete elliptic integral of the first kind
  *
@@ -266,6 +280,7 @@ ellik (double phi, double m)
 {
   double a, b, c, e, temp, t, K;
   int d, mod, sign, npio2;
+
   if (m == 0.0)
     return phi;
   a = 1.0 - m;
@@ -315,6 +330,7 @@ ellik (double phi, double m)
   c = sqrt (m);
   d = 1;
   mod = 0;
+
   while (fabs (c/a) > MACHEP)
     {
       temp = b/a;
@@ -327,13 +343,16 @@ ellik (double phi, double m)
       b = temp;
       d += d;
     }
+
   temp = (atan (t) + mod * PI)/(d * a);
+
  done:
   if (sign < 0)
     temp = -temp;
   temp += npio2 * K;
   return temp;
 }
+
 /* ellpj - Jacobian Elliptic Functions
  *
  * SYNOPSIS:
@@ -403,6 +422,7 @@ ellpj (double u, double m,
       *dn = 1.0 - 0.5*m*t*t;
       return 0;
     }
+
   if (m >= 0.9999999999)
     {
       ai = 0.25 * (1.0-m);
@@ -423,6 +443,7 @@ ellpj (double u, double m,
   c[0] = sqrt (m);
   twon = 1.0;
   i = 0;
+
   while (fabs (c[i]/a[i]) > MACHEP)
     {
       if (i > 7)
@@ -438,6 +459,7 @@ ellpj (double u, double m,
       b = t;
       twon *= 2.0;
     }
+
  done:
   /* backward recurrence */
   phi = twon * a[i] * u;
@@ -448,6 +470,7 @@ ellpj (double u, double m,
       phi = (asin (t) + phi)/2.0;
     }
   while (--i);
+
   *sn = sin (phi);
   t = cos (phi);
   *cn = t;
@@ -455,6 +478,7 @@ ellpj (double u, double m,
   *ph = phi;
   return 0;
 }
+
 /* polevl - Evaluate polynomial
  *
  * SYNOPSIS:
@@ -484,14 +508,18 @@ polevl (double x, const double coef[], int N)
   double ans;
   int i;
   const double *p;
+
   p = coef;
   ans = *p++;
   i = N;
+
   do
     ans = ans * x  +  *p++;
   while (--i);
+
   return ans;
 }
+
 /* ellpk - Complete elliptic integral of the first kind
  *
  * SYNOPSIS:
@@ -555,11 +583,13 @@ ellpk (double x)
     1.24999999999870820058E-1,
     4.99999999999999999821E-1
   };
+
   if ((x < 0.0) || (x > 1.0))
     {
       math_set_error ("ellpk", MATH_ERROR_DOMAIN);
       return 0.0;
     }
+
   if (x > MACHEP)
     {
       return polevl (x,P_ellpk,10) - log (x) * polevl (x,Q_ellpk,10);
@@ -578,6 +608,7 @@ ellpk (double x)
         }
     }
 }
+
 /* jacobi_theta_by_nome():
  * Find parameter corresponding to given nome by expansion
  * in theta functions:
@@ -608,6 +639,7 @@ jacobi_theta_by_nome (double q)
       r *= p;
       a += 2.0 * r;
       t1 = fabs (r / a);
+
       r *= p;
       b += r;
       p *= q;
@@ -620,6 +652,7 @@ jacobi_theta_by_nome (double q)
   a = 4.0 * sqrt (q) * a * a;	/* see above formulas, solved for m */
   return a;
 }
+
 /* --- filter design functions --- */
 static int
 find_elliptic_locations_in_lambda_plane (const BseIIRFilterRequest *ifr,
@@ -665,6 +698,7 @@ find_elliptic_locations_in_lambda_plane (const BseIIRFilterRequest *ifr,
   ds->elliptic_m = m;
   return 0;
 }
+
 /* calculate s plane poles and zeros, normalized to wc = 1 */
 static int
 find_s_plane_poles_and_zeros (const BseIIRFilterRequest *ifr,
@@ -844,6 +878,7 @@ find_s_plane_poles_and_zeros (const BseIIRFilterRequest *ifr,
     }
   return 0;
 }
+
 /* convert s plane poles and zeros to the z plane. */
 static int
 convert_s_plane_to_z_plane (const BseIIRFilterRequest *ifr,
@@ -851,16 +886,19 @@ convert_s_plane_to_z_plane (const BseIIRFilterRequest *ifr,
 {
   BseComplex r, cnum, cden, cwc, ca, cb, b4ac;
   double C;
+
   if (ifr->kind == BSE_IIR_FILTER_ELLIPTIC)
     C = ds->tan_angle_frequency;
   else
     C = ds->wc;
+
   int i;
   for (i = 0; i < BSE_IIR_CARRAY_SIZE; i++)
     {
       ds->zcpz[i].re = 0.0;
       ds->zcpz[i].im = 0.0;
     }
+
   int nc = ds->n_poles;
   ds->z_counter = -1;
   int icnt, ii = -1;
@@ -874,6 +912,7 @@ convert_s_plane_to_z_plane (const BseIIRFilterRequest *ifr,
           ii = ir + 1;
           r.re = ds->spz[ir];
           r.im = ds->spz[ii];
+
           switch (ifr->type)
             {
             case BSE_IIR_FILTER_LOW_PASS:
@@ -961,6 +1000,7 @@ convert_s_plane_to_z_plane (const BseIIRFilterRequest *ifr,
             } /* end switch */
 	}
       while (--nc > 0);
+
       if (icnt == 0)
 	{
           ds->n_solved_poles = ds->z_counter + 1;
@@ -976,13 +1016,16 @@ convert_s_plane_to_z_plane (const BseIIRFilterRequest *ifr,
     } /* end for() loop */
   return 0;
 }
+
 static int
 z_plane_zeros_poles_to_numerator_denomerator (const BseIIRFilterRequest *ifr,
                                               EllfDesignState           *ds)
 {
   BseComplex lin[2];
+
   lin[1].re = 1.0;
   lin[1].im = 0.0;
+
   if (ifr->kind == BSE_IIR_FILTER_BUTTERWORTH || ifr->kind == BSE_IIR_FILTER_CHEBYSHEV1)
     { /* Butterworth or Chebyshev */
       /* generate the remaining zeros */
@@ -1020,6 +1063,7 @@ z_plane_zeros_poles_to_numerator_denomerator (const BseIIRFilterRequest *ifr,
         }
     }
   ellf_outputf ("order = %d\n", ds->n_solved_poles);
+
   /* Expand the poles and zeros into numerator and
    * denominator polynomials
    */
@@ -1128,6 +1172,7 @@ z_plane_zeros_poles_to_numerator_denomerator (const BseIIRFilterRequest *ifr,
                ds->numerator_accu / ds->denominator_accu * ds->gain_scale);
   return 0;
 }
+
 /* display quadratic factors */
 static int
 print_quadratic_factors (const BseIIRFilterRequest *ifr,
@@ -1136,6 +1181,7 @@ print_quadratic_factors (const BseIIRFilterRequest *ifr,
                          bool                       is_pole) /* 1 if poles, 0 if zeros */
 {
   double a, b, r, f, g, g0;
+
   if (y > 1.0e-16)      /* check for imaginary pole/zero */
     {
       a = -2.0 * x;
@@ -1168,6 +1214,7 @@ print_quadratic_factors (const BseIIRFilterRequest *ifr,
       g = 1.0 - a;
       g0 = 1.0 + a;
     }
+
   if (is_pole)
     {
       if (g != 0.0)
@@ -1182,6 +1229,7 @@ print_quadratic_factors (const BseIIRFilterRequest *ifr,
   ellf_outputf ("f0 %16.8E  gain %12.4E  DC gain %12.4E\n\n", f, g, g0);
   return 0;
 }
+
 static int
 gainscale_and_print_deno_nume_zeros2_poles2 (const BseIIRFilterRequest *ifr, /* zplnc */
                                              EllfDesignState           *ds)
@@ -1193,11 +1241,13 @@ gainscale_and_print_deno_nume_zeros2_poles2 (const BseIIRFilterRequest *ifr, /* 
   ellf_outputf ("constant gain factor %23.13E\n", ds->gain);
   for (j = 0; j <= ds->n_solved_poles; j++)
     ds->zn[j] = ds->gain * ds->zn[j];
+
   ellf_outputf ("z plane Denominator      Numerator\n");
   for (j = 0; j <= ds->n_solved_poles; j++)
     {
       ellf_outputf ("%2d %17.9E %17.9E\n", j, ds->zd[j], ds->zn[j]);
     }
+
   /* I /think/ at this point the polynomial is factorized in 2nd order filters,
    * so that it can be implemented without stability problems -- stw
    */
@@ -1221,6 +1271,7 @@ gainscale_and_print_deno_nume_zeros2_poles2 (const BseIIRFilterRequest *ifr, /* 
     }
   return 0;
 }
+
 /* Calculate frequency response at f Hz mulitplied by amp */
 static double
 response (const BseIIRFilterRequest *ifr,
@@ -1230,10 +1281,12 @@ response (const BseIIRFilterRequest *ifr,
   BseComplex x, num, den, w;
   double u;
   int j;
+
   /* exp(j omega T) */
   u = 2.0 * PI * f /ifr->sampling_frequency;
   x.re = cos (u);
   x.im = sin (u);
+
   num.re = 1.0;
   num.im = 0.0;
   den.re = 1.0;
@@ -1251,12 +1304,14 @@ response (const BseIIRFilterRequest *ifr,
   u = bse_complex_abs (w);
   return u;
 }
+
 /* Print table of filter frequency response */
 static void
 print_filter_table (const BseIIRFilterRequest *ifr,
                     EllfDesignState           *ds)
 {
   double f, limit = 0.05 * ds->nyquist_frequency * 21;
+
   for (f=0; f < limit; f += limit / 21.)
     {
       double r = response (ifr, ds, f, ds->gain);
@@ -1268,6 +1323,7 @@ print_filter_table (const BseIIRFilterRequest *ifr,
       // f = f + 0.05 * ds->nyquist_frequency;
     }
 }
+
 /* --- main IIR filter design function --- */
 static const char*
 ellf_filter_design (const BseIIRFilterRequest *ifr,
@@ -1275,6 +1331,7 @@ ellf_filter_design (const BseIIRFilterRequest *ifr,
 {
   double passband_edge1 = ifr->passband_edge;
   double passband_edge0 = ifr->passband_edge2;
+
   if (ifr->kind != BSE_IIR_FILTER_BUTTERWORTH &&
       ifr->kind != BSE_IIR_FILTER_CHEBYSHEV1 &&
       ifr->kind != BSE_IIR_FILTER_ELLIPTIC)
@@ -1286,6 +1343,7 @@ ellf_filter_design (const BseIIRFilterRequest *ifr,
     return "unknown type";
   if (ifr->order <= 0)
     return "order too small";
+
   if (ifr->kind == BSE_IIR_FILTER_CHEBYSHEV1 || ifr->kind == BSE_IIR_FILTER_ELLIPTIC)
     {
       if (ifr->passband_ripple_db <= 0.0)
@@ -1294,6 +1352,7 @@ ellf_filter_design (const BseIIRFilterRequest *ifr,
         {
           /* For Chebyshev filter, ripples go from 1.0 to 1/sqrt(1+ds->ripple_epsilon^2) */
           ds->chebyshev_phi = exp (ifr->passband_ripple_db / BSE_DECIBEL20_FACTOR);
+
           if ((ifr->order & 1) == 0)
             ds->gain_scale = ds->chebyshev_phi;
           else
@@ -1308,13 +1367,17 @@ ellf_filter_design (const BseIIRFilterRequest *ifr,
           ds->ripple_epsilon = sqrt (ds->ripple_epsilon - 1.0);
         }
     }
+
   if (ifr->sampling_frequency <= 0.0)
     return "sampling_frequency too small";
+
   ds->nyquist_frequency = 0.5 * ifr->sampling_frequency;
+
   if (passband_edge1 <= 0.0)
     return "passband_edge1 too small";
   if (passband_edge1 >= ds->nyquist_frequency)
     return "passband_edge1 too high";
+
   if (ifr->type == BSE_IIR_FILTER_BAND_PASS || ifr->type == BSE_IIR_FILTER_BAND_STOP)
     {
       if (passband_edge0 <= 0.0)
@@ -1357,6 +1420,7 @@ ellf_filter_design (const BseIIRFilterRequest *ifr,
       ds->wc = ds->tan_angle_frequency;
       /*ellf_debugf("cos(1/2 (Whigh-Wlow) T) = %.5e, wc = %.5e\n", cang, ds->wc);*/
     }
+
   if (ifr->kind == BSE_IIR_FILTER_ELLIPTIC)
     { /* elliptic */
       double tmp_cgam = cos ((high_edge + passband_edge0) * PI / ifr->sampling_frequency) / cang;
@@ -1416,6 +1480,7 @@ ellf_filter_design (const BseIIRFilterRequest *ifr,
       ang = ds->stopband_edge * PI / ifr->sampling_frequency;
       cang = cos (ang);
       double sang = sin (ang);
+
       if (ifr->type == BSE_IIR_FILTER_LOW_PASS || ifr->type == BSE_IIR_FILTER_HIGH_PASS)
 	{
           ds->wr = sang / (cang * ds->tan_angle_frequency);
@@ -1427,10 +1492,12 @@ ellf_filter_design (const BseIIRFilterRequest *ifr,
           cang = q;
           ds->wr = (tmp_cgam - cang) / (sang * ds->tan_angle_frequency);
 	}
+
       if (ifr->type == BSE_IIR_FILTER_HIGH_PASS || ifr->type == BSE_IIR_FILTER_BAND_STOP)
 	ds->wr = 1.0 / ds->wr;
       if (ds->wr < 0.0)
 	ds->wr = -ds->wr;
+
       const double tmp_y0 = 1.0;
       double tmp_y1 = ds->wr;
       /* ds->chebyshev_band_cbp = ds->wr; */
@@ -1468,6 +1535,7 @@ ellf_filter_design (const BseIIRFilterRequest *ifr,
       if ((2 * ifr->order + 2) > BSE_IIR_CARRAY_SIZE)
 	goto toosml;
     } /* elliptic */
+
   /* Transformation from low-pass to band-pass critical frequencies
    *
    * Center frequency
@@ -1481,6 +1549,7 @@ ellf_filter_design (const BseIIRFilterRequest *ifr,
    *  Wanalog = -----------------------------------
    *                        sin(Wdigital T)
    */
+
   if (ifr->kind == BSE_IIR_FILTER_CHEBYSHEV1)
     { /* Chebyshev */
       double a = PI * (high_edge + passband_edge0) / ifr->sampling_frequency ;
@@ -1496,13 +1565,17 @@ ellf_filter_design (const BseIIRFilterRequest *ifr,
       /* ds->chebyshev_band_cbp = (ds->cgam - cos (a)) / sin (a); */
       ds->gain_scale = 1.0;
     }
+
   ellf_debugf ("State: gain_scale=%.20g ripple_epsilon=%.20g nyquist_frequency=%.20g " // BSE info
                "tan_angle_frequency=%.20g stopband_edge=%.20g wc=%.20g wr=%.20g cgam=%.20g\n",
                ds->gain_scale, ds->ripple_epsilon, ds->nyquist_frequency,
                ds->tan_angle_frequency, ds->stopband_edge, ds->wc, ds->wr, ds->cgam);
+
   find_s_plane_poles_and_zeros (ifr, ds);		/* find s plane poles and zeros */
+
   if ((ifr->type == BSE_IIR_FILTER_BAND_PASS || ifr->type == BSE_IIR_FILTER_BAND_STOP) && 4 * ifr->order + 2 > BSE_IIR_CARRAY_SIZE)
     goto toosml;
+
   convert_s_plane_to_z_plane (ifr, ds);	/* convert s plane to z plane */
   // volatile_sink ("x");
   z_plane_zeros_poles_to_numerator_denomerator (ifr, ds);
@@ -1510,6 +1583,7 @@ ellf_filter_design (const BseIIRFilterRequest *ifr,
   gainscale_and_print_deno_nume_zeros2_poles2 (ifr, ds);
   print_filter_table (ifr, ds); /* tabulate transfer function */
   return NULL;
+
  toosml:
   return "storage arrays too small";
 }

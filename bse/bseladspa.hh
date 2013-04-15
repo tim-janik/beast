@@ -1,9 +1,12 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #ifndef __BSE_LADSPA_H__
 #define __BSE_LADSPA_H__
+
 #include <bse/bseutils.hh>
 #include <gmodule.h>
+
 G_BEGIN_DECLS
+
 /* --- object type macros --- */
 #define BSE_TYPE_LADSPA_PLUGIN              (BSE_TYPE_ID (BseLadspaPlugin))
 #define BSE_LADSPA_PLUGIN(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), BSE_TYPE_LADSPA_PLUGIN, BseLadspaPlugin))
@@ -11,6 +14,8 @@ G_BEGIN_DECLS
 #define BSE_IS_LADSPA_PLUGIN(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), BSE_TYPE_LADSPA_PLUGIN))
 #define BSE_IS_LADSPA_PLUGIN_CLASS(class)   (G_TYPE_CHECK_CLASS_TYPE ((class), BSE_TYPE_LADSPA_PLUGIN))
 #define BSE_LADSPA_PLUGIN_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), BSE_TYPE_LADSPA_PLUGIN, BseLadspaPluginClass))
+
+
 /* --- BseLadspaPlugin --- */
 struct BseLadspaInfo;
 typedef struct {
@@ -76,5 +81,7 @@ void		bse_ladspa_info_free		  (BseLadspaInfo	*bli);
 SfiRing*	bse_ladspa_plugin_path_list_files (void);
 const gchar*    bse_ladspa_plugin_check_load      (const gchar		*file_name);
 gchar*		bse_ladspa_info_port_2str	  (BseLadspaPort	*port);
+
 G_END_DECLS
+
 #endif /* __BSE_LADSPA_H__ */

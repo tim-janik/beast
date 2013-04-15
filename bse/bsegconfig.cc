@@ -21,7 +21,9 @@ _bse_gconfig_init (void)
   BseGConfig *gconfig;
   GValue *value;
   SfiRec *rec;
+
   g_return_if_fail (bse_global_config == NULL);
+
   /* global config record description */
   pspec_global_config = sfi_pspec_rec ("bse-preferences", NULL, NULL,
 				       bse_gconfig_get_fields (), SFI_PARAM_STANDARD);
@@ -150,10 +152,12 @@ set_gconfig (BseGConfig *gconfig)
       sfi_rec_unref (prec);
     }
 }
+
 void
 bse_gconfig_apply (SfiRec *rec)
 {
   g_return_if_fail (rec != NULL);
+
   if (!bse_gconfig_locked ())
     {
       BseGConfig *gconfig;
@@ -164,11 +168,13 @@ bse_gconfig_apply (SfiRec *rec)
       set_gconfig (gconfig);
     }
 }
+
 GParamSpec*
 bse_gconfig_pspec (void)
 {
   return pspec_global_config;
 }
+
 void
 bse_gconfig_lock (void)
 {
@@ -176,6 +182,7 @@ bse_gconfig_lock (void)
   if (gconfig_lock_count == 1)
     bse_server_notify_gconfig (bse_server_get ());
 }
+
 void
 bse_gconfig_unlock (void)
 {
@@ -187,11 +194,13 @@ bse_gconfig_unlock (void)
 	bse_server_notify_gconfig (bse_server_get ());
     }
 }
+
 gboolean
 bse_gconfig_locked (void)
 {
   return gconfig_lock_count != 0;
 }
+
 void
 bse_gconfig_merge_args (const BseMainArgs *margs)
 {

@@ -1,8 +1,11 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #ifndef __BSE_PARASITE_H__
 #define __BSE_PARASITE_H__
+
 #include <bse/bseitem.hh>
+
 G_BEGIN_DECLS
+
 /* --- parasite records --- */
 void         bse_item_set_parasite               (BseItem        *item, /* undoable */
                                                   const gchar    *parasite_path,
@@ -24,6 +27,8 @@ const gchar* bse_item_create_parasite_name       (BseItem        *item,
  *                             const gchar *parasite_path);
  */
 void         bse_item_class_add_parasite_signals (BseItemClass *);
+
+
 /* --- old prototypes --- */
 void	   bse_parasite_set_floats	(BseObject      *object,
 					 const gchar	*name,
@@ -35,5 +40,7 @@ void	   bse_parasite_store		(BseObject	*object,
 					 BseStorage	*storage);
 GTokenType bse_parasite_restore		(BseObject	*object,
 					 BseStorage	*storage);
+
 G_END_DECLS
+
 #endif /* __BSE_PARASITE_H__ */

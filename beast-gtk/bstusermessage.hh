@@ -36,11 +36,13 @@ typedef struct {
   guint          n_msg_bits;
   BstMsgBit    **msg_bits;
 } BstMessage;
+
 typedef struct {
   guint        type;
   const gchar *ident;
   const gchar *label; /* maybe NULL */
 } BstMsgID;
+
 /* --- prototypes --- */
 void              bst_message_connect_to_server	(void);
 void              bst_message_dialogs_popdown	(void);
@@ -77,5 +79,7 @@ BstMsgBit*        bst_msg_bit_create_choice     (guint                   id,
                                                    __result = bst_message_dialog_display ("BEAST",  \
                                                                __mt, RAPICORN_ARRAY_SIZE (__ba), __ba);         \
                                                    __result; })
+
 G_END_DECLS
+
 #endif	/* __BST_USER_MESSAGE_H__ */

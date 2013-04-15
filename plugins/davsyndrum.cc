@@ -3,6 +3,7 @@
 #include <bse/bseengine.hh>
 #include <bse/bsemathsignal.hh>
 #include <bse/bsecxxplugin.hh>
+
 /* --- parameters --- */
 enum
 {
@@ -14,6 +15,8 @@ enum
   PROP_RES,
   PROP_RATIO
 };
+
+
 /* --- prototypes --- */
 static void dav_syn_drum_init           (DavSynDrum      *drum);
 static void dav_syn_drum_class_init     (DavSynDrumClass *klass);
@@ -31,6 +34,7 @@ static void dav_syn_drum_context_create (BseSource       *source,
                                          BseTrans        *trans);
 static void dav_syn_drum_update_modules (DavSynDrum      *self,
                                          gboolean         force_trigger);
+
 // == Type Registration ==
 #include "./icons/drum.c"
 BSE_RESIDENT_SOURCE_DEF (DavSynDrum, dav_syn_drum, N_("Audio Sources/Synthetic Drum"),
@@ -40,8 +44,11 @@ BSE_RESIDENT_SOURCE_DEF (DavSynDrum, dav_syn_drum, N_("Audio Sources/Synthetic D
                          "The initial frequency shift is controllable through the "
                          "\"Ratio In\" input channel, and adjustable through a parameter.",
                          drum_icon);
+
 /* --- variables --- */
 static gpointer          parent_class = NULL;
+
+
 /* --- functions --- */
 static void
 dav_syn_drum_class_init (DavSynDrumClass *klass)
@@ -50,11 +57,15 @@ dav_syn_drum_class_init (DavSynDrumClass *klass)
   BseObjectClass *object_class = BSE_OBJECT_CLASS (klass);
   BseSourceClass *source_class = BSE_SOURCE_CLASS (klass);
   guint ochannel_id, ichannel_id;
+
   parent_class = g_type_class_peek_parent (klass);
+
   gobject_class->set_property = dav_syn_drum_set_property;
   gobject_class->get_property = dav_syn_drum_get_property;
+
   source_class->prepare = dav_syn_drum_prepare;
   source_class->context_create = dav_syn_drum_context_create;
+
   bse_object_class_add_param (object_class, _("Frequency"), PROP_BASE_FREQ,
                               bse_param_spec_freq ("base_freq", _("Frequency"),
                                                    _("Drum frequency in Hertz"),
@@ -65,6 +76,7 @@ dav_syn_drum_class_init (DavSynDrumClass *klass)
                               bse_pspec_note_simple ("base_note", _("Note"),
                                                      _("Drum frequency as note, converted to Hertz according to the current musical tuning"),
                                                      SFI_PARAM_GUI));
+
   bse_object_class_add_param (object_class, "Trigger", PROP_TRIGGER_VEL,
 			      sfi_pspec_real ("trigger_vel", _("Trigger Velocity [%]"),
                                               _("The velocity of the drum hit"),
@@ -83,6 +95,7 @@ dav_syn_drum_class_init (DavSynDrumClass *klass)
                                               _("The ratio of frequency shift. (i.e. 1.0 means shift equal to the drum's base frequency)"),
                                               1.0, 0.0, 10.0, 0.1,
                                               SFI_PARAM_STANDARD ":scale"));
+
   ichannel_id = bse_source_class_add_ichannel (source_class, "freq-in", _("Freq In"), _("Drum Frequency Input"));
   g_assert (ichannel_id == DAV_SYN_DRUM_ICHANNEL_FREQ);
   ichannel_id = bse_source_class_add_ichannel (source_class, "ratio-in", _("Ratio In"), _("Frequency shift ratio (assumed 1.0 if not connected)"));
@@ -92,6 +105,7 @@ dav_syn_drum_class_init (DavSynDrumClass *klass)
   ochannel_id = bse_source_class_add_ochannel (source_class, "audio-out", _("Audio Out"), _("SynDrum Output"));
   g_assert (ochannel_id == DAV_SYN_DRUM_OCHANNEL_MONO);
 }
+
 static void
 dav_syn_drum_init (DavSynDrum *self)
 {
@@ -101,6 +115,7 @@ dav_syn_drum_init (DavSynDrum *self)
   self->params.res = 0;
   self->half = 50 * 0.001;
 }
+
 static void
 dav_syn_drum_set_property (GObject         *object,
                            guint            param_id,
@@ -137,6 +152,7 @@ dav_syn_drum_set_property (GObject         *object,
     }
   dav_syn_drum_update_modules (self, force_trigger);
 }
+
 static void
 dav_syn_drum_get_property (GObject         *object,
                            guint            param_id,
@@ -169,15 +185,19 @@ dav_syn_drum_get_property (GObject         *object,
       break;
     }
 }
+
 static void
 dav_syn_drum_prepare (BseSource *source)
 {
   DavSynDrum *self = DAV_SYN_DRUM (source);
+
   /* initialize calculated params (mix-freq dependant) */
   dav_syn_drum_update_modules (self, FALSE);
+
   /* chain parent class' handler */
   BSE_SOURCE_CLASS (parent_class)->prepare (source);
 }
+
 static inline void
 dmod_trigger (DavSynDrumModule *dmod,
               gfloat            freq,
@@ -188,6 +208,7 @@ dmod_trigger (DavSynDrumModule *dmod,
   dmod->freq_rad = freq * 2.0 * PI / bse_engine_sample_freq();
   dmod->freq_shift = dmod->freq_rad * dmod->params.ratio * CLAMP (ratio, 0, 1.0);
 }
+
 static void
 dmod_process (BseModule *module,
               guint      n_values)
@@ -205,13 +226,16 @@ dmod_process (BseModule *module,
   gfloat spring_pos = dmod->spring_pos;
   gfloat env = dmod->env;
   guint i;
+
   if (!BSE_MODULE_ISTREAM (module, DAV_SYN_DRUM_ICHANNEL_FREQ).connected)
     freq_in = NULL;
   if (!BSE_MODULE_ISTREAM (module, DAV_SYN_DRUM_ICHANNEL_RATIO).connected)
     ratio_in = NULL;
+
   for (i = 0; i < n_values; i++)
     {
       gfloat cur_freq;
+
       /* check input triggers */
       if (G_UNLIKELY (BSE_SIGNAL_RAISING_EDGE (last_trigger_level, trigger_in[i])))
         {
@@ -225,18 +249,22 @@ dmod_process (BseModule *module,
           freq_shift = dmod->freq_shift;
         }
       last_trigger_level = trigger_in[i];
+
       cur_freq = freq_rad + (env * freq_shift);
       spring_vel -= spring_pos * cur_freq;
       spring_pos += spring_vel * cur_freq;
       spring_vel *= res;
       env *= res;
+
       wave_out[i] = spring_pos;
     }
+
   dmod->env = env;
   dmod->spring_pos = spring_pos;
   dmod->spring_vel = spring_vel;
   dmod->last_trigger_level = last_trigger_level;
 }
+
 static void
 dmod_reset (BseModule *module)
 {
@@ -249,6 +277,7 @@ dmod_reset (BseModule *module)
   dmod->freq_rad = 0;
   dmod->freq_shift = 0;
 }
+
 static void
 dav_syn_drum_context_create (BseSource *source,
                              guint      context_handle,
@@ -267,16 +296,21 @@ dav_syn_drum_context_create (BseSource *source,
   DavSynDrum *self = DAV_SYN_DRUM (source);
   DavSynDrumModule *dmod = g_new0 (DavSynDrumModule, 1);
   BseModule *module;
+
   dmod->params = self->params;
   module = bse_module_new (&dmod_class, dmod);
   dmod_reset (module);
+
   /* setup module i/o streams with BseSource i/o channels */
   bse_source_set_context_module (source, context_handle, module);
+
   /* commit module to engine */
   bse_trans_add (trans, bse_job_integrate (module));
+
   /* chain parent class' handler */
   BSE_SOURCE_CLASS (parent_class)->context_create (source, context_handle, trans);
 }
+
 /* update module configuration from new parameter set */
 static void
 dmod_access (BseModule *module,
@@ -284,8 +318,10 @@ dmod_access (BseModule *module,
 {
   DavSynDrumModule *dmod = (DavSynDrumModule*) module->user_data;
   DavSynDrumParams *params = (DavSynDrumParams*) data;
+
   dmod->params = *params;
 }
+
 /* update module configuration from new parameter set and force trigger */
 static void
 dmod_access_trigger (BseModule *module,
@@ -293,9 +329,11 @@ dmod_access_trigger (BseModule *module,
 {
   DavSynDrumModule *dmod = (DavSynDrumModule*) module->user_data;
   DavSynDrumParams *params = (DavSynDrumParams*) data;
+
   dmod->params = *params;
   dmod_trigger (dmod, dmod->params.freq, 1.0);
 }
+
 static void
 dav_syn_drum_update_modules (DavSynDrum *self,
                              gboolean    force_trigger)
@@ -311,6 +349,7 @@ dav_syn_drum_update_modules (DavSynDrum *self,
        * ln(1/2) = -ln(2) = -BSE_LN2 = -0.693147...
        */
       self->params.res = exp (-BSE_LN2 / (self->half * bse_engine_sample_freq()));
+
       /* update all DavSynDrumModules. take a look at davxtalstrings.c
        * if you don't understand what this code does.
        */

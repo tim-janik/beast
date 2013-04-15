@@ -86,6 +86,7 @@ sfi_url_show (const char *url)
 {
   return Rapicorn::url_show (url);
 }
+
 void
 sfi_url_show_with_cookie (const char *url,
                           const char *url_title,

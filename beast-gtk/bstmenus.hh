@@ -1,12 +1,16 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #ifndef __BST_MENUS_H__
 #define __BST_MENUS_H__
+
 #include        "bstutils.hh"
+
 G_BEGIN_DECLS
+
 /* --- BstChoice --- */
 /* BstChoice are simple inlined popup menus for modal selections.
  */
 typedef struct _BstChoice BstChoice;
+
 GtkWidget* bst_choice_menu_createv        (const gchar		  *menu_path,
 					   BstChoice              *first_choice,
 					   ...);
@@ -23,6 +27,8 @@ guint      bst_choice_modal               (GtkWidget              *widget,
 					   guint32                 time);
 guint      bst_choice_get_last            (GtkWidget              *widget);
 void	   bst_choice_destroy		  (GtkWidget		  *choice);
+
+
 /* --- BstChoice shortcuts --- */
 #define BST_CHOICE_TITLE(name)           (bst_choice_alloc (BST_CHOICE_TYPE_TITLE, \
 							    (name), NULL, BST_STOCK_NONE, 0))
@@ -44,6 +50,8 @@ void	   bst_choice_destroy		  (GtkWidget		  *choice);
 #define BST_CHOICE_SEPERATOR             (bst_choice_alloc (BST_CHOICE_TYPE_SEPARATOR, \
 							    NULL, NULL, BST_STOCK_NONE, 0))
 #define BST_CHOICE_END                   (NULL)
+
+
 /* --- private implementation stubs --- */
 typedef enum
 {
@@ -62,7 +70,9 @@ BstChoice* bst_choice_alloc               (BstChoiceFlags          type,
 					   gpointer                choice_id,
 					   const gchar		  *icon_stock_id,
 					   BseIcon		  *bse_icon);
+
 G_END_DECLS
+
 // == Flags Enumeration Operators in C++ ==
 #ifdef __cplusplus
 constexpr BstChoiceFlags  operator&  (BstChoiceFlags  s1, BstChoiceFlags s2) { return BstChoiceFlags (s1 & (long long unsigned) s2); }
@@ -71,4 +81,5 @@ constexpr BstChoiceFlags  operator|  (BstChoiceFlags  s1, BstChoiceFlags s2) { r
 inline    BstChoiceFlags& operator|= (BstChoiceFlags &s1, BstChoiceFlags s2) { s1 = s1 | s2; return s1; }
 constexpr BstChoiceFlags  operator~  (BstChoiceFlags  s1)                    { return BstChoiceFlags (~(long long unsigned) s1); }
 #endif // __cplusplus
+
 #endif  /* __BST_MENUS_H__ */

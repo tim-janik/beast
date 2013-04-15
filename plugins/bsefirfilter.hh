@@ -1,11 +1,18 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #ifndef __BSE_FIR_FILTER_H__
 #define __BSE_FIR_FILTER_H__
+
 #include <bse/bseplugin.hh>
 #include <bse/bsesource.hh>
+
 #ifdef __cplusplus
 extern "C" {
 #endif /* __cplusplus */
+
+
+
+
+
 /* --- object type macros --- */
 #define BSE_TYPE_FIR_FILTER              (type_id_fir_filter)
 #define BSE_FIR_FILTER(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), BSE_TYPE_FIR_FILTER, BseFIRFilter))
@@ -45,7 +52,12 @@ enum
   BSE_FIR_FILTER_ICHANNEL_NONE,
   BSE_FIR_FILTER_ICHANNEL_MONO
 };
+
+
+
+
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */
+
 #endif /* __BSE_FIR_FILTER_H__ */

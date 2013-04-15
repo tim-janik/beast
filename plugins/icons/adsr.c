@@ -1,4 +1,5 @@
 /* GdkPixbuf RGBA C-Source image dump 1-byte-run-length-encoded */
+
 static const guint8 adsr_icon[] = 
 { ""
   /* Pixbuf magic (0x47646b50) */
@@ -139,3 +140,5 @@ static const guint8 adsr_icon[] =
   "\0\0\0\0\2\27-\357\300\27-\357\317\272\27-\357\300\2\27-\357\357\27-"
   "\357@\202\0\0\0\0\1\27-\3570\274\27-\357@\1\27-\357\20\377\0\0\0\0\377"
   "\0\0\0\0\303\0\0\0\0"};
+
+

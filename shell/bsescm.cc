@@ -27,6 +27,7 @@ static gboolean        bse_scm_auto_play = TRUE;
 static SfiComPort     *bse_scm_port = NULL;
 static SfiGlueContext *bse_scm_context = NULL;
 static const gchar    *boot_script_path = BSE_PATH_SCRIPTS;
+
 /* --- functions --- */
 static void
 port_closed (SfiComPort *port,
@@ -99,11 +100,14 @@ gh_main (int   argc,
   else
     bse_scm_enable_server (TRUE);
   sfi_glue_context_push (bse_scm_context);
+
   /* initialize interpreter */
   bse_scm_interp_init ();
+
   /* exec Bse Scheme bootup code */
   const gchar *boot_script = g_intern_printf ("%s/%s", boot_script_path, "bse-scm-glue.boot");
   gh_load (boot_script);
+
   /* eval, auto-play or interactive */
   if (bse_scm_eval_expr)
     gh_eval_str (bse_scm_eval_expr);
@@ -139,6 +143,7 @@ gh_main (int   argc,
           gh_repl (argc, argv);
         }
     }
+
   /* shutdown */
   sfi_glue_context_pop ();
   if (bse_scm_port)
@@ -148,6 +153,7 @@ gh_main (int   argc,
     }
   sfi_glue_context_destroy (bse_scm_context);
 }
+
 static void
 shell_parse_args (int *argc_p, char **argv)
 {
@@ -163,6 +169,7 @@ shell_parse_args (int *argc_p, char **argv)
       else if (strcmp (argv[i], "--g-fatal-warnings") == 0)
 	{
 	  GLogLevelFlags fatal_mask;
+
 	  fatal_mask = g_log_set_always_fatal (GLogLevelFlags (G_LOG_FATAL_MASK));
           fatal_mask = GLogLevelFlags (fatal_mask | G_LOG_LEVEL_WARNING | G_LOG_LEVEL_CRITICAL);
 	  g_log_set_always_fatal (fatal_mask);
@@ -274,6 +281,7 @@ shell_parse_args (int *argc_p, char **argv)
           exit (0);
         }
     }
+
   e = 1;
   for (i = 1; i < argc; i++)
     if (argv[i])

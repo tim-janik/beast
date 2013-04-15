@@ -1,4 +1,5 @@
 ;; CC0 Public Domain: http://creativecommons.org/publicdomain/zero/1.0/
+
 ;; (bse-script-register 'script-function
 ;;                      "unstable"                          ; Options
 ;;                      (N_ "/Project/Toys/My Script")
@@ -10,6 +11,7 @@
 ;;                      (bse-param-irange (N_ "IntNum") '(16 -100 +100 5))
 ;;                      (bse-param-frange (N_ "FloatNum") '(42 0 1000 10))
 ;;                      (bse-param-note   (_ "Note") "C-7"))
+
 (bse-script-register 'progressor
 		     ""
                      (N_ "/Project/Toys/Progressor...")
@@ -21,6 +23,7 @@
 		     (bse-param-irange (N_ "N Iterations") '(512 0 65536 128))
 		     (bse-param-irange (N_ "N Wait Spins") '(256 0 65536 64))
 		     (bse-param-bool   (N_ "Update Percentage") #t))
+
 (define (progressor niter nwait uperc)
   (do ((i niter (- i 1)))
       ((<= i 0))

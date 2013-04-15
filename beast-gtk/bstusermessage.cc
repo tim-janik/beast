@@ -96,6 +96,8 @@ toggle_update_filter (GtkWidget *toggle,
   if (config_check && bst_msg_absorb_config_adjust (config_check, GTK_TOGGLE_BUTTON (toggle)->active, TRUE))
     bst_msg_absorb_config_save();
 }
+
+
 static gchar*
 adapt_message_spacing (const gchar *head,
                        const gchar *message,
@@ -114,6 +116,7 @@ adapt_message_spacing (const gchar *head,
     g_string_append (gstring, tail);
   return g_string_free (gstring, FALSE);
 }
+
 static gchar*
 strdup_msg_hashkey (const BstMessage *msg)
 {
@@ -126,6 +129,7 @@ strdup_msg_hashkey (const BstMessage *msg)
   else
     return g_strdup_printf ("## %x ## %s ## %s ## N%x", msg->type, msg->primary, msg->secondary, msg->pid);
 }
+
 static void
 bst_msg_dialog_update (GxkDialog        *dialog,
                        const BstMessage *msg,
@@ -260,17 +264,20 @@ bst_msg_dialog_update (GxkDialog        *dialog,
   gxk_dialog_set_title (dialog, title);
   g_free (title);
 }
+
 static void
 bst_msg_dialog_janitor_update (GxkDialog        *dialog,
                                SfiProxy          janitor)
 {
   g_return_if_fail (BSE_IS_JANITOR (janitor));
+
   guint i, n = bse_janitor_n_actions (janitor);
   for (i = 0; i < n; i++)
     {
       const gchar *action = bse_janitor_get_action (janitor, i);
       const gchar *name = bse_janitor_get_action_name (janitor, i);
       const gchar *blurb = bse_janitor_get_action_blurb (janitor, i);
+
       if (action)
         {
           GtkWidget *button = gxk_dialog_action_multi (dialog, name,
@@ -283,6 +290,8 @@ bst_msg_dialog_janitor_update (GxkDialog        *dialog,
   GtkWidget *bwidget = gxk_dialog_action (dialog, BST_STOCK_CANCEL, (void*) gxk_toplevel_delete, NULL);
   gxk_dialog_set_focus (dialog, bwidget);
 }
+
+
 void
 bst_msg_bit_free (BstMsgBit *mbit)
 {
@@ -291,6 +300,7 @@ bst_msg_bit_free (BstMsgBit *mbit)
   g_free (mbit->options);
   g_free (mbit);
 }
+
 BstMsgBit*
 bst_msg_bit_printf (guint8                  msg_part_id,
                     const char             *format,
@@ -311,6 +321,7 @@ bst_msg_bit_printf (guint8                  msg_part_id,
   errno = saved_errno;
   return mbit;
 }
+
 BstMsgBit*
 bst_msg_bit_create_choice (guint                   id,
                            const gchar            *name,
@@ -327,6 +338,7 @@ bst_msg_bit_create_choice (guint                   id,
   errno = saved_errno;
   return mbit;
 }
+
 static void
 message_dialog_choice_triggered (GtkWidget *choice,
                                  gpointer   data)
@@ -336,6 +348,7 @@ message_dialog_choice_triggered (GtkWidget *choice,
     g_object_set_data ((GObject*) toplevel, "bst-modal-choice-result", data);
   gxk_toplevel_delete (choice);
 }
+
 static void
 repeat_dialog (GxkDialog *dialog)
 {
@@ -350,6 +363,7 @@ repeat_dialog (GxkDialog *dialog)
       gtk_widget_show (GTK_WIDGET (label));
     }
 }
+
 static GtkWidget*
 find_dialog (GSList           *dialog_list,
              const BstMessage *msg)
@@ -369,6 +383,7 @@ find_dialog (GSList           *dialog_list,
   g_free (mid);
   return widget;
 }
+
 static void
 dialog_show_above_modals (GxkDialog *dialog,
                           gboolean   must_return_visible)
@@ -381,6 +396,7 @@ dialog_show_above_modals (GxkDialog *dialog,
     }
   gtk_widget_show (GTK_WIDGET (dialog));
 }
+
 guint
 bst_message_handler (const BstMessage *const_msg)
 {
@@ -498,6 +514,8 @@ message_fill_from_script (BstMessage    *msg,
   msg->n_msg_bits = 0;
   msg->msg_bits = NULL;
 }
+
+
 static void
 message_free_from_script (BstMessage *msg)
 {
@@ -507,6 +525,7 @@ message_free_from_script (BstMessage *msg)
   g_free ((char*) msg->details);
   g_free ((char*) msg->config_check);
 }
+
 static void
 janitor_actions_changed (GxkDialog *dialog)
 {
@@ -521,6 +540,7 @@ janitor_actions_changed (GxkDialog *dialog)
   bst_msg_dialog_janitor_update (dialog, janitor);
   message_free_from_script (&msg);
 }
+
 static void
 janitor_progress (GxkDialog *dialog,
 		  SfiReal    progress)
@@ -538,6 +558,7 @@ janitor_progress (GxkDialog *dialog,
   gxk_status_window_pop ();
   g_free (exec_name);
 }
+
 static void
 janitor_unconnected (GxkDialog *dialog)
 {
@@ -564,10 +585,12 @@ janitor_unconnected (GxkDialog *dialog)
         }
     }
 }
+
 static void
 janitor_window_deleted (GxkDialog *dialog)
 {
   SfiProxy janitor = (SfiProxy) g_object_get_data (G_OBJECT (dialog), "user-data");
+
   bse_proxy_disconnect (janitor,
 			"any_signal", janitor_actions_changed, dialog,
 			"any_signal", janitor_progress, dialog,
@@ -576,6 +599,7 @@ janitor_window_deleted (GxkDialog *dialog)
   bse_janitor_kill (janitor);
   bse_item_unuse (janitor);
 }
+
 static GtkWidget*
 create_janitor_dialog (SfiProxy janitor)
 {
@@ -583,6 +607,7 @@ create_janitor_dialog (SfiProxy janitor)
                                                    GXK_DIALOG_STATUS_BAR, // | GXK_DIALOG_WINDOW_GROUP,
                                                    NULL, NULL);
   gxk_dialog_set_sizes (dialog, -1, -1, 512, -1);
+
   g_object_set_data (G_OBJECT (dialog), "user-data", (gpointer) janitor);
   bse_proxy_connect (janitor,
 		     "swapped-object-signal::action-changed", janitor_actions_changed, dialog,
@@ -605,6 +630,8 @@ text_concat (char *prefix,
   g_free (prefix);
   return result;
 }
+
+
 /**
  * bst_message_dialog_display
  * @param log_domain   log domain
@@ -691,6 +718,7 @@ bst_message_dialog_display (const char     *log_domain,
   errno = saved_errno;
   return result;
 }
+
 void
 bst_message_dialogs_popdown (void)
 {

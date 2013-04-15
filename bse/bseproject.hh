@@ -1,8 +1,12 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #ifndef __BSE_PROJECT_H__
 #define __BSE_PROJECT_H__
+
 #include        <bse/bsecontainer.hh>
+
 G_BEGIN_DECLS
+
+
 /* --- object type macros --- */
 #define	BSE_TYPE_PROJECT	      (BSE_TYPE_ID (BseProject))
 #define BSE_PROJECT(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), BSE_TYPE_PROJECT, BseProject))
@@ -10,6 +14,8 @@ G_BEGIN_DECLS
 #define BSE_IS_PROJECT(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), BSE_TYPE_PROJECT))
 #define BSE_IS_PROJECT_CLASS(class)   (G_TYPE_CHECK_CLASS_TYPE ((class), BSE_TYPE_PROJECT))
 #define BSE_PROJECT_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), BSE_TYPE_PROJECT, BseProjectClass))
+
+
 /* --- BseProject object --- */
 typedef enum {
   BSE_PROJECT_INACTIVE,
@@ -70,5 +76,8 @@ BseMidiNotifier*bse_project_get_midi_notifier   (BseProject     *project);
 void            bse_project_clear_undo          (BseProject     *project);
 void            bse_project_clean_dirty         (BseProject     *project);
 void    bse_project_push_undo_silent_deactivate (BseProject     *self);
+
+
 G_END_DECLS
+
 #endif /* __BSE_PROJECT_H__ */

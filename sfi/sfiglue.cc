@@ -107,6 +107,7 @@ sfi_glue_context_dispatch (void)
       sfi_seq_unref (seq);
     }
 }
+
 SfiSeq*
 sfi_glue_context_fetch_event (void)
 {
@@ -115,6 +116,7 @@ sfi_glue_context_fetch_event (void)
   SfiSeq *seq = (SfiSeq*) sfi_ring_pop_head (&context->pending_events);
   return seq;
 }
+
 gboolean
 _sfi_glue_proxy_request_notify (SfiProxy        proxy,
 				const gchar    *signal,
@@ -122,8 +124,10 @@ _sfi_glue_proxy_request_notify (SfiProxy        proxy,
 {
   SfiGlueContext *context = sfi_glue_fetch_context (G_STRLOC);
   gboolean connected;
+
   g_return_val_if_fail (proxy != 0, FALSE);
   g_return_val_if_fail (signal != NULL, FALSE);
+
   connected = context->table.proxy_request_notify (context, proxy, signal, enable_notify);
   if (!enable_notify)					/* filter current event queue */
     {
@@ -135,11 +139,14 @@ _sfi_glue_proxy_request_notify (SfiProxy        proxy,
     }
   return connected;
 }
+
 void
 sfi_glue_context_destroy (SfiGlueContext *context)
 {
   void (*destroy) (SfiGlueContext *);
+
   g_return_if_fail (context != NULL);
+
   sfi_glue_context_push (context);
   sfi_glue_gc_run ();
   _sfi_glue_context_clear_proxies (context);
@@ -158,18 +165,23 @@ sfi_glue_context_destroy (SfiGlueContext *context)
     }
   destroy (context);
 }
+
+
 /* --- VTable API --- */
 static inline gulong
 upper_power2 (gulong number)
 {
   return number ? 1 << g_bit_storage (number - 1) : 0;
 }
+
 SfiGlueProc*
 sfi_glue_describe_proc (const gchar *proc_name)
 {
   SfiGlueContext *context = sfi_glue_fetch_context (G_STRLOC);
   SfiGlueProc *proc;
+
   g_return_val_if_fail (proc_name != NULL, NULL);
+
   proc = context->table.describe_proc (context, proc_name);
   if (proc && !proc->name)
     {
@@ -180,84 +192,104 @@ sfi_glue_describe_proc (const gchar *proc_name)
     sfi_glue_gc_add (proc, SfiGlueGcFreeFunc (sfi_glue_proc_unref));
   return proc;
 }
+
 const gchar**
 sfi_glue_list_proc_names (void)
 {
   SfiGlueContext *context = sfi_glue_fetch_context (G_STRLOC);
   gchar **names;
+
   names = context->table.list_proc_names (context);
   if (!names)
     names = g_new0 (gchar*, 1);
   sfi_glue_gc_add (names, SfiGlueGcFreeFunc (g_strfreev));
   return (const gchar**) names;
 }
+
 const gchar**
 sfi_glue_list_method_names (const gchar *iface_name)
 {
   SfiGlueContext *context = sfi_glue_fetch_context (G_STRLOC);
   gchar **names;
+
   g_return_val_if_fail (iface_name != NULL, NULL);
+
   names = context->table.list_method_names (context, iface_name);
   if (!names)
     names = g_new0 (gchar*, 1);
   sfi_glue_gc_add (names, SfiGlueGcFreeFunc (g_strfreev));
   return (const gchar**) names;
 }
+
 gchar*
 sfi_glue_base_iface (void)
 {
   SfiGlueContext *context = sfi_glue_fetch_context (G_STRLOC);
   gchar *biface = context->table.base_iface (context);
+
   if (biface)
     sfi_glue_gc_add (biface, g_free);
   return biface;
 }
+
 const gchar**
 sfi_glue_iface_children (const gchar *iface_name)
 {
   SfiGlueContext *context = sfi_glue_fetch_context (G_STRLOC);
   gchar **names;
+
   g_return_val_if_fail (iface_name != NULL, NULL);
+
   names = context->table.iface_children (context, iface_name);
   if (!names)
     names = g_new0 (gchar*, 1);
   sfi_glue_gc_add (names, SfiGlueGcFreeFunc (g_strfreev));
   return (const gchar**) names;
 }
+
 SfiGlueIFace*
 sfi_glue_describe_iface (const gchar *iface_name)
 {
   SfiGlueContext *context = sfi_glue_fetch_context (G_STRLOC);
+
   g_return_val_if_fail (iface_name != NULL, NULL);
+
   SfiGlueIFace *iface = context->table.describe_iface (context, iface_name);
   if (iface)
     sfi_glue_gc_add (iface, SfiGlueGcFreeFunc (sfi_glue_iface_unref));
   return iface;
 }
+
 GValue*
 sfi_glue_client_msg (const gchar *msg,
 		     GValue      *value)
 {
   SfiGlueContext *context = sfi_glue_fetch_context (G_STRLOC);
   GValue *rvalue;
+
   rvalue = context->table.client_msg (context, msg, value);
   if (rvalue)
     sfi_glue_gc_add (rvalue, SfiGlueGcFreeFunc (sfi_value_free));
   return rvalue;
 }
+
+
 /* --- procedure calls --- */
 GValue*
 sfi_glue_call_seq (const gchar *proc_name,
 		   SfiSeq      *params)
 {
   SfiGlueContext *context = sfi_glue_fetch_context (G_STRLOC);
+
   g_return_val_if_fail (proc_name != NULL, NULL);
   g_return_val_if_fail (params != NULL, NULL);
+
   GValue *value = context->table.exec_proc (context, proc_name, params);
   if (value)
     sfi_glue_gc_add (value, SfiGlueGcFreeFunc (sfi_value_free));
   return value;
 }
+
 GValue*
 sfi_glue_call_valist (const gchar *proc_name,
 		      guint8       first_arg_type,
@@ -265,7 +297,9 @@ sfi_glue_call_valist (const gchar *proc_name,
 {
   guint8 arg_type = first_arg_type;
   SfiSeq *seq;
+
   g_return_val_if_fail (proc_name != NULL, NULL);
+
   seq = sfi_seq_new ();
   while (arg_type)
     {
@@ -295,19 +329,23 @@ sfi_glue_call_valist (const gchar *proc_name,
     }
   return NULL;
 }
+
 void
 sfi_glue_vcall_void (const gchar    *proc_name,
 		     guint8          first_arg_type,
 		     ...)
 {
   va_list var_args;
+
   g_return_if_fail (proc_name != NULL);
+
   va_start (var_args, first_arg_type);
   GValue *rvalue = sfi_glue_call_valist (proc_name, first_arg_type, var_args);
   va_end (var_args);
   if (rvalue)
     sfi_glue_gc_free_now (rvalue, SfiGlueGcFreeFunc (sfi_value_free));
 }
+
 SfiBool
 sfi_glue_vcall_bool (const gchar *proc_name,
 		     guint8       first_arg_type,
@@ -316,7 +354,9 @@ sfi_glue_vcall_bool (const gchar *proc_name,
   va_list var_args;
   GValue *rvalue;
   SfiBool retv = FALSE;
+
   g_return_val_if_fail (proc_name != NULL, FALSE);
+
   va_start (var_args, first_arg_type);
   rvalue = sfi_glue_call_valist (proc_name, first_arg_type, var_args);
   va_end (var_args);
@@ -326,6 +366,7 @@ sfi_glue_vcall_bool (const gchar *proc_name,
     sfi_glue_gc_free_now (rvalue, SfiGlueGcFreeFunc (sfi_value_free));
   return retv;
 }
+
 SfiInt
 sfi_glue_vcall_int (const gchar *proc_name,
 		    guint8       first_arg_type,
@@ -334,7 +375,9 @@ sfi_glue_vcall_int (const gchar *proc_name,
   va_list var_args;
   GValue *rvalue;
   SfiInt retv = 0;
+
   g_return_val_if_fail (proc_name != NULL, 0);
+
   va_start (var_args, first_arg_type);
   rvalue = sfi_glue_call_valist (proc_name, first_arg_type, var_args);
   va_end (var_args);
@@ -344,6 +387,7 @@ sfi_glue_vcall_int (const gchar *proc_name,
     sfi_glue_gc_free_now (rvalue, SfiGlueGcFreeFunc (sfi_value_free));
   return retv;
 }
+
 SfiNum
 sfi_glue_vcall_num (const gchar    *proc_name,
 		    guint8          first_arg_type,
@@ -352,7 +396,9 @@ sfi_glue_vcall_num (const gchar    *proc_name,
   va_list var_args;
   GValue *rvalue;
   SfiNum retv = 0;
+
   g_return_val_if_fail (proc_name != NULL, 0);
+
   va_start (var_args, first_arg_type);
   rvalue = sfi_glue_call_valist (proc_name, first_arg_type, var_args);
   va_end (var_args);
@@ -362,6 +408,7 @@ sfi_glue_vcall_num (const gchar    *proc_name,
     sfi_glue_gc_free_now (rvalue, SfiGlueGcFreeFunc (sfi_value_free));
   return retv;
 }
+
 SfiReal
 sfi_glue_vcall_real (const gchar    *proc_name,
 		     guint8          first_arg_type,
@@ -370,7 +417,9 @@ sfi_glue_vcall_real (const gchar    *proc_name,
   va_list var_args;
   GValue *rvalue;
   SfiReal retv = 0;
+
   g_return_val_if_fail (proc_name != NULL, 0);
+
   va_start (var_args, first_arg_type);
   rvalue = sfi_glue_call_valist (proc_name, first_arg_type, var_args);
   va_end (var_args);
@@ -380,6 +429,7 @@ sfi_glue_vcall_real (const gchar    *proc_name,
     sfi_glue_gc_free_now (rvalue, SfiGlueGcFreeFunc (sfi_value_free));
   return retv;
 }
+
 const gchar*
 sfi_glue_vcall_string (const gchar    *proc_name,
 		       guint8          first_arg_type,
@@ -388,7 +438,9 @@ sfi_glue_vcall_string (const gchar    *proc_name,
   va_list var_args;
   GValue *rvalue;
   const char *retv = NULL;
+
   g_return_val_if_fail (proc_name != NULL, NULL);
+
   va_start (var_args, first_arg_type);
   rvalue = sfi_glue_call_valist (proc_name, first_arg_type, var_args);
   va_end (var_args);
@@ -399,6 +451,7 @@ sfi_glue_vcall_string (const gchar    *proc_name,
     }
   return retv ? retv : "";
 }
+
 const gchar*
 sfi_glue_vcall_choice (const gchar    *proc_name,
 		       guint8          first_arg_type,
@@ -407,7 +460,9 @@ sfi_glue_vcall_choice (const gchar    *proc_name,
   va_list var_args;
   GValue *rvalue;
   const char *retv = NULL;
+
   g_return_val_if_fail (proc_name != NULL, NULL);
+
   va_start (var_args, first_arg_type);
   rvalue = sfi_glue_call_valist (proc_name, first_arg_type, var_args);
   va_end (var_args);
@@ -418,6 +473,7 @@ sfi_glue_vcall_choice (const gchar    *proc_name,
     }
   return retv ? retv : "";
 }
+
 SfiProxy
 sfi_glue_vcall_proxy (const gchar *proc_name,
 		      guint8       first_arg_type,
@@ -426,7 +482,9 @@ sfi_glue_vcall_proxy (const gchar *proc_name,
   va_list var_args;
   GValue *rvalue;
   SfiProxy retv = 0;
+
   g_return_val_if_fail (proc_name != NULL, 0);
+
   va_start (var_args, first_arg_type);
   rvalue = sfi_glue_call_valist (proc_name, first_arg_type, var_args);
   va_end (var_args);
@@ -436,6 +494,7 @@ sfi_glue_vcall_proxy (const gchar *proc_name,
     sfi_glue_gc_free_now (rvalue, SfiGlueGcFreeFunc (sfi_value_free));
   return retv;
 }
+
 SfiSeq*
 sfi_glue_vcall_seq (const gchar *proc_name,
 		    guint8       first_arg_type,
@@ -444,7 +503,9 @@ sfi_glue_vcall_seq (const gchar *proc_name,
   va_list var_args;
   GValue *rvalue;
   SfiSeq *retv = NULL;
+
   g_return_val_if_fail (proc_name != NULL, NULL);
+
   va_start (var_args, first_arg_type);
   rvalue = sfi_glue_call_valist (proc_name, first_arg_type, var_args);
   va_end (var_args);
@@ -460,6 +521,7 @@ sfi_glue_vcall_seq (const gchar *proc_name,
     }
   return retv;
 }
+
 SfiRec*
 sfi_glue_vcall_rec (const gchar *proc_name,
 		    guint8       first_arg_type,
@@ -468,7 +530,9 @@ sfi_glue_vcall_rec (const gchar *proc_name,
   va_list var_args;
   GValue *rvalue;
   SfiRec *retv = NULL;
+
   g_return_val_if_fail (proc_name != NULL, NULL);
+
   va_start (var_args, first_arg_type);
   rvalue = sfi_glue_call_valist (proc_name, first_arg_type, var_args);
   va_end (var_args);
@@ -479,6 +543,7 @@ sfi_glue_vcall_rec (const gchar *proc_name,
     }
   return retv;
 }
+
 SfiFBlock*
 sfi_glue_vcall_fblock (const gchar *proc_name,
 		       guint8       first_arg_type,
@@ -486,7 +551,9 @@ sfi_glue_vcall_fblock (const gchar *proc_name,
 {
   va_list var_args;
   GValue *rvalue;
+
   g_return_val_if_fail (proc_name != NULL, NULL);
+
   va_start (var_args, first_arg_type);
   rvalue = sfi_glue_call_valist (proc_name, first_arg_type, var_args);
   va_end (var_args);
@@ -497,6 +564,7 @@ sfi_glue_vcall_fblock (const gchar *proc_name,
     }
   return NULL;
 }
+
 SfiBBlock*
 sfi_glue_vcall_bblock (const gchar *proc_name,
 		       guint8       first_arg_type,
@@ -504,7 +572,9 @@ sfi_glue_vcall_bblock (const gchar *proc_name,
 {
   va_list var_args;
   GValue *rvalue;
+
   g_return_val_if_fail (proc_name != NULL, NULL);
+
   va_start (var_args, first_arg_type);
   rvalue = sfi_glue_call_valist (proc_name, first_arg_type, var_args);
   va_end (var_args);
@@ -515,11 +585,14 @@ sfi_glue_vcall_bblock (const gchar *proc_name,
     }
   return NULL;
 }
+
+
 /* --- Glue utilities --- */
 SfiGlueIFace*
 sfi_glue_iface_new (const gchar *iface_name)
 {
   SfiGlueIFace *iface;
+
   iface = g_new0 (SfiGlueIFace, 1);
   iface->type_name = g_strdup (iface_name ? iface_name : "<null>");
   iface->n_ifaces = 0;
@@ -527,21 +600,26 @@ sfi_glue_iface_new (const gchar *iface_name)
   iface->n_props = 0;
   iface->props = NULL;
   iface->ref_count = 1;
+
   return iface;
 }
+
 SfiGlueIFace*
 sfi_glue_iface_ref (SfiGlueIFace *iface)
 {
   g_return_val_if_fail (iface != NULL, NULL);
   g_return_val_if_fail (iface->ref_count > 0, NULL);
+
   iface->ref_count++;
   return iface;
 }
+
 void
 sfi_glue_iface_unref (SfiGlueIFace *iface)
 {
   g_return_if_fail (iface != NULL);
   g_return_if_fail (iface->ref_count > 0);
+
   iface->ref_count--;
   if (!iface->ref_count)
     {
@@ -552,11 +630,14 @@ sfi_glue_iface_unref (SfiGlueIFace *iface)
       g_free (iface);
     }
 }
+
 SfiGlueProc*
 sfi_glue_proc_new (const gchar *proc_name)
 {
   SfiGlueProc *proc;
+
   g_return_val_if_fail (proc_name != NULL, NULL);
+
   proc = g_new0 (SfiGlueProc, 1);
   proc->name = g_strdup (proc_name);
   proc->help = NULL;
@@ -568,18 +649,22 @@ sfi_glue_proc_new (const gchar *proc_name)
   proc->ref_count = 1;
   return proc;
 }
+
 void
 sfi_glue_proc_add_param (SfiGlueProc *proc,
 			 GParamSpec  *param)
 {
   guint i;
+
   g_return_if_fail (proc != NULL);
   g_return_if_fail (param != NULL);
+
   i = proc->n_params++;
   proc->params = g_renew (GParamSpec*, proc->params, proc->n_params);
   proc->params[i] = g_param_spec_ref (param);
   g_param_spec_sink (param);
 }
+
 void
 sfi_glue_proc_add_ret_param (SfiGlueProc *proc,
 			     GParamSpec  *param)
@@ -587,26 +672,32 @@ sfi_glue_proc_add_ret_param (SfiGlueProc *proc,
   g_return_if_fail (proc != NULL);
   g_return_if_fail (param != NULL);
   g_return_if_fail (proc->ret_param == NULL);
+
   proc->ret_param = g_param_spec_ref (param);
   g_param_spec_sink (param);
 }
+
 SfiGlueProc*
 sfi_glue_proc_ref (SfiGlueProc *proc)
 {
   g_return_val_if_fail (proc != NULL, NULL);
   g_return_val_if_fail (proc->ref_count > 0, NULL);
+
   proc->ref_count++;
   return proc;
 }
+
 void
 sfi_glue_proc_unref (SfiGlueProc *proc)
 {
   g_return_if_fail (proc != NULL);
   g_return_if_fail (proc->ref_count > 0);
+
   proc->ref_count--;
   if (!proc->ref_count)
     {
       g_return_if_fail (_sfi_glue_gc_test (proc, (void*) sfi_glue_proc_unref) == FALSE);
+
       if (proc->ret_param)
 	g_param_spec_unref (proc->ret_param);
       for (uint i = 0; i < proc->n_params; i++)
@@ -619,11 +710,14 @@ sfi_glue_proc_unref (SfiGlueProc *proc)
       g_free (proc);
     }
 }
+
+
 /* --- garbage collector --- */
 typedef struct {
   gpointer data;
   void   (*free_func) (gpointer);
 } GcEntry;
+
 static uint
 glue_gc_entry_hash (gconstpointer key)
 {
@@ -634,6 +728,7 @@ glue_gc_entry_hash (gconstpointer key)
     h = h + (h >> 47) - (h >> 55);
   return h;
 }
+
 static gboolean
 glue_gc_entry_equal (gconstpointer key1,
 		     gconstpointer key2)
@@ -642,6 +737,7 @@ glue_gc_entry_equal (gconstpointer key1,
   const GcEntry *e2 = (const GcEntry*) key2;
   return e1->free_func == e2->free_func && e1->data == e2->data;
 }
+
 static void
 glue_gc_entry_destroy (gpointer hvalue)
 {
@@ -649,25 +745,30 @@ glue_gc_entry_destroy (gpointer hvalue)
   entry->free_func (entry->data);
   g_free (entry);
 }
+
 static GHashTable*
 glue_gc_hash_table_new (void)
 {
   return g_hash_table_new_full (glue_gc_entry_hash, glue_gc_entry_equal, NULL, glue_gc_entry_destroy);
 }
+
 void
 sfi_glue_gc_add (gpointer          data,
 		 SfiGlueGcFreeFunc free_func)
 {
   SfiGlueContext *context = sfi_glue_fetch_context (G_STRLOC);
+
   g_return_if_fail (free_func != NULL);
   g_return_if_fail (_sfi_glue_gc_test (data, (void*) g_free) == FALSE); /* can't catch ref counted objects */
   g_return_if_fail (_sfi_glue_gc_test (data, (void*) g_strfreev) == FALSE);
   g_return_if_fail (_sfi_glue_gc_test (data, (void*) sfi_value_free) == FALSE);
+
   GcEntry *entry = g_new (GcEntry, 1);
   entry->data = data;
   entry->free_func = SfiGlueGcFreeFunc (free_func);
   g_hash_table_replace (context->gc_hash, entry, entry);
 }
+
 gboolean
 _sfi_glue_gc_test (gpointer        data,
 		   gpointer        free_func)
@@ -678,13 +779,16 @@ _sfi_glue_gc_test (gpointer        data,
   key.free_func = SfiGlueGcFreeFunc (free_func);
   return g_hash_table_lookup (context->gc_hash, &key) != NULL;
 }
+
 void
 sfi_glue_gc_remove (gpointer          data,
 		    SfiGlueGcFreeFunc free_func)
 {
   SfiGlueContext *context = sfi_glue_fetch_context (G_STRLOC);
   GcEntry key, *gc_entry;
+
   g_return_if_fail (free_func != NULL);
+
   key.data = data;
   key.free_func = SfiGlueGcFreeFunc (free_func);
   gc_entry = (GcEntry*) g_hash_table_lookup (context->gc_hash, &key);
@@ -692,13 +796,16 @@ sfi_glue_gc_remove (gpointer          data,
   g_hash_table_steal (context->gc_hash, gc_entry);
   g_free (gc_entry);
 }
+
 void
 sfi_glue_gc_free_now (gpointer          data,
 		      SfiGlueGcFreeFunc free_func)
 {
   SfiGlueContext *context = sfi_glue_fetch_context (G_STRLOC);
   GcEntry key, *gc_entry;
+
   g_return_if_fail (free_func != NULL);
+
   key.data = data;
   key.free_func = SfiGlueGcFreeFunc (free_func);
   gc_entry = (GcEntry*) g_hash_table_lookup (context->gc_hash, &key);
@@ -707,6 +814,7 @@ sfi_glue_gc_free_now (gpointer          data,
   g_free (gc_entry);
   key.free_func (key.data);
 }
+
 static gboolean
 slist_entries (gpointer key,
 	       gpointer value,
@@ -716,10 +824,12 @@ slist_entries (gpointer key,
   *slist_p = g_slist_prepend (*slist_p, value);
   return TRUE;
 }
+
 void
 sfi_glue_gc_run (void)
 {
   SfiGlueContext *context = sfi_glue_fetch_context (G_STRLOC);
+
   do
     {
       GSList *slist, *gclist = NULL;
@@ -734,4 +844,5 @@ sfi_glue_gc_run (void)
     }
   while (g_hash_table_size (context->gc_hash));
 }
+
 /* vim:set ts=8 sts=2 sw=2: */

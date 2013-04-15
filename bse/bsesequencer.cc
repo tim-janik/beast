@@ -240,6 +240,7 @@ Sequencer::start_song (BseSong *song, uint64 start_stamp)
   g_return_if_fail (song->sequencer_start_request_SL == 0);
   g_assert (song->sequencer_owns_refcount_SL == false);
   start_stamp = MAX (start_stamp, 1);
+
   g_object_ref (song);
   BSE_SEQUENCER_LOCK();
   song->sequencer_owns_refcount_SL = true;
@@ -507,6 +508,7 @@ Sequencer::process_part_SL (BsePart *part, double start_stamp, uint start_tick,
           note++;
         }
     }
+
   node = bse_part_controls_lookup_ge (&part->controls, start_tick);
   last = bse_part_controls_lookup_lt (&part->controls, tick_bound);
   if (node) while (node <= last)

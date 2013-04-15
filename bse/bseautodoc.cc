@@ -10,6 +10,8 @@
 #include <unistd.h>
 #include <sys/stat.h>
 #include <fcntl.h>
+
+
 static const gchar*
 beauty_float (gdouble f)
 {
@@ -31,17 +33,21 @@ beauty_float (gdouble f)
   g_free (s);
   return c;
 }
+
 static GQuark boxed_type_tag = 0;
+
 static void
 tag_all_boxed_pspecs (void)
 {
   GType *children;
   guint i;
+
   children = g_type_children (G_TYPE_BOXED, NULL);
   for (i = 0; children[i]; i++)
     {
       SfiRecFields rfields = sfi_boxed_type_get_rec_fields (children[i]);
       GParamSpec *element = sfi_boxed_type_get_seq_element (children[i]);
+
       if (element)
 	{
 	  g_param_spec_ref (element);
@@ -59,6 +65,7 @@ tag_all_boxed_pspecs (void)
     }
   g_free (children);
 }
+
 static const gchar*
 lookup_boxed_tag (GParamSpec *pspec)
 {
@@ -66,6 +73,7 @@ lookup_boxed_tag (GParamSpec *pspec)
     return (const gchar*) g_param_spec_get_qdata (pspec, boxed_type_tag);
   return NULL;
 }
+
 static gchar*
 type_name (GParamSpec *pspec)
 {
@@ -115,7 +123,9 @@ type_name (GParamSpec *pspec)
     }
   return NULL;
 }
+
 static GSList *all_strings = NULL;
+
 static const gchar*
 qescape (const gchar *name)
 {
@@ -125,6 +135,7 @@ qescape (const gchar *name)
   all_strings = g_slist_prepend (all_strings, s);
   return s;
 }
+
 static gchar*
 pspec_construct_description (GParamSpec  *pspec,
                              const gchar *cname,
@@ -132,11 +143,14 @@ pspec_construct_description (GParamSpec  *pspec,
 {
   const gchar *blurb = g_param_spec_get_blurb (pspec);
   const gchar *nick = g_param_spec_get_nick (pspec);
+
   if (blurb && (strcmp (blurb, cname) == 0 || strcmp (blurb, sname) == 0))
     blurb = NULL;
   if (nick && (strcmp (nick, cname) == 0 || strcmp (nick, sname) == 0))
     nick = NULL;
+
   GString *gstring = g_string_new ("");
+
   if (blurb || nick)
     {
       if (gstring->str[0])
@@ -148,6 +162,7 @@ pspec_construct_description (GParamSpec  *pspec,
     }
   while (gstring->len && gstring->str[gstring->len - 1] == '\n')
     gstring->str[--gstring->len] = 0;
+
   if (SFI_IS_PSPEC_INT (pspec))
     {
       SfiInt imin, imax;
@@ -162,11 +177,13 @@ pspec_construct_description (GParamSpec  *pspec,
     }
   while (gstring->len && gstring->str[gstring->len - 1] == '\n')
     gstring->str[--gstring->len] = 0;
+
   if (gstring->len)
     return g_string_free (gstring, FALSE);
   g_string_free (gstring, TRUE);
   return NULL;
 }
+
 static void
 print_pspec (GParamSpec  *pspec,
              const gchar *indent,
@@ -191,12 +208,15 @@ print_pspec (GParamSpec  *pspec,
   g_free (tname);
   g_free (blurb);
 }
+
 static void
 show_procdoc (void)
 {
   BseCategorySeq *cseq;
   guint i;
+
   g_print ("functions = (\n");
+
   cseq = bse_categories_match_typed ("*", BSE_TYPE_PROCEDURE);
   for (i = 0; i < cseq->n_cats; i++)
     {
@@ -206,6 +226,7 @@ show_procdoc (void)
       gchar *cname = g_type_name_to_cname (cseq->cats[i]->type);
       gchar *sname = g_type_name_to_sname (cseq->cats[i]->type);
       guint j;
+
       g_print ("{\n");
       g_print ("  'name': '%s',\n", cname);
       g_print ("  'aliases': [ ('%s', 'scheme'), ], # aliases\n", sname);
@@ -216,6 +237,7 @@ show_procdoc (void)
           print_pspec (pspec, "    ", "");
         }
       g_print ("  ],\n");
+
       if (pclass->n_out_pspecs == 1)
         {
           g_print ("  'return': \n");
@@ -224,8 +246,10 @@ show_procdoc (void)
         }
       else if (pclass->n_out_pspecs > 1)
         g_print ("  'return': ('RETURNS', 'MultiReturn', '', '', ('%s', '', 0), ),\n", _("This procedure has multiple return values."));
+
       if (blurb)
         g_print ("  'description': (%s, '', 0),\n", qescape (blurb));
+
       /* procedures/%s:0 is a lame substitute for the real file/line location */
       if (bse_type_get_file (type))
         {
@@ -242,6 +266,7 @@ show_procdoc (void)
         }
       else
         g_print ("  'location': ('procedures/%s', 0),\n", cseq->cats[i]->type);
+
       g_print ("},\n");
       g_type_class_unref (pclass);
       g_free (cname);
@@ -250,18 +275,22 @@ show_procdoc (void)
   g_print ("); # end of functions\n");
   bse_category_seq_free (cseq);
 }
+
 static void
 show_structdoc (void)
 {
   GType *children;
   guint i;
+
   g_print ("structures = (\n");
+
   children = g_type_children (G_TYPE_BOXED, NULL);
   for (i = 0; children[i]; i++)
     {
       GType type = children[i];
       SfiRecFields rfields = sfi_boxed_type_get_rec_fields (type);
       GParamSpec *element = sfi_boxed_type_get_seq_element (type);
+
       if (element || rfields.n_fields)
 	{
 	  const gchar *name = g_type_name (type);
@@ -271,16 +300,19 @@ show_structdoc (void)
 	  const gchar *cstring;
 	  SfiRing *ring, *pspecs = NULL;
 	  guint j;
+
           g_print ("{\n");
           g_print ("  'name': '%s',\n", name);
           g_print ("  'hint': '%s',\n", dname);
           g_print ("  'aliases': [ ('%s', 'scheme'), ], # aliases\n", sname);
           g_print ("  'fields': [\n");
 	  g_print ("\n");
+
           for (j = 0; j < rfields.n_fields; j++)
             pspecs = sfi_ring_append (pspecs, rfields.fields[j]);
           if (element)
 	    pspecs = sfi_ring_append (pspecs, element);
+
 	  if (element)
 	    {
 	      GParamSpec *pspec = (GParamSpec*) pspecs->data;
@@ -294,6 +326,7 @@ show_structdoc (void)
               print_pspec (pspec, "    ", element ? "*" : "");
 	    }
           g_print ("  ],\n");
+
           GString *full_description = g_string_new ("");
 	  cstring = bse_type_get_blurb (type);
           if (cstring)
@@ -316,8 +349,10 @@ show_structdoc (void)
               g_string_append (full_description, " ");
               g_string_append (full_description, cstring);
             }
+
           if (full_description->str[0])
             g_print ("  'description': (%s, '', 0),\n", qescape (full_description->str));
+
           /* structures/%s:0 is a lame substitute for the real file/line location */
           if (bse_type_get_file (type))
             {
@@ -334,8 +369,10 @@ show_structdoc (void)
             }
           else
             g_print ("  'location': ('structures/%s', 0),\n", g_type_name (type));
+
           g_print ("},\n");
           g_string_free (full_description, TRUE);
+
 	  g_free (cname);
 	  g_free (sname);
 	  sfi_ring_free (pspecs);
@@ -344,6 +381,7 @@ show_structdoc (void)
   g_print ("); # end of structures\n");
   g_free (children);
 }
+
 static gboolean
 strequals (const gchar *s1,
            const gchar *s2)
@@ -352,6 +390,7 @@ strequals (const gchar *s1,
     return s1 == s2;
   return strcmp (s1, s2) == 0;
 }
+
 static void
 showdoc_print_type (GObjectClass *oclass,
                     gboolean      show_channels)
@@ -361,6 +400,7 @@ showdoc_print_type (GObjectClass *oclass,
   const gchar *string;
   g_print ("{\n");
   g_print ("  'name': '%s',\n", g_type_name (type));
+
   GString *full_description = g_string_new ("");
   const gchar *cstring = bse_type_get_blurb (type);
   if (cstring)
@@ -386,6 +426,7 @@ showdoc_print_type (GObjectClass *oclass,
   if (full_description->str[0])
     g_print ("  'description': (%s, '', 0),\n", qescape (full_description->str));
   g_string_free (full_description, TRUE);
+
   g_print ("  'properties': [\n");
   btype = G_TYPE_OBJECT;
   do
@@ -406,6 +447,7 @@ showdoc_print_type (GObjectClass *oclass,
     }
   while (btype != type);
   g_print ("  ],\n");
+
   /* show signals */
   guint n = 0, ns, *sigs = g_signal_list_ids (type, &n);
   g_print ("  'signals': [\n");
@@ -424,6 +466,7 @@ showdoc_print_type (GObjectClass *oclass,
     }
   g_free (sigs);
   g_print ("  ],\n");
+
   /* show input and output channels */
   g_print ("  'channels': [\n");
   if (show_channels &&
@@ -459,8 +502,10 @@ showdoc_print_type (GObjectClass *oclass,
       g_object_unref (source);
     }
   g_print ("  ],\n");
+
   g_print ("},\n");
 }
+
 static void
 showdoc_descendants (GType type)
 {
@@ -472,6 +517,7 @@ showdoc_descendants (GType type)
   g_free (children);
   g_type_class_unref (oclass);
 }
+
 static gint
 help (const gchar *name,
       const gchar *arg)
@@ -483,8 +529,10 @@ help (const gchar *name,
   fprintf (stderr, "  -s                  include scripts\n");
   fprintf (stderr, "  -h                  show help\n");
   fprintf (stderr, "  --seealso <link>    add a SEE ALSO section link\n");
+
   return arg != NULL;
 }
+
 int
 main (gint   argc,
       gchar *argv[])
@@ -553,5 +601,6 @@ main (gint   argc,
     }
   else
     return help (argv[0], NULL);
+
   return 0;
 }

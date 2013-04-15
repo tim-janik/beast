@@ -1,9 +1,13 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #ifndef __DAV_SYNDRUM_H__
 #define __DAV_SYNDRUM_H__
+
 #include <bse/bseplugin.hh>
 #include <bse/bsesource.hh>
+
 G_BEGIN_DECLS
+
+
 /* --- object type macros --- */
 #define DAV_TYPE_SYN_DRUM              (dav_syn_drum_get_type())
 #define DAV_SYN_DRUM(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), DAV_TYPE_SYN_DRUM, DavSynDrum))
@@ -47,5 +51,7 @@ enum
   DAV_SYN_DRUM_OCHANNEL_MONO,
   DAV_SYN_DRUM_N_OCHANNELS
 };
+
 G_END_DECLS
+
 #endif /* __DAV_SYNDRUM_H__ */
