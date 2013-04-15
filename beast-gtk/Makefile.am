@@ -187,12 +187,7 @@ beast___BIN_VERSION__SOURCES = bstmain.cc $(beast_sources)
 beast___BIN_VERSION__LDADD = $(progs_LDADD)
 beast_vOBJECTS  = $(beast___BIN_VERSION__OBJECTS)
 noinst_PROGRAMS = $(ALLTESTS)
-progs_LDADD     = $(strip                                       \
-	$(BEAST_LIBS) 						\
-	 $(RAPICORN_LIBS)					\
-	./gxk/libgxk.a $(GXK_LIBS)                              \
-	$(top_builddir)/bse/libbse.la $(BSE_LIBS)               \
-)
+progs_LDADD     = $(BEAST_LIBS) ./gxk/libgxk.a $(GXK_LIBS) $(top_builddir)/bse/libbse.la $(RAPICORN_LIBS) $(BSE_LIBS)
 
 noinst_PROGRAMS += tsmview
 tsmview_SOURCES  = tsmview.cc
