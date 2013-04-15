@@ -48,6 +48,9 @@ bse_flipper_check (const char *key)
 void
 sfi_init (int *argcp, char **argv, const char *app_name, const Bse::StringVector &args)
 {
+  static bool initialized = false;
+  if (initialized)
+    return;
   char *prg_name = argcp && *argcp ? g_path_get_basename (argv[0]) : NULL;
   if (args.size() == 1 && args[0] == "rapicorn-test-initialization=1")
     Rapicorn::init_core_test (app_name ? app_name : prg_name, argcp, argv);
@@ -60,6 +63,7 @@ sfi_init (int *argcp, char **argv, const char *app_name, const Bse::StringVector
   _sfi_init_time ();
   _sfi_init_glue ();
   _sfi_init_file_crawler ();
+  initialized = true;
 }
 
 /* --- file testing --- */
