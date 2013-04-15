@@ -26,13 +26,15 @@ struct CDataHandleFlac : public GslDataHandle
   DataHandleFlac* cxx_dh;
 };
 
+// == DataHandleFlac ==
 class DataHandleFlac {
-private:
   // ***************************** virtual file I/O ********************************
   int64     m_file_byte_offset;
   int64     m_file_byte_size;
   GslRFile *m_rfile;
-
+  bool                              m_error_occurred;
+  FLAC__StreamDecoderErrorStatus    m_error_status;     // pass error status from flac callback to caller
+private:
   static FLAC__StreamDecoderReadStatus
   file_read_callback (const FLAC__StreamDecoder  *decoder,
                       FLAC__byte                  buffer[],
@@ -52,7 +54,6 @@ private:
     else
       return FLAC__STREAM_DECODER_READ_STATUS_CONTINUE;
   }
-
   static FLAC__StreamDecoderSeekStatus
   file_seek_callback (const FLAC__StreamDecoder *decoder,
                       FLAC__uint64               absolute_byte_offset,
@@ -68,7 +69,6 @@ private:
     else
       return FLAC__STREAM_DECODER_SEEK_STATUS_ERROR;
   }
-
   static FLAC__StreamDecoderTellStatus
   file_tell_callback (const FLAC__StreamDecoder *decoder,
                       FLAC__uint64              *absolute_byte_offset,
@@ -79,7 +79,6 @@ private:
     *absolute_byte_offset = gsl_rfile_position (dh->m_rfile) - dh->m_file_byte_offset;
     return FLAC__STREAM_DECODER_TELL_STATUS_OK;
   }
-
   static FLAC__StreamDecoderLengthStatus
   file_length_callback (const FLAC__StreamDecoder *decoder,
                         FLAC__uint64              *stream_length,
@@ -90,7 +89,6 @@ private:
     *stream_length = dh->m_file_byte_size;
     return FLAC__STREAM_DECODER_LENGTH_STATUS_OK;
   }
-
   static FLAC__bool
   file_eof_callback (const FLAC__StreamDecoder *decoder,
                      void *client_data)
@@ -99,9 +97,6 @@ private:
 
     return dh->m_file_byte_size == (gsl_rfile_position (dh->m_rfile) - dh->m_file_byte_offset);
   }
-
-// *******************************************************************************
-
   static FLAC__StreamDecoderWriteStatus
   flac_write_callback (const FLAC__StreamDecoder  *decoder,
                        const FLAC__Frame          *frame,
@@ -126,11 +121,6 @@ private:
       }
     return FLAC__STREAM_DECODER_WRITE_STATUS_CONTINUE;
   }
-
-  // pass error status from flac callback to caller
-  bool                              m_error_occurred;
-  FLAC__StreamDecoderErrorStatus    m_error_status;
-
   static void
   flac_error_callback (const FLAC__StreamDecoder     *decoder,
                        FLAC__StreamDecoderErrorStatus status,
@@ -140,7 +130,6 @@ private:
     dh->m_error_occurred = true;
     dh->m_error_status = status;
   }
-
 protected:
   CDataHandleFlac	m_dhandle;
   int                   m_n_channels;
@@ -153,8 +142,8 @@ protected:
   FlacZOffset           m_init_add_zoffset;
   int64                 m_init_byte_offset;
   int64                 m_init_byte_size;
-
 public:
+  static GslDataHandleFuncs dh_vtable;
   DataHandleFlac (const String& file_name,
 		  float         osc_freq,
                   FlacZOffset   add_zoffset,
@@ -172,15 +161,12 @@ public:
     m_dhandle.name = g_strdup (m_file_name.c_str());
     m_osc_freq = osc_freq;
   }
-
-  /* protected destructor: (use reference counting instead) */
   virtual
-  ~DataHandleFlac()
+  ~DataHandleFlac()     // protected destructor: (use reference counting instead)
   {
     if (m_init_ok)
       gsl_data_handle_common_free (&m_dhandle);
   }
-
   BseErrorType
   open (GslDataHandleSetup *setup)
   {
@@ -242,13 +228,11 @@ public:
 
     return BSE_ERROR_NONE;
   }
-
   void
   close()
   {
-    m_dhandle.setup.xinfos = NULL;	/* cleanup pointer reference */
+    m_dhandle.setup.xinfos = NULL;      // cleanup pointer reference
   }
-
   int64
   read_samples (int64 voffset, int64 n_values, float *values)
   {
@@ -269,7 +253,6 @@ public:
         std::copy (m_buffer.begin() + buffer_offset, m_buffer.begin() + buffer_offset + n_values, values);
         return n_values;
       }
-
     // need to seek to get to the right location
     m_error_occurred = false;
     FLAC__bool seek_ok = FLAC__stream_decoder_seek_absolute (m_decoder, voffset / m_n_channels);
@@ -281,8 +264,6 @@ public:
 
     return 0;
   }
-
-  static GslDataHandleFuncs dh_vtable;
   static GslDataHandle*
   dh_create (DataHandleFlac *cxx_dh)
   {
@@ -303,7 +284,6 @@ public:
   {
     return static_cast<CDataHandleFlac *> (dhandle)->cxx_dh;
   }
-
   int64
   file_byte_offset()
   {
@@ -315,7 +295,7 @@ public:
     return m_file_byte_size;
   }
 private:
-  /* for the "C" API (vtable) */
+  // for the "C" API (vtable)
   static BseErrorType
   dh_open (GslDataHandle *dhandle, GslDataHandleSetup *setup)
   {
@@ -338,8 +318,7 @@ private:
   }
 };
 
-GslDataHandleFuncs DataHandleFlac::dh_vtable
-{
+GslDataHandleFuncs DataHandleFlac::dh_vtable = GslDataHandleFuncs {
   dh_open,
   dh_read,
   dh_close,
@@ -348,13 +327,13 @@ GslDataHandleFuncs DataHandleFlac::dh_vtable
   dh_destroy,
 };
 
-}
+} // Bse
 
+// == Public FLAC C API ==
 using namespace Bse;
 
 GslDataHandle*
-bse_data_handle_new_flac (const char    *file_name,
-                          gfloat         osc_freq)
+bse_data_handle_new_flac (const char *file_name, float osc_freq)
 {
   DataHandleFlac *cxx_dh = new DataHandleFlac (file_name, osc_freq, NO_ZOFFSET);
   return DataHandleFlac::dh_create (cxx_dh);
@@ -366,7 +345,7 @@ bse_data_handle_new_flac_zoffset (const char *file_name,
                                   int64       byte_offset,
                                   int64       byte_size,
                                   uint       *n_channels_p,
-                                  gfloat     *mix_freq_p)
+                                  float      *mix_freq_p)
 {
   g_return_val_if_fail (file_name != NULL, NULL);
   g_return_val_if_fail (byte_offset >= 0, NULL);
@@ -396,9 +375,8 @@ bse_data_handle_new_flac_zoffset (const char *file_name,
     }
 }
 
-/* flac storage */
-
-Flac1Handle *
+// == FLAC Storage ==
+Flac1Handle*
 Flac1Handle::create (GslDataHandle *dhandle)
 {
   if (dhandle->vtable == &DataHandleFlac::dh_vtable &&
