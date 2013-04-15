@@ -14,7 +14,7 @@ PRJ_VERSION   = $(shell sed -ne "/^[ \t]*VERSION[ \t]*=/ { s/^[^=]*=[ \t]*//; p;
 DOC_VERSION = $(or $(DSC_VERSION), $(PRJ_VERSION))
 SED_MKEVEN  = sed 's/1$$/0/;s/3$$/2/;s/5$$/4/;s/7$$/6/;s/9$$/8/'
 
-DOC_DIRS   = birnet/ sfi/ bse/ plugins/ plugins/freeverb/ beast-gtk/ beast-gtk/gxk/ launchers/ shell/ tools/
+DOC_DIRS   = sfi/ bse/ plugins/ plugins/freeverb/ beast-gtk/ beast-gtk/gxk/ launchers/ shell/ tools/
 DOCU_GLOBS  = *.dox *.py $(DOCU_HGLOBS)
 DOCU_HGLOBS = *.idl *.h *.H *.hh *.proc
 DOCU_CGLOBS = $(DOCU_GLOBS) *.c *.C *.cc
