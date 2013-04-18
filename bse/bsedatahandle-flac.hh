@@ -4,7 +4,7 @@
 
 #include <bse/gslfilehash.hh>
 
-/* --- flac datahandle C API--- */
+// == flac datahandle C API ==
 GslDataHandle*    bse_data_handle_new_flac          (const char* file_name, float osc_freq);
 GslDataHandle*    bse_data_handle_new_flac_zoffset  (const char *file_name, float osc_freq,
                                                      int64 byte_offset, int64 byte_size,
@@ -35,4 +35,4 @@ public:
 
 } // Bse
 
-#endif /* __BSE_DATA_HANDLE_FLAC_HH */
+#endif // __BSE_DATA_HANDLE_FLAC_HH
