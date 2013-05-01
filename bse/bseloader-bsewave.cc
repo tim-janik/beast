@@ -3,6 +3,7 @@
 #include "bsemain.hh"
 #include "gsldatahandle.hh"
 #include "gsldatahandle-vorbis.hh"
+#include "bsedatahandle-flac.hh"
 #include "bsemath.hh"
 #include <sfi/sfistore.hh>
 #include <fcntl.h>
@@ -27,6 +28,7 @@ typedef enum
   BSEWAVE_TOKEN_OSC_FREQ,
   BSEWAVE_TOKEN_XINFO,
   BSEWAVE_TOKEN_VORBIS_LINK,
+  BSEWAVE_TOKEN_FLAC_LINK,
   BSEWAVE_TOKEN_FILE,
   BSEWAVE_TOKEN_INDEX,          /* file (auto detect loader) */
   BSEWAVE_TOKEN_RAW_FILE,
@@ -61,7 +63,7 @@ typedef enum
 static const char *bsewave_tokens[] = {
   /* keyword tokens */
   "wave",       "chunk",        "name",         "n-channels",
-  "midi-note",  "osc-freq",     "xinfo",        "vorbis-link",
+  "midi-note",  "osc-freq",     "xinfo",        "vorbis-link",    "flac-link",
   "file",       "index",        "raw-file",     "boffset",
   "n-values",   "raw-link",     "byte-order",   "format",
   "mix-freq",
@@ -102,6 +104,7 @@ typedef struct
 #define RAW_FILE_MAGIC          (('R' << 24) | ('a' << 16) | ('w' << 8) | 'F')
 #define RAW_LINK_MAGIC          (('R' << 24) | ('a' << 16) | ('w' << 8) | 'L')
 #define VORBIS_LINK_MAGIC       (('O' << 24) | ('/' << 16) | ('V' << 8) | '1')
+#define FLAC_LINK_MAGIC         (('F' << 24) | ('L' << 16) | ('C' << 8) | '1')
 
 /* --- functions --- */
 static GTokenType
@@ -309,6 +312,21 @@ bsewave_parse_chunk_dsc (GScanner        *scanner,
 	g_free (LOADER_FILE (chunk));
 	LOADER_FILE (chunk) = NULL;
         LOADER_TYPE (chunk) = VORBIS_LINK_MAGIC;
+	break;
+      case BSEWAVE_TOKEN_FLAC_LINK:
+	parse_or_return (scanner, '=');
+	parse_or_return (scanner, '(');
+	parse_or_return (scanner, G_TOKEN_IDENTIFIER);
+	if (strcmp (scanner->value.v_identifier, "binary-appendix") != 0)
+	  return G_TOKEN_IDENTIFIER;
+	parse_or_return (scanner, G_TOKEN_INT);
+	LOADER_BOFFSET (chunk) = scanner->value.v_int64;        /* byte offset */
+	parse_or_return (scanner, G_TOKEN_INT);
+	LOADER_LENGTH (chunk) = scanner->value.v_int64;         /* byte length */
+	parse_or_return (scanner, ')');
+	g_free (LOADER_FILE (chunk));
+	LOADER_FILE (chunk) = NULL;
+        LOADER_TYPE (chunk) = FLAC_LINK_MAGIC;
 	break;
       case BSEWAVE_TOKEN_FILE:
 	parse_or_return (scanner, '=');
@@ -785,6 +803,32 @@ bsewave_create_chunk_handle (void         *data,
               gsl_data_handle_unref (tmp_handle);
             }
 	}
+      else
+        *error_p = BSE_ERROR_WAVE_NOT_FOUND;
+      break;
+    case FLAC_LINK_MAGIC:
+      if (LOADER_LENGTH (chunk))        /* inlined binary data */
+        {
+          *error_p = BSE_ERROR_IO;
+          uint vnch = 0;
+	  dhandle = bse_data_handle_new_flac_zoffset (fi->wfi.file_name,
+                                                      chunk->osc_freq,
+                                                      LOADER_BOFFSET (chunk),     /* byte offset */
+                                                      LOADER_LENGTH (chunk),      /* byte length */
+                                                      &vnch, NULL);
+          if (dhandle && vnch != dsc->wdsc.n_channels)
+            {
+              *error_p = BSE_ERROR_WRONG_N_CHANNELS;
+              gsl_data_handle_unref (dhandle);
+              dhandle = NULL;
+            }
+          if (dhandle && chunk->xinfos)
+            {
+              GslDataHandle *tmp_handle = dhandle;
+              dhandle = gsl_data_handle_new_add_xinfos (dhandle, chunk->xinfos);
+              gsl_data_handle_unref (tmp_handle);
+            }
+        }
       else
         *error_p = BSE_ERROR_WAVE_NOT_FOUND;
       break;

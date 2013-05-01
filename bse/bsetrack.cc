@@ -315,6 +315,35 @@ track_uncross_wave (BseItem *owner,
 }
 
 static void
+set_amp_master_volume (BseSNet *snet, const char *amp_name, gchar **xinfos)
+{
+  const gchar *master_volume_db = bse_xinfos_get_value (xinfos, "master-volume-db");
+  if (master_volume_db)
+    {
+      BseItem *amp = bse_container_resolve_upath (BSE_CONTAINER (snet), amp_name);
+      double volume = 0;
+      g_object_get (amp, "master-volume", &volume, NULL);
+      volume *= bse_db_to_factor (g_ascii_strtod (master_volume_db, NULL));
+      g_object_set (amp, "master-volume", volume, NULL);
+    }
+}
+static void
+set_adsr_params (BseSNet *snet, const char *adsr_name, gchar **xinfos)
+{
+  const gchar *adsr_release_time = bse_xinfos_get_value (xinfos, "adsr-release-time");
+  if (adsr_release_time)
+    {
+      BseItem *adsr = bse_container_resolve_upath (BSE_CONTAINER (snet), adsr_name);
+      g_object_set (adsr, "release_time", g_ascii_strtod (adsr_release_time, NULL), NULL);
+    }
+  const gchar *adsr_attack_time = bse_xinfos_get_value (xinfos, "adsr-attack-time");
+  if (adsr_attack_time)
+    {
+      BseItem *adsr = bse_container_resolve_upath (BSE_CONTAINER (snet), adsr_name);
+      g_object_set (adsr, "attack_time", g_ascii_strtod (adsr_attack_time, NULL), NULL);
+    }
+}
+static void
 create_wnet (BseTrack *self,
 	     BseWave  *wave)
 {
@@ -340,6 +369,8 @@ create_wnet (BseTrack *self,
       g_object_set (bse_container_resolve_upath (BSE_CONTAINER (self->wnet), "wave-osc"), /* no undo */
 						 "wave", wave,
 					         NULL);
+      set_amp_master_volume (self->wnet, "amplifier", wave->xinfos);
+      set_adsr_params (self->wnet, "adsr", wave->xinfos);
     }
   else if (strcmp (synthesis_network, "adsr-wave-2") == 0 ||
            strcmp (synthesis_network, "plain-wave-2") == 0)
@@ -350,6 +381,9 @@ create_wnet (BseTrack *self,
       g_object_set (bse_container_resolve_upath (BSE_CONTAINER (self->wnet), "wave-osc-right"), /* no undo */
 						 "wave", wave,
 					         NULL);
+      set_amp_master_volume (self->wnet, "amplifier-left", wave->xinfos);
+      set_amp_master_volume (self->wnet, "amplifier-right", wave->xinfos);
+      set_adsr_params (self->wnet, "adsr", wave->xinfos);
     }
   else if (strcmp (synthesis_network, "gus-patch") == 0)
     {

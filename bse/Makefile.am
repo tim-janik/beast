@@ -55,7 +55,7 @@ bse_public_headers = $(strip \
 	bsenote.hh		bsemidifile.hh		bseblockutils.hh		\
 	bsecxxvalue.hh		bsecxxutils.hh		bsecxxbase.hh			bsecxxclosure.hh \
 	bsecxxarg.hh		bsecxxmodule.hh		bsecxxplugin.hh			bseloader.hh \
-	bseresampler.hh		bseresamplerimpl.hh	\
+	bseresampler.hh		bseresamplerimpl.hh	bsedatahandle-flac.hh           \
 	testobject.hh		\
 )
 # BSE C & C++ sources
@@ -91,7 +91,7 @@ bse_sources = $(strip \
 	bsecxxarg.cc		bsecxxmodule.cc		bsecxxplugin.cc			bseloader.cc \
 	bseresampler.cc 	bsedatahandle-resample.cc				bsedatahandle-fir.cc \
 	bseloader-aiff.cc	bseloader-guspatch.cc	bseloader-oggvorbis.cc		bseloader-bsewave.cc \
-	bseloader-mad.cc	bseloader-wav.cc	\
+	bseloader-mad.cc	bseloader-wav.cc	bseloader-flac.cc               bsedatahandle-flac.cc \
 	bsebusmodule.cc		\
 	bsebasics.cc		\
 	bseprobe.cc		\

@@ -234,6 +234,15 @@ AC_DEFUN([AC_BSE_REQUIREMENTS],
     dnl # --- Ogg/Vorbis check ---
     PKG_CHECK_MODULES(OV, ogg >= 1.2.2 vorbis >= 1.3.2 vorbisfile >= 1.3.2 vorbisenc >= 1.3.2)
 
+    dnl # --- FLAC check ---
+    PKG_CHECK_MODULES(FLAC, flac)
+
+    dnl # old FLAC versions use "-I/usr/.../include/FLAC" as pkg-config --cflags
+    dnl # new FLAC versions use "-I/usr/.../include" as pkg-config --cflags
+    dnl #
+    dnl # to support both, we strip /FLAC from FLAC_CFLAGS and use #include <FLAC/foo.h>
+    FLAC_CFLAGS=`echo $FLAC_CLFAGS | $SED "s/FLAC$//"`
+
     dnl # --- libmad MPEG decoder check ---
     dnl # libmad doesn't come with a mad.pc file (just its debian package)
     dnl # PKG_CHECK_MODULES(MAD, mad >= 0.14.2,
@@ -267,8 +276,8 @@ AC_DEFUN([AC_BSE_REQUIREMENTS],
     fi
 
     dnl # --- complete CFLAGS/LIBS setup ---
-    BSE_CFLAGS="$MAD_CFLAGS $SFI_CFLAGS"
-    BSE_LIBS="$OV_LIBS $MAD_LIBS $SFI_LIBS"
+    BSE_CFLAGS="$MAD_CFLAGS $FLAC_CFLAGS $SFI_CFLAGS"
+    BSE_LIBS="$OV_LIBS $MAD_LIBS $FLAC_LIBS $SFI_LIBS"
     AC_SUBST(BSE_CFLAGS)
     AC_SUBST(BSE_LIBS)
     dnl # --- figure stuff for bse.pc ---
