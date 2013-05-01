@@ -15,10 +15,10 @@ static GSList *msg_windows = NULL;
 const char*
 bst_msg_type_ident (BstMsgType bmt)
 {
-  Rapicorn::Aida::EnumInfo einfo = Rapicorn::Aida::enum_info<Bse::UserMessageType> ();
-  const Rapicorn::Aida::EnumInfo::Value *ev = einfo.find_first (bmt);
-  if (ev)
-    return ev->name;
+  Rapicorn::Aida::TypeCode etype = Rapicorn::Aida::TypeCode::from_enum<Bse::UserMessageType> ();
+  const Rapicorn::Aida::EnumValue ev = etype.enum_find (bmt);
+  if (ev.ident)
+    return ev.ident;
   switch (bmt)
     {
     case BST_MSG_SCRIPT:        return "script";
@@ -750,7 +750,7 @@ server_script_error (SfiProxy     server,
 static void
 server_user_message (const Bse::UserMessage &umsg)
 {
-  Rapicorn::Aida::EnumInfo einfo = Rapicorn::Aida::enum_info<Bse::UserMessageType> ();
+  Rapicorn::Aida::TypeCode etype = Rapicorn::Aida::TypeCode::from_enum<Bse::UserMessageType> ();
   auto convert_msg_type = [] (Bse::UserMessageType mtype) {
     switch (mtype)
       {
@@ -770,7 +770,7 @@ server_user_message (const Bse::UserMessage &umsg)
   msg.details = umsg.text3.c_str();
   Bse::String cfg = Bse::string_printf (_("Show messages about %s"), umsg.label.c_str());
   msg.config_check = cfg.c_str();
-  msg.ident = einfo.find_first (umsg.type)->name;
+  msg.ident = etype.enum_find (umsg.type).ident;
   msg.label = NULL;
   msg.janitor = 0;
   msg.process = 0;
