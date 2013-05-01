@@ -10,20 +10,10 @@
 
 namespace {
 
-static FLAC__StreamDecoderWriteStatus
-flac_write_callback (const FLAC__StreamDecoder  *decoder,
-                     const FLAC__Frame          *frame,
-                     const FLAC__int32          *const buffer[],
-                     void                       *client_data)
-{
-  return FLAC__STREAM_DECODER_WRITE_STATUS_CONTINUE;
-}
-
 struct FileInfo
 {
   BseWaveFileInfo wfi;
   BseWaveDsc      wdsc;
-
   // pass error status from flac callback to caller
   bool                              error_occurred;
   FLAC__StreamDecoderErrorStatus    error_status;
@@ -37,14 +27,20 @@ struct FileInfo
     fi->error_occurred = true;
     fi->error_status = status;
   }
-
+  static FLAC__StreamDecoderWriteStatus
+  flac_write_callback (const FLAC__StreamDecoder  *decoder,
+                       const FLAC__Frame          *frame,
+                       const FLAC__int32          *const buffer[],
+                       void                       *client_data)
+  {
+    return FLAC__STREAM_DECODER_WRITE_STATUS_CONTINUE;
+  }
   FileInfo (const gchar  *file_name,
             BseErrorType *error_p)
   {
     /* initialize C structures with zeros */
     memset (&wfi, 0, sizeof (wfi));
     memset (&wdsc, 0, sizeof (wdsc));
-
 
     /* setup decoder, decoding from file */
     FLAC__StreamDecoder* decoder = FLAC__stream_decoder_new();
@@ -53,7 +49,6 @@ struct FileInfo
         *error_p = BSE_ERROR_INTERNAL;  // should not happen
         return;
       }
-
     error_occurred = false;
     int r = FLAC__stream_decoder_init_file (decoder, file_name, flac_write_callback, NULL, flac_error_callback, this);
     if (r != 0)
@@ -64,9 +59,9 @@ struct FileInfo
 
     /* decode enough to figure out channel count */
     FLAC__bool mdok;
-    do {
+    do
       mdok = FLAC__stream_decoder_process_single (decoder);
-    } while (FLAC__stream_decoder_get_channels (decoder) == 0 && mdok);
+    while (FLAC__stream_decoder_get_channels (decoder) == 0 && mdok);
 
     if (error_occurred || FLAC__stream_decoder_get_channels (decoder) == 0)
       {
@@ -89,7 +84,6 @@ struct FileInfo
     wdsc.chunks[0].mix_freq = FLAC__stream_decoder_get_sample_rate (decoder);
     wdsc.chunks[0].osc_freq = 440.0;
   }
-
   ~FileInfo()
   {
     /* free BseWaveDsc */
@@ -109,7 +103,7 @@ struct FileInfo
   }
 };
 
-}
+} // Anon
 
 static BseWaveFileInfo*
 flac_load_file_info (gpointer      data,
@@ -127,8 +121,7 @@ flac_load_file_info (gpointer      data,
 }
 
 static void
-flac_free_file_info (gpointer         data,
-		    BseWaveFileInfo *wave_file_info)
+flac_free_file_info (gpointer data, BseWaveFileInfo *wave_file_info)
 {
   FileInfo *file_info = reinterpret_cast<FileInfo*> (wave_file_info);
   delete file_info;
@@ -160,10 +153,7 @@ flac_create_chunk_handle (gpointer      data,
 
   FileInfo *file_info = reinterpret_cast<FileInfo*> (wave_dsc->file_info);
   const BseWaveChunkDsc *chunk = &wave_dsc->chunks[nth_chunk];
-
-  GslDataHandle *dhandle;
-  dhandle = bse_data_handle_new_flac (file_info->wfi.file_name,
-				      chunk->osc_freq);
+  GslDataHandle *dhandle = bse_data_handle_new_flac (file_info->wfi.file_name, chunk->osc_freq);
   return dhandle;
 }
 

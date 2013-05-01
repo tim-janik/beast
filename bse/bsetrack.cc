@@ -321,8 +321,7 @@ set_amp_master_volume (BseSNet *snet, const char *amp_name, gchar **xinfos)
   if (master_volume_db)
     {
       BseItem *amp = bse_container_resolve_upath (BSE_CONTAINER (snet), amp_name);
-
-      double volume;
+      double volume = 0;
       g_object_get (amp, "master-volume", &volume, NULL);
       volume *= bse_db_to_factor (g_ascii_strtod (master_volume_db, NULL));
       g_object_set (amp, "master-volume", volume, NULL);
