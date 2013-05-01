@@ -1981,7 +1981,7 @@ public:
                   GslDataHandle *shandle = gsl_data_handle_new_scale (chunk->dhandle, 1. / absmax);
                   error = chunk->change_dhandle (shandle, gsl_data_handle_osc_freq (chunk->dhandle), xinfos);
                   if (error)
-                    sfi_error ("level normalizeping failed: %s", bse_error_blurb (error));
+                    sfi_error ("level normalizing failed: %s", bse_error_blurb (error));
                   gsl_data_handle_unref (shandle);
                 }
             }
