@@ -16,7 +16,7 @@ bse_debug (const char *key, const char *file_path, const int line, const char *f
 {
   va_list vargs;
   va_start (vargs, format);
-  envkey_debug_message ("BSE_DEBUG", key, file_path, line, format, vargs, &_cached_rapicorn_debug);
+  envkey_debug_message ("BSE_DEBUG", key, file_path, line, format, vargs, &_cached_bse_debug);
   va_end (vargs);
 }
 
