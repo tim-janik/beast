@@ -376,7 +376,7 @@ bse_pcm_device_port_audio_class_init (BsePcmDevicePortAudioClass *klass)
   device_class->list_devices = bse_pcm_device_port_audio_list_devices;
   const gchar *name = "portaudio";
   const gchar *syntax = _("DEVICE,MODE");
-  const gchar *info = g_intern_printf (/* TRANSLATORS: keep this text to 70 chars in width */
+  const gchar *info = g_intern_format (/* TRANSLATORS: keep this text to 70 chars in width */
                                        _("PortAudio PCM driver, using %s.\n"
                                          "  DEVICE - the PortAudio device to use, 'default' selects default device\n"
                                          "  MODE   - rw = read/write, ro = readonly, wo = writeonly\n"),

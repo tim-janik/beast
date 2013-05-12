@@ -579,7 +579,7 @@ bse_pcm_device_alsa_class_init (BsePcmDeviceALSAClass *klass)
   device_class->list_devices = bse_pcm_device_alsa_list_devices;
   const gchar *name = "alsa";
   const gchar *syntax = _("PLUGIN:CARD,DEV,SUBDEV");
-  const gchar *info = g_intern_printf (/* TRANSLATORS: keep this text to 70 chars in width */
+  const gchar *info = g_intern_format (/* TRANSLATORS: keep this text to 70 chars in width */
                                        _("Advanced Linux Sound Architecture PCM driver, using\n"
                                          "ALSA %s.\n"
                                          "The device specification follows the ALSA device naming\n"
