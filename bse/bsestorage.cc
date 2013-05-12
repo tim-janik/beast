@@ -1881,12 +1881,11 @@ bse_storage_parse_blob (BseStorage             *self,
     }
   else if (g_quark_try_string (scanner->value.v_identifier) == quark_blob_id)
     {
-      int i;
       gulong id;
       parse_or_return (scanner, G_TOKEN_INT);
       id = scanner->value.v_int64;
       *blob = NULL;
-      for (i = 0; i < self->n_blobs; i++)
+      for (size_t i = 0; i < self->n_blobs; i++)
 	{
 	  if (self->blobs[i]->id == id)
 	    *blob = bse_storage_blob_ref (self->blobs[i]);
