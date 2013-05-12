@@ -1612,7 +1612,7 @@ bse_storage_parse_data_handle_rest (BseStorage     *self,
   return parse_data_handle_trampoline (self, TRUE, data_handle_p, n_channels_p, mix_freq_p, osc_freq_p);
 }
 
-/* blobs */
+// == blobs ==
 
 BseStorageBlob *
 bse_storage_blob_ref (BseStorageBlob *blob)
