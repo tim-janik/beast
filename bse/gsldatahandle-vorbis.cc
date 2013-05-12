@@ -272,11 +272,11 @@ read_packet (VorbisHandle *vhandle)
       vhandle->pcm[i] = pcm[i];
 }
 
-static GslLong
+static int64
 dh_vorbis_read (GslDataHandle *dhandle,
-		GslLong        voffset, /* in values */
-		GslLong        n_values,
-		gfloat        *values)
+		int64          voffset, /* in values */
+		int64          n_values,
+		float         *values)
 {
   VorbisHandle *vhandle = (VorbisHandle*) dhandle;
   GslLong pos = voffset / dhandle->setup.n_channels;

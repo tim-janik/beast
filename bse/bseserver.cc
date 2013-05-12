@@ -453,7 +453,7 @@ bse_server_require_pcm_input (BseServer *server)
                          "An audio signal of silence will be used instead of a recorded signal, "
                          "so playback operation may produce results not actually intended "
                          "(such as a silent output signal).");
-          umsg.text3 = string_printf (_("Audio device \"%s\" is not open for input, audio driver: %s=%s"),
+          umsg.text3 = string_format (_("Audio device \"%s\" is not open for input, audio driver: %s=%s"),
                                       BSE_DEVICE (server->pcm_device)->open_device_name,
                                       BSE_DEVICE_GET_CLASS (server->pcm_device)->driver_name,
                                       BSE_DEVICE (server->pcm_device)->open_device_args);
@@ -504,7 +504,7 @@ server_open_pcm_device (BseServer *server,
       umsg.text1 = _("No available audio device was found.");
       umsg.text2 = _("No available audio device could be found and opened successfully. "
                      "Sorry, no fallback selection can be made for audio devices, giving up.");
-      umsg.text3 = string_printf (_("Failed to open PCM devices: %s"), bse_error_blurb (error));
+      umsg.text3 = string_format (_("Failed to open PCM devices: %s"), bse_error_blurb (error));
       umsg.label = _("PCM device selections problems");
       ServerImpl::instance().send_user_message (umsg);
     }
@@ -531,7 +531,7 @@ server_open_midi_device (BseServer *server)
           umsg.text1 = _("MIDI input or output is not available.");
           umsg.text2 = _("No available MIDI device could be found and opened successfully. "
                          "Reverting to null device, no MIDI events will be received or sent.");
-          umsg.text3 = string_printf (_("Failed to open MIDI devices: %s"), bse_error_blurb (error));
+          umsg.text3 = string_format (_("Failed to open MIDI devices: %s"), bse_error_blurb (error));
           umsg.label = _("MIDI device selections problems");
           ServerImpl::instance().send_user_message (umsg);
         }
@@ -589,7 +589,7 @@ bse_server_open_devices (BseServer *self)
               umsg.text1 = _("Failed to start PCM recording to disk.");
               umsg.text2 = _("An error occoured while opening the recording file, selecting a different "
                              "file might fix this situation.");
-              umsg.text3 = string_printf (_("Failed to open file \"%s\" for recording: %s"), self->wave_file, bse_error_blurb (error));
+              umsg.text3 = string_format (_("Failed to open file \"%s\" for recording: %s"), self->wave_file, bse_error_blurb (error));
               umsg.label = _("PCM recording errors");
               ServerImpl::instance().send_user_message (umsg);
 	      g_object_unref (self->pcm_writer);

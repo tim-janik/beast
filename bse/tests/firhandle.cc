@@ -10,8 +10,8 @@
 #include <stdlib.h>
 #include <complex>
 #include <vector>
-using Rapicorn::string_printf;
 
+using Rapicorn::string_format;
 using std::vector;
 using std::min;
 using std::max;
@@ -254,10 +254,10 @@ test_with_sine_sweep (FirHandleType type)
         }
       samples_per_second = sweep_sin.size() / (m / dups);
       TMSG ("    %-28s : %+.14f samples/second",
-            string_printf ("%s O64 mono", handle_name (type)).c_str(),
+            string_format ("%s O64 mono", handle_name (type)).c_str(),
             samples_per_second);
       TMSG ("    %-28s : %+.14f streams",
-            string_printf ("CPU %s mono", handle_name (type)).c_str(),
+            string_format ("CPU %s mono", handle_name (type)).c_str(),
             samples_per_second / 44100.0);
     }
 }
