@@ -198,25 +198,6 @@ g_intern_strconcat (const gchar *first_string,
   return c;
 }
 
-const gchar*
-g_intern_printf (const gchar   *format,
-                 ...)
-{
-  if (format)
-    {
-      gchar *buffer;
-      va_list args;
-      va_start (args, format);
-      buffer = g_strdup_vprintf (format, args);
-      va_end (args);
-      const gchar *istring = g_intern_string (buffer);
-      g_free (buffer);
-      return istring;
-    }
-  else
-    return NULL;
-}
-
 gchar*
 g_path_concat (const gchar *first_path,
                ...)

@@ -56,6 +56,9 @@ void g_object_disconnect_any (gpointer object,
                               gpointer function,
                               gpointer data); /* workaorund for g_object_disconnect() */
 
+// == printf variants ==
+#define g_intern_format(...)    g_intern_string (Rapicorn::string_format (__VA_ARGS__).c_str())
+
 /* --- string functions --- */
 const gchar*    g_printf_find_localised_directive (const gchar *format);
 gchar**		g_straddv	  (gchar	**str_array,
@@ -68,8 +71,6 @@ gchar*		g_strdup_lstrip   (const gchar	 *string);
 
 const gchar*    g_intern_strconcat      (const gchar   *first_string,
                                          ...) G_GNUC_NULL_TERMINATED;
-const gchar*    g_intern_printf         (const gchar   *format,
-                                         ...) G_GNUC_PRINTF (1,2);
 
 gchar*          g_path_concat     (const gchar   *first_path,
                                    ...) G_GNUC_NULL_TERMINATED;
