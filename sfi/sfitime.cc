@@ -640,7 +640,7 @@ sfi_time_from_string_err (const gchar *time_string,
 	    g_string_append (gstring, ", ");
 	  g_string_append (gstring, (char*) ring->data);
 	}
-      g_string_aprintf (gstring, " in date: \"%s\"", time_string);
+      g_string_add_format (gstring, " in date: \"%s\"", time_string);
       *error_p = g_string_free (gstring, FALSE);
     }
   else if (error_p)

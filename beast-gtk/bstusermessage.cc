@@ -211,15 +211,15 @@ bst_msg_dialog_update (GxkDialog        *dialog,
       GString *gstring = g_string_new (msg->details);
       while (gstring->len && gstring->str[gstring->len - 1] == '\n')
         g_string_erase (gstring, gstring->len - 1, 1);
-      g_string_aprintf (gstring, "\n\n");
+      g_string_add_format (gstring, "\n\n");
       if (hastext (proc_name))
-        g_string_aprintf (gstring, _("Procedure: %s\nScript: %s\n"), proc_name, script_name);
+        g_string_add_format (gstring, _("Procedure: %s\nScript: %s\n"), proc_name, script_name);
       if (hastext (msg->process))
-        g_string_aprintf (gstring, _("Process: %s\n"), msg->process);
+        g_string_add_format (gstring, _("Process: %s\n"), msg->process);
       if (hastext (msg->log_domain) && !hastext (proc_name) && !hastext (msg->process))
-        g_string_aprintf (gstring, _("Origin:  %s\n"), msg->log_domain);
+        g_string_add_format (gstring, _("Origin:  %s\n"), msg->log_domain);
       if (msg->pid && BST_DVL_HINTS)
-          g_string_aprintf (gstring, _("PID:     %u\n"), msg->pid);
+          g_string_add_format (gstring, _("PID:     %u\n"), msg->pid);
       while (gstring->len && gstring->str[gstring->len - 1] == '\n')
         g_string_erase (gstring, gstring->len - 1, 1);
       gchar *text = adapt_message_spacing (NULL, gstring->str, NULL);
