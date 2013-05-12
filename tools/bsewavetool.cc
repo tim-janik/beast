@@ -323,7 +323,7 @@ public:
 
     const uint64 key_checksum = key_uint & 0x1ff;
     key_uint ^= key_checksum << 32LL;  // deobfuscate high bits with checksum
-    const uint64 checksum = old_g_str_hash (string_printf ("%lld", key_uint - key_checksum).c_str()) % 509;
+    const uint64 checksum = old_g_str_hash (string_format ("%lld", key_uint - key_checksum).c_str()) % 509;
     if (key_checksum != checksum)
       return; // invalid key
     key_uint >>= 9;
@@ -351,7 +351,7 @@ public:
     key_uint <<= 23;
     key_uint |= m_osc_freq.mpn.mantissa;        // 23 bit
     key_uint <<= 9;                             // +9 bit checksum
-    const uint64 checksum = old_g_str_hash (string_printf ("%lld", key_uint).c_str()) % 509;
+    const uint64 checksum = old_g_str_hash (string_format ("%lld", key_uint).c_str()) % 509;
     key_uint |= checksum;
     key_uint ^= checksum << 32LL;               // obfuscate high bits with checksum
 
@@ -524,7 +524,7 @@ verify_chunk_selection (const vector<float> &freq_list,
     {
       if (!wave->lookup (*fi))
         {
-          String msg = string_printf ("failed to find wave chunk with oscillator frequency: %.2f", *fi);
+          String msg = string_format ("failed to find wave chunk with oscillator frequency: %.2f", *fi);
           if (skip_errors)
             sfi_warning ("%s", msg.c_str());
           else
@@ -1155,7 +1155,7 @@ public:
             }
           if (error)
             {
-              String msg = string_printf (_("failed to add wave chunk from file \"%s\": %s"),
+              String msg = string_format (_("failed to add wave chunk from file \"%s\": %s"),
                                           ochunk.sample_file, bse_error_blurb (error));
               if (skip_errors)
                 sfi_warning ("%s", msg.c_str());
