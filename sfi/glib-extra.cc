@@ -152,20 +152,6 @@ g_strdup_lstrip (const gchar *string)
   return NULL;
 }
 
-#if !GLIB_CHECK_VERSION (2, 9, 0)
-const gchar*
-g_intern_string (const gchar *string)
-{
-  return string ? g_quark_to_string (g_quark_from_string (string)) : NULL;
-}
-
-const gchar*
-g_intern_static_string (const gchar   *string)
-{
-  return string ? g_quark_to_string (g_quark_from_static_string (string)) : NULL;
-}
-#endif
-
 static gchar*
 delim_concat_varargs (const gchar *first_string,
                       gchar        delim,

@@ -66,11 +66,6 @@ gchar*		g_strdup_stripped (const gchar	 *string);
 gchar*		g_strdup_rstrip   (const gchar	 *string);
 gchar*		g_strdup_lstrip   (const gchar	 *string);
 
-#if !GLIB_CHECK_VERSION (2, 9, 0)
-const gchar*    g_intern_string         (const gchar   *string);
-const gchar*    g_intern_static_string  (const gchar   *string);
-#endif
-
 const gchar*    g_intern_strconcat      (const gchar   *first_string,
                                          ...) G_GNUC_NULL_TERMINATED;
 const gchar*    g_intern_printf         (const gchar   *format,
