@@ -38,11 +38,6 @@ typedef struct _SfiUPool	SfiUPool;
 typedef struct _SfiPPool	SfiPPool;
 
 /* --- FIXME: hacks! --- */
-void	sfi_set_error	(GError       **errorp,	// do nothing if *errorp is set already
-			 GQuark         domain,
-			 gint           code,
-			 const gchar   *format,
-			 ...) G_GNUC_PRINTF (4, 5);
 gboolean sfi_choice_match_detailed (const gchar *choice_val1,
 				    const gchar *choice_val2,
 				    gboolean     l1_ge_l2);
