@@ -128,7 +128,8 @@ string_to_cescape (const String &str)   // FIXME: move
 /* --- storage helpers --- */
 #define	gstring_puts(gstring, string)	g_string_append (gstring, string)
 #define	gstring_putc(gstring, vchar)	g_string_append_c (gstring, vchar)
-#define	gstring_printf			g_string_append_printf
+#define	gstring_printf(gstring, ...)	g_string_append (gstring, Rapicorn::string_format (__VA_ARGS__).c_str())
+
 static void
 gstring_break (GString  *gstring,
 	       gboolean *needs_break,
@@ -453,9 +454,9 @@ sfi_serialize_primitives (SfiSCategory scat,
 	      guint i;
 	      gstring_puts (gstring, "(");
 	      if (fblock->n_values)
-                g_string_append (gstring, Bse::string_printf ("%.9g", fblock->values[0]).c_str());
+                gstring_printf (gstring, "%.9g", fblock->values[0]);
 	      for (i = 1; i < fblock->n_values; i++)
-                g_string_append (gstring, Bse::string_printf (" %.9g", fblock->values[i]).c_str());
+                gstring_printf (gstring, " %.9g", fblock->values[i]);
 	      gstring_puts (gstring, ")");
 	    }
 	}

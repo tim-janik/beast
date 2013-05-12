@@ -16,8 +16,14 @@ bse_debug (const char *key, const char *file_path, const int line, const char *f
 {
   va_list vargs;
   va_start (vargs, format);
-  envkey_debug_message ("BSE_DEBUG", key, file_path, line, format, vargs, &_cached_bse_debug);
+  char *str = NULL;
+  int ret = vasprintf (&str, format, vargs);
   va_end (vargs);
+  if (ret >= 0 && str)
+    {
+      envkey_debug_message ("BSE_DEBUG", key, file_path, line, str, &_cached_bse_debug);
+      free (str);
+    }
 }
 
 #ifdef DOXYGEN
