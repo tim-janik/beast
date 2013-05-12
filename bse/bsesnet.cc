@@ -307,7 +307,7 @@ bse_snet_iport_name_register (BseSNet     *snet,
   while (slist)
     {
       g_free (name);
-      name = g_strdup_printf ("%s-%u", tmpl_name, i++);
+      name = g_strdup_format ("%s-%u", tmpl_name, i++);
       slist = snet_find_port_name (snet, name, TRUE);
     }
   if (!name)
@@ -365,7 +365,7 @@ bse_snet_oport_name_register (BseSNet     *snet,
   while (slist)
     {
       g_free (name);
-      name = g_strdup_printf ("%s-%u", tmpl_name, i++);
+      name = g_strdup_format ("%s-%u", tmpl_name, i++);
       slist = snet_find_port_name (snet, name, FALSE);
     }
   if (!name)

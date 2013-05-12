@@ -268,7 +268,7 @@ static PangoLayout*
 bst_db_labeling_create_layout (BstDBLabeling *self,
                                double         dB)
 {
-  gchar *buffer = g_strdup_printf ("%u", (int) (0.5 + ABS (dB)));
+  gchar *buffer = g_strdup_format ("%u", (int) (0.5 + ABS (dB)));
   PangoLayout *layout = gtk_widget_create_pango_layout (GTK_WIDGET (self), buffer);
   g_free (buffer);
   return layout;

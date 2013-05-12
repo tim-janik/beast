@@ -138,12 +138,12 @@ bse_script_procedure_exec (BseProcedureClass *proc,
   gchar *shellpath;
   guint i;
 
-  params = sfi_ring_append (params, g_strdup_printf ("--bse-eval"));
-  params = sfi_ring_append (params, g_strdup_printf ("(load \"%s\")"
+  params = sfi_ring_append (params, g_strdup_format ("--bse-eval"));
+  params = sfi_ring_append (params, g_strdup_format ("(load \"%s\")"
 						     "(apply %s (bse-script-fetch-args))",
 						     sdata->script_file,
 						     sdata->name));
-  shellpath = g_strdup_printf ("%s/%s-%s", bse_main_args->path_binaries, "bsescm", BIN_VERSION);
+  shellpath = g_strdup_format ("%s/%s-%s", bse_main_args->path_binaries, "bsescm", BIN_VERSION);
   error = bse_server_run_remote (server, shellpath,
 				 params, sdata->script_file, BSE_PROCEDURE_NAME (proc), &janitor);
   g_free (shellpath);
@@ -254,8 +254,8 @@ bse_script_file_register (const gchar *file_name,
 
   params = sfi_ring_append (params, g_strdup ("--bse-enable-register"));
   params = sfi_ring_append (params, g_strdup ("--bse-eval"));
-  params = sfi_ring_append (params, g_strdup_printf ("(load \"%s\")", file_name));
-  char *shellpath = g_strdup_printf ("%s/%s-%s", bse_main_args->path_binaries, "bsescm", BIN_VERSION);
+  params = sfi_ring_append (params, g_strdup_format ("(load \"%s\")", file_name));
+  char *shellpath = g_strdup_format ("%s/%s-%s", bse_main_args->path_binaries, "bsescm", BIN_VERSION);
   *janitor_p = NULL;
   error = bse_server_run_remote (server, shellpath,
 				 params, file_name, proc_name, janitor_p);
@@ -304,7 +304,7 @@ bse_script_param_spec (gchar       *pspec_desc,
   cname = make_sname (pstring);
   const gchar *nick = _(pstring);
   *free1 = cname;
-  gchar *blurb = g_strdup_printf ("Parameter \"%s\" to function <%s> in script \"%s\"",
+  gchar *blurb = g_strdup_format ("Parameter \"%s\" to function <%s> in script \"%s\"",
                                   cname, func_name, script_name);
   *free2 = blurb;
   if (strcmp (pspec_desc, "BseParamString") == 0)	/* "BseParamString:Text:Default" */

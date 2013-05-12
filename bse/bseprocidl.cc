@@ -174,7 +174,7 @@ std::string symbolForInt (int i)
   if (i == SFI_MAXINT) return "SFI_MAXINT";
   if (i == SFI_MININT) return "SFI_MININT";
 
-  char *x = g_strdup_printf ("%d", i);
+  char *x = g_strdup_format ("%d", i);
   std::string result = x;
   g_free(x);
   return result;

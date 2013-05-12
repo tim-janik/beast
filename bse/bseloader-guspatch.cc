@@ -354,7 +354,7 @@ struct FileInfo
   string
   envelope_point_to_string (guint value)
   {
-    gchar *tmp_str = g_strdup_printf ("%u", value);
+    gchar *tmp_str = g_strdup_format ("%u", value);
     string str = tmp_str;
     g_free (tmp_str);
     return str;

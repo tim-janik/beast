@@ -120,7 +120,7 @@ sfi_note_from_string_err (const gchar *note_string,
   g_free (freeme);
 
   if (!fits && error_p)
-    *error_p = g_strdup_printf ("invalid note specification: %s", note_string);
+    *error_p = g_strdup_format ("invalid note specification: %s", note_string);
 
   return note;
 }
@@ -134,7 +134,7 @@ sfi_note_to_string (SfiInt note)
 
       sfi_note_examine (note, &o, &ht, NULL, NULL);
       if (o)
-	return g_strdup_printf ("%s%+d", sfi_note_name_table[ht], o);
+	return g_strdup_format ("%s%+d", sfi_note_name_table[ht], o);
       else
 	return g_strdup (sfi_note_name_table[ht]);
     }

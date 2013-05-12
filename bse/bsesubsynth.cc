@@ -91,11 +91,11 @@ bse_sub_synth_init (BseSubSynth *self)
 
   self->input_ports = g_new (gchar*, BSE_SOURCE_N_ICHANNELS (self));
   for (i = 0; i < BSE_SOURCE_N_ICHANNELS (self); i++)
-    self->input_ports[i] = g_strdup_printf ("synth_in_%u", i + 1);
+    self->input_ports[i] = g_strdup_format ("synth_in_%u", i + 1);
 
   self->output_ports = g_new (gchar*, BSE_SOURCE_N_OCHANNELS (self));
   for (i = 0; i < BSE_SOURCE_N_OCHANNELS (self); i++)
-    self->output_ports[i] = g_strdup_printf ("synth_out_%u", i + 1);
+    self->output_ports[i] = g_strdup_format ("synth_out_%u", i + 1);
 }
 
 static void
@@ -175,7 +175,7 @@ dup_name_unique (BseSubSynth *self,
   while (find_name (self, name, is_input))
     {
       g_free (name);
-      name = g_strdup_printf ("%s-%u", name, i++);
+      name = g_strdup_format ("%s-%u", name, i++);
     }
   return name;
 }
@@ -273,13 +273,13 @@ bse_sub_synth_get_property (GObject    *object,
           if (n < BSE_SOURCE_N_ICHANNELS (self))
             g_value_set_string (value, self->input_ports[n]);
           else
-            g_value_take_string (value, g_strdup_printf ("synth_in_%u", n + 1)); /* return default */
+            g_value_take_string (value, g_strdup_format ("synth_in_%u", n + 1)); /* return default */
 	  break;
 	case PARAM_OPORT_NAME:
           if (n < BSE_SOURCE_N_OCHANNELS (self))
             g_value_set_string (value, self->output_ports[n]);
           else
-            g_value_take_string (value, g_strdup_printf ("synth_out_%u", n + 1)); /* return default */
+            g_value_take_string (value, g_strdup_format ("synth_out_%u", n + 1)); /* return default */
 	  break;
 	default:
 	  G_OBJECT_WARN_INVALID_PROPERTY_ID (self, param_id, pspec);
@@ -501,9 +501,9 @@ bse_sub_synth_class_init (BseSubSynthClass *klass)
     {
       gchar *ident, *label, *value;
 
-      ident = g_strdup_printf ("in_port_%u", i + 1);
-      label = g_strdup_printf (_("Input Port %u"), i + 1);
-      value = g_strdup_printf ("synth_in_%u", i + 1);
+      ident = g_strdup_format ("in_port_%u", i + 1);
+      label = g_strdup_format (_("Input Port %u"), i + 1);
+      value = g_strdup_format ("synth_in_%u", i + 1);
       bse_object_class_add_param (object_class, _("Input Assignments"), PARAM_IPORT_NAME + i * 2,
 				  sfi_pspec_string (ident, label, _("Output port name to interface from"),
 						    value, SFI_PARAM_STANDARD ":skip-default"));
@@ -511,9 +511,9 @@ bse_sub_synth_class_init (BseSubSynthClass *klass)
       g_free (label);
       g_free (value);
 
-      ident = g_strdup_printf ("out_port_%u", i + 1);
-      label = g_strdup_printf (_("Output Port %u"), i + 1);
-      value = g_strdup_printf ("synth_out_%u", i + 1);
+      ident = g_strdup_format ("out_port_%u", i + 1);
+      label = g_strdup_format (_("Output Port %u"), i + 1);
+      value = g_strdup_format ("synth_out_%u", i + 1);
       bse_object_class_add_param (object_class, _("Output Assignments"), PARAM_OPORT_NAME + i * 2,
 				  sfi_pspec_string (ident, label, _("Input port name to interface to"),
 						    value, SFI_PARAM_STANDARD ":skip-default"));
@@ -521,15 +521,15 @@ bse_sub_synth_class_init (BseSubSynthClass *klass)
       g_free (label);
       g_free (value);
 
-      ident = g_strdup_printf ("input-%u", i + 1);
-      label = g_strdup_printf (_("Virtual input %u"), i + 1);
+      ident = g_strdup_format ("input-%u", i + 1);
+      label = g_strdup_format (_("Virtual input %u"), i + 1);
       channel_id = bse_source_class_add_ichannel (source_class, ident, label, NULL);
       g_assert (channel_id == i);
       g_free (ident);
       g_free (label);
 
-      ident = g_strdup_printf ("output-%u", i + 1);
-      label = g_strdup_printf (_("Virtual output %u"), i + 1);
+      ident = g_strdup_format ("output-%u", i + 1);
+      label = g_strdup_format (_("Virtual output %u"), i + 1);
       channel_id = bse_source_class_add_ochannel (source_class, ident, label, NULL);
       g_assert (channel_id == i);
       g_free (ident);

@@ -32,7 +32,7 @@ static SfiRing*
 bse_pcm_device_null_list_devices (BseDevice *device)
 {
   SfiRing *ring = NULL;
-  ring = sfi_ring_append (ring, bse_device_entry_new (device, g_strdup_printf ("default"), NULL));
+  ring = sfi_ring_append (ring, bse_device_entry_new (device, g_strdup_format ("default"), NULL));
   return ring;
 }
 

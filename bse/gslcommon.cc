@@ -380,7 +380,7 @@ gsl_progress_printerr (gpointer          message,
   gchar *ppos = strchr (format, '1');
   guint l, prec = pstate->precision;
   ppos[0] = '0' + CLAMP (prec, 0, 9);
-  str = g_strdup_printf (format,
+  str = g_strdup_format (format,
                          message ? (gchar*) message : "",
                          message ? ": " : "",
                          pval,

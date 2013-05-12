@@ -110,20 +110,20 @@ bse_pcm_device_oss_list_devices (BseDevice    *device)
           if (check_device_usage (dname, "crw") == BSE_ERROR_NONE)
             ring = sfi_ring_append (ring,
                                     bse_device_entry_new (device,
-                                                          g_strdup_printf ("%s,rw", dname),
-                                                          g_strdup_printf ("%s (read-write)", dname)));
+                                                          g_strdup_format ("%s,rw", dname),
+                                                          g_strdup_format ("%s (read-write)", dname)));
           else if (check_device_usage (dname, "cw") == BSE_ERROR_NONE)
             ring = sfi_ring_append (ring,
                                     bse_device_entry_new (device,
-                                                          g_strdup_printf ("%s,wo", dname),
-                                                          g_strdup_printf ("%s (write only)", dname)));
+                                                          g_strdup_format ("%s,wo", dname),
+                                                          g_strdup_format ("%s (write only)", dname)));
         }
       g_free (last);
       last = dname;
     }
   g_free (last);
   if (!ring)
-    ring = sfi_ring_append (ring, bse_device_error_new (device, g_strdup_printf ("No devices found")));
+    ring = sfi_ring_append (ring, bse_device_error_new (device, g_strdup_format ("No devices found")));
   return ring;
 }
 

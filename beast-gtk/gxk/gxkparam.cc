@@ -269,9 +269,9 @@ gxk_param_dup_tooltip (GxkParam *param)
   if (!_param_devel_tips)
     tooltip = g_strdup (ctip);
   else if (ctip)
-    tooltip = g_strdup_printf ("(%s): %s", g_param_spec_get_name (param->pspec), ctip);
+    tooltip = g_strdup_format ("(%s): %s", g_param_spec_get_name (param->pspec), ctip);
   else
-    tooltip = g_strdup_printf ("(%s)", g_param_spec_get_name (param->pspec));
+    tooltip = g_strdup_format ("(%s)", g_param_spec_get_name (param->pspec));
   return tooltip;
 }
 

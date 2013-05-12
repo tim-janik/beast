@@ -865,7 +865,7 @@ sfi_glue_proxy_set (SfiProxy     proxy,
 	  g_value_unset (&value);
 	}
       else
-	error = g_strdup_printf ("unknown property \"%s\"", prop);
+	error = g_strdup_format ("unknown property \"%s\"", prop);
       if (error)
 	{
 	  sfi_diag ("%s: %s", G_STRLOC, error);
@@ -898,7 +898,7 @@ sfi_glue_proxy_get (SfiProxy     proxy,
 	  G_VALUE_LCOPY (value, var_args, G_VALUE_NOCOPY_CONTENTS, &error);
 	}
       else
-        error = g_strdup_printf ("unknown property \"%s\"", prop);
+        error = g_strdup_format ("unknown property \"%s\"", prop);
       if (error)
 	{
 	  sfi_diag ("%s: %s", G_STRLOC, error);

@@ -119,7 +119,7 @@ gsl_data_handle_new_looped_reference (GslDataHandle *src_handle,
   success = gsl_data_handle_common_init (&lhandle->dhandle, NULL);
   if (success)
     {
-      lhandle->dhandle.name = g_strdup_printf ("%s// #loop(0x%llx:0x%llx) /", src_handle->name, loop_first, loop_last);
+      lhandle->dhandle.name = g_strdup_format ("%s// #loop(0x%llx:0x%llx) /", src_handle->name, loop_first, loop_last);
       lhandle->dhandle.vtable = &loop_handle_reference_vtable;
       lhandle->src_handle = gsl_data_handle_ref (src_handle);
       lhandle->requested_first = loop_first;

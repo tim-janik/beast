@@ -17,9 +17,9 @@ beauty_float (gdouble f)
 {
   gchar *s;
   if (ABS (f) <= 18446744073709551616.)
-    s = g_strdup_printf ("%.7f", f);
+    s = g_strdup_format ("%.7f", f);
   else
-    s = g_strdup_printf ("%.7g", f);
+    s = g_strdup_format ("%.7g", f);
   const gchar *c;
   if (strchr (s, '.'))
     {
@@ -93,14 +93,14 @@ type_name (GParamSpec *pspec)
     case SFI_SCAT_SEQ:
       btag = lookup_boxed_tag (sfi_pspec_get_seq_element (pspec));
       if (btag)
-	return g_strdup_printf ("%s*", btag);
+	return g_strdup_format ("%s*", btag);
       else
 	return g_strdup ("SfiSeq*");
     case SFI_SCAT_REC:
       rfields = sfi_pspec_get_rec_fields (pspec);
       btag = rfields.n_fields ? lookup_boxed_tag (rfields.fields[0]) : NULL;
       if (btag)
-	return g_strdup_printf ("%s*", btag);
+	return g_strdup_format ("%s*", btag);
       else
 	return g_strdup ("SfiRec*");
     case SFI_SCAT_PROXY:	return g_strdup ("SfiProxy");

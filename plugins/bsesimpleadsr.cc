@@ -81,7 +81,7 @@ bse_simple_adsr_class_init (BseSimpleADSRClass *klass)
 			      sfi_pspec_real ("release_time", "Release Time [%]", NULL,
 					      40.0, 0.0, 100.0, 1.0,
 					      SFI_PARAM_STANDARD ":f:dial"));
-  desc = g_strdup_printf ("Time ranges in seconds: %.1f %.1f %.1f",
+  desc = g_strdup_format ("Time ranges in seconds: %.1f %.1f %.1f",
 			  BSE_TIME_RANGE_SHORT_ms / 1000.0,
 			  BSE_TIME_RANGE_MEDIUM_ms / 1000.0,
 			  BSE_TIME_RANGE_LONG_ms / 1000.0);

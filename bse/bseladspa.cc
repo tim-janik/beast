@@ -300,13 +300,13 @@ bse_ladspa_info_add_port (BseLadspaInfo              *bli,
   port->input = is_input;
   port->output = is_output;
   if (port->audio_channel && port->input)
-    port->ident = g_strdup_printf ("audio-in-%u", pcounter->audio_input++);
+    port->ident = g_strdup_format ("audio-in-%u", pcounter->audio_input++);
   else if (port->audio_channel) /* port->output */
-    port->ident = g_strdup_printf ("audio-out-%u", pcounter->audio_output++);
+    port->ident = g_strdup_format ("audio-out-%u", pcounter->audio_output++);
   else if (port->input) /* !port->audio_channel */
-    port->ident = g_strdup_printf ("icontrol-%u", pcounter->control_input++);
+    port->ident = g_strdup_format ("icontrol-%u", pcounter->control_input++);
   else /* port->output && !port->audio_channel */
-    port->ident = g_strdup_printf ("ocontrol-%u", pcounter->control_output++);
+    port->ident = g_strdup_format ("ocontrol-%u", pcounter->control_output++);
   port->minimum = G_MINFLOAT;
   port->default_value = 0;
   port->maximum = G_MAXFLOAT;
@@ -420,7 +420,7 @@ bse_ladspa_info_port_2str (BseLadspaPort *port)
     strcat (flags, "L");
   if (port->concert_a)
     strcat (flags, "A");
-  return g_strdup_printf ("( %s, %f<=%f<=%f, %s )",
+  return g_strdup_format ("( %s, %f<=%f<=%f, %s )",
 			  port->ident,
 			  port->minimum, port->default_value, port->maximum,
 			  flags);
@@ -450,7 +450,7 @@ bse_ladspa_info_assemble (const gchar  *file_path,
       goto bail_broken;
     }
   else
-    bli->ident = g_strdup_printf ("%s#%s", file_path, cld->Label);
+    bli->ident = g_strdup_format ("%s#%s", file_path, cld->Label);
   bli->name = cld->Name ? cld->Name : bli->ident;
   if (!cld->Maker)
     LDEBUG ("%s: plugin with 'Maker' field of NULL", bli->ident);

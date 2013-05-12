@@ -35,25 +35,25 @@ thread_info_cell_fill_value (GtkWidget *profiler,
   switch (column)
     {
     case TCOL_NAME:
-      sfi_value_take_string (value, g_strdup_printf ("%s", info->name.c_str()));
+      sfi_value_take_string (value, g_strdup_format ("%s", info->name.c_str()));
       break;
     case TCOL_PROC:
-      sfi_value_take_string (value, info->processor ? g_strdup_printf ("%d", info->processor) : g_strdup (""));
+      sfi_value_take_string (value, info->processor ? g_strdup_format ("%d", info->processor) : g_strdup (""));
       break;
     case TCOL_TID:
-      sfi_value_take_string (value, info->task_id ? g_strdup_printf ("%u", info->task_id) : g_strdup (""));
+      sfi_value_take_string (value, info->task_id ? g_strdup_format ("%u", info->task_id) : g_strdup (""));
       break;
     case TCOL_PRIO:
-      sfi_value_take_string (value, info->task_id ? g_strdup_printf ("%d", info->priority) : g_strdup (""));
+      sfi_value_take_string (value, info->task_id ? g_strdup_format ("%d", info->priority) : g_strdup (""));
       break;
     case TCOL_PERC:
-      sfi_value_take_string (value, g_strdup_printf ("%5.2f%%", (info->utime + info->stime) * 0.0001));
+      sfi_value_take_string (value, g_strdup_format ("%5.2f%%", (info->utime + info->stime) * 0.0001));
       break;
     case TCOL_UTIME:
-      sfi_value_take_string (value, g_strdup_printf ("%7.3f", info->utime * 0.001));
+      sfi_value_take_string (value, g_strdup_format ("%7.3f", info->utime * 0.001));
       break;
     case TCOL_STIME:
-      sfi_value_take_string (value, g_strdup_printf ("%7.3f", info->stime * 0.001));
+      sfi_value_take_string (value, g_strdup_format ("%7.3f", info->stime * 0.001));
       break;
     }
 }

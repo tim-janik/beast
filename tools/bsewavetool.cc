@@ -775,7 +775,7 @@ public:
                        bse_error_blurb (error));
             exit (1);
           }
-        gchar *temp_file = g_strdup_printf ("%s/bsewavetool-pid%u-oggchunk%04X.tmp%06xyXXXXXX", g_get_tmp_dir(), getpid(), 0x1000 + nth, rand() & 0xfffffd);
+        gchar *temp_file = g_strdup_format ("%s/bsewavetool-pid%u-oggchunk%04X.tmp%06xyXXXXXX", g_get_tmp_dir(), getpid(), 0x1000 + nth, rand() & 0xfffffd);
         gint tmpfd = mkstemp (temp_file);
         if (tmpfd < 0)
           {
@@ -2419,7 +2419,7 @@ public:
       {
 	if (chunk_set[i])
 	  {
-	    char *x = g_strdup_printf ("%4.2f ", chunk_data.freqs[i]);
+	    char *x = g_strdup_format ("%4.2f ", chunk_data.freqs[i]);
 	    result += x;
 	    g_free (x);
 	  }
@@ -2888,18 +2888,18 @@ public:
 	      cent = bse_note_fine_tune_from_note_freq (BSE_MUSICAL_TUNING_12_TET, note, gsl_data_handle_osc_freq (dhandle));
 	    }
 
-	  name_addon = g_strdup_printf ("%d", note);
+	  name_addon = g_strdup_format ("%d", note);
 	  substitute (filename, 'N', name_addon);
 	  g_free (name_addon);
 
-	  name_addon = g_strdup_printf ("%.2f", gsl_data_handle_osc_freq (dhandle));
+	  name_addon = g_strdup_format ("%.2f", gsl_data_handle_osc_freq (dhandle));
 	  substitute (filename, 'F', name_addon);
 	  g_free (name_addon);
 
 	  if (cent >= 0)
-	    name_addon = g_strdup_printf ("u%03d", cent); /* up */
+	    name_addon = g_strdup_format ("u%03d", cent); /* up */
 	  else
-	    name_addon = g_strdup_printf ("d%03d", cent); /* down */
+	    name_addon = g_strdup_format ("d%03d", cent); /* down */
 	  substitute (filename, 'C', name_addon);
 	  g_free (name_addon);
 

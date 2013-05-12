@@ -1108,14 +1108,14 @@ register_types (const gchar **types)
 
       if (strncmp (sname, "bse-", 4) == 0)
 	{
-	  s = g_strdup_printf ("(define (bse-is-%s proxy) (bse-item-check-is-a proxy \"%s\"))",
+	  s = g_strdup_format ("(define (bse-is-%s proxy) (bse-item-check-is-a proxy \"%s\"))",
 			       sname + 4, *types);
 	  gh_eval_str (s);
 	  g_free (s);
 	}
       for (i = 0; names[i]; i++)
 	{
-	  gchar *s = g_strdup_printf ("(define %s-%s (lambda list (bse-glue-call \"%s+%s\" list)))",
+	  gchar *s = g_strdup_format ("(define %s-%s (lambda list (bse-glue-call \"%s+%s\" list)))",
 				      sname, names[i], *types, names[i]);
 	  gh_eval_str (s);
 	  g_free (s);
@@ -1166,7 +1166,7 @@ bse_scm_interp_init (void)
   for (i = 0; procs[i]; i++)
     if (strncmp (procs[i], "bse-", 4) == 0)
       {
-	gchar *s = g_strdup_printf ("(define bse-%s (lambda list (bse-glue-call \"%s\" list)))", procs[i] + 4, procs[i]);
+	gchar *s = g_strdup_format ("(define bse-%s (lambda list (bse-glue-call \"%s\" list)))", procs[i] + 4, procs[i]);
 	gh_eval_str (s);
 	g_free (s);
       }

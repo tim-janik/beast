@@ -667,7 +667,7 @@ bst_snet_router_root_event (BstSNetRouter   *self,
               choice = bst_choice_menu_createv ("<BEAST-SNetRouter>/ModuleChannelPopup", NULL);
               for (int i = 0; i < bse_source_n_ochannels (csource->source); i++)
                 {
-                  gchar *name = g_strdup_printf ("%d: %s", i + 1, bse_source_ochannel_label (csource->source, i));
+                  gchar *name = g_strdup_format ("%d: %s", i + 1, bse_source_ochannel_label (csource->source, i));
                   bst_choice_menu_add_choice_and_free (choice, BST_CHOICE (monitor_ids + i, name, NONE));
                   g_free (name);
                 }

@@ -306,7 +306,7 @@ sfi_glue_call_valist (const gchar *proc_name,
       gchar *error = NULL;
       GType collect_type = sfi_category_type (SfiSCategory (arg_type));
       if (!collect_type)
-	error = g_strdup_printf ("%s: invalid category_type (%u)", G_STRLOC, arg_type);
+	error = g_strdup_format ("%s: invalid category_type (%u)", G_STRLOC, arg_type);
       else
 	{
 	  GValue *value = sfi_seq_append_empty (seq, collect_type);

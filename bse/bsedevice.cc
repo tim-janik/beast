@@ -19,7 +19,7 @@ bse_device_list (BseDevice    *self)
   if (BSE_DEVICE_GET_CLASS (self)->list_devices)
     ring = BSE_DEVICE_GET_CLASS (self)->list_devices (self);
   if (!ring)
-    ring = sfi_ring_append (ring, bse_device_error_new (self, g_strdup_printf ("Driver not implemented")));
+    ring = sfi_ring_append (ring, bse_device_error_new (self, g_strdup_format ("Driver not implemented")));
   return ring;
 }
 

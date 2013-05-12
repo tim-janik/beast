@@ -72,7 +72,7 @@ param_choice_create (GxkParam    *param,
     {
       SfiProxy proxy = bst_param_get_proxy (param);
       g_object_set (widget, "menu", menu, NULL);
-      str = g_strdup_printf ("<BEAST-ParamChoice>/%s(%s::%llx)",
+      str = g_strdup_format ("<BEAST-ParamChoice>/%s(%s::%llx)",
                              param->pspec->name,
                              proxy ? bse_item_get_type (proxy) : "0",
                              (long long unsigned) sfi_pspec_get_choice_hash (param->pspec));

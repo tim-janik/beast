@@ -63,7 +63,7 @@ struct LineInfo {
   String location() const
   {
     String result;
-    char *x = g_strdup_printf ("%s:%d", (filename == "-") ? "stdin" : filename.c_str(), line);
+    char *x = g_strdup_format ("%s:%d", (filename == "-") ? "stdin" : filename.c_str(), line);
     result = x;
     g_free (x);
     return result;

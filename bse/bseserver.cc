@@ -809,7 +809,7 @@ bse_server_run_remote (BseServer         *server,
   char *freeme = NULL;
   if (!reason)
     {
-      gchar *ident = g_strdup_printf ("%s::%s", script_name, proc_name);
+      gchar *ident = g_strdup_format ("%s::%s", script_name, proc_name);
       SfiComPort *port = sfi_com_port_from_child (ident,
 						  command_output,
 						  command_input,

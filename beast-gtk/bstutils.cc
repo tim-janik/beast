@@ -1025,7 +1025,7 @@ bst_gmask_pack (BstGMask *mask)
   /* ensure expansion happens outside of columns */
   if (dislodge_columns)
     {
-      gchar *dummy_name = g_strdup_printf ("GMask-dummy-dislodge-%u", MAX (gmask->column, 1) - 1);
+      gchar *dummy_name = g_strdup_format ("GMask-dummy-dislodge-%u", MAX (gmask->column, 1) - 1);
       GtkWidget *dislodge = (GtkWidget*) g_object_get_data (G_OBJECT (table), dummy_name);
 
       if (!dislodge)
@@ -1056,7 +1056,7 @@ bst_gmask_pack (BstGMask *mask)
   c++;
   if (!aux2 && !dislodge_columns)
     {
-      char *dummy_name = g_strdup_printf ("GMask-dummy-aux2-%u", gmask->column);
+      char *dummy_name = g_strdup_format ("GMask-dummy-aux2-%u", gmask->column);
       aux2 = (GtkWidget*) g_object_get_data (G_OBJECT (table), dummy_name);
 
       /* need to have at least 1 (dummy) aux2-child per table column to eat up

@@ -43,8 +43,8 @@ check (const char           *up_down,
        int                   precision_bits,
        double                max_db)
 {
-  char *samplestr = g_strdup_printf ("ResampleHandle-%s%02d%s", up_down, bits, channels);
-  char *streamstr = g_strdup_printf ("CPU Resampling %s%02d%s", up_down, bits, channels);
+  char *samplestr = g_strdup_format ("ResampleHandle-%s%02d%s", up_down, bits, channels);
+  char *streamstr = g_strdup_format ("CPU Resampling %s%02d%s", up_down, bits, channels);
   TSTART ("%s (%s)", samplestr, cpu_type);
 
   TASSERT (input.size() % n_channels == 0);

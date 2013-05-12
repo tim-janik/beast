@@ -2,8 +2,9 @@
 #ifndef __SFI_GLIB_EXTRA_H__
 #define __SFI_GLIB_EXTRA_H__
 
-#include	<glib.h>
-#include	<glib-object.h>
+#include <glib.h>
+#include <glib-object.h>
+#include <rapicorn-core.hh>     // for Rapicorn::string_format
 
 G_BEGIN_DECLS
 
@@ -57,6 +58,7 @@ void g_object_disconnect_any (gpointer object,
 // == printf variants ==
 #define g_intern_format(...)            g_intern_string (Rapicorn::string_format (__VA_ARGS__).c_str())
 #define	g_string_add_format(gstr, ...)  g_string_append (gstr, Rapicorn::string_format (__VA_ARGS__).c_str())
+#define g_strdup_format(...)            g_strdup (Rapicorn::string_format (__VA_ARGS__).c_str())
 
 /* --- string functions --- */
 const gchar*    g_printf_find_localised_directive (const gchar *format);

@@ -47,7 +47,7 @@ BODY (BseProcedureClass *proc,
   while (bse_server_find_project (server, uname))
     {
       g_free (uname);
-      uname = g_strdup_printf ("%s-%u", name, num++);
+      uname = g_strdup_format ("%s-%u", name, num++);
     }
 
   /* create project */

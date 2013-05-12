@@ -401,7 +401,7 @@ bse_item_create_parasite_name (BseItem        *item,
     {
       Node key = { 0, };
       guint counter = 1;
-      gchar *path = g_strdup_printf ("%sAuto-%02x", path_prefix, counter++);
+      gchar *path = g_strdup_format ("%sAuto-%02x", path_prefix, counter++);
       /* ensure parasite intiialization */
       if (!item->parasite)
         parasite_init (item);
@@ -410,7 +410,7 @@ bse_item_create_parasite_name (BseItem        *item,
       while (g_bsearch_array_lookup (item->parasite->nodes, &bconfig_nodes, &key))
         {
           g_free (path);
-          path = g_strdup_printf ("%sAuto-%02x", path_prefix, counter++);
+          path = g_strdup_format ("%sAuto-%02x", path_prefix, counter++);
           key.path = path;
         }
       key.path = g_intern_string (path);

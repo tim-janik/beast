@@ -491,7 +491,7 @@ store_bse_file (SfiProxy       project,
                 gboolean       want_overwrite)
 {
   BseErrorType error = bse_project_store_bse (project, super, file_name, self_contained);
-  gchar *title = g_strdup_printf (saving_message_format, bse_item_get_name (super ? super : project));
+  gchar *title = g_strdup_format (saving_message_format, bse_item_get_name (super ? super : project));
   gboolean handled = TRUE;
   gchar *msg = NULL;
   /* handle file exists cases */
@@ -499,7 +499,7 @@ store_bse_file (SfiProxy       project,
     {
       if (!want_overwrite)
         {
-          gchar *text = g_strdup_printf (_("Failed to save\n`%s'\nto\n`%s':\n%s"), bse_item_get_name (project), file_name, bse_error_blurb (error));
+          gchar *text = g_strdup_format (_("Failed to save\n`%s'\nto\n`%s':\n%s"), bse_item_get_name (project), file_name, bse_error_blurb (error));
           GtkWidget *choice = bst_choice_dialog_createv (BST_CHOICE_TITLE (title),
                                                          BST_CHOICE_TEXT (text),
                                                          BST_CHOICE_D (1, BST_STOCK_OVERWRITE, NONE),
@@ -516,7 +516,7 @@ store_bse_file (SfiProxy       project,
           while (error == BSE_ERROR_FILE_EXISTS)
             {
               g_free (temp_file);
-              temp_file = g_strdup_printf ("%s.tmp%06xyXXXXXX", file_name, rand() & 0xfffffd);
+              temp_file = g_strdup_format ("%s.tmp%06xyXXXXXX", file_name, rand() & 0xfffffd);
               char *result = mktemp (temp_file); /* this is save, due to use of: O_CREAT | O_EXCL */
               (void) result;
               error = bse_project_store_bse (project, super, temp_file, self_contained);
@@ -525,12 +525,12 @@ store_bse_file (SfiProxy       project,
           if (error != BSE_ERROR_NONE)
             {
               unlink (temp_file); /* error != BSE_ERROR_FILE_EXISTS */
-              msg = g_strdup_printf (_("Failed to save to file\n`%s'\ndue to:\n%s"), file_name, bse_error_blurb (error));
+              msg = g_strdup_format (_("Failed to save to file\n`%s'\ndue to:\n%s"), file_name, bse_error_blurb (error));
             }
           else if (rename (temp_file, file_name) < 0)
             {
               unlink (temp_file);
-              msg = g_strdup_printf (_("Failed to replace file\n`%s'\ndue to:\n%s"), file_name, g_strerror (errno));
+              msg = g_strdup_format (_("Failed to replace file\n`%s'\ndue to:\n%s"), file_name, g_strerror (errno));
             }
           else /* success */
             ;
@@ -539,7 +539,7 @@ store_bse_file (SfiProxy       project,
         handled = FALSE;        /* exists && !overwrite */
     }
   else if (error != BSE_ERROR_NONE)
-    msg = g_strdup_printf (_("Failed to save to file\n`%s'\ndue to:\n%s"), file_name, bse_error_blurb (error));
+    msg = g_strdup_format (_("Failed to save to file\n`%s'\ndue to:\n%s"), file_name, bse_error_blurb (error));
   /* report errors */
   if (msg)
     {

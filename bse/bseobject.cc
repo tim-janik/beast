@@ -85,7 +85,7 @@ bse_object_strdup_debug_handle (gpointer object)
   if (!g_type_is_a (instance->g_class->g_type, G_TYPE_OBJECT))
     return g_strdup ("<Non-GObject>");
   /* we may not access GObject.data (includes BSE_OBJECT_UNAME()) */
-  return g_strdup_printf ("%s(%p)\"", G_OBJECT_TYPE_NAME (instance), object);
+  return g_strdup_format ("%s(%p)\"", G_OBJECT_TYPE_NAME (instance), object);
 }
 
 const gchar*
@@ -104,7 +104,7 @@ bse_object_debug_name (gpointer object)
   if (!debug_name)
     {
       const gchar *uname = BSE_OBJECT_UNAME (instance);
-      debug_name = g_strdup_printf ("\"%s::%s\"", G_OBJECT_TYPE_NAME (instance), uname ? uname : "");
+      debug_name = g_strdup_format ("\"%s::%s\"", G_OBJECT_TYPE_NAME (instance), uname ? uname : "");
       g_object_set_data_full (G_OBJECT (instance), "bse-debug-name", debug_name, g_free);
     }
   return debug_name;

@@ -413,7 +413,7 @@ bse_storage_finish_parsing (BseStorage *self)
 
       if (ilink->error)
         {
-          gchar *error = g_strdup_printf ("unable to resolve link path for item `%s': %s",
+          gchar *error = g_strdup_format ("unable to resolve link path for item `%s': %s",
                                           BSE_OBJECT_UNAME (ilink->from_item),
                                           ilink->error);
           ilink->restore_link (ilink->data, self, ilink->from_item, NULL, error);
@@ -443,7 +443,7 @@ bse_storage_finish_parsing (BseStorage *self)
               parent = parent->parent;
             }
           if (!parent)
-            error = g_strdup_printf ("failed to find ancestor of item `%s' (branch depth: -%u, "
+            error = g_strdup_format ("failed to find ancestor of item `%s' (branch depth: -%u, "
                                      "number of parents: %u) while resolving link path \"%s\"",
                                      BSE_OBJECT_UNAME (ilink->from_item),
                                      ilink->pbackup,
@@ -453,7 +453,7 @@ bse_storage_finish_parsing (BseStorage *self)
             {
               child = storage_path_table_resolve_upath (self, BSE_CONTAINER (parent), ilink->upath);
               if (!child)
-                error = g_strdup_printf ("failed to find object for item `%s' while resolving link path \"%s\" from ancestor `%s'",
+                error = g_strdup_format ("failed to find object for item `%s' while resolving link path \"%s\" from ancestor `%s'",
                                          BSE_OBJECT_UNAME (ilink->from_item),
                                          ilink->upath, BSE_OBJECT_UNAME (parent));
             }
@@ -1576,6 +1576,7 @@ bse_storage_parse_data_handle_rest (BseStorage     *self,
   g_return_val_if_fail (data_handle_p != NULL, G_TOKEN_ERROR);
   return parse_data_handle_trampoline (self, TRUE, data_handle_p, n_channels_p, mix_freq_p, osc_freq_p);
 }
+
 BseErrorType
 bse_storage_flush_fd (BseStorage *self,
                       gint        fd)

@@ -1184,7 +1184,7 @@ slave (gpointer data)
   while (run)
     {
       BseTrans *trans = bse_trans_open ();
-      gchar *str = g_strdup_printf ("SLAVE(%p): idle", g_thread_self ());
+      gchar *str = g_strdup_format ("SLAVE(%p): idle", g_thread_self ());
       bse_trans_add (trans, bse_job_debug (str));
       g_free (str);
       bse_trans_add (trans, bse_job_debug ("string2"));

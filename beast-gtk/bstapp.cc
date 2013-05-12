@@ -503,17 +503,17 @@ bst_app_add_page_item (BstApp  *self,
   else if (BSE_IS_SONG (item))
     {
       stock = BST_STOCK_MINI_SONG;
-      tip = g_strdup_printf (_("Song: %s"), name);
+      tip = g_strdup_format (_("Song: %s"), name);
     }
   else if (BSE_IS_MIDI_SYNTH (item))
     {
       stock = BST_STOCK_MINI_MIDI_SYNTH;
-      tip = g_strdup_printf (_("MIDI Synthesizer: %s"), name);
+      tip = g_strdup_format (_("MIDI Synthesizer: %s"), name);
     }
   else
     {
       stock = BST_STOCK_MINI_CSYNTH;
-      tip = g_strdup_printf (_("Synthesizer: %s"), name);
+      tip = g_strdup_format (_("Synthesizer: %s"), name);
     }
   GtkWidget *page = NULL;
   if (BSE_IS_SUPER (item))
@@ -759,7 +759,7 @@ skin_entries_setup (void)
           char *name = bst_file_scan_find_key (file, "skin-name", "");
           static guint statici = 1;
           if (!name)
-            name = g_strdup_printf ("skin-%u", statici++);
+            name = g_strdup_format ("skin-%u", statici++);
           if (name && n_skin_entries < 0xffff)
             {
               guint i = n_skin_entries++;

@@ -94,7 +94,7 @@ list_pcm_devices (BseDevice *device, SfiRing *ring, const char *device_group)
         {
           std::string blurb = substitute_string ("\n", " ", desc);
           BseDeviceEntry *entry = bse_device_group_entry_new (device, g_strdup (name), g_strdup (device_group),
-                                                              g_strdup_printf ("%s - %s", name, blurb.c_str()));
+                                                              g_strdup_format ("%s - %s", name, blurb.c_str()));
           ring = sfi_ring_append (ring, entry);
         }
       if (name) free (name);
@@ -135,7 +135,7 @@ bse_pcm_device_alsa_list_devices (BseDevice *device)
           continue;
         }
 
-      gchar *device_group = g_strdup_printf ("%s - %s", snd_ctl_card_info_get_id (cinfo), snd_ctl_card_info_get_longname (cinfo));
+      gchar *device_group = g_strdup_format ("%s - %s", snd_ctl_card_info_get_id (cinfo), snd_ctl_card_info_get_longname (cinfo));
 
       int pindex = -1;
       snd_ctl_pcm_next_device (chandle, &pindex);
@@ -157,19 +157,19 @@ bse_pcm_device_alsa_list_devices (BseDevice *device)
           guint avail_capture_subdevices = readable ? snd_pcm_info_get_subdevices_avail (rinfo) : 0;
           gchar *pdevs = NULL, *rdevs = NULL;
           if (total_playback_subdevices && total_playback_subdevices != avail_playback_subdevices)
-            pdevs = g_strdup_printf ("%u*playback (%u busy)", total_playback_subdevices, total_playback_subdevices - avail_playback_subdevices);
+            pdevs = g_strdup_format ("%u*playback (%u busy)", total_playback_subdevices, total_playback_subdevices - avail_playback_subdevices);
           else if (total_playback_subdevices)
-            pdevs = g_strdup_printf ("%u*playback", total_playback_subdevices);
+            pdevs = g_strdup_format ("%u*playback", total_playback_subdevices);
           if (total_capture_subdevices && total_capture_subdevices != avail_capture_subdevices)
-            rdevs = g_strdup_printf ("%u*capture (%u busy)", total_capture_subdevices, total_capture_subdevices - avail_capture_subdevices);
+            rdevs = g_strdup_format ("%u*capture (%u busy)", total_capture_subdevices, total_capture_subdevices - avail_capture_subdevices);
           else if (total_capture_subdevices)
-            rdevs = g_strdup_printf ("%u*capture", total_capture_subdevices);
+            rdevs = g_strdup_format ("%u*capture", total_capture_subdevices);
           const gchar *joiner = pdevs && rdevs ? " + " : "";
           BseDeviceEntry *entry;
           entry = bse_device_group_entry_new (device,
-                                              g_strdup_printf ("hw:%u,%u", cindex, pindex),
+                                              g_strdup_format ("hw:%u,%u", cindex, pindex),
                                               g_strdup (device_group),
-                                              g_strdup_printf ("hw:%u,%u - subdevices: %s%s%s",
+                                              g_strdup_format ("hw:%u,%u - subdevices: %s%s%s",
                                                                cindex, pindex,
                                                                pdevs ? pdevs : "",
                                                                joiner,
@@ -186,7 +186,7 @@ bse_pcm_device_alsa_list_devices (BseDevice *device)
         break;
     }
   if (!ring)
-    ring = sfi_ring_append (ring, bse_device_error_new (device, g_strdup_printf ("No devices found")));
+    ring = sfi_ring_append (ring, bse_device_error_new (device, g_strdup_format ("No devices found")));
   return ring;
 }
 

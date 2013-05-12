@@ -122,12 +122,12 @@ strdup_msg_hashkey (const BstMessage *msg)
 {
   /* prefer hashing by janitor/process name over PID */
   if (msg->janitor)
-    return g_strdup_printf ("## %x ## %s ## %s ## J%s:%s", msg->type, msg->primary, msg->secondary,
+    return g_strdup_format ("## %x ## %s ## %s ## J%s:%s", msg->type, msg->primary, msg->secondary,
                             bse_janitor_get_script_name (msg->janitor), bse_janitor_get_proc_name (msg->janitor));
   else if (msg->process)
-    return g_strdup_printf ("## %x ## %s ## %s ## P%s", msg->type, msg->primary, msg->secondary, msg->process);
+    return g_strdup_format ("## %x ## %s ## %s ## P%s", msg->type, msg->primary, msg->secondary, msg->process);
   else
-    return g_strdup_printf ("## %x ## %s ## %s ## N%x", msg->type, msg->primary, msg->secondary, msg->pid);
+    return g_strdup_format ("## %x ## %s ## %s ## N%x", msg->type, msg->primary, msg->secondary, msg->pid);
 }
 
 static void
@@ -356,7 +356,7 @@ repeat_dialog (GxkDialog *dialog)
   if (label)
     {
       gint count = g_object_get_int (dialog, "BEAST-user-message-count");
-      gchar *rstr = g_strdup_printf (dngettext (BEAST_GETTEXT_DOMAIN, _("Message has been repeated %u time"), _("Message has been repeated %u times"), count), count);
+      gchar *rstr = g_strdup_format (dngettext (BEAST_GETTEXT_DOMAIN, _("Message has been repeated %u time"), _("Message has been repeated %u times"), count), count);
       g_object_set_int (dialog, "BEAST-user-message-count", count + 1);
       gtk_label_set_text (label, rstr);
       g_free (rstr);
@@ -500,11 +500,11 @@ message_fill_from_script (BstMessage    *msg,
   else
     {
       gchar *script_base = g_path_get_basename (script_name);
-      msg->secondary = g_strdup_printf (_("Executing procedure '%s' from script '%s'."), proc_name, script_base);
+      msg->secondary = g_strdup_format (_("Executing procedure '%s' from script '%s'."), proc_name, script_base);
       g_free (script_base);
     }
   if (!janitor && hastext (proc_name))
-    msg->details = g_strdup_printf (_("Procedure: %s\nScript: %s\n"), proc_name, script_name);
+    msg->details = g_strdup_format (_("Procedure: %s\nScript: %s\n"), proc_name, script_name);
   else
     msg->details = NULL;
   msg->config_check = NULL;
@@ -548,7 +548,7 @@ janitor_progress (GxkDialog *dialog,
   SfiProxy janitor = (SfiProxy) g_object_get_data (G_OBJECT (dialog), "user-data");
   const gchar *script = bse_janitor_get_script_name (janitor);
   const gchar *sbname = strrchr (script, '/');
-  gchar *exec_name = g_strdup_printf ("%s", sbname ? sbname + 1 : script);
+  gchar *exec_name = g_strdup_format ("%s", sbname ? sbname + 1 : script);
   // bse_janitor_get_proc_name (janitor);
   gxk_status_window_push (dialog);
   if (progress < 0)
@@ -577,7 +577,7 @@ janitor_unconnected (GxkDialog *dialog)
       if (exit_reason)
         {
           BstMessage msg = { 0, };
-          gchar *error_msg = g_strdup_printf (_("An error occoured during execution of script procedure '%s': %s"), proc_name, exit_reason);
+          gchar *error_msg = g_strdup_format (_("An error occoured during execution of script procedure '%s': %s"), proc_name, exit_reason);
           message_fill_from_script (&msg, BST_MSG_ERROR, 0, _("Script execution error."), script_name, proc_name, error_msg);
           g_free (error_msg);
           bst_message_handler (&msg);
@@ -740,7 +740,7 @@ server_script_error (SfiProxy     server,
 {
   /* this signal is emitted (without janitor) when script execution failed */
   BstMessage msg = { 0, };
-  gchar *error_msg = g_strdup_printf (_("Failed to execute script procedure '%s': %s"), proc_name, reason);
+  gchar *error_msg = g_strdup_format (_("Failed to execute script procedure '%s': %s"), proc_name, reason);
   message_fill_from_script (&msg, BST_MSG_ERROR, 0, _("Script execution error."), script_name, proc_name, error_msg);
   g_free (error_msg);
   bst_message_handler (&msg);

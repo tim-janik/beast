@@ -551,7 +551,7 @@ bglue_list_method_names (SfiGlueContext *context,
   if (!g_type_is_a (type, BSE_TYPE_ITEM))
     return NULL;
 
-  prefix = g_strdup_printf ("%s+", g_type_name (type));
+  prefix = g_strdup_format ("%s+", g_type_name (type));
   l = strlen (prefix);
 
   cseq = bse_categories_match_typed ("/Methods/" "*", BSE_TYPE_PROCEDURE);

@@ -191,7 +191,7 @@ bse_debug_dump_floats (guint   debug_stream,
   debug_stream %= MAX_DEBUG_STREAMS;
   if (debug_fds[debug_stream] < 0)
     {
-      gchar *file = g_strdup_printf ("/tmp/beast-debug-dump%u.%u", debug_stream, getpid());
+      gchar *file = g_strdup_format ("/tmp/beast-debug-dump%u.%u", debug_stream, getpid());
       debug_fds[debug_stream] = open (file, O_WRONLY | O_CREAT | O_TRUNC, 0666);
       g_free (file);
       if (debug_fds[debug_stream] >= 0)

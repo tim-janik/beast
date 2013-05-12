@@ -197,7 +197,7 @@ serial_pspec_check (GParamSpec *pspec,
     {
       g_print ("{while parsing pspec \"%s\":\n\t%s\n", pspec->name, s1->str);
       g_scanner_unexp_token (scanner, token, NULL, NULL, NULL,
-			     g_strdup_printf ("failed to serialize pspec \"%s\"", pspec->name), TRUE);
+			     g_strdup_format ("failed to serialize pspec \"%s\"", pspec->name), TRUE);
     }
   TASSERT (token == G_TOKEN_NONE);
   sfi_value_store_typed (&rvalue, s2);
@@ -248,7 +248,7 @@ serialize_cmp (GValue     *value,
 	{
 	  g_print ("{while parsing \"%s\":\n\t%s\n", pspec->name, gstring->str);
 	  g_scanner_unexp_token (scanner, token, NULL, NULL, NULL,
-				 g_strdup_printf ("failed to serialize \"%s\"", pspec->name), TRUE);
+				 g_strdup_format ("failed to serialize \"%s\"", pspec->name), TRUE);
 	}
       TASSERT (token == G_TOKEN_NONE);
       cmp = g_param_values_cmp (pspec, value, &rvalue);

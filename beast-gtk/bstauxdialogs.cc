@@ -370,7 +370,7 @@ bst_key_combo_popup (const gchar            *function,
     }
   if (function && function[0])
     {
-      gchar *str = g_strdup_printf (_("Please press the keyboard shortcut to be installed for function: %s"), function);
+      gchar *str = g_strdup_format (_("Please press the keyboard shortcut to be installed for function: %s"), function);
       gtk_label_set_text (GTK_LABEL (label), str);
       g_free (str);
     }

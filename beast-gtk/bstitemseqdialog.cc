@@ -140,10 +140,10 @@ bst_item_seq_dialog_popup (gpointer     parent_widget,
 
   /* construct add/remove button tooltips */
   gchar *string;
-  string = g_strdup_printf (_("Adds the selection from the \"%s\" list to the \"%s\" list"), candidate_label, item_label);
+  string = g_strdup_format (_("Adds the selection from the \"%s\" list to the \"%s\" list"), candidate_label, item_label);
   gxk_widget_set_tooltip (gxk_radget_find (radget, "button-add"), string);
   g_free (string);
-  string = g_strdup_printf (_("Removes the selection from the \"%s\" list"), item_label);
+  string = g_strdup_format (_("Removes the selection from the \"%s\" list"), item_label);
   gxk_widget_set_tooltip (gxk_radget_find (radget, "button-remove"), string);
   g_free (string);
 
