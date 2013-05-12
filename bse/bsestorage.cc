@@ -1676,7 +1676,7 @@ bse_storage_blob_clean_files()
   GDir *dir = g_dir_open (tmp_dir, 0, &error);
   if (dir)
     {
-      char *pattern = g_strdup_printf ("bse-%s-", g_get_user_name());
+      char *pattern = g_strdup_format ("bse-%s-", g_get_user_name());
       const char *file_name;
       while ((file_name = g_dir_read_name (dir)))
 	{
@@ -1686,7 +1686,7 @@ bse_storage_blob_clean_files()
 
               if (kill (pid, 0) == -1 && errno == ESRCH)
 		{
-		  char *path = g_strdup_printf ("%s/%s", tmp_dir, file_name);
+		  char *path = g_strdup_format ("%s/%s", tmp_dir, file_name);
 		  unlink (path);
 		  g_free (path);
 		}
@@ -1806,7 +1806,7 @@ bse_storage_parse_blob (BseStorage             *self,
   GScanner *scanner = bse_storage_get_scanner (self);
   int bse_fd = -1;
   int tmp_fd = -1;
-  char *file_name = g_strdup_printf ("%s/bse-%s-%u-%08x", g_get_tmp_dir(), g_get_user_name(), getpid(), g_random_int());
+  char *file_name = g_strdup_format ("%s/bse-%s-%u-%08x", g_get_tmp_dir(), g_get_user_name(), getpid(), g_random_int());
 
   *blob = NULL; /* on error, the resulting blob should be NULL */
 
