@@ -768,7 +768,7 @@ server_user_message (const Bse::UserMessage &umsg)
   msg.primary = umsg.text1.c_str();
   msg.secondary = umsg.text2.c_str();
   msg.details = umsg.text3.c_str();
-  Bse::String cfg = Bse::string_printf (_("Show messages about %s"), umsg.label.c_str());
+  Bse::String cfg = Bse::string_format (_("Show messages about %s"), umsg.label.c_str());
   msg.config_check = cfg.c_str();
   msg.ident = etype.enum_find (umsg.type).ident;
   msg.label = NULL;

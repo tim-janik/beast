@@ -134,7 +134,7 @@ main (int   argc,
 
   /* start BSE core and connect */
   bst_splash_update_item (beast_splash, _("BSE Core"));
-  Bse::String bseoptions = Bse::string_printf ("debug-extensions=%d", bst_debug_extensions);
+  Bse::String bseoptions = Bse::string_format ("debug-extensions=%d", bst_debug_extensions);
   Bse::init_async (&argc, argv, "BEAST", Bse::string_split (bseoptions, ":"));
   sfi_glue_context_push (Bse::init_glue_context ("BEAST", bst_main_loop_wakeup));
   source = g_source_simple (GDK_PRIORITY_EVENTS, // G_PRIORITY_HIGH - 100,
@@ -285,7 +285,7 @@ main (int   argc,
                 exit (1);
               if (unlink (argv[i]) < 0)
                 {
-                  perror (Rapicorn::string_printf ("%s: failed to remove", argv[i]).c_str());
+                  perror (Rapicorn::string_format ("%s: failed to remove", argv[i]).c_str());
                   exit (2);
                 }
               error = bse_project_store_bse (project, 0, argv[i], TRUE);
