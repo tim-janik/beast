@@ -18,6 +18,9 @@ EXTRA_DIST += $(built_sources)
 gen_sources = xgen-bsggc
 CLEANFILES += $(gen_sources)
 
+# libraries to link programs against
+programs_ldadd = $(top_builddir)/bse/libbse.la $(RAPICORN_LIBS)
+
 #
 # programs to build
 #
@@ -25,8 +28,6 @@ bin_PROGRAMS = bsescm-$(BIN_VERSION)		# this expands to bsescm-0.7.0 or similar
 bsescm___BIN_VERSION__SOURCES = bsescm.cc bsescminterp.cc
 bsescm___BIN_VERSION__LDADD = $(programs_ldadd) $(BSESCM_LIBS)
 
-# libraries to link programs against
-programs_ldadd = $(top_builddir)/bse/libbse.la
 # source setups
 bsescminterp.cc: # bsescm-genglue.c
 EXTRA_DIST += bsescminterp.hh
