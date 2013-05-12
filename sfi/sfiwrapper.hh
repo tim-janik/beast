@@ -15,11 +15,11 @@ using namespace Rapicorn;
 
 // == Debugging ==
 /// Issue a general purpose debugging message, configurable via #$BSE_DEBUG.
-#define BSE_DEBUG(...)          do { if (BSE_UNLIKELY (Bse::_cached_bse_debug)) Bse::bse_debug (NULL, RAPICORN_PRETTY_FILE, __LINE__, __VA_ARGS__); } while (0)
+#define BSE_DEBUG(...)          do { if (BSE_UNLIKELY (Bse::_cached_bse_debug)) Bse::bse_debug (NULL, RAPICORN_PRETTY_FILE, __LINE__, Rapicorn::string_format (__VA_ARGS__)); } while (0)
 /// Issue a debugging message if debugging for @a key is enabled via #$BSE_DEBUG.
-#define BSE_KEY_DEBUG(key,...)  do { if (BSE_UNLIKELY (Bse::_cached_bse_debug)) Bse::bse_debug (key, RAPICORN_PRETTY_FILE, __LINE__, __VA_ARGS__); } while (0)
+#define BSE_KEY_DEBUG(key,...)  do { if (BSE_UNLIKELY (Bse::_cached_bse_debug)) Bse::bse_debug (key, RAPICORN_PRETTY_FILE, __LINE__, Rapicorn::string_format (__VA_ARGS__)); } while (0)
 extern bool volatile _cached_bse_debug;
-void        bse_debug         (const char*, const char*, int, const char*, ...) RAPICORN_PRINTF (4, 5);
+void        bse_debug         (const char*, const char*, int, const String&);
 bool       _bse_debug_enabled (const char *key);
 inline bool bse_debug_enabled (const char *key = NULL) { return BSE_UNLIKELY (_cached_bse_debug) && _bse_debug_enabled (key); }
 bool        bse_flipper_check (const char *key);
@@ -60,8 +60,6 @@ bool	birnet_file_equals (const char *file1,
 #define         sfi_warning(...)                 RAPICORN_CRITICAL (__VA_ARGS__)
 #define         sfi_info(...)                    BSE_DEBUG (__VA_ARGS__)
 #define         sfi_diag(...)                    BSE_DEBUG (__VA_ARGS__)
-#define         sfi_debug(lvl, ...)              BSE_DEBUG (__VA_ARGS__)
-#define         sfi_nodebug(lvl, ...)            do { /* nothing */ } while (0)
 
 /* --- url handling --- */
 void sfi_url_show                   	(const char           *url);
