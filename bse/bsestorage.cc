@@ -981,7 +981,7 @@ bse_storage_warn (BseStorage  *self,
   string = g_strdup_vprintf (format, args);
   va_end (args);
   if (self->rstore)
-    sfi_rstore_warn (self->rstore, "%s", string);
+    sfi_rstore_warn (self->rstore, string);
   else
     g_printerr ("BseStorage: while storing: %s", string);
   g_free (string);
@@ -999,7 +999,7 @@ bse_storage_warn_skip (BseStorage  *self,
   va_start (args, format);
   string = g_strdup_vprintf (format, args);
   va_end (args);
-  token = sfi_rstore_warn_skip (self->rstore, "%s", string);
+  token = sfi_rstore_warn_skip (self->rstore, string);
   g_free (string);
   return token;
 }
@@ -1015,7 +1015,7 @@ bse_storage_error (BseStorage  *self,
   string = g_strdup_vprintf (format, args);
   va_end (args);
   if (self->rstore)
-    sfi_rstore_error (self->rstore, "%s", string);
+    sfi_rstore_error (self->rstore, string);
   else
     g_printerr ("BseStorage: ERROR: while storing: %s\n", string);
   g_free (string);
