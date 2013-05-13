@@ -78,10 +78,10 @@ static inline BseComplex bse_complex_tan        (BseComplex     c);
 static inline BseComplex bse_complex_sinh       (BseComplex     c);
 static inline BseComplex bse_complex_cosh       (BseComplex     c);
 static inline BseComplex bse_complex_tanh       (BseComplex     c);
-char*                    bse_complex_str        (BseComplex     c);
-char*                    bse_complex_list       (uint           n_points,
+std::string              bse_complex_str        (BseComplex     c);
+std::string              bse_complex_list       (uint           n_points,
                                                  BseComplex    *points,
-                                                 const char    *indent);
+                                                 const std::string &indent);
 void                     bse_complex_gnuplot    (const char    *file_name,
                                                  uint           n_points,
                                                  BseComplex    *points);
@@ -133,12 +133,12 @@ gboolean               bse_poly2_droots         (gdouble        roots[2],
                                                  gdouble        a,
                                                  gdouble        b,
                                                  gdouble        c);
-char*                  bse_poly_str             (uint           degree,
+std::string            bse_poly_str             (uint           degree,
                                                  double        *a,
-                                                 const char    *var);
-char*                  bse_poly_str1            (uint           degree,
+                                                 const std::string &var);
+std::string            bse_poly_str1            (uint           degree,
                                                  double        *a,
-                                                 const char    *var);
+                                                 const std::string &var);
 
 /* --- transformations --- */
 double                 bse_temp_freq            (double         kammer_freq,

@@ -776,7 +776,7 @@ gsl_filter_tscheb1_test	(uint         iorder,
 
   /* choose roots from the left half-plane */
   if (0)
-    g_print ("zhqr-root:\n%s\n", bse_complex_list (iorder, roots, "  "));
+    g_print ("zhqr-root:\n%s\n", bse_complex_list (iorder, roots, "  ").c_str());
   r = roots;
   for (i = 0; i < iorder; i++)
     if (roots[i].re < 0)

@@ -342,8 +342,10 @@ public:
     /* we don't need H(z) that because we do it ourselves, but we can print it
      * in case somebody wants to play around with gnuplot
      */
-    fprintf (gp_file, "H(z)=%s/%s\n", bse_poly_str (m_order, &m_a[0], "z"),
-				      bse_poly_str (m_order, &m_b[0], "z"));
+    fprintf (gp_file,
+             "H(z)=%s/%s\n",
+             bse_poly_str (m_order, &m_a[0], "z").c_str(),
+             bse_poly_str (m_order, &m_b[0], "z").c_str());
     fprintf (gp_file, "load '../../bse/tests/filter-defs.gp'\n");
     fprintf (gp_file, "call '../../bse/tests/arrows.gp' %zd", m_gp_arrows.size());
     for (set<double>::iterator ai = m_gp_arrows.begin(); ai != m_gp_arrows.end(); ai++)
