@@ -870,7 +870,7 @@ undo_call_proc (BseUndoStep  *ustep,
     {
       const char *packed_item_pointer = g_value_get_string (ivalues + 0);
       BseItem *item = (BseItem*) bse_undo_pointer_unpack (packed_item_pointer, ustack);
-      BseUndoStack *redo_stack = (BseUndoStack*) bse_item_undo_open (item, "%s", BSE_PROCEDURE_NAME (proc));
+      BseUndoStack *redo_stack = bse_item_undo_open (item, "%s", BSE_PROCEDURE_NAME (proc));
       BseUndoStep *redo_step;
       redo_step = bse_undo_step_new (undo_call_proc, unde_free_proc, 3);
       redo_step->data[0].v_pointer = proc;
@@ -1160,31 +1160,17 @@ bse_item_set_property_undoable (BseItem      *self,
 }
 
 BseUndoStack*
-bse_item_undo_open (void       *item,
-                    const char *format,
-                    ...)
+bse_item_undo_open_str (void *item, const std::string &string)
 {
-  BseItem     *self = BSE_ITEM (item);
-  BseUndoStack *ustack;
-  char *buffer;
-  va_list args;
-
-  g_return_val_if_fail (format != NULL, NULL);
-
-  ustack = BSE_ITEM_GET_CLASS (self)->get_undo (self);
-  va_start (args, format);
-  buffer = g_strdup_vprintf (format, args);
-  va_end (args);
+  BseItem *self = BSE_ITEM (item);
+  BseUndoStack *ustack = BSE_ITEM_GET_CLASS (self)->get_undo (self);
   if (ustack)
-    bse_undo_group_open (ustack, buffer);
+    bse_undo_group_open (ustack, string.c_str());
   else
     {
-      char *str = g_strconcat ("DUMMY-GROUP(", buffer, ")", NULL);
       ustack = bse_undo_stack_dummy ();
-      bse_undo_group_open (ustack, str);
-      g_free (str);
+      bse_undo_group_open (ustack, Rapicorn::string_format ("DUMMY-GROUP(%s)", string).c_str());
     }
-  g_free (buffer);
   return ustack;
 }
 
