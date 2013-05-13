@@ -105,11 +105,35 @@ check_freq_vs_notes (BseMusicalTuningType musical_tuning)
     }
   TDONE();
 }
+
+static void
+test_math_bits ()
+{
+  TCMP (bse_string_from_double (-1.0), ==, "-1.0");
+  TCMP (bse_string_from_double (0.0), ==, "0.0");
+  TCMP (bse_string_from_double (1000000000000000.75000000000000), ==, "1000000000000000.75");
+  BseComplex c[] = { { 0, 0 }, { -1, +1 }, { +2, -3 } };
+  const std::string c0 = bse_complex_str (c[0]);
+  TCMP (c0, ==, "{0.0, 0.0}");
+  const std::string c1 = bse_complex_str (c[1]);
+  TCMP (c1, ==, "{-1.0, 1.0}");
+  const std::string c2 = bse_complex_str (c[2]);
+  TCMP (c2, ==, "{2.0, -3.0}");
+  const std::string complex_list = bse_complex_list (RAPICORN_ARRAY_SIZE (c), c, "");
+  TCMP (complex_list, ==, "0.0 0.0\n-1.0 1.0\n2.0 -3.0\n");
+  double a[] = { 0, -1, +2, -3, +7.75, -1000000000000000.75 };
+  const std::string poly1 = bse_poly_str (RAPICORN_ARRAY_SIZE (a) - 1, a, "x");
+  TCMP (poly1, ==, "(0.0+x*(-1.0+x*(2.0+x*(-3.0+x*(7.75+x*(-1000000000000000.75))))))");
+  const std::string poly2 = bse_poly_str1 (RAPICORN_ARRAY_SIZE (a) - 1, a, "y");
+  TCMP (poly2, ==, "(-1.0*y + 2.0*y**2 + -3.0*y**3 + 7.75*y**4 + -1000000000000000.75*y**5)");
+}
+
 int
 main (gint   argc,
       gchar *argv[])
 {
   bse_init_test (&argc, argv);
+  test_math_bits();
   check_cent_tune();
   check_cent_tune_fast();
   check_equal_tempered_tuning();

@@ -6,19 +6,21 @@
 #define RING_BUFFER_LENGTH	(256) // FIXME: simlpy dup strings in the API
 #define	PRINTF_DIGITS		"1270"
 #define	FLOAT_STRING_SIZE	(2048)
+
 /* --- functions --- */
-static inline char*
-pretty_print_double (char  *str,
-		     double d)
+std::string
+bse_string_from_double (long double value)
 {
-  char *s= str;
-  sprintf (s, "%." PRINTF_DIGITS "f", d);
+  std::string str;
+  str.resize (FLOAT_STRING_SIZE, 0);
+  char *s = &str[0];
+  sprintf (s, "%." PRINTF_DIGITS "Lf", value);
   while (*s)
     s++;
-  while (s[-1] == '0' && s[-2] != '.')
+  while (s > &str[2] && s[-1] == '0' && s[-2] != '.')
     s--;
   *s = 0;
-  return s;
+  return std::string (str.c_str());
 }
 
 char*
@@ -40,10 +42,11 @@ bse_complex_list (uint         n_points,
       *s = 0;
       if (indent)
 	strcat (s, indent);
-      while (*s) s++;
-      s = pretty_print_double (s, points[i].re);
+      while (*s)
+        s++;
+      *s = 0; strcat (s, bse_string_from_double (points[i].re).c_str()); s += strlen (s);
       *s++ = ' ';
-      s = pretty_print_double (s, points[i].im);
+      *s = 0; strcat (s, bse_string_from_double (points[i].im).c_str()); s += strlen (s);
       *s++ = '\n';
     }
   *s++ = 0;
@@ -63,10 +66,10 @@ bse_complex_str (BseComplex c)
     g_free (rbuffer[rbi]);
   s = tbuffer;
   *s++ = '{';
-  s = pretty_print_double (s, c.re);
+  *s = 0; strcat (s, bse_string_from_double (c.re).c_str()); s += strlen (s);
   *s++ = ',';
   *s++ = ' ';
-  s = pretty_print_double (s, c.im);
+  *s = 0; strcat (s, bse_string_from_double (c.im).c_str()); s += strlen (s);
   *s++ = '}';
   *s++ = 0;
   rbuffer[rbi] = g_strdup (tbuffer);
@@ -90,14 +93,14 @@ bse_poly_str (uint         degree,
     g_free (rbuffer[rbi]);
   s = tbuffer;
   *s++ = '(';
-  s = pretty_print_double (s, a[0]);
+  *s = 0; strcat (s, bse_string_from_double (a[0]).c_str()); s += strlen (s);
   for (i = 1; i <= degree; i++)
     {
       *s++ = '+';
       *s = 0; strcat (s, var); while (*s) s++;
       *s++ = '*';
       *s++ = '(';
-      s = pretty_print_double (s, a[i]);
+      *s = 0; strcat (s, bse_string_from_double (a[i]).c_str()); s += strlen (s);
     }
   while (i--)
     *s++ = ')';
@@ -125,7 +128,7 @@ bse_poly_str1 (uint         degree,
   *s++ = '(';
   if (a[0] != 0.0)
     {
-      s = pretty_print_double (s, a[0]);
+      *s = 0; strcat (s, bse_string_from_double (a[0]).c_str()); s += strlen (s);
       need_plus = 1;
     }
   for (i = 1; i <= degree; i++)
@@ -140,7 +143,7 @@ bse_poly_str1 (uint         degree,
 	}
       if (a[i] != 1.0)
 	{
-	  s = pretty_print_double (s, a[i]);
+          *s = 0; strcat (s, bse_string_from_double (a[i]).c_str()); s += strlen (s);
 	  *s++ = '*';
 	}
       *s = 0;
@@ -183,9 +186,9 @@ bse_float_gnuplot (const char    *file_name,
   uint i;
   for (i = 0; i < n_ypoints; i++)
     {
-      char xstr[FLOAT_STRING_SIZE], ystr[FLOAT_STRING_SIZE];
-      pretty_print_double (xstr, xstart + i * xstep);
-      pretty_print_double (ystr, ypoints[i]);
+      char xbuf[FLOAT_STRING_SIZE], *xstr = xbuf, ybuf[FLOAT_STRING_SIZE], *ystr = ybuf;
+      *xstr = 0; strcat (xstr, bse_string_from_double (xstart + i * xstep).c_str()); xstr += strlen (xstr);
+      *ystr = 0; strcat (ystr, bse_string_from_double (ypoints[i]).c_str()); ystr += strlen (ystr);
       fprintf (fout, "%s %s\n", xstr, ystr);
     }
   fclose (fout);

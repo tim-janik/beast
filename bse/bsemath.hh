@@ -85,6 +85,7 @@ char*                    bse_complex_list       (uint           n_points,
 void                     bse_complex_gnuplot    (const char    *file_name,
                                                  uint           n_points,
                                                  BseComplex    *points);
+std::string              bse_string_from_double (long double    value);
 
 /* --- polynomials --- */
 /* example, degree=2: 5+2x+7x^2 => a[0..degree] = { 5, 2, 7 } */
