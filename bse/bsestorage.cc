@@ -983,57 +983,33 @@ bse_storage_parse_item_link (BseStorage           *self,
 }
 
 void
-bse_storage_warn (BseStorage  *self,
-                  const gchar *format,
-                  ...)
+bse_storage_warn_str (BseStorage *self, const std::string &string)
 {
-  va_list args;
-  gchar *string;
   g_return_if_fail (BSE_IS_STORAGE (self));
-  va_start (args, format);
-  string = g_strdup_vprintf (format, args);
-  va_end (args);
   if (self->rstore)
     sfi_rstore_warn (self->rstore, string);
   else
-    g_printerr ("BseStorage: while storing: %s", string);
-  g_free (string);
+    g_printerr ("BseStorage: while storing: %s", string.c_str());
 }
 
 GTokenType
-bse_storage_warn_skip (BseStorage  *self,
-                       const gchar *format,
-                       ...)
+bse_storage_skip (BseStorage *self, const std::string &string)
 {
-  va_list args;
-  gchar *string;
   GTokenType token;
   g_return_val_if_fail (BSE_IS_STORAGE (self), G_TOKEN_ERROR);
   g_return_val_if_fail (self->rstore != NULL, G_TOKEN_ERROR);
-  va_start (args, format);
-  string = g_strdup_vprintf (format, args);
-  va_end (args);
   token = sfi_rstore_warn_skip (self->rstore, string);
-  g_free (string);
   return token;
 }
 
 void
-bse_storage_error (BseStorage  *self,
-                   const gchar *format,
-                   ...)
+bse_storage_error_str (BseStorage *self, const std::string &string)
 {
-  va_list args;
-  gchar *string;
   g_return_if_fail (BSE_IS_STORAGE (self));
-  va_start (args, format);
-  string = g_strdup_vprintf (format, args);
-  va_end (args);
   if (self->rstore)
     sfi_rstore_error (self->rstore, string);
   else
-    g_printerr ("BseStorage: ERROR: while storing: %s\n", string);
-  g_free (string);
+    g_printerr ("BseStorage: ERROR: while storing: %s\n", string.c_str());
 }
 
 static void
