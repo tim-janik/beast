@@ -11,16 +11,11 @@
 std::string
 bse_string_from_double (long double value)
 {
-  std::string str;
-  str.resize (FLOAT_STRING_SIZE, 0);
-  char *s = &str[0];
-  sprintf (s, "%." PRINTF_DIGITS "Lf", value);
-  while (*s)
-    s++;
-  while (s > &str[2] && s[-1] == '0' && s[-2] != '.')
+  std::string str = Rapicorn::string_format ("%.1270f", value);
+  const char *s = &str[str.size()];
+  while (s > &str[0] && s[-1] == '0' && s[-2] != '.')
     s--;
-  *s = 0;
-  return std::string (str.c_str());
+  return str.substr (0, s - &str[0]);
 }
 
 char*
