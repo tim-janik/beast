@@ -14,6 +14,7 @@ sfi_public_headers = $(strip \
 	sfitime.hh	sfitypes.hh	sfivalues.hh	sfiustore.hh	\
 	sficxx.hh	sfiring.hh	sfimemory.hh	sficomport.hh	\
 	sfitests.hh	sfi.hh						\
+	gbsearcharray.hh \
 )
 sfi_all_sources = $(strip \
 	sfistore.cc	sficomwire.cc	sfifilecrawler.cc \
@@ -25,7 +26,6 @@ sfi_all_sources = $(strip \
 	$(conditional_toyprof_sources)	\
 )
 sfi_extra_sources = $(strip \
-	gbsearcharray.hh \
 )
 sfi_built_sources = $(strip \
 )
