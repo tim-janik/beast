@@ -1592,33 +1592,6 @@ gxk_scroll_text_append_file_tsm (GtkWidget   *sctext,
 
 /**
  * @param sctext	a scroll text widget as returned from gxk_scroll_text_create()
- * @param text_fmt	printf(3) style format string
- *
- * Append @a text_fmt to the textual contents of this @a sctext.
- */
-void
-gxk_scroll_text_aprintf (GtkWidget   *sctext,
-                         const gchar *text_fmt,
-                         ...)
-{
-  g_return_if_fail (GXK_IS_SCROLL_TEXT (sctext));
-
-  if (text_fmt)
-    {
-      va_list args;
-      gchar *buffer;
-
-      va_start (args, text_fmt);
-      buffer = g_strdup_vprintf (text_fmt, args);
-      va_end (args);
-
-      gxk_scroll_text_append (sctext, buffer);
-      g_free (buffer);
-    }
-}
-
-/**
- * @param sctext	a scroll text widget as returned from gxk_scroll_text_create()
  * @return		a GtkTextView widget
  *
  * Return the internally used GtkTextView of this @a sctext.
