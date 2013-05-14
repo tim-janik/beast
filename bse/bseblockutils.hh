@@ -264,7 +264,7 @@ bse_block_fill_0 (size_t n_values, TYPE *values)
   size_t n_bytes = n_values * sizeof (TYPE);
   char *p = (char*) values;
   uint r = size_t (p) & 3;
-  if (UNLIKELY (r))
+  if (RAPICORN_UNLIKELY (r))
     {
       r = MIN (r, n_values);    // rest for pointer alignment
       memset (p, 0, r);
@@ -274,7 +274,7 @@ bse_block_fill_0 (size_t n_values, TYPE *values)
   const size_t n_aligned = n_bytes / 4;
   wmemset ((wchar_t*) p, 0, n_aligned);
   n_bytes -= n_aligned * 4;
-  if (UNLIKELY (n_bytes))
+  if (RAPICORN_UNLIKELY (n_bytes))
     {
       p += n_aligned * 4;
       memset (p, 0, n_bytes);
