@@ -269,35 +269,8 @@ Parser::Parser () : options (*Options::the())
   scanner->user_data = this;
 }
 
-void Parser::printError (const gchar *format, ...)
-{
-  va_list args;
-  gchar *string;
-
-  va_start (args, format);
-  string = g_strdup_vprintf (format, args);
-  va_end (args);
-
-  if (scanner->parse_errors < scanner->max_parse_errors)
-    g_scanner_error (scanner, "%s", string);
-
-  g_free (string);
-}
-
-void Parser::printWarning (const gchar *format, ...)
-{
-  va_list args;
-  gchar *string;
-
-  va_start (args, format);
-  string = g_strdup_vprintf (format, args);
-  va_end (args);
-
-  g_scanner_warn (scanner, "%s", string);
-  g_free (string);
-}
-
-void Parser::scannerMsgHandler (GScanner *scanner, gchar *message, gboolean is_error)
+void
+Parser::scannerMsgHandler (GScanner *scanner, gchar *message, gboolean is_error)
 {
   g_return_if_fail (scanner != NULL);
   g_return_if_fail (scanner->user_data != NULL);
@@ -981,7 +954,7 @@ GTokenType Parser::parseTypeName (String& type)
   String qtype = qualifySymbol (type.c_str());
 
   if (qtype == "")
-    printError ("can't find prior definition for type '%s'", type.c_str());
+    print_error ("can't find prior definition for type '%s'", type.c_str());
   else
     type = qtype;
 
@@ -1019,7 +992,7 @@ GTokenType Parser::parseStringOrConst (String &s)
 	      return G_TOKEN_NONE;
 	    }
 	}
-      printError("undeclared constant %s used", s.c_str());
+      print_error("undeclared constant %s used", s.c_str());
     }
 
   parse_or_return (G_TOKEN_STRING);
@@ -1585,7 +1558,7 @@ GTokenType Parser::parseParamHints (Param &def)
     }
   def.args = args;
   if (!makeLiteralOptions (def.options, def.literal_options))
-    printWarning ("can't parse option string: %s", def.options.c_str());
+    print_warning ("can't parse option string: %s", def.options.c_str());
   return G_TOKEN_NONE;
 }
 
@@ -1865,13 +1838,13 @@ GTokenType Parser::parseMethod (Method& method)
 	  }
 	  else
 	  {
-	    printError("In or Out expected in method/procedure details");
+	    print_error("In or Out expected in method/procedure details");
 	    return G_TOKEN_IDENTIFIER;
 	  }
 
 	  if (!pd)
 	  {
-	    printError("can't associate method/procedure parameter details");
+	    print_error("can't associate method/procedure parameter details");
 	    return G_TOKEN_IDENTIFIER;
 	  }
 
@@ -1999,7 +1972,7 @@ void Parser::addType (const String& type, TypeDeclaration typeDecl)
     }
   else if (m == typeDecl)
     {
-      printError ("double definition of '%s' as same type", type.c_str());
+      print_error ("double definition of '%s' as same type", type.c_str());
     }
   else if (m == (typeDecl | tdProto))
     {
@@ -2007,7 +1980,7 @@ void Parser::addType (const String& type, TypeDeclaration typeDecl)
     }
   else
     {
-      printError ("double definition of '%s' as different types", type.c_str());
+      print_error ("double definition of '%s' as different types", type.c_str());
     }
 }
 
@@ -2029,7 +2002,7 @@ void Parser::addPrototype (const String& type, TypeDeclaration typeDecl)
     }
   else
     {
-      printError ("double definition of '%s' as different types", type.c_str());
+      print_error ("double definition of '%s' as different types", type.c_str());
     }
 }
 
@@ -2133,9 +2106,9 @@ Symbol *Parser::qualifyHelper (const String& name)
     return alternatives.front();
 
   /* multiple equally valid candidates? */
-  printError ("there are multiple valid interpretations of %s in this context", name.c_str());
+  print_error ("there are multiple valid interpretations of %s in this context", name.c_str());
   for (list<Symbol *>::iterator ai = alternatives.begin(); ai != alternatives.end(); ai++)
-    printError (" - it could be %s", (*ai)->fullName().c_str());
+    print_error (" - it could be %s", (*ai)->fullName().c_str());
 
   return 0;
 }
@@ -2157,7 +2130,7 @@ bool Parser::enterNamespace (const String& name)
       currentNamespace = dynamic_cast <Namespace *> (symbol);
       if (!currentNamespace)
 	{
-	  printError ("%s is not a namespace", name.c_str());
+	  print_error ("%s is not a namespace", name.c_str());
 	  return false;
 	}
     }
@@ -2183,14 +2156,14 @@ bool Parser::usingNamespace (const String& name)
   Symbol *sym = qualifyHelper (name);
   if (!sym)
     {
-      printError ("%s is an undeclared namespace (can't be used)", name.c_str());
+      print_error ("%s is an undeclared namespace (can't be used)", name.c_str());
       return false;
     }
 
   Namespace *ns = dynamic_cast<Namespace *> (sym);
   if (!ns)
     {
-      printError ("%s is not a namespace (can't be used)", name.c_str());
+      print_error ("%s is not a namespace (can't be used)", name.c_str());
       return false;
     }
   currentNamespace->used.push_back (ns);
