@@ -62,7 +62,7 @@ sfi_com_port_from_child (const gchar *ident,
   port = g_new0 (SfiComPort, 1);
   port->ref_count = 1;
   if (remote_pid > 1)
-    port->ident = g_strdup_printf ("%s[%u]", ident, remote_pid);
+    port->ident = g_strdup_format ("%s[%u]", ident, remote_pid);
   else
     port->ident = g_strdup (ident);
   port->pfd[0].fd = nonblock_fd (remote_input);

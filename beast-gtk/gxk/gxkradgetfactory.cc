@@ -248,7 +248,7 @@ radget_factory_action_list_added (gpointer                client_data,
     {
       const gchar *domain = gxk_radget_get_domain (self);
       const gchar *wname = GTK_WIDGET (self->window)->name;
-      gchar *path_prefix = wname ? g_strdup_printf ("<%s>/%s/", wname, prefix) : NULL;
+      gchar *path_prefix = wname ? g_strdup_format ("<%s>/%s/", wname, prefix) : NULL;
       GSList *slist;
       guint i;
       if (self->per_list)

@@ -244,7 +244,7 @@ Wave::store (const string file_name)
   do
     {
       g_free (temp_file);
-      temp_file = g_strdup_printf ("%s.tmp%06xyXXXXXX", file_name.c_str(), rand() & 0xfffffd);
+      temp_file = g_strdup_format ("%s.tmp%06xyXXXXXX", file_name.c_str(), rand() & 0xfffffd);
       mktemp (temp_file); /* this is save, due to use of: O_CREAT | O_EXCL */
       fd = open (temp_file, O_WRONLY | O_CREAT | O_EXCL, 0666);
     }

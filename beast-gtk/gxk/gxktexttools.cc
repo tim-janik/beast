@@ -81,7 +81,7 @@ text_buffer_add_error (GtkTextBuffer *tbuffer,
   va_start (args, format);
   text = g_strdup_vprintf (format, args);
   va_end (args);
-  string = g_strdup_printf ("\n%s\n", text);
+  string = g_strdup_format ("\n%s\n", text);
   g_free (text);
   gtk_text_buffer_insert_with_tags (tbuffer, &iter, string, strlen (string), tag, NULL);
   g_free (string);
@@ -524,7 +524,7 @@ tsm_start_element  (GMarkupParseContext *context,
       if (attribute_names[i])
         {
           const gchar *errtname = attribute_values[i];
-          gchar *tname = g_strdup_printf ("%u-%s", md->tagns, attribute_values[i]);
+          gchar *tname = g_strdup_format ("%u-%s", md->tagns, attribute_values[i]);
           text_buffer_tagdef (md->tbuffer, tname, NULL, NULL);
           for (i = 0; attribute_names[i]; i++)
             if (strcmp (attribute_names[i], "name") != 0 &&
@@ -702,7 +702,7 @@ tsm_end_element (GMarkupParseContext *context,
       if (ml->tag_name)
         {
           GtkTextTagTable *ttable = gtk_text_buffer_get_tag_table (md->tbuffer);
-          gchar *tname = g_strdup_printf ("%u-%s", md->tagns, ml->tag_name);
+          gchar *tname = g_strdup_format ("%u-%s", md->tagns, ml->tag_name);
           GtkTextTag *tag = gtk_text_tag_table_lookup (ttable, tname);
           g_free (tname);
           if (tag)
@@ -887,7 +887,7 @@ gxk_text_buffer_insert (GtkTextBuffer *tbuffer,
       /* ensure certain icon sizes */
       for (n = 0; n < n_icon_sizes; n++)
         {
-          name = g_strdup_printf ("%ux%u", icon_square_sizes[n], icon_square_sizes[n]);
+          name = g_strdup_format ("%ux%u", icon_square_sizes[n], icon_square_sizes[n]);
 
           if (gtk_icon_size_from_name (name) == GTK_ICON_SIZE_INVALID)
             gtk_icon_size_register (name, icon_square_sizes[n], icon_square_sizes[n]);
@@ -928,7 +928,7 @@ gxk_text_buffer_insert (GtkTextBuffer *tbuffer,
         g_object_unref (md.style);
     }
 
-  name = g_strdup_printf ("gxk-text-tools-indent-%u", indent);
+  name = g_strdup_format ("gxk-text-tools-indent-%u", indent);
   tag = gtk_text_tag_table_lookup (ttable, name);
   if (!tag)
     {
@@ -1588,33 +1588,6 @@ gxk_scroll_text_append_file_tsm (GtkWidget   *sctext,
   gxk_text_buffer_add_textgets_to_view (tbuffer, tview);
   gxk_text_view_cursor_normal (tview);
   gxk_text_view_cursor_to_start (tview);
-}
-
-/**
- * @param sctext	a scroll text widget as returned from gxk_scroll_text_create()
- * @param text_fmt	printf(3) style format string
- *
- * Append @a text_fmt to the textual contents of this @a sctext.
- */
-void
-gxk_scroll_text_aprintf (GtkWidget   *sctext,
-                         const gchar *text_fmt,
-                         ...)
-{
-  g_return_if_fail (GXK_IS_SCROLL_TEXT (sctext));
-
-  if (text_fmt)
-    {
-      va_list args;
-      gchar *buffer;
-
-      va_start (args, text_fmt);
-      buffer = g_strdup_vprintf (text_fmt, args);
-      va_end (args);
-
-      gxk_scroll_text_append (sctext, buffer);
-      g_free (buffer);
-    }
 }
 
 /**

@@ -13,10 +13,10 @@
 extern Bse::ServerH bse_server;
 
 G_BEGIN_DECLS
+
 /* --- GUI utilities --- */
-void           bst_status_eprintf             (BseErrorType     error,
-                                               const gchar     *message_fmt,
-                                               ...) G_GNUC_PRINTF (2, 3);
+void           bst_status_set_error           (BseErrorType error, const std::string &message);
+#define        bst_status_eprintf(error, ...)  bst_status_set_error (error, Rapicorn::string_format (__VA_ARGS__))
 void           bst_gui_error_bell             (gpointer         widget);
 void           bst_window_sync_title_to_proxy (gpointer         window,
                                                SfiProxy         proxy,

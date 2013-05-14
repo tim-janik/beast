@@ -97,46 +97,6 @@ sfi_glue_encoder_context (SfiComPort *port)
   return &encoder->context;
 }
 
-#if 0
-GValue* /* needs sfi_value_free() */
-sfi_glue_encode_message (guint        log_level,
-			 const gchar *format,
-			 ...)
-{
-  gchar *buffer;
-  GValue *value;
-  SfiSeq *seq;
-  va_list args;
-
-  g_return_val_if_fail (format != NULL, NULL);
-
-  va_start (args, format);
-  buffer = g_strdup_vprintf (format, args);
-  va_end (args);
-
-  switch (log_level)
-    {
-    case SFI_LOG_ERROR:
-    case SFI_LOG_WARN:
-    case SFI_LOG_INFO:
-    case SFI_LOG_DIAG:
-      break;
-    default:
-      log_level = SFI_LOG_DEBUG;
-    }
-
-  seq = sfi_seq_new ();
-  sfi_seq_append_int (seq, SFI_GLUE_CODEC_ASYNC_MESSAGE);
-  sfi_seq_append_string (seq, G_LOG_DOMAIN);
-  sfi_seq_append_int (seq, log_level);
-  sfi_seq_append_string (seq, buffer);		/* message */
-  value = sfi_value_seq (seq);
-  sfi_seq_unref (seq);
-  g_free (buffer);
-  return value;
-}
-#endif
-
 static gboolean
 encoder_process_message (SfiGlueEncoder *encoder,
 			 GValue		*value,

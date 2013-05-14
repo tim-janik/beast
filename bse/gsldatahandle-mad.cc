@@ -448,11 +448,11 @@ dh_mad_open (GslDataHandle      *dhandle,
   return error;
 }
 
-static GslLong
+static int64
 dh_mad_read (GslDataHandle *dhandle,
-	     GslLong        voffset, /* in values */
-	     GslLong        n_values,
-	     gfloat        *values)
+	     int64          voffset, /* in values */
+	     int64          n_values,
+	     float         *values)
 {
   MadHandle *handle = (MadHandle*) dhandle;
   GslLong pos = voffset / dhandle->setup.n_channels;
@@ -604,6 +604,7 @@ dh_mad_coarse_seek (GslDataHandle *dhandle,
     }
   return handle->pcm_pos * dhandle->setup.n_channels;
 }
+
 static void
 dh_mad_close (GslDataHandle *dhandle)
 {

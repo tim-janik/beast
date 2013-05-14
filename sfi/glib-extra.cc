@@ -152,20 +152,6 @@ g_strdup_lstrip (const gchar *string)
   return NULL;
 }
 
-#if !GLIB_CHECK_VERSION (2, 9, 0)
-const gchar*
-g_intern_string (const gchar *string)
-{
-  return string ? g_quark_to_string (g_quark_from_string (string)) : NULL;
-}
-
-const gchar*
-g_intern_static_string (const gchar   *string)
-{
-  return string ? g_quark_to_string (g_quark_from_static_string (string)) : NULL;
-}
-#endif
-
 static gchar*
 delim_concat_varargs (const gchar *first_string,
                       gchar        delim,
@@ -210,25 +196,6 @@ g_intern_strconcat (const gchar *first_string,
       g_free (s);
     }
   return c;
-}
-
-const gchar*
-g_intern_printf (const gchar   *format,
-                 ...)
-{
-  if (format)
-    {
-      gchar *buffer;
-      va_list args;
-      va_start (args, format);
-      buffer = g_strdup_vprintf (format, args);
-      va_end (args);
-      const gchar *istring = g_intern_string (buffer);
-      g_free (buffer);
-      return istring;
-    }
-  else
-    return NULL;
 }
 
 gchar*

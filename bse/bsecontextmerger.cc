@@ -60,12 +60,12 @@ bse_context_merger_class_init (BseContextMergerClass *klass)
     {
       char *ident;
 
-      ident = g_strdup_printf ("input-%u", i + 1);
+      ident = g_strdup_format ("input-%u", i + 1);
       channel_id = bse_source_class_add_jchannel (source_class, ident, NULL, NULL);
       g_assert (channel_id == i);
       g_free (ident);
 
-      ident = g_strdup_printf ("output-%u", i + 1);
+      ident = g_strdup_format ("output-%u", i + 1);
       channel_id = bse_source_class_add_ochannel (source_class, ident, NULL, NULL);
       g_assert (channel_id == i);
       g_free (ident);

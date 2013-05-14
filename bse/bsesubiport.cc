@@ -33,7 +33,7 @@ bse_sub_iport_init (BseSubIPort *self)
   guint i;
   self->input_ports = g_new (gchar*, BSE_SOURCE_N_OCHANNELS (self));
   for (i = 0; i < BSE_SOURCE_N_OCHANNELS (self); i++)
-    self->input_ports[i] = g_strdup_printf ("synth_in_%u", i + 1);
+    self->input_ports[i] = g_strdup_format ("synth_in_%u", i + 1);
 }
 
 static void
@@ -140,7 +140,7 @@ bse_sub_iport_set_parent (BseItem *item,
           {
             g_free (self->input_ports[i]);
             self->input_ports[i] = g_strdup (name);
-            gchar *string = g_strdup_printf ("in_port_%u", i + 1);
+            gchar *string = g_strdup_format ("in_port_%u", i + 1);
             g_object_notify (G_OBJECT (item), string);
             g_free (string);
           }
@@ -275,16 +275,16 @@ bse_sub_iport_class_init (BseSubIPortClass *klass)
     {
       gchar *ident, *label, *value;
 
-      ident = g_strdup_printf ("output-%u", i + 1);
-      label = g_strdup_printf (_("Virtual input %u"), i + 1);
+      ident = g_strdup_format ("output-%u", i + 1);
+      label = g_strdup_format (_("Virtual input %u"), i + 1);
       channel_id = bse_source_class_add_ochannel (source_class, ident, label, NULL);
       g_assert (channel_id == i);
       g_free (ident);
       g_free (label);
 
-      ident = g_strdup_printf ("in_port_%u", i + 1);
-      label = g_strdup_printf (_("Input Port %u"), i + 1);
-      value = g_strdup_printf ("synth_in_%u", i + 1);
+      ident = g_strdup_format ("in_port_%u", i + 1);
+      label = g_strdup_format (_("Input Port %u"), i + 1);
+      value = g_strdup_format ("synth_in_%u", i + 1);
       bse_object_class_add_param (object_class, _("Assignments"), PROP_IPORT_NAME + i * 2,
                                   sfi_pspec_string (ident, label,
                                                     _("The port name is a unique name to establish input<->output "

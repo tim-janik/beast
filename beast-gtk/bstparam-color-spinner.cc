@@ -25,7 +25,7 @@ param_color_spinner_output (GtkSpinButton *spin_button,
                             GxkParam      *param)
 {
   guint n = spin_button->adjustment->value;
-  gchar *string = g_strdup_printf ("#%06x", n);
+  gchar *string = g_strdup_format ("#%06x", n);
   gxk_param_entry_set_text (param, GTK_WIDGET (spin_button), string);
   g_free (string);
   return TRUE;

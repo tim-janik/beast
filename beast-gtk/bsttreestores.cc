@@ -433,7 +433,7 @@ child_list_wrapper_fill_value (GxkListWrapper *self,
       const gchar *string;
       SfiProxy item;
     case BST_PROXY_STORE_SEQID:
-      g_value_set_string_take_ownership (value, g_strdup_printf ("%03u", seqid));
+      g_value_set_string_take_ownership (value, g_strdup_format ("%03u", seqid));
       break;
     case BST_PROXY_STORE_NAME:
       item = bst_child_list_wrapper_get_proxy (self, row);
@@ -480,7 +480,7 @@ item_seq_store_fill_value (GxkListWrapper *self,
       SfiProxy item;
     case BST_PROXY_STORE_SEQID:
       item = bst_item_seq_store_get_proxy (model, row);
-      g_value_set_string_take_ownership (value, g_strdup_printf ("%03u", bse_item_get_seqid (item)));
+      g_value_set_string_take_ownership (value, g_strdup_format ("%03u", bse_item_get_seqid (item)));
       break;
     case BST_PROXY_STORE_NAME:
       item = bst_item_seq_store_get_proxy (model, row);

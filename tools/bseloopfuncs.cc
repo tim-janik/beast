@@ -511,7 +511,7 @@ gsl_data_find_loop2 (GslDataHandle     *dhandle,
       ep = sp + minll;
       {
         gdouble score = score_headloop (dhandle, sp, ep - sp, config->block_length / 2, G_MAXDOUBLE);
-        g_print ("%u %.17g\n", sp - block, score);
+        g_print ("%zu %.17g\n", size_t (sp - block), score);
         continue;
         if (score <= config->score)
           {
@@ -540,7 +540,7 @@ gsl_data_find_loop2 (GslDataHandle     *dhandle,
       for (ep = sp + minll; ep < cstart; ep++)
         {
           gdouble score = score_headloop (dhandle, sp, ep - sp, config->block_length / 2, config->score);
-          g_print ("%u %.17g\n", ep - sp, score);
+          g_print ("%zu %.17g\n", size_t (ep - sp), score);
           continue;
           if (score <= config->score)
             {

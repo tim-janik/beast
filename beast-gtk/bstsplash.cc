@@ -5,6 +5,9 @@
 #include <string.h>
 
 
+#define SPLASH_REFRESH_TIMEOUT          (0 * 1000 * 250)        // just for debugging
+
+
 /* --- prototypes --- */
 static void	bst_splash_class_init		(BstSplashClass	  *klass);
 static void	bst_splash_init			(BstSplash	  *splash);
@@ -271,44 +274,25 @@ bst_splash_release_grab (GtkWidget      *widget)
 }
 
 void
-bst_splash_update_entity (GtkWidget   *widget,
-			  const gchar *format,
-			  ...)
+bst_splash_update_entity (GtkWidget *widget, const std::string &message)
 {
-  BstSplash *self;
-  va_list args;
-  gchar *text;
-
   g_return_if_fail (BST_IS_SPLASH (widget));
 
-  self = BST_SPLASH (widget);
-  va_start (args, format);
-  text = g_strdup_vprintf (format, args);
-  va_end (args);
+  BstSplash *self = BST_SPLASH (widget);
 
-  gtk_label_set_text (GTK_LABEL (self->entity), text);
+  gtk_label_set_text (GTK_LABEL (self->entity), message.c_str());
   gtk_label_set_text (GTK_LABEL (self->item), NULL);
-  g_free (text);
+  g_usleep (SPLASH_REFRESH_TIMEOUT);
 }
 
 void
-bst_splash_update_item (GtkWidget   *widget,
-			const gchar *format,
-			...)
+bst_splash_update_item (GtkWidget *widget, const std::string &message)
 {
-  BstSplash *self;
-  va_list args;
-  gchar *text;
-
   g_return_if_fail (BST_IS_SPLASH (widget));
 
-  self = BST_SPLASH (widget);
-  va_start (args, format);
-  text = g_strdup_vprintf (format, args);
-  va_end (args);
+  BstSplash *self = BST_SPLASH (widget);
 
-  gtk_label_set_text (GTK_LABEL (self->item), text);
-  g_free (text);
+  gtk_label_set_text (GTK_LABEL (self->item), message.c_str());
 
   if (GTK_WIDGET_VISIBLE (self))
     {
@@ -316,8 +300,7 @@ bst_splash_update_item (GtkWidget   *widget,
       frac /= self->max_items;
       gtk_progress_bar_set_fraction (self->pbar, MIN (frac, 1.0));
       bst_splash_update ();
-      if (0)
-	g_usleep (1000 * 250);
+      g_usleep (SPLASH_REFRESH_TIMEOUT);
     }
 }
 
@@ -331,29 +314,22 @@ bst_splash_update (void)
 }
 
 void
-bst_splash_set_text (GtkWidget   *widget,
-		     const gchar *format,
-		     ...)
+bst_splash_set_text (GtkWidget *widget, const std::string &message)
 {
   BstSplash *self;
-  va_list args;
-  gchar *text;
 
   g_return_if_fail (BST_IS_SPLASH (widget));
 
-  va_start (args, format);
-  text = g_strdup_vprintf (format, args);
-  va_end (args);
-
   self = BST_SPLASH (widget);
   gtk_container_foreach (GTK_CONTAINER (self->splash_box), (GtkCallback) gtk_widget_destroy, NULL);
-  if (text)
+  if (!message.empty())
     {
-      gchar *str = text;
+      std::string text = message;
+      char *str = &text[0];
       while (str)
 	{
 	  GtkWidget *label;
-	  gchar *p = strchr (str, '\n');
+          char *p = strchr (str, '\n');
 	  if (p)
 	    *p++ = 0;
 	  label = (GtkWidget*) g_object_new (GTK_TYPE_LABEL,
@@ -365,9 +341,9 @@ bst_splash_set_text (GtkWidget   *widget,
 	  str = p;
 	}
     }
-  g_free (text);
   if (GTK_WIDGET_VISIBLE (self))
     bst_splash_update ();
+  g_usleep (SPLASH_REFRESH_TIMEOUT);
 }
 
 void

@@ -69,7 +69,7 @@ list_midi_devices (BseDevice *device, SfiRing *ring, const char *device_group)
         {
           std::string blurb = substitute_string ("\n", " ", desc);
           BseDeviceEntry *entry = bse_device_group_entry_new (device, g_strdup (name), g_strdup (device_group),
-                                                              g_strdup_printf ("%s - %s", name, blurb.c_str()));
+                                                              g_strdup_format ("%s - %s", name, blurb.c_str()));
           ring = sfi_ring_append (ring, entry);
         }
       if (name) free (name);
@@ -111,7 +111,7 @@ bse_midi_device_alsa_list_devices (BseDevice *device)
           continue;
         }
 
-      gchar *device_group = g_strdup_printf ("%s - %s", snd_ctl_card_info_get_id (cinfo), snd_ctl_card_info_get_longname (cinfo));
+      gchar *device_group = g_strdup_format ("%s - %s", snd_ctl_card_info_get_id (cinfo), snd_ctl_card_info_get_longname (cinfo));
 
       int pindex = -1;
       snd_ctl_rawmidi_next_device (chandle, &pindex);
@@ -133,19 +133,19 @@ bse_midi_device_alsa_list_devices (BseDevice *device)
           guint avail_output_subdevices = writable ? snd_rawmidi_info_get_subdevices_avail (winfo) : 0;
           gchar *wdevs = NULL, *rdevs = NULL;
           if (total_input_subdevices && total_input_subdevices != avail_input_subdevices)
-            rdevs = g_strdup_printf ("%u*input (%u busy)", total_input_subdevices, total_input_subdevices - avail_input_subdevices);
+            rdevs = g_strdup_format ("%u*input (%u busy)", total_input_subdevices, total_input_subdevices - avail_input_subdevices);
           else if (total_input_subdevices)
-            rdevs = g_strdup_printf ("%u*input", total_input_subdevices);
+            rdevs = g_strdup_format ("%u*input", total_input_subdevices);
           if (total_output_subdevices && total_output_subdevices != avail_output_subdevices)
-            wdevs = g_strdup_printf ("%u*output (%u busy)", total_output_subdevices, total_output_subdevices - avail_output_subdevices);
+            wdevs = g_strdup_format ("%u*output (%u busy)", total_output_subdevices, total_output_subdevices - avail_output_subdevices);
           else if (total_output_subdevices)
-            wdevs = g_strdup_printf ("%u*output", total_output_subdevices);
+            wdevs = g_strdup_format ("%u*output", total_output_subdevices);
           const gchar *joiner = wdevs && rdevs ? " + " : "";
           BseDeviceEntry *entry;
           entry = bse_device_group_entry_new (device,
-                                              g_strdup_printf ("hw:%u,%u", cindex, pindex),
+                                              g_strdup_format ("hw:%u,%u", cindex, pindex),
                                               g_strdup (device_group),
-                                              g_strdup_printf ("hw:%u,%u (subdevices: %s%s%s)",
+                                              g_strdup_format ("hw:%u,%u (subdevices: %s%s%s)",
                                                                cindex, pindex,
                                                                rdevs ? rdevs : "",
                                                                joiner,
@@ -162,7 +162,7 @@ bse_midi_device_alsa_list_devices (BseDevice *device)
         break;
     }
   if (!ring)
-    ring = sfi_ring_append (ring, bse_device_error_new (device, g_strdup_printf ("No devices found")));
+    ring = sfi_ring_append (ring, bse_device_error_new (device, g_strdup_format ("No devices found")));
   return ring;
 }
 
@@ -327,7 +327,7 @@ bse_midi_device_alsa_class_init (BseMidiDeviceALSAClass *klass)
   device_class->list_devices = bse_midi_device_alsa_list_devices;
   const gchar *name = "alsa";
   const gchar *syntax = _("PLUGIN:CARD,DEV,SUBDEV");
-  const gchar *info = g_intern_printf (/* TRANSLATORS: keep this text to 70 chars in width */
+  const gchar *info = g_intern_format (/* TRANSLATORS: keep this text to 70 chars in width */
                                        _("Advanced Linux Sound Architecture MIDI driver, using\n"
                                          "ALSA %s.\n"
                                          "The device specification follows the ALSA device naming\n"

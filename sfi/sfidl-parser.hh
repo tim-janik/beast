@@ -63,7 +63,7 @@ struct LineInfo {
   String location() const
   {
     String result;
-    char *x = g_strdup_printf ("%s:%d", (filename == "-") ? "stdin" : filename.c_str(), line);
+    char *x = g_strdup_format ("%s:%d", (filename == "-") ? "stdin" : filename.c_str(), line);
     result = x;
     g_free (x);
     return result;
@@ -264,8 +264,16 @@ protected:
   // scanner related functions
 
   static void scannerMsgHandler (GScanner *scanner, gchar *message, gboolean is_error);
-  void printError (const gchar *format, ...) G_GNUC_PRINTF (2, 3);
-  void printWarning (const gchar *format, ...) G_GNUC_PRINTF (2, 3);
+
+  template<class... Args> void print_error (const char *format, const Args &...args)
+  {
+    if (scanner->parse_errors < scanner->max_parse_errors)
+      g_scanner_error (scanner, "%s", string_format (format, args...).c_str());
+  }
+  template<class... Args> void print_warning (const char *format, const Args &...args)
+  {
+    g_scanner_warn (scanner, "%s", string_format (format, args...).c_str());
+  }
 
   // preprocessor
 

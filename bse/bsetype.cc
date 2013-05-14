@@ -225,7 +225,7 @@ bse_boxed_lcopy_value (const GValue *value,
 {
   gpointer *boxed_p = (void**) collect_values[0].v_pointer;
   if (!boxed_p)
-    return g_strdup_printf ("value location for `%s' passed as NULL", G_VALUE_TYPE_NAME (value));
+    return g_strdup_format ("value location for `%s' passed as NULL", G_VALUE_TYPE_NAME (value));
   if (!value->data[0].v_pointer)
     *boxed_p = NULL;
   else if (collect_flags & G_VALUE_NOCOPY_CONTENTS)

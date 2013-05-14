@@ -12,12 +12,9 @@ bool volatile _cached_bse_debug = true;
 
 /// Issue a debugging message, configurable via #$BSE_DEBUG.
 void
-bse_debug (const char *key, const char *file_path, const int line, const char *format, ...)
+bse_debug (const char *key, const char *file_path, const int line, const String &message)
 {
-  va_list vargs;
-  va_start (vargs, format);
-  envkey_debug_message ("BSE_DEBUG", key, file_path, line, format, vargs, &_cached_rapicorn_debug);
-  va_end (vargs);
+  envkey_debug_message ("BSE_DEBUG", key, file_path, line, message, &_cached_bse_debug);
 }
 
 #ifdef DOXYGEN

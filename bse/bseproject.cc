@@ -527,7 +527,7 @@ bse_project_store_bse (BseProject  *self,
       slist = g_slist_concat (compute_missing_supers (self, storage), slist);
     }
 
-  string = g_strdup_printf ("; BseProject\n\n"); /* %010o mflags */
+  string = g_strdup_format ("; BseProject\n\n"); /* %010o mflags */
   do
     l = write (fd, string, strlen (string));
   while (l < 0 && errno == EINTR);
@@ -600,7 +600,7 @@ bse_project_upath_resolver (gpointer     func_data,
   if (g_type_is_a (required_type, BSE_TYPE_ITEM))
     item = bse_container_resolve_upath (BSE_CONTAINER (self), upath);
   else if (error_p)
-    *error_p = g_strdup_printf ("unable to resolve object of type `%s' from upath: %s", g_type_name (required_type), upath);
+    *error_p = g_strdup_format ("unable to resolve object of type `%s' from upath: %s", g_type_name (required_type), upath);
 
   return (BseObject*) item;
 }

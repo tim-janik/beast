@@ -333,12 +333,12 @@ key_binding_fill_binding_value (GtkWidget      *self,
       param = kbinding->keys[nb].param;
       switch (kbinding->funcs[kbinding->keys[nb].func_index].ptype)
         {
-        case BST_KEY_BINDING_PARAM_m1_p1:       str = g_strdup_printf ("%+.7f", param);         break;
-        case BST_KEY_BINDING_PARAM_0_p1:        str = g_strdup_printf ("% .7f", param);         break;
-        case BST_KEY_BINDING_PARAM_m1_0:        str = g_strdup_printf ("%+.7f", param);         break;
-        case BST_KEY_BINDING_PARAM_PERC:        str = g_strdup_printf ("% 3.2f", param);        break;
-        case BST_KEY_BINDING_PARAM_SHORT:       str = g_strdup_printf ("% d", (gint) param);    break;
-        case BST_KEY_BINDING_PARAM_USHORT:      str = g_strdup_printf ("% d", (gint) param);    break;
+        case BST_KEY_BINDING_PARAM_m1_p1:       str = g_strdup_format ("%+.7f", param);         break;
+        case BST_KEY_BINDING_PARAM_0_p1:        str = g_strdup_format ("% .7f", param);         break;
+        case BST_KEY_BINDING_PARAM_m1_0:        str = g_strdup_format ("%+.7f", param);         break;
+        case BST_KEY_BINDING_PARAM_PERC:        str = g_strdup_format ("% 3.2f", param);        break;
+        case BST_KEY_BINDING_PARAM_SHORT:       str = g_strdup_format ("% d", (gint) param);    break;
+        case BST_KEY_BINDING_PARAM_USHORT:      str = g_strdup_format ("% d", (gint) param);    break;
         case BST_KEY_BINDING_PARAM_NOTE:        str = sfi_note_to_string (param);               break;
         default:                                str = g_strdup ("");                            break;
         }

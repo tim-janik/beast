@@ -102,21 +102,6 @@ gint          bse_xinfo_stub_compare            (const gchar     *xinfo1,  /* mu
 guint		bse_string_hash			(gconstpointer   string);
 gint		bse_string_equals		(gconstpointer	 string1,
 						 gconstpointer	 string2);
-/* --- bbuffer utils --- */
-#define BSE_BBUFFER_SIZE        (128)
-void	bse_bbuffer_puts	(gchar       	 bbuffer[BSE_BBUFFER_SIZE],
-				 const gchar	*string);
-guint	bse_bbuffer_printf	(gchar		 bbuffer[BSE_BBUFFER_SIZE],
-				 const gchar    *format,
-				 ...) G_GNUC_PRINTF (2, 3);
-static inline void
-bse_bbuffer_putc (gchar bbuffer[BSE_BBUFFER_SIZE],
-		  gchar character)
-{
-  bbuffer[0] = character;
-  bbuffer[1] = 0;
-}
-
 G_END_DECLS
 
 #endif /* __BSE_UTILS_H__ */

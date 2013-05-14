@@ -98,7 +98,7 @@ port_audio_host_api_name (PaHostApiIndex host_api_index)
     default:      ;
     }
 
-  char *api_str = g_strdup_printf ("pa%02d", host_api_info->type);
+  char *api_str = g_strdup_format ("pa%02d", host_api_info->type);
   string name = api_str;
   g_free (api_str);
   return name;
@@ -124,7 +124,7 @@ port_audio_devices()
 	  const PaDeviceInfo *device_info = Pa_GetDeviceInfo (device_index);
 	  if (device_info->hostApi == host_api_index)
 	    {
-	      char *device_args = g_strdup_printf ("%s:%d", host_api_name.c_str(), host_api_device_index++);
+	      char *device_args = g_strdup_format ("%s:%d", host_api_name.c_str(), host_api_device_index++);
 	      devices[device_index] = device_args;
 	      g_free (device_args);
 	    }
@@ -150,12 +150,12 @@ bse_pcm_device_port_audio_list_devices (BseDevice *device)
 
       BseDeviceEntry *entry = bse_device_group_entry_new (device, device_args,
 							  g_strdup (host_api_info->name),
-							  g_strdup_printf ("%-10s%s%s", device_args, device_info->name,
+							  g_strdup_format ("%-10s%s%s", device_args, device_info->name,
                                                                            device_index == default_device_index ? " (default)": ""));
       ring = sfi_ring_append (ring, entry);
     }
   if (!ring)
-    ring = sfi_ring_append (ring, bse_device_error_new (device, g_strdup_printf ("No devices found")));
+    ring = sfi_ring_append (ring, bse_device_error_new (device, g_strdup_format ("No devices found")));
   return ring;
 }
 
@@ -376,7 +376,7 @@ bse_pcm_device_port_audio_class_init (BsePcmDevicePortAudioClass *klass)
   device_class->list_devices = bse_pcm_device_port_audio_list_devices;
   const gchar *name = "portaudio";
   const gchar *syntax = _("DEVICE,MODE");
-  const gchar *info = g_intern_printf (/* TRANSLATORS: keep this text to 70 chars in width */
+  const gchar *info = g_intern_format (/* TRANSLATORS: keep this text to 70 chars in width */
                                        _("PortAudio PCM driver, using %s.\n"
                                          "  DEVICE - the PortAudio device to use, 'default' selects default device\n"
                                          "  MODE   - rw = read/write, ro = readonly, wo = writeonly\n"),

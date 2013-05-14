@@ -65,7 +65,7 @@ EXTRA_DIST += empty.ogg
 lib_LTLIBRARIES = testplugin.la
 testplugin_la_SOURCES = testplugin.cc
 testplugin_la_LDFLAGS = -module -avoid-version
-testplugin_la_LIBADD  = $(top_builddir)/bse/libbse.la $(BSE_LIBS) -lm
+testplugin_la_LIBADD  = $(top_builddir)/bse/libbse.la $(RAPICORN_LIBS) $(BSE_LIBS) -lm
 EXTRA_DIST += testplugin.idl
 GENERATED_CLEANFILES += testplugin.genidl.hh
 $(srcdir)/testplugin.cc: testplugin.genidl.hh

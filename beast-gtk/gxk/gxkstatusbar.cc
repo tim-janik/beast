@@ -267,67 +267,6 @@ gxk_status_set (gfloat       percentage,
 }
 
 /**
- * @param percentage	progress percentage
- * @param status_msg	error status
- * @param message_fmt	printf style message to be displayed
- *
- * Similar to gxk_status_set() but supports construction of
- * the message through a printf(3) style argument list.
- */
-void
-gxk_status_printf (gfloat       percentage,
-                   const gchar *status_msg,
-                   const gchar *message_fmt,
-                   ...)
-{
-  GxkStatusBar *sbar = status_bar_get_current ();
-
-  if (sbar)
-    {
-      gchar *buffer;
-      va_list args;
-
-      va_start (args, message_fmt);
-      buffer = g_strdup_vprintf (message_fmt, args);
-      va_end (args);
-
-      status_bar_set (sbar, percentage, buffer, status_msg);
-      g_free (buffer);
-    }
-}
-
-/**
- * @param libc_errno	errno value
- * @param message_fmt	printf style message to be displayed
- *
- * Similar to gxk_status_printf() but figures the error
- * status automatically from the passed in @a libc_errno.
- */
-void
-gxk_status_errnoprintf (gint         libc_errno,
-			const gchar *message_fmt,
-			...)
-{
-  GxkStatusBar *sbar = status_bar_get_current ();
-
-  if (sbar)
-    {
-      gchar *buffer;
-      va_list args;
-
-      va_start (args, message_fmt);
-      buffer = g_strdup_vprintf (message_fmt, args);
-      va_end (args);
-
-      if (libc_errno)
-	status_bar_set (sbar, GXK_STATUS_ERROR, buffer, g_strerror (libc_errno));
-      else
-	status_bar_set (sbar, GXK_STATUS_DONE, buffer, NULL);
-      g_free (buffer);
-    }
-}
-
-/**
  * @param widget	status bar window
  *
  * Push a window onto the stack of windows that have

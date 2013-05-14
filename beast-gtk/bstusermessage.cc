@@ -122,12 +122,12 @@ strdup_msg_hashkey (const BstMessage *msg)
 {
   /* prefer hashing by janitor/process name over PID */
   if (msg->janitor)
-    return g_strdup_printf ("## %x ## %s ## %s ## J%s:%s", msg->type, msg->primary, msg->secondary,
+    return g_strdup_format ("## %x ## %s ## %s ## J%s:%s", msg->type, msg->primary, msg->secondary,
                             bse_janitor_get_script_name (msg->janitor), bse_janitor_get_proc_name (msg->janitor));
   else if (msg->process)
-    return g_strdup_printf ("## %x ## %s ## %s ## P%s", msg->type, msg->primary, msg->secondary, msg->process);
+    return g_strdup_format ("## %x ## %s ## %s ## P%s", msg->type, msg->primary, msg->secondary, msg->process);
   else
-    return g_strdup_printf ("## %x ## %s ## %s ## N%x", msg->type, msg->primary, msg->secondary, msg->pid);
+    return g_strdup_format ("## %x ## %s ## %s ## N%x", msg->type, msg->primary, msg->secondary, msg->pid);
 }
 
 static void
@@ -211,15 +211,15 @@ bst_msg_dialog_update (GxkDialog        *dialog,
       GString *gstring = g_string_new (msg->details);
       while (gstring->len && gstring->str[gstring->len - 1] == '\n')
         g_string_erase (gstring, gstring->len - 1, 1);
-      g_string_aprintf (gstring, "\n\n");
+      g_string_add_format (gstring, "\n\n");
       if (hastext (proc_name))
-        g_string_aprintf (gstring, _("Procedure: %s\nScript: %s\n"), proc_name, script_name);
+        g_string_add_format (gstring, _("Procedure: %s\nScript: %s\n"), proc_name, script_name);
       if (hastext (msg->process))
-        g_string_aprintf (gstring, _("Process: %s\n"), msg->process);
+        g_string_add_format (gstring, _("Process: %s\n"), msg->process);
       if (hastext (msg->log_domain) && !hastext (proc_name) && !hastext (msg->process))
-        g_string_aprintf (gstring, _("Origin:  %s\n"), msg->log_domain);
+        g_string_add_format (gstring, _("Origin:  %s\n"), msg->log_domain);
       if (msg->pid && BST_DVL_HINTS)
-          g_string_aprintf (gstring, _("PID:     %u\n"), msg->pid);
+          g_string_add_format (gstring, _("PID:     %u\n"), msg->pid);
       while (gstring->len && gstring->str[gstring->len - 1] == '\n')
         g_string_erase (gstring, gstring->len - 1, 1);
       gchar *text = adapt_message_spacing (NULL, gstring->str, NULL);
@@ -302,20 +302,13 @@ bst_msg_bit_free (BstMsgBit *mbit)
 }
 
 BstMsgBit*
-bst_msg_bit_printf (guint8                  msg_part_id,
-                    const char             *format,
-                    ...)
+bst_msg_bit_create (guint8 msg_part_id, const std::string &text)
 {
   int saved_errno = errno;
   /* construct message */
-  va_list args;
-  va_start (args, format);
-  char *text = g_strdup_vprintf (format, args);
-  va_end (args);
   BstMsgBit *mbit = g_new0 (BstMsgBit, 1);
   mbit->id = msg_part_id;
-  mbit->text = g_strdup (text);
-  g_free (text);
+  mbit->text = g_strdup (text.c_str());
   mbit->stock_icon = NULL;
   mbit->options = NULL;
   errno = saved_errno;
@@ -356,7 +349,7 @@ repeat_dialog (GxkDialog *dialog)
   if (label)
     {
       gint count = g_object_get_int (dialog, "BEAST-user-message-count");
-      gchar *rstr = g_strdup_printf (dngettext (BEAST_GETTEXT_DOMAIN, _("Message has been repeated %u time"), _("Message has been repeated %u times"), count), count);
+      gchar *rstr = g_strdup_format (dngettext (BEAST_GETTEXT_DOMAIN, _("Message has been repeated %u time"), _("Message has been repeated %u times"), count), count);
       g_object_set_int (dialog, "BEAST-user-message-count", count + 1);
       gtk_label_set_text (label, rstr);
       g_free (rstr);
@@ -500,11 +493,11 @@ message_fill_from_script (BstMessage    *msg,
   else
     {
       gchar *script_base = g_path_get_basename (script_name);
-      msg->secondary = g_strdup_printf (_("Executing procedure '%s' from script '%s'."), proc_name, script_base);
+      msg->secondary = g_strdup_format (_("Executing procedure '%s' from script '%s'."), proc_name, script_base);
       g_free (script_base);
     }
   if (!janitor && hastext (proc_name))
-    msg->details = g_strdup_printf (_("Procedure: %s\nScript: %s\n"), proc_name, script_name);
+    msg->details = g_strdup_format (_("Procedure: %s\nScript: %s\n"), proc_name, script_name);
   else
     msg->details = NULL;
   msg->config_check = NULL;
@@ -548,7 +541,7 @@ janitor_progress (GxkDialog *dialog,
   SfiProxy janitor = (SfiProxy) g_object_get_data (G_OBJECT (dialog), "user-data");
   const gchar *script = bse_janitor_get_script_name (janitor);
   const gchar *sbname = strrchr (script, '/');
-  gchar *exec_name = g_strdup_printf ("%s", sbname ? sbname + 1 : script);
+  gchar *exec_name = g_strdup_format ("%s", sbname ? sbname + 1 : script);
   // bse_janitor_get_proc_name (janitor);
   gxk_status_window_push (dialog);
   if (progress < 0)
@@ -577,7 +570,7 @@ janitor_unconnected (GxkDialog *dialog)
       if (exit_reason)
         {
           BstMessage msg = { 0, };
-          gchar *error_msg = g_strdup_printf (_("An error occoured during execution of script procedure '%s': %s"), proc_name, exit_reason);
+          gchar *error_msg = g_strdup_format (_("An error occoured during execution of script procedure '%s': %s"), proc_name, exit_reason);
           message_fill_from_script (&msg, BST_MSG_ERROR, 0, _("Script execution error."), script_name, proc_name, error_msg);
           g_free (error_msg);
           bst_message_handler (&msg);
@@ -740,7 +733,7 @@ server_script_error (SfiProxy     server,
 {
   /* this signal is emitted (without janitor) when script execution failed */
   BstMessage msg = { 0, };
-  gchar *error_msg = g_strdup_printf (_("Failed to execute script procedure '%s': %s"), proc_name, reason);
+  gchar *error_msg = g_strdup_format (_("Failed to execute script procedure '%s': %s"), proc_name, reason);
   message_fill_from_script (&msg, BST_MSG_ERROR, 0, _("Script execution error."), script_name, proc_name, error_msg);
   g_free (error_msg);
   bst_message_handler (&msg);
@@ -768,7 +761,7 @@ server_user_message (const Bse::UserMessage &umsg)
   msg.primary = umsg.text1.c_str();
   msg.secondary = umsg.text2.c_str();
   msg.details = umsg.text3.c_str();
-  Bse::String cfg = Bse::string_printf (_("Show messages about %s"), umsg.label.c_str());
+  Bse::String cfg = Bse::string_format (_("Show messages about %s"), umsg.label.c_str());
   msg.config_check = cfg.c_str();
   msg.ident = etype.enum_find (umsg.type).ident;
   msg.label = NULL;

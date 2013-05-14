@@ -323,7 +323,7 @@ public:
 
     const uint64 key_checksum = key_uint & 0x1ff;
     key_uint ^= key_checksum << 32LL;  // deobfuscate high bits with checksum
-    const uint64 checksum = old_g_str_hash (string_printf ("%lld", key_uint - key_checksum).c_str()) % 509;
+    const uint64 checksum = old_g_str_hash (string_format ("%lld", key_uint - key_checksum).c_str()) % 509;
     if (key_checksum != checksum)
       return; // invalid key
     key_uint >>= 9;
@@ -351,7 +351,7 @@ public:
     key_uint <<= 23;
     key_uint |= m_osc_freq.mpn.mantissa;        // 23 bit
     key_uint <<= 9;                             // +9 bit checksum
-    const uint64 checksum = old_g_str_hash (string_printf ("%lld", key_uint).c_str()) % 509;
+    const uint64 checksum = old_g_str_hash (string_format ("%lld", key_uint).c_str()) % 509;
     key_uint |= checksum;
     key_uint ^= checksum << 32LL;               // obfuscate high bits with checksum
 
@@ -524,7 +524,7 @@ verify_chunk_selection (const vector<float> &freq_list,
     {
       if (!wave->lookup (*fi))
         {
-          String msg = string_printf ("failed to find wave chunk with oscillator frequency: %.2f", *fi);
+          String msg = string_format ("failed to find wave chunk with oscillator frequency: %.2f", *fi);
           if (skip_errors)
             sfi_warning ("%s", msg.c_str());
           else
@@ -775,7 +775,7 @@ public:
                        bse_error_blurb (error));
             exit (1);
           }
-        gchar *temp_file = g_strdup_printf ("%s/bsewavetool-pid%u-oggchunk%04X.tmp%06xyXXXXXX", g_get_tmp_dir(), getpid(), 0x1000 + nth, rand() & 0xfffffd);
+        gchar *temp_file = g_strdup_format ("%s/bsewavetool-pid%u-oggchunk%04X.tmp%06xyXXXXXX", g_get_tmp_dir(), getpid(), 0x1000 + nth, rand() & 0xfffffd);
         gint tmpfd = mkstemp (temp_file);
         if (tmpfd < 0)
           {
@@ -1155,7 +1155,7 @@ public:
             }
           if (error)
             {
-              String msg = string_printf (_("failed to add wave chunk from file \"%s\": %s"),
+              String msg = string_format (_("failed to add wave chunk from file \"%s\": %s"),
                                           ochunk.sample_file, bse_error_blurb (error));
               if (skip_errors)
                 sfi_warning ("%s", msg.c_str());
@@ -2419,7 +2419,7 @@ public:
       {
 	if (chunk_set[i])
 	  {
-	    char *x = g_strdup_printf ("%4.2f ", chunk_data.freqs[i]);
+	    char *x = g_strdup_format ("%4.2f ", chunk_data.freqs[i]);
 	    result += x;
 	    g_free (x);
 	  }
@@ -2888,18 +2888,18 @@ public:
 	      cent = bse_note_fine_tune_from_note_freq (BSE_MUSICAL_TUNING_12_TET, note, gsl_data_handle_osc_freq (dhandle));
 	    }
 
-	  name_addon = g_strdup_printf ("%d", note);
+	  name_addon = g_strdup_format ("%d", note);
 	  substitute (filename, 'N', name_addon);
 	  g_free (name_addon);
 
-	  name_addon = g_strdup_printf ("%.2f", gsl_data_handle_osc_freq (dhandle));
+	  name_addon = g_strdup_format ("%.2f", gsl_data_handle_osc_freq (dhandle));
 	  substitute (filename, 'F', name_addon);
 	  g_free (name_addon);
 
 	  if (cent >= 0)
-	    name_addon = g_strdup_printf ("u%03d", cent); /* up */
+	    name_addon = g_strdup_format ("u%03d", cent); /* up */
 	  else
-	    name_addon = g_strdup_printf ("d%03d", cent); /* down */
+	    name_addon = g_strdup_format ("d%03d", cent); /* down */
 	  substitute (filename, 'C', name_addon);
 	  g_free (name_addon);
 

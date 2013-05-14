@@ -8,7 +8,7 @@
 #include <sfi/gbsearcharray.hh>
 
 #define SDEBUG(...)     BSE_KEY_DEBUG ("signals", __VA_ARGS__)
-#define	invalid_proxy(proxy)    Rapicorn::debug_critical (__FILE__, __LINE__, "invalid proxy id: %zu", size_t (proxy))
+#define	invalid_proxy(proxy)    RAPICORN_CRITICAL ("invalid proxy id: %u", proxy)
 
 /* --- structures --- */
 typedef struct {
@@ -865,7 +865,7 @@ sfi_glue_proxy_set (SfiProxy     proxy,
 	  g_value_unset (&value);
 	}
       else
-	error = g_strdup_printf ("unknown property \"%s\"", prop);
+	error = g_strdup_format ("unknown property \"%s\"", prop);
       if (error)
 	{
 	  sfi_diag ("%s: %s", G_STRLOC, error);
@@ -898,7 +898,7 @@ sfi_glue_proxy_get (SfiProxy     proxy,
 	  G_VALUE_LCOPY (value, var_args, G_VALUE_NOCOPY_CONTENTS, &error);
 	}
       else
-        error = g_strdup_printf ("unknown property \"%s\"", prop);
+        error = g_strdup_format ("unknown property \"%s\"", prop);
       if (error)
 	{
 	  sfi_diag ("%s: %s", G_STRLOC, error);

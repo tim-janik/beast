@@ -191,7 +191,7 @@ bse_debug_dump_floats (guint   debug_stream,
   debug_stream %= MAX_DEBUG_STREAMS;
   if (debug_fds[debug_stream] < 0)
     {
-      gchar *file = g_strdup_printf ("/tmp/beast-debug-dump%u.%u", debug_stream, getpid());
+      gchar *file = g_strdup_format ("/tmp/beast-debug-dump%u.%u", debug_stream, getpid());
       debug_fds[debug_stream] = open (file, O_WRONLY | O_CREAT | O_TRUNC, 0666);
       g_free (file);
       if (debug_fds[debug_stream] >= 0)
@@ -668,31 +668,6 @@ bse_string_equals (gconstpointer string1,
     return strcmp ((const char*) string1, (const char*) string2) == 0;
   else
     return string1 == string2;
-}
-void
-bse_bbuffer_puts (gchar        bbuffer[BSE_BBUFFER_SIZE],
-		  const gchar *string)
-{
-  g_return_if_fail (bbuffer != NULL);
-  strncpy (bbuffer, string, BSE_BBUFFER_SIZE - 1);
-  bbuffer[BSE_BBUFFER_SIZE - 1] = 0;
-}
-guint
-bse_bbuffer_printf (gchar        bbuffer[BSE_BBUFFER_SIZE],
-		    const gchar *format,
-		    ...)
-{
-  va_list args;
-  guint l;
-
-  g_return_val_if_fail (bbuffer != NULL, 0);
-  g_return_val_if_fail (format != NULL, 0);
-
-  va_start (args, format);
-  l = g_vsnprintf (bbuffer, BSE_BBUFFER_SIZE, format, args);
-  va_end (args);
-
-  return l;
 }
 
 #include "bseclientapi.cc"

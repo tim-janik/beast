@@ -109,9 +109,6 @@ void         bse_storage_putd                   (BseStorage             *self,
 void         bse_storage_putr                   (BseStorage             *self,
                                                  SfiReal                 vreal,
                                                  const gchar            *hints);
-void         bse_storage_printf                 (BseStorage             *self,
-                                                 const gchar            *format,
-                                                 ...) G_GNUC_PRINTF (2, 3);
 void         bse_storage_put_param              (BseStorage             *self,
                                                  const GValue           *value,
                                                  GParamSpec             *pspec);
@@ -128,15 +125,12 @@ BseErrorType bse_storage_flush_fd               (BseStorage             *self,
 
 
 /* --- reading --- */
-void         bse_storage_error                  (BseStorage             *self,
-                                                 const gchar            *format,
-                                                 ...) G_GNUC_PRINTF (2,3);
-void         bse_storage_warn                   (BseStorage             *self,
-                                                 const gchar            *format,
-                                                 ...) G_GNUC_PRINTF (2,3);
-GTokenType   bse_storage_warn_skip              (BseStorage             *self,
-                                                 const gchar            *format,
-                                                 ...) G_GNUC_PRINTF (2,3);
+#define      bse_storage_error(s, ...)          bse_storage_error_str (s, Rapicorn::string_format (__VA_ARGS__).c_str())
+void         bse_storage_error_str              (BseStorage *self, const std::string &string);
+#define      bse_storage_warn(s, ...)           bse_storage_warn_str (s, Rapicorn::string_format (__VA_ARGS__).c_str())
+void         bse_storage_warn_str               (BseStorage *self, const std::string &string);
+#define      bse_storage_warn_skip(s, ...)      bse_storage_skip (s, Rapicorn::string_format (__VA_ARGS__).c_str())
+GTokenType   bse_storage_skip                   (BseStorage *self, const std::string &string);
 GTokenType   bse_storage_parse_param_value      (BseStorage             *self,
                                                  GValue                 *value,
                                                  GParamSpec             *pspec);
@@ -176,7 +170,7 @@ gboolean     bse_storage_check_parse_negate     (BseStorage             *self);
 #define bse_storage_break(s)            sfi_wstore_break ((s)->wstore)
 #define bse_storage_putc(s,c)           sfi_wstore_putc ((s)->wstore, c)
 #define bse_storage_puts(s,b)           sfi_wstore_puts ((s)->wstore, b)
-
+#define bse_storage_printf(s, ...)      bse_storage_puts (s, Rapicorn::string_format (__VA_ARGS__).c_str())
 
 G_END_DECLS
 

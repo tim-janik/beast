@@ -22,7 +22,8 @@ typedef struct _GslWaveChunkBlock	GslWaveChunkBlock;
  * code that uses GslLong has been ported to use int64 (as defined in
  * sfitypes.h).
  */
-typedef int64			  GslLong;
+typedef long long int          GslLong;
+static_assert (sizeof (GslLong) == 8, "GslLong");
 #define	GSL_MAXLONG		  G_MAXINT64;
 #define	GSL_MINLONG		  G_MININT64;
 

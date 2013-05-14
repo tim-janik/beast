@@ -107,7 +107,7 @@ bse_instrument_input_class_init (BseInstrumentInputClass *klass)
   /* override parent properties with NOP properties */
   for (i = 0; i < BSE_SUB_IPORT_N_PORTS; i++)
     {
-      char *string = g_strdup_printf ("in_port_%u", i + 1);
+      char *string = g_strdup_format ("in_port_%u", i + 1);
       bse_object_class_add_param (object_class, NULL, PROP_IPORT_NAME + i * 2,
 				  sfi_pspec_string (string, NULL, NULL, NULL,
                                                     /* override parent property: 0 */ "r"));

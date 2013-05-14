@@ -58,7 +58,7 @@ oggv_load_file_info (void         *data,
       if (n < vc->comments)
 	fi->wfi.waves[i].name = g_strdup (vc->user_comments[n] + 6);
       else
-	fi->wfi.waves[i].name = g_strdup_printf ("Unnamed-%u", i);
+	fi->wfi.waves[i].name = g_strdup_format ("Unnamed-%u", i);
     }
 
   return &fi->wfi;

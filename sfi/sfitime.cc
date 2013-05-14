@@ -134,7 +134,7 @@ sfi_time_to_string (SfiTime ustime)
 
   bt = *gmtime (&t);	/* FIXME: not thread safe */
 
-  return g_strdup_printf ("%04d-%02d-%02d %02d:%02d:%02d",
+  return g_strdup_format ("%04d-%02d-%02d %02d:%02d:%02d",
 			  bt.tm_year + 1900,
 			  bt.tm_mon + 1,
 			  bt.tm_mday,
@@ -178,17 +178,17 @@ sfi_time_to_nice_string (SfiTime      ustime,
   const bool wdate = strchr (elements, 'd') || strchr (elements, 'm') || strchr (elements, 'y');
 
   if (wdate && !wtime)
-    return g_strdup_printf ("%04d-%02d-%02d",
+    return g_strdup_format ("%04d-%02d-%02d",
                             bt.tm_year + 1900,
                             bt.tm_mon + 1,
                             bt.tm_mday);
   if (!wdate && wtime)
-    return g_strdup_printf ("%02d:%02d:%02d",
+    return g_strdup_format ("%02d:%02d:%02d",
                             bt.tm_hour,
                             bt.tm_min,
                             bt.tm_sec);
   else
-    return g_strdup_printf ("%02d:%02d:%02d %04d-%02d-%02d",
+    return g_strdup_format ("%02d:%02d:%02d %04d-%02d-%02d",
                             bt.tm_hour,
                             bt.tm_min,
                             bt.tm_sec,
@@ -557,32 +557,32 @@ sfi_time_from_string_err (const gchar *time_string,
 	warnings = sfi_ring_append (warnings, g_strdup ("junk characters at end of date"));
       if (year[i] < 1990)
 	{
-	  warnings = sfi_ring_append (warnings, g_strdup_printf ("%s out of bounds", "year"));
+	  warnings = sfi_ring_append (warnings, g_strdup_format ("%s out of bounds", "year"));
 	  year[i] = 1990;
 	}
       if (month[i] < 1 || month[i] > 12)
 	{
-	  warnings = sfi_ring_append (warnings, g_strdup_printf ("%s out of bounds", "month"));
+	  warnings = sfi_ring_append (warnings, g_strdup_format ("%s out of bounds", "month"));
 	  month[i] = CLAMP (month[i], 1, 12);
 	}
       if (day[i] < 1 || day[i] > 31)
 	{
-	  warnings = sfi_ring_append (warnings, g_strdup_printf ("%s out of bounds", "day"));
+	  warnings = sfi_ring_append (warnings, g_strdup_format ("%s out of bounds", "day"));
 	  month[i] = CLAMP (day[i], 1, 31);
 	}
       if (hour[i] < 0 || hour[i] > 23)
 	{
-	  warnings = sfi_ring_append (warnings, g_strdup_printf ("%s out of bounds", "hour"));
+	  warnings = sfi_ring_append (warnings, g_strdup_format ("%s out of bounds", "hour"));
 	  hour[i] = CLAMP (hour[i], 0, 23);
 	}
       if (minute[i] < 0 || minute[i] > 59)
 	{
-	  warnings = sfi_ring_append (warnings, g_strdup_printf ("%s out of bounds", "minute"));
+	  warnings = sfi_ring_append (warnings, g_strdup_format ("%s out of bounds", "minute"));
 	  minute[i] = CLAMP (minute[i], 0, 59);
 	}
       if (second[i] < 0 || second[i] > 61)
 	{
-	  warnings = sfi_ring_append (warnings, g_strdup_printf ("%s out of bounds", "second"));
+	  warnings = sfi_ring_append (warnings, g_strdup_format ("%s out of bounds", "second"));
 	  second[i] = CLAMP (second[i], 0, 61);
 	}
 
@@ -623,7 +623,7 @@ sfi_time_from_string_err (const gchar *time_string,
 
       if (ustime < SFI_MIN_TIME)	/* limit ustime to 1.1.1990 */
 	{
-	  warnings = sfi_ring_append (warnings, g_strdup_printf ("invalid date specification (%lld < %lld, gmt-diff=%lld)",
+	  warnings = sfi_ring_append (warnings, g_strdup_format ("invalid date specification (%lld < %lld, gmt-diff=%lld)",
 								 ustime, SFI_MIN_TIME, gmt_diff));
 	  ustime = SFI_MIN_TIME;
 	}
@@ -640,7 +640,7 @@ sfi_time_from_string_err (const gchar *time_string,
 	    g_string_append (gstring, ", ");
 	  g_string_append (gstring, (char*) ring->data);
 	}
-      g_string_aprintf (gstring, " in date: \"%s\"", time_string);
+      g_string_add_format (gstring, " in date: \"%s\"", time_string);
       *error_p = g_string_free (gstring, FALSE);
     }
   else if (error_p)

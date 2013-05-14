@@ -115,30 +115,6 @@ sfi_wstore_putc (SfiWStore *wstore,
 }
 
 void
-sfi_wstore_printf (SfiWStore   *wstore,
-		   const gchar *format,
-		   ...)
-{
-  gchar *buffer;
-  va_list args;
-
-  g_return_if_fail (wstore != NULL);
-
-  const gchar *ldir = g_printf_find_localised_directive (format);
-  if (ldir)
-    g_warning ("%s: encountered localised directive \"%s\" in format string: \"%s\"", G_STRFUNC, ldir, format);
-
-  va_start (args, format);
-  buffer = g_strdup_vprintf (format, args);
-  va_end (args);
-
-  g_string_append (wstore->text, buffer);
-  if (buffer[0])
-    sfi_wstore_text_changed (wstore);
-  g_free (buffer);
-}
-
-void
 sfi_wstore_putf (SfiWStore      *wstore,
                  gfloat          vfloat)
 {
@@ -479,23 +455,12 @@ sfi_rstore_eof (SfiRStore *rstore)
 }
 
 void
-sfi_rstore_error (SfiRStore   *rstore,
-		  const gchar *format,
-		  ...)
+sfi_rstore_error (SfiRStore *rstore, const std::string &msg)
 {
-  va_list args;
-
   g_return_if_fail (rstore);
-  g_return_if_fail (format != NULL);
 
-  va_start (args, format);
   if (rstore->scanner->parse_errors < rstore->scanner->max_parse_errors)
-    {
-      gchar *string = g_strdup_vprintf (format, args);
-      g_scanner_error (rstore->scanner, "%s", string);
-      g_free (string);
-    }
-  va_end (args);
+    g_scanner_error (rstore->scanner, "%s", msg.c_str());
 }
 
 void
@@ -520,23 +485,12 @@ sfi_rstore_unexp_token (SfiRStore *rstore,
 }
 
 void
-sfi_rstore_warn (SfiRStore   *rstore,
-		 const gchar *format,
-		 ...)
+sfi_rstore_warn (SfiRStore *rstore, const std::string &msg)
 {
-  va_list args;
-
   g_return_if_fail (rstore);
-  g_return_if_fail (format != NULL);
 
-  va_start (args, format);
   if (rstore->scanner->parse_errors < rstore->scanner->max_parse_errors)
-    {
-      gchar *string = g_strdup_vprintf (format, args);
-      g_scanner_warn (rstore->scanner, "%s", string);
-      g_free (string);
-    }
-  va_end (args);
+    g_scanner_warn (rstore->scanner, "%s", msg.c_str());
 }
 
 static GTokenType
@@ -569,24 +523,13 @@ scanner_skip_statement (GScanner *scanner,
 }
 
 GTokenType
-sfi_rstore_warn_skip (SfiRStore   *rstore,
-		      const gchar *format,
-		      ...)
+sfi_rstore_warn_skip (SfiRStore *rstore, const std::string &msg)
 {
-  va_list args;
-
   g_return_val_if_fail (rstore, G_TOKEN_ERROR);
-  g_return_val_if_fail (format != NULL, G_TOKEN_ERROR);
 
-  va_start (args, format);
   if (rstore->scanner->parse_errors < rstore->scanner->max_parse_errors)
-    {
-      gchar *string = g_strdup_vprintf (format, args);
-      /* construct warning *before* modifying scanner state */
-      g_scanner_warn (rstore->scanner, "%s - skipping...", string);
-      g_free (string);
-    }
-  va_end (args);
+    /* construct warning *before* modifying scanner state */
+    g_scanner_warn (rstore->scanner, "%s - skipping...", msg.c_str());
 
   return scanner_skip_statement (rstore->scanner, 1);
 }
@@ -641,12 +584,14 @@ sfi_rstore_parse_param (SfiRStore  *rstore,
 	  if (g_param_value_validate (pspec, value))
 	    {
 	      if (G_VALUE_TYPE (&pvalue) != G_VALUE_TYPE (value))
-		sfi_rstore_warn (rstore, "fixing up value for \"%s\" of type `%s' (converted from `%s')",
-				 pspec->name, g_type_name (G_VALUE_TYPE (value)),
-				 g_type_name (G_VALUE_TYPE (&pvalue)));
+		sfi_rstore_warn (rstore,
+                                 Rapicorn::string_format ("fixing up value for \"%s\" of type `%s' (converted from `%s')",
+                                                          pspec->name, g_type_name (G_VALUE_TYPE (value)),
+                                                          g_type_name (G_VALUE_TYPE (&pvalue))));
 	      else
-		sfi_rstore_warn (rstore, "fixing up value for \"%s\" of type `%s'",
-				 pspec->name, g_type_name (G_VALUE_TYPE (value)));
+		sfi_rstore_warn (rstore,
+                                 Rapicorn::string_format ("fixing up value for \"%s\" of type `%s'",
+                                                          pspec->name, g_type_name (G_VALUE_TYPE (value))));
 	    }
 	}
       else
@@ -822,7 +767,9 @@ sfi_rstore_parse_until (SfiRStore     *rstore,
               g_warning ("((SfiStoreParser)%p) advanced scanner for unmatched token", try_statement);
               return G_TOKEN_ERROR;
             }
-          expected_token = sfi_rstore_warn_skip (rstore, "unknown identifier: %s", scanner->next_value.v_identifier);
+          expected_token = sfi_rstore_warn_skip (rstore,
+                                                 Rapicorn::string_format ("unknown identifier: %s",
+                                                                          scanner->next_value.v_identifier));
         }
       /* bail out on errors */
       if (expected_token != G_TOKEN_NONE)

@@ -57,18 +57,12 @@ void		bst_splash_set_title		(GtkWidget	*widget,
 						 const gchar	*title);
 void		bst_splash_show_grab		(GtkWidget	*widget);
 void		bst_splash_release_grab 	(GtkWidget	*widget);
-void		bst_splash_set_text		(GtkWidget	*widget,
-						 const gchar	*format,
-						 ...) G_GNUC_PRINTF (2, 3);
+void		bst_splash_set_text		(GtkWidget *widget, const std::string &message);
 void		bst_splash_set_animation	(GtkWidget	*widget,
 						 GdkPixbufAnimation *anim);
 void		bst_splash_update		(void);
-void		bst_splash_update_entity	(GtkWidget	*widget,
-						 const gchar	*format,
-						 ...) G_GNUC_PRINTF (2, 3);
-void		bst_splash_update_item		(GtkWidget	*widget,
-						 const gchar	*format,
-						 ...) G_GNUC_PRINTF (2, 3);
+void		bst_splash_update_entity	(GtkWidget *widget, const std::string &message);
+void		bst_splash_update_item		(GtkWidget *widget, const std::string &message);
 void            bst_splash_animate_strings      (GtkWidget      *splash,
                                                  const gchar   **strings);
 

@@ -16,25 +16,6 @@
 /* --- functions --- */
 
 /* --- FIXME: hacks! */
-void
-sfi_set_error (GError       **errorp,
-	       GQuark         domain,
-	       gint           code,
-	       const gchar   *format,
-	       ...)
-{
-  if (errorp && !*errorp)
-    {
-      gchar *message;
-      va_list args;
-      va_start (args, format);
-      message = g_strdup_vprintf (format, args);
-      *errorp = g_error_new_literal (domain, code, message);
-      g_free (message);
-      va_end (args);
-    }
-}
-
 static inline gchar
 char_canon (gchar c)
 {

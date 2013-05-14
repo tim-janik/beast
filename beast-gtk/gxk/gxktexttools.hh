@@ -57,9 +57,7 @@ void		gxk_scroll_text_append_file	(GtkWidget		*sctext,
 						 const gchar    	*file_name);
 void		gxk_scroll_text_append_file_tsm	(GtkWidget		*sctext,
 						 const gchar    	*file_name);
-void		gxk_scroll_text_aprintf		(GtkWidget		*sctext,
-						 const gchar		*text_fmt,
-						 ...) G_GNUC_PRINTF (2, 3);
+#define         gxk_scroll_text_aprintf(sctext, ...)    gxk_scroll_text_append (sctext, Rapicorn::string_format (__VA_ARGS__).c_str())
 void		gxk_scroll_text_pop_indent	(GtkWidget		*sctext);
 GtkTextView*	gxk_scroll_text_get_text_view	(GtkWidget		*sctext);
 void		gxk_text_add_tsm_path		(const gchar		*path);

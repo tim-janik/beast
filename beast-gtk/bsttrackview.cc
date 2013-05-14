@@ -124,7 +124,7 @@ track_view_fill_value (BstItemView *iview,
       BseItemSeq *iseq;
       SfiSeq *seq;
     case COL_SEQID:
-      sfi_value_take_string (value, g_strdup_printf ("%03d", seqid));
+      sfi_value_take_string (value, g_strdup_format ("%03d", seqid));
       break;
     case COL_NAME:
       g_value_set_string (value, bse_item_get_name (item));
@@ -135,7 +135,7 @@ track_view_fill_value (BstItemView *iview,
       break;
     case COL_VOICES:
       bse_proxy_get (item, "n_voices", &vint, NULL);
-      sfi_value_take_string (value, g_strdup_printf ("%2d", vint));
+      sfi_value_take_string (value, g_strdup_format ("%2d", vint));
       break;
     case COL_SYNTH:
       snet = 0;
@@ -144,15 +144,15 @@ track_view_fill_value (BstItemView *iview,
       break;
     case COL_MIDI_CHANNEL:
       bse_proxy_get (item, "midi-channel", &vint, NULL);
-      sfi_value_take_string (value, g_strdup_printf ("%2d", vint));
+      sfi_value_take_string (value, g_strdup_format ("%2d", vint));
       break;
     case COL_OUTPUTS:
       bse_proxy_get (item, "outputs", &seq, NULL);
       iseq = bse_item_seq_from_seq (seq);
       if (iseq && iseq->n_items == 1)
-        g_value_take_string (value, g_strdup_printf ("%s", bse_item_get_name_or_type (iseq->items[0])));
+        g_value_take_string (value, g_strdup_format ("%s", bse_item_get_name_or_type (iseq->items[0])));
       else if (iseq && iseq->n_items > 1)
-        g_value_take_string (value, g_strdup_printf ("#%u", iseq ? iseq->n_items : 0));
+        g_value_take_string (value, g_strdup_format ("#%u", iseq ? iseq->n_items : 0));
       else
         g_value_set_string (value, "");
       bse_item_seq_free (iseq);
@@ -715,7 +715,7 @@ track_view_action_exec (gpointer data,
       item = bse_song_create_track (song);
       if (item)
 	{
-	  gchar *string = g_strdup_printf ("Track-%02X", bse_item_get_seqid (item));
+	  gchar *string = g_strdup_format ("Track-%02X", bse_item_get_seqid (item));
 	  bse_item_set_name (item, string);
 	  g_free (string);
 	  bst_item_view_select (item_view, item);

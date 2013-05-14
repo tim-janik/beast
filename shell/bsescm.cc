@@ -105,7 +105,7 @@ gh_main (int   argc,
   bse_scm_interp_init ();
 
   /* exec Bse Scheme bootup code */
-  const gchar *boot_script = g_intern_printf ("%s/%s", boot_script_path, "bse-scm-glue.boot");
+  const gchar *boot_script = g_intern_format ("%s/%s", boot_script_path, "bse-scm-glue.boot");
   gh_load (boot_script);
 
   /* eval, auto-play or interactive */

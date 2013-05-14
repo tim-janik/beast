@@ -62,11 +62,11 @@ loop_handle_reference_destroy (GslDataHandle *dhandle)
   sfi_delete_struct (LoopHandleReference, lhandle);
 }
 
-static GslLong
+static int64
 loop_handle_reference_read (GslDataHandle *dhandle,
-			    GslLong        voffset,
-			    GslLong        n_values,
-			    gfloat        *values)
+			    int64          voffset,
+			    int64          n_values,
+			    float         *values)
 {
   LoopHandleReference *lhandle = (LoopHandleReference*) dhandle;
 
@@ -119,7 +119,7 @@ gsl_data_handle_new_looped_reference (GslDataHandle *src_handle,
   success = gsl_data_handle_common_init (&lhandle->dhandle, NULL);
   if (success)
     {
-      lhandle->dhandle.name = g_strdup_printf ("%s// #loop(0x%llx:0x%llx) /", src_handle->name, loop_first, loop_last);
+      lhandle->dhandle.name = g_strdup_format ("%s// #loop(0x%llx:0x%llx) /", src_handle->name, loop_first, loop_last);
       lhandle->dhandle.vtable = &loop_handle_reference_vtable;
       lhandle->src_handle = gsl_data_handle_ref (src_handle);
       lhandle->requested_first = loop_first;

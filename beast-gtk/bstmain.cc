@@ -54,7 +54,7 @@ server_registration (SfiProxy     server,
   else
     {
       const char *base = strrchr (what, '/');
-      bst_splash_update_item ((GtkWidget*) data, "%s", base ? base + 1 : what);
+      bst_splash_update_item ((GtkWidget*) data, base ? base + 1 : what);
       if (error && error[0])
 	g_message ("failed to register \"%s\": %s", what, error);
     }
@@ -101,10 +101,10 @@ main (int   argc,
   bst_splash_set_title (beast_splash, _("BEAST Startup"));
   gtk_object_set_user_data (GTK_OBJECT (beast_splash), NULL);	/* fix for broken user_data in 2.2 */
   bst_splash_set_text (beast_splash,
-		       "<b><big>BEAST</big></b>\n"
-		       "<b>The Better Audio System</b>\n"
-		       "<b>Version %s (%s)</b>\n",
-		       BST_VERSION, BST_VERSION_HINT);
+		       Rapicorn::string_format ("<b><big>BEAST</big></b>\n"
+                                                "<b>The Better Audio System</b>\n"
+                                                "<b>Version %s (%s)</b>\n",
+                                                BST_VERSION, BST_VERSION_HINT));
   bst_splash_update_entity (beast_splash, _("Startup"));
   bst_splash_show_grab (beast_splash);
 
@@ -134,7 +134,7 @@ main (int   argc,
 
   /* start BSE core and connect */
   bst_splash_update_item (beast_splash, _("BSE Core"));
-  Bse::String bseoptions = Bse::string_printf ("debug-extensions=%d", bst_debug_extensions);
+  Bse::String bseoptions = Bse::string_format ("debug-extensions=%d", bst_debug_extensions);
   Bse::init_async (&argc, argv, "BEAST", Bse::string_split (bseoptions, ":"));
   sfi_glue_context_push (Bse::init_glue_context ("BEAST", bst_main_loop_wakeup));
   source = g_source_simple (GDK_PRIORITY_EVENTS, // G_PRIORITY_HIGH - 100,
@@ -285,7 +285,7 @@ main (int   argc,
                 exit (1);
               if (unlink (argv[i]) < 0)
                 {
-                  perror (Rapicorn::string_printf ("%s: failed to remove", argv[i]).c_str());
+                  perror (Rapicorn::string_format ("%s: failed to remove", argv[i]).c_str());
                   exit (2);
                 }
               error = bse_project_store_bse (project, 0, argv[i], TRUE);
@@ -850,7 +850,7 @@ beast_show_about_box (void)
   if (!GTK_WIDGET_VISIBLE (beast_splash))
     {
       bst_splash_set_title (beast_splash, _("BEAST About"));
-      bst_splash_update_entity (beast_splash, _("BEAST Version %s"), BST_VERSION);
+      bst_splash_update_entity (beast_splash, Rapicorn::string_format (_("BEAST Version %s"), BST_VERSION));
       bst_splash_update_item (beast_splash, _("Contributions made by:"));
       bst_splash_animate_strings (beast_splash, contributors);
     }

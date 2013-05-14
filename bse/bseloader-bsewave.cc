@@ -152,7 +152,7 @@ bsewave_load_file_info (void         *data,
   else
     {
       cwd = g_get_current_dir ();
-      file_name = g_strdup_printf ("%s%c%s", cwd, G_DIR_SEPARATOR, _file_name);
+      file_name = g_strdup_format ("%s%c%s", cwd, G_DIR_SEPARATOR, _file_name);
     }
 
   fd = open (file_name, O_RDONLY);
@@ -716,7 +716,7 @@ bsewave_create_chunk_handle (void         *data,
         if (g_path_is_absolute ((char*) LOADER_FILE (chunk)))
           string = g_strdup ((char*) LOADER_FILE (chunk));
         else
-          string = g_strdup_printf ("%s%c%s", fi->cwd, G_DIR_SEPARATOR, (char*) LOADER_FILE (chunk));
+          string = g_strdup_format ("%s%c%s", fi->cwd, G_DIR_SEPARATOR, (char*) LOADER_FILE (chunk));
         /* try to load the chunk via registered loaders */
         BseWaveFileInfo *cfi = bse_wave_file_info_load (string, error_p);
         if (cfi)
@@ -749,7 +749,7 @@ bsewave_create_chunk_handle (void         *data,
       if (g_path_is_absolute ((char*) LOADER_FILE (chunk)))
         string = g_strdup ((char*) LOADER_FILE (chunk));
       else
-        string = g_strdup_printf ("%s%c%s", fi->cwd, G_DIR_SEPARATOR, (char*) LOADER_FILE (chunk));
+        string = g_strdup_format ("%s%c%s", fi->cwd, G_DIR_SEPARATOR, (char*) LOADER_FILE (chunk));
       /* try to load a raw sample */
       dhandle = gsl_wave_handle_new (string,			/* file name */
 				     dsc->wdsc.n_channels,

@@ -986,7 +986,7 @@ toplevel_get_size_group (GtkWidget   *toplevel,
                          const gchar *name,
                          gchar        type)
 {
-  gchar *key = g_strdup_printf ("gxk-toplevel-%cgroup#%s", type, name);
+  gchar *key = g_strdup_format ("gxk-toplevel-%cgroup#%s", type, name);
   GtkSizeGroup *sg = (GtkSizeGroup*) g_object_get_data ((GObject*) toplevel, key);
   if (!sg)
     {
@@ -2319,7 +2319,7 @@ mf_floatcollect (GSList *args,
     }
   if (strcmp (name, "avg") == 0 && n)
     accu /= n;
-  return g_strdup_printf ("%.17g", accu);
+  return g_strdup_format ("%.17g", accu);
 }
 
 static gchar*

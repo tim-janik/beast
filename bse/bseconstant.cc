@@ -87,18 +87,18 @@ bse_constant_class_init (BseConstantClass *klass)
 
   for (i = 1; i <= BSE_CONSTANT_N_OUTPUTS; i++)
     {
-      gchar *ident, *label, *blurb, *group = g_strdup_printf (_("Constant Output %u"), i);
+      gchar *ident, *label, *blurb, *group = g_strdup_format (_("Constant Output %u"), i);
 
-      ident = g_strdup_printf ("value_%u", i);
-      label = g_strdup_printf ("%s", _("Value [float]"));
+      ident = g_strdup_format ("value_%u", i);
+      label = g_strdup_format ("%s", _("Value [float]"));
       bse_object_class_add_param (object_class, group, PARAM_VALUE + (i - 1) * 3,
 				  sfi_pspec_real (ident, label, _("Constant signal value"),
 						  1.0, -1.0, 1.0, 0.01,
 						  SFI_PARAM_STANDARD ":dial"));
       g_free (ident);
       g_free (label);
-      ident = g_strdup_printf ("frequency_%u", i);
-      label = g_strdup_printf ("%s", _("Frequency"));
+      ident = g_strdup_format ("frequency_%u", i);
+      label = g_strdup_format ("%s", _("Frequency"));
       bse_object_class_add_param (object_class, group, PARAM_FREQ + (i - 1) * 3,
 				  sfi_pspec_log_scale (ident, label, _("Constant signal value interpreted as frequency value in Hertz"),
 						       BSE_MAX_FREQUENCY,
@@ -108,17 +108,17 @@ bse_constant_class_init (BseConstantClass *klass)
 						       SFI_PARAM_GUI ":dial"));
       g_free (ident);
       g_free (label);
-      ident = g_strdup_printf ("note_%u", i);
-      label = g_strdup_printf ("%s", _("Note"));
+      ident = g_strdup_format ("note_%u", i);
+      label = g_strdup_format ("%s", _("Note"));
       bse_object_class_add_param (object_class, group, PARAM_NOTE + (i - 1) * 3,
 				  sfi_pspec_note (ident, label, _("Constant signal value as note, converted to Hertz according to the current musical tuning"),
 						  SFI_KAMMER_NOTE, SFI_MIN_NOTE, SFI_MAX_NOTE,
 						  TRUE, SFI_PARAM_GUI));
       g_free (ident);
       g_free (label);
-      ident = g_strdup_printf ("const-out%u", i);
-      label = g_strdup_printf (_("Const Out%u"), i);
-      blurb = g_strdup_printf (_("Constant Output %u"), i);
+      ident = g_strdup_format ("const-out%u", i);
+      label = g_strdup_format (_("Const Out%u"), i);
+      blurb = g_strdup_format (_("Constant Output %u"), i);
       ochannel = bse_source_class_add_ochannel (source_class, ident, label, blurb);
       g_assert (ochannel == i - 1);
       g_free (ident);
@@ -158,20 +158,20 @@ bse_constant_set_property (GObject      *object,
 	case PARAM_VALUE - PARAM_VALUE:
 	  self->constants[n] = sfi_value_get_real (value);
 	  bse_constant_update_modules (self, NULL);
-	  prop = g_strdup_printf ("frequency_%u", n + 1);
+	  prop = g_strdup_format ("frequency_%u", n + 1);
 	  g_object_notify (object, prop);
 	  g_free (prop);
-	  prop = g_strdup_printf ("note_%u", n + 1);
+	  prop = g_strdup_format ("note_%u", n + 1);
           g_object_notify (object, prop);
 	  g_free (prop);
 	  break;
 	case PARAM_FREQ - PARAM_VALUE:
 	  self->constants[n] = BSE_VALUE_FROM_FREQ (sfi_value_get_real (value));
           bse_constant_update_modules (self, NULL);
-          prop = g_strdup_printf ("value_%u", n + 1);
+          prop = g_strdup_format ("value_%u", n + 1);
 	  g_object_notify (object, prop);
 	  g_free (prop);
-	  prop = g_strdup_printf ("note_%u", n + 1);
+	  prop = g_strdup_format ("note_%u", n + 1);
 	  g_object_notify (object, prop);
 	  g_free (prop);
 	  break;
@@ -181,10 +181,10 @@ bse_constant_set_property (GObject      *object,
 	    {
 	      self->constants[n] = BSE_VALUE_FROM_FREQ (bse_note_to_freq (bse_item_current_musical_tuning (BSE_ITEM (self)), note));
 	      bse_constant_update_modules (self, NULL);
-	      prop = g_strdup_printf ("value_%u", n + 1);
+	      prop = g_strdup_format ("value_%u", n + 1);
 	      g_object_notify (object, prop);
 	      g_free (prop);
-	      prop = g_strdup_printf ("frequency_%u", n + 1);
+	      prop = g_strdup_format ("frequency_%u", n + 1);
 	      g_object_notify (object, prop);
 	      g_free (prop);
 	    }

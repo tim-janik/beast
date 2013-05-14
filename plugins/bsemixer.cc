@@ -94,9 +94,9 @@ bse_mixer_class_init (BseMixerClass *klass)
     {
       gchar *group, *ident, *label, *blurb;
 
-      group = g_strdup_printf (_("Channel%u"), i);
-      ident = g_strdup_printf ("volume_f%u", i);
-      label = g_strdup_printf (_("Channel%u [float]"), i);
+      group = g_strdup_format (_("Channel%u"), i);
+      ident = g_strdup_format ("volume_f%u", i);
+      label = g_strdup_format (_("Channel%u [float]"), i);
       bse_object_class_add_param (object_class, group,
 				  PROP_NTH_VOLUME_f + (i - 1) * 3,
 				  sfi_pspec_real (ident, label, NULL,
@@ -105,8 +105,8 @@ bse_mixer_class_init (BseMixerClass *klass)
 						  SFI_PARAM_STORAGE));
       g_free (ident);
       g_free (label);
-      ident = g_strdup_printf ("volume_dB%u", i);
-      label = g_strdup_printf (_("Channel%u [dB]"), i);
+      ident = g_strdup_format ("volume_dB%u", i);
+      label = g_strdup_format (_("Channel%u [dB]"), i);
       bse_object_class_add_param (object_class, group,
 				  PROP_NTH_VOLUME_dB + (i - 1) * 3,
 				  sfi_pspec_real (ident, label, NULL,
@@ -116,8 +116,8 @@ bse_mixer_class_init (BseMixerClass *klass)
 						  SFI_PARAM_GUI ":dial"));
       g_free (ident);
       g_free (label);
-      ident = g_strdup_printf ("volume_perc%u", i);
-      label = g_strdup_printf (_("Channel%u [%%]"), i);
+      ident = g_strdup_format ("volume_perc%u", i);
+      label = g_strdup_format (_("Channel%u [%%]"), i);
       bse_object_class_add_param (object_class, group,
 				  PROP_NTH_VOLUME_PERC + (i - 1) * 3,
 				  sfi_pspec_int (ident, label, NULL,
@@ -127,9 +127,9 @@ bse_mixer_class_init (BseMixerClass *klass)
       g_free (group);
       g_free (ident);
       g_free (label);
-      ident = g_strdup_printf ("audio-in%u", i);
-      label = g_strdup_printf (_("Audio In%u"), i);
-      blurb = g_strdup_printf (_("Input Channel %u"), i);
+      ident = g_strdup_format ("audio-in%u", i);
+      label = g_strdup_format (_("Audio In%u"), i);
+      blurb = g_strdup_format (_("Input Channel %u"), i);
       ichannel = bse_source_class_add_ichannel (source_class, ident, label, blurb);
       g_assert (ichannel == i - 1);
       g_free (blurb);
@@ -186,30 +186,30 @@ bse_mixer_set_property (GObject      *object,
 	case PROP_NTH_VOLUME_f - PROP_NTH_VOLUME_f:
 	  self->volume_factors[n] = sfi_value_get_real (value);
 	  bse_mixer_update_modules (self, NULL);
-	  prop = g_strdup_printf ("volume_dB%u", n + 1);
+	  prop = g_strdup_format ("volume_dB%u", n + 1);
 	  g_object_notify ((GObject*) object, prop);
 	  g_free (prop);
-          prop = g_strdup_printf ("volume_perc%u", n + 1);
+          prop = g_strdup_format ("volume_perc%u", n + 1);
 	  g_object_notify ((GObject*) object, prop);
 	  g_free (prop);
 	  break;
 	case PROP_NTH_VOLUME_dB - PROP_NTH_VOLUME_f:
 	  self->volume_factors[n] = bse_db_to_factor (sfi_value_get_real (value));
 	  bse_mixer_update_modules (self, NULL);
-	  prop = g_strdup_printf ("volume_f%u", n + 1);
+	  prop = g_strdup_format ("volume_f%u", n + 1);
 	  g_object_notify ((GObject*) object, prop);
 	  g_free (prop);
-          prop = g_strdup_printf ("volume_perc%u", n + 1);
+          prop = g_strdup_format ("volume_perc%u", n + 1);
 	  g_object_notify ((GObject*) object, prop);
 	  g_free (prop);
 	  break;
 	case PROP_NTH_VOLUME_PERC - PROP_NTH_VOLUME_f:
 	  self->volume_factors[n] = sfi_value_get_int (value) / 100.0;
 	  bse_mixer_update_modules (self, NULL);
-	  prop = g_strdup_printf ("volume_f%u", n + 1);
+	  prop = g_strdup_format ("volume_f%u", n + 1);
 	  g_object_notify ((GObject*) object, prop);
 	  g_free (prop);
-	  prop = g_strdup_printf ("volume_dB%u", n + 1);
+	  prop = g_strdup_format ("volume_dB%u", n + 1);
 	  g_object_notify ((GObject*) object, prop);
 	  g_free (prop);
 	  break;

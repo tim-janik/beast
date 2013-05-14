@@ -50,7 +50,7 @@ sfi_com_wire_from_child (const gchar *ident,
 
   wire = g_new0 (SfiComWire, 1);
   if (remote_pid > 1)
-    wire->ident = g_strdup_printf ("%s[%u]", ident, remote_pid);
+    wire->ident = g_strdup_format ("%s[%u]", ident, remote_pid);
   else
     wire->ident = g_strdup (ident);
   wire->remote_input = remote_input;
@@ -957,16 +957,16 @@ sfi_com_spawn_async (const gchar *executable,
 	      close (command_output_pipe[0]);
 	      close (command_output_pipe[1]);
 	    }
-	  return g_strdup_printf ("failed to create communication channels: %s", g_strerror (e));
+	  return g_strdup_format ("failed to create communication channels: %s", g_strerror (e));
 	}
-      cargs = sfi_ring_prepend (cargs, g_strdup_printf ("%u", command_output_pipe[1]));
-      cargs = sfi_ring_prepend (cargs, g_strdup_printf ("%u", command_input_pipe[0]));
+      cargs = sfi_ring_prepend (cargs, g_strdup_format ("%u", command_output_pipe[1]));
+      cargs = sfi_ring_prepend (cargs, g_strdup_format ("%u", command_input_pipe[0]));
       if (command_fd_option[0])
 	cargs = sfi_ring_prepend (cargs, g_strdup (command_fd_option));
       setup_data.keepexec1 = command_output_pipe[1];
       setup_data.keepexec2 = command_input_pipe[0];
     }
-  cargs = sfi_ring_prepend (cargs, g_strdup_printf (/*"SFI-Spawn:%s"*/"%s", executable));
+  cargs = sfi_ring_prepend (cargs, g_strdup_format (/*"SFI-Spawn:%s"*/"%s", executable));
   cargs = sfi_ring_prepend (cargs, g_strdup (executable));
 
   l = sfi_ring_length (cargs) + sfi_ring_length (args);

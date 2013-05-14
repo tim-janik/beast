@@ -668,13 +668,13 @@ wave_chunk_fill_value (BstWaveEditor *self,
     {
       const gchar *string;
     case COL_OSC_FREQ:
-      g_value_set_string_take_ownership (value, g_strdup_printf ("%.2f", bse_wave_chunk_get_osc_freq (wave, cidx)));
+      g_value_set_string_take_ownership (value, g_strdup_format ("%.2f", bse_wave_chunk_get_osc_freq (wave, cidx)));
       break;
     case COL_MIX_FREQ:
-      g_value_set_string_take_ownership (value, g_strdup_printf ("%.2f", bse_wave_chunk_get_mix_freq (wave, cidx)));
+      g_value_set_string_take_ownership (value, g_strdup_format ("%.2f", bse_wave_chunk_get_mix_freq (wave, cidx)));
       break;
     case COL_LOOP:
-      g_value_set_string_take_ownership (value, g_strdup_printf ("L:%u {0x%08x,0x%08x}", 0, 0, 0));
+      g_value_set_string_take_ownership (value, g_strdup_format ("L:%u {0x%08x,0x%08x}", 0, 0, 0));
       break;
     case COL_WAVE_NAME:
       bse_proxy_get (wave, "wave-name", &string, NULL);

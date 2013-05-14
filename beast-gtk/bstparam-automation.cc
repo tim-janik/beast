@@ -178,15 +178,15 @@ param_automation_update (GxkParam  *param,
         {
           content = g_strdup ("--");
           /* TRANSLATORS: %s is substituted with a property name */
-          tip = g_strdup_printf (_("%s: automation disabled"), g_param_spec_get_nick (param->pspec));
+          tip = g_strdup_format (_("%s: automation disabled"), g_param_spec_get_nick (param->pspec));
         }
       else if (midi_channel)
         {
-          content = g_strdup_printf ("%u:%s%02d", midi_channel, prefix, control_type);
+          content = g_strdup_format ("%u:%s%02d", midi_channel, prefix, control_type);
           if (cv)
             {
               /* TRANSLATORS: %s is substituted with a property name, %s is substituted with midi control type */
-              tip = g_strdup_printf (_("%s: automation from MIDI control: %s (MIDI channel: %d)"),
+              tip = g_strdup_format (_("%s: automation from MIDI control: %s (MIDI channel: %d)"),
                                      g_param_spec_get_nick (param->pspec),
                                      cv->choice_label ? cv->choice_label : cv->choice_ident,
                                      midi_channel);
@@ -194,11 +194,11 @@ param_automation_update (GxkParam  *param,
         }
       else
         {
-          content = g_strdup_printf ("%s%02d", prefix, control_type);
+          content = g_strdup_format ("%s%02d", prefix, control_type);
           if (cv)
             {
               /* TRANSLATORS: %s is substituted with a property name, %s is substituted with midi control type */
-              tip = g_strdup_printf (_("%s: automation from MIDI control: %s"),
+              tip = g_strdup_format (_("%s: automation from MIDI control: %s"),
                                      g_param_spec_get_nick (param->pspec),
                                      cv->choice_label ? cv->choice_label : cv->choice_ident);
             }

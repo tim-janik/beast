@@ -2,8 +2,9 @@
 #ifndef __SFI_GLIB_EXTRA_H__
 #define __SFI_GLIB_EXTRA_H__
 
-#include	<glib.h>
-#include	<glib-object.h>
+#include <glib.h>
+#include <glib-object.h>
+#include <rapicorn-core.hh>     // for Rapicorn::string_format
 
 G_BEGIN_DECLS
 
@@ -30,8 +31,6 @@ G_BEGIN_DECLS
 
 
 /* --- provide (historic) aliases --- */
-#define	g_string_printfa	g_string_append_printf
-#define	g_string_aprintf	g_string_append_printf
 #define	g_scanner_add_symbol( scanner, symbol, value )	G_STMT_START { \
   g_scanner_scope_add_symbol ((scanner), 0, (symbol), (value)); \
 } G_STMT_END
@@ -56,6 +55,11 @@ void g_object_disconnect_any (gpointer object,
                               gpointer function,
                               gpointer data); /* workaorund for g_object_disconnect() */
 
+// == printf variants ==
+#define g_intern_format(...)            g_intern_string (Rapicorn::string_format (__VA_ARGS__).c_str())
+#define	g_string_add_format(gstr, ...)  g_string_append (gstr, Rapicorn::string_format (__VA_ARGS__).c_str())
+#define g_strdup_format(...)            g_strdup (Rapicorn::string_format (__VA_ARGS__).c_str())
+
 /* --- string functions --- */
 const gchar*    g_printf_find_localised_directive (const gchar *format);
 gchar**		g_straddv	  (gchar	**str_array,
@@ -66,15 +70,8 @@ gchar*		g_strdup_stripped (const gchar	 *string);
 gchar*		g_strdup_rstrip   (const gchar	 *string);
 gchar*		g_strdup_lstrip   (const gchar	 *string);
 
-#if !GLIB_CHECK_VERSION (2, 9, 0)
-const gchar*    g_intern_string         (const gchar   *string);
-const gchar*    g_intern_static_string  (const gchar   *string);
-#endif
-
 const gchar*    g_intern_strconcat      (const gchar   *first_string,
                                          ...) G_GNUC_NULL_TERMINATED;
-const gchar*    g_intern_printf         (const gchar   *format,
-                                         ...) G_GNUC_PRINTF (1,2);
 
 gchar*          g_path_concat     (const gchar   *first_path,
                                    ...) G_GNUC_NULL_TERMINATED;

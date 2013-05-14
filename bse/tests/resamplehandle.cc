@@ -43,8 +43,8 @@ check (const char           *up_down,
        int                   precision_bits,
        double                max_db)
 {
-  char *samplestr = g_strdup_printf ("ResampleHandle-%s%02d%s", up_down, bits, channels);
-  char *streamstr = g_strdup_printf ("CPU Resampling %s%02d%s", up_down, bits, channels);
+  char *samplestr = g_strdup_format ("ResampleHandle-%s%02d%s", up_down, bits, channels);
+  char *streamstr = g_strdup_format ("CPU Resampling %s%02d%s", up_down, bits, channels);
   TSTART ("%s (%s)", samplestr, cpu_type);
 
   TASSERT (input.size() % n_channels == 0);
@@ -170,7 +170,7 @@ generate_test_signal (vector<Sample> &signal,
           cached_window[i] = bse_window_blackman (wpos);
         }
     }
-  string signal_cache_key = Rapicorn::string_printf ("%zd/%.1f/%.1f/%.1f", signal_length, sample_rate, frequency1, frequency2);
+  string signal_cache_key = Rapicorn::string_format ("%d/%.1f/%.1f/%.1f", signal_length, sample_rate, frequency1, frequency2);
   static map<string, vector<Sample> > signal_cache;
   vector<Sample>& cached_signal = signal_cache[signal_cache_key];
   if (cached_signal.empty())

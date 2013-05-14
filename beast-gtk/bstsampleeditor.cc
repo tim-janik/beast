@@ -206,10 +206,10 @@ qsampler_set_selection (BstQSampler *qsampler,
 	bst_qsampler_scroll_show (qs, m1);
       else if (visible_mark == 2)
 	bst_qsampler_scroll_show (qs, m2);
-      s = g_strdup_printf ("%d", MIN (m1, m2));
+      s = g_strdup_format ("%d", MIN (m1, m2));
       gtk_entry_set_text (editor->sstart, s);
       g_free (s);
-      s = g_strdup_printf ("%d", MAX (m1, m2));
+      s = g_strdup_format ("%d", MAX (m1, m2));
       gtk_entry_set_text (editor->send, s);
       g_free (s);
     }
