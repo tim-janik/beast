@@ -170,22 +170,12 @@ bst_stock_register_icon (const gchar    *stock_id,
 
 /* --- beast/bse specific extensions --- */
 void
-bst_status_eprintf (BseErrorType error,
-                    const gchar *message_fmt,
-                    ...)
+bst_status_set_error (BseErrorType error, const std::string &message)
 {
-  gchar *buffer;
-  va_list args;
-
-  va_start (args, message_fmt);
-  buffer = g_strdup_vprintf (message_fmt, args);
-  va_end (args);
-
   if (error)
-    gxk_status_set (GXK_STATUS_ERROR, buffer, bse_error_blurb (error));
+    gxk_status_set (GXK_STATUS_ERROR, message.c_str(), bse_error_blurb (error));
   else
-    gxk_status_set (GXK_STATUS_DONE, buffer, NULL);
-  g_free (buffer);
+    gxk_status_set (GXK_STATUS_DONE, message.c_str(), NULL);
 }
 
 void
