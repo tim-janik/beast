@@ -302,20 +302,13 @@ bst_msg_bit_free (BstMsgBit *mbit)
 }
 
 BstMsgBit*
-bst_msg_bit_printf (guint8                  msg_part_id,
-                    const char             *format,
-                    ...)
+bst_msg_bit_create (guint8 msg_part_id, const std::string &text)
 {
   int saved_errno = errno;
   /* construct message */
-  va_list args;
-  va_start (args, format);
-  char *text = g_strdup_vprintf (format, args);
-  va_end (args);
   BstMsgBit *mbit = g_new0 (BstMsgBit, 1);
   mbit->id = msg_part_id;
-  mbit->text = g_strdup (text);
-  g_free (text);
+  mbit->text = g_strdup (text.c_str());
   mbit->stock_icon = NULL;
   mbit->options = NULL;
   errno = saved_errno;

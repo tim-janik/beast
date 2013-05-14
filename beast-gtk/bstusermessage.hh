@@ -52,9 +52,8 @@ guint             bst_message_dialog_display    (const char             *log_dom
                                                  guint                   n_bits,
                                                  BstMsgBit             **bits);
 void              bst_msg_bit_free              (BstMsgBit              *mbit);
-BstMsgBit*        bst_msg_bit_printf            (guint8                  msg_part_id,
-                                                 const char             *format,
-                                                 ...) G_GNUC_PRINTF (2, 3);
+#define           bst_msg_bit_printf(msg_part_id, ...)  bst_msg_bit_create (msg_part_id, Rapicorn::string_format (__VA_ARGS__))
+BstMsgBit*        bst_msg_bit_create            (guint8 msg_part_id, const std::string &text);
 BstMsgBit*        bst_msg_bit_create_choice     (guint                   id,
                                                  const gchar            *name,
                                                  const gchar            *stock_icon,
