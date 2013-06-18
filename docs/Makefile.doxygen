@@ -50,6 +50,7 @@ doxygen-srctree:
 	      -exec cp {} $$CWD/doxygen-srctree/$$dir/{} \; ) || exit $? ; \
 	  done \
 	$(foreach FILE, $(DOXYGEN_DOC_FILES), \
+	  && mkdir -p doxygen-srctree/$(dir $(FILE)) \
 	  && cp $(top_srcdir)/$(FILE) doxygen-srctree/$(dir $(FILE)))
 	$(DOXYGEN_V) "ADD" "File docu commands..."
 	$(DOXYGEN_Q) cd doxygen-srctree/ \
