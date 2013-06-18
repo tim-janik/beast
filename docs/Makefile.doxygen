@@ -98,8 +98,8 @@ doxygen-html: doxygen.cfg tagfile-susv4.xml doxygen-srctree
 	$(DOXYGEN_V) "CLEAN" "Html temporaries..."
 	$(DOXYGEN_Q) rm -rf doxygen-tmp/
 
-DOXYGEN_SED_ACCESSKEY_AS_F = -e 's/(<input [^>]*id="MSearchField"[^>]*accesskey=")S"/\1F"/'
-DOXYGEN_SED_PROJECT_LINK   = -e 's|<div id="projectname">(\w+)|<div id="projectname"><a href="$(DOXYGEN_PROJECT_LINK)">\1</a>|'
+DOXYGEN_SED_ACCESSKEY_AS_F = -e 's;(<input [^>]*id="MSearchField"[^>]*accesskey=")S";\1F";'
+DOXYGEN_SED_PROJECT_LINK   = -e 's;<div id="projectname">((\w|[+_/~*%^-])+);<div id="projectname"><a href="$(DOXYGEN_PROJECT_LINK)">\1</a>;'
 
 # == doxygen-html ==
 # Clean doxgen files and temporaries
