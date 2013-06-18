@@ -1,15 +1,16 @@
 # BEAST/BSE - Better Audio System / Better Sound Engine
 include $(top_srcdir)/Makefile.decl
 
+TAGFILES    = tagfile-rapicorn.xml
 MANMANS	    = beast.1 bse.5 bsescm.1 bsewavetool.1 sfidl.1
 HTMLMANS    = beast.1.html bse.5.html bsescm.1.html bsewavetool.1.html sfidl.1.html
-EXTRA_DIST += $(MANMANS)
+EXTRA_DIST += $(TAGFILES) $(MANMANS)
 # HTMLMANS are packaged as part of the doxygen docs
 
 import: check-tools
 	$(AM_V_GEN)
-	$(Q) rm -f $(HTMLMANS) $(MANMANS)
-	$(Q) $(MAKE) $(AM_MAKEFLAGS) --no-print-directory $(HTMLMANS) $(MANMANS)
+	$(Q) rm -f $(TAGFILES) $(HTMLMANS) $(MANMANS)
+	$(Q) $(MAKE) $(AM_MAKEFLAGS) --no-print-directory $(TAGFILES) $(HTMLMANS) $(MANMANS)
 .PHONY: import
 
 # = Check Tools =
@@ -18,6 +19,11 @@ CHECK_WH2M = { command -v wikihtml2man >/dev/null && { echo "11.09.1" ; wikihtml
 check-tools:
 	$(Q) ${CHECK_WGET} || { echo "$@: failed to detect recent version: wget"; exit 1; }
 	$(Q) ${CHECK_WH2M} || { echo "$@: failed to detect recent version: wikihtml2man"; exit 1; }
+
+# = Tagfile Imports =
+tagfile-rapicorn.xml:
+	$(Q) wget --progress=dot --output-document=- http://dev.testbit.eu/rapicorn/latest/tagfile.xml > xtmp-${@F}
+	$(Q) mv xtmp-${@F} $@
 
 # = MANMANS =
 %.1 %.5:
