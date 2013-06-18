@@ -1,0 +1,110 @@
+# Makefile.doxygen - Common rules to build Doxygen docs	    -*-mode:makefile;-*-
+# Licensed GNU LGPL v3 or later: http://www.gnu.org/licenses/lgpl.html
+
+DOXYGEN_PROJECT_NUMBER	= ${VERSION}
+DOXYGEN_DOCU_GLOBS	= *.dox *.py *.idl *.h *.H *.hh
+DOXYGEN_CONTENT_GLOBS	= *.c *.C *.cc
+DOXYGEN			= doxygen
+DOXYGEN_V		= @printf '  %-7s%s\n'
+DOXYGEN_Q		= $(if $(findstring 1, $(V)) ,, @)
+# ChangeLog to add to the generated documentation
+DOXYGEN_CHANGELOG       ?=
+DOXYGEN_CHANGELOG_TITLE ?= Development ChangeLog
+# Build with dot files by default
+DOXYGEN_GRAPHICS	?= YES
+# Link markup for the project name
+DOXYGEN_PROJECT_LINK    ?=
+
+# == doxygen-full ==
+# build doxygen-html/ from scratch ==
+doxygen-full:
+	$(DOXYGEN_Q) $(MAKE) $(AM_MAKEFLAGS) --no-print-directory doxygen-clean
+	$(DOXYGEN_Q) $(MAKE) $(AM_MAKEFLAGS) --no-print-directory doxygen-html
+.PHONY: doxygen-full
+
+# == doxygen-check =
+# Check for doxygen, tools and versions
+CHECK_DOXYGEN = { command -v doxygen >/dev/null && { echo "1.7.6.1" ; doxygen --version ; } | sort -VC ; }
+CHECK_DOT     = { command -v dot >/dev/null && { echo "2.26.0" ; dot -V 2>&1 | sed 's/[^0-9]*//' ; } | sort -VC ; }
+doxygen-check:
+	$(DOXYGEN_Q) ${CHECK_DOXYGEN} || { echo "$@: failed to detect recent version: doxygen"; exit 1; }
+	$(DOXYGEN_Q) ${CHECK_DOT}     || { echo "$@: failed to detect recent version: dot"; exit 1; }
+.PHONY: doxygen-check
+
+# == doxygen-srctree ==
+# Collect source files to generate docs from
+doxygen-srctree:
+	$(DOXYGEN_V) "GEN" doxygen-srctree/
+	$(DOXYGEN_Q) rm -rf doxygen-srctree/ && mkdir -p doxygen-srctree/
+	$(DOXYGEN_V) `test -z "$(DOXYGEN_CHANGELOG)" && echo SKIP || echo GEN` "ChangeLog"
+	$(DOXYGEN_Q) test -z "$(DOXYGEN_CHANGELOG)" || ( true \
+	&& echo "/*! @page ChangeLog $(DOXYGEN_CHANGELOG_TITLE)"	 > doxygen-srctree/ChangeLog \
+	&& sed -r $(DOXYGEN_CHANGELOG_SED) $(DOXYGEN_CHANGELOG)		>> doxygen-srctree/ChangeLog \
+	&& echo ' */' 							>> doxygen-srctree/ChangeLog )
+	$(DOXYGEN_V) "COPY" "Source tree..." \
+	&& CWD=`pwd` \
+	&& for dir in $(DOXYGEN_DOC_DIRS) ; do \
+	  (mkdir -p $$CWD/doxygen-srctree/$$dir/ \
+	   && cd $(top_srcdir)/$$dir \
+	   && find . -maxdepth 1 -type f \( $(patsubst %,-name '%' -o, $(DOXYGEN_DOCU_GLOBS) $(DOXYGEN_CONTENT_GLOBS)) -false \) \
+	      -exec cp {} $$CWD/doxygen-srctree/$$dir/{} \; ) || exit $? ; \
+	  done \
+	$(foreach FILE, $(DOXYGEN_DOC_FILES), \
+	  && cp $(top_srcdir)/$(FILE) doxygen-srctree/$(dir $(FILE)))
+	$(DOXYGEN_V) "ADD" "File docu commands..." \
+	&& cd doxygen-srctree/ \
+	&& find . -type f \( $(patsubst %,-name '%' -o, $(DOXYGEN_DOCU_GLOBS)) -false \) \
+	   -exec sed  '1,+0s,^,/** @file {} */,' {} --in-place \;
+	$(DOXYGEN_V) "PRUNE" "Exclude files..." \
+	&& rm -f $(patsubst %, doxygen-srctree/%, $(DOXYGEN_EXCLUDES))
+
+# sed: escape @ < & >, add sections, handle * bullets
+DOXYGEN_CHANGELOG_SED = \
+		-e 's/(@\w)/\\\1/g; s/&/\&amp;/g; s/</\&lt;/g; s/>/\&gt;/g; s,\*/,*\&nbps;/,g' \
+		-e '/^[^ ].*\# [0-9a-f]/s/^(.*)\# ([0-9a-f]+)/@section commit_\2 \0/' \
+		-e 's/^[ \t]+\*? ?([a-zA-Z0-9_.+\/-]+):[ \t]*(\w.*)$$/- @b \1: \2/' \
+		-e 's/^[ \t]+\*? ?([a-zA-Z0-9_.+\/-]+):(.*)/- <em><b>\1:<\/b> \2<\/em>/' \
+		-e "s/^[ \t]+\*? ?(Merge branch)[ \t]+'(.*)'/- \1 '<em>\2<\/em>'/" \
+		-e 's/^/ * /'
+
+# == doxygen-html ==
+# configure and run doxygen, handle DOXYGEN="" by creating a dummy docu target
+doxygen-html: doxygen.cfg tagfile-susv4.xml doxygen-srctree
+	$(DOXYGEN_V) "CLEAN" "Html temporaries..."
+	$(DOXYGEN_Q) rm -rf doxygen-tmp/ && mkdir -p doxygen-tmp/
+	$(DOXYGEN_V) "GEN" "HTML Documentation..."
+	$(DOXYGEN_Q) test -n "$(DOXYGEN)" || \
+		( mkdir -p doxygen-tmp/html/ && echo "$(PACKAGE) $(DOXYGEN_PROJECT_NUMBER)" > doxygen-tmp/html/index.html )
+	$(DOXYGEN_Q) test -z "$(DOXYGEN)" || (cat doxygen.cfg \
+	&& echo "STRIP_FROM_PATH  = `pwd`/doxygen-srctree" \
+	&& echo "INPUT		  = doxygen-srctree/" \
+	&& echo "HAVE_DOT	  = $(DOXYGEN_GRAPHICS)" \
+	&& echo "CLASS_DIAGRAMS   = $(DOXYGEN_GRAPHICS)" \
+	&& echo "DOT_MULTI_TARGETS = YES" \
+	&& echo "EXAMPLE_PATH	  = $(top_srcdir)/" \
+	&& echo "OUTPUT_DIRECTORY = doxygen-tmp/" \
+	&& echo "GENERATE_TAGFILE = doxygen-tmp/html/tagfile.xml" \
+	&& echo "TAGFILES         = tagfile-susv4.xml=http://pubs.opengroup.org/onlinepubs/9699919799/" \
+	&& echo -n "PROJECT_NUMBER = $(DOXYGEN_PROJECT_NUMBER)" \
+	) > doxygen-tmp/Doxyfile.tmp \
+	&& nice $(DOXYGEN) doxygen-tmp/Doxyfile.tmp > error.log 2>&1
+	$(DOXYGEN_Q) test ! -s error.log && rm -f error.log \
+	|| { echo "WARNING: doxygen issues encountered ($$(wc -l <error.log)): $$(pwd)/error.log" ; cat error.log $(DOXYGEN_Q:@=1>/dev/null) ; }
+	$(DOXYGEN_V) "POLISH" "HTML Files..."
+	$(DOXYGEN_Q) sed -r $(DOXYGEN_SED_ACCESSKEY_AS_F) -i doxygen-tmp/html/*.html
+	$(DOXYGEN_Q) test -z "$(DOXYGEN_PROJECT_LINK)" || sed -r $(DOXYGEN_SED_PROJECT_LINK) -i doxygen-tmp/html/*.html
+	$(DOXYGEN_V) "GEN" "doxygen-html/..."
+	$(DOXYGEN_Q) rm -rf doxygen-html/ && mv doxygen-tmp/html/ doxygen-html/
+	$(DOXYGEN_V) "CLEAN" "Html temporaries..."
+	$(DOXYGEN_Q) rm -rf doxygen-tmp/
+
+DOXYGEN_SED_ACCESSKEY_AS_F = -e 's/(<input [^>]*id="MSearchField"[^>]*accesskey=")S"/\1F"/'
+DOXYGEN_SED_PROJECT_LINK   = -e 's|<div id="projectname">(\w+)|<div id="projectname"><a href="$(DOXYGEN_PROJECT_LINK)">\1</a>|'
+
+# == doxygen-html ==
+# Clean doxgen files and temporaries
+doxygen-clean:
+	$(DOXYGEN_V) "CLEAN" "Doxygen files..."
+	$(DOXYGEN_Q) rm -rf doxygen-srctree/ doxygen-tmp/ doxygen-html/
+	$(DOXYGEN_Q) rm -rf error.log
+.PHONY: doxygen-clean
