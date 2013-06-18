@@ -14,6 +14,18 @@ PRJ_VERSION = $(shell sed -ne "/^[ \t]*VERSION[ \t]*=/ { s/^[^=]*=[ \t]*//; p; q
 # Detailed documentation version
 DOC_VERSION = $(or $(DSC_VERSION), $(PRJ_VERSION))
 
+# == Extra Tarball Files ==
+EXTRA_DIST += bse-categories.txt interpolation.txt ChangeLog.svn
+
+# == Doxygen Install Rules ==
+htmldocsbase  = ${docdir}
+htmldocsdir   = ${htmldocsbase}/html
+htmldocs_DATA = html/doc-version		# build dependency for doxygen docs
+install-data-hook: @INGIT@ html/doc-version
+	umask 022 && cp -RP html/ "$(DESTDIR)$(htmldocsbase)/"
+uninstall-local:
+	rm -Rf "$(DESTDIR)$(htmldocsbase)/html/"
+
 # == html/ build rules ==
 include Makefile.doxygen
 git_index_file = $(shell test ! -x $(top_srcdir)/.git/ || echo $(top_srcdir)/.git/index)
@@ -64,10 +76,3 @@ CLEANFILES = $(DOXYGEN_CHANGELOG)
 GIT_CHANGELOG = ( git log --first-parent --date=short --pretty='%ad  %an 	\# %h%n%n%s%n%n%b' --abbrev=11 \
 		  ce584d04999a7fb9393e1cfedde2048ba73e8878..HEAD \
 		| sed 's/^/	/; s/^	//; /^[ 	]*<unknown>$$/d' )
-
-# == Misc Distribution Files ==
-EXTRA_DIST += $(strip		\
-	bse-categories.txt	\
-	interpolation.txt	\
-	ChangeLog.svn		\
-)
