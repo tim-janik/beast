@@ -722,7 +722,6 @@ tests/bse/Makefile
 tests/audio/Makefile
 tests/filecheck/Makefile
 docs/Makefile
-docs/dev/Makefile
 docs/images/Makefile
 docs/imports/Makefile
 ])
