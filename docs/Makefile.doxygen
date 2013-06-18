@@ -41,8 +41,8 @@ doxygen-srctree:
 	&& echo "/*! @page ChangeLog $(DOXYGEN_CHANGELOG_TITLE)"	 > doxygen-srctree/ChangeLog \
 	&& sed -r $(DOXYGEN_CHANGELOG_SED) $(DOXYGEN_CHANGELOG)		>> doxygen-srctree/ChangeLog \
 	&& echo ' */' 							>> doxygen-srctree/ChangeLog )
-	$(DOXYGEN_V) "COPY" "Source tree..." \
-	&& CWD=`pwd` \
+	$(DOXYGEN_V) "COPY" "Source tree..."
+	$(DOXYGEN_Q) CWD=`pwd` \
 	&& for dir in $(DOXYGEN_DOC_DIRS) ; do \
 	  (mkdir -p $$CWD/doxygen-srctree/$$dir/ \
 	   && cd $(top_srcdir)/$$dir \
@@ -51,12 +51,12 @@ doxygen-srctree:
 	  done \
 	$(foreach FILE, $(DOXYGEN_DOC_FILES), \
 	  && cp $(top_srcdir)/$(FILE) doxygen-srctree/$(dir $(FILE)))
-	$(DOXYGEN_V) "ADD" "File docu commands..." \
-	&& cd doxygen-srctree/ \
+	$(DOXYGEN_V) "ADD" "File docu commands..."
+	$(DOXYGEN_Q) cd doxygen-srctree/ \
 	&& find . -type f \( $(patsubst %,-name '%' -o, $(DOXYGEN_DOCU_GLOBS)) -false \) \
 	   -exec sed  '1,+0s,^,/** @file {} */,' {} --in-place \;
-	$(DOXYGEN_V) "PRUNE" "Exclude files..." \
-	&& rm -f $(patsubst %, doxygen-srctree/%, $(DOXYGEN_EXCLUDES))
+	$(DOXYGEN_V) "PRUNE" "Exclude files..."
+	$(DOXYGEN_Q) rm -f $(patsubst %, doxygen-srctree/%, $(DOXYGEN_EXCLUDES))
 
 # sed: escape @ < & >, add sections, handle * bullets
 DOXYGEN_CHANGELOG_SED = \
