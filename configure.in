@@ -64,6 +64,13 @@ else
 fi
 AC_SUBST(DEFINE__FILE_DIR__)
 
+# Build tree checks
+AC_MSG_CHECKING([for git repository])
+test -f "${srcdir}/.git/index" && INGIT= || INGIT='#'
+AC_SUBST(INGIT)
+result=$(test -z "$INGIT" && echo yes || echo no)
+AC_MSG_RESULT($result)
+
 dnl # figure debugging default, prior to $ac_help setup
 dnl
 if test `expr $BSE_MINOR_VERSION \% 2 \| $BSE_MAJOR_VERSION \< 1` = 1 ; then
