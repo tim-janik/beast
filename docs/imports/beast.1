@@ -1,0 +1,146 @@
+.TH "BEAST" "1" "2011\-05\-09" "Revision 319" "Testbit Wiki Pages"
+
+.SH NAME
+
+beast - Music composition and modular synthesis application.
+
+.SH SYNOPSIS
+
+\fBbeast\fR [\fIOPTIONS\fR] [\fIFILES...\fR]
+
+.SH DESCRIPTION
+
+\fBbeast\fR is the \fBBE\fRtter \fBA\fRudio \fBS\fRys\fBT\fRem. It is a music composition and
+modular synthesis application released as free software under the GNU LGPL.
+
+\fBbeast\fR comes with various synthesis modules which can be arranged in
+networks for modular synthesis. It is capable of monophonic and polyphonic
+voice processing, provides MIDI sequencer functionality and supports
+external sequencer sources. A huge set of extra modules is available through
+the support for LADSPA (Linux Audio Developer's Simple Plugin API) plugins.
+
+\fBbeast'\fRs underlying sound engine \fIBse\fR also comes with a scheme scripting
+extension which allows for advanced non-interactive processing via
+\fIbsescm.1\fR and creation of additional GUI functionality for \fBbeast\fR.
+
+.SH OPTIONS
+
+\fBbeast\fR follows the usual GNU command line syntax, with long options starting with two dashes ('-').
+.TP
+\fB--skinrc\fR \fIFILENAME\fR
+Read skin resources from \fIFILENAME\fR.
+.PP
+.TP
+\fB--print-dir\fR \fIRESOURCE\fR
+Print the directory for a specific resource (e.g. 'plugins' or 'images'). Giving just \fB--print-dir\fR without an extra argument causes \fBbeast\fR to print the list of available resources.
+.PP
+.TP
+\fB--merge\fR
+Causes the following files to be merged into the previous or first project.
+.PP
+.TP
+\fB--devel\fR
+Enrich the GUI with hints useful for (script) developers
+.PP
+.TP
+\fB-h\fR, \fB--help\fR
+Shows a brief help message.
+.PP
+.TP
+\fB-v\fR, \fB--version\fR
+Prints out \fBbeast\fR and component versions and file paths.
+.PP
+.TP
+\fB-n\fR \fINICELEVEL\fR
+Execute with priority \fINICELEVEL\fR, this option only takes effect for the root suid wrapper 'beast'.
+.PP
+.TP
+\fB-N\fR
+Disables renicing to execute with existing priority.
+.PP
+.TP
+\fB--display\fR \fIDISPLAY\fR
+X server display for the GUI; see \fIX(7)\fR.
+.PP
+.TP
+\fB--bse-latency\fR \fIUSECONDS\fR
+Set the allowed synthesis latency for \fIBse\fR in milliseconds.
+.PP
+.TP
+\fB--bse-mixing-freq\fR \fIFREQUENCY\fR
+Set the desired synthesis mixing frequency in Hz.
+.PP
+.TP
+\fB--bse-control-freq\fR \fIFREQUENCY\fR
+Set the desired control frequency in Hz, this should be much smaller than the synthesis mixing frequency to reduce CPU load. The default value of approximately 1000 Hz is usually a good choice.
+.PP
+.TP
+\fB--bse-pcm-driver\fR \fIDRIVER-CONF\fR
+.TP
+\fB-p\fR \fIDRIVER-CONF\fR
+This options results in an attempt to open the PCM driver \fIDRIVER-CONF\fR when playback is started. Multiple options may be supplied to try a variety of drivers and unless \fIDRIVER-CONF\fR is specified as 'auto', only the drivers listed by options are used. Each \fIDRIVER-CONF\fR consists of a driver name and an optional comma seperated list of arguments attached to the driver withan equal sign, e.g.: \fB-p oss=/dev/dsp2,rw -p auto\fR
+.PP
+.TP
+\fB--bse-midi-driver\fR \fIDRIVER-CONF\fR
+.TP
+\fB-m\fR \fIDRIVER-CONF\fR
+This option is similar to the \fB--bse-pcm-driver\fR option, but applies to MIDI drivers and devices. It also may be specified multiple times and features an 'auto' driver.
+.PP
+.TP
+\fB--bse-driver-list\fR
+Produce a list of all available PCM and MIDI drivers and available devices.
+.PP
+.TP
+\fB--\fR
+Stop argument processing, interpret all remaining arguments as file names.
+.PP
+.SS Development Options:
+.TP
+\fB--debug\fR \fIKEYS\fR
+Enable certain verbosity stages.
+.PP
+.TP
+\fB--debug-list\fR
+List possible debug keys.
+.PP
+.TP
+\fB-:\fR[\fIflags\fR]
+This option enables or disables various debugging specific flags for beast core developers. Use of \fB-:\fR is not recommended, because the supported flags may change between versions and cause possibly harmful misbehaviour.
+.PP
+.SS Gtk+ Options:
+.TP
+\fB--gtk-debug\fR \fIFLAGS\fR
+Gtk+ debugging flags to enable.
+.PP
+.TP
+\fB--gtk-no-debug\fR \fIFLAGS\fR
+Gtk+ debugging flags to disable.
+.PP
+.TP
+\fB--gtk-module\fR \fIMODULE\fR
+Load additional Gtk+ modules.
+.PP
+.TP
+\fB--gdk-debug\fR \fIFLAGS\fR
+Gdk debugging flags to enable.
+.PP
+.TP
+\fB--gdk-no-debug\fR \fIFLAGS\fR
+Gdk debugging flags to disable.
+.PP
+.TP
+\fB--g-fatal-warnings\fR
+Make warnings fatal (abort).
+.PP
+.TP
+\fB--sync\fR
+Do all X calls synchronously.
+.PP
+
+.SH SEE ALSO
+
+bsescm.1 <http://testbit.eu/Bsescm.1>,
+bse.5 <http://testbit.eu/Bse.5>,
+sfidl.1 <http://testbit.eu/Sfidl.1>,
+BEAST/BSE Website <http://beast.gtk.org>
+

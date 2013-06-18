@@ -1,0 +1,150 @@
+.TH "BSESCM" "1" "2011\-05\-02" "Revision 307" "Testbit Wiki Pages"
+
+.SH NAME
+
+bsescm - A Guile based scheme shell for \fIBeast\fR and \fIBse\fR.
+
+.SH SYNOPSIS
+
+\fBbsescm\fR [\fIoptions\fR] [\fB--\fR] \fB...\fR
+
+\fBbsescm\fR [\fIoptions\fR] \fI<infile.bse>\fR \fB...\fR
+
+.SH DESCRIPTION
+
+\fBbsescm\fR is a \fIGuile\fR based scheme shell for \fIBse\fR,
+the Better Sound Engine.
+
+\fBbsescm\fR provides a shell interface to all procedures exported by the
+\fIBse\fR library, so scripts are able to access the full range of functionality
+provided by it, from simple playback of a \fI.bse\fR file to
+full fledged automated creation or editing of synthesis networks.
+
+Alternatively to the linked in \fIBse\fR library, the \fBbsescm\fR language interface
+can also talk to a remotely running \fIBse\fR library host, for instance
+\fIBeast\fR.
+By operating on a remotely running \fIBse\fR core, \fBbsescm\fR can be used to script
+arbitrary \fIBse\fR programs. The shell is also used directly by the \fIBse\fR library to
+execute procedures on its behalf, this allows \fIBse\fR procedures to be written in scheme.
+
+When started, \fBbsescm\fR tests whether the first non-option argument is a \fI.bse\fR
+file and if the test succeeds, attempts to play the command line arguments as
+\fI.bse\fR files.
+
+.SH OPTIONS
+
+\fBbsescm\fR follows the usual GNU command line syntax, with long options starting with two dashes ('--').
+.TP
+\fB--bse-pipe\fR \fIinfd\fR \fIoutfd\fR
+Provide the input and output communication filedescriptors for remote operation.
+.PP
+.TP
+\fB--bse-eval\fR \fIstring\fR
+Execute (eval-string \fIstring\fR) instead of going into interactive mode.
+.PP
+.TP
+\fB--bse-enable-register\fR
+Allowes registration of procedures with the \fIBse\fR core.
+.PP
+.TP
+\fB--bse-no-load\fR
+Prevent automated loading of plugins and scripts at startup time in interactive mode.
+.PP
+.TP
+\fB--bse-no-play\fR
+Prevent automated detection and playback of \fI.bse\fR file command line arguments.
+.PP
+.TP
+\fB--g-fatal-warnings\fR
+Make runtime warnings fatal (abort).
+.PP
+.TP
+\fB-h\fR, \fB--help\fR
+Describe command line options and exit.
+.PP
+.TP
+\fB-v\fR, \fB--version\fR
+Display version and exit.
+.PP
+.TP
+\fB-n\fR=\fInicelevel\fR
+Execute with priority \fInicelevel\fR, this option only takes effect for the root suid wrapper 'beast'.
+.PP
+.TP
+\fB-N\fR
+Disables renicing to execute with existing priority.
+.PP
+.TP
+\fB--bse-latency\fR=\fIuseconds\fR
+Set the allowed synthesis latency for \fIBse\fR in milliseconds.
+.PP
+.TP
+\fB--bse-mixing-freq\fR=\fIfrequency\fR
+Set the desired synthesis mixing frequency in Hz.
+.PP
+.TP
+\fB--bse-control-freq\fR=\fIfrequency\fR
+Set the desired control frequency in Hz, this should be much smaller than the synthesis mixing frequency to reduce CPU load. The default value of approximately 1000 Hz is usually a good choice.
+.PP
+.TP
+\fB--bse-pcm-driver\fR \fIdriver-conf\fR
+.TP
+\fB-p\fR \fIdriver-conf\fR
+This options results in an attempt to open the PCM driver \fIdriver-conf\fR when playback is started. Multiple options may be supplied to try a variety of drivers and unless \fIdriver-conf\fR is specified as "\fBauto\fR", only the drivers listed by options are used. Each \fIdriver-conf\fR consists of a driver name and an optional comma seperated list of arguments attached to the driver withan equal sign, e.g.: \fB-p oss=/dev/dsp2,rw -p auto\fR
+.PP
+.TP
+\fB--bse-midi-driver\fR \fIdriver-conf\fR
+.TP
+\fB-m\fR \fIdriver-conf\fR
+This option is similar to the \fB--bse-pcm-driver\fR option, but applies to MIDI drivers and devices. It also may be specified multiple times and features an "\fBauto\fR" driver.
+.PP
+.TP
+\fB--bse-driver-list\fR
+Produce a list of all available PCM and MIDI drivers and available devices.
+.PP
+.SS Guile Options:
+.TP
+\fB-l\fR \fIfile\fR
+Load scheme source code from file.
+.PP
+.TP
+\fB-e\fR \fIfunction\fR
+After reading script, apply \fIfunction\fR to command-line arguments.
+.PP
+.TP
+\fB-ds\fR
+Do -s \fIscript\fR at this point (note that this argument must be used in conjuction with -s).
+.PP
+.TP
+\fB--debug\fR
+Start with debugging evaluator and backtraces enabled (useful for debugging scripts).
+.PP
+.TP
+\fB--emacs\fR
+Enable emacs protocol for use from within emacs (experimental).
+.PP
+
+The remaining Guile options stop argument processing, and pass all remaining arguments as the value of (command-line):
+.TP
+\fB--\fR
+Stop argument processing, start in interactive mode.
+.PP
+.TP
+\fB-c\fR \fIexpr\fR
+Stop argument processing, evaluate \fIexpr\fR as a scheme expression.
+.PP
+.TP
+\fB-s\fR \fIscript\fR
+Load Scheme source from \fIscript\fR and execute as a script.
+.PP
+
+
+.br
+
+.SH SEE ALSO
+
+beast.1 <http://testbit.eu/Beast.1>,
+bse.5 <http://testbit.eu/Bse.5>,
+BEAST/BSE Website <http://beast.testbit.eu>,
+Guile <http://www.gnu.org/software/guile/docs/>
+
