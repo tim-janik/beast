@@ -14,6 +14,8 @@ DOXYGEN_CHANGELOG_TITLE ?= Development ChangeLog
 DOXYGEN_GRAPHICS	?= YES
 # Link markup for the project name
 DOXYGEN_PROJECT_LINK    ?=
+# Tagfile references for Doxygen
+DOXYGEN_TAGFILES        ?=
 
 # == doxygen-full ==
 # build doxygen-html/ from scratch ==
@@ -70,23 +72,26 @@ DOXYGEN_CHANGELOG_SED = \
 
 # == doxygen-html ==
 # configure and run doxygen, handle DOXYGEN="" by creating a dummy docu target
-doxygen-html: doxygen.cfg tagfile-susv4.xml doxygen-srctree
+doxygen-html: doxygen.cfg doxygen-srctree
 	$(DOXYGEN_V) "CLEAN" "Html temporaries..."
 	$(DOXYGEN_Q) rm -rf doxygen-tmp/ && mkdir -p doxygen-tmp/
 	$(DOXYGEN_V) "GEN" "HTML Documentation..."
 	$(DOXYGEN_Q) test -n "$(DOXYGEN)" || \
 		( mkdir -p doxygen-tmp/html/ && echo "$(PACKAGE) $(DOXYGEN_PROJECT_NUMBER)" > doxygen-tmp/html/index.html )
+	$(DOXYGEN_Q) for tagfile in $(DOXYGEN_TAGFILES) ; do \
+	  test -r "$${tagfile/=*/}" || { echo "ERROR: tag file missing or unreadable: $${tagfile/=*/}" >&2 ; exit 1 ; } ; done
 	$(DOXYGEN_Q) test -z "$(DOXYGEN)" || (cat doxygen.cfg \
 	&& echo "STRIP_FROM_PATH  = `pwd`/doxygen-srctree" \
 	&& echo "INPUT		  = doxygen-srctree/" \
 	&& echo "HAVE_DOT	  = $(DOXYGEN_GRAPHICS)" \
 	&& echo "CLASS_DIAGRAMS   = $(DOXYGEN_GRAPHICS)" \
-	&& echo "DOT_MULTI_TARGETS = YES" \
 	&& echo "EXAMPLE_PATH	  = $(top_srcdir)/" \
 	&& echo "OUTPUT_DIRECTORY = doxygen-tmp/" \
 	&& echo "GENERATE_TAGFILE = doxygen-tmp/html/tagfile.xml" \
-	&& echo "TAGFILES         = tagfile-susv4.xml=http://pubs.opengroup.org/onlinepubs/9699919799/" \
-	&& echo -n "PROJECT_NUMBER = $(DOXYGEN_PROJECT_NUMBER)" \
+	&& echo "PROJECT_NUMBER   = $(DOXYGEN_PROJECT_NUMBER)" \
+	&& echo "DOT_MULTI_TARGETS = YES" \
+	&& for tagfile in $(DOXYGEN_TAGFILES) ; do \
+	     echo "TAGFILES += $$tagfile" ; done \
 	) > doxygen-tmp/Doxyfile.tmp \
 	&& nice $(DOXYGEN) doxygen-tmp/Doxyfile.tmp > error.log 2>&1
 	$(DOXYGEN_Q) test ! -s error.log && rm -f error.log \
