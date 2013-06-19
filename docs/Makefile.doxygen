@@ -112,5 +112,5 @@ DOXYGEN_SED_PROJECT_LINK   = -e 's;<div id="projectname">((\w|[+_/~*%^-])+);<div
 doxygen-clean:
 	$(DOXYGEN_V) "CLEAN" "Doxygen files..."
 	$(DOXYGEN_Q) rm -rf doxygen-srctree/ doxygen-tmp/ doxygen-html/
-	$(DOXYGEN_Q) rm -rf error.log
+#	$(DOXYGEN_Q) rm -rf error.log
 .PHONY: doxygen-clean
