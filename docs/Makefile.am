@@ -72,7 +72,7 @@ build-docs: doxygen-check
 	$(Q) mv doxygen-html $(DOC_TARGET)
 	$(Q) $(MAKE) $(AM_MAKEFLAGS) --no-print-directory doxygen-clean
 .PHONY: build-docs
-CLEANFILES = $(DOXYGEN_CHANGELOG)
+CLEANFILES += $(DOXYGEN_CHANGELOG)
 GIT_CHANGELOG = ( git log --first-parent --date=short --pretty='%ad  %an 	\# %h%n%n%s%n%n%b' --abbrev=11 \
 		  ce584d04999a7fb9393e1cfedde2048ba73e8878..HEAD \
 		| sed 's/^/	/; s/^	//; /^[ 	]*<unknown>$$/d' )
