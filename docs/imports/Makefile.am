@@ -7,6 +7,10 @@ HTMLMANS    = beast.1.html bse.5.html bsescm.1.html bsewavetool.1.html sfidl.1.h
 EXTRA_DIST += $(TAGFILES) $(MANMANS)
 # HTMLMANS are packaged as part of the doxygen docs
 
+# Install manual pages
+man_MANS    = ${MANMANS} # automake-1.11 needs this expandable w/o patsubst
+
+# = Import Rule =
 import: check-tools
 	$(AM_V_GEN)
 	$(Q) rm -f $(TAGFILES) $(HTMLMANS) $(MANMANS)
