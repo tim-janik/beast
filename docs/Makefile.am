@@ -50,7 +50,7 @@ DOXYGEN_DOC_FILES	= docs/main.dox
 DOXYGEN_DOC_DIRS	= sfi/ bse/ plugins/ plugins/freeverb/ beast-gtk/ beast-gtk/gxk/ launchers/ shell/ tools/
 DOXYGEN_EXCLUDES	= rope/cpy2rope.cc rope/cxx-client.[hc][hc] rcore/signalvariants.hh
 DOXYGEN_CHANGELOG       = ChangeLog.tmp
-DOXYGEN_CHANGELOG_TITLE	= "Beast Development ChangeLog"
+DOXYGEN_NEWS     	= $(top_srcdir)/NEWS
 DOXYGEN_PROJECT_LINK    = http://beast.testbit.eu/
 DOXYGEN_TAGFILES        = imports/tagfile-rapicorn.xml=http://dev.testbit.eu/rapicorn/latest/ \
 			  imports/tagfile-susv4.xml=http://pubs.opengroup.org/onlinepubs/9699919799/
