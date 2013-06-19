@@ -1,10 +1,9 @@
-// Licensed GNU LGPL v3 or later, see: www.gnu.org              -*-mode:c++-*-
+// Licensed GNU LGPL v3 or later, see: www.gnu.org
 /*! @mainpage
 
 @section documents Documents
-- <a href="faq.html"><b>FAQ</b></a> - Frequently Asked Questions
-- <a href="Beast-Quickstart.html"><b>Quickstart Guide</b></a> - Basic steps with Beast
-- <a href="pages.html"><b>Release News</b></a> - List of updates per release version
+- <a href="ReleaseNews.html"><b>Release News</b></a> - List of updates per release version
+- <a href="ChangeLog.html"><b>ChangeLog</b></a> - Beast Development ChangeLog
 
 @section manpages Manual Pages
 - <a href="beast.1.html"><b>Beast</b></a> - Better Audio System
@@ -18,9 +17,10 @@
 - <a href="http://beast.testbit.eu/">BEAST Website</a>
 - <a href="http://beast.testbit.eu/Beast_Sound_Gallery">Sound Archive</a>
 - <a href="http://beast.testbit.eu/Beast_Help_Desk">Help Desk</a>
+- <a href="http://beast.testbit.eu/Beast_FAQ">Beast FAQ</a>
+- <a href="http://beast.testbit.eu/Beast-Quickstart">Quickstart Guide</a>
 - <a href="http://beast.testbit.eu/Beast_Feature_Requests">Feature Requests</a>
 - <a href="http://beast.testbit.eu/Beast_Use_Cases">Community Input</a>
 - <a href="http://beast.testbit.eu/Synthesis_Links">Synthesis Links</a>
-- <a href="http://beast.testbit.eu/Beast_Development">Development Documentation</a>
 
 */
