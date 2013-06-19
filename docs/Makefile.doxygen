@@ -10,6 +10,9 @@ DOXYGEN_Q		= $(if $(findstring 1, $(V)) ,, @)
 # ChangeLog to add to the generated documentation
 DOXYGEN_CHANGELOG       ?=
 DOXYGEN_CHANGELOG_TITLE ?= Development ChangeLog
+# NEWS file to add to the generated documentation
+DOXYGEN_NEWS		?=
+DOXYGEN_NEWS_TITLE	?= Release News
 # Build with dot files by default
 DOXYGEN_GRAPHICS	?= YES
 # Link markup for the project name
@@ -38,11 +41,16 @@ doxygen-check:
 doxygen-srctree:
 	$(DOXYGEN_V) "GEN" doxygen-srctree/
 	$(DOXYGEN_Q) rm -rf doxygen-srctree/ && mkdir -p doxygen-srctree/
-	$(DOXYGEN_V) `test -z "$(DOXYGEN_CHANGELOG)" && echo SKIP || echo GEN` "ChangeLog"
+	$(DOXYGEN_V) `test -z "$(DOXYGEN_CHANGELOG)" && echo SKIP || echo GEN` "ChangeLog.dox"
 	$(DOXYGEN_Q) test -z "$(DOXYGEN_CHANGELOG)" || ( true \
-	&& echo "/*! @page ChangeLog $(DOXYGEN_CHANGELOG_TITLE)"	 > doxygen-srctree/ChangeLog \
-	&& sed -r $(DOXYGEN_CHANGELOG_SED) $(DOXYGEN_CHANGELOG)		>> doxygen-srctree/ChangeLog \
-	&& echo ' */' 							>> doxygen-srctree/ChangeLog )
+	&& echo "/*! @page $(PACKAGE_TARNAME)-ChangeLog $(DOXYGEN_CHANGELOG_TITLE)" > doxygen-srctree/ChangeLog.dox \
+	&& sed -r $(DOXYGEN_CHANGELOG_SED) $(DOXYGEN_CHANGELOG)		>> doxygen-srctree/ChangeLog.dox \
+	&& echo ' */' 							>> doxygen-srctree/ChangeLog.dox )
+	$(DOXYGEN_V) `test -z "$(DOXYGEN_NEWS)" && echo SKIP || echo GEN` "NEWS.dox"
+	$(DOXYGEN_Q) test -z "$(DOXYGEN_NEWS)" || ( true \
+	&& echo "/*! @page $(PACKAGE_TARNAME)-NEWS $(DOXYGEN_NEWS_TITLE)" >doxygen-srctree/NEWS.dox \
+	&& sed -r $(DOXYGEN_NEWS_SED) $(DOXYGEN_NEWS)			>> doxygen-srctree/NEWS.dox \
+	&& echo ' */' 							>> doxygen-srctree/NEWS.dox )
 	$(DOXYGEN_V) "COPY" "Source tree..."
 	$(DOXYGEN_Q) CWD=`pwd` \
 	&& for dir in $(DOXYGEN_DOC_DIRS) ; do \
@@ -61,14 +69,19 @@ doxygen-srctree:
 	$(DOXYGEN_V) "PRUNE" "Exclude files..."
 	$(DOXYGEN_Q) rm -f $(patsubst %, doxygen-srctree/%, $(DOXYGEN_EXCLUDES))
 
-# sed: escape @ < & >, add sections, handle * bullets
+# sed: escape @ < & > #, add sections, handle * bullets
 DOXYGEN_CHANGELOG_SED = \
 		-e 's/(@\w)/\\\1/g; s/&/\&amp;/g; s/</\&lt;/g; s/>/\&gt;/g; s,\*/,*\&nbps;/,g' \
 		-e '/^[^ ].*\# [0-9a-f]/s/^(.*)\# ([0-9a-f]+)/@section commit_\2 \0/' \
 		-e 's/^[ \t]+\*? ?([a-zA-Z0-9_.+\/-]+):[ \t]*(\w.*)$$/- @b \1: \2/' \
 		-e 's/^[ \t]+\*? ?([a-zA-Z0-9_.+\/-]+):(.*)/- <em><b>\1:<\/b> \2<\/em>/' \
 		-e "s/^[ \t]+\*? ?(Merge branch)[ \t]+'(.*)'/- \1 '<em>\2<\/em>'/" \
-		-e 's/^/ * /'
+		-e 's/^/ * /' -e 's/\#/\\\\\#/g'
+DOXYGEN_NEWS_SED = \
+		-e 's/(@\w)/\\\1/g; s/&/\&amp;/g; s/</\&lt;/g; s/>/\&gt;/g; s,\*/,*\&nbps;/,g' \
+		-e '/^\w+.*\b[0-9]/s/^/@section release /' \
+		-e 's/^([ \t]*)([+*-])[ \t]+(\w+)/\1- \3/' \
+		-e 's/^/ * /' -e 's/\#/\\\\\#/g'
 
 # == doxygen-html ==
 # configure and run doxygen, handle DOXYGEN="" by creating a dummy docu target
