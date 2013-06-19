@@ -57,7 +57,7 @@ doxygen-srctree:
 	$(DOXYGEN_V) "ADD" "File docu commands..."
 	$(DOXYGEN_Q) cd doxygen-srctree/ \
 	&& find . -type f \( $(patsubst %,-name '%' -o, $(DOXYGEN_DOCU_GLOBS)) -false \) \
-	   -exec sed  '1,+0s,^,/** @file {} */,' {} --in-place \;
+	   -exec sed  '1,+0s,^,/** @file {} */ ,' {} --in-place \;
 	$(DOXYGEN_V) "PRUNE" "Exclude files..."
 	$(DOXYGEN_Q) rm -f $(patsubst %, doxygen-srctree/%, $(DOXYGEN_EXCLUDES))
 
