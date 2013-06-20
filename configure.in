@@ -85,7 +85,7 @@ dnl # AC_CANONICAL_HOST is provided by AC_CANONICAL_TARGET
 AC_DEFINE_UNQUOTED(BST_ARCH_NAME, "$target", [Architecture Description])
 
 # initialize automake, don't define PACKAGE and VERSION
-AM_INIT_AUTOMAKE
+AM_INIT_AUTOMAKE(tar-pax no-define)
 
 # We have subdirectories.
 AC_PROG_MAKE_SET
