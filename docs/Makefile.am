@@ -76,3 +76,24 @@ CLEANFILES += $(DOXYGEN_CHANGELOG)
 GIT_CHANGELOG = ( git log --first-parent --date=short --pretty='%ad  %an 	\# %h%n%n%s%n%n%b' --abbrev=11 \
 		  ce584d04999a7fb9393e1cfedde2048ba73e8878..HEAD \
 		| sed 's/^/	/; s/^	//; /^[ 	]*<unknown>$$/d' )
+
+# == Upload build rules ==
+upload-docs: doxygen-check $(git_index_file)
+	$(AM_V_GEN)
+	$(Q) test -e $@ && test "`cat upload-docs/doc-version`" = "$(DOC_VERSION)" || (true \
+	&& rm -rf upload-docs/ \
+	&& $(MAKE) $(AM_MAKEFLAGS) --no-print-directory build-docs DOXYGEN_GRAPHICS=YES DOC_TARGET=upload-docs )
+	$(Q) echo "$(DOC_VERSION)" > upload-docs/doc-version
+clean-upload-docs:
+	rm -rf upload-docs/
+clean-local: clean-upload-docs
+# Upload release versions as $DOC_VERSION, otherwise upload as latest/
+upload: upload-docs
+	$(AM_V_GEN)
+	$(Q) ${CHECK_RSYNC} || { echo "$@: failed to detect recent version: rsync"; exit 1; }
+	$(Q) test "${REL_VERSION}" != "${DSC_VERSION}" || { set -x ; \
+	  rsync -zaHP --del "upload-docs"   "testbit:/srv/dev/html/beast/${DOC_VERSION}" ; }
+	$(Q) test "${REL_VERSION}"  = "${DSC_VERSION}" || { set -x ; \
+	  rsync -zaHP --del "upload-docs/"  "testbit:/srv/dev/html/beast/latest/" ; }
+.PHONY: upload upload-docs
+CHECK_RSYNC   = { command -v rsync >/dev/null && { echo "3.0.0" ; rsync --version 2>&1 | sed 's/[^0-9]*// ; 1q' ; } | sort -VC ; }
