@@ -1,0 +1,501 @@
+.TH "BSEWAVETOOL" "1" "2011\-05\-02" "Revision 308" "Testbit Wiki Pages"
+
+.SH NAME
+
+bsewavetool - A tool for editing the native multisample format for \fIbeast\fR and \fIBse\fR.
+
+.SH SYNOPSIS
+
+\fBbsewavetool\fR [\fItool-options\fR] command \fI<file.bsewave>\fR [\fIcommand-arguments\fR]
+
+.SH DESCRIPTION
+
+\fBbsewavetool\fR is a command line tool for editing the native multisample format for \fIbeast\fR and \fIBse\fR, the \fIbsewave\fR format. Some common operations are creating new \fIbsewave\fR files, adding chunks to an existing file, encoding the sample data, adding meta information or exporting chunks.
+
+Common uses for \fIbsewave\fR files are:
+.IP \(bu 2
+Mapping an individual sample to each midi note (key on the keyboard) - this is mainly useful for drumkits.
+.IP \(bu 2
+Approximating the sound of an instrument (such as a piano) by sampling some notes, and mapping these to the corresponding frequencies in a \fIbsewave\fR file - when such a file is loaded by \fIBse\fR and a note is played, \fIBse\fR will play the "nearest" note, and - if necessary - pitch it.
+
+.SH OPTIONS
+
+A number of options can be used with \fBbsewavetool\fR in combination with the commands:
+.TP
+\fB-o\fR \fI<output.bsewave>\fR
+Name of the destination file (default: <file.bsewave>).
+.PP
+.TP
+\fB--silent\fR
+Suppress extra processing information.
+.PP
+.TP
+\fB--skip-errors\fR
+Skip errors (may overwrite bsewave files after load errors occoured for part of its contents).
+.PP
+.TP
+\fB-h\fR, \fB--help\fR
+Show elaborated help message with command documentation.
+.PP
+.TP
+\fB-v\fR, \fB--version\fR
+Print version information.
+.PP
+
+.SH COMMANDS
+.SS Store
+
+\fBstore\fR
+
+Store the input bsewave as output bsewave. If both file names are the same, the bsewave file is simply rewritten. Allthough no explicit modifications are performed on the bsewave, externally referenced sample files will be inlined, chunks may be reordered, and other changes related to the bsewave storage process may occour.
+.SS Create
+
+\fBcreate\fR \fI<n_channels>\fR [\fIoptions\fR]
+
+Create an empty bsewave file, \fI<n_channels>\fR=1 (mono) and \fI<n_channels>\fR=2 (stereo) are currently supported.
+
+\fBOptions:\fR
+.TP
+\fB-N\fR \fI<wave-name>\fR
+Name of the wave stored inside of <output.bsewave>.
+.PP
+.TP
+\fB-f\fR
+Force creation even if the file exists already.
+.PP
+.SS Oggenc
+
+\fBoggenc\fR [\fIoptions\fR]
+
+Compress all chunks with the Vorbis audio codec and store the wave data as Ogg/Vorbis streams inside the bsewave file.
+
+\fBOptions:\fR
+.TP
+\fB-q\fR \fI<n>\fR
+Use quality level \fI<n>\fR, refer to oggenc(1) for details.
+.PP
+.SS Add Chunk
+
+\fBadd-chunk\fR [\fIoptions\fR] {\fB-m\fR=\fImidi-note\fR|\fB-f\fR=\fIosc-freq\fR} \fI<sample-file>\fR ...
+
+Add a new chunk containing \fI<sample-file>\fR to the wave file. For each chunk, a unique oscillator frequency must be given to determine what note the chunk is to be played back for. Multi oscillator frequency + sample-file option combinations may be given on the command line to add multiple wave chunks. The -f and -m options can be omitted for a sample file, if the oscillator frequency can be determined through auto extract options.
+
+\fBOptions:\fR
+.TP
+\fB-f\fR \fI<osc-freq>\fR
+Oscillator frequency for the next chunk.
+.PP
+.TP
+\fB-m\fR \fI<midi-note>\fR
+Alternative way to specify oscillator frequency.
+.PP
+.TP
+\fB--auto-extract-midi-note\fR \fI<nth>\fR
+Automatically retrieve the midi note by extracting the \fI<nth>\fR number from the base name of \fI<sample-file>\fR.
+.PP
+.TP
+\fB--auto-extract-osc-freq\fR \fI<nth>\fR
+Automatically retrieve the oscillator frequency by extracting the \fI<nth>\fR number from the base name of \fI<sample-file>\fR.
+.PP
+.SS Add Raw Chunk
+
+\fBadd-raw-chunk\fR [\fIoptions\fR] {\fB-m\fR=\fImidi-note\fR|\fB-f\fR=\fIosc-freq\fR} \fI<sample-file>\fR ...
+
+Add a new chunk just like with "add-chunk", but load raw sample data. Additional raw sample format options are supported.
+
+\fBOptions:\fR
+.TP
+\fB-R\fR \fI<mix-freq>\fR
+Mixing frequency for the next chunk [44100].
+.PP
+.TP
+\fB-F\fR \fI<format>\fR
+Raw sample format, supported formats are: alaw, ulaw, float, signed-8, signed-12, signed-16, unsigned-8, unsigned-12, unsigned-16 [signed-16].
+.PP
+.TP
+\fB-B\fR \fI<byte-order>\fR
+Raw sample byte order, supported types: little-endian, big-endian [little-endian].
+.PP
+.SS Del Chunk
+
+\fBdel-chunk\fR {\fB-m\fR=\fImidi-note\fR|\fB-f\fR=\fIosc-freq\fR|\fB--chunk-key\fR=\fIkey\fR|\fB--all-chunks\fR}
+
+Removes one or more chunks from the bsewave file.
+
+\fBOptions:\fR
+.TP
+\fB-f\fR \fI<osc-freq>\fR
+Oscillator frequency to select a wave chunk.
+.PP
+.TP
+\fB-m\fR \fI<midi-note>\fR
+Alternative way to specify oscillator frequency.
+.PP
+.TP
+\fB--chunk-key\fR \fI<key>\fR
+Select wave chunk using chunk key from list-chunks.
+.PP
+.TP
+\fB--all-chunks\fR
+Delete all chunks.
+.PP
+.SS XInfo
+
+\fBxinfo\fR {\fB-m\fR=\fImidi-note\fR|\fB-f\fR=\fIosc-freq\fR|\fB--chunk-key\fR=\fIkey\fR|\fB--all-chunks\fR|\fB--wave\fR} \fBkey\fR=[\fIvalue\fR] ...
+
+Add, change or remove an XInfo string of a bsewave file. Omission of [value] deletes the XInfo associated with the key. Key and value pairs may be specified multiple times, optionally preceeded by location options to control what portion of a bsewave file (the wave, individual wave chunks or all wave chunks) should be affected.
+
+\fBOptions:\fR
+.TP
+\fB-f\fR \fI<osc-freq>\fR
+Oscillator frequency to select a wave chunk.
+.PP
+.TP
+\fB-m\fR \fI<midi-note>\fR
+Alternative way to specify oscillator frequency.
+.PP
+.TP
+\fB--chunk-key\fR \fI<key>\fR
+Select wave chunk using chunk key from list-chunks.
+.PP
+.TP
+\fB--all-chunks\fR
+Apply XInfo modification to all chunks.
+.PP
+.TP
+\fB--wave\fR
+Apply XInfo modifications to the wave itself.
+.PP
+
+
+.br
+.SS Info
+
+\fBinfo\fR \fI{\fB-m\fR=\fRmidi-note\fI|\fB-f\fR=\fRosc-freq\fI|\fB--chunk-key\fR=\fRkey\fI|\fB--all-chunks\fR|\fR#--wave\fB} [\fIoptions\fR]\fR
+
+Print information about the chunks of a bsewave file.
+
+\fBOptions:\fR
+.TP
+\fB-f\fR \fI<osc-freq>\fR
+Oscillator frequency to select a wave chunk.
+.PP
+.TP
+\fB-m\fR \fI<midi-note>\fR
+Alternative way to specify oscillator frequency.
+.PP
+.TP
+\fB--all-chunks\fR
+Show information for all chunks (default).
+.PP
+.TP
+\fB--chunk-key\fR \fI<key>\fR
+Select wave chunk using chunk key from list-chunks.
+.PP
+.TP
+\fB--wave\fR
+Show information for the wave.
+.PP
+.TP
+\fB--pretty\fR=medium
+Use human readable format (default).
+.PP
+.TP
+\fB--pretty\fR=full
+Use human readable format with all details.
+.PP
+.TP
+\fB--script\fR \fI<field1>\fR,\fI<field2>\fR,\fI<field3>\fR,...,\fI<fieldN>\fR
+Use script readable line based space separated output.
+.PP
+
+\fBValid wave or chunk fields:\fR
+.TP
+channels
+Number of channels.
+.PP
+.TP
+label
+User interface label.
+.PP
+.TP
+blurb
+Associated comment.
+.PP
+
+\fBValid wave fields:\fR
+.TP
+authors
+Authors who participated in creating the wave file.
+.PP
+.TP
+license
+License specifying redistribution and other legal terms.
+.PP
+.TP
+play-type
+Set of required play back facilities for a wave.
+.PP
+
+\fBValid chunk fields:\fR
+.TP
+osc-freq
+Frequency of the chunk.
+.PP
+.TP
+mix-freq
+Sampling rate of the chunk.
+.PP
+.TP
+midi-note
+Midi note of a chunk.
+.PP
+.TP
+length
+Length of the chunk in sample frames.
+.PP
+.TP
+volume
+Volume at which the chunk is to be played.
+.PP
+.TP
+format
+Storage format used to save the chunk data.
+.PP
+.TP
+loop-type
+Whether the chunk is to be looped.
+.PP
+.TP
+loop-start
+Offset in sample frames for the start of the loop.
+.PP
+.TP
+loop-end
+Offset in sample frames for the end of the loop.
+.PP
+.TP
+loop-count
+Maximum limit for how often the loop should be repeated.
+.PP
+
+\fBChunk fields that can be computed for the signal:\fR
+.TP
++avg-energy-raw
+Average signal energy (dB) of the raw data of the chunk.
+.PP
+.TP
++avg-energy
+Average signal energy (dB) using volume xinfo.
+.PP
+
+The script output consists of one line per chunk. The individual fields of a line are separated by a single space. Special characters are escaped, such as spaces, tabs, newlines and backslashes. So each line of script parsable output can be parsed using the read(P) shell command. Optional fields will printed as a single (escaped) space.
+
+The human readable output formats (--pretty) may vary in future versions and are not recommended as script input.
+.SS Clip
+
+\fBclip\fR {\fB-m\fR=\fImidi-note\fR|\fB-f\fR=\fIosc-freq\fR|\fB--chunk-key\fR=\fIkey\fR|\fB--all-chunks\fR} [\fIoptions\fR]
+
+Clip head and or tail of a wave chunk and produce fade-in ramps at the beginning. Wave chunks which are clipped to an essential 0-length will automatically be deleted.
+
+\fBOptions:\fR
+.TP
+\fB-f\fR \fI<osc-freq>\fR
+Oscillator frequency to select a wave chunk.
+.PP
+.TP
+\fB-m\fR \fI<midi-note>\fR
+Alternative way to specify oscillator frequency.
+.PP
+.TP
+\fB--chunk-key\fR \fI<key>\fR
+Select wave chunk using chunk key from list-chunks.
+.PP
+.TP
+\fB--all-chunks\fR
+Try to clip all chunks.
+.PP
+.TP
+\fB-s\fR=\fI<threshold>\fR
+Set the minimum signal threshold (0..32767) [16].
+.PP
+.TP
+\fB-h\fR=\fI<head-samples>\fR
+Number of silence samples to verify at head [0].
+.PP
+.TP
+\fB-t\fR=\fI<tail-samples>\fR
+Number of silence samples to verify at tail [0].
+.PP
+.TP
+\fB-f\fR=\fI<fade-samples>\fR
+Number of samples to fade-in before signal starts [16].
+.PP
+.TP
+\fB-p\fR=\fI<pad-samples>\fR
+Number of padding samples after signal ends [16].
+.PP
+.TP
+\fB-r\fR=\fI<tail-silence>\fR
+Number of silence samples required at tail to allow tail clipping [0].
+.PP
+.SS Normalize
+
+\fBnormalize\fR {\fB-m\fR=\fImidi-note\fR|\fB-f\fR=\fIosc-freq\fR|\fB--chunk-key\fR=\fIkey\fR|\fB--all-chunks\fR} [\fIoptions\fR]
+
+Normalize wave chunk. This is used to extend (or compress) the signal range to optimally fit the available unclipped dynamic range.
+
+\fBOptions:\fR
+.TP
+\fB-f\fR \fI<osc-freq>\fR
+Oscillator frequency to select a wave chunk.
+.PP
+.TP
+\fB-m\fR \fI<midi-note>\fR
+Alternative way to specify oscillator frequency.
+.PP
+.TP
+\fB--chunk-key\fR \fI<key>\fR
+Select wave chunk using chunk key from list-chunks.
+.PP
+.TP
+\fB--all-chunks\fR
+Try to normalize all chunks.
+.PP
+.SS Loop
+
+\fBloop\fR {\fB-m\fR=\fImidi-note\fR|\fB-f\fR=\fIosc-freq\fR|\fB--all-chunks\fR} [\fIoptions\fR]
+
+Find suitable loop points.
+
+\fBOptions:\fR
+.TP
+\fB-f\fR \fI<osc-freq>\fR
+Oscillator frequency to select a wave chunk
+.PP
+.TP
+\fB-m\fR \fI<midi-note>\fR
+Alternative way to specify oscillator frequency
+.PP
+.TP
+\fB--chunk-key\fR \fI<key>\fR
+Select wave chunk using chunk key from list-chunks
+.PP
+.TP
+\fB--all-chunks\fR
+Try to loop all chunks
+.PP
+.SS Highpass
+
+\fBhighpass\fR [\fIoptions\fR]
+
+Apply highpass filter to wave data.
+
+\fBOptions:\fR
+.TP
+\fB--cutoff-freq\fR \fI<f>\fR
+Filter cutoff frequency in Hz
+.PP
+.TP
+\fB--order\fR \fI<o>\fR
+Filter order [64]
+.PP
+.SS Lowpass
+
+\fBlowpass\fR [\fIoptions\fR]
+
+Apply lowpass filter to wave data.
+
+\fBOptions:\fR
+.TP
+\fB--cutoff-freq\fR \fI<f>\fR
+Filter cutoff frequency in Hz
+.PP
+.TP
+\fB--order\fR <o>
+Filter order [64]
+.PP
+.SS Upsample2
+
+\fBupsample2\fR [\fIoptions\fR]
+
+Resample wave data to twice the sampling frequency.
+
+\fBOptions:\fR
+.TP
+\fB--precision\fR \fI<bits>\fR
+Set resampler precision bits [24]. Supported precisions: 1, 8, 12, 16, 20, 24 (1 is a special value for linear interpolation)
+.PP
+.SS Downsample2
+
+\fBdownsample2\fR [\fIoptions\fR]
+
+Resample wave data to half the sampling frequency.
+
+\fBOptions:\fR
+.TP
+\fB--precision\fR \fI<bits>\fR
+Set resampler precision bits [24]. Supported precisions: 1, 8, 12, 16, 20, 24 (1 is a special value for linear interpolation).
+.PP
+.SS Export
+
+\fBexport\fR {\fB-m\fR=\fImidi-note\fR|\fB-f\fR=\fIosc-freq\fR|\fB--chunk-key\fR=\fIkey\fR|\fB--all-chunks\fR|\fB-x\fR=\fIfilename\fR} [\fIoptions\fR]
+
+Export chunks from bsewave as WAV file.
+
+\fBOptions:\fR
+.TP
+\fB-x\fR \fI<filename>\fR
+Set export filename (supports %N %F and %C, see below).
+.PP
+.TP
+\fB-f\fR \fI<osc-freq>\fR
+Oscillator frequency to select a wave chunk.
+.PP
+.TP
+\fB-m\fR \fI<midi-note>\fR
+Alternative way to specify oscillator frequency.
+.PP
+.TP
+\fB--chunk-key\fR \fI<key>\fR
+Select wave chunk using chunk key from list-chunks.
+.PP
+.TP
+\fB--all-chunks\fR
+Try to export all chunks.
+.PP
+
+The export filename can contain the following extra information:
+.TP
+%F
+The frequency of the chunk.
+.PP
+.TP
+%N
+The midi note of the chunk.
+.PP
+.TP
+%C
+Cent detuning of the midi note.
+.PP
+.SS List Chunks
+
+\fBlist-chunks\fR [\fIoptions\fR]
+
+Prints a list of chunk keys of the chunks contained in the bsewave file.
+A chunk key for a given chunk identifies the chunk uniquely and stays valid
+if other chunks are inserted and deleted.
+
+This bash script shows the length of all chunks (like info --all-chunks):
+.EX
+ for key in `bsewavetool list-chunks foo.bsewave` ; do
+   bsewavetool info foo.bsewave --chunk-key $key --script length ;
+ done
+.EE
+
+.SH SEE ALSO
+
+beast.1 <http://testbit.eu/Beast.1>,
+BEAST/BSE Website <http://beast.testbit.eu>,
+Samples and Wave Files in BEAST <http://testbit.eu/Beast_Architecture#Samples_and_Wave_Files>
+

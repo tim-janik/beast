@@ -1,0 +1,41 @@
+.TH "BSE" "5" "2011\-01\-25" "Revision 175" "Testbit Wiki Pages"
+
+.SH NAME
+
+BSE - Better Sound Engine File Format
+
+.SH SYNOPSIS
+
+\fIfilename\fR\fB.bse\fR
+
+.SH DESCRIPTION
+
+The \fBbse\fR file format is used by the \fIbse\fR library and dependent programs to save
+\fIbse\fR projects, songs, instruments and sample collections.
+The \fIbse\fR scheme shell \fIbsescm.1\fR is able to play back \fBbse\fR files directly.
+
+.SH FORMAT
+
+\fIbse\fR files start out with a special magic string "; BseProject\n" and then contain nested
+expressions in scheme syntax using the ASCII charset.
+Binary data may be appended to a \fI.bse\fR file if it is seperated from the preceeding
+ASCII test by one or more literal NUL characters ('\0').
+This mechanism is used to store arbitrary binary data like \fI.WAV\fR or Ogg/Vorbis files
+in \fIbse\fR projects, while keeping the actuall content user editable (text editors that preserve
+binary sections have to be used, such as vi(1) or emacs(1)).
+
+.SH COMPATIBILITY
+
+The exact format and sets of objects and properties used in a \fBbse\fR file depend highly
+on the library version that was used to save the file. Compatibility functions are supplied
+by the library itself, so old \fBbse\fR files can be converted when the file is loaded.
+To enable this mechanism, all \fBbse\fR files contain a \fB"bse-version"\fR directive which
+indicates the \fBbse\fR file format version of the supplied content.
+
+.SH SEE ALSO
+
+beast.1 <http://testbit.eu/Beast.1>,
+bsescm.1 <http://testbit.eu/Bsescm.1>,
+bsewavetool.1 <http://testbit.eu/Bsewavetool.1>,
+BSE Object Reference <http://beast.gtk.org/bse-objects>
+

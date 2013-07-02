@@ -64,6 +64,13 @@ else
 fi
 AC_SUBST(DEFINE__FILE_DIR__)
 
+# Build tree checks
+AC_MSG_CHECKING([for git repository])
+test -f "${srcdir}/.git/index" && INGIT= || INGIT='#'
+AC_SUBST(INGIT)
+result=$(test -z "$INGIT" && echo yes || echo no)
+AC_MSG_RESULT($result)
+
 dnl # figure debugging default, prior to $ac_help setup
 dnl
 if test `expr $BSE_MINOR_VERSION \% 2 \| $BSE_MAJOR_VERSION \< 1` = 1 ; then
@@ -78,7 +85,7 @@ dnl # AC_CANONICAL_HOST is provided by AC_CANONICAL_TARGET
 AC_DEFINE_UNQUOTED(BST_ARCH_NAME, "$target", [Architecture Description])
 
 # initialize automake, don't define PACKAGE and VERSION
-AM_INIT_AUTOMAKE
+AM_INIT_AUTOMAKE(tar-pax no-define)
 
 # We have subdirectories.
 AC_PROG_MAKE_SET
@@ -363,29 +370,6 @@ AC_DEFUN([AC_BSE_REQUIREMENTS],
     bseuserdatadir='~/beast'
     AC_SUBST(bseuserdatadir)
 ])
-AC_DEFUN([AC_MAN_REQUIREMENTS],
-[
-  AC_PATH_PROGS(WIKIHTML2MAN, wikihtml2man wikihtml2man.py, false)
-  AC_PATH_PROG(GROFF, groff, false)
-  IFMAN=
-  IFAGING=
-  if test x"$enable_maintainer_mode" = xyes ; then
-    test x"$WIKIHTML2MAN" = xfalse && {
-      AC_MSG_ERROR(This package requires the wikihtml2man.py tool for maintainer builds)
-    }
-    echo "" | $GROFF -mandoc -Thtml 2>/dev/null | grep -Fq HTML || {
-      AC_MSG_ERROR(Failed to test-build HTML manual page via groff)
-    }
-  else # non-maintainer builds, need to have pre-built manual pages
-    test -e "${srcdir}/docs/mans/beast.1" || {
-      AC_MSG_ERROR([Missing prepackaged manual pages, use --enable-maintainer-mode])
-    }
-    IFMAN="#"
-    IFAGING="#"
-  fi
-  AC_SUBST(IFMAN)
-  AC_SUBST(IFAGING)
-])
 AC_DEFUN([AC_ASOUND_CHECK],
 [
     saved_cflags="$CFLAGS"
@@ -525,8 +509,6 @@ AC_DEFUN([AC_BEAST_REQUIREMENTS],
 
     # --- BEAST paths ---
     beastbasedir=\${datadir}/beast
-    beastdocsdir=$beastbasedir/v$BIN_VERSION/docs
-    AC_SUBST(beastdocsdir)
     beastimagesdir=$beastbasedir/v$BIN_VERSION/images
     AC_SUBST(beastimagesdir)
     beastkeysdir=$beastbasedir/v$BIN_VERSION/keys
@@ -657,7 +639,6 @@ AM_CONDITIONAL(WITH_PERLRULE, [test "$PERLRULE" != "#"])
 AC_I18N_REQUIREMENTS
 AC_SFI_REQUIREMENTS
 AC_BSE_REQUIREMENTS
-AC_MAN_REQUIREMENTS
 AC_ASOUND_CHECK
 AC_BSESCM_REQUIREMENTS
 AC_BSE_SNDDEV_CHECK
@@ -722,8 +703,8 @@ tests/bse/Makefile
 tests/audio/Makefile
 tests/filecheck/Makefile
 docs/Makefile
-docs/dev/Makefile
 docs/images/Makefile
+docs/imports/Makefile
 ])
 
 AC_OUTPUT

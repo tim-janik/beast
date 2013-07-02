@@ -1,110 +1,99 @@
 # BEAST - Better Audio System
 include $(top_srcdir)/Makefile.decl
 
-SUBDIRS = images dev
+SUBDIRS = imports images
 
-# = Build & Dist Items =
-# manual pages to be installed, downloaded from beast.testbit.eu
-man_MANS      = ${MANUAL_PAGES} # automake-1.11 needs this expandable w/o patsubst
-# html pages to be installed, some downloaded from beast.testbit.eu
-htmldocsdir   = ${beastdocsdir}/html
-htmldocs_DATA = $(HTML_SIMPLE_DOCS) $(HTML_ONLINE_DOCS) $(HTMLMAN_PAGES)
+QPRINT = @printf '  %-7s%s\n'
 
-# == Html File Builds ==
-HTML_SIMPLE_DOCS = html/beast-index.html html/news-file.txt
-EXTRA_DIST	+= $(HTML_SIMPLE_DOCS)
-CLEANFILES      += $(HTML_SIMPLE_DOCS)
-html/news-file.txt: $(top_srcdir)/NEWS
+# Describe source tree version (release tag relative, e.g. yy.mm.z-nnn-gHEXHEX)
+DSC_VERSION = $(shell git describe --always --match '[0-9]*' HEAD 2>/dev/null)
+# Release version, shows last tag reachable
+REL_VERSION = $(shell git describe --always --abbrev=0 HEAD 2>/dev/null)
+# Project version as configured
+PRJ_VERSION = $(shell sed -ne "/^[ \t]*VERSION[ \t]*=/ { s/^[^=]*=[ \t]*//; p; q }" < $(top_srcdir)/Makefile)
+# Detailed documentation version
+DOC_VERSION = $(or $(DSC_VERSION), $(PRJ_VERSION))
+
+# == Extra Tarball Files ==
+EXTRA_DIST += bse-categories.txt interpolation.txt ChangeLog.svn
+
+# == Doxygen Install Rules ==
+htmldocsbase  = ${docdir}
+htmldocsdir   = ${htmldocsbase}/html
+htmldocs_DATA = html/doc-version		# build dependency for doxygen docs
+install-data-hook: @INGIT@ html/doc-version
+	umask 022 && cp -RP html/ "$(DESTDIR)$(htmldocsbase)/"
+uninstall-local:
+	rm -Rf "$(DESTDIR)$(htmldocsbase)/html/"
+
+# == html/ build rules ==
+include Makefile.doxygen
+git_index_file = $(shell test ! -x $(top_srcdir)/.git/ || echo $(top_srcdir)/.git/index)
+html/doc-version: @INGIT@ $(git_index_file)	# conditionally rebuild, depending on HEAD changes
 	$(AM_V_GEN)
-	$(Q) cp $< $@
-html/beast-index.html: beast-index.html
+	$(Q) test -e $@ && test "`cat $@`" = "$(DOC_VERSION)" \
+	|| $(MAKE) $(AM_MAKEFLAGS) --no-print-directory html-docs
+	$(Q) rm -f $@ && echo "$(DOC_VERSION)" > $@
+clean-html-docs:
+	rm -rf html/
+clean-local: @INGIT@ clean-html-docs doxygen-clean
+EXTRA_DIST += html
+html-docs: doxygen-check
+	$(Q) rm -rf html/
+	$(Q) $(MAKE) $(AM_MAKEFLAGS) --no-print-directory build-docs DOXYGEN_GRAPHICS=NO DOC_TARGET=html
+	$(Q) echo "$(DOC_VERSION)" > html/doc-version
+.PHONY: html-docs
+
+# == Doxygen Build Rules ==
+HTMLMAN_FILES     	= imports/beast.1.html imports/bse.5.html imports/bsescm.1.html imports/bsewavetool.1.html imports/sfidl.1.html
+DOXYGEN_DOC_FILES	= docs/main.dox
+DOXYGEN_DOC_DIRS	= sfi/ bse/ plugins/ plugins/freeverb/ beast-gtk/ beast-gtk/gxk/ launchers/ shell/ tools/
+DOXYGEN_EXCLUDES	= rope/cpy2rope.cc rope/cxx-client.[hc][hc] rcore/signalvariants.hh
+DOXYGEN_CHANGELOG       = ChangeLog.tmp
+DOXYGEN_NEWS     	= $(top_srcdir)/NEWS
+DOXYGEN_PROJECT_LINK    = http://beast.testbit.eu/
+DOXYGEN_TAGFILES        = imports/tagfile-rapicorn.xml=http://dev.testbit.eu/rapicorn/latest/ \
+			  imports/tagfile-susv4.xml=http://pubs.opengroup.org/onlinepubs/9699919799/
+build-docs: doxygen-check
+	$(Q) $(MAKE) $(AM_MAKEFLAGS) --no-print-directory doxygen-clean
+	$(QPRINT) "GEN" "Git ChangeLog"
+	$(Q) $(GIT_CHANGELOG) > $(DOXYGEN_CHANGELOG)
+	$(Q) $(MAKE) $(AM_MAKEFLAGS) --no-print-directory doxygen-srctree
+	$(Q) rm -f $(DOXYGEN_CHANGELOG)
+	$(QPRINT) "GEN" "docs/docextract.dox"
+	$(Q) cd doxygen-srctree && \
+	  find . -type f -name \*[hcHC] -print | \
+	  $(PYTHON) $(abs_srcdir)/docextract.py > docs/docextract.dox
+	$(Q) $(MAKE) $(AM_MAKEFLAGS) --no-print-directory doxygen-html
+	$(QPRINT) "GEN" "HTML manual pages..."
+	$(Q) cp $(HTMLMAN_FILES) doxygen-html/
+	$(QPRINT) "MOVE" "HTML Documentation..."
+	$(Q) ! test -e $(DOC_TARGET) || { echo "$@: target directory exists already: $(DOC_TARGET)"; exit 1; }
+	$(Q) mv doxygen-html $(DOC_TARGET)
+	$(Q) $(MAKE) $(AM_MAKEFLAGS) --no-print-directory doxygen-clean
+.PHONY: build-docs
+CLEANFILES += $(DOXYGEN_CHANGELOG)
+GIT_CHANGELOG = ( git log --first-parent --date=short --pretty='%ad  %an 	\# %h%n%n%s%n%n%b' --abbrev=11 \
+		  ce584d04999a7fb9393e1cfedde2048ba73e8878..HEAD \
+		| sed 's/^/	/; s/^	//; /^[ 	]*<unknown>$$/d' )
+
+# == Upload build rules ==
+upload-docs: doxygen-check $(git_index_file)
 	$(AM_V_GEN)
-	$(Q) cp $< $@
-EXTRA_DIST += beast-index.html
-
-# == Download Imports ==
-IMPORT_FILES = # files to be imported/updated
-EXTRA_DIST  += $(IMPORT_FILES:%=import/%) import/stamp
-import:	# online docs are downloaded and stored in $(srcdir)/import/
-	$(Q) test "$(srcdir)" = "$(builddir)" -a -d html/
-	$(Q) rm -rf newimport/ && mkdir newimport/
-	$(Q) for FN in $(IMPORT_FILES) ; do \
-	  echo "  IMPORT" $$FN; \
-	  curl -sfS http://beast.testbit.eu/$$FN?action=render > newimport/$$FN || exit $? ; \
-	done
-	$(Q) date +%s > newimport/stamp
-	$(Q) rm -rf import/ && mv newimport/ import/
-	$(MAKE) $(AM_MAKEFLAGS) $(MANUAL_PAGES)
-.PHONY: import
-
-# == Html Online Docs ==
-HTML_ONLINE_DOCS      = html/Beast-Quickstart.html html/Beast_FAQ.html
-IMPORT_FILES         += $(HTML_ONLINE_DOCS:html/%.html=%)
-CLEANFILES 	     += $(HTML_ONLINE_DOCS)
-html/:
-	mkdir -p $@
-$(HTML_ONLINE_DOCS): html/%.html: import/% | html/
+	$(Q) test -e $@ && test "`cat upload-docs/doc-version`" = "$(DOC_VERSION)" || (true \
+	&& rm -rf upload-docs/ \
+	&& $(MAKE) $(AM_MAKEFLAGS) --no-print-directory build-docs DOXYGEN_GRAPHICS=YES DOC_TARGET=upload-docs )
+	$(Q) echo "$(DOC_VERSION)" > upload-docs/doc-version
+clean-upload-docs:
+	rm -rf upload-docs/
+clean-local: clean-upload-docs
+# Upload release versions as $DOC_VERSION, otherwise upload as latest/
+upload: upload-docs
 	$(AM_V_GEN)
-	$(Q) echo -e $(HTML1)		 > $(@D)/xgen-$(@F)
-	$(Q) sed -n $(H1SED) $< 	>> $(@D)/xgen-$(@F)
-	$(Q) echo -e $(HTML2)		>> $(@D)/xgen-$(@F)
-	$(Q) cat $< 			>> $(@D)/xgen-$(@F)
-	$(Q) echo -e $(HTML3)		>> $(@D)/xgen-$(@F)
-	$(Q) mv $(@D)/xgen-$(@F) $@
-HTML1 = '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">\n' \
-	'<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">\n' \
-	'<head>  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />\n' \
-	'<title>'
-HTML2 = '</title></head>\n' \
-	'<body>\n'
-HTML3 = '\n</body></html>\n'
-H1SED = '/<[hH]1\b/{ s/<[^>]\+>//g ; s/^\s\+//; p ; q }' # sed hack to extract first H1 title
-
-# == Online Manual Pages ==
-MANUAL_PAGES          = mans/bse.5 mans/beast.1 mans/bsescm.1 mans/bsewavetool.1 mans/sfidl.1
-IMPORT_FILES         += $(MANUAL_PAGES:mans/%=%)
-EXTRA_DIST           += $(MANUAL_PAGES)
-MAINTAINERCLEANFILES += $(MANUAL_PAGES)
-mans/:	# manual pages are downloaded and stored in $(srcdir)/mans/
-	mkdir -p $@
-$(MANUAL_PAGES): mans/%: import/% | mans/
-	$(AM_V_GEN)
-	$(Q) $(WIKIHTML2MAN) $< >$(@D)/xgen-$(@F)
-	$(Q) mv $(@D)/xgen-$(@F) $@
-
-# == HTML Manual Pages ==
-HTMLMAN_PAGES = $(patsubst mans/%, html/%.html, $(MANUAL_PAGES))
-CLEANFILES   += $(HTMLMAN_PAGES)
-html/%.html: mans/%
-	$(AM_V_GEN)
-	$(Q) set -o pipefail \
-	&& groff -mandoc -Thtml $< \
-	| sed $(HREFS) >$(@D)/xgen-$(@F)
-	$(Q) mv $(@D)/xgen-$(@F) $@
-HREFS = 's,&lt;\(\(http\|ftp\)s\?:[^<>]\+\)&gt;,\&lt;<a href="\1">\1</a>\&gt;,g'
-
-# == File Checks ==
-MISSING_MSG = "  Some files hosted online appear missing or outdated; please issue: make import  "
-CURRENTNESS = 86400 # 86400 seconds = 24 hours
-check-aging-files: check-missing-files
-	$(Q) LAST=`cd $(srcdir) && test -e import/stamp && cat import/stamp || echo 0` ; NOW=`date +%s` \
-	; test $$(($$NOW - $$LAST)) -lt $(CURRENTNESS) || { \
-	  echo $(MISSING_MSG) | sed 's/./=/g' && echo $(MISSING_MSG) && echo $(MISSING_MSG) | sed 's/./=/g' \
-	  && false ; }
-dist-hook: check-aging-files
-check-missing-files:
-	$(Q) { cd $(srcdir) && test 1 $(patsubst %, -a -e $(srcdir)/import/%, $(IMPORT_FILES)) ; } || { \
-	  echo $(MISSING_MSG) | sed 's/./=/g' && echo $(MISSING_MSG) && echo $(MISSING_MSG) | sed 's/./=/g' \
-	  && false ; }
-import/%:
-	$(MAKE) $(AM_MAKEFLAGS) check-missing-files
-
-# == Custom Rules ==
-all: check-missing-files
-
-# == Misc Distribution Files ==
-EXTRA_DIST += $(strip		\
-	bse-categories.txt	\
-	interpolation.txt	\
-	ChangeLog.svn		\
-)
+	$(Q) ${CHECK_RSYNC} || { echo "$@: failed to detect recent version: rsync"; exit 1; }
+	$(Q) test "${REL_VERSION}" != "${DSC_VERSION}" || { set -x ; \
+	  rsync -zaHP --del "upload-docs"   "testbit:/srv/dev/html/beast/${DOC_VERSION}" ; }
+	$(Q) test "${REL_VERSION}"  = "${DSC_VERSION}" || { set -x ; \
+	  rsync -zaHP --del "upload-docs/"  "testbit:/srv/dev/html/beast/latest/" ; }
+.PHONY: upload upload-docs
+CHECK_RSYNC   = { command -v rsync >/dev/null && { echo "3.0.0" ; rsync --version 2>&1 | sed 's/[^0-9]*// ; 1q' ; } | sort -VC ; }

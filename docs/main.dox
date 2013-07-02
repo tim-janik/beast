@@ -1,0 +1,26 @@
+// Licensed GNU LGPL v3 or later, see: www.gnu.org
+/*! @mainpage
+
+@section documents Documents
+- <a href="beast-NEWS.html"><b>Release News</b></a> - List of updates per release version
+- <a href="beast-ChangeLog.html"><b>ChangeLog</b></a> - Beast Development ChangeLog
+
+@section manpages Manual Pages
+- <a href="beast.1.html"><b>Beast</b></a> - Better Audio System
+- <a href="bsewavetool.1.html"><b>Bsewavetool</b></a> - A tool for editing the native multisample format of Beast and Bse
+- <a href="bse.5.html"><b>BSE</b></a> - Better Sound Engine File Format
+- <a href="bsescm.1.html"><b>Bsescm</b></a> - BSE Scheme Shell
+- <a href="sfidl.1.html"><b>Sfidl</b></a> - SFI IDL Compiler
+
+@section weblinks Online Resources
+
+- <a href="http://beast.testbit.eu/">BEAST Website</a>
+- <a href="http://beast.testbit.eu/Beast_Sound_Gallery">Sound Archive</a>
+- <a href="http://beast.testbit.eu/Beast_Help_Desk">Help Desk</a>
+- <a href="http://beast.testbit.eu/Beast_FAQ">Beast FAQ</a>
+- <a href="http://beast.testbit.eu/Beast-Quickstart">Quickstart Guide</a>
+- <a href="http://beast.testbit.eu/Beast_Feature_Requests">Feature Requests</a>
+- <a href="http://beast.testbit.eu/Beast_Use_Cases">Community Input</a>
+- <a href="http://beast.testbit.eu/Synthesis_Links">Synthesis Links</a>
+
+*/

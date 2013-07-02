@@ -142,19 +142,19 @@ static const GxkStockAction library_files_actions[] = {
 static const GxkStockAction simple_help_actions[] = {
   { N_("Document _Index..."),   NULL,           N_("Provide an overview of all BEAST documentation contents"),
     ACTION_HELP_INDEX,          BST_STOCK_DOC_INDEX },
-  { N_("_Quick Start..."),      NULL,           N_("Provides an introduction about how to accomplish the most common tasks"),
-    ACTION_HELP_QUICK_START,    BST_STOCK_HELP },
-  { N_("_FAQ..."),              NULL,           N_("Answers to frequently asked questions"),
-    ACTION_HELP_FAQ,            BST_STOCK_DOC_FAQ },
+  { N_("_Release Notes..."),    NULL,           N_("Notes and informations about this release cycle"),
+    ACTION_HELP_RELEASE_NOTES,  BST_STOCK_DOC_NEWS },
   { N_("_Beast Website..."),    NULL,           N_("Start a web browser pointing to the BEAST website"),
     ACTION_URL_BEAST_SITE,      BST_STOCK_ONLINE_BEAST_SITE },
+  { N_("_FAQ..."),              NULL,           N_("Answers to frequently asked questions"),
+    ACTION_HELP_FAQ,            BST_STOCK_DOC_FAQ },
+  { N_("_Quick Start..."),      NULL,           N_("Provides an introduction about how to accomplish the most common tasks"),
+    ACTION_HELP_QUICK_START,    BST_STOCK_HELP },
   { N_("Online _Help Desk..."), NULL,           N_("Start a web browser pointing to the online help desk at the BEAST website"),
     ACTION_URL_HELP_DESK,       BST_STOCK_ONLINE_HELP_DESK },
   { N_("Report a Beast Bug..."),NULL,           N_("Start a web browser with the bug report form for the BEAST bugzilla product"),
     ACTION_URL_REPORT_BUG,      BST_STOCK_ONLINE_BUGS },
 #if 0
-  { N_("_Release Notes..."),    NULL,           N_("Notes and informations about this release cycle"),
-    ACTION_HELP_RELEASE_NOTES,  BST_STOCK_DOC_NEWS },
   { N_("Developing Plugins..."),NULL,           N_("A guide to synthesis plugin development"),
     ACTION_HELP_PLUGIN_DEVEL,   BST_STOCK_DOC_DEVEL },
   { N_("DSP Engine..."),        NULL,           N_("Technical description of the multi-threaded synthesis engine innards"),
@@ -1038,31 +1038,19 @@ app_action_exec (gpointer data,
       gtk_widget_queue_draw (GTK_WIDGET (self->notebook));
       break;
     case ACTION_HELP_INDEX:
-      docs_url = "html/beast-index.html";
+      docs_url = "html/index.html";
       docs_title = "BEAST Index";
       goto BROWSE_LOCAL_URL;
-    case ACTION_HELP_FAQ:
-      docs_url = "html/Beast_FAQ.html";
-      docs_title = "BEAST FAQ";
-      goto BROWSE_LOCAL_URL;
-    case ACTION_HELP_QUICK_START:
-      docs_url = "html/Beast-Quickstart.html";
-      docs_title = "BEAST Quick Start Guide";
-      goto BROWSE_LOCAL_URL;
     case ACTION_HELP_RELEASE_NOTES:
-      docs_url = "html/release-notes.html";
+      docs_url = "html/beast-NEWS.html";
       docs_title = "BEAST Release Notes";
       goto BROWSE_LOCAL_URL;
     case ACTION_HELP_DSP_ENGINE:
       docs_url = "html/engine-mplan.html";
       docs_title = "BEAST DSP Engine";
       goto BROWSE_LOCAL_URL;
-    case ACTION_HELP_PLUGIN_DEVEL:
-      docs_url = "html/plugin-devel.html";
-      docs_title = "BEAST Plugin Development";
-      goto BROWSE_LOCAL_URL;
     case ACTION_HELP_DEVELOPMENT:
-      docs_url = "html/beast-index.html#development";
+      docs_url = "html/index.html";
       docs_title = "BEAST Development Index";
       goto BROWSE_LOCAL_URL;
     BROWSE_LOCAL_URL:
@@ -1072,6 +1060,15 @@ app_action_exec (gpointer data,
           sfi_url_show_with_cookie (local_url, docs_title, self->cookie);
           g_free (local_url);
         }
+      break;
+    case ACTION_HELP_FAQ:
+      sfi_url_show ("http://beast.testbit.eu/Beast_FAQ");
+      break;
+    case ACTION_HELP_QUICK_START:
+      sfi_url_show ("http://beast.testbit.eu/Beast-Quickstart");
+      break;
+    case ACTION_HELP_PLUGIN_DEVEL:
+      sfi_url_show ("http://beast.testbit.eu/BSE_Plugin_Development");
       break;
     case ACTION_HELP_ABOUT:
       beast_show_about_box ();
