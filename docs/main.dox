@@ -2,8 +2,8 @@
 /*! @mainpage
 
 @section documents Documents
-- <a href="ReleaseNews.html"><b>Release News</b></a> - List of updates per release version
-- <a href="ChangeLog.html"><b>ChangeLog</b></a> - Beast Development ChangeLog
+- <a href="beast-NEWS.html"><b>Release News</b></a> - List of updates per release version
+- <a href="beast-ChangeLog.html"><b>ChangeLog</b></a> - Beast Development ChangeLog
 
 @section manpages Manual Pages
 - <a href="beast.1.html"><b>Beast</b></a> - Better Audio System
