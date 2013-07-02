@@ -24,6 +24,8 @@ htmldocs_DATA = html/doc-version		# build dependency for doxygen docs
 htmlparent    = $(if $(findstring \#, ..\@INGIT@..), $(srcdir), $(builddir))
 install-data-hook: @INGIT@ $(htmldocs_DATA)
 	umask 022 && cp -RP $(htmlparent)/html/ "$(DESTDIR)$(htmldocsbase)/"
+	chmod -R u+w "$(DESTDIR)$(htmldocsbase)/"
+# u+w is needed for uninstall (distcheck enforces read-only srcdir contents)
 uninstall-local:
 	rm -Rf "$(DESTDIR)$(htmldocsbase)/html/"
 
