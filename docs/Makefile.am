@@ -21,8 +21,9 @@ EXTRA_DIST += bse-categories.txt interpolation.txt ChangeLog.svn
 htmldocsbase  = ${docdir}
 htmldocsdir   = ${htmldocsbase}/html
 htmldocs_DATA = html/doc-version		# build dependency for doxygen docs
-install-data-hook: @INGIT@ html/doc-version
-	umask 022 && cp -RP html/ "$(DESTDIR)$(htmldocsbase)/"
+htmlparent    = $(if $(findstring \#, ..\@INGIT@..), $(srcdir), $(builddir))
+install-data-hook: @INGIT@ $(htmldocs_DATA)
+	umask 022 && cp -RP $(htmlparent)/html/ "$(DESTDIR)$(htmldocsbase)/"
 uninstall-local:
 	rm -Rf "$(DESTDIR)$(htmldocsbase)/html/"
 
