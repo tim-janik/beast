@@ -313,7 +313,7 @@ GENERATED += bseserverapi.cc
 
 
 # == GENERATED targets ==
-bseutils.lo: $(GENERATED)	# need dependency to force file generation
+$(libbse_la_OBJECTS): $(GENERATED)	# need dependency to force file generation
 generated: clean-generated $(GENERATED)
 	$(Q) $(MAKE) $(AM_MAKEFLAGS) clean-generated
 	$(Q) $(MAKE) generated-files
