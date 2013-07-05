@@ -45,6 +45,8 @@ interface Compressor : Effect {
     Real output       = SfiReal ("", "", 1, 0.1, 10.0, 1, "w");
   };
 };
+
 }; // Arts
 }; // Bse
+
 /* vim:set ts=8 sw=2 sts=2 syntax=cpp: */

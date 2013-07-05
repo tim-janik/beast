@@ -2,19 +2,23 @@
 #include "bseutils.hh"
 #include "bsemain.hh"
 #include "bsemathsignal.hh"
+
 #define	PREC_SHIFT	16
 #define	FLF	"26.20"
+
 static void
 print_int (const char *name,
            int         integer)
 {
   g_print ("%s =%-4d\n", name, integer);
 }
+
 static void
 print_note (const char *note_name,
 	    int         note)
 {
   char *string;
+
   string = bse_note_to_string (note);
   g_print ("%s =%-4d \tfactor=%" FLF "f [%-5s] (freq=%" FLF "f)\n",
 	   note_name, note,
@@ -22,6 +26,7 @@ print_note (const char *note_name,
 	   string, bse_note_to_freq (BSE_MUSICAL_TUNING_12_TET, note));
   g_free (string);
 }
+
 static void
 print_fine_tune (const char *tune_name,
 		 int         tune)
@@ -36,7 +41,7 @@ main (int   argc,
 {
   int j, k;
   g_thread_init (NULL);
-  bse_init_inprocess (&argc, &argv, "BseInfo", NULL);
+  bse_init_inprocess (&argc, argv, "BseInfo");
   g_print ("Rate relevant limits:\n");
   print_int       ("BSE_MIN_OCTAVE   ", BSE_MIN_OCTAVE);
   print_int       ("BSE_MAX_OCTAVE   ", BSE_MAX_OCTAVE);
@@ -48,12 +53,14 @@ main (int   argc,
   print_fine_tune ("bse-mid-fine-tune", (BSE_MIN_FINE_TUNE + BSE_MAX_FINE_TUNE) / 2);
   print_fine_tune ("BSE_MAX_FINE_TUNE", BSE_MAX_FINE_TUNE);
   print_note      ("BSE_KAMMER_NOTE+1", BSE_KAMMER_NOTE + 1);
+
   if (0)
     for (j = BSE_MIN_NOTE; j <= BSE_MAX_NOTE; j += 3)
       print_note (":", j);
   if (0)
     for (j = BSE_MIN_FINE_TUNE; j <= BSE_MAX_FINE_TUNE; j += 10)
       print_fine_tune (":", j);
+
   if (0)
     for (j = BSE_MIN_NOTE; j <= BSE_MAX_NOTE; j += 3)
       for (k = BSE_MIN_FINE_TUNE / 2; k <= BSE_MAX_FINE_TUNE / 2; k += 10)
@@ -74,10 +81,12 @@ main (int   argc,
 	int semitone = SFI_NOTE_SEMITONE (j);
 	int note = BSE_NOTE_GENERIC (octave, semitone);
 	char *name = bse_note_to_string (j);
+
 	g_print ("note[%3d]: name=%-8s octave=%3d semitone=%3d note=%3d match=%u\n",
 		 j, name, octave, semitone, note, j == note);
 	g_free (name);
       }
+
   if (argc == 2)
     {
       SfiRing *ring;
@@ -90,5 +99,6 @@ main (int   argc,
           g_print ("%s\n", name);
         }
     }
+
   return 0;
 }

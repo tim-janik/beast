@@ -3,17 +3,17 @@
 #define __BST_USER_MESSAGE_H__
 #include	"bstutils.hh"
 G_BEGIN_DECLS
+
 /* --- structures --- */
 typedef enum {
-  BST_MSG_NONE          = SFI_MSG_NONE,
-  BST_MSG_ALWAYS        = SFI_MSG_ALWAYS,
-  BST_MSG_ERROR         = SFI_MSG_ERROR,
-  BST_MSG_WARNING       = SFI_MSG_WARNING,
-  BST_MSG_SCRIPT        = SFI_MSG_SCRIPT,
-  BST_MSG_INFO          = SFI_MSG_INFO,
-  BST_MSG_DIAG          = SFI_MSG_DIAG,
-  BST_MSG_DEBUG         = SFI_MSG_DEBUG,
+  BST_MSG_ERROR         = Bse::ERROR,
+  BST_MSG_WARNING       = Bse::WARNING,
+  BST_MSG_INFO          = Bse::INFO,
+  BST_MSG_DEBUG         = Bse::DEBUG,
+  BST_MSG_SCRIPT,
 } BstMsgType;
+const char* bst_msg_type_ident (BstMsgType);
+
 typedef struct {
   guint             id;
   gchar            *text;
@@ -36,25 +36,24 @@ typedef struct {
   guint          n_msg_bits;
   BstMsgBit    **msg_bits;
 } BstMessage;
+
 typedef struct {
   guint        type;
   const gchar *ident;
   const gchar *label; /* maybe NULL */
 } BstMsgID;
+
 /* --- prototypes --- */
 void              bst_message_connect_to_server	(void);
 void              bst_message_dialogs_popdown	(void);
 guint             bst_message_handler           (const BstMessage       *message);
-void              bst_message_synth_msg_handler (const BseMessage       *umsg);
-const BstMsgID*   bst_message_list_types        (guint                  *n_types);
 guint             bst_message_dialog_display    (const char             *log_domain,
                                                  BstMsgType              type,
                                                  guint                   n_bits,
                                                  BstMsgBit             **bits);
 void              bst_msg_bit_free              (BstMsgBit              *mbit);
-BstMsgBit*        bst_msg_bit_printf            (guint8                  msg_part_id,
-                                                 const char             *format,
-                                                 ...) G_GNUC_PRINTF (2, 3);
+#define           bst_msg_bit_printf(msg_part_id, ...)  bst_msg_bit_create (msg_part_id, Rapicorn::string_format (__VA_ARGS__))
+BstMsgBit*        bst_msg_bit_create            (guint8 msg_part_id, const std::string &text);
 BstMsgBit*        bst_msg_bit_create_choice     (guint                   id,
                                                  const gchar            *name,
                                                  const gchar            *stock_icon,
@@ -74,11 +73,12 @@ BstMsgBit*        bst_msg_bit_create_choice     (guint                   id,
 #define BST_MSG_CHOICE(id, name, stock_icon)    bst_msg_bit_create_choice (id, name, stock_icon, "C")          /* choice */
 #define BST_MSG_CHOICE_D(id, name, stock_icon)  bst_msg_bit_create_choice (id, name, stock_icon, "D")          /* default */
 #define BST_MSG_CHOICE_S(id, name, sticn, sens) bst_msg_bit_create_choice (id, name, sticn, (sens) ? "" : "I") /* insensitive */
-#define BST_MSG_DIALOG(lvl, ...)                ({ BstMsgType __mt = lvl; uint __result = 0;                    \
-                                                  if (sfi_msg_check (SfiMsgType (__mt))) {                      \
-                                                     BstMsgBit *__ba[] = { __VA_ARGS__ };                       \
-                                                     __result = bst_message_dialog_display (BIRNET_LOG_DOMAIN,  \
-                                                                 __mt, BIRNET_ARRAY_SIZE (__ba), __ba); }       \
+#define BST_MSG_DIALOG(lvl, ...)                ({ BstMsgType __mt = lvl; uint __result = 0;                  \
+                                                   BstMsgBit *__ba[] = { __VA_ARGS__ };                       \
+                                                   __result = bst_message_dialog_display ("BEAST",  \
+                                                               __mt, RAPICORN_ARRAY_SIZE (__ba), __ba);         \
                                                    __result; })
+
 G_END_DECLS
+
 #endif	/* __BST_USER_MESSAGE_H__ */

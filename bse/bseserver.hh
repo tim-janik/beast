@@ -1,10 +1,13 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #ifndef __BSE_SERVER_H__
 #define __BSE_SERVER_H__
-#include        <bse/bsesuper.hh>
-#include        <bse/bsepcmdevice.hh>
-#include        <bse/bsemididevice.hh>
+#include <bse/bsesuper.hh>
+#include <bse/bsepcmdevice.hh>
+#include <bse/bsemididevice.hh>
+#include <bse/testobject.hh>
+
 G_BEGIN_DECLS
+
 /* --- BSE type macros --- */
 #define BSE_TYPE_SERVER              (BSE_TYPE_ID (BseServer))
 #define BSE_SERVER(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), BSE_TYPE_SERVER, BseServer))
@@ -69,6 +72,7 @@ void		bse_server_add_io_watch			(BseServer	*server,
 void		bse_server_remove_io_watch		(BseServer	*server,
 							 BseIOWatch	 watch_func,
 							 gpointer	 data);
+
 /* --- internal --- */
 void		bse_server_registration			(BseServer          *server,
 							 BseRegistrationType rtype,
@@ -80,19 +84,6 @@ void		bse_server_script_error			(BseServer	    *server,
 							 const gchar	    *script_name,
 							 const gchar	    *proc_name,
 							 const gchar        *reason);
-void		bse_server_send_message	                (BseServer	    *server,
-                                                         const BseMessage   *umsg);
-void		bse_server_message		        (BseServer	    *server,
-                                                         const gchar        *log_domain,
-                                                         BseMsgType          msg_type,
-                                                         const gchar        *title,
-                                                         const gchar        *primary,
-                                                         const gchar        *secondary,
-                                                         const gchar        *details,
-                                                         const gchar        *config_blurb,
-                                                         BseJanitor         *janitor,
-                                                         const gchar        *process_name,
-                                                         gint                pid);
 BseErrorType	bse_server_run_remote			(BseServer	    *server,
 							 const gchar	    *process_name,
 							 SfiRing	    *params,
@@ -103,4 +94,21 @@ void		bse_server_queue_kill_wire		(BseServer	    *server,
 							 SfiComWire	    *wire);
 void		bse_server_notify_gconfig		(BseServer	    *server);
 G_END_DECLS
+
+
+namespace Bse {
+
+class ServerImpl : public ServerIface {
+  TestObjectImplP    test_object_;
+protected:
+  explicit           ServerImpl ();
+  virtual           ~ServerImpl ();
+public:
+  virtual TestObjectIface* get_test_object ();
+  static ServerImpl&       instance        ();
+  void                     send_user_message (const UserMessage &umsg);
+};
+
+} // Bse
+
 #endif /* __BSE_SERVER_H__ */

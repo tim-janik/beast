@@ -1,9 +1,9 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #ifndef __BST_BSE_UTILS_H__
 #define __BST_BSE_UTILS_H__
-#include <sfi/sfi.hh> /* needed by bstgenbseapi.h */
+#include <sfi/sfi.hh> /* needed by bstoldbseapi.h */
 G_BEGIN_DECLS
-#include "bstgenbseapi.h" /* include this within extern "C" */
+#include "bstoldbseapi.h" /* include this within extern "C" */
 /* --- BSE utilities --- */
 #define BSE_SERVER                              (1 /* HACK */ )
 #define bse_proxy_set_property                  sfi_glue_proxy_set_property
@@ -24,6 +24,7 @@ G_BEGIN_DECLS
 #define bse_proxy_get_data(p,n)                 bse_proxy_get_qdata ((p), g_quark_try_string (n))
 #define bse_proxy_steal_data(p,n)               bse_proxy_steal_qdata ((p), g_quark_try_string (n))
 #define bse_proxy_set_data_full(p,n,d,f)        bse_proxy_set_qdata_full ((p), g_quark_from_string (n), (d), (f))
+
 /* --- BEAST utilities --- */
 BseErrorType    bst_project_restore_from_file   (SfiProxy        project,
                                                  const gchar    *file_name,
@@ -32,5 +33,7 @@ BseErrorType    bst_project_restore_from_file   (SfiProxy        project,
 BseErrorType    bst_project_import_midi_file    (SfiProxy        project,
                                                  const gchar    *file_name);
 const gchar*    bst_procedure_get_title         (const gchar    *procedure);
+
 G_END_DECLS
+
 #endif /* __BST_BSE_UTILS_H__ */

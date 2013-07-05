@@ -1,9 +1,12 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #ifndef __SFI_STORE_H__
 #define __SFI_STORE_H__
+
 #include <sfi/sfivalues.hh>
 #include <sfi/sfiring.hh>
+
 G_BEGIN_DECLS
+
 /* --- typedefs and structures --- */
 typedef gint /* -errno || length */ (*SfiStoreReadBin)  (gpointer        data,
                                                          void           *buffer,
@@ -32,6 +35,8 @@ struct _SfiRStore
   gpointer       parser_this;
   SfiNum         bin_offset;
 };
+
+
 /* --- writable store --- */
 SfiWStore*      sfi_wstore_new                (void);
 void            sfi_wstore_destroy            (SfiWStore      *wstore);
@@ -42,9 +47,7 @@ void            sfi_wstore_puts               (SfiWStore      *wstore,
                                                const gchar    *string);
 void            sfi_wstore_putc               (SfiWStore      *wstore,
                                                gchar           character);
-void            sfi_wstore_printf             (SfiWStore      *wstore,
-                                               const gchar    *format,
-                                               ...) G_GNUC_PRINTF (2, 3);
+#define         sfi_wstore_printf(wstore, ...)  sfi_wstore_puts (wstore, Rapicorn::string_format (__VA_ARGS__).c_str())
 void            sfi_wstore_putf               (SfiWStore      *wstore,
                                                gfloat          vfloat);
 void            sfi_wstore_putd               (SfiWStore      *wstore,
@@ -62,6 +65,8 @@ gint /*-errno*/ sfi_wstore_flush_fd           (SfiWStore      *wstore,
                                                gint            fd);
 const gchar*    sfi_wstore_peek_text          (SfiWStore      *wstore,
                                                guint          *length);
+
+
 /* --- readable store --- */
 SfiRStore*      sfi_rstore_new                (void);
 SfiRStore*      sfi_rstore_new_open           (const gchar    *fname);
@@ -93,23 +98,19 @@ guint           sfi_rstore_parse_all          (SfiRStore      *rstore,
                                                gpointer        context_data,
                                                SfiStoreParser  try_statement,
                                                gpointer        user_data);
-void            sfi_rstore_error              (SfiRStore      *rstore,
-                                               const gchar    *format,
-                                               ...) G_GNUC_PRINTF (2,3);
+void            sfi_rstore_error              (SfiRStore *rstore, const std::string &msg);
 void            sfi_rstore_unexp_token        (SfiRStore      *rstore,
                                                GTokenType      expected_token);
-void            sfi_rstore_warn               (SfiRStore      *rstore,
-                                               const gchar    *format,
-                                               ...) G_GNUC_PRINTF (2,3);
-GTokenType      sfi_rstore_warn_skip          (SfiRStore      *rstore,
-                                               const gchar    *format,
-                                               ...) G_GNUC_PRINTF (2,3);
+void            sfi_rstore_warn               (SfiRStore *rstore, const std::string &msg);
+GTokenType      sfi_rstore_warn_skip          (SfiRStore *rstore, const std::string &msg);
 typedef gboolean (SfiRStoreQuickScan)         (SfiRStore      *rstore,
                                                gpointer        data);
 void            sfi_rstore_quick_scan         (SfiRStore      *rstore,
                                                const gchar    *identifier,
                                                SfiRStoreQuickScan qcheck,
                                                gpointer        data);
+
+
 /* --- convenience --- */
 #define sfi_scanner_parse_or_return(scanner, token)  G_STMT_START {     \
   GTokenType _t = GTokenType (token);                                   \
@@ -125,6 +126,7 @@ void            sfi_rstore_quick_scan         (SfiRStore      *rstore,
       return _t;                                                        \
     }                                                                   \
 } G_STMT_END
+
 G_END_DECLS
+
 #endif /* __SFI_STORE_H__ */
-/* vim:set ts=8 sts=2 sw=2: */

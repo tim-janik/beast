@@ -1,3 +1,15 @@
+Overview of Changes in BEAST/BSE 0.8.2:
+
+* Introduced Rapicorn1307 dependency.
+* Establish Aida remote interfacing between Beast and BSE.
+* Removed birnet/ sublibrary entirely, replaced with Rapicorn uses.
+* Added support for loading and saving of FLAC encoded samples. [stw]
+* Ported code to use Rapicorn's type safe cxxprintf instead of vprintf.
+* Lots of documentation improvements and fixes.
+* Automatization of documentation builds documentation uploads.
+* Beast now ships complete documentation builds in tarballs.
+
+
 Overview of Changes in BEAST/BSE 0.8.0:		(2013-03-25)
 
 * Added use of the Rapicorn library, require version 13.0.0.
@@ -7,6 +19,7 @@ Overview of Changes in BEAST/BSE 0.8.0:		(2013-03-25)
 * Major documentation improvements, see: http://dev.testbit.eu/beast/latest/
 * Fixed printf format-security issues (#665097). [Alessio Treglia]
 * Lots of code cleanups, licensing cleanups.
+
 
 Overview of Changes in BEAST/BSE 0.7.8:
 
@@ -21,6 +34,7 @@ Overview of Changes in BEAST/BSE 0.7.8:
 * Extended MIDI device listing.
 * Improved Beast startup time.
 
+
 Overview of Changes in BEAST/BSE 0.7.6:
 
 * Packaging fixups, download and integrate documentation from beast wiki.
@@ -30,6 +44,7 @@ Overview of Changes in BEAST/BSE 0.7.6:
 * Build documentation with doxygen.
 * Code fixups for g++-4.4, g++-4.7.
 * Improved DavOrgan frequency handling.
+
 
 Overview of Changes in BEAST/BSE 0.7.4:
 
@@ -48,6 +63,7 @@ Overview of Changes in BEAST/BSE 0.7.4:
 * Updated German translation.
 * Updated Norwegian bokmål translation [Kjartan Maraas]
 * Added e-Telugu translation [Veeven]
+
 
 Overview of Changes in BEAST/BSE 0.7.2:
 
@@ -88,6 +104,7 @@ Overview of Changes in BEAST/BSE 0.7.2:
 * Added Norwegian bokmal translation [Kjartan Maraas]
 * Added Ukrainian translation [Maxim V. Dziumanenko]
 
+
 Overview of Changes in BEAST/BSE 0.7.1:
 
 * Fixed SUID security vulnerability by validating success of seteuid/setreuid,
@@ -123,6 +140,7 @@ Overview of Changes in BEAST/BSE 0.7.1:
 * Other bug fixes: #364041 #386862 #387364 #336366 #353135 #353442
 * Fixes for gcc-3.3 and GNU/kFreeBSD
 * Updated Italian translation [Petrecca Michele]
+
 
 Overview of Changes in BEAST/BSE 0.7.0:
 
@@ -165,6 +183,7 @@ Overview of Changes in BEAST/BSE 0.7.0:
 * Updated Swedish translation [Daniel Nylander]
 * Added Nepali translation [Pawan Chitrakar]
 
+
 Overview of Changes in BEAST/BSE 0.6.6:
 
 * Improved error messages
@@ -182,6 +201,7 @@ Overview of Changes in BEAST/BSE 0.6.6:
 * Updated Italian translation [Petrecca Michele]
 * Updated Spanish translation [Francisco Javier F. Serrador]
 * Added Basque translation [Hizkuntza Politikarako Sailburuordetza]
+
 
 Overview of Changes in BEAST/BSE 0.6.5:
 
@@ -211,6 +231,7 @@ Overview of Changes in BEAST/BSE 0.6.5:
 * Added Bulgarian translation [Iassen Pramatarov]
 * Added Kinyarwanda translation [Steve Murphy]
 
+
 Overview of Changes in BEAST/BSE 0.6.4:
 
 * Fixed storage logic that caused data loss when overwriting BSE files
@@ -225,6 +246,7 @@ Overview of Changes in BEAST/BSE 0.6.4:
 * Updated Czech translation [Miloslav Trmac]
 * Updated Dutch translation [Tino Meinen]
 * Updated Spanish translation [Jorge Gonzalez]
+
 
 Overview of Changes in BEAST/BSE 0.6.3:
 
@@ -269,6 +291,7 @@ Overview of Changes in BEAST/BSE 0.6.3:
 * Added Esperanto translation [Artem Popov]
 * Added Italian translation [Petrecca Michele]
 
+
 Overview of Changes in BEAST/BSE 0.6.2:
 
 * Rewrote scrollbar sizing, so tracks and parts are easily resizable
@@ -296,6 +319,7 @@ Overview of Changes in BEAST/BSE 0.6.2:
 * Fixed user configurable debugging support
 * Lots of adaptions to GLib/Gtk+-2.4
 
+
 Overview of Changes in BEAST/BSE 0.6.1:
 
 * Added suid wrapper which acquires nice level -20, then drops privileges
@@ -318,6 +342,7 @@ Overview of Changes in BEAST/BSE 0.6.1:
 * Updated Dutch translation [Kees van den Broek]
 * FreeBSD fixes [Rasmus Kaj]
 * Lots of GUI fixes
+
 
 Overview of Changes in BEAST/BSE 0.6.0:
 
@@ -345,6 +370,7 @@ Overview of Changes in BEAST/BSE 0.6.0:
 * Added Mongolian translation [Dulmandakh Sukhbaatar]
 * Added sfidl documentation [Stefan Westerfeld]
 * Miscellaneous bug fixes and cleanups
+
 
 Overview of Changes in BEAST/BSE 0.5.6:
 
@@ -385,6 +411,7 @@ Overview of Changes in BEAST/BSE 0.5.6:
 * Added "About" box
 * Miscellaneous bug fixes, lots of code cleanups
 
+
 Overview of Changes in BEAST/BSE 0.5.5:
 
 * New (or ported) modules:
@@ -418,6 +445,7 @@ Overview of Changes in BEAST/BSE 0.5.5:
 * Added Dutch translation [Vincent van Adrighem]
 * Lots of bug fixes
 
+
 Overview of Changes in BEAST/BSE 0.5.4:
 
 * Ported and improved synthesis module from David A. Bartold:
@@ -429,12 +457,14 @@ Overview of Changes in BEAST/BSE 0.5.4:
 * Fixes to compile on NetBSD
 * Miscellaneous bug fixes
 
+
 Overview of Changes in BEAST/BSE 0.5.3:
 
 * Seperated core plugin loading from LADSPA plugin loading
 * Fixed memory leaks in various places
 * Added child process (bsesh) error monitoring
 * Fixed bsesh (script) communication for systems with short writes
+
 
 Overview of Changes in BEAST/BSE 0.5.2:
 
@@ -455,6 +485,7 @@ Overview of Changes in BEAST/BSE 0.5.2:
 * Bug fixes for 64bit archs [Sam Hocevar]
 * Miscellaneous major and minor code fixes
 
+
 Overview of Changes in BEAST/BSE 0.5.1:
 
 * Added support for LADSPA plugins
@@ -462,6 +493,7 @@ Overview of Changes in BEAST/BSE 0.5.1:
 * Documentation fixes
 * Added support for dsp[0-3] and midi[0-3] devices
 * Fixed memory leaks during playback
+
 
 Overview of Changes in BEAST/BSE 0.5.0:
 
@@ -478,6 +510,7 @@ Overview of Changes in BEAST/BSE 0.5.0:
 * Major code cleanups, bug fixes and refactoring
 * Lots of GUI fixes, improvements and revamps
 * Bug fixes and major cleanups
+
 
 Overview of Changes in BEAST/BSE 0.4.1:
 
@@ -519,6 +552,7 @@ Overview of Changes in BEAST/BSE 0.4.1:
 * Moved the BSE type system into GLib-2.0 as GObject
 * A huge amount of bug fixes
 
+
 Overview of Changes in BEAST/BSE 0.4.0:
 
 * Various effects are supported for sequencer notes now
@@ -531,12 +565,14 @@ Overview of Changes in BEAST/BSE 0.4.0:
   DavGuitar     - physical modelling acoustic guitar
   DavChorus     - chorusing filter
 
+
 Overview of Changes in BEAST/BSE 0.3.3:
 
 * Fixed font specification in pattern editor
 * GNOME Canvas redrawing workarounds
 * Libart hang workaround
 * Libtool update
+
 
 Overview of Changes in BEAST/BSE 0.3.2:
 
@@ -559,6 +595,7 @@ Overview of Changes in BEAST/BSE 0.3.2:
 * More test files in the test/ subdirectory ;)
 * Vast amounts of code cleanups and bug fixes ;)
 
+
 Overview of Changes in BEAST/BSE 0.3.1:
 
 * Fixed a dumb major bug in the ALSA backend that could prevent
@@ -574,6 +611,7 @@ Overview of Changes in BEAST/BSE 0.3.1:
 * Random GUI improvements
 * ALSA 0.5.0 support
 * Miscellaneous minor bugfixes
+
 
 What's new in BEAST/BSE 0.3.0:
 

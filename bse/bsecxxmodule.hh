@@ -1,9 +1,12 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #ifndef __BSE_CXX_MODULE_H__
 #define __BSE_CXX_MODULE_H__
+
 #include <bse/bsecxxbase.hh>
 #include <bse/bseieee754.hh>
+
 namespace Bse {
+
 /* enums/structures mirrored from bseengine.hh */
 enum ProcessCost {
   NORMAL,
@@ -24,7 +27,9 @@ struct OStream {
   float        *values;
   gboolean      connected;
 };
+
 class Effect;
+
 class SynthesisModule {
   template<class T, typename P> class ClosureP1; /* 1-argument member function closure */
   BseModule     *intern_module;
@@ -81,6 +86,7 @@ protected:
     static void auto_update_accessor (BseModule*, gpointer);
   };
 };
+
 #define BSE_TYPE_EFFECT         (BSE_CXX_TYPE_GET_REGISTERED (Bse, Effect))
 class EffectBase : public CxxBase {};
 class Effect : public EffectBase {
@@ -123,6 +129,7 @@ public:
   virtual void  prepare2()      { /* override this to do something after parent class prepare */ }
   virtual void  reset1()        { /* override this to do something before parent class dismiss */ }
   virtual void  reset2()        { /* override this to do something after parent class dismiss */ }
+
   static void               class_init                 (CxxBaseClass    *klass);
 protected:
   const BseModuleClass*     create_engine_class        (SynthesisModule *sample_module,
@@ -182,6 +189,8 @@ auto_update_accessor (BseModule *bmodule,
                       gpointer   data)
 {
 }
+
+
 /* --- implementation details --- */
 namespace externC { extern "C" {
 extern guint bse_engine_exvar_sample_freq;
@@ -255,5 +264,7 @@ SynthesisModule::make_closure (void   (C::*method) (D*),
   ClosureP1<C,D> *ac = new ClosureP1<C,D> (method, d);
   return ac;
 }
+
 } // Bse
+
 #endif /* __BSE_CXX_MODULE_H__ */

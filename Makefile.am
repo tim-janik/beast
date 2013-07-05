@@ -1,7 +1,7 @@
 # BEAST/BSE - Better Audio System / Better Sound Engine
 include $(top_srcdir)/Makefile.decl
 
-SUBDIRS = . data birnet sfi bse plugins drivers shell beast-gtk launchers library tools po tests docs
+SUBDIRS = . data sfi bse plugins drivers shell beast-gtk launchers library tools po tests docs
 
 noinst_DATA =
 
@@ -12,8 +12,6 @@ ACLOCAL_AMFLAGS = -I autotools
 site site-preview site-update site-update-all site-update-pages site-update-galleries:
 	@$(MAKE) -C web/ $(AM_MAKEFLAGS) $@
 
-# extra dependencies
-configure: birnet/acbirnet.m4 birnet/configure.inc
 MAINTAINERCLEANFILES += configure
 
 EXTRA_DIST += $(strip		\

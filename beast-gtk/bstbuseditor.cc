@@ -3,12 +3,16 @@
 #include "bstparam.hh"
 #include "bstitemseqdialog.hh" // FIXME
 #include "bstsnifferscope.hh" // FIXME
+
+
 /* --- prototypes --- */
 static void     bus_editor_action_exec           (gpointer                data,
                                                   gulong                  action);
 static gboolean bus_editor_action_check          (gpointer                data,
                                                   gulong                  action,
                                                   guint64                 action_stamp);
+
+
 /* --- bus actions --- */
 enum {
   ACTION_ADD_BUS,
@@ -20,8 +24,11 @@ static const GxkStockAction bus_editor_actions[] = {
   { N_("Delete"),       NULL,   NULL,   ACTION_DELETE_BUS,     BST_STOCK_TRASHCAN },
   { N_("Editor"),       NULL,   NULL,   ACTION_EDIT_BUS,       BST_STOCK_PART_EDITOR },
 };
+
+
 /* --- functions --- */
 G_DEFINE_TYPE (BstBusEditor, bst_bus_editor, GTK_TYPE_ALIGNMENT);
+
 static void
 bst_bus_editor_init (BstBusEditor *self)
 {
@@ -32,6 +39,7 @@ bst_bus_editor_init (BstBusEditor *self)
                               G_N_ELEMENTS (bus_editor_actions), bus_editor_actions,
                               NULL, bus_editor_action_check, bus_editor_action_exec);
 }
+
 static void
 bst_bus_editor_destroy (GtkObject *object)
 {
@@ -39,6 +47,7 @@ bst_bus_editor_destroy (GtkObject *object)
   bst_bus_editor_set_bus (self, 0);
   GTK_OBJECT_CLASS (bst_bus_editor_parent_class)->destroy (object);
 }
+
 static void
 bst_bus_editor_finalize (GObject *object)
 {
@@ -46,6 +55,7 @@ bst_bus_editor_finalize (GObject *object)
   bst_bus_editor_set_bus (self, 0);
   G_OBJECT_CLASS (bst_bus_editor_parent_class)->finalize (object);
 }
+
 GtkWidget*
 bst_bus_editor_new (SfiProxy bus)
 {
@@ -55,6 +65,7 @@ bst_bus_editor_new (SfiProxy bus)
   bst_bus_editor_set_bus (self, bus);
   return widget;
 }
+
 static void
 bus_editor_release_item (SfiProxy      item,
                          BstBusEditor *self)
@@ -62,6 +73,7 @@ bus_editor_release_item (SfiProxy      item,
   g_assert (self->item == item);
   bst_bus_editor_set_bus (self, 0);
 }
+
 static void
 bus_probes_notify (SfiProxy     bus,
                    SfiSeq      *sseq,
@@ -84,6 +96,7 @@ bus_probes_notify (SfiProxy     bus,
   bst_source_queue_probe_request (self->item, 1, BST_SOURCE_PROBE_ENERGIE, 20.0);
   bse_probe_seq_free (pseq);
 }
+
 static GtkWidget*
 bus_build_param (BstBusEditor *self,
                  const gchar  *property,
@@ -99,12 +112,14 @@ bus_build_param (BstBusEditor *self,
     g_object_set (gxk_parent_find_descendant (ewidget, GTK_TYPE_LABEL), "label", label, NULL);
   return ewidget;
 }
+
 static gboolean
 grab_focus_and_false (GtkWidget *widget)
 {
   gtk_widget_grab_focus (widget);
   return FALSE;
 }
+
 void
 bst_bus_editor_set_bus (BstBusEditor *self,
                         SfiProxy      item)
@@ -175,6 +190,7 @@ bst_bus_editor_set_bus (BstBusEditor *self,
       bst_source_queue_probe_request (self->item, 1, BST_SOURCE_PROBE_ENERGIE, 20.0);
     }
 }
+
 static void
 bus_editor_action_exec (gpointer data,
                         gulong   action)
@@ -191,6 +207,7 @@ bus_editor_action_exec (gpointer data,
     }
   gxk_widget_update_actions_downwards (self);
 }
+
 static gboolean
 bus_editor_action_check (gpointer data,
                          gulong   action,
@@ -207,11 +224,13 @@ bus_editor_action_check (gpointer data,
       return FALSE;
     }
 }
+
 static void
 bst_bus_editor_class_init (BstBusEditorClass *klass)
 {
   GObjectClass *gobject_class = G_OBJECT_CLASS (klass);
   GtkObjectClass *object_class = GTK_OBJECT_CLASS (klass);
+
   gobject_class->finalize = bst_bus_editor_finalize;
   object_class->destroy = bst_bus_editor_destroy;
 }

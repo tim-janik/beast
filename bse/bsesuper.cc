@@ -1,7 +1,10 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include	"bsesuper.hh"
+
 #include	"bseproject.hh"
 #include	<string.h>
+
+
 enum
 {
   PARAM_0,
@@ -11,11 +14,15 @@ enum
   PARAM_CREATION_TIME,
   PARAM_MOD_TIME
 };
+
+
 /* --- variables --- */
 static GTypeClass	*parent_class = NULL;
 static GQuark		 quark_author = 0;
 static GQuark		 quark_license = 0;
 static GSList		*bse_super_objects = NULL;
+
+
 /* --- functions --- */
 static void
 bse_super_init (BseSuper *super,
@@ -24,7 +31,9 @@ bse_super_init (BseSuper *super,
   super->creation_time = sfi_time_from_utc (sfi_time_system ());
   super->mod_time = super->creation_time;
   super->context_handle = ~0;
+
   bse_super_objects = g_slist_prepend (bse_super_objects, super);
+
   /* we want Unnamed-xxx default unames */
   bse_item_set (super, "uname", "Unnamed", NULL);
   /* default-fill fields */
@@ -35,14 +44,18 @@ bse_super_init (BseSuper *super,
   if (value && value[0])
     bse_item_set (super, "license", value, NULL);
 }
+
 static void
 bse_super_finalize (GObject *object)
 {
   BseSuper *super = BSE_SUPER (object);
+
   bse_super_objects = g_slist_remove (bse_super_objects, super);
+
   /* chain parent class' handler */
   G_OBJECT_CLASS (parent_class)->finalize (object);
 }
+
 static void
 bse_super_set_property (GObject      *object,
 			guint         param_id,
@@ -88,6 +101,7 @@ bse_super_set_property (GObject      *object,
       break;
     }
 }
+
 static void
 bse_super_get_property (GObject     *object,
 			guint        param_id,
@@ -114,12 +128,14 @@ bse_super_get_property (GObject     *object,
       break;
     }
 }
+
 static void
 super_modified (BseSuper *super,
                 SfiTime	 stamp)
 {
   super->mod_time = MAX (super->mod_time, stamp);
 }
+
 static void
 super_compat_setup (BseItem               *item,
                     guint                  vmajor,
@@ -132,6 +148,7 @@ super_compat_setup (BseItem               *item,
                   "license", "",
                   NULL);
 }
+
 static void
 super_compat_finish (BseSuper       *super,
                      guint           vmajor,
@@ -139,6 +156,7 @@ super_compat_finish (BseSuper       *super,
                      guint           vmicro)
 {
 }
+
 static void
 bse_super_class_init (BseSuperClass *klass)
 {
@@ -146,15 +164,20 @@ bse_super_class_init (BseSuperClass *klass)
   BseObjectClass *object_class = BSE_OBJECT_CLASS (klass);
   BseItemClass *item_class = BSE_ITEM_CLASS (klass);
   // BseSourceClass *source_class = BSE_SOURCE_CLASS (klass);
+
   parent_class = (GTypeClass*) g_type_class_peek_parent (klass);
   quark_author = g_quark_from_static_string ("author");
   quark_license = g_quark_from_static_string ("license");
+
   gobject_class->set_property = bse_super_set_property;
   gobject_class->get_property = bse_super_get_property;
   gobject_class->finalize = bse_super_finalize;
+
   item_class->compat_setup = super_compat_setup;
+
   klass->modified = super_modified;
   klass->compat_finish = super_compat_finish;
+
   bse_object_class_add_param (object_class, NULL,
 			      PARAM_AUTHOR,
 			      sfi_pspec_string ("author", _("Author"), _("Person changing or creating this object"),
@@ -177,19 +200,23 @@ bse_super_class_init (BseSuperClass *klass)
 			      sfi_pspec_time ("modification_time", _("Last modification time"), NULL,
 					      SFI_PARAM_STANDARD_RDONLY));
 }
+
 BSE_BUILTIN_TYPE (BseSuper)
 {
   static const GTypeInfo super_info = {
     sizeof (BseSuperClass),
+
     (GBaseInitFunc) NULL,
     (GBaseFinalizeFunc) NULL,
     (GClassInitFunc) bse_super_class_init,
     (GClassFinalizeFunc) NULL,
     NULL /* class_data */,
+
     sizeof (BseSuper),
     0 /* n_preallocs */,
     (GInstanceInitFunc) bse_super_init,
   };
+
   return bse_type_register_abstract (BSE_TYPE_CONTAINER,
                                      "BseSuper",
                                      "Base type for item managers",

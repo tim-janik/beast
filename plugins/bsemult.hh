@@ -1,11 +1,15 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #ifndef __BSE_MULT_H__
 #define __BSE_MULT_H__
+
 #include <bse/bseplugin.hh>
 #include <bse/bsesource.hh>
+
 #ifdef __cplusplus
 extern "C" {
 #endif /* __cplusplus */
+
+
 /* --- object type macros --- */
 #define BSE_TYPE_MULT              (bse_mult_get_type())
 #define BSE_MULT(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), BSE_TYPE_MULT, BseMult))
@@ -31,7 +35,13 @@ enum
 {
   BSE_MULT_OCHANNEL_MONO
 };
+
+
+
+
+
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */
+
 #endif /* __BSE_MULT_H__ */

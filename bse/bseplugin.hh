@@ -1,9 +1,13 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #ifndef __BSE_PLUGIN_H__
 #define __BSE_PLUGIN_H__
+
 #include	<bse/bse.hh>	/* for bse_check_version() */
 #include	<bse/bseexports.hh>
+
 G_BEGIN_DECLS
+
+
 /* --- BSE type macros --- */
 #define BSE_TYPE_PLUGIN              (BSE_TYPE_ID (BsePlugin))
 #define BSE_PLUGIN(plugin)           (G_TYPE_CHECK_INSTANCE_CAST ((plugin), BSE_TYPE_PLUGIN, BsePlugin))
@@ -20,6 +24,7 @@ struct BsePlugin : GObject {
   guint          version_match : 1;
   guint          force_clean : 1;
   guint          resident_types : 1;
+
   BseExportNode *chain;
   guint		 n_types;
   GType  	*types;

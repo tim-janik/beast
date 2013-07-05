@@ -1,8 +1,11 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #ifndef __BSE_INSTRUMENT_OUTPUT_H__
 #define __BSE_INSTRUMENT_OUTPUT_H__
+
 #include <bse/bsesuboport.hh>
+
 G_BEGIN_DECLS
+
 /* --- object type macros --- */
 #define BSE_TYPE_INSTRUMENT_OUTPUT		(BSE_TYPE_ID (BseInstrumentOutput))
 #define BSE_INSTRUMENT_OUTPUT(object)	        (G_TYPE_CHECK_INSTANCE_CAST ((object), BSE_TYPE_INSTRUMENT_OUTPUT, BseInstrumentOutput))
@@ -23,5 +26,7 @@ enum
   BSE_INSTRUMENT_OUTPUT_ICHANNEL_UNUSED,
   BSE_INSTRUMENT_OUTPUT_ICHANNEL_DONE
 };
+
 G_END_DECLS
+
 #endif /* __BSE_INSTRUMENT_OUTPUT_H__ */

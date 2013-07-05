@@ -1,12 +1,16 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
+
+
 /* --- automation setup editor --- */
 #include "bstprocedure.hh"
+
 static void
 param_automation_dialog_cancel (GxkDialog *dialog)
 {
   g_object_set_data ((GObject*) dialog, "beast-GxkParam", NULL);
   gxk_toplevel_delete (GTK_WIDGET (dialog));
 }
+
 static void
 param_automation_dialog_ok (GxkDialog *dialog)
 {
@@ -23,6 +27,7 @@ param_automation_dialog_ok (GxkDialog *dialog)
     }
   gxk_toplevel_delete (GTK_WIDGET (dialog));
 }
+
 static void
 param_automation_popup_editor (GtkWidget *widget,
                                GxkParam  *param)
@@ -89,6 +94,7 @@ param_automation_popup_editor (GtkWidget *widget,
       gxk_widget_showraise (GTK_WIDGET (automation_dialog));
     }
 }
+
 static void
 param_automation_unrequest_focus_space (GtkWidget      *button,  // GTKFIX: GtkButton requests focus space for !CAN_FOCUS
                                         GtkRequisition *requisition)
@@ -102,6 +108,7 @@ param_automation_unrequest_focus_space (GtkWidget      *button,  // GTKFIX: GtkB
       requisition->height -= 2 * (focus_width + focus_pad);
     }
 }
+
 static GtkWidget*
 param_automation_create (GxkParam    *param,
                          const gchar *tooltip,
@@ -129,6 +136,7 @@ param_automation_create (GxkParam    *param,
   g_object_connect (button, "signal::clicked", param_automation_popup_editor, param, NULL);
   return widget;
 }
+
 static const SfiChoiceValue*
 param_automation_find_choice_value (const gchar *choice,
                                     GParamSpec  *pspec)
@@ -140,6 +148,7 @@ param_automation_find_choice_value (const gchar *choice,
       return &cvalues.values[i];
   return NULL;
 }
+
 static void
 param_automation_update (GxkParam  *param,
                          GtkWidget *widget)
@@ -169,15 +178,15 @@ param_automation_update (GxkParam  *param,
         {
           content = g_strdup ("--");
           /* TRANSLATORS: %s is substituted with a property name */
-          tip = g_strdup_printf (_("%s: automation disabled"), g_param_spec_get_nick (param->pspec));
+          tip = g_strdup_format (_("%s: automation disabled"), g_param_spec_get_nick (param->pspec));
         }
       else if (midi_channel)
         {
-          content = g_strdup_printf ("%u:%s%02d", midi_channel, prefix, control_type);
+          content = g_strdup_format ("%u:%s%02d", midi_channel, prefix, control_type);
           if (cv)
             {
               /* TRANSLATORS: %s is substituted with a property name, %s is substituted with midi control type */
-              tip = g_strdup_printf (_("%s: automation from MIDI control: %s (MIDI channel: %d)"),
+              tip = g_strdup_format (_("%s: automation from MIDI control: %s (MIDI channel: %d)"),
                                      g_param_spec_get_nick (param->pspec),
                                      cv->choice_label ? cv->choice_label : cv->choice_ident,
                                      midi_channel);
@@ -185,11 +194,11 @@ param_automation_update (GxkParam  *param,
         }
       else
         {
-          content = g_strdup_printf ("%s%02d", prefix, control_type);
+          content = g_strdup_format ("%s%02d", prefix, control_type);
           if (cv)
             {
               /* TRANSLATORS: %s is substituted with a property name, %s is substituted with midi control type */
-              tip = g_strdup_printf (_("%s: automation from MIDI control: %s"),
+              tip = g_strdup_format (_("%s: automation from MIDI control: %s"),
                                      g_param_spec_get_nick (param->pspec),
                                      cv->choice_label ? cv->choice_label : cv->choice_ident);
             }
@@ -205,6 +214,7 @@ param_automation_update (GxkParam  *param,
   g_free (tip);
   gtk_widget_set_sensitive (GTK_BIN (widget)->child, proxy && !bse_source_is_prepared (proxy));
 }
+
 static GxkParamEditor param_automation = {
   { "automation",       N_("Control Automation"), },
   { 0, },

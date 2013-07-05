@@ -646,31 +646,6 @@ record SampleFileInfo {
   Int           error   = SfiInt ("BseErrorType", "", 0, 0, G_MAXINT, 0, STANDARD); // FIXME: use BseErrorType here
 };
 interface Janitor;
-/* user messages */
-enum MsgType {
-  MSG_NONE = 0,
-  MSG_ALWAYS,
-  MSG_ERROR,
-  MSG_WARNING,
-  MSG_SCRIPT,
-  MSG_INFO,
-  MSG_DIAG,
-  MSG_DEBUG
-};
-record Message {
-  String        log_domain;
-  MsgType       type;
-  String        ident;
-  String        label;
-  String        title;
-  String        primary;
-  String        secondary;
-  String        details;
-  String        config_check;
-  Janitor       janitor;
-  String        process;
-  Int           pid;
-};
 
 // == BSE Global Config ==
 Const DEFAULT_AUTHOR  = "\357\277\271\357\277\272{{bse.idl/default-author}}\357\277\273";

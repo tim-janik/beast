@@ -1,9 +1,13 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #ifndef __BSE_MIDI_NOTIFIER_H__
 #define __BSE_MIDI_NOTIFIER_H__
+
 #include <bse/bseitem.hh>
 #include <bse/bsemidireceiver.hh>
+
+
 G_BEGIN_DECLS
+
 /* --- object type macros --- */
 #define BSE_TYPE_MIDI_NOTIFIER              (BSE_TYPE_ID (BseMidiNotifier))
 #define BSE_MIDI_NOTIFIER(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), BSE_TYPE_MIDI_NOTIFIER, BseMidiNotifier))

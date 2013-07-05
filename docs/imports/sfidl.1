@@ -1,0 +1,102 @@
+.TH "SFIDL" "1" "2011\-05\-02" "Revision 305" "Testbit Wiki Pages"
+
+.SH NAME
+
+SFIDL - SFI IDL Compiler
+
+.SH SYNOPSIS
+
+\fBsfidl\fR [\fIOPTIONS\fR] \fIinput.idl\fR
+
+.SH DESCRIPTION
+
+\fBsfidl\fR generates glue code for \fIBse\fR objects and
+plugins from interface definition language files.
+
+.SH OPTIONS
+.TP
+\fB--help\fR [\fIbinding\fR]
+Print general usage information. Or, if \fIbinding\fR was specified, print usage information for this language binding.
+.PP
+.TP
+\fB--version\fR
+Print program version.
+.PP
+.TP
+\fB-I\fR \fIDIRECTORY\fR
+Add \fIDIRECTORY\fR to include path.
+.PP
+.TP
+\fB--print-include-path\fR
+Print include path.
+.PP
+.TP
+\fB--nostdinc\fR
+Prevents standard include path from being used.
+.PP
+.SS Language bindings:
+.TP
+\fB--client-c\fR
+Generate C client language binding.
+.PP
+.TP
+\fB--client-c\fR
+Generate C core language binding.
+.PP
+.TP
+\fB--host-c\fR
+Generate C host language binding.
+.PP
+.TP
+\fB--client-cxx\fR
+Generate C++ client language binding.
+.PP
+.TP
+\fB--core-cxx\fR
+Generate C++ core language binding.
+.PP
+.TP
+\fB--plugin\fR
+Generate C++ plugin language binding.
+.PP
+.TP
+\fB--list-types\fR
+Print all types defined in the idlfile. This option is used only for BSE internally to ease transition from C to C++ types.
+.PP
+.SS Language binding options:
+.TP
+\fB--header\fR
+Generate header file, this is the default.
+.PP
+.TP
+\fB--source\fR
+Generate source file.
+.PP
+.TP
+\fB--prefix\fR \fIprefix\fR
+C host/client language binding option, sets the prefix for C functions. The prefix ensures that no symbol clashes will occur between different programs/libraries which are using a binding, so it is important to set it to something unique to your application/library.
+.PP
+.TP
+\fB--init\fR \fIname\fR
+Set the name of the init function for C host/core bindings.
+.PP
+.TP
+\fB--namespace\fR \fInamespace\fR
+C++ client language binding, sets the namespace to use for the code. The namespace ensures that no symbol clashes will occur between different programs/libraries which are using a binding, so it is important to set it to something unique to your application/library.
+.PP
+.TP
+\fB--lower\fR
+Select lower case identifiers in the C++ client language binding (create_midi_synth), this is the default.
+.PP
+.TP
+\fB--mixed\fR
+Select mixed case identifiers in the C++ client language binding (createMidiSynth).
+.PP
+
+.SH SEE ALSO
+
+bsescm.1 <http://testbit.eu/Bsescm.1>,
+BSE Object Reference <http://beast.testbit.eu/bse-objects>,
+BSE Interface Reference <http://beast.testbit.eu/bse-interface>,
+SFIDL Documentation <http://beast.testbit.eu/sfidl-manual>
+

@@ -13,6 +13,7 @@ DEFS     += @DEFINE__FILE_DIR__@ $(strip \
 	              $(filter $(<F), $(bse_sources) $(bse_sources))) \
 )
 AM_CXXFLAGS  = $(BSE_CFLAGS) $(RAPICORN_CFLAGS) -DRAPICORN_CONVENIENCE -DG_DISABLE_DEPRECATED -DG_DISABLE_CONST_RETURNS
+AIDACC_VDEBUG = $(AIDACC) $(if $(findstring 1, $(V)), --aida-debug)
 
 #
 # setup source file variables
@@ -54,7 +55,8 @@ bse_public_headers = $(strip \
 	bsenote.hh		bsemidifile.hh		bseblockutils.hh		\
 	bsecxxvalue.hh		bsecxxutils.hh		bsecxxbase.hh			bsecxxclosure.hh \
 	bsecxxarg.hh		bsecxxmodule.hh		bsecxxplugin.hh			bseloader.hh \
-	bseresampler.hh		bseresamplerimpl.hh	\
+	bseresampler.hh		bseresamplerimpl.hh	bsedatahandle-flac.hh           \
+	testobject.hh		\
 )
 # BSE C & C++ sources
 bse_sources = $(strip \
@@ -89,10 +91,11 @@ bse_sources = $(strip \
 	bsecxxarg.cc		bsecxxmodule.cc		bsecxxplugin.cc			bseloader.cc \
 	bseresampler.cc 	bsedatahandle-resample.cc				bsedatahandle-fir.cc \
 	bseloader-aiff.cc	bseloader-guspatch.cc	bseloader-oggvorbis.cc		bseloader-bsewave.cc \
-	bseloader-mad.cc	bseloader-wav.cc	\
+	bseloader-mad.cc	bseloader-wav.cc	bseloader-flac.cc               bsedatahandle-flac.cc \
 	bsebusmodule.cc		\
 	bsebasics.cc		\
 	bseprobe.cc		\
+	testobject.cc		\
 )
 # BSE Synthesis Modules
 bse_idl_sources =
@@ -103,6 +106,7 @@ $(srcdir)/bsecxxplugin.cc: bsebasics.genidl.hh
 bse_idl_sources += bseprobe.idl
 $(srcdir)/bseprobe.cc: bseprobe.genidl.hh
 idl_built_sources = $(bse_idl_sources:.idl=.genidl.hh)
+GENERATED += $(idl_built_sources)
 $(srcdir)/bsebus.cc: bsebasics.genidl.hh
 # idl files not used for build rules
 idl_dummy_files = $(strip	\
@@ -138,7 +142,7 @@ libbseincludedir       	     = $(includedir)/bse
 libbseinclude_HEADERS        = $(bse_public_headers) bse.idl $(bse_idl_sources) bsehack.idl $(idl_dummy_files)
 nodist_libbseinclude_HEADERS = bsebasics.genidl.hh
 libbse_la_SOURCES            = $(bse_sources) $(bse_proc_gen_sources)
-libbse_la_LIBADD             = $(top_builddir)/birnet/libbirnet.o $(top_builddir)/sfi/libsfi.o $(BSE_LIBS) $(SFI_LIBS) $(RAPICORN_LIBS)
+libbse_la_LIBADD             = $(top_builddir)/sfi/libsfi.o $(BSE_LIBS) $(SFI_LIBS) $(RAPICORN_LIBS)
 libbse_la_LDFLAGS            = $(strip				\
 	-Wl,--version-script=$(srcdir)/ldscript.map		\
 	-version-info $(LT_CURRENT):$(LT_REVISION):$(LT_AGE)	\
@@ -284,14 +288,41 @@ bsehack.idl: bsebasics.idl bseprocidl
 CLEANFILES += bsehack.idl
 noinst_DATA = bsehack.idl
 
-#
-# convenience targets for generated source files
-#
-.PHONY: generated clean-generated
-clean-generated: clean
-	rm -f $(GENERATED)
-generated: clean-generated $(GENERATED) $(idl_built_sources)
+# == BSE IDL API (AIDA) ==
+AUXTYPES_PY = $(srcdir)/AuxTypes.py
+EXTRA_DIST += AuxTypes.py
+bseclientapi.hh: $(srcdir)/../bse/bseapi.idl $(AUXTYPES_PY)
+	$(AM_V_GEN)
+	$(Q) ${AIDACC} -x CxxStub -x $(AUXTYPES_PY) -G clienthh -G cppguard=__BST_BSECLIENTAPI_HH_ $< -o xgen-$(@F)
+	$(Q) mv xgen-$(@F) $@
+GENERATED += bseclientapi.hh
+bseclientapi.cc: $(srcdir)/../bse/bseapi.idl $(AUXTYPES_PY)
+	$(AM_V_GEN)
+	$(Q) ${AIDACC} -x CxxStub -x $(AUXTYPES_PY) -G clientcc -G cppguard=__BST_BSECLIENTAPI_CC_ $< -o xgen-$(@F)
+	$(Q) mv xgen-$(@F) $@
+GENERATED += bseclientapi.cc
+bseserverapi.hh: $(srcdir)/bseapi.idl $(AUXTYPES_PY)
+	$(AM_V_GEN)
+	$(Q) ${AIDACC} -x CxxStub -x $(AUXTYPES_PY) -G serverhh -G cppguard=__BST_BSESERVERAPI_HH_ $< -o xgen-$(@F)
+	$(Q) mv xgen-$(@F) $@
+GENERATED += bseserverapi.hh
+bseserverapi.cc: $(srcdir)/bseapi.idl $(AUXTYPES_PY)
+	$(AM_V_GEN)
+	$(Q) ${AIDACC} -x CxxStub -x $(AUXTYPES_PY) -G servercc -G cppguard=__BST_BSESERVERAPI_CC_ $< -o xgen-$(@F)
+	$(Q) mv xgen-$(@F) $@
+GENERATED += bseserverapi.cc
 
+
+# == GENERATED targets ==
+$(libbse_la_OBJECTS): $(GENERATED)	# need dependency to force file generation
+generated: clean-generated $(GENERATED)
+	$(Q) $(MAKE) $(AM_MAKEFLAGS) clean-generated
+	$(Q) $(MAKE) generated-files
+generated-files: $(GENERATED)
+clean-generated:
+	rm -f $(GENERATED) stamp-*
+clean-local: clean-generated
+.PHONY: clean-generated generated-files generated
 
 #
 # private (birnet) dependancy to make TAGS file after each build
@@ -304,7 +335,7 @@ all: # TAGS
 # other programs, we want to compile
 #
 noinst_PROGRAMS = $(ALLTESTS)
-progs_LDADD = libbse.la $(SFI_LIBS) -lm
+progs_LDADD = libbse.la $(RAPICORN_LIBS) $(SFI_LIBS) -lm
 # source files
 
 noinst_PROGRAMS   += bseprocidl
@@ -323,3 +354,10 @@ noinst_PROGRAMS += bseinfo
 bseinfo_SOURCES  = bseinfo.cc
 bseinfo_LDADD    = $(progs_LDADD)
 
+# == Tests ==
+EXTRA_DIST += oldidl.idl
+check-oldidl: oldidl.idl AuxTypes.py
+	@echo "  CHECK " $<
+	$(Q) $(AIDACC_VDEBUG) -x $(srcdir)/AuxTypes.py $<
+.PHONY: check-oldidl
+check-local: check-oldidl

@@ -95,7 +95,7 @@ gsl_power2_fftc_big (const unsigned int n_values,
     }
   theta *= (double) 1.0 / 8192.;
   last_sin = sin (theta);
-  
+
   /* we're not combining the first and second halves coefficients
    * in the below loop, since for fft sizes beyond 8192, it'd actually
    * harm performance due to paging
@@ -110,7 +110,7 @@ gsl_power2_fftc_big (const unsigned int n_values,
       Dim = last_sin;
       last_sin = sin (theta);
       Dre = last_sin * last_sin * -2.;
-      
+
       /* loop over first coefficient in each block ==> w == {1,0} */
       for (i = 0; i < n_values2; i += block_size2)
 	{
@@ -131,7 +131,7 @@ gsl_power2_fftc_big (const unsigned int n_values,
 	  for (i = k; i < n_values2; i += block_size2)
 	    {
 	      unsigned int v1 = i, v2 = i + block_size;
-	      
+
               BUTTERFLY_XY (rivalues[v1], rivalues[v1 + 1],
                             rivalues[v2], rivalues[v2 + 1],
                             rivalues[v1], rivalues[v1 + 1],
@@ -148,7 +148,7 @@ gsl_power2_fftc_big (const unsigned int n_values,
 	    for (i = k; i < n_values2; i += block_size2)
 	      {
 	        unsigned int v1 = i, v2 = i + block_size;
-	      
+
                 BUTTERFLY_01 (rivalues[v1], rivalues[v1 + 1],
                               rivalues[v2], rivalues[v2 + 1],
                               rivalues[v1], rivalues[v1 + 1],
@@ -159,7 +159,7 @@ gsl_power2_fftc_big (const unsigned int n_values,
 	    for (i = k; i < n_values2; i += block_size2)
 	      {
 	        unsigned int v1 = i, v2 = i + block_size;
-	      
+
                 BUTTERFLY_0m (rivalues[v1], rivalues[v1 + 1],
                               rivalues[v2], rivalues[v2 + 1],
                               rivalues[v1], rivalues[v1 + 1],
@@ -213,7 +213,7 @@ gsl_power2_fftac (const unsigned int n_values,
                   $IEEE_TYPE        *rivalues_out)
 {
   g_return_if_fail ((n_values & (n_values - 1)) == 0 && n_values >= 1);
-  
+
   switch (n_values)
     {
       case    1: rivalues_out[0] = rivalues_in[0], rivalues_out[1] = rivalues_in[1]; break;
@@ -239,7 +239,7 @@ gsl_power2_fftsc (const unsigned int n_values,
                   $IEEE_TYPE        *rivalues_out)
 {
   g_return_if_fail ((n_values & (n_values - 1)) == 0 && n_values >= 1);
-  
+
   switch (n_values)
     {
       case    1: rivalues_out[0] = rivalues_in[0], rivalues_out[1] = rivalues_in[1]; break;

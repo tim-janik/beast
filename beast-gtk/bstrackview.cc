@@ -2,6 +2,7 @@
 #include "bstrackview.hh"
 #include "bstrackitem.hh"
 #include "gxk/gxkrackeditor.hh"
+
 /* --- prototypes --- */
 static void     rack_view_class_init         (BstRackViewClass *klass);
 static void     rack_view_init               (BstRackView      *self);
@@ -14,6 +15,9 @@ static void     rack_view_popup_action       (gpointer          user_data,
 static gboolean rack_view_popup_action_check (gpointer          data,
                                               gulong            action,
                                               guint64           action_stamp);
+
+
+
 /* --- rack view actions --- */
 enum {
   ACTION_ADD_LABEL,
@@ -27,8 +31,12 @@ static const GxkStockAction rack_view_popup_actions[] = {
     ACTION_ADD_LABEL,   BST_STOCK_NO_ICON,
   },
 };
+
+
 /* --- static variables --- */
 static gpointer          parent_class = NULL;
+
+
 /* --- functions --- */
 GType
 bst_rack_view_get_type (void)
@@ -51,15 +59,20 @@ bst_rack_view_get_type (void)
     }
   return type;
 }
+
 static void
 rack_view_class_init (BstRackViewClass *klass)
 {
   GObjectClass *gobject_class = G_OBJECT_CLASS (klass);
   GtkObjectClass *object_class = GTK_OBJECT_CLASS (klass);
+
   parent_class = g_type_class_peek_parent (klass);
+
   gobject_class->finalize = rack_view_finalize;
+
   object_class->destroy = rack_view_destroy;
 }
+
 static void
 toggle_edit_mode (GtkToggleButton *tb,
                   BstRackView     *self)
@@ -70,6 +83,7 @@ toggle_edit_mode (GtkToggleButton *tb,
       gxk_widget_update_actions_upwards (self->rack_table);
     }
 }
+
 static void
 rack_view_init (BstRackView *self)
 {
@@ -90,20 +104,27 @@ rack_view_init (BstRackView *self)
                               G_N_ELEMENTS (rack_view_popup_actions), rack_view_popup_actions,
                               NULL, rack_view_popup_action_check, rack_view_popup_action);
 }
+
 static void
 rack_view_destroy (GtkObject *object)
 {
   BstRackView *self = BST_RACK_VIEW (object);
+
   bst_rack_view_set_item (self, 0);
+
   GTK_OBJECT_CLASS (parent_class)->destroy (object);
 }
+
 static void
 rack_view_finalize (GObject *object)
 {
   BstRackView *self = BST_RACK_VIEW (object);
+
   bst_rack_view_set_item (self, 0);
+
   G_OBJECT_CLASS (parent_class)->finalize (object);
 }
+
 GtkWidget*
 bst_rack_view_new (SfiProxy item)
 {
@@ -115,11 +136,13 @@ bst_rack_view_new (SfiProxy item)
     }
   return self;
 }
+
 static void
 rack_view_reset_item (BstRackView *self)
 {
   bst_rack_view_set_item (self, 0);
 }
+
 static void
 rack_view_parasites_added (BstRackView *self)
 {
@@ -133,6 +156,7 @@ rack_view_parasites_added (BstRackView *self)
         gtk_container_add (GTK_CONTAINER (self->rack_table), item);
     }
 }
+
 void
 bst_rack_view_set_item (BstRackView *self,
                         SfiProxy     item)
@@ -140,8 +164,10 @@ bst_rack_view_set_item (BstRackView *self,
   g_return_if_fail (BST_IS_RACK_VIEW (self));
   if (item)
     g_return_if_fail (BSE_IS_ITEM (item));
+
   if (item == self->item)
     return;
+
   if (self->item)
     {
       bse_proxy_disconnect (self->item,
@@ -156,13 +182,16 @@ bst_rack_view_set_item (BstRackView *self,
                        "swapped_signal::release", rack_view_reset_item, self,
                        "swapped_signal::parasites-added::/beast-rack-view/", rack_view_parasites_added, self,
                        NULL);
+
   bst_rack_view_rebuild (self);
 }
+
 void
 bst_rack_view_rebuild (BstRackView *self)
 {
   GtkWidget *toggle;
   g_return_if_fail (BST_IS_RACK_VIEW (self));
+
   gtk_container_foreach (GTK_CONTAINER (self->rack_table), (GtkCallback) gtk_widget_destroy, NULL);
   toggle = (GtkWidget*) gxk_radget_find (self, "edit-toggle");
   gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (toggle), FALSE);
@@ -170,6 +199,7 @@ bst_rack_view_rebuild (BstRackView *self)
     return;
   rack_view_parasites_added (self);
 }
+
 static gboolean
 rack_view_button_press_event (BstRackView     *self,
                               GdkEventButton  *event)
@@ -183,6 +213,7 @@ rack_view_button_press_event (BstRackView     *self,
     }
   return FALSE;
 }
+
 static void
 rack_view_popup_action (gpointer                user_data,
                         gulong                  action_id)
@@ -203,6 +234,7 @@ rack_view_popup_action (gpointer                user_data,
       break;
     }
 }
+
 static gboolean
 rack_view_popup_action_check (gpointer data,
                               gulong   action,

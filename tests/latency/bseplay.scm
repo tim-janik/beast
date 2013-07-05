@@ -1,5 +1,6 @@
 ;; CC0 Public Domain: http://creativecommons.org/publicdomain/zero/1.0/
 ;; bseplay.scm - silently play .bse files		-*- scheme -*-
+
 ;; play argc/argv contents as bse files
 (define (bse-play)
   (bse-server-register-blocking bse-server-register-core-plugins #f)

@@ -25,7 +25,7 @@ beast_headers = $(strip \
 	bstpatterncolumns.hh	bstxkb.hh	bstpatternview.hh	bstpatternctrl.hh    \
 	bstkeybindings.hh	bstprofiler.hh	bstgrowbar.hh		bstbusview.hh        \
 	bstpianorollctrl.hh	bstpartview.hh	bstpianoroll.hh		bstplayback.hh	    \
-	bsttrackroll.hh		bstcluehunter.hh	bstprojectctrl.hh	bstcxxutils.hh	    \
+	bsttrackroll.hh		bstcluehunter.hh	bstprojectctrl.hh	\
 	bstauxdialogs.hh		bstsegment.hh	bsteventrollctrl.hh	bsteventroll.hh	    \
 	bstsnifferscope.hh	bstwaveview.hh	bstfiledialog.hh		bstgconfig.hh	    \
 	bstlogadjustment.hh	bstitemview.hh	bstservermonitor.hh	bstknob.hh	    \
@@ -47,7 +47,7 @@ beast_sources = $(strip \
 	bstpatterncolumns.cc	bstxkb.cc	bstpatternview.cc	bstpatternctrl.cc   \
 	bstkeybindings.cc	bstprofiler.cc	bstgrowbar.cc		bstbusview.cc       \
 	bstpianorollctrl.cc	bstpartview.cc	bstpianoroll.cc		bstplayback.cc	    \
-	bsttrackroll.cc	       bstcluehunter.cc	bstprojectctrl.cc	bstcxxutils.cc	    \
+	bsttrackroll.cc	       bstcluehunter.cc	bstprojectctrl.cc	\
 	bstauxdialogs.cc	bstsegment.cc	bsteventrollctrl.cc	bsteventroll.cc	    \
 	bstsnifferscope.cc	bstwaveview.cc	bstfiledialog.cc	bstgconfig.cc	    \
 	bstlogadjustment.cc	bstitemview.cc	bstservermonitor.cc	bstknob.cc	    \
@@ -134,25 +134,25 @@ bstenum_list.cc: $(beast_headers)
 	    $(beast_headers) ) > xgen-$(@F) \
 	&& cp xgen-$(@F) $@ \
 	&& rm -f xgen-$(@F)
-# bstgenbseapi.h
-GENERATED_CLEANFILES += bstgenbseapi.h
-CLEANFILES += stamp-bstgenbseapi.h
-$(beast_vOBJECTS): bstgenbseapi.h
-bstgenbseapi.h: stamp-bstgenbseapi.h ;
-stamp-bstgenbseapi.h: $(top_srcdir)/bse/*.idl $(top_builddir)/bse/*.idl $(SFIDL)
+# bstoldbseapi.h
+GENERATED_CLEANFILES += bstoldbseapi.h
+CLEANFILES += stamp-bstoldbseapi.h
+$(beast_vOBJECTS): bstoldbseapi.h
+bstoldbseapi.h: stamp-bstoldbseapi.h ;
+stamp-bstoldbseapi.h: $(top_srcdir)/bse/*.idl $(top_builddir)/bse/*.idl $(SFIDL)
 	cd . \
 	&& $(SFIDL) $(SFIDL_INC) --client-c --header --prefix beast_ $(top_srcdir)/bse/bse.idl >> xgen-$(@F) \
-	&& (cmp -s xgen-$(@F) bstgenbseapi.h || cp xgen-$(@F) bstgenbseapi.h) \
+	&& (cmp -s xgen-$(@F) bstoldbseapi.h || cp xgen-$(@F) bstoldbseapi.h) \
 	&& rm -f xgen-$(@F) \
 	&& echo timestamp > $@
-# bstgenbseapi.cc
-GENERATED_CLEANFILES += bstgenbseapi.cc
-$(beast_vOBJECTS): bstgenbseapi.cc
-bstgenbseapi.cc: bstgenbseapi.h $(top_srcdir)/bse/*.idl $(top_builddir)/bse/*.idl $(SFIDL)
+# bstoldbseapi.cc
+GENERATED_CLEANFILES += bstoldbseapi.cc
+$(beast_vOBJECTS): bstoldbseapi.cc
+bstoldbseapi.cc: bstoldbseapi.h $(top_srcdir)/bse/*.idl $(top_builddir)/bse/*.idl $(SFIDL)
 	cd .	\
-	&& echo -e "/* #include \"bstgenbseapi.h\" */\n" > xgen-$(@F) \
+	&& echo -e "/* #include \"bstoldbseapi.h\" */\n" > xgen-$(@F) \
 	&& $(SFIDL) $(SFIDL_INC) --client-c --source --prefix beast_ $(top_srcdir)/bse/bse.idl >> xgen-$(@F) \
-	&& cp xgen-$(@F) bstgenbseapi.cc \
+	&& cp xgen-$(@F) bstoldbseapi.cc \
 	&& rm -f xgen-$(@F)
 # bstmarshal.h
 GENERATED_CLEANFILES += bstmarshal.h
@@ -187,12 +187,7 @@ beast___BIN_VERSION__SOURCES = bstmain.cc $(beast_sources)
 beast___BIN_VERSION__LDADD = $(progs_LDADD)
 beast_vOBJECTS  = $(beast___BIN_VERSION__OBJECTS)
 noinst_PROGRAMS = $(ALLTESTS)
-progs_LDADD     = $(strip                                       \
-	$(BEAST_LIBS) 						\
-	 $(RAPICORN_LIBS)					\
-	./gxk/libgxk.a $(GXK_LIBS)                              \
-	$(top_builddir)/bse/libbse.la $(BSE_LIBS)               \
-)
+progs_LDADD     = $(BEAST_LIBS) ./gxk/libgxk.a $(GXK_LIBS) $(top_builddir)/bse/libbse.la $(RAPICORN_LIBS) $(BSE_LIBS)
 
 noinst_PROGRAMS += tsmview
 tsmview_SOURCES  = tsmview.cc

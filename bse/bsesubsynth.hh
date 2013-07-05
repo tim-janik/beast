@@ -27,5 +27,8 @@ void    bse_sub_synth_set_null_shortcut  (BseSubSynth     *self,
 /* override midi_channel for snet, or if midi_channel==0 inherit from parent */
 void    bse_sub_synth_set_midi_channel   (BseSubSynth     *self,
                                           guint            midi_channel);
+
+
 G_END_DECLS
+
 #endif /* __BSE_SUB_SYNTH_H__ */

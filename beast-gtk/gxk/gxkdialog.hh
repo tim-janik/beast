@@ -1,8 +1,11 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #ifndef __GXK_DIALOG_H__
 #define __GXK_DIALOG_H__
+
 #include        "gxkutils.hh"
+
 G_BEGIN_DECLS
+
 /* --- type macros --- */
 #define GXK_TYPE_DIALOG              (gxk_dialog_get_type ())
 #define GXK_DIALOG(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), GXK_TYPE_DIALOG, GxkDialog))
@@ -10,6 +13,8 @@ G_BEGIN_DECLS
 #define GXK_IS_DIALOG(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), GXK_TYPE_DIALOG))
 #define GXK_IS_DIALOG_CLASS(klass)   (G_TYPE_CHECK_CLASS_TYPE ((klass), GXK_TYPE_DIALOG))
 #define GXK_DIALOG_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), GXK_TYPE_DIALOG, GxkDialogClass))
+
+
 /* --- typedefs & enums --- */
 typedef struct  _GxkDialog       GxkDialog;
 typedef struct  _GxkDialogClass  GxkDialogClass;
@@ -24,11 +29,15 @@ typedef enum
   GXK_DIALOG_POPUP_POS		= 1 << 6,	/* popup at mouse pointer */
   GXK_DIALOG_PRESERVE_STATE     = 1 << 7        /* don't always reset size etc. upon hiding */
 } GxkDialogFlags;
+
+
 /* --- structures --- */
 struct _GxkDialog
 {
   GtkWindow      window;
+
   GtkWidget	*vbox;
+
   /*< private >*/
   GtkObject	*alive_object;	/* dialog is destroyed with this object */
   GxkDialogFlags flags;
@@ -45,6 +54,8 @@ struct _GxkDialogClass
 {
   GtkWindowClass        parent_class;
 };
+
+
 /* --- prototypes --- */
 GType		gxk_dialog_get_type		  (void);
 gpointer	gxk_dialog_new			  (gpointer	   pointer_loc,
@@ -86,6 +97,8 @@ void		gxk_dialog_remove_actions	  (GxkDialog	  *dialog);
                                                   gxk_dialog_action_multi ((dialog), (action), (callback), (data), 0, GXK_DIALOG_MULTI_SWAPPED)
 #define		gxk_dialog_default_action_swapped( dialog, action, callback, data)	\
                                                   gxk_dialog_action_multi ((dialog), (action), (callback), (data), 0, GXK_DIALOG_MULTI_DEFAULT | GXK_DIALOG_MULTI_SWAPPED)
+
+
 /* --- internal --- */
 typedef enum /*< skip >*/
 {
@@ -98,7 +111,9 @@ GtkWidget*	gxk_dialog_action_multi		(GxkDialog	    *dialog,
 						 gpointer	     data,
 						 const gchar	    *icon_stock_id,
 						 GxkDialogMultiFlags multi_mode);
+
 G_END_DECLS
+
 // == Flags Enumeration Operators in C++ ==
 #ifdef __cplusplus
 constexpr GxkDialogFlags  operator&  (GxkDialogFlags  s1, GxkDialogFlags s2) { return GxkDialogFlags (s1 & (long long unsigned) s2); }
@@ -112,4 +127,5 @@ constexpr GxkDialogMultiFlags  operator|  (GxkDialogMultiFlags  s1, GxkDialogMul
 inline    GxkDialogMultiFlags& operator|= (GxkDialogMultiFlags &s1, GxkDialogMultiFlags s2) { s1 = s1 | s2; return s1; }
 constexpr GxkDialogMultiFlags  operator~  (GxkDialogMultiFlags  s1)                    { return GxkDialogMultiFlags (~(long long unsigned) s1); }
 #endif // __cplusplus
+
 #endif  /* __GXK_DIALOG_H__ */

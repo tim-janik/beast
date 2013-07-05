@@ -1,8 +1,11 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #ifndef __BST_APP_H__
 #define __BST_APP_H__
+
 #include "bstutils.hh"
+
 G_BEGIN_DECLS
+
 /* --- type macros --- */
 #define BST_TYPE_APP            (bst_app_get_type ())
 #define BST_APP(object)         (GTK_CHECK_CAST ((object), BST_TYPE_APP, BstApp))
@@ -10,22 +13,33 @@ G_BEGIN_DECLS
 #define BST_IS_APP(object)      (GTK_CHECK_TYPE ((object), BST_TYPE_APP))
 #define BST_IS_APP_CLASS(klass) (GTK_CHECK_CLASS_TYPE ((klass), BST_TYPE_APP))
 #define BST_APP_GET_CLASS(app)  (G_TYPE_INSTANCE_GET_CLASS ((app), BST_TYPE_APP, BstAppClass))
+
+
 /* --- typedefs --- */
 typedef struct  _BstApp       BstApp;
 typedef struct  _BstAppClass  BstAppClass;
+
+
 /* --- structures --- */
 struct _BstApp
 {
   GxkDialog       window;
+
   SfiProxy        project;
+
   guint           select_unseen_super : 1;
+
   gchar 	 *cookie;
+
   GxkParam       *wave_file;
+
   GxkRadget      *box;
   GtkNotebook    *notebook;
+
   GtkWidget      *rack_dialog;
   GtkWidget      *rack_editor;
   GtkWidget      *pcontrols;
+
   GxkAssortment  *ppages;
 };
 struct _BstAppClass
@@ -34,6 +48,8 @@ struct _BstAppClass
   gboolean              seen_apps;
   GSList               *apps;
 };
+
+
 /* --- actions --- */
 enum {
   BST_ACTION_APP_NONE,
@@ -73,11 +89,15 @@ enum {
   /* last value */
   BST_ACTION_APP_LAST
 };
+
+
 /* --- prototypes --- */
 GType           bst_app_get_type                (void);
 BstApp*         bst_app_new                     (SfiProxy        project);
 void            bst_app_create_default          (BstApp         *app);
 BstApp*         bst_app_find                    (SfiProxy        project);
 void            bst_app_show_release_notes      (BstApp         *app);
+
 G_END_DECLS
+
 #endif  /* __BST_APP_H__ */

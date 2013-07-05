@@ -1,0 +1,374 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+ <head>
+ <title>bsewavetool.1</title>
+ <style type="text/css">
+ body { font-family: "DejaVu Sans", "Bitstream Vera Sans", Corbel, Verdana, "Verdana Ref", sans-serif; }
+ .tocnumber { display: none; }
+ body > p, body > dl, body > ul, body > ol { margin-left: 8em; }
+ </style></head>
+<body>
+ <a href="index.html">Return to Index</a><hr>
+<table id="toc" class="toc"><tr><td><div id="toctitle"><h2>Contents</h2></div>
+<ul>
+<li class="toclevel-1 tocsection-1"><a href="bsewavetool.1.html#Bsewavetool.281.29_-_BEAST.2FBSE_Wave_Tool"><span class="tocnumber">1</span> <span class="toctext">Bsewavetool(1) - BEAST/BSE Wave Tool</span></a>
+<ul>
+<li class="toclevel-2 tocsection-2"><a href="bsewavetool.1.html#NAME"><span class="tocnumber">1.1</span> <span class="toctext">NAME</span></a></li>
+<li class="toclevel-2 tocsection-3"><a href="bsewavetool.1.html#SYNOPSIS"><span class="tocnumber">1.2</span> <span class="toctext">SYNOPSIS</span></a></li>
+<li class="toclevel-2 tocsection-4"><a href="bsewavetool.1.html#DESCRIPTION"><span class="tocnumber">1.3</span> <span class="toctext">DESCRIPTION</span></a></li>
+<li class="toclevel-2 tocsection-5"><a href="bsewavetool.1.html#OPTIONS"><span class="tocnumber">1.4</span> <span class="toctext">OPTIONS</span></a></li>
+<li class="toclevel-2 tocsection-6"><a href="bsewavetool.1.html#COMMANDS"><span class="tocnumber">1.5</span> <span class="toctext">COMMANDS</span></a>
+<ul>
+<li class="toclevel-3 tocsection-7"><a href="bsewavetool.1.html#Store"><span class="tocnumber">1.5.1</span> <span class="toctext">Store</span></a></li>
+<li class="toclevel-3 tocsection-8"><a href="bsewavetool.1.html#Create"><span class="tocnumber">1.5.2</span> <span class="toctext">Create</span></a></li>
+<li class="toclevel-3 tocsection-9"><a href="bsewavetool.1.html#Oggenc"><span class="tocnumber">1.5.3</span> <span class="toctext">Oggenc</span></a></li>
+<li class="toclevel-3 tocsection-10"><a href="bsewavetool.1.html#Add_Chunk"><span class="tocnumber">1.5.4</span> <span class="toctext">Add Chunk</span></a></li>
+<li class="toclevel-3 tocsection-11"><a href="bsewavetool.1.html#Add_Raw_Chunk"><span class="tocnumber">1.5.5</span> <span class="toctext">Add Raw Chunk</span></a></li>
+<li class="toclevel-3 tocsection-12"><a href="bsewavetool.1.html#Del_Chunk"><span class="tocnumber">1.5.6</span> <span class="toctext">Del Chunk</span></a></li>
+<li class="toclevel-3 tocsection-13"><a href="bsewavetool.1.html#XInfo"><span class="tocnumber">1.5.7</span> <span class="toctext">XInfo</span></a></li>
+<li class="toclevel-3 tocsection-14"><a href="bsewavetool.1.html#Info"><span class="tocnumber">1.5.8</span> <span class="toctext">Info</span></a></li>
+<li class="toclevel-3 tocsection-15"><a href="bsewavetool.1.html#Clip"><span class="tocnumber">1.5.9</span> <span class="toctext">Clip</span></a></li>
+<li class="toclevel-3 tocsection-16"><a href="bsewavetool.1.html#Normalize"><span class="tocnumber">1.5.10</span> <span class="toctext">Normalize</span></a></li>
+<li class="toclevel-3 tocsection-17"><a href="bsewavetool.1.html#Loop"><span class="tocnumber">1.5.11</span> <span class="toctext">Loop</span></a></li>
+<li class="toclevel-3 tocsection-18"><a href="bsewavetool.1.html#Highpass"><span class="tocnumber">1.5.12</span> <span class="toctext">Highpass</span></a></li>
+<li class="toclevel-3 tocsection-19"><a href="bsewavetool.1.html#Lowpass"><span class="tocnumber">1.5.13</span> <span class="toctext">Lowpass</span></a></li>
+<li class="toclevel-3 tocsection-20"><a href="bsewavetool.1.html#Upsample2"><span class="tocnumber">1.5.14</span> <span class="toctext">Upsample2</span></a></li>
+<li class="toclevel-3 tocsection-21"><a href="bsewavetool.1.html#Downsample2"><span class="tocnumber">1.5.15</span> <span class="toctext">Downsample2</span></a></li>
+<li class="toclevel-3 tocsection-22"><a href="bsewavetool.1.html#Export"><span class="tocnumber">1.5.16</span> <span class="toctext">Export</span></a></li>
+<li class="toclevel-3 tocsection-23"><a href="bsewavetool.1.html#List_Chunks"><span class="tocnumber">1.5.17</span> <span class="toctext">List Chunks</span></a></li>
+</ul>
+</li>
+<li class="toclevel-2 tocsection-24"><a href="bsewavetool.1.html#SEE_ALSO"><span class="tocnumber">1.6</span> <span class="toctext">SEE ALSO</span></a></li>
+</ul>
+</li>
+</ul>
+</td></tr></table>
+<h1> <span class="mw-headline" id="Bsewavetool.281.29_-_BEAST.2FBSE_Wave_Tool"> Bsewavetool(1) - BEAST/BSE Wave Tool </span></h1>
+<p>Manual: Testbit Wiki Pages <br/>
+Release: Revision 949 <br/>
+Updated: 2013-06-18 <br/>
+</p>
+<h2> <span class="mw-headline" id="NAME"> NAME </span></h2>
+<p>bsewavetool - A tool for editing the native multisample format of <a href="http://testbit.eu/Beast" title="Beast">Beast</a> and <a href="http://testbit.eu/index.php?title=Bse&amp;action=edit&amp;redlink=1" class="new" title="Bse (page does not exist)">Bse</a>.
+</p>
+<h2> <span class="mw-headline" id="SYNOPSIS"> SYNOPSIS </span></h2>
+<p><b>bsewavetool</b> [<i>tool-options</i>] command <i>&lt;file.bsewave&gt;</i> [<i>command-arguments</i>]
+</p>
+<h2> <span class="mw-headline" id="DESCRIPTION"> DESCRIPTION </span></h2>
+<p><b>bsewavetool</b> is a command line tool for editing the native multisample format for <a href="http://testbit.eu/Beast" title="Beast">beast</a> and <a href="http://testbit.eu/index.php?title=Bse&amp;action=edit&amp;redlink=1" class="new" title="Bse (page does not exist)">Bse</a>, the <a href="http://testbit.eu/index.php?title=Bsewave&amp;action=edit&amp;redlink=1" class="new" title="Bsewave (page does not exist)">bsewave</a> format. Some common operations are creating new <a href="http://testbit.eu/index.php?title=Bsewave&amp;action=edit&amp;redlink=1" class="new" title="Bsewave (page does not exist)">bsewave</a> files, adding chunks to an existing file, encoding the sample data, adding meta information or exporting chunks.
+</p><p>Common uses for <a href="http://testbit.eu/index.php?title=Bsewave&amp;action=edit&amp;redlink=1" class="new" title="Bsewave (page does not exist)">bsewave</a> files are:
+</p>
+<ul><li> Mapping an individual sample to each midi note (key on the keyboard) - this is mainly useful for drumkits.
+</li><li> Approximating the sound of an instrument (such as a piano) by sampling some notes, and mapping these to the corresponding frequencies in a <a href="http://testbit.eu/index.php?title=Bsewave&amp;action=edit&amp;redlink=1" class="new" title="Bsewave (page does not exist)">bsewave</a> file - when such a file is loaded by <a href="http://testbit.eu/index.php?title=Bse&amp;action=edit&amp;redlink=1" class="new" title="Bse (page does not exist)">Bse</a> and a note is played, <a href="http://testbit.eu/index.php?title=Bse&amp;action=edit&amp;redlink=1" class="new" title="Bse (page does not exist)">Bse</a> will play the "nearest" note, and - if necessary - pitch it.
+</li></ul>
+<h2> <span class="mw-headline" id="OPTIONS"> OPTIONS </span></h2>
+<p>A number of options can be used with <b>bsewavetool</b> in combination with the commands:
+</p>
+<dl><dt> <b>-o</b> <i>&lt;output.bsewave&gt;</i>
+</dt><dd> Name of the destination file (default: &lt;file.bsewave&gt;).
+</dd><dt> <b>--silent</b>
+</dt><dd> Suppress extra processing information.
+</dd><dt> <b>--skip-errors</b>
+</dt><dd> Skip errors (may overwrite bsewave files after load errors occoured for part of its contents).
+</dd><dt> <b>-h</b>, <b>--help</b>
+</dt><dd> Show elaborated help message with command documentation.
+</dd><dt> <b>-v</b>, <b>--version</b>
+</dt><dd> Print version information.
+</dd></dl>
+<h2> <span class="mw-headline" id="COMMANDS"> COMMANDS </span></h2>
+<h3> <span class="mw-headline" id="Store"> Store </span></h3>
+<p><b>store</b>
+</p><p>Store the input bsewave as output bsewave. If both file names are the same, the bsewave file is simply rewritten. Allthough no explicit modifications are performed on the bsewave, externally referenced sample files will be inlined, chunks may be reordered, and other changes related to the bsewave storage process may occour.
+</p>
+<h3> <span class="mw-headline" id="Create"> Create </span></h3>
+<p><b>create</b> <i>&lt;n_channels&gt;</i> [<i>options</i>]
+</p><p>Create an empty bsewave file, <i>&lt;n_channels&gt;</i>=1 (mono) and <i>&lt;n_channels&gt;</i>=2 (stereo) are currently supported.
+</p><p><b>Options:</b>
+</p>
+<dl><dt> <b>-N</b> <i>&lt;wave-name&gt;</i>
+</dt><dd> Name of the wave stored inside of &lt;output.bsewave&gt;.
+</dd><dt> <b>-f</b>
+</dt><dd> Force creation even if the file exists already.
+</dd></dl>
+<h3> <span class="mw-headline" id="Oggenc"> Oggenc </span></h3>
+<p><b>oggenc</b> [<i>options</i>]
+</p><p>Compress all chunks with the Vorbis audio codec and store the wave data as Ogg/Vorbis streams inside the bsewave file.
+</p><p><b>Options:</b>
+</p>
+<dl><dt> <b>-q</b> <i>&lt;n&gt;</i>
+</dt><dd> Use quality level <i>&lt;n&gt;</i>, refer to oggenc(1) for details.
+</dd></dl>
+<h3> <span class="mw-headline" id="Add_Chunk"> Add Chunk </span></h3>
+<p><b>add-chunk</b> [<i>options</i>] {<b>-m</b>=<i>midi-note</i>|<b>-f</b>=<i>osc-freq</i>} <i>&lt;sample-file&gt;</i> ...
+</p><p>Add a new chunk containing <i>&lt;sample-file&gt;</i> to the wave file. For each chunk, a unique oscillator frequency must be given to determine what note the chunk is to be played back for. Multi oscillator frequency + sample-file option combinations may be given on the command line to add multiple wave chunks. The -f and -m options can be omitted for a sample file, if the oscillator frequency can be determined through auto extract options.
+</p><p><b>Options:</b>
+</p>
+<dl><dt> <b>-f</b> <i>&lt;osc-freq&gt;</i>
+</dt><dd> Oscillator frequency for the next chunk.
+</dd><dt> <b>-m</b> <i>&lt;midi-note&gt;</i>
+</dt><dd> Alternative way to specify oscillator frequency.
+</dd><dt> <b>--auto-extract-midi-note</b> <i>&lt;nth&gt;</i>
+</dt><dd> Automatically retrieve the midi note by extracting the <i>&lt;nth&gt;</i> number from the base name of <i>&lt;sample-file&gt;</i>.
+</dd><dt> <b>--auto-extract-osc-freq</b> <i>&lt;nth&gt;</i>
+</dt><dd> Automatically retrieve the oscillator frequency by extracting the <i>&lt;nth&gt;</i> number from the base name of <i>&lt;sample-file&gt;</i>.
+</dd></dl>
+<h3> <span class="mw-headline" id="Add_Raw_Chunk"> Add Raw Chunk </span></h3>
+<p><b>add-raw-chunk</b> [<i>options</i>] {<b>-m</b>=<i>midi-note</i>|<b>-f</b>=<i>osc-freq</i>} <i>&lt;sample-file&gt;</i> ...
+</p><p>Add a new chunk just like with "add-chunk", but load raw sample data. Additional raw sample format options are supported.
+</p><p><b>Options:</b>
+</p>
+<dl><dt> <b>-R</b> <i>&lt;mix-freq&gt;</i>
+</dt><dd> Mixing frequency for the next chunk [44100].
+</dd><dt> <b>-F</b> <i>&lt;format&gt;</i>
+</dt><dd> Raw sample format, supported formats are: alaw, ulaw, float, signed-8, signed-12, signed-16, unsigned-8, unsigned-12, unsigned-16 [signed-16].
+</dd><dt> <b>-B</b> <i>&lt;byte-order&gt;</i>
+</dt><dd> Raw sample byte order, supported types: little-endian, big-endian [little-endian].
+</dd></dl>
+<h3> <span class="mw-headline" id="Del_Chunk"> Del Chunk </span></h3>
+<p><b>del-chunk</b> {<b>-m</b>=<i>midi-note</i>|<b>-f</b>=<i>osc-freq</i>|<b>--chunk-key</b>=<i>key</i>|<b>--all-chunks</b>}
+</p><p>Removes one or more chunks from the bsewave file.
+</p><p><b>Options:</b>
+</p>
+<dl><dt> <b>-f</b> <i>&lt;osc-freq&gt;</i>
+</dt><dd> Oscillator frequency to select a wave chunk.
+</dd><dt> <b>-m</b> <i>&lt;midi-note&gt;</i>
+</dt><dd> Alternative way to specify oscillator frequency.
+</dd><dt> <b>--chunk-key</b> <i>&lt;key&gt;</i>
+</dt><dd> Select wave chunk using chunk key from list-chunks.
+</dd><dt> <b>--all-chunks</b>
+</dt><dd> Delete all chunks.
+</dd></dl>
+<h3> <span class="mw-headline" id="XInfo"> XInfo </span></h3>
+<p><b>xinfo</b> {<b>-m</b>=<i>midi-note</i>|<b>-f</b>=<i>osc-freq</i>|<b>--chunk-key</b>=<i>key</i>|<b>--all-chunks</b>|<b>--wave</b>} <b>key</b>=[<i>value</i>] ...
+</p><p>Add, change or remove an XInfo string of a bsewave file. Omission of [value] deletes the XInfo associated with the key. Key and value pairs may be specified multiple times, optionally preceeded by location options to control what portion of a bsewave file (the wave, individual wave chunks or all wave chunks) should be affected.
+</p><p><b>Options:</b>
+</p>
+<dl><dt> <b>-f</b> <i>&lt;osc-freq&gt;</i>
+</dt><dd> Oscillator frequency to select a wave chunk.
+</dd><dt> <b>-m</b> <i>&lt;midi-note&gt;</i>
+</dt><dd> Alternative way to specify oscillator frequency.
+</dd><dt> <b>--chunk-key</b> <i>&lt;key&gt;</i>
+</dt><dd> Select wave chunk using chunk key from list-chunks.
+</dd><dt> <b>--all-chunks</b>
+</dt><dd> Apply XInfo modification to all chunks.
+</dd><dt> <b>--wave</b>
+</dt><dd> Apply XInfo modifications to the wave itself.
+</dd></dl>
+<p><br/>
+</p>
+<h3> <span class="mw-headline" id="Info"> Info </span></h3>
+<p><b>info</b> <i>{<b>-m</b>=</i>midi-note<i>|<b>-f</b>=</i>osc-freq<i>|<b>--chunk-key</b>=</i>key<i>|<b>--all-chunks</b>|</i>#--wave<b>} [<i>options</i>]</b>
+</p><p>Print information about the chunks of a bsewave file.
+</p><p><b>Options:</b>
+</p>
+<dl><dt> <b>-f</b> <i>&lt;osc-freq&gt;</i>
+</dt><dd> Oscillator frequency to select a wave chunk.
+</dd><dt> <b>-m</b> <i>&lt;midi-note&gt;</i>
+</dt><dd> Alternative way to specify oscillator frequency.
+</dd><dt> <b>--all-chunks</b>
+</dt><dd> Show information for all chunks (default).
+</dd><dt> <b>--chunk-key</b> <i>&lt;key&gt;</i>
+</dt><dd> Select wave chunk using chunk key from list-chunks.
+</dd><dt> <b>--wave</b>
+</dt><dd> Show information for the wave.
+</dd><dt> <b>--pretty</b>=medium
+</dt><dd> Use human readable format (default).
+</dd><dt> <b>--pretty</b>=full
+</dt><dd> Use human readable format with all details.
+</dd><dt> <b>--script</b> <i>&lt;field1&gt;</i>,<i>&lt;field2&gt;</i>,<i>&lt;field3&gt;</i>,...,<i>&lt;fieldN&gt;</i>
+</dt><dd> Use script readable line based space separated output.
+</dd></dl>
+<p><b>Valid wave or chunk fields:</b>
+</p>
+<dl><dt> channels
+</dt><dd> Number of channels.
+</dd><dt> label
+</dt><dd> User interface label.
+</dd><dt> blurb
+</dt><dd> Associated comment.
+</dd></dl>
+<p><b>Valid wave fields:</b>
+</p>
+<dl><dt> authors
+</dt><dd> Authors who participated in creating the wave file.
+</dd><dt> license
+</dt><dd> License specifying redistribution and other legal terms.
+</dd><dt> play-type
+</dt><dd> Set of required play back facilities for a wave.
+</dd></dl>
+<p><b>Valid chunk fields:</b>
+</p>
+<dl><dt> osc-freq
+</dt><dd> Frequency of the chunk.
+</dd><dt> mix-freq
+</dt><dd> Sampling rate of the chunk.
+</dd><dt> midi-note
+</dt><dd> Midi note of a chunk.
+</dd><dt> length
+</dt><dd> Length of the chunk in sample frames.
+</dd><dt> volume
+</dt><dd> Volume at which the chunk is to be played.
+</dd><dt> format
+</dt><dd> Storage format used to save the chunk data.
+</dd><dt> loop-type
+</dt><dd> Whether the chunk is to be looped.
+</dd><dt> loop-start
+</dt><dd> Offset in sample frames for the start of the loop.
+</dd><dt> loop-end
+</dt><dd> Offset in sample frames for the end of the loop.
+</dd><dt> loop-count
+</dt><dd> Maximum limit for how often the loop should be repeated.
+</dd></dl>
+<p><b>Chunk fields that can be computed for the signal:</b>
+</p>
+<dl><dt> +avg-energy-raw
+</dt><dd> Average signal energy (dB) of the raw data of the chunk.
+</dd><dt> +avg-energy
+</dt><dd> Average signal energy (dB) using volume xinfo.
+</dd></dl>
+<p>The script output consists of one line per chunk. The individual fields of a line are separated by a single space. Special characters are escaped, such as spaces, tabs, newlines and backslashes. So each line of script parsable output can be parsed using the read(P) shell command. Optional fields will printed as a single (escaped) space.
+</p><p>The human readable output formats (--pretty) may vary in future versions and are not recommended as script input.
+</p>
+<h3> <span class="mw-headline" id="Clip"> Clip </span></h3>
+<p><b>clip</b> {<b>-m</b>=<i>midi-note</i>|<b>-f</b>=<i>osc-freq</i>|<b>--chunk-key</b>=<i>key</i>|<b>--all-chunks</b>} [<i>options</i>]
+</p><p>Clip head and or tail of a wave chunk and produce fade-in ramps at the beginning. Wave chunks which are clipped to an essential 0-length will automatically be deleted.
+</p><p><b>Options:</b>
+</p>
+<dl><dt> <b>-f</b> <i>&lt;osc-freq&gt;</i>
+</dt><dd> Oscillator frequency to select a wave chunk.
+</dd><dt> <b>-m</b> <i>&lt;midi-note&gt;</i>
+</dt><dd> Alternative way to specify oscillator frequency.
+</dd><dt> <b>--chunk-key</b> <i>&lt;key&gt;</i>
+</dt><dd> Select wave chunk using chunk key from list-chunks.
+</dd><dt> <b>--all-chunks</b>
+</dt><dd> Try to clip all chunks.
+</dd><dt> <b>-s</b>=<i>&lt;threshold&gt;</i>
+</dt><dd> Set the minimum signal threshold (0..32767) [16].
+</dd><dt> <b>-h</b>=<i>&lt;head-samples&gt;</i>
+</dt><dd> Number of silence samples to verify at head [0].
+</dd><dt> <b>-t</b>=<i>&lt;tail-samples&gt;</i>
+</dt><dd> Number of silence samples to verify at tail [0].
+</dd><dt> <b>-f</b>=<i>&lt;fade-samples&gt;</i>
+</dt><dd> Number of samples to fade-in before signal starts [16].
+</dd><dt> <b>-p</b>=<i>&lt;pad-samples&gt;</i>
+</dt><dd> Number of padding samples after signal ends [16].
+</dd><dt> <b>-r</b>=<i>&lt;tail-silence&gt;</i>
+</dt><dd> Number of silence samples required at tail to allow tail clipping [0].
+</dd></dl>
+<h3> <span class="mw-headline" id="Normalize"> Normalize </span></h3>
+<p><b>normalize</b> {<b>-m</b>=<i>midi-note</i>|<b>-f</b>=<i>osc-freq</i>|<b>--chunk-key</b>=<i>key</i>|<b>--all-chunks</b>} [<i>options</i>]
+</p><p>Normalize wave chunk. This is used to extend (or compress) the signal range to optimally fit the available unclipped dynamic range.
+</p><p><b>Options:</b>
+</p>
+<dl><dt> <b>-f</b> <i>&lt;osc-freq&gt;</i>
+</dt><dd> Oscillator frequency to select a wave chunk.
+</dd><dt> <b>-m</b> <i>&lt;midi-note&gt;</i>
+</dt><dd> Alternative way to specify oscillator frequency.
+</dd><dt> <b>--chunk-key</b> <i>&lt;key&gt;</i>
+</dt><dd> Select wave chunk using chunk key from list-chunks.
+</dd><dt> <b>--all-chunks</b>
+</dt><dd> Try to normalize all chunks.
+</dd></dl>
+<h3> <span class="mw-headline" id="Loop"> Loop </span></h3>
+<p><b>loop</b> {<b>-m</b>=<i>midi-note</i>|<b>-f</b>=<i>osc-freq</i>|<b>--all-chunks</b>} [<i>options</i>]
+</p><p>Find suitable loop points.
+</p><p><b>Options:</b>
+</p>
+<dl><dt> <b>-f</b> <i>&lt;osc-freq&gt;</i>
+</dt><dd> Oscillator frequency to select a wave chunk
+</dd><dt> <b>-m</b> <i>&lt;midi-note&gt;</i>
+</dt><dd> Alternative way to specify oscillator frequency
+</dd><dt> <b>--chunk-key</b> <i>&lt;key&gt;</i>
+</dt><dd> Select wave chunk using chunk key from list-chunks
+</dd><dt> <b>--all-chunks</b>
+</dt><dd> Try to loop all chunks
+</dd></dl>
+<h3> <span class="mw-headline" id="Highpass"> Highpass </span></h3>
+<p><b>highpass</b> [<i>options</i>]
+</p><p>Apply highpass filter to wave data.
+</p><p><b>Options:</b>
+</p>
+<dl><dt> <b>--cutoff-freq</b> <i>&lt;f&gt;</i>
+</dt><dd> Filter cutoff frequency in Hz
+</dd><dt> <b>--order</b> <i>&lt;o&gt;</i>
+</dt><dd> Filter order [64]
+</dd></dl>
+<h3> <span class="mw-headline" id="Lowpass"> Lowpass </span></h3>
+<p><b>lowpass</b> [<i>options</i>]
+</p><p>Apply lowpass filter to wave data.
+</p><p><b>Options:</b>
+</p>
+<dl><dt> <b>--cutoff-freq</b> <i>&lt;f&gt;</i>
+</dt><dd> Filter cutoff frequency in Hz
+</dd><dt> <b>--order</b> &lt;o&gt;
+</dt><dd> Filter order [64]
+</dd></dl>
+<h3> <span class="mw-headline" id="Upsample2"> Upsample2 </span></h3>
+<p><b>upsample2</b> [<i>options</i>]
+</p><p>Resample wave data to twice the sampling frequency.
+</p><p><b>Options:</b>
+</p>
+<dl><dt> <b>--precision</b> <i>&lt;bits&gt;</i>
+</dt><dd> Set resampler precision bits [24]. Supported precisions: 1, 8, 12, 16, 20, 24 (1 is a special value for linear interpolation)
+</dd></dl>
+<h3> <span class="mw-headline" id="Downsample2"> Downsample2 </span></h3>
+<p><b>downsample2</b> [<i>options</i>]
+</p><p>Resample wave data to half the sampling frequency.
+</p><p><b>Options:</b>
+</p>
+<dl><dt> <b>--precision</b> <i>&lt;bits&gt;</i>
+</dt><dd> Set resampler precision bits [24]. Supported precisions: 1, 8, 12, 16, 20, 24 (1 is a special value for linear interpolation).
+</dd></dl>
+<h3> <span class="mw-headline" id="Export"> Export </span></h3>
+<p><b>export</b> {<b>-m</b>=<i>midi-note</i>|<b>-f</b>=<i>osc-freq</i>|<b>--chunk-key</b>=<i>key</i>|<b>--all-chunks</b>|<b>-x</b>=<i>filename</i>} [<i>options</i>]
+</p><p>Export chunks from bsewave as WAV file.
+</p><p><b>Options:</b>
+</p>
+<dl><dt> <b>-x</b> <i>&lt;filename&gt;</i>
+</dt><dd> Set export filename (supports&#160;%N&#160;%F and&#160;%C, see below).
+</dd><dt> <b>-f</b> <i>&lt;osc-freq&gt;</i>
+</dt><dd> Oscillator frequency to select a wave chunk.
+</dd><dt> <b>-m</b> <i>&lt;midi-note&gt;</i>
+</dt><dd> Alternative way to specify oscillator frequency.
+</dd><dt> <b>--chunk-key</b> <i>&lt;key&gt;</i>
+</dt><dd> Select wave chunk using chunk key from list-chunks.
+</dd><dt> <b>--all-chunks</b>
+</dt><dd> Try to export all chunks.
+</dd></dl>
+<p>The export filename can contain the following extra information:
+</p>
+<dl><dt>&#160;%F
+</dt><dd> The frequency of the chunk.
+</dd><dt>&#160;%N
+</dt><dd> The midi note of the chunk.
+</dd><dt>&#160;%C
+</dt><dd> Cent detuning of the midi note.
+</dd></dl>
+<h3> <span class="mw-headline" id="List_Chunks"> List Chunks </span></h3>
+<p><b>list-chunks</b> [<i>options</i>]
+</p><p>Prints a list of chunk keys of the chunks contained in the bsewave file.
+A chunk key for a given chunk identifies the chunk uniquely and stays valid
+if other chunks are inserted and deleted.
+</p><p>This bash script shows the length of all chunks (like info --all-chunks):
+</p>
+<pre> for key in `bsewavetool list-chunks foo.bsewave`&#160;; do
+   bsewavetool info foo.bsewave --chunk-key $key --script length&#160;;
+ done
+</pre>
+<h2> <span class="mw-headline" id="SEE_ALSO"> SEE ALSO </span></h2>
+<p><a href="http://testbit.eu/Beast.1" title="Beast.1">beast.1</a>,
+<a rel="nofollow" class="external text" href="http://beast.testbit.eu">BEAST/BSE Website</a>,
+<a href="http://testbit.eu/Beast_Architecture#Samples_and_Wave_Files" title="Beast Architecture"> Samples and Wave Files in BEAST</a>
+</p>
+<!-- 
+NewPP limit report
+Preprocessor node count: 114/1000000
+Post-expand include size: 15/2097152 bytes
+Template argument size: 0/2097152 bytes
+Expensive parser function count: 0/100
+-->
+
+<!-- Saved in parser cache with key mediawikidb:pcache:idhash:58-1!*!0!!en!*!* and timestamp 20130703010440 -->
+<hr>
+</body>
+</html>

@@ -4,9 +4,9 @@
 #include <vorbis/codec.h>
 #include <string.h>
 #include <errno.h>
-static SFI_MSG_TYPE_DEFINE (debug_vorbis, "vorbis", SFI_MSG_DEBUG, NULL);
-#define DEBUG(...)      sfi_debug (debug_vorbis, __VA_ARGS__)
-#define DIAG(...)       sfi_diag (__VA_ARGS__)
+
+#define VDEBUG(...)     BSE_KEY_DEBUG ("vorbis", __VA_ARGS__)
+
 /* --- structures --- */
 typedef struct {
   guint length;
@@ -39,6 +39,8 @@ struct _GslVorbisCutter
   vorbis_comment        vcomment;
   vorbis_dsp_state      vdsp;
 };
+
+
 /* --- miscellaneous --- */
 static const gchar*
 ov_error_blurb (gint ov_error)
@@ -62,6 +64,7 @@ ov_error_blurb (gint ov_error)
     default:            return "Unknown failure";
     }
 }
+
 static void
 enqueue_page (SfiRing **dblocks,
               ogg_page *opage)
@@ -75,6 +78,8 @@ enqueue_page (SfiRing **dblocks,
   memcpy (dblock->data, opage->body, dblock->length);
   *dblocks = sfi_ring_append (*dblocks, dblock);
 }
+
+
 /* --- cutter API --- */
 GslVorbisCutter*
 gsl_vorbis_cutter_new (void)
@@ -96,15 +101,18 @@ gsl_vorbis_cutter_new (void)
   vorbis_comment_init (&self->vcomment);
   return self;
 }
+
 void
 gsl_vorbis_cutter_set_cutpoint (GslVorbisCutter    *self,
                                 GslVorbisCutterMode cutmode,
                                 SfiNum              cutpoint)
 {
   g_return_if_fail (self != NULL);
+
   /* cutpoint is interpreted as last_sample + 1,
    * i.e. sample[cutpoint] is removed for SAMPLE_BOUNDARY
    */
+
   switch (cutpoint > 0 ? cutmode : 0)
     {
     case GSL_VORBIS_CUTTER_SAMPLE_BOUNDARY:
@@ -119,28 +127,36 @@ gsl_vorbis_cutter_set_cutpoint (GslVorbisCutter    *self,
       break;
     }
 }
+
 void
 gsl_vorbis_cutter_filter_serialno (GslVorbisCutter        *self,
                                    guint                   serialno)
 {
   g_return_if_fail (self != NULL);
+
   /* only read an input Ogg/Vorbis stream with serial number "serialno" */
+
   self->filtered_serialno = serialno;
   self->filter_serialno = TRUE;
 }
+
 void
 gsl_vorbis_cutter_force_serialno (GslVorbisCutter        *self,
                                   guint                   serialno)
 {
   g_return_if_fail (self != NULL);
+
   /* change the Ogg/Vorbis stream serial number on output to "serialno" */
+
   self->forced_serialno = serialno;
   self->force_serialno = TRUE;
 }
+
 void
 gsl_vorbis_cutter_destroy (GslVorbisCutter *self)
 {
   g_return_if_fail (self != NULL);
+
   /* cleanup codec state */
   if (self->vorbis_initialized)
     vorbis_dsp_clear (&self->vdsp);
@@ -156,6 +172,7 @@ gsl_vorbis_cutter_destroy (GslVorbisCutter *self)
   /* cleanup self */
   g_free (self);
 }
+
 static void
 vorbis_cutter_abort (GslVorbisCutter *self)
 {
@@ -164,19 +181,24 @@ vorbis_cutter_abort (GslVorbisCutter *self)
     g_free (sfi_ring_pop_head (&self->dblocks));
   self->eos = TRUE;
 }
+
 gboolean
 gsl_vorbis_cutter_ogg_eos (GslVorbisCutter *self)
 {
   g_return_val_if_fail (self != NULL, FALSE);
+
   return self->eos && !self->dblocks;
 }
+
 guint
 gsl_vorbis_cutter_read_ogg (GslVorbisCutter *self,
                             guint            n_bytes,
                             guint8          *bytes)
 {
   guint8 *ubytes = bytes;
+
   g_return_val_if_fail (self != NULL, 0);
+
   while (n_bytes && self->dblocks)
     {
       CDataBlock *dblock = (CDataBlock*) self->dblocks->data;
@@ -193,6 +215,7 @@ gsl_vorbis_cutter_read_ogg (GslVorbisCutter *self,
     }
   return bytes - ubytes;
 }
+
 static void
 vorbis_cutter_process_paket (GslVorbisCutter *self,
                              ogg_packet      *opacket)
@@ -205,7 +228,7 @@ vorbis_cutter_process_paket (GslVorbisCutter *self,
       error = vorbis_synthesis_headerin (&self->vinfo, &self->vcomment, opacket);
       if (error < 0)
         {
-          DIAG ("ignoring packet preceeding Vorbis stream: %s", ov_error_blurb (error));
+          VDEBUG ("ignoring packet preceeding Vorbis stream: %s", ov_error_blurb (error));
         }
       else /* valid vorbis stream start */
         {
@@ -218,7 +241,7 @@ vorbis_cutter_process_paket (GslVorbisCutter *self,
       error = vorbis_synthesis_headerin (&self->vinfo, &self->vcomment, opacket);
       if (error < 0)
         {
-          DIAG ("invalid Vorbis (comment) header packet: %s", ov_error_blurb (error));
+          VDEBUG ("invalid Vorbis (comment) header packet: %s", ov_error_blurb (error));
           vorbis_cutter_abort (self);
         }
       else
@@ -228,7 +251,7 @@ vorbis_cutter_process_paket (GslVorbisCutter *self,
       error = vorbis_synthesis_headerin (&self->vinfo, &self->vcomment, opacket);
       if (error < 0)
         {
-          DIAG ("invalid Vorbis (codebook) header packet: %s", ov_error_blurb (error));
+          VDEBUG ("invalid Vorbis (codebook) header packet: %s", ov_error_blurb (error));
           vorbis_cutter_abort (self);
         }
       else
@@ -242,7 +265,7 @@ vorbis_cutter_process_paket (GslVorbisCutter *self,
     default:    /* audio packets */
       window = vorbis_packet_blocksize (&self->vinfo, opacket);
       if (window < 0)
-        DIAG ("skipping package: %s", ov_error_blurb (window));
+        VDEBUG ("skipping package: %s", ov_error_blurb (window));
       else
         {
           self->n_packets++;
@@ -259,10 +282,10 @@ vorbis_cutter_process_paket (GslVorbisCutter *self,
       if (self->n_packets > 3)  /* audio packet */
         {
           gboolean last_on_page = FALSE;
-          DEBUG ("packet[%d]: b_o_s=%ld e_o_s=%ld packetno=%ld pgran=%ld granule=%ld", self->n_packets - 1,
-                 opacket->b_o_s, opacket->e_o_s,
-                 opacket->packetno, opacket->granulepos,
-                 self->tracking_granule);
+          VDEBUG ("packet[%d]: b_o_s=%ld e_o_s=%ld packetno=%ld pgran=%ld granule=%ld", self->n_packets - 1,
+                  opacket->b_o_s, opacket->e_o_s,
+                  opacket->packetno, opacket->granulepos,
+                  self->tracking_granule);
           /* update packet granulepos */
           if (opacket->granulepos < 0)
             opacket->granulepos = self->tracking_granule;
@@ -270,7 +293,7 @@ vorbis_cutter_process_paket (GslVorbisCutter *self,
             {
               if (!opacket->e_o_s &&    /* catch granule mismatches (before end) */
                   self->tracking_granule != opacket->granulepos)
-                DIAG ("failed to track position of input ogg stream, output possibly corrupted");
+                VDEBUG ("failed to track position of input ogg stream, output possibly corrupted");
               self->tracking_granule = opacket->granulepos;
               last_on_page = TRUE;      /* only the last packet of a page has a granule */
             }
@@ -294,9 +317,9 @@ vorbis_cutter_process_paket (GslVorbisCutter *self,
               }
         }
       else
-        DEBUG ("packet[%d]: b_o_s=%ld e_o_s=%ld packetno=%ld pgran=%ld", self->n_packets - 1,
-               opacket->b_o_s, opacket->e_o_s,
-               opacket->packetno, opacket->granulepos);
+        VDEBUG ("packet[%d]: b_o_s=%ld e_o_s=%ld packetno=%ld pgran=%ld", self->n_packets - 1,
+                opacket->b_o_s, opacket->e_o_s,
+                opacket->packetno, opacket->granulepos);
       /* copy packet to output stream */
       ogg_stream_packetin (&self->ostream, opacket);
       /* write output stream (vorbis needs certain packets to be page-flushed) */
@@ -326,6 +349,7 @@ vorbis_cutter_process_paket (GslVorbisCutter *self,
       self->eos = opacket->e_o_s > 0;
     }
 }
+
 void
 gsl_vorbis_cutter_write_ogg (GslVorbisCutter *self,
                              guint            n_bytes,
@@ -336,6 +360,7 @@ gsl_vorbis_cutter_write_ogg (GslVorbisCutter *self,
     g_return_if_fail (bytes != NULL);
   else
     return;
+
   if (!self->eos)
     {
       ogg_page opage;

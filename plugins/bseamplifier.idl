@@ -59,4 +59,5 @@ interface Amplifier : Effect {
     Real  olevel          = Perc ("", "", 100, "w");		/* -> master_volume (v0.6.2) */
   };
 };
+
 };

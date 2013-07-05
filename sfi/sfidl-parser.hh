@@ -1,14 +1,19 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
+
 #ifndef _SFIDL_PARSER_H_
 #define _SFIDL_PARSER_H_
+
 #include <map>
 #include "sfidl-utils.hh"
+
 namespace Sfidl {
+
 /* we implement a get() function since operator[] is not const */
 template<typename Key, typename Value>
 class Map : public std::map<Key,Value> {
 private:
   Value default_value;
+
 public:
   const Value& get(const Key& k) const {
     typename std::map<Key,Value>::const_iterator i = this->find(k);
@@ -18,6 +23,7 @@ public:
       return default_value;
   }
 };
+
 /*
  * internationalized string: can store a conventional string,
  * however it can also store whether the string was given in
@@ -27,10 +33,13 @@ public:
 class IString : public String {
 public:
   bool i18n;
+
   IString() : i18n (false) {
   }
+
   IString(const char *str) : String (str), i18n (false) {
   }
+
   /* produces an escaped version "foo" or _("foo") */
   String escaped (const String &i18n_prefix = "_") const
   {
@@ -44,49 +53,59 @@ public:
     return result;
   }
 };
+
 struct LineInfo {
   bool	  isInclude;
   int	  line;
   String  filename;
+
   // Produce a human readable location (file:line, using "stdin" where appropriate) 
   String location() const
   {
     String result;
-    char *x = g_strdup_printf ("%s:%d", (filename == "-") ? "stdin" : filename.c_str(), line);
+    char *x = g_strdup_format ("%s:%d", (filename == "-") ? "stdin" : filename.c_str(), line);
     result = x;
     g_free (x);
     return result;
   }
 };
+
 struct Pragma {
   String  filename;
   String  text;
   int	  line;
   bool	  fromInclude; /* true for normal includes; false for implIncludes and the base file */
+
   bool getString (const String& key, String& value);
 };
+
 struct Constant {
   String  name;
   String  file;
   enum { tString = 1, tFloat = 2, tInt = 3, tIdent = 4 } type;
+
   String  str;
   float	  f;
   int64	  i;
 };
+
 struct Param {
   String  type;
   String  name;
   String  file;
+
   IString group;
   String  pspec;
   int     line;
   String  args;
+
   String  label; /* first argument of the param spec contructor */
   String  blurb; /* second argument of the param spec contructor */
   String  options; /* last argument of the param spec contructor */
   String  literal_options; /* the real option string; note that conversion might not work,
 				  if building the literal option string requires things like C function calls */
 };
+
 struct Stream {
   enum Type { IStream, JStream, OStream } type;
   String  ident;
@@ -95,15 +114,18 @@ struct Stream {
   String  file;
   int     line;
 };
+
 struct ChoiceValue {
   String  name;
   String  file;
   IString label;
   IString blurb;
+
   int     value;
   int     sequentialValue;
   bool    neutral;
 };
+
 struct Choice {
   /*
    * name if the enum, "_anonymous_" for anonymous enum - of course, when
@@ -112,38 +134,47 @@ struct Choice {
    */
   String name;
   String file;
+
   std::vector<ChoiceValue> contents;
   Map<String, IString> infos;
 };
+
 struct Record {
   String name;
   String file;
+
   std::vector<Param> contents;
   Map<String, IString> infos;
 };
+
 struct Sequence {
   String  name;
   String  file;
   Param	  content;
   Map<String, IString> infos;
 };
+
 struct Method {
   String  name;
   String  file;
+
   std::vector<Param> params;
   Param	  result;
   Map<String, IString> infos;
 };
+
 struct Class {
   String name;
   String file;
   String inherits;
+
   std::vector<Method>	methods;
   std::vector<Method>	signals;
   std::vector<Param>	properties;
   std::vector<Stream>	istreams, jstreams, ostreams;
   Map<String, IString>	infos;
 };
+
 enum TypeDeclaration {
   tdChoice        = 1,
   tdRecord        = 2,
@@ -155,6 +186,7 @@ enum TypeDeclaration {
   tdSequenceProto = tdSequence | tdProto,
   tdClassProto    = tdClass | tdProto,
 };
+
 enum Type {
   // primitive types
   VOID,
@@ -175,32 +207,42 @@ enum Type {
   RECORD,
   OBJECT,     /* PROXY */
 };
+
 class Symbol {
 public:
   String name;
+
   Symbol *parent;
   std::vector<Symbol *> children;
+
   Symbol();
   virtual ~Symbol();
+
   String   fullName ();
   Symbol  *find (const String& name);
   bool     insert (Symbol *symbol);
 };
+
 class Namespace : public Symbol {
 public:
   std::vector<Namespace *> used; /* from "using namespace Foo;" statements */
 };
+
 class Parser {
 protected:
   const class Options&      options;
+
   GScanner                 *scanner;
   std::vector<char>         scannerInputData;
   std::vector<LineInfo>     scannerLineInfo;
+
   Namespace                 rootNamespace;
   Namespace                *currentNamespace;
+
   std::vector<String>	    includedNames;
   std::vector<String>	    types;
   std::map<String,int>	    typeMap;
+
   std::vector<String>	    includes;          // files to include
   std::vector<Pragma>	    pragmas;
   std::vector<Constant>	    constants;
@@ -209,31 +251,49 @@ protected:
   std::vector<Record>	    records;
   std::vector<Class>	    classes;
   std::vector<Method>	    procedures;
+
   // namespace related functions
+
   String defineSymbol (const String& name);
   Symbol *qualifyHelper (const String& name);
   String qualifySymbol (const String& name);
   bool enterNamespace (const String& name);
   void leaveNamespace ();
   bool usingNamespace (const String& name);
+
   // scanner related functions
+
   static void scannerMsgHandler (GScanner *scanner, gchar *message, gboolean is_error);
-  void printError (const gchar *format, ...) G_GNUC_PRINTF (2, 3);
-  void printWarning (const gchar *format, ...) G_GNUC_PRINTF (2, 3);
+
+  template<class... Args> void print_error (const char *format, const Args &...args)
+  {
+    if (scanner->parse_errors < scanner->max_parse_errors)
+      g_scanner_error (scanner, "%s", string_format (format, args...).c_str());
+  }
+  template<class... Args> void print_warning (const char *format, const Args &...args)
+  {
+    g_scanner_warn (scanner, "%s", string_format (format, args...).c_str());
+  }
+
   // preprocessor
+
   void preprocess (const String& filename, bool includeImpl = false);
   void preprocessContents (const String& filename);
   bool haveIncluded (const String& filename) const;
   bool insideInclude () const;
+
   // parser
+
   void addConstantTodo (const Constant& cdef);
   void addChoiceTodo (const Choice& cdef);
   void addRecordTodo (const Record& rdef);
   void addSequenceTodo (const Sequence& sdef);
   void addClassTodo (const Class& cdef);
   void addProcedureTodo (const Method& pdef);
+
   void addPrototype (const String& type, TypeDeclaration typeDecl);
   void addType (const String& type, TypeDeclaration typeDecl);
+
   GTokenType parseTypeName (String& s);
   GTokenType parseStringOrConst (String &s);
   GTokenType parseConstant (bool isident = false);
@@ -250,7 +310,9 @@ protected:
   GTokenType parseInfoOptional (Map<String,IString>& infos);
 public:
   Parser ();
+
   bool parse (const String& fileName);
+
   String fileName() const				  { return scanner->input_name; }
   const std::vector<String>& getIncludes () const	  { return includes; }
   const std::vector<Constant>& getConstants () const	  { return constants; }
@@ -260,10 +322,13 @@ public:
   const std::vector<Class>& getClasses () const 	  { return classes; }
   const std::vector<Method>& getProcedures () const	  { return procedures; }
   const std::vector<String>& getTypes () const		  { return types; }
+
   std::vector<Pragma> getPragmas (const String& binding) const;
+
   Sequence findSequence (const String& name) const;
   Record findRecord (const String& name) const;
   const Class* findClass (const String &name) const;
+
   bool isChoice (const String& type) const;
   bool isSequence (const String& type) const;
   bool isRecord (const String& type) const;
@@ -271,6 +336,8 @@ public:
   Type typeOf (const String& type) const;
   bool fromInclude (const String& type) const;
 };
+
 }
 #endif /* _SFIDL_PARSER_H_ */
+
 /* vim:set ts=8 sts=2 sw=2: */

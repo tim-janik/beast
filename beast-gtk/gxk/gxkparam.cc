@@ -4,6 +4,7 @@
 #include <string.h>
 #include <math.h>
 #include <libintl.h>
+
 /* --- GxkParam functions --- */
 static void
 param_update_flags (GxkParam *param)
@@ -22,6 +23,7 @@ param_update_flags (GxkParam *param)
       if (GTK_IS_WIDGET (slist->data))
         gtk_widget_set_sensitive ((GtkWidget*) slist->data, param->sensitive);
 }
+
 static GxkParam*
 param_new (GParamSpec      *pspec,
            gboolean         is_constant,
@@ -49,6 +51,7 @@ param_new (GParamSpec      *pspec,
     }
   return param;
 }
+
 GxkParam*
 gxk_param_new (GParamSpec      *pspec,
                GxkParamBinding *binding,
@@ -58,6 +61,7 @@ gxk_param_new (GParamSpec      *pspec,
   g_return_val_if_fail (binding != NULL, NULL);
   return param_new (pspec, FALSE, binding, user_data);
 }
+
 GxkParam*
 gxk_param_new_constant (GParamSpec      *pspec,
                         GxkParamBinding *binding,
@@ -67,6 +71,7 @@ gxk_param_new_constant (GParamSpec      *pspec,
   g_return_val_if_fail (binding != NULL, NULL);
   return param_new (pspec, TRUE, binding, user_data);
 }
+
 static void
 param_call_update (GxkParam *param,
                    gpointer object)
@@ -83,6 +88,7 @@ param_call_update (GxkParam *param,
       param->updating = updating;
     }
 }
+
 void
 gxk_object_set_param_callback (GtkObject          *object,
                                GxkParamUpdateFunc  ufunc)
@@ -91,12 +97,15 @@ gxk_object_set_param_callback (GtkObject          *object,
   g_return_if_fail (GTK_IS_OBJECT (object));
   g_object_set_data ((GObject*) object, "GxkParamUpdateFunc", (void*) ufunc);
 }
+
 void
 gxk_param_update (GxkParam *param)
 {
   GSList *slist;
   gboolean updating;
+
   g_return_if_fail (GXK_IS_PARAM (param));
+
   updating = param->updating;
   param->updating = TRUE;
   if (param->binding->get_value)
@@ -111,6 +120,7 @@ gxk_param_update (GxkParam *param)
     }
   param->updating = updating;
 }
+
 static gboolean
 gxk_param_grouping_event (GtkWidget *widget,
                           GdkEvent  *event,
@@ -131,6 +141,7 @@ gxk_param_grouping_event (GtkWidget *widget,
     }
   return FALSE;
 }
+
 static void
 gxk_param_grouping_unrealized (GtkWidget *widget,
                                GxkParam  *param)
@@ -138,6 +149,7 @@ gxk_param_grouping_unrealized (GtkWidget *widget,
   while (param->grouping)
     gxk_param_stop_grouping (param);
 }
+
 void
 gxk_param_add_grab_widget (GxkParam           *param,
                            GtkWidget          *widget)
@@ -148,6 +160,7 @@ gxk_param_add_grab_widget (GxkParam           *param,
                     "signal::unrealize", gxk_param_grouping_unrealized, param,
                     NULL);
 }
+
 static void
 gxk_param_remove_object (GxkParam          *param,
                          GtkObject         *object)
@@ -166,6 +179,7 @@ gxk_param_remove_object (GxkParam          *param,
                          NULL);
   g_object_unref (object);
 }
+
 void
 gxk_param_add_object (GxkParam          *param,
                       GtkObject         *object)
@@ -180,6 +194,7 @@ gxk_param_add_object (GxkParam          *param,
       param_call_update (param, object);
     }
 }
+
 void
 gxk_param_apply_value (GxkParam *param)
 {
@@ -197,6 +212,7 @@ gxk_param_apply_value (GxkParam *param)
   else
     gxk_param_update (param);
 }
+
 void
 gxk_param_apply_default (GxkParam *param)
 {
@@ -207,6 +223,7 @@ gxk_param_apply_default (GxkParam *param)
       gxk_param_apply_value (param);
     }
 }
+
 void
 gxk_param_set_editable (GxkParam *param,
 			gboolean  editable)
@@ -227,18 +244,21 @@ gxk_param_set_editable (GxkParam *param,
         }
     }
 }
+
 const gchar*
 gxk_param_get_name (GxkParam *param)
 {
   g_return_val_if_fail (GXK_IS_PARAM (param), NULL);
   return param->pspec->name;
 }
+
 static gboolean _param_devel_tips = FALSE;
 void
 gxk_param_set_devel_tips (gboolean enabled)
 {
   _param_devel_tips = enabled != FALSE;
 }
+
 gchar*
 gxk_param_dup_tooltip (GxkParam *param)
 {
@@ -249,11 +269,12 @@ gxk_param_dup_tooltip (GxkParam *param)
   if (!_param_devel_tips)
     tooltip = g_strdup (ctip);
   else if (ctip)
-    tooltip = g_strdup_printf ("(%s): %s", g_param_spec_get_name (param->pspec), ctip);
+    tooltip = g_strdup_format ("(%s): %s", g_param_spec_get_name (param->pspec), ctip);
   else
-    tooltip = g_strdup_printf ("(%s)", g_param_spec_get_name (param->pspec));
+    tooltip = g_strdup_format ("(%s)", g_param_spec_get_name (param->pspec));
   return tooltip;
 }
+
 void
 gxk_param_start_grouping (GxkParam *param)
 {
@@ -264,6 +285,7 @@ gxk_param_start_grouping (GxkParam *param)
       param->binding->start_grouping)
     param->binding->start_grouping (param);
 }
+
 void
 gxk_param_stop_grouping (GxkParam *param)
 {
@@ -276,13 +298,16 @@ gxk_param_stop_grouping (GxkParam *param)
         param->binding->stop_grouping (param);
     }
 }
+
 void
 gxk_param_destroy (GxkParam *param)
 {
   g_return_if_fail (GXK_IS_PARAM (param));
   g_return_if_fail (param->binding != NULL);
+
   while (param->grouping)
     gxk_param_stop_grouping (param);
+
   while (param->objects)
     {
       GObject *object = (GObject*) param->objects->data;
@@ -298,6 +323,8 @@ gxk_param_destroy (GxkParam *param)
   g_param_spec_unref (param->pspec);
   g_free (param);
 }
+
+
 /* --- value binding --- */
 static void
 param_value_binding_setup (GxkParam       *param,
@@ -306,6 +333,7 @@ param_value_binding_setup (GxkParam       *param,
   if (user_data)
     param->constant = TRUE;
 }
+
 static void
 param_value_binding_set_value (GxkParam     *param,
                                const GValue *value)
@@ -316,6 +344,7 @@ param_value_binding_set_value (GxkParam     *param,
     notify (param->bdata[1].v_pointer, param);
   gxk_param_update (param);
 }
+
 static void
 param_value_binding_get_value (GxkParam *param,
                                GValue   *value)
@@ -323,12 +352,14 @@ param_value_binding_get_value (GxkParam *param,
   g_value_copy (&param->value, value);
   g_param_value_validate (param->pspec, value);
 }
+
 static void
 param_value_binding_destroy (GxkParam *param)
 {
   param->bdata[0].v_pointer = NULL;
   param->bdata[1].v_pointer = NULL;
 }
+
 static GxkParamBinding _param_value_binding = {
   2,    /* fields: notify, notify_data */
   param_value_binding_setup,
@@ -337,6 +368,7 @@ static GxkParamBinding _param_value_binding = {
   param_value_binding_destroy,
   /* check_writable */
 };
+
 GxkParam*
 gxk_param_new_value (GParamSpec          *pspec,
                      GxkParamValueNotify  notify,
@@ -347,6 +379,7 @@ gxk_param_new_value (GParamSpec          *pspec,
   param->bdata[1].v_pointer = notify_data;
   return param;
 }
+
 GxkParam*
 gxk_param_new_constant_value (GParamSpec          *pspec,
                               GxkParamValueNotify  notify,
@@ -357,6 +390,8 @@ gxk_param_new_constant_value (GParamSpec          *pspec,
   param->bdata[1].v_pointer = notify_data;
   return param;
 }
+
+
 /* --- param object binding --- */
 static void
 object_binding_set_value (GxkParam     *param,
@@ -366,6 +401,7 @@ object_binding_set_value (GxkParam     *param,
   if (object)
     g_object_set_property (object, param->pspec->name, value);
 }
+
 static void
 object_binding_get_value (GxkParam *param,
                           GValue   *value)
@@ -382,6 +418,7 @@ object_binding_get_value (GxkParam *param,
   else
     g_value_reset (value);
 }
+
 static void
 object_binding_weakref (gpointer data,
                         GObject *junk)
@@ -390,6 +427,7 @@ object_binding_weakref (gpointer data,
   param->bdata[0].v_pointer = NULL;
   param->bdata[1].v_long = 0;   /* already disconnected */
 }
+
 static void
 object_binding_destroy (GxkParam *param)
 {
@@ -402,6 +440,7 @@ object_binding_destroy (GxkParam *param)
       param->bdata[1].v_long = 0;
     }
 }
+
 static gboolean
 object_binding_check_writable (GxkParam *param)
 {
@@ -411,6 +450,7 @@ object_binding_check_writable (GxkParam *param)
   else
     return FALSE;
 }
+
 static GxkParamBinding g_object_binding = {
   2, // n_data_fields
   NULL, // setup
@@ -421,6 +461,7 @@ static GxkParamBinding g_object_binding = {
   NULL, // start_grouping
   NULL, // stop_grouping
 };
+
 GxkParam*
 gxk_param_new_object (GParamSpec         *pspec,
                       GObject            *object)
@@ -429,6 +470,7 @@ gxk_param_new_object (GParamSpec         *pspec,
   gxk_param_set_object (param, object);
   return param;
 }
+
 void
 gxk_param_set_object (GxkParam           *param,
                       GObject            *object)
@@ -437,6 +479,7 @@ gxk_param_set_object (GxkParam           *param,
   g_return_if_fail (param->binding == &g_object_binding);
   if (object)
     g_return_if_fail (G_IS_OBJECT (object));
+
   object_binding_destroy (param);
   param->bdata[0].v_pointer = object;
   if (object)
@@ -447,14 +490,18 @@ gxk_param_set_object (GxkParam           *param,
       g_object_weak_ref (object, object_binding_weakref, param);
     }
 }
+
 GObject*
 gxk_param_get_object (GxkParam *param)
 {
   g_return_val_if_fail (GXK_IS_PARAM (param), NULL);
+
   if (param->binding == &g_object_binding)
     return (GObject*) param->bdata[0].v_pointer;
   return 0;
 }
+
+
 /* --- param view/editor --- */
 static GSList *_param_editor_list = NULL;
 static void
@@ -464,6 +511,7 @@ param_register_editor (GxkParamEditor *editor,
   editor->ident.nick = dgettext (i18n_domain, editor->ident.nick);
   _param_editor_list = g_slist_prepend (_param_editor_list, (GxkParamEditor*) editor);
 }
+
 static void
 params_register_editor_dup_typed (GxkParamEditor *editor,
                                   const gchar    *i18n_domain,
@@ -473,6 +521,7 @@ params_register_editor_dup_typed (GxkParamEditor *editor,
   ed->type_match.type = new_type;
   param_register_editor (ed, GXK_I18N_DOMAIN);
 }
+
 void
 gxk_param_register_editor (GxkParamEditor *editor,
                            const gchar    *i18n_domain)
@@ -501,6 +550,7 @@ gxk_param_register_editor (GxkParamEditor *editor,
       param_register_editor (editor, i18n_domain);
     }
 }
+
 gchar**
 gxk_param_list_editors (void)
 {
@@ -520,8 +570,10 @@ gxk_param_list_editors (void)
   names[i] = NULL;
   return names;
 }
+
 static guint          _param_editor_name_n_aliases = 0;
 static const gchar ***_param_editor_name_aliases = NULL;
+
 void
 gxk_param_register_aliases (const gchar **aliases)
 {
@@ -532,6 +584,7 @@ gxk_param_register_aliases (const gchar **aliases)
       _param_editor_name_aliases[i] = aliases;
     }
 }
+
 static gboolean
 param_editor_name_match (const gchar          *editor_name,
                          const GxkParamEditor *editor)
@@ -554,6 +607,7 @@ param_editor_name_match (const gchar          *editor_name,
     }
   return FALSE;
 }
+
 static guint
 param_score_editor (const GxkParamEditor *editor,
                     GParamSpec           *pspec,
@@ -586,6 +640,7 @@ param_score_editor (const GxkParamEditor *editor,
       option_mismatch |= !g_param_spec_provides_options (pspec, editor->features.options);
       bonus++;
     }
+
   if (annotate)
     g_printerr ("  %s(%s): fundamental=%s derived=%s%s%s editing=%s bonus=%+d%s%s: ",
                 editor->ident.name, editor->ident.nick,
@@ -597,12 +652,14 @@ param_score_editor (const GxkParamEditor *editor,
                 editor->features.rating,
                 editor->features.options ? " options=" : "",
                 editor->features.options ? editor->features.options : "");
+
   if (type_mismatch || option_mismatch) /* bail out on mismatches */
     {
       if (annotate)
         g_printerr ("%s mismatch\n", type_mismatch ? "type" : "option");
       return 0;
     }
+
   guint rating = 0;
   rating |= 256 - type_distance;
   rating <<= 1;
@@ -615,10 +672,12 @@ param_score_editor (const GxkParamEditor *editor,
   rating += 128 + editor->features.rating;      /* rating is signed, 8bit */
   rating <<= 8;
   rating += bonus;      /* bonus is provided for overcomming additional mismatch possibilities */
+
   if (annotate)
     g_printerr ("%d\n", rating);
   return rating;
 }
+
 static GxkParamEditor*
 param_lookup_editor (const gchar *editor_name,
                      GParamSpec  *pspec)
@@ -645,6 +704,7 @@ param_lookup_editor (const gchar *editor_name,
 #endif
   return best;
 }
+
 guint
 gxk_param_editor_score (const gchar *editor_name,
                         GParamSpec  *pspec)
@@ -664,6 +724,7 @@ gxk_param_editor_score (const gchar *editor_name,
     }
   return rating;
 }
+
 void
 gxk_param_editor_debug_score (GParamSpec *pspec)
 {
@@ -684,6 +745,7 @@ gxk_param_editor_debug_score (GParamSpec *pspec)
       rating = MAX (r, rating);
     }
 }
+
 const gchar*
 gxk_param_lookup_editor (const gchar *editor_name,
                          GParamSpec  *pspec)
@@ -692,6 +754,7 @@ gxk_param_lookup_editor (const gchar *editor_name,
   g_return_val_if_fail (G_IS_PARAM_SPEC (pspec), 0);
   return param_lookup_editor (editor_name, pspec)->ident.name;
 }
+
 GtkWidget*
 gxk_param_create_editor (GxkParam               *param,
                          const gchar            *editor_name)
@@ -713,6 +776,7 @@ gxk_param_create_editor (GxkParam               *param,
     gxk_param_add_object (param, GTK_OBJECT (toplevel));
   return toplevel;
 }
+
 /* --- param editor sizes --- */
 static const GxkParamEditorSizes param_editor_default_sizes = {
   TRUE,         /* may_resize */
@@ -736,6 +800,7 @@ static const GxkParamEditorSizes param_editor_default_sizes = {
 };
 static GxkParamEditorSizes *size_groups = NULL;
 static guint                n_size_groups = 0;
+
 guint
 gxk_param_create_size_group (void)
 {
@@ -748,6 +813,7 @@ gxk_param_create_size_group (void)
   size_groups[i].request_fractions = FALSE;
   return n_size_groups;
 }
+
 const GxkParamEditorSizes*
 gxk_param_get_editor_sizes (GxkParam *param)
 {
@@ -755,6 +821,7 @@ gxk_param_get_editor_sizes (GxkParam *param)
     return &size_groups[param->size_group - 1];
   return &param_editor_default_sizes;
 }
+
 void
 gxk_param_set_size_group (GxkParam                  *param,
                           guint                      size_group)
@@ -763,6 +830,7 @@ gxk_param_set_size_group (GxkParam                  *param,
   g_return_if_fail (size_group <= n_size_groups);
   param->size_group = size_group;
 }
+
 void
 gxk_param_set_sizes (guint                      size_group,
                      const GxkParamEditorSizes *esizes)
@@ -770,6 +838,7 @@ gxk_param_set_sizes (guint                      size_group,
   g_return_if_fail (size_group > 0 && size_group <= n_size_groups);
   size_groups[size_group - 1] = esizes ? *esizes : param_editor_default_sizes;
 }
+
 guint
 gxk_param_get_digits (gdouble                    value,
                       guint                      base)
@@ -778,12 +847,15 @@ gxk_param_get_digits (gdouble                    value,
     return 1;
   return 1 + log (value) / log (base);
 }
+
+
 /* --- param editor widgets --- */
 #include "gxkparam-entry.cc"
 #include "gxkparam-label.cc"
 #include "gxkparam-scale.cc"
 #include "gxkparam-spinner.cc"
 #include "gxkparam-toggle.cc"
+
 void
 gxk_init_params (void)
 {
@@ -802,6 +874,7 @@ gxk_init_params (void)
   gxk_param_register_editor (&param_toggle, GXK_I18N_DOMAIN);
   gxk_param_register_editor (&param_toggle_empty, GXK_I18N_DOMAIN);
 }
+
 /* --- param implementation utils --- */
 gboolean
 gxk_param_entry_key_press (GtkEntry    *entry,
@@ -809,6 +882,7 @@ gxk_param_entry_key_press (GtkEntry    *entry,
 {
   GtkEditable *editable = GTK_EDITABLE (entry);
   gboolean intercept = FALSE;
+
   if (event->state & GDK_MOD1_MASK)
     switch (event->keyval)
       {
@@ -826,6 +900,7 @@ gxk_param_entry_key_press (GtkEntry    *entry,
       }
   return intercept;
 }
+
 void
 gxk_param_entry_set_text (GxkParam    *param,
                           GtkWidget   *_entry,
@@ -842,6 +917,7 @@ gxk_param_entry_set_text (GxkParam    *param,
     }
   gtk_editable_set_editable (GTK_EDITABLE (entry), param->editable);
 }
+
 static void
 gxk_entry_changed_marshaller (GClosure       *closure,
                               GValue         *return_value,
@@ -856,6 +932,7 @@ gxk_entry_changed_marshaller (GClosure       *closure,
   if (!param->updating)
     changed ((GtkWidget*) g_value_get_object (param_values + 0), param);
 }
+
 void
 gxk_param_entry_connect_handlers (GxkParam    *param,
                                   GtkWidget   *entry,
@@ -871,12 +948,14 @@ gxk_param_entry_connect_handlers (GxkParam    *param,
       g_signal_connect_closure (entry, "focus-out-event", closure, FALSE);
     }
 }
+
 gboolean
 gxk_param_ensure_focus (GtkWidget *widget)
 {
   gtk_widget_grab_focus (widget);
   return FALSE;
 }
+
 static void
 param_adjustment_update (GxkParam       *param,
                          GtkObject      *object)
@@ -887,6 +966,7 @@ param_adjustment_update (GxkParam       *param,
   gtk_adjustment_set_value (GTK_ADJUSTMENT (object), g_value_get_double (&dvalue));
   g_value_unset (&dvalue);
 }
+
 static void
 param_adjustment_value_changed (GtkAdjustment *adjustment,
                                 GxkParam      *param)
@@ -901,6 +981,7 @@ param_adjustment_value_changed (GtkAdjustment *adjustment,
       gxk_param_apply_value (param);
     }
 }
+
 GtkAdjustment*
 gxk_param_get_adjustment_with_stepping (GxkParam  *param,
                                         gdouble    pstepping)
@@ -914,6 +995,7 @@ gxk_param_get_adjustment_with_stepping (GxkParam  *param,
     if (GTK_IS_ADJUSTMENT (slist->data) &&
         g_object_get_data ((GObject*) slist->data, "gxk-param-func") == gxk_param_get_adjustment_with_stepping)
       return (GtkAdjustment*) slist->data;
+
 #define EXTRACT_FIELDS(p,T,mi,ma,df) { T *t = (T*) p; mi = t->minimum; ma = t->maximum; df = t->default_value; }
   if (G_IS_PARAM_SPEC_CHAR (pspec))
     {
@@ -970,6 +1052,7 @@ gxk_param_get_adjustment_with_stepping (GxkParam  *param,
   else
     return NULL;
 #undef EXTRACT_FIELDS
+
   if (pstepping <= 0)
     pstepping = isint ? 1.0 : 0.1;
   if (pstepping == stepping)
@@ -993,11 +1076,13 @@ gxk_param_get_adjustment_with_stepping (GxkParam  *param,
   g_object_set_data ((GObject*) adjustment, "gxk-param-func", (void*) gxk_param_get_adjustment_with_stepping);
   return GTK_ADJUSTMENT (adjustment);
 }
+
 GtkAdjustment*
 gxk_param_get_adjustment (GxkParam *param)
 {
   return gxk_param_get_adjustment_with_stepping (param, 0);
 }
+
 GtkAdjustment*
 gxk_param_get_log_adjustment (GxkParam *param)
 {
@@ -1025,9 +1110,11 @@ gxk_param_get_log_adjustment (GxkParam *param)
     }
   return NULL;
 }
+
 typedef struct {
   gdouble mindb, maxdb;
 } GxkParamDBData;
+
 static gdouble
 gxk_param_db_adjustment_convert (GxkAdapterAdjustment           *self,
                                  GxkAdapterAdjustmentConvertType convert_type,
@@ -1052,6 +1139,7 @@ gxk_param_db_adjustment_convert (GxkAdapterAdjustment           *self,
       return 0;
     }
 }
+
 GtkAdjustment*
 gxk_param_get_decibel_adjustment (GxkParam *param)
 {

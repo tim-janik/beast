@@ -17,5 +17,7 @@ interface Evaluator : Bse::Effect {
     String status  = String (_("Status"), _("Status used to output error messages"), "", GUI_RDONLY);
   };
 };
+
 }; // Bse
+
 /* vim:set ts=8 sw=2 sts=2 syntax=cpp: */

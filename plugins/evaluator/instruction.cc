@@ -1,6 +1,9 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
+
 #include "instruction.hh"
+
 using namespace Bse::EvaluatorUtils;
+
 Instruction Instruction::rr(Instruction::Type ins, int reg1, int reg2)
 {
     Instruction i;
@@ -9,6 +12,7 @@ Instruction Instruction::rr(Instruction::Type ins, int reg1, int reg2)
     i.p2.reg = reg2;
     return i;
 }
+
 Instruction Instruction::rv(Instruction::Type ins, int reg, double val)
 {
     Instruction i;
@@ -17,6 +21,7 @@ Instruction Instruction::rv(Instruction::Type ins, int reg, double val)
     i.p2.val = val;
     return i;
 }
+
 void Instruction::rw_registers(int& read1, int& read2, int& write1, int& write2) const
 {
     read1 = read2 = write1 = write2 = -1;
@@ -40,6 +45,7 @@ void Instruction::rw_registers(int& read1, int& read2, int& write1, int& write2)
 	read1 = write1 = p1.reg;
     }
 }
+
 void Instruction::print(const Symbols& symbols) const
 {
     switch(ins)
@@ -59,4 +65,5 @@ void Instruction::print(const Symbols& symbols) const
 		    break;
     }
 }
+
 /* vim:set ts=8 sw=4 sts=4: */

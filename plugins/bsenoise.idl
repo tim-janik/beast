@@ -9,4 +9,5 @@ interface Noise : Effect {
   Info    blurb       = _("Noise is a generator of (supposedly) white noise");
   OStream noise_out   = Stream (_("Noise Out"), _("Noise Output"));
 };
+
 } // Bse

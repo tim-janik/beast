@@ -13,6 +13,7 @@ interface LatencyTest : Effect {
 			  "After sending a midi event, the latency tester will count the number"
 			  " of samples until it sees some signal on its input channel. From"
 			  " that number a latency is computed and printed (or logged, if you specified a log file)");
+  
   group _("Test configuration") {
     Real   bpm = SfiReal (_("Beats per Minute"), _("The speed at which test events (quarter notes) are generated"),
                   120, 10, 1000, 5, STANDARD);

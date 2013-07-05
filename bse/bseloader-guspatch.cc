@@ -5,9 +5,11 @@
 #include <string.h>
 #include <vector>
 #include <string>
+
 #undef  WITH_GUSPATCH_XINFOS
-static SFI_MSG_TYPE_DEFINE (debug_guspatch, "guspatch", SFI_MSG_DEBUG, NULL);
-#define DEBUG(...)      sfi_debug (debug_guspatch, __VA_ARGS__)
+
+#define LDEBUG(...)     BSE_KEY_DEBUG ("gus-loader", __VA_ARGS__)
+
 using std::vector;
 using std::string;
 /*
@@ -21,21 +23,25 @@ typedef uint dword;
 typedef char sbyte;
 typedef short int sword;
 typedef int sdword;
+
 /*
  * executes read_me (which should be a function call to read something from the file),
  * and returns from the calling function if that fails
  */
 #define read_or_return_error(read_me) G_STMT_START{ BseErrorType _error = read_me; if (_error) return _error; }G_STMT_END
+
 static inline BseErrorType
 fread_block (FILE *file,
              int   len,
              void *data)
 {
   if (fread (data, len, 1, file) != 1)
-    if (feof (file))
-      return BSE_ERROR_FILE_EOF;
-    else
-      return gsl_error_from_errno (errno, BSE_ERROR_FILE_READ_FAILED);
+    {
+      if (feof (file))
+        return BSE_ERROR_FILE_EOF;
+      else
+        return gsl_error_from_errno (errno, BSE_ERROR_FILE_READ_FAILED);
+    }
   return BSE_ERROR_NONE;
 }
 static inline BseErrorType
@@ -50,6 +56,7 @@ skip (FILE *file,
     }
   return BSE_ERROR_NONE;
 }
+
 static inline BseErrorType
 fread_bytes (FILE          *file,
              unsigned char *bytes,
@@ -57,6 +64,7 @@ fread_bytes (FILE          *file,
 {
   return fread_block (file, len, bytes);
 }
+
 static inline BseErrorType
 fread_string (FILE *file,
               char *str,
@@ -64,6 +72,7 @@ fread_string (FILE *file,
 {
   return fread_block (file, len, str);
 }
+
 /* readXXX with sizeof(xxx) == 1 */
 static inline BseErrorType
 fread_byte (FILE *file,
@@ -71,38 +80,48 @@ fread_byte (FILE *file,
 {
   return fread_block (file, 1, &b);
 }
+
 /* readXXX with sizeof(xxx) == 2 */
 static inline BseErrorType
 fread_word (FILE *file,
           word &w)
 {
   byte h, l;
+
   read_or_return_error (fread_block (file, 1, &l));
   read_or_return_error (fread_block (file, 1, &h));
   w = (h << 8) + l;
+
   return BSE_ERROR_NONE;
 }
+
 static inline BseErrorType
 fread_short_word (FILE  *file,
                   sword &sw)
 {
   word w;
+
   read_or_return_error (fread_word (file, w));
   sw = (sword) w;
+
   return BSE_ERROR_NONE;
 }
+
 /* readXXX with sizeof(xxx) == 4 */
 static inline BseErrorType
 fread_dword (FILE *file, dword& dw)
 {
   byte h, l, hh, hl;
+
   read_or_return_error (fread_block (file, 1, &l));
   read_or_return_error (fread_block (file, 1, &h));
   read_or_return_error (fread_block (file, 1, &hl));
   read_or_return_error (fread_block (file, 1, &hh));
   dw = (hh << 24) + (hl << 16) + (h << 8) + l;
+
   return BSE_ERROR_NONE;
 }
+
 struct PatHeader
 {
   char id[12];		        /* ID='GF1PATCH110' */
@@ -117,9 +136,11 @@ struct PatHeader
   word mastervolume;		/* Master volume for all samples */
   dword size;			/* Size of the following data */
   char reserved[36];		/* reserved */
+
   PatHeader()
   {
   }
+
   BseErrorType
   load (FILE *file)
   {
@@ -127,16 +148,21 @@ struct PatHeader
     read_or_return_error (fread_string (file, manufacturer_id, 10));
     read_or_return_error (fread_string (file, description, 60));
     /*		skip(file, 2);*/
+
     read_or_return_error (fread_byte (file, instruments));
     read_or_return_error (fread_byte (file, voices));
     read_or_return_error (fread_byte (file, channels));
+
     read_or_return_error (fread_word (file, waveforms));
     read_or_return_error (fread_word (file, mastervolume));
     read_or_return_error (fread_dword (file, size));
+
     read_or_return_error (fread_string (file, reserved, 36));
+
     return BSE_ERROR_NONE;
   }
 };
+
 struct PatInstrument
 {
   word	number;
@@ -144,14 +170,17 @@ struct PatInstrument
   dword 	size;		  /* Size of the whole instrument in bytes. */
   byte	layers;
   char	reserved[40];
+
   /* layer? */
   word	layerUnknown;
   dword	layerSize;
   byte	sampleCount;	  /* number of samples in this layer (?) */
   char	layerReserved[40];
+
   PatInstrument()
   {
   }
+
   BseErrorType
   load (FILE *file)
   {
@@ -160,14 +189,17 @@ struct PatInstrument
     read_or_return_error (fread_dword (file, size));
     read_or_return_error (fread_byte (file, layers));
     read_or_return_error (fread_string (file, reserved, 40));
+
     /* layer: (?) */
     read_or_return_error (fread_word (file, layerUnknown));
     read_or_return_error (fread_dword (file, layerSize));
     read_or_return_error (fread_byte (file, sampleCount));
     read_or_return_error (fread_string (file, reserved, 40));
+
     return BSE_ERROR_NONE;
   }
 };
+
 enum
 {
   PAT_FORMAT_16BIT = (1 << 0),
@@ -179,6 +211,7 @@ enum
   PAT_FORMAT_ENVELOPE = (1 << 6),
   PAT_FORMAT_CLAMPED = (1 << 7) // timidity source says: ? (for last envelope??)
 };
+
 struct PatPatch
 {
   char	filename[7];	  /* Wave file name */
@@ -204,9 +237,11 @@ struct PatPatch
   sword	freqScale;
   word	freqScaleFactor;
   char	reserved[36];
+
   PatPatch()
   {
   }
+
   BseErrorType
   load (FILE *file)
   {
@@ -233,12 +268,15 @@ struct PatPatch
     read_or_return_error (fread_short_word (file, freqScale));
     read_or_return_error (fread_word (file, freqScaleFactor));
     read_or_return_error (fread_string (file, reserved, 36));
+
     return BSE_ERROR_NONE;
   }
 };
 #undef read_or_return_error
 };
+
 namespace {
+
 /*
  * adaptation to GSL API
  */
@@ -246,9 +284,11 @@ struct FileInfo
 {
   BseWaveFileInfo wfi;
   BseWaveDsc      wdsc;
+
   PatHeader          *header;
   PatInstrument      *instrument;
   vector<PatPatch *>  patches;
+
   GslWaveLoopType
   loop_type (int wave_format)
   {
@@ -259,7 +299,7 @@ struct FileInfo
 	  {
 	    if (wave_format & PAT_FORMAT_LOOP_BACKWARDS)
 	      {
-		DEBUG ("unsupported loop type (backwards-pingpong)");
+		LDEBUG ("unsupported loop type (backwards-pingpong)");
 		return GSL_WAVE_LOOP_PINGPONG;
 	      }
 	    else
@@ -271,7 +311,7 @@ struct FileInfo
 	  {
 	    if (wave_format & PAT_FORMAT_LOOP_BACKWARDS)
 	      {
-		DEBUG ("unsupported loop type (backwards-jump)");
+		LDEBUG ("unsupported loop type (backwards-jump)");
 		return GSL_WAVE_LOOP_JUMP;
 	      }
 	    else
@@ -285,11 +325,13 @@ struct FileInfo
 	return GSL_WAVE_LOOP_NONE;
       }
   }
+
   guint&
   data_offset (int chunk_number)
   {
     return wdsc.chunks[chunk_number].loader_data[0].uint;
   }
+
   GslWaveFormatType
   wave_format (int wave_format)
   {
@@ -300,39 +342,47 @@ struct FileInfo
       case PAT_FORMAT_16BIT:			    return GSL_WAVE_FORMAT_SIGNED_16;
       case PAT_FORMAT_UNSIGNED | PAT_FORMAT_16BIT:  return GSL_WAVE_FORMAT_UNSIGNED_16;
       }
-    BIRNET_ASSERT_NOT_REACHED();
+    RAPICORN_ASSERT_UNREACHED();
   }
+
   int
   bytes_per_frame (int wave_format)
   {
     return ((wave_format & PAT_FORMAT_16BIT) ? 2 : 1);
   }
+
   string
   envelope_point_to_string (guint value)
   {
-    gchar *tmp_str = g_strdup_printf ("%u", value);
+    gchar *tmp_str = g_strdup_format ("%u", value);
     string str = tmp_str;
     g_free (tmp_str);
     return str;
   }
+
   string
   envelope_array_to_string (byte *envelope_array)
   {
     string envelope_str;
+
     for (int i = 0; i < 6; i++)
       {
 	if (i)
 	  envelope_str += ",";
 	envelope_str += envelope_point_to_string (envelope_array[i]);
       }
+
     return envelope_str;
   }
+
+
   FileInfo (const gchar  *file_name,
             BseErrorType *error_p)
   {
     /* initialize C structures with zeros */
     memset (&wfi, 0, sizeof (wfi));
     memset (&wdsc, 0, sizeof (wdsc));
+
     /* open patch file */
     FILE *patfile = fopen (file_name, "r");
     if (!patfile)
@@ -340,47 +390,59 @@ struct FileInfo
 	*error_p = gsl_error_from_errno (errno, BSE_ERROR_FILE_OPEN_FAILED);
 	return;
       }
+
     /* parse contents of patfile into Pat* data structurs */
     header = new PatHeader();
+
     *error_p = header->load (patfile);
     if (*error_p)
       {
 	fclose (patfile);
 	return;
       }
+
     if (header->channels == 0) /* fixup channels setting */
       header->channels = 1;
+
     instrument = new PatInstrument();
+
     *error_p = instrument->load (patfile);
     if (*error_p)
       {
 	fclose (patfile);
         return;
       }
+
     /* allocate BseWaveDsc */
     wdsc.n_chunks = instrument->sampleCount;
     wdsc.chunks = (typeof (wdsc.chunks)) g_malloc0 (sizeof (wdsc.chunks[0]) * wdsc.n_chunks);
+
     for (int i = 0; i<instrument->sampleCount; i++)
       {
 	PatPatch *patch = new PatPatch();
 	patches.push_back (patch);
+
         *error_p = patch->load (patfile);
         if (*error_p)
           return;
+
 	data_offset (i) = (guint) ftell (patfile);
+
 	*error_p = skip (patfile, patch->wavesize);
         if (*error_p)
 	  {
 	    fclose (patfile);
 	    return;
 	  }
-	DEBUG (" - read patch, srate = %d (%d bytes)", patch->sampleRate, patch->wavesize);
+	LDEBUG (" - read patch, srate = %d (%d bytes)", patch->sampleRate, patch->wavesize);
       }
     fclose (patfile);
+
     /* allocate and fill BseWaveFileInfo */
     wfi.n_waves = 1;
     wfi.waves = (typeof (wfi.waves)) g_malloc0 (sizeof (wfi.waves[0]) * wfi.n_waves);
     wfi.waves[0].name = g_strdup (file_name);
+
     /* fill BseWaveDsc */
     wdsc.name = g_strdup (file_name);
     /* header->channels means output channels, GUS Patches are mono only */
@@ -393,12 +455,12 @@ struct FileInfo
 	/* fill GslWaveChunk */
 	wdsc.chunks[i].mix_freq = patches[i]->sampleRate;
 	wdsc.chunks[i].osc_freq = patches[i]->origFreq / 1000.0;
-	DEBUG ("orig_freq = %f (%d)", patches[i]->origFreq / 1000.0, patches[i]->origFreq);
-	DEBUG ("min_freq = %f", patches[i]->minFreq / 1000.0);
-	DEBUG ("max_freq = %f", patches[i]->maxFreq / 1000.0);
-	DEBUG ("fine_tune = %d", patches[i]->fineTune);
-	DEBUG ("scale_freq = %d", patches[i]->freqScale);
-	DEBUG ("scale_factor = %d", patches[i]->freqScaleFactor);
+	LDEBUG ("orig_freq = %f (%d)", patches[i]->origFreq / 1000.0, patches[i]->origFreq);
+	LDEBUG ("min_freq = %f", patches[i]->minFreq / 1000.0);
+	LDEBUG ("max_freq = %f", patches[i]->maxFreq / 1000.0);
+	LDEBUG ("fine_tune = %d", patches[i]->fineTune);
+	LDEBUG ("scale_freq = %d", patches[i]->freqScale);
+	LDEBUG ("scale_factor = %d", patches[i]->freqScaleFactor);
 	/* fill xinfos */
 	char**& xinfos = wdsc.chunks[i].xinfos;
 	int frame_size = bytes_per_frame (patches[i]->waveFormat);
@@ -408,6 +470,7 @@ struct FileInfo
             xinfos = bse_xinfos_add_num (xinfos, "loop-count", 1000000);
             xinfos = bse_xinfos_add_num (xinfos, "loop-start", patches[i]->loopStart / frame_size);
             xinfos = bse_xinfos_add_num (xinfos, "loop-end", patches[i]->loopEnd / frame_size);
+
 #ifdef WITH_GUSPATCH_XINFOS
             xinfos = bse_xinfos_add_value (xinfos, "gus-patch-envelope-rates",
                                            envelope_array_to_string (patches[i]->filterRate).c_str());
@@ -415,6 +478,7 @@ struct FileInfo
                                            envelope_array_to_string (patches[i]->filterOffset).c_str());
 #endif
           }
+
 #ifdef WITH_GUSPATCH_XINFOS
 	xinfos = bse_xinfos_add_num (xinfos, "gus-patch-loop-fractions", patches[i]->fractions);
 	xinfos = bse_xinfos_add_float (xinfos, "gus-patch-min-freq", patches[i]->minFreq / 1000.0);
@@ -434,6 +498,7 @@ struct FileInfo
 #endif
       }
   }
+
   ~FileInfo()
   {
     /* free patch data loaded from file */
@@ -442,12 +507,15 @@ struct FileInfo
       delete *pi;
     delete instrument;
     delete header;
+
     /* free BseWaveDsc */
     for (guint i = 0; i < wdsc.n_chunks; i++)
       g_strfreev (wdsc.chunks[i].xinfos);
+
     g_strfreev (wdsc.xinfos);
     g_free (wdsc.name);
     g_free (wdsc.chunks);
+
     /* free BseWaveFileInfo */
     if (wfi.waves)
       {
@@ -456,6 +524,7 @@ struct FileInfo
       }
   }
 };
+
 static BseWaveFileInfo*
 pat_load_file_info (gpointer      data,
 		    const gchar  *file_name,
@@ -467,8 +536,10 @@ pat_load_file_info (gpointer      data,
       delete file_info;
       return NULL;
     }
+
   return &file_info->wfi;
 }
+
 static void
 pat_free_file_info (gpointer         data,
 		    BseWaveFileInfo *wave_file_info)
@@ -476,6 +547,7 @@ pat_free_file_info (gpointer         data,
   FileInfo *file_info = reinterpret_cast<FileInfo*> (wave_file_info);
   delete file_info;
 }
+
 static BseWaveDsc*
 pat_load_wave_dsc (gpointer         data,
 		   BseWaveFileInfo *wave_file_info,
@@ -485,11 +557,13 @@ pat_load_wave_dsc (gpointer         data,
   FileInfo *file_info = reinterpret_cast<FileInfo*> (wave_file_info);
   return &file_info->wdsc;
 }
+
 static void
 pat_free_wave_dsc (gpointer    data,
 		   BseWaveDsc *wave_dsc)
 {
 }
+
 static GslDataHandle*
 pat_create_chunk_handle (gpointer      data,
 			 BseWaveDsc   *wave_dsc,
@@ -500,16 +574,16 @@ pat_create_chunk_handle (gpointer      data,
   FileInfo *file_info = reinterpret_cast<FileInfo*> (wave_dsc->file_info);
   const PatPatch *patch = file_info->patches[nth_chunk];
   const BseWaveChunkDsc *chunk = &wave_dsc->chunks[nth_chunk];
-  DEBUG ("pat loader chunk %d: gsl_wave_handle_new %s %d %d %d %f %f %u %d",
-         nth_chunk,
-         file_info->wfi.file_name,
-         wave_dsc->n_channels,
-         file_info->wave_format (patch->waveFormat),
-         G_LITTLE_ENDIAN,
-         chunk->mix_freq,
-         chunk->osc_freq,
-         file_info->data_offset (nth_chunk),
-         patch->wavesize / file_info->bytes_per_frame (patch->waveFormat));
+  LDEBUG ("pat loader chunk %d: gsl_wave_handle_new %s %d %d %d %f %f %u %d",
+          nth_chunk,
+          file_info->wfi.file_name,
+          wave_dsc->n_channels,
+          file_info->wave_format (patch->waveFormat),
+          G_LITTLE_ENDIAN,
+          chunk->mix_freq,
+          chunk->osc_freq,
+          file_info->data_offset (nth_chunk),
+          patch->wavesize / file_info->bytes_per_frame (patch->waveFormat));
   GslDataHandle *dhandle;
   dhandle = gsl_wave_handle_new (file_info->wfi.file_name,
 	                         wave_dsc->n_channels,
@@ -522,7 +596,9 @@ pat_create_chunk_handle (gpointer      data,
                                  chunk->xinfos);
   return dhandle;
 }
+
 } // namespace
+
 extern "C" void
 bse_init_loader_gus_patch (void)
 {
@@ -548,7 +624,9 @@ bse_init_loader_gus_patch (void)
     pat_create_chunk_handle,
   };
   static gboolean initialized = FALSE;
+
   g_assert (initialized == FALSE);
   initialized = TRUE;
+
   bse_loader_register (&loader);
 }

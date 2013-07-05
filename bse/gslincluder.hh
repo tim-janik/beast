@@ -1,4 +1,5 @@
 // CC0 Public Domain: http://creativecommons.org/publicdomain/zero/1.0/
+
 #if 0
 /* script, used to create this file's contents:
  */
@@ -6,6 +7,7 @@
   my $first_case = 0;
   my $last_case = 1024;
   my $i;
+
   print "#define GSL_INCLUDER_MAKE_FUNC(name,case) GSL_INCLUDER_CONCAT3 (name, __, case)\n";
   print "#define GSL_INCLUDER_CONCAT3(x,y,z)       x ## y ## z\n";
   print "#define GSL_INCLUDER_FUNC                 GSL_INCLUDER_MAKE_FUNC (GSL_INCLUDER_NAME, GSL_INCLUDER_CASE)\n";
@@ -55,12 +57,15 @@
   print "#undef GSL_INCLUDER_FILE\n";
 }
 #endif
+
+
 #define GSL_INCLUDER_MAKE_FUNC(name,case) GSL_INCLUDER_CONCAT3 (name, __, case)
 #define GSL_INCLUDER_CONCAT3(x,y,z)       x ## y ## z
 #define GSL_INCLUDER_FUNC                 GSL_INCLUDER_MAKE_FUNC (GSL_INCLUDER_NAME, GSL_INCLUDER_CASE)
 #ifndef GSL_INCLUDER_REJECT
 #define GSL_INCLUDER_REJECT(icase)        0
 #endif
+
 /* check range: 0 .. 1024 */
 #if     (GSL_INCLUDER_FIRST_CASE < 0)
 #error GSL_INCLUDER_FIRST_CASE < 0 is not supported
@@ -68,6 +73,7 @@
 #if     (GSL_INCLUDER_LAST_CASE > 1024)
 #error GSL_INCLUDER_LAST_CASE > 1024 is not supported
 #endif
+
 /* 0 */
 #if     ((0 >= GSL_INCLUDER_FIRST_CASE) && (0 <= GSL_INCLUDER_LAST_CASE) && !(GSL_INCLUDER_REJECT (0)))
 #define  GSL_INCLUDER_CASE       0
@@ -6218,6 +6224,7 @@
 #include GSL_INCLUDER_FILE
 #undef   GSL_INCLUDER_CASE
 #endif
+
 GSL_INCLUDER_TABLE = {
 #if     ((0 >= GSL_INCLUDER_FIRST_CASE) && (0 <= GSL_INCLUDER_LAST_CASE))
 #if     (GSL_INCLUDER_REJECT (0))
@@ -13395,6 +13402,7 @@ GSL_INCLUDER_TABLE = {
 #endif
 #endif
 };
+
 #undef GSL_INCLUDER_REJECT
 #undef GSL_INCLUDER_FUNC
 #undef GSL_INCLUDER_CONCAT3

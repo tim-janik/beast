@@ -1,8 +1,12 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #ifndef __SFI_NOTE_H__
 #define __SFI_NOTE_H__
+
 #include <sfi/sfitypes.hh>
+
 G_BEGIN_DECLS
+
+
 /* --- (MIDI) notes --- */
 /* notes are generally kept in signed integers. though they are zero
  * bounded, they are often used within expression that shouldn't be
@@ -10,23 +14,30 @@ G_BEGIN_DECLS
  */
 #define	SFI_MIN_NOTE			(0)	/* assumed to be 0 in various places */
 #define	SFI_MAX_NOTE			(131 /* 123 */)
+
 /* special note value to represent "no value specified"
  * or unparsable notes.
  */
 #define	SFI_NOTE_VOID			(SFI_MAX_NOTE + 1)
+
 /* kammer note, representing the kammer frequency's midi note value */
 #define	SFI_KAMMER_NOTE			((SfiInt) (69) /* A' */)
 #define	SFI_KAMMER_OCTAVE		((SfiInt) (+1))
+
 /* resulting minimum and maximum octaves */
 #define	SFI_MIN_OCTAVE			(SFI_NOTE_OCTAVE (SFI_MIN_NOTE))
 #define	SFI_MAX_OCTAVE			(SFI_NOTE_OCTAVE (SFI_MAX_NOTE))
+
 /* macro to retrieve a valid note. simply defaults
  * to kammer note for invalid note values.
  */
 #define	SFI_NOTE_MAKE_VALID(n)		((n) > SFI_MAX_NOTE || (n) < SFI_MIN_NOTE ? SFI_KAMMER_NOTE : ((SfiInt) (n)))
 #define	SFI_NOTE_IS_VALID(n)		((n) >= SFI_MIN_NOTE && (n) <= SFI_MAX_NOTE)
+
 /* clamp note against boundaries in cases of underflow or overflow */
 #define	SFI_NOTE_CLAMP(n)		(CLAMP (((SfiInt) (n)), SFI_MIN_NOTE, SFI_MAX_NOTE))
+
+
 /* macros to compose and decompose note values into semitones and octaves */
 #define	SFI_NOTE_OCTAVE(n)		((((SfiInt) (n)) - SFI_NOTE_SEMITONE (n) - (SFI_KAMMER_NOTE - 9)) / 12 + SFI_KAMMER_OCTAVE)
 #define	SFI_NOTE_SEMITONE(n)		(((SfiInt) (n)) % 12 + (9 - (SFI_KAMMER_NOTE % 12)))
@@ -52,6 +63,8 @@ G_BEGIN_DECLS
 #define	SFI_NOTE_SHIFT(n,ht_i)		(_SFI_NOTE_SHIFT_AUX ((SfiInt) (n), (gint) (ht), (SfiInt) (n)))
 #define	SFI_NOTE_OCTAVE_UP(n)		(SFI_NOTE_SHIFT ((n), +12))
 #define	SFI_NOTE_OCTAVE_DOWN(n)		(SFI_NOTE_SHIFT ((n), -12))
+
+
 /* --- functions --- */
 void	sfi_note_examine	 (SfiInt	 note,
 				  gint          *octave_p,
@@ -64,6 +77,10 @@ gchar*	sfi_note_to_string	 (SfiInt	 note);
 SfiInt	sfi_note_from_string	 (const gchar	*note_string);
 SfiInt	sfi_note_from_string_err (const gchar	*note_string,
 				  gchar        **error_p);
+
+
 G_END_DECLS
+
 #endif /* __SFI_NOTE_H__ */
+
 /* vim:set ts=8 sts=2 sw=2: */

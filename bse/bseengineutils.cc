@@ -9,10 +9,13 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <errno.h>
+
 #define LOG_INTERN      SfiLogger ("internals", NULL, NULL)
+
 /* --- prototypes --- */
 static inline void      engine_fetch_process_queue_trash_jobs_U (EngineTimedJob **trash_tjobs_head,
                                                                  EngineTimedJob **trash_tjobs_tail);
+
 /* --- UserThread --- */
 BseOStream*
 _engine_alloc_ostreams (guint n)
@@ -32,6 +35,7 @@ _engine_alloc_ostreams (guint n)
   else
     return NULL;
 }
+
 static void
 bse_engine_free_timed_job (EngineTimedJob *tjob)
 {
@@ -58,6 +62,7 @@ bse_engine_free_timed_job (EngineTimedJob *tjob)
       break;
     }
 }
+
 void
 bse_engine_free_ostreams (guint         n_ostreams,
                           BseOStream   *ostreams)
@@ -66,12 +71,14 @@ bse_engine_free_ostreams (guint         n_ostreams,
   /* bse_engine_block_size() may have changed since allocation */
   g_free (ostreams);
 }
+
 static void
 bse_engine_free_node (EngineNode *node)
 {
   const BseModuleClass *klass;
   gpointer user_data;
   guint j;
+
   g_return_if_fail (node != NULL);
   g_return_if_fail (node->output_nodes == NULL);
   g_return_if_fail (node->integrated == FALSE);
@@ -106,14 +113,17 @@ bse_engine_free_node (EngineNode *node)
   user_data = node->module.user_data;
   node->rec_mutex.~Mutex();
   sfi_delete_struct (EngineNode, node);
+
   /* allow the free function to free the klass as well */
   if (klass->free)
     klass->free (user_data, klass);
 }
+
 static void
 bse_engine_free_job (BseJob *job)
 {
   g_return_if_fail (job != NULL);
+
   switch (job->job_id)
     {
     case ENGINE_JOB_INTEGRATE:
@@ -147,23 +157,29 @@ bse_engine_free_job (BseJob *job)
     }
   sfi_delete_struct (BseJob, job);
 }
+
 static void
 bse_engine_free_transaction (BseTrans *trans)
 {
   BseJob *job;
+
   g_return_if_fail (trans != NULL);
   g_return_if_fail (trans->comitted == FALSE);
   if (trans->jobs_tail)
     g_return_if_fail (trans->jobs_tail->next == NULL);	/* paranoid */
+
   job = trans->jobs_head;
   while (job)
     {
       BseJob *tmp = job->next;
+
       bse_engine_free_job (job);
       job = tmp;
     }
   sfi_delete_struct (BseTrans, trans);
 }
+
+
 /* --- job transactions --- */
 static Bse::Mutex      cqueue_trans_mutex;
 static BseTrans       *cqueue_trans_pending_head = NULL;
@@ -197,6 +213,7 @@ _engine_enqueue_trans (BseTrans *trans)
   cqueue_trans_cond.broadcast();
   return base_stamp + bse_engine_block_size();  /* returns tick_stamp of when this transaction takes effect */
 }
+
 void
 _engine_wait_on_trans (void)
 {
@@ -205,10 +222,12 @@ _engine_wait_on_trans (void)
     cqueue_trans_cond.wait (cqueue_trans_mutex);
   cqueue_trans_mutex.unlock();
 }
+
 gboolean
 _engine_job_pending (void)
 {
   gboolean pending = cqueue_trans_job != NULL;
+
   if (!pending)
     {
       cqueue_trans_mutex.lock();
@@ -217,6 +236,7 @@ _engine_job_pending (void)
     }
   return pending;
 }
+
 void
 _engine_free_trans (BseTrans *trans)
 {
@@ -233,6 +253,7 @@ _engine_free_trans (BseTrans *trans)
   cqueue_trans_trash_tail = trans;
   cqueue_trans_mutex.unlock();
 }
+
 BseJob*
 _engine_pop_job (gboolean update_commit_stamp)
 {
@@ -305,6 +326,7 @@ _engine_pop_job (gboolean update_commit_stamp)
 	  cqueue_trans_mutex.unlock();
 	}
     }
+
   /* pick new job and out of here */
   if (cqueue_trans_job)
     {
@@ -312,9 +334,12 @@ _engine_pop_job (gboolean update_commit_stamp)
       cqueue_trans_job = job->next;
       return job;
     }
+
   /* no pending jobs... */
   return NULL;
 }
+
+
 /* --- user thread garbage collection --- */
 /**
  * BSE Engine user thread function. Collects processed jobs
@@ -344,6 +369,7 @@ bse_engine_user_thread_collect (void)
       tjob->next = NULL;
       bse_engine_free_timed_job (tjob);
     }
+
   while (trans)
     {
       BseTrans *t = trans;
@@ -355,11 +381,14 @@ bse_engine_user_thread_collect (void)
       bse_engine_free_transaction (t);
     }
 }
+
 gboolean
 bse_engine_has_garbage (void)
 {
   return cqueue_tjobs_trash_head || cqueue_trans_trash_head;
 }
+
+
 /* --- node processing queue --- */
 static Bse::Mutex        pqueue_mutex;
 static EngineSchedule   *pqueue_schedule = NULL;
@@ -368,6 +397,7 @@ static guint             pqueue_n_cycles = 0;
 static Bse::Cond	 pqueue_done_cond;
 static EngineTimedJob   *pqueue_trash_tjobs_head = NULL;
 static EngineTimedJob   *pqueue_trash_tjobs_tail = NULL;
+
 static inline void
 engine_fetch_process_queue_trash_jobs_U (EngineTimedJob **trash_tjobs_head,
                                          EngineTimedJob **trash_tjobs_tail)
@@ -489,11 +519,13 @@ _engine_push_processed_node (EngineNode *node)
     pqueue_done_cond.signal();
   pqueue_mutex.unlock();
 }
+
 SfiRing*
 _engine_pop_unprocessed_cycle (void)
 {
   return NULL;
 }
+
 void
 _engine_push_processed_cycle (SfiRing *cycle)
 {
@@ -501,6 +533,7 @@ _engine_push_processed_cycle (SfiRing *cycle)
   g_return_if_fail (pqueue_n_cycles > 0);
   g_return_if_fail (ENGINE_NODE_IS_SCHEDULED (cycle->data));
 }
+
 void
 _engine_wait_on_unprocessed (void)
 {
@@ -509,18 +542,23 @@ _engine_wait_on_unprocessed (void)
     pqueue_done_cond.wait (pqueue_mutex);
   pqueue_mutex.unlock();
 }
+
+
 /* -- master node list --- */
 static EngineNode      *master_node_list_head = NULL;
 static EngineNode      *master_node_list_tail = NULL;
+
 EngineNode*
 _engine_mnl_head (void)
 {
   return master_node_list_head;
 }
+
 void
 _engine_mnl_remove (EngineNode *node)
 {
   g_return_if_fail (node->integrated == TRUE);
+
   node->integrated = FALSE;
   /* remove */
   if (node->mnl_prev)
@@ -534,12 +572,14 @@ _engine_mnl_remove (EngineNode *node)
   node->mnl_prev = NULL;
   node->mnl_next = NULL;
 }
+
 void
 _engine_mnl_integrate (EngineNode *node)
 {
   g_return_if_fail (node->integrated == FALSE);
   g_return_if_fail (node->flow_jobs == NULL);
   g_return_if_fail (node->boundary_jobs == NULL);
+
   node->integrated = TRUE;
   /* append */
   if (master_node_list_tail)
@@ -550,11 +590,14 @@ _engine_mnl_integrate (EngineNode *node)
     master_node_list_head = master_node_list_tail;
   g_assert (node->mnl_next == NULL);
 }
+
 void
 _engine_mnl_node_changed (EngineNode *node)
 {
   EngineNode *sibling;
+
   g_return_if_fail (node->integrated == TRUE);
+
   /* the master node list is partially sorted. that is, all
    * nodes which are not scheduled and have pending user jobs
    * are agglomerated at the head.
@@ -595,6 +638,8 @@ _engine_mnl_node_changed (EngineNode *node)
       pqueue_mutex.unlock();
     }
 }
+
+
 /* --- const value blocks --- */
 float*
 bse_engine_const_zeros (guint smaller_than_BSE_STREAM_MAX_VALUES)
@@ -604,27 +649,33 @@ bse_engine_const_zeros (guint smaller_than_BSE_STREAM_MAX_VALUES)
   g_assert (smaller_than_BSE_STREAM_MAX_VALUES <= BSE_STREAM_MAX_VALUES);
   return (float*) engine_const_zero_block;
 }
+
 typedef struct
 {
   guint    n_nodes;
   gfloat **nodes;
   guint8  *nodes_used;
 } ConstValuesArray;
+
 static const guint8 CONST_VALUES_EXPIRE = 16;           /* expire value after being unused for 16 times */
+
 static inline gfloat**
 const_values_lookup_nextmost (ConstValuesArray *array,
 		              gfloat	        key_value)
 {
   guint n_nodes = array->n_nodes;
+
   if (n_nodes > 0)
     {
       gfloat **nodes = array->nodes;
       gfloat **check;
+
       nodes -= 1;
       do
 	{
 	  guint i;
 	  register gfloat cmp;
+
 	  i = (n_nodes + 1) >> 1;
 	  check = nodes + i;
 	  cmp = key_value - **check;
@@ -639,15 +690,19 @@ const_values_lookup_nextmost (ConstValuesArray *array,
 	    return check;   /* matched */
 	}
       while (n_nodes);
+
       return check;  /* nextmost */
     }
+
   return NULL;
 }
+
 static inline guint
 upper_power2 (guint number)
 {
   return sfi_alloc_upper_power2 (MAX (number, 8));
 }
+
 static inline void
 const_values_insert (ConstValuesArray *array,
 		     guint             index,
@@ -682,12 +737,15 @@ const_values_insert (ConstValuesArray *array,
   array->nodes[index] = value_block;
   array->nodes_used[index] = CONST_VALUES_EXPIRE;
 }
+
 static ConstValuesArray cvalue_array = { 0, NULL, NULL };
+
 float*
 bse_engine_const_values (gfloat value)
 {
   if (fabs (value) < BSE_SIGNAL_EPSILON)
     return bse_engine_const_zeros (BSE_STREAM_MAX_VALUES);
+
   float **block = const_values_lookup_nextmost (&cvalue_array, value);
   /* found correct match? */
   if (block && fabs (**block - value) < BSE_SIGNAL_EPSILON)
@@ -704,21 +762,25 @@ bse_engine_const_values (gfloat value)
 	const_values_insert (&cvalue_array, block - cvalue_array.nodes, values);
       else
 	const_values_insert (&cvalue_array, 0, values);
+
       return values;
     }
 }
+
 void
 _engine_recycle_const_values (gboolean nuke_all)
 {
   gfloat **nodes = cvalue_array.nodes;
   guint8 *used = cvalue_array.nodes_used;
   guint count = cvalue_array.n_nodes, e = 0, i;
+
   for (i = 0; i < count; i++)
     {
       if (nuke_all)
         used[i] = 0;
       else
         used[i]--;      /* invariant: use counts are never 0 */
+
       if (used[i] == 0)
 	g_free (nodes[i]);
       else /* preserve node */

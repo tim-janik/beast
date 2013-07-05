@@ -1,6 +1,9 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bstsegment.hh"
+
 #include <string.h>
+
+
 /* --- functions --- */
 void
 bst_segment_expose (BstSegment *self)
@@ -9,6 +12,7 @@ bst_segment_expose (BstSegment *self)
   bst_segment_bbox (self, &area);
   gdk_window_invalidate_rect (self->any.drawable, &area, TRUE);
 }
+
 void
 bst_segment_bbox (BstSegment   *self,
                   GdkRectangle *area)
@@ -21,11 +25,13 @@ bst_segment_bbox (BstSegment   *self,
   area->width = w + 2.5;
   area->height = h + 2.5;
 }
+
 gint
 bst_segment_initialized (BstSegment     *self)
 {
   return self->type && self->any.drawable;
 }
+
 void
 bst_segment_init (BstSegment     *self,
                   BstSegmentType  type,
@@ -34,6 +40,7 @@ bst_segment_init (BstSegment     *self,
   g_return_if_fail (self != NULL);
   g_return_if_fail (self->type == 0);
   g_return_if_fail (GDK_IS_DRAWABLE (drawable));
+
   self->type = type;
   self->any.drawable = (GdkDrawable*) g_object_ref (drawable);
   switch (self->type)
@@ -46,6 +53,7 @@ bst_segment_init (BstSegment     *self,
       break;
     }
 }
+
 void
 bst_segment_clear (BstSegment *self)
 {
@@ -58,6 +66,7 @@ bst_segment_clear (BstSegment *self)
   g_object_unref (self->any.drawable);
   memset (self, 0, sizeof (*self));
 }
+
 void
 bst_segment_xrange (BstSegment     *self,
                     gdouble        *x_p,
@@ -76,6 +85,7 @@ bst_segment_xrange (BstSegment     *self,
   if (width_p)
     *width_p = MAX (x1, x2) - MIN (x1, x2) + 1;
 }
+
 void
 bst_segment_yrange (BstSegment     *self,
                     gdouble        *y_p,
@@ -94,6 +104,7 @@ bst_segment_yrange (BstSegment     *self,
   if (height_p)
     *height_p = MAX (y1, y2) - MIN (y1, y2) + 1;
 }
+
 gdouble
 bst_segment_calcy (BstSegment *self,
                    gdouble     x)
@@ -110,6 +121,7 @@ bst_segment_calcy (BstSegment *self,
     }
   return v;
 }
+
 void
 bst_segment_start (BstSegment     *self,
                    gdouble         x,
@@ -127,6 +139,7 @@ bst_segment_start (BstSegment     *self,
     }
   bst_segment_expose (self);
 }
+
 void
 bst_segment_move_to (BstSegment     *self,
                      gdouble         x,
@@ -142,6 +155,7 @@ bst_segment_move_to (BstSegment     *self,
     }
   bst_segment_expose (self);
 }
+
 void
 bst_segment_translate (BstSegment     *self,
                        gdouble         xdiff,
@@ -157,6 +171,7 @@ bst_segment_translate (BstSegment     *self,
       break;
     }
 }
+
 void
 bst_segment_draw (BstSegment     *self,
                   GtkStyle       *style)

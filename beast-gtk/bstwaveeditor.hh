@@ -1,11 +1,15 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #ifndef __BST_WAVE_EDITOR_H__
 #define __BST_WAVE_EDITOR_H__
+
 #include	"bstqsampler.hh"
 #include	"bstplayback.hh"
+
 #ifdef __cplusplus
 extern "C" {
 #endif /* __cplusplus */
+
+
 /* --- Gtk+ type macros --- */
 #define	BST_TYPE_WAVE_EDITOR		(bst_wave_editor_get_type ())
 #define	BST_WAVE_EDITOR(object)	        (GTK_CHECK_CAST ((object), BST_TYPE_WAVE_EDITOR, BstWaveEditor))
@@ -13,6 +17,8 @@ extern "C" {
 #define	BST_IS_WAVE_EDITOR(object)	(GTK_CHECK_TYPE ((object), BST_TYPE_WAVE_EDITOR))
 #define	BST_IS_WAVE_EDITOR_CLASS(klass) (GTK_CHECK_CLASS_TYPE ((klass), BST_TYPE_WAVE_EDITOR))
 #define BST_WAVE_EDITOR_GET_CLASS(obj)  (GTK_CHECK_GET_CLASS ((obj), BST_TYPE_WAVE_EDITOR, BstWaveEditorClass))
+
+
 /* --- structures & typedefs --- */
 typedef	struct	_BstWaveEditor	BstWaveEditor;
 typedef	struct	_BstWaveEditorClass	BstWaveEditorClass;
@@ -20,6 +26,7 @@ struct _BstWaveEditor
 {
   GtkVBox    parent_object;
   GtkWidget *main_vbox;
+
   GxkListWrapper    *chunk_wrapper;
   GtkWidget         *tree;
   GtkWidget	    *qsampler_parent;
@@ -27,6 +34,7 @@ struct _BstWaveEditor
   GtkAdjustment     *zoom_adjustment;
   GtkAdjustment     *vscale_adjustment;
   guint		     draw_mode;
+
   /* preview (playback) */
   BstPlayBackHandle *phandle;
   guint		     playback_length;
@@ -37,7 +45,9 @@ struct _BstWaveEditor
   SfiNum	     tick_stamp;
   guint		     pcm_pos;
   gdouble	     pcm_per_tick;
+
   SfiProxy	     wave;
+
   /* editable sample view */
   SfiProxy	     esample;
   guint              esample_open : 1;
@@ -51,6 +61,8 @@ struct _BstWaveEditorClass
 {
   GtkVBoxClass parent_class;
 };
+
+
 /* --- prototypes --- */
 GtkType		bst_wave_editor_get_type	(void);
 GtkWidget*	bst_wave_editor_new		(SfiProxy	 wave);
@@ -59,7 +71,10 @@ void		bst_wave_editor_set_wave	(BstWaveEditor	*self,
 void		bst_wave_editor_rebuild		(BstWaveEditor *wave_editor);
 void		bst_wave_editor_set_esample	(BstWaveEditor	*self,
 						 SfiProxy	 editable_sample);
+
+
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */
+
 #endif /* __BST_WAVE_EDITOR_H__ */

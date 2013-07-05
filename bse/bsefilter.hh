@@ -2,7 +2,9 @@
 #ifndef BSE_FILTER_H__
 #define BSE_FILTER_H__
 #include <bse/bsemath.hh>
-BIRNET_EXTERN_C_BEGIN();
+
+extern "C" {
+
 typedef enum /*< skip >*/
 {
   BSE_IIR_FILTER_BUTTERWORTH = 1,
@@ -11,6 +13,7 @@ typedef enum /*< skip >*/
   BSE_IIR_FILTER_CHEBYSHEV2  = 4,
   BSE_IIR_FILTER_ELLIPTIC    = 5,
 } BseIIRFilterKind;
+
 typedef enum /*< skip >*/
 {
   BSE_IIR_FILTER_LOW_PASS    = 1,
@@ -18,6 +21,7 @@ typedef enum /*< skip >*/
   BSE_IIR_FILTER_HIGH_PASS   = 3,
   BSE_IIR_FILTER_BAND_STOP   = 4,
 } BseIIRFilterType;
+
 typedef struct {
   BseIIRFilterKind      kind;
   BseIIRFilterType      type;
@@ -29,8 +33,10 @@ typedef struct {
   double                stopband_edge;          /* Hz, > 0.0, replaces stopband_db, elliptic only */
   double                stopband_db;            /* dB, < 0.0, elliptic only */
 } BseIIRFilterRequest;
+
 #define BSE_IIR_MAX_ORDER		(64)
 #define BSE_IIR_CARRAY_SIZE		(4 * BSE_IIR_MAX_ORDER + 2) /* size of arrays used to store coefficients */
+
 typedef struct {
   double     sampling_frequency;		/* same as BseIIRFilterRequest.sampling_frequency */
   uint 	     order;
@@ -45,17 +51,21 @@ typedef struct {
   // double zn[BSE_IIR_CARRAY_SIZE];	/* numerator coefficients [order+1] */
   // double zd[BSE_IIR_CARRAY_SIZE];	/* denominator coefficients [order+1] */
 } BseIIRFilterDesign;
+
 typedef struct {
   double xz2;   // x[i-2] coefficient
   double xz1;   // x[i-1] coefficient
   double yz2;   // y[i-2] coefficient
   double yz1;   // y[i-1] coefficient
 } BseIIRStage;
+
 typedef struct {
   uint         order;
   BseIIRStage *stages;
   double      *states;	/* [0..2*order] */
 } BseIIRFilter;
+
+
 bool		bse_iir_filter_design	(const BseIIRFilterRequest  *filter_request,
 					 BseIIRFilterDesign         *filter_design);
 BseIIRFilter*	bse_iir_filter_new	(const BseIIRFilterDesign   *filter_design);
@@ -74,5 +84,7 @@ gchar*	bse_iir_filter_string		(const BseIIRFilter         *filter);
 /* --- internal prototypes --- */
 bool	_bse_filter_design_ellf 	(const BseIIRFilterRequest      *ifr,
 					 BseIIRFilterDesign             *fid);
-BIRNET_EXTERN_C_END();
+
+} // "C"
+
 #endif /* BSE_FILTER_H__ */	/* vim:set ts=8 sw=2 sts=2: */

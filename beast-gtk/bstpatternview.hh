@@ -1,8 +1,11 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #ifndef __BST_PATTERN_VIEW_H__
 #define __BST_PATTERN_VIEW_H__
+
 #include "bstpatterncolumns.hh"
+
 G_BEGIN_DECLS
+
 /* --- type macros --- */
 #define BST_TYPE_PATTERN_VIEW              (bst_pattern_view_get_type ())
 #define BST_PATTERN_VIEW(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), BST_TYPE_PATTERN_VIEW, BstPatternView))
@@ -10,9 +13,13 @@ G_BEGIN_DECLS
 #define BST_IS_PATTERN_VIEW(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), BST_TYPE_PATTERN_VIEW))
 #define BST_IS_PATTERN_VIEW_CLASS(klass)   (G_TYPE_CHECK_CLASS_TYPE ((klass), BST_TYPE_PATTERN_VIEW))
 #define BST_PATTERN_VIEW_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), BST_TYPE_PATTERN_VIEW, BstPatternViewClass))
+
+
 /* --- typedefs & enums --- */
 /* bstpatterncolumns.hh: typedef struct _BstPatternView      BstPatternView; */
 typedef struct _BstPatternViewClass BstPatternViewClass;
+
+
 /* --- structures & typedefs --- */
 typedef enum /*< skip >*/
 {
@@ -37,24 +44,30 @@ typedef struct {
 struct _BstPatternView
 {
   GxkScrollCanvas    parent_instance;
+
   SfiProxy           proxy;
+
   /* vertical layout */
   guint              row_height;
   guint              tpqn;              /* ticks per quarter note */
   guint              tpt;               /* ticks per tact */
   gint               vticks;            /* ticks per row */
   guint              max_ticks;
+
   /* horizontal layout */
   guint              n_cols;
   BstPatternColumn **cols;
   gchar             *layout_string;
+
   /* focus cell */
   guint              focus_col;
   guint              focus_row;
   int                n_focus_cols;
   BstPatternColumn **focus_cols;
+
   /* shading */
   guint16            srow1, srow2;
+
   /* last drag state */
   guint              start_col;
   guint              start_row;
@@ -65,6 +78,7 @@ struct _BstPatternView
 struct _BstPatternViewClass
 {
   GxkScrollCanvasClass parent_class;
+
   void          (*drag)                         (BstPatternView     *self,
                                                  BstPatternViewDrag *drag);
   void          (*clicked)                      (BstPatternView     *tview,
@@ -73,6 +87,8 @@ struct _BstPatternViewClass
                                                  guint               tick_position,
                                                  GdkEvent           *event);
 };
+
+
 /* --- prototypes --- */
 GType             bst_pattern_view_get_type        (void);
 void              bst_pattern_view_set_proxy       (BstPatternView            *self,
@@ -115,5 +131,8 @@ gint              bst_pattern_view_get_last_row    (BstPatternView            *s
 const gchar*      bst_pattern_view_get_layout      (BstPatternView            *self);
 guint             bst_pattern_view_set_layout      (BstPatternView            *self,
                                                     const gchar               *layout);
+
+
 G_END_DECLS
+
 #endif /* __BST_PATTERN_VIEW_H__ */

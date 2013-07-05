@@ -1,9 +1,13 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bstcanvaslink.hh"
+
 #include <math.h>
+
 #define ARROW_LENGTH    (12.0)
 #define ARROW_WIDTH     (6.0)
 #define TAG_DIAMETER    (2.0)
+
+
 /* --- prototypes --- */
 static void	bst_canvas_link_adjust_arrow	(BstCanvasLink		*clink);
 static void	bst_canvas_link_adjust_tags	(BstCanvasLink		*clink);
@@ -11,8 +15,11 @@ static gboolean	bst_canvas_link_child_event	(GnomeCanvasItem        *item,
 						 GdkEvent               *event);
 static void     bst_canvas_link_update          (BstCanvasLink          *clink);
 static gboolean bst_canvas_link_build_async     (gpointer                data);
+
+
 /* --- functions --- */
 G_DEFINE_TYPE (BstCanvasLink, bst_canvas_link, GNOME_TYPE_CANVAS_GROUP);
+
 static void
 bst_canvas_link_init (BstCanvasLink *clink)
 {
@@ -28,30 +35,39 @@ bst_canvas_link_init (BstCanvasLink *clink)
   clink->ic_handler = 0;
   clink->link_view = NULL;
 }
+
 static void
 bst_canvas_link_destroy (GtkObject *object)
 {
   BstCanvasLink *clink = BST_CANVAS_LINK (object);
   GnomeCanvasGroup *group = GNOME_CANVAS_GROUP (object);
+
   while (group->item_list)
     gtk_object_destroy ((GtkObject*) group->item_list->data);
+
   bst_canvas_link_set_ocsource (clink, NULL, 0);
   bst_canvas_link_set_icsource (clink, NULL, 0);
+
   GTK_OBJECT_CLASS (bst_canvas_link_parent_class)->destroy (object);
 }
+
 GnomeCanvasItem*
 bst_canvas_link_new (GnomeCanvasGroup *group)
 {
   GnomeCanvasItem *item;
+
   g_return_val_if_fail (GNOME_IS_CANVAS_GROUP (group), NULL);
+
   item = gnome_canvas_item_new (group,
 				BST_TYPE_CANVAS_LINK,
 				NULL);
+
   /* work around stale canvas pointers, see #340437 */
   g_object_set_data_full ((GObject*) item, "bst-workaround-canvas-ref", g_object_ref (item->canvas), g_object_unref);
   bst_background_handler1_add (bst_canvas_link_build_async, g_object_ref (item), NULL);
   return item;
 }
+
 BstCanvasLink*
 bst_canvas_link_at (GnomeCanvas *canvas,
 		    gdouble      world_x,
@@ -59,13 +75,16 @@ bst_canvas_link_at (GnomeCanvas *canvas,
 {
   return (BstCanvasLink*) gnome_canvas_typed_item_at (canvas, BST_TYPE_CANVAS_LINK, world_x, world_y);
 }
+
 BstCanvasSource*
 bst_canvas_link_csource_at (BstCanvasLink *clink,
 			    gdouble        world_x,
 			    gdouble        world_y)
 {
   GnomeCanvasItem *tag;
+
   g_return_val_if_fail (BST_IS_CANVAS_LINK (clink), NULL);
+
   tag = gnome_canvas_typed_item_at (GNOME_CANVAS_ITEM (clink)->canvas, GNOME_TYPE_CANVAS_ELLIPSE, world_x, world_y);
   if (tag && tag == clink->tag_start)
     return clink->ocsource;
@@ -74,6 +93,7 @@ bst_canvas_link_csource_at (BstCanvasLink *clink,
   else
     return NULL;
 }
+
 static void
 clink_view_update (BstCanvasLink *clink,
 		   gboolean       force_update)
@@ -86,6 +106,7 @@ clink_view_update (BstCanvasLink *clink,
       GtkWidget *text = GTK_BIN (frame)->child;
       const gchar *ic_label, *oc_label, *ic_blurb, *oc_blurb, *iname, *oname;
       gchar *string;
+
       /* figure appropriate window title
        */
       iname = clink->icsource ? bse_item_get_name_or_type (clink->icsource->source) : "<""???"">";
@@ -93,6 +114,7 @@ clink_view_update (BstCanvasLink *clink,
       string = g_strconcat (_("Module Link: "), iname, " <=> ", oname, NULL);
       gxk_dialog_set_title (GXK_DIALOG (clink->link_view), string);
       g_free (string);
+
       /* construct actuall information
        */
       oc_label = clink->ocsource ? bse_source_ochannel_label (clink->ocsource->source, clink->ochannel) : NULL;
@@ -103,6 +125,7 @@ clink_view_update (BstCanvasLink *clink,
 	oc_label = "?";
       if (!ic_label)
 	ic_label = "?";
+
       /* compose new info */
       gxk_scroll_text_clear (text);
       gxk_scroll_text_aprintf (text, "Source Module:\n");
@@ -130,10 +153,12 @@ clink_view_update (BstCanvasLink *clink,
 	gxk_scroll_text_aprintf (text, "%s: %s\n", iname, ic_label);
     }
 }
+
 void
 bst_canvas_link_popup_view (BstCanvasLink *clink)
 {
   g_return_if_fail (BST_IS_CANVAS_LINK (clink));
+
   if (!clink->link_view)
     clink->link_view = (GtkWidget*) gxk_dialog_new (&clink->link_view,
                                                     GTK_OBJECT (clink),
@@ -148,21 +173,26 @@ bst_canvas_link_popup_view (BstCanvasLink *clink)
   clink_view_update (clink, TRUE);
   gxk_widget_showraise (clink->link_view);
 }
+
 void
 bst_canvas_link_toggle_view (BstCanvasLink *clink)
 {
   g_return_if_fail (BST_IS_CANVAS_LINK (clink));
+
   if (!clink->link_view || !GTK_WIDGET_VISIBLE (clink->link_view))
     bst_canvas_link_popup_view (clink);
   else
     gtk_widget_hide (clink->link_view);
 }
+
 static void
 clink_view_check_update (BstCanvasLink *clink)
 {
   g_return_if_fail (BST_IS_CANVAS_LINK (clink));
+
   clink_view_update (clink, FALSE);
 }
+
 void
 bst_canvas_link_set_ocsource (BstCanvasLink   *clink,
 			      BstCanvasSource *ocsource,
@@ -171,6 +201,7 @@ bst_canvas_link_set_ocsource (BstCanvasLink   *clink,
   g_return_if_fail (BST_IS_CANVAS_LINK (clink));
   if (ocsource)
     g_return_if_fail (BST_CANVAS_SOURCE (ocsource));
+
   if (clink->ocsource)
     {
       if (clink->ocsource->source) /* source may be destroyed already */
@@ -196,6 +227,7 @@ bst_canvas_link_set_ocsource (BstCanvasLink   *clink,
       bst_canvas_link_update (clink);
     }
 }
+
 void
 bst_canvas_link_set_icsource (BstCanvasLink   *clink,
 			      BstCanvasSource *icsource,
@@ -204,6 +236,7 @@ bst_canvas_link_set_icsource (BstCanvasLink   *clink,
   g_return_if_fail (BST_IS_CANVAS_LINK (clink));
   if (icsource)
     g_return_if_fail (BST_CANVAS_SOURCE (icsource));
+
   if (clink->icsource)
     {
       if (clink->icsource->source) /* source may be destroyed already */
@@ -229,6 +262,7 @@ bst_canvas_link_set_icsource (BstCanvasLink   *clink,
       bst_canvas_link_update (clink);
     }
 }
+
 static gboolean
 bst_canvas_link_build_async (gpointer data)
 {
@@ -295,6 +329,7 @@ bst_canvas_link_build_async (gpointer data)
     g_object_unref (canvas);      /* canvases don't properly protect their items */
   return FALSE;
 }
+
 static void
 bst_canvas_link_update (BstCanvasLink *clink)
 {
@@ -333,17 +368,20 @@ bst_canvas_link_update (BstCanvasLink *clink)
   bst_canvas_link_adjust_tags (clink);
   bst_canvas_link_adjust_arrow (clink);
 }
+
 static void
 bst_canvas_link_adjust_tags (BstCanvasLink *clink)
 {
   GnomeCanvasPoints *gpoints;
   gdouble x1, y1, x2, y2, *points;
+
   if (!clink->line)
     return;
   gtk_object_get (GTK_OBJECT (clink->line), "points", &gpoints, NULL);
   if (!gpoints)
     gpoints = gnome_canvas_points_new0 (2);
   points = gpoints->coords;
+
   x1 = points[0] - TAG_DIAMETER;
   y1 = points[1] - TAG_DIAMETER;
   x2 = points[0] + TAG_DIAMETER;
@@ -366,33 +404,41 @@ bst_canvas_link_adjust_tags (BstCanvasLink *clink)
                   "x2", x2,
                   "y2", y2,
                   NULL);
+
   gnome_canvas_points_free (gpoints);
 }
+
 static void
 bst_canvas_link_adjust_arrow (BstCanvasLink *clink)
 {
   GnomeCanvasPoints *gpoints;
   gdouble dx, dy, l, x, y, px, py, cos_theta, sin_theta, *points;
+
   if (!clink->line)
     return;
   gtk_object_get (GTK_OBJECT (clink->line), "points", &gpoints, NULL);
   if (!gpoints)
     gpoints = gnome_canvas_points_new0 (2);
   points = gpoints->coords;
+
   dx = points[0] - points[2];
   dy = points[1] - points[3];
   l = sqrt (dx * dx + dy * dy);
   x = (points[2] + points[0]) / 2;
   y = (points[3] + points[1]) / 2;
+
   gnome_canvas_points_free (gpoints);
+
   sin_theta = l ? dy / l : 0;
   cos_theta = l ? dx / l : 0;
   px = x - ARROW_LENGTH / 2.0 * cos_theta;
   py = y - ARROW_LENGTH / 2.0 * sin_theta;
   x += ARROW_LENGTH / 2.0 * cos_theta;
   y += ARROW_LENGTH / 2.0 * sin_theta;
+
   gpoints = gnome_canvas_points_new (4);
   points = gpoints->coords;
+
   *(points++) = px;
   *(points++) = py;
   *(points++) = x - ARROW_WIDTH * sin_theta;
@@ -434,6 +480,7 @@ bst_canvas_link_event (GnomeCanvasItem *item,
 				     &clink->end_move_dy);
 	    }
 	  clink->in_move = TRUE;
+
 	  fleur = gdk_cursor_new (GDK_FLEUR);
 	  gnome_canvas_item_grab (item,
 				  GDK_POINTER_MOTION_MASK | GDK_BUTTON_RELEASE_MASK,
@@ -447,6 +494,7 @@ bst_canvas_link_event (GnomeCanvasItem *item,
       if (clink->in_move && clink->ocsource)
 	{
 	  gdouble x = event->motion.x, y = event->motion.y;
+
 	  gnome_canvas_item_w2i (GNOME_CANVAS_ITEM (clink->ocsource), &x, &y);
 	  gnome_canvas_item_move (GNOME_CANVAS_ITEM (clink->ocsource),
 				  x - clink->start_move_dx,
@@ -457,6 +505,7 @@ bst_canvas_link_event (GnomeCanvasItem *item,
       if (clink->in_move && clink->icsource)
 	{
 	  gdouble x = event->motion.x, y = event->motion.y;
+
 	  gnome_canvas_item_w2i (GNOME_CANVAS_ITEM (clink->icsource), &x, &y);
 	  gnome_canvas_item_move (GNOME_CANVAS_ITEM (clink->icsource),
 				  x - clink->end_move_dx,
@@ -476,10 +525,13 @@ bst_canvas_link_event (GnomeCanvasItem *item,
     default:
       break;
     }
+
   if (!handled && GNOME_CANVAS_ITEM_CLASS (bst_canvas_link_parent_class)->event)
     handled |= GNOME_CANVAS_ITEM_CLASS (bst_canvas_link_parent_class)->event (item, event);
+
   return handled;
 }
+
 static gboolean
 bst_canvas_link_child_event (GnomeCanvasItem *item,
 			     GdkEvent        *event)
@@ -487,7 +539,9 @@ bst_canvas_link_child_event (GnomeCanvasItem *item,
   BstCanvasLink *clink;
   GtkWidget *widget = GTK_WIDGET (item->canvas);
   gboolean handled = FALSE;
+
   clink = BST_CANVAS_LINK (item);
+
   switch (event->type)
     {
     case GDK_ENTER_NOTIFY:
@@ -526,17 +580,21 @@ bst_canvas_link_child_event (GnomeCanvasItem *item,
     default:
       break;
     }
+
   return handled;
 }
+
 static void
 bst_canvas_link_class_init (BstCanvasLinkClass *klass)
 {
   GtkObjectClass *object_class;
   GnomeCanvasItemClass *canvas_item_class;
   GnomeCanvasGroupClass *canvas_group_class;
+
   object_class = GTK_OBJECT_CLASS (klass);
   canvas_item_class = GNOME_CANVAS_ITEM_CLASS (klass);
   canvas_group_class = GNOME_CANVAS_GROUP_CLASS (klass);
+
   object_class->destroy = bst_canvas_link_destroy;
   canvas_item_class->event = bst_canvas_link_event;
 }

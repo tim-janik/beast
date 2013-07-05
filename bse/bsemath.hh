@@ -1,9 +1,12 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #ifndef __BSE_MATH_H__
 #define __BSE_MATH_H__
+
 #include <bse/bsedefs.hh>
 #include <bse/bseieee754.hh> 	/* provides math.h */
+
 G_BEGIN_DECLS
+
 /* --- constants --- */
 /* PI is defined in bseieee754.hh */
 #define BSE_1_DIV_PI                  (0.3183098861837906715377675267450287240689)   // 1/pi
@@ -31,11 +34,13 @@ G_BEGIN_DECLS
 #define BSE_DECIBEL10_FACTOR          (4.34294481903251827651128918916605082294397)  // 10.0 / ln (10.0)
 #define BSE_1_DIV_DECIBEL20_FACTOR    (0.1151292546497022842008995727342182103801)   // ln (10) / 20
 #define BSE_COMPLEX_ONE               (bse_complex (1, 0))
+
 /* --- structures --- */
 typedef struct {
   double re;
   double im;
 } BseComplex;
+
 /* --- complex numbers --- */
 static inline BseComplex bse_complex            (double         re,
                                                  double         im);
@@ -73,13 +78,15 @@ static inline BseComplex bse_complex_tan        (BseComplex     c);
 static inline BseComplex bse_complex_sinh       (BseComplex     c);
 static inline BseComplex bse_complex_cosh       (BseComplex     c);
 static inline BseComplex bse_complex_tanh       (BseComplex     c);
-char*                    bse_complex_str        (BseComplex     c);
-char*                    bse_complex_list       (uint           n_points,
+std::string              bse_complex_str        (BseComplex     c);
+std::string              bse_complex_list       (uint           n_points,
                                                  BseComplex    *points,
-                                                 const char    *indent);
+                                                 const std::string &indent);
 void                     bse_complex_gnuplot    (const char    *file_name,
                                                  uint           n_points,
                                                  BseComplex    *points);
+std::string              bse_string_from_double (long double    value);
+
 /* --- polynomials --- */
 /* example, degree=2: 5+2x+7x^2 => a[0..degree] = { 5, 2, 7 } */
 static inline void     bse_poly_add             (uint           degree,
@@ -126,15 +133,17 @@ gboolean               bse_poly2_droots         (gdouble        roots[2],
                                                  gdouble        a,
                                                  gdouble        b,
                                                  gdouble        c);
-char*                  bse_poly_str             (uint           degree,
+std::string            bse_poly_str             (uint           degree,
                                                  double        *a,
-                                                 const char    *var);
-char*                  bse_poly_str1            (uint           degree,
+                                                 const std::string &var);
+std::string            bse_poly_str1            (uint           degree,
                                                  double        *a,
-                                                 const char    *var);
+                                                 const std::string &var);
+
 /* --- transformations --- */
 double                 bse_temp_freq            (double         kammer_freq,
                                                  int            semitone_delta);
+
 /* --- miscellaneous --- */
 double                 bse_bit_depth_epsilon    (guint          n_bits);  /* 1..32 */
 gint                   bse_rand_int             (void);                   /* +-G_MAXINT */
@@ -145,6 +154,8 @@ void                   bse_float_gnuplot        (const char    *file_name,
                                                  double         xstep,
                                                  uint           n_ypoints,
                                                  const float   *ypoints);
+
+
 /* --- implementations --- */
 static inline BseComplex
 bse_complex (double re,
@@ -212,6 +223,7 @@ bse_complex_mul3 (BseComplex c1,
   double bce = c1.im * c2.re * c3.re;
   double acf = c1.re * c2.re * c3.im;
   double bdf = c1.im * c2.im * c3.im;
+
   return bse_complex (aec - bde - adf - bcf, ade + bce + acf - bdf);
 }
 static inline BseComplex
@@ -352,6 +364,7 @@ bse_poly_add (uint         degree,
               double      *b)
 {
   uint         i;
+
   for (i = 0; i <= degree; i++)
     a[i] += b[i];
 }
@@ -361,6 +374,7 @@ bse_poly_sub (uint         degree,
               double      *b)
 {
   uint         i;
+
   for (i = 0; i <= degree; i++)
     a[i] -= b[i];
 }
@@ -372,10 +386,12 @@ bse_poly_mul (double        *p,  /* out:[0..aorder+border] */
               const double  *b)  /* in:[0..border] */
 {
   uint         i;
+
   for (i = aorder + border; i > 0; i--)
     {
       uint         j;
       double t = 0;
+
       for (j = i - MIN (border, i); j <= MIN (aorder, i); j++)
         t += a[j] * b[i - j];
       p[i] = t;
@@ -388,6 +404,7 @@ bse_cpoly_mul_monomial (uint         degree,
                         BseComplex   root)
 {
   uint         j;
+
   c[degree] = c[degree - 1];
   for (j = degree - 1; j >= 1; j--)
     c[j] = bse_complex_sub (c[j - 1], bse_complex_mul (c[j], root));
@@ -399,6 +416,7 @@ bse_cpoly_mul_reciprocal (uint         degree,
                           BseComplex   root)
 {
   uint         j;
+
   c[degree] = bse_complex_mul (c[degree - 1], bse_complex_inv (root));
   for (j = degree - 1; j >= 1; j--)
     c[j] = bse_complex_sub (c[j], bse_complex_mul (c[j - 1], root));
@@ -412,10 +430,12 @@ bse_cpoly_mul (BseComplex  *p,  /* [0..aorder+border] */
                BseComplex  *b)
 {
   uint         i;
+
   for (i = aorder + border; i > 0; i--)
     {
       BseComplex t;
       uint         j;
+
       t = bse_complex (0, 0);
       for (j = i - MIN (i, border); j <= MIN (aorder, i); j++)
         t = bse_complex_add (t, bse_complex_mul (a[j], b[i - j]));
@@ -429,6 +449,7 @@ bse_poly_scale (uint         degree,
                 double       scale)
 {
   uint         i;
+
   for (i = 0; i <= degree; i++)
     a[i] *= scale;
 }
@@ -439,6 +460,7 @@ bse_poly_xscale (uint         degree,
 {
   double scale = xscale;
   uint         i;
+
   for (i = 1; i <= degree; i++)
     {
       a[i] *= scale;
@@ -451,9 +473,12 @@ bse_poly_eval (uint         degree,
                double       x)
 {
   double sum = a[degree];
+
   while (degree--)
     sum = sum * x + a[degree];
   return sum;
 }
+
 G_END_DECLS
+
 #endif /* __BSE_MATH_H__ */     /* vim: set ts=8 sw=2 sts=2: */

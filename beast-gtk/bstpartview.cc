@@ -1,13 +1,19 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bstpartview.hh"
+
 #include "bstpartdialog.hh"
 #include "bstpianoroll.hh"
+
+
+
 /* --- prototypes --- */
 static void     part_view_action_exec           (gpointer                data,
                                                  gulong                  action);
 static gboolean part_view_action_check          (gpointer                data,
                                                  gulong                  action,
                                                  guint64                 action_stamp);
+
+
 /* --- part actions --- */
 enum {
   ACTION_ADD_PART,
@@ -19,14 +25,19 @@ static const GxkStockAction part_view_actions[] = {
   { N_("Delete"),       NULL,   NULL,   ACTION_DELETE_PART,     BST_STOCK_TRASHCAN },
   { N_("Editor"),       NULL,   NULL,   ACTION_EDIT_PART,       BST_STOCK_PART_EDITOR },
 };
+
+
 /* --- functions --- */
 G_DEFINE_TYPE (BstPartView, bst_part_view, BST_TYPE_ITEM_VIEW);
+
 static void
 bst_part_view_class_init (BstPartViewClass *klass)
 {
   BstItemViewClass *item_view_class = BST_ITEM_VIEW_CLASS (klass);
+
   item_view_class->item_type = "BsePart";
 }
+
 static void
 bst_part_view_init (BstPartView *self)
 {
@@ -43,26 +54,34 @@ bst_part_view_init (BstPartView *self)
   /* create property editor */
   bst_item_view_build_param_view (iview, (GtkContainer*) gxk_radget_find (radget, "property-area"));
 }
+
 static void
 popup_part_dialog (BstPartView *part_view)
 {
   SfiProxy part;
   GtkWidget *pdialog;
+
   part = bst_item_view_get_current (BST_ITEM_VIEW (part_view));
   pdialog = (GtkWidget*) g_object_new (BST_TYPE_PART_DIALOG, NULL);
+
   bst_part_dialog_set_proxy (BST_PART_DIALOG (pdialog), part);
   g_signal_connect_object (part_view, "destroy", G_CALLBACK (gtk_widget_destroy), pdialog, G_CONNECT_SWAPPED);
   gtk_widget_show (pdialog);
 }
+
 GtkWidget*
 bst_part_view_new (SfiProxy song)
 {
   GtkWidget *part_view;
+
   g_return_val_if_fail (BSE_IS_SONG (song), NULL);
+
   part_view = gtk_widget_new (BST_TYPE_PART_VIEW, NULL);
   bst_item_view_set_container (BST_ITEM_VIEW (part_view), song);
+
   return part_view;
 }
+
 static void
 part_view_action_exec (gpointer                data,
                        gulong                  action)
@@ -87,6 +106,7 @@ part_view_action_exec (gpointer                data,
     }
   gxk_widget_update_actions_downwards (self);
 }
+
 static gboolean
 part_view_action_check (gpointer                data,
                         gulong                  action,

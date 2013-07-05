@@ -1,8 +1,13 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #ifndef __BSE_SONG_H__
 #define __BSE_SONG_H__
+
 #include        <bse/bsesnet.hh>
+
+
 G_BEGIN_DECLS
+
+
 /* --- BSE type macros --- */
 #define BSE_TYPE_SONG              (BSE_TYPE_ID (BseSong))
 #define BSE_SONG(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), BSE_TYPE_SONG, BseSong))
@@ -10,6 +15,8 @@ G_BEGIN_DECLS
 #define BSE_IS_SONG(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), BSE_TYPE_SONG))
 #define BSE_IS_SONG_CLASS(class)   (G_TYPE_CHECK_CLASS_TYPE ((class), BSE_TYPE_SONG))
 #define BSE_SONG_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), BSE_TYPE_SONG, BseSongClass))
+
+
 /* --- BseSong object --- */
 struct BseSongVoice {
   BseSource *constant;

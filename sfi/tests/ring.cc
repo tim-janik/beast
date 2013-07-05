@@ -2,6 +2,7 @@
 // #define TEST_VERBOSE
 #include <sfi/sfitests.hh>
 #include <sfi/sfi.hh>
+
 static void
 print_ring_ints (SfiRing *ring)
 {
@@ -11,6 +12,7 @@ print_ring_ints (SfiRing *ring)
     g_print (" %zd,", (size_t) node->data);
   g_print (" };");
 }
+
 static void
 print_rings_side_by_side (SfiRing *ring1,
                           SfiRing *ring2)
@@ -31,12 +33,15 @@ print_rings_side_by_side (SfiRing *ring1,
         r2 = sfi_ring_walk (r2, ring2);
     }
 }
+
 static void
 test_sfi_ring (void)
 {
   TSTART ("RingBasics");
   (void) print_ring_ints;
+
   SfiRing *r1 = NULL, *r2 = NULL, *d = NULL;
+
   r1= sfi_ring_append (r1, (void*) 3);
   r1= sfi_ring_append (r1, (void*) 7);
   r1= sfi_ring_append (r1, (void*) 8);
@@ -44,6 +49,7 @@ test_sfi_ring (void)
   r1= sfi_ring_append (r1, (void*) 18);
   TASSERT (sfi_ring_length (r1) == 5);
   TASSERT (sfi_ring_equals (r1, r1, sfi_pointer_cmp, NULL));
+
   d = sfi_ring_append (d, (void*) 13);
   d = sfi_ring_append (d, (void*) 7);
   d = sfi_ring_append (d, (void*) 18);
@@ -52,12 +58,14 @@ test_sfi_ring (void)
   TASSERT (sfi_ring_equals (d, d, sfi_pointer_cmp, NULL));
   TASSERT (sfi_ring_min (d, sfi_pointer_cmp, NULL) == (void*) 3);
   TASSERT (sfi_ring_max (d, sfi_pointer_cmp, NULL) == (void*) 18);
+
   TASSERT (sfi_ring_equals (r1, d, sfi_pointer_cmp, NULL) == FALSE);
   d = sfi_ring_sort (d, sfi_pointer_cmp, NULL);
   TASSERT (sfi_ring_equals (r1, d, sfi_pointer_cmp, NULL));
   TASSERT (sfi_ring_includes (r1, d, sfi_pointer_cmp, NULL));
   TASSERT (sfi_ring_includes (d, r1, sfi_pointer_cmp, NULL));
   sfi_ring_free (d);
+
   r2 = sfi_ring_append (r2, (void*) 4);
   r2 = sfi_ring_append (r2, (void*) 7);
   r2 = sfi_ring_append (r2, (void*) 13);
@@ -67,19 +75,23 @@ test_sfi_ring (void)
   TASSERT (sfi_ring_equals (r1, r2, sfi_pointer_cmp, NULL) == FALSE);
   TASSERT (sfi_ring_includes (r1, r2, sfi_pointer_cmp, NULL) == FALSE);
   sfi_ring_free (d);
+
   TDONE ();
   TSTART ("RingMath");
+
   d = sfi_ring_difference (r1, r2, sfi_pointer_cmp, NULL);
   TASSERT (sfi_ring_pop_head (&d) == (void*) 3);
   TASSERT (sfi_ring_pop_head (&d) == (void*) 8);
   TASSERT (sfi_ring_pop_head (&d) == (void*) 18);
   TASSERT (d == NULL);
+
   d = sfi_ring_symmetric_difference (r1, r2, sfi_pointer_cmp, NULL);
   TASSERT (sfi_ring_pop_head (&d) == (void*) 3);
   TASSERT (sfi_ring_pop_head (&d) == (void*) 4);
   TASSERT (sfi_ring_pop_head (&d) == (void*) 8);
   TASSERT (sfi_ring_pop_head (&d) == (void*) 18);
   TASSERT (d == NULL);
+
   SfiRing *t1 = sfi_ring_symmetric_difference (r1, r2, sfi_pointer_cmp, NULL);
   SfiRing *t2 = sfi_ring_intersection (r1, r2, sfi_pointer_cmp, NULL);
   d = sfi_ring_intersection (t1, t2, sfi_pointer_cmp, NULL);
@@ -91,6 +103,7 @@ test_sfi_ring (void)
   sfi_ring_free (t2);
   TASSERT (sfi_ring_includes (d, r1, sfi_pointer_cmp, NULL));
   TASSERT (sfi_ring_includes (d, r2, sfi_pointer_cmp, NULL));
+
   d = sfi_ring_union (r1, r2, sfi_pointer_cmp, NULL);
   TASSERT (sfi_ring_length (d) == 6);
   t1 = r1, t2 = d;
@@ -110,10 +123,13 @@ test_sfi_ring (void)
   TASSERT (sfi_ring_equals (d, t1, sfi_pointer_cmp, NULL));
   sfi_ring_free (t1);
   sfi_ring_free (d);
+
   sfi_ring_free (r1);
   sfi_ring_free (r2);
+
   TDONE ();
   TSTART ("RingReorder");
+
   r1 = NULL;
   r1 = sfi_ring_append (r1, (void*) 5);
   r1 = sfi_ring_append (r1, (void*) 7);
@@ -155,6 +171,7 @@ test_sfi_ring (void)
   TASSERT (sfi_ring_pop_head (&r2) == (void*) 0x68);
   TASSERT (r2 == NULL);
   sfi_ring_free (r1);
+
   r1 = NULL;
   r1 = sfi_ring_append (r1, (void*) 0x11);
   r1 = sfi_ring_append (r1, (void*) 0x16);
@@ -185,7 +202,7 @@ int
 main (int   argc,
       char *argv[])
 {
-  sfi_init_test (&argc, &argv, NULL);
+  sfi_init_test (&argc, argv);
   test_sfi_ring();
   return 0;
 }

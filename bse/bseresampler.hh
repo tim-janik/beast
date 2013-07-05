@@ -1,14 +1,19 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #ifndef __BSE_RESAMPLER_HH__
 #define __BSE_RESAMPLER_HH__
+
 #include <bse/bsecxxutils.hh>
+
 G_BEGIN_DECLS
+
 typedef struct BseResampler2 BseResampler2;
+
 typedef enum /*< skip >*/
 {
   BSE_RESAMPLER2_MODE_UPSAMPLE,
   BSE_RESAMPLER2_MODE_DOWNSAMPLE
 } BseResampler2Mode;
+
 typedef enum /*< skip >*/
 {
   BSE_RESAMPLER2_PREC_LINEAR = 1,     /* linear interpolation */
@@ -18,6 +23,7 @@ typedef enum /*< skip >*/
   BSE_RESAMPLER2_PREC_120DB = 20,
   BSE_RESAMPLER2_PREC_144DB = 24
 } BseResampler2Precision;
+
 BseResampler2* bse_resampler2_create        (BseResampler2Mode      mode,
                                              BseResampler2Precision precision);
 void           bse_resampler2_destroy       (BseResampler2         *resampler);
@@ -87,6 +93,7 @@ protected:
   static const double halfband_fir_96db_coeffs[32];
   static const double halfband_fir_120db_coeffs[42];
   static const double halfband_fir_144db_coeffs[52];
+
   /* Creates implementation from filter coefficients and Filter implementation class
    *
    * Since up- and downsamplers use different (scaled) coefficients, its possible
@@ -100,6 +107,7 @@ protected:
     float taps[order];
     for (guint i = 0; i < order; i++)
       taps[i] = d[i] * scaling;
+
     Resampler2 *filter = new Filter (taps);
     g_assert (order == filter->order());
     return filter;
@@ -114,7 +122,11 @@ protected:
   create_impl (BseResampler2Mode      mode,
 	       BseResampler2Precision precision);
 };
+
 } /* namespace Resampler */
+
 } /* namespace Bse */
+
 #endif /* __cplusplus */
+
 #endif /* __BSE_RESAMPLER_HH__ */

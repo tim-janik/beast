@@ -1,8 +1,12 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #ifndef __BST_KEY_BINDINGS_H__
 #define __BST_KEY_BINDINGS_H__
+
 #include "bstutils.hh"
+
 G_BEGIN_DECLS
+
+
 /* --- typedefs & structures --- */
 typedef enum /*< skip >*/
 {
@@ -36,6 +40,8 @@ struct _BstKeyBinding
   guint                          n_keys;
   BstKeyBindingKey              *keys;
 };
+
+
 /* --- prototypes --- */
 GtkWidget*                   bst_key_binding_box          (const gchar                 *binding_name,
                                                            guint                        n_funcs,
@@ -67,5 +73,7 @@ BseErrorType                 bst_key_binding_dump         (const gchar          
 BseErrorType                 bst_key_binding_parse        (const gchar                 *file_name,
                                                            GSList                      *kbindings);
 GParamSpec*                  bst_key_binding_item_pspec   (void);
+
 G_END_DECLS
+
 #endif /* __BST_KEY_BINDINGS_H__ */

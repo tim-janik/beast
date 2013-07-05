@@ -1,0 +1,106 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+ <head>
+ <title>sfidl.1</title>
+ <style type="text/css">
+ body { font-family: "DejaVu Sans", "Bitstream Vera Sans", Corbel, Verdana, "Verdana Ref", sans-serif; }
+ .tocnumber { display: none; }
+ body > p, body > dl, body > ul, body > ol { margin-left: 8em; }
+ </style></head>
+<body>
+ <a href="index.html">Return to Index</a><hr>
+<table id="toc" class="toc"><tr><td><div id="toctitle"><h2>Contents</h2></div>
+<ul>
+<li class="toclevel-1 tocsection-1"><a href="sfidl.1.html#SFIDL.281.29_-_SFI_IDL_Compiler"><span class="tocnumber">1</span> <span class="toctext">SFIDL(1) - SFI IDL Compiler</span></a>
+<ul>
+<li class="toclevel-2 tocsection-2"><a href="sfidl.1.html#NAME"><span class="tocnumber">1.1</span> <span class="toctext">NAME</span></a></li>
+<li class="toclevel-2 tocsection-3"><a href="sfidl.1.html#SYNOPSIS"><span class="tocnumber">1.2</span> <span class="toctext">SYNOPSIS</span></a></li>
+<li class="toclevel-2 tocsection-4"><a href="sfidl.1.html#DESCRIPTION"><span class="tocnumber">1.3</span> <span class="toctext">DESCRIPTION</span></a></li>
+<li class="toclevel-2 tocsection-5"><a href="sfidl.1.html#OPTIONS"><span class="tocnumber">1.4</span> <span class="toctext">OPTIONS</span></a>
+<ul>
+<li class="toclevel-3 tocsection-6"><a href="sfidl.1.html#Language_bindings:"><span class="tocnumber">1.4.1</span> <span class="toctext">Language bindings:</span></a></li>
+<li class="toclevel-3 tocsection-7"><a href="sfidl.1.html#Language_binding_options:"><span class="tocnumber">1.4.2</span> <span class="toctext">Language binding options:</span></a></li>
+</ul>
+</li>
+<li class="toclevel-2 tocsection-8"><a href="sfidl.1.html#SEE_ALSO"><span class="tocnumber">1.5</span> <span class="toctext">SEE ALSO</span></a></li>
+</ul>
+</li>
+</ul>
+</td></tr></table>
+<h1> <span class="mw-headline" id="SFIDL.281.29_-_SFI_IDL_Compiler"> SFIDL(1) - SFI IDL Compiler </span></h1>
+<p>Manual: Testbit Wiki Pages <br/>
+Release: Revision 305 <br/>
+Updated: 2011-05-2 <br/>
+</p>
+<h2> <span class="mw-headline" id="NAME"> NAME </span></h2>
+<p>SFIDL - SFI IDL Compiler
+</p>
+<h2> <span class="mw-headline" id="SYNOPSIS"> SYNOPSIS </span></h2>
+<p><b>sfidl</b> [<i>OPTIONS</i>] <i>input.idl</i>
+</p>
+<h2> <span class="mw-headline" id="DESCRIPTION"> DESCRIPTION </span></h2>
+<p><b>sfidl</b> generates glue code for <a href="http://testbit.eu/index.php?title=Bse&amp;action=edit&amp;redlink=1" class="new" title="Bse (page does not exist)">Bse</a> objects and
+plugins from interface definition language files.
+</p>
+<h2> <span class="mw-headline" id="OPTIONS"> OPTIONS </span></h2>
+<dl><dt> <b>--help</b> [<i>binding</i>]
+</dt><dd> Print general usage information. Or, if <i>binding</i> was specified, print usage information for this language binding.
+</dd><dt> <b>--version</b>
+</dt><dd> Print program version.
+</dd><dt> <b>-I</b> <i>DIRECTORY</i>
+</dt><dd> Add <i>DIRECTORY</i> to include path.
+</dd><dt> <b>--print-include-path</b>
+</dt><dd> Print include path.
+</dd><dt> <b>--nostdinc</b>
+</dt><dd> Prevents standard include path from being used.
+</dd></dl>
+<h3> <span class="mw-headline" id="Language_bindings:"> Language bindings: </span></h3>
+<dl><dt> <b>--client-c</b>
+</dt><dd> Generate C client language binding.
+</dd><dt> <b>--client-c</b>
+</dt><dd> Generate C core language binding.
+</dd><dt> <b>--host-c</b>
+</dt><dd> Generate C host language binding.
+</dd><dt> <b>--client-cxx</b>
+</dt><dd> Generate C++ client language binding.
+</dd><dt> <b>--core-cxx</b>
+</dt><dd> Generate C++ core language binding.
+</dd><dt> <b>--plugin</b>
+</dt><dd> Generate C++ plugin language binding.
+</dd><dt> <b>--list-types</b>
+</dt><dd> Print all types defined in the idlfile. This option is used only for BSE internally to ease transition from C to C++ types.
+</dd></dl>
+<h3> <span class="mw-headline" id="Language_binding_options:"> Language binding options: </span></h3>
+<dl><dt> <b>--header</b>
+</dt><dd> Generate header file, this is the default.
+</dd><dt> <b>--source</b>
+</dt><dd> Generate source file.
+</dd><dt> <b>--prefix</b> <i>prefix</i>
+</dt><dd> C host/client language binding option, sets the prefix for C functions. The prefix ensures that no symbol clashes will occur between different programs/libraries which are using a binding, so it is important to set it to something unique to your application/library.
+</dd><dt> <b>--init</b> <i>name</i>
+</dt><dd> Set the name of the init function for C host/core bindings.
+</dd><dt> <b>--namespace</b> <i>namespace</i>
+</dt><dd> C++ client language binding, sets the namespace to use for the code. The namespace ensures that no symbol clashes will occur between different programs/libraries which are using a binding, so it is important to set it to something unique to your application/library.
+</dd><dt> <b>--lower</b>
+</dt><dd> Select lower case identifiers in the C++ client language binding (create_midi_synth), this is the default.
+</dd><dt> <b>--mixed</b>
+</dt><dd> Select mixed case identifiers in the C++ client language binding (createMidiSynth).
+</dd></dl>
+<h2> <span class="mw-headline" id="SEE_ALSO"> SEE ALSO </span></h2>
+<p><a href="http://testbit.eu/Bsescm.1" title="Bsescm.1">bsescm.1</a>,
+<a rel="nofollow" class="external text" href="http://beast.testbit.eu/bse-objects">BSE Object Reference</a>,
+<a rel="nofollow" class="external text" href="http://beast.testbit.eu/bse-interface">BSE Interface Reference</a>,
+<a rel="nofollow" class="external text" href="http://beast.testbit.eu/sfidl-manual">SFIDL Documentation</a>
+</p>
+<!-- 
+NewPP limit report
+Preprocessor node count: 50/1000000
+Post-expand include size: 15/2097152 bytes
+Template argument size: 0/2097152 bytes
+Expensive parser function count: 0/100
+-->
+
+<!-- Saved in parser cache with key mediawikidb:pcache:idhash:63-1!*!0!!en!*!* and timestamp 20130618181236 -->
+<hr>
+</body>
+</html>

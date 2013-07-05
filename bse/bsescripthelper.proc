@@ -2,8 +2,12 @@
 #include <bse/bseplugin.hh>
 #include <bse/bseprocedure.hh>
 #include <bse/bsecontainer.hh>
+
+
 AUTHORS	= "Tim Janik <timj@gtk.org>";
 LICENSE = "GNU Lesser General Public License";
+
+
 PROCEDURE (bse-proxy-check, "Proxy Check") {
   HELP	= "Check whether a proxy has a certain type.";
   IN	= bse_param_spec_object ("item", "Item", "The Item",
@@ -21,13 +25,17 @@ PROCEDURE (bse-proxy-check, "Proxy Check") {
   const char *type_name = sfi_value_get_string (in_values++);
   GType type;
   gboolean is_a;
+
   /* check parameters */
   if (!type_name)
     type_name = "";
+
   /* action */
   type = g_type_from_name (type_name);
   is_a = item && g_type_is_a (G_OBJECT_TYPE (item), type);
+
   /* set output parameters */
   sfi_value_set_bool (out_values++, is_a);
+
   return BSE_ERROR_NONE;
 }

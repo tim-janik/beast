@@ -1,49 +1,63 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bstsnifferscope.hh"
 #include <string.h>
+
+
 #define WIDGET(self)    (GTK_WIDGET (self))
 #define STATE(self)     (WIDGET (self)->state)
 #define STYLE(self)     (WIDGET (self)->style)
 #define BASE_GC(self)   (STYLE (self)->base_gc[STATE (self)])
+
 G_DEFINE_TYPE (BstSnifferScope, bst_sniffer_scope, GTK_TYPE_WIDGET);
+
 /* --- functions --- */
 static void
 bst_sniffer_scope_init (BstSnifferScope *self)
 {
   GtkWidget *widget = GTK_WIDGET (self);
+
   GTK_WIDGET_SET_FLAGS (self, GTK_NO_WINDOW);
   gtk_widget_show (widget);
 }
+
 GtkWidget*
 bst_sniffer_scope_new (void)
 {
   BstSnifferScope *self = (BstSnifferScope*) g_object_new (BST_TYPE_SNIFFER_SCOPE, NULL);
   return GTK_WIDGET (self);
 }
+
 static void
 bst_sniffer_scope_destroy (GtkObject *object)
 {
   BstSnifferScope *self = BST_SNIFFER_SCOPE (object);
+
   bst_sniffer_scope_set_sniffer (self, 0);
+
   GTK_OBJECT_CLASS (bst_sniffer_scope_parent_class)->destroy (object);
 }
+
 static void
 bst_sniffer_scope_finalize (GObject *object)
 {
   BstSnifferScope *self = BST_SNIFFER_SCOPE (object);
+
   bst_sniffer_scope_set_sniffer (self, 0);
   g_free (self->lvalues);
   g_free (self->rvalues);
   G_OBJECT_CLASS (bst_sniffer_scope_parent_class)->finalize (object);
 }
+
 static void
 bst_sniffer_scope_size_request (GtkWidget      *widget,
                                 GtkRequisition *requisition)
 {
   // BstSnifferScope *self = BST_SNIFFER_SCOPE (widget);
+
   requisition->width = 30 + 4;
   requisition->height = 20;
 }
+
 static void
 bst_sniffer_scope_realize (GtkWidget *widget)
 {
@@ -53,6 +67,7 @@ bst_sniffer_scope_realize (GtkWidget *widget)
   GdkColor color = gdk_color_from_rgb (0xff0000);
   gdk_gc_set_rgb_fg_color (self->oshoot_gc, &color);
 }
+
 static void
 bst_sniffer_scope_unrealize (GtkWidget *widget)
 {
@@ -61,6 +76,7 @@ bst_sniffer_scope_unrealize (GtkWidget *widget)
   self->oshoot_gc = NULL;
   GTK_WIDGET_CLASS (bst_sniffer_scope_parent_class)->unrealize (widget);
 }
+
 static void
 bst_sniffer_scope_size_allocate (GtkWidget     *widget,
                                  GtkAllocation *allocation)
@@ -73,6 +89,7 @@ bst_sniffer_scope_size_allocate (GtkWidget     *widget,
   self->rvalues = g_renew (float, self->rvalues, self->n_values);
   memset (self->rvalues, 0, self->n_values * sizeof (self->rvalues[0]));
 }
+
 static void
 sniffer_scope_lregion (BstSnifferScope *self,
                        gint            *x,
@@ -82,6 +99,7 @@ sniffer_scope_lregion (BstSnifferScope *self,
   *width = self->n_values;
   *x = widget->allocation.x + 1;
 }
+
 static void
 sniffer_scope_rregion (BstSnifferScope *self,
                        gint            *x,
@@ -91,6 +109,7 @@ sniffer_scope_rregion (BstSnifferScope *self,
   *width = self->n_values;
   *x = widget->allocation.x + 1 + *width + 1 + (widget->allocation.width & 1) + 1;
 }
+
 static void
 sniffer_scope_draw_bar (BstSnifferScope *self,
                         guint            x,
@@ -109,6 +128,7 @@ sniffer_scope_draw_bar (BstSnifferScope *self,
   gdk_draw_vline (window, value > 1.0 ? xg_gc : fg_gc,
                   x, y + height - top, top);
 }
+
 static gboolean
 bst_sniffer_scope_expose (GtkWidget      *widget,
                           GdkEventExpose *event)
@@ -118,6 +138,7 @@ bst_sniffer_scope_expose (GtkWidget      *widget,
   GtkAllocation *allocation = &widget->allocation;
   if (window != widget->window)
     return FALSE;
+
   /* draw left and right channel */
   gint i, xl, xr, width;
   sniffer_scope_lregion (self, &xl, &width);
@@ -152,8 +173,10 @@ bst_sniffer_scope_expose (GtkWidget      *widget,
   gdk_draw_hline (window, light_gc, allocation->x, allocation->y, allocation->width);
   if (bgcol >= 0)       /* paint above hline outline */
     gdk_draw_vline (window, widget->style->bg_gc[GTK_STATE_NORMAL], bgcol, allocation->y, allocation->height);
+
   return FALSE;
 }
+
 static void
 sniffer_scope_shift (BstSnifferScope *self)
 {
@@ -184,6 +207,7 @@ sniffer_scope_shift (BstSnifferScope *self)
         }
     }
 }
+
 static void
 scope_probes_notify (SfiProxy     proxy,
                      SfiSeq      *sseq,
@@ -216,20 +240,25 @@ scope_probes_notify (SfiProxy     proxy,
   bst_source_queue_probe_request (self->proxy, 0, BST_SOURCE_PROBE_RANGE, 20.0);
   bst_source_queue_probe_request (self->proxy, 1, BST_SOURCE_PROBE_RANGE, 20.0);
 }
+
 static void
 bst_sniffer_scope_class_init (BstSnifferScopeClass *klass)
 {
   GObjectClass *gobject_class = G_OBJECT_CLASS (klass);
   GtkObjectClass *object_class = GTK_OBJECT_CLASS (klass);
   GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (klass);
+
   gobject_class->finalize = bst_sniffer_scope_finalize;
+
   object_class->destroy = bst_sniffer_scope_destroy;
+
   widget_class->size_request = bst_sniffer_scope_size_request;
   widget_class->size_allocate = bst_sniffer_scope_size_allocate;
   widget_class->realize = bst_sniffer_scope_realize;
   widget_class->expose_event = bst_sniffer_scope_expose;
   widget_class->unrealize = bst_sniffer_scope_unrealize;
 }
+
 void
 bst_sniffer_scope_set_sniffer (BstSnifferScope *self,
                                SfiProxy         proxy)
@@ -256,6 +285,7 @@ bst_sniffer_scope_set_sniffer (BstSnifferScope *self,
       bst_source_queue_probe_request (self->proxy, 1, BST_SOURCE_PROBE_RANGE, 20.0);
     }
 }
+
 static BseProbeRequestSeq *probe_request_seq = NULL;
 static gboolean
 source_probe_idle_request (gpointer data)
@@ -271,6 +301,7 @@ source_probe_idle_request (gpointer data)
   GDK_THREADS_LEAVE ();
   return FALSE;
 }
+
 void
 bst_source_queue_probe_request (SfiProxy              source,
                                 guint                 ochannel_id,

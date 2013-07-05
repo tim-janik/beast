@@ -12,10 +12,10 @@
 #include <sys/poll.h>
 #include <sys/time.h>
 #include <errno.h>
-static SFI_MSG_TYPE_DEFINE (debug_job, "job", SFI_MSG_DEBUG, NULL);
-#define JOB_DEBUG(...)  sfi_debug (debug_job, __VA_ARGS__)
-static SFI_MSG_TYPE_DEFINE (debug_tjob, "tjob", SFI_MSG_DEBUG, NULL);
-#define TJOB_DEBUG(...) sfi_debug (debug_tjob, __VA_ARGS__)
+
+#define JOB_DEBUG(...)  BSE_KEY_DEBUG ("job", __VA_ARGS__)
+#define TJOB_DEBUG(...) BSE_KEY_DEBUG ("tjob", __VA_ARGS__)
+
 #define	NODE_FLAG_RECONNECT(node)  G_STMT_START { /*(node)->needs_reset = TRUE*/; } G_STMT_END
 /* --- time stamping (debugging) --- */
 #define	ToyprofStamp		struct timeval
@@ -31,6 +31,8 @@ toyprof_elapsed (ToyprofStamp fstamp,
   guint64 last  = lstamp.tv_sec * toyprof_stamp_ticks () + lstamp.tv_usec;
   return last - first;
 }
+
+
 /* --- typedefs & structures --- */
 typedef struct _Poll Poll;
 struct _Poll
@@ -50,8 +52,12 @@ struct _Timer
   gpointer           data;
   BseFreeFunc        free_func;
 };
+
+
 /* --- prototypes --- */
 static void	master_schedule_discard	(void);
+
+
 /* --- variables --- */
 static gboolean	       master_need_reflow = FALSE;
 static gboolean	       master_need_process = FALSE;
@@ -65,19 +71,25 @@ static EngineSchedule *master_schedule = NULL;
 static SfiRing        *boundary_node_list = NULL;
 static gboolean        master_new_boundary_jobs = FALSE;
 static SfiRing        *probe_node_list = NULL;
+
+
 /* --- node state functions --- */
 static void
 add_consumer (EngineNode *node)
 {
   g_return_if_fail (ENGINE_NODE_IS_CONSUMER (node) && node->toplevel_next == NULL && node->integrated);
+
   node->toplevel_next = master_consumer_list;
   master_consumer_list = node;
 }
+
 static void
 remove_consumer (EngineNode *node)
 {
   EngineNode *tmp, *last = NULL;
+
   g_return_if_fail (!ENGINE_NODE_IS_CONSUMER (node) || !node->integrated);
+
   for (tmp = master_consumer_list; tmp; last = tmp, tmp = last->toplevel_next)
     if (tmp == node)
       break;
@@ -88,6 +100,7 @@ remove_consumer (EngineNode *node)
     master_consumer_list = node->toplevel_next;
   node->toplevel_next = NULL;
 }
+
 static void
 propagate_update_suspend (EngineNode *node)
 {
@@ -103,6 +116,7 @@ propagate_update_suspend (EngineNode *node)
 	  propagate_update_suspend (node->jinputs[j][i].src_node);
     }
 }
+
 static void
 master_idisconnect_node (EngineNode *node,
 			 guint       istream)
@@ -110,8 +124,10 @@ master_idisconnect_node (EngineNode *node,
   EngineNode *src_node = node->inputs[istream].src_node;
   guint ostream = node->inputs[istream].src_stream;
   gboolean was_consumer;
+
   g_assert (ostream < ENGINE_NODE_N_OSTREAMS (src_node) &&
 	    src_node->outputs[ostream].n_outputs > 0);	/* these checks better pass */
+
   node->inputs[istream].src_node = NULL;
   node->inputs[istream].src_stream = ~0;
   node->module.istreams[istream].connected = 0;	/* scheduler update */
@@ -127,6 +143,7 @@ master_idisconnect_node (EngineNode *node,
   if (!was_consumer && ENGINE_NODE_IS_CONSUMER (src_node))
     add_consumer (src_node);
 }
+
 static void
 master_jdisconnect_node (EngineNode *node,
 			 guint       jstream,
@@ -135,9 +152,11 @@ master_jdisconnect_node (EngineNode *node,
   EngineNode *src_node = node->jinputs[jstream][con].src_node;
   guint i, ostream = node->jinputs[jstream][con].src_stream;
   gboolean was_consumer;
+
   g_assert (ostream < ENGINE_NODE_N_OSTREAMS (src_node) &&
 	    node->module.jstreams[jstream].jcount > 0 &&
 	    src_node->outputs[ostream].n_outputs > 0);	/* these checks better pass */
+
   i = --node->module.jstreams[jstream].jcount;
   node->jinputs[jstream][con] = node->jinputs[jstream][i];
   node->module.jstreams[jstream].values[i] = NULL; /* float**values 0-termination */
@@ -153,6 +172,7 @@ master_jdisconnect_node (EngineNode *node,
   if (!was_consumer && ENGINE_NODE_IS_CONSUMER (src_node))
     add_consumer (src_node);
 }
+
 static void
 master_disconnect_node_outputs (EngineNode *src_node, EngineNode *dest_node)
 {
@@ -164,6 +184,8 @@ master_disconnect_node_outputs (EngineNode *src_node, EngineNode *dest_node)
       if (dest_node->jinputs[j][i].src_node == src_node)
 	master_jdisconnect_node (dest_node, j, i--);
 }
+
+
 /* --- timed job handling --- */
 static inline void
 insert_trash_job (EngineNode     *node,
@@ -176,6 +198,7 @@ insert_trash_job (EngineNode     *node,
     node->tjob_head = tjob;
   node->tjob_tail = tjob;
 }
+
 static inline EngineTimedJob*
 node_pop_flow_job (EngineNode  *node,
                    guint64      tick_stamp)
@@ -193,6 +216,7 @@ node_pop_flow_job (EngineNode  *node,
     }
   return tjob;
 }
+
 static inline EngineTimedJob*
 node_pop_boundary_job (EngineNode  *node,
                        guint64      tick_stamp,
@@ -213,6 +237,7 @@ node_pop_boundary_job (EngineNode  *node,
     }
   return tjob;
 }
+
 static inline EngineTimedJob*
 insert_timed_job (EngineTimedJob *head,
                   EngineTimedJob *tjob)
@@ -232,6 +257,7 @@ insert_timed_job (EngineTimedJob *head,
     head = tjob;
   return head;
 }
+
 static inline guint64
 node_peek_flow_job_stamp (EngineNode *node)
 {
@@ -240,6 +266,7 @@ node_peek_flow_job_stamp (EngineNode *node)
     return tjob->tick_stamp;
   return Bse::TickStamp::max_stamp();
 }
+
 static inline guint64
 node_peek_boundary_job_stamp (EngineNode *node)
 {
@@ -248,6 +275,8 @@ node_peek_boundary_job_stamp (EngineNode *node)
     return tjob->tick_stamp;
   return Bse::TickStamp::max_stamp();
 }
+
+
 /* --- job processing --- */
 static void
 master_process_job (BseJob *job)
@@ -600,12 +629,14 @@ master_process_job (BseJob *job)
     }
   JOB_DEBUG ("done");
 }
+
 static void
 master_poll_check (glong   *timeout_p,
 		   gboolean check_with_revents)
 {
   gboolean need_processing = FALSE;
   Poll *poll;
+
   if (master_need_process || *timeout_p == 0)
     {
       master_need_process = TRUE;
@@ -614,6 +645,7 @@ master_poll_check (glong   *timeout_p,
   for (poll = master_poll_list; poll; poll = poll->next)
     {
       glong timeout = -1;
+
       if (poll->poll_func (poll->data, bse_engine_block_size (), &timeout,
 			   poll->n_fds, poll->n_fds ? poll->fds : NULL, check_with_revents)
 	  || timeout == 0)
@@ -627,6 +659,7 @@ master_poll_check (glong   *timeout_p,
     }
   master_need_process = need_processing;
 }
+
 static void
 master_tick_stamp_inc (void)
 {
@@ -655,11 +688,13 @@ master_tick_stamp_inc (void)
       timer = next;
     }
 }
+
 typedef enum {
   PROBE_UNSCHEDULED,
   PROBE_SCHEDULED,
   PROBE_VIRTUAL /* scheduled */
 } ProbeType;
+
 static inline void
 master_take_probes (EngineNode   *node,
                     const guint64 current_stamp,
@@ -711,6 +746,7 @@ master_take_probes (EngineNode   *node,
   insert_trash_job (node, tjob);
   _engine_node_collect_jobs (node);
 }
+
 static inline guint64
 master_update_node_state (EngineNode *node,
                           guint64     max_tick)
@@ -739,6 +775,7 @@ master_update_node_state (EngineNode *node,
     while (tjob);
   return node_peek_flow_job_stamp (node);
 }
+
 static void
 master_process_locked_node (EngineNode *node,
 			    guint       n_values)
@@ -747,7 +784,9 @@ master_process_locked_node (EngineNode *node,
   guint64 next_counter, new_counter, final_counter = current_stamp + n_values;
   guint i, j, diff;
   bool needs_probe_reset = node->probe_jobs != NULL;
+
   g_return_if_fail (node->integrated && node->sched_tag);
+
   while (node->counter < final_counter)
     {
       /* call reset() and exec flow jobs */
@@ -762,6 +801,7 @@ master_process_locked_node (EngineNode *node,
       for (i = 0; i < ENGINE_NODE_N_ISTREAMS (node); i++)
 	{
 	  EngineNode *inode = node->inputs[i].real_node;
+
 	  if (inode)
 	    {
 	      ENGINE_NODE_LOCK (inode);
@@ -779,6 +819,7 @@ master_process_locked_node (EngineNode *node,
 	for (i = 0; i < node->module.jstreams[j].n_connections; i++) /* assumes scheduled node */
 	  {
 	    EngineNode *inode = node->jinputs[j][i].real_node;
+
 	    ENGINE_NODE_LOCK (inode);
 	    if (inode->counter < final_counter)
 	      master_process_locked_node (inode, final_counter - node->counter);
@@ -816,7 +857,9 @@ master_process_locked_node (EngineNode *node,
       node->counter = new_counter;
     }
 }
+
 static gboolean gsl_profile_modules = 0;	/* set to 1 in gdb to get profile output */
+
 static void
 master_process_flow (void)
 {
@@ -826,19 +869,26 @@ master_process_flow (void)
   guint64 profile_maxtime = 0;
   gboolean profile_modules = gsl_profile_modules;
   EngineNode *profile_node = NULL;
+
   g_return_if_fail (master_need_process == TRUE);
+
   g_assert (bse_fpu_okround () == TRUE);
+
   if (master_schedule)
     {
       _engine_schedule_restart (master_schedule);
       _engine_set_schedule (master_schedule);
+
       EngineNode *node = _engine_pop_unprocessed_node ();
       while (node)
 	{
 	  ToyprofStamp profile_stamp1, profile_stamp2;
+
 	  if (UNLIKELY (profile_modules))
 	    toyprof_stamp (profile_stamp1);
+
 	  master_process_locked_node (node, n_values);
+
 	  if (UNLIKELY (profile_modules))
 	    {
 	      toyprof_stamp (profile_stamp2);
@@ -849,9 +899,11 @@ master_process_flow (void)
 		  profile_node = node;
 		}
 	    }
+
 	  _engine_push_processed_node (node);
 	  node = _engine_pop_unprocessed_node ();
 	}
+
       /* walk unscheduled nodes with flow jobs */
       node = _engine_mnl_head ();
       while (node && BSE_ENGINE_MNL_UNSCHEDULED_TJOB_NODE (node))
@@ -863,8 +915,10 @@ master_process_flow (void)
 	  _engine_mnl_node_changed (node);      /* collects trash jobs and reorders node */
 	  node = tmp;
 	}
+
       /* nothing new to process, wait for slaves */
       _engine_wait_on_unprocessed ();
+
       /* take remaining probes */
       SfiRing *ring = probe_node_list;
       while (ring)
@@ -878,6 +932,7 @@ master_process_flow (void)
           else
             master_take_probes (node, current_stamp, n_values, PROBE_SCHEDULED);
         }
+
       if (UNLIKELY (profile_modules))
 	{
 	  if (profile_node)
@@ -890,17 +945,21 @@ master_process_flow (void)
 			 profile_node, (long long unsigned int) profile_maxtime, profile_node->module.klass->process);
 	    }
 	}
+
       _engine_unset_schedule (master_schedule);
       master_tick_stamp_inc ();
       _engine_recycle_const_values (FALSE);
     }
   master_need_process = FALSE;
 }
+
 static void
 master_reschedule_flow (void)
 {
   EngineNode *node;
+
   g_return_if_fail (master_need_reflow == TRUE);
+
   if (!master_schedule)
     master_schedule = _engine_schedule_new ();
   else
@@ -913,10 +972,12 @@ master_reschedule_flow (void)
   _engine_schedule_secure (master_schedule);
   master_need_reflow = FALSE;
 }
+
 static void
 master_schedule_discard (void)
 {
   g_return_if_fail (master_need_reflow == TRUE);
+
   if (master_schedule)
     {
       _engine_schedule_unsecure (master_schedule);
@@ -924,13 +985,17 @@ master_schedule_discard (void)
       master_schedule = NULL;
     }
 }
+
+
 /* --- MasterThread main loop --- */
 gboolean
 _engine_master_prepare (BseEngineLoop *loop)
 {
   gboolean need_dispatch;
   guint i;
+
   g_return_val_if_fail (loop != NULL, FALSE);
+
   /* setup and clear pollfds here already, so master_poll_check() gets no junk (and IRIX can't handle non-0 revents) */
   loop->fds_changed = master_pollfds_changed;
   master_pollfds_changed = FALSE;
@@ -939,6 +1004,7 @@ _engine_master_prepare (BseEngineLoop *loop)
   for (i = 0; i < loop->n_fds; i++)
     loop->fds[i].revents = 0;
   loop->revents_filled = FALSE;
+
   loop->timeout = -1;
   /* cached checks first */
   need_dispatch = master_need_reflow || master_need_process;
@@ -953,17 +1019,21 @@ _engine_master_prepare (BseEngineLoop *loop)
     }
   if (need_dispatch)
     loop->timeout = 0;
+
   return need_dispatch;
 }
+
 gboolean
 _engine_master_check (const BseEngineLoop *loop)
 {
   gboolean need_dispatch;
+
   g_return_val_if_fail (loop != NULL, FALSE);
   g_return_val_if_fail (loop->n_fds == master_n_pollfds, FALSE);
   g_return_val_if_fail (loop->fds == master_pollfds, FALSE);
   if (loop->n_fds)
     g_return_val_if_fail (loop->revents_filled == TRUE, FALSE);
+
   /* cached checks first */
   need_dispatch = master_need_reflow || master_need_process;
   /* lengthy query */
@@ -973,11 +1043,14 @@ _engine_master_check (const BseEngineLoop *loop)
   if (!need_dispatch)
     {
       glong dummy = -1;
+
       master_poll_check (&dummy, TRUE);
       need_dispatch = master_need_process;
     }
+
   return need_dispatch;
 }
+
 void
 _engine_master_dispatch_jobs (void)
 {
@@ -1025,6 +1098,7 @@ _engine_master_dispatch_jobs (void)
       }
     while (master_new_boundary_jobs);   /* new boundary jobs arrived */
 }
+
 void
 _engine_master_dispatch (void)
 {
@@ -1056,16 +1130,15 @@ void
 MasterThread::master_thread()
 {
   Bse::TaskRegistry::add ("DSP #1", Rapicorn::ThisThread::process_pid(), Rapicorn::ThisThread::thread_pid());
-  bse_message_setup_thread_handler ();
 
   /* assert pollfd equality, since we're simply casting structures */
-  BIRNET_STATIC_ASSERT (sizeof (struct pollfd) == sizeof (GPollFD));
-  BIRNET_STATIC_ASSERT (G_STRUCT_OFFSET (GPollFD, fd) == G_STRUCT_OFFSET (struct pollfd, fd));
-  BIRNET_STATIC_ASSERT (sizeof (((GPollFD*) 0)->fd) == sizeof (((struct pollfd*) 0)->fd));
-  BIRNET_STATIC_ASSERT (G_STRUCT_OFFSET (GPollFD, events) == G_STRUCT_OFFSET (struct pollfd, events));
-  BIRNET_STATIC_ASSERT (sizeof (((GPollFD*) 0)->events) == sizeof (((struct pollfd*) 0)->events));
-  BIRNET_STATIC_ASSERT (G_STRUCT_OFFSET (GPollFD, revents) == G_STRUCT_OFFSET (struct pollfd, revents));
-  BIRNET_STATIC_ASSERT (sizeof (((GPollFD*) 0)->revents) == sizeof (((struct pollfd*) 0)->revents));
+  RAPICORN_STATIC_ASSERT (sizeof (struct pollfd) == sizeof (GPollFD));
+  RAPICORN_STATIC_ASSERT (G_STRUCT_OFFSET (GPollFD, fd) == G_STRUCT_OFFSET (struct pollfd, fd));
+  RAPICORN_STATIC_ASSERT (sizeof (((GPollFD*) 0)->fd) == sizeof (((struct pollfd*) 0)->fd));
+  RAPICORN_STATIC_ASSERT (G_STRUCT_OFFSET (GPollFD, events) == G_STRUCT_OFFSET (struct pollfd, events));
+  RAPICORN_STATIC_ASSERT (sizeof (((GPollFD*) 0)->events) == sizeof (((struct pollfd*) 0)->events));
+  RAPICORN_STATIC_ASSERT (G_STRUCT_OFFSET (GPollFD, revents) == G_STRUCT_OFFSET (struct pollfd, revents));
+  RAPICORN_STATIC_ASSERT (sizeof (((GPollFD*) 0)->revents) == sizeof (((struct pollfd*) 0)->revents));
 
   /* add the thread wakeup pipe to master pollfds,
    * so we get woken  up in time.

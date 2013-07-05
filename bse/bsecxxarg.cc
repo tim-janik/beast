@@ -1,10 +1,15 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bsecxxarg.hh"
 #include "bsecxxbase.hh"
+
 namespace {
 using namespace Bse;
+
 } // namespace
+
+
 namespace Bse {
+
 const String
 tokenize_gtype (GType t)
 {
@@ -26,4 +31,5 @@ tokenize_gtype (GType t)
       throw InvalidArgument (G_STRLOC);
     }
 }
+
 } // Bse

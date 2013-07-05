@@ -1,13 +1,17 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bstprocbrowser.hh"
+
 #include "bstprocedure.hh"
+
 #if 0
+
 enum {
   COL_SNAME,	/* scheme name */
   COL_TNAME,	/* type name */
   COL_CAT,	/* category */
   N_COLS
 };
+
 /* --- prototypes --- */
 static void	bst_proc_browser_class_init	(BstProcBrowserClass	*klass);
 static void	bst_proc_browser_init		(BstProcBrowser		*self);
@@ -20,13 +24,18 @@ static void	tree_row_activated		(BstProcBrowser		*self,
 						 GtkTreePath		*path,
 						 GtkTreeViewColumn	*column,
 						 GtkTreeView		*tree_view);
+
+
 /* --- static variables --- */
 static gpointer             parent_class = NULL;
+
+
 /* --- functions --- */
 GType
 bst_proc_browser_get_type (void)
 {
   static GType type = 0;
+
   if (!type)
     {
       static const GTypeInfo type_info = {
@@ -40,24 +49,31 @@ bst_proc_browser_get_type (void)
 	0,      /* n_preallocs */
 	(GInstanceInitFunc) bst_proc_browser_init,
       };
+
       type = g_type_register_static (GTK_TYPE_VBOX,
 				     "BstProcBrowser",
 				     &type_info, 0);
     }
+
   return type;
 }
+
 static void
 bst_proc_browser_class_init (BstProcBrowserClass *klass)
 {
   GtkObjectClass *object_class = GTK_OBJECT_CLASS (klass);
+
   parent_class = g_type_class_peek_parent (klass);
+
   object_class->destroy = bst_proc_browser_destroy;
 }
+
 static void
 bst_proc_browser_init (BstProcBrowser *self)
 {
   GtkWidget *scwin, *tree;
   GtkTreeSelection *tsel;
+
   /* main HBox
    */
   self->hbox = g_object_new (GTK_TYPE_HBOX,
@@ -65,9 +81,11 @@ bst_proc_browser_init (BstProcBrowser *self)
 			     "border_width", 3,
 			     "parent", self,
 			     NULL);
+
   /* fetch categories
    */
   self->cats = bse_categories_match_typed ("*", BSE_TYPE_PROCEDURE, &self->n_cats);
+
   /* setup procedure list model
    */
   self->proc_list = gtk_list_wrapper_new (N_COLS,
@@ -79,6 +97,8 @@ bst_proc_browser_init (BstProcBrowser *self)
 			   G_CALLBACK (proc_list_fill_value),
 			   self, G_CONNECT_SWAPPED);
   gtk_list_wrapper_notify_prepend (self->proc_list, self->n_cats);
+
+
   /* setup tree view and it's scrolled window
    */
   scwin = g_object_new (GTK_TYPE_SCROLLED_WINDOW,
@@ -106,11 +126,13 @@ bst_proc_browser_init (BstProcBrowser *self)
   g_object_connect (tree,
 		    "swapped_object_signal::row_activated", tree_row_activated, self,
 		    NULL);
+
   /* ensure selection
    */
   tsel = gtk_tree_view_get_selection (GTK_TREE_VIEW (tree));
   gtk_tree_selection_set_mode (tsel, GTK_SELECTION_SINGLE);
   gxk_tree_selection_select_spath (tsel, "0");
+
   /* text entry
    */
   self->entry = g_object_new (GTK_TYPE_ENTRY,
@@ -119,14 +141,18 @@ bst_proc_browser_init (BstProcBrowser *self)
 			      NULL);
   gtk_box_pack_start (GTK_BOX (self), GTK_WIDGET (self->entry), FALSE, TRUE, 0);
 }
+
 static void
 bst_proc_browser_destroy (GtkObject *object)
 {
   BstProcBrowser *self = BST_PROC_BROWSER (object);
+
   g_free (self->cats);
   self->n_cats = 0;
+
   GTK_OBJECT_CLASS (parent_class)->destroy (object);
 }
+
 static void
 proc_list_fill_value (BstProcBrowser *self,
 		      guint           column,
@@ -134,8 +160,11 @@ proc_list_fill_value (BstProcBrowser *self,
 		      GValue         *value)
 {
   BseCategory *cat;
+
   g_return_if_fail (row < self->n_cats);
+
   cat = self->cats + row;
+
   switch (column)
     {
     case COL_TNAME:
@@ -149,6 +178,7 @@ proc_list_fill_value (BstProcBrowser *self,
       break;
     }
 }
+
 static void
 tree_row_activated (BstProcBrowser    *self,
 		    GtkTreePath       *path,
@@ -157,28 +187,35 @@ tree_row_activated (BstProcBrowser    *self,
 {
   // GtkTreeSelection *tsel = gtk_tree_view_get_selection (tree_view);
   BseCategory *cat;
+
   cat = self->cats + gtk_tree_path_get_indices (path)[0];
   bst_procedure_exec (cat->type, NULL, NULL);
 }
+
 GtkWidget*
 bst_proc_browser_new (void)
 {
   GtkWidget *sbrowser = (GtkWidget*) g_object_new (BST_TYPE_PROC_BROWSER, NULL);
+
   return sbrowser;
 }
+
 static void
 bst_proc_browser_execute (BstProcBrowser *self)
 {
   gchar *text;
   guint argc;
   char **argv;
+
   g_return_if_fail (BST_IS_PROC_BROWSER (self));
+
   text = gtk_entry_get_text (self->entry);
   if (!g_shell_parse_argv (text, &argc, &argv, NULL))
     g_printerr ("failed to parse: %s\n", text);
   else
     {
       GType ptype = g_type_from_name (argv[0]);
+
       if (BSE_TYPE_IS_PROCEDURE (ptype))
 	{
 	  g_printerr ("proc-call: %s %s\n", argv[0], g_type_name (ptype));
@@ -186,18 +223,22 @@ bst_proc_browser_execute (BstProcBrowser *self)
 	}
       else
 	g_printerr ("no-such-procedure: %s \n", argv[0]);
+
       // g_printerr ("return: %d\n", bsw_server_exec_proc (BSE_SERVER, argv[0], argv[1]));
       g_strfreev (argv);
     }
 }
+
 void
 bst_proc_browser_create_buttons (BstProcBrowser *self,
 				 GxkDialog      *dialog)
 {
   GtkWidget *widget;
+
   g_return_if_fail (BST_IS_PROC_BROWSER (self));
   g_return_if_fail (GXK_IS_DIALOG (dialog));
   g_return_if_fail (self->execute == NULL);
+
   /* Execute
    */
   if (0)
@@ -208,6 +249,7 @@ bst_proc_browser_create_buttons (BstProcBrowser *self,
 					NULL);
       gxk_widget_set_tooltip (self->execute, "Execute the current line.");
     }
+
   /* Close
    */
   widget = gxk_dialog_action (dialog, BST_STOCK_CLOSE, gxk_toplevel_delete, NULL);

@@ -46,4 +46,5 @@ interface Saturator : Bse::Effect {
     // Bool        test_dump = Trigger ("Test Dump", "", GUI);
   };
 };
+
 } } // Bse::Standard

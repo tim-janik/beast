@@ -3,7 +3,9 @@
 #include "bseplugin.hh"
 #include "bsemain.hh"
 #include <new>
+
 namespace Bse {
+
 BsePlugin*
 ExportTypeKeeper::plugin_export_node (const ::BseExportIdentity *plugin_identity,
                                       ::BseExportNode           *enode)
@@ -18,10 +20,12 @@ ExportTypeKeeper::plugin_export_node (const ::BseExportIdentity *plugin_identity
   else
     return bse_exports__add_node (plugin_identity, enode);
 }
+
 void
 ExportTypeKeeper::plugin_cleanup (BsePlugin                 *plugin,
                                   ::BseExportNode           *enode)
 {
   bse_exports__del_node (plugin, enode);
 }
+
 } // Bse

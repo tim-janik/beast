@@ -1,9 +1,12 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #ifndef __BSE_MIDI_VOICE_H__
 #define __BSE_MIDI_VOICE_H__
+
 #include <bse/bsesource.hh>
 #include <bse/bsesnet.hh>
+
 G_BEGIN_DECLS
+
 /* --- object type macros --- */
 #define BSE_TYPE_MIDI_VOICE_INPUT	        (BSE_TYPE_ID (BseMidiVoiceInput))
 #define BSE_MIDI_VOICE_INPUT(object)	        (G_TYPE_CHECK_INSTANCE_CAST ((object), BSE_TYPE_MIDI_VOICE_INPUT, BseMidiVoiceInput))
@@ -42,6 +45,8 @@ void           bse_midi_voice_switch_unref_poly_voice (BseMidiVoiceSwitch *self,
                                                        BseTrans           *trans);
 void           bse_midi_voice_input_set_voice_switch  (BseMidiVoiceInput  *self,
                                                        BseMidiVoiceSwitch *voice_switch);
+
+
 /* --- channels --- */
 enum
 {
@@ -62,5 +67,7 @@ enum
   BSE_MIDI_VOICE_SWITCH_OCHANNEL_RIGHT,
   BSE_MIDI_VOICE_SWITCH_OCHANNEL_DISCONNECT
 };
+
 G_END_DECLS
+
 #endif /* __BSE_MIDI_VOICE_H__ */

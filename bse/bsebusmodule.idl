@@ -17,4 +17,5 @@ interface BusModule : Effect {
     Real  volume2    = SfiReal ("", "", 1, 0, 1000, 10, STANDARD); /* volume factor */
   };
 };
+
 };

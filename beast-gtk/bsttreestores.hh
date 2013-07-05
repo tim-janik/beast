@@ -1,8 +1,12 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #ifndef __BST_TREE_STORES_H__
 #define __BST_TREE_STORES_H__
+
 #include "bstutils.hh"
+
 G_BEGIN_DECLS
+
+
 /* --- file store --- */
 enum {
   BST_FILE_STORE_COL_ID,
@@ -22,6 +26,8 @@ void            bst_file_store_update_list      (GtkTreeModel *model,
                                                  const gchar  *filter);
 void            bst_file_store_forget_list      (GtkTreeModel *model);
 void            bst_file_store_destroy          (GtkTreeModel *model);
+
+
 /* --- proxy stores --- */
 enum {
   BST_PROXY_STORE_SEQID,
@@ -56,6 +62,8 @@ gboolean        bst_item_seq_store_get_iter             (GtkTreeModel   *self,
                                                          SfiProxy        proxy);
 /* store based on the child list of a container */
 GxkListWrapper* bst_child_list_wrapper_store_new        (void);
+
+
 /* --- generic child list wrapper --- */
 void     bst_child_list_wrapper_setup           (GxkListWrapper *self,
                                                  SfiProxy        parent,
@@ -74,5 +82,8 @@ gboolean bst_child_list_wrapper_get_iter        (GxkListWrapper *self,
                                                  SfiProxy        proxy);
 void     bst_child_list_wrapper_proxy_changed   (GxkListWrapper *self,
                                                  SfiProxy        item);
+
+
 G_END_DECLS
+
 #endif /* __BST_TREE_STORES_H__ */

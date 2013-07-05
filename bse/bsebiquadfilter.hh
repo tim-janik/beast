@@ -1,11 +1,15 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #ifndef __BSE_BIQUAD_FILTER_H__
 #define __BSE_BIQUAD_FILTER_H__
+
 #include <bse/bsesource.hh>
 #include <bse/gslfilter.hh>
+
 #ifdef __cplusplus
 extern "C" {
 #endif /* __cplusplus */
+
+
 /* --- type macros --- */
 #define BSE_TYPE_BIQUAD_FILTER              (BSE_TYPE_ID (BseBiquadFilter))
 #define BSE_BIQUAD_FILTER(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), BSE_TYPE_BIQUAD_FILTER, BseBiquadFilter))
@@ -13,6 +17,8 @@ extern "C" {
 #define BSE_IS_BIQUAD_FILTER(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), BSE_TYPE_BIQUAD_FILTER))
 #define BSE_IS_BIQUAD_FILTER_CLASS(class)   (G_TYPE_CHECK_CLASS_TYPE ((class), BSE_TYPE_BIQUAD_FILTER))
 #define BSE_BIQUAD_FILTER_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), BSE_TYPE_BIQUAD_FILTER, BseBiquadFilterClass))
+
+
 /* --- enums --- */
 typedef enum
 {
@@ -56,7 +62,10 @@ enum
   BSE_BIQUAD_FILTER_OCHANNEL_AUDIO,
   BSE_BIQUAD_FILTER_N_OCHANNELS
 };
+
+
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */
+
 #endif /* __BSE_BIQUAD_FILTER_H__ */

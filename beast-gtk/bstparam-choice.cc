@@ -1,6 +1,9 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
+
+
 /* --- choice parameters --- */
 #define CHOICE_PARAM_OPTION_MENU        GXK_MENU_BUTTON_POPUP_MODE
+
 static void
 param_choice_change_value (GtkWidget *widget,
 			   GxkParam  *param)
@@ -20,6 +23,7 @@ param_choice_change_value (GtkWidget *widget,
       gxk_param_apply_value (param);
     }
 }
+
 static void
 param_choice_item_activated (GtkWidget *menu_item,
                              GtkWidget *widget)
@@ -28,6 +32,7 @@ param_choice_item_activated (GtkWidget *menu_item,
   if (mshell)
     gxk_menu_set_active (GTK_MENU (mshell), menu_item);
 }
+
 static GtkWidget*
 param_choice_create (GxkParam    *param,
                      const gchar *tooltip,
@@ -38,6 +43,7 @@ param_choice_create (GxkParam    *param,
   GtkContainer *menu;
   gchar *str;
   guint i;
+
   if (variant == CHOICE_PARAM_OPTION_MENU)
     widget = (GtkWidget*) g_object_new (GTK_TYPE_OPTION_MENU,
                                         "visible", TRUE,
@@ -49,6 +55,7 @@ param_choice_create (GxkParam    *param,
                                         "can-focus", variant == GXK_MENU_BUTTON_COMBO_MODE,
                                         NULL);
   gxk_widget_set_tooltip (widget, tooltip);
+
   menu = (GtkContainer*) g_object_new (GTK_TYPE_MENU, NULL);
   for (i = 0; i < cvalues.n_values; i++)
     {
@@ -60,11 +67,12 @@ param_choice_create (GxkParam    *param,
       g_object_set_qdata (G_OBJECT (item), quark_param_choice_values, (gpointer) &cvalues.values[i]);
       gtk_container_add (menu, item);
     }
+
   if (GXK_IS_MENU_BUTTON (widget))
     {
       SfiProxy proxy = bst_param_get_proxy (param);
       g_object_set (widget, "menu", menu, NULL);
-      str = g_strdup_printf ("<BEAST-ParamChoice>/%s(%s::%llx)",
+      str = g_strdup_format ("<BEAST-ParamChoice>/%s(%s::%llx)",
                              param->pspec->name,
                              proxy ? bse_item_get_type (proxy) : "0",
                              (long long unsigned) sfi_pspec_get_choice_hash (param->pspec));
@@ -82,6 +90,7 @@ param_choice_create (GxkParam    *param,
 		    NULL);
   return widget;
 }
+
 static void
 param_choice_update (GxkParam  *param,
 		     GtkWidget *widget)
@@ -114,6 +123,7 @@ param_choice_update (GxkParam  *param,
       gxk_menu_button_update (GXK_MENU_BUTTON (widget));
     }
 }
+
 static GxkParamEditor param_choice1 = {
   { "combo-button",     N_("Drop Down Combo"), },
   { G_TYPE_STRING,      "SfiChoice", },

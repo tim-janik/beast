@@ -1,8 +1,11 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #ifndef __BSE_OBJECT_H__
 #define __BSE_OBJECT_H__
+
 #include	<bse/bseparam.hh>
+
 G_BEGIN_DECLS
+
 /* --- BSE type macros --- */
 #define BSE_TYPE_OBJECT              (BSE_TYPE_ID (BseObject))
 #define BSE_OBJECT(object)	     (G_TYPE_CHECK_INSTANCE_CAST ((object), BSE_TYPE_OBJECT, BseObject))
@@ -10,6 +13,7 @@ G_BEGIN_DECLS
 #define BSE_IS_OBJECT(object)	     (G_TYPE_CHECK_INSTANCE_TYPE ((object), BSE_TYPE_OBJECT))
 #define BSE_IS_OBJECT_CLASS(class)   (G_TYPE_CHECK_CLASS_TYPE ((class), BSE_TYPE_OBJECT))
 #define BSE_OBJECT_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), BSE_TYPE_OBJECT, BseObjectClass))
+
 /* --- object member/convenience macros --- */
 #define BSE_OBJECT_TYPE(object)		  (G_TYPE_FROM_INSTANCE (object))
 #define BSE_OBJECT_TYPE_NAME(object)	  (g_type_name (BSE_OBJECT_TYPE (object)))
@@ -21,6 +25,7 @@ G_BEGIN_DECLS
 #define BSE_OBJECT_DISPOSING(object)	  ((BSE_OBJECT_FLAGS (object) & BSE_OBJECT_FLAG_DISPOSING) > 0)
 #define BSE_OBJECT_IN_RESTORE(object)	  ((BSE_OBJECT_FLAGS (object) & BSE_OBJECT_FLAG_IN_RESTORE) > 0)
 #define BSE_OBJECT_ID(object)		  (((BseObject*) (object))->unique_id)
+
 /* --- object flags --- */
 typedef enum				/*< skip >*/
 {
@@ -59,6 +64,7 @@ struct BseObjectClass : GObjectClass {
   void			(*unlocked)		(BseObject	*object);
   BseIcon*		(*get_icon)		(BseObject	*object);
 };
+
 /* --- object class API ---*/
 void	bse_object_class_add_property		(BseObjectClass *oclass,
 						 const gchar	*property_group,
@@ -83,6 +89,8 @@ guint	bse_object_class_add_dsignal    	(BseObjectClass	*oclass,
 						 GType           return_type,
 						 guint           n_params,
 						 ...);
+
+
 /* --- object API --- */
 void		bse_object_lock			(gpointer	 object);
 void		bse_object_unlock		(gpointer	 object);
@@ -127,6 +135,8 @@ bse_object_unproxy_notifies	(gpointer	 src_object,
   bse_object_remove_reemit (src_object, "notify::uname", dest_object, dest_signal);
   bse_object_remove_reemit (src_object, "icon-changed", dest_object, dest_signal);
 }
+
+
 /* --- implementation details --- */
 extern GQuark bse_quark_uname;
 void          bse_object_marshal_signal (GClosure       *closure,
@@ -135,5 +145,7 @@ void          bse_object_marshal_signal (GClosure       *closure,
                                          const GValue   *param_values,
                                          gpointer        invocation_hint,
                                          gpointer        marshal_data);
+
 G_END_DECLS
+
 #endif /* __BSE_OBJECT_H__ */

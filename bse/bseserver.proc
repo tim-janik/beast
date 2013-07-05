@@ -12,8 +12,12 @@
 #include <bse/bseladspa.hh>
 #include "topconfig.h"
 #include <string.h>
+
+
 AUTHORS	= "Tim Janik <timj@gtk.org>";
 LICENSE = "GNU Lesser General Public License";
+
+
 METHOD (BseServer, use-new-project) {
   HELP	= "Create a new project, owned by the caller (name is modified to be unique if necessary)";
   IN	= bse_param_spec_object ("server", "Server", NULL,
@@ -33,25 +37,31 @@ BODY (BseProcedureClass *proc,
   gchar *uname;
   guint num = 1;
   BseProject *project;
+
   /* check parameters */
   if (!BSE_IS_SERVER (server) || !name)
     return BSE_ERROR_PROC_PARAM_INVAL;
+
   /* enforce unique name */
   uname = g_strdup (name);
   while (bse_server_find_project (server, uname))
     {
       g_free (uname);
-      uname = g_strdup_printf ("%s-%u", name, num++);
+      uname = g_strdup_format ("%s-%u", name, num++);
     }
+
   /* create project */
   project = bse_server_create_project (server, uname);
   g_free (uname);
   bse_item_use (BSE_ITEM (project));
   g_object_unref (project);
+
   /* set output parameters */
   bse_value_set_object (out_values++, G_OBJECT (project));
+
   return BSE_ERROR_NONE;
 }
+
 METHOD (BseServer, can-load) {
   HELP	= "Check whether a loader can be found for a wave file";
   IN	= bse_param_spec_object ("server", "Server", NULL,
@@ -69,16 +79,20 @@ BODY (BseProcedureClass *proc,
   BseServer *server = (BseServer*) bse_value_get_object (in_values++);
   const char *file_name = sfi_value_get_string (in_values++);
   BseWaveFileInfo *finfo;
+
   /* check parameters */
   if (!BSE_IS_SERVER (server) || !file_name)
     return BSE_ERROR_PROC_PARAM_INVAL;
+
   /* find a loader */
   finfo = bse_wave_file_info_load (file_name, NULL);
   sfi_value_set_bool (out_values++, finfo != NULL);
   if (finfo)
     bse_wave_file_info_unref (finfo);
+
   return BSE_ERROR_NONE;
 }
+
 METHOD (BseServer, n-scripts) {
   HELP	= "Return the number of scripts currently running on this server.";
   IN	= bse_param_spec_object ("server", "Server", NULL,
@@ -95,17 +109,22 @@ BODY (BseProcedureClass *proc,
   BseServer *server = (BseServer*) bse_value_get_object (in_values++);
   GSList *slist;
   guint n_scripts = 0;
+
   /* check parameters */
   if (!BSE_IS_SERVER (server))
     return BSE_ERROR_PROC_PARAM_INVAL;
+
   /* count script controls */
   for (slist = server->children; slist; slist = slist->next)
     if (BSE_IS_JANITOR (slist->data))
       n_scripts++;
+
   /* set output parameters */
   sfi_value_set_int (out_values++, n_scripts);
+
   return BSE_ERROR_NONE;
 }
+
 METHOD (BseServer, preferences-locked) {
   HELP	= "Returns whether the bse-preferences property is currently locked against modifications or not.";
   IN	= bse_param_spec_object ("server", "Server", NULL,
@@ -119,13 +138,17 @@ BODY (BseProcedureClass *proc,
 {
   /* extract parameter values */
   BseServer *server = (BseServer*) bse_value_get_object (in_values++);
+
   /* check parameters */
   if (!BSE_IS_SERVER (server))
     return BSE_ERROR_PROC_PARAM_INVAL;
+
   /* set output parameters */
   sfi_value_set_int (out_values++, bse_gconfig_locked ());
+
   return BSE_ERROR_NONE;
 }
+
 typedef struct _ScriptRegistration ScriptRegistration;
 struct _ScriptRegistration
 {
@@ -134,7 +157,9 @@ struct _ScriptRegistration
 				 BseJanitor **janitor_p);
   ScriptRegistration *next;
 };
+
 static gboolean	register_scripts (gpointer data);
+
 static void
 script_janitor_closed (BseJanitor *janitor,
 		       BseServer  *server)
@@ -142,6 +167,7 @@ script_janitor_closed (BseJanitor *janitor,
   bse_server_registration (server, BSE_REGISTER_SCRIPT, janitor->script_name, NULL);
   bse_idle_normal (register_scripts, server);
 }
+
 static gboolean
 register_scripts (gpointer data)
 {
@@ -149,12 +175,14 @@ register_scripts (gpointer data)
   ScriptRegistration *scr = (ScriptRegistration*) g_object_get_data ((GObject*) server, "script-registration-queue");
   BseJanitor *janitor = NULL;
   BseErrorType error;
+
   if (!scr)
     {
       bse_server_registration (server, BSE_REGISTER_DONE, NULL, NULL);
       return FALSE;
     }
   g_object_set_data ((GObject*) server, "script-registration-queue", scr->next);
+
   error = scr->register_func (scr->script, &janitor);
   if (!janitor)
     bse_server_registration (server, BSE_REGISTER_SCRIPT, scr->script, bse_error_blurb (error));
@@ -164,6 +192,7 @@ register_scripts (gpointer data)
   g_free (scr);
   return !janitor;
 }
+
 METHOD (BseServer, register-scripts) {
   HELP	= "Register external scripts.";
   IN	= bse_param_spec_object ("server", "Server", NULL,
@@ -178,15 +207,18 @@ BODY (BseProcedureClass *proc,
   BseServer *server = (BseServer*) bse_value_get_object (in_values++);
   ScriptRegistration *scr_list = NULL;
   SfiRing *ring;
+
   /* check parameters */
   if (!BSE_IS_SERVER (server))
     return BSE_ERROR_PROC_PARAM_INVAL;
+
   if (registration_done)
     {
       bse_server_registration (server, BSE_REGISTER_DONE, NULL, NULL);
       return BSE_ERROR_NONE;
     }
   registration_done = TRUE;
+
   ring = bse_script_path_list_files ();
   while (ring)
     {
@@ -196,16 +228,20 @@ BODY (BseProcedureClass *proc,
       scr->next = scr_list;
       scr_list = scr;
     }
+
   g_object_set_data ((GObject*) server, "script-registration-queue", scr_list);
   bse_idle_normal (register_scripts, server);
+
   return BSE_ERROR_NONE;
 }
+
 static gboolean
 register_core_plugins (gpointer data)
 {
   BseServer *server = (BseServer*) data;
   SfiRing *plugins = (SfiRing*) g_object_get_data ((GObject*) server, "plugin-registration-queue");
   const gchar *error;
+
   if (plugins)
     {
       char *name = (char*) sfi_ring_pop_head (&plugins);
@@ -221,6 +257,7 @@ register_core_plugins (gpointer data)
     }
   return TRUE;
 }
+
 METHOD (BseServer, register-core-plugins) {
   HELP	= "Register core plugins.";
   IN	= bse_param_spec_object ("server", "Server", NULL,
@@ -234,31 +271,39 @@ BODY (BseProcedureClass *proc,
   /* extract parameter values */
   BseServer *server = (BseServer*) bse_value_get_object (in_values++);
   SfiRing *ring;
+
   /* check parameters */
   if (!BSE_IS_SERVER (server))
     return BSE_ERROR_PROC_PARAM_INVAL;
+
   if (registration_done)
     {
       bse_server_registration (server, BSE_REGISTER_DONE, NULL, NULL);
       return BSE_ERROR_NONE;
     }
   registration_done = TRUE;
+
   ring = bse_plugin_path_list_files (!bse_main_args->load_drivers_early, TRUE);
   g_object_set_data ((GObject*) server, "plugin-registration-queue", ring);
+
   bse_idle_normal (register_core_plugins, server);
+
   return BSE_ERROR_NONE;
 }
+
 static gboolean
 register_ladspa_plugins (gpointer data)
 {
   BseServer *server = (BseServer*) data;
   SfiRing *lplugins = (SfiRing*) g_object_get_data ((GObject*) server, "ladspa-registration-queue");
   const gchar *error;
+
   if (g_object_get_data ((GObject*) server, "plugin-registration-queue"))
     {
       /* give precedence to core plugins until they're done registering */
       return TRUE;
     }
+
   if (lplugins)
     {
       char *name = (char*) sfi_ring_pop_head (&lplugins);
@@ -274,6 +319,7 @@ register_ladspa_plugins (gpointer data)
     }
   return TRUE;
 }
+
 METHOD (BseServer, register-ladspa-plugins) {
   HELP	= "Register LADSPA (Linux Audio Developer's Simple Plugin API) plugins.";
   IN	= bse_param_spec_object ("server", "Server", NULL,
@@ -287,24 +333,31 @@ BODY (BseProcedureClass *proc,
   /* extract parameter values */
   BseServer *server = (BseServer*) bse_value_get_object (in_values++);
   SfiRing *ring;
+
   /* check parameters */
   if (!BSE_IS_SERVER (server))
     return BSE_ERROR_PROC_PARAM_INVAL;
+
   if (registration_done)
     {
       bse_server_registration (server, BSE_REGISTER_DONE, NULL, NULL);
       return BSE_ERROR_NONE;
     }
   registration_done = TRUE;
+
   ring = bse_ladspa_plugin_path_list_files ();
   g_object_set_data ((GObject*) server, "ladspa-registration-queue", ring);
+
   bse_idle_normal (register_ladspa_plugins, server);
+
   return BSE_ERROR_NONE;
 }
+
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <unistd.h>
+
 METHOD (BseServer, save-preferences) {
   HELP	= "Request the bse-preferences property to be saved into BSE's configuration file.";
   IN	= bse_param_spec_object ("server", "Server", NULL,
@@ -321,9 +374,11 @@ BODY (BseProcedureClass *proc,
   GValue *value;
   SfiRec *rec;
   gint fd;
+
   /* check parameters */
   if (!BSE_IS_SERVER (server))
     return BSE_ERROR_PROC_PARAM_INVAL;
+
   file_name = g_strconcat (g_get_home_dir (), "/.bserc", NULL);
   fd = open (file_name,
 	     O_WRONLY | O_CREAT | O_TRUNC, /* O_EXCL, */
@@ -331,8 +386,10 @@ BODY (BseProcedureClass *proc,
   g_free (file_name);
   if (fd < 0)
     return BSE_ERROR_NONE;
+
   wstore = sfi_wstore_new ();
   sfi_wstore_printf (wstore, "; rc-file for BSE v%s\n", BSE_VERSION);
+
   /* store BseGConfig */
   sfi_wstore_puts (wstore, "\n; BseGConfig Dump\n");
   rec = bse_gconfig_to_rec (bse_global_config);
@@ -341,12 +398,15 @@ BODY (BseProcedureClass *proc,
   sfi_value_free (value);
   sfi_rec_unref (rec);
   sfi_wstore_puts (wstore, "\n");
+
   /* flush stuff to rc file */
   sfi_wstore_flush_fd (wstore, fd);
   sfi_wstore_destroy (wstore);
   close (fd);
+
   return BSE_ERROR_NONE;
 }
+
 METHOD (BseServer, start-recording) {
   HELP	= "Start recording to a WAV file.";
   IN	= bse_param_spec_object ("server", "Server", NULL,
@@ -363,12 +423,15 @@ BODY (BseProcedureClass *proc,
   BseServer *server = (BseServer*) bse_value_get_object (in_values++);
   const char *wave_file = g_value_get_string (in_values++);
   double n_seconds      = g_value_get_double (in_values++);
+
   /* check parameters */
   if (!BSE_IS_SERVER (server))
     return BSE_ERROR_PROC_PARAM_INVAL;
+
   bse_server_start_recording (server, wave_file, n_seconds);
   return BSE_ERROR_NONE;
 }
+
 METHOD (BseServer, get-version) {
   HELP	= "Retrieve BSE version.";
   IN	= bse_param_spec_object ("server", "Server", NULL,
@@ -382,6 +445,7 @@ BODY (BseProcedureClass *proc,
   sfi_value_set_string (out_values++, BSE_VERSION);
   return BSE_ERROR_NONE;
 }
+
 METHOD (BseServer, get-demo-path) {
   HELP	= "Retrieve demo search path.";
   IN	= bse_param_spec_object ("server", "Server", NULL,
@@ -395,6 +459,7 @@ BODY (BseProcedureClass *proc,
   sfi_value_set_string (out_values++, BSE_PATH_DEMOS);
   return BSE_ERROR_NONE;
 }
+
 METHOD (BseServer, get-sample-path) {
   HELP	= "Retrieve sample search path.";
   IN	= bse_param_spec_object ("server", "Server", NULL,
@@ -408,6 +473,7 @@ BODY (BseProcedureClass *proc,
   sfi_value_take_string (out_values++, g_path_concat (BSE_PATH_SAMPLES, BSE_GCONFIG (sample_path), NULL));
   return BSE_ERROR_NONE;
 }
+
 METHOD (BseServer, get-custom-effect-dir) {
   HELP	= "Retrieve user specific effects directory.";
   IN	= bse_param_spec_object ("server", "Server", NULL,
@@ -423,6 +489,7 @@ BODY (BseProcedureClass *proc,
   g_strfreev (dirs);
   return BSE_ERROR_NONE;
 }
+
 METHOD (BseServer, get-effect-path) {
   HELP	= "Retrieve effect search path.";
   IN	= bse_param_spec_object ("server", "Server", NULL,
@@ -436,6 +503,7 @@ BODY (BseProcedureClass *proc,
   sfi_value_take_string (out_values++, g_path_concat (BSE_PATH_EFFECTS, BSE_GCONFIG (effect_path), NULL));
   return BSE_ERROR_NONE;
 }
+
 METHOD (BseServer, get-custom-instrument-dir) {
   HELP	= "Retrieve user specific instruments directory.";
   IN	= bse_param_spec_object ("server", "Server", NULL,
@@ -451,6 +519,7 @@ BODY (BseProcedureClass *proc,
   g_strfreev (dirs);
   return BSE_ERROR_NONE;
 }
+
 METHOD (BseServer, get-instrument-path) {
   HELP	= "Retrieve instrument search path.";
   IN	= bse_param_spec_object ("server", "Server", NULL,
@@ -464,6 +533,7 @@ BODY (BseProcedureClass *proc,
   sfi_value_take_string (out_values++, g_path_concat (BSE_PATH_INSTRUMENTS, BSE_GCONFIG (instrument_path), NULL));
   return BSE_ERROR_NONE;
 }
+
 METHOD (BseServer, get-script-path) {
   HELP	= "Retrieve script search path.";
   IN	= bse_param_spec_object ("server", "Server", NULL,
@@ -477,6 +547,7 @@ BODY (BseProcedureClass *proc,
   sfi_value_take_string (out_values++, g_path_concat (BSE_PATH_SCRIPTS, BSE_GCONFIG (script_path), NULL));
   return BSE_ERROR_NONE;
 }
+
 METHOD (BseServer, get-plugin-path) {
   HELP	= "Retrieve plugin search path.";
   IN	= bse_param_spec_object ("server", "Server", NULL,
@@ -490,6 +561,7 @@ BODY (BseProcedureClass *proc,
   sfi_value_take_string (out_values++, g_path_concat (BSE_PATH_PLUGINS, BSE_GCONFIG (plugin_path), NULL));
   return BSE_ERROR_NONE;
 }
+
 METHOD (BseServer, get-ladspa-path) {
   HELP	= "Retrieve ladspa search path.";
   IN	= bse_param_spec_object ("server", "Server", NULL,
@@ -503,7 +575,9 @@ BODY (BseProcedureClass *proc,
   sfi_value_take_string (out_values++, g_path_concat (BSE_PATH_LADSPA, BSE_GCONFIG (ladspa_path), NULL));
   return BSE_ERROR_NONE;
 }
+
 #include "gslvorbis-enc.hh"
+
 METHOD (BseServer, get-vorbis-version) {
   HELP	= "Retrieve BSE Vorbis handler version.";
   IN	= bse_param_spec_object ("server", "Server", NULL,
@@ -524,7 +598,9 @@ BODY (BseProcedureClass *proc,
   g_free (v);
   return BSE_ERROR_NONE;
 }
+
 #include "gsldatahandle-mad.hh"
+
 METHOD (BseServer, get-mp3-version) {
   HELP	= "Retrieve BSE MP3 handler version.";
   IN	= bse_param_spec_object ("server", "Server", NULL,

@@ -1,7 +1,5 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bstutils.hh"
-#include "bstcxxutils.hh"
-#include "bse/bse.hh"
 #include "bstapp.hh"
 #include "bstsplash.hh"
 #include "bstxkb.hh"
@@ -19,12 +17,15 @@
 #include <sys/time.h>
 #include <sys/resource.h>
 // #include "sfi/toyprof-mem.h"
+
 extern "C" void bse_object_debug_leaks (void); // FIXME
+
 /* --- prototypes --- */
-static void			bst_early_parse_args	(gint        *argc_p,
-							 gchar     ***argv_p);
+static void			bst_early_parse_args	(int *argc_p, char **argv);
 static void			bst_print_blurb		(void);
 static void			bst_exit_print_version	(void);
+static void                     bst_init_aida_idl       ();
+
 /* --- variables --- */
 gboolean            bst_developer_hints = FALSE;
 gboolean            bst_debug_extensions = FALSE;
@@ -47,12 +48,13 @@ server_registration (SfiProxy     server,
 		     gpointer     data)
 {
   BseRegistrationType rtype = bse_registration_type_from_choice (rchoice);
+
   if (rtype == BSE_REGISTER_DONE)
     registration_done = TRUE;
   else
     {
       const char *base = strrchr (what, '/');
-      bst_splash_update_item ((GtkWidget*) data, "%s", base ? base + 1 : what);
+      bst_splash_update_item ((GtkWidget*) data, base ? base + 1 : what);
       if (error && error[0])
 	g_message ("failed to register \"%s\": %s", what, error);
     }
@@ -65,12 +67,6 @@ main (int   argc,
   GdkPixbufAnimation *anim;
   gchar *string;
   GSource *source;
-  char debugbool[2] = "0";
-  SfiInitValue config[] = {
-    { "debug-extensions", debugbool },
-    { NULL },
-  };
-  guint i;
   /* initialize i18n */
   bindtextdomain (BST_GETTEXT_DOMAIN, BST_PATH_LOCALE);
   bind_textdomain_codeset (BST_GETTEXT_DOMAIN, "UTF-8");
@@ -88,13 +84,10 @@ main (int   argc,
   g_thread_init (NULL);
   g_type_init ();
   /* initialize Birnet/Sfi */
-  sfi_init (&argc, &argv, _("BEAST"), NULL);  /* application name is user visible */       
-  sfi_msg_allow ("misc");
+  sfi_init (&argc, argv, "BEAST");
   /* ensure SFI can wake us up */
   /* initialize Gtk+ and go into threading mode */
-  bst_early_parse_args (&argc, &argv);
-  if (bst_debug_extensions)
-    debugbool[0] = '1';
+  bst_early_parse_args (&argc, argv);
   gtk_init (&argc, &argv);
   GDK_THREADS_ENTER ();
   /* initialize Gtk+ Extension Kit */
@@ -108,12 +101,13 @@ main (int   argc,
   bst_splash_set_title (beast_splash, _("BEAST Startup"));
   gtk_object_set_user_data (GTK_OBJECT (beast_splash), NULL);	/* fix for broken user_data in 2.2 */
   bst_splash_set_text (beast_splash,
-		       "<b><big>BEAST</big></b>\n"
-		       "<b>The Better Audio System</b>\n"
-		       "<b>Version %s (%s)</b>\n",
-		       BST_VERSION, BST_VERSION_HINT);
+		       Rapicorn::string_format ("<b><big>BEAST</big></b>\n"
+                                                "<b>The Better Audio System</b>\n"
+                                                "<b>Version %s (%s)</b>\n",
+                                                BST_VERSION, BST_VERSION_HINT));
   bst_splash_update_entity (beast_splash, _("Startup"));
   bst_splash_show_grab (beast_splash);
+
   /* BEAST initialization */
   bst_splash_update_item (beast_splash, _("Initializers"));
   _bst_init_utils ();
@@ -121,9 +115,11 @@ main (int   argc,
   _bst_gconfig_init ();
   _bst_skin_config_init ();
   _bst_msg_absorb_config_init ();
+
   /* parse rc file */
   bst_splash_update_item (beast_splash, _("RC Files"));
   bst_preferences_load_rc_files();
+
   /* show splash images */
   bst_splash_update_item (beast_splash, _("Splash Image"));
   string = g_strconcat (BST_PATH_IMAGES, G_DIR_SEPARATOR_S, BST_SPLASH_IMAGE, NULL);
@@ -135,9 +131,11 @@ main (int   argc,
       bst_splash_set_animation (beast_splash, anim);
       g_object_unref (anim);
     }
+
   /* start BSE core and connect */
   bst_splash_update_item (beast_splash, _("BSE Core"));
-  Bse::init_async (&argc, &argv, "BEAST", config);
+  Bse::String bseoptions = Bse::string_format ("debug-extensions=%d", bst_debug_extensions);
+  Bse::init_async (&argc, argv, "BEAST", Bse::string_split (bseoptions, ":"));
   sfi_glue_context_push (Bse::init_glue_context ("BEAST", bst_main_loop_wakeup));
   source = g_source_simple (GDK_PRIORITY_EVENTS, // G_PRIORITY_HIGH - 100,
 			    (GSourcePending) sfi_glue_context_pending,
@@ -145,16 +143,20 @@ main (int   argc,
 			    NULL, NULL, NULL);
   g_source_attach (source, NULL);
   g_source_unref (source);
+
   /* now that the BSE thread runs, drop scheduling priorities if we have any */
   setpriority (PRIO_PROCESS, getpid(), 0);
+
   /* watch registration notifications on server */
   bse_proxy_connect (BSE_SERVER,
 		     "signal::registration", server_registration, beast_splash,
 		     NULL);
+
   /* register core plugins */
   if (register_core_plugins)
     {
       bst_splash_update_entity (beast_splash, _("Plugins"));
+
       /* plugin registration, this is done asyncronously,
        * so we wait until all are done
        */
@@ -168,10 +170,12 @@ main (int   argc,
 	  sfi_glue_gc_run ();
 	}
     }
+
   /* register LADSPA plugins */
   if (register_ladspa_plugins)
     {
       bst_splash_update_entity (beast_splash, _("LADSPA Plugins"));
+
       /* plugin registration, this is done asyncronously,
        * so we wait until all are done
        */
@@ -185,6 +189,7 @@ main (int   argc,
 	  sfi_glue_gc_run ();
 	}
     }
+
   /* debugging hook */
   const char *estring = g_getenv ("BEAST_SLEEP4GDB");
   if (estring && atoi (estring) > 0)
@@ -193,10 +198,12 @@ main (int   argc,
       g_message ("going into sleep mode due to debugging request (pid=%u)", getpid ());
       g_usleep (2147483647);
     }
+
   /* register BSE scripts */
   if (register_scripts)
     {
       bst_splash_update_entity (beast_splash, _("Scripts"));
+
       /* script registration, this is done asyncronously,
        * so we wait until all are done
        */
@@ -212,24 +219,28 @@ main (int   argc,
     }
   /* listen to BseServer notification */
   bst_splash_update_entity (beast_splash, _("Dialogs"));
+
+  // hook up Bse aida IDL with main loop
+  bst_init_aida_idl();
+
   bst_message_connect_to_server ();
   _bst_init_radgets ();
-  /* install message dialog handler */
-  bst_message_handler_install();
   /* open files given on command line */
   if (argc > 1)
     bst_splash_update_entity (beast_splash, _("Loading..."));
   BstApp *app = NULL;
   gboolean merge_with_last = FALSE;
-  for (i = 1; i < argc; i++)
+  for (int i = 1; i < argc; i++)
     {
       bst_splash_update ();
+
       /* parse non-file args */
       if (strcmp (argv[i], "--merge") == 0)
         {
           merge_with_last = TRUE;
           continue;
         }
+
       /* load waves into the last project */
       if (bse_server_can_load (BSE_SERVER, argv[i]))
 	{
@@ -274,7 +285,7 @@ main (int   argc,
                 exit (1);
               if (unlink (argv[i]) < 0)
                 {
-                  perror (Rapicorn::string_printf ("%s: failed to remove", argv[i]).c_str());
+                  perror (Rapicorn::string_format ("%s: failed to remove", argv[i]).c_str());
                   exit (2);
                 }
               error = bse_project_store_bse (project, 0, argv[i], TRUE);
@@ -301,11 +312,13 @@ main (int   argc,
             sfi_error (_("Failed to merge project \"%s\": %s"), argv[i], bse_error_blurb (error));
         }
     }
+
   /* open default app window
    */
   if (!app)
     {
       SfiProxy project = bse_server_use_new_project (BSE_SERVER, "Untitled.bse");
+
       bse_project_get_wave_repo (project);
       app = bst_app_new (project);
       bse_item_unuse (project);
@@ -313,6 +326,7 @@ main (int   argc,
       gtk_widget_hide (beast_splash);
     }
   /* splash screen is definitely hidden here (still grabbing) */
+
   /* fire up release notes dialog
    */
   gboolean update_rc_files = FALSE;
@@ -354,9 +368,11 @@ main (int   argc,
       update_rc_files = TRUE;
       bst_gconfig_set_rc_version (BST_VERSION);
     }
+
   /* release splash grab */
   gtk_widget_hide (beast_splash);
   bst_splash_release_grab (beast_splash);
+
   /* away into the main loop */
   while (bst_main_loop_running)
     {
@@ -365,8 +381,6 @@ main (int   argc,
       g_main_iteration (TRUE);
       GDK_THREADS_ENTER ();
     }
-  /* take down GUI */
-  bst_message_handler_uninstall();
   bst_message_dialogs_popdown ();
   /* perform necessary cleanup cycles */
   GDK_THREADS_LEAVE ();
@@ -377,6 +391,7 @@ main (int   argc,
       GDK_THREADS_LEAVE ();
     }
   GDK_THREADS_ENTER ();
+
   /* save BSE configuration */
   if (update_rc_files && !bst_preferences_saved())
     {
@@ -400,7 +415,7 @@ main (int   argc,
     }
 
   // misc cleanups
-  birnet_cleanup_force_handlers();
+  Rapicorn::cleanup_force_handlers();
   bse_object_debug_leaks ();
   Bse::TaskRegistry::remove (Rapicorn::ThisThread::thread_pid());
 
@@ -415,26 +430,41 @@ bst_main_loop_wakeup ()
 }
 
 static void
-bst_early_parse_args (int    *argc_p,
-		      char ***argv_p)
+echo_test_handler (const std::string &msg)
 {
-  guint argc = *argc_p;
-  gchar **argv = *argv_p;
-  gchar *envar;
-  guint i, e;
-  envar = getenv ("BST_DEBUG");
-  if (envar)
-    sfi_msg_allow (envar);
-  envar = getenv ("BST_NO_DEBUG");
-  if (envar)
-    sfi_msg_deny (envar);
-  envar = getenv ("BEAST_DEBUG");
-  if (envar)
-    sfi_msg_allow (envar);
-  envar = getenv ("BEAST_NO_DEBUG");
-  if (envar)
-    sfi_msg_deny (envar);
-  gboolean initialize_bse_and_exit = FALSE;
+  g_print ("BST-Thread: got signal with message: %s\n", msg.c_str());
+}
+
+static void
+bst_init_aida_idl()
+{
+  assert (bse_server == NULL);
+  // hook Aida connection into our main loop
+  Bse::AidaGlibSource *source = Bse::AidaGlibSource::create (Bse::ServerH::__aida_connection__());
+  g_source_set_priority (source, G_PRIORITY_DEFAULT);
+  g_source_attach (source, g_main_context_default());
+  // fetch initial remote object reference
+  auto aidabsekeys = Rapicorn::string_split ("CxxStub:AidaServerConnection:idl_file=\\bbse/bseapi.idl", ":");
+  Rapicorn::Aida::SmartHandle smh = Bse::ServerH::__aida_connection__()->remote_origin (aidabsekeys);
+  bse_server = Rapicorn::Aida::ObjectBroker::smart_handle_down_cast<Bse::ServerH> (smh);
+  assert (bse_server != NULL);
+
+  // performa Bse Aida test
+  if (0)
+    {
+      Bse::TestObjectH test = bse_server.get_test_object();
+      test.sig_echo_reply() += echo_test_handler;
+      const int test_result = test.echo_test ("foo");
+      g_assert (test_result == 3);
+    }
+}
+
+static void
+bst_early_parse_args (int *argc_p, char **argv)
+{
+  uint argc = *argc_p;
+  uint i, e;
+  bool initialize_bse_and_exit = false;
   for (i = 1; i < argc; i++)
     {
       if (strcmp (argv[i], "--") == 0)
@@ -482,46 +512,6 @@ bst_early_parse_args (int    *argc_p,
 	{
 	  bst_developer_hints = TRUE;
           argv[i] = NULL;
-	}
-      else if (strcmp ("--debug-list", argv[i]) == 0)
-	{
-	  const BstMsgID *mids = bst_message_list_types (NULL);
-	  guint j;
-	  g_print ("BEAST debug keys: all");
-	  for (j = 0; mids[j].ident; j++)
-            if (mids[j].type >= SFI_MSG_DEBUG && mids[j].label && mids[j].label[0])
-              g_print (", %s (%s)", mids[j].ident, mids[j].label);
-            else if (mids[j].type >= SFI_MSG_DEBUG)
-              g_print (", %s", mids[j].ident);
-	  g_print ("\n");
-	  exit (0);
-	  argv[i] = NULL;
-	}
-      else if (strcmp ("--debug", argv[i]) == 0 ||
-	       strncmp ("--debug=", argv[i], 8) == 0)
-	{
-	  gchar *equal = argv[i] + 7;
-	  if (*equal == '=')
-            sfi_msg_allow (equal + 1);
-	  else if (i + 1 < argc)
-	    {
-	      argv[i++] = NULL;
-	      sfi_msg_allow (argv[i]);
-	    }
-	  argv[i] = NULL;
-	}
-      else if (strcmp ("--no-debug", argv[i]) == 0 ||
-	       strncmp ("--no-debug=", argv[i], 11) == 0)
-	{
-	  gchar *equal = argv[i] + 10;
-	  if (*equal == '=')
-            sfi_msg_deny (equal + 1);
-	  else if (i + 1 < argc)
-	    {
-	      argv[i++] = NULL;
-	      sfi_msg_deny (argv[i]);
-	    }
-	  argv[i] = NULL;
 	}
       else if (strcmp ("--force-xkb", argv[i]) == 0)
 	{
@@ -639,15 +629,16 @@ bst_early_parse_args (int    *argc_p,
       else if (strcmp ("-p", argv[i]) == 0)
         {
           /* modify args for BSE */
-          argv[i] = "--bse-pcm-driver";
+          argv[i] = (char*) "--bse-pcm-driver";
         }
       else if (strcmp ("-m", argv[i]) == 0)
         {
           /* modify args for BSE */
-          argv[i] = "--bse-midi-driver";
+          argv[i] = (char*) "--bse-midi-driver";
         }
     }
   gxk_param_set_devel_tips (bst_developer_hints);
+
   e = 1;
   for (i = 1; i < argc; i++)
     if (argv[i])
@@ -659,17 +650,18 @@ bst_early_parse_args (int    *argc_p,
   *argc_p = e;
   if (initialize_bse_and_exit)
     {
-      Bse::init_async (argc_p, argv_p, "BEAST", NULL);
+      Bse::init_async (argc_p, argv, "BEAST");
       exit (0);
     }
 }
+
 static void G_GNUC_NORETURN
 bst_exit_print_version (void)
 {
   const gchar *c;
   gchar *freeme = NULL;
   /* hack: start BSE, so we can query it for paths, works since we immediately exit() afterwards */
-  Bse::init_async (NULL, NULL, "BEAST", NULL);
+  Bse::init_async (NULL, NULL, "BEAST");
   sfi_glue_context_push (Bse::init_glue_context ("BEAST", bst_main_loop_wakeup));
   g_print ("BEAST version %s (%s)\n", BST_VERSION, BST_VERSION_HINT);
   g_print ("Libraries: ");
@@ -690,10 +682,8 @@ bst_exit_print_version (void)
   g_print ("\n");
   g_print ("Compiled for %s %s SSE plugins.\n", BST_ARCH_NAME, BSE_WITH_SSE_FLAGS ? "with" : "without");
   g_print ("Intrinsic code selected according to runtime CPU detection:\n");
-  const SfiCPUInfo cpu_info = sfi_cpu_info();
-  gchar *cpu_blurb = sfi_cpu_info_string (&cpu_info);
-  g_print ("%s", cpu_blurb);
-  g_free (cpu_blurb);
+  const Rapicorn::CPUInfo cpu_info = Rapicorn::cpu_info();
+  g_print ("%s", cpu_info_string (cpu_info).c_str());
   g_print ("\n");
   g_print ("Prefix:          %s\n", BST_PATH_PREFIX);
   g_print ("Doc Path:        %s\n", BST_PATH_DOCS);
@@ -717,6 +707,7 @@ bst_exit_print_version (void)
   g_free (freeme);
   exit (0);
 }
+
 static void
 bst_print_blurb (void)
 {
@@ -753,9 +744,6 @@ bst_print_blurb (void)
   g_print ("                          option handling for --bse-pcm-driver\n");
   g_print ("  --bse-driver-list       List available PCM and MIDI drivers\n");
   g_print ("Development Options:\n");
-  g_print ("  --debug=KEYS            Enable specific debugging messages\n");
-  g_print ("  --no-debug=KEYS         Disable specific debugging messages\n");
-  g_print ("  --debug-list            List possible debug keys\n");
   g_print ("  -:[Flags]               [Flags] can be any combination of:\n");
   g_print ("                          f - fatal warnings\n");
   g_print ("                          N - disable script and plugin registration\n");
@@ -775,6 +763,7 @@ bst_print_blurb (void)
   g_print ("  --g-fatal-warnings      Make warnings fatal (abort)\n");
   g_print ("  --sync                  Do all X calls synchronously\n");
 }
+
 void
 beast_show_about_box (void)
 {
@@ -861,7 +850,7 @@ beast_show_about_box (void)
   if (!GTK_WIDGET_VISIBLE (beast_splash))
     {
       bst_splash_set_title (beast_splash, _("BEAST About"));
-      bst_splash_update_entity (beast_splash, _("BEAST Version %s"), BST_VERSION);
+      bst_splash_update_entity (beast_splash, Rapicorn::string_format (_("BEAST Version %s"), BST_VERSION));
       bst_splash_update_item (beast_splash, _("Contributions made by:"));
       bst_splash_animate_strings (beast_splash, contributors);
     }

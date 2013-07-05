@@ -1,8 +1,11 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #ifndef __BSE_WAVE_H__
 #define __BSE_WAVE_H__
+
 #include	<bse/bsesource.hh>
+
 G_BEGIN_DECLS
+
 /* --- BSE type macros --- */
 #define BSE_TYPE_WAVE		   (BSE_TYPE_ID (BseWave))
 #define BSE_WAVE(object)	   (G_TYPE_CHECK_INSTANCE_CAST ((object), BSE_TYPE_WAVE, BseWave))
@@ -57,9 +60,12 @@ void            bse_wave_remove_chunk           (BseWave        *wave,
 void		bse_wave_request_index		(BseWave	*wave);
 BseWaveIndex*	bse_wave_get_index_for_modules	(BseWave	*wave);
 void		bse_wave_drop_index		(BseWave	*wave);
+
 /* BseWaveIndex is safe to use from BseModules (self-contained constant structure) */
 GslWaveChunk*	bse_wave_index_lookup_best	(BseWaveIndex	*windex,
 						 gfloat		 osc_freq,
                                                  gfloat          velocity);
+
 G_END_DECLS
+
 #endif /* __BSE_WAVE_H__ */

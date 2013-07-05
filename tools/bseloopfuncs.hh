@@ -1,9 +1,13 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #ifndef __BSE_LOOPFUNCS_H__
 #define __BSE_LOOPFUNCS_H__
+
 #include <bse/gsldatautils.hh>
 #include <bse/gslcommon.hh>
+
 G_BEGIN_DECLS
+
+
 typedef struct {
   /* block containing loop */
   GslLong       block_start;
@@ -22,6 +26,7 @@ typedef struct {
   const char   *detail_names[64];
   double        detail_scores[64];
 } GslDataLoopConfig;
+
 /* mem-cached loop position and size finder. tests through all possible
  * loop sizes around center points determined by block/(analysis_points+1).
  * uses full-block comparisons (centering comparison area around the
@@ -73,6 +78,8 @@ gboolean        gsl_data_find_loop1              (GslDataHandle     *dhandle,
                                                   GslDataLoopConfig *config,
                                                   gpointer           pdata,
                                                   GslProgressFunc    pfunc);
+
+
 typedef enum
 {
   GSL_DATA_TAIL_LOOP_CMP_LEAST_SQUARE,
@@ -102,5 +109,7 @@ gdouble		gsl_data_find_loop0		(GslDataHandle          *dhandle,
  * #                n_samples compare area size (ahead of loop start) [8820]
  * TL_CFG="--loop=5000:-1:5000"
  */
+
 G_END_DECLS
+
 #endif  /* __BSE_LOOPFUNCS_H__ */

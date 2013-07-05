@@ -1,8 +1,11 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #ifndef __GXK_TEXT_TOOLS_H__
 #define __GXK_TEXT_TOOLS_H__
+
 #include        "gxkutils.hh"
+
 G_BEGIN_DECLS
+
 /* --- text tools flags --- */
 typedef enum /*< skip >*/
 {
@@ -18,6 +21,8 @@ typedef enum /*< skip >*/
   GXK_SCROLL_TEXT_VFIXED	= 1 << 8
 #define GXK_SCROLL_TEXT_WIDGET_LOOK	(GXK_SCROLL_TEXT_WRAP | GXK_SCROLL_TEXT_WIDGET_BG | GXK_SCROLL_TEXT_SANS)
 } GxkScrollTextFlags;
+
+
 /* --- text tools functions --- */
 void		gxk_text_view_enter_browse_mode	(GtkTextView		*tview);
 void		gxk_text_view_leave_browse_mode	(GtkTextView		*tview);
@@ -52,9 +57,7 @@ void		gxk_scroll_text_append_file	(GtkWidget		*sctext,
 						 const gchar    	*file_name);
 void		gxk_scroll_text_append_file_tsm	(GtkWidget		*sctext,
 						 const gchar    	*file_name);
-void		gxk_scroll_text_aprintf		(GtkWidget		*sctext,
-						 const gchar		*text_fmt,
-						 ...) G_GNUC_PRINTF (2, 3);
+#define         gxk_scroll_text_aprintf(sctext, ...)    gxk_scroll_text_append (sctext, Rapicorn::string_format (__VA_ARGS__).c_str())
 void		gxk_scroll_text_pop_indent	(GtkWidget		*sctext);
 GtkTextView*	gxk_scroll_text_get_text_view	(GtkWidget		*sctext);
 void		gxk_text_add_tsm_path		(const gchar		*path);
@@ -70,6 +73,8 @@ void	gxk_text_buffer_append_from_file		(GtkTextBuffer	*tbuffer,
 							 gboolean	 parse_tsm,
 							 guint		 indent_margin,
 							 const gchar	*file_name);
+
+
 /* --- special tag handlers --- */
 typedef GtkWidget* (*GxkTextTextgetHandler)  (gpointer              user_data,
                                               const gchar          *element_name,
@@ -80,7 +85,10 @@ void    gxk_text_register_textget_handler    (const gchar          *element_name
                                               gpointer              user_data);
 void    gxk_text_buffer_add_textgets_to_view (GtkTextBuffer        *tbuffer,
                                               GtkTextView          *tview);
+
+
 G_END_DECLS
+
 // == Flags Enumeration Operators in C++ ==
 #ifdef __cplusplus
 constexpr GxkScrollTextFlags  operator&  (GxkScrollTextFlags  s1, GxkScrollTextFlags s2) { return GxkScrollTextFlags (s1 & (long long unsigned) s2); }
@@ -89,4 +97,5 @@ constexpr GxkScrollTextFlags  operator|  (GxkScrollTextFlags  s1, GxkScrollTextF
 inline    GxkScrollTextFlags& operator|= (GxkScrollTextFlags &s1, GxkScrollTextFlags s2) { s1 = s1 | s2; return s1; }
 constexpr GxkScrollTextFlags  operator~  (GxkScrollTextFlags  s1)                 { return GxkScrollTextFlags (~(long long unsigned) s1); }
 #endif // __cplusplus
+
 #endif /* __GXK_TEXT_TOOLS_H__ */

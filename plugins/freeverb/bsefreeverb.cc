@@ -1,7 +1,10 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bsefreeverb.hh"
+
 #include <bse/bseengine.hh>
 #include <bse/bsecxxplugin.hh>
+
+
 /* --- properties --- */
 enum
 {
@@ -12,6 +15,8 @@ enum
   PROP_DRY_LEVEL,
   PROP_WIDTH
 };
+
+
 /* --- prototypes --- */
 static void	bse_free_verb_init		(BseFreeVerb		*self);
 static void	bse_free_verb_class_init	(BseFreeVerbClass	*klass);
@@ -27,14 +32,18 @@ static void	bse_free_verb_context_create	(BseSource		*source,
 						 guint			 context_handle,
 						 BseTrans		*trans);
 static void	bse_free_verb_update_modules	(BseFreeVerb		*self);
+
 // == Type Registration ==
 #include "../icons/reverb.c"
 BSE_RESIDENT_SOURCE_DEF (BseFreeVerb, bse_free_verb, N_("Filters/Free Verb"),
                          "BseFreeVerb - Free, studio-quality reverb (SOURCE CODE in the public domain) "
                          "Written by Jezar at Dreampoint - http://www.dreampoint.co.uk",
                          reverb_icon);
+
 /* --- variables --- */
 static gpointer        parent_class = NULL;
+
+
 /* --- functions --- */
 static void
 bse_free_verb_class_init (BseFreeVerbClass *klass)
@@ -45,11 +54,16 @@ bse_free_verb_class_init (BseFreeVerbClass *klass)
   BseFreeVerbConstants *constants = &klass->constants;
   BseFreeVerbConfig defaults;
   guint channel;
+
   parent_class = g_type_class_peek_parent (klass);
+
   gobject_class->set_property = bse_free_verb_set_property;
   gobject_class->get_property = bse_free_verb_get_property;
+
   source_class->context_create = bse_free_verb_context_create;
+
   bse_free_verb_cpp_defaults (&defaults, constants);
+
   bse_object_class_add_param (object_class, "Reverb Style",
 			      PROP_ROOM_SIZE,
 			      sfi_pspec_real ("room_size", "Room Size", NULL,
@@ -92,11 +106,13 @@ bse_free_verb_class_init (BseFreeVerbClass *klass)
   channel = bse_source_class_add_ochannel (source_class, "right-audio-out", _("Right Audio Out"), _("Right Output"));
   (void) channel;
 }
+
 static void
 bse_free_verb_init (BseFreeVerb *self)
 {
   bse_free_verb_cpp_defaults (&self->config, NULL);
 }
+
 static void
 bse_free_verb_set_property (GObject      *object,
 			    guint         param_id,
@@ -105,6 +121,7 @@ bse_free_verb_set_property (GObject      *object,
 {
   BseFreeVerb *self = BSE_FREE_VERB (object);
   BseFreeVerbConstants *constants = &BSE_FREE_VERB_GET_CLASS (self)->constants;
+
   switch (param_id)
     {
     case PROP_ROOM_SIZE:
@@ -132,6 +149,7 @@ bse_free_verb_set_property (GObject      *object,
       break;
     }
 }
+
 static void
 bse_free_verb_get_property (GObject    *object,
 			    guint       param_id,
@@ -140,6 +158,7 @@ bse_free_verb_get_property (GObject    *object,
 {
   BseFreeVerb *self = BSE_FREE_VERB (object);
   BseFreeVerbConstants *constants = &BSE_FREE_VERB_GET_CLASS (self)->constants;
+
   switch (param_id)
     {
     case PROP_ROOM_SIZE:
@@ -162,17 +181,21 @@ bse_free_verb_get_property (GObject    *object,
       break;
     }
 }
+
 static void
 free_verb_access (BseModule *module,
 		  gpointer   data)
 {
   BseFreeVerbCpp *cpp = (BseFreeVerbCpp*) module->user_data;
   BseFreeVerbConfig *config = (BseFreeVerbConfig*) data;
+
   /* this runs in the Gsl Engine threads */
   bse_free_verb_cpp_configure (cpp, config);
+
   /* save config for _reset() */
   bse_free_verb_cpp_save_config (cpp, config);
 }
+
 static void
 bse_free_verb_update_modules (BseFreeVerb *self)
 {
@@ -183,6 +206,7 @@ bse_free_verb_update_modules (BseFreeVerb *self)
 			       g_free,
 			       NULL);
 }
+
 static void
 free_verb_process (BseModule *module,
 		   guint      n_values)
@@ -192,27 +216,33 @@ free_verb_process (BseModule *module,
   const gfloat *iright = BSE_MODULE_IBUFFER (module, BSE_FREE_VERB_ICHANNEL_RIGHT);
   gfloat *oleft = BSE_MODULE_OBUFFER (module, BSE_FREE_VERB_OCHANNEL_LEFT);
   gfloat *oright = BSE_MODULE_OBUFFER (module, BSE_FREE_VERB_OCHANNEL_RIGHT);
+
   bse_free_verb_cpp_process (cpp, n_values, ileft, iright, oleft, oright);
 }
+
 static void
 free_verb_reset (BseModule *module)
 {
   BseFreeVerbCpp *cpp = (BseFreeVerbCpp*) module->user_data;
   BseFreeVerbConfig config;
+
   bse_free_verb_cpp_restore_config (cpp, &config);
   bse_free_verb_cpp_destroy (cpp);
   bse_free_verb_cpp_create (cpp);
   bse_free_verb_cpp_configure (cpp, &config);
   bse_free_verb_cpp_save_config (cpp, &config);
 }
+
 static void
 free_verb_destroy (gpointer        data,
 		   const BseModuleClass *klass)
 {
   BseFreeVerbCpp *cpp = (BseFreeVerbCpp*) data;
+
   bse_free_verb_cpp_destroy (cpp);
   g_free (cpp);
 }
+
 static void
 bse_free_verb_context_create (BseSource *source,
 			      guint      context_handle,
@@ -231,15 +261,19 @@ bse_free_verb_context_create (BseSource *source,
   BseFreeVerb *self = BSE_FREE_VERB (source);
   BseFreeVerbCpp *cpp = g_new0 (BseFreeVerbCpp, 1);
   BseModule *module;
+
   /* initialize module data */
   bse_free_verb_cpp_create (cpp);
   bse_free_verb_cpp_configure (cpp, &self->config);
   bse_free_verb_cpp_save_config (cpp, &self->config);
   module = bse_module_new (&free_verb_class, cpp);
+
   /* setup module i/o streams with BseSource i/o channels */
   bse_source_set_context_module (source, context_handle, module);
+
   /* commit module to engine */
   bse_trans_add (trans, bse_job_integrate (module));
+
   /* chain parent class' handler */
   BSE_SOURCE_CLASS (parent_class)->context_create (source, context_handle, trans);
 }

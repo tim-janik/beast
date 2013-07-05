@@ -1,9 +1,14 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #ifndef __BSE_ENUMS_H__
 #define __BSE_ENUMS_H__
+
 #include <bse/bsetype.hh>
 #include <bse/gsldefs.hh>
+
+
 G_BEGIN_DECLS
+
+
 /* --- enum definitions --- */
 typedef enum
 {
@@ -123,12 +128,15 @@ typedef enum
   BSE_ERROR_INVALID_DURATION,
   BSE_ERROR_INVALID_OVERLAP,
 } BseErrorType;
+
+
 /* --- convenience functions --- */
 const gchar*	bse_error_name			(BseErrorType	 error_value);
 const gchar*	bse_error_nick			(BseErrorType	 error_value);
 const gchar*	bse_error_blurb			(BseErrorType	 error_value);
 BseErrorType	bse_error_from_errno		(gint		 v_errno,
 						 BseErrorType    fallback);
+
 #define bse_assert_ok(error)    G_STMT_START{                           \
      if G_UNLIKELY (error)                                              \
        {                                                                \
@@ -137,5 +145,8 @@ BseErrorType	bse_error_from_errno		(gint		 v_errno,
                 __FILE__, __LINE__, bse_error_blurb (error));           \
        }                                                                \
 }G_STMT_END
+
 G_END_DECLS
+
+
 #endif /* __BSE_ENUMS_H__ */

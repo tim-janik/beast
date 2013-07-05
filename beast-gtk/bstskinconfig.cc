@@ -1,9 +1,13 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bstskinconfig.hh"
 #include <string.h>
+
+
 /* --- variables --- */
 static BstSkinConfig *global_skin_config = NULL;
 static GParamSpec    *pspec_skin_config = NULL;
+
+
 /* --- functions --- */
 void
 _bst_skin_config_init (void)
@@ -11,7 +15,9 @@ _bst_skin_config_init (void)
   BstSkinConfig *skin_config;
   GValue *value;
   SfiRec *rec;
+
   g_return_if_fail (global_skin_config == NULL);
+
   /* global config record description */
   pspec_skin_config = sfi_pspec_rec ("beast-skin-config-v1", NULL, NULL,
                                      bst_skin_config_fields, SFI_PARAM_STANDARD);
@@ -29,16 +35,19 @@ _bst_skin_config_init (void)
   sfi_value_free (value);
   sfi_rec_unref (rec);
 }
+
 GParamSpec*
 bst_skin_config_pspec (void)
 {
   return pspec_skin_config;
 }
+
 BstSkinConfig*
 bst_skin_config_get_global (void)
 {
   return global_skin_config;
 }
+
 static void
 set_skin_config (BstSkinConfig *skin_config)
 {
@@ -46,6 +55,7 @@ set_skin_config (BstSkinConfig *skin_config)
   global_skin_config = skin_config;
   bst_skin_config_free (oldconfig);
 }
+
 static void
 rec_make_absolute_pathnames (SfiRec       *rec,
                              const gchar  *path_prefix,
@@ -75,6 +85,7 @@ rec_make_absolute_pathnames (SfiRec       *rec,
         }
     }
 }
+
 static void
 rec_make_relative_pathnames (SfiRec       *rec,
                              const gchar  *path_prefix,
@@ -106,14 +117,18 @@ rec_make_relative_pathnames (SfiRec       *rec,
         }
     }
 }
+
 static gchar *skin_path_prefix = NULL;
+
 void
 bst_skin_config_apply (SfiRec      *rec,
                        const gchar *skin_file)
 {
   SfiRec *vrec;
   BstSkinConfig *skin_config;
+
   g_return_if_fail (rec != NULL);
+
   vrec = sfi_rec_copy_deep (rec);
   sfi_rec_validate (vrec, sfi_pspec_get_rec_fields (pspec_skin_config));
   if (skin_file)
@@ -132,17 +147,21 @@ bst_skin_config_apply (SfiRec      *rec,
       skin_path_prefix = g_path_get_dirname (skin_file);
     }
 }
+
 const gchar*
 bst_skin_config_dirname (void)
 {
   return skin_path_prefix;
 }
+
 struct SkinNotify {
   BstSkinConfigNotify func;
   gpointer            data;
 };
+
 static SkinNotify *notifies = NULL;
 static uint        n_notifies = 0;
+
 void
 bst_skin_config_add_notify (BstSkinConfigNotify func,
                             gpointer            data)
@@ -152,6 +171,7 @@ bst_skin_config_add_notify (BstSkinConfigNotify func,
   notifies[i].func = func;
   notifies[i].data = data;
 }
+
 void
 bst_skin_config_notify (void)
 {
@@ -159,6 +179,8 @@ bst_skin_config_notify (void)
   for (i = 0; i < n_notifies; i++)
     notifies[i].func (notifies[i].data);
 }
+
+
 /* --- skin file --- */
 #include <unistd.h>
 #include <fcntl.h>
@@ -172,15 +194,21 @@ bst_skin_dump (const gchar *file_name)
   GValue *value;
   SfiRec *rec;
   gint fd;
+
   g_return_val_if_fail (file_name != NULL, BSE_ERROR_INTERNAL);
+
   sfi_make_dirname_path (file_name);
   fd = open (file_name,
              O_WRONLY | O_CREAT | O_TRUNC, /* O_EXCL, */
              0666);
+
   if (fd < 0)
     return errno == EEXIST ? BSE_ERROR_FILE_EXISTS : BSE_ERROR_IO;
+
   wstore = sfi_wstore_new ();
+
   sfi_wstore_printf (wstore, "; skin-file for BEAST v%s\n", BST_VERSION);
+
   /* store BstSkinConfig */
   sfi_wstore_puts (wstore, "\n");
   rec = bst_skin_config_to_rec (bst_skin_config_get_global ());
@@ -196,11 +224,14 @@ bst_skin_dump (const gchar *file_name)
   sfi_value_free (value);
   sfi_rec_unref (rec);
   sfi_wstore_puts (wstore, "\n");
+
   /* flush buffers to file */
   sfi_wstore_flush_fd (wstore, fd);
   sfi_wstore_destroy (wstore);
+
   return close (fd) < 0 ? BSE_ERROR_IO : BSE_ERROR_NONE;
 }
+
 static GTokenType
 skin_file_try_statement (gpointer   context_data,
                          SfiRStore *rstore,
@@ -225,6 +256,7 @@ skin_file_try_statement (gpointer   context_data,
   else
     return SFI_TOKEN_UNMATCHED;
 }
+
 BseErrorType
 bst_skin_parse (const gchar *file_name)
 {
@@ -232,7 +264,9 @@ bst_skin_parse (const gchar *file_name)
   BseErrorType error = BSE_ERROR_NONE;
   gchar *absname;
   gint fd;
+
   g_return_val_if_fail (file_name != NULL, BSE_ERROR_INTERNAL);
+
   absname = sfi_path_get_filename (file_name, NULL);
   fd = open (absname, O_RDONLY, 0);
   if (fd < 0)
@@ -241,6 +275,7 @@ bst_skin_parse (const gchar *file_name)
       return (errno == ENOENT || errno == ENOTDIR || errno == ELOOP ?
               BSE_ERROR_FILE_NOT_FOUND : BSE_ERROR_IO);
     }
+
   rstore = sfi_rstore_new ();
   sfi_rstore_input_fd (rstore, fd, absname);
   if (sfi_rstore_parse_all (rstore, NULL, skin_file_try_statement, absname) > 0)
@@ -250,7 +285,9 @@ bst_skin_parse (const gchar *file_name)
   g_free (absname);
   return error;
 }
+
 static gchar  *skinrc_name = NULL;
+
 void
 bst_skin_config_set_rcfile (const gchar *file_name)
 {
@@ -261,6 +298,7 @@ bst_skin_config_set_rcfile (const gchar *file_name)
       skinrc_name = sfi_path_get_filename (file_name, NULL);
     }
 }
+
 const gchar*
 bst_skin_config_rcfile (void)
 {

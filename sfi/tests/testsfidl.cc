@@ -1,17 +1,16 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #undef G_LOG_DOMAIN
 #define  G_LOG_DOMAIN __FILE__
-// #define TEST_VERBOSE
-#include <birnet/birnettests.h>
+#include <sfi/sfitests.hh>
 #include "../sfidl-generator.hh"
 #include "../sfidl-factory.hh"
 #include <stdio.h>
+
 using namespace Sfidl;
 using namespace std;
-#define ASSERT_EQ(got,expectedcstr) do {                                \
-  TPRINT ("{check equality: %s == %s}", expectedcstr, got.c_str());     \
-  TASSERT (expectedcstr == got);                                            \
-} while (0)
+
+#define ASSERT_EQ(got,expectedcstr)     TCMP (got, ==, expectedcstr)
+
 class TestCG : public CodeGenerator
 {
   string one, two, done;
@@ -22,9 +21,11 @@ public:
   OptionVector getOptions()
   {
     OptionVector opts;
+
     opts.push_back (make_pair ("--one", true));
     opts.push_back (make_pair ("--two", true));
     opts.push_back (make_pair ("--done", false));
+
     return opts;
   }
   void setOption (const string& option, const string& value)
@@ -89,6 +90,7 @@ public:
     return new TestCG (parser);
   }
 } static_factory;
+
 int
 main (int   argc,
       char *argv[])
@@ -104,9 +106,11 @@ main (int   argc,
   fake_argv[4] = (char*) "--two=2";
   fake_argv[5] = (char*) "--done";
   options.parse (&fake_argc, &fake_argv, parser);
+
   TSTART ("Testing factory");
   TASSERT (options.codeGenerator != 0);
   TDONE();
+
   if (options.codeGenerator->run())
     {
       delete options.codeGenerator;
@@ -118,4 +122,5 @@ main (int   argc,
       return 1;
     }
 }
+
 /* vim:set ts=8 sts=2 sw=2: */

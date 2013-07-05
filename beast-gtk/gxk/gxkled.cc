@@ -1,7 +1,11 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "gxkled.hh"
+
 #include <math.h>
+
 #define	FUDGE	3
+
+
 /* --- prototypes --- */
 static void	gxk_led_class_init		(GxkLedClass	*klass);
 static void	gxk_led_init			(GxkLed		*self);
@@ -18,8 +22,12 @@ static void	gxk_led_resize			(GxkLed		*self);
 static void	gxk_led_rerender		(GxkLed		*self);
 static gboolean gxk_led_expose			(GtkWidget      *widget,
 						 GdkEventExpose *event);
+
+
 /* --- variables --- */
 static gpointer parent_class = NULL;
+
+
 /* --- functions --- */
 GType
 gxk_led_get_type (void)
@@ -38,25 +46,31 @@ gxk_led_get_type (void)
 	0,      /* n_preallocs */
 	(GInstanceInitFunc) gxk_led_init,
       };
+
       type = g_type_register_static (GTK_TYPE_WIDGET,
 				     "GxkLed",
 				     &type_info, GTypeFlags (0));
     }
   return type;
 }
+
 static void
 gxk_led_class_init (GxkLedClass *klass)
 {
   GObjectClass *gobject_class = G_OBJECT_CLASS (klass);
   GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (klass);
+
   parent_class = g_type_class_peek_parent (klass);
+
   gobject_class->finalize = gxk_led_finalize;
+
   widget_class->size_request = gxk_led_size_request;
   widget_class->size_allocate = gxk_led_size_allocate;
   widget_class->state_changed = gxk_led_state_changed;
   widget_class->style_set = gxk_led_style_set;
   widget_class->expose_event = gxk_led_expose;
 }
+
 static void
 gxk_led_init (GxkLed *self)
 {
@@ -66,14 +80,18 @@ gxk_led_init (GxkLed *self)
   gtk_widget_show (GTK_WIDGET (self));
   gxk_led_resize (self);
 }
+
 static void
 gxk_led_finalize (GObject *object)
 {
   GxkLed *self = GXK_LED (object);
+
   if (self->pixbuf)
     g_object_unref (self->pixbuf);
+
   G_OBJECT_CLASS (parent_class)->finalize (object);
 }
+
 /**
  * @param color	rgb color
  *
@@ -87,6 +105,7 @@ gxk_led_new (guint color)
   gxk_led_set_color (self, color);
   return self;
 }
+
 /**
  * @param self	valid GxkLed
  * @param color	color as RGB byte triple
@@ -98,20 +117,24 @@ gxk_led_set_color (GxkLed *self,
 		   guint   color)
 {
   g_return_if_fail (GXK_IS_LED (self));
+
   if (!color)	/* lazy bum! */
     color = GXK_LED_OFF;
   self->color = color;
   if (self->pixbuf)
     gxk_led_rerender (self);
 }
+
 void
 gxk_led_set_border_width (GxkLed *self,
 			  guint   border_width)
 {
   g_return_if_fail (GXK_IS_LED (self));
+
   self->border_width = border_width;
   gtk_widget_queue_resize (GTK_WIDGET (self));
 }
+
 static void
 gxk_led_state_changed (GtkWidget   *widget,
 		       GtkStateType previous_state)
@@ -121,6 +144,7 @@ gxk_led_state_changed (GtkWidget   *widget,
     GTK_WIDGET_CLASS (parent_class)->state_changed (widget, previous_state);
   gxk_led_rerender (self);
 }
+
 static void
 gxk_led_style_set (GtkWidget *widget,
 		   GtkStyle  *previous_style)
@@ -130,12 +154,14 @@ gxk_led_style_set (GtkWidget *widget,
     GTK_WIDGET_CLASS (parent_class)->style_set (widget, previous_style);
   gxk_led_rerender (self);
 }
+
 static void
 gxk_led_size_request (GtkWidget      *widget,
 		      GtkRequisition *requisition)
 {
   GxkLed *self = GXK_LED (widget);
   GdkPixbuf *pixbuf = self->pixbuf;
+
   requisition->width = 0;
   requisition->height = 0;
   if (pixbuf)
@@ -144,10 +170,12 @@ gxk_led_size_request (GtkWidget      *widget,
       requisition->height += gdk_pixbuf_get_height (pixbuf);
     }
 }
+
 static void
 gxk_led_resize (GxkLed *self)
 {
   /* GtkWidget *widget = GTK_WIDGET (self); */
+
   if (self->pixbuf)
     g_object_unref (self->pixbuf);
   self->pixbuf = gdk_pixbuf_new (GDK_COLORSPACE_RGB, TRUE, 8,
@@ -155,6 +183,7 @@ gxk_led_resize (GxkLed *self)
 				 2 * self->radius);
   gxk_led_rerender (self);
 }
+
 static void
 gxk_led_size_allocate (GtkWidget     *widget,
 		       GtkAllocation *allocation)
@@ -165,6 +194,7 @@ gxk_led_size_allocate (GtkWidget     *widget,
   self->radius = MAX (self->radius, 3 + self->border_width) - 2 - self->border_width;
   gxk_led_resize (self);
 }
+
 static void
 gxk_led_rerender (GxkLed *self)
 {
@@ -179,6 +209,7 @@ gxk_led_rerender (GxkLed *self)
   gint x, y;
   gdouble xc, yc, radius = self->radius;
   gdouble lx, ly, lr;
+
   /* center */
   xc = width / 2;
   yc = height / 2;
@@ -198,10 +229,13 @@ gxk_led_rerender (GxkLed *self)
 	pixels[y * rowstride + x * 4 + 2] = la * b;
 	pixels[y * rowstride + x * 4 + 3] = a * 0xff;
       }
+
   if (!GTK_WIDGET_IS_SENSITIVE (self))
     gdk_pixbuf_saturate_and_pixelate (pixbuf, pixbuf, 0.8, TRUE);
+
   gtk_widget_queue_draw (GTK_WIDGET (self));
 }
+
 static gboolean
 gxk_led_expose (GtkWidget      *widget,
 		GdkEventExpose *event)
@@ -209,6 +243,7 @@ gxk_led_expose (GtkWidget      *widget,
   GxkLed *self = GXK_LED (widget);
   GdkRectangle rect, area = event->area;
   GdkPixbuf *pixbuf = self->pixbuf;
+
   if (0)
     gdk_draw_rectangle (widget->window,
 			widget->style->black_gc,
@@ -217,6 +252,7 @@ gxk_led_expose (GtkWidget      *widget,
 			widget->allocation.y,
 			widget->allocation.width,
 			widget->allocation.height);
+
   if (pixbuf && gdk_rectangle_intersect (&area, &widget->allocation, &area))
     {
       gdouble radius = self->radius;

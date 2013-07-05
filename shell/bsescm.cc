@@ -16,8 +16,7 @@
 /* --- prototypes --- */
 static void	gh_main			(gint	 argc,
 					 gchar	*argv[]);
-static void	shell_parse_args	(gint    *argc_p,
-					 gchar ***argv_p);
+static void	shell_parse_args	(int *argc_p, char **argv);
 static void     shell_print_usage       (void);
 /* --- variables --- */
 static gint            bse_scm_pipe[2] = { -1, -1 };
@@ -28,6 +27,7 @@ static gboolean        bse_scm_auto_play = TRUE;
 static SfiComPort     *bse_scm_port = NULL;
 static SfiGlueContext *bse_scm_context = NULL;
 static const gchar    *boot_script_path = BSE_PATH_SCRIPTS;
+
 /* --- functions --- */
 static void
 port_closed (SfiComPort *port,
@@ -48,7 +48,7 @@ main (int   argc,
 {
   const gchar *env_str;
   GSource *source;
-  sfi_init (&argc, &argv, "BSESCM", NULL);
+  sfi_init (&argc, argv, "BSESCM");
   bse_init_textdomain_only();
   setlocale (LC_ALL, "");
   env_str = g_getenv ("BSESCM_SLEEP4GDB");
@@ -57,7 +57,7 @@ main (int   argc,
       g_message ("going into sleep mode due to debugging request (pid=%u)", getpid ());
       g_usleep (2147483647);
     }
-  shell_parse_args (&argc, &argv);
+  shell_parse_args (&argc, argv);
   if (env_str && (atoi (env_str) >= 2 ||
                   (atoi (env_str) >= 1 && !bse_scm_enable_register)))
     {
@@ -78,7 +78,7 @@ main (int   argc,
   if (!bse_scm_context)
     {
       // start our own core thread
-      Bse::init_async (&argc, &argv, "BSESCM", NULL);
+      Bse::init_async (&argc, argv, "BSESCM");
       // allow g_main_context_wakeup to interrupt sleeps in bse_scm_context_iteration
       bse_scm_context = Bse::init_glue_context (PRG_NAME, []() { g_main_context_wakeup (g_main_context_default()); });
     }
@@ -100,11 +100,14 @@ gh_main (int   argc,
   else
     bse_scm_enable_server (TRUE);
   sfi_glue_context_push (bse_scm_context);
+
   /* initialize interpreter */
   bse_scm_interp_init ();
+
   /* exec Bse Scheme bootup code */
-  const gchar *boot_script = g_intern_printf ("%s/%s", boot_script_path, "bse-scm-glue.boot");
+  const gchar *boot_script = g_intern_format ("%s/%s", boot_script_path, "bse-scm-glue.boot");
   gh_load (boot_script);
+
   /* eval, auto-play or interactive */
   if (bse_scm_eval_expr)
     gh_eval_str (bse_scm_eval_expr);
@@ -140,6 +143,7 @@ gh_main (int   argc,
           gh_repl (argc, argv);
         }
     }
+
   /* shutdown */
   sfi_glue_context_pop ();
   if (bse_scm_port)
@@ -149,14 +153,13 @@ gh_main (int   argc,
     }
   sfi_glue_context_destroy (bse_scm_context);
 }
+
 static void
-shell_parse_args (gint    *argc_p,
-		  gchar ***argv_p)
+shell_parse_args (int *argc_p, char **argv)
 {
-  guint argc = *argc_p;
-  gchar **argv = *argv_p;
-  guint i, e;
-  gboolean initialize_bse_and_exit = FALSE;
+  uint argc = *argc_p;
+  uint i, e;
+  bool initialize_bse_and_exit = false;
   for (i = 1; i < argc; i++)
     {
       if (strcmp (argv[i], "--") == 0 ||
@@ -166,6 +169,7 @@ shell_parse_args (gint    *argc_p,
       else if (strcmp (argv[i], "--g-fatal-warnings") == 0)
 	{
 	  GLogLevelFlags fatal_mask;
+
 	  fatal_mask = g_log_set_always_fatal (GLogLevelFlags (G_LOG_FATAL_MASK));
           fatal_mask = GLogLevelFlags (fatal_mask | G_LOG_LEVEL_WARNING | G_LOG_LEVEL_CRITICAL);
 	  g_log_set_always_fatal (fatal_mask);
@@ -228,12 +232,12 @@ shell_parse_args (gint    *argc_p,
       else if (strcmp ("-p", argv[i]) == 0)
         {
           /* modify args for BSE */
-          argv[i] = "--bse-pcm-driver";
+          argv[i] = (char*) "--bse-pcm-driver";
         }
       else if (strcmp ("-m", argv[i]) == 0)
         {
           /* modify args for BSE */
-          argv[i] = "--bse-midi-driver";
+          argv[i] = (char*) "--bse-midi-driver";
         }
       else if (strcmp ("--bse-override-script-path", argv[i]) == 0 && i + 1 < argc)
         {
@@ -277,6 +281,7 @@ shell_parse_args (gint    *argc_p,
           exit (0);
         }
     }
+
   e = 1;
   for (i = 1; i < argc; i++)
     if (argv[i])
@@ -288,7 +293,7 @@ shell_parse_args (gint    *argc_p,
   *argc_p = e;
   if (initialize_bse_and_exit)
     {
-      Bse::init_async (argc_p, argv_p, "BSESCM", NULL);
+      Bse::init_async (argc_p, argv, "BSESCM");
       exit (0);
     }
 }

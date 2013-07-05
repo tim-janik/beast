@@ -7,6 +7,7 @@
 #include <string.h>
 #include <signal.h>	/* G_BREAKPOINT() */
 #include <math.h>
+
 /* provide IDL type initializers */
 #define sfidl_pspec_Real(group, name, nick, blurb, dflt, min, max, step, hints)  \
   sfi_pspec_real (name, nick, blurb, dflt, min, max, step, hints)
@@ -14,12 +15,15 @@
   sfi_pspec_rec (name, nick, blurb, fields, hints)
 #define sfidl_pspec_Choice(group, name, nick, blurb, default_value, hints, choices) \
   sfi_pspec_choice (name, nick, blurb, default_value, choices, hints)
+
 /* FIXME: small hackery */
 #define sfidl_pspec_Rec(group, name, nick, blurb, hints)            \
   sfi_pspec_int (name, nick, blurb, 0, 0, 0, 0, hints)
 #define sfidl_pspec_PSpec(group, name, nick, blurb, hints)            \
   sfi_pspec_int (name, nick, blurb, 0, 0, 0, 0, hints)
+
 #include "testidl.h"
+
 static void
 test_misc (void)
 {
@@ -27,24 +31,7 @@ test_misc (void)
   TASSERT (0 == 0);
   TDONE ();
 }
-static void
-test_messages (void)
-{
-  TSTART ("Messaging");
-  TASSERT (sfi_msg_check (SFI_MSG_NONE) == false);
-  TASSERT (sfi_msg_check (SFI_MSG_ALWAYS) == true);
-  TDONE();
-  if (0)
-    {
-      /* check compilability */
-      sfi_info ("First info message test.");
-      sfi_info ("Second info message test: %d", 42);
-      sfi_msg_display (SFI_MSG_INFO,
-                       SFI_MSG_TITLE ("Third info message test"),
-                       SFI_MSG_PRIMARY ("Third info primary message."),
-                       SFI_MSG_SECONDARY ("Third info secondary message: %d", 42));
-    }
-}
+
 static void
 test_time (void)
 {
@@ -97,6 +84,7 @@ test_time (void)
     }
   TDONE ();
 }
+
 static void
 test_com_ports (void)
 {
@@ -159,6 +147,7 @@ test_com_ports (void)
   TASSERT (scanner->value.v_float == svalue); \
   TASSERT (g_scanner_get_next_token (scanner) == '#'); \
 }
+
 static void
 test_scanner64 (void)
 {
@@ -208,7 +197,7 @@ serial_pspec_check (GParamSpec *pspec,
     {
       g_print ("{while parsing pspec \"%s\":\n\t%s\n", pspec->name, s1->str);
       g_scanner_unexp_token (scanner, token, NULL, NULL, NULL,
-			     g_strdup_printf ("failed to serialize pspec \"%s\"", pspec->name), TRUE);
+			     g_strdup_format ("failed to serialize pspec \"%s\"", pspec->name), TRUE);
     }
   TASSERT (token == G_TOKEN_NONE);
   sfi_value_store_typed (&rvalue, s2);
@@ -259,7 +248,7 @@ serialize_cmp (GValue     *value,
 	{
 	  g_print ("{while parsing \"%s\":\n\t%s\n", pspec->name, gstring->str);
 	  g_scanner_unexp_token (scanner, token, NULL, NULL, NULL,
-				 g_strdup_printf ("failed to serialize \"%s\"", pspec->name), TRUE);
+				 g_strdup_format ("failed to serialize \"%s\"", pspec->name), TRUE);
 	}
       TASSERT (token == G_TOKEN_NONE);
       cmp = g_param_values_cmp (pspec, value, &rvalue);
@@ -289,6 +278,7 @@ serialize_cmp (GValue     *value,
   sfi_value_free (value);
   sfi_pspec_sink (pspec);
 }
+
 static void
 test_typed_serialization (SerialTest test_type)
 {
@@ -469,6 +459,7 @@ test_typed_serialization (SerialTest test_type)
   sfi_rec_unref (rec);
   TDONE ();
 }
+
 static void
 test_notes (void)
 {
@@ -495,7 +486,7 @@ test_notes (void)
       sfi_note_examine (i, &octave, &semitone, &black_semitone, &letter);
       TASSERT (octave == SFI_NOTE_OCTAVE (i));
       TASSERT (semitone == SFI_NOTE_SEMITONE (i));
-      TASSERT (SFI_NOTE_GENERIC (octave, semitone) == i);
+      TASSERT (SFI_NOTE_GENERIC (octave, semitone) == int (i));
     }
   sfi_note_from_string_err ("NeverNote", &error);
   TASSERT (error != NULL);
@@ -567,6 +558,7 @@ generate_vmarshal (guint sig)
   else
     g_print ("    case 0x%03x: return sfi_vmarshal_%s; /* %u */\n", sig, s, vmarshal_count);
 }
+
 static void
 generate_vmarshal_loop (void)
 {
@@ -597,6 +589,7 @@ generate_vmarshal_loop (void)
 	}
     }
 }
+
 static void
 generate_vmarshal_code (void)
 {
@@ -655,6 +648,8 @@ test_vmarshals (void)
   TDONE ();
   sfi_seq_unref (seq);
 }
+
+
 static void
 test_sfidl_seq (void)
 {
@@ -738,7 +733,7 @@ int
 main (int   argc,
       char *argv[])
 {
-  sfi_init_test (&argc, &argv, NULL);
+  sfi_init_test (&argc, argv);
   test_types_init ();
   if (0)
     {
@@ -755,10 +750,12 @@ main (int   argc,
   test_vmarshals ();
   test_com_ports ();
   test_sfidl_seq ();
-  test_messages();
   test_misc ();
+
   return 0;
 }
+
 /* distcc preprocessing test */
 const char *test_distcc_strings = "ÿÿÿÿ";
+
 /* vim:set ts=8 sts=2 sw=2: */

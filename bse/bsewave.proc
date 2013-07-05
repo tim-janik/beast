@@ -3,8 +3,12 @@
 #include <bse/bseprocedure.hh>
 #include <bse/bsewave.hh>
 #include <bse/bseeditablesample.hh>
+
+
 AUTHORS = "Tim Janik <timj@gtk.org>";
 LICENSE = "GNU Lesser General Public License";
+
+
 METHOD (BseWave, load-wave) {
   HELP  = "Load sample chunks from a wave file";
   IN    = bse_param_spec_object ("wave", "Wave", "Wave object to store loaded contents",
@@ -26,14 +30,19 @@ BODY (BseProcedureClass *proc,
   const char *file_name = sfi_value_get_string (in_values++);
   const char *wave_name = sfi_value_get_string (in_values++);
   BseErrorType error = BSE_ERROR_NONE;
+
   /* check parameters */
   if (!BSE_IS_WAVE (wave) || !file_name || !wave_name)
     return BSE_ERROR_PROC_PARAM_INVAL;
+
   error = bse_wave_load_wave_file (wave, file_name, wave_name, NULL, NULL, TRUE);
+
   /* set output parameters */
   g_value_set_enum (out_values++, error);
+
   return BSE_ERROR_NONE;
 }
+
 METHOD (BseWave, n-wave-chunks) {
   HELP  = "Get the number of wave chunks of a wave";
   IN    = bse_param_spec_object ("wave", "Wave", NULL,
@@ -47,13 +56,17 @@ BODY (BseProcedureClass *proc,
 {
   /* extract parameter values */
   BseWave *wave = (BseWave*) bse_value_get_object (in_values++);
+
   /* check parameters */
   if (!BSE_IS_WAVE (wave))
     return BSE_ERROR_PROC_PARAM_INVAL;
+
   /* set output parameters */
   sfi_value_set_int (out_values++, wave->n_wchunks);
+
   return BSE_ERROR_NONE;
 }
+
 METHOD (BseWave, use-editable) {
   HELP  = "Retrieve an editable sample object for a wave chunk.";
   IN    = bse_param_spec_object ("wave", "Wave", NULL,
@@ -72,9 +85,11 @@ BODY (BseProcedureClass *proc,
   guint chunk_index = sfi_value_get_int (in_values++);
   BseEditableSample *esample = NULL;
   GslWaveChunk *wchunk = NULL;
+
   /* check parameters */
   if (!BSE_IS_WAVE (wave))
     return BSE_ERROR_PROC_PARAM_INVAL;
+
   wchunk = (GslWaveChunk*) sfi_ring_nth_data (wave->wave_chunks, chunk_index);
   if (wchunk)
     {
@@ -83,10 +98,13 @@ BODY (BseProcedureClass *proc,
       bse_item_use (BSE_ITEM (esample));
       g_object_unref (esample);
     }
+
   /* set output parameters */
   bse_value_set_object (out_values++, esample);
+
   return BSE_ERROR_NONE;
 }
+
 METHOD (BseWave, chunk-get-osc-freq) {
   HELP  = "Retrieve oscillating frequency of a wave chunk.";
   IN    = bse_param_spec_object ("wave", "Wave", NULL,
@@ -105,14 +123,18 @@ BODY (BseProcedureClass *proc,
   BseWave *wave = (BseWave*) bse_value_get_object (in_values++);
   guint chunk_index = sfi_value_get_int (in_values++);
   GslWaveChunk *wchunk = NULL;
+
   /* check parameters */
   if (!BSE_IS_WAVE (wave))
     return BSE_ERROR_PROC_PARAM_INVAL;
+
   wchunk = (GslWaveChunk*) sfi_ring_nth_data (wave->wave_chunks, chunk_index);
   if (wchunk)
     sfi_value_set_real (out_values++, wchunk->osc_freq);
+
   return BSE_ERROR_NONE;
 }
+
 METHOD (BseWave, chunk-get-mix-freq) {
   HELP  = "Retrieve mixing frequency of a wave chunk.";
   IN    = bse_param_spec_object ("wave", "Wave", NULL,
@@ -131,11 +153,14 @@ BODY (BseProcedureClass *proc,
   BseWave *wave = (BseWave*) bse_value_get_object (in_values++);
   guint chunk_index = sfi_value_get_int (in_values++);
   GslWaveChunk *wchunk = NULL;
+
   /* check parameters */
   if (!BSE_IS_WAVE (wave))
     return BSE_ERROR_PROC_PARAM_INVAL;
+
   wchunk = (GslWaveChunk*) sfi_ring_nth_data (wave->wave_chunks, chunk_index);
   if (wchunk)
     sfi_value_set_real (out_values++, wchunk->mix_freq);
+
   return BSE_ERROR_NONE;
 }

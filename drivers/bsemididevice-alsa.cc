@@ -7,8 +7,9 @@
 #include <alsa/asoundlib.h>
 #include <string.h>
 #include <errno.h>
-static SFI_MSG_TYPE_DEFINE (debug_pcm, "midi", SFI_MSG_DEBUG, NULL);
-#define DEBUG(...) sfi_debug (debug_pcm, __VA_ARGS__)
+
+#define MDEBUG(...)     BSE_KEY_DEBUG ("midi-alsa", __VA_ARGS__)
+
 /* --- structs --- */
 typedef struct
 {
@@ -17,6 +18,7 @@ typedef struct
   snd_rawmidi_t  *write_handle;
   guint           total_pfds;
 } AlsaMidiHandle;
+
 /* --- prototypes --- */
 static void     bse_midi_device_alsa_class_init (BseMidiDeviceALSAClass *klass);
 static void     bse_midi_device_alsa_init       (BseMidiDeviceALSA      *self);
@@ -67,7 +69,7 @@ list_midi_devices (BseDevice *device, SfiRing *ring, const char *device_group)
         {
           std::string blurb = substitute_string ("\n", " ", desc);
           BseDeviceEntry *entry = bse_device_group_entry_new (device, g_strdup (name), g_strdup (device_group),
-                                                              g_strdup_printf ("%s - %s", name, blurb.c_str()));
+                                                              g_strdup_format ("%s - %s", name, blurb.c_str()));
           ring = sfi_ring_append (ring, entry);
         }
       if (name) free (name);
@@ -92,6 +94,7 @@ bse_midi_device_alsa_list_devices (BseDevice *device)
   snd_ctl_card_info_t *cinfo = alsa_alloca0 (snd_ctl_card_info);
   snd_rawmidi_info_t *winfo = alsa_alloca0 (snd_rawmidi_info);
   snd_rawmidi_info_t *rinfo = alsa_alloca0 (snd_rawmidi_info);
+
   int cindex = -1;
   snd_card_next (&cindex);
   while (cindex >= 0)
@@ -107,7 +110,9 @@ bse_midi_device_alsa_list_devices (BseDevice *device)
           snd_ctl_close (chandle);
           continue;
         }
-      gchar *device_group = g_strdup_printf ("%s - %s", snd_ctl_card_info_get_id (cinfo), snd_ctl_card_info_get_longname (cinfo));
+
+      gchar *device_group = g_strdup_format ("%s - %s", snd_ctl_card_info_get_id (cinfo), snd_ctl_card_info_get_longname (cinfo));
+
       int pindex = -1;
       snd_ctl_rawmidi_next_device (chandle, &pindex);
       while (pindex >= 0)
@@ -128,19 +133,19 @@ bse_midi_device_alsa_list_devices (BseDevice *device)
           guint avail_output_subdevices = writable ? snd_rawmidi_info_get_subdevices_avail (winfo) : 0;
           gchar *wdevs = NULL, *rdevs = NULL;
           if (total_input_subdevices && total_input_subdevices != avail_input_subdevices)
-            rdevs = g_strdup_printf ("%u*input (%u busy)", total_input_subdevices, total_input_subdevices - avail_input_subdevices);
+            rdevs = g_strdup_format ("%u*input (%u busy)", total_input_subdevices, total_input_subdevices - avail_input_subdevices);
           else if (total_input_subdevices)
-            rdevs = g_strdup_printf ("%u*input", total_input_subdevices);
+            rdevs = g_strdup_format ("%u*input", total_input_subdevices);
           if (total_output_subdevices && total_output_subdevices != avail_output_subdevices)
-            wdevs = g_strdup_printf ("%u*output (%u busy)", total_output_subdevices, total_output_subdevices - avail_output_subdevices);
+            wdevs = g_strdup_format ("%u*output (%u busy)", total_output_subdevices, total_output_subdevices - avail_output_subdevices);
           else if (total_output_subdevices)
-            wdevs = g_strdup_printf ("%u*output", total_output_subdevices);
+            wdevs = g_strdup_format ("%u*output", total_output_subdevices);
           const gchar *joiner = wdevs && rdevs ? " + " : "";
           BseDeviceEntry *entry;
           entry = bse_device_group_entry_new (device,
-                                              g_strdup_printf ("hw:%u,%u", cindex, pindex),
+                                              g_strdup_format ("hw:%u,%u", cindex, pindex),
                                               g_strdup (device_group),
-                                              g_strdup_printf ("hw:%u,%u (subdevices: %s%s%s)",
+                                              g_strdup_format ("hw:%u,%u (subdevices: %s%s%s)",
                                                                cindex, pindex,
                                                                rdevs ? rdevs : "",
                                                                joiner,
@@ -157,9 +162,10 @@ bse_midi_device_alsa_list_devices (BseDevice *device)
         break;
     }
   if (!ring)
-    ring = sfi_ring_append (ring, bse_device_error_new (device, g_strdup_printf ("No devices found")));
+    ring = sfi_ring_append (ring, bse_device_error_new (device, g_strdup_format ("No devices found")));
   return ring;
 }
+
 static void
 silent_error_handler (const char *file,
                       int         line,
@@ -169,6 +175,7 @@ silent_error_handler (const char *file,
                       ...)
 {
 }
+
 static BseErrorType
 bse_midi_device_alsa_open (BseDevice     *device,
                           gboolean       require_readable,
@@ -193,6 +200,7 @@ bse_midi_device_alsa_open (BseDevice     *device,
                                  dname, SND_RAWMIDI_NONBLOCK);
       snd_lib_error_set_handler (NULL);
     }
+
   /* try setup */
   BseErrorType error = !aerror ? BSE_ERROR_NONE : bse_error_from_errno (-aerror, BSE_ERROR_FILE_OPEN_FAILED);
   snd_rawmidi_params_t *mparams = alsa_alloca0 (snd_rawmidi_params);
@@ -218,6 +226,7 @@ bse_midi_device_alsa_open (BseDevice     *device,
     }
   if (!error && alsa->read_handle && snd_rawmidi_poll_descriptors_count (alsa->read_handle) <= 0)
     error = BSE_ERROR_FILE_OPEN_FAILED;
+
   /* setup MIDI handle or shutdown */
   if (!error)
     {
@@ -254,7 +263,7 @@ bse_midi_device_alsa_open (BseDevice     *device,
         snd_rawmidi_close (alsa->write_handle);
       g_free (alsa);
     }
-  DEBUG ("ALSA: opening MIDI \"%s\" readable=%d writable=%d: %s", dname, require_readable, require_writable, bse_error_blurb (error));
+  MDEBUG ("ALSA: opening MIDI \"%s\" readable=%d writable=%d: %s", dname, require_readable, require_writable, bse_error_blurb (error));
   g_free (dname);
   return error;
 }
@@ -275,6 +284,7 @@ bse_midi_device_alsa_close (BseDevice *device)
     }
   g_free (alsa);
 }
+
 static void
 bse_midi_device_alsa_finalize (GObject *object)
 {
@@ -282,6 +292,7 @@ bse_midi_device_alsa_finalize (GObject *object)
   /* chain parent class' handler */
   G_OBJECT_CLASS (parent_class)->finalize (object);
 }
+
 static gboolean
 alsa_midi_io_handler (gpointer        data,     /* Sequencer Thread */
                       guint           n_pfds,
@@ -292,25 +303,31 @@ alsa_midi_io_handler (gpointer        data,     /* Sequencer Thread */
   const gsize buf_size = 8192;
   guint8 buffer[buf_size];
   gssize l;
+
   guint64 systime = sfi_time_system ();
   do
     l = snd_rawmidi_read (alsa->read_handle, buffer, buf_size);
   while (l < 0 && errno == EINTR);      /* don't mind signals */
+
   if (l > 0)
     bse_midi_decoder_push_data (handle->midi_decoder, l, buffer, systime);
   return TRUE;
 }
+
 static void
 bse_midi_device_alsa_class_init (BseMidiDeviceALSAClass *klass)
 {
   GObjectClass *gobject_class = G_OBJECT_CLASS (klass);
   BseDeviceClass *device_class = BSE_DEVICE_CLASS (klass);
+
   parent_class = g_type_class_peek_parent (klass);
+
   gobject_class->finalize = bse_midi_device_alsa_finalize;
+
   device_class->list_devices = bse_midi_device_alsa_list_devices;
   const gchar *name = "alsa";
   const gchar *syntax = _("PLUGIN:CARD,DEV,SUBDEV");
-  const gchar *info = g_intern_printf (/* TRANSLATORS: keep this text to 70 chars in width */
+  const gchar *info = g_intern_format (/* TRANSLATORS: keep this text to 70 chars in width */
                                        _("Advanced Linux Sound Architecture MIDI driver, using\n"
                                          "ALSA %s.\n"
                                          "The device specification follows the ALSA device naming\n"

@@ -1,5 +1,6 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bseproject.hh"
+
 #include "bsesuper.hh"
 #include "bsestorage.hh"
 #include "bsesong.hh"
@@ -20,19 +21,25 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <errno.h>
+
+
 typedef struct {
   GType    base_type;
   gboolean intern_children;
   guint    max_items;
   GSList  *items;
 } StorageTrap;
+
 /* --- macros --- */
 #define parse_or_return         bse_storage_scanner_parse_or_return
 #define peek_or_return          bse_storage_scanner_peek_or_return
+
 enum {
   PARAM_0,
   PARAM_DIRTY
 };
+
+
 /* --- prototypes --- */
 static void	bse_project_class_init		(BseProjectClass	*klass);
 static void	bse_project_class_finalize	(BseProjectClass	*klass);
@@ -63,30 +70,38 @@ static void	bse_project_prepare		(BseSource		*source);
 static gboolean project_check_restore		(BseContainer           *container,
 						 const gchar            *child_type);
 static BseUndoStack* bse_project_get_undo       (BseItem                *item);
+
+
 /* --- variables --- */
 static GTypeClass *parent_class = NULL;
 static guint       signal_state_changed = 0;
 static GQuark      quark_storage_trap = 0;
+
+
 /* --- functions --- */
 BSE_BUILTIN_TYPE (BseProject)
 {
   static const GTypeInfo project_info = {
     sizeof (BseProjectClass),
+
     (GBaseInitFunc) NULL,
     (GBaseFinalizeFunc) NULL,
     (GClassInitFunc) bse_project_class_init,
     (GClassFinalizeFunc) bse_project_class_finalize,
     NULL /* class_data */,
+
     sizeof (BseProject),
     0 /* n_preallocs */,
     (GInstanceInitFunc) bse_project_init,
   };
+
   return bse_type_register_static (BSE_TYPE_CONTAINER,
 				   "BseProject",
 				   "BSE Super container type",
                                    __FILE__, __LINE__,
                                    &project_info);
 }
+
 static void
 bse_project_class_init (BseProjectClass *klass)
 {
@@ -95,32 +110,41 @@ bse_project_class_init (BseProjectClass *klass)
   BseItemClass *item_class = BSE_ITEM_CLASS (klass);
   BseSourceClass *source_class = BSE_SOURCE_CLASS (klass);
   BseContainerClass *container_class = BSE_CONTAINER_CLASS (klass);
+
   parent_class = (GTypeClass*) g_type_class_peek_parent (klass);
   quark_storage_trap = g_quark_from_static_string ("bse-project-storage-trap");
+
   gobject_class->set_property = bse_project_set_property;
   gobject_class->get_property = bse_project_get_property;
   gobject_class->dispose = bse_project_dispose;
   gobject_class->finalize = bse_project_finalize;
+
   item_class->get_undo = bse_project_get_undo;
+
   source_class->prepare = bse_project_prepare;
+
   container_class->add_item = bse_project_add_item;
   container_class->remove_item = bse_project_remove_item;
   container_class->forall_items = bse_project_forall_items;
   container_class->check_restore = project_check_restore;
   container_class->retrieve_child = bse_project_retrieve_child;
   container_class->release_children = bse_project_release_children;
+
   bse_object_class_add_param (object_class, "State",
                               PARAM_DIRTY,
                               sfi_pspec_bool ("dirty", NULL, "Whether project needs saving",
                                               FALSE, "r"));
+
   signal_state_changed = bse_object_class_add_signal (object_class, "state-changed",
 						      G_TYPE_NONE,
 						      1, BSE_TYPE_PROJECT_STATE);
 }
+
 static void
 bse_project_class_finalize (BseProjectClass *klass)
 {
 }
+
 static void
 undo_notify (BseProject     *project,
              BseUndoStack   *ustack,
@@ -133,6 +157,7 @@ undo_notify (BseProject     *project,
       bse_undo_stack_clear (project->redo_stack);
     }
 }
+
 static void
 redo_notify (BseProject     *project,
              BseUndoStack   *ustack,
@@ -168,6 +193,7 @@ bse_project_set_property (GObject                *object,
                           GParamSpec             *pspec)
 {
   BseProject *self = BSE_PROJECT (object);
+
   switch (param_id)
     {
     case PARAM_DIRTY:
@@ -177,6 +203,7 @@ bse_project_set_property (GObject                *object,
       break;
     }
 }
+
 static void
 bse_project_get_property (GObject                *object,
                           guint                   param_id,
@@ -184,6 +211,7 @@ bse_project_get_property (GObject                *object,
                           GParamSpec             *pspec)
 {
   BseProject *self = BSE_PROJECT (object);
+
   switch (param_id)
     {
     case PARAM_DIRTY:
@@ -194,44 +222,57 @@ bse_project_get_property (GObject                *object,
       break;
     }
 }
+
 static void
 bse_project_release_children (BseContainer *container)
 {
   BseProject *project = BSE_PROJECT (container);
+
   while (project->items)
     bse_container_remove_item (BSE_CONTAINER (project), (BseItem*) project->items->data);
   while (project->supers)
     bse_container_remove_item (BSE_CONTAINER (project), (BseItem*) project->supers->data);
+
   /* chain parent class' handler */
   BSE_CONTAINER_CLASS (parent_class)->release_children (container);
 }
+
 static void
 bse_project_dispose (GObject *object)
 {
   BseProject *self = BSE_PROJECT (object);
+
   bse_project_deactivate (self);
+
   bse_undo_stack_limit (self->undo_stack, 0);
   bse_undo_stack_limit (self->redo_stack, 0);
+
   /* chain parent class' handler */
   G_OBJECT_CLASS (parent_class)->dispose (object);
 }
+
 static void
 bse_project_finalize (GObject *object)
 {
   BseProject *self = BSE_PROJECT (object);
+
   bse_midi_receiver_unref (self->midi_receiver);
   self->midi_receiver = NULL;
+
   /* chain parent class' handler */
   G_OBJECT_CLASS (parent_class)->finalize (object);
+
   bse_undo_stack_destroy (self->undo_stack);
   bse_undo_stack_destroy (self->redo_stack);
 }
+
 static BseUndoStack*
 bse_project_get_undo (BseItem *item)
 {
   BseProject *self = BSE_PROJECT (item);
   return self->in_undo ? self->redo_stack : self->undo_stack;
 }
+
 void
 bse_project_clear_undo (BseProject *self)
 {
@@ -243,6 +284,7 @@ bse_project_clear_undo (BseProject *self)
       g_object_notify ((GObject*) self, "dirty");
     }
 }
+
 void
 bse_project_clean_dirty (BseProject *self)
 {
@@ -251,6 +293,7 @@ bse_project_clean_dirty (BseProject *self)
   bse_undo_stack_clean_dirty (self->redo_stack);
   g_object_notify ((GObject*) self, "dirty");
 }
+
 static void
 project_undo_do_deactivate (BseUndoStep  *ustep,
                             BseUndoStack *ustack)
@@ -258,15 +301,18 @@ project_undo_do_deactivate (BseUndoStep  *ustep,
   BseProject *self = (BseProject*) bse_undo_pointer_unpack ((const char*) ustep->data[0].v_pointer, ustack);
   bse_project_deactivate (self);
 }
+
 static void
 project_undo_do_deactivate_free (BseUndoStep *ustep)
 {
   g_free (ustep->data[0].v_pointer);
 }
+
 void
 bse_project_push_undo_silent_deactivate (BseProject *self)
 {
   g_return_if_fail (BSE_IS_PROJECT (self));
+
   /* certain things work only (can only be undone/redone) in deactivated projects,
    * so we need to push an undo step here. this step isn't required however
    * if there're no undo steps pushed so far, and it shouldn't be visible
@@ -281,6 +327,7 @@ bse_project_push_undo_silent_deactivate (BseProject *self)
       ustep->data[0].v_pointer = bse_undo_pointer_pack (self, ustack);
       bse_undo_stack_push_add_on (ustack, ustep);
       bse_item_undo_close (ustack);
+
       gboolean in_undo = self->in_undo;
       self->in_undo = !in_undo;             /* swap undo<=>redo */
       ustack = bse_item_undo_open (self, "deactivate-project");
@@ -291,30 +338,37 @@ bse_project_push_undo_silent_deactivate (BseProject *self)
       self->in_undo = in_undo;              /* swap undo<=>redo */
     }
 }
+
 static void
 bse_project_add_item (BseContainer *container,
 		      BseItem      *item)
 {
   BseProject *self = BSE_PROJECT (container);
+
   if (BSE_IS_SUPER (item))
     self->supers = g_slist_append (self->supers, item);
   else
     self->items = g_slist_append (self->items, item);
+
   /* chain parent class' add_item handler */
   BSE_CONTAINER_CLASS (parent_class)->add_item (container, item);
 }
+
 static void
 bse_project_remove_item (BseContainer *container,
 			 BseItem      *item)
 {
   BseProject *self = BSE_PROJECT (container);
+
   /* chain parent class' remove_item handler */
   BSE_CONTAINER_CLASS (parent_class)->remove_item (container, item);
+
   if (BSE_IS_SUPER (item))
     self->supers = g_slist_remove (self->supers, item);
   else
     self->items = g_slist_remove (self->items, item);
 }
+
 static void
 bse_project_forall_items (BseContainer      *container,
 			  BseForallItemsFunc func,
@@ -322,6 +376,7 @@ bse_project_forall_items (BseContainer      *container,
 {
   BseProject *self = BSE_PROJECT (container);
   GSList *slist;
+
   slist = self->supers;
   while (slist)
     {
@@ -330,6 +385,7 @@ bse_project_forall_items (BseContainer      *container,
       if (!func (item, data))
 	return;
     }
+
   slist = self->items;
   while (slist)
     {
@@ -339,16 +395,19 @@ bse_project_forall_items (BseContainer      *container,
 	return;
     }
 }
+
 static BseItem*
 bse_project_retrieve_child (BseContainer *container,
 			    GType         child_type,
 			    const gchar  *uname)
 {
   BseProject *self = BSE_PROJECT (container);
+
   /* always hand out the same wave repo */
   if (g_type_is_a (child_type, BSE_TYPE_WAVE_REPO))
     {
       GSList *slist;
+
       for (slist = self->supers; slist; slist = slist->next)
 	if (g_type_is_a (G_OBJECT_TYPE (slist->data), BSE_TYPE_WAVE_REPO))
 	  return (BseItem*) slist->data;
@@ -369,6 +428,7 @@ bse_project_retrieve_child (BseContainer *container,
       return item;
     }
 }
+
 static gboolean
 add_item_upaths (BseItem *item,
 		 gpointer data_p)
@@ -377,6 +437,7 @@ add_item_upaths (BseItem *item,
   BseStringSeq *sseq = (BseStringSeq*) data[0];
   GType item_type = (GType) data[1];
   BseContainer *container = (BseContainer*) data[2];
+
   if (g_type_is_a (BSE_OBJECT_TYPE (item), item_type))
     {
       gchar *upath = bse_container_make_upath (container, item);
@@ -385,23 +446,29 @@ add_item_upaths (BseItem *item,
     }
   if (BSE_IS_CONTAINER (item))
     bse_container_forall_items (BSE_CONTAINER (item), add_item_upaths, data);
+
   return TRUE;
 }
+
 BseStringSeq*
 bse_project_list_upaths (BseProject *self,
 			 GType       item_type)
 {
   gpointer data[3];
   BseStringSeq *sseq;
+
   g_return_val_if_fail (BSE_IS_PROJECT (self), NULL);
   g_return_val_if_fail (g_type_is_a (item_type, BSE_TYPE_ITEM), NULL);
+
   sseq = bse_string_seq_new ();
   data[0] = sseq;
   data[1] = (gpointer) item_type;
   data[2] = self;
   bse_container_forall_items (BSE_CONTAINER (self), add_item_upaths, data);
+
   return sseq;
 }
+
 static GSList*
 compute_missing_supers (BseProject *self,
                         BseStorage *storage)
@@ -418,6 +485,7 @@ compute_missing_supers (BseProject *self,
     }
   return targets;
 }
+
 BseErrorType
 bse_project_store_bse (BseProject  *self,
                        BseSuper    *super,
@@ -429,6 +497,7 @@ bse_project_store_bse (BseProject  *self,
   gchar *string;
   guint l, flags;
   gint fd;
+
   g_return_val_if_fail (BSE_IS_PROJECT (self), BSE_ERROR_INTERNAL);
   if (super)
     {
@@ -436,14 +505,17 @@ bse_project_store_bse (BseProject  *self,
       g_return_val_if_fail (BSE_ITEM (super)->parent == BSE_ITEM (self), BSE_ERROR_INTERNAL);
     }
   g_return_val_if_fail (bse_file != NULL, BSE_ERROR_INTERNAL);
+
   fd = open (bse_file, O_WRONLY | O_CREAT | O_EXCL, 0666);
   if (fd < 0)
     return bse_error_from_errno (errno, BSE_ERROR_FILE_OPEN_FAILED);
+
   storage = (BseStorage*) g_object_new (BSE_TYPE_STORAGE, NULL);
   flags = 0;
   if (self_contained)
     flags |= BSE_STORAGE_SELF_CONTAINED;
   bse_storage_prepare_write (storage, BseStorageMode (flags));
+
   slist = g_slist_prepend (slist, super ? (void*) super : (void*) self);
   while (slist)
     {
@@ -454,33 +526,43 @@ bse_project_store_bse (BseProject  *self,
         bse_storage_store_child (storage, item);
       slist = g_slist_concat (compute_missing_supers (self, storage), slist);
     }
-  string = g_strdup_printf ("; BseProject\n\n"); /* %010o mflags */
+
+  string = g_strdup_format ("; BseProject\n\n"); /* %010o mflags */
   do
     l = write (fd, string, strlen (string));
   while (l < 0 && errno == EINTR);
   g_free (string);
+
   BseErrorType error = bse_storage_flush_fd (storage, fd);
   if (close (fd) < 0 && error == BSE_ERROR_NONE)
     error = bse_error_from_errno (errno, BSE_ERROR_FILE_WRITE_FAILED);
   bse_storage_reset (storage);
   g_object_unref (storage);
+
   return error;
 }
+
 BseErrorType
 bse_project_restore (BseProject *self,
 		     BseStorage *storage)
 {
   GScanner *scanner;
   GTokenType expected_token = G_TOKEN_NONE;
+
   g_return_val_if_fail (BSE_IS_PROJECT (self), BSE_ERROR_INTERNAL);
   g_return_val_if_fail (BSE_IS_STORAGE (storage), BSE_ERROR_INTERNAL);
+
   scanner = bse_storage_get_scanner (storage);
   g_return_val_if_fail (scanner != NULL, BSE_ERROR_INTERNAL);
+
   g_object_ref (self);
+
   expected_token = bse_storage_restore_item (storage, BSE_ITEM (self));
   if (expected_token != G_TOKEN_NONE)
     bse_storage_unexp_token (storage, expected_token);
+
   bse_storage_finish_parsing (storage);
+
   GSList *slist = self->supers;
   while (slist)
     {
@@ -489,12 +571,16 @@ bse_project_restore (BseProject *self,
       BseSuperClass *super_class = BSE_SUPER_GET_CLASS (super);
       super_class->compat_finish (super, storage->major_version, storage->minor_version, storage->micro_version);
     }
+
   bse_undo_stack_force_dirty (self->undo_stack);
+
   g_object_unref (self);
+
   return (scanner->parse_errors >= scanner->max_parse_errors ?
 	  BSE_ERROR_PARSE_ERROR :
 	  BSE_ERROR_NONE);
 }
+
 BseObject*
 bse_project_upath_resolver (gpointer     func_data,
 			    GType        required_type,
@@ -503,30 +589,39 @@ bse_project_upath_resolver (gpointer     func_data,
 {
   BseProject *self = (BseProject*) func_data;
   gpointer item = NULL;
+
   if (error_p)
     *error_p = NULL;
   g_return_val_if_fail (BSE_IS_PROJECT (self), NULL);
   g_return_val_if_fail (upath != NULL, NULL);
+
   /* FIXME: need error handling, warnings.... */
+
   if (g_type_is_a (required_type, BSE_TYPE_ITEM))
     item = bse_container_resolve_upath (BSE_CONTAINER (self), upath);
   else if (error_p)
-    *error_p = g_strdup_printf ("unable to resolve object of type `%s' from upath: %s", g_type_name (required_type), upath);
+    *error_p = g_strdup_format ("unable to resolve object of type `%s' from upath: %s", g_type_name (required_type), upath);
+
   return (BseObject*) item;
 }
+
 BseItem*
 bse_project_lookup_typed_item (BseProject  *self,
 			       GType	    item_type,
 			       const gchar *uname)
 {
   BseItem *item;
+
   g_return_val_if_fail (BSE_IS_PROJECT (self), NULL);
   g_return_val_if_fail (uname != NULL, NULL);
+
   item = bse_container_lookup_item (BSE_CONTAINER (self), uname);
   if (item && G_OBJECT_TYPE (item) == item_type)
     return item;
+
   return NULL;
 }
+
 BseWaveRepo*
 bse_project_get_wave_repo (BseProject *self)
 {
@@ -537,6 +632,7 @@ bse_project_get_wave_repo (BseProject *self)
       return (BseWaveRepo*) slist->data;
   return NULL;
 }
+
 BseSong*
 bse_project_get_song (BseProject *self)
 {
@@ -547,6 +643,7 @@ bse_project_get_song (BseProject *self)
       return (BseSong*) slist->data;
   return NULL;
 }
+
 static gboolean
 project_check_restore (BseContainer *container,
 		       const gchar  *child_type)
@@ -565,6 +662,7 @@ project_check_restore (BseContainer *container,
   else
     return FALSE;
 }
+
 BseSNet*
 bse_project_create_intern_synth (BseProject  *self,
 				 const gchar *synth_name,
@@ -572,8 +670,10 @@ bse_project_create_intern_synth (BseProject  *self,
 {
   BseItem *synth = NULL;
   gchar *bse_synth;
+
   g_return_val_if_fail (BSE_IS_PROJECT (self), NULL);
   g_return_val_if_fail (synth_name != NULL, NULL);
+
   bse_synth = bse_standard_synth_inflate (synth_name, NULL);
   if (bse_synth)
     {
@@ -600,6 +700,7 @@ bse_project_create_intern_synth (BseProject  *self,
     }
   return BSE_SNET (synth);
 }
+
 BseCSynth*
 bse_project_create_intern_csynth (BseProject *self,
                                   const char *base_name)
@@ -608,6 +709,7 @@ bse_project_create_intern_csynth (BseProject *self,
   bse_item_set_internal (BSE_ITEM (csynth), TRUE);
   return csynth;
 }
+
 BseMidiNotifier*
 bse_project_get_midi_notifier (BseProject *self)
 {
@@ -615,24 +717,29 @@ bse_project_get_midi_notifier (BseProject *self)
   for (slist = self->items; slist; slist = slist->next)
     if (BSE_IS_MIDI_NOTIFIER (slist->data))
       return (BseMidiNotifier*) slist->data;
+
   BseMidiNotifier *mnot = (BseMidiNotifier*) bse_container_new_child_bname (BSE_CONTAINER (self), BSE_TYPE_MIDI_NOTIFIER,
                                                                             "%bse-intern-midi-notifier", NULL);
   bse_midi_notifier_set_receiver (mnot, self->midi_receiver);
   bse_item_set_internal (BSE_ITEM (mnot), TRUE);
   return mnot;
 }
+
 static void
 bse_project_prepare (BseSource *source)
 {
   BseProject *self = BSE_PROJECT (source);
   GSList *slist;
+
   /* make sure Wave repositories are prepared first */
   for (slist = self->supers; slist; slist = slist->next)
     if (BSE_IS_WAVE_REPO (slist->data))
       bse_source_prepare ((BseSource*) slist->data);
+
   /* chain parent class' handler to prepare the rest */
   BSE_SOURCE_CLASS (parent_class)->prepare (source);
 }
+
 static gboolean
 auto_deactivate (gpointer data)
 {
@@ -642,11 +749,13 @@ auto_deactivate (gpointer data)
     bse_project_deactivate (self);
   return FALSE;
 }
+
 void
 bse_project_state_changed (BseProject     *self,
 			   BseProjectState state)
 {
   g_return_if_fail (BSE_IS_PROJECT (self));
+
   if (self->deactivate_timer)
     {
       bse_idle_remove (self->deactivate_timer);
@@ -663,11 +772,13 @@ bse_project_state_changed (BseProject     *self,
     }
   g_signal_emit (self, signal_state_changed, 0, state);
 }
+
 void
 bse_project_keep_activated (BseProject *self,
 			    guint64     min_tick)
 {
   g_return_if_fail (BSE_IS_PROJECT (self));
+
   if (min_tick > self->deactivate_min_tick)
     {
       self->deactivate_min_tick = min_tick;
@@ -675,21 +786,28 @@ bse_project_keep_activated (BseProject *self,
 	bse_project_state_changed (self, self->state);
     }
 }
+
 BseErrorType
 bse_project_activate (BseProject *self)
 {
   BseErrorType error;
   BseTrans *trans;
   GSList *slist;
+
   g_return_val_if_fail (BSE_IS_PROJECT (self), BSE_ERROR_INTERNAL);
+
   if (self->state != BSE_PROJECT_INACTIVE)
     return BSE_ERROR_NONE;
+
   g_return_val_if_fail (BSE_SOURCE_PREPARED (self) == FALSE, BSE_ERROR_INTERNAL);
+
   error = bse_server_open_devices (bse_server_get ());
   if (error)
     return error;
+
   bse_source_prepare (BSE_SOURCE (self));
   self->deactivate_min_tick = 0;
+
   trans = bse_trans_open ();
   for (slist = self->supers; slist; slist = slist->next)
     {
@@ -710,16 +828,20 @@ bse_project_activate (BseProject *self)
   bse_project_state_changed (self, BSE_PROJECT_ACTIVE);
   return BSE_ERROR_NONE;
 }
+
 void
 bse_project_start_playback (BseProject *self)
 {
   BseTrans *trans;
   GSList *slist;
   guint seen_synth = 0;
+
   g_return_if_fail (BSE_IS_PROJECT (self));
+
   if (self->state != BSE_PROJECT_ACTIVE)
     return;
   g_return_if_fail (BSE_SOURCE_PREPARED (self) == TRUE);
+
   SfiRing *songs = NULL;
   trans = bse_trans_open ();
   for (slist = self->supers; slist; slist = slist->next)
@@ -752,15 +874,19 @@ bse_project_start_playback (BseProject *self)
   while (songs)
     Bse::Sequencer::instance().start_song ((BseSong*) sfi_ring_pop_head (&songs), 0);
 }
+
 void
 bse_project_stop_playback (BseProject *self)
 {
   BseTrans *trans;
   GSList *slist;
+
   g_return_if_fail (BSE_IS_PROJECT (self));
+
   if (self->state != BSE_PROJECT_PLAYING)
     return;
   g_return_if_fail (BSE_SOURCE_PREPARED (self) == TRUE);
+
   trans = bse_trans_open ();
   for (slist = self->supers; slist; slist = slist->next)
     {
@@ -782,10 +908,12 @@ bse_project_stop_playback (BseProject *self)
   /* update state */
   bse_project_state_changed (self, BSE_PROJECT_ACTIVE);
 }
+
 void
 bse_project_check_auto_stop (BseProject *self)
 {
   g_return_if_fail (BSE_IS_PROJECT (self));
+
   if (self->state == BSE_PROJECT_PLAYING)
     {
       GSList *slist;
@@ -801,16 +929,21 @@ bse_project_check_auto_stop (BseProject *self)
       bse_project_stop_playback (self);
     }
 }
+
 void
 bse_project_deactivate (BseProject *self)
 {
   BseTrans *trans;
   GSList *slist;
+
   g_return_if_fail (BSE_IS_PROJECT (self));
+
   if (self->state == BSE_PROJECT_INACTIVE)
     return;
   g_return_if_fail (BSE_SOURCE_PREPARED (self) == TRUE);
+
   bse_project_stop_playback (self);
+
   trans = bse_trans_open ();
   for (slist = self->supers; slist; slist = slist->next)
     {
@@ -827,5 +960,6 @@ bse_project_deactivate (BseProject *self)
   bse_engine_wait_on_trans ();
   bse_source_reset (BSE_SOURCE (self));
   bse_project_state_changed (self, BSE_PROJECT_INACTIVE);
+
   bse_server_close_devices (bse_server_get ());
 }

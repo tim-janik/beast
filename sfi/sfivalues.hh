@@ -1,8 +1,12 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #ifndef __SFI_VALUES_H__
 #define __SFI_VALUES_H__
+
 #include <sfi/sfitypes.hh>
+
 G_BEGIN_DECLS
+
+
 /* --- Sfi value type aliases --- */
 #define	SFI_TYPE_BOOL		G_TYPE_BOOLEAN
 #define	SFI_TYPE_INT		G_TYPE_INT
@@ -10,6 +14,8 @@ G_BEGIN_DECLS
 #define	SFI_TYPE_REAL		G_TYPE_DOUBLE
 #define	SFI_TYPE_STRING		G_TYPE_STRING
 #define SFI_TYPE_PSPEC		G_TYPE_PARAM
+
+
 /* --- Sfi value types --- */
 #define SFI_TYPE_CHOICE		(sfi__value_types[0])
 #define SFI_TYPE_BBLOCK		(sfi__value_types[1])
@@ -17,6 +23,8 @@ G_BEGIN_DECLS
 #define SFI_TYPE_SEQ		(sfi__value_types[3])
 #define SFI_TYPE_REC		(sfi__value_types[4])
 #define SFI_TYPE_PROXY		(sfi__value_types[5])
+
+
 /* --- Sfi value macros --- */
 #define SFI_IS_VALUE(value)		(sfi_check_value (value))
 #define SFI_VALUE_HOLDS_BOOL(value)	(G_TYPE_CHECK_VALUE_TYPE ((value), SFI_TYPE_BOOL))
@@ -31,6 +39,8 @@ G_BEGIN_DECLS
 #define SFI_VALUE_HOLDS_SEQ(value)	(G_TYPE_CHECK_VALUE_TYPE ((value), SFI_TYPE_SEQ))
 #define SFI_VALUE_HOLDS_REC(value)	(G_TYPE_CHECK_VALUE_TYPE ((value), SFI_TYPE_REC))
 #define SFI_VALUE_HOLDS_PROXY(value)	(G_TYPE_CHECK_VALUE_TYPE ((value), SFI_TYPE_PROXY))
+
+
 /* --- Sfi value accessor aliases --- */
 #define	sfi_value_get_bool		g_value_get_boolean
 #define	sfi_value_set_bool		g_value_set_boolean
@@ -45,6 +55,8 @@ G_BEGIN_DECLS
 #define	sfi_value_dup_string		g_value_dup_string
 #define	sfi_value_set_static_string	g_value_set_static_string
 #define	sfi_value_take_string		g_value_take_string
+
+
 /* --- Sfi value accessors --- */
 const char* sfi_value_get_choice	(const GValue	*value);
 void	    sfi_value_set_choice	(GValue		*value,
@@ -84,6 +96,8 @@ void	    sfi_value_set_proxy		(GValue		*value,
 void	    sfi_value_copy_deep		(const GValue	*src_value,
 					 GValue		*dest_value);
 #define	    sfi_value_copy_shallow	g_value_copy
+
+
 /* --- Sfi value constructors --- */
 GValue*	sfi_value_empty		(void);
 GValue*	sfi_value_clone_deep	(const GValue	*value);
@@ -110,6 +124,8 @@ GValue*	sfi_value_rec		(SfiRec		*vrec);
 GValue*	sfi_value_new_take_rec	(SfiRec		*vrec);
 GValue*	sfi_value_proxy		(SfiProxy	 vproxy);
 void	sfi_value_free		(GValue		*value);
+
+
 /* --- convenience aliases --- */
 #define SFI_VALUE_HOLDS_NOTE(value)	SFI_VALUE_HOLDS_INT(value)
 #define	sfi_value_get_note		sfi_value_get_int
@@ -119,6 +135,8 @@ void	sfi_value_free		(GValue		*value);
 #define	sfi_value_get_time		sfi_value_get_num
 #define	sfi_value_set_time		sfi_value_set_num
 #define	sfi_value_time			sfi_value_num
+
+
 /* --- transformation --- */
 #define SFI_CHOICE_ERROR_QUARK            (g_quark_from_string ("sfi-choice-error"))
 void         sfi_value_choice2enum        (const GValue *choice_value,
@@ -147,10 +165,15 @@ gboolean     sfi_value_type_compatible    (GType         src_type,
                                            GType         dest_type);
 gboolean     sfi_value_type_transformable (GType         src_type,
                                            GType         dest_type);
+
+
 /* --- internal --- */
 void	     _sfi_init_values	(void);
 extern GType *sfi__value_types;
 gboolean      sfi_check_value	(const GValue	*value);
+
 G_END_DECLS
+
 #endif /* __SFI_VALUES_H__ */
+
 /* vim:set ts=8 sts=2 sw=2: */

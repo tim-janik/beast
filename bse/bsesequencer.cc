@@ -14,8 +14,8 @@
 #include <string.h>
 #include <vector>
 
-#define CHECKTRACE()    UNLIKELY (bse_trace_args.sequencer)
-#define SEQTRACE(...)   do { if (CHECKTRACE()) sfi_debug_channel_printf (bse_trace_args.sequencer, NULL, __VA_ARGS__); } while (0)
+#define SDEBUG(...)     BSE_KEY_DEBUG ("sequencer", __VA_ARGS__)
+
 #define	BSE_SEQUENCER_FUTURE_BLOCKS    (7)
 
 namespace Bse {
@@ -119,13 +119,13 @@ public:
     watches.erase (watches.begin() + i);
     return true;
   }
-  BIRNET_STATIC_ASSERT (sizeof (GPollFD) == sizeof (struct pollfd));
-  BIRNET_STATIC_ASSERT (offsetof (GPollFD, fd) == offsetof (struct pollfd, fd));
-  BIRNET_STATIC_ASSERT (sizeof (((GPollFD*) 0)->fd) == sizeof (((struct pollfd*) 0)->fd));
-  BIRNET_STATIC_ASSERT (offsetof (GPollFD, events) == offsetof (struct pollfd, events));
-  BIRNET_STATIC_ASSERT (sizeof (((GPollFD*) 0)->events) == sizeof (((struct pollfd*) 0)->events));
-  BIRNET_STATIC_ASSERT (offsetof (GPollFD, revents) == offsetof (struct pollfd, revents));
-  BIRNET_STATIC_ASSERT (sizeof (((GPollFD*) 0)->revents) == sizeof (((struct pollfd*) 0)->revents));
+  RAPICORN_STATIC_ASSERT (sizeof (GPollFD) == sizeof (struct pollfd));
+  RAPICORN_STATIC_ASSERT (offsetof (GPollFD, fd) == offsetof (struct pollfd, fd));
+  RAPICORN_STATIC_ASSERT (sizeof (((GPollFD*) 0)->fd) == sizeof (((struct pollfd*) 0)->fd));
+  RAPICORN_STATIC_ASSERT (offsetof (GPollFD, events) == offsetof (struct pollfd, events));
+  RAPICORN_STATIC_ASSERT (sizeof (((GPollFD*) 0)->events) == sizeof (((struct pollfd*) 0)->events));
+  RAPICORN_STATIC_ASSERT (offsetof (GPollFD, revents) == offsetof (struct pollfd, revents));
+  RAPICORN_STATIC_ASSERT (sizeof (((GPollFD*) 0)->revents) == sizeof (((struct pollfd*) 0)->revents));
 };
 
 void
@@ -240,6 +240,7 @@ Sequencer::start_song (BseSong *song, uint64 start_stamp)
   g_return_if_fail (song->sequencer_start_request_SL == 0);
   g_assert (song->sequencer_owns_refcount_SL == false);
   start_stamp = MAX (start_stamp, 1);
+
   g_object_ref (song);
   BSE_SEQUENCER_LOCK();
   song->sequencer_owns_refcount_SL = true;
@@ -327,9 +328,8 @@ Sequencer::sequencer_thread ()
 {
   Bse::TaskRegistry::add ("Sequencer", Rapicorn::ThisThread::process_pid(), Rapicorn::ThisThread::thread_pid());
   sequencer_thread_self = &ThreadInfo::self();
-  SEQTRACE ("SEQ:thrdstrt: now=%llu", Bse::TickStamp::current());
+  SDEBUG ("thrdstrt: now=%llu", Bse::TickStamp::current());
   Bse::TickStampWakeupP wakeup = Bse::TickStamp::create_wakeup ([&]() { this->wakeup(); });
-  bse_message_setup_thread_handler();
   BSE_SEQUENCER_LOCK();
   do
     {
@@ -382,7 +382,7 @@ Sequencer::sequencer_thread ()
     }
   while (pool_poll_Lm (-1));
   BSE_SEQUENCER_UNLOCK();
-  SEQTRACE ("SEQ:thrdstop: now=%llu", Bse::TickStamp::current());
+  SDEBUG ("thrdstop: now=%llu", Bse::TickStamp::current());
   Bse::TaskRegistry::remove (Rapicorn::ThisThread::thread_pid());
 }
 
@@ -452,13 +452,13 @@ Sequencer::process_track_SL (BseTrack *track, double start_stamp, uint start_tic
   if (!part && next)
     {
       part = bse_track_get_part_SL (track, next, &start, &next);
-      SEQTRACE ("SEQ:trackjmp: tick=%u fast forward to first part part=%p now=%llu", start_tick, part, Bse::TickStamp::current());
+      SDEBUG ("trackjmp: tick=%u fast forward to first part part=%p now=%llu", start_tick, part, Bse::TickStamp::current());
     }
   if (!part || (next == 0 && start + part->last_tick_SL < start_tick))
     {
       track->track_done_SL = !bse_midi_receiver_voices_pending (midi_receiver, track->midi_channel_SL);
-      SEQTRACE ("SEQ:trackchk: tick=%u next=%u part=%p done=%u now=%llu", // part==NULL || start + (part ? part->last_tick_SL : 0) < start_tick
-                start_tick, next, part, track->track_done_SL, Bse::TickStamp::current());
+      SDEBUG ("trackchk: tick=%u next=%u part=%p done=%u now=%llu", // part==NULL || start + (part ? part->last_tick_SL : 0) < start_tick
+              start_tick, next, part, track->track_done_SL, Bse::TickStamp::current());
       part = NULL;
     }
   while (part && start < bound)
@@ -501,16 +501,14 @@ Sequencer::process_part_SL (BsePart *part, double start_stamp, uint start_tick,
                                           freq);
           bse_midi_receiver_push_event (midi_receiver, eon);
           bse_midi_receiver_push_event (midi_receiver, eoff);
-          if (CHECKTRACE())
-            {
-              SEQTRACE ("SEQ:note-on:  tick=%llu midinote=%-3d velocity=%02x freq=% 10f now=%llu",
-                        uint64 (eon->delta_time),  note->note, bse_ftoi (note->velocity * 128), freq, Bse::TickStamp::current());
-              SEQTRACE ("SEQ:note-off: tick=%llu midinote=%-3d velocity=%02x freq=% 10f now=%llu",
-                        uint64 (eoff->delta_time), note->note, bse_ftoi (note->velocity * 128), freq, Bse::TickStamp::current());
-            }
+          SDEBUG ("note-on:  tick=%llu midinote=%-3d velocity=%02x freq=% 10f now=%llu",
+                  uint64 (eon->delta_time),  note->note, bse_ftoi (note->velocity * 128), freq, Bse::TickStamp::current());
+          SDEBUG ("note-off: tick=%llu midinote=%-3d velocity=%02x freq=% 10f now=%llu",
+                  uint64 (eoff->delta_time), note->note, bse_ftoi (note->velocity * 128), freq, Bse::TickStamp::current());
           note++;
         }
     }
+
   node = bse_part_controls_lookup_ge (&part->controls, start_tick);
   last = bse_part_controls_lookup_lt (&part->controls, tick_bound);
   if (node) while (node <= last)
@@ -522,8 +520,8 @@ Sequencer::process_part_SL (BsePart *part, double start_stamp, uint start_tick,
                                                        bse_dtoull (start_stamp + (node->tick - start_tick) * stamps_per_tick),
                                                        BseMidiSignalType (cev->ctype), cev->value);
           bse_midi_receiver_push_event (midi_receiver, event);
-          SEQTRACE ("SEQ:control:  tick=%llu midisignal=%-3d value=%f now=%llu",
-                    uint64 (event->delta_time), cev->ctype, cev->value, Bse::TickStamp::current());
+          SDEBUG ("control:  tick=%llu midisignal=%-3d value=%f now=%llu",
+                  uint64 (event->delta_time), cev->ctype, cev->value, Bse::TickStamp::current());
         }
       node++;
     }

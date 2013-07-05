@@ -9,12 +9,15 @@
 #include <string.h>
 #include <errno.h>
 #include <time.h>
+
+
 /* --- macros --- */
 #define	NODEP_INDEX(dcache, node_p)	((node_p) - (dcache)->nodes)
 #define	UPPER_POWER2(n)			(sfi_alloc_upper_power2 (MAX (n, 4)))
 #define	CONFIG_NODE_SIZE()		(BSE_CONFIG (dcache_block_size))
 #define	AGE_EPSILON			(3)	/* must be < resident set */
 #define	LOW_PERSISTENCY_RESIDENT_SET    (5)
+
 /* we use one global lock to protect the dcache list, the list
  * count (length) and the number of aged (unused) nodes.
  * also, each dcache has its own mutext to protect updates in
@@ -52,7 +55,7 @@ _gsl_init_data_caches (void)
   static gboolean initialized = FALSE;
   g_assert (initialized == FALSE);
   initialized++;
-  BIRNET_STATIC_ASSERT (AGE_EPSILON < LOW_PERSISTENCY_RESIDENT_SET);
+  RAPICORN_STATIC_ASSERT (AGE_EPSILON < LOW_PERSISTENCY_RESIDENT_SET);
 }
 GslDataCache*
 gsl_data_cache_new (GslDataHandle *dhandle,
@@ -197,6 +200,7 @@ gsl_data_cache_unref (GslDataCache *dcache)
       dcache->mutex.unlock();
     }
 }
+
 static inline GslDataCacheNode**
 data_cache_lookup_nextmost_node_L (GslDataCache *dcache,
 				   int64         offset)
@@ -205,12 +209,14 @@ data_cache_lookup_nextmost_node_L (GslDataCache *dcache,
     {
       GslDataCacheNode **check, **nodes = dcache->nodes;
       guint n_nodes = dcache->n_nodes, node_size = dcache->node_size;
+
       /* caller has to figure himself whether we return nextmost vs. exact match */
       nodes -= 1;
       do
 	{
 	  register gint cmp;
 	  register guint i;
+
 	  i = (n_nodes + 1) >> 1;
 	  check = nodes + i;
 	  cmp = offset < (*check)->offset ? -1 : offset >= (*check)->offset + node_size;
@@ -225,10 +231,12 @@ data_cache_lookup_nextmost_node_L (GslDataCache *dcache,
 	    n_nodes = i - 1;
 	}
       while (n_nodes);
+
       return check; /* nextmost */
     }
   return NULL;
 }
+
 static inline GslDataCacheNode*
 data_cache_new_node_L (GslDataCache *dcache,
 		       int64	     offset,
@@ -241,6 +249,7 @@ data_cache_new_node_L (GslDataCache *dcache,
   int64 dhandle_length;
   guint i, size;
   gint result;
+
   i = dcache->n_nodes++;
   new_node_array_size = UPPER_POWER2 (dcache->n_nodes);
   if (old_node_array_size != new_node_array_size)
@@ -261,6 +270,7 @@ data_cache_new_node_L (GslDataCache *dcache,
   if (dcache->padding > offset)		/* pad out bytes before data start */
     {
       guint short_pad = dcache->padding - offset;
+
       memset (data, 0, short_pad * sizeof (GslDataType));
       size -= short_pad;
       data += short_pad;
@@ -270,6 +280,7 @@ data_cache_new_node_L (GslDataCache *dcache,
     offset -= dcache->padding;
   if (!demand_load)
     g_message (G_STRLOC ":FIXME: lazy data loading not yet supported");
+
   /* copy over data from previous node */
   GslDataCacheNode *prev_node = pos ? dcache->nodes[pos - 1] : NULL;
   if (prev_node)
@@ -277,10 +288,12 @@ data_cache_new_node_L (GslDataCache *dcache,
       int64 prev_node_size = dcache->node_size;
       int64 prev_node_offset = prev_node->offset;
       GslDataType *prev_node_data = prev_node->data;
+
       /* padding around prev_node */
       prev_node_size += dcache->padding << 1;
       prev_node_offset -= dcache->padding;
       prev_node_data -= dcache->padding;
+
       /* check for overlap */
       if (offset < prev_node_offset + prev_node_size)
         {
@@ -291,6 +304,7 @@ data_cache_new_node_L (GslDataCache *dcache,
           data += overlap;
         }
     }
+
   /* fill from data handle */
   dhandle_length = gsl_data_handle_length (dcache->dhandle);
   do
@@ -337,6 +351,7 @@ gsl_data_cache_ref_node (GslDataCache       *dcache,
       if (offset >= node->offset && offset < node->offset + dcache->node_size)
 	{
 	  gboolean rejuvenate_node = !node->ref_count;
+
 	  if (load_request == GSL_DATA_CACHE_PEEK)
 	    {
 	      if (node->data)
@@ -387,13 +402,16 @@ data_cache_free_olders_Lunlock (GslDataCache *dcache,
   GslDataCacheNode **slot_p;
   guint i, rejuvenate, size;
   guint n_freed = 0;
+
   g_return_val_if_fail (dcache != NULL, TRUE);
+
   /* it doesn't make sense to free nodes below the jitter that
    * AGE_EPSILON attempts to prevent.
    */
   max_lru = MAX (AGE_EPSILON, max_lru);
   if (max_lru >= dcache->max_age)
     return TRUE;
+
   rejuvenate = dcache->max_age - max_lru;
   if (0)
     g_print ("start sweep: dcache (%p) with %u nodes, max_age: %u, rejuvenate: %u (max_lru: %u)\n",
@@ -403,6 +421,7 @@ data_cache_free_olders_Lunlock (GslDataCache *dcache,
   for (i = 0; i < dcache->n_nodes; i++)
     {
       GslDataCacheNode *node = dcache->nodes[i];
+
       if (!node->ref_count && node->age <= rejuvenate)
 	{
 	  sfi_delete_structs (GslDataType, size, node->data - dcache->padding);

@@ -1,4 +1,5 @@
 ;; CC0 Public Domain: http://creativecommons.org/publicdomain/zero/1.0/
+
 (bse-script-register 'record-midi
 		     ""
                      (N_ "/Part/Record Midi...")
@@ -8,6 +9,7 @@
 		     "Provided \"as is\", WITHOUT ANY WARRANTY;"
 		     (bse-param-part (N_ "Part"))
 		     (bse-param-bool (N_ "Start Now") #t))
+
 (define (record-midi part start-now)
   (define do-recording #f)
   (define (record-note start duration note freq fine-tune velocity)

@@ -1,15 +1,19 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include	"bseglobals.hh"
 #include	"bsemain.hh"
+
+
 /* --- functions --- */
 void
 bse_globals_init (void) { /* FIXME: remove */ }
+
 double
 bse_db_to_factor (double dB)
 {
   double factor = dB / 20; /* Bell */
   return pow (10, factor);
 }
+
 double
 bse_db_from_factor (double factor,
 		    double min_dB)
@@ -23,11 +27,13 @@ bse_db_from_factor (double factor,
   else
     return min_dB;
 }
+
 long
 bse_time_range_to_ms (BseTimeRangeType time_range)
 {
   g_return_val_if_fail (time_range >= BSE_TIME_RANGE_SHORT, 0);
   g_return_val_if_fail (time_range <= BSE_TIME_RANGE_LONG, 0);
+
   switch (time_range)
     {
     case BSE_TIME_RANGE_SHORT:		return BSE_TIME_RANGE_SHORT_ms;
@@ -36,6 +42,8 @@ bse_time_range_to_ms (BseTimeRangeType time_range)
     }
   return 0;	/* can't be triggered */
 }
+
+
 /* --- idle handlers --- */
 /* important ordering constrains:
  * BSE_PRIORITY_NOW             = -G_MAXINT / 2
@@ -54,6 +62,7 @@ bse_time_range_to_ms (BseTimeRangeType time_range)
  * G_PRIORITY_LOW		(300)
  * BSE_PRIORITY_BACKGROUND	= G_PRIORITY_LOW + 500
  */
+
 /**
  * @param function	user function
  * @param data	        user data
@@ -76,6 +85,7 @@ bse_idle_now (GSourceFunc function,
   g_source_unref (source);
   return id;
 }
+
 /**
  * @param function	user function
  * @param data	        user data
@@ -97,6 +107,7 @@ bse_idle_next (GSourceFunc function,
   g_source_unref (source);
   return id;
 }
+
 /**
  * @param function	user function
  * @param data	user data
@@ -119,6 +130,7 @@ bse_idle_notify (GSourceFunc function,
   g_source_unref (source);
   return id;
 }
+
 uint
 bse_idle_normal (GSourceFunc function,
 		 void       *data)
@@ -131,6 +143,7 @@ bse_idle_normal (GSourceFunc function,
   g_source_unref (source);
   return id;
 }
+
 uint
 bse_idle_update (GSourceFunc function,
 		 void       *data)
@@ -143,6 +156,7 @@ bse_idle_update (GSourceFunc function,
   g_source_unref (source);
   return id;
 }
+
 uint
 bse_idle_background (GSourceFunc function,
 		     void       *data)
@@ -155,6 +169,7 @@ bse_idle_background (GSourceFunc function,
   g_source_unref (source);
   return id;
 }
+
 /**
  * @param usec_delay	microsecond delay
  * @param function	user function
@@ -177,6 +192,7 @@ bse_idle_timed (guint64     usec_delay,
   g_source_unref (source);
   return id;
 }
+
 /**
  * @param id	idle handler id
  * Remove or unqueue an idle handler queued by bse_idle_now()
@@ -187,7 +203,9 @@ gboolean
 bse_idle_remove (uint id)
 {
   GSource *source;
+
   g_return_val_if_fail (id > 0, FALSE);
+
   source = g_main_context_find_source_by_id (bse_main_context, id);
   if (source)
     g_source_destroy (source);

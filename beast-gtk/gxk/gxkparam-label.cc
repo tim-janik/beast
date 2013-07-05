@@ -1,10 +1,12 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
+
 /* --- label display --- */
 enum {
   PARAM_LABEL,
   PARAM_LABEL_IDENT,
   PARAM_LABEL_NAME,
 };
+
 static GtkWidget*
 param_label_create (GxkParam    *param,
                     const gchar *tooltip,
@@ -35,12 +37,14 @@ param_label_create (GxkParam    *param,
     gtk_label_set_text (GTK_LABEL (widget), g_param_spec_get_nick (param->pspec));
   return widget;
 }
+
 static void
 param_label_update (GxkParam  *param,
 		    GtkWidget *widget)
 {
   gtk_label_set_text (GTK_LABEL (widget), g_value_get_string (&param->value));
 }
+
 static GxkParamEditor param_label1 = {
   { "ident",            N_("Property Identifier"), },
   { 0, },

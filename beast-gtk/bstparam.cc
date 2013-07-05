@@ -1,13 +1,19 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bstparam.hh"
 #include "bstxframe.hh"
+
+
 /* --- prototypes --- */
 static gboolean bst_param_xframe_check_button (GxkParam *param,
                                                guint     button);
+
+
 /* --- variable --- */
 static GQuark quark_null_group = 0;
 static GQuark quark_param_choice_values = 0;
 static guint  param_size_group = 0;
+
+
 /* --- gmask parameters --- */
 static GtkWidget*
 param_get_gmask_container (GtkWidget *parent,
@@ -41,6 +47,7 @@ param_get_gmask_container (GtkWidget *parent,
     }
   return container;
 }
+
 static const GxkParamEditorSizes param_editor_homogeneous_sizes = {
   FALSE,        /* may_resize */
   FALSE,        /* request_fractions */
@@ -56,6 +63,7 @@ static const GxkParamEditorSizes param_editor_homogeneous_sizes = {
   2, 8,         /* double */
   9, 3,         /* string */
 };
+
 static BstGMask*
 bst_param_create_gmask_intern (GxkParam    *param,
                                const gchar *editor_name,
@@ -69,16 +77,21 @@ bst_param_create_gmask_intern (GxkParam    *param,
   BstGMask *gmask;
   gboolean expand_action;
   gchar *tooltip;
+
   g_return_val_if_fail (GXK_IS_PARAM (param), NULL);
   g_return_val_if_fail (GTK_IS_CONTAINER (parent), NULL);
+
   gxk_param_set_sizes (param_size_group, BST_GCONFIG (size_group_input_fields) ? &param_editor_homogeneous_sizes : NULL);
   group = sfi_pspec_get_group (param->pspec);
   parent = param_get_gmask_container (parent, group ? g_quark_from_string (group) : 0);
+
   action = gxk_param_create_editor (param, editor_name);
+
   xframe = (GtkWidget*) g_object_new (BST_TYPE_XFRAME, "cover", action, NULL);
   g_object_connect (xframe,
                     "swapped_signal::button_check", bst_param_xframe_check_button, param,
                     NULL);
+
   if (GTK_IS_TOGGLE_BUTTON (action))
     {
       /* if there's a prompt widget inside the button already, sneak in xframe */
@@ -98,6 +111,7 @@ bst_param_create_gmask_intern (GxkParam    *param,
                                           NULL);
       gxk_param_add_object (param, GTK_OBJECT (prompt));
     }
+
   expand_action = !prompt || gxk_widget_check_option (action, "hexpand");
   gmask = bst_gmask_form (parent, action, multi_span ? BST_GMASK_MULTI_SPAN : expand_action ? BST_GMASK_BIG : BST_GMASK_INTERLEAVE);
   bst_gmask_set_column (gmask, column);
@@ -131,6 +145,7 @@ bst_param_create_gmask_intern (GxkParam    *param,
         g_message ("failed to create scale/dial widget for parameter \"%s\" of type `%s'",
                    param->pspec->name, g_type_name (G_PARAM_SPEC_VALUE_TYPE (param->pspec)));
     }
+
   tooltip = gxk_param_dup_tooltip (param);
   bst_gmask_set_tip (gmask, tooltip);
   g_free (tooltip);
@@ -138,6 +153,7 @@ bst_param_create_gmask_intern (GxkParam    *param,
   gxk_param_update (param);
   return gmask;
 }
+
 BstGMask*
 bst_param_create_gmask (GxkParam    *param,
                         const gchar *editor_name,
@@ -145,6 +161,7 @@ bst_param_create_gmask (GxkParam    *param,
 {
   return bst_param_create_gmask_intern (param, editor_name, parent, 0, FALSE);
 }
+
 BstGMask*
 bst_param_create_col_gmask (GxkParam    *param,
                             const gchar *editor_name,
@@ -153,6 +170,7 @@ bst_param_create_col_gmask (GxkParam    *param,
 {
   return bst_param_create_gmask_intern (param, editor_name, parent, column, FALSE);
 }
+
 BstGMask*
 bst_param_create_span_gmask (GxkParam    *param,
                              const gchar *editor_name,
@@ -161,6 +179,7 @@ bst_param_create_span_gmask (GxkParam    *param,
 {
   return bst_param_create_gmask_intern (param, editor_name, parent, column, TRUE);
 }
+
 /* --- value binding --- */
 GxkParam*
 bst_param_new_value (GParamSpec          *pspec,
@@ -172,6 +191,7 @@ bst_param_new_value (GParamSpec          *pspec,
     gxk_param_set_size_group (param, param_size_group);
   return param;
 }
+
 /* --- GObject binding --- */
 GxkParam*
 bst_param_new_object (GParamSpec  *pspec,
@@ -182,6 +202,7 @@ bst_param_new_object (GParamSpec  *pspec,
     gxk_param_set_size_group (param, param_size_group);
   return param;
 }
+
 /* --- proxy binding --- */
 static void
 proxy_binding_set_value (GxkParam     *param,
@@ -191,6 +212,7 @@ proxy_binding_set_value (GxkParam     *param,
   if (proxy)
     sfi_glue_proxy_set_property (proxy, param->pspec->name, value);
 }
+
 static void
 proxy_binding_get_value (GxkParam *param,
                          GValue   *value)
@@ -207,6 +229,7 @@ proxy_binding_get_value (GxkParam *param,
   else
     g_value_reset (value);
 }
+
 static void
 proxy_binding_weakref (gpointer data,
                        SfiProxy junk)
@@ -215,6 +238,7 @@ proxy_binding_weakref (gpointer data,
   param->bdata[0].v_long = 0;
   param->bdata[1].v_long = 0;	/* already disconnected */
 }
+
 static void
 proxy_binding_destroy (GxkParam *param)
 {
@@ -227,6 +251,7 @@ proxy_binding_destroy (GxkParam *param)
       param->bdata[1].v_long = 0;
     }
 }
+
 static void
 proxy_binding_start_grouping (GxkParam *param)
 {
@@ -236,6 +261,7 @@ proxy_binding_start_grouping (GxkParam *param)
     bse_item_group_undo (proxy, ustr);
   g_free (ustr);
 }
+
 static void
 proxy_binding_stop_grouping (GxkParam *param)
 {
@@ -243,6 +269,7 @@ proxy_binding_stop_grouping (GxkParam *param)
   if (proxy)
     bse_item_ungroup_undo (proxy);
 }
+
 static gboolean
 proxy_binding_check_writable (GxkParam *param)
 {
@@ -252,6 +279,7 @@ proxy_binding_check_writable (GxkParam *param)
   else
     return FALSE;
 }
+
 static GxkParamBinding proxy_binding = {
   2,    // n_data_fields
   NULL, // setup
@@ -262,6 +290,7 @@ static GxkParamBinding proxy_binding = {
   proxy_binding_start_grouping,
   proxy_binding_stop_grouping,
 };
+
 GxkParam*
 bst_param_new_proxy (GParamSpec *pspec,
                      SfiProxy    proxy)
@@ -271,12 +300,14 @@ bst_param_new_proxy (GParamSpec *pspec,
   gxk_param_set_size_group (param, param_size_group);
   return param;
 }
+
 void
 bst_param_set_proxy (GxkParam *param,
                      SfiProxy  proxy)
 {
   g_return_if_fail (GXK_IS_PARAM (param));
   g_return_if_fail (param->binding == &proxy_binding);
+
   proxy_binding_destroy (param);
   param->bdata[0].v_long = proxy;
   if (proxy)
@@ -287,14 +318,18 @@ bst_param_set_proxy (GxkParam *param,
       sfi_glue_proxy_weak_ref (proxy, proxy_binding_weakref, param);
     }
 }
+
 SfiProxy
 bst_param_get_proxy (GxkParam *param)
 {
   g_return_val_if_fail (GXK_IS_PARAM (param), 0);
+
   if (param->binding == &proxy_binding)
     return param->bdata[0].v_long;
   return 0;
 }
+
+
 /* --- record binding --- */
 static void
 record_binding_set_value (GxkParam     *param,
@@ -302,6 +337,7 @@ record_binding_set_value (GxkParam     *param,
 {
   sfi_rec_set ((SfiRec*) param->bdata[0].v_pointer, param->pspec->name, value);
 }
+
 static void
 record_binding_get_value (GxkParam *param,
 			  GValue   *value)
@@ -312,12 +348,14 @@ record_binding_get_value (GxkParam *param,
   else
     g_value_reset (value);
 }
+
 static void
 record_binding_destroy (GxkParam *param)
 {
   sfi_rec_unref ((SfiRec*) param->bdata[0].v_pointer);
   param->bdata[0].v_pointer = NULL;
 }
+
 static GxkParamBinding record_binding = {
   1, NULL,
   record_binding_set_value,
@@ -325,6 +363,7 @@ static GxkParamBinding record_binding = {
   record_binding_destroy,
   NULL,	/* check_writable */
 };
+
 GxkParam*
 bst_param_new_rec (GParamSpec *pspec,
                    SfiRec     *rec)
@@ -335,6 +374,8 @@ bst_param_new_rec (GParamSpec *pspec,
   gxk_param_set_size_group (param, param_size_group);
   return param;
 }
+
+
 /* --- param implementation utils --- */
 static gboolean
 bst_param_xframe_check_button (GxkParam *param,
@@ -363,6 +404,8 @@ bst_param_xframe_check_button (GxkParam *param,
 #endif
   return FALSE;
 }
+
+
 /* --- param editor registration --- */
 #include "bstparam-choice.cc"
 #include "bstparam-color-spinner.cc"
@@ -378,6 +421,7 @@ void
 _bst_init_params (void)
 {
   g_assert (quark_null_group == 0);
+
   quark_null_group = g_quark_from_static_string ("bst-param-null-group");
   quark_param_choice_values = g_quark_from_static_string ("bst-param-choice-values");
   param_size_group = gxk_param_create_size_group ();

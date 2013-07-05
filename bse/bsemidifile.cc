@@ -9,8 +9,9 @@
 #include <unistd.h>
 #include <string.h>
 #include <errno.h>
-static SFI_MSG_TYPE_DEFINE (debug_midi_file, "midi-file", SFI_MSG_DEBUG, NULL);
-#define DEBUG(...)      sfi_debug (debug_midi_file, __VA_ARGS__)
+
+#define MDEBUG(...)     BSE_KEY_DEBUG ("midi-file", __VA_ARGS__)
+
 typedef struct {
   uint32       type;   /* four letter chunk identifier */
   uint32       length; /* length of data to follow, big-endian */
@@ -22,6 +23,8 @@ typedef struct {
   uint16        n_tracks;       /* always 1 for single-track */
   uint16        division;       /* if 0x8000 is set => SMPTE, ticks-per-quarter-note otherwise */
 } SMFHeader;
+
+
 /* --- functions --- */
 static uint
 dummy_read (int  fd,
@@ -38,6 +41,7 @@ dummy_read (int  fd,
     }
   return total;
 }
+
 static BseErrorType
 smf_read_header (int        fd,
                  SMFHeader *header)
@@ -47,7 +51,7 @@ smf_read_header (int        fd,
   n_bytes = 4 + 4 + 2 + 2 + 2;
   if (read (fd, header, n_bytes) != n_bytes)
     {
-      DEBUG ("failed to read midi file header: %s", g_strerror (errno));
+      MDEBUG ("failed to read midi file header: %s", g_strerror (errno));
       return gsl_error_from_errno (errno, BSE_ERROR_IO);
     }
   /* endianess corrections */
@@ -59,42 +63,43 @@ smf_read_header (int        fd,
   /* validation */
   if (header->chunk.type != ('M' << 24 | 'T' << 16 | 'h' << 8 | 'd'))
     {
-      DEBUG ("unmatched token 'MThd'");
+      MDEBUG ("unmatched token 'MThd'");
       return BSE_ERROR_FORMAT_INVALID;
     }
   if (header->chunk.length < 6)
     {
-      DEBUG ("truncated midi file header");
+      MDEBUG ("truncated midi file header");
       return BSE_ERROR_FORMAT_INVALID;
     }
   if (header->format > 2)
     {
-      DEBUG ("unknown midi file format");
+      MDEBUG ("unknown midi file format");
       return BSE_ERROR_FORMAT_UNKNOWN;
     }
   if (header->format == 0 && header->n_tracks != 1)
     {
-      DEBUG ("invalid number of tracks: %d", header->n_tracks);
+      MDEBUG ("invalid number of tracks: %d", header->n_tracks);
       return BSE_ERROR_FORMAT_INVALID;
     }
   if (header->n_tracks < 1)
     {
-      DEBUG ("midi file without tracks");
+      MDEBUG ("midi file without tracks");
       return BSE_ERROR_NO_DATA;
     }
   if (header->division & 0x8000)        // FIXME: this allowes only tpqn
     {
-      DEBUG ("SMPTE time encoding not supported");
+      MDEBUG ("SMPTE time encoding not supported");
       return BSE_ERROR_FORMAT_UNKNOWN;
     }
   /* read up remaining unused header bytes */
   if (dummy_read (fd, header->chunk.length - 6) != header->chunk.length - 6)
     {
-      DEBUG ("failed to read midi file header: %s", g_strerror (errno));
+      MDEBUG ("failed to read midi file header: %s", g_strerror (errno));
       return gsl_error_from_errno (errno, BSE_ERROR_IO);
     }
   return BSE_ERROR_NONE;
 }
+
 static BseErrorType
 smf_read_track (BseMidiFile    *smf,
                 int             fd,
@@ -106,7 +111,7 @@ smf_read_track (BseMidiFile    *smf,
   n_bytes = 4 + 4;
   if (read (fd, &chunk, n_bytes) != n_bytes)
     {
-      DEBUG ("failed to read midi track header: %s", g_strerror (errno));
+      MDEBUG ("failed to read midi track header: %s", g_strerror (errno));
       return gsl_error_from_errno (errno, BSE_ERROR_IO);
     }
   /* endianess corrections */
@@ -115,7 +120,7 @@ smf_read_track (BseMidiFile    *smf,
   /* validation */
   if (chunk.type != ('M' << 24 | 'T' << 16 | 'r' << 8 | 'k'))
     {
-      DEBUG ("unmatched token 'MTrk'");
+      MDEBUG ("unmatched token 'MTrk'");
       return BSE_ERROR_FORMAT_INVALID;
     }
   /* read up and decode track data */
@@ -126,7 +131,7 @@ smf_read_track (BseMidiFile    *smf,
       int l = MIN (n_bytes, sizeof (buffer));
       if (read (fd, buffer, l) < 0)
         {
-          DEBUG ("failed to read (got %d bytes) midi track: %s", l, g_strerror (errno));
+          MDEBUG ("failed to read (got %d bytes) midi track: %s", l, g_strerror (errno));
           return gsl_error_from_errno (errno, BSE_ERROR_IO);
         }
       bse_midi_decoder_push_smf_data (md, l, buffer);
@@ -134,6 +139,7 @@ smf_read_track (BseMidiFile    *smf,
     }
   return BSE_ERROR_NONE;
 }
+
 BseMidiFile*
 bse_midi_file_load (const char   *file_name,
                     BseErrorType *error_p)
@@ -149,12 +155,14 @@ bse_midi_file_load (const char   *file_name,
       *error_p = gsl_error_from_errno (errno, BSE_ERROR_FILE_OPEN_FAILED);
       return NULL;
     }
+
   *error_p = smf_read_header (fd, &header);
   if (*error_p)
     {
       close (fd);
       return NULL;
     }
+
   smf = (BseMidiFile*) g_malloc0 (sizeof (BseMidiFile) + header.n_tracks * sizeof (smf->tracks[0]));
   smf->musical_tuning = BSE_MUSICAL_TUNING_12_TET;
 #if 0
@@ -204,6 +212,7 @@ bse_midi_file_load (const char   *file_name,
   *error_p = BSE_ERROR_NONE;
   return smf;
 }
+
 void
 bse_midi_file_free (BseMidiFile *smf)
 {
@@ -215,6 +224,7 @@ bse_midi_file_free (BseMidiFile *smf)
     g_free (smf->tracks[i].events);
   g_free (smf);
 }
+
 void
 bse_midi_file_add_part_events (BseMidiFile *smf,
                                uint         nth_track,
@@ -301,6 +311,7 @@ bse_midi_file_add_part_events (BseMidiFile *smf,
         }
     }
 }
+
 void
 bse_midi_file_setup_song (BseMidiFile    *smf,
                           BseSong        *song)

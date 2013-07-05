@@ -60,8 +60,6 @@ beast-gtk/gxk/gxkparam-scale.cc
 beast-gtk/gxk/gxkparam-spinner.cc
 beast-gtk/gxk/gxkparam-toggle.cc
 beast-gtk/gxk/gxksimplelabel.cc
-birnet/birnetmsg.cc
-birnet/birnetutils.cc
 bse/bseautodoc.cc
 bse/bsebasics.idl
 bse/bsebiquadfilter.cc

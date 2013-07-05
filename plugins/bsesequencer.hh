@@ -1,11 +1,15 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #ifndef __BSE_SEQUENCER_H__
 #define __BSE_SEQUENCER_H__
+
 #include <bse/bseplugin.hh>
 #include <bse/bsesource.hh>
+
 #ifdef __cplusplus
 extern "C" {
 #endif /* __cplusplus */
+
+
 /* --- object type macros --- */
 #define BSE_TYPE_SEQUENCER              (bse_sequencer_get_type())
 #define BSE_SEQUENCER(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), BSE_TYPE_SEQUENCER, BseSequencer))
@@ -30,7 +34,11 @@ enum
   BSE_SEQUENCER_OCHANNEL_NOTE_SYNC,
   BSE_SEQUENCER_N_OCHANNELS
 };
+
+
+
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */
+
 #endif /* __BSE_SEQUENCER_H__ */

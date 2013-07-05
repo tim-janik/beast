@@ -16,4 +16,5 @@ interface Quantizer : Bse::Effect {
   OStream audio_out1 = Stream ("Audio Out1", "Audio Output 1");
   OStream audio_out2 = Stream ("Audio Out2", "Audio Output 2");
 };
+
 } } // Bse::Standard

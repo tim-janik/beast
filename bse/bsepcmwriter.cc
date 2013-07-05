@@ -83,6 +83,7 @@ bse_pcm_writer_open (BsePcmWriter *self,
       self->mutex.unlock();
       return bse_error_from_errno (errno, BSE_ERROR_FILE_OPEN_FAILED);
     }
+
   errno = bse_wave_file_dump_header (fd, 0x7fff0000, 16, n_channels, sample_freq);
   if (errno)
     {
@@ -109,12 +110,14 @@ bse_pcm_writer_close (BsePcmWriter *self)
   self->mutex.unlock();
   errno = 0;
 }
+
 static gboolean
 bsethread_halt_recording (gpointer data)
 {
   bse_server_stop_recording (bse_server_get());
   return false;
 }
+
 void
 bse_pcm_writer_write (BsePcmWriter *self,
 		      gsize         n_values,

@@ -1,8 +1,13 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #ifndef	__BSE_WAVE_REPO_H__
 #define	__BSE_WAVE_REPO_H__
+
 #include	<bse/bsesuper.hh>
+
+
 G_BEGIN_DECLS
+
+
 /* --- object type macros --- */
 #define BSE_TYPE_WAVE_REPO	        (BSE_TYPE_ID (BseWaveRepo))
 #define BSE_WAVE_REPO(object)	        (G_TYPE_CHECK_INSTANCE_CAST ((object), BSE_TYPE_WAVE_REPO, BseWaveRepo))

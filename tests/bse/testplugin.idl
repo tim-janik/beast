@@ -32,8 +32,10 @@ interface TestObject : Bse::Effect {
   property Bse::Effect ef; // C++ Object 
   property Bse::Item it;   // C Object
 };
+
 // test procedure
 Int test_exception (Int i, TestObject o, Int bar, FunkynessType ft) {
   Info category = "/Toys/Test Exception";
 }
+
 };

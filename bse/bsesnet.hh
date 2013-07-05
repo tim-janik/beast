@@ -1,9 +1,14 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #ifndef	__BSE_SNET_H__
 #define	__BSE_SNET_H__
+
 #include	<bse/bsesuper.hh>
 #include	<bse/bseglobals.hh> /* FIXME */
+
+
 G_BEGIN_DECLS
+
+
 /* --- object type macros --- */
 #define BSE_TYPE_SNET		   (BSE_TYPE_ID (BseSNet))
 #define BSE_SNET(object)	   (G_TYPE_CHECK_INSTANCE_CAST ((object), BSE_TYPE_SNET, BseSNet))
@@ -97,5 +102,8 @@ void             bse_snet_set_oport_dest        (BseSNet         *snet,
                                                  BseModule       *imodule,
                                                  guint            istream,
                                                  BseTrans        *trans);
+
+
 G_END_DECLS
+
 #endif /* __BSE_SNET_H__ */

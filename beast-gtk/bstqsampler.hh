@@ -1,8 +1,11 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #ifndef __BST_QSAMPLER_H__
 #define __BST_QSAMPLER_H__
+
 #include        "bstutils.hh"
+
 G_BEGIN_DECLS
+
 /* --- Gtk+ type macros --- */
 #define BST_TYPE_QSAMPLER            (bst_qsampler_get_type ())
 #define BST_QSAMPLER(object)         (GTK_CHECK_CAST ((object), BST_TYPE_QSAMPLER, BstQSampler))
@@ -10,6 +13,9 @@ G_BEGIN_DECLS
 #define BST_IS_QSAMPLER(object)      (GTK_CHECK_TYPE ((object), BST_TYPE_QSAMPLER))
 #define BST_IS_QSAMPLER_CLASS(klass) (GTK_CHECK_CLASS_TYPE ((klass), BST_TYPE_QSAMPLER))
 #define BST_QSAMPLER_GET_CLASS(obj)  ((BstQSamplerClass*) ((GtkObject*) (obj))->klass)
+
+
+
 /* --- typedefs --- */
 typedef struct _BstQSampler       BstQSampler;
 typedef struct _BstQSamplerClass  BstQSamplerClass;
@@ -33,6 +39,7 @@ typedef enum
   BST_QSAMPLER_SELECTED		= 1 << 2,
   /* marks only */
   BST_QSAMPLER_PRELIGHT		= 1 << 3,
+
   /*< private >*/
   BST_QSAMPLER_MARK_MASK	= (BST_QSAMPLER_SELECTED | BST_QSAMPLER_ACTIVE | BST_QSAMPLER_PRELIGHT),
   BST_QSAMPLER_REGION_MASK	= (BST_QSAMPLER_SELECTED | BST_QSAMPLER_ACTIVE),
@@ -49,6 +56,7 @@ constexpr BstQSamplerType  operator|  (BstQSamplerType  s1, BstQSamplerType s2) 
 inline    BstQSamplerType& operator|= (BstQSamplerType &s1, BstQSamplerType s2) { s1 = s1 | s2; return s1; }
 constexpr BstQSamplerType  operator~  (BstQSamplerType  s1)                 { return BstQSamplerType (~(long long unsigned) s1); }
 #endif // __cplusplus
+
 typedef enum
 {
   BST_QSAMPLER_DRAW_CRANGE,
@@ -62,15 +70,20 @@ typedef enum
   BST_QSAMPLER_DRAW_MODE_LAST	/*< skip >*/
 } BstQSamplerDrawMode;
 #define	BST_QSAMPLER_RELOAD_PRIORITY	(GTK_PRIORITY_REDRAW + 5)
+
+
 /* --- structures --- */
 struct _BstQSampler
 {
   GtkWidget parent_instance;
+
   guint		     peak_length;	/* pcm length in peaks */
   guint		     n_peaks;		/* number of cached peaks */
   BstQSamplerTPeak  *peaks;
   guint		     peak_offset;	/* display offset */
   guint		     n_pixels;		/* <= n_peaks */
+
+
   /* user settings */
   guint		     n_marks;
   BstQSamplerMark   *marks;
@@ -81,8 +94,10 @@ struct _BstQSampler
   gpointer	     src_data;
   GDestroyNotify     src_destroy;
   gdouble	     zoom_factor;
+
   GtkAdjustment	    *adjustment;
   gdouble	     vscale_factor;
+
   GdkColor	     red, green;
   GdkGC		    *red_gc, *green_gc;
   GdkWindow	    *canvas;
@@ -91,6 +106,7 @@ struct _BstQSampler
   guint		     ignore_adjustment : 1;
   guint		     refresh_queued : 1;
   guint		     invalid_remains : 1; /* temporary refresh flag */
+
   /* user data */
   gpointer	     owner;
   guint		     owner_index;
@@ -121,6 +137,8 @@ struct _BstQSamplerRegion
   guint			offset;
   guint			length;
 };
+
+
 /* --- prototypes --- */
 GType	   bst_qsampler_get_type	(void);
 void	   bst_qsampler_set_source	(BstQSampler			*qsampler,
@@ -169,8 +187,11 @@ void	   bst_qsampler_set_draw_mode	(BstQSampler			*qsampler,
 					 BstQSamplerDrawMode		 dmode);
 void	   bst_qsampler_set_adjustment	(BstQSampler			*qsampler,
 					 GtkAdjustment			*adjustment);
+
 void	   bst_qsampler_set_source_from_esample (BstQSampler		*qsampler,
 						 SfiProxy		 esample,
 						 guint			 nth_channel);
+
 G_END_DECLS
+
 #endif /* __BST_QSAMPLER_H__ */

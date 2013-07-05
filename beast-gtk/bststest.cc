@@ -5,15 +5,21 @@
 // #include <bse/gsldatacache.hh>
 // #include <bse/gsldatahandle.hh>
 #include <string.h>
+
 #include <math.h>
+
 #include <sys/types.h>
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
+
 int main() { return 0; }
+
 #if 0
+
 #define	QSAMPLER_SELECTION_TIMEOUT	(33)
+
 typedef struct _WaveView WaveView;
 struct _WaveView
 {
@@ -22,7 +28,10 @@ struct _WaveView
   WaveView *next;
 };
 static WaveView *wave_views = NULL;
+
+
 static gulong qsampler_selection_timeout_id = 0;
+
 static void
 qsampler_set_selection (BstQSampler *qsampler,
 			gint         m1,
@@ -37,20 +46,24 @@ qsampler_set_selection (BstQSampler *qsampler,
   else if (visible_mark == 2)
     bst_qsampler_scroll_show (qsampler, m2);
 }
+
 static gboolean
 qsampler_selection_timeout (gpointer data)
 {
   BstQSampler *qsampler = BST_QSAMPLER (data);
   gboolean retain = FALSE;
+
   if (GTK_WIDGET_DRAWABLE (qsampler))
     {
       gint m1 = bst_qsampler_get_mark_offset (qsampler, 1);
       gint m2 = bst_qsampler_get_mark_offset (qsampler, 2);
       gint x;
+
       gdk_window_get_pointer (GTK_WIDGET (qsampler)->window, &x, NULL, NULL);
       if (!bst_qsampler_get_offset_at (qsampler, &x))
 	{
 	  gint b;
+
 	  if (x < 0)
 	    {
 	      bst_qsampler_get_bounds (qsampler, &b, NULL);
@@ -68,6 +81,7 @@ qsampler_selection_timeout (gpointer data)
       else
 	qsampler_set_selection (qsampler, m1, x, 2);
     }
+
   if (retain && qsampler_selection_timeout_id)
     return TRUE;
   else
@@ -77,16 +91,19 @@ qsampler_selection_timeout (gpointer data)
       return FALSE;
     }
 }
+
 static gboolean
 qsampler_button_event (BstQSampler    *qsampler,
 		       GdkEventButton *event)
 {
   gboolean handled = FALSE;
+
   if (event->button == 1)
     {
       gint m1 = bst_qsampler_get_mark_offset (qsampler, 1);
       gint m2 = bst_qsampler_get_mark_offset (qsampler, 2);
       gint x = event->x;
+
       handled = TRUE;
       if (!bst_qsampler_get_offset_at (qsampler, &x))
 	{
@@ -95,6 +112,7 @@ qsampler_button_event (BstQSampler    *qsampler,
 	  else
 	    bst_qsampler_get_bounds (qsampler, NULL, &x);
 	}
+
       if (event->type == GDK_BUTTON_PRESS && (event->state & GDK_SHIFT_MASK) &&
 	  m1 >= 0 && m2 >= 0)
 	{
@@ -114,18 +132,22 @@ qsampler_button_event (BstQSampler    *qsampler,
 	    }
 	}
     }
+
   return handled;
 }
+
 static gboolean
 qsampler_motion_event (BstQSampler    *qsampler,
 		       GdkEventMotion *event)
 {
   gboolean handled = FALSE;
+
   if (event->type == GDK_MOTION_NOTIFY)
     {
       gint m1 = bst_qsampler_get_mark_offset (qsampler, 1);
       // gint m2 = bst_qsampler_get_mark_offset (qsampler, 2);
       gint x = event->x;
+
       handled = TRUE;
       if (bst_qsampler_get_offset_at (qsampler, &x))
 	qsampler_set_selection (qsampler, m1, x, 2);
@@ -135,15 +157,20 @@ qsampler_motion_event (BstQSampler    *qsampler,
 							    qsampler_selection_timeout,
 							    g_object_ref (qsampler), NULL);
     }
+
   return handled;
 }
+
+
 static void
 selection_to_loop (BstQSampler *qsampler)
 {
   gint m1 = bst_qsampler_get_mark_offset (qsampler, 1);
   gint m2 = bst_qsampler_get_mark_offset (qsampler, 2);
+
   if (m2 < 0 || m1 < 0)
     return;
+
   if (m2 < m1)
     {
       gint t = m2;
@@ -157,20 +184,25 @@ selection_to_loop (BstQSampler *qsampler)
   bst_qsampler_set_mark (qsampler, 1, 0, 0);
   bst_qsampler_set_mark (qsampler, 2, 0, 0);
 }
+
 static void
 loop_to_selection (BstQSampler *qsampler)
 {
   gint m1, m2;
+
   m1 = bst_qsampler_get_mark_offset (qsampler, 3);
   m2 = bst_qsampler_get_mark_offset (qsampler, 4);
   if (m2 < 0 || m1 < 0)
     return;
+
   qsampler_set_selection (qsampler, MIN (m1, m2), MAX (m1, m2), 0);
 }
+
 static void
 zoom_selection (BstQSampler *qsampler)
 {
   gint m1, m2;
+
   m1 = bst_qsampler_get_mark_offset (qsampler, 1);
   m2 = bst_qsampler_get_mark_offset (qsampler, 2);
   if (m2 < 0 || m1 < 0)
@@ -182,9 +214,11 @@ zoom_selection (BstQSampler *qsampler)
       m1 = t;
     }
   m2 = MAX (m2, m1 + 1);
+
   bst_qsampler_scroll_to (qsampler, m1);
   bst_qsampler_set_zoom (qsampler, qsampler->n_pixels / (gdouble) (m2 - m1) * 100.);
 }
+
 static void
 adjust_zoom (GtkAdjustment *adjustment,
 	     BstQSampler   *qsampler)
@@ -197,6 +231,7 @@ adjust_vscale (GtkAdjustment *adjustment,
 {
   bst_qsampler_set_vscale (qsampler, adjustment->value);
 }
+
 static void
 qsampler_dcache_filler (gpointer     data,
 			guint        voffset,
@@ -208,12 +243,14 @@ qsampler_dcache_filler (gpointer     data,
   GslDataCacheNode *dnode;
   glong dcache_length, dnode_length;
   gint i;
+
   dnode = gsl_data_cache_ref_node (dcache, voffset, TRUE);
   dcache_length = gsl_data_handle_length (dcache->dhandle);
   dnode_length = dcache->node_size;
   for (i = 0; i < n_values; i++)
     {
       glong offset = voffset + i;
+
       if (offset < 0 || offset >= dcache_length)
 	values[i] = 0;
       else
@@ -228,43 +265,53 @@ qsampler_dcache_filler (gpointer     data,
     }
   gsl_data_cache_unref_node (dcache, dnode);
 }
+
 static void
 qsampler_set_handle (BstQSampler   *qsampler,
 		     GslDataHandle *handle)
 {
   GslDataCache *dcache = gsl_data_cache_new (handle, 1);
+
   gsl_data_cache_open (dcache);
   bst_qsampler_set_source (qsampler, gsl_data_handle_length (dcache->dhandle),
 			   qsampler_dcache_filler, dcache, (GDestroyNotify) gsl_data_cache_close);
   gsl_data_cache_unref (dcache);
 }
+
 GslDataHandle *global_handle = NULL;
+
 static void
 unset_loop (BstQSampler *qsampler)
 {
   qsampler_set_handle (qsampler, global_handle);
 }
+
 static void
 set_loop (BstQSampler *qsampler)
 {
   gint m1 = bst_qsampler_get_mark_offset (qsampler, 3);
   gint m2 = bst_qsampler_get_mark_offset (qsampler, 4);
+
   if (m2 < 0 || m1 < 0)
     return;
+
   if (m2 < m1)
     {
       gint t = m2;
       m2 = m1;
       m1 = t;
     }
+
   if (m1 >= 0 && m2 > m1)
     {
       GslDataHandle *handle = gsl_data_handle_new_looped (global_handle, m1, m2);
+
       qsampler_set_handle (qsampler, handle);
       gsl_data_handle_unref (handle);
       qsampler_set_selection (qsampler, m1, m2, 0);
     }
 }
+
 static void
 score (BstQSampler *qsampler)
 {
@@ -273,74 +320,89 @@ score (BstQSampler *qsampler)
   GslDataHandle *dhandle = dcache->dhandle;
   GslLong l, length = MIN (gsl_data_handle_length (shandle), gsl_data_handle_length (dhandle));
   gdouble score = 0;
+
   for (l = 0; l < length; )
     {
       GslLong b = 8192;
       gfloat v1[b], v2[b];
+
       b = MIN (b, length - l);
       b = gsl_data_handle_read (shandle, l, b, v1);
       b = gsl_data_handle_read (dhandle, l, b, v2);
       g_assert (b >= 0);
       g_assert (b >= 1);
       l += b;
+
       while (b--)
 	score += (v1[b] - v2[b]) * (v1[b] - v2[b]);
       // g_print ("0x%08lx) %10.3f\n", l, score);
     }
   g_print ("total score: %10.3f\n", score);
 }
+
 static gdouble
 score_loop (GslDataHandle *shandle,
 	    GslDataHandle *dhandle)
 {
   GslLong l, length = MIN (gsl_data_handle_length (shandle), gsl_data_handle_length (dhandle));
   gdouble score = 0;
+
   for (l = 0; l < length; )
     {
       GslLong b = 8192;
       gfloat v1[b], v2[b];
+
       b = MIN (b, length - l);
       b = gsl_data_handle_read (shandle, l, b, v1);
       b = gsl_data_handle_read (dhandle, l, b, v2);
       g_assert (b >= 0);
       g_assert (b >= 1);
       l += b;
+
       while (b--)
 	score += (v1[b] - v2[b]) * (v1[b] - v2[b]);
     }
   return score;
 }
+
 #include <bse/gsldatautils.hh>
+
 static void
 find (WaveView *view)
 {
   GslLong start, end;
   GslLong length = gsl_data_handle_length (view->handle);
   GslLoopSpec loop_spec = { 0, length / 3, 44100.0/15., length / 3.5 };
+
   gsl_data_find_tailmatch (view->handle, &loop_spec, &start, &end);
   qsampler_set_selection (view->qsampler, start, end, 2);
   selection_to_loop (view->qsampler);
 }
+
 static void
 mark_signalh (WaveView *view)
 {
   GslLong mark;
+
   mark = gsl_data_find_sample (view->handle,
 			       1. / 32768. * +16.,
 			       1. / 32768. * -16.,
 			       0, +1);
   bst_qsampler_set_mark (view->qsampler, 5, MAX (mark, 0), mark < 0 ? 0 : BST_QSAMPLER_PRELIGHT);
 }
+
 static void
 mark_signalt (WaveView *view)
 {
   GslLong mark;
+
   mark = gsl_data_find_sample (view->handle,
 			       1. / 32768. * +16.,
 			       1. / 32768. * -16.,
 			       -1, -1);
   bst_qsampler_set_mark (view->qsampler, 5, MAX (mark, 0), mark < 0 ? 0 : BST_QSAMPLER_PRELIGHT);
 }
+
 static void
 findx ()
 {
@@ -349,13 +411,16 @@ findx ()
   GslLong length = gsl_data_handle_length (shandle);
   GslLong l, start = 0, end = 0, lsize = gsl_data_handle_length (shandle) / 2;
   gdouble score = 0, least = GSL_MAXLONG;
+
   gsl_data_cache_unref (dcache);
   gsl_data_handle_open (shandle);
+
   while (lsize)
     {
       for (l = 0; l < length - lsize; l++)
 	{
 	  GslDataHandle *dhandle = gsl_data_handle_new_looped (shandle, l, l + lsize);
+
 	  gsl_data_handle_open (dhandle);
 	  score = score_loop (shandle, dhandle);
 	  gsl_data_handle_close (dhandle);
@@ -374,7 +439,9 @@ findx ()
   gsl_data_handle_close (shandle);
   gsl_data_handle_unref (shandle);
 }
+
 static GtkWidget*	pack_test_widget (void);
+
 int
 main (int   argc,
       char *argv[])
@@ -388,6 +455,7 @@ main (int   argc,
   };
   WaveView *view, *first_view = NULL;
   guint i;
+
   g_thread_init (NULL);
   g_type_init ();
   birnet_init (&argc, &argv, NULL);
@@ -396,17 +464,21 @@ main (int   argc,
   gtk_init (&argc, &argv);
   gxk_init ();
   _bst_init_utils ();
+
   if (argc < 2)
     g_error ("need filenames");
+
   vbox = gtk_widget_new (GTK_TYPE_VBOX,
 			 "visible", TRUE,
 			 "border_width", 10,
 			 NULL);
   gtk_box_pack_start (GTK_BOX (vbox), pack_test_widget (), TRUE, TRUE, 0);
+
   sbar = gtk_widget_new (GTK_TYPE_HSCROLLBAR,
 			 "visible", TRUE,
 			 NULL);
   gtk_box_pack_start (GTK_BOX (vbox), sbar, FALSE, TRUE, 0);
+
   for (i = 1; i < argc; i++)
     {
       view = g_new (WaveView, 1);
@@ -432,6 +504,7 @@ main (int   argc,
       if (i == 1)
 	first_view = view;
     }
+
   spin = gtk_spin_button_new (GTK_ADJUSTMENT (gtk_adjustment_new (100, 1e-16, 1e+16, 0.1, 10, 0)), 0, 5);
   gtk_widget_set (spin,
 		  "visible", TRUE,
@@ -442,6 +515,7 @@ main (int   argc,
 		      "signal::value_changed", adjust_zoom, view->qsampler,
 		      NULL);
   gtk_box_pack_start (GTK_BOX (vbox), spin, FALSE, TRUE, 0);
+
   spin = gtk_spin_button_new (GTK_ADJUSTMENT (gtk_adjustment_new (100, 1e-16, 1e+16, 1, 10, 0)), 0, 5);
   gtk_widget_set (spin,
 		  "visible", TRUE,
@@ -452,11 +526,13 @@ main (int   argc,
 		      "signal::value_changed", adjust_vscale, view->qsampler,
 		      NULL);
   gtk_box_pack_start (GTK_BOX (vbox), spin, FALSE, TRUE, 0);
+
   hbox = gtk_widget_new (GTK_TYPE_HBOX,
 			 "visible", TRUE,
 			 "border_width", 10,
 			 NULL);
   gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, TRUE, 0);
+
   button = g_object_connect (g_object_new (GTK_TYPE_BUTTON,
 					   "visible", TRUE,
 					   "label", _("Selection to Loop"),
@@ -464,6 +540,7 @@ main (int   argc,
 			     "swapped_signal::clicked", selection_to_loop, first_view->qsampler,
 			     NULL);
   gtk_box_pack_start (GTK_BOX (hbox), button, FALSE, TRUE, 0);
+
   button = g_object_connect (g_object_new (GTK_TYPE_BUTTON,
 					   "visible", TRUE,
 					   "label", _("Loop to Selection"),
@@ -471,6 +548,7 @@ main (int   argc,
 			     "swapped_signal::clicked", loop_to_selection, first_view->qsampler,
 			     NULL);
   gtk_box_pack_start (GTK_BOX (hbox), button, FALSE, TRUE, 0);
+
   button = g_object_connect (g_object_new (GTK_TYPE_BUTTON,
 					   "visible", TRUE,
 					   "label", _("Zoom Selection"),
@@ -478,6 +556,7 @@ main (int   argc,
 			     "swapped_signal::clicked", zoom_selection, first_view->qsampler,
 			     NULL);
   gtk_box_pack_start (GTK_BOX (hbox), button, FALSE, TRUE, 0);
+
   button = g_object_connect (g_object_new (GTK_TYPE_BUTTON,
 					   "visible", TRUE,
 					   "label", _("Apply Loop"),
@@ -485,6 +564,7 @@ main (int   argc,
 			     "swapped_signal::clicked", set_loop, first_view->qsampler,
 			     NULL);
   gtk_box_pack_start (GTK_BOX (hbox), button, FALSE, TRUE, 0);
+
   button = g_object_connect (g_object_new (GTK_TYPE_BUTTON,
 					   "visible", TRUE,
 					   "label", _("Reset Loop"),
@@ -492,6 +572,7 @@ main (int   argc,
 			     "swapped_signal::clicked", unset_loop, first_view->qsampler,
 			     NULL);
   gtk_box_pack_start (GTK_BOX (hbox), button, FALSE, TRUE, 0);
+
   button = g_object_connect (g_object_new (GTK_TYPE_BUTTON,
 					   "visible", TRUE,
 					   "label", _("Score"),
@@ -499,6 +580,7 @@ main (int   argc,
 			     "swapped_signal::clicked", score, first_view->qsampler,
 			     NULL);
   gtk_box_pack_start (GTK_BOX (hbox), button, FALSE, TRUE, 0);
+
   button = g_object_connect (g_object_new (GTK_TYPE_BUTTON,
 					   "visible", TRUE,
 					   "label", _("Find"),
@@ -506,6 +588,7 @@ main (int   argc,
 			     "swapped_signal::clicked", find, first_view,
 			     NULL);
   gtk_box_pack_start (GTK_BOX (hbox), button, FALSE, TRUE, 0);
+
   window = g_object_connect (gtk_widget_new (GTK_TYPE_WINDOW,
 					     "child", vbox,
 					     "visible", TRUE,
@@ -515,6 +598,7 @@ main (int   argc,
 					     NULL),
 			     "signal::destroy", gtk_main_quit, NULL,
 			     NULL);
+
   button = g_object_new (GTK_TYPE_BUTTON,
 			 "visible", TRUE,
 			 "label", _("Mark Signal (Head)"),
@@ -524,6 +608,7 @@ main (int   argc,
      g_object_connect (GTK_OBJECT (button),
 		       "swapped_signal::clicked", mark_signalh, view,
 		       NULL);
+
   button = g_object_new (GTK_TYPE_BUTTON,
 			 "visible", TRUE,
 			 "label", _("Mark Signal (Tail)"),
@@ -533,9 +618,13 @@ main (int   argc,
      g_object_connect (GTK_OBJECT (button),
 		       "swapped_signal::clicked", mark_signalt, view,
 		       NULL);
+
+
   gtk_main ();
+
   return 0;
 }
+
 #if 0	/* test code */
 static void
 plist_fill_value (gpointer  da_NULL,
@@ -556,6 +645,7 @@ plist_fill_value (gpointer  da_NULL,
       break;
     }
 }
+
 static gboolean
 tree_event (GtkTreeView *tree,
 	    GdkEvent    *event)
@@ -588,6 +678,7 @@ tree_event (GtkTreeView *tree,
     }
   return FALSE;
 }
+
 static GtkWidget*
 pack_test_widget (void)
 {
@@ -602,6 +693,7 @@ pack_test_widget (void)
 			   G_CALLBACK (plist_fill_value),
 			   NULL, G_CONNECT_SWAPPED);
   gxk_list_wrapper_notify_prepend (plist, 200);
+
   scwin = g_object_new (GTK_TYPE_SCROLLED_WINDOW,
 			"visible", TRUE,
 			"hscrollbar_policy", GTK_POLICY_AUTOMATIC,
@@ -642,11 +734,13 @@ pack_test_widget (void)
 		    "swapped_object_signal::row_activated", tree_row_activated, self,
 		    NULL);
 #endif
+
   /* ensure selection
    */
   tsel = gtk_tree_view_get_selection (GTK_TREE_VIEW (tree));
   gtk_tree_selection_set_mode (tsel, GTK_SELECTION_SINGLE);
   gxk_tree_selection_select_spath (tsel, "0");
+
   return scwin;
 }
 #else
@@ -656,4 +750,6 @@ pack_test_widget (void)
   return g_object_new (GTK_TYPE_ALIGNMENT, NULL);
 }
 #endif
+
+
 #endif

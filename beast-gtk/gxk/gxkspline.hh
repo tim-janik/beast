@@ -1,8 +1,11 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #ifndef __GXK_SPLINE_H__
 #define __GXK_SPLINE_H__
+
 #include        <gxk/gxkglobals.hh>
+
 G_BEGIN_DECLS
+
 typedef struct _GxkSpline GxkSpline;
 typedef struct {
   double x, y;
@@ -32,5 +35,9 @@ double          gxk_spline_findx        (const GxkSpline        *spline,
 void            gxk_spline_dump         (GxkSpline              *spline);
 GxkSpline*      gxk_spline_copy         (GxkSpline              *spline);
 void            gxk_spline_free         (GxkSpline              *spline);
+
+
+
 G_END_DECLS
+
 #endif /* __GXK_SPLINE_H__ */

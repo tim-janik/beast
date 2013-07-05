@@ -4,9 +4,12 @@
 #include <string>
 #include <errno.h>
 #include <stdio.h>
+
 using namespace std;
 using namespace Sfi;
+
 namespace Bse {
+
 class LatencyTest : public LatencyTestBase {
   /* properties */
   struct Properties : public LatencyTestProperties {
@@ -19,19 +22,24 @@ class LatencyTest : public LatencyTestBase {
   public:
     FILE *midi_output_file;
     FILE *logfile;
+
     char note_on[3];
     char note_off[3];
+
     guint note_on_wait;
     guint note_off_wait;
     guint bpm_samples;
     gfloat threshold;
+
     double start_time;
     double end_time;
+
     double
     gettime ()
     {
       timeval tv;
       gettimeofday (&tv, 0);
+
       return double(tv.tv_sec) + double(tv.tv_usec) * (1.0 / 1000000.0);
     }
     void
@@ -63,6 +71,7 @@ class LatencyTest : public LatencyTestBase {
     reset()
     {
       close_devices();
+
       if (birnet_file_check (midi_output_name.c_str(), "pw")) /* writable pipe */
         midi_output_file = fopen (midi_output_name.c_str(), "w");
       if (!midi_output_file)
@@ -83,15 +92,19 @@ class LatencyTest : public LatencyTestBase {
       midi_output_name = properties->midi_output.c_str();
       if (midi_output_name[0] == '$')
         midi_output_name = g_getenv (midi_output_name.c_str() + 1);
+
       /* send pending note-off events, close and reopen devices */
       reset();
+
       /* configure events */
       note_on[0] = 0x90 | (properties->midi_channel - 1);
       note_on[1] = properties->midi_note;
       note_on[2] = 100; /* velocity */
+
       note_off[0] = 0x80 | (properties->midi_channel - 1);
       note_off[1] = properties->midi_note;
       note_off[2] = 0; /* velocity */
+
       /* setup timing */
       bpm_samples = guint (mix_freq() * 60 / properties->bpm); /* quarter note duration */
       note_on_wait = bpm_samples / 2;
@@ -108,12 +121,14 @@ class LatencyTest : public LatencyTestBase {
 	  if (!note_on_wait)
 	    {
 	      start_time = gettime();
+
 	      fwrite (note_on, 3, 1, midi_output_file);
 	      fflush (midi_output_file);
 	      note_on_wait += bpm_samples;
 	    }
 	  else
 	    note_on_wait--;
+
 	  if (!note_off_wait)
 	    {
 	      fwrite (note_off, 3, 1, midi_output_file);
@@ -122,10 +137,12 @@ class LatencyTest : public LatencyTestBase {
 	    }
 	  else
 	    note_off_wait--;
+
 	  if (auin[i] > threshold && start_time > 0)
 	    {
 	      double delta_time = double (i) / mix_freq();
 	      double end_time = gettime();
+
 	      if (logfile)
                 fprintf (stdout, "%12.6f # latency in ms between note-on and signal-start; (block-offset=%u)\n",
                          1000.0 * (end_time + delta_time - start_time), i);
@@ -138,6 +155,8 @@ public:
   /* implement creation and config methods for synthesis Module */
   BSE_EFFECT_INTEGRATE_MODULE (LatencyTest, Module, Properties);
 };
+
 BSE_CXX_DEFINE_EXPORTS();
 BSE_CXX_REGISTER_EFFECT (LatencyTest);
+
 } // Bse

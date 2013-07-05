@@ -1,8 +1,12 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #ifndef __BSE_ITEM_H__
 #define __BSE_ITEM_H__
+
 #include        <bse/bseobject.hh>
+
 G_BEGIN_DECLS
+
+
 /* --- object type macros --- */
 #define BSE_TYPE_ITEM               (BSE_TYPE_ID (BseItem))
 #define BSE_ITEM(object)            (G_TYPE_CHECK_INSTANCE_CAST ((object), BSE_TYPE_ITEM, BseItem))
@@ -10,9 +14,13 @@ G_BEGIN_DECLS
 #define BSE_IS_ITEM(object)         (G_TYPE_CHECK_INSTANCE_TYPE ((object), BSE_TYPE_ITEM))
 #define BSE_IS_ITEM_CLASS(class)    (G_TYPE_CHECK_CLASS_TYPE ((class), BSE_TYPE_ITEM))
 #define BSE_ITEM_GET_CLASS(object)  (G_TYPE_INSTANCE_GET_CLASS ((object), BSE_TYPE_ITEM, BseItemClass))
+
+
 /* --- BseItem member macros --- */
 #define BSE_ITEM_SINGLETON(object)  ((BSE_OBJECT_FLAGS (object) & BSE_ITEM_FLAG_SINGLETON) != 0)
 #define BSE_ITEM_INTERNAL(item)     ((BSE_OBJECT_FLAGS (item) & BSE_ITEM_FLAG_INTERN_BRANCH) != 0)
+
+
 /* --- bse item flags --- */
 typedef enum                            /*< skip >*/
 {
@@ -44,6 +52,7 @@ struct BseItemClass : BseObjectClass {
   guint         (*get_seqid)      (BseItem               *item);
   BseUndoStack* (*get_undo)       (BseItem               *item);
 };
+
 typedef void     (*BseItemUncross)           (BseItem        *owner,
                                               BseItem        *link);
 typedef gboolean (*BseItemCheckContainer)    (BseContainer   *container,
@@ -52,6 +61,8 @@ typedef gboolean (*BseItemCheckContainer)    (BseContainer   *container,
 typedef gboolean (*BseItemCheckProxy)        (BseItem        *proxy,
                                               BseItem        *item,
                                               gpointer        data);
+
+
 /* --- prototypes --- */
 BseItemSeq*    bse_item_gather_items         (BseItem                *item,
                                               BseItemSeq             *iseq,
@@ -114,9 +125,8 @@ void          bse_item_set_property_undoable (BseItem         *self,
                                               const gchar     *name,
                                               const GValue    *value);
 /* undo admin functions */
-BseUndoStack* bse_item_undo_open             (gpointer         item,
-                                              const gchar     *format,
-                                              ...) G_GNUC_PRINTF (2, 3);
+BseUndoStack* bse_item_undo_open_str         (void *item, const std::string &string);
+#define       bse_item_undo_open(item,...)   bse_item_undo_open_str (item, Rapicorn::string_format (__VA_ARGS__).c_str())
 void          bse_item_undo_close            (BseUndoStack    *ustack);
 /* undo helper functions */
 void          bse_item_push_undo_proc        (gpointer         item,
@@ -134,5 +144,7 @@ void          bse_item_push_undo_storage     (BseItem         *self,
 #define bse_item_set             bse_item_set_undoable
 #define bse_item_get             g_object_get
 BseMusicalTuningType bse_item_current_musical_tuning (BseItem     *self);
+
 G_END_DECLS
+
 #endif /* __BSE_ITEM_H__ */

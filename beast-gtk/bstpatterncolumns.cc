@@ -3,6 +3,8 @@
 #include "bstpatternview.hh"
 #include <string.h>
 #include <math.h>
+
+
 /* --- defines --- */
 /* checks */
 #define ISSPACE(c)      ((c) == ' ' || ((c) >= '\t' && (c) <= '\r'))
@@ -18,6 +20,8 @@
 #define FOCUS_WIDTH(self)       (bst_pattern_view_get_focus_width (self))
 #define X_OFFSET(self)          (GXK_SCROLL_CANVAS (self)->x_offset)
 #define Y_OFFSET(self)          (GXK_SCROLL_CANVAS (self)->y_offset)
+
+
 /* --- functions --- */
 static void
 playout_calc_char_extents (PangoLayout *pango_layout,
@@ -50,12 +54,15 @@ playout_calc_char_extents (PangoLayout *pango_layout,
         *char_offset = 0;
     }
 }
+
+
 /* --- note cell --- */
 typedef struct {
   BstPatternColumn column;
   gint co0, co1, co2, co3;      /* char offsets */
   gint cw0, cw1, cw2, cw3;      /* char widths */
 } BstPatternColumnNote;
+
 static PangoFontDescription*
 pattern_column_note_create_font_desc (BstPatternColumn *self)
 {
@@ -64,6 +71,7 @@ pattern_column_note_create_font_desc (BstPatternColumn *self)
   pango_font_description_set_weight (fdesc, PANGO_WEIGHT_BOLD);
   return fdesc;
 }
+
 static guint
 pattern_column_note_width_request (BstPatternColumn       *column,
                                    BstPatternView         *pview,
@@ -84,6 +92,7 @@ pattern_column_note_width_request (BstPatternColumn       *column,
   width = self->cw0 + self->cw1 + self->cw2 + self->cw3;
   return FOCUS_WIDTH (pview) + width + XTHICKNESS (pview) + FOCUS_WIDTH (pview);
 }
+
 static char
 pattern_column_note_char (BstPatternColumnNote *self,
                           BsePartNoteSeq       *pseq,
@@ -106,6 +115,7 @@ pattern_column_note_char (BstPatternColumnNote *self,
     default:    return '-';     /* not reached */
     }
 }
+
 static void
 pattern_column_note_draw_cell (BstPatternColumn       *column,
                                BstPatternView         *pview,
@@ -126,6 +136,7 @@ pattern_column_note_draw_cell (BstPatternColumn       *column,
   BsePartNoteSeq *pseq = proxy ? bse_part_list_notes_within (proxy, column->num, tick, duration) : NULL;
   gchar ch;
   gint accu, yline;
+
   accu = crect->x + FOCUS_WIDTH (pview);
   ch = pattern_column_note_char (self, pseq, 0);
   draw_gc = ch == '-' ? inactive_gc : text_gc;      /* choose gc dependant on note letter */
@@ -133,22 +144,26 @@ pattern_column_note_draw_cell (BstPatternColumn       *column,
   pango_layout_get_pixel_extents (pango_layout, NULL, &prect);
   yline = crect->y + (crect->height - prect.height) / 2;
   gdk_draw_layout (drawable, draw_gc, accu + self->co0 + (self->cw0 - prect.width) / 2, yline, pango_layout);
+
   accu += self->cw0;
   ch = pattern_column_note_char (self, pseq, 1);
   pango_layout_set_text (pango_layout, &ch, 1);
   pango_layout_get_pixel_extents (pango_layout, NULL, &prect);
   gdk_draw_layout (drawable, draw_gc, accu + self->co1 + (self->cw1 - prect.width) / 2, yline, pango_layout);
+
   accu += self->cw1;
   ch = pattern_column_note_char (self, pseq, 2);
   pango_layout_set_text (pango_layout, &ch, 1);
   pango_layout_get_pixel_extents (pango_layout, NULL, &prect);
   gdk_draw_layout (drawable, draw_gc, accu + self->co2 + (self->cw2 - prect.width) / 2, yline, pango_layout);
+
   accu += self->cw2;
   ch = pattern_column_note_char (self, pseq, 3);
   pango_layout_set_text (pango_layout, &ch, 1);
   pango_layout_get_pixel_extents (pango_layout, NULL, &prect);
   gdk_draw_layout (drawable, draw_gc, accu + self->co3 + (self->cw3 - prect.width) / 2, yline, pango_layout);
 }
+
 static gboolean
 pattern_column_note_key_event (BstPatternColumn       *column,
                                BstPatternView         *pview,
@@ -194,12 +209,14 @@ pattern_column_note_key_event (BstPatternColumn       *column,
     }
   return FALSE;
 }
+
 static void
 pattern_column_note_finalize (BstPatternColumn *column)
 {
   BstPatternColumnNote *self = (BstPatternColumnNote*) column;
   g_free (self);
 }
+
 static BstPatternColumnClass pattern_column_note_class = {
   1,    /* n_focus_positions */
   sizeof (BstPatternColumnNote),
@@ -212,12 +229,15 @@ static BstPatternColumnClass pattern_column_note_class = {
   pattern_column_note_key_event,
   pattern_column_note_finalize,
 };
+
+
 /* --- event cell --- */
 typedef struct {
   BstPatternColumn column;
   gint co;      /* character offset to translate ink-rect to logical-rect */
   gint cw;      /* character width */
 } BstPatternColumnEvent;
+
 static void
 pattern_column_event_init (BstPatternColumn *column)
 {
@@ -225,6 +245,7 @@ pattern_column_event_init (BstPatternColumn *column)
   gint n_digits = 1 + (column->lflags & BST_PATTERN_LFLAG_DIGIT_MASK);
   column->n_focus_positions = is_signed + n_digits;
 }
+
 static PangoFontDescription*
 pattern_column_event_create_font_desc (BstPatternColumn *self)
 {
@@ -233,6 +254,7 @@ pattern_column_event_create_font_desc (BstPatternColumn *self)
   pango_font_description_set_weight (fdesc, PANGO_WEIGHT_BOLD);
   return fdesc;
 }
+
 static guint
 pattern_column_event_width_request (BstPatternColumn       *column,
                                     BstPatternView         *pview,
@@ -247,6 +269,7 @@ pattern_column_event_width_request (BstPatternColumn       *column,
   width = 1 + (is_signed + n_digits) * (self->cw + 1);
   return FOCUS_WIDTH (pview) + width + FOCUS_WIDTH (pview);
 }
+
 static guint
 control_get_max (guint num_type,
                  guint n_digits)
@@ -256,6 +279,7 @@ control_get_max (guint num_type,
   else /* if (num_type == BST_PATTERN_LFLAG_HEX) */
     return pow (16, n_digits) - 1;
 }
+
 static guint
 control_get_digit_increment (guint num_type,
                              guint nth_digits)
@@ -266,6 +290,7 @@ control_get_digit_increment (guint num_type,
   else /* if (num_type == BST_PATTERN_LFLAG_HEX) */
     return pow (16, nth_digits - 1);
 }
+
 static guint
 pattern_column_event_to_string (BstPatternColumn *column,
                                 gchar             buffer[64],
@@ -306,6 +331,7 @@ pattern_column_event_to_string (BstPatternColumn *column,
     }
   return is_signed + n_digits;
 }
+
 static gfloat
 pattern_column_event_value_from_int (BstPatternColumn *column,
                                      gint              ivalue)
@@ -321,6 +347,7 @@ pattern_column_event_value_from_int (BstPatternColumn *column,
   value += value < 0 ? -0.000001 : +0.000001;
   return CLAMP (value, -1, +1);
 }
+
 static gint
 pattern_column_event_ivalue_from_string (BstPatternColumn *column,
                                          const gchar      *string)
@@ -338,6 +365,7 @@ pattern_column_event_ivalue_from_string (BstPatternColumn *column,
   g_free (stripped);
   return CLAMP (ival, -vmax, vmax);
 }
+
 static gfloat
 pattern_column_event_value_from_string (BstPatternColumn *column,
                                         const gchar      *string)
@@ -345,6 +373,7 @@ pattern_column_event_value_from_string (BstPatternColumn *column,
   gint ival = pattern_column_event_ivalue_from_string (column, string);
   return pattern_column_event_value_from_int (column, ival);
 }
+
 static BseMidiSignalType
 pattern_column_control_type (BstPatternColumn *column, bool *isnote_p)
 {
@@ -363,6 +392,7 @@ pattern_column_control_type (BstPatternColumn *column, bool *isnote_p)
     *isnote_p = isnote;
   return control_type;
 }
+
 static BsePartControl*
 pattern_column_event_lookup (BstPatternColumn   *column,
                              BstPatternView     *pview,
@@ -389,6 +419,7 @@ pattern_column_event_lookup (BstPatternColumn   *column,
     *cseq_p = cseq;
   return pctrl;
 }
+
 static void
 pattern_column_event_draw_cell (BstPatternColumn       *column,
                                 BstPatternView         *pview,
@@ -409,6 +440,7 @@ pattern_column_event_draw_cell (BstPatternColumn       *column,
   int n = pattern_column_event_to_string (column, buffer, pctrl, placeholder, NULL);
   GdkGC *draw_gc = placeholder == '-' ? inactive_gc : text_gc;
   int yline, accu = crect->x + FOCUS_WIDTH (pview) + 1;
+
   for (int i = 0; i < n; i++)
     {
       PangoRectangle irect, prect;
@@ -419,6 +451,7 @@ pattern_column_event_draw_cell (BstPatternColumn       *column,
       accu += self->cw + 1;
     }
 }
+
 static void
 pattern_column_event_get_focus_pos (BstPatternColumn       *column,
                                     BstPatternView         *pview,
@@ -439,6 +472,7 @@ pattern_column_event_get_focus_pos (BstPatternColumn       *column,
   *pos_x = accu;
   *pos_width = width;
 }
+
 static gboolean
 pattern_column_event_key_event (BstPatternColumn       *column,
                                 BstPatternView         *pview,
@@ -534,12 +568,14 @@ pattern_column_event_key_event (BstPatternColumn       *column,
     }
   return handled;
 }
+
 static void
 pattern_column_event_finalize (BstPatternColumn *column)
 {
   BstPatternColumnEvent *self = (BstPatternColumnEvent*) column;
   g_free (self);
 }
+
 static BstPatternColumnClass pattern_column_event_class = {
   1,    /* n_focus_positions */
   sizeof (BstPatternColumnEvent),
@@ -552,6 +588,8 @@ static BstPatternColumnClass pattern_column_event_class = {
   pattern_column_event_key_event,
   pattern_column_event_finalize,
 };
+
+
 /* --- vbar cell --- */
 static guint
 pattern_column_vbar_width_request (BstPatternColumn       *self,
@@ -565,6 +603,7 @@ pattern_column_vbar_width_request (BstPatternColumn       *self,
   /* space */
   return 1 + 1; // 2 * XTHICKNESS (pview) + 1;
 }
+
 static void
 pattern_column_vbar_draw_cell (BstPatternColumn       *self,
                                BstPatternView         *pview,
@@ -592,11 +631,13 @@ pattern_column_vbar_draw_cell (BstPatternColumn       *self,
   if (self->num < 0)
     gdk_gc_set_line_attributes (draw_gc, 0, GDK_LINE_SOLID, GDK_CAP_BUTT, GDK_JOIN_MITER);
 }
+
 static void
 pattern_column_vbar_finalize (BstPatternColumn *self)
 {
   g_free (self);
 }
+
 static BstPatternColumnClass pattern_column_vbar_class = {
   0,  /* n_focus_positions */
   sizeof (BstPatternColumn),
@@ -609,6 +650,8 @@ static BstPatternColumnClass pattern_column_vbar_class = {
   NULL, /* key_event */
   pattern_column_vbar_finalize,
 };
+
+
 /* --- layout configuration --- */
 static void
 pattern_column_layouter_apply (GtkWidget *dialog)
@@ -623,7 +666,9 @@ pattern_column_layouter_apply (GtkWidget *dialog)
       bst_gui_error_bell (dialog);
     }
 }
+
 #define __(str)         str /* leave string unstranslated */
+
 void
 bst_pattern_column_layouter_popup (BstPatternView *pview)
 {
@@ -699,6 +744,7 @@ bst_pattern_column_layouter_popup (BstPatternView *pview)
   gtk_entry_set_text (entry, bst_pattern_view_get_layout (pview));
   gxk_widget_showraise (dialog);
 }
+
 const gchar*
 bst_pattern_layout_parse_column (const gchar      *string,
                                  BstPatternLType  *ltype,
@@ -792,6 +838,7 @@ bst_pattern_layout_parse_column (const gchar      *string,
     *flags |= BST_PATTERN_LFLAG_SIGNED | BST_PATTERN_LFLAG_HEX | BST_PATTERN_LFLAG_DIGIT_2;
   return string;
 }
+
 BstPatternColumn*
 bst_pattern_column_create (BstPatternLType   ltype,
                            gint              num,
@@ -835,6 +882,7 @@ bst_pattern_column_create (BstPatternLType   ltype,
     klass->init (column);
   return column;
 }
+
 gboolean
 bst_pattern_column_has_notes (BstPatternColumn *column)
 {

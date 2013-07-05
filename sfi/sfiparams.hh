@@ -1,9 +1,13 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #ifndef __SFI_PARAMS_H__
 #define __SFI_PARAMS_H__
+
 #include <sfi/sfivalues.hh>
 #include <sfi/sfiprimitives.hh>
+
 G_BEGIN_DECLS
+
+
 /* --- Sfi param spec macros --- */
 #define SFI_TYPE_PARAM_BOOL		(G_TYPE_PARAM_BOOLEAN)
 #define SFI_IS_PSPEC_BOOL(pspec)	(G_TYPE_CHECK_INSTANCE_TYPE ((pspec), SFI_TYPE_PARAM_BOOL))
@@ -44,6 +48,8 @@ G_BEGIN_DECLS
 #define SFI_TYPE_PARAM_NOTE		(sfi__param_spec_types[6])
 #define SFI_IS_PSPEC_NOTE(pspec)	(G_TYPE_CHECK_INSTANCE_TYPE ((pspec), SFI_TYPE_PARAM_NOTE))
 #define SFI_PSPEC_NOTE(pspec)		(G_TYPE_CHECK_INSTANCE_CAST ((pspec), SFI_TYPE_PARAM_NOTE, SfiParamSpecNote))
+
+
 /* --- Sfi param spec aliases --- */
 typedef GParamSpecBoolean SfiParamSpecBool;
 typedef GParamSpecInt     SfiParamSpecInt;
@@ -51,6 +57,8 @@ typedef GParamSpecInt64   SfiParamSpecNum;
 typedef GParamSpecDouble  SfiParamSpecReal;
 typedef GParamSpecString  SfiParamSpecString;
 typedef GParamSpecParam   SfiParamSpecPSpec;
+
+
 /* --- Sfi param specs --- */
 typedef struct {
   const gchar *choice_ident;
@@ -86,6 +94,8 @@ typedef struct {
   GParamSpecInt      pspec;
   gboolean           allow_void;
 } SfiParamSpecNote;
+
+
 /* --- Sfi GParamSpec  constructors --- */
 GParamSpec*    sfi_pspec_bool		(const gchar    *name,
 					 const gchar    *nick,
@@ -168,6 +178,8 @@ GParamSpec*	sfi_pspec_proxy		(const gchar    *name,
 					 const gchar    *nick,
 					 const gchar    *blurb,
 					 const gchar	*hints);
+
+
 /* --- pspec wrappers --- */
 #define	sfi_pspec_ref			g_param_spec_ref
 #define	sfi_pspec_unref			g_param_spec_unref
@@ -179,6 +191,8 @@ GParamSpec*	sfi_pspec_proxy		(const gchar    *name,
 #define	sfi_pspec_get_name		g_param_spec_get_name
 #define	sfi_pspec_get_nick		g_param_spec_get_nick
 #define	sfi_pspec_get_blurb		g_param_spec_get_blurb
+
+
 /* --- conversion --- */
 typedef SfiChoiceValues (*SfiChoiceValueGetter)     (GType                 enum_type);
 GParamSpec*  sfi_pspec_to_serializable              (GParamSpec           *pspec);
@@ -192,6 +206,8 @@ SfiRecFields sfi_boxed_type_get_rec_fields          (GType                 boxed
 void         sfi_boxed_type_set_seq_element         (GType                 boxed_type,
                                                      GParamSpec           *element);
 GParamSpec*  sfi_boxed_type_get_seq_element         (GType                 boxed_type);
+
+
 /* --- Sfi PSpec Options --- */
 /* provide common option combinations: */
 #define	SFI_PARAM_READWRITE       ":r:w:"
@@ -201,6 +217,8 @@ GParamSpec*  sfi_boxed_type_get_seq_element         (GType                 boxed
 #define	SFI_PARAM_GUI		  ":r:w:G:"
 #define	SFI_PARAM_GUI_RDONLY	  ":r:w:G:ro:"
 #define	SFI_PARAM_GUI_READABLE	  ":r:G:"
+
+
 /* --- serializable categories --- */
 typedef enum	/*< skip >*/
 {
@@ -221,10 +239,13 @@ typedef enum	/*< skip >*/
   SFI_SCAT_NOTE		= 0x0100 | SFI_SCAT_INT,
   SFI_SCAT_TIME		= 0x0200 | SFI_SCAT_NUM,
 } SfiSCategory;
+
 SfiSCategory	sfi_categorize_type	(GType		 value_type);
 SfiSCategory	sfi_categorize_pspec	(GParamSpec	*pspec);
 GType		sfi_category_type	(SfiSCategory	 pspec_cat);
 GType		sfi_category_param_type	(SfiSCategory	 pspec_cat);
+
+
 /* --- convenience aliases --- */
 GParamSpec* sfi_pspec_note		(const gchar    *name,
 					 const gchar    *nick,
@@ -239,6 +260,8 @@ GParamSpec* sfi_pspec_time		(const gchar    *name,
 					 const gchar    *nick,
 					 const gchar    *blurb,
 					 const gchar    *hints);
+
+
 /* --- pspec accessors --- */
 GParamSpec*	sfi_pspec_set_group		(GParamSpec	*pspec,
 						 const gchar	*group);
@@ -280,11 +303,17 @@ GParamSpec*	sfi_pspec_get_seq_element	(GParamSpec	*pspec);
 SfiRecFields	sfi_pspec_get_rec_fields	(GParamSpec	*pspec);
 GParamSpec*	sfi_pspec_get_rec_field		(GParamSpec	*pspec,
 						 const gchar	*field_name);
+
+
 /* --- internal --- */
 void		_sfi_init_params	(void);
 extern GType*	 sfi__param_spec_types;
 SfiRec*		sfi_pspec_to_rec	(GParamSpec	*pspec);
 GParamSpec*	sfi_pspec_from_rec	(SfiRec		*prec);
+
+
 G_END_DECLS
+
 #endif /* __SFI_PARAMS_H__ */
+
 /* vim:set ts=8 sts=2 sw=2: */

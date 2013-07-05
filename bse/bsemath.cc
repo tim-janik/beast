@@ -3,164 +3,109 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
-#define RING_BUFFER_LENGTH	(256) // FIXME: simlpy dup strings in the API
-#define	PRINTF_DIGITS		"1270"
-#define	FLOAT_STRING_SIZE	(2048)
+
 /* --- functions --- */
-static inline char*
-pretty_print_double (char  *str,
-		     double d)
+std::string
+bse_string_from_double (long double value)
 {
-  char *s= str;
-  sprintf (s, "%." PRINTF_DIGITS "f", d);
-  while (*s)
-    s++;
-  while (s[-1] == '0' && s[-2] != '.')
+  std::string str = Rapicorn::string_format ("%.1270f", value);
+  const char *s = &str[str.size()];
+  while (s > &str[0] && s[-1] == '0' && s[-2] != '.')
     s--;
-  *s = 0;
-  return s;
+  return str.substr (0, s - &str[0]);
 }
-char*
-bse_complex_list (uint         n_points,
-		  BseComplex  *points,
-		  const char  *indent)
+
+std::string
+bse_complex_list (uint n_points, BseComplex *points, const std::string &indent)
 {
-  static uint rbi = 0;
-  static char* rbuffer[RING_BUFFER_LENGTH] = { NULL, };
-  char *s, *tbuffer = g_newa (char, (FLOAT_STRING_SIZE * 2 * n_points));
-  uint i;
-  rbi = (rbi + 1) % RING_BUFFER_LENGTH;
-  if (rbuffer[rbi] != NULL)
-    g_free (rbuffer[rbi]);
-  s = tbuffer;
-  for (i = 0; i < n_points; i++)
+  std::string string;
+  for (uint i = 0; i < n_points; i++)
     {
-      *s = 0;
-      if (indent)
-	strcat (s, indent);
-      while (*s) s++;
-      s = pretty_print_double (s, points[i].re);
-      *s++ = ' ';
-      s = pretty_print_double (s, points[i].im);
-      *s++ = '\n';
+      string += indent;
+      string += bse_string_from_double (points[i].re);
+      string += ' ';
+      string += bse_string_from_double (points[i].im);
+      string += '\n';
     }
-  *s++ = 0;
-  rbuffer[rbi] = g_strdup (tbuffer);
-  return rbuffer[rbi];
+  return string;
 }
-char*
+
+std::string
 bse_complex_str (BseComplex c)
 {
-  static uint rbi = 0;
-  static char* rbuffer[RING_BUFFER_LENGTH] = { NULL, };
-  char *s, tbuffer[FLOAT_STRING_SIZE * 2];
-  rbi = (rbi + 1) % RING_BUFFER_LENGTH;
-  if (rbuffer[rbi] != NULL)
-    g_free (rbuffer[rbi]);
-  s = tbuffer;
-  *s++ = '{';
-  s = pretty_print_double (s, c.re);
-  *s++ = ',';
-  *s++ = ' ';
-  s = pretty_print_double (s, c.im);
-  *s++ = '}';
-  *s++ = 0;
-  rbuffer[rbi] = g_strdup (tbuffer);
-  return rbuffer[rbi];
+  std::string s;
+  s += '{';
+  s += bse_string_from_double (c.re);
+  s += ", ";
+  s += bse_string_from_double (c.im);
+  s += '}';
+  return s;
 }
-char*
-bse_poly_str (uint         degree,
-	      double      *a,
-	      const char  *var)
+
+std::string
+bse_poly_str (uint degree, double *a, const std::string &uvar)
 {
-  static uint rbi = 0;
-  static char* rbuffer[RING_BUFFER_LENGTH] = { NULL, };
-  char *s, *tbuffer = g_newa (char, degree * FLOAT_STRING_SIZE);
+  const std::string var = uvar.empty() ? "x" : uvar;
+  std::string s;
+  s += '(';
+  s += bse_string_from_double (a[0]);
   uint i;
-  if (!var)
-    var = "x";
-  rbi = (rbi + 1) % RING_BUFFER_LENGTH;
-  if (rbuffer[rbi] != NULL)
-    g_free (rbuffer[rbi]);
-  s = tbuffer;
-  *s++ = '(';
-  s = pretty_print_double (s, a[0]);
   for (i = 1; i <= degree; i++)
     {
-      *s++ = '+';
-      *s = 0; strcat (s, var); while (*s) s++;
-      *s++ = '*';
-      *s++ = '(';
-      s = pretty_print_double (s, a[i]);
+      s += '+';
+      s += var;
+      s += "*(";
+      s += bse_string_from_double (a[i]);
     }
   while (i--)
-    *s++ = ')';
-  *s++ = 0;
-  rbuffer[rbi] = g_strdup (tbuffer);
-  return rbuffer[rbi];
+    s += ')';
+  return s;
 }
-char*
-bse_poly_str1 (uint         degree,
-	       double      *a,
-	       const char  *var)
+
+std::string
+bse_poly_str1 (uint degree, double *a, const std::string &uvar)
 {
-  static uint rbi = 0;
-  static char* rbuffer[RING_BUFFER_LENGTH] = { NULL, };
-  char *s, *tbuffer = g_newa (char, degree * FLOAT_STRING_SIZE);
-  uint i, need_plus = 0;
-  if (!var)
-    var = "x";
-  rbi = (rbi + 1) % RING_BUFFER_LENGTH;
-  if (rbuffer[rbi] != NULL)
-    g_free (rbuffer[rbi]);
-  s = tbuffer;
-  *s++ = '(';
+  const std::string var = uvar.empty() ? "x" : uvar;
+  std::string s;
+  bool need_plus = 0;
+  s += '(';
   if (a[0] != 0.0)
     {
-      s = pretty_print_double (s, a[0]);
-      need_plus = 1;
+      s += bse_string_from_double (a[0]);
+      need_plus = true;
     }
+  uint i;
   for (i = 1; i <= degree; i++)
     {
       if (a[i] == 0.0)
 	continue;
       if (need_plus)
-	{
-	  *s++ = ' ';
-	  *s++ = '+';
-	  *s++ = ' ';
-	}
+        s += " + ";
       if (a[i] != 1.0)
 	{
-	  s = pretty_print_double (s, a[i]);
-	  *s++ = '*';
+          s += bse_string_from_double (a[i]);
+	  s += '*';
 	}
-      *s = 0;
-      strcat (s, var);
-      while (*s) s++;
+      s += var;
       if (i > 1)
-	{
-	  *s++ = '*';
-	  *s++ = '*';
-	  sprintf (s, "%u", i);
-	  while (*s) s++;
-	}
-      need_plus = 1;
+        s += Rapicorn::string_format ("**%u", i);
+      need_plus = true;
     }
-  *s++ = ')';
-  *s++ = 0;
-  rbuffer[rbi] = g_strdup (tbuffer);
-  return rbuffer[rbi];
+  s += ')';
+  return s;
 }
+
 void
 bse_complex_gnuplot (const char  *file_name,
 		     uint         n_points,
 		     BseComplex  *points)
 {
   FILE *fout = fopen (file_name, "w");
-  fputs (bse_complex_list (n_points, points, ""), fout);
+
+  fputs (bse_complex_list (n_points, points, "").c_str(), fout);
   fclose (fout);
 }
+
 void
 bse_float_gnuplot (const char    *file_name,
                    double         xstart,
@@ -171,28 +116,28 @@ bse_float_gnuplot (const char    *file_name,
   FILE *fout = fopen (file_name, "w");
   uint i;
   for (i = 0; i < n_ypoints; i++)
-    {
-      char xstr[FLOAT_STRING_SIZE], ystr[FLOAT_STRING_SIZE];
-      pretty_print_double (xstr, xstart + i * xstep);
-      pretty_print_double (ystr, ypoints[i]);
-      fprintf (fout, "%s %s\n", xstr, ystr);
-    }
+    fprintf (fout, "%s %s\n", bse_string_from_double (xstart + i * xstep).c_str(), bse_string_from_double (ypoints[i]).c_str());
   fclose (fout);
 }
+
 double
 bse_temp_freq (double kammer_freq,
 	       int    semitone_delta)
 {
   double factor;
+
   factor = pow (BSE_2_POW_1_DIV_12, semitone_delta);
+
   return kammer_freq * factor;
 }
+
 void
 bse_poly_from_re_roots (uint         degree,
 			double      *a,
 			BseComplex  *roots)
 {
   uint i;
+
   /* initialize polynomial */
   a[1] = 1;
   a[0] = -roots[0].re;
@@ -200,18 +145,21 @@ bse_poly_from_re_roots (uint         degree,
   for (i = 1; i < degree; i++)
     {
       uint j;
+
       a[i + 1] = a[i];
       for (j = i; j >= 1; j--)
 	a[j] = a[j - 1] - a[j] * roots[i].re;
       a[0] *= -roots[i].re;
     }
 }
+
 void
 bse_cpoly_from_roots (uint         degree,
 		      BseComplex  *c,
 		      BseComplex  *roots)
 {
   uint i;
+
   /* initialize polynomial */
   c[1].re = 1;
   c[1].im = 0;
@@ -222,12 +170,14 @@ bse_cpoly_from_roots (uint         degree,
     {
       BseComplex r = bse_complex (-roots[i].re, -roots[i].im);
       uint j;
+
       c[i + 1] = c[i];
       for (j = i; j >= 1; j--)
 	c[j] = bse_complex_add (c[j - 1], bse_complex_mul (c[j], r));
       c[0] = bse_complex_mul (c[0], r);
     }
 }
+
 gboolean
 bse_poly2_droots (double roots[2],
 		  double a,
@@ -236,16 +186,21 @@ bse_poly2_droots (double roots[2],
 {
   double square = b * b - 4.0 * a * c;
   double tmp;
+
   if (square < 0)
     return FALSE;
+
   if (b > 0)
     tmp = -b - sqrt (square);
   else
     tmp = -b + sqrt (square);
+
   roots[0] = tmp / (a + a);
   roots[1] = (c + c) / tmp;
+
   return TRUE;
 }
+
 double
 bse_bit_depth_epsilon (uint n_bits)
 {
@@ -287,8 +242,10 @@ bse_bit_depth_epsilon (uint n_bits)
     .0000000004656612873077392578124900000000,
     .0000000002328306436538696289062490000000,
   };
+
   return bit_epsilons[CLAMP (n_bits, 1, 32) - 1];
 }
+
 int
 bse_rand_bool (void)
 {

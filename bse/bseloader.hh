@@ -1,16 +1,21 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #ifndef __BSE_LOADER_H__
 #define __BSE_LOADER_H__
+
 #include <bse/bseutils.hh>
 #include <bse/gslwavechunk.hh>
+
 G_BEGIN_DECLS
+
 /* --- structures --- */
 struct BseWaveFileInfo {
   guint	   n_waves;
   struct Wave {
     gchar *name;
   }       *waves;
+
   gchar  **comments;
+
   /*< private >*/
   gchar     *file_name;
   BseLoader *loader;
@@ -38,6 +43,8 @@ struct _BseWaveChunkDsc
     gfloat        vfloat;
   }               loader_data[8];
 };
+
+
 /* --- functions --- */
 BseWaveFileInfo*      bse_wave_file_info_load	(const gchar	 *file_name,
 						 BseErrorType	 *error);
@@ -55,6 +62,8 @@ GslDataHandle*	      bse_wave_handle_create	(BseWaveDsc	 *wave_dsc,
 GslWaveChunk*	      bse_wave_chunk_create	(BseWaveDsc	 *wave_dsc,
 						 guint		  nth_chunk,
 						 BseErrorType	 *error);
+
+
 /* --- loader impl --- */
 typedef enum /*< skip >*/
 {
@@ -63,6 +72,7 @@ typedef enum /*< skip >*/
 } BseLoaderFlags;
 struct BseLoader {
   const gchar *name;		/* format/loader name, e.g. "BseWave" or "WAVE audio, RIFF (little-endian)" */
+
   /* at least one of the
    * following three must
    * be non-NULL
@@ -71,7 +81,9 @@ struct BseLoader {
   const gchar **mime_types;	/* e.g.: "audio/x-mpg3" or "audio/x-wav" */
   BseLoaderFlags flags;
   const gchar **magic_specs;	/* e.g.: "0 string RIFF\n8 string WAVE\n" or "0 string #BseWave1\n" */
+
   gint   priority;   /* -100=high, +100=low, 0=default */
+
   /*< private >*/
   gpointer		  data;
   BseWaveFileInfo*	(*load_file_info)	(gpointer	   data,
@@ -91,7 +103,10 @@ struct BseLoader {
 						 BseErrorType	  *error);
   BseLoader   *next;	/* must be NULL */
 };
+
 void	      bse_loader_register	        (BseLoader	 *loader);
 BseLoader*    bse_loader_match	                (const gchar	 *file_name);
+
 G_END_DECLS
+
 #endif /* __BSE_LOADER_H__ */

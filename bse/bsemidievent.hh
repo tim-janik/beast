@@ -1,10 +1,15 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #ifndef __BSE_MIDI_EVENT_H__
 #define __BSE_MIDI_EVENT_H__
+
 #include <bse/bseobject.hh>
+
 G_BEGIN_DECLS
+
 /* --- MIDI constants --- */
 #define	BSE_MIDI_MAX_CHANNELS		(99)
+
+
 /* --- MIDI event types --- */
 #define BSE_MIDI_CHANNEL_VOICE_MESSAGE(s)       ((s) < 0x0F0)
 #define BSE_MIDI_SYSTEM_COMMON_MESSAGE(s)       (((s) & 0x0F8) == 0x0F0)
@@ -62,6 +67,8 @@ typedef enum
   /* BSE specific extra events */
   BSE_MIDI_X_CONTINUOUS_CHANGE  = 0x400
 } BseMidiEventType;
+
+
 /* --- BSE MIDI Event --- */
 #define BSE_TYPE_MIDI_EVENT	(bse_midi_event_get_type ())
 typedef struct
@@ -111,6 +118,8 @@ typedef struct
     guint   zprefix;
   } data;
 } BseMidiEvent;
+
+
 /* --- API --- */
 GType         bse_midi_event_get_type (void); /* boxed */
 BseMidiEvent* bse_midi_alloc_event    (void);
@@ -127,6 +136,8 @@ BseMidiEvent* bse_midi_event_signal   (uint                midi_channel,
                                        uint64              delta_time,
                                        BseMidiSignalType   signal_type,
                                        float               value);
+
+
 /* --- MIDI Signals --- */
 #if 0
 typeNOTdef enum	/*< prefix=BSE_MIDI_SIGNAL >*/  /* FIXME: sync to bserecords.sfidl */
@@ -311,8 +322,11 @@ typeNOTdef enum	/*< prefix=BSE_MIDI_SIGNAL >*/  /* FIXME: sync to bserecords.sfi
   BSE_MIDI_SIGNAL_CONTROL_127		/*< nick=Control 127 Polyphonic Mode On ITrigger >*/
 } BseMidiSignalType;
 #endif
+
 gfloat		bse_midi_signal_default	(BseMidiSignalType signal);
 const gchar*	bse_midi_signal_name	(BseMidiSignalType signal);
 const gchar*	bse_midi_signal_nick	(BseMidiSignalType signal);
+
 G_END_DECLS
+
 #endif /* __BSE_MIDI_EVENT_H__ */

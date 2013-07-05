@@ -21,9 +21,9 @@ init_glue_context (const gchar *client, const std::function<void()> &caller_wake
  * from @a argc / @a argv.
  */
 void
-init_async (int *argc, char ***argv, const char *app_name, SfiInitValue values[])
+init_async (int *argc, char **argv, const char *app_name, const StringVector &args)
 {
-  _bse_init_async (argc, argv, app_name, values);
+  _bse_init_async (argc, argv, app_name, args);
 }
 
 // == TaskRegistry ==
@@ -66,6 +66,59 @@ TaskRegistry::list ()
 {
   Bse::ScopedLock<Bse::Mutex> locker (task_registry_mutex_);
   return task_registry_tasks_;
+}
+
+class AidaGlibSourceImpl : public AidaGlibSource {
+  static AidaGlibSourceImpl* self_         (GSource *src)                     { return (AidaGlibSourceImpl*) src; }
+  static int                 glib_prepare  (GSource *src, int *timeoutp)      { return self_ (src)->prepare (timeoutp); }
+  static int                 glib_check    (GSource *src)                     { return self_ (src)->check(); }
+  static int                 glib_dispatch (GSource *src, GSourceFunc, void*) { return self_ (src)->dispatch(); }
+  static void                glib_finalize (GSource *src)                     { self_ (src)->~AidaGlibSourceImpl(); }
+  Rapicorn::Aida::BaseConnection *connection_;
+  GPollFD                         pfd_;
+  AidaGlibSourceImpl (Rapicorn::Aida::BaseConnection *connection) :
+    connection_ (connection), pfd_ { -1, 0, 0 }
+  {
+    pfd_.fd = connection_->notify_fd();
+    pfd_.events = G_IO_IN;
+    g_source_add_poll (this, &pfd_);
+  }
+  ~AidaGlibSourceImpl ()
+  {
+    g_source_remove_poll (this, &pfd_);
+  }
+  bool
+  prepare (int *timeoutp)
+  {
+    return pfd_.revents || connection_->pending();
+  }
+  bool
+  check ()
+  {
+    return pfd_.revents || connection_->pending();
+  }
+  bool
+  dispatch ()
+  {
+    pfd_.revents = 0;
+    connection_->dispatch();
+    return true;
+  }
+public:
+  static AidaGlibSourceImpl*
+  create (Rapicorn::Aida::BaseConnection *connection)
+  {
+    AIDA_ASSERT (connection != NULL);
+    static GSourceFuncs glib_source_funcs = { glib_prepare, glib_check, glib_dispatch, glib_finalize, NULL, NULL };
+    GSource *src = g_source_new (&glib_source_funcs, sizeof (AidaGlibSourceImpl));
+    return new (src) AidaGlibSourceImpl (connection);
+  }
+};
+
+AidaGlibSource*
+AidaGlibSource::create (Rapicorn::Aida::BaseConnection *connection)
+{
+  return AidaGlibSourceImpl::create (connection);
 }
 
 } // Bse

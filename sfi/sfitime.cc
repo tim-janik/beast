@@ -8,6 +8,8 @@
 #include <time.h>
 #include <errno.h>
 #include <stdio.h>
+
+
 #define	SFI_ERROR_DOMAIN	g_quark_from_static_string ("sfi-error-domain")
 enum {
   ERROR_DATE_INVALID	= 1,
@@ -19,8 +21,12 @@ enum {
   ERROR_DATE_MINUTE_BOUNDS,
   ERROR_DATE_SECOND_BOUNDS,
 };
+
+
 /* --- variables --- */
 static SfiTime	 gmt_diff = 0;
+
+
 /* --- functions --- */
 void
 _sfi_init_time (void)
@@ -29,12 +35,15 @@ _sfi_init_time (void)
   struct timeval tv = { 0, };
   time_t t;
   gint error;
+
   g_assert (initialized++ == FALSE);
+
   tzset ();
   error = gettimeofday (&tv, NULL);
   if (error)
     g_error ("gettimeofday() failed: %s", g_strerror (errno));
   t = tv.tv_sec + tv.tv_usec / 1000000;
+
   /* we need to find out the timezone offset relative to GMT here */
 #if 0
   { /* aparently FreeBSD/BSD4.3 doesn't have an extern long timezone; set by
@@ -52,8 +61,10 @@ _sfi_init_time (void)
     gmt_diff = -tmdata.tm_gmtoff;
   }
 #endif
+
   gmt_diff *= SFI_USEC_FACTOR;
 }
+
 /**
  * @return		Current system time in micro seconds
  *
@@ -71,11 +82,14 @@ sfi_time_system (void)
 {
   struct timeval tv;
   SfiTime ustime;
+
   gettimeofday (&tv, NULL);
   ustime = tv.tv_sec;
   ustime = ustime * SFI_USEC_FACTOR + tv.tv_usec;
+
   return ustime;
 }
+
 /**
  * @param ustime	local standard time in micro seconds
  * @return		UTC relative time in micro seconds
@@ -89,6 +103,7 @@ sfi_time_to_utc (SfiTime ustime)
 {
   return ustime + gmt_diff;
 }
+
 /**
  * @param ustime	UTC relative time in micro seconds
  * @return		local standard time in micro seconds
@@ -102,6 +117,7 @@ sfi_time_from_utc (SfiTime ustime)
 {
   return ustime - gmt_diff;
 }
+
 /**
  * @param ustime	time in micro seconds
  * @return		newly allocated string
@@ -115,8 +131,10 @@ sfi_time_to_string (SfiTime ustime)
 {
   time_t t = CLAMP (ustime, SFI_MIN_TIME, SFI_MAX_TIME) / SFI_USEC_FACTOR;
   struct tm bt;
+
   bt = *gmtime (&t);	/* FIXME: not thread safe */
-  return g_strdup_printf ("%04d-%02d-%02d %02d:%02d:%02d",
+
+  return g_strdup_format ("%04d-%02d-%02d %02d:%02d:%02d",
 			  bt.tm_year + 1900,
 			  bt.tm_mon + 1,
 			  bt.tm_mday,
@@ -124,6 +142,7 @@ sfi_time_to_string (SfiTime ustime)
 			  bt.tm_min,
 			  bt.tm_sec);
 }
+
 /**
  * @param ustime	time in micro seconds
  * @param elements      string identifying time elements
@@ -152,21 +171,24 @@ sfi_time_to_nice_string (SfiTime      ustime,
   struct tm bt;
   if (!elements)
     elements = "";
+
   bt = *gmtime (&t);	/* FIXME: not thread safe */
+
   const bool wtime = strchr (elements, 'H') || strchr (elements, 'M') || strchr (elements, 'S');
   const bool wdate = strchr (elements, 'd') || strchr (elements, 'm') || strchr (elements, 'y');
+
   if (wdate && !wtime)
-    return g_strdup_printf ("%04d-%02d-%02d",
+    return g_strdup_format ("%04d-%02d-%02d",
                             bt.tm_year + 1900,
                             bt.tm_mon + 1,
                             bt.tm_mday);
   if (!wdate && wtime)
-    return g_strdup_printf ("%02d:%02d:%02d",
+    return g_strdup_format ("%02d:%02d:%02d",
                             bt.tm_hour,
                             bt.tm_min,
                             bt.tm_sec);
   else
-    return g_strdup_printf ("%02d:%02d:%02d %04d-%02d-%02d",
+    return g_strdup_format ("%02d:%02d:%02d %04d-%02d-%02d",
                             bt.tm_hour,
                             bt.tm_min,
                             bt.tm_sec,
@@ -174,6 +196,7 @@ sfi_time_to_nice_string (SfiTime      ustime,
                             bt.tm_mon + 1,
                             bt.tm_mday);
 }
+
 /**
  * @param time_string	string containing human readable date and time
  * @return		parsed time in micro seconds or 0 on error
@@ -185,6 +208,7 @@ sfi_time_from_string (const gchar *time_string)
 {
   return sfi_time_from_string_err (time_string, NULL);
 }
+
 /**
  * @param time_string	string containing human readable date and time
  * @param error_p	location for newly allocated string containing conversion errors
@@ -213,7 +237,9 @@ sfi_time_from_string_err (const gchar *time_string,
   SfiTime ustime;
   SfiRing *ring, *warnings = NULL;
   guint i;
+
   g_return_val_if_fail (time_string != NULL, 0);
+
   /* here, we support several date formats by making several attempts
    * to match a string and pick the best one. if we acquire a full match
    * before all match possibilities have been tryed, we skip outstanding
@@ -246,15 +272,19 @@ sfi_time_from_string_err (const gchar *time_string,
    * more on time formats (ISO 8601) can be found at:
    *   http://www.cl.cam.ac.uk/~mgk25/iso-time.html
    */
+
   string = g_strdup (time_string);
+
   for (i = 0; i < n_formats; i++)
     {
       year[i] = month[i] = day[i] = 0;
       hour[i] = minute[i] = second[i] = 0;
       success[i] = garbage[i] = FALSE;
     }
+
   finished = FALSE;
   i = 0;
+
 #define DATE_CHECK(index)	(year[(index)] >= 1990 &&	\
 				 month[(index)] >= 1 &&		\
 				 month[(index)] <= 12 &&	\
@@ -273,6 +303,7 @@ sfi_time_from_string_err (const gchar *time_string,
     {
       gint n_values;
       gchar end_char = 0;
+
       n_values = sscanf (string,
 			 "%u-%u-%u %u:%u:%u%c",
 			 &year[i], &month[i], &day[i],
@@ -287,6 +318,7 @@ sfi_time_from_string_err (const gchar *time_string,
     {
       gint n_values;
       gchar end_char = 0;
+
       second[i] = 0;
       n_values = sscanf (string,
 			 "%u-%u-%u %u:%u%c",
@@ -302,6 +334,7 @@ sfi_time_from_string_err (const gchar *time_string,
     {
       gint n_values;
       gchar end_char = 0;
+
       second[i] = 0;
       n_values = sscanf (string,
                          "%u-%u-%u%c",
@@ -313,9 +346,11 @@ sfi_time_from_string_err (const gchar *time_string,
       i++;
     }
   if (!finished) /* parse "mm/dd/yyyy hh:mm:ss" e.g. "04/16/1998 23:59:59" */
+
     {
       gint n_values;
       gchar end_char = 0;
+
       n_values = sscanf (string,
 			 "%u/%u/%u %u:%u:%u%c",
 			 &month[i], &day[i], &year[i],
@@ -330,6 +365,7 @@ sfi_time_from_string_err (const gchar *time_string,
     {
       gint n_values;
       gchar end_char = 0;
+
       second[i] = 0;
       n_values = sscanf (string,
 			 "%u/%u/%u %u:%u%c",
@@ -345,6 +381,7 @@ sfi_time_from_string_err (const gchar *time_string,
     {
       gint n_values;
       gchar end_char = 0;
+
       second[i] = 0;
       n_values = sscanf (string,
                          "%u/%u/%u%c",
@@ -359,6 +396,7 @@ sfi_time_from_string_err (const gchar *time_string,
     {
       gint n_values;
       gchar end_char = 0;
+
       n_values = sscanf (string,
 			 "%u.%u.%u %u:%u:%u%c",
 			 &day[i], &month[i], &year[i],
@@ -373,6 +411,7 @@ sfi_time_from_string_err (const gchar *time_string,
     {
       gint n_values;
       gchar end_char = 0;
+
       second[i] = 0;
       n_values = sscanf (string,
 			 "%u.%u.%u %u:%u%c",
@@ -388,6 +427,7 @@ sfi_time_from_string_err (const gchar *time_string,
     {
       gint n_values;
       gchar end_char = 0;
+
       second[i] = 0;
       n_values = sscanf (string,
                          "%u.%u.%u%c",
@@ -402,6 +442,7 @@ sfi_time_from_string_err (const gchar *time_string,
     {
       gint n_values;
       gchar end_char = 0;
+
       n_values = sscanf (string,
 			 "%u:%u:%u %u-%u-%u%c",
 			 &hour[i], &minute[i], &second[i],
@@ -416,6 +457,7 @@ sfi_time_from_string_err (const gchar *time_string,
     {
       gint n_values;
       gchar end_char = 0;
+
       second[i] = 0;
       n_values = sscanf (string,
 			 "%u:%u %u-%u-%u%c",
@@ -431,6 +473,7 @@ sfi_time_from_string_err (const gchar *time_string,
     {
       gint n_values;
       gchar end_char = 0;
+
       n_values = sscanf (string,
 			 "%u:%u:%u %u/%u/%u%c",
 			 &hour[i], &minute[i], &second[i],
@@ -445,6 +488,7 @@ sfi_time_from_string_err (const gchar *time_string,
     {
       gint n_values;
       gchar end_char = 0;
+
       second[i] = 0;
       n_values = sscanf (string,
 			 "%u:%u %u/%u/%u%c",
@@ -460,6 +504,7 @@ sfi_time_from_string_err (const gchar *time_string,
     {
       gint n_values;
       gchar end_char = 0;
+
       n_values = sscanf (string,
 			 "%u:%u:%u %u.%u.%u%c",
 			 &hour[i], &minute[i], &second[i],
@@ -474,6 +519,7 @@ sfi_time_from_string_err (const gchar *time_string,
     {
       gint n_values;
       gchar end_char = 0;
+
       second[i] = 0;
       n_values = sscanf (string,
 			 "%u:%u %u.%u.%u%c",
@@ -486,6 +532,7 @@ sfi_time_from_string_err (const gchar *time_string,
       i++;
     }
 #undef	DATE_CHECK
+
   /* try to find out the best/first match if any */
   if (finished)
     i--;
@@ -495,6 +542,7 @@ sfi_time_from_string_err (const gchar *time_string,
 	if (success[i])
 	  break;
     }
+
   if (!success[i])
     {
       warnings = sfi_ring_append (warnings, g_strdup ("invalid date specification"));
@@ -504,38 +552,40 @@ sfi_time_from_string_err (const gchar *time_string,
     {
       struct tm tm_data = { 0 };
       time_t ttime;
+
       if (garbage[i])
 	warnings = sfi_ring_append (warnings, g_strdup ("junk characters at end of date"));
       if (year[i] < 1990)
 	{
-	  warnings = sfi_ring_append (warnings, g_strdup_printf ("%s out of bounds", "year"));
+	  warnings = sfi_ring_append (warnings, g_strdup_format ("%s out of bounds", "year"));
 	  year[i] = 1990;
 	}
       if (month[i] < 1 || month[i] > 12)
 	{
-	  warnings = sfi_ring_append (warnings, g_strdup_printf ("%s out of bounds", "month"));
+	  warnings = sfi_ring_append (warnings, g_strdup_format ("%s out of bounds", "month"));
 	  month[i] = CLAMP (month[i], 1, 12);
 	}
       if (day[i] < 1 || day[i] > 31)
 	{
-	  warnings = sfi_ring_append (warnings, g_strdup_printf ("%s out of bounds", "day"));
+	  warnings = sfi_ring_append (warnings, g_strdup_format ("%s out of bounds", "day"));
 	  month[i] = CLAMP (day[i], 1, 31);
 	}
       if (hour[i] < 0 || hour[i] > 23)
 	{
-	  warnings = sfi_ring_append (warnings, g_strdup_printf ("%s out of bounds", "hour"));
+	  warnings = sfi_ring_append (warnings, g_strdup_format ("%s out of bounds", "hour"));
 	  hour[i] = CLAMP (hour[i], 0, 23);
 	}
       if (minute[i] < 0 || minute[i] > 59)
 	{
-	  warnings = sfi_ring_append (warnings, g_strdup_printf ("%s out of bounds", "minute"));
+	  warnings = sfi_ring_append (warnings, g_strdup_format ("%s out of bounds", "minute"));
 	  minute[i] = CLAMP (minute[i], 0, 59);
 	}
       if (second[i] < 0 || second[i] > 61)
 	{
-	  warnings = sfi_ring_append (warnings, g_strdup_printf ("%s out of bounds", "second"));
+	  warnings = sfi_ring_append (warnings, g_strdup_format ("%s out of bounds", "second"));
 	  second[i] = CLAMP (second[i], 0, 61);
 	}
+
       tm_data.tm_sec = second[i];
       tm_data.tm_min = minute[i];
       tm_data.tm_hour = hour[i];
@@ -545,6 +595,7 @@ sfi_time_from_string_err (const gchar *time_string,
       tm_data.tm_wday = 0;
       tm_data.tm_yday = 0;
       tm_data.tm_isdst = 1;
+
 #if HAVE_TIMEGM
       ttime = timegm (&tm_data);			/* returns -1 on error */
 #else
@@ -561,19 +612,23 @@ sfi_time_from_string_err (const gchar *time_string,
         g_free (tz);
       }
 #endif
+
       ustime = ttime;
       ustime *= SFI_USEC_FACTOR;
       ustime = MAX (ustime, 0);
+
       /* g_print ("mktime(): year(%u) month(%u) day(%u) hour(%u) minute(%u) second(%u)\n",
        *           year[i], month[i], day[i], hour[i], minute[i], second[i]);
        */
+
       if (ustime < SFI_MIN_TIME)	/* limit ustime to 1.1.1990 */
 	{
-	  warnings = sfi_ring_append (warnings, g_strdup_printf ("invalid date specification (%lld < %lld, gmt-diff=%lld)",
+	  warnings = sfi_ring_append (warnings, g_strdup_format ("invalid date specification (%lld < %lld, gmt-diff=%lld)",
 								 ustime, SFI_MIN_TIME, gmt_diff));
 	  ustime = SFI_MIN_TIME;
 	}
     }
+
   /* general cleanup and error return */
   g_free (string);
   if (error_p && warnings)
@@ -585,7 +640,7 @@ sfi_time_from_string_err (const gchar *time_string,
 	    g_string_append (gstring, ", ");
 	  g_string_append (gstring, (char*) ring->data);
 	}
-      g_string_aprintf (gstring, " in date: \"%s\"", time_string);
+      g_string_add_format (gstring, " in date: \"%s\"", time_string);
       *error_p = g_string_free (gstring, FALSE);
     }
   else if (error_p)

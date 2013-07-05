@@ -4,16 +4,35 @@
 #include "bstmsgabsorb.hh"
 #include <string.h>
 #include <errno.h>
+
 /* --- prototypes --- */
 static GtkWidget*	create_janitor_dialog	(SfiProxy	   janitor);
+
 /* --- variables --- */
 static GSList *msg_windows = NULL;
+
 /* --- functions --- */
+const char*
+bst_msg_type_ident (BstMsgType bmt)
+{
+  Rapicorn::Aida::TypeCode etype = Rapicorn::Aida::TypeCode::from_enum<Bse::UserMessageType> ();
+  const Rapicorn::Aida::EnumValue ev = etype.enum_find (bmt);
+  if (ev.ident)
+    return ev.ident;
+  switch (bmt)
+    {
+    case BST_MSG_SCRIPT:        return "script";
+    default: ;
+    }
+  assert_unreached();
+}
+
 static void
 dialog_destroyed (GtkWidget *dialog)
 {
   msg_windows = g_slist_remove (msg_windows, dialog);
 }
+
 static inline gboolean
 hastext (const gchar *string)
 {
@@ -23,6 +42,7 @@ hastext (const gchar *string)
     string++;
   return string[0] != 0;
 }
+
 static gchar*
 message_title (const BstMessage *msg,
 	       const gchar     **stock,
@@ -40,16 +60,12 @@ message_title (const BstMessage *msg,
     case BST_MSG_SCRIPT:
       *stock = BST_STOCK_EXECUTE;
       break;
-    case BST_MSG_ALWAYS:
-    case BST_MSG_INFO:
-      *stock = BST_STOCK_INFO;
-      break;
-    default:
-    case BST_MSG_DIAG:
-      *stock = BST_STOCK_DIAG;
-      break;
     case BST_MSG_DEBUG:
       *stock = BST_STOCK_DIAG;
+      break;
+    default:
+    case BST_MSG_INFO:
+      *stock = BST_STOCK_INFO;
       break;
     }
   const gchar *message = msg->label ? msg->label : msg->ident;
@@ -80,6 +96,8 @@ toggle_update_filter (GtkWidget *toggle,
   if (config_check && bst_msg_absorb_config_adjust (config_check, GTK_TOGGLE_BUTTON (toggle)->active, TRUE))
     bst_msg_absorb_config_save();
 }
+
+
 static gchar*
 adapt_message_spacing (const gchar *head,
                        const gchar *message,
@@ -98,18 +116,20 @@ adapt_message_spacing (const gchar *head,
     g_string_append (gstring, tail);
   return g_string_free (gstring, FALSE);
 }
+
 static gchar*
 strdup_msg_hashkey (const BstMessage *msg)
 {
   /* prefer hashing by janitor/process name over PID */
   if (msg->janitor)
-    return g_strdup_printf ("## %x ## %s ## %s ## J%s:%s", msg->type, msg->primary, msg->secondary,
+    return g_strdup_format ("## %x ## %s ## %s ## J%s:%s", msg->type, msg->primary, msg->secondary,
                             bse_janitor_get_script_name (msg->janitor), bse_janitor_get_proc_name (msg->janitor));
   else if (msg->process)
-    return g_strdup_printf ("## %x ## %s ## %s ## P%s", msg->type, msg->primary, msg->secondary, msg->process);
+    return g_strdup_format ("## %x ## %s ## %s ## P%s", msg->type, msg->primary, msg->secondary, msg->process);
   else
-    return g_strdup_printf ("## %x ## %s ## %s ## N%x", msg->type, msg->primary, msg->secondary, msg->pid);
+    return g_strdup_format ("## %x ## %s ## %s ## N%x", msg->type, msg->primary, msg->secondary, msg->pid);
 }
+
 static void
 bst_msg_dialog_update (GxkDialog        *dialog,
                        const BstMessage *msg,
@@ -191,15 +211,15 @@ bst_msg_dialog_update (GxkDialog        *dialog,
       GString *gstring = g_string_new (msg->details);
       while (gstring->len && gstring->str[gstring->len - 1] == '\n')
         g_string_erase (gstring, gstring->len - 1, 1);
-      g_string_aprintf (gstring, "\n\n");
+      g_string_add_format (gstring, "\n\n");
       if (hastext (proc_name))
-        g_string_aprintf (gstring, _("Procedure: %s\nScript: %s\n"), proc_name, script_name);
+        g_string_add_format (gstring, _("Procedure: %s\nScript: %s\n"), proc_name, script_name);
       if (hastext (msg->process))
-        g_string_aprintf (gstring, _("Process: %s\n"), msg->process);
+        g_string_add_format (gstring, _("Process: %s\n"), msg->process);
       if (hastext (msg->log_domain) && !hastext (proc_name) && !hastext (msg->process))
-        g_string_aprintf (gstring, _("Origin:  %s\n"), msg->log_domain);
+        g_string_add_format (gstring, _("Origin:  %s\n"), msg->log_domain);
       if (msg->pid && BST_DVL_HINTS)
-          g_string_aprintf (gstring, _("PID:     %u\n"), msg->pid);
+          g_string_add_format (gstring, _("PID:     %u\n"), msg->pid);
       while (gstring->len && gstring->str[gstring->len - 1] == '\n')
         g_string_erase (gstring, gstring->len - 1, 1);
       gchar *text = adapt_message_spacing (NULL, gstring->str, NULL);
@@ -244,17 +264,20 @@ bst_msg_dialog_update (GxkDialog        *dialog,
   gxk_dialog_set_title (dialog, title);
   g_free (title);
 }
+
 static void
 bst_msg_dialog_janitor_update (GxkDialog        *dialog,
                                SfiProxy          janitor)
 {
   g_return_if_fail (BSE_IS_JANITOR (janitor));
+
   guint i, n = bse_janitor_n_actions (janitor);
   for (i = 0; i < n; i++)
     {
       const gchar *action = bse_janitor_get_action (janitor, i);
       const gchar *name = bse_janitor_get_action_name (janitor, i);
       const gchar *blurb = bse_janitor_get_action_blurb (janitor, i);
+
       if (action)
         {
           GtkWidget *button = gxk_dialog_action_multi (dialog, name,
@@ -267,6 +290,8 @@ bst_msg_dialog_janitor_update (GxkDialog        *dialog,
   GtkWidget *bwidget = gxk_dialog_action (dialog, BST_STOCK_CANCEL, (void*) gxk_toplevel_delete, NULL);
   gxk_dialog_set_focus (dialog, bwidget);
 }
+
+
 void
 bst_msg_bit_free (BstMsgBit *mbit)
 {
@@ -275,26 +300,21 @@ bst_msg_bit_free (BstMsgBit *mbit)
   g_free (mbit->options);
   g_free (mbit);
 }
+
 BstMsgBit*
-bst_msg_bit_printf (guint8                  msg_part_id,
-                    const char             *format,
-                    ...)
+bst_msg_bit_create (guint8 msg_part_id, const std::string &text)
 {
   int saved_errno = errno;
   /* construct message */
-  va_list args;
-  va_start (args, format);
-  char *text = g_strdup_vprintf (format, args);
-  va_end (args);
   BstMsgBit *mbit = g_new0 (BstMsgBit, 1);
   mbit->id = msg_part_id;
-  mbit->text = g_strdup (text);
-  g_free (text);
+  mbit->text = g_strdup (text.c_str());
   mbit->stock_icon = NULL;
   mbit->options = NULL;
   errno = saved_errno;
   return mbit;
 }
+
 BstMsgBit*
 bst_msg_bit_create_choice (guint                   id,
                            const gchar            *name,
@@ -311,6 +331,7 @@ bst_msg_bit_create_choice (guint                   id,
   errno = saved_errno;
   return mbit;
 }
+
 static void
 message_dialog_choice_triggered (GtkWidget *choice,
                                  gpointer   data)
@@ -320,6 +341,7 @@ message_dialog_choice_triggered (GtkWidget *choice,
     g_object_set_data ((GObject*) toplevel, "bst-modal-choice-result", data);
   gxk_toplevel_delete (choice);
 }
+
 static void
 repeat_dialog (GxkDialog *dialog)
 {
@@ -327,13 +349,14 @@ repeat_dialog (GxkDialog *dialog)
   if (label)
     {
       gint count = g_object_get_int (dialog, "BEAST-user-message-count");
-      gchar *rstr = g_strdup_printf (dngettext (BEAST_GETTEXT_DOMAIN, _("Message has been repeated %u time"), _("Message has been repeated %u times"), count), count);
+      gchar *rstr = g_strdup_format (dngettext (BEAST_GETTEXT_DOMAIN, _("Message has been repeated %u time"), _("Message has been repeated %u times"), count), count);
       g_object_set_int (dialog, "BEAST-user-message-count", count + 1);
       gtk_label_set_text (label, rstr);
       g_free (rstr);
       gtk_widget_show (GTK_WIDGET (label));
     }
 }
+
 static GtkWidget*
 find_dialog (GSList           *dialog_list,
              const BstMessage *msg)
@@ -353,6 +376,7 @@ find_dialog (GSList           *dialog_list,
   g_free (mid);
   return widget;
 }
+
 static void
 dialog_show_above_modals (GxkDialog *dialog,
                           gboolean   must_return_visible)
@@ -365,6 +389,7 @@ dialog_show_above_modals (GxkDialog *dialog,
     }
   gtk_widget_show (GTK_WIDGET (dialog));
 }
+
 guint
 bst_message_handler (const BstMessage *const_msg)
 {
@@ -382,8 +407,6 @@ bst_message_handler (const BstMessage *const_msg)
     msg.config_check = NULL;
   if (!msg.config_check && msg.type == BST_MSG_INFO)
     msg.config_check = _("Display dialogs with information messages");
-  if (!msg.config_check && msg.type == BST_MSG_DIAG)
-    msg.config_check = _("Display dialogs with dignostic messages");
   if (!msg.config_check && msg.type == BST_MSG_DEBUG)
     msg.config_check = _("Display dialogs with debugging messages");
   /* check the simple non-choice dialog types */
@@ -442,19 +465,7 @@ bst_message_handler (const BstMessage *const_msg)
     }
   return result;
 }
-static BstMsgType
-bst_msg_type_from_user_msg_type (BseMsgType utype)
-{
-  BIRNET_STATIC_ASSERT (BST_MSG_NONE    == (uint) BSE_MSG_NONE);
-  BIRNET_STATIC_ASSERT (BST_MSG_ALWAYS  == (uint) BSE_MSG_ALWAYS);
-  BIRNET_STATIC_ASSERT (BST_MSG_ERROR   == (uint) BSE_MSG_ERROR);
-  BIRNET_STATIC_ASSERT (BST_MSG_WARNING == (uint) BSE_MSG_WARNING);
-  BIRNET_STATIC_ASSERT (BST_MSG_SCRIPT  == (uint) BSE_MSG_SCRIPT);
-  BIRNET_STATIC_ASSERT (BST_MSG_INFO    == (uint) BSE_MSG_INFO);
-  BIRNET_STATIC_ASSERT (BST_MSG_DIAG    == (uint) BSE_MSG_DIAG);
-  BIRNET_STATIC_ASSERT (BST_MSG_DEBUG   == (uint) BSE_MSG_DEBUG);
-  return BstMsgType (utype);
-}
+
 static void
 message_fill_from_script (BstMessage    *msg,
                           BstMsgType     mtype,
@@ -466,8 +477,8 @@ message_fill_from_script (BstMessage    *msg,
 {
   msg->log_domain = NULL;
   msg->type = mtype;
-  msg->ident = sfi_msg_type_ident (SfiMsgType (msg->type));
-  msg->label = sfi_msg_type_label (SfiMsgType (msg->type));
+  msg->ident = bst_msg_type_ident (msg->type);
+  msg->label = bst_msg_type_ident (msg->type);
   const gchar *proc_title = NULL;
   if (hastext (proc_name))
     {
@@ -482,11 +493,11 @@ message_fill_from_script (BstMessage    *msg,
   else
     {
       gchar *script_base = g_path_get_basename (script_name);
-      msg->secondary = g_strdup_printf (_("Executing procedure '%s' from script '%s'."), proc_name, script_base);
+      msg->secondary = g_strdup_format (_("Executing procedure '%s' from script '%s'."), proc_name, script_base);
       g_free (script_base);
     }
   if (!janitor && hastext (proc_name))
-    msg->details = g_strdup_printf (_("Procedure: %s\nScript: %s\n"), proc_name, script_name);
+    msg->details = g_strdup_format (_("Procedure: %s\nScript: %s\n"), proc_name, script_name);
   else
     msg->details = NULL;
   msg->config_check = NULL;
@@ -496,6 +507,8 @@ message_fill_from_script (BstMessage    *msg,
   msg->n_msg_bits = 0;
   msg->msg_bits = NULL;
 }
+
+
 static void
 message_free_from_script (BstMessage *msg)
 {
@@ -505,6 +518,7 @@ message_free_from_script (BstMessage *msg)
   g_free ((char*) msg->details);
   g_free ((char*) msg->config_check);
 }
+
 static void
 janitor_actions_changed (GxkDialog *dialog)
 {
@@ -519,6 +533,7 @@ janitor_actions_changed (GxkDialog *dialog)
   bst_msg_dialog_janitor_update (dialog, janitor);
   message_free_from_script (&msg);
 }
+
 static void
 janitor_progress (GxkDialog *dialog,
 		  SfiReal    progress)
@@ -526,7 +541,7 @@ janitor_progress (GxkDialog *dialog,
   SfiProxy janitor = (SfiProxy) g_object_get_data (G_OBJECT (dialog), "user-data");
   const gchar *script = bse_janitor_get_script_name (janitor);
   const gchar *sbname = strrchr (script, '/');
-  gchar *exec_name = g_strdup_printf ("%s", sbname ? sbname + 1 : script);
+  gchar *exec_name = g_strdup_format ("%s", sbname ? sbname + 1 : script);
   // bse_janitor_get_proc_name (janitor);
   gxk_status_window_push (dialog);
   if (progress < 0)
@@ -536,6 +551,7 @@ janitor_progress (GxkDialog *dialog,
   gxk_status_window_pop ();
   g_free (exec_name);
 }
+
 static void
 janitor_unconnected (GxkDialog *dialog)
 {
@@ -554,7 +570,7 @@ janitor_unconnected (GxkDialog *dialog)
       if (exit_reason)
         {
           BstMessage msg = { 0, };
-          gchar *error_msg = g_strdup_printf (_("An error occoured during execution of script procedure '%s': %s"), proc_name, exit_reason);
+          gchar *error_msg = g_strdup_format (_("An error occoured during execution of script procedure '%s': %s"), proc_name, exit_reason);
           message_fill_from_script (&msg, BST_MSG_ERROR, 0, _("Script execution error."), script_name, proc_name, error_msg);
           g_free (error_msg);
           bst_message_handler (&msg);
@@ -562,10 +578,12 @@ janitor_unconnected (GxkDialog *dialog)
         }
     }
 }
+
 static void
 janitor_window_deleted (GxkDialog *dialog)
 {
   SfiProxy janitor = (SfiProxy) g_object_get_data (G_OBJECT (dialog), "user-data");
+
   bse_proxy_disconnect (janitor,
 			"any_signal", janitor_actions_changed, dialog,
 			"any_signal", janitor_progress, dialog,
@@ -574,6 +592,7 @@ janitor_window_deleted (GxkDialog *dialog)
   bse_janitor_kill (janitor);
   bse_item_unuse (janitor);
 }
+
 static GtkWidget*
 create_janitor_dialog (SfiProxy janitor)
 {
@@ -581,6 +600,7 @@ create_janitor_dialog (SfiProxy janitor)
                                                    GXK_DIALOG_STATUS_BAR, // | GXK_DIALOG_WINDOW_GROUP,
                                                    NULL, NULL);
   gxk_dialog_set_sizes (dialog, -1, -1, 512, -1);
+
   g_object_set_data (G_OBJECT (dialog), "user-data", (gpointer) janitor);
   bse_proxy_connect (janitor,
 		     "swapped-object-signal::action-changed", janitor_actions_changed, dialog,
@@ -594,24 +614,7 @@ create_janitor_dialog (SfiProxy janitor)
   dialog_show_above_modals (dialog, FALSE);
   return GTK_WIDGET (dialog);
 }
-void
-bst_message_synth_msg_handler (const BseMessage *umsg)
-{
-  BstMessage msg = { 0, };
-  msg.log_domain = umsg->log_domain;
-  msg.type = bst_msg_type_from_user_msg_type (umsg->type);
-  msg.ident = sfi_msg_type_ident (SfiMsgType (msg.type));
-  msg.label = sfi_msg_type_label (SfiMsgType (msg.type));
-  msg.config_check = umsg->config_check;
-  msg.title = umsg->title;
-  msg.primary = umsg->primary;
-  msg.secondary = umsg->secondary;
-  msg.details = umsg->details;
-  msg.janitor = umsg->janitor;
-  msg.process = umsg->process;
-  msg.pid = umsg->pid;
-  bst_message_handler (&msg);
-}
+
 static char*
 text_concat (char *prefix,
              char *text)
@@ -620,10 +623,12 @@ text_concat (char *prefix,
   g_free (prefix);
   return result;
 }
+
+
 /**
  * bst_message_dialog_display
  * @param log_domain   log domain
- * @param level        one of %BST_MSG_ERROR, %BST_MSG_WARNING, %BST_MSG_INFO, %BST_MSG_DIAG
+ * @param mtype        one of %BST_MSG_ERROR, %BST_MSG_WARNING, %BST_MSG_INFO, %BST_MSG_DIAG
  * @param n_bits       number of message bits
  * @param bits         message bits from bst_msg_bit_printf
  *
@@ -656,8 +661,8 @@ bst_message_dialog_display (const char     *log_domain,
   BstMessage msg = { 0, };
   msg.log_domain = log_domain;
   msg.type = mtype;
-  msg.ident = sfi_msg_type_ident (SfiMsgType (mtype));
-  msg.label = sfi_msg_type_label (SfiMsgType (mtype));
+  msg.ident = bst_msg_type_ident (mtype);
+  msg.label = bst_msg_type_ident (mtype);
   msg.janitor = bse_script_janitor();
   msg.process = g_strdup (Rapicorn::ThisThread::name().c_str());
   msg.pid = Rapicorn::ThisThread::thread_pid();
@@ -706,20 +711,14 @@ bst_message_dialog_display (const char     *log_domain,
   errno = saved_errno;
   return result;
 }
+
 void
 bst_message_dialogs_popdown (void)
 {
   while (msg_windows)
     gtk_widget_destroy ((GtkWidget*) msg_windows->data);
 }
-static void
-server_bse_message (SfiProxy        server,
-                    SfiRec         *bse_msg_rec)
-{
-  BseMessage *umsg = bse_message_from_rec (bse_msg_rec);
-  bst_message_synth_msg_handler (umsg);
-  bse_message_free (umsg);
-}
+
 static void
 server_script_start (SfiProxy server,
                      SfiProxy janitor)
@@ -734,57 +733,51 @@ server_script_error (SfiProxy     server,
 {
   /* this signal is emitted (without janitor) when script execution failed */
   BstMessage msg = { 0, };
-  gchar *error_msg = g_strdup_printf (_("Failed to execute script procedure '%s': %s"), proc_name, reason);
+  gchar *error_msg = g_strdup_format (_("Failed to execute script procedure '%s': %s"), proc_name, reason);
   message_fill_from_script (&msg, BST_MSG_ERROR, 0, _("Script execution error."), script_name, proc_name, error_msg);
   g_free (error_msg);
   bst_message_handler (&msg);
   message_free_from_script (&msg);
 }
+
+static void
+server_user_message (const Bse::UserMessage &umsg)
+{
+  Rapicorn::Aida::TypeCode etype = Rapicorn::Aida::TypeCode::from_enum<Bse::UserMessageType> ();
+  auto convert_msg_type = [] (Bse::UserMessageType mtype) {
+    switch (mtype)
+      {
+      case Bse::ERROR:          return BST_MSG_ERROR;
+      case Bse::WARNING:        return BST_MSG_WARNING;
+      case Bse::DEBUG:          return BST_MSG_DEBUG;
+      default:
+      case Bse::INFO:           return BST_MSG_INFO;
+      }
+  };
+  BstMessage msg = { 0, };
+  msg.log_domain = "BSE";
+  msg.type = convert_msg_type (umsg.type);
+  msg.title = umsg.title.c_str();
+  msg.primary = umsg.text1.c_str();
+  msg.secondary = umsg.text2.c_str();
+  msg.details = umsg.text3.c_str();
+  Bse::String cfg = Bse::string_format (_("Show messages about %s"), umsg.label.c_str());
+  msg.config_check = cfg.c_str();
+  msg.ident = etype.enum_find (umsg.type).ident;
+  msg.label = NULL;
+  msg.janitor = 0;
+  msg.process = 0;
+  msg.pid = 0;
+  bst_message_handler (&msg);
+}
+
 void
 bst_message_connect_to_server (void)
 {
+  bse_server.sig_user_message() += server_user_message;
   bse_proxy_connect (BSE_SERVER,
-		     "signal::message", server_bse_message, NULL,
 		     "signal::script_start", server_script_start, NULL,
 		     "signal::script_error", server_script_error, NULL,
 		     NULL);
   bse_proxy_set (BSE_SERVER, "log-messages", FALSE, NULL);
-}
-static int
-msg_id_compare (const void *v1, const void *v2)
-{
-  const BstMsgID *mid1 = (const BstMsgID*) v1;
-  const BstMsgID *mid2 = (const BstMsgID*) v2;
-  return strcmp (mid1->ident, mid2->ident);
-}
-const BstMsgID*
-bst_message_list_types (guint *n_types)
-{
-  static const BstMsgID *const_msg_ids = NULL;
-  static guint           const_n_msg_ids = 0;
-  if (!const_msg_ids)
-    {
-      BstMsgID *msg_ids = NULL;
-      guint i = 0;
-      const gchar *ident = sfi_msg_type_ident (SfiMsgType (i));
-      while (ident)
-        {
-          msg_ids = g_renew (BstMsgID, msg_ids, i + 1);
-          msg_ids[i].type = i;
-          msg_ids[i].ident = ident;
-          msg_ids[i].label = sfi_msg_type_label (SfiMsgType (msg_ids[i].type));
-          i++;
-          ident = sfi_msg_type_ident (SfiMsgType (i));
-        }
-      msg_ids = g_renew (BstMsgID, msg_ids, i + 1);
-      msg_ids[i].type = 0;
-      msg_ids[i].ident = NULL;
-      msg_ids[i].label = NULL;
-      qsort (msg_ids, i, sizeof (msg_ids[0]), msg_id_compare);
-      const_msg_ids = msg_ids;
-      const_n_msg_ids = i;
-    }
-  if (n_types)
-    *n_types = const_n_msg_ids;
-  return const_msg_ids;
 }

@@ -1,4 +1,6 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
+
+
 /* --- item sequence editors --- */
 #include "bstitemseqdialog.hh"
 static void
@@ -15,6 +17,7 @@ param_item_seq_changed (gpointer             data,
       gxk_param_apply_value (param);
     }
 }
+
 static void
 param_item_seq_popup_editor (GtkWidget *widget,
                              GxkParam  *param)
@@ -33,6 +36,7 @@ param_item_seq_popup_editor (GtkWidget *widget,
       bse_item_seq_free (iseq);
     }
 }
+
 static GtkWidget*
 param_item_seq_create (GxkParam    *param,
                        const gchar *tooltip,
@@ -72,6 +76,7 @@ param_item_seq_create (GxkParam    *param,
   /* gxk_widget_add_option (box, "hexpand", "+"); */
   return widget;
 }
+
 static void
 param_item_seq_update (GxkParam  *param,
                        GtkWidget *widget)
@@ -86,9 +91,9 @@ param_item_seq_update (GxkParam  *param,
       if (iseq)
         {
           if (iseq->n_items == 1)
-            content = g_strdup_printf ("%s", bse_item_get_name_or_type (iseq->items[0]));
+            content = g_strdup_format ("%s", bse_item_get_name_or_type (iseq->items[0]));
           else if (iseq->n_items > 1 && (!pc->partitions || pc->partitions->n_types == 0))
-            content = g_strdup_printf ("#%u", iseq->n_items);
+            content = g_strdup_format ("#%u", iseq->n_items);
           else if (iseq->n_items > 1) /* && partitions->n_types */
             {
               guint i, j, other = 0, *partitions = g_newa (guint, pc->partitions->n_types);
@@ -120,6 +125,7 @@ param_item_seq_update (GxkParam  *param,
                 NULL);
   g_free (content);
 }
+
 static GxkParamEditor param_item_seq = {
   { "item-list",        N_("Item List"), },
   { G_TYPE_BOXED,       "SfiSeq", },

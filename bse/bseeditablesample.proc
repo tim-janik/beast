@@ -20,9 +20,11 @@ METHOD (BseEditableSample, open) {
   /* extract parameter values */
   BseEditableSample *esample = (BseEditableSample*) bse_value_get_object (in_values++);
   BseErrorType error;
+
   /* check parameters */
   if (!BSE_IS_EDITABLE_SAMPLE (esample))
     return BSE_ERROR_PROC_PARAM_INVAL;
+
   /* action */
   if (!esample->wchunk)
     error = BSE_ERROR_WAVE_NOT_FOUND;
@@ -37,10 +39,13 @@ METHOD (BseEditableSample, open) {
       if (!error)
 	esample->open_count++;
     }
+
   /* set output parameters */
   g_value_set_enum (out_values++, error);
+
   return BSE_ERROR_NONE;
 }
+
 METHOD (BseEditableSample, close) {
   HELP	= ("Close an opened sample.");
   IN	= bse_param_spec_object ("esample", "Editable Sample", NULL,
@@ -51,15 +56,19 @@ METHOD (BseEditableSample, close) {
 {
   /* extract parameter values */
   BseEditableSample *esample = (BseEditableSample*) bse_value_get_object (in_values++);
+
   /* check parameters */
   if (!BSE_IS_EDITABLE_SAMPLE (esample) || !esample->wchunk || !esample->open_count)
     return BSE_ERROR_PROC_PARAM_INVAL;
+
   /* action */
   esample->open_count--;
   if (!esample->open_count)
     gsl_wave_chunk_close (esample->wchunk);
+
   return BSE_ERROR_NONE;
 }
+
 METHOD (BseEditableSample, get-length) {
   HELP	= ("Return the number of values in the sample.");
   IN	= bse_param_spec_object ("esample", "Editable Sample", NULL,
@@ -73,15 +82,19 @@ METHOD (BseEditableSample, get-length) {
   /* extract parameter values */
   BseEditableSample *esample = (BseEditableSample*) bse_value_get_object (in_values++);
   GslDataCache *dcache = NULL;
+
   /* check parameters */
   if (!BSE_IS_EDITABLE_SAMPLE (esample))
     return BSE_ERROR_PROC_PARAM_INVAL;
+
   /* set output parameters */
   if (BSE_EDITABLE_SAMPLE_OPENED (esample) && esample->wchunk)
     dcache = esample->wchunk->dcache;
   sfi_value_set_int (out_values++, dcache ? gsl_data_handle_length (dcache->dhandle) : 0);
+
   return BSE_ERROR_NONE;
 }
+
 METHOD (BseEditableSample, get-n-channels) {
   HELP	= ("Return the number of channels in the sample.");
   IN	= bse_param_spec_object ("esample", "Editable Sample", NULL,
@@ -94,13 +107,17 @@ METHOD (BseEditableSample, get-n-channels) {
 {
   /* extract parameter values */
   BseEditableSample *esample = (BseEditableSample*) bse_value_get_object (in_values++);
+
   /* check parameters */
   if (!BSE_IS_EDITABLE_SAMPLE (esample))
     return BSE_ERROR_PROC_PARAM_INVAL;
+
   /* set output parameters */
   sfi_value_set_int (out_values++, esample->wchunk ? esample->wchunk->n_channels : 1);
+
   return BSE_ERROR_NONE;
 }
+
 METHOD (BseEditableSample, get-osc-freq) {
   HELP	= ("Return the oscillator frequency for the sample.");
   IN	= bse_param_spec_object ("esample", "Editable Sample", NULL,
@@ -113,13 +130,17 @@ METHOD (BseEditableSample, get-osc-freq) {
 {
   /* extract parameter values */
   BseEditableSample *esample = (BseEditableSample*) bse_value_get_object (in_values++);
+
   /* check parameters */
   if (!BSE_IS_EDITABLE_SAMPLE (esample))
     return BSE_ERROR_PROC_PARAM_INVAL;
+
   /* set output parameters */
   sfi_value_set_real (out_values++, esample->wchunk ? esample->wchunk->osc_freq : BSE_KAMMER_FREQUENCY);
+
   return BSE_ERROR_NONE;
 }
+
 METHOD (BseEditableSample, read-samples) {
   HELP	= ("Read a set of samples from a specific offset.");
   IN	= bse_param_spec_object ("esample", "Editable Sample", NULL,
@@ -150,6 +171,7 @@ METHOD (BseEditableSample, read-samples) {
     {
       GslDataCacheNode *dnode = (GslDataCacheNode*) gsl_data_cache_ref_node (dcache, voffset, GSL_DATA_CACHE_DEMAND_LOAD);
       guint i, l, dnode_length = dcache->node_size;
+
       l = dnode_length - (voffset - dnode->offset) + dcache->padding;
       l = MIN (l, gsl_data_handle_length (dcache->dhandle) - voffset);
       fseq = bse_float_seq_new ();

@@ -2,6 +2,8 @@
 #include "bstpatternview.hh"
 #include "bstskinconfig.hh"
 #include <string.h>
+
+
 /* --- defines --- */
 /* accessors */
 #define	STYLE(self)		(GTK_WIDGET (self)->style)
@@ -31,16 +33,24 @@
 /* layout (allocation) */
 #define	CMARK_HEIGHT(self)      (YTHICKNESS (self) * 3 + 1)
 #define	PMARK_HEIGHT(self)      (CMARK_HEIGHT (self) + 3 * YTHICKNESS (self))
+
 #define CUSTOM_MARKER_OFFSET    (128)
+
+
 /* --- prototypes --- */
 static void     pattern_view_queue_expose       (BstPatternView *self,
                                                  guint           tick_start,
                                                  guint           tick_end);
+
+
 /* --- static variables --- */
 static guint	signal_drag = 0;
 static guint	signal_clicked = 0;
+
+
 /* --- functions --- */
 G_DEFINE_TYPE (BstPatternView, bst_pattern_view, GXK_TYPE_SCROLL_CANVAS);
+
 enum {
   CINDEX_SHADE1,
   CINDEX_SHADE2,
@@ -49,6 +59,7 @@ enum {
   CINDEX_VBAR,
   CINDEX_LAST
 };
+
 static void
 pattern_view_class_setup_skin (BstPatternViewClass *klass)
 {
@@ -67,10 +78,12 @@ pattern_view_class_setup_skin (BstPatternViewClass *klass)
   scroll_canvas_class->image_saturation = BST_SKIN_CONFIG (pattern_shade) * 0.01;
   gxk_scroll_canvas_class_skin_changed (scroll_canvas_class);
 }
+
 static void
 bst_pattern_view_init (BstPatternView *self)
 {
   GxkScrollCanvas *scc = GXK_SCROLL_CANVAS (self);
+
   self->row_height = 1;
   self->tpt = 384 * 4;
   self->max_ticks = 1;
@@ -86,13 +99,17 @@ bst_pattern_view_init (BstPatternView *self)
                                       "offset-3 : note-3 : velocity-3 : fine-tune-3 : length-3 | "
                                       "control-4 | control-7 | control-8"));
 }
+
 static void
 bst_pattern_view_dispose (GObject *object)
 {
   BstPatternView *self = BST_PATTERN_VIEW (object);
+
   bst_pattern_view_set_proxy (self, 0);
+
   G_OBJECT_CLASS (bst_pattern_view_parent_class)->dispose (object);
 }
+
 static void
 bst_pattern_view_destroy_columns (BstPatternView *self)
 {
@@ -117,14 +134,18 @@ bst_pattern_view_destroy_columns (BstPatternView *self)
   self->layout_string = NULL;
   gxk_scroll_canvas_reset_pango_layouts (GXK_SCROLL_CANVAS (self));
 }
+
 static void
 bst_pattern_view_finalize (GObject *object)
 {
   BstPatternView *self = BST_PATTERN_VIEW (object);
+
   bst_pattern_view_set_proxy (self, 0);
   bst_pattern_view_destroy_columns (self);
+
   G_OBJECT_CLASS (bst_pattern_view_parent_class)->finalize (object);
 }
+
 static void
 pattern_view_update (BstPatternView *self,
                      guint           tick,
@@ -136,12 +157,14 @@ pattern_view_update (BstPatternView *self,
   if (GTK_WIDGET_DRAWABLE (self))
     pattern_view_queue_expose (self, tick, tick + duration - 1);
 }
+
 static void
 pattern_view_release_proxy (BstPatternView *self)
 {
   gxk_toplevel_delete (GTK_WIDGET (self));
   bst_pattern_view_set_proxy (self, 0);
 }
+
 static void
 pattern_view_range_changed (BstPatternView *self)
 {
@@ -149,6 +172,7 @@ pattern_view_range_changed (BstPatternView *self)
   bse_proxy_get (self->proxy, "last-tick", &max_ticks, NULL);
   bst_pattern_view_vsetup (self, 384, 4, MAX (max_ticks, 1), self->vticks);
 }
+
 void
 bst_pattern_view_set_proxy (BstPatternView *self,
                             SfiProxy        proxy)
@@ -159,6 +183,7 @@ bst_pattern_view_set_proxy (BstPatternView *self,
       g_return_if_fail (BSE_IS_PART (proxy));
       g_return_if_fail (bse_item_get_project (proxy) != 0);
     }
+
   if (self->proxy)
     {
       bse_proxy_disconnect (self->proxy,
@@ -181,6 +206,7 @@ bst_pattern_view_set_proxy (BstPatternView *self,
     }
   gtk_widget_queue_resize (GTK_WIDGET (self));
 }
+
 static PangoLayout*
 pattern_view_column_pango_layout (BstPatternView   *self,
                                   BstPatternColumn *col)
@@ -192,6 +218,7 @@ pattern_view_column_pango_layout (BstPatternView   *self,
       break;
   return gxk_scroll_canvas_peek_pango_layout (scc, COLUMN_PLAYOUT_INDEX (i));
 }
+
 static void
 pattern_view_get_layout (GxkScrollCanvas        *scc,
                          GxkScrollCanvasLayout  *layout)
@@ -201,9 +228,11 @@ pattern_view_get_layout (GxkScrollCanvas        *scc,
   PangoRectangle rect = { 0 };
   gchar buffer[64];
   guint i, accu = 0;
+
   /* hpanel writings */
   pango_layout_get_pixel_extents (PLAYOUT_HPANEL (self), NULL, &rect);
   layout->top_panel_height = rect.height;
+
   /* vpanel numbers */
   fdesc = pango_font_description_new ();
   pango_font_description_set_family_static (fdesc, "monospace");
@@ -215,8 +244,10 @@ pattern_view_get_layout (GxkScrollCanvas        *scc,
   pango_layout_set_text (PLAYOUT_VPANEL (self), buffer, -1);
   pango_layout_get_pixel_extents (PLAYOUT_VPANEL (self), NULL, &rect);
   layout->left_panel_width = rect.width + 2 * XTHICKNESS (self);
+
   layout->right_panel_width = 0;
   layout->bottom_panel_height = 0;
+
   /* canvas size */
   pango_layout_get_pixel_extents (PLAYOUT_CANVAS (self), NULL, &rect);
   self->row_height = rect.height + FOCUS_WIDTH (self);
@@ -237,6 +268,7 @@ pattern_view_get_layout (GxkScrollCanvas        *scc,
     }
   layout->canvas_width = accu;
 }
+
 static gint
 tick_to_row (BstPatternView *self,
              gint            tick)
@@ -244,6 +276,7 @@ tick_to_row (BstPatternView *self,
   double row = tick / (double) self->vticks;
   return MIN (row, G_MAXINT);
 }
+
 static gint
 last_visible_row (BstPatternView *self)
 {
@@ -252,6 +285,7 @@ last_visible_row (BstPatternView *self)
   gint view_row = (-1 + (gint) scc->vadjustment->upper) / self->row_height;
   return MAX (model_row, view_row);
 }
+
 static void
 row_to_ticks (BstPatternView *self,
               gint            row,
@@ -264,6 +298,7 @@ row_to_ticks (BstPatternView *self,
   if (duration_p)
     *duration_p = self->vticks;
 }
+
 static gint
 pixels_to_row_unscrolled (BstPatternView *self,
                           gint            y)
@@ -271,6 +306,7 @@ pixels_to_row_unscrolled (BstPatternView *self,
   double row = y / (double) self->row_height;
   return MIN (G_MAXINT, row);
 }
+
 static gint
 coord_to_row (BstPatternView *self,
               gint            y,
@@ -281,6 +317,7 @@ coord_to_row (BstPatternView *self,
     *is_valid = row >= 0 && row <= last_visible_row (self);
   return row;
 }
+
 static void
 row_to_pixels_unscrolled (BstPatternView *self,
                           gint            row,
@@ -292,6 +329,7 @@ row_to_pixels_unscrolled (BstPatternView *self,
   if (height_p)
     *height_p = self->row_height;
 }
+
 static gboolean
 row_to_coords (BstPatternView *self,
 	       gint            row,
@@ -305,6 +343,7 @@ row_to_coords (BstPatternView *self,
     *height_p = self->row_height;
   return row >= 0 && row <= last_visible_row (self);
 }
+
 static gint
 coord_to_focus_col (BstPatternView *self,
                     gint            x,
@@ -355,6 +394,7 @@ coord_to_focus_col (BstPatternView *self,
     *is_valid = valid;
   return focus_col;
 }
+
 #if 0
 static gint
 ticks_to_pixels (BstPatternView *self,
@@ -366,6 +406,7 @@ ticks_to_pixels (BstPatternView *self,
     pixels = MAX (pixels, 1);
   return pixels;
 }
+
 static gint
 pixels_to_ticks (BstPatternView *self,
 		 gint	         pixels)
@@ -378,12 +419,14 @@ pixels_to_ticks (BstPatternView *self,
     ticks = 0;
   return ticks;
 }
+
 static gint
 coord_to_tick (BstPatternView *self,
 	       gint	       y,
 	       gboolean	       extended_bound)
 {
   guint tick;
+
   y += Y_OFFSET (self);
   tick = pixels_to_ticks (self, y);
   if (extended_bound)
@@ -394,8 +437,10 @@ coord_to_tick (BstPatternView *self,
     }
   return tick;
 }
+
 #define	CROSSING_TACT4		(1)
 #define	CROSSING_TACT		(2)
+
 static guint
 coord_check_crossing (BstPatternView *self,
 		      gint	      y,
@@ -404,8 +449,10 @@ coord_check_crossing (BstPatternView *self,
   guint ntick = coord_to_tick (self, y, FALSE);
   guint xtick = coord_to_tick (self, y, TRUE);
   guint nq = 0, xq = 0;
+
   /* catch _at_ tick boundary as well */
   xtick += 1;
+
   switch (crossing)
     {
     case CROSSING_TACT4:
@@ -417,9 +464,11 @@ coord_check_crossing (BstPatternView *self,
       xq = xtick / self->tpt;
       break;
     }
+
   return nq != xq;
 }
 #endif
+
 static void
 pattern_view_allocate_2markers (BstPatternView    *self,
                                 GxkScrollMarker *marker)
@@ -438,6 +487,7 @@ pattern_view_allocate_2markers (BstPatternView    *self,
                                   0, ry + rh / 2 - PMARK_HEIGHT (self) / 2,
                                   pw, PMARK_HEIGHT (self));
 }
+
 static void
 pattern_view_move_2markers (BstPatternView    *self,
                             GxkScrollMarker *marker)
@@ -448,6 +498,7 @@ pattern_view_move_2markers (BstPatternView    *self,
   gxk_scroll_canvas_move_marker (scc, &marker[0], 0, ry + rh / 2 - CMARK_HEIGHT (self) / 2);
   gxk_scroll_canvas_move_marker (scc, &marker[1], 0, ry + rh / 2 - PMARK_HEIGHT (self) / 2);
 }
+
 static void
 pattern_view_reallocate_contents (GxkScrollCanvas *scc,
                                   gint             xdiff,
@@ -481,6 +532,7 @@ pattern_view_reallocate_contents (GxkScrollCanvas *scc,
         }
     }
 }
+
 static void
 pattern_view_realize (GtkWidget *widget)
 {
@@ -488,6 +540,7 @@ pattern_view_realize (GtkWidget *widget)
   GTK_WIDGET_CLASS (bst_pattern_view_parent_class)->realize (widget);
   bst_pattern_view_set_focus (self, 0, 0);
 }
+
 static void
 draw_row_shading (BstPatternView *self,
                   GdkWindow      *drawable,
@@ -503,6 +556,7 @@ draw_row_shading (BstPatternView *self,
     gdk_draw_rectangle (drawable, COLOR_GC_SHADE2 (self), TRUE,
                         0, y, drawable_width, height);
 }
+
 static void
 bst_pattern_view_draw_canvas (GxkScrollCanvas *scc,
                               GdkWindow       *drawable,
@@ -515,10 +569,12 @@ bst_pattern_view_draw_canvas (GxkScrollCanvas *scc,
   // gint line_width = 0; /* line widths != 0 interfere with dash-settings on some X servers */
   GXK_SCROLL_CANVAS_CLASS (bst_pattern_view_parent_class)->draw_canvas (scc, drawable, area);
   gdk_window_get_size (CANVAS (self), &width, &height);
+
   GdkGC *gcs[BST_PATTERN_COLUMN_GC_LAST] = { NULL, };
   gcs[BST_PATTERN_COLUMN_GC_TEXT0] = COLOR_GC_TEXT0 (self);
   gcs[BST_PATTERN_COLUMN_GC_TEXT1] = COLOR_GC_TEXT1 (self);
   gcs[BST_PATTERN_COLUMN_GC_VBAR] = COLOR_GC_VBAR (self);
+
   validrow = row_to_coords (self, row, &rect.y, &rect.height);
   while (validrow && rect.y < area->y + area->height)
     {
@@ -537,12 +593,14 @@ bst_pattern_view_draw_canvas (GxkScrollCanvas *scc,
       validrow = row_to_coords (self, ++row, &rect.y, &rect.height);
     }
 }
+
 #if 0   // FIXME
 static void
 bst_pattern_view_overlap_grow_hpanel_area (BstPatternView *self,
                                            GdkRectangle *area)
 {
   gint i, x = area->x, xbound = x + area->width;
+
   /* grow hpanel exposes by surrounding tacts */
   i = coord_to_tick (self, x, FALSE);
   i /= self->tpt;
@@ -555,10 +613,12 @@ bst_pattern_view_overlap_grow_hpanel_area (BstPatternView *self,
   i += 2;               /* fudge 1 tact to the right (+1 for round-off) */
   i *= self->tpt;
   xbound = tick_to_coord (self, i);
+
   area->x = x;
   area->width = xbound - area->x;
 }
 #endif
+
 static void
 bst_pattern_view_draw_hpanel (GxkScrollCanvas *scc,
                               GdkWindow       *drawable,
@@ -572,6 +632,7 @@ bst_pattern_view_draw_hpanel (GxkScrollCanvas *scc,
   gint i, width, height;
   gdk_window_get_size (drawable, &width, &height);
   bst_pattern_view_overlap_grow_hpanel_area (self, area);
+
   /* tact numbers */
   for (i = area->x; i < area->x + area->width; i++)
     {
@@ -581,11 +642,14 @@ bst_pattern_view_draw_hpanel (GxkScrollCanvas *scc,
       if (coord_check_crossing (self, i, CROSSING_TACT4))
 	{
 	  guint next_pixel, tact4 = coord_to_tick (self, i, TRUE) + 1;
+
 	  tact4 /= (self->tpt * 4);
 	  next_pixel = tick_to_coord (self, (tact4 + 1) * (self->tpt * 4));
+
 	  g_snprintf (buffer, 64, "%u", tact4 + 1);
           pango_layout_set_text (PLAYOUT_HPANEL (self), buffer, -1);
           pango_layout_get_pixel_extents (PLAYOUT_HPANEL (self), NULL, &rect);
+
 	  /* draw this tact if there's enough space */
 	  if (i + rect.width / 2 < (i + next_pixel) / 2)
             gdk_draw_layout (drawable, draw_gc,
@@ -595,14 +659,17 @@ bst_pattern_view_draw_hpanel (GxkScrollCanvas *scc,
       else if (self->draw_tact_grid && coord_check_crossing (self, i, CROSSING_TACT))
 	{
           guint next_pixel, tact = coord_to_tick (self, i, TRUE) + 1;
+
 	  tact /= self->tpt;
 	  next_pixel = tick_to_coord (self, (tact + 1) * self->tpt);
           tact = tact % 4 + 1;
           if (tact == 1444)
             continue;   /* would draw on top of tact4 number */
+
 	  g_snprintf (buffer, 64, ":%u", tact % 4 + 1);
           pango_layout_set_text (PLAYOUT_HPANEL (self), buffer, -1);
           pango_layout_get_pixel_extents (PLAYOUT_HPANEL (self), NULL, &rect);
+
 	  /* draw this tact if there's enough space */
 	  if (i + rect.width < (i + next_pixel) / 2)		/* don't half width, leave some more space */
             gdk_draw_layout (drawable, draw_gc,
@@ -612,6 +679,7 @@ bst_pattern_view_draw_hpanel (GxkScrollCanvas *scc,
     }
 #endif
 }
+
 static void
 bst_pattern_view_draw_vpanel (GxkScrollCanvas *scc,
                               GdkWindow       *drawable,
@@ -624,6 +692,7 @@ bst_pattern_view_draw_vpanel (GxkScrollCanvas *scc,
   gchar buffer[64];
   GdkRectangle rect;
   gdk_window_get_size (VPANEL (self), &width, &height);
+
   validrow = row_to_coords (self, row, &rect.y, &rect.height);
   while (validrow && rect.y < area->y + area->height)
     {
@@ -640,6 +709,7 @@ bst_pattern_view_draw_vpanel (GxkScrollCanvas *scc,
       validrow = row_to_coords (self, ++row, &rect.y, &rect.height);
     }
 }
+
 static void
 bst_pattern_view_draw_marker (GxkScrollCanvas *scc,
                               GdkWindow       *drawable,
@@ -680,6 +750,7 @@ bst_pattern_view_draw_marker (GxkScrollCanvas *scc,
                     x, y, width, height);
 #endif
 }
+
 static void
 pattern_view_queue_expose (BstPatternView *self,
                            guint           tick_start,
@@ -702,6 +773,7 @@ pattern_view_queue_expose (BstPatternView *self,
   gdk_window_get_size (CANVAS (self), &area.width, NULL);
   gdk_window_invalidate_rect (CANVAS (self), &area, TRUE);
 }
+
 static void
 pattern_view_adjustment_changed (GxkScrollCanvas *scc,
                                  GtkAdjustment   *adj)
@@ -735,12 +807,14 @@ pattern_view_adjustment_changed (GxkScrollCanvas *scc,
       bst_pattern_view_set_focus (self, self->focus_col, self->focus_row);
     }
 }
+
 static void
 pattern_view_update_adjustments (GxkScrollCanvas *scc,
                                  gboolean         hadj,
                                  gboolean         vadj)
 {
   BstPatternView *self = BST_PATTERN_VIEW (scc);
+
   if (hadj)
     {
       scc->hadjustment->upper = scc->layout.canvas_width;
@@ -768,8 +842,10 @@ pattern_view_update_adjustments (GxkScrollCanvas *scc,
       scc->hadjustment->step_increment = 4 * rh;        // FIXME rows-per-tact
     }
   GXK_SCROLL_CANVAS_CLASS (bst_pattern_view_parent_class)->update_adjustments (scc, hadj, vadj);
+
   bst_pattern_view_set_focus (self, self->focus_col, self->focus_row);
 }
+
 void
 bst_pattern_view_vsetup (BstPatternView           *self,
                          guint                     tpqn,
@@ -781,10 +857,12 @@ bst_pattern_view_vsetup (BstPatternView           *self,
   self->tpt = MAX (qnpt, 1) * self->tpqn;
   self->vticks = CLAMP (vticks, 1, self->tpt);
   self->max_ticks = MAX (max_ticks, self->tpt);
+
   gtk_widget_queue_draw (GTK_WIDGET (self));
   Y_OFFSET (self) = GXK_SCROLL_CANVAS (self)->vadjustment->value;
   gxk_scroll_canvas_update_adjustments (GXK_SCROLL_CANVAS (self), FALSE, TRUE);
 }
+
 static void
 pattern_view_handle_drag (GxkScrollCanvas     *scc,
                           GxkScrollCanvasDrag *scc_drag,
@@ -836,6 +914,7 @@ pattern_view_handle_drag (GxkScrollCanvas     *scc,
       g_signal_emit (self, signal_clicked, 0, drag->button, drag->start_row, drag->start_tick, event);
     }
 }
+
 void
 bst_pattern_view_add_column (BstPatternView   *self,
                              BstPatternLType   ltype,
@@ -844,6 +923,7 @@ bst_pattern_view_add_column (BstPatternView   *self,
 {
   BstPatternColumn *col;
   g_return_if_fail (BST_PATTERN_VIEW (self));
+
   self->cols = g_renew (BstPatternColumn*, self->cols, self->n_cols + 1);
   col = bst_pattern_column_create (ltype, num, lflags);
   self->cols[self->n_cols++] = col;
@@ -855,18 +935,21 @@ bst_pattern_view_add_column (BstPatternView   *self,
     }
   gtk_widget_queue_resize (GTK_WIDGET (self));
 }
+
 gint
 bst_pattern_view_get_focus_width (BstPatternView           *self)
 {
   g_return_val_if_fail (BST_PATTERN_VIEW (self), 0);
   return (XTHICKNESS (self) + YTHICKNESS (self)) / 2;
 }
+
 gint
 bst_pattern_view_get_last_row (BstPatternView *self)
 {
   g_return_val_if_fail (BST_PATTERN_VIEW (self), 0);
   return last_visible_row (self);
 }
+
 BstPatternColumn*
 bst_pattern_view_get_focus_cell (BstPatternView *self, int *tick_p, int *duration_p)
 {
@@ -879,6 +962,7 @@ bst_pattern_view_get_focus_cell (BstPatternView *self, int *tick_p, int *duratio
     }
   return NULL;
 }
+
 gboolean
 bst_pattern_view_dispatch_key (BstPatternView            *self,
                                guint                      keyval,
@@ -906,12 +990,14 @@ bst_pattern_view_dispatch_key (BstPatternView            *self,
     }
   return FALSE;
 }
+
 void
 bst_pattern_view_set_focus (BstPatternView *self, int focus_col, int focus_row)
 {
   GdkRectangle rect;
   gint last_row;
   g_return_if_fail (BST_PATTERN_VIEW (self));
+
   focus_col = MIN (focus_col + 1, self->n_focus_cols) - 1;
   last_row = bst_pattern_view_get_last_row (self);
   focus_row = MIN (focus_row, last_row);
@@ -953,6 +1039,7 @@ bst_pattern_view_set_focus (BstPatternView *self, int focus_col, int focus_row)
                                       rect.width, rect.height);
     }
 }
+
 void
 bst_pattern_view_set_marker (BstPatternView          *self,
                              guint                    mark_index,
@@ -964,6 +1051,7 @@ bst_pattern_view_set_marker (BstPatternView          *self,
   guint count;
   g_return_if_fail (mark_index > 0);
   mark_index += CUSTOM_MARKER_OFFSET;
+
   marker = gxk_scroll_canvas_lookup_marker (scc, mark_index, &count);
   if (!marker && !mtype)
     return;
@@ -982,7 +1070,9 @@ bst_pattern_view_set_marker (BstPatternView          *self,
         }
       return;
     }
+
   g_return_if_fail (count == 2);
+
   marker[0].coords.y = position;
   marker[1].coords.y = position;
   if (marker[0].mtype != mtype || !marker[0].pixmap)
@@ -994,6 +1084,7 @@ bst_pattern_view_set_marker (BstPatternView          *self,
   else
     pattern_view_move_2markers (self, marker);
 }
+
 void
 bst_pattern_view_set_pixmarker (BstPatternView           *self,
                                 guint                     mark_index,
@@ -1007,6 +1098,7 @@ bst_pattern_view_set_pixmarker (BstPatternView           *self,
   GxkScrollMarker *marker;
   guint count;
   g_return_if_fail (mark_index > 0 && mark_index < CUSTOM_MARKER_OFFSET);
+
   marker = gxk_scroll_canvas_lookup_marker (scc, mark_index, &count);
   if (!marker && !mtype)
     return;
@@ -1024,7 +1116,9 @@ bst_pattern_view_set_pixmarker (BstPatternView           *self,
         }
       return;
     }
+
   g_return_if_fail (count == 1);
+
   if (marker->mtype == mtype && marker->windowp == &CANVAS (self) &&
       marker->extends.width == width && marker->extends.height == height)
     gxk_scroll_canvas_move_marker (scc, marker, x, y);
@@ -1034,11 +1128,13 @@ bst_pattern_view_set_pixmarker (BstPatternView           *self,
       gxk_scroll_canvas_setup_marker (scc, marker, &CANVAS (self), x, y, width, height);
     }
 }
+
 const gchar*
 bst_pattern_view_get_layout (BstPatternView *self)
 {
   return self->layout_string;
 }
+
 guint
 bst_pattern_view_set_layout (BstPatternView *self,
                              const gchar    *layout)
@@ -1076,6 +1172,7 @@ bst_pattern_view_set_layout (BstPatternView *self,
   g_free (column);
   return p2 - layout;
 }
+
 void
 bst_pattern_view_set_shading (BstPatternView            *self,
                               guint                      row1,
@@ -1087,15 +1184,19 @@ bst_pattern_view_set_shading (BstPatternView            *self,
   self->srow2 = row2;
   gtk_widget_queue_draw (GTK_WIDGET (self));
 }
+
 static void
 bst_pattern_view_class_init (BstPatternViewClass *klass)
 {
   GObjectClass *gobject_class = G_OBJECT_CLASS (klass);
   GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (klass);
   GxkScrollCanvasClass *scroll_canvas_class = GXK_SCROLL_CANVAS_CLASS (klass);
+
   gobject_class->finalize = bst_pattern_view_finalize;
   gobject_class->dispose = bst_pattern_view_dispose;
+
   widget_class->realize = pattern_view_realize;
+
   scroll_canvas_class->hscrollable = TRUE;
   scroll_canvas_class->vscrollable = TRUE;
   scroll_canvas_class->get_layout = pattern_view_get_layout;
@@ -1109,8 +1210,10 @@ bst_pattern_view_class_init (BstPatternViewClass *klass)
   scroll_canvas_class->handle_drag = pattern_view_handle_drag;
   scroll_canvas_class->image_tint = gdk_color_from_rgb (0x00ffffff);
   scroll_canvas_class->image_saturation = 0;
+
   klass->drag = NULL;
   klass->clicked = NULL;
+
   signal_drag = g_signal_new ("drag", G_OBJECT_CLASS_TYPE (klass),
 			      G_SIGNAL_RUN_LAST, G_STRUCT_OFFSET (BstPatternViewClass, drag),
 			      NULL, NULL,
@@ -1122,6 +1225,7 @@ bst_pattern_view_class_init (BstPatternViewClass *klass)
 				 bst_marshal_NONE__UINT_UINT_INT_BOXED,
 				 G_TYPE_NONE, 4, G_TYPE_UINT, G_TYPE_UINT, G_TYPE_INT,
 				 GDK_TYPE_EVENT | G_SIGNAL_TYPE_STATIC_SCOPE);
+
   bst_skin_config_add_notify ((BstSkinConfigNotify) pattern_view_class_setup_skin, klass);
   pattern_view_class_setup_skin (klass);
 }

@@ -4,6 +4,7 @@
 #ifdef __cplusplus
 extern "C" {
 #endif /* __cplusplus */
+
 /* GTK - The GIMP Toolkit
  * Copyright (C) 1995-1997 Peter Mattis, Spencer Kimball and Josh MacDonald
  *
@@ -27,11 +28,17 @@ extern "C" {
  */
 #ifndef __GTK_WRAP_BOX_H__
 #define __GTK_WRAP_BOX_H__
+
+
 /* #include <gdk/gdk.h> */
 /* #include <gtk/gtkcontainer.h> */
+
+
 #ifdef __cplusplus
 extern "C" {
 #endif /* __cplusplus */
+
+
 /* --- type macros --- */
 #define GTK_TYPE_WRAP_BOX	     (gtk_wrap_box_get_type ())
 #define GTK_WRAP_BOX(obj)	     (GTK_CHECK_CAST ((obj), GTK_TYPE_WRAP_BOX, GtkWrapBox))
@@ -39,14 +46,18 @@ extern "C" {
 #define GTK_IS_WRAP_BOX(obj)	     (GTK_CHECK_TYPE ((obj), GTK_TYPE_WRAP_BOX))
 #define GTK_IS_WRAP_BOX_CLASS(klass) (GTK_CHECK_CLASS_TYPE ((klass), GTK_TYPE_WRAP_BOX))
 #define GTK_WRAP_BOX_GET_CLASS(obj)  (GTK_CHECK_GET_CLASS ((obj), GTK_TYPE_WRAP_BOX, GtkWrapBoxClass))
+
+
 /* --- typedefs --- */
 typedef struct _GtkWrapBox      GtkWrapBox;
 typedef struct _GtkWrapBoxClass GtkWrapBoxClass;
 typedef struct _GtkWrapBoxChild GtkWrapBoxChild;
+
 /* --- GtkWrapBox --- */
 struct _GtkWrapBox
 {
   GtkContainer     container;
+
   guint            homogeneous : 1;
   guint            justify : 4;
   guint            line_justify : 4;
@@ -60,6 +71,7 @@ struct _GtkWrapBox
 struct _GtkWrapBoxClass
 {
   GtkContainerClass parent_class;
+
   GSList* (*rlist_line_children) (GtkWrapBox       *wbox,
 				  GtkWrapBoxChild **child_p,
 				  GtkAllocation    *area,
@@ -74,10 +86,13 @@ struct _GtkWrapBoxChild
   guint      vexpand : 1;
   guint      vfill : 1;
   guint      wrapped : 1;
+
   GtkWrapBoxChild *next;
 };
 #define GTK_JUSTIFY_TOP    GTK_JUSTIFY_LEFT
 #define GTK_JUSTIFY_BOTTOM GTK_JUSTIFY_RIGHT
+
+
 /* --- prototypes --- */
 GtkType	   gtk_wrap_box_get_type            (void);
 void	   gtk_wrap_box_set_homogeneous     (GtkWrapBox      *wbox,
@@ -124,9 +139,14 @@ void       gtk_wrap_box_set_child_packing   (GtkWrapBox      *wbox,
 					     gboolean         wrapped);
 guint*	   gtk_wrap_box_query_line_lengths  (GtkWrapBox	     *wbox,
 					     guint           *n_lines);
+
+
+
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */
+
+
 #endif /* __GTK_WRAP_BOX_H__ */
 /* GTK - The GIMP Toolkit
  * Copyright (C) 1995-1997 Peter Mattis, Spencer Kimball and Josh MacDonald
@@ -151,10 +171,16 @@ guint*	   gtk_wrap_box_query_line_lengths  (GtkWrapBox	     *wbox,
  */
 #ifndef __GTK_HWRAP_BOX_H__
 #define __GTK_HWRAP_BOX_H__
+
+
 /* #include <gle/gtkwrapbox.h> */
+
+
 #ifdef __cplusplus
 extern "C" {
 #endif /* __cplusplus */
+
+
 /* --- type macros --- */
 #define GTK_TYPE_HWRAP_BOX	      (gtk_hwrap_box_get_type ())
 #define GTK_HWRAP_BOX(obj)	      (GTK_CHECK_CAST ((obj), GTK_TYPE_HWRAP_BOX, GtkHWrapBox))
@@ -162,28 +188,40 @@ extern "C" {
 #define GTK_IS_HWRAP_BOX(obj)	      (GTK_CHECK_TYPE ((obj), GTK_TYPE_HWRAP_BOX))
 #define GTK_IS_HWRAP_BOX_CLASS(klass) (GTK_CHECK_CLASS_TYPE ((klass), GTK_TYPE_HWRAP_BOX))
 #define GTK_HWRAP_BOX_GET_CLASS(obj)  (GTK_CHECK_GET_CLASS ((obj), GTK_TYPE_HWRAP_BOX, GtkHWrapBoxClass))
+
+
 /* --- typedefs --- */
 typedef struct _GtkHWrapBox      GtkHWrapBox;
 typedef struct _GtkHWrapBoxClass GtkHWrapBoxClass;
+
+
 /* --- GtkHWrapBox --- */
 struct _GtkHWrapBox
 {
   GtkWrapBox parent_widget;
+
   /*<h2v-off>*/
   guint      max_child_width;
   guint      max_child_height;
   /*<h2v-on>*/
 };
+
 struct _GtkHWrapBoxClass
 {
   GtkWrapBoxClass parent_class;
 };
+
+
 /* --- prototypes --- */
 GtkType	   gtk_hwrap_box_get_type           (void);
 GtkWidget* gtk_hwrap_box_new                (gboolean homogeneous);
+
+
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */
+
+
 #endif /* __GTK_HWRAP_BOX_H__ */
 /* GTK - The GIMP Toolkit
  * Copyright (C) 1995-1997 Peter Mattis, Spencer Kimball and Josh MacDonald
@@ -208,10 +246,16 @@ GtkWidget* gtk_hwrap_box_new                (gboolean homogeneous);
  */
 #ifndef __GTK_VWRAP_BOX_H__
 #define __GTK_VWRAP_BOX_H__
+
+
 /* #include <gle/gtkwrapbox.h> */
+
+
 #ifdef __cplusplus
 extern "C" {
 #endif /* __cplusplus */
+
+
 /* --- type macros --- */
 #define GTK_TYPE_VWRAP_BOX	      (gtk_vwrap_box_get_type ())
 #define GTK_VWRAP_BOX(obj)	      (GTK_CHECK_CAST ((obj), GTK_TYPE_VWRAP_BOX, GtkVWrapBox))
@@ -219,28 +263,40 @@ extern "C" {
 #define GTK_IS_VWRAP_BOX(obj)	      (GTK_CHECK_TYPE ((obj), GTK_TYPE_VWRAP_BOX))
 #define GTK_IS_VWRAP_BOX_CLASS(klass) (GTK_CHECK_CLASS_TYPE ((klass), GTK_TYPE_VWRAP_BOX))
 #define GTK_VWRAP_BOX_GET_CLASS(obj)  (GTK_CHECK_GET_CLASS ((obj), GTK_TYPE_VWRAP_BOX, GtkVWrapBoxClass))
+
+
 /* --- typedefs --- */
 typedef struct _GtkVWrapBox      GtkVWrapBox;
 typedef struct _GtkVWrapBoxClass GtkVWrapBoxClass;
+
+
 /* --- GtkVWrapBox --- */
 struct _GtkVWrapBox
 {
   GtkWrapBox parent_widget;
+
   /*<h2v-off>*/
   guint      max_child_width;
   guint      max_child_height;
   /*<h2v-on>*/
 };
+
 struct _GtkVWrapBoxClass
 {
   GtkWrapBoxClass parent_class;
 };
+
+
 /* --- prototypes --- */
 GtkType	   gtk_vwrap_box_get_type           (void);
 GtkWidget* gtk_vwrap_box_new                (gboolean homogeneous);
+
+
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */
+
+
 #endif /* __GTK_VWRAP_BOX_H__ */
 #ifdef __cplusplus
 }

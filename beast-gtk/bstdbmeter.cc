@@ -2,6 +2,8 @@
 #include "bstdbmeter.hh"
 #include <string.h>
 #include <math.h>
+
+
 #define WIDGET(self)            (GTK_WIDGET (self))
 /* accessors */
 #define STATE(self)             (GtkStateType (WIDGET (self)->state))
@@ -9,8 +11,11 @@
 #define XTHICKNESS(self)        (STYLE (self)->xthickness)
 #define YTHICKNESS(self)        (STYLE (self)->ythickness)
 #define ALLOCATION(self)        (&WIDGET (self)->allocation)
+
 #define DEFAULT_BORDER          (20)
 #define NUMBER_HPADDING         (8)     /* extra spacing to seperate numbers horizontally */
+
+
 /* --- DB Setup --- */
 static BstDBSetup*
 bst_db_setup_get_default (void)
@@ -40,6 +45,7 @@ bst_db_setup_get_default (void)
     }
   return dbsetup;
 }
+
 static int
 db_color_pixel_cmp (const void *v1,
                     const void *v2)
@@ -48,6 +54,7 @@ db_color_pixel_cmp (const void *v1,
   const BstDBColor *c2 = (const BstDBColor*) v2;
   return c1->pixel < c2->pixel ? -1 : c1->pixel > c2->pixel;
 }
+
 BstDBSetup*
 bst_db_setup_new (GxkSpline *db2pixel_spline,
                   double     maxdb,
@@ -85,6 +92,7 @@ bst_db_setup_new (GxkSpline *db2pixel_spline,
   bst_db_setup_relocate (dbsetup, 0, 99, FALSE);
   return dbsetup;
 }
+
 void
 bst_db_setup_relocate (BstDBSetup     *dbsetup,
                        gint            offset,
@@ -107,6 +115,7 @@ bst_db_setup_relocate (BstDBSetup     *dbsetup,
     dbsetup->colors[i].pixel = bst_db_setup_get_pixel (dbsetup, dbsetup->colors[i].db);
   qsort (dbsetup->colors, dbsetup->n_colors, sizeof (dbsetup->colors[0]), db_color_pixel_cmp);
 }
+
 guint
 bst_db_setup_get_color (BstDBSetup *dbsetup,
                         double      pixel,
@@ -145,6 +154,7 @@ bst_db_setup_get_color (BstDBSetup *dbsetup,
       return (red << 16) | (green << 8) | blue;
     }
 }
+
 BstDBSetup*
 bst_db_setup_copy (BstDBSetup *srcdb)
 {
@@ -156,6 +166,7 @@ bst_db_setup_copy (BstDBSetup *srcdb)
   dbsetup->ref_count = 1;
   return dbsetup;
 }
+
 BstDBSetup*
 bst_db_setup_ref (BstDBSetup *dbsetup)
 {
@@ -164,6 +175,7 @@ bst_db_setup_ref (BstDBSetup *dbsetup)
   dbsetup->ref_count += 1;
   return dbsetup;
 }
+
 void
 bst_db_setup_unref (BstDBSetup *dbsetup)
 {
@@ -178,6 +190,7 @@ bst_db_setup_unref (BstDBSetup *dbsetup)
       g_free (dbsetup);
     }
 }
+
 double
 bst_db_setup_get_pixel (BstDBSetup *dbsetup,
                         double      dbvalue)
@@ -187,6 +200,7 @@ bst_db_setup_get_pixel (BstDBSetup *dbsetup,
     pixel = (dbsetup->length - 1) - pixel;
   return pixel + dbsetup->offset;
 }
+
 double
 bst_db_setup_get_dbvalue (BstDBSetup *dbsetup,
                           double      pixel)
@@ -196,6 +210,8 @@ bst_db_setup_get_dbvalue (BstDBSetup *dbsetup,
     pixel = (dbsetup->length - 1) - pixel;
   return gxk_spline_findx (dbsetup->spline, pixel / dbsetup->spzoom);
 }
+
+
 /* --- comon helpers --- */
 static void
 db_setup_size_allocate (BstDBSetup     *dbsetup,
@@ -210,12 +226,15 @@ db_setup_size_allocate (BstDBSetup     *dbsetup,
   size -= 1;                            /* account for length = range + 1 pixels */
   bst_db_setup_relocate (dbsetup, border, MAX (size, 0), !vertical);
 }
+
 enum {
   PROP_ORIENTATION = 1,
   PROP_DRAW_VALUES,
   PROP_JUSTIFY,
   PROP_N_CHANNELS,
 };
+
+
 /* --- DB Labeling --- */
 G_DEFINE_TYPE (BstDBLabeling, bst_db_labeling, GTK_TYPE_WIDGET);
 static void
@@ -229,12 +248,14 @@ bst_db_labeling_init (BstDBLabeling *self)
   self->orientation = GTK_ORIENTATION_VERTICAL;
   self->justify = GTK_JUSTIFY_CENTER;
 }
+
 static void
 bst_db_labeling_destroy (GtkObject *object)
 {
   // BstDBLabeling *self = BST_DB_LABELING (object);
   GTK_OBJECT_CLASS (bst_db_labeling_parent_class)->destroy (object);
 }
+
 static void
 bst_db_labeling_finalize (GObject *object)
 {
@@ -242,15 +263,17 @@ bst_db_labeling_finalize (GObject *object)
   bst_db_setup_unref (self->dbsetup);
   G_OBJECT_CLASS (bst_db_labeling_parent_class)->finalize (object);
 }
+
 static PangoLayout*
 bst_db_labeling_create_layout (BstDBLabeling *self,
                                double         dB)
 {
-  gchar *buffer = g_strdup_printf ("%u", (int) (0.5 + ABS (dB)));
+  gchar *buffer = g_strdup_format ("%u", (int) (0.5 + ABS (dB)));
   PangoLayout *layout = gtk_widget_create_pango_layout (GTK_WIDGET (self), buffer);
   g_free (buffer);
   return layout;
 }
+
 static void
 bst_db_labeling_size_request (GtkWidget      *widget,
                               GtkRequisition *requisition)
@@ -263,6 +286,7 @@ bst_db_labeling_size_request (GtkWidget      *widget,
   PangoRectangle irect = { 0, }, lrect = { 0 };
   int breadth = 0, length = 0;
   PangoLayout *layout;
+
   for (uint i = 0; i < self->dbsetup->spline->n_segs; i++)
     {
       double v = self->dbsetup->spline->segs[i].x;
@@ -288,6 +312,7 @@ bst_db_labeling_size_request (GtkWidget      *widget,
       pango_layout_get_pixel_extents (layout, &irect, &lrect);
       g_object_unref (layout);
       guint dash_length = lrect.width;
+
       if (self->justify == GTK_JUSTIFY_CENTER)
         breadth = 2 * dash_length | 1;  /* always request odd size */
       else
@@ -304,6 +329,7 @@ bst_db_labeling_size_request (GtkWidget      *widget,
       requisition->height = breadth;
     }
 }
+
 static void
 bst_db_labeling_size_allocate (GtkWidget     *widget,
                                GtkAllocation *allocation)
@@ -314,6 +340,7 @@ bst_db_labeling_size_allocate (GtkWidget     *widget,
   guint thickness = vertical ? YTHICKNESS (self) : XTHICKNESS (self);
   db_setup_size_allocate (self->dbsetup, thickness, self->border, vertical ? allocation->height : allocation->width, vertical);
 }
+
 typedef enum {
   DRAW_SKIP,
   DRAW_ETCHED,
@@ -323,6 +350,7 @@ typedef enum {
   DRAW_SUBRO,
   DRAW_NUM
 } DrawType;
+
 static void
 db_labeling_draw_lateral_line (BstDBLabeling   *self,
                                GdkGC           *gc,
@@ -361,6 +389,7 @@ db_labeling_draw_lateral_line (BstDBLabeling   *self,
   else  /* horizontal */
     gdk_draw_vline (drawable, gc, x + pos, y + pixindent, breadth - breadth_reduz);
 }
+
 static void
 db_labeling_draw_vline (BstDBLabeling *self,
                         GdkGC         *gc,
@@ -377,6 +406,7 @@ db_labeling_draw_vline (BstDBLabeling *self,
   else  /* horizontal */
     gdk_draw_hline (drawable, gc, x + pos, y + indent, breadth);
 }
+
 static void
 bst_db_labeling_draw_value (BstDBLabeling *self,
                             GdkRectangle  *expose_area,
@@ -474,6 +504,7 @@ bst_db_labeling_draw_value (BstDBLabeling *self,
         db_labeling_draw_lateral_line (self, light_gc, canvas->x, canvas->y, pos + 1, cbreadth, 0);
     }
 }
+
 static gboolean
 bst_db_labeling_expose (GtkWidget      *widget,
                         GdkEventExpose *event)
@@ -493,6 +524,7 @@ bst_db_labeling_expose (GtkWidget      *widget,
       gdk_draw_line (widget->window, widget->style->black_gc, widget->allocation.x + widget->allocation.width-1, widget->allocation.y,
                      widget->allocation.x, widget->allocation.y + widget->allocation.height-1);
     }
+
   GdkGC *dark_gc = widget->style->light_gc[widget->state];
   GdkGC *line_gc = widget->style->fg_gc[widget->state];
   GdkGC *light_gc = widget->style->dark_gc[widget->state];
@@ -618,8 +650,10 @@ bst_db_labeling_expose (GtkWidget      *widget,
   /* vline bar */
   if (draw_longitudinal)
     db_labeling_draw_vline (self, line_gc, allocation->x, allocation->y, dbsetup->offset, dbsetup->length, longitudinal_pos);
+
   return FALSE;
 }
+
 void
 bst_db_labeling_setup (BstDBLabeling      *self,
                        BstDBSetup     *db_setup)
@@ -628,6 +662,7 @@ bst_db_labeling_setup (BstDBLabeling      *self,
   self->dbsetup = bst_db_setup_copy (db_setup);
   gtk_widget_queue_resize (GTK_WIDGET (self));
 }
+
 void
 bst_db_labeling_set_border (BstDBLabeling  *self,
                             guint           border)
@@ -638,6 +673,7 @@ bst_db_labeling_set_border (BstDBLabeling  *self,
       gtk_widget_queue_resize (GTK_WIDGET (self));
     }
 }
+
 static void
 bst_db_labeling_set_property (GObject      *object,
                               guint         prop_id,
@@ -665,6 +701,7 @@ bst_db_labeling_set_property (GObject      *object,
       break;
     }
 }
+
 static void
 bst_db_labeling_get_property (GObject     *object,
                               guint        prop_id,
@@ -688,19 +725,24 @@ bst_db_labeling_get_property (GObject     *object,
       break;
     }
 }
+
 static void
 bst_db_labeling_class_init (BstDBLabelingClass *klass)
 {
   GObjectClass *gobject_class = G_OBJECT_CLASS (klass);
   GtkObjectClass *object_class = GTK_OBJECT_CLASS (klass);
   GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (klass);
+
   gobject_class->set_property = bst_db_labeling_set_property;
   gobject_class->get_property = bst_db_labeling_get_property;
   gobject_class->finalize = bst_db_labeling_finalize;
+
   object_class->destroy = bst_db_labeling_destroy;
+
   widget_class->size_request = bst_db_labeling_size_request;
   widget_class->size_allocate = bst_db_labeling_size_allocate;
   widget_class->expose_event = bst_db_labeling_expose;
+
   g_object_class_install_property (gobject_class, PROP_DRAW_VALUES,
                                    g_param_spec_boolean ("draw-values", _("Draw Values"), _("Adjust whether to draw dB values instead of lines"),
                                                          FALSE, G_PARAM_READWRITE));
@@ -711,8 +753,11 @@ bst_db_labeling_class_init (BstDBLabelingClass *klass)
                                    g_param_spec_enum ("justify", _("Justify"), _("Adjust relative alignment of the values or bars to be drawn"),
                                                       GTK_TYPE_JUSTIFICATION, GTK_JUSTIFY_CENTER, G_PARAM_READWRITE));
 }
+
+
 /* --- DB Beam --- */
 G_DEFINE_TYPE (BstDBBeam, bst_db_beam, GTK_TYPE_WIDGET);
+
 static void
 bst_db_beam_init (BstDBBeam *self)
 {
@@ -724,12 +769,14 @@ bst_db_beam_init (BstDBBeam *self)
   self->orientation = GTK_ORIENTATION_VERTICAL;
   self->currentdb = 0;
 }
+
 static void
 bst_db_beam_destroy (GtkObject *object)
 {
   // BstDBBeam *self = BST_DB_BEAM (object);
   GTK_OBJECT_CLASS (bst_db_beam_parent_class)->destroy (object);
 }
+
 static void
 bst_db_beam_finalize (GObject *object)
 {
@@ -737,6 +784,7 @@ bst_db_beam_finalize (GObject *object)
   bst_db_setup_unref (self->dbsetup);
   G_OBJECT_CLASS (bst_db_beam_parent_class)->finalize (object);
 }
+
 static void
 bst_db_beam_size_request (GtkWidget      *widget,
                           GtkRequisition *requisition)
@@ -744,12 +792,14 @@ bst_db_beam_size_request (GtkWidget      *widget,
   BstDBBeam *self = BST_DB_BEAM (widget);
   const gboolean vertical = self->orientation == GTK_ORIENTATION_VERTICAL;
   guint thickness = vertical ? XTHICKNESS (self) : YTHICKNESS (self);
+
   /* font width */
   PangoRectangle irect = { 0, }, lrect = { 0 };
   PangoLayout *layout = gtk_widget_create_pango_layout (GTK_WIDGET (self), "z");
   pango_layout_get_pixel_extents (layout, &irect, &lrect);
   g_object_unref (layout);
   guint thick_beam = lrect.width;
+
   if (vertical)
     {
       requisition->width = thickness + thick_beam + thickness;
@@ -761,6 +811,7 @@ bst_db_beam_size_request (GtkWidget      *widget,
       requisition->height = thickness + thick_beam + thickness;
     }
 }
+
 static void
 db_beam_redraw_pixmap (BstDBBeam *self)
 {
@@ -796,6 +847,7 @@ db_beam_redraw_pixmap (BstDBBeam *self)
         }
     }
 }
+
 static void
 bst_db_beam_size_allocate (GtkWidget     *widget,
                            GtkAllocation *allocation)
@@ -808,6 +860,7 @@ bst_db_beam_size_allocate (GtkWidget     *widget,
   if (GTK_WIDGET_REALIZED (self))
     db_beam_redraw_pixmap (self);
 }
+
 static void
 bst_db_beam_realize (GtkWidget *widget)
 {
@@ -815,6 +868,7 @@ bst_db_beam_realize (GtkWidget *widget)
   GTK_WIDGET_CLASS (bst_db_beam_parent_class)->realize (widget);
   db_beam_redraw_pixmap (self);
 }
+
 static void
 bst_db_beam_unrealize (GtkWidget *widget)
 {
@@ -823,6 +877,7 @@ bst_db_beam_unrealize (GtkWidget *widget)
   self->pixmap = NULL;
   GTK_WIDGET_CLASS (bst_db_beam_parent_class)->unrealize (widget);
 }
+
 static gboolean
 bst_db_beam_expose (GtkWidget      *widget,
                     GdkEventExpose *event)
@@ -841,6 +896,7 @@ bst_db_beam_expose (GtkWidget      *widget,
       gdk_draw_line (widget->window, widget->style->black_gc, widget->allocation.x + widget->allocation.width-1, widget->allocation.y,
                      widget->allocation.x, widget->allocation.y + widget->allocation.height-1);
     }
+
   /* subtract one pixel in length, since it doesn't make sense to always paint mindb (=silence) highlighted */
   if (vertical)
     gtk_paint_shadow (STYLE (self), drawable, STATE (self), GTK_SHADOW_IN, NULL, NULL, NULL,
@@ -850,14 +906,17 @@ bst_db_beam_expose (GtkWidget      *widget,
     gtk_paint_shadow (STYLE (self), drawable, STATE (self), GTK_SHADOW_IN, NULL, NULL, NULL,
                       allocation->x + dbsetup->offset - XTHICKNESS (self) + dbsetup->flipdir, allocation->y,
                       dbsetup->length + 2 * XTHICKNESS (self) - 1, allocation->height);
+
   /* force complete beam redraw */
   double currentdb = self->currentdb;
   self->currentdb = G_MAXDOUBLE;
   bst_db_beam_set_value (self, currentdb);
   self->currentdb = -G_MAXDOUBLE;
   bst_db_beam_set_value (self, currentdb);
+
   return FALSE;
 }
+
 void
 bst_db_beam_set_value (BstDBBeam      *self,
                        double          db)
@@ -904,6 +963,7 @@ bst_db_beam_set_value (BstDBBeam      *self,
                            vertical ? length : allocation->height - 2 * thickness);
     }
 }
+
 void
 bst_db_beam_set_border (BstDBBeam  *self,
                         guint       border)
@@ -914,6 +974,7 @@ bst_db_beam_set_border (BstDBBeam  *self,
       gtk_widget_queue_resize (GTK_WIDGET (self));
     }
 }
+
 void
 bst_db_beam_setup (BstDBBeam      *self,
                    BstDBSetup     *db_setup)
@@ -922,6 +983,7 @@ bst_db_beam_setup (BstDBBeam      *self,
   self->dbsetup = bst_db_setup_copy (db_setup);
   gtk_widget_queue_resize (GTK_WIDGET (self));
 }
+
 static void
 bst_db_beam_set_property (GObject      *object,
                           guint         prop_id,
@@ -941,6 +1003,7 @@ bst_db_beam_set_property (GObject      *object,
       break;
     }
 }
+
 static void
 bst_db_beam_get_property (GObject     *object,
                           guint        prop_id,
@@ -958,27 +1021,35 @@ bst_db_beam_get_property (GObject     *object,
       break;
     }
 }
+
 static void
 bst_db_beam_class_init (BstDBBeamClass *klass)
 {
   GObjectClass *gobject_class = G_OBJECT_CLASS (klass);
   GtkObjectClass *object_class = GTK_OBJECT_CLASS (klass);
   GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (klass);
+
   gobject_class->set_property = bst_db_beam_set_property;
   gobject_class->get_property = bst_db_beam_get_property;
   gobject_class->finalize = bst_db_beam_finalize;
+
   object_class->destroy = bst_db_beam_destroy;
+
   widget_class->size_request = bst_db_beam_size_request;
   widget_class->size_allocate = bst_db_beam_size_allocate;
   widget_class->realize = bst_db_beam_realize;
   widget_class->unrealize = bst_db_beam_unrealize;
   widget_class->expose_event = bst_db_beam_expose;
+
   g_object_class_install_property (gobject_class, PROP_ORIENTATION,
                                    g_param_spec_enum ("orientation", _("Orientation"), _("Choose horizontal or vertical orientation"),
                                                       GTK_TYPE_ORIENTATION, GTK_ORIENTATION_VERTICAL, G_PARAM_READWRITE));
 }
+
+
 /* --- DB Meter --- */
 G_DEFINE_TYPE (BstDBMeter, bst_db_meter, GTK_TYPE_ALIGNMENT);
+
 static void
 bst_db_meter_init (BstDBMeter *self)
 {
@@ -991,6 +1062,7 @@ bst_db_meter_init (BstDBMeter *self)
                 "yalign", 0.5,
                 NULL);
 }
+
 static void
 bst_db_meter_size_allocate (GtkWidget     *widget,
                             GtkAllocation *allocation)
@@ -1002,8 +1074,10 @@ bst_db_meter_size_allocate (GtkWidget     *widget,
   db_setup_size_allocate (self->dbsetup, thickness, self->border,
                           vertical ? widget->allocation.height : widget->allocation.width, vertical);
 }
+
 static void     db_meter_build_channels (BstDBMeter *self,
                                          guint       n_channels);
+
 static void
 bst_db_meter_set_property (GObject      *object,
                            guint         prop_id,
@@ -1036,6 +1110,7 @@ bst_db_meter_set_property (GObject      *object,
       break;
     }
 }
+
 static void
 bst_db_meter_get_property (GObject     *object,
                            guint        prop_id,
@@ -1053,6 +1128,7 @@ bst_db_meter_get_property (GObject     *object,
       break;
     }
 }
+
 GtkWidget*
 bst_db_meter_new (GtkOrientation  orientation,
                   guint           n_channels)
@@ -1060,12 +1136,14 @@ bst_db_meter_new (GtkOrientation  orientation,
   BstDBMeter *self = (BstDBMeter*) g_object_new (BST_TYPE_DB_METER, "orientation", orientation, "n-channels", n_channels, NULL);
   return GTK_WIDGET (self);
 }
+
 static void
 bst_db_meter_destroy (GtkObject *object)
 {
   // BstDBMeter *self = BST_DB_METER (object);
   GTK_OBJECT_CLASS (bst_db_meter_parent_class)->destroy (object);
 }
+
 static void
 bst_db_meter_finalize (GObject *object)
 {
@@ -1074,6 +1152,7 @@ bst_db_meter_finalize (GObject *object)
   self->dbsetup = NULL;
   G_OBJECT_CLASS (bst_db_meter_parent_class)->finalize (object);
 }
+
 static void
 db_meter_setup_recursive (GtkWidget *widget,
                           gpointer   data)
@@ -1086,6 +1165,7 @@ db_meter_setup_recursive (GtkWidget *widget,
   if (GTK_IS_CONTAINER (widget))
     gtk_container_foreach (GTK_CONTAINER (widget), db_meter_setup_recursive, data);
 }
+
 void
 bst_db_meter_propagate_setup (BstDBMeter     *self,
                               BstDBSetup     *db_setup)
@@ -1096,6 +1176,7 @@ bst_db_meter_propagate_setup (BstDBMeter     *self,
   self->dbsetup = bst_db_setup_copy (db_setup);
   db_meter_setup_recursive (GTK_WIDGET (self), self->dbsetup);
 }
+
 static void
 db_meter_set_border_recursive (GtkWidget *widget,
                                gpointer   data)
@@ -1108,6 +1189,7 @@ db_meter_set_border_recursive (GtkWidget *widget,
   if (GTK_IS_CONTAINER (widget))
     gtk_container_foreach (GTK_CONTAINER (widget), db_meter_set_border_recursive, data);
 }
+
 void
 bst_db_meter_propagate_border (BstDBMeter     *self,
                                guint           border)
@@ -1119,6 +1201,7 @@ bst_db_meter_propagate_border (BstDBMeter     *self,
       db_meter_set_border_recursive (GTK_WIDGET (self), GUINT_TO_POINTER (self->border));
     }
 }
+
 BstDBBeam*
 bst_db_meter_create_beam (BstDBMeter     *self,
                           guint           padding)
@@ -1136,6 +1219,7 @@ bst_db_meter_create_beam (BstDBMeter     *self,
     }
   return aux;
 }
+
 BstDBLabeling*
 bst_db_meter_create_numbers (BstDBMeter     *self,
                              guint           padding)
@@ -1154,6 +1238,7 @@ bst_db_meter_create_numbers (BstDBMeter     *self,
     }
   return aux;
 }
+
 BstDBLabeling*
 bst_db_meter_create_dashes (BstDBMeter      *self,
                             GtkJustification justify,
@@ -1174,6 +1259,7 @@ bst_db_meter_create_dashes (BstDBMeter      *self,
     }
   return aux;
 }
+
 static void
 db_scale_pixel_adjustment_value_changed_unconverted (GtkAdjustment *adjustment,
                                                      GxkParam      *param)
@@ -1189,6 +1275,7 @@ db_scale_pixel_adjustment_value_changed_unconverted (GtkAdjustment *adjustment,
   g_value_unset (&dvalue);
   gxk_param_apply_value (param);
 }
+
 static void
 db_scale_pixel_adjustment_update_unconverted (GxkParam       *param,
                                               GtkObject      *object)
@@ -1200,6 +1287,7 @@ db_scale_pixel_adjustment_update_unconverted (GxkParam       *param,
   gtk_adjustment_set_value (GTK_ADJUSTMENT (object), bst_db_setup_get_pixel (dbsetup, g_value_get_double (&dvalue)));
   g_value_unset (&dvalue);
 }
+
 static void
 db_scale_pixel_adjustment_value_changed (GtkAdjustment *adjustment,
                                          GxkParam      *param)
@@ -1216,6 +1304,7 @@ db_scale_pixel_adjustment_value_changed (GtkAdjustment *adjustment,
   g_value_unset (&dvalue);
   gxk_param_apply_value (param);
 }
+
 static void
 db_scale_pixel_adjustment_update (GxkParam       *param,
                                   GtkObject      *object)
@@ -1232,6 +1321,7 @@ db_scale_pixel_adjustment_update (GxkParam       *param,
   gtk_adjustment_set_value (GTK_ADJUSTMENT (object), bst_db_setup_get_pixel (dbsetup, dbvalue));
   g_value_unset (&dvalue);
 }
+
 void
 bst_db_scale_hook_up_param (GtkRange     *range,
                             GxkParam     *param)
@@ -1256,6 +1346,7 @@ bst_db_scale_hook_up_param (GtkRange     *range,
   /* save param for GtkRange */
   g_object_set_data ((GObject*) range, "GxkParam", param);
 }
+
 static void
 db_scale_size_allocate (GtkRange      *range,
                         GtkAllocation *dummy,
@@ -1328,6 +1419,7 @@ db_scale_size_allocate (GtkRange      *range,
   if (param)
     gxk_param_update (param);
 }
+
 GtkRange*
 bst_db_meter_create_scale (BstDBMeter *self,
                            guint       padding)
@@ -1355,6 +1447,7 @@ bst_db_meter_create_scale (BstDBMeter *self,
     }
   return range;
 }
+
 static gpointer
 db_meter_get_child (BstDBMeter     *self,
                     guint           nth,
@@ -1380,24 +1473,28 @@ db_meter_get_child (BstDBMeter     *self,
     }
   return child;
 }
+
 GtkRange*
 bst_db_meter_get_scale (BstDBMeter     *self,
                         guint           nth)
 {
   return (GtkRange*) db_meter_get_child (self, nth, GTK_TYPE_RANGE);
 }
+
 BstDBBeam*
 bst_db_meter_get_beam (BstDBMeter     *self,
                        guint           nth)
 {
   return (BstDBBeam*) db_meter_get_child (self, nth, BST_TYPE_DB_BEAM);
 }
+
 BstDBLabeling*
 bst_db_meter_get_labeling (BstDBMeter     *self,
                            guint           nth)
 {
   return (BstDBLabeling*) db_meter_get_child (self, nth, BST_TYPE_DB_LABELING);
 }
+
 static void
 db_meter_build_channels (BstDBMeter *self,
                          guint       n_channels)
@@ -1428,17 +1525,22 @@ db_meter_build_channels (BstDBMeter *self,
       bst_db_meter_create_scale (self, padding);
     }
 }
+
 static void
 bst_db_meter_class_init (BstDBMeterClass *klass)
 {
   GObjectClass *gobject_class = G_OBJECT_CLASS (klass);
   GtkObjectClass *object_class = GTK_OBJECT_CLASS (klass);
   GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (klass);
+
   gobject_class->set_property = bst_db_meter_set_property;
   gobject_class->get_property = bst_db_meter_get_property;
   gobject_class->finalize = bst_db_meter_finalize;
+
   object_class->destroy = bst_db_meter_destroy;
+
   widget_class->size_allocate = bst_db_meter_size_allocate;
+
   g_object_class_install_property (gobject_class, PROP_ORIENTATION,
                                    g_param_spec_enum ("orientation", _("Orientation"), _("Choose horizontal or vertical orientation"),
                                                       GTK_TYPE_ORIENTATION, GTK_ORIENTATION_VERTICAL, G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));

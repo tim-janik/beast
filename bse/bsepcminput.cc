@@ -1,8 +1,12 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bsepcminput.hh"
+
 #include "bsecategories.hh"
 #include "bseserver.hh"
 #include "bseengine.hh"
+
+
+
 /* --- parameters --- */
 enum
 {
@@ -11,6 +15,8 @@ enum
   PARAM_MVOLUME_dB,
   PARAM_MVOLUME_PERC
 };
+
+
 /* --- prototypes --- */
 static void	 bse_pcm_input_init		(BsePcmInput		*scard);
 static void	 bse_pcm_input_class_init	(BsePcmInputClass	*klass);
@@ -31,18 +37,24 @@ static void	 bse_pcm_input_context_connect	(BseSource		*source,
 						 guint			 instance_id,
 						 BseTrans		*trans);
 static void	 bse_pcm_input_reset		(BseSource		*source);
+
+
 /* --- variables --- */
 static gpointer		 parent_class = NULL;
+
+
 /* --- functions --- */
 BSE_BUILTIN_TYPE (BsePcmInput)
 {
   static const GTypeInfo pcm_input_info = {
     sizeof (BsePcmInputClass),
+
     (GBaseInitFunc) NULL,
     (GBaseFinalizeFunc) NULL,
     (GClassInitFunc) bse_pcm_input_class_init,
     (GClassFinalizeFunc) bse_pcm_input_class_finalize,
     NULL /* class_data */,
+
     sizeof (BsePcmInput),
     0 /* n_preallocs */,
     (GInstanceInitFunc) bse_pcm_input_init,
@@ -57,6 +69,7 @@ BSE_BUILTIN_TYPE (BsePcmInput)
   bse_categories_register_stock_module (N_("/Input & Output/PCM Input"), type, mic_pixstream);
   return type;
 }
+
 static void
 bse_pcm_input_class_init (BsePcmInputClass *klass)
 {
@@ -64,13 +77,17 @@ bse_pcm_input_class_init (BsePcmInputClass *klass)
   BseObjectClass *object_class = BSE_OBJECT_CLASS (klass);
   BseSourceClass *source_class = BSE_SOURCE_CLASS (klass);
   guint ochannel_id;
+
   parent_class = g_type_class_peek_parent (klass);
+
   gobject_class->set_property = bse_pcm_input_set_property;
   gobject_class->get_property = bse_pcm_input_get_property;
+
   source_class->prepare = bse_pcm_input_prepare;
   source_class->context_create = bse_pcm_input_context_create;
   source_class->context_connect = bse_pcm_input_context_connect;
   source_class->reset = bse_pcm_input_reset;
+
   bse_object_class_add_param (object_class, "Adjustments",
 			      PARAM_MVOLUME_f,
 			      sfi_pspec_real ("gain_volume_f", "Input Gain [float]", NULL,
@@ -91,20 +108,24 @@ bse_pcm_input_class_init (BsePcmInputClass *klass)
 					     bse_db_to_factor (0) * 100,
 					     0, bse_db_to_factor (BSE_MAX_VOLUME_dB) * 100,
 					     1, SFI_PARAM_GUI ":dial"));
+
   ochannel_id = bse_source_class_add_ochannel (source_class, "left-audio-out", _("Left Audio Out"), _("Left channel output"));
   g_assert (ochannel_id == BSE_PCM_INPUT_OCHANNEL_LEFT);
   ochannel_id = bse_source_class_add_ochannel (source_class, "right-audio-out", _("Right Audio Out"), _("Right channel output"));
   g_assert (ochannel_id == BSE_PCM_INPUT_OCHANNEL_RIGHT);
 }
+
 static void
 bse_pcm_input_class_finalize (BsePcmInputClass *klass)
 {
 }
+
 static void
 bse_pcm_input_init (BsePcmInput *iput)
 {
   iput->volume_factor = bse_db_to_factor (0);
 }
+
 static void
 bse_pcm_input_set_property (GObject      *object,
 			    guint         param_id,
@@ -134,6 +155,7 @@ bse_pcm_input_set_property (GObject      *object,
       break;
     }
 }
+
 static void
 bse_pcm_input_get_property (GObject    *object,
 			    guint       param_id,
@@ -157,18 +179,23 @@ bse_pcm_input_get_property (GObject    *object,
       break;
     }
 }
+
 static void
 bse_pcm_input_prepare (BseSource *source)
 {
   BsePcmInput *iput = BSE_PCM_INPUT (source);
+
   iput->uplink = bse_server_retrieve_pcm_input_module (bse_server_get (), source, "MasterIn");
+
   /* chain parent class' handler */
   BSE_SOURCE_CLASS (parent_class)->prepare (source);
 }
+
 typedef struct {
   gfloat             volume;
   gboolean           volume_set;
 } ModData;
+
 static void
 pcm_input_process (BseModule *module,
 		   guint      n_values)
@@ -179,6 +206,7 @@ pcm_input_process (BseModule *module,
   gfloat *ld = BSE_MODULE_OBUFFER (module, BSE_PCM_INPUT_OCHANNEL_LEFT);
   gfloat *rd = BSE_MODULE_OBUFFER (module, BSE_PCM_INPUT_OCHANNEL_RIGHT);
   gfloat v = mdata->volume;
+
   if (mdata->volume_set)
     while (n_values--)
       {
@@ -191,6 +219,7 @@ pcm_input_process (BseModule *module,
       BSE_MODULE_OBUFFER (module, BSE_PCM_INPUT_OCHANNEL_RIGHT) = (gfloat*) BSE_MODULE_IBUFFER (module, BSE_PCM_INPUT_OCHANNEL_RIGHT);
     }
 }
+
 static void
 bse_pcm_input_context_create (BseSource *source,
 			      guint      context_handle,
@@ -208,15 +237,20 @@ bse_pcm_input_context_create (BseSource *source,
   };
   ModData *mdata = g_new0 (ModData, 1);
   BseModule *module = bse_module_new (&pcm_input_mclass, mdata);
+
   mdata->volume = 1.0;
   mdata->volume_set = mdata->volume != 1.0;
+
   /* setup module i/o streams with BseSource i/o channels */
   bse_source_set_context_omodule (source, context_handle, module);
+
   /* commit module to engine */
   bse_trans_add (trans, bse_job_integrate (module));
+
   /* chain parent class' handler */
   BSE_SOURCE_CLASS (parent_class)->context_create (source, context_handle, trans);
 }
+
 static void
 bse_pcm_input_context_connect (BseSource *source,
 			       guint      context_handle,
@@ -224,20 +258,26 @@ bse_pcm_input_context_connect (BseSource *source,
 {
   BsePcmInput *iput = BSE_PCM_INPUT (source);
   BseModule *module;
+
   /* get context specific module */
   module = bse_source_get_context_omodule (source, context_handle);
+
   /* connect module to server uplink */
   bse_trans_add (trans, bse_job_connect (iput->uplink, 0, module, 0));
   bse_trans_add (trans, bse_job_connect (iput->uplink, 1, module, 1));
+
   /* chain parent class' handler */
   BSE_SOURCE_CLASS (parent_class)->context_connect (source, context_handle, trans);
 }
+
 static void
 bse_pcm_input_reset (BseSource *source)
 {
   BsePcmInput *iput = BSE_PCM_INPUT (source);
+
   bse_server_discard_pcm_input_module (bse_server_get (), iput->uplink);
   iput->uplink = NULL;
+
   /* chain parent class' handler */
   BSE_SOURCE_CLASS (parent_class)->reset (source);
 }

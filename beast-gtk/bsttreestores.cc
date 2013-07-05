@@ -2,7 +2,9 @@
 #include "bsttreestores.hh"
 #include "topconfig.h"
 #include <string.h>
+
 typedef void (*ListenerFunc) (GtkTreeModel *model, SfiProxy item, gboolean added);
+
 /* --- functions --- */
 static gboolean
 file_store_idle_handler (gpointer data)
@@ -117,6 +119,7 @@ file_store_idle_handler (gpointer data)
   GDK_THREADS_LEAVE ();
   return busy;
 }
+
 GtkTreeModel*
 bst_file_store_create (void)
 {
@@ -133,6 +136,7 @@ bst_file_store_create (void)
                                                    -1);
   return (GtkTreeModel*) sample_store;
 }
+
 void
 bst_file_store_update_list (GtkTreeModel *model,
                             const gchar  *search_path,
@@ -141,7 +145,9 @@ bst_file_store_update_list (GtkTreeModel *model,
   GtkTreeStore *store = GTK_TREE_STORE (model);
   SfiFileCrawler *crawler = sfi_file_crawler_new ();
   glong l;
+
   g_return_if_fail (search_path != NULL);
+
   sfi_file_crawler_add_search_path (crawler, search_path, filter);
   g_object_set_data_full ((GObject*) store, "file-crawler", crawler, (GDestroyNotify) sfi_file_crawler_destroy);
   l = g_timeout_add_full (G_PRIORITY_LOW + 100, 0,
@@ -149,6 +155,7 @@ bst_file_store_update_list (GtkTreeModel *model,
                           store, NULL);
   g_object_set_long (store, "timer", l);
 }
+
 void
 bst_file_store_forget_list (GtkTreeModel *model)
 {
@@ -166,12 +173,15 @@ bst_file_store_forget_list (GtkTreeModel *model)
     }
   gtk_tree_store_clear (store);
 }
+
 void
 bst_file_store_destroy (GtkTreeModel *model)
 {
   bst_file_store_forget_list (model);
   g_object_unref (model);
 }
+
+
 /* --- child list wrapper --- */
 typedef struct _ProxyStore ProxyStore;
 struct _ProxyStore
@@ -189,6 +199,7 @@ struct _ProxyStore
     } pq;       /* proxy sequence specific */
   } u;
 };
+
 static void
 proxy_store_item_property_notify (SfiProxy     item,
                                   const gchar *property_name,
@@ -198,6 +209,7 @@ proxy_store_item_property_notify (SfiProxy     item,
   if (row >= 0) /* the item can be removed already */
     gxk_list_wrapper_notify_change (ps->self, row);
 }
+
 static gint
 proxy_store_item_listen_on (ProxyStore *ps,
                             SfiProxy    item)
@@ -211,6 +223,7 @@ proxy_store_item_listen_on (ProxyStore *ps,
   gxk_list_wrapper_notify_insert (ps->self, row);
   return row;
 }
+
 static void
 proxy_store_item_unlisten_on (ProxyStore *ps,
                               SfiProxy    item,
@@ -222,6 +235,7 @@ proxy_store_item_unlisten_on (ProxyStore *ps,
   if (row >= 0) /* special case ipool foreach destroy */
     gxk_list_wrapper_notify_delete (ps->self, row);
 }
+
 static gboolean
 proxy_store_get_iter (ProxyStore  *ps,
                       GtkTreeIter *iter,
@@ -234,12 +248,14 @@ proxy_store_get_iter (ProxyStore  *ps,
   gtk_tree_path_free (path);
   return isset;
 }
+
 static void
 child_list_wrapper_release_container (SfiProxy    container,
                                       ProxyStore *ps)
 {
   g_object_set_data ((GObject*) ps->self, "ProxyStore", NULL);
 }
+
 static void
 child_list_wrapper_item_added (SfiProxy    container,
                                SfiProxy    item,
@@ -254,6 +270,7 @@ child_list_wrapper_item_added (SfiProxy    container,
         listener (GTK_TREE_MODEL (ps->self), item, TRUE);
     }
 }
+
 static void
 child_list_wrapper_item_removed (SfiProxy    container,
                                  SfiProxy    item,
@@ -271,12 +288,14 @@ child_list_wrapper_item_removed (SfiProxy    container,
         listener (GTK_TREE_MODEL (ps->self), item, FALSE);
     }
 }
+
 static gint
 child_list_wrapper_row_from_proxy (ProxyStore *ps,
                                    SfiProxy    proxy)
 {
   return bse_item_get_seqid (proxy) - 1;
 }
+
 static gboolean
 child_list_wrapper_foreach (gpointer data,
                             gulong   unique_id)
@@ -285,6 +304,7 @@ child_list_wrapper_foreach (gpointer data,
   child_list_wrapper_item_removed (0, unique_id, 0, ps);
   return TRUE;
 }
+
 static void
 child_list_wrapper_destroy_data (gpointer data)
 {
@@ -300,6 +320,7 @@ child_list_wrapper_destroy_data (gpointer data)
   g_free (ps->u.cl.child_type);
   g_free (ps);
 }
+
 void
 bst_child_list_wrapper_setup (GxkListWrapper *self,
                               SfiProxy        parent,
@@ -327,6 +348,7 @@ bst_child_list_wrapper_setup (GxkListWrapper *self,
       g_object_set_data_full ((GObject*) self, "ProxyStore", ps, child_list_wrapper_destroy_data);
     }
 }
+
 static void
 child_list_wrapper_rebuild_with_listener (GxkListWrapper *self,
                                           gpointer        listener,
@@ -343,17 +365,20 @@ child_list_wrapper_rebuild_with_listener (GxkListWrapper *self,
   bst_child_list_wrapper_setup (self, parent, child_type);
   g_free (child_type);
 }
+
 void
 bst_child_list_wrapper_set_listener (GxkListWrapper *self,
                                      ListenerFunc   listener)
 {
   child_list_wrapper_rebuild_with_listener (self, (void*) listener, TRUE);
 }
+
 void
 bst_child_list_wrapper_rebuild (GxkListWrapper *self)
 {
   child_list_wrapper_rebuild_with_listener (self, NULL, FALSE);
 }
+
 SfiProxy
 bst_child_list_wrapper_get_from_iter (GxkListWrapper *self,
                                       GtkTreeIter    *iter)
@@ -361,6 +386,7 @@ bst_child_list_wrapper_get_from_iter (GxkListWrapper *self,
   gint row = gxk_list_wrapper_get_index (self, iter);
   return bst_child_list_wrapper_get_proxy (self, row);
 }
+
 SfiProxy
 bst_child_list_wrapper_get_proxy (GxkListWrapper *self,
                                   gint            row)
@@ -373,6 +399,7 @@ bst_child_list_wrapper_get_proxy (GxkListWrapper *self,
     }
   return 0;
 }
+
 gboolean
 bst_child_list_wrapper_get_iter (GxkListWrapper *self,
                                  GtkTreeIter    *iter,
@@ -381,6 +408,7 @@ bst_child_list_wrapper_get_iter (GxkListWrapper *self,
   ProxyStore *ps = (ProxyStore*) g_object_get_data ((GObject*) self, "ProxyStore");
   return ps ? proxy_store_get_iter (ps, iter, proxy) : FALSE;
 }
+
 void
 bst_child_list_wrapper_proxy_changed (GxkListWrapper *self,
                                       SfiProxy        item)
@@ -390,6 +418,8 @@ bst_child_list_wrapper_proxy_changed (GxkListWrapper *self,
   if (row >= 0)
     gxk_list_wrapper_notify_change (ps->self, row);
 }
+
+
 /* --- proxy stores --- */
 static void
 child_list_wrapper_fill_value (GxkListWrapper *self,
@@ -403,7 +433,7 @@ child_list_wrapper_fill_value (GxkListWrapper *self,
       const gchar *string;
       SfiProxy item;
     case BST_PROXY_STORE_SEQID:
-      g_value_set_string_take_ownership (value, g_strdup_printf ("%03u", seqid));
+      g_value_set_string_take_ownership (value, g_strdup_format ("%03u", seqid));
       break;
     case BST_PROXY_STORE_NAME:
       item = bst_child_list_wrapper_get_proxy (self, row);
@@ -420,6 +450,7 @@ child_list_wrapper_fill_value (GxkListWrapper *self,
       break;
     }
 }
+
 GxkListWrapper*
 bst_child_list_wrapper_store_new (void)
 {
@@ -435,6 +466,7 @@ bst_child_list_wrapper_store_new (void)
                            self, G_CONNECT_SWAPPED);
   return self;
 }
+
 static void
 item_seq_store_fill_value (GxkListWrapper *self,
                            guint           column,
@@ -448,7 +480,7 @@ item_seq_store_fill_value (GxkListWrapper *self,
       SfiProxy item;
     case BST_PROXY_STORE_SEQID:
       item = bst_item_seq_store_get_proxy (model, row);
-      g_value_set_string_take_ownership (value, g_strdup_printf ("%03u", bse_item_get_seqid (item)));
+      g_value_set_string_take_ownership (value, g_strdup_format ("%03u", bse_item_get_seqid (item)));
       break;
     case BST_PROXY_STORE_NAME:
       item = bst_item_seq_store_get_proxy (model, row);
@@ -465,6 +497,7 @@ item_seq_store_fill_value (GxkListWrapper *self,
       break;
     }
 }
+
 GtkTreeModel*
 bst_item_seq_store_new (gboolean sorted)
 {
@@ -481,17 +514,20 @@ bst_item_seq_store_new (gboolean sorted)
   g_object_set_long (self, "sorted-proxies", sorted != FALSE);
   return GTK_TREE_MODEL (self);
 }
+
 static inline SfiProxy
 get_proxy (const SfiRing *ring)
 {
   return (SfiProxy) (ring ? ring->data : NULL);
 }
+
 static gint
 item_seq_store_row_from_proxy (ProxyStore *ps,
                                SfiProxy    proxy)
 {
   return sfi_ring_index (ps->u.pq.items, (gpointer) proxy);
 }
+
 static void
 item_seq_store_destroy_data (gpointer data)
 {
@@ -503,6 +539,7 @@ item_seq_store_destroy_data (gpointer data)
   sfi_ring_free (ps->u.pq.items);
   g_free (ps);
 }
+
 static gint
 proxy_cmp_sorted (gconstpointer   value1,
                   gconstpointer   value2,
@@ -525,6 +562,7 @@ proxy_cmp_sorted (gconstpointer   value1,
     return s2 ? -1 : s1 != 0;
   return strcmp (s1, s2);
 }
+
 void
 bst_item_seq_store_set (GtkTreeModel   *model,
                         BseItemSeq     *iseq)
@@ -546,6 +584,7 @@ bst_item_seq_store_set (GtkTreeModel   *model,
       g_object_set_data_full ((GObject*) model, "ProxyStore", ps, item_seq_store_destroy_data);
     }
 }
+
 gint
 bst_item_seq_store_add (GtkTreeModel   *model,
                         SfiProxy        proxy)
@@ -558,6 +597,7 @@ bst_item_seq_store_add (GtkTreeModel   *model,
   gint row = proxy_store_item_listen_on (ps, proxy);
   return row;
 }
+
 gint
 bst_item_seq_store_remove (GtkTreeModel   *model,
                            SfiProxy        proxy)
@@ -571,6 +611,7 @@ bst_item_seq_store_remove (GtkTreeModel   *model,
     }
   return row;
 }
+
 gboolean
 bst_item_seq_store_can_raise (GtkTreeModel   *model,
                               SfiProxy        proxy)
@@ -579,6 +620,7 @@ bst_item_seq_store_can_raise (GtkTreeModel   *model,
   gint row = item_seq_store_row_from_proxy (ps, proxy);
   return row > 0;
 }
+
 gint
 bst_item_seq_store_raise (GtkTreeModel   *model,
                           SfiProxy        proxy)
@@ -595,6 +637,7 @@ bst_item_seq_store_raise (GtkTreeModel   *model,
     }
   return row;
 }
+
 gboolean
 bst_item_seq_store_can_lower (GtkTreeModel   *model,
                               SfiProxy        proxy)
@@ -603,6 +646,7 @@ bst_item_seq_store_can_lower (GtkTreeModel   *model,
   gint row = item_seq_store_row_from_proxy (ps, proxy);
   return row >= 0 && sfi_ring_tail (ps->u.pq.items)->data != (gpointer) proxy;
 }
+
 gint
 bst_item_seq_store_lower (GtkTreeModel   *model,
                           SfiProxy        proxy)
@@ -619,6 +663,7 @@ bst_item_seq_store_lower (GtkTreeModel   *model,
     }
   return row;
 }
+
 BseItemSeq*
 bst_item_seq_store_dup (GtkTreeModel   *model)
 {
@@ -629,6 +674,7 @@ bst_item_seq_store_dup (GtkTreeModel   *model)
     bse_item_seq_append (iseq, (SfiProxy) ring->data);
   return iseq;
 }
+
 SfiProxy
 bst_item_seq_store_get_from_iter (GtkTreeModel *model,
                                   GtkTreeIter  *iter)
@@ -637,6 +683,7 @@ bst_item_seq_store_get_from_iter (GtkTreeModel *model,
   gint row = gxk_list_wrapper_get_index (self, iter);
   return bst_item_seq_store_get_proxy (model, row);
 }
+
 SfiProxy
 bst_item_seq_store_get_proxy (GtkTreeModel *model,
                               gint          row)
@@ -646,6 +693,7 @@ bst_item_seq_store_get_proxy (GtkTreeModel *model,
     return get_proxy (sfi_ring_nth (ps->u.pq.items, row));
   return 0;
 }
+
 gboolean
 bst_item_seq_store_get_iter (GtkTreeModel *model,
                              GtkTreeIter  *iter,

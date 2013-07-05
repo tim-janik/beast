@@ -1,6 +1,7 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #ifndef __BSE_DEFS_H__
 #define __BSE_DEFS_H__
+
 #undef   G_DISABLE_ASSERT
 #undef   G_DISABLE_CHECKS
 #include <libintl.h>
@@ -8,12 +9,17 @@
 #include <sfi/sfistore.hh>	// FIXME
 #include <sfi/sficomwire.hh>	// FIXME
 #include <bse/bseconfig.h>
+
 G_BEGIN_DECLS
+
+
 /* --- some globally used macros --- */
 #define BSE_VERSION_CMP(v1_major, v1_minor, v1_micro, v2_major, v2_minor, v2_micro) ( \
                                     (v1_major != v2_major) ? (v1_major > v2_major ? +1 : -1) : \
                                     (v1_minor != v2_minor) ? (v1_minor > v2_minor ? +1 : -1) : \
                                     (v1_micro < v2_micro ? -1 : v1_micro > v2_micro))
+
+
 /* --- BSE objects, classes & interfaces --- */
 typedef struct  _BseBinData                BseBinData;
 typedef struct  _BseBinDataClass           BseBinDataClass;
@@ -121,9 +127,14 @@ typedef gboolean      (*BseCategoryForeach)  (const gchar       *category_path,
                                               gpointer           user_data);
 typedef void          (*BseEngineAccessFunc) (BseModule         *module,
                                               gpointer           data); 
+
+
+
 /* --- i18n and gettext helpers --- */
 const gchar* bse_gettext (const gchar *text);
 #define _(str)	bse_gettext (str)
 #define N_(str) (str)
+
 G_END_DECLS
+
 #endif /* __BSE_DEFS_H__ */

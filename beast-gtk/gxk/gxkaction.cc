@@ -2,12 +2,17 @@
 #include "gxkaction.hh"
 #include <string.h>
 #include <libintl.h>
+
+
 #define intern_null_string(s,sconst)      (s ? (sconst ? g_intern_static_string : g_intern_string) (s) : NULL)
 #define intern_i18n_string(idom,s,sconst) (intern_null_string (idom && s ? dgettext (idom, s) : s, sconst))
+
 /* --- caching GxkActionCheck() --- */
 #define ACTION_CHECK( func, user_data, action_id)         (!func || action_check_stamped (func, user_data, action_id, TRUE))
 #define ACTION_CHECK_CACHED( func, user_data, action_id)  (!func || action_check_stamped (func, user_data, action_id, FALSE))
+
 static guint64 global_action_cache_stamp = 0x100000000LL;
+
 guint64
 gxk_action_inc_cache_stamp (void)
 {
@@ -16,6 +21,7 @@ gxk_action_inc_cache_stamp (void)
   while ((global_action_cache_stamp & 0xffffffff) == 0);
   return global_action_cache_stamp;
 }
+
 static inline gboolean
 action_check_stamped (GxkActionCheck acheck_func,
                       gpointer       user_data,
@@ -26,6 +32,7 @@ action_check_stamped (GxkActionCheck acheck_func,
     gxk_action_inc_cache_stamp();
   return acheck_func (user_data, action_id, global_action_cache_stamp) != FALSE;
 }
+
 /* --- action class ---- */
 typedef struct {
   GxkActionCheck  acheck;
@@ -37,6 +44,7 @@ typedef struct {
   guint           ref_count;
 } ActionClass;
 static GHashTable *action_class_ht = NULL;
+
 static gboolean
 action_class_equals (gconstpointer v1,
                      gconstpointer v2)
@@ -49,6 +57,7 @@ action_class_equals (gconstpointer v1,
           c1->agroup      == c2->agroup &&
           c1->class_flags == c2->class_flags);
 }
+
 static guint
 action_class_hash (gconstpointer v)
 {
@@ -59,6 +68,7 @@ action_class_hash (gconstpointer v)
           G_HASH_POINTER (c->agroup) ^
           c->class_flags);
 }
+
 static ActionClass*
 action_class_ref_new (GxkActionCheck  acheck,
                       GxkActionExec   aexec,
@@ -84,6 +94,7 @@ action_class_ref_new (GxkActionCheck  acheck,
     c->ref_count++;
   return c;
 }
+
 static ActionClass*
 action_class_ref (ActionClass *aclass)
 {
@@ -91,6 +102,7 @@ action_class_ref (ActionClass *aclass)
   aclass->ref_count++;
   return aclass;
 }
+
 static void
 action_class_unref (ActionClass *aclass)
 {
@@ -104,6 +116,8 @@ action_class_unref (ActionClass *aclass)
       g_free (aclass);
     }
 }
+
+
 /* --- action list --- */
 typedef struct {
   ActionClass   *klass;
@@ -112,11 +126,13 @@ typedef struct {
   GSList        *widgets;
 } ActionEntry;
 static GQuark quark_action_entry = 0;
+
 struct GxkActionList {
   guint           n_entries;
   ActionEntry   **entries;
   GxkActionGroup *agroup;
 };
+
 static void
 action_list_add (GxkActionList        *alist,
                  ActionClass          *klass,
@@ -138,6 +154,7 @@ action_list_add (GxkActionList        *alist,
   alist->entries = g_renew (ActionEntry*, alist->entries, alist->n_entries);
   alist->entries[j] = entry;
 }
+
 static void
 action_entry_free (ActionEntry *entry)
 {
@@ -150,6 +167,7 @@ action_entry_free (ActionEntry *entry)
   action_class_unref (entry->klass);
   g_free (entry);
 }
+
 static ActionEntry*
 action_entry_copy (const ActionEntry *source)
 {
@@ -158,11 +176,13 @@ action_entry_copy (const ActionEntry *source)
   entry->widgets = NULL;
   return entry;
 }
+
 GxkActionList*
 gxk_action_list_create (void)
 {
   return gxk_action_list_create_grouped (NULL);
 }
+
 GxkActionList*
 gxk_action_list_create_grouped (GxkActionGroup *agroup)
 {
@@ -170,6 +190,7 @@ gxk_action_list_create_grouped (GxkActionGroup *agroup)
   alist->agroup = agroup ? (GxkActionGroup*) g_object_ref (agroup) : NULL;
   return alist;
 }
+
 void
 gxk_action_list_add_actions (GxkActionList        *alist,
                              guint                 n_actions,
@@ -189,6 +210,7 @@ gxk_action_list_add_actions (GxkActionList        *alist,
     }
   action_class_unref (klass);
 }
+
 void
 gxk_action_list_add_translated (GxkActionList          *alist,
                                 const gchar            *key,
@@ -214,6 +236,7 @@ gxk_action_list_add_translated (GxkActionList          *alist,
   action_list_add (alist, klass, FALSE, key, &a, NULL);
   action_class_unref (klass);
 }
+
 static gint
 action_entries_compare (gconstpointer v1,
                         gconstpointer v2,
@@ -223,12 +246,14 @@ action_entries_compare (gconstpointer v1,
   const ActionEntry *const*p2 = (const ActionEntry*const*) v2, *e2 = *p2;
   return strcmp (e1->action.name, e2->action.name);
 }
+
 GxkActionList*
 gxk_action_list_sort (GxkActionList *alist)
 {
   g_qsort_with_data (alist->entries, alist->n_entries, sizeof (alist->entries[0]), action_entries_compare, NULL);
   return alist;
 }
+
 GxkActionList*
 gxk_action_list_merge (GxkActionList *alist1,
                        GxkActionList *alist2)
@@ -248,6 +273,7 @@ gxk_action_list_merge (GxkActionList *alist1,
   g_free (alist2);
   return alist1;
 }
+
 GxkActionList*
 gxk_action_list_copy (GxkActionList *alist)
 {
@@ -259,11 +285,13 @@ gxk_action_list_copy (GxkActionList *alist)
     al->entries[i] = action_entry_copy (alist->entries[i]);
   return al;
 }
+
 guint
 gxk_action_list_get_n_actions (GxkActionList *alist)
 {
   return alist->n_entries;
 }
+
 void
 gxk_action_list_get_action (GxkActionList          *alist,
                             guint                   nth,
@@ -280,6 +308,7 @@ gxk_action_list_get_action (GxkActionList          *alist,
   action->action_id = e->action.action_id;
   action->stock_icon = e->action.stock_icon;
 }
+
 static void
 widget_set_active (GxkActionGroup *agroup,
                    GtkWidget      *widget)
@@ -294,6 +323,7 @@ widget_set_active (GxkActionGroup *agroup,
       gxk_action_group_unlock (agroup);
     }
 }
+
 void
 gxk_action_list_regulate_widget (GxkActionList          *alist,
                                  guint                   nth,
@@ -307,6 +337,7 @@ gxk_action_list_regulate_widget (GxkActionList          *alist,
   if (e->klass->agroup && gxk_widget_regulate_uses_active (widget))
     g_signal_connect_object (e->klass->agroup, "changed", G_CALLBACK (widget_set_active), widget, GConnectFlags (0));
 }
+
 void
 gxk_action_list_force_regulate (GtkWidget *widget)
 {
@@ -322,6 +353,7 @@ gxk_action_list_force_regulate (GtkWidget *widget)
         gxk_action_group_unlock (e->klass->agroup);
     }
 }
+
 void
 gxk_action_list_free (GxkActionList *alist)
 {
@@ -333,6 +365,7 @@ gxk_action_list_free (GxkActionList *alist)
     g_object_unref (alist->agroup);
   g_free (alist);
 }
+
 void
 gxk_action_activate_callback (gconstpointer action_data)
 {
@@ -361,12 +394,15 @@ gxk_action_activate_callback (gconstpointer action_data)
         }
     }
 }
+
+
 /* --- GtkWindow actions --- */
 typedef struct {
   gpointer            client_data;
   GxkActionClient     added_func;
 } ActionClient;
 static GQuark quark_action_clients = 0;
+
 typedef struct ActionLink ActionLink;
 struct ActionLink {
   guint          ref_count;
@@ -378,6 +414,7 @@ struct ActionLink {
 };
 static GQuark quark_action_links = 0;
 static GQuark quark_action_factories = 0;
+
 static void
 action_link_unref (ActionLink *alink)
 {
@@ -390,6 +427,7 @@ action_link_unref (ActionLink *alink)
       g_free (alink);
     }
 }
+
 static void
 window_destroy_action_links (gpointer data)
 {
@@ -403,6 +441,7 @@ window_destroy_action_links (gpointer data)
       action_link_unref (alink);
     }
 }
+
 static void
 window_add_action_link (GtkWidget *window,
                         ActionLink *alink)
@@ -422,11 +461,13 @@ window_add_action_link (GtkWidget *window,
         aclient->added_func (aclient->client_data, (GtkWindow*) window, alink->prefix, alink->alist, alink->widget);
     }
 }
+
 static void
 window_remove_action_link (ActionLink *alink)
 {
   GtkWidget *window = alink->toplevel;
   g_return_if_fail (GTK_IS_WIDGET (alink->toplevel));
+
   ActionLink *last = NULL, *anode = (ActionLink*) g_object_get_qdata ((GObject*) window, quark_action_links);
   for (; anode; last = anode, anode = last->next)
     if (anode == alink)
@@ -444,9 +485,11 @@ window_remove_action_link (ActionLink *alink)
         return;
       }
 }
+
 static GSList *window_queue = NULL;
 static GQuark  quark_widgets_upwards = 0;
 static GQuark  quark_widgets_downwards = 0;
+
 static void
 free_widget_slist (gpointer data)
 {
@@ -457,6 +500,7 @@ free_widget_slist (gpointer data)
       g_object_unref (widget);
     }
 }
+
 static inline gboolean
 check_ancestor (GtkWidget *widget,
                 GtkWidget *ancestor)
@@ -469,6 +513,7 @@ check_ancestor (GtkWidget *widget,
     }
   return FALSE;
 }
+
 static gboolean
 gxk_action_timer_update_window (gpointer data)
 {
@@ -531,6 +576,7 @@ gxk_action_timer_update_window (gpointer data)
   GDK_THREADS_LEAVE ();
   return FALSE;
 }
+
 static void
 window_queue_action_updates (GtkWidget *window,
                              GtkWidget *upwards,
@@ -572,6 +618,9 @@ window_queue_action_updates (GtkWidget *window,
       window_queue = g_slist_prepend (window_queue, g_object_ref (window));
     }
 }
+
+
+
 void
 gxk_widget_update_actions_upwards (gpointer widget)
 {
@@ -580,6 +629,7 @@ gxk_widget_update_actions_upwards (gpointer widget)
   if (GTK_IS_WINDOW (toplevel))
     window_queue_action_updates (toplevel, (GtkWidget*) widget, NULL);
 }
+
 void
 gxk_widget_update_actions_downwards (gpointer widget)
 {
@@ -588,6 +638,7 @@ gxk_widget_update_actions_downwards (gpointer widget)
   if (GTK_IS_WINDOW (toplevel))
     window_queue_action_updates (toplevel, NULL, (GtkWidget*) widget);
 }
+
 void
 gxk_widget_update_actions (gpointer widget)
 {
@@ -596,9 +647,12 @@ gxk_widget_update_actions (gpointer widget)
   if (GTK_IS_WINDOW (toplevel))
     window_queue_action_updates (toplevel, (GtkWidget*) widget, (GtkWidget*) widget);
 }
+
+
 /* --- publishing --- */
 static GQuark  quark_widget_actions = 0;
 static GSList *publisher_list = NULL;
+
 static gboolean
 action_idle_publisher (gpointer data)
 {
@@ -625,6 +679,7 @@ action_idle_publisher (gpointer data)
   GDK_THREADS_LEAVE ();
   return FALSE;
 }
+
 static void
 publisher_update_actions (GtkWidget *widget)
 {
@@ -635,6 +690,7 @@ publisher_update_actions (GtkWidget *widget)
       publisher_list = g_slist_prepend (publisher_list, g_object_ref (widget));
     }
 }
+
 static void
 publisher_destroy_action_links (gpointer data)
 {
@@ -647,6 +703,7 @@ publisher_destroy_action_links (gpointer data)
       action_link_unref (alink);
     }
 }
+
 void
 gxk_widget_publish_action_list (gpointer       widget,
                                 const gchar   *prefix,
@@ -668,6 +725,7 @@ gxk_widget_publish_action_list (gpointer       widget,
     g_object_connect (widget, "signal_after::realize", gxk_widget_update_actions, NULL, NULL);
   gxk_widget_update_actions (widget);
 }
+
 GSList*
 gxk_widget_peek_action_widgets (gpointer                widget,
                                 const gchar            *prefix,
@@ -688,6 +746,7 @@ gxk_widget_peek_action_widgets (gpointer                widget,
     }
   return NULL;
 }
+
 void
 gxk_widget_republish_actions (gpointer                widget,
                               const gchar            *prefix,
@@ -704,6 +763,7 @@ gxk_widget_republish_actions (gpointer                widget,
         }
     }
 }
+
 void
 gxk_widget_publish_actions_grouped (gpointer                widget,
                                     GxkActionGroup         *group,
@@ -719,6 +779,7 @@ gxk_widget_publish_actions_grouped (gpointer                widget,
   gxk_action_list_add_actions (alist, n_actions, actions, i18n_domain, acheck, aexec, widget);
   gxk_widget_publish_action_list (widget, prefix, alist);
 }
+
 void
 gxk_widget_publish_actions (gpointer                widget,
                             const gchar            *prefix,
@@ -730,6 +791,7 @@ gxk_widget_publish_actions (gpointer                widget,
 {
   gxk_widget_publish_actions_grouped (widget, NULL, prefix, n_actions, actions, i18n_domain, acheck, aexec);
 }
+
 void
 gxk_widget_publish_grouped_translated (gpointer                widget,
                                        GxkActionGroup         *group,
@@ -750,6 +812,7 @@ gxk_widget_publish_grouped_translated (gpointer                widget,
                                   acheck, aexec, widget);
   gxk_widget_publish_action_list (widget, prefix, alist);
 }
+
 void
 gxk_widget_publish_translated (gpointer                widget,
                                const gchar            *prefix,
@@ -766,6 +829,7 @@ gxk_widget_publish_translated (gpointer                widget,
   gxk_widget_publish_grouped_translated (widget, NULL, prefix, key ? key : name, name, accelerator,
                                          tooltip, action_id, stock_icon, acheck, aexec);
 }
+
 void
 gxk_window_add_action_client (GtkWindow              *window,
                               GxkActionClient         added_func,
@@ -782,6 +846,7 @@ gxk_window_add_action_client (GtkWindow              *window,
   for (alink = (ActionLink*) g_object_get_qdata ((GObject*) window, quark_action_links); alink; alink = alink->next)
     aclient->added_func (aclient->client_data, window, alink->prefix, alink->alist, alink->widget);
 }
+
 void
 gxk_window_remove_action_client (GtkWindow              *window,
                                  gpointer                client_data)
@@ -806,8 +871,10 @@ gxk_window_remove_action_client (GtkWindow              *window,
     }
   g_warning ("failed to remove action client (%p) from GtkWindow (%p)", client_data, window);
 }
+
 /* --- action group --- */
 static gulong action_group_signal_changed = 0;
+
 static void
 gxk_action_group_class_init (GxkActionGroupClass *klass)
 {
@@ -817,6 +884,7 @@ gxk_action_group_class_init (GxkActionGroupClass *klass)
                                               NULL, NULL, gtk_signal_default_marshaller,
                                               G_TYPE_NONE, 0);
 }
+
 GType
 gxk_action_group_get_type (void)
 {
@@ -838,6 +906,7 @@ gxk_action_group_get_type (void)
     }
   return type;
 }
+
 GxkActionGroup*
 gxk_action_toggle_new (void)
 {
@@ -845,11 +914,13 @@ gxk_action_toggle_new (void)
   group->invert_dups = TRUE;
   return group;
 }
+
 GxkActionGroup*
 gxk_action_group_new (void)
 {
   return (GxkActionGroup*) g_object_new (GXK_TYPE_ACTION_GROUP, NULL);
 }
+
 void
 gxk_action_group_select (GxkActionGroup *self,
                          gulong          action_id)
@@ -866,12 +937,14 @@ gxk_action_group_select (GxkActionGroup *self,
       self->lock_count--;
     }
 }
+
 void
 gxk_action_group_lock (GxkActionGroup *self)
 {
   g_return_if_fail (GXK_IS_ACTION_GROUP (self));
   self->lock_count++;
 }
+
 void
 gxk_action_group_unlock (GxkActionGroup *self)
 {
@@ -879,12 +952,15 @@ gxk_action_group_unlock (GxkActionGroup *self)
   g_return_if_fail (self->lock_count > 0);
   self->lock_count--;
 }
+
 void
 gxk_action_group_dispose (GxkActionGroup *self)
 {
   g_return_if_fail (GXK_IS_ACTION_GROUP (self));
   g_object_run_dispose ((GObject*) self);
 }
+
+
 /* --- initialization --- */
 void
 gxk_init_actions (void)

@@ -77,6 +77,7 @@ void		sfi_com_port_create_linked	(const gchar	*ident1,
 						 SfiComPort    **port2);
 SfiComPort*	sfi_com_port_ref		(SfiComPort	*port);
 void		sfi_com_port_unref		(SfiComPort	*port);
+
 /* remote I/O */
 void		sfi_com_port_send		(SfiComPort	*port,
 						 const GValue	*value);
@@ -84,11 +85,14 @@ void		sfi_com_port_send_bulk		(SfiComPort	*port,
 						 SfiRing        *value_ring);
 GValue*		sfi_com_port_recv		(SfiComPort	*port);
 GValue*		sfi_com_port_recv_blocking	(SfiComPort	*port);
+
 /* I/O handling */
 GPollFD*	sfi_com_port_get_poll_fds	(SfiComPort	*port,
 						 guint		*n_pfds);
 gboolean	sfi_com_port_io_pending		(SfiComPort	*port);
 void		sfi_com_port_process_io		(SfiComPort	*port);
+
+
 /* shutdown */
 void		sfi_com_port_set_close_func	(SfiComPort	*port,
 						 SfiComPortClosedFunc func,

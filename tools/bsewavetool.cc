@@ -7,7 +7,7 @@
 #include <bse/gslvorbis-enc.hh>
 #include <bse/gsldatahandle-vorbis.hh>
 #include <bse/bseresamplerimpl.hh>
-#include <birnet/birnettests.h>
+#include <rapicorn-test.hh>
 #include <stdlib.h>
 #include <errno.h>
 #include <string.h>
@@ -21,7 +21,8 @@
 
 /// The BseWaveTool namespace contains all functions of the bse wave tool utility.
 namespace BseWaveTool {
-using namespace Birnet;
+using namespace Bse;
+
 #define PRG_NAME        ("bsewavetool")
 #define	IROUND(dbl)	((int) (floor (dbl + 0.5)))
 /* --- prototypes --- */
@@ -36,12 +37,14 @@ static string input_file;
 static string output_file;
 list<Command*> Command::registry;
 list<string>   unlink_file_list;
+
 /* --- Command --- */
 Command::Command (const char *command_name) :
   name (command_name)
 {
   registry.push_back (this);
 }
+
 void
 Command::blurb (bool bshort)
 {
@@ -49,37 +52,8 @@ Command::blurb (bool bshort)
   if (bshort)
     return;
 }
+
 /* --- main program --- */
-static void
-wavetool_message_handler (const char              *domain,
-                          Msg::Type                mtype,
-                          const vector<Msg::Part> &parts)
-{
-  if (mtype == Msg::INFO)
-    {
-      if (!silent_infos)
-        {
-          String title, primary, secondary, details, checkmsg;
-          for (uint i = 0; i < parts.size(); i++)
-            switch (parts[i].ptype)
-              {
-              case '0': title     += (title.size()     ? "\n" : "") + parts[i].string; break;
-              case '1': primary   += (primary.size()   ? "\n" : "") + parts[i].string; break;
-              case '2': secondary += (secondary.size() ? "\n" : "") + parts[i].string; break;
-              case '3': details   += (details.size()   ? "\n" : "") + parts[i].string; break;
-              case 'c': checkmsg  += (checkmsg.size()  ? "\n" : "") + parts[i].string; break;
-              }
-          if (primary.size())
-            g_printerr ("%s\n", primary.c_str());
-          if (secondary.size())
-            g_printerr ("%s\n", secondary.c_str());
-          if (details.size())
-            g_printerr ("%s\n", details.c_str());
-        }
-    }
-  else
-    Msg::default_handler (domain, mtype, parts);
-}
 extern "C" int
 main (int   argc,
       char *argv[])
@@ -87,17 +61,9 @@ main (int   argc,
   std::set_terminate (__gnu_cxx::__verbose_terminate_handler);
   /* initialization */
   int orig_argc = argc;
-  SfiInitValue values[] = {
-    { "stand-alone",            "true" }, /* no rcfiles etc. */
-    { "wave-chunk-padding",     NULL, 1, },
-    { "dcache-block-size",      NULL, 8192, },
-    { "dcache-cache-memory",    NULL, 5 * 1024 * 1024, },
-    { NULL }
-  };
-  bse_init_inprocess (&argc, &argv, "BseWaveTool", values);
-  Msg::allow_msgs ("main"); // FIXME
-  Msg::set_thread_handler (wavetool_message_handler);
-  Msg::configure (Msg::INFO, Msg::LOG_TO_HANDLER, "");
+  bse_init_inprocess (&argc, argv, "BseWaveTool",
+                      Bse::cstrings_to_vector ("stand-alone=1", "wave-chunk-padding=1",
+                                               "dcache-block-size=8192", "dcache-cache-memory=5242880", NULL));
   /* pre-parse argument list to decide command */
   wavetool_parse_args (&argc, &argv);
   /* check args */
@@ -126,6 +92,7 @@ main (int   argc,
       sfi_error ("missing input file name\n");
       exit (1);
     }
+
   /* parse and check command args */
   guint missing = command->parse_args (argc, argv);
   int e = 1; /* collapse NULL args */
@@ -147,6 +114,7 @@ main (int   argc,
       sfi_error ("extra argument given to command \"%s\": %s\n", command->name.c_str(), argv[1]);
       exit (1);
     }
+
   /* load wave file */
   g_printerr ("LOAD: %s\n", input_file.c_str());
   Wave *wave = command->create ();
@@ -201,9 +169,11 @@ main (int   argc,
       sfi_error ("problems encountered loading bsewave file \"%s\": %s", input_file.c_str(), bse_error_blurb (error));
       exit (1);
     }
+
   /* process */
   g_printerr ("EXEC: %s\n", command_name.c_str());
   bool needs_saving = command->exec (wave);
+
   /* save */
   if (needs_saving)
     {
@@ -216,12 +186,15 @@ main (int   argc,
           exit (1);
         }
     }
+
   /* cleanup */
   delete wave;
   for (list<string>::iterator it = unlink_file_list.begin(); it != unlink_file_list.end(); it++)
     unlink (it->c_str());
+
   return 0;
 }
+
 static void
 wavetool_print_version (void)
 {
@@ -233,6 +206,7 @@ wavetool_print_version (void)
   g_print ("the BEAST source package. Sources, examples and contact\n");
   g_print ("information are available at http://beast.testbit.eu/.\n");
 }
+
 static void
 wavetool_print_blurb (bool bshort)
 {
@@ -261,6 +235,7 @@ wavetool_print_blurb (bool bshort)
       cmd->blurb (bshort);
     }
 }
+
 static bool
 parse_str_option (char        **argv,
                   guint        &i,
@@ -287,6 +262,7 @@ parse_str_option (char        **argv,
     }
   return false;
 }
+
 static bool
 parse_bool_option (char        **argv,
                    guint        &i,
@@ -300,6 +276,7 @@ parse_bool_option (char        **argv,
     }
   return false;
 }
+
 /* Since the function g_str_hash has changed between glib 2.26 and glib 2.28,
  * we include the original code here to make chunk keys behave the same with
  * both glib versions, so the unit tests pass with any glib version.
@@ -310,11 +287,15 @@ old_g_str_hash (gconstpointer v)
   /* 31 bit hash function */
   const signed char *p = static_cast<const signed char *> (v);
   guint32 h = *p;
+
   if (h)
     for (p += 1; *p != '\0'; p++)
       h = (h << 5) - h + *p;
+
   return h;
 }
+
+
 /* wave chunk keys for shell iteration */
 class WaveChunkKey {
   BseFloatIEEE754 m_osc_freq;
@@ -325,6 +306,7 @@ public:
     m_osc_freq.v_float = -1;
     if (key_string.size() != 7)
       return;  // invalid key
+
     uint64 key_uint = 0;
     for (string::const_reverse_iterator si = key_string.rbegin(); si != key_string.rend(); si++)
       {
@@ -338,12 +320,14 @@ public:
         else
           return; // invalid key
       }
+
     const uint64 key_checksum = key_uint & 0x1ff;
     key_uint ^= key_checksum << 32LL;  // deobfuscate high bits with checksum
-    const uint64 checksum = old_g_str_hash (string_printf ("%lld", key_uint - key_checksum).c_str()) % 509;
+    const uint64 checksum = old_g_str_hash (string_format ("%lld", key_uint - key_checksum).c_str()) % 509;
     if (key_checksum != checksum)
       return; // invalid key
     key_uint >>= 9;
+
     // decode float components in byte order independent way
     m_osc_freq.mpn.mantissa = key_uint;
     key_uint >>= 23;
@@ -359,6 +343,7 @@ public:
   as_string() const
   {
     uint64 key_uint = 0;
+
     // put float components to key in byte order independent way
     key_uint |= m_osc_freq.mpn.sign;            //  1 bit
     key_uint <<= 8;
@@ -366,9 +351,10 @@ public:
     key_uint <<= 23;
     key_uint |= m_osc_freq.mpn.mantissa;        // 23 bit
     key_uint <<= 9;                             // +9 bit checksum
-    const uint64 checksum = old_g_str_hash (string_printf ("%lld", key_uint).c_str()) % 509;
+    const uint64 checksum = old_g_str_hash (string_format ("%lld", key_uint).c_str()) % 509;
     key_uint |= checksum;
     key_uint ^= checksum << 32LL;               // obfuscate high bits with checksum
+
     string key_string;
     for (int i = 0; i < 7; i++) /* encode in custom base-62 format; 7 digits  <=>  2^41 < 62^7 */
       {
@@ -382,6 +368,7 @@ public:
         key_uint /= 62;
       }
     g_assert (key_uint == 0);
+
     return key_string;
   }
   bool
@@ -455,10 +442,10 @@ public:
     for (int i = 0; decode_test[i].key; i++)
       {
         WaveChunkKey key = WaveChunkKey (decode_test[i].key);
-        TCHECK (key.is_valid());
-        TCHECK (fabs ((decode_test[i].value - key.osc_freq()) / decode_test[i].value) < epsilon);
+        TASSERT (key.is_valid());
+        TASSERT (fabs ((decode_test[i].value - key.osc_freq()) / decode_test[i].value) < epsilon);
         if (i % 2 == 0)
-          TICK();
+          TOK();
       }
     TDONE();
     TSTART ("Encoding chunk keys");
@@ -467,10 +454,10 @@ public:
       {
         WaveChunkKey encoded_key (value);
         WaveChunkKey decoded_key (encoded_key.as_string());
-        TCHECK (decoded_key.is_valid());
-        TCHECK (fabs ((value - decoded_key.osc_freq()) / value) < epsilon);
+        TASSERT (decoded_key.is_valid());
+        TASSERT (fabs ((value - decoded_key.osc_freq()) / value) < epsilon);
         if (i++ % 150 == 0)
-          TICK();
+          TOK();
       }
     TDONE();
     TSTART ("Invalid chunk keys");
@@ -484,14 +471,17 @@ public:
     TDONE();
   }
 };
+
 static bool
 parse_chunk_selection (char          **argv,
                        uint           &i,
                        uint            argc,
                        bool           &all_chunks,
                        vector<float>  &freq_list)
+
 {
   const gchar *str = NULL;
+
   if (parse_bool_option (argv, i, "--all-chunks"))
     {
       all_chunks = true;
@@ -525,6 +515,7 @@ parse_chunk_selection (char          **argv,
     }
   return false;
 }
+
 static void
 verify_chunk_selection (const vector<float> &freq_list,
                         Wave                *wave)
@@ -533,27 +524,22 @@ verify_chunk_selection (const vector<float> &freq_list,
     {
       if (!wave->lookup (*fi))
         {
-          Msg::display (skip_errors ? Msg::WARNING : Msg::ERROR,
-                        Msg::Primary ("failed to find wave chunk with oscillator frequency: %.2f", *fi));
-          if (!skip_errors)
-            exit (1);
+          String msg = string_format ("failed to find wave chunk with oscillator frequency: %.2f", *fi);
+          if (skip_errors)
+            sfi_warning ("%s", msg.c_str());
+          else
+            sfi_error ("%s", msg.c_str());
         }
     }
 }
+
 static void
 wavetool_parse_args (int    *argc_p,
                      char ***argv_p)
 {
   guint argc = *argc_p;
   gchar **argv = *argv_p;
-  gchar *envar;
   guint i;
-  envar = getenv ("BSEWAVETOOL_DEBUG");
-  if (envar)
-    Msg::allow_msgs (envar);
-  envar = getenv ("BSEWAVETOOL_NO_DEBUG");
-  if (envar)
-    Msg::deny_msgs (envar);
   for (i = 1; i < argc; i++)
     {
       const gchar *str = NULL;
@@ -562,16 +548,6 @@ wavetool_parse_args (int    *argc_p,
           argv[i] = NULL;
           break;
         }
-      else if (parse_bool_option (argv, i, "--debug-list"))
-        {
-          g_print ("debug keys: all");
-          g_print ("\n");
-          exit (0);
-        }
-      else if (parse_str_option (argv, i, "--debug", &str, argc))
-        Msg::allow_msgs (str);
-      else if (parse_str_option (argv, i, "--no-debug", &str, argc))
-        Msg::deny_msgs (str);
       else if (parse_bool_option (argv, i, "-h") ||
                parse_bool_option (argv, i, "--help"))
         {
@@ -613,6 +589,7 @@ wavetool_parse_args (int    *argc_p,
             ; /* preserve remaining options */
         }
     }
+
   guint e = 1;
   for (i = 1; i < argc; i++)
     if (argv[i])
@@ -623,6 +600,7 @@ wavetool_parse_args (int    *argc_p,
       }
   *argc_p = e;
 }
+
 /* --- command implementations --- */
 class Store : public Command {
 public:
@@ -649,6 +627,7 @@ public:
     /*       "**********1*********2*********3*********4*********5*********6*********7*********" */
   }
 } cmd_store ("store");
+
 class Create : public Command {
   bool force_creation;
 public:
@@ -724,6 +703,7 @@ public:
     return true;
   }
 } cmd_create ("create");
+
 class Oggenc : public Command {
 public:
   float quality;
@@ -795,7 +775,7 @@ public:
                        bse_error_blurb (error));
             exit (1);
           }
-        gchar *temp_file = g_strdup_printf ("%s/bsewavetool-pid%u-oggchunk%04X.tmp%06xyXXXXXX", g_get_tmp_dir(), getpid(), 0x1000 + nth, rand() & 0xfffffd);
+        gchar *temp_file = g_strdup_format ("%s/bsewavetool-pid%u-oggchunk%04X.tmp%06xyXXXXXX", g_get_tmp_dir(), getpid(), 0x1000 + nth, rand() & 0xfffffd);
         gint tmpfd = mkstemp (temp_file);
         if (tmpfd < 0)
           {
@@ -886,6 +866,7 @@ public:
     return true;
   }
 } cmd_oggenc ("oggenc");
+
 class AddChunk : public Command {
   struct OptChunk {
     const gchar *midi_note;
@@ -1174,17 +1155,19 @@ public:
             }
           if (error)
             {
-              Msg::display (skip_errors ? Msg::WARNING : Msg::ERROR,
-                            Msg::Primary (_("failed to add wave chunk from file \"%s\": %s"),
-                                          ochunk.sample_file, bse_error_blurb (error)));
-              if (!skip_errors)
-                exit (1);
+              String msg = string_format (_("failed to add wave chunk from file \"%s\": %s"),
+                                          ochunk.sample_file, bse_error_blurb (error));
+              if (skip_errors)
+                sfi_warning ("%s", msg.c_str());
+              else
+                sfi_error ("%s", msg.c_str());
             }
           g_strfreev (xinfos);
         }
     return true;
   }
 } cmd_add_chunk ("add-chunk"), cmd_add_raw_chunk ("add-raw-chunk", AddChunk::RAW);
+
 class DelChunkCmd : public Command {
   vector<gfloat> m_freq_list;
   bool           m_all_chunks;
@@ -1225,11 +1208,13 @@ public:
       {
         list<WaveChunk>::iterator next_it = it;
         next_it++;
+
         if (m_all_chunks || wave->match (*it, m_freq_list))
           {
             GslDataHandle *dhandle = it->dhandle;
             double osc_freq = gsl_data_handle_osc_freq (dhandle);
             sfi_info ("DELETE: osc-freq=%g", osc_freq);
+
             wave->remove (it);
           }
         it = next_it;
@@ -1242,6 +1227,7 @@ public:
   {
   }
 } cmd ("del-chunk");
+
 class XInfoCmd : public Command {
   vector<char*> args;
 public:
@@ -1409,6 +1395,7 @@ public:
     return true;
   }
 } cmd_xinfo ("xinfo");
+
 class InfoCmd : public Command {
   vector<gfloat> m_freq_list;
   vector<String> m_fields;
@@ -1480,6 +1467,7 @@ public:
   string_tokenize (const String& str)
   {
     vector<String> words;
+
     String::const_iterator word_start = str.begin();
     for (String::const_iterator si = str.begin(); si != str.end(); si++)
       {
@@ -1489,8 +1477,10 @@ public:
             word_start = si + 1;
           }
       }
+
     if (!str.empty()) /* handle last word in string */
       words.push_back (String (word_start, str.end()));
+
     return words;
   }
   guint
@@ -1498,6 +1488,7 @@ public:
               char **argv)
   {
     bool seen_selection = false;
+
     for (guint i = 1; i < argc; i++)
       {
         const char *str = NULL;
@@ -1554,6 +1545,7 @@ public:
     int64 n_values = gsl_data_handle_length (dhandle);
     int64 n_channels = gsl_data_handle_n_channels (dhandle);
     int64 n_frames = n_values / n_channels;
+
     g_return_val_if_fail (n_values % n_channels == 0, n_frames);  /* a datahandle cannot contain half frames */
     return n_frames;
   }
@@ -1563,6 +1555,7 @@ public:
   {
     const double min_db = -200;
     g_return_val_if_fail (GSL_DATA_HANDLE_OPENED (dhandle), min_db);
+
     /* We do not take into account that a data handle can contain many separate
      * channels, so we're effectively averaging over all channels here.
      */
@@ -1575,6 +1568,7 @@ public:
       }
     avg_energy /= MAX (dhandle->setup.n_values, 1);
     avg_energy *= volume_adjustment * volume_adjustment;
+
     if (avg_energy > 0)
       return 10 * log (avg_energy) / log (10);
     else
@@ -1612,12 +1606,14 @@ public:
   {
     sort (m_freq_list.begin(), m_freq_list.end());
     verify_chunk_selection (m_freq_list, wave);
+
     if (m_output_format == SCRIPT && m_location_wave)
       {
         for (vector<string>::const_iterator fi = m_fields.begin(); fi != m_fields.end(); fi++)
           {
             if (fi != m_fields.begin()) // not first field
               g_print (" ");
+
             if (*fi == "channels")
               g_print ("%d", wave->n_channels);
             else if (*fi == "label")
@@ -1642,6 +1638,7 @@ public:
       {
         g_print ("\n");
         g_print ("Wave\n");
+
         if (wave->name != "")
           g_print ("  Label                  %s\n", wave->name.c_str());
         const char *blurb = bse_xinfos_get_value (wave->wave_xinfos, "blurb");
@@ -1653,9 +1650,11 @@ public:
         const char *license = bse_xinfos_get_value (wave->wave_xinfos, "license");
         if (license)
           g_print ("  License                %s\n", license);
+
         g_print ("  Channels         %7d\n", wave->n_channels);
         g_print ("\n");
       }
+
     /* get the wave into storage order */
     wave->sort();
     for (list<WaveChunk>::iterator it = wave->chunks.begin(); it != wave->chunks.end(); it++)
@@ -1663,12 +1662,14 @@ public:
         {
           WaveChunk *chunk = &*it;
           GslDataHandle *dhandle = chunk->dhandle;
+
           if (m_output_format == SCRIPT)
             {
               for (vector<string>::const_iterator fi = m_fields.begin(); fi != m_fields.end(); fi++)
                 {
                   if (fi != m_fields.begin()) // not first field
                     g_print (" ");
+
                   if (*fi == "channels")
                     g_print ("%d", wave->n_channels);
                   else if (*fi == "length")
@@ -1718,6 +1719,7 @@ public:
               const char *blurb = bse_xinfos_get_value (dhandle->setup.xinfos, "blurb");
               if (blurb)
                 g_print ("  Comment                %s\n", blurb);
+
               g_print ("  Osc Freq   %13.2f Hz\n", gsl_data_handle_osc_freq (dhandle));
               g_print ("  Mix Freq   %13.2f Hz\n", gsl_data_handle_mix_freq (dhandle));
               if (bse_xinfos_get_value (dhandle->setup.xinfos, "midi-note"))
@@ -1754,6 +1756,7 @@ public:
                       SfiNum loop_start = bse_xinfos_get_num (dhandle->setup.xinfos, "loop-start");
                       SfiNum loop_end = bse_xinfos_get_num (dhandle->setup.xinfos, "loop-end");
                       g_print ("     (start: %lld, end: %lld, ", loop_start, loop_end);
+
                       SfiNum loop_count = bse_xinfos_get_num (dhandle->setup.xinfos, "loop-count");
                       if (!loop_count)
                         g_print ("forever)\n");
@@ -1766,6 +1769,7 @@ public:
     return false; /* bsewave didn't change */
   }
 } cmd_info ("info");
+
 class ClipCmd : public Command {
   gfloat threshold;
   guint head_samples, tail_samples, fade_samples, pad_samples, tail_silence;
@@ -1847,6 +1851,7 @@ public:
   {
     sort (freq_list.begin(), freq_list.end());
     verify_chunk_selection (freq_list, wave);
+
     vector<list<WaveChunk>::iterator> deleted;
     /* level clipping */
     for (list<WaveChunk>::iterator it = wave->chunks.begin(); it != wave->chunks.end(); it++)
@@ -1906,13 +1911,16 @@ public:
     return true;
   }
 } cmd_clip ("clip");
+
 class NormalizeCmd : public Command {
   bool all_chunks;
+  bool use_volume_xinfo;
   vector<gfloat> freq_list;
 public:
   NormalizeCmd (const char *command_name) :
     Command (command_name),
-    all_chunks (false)
+    all_chunks (false),
+    use_volume_xinfo (false)
   {}
   void
   blurb (bool bshort)
@@ -1927,6 +1935,7 @@ public:
     g_print ("    -m <midi-note>      alternative way to specify oscillator frequency\n");
     g_print ("    --chunk-key <key>   select wave chunk using chunk key from list-chunks\n");
     g_print ("    --all-chunks        try to normalize all chunks\n");
+    g_print ("    --volume-xinfo      keep original sample data, only set volume xinfo\n");
     /*       "**********1*********2*********3*********4*********5*********6*********7*********" */
   }
   guint
@@ -1938,6 +1947,8 @@ public:
       {
 	if (parse_chunk_selection (argv, i, argc, all_chunks, freq_list))
 	  seen_selection = true;
+        else if (parse_bool_option (argv, i, "--volume-xinfo"))
+          use_volume_xinfo = true;
       }
     return !seen_selection ? 1 : 0; /* # args missing */
   }
@@ -1946,22 +1957,33 @@ public:
   {
     sort (freq_list.begin(), freq_list.end());
     verify_chunk_selection (freq_list, wave);
+
     /* normalization */
     for (list<WaveChunk>::iterator it = wave->chunks.begin(); it != wave->chunks.end(); it++)
       if (all_chunks || wave->match (*it, freq_list))
         {
           WaveChunk *chunk = &*it;
-          sfi_info ("NORMALIZE: chunk %f", gsl_data_handle_osc_freq (chunk->dhandle));
+          const double osc_freq = gsl_data_handle_osc_freq (chunk->dhandle);
+          sfi_info ("NORMALIZE: chunk %f", osc_freq);
           double absmax = gsl_data_find_min_max (chunk->dhandle, NULL, NULL);
           gchar **xinfos = bse_xinfos_dup_consolidated (chunk->dhandle->setup.xinfos, FALSE);
           BseErrorType error = BSE_ERROR_NONE;
           if (absmax > 4.6566e-10) /* 32bit threshold */
             {
-              GslDataHandle *shandle = gsl_data_handle_new_scale (chunk->dhandle, 1. / absmax);
-              error = chunk->change_dhandle (shandle, gsl_data_handle_osc_freq (chunk->dhandle), xinfos);
-              if (error)
-                sfi_error ("level normalizeping failed: %s", bse_error_blurb (error));
-              gsl_data_handle_unref (shandle);
+              if (use_volume_xinfo)
+                {
+                  gchar buffer[G_ASCII_DTOSTR_BUF_SIZE * 2 + 1024];
+                  g_ascii_dtostr (buffer, sizeof (buffer), 1. / absmax);
+                  wave->set_chunk_xinfo (osc_freq, "volume", buffer);
+                }
+              else
+                {
+                  GslDataHandle *shandle = gsl_data_handle_new_scale (chunk->dhandle, 1. / absmax);
+                  error = chunk->change_dhandle (shandle, gsl_data_handle_osc_freq (chunk->dhandle), xinfos);
+                  if (error)
+                    sfi_error ("level normalizing failed: %s", bse_error_blurb (error));
+                  gsl_data_handle_unref (shandle);
+                }
             }
           g_strfreev (xinfos);
           if (error && !skip_errors)
@@ -1970,6 +1992,7 @@ public:
     return true;
   }
 } cmd_normalize ("normalize");
+
 class LoopCmd : public Command {
   bool all_chunks;
   vector<gfloat> freq_list;
@@ -2015,6 +2038,7 @@ public:
   {
     sort (freq_list.begin(), freq_list.end());
     verify_chunk_selection (freq_list, wave);
+
     vector<list<WaveChunk>::iterator> deleted;
     /* level clipping */
     for (list<WaveChunk>::reverse_iterator it = wave->chunks.rbegin(); it != wave->chunks.rend(); it++)
@@ -2031,6 +2055,7 @@ public:
 	  lconfig.repetitions = 2;
 	  lconfig.min_loop = (GslLong) MAX (mix_freq / 10, /* at least 100ms */
 			                    8820 /* FIXME: hardcoded values in gsl_data_loop*() -> 200ms */);
+
 	  gboolean found_loop = gsl_data_find_loop5 (dhandle, &lconfig, NULL, gsl_progress_printerr);
 	  const char *loop_algorithm =       "loop5";
 	  if (found_loop)
@@ -2047,6 +2072,7 @@ public:
 	      if (lconfig.n_details > 1)
 		xinfos = bse_xinfos_add_float (xinfos, "loop-score-detail2", lconfig.detail_scores[1]);
 	      xinfos = bse_xinfos_add_value (xinfos, "loop-algorithm", loop_algorithm);
+
 	      gsl_data_handle_ref (dhandle);
 	      BseErrorType error = chunk->change_dhandle (dhandle, gsl_data_handle_osc_freq (dhandle), xinfos);
 	      if (error)
@@ -2057,6 +2083,7 @@ public:
     return true;
   }
 } cmd_loop ("loop");
+
 #if 0
 class ThinOutCmd : public Command {
   GslLong max_total_size;
@@ -2139,18 +2166,21 @@ public:
       }
     return 0; /* # args missing */
   }
+
   struct ChunkData
   {
     vector<GslLong> sizes;
     vector<gdouble> errors;
     vector<gdouble> freqs;
     vector<list<WaveChunk>::iterator> iterators;
+
     int
     n_chunks() const
     {
       return sizes.size();
     }
   };
+
   struct ChunkSet
   {
     /*
@@ -2159,10 +2189,12 @@ public:
 	error (s.error)
     {
     }
+
     ChunkSet ()
     {
       error = -1;
     }
+
     const ChunkSet& operator =(const ChunkSet& s)
     {
       chunks = s.chunks;
@@ -2170,8 +2202,10 @@ public:
       return *this;
     }
     */
+
     vector<guint8> chunks; /* which chunks should be used */
     double error;	   /* total_error (chunk_data, chunks) <- to be minimized */
+
     /* syntactic sugar */
     guint8& operator[] (size_t n)
     {
@@ -2186,28 +2220,36 @@ public:
   exec (Wave *wave)
   {
     ChunkData chunk_data;
+
     /* level clipping */
     for (list<WaveChunk>::iterator it = wave->chunks.begin(); it != wave->chunks.end(); it++)
       {
 	WaveChunk *chunk = &*it;
 	GslDataHandle *dhandle = chunk->dhandle;
+
 	gfloat error = bse_xinfos_get_float (dhandle->setup.xinfos, "loop-score");
 	GslLong size = 1;
 	gdouble freq = gsl_data_handle_osc_freq (chunk->dhandle);
+
 	sfi_info ("THINOUT: chunk %f: error %f, size %lld", freq, error, size);
+
 	chunk_data.sizes.push_back (size);
 	chunk_data.errors.push_back (error);
 	chunk_data.freqs.push_back (freq);
 	chunk_data.iterators.push_back (it);
       }
+
     g_assert (chunk_data.sizes.size() > 0);
     g_assert (chunk_data.sizes.size() == chunk_data.errors.size());
+
     ChunkSet chunk_set;
     init_empty_set (chunk_data, chunk_set);
+
     if (gal_iterations)
       gal_optimize (chunk_data, chunk_set);
     else
       optimize (chunk_data, chunk_set);
+
     /* really delete chunks */
     for (int i = 0; i < chunk_data.n_chunks(); i++)
       {
@@ -2222,6 +2264,7 @@ public:
     chunk_set.chunks.resize (chunk_data.n_chunks());
     chunk_set.error = total_error (chunk_data, chunk_set);
   }
+
   void gal_create_child (const ChunkSet& father, const ChunkSet& mother, ChunkSet& child)
   {
     if (rand() % 2)
@@ -2238,6 +2281,7 @@ public:
 	      child.chunks[i] = mother.chunks[i];
 	  }
       }
+
     int mutations = (rand() % 7) + 1;
     for (int i = 0; i < mutations; i++)
       {
@@ -2245,6 +2289,7 @@ public:
 	child.chunks[k] = !child.chunks[k];
       }
   }
+
   struct GalErrorSort
   {
     bool operator () (const ChunkSet& set1, const ChunkSet& set2) const
@@ -2252,12 +2297,15 @@ public:
       return set1.error < set2.error;
     }
   };
+
   void gal_optimize (const ChunkData& chunk_data, ChunkSet& chunk_set)
   {
     const int POPULATION_SIZE = 64;
     vector<ChunkSet> population;
+
     for (int i = 0; i < POPULATION_SIZE; i++)
       population.push_back (chunk_set);
+
     for (uint64 giteration = 0; giteration < gal_iterations; giteration++)
       {
 	/*
@@ -2268,10 +2316,13 @@ public:
 	  {
 	    int father = rand() % (POPULATION_SIZE / 2);
 	    int mother = rand() % (POPULATION_SIZE / 2);
+
 	    gal_create_child (population[father], population[mother], population[i]);
 	    population[i].error = total_error (chunk_data, population[i]);
 	  }
+
 	sort (population.begin(), population.end(), GalErrorSort());
+
 	/*
 	 * if one individuum is present more than once in the population
 	 * replace it with "less fit" individuums
@@ -2288,21 +2339,26 @@ public:
 	  }
 #if 0
 	printf ("k = %d, p = %d\n", k, p);
+
 	printf ("giteration %lld error %.5f (middle: %.5f, worst: %.5f)\n -> %s\n", giteration,
 		population[0].error, population[POPULATION_SIZE/2-1].error, population.back().error,
 		set_to_string (chunk_data, population[0]).c_str());
 #endif
       }
+
     /*
      * better individuums are at the beginning of the population after sort
      */
     chunk_set = population[0];
+
     sfi_info ("THINOUT: error %.5f %s", chunk_set.error, set_to_string (chunk_data, chunk_set).c_str());
   }
+
   double
   total_error (const ChunkData& chunk_data, const ChunkSet& chunk_set)
   {
     double error = 0;
+
     /*
      * approximation error (created by replacing S original chunks with R looped and
      * resampled chunks, where S is often a lot smaller than R)
@@ -2311,6 +2367,7 @@ public:
       {
 	double best_fdiff = 44100;
 	double best_fdiff_error = 1000; /* should be a lot more than conventional loop scores */
+
 	/* FIXME: speed! */
 	for (int replacement_chunk = 0; replacement_chunk < chunk_data.n_chunks(); replacement_chunk++)
 	  {
@@ -2327,6 +2384,7 @@ public:
 	  }
 	error += best_fdiff_error;
       }
+
     /*
      * user constraint: maximal total size
      */
@@ -2336,9 +2394,11 @@ public:
 	for (int i = 0; i < chunk_data.n_chunks(); i++)
 	  if (chunk_set[i])
 	    total_size += chunk_data.sizes[i];
+
 	if (total_size > max_total_size)
 	  error += (total_size - max_total_size) * 1000.0;
       }
+
     /*
      * user constraint: maximum chunk error
      */
@@ -2350,6 +2410,7 @@ public:
       }
     return error;
   }
+
   string
   set_to_string (const ChunkData& chunk_data, const ChunkSet& chunk_set)
   {
@@ -2358,30 +2419,35 @@ public:
       {
 	if (chunk_set[i])
 	  {
-	    char *x = g_strdup_printf ("%4.2f ", chunk_data.freqs[i]);
+	    char *x = g_strdup_format ("%4.2f ", chunk_data.freqs[i]);
 	    result += x;
 	    g_free (x);
 	  }
       }
     result += "]";
+
     return result;
   }
+
   void
   optimize (const ChunkData& chunk_data, ChunkSet& chunk_set)
   {
     double best_error = total_error (chunk_data, chunk_set);
     int toggle = -1;
+
     for (int i = 0; i < chunk_data.n_chunks(); i++)
       {
 	chunk_set[i] = !chunk_set[i];
 	double error = total_error (chunk_data, chunk_set);
 	chunk_set[i] = !chunk_set[i];
+
 	if (error < best_error)
 	  {
 	    best_error = error;
 	    toggle = i;
 	  }
       }
+
     if (toggle >= 0)
       {
 	chunk_set[toggle] = !chunk_set[toggle];
@@ -2392,10 +2458,12 @@ public:
   }
 } cmd_thinout ("thinout");
 #endif
+
 class FirCommand : public Command {
 protected:
   gdouble m_cutoff_freq;
   guint   m_order;
+
   virtual GslDataHandle* create_fir_handle (GslDataHandle* dhandle) = 0;
 public:
   FirCommand (const char *command_name) :
@@ -2439,12 +2507,12 @@ public:
     BseErrorType error = gsl_data_handle_open (fir_handle);
     if (error)
       return error;
-    Birnet::int64 freq_inc = 5; // FIXME
+    int64 freq_inc = 5; // FIXME
     while (freq_inc * 1000 < gsl_data_handle_mix_freq (fir_handle))
       freq_inc *= 2;
     double	  best_diff_db = 100;
-    Birnet::int64 best_freq = 0;
-    for (Birnet::int64 freq = 0; freq < gsl_data_handle_mix_freq (fir_handle) / 2.0; freq += freq_inc)
+    int64 best_freq = 0;
+    for (int64 freq = 0; freq < gsl_data_handle_mix_freq (fir_handle) / 2.0; freq += freq_inc)
       {
 	double diff_db = fabs (bse_data_handle_fir_response_db (fir_handle, freq) + 48);
 	if (diff_db < best_diff_db)
@@ -2456,6 +2524,7 @@ public:
     sfi_info ("%s: => %.2f dB at %lld Hz", string_toupper (name).c_str(),
 	bse_data_handle_fir_response_db (fir_handle, best_freq), best_freq);
     gsl_data_handle_close (fir_handle);
+
     return BSE_ERROR_NONE;
   }
   bool
@@ -2469,6 +2538,7 @@ public:
         GslDataHandle *dhandle = chunk->dhandle;
 	sfi_info ("%s: chunk %f: cutoff_freq=%f order=%d", string_toupper (name).c_str(),
 	          gsl_data_handle_osc_freq (chunk->dhandle), m_cutoff_freq, m_order);
+
 	if (m_cutoff_freq >= gsl_data_handle_mix_freq (dhandle) / 2.0)
 	  {
 	    sfi_error ("chunk % 7.2f/%.0f: IGNORED - can't filter this chunk, cutoff frequency (%f) too high\n",
@@ -2477,9 +2547,11 @@ public:
 	else
 	  {
 	    GslDataHandle *fir_handle = create_fir_handle (dhandle);
+
 	    BseErrorType error = print_effective_stopband_start (fir_handle);
 	    if (!error)
 	      error = chunk->change_dhandle (fir_handle, 0, 0);
+
 	    if (error)
 	      {
 		sfi_error ("chunk % 7.2f/%.0f: %s",
@@ -2492,6 +2564,7 @@ public:
     return true;
   }
 };
+
 class Highpass : public FirCommand {
 protected:
   GslDataHandle*
@@ -2505,6 +2578,7 @@ public:
   {
   }
 } cmd_highpass ("highpass");
+
 class Lowpass : public FirCommand {
 protected:
   GslDataHandle*
@@ -2518,6 +2592,7 @@ public:
   {
   }
 } cmd_lowpass ("lowpass");
+
 class Upsample2 : public Command {
 private:
   vector<gfloat> m_freq_list;
@@ -2551,6 +2626,7 @@ public:
               char **argv)
   {
     bool seen_selection = false;
+
     for (guint i = 1; i < argc; i++)
       {
 	const gchar *str = NULL;
@@ -2579,6 +2655,7 @@ public:
                     gsl_data_handle_mix_freq (chunk->dhandle) * 2);
           sfi_info ("  using resampler precision: %s\n",
                     bse_resampler2_precision_name (bse_resampler2_find_precision_for_bits (m_precision_bits)));
+
           BseErrorType error = chunk->change_dhandle (bse_data_handle_new_upsample2 (dhandle, m_precision_bits), 0, 0);
           if (error)
             {
@@ -2591,6 +2668,7 @@ public:
     return true;
   }
 } cmd_upsample2 ("upsample2");
+
 class Downsample2 : public Command {
 private:
   vector<gfloat> m_freq_list;
@@ -2624,6 +2702,7 @@ public:
               char **argv)
   {
     bool seen_selection = false;
+
     for (guint i = 1; i < argc; i++)
       {
 	const gchar *str = NULL;
@@ -2652,6 +2731,7 @@ public:
                     gsl_data_handle_mix_freq (chunk->dhandle) / 2);
           sfi_info ("  using resampler precision: %s\n",
                     bse_resampler2_precision_name (bse_resampler2_find_precision_for_bits (m_precision_bits)));
+
           BseErrorType error = chunk->change_dhandle (bse_data_handle_new_downsample2 (dhandle, 24), 0, 0);
           if (error)
             {
@@ -2664,11 +2744,13 @@ public:
     return true;
   }
 } cmd_downsample2 ("downsample2");
+
 class Export : public Command {
 public:
   vector<gfloat> freq_list;
   bool           all_chunks;
   string         export_filename;
+
   Export (const char *command_name) :
     Command (command_name)
   {
@@ -2699,6 +2781,7 @@ public:
   {
     bool seen_selection = false;
     bool seen_export_filename = false;
+
     for (guint i = 1; i < argc; i++)
       {
         const gchar *str = NULL;
@@ -2728,6 +2811,7 @@ public:
   {
     string result;
     bool need_subst = false;
+
     for (size_t i = 0; i < pattern.size(); i++)
       {
 	if (need_subst)
@@ -2754,6 +2838,7 @@ public:
   exec (Wave *wave)
   {
     map<string,bool> used_filenames;
+
     /* validate format */
     bool have_export_pattern = false;
     for (int i = 0; i < int(export_filename.size()) - 1; i++)
@@ -2769,6 +2854,7 @@ public:
 	      exit (1);
 	    }
       }
+
     /* validate that we have a pattern if more than one chunk gets exported */
     if ((all_chunks && wave->chunks.size() > 1) || (freq_list.size() > 1))
       {
@@ -2778,9 +2864,11 @@ public:
 	    exit (1);
 	  }
       }
+
     /* validate freq list */
     sort (freq_list.begin(), freq_list.end());
     verify_chunk_selection (freq_list, wave);
+
     /* get the wave into storage order */
     wave->sort();
     for (list<WaveChunk>::iterator it = wave->chunks.begin(); it != wave->chunks.end(); it++)
@@ -2788,28 +2876,35 @@ public:
         {
           WaveChunk *chunk = &*it;
 	  GslDataHandle *dhandle = chunk->dhandle;
+
 	  gchar *name_addon = NULL;
 	  string filename = export_filename;
 	  int note = bse_xinfos_get_num (dhandle->setup.xinfos, "midi-note");
 	  int cent = 0;
+
 	  if (!note)
 	    {
 	      note = bse_note_from_freq_bounded (BSE_MUSICAL_TUNING_12_TET, gsl_data_handle_osc_freq (dhandle));
 	      cent = bse_note_fine_tune_from_note_freq (BSE_MUSICAL_TUNING_12_TET, note, gsl_data_handle_osc_freq (dhandle));
 	    }
-	  name_addon = g_strdup_printf ("%d", note);
+
+	  name_addon = g_strdup_format ("%d", note);
 	  substitute (filename, 'N', name_addon);
 	  g_free (name_addon);
-	  name_addon = g_strdup_printf ("%.2f", gsl_data_handle_osc_freq (dhandle));
+
+	  name_addon = g_strdup_format ("%.2f", gsl_data_handle_osc_freq (dhandle));
 	  substitute (filename, 'F', name_addon);
 	  g_free (name_addon);
+
 	  if (cent >= 0)
-	    name_addon = g_strdup_printf ("u%03d", cent); /* up */
+	    name_addon = g_strdup_format ("u%03d", cent); /* up */
 	  else
-	    name_addon = g_strdup_printf ("d%03d", cent); /* down */
+	    name_addon = g_strdup_format ("d%03d", cent); /* down */
 	  substitute (filename, 'C', name_addon);
 	  g_free (name_addon);
+
           sfi_info ("EXPORTING: chunk %f to %s", gsl_data_handle_osc_freq (dhandle), filename.c_str());
+
 	  if (used_filenames[filename])
 	    {
 	      sfi_warning ("another chunk was already exported to %s. skipping this chunk export.", filename.c_str());
@@ -2819,12 +2914,14 @@ public:
 	    {
 	      used_filenames[filename] = true;
 	    }
+
 	  int fd = open (filename.c_str(), O_WRONLY | O_CREAT | O_TRUNC, 0666);
 	  if (fd < 0)
 	    {
 	      BseErrorType error = bse_error_from_errno (errno, BSE_ERROR_FILE_OPEN_FAILED);
 	      sfi_error ("export to file %s failed: %s", filename.c_str(), bse_error_blurb (error));
 	    }
+
 	  int xerrno = gsl_data_handle_dump_wav (dhandle, fd, 16, dhandle->setup.n_channels, (guint) dhandle->setup.mix_freq);
 	  if (xerrno)
 	    {
@@ -2836,6 +2933,7 @@ public:
     return true;
   }
 } cmd_export ("export");
+
 class ListChunks : public Command {
 public:
   ListChunks (const char *command_name) :
@@ -2873,11 +2971,13 @@ public:
       {
         WaveChunk     *chunk = &*it;
         WaveChunkKey   chunk_key (gsl_data_handle_osc_freq (chunk->dhandle));
+
         g_print ("%s\n", chunk_key.as_string().c_str());
       }
     return true;
   }
 } cmd_list_chunks ("list-chunks");
+
 /* TODO commands:
  * bsewavetool.1 # need manual page
  * bsewavetool merge <file.bsewave> <second.bsewave>
@@ -2895,5 +2995,7 @@ public:
  *   --tremolo=<s,r,d>          tremolo, s.., r..., d...
  *   --vibrato=<s,r,d>          vibrato, s.., r..., d...
  */
+
 } // BseWaveTool
+
 /* vim:set ts=8 sts=2 sw=2: */

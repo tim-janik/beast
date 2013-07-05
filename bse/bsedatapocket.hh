@@ -1,8 +1,11 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #ifndef __BSE_DATA_POCKET_H__
 #define __BSE_DATA_POCKET_H__
+
 #include        <bse/bsesuper.hh>
+
 G_BEGIN_DECLS
+
 /* --- object type macros --- */
 #define BSE_TYPE_DATA_POCKET              (BSE_TYPE_ID (BseDataPocket))
 #define BSE_DATA_POCKET(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), BSE_TYPE_DATA_POCKET, BseDataPocket))
@@ -10,6 +13,8 @@ G_BEGIN_DECLS
 #define BSE_IS_DATA_POCKET(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), BSE_TYPE_DATA_POCKET))
 #define BSE_IS_DATA_POCKET_CLASS(class)   (G_TYPE_CHECK_CLASS_TYPE ((class), BSE_TYPE_DATA_POCKET))
 #define BSE_DATA_POCKET_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), BSE_TYPE_DATA_POCKET, BseDataPocketClass))
+
+
 /* --- data types --- */
 typedef enum	/*< skip >*/
 {
@@ -20,6 +25,8 @@ typedef enum	/*< skip >*/
   BSE_DATA_POCKET_STRING	= 's',
   BSE_DATA_POCKET_OBJECT	= 'o'
 } BseDataPocketType;
+
+
 /* --- BseDataPocket structs --- */
 struct BseDataPocket;
 struct BseDataPocketClass;
@@ -68,5 +75,7 @@ gchar	 _bse_data_pocket_entry_get	(BseDataPocket	    *pocket,
 					 guint		     id,
 					 GQuark		     data_quark,
 					 BseDataPocketValue *value);
+
 G_END_DECLS
+
 #endif /* __BSE_DATA_POCKET_H__ */

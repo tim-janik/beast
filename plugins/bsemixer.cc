@@ -1,9 +1,13 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bsemixer.hh"
+
 #include <bse/bseengine.hh>
 #include <bse/bsecxxplugin.hh>
+
 #include <string.h>
+
 #define	DEFAULT_DB_VOLUME	(0)
+
 /* --- parameters --- */
 enum
 {
@@ -16,6 +20,8 @@ enum
   PROP_NTH_VOLUME_dB,
   PROP_NTH_VOLUME_PERC
 };
+
+
 /* --- prototypes --- */
 static void	 bse_mixer_init			(BseMixer	*self);
 static void	 bse_mixer_class_init		(BseMixerClass	*klass);
@@ -32,14 +38,20 @@ static void	 bse_mixer_context_create	(BseSource      *source,
 						 BseTrans       *trans);
 static void	 bse_mixer_update_modules	(BseMixer	*self,
 						 BseTrans       *trans);
+
+
 // == Type Registration ==
 #include "./icons/mixer.c"
 BSE_RESIDENT_SOURCE_DEF (BseMixer, bse_mixer, N_("Routing/Mixer"),
                          "The Mixer module sums up incomming signals, and allowes for fine "
                          "adjusted weighting (volume setting) of the input sources",
                          mixer_icon);
+
+
 /* --- variables --- */
 static gpointer		 parent_class = NULL;
+
+
 /* --- functions --- */
 static void
 bse_mixer_class_init (BseMixerClass *klass)
@@ -49,10 +61,14 @@ bse_mixer_class_init (BseMixerClass *klass)
   BseSourceClass *source_class = BSE_SOURCE_CLASS (klass);
   guint ichannel, ochannel;
   guint i;
+
   parent_class = g_type_class_peek_parent (klass);
+
   gobject_class->set_property = bse_mixer_set_property;
   gobject_class->get_property = bse_mixer_get_property;
+
   source_class->context_create = bse_mixer_context_create;
+
   bse_object_class_add_param (object_class, "Adjustments",
 			      PROP_MVOLUME_f,
 			      sfi_pspec_real ("master_volume_f", "Master [float]", NULL,
@@ -77,9 +93,10 @@ bse_mixer_class_init (BseMixerClass *klass)
   for (i = 1; i <= BSE_MIXER_N_INPUTS; i++)
     {
       gchar *group, *ident, *label, *blurb;
-      group = g_strdup_printf (_("Channel%u"), i);
-      ident = g_strdup_printf ("volume_f%u", i);
-      label = g_strdup_printf (_("Channel%u [float]"), i);
+
+      group = g_strdup_format (_("Channel%u"), i);
+      ident = g_strdup_format ("volume_f%u", i);
+      label = g_strdup_format (_("Channel%u [float]"), i);
       bse_object_class_add_param (object_class, group,
 				  PROP_NTH_VOLUME_f + (i - 1) * 3,
 				  sfi_pspec_real (ident, label, NULL,
@@ -88,8 +105,8 @@ bse_mixer_class_init (BseMixerClass *klass)
 						  SFI_PARAM_STORAGE));
       g_free (ident);
       g_free (label);
-      ident = g_strdup_printf ("volume_dB%u", i);
-      label = g_strdup_printf (_("Channel%u [dB]"), i);
+      ident = g_strdup_format ("volume_dB%u", i);
+      label = g_strdup_format (_("Channel%u [dB]"), i);
       bse_object_class_add_param (object_class, group,
 				  PROP_NTH_VOLUME_dB + (i - 1) * 3,
 				  sfi_pspec_real (ident, label, NULL,
@@ -99,8 +116,8 @@ bse_mixer_class_init (BseMixerClass *klass)
 						  SFI_PARAM_GUI ":dial"));
       g_free (ident);
       g_free (label);
-      ident = g_strdup_printf ("volume_perc%u", i);
-      label = g_strdup_printf (_("Channel%u [%%]"), i);
+      ident = g_strdup_format ("volume_perc%u", i);
+      label = g_strdup_format (_("Channel%u [%%]"), i);
       bse_object_class_add_param (object_class, group,
 				  PROP_NTH_VOLUME_PERC + (i - 1) * 3,
 				  sfi_pspec_int (ident, label, NULL,
@@ -110,9 +127,9 @@ bse_mixer_class_init (BseMixerClass *klass)
       g_free (group);
       g_free (ident);
       g_free (label);
-      ident = g_strdup_printf ("audio-in%u", i);
-      label = g_strdup_printf (_("Audio In%u"), i);
-      blurb = g_strdup_printf (_("Input Channel %u"), i);
+      ident = g_strdup_format ("audio-in%u", i);
+      label = g_strdup_format (_("Audio In%u"), i);
+      blurb = g_strdup_format (_("Input Channel %u"), i);
       ichannel = bse_source_class_add_ichannel (source_class, ident, label, blurb);
       g_assert (ichannel == i - 1);
       g_free (blurb);
@@ -120,14 +137,17 @@ bse_mixer_class_init (BseMixerClass *klass)
       g_free (ident);
     }
 }
+
 static void
 bse_mixer_init (BseMixer *self)
 {
   guint i;
+
   self->master_volume_factor = bse_db_to_factor (DEFAULT_DB_VOLUME);
   for (i = 0; i < BSE_MIXER_N_INPUTS; i++)
     self->volume_factors[i] = bse_db_to_factor (DEFAULT_DB_VOLUME);
 }
+
 static void
 bse_mixer_set_property (GObject      *object,
 			guint         param_id,
@@ -135,6 +155,7 @@ bse_mixer_set_property (GObject      *object,
 			GParamSpec   *pspec)
 {
   BseMixer *self = BSE_MIXER (object);
+
   switch (param_id)
     {
       guint indx, n;
@@ -165,30 +186,30 @@ bse_mixer_set_property (GObject      *object,
 	case PROP_NTH_VOLUME_f - PROP_NTH_VOLUME_f:
 	  self->volume_factors[n] = sfi_value_get_real (value);
 	  bse_mixer_update_modules (self, NULL);
-	  prop = g_strdup_printf ("volume_dB%u", n + 1);
+	  prop = g_strdup_format ("volume_dB%u", n + 1);
 	  g_object_notify ((GObject*) object, prop);
 	  g_free (prop);
-          prop = g_strdup_printf ("volume_perc%u", n + 1);
+          prop = g_strdup_format ("volume_perc%u", n + 1);
 	  g_object_notify ((GObject*) object, prop);
 	  g_free (prop);
 	  break;
 	case PROP_NTH_VOLUME_dB - PROP_NTH_VOLUME_f:
 	  self->volume_factors[n] = bse_db_to_factor (sfi_value_get_real (value));
 	  bse_mixer_update_modules (self, NULL);
-	  prop = g_strdup_printf ("volume_f%u", n + 1);
+	  prop = g_strdup_format ("volume_f%u", n + 1);
 	  g_object_notify ((GObject*) object, prop);
 	  g_free (prop);
-          prop = g_strdup_printf ("volume_perc%u", n + 1);
+          prop = g_strdup_format ("volume_perc%u", n + 1);
 	  g_object_notify ((GObject*) object, prop);
 	  g_free (prop);
 	  break;
 	case PROP_NTH_VOLUME_PERC - PROP_NTH_VOLUME_f:
 	  self->volume_factors[n] = sfi_value_get_int (value) / 100.0;
 	  bse_mixer_update_modules (self, NULL);
-	  prop = g_strdup_printf ("volume_f%u", n + 1);
+	  prop = g_strdup_format ("volume_f%u", n + 1);
 	  g_object_notify ((GObject*) object, prop);
 	  g_free (prop);
-	  prop = g_strdup_printf ("volume_dB%u", n + 1);
+	  prop = g_strdup_format ("volume_dB%u", n + 1);
 	  g_object_notify ((GObject*) object, prop);
 	  g_free (prop);
 	  break;
@@ -198,6 +219,7 @@ bse_mixer_set_property (GObject      *object,
 	}
     }
 }
+
 static void
 bse_mixer_get_property (GObject    *object,
 			guint       param_id,
@@ -205,6 +227,7 @@ bse_mixer_get_property (GObject    *object,
 			GParamSpec *pspec)
 {
   BseMixer *self = BSE_MIXER (object);
+
   switch (param_id)
     {
       guint indx, n;
@@ -237,16 +260,19 @@ bse_mixer_get_property (GObject    *object,
 	}
     }
 }
+
 typedef struct
 {
   gfloat volumes[BSE_MIXER_N_INPUTS];
 } Mixer;
+
 static void
 bse_mixer_update_modules (BseMixer *self,
 			  BseTrans *trans)
 {
   gfloat volumes[BSE_MIXER_N_INPUTS];
   guint i;
+
   for (i = 0; i < BSE_MIXER_N_INPUTS; i++)
     volumes[i] = self->volume_factors[i] * self->master_volume_factor;
   if (BSE_SOURCE_PREPARED (self))
@@ -256,6 +282,7 @@ bse_mixer_update_modules (BseMixer *self,
 			       sizeof (volumes),
 			       trans);
 }
+
 static void
 mixer_process (BseModule *module,
 	       guint      n_values)
@@ -263,15 +290,18 @@ mixer_process (BseModule *module,
   Mixer *mixer = (Mixer*) module->user_data;
   gfloat *wave_out = BSE_MODULE_OBUFFER (module, 0);
   gfloat *wave_bound = wave_out + n_values;
+
   if (module->ostreams[0].connected)
     {
       guint n;
+
       for (n = 0; n < BSE_MODULE_N_ISTREAMS (module); n++)
 	if (module->istreams[n].connected)
 	  {
 	    const gfloat *wave_in = BSE_MODULE_IBUFFER (module, n);
 	    gfloat *w = wave_out;
 	    gfloat volume = mixer->volumes[n];
+
 	    if (volume != 1.0)
 	      do { *w++ = volume * *wave_in++; } while (w < wave_bound);
 	    else
@@ -286,6 +316,7 @@ mixer_process (BseModule *module,
 	    const gfloat *wave_in = BSE_MODULE_IBUFFER (module, n);
 	    gfloat *w = wave_out;
 	    gfloat volume = mixer->volumes[n];
+
 	    if (volume != 1.0)
 	      do { *w++ += volume * *wave_in++; } while (w < wave_bound);
 	    else
@@ -293,6 +324,7 @@ mixer_process (BseModule *module,
 	  }
     }
 }
+
 static void
 bse_mixer_context_create (BseSource *source,
 			  guint      context_handle,
@@ -310,13 +342,18 @@ bse_mixer_context_create (BseSource *source,
   };
   Mixer *mixer = g_new0 (Mixer, 1);
   BseModule *module;
+
   module = bse_module_new (&mixer_class, mixer);
+
   /* setup module i/o streams with BseSource i/o channels */
   bse_source_set_context_module (source, context_handle, module);
+
   /* commit module to engine */
   bse_trans_add (trans, bse_job_integrate (module));
+
   /* chain parent class' handler */
   BSE_SOURCE_CLASS (parent_class)->context_create (source, context_handle, trans);
+
   /* update module data */
   bse_mixer_update_modules (BSE_MIXER (source), trans);
 }

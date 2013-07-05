@@ -2,12 +2,12 @@
 #include <bse/bse.hh>
 #include <bse/bseieee754.hh>
 #include <bse/bsemain.hh>
-//#define TEST_VERBOSE
-#include <birnet/birnettests.h>
+#include <rapicorn-test.hh>
 #include <stdio.h>
 #ifdef __SSE__
 #include <xmmintrin.h>
 #endif
+
 #if 1
 inline float  test1f (float v) { return v;     }
 inline float  test2f (float v) { return bse_float_zap_denormal (v); }
@@ -167,12 +167,13 @@ benchmark_subnormal_eliminations ()
   if (0)
     g_print ("subnormal cancellation times: keep=%fs zap=%fs inlined-cond=%fs if-cond=%fs arithmetic=%f bse=%f\n",
              test1_time, test2_time, test3_time, test4_time, test5_time, test6_time);
-  treport_minimized ("Subnormals-keep",         test1_time, TUNIT_SECOND);
-  treport_minimized ("Subnormals-bse-zap",      test2_time, TUNIT_SECOND);
-  treport_minimized ("Subnormals-inlined-cond", test3_time, TUNIT_SECOND);
-  treport_minimized ("Subnormals-if-cond",      test4_time, TUNIT_SECOND);
-  treport_minimized ("Subnormals-arithmetic",   test5_time, TUNIT_SECOND);
-  treport_minimized ("Subnormals-bse-flush",    test6_time, TUNIT_SECOND);
+  constexpr const char *format = "    %-28s : %+.14f milliseconds";
+  TMSG (format, "Subnormals-keep",         test1_time * 1000);
+  TMSG (format, "Subnormals-bse-zap",      test2_time * 1000);
+  TMSG (format, "Subnormals-inlined-cond", test3_time * 1000);
+  TMSG (format, "Subnormals-if-cond",      test4_time * 1000);
+  TMSG (format, "Subnormals-arithmetic",   test5_time * 1000);
+  TMSG (format, "Subnormals-bse-flush",    test6_time * 1000);
 }
 bool
 check_denormals_are_zero()
@@ -193,7 +194,7 @@ int
 main (int   argc,
       char *argv[])
 {
-  bse_init_test (&argc, &argv, NULL);
+  bse_init_test (&argc, argv);
   g_printerr ("Checking if your processor is in 'denormals are zero' (DAZ) mode... ");
   bool daz_mode = check_denormals_are_zero();
   g_printerr (daz_mode ? "yes - skipping subnormal elimination tests.\n" : "no.\n");
@@ -208,7 +209,6 @@ main (int   argc,
       test_correct_subnormal_elimination<test4d> ("if-cond-double");
       test_correct_subnormal_elimination<test5d> ("arithmetic-double");
     }
-  if (sfi_init_settings().test_perf)
-    benchmark_subnormal_eliminations();
+  benchmark_subnormal_eliminations();
   return 0;
 }

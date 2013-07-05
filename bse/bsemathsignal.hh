@@ -1,18 +1,23 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #ifndef __BSE_SIGNAL_H__
 #define __BSE_SIGNAL_H__
+
 #include <bse/bsemath.hh>
 #include <bse/bseglobals.hh>
 #include <bse/bsetype.hh> // for BseMusicalTuningType
+
 G_BEGIN_DECLS
+
 /**
  * smallest value of a signal sample, greater than zero
  */
 #define BSE_SIGNAL_EPSILON      (1.15e-14)      /* 1.16415321826934814453125e-9 ~= 1/2^33 */
+
 /**
  * maximum value of a signal sample
  */
 #define BSE_SIGNAL_KAPPA        (1.5)
+
 /**
  * Catch edges in sync signals.
  * sync signals should be constant, do comparing against
@@ -23,6 +28,7 @@ G_BEGIN_DECLS
  * Inverse variant of BSE_SIGNAL_RAISING_EDGE().
  */
 #define BSE_SIGNAL_FALLING_EDGE(v1,v2)	((v1) > (v2))
+
 /**
  * Value changes in signals which represent frequencies.
  */
@@ -31,14 +37,17 @@ G_BEGIN_DECLS
  * Inverse variant of BSE_SIGNAL_FREQ_CHANGED().
  */
 #define BSE_SIGNAL_FREQ_EQUALS(v1,v2)	(!BSE_SIGNAL_FREQ_CHANGED (v1, v2))
+
 /**
  * Value changes in signals which represent modulation.
  */
 #define BSE_SIGNAL_MOD_CHANGED(v1,v2)	(fabs ((v1) - (v2)) > 1e-8)
+
 /**
  * Value changes in signals which represent dB ranges.
  */
 #define BSE_SIGNAL_GAIN_CHANGED(v1,v2)	(fabs ((v1) - (v2)) > 1e-8)
+
 /**
  * Convert between literal frequencies and signal values.
  */
@@ -46,7 +55,9 @@ G_BEGIN_DECLS
 #define BSE_SIGNAL_FROM_FREQ_FACTOR	(1.0 / BSE_MAX_FREQUENCY)
 #define BSE_SIGNAL_TO_FREQ(value)	(BSE_FREQ_FROM_VALUE (value))
 #define BSE_SIGNAL_FROM_FREQ(freq)	(BSE_VALUE_FROM_FREQ (freq))
+
 #define BSE_SIGNAL_CLIP(v)      bse_signal_value_clip (v)
+
 static inline double   bse_signal_value_clip (register double x)  G_GNUC_CONST;
 static inline double G_GNUC_CONST
 bse_signal_value_clip (register double x)
@@ -57,6 +68,8 @@ bse_signal_value_clip (register double x)
     return -1.0;
   return x;
 }
+
+
 /* --- frequency modulation --- */
 typedef struct {
   gfloat	fm_strength;		/* linear: 0..1, exponential: n_octaves */
@@ -64,11 +77,14 @@ typedef struct {
   gfloat	signal_freq;		/* for ifreq == NULL (as BSE_SIGNAL_FROM_FREQ) */
   gint		fine_tune;		/* -100..+100 */
 } BseFrequencyModulator;
+
 void	bse_frequency_modulator	(const BseFrequencyModulator	*fm,
 				 guint				 n_values,
 				 const gfloat			*ifreq,
 				 const gfloat			*ifmod,
 				 gfloat				*fm_buffer);
+
+
 /* --- windows --- */
 double	bse_window_bartlett	(double x);	/* narrowest */
 double	bse_window_blackman	(double x);
@@ -76,7 +92,10 @@ double	bse_window_cos		(double x);
 double	bse_window_hamming	(double x);
 double	bse_window_sinc		(double x);
 double	bse_window_rect		(double x);	/* widest */
+
+
 /* --- function approximations --- */
+
 /**
  * @param x	x as in atan(x)
  *
@@ -89,6 +108,7 @@ double	bse_window_rect		(double x);	/* widest */
  * positive_atan1(x) = 1 + (n1 * x + n2) / ((1 + d1 * x) * x + d2);
  */
 static inline double	bse_approx_atan1 	  (register double x)  G_GNUC_CONST;
+
 /**
  * @param boost_amount	boost amount between [0..1]
  * @return		prescale factor for bse_approx_atan1()
@@ -98,6 +118,7 @@ static inline double	bse_approx_atan1 	  (register double x)  G_GNUC_CONST;
  * in maximum boost and 0.0 results in maximum attenuation.
  */
 double			bse_approx_atan1_prescale (double	   boost_amount);
+
 /**
  * @param x	x within [0..1]
  * @return	y for circle approximation within [0..1]
@@ -108,6 +129,7 @@ double			bse_approx_atan1_prescale (double	   boost_amount);
  * quarter circle. The maximum error is below 0.092.
  */
 static inline double	bse_approx_qcircle1	  (register double x)  G_GNUC_CONST;
+
 /**
  * @param x	x within [0..1]
  * @return	y for circle approximation within [0..1]
@@ -118,6 +140,7 @@ static inline double	bse_approx_qcircle1	  (register double x)  G_GNUC_CONST;
  * quarter circle. The maximum error is below 0.092.
  */
 static inline double	bse_approx_qcircle2	  (register double x)  G_GNUC_CONST;
+
 /**
  * @param x	x within [0..1]
  * @return	y for circle approximation within [0..1]
@@ -128,6 +151,7 @@ static inline double	bse_approx_qcircle2	  (register double x)  G_GNUC_CONST;
  * quarter circle. The maximum error is below 0.092.
  */
 static inline double	bse_approx_qcircle3	  (register double x)  G_GNUC_CONST;
+
 /**
  * @param x	x within [0..1]
  * @return	y for circle approximation within [0..1]
@@ -138,6 +162,7 @@ static inline double	bse_approx_qcircle3	  (register double x)  G_GNUC_CONST;
  * quarter circle. The maximum error is below 0.092.
  */
 static inline double	bse_approx_qcircle4	  (register double x)  G_GNUC_CONST;
+
 /**
  * @param ex	exponent within [-127..+127]
  * @return	y approximating 2^ex
@@ -149,6 +174,7 @@ static inline double	bse_approx_qcircle4	  (register double x)  G_GNUC_CONST;
  * approaches zero. On a 2GHz machine, execution takes roughly 12.81 ns.
  */
 static inline double    bse_approx2_exp2        (float ex)      G_GNUC_CONST;
+
 /**
  * @param ex	exponent within [-127..+127]
  * @return	y approximating 2^ex
@@ -160,6 +186,7 @@ static inline double    bse_approx2_exp2        (float ex)      G_GNUC_CONST;
  * approaches zero. On a 2GHz machine, execution takes roughly 13.74 ns.
  */
 static inline double    bse_approx3_exp2        (float ex)      G_GNUC_CONST;
+
 /**
  * @param ex	exponent within [-127..+127]
  * @return	y approximating 2^ex
@@ -171,6 +198,7 @@ static inline double    bse_approx3_exp2        (float ex)      G_GNUC_CONST;
  * approaches zero. On a 2GHz machine, execution takes roughly 16.46 ns.
  */
 static inline double    bse_approx4_exp2        (float ex)      G_GNUC_CONST;
+
 /**
  * @param ex	exponent within [-127..+127]
  * @return	y approximating 2^ex
@@ -182,6 +210,7 @@ static inline double    bse_approx4_exp2        (float ex)      G_GNUC_CONST;
  * approaches zero. On a 2GHz machine, execution takes roughly 18.51 ns.
  */
 static inline double    bse_approx5_exp2        (float ex)      G_GNUC_CONST;
+
 /**
  * @param ex	exponent within [-127..+127]
  * @return	y approximating 2^ex
@@ -193,6 +222,7 @@ static inline double    bse_approx5_exp2        (float ex)      G_GNUC_CONST;
  * approaches zero. On a 2GHz machine, execution takes roughly 21.84 ns.
  */
 static inline double    bse_approx6_exp2        (float ex)      G_GNUC_CONST;
+
 /**
  * @param ex	exponent within [-127..+127]
  * @return	y approximating 2^ex
@@ -204,6 +234,7 @@ static inline double    bse_approx6_exp2        (float ex)      G_GNUC_CONST;
  * approaches zero. On a 2GHz machine, execution takes roughly 23.79 ns.
  */
 static inline double    bse_approx7_exp2        (float ex)      G_GNUC_CONST;
+
 /**
  * @param ex	exponent within [-127..+127]
  * @return	y approximating 2^ex
@@ -216,6 +247,7 @@ static inline double    bse_approx7_exp2        (float ex)      G_GNUC_CONST;
  * approaches zero. On a 2GHz machine, execution takes roughly 26.59 ns.
  */
 static inline double    bse_approx8_exp2        (float ex)      G_GNUC_CONST;
+
 /**
  * @param ex	exponent within [-127..+127]
  * @return	y approximating 2^ex
@@ -228,6 +260,7 @@ static inline double    bse_approx8_exp2        (float ex)      G_GNUC_CONST;
  * approaches zero. On a 2GHz machine, execution takes roughly 29.40 ns.
  */
 static inline double    bse_approx9_exp2        (float ex)      G_GNUC_CONST;
+
 /**
  * @param x	exponent within [-127..+127]
  * @return	y approximating tanh(x)
@@ -238,6 +271,7 @@ static inline double    bse_approx9_exp2        (float ex)      G_GNUC_CONST;
  * On a 2GHz machine, execution takes roughly 24.48 ns.
  */
 static inline double    bse_approx2_tanh        (float x)       G_GNUC_CONST;
+
 /**
  * @param x	exponent within [-127..+127]
  * @return	y approximating tanh(x)
@@ -248,6 +282,7 @@ static inline double    bse_approx2_tanh        (float x)       G_GNUC_CONST;
  * On a 2GHz machine, execution takes roughly 25.78 ns.
  */
 static inline double    bse_approx3_tanh        (float x)       G_GNUC_CONST;
+
 /**
  * @param x	exponent within [-127..+127]
  * @return	y approximating tanh(x)
@@ -258,6 +293,7 @@ static inline double    bse_approx3_tanh        (float x)       G_GNUC_CONST;
  * On a 2GHz machine, execution takes roughly 28.41 ns.
  */
 static inline double    bse_approx4_tanh        (float x)       G_GNUC_CONST;
+
 /**
  * @param x	exponent within [-127..+127]
  * @return	y approximating tanh(x)
@@ -268,6 +304,7 @@ static inline double    bse_approx4_tanh        (float x)       G_GNUC_CONST;
  * On a 2GHz machine, execution takes roughly 30.35 ns.
  */
 static inline double    bse_approx5_tanh        (float x)       G_GNUC_CONST;
+
 /**
  * @param x	exponent within [-127..+127]
  * @return	y approximating tanh(x)
@@ -278,6 +315,7 @@ static inline double    bse_approx5_tanh        (float x)       G_GNUC_CONST;
  * On a 2GHz machine, execution takes roughly 34.29 ns.
  */
 static inline double    bse_approx6_tanh        (float x)       G_GNUC_CONST;
+
 /**
  * @param x	exponent within [-127..+127]
  * @return	y approximating tanh(x)
@@ -288,6 +326,7 @@ static inline double    bse_approx6_tanh        (float x)       G_GNUC_CONST;
  * On a 2GHz machine, execution takes roughly 36.86 ns.
  */
 static inline double    bse_approx7_tanh        (float x)       G_GNUC_CONST;
+
 /**
  * @param x	exponent within [-127..+127]
  * @return	y approximating tanh(x)
@@ -299,6 +338,7 @@ static inline double    bse_approx7_tanh        (float x)       G_GNUC_CONST;
  * On a 2GHz machine, execution takes roughly 42.03 ns.
  */
 static inline double    bse_approx8_tanh        (float x)       G_GNUC_CONST;
+
 /**
  * @param x	exponent within [-127..+127]
  * @return	y approximating tanh(x)
@@ -310,6 +350,7 @@ static inline double    bse_approx8_tanh        (float x)       G_GNUC_CONST;
  * On a 2GHz machine, execution takes roughly 43.83 ns.
  */
 static inline double    bse_approx9_tanh        (float x)       G_GNUC_CONST;
+
 /**
  * @param value		value to saturate
  * @param limit		limit not to be exceeded by value
@@ -322,6 +363,7 @@ static inline double    bse_approx9_tanh        (float x)       G_GNUC_CONST;
  */
 static inline double    bse_saturate_hard       (double value,
                                                  double limit)  G_GNUC_CONST;
+
 /**
  * @param value		value to saturate
  * @param limit		limit not to be exceeded by value
@@ -334,12 +376,16 @@ static inline double    bse_saturate_hard       (double value,
  */
 static inline double    bse_saturate_branching (double value,
                                                 double limit)   G_GNUC_CONST;
+
 /* --- semitone factors (for +-11 octaves) --- */
 const double* bse_semitone_table_from_tuning (BseMusicalTuningType musical_tuning); /* returns [-132..+132] */
 double        bse_transpose_factor           (BseMusicalTuningType musical_tuning,
                                               int                  index /* [-132..+132] */);
+
 /* --- cents (1/100th of a semitone) --- */
+
 double                  bse_cent_tune (double fine_tune);
+
 /**
  * @param fine_tune	fine tuning in cent between -100 and 100
  * @return		a factor corresponding to this
@@ -351,6 +397,7 @@ double                  bse_cent_tune (double fine_tune);
  * that it lies in this range.
  */
 static inline double	bse_cent_tune_fast (int fine_tune /* -100..+100 */)   G_GNUC_CONST;
+
 /* --- implementation details --- */
 static inline double  G_GNUC_CONST
 bse_approx_atan1 (register double x)
@@ -358,27 +405,32 @@ bse_approx_atan1 (register double x)
   if (x < 0)	/* make use of -atan(-x)==atan(x) */
     {
       register double numerator, denominator = -1.0;
+
       denominator += x * 0.81901156857081841441890603235599; /* d1 */
       numerator = x * 0.41156875521951602506487246309908; /* -n1 */
       denominator *= x;
       numerator  += -1.0091272542790025586079663559158; /* n2 */
       denominator += 1.0091272542790025586079663559158; /* d2 */
+
       return -1.0 - numerator / denominator;
     }
   else
     {
       register double numerator, denominator = 1.0;
+
       denominator += x * 0.81901156857081841441890603235599; /* d1 */
       numerator = x * -0.41156875521951602506487246309908; /* n1 */
       denominator *= x;
       numerator  += -1.0091272542790025586079663559158; /* n2 */
       denominator += 1.0091272542790025586079663559158; /* d2 */
+
       return 1.0 + numerator / denominator;
     }
   /* atan1_positive(x)=1+(x*-0.411568755219516-1.009127254279)/((1+x*0.81901156857)*x+1.009127254279)
    * atan1(x)=x<0 ? -atan1_positive(-x) : atan1_positive(x)
    */
 }
+
 static inline double	G_GNUC_CONST
 bse_approx_qcircle1 (register double x)
 {
@@ -387,6 +439,7 @@ bse_approx_qcircle1 (register double x)
   /* R1(x)=(1.2046012479036946898771563 * x - 1.2046012479036946898771563) / (x - 1.2046012479036946898771563) */
   return numerator / denominator;
 }
+
 static inline double	G_GNUC_CONST
 bse_approx_qcircle2 (register double x)
 {
@@ -395,6 +448,7 @@ bse_approx_qcircle2 (register double x)
   /* R2(x)=1.2046012479036946898771563*x/(x + 0.2046012479036946898771563) */
   return numerator / denominator;
 }
+
 static inline double	G_GNUC_CONST
 bse_approx_qcircle3 (register double x)
 {
@@ -403,6 +457,7 @@ bse_approx_qcircle3 (register double x)
   /* R3(x)=(0.2046012479036946898771563 - 0.2046012479036946898771563 * x) / (x + 0.2046012479036946898771563) */
   return numerator / denominator;
 }
+
 static inline double	G_GNUC_CONST
 bse_approx_qcircle4 (register double x)
 {
@@ -411,6 +466,7 @@ bse_approx_qcircle4 (register double x)
   /* R4(x)=-0.2046012479036946898771563 * x / (x - 1.2046012479036946898771563) */
   return numerator / denominator;
 }
+
 static inline double G_GNUC_CONST
 bse_approx2_exp2 (float ex)
 {
@@ -421,6 +477,7 @@ bse_approx2_exp2 (float ex)
   return fp.v_float * (1.0 + x * (0.69314718055994530941723212145818 +
                                   x * (0.24022650695910071233355126316333)));
 }
+
 static inline double G_GNUC_CONST
 bse_approx3_exp2 (float ex)
 {
@@ -435,6 +492,7 @@ bse_approx3_exp2 (float ex)
    * exp2a3(x)=2**ftoi(x)*(1+exp2frac(x)*(0.6931471805599453+exp2frac(x)*(0.2402265069591+exp2frac(x)*0.0555041086648)))
    */
 }
+
 static inline double G_GNUC_CONST
 bse_approx4_exp2 (float ex)
 {
@@ -451,6 +509,7 @@ bse_approx4_exp2 (float ex)
    * exp2a4(x)=2**ftoi(x)*(1+exp2frac(x)*(0.6931471805599453+exp2frac(x)*(0.2402265069591+exp2frac(x)*(0.0555041086648+exp2frac(x)*0.009618129107628477))))
    */
 }
+
 static inline double G_GNUC_CONST
 bse_approx5_exp2 (float ex)
 {
@@ -464,6 +523,7 @@ bse_approx5_exp2 (float ex)
                                             x * (0.0096181291076284771619790715736589 +
                                                  x * (0.0013333558146428443423412221987996))))));
 }
+
 static inline double G_GNUC_CONST
 bse_approx6_exp2 (float ex)
 {
@@ -478,6 +538,7 @@ bse_approx6_exp2 (float ex)
                                                  x * (0.0013333558146428443423412221987996 +
                                                       x * (0.00015403530393381609954437097332742)))))));
 }
+
 static inline double G_GNUC_CONST
 bse_approx7_exp2 (float ex)
 {
@@ -493,6 +554,7 @@ bse_approx7_exp2 (float ex)
                                                       x * (0.00015403530393381609954437097332742 +
                                                            x * (0.00001525273380405984028002543901201))))))));
 }
+
 static inline double G_GNUC_CONST
 bse_approx8_exp2 (float ex)
 {
@@ -509,6 +571,7 @@ bse_approx8_exp2 (float ex)
                                                            x * (0.00001525273380405984028002543901201 +
                                                                 x * (0.0000013215486790144309488403758228288)))))))));
 }
+
 static inline double G_GNUC_CONST
 bse_approx9_exp2 (float ex)
 {
@@ -526,6 +589,7 @@ bse_approx9_exp2 (float ex)
                                                                 x * (0.0000013215486790144309488403758228288 +
                                                                      x * 0.00000010178086009239699727490007597745)))))))));
 }
+
 static inline double G_GNUC_CONST
 bse_approx2_tanh (float x)
 {
@@ -536,6 +600,7 @@ bse_approx2_tanh (float x)
   register double bpot = bse_approx2_exp2 (x * BSE_2_DIV_LN2);
   return (bpot - 1) / (bpot + 1);
 }
+
 static inline double G_GNUC_CONST
 bse_approx3_tanh (float x)
 {
@@ -546,6 +611,7 @@ bse_approx3_tanh (float x)
   register double bpot = bse_approx3_exp2 (x * BSE_2_DIV_LN2);
   return (bpot - 1) / (bpot + 1);
 }
+
 static inline double G_GNUC_CONST
 bse_approx4_tanh (float x)
 {
@@ -557,6 +623,7 @@ bse_approx4_tanh (float x)
   return (bpot - 1) / (bpot + 1);
   /* tanha4(x)=x<-20 ? -1 : x>20 ? 1 : (exp2a4(x*2.885390081777926814719849362)-1) / (exp2a4(x*2.885390081777926814719849362)+1) */
 }
+
 static inline double G_GNUC_CONST
 bse_approx5_tanh (float x)
 {
@@ -567,6 +634,7 @@ bse_approx5_tanh (float x)
   register double bpot = bse_approx5_exp2 (x * BSE_2_DIV_LN2);
   return (bpot - 1) / (bpot + 1);
 }
+
 static inline double G_GNUC_CONST
 bse_approx6_tanh (float x)
 {
@@ -577,6 +645,7 @@ bse_approx6_tanh (float x)
   register double bpot = bse_approx6_exp2 (x * BSE_2_DIV_LN2);
   return (bpot - 1) / (bpot + 1);
 }
+
 static inline double G_GNUC_CONST
 bse_approx7_tanh (float x)
 {
@@ -587,6 +656,7 @@ bse_approx7_tanh (float x)
   register double bpot = bse_approx7_exp2 (x * BSE_2_DIV_LN2);
   return (bpot - 1) / (bpot + 1);
 }
+
 static inline double G_GNUC_CONST
 bse_approx8_tanh (float x)
 {
@@ -597,6 +667,7 @@ bse_approx8_tanh (float x)
   register double bpot = bse_approx8_exp2 (x * BSE_2_DIV_LN2);
   return (bpot - 1) / (bpot + 1);
 }
+
 static inline double G_GNUC_CONST
 bse_approx9_tanh (float x)
 {
@@ -607,6 +678,7 @@ bse_approx9_tanh (float x)
   register double bpot = bse_approx9_exp2 (x * BSE_2_DIV_LN2);
   return (bpot - 1) / (bpot + 1);
 }
+
 static inline double G_GNUC_CONST
 bse_saturate_hard (double value,
                    double limit)
@@ -615,6 +687,7 @@ bse_saturate_hard (double value,
   register double v2 = fabsf (value - limit);
   return 0.5 * (v1 - v2); /* CLAMP() without branching */
 }
+
 static inline double G_GNUC_CONST
 bse_saturate_branching (double value,
                         double limit)
@@ -625,12 +698,17 @@ bse_saturate_branching (double value,
     return -limit;
   return value;
 }
+
 void    _bse_init_signal (void);
+
 extern const double * const bse_cent_table;
+
 static inline double G_GNUC_CONST
 bse_cent_tune_fast (int fine_tune)
 {
   return bse_cent_table[CLAMP (fine_tune, -100, 100)];
 }
+
 G_END_DECLS
+
 #endif /* __BSE_SIGNAL_H__ */
