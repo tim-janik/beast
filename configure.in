@@ -20,7 +20,7 @@ AC_PREREQ(2.57)
 #
 BSE_MAJOR_VERSION=0
 BSE_MINOR_VERSION=8
-BSE_MICRO_VERSION=1
+BSE_MICRO_VERSION=2
 BSE_INTERFACE_AGE=0
 BSE_BINARY_AGE=0
 dnl#
@@ -235,8 +235,8 @@ AC_DEFUN([AC_BSE_REQUIREMENTS],
     AC_DEFINE_UNQUOTED(BSE_VERSION, "$BSE_VERSION", [BSE Version])
 
     dnl # require Rapicorn
-    PKG_CHECK_MODULES(RAPICORN, rapicorn1303 >= 13.03.1)
-    MC_ASSERT_PROG(AIDACC, aidacc-1303, [aidacc gets shipped with Rapicorn])
+    PKG_CHECK_MODULES(RAPICORN, rapicorn1307 >= 13.07.0)
+    MC_ASSERT_PROG(AIDACC, aidacc-1307, [aidacc gets shipped with Rapicorn])
 
     dnl # --- Ogg/Vorbis check ---
     PKG_CHECK_MODULES(OV, ogg >= 1.2.2 vorbis >= 1.3.2 vorbisfile >= 1.3.2 vorbisenc >= 1.3.2)

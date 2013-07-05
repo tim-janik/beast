@@ -290,6 +290,7 @@ noinst_DATA = bsehack.idl
 
 # == BSE IDL API (AIDA) ==
 AUXTYPES_PY = $(srcdir)/AuxTypes.py
+EXTRA_DIST += AuxTypes.py
 bseclientapi.hh: $(srcdir)/../bse/bseapi.idl $(AUXTYPES_PY)
 	$(AM_V_GEN)
 	$(Q) ${AIDACC} -x CxxStub -x $(AUXTYPES_PY) -G clienthh -G cppguard=__BST_BSECLIENTAPI_HH_ $< -o xgen-$(@F)
@@ -313,7 +314,7 @@ GENERATED += bseserverapi.cc
 
 
 # == GENERATED targets ==
-bseutils.lo: $(GENERATED)	# need dependency to force file generation
+$(libbse_la_OBJECTS): $(GENERATED)	# need dependency to force file generation
 generated: clean-generated $(GENERATED)
 	$(Q) $(MAKE) $(AM_MAKEFLAGS) clean-generated
 	$(Q) $(MAKE) generated-files
@@ -354,6 +355,7 @@ bseinfo_SOURCES  = bseinfo.cc
 bseinfo_LDADD    = $(progs_LDADD)
 
 # == Tests ==
+EXTRA_DIST += oldidl.idl
 check-oldidl: oldidl.idl AuxTypes.py
 	@echo "  CHECK " $<
 	$(Q) $(AIDACC_VDEBUG) -x $(srcdir)/AuxTypes.py $<
