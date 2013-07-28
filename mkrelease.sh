@@ -226,6 +226,11 @@ done
     done
     exit 1
   }
+  skipop() {
+    match "*:$1:*" ":$MKRELEASE_SKIP:" || return 1
+    skip
+    return 0
+  }
   msg2() {
     M1="  $1 " ; shift
     M2="$@"
@@ -284,16 +289,24 @@ done
   done
   $TST && ok || fail "note: ChangeLog outdated; see: $SCRIPT_NAME ChangeLog"
   msg "Checking for NEWS to cover $VERSION..."
-  head -n2 NEWS | grep -q "$VERSION" && ok || \
-    fail "note: NEWS fails to describe version $VERSION"
+  skipop "news" || {
+    head -n2 NEWS | grep -q "$VERSION" && ok || \
+      fail "note: NEWS fails to describe version $VERSION"
+  }
   msg "Checking release tarball $TARBALL..."
-  test -r "$TARBALL" && ok || fail "note: tarball unreadable"
+  skipop "tarball" || {
+    test -r "$TARBALL" && ok || fail "note: tarball unreadable"
+  }
   msg "Checking tarball against ChangeLog age..."
-  test "$TARBALL" -nt ChangeLog && ok \
-    || fail "note: ChangeLog appears to be newer; make distcheck"
+  skipop "changelogage" || {
+    test "$TARBALL" -nt ChangeLog && ok \
+      || fail "note: ChangeLog appears to be newer; make distcheck"
+  }
   msg "Checking tarball against NEWS age..."
-  test "$TARBALL" -nt NEWS && ok \
-    || fail "note: NEWS appears to be newer; make distcheck"
+  skipop "newsage" || {
+    test "$TARBALL" -nt NEWS && ok \
+      || fail "note: NEWS appears to be newer; make distcheck"
+  }
   [ -n "$REVISIONVAR" ] && {
     msg "Checking revision variable to match version..."
     N=`sed -ne "/^$REVISIONVAR_NAME\s*=\s*[0-9]/ { s/^[^=]*=\s*\([0-9]\+\).*/\1/ ; p ; q }" $REVISIONVAR_FILE`
@@ -304,8 +317,10 @@ done
       || fail "note: unexisting file in git HEAD: $REVISIONVAR_FILE"
   }
   msg "Checking for even revision in version $VERSION..."
-  test "$REVISION" = `echo "$REVISION / 2 * 2" | bc` && ok \
-    || fail "note: refusing to release development version with odd revision: $REVISION"
+  skipop "evenrev" || {
+    test "$REVISION" = `echo "$REVISION / 2 * 2" | bc` && ok \
+      || fail "note: refusing to release development version with odd revision: $REVISION"
+  }
   msg "Checking master to be the current branch..."
   CBRANCH=`{ git symbolic-ref -q HEAD || git rev-parse HEAD ; }`
   test "$CBRANCH" = refs/heads/master && ok \
