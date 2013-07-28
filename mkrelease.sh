@@ -28,6 +28,14 @@ die() {
   exit $estatus
 }
 unset R_REVISION
+function match() {	# perform wildcard string match: match "*.*" unmatched1 foo.dat unmatched2...
+  pattern="$1" ; searchtext="$2"
+  case "$searchtext" in
+    $pattern) return 0 ;; # $pattern must be unquoted to allow *?[]
+  esac
+  return 1
+}
+
 
 # === Usage ===
 usage() {
