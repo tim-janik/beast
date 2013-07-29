@@ -3,19 +3,7 @@
 #
 ## This work is provided "as is"; see: http://rapicorn.org/LICENSE-AS-IS
 
-MYVERSION="mkrelease.sh version 20100901"
-# 20110407: extract 'contributors' from NEWS files
-# 20100910: fixed 'commit-stamps' outside of git repos
-# 20100901: check HEAD against upstream repository, upload last
-# 20100831: implemented 'shellvar' command
-# 20100827: implemented 'news' command
-# 20100421: added tagging, even revision checking and revision bumping
-# 20100420: implemented rsync based 'upload' for release tarballs
-# 20090605: ported to git-1.6.0
-# 20080515: take packed-refs into account as git stamp file
-# 20070820: implemented 'commit-stamps', handle non-symbolic git stamp files
-# 20070518: implemented 'ChangeLog' generation from git"
-# 20060217: implemented scp based remote file updates
+MYVERSION="mkrelease version 20120801"
 
 # === initial setup ===
 SCRIPT_NAME="$0"
@@ -50,7 +38,7 @@ usage() {
 	  shellvar <FILE:VAR>	shell-eval VAR variable assignment in FILE
 	Options:
 	  -h, --help		usage help
-	  -v, --version		issue version and brief history
+	  -v, --version		issue version
 	  -E <FILE:VAR>         revision variable to increment during "upload"
 	                        (e.g. configure.ac:MICRO)
 	  -B <A,B,C...>		ignored names for "contributors"
