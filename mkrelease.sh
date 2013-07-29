@@ -258,8 +258,10 @@ done
   }
   # release checks
   msg "Checking for a clean $VERSION working tree..."
-  test 0 = `git diff HEAD | wc -l` && ok \
-    || fail "note: use 'git diff HEAD' to view working tree changes"
+  skipop "clean" || {
+    test 0 = `git diff HEAD | wc -l` && ok \
+      || fail "note: use 'git diff HEAD' to view working tree changes"
+  }
   msg "Checking untagged revision $VERSION..."
   RNAME=`! git rev-parse --verify -q "$VERSION"` && ok \
     || fail "note: a revision named '$VERSION' already exists: $RNAME" \
