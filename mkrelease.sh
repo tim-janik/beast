@@ -50,6 +50,10 @@ usage() {
 	  -U <remoteurl>	remote release URL (e.g. example.com:distdir)
 	  -V <releaseversion>	release version (from Makefile)
 	  -X			expect no strings to be found for "contributors"
+	Configuration (Makefile):
+	  MKRELEASE_UPLOAD_URL	remote release URL
+	  MKRELEASE_REVISION_VAR
+				revision variable to increment during "upload"
 EOF
   [ -z "$1" ] || exit $1
 }
@@ -59,8 +63,8 @@ unset COMMAND
 VERSION=_parse
 TARBALL=_parse
 BODY=false
-REMOTE_URL=
-REVISIONVAR=
+REMOTE_URL=_parse
+REVISIONVAR=_parse
 CONTRBLACK=
 CONTRCFILE=/dev/null
 CONTREXIT=0
@@ -238,15 +242,19 @@ done
     [ -z "$TARBALL" ] && die "Failed to determine release tarball"
   }
   msg2 "Determine tarball..." "$TARBALL"
+  # read REMOTE_URL from Makefile.am
+  [ "$REMOTE_URL" = _parse ] && check_makefile && REMOTE_URL="`parse_makefile_var MKRELEASE_UPLOAD_URL`"
   # ensure remote host from remote URL
   REMOTE_HOST=`printf "%s" "$REMOTE_URL" | sed -e 's/:.*//'`
   msg2 "Determine remote host..." "$REMOTE_HOST"
-  [ -z "$REMOTE_URL" ] && die "remote release destination unkown, use -U"
+  [ -z "$REMOTE_URL" ] && die "remote release destination unkown, use -U or MKRELEASE_UPLOAD_URL"
   [ -z "$REMOTE_HOST" ] && die "Failed to determine remote host"
   # extract remote path, slash terminated
   REMOTE_PATH=`printf "%s" "$REMOTE_URL" | sed -ne '/:/ { s/[^:]*:// ; p ; q }'`
   case "$REMOTE_PATH" in *[^/]) REMOTE_PATH="$REMOTE_PATH/" ;; esac
   msg2 "Determine remote path..." "$REMOTE_PATH"
+  # read REVISIONVAR from Makefile.am
+  [ "$REVISIONVAR" = _parse ] && check_makefile && REVISIONVAR="`parse_makefile_var MKRELEASE_REVISION_VAR`"
   # extract file from REVISIONVAR
   REVISIONVAR_FILE=`printf "%s" "$REVISIONVAR" | sed -e 's/:.*//'`
   REVISIONVAR_NAME=`printf "%s" "$REVISIONVAR" | sed -ne '/:/ { s/[^:]*:// ; p ; q }'`
