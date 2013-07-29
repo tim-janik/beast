@@ -357,17 +357,27 @@ done
   [ -n "$REVISIONVAR" ] && {
     N=$((1 + $REVISION))
     msg "Increment $REVISIONVAR_FILE:$REVISIONVAR_NAME to $N..."
-    TEMPF="`mktemp -t yyREVfile.$$XXXXXX`" && touch $TEMPF || \
+    TEMPF="`mktemp -t mkrtempf.$$XXXXXX`" && touch $TEMPF || \
+      die 9 "Failed to create temporary file"
+    TEMPS="`mktemp -t mkrtemps.$$XXXXXX`" && touch $TEMPS || \
       die 9 "Failed to create temporary file"
     trap "rm -f $TEMPF" 0 HUP INT QUIT TRAP USR1 PIPE TERM
     sed "0,/^\($REVISIONVAR_NAME\s*=\s*\)[0-9]\+/s//\1$N/" < "$REVISIONVAR_FILE" > $TEMPF \
       && ok || fail
+    cp "$REVISIONVAR_FILE" $TEMPS && touch $TEMPS -r "$REVISIONVAR_FILE" || \
+      die 9 "Failed to record time stamp for: $REVISIONVAR_FILE"
     mv $TEMPF "$REVISIONVAR_FILE"
     git diff -U0 "$REVISIONVAR_FILE" | sed 's/^/  > /'
     git commit -v -m "$REVISIONVAR_FILE: revision increment of $REVISIONVAR_NAME to $N" \
       -- "$REVISIONVAR_FILE" | sed 's/^/  > /' || die "git commit failed"
     msg_ "* Comitted revision increment of $REVISIONVAR_NAME to $N" ; ok
     needs_head_push=true
+    # checkout tag at VERSION
+    msg_ "* Checkout $VERSION" "..."
+    git checkout "$VERSION"
+    # restore REVISIONVAR_FILE timestamp
+    cmp $TEMPS "$REVISIONVAR_FILE" && touch "$REVISIONVAR_FILE" -r $TEMPS
+    rm -f $TEMPS
   }
   # push notes
   $needs_head_push && \
