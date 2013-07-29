@@ -334,9 +334,9 @@ done
     || fail "note: file already exists: $REMOTE_HOST:$REMOTE_PATH$TARBALL"
   # planned steps
   msg2 "* Planned: tag HEAD as '$VERSION' release..."
+  msg2 "* Planned: upload tarball $TARBALL..."
   [ -n "$REVISIONVAR" ] && \
     msg2 "* Planned: commit revision increment of $REVISIONVAR_FILE:$REVISIONVAR_NAME"
-  msg2 "* Planned: upload tarball $TARBALL..."
   read -ei n -p "--- Proceed as planned [y/n]? " ANS
   case "$ANS" in
     Y|YES|Yes|y|yes|1) msg "Confirmed planned procedures..." ; ok ;;
@@ -346,6 +346,12 @@ done
   msg_ "* Tagging HEAD as '$VERSION' release..."
   git tag -m "Released $TARBALL" "$VERSION" && ok || fail
   git tag -n1 -l "$VERSION" | sed 's/^/  > /'
+  # upload
+  msg_ "* Uploading release tarball $TARBALL..."
+  rsync -lpt --delay-updates "$TARBALL" "$REMOTE_HOST:$REMOTE_PATH" && ok \
+    || fail "note: rsync transfer failed"
+  RLS=$(ssh -x "$REMOTE_HOST" ls -l \`readlink -f "$REMOTE_PATH/$TARBALL"\`)
+  msg2 ">" "$RLS"
   # bump version
   needs_head_push=false
   [ -n "$REVISIONVAR" ] && {
@@ -363,12 +369,6 @@ done
     msg_ "* Comitted revision increment of $REVISIONVAR_NAME to $N" ; ok
     needs_head_push=true
   }
-  # upload
-  msg_ "* Uploading release tarball $TARBALL..."
-  rsync -lpt --delay-updates "$TARBALL" "$REMOTE_HOST:$REMOTE_PATH" && ok \
-    || fail "note: rsync transfer failed"
-  RLS=$(ssh -x "$REMOTE_HOST" ls -l \`readlink -f "$REMOTE_PATH/$TARBALL"\`)
-  msg2 ">" "$RLS"
   # push notes
   $needs_head_push && \
     CHASH=`git rev-list -n1 "$VERSION"`
