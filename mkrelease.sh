@@ -44,6 +44,7 @@ usage() {
 	  --body		include commit body for "news"
 	  -C <NEWS>		file with ignored C strings for "contributors"
 	  --first-parent	use git log with --first-parent
+	  -o output		output filename (ChangeLog)
 	  -R <revision>		revision range for "ChangeLog" generation
 	                        last release revision for "news" (auto)
 	  -T <disttarball>	name of distribution tarball (from Makefile)
@@ -68,6 +69,7 @@ REVISIONVAR=_parse
 CONTRBLACK=
 CONTRCFILE=/dev/null
 CONTREXIT=0
+OUTPUT=ChangeLog
 FIRST=
 parse_options=1
 while test $# -ne 0 -a $parse_options = 1; do
@@ -78,6 +80,7 @@ while test $# -ne 0 -a $parse_options = 1; do
     --body)	BODY=true ;;
     -C)		CONTRCFILE="$2" ; shift ;;
     -E)		REVISIONVAR="$2" ; shift ;;
+    -o)		OUTPUT="$2" ; shift ;;
     -R)		R_REVISION="$2" ; shift ;;
     -T)		TARBALL="$2" ; shift ;;
     -U)		REMOTE_URL="$2" ; shift ;;
@@ -121,7 +124,7 @@ done
     sed '/^\s*$/{ N; /^\s*\n\s*$/D }'
   } > $TEMPF
   # replace atomically
-  mv $TEMPF ChangeLog
+  mv $TEMPF "$OUTPUT"
   exit
 }
 
