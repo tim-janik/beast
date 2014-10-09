@@ -387,8 +387,8 @@ done
   # push notes
   $needs_head_push && \
     CHASH=`git rev-list -n1 "$VERSION"`
-    msg2 "Note, push HEAD with:      # git push origin $CHASH:master"
-    msg2 "Note, update 'devel' with: # git checkout devel && git merge --ff-only $CHASH"
+    msg2 "Note, push HEAD with:      # git push origin master" # $CHASH
+    msg2 "Note, update 'devel' with: # git checkout devel && git merge --ff-only master" # $CHASH
   msg2 "Note, push tag with:       # git push origin '$VERSION'"
   msg2 "Done."
   exit
