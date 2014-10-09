@@ -289,20 +289,6 @@ done
     head -n2 NEWS | grep -q "$VERSION" && ok || \
       fail "note: NEWS fails to describe version $VERSION"
   }
-  msg "Checking release tarball $TARBALL..."
-  skipop "tarball" || {
-    test -r "$TARBALL" && ok || fail "note: tarball unreadable"
-  }
-  msg "Checking tarball against ChangeLog age..."
-  skipop "changelogage" || {
-    test "$TARBALL" -nt ChangeLog && ok \
-      || fail "note: ChangeLog appears to be newer; make distcheck"
-  }
-  msg "Checking tarball against NEWS age..."
-  skipop "newsage" || {
-    test "$TARBALL" -nt NEWS && ok \
-      || fail "note: NEWS appears to be newer; make distcheck"
-  }
   [ -n "$REVISIONVAR" ] && {
     msg "Checking revision variable to match version..."
     N=`sed -ne "/^$REVISIONVAR_NAME\s*=\s*[0-9]/ { s/^[^=]*=\s*\([0-9]\+\).*/\1/ ; p ; q }" $REVISIONVAR_FILE`
@@ -317,6 +303,22 @@ done
     test "$REVISION" = `echo "$REVISION / 2 * 2" | bc` && ok \
       || fail "note: refusing to release development version with odd revision: $REVISION"
   }
+  # semi-final checks for tarball sanity, new checks should be added above
+  msg "Checking release tarball $TARBALL..."
+  skipop "tarball" || {
+    test -r "$TARBALL" && ok || fail "note: tarball unreadable"
+  }
+  msg "Checking tarball against ChangeLog age..."
+  skipop "changelogage" || {
+    test "$TARBALL" -nt ChangeLog && ok \
+      || fail "note: ChangeLog appears to be newer; make distcheck"
+  }
+  msg "Checking tarball against NEWS age..."
+  skipop "newsage" || {
+    test "$TARBALL" -nt NEWS && ok \
+      || fail "note: NEWS appears to be newer; make distcheck"
+  }
+  # final upstream & upload checks
   msg "Checking master to be the current branch..."
   CBRANCH=`{ git symbolic-ref -q HEAD || git rev-parse HEAD ; }`
   test "$CBRANCH" = refs/heads/master && ok \
