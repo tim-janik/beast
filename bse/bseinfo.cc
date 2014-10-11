@@ -40,7 +40,7 @@ main (int   argc,
       char *argv[])
 {
   int j, k;
-  g_thread_init (NULL);
+
   bse_init_inprocess (&argc, argv, "BseInfo");
   g_print ("Rate relevant limits:\n");
   print_int       ("BSE_MIN_OCTAVE   ", BSE_MIN_OCTAVE);
