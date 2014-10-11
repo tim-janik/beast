@@ -699,7 +699,7 @@ bst_qsampler_move_to (BstQSampler *qsampler,
     {
       guint diff = peak_offset - qsampler->peak_offset;
 
-      g_memmove (qsampler->peaks, qsampler->peaks + diff, (qsampler->n_peaks - diff) * sizeof (qsampler->peaks[0]));
+      memmove (qsampler->peaks, qsampler->peaks + diff, (qsampler->n_peaks - diff) * sizeof (qsampler->peaks[0]));
       qsampler->peak_offset = peak_offset;
       bst_qsampler_invalidate (qsampler, (qsampler->n_peaks - diff), qsampler->n_peaks, TRUE);
       bst_qsampler_update_types (qsampler,
@@ -711,7 +711,7 @@ bst_qsampler_move_to (BstQSampler *qsampler,
     {
       guint diff = qsampler->peak_offset - peak_offset;
 
-      g_memmove (qsampler->peaks + diff, qsampler->peaks, (qsampler->n_peaks - diff) * sizeof (qsampler->peaks[0]));
+      memmove (qsampler->peaks + diff, qsampler->peaks, (qsampler->n_peaks - diff) * sizeof (qsampler->peaks[0]));
       qsampler->peak_offset = peak_offset;
       bst_qsampler_invalidate (qsampler, 0, diff, TRUE);
       bst_qsampler_update_types (qsampler, 0, (qsampler->peak_offset + diff + 1) * qsampler->zoom_factor);
