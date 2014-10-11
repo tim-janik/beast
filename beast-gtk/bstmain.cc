@@ -81,7 +81,7 @@ main (int   argc,
   // initialize threading and GLib types
   Rapicorn::ThreadInfo::self().name ("Beast GUI");
   Bse::TaskRegistry::add (Rapicorn::ThreadInfo::self().name(), Rapicorn::ThisThread::process_pid(), Rapicorn::ThisThread::thread_pid());
-  g_thread_init (NULL);
+
   g_type_init ();
   /* initialize Birnet/Sfi */
   sfi_init (&argc, argv, "BEAST");

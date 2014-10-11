@@ -456,7 +456,6 @@ main (int   argc,
   WaveView *view, *first_view = NULL;
   guint i;
 
-  g_thread_init (NULL);
   g_type_init ();
   birnet_init (&argc, &argv, NULL);
   gsl_init (gslconfig);

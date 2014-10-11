@@ -55,7 +55,6 @@ main (int   argc,
   guint i;
 
   /* GLib's thread and object systems */
-  g_thread_init (NULL);
   g_type_init ();
 
   /* initialize Gtk+ and go into threading mode */
