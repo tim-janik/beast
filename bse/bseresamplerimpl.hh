@@ -315,7 +315,7 @@ public:
       {
 	// build new history from end of old history
 	// (very expensive if n_input_samples tends to be a lot smaller than ORDER often)
-	g_memmove (&history[0], &history[n_input_samples], sizeof (history[0]) * (ORDER - 1));
+	memmove (&history[0], &history[n_input_samples], sizeof (history[0]) * (ORDER - 1));
       }
   }
   /**
@@ -486,8 +486,8 @@ public:
 	  {
 	    // build new history from end of old history
 	    // (very expensive if n_output_todo tends to be a lot smaller than ORDER often)
-	    g_memmove (&history_even[0], &history_even[n_output_todo], sizeof (history_even[0]) * (ORDER - 1));
-	    g_memmove (&history_odd[0], &history_odd[n_output_todo], sizeof (history_odd[0]) * (ORDER - 1));
+	    memmove (&history_even[0], &history_even[n_output_todo], sizeof (history_even[0]) * (ORDER - 1));
+	    memmove (&history_odd[0], &history_odd[n_output_todo], sizeof (history_odd[0]) * (ORDER - 1));
 	  }
 
 	n_input_samples -= n_input_todo;

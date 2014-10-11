@@ -255,7 +255,7 @@ data_cache_new_node_L (GslDataCache *dcache,
   if (old_node_array_size != new_node_array_size)
     dcache->nodes = g_renew (GslDataCacheNode*, dcache->nodes, new_node_array_size);
   node_p = dcache->nodes + pos;
-  g_memmove (node_p + 1, node_p, (i - pos) * sizeof (*node_p));
+  memmove (node_p + 1, node_p, (i - pos) * sizeof (*node_p));
   dnode = sfi_new_struct (GslDataCacheNode, 1);
   (*node_p) = dnode;
   dnode->offset = offset & ~(dcache->node_size - 1);

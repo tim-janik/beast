@@ -602,7 +602,7 @@ master_process_job (BseJob *job)
 	      for (poll = master_poll_list; poll; poll = poll->next)
 		if (poll->fds > poll_last->fds)
 		  poll->fds -= poll_last->n_fds;
-	      g_memmove (poll_last->fds, poll_last->fds + poll_last->n_fds,
+	      memmove (poll_last->fds, poll_last->fds + poll_last->n_fds,
 			 ((guint8*) (master_pollfds + master_n_pollfds)) -
 			 ((guint8*) (poll_last->fds + poll_last->n_fds)));
 	      master_n_pollfds -= poll_last->n_fds;

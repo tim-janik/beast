@@ -159,7 +159,7 @@ bse_freq_array_insert (BseFreqArray *farray,
       farray->n_prealloced = farray->n_values;
       farray->values = g_renew (gdouble, farray->values, farray->n_prealloced);
     }
-  g_memmove (farray->values + index + 1,
+  memmove (farray->values + index + 1,
              farray->values + index,
              i - index);
   farray->values[index] = value;
