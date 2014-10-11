@@ -1,0 +1,19 @@
+--- xgen-bseserverapi.cc
++++ xgen-bseserverapi.cc
+@@ -43,14 +43,14 @@ interface_to_remote_handle ($AIDA_iface_base$ *ibase)
+   SMH target;
+   struct CastingServerConnection : ServerConnection { using ServerConnection::cast_interface_handle; };
+   CastingServerConnection *cs_con = (CastingServerConnection*) server_connection;
+-  cs_con->cast_interface_handle (target, Rapicorn::BaseObject::shared_ptr (ibase));
++  cs_con->cast_interface_handle (target, ibase ? ibase->shared_from_this() : ImplicitBaseP());
+   return target;
+ }
+ 
+ template<class Target> static inline void
+ field_buffer_add_interface (Rapicorn::Aida::FieldBuffer &fb, Target *instane)
+ {
+-  server_connection->add_interface (fb, Rapicorn::BaseObject::shared_ptr (instane));
++  server_connection->add_interface (fb, instane ? instane->shared_from_this() : ImplicitBaseP());
+ }
+ 
+ template<class Target> static inline Target*
