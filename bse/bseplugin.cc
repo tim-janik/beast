@@ -164,24 +164,27 @@ bse_plugin_init_builtins (void)
 static guint64
 runtime_export_config (void)
 {
-  const Bse::CPUInfo cinfo = Rapicorn::cpu_info();
+  const std::string cinfo = Rapicorn::cpu_info();
   guint64 emask = 0;
-  if (cinfo.x86_mmx)
+  if (cinfo.find (" MMX ") != cinfo.npos)
     emask |= BSE_EXPORT_FLAG_MMX;
-  if (cinfo.x86_mmxext)
+  if (cinfo.find (" MMXEXT ") != cinfo.npos)
     emask |= BSE_EXPORT_FLAG_MMXEXT;
-  if (cinfo.x86_3dnow)
+  if (cinfo.find (" 3DNOW ") != cinfo.npos)
     emask |= BSE_EXPORT_FLAG_3DNOW;
-  if (cinfo.x86_3dnowext)
+  if (cinfo.find (" 3DNOWEXT ") != cinfo.npos)
     emask |= BSE_EXPORT_FLAG_3DNOWEXT;
-  if (cinfo.x86_sse && cinfo.x86_ssesys)
-    emask |= BSE_EXPORT_FLAG_SSE;
-  if (cinfo.x86_sse2 && cinfo.x86_ssesys)
-    emask |= BSE_EXPORT_FLAG_SSE2;
-  if (cinfo.x86_sse3 && cinfo.x86_ssesys)
-    emask |= BSE_EXPORT_FLAG_SSE3;
-  if (cinfo.x86_sse4_2 && cinfo.x86_ssesys)
-    emask |= BSE_EXPORT_FLAG_SSE4;
+  if (cinfo.find (" SSESYS ") != cinfo.npos)
+    {
+      if (cinfo.find (" SSE ") != cinfo.npos)
+        emask |= BSE_EXPORT_FLAG_SSE;
+      if (cinfo.find (" SSE2 ") != cinfo.npos)
+        emask |= BSE_EXPORT_FLAG_SSE2;
+      if (cinfo.find (" SSE3 ") != cinfo.npos)
+        emask |= BSE_EXPORT_FLAG_SSE3;
+      if (cinfo.find (" SSE4.2 ") != cinfo.npos)
+        emask |= BSE_EXPORT_FLAG_SSE4;
+    }
   return emask;
 }
 
@@ -757,10 +760,12 @@ bse_plugin_path_list_files (gboolean include_drivers,
     }
   if (true)
     {
-      const Bse::CPUInfo cpu_info = Rapicorn::cpu_info();
+      const std::string cinfo = Rapicorn::cpu_info();
       const char *exts[] = { ".FPU" PLUGIN_EXTENSION, ".FPU.la", PLUGIN_EXTENSION, ".la", };
       if (BSE_WITH_SSE_FLAGS && !bse_main_args->force_fpu &&
-          cpu_info.x86_mmx && cpu_info.x86_sse && cpu_info.x86_ssesys)
+          cinfo.find (" MMX ") != cinfo.npos &&
+          cinfo.find (" SSE ") != cinfo.npos &&
+          cinfo.find (" SSESYS ") != cinfo.npos)
         {
           exts[0] = ".SSE" PLUGIN_EXTENSION;  /* !".FPU.so" / ".FPU.dll" */
           exts[1] = ".SSE.la";  /* !".FPU.la" */

@@ -302,8 +302,9 @@ bse_init_intern (int *argc, char **argv, const char *app_name, const Bse::String
     }
   if (as_test)
     {
-      Bse::CPUInfo ci = Rapicorn::cpu_info();
-      TMSG ("  NOTE   Running on: %s+%s", ci.machine, bse_block_impl_name());
+      StringVector sv = Rapicorn::string_split (Rapicorn::cpu_info(), " ");
+      String machine = sv.size() >= 2 ? sv[1] : "Unknown";
+      TMSG ("  NOTE   Running on: %s+%s", machine.c_str(), bse_block_impl_name());
     }
   // sfi_glue_gc_run ();
 }
