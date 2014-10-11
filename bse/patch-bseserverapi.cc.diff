@@ -17,3 +17,19 @@
  }
  
  template<class Target> static inline Target*
+@@ -113,6 +113,7 @@
+ 
+ namespace Rapicorn { namespace Aida {
+ // namespace Rapicorn::Aida needed for argument dependent lookups of the operators
++#if 0
+ static void operator<<= (Rapicorn::Aida::FieldBuffer &fb, const Rapicorn::Aida::Any &v);
+ static void operator>>= (Rapicorn::Aida::FieldReader &fr, Rapicorn::Aida::Any &v);
+ static void
+@@ -125,6 +126,7 @@
+ {
+   v = fr.pop_any (*__AIDA_Local__::server_connection);
+ }
++#endif
+ } } // Rapicorn::Aida
+ 
+ 
