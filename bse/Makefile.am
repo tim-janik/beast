@@ -304,13 +304,13 @@ GENERATED += bseclientapi.cc
 bseserverapi.hh: $(srcdir)/bseapi.idl $(AUXTYPES_PY)
 	$(AM_V_GEN)
 	$(Q) ${AIDACC} -x CxxStub -x $(AUXTYPES_PY) -G serverhh -G cppguard=__BST_BSESERVERAPI_HH_ \
-		-G iface-base=BseImplicitBase $< -o xgen-$(@F)
+		-G iface-base=Bse::ImplicitBase $< -o xgen-$(@F)
 	$(Q) mv xgen-$(@F) $@
 GENERATED += bseserverapi.hh
 bseserverapi.cc: $(srcdir)/bseapi.idl $(AUXTYPES_PY)
 	$(AM_V_GEN)
 	$(Q) ${AIDACC} -x CxxStub -x $(AUXTYPES_PY) -G servercc -G cppguard=__BST_BSESERVERAPI_CC_ \
-		-G iface-base=BseImplicitBase $< -o xgen-$(@F)
+		-G iface-base=Bse::ImplicitBase $< -o xgen-$(@F)
 	$(Q) patch < patch-bseserverapi.cc.diff
 	$(Q) mv xgen-$(@F) $@
 GENERATED += bseserverapi.cc
