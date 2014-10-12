@@ -415,7 +415,6 @@ main (int   argc,
     }
 
   // misc cleanups
-  Rapicorn::cleanup_force_handlers();
   bse_object_debug_leaks ();
   Bse::TaskRegistry::remove (Rapicorn::ThisThread::thread_pid());
 
@@ -445,8 +444,8 @@ bst_init_aida_idl()
   g_source_attach (source, g_main_context_default());
   // fetch initial remote object reference
   auto aidabsekeys = Rapicorn::string_split ("CxxStub:AidaServerConnection:idl_file=\\bbse/bseapi.idl", ":");
-  Rapicorn::Aida::SmartHandle smh = Bse::ServerH::__aida_connection__()->remote_origin (aidabsekeys);
-  bse_server = Rapicorn::Aida::ObjectBroker::smart_handle_down_cast<Bse::ServerH> (smh);
+  Rapicorn::Aida::RemoteHandle smh = Bse::ServerH::__aida_connection__()->remote_origin (aidabsekeys);
+  bse_server = Rapicorn::Aida::RemoteHandle::__aida_reinterpret_down_cast__<Bse::ServerH> (smh);
   assert (bse_server != NULL);
 
   // performa Bse Aida test
