@@ -312,7 +312,7 @@ bseserverapi.cc: $(srcdir)/bseapi.idl $(AUXTYPES_PY)
 	$(AM_V_GEN)
 	$(Q) ${AIDACC} -x CxxStub -x $(AUXTYPES_PY) -G servercc -G cppguard=__BST_BSESERVERAPI_CC_ \
 		-G iface-base=Bse::ImplicitBase $< -o xgen-$(@F)
-	$(Q) patch < patch-bseserverapi.cc.diff
+	$(Q) patch -f < patch-bseserverapi.cc.diff || true
 	$(Q) mv xgen-$(@F) $@
 GENERATED += bseserverapi.cc
 
