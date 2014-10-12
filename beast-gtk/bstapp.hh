@@ -29,8 +29,6 @@ struct _BstApp
 
   guint           select_unseen_super : 1;
 
-  gchar 	 *cookie;
-
   GxkParam       *wave_file;
 
   GxkRadget      *box;
