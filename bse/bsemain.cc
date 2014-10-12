@@ -584,7 +584,7 @@ init_aida_idl ()
   g_source_set_priority (source, BSE_PRIORITY_GLUE);
   g_source_attach (source, bse_main_context);
   // provide initial remote object reference
-  Bse::ServerIface::__aida_connection__()->remote_origin (&Bse::ServerImpl::instance());
+  Bse::ServerIface::__aida_connection__()->remote_origin (Bse::ServerImpl::instance().shared_from_this());
 }
 
 } // Bse

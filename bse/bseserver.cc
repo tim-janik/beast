@@ -1140,17 +1140,8 @@ ServerImpl::get_test_object ()
 ServerImpl&
 ServerImpl::instance()
 {
-  static Rapicorn::Atomic<ServerImpl*> instance_ = NULL;
-  if (LIKELY (instance_ != NULL))
-    return *instance_;
-  static Mutex instance_mutex;
-  ScopedLock<Mutex> locker (instance_mutex);
-  if (!instance_)
-    {
-      static uint64 instance_space[sizeof (*instance_) / sizeof (uint64)];
-      instance_ = new (instance_space) ServerImpl();
-    }
-  return *instance_;
+  static std::shared_ptr<ServerImpl> singleton = Rapicorn::FriendAllocator<ServerImpl>::make_shared();
+  return *singleton;
 }
 
 void
