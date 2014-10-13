@@ -79,8 +79,8 @@ main (int   argc,
   bind_textdomain_codeset (BST_GETTEXT_DOMAIN, "UTF-8");
   textdomain (BST_GETTEXT_DOMAIN);
   setlocale (LC_ALL, "");
+
   /* initialize GLib */
-  g_thread_init (NULL);
   g_type_init ();
   /* initialize Sfi */
   sfi_init (&argc, argv, "TestGUI");

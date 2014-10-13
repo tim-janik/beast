@@ -1658,7 +1658,7 @@ gxk_scroll_canvas_add_marker (GxkScrollCanvas *self,
     if (index < self->markers[i].index)
       break;
   self->markers = g_renew (GxkScrollMarker, self->markers, self->n_markers + 1);
-  g_memmove (self->markers + i + 1, self->markers + i, sizeof (marker[0]) * (self->n_markers - i));
+  memmove (self->markers + i + 1, self->markers + i, sizeof (marker[0]) * (self->n_markers - i));
   self->n_markers += 1;
   marker = self->markers + i;
   memset (marker, 0, sizeof (marker[0]));
@@ -1677,7 +1677,7 @@ gxk_scroll_canvas_remove_marker (GxkScrollCanvas *self,
   i = marker - self->markers;
   gxk_scroll_canvas_setup_marker (self, marker, NULL, 0, 0, 0, 0);
   self->n_markers -= 1;
-  g_memmove (self->markers + i, self->markers + i + 1, sizeof (marker[0]) * (self->n_markers - i));
+  memmove (self->markers + i, self->markers + i + 1, sizeof (marker[0]) * (self->n_markers - i));
 }
 
 void

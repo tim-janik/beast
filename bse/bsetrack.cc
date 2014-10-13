@@ -170,7 +170,7 @@ track_add_entry (BseTrack *self,
   size = upper_power2 (self->n_entries_SL);
   if (size > upper_power2 (n))
     self->entries_SL = g_renew (BseTrackEntry, self->entries_SL, size);
-  g_memmove (self->entries_SL + index + 1, self->entries_SL + index, (n - index) * sizeof (self->entries_SL[0]));
+  memmove (self->entries_SL + index + 1, self->entries_SL + index, (n - index) * sizeof (self->entries_SL[0]));
   self->entries_SL[index].tick = tick;
   self->entries_SL[index].id = bse_id_alloc ();
   self->entries_SL[index].part = part;
@@ -197,7 +197,7 @@ track_delete_entry (BseTrack *self,
   BSE_SEQUENCER_LOCK ();
   self->n_entries_SL -= 1;
   bse_id_free (self->entries_SL[index].id);
-  g_memmove (self->entries_SL + index, self->entries_SL + index + 1, (self->n_entries_SL - index) * sizeof (self->entries_SL[0]));
+  memmove (self->entries_SL + index, self->entries_SL + index + 1, (self->n_entries_SL - index) * sizeof (self->entries_SL[0]));
   BSE_SEQUENCER_UNLOCK ();
 }
 

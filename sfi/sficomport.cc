@@ -304,7 +304,7 @@ com_port_write_queued (SfiComPort *port)
       if (n > 0)
 	{
 	  port->wbuffer.n -= n;
-	  g_memmove (port->wbuffer.data, port->wbuffer.data + n, port->wbuffer.n);
+	  memmove (port->wbuffer.data, port->wbuffer.data + n, port->wbuffer.n);
 	}
     }
   return TRUE;	/* connection remains valid */

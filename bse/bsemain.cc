@@ -302,8 +302,9 @@ bse_init_intern (int *argc, char **argv, const char *app_name, const Bse::String
     }
   if (as_test)
     {
-      Bse::CPUInfo ci = Rapicorn::cpu_info();
-      TMSG ("  NOTE   Running on: %s+%s", ci.machine, bse_block_impl_name());
+      StringVector sv = Rapicorn::string_split (Rapicorn::cpu_info(), " ");
+      String machine = sv.size() >= 2 ? sv[1] : "Unknown";
+      TMSG ("  NOTE   Running on: %s+%s", machine.c_str(), bse_block_impl_name());
     }
   // sfi_glue_gc_run ();
 }
@@ -583,7 +584,7 @@ init_aida_idl ()
   g_source_set_priority (source, BSE_PRIORITY_GLUE);
   g_source_attach (source, bse_main_context);
   // provide initial remote object reference
-  Bse::ServerIface::__aida_connection__()->remote_origin (&Bse::ServerImpl::instance());
+  Bse::ServerIface::__aida_connection__()->remote_origin (Bse::ServerImpl::instance().shared_from_this());
 }
 
 } // Bse

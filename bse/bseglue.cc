@@ -848,8 +848,8 @@ bcontext_destroy_bproxy (BContext *bcontext,
       BClosure *bclosure = (BClosure*) closure;
       p->closures = slist->next;
       g_slist_free_1 (slist);
-      g_closure_invalidate (closure);
       g_signal_handler_disconnect (item, bclosure->handler_id);
+      g_closure_invalidate (closure);
       g_closure_unref (closure);
     }
   g_signal_handler_disconnect (item, p->release_id);
@@ -1026,8 +1026,8 @@ bglue_proxy_request_notify (SfiGlueContext *context,
 	  else
 	    p->closures = slist->next;
 	  g_slist_free_1 (slist);
-	  g_closure_invalidate (closure);
 	  g_signal_handler_disconnect (item, bclosure->handler_id);
+	  g_closure_invalidate (closure);
 	  g_closure_unref (closure);
 	  return FALSE;
 	}

@@ -859,7 +859,7 @@ gsl_data_clip_sample (GslDataHandle     *dhandle,
       if (j > 0) /* shorten ramp by j values which are below threshold */
         {
           l -= j;
-          g_memmove (ramp, ramp + j, l * sizeof (ramp[0]));
+          memmove (ramp, ramp + j, l * sizeof (ramp[0]));
         }
 
       fade_handle = gsl_data_handle_new_insert (clip_handle, gsl_data_handle_bit_depth (clip_handle), 0, l, ramp, g_free);

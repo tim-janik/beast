@@ -152,7 +152,7 @@ bse_item_seq_remove (BseItemSeq *iseq,
     if (iseq->items[i] == item)
       {
         iseq->n_items--;
-        g_memmove (iseq->items + i, iseq->items + i + 1, (iseq->n_items - i) * sizeof (iseq->items[0]));
+        memmove (iseq->items + i, iseq->items + i + 1, (iseq->n_items - i) * sizeof (iseq->items[0]));
         goto restart;
       }
 }

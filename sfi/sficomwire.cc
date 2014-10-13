@@ -136,7 +136,7 @@ wire_write_remote (SfiComWire *wire)
 	wire->remote_output_broke = TRUE;
 
       n = wire->obp - buf;
-      g_memmove (wire->obuffer, buf, n);
+      memmove (wire->obuffer, buf, n);
       wire->obp = wire->obuffer + n;
     }
 }
@@ -276,7 +276,7 @@ wire_receive (SfiComWire *wire)
 		    }
 		}
 	      n = wire->ibp - p;
-	      g_memmove (wire->ibuffer, p, n);
+	      memmove (wire->ibuffer, p, n);
 	      wire->ibp = wire->ibuffer + n;
 	      break;
 	    case SFI_COM_MSG_RESERVED1:
@@ -288,7 +288,7 @@ wire_receive (SfiComWire *wire)
 	      p += 4;	/* request */
 	      p += strl;
 	      n = wire->ibp - p;
-	      g_memmove (wire->ibuffer, p, n);
+	      memmove (wire->ibuffer, p, n);
 	      wire->ibp = wire->ibuffer + n;
 	      break;
 	    default:

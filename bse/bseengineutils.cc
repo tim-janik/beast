@@ -731,8 +731,8 @@ const_values_insert (ConstValuesArray *array,
 	      array->nodes_used = (guint8*) g_realloc (array->nodes_used, new_size / sizeof (float*));
 	    }
 	}
-      g_memmove (array->nodes + index + 1, array->nodes + index, (n_nodes - index) * sizeof (array->nodes[0]));
-      g_memmove (array->nodes_used + index + 1, array->nodes_used + index, (n_nodes - index) * sizeof (array->nodes_used[0]));
+      memmove (array->nodes + index + 1, array->nodes + index, (n_nodes - index) * sizeof (array->nodes[0]));
+      memmove (array->nodes_used + index + 1, array->nodes_used + index, (n_nodes - index) * sizeof (array->nodes_used[0]));
     }
   array->nodes[index] = value_block;
   array->nodes_used[index] = CONST_VALUES_EXPIRE;

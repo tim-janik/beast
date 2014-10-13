@@ -81,25 +81,6 @@ birnet_file_equals (const char *file1,
 void
 sfi_url_show (const char *url)
 {
-  return Rapicorn::url_show (url);
-}
-
-void
-sfi_url_show_with_cookie (const char *url,
-                          const char *url_title,
-                          const char *cookie)
-{
-  return Rapicorn::url_show_with_cookie (url, url_title, cookie);
-}
-bool
-sfi_url_test_show (const char *url)
-{
-  return Rapicorn::url_test_show (url);
-}
-bool
-sfi_url_test_show_with_cookie (const char *url,
-                               const char *url_title,
-                               const char *cookie)
-{
-  return Rapicorn::url_test_show_with_cookie (url, url_title, cookie);
+  if (!Rapicorn::url_show (url))
+    g_warning ("Failed to start browser for URL: %s", url);
 }
