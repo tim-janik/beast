@@ -33,21 +33,12 @@ sfi_built_sources = $(strip \
 $(sfi_all_sources): $(sfi_built_sources)
 
 # SFI library
-# we want a partial shared library here. libtool creates that if the library
-# name ends in .lo or .o. however automake doesn't know .lo or .o libraries,
-# so we simply build an ordinary non-installed .la library and then use our
-# own rule to build the .o from the .la pieces.
 noinst_LTLIBRARIES    = libsfi.la
 libsfiincludedir      = $(includedir)/sfi
 libsfiinclude_HEADERS = $(sfi_public_headers)
 libsfi_la_SOURCES     = $(sfi_all_sources)
 libsfi_la_LDFLAGS     = -no-undefined # -Wl,-Bsymbolic
 libsfi_la_LIBADD      = $(SFI_LIBS) -lm
-# keep this .o rule in sync with the corresponding .la rule from Makefile.in
-libsfi.o: $(libsfi_la_OBJECTS) $(libsfi_la_DEPENDENCIES)
-	$(CXXLINK)  $(libsfi_la_LDFLAGS) $(libsfi_la_OBJECTS) # $(libsfi_la_LIBADD) $(LIBS)
-all-am: libsfi.o
-CLEANFILES += libsfi.o libsfi.lo
 
 #
 # programs to build

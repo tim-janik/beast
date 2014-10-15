@@ -8,7 +8,7 @@ AM_CXXFLAGS  = $(SFI_CFLAGS) $(RAPICORN_CFLAGS) -DRAPICORN_CONVENIENCE
 
 noinst_PROGRAMS   = $(ALLTESTS)
 progs_nosfi_ldadd = $(RAPICORN_LIBS) $(SFI_LIBS) -lm
-progs_ldadd 	  = $(top_builddir)/sfi/libsfi.o $(RAPICORN_LIBS) $(SFI_LIBS) -lm
+progs_ldadd 	  = $(top_builddir)/sfi/libsfi.la $(RAPICORN_LIBS) $(SFI_LIBS) -lm
 SFIDL 		  = $(top_builddir)/sfi/sfidl
 
 # ring
