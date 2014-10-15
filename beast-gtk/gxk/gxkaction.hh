@@ -12,10 +12,10 @@ G_BEGIN_DECLS
 
 /* --- structures --- */
 typedef gboolean (*GxkActionCheck)        (gpointer        user_data,
-                                           gulong          action_id,
+                                           size_t          action_id,
                                            guint64         action_stamp);
 typedef void     (*GxkActionExec)         (gpointer        user_data,
-                                           gulong          action_id);
+                                           size_t          action_id);
 typedef struct GxkActionGroup GxkActionGroup;   /* prototyped */
 typedef struct GxkActionList  GxkActionList;
 typedef struct {
@@ -24,7 +24,7 @@ typedef struct {
   const gchar  *name;
   const gchar  *accelerator;
   const gchar  *tooltip;
-  gulong        action_id;
+  size_t        action_id;
   const gchar  *stock_icon;     /* stock_id for the icon or NULL */
 } GxkAction;
 
@@ -32,7 +32,7 @@ typedef struct {
   const gchar  *name;           /* subject to i18n (key) */
   const gchar  *accelerator;
   const gchar  *tooltip;        /* subject to i18n */
-  gulong        action_id;
+  size_t        action_id;
   const gchar  *stock_icon;     /* stock_id for the icon */
 } GxkStockAction;
 
@@ -52,7 +52,7 @@ void            gxk_action_list_add_translated  (GxkActionList          *alist,
                                                  const gchar            *name,          /* translated (key) */
                                                  const gchar            *accelerator,
                                                  const gchar            *tooltip,       /* translated */
-                                                 gulong                  action_id,
+                                                 size_t                  action_id,
                                                  const gchar            *stock_icon,
                                                  GxkActionCheck          acheck,
                                                  GxkActionExec           aexec,
@@ -81,7 +81,7 @@ void      gxk_widget_publish_action_list        (gpointer                widget,
                                                  GxkActionList          *alist);
 GSList*   gxk_widget_peek_action_widgets        (gpointer                widget,
                                                  const gchar            *prefix,
-                                                 gulong                  action_id);
+                                                 size_t                  action_id);
 void      gxk_widget_publish_actions            (gpointer                widget,
                                                  const gchar            *prefix,
                                                  guint                   n_actions,
@@ -103,7 +103,7 @@ void      gxk_widget_publish_translated         (gpointer                widget,
                                                  const gchar            *name,          /* translated (key) */
                                                  const gchar            *accelerator,
                                                  const gchar            *tooltip,       /* translated */
-                                                 gulong                  action_id,
+                                                 size_t                  action_id,
                                                  const gchar            *stock_icon,
                                                  GxkActionCheck          acheck,
                                                  GxkActionExec           aexec);
@@ -114,7 +114,7 @@ void      gxk_widget_publish_grouped_translated (gpointer                widget,
                                                  const gchar            *name,          /* translated (key) */
                                                  const gchar            *accelerator,
                                                  const gchar            *tooltip,       /* translated */
-                                                 gulong                  action_id,
+                                                 size_t                  action_id,
                                                  const gchar            *stock_icon,
                                                  GxkActionCheck          acheck,
                                                  GxkActionExec           aexec);
@@ -142,7 +142,7 @@ void      gxk_window_remove_action_client       (GtkWindow              *window,
 #define GXK_ACTION_GROUP_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), GXK_TYPE_ACTION_GROUP, GxkActionGroupClass))
 struct GxkActionGroup {
   GObject parent_instance;
-  gulong  action_id;
+  size_t  action_id;
   guint   lock_count;
   guint   invert_dups : 1;
 };
@@ -153,7 +153,7 @@ typedef struct {
 GType           gxk_action_group_get_type       (void);
 GxkActionGroup* gxk_action_group_new            (void);
 void            gxk_action_group_select         (GxkActionGroup        *agroup,
-                                                 gulong                 action_id);
+                                                 size_t                 action_id);
 void            gxk_action_group_lock           (GxkActionGroup        *agroup);
 void            gxk_action_group_unlock         (GxkActionGroup        *agroup);
 void            gxk_action_group_dispose        (GxkActionGroup        *agroup);

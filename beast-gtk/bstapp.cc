@@ -20,13 +20,13 @@
 
 /* --- prototypes --- */
 static void           bst_app_run_script_proc     (gpointer     data,
-                                                   gulong       category_id);
+                                                   size_t       category_id);
 static GxkActionList* demo_entries_create         (BstApp      *app);
 static GxkActionList* skin_entries_create         (BstApp      *app);
 static void           app_action_exec             (gpointer     data,
-                                                   gulong       action);
+                                                   size_t       action);
 static gboolean       app_action_check            (gpointer     data,
-                                                   gulong       action,
+                                                   size_t       action,
                                                    guint64      action_stamp);
 static void           bst_app_reload_pages        (BstApp      *self);
 
@@ -706,7 +706,7 @@ demo_entries_setup (void)
 
 static void
 demo_play_song (gpointer data,
-                gulong   callback_action)
+                size_t   callback_action)
 {
   const gchar *file_name = demo_entries[callback_action - BST_ACTION_LOAD_DEMO_0000].file;
   SfiProxy project = bse_server_use_new_project (BSE_SERVER, file_name);
@@ -775,7 +775,7 @@ skin_entries_setup (void)
 
 static void
 load_skin (gpointer data,
-           gulong   callback_action)
+           size_t   callback_action)
 {
   const gchar *file_name = skin_entries[callback_action - BST_ACTION_LOAD_SKIN_0000].file;
   BseErrorType error = bst_skin_parse (file_name);
@@ -797,7 +797,7 @@ skin_entries_create (BstApp *app)
 
 static void
 bst_app_run_script_proc (gpointer data,
-                         gulong   category_id)
+                         size_t   category_id)
 {
   BstApp *self = BST_APP (data);
   BseCategory *cat = bse_category_from_id (category_id);
@@ -833,7 +833,7 @@ bst_app_show_release_notes (BstApp *app)
 
 static void
 app_action_exec (gpointer data,
-                 gulong   action)
+                 size_t   action)
 {
   static GtkWidget *bst_preferences = NULL;
   BstApp *self = BST_APP (data);
@@ -1116,7 +1116,7 @@ app_action_exec (gpointer data,
 
 static gboolean
 app_action_check (gpointer data,
-                  gulong   action,
+                  size_t   action,
                   guint64  action_stamp)
 {
   BstApp *self = BST_APP (data);

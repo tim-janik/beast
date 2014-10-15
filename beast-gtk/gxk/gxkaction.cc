@@ -25,7 +25,7 @@ gxk_action_inc_cache_stamp (void)
 static inline gboolean
 action_check_stamped (GxkActionCheck acheck_func,
                       gpointer       user_data,
-                      gulong         action_id,
+                      size_t         action_id,
                       gboolean       alter_stamp)
 {
   if (alter_stamp)
@@ -217,7 +217,7 @@ gxk_action_list_add_translated (GxkActionList          *alist,
                                 const gchar            *name,          /* translated (key) */
                                 const gchar            *accelerator,
                                 const gchar            *tooltip,       /* translated */
-                                gulong                  action_id,
+                                size_t                  action_id,
                                 const gchar            *stock_icon,
                                 GxkActionCheck          acheck,
                                 GxkActionExec           aexec,
@@ -729,7 +729,7 @@ gxk_widget_publish_action_list (gpointer       widget,
 GSList*
 gxk_widget_peek_action_widgets (gpointer                widget,
                                 const gchar            *prefix,
-                                gulong                  action_id)
+                                size_t                  action_id)
 {
   GSList *alinklist = (GSList*) g_object_get_qdata ((GObject*) widget, quark_widget_actions);
   for (; alinklist; alinklist = alinklist->next)
@@ -800,7 +800,7 @@ gxk_widget_publish_grouped_translated (gpointer                widget,
                                        const gchar            *name,            /* translated (key) */
                                        const gchar            *accelerator,
                                        const gchar            *tooltip,         /* translated */
-                                       gulong                  action_id,
+                                       size_t                  action_id,
                                        const gchar            *stock_icon,
                                        GxkActionCheck          acheck,
                                        GxkActionExec           aexec)
@@ -820,7 +820,7 @@ gxk_widget_publish_translated (gpointer                widget,
                                const gchar            *name,            /* translated (part of key) */
                                const gchar            *accelerator,
                                const gchar            *tooltip,         /* translated */
-                               gulong                  action_id,
+                               size_t                  action_id,
                                const gchar            *stock_icon,
                                GxkActionCheck          acheck,
                                GxkActionExec           aexec)
@@ -873,7 +873,7 @@ gxk_window_remove_action_client (GtkWindow              *window,
 }
 
 /* --- action group --- */
-static gulong action_group_signal_changed = 0;
+static size_t action_group_signal_changed = 0;
 
 static void
 gxk_action_group_class_init (GxkActionGroupClass *klass)
@@ -923,7 +923,7 @@ gxk_action_group_new (void)
 
 void
 gxk_action_group_select (GxkActionGroup *self,
-                         gulong          action_id)
+                         size_t          action_id)
 {
   g_return_if_fail (GXK_IS_ACTION_GROUP (self));
   if (!self->lock_count && (action_id != self->action_id || self->invert_dups))
