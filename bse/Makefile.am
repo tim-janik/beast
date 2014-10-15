@@ -130,6 +130,7 @@ EXTRA_DIST += $(strip \
 	bsewave.header						\
 	gsl-fftgen.pl	gsl-fftconf.sh	gsloscillator-aux.cc	\
 	gslincluder.hh	gslwaveosc-aux.cc			\
+	bse-internals.hh					\
 )
 
 # -pthread -> -lpthread hack (required for libtool library linkage)
@@ -312,10 +313,11 @@ bseserverapi.cc: $(srcdir)/bseapi.idl $(AUXTYPES_PY)
 	$(AM_V_GEN)
 	$(Q) ${AIDACC} -x CxxStub -x $(AUXTYPES_PY) -G servercc -G cppguard=__BST_BSESERVERAPI_CC_ \
 		-G iface-base=Bse::ImplicitBase $< -o xgen-$(@F)
-	$(Q) patch -f < patch-bseserverapi.cc.diff || true
+	$(Q) patch -f < $(srcdir)/patch-bseserverapi.cc.diff || true
 	$(Q) mv xgen-$(@F) $@
-GENERATED += bseserverapi.cc
-
+GENERATED  += bseserverapi.cc
+EXTRA_DIST += bseapi.idl patch-bseserverapi.cc.diff
+CLEANFILES += xgen-bseserverapi.cc.rej xgen-bseserverapi.cc.orig
 
 # == GENERATED targets ==
 $(libbse_la_OBJECTS): $(GENERATED)	# need dependency to force file generation
