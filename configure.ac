@@ -8,7 +8,7 @@ m4_include(autotools/glib-gettext.m4)
 #
 # Configure script for BEAST/BSE
 #
-AC_INIT(beast, m4_esyscmd(./mkrelease.sh shellvar configure.in:BST_VERSION))
+AC_INIT(beast, m4_esyscmd(./mkrelease.sh shellvar configure.ac:BST_VERSION))
 AC_CONFIG_SRCDIR([bse/bseconfig.h.in])
 AM_CONFIG_HEADER(configure.h)
 AC_CONFIG_AUX_DIR([autotools])
