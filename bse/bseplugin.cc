@@ -762,7 +762,7 @@ bse_plugin_path_list_files (gboolean include_drivers,
     {
       const std::string cinfo = Rapicorn::cpu_info();
       const char *exts[] = { ".FPU" PLUGIN_EXTENSION, ".FPU.la", PLUGIN_EXTENSION, ".la", };
-      if (BSE_WITH_SSE_FLAGS && !bse_main_args->force_fpu &&
+      if (BSE_WITH_MMX_SSE && !bse_main_args->force_fpu &&
           cinfo.find (" MMX ") != cinfo.npos &&
           cinfo.find (" SSE ") != cinfo.npos &&
           cinfo.find (" SSESYS ") != cinfo.npos)

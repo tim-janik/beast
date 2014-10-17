@@ -211,16 +211,16 @@ AC_SUBST(AM_CPPFLAGS)
 # Intel Pentium 3: CMOV MMX SSE (1999)
 # VIA C3 Nehemiah: CMOV MMX SSE (2003)
 # Athlon Palomino: CMOV MMX SSE 3DNow (2001)
-SIMD_FLAGS=
-MC_CC_TRY_OPTION(SIMD_FLAGS, -mmmx)
-MC_CC_TRY_OPTION(SIMD_FLAGS, -msse)
+MMX_SSE_FLAGS=
+MC_CC_TRY_OPTION(MMX_SSE_FLAGS, -mmmx)
+MC_CC_TRY_OPTION(MMX_SSE_FLAGS, -msse)
 # Note, -mfpmath=sse can harm FPU-algorithm performance
 # Note, -funroll-loops can harm SSE loop performance
-#MC_CC_TRY_OPTION(SIMD_FLAGS, -funroll-loops)
-#AC_SUBST(SIMD_FLAGS)
+#MC_CC_TRY_OPTION(MMX_SSE_FLAGS, -funroll-loops)
+#AC_SUBST(MMX_SSE_FLAGS)
 # Expect the target architecture to support MMX/SSE if the compiler does it.
-MC_EVAR_ADD(AM_CFLAGS,   "$SIMD_FLAGS")
-MC_EVAR_ADD(AM_CXXFLAGS, "$SIMD_FLAGS")
+MC_EVAR_ADD(AM_CFLAGS,   "$MMX_SSE_FLAGS")
+MC_EVAR_ADD(AM_CXXFLAGS, "$MMX_SSE_FLAGS")
 # Newer vectorization instruction sets, should be optionally supported
 # SSE >= 2, AVX
 SSEAVX_FLAGS=
@@ -256,13 +256,13 @@ MC_CXX_TRY_OPTION(FAST_MATH_FLAGS, -fivopts)
 AC_SUBST(FAST_MATH_FLAGS)
 MC_CXX_TRY_OPTION(FPU_FLAGS, -funroll-loops)
 AC_SUBST(FPU_FLAGS)
-SSE_FLAGS="$SIMD_FLAGS"
-AC_SUBST(SSE_FLAGS)
+MMX_SSE_FLAGS="$MMX_SSE_FLAGS"
+AC_SUBST(MMX_SSE_FLAGS)
 
 # == SSE Build Conditionals ==
-lacking_mmx_sse=`echo "$SIMD_FLAGS" | grep 'mmx.*sse' -q ; echo $?` # sh truth values: 1 (without sse) or 0 (with sse)
-AM_CONDITIONAL(WITH_SSE_FLAGS, test 0 == $lacking_mmx_sse)
-AC_DEFINE_UNQUOTED(BSE_WITH_SSE_FLAGS, [(0 == $lacking_mmx_sse)], [wether MMX and SSE are supported])
+lacking_mmx_sse=`echo "$MMX_SSE_FLAGS" | grep 'mmx.*sse' -q ; echo $?` # sh truth values: 1 (without sse) or 0 (with sse)
+AM_CONDITIONAL(WITH_MMX_SSE, test 0 == $lacking_mmx_sse)
+AC_DEFINE_UNQUOTED(BSE_WITH_MMX_SSE, [(0 == $lacking_mmx_sse)], [wether MMX and SSE are supported])
 
 # C & C++ idioms
 AC_C_CONST
