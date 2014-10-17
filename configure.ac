@@ -704,9 +704,9 @@ if test x"$enable_devel_mode" = xyes ; then
   DEVELMODE="" ; NOTDEVELMODE="#"
   # devel mode build tools
   MC_ASSERT_PROG(XMLLINT, xmllint, [See: http://xmlsoft.org/xmllint.html])
-  AC_CHECK_PROGS(PYTHON, OXXpython2.4 python)
-  if test -z "$PYTHON" || $PYTHON -c "import sys; sys.exit (sys.hexversion >= 0x20401f0)" 2>/dev/null ; then
-     AC_MSG_ERROR([failed to detect python (version >= 2.4.1) required for development mode])
+  MC_ASSERT_PROG(PYTHON, python2.7)
+  if test -z "$PYTHON" || $PYTHON -c "import sys; sys.exit (sys.hexversion >= 0x2070500)" 2>/dev/null ; then
+     AC_MSG_ERROR([failed to detect python (version >= 2.7.5) required for development mode])
   fi
 else
   DEVELMODE="#"; NOTDEVELMODE=""
