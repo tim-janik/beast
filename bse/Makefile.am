@@ -130,9 +130,6 @@ EXTRA_DIST += $(strip \
 	bse-internals.hh					\
 )
 
-# -pthread -> -lpthread hack (required for libtool library linkage)
-pthread_2_lpthread = $(if $(findstring -pthread, $1), -lpthread)
-
 #
 # BSE library
 #
@@ -148,7 +145,6 @@ libbse_la_LDFLAGS            = $(strip				\
 	-release $(LT_RELEASE) 					\
 	-no-undefined 						\
 	$(AM_LDFLAGS)						\
-	$(call pthread_2_lpthread, $(BSE_LIBS) $(SFI_LIBS))	\
 )
 EXTRA_DIST += ldscript.map
 #	-Wl,-Bsymbolic
