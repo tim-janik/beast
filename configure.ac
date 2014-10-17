@@ -99,7 +99,6 @@ m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES([yes])])
 AC_ARG_ENABLE(debug,      [  --enable-debug=no/minimum/yes  turn on debugging],,enable_debug=$debug_default)
 AC_ARG_ENABLE(devel-mode, [  --enable-devel-mode=[no/yes]   turn on development mode, default=no],,enable_devel_mode=no)
 AC_ARG_ENABLE(distcheck-tests, [  --enable-distcheck-tests       turn on resource and time consuming distcheck tests],,enable_distcheck_tests=no)
-AC_SUBST(DOXRULE)
 
 # set BEAST_BUILD_DEFAULTS from configure's BEAST_BUILD env
 BEAST_BUILD_DEFAULTS="$BEAST_BUILD_DEFAULTS"
