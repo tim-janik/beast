@@ -90,9 +90,6 @@ AM_INIT_AUTOMAKE(tar-pax no-define)
 
 # We have subdirectories.
 AC_PROG_MAKE_SET
-
-# Disable automatic maintainer mode.
-AM_MAINTAINER_MODE
 m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES([yes])])
 
 # declare --enable-* args and collect ac_help strings
@@ -692,20 +689,30 @@ AC_DEFUN([AC_DOC_REQUIREMENTS],
 # find installation utilities
 AC_PATH_PROG(UPDATE_MIME_DATABASE, update-mime-database)
 
-# check for maintainer mode tools
-AC_CHECK_PROGS(XMLLINT, xmllint)
-# check for maintainer/development build rules
-AC_MSG_CHECKING(whether maintainer and develoment build rules are to be used)
-if test x"$enable_maintainer_mode" = xyes ; then
-    AC_MSG_RESULT(yes)
-    AC_CHECK_PROGS(PYTHON, python2.4 python)
-    if test -z "$PYTHON" || $PYTHON -c "import sys; sys.exit (sys.hexversion >= 0x20401f0)" 2>/dev/null ; then
-	AC_MSG_ERROR([failed to detect python (version >= 2.4.1) required for maintainer mode])
-    fi
-    test -z "$XMLLINT" && { AC_MSG_ERROR([failed to detect xmllint required for maintainer mode]); }
+# --enable-devel-mode: check for development build rules, i.e. autogen.sh
+# based builds with .git repository; these enable additional build rules
+# for files that are pre-packaged in tarballs.
+if test x"$enable_devel_mode" = xyes ; then
+  TEST_SRCDIR=$(cd $srcdir ; /bin/pwd)
+  TEST_BUILDDIR=$(cd . ; /bin/pwd)
+  test "$TEST_SRCDIR" == "$TEST_BUILDDIR" || {
+    AC_MSG_ERROR([development build rules require srcdir == builddir])
+  }
+  git cat-file commit af82337c966c1182e 2>&1 | fgrep -q bb4f6e48724a6731 || { # 0.8.0
+    AC_MSG_ERROR([development build rules require a beast.git repository])
+  }
+  DEVELMODE="" ; NOTDEVELMODE="#"
+  # devel mode build tools
+  MC_ASSERT_PROG(XMLLINT, xmllint, [See: http://xmlsoft.org/xmllint.html])
+  AC_CHECK_PROGS(PYTHON, OXXpython2.4 python)
+  if test -z "$PYTHON" || $PYTHON -c "import sys; sys.exit (sys.hexversion >= 0x20401f0)" 2>/dev/null ; then
+     AC_MSG_ERROR([failed to detect python (version >= 2.4.1) required for development mode])
+  fi
 else
-    AC_MSG_RESULT(no)
+  DEVELMODE="#"; NOTDEVELMODE=""
 fi
+AC_SUBST(DEVELMODE)
+AC_SUBST(NOTDEVELMODE)
 
 AC_MSG_CHECKING(whether source dir equals build dir)
 TEST_SRCDIR=`cd $srcdir ; /bin/pwd`
