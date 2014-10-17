@@ -23,7 +23,6 @@ sfi_all_sources = $(strip \
 	sfinote.cc	sfiparams.cc			sfiserial.cc	\
 	sfitime.cc	sfitypes.cc	sfivalues.cc	sfiustore.cc	\
 			sfiring.cc	sfimemory.cc	sficomport.cc	\
-	$(conditional_toyprof_sources)	\
 )
 sfi_extra_sources = $(strip \
 )

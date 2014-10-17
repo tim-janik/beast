@@ -98,7 +98,6 @@ m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES([yes])])
 # declare --enable-* args and collect ac_help strings
 AC_ARG_ENABLE(debug,      [  --enable-debug=no/minimum/yes  turn on debugging],,enable_debug=$debug_default)
 AC_ARG_ENABLE(devel-mode, [  --enable-devel-mode=[no/yes]   turn on development mode, default=no],,enable_devel_mode=no)
-AC_ARG_ENABLE(toyprof,         [  --enable-toyprof               turn on toy profiler, see sfi/toyprof.README],,)
 AC_ARG_ENABLE(distcheck-tests, [  --enable-distcheck-tests       turn on resource and time consuming distcheck tests],,enable_distcheck_tests=no)
 AC_SUBST(DOXRULE)
 
@@ -337,9 +336,6 @@ AC_DEFUN([AC_SFI_REQUIREMENTS],
 
     AC_CHECK_FUNCS(getpwnam_r getpwnam)
     AC_CHECK_FUNCS(timegm)
-
-    dnl # --- toy profiler ---
-    AM_CONDITIONAL(IF_TOYPROF, test x"$enable_toyprof" = xyes)
 
     dnl # --- SFI directories ---
     sfidlstdincdir=${includedir}

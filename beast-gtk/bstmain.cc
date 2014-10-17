@@ -16,7 +16,6 @@
 #include <string.h>
 #include <sys/time.h>
 #include <sys/resource.h>
-// #include "sfi/toyprof-mem.h"
 
 extern "C" void bse_object_debug_leaks (void); // FIXME
 
