@@ -4,7 +4,7 @@ include $(top_srcdir)/Makefile.decl
 SUBDIRS   = . tests
 INCLUDES    += -I$(top_srcdir) -I$(top_builddir) $(SFI_CFLAGS)
 DEFS        += @DEFINE__FILE_DIR__@ -DG_LOG_DOMAIN=\"SFI\" -DG_DISABLE_CONST_RETURNS
-AM_CXXFLAGS  = $(SFI_CFLAGS) $(RAPICORN_CFLAGS) -DRAPICORN_CONVENIENCE
+AM_CXXFLAGS += $(SFI_CFLAGS) $(RAPICORN_CFLAGS) -DRAPICORN_CONVENIENCE
 
 sfi_public_headers = $(strip \
 	sfistore.hh	sficomwire.hh	sfifilecrawler.hh \
@@ -37,7 +37,7 @@ noinst_LTLIBRARIES    = libsfi.la
 libsfiincludedir      = $(includedir)/sfi
 libsfiinclude_HEADERS = $(sfi_public_headers)
 libsfi_la_SOURCES     = $(sfi_all_sources)
-libsfi_la_LDFLAGS     = -no-undefined # -Wl,-Bsymbolic
+libsfi_la_LDFLAGS     = $(AM_LDFLAGS) -no-undefined # -Wl,-Bsymbolic
 libsfi_la_LIBADD      = $(SFI_LIBS) -lm
 
 #

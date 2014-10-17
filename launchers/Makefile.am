@@ -3,7 +3,7 @@ include $(top_srcdir)/Makefile.decl
 
 INCLUDES    += -I$(top_srcdir) -I$(top_builddir) -I.
 DEFS        += @DEFINE__FILE_DIR__@ -DBINDIR=\"$(bindir)\"
-AM_CXXFLAGS  = $(LAUNCHER_CFLAGS) -DG_DISABLE_CONST_RETURNS
+AM_CXXFLAGS += $(LAUNCHER_CFLAGS) -DG_DISABLE_CONST_RETURNS
 
 #
 # programs to build

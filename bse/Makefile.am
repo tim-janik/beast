@@ -12,7 +12,7 @@ DEFS     += @DEFINE__FILE_DIR__@ $(strip \
 	$(patsubst %, -DG_LOG_DOMAIN=\"BSE\" -DBSE_COMPILATION, \
 	              $(filter $(<F), $(bse_sources) $(bse_sources))) \
 )
-AM_CXXFLAGS  = $(BSE_CFLAGS) $(RAPICORN_CFLAGS) -DRAPICORN_CONVENIENCE -DG_DISABLE_DEPRECATED -DG_DISABLE_CONST_RETURNS
+AM_CXXFLAGS  += $(BSE_CFLAGS) $(RAPICORN_CFLAGS) -DRAPICORN_CONVENIENCE -DG_DISABLE_DEPRECATED -DG_DISABLE_CONST_RETURNS
 AIDACC_VDEBUG = $(AIDACC) $(if $(findstring 1, $(V)), --aida-debug)
 
 #
@@ -150,6 +150,7 @@ libbse_la_LDFLAGS            = $(strip				\
 	-version-info $(LT_CURRENT):$(LT_REVISION):$(LT_AGE)	\
 	-release $(LT_RELEASE) 					\
 	-no-undefined 						\
+	$(AM_LDFLAGS)						\
 	$(call pthread_2_lpthread, $(BSE_LIBS) $(SFI_LIBS))	\
 )
 EXTRA_DIST += ldscript.map

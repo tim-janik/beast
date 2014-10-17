@@ -19,8 +19,8 @@ QGEN    = $(Q:@=@echo '  GEN   ' $@; )
 QSTDERR = $(Q:@=2>/dev/null)
 
 # assign project wide defaults
-AM_CFLAGS = -D_BIRNET_SOURCE_EXTENSIONS
-AM_CXXFLAGS = -D_BIRNET_SOURCE_EXTENSIONS
+AM_CFLAGS   += -D_BIRNET_SOURCE_EXTENSIONS
+AM_CXXFLAGS += -D_BIRNET_SOURCE_EXTENSIONS
 
 # == download ==
 # recursive rule supported by all Makefiles to download files hosted online

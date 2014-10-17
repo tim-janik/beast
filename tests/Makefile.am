@@ -5,8 +5,8 @@ SUBDIRS = . latency scripts bse audio filecheck
 
 INCLUDES    += -I$(top_srcdir) -I$(top_builddir) -I$(srcdir) -I.
 DEFS        += @DEFINE__FILE_DIR__@ -DG_LOG_DOMAIN="\"BEAST-TEST\"" # -DG_DISABLE_CONST_RETURNS
-AM_CXXFLAGS  = $(SFI_CFLAGS) $(RAPICORN_CFLAGS) -DRAPICORN_CONVENIENCE
-AM_CFLAGS    = $(SFI_CFLAGS) $(RAPICORN_CFLAGS) -DRAPICORN_CONVENIENCE
+AM_CXXFLAGS += $(SFI_CFLAGS) $(RAPICORN_CFLAGS) -DRAPICORN_CONVENIENCE
+AM_CFLAGS   += $(SFI_CFLAGS) $(RAPICORN_CFLAGS) -DRAPICORN_CONVENIENCE
 
 SFIDL = $(top_builddir)/sfi/sfidl
 SFIDL_INC = --nostdinc -I$(top_srcdir) -I$(top_builddir)
