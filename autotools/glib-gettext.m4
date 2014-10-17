@@ -378,7 +378,8 @@ glib_DEFUN([GLIB_GNU_GETTEXT],
      posrcprefix="../"
    fi
    rm -f po/POTFILES
-   sed -e "/^#/d" -e "/^\$/d" -e "s,.*,	$posrcprefix& \\\\," -e "\$s/\(.*\) \\\\/\1/" \
+   test -e $srcdir/po/POTFILES.in && \
+     sed -e "/^#/d" -e "/^\$/d" -e "s,.*,	$posrcprefix& \\\\," -e "\$s/\(.*\) \\\\/\1/" \
 	< $srcdir/po/POTFILES.in > po/POTFILES
   ])
 
