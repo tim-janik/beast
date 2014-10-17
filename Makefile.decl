@@ -4,7 +4,6 @@
 ## GNU Lesser General Public License version 2 or any later version.
 
 # declare variables that we might want to use += on.
-INCLUDES=
 EXTRA_HEADERS=
 MAINTAINERCLEANFILES=$(GENERATED)
 CLEANFILES=$(GENERATED_CLEANFILES)

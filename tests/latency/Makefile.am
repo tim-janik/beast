@@ -1,7 +1,7 @@
 # BSE - Better Sound Engine
 include $(top_srcdir)/Makefile.decl
 
-INCLUDES    += -I$(top_srcdir) -I$(top_builddir) -I$(srcdir) -I.
+AM_CPPFLAGS += -I$(top_srcdir) -I$(top_builddir) -I$(srcdir) -I.
 DEFS        += @DEFINE__FILE_DIR__@ -DG_LOG_DOMAIN="\"BSE-TEST\"" # -DG_DISABLE_CONST_RETURNS
 AM_CXXFLAGS += $(SFI_CFLAGS) $(RAPICORN_CFLAGS) -DRAPICORN_CONVENIENCE
 

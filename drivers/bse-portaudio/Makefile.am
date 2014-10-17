@@ -1,6 +1,6 @@
 # BSE-PortAudio - Better Sound Engine PortAudio Driver Package
 
-INCLUDES    += -I$(srcdir) -I$(top_builddir)
+AM_CPPFLAGS += -I$(srcdir) -I$(top_builddir)
 DEFS        += @DEFINE__FILE_DIR__@ $(strip -DG_LOG_DOMAIN=\"BSE-PortAudio\")
 AM_CXXFLAGS += $(BSE_CFLAGS)
 

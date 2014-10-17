@@ -1,7 +1,7 @@
 # beast/tests/filecheck
 include $(top_srcdir)/Makefile.decl
 
-INCLUDES    += -I$(top_srcdir) -I$(top_builddir) -I$(srcdir)
+AM_CPPFLAGS += -I$(top_srcdir) -I$(top_builddir) -I$(srcdir)
 DEFS        += @DEFINE__FILE_DIR__@ -DG_LOG_DOMAIN="\"BEAST-TEST\"" # -DG_DISABLE_CONST_RETURNS
 AM_CXXFLAGS += $(SFI_CFLAGS)
 

@@ -7,11 +7,8 @@ SUBDIRS = icons zintern . tests
 # need -I$(top_builddir) for <sfi/sficonfig.h>
 # need -I$(srcdir) for "bseserver.hh" in .genprc.cc
 # need -I. (builddir) for "bsebasics.genidl.hh" in bsebasics.cc
-INCLUDES += -I$(top_srcdir) -I$(top_builddir) -I$(srcdir) -I.
-DEFS     += @DEFINE__FILE_DIR__@ $(strip \
-	$(patsubst %, -DG_LOG_DOMAIN=\"BSE\" -DBSE_COMPILATION, \
-	              $(filter $(<F), $(bse_sources) $(bse_sources))) \
-)
+AM_CPPFLAGS += -I$(top_srcdir) -I$(top_builddir) -I$(srcdir) -I.
+DEFS        += @DEFINE__FILE_DIR__@ $(patsubst %, -DG_LOG_DOMAIN=\"BSE\" -DBSE_COMPILATION, $(filter $(<F), $(bse_sources) $(bse_sources))) 
 AM_CXXFLAGS  += $(BSE_CFLAGS) $(RAPICORN_CFLAGS) -DRAPICORN_CONVENIENCE -DG_DISABLE_DEPRECATED -DG_DISABLE_CONST_RETURNS
 AIDACC_VDEBUG = $(AIDACC) $(if $(findstring 1, $(V)), --aida-debug)
 

@@ -1,11 +1,8 @@
 # SHELL - Better Sound Engine Shell
 include $(top_srcdir)/Makefile.decl
 
-INCLUDES += -I$(top_srcdir) -I. -I$(top_builddir)
-DEFS += @DEFINE__FILE_DIR__@ $(strip                       	\
-	-DG_LOG_DOMAIN=\"BSESCM\"      	\
-	$(SUIDMAIN_DEFS)                \
-)
+AM_CPPFLAGS += -I$(top_srcdir) -I. -I$(top_builddir)
+DEFS        += @DEFINE__FILE_DIR__@ -DG_LOG_DOMAIN=\"BSESCM\" $(SUIDMAIN_DEFS)
 AM_CXXFLAGS += $(BSESCM_CFLAGS) $(BSE_CFLAGS) $(RAPICORN_CFLAGS) -DRAPICORN_CONVENIENCE -DG_DISABLE_CONST_RETURNS
 
 #

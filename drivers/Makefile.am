@@ -1,7 +1,7 @@
 # BSE-Plugins - Better Sound Engine dynamic Plugins
 include $(top_srcdir)/Makefile.decl
 
-INCLUDES    += -I$(top_srcdir) -I.
+AM_CPPFLAGS += -I$(top_srcdir) -I.
 DEFS        += @DEFINE__FILE_DIR__@ $(strip -DG_LOG_DOMAIN=\"BSE-ALSA\")
 AM_CXXFLAGS += $(BSE_CFLAGS) $(RAPICORN_CFLAGS) -DRAPICORN_CONVENIENCE
 

@@ -3,7 +3,7 @@ include $(top_srcdir)/Makefile.decl
 
 SUBDIRS = . scripts
 
-INCLUDES    += -I$(top_srcdir) -I$(top_builddir)
+AM_CPPFLAGS += -I$(top_srcdir) -I$(top_builddir)
 DEFS        += @DEFINE__FILE_DIR__@ -DG_LOG_DOMAIN=\"BSE-TOOLS\" -DG_DISABLE_CONST_RETURNS
 AM_CXXFLAGS += $(BSE_CFLAGS) $(RAPICORN_CFLAGS) -DRAPICORN_CONVENIENCE
 
