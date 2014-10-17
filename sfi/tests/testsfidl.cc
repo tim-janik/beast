@@ -123,4 +123,19 @@ main (int   argc,
     }
 }
 
+#include "../sfidl-generator.cc"
+#include "../sfidl-namespace.cc"
+#include "../sfidl-options.cc"
+#include "../sfidl-parser.cc"
+#include "../sfidl-factory.cc"
+#include "../sfidl-typelist.cc"
+#include "../sfidl-cbase.cc"
+#include "../sfidl-clientc.cc"
+#include "../sfidl-clientcxx.cc"
+#include "../sfidl-corec.cc"
+#include "../sfidl-corecxx.cc"
+#include "../sfidl-cxxbase.cc"
+#include "../sfidl-hostc.cc"
+#include "../sfidl-utils.cc"
+
 /* vim:set ts=8 sts=2 sw=2: */
