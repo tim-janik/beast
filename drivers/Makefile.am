@@ -10,7 +10,6 @@ driversdir          = $(bsedriverdir)
 drivers_LTLIBRARIES = bsepcmdevice-alsa.la bsemididevice-alsa.la
 drivers_ldflags     = -avoid-version
 drivers_libs        = $(top_builddir)/bse/libbse.la $(BSE_LIBS) $(SFI_LIBS) $(RAPICORN_LIBS)
-EXTRA_DIST=
 
 # Plugin bsepcmdevice-alsa
 bsepcmdevice_alsa_la_SOURCES = bsepcmdevice-alsa.cc
