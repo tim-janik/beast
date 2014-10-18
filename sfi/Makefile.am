@@ -43,13 +43,15 @@ libsfi_la_LIBADD      = $(SFI_LIBS) -lm
 # programs to build
 #
 # source files
-common_idl_sources = sfidl-generator.cc sfidl-namespace.cc sfidl-options.cc sfidl-parser.cc \
-  sfidl-factory.cc sfidl-typelist.cc sfidl-cbase.cc sfidl-clientc.cc sfidl-clientcxx.cc sfidl-corec.cc \
-  sfidl-corecxx.cc sfidl-cxxbase.cc sfidl-hostc.cc sfidl-utils.cc
 
 bin_PROGRAMS = sfidl
-sfidl_SOURCES = sfidl.cc $(common_idl_sources)
+sfidl_SOURCES = sfidl.cc
 sfidl_LDADD = $(SFI_LIBS) $(RAPICORN_LIBS) -lm
+# included files
+EXTRA_DIST += sfidl-generator.cc sfidl-namespace.cc sfidl-options.cc sfidl-parser.cc sfidl-factory.cc
+EXTRA_DIST += sfidl-typelist.cc sfidl-cbase.cc sfidl-clientc.cc sfidl-clientcxx.cc sfidl-corec.cc
+EXTRA_DIST += sfidl-corecxx.cc sfidl-cxxbase.cc sfidl-hostc.cc sfidl-utils.cc
+# headers
 EXTRA_DIST += sfidl-generator.hh sfidl-namespace.hh sfidl-options.hh sfidl-parser.hh sfidl-factory.hh
 EXTRA_DIST += sfidl-cbase.hh sfidl-clientc.hh sfidl-clientcxx.hh sfidl-cxxbase.hh sfidl-hostc.hh sfidl-utils.hh
 
