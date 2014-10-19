@@ -9,12 +9,14 @@ m4_include(autotools/glib-gettext.m4)
 #
 # Configure script for BEAST/BSE
 #
+AC_PREREQ(2.57)
 AC_INIT(beast, m4_esyscmd(./mkrelease.sh shellvar configure.ac:BST_VERSION))
 AC_CONFIG_SRCDIR([bse/bseconfig.h.in])
-AM_CONFIG_HEADER(configure.h)
 AC_CONFIG_AUX_DIR([autotools])
 AC_CONFIG_MACRO_DIR([autotools])
-AC_PREREQ(2.57)
+AC_CANONICAL_TARGET					# architecture information
+AM_INIT_AUTOMAKE(tar-pax no-define -Wno-portability)	# don't define PACKAGE and VERSION
+AM_CONFIG_HEADER(configure.h)
 
 #
 # BSE version numbers
@@ -80,13 +82,8 @@ else
         debug_default=minimum
 fi
 
-# architecture information
-AC_CANONICAL_TARGET
 dnl # AC_CANONICAL_HOST is provided by AC_CANONICAL_TARGET
 AC_DEFINE_UNQUOTED(BST_ARCH_NAME, "$target", [Architecture Description])
-
-# initialize automake, don't define PACKAGE and VERSION
-AM_INIT_AUTOMAKE(tar-pax no-define)
 
 # We have subdirectories.
 AC_PROG_MAKE_SET
