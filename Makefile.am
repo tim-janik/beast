@@ -15,7 +15,6 @@ site site-preview site-update site-update-all site-update-pages site-update-gall
 MAINTAINERCLEANFILES += configure
 
 EXTRA_DIST += $(strip		\
-	TODO			\
 	topconfig.h		\
 )
 
