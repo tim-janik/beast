@@ -10,57 +10,48 @@ m4_include(autotools/glib-gettext.m4)
 # Configure script for BEAST/BSE
 #
 AC_PREREQ(2.57)
-AC_INIT(beast, m4_esyscmd(./mkrelease.sh shellvar configure.ac:BST_VERSION))
+# VERSION: MAJOR.MINOR.MICRO-RC:
+# * MAJOR, MINOR: increment on ABI/API changes
+# * MICRO: increment when ABI compatible, development versions are odd
+# * RC: release candidate, may be rc[0-9]+ or empty
+AC_INIT([beast], [0.8.3]) # defines PACKAGE_NAME, PACKAGE_VERSION, PACKAGE_STRING
 AC_CONFIG_SRCDIR([bse/bseconfig.h.in])
 AC_CONFIG_AUX_DIR([autotools])
 AC_CONFIG_MACRO_DIR([autotools])
 AC_CANONICAL_TARGET					# architecture information
 AM_INIT_AUTOMAKE(tar-pax no-define -Wno-portability)	# don't define PACKAGE and VERSION
 AM_CONFIG_HEADER(configure.h)
-
-#
-# BSE version numbers
-#
-BSE_MAJOR_VERSION=0
-BSE_MINOR_VERSION=8
-BSE_MICRO_VERSION=3
-BSE_INTERFACE_AGE=0
-BSE_BINARY_AGE=0
-dnl#
-dnl# Making releases:
-dnl#   BSE_MICRO_VERSION += 1;
-dnl#   BSE_INTERFACE_AGE += 1;
-dnl#   BSE_BINARY_AGE += 1;
-dnl# if any functions have been added, set BSE_INTERFACE_AGE to 0.
-dnl# if backwards compatibility has been broken,
-dnl# set BSE_BINARY_AGE _and_ BSE_INTERFACE_AGE to 0.
-dnl# BST_RELEASE_CANDIDATE may contain rc[0-9]+ or nothing
-BST_RELEASE_CANDIDATE= #rc1
-
-# version number setup
-BSE_VERSION=$BSE_MAJOR_VERSION.$BSE_MINOR_VERSION.$BSE_MICRO_VERSION
-BST_VERSION=$BSE_VERSION${BST_RELEASE_CANDIDATE:+-}$BST_RELEASE_CANDIDATE # M.M.M-rcZ
-BIN_VERSION=$BSE_VERSION    # binary version, used for binaries and paths
-AC_SUBST(BSE_MAJOR_VERSION)
-AC_SUBST(BSE_MINOR_VERSION)
-AC_SUBST(BSE_MICRO_VERSION)
-AC_SUBST(BSE_INTERFACE_AGE)
-AC_SUBST(BSE_BINARY_AGE)
-AC_SUBST(BSE_VERSION)
-AC_SUBST(BST_VERSION)
-AC_SUBST(BIN_VERSION)
+# version handling
+BST_VERSION="$PACKAGE_VERSION"
+[BST_MAJOR_VERSION=`echo $PACKAGE_VERSION | sed 's/\([0-9]\+\)\.\([0-9]\+\)\.\([0-9]\+\)\(.*\)/\1/'`]
+[BST_MINOR_VERSION=`echo $PACKAGE_VERSION | sed 's/\([0-9]\+\)\.\([0-9]\+\)\.\([0-9]\+\)\(.*\)/\2/'`]
+[BST_MICRO_VERSION=`echo $PACKAGE_VERSION | sed 's/\([0-9]\+\)\.\([0-9]\+\)\.\([0-9]\+\)\(.*\)/\3/'`]
+[BIN_VERSION=`echo $PACKAGE_VERSION | sed 's/\([0-9]\+\)\.\([0-9]\+\)\.\([0-9]\+\)\(.*\)/\1.\2.\3/'`]
+case "$BST_VERSION" in
+0.99.*)     BST_VERSION_HINT=BETA ;;
+0.*)        BST_VERSION_HINT="ALPHA" ;;
+*)          BST_VERSION_HINT="Stable Release"
+            test `expr $BST_MICRO_VERSION \% 2` = 1 && BST_VERSION_HINT="Development Build" ;;
+esac
+AC_DEFINE_UNQUOTED(BST_VERSION, "$BST_VERSION", [BEAST Version])
 AC_DEFINE_UNQUOTED(BIN_VERSION, "$BIN_VERSION", [Binary Version])
+AC_DEFINE_UNQUOTED(BST_VERSION_HINT, "$BST_VERSION_HINT", [Version classification])
+AC_SUBST(BST_VERSION)
+AC_SUBST(BST_MAJOR_VERSION)
+AC_SUBST(BST_MINOR_VERSION)
+AC_SUBST(BST_MICRO_VERSION)
+AC_SUBST(BIN_VERSION)
 
 # compute libtool versions
-LT_RELEASE=$BSE_MAJOR_VERSION.$BSE_MINOR_VERSION
-LT_CURRENT=`expr $BSE_MICRO_VERSION - $BSE_INTERFACE_AGE`
-LT_REVISION=$BSE_INTERFACE_AGE
-LT_AGE=`expr $BSE_BINARY_AGE - $BSE_INTERFACE_AGE`
+LT_RELEASE=$BST_MAJOR_VERSION.$BST_MINOR_VERSION
+LT_CURRENT=$BST_MICRO_VERSION
+LT_REVISION=0
+LT_AGE=$BST_MICRO_VERSION
 AC_SUBST(LT_RELEASE)
 AC_SUBST(LT_CURRENT)
 AC_SUBST(LT_REVISION)
 AC_SUBST(LT_AGE)
-if test 1 = $(($BSE_MICRO_VERSION & 1)) ; then
+if test 1 = $(($BST_MICRO_VERSION & 1)) ; then
   DEFINE__FILE_DIR__='-D__FILE_DIR__=\"${abs_srcdir}\"'
 else
   DEFINE__FILE_DIR__='-D__FILE_DIR__=\"beast/${subdir}\"'
@@ -74,14 +65,6 @@ AC_SUBST(INGIT)
 result=$(test -z "$INGIT" && echo yes || echo no)
 AC_MSG_RESULT($result)
 
-dnl # figure debugging default, prior to $ac_help setup
-dnl
-if test `expr $BSE_MINOR_VERSION \% 2 \| $BSE_MAJOR_VERSION \< 1` = 1 ; then
-        debug_default=yes
-else
-        debug_default=minimum
-fi
-
 dnl # AC_CANONICAL_HOST is provided by AC_CANONICAL_TARGET
 AC_DEFINE_UNQUOTED(BST_ARCH_NAME, "$target", [Architecture Description])
 
@@ -90,7 +73,7 @@ AC_PROG_MAKE_SET
 m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES([yes])])
 
 # declare --enable-* args and collect ac_help strings
-AC_ARG_ENABLE(debug,      [  --enable-debug=no/minimum/yes  turn on debugging],,enable_debug=$debug_default)
+AC_ARG_ENABLE(debug,      [  --enable-debug=no/minimum/yes  turn on debugging, default=yes],,enable_debug=yes)
 AC_ARG_ENABLE(devel-mode, [  --enable-devel-mode=[no/yes]   turn on development mode, default=no],,enable_devel_mode=no)
 AC_ARG_ENABLE(distcheck-tests, [  --enable-distcheck-tests       turn on resource and time consuming distcheck tests],,enable_distcheck_tests=no)
 
@@ -336,9 +319,6 @@ AC_DEFUN([AC_SFI_REQUIREMENTS],
 ])
 AC_DEFUN([AC_BSE_REQUIREMENTS],
 [
-    dnl # --- BSE version ---
-    AC_DEFINE_UNQUOTED(BSE_VERSION, "$BSE_VERSION", [BSE Version])
-
     dnl # require Rapicorn
     PKG_CHECK_MODULES(RAPICORN, rapicorn1410 >= 14.10.0)
     MC_ASSERT_PROG(AIDACC, aidacc-1410, [aidacc gets shipped with Rapicorn])
@@ -577,22 +557,6 @@ AC_DEFUN([AC_BEAST_REQUIREMENTS],
     )
     CFLAGS=$cflags
     LDFLAGS=$ldflags
-
-    # BEAST version
-    AC_DEFINE_UNQUOTED(BST_VERSION, "$BST_VERSION", [BEAST Version])
-    BST_VERSION_STABLE=0
-    case "$BST_VERSION" in
-    0.99.*)     BST_VERSION_HINT=BETA ;;
-    0.*)        BST_VERSION_HINT="ALPHA" ;;
-    *)          if test `expr $BSE_MINOR_VERSION \% 2` = 1 ; then
-                  BST_VERSION_HINT="Development Branch"
-                else
-		  BST_VERSION_STABLE=1
-	 	  BST_VERSION_HINT="Stable Branch"
-	        fi ;;
-    esac
-    AC_DEFINE_UNQUOTED(BST_VERSION_HINT, "$BST_VERSION_HINT", [Version classification])
-    AC_DEFINE_UNQUOTED(BST_VERSION_STABLE, $BST_VERSION_STABLE, [On stable branch?])
 
     # --- BEAST paths ---
     beastbasedir=\${datadir}/beast

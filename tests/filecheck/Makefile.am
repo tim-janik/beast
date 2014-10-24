@@ -27,7 +27,7 @@ distfiles.list: Makefile
 
 .PHONY: bse-version-check
 bse-version-check: distfiles.list
-	TESTVERSION="$(BSE_MAJOR_VERSION).$(BSE_MINOR_VERSION)." ;	\
+	TESTVERSION="$(BST_MAJOR_VERSION).$(BST_MINOR_VERSION)." ;	\
 	for tfile in `grep '\.bse$$' distfiles.list` ; do		\
 	  file="$(top_srcdir)/$$tfile" ;				\
 	  echo "Check project version: $$file" ;			\

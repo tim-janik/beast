@@ -30,12 +30,10 @@ static void     init_aida_idl ();
 
 /* --- variables --- */
 /* from bse.hh */
-const guint		 bse_major_version = BSE_MAJOR_VERSION;
-const guint		 bse_minor_version = BSE_MINOR_VERSION;
-const guint		 bse_micro_version = BSE_MICRO_VERSION;
-const guint		 bse_interface_age = BSE_INTERFACE_AGE;
-const guint		 bse_binary_age = BSE_BINARY_AGE;
-const gchar		*bse_version = BSE_VERSION;
+const uint		 bse_major_version = BST_MAJOR_VERSION;
+const uint		 bse_minor_version = BST_MINOR_VERSION;
+const uint		 bse_micro_version = BST_MICRO_VERSION;
+const char		*bse_version = BST_VERSION;
 GMainContext            *bse_main_context = NULL;
 static volatile gboolean bse_initialization_stage = 0;
 static gboolean          textdomain_setup = FALSE;
@@ -112,19 +110,17 @@ _bse_init_async (int *argc, char **argv, const char *app_name, const Bse::String
 const char*
 bse_check_version (uint required_major, uint required_minor, uint required_micro)
 {
-  if (required_major > BSE_MAJOR_VERSION)
+  if (required_major > BST_MAJOR_VERSION)
     return "BSE version too old (major mismatch)";
-  if (required_major < BSE_MAJOR_VERSION)
+  if (required_major < BST_MAJOR_VERSION)
     return "BSE version too new (major mismatch)";
-  if (required_minor > BSE_MINOR_VERSION)
+  if (required_minor > BST_MINOR_VERSION)
     return "BSE version too old (minor mismatch)";
-  if (required_minor < BSE_MINOR_VERSION)
+  if (required_minor < BST_MINOR_VERSION)
     return "BSE version too new (minor mismatch)";
-  if (required_micro < BSE_MICRO_VERSION - BSE_BINARY_AGE)
-    return "BSE version too new (micro mismatch)";
-  if (required_micro > BSE_MICRO_VERSION)
+  if (required_micro > BST_MICRO_VERSION)
     return "BSE version too old (micro mismatch)";
-  return NULL;
+  return NULL; // required_micro <= BST_MICRO_VERSION
 }
 
 struct AsyncData {

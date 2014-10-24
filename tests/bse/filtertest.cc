@@ -122,7 +122,7 @@ Options::parse (int   *argc_p,
       else if (strcmp (argv[i], "--version") == 0 ||
                strcmp (argv[i], "-v") == 0)
         {
-          printf ("%s %s\n", program_name.c_str(), BSE_VERSION);
+          printf ("%s %s\n", program_name.c_str(), BST_VERSION);
           exit (0);
         }
       else if (check_arg (argc, argv, &i, "--dump-gnuplot-data"))

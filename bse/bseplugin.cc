@@ -205,9 +205,9 @@ bse_exports__add_node (const BseExportIdentity *identity,
     g_error ("%s: plugin startup called without plugin", G_STRFUNC);
   if (!enode || enode->next)
     return NULL;
-  if (identity->major != BSE_MAJOR_VERSION ||
-      identity->minor != BSE_MINOR_VERSION ||
-      identity->micro != BSE_MICRO_VERSION)
+  if (identity->major != BST_MAJOR_VERSION ||
+      identity->minor != BST_MINOR_VERSION ||
+      identity->micro != BST_MICRO_VERSION)
     startup_plugin->version_match = false;
   startup_plugin->missing_export_flags = identity->export_flags & ~runtime_export_config();
   if (startup_plugin->version_match && !startup_plugin->missing_export_flags)
@@ -228,9 +228,9 @@ plugin_check_identity (BsePlugin *plugin, GModule *gmodule)
       if (g_module_symbol (gmodule, BSE_EXPORT_IDENTITY_STRING, (void**) &symbol_p) && *symbol_p)
         {
           BseExportIdentity *identity = *symbol_p;
-          if (identity->major != BSE_MAJOR_VERSION ||
-              identity->minor != BSE_MINOR_VERSION ||
-              identity->micro != BSE_MICRO_VERSION)
+          if (identity->major != BST_MAJOR_VERSION ||
+              identity->minor != BST_MINOR_VERSION ||
+              identity->micro != BST_MICRO_VERSION)
             plugin->version_match = false;
           plugin->missing_export_flags = identity->export_flags & ~runtime_export_config();
           plugin->chain = identity->export_chain;
