@@ -38,8 +38,8 @@ usage() {
 	Options:
 	  -h, --help		usage help
 	  -v, --version		issue version
-	  -E <FILE:VAR>         revision variable to increment during "upload"
-	                        (e.g. configure.ac:MICRO)
+	  -E <ACINITFILE>       file with AC_INIT version to be incremented
+	                        after release upload (e.g. configure.ac)
 	  -B <A,B,C...>		ignored names for "contributors"
 	  --body		include commit body for "news"
 	  -C <NEWS>		file with ignored C strings for "contributors"
@@ -53,8 +53,6 @@ usage() {
 	  -X			expect no strings to be found for "contributors"
 	Configuration (Makefile):
 	  MKRELEASE_UPLOAD_URL	remote release URL
-	  MKRELEASE_REVISION_VAR
-				revision variable to increment during "upload"
 EOF
   [ -z "$1" ] || exit $1
 }
@@ -65,7 +63,8 @@ VERSION=_parse
 TARBALL=_parse
 BODY=false
 REMOTE_URL=_parse
-REVISIONVAR=_parse
+ACVERSION_FILE=
+ACVERSION_NEXT=
 CONTRBLACK=
 CONTRCFILE=/dev/null
 CONTREXIT=0
@@ -79,7 +78,7 @@ while test $# -ne 0 -a $parse_options = 1; do
     -B)		CONTRBLACK="$2" ; shift ;;
     --body)	BODY=true ;;
     -C)		CONTRCFILE="$2" ; shift ;;
-    -E)		REVISIONVAR="$2" ; shift ;;
+    -E)		ACVERSION_FILE="$2" ; shift ;;
     -o)		OUTPUT="$2" ; shift ;;
     -R)		R_REVISION="$2" ; shift ;;
     -T)		TARBALL="$2" ; shift ;;
@@ -204,6 +203,23 @@ done
 		s/\$(PACKAGE)\|\${PACKAGE}/$PACKAGE/g ;
 		s/\$(distdir)\|${distdir}/$distdir/g ; }"
   }
+  increment_ac_version() {
+    INFILE="$1"
+    OUTFILE="$2"
+    # pattern for the last component of a version number passed as second argument
+    pat='^\([^,]*,[^0-9]*[0-9.]\+\.\)\([0-9]\+\)' # \1=prefix \2=digits
+    # extract the last component of the version passed as second AC_INIT argument
+    ACINIT_REVISION=`sed -n "/^AC_INIT\b/{ s/$pat.*/\2/; p; }" "$INFILE"` &&
+      echo " $ACINIT_REVISION" | grep -q '[0-9]' ||
+      die 8 "$INFILE: failed to find AC_INIT with version number"
+    # increment version, this may fail if $ACINIT_REVISION contains multiple matches
+    vnext=`expr $ACINIT_REVISION + 1 2>/dev/null` ||
+      die 8 "$INFILE: failed to identify AC_INIT version number"
+    # write updated version
+    sed "/^AC_INIT\b/s/$pat/\1$vnext/" "$INFILE" > "$OUTFILE" &&
+      { ! cmp -s "$INFILE" "$OUTFILE" ; } ||
+      die 8 "$INFILE: failed to adjust AC_INIT version number"
+  }
   first_arg()	{ echo "$1" ; }
   msg_()  	{ printf "%-76s" "$@ " ; }
   msg()  	{ msg_ "  $@" ; }
@@ -232,9 +248,23 @@ done
   [ "$VERSION" = "_parse" ] && check_makefile && VERSION="`parse_makefile_var VERSION`"
   msg2 "Determine version..." "$VERSION"
   # extract REVISION from last numeric part in VERSION
-  REVISION=`echo " $VERSION" | sed -n '/[0-9][ \t]*$/{ s/.*\b\([0-9]\+\)[ \t]*$/\1/ ; p ; q }'`
+  REVISION=`echo " $VERSION" | sed -n '/[0-9][ \t]*$/{ s/-.*//; s/.*\b\([0-9]\+\)[ \t]*$/\1/ ; p ; q }'`
   [ -n "$REVISION" ] || { msg "Extracting revision from $VERSION..." ; fail ; }
   msg2 "Determine revision..." "$REVISION"
+  # test AC_INIT version increments
+  [ -n "$ACVERSION_FILE" ] && {
+    msg2 "Checking AC_INIT version increments in file..." "$ACVERSION_FILE"
+    [ -w "$ACVERSION_FILE" ] || die 8 "Write access failed: $ACVERSION_FILE"
+    ACVERSION_NEXT="xtmp-$ACVERSION_FILE"
+    increment_ac_version "$ACVERSION_FILE" "$ACVERSION_NEXT"
+    cmp -s "$ACVERSION_FILE" "$ACVERSION_NEXT" && die 8 "Version increment failed: $ACVERSION_FILE"
+    msg "Checking AC_INIT revision to match version..."
+    [ -n "$ACINIT_REVISION" -a "$ACINIT_REVISION" = "$REVISION" ] && ok \
+      || fail "note: mismatching AC_INIT revision for $VERSION: '$ACINIT_REVISION' != '$REVISION'"
+    msg "Checking AC_INIT file ($ACVERSION_FILE) in git..."
+    git rev-list --max-count=1 HEAD -- "$ACVERSION_FILE" | grep -q '.' && ok \
+      || fail "note: file not existing in git HEAD: $ACVERSION_FILE"
+  }
   # ensure TARBALL, fallback to Makefile
   [ "$TARBALL" = "_parse" ] && check_makefile && {
     # expand tarball from PACKAGE, VERSION, distdir and DIST_ARCHIVES
@@ -256,17 +286,6 @@ done
   REMOTE_PATH=`printf "%s" "$REMOTE_URL" | sed -ne '/:/ { s/[^:]*:// ; p ; q }'`
   case "$REMOTE_PATH" in *[^/]) REMOTE_PATH="$REMOTE_PATH/" ;; esac
   msg2 "Determine remote path..." "$REMOTE_PATH"
-  # read REVISIONVAR from Makefile.am
-  [ "$REVISIONVAR" = _parse ] && check_makefile && REVISIONVAR="`parse_makefile_var MKRELEASE_REVISION_VAR`"
-  # extract file from REVISIONVAR
-  REVISIONVAR_FILE=`printf "%s" "$REVISIONVAR" | sed -e 's/:.*//'`
-  REVISIONVAR_NAME=`printf "%s" "$REVISIONVAR" | sed -ne '/:/ { s/[^:]*:// ; p ; q }'`
-  [ -n "$REVISIONVAR" ] && {
-    msg2 "Determine file for revision increments..." "$REVISIONVAR_FILE"
-    [ -z "$REVISIONVAR_FILE" ] && die "Failed to extract file from: $REVISIONVAR"
-    msg2 "Determine variable for revision increments..." "$REVISIONVAR_NAME"
-    [ -z "$REVISIONVAR_NAME" ] && die "Failed to extract variable from: $REVISIONVAR"
-  }
   # release checks
   msg "Checking for a clean $VERSION working tree..."
   skipop "clean" || {
@@ -288,15 +307,6 @@ done
   skipop "news" || {
     head -n2 NEWS | grep -q "$VERSION" && ok || \
       fail "note: NEWS fails to describe version $VERSION"
-  }
-  [ -n "$REVISIONVAR" ] && {
-    msg "Checking revision variable to match version..."
-    N=`sed -ne "/^$REVISIONVAR_NAME\s*=\s*[0-9]/ { s/^[^=]*=\s*\([0-9]\+\).*/\1/ ; p ; q }" $REVISIONVAR_FILE`
-    [ -n "$N" -a "$N" = "$REVISION" ] && ok \
-      || fail "note: mismatching revisions for $VERSION: '$REVISION' != '$N'"
-    msg "Checking for git tracking of $REVISIONVAR_FILE..."
-    git rev-list --max-count=1 HEAD -- "$REVISIONVAR_FILE" | grep -q '.' && ok \
-      || fail "note: unexisting file in git HEAD: $REVISIONVAR_FILE"
   }
   msg "Checking for even revision in version $VERSION..."
   skipop "evenrev" || {
@@ -340,8 +350,10 @@ done
   # planned steps
   msg2 "* Planned: tag HEAD as '$VERSION' release..."
   msg2 "* Planned: upload tarball $TARBALL..."
-  [ -n "$REVISIONVAR" ] && \
-    msg2 "* Planned: commit revision increment of $REVISIONVAR_FILE:$REVISIONVAR_NAME"
+  [ -n "$ACVERSION_FILE" ] && {
+    msg2 "* Planned: commit revision increment of $ACVERSION_FILE:"
+    diff -U0 "$ACVERSION_FILE" "$ACVERSION_NEXT" | sed -n '/^[-+]\b/ { s/^/    /; s/^\(.\{74\}\).*/\1.../; p }'
+  }
   read -ei n -p "--- Proceed as planned [y/n]? " ANS
   case "$ANS" in
     Y|YES|Yes|y|yes|1) msg "Confirmed planned procedures..." ; ok ;;
@@ -359,29 +371,22 @@ done
   msg2 ">" "$RLS"
   # bump version
   needs_head_push=false
-  [ -n "$REVISIONVAR" ] && {
-    N=$((1 + $REVISION))
-    msg "Increment $REVISIONVAR_FILE:$REVISIONVAR_NAME to $N..."
-    TEMPF="`mktemp -t mkrtempf.$$XXXXXX`" && touch $TEMPF || \
+  [ -n "$ACVERSION_FILE" ] && {
+    TEMPS="`mktemp -t mkrelease.tmp$$XXXXXX`" && touch $TEMPS || \
       die 9 "Failed to create temporary file"
-    TEMPS="`mktemp -t mkrtemps.$$XXXXXX`" && touch $TEMPS || \
-      die 9 "Failed to create temporary file"
-    trap "rm -f $TEMPF" 0 HUP INT QUIT TRAP USR1 PIPE TERM
-    sed "0,/^\($REVISIONVAR_NAME\s*=\s*\)[0-9]\+/s//\1$N/" < "$REVISIONVAR_FILE" > $TEMPF \
-      && ok || fail
-    cp "$REVISIONVAR_FILE" $TEMPS && touch $TEMPS -r "$REVISIONVAR_FILE" || \
-      die 9 "Failed to record time stamp for: $REVISIONVAR_FILE"
-    mv $TEMPF "$REVISIONVAR_FILE"
-    git diff -U0 "$REVISIONVAR_FILE" | sed 's/^/  > /'
-    git commit -v -m "$REVISIONVAR_FILE: revision increment of $REVISIONVAR_NAME to $N" \
-      -- "$REVISIONVAR_FILE" | sed 's/^/  > /' || die "git commit failed"
-    msg_ "* Comitted revision increment of $REVISIONVAR_NAME to $N" ; ok
+    cp "$ACVERSION_FILE" $TEMPS && touch $TEMPS -r "$ACVERSION_FILE" || \
+      die 9 "Failed to record time stamp for: $ACVERSION_FILE"
+    mv "$ACVERSION_NEXT" "$ACVERSION_FILE" # actual revision update
+    git diff -U0 "$ACVERSION_FILE" | sed 's/^/  > /'
+    git commit -v -m "$ACVERSION_FILE: revision increment to $((1 + $REVISION))" \
+      -- "$ACVERSION_FILE" | sed 's/^/  > /' || die "git commit failed"
+    msg_ "* Comitted AC_INIT revision increment in $ACVERSION_FILE" ; ok
     needs_head_push=true
     # checkout tag at VERSION
     msg_ "* Checkout $VERSION" "..."
     git checkout "$VERSION"
-    # restore REVISIONVAR_FILE timestamp
-    cmp $TEMPS "$REVISIONVAR_FILE" && touch "$REVISIONVAR_FILE" -r $TEMPS
+    # restore $ACVERSION_FILE timestamp
+    cmp -s "$ACVERSION_FILE" $TEMPS && touch "$ACVERSION_FILE" -r $TEMPS
     rm -f $TEMPS
   }
   # push notes
