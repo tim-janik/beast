@@ -1,25 +1,11 @@
-/* BSE - Bedevilled Sound Engine	-*-mode: c;-*-
- * Copyright (C) 2000-2004 Tim Janik
- *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * A copy of the GNU Lesser General Public License should ship along
- * with this library; if not, see http://www.gnu.org/copyleft/.
- */
-#include <bse/bseplugin.h>
-#include <bse/bseprocedure.h>
-#include <bse/bsesource.h>
-#include <bse/bseundostack.h>
-#include <bse/bseieee754.h>
-#include <bse/bsemidievent.h>
+// Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
+#include <bse/bseplugin.hh>
+#include <bse/bseprocedure.hh>
+#include <bse/bsesource.hh>
+#include <bse/bseundostack.hh>
+#include <bse/bseieee754.hh>
+#include <bse/bsemidievent.hh>
+#include "bsecxxplugin.hh"
 
 
 AUTHORS	= "Tim Janik <timj@gtk.org>";
@@ -44,17 +30,17 @@ BODY (BseProcedureClass *proc,
       GValue            *out_values)
 {
   /* extract parameter values */
-  BseSource *isource = bse_value_get_object (in_values++);
+  BseSource *isource = (BseSource*) bse_value_get_object (in_values++);
   guint ichannel     = sfi_value_get_int (in_values++);
-  BseSource *osource = bse_value_get_object (in_values++);
+  BseSource *osource = (BseSource*) bse_value_get_object (in_values++);
   guint ochannel     = sfi_value_get_int (in_values++);
   BseErrorType error;
-  
+
   /* check parameters */
   if (!BSE_IS_SOURCE (isource) || !BSE_IS_SOURCE (osource) ||
       BSE_ITEM (isource)->parent != BSE_ITEM (osource)->parent)
     return BSE_ERROR_PROC_PARAM_INVAL;
-  
+
   /* connect */
   error = bse_source_set_input (isource, ichannel, osource, ochannel);
   if (error == BSE_ERROR_NONE)
@@ -62,7 +48,7 @@ BODY (BseProcedureClass *proc,
 
   /* set output parameters */
   g_value_set_enum (out_values++, error);
-  
+
   return BSE_ERROR_NONE;
 }
 
@@ -85,29 +71,29 @@ BODY (BseProcedureClass *proc,
       GValue            *out_values)
 {
   /* extract parameter values */
-  BseSource *isource   = bse_value_get_object (in_values++);
-  gchar *ichannel_ident = sfi_value_get_string (in_values++);
-  BseSource *osource   = bse_value_get_object (in_values++);
-  gchar *ochannel_ident = sfi_value_get_string (in_values++);
+  BseSource *isource = (BseSource*) bse_value_get_object (in_values++);
+  const char *ichannel_ident = sfi_value_get_string (in_values++);
+  BseSource *osource = (BseSource*) bse_value_get_object (in_values++);
+  const char *ochannel_ident = sfi_value_get_string (in_values++);
   guint ichannel, ochannel;
   BseErrorType error;
-  
+
   /* check parameters */
   if (!BSE_IS_SOURCE (isource) || !BSE_IS_SOURCE (osource) ||
       BSE_ITEM (isource)->parent != BSE_ITEM (osource)->parent ||
       !ichannel_ident || !ochannel_ident)
     return BSE_ERROR_PROC_PARAM_INVAL;
-  
+
   /* connect */
   ichannel = bse_source_find_ichannel (isource, ichannel_ident);
   ochannel = bse_source_find_ochannel (osource, ochannel_ident);
   error = bse_source_set_input (isource, ichannel, osource, ochannel);
   if (error == BSE_ERROR_NONE)
     bse_item_push_undo_proc (isource, "unset-input-by-id", ichannel, osource, ochannel);
-  
+
   /* set output parameters */
   g_value_set_enum (out_values++, error);
-  
+
   return BSE_ERROR_NONE;
 }
 
@@ -130,16 +116,16 @@ BODY (BseProcedureClass *proc,
       GValue            *out_values)
 {
   /* extract parameter values */
-  BseSource *isource = bse_value_get_object (in_values++);
+  BseSource *isource = (BseSource*) bse_value_get_object (in_values++);
   guint ichannel     = sfi_value_get_int (in_values++);
-  BseSource *osource = bse_value_get_object (in_values++);
+  BseSource *osource = (BseSource*) bse_value_get_object (in_values++);
   guint ochannel     = sfi_value_get_int (in_values++);
   BseErrorType error = BSE_ERROR_NONE;
-  
+
   /* check parameters */
   if (!BSE_IS_SOURCE (isource) || !BSE_IS_SOURCE (osource))
     return BSE_ERROR_PROC_PARAM_INVAL;
-  
+
   /* disconnect */
   error = bse_source_check_input (isource, ichannel, osource, ochannel);
   if (error == BSE_ERROR_NONE)
@@ -153,7 +139,7 @@ BODY (BseProcedureClass *proc,
 
   /* set output parameters */
   g_value_set_enum (out_values++, error);
-  
+
   return BSE_ERROR_NONE;
 }
 
@@ -176,18 +162,18 @@ BODY (BseProcedureClass *proc,
       GValue            *out_values)
 {
   /* extract parameter values */
-  BseSource *isource   = bse_value_get_object (in_values++);
-  gchar *ichannel_ident = sfi_value_get_string (in_values++);
-  BseSource *osource   = bse_value_get_object (in_values++);
-  gchar *ochannel_ident = sfi_value_get_string (in_values++);
+  BseSource *isource = (BseSource*) bse_value_get_object (in_values++);
+  const char *ichannel_ident = sfi_value_get_string (in_values++);
+  BseSource *osource = (BseSource*) bse_value_get_object (in_values++);
+  const char *ochannel_ident = sfi_value_get_string (in_values++);
   guint ichannel, ochannel;
   BseErrorType error = BSE_ERROR_NONE;
-  
+
   /* check parameters */
   if (!BSE_IS_SOURCE (isource) || !BSE_IS_SOURCE (osource) ||
       !ichannel_ident || !ochannel_ident)
     return BSE_ERROR_PROC_PARAM_INVAL;
-  
+
   /* disconnect */
   ichannel = bse_source_find_ichannel (isource, ichannel_ident);
   ochannel = bse_source_find_ochannel (osource, ochannel_ident);
@@ -200,10 +186,10 @@ BODY (BseProcedureClass *proc,
       bse_item_undo_close (ustack);
       error = bse_source_unset_input (isource, ichannel, osource, ochannel);
     }
-  
+
   /* set output parameters */
   g_value_set_enum (out_values++, error);
-  
+
   return BSE_ERROR_NONE;
 }
 
@@ -217,20 +203,20 @@ BODY (BseProcedureClass *proc,
       GValue            *out_values)
 {
   /* extract parameter values */
-  BseSource *isource = bse_value_get_object (in_values++);
+  BseSource *isource = (BseSource*) bse_value_get_object (in_values++);
   BseUndoStack *ustack;
-  
+
   /* check parameters */
   if (!BSE_IS_SOURCE (isource))
     return BSE_ERROR_PROC_PARAM_INVAL;
-  
+
   /* disconnect */
   ustack = bse_item_undo_open (isource, "clear-inputs %s", bse_object_debug_name (isource));
   bse_source_backup_ichannels_to_undo (isource);
   bse_item_push_redo_proc (isource, "clear-inputs");
   bse_item_undo_close (ustack);
   bse_source_clear_ichannels (isource);
-  
+
   return BSE_ERROR_NONE;
 }
 
@@ -244,20 +230,20 @@ BODY (BseProcedureClass *proc,
       GValue            *out_values)
 {
   /* extract parameter values */
-  BseSource *isource = bse_value_get_object (in_values++);
+  BseSource *isource = (BseSource*) bse_value_get_object (in_values++);
   BseUndoStack *ustack;
 
   /* check parameters */
   if (!BSE_IS_SOURCE (isource))
     return BSE_ERROR_PROC_PARAM_INVAL;
-  
+
   /* disconnect */
   ustack = bse_item_undo_open (isource, "clear-outputs %s", bse_object_debug_name (isource));
   bse_source_backup_ochannels_to_undo (isource);
   bse_item_push_redo_proc (isource, "clear-outputs");
   bse_item_undo_close (ustack);
   bse_source_clear_ochannels (isource);
-  
+
   return BSE_ERROR_NONE;
 }
 
@@ -272,16 +258,16 @@ BODY (BseProcedureClass *proc,
       GValue            *out_values)
 {
   /* extract parameter values */
-  BseSource *source = bse_value_get_object (in_values++);
+  BseSource *source = (BseSource*) bse_value_get_object (in_values++);
   guint ochannel    = sfi_value_get_int (in_values++);
-  
+
   /* check parameters */
   if (!BSE_IS_SOURCE (source))
     return BSE_ERROR_PROC_PARAM_INVAL;
-  
+
   /* set output parameters */
   sfi_value_set_bool (out_values++, bse_source_has_output (source, ochannel));
-  
+
   return BSE_ERROR_NONE;
 }
 
@@ -297,15 +283,15 @@ BODY (BseProcedureClass *proc,
       GValue            *out_values)
 {
   /* extract parameter values */
-  BseSource *source = bse_value_get_object (in_values++);
-  
+  BseSource *source = (BseSource*) bse_value_get_object (in_values++);
+
   /* check parameters */
   if (!BSE_IS_SOURCE (source))
     return BSE_ERROR_PROC_PARAM_INVAL;
-  
+
   /* set output parameters */
   sfi_value_set_bool (out_values++, source->outputs != NULL);
-  
+
   return BSE_ERROR_NONE;
 }
 
@@ -321,15 +307,15 @@ BODY (BseProcedureClass *proc,
       GValue            *out_values)
 {
   /* extract parameter values */
-  BseSource *source = bse_value_get_object (in_values++);
-  
+  BseSource *source = (BseSource*) bse_value_get_object (in_values++);
+
   /* check parameters */
   if (!BSE_IS_SOURCE (source))
     return BSE_ERROR_PROC_PARAM_INVAL;
-  
+
   /* set output parameters */
   sfi_value_set_int (out_values++, BSE_SOURCE_N_ICHANNELS (source));
-  
+
   return BSE_ERROR_NONE;
 }
 
@@ -347,16 +333,16 @@ BODY (BseProcedureClass *proc,
       GValue            *out_values)
 {
   /* extract parameter values */
-  BseSource *source = bse_value_get_object (in_values++);
+  BseSource *source = (BseSource*) bse_value_get_object (in_values++);
   guint ichannel    = sfi_value_get_int (in_values++);
-  
+
   /* check parameters */
   if (!BSE_IS_SOURCE (source) || ichannel >= BSE_SOURCE_N_ICHANNELS (source))
     return BSE_ERROR_PROC_PARAM_INVAL;
-  
+
   /* set output parameters */
   sfi_value_set_string (out_values++, BSE_SOURCE_ICHANNEL_LABEL (source, ichannel));
-  
+
   return BSE_ERROR_NONE;
 }
 
@@ -374,16 +360,16 @@ BODY (BseProcedureClass *proc,
       GValue            *out_values)
 {
   /* extract parameter values */
-  BseSource *source = bse_value_get_object (in_values++);
+  BseSource *source = (BseSource*) bse_value_get_object (in_values++);
   guint ichannel    = sfi_value_get_int (in_values++);
-  
+
   /* check parameters */
   if (!BSE_IS_SOURCE (source) || ichannel >= BSE_SOURCE_N_ICHANNELS (source))
     return BSE_ERROR_PROC_PARAM_INVAL;
-  
+
   /* set output parameters */
   sfi_value_set_string (out_values++, BSE_SOURCE_ICHANNEL_IDENT (source, ichannel));
-  
+
   return BSE_ERROR_NONE;
 }
 
@@ -401,16 +387,16 @@ BODY (BseProcedureClass *proc,
       GValue            *out_values)
 {
   /* extract parameter values */
-  BseSource *source = bse_value_get_object (in_values++);
+  BseSource *source = (BseSource*) bse_value_get_object (in_values++);
   guint ichannel    = sfi_value_get_int (in_values++);
-  
+
   /* check parameters */
   if (!BSE_IS_SOURCE (source) || ichannel >= BSE_SOURCE_N_ICHANNELS (source))
     return BSE_ERROR_PROC_PARAM_INVAL;
-  
+
   /* set output parameters */
   sfi_value_set_string (out_values++, BSE_SOURCE_ICHANNEL_BLURB (source, ichannel));
-  
+
   return BSE_ERROR_NONE;
 }
 
@@ -428,16 +414,16 @@ BODY (BseProcedureClass *proc,
       GValue            *out_values)
 {
   /* extract parameter values */
-  BseSource *source = bse_value_get_object (in_values++);
+  BseSource *source = (BseSource*) bse_value_get_object (in_values++);
   guint ichannel    = sfi_value_get_int (in_values++);
-  
+
   /* check parameters */
   if (!BSE_IS_SOURCE (source) || ichannel >= BSE_SOURCE_N_ICHANNELS (source))
     return BSE_ERROR_PROC_PARAM_INVAL;
-  
+
   /* set output parameters */
   sfi_value_set_bool (out_values++, BSE_SOURCE_IS_JOINT_ICHANNEL (source, ichannel));
-  
+
   return BSE_ERROR_NONE;
 }
 
@@ -455,19 +441,19 @@ BODY (BseProcedureClass *proc,
       GValue            *out_values)
 {
   /* extract parameter values */
-  BseSource *source = bse_value_get_object (in_values++);
-  gchar *ichannel   = sfi_value_get_string (in_values++);
+  BseSource *source = (BseSource*) bse_value_get_object (in_values++);
+  const char *ichannel   = sfi_value_get_string (in_values++);
   guint id;
-  
+
   /* check parameters */
   if (!BSE_IS_SOURCE (source) || !ichannel)
     return BSE_ERROR_PROC_PARAM_INVAL;
-  
+
   /* set output parameters */
   id = bse_source_find_ichannel (source, ichannel);
   sfi_value_set_bool (out_values++,
 		      id < BSE_SOURCE_N_ICHANNELS (source) ? BSE_SOURCE_IS_JOINT_ICHANNEL (source, id) : FALSE);
-  
+
   return BSE_ERROR_NONE;
 }
 
@@ -485,21 +471,21 @@ BODY (BseProcedureClass *proc,
       GValue            *out_values)
 {
   /* extract parameter values */
-  BseSource *source = bse_value_get_object (in_values++);
+  BseSource *source = (BseSource*) bse_value_get_object (in_values++);
   guint ichannel    = sfi_value_get_int (in_values++);
   BseSourceInput *input;
-  
+
   /* check parameters */
   if (!BSE_IS_SOURCE (source) || ichannel >= BSE_SOURCE_N_ICHANNELS (source))
     return BSE_ERROR_PROC_PARAM_INVAL;
-  
+
   /* set output parameters */
   input = BSE_SOURCE_INPUT (source, ichannel);
   if (BSE_SOURCE_IS_JOINT_ICHANNEL (source, ichannel))
     sfi_value_set_int (out_values++, input->jdata.n_joints);
   else
     sfi_value_set_int (out_values++, input->idata.osource ? 1 : 0);
-  
+
   return BSE_ERROR_NONE;
 }
 
@@ -519,15 +505,15 @@ BODY (BseProcedureClass *proc,
       GValue            *out_values)
 {
   /* extract parameter values */
-  BseSource *source = bse_value_get_object (in_values++);
+  BseSource *source = (BseSource*) bse_value_get_object (in_values++);
   guint ichannel    = sfi_value_get_int (in_values++);
   guint joint       = sfi_value_get_int (in_values++);
   BseSourceInput *input;
-  
+
   /* check parameters */
   if (!BSE_IS_SOURCE (source) || ichannel >= BSE_SOURCE_N_ICHANNELS (source))
     return BSE_ERROR_PROC_PARAM_INVAL;
-  
+
   /* set output parameters */
   input = BSE_SOURCE_INPUT (source, ichannel);
   if (BSE_SOURCE_IS_JOINT_ICHANNEL (source, ichannel) && joint < input->jdata.n_joints)
@@ -536,7 +522,7 @@ BODY (BseProcedureClass *proc,
     bse_value_set_object (out_values++, input->idata.osource);
   else
     bse_value_set_object (out_values++, NULL);
-  
+
   return BSE_ERROR_NONE;
 }
 
@@ -556,15 +542,15 @@ BODY (BseProcedureClass *proc,
       GValue            *out_values)
 {
   /* extract parameter values */
-  BseSource *source = bse_value_get_object (in_values++);
+  BseSource *source = (BseSource*) bse_value_get_object (in_values++);
   guint ichannel    = sfi_value_get_int (in_values++);
   guint joint       = sfi_value_get_int (in_values++);
   BseSourceInput *input;
-  
+
   /* check parameters */
   if (!BSE_IS_SOURCE (source) || ichannel >= BSE_SOURCE_N_ICHANNELS (source))
     return BSE_ERROR_PROC_PARAM_INVAL;
-  
+
   /* set output parameters */
   input = BSE_SOURCE_INPUT (source, ichannel);
   if (BSE_SOURCE_IS_JOINT_ICHANNEL (source, ichannel) && joint < input->jdata.n_joints)
@@ -573,7 +559,7 @@ BODY (BseProcedureClass *proc,
     sfi_value_set_int (out_values++, input->idata.ochannel);
   else
     sfi_value_set_int (out_values++, G_MAXINT);
-  
+
   return BSE_ERROR_NONE;
 }
 
@@ -589,15 +575,15 @@ BODY (BseProcedureClass *proc,
       GValue            *out_values)
 {
   /* extract parameter values */
-  BseSource *source = bse_value_get_object (in_values++);
-  
+  BseSource *source = (BseSource*) bse_value_get_object (in_values++);
+
   /* check parameters */
   if (!BSE_IS_SOURCE (source))
     return BSE_ERROR_PROC_PARAM_INVAL;
-  
+
   /* set output parameters */
   sfi_value_set_int (out_values++, BSE_SOURCE_N_OCHANNELS (source));
-  
+
   return BSE_ERROR_NONE;
 }
 
@@ -615,16 +601,16 @@ BODY (BseProcedureClass *proc,
       GValue            *out_values)
 {
   /* extract parameter values */
-  BseSource *source = bse_value_get_object (in_values++);
+  BseSource *source = (BseSource*) bse_value_get_object (in_values++);
   guint ochannel    = sfi_value_get_int (in_values++);
-  
+
   /* check parameters */
   if (!BSE_IS_SOURCE (source) || ochannel >= BSE_SOURCE_N_OCHANNELS (source))
     return BSE_ERROR_PROC_PARAM_INVAL;
-  
+
   /* set output parameters */
   sfi_value_set_string (out_values++, BSE_SOURCE_OCHANNEL_LABEL (source, ochannel));
-  
+
   return BSE_ERROR_NONE;
 }
 
@@ -642,16 +628,16 @@ BODY (BseProcedureClass *proc,
       GValue            *out_values)
 {
   /* extract parameter values */
-  BseSource *source = bse_value_get_object (in_values++);
+  BseSource *source = (BseSource*) bse_value_get_object (in_values++);
   guint ochannel    = sfi_value_get_int (in_values++);
-  
+
   /* check parameters */
   if (!BSE_IS_SOURCE (source) || ochannel >= BSE_SOURCE_N_OCHANNELS (source))
     return BSE_ERROR_PROC_PARAM_INVAL;
-  
+
   /* set output parameters */
   sfi_value_set_string (out_values++, BSE_SOURCE_OCHANNEL_IDENT (source, ochannel));
-  
+
   return BSE_ERROR_NONE;
 }
 
@@ -669,16 +655,16 @@ BODY (BseProcedureClass *proc,
       GValue            *out_values)
 {
   /* extract parameter values */
-  BseSource *source = bse_value_get_object (in_values++);
+  BseSource *source = (BseSource*) bse_value_get_object (in_values++);
   guint ochannel    = sfi_value_get_int (in_values++);
-  
+
   /* check parameters */
   if (!BSE_IS_SOURCE (source) || ochannel >= BSE_SOURCE_N_OCHANNELS (source))
     return BSE_ERROR_PROC_PARAM_INVAL;
-  
+
   /* set output parameters */
   sfi_value_set_string (out_values++, BSE_SOURCE_OCHANNEL_BLURB (source, ochannel));
-  
+
   return BSE_ERROR_NONE;
 }
 
@@ -701,7 +687,7 @@ BODY (BseProcedureClass *proc,
       GValue            *out_values)
 {
   /* extract parameter values */
-  BseSource *source = bse_value_get_object (in_values++);
+  BseSource *source = (BseSource*) bse_value_get_object (in_values++);
   SfiReal xpos      = sfi_value_get_real (in_values++);
   SfiReal ypos      = sfi_value_get_real (in_values++);
   SfiReal epsilon = 1e-5;
@@ -742,10 +728,10 @@ BODY (BseProcedureClass *proc,
       GValue            *out_values)
 {
   /* extract parameter values */
-  BseSource *source       = bse_value_get_object (in_values++);
-  gchar     *property     = sfi_value_get_string (in_values++);
+  BseSource *source = (BseSource*) bse_value_get_object (in_values++);
+  const char *property = sfi_value_get_string (in_values++);
   guint      midi_channel = sfi_value_get_int (in_values++);
-  guint      control_type = g_value_get_enum (in_values++);
+  BseMidiSignalType control_type = (BseMidiSignalType) g_value_get_enum (in_values++);
   BseErrorType error = BSE_ERROR_NONE;
 
   /* check parameters */
@@ -754,7 +740,7 @@ BODY (BseProcedureClass *proc,
 
   /* connect */
   guint old_midi_channel = 0;
-  guint old_control_type = 0;
+  BseMidiSignalType old_control_type = BseMidiSignalType (0);
   bse_source_get_automation_property (source, property, &old_midi_channel, &old_control_type);
   if (old_midi_channel != midi_channel || old_control_type != control_type)
     {
@@ -765,7 +751,7 @@ BODY (BseProcedureClass *proc,
 
   /* set output parameters */
   g_value_set_enum (out_values++, error);
-  
+
   return BSE_ERROR_NONE;
 }
 
@@ -782,8 +768,8 @@ BODY (BseProcedureClass *proc,
       GValue            *out_values)
 {
   /* extract parameter values */
-  BseSource *source       = bse_value_get_object (in_values++);
-  gchar     *property     = sfi_value_get_string (in_values++);
+  BseSource *source = (BseSource*) bse_value_get_object (in_values++);
+  const char *property = sfi_value_get_string (in_values++);
 
   /* check parameters */
   if (!BSE_IS_SOURCE (source) || !property)
@@ -794,7 +780,7 @@ BODY (BseProcedureClass *proc,
   bse_source_get_automation_property (source, property, &midi_channel, NULL);
   /* set output parameters */
   g_value_set_int (out_values++, midi_channel);
-  
+
   return BSE_ERROR_NONE;
 }
 
@@ -811,19 +797,19 @@ BODY (BseProcedureClass *proc,
       GValue            *out_values)
 {
   /* extract parameter values */
-  BseSource *source       = bse_value_get_object (in_values++);
-  gchar     *property     = sfi_value_get_string (in_values++);
+  BseSource *source = (BseSource*) bse_value_get_object (in_values++);
+  const char *property = sfi_value_get_string (in_values++);
 
   /* check parameters */
   if (!BSE_IS_SOURCE (source) || !property)
     return BSE_ERROR_PROC_PARAM_INVAL;
 
   /* connect */
-  guint control_type = 0;
+  BseMidiSignalType control_type = BseMidiSignalType (0);
   bse_source_get_automation_property (source, property, NULL, &control_type);
   /* set output parameters */
   g_value_set_enum (out_values++, control_type);
-  
+
   return BSE_ERROR_NONE;
 }
 
@@ -837,7 +823,7 @@ METHOD (BseSource, is-prepared) {
         GValue            *out_values)
 {
   /* extract parameter values */
-  BseSource *source       = bse_value_get_object (in_values++);
+  BseSource *source = (BseSource*) bse_value_get_object (in_values++);
 
   /* check parameters */
   if (!BSE_IS_SOURCE (source))

@@ -1,15 +1,9 @@
-# SHELL - Bedevilled Sound Engine Shell
-# Copyright (C) 2001-2003 Tim Janik
-#
-## GNU Lesser General Public License version 2 or any later version.
+# SHELL - Better Sound Engine Shell
 include $(top_srcdir)/Makefile.decl
 
-INCLUDES += -I$(top_srcdir) -I. -I$(top_builddir) $(BSESCM_CFLAGS) -DG_DISABLE_CONST_RETURNS
-
-DEFS += $(strip                       	\
-	-DG_LOG_DOMAIN=\"BSESCM\"      	\
-	$(SUIDMAIN_DEFS)                \
-)
+AM_CPPFLAGS += -I$(top_srcdir) -I. -I$(top_builddir)
+DEFS        += @DEFINE__FILE_DIR__@ -DG_LOG_DOMAIN=\"BSESCM\" $(SUIDMAIN_DEFS)
+AM_CXXFLAGS += $(BSESCM_CFLAGS) $(BSE_CFLAGS) $(RAPICORN_CFLAGS) -DRAPICORN_CONVENIENCE -DG_DISABLE_CONST_RETURNS
 
 #
 # built sources
@@ -21,18 +15,19 @@ EXTRA_DIST += $(built_sources)
 gen_sources = xgen-bsggc
 CLEANFILES += $(gen_sources)
 
+# libraries to link programs against
+programs_ldadd = $(top_builddir)/bse/libbse.la $(RAPICORN_LIBS)
+
 #
 # programs to build
 #
 bin_PROGRAMS = bsescm-$(BIN_VERSION)		# this expands to bsescm-0.7.0 or similar
-bsescm___BIN_VERSION__SOURCES = bsescm.c bsescminterp.c cxxdummy.cc
+bsescm___BIN_VERSION__SOURCES = bsescm.cc bsescminterp.cc
 bsescm___BIN_VERSION__LDADD = $(programs_ldadd) $(BSESCM_LIBS)
 
-# libraries to link programs against
-programs_ldadd = $(top_builddir)/bse/libbse.la
 # source setups
-bsescminterp.c: # bsescm-genglue.c
-EXTRA_DIST += bsescminterp.h
+bsescminterp.cc: # bsescm-genglue.c
+EXTRA_DIST += bsescminterp.hh
 
 
 #

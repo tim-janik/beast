@@ -1,20 +1,5 @@
-/* SFI - Synthesis Fusion Kit Interface
- * Copyright (C) 2002-2007 Stefan Westerfeld
- *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * A copy of the GNU Lesser General Public License should ship along
- * with this library; if not, see http://www.gnu.org/copyleft/.
- */
-#include <sfi/glib-extra.h>
+// Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
+#include <sfi/glib-extra.hh>
 #include <fcntl.h>
 #include <stdio.h>
 #include <unistd.h>
@@ -71,9 +56,9 @@ static  GScannerConfig  scanner_config_template = {
    G_CSET_A_2_Z
    )                    /* cset_identifier_nth */,
   0			/* cpair_comment_single */,
-  
+
   TRUE                  /* case_sensitive */,
-  
+
   TRUE                  /* skip_comment_multi */,
   TRUE                  /* skip_comment_single */,
   TRUE                  /* scan_comment_multi */,
@@ -111,23 +96,20 @@ enum ExtraToken {
   TOKEN_GROUP,
   TOKEN_USING,
   TOKEN_CONST,
-  TOKEN_CONST_IDENT,
+  /*TOKEN_CONST_IDENT,*/
   TOKEN_INFO,
   TOKEN_ISTREAM,
   TOKEN_JSTREAM,
   TOKEN_OSTREAM,
   TOKEN_ERROR
 };
-
 const char *token_symbols[] = {
-  "namespace", "class", "choice", "record", "sequence",
+  "namespace", "interface", "enum", "record", "sequence",
   "property", "group", "using",
-  "Const", "ConstIdent", "Info", "IStream", "JStream", "OStream",
+  "Const", /*"ConstIdent",*/ "Info", "IStream", "JStream", "OStream",
   0
 };
-
 bool operator== (GTokenType t, ExtraToken e) { return (int) t == (int) e; }
-
 #define parse_or_return(token)  G_STMT_START{ \
   GTokenType _t = GTokenType(token); \
   if (g_scanner_get_next_token (scanner) != _t) \
@@ -238,29 +220,29 @@ Type Parser::typeOf (const String& type) const
   if (isSequence (type))      return SEQUENCE;
   if (isRecord (type))	      return RECORD;
   if (isClass (type))	      return OBJECT;
-  g_error (("invalid type: " + type).c_str());
+  g_error ("%s", ("invalid type: " + type).c_str());
   return VOID;
 }
 
 Sequence Parser::findSequence(const String& name) const
 {
   vector<Sequence>::const_iterator i;
-  
+
   for (i=sequences.begin(); i != sequences.end(); i++)
     if (i->name == name)
       return *i;
-  
+
   return Sequence();
 }
 
 Record Parser::findRecord(const String& name) const
 {
   vector<Record>::const_iterator i;
-  
+
   for (i=records.begin(); i != records.end(); i++)
     if (i->name == name)
       return *i;
-  
+
   return Record();
 }
 
@@ -277,45 +259,18 @@ Parser::findClass (const String& name) const
 Parser::Parser () : options (*Options::the())
 {
   scanner = g_scanner_new64 (&scanner_config_template);
-  
+
   for (int n = 0; token_symbols[n]; n++)
     g_scanner_add_symbol (scanner, token_symbols[n], GUINT_TO_POINTER (G_TOKEN_LAST + 1 + n));
-  
+
   scanner->max_parse_errors = 10;
   scanner->parse_errors = 0;
   scanner->msg_handler = scannerMsgHandler;
   scanner->user_data = this;
 }
 
-void Parser::printError (const gchar *format, ...)
-{
-  va_list args;
-  gchar *string;
-  
-  va_start (args, format);
-  string = g_strdup_vprintf (format, args);
-  va_end (args);
-  
-  if (scanner->parse_errors < scanner->max_parse_errors)
-    g_scanner_error (scanner, "%s", string);
-  
-  g_free (string);
-}
-
-void Parser::printWarning (const gchar *format, ...)
-{
-  va_list args;
-  gchar *string;
-  
-  va_start (args, format);
-  string = g_strdup_vprintf (format, args);
-  va_end (args);
-  
-  g_scanner_warn (scanner, "%s", string);
-  g_free (string);
-}
-
-void Parser::scannerMsgHandler (GScanner *scanner, gchar *message, gboolean is_error)
+void
+Parser::scannerMsgHandler (GScanner *scanner, gchar *message, gboolean is_error)
 {
   g_return_if_fail (scanner != NULL);
   g_return_if_fail (scanner->user_data != NULL);
@@ -552,7 +507,7 @@ void Parser::preprocessContents (const String& input_filename)
 			break;
 	    case '<':	state = filenameIn2;
 			break;
-	    default:	g_printerr ("bad char after #include statement");
+	    default:	g_printerr ("bad char after include statement");
 			g_assert_not_reached (); // error handling!
 	    }
 	}
@@ -560,7 +515,7 @@ void Parser::preprocessContents (const String& input_filename)
 	   || (state == filenameIn2 && *i == '>'))
 	{
 	  String location;
-	  // #include "/usr/include/foo.idl" (absolute path includes)
+	  // include "/usr/include/foo.idl" (absolute path includes)
 	  if (g_path_is_absolute (filename.c_str()))
 	    {
 	      if (fileExists (filename))
@@ -568,15 +523,17 @@ void Parser::preprocessContents (const String& input_filename)
 	    }
 	  else
 	    {
-	      // #include "foo.idl" => search in local directory (relative to input_file)
+	      // include "foo.idl" => search in local directory (relative to input_file)
 	      if (state == filenameIn1)
 		{
-		  gchar *dir = g_path_get_dirname (input_filename.c_str());
-		  if (fileExists (dir + String(G_DIR_SEPARATOR_S) + filename))
-		    location = filename;
+		  char *dir = g_path_get_dirname (input_filename.c_str());
+                  String candidate = dir + String(G_DIR_SEPARATOR_S) + filename;
+		  const bool candidate_exists = fileExists (candidate);
+		  if (candidate_exists)
+		    location = candidate;
 		  g_free (dir);
 		}
-	      // all #include directives => search includepath with standard include dirs
+	      // all include directives => search includepath with standard include dirs
 	      if (location == "")
 		{
 		  vector<String>::const_iterator oi;
@@ -597,10 +554,18 @@ void Parser::preprocessContents (const String& input_filename)
 	      fprintf (stderr, "include file '%s' not found\n", filename.c_str());
 	      exit(1);
 	    }
+	  i++; // eat closing quote
+          if (match (i, " as implementation"))
+            {
+              i += 18;
+              includeImpl = true;
+            }
+          if (*i != ';')
+            g_error ("expected ';' after include statement");
+          i++; // eat semicolpon after include
 	  preprocess (location, includeImpl);
 
 	  state = idlCode;
-	  i++;
 	}
       else if(state == filenameIn1 || state == filenameIn2)
 	{
@@ -613,14 +578,14 @@ void Parser::preprocessContents (const String& input_filename)
 	}
       else if(state == lineStart) // check if we're on lineStart
 	{
-	  if(match(i,"#include-impl"))
+	  if (0 && match(i,"#include-impl")) // old syntax disabled
 	    {
 	      i += 13;
 	      state = filenameFind;
 	      filename = "";
 	      includeImpl = true;
 	    }
-	  else if(match(i,"#include"))
+	  else if(match(i,"include"))
 	    {
 	      i += 8;
 	      state = filenameFind;
@@ -831,17 +796,17 @@ bool Parser::parse (const String& filename)
   defineSymbol ("Num");
   defineSymbol ("Real");
   defineSymbol ("String");
-  defineSymbol ("BBlock");
-  defineSymbol ("FBlock");
+  // deprecated: defineSymbol ("BBlock");
+  // deprecated: defineSymbol ("FBlock");
   defineSymbol ("Rec");
   leaveNamespace ();
 
   GTokenType expected_token = G_TOKEN_NONE;
-  
+
   while (!g_scanner_eof (scanner) && expected_token == G_TOKEN_NONE)
     {
       g_scanner_get_next_token (scanner);
-      
+
       if (scanner->token == G_TOKEN_EOF)
         break;
       else if (scanner->token == TOKEN_NAMESPACE)
@@ -849,7 +814,7 @@ bool Parser::parse (const String& filename)
       else
         expected_token = G_TOKEN_EOF; /* '('; */
     }
-  
+
   if (expected_token != G_TOKEN_NONE && expected_token != (GTokenType)TOKEN_ERROR)
     {
       g_scanner_unexp_token (scanner, expected_token, NULL, NULL, NULL, NULL, TRUE);
@@ -871,7 +836,7 @@ GTokenType Parser::parseNamespace()
 
   if (!enterNamespace (scanner->value.v_identifier))
     return GTokenType (TOKEN_ERROR);
-  
+
   parse_or_return (G_TOKEN_LEFT_CURLY);
 
   bool ready = false;
@@ -926,14 +891,16 @@ GTokenType Parser::parseNamespace()
 		return expected_token;
 	    }
 	    break;
-	  case TOKEN_CONST_IDENT:
+#if 0
+        case TOKEN_CONST_IDENT:
 	    {
 	      GTokenType expected_token = parseConstant (true);
 	      if (expected_token != G_TOKEN_NONE)
 		return expected_token;
 	    }
 	    break;
-	  case TOKEN_USING:
+#endif
+        case TOKEN_USING:
 	    {
 	      parse_or_return (TOKEN_USING);
 	      parse_or_return (TOKEN_NAMESPACE);
@@ -958,15 +925,15 @@ GTokenType Parser::parseNamespace()
 	}
     }
   while (!ready);
-  
+
   parse_or_return (G_TOKEN_RIGHT_CURLY);
 
   /* semicolon after namespaces is optional (like in C++) */
   if (g_scanner_peek_next_token (scanner) == GTokenType(';'))
     parse_or_return (';');
-  
+
   leaveNamespace();
-  
+
   return G_TOKEN_NONE;
 }
 
@@ -987,7 +954,7 @@ GTokenType Parser::parseTypeName (String& type)
   String qtype = qualifySymbol (type.c_str());
 
   if (qtype == "")
-    printError ("can't find prior definition for type '%s'", type.c_str());
+    print_error ("can't find prior definition for type '%s'", type.c_str());
   else
     type = qtype;
 
@@ -1025,7 +992,7 @@ GTokenType Parser::parseStringOrConst (String &s)
 	      return G_TOKEN_NONE;
 	    }
 	}
-      printError("undeclared constant %s used", s.c_str());
+      print_error("undeclared constant %s used", s.c_str());
     }
 
   parse_or_return (G_TOKEN_STRING);
@@ -1041,13 +1008,13 @@ GTokenType Parser::parseConstant (bool isident)
   Constant cdef;
 
   if (isident)
-    parse_or_return (TOKEN_CONST_IDENT);
+    g_assert_not_reached (); /* parse_or_return (TOKEN_CONST_IDENT); */
   else
     parse_or_return (TOKEN_CONST);
   parse_or_return (G_TOKEN_IDENTIFIER);
   cdef.name = defineSymbol (scanner->value.v_identifier);
   cdef.file = fileName();
-  
+
   parse_or_return ('=');
 
   /* handle ConstIdent */
@@ -1101,18 +1068,15 @@ GTokenType Parser::parseConstant (bool isident)
     return G_TOKEN_FLOAT;
   }
   parse_or_return (';');
-
   addConstantTodo (cdef);
   return G_TOKEN_NONE;
 }
-
 GTokenType
 Parser::parseChoice ()
 {
   Choice choice;
   int value = 0, sequentialValue = 1;
-  DEBUG("parse choice\n");
-  
+  DEBUG("parse enum\n");
   parse_or_return (TOKEN_CHOICE);
   parse_or_return (G_TOKEN_IDENTIFIER);
   choice.name = defineSymbol (scanner->value.v_identifier);
@@ -1127,16 +1091,16 @@ Parser::parseChoice ()
   while (g_scanner_peek_next_token (scanner) == G_TOKEN_IDENTIFIER)
     {
       ChoiceValue comp;
-      
+
       GTokenType expected_token = parseChoiceValue (comp, value, sequentialValue);
       if (expected_token != G_TOKEN_NONE)
 	return expected_token;
-      
+
       choice.contents.push_back(comp);
     }
   parse_or_return (G_TOKEN_RIGHT_CURLY);
   parse_or_return (';');
-  
+
   addChoiceTodo (choice);
   return G_TOKEN_NONE;
 }
@@ -1171,39 +1135,31 @@ Parser::parseChoiceValue (ChoiceValue& comp, int& value, int& sequentialValue)
     if (comp.name[i] != ':' || comp.name[i + 1] != ':')
       str += comp.name[i] == ':' ? '_' : to_lower(comp.name[i]);
   comp.label = g_type_name_to_sname (str.c_str());
-  
+
   /*
     YES,
     YES = 1,
     YES = "Yes",
-    YES = Neutral,
     YES = (1),
-    YES = (1, "Yes"),
-    YES = (Neutral, "Yes"),
-    YES = (1, "Yes", "this is the Yes value"),
-    YES = ("Yes", "this is the Yes value"),
+    YES = Enum (0, "Yes"), // neutral
+    YES = Enum (1, "Yes", "this is the Yes value"),
+    YES = Enum ("Yes", "this is the Yes value"),
   */
   if (g_scanner_peek_next_token (scanner) == GTokenType('='))
     {
       parse_or_return ('=');
-      if (g_scanner_peek_next_token (scanner) == GTokenType('('))
+      if (g_scanner_peek_next_token (scanner) == G_TOKEN_IDENTIFIER &&
+          strcmp (scanner->next_value.v_string, "Enum") == 0)
         {
-          bool need_arg = true;
+          parse_or_return (G_TOKEN_IDENTIFIER); // "Enum"
           parse_or_return ('(');
+          bool need_arg = true;
           if (g_scanner_peek_next_token (scanner) == G_TOKEN_INT)
             {
               parse_or_return (G_TOKEN_INT);
               value = scanner->value.v_int64;
-              if (g_scanner_peek_next_token (scanner) == ',')
-                parse_or_return (',');
-              else
-                need_arg = false;
-            }
-          else if (g_scanner_peek_next_token (scanner) == G_TOKEN_IDENTIFIER &&
-                   strcmp (scanner->next_value.v_string, "Neutral") == 0)
-            {
-              parse_or_return (G_TOKEN_IDENTIFIER);
-              comp.neutral = true;
+              if (value == 0)
+                comp.neutral = true;
               if (g_scanner_peek_next_token (scanner) == ',')
                 parse_or_return (',');
               else
@@ -1231,12 +1187,8 @@ Parser::parseChoiceValue (ChoiceValue& comp, int& value, int& sequentialValue)
         {
           parse_or_return (G_TOKEN_INT);
           value = scanner->value.v_int64;
-        }
-      else if (g_scanner_peek_next_token (scanner) == G_TOKEN_IDENTIFIER &&
-               strcmp (scanner->next_value.v_string, "Neutral") == 0)
-        {
-          parse_or_return (G_TOKEN_IDENTIFIER);
-          comp.neutral = true;
+          if (value == 0)
+            comp.neutral = true;
         }
       else if (g_scanner_peek_next_token (scanner) == G_TOKEN_IDENTIFIER &&
                strcmp (scanner->next_value.v_string, "_") == 0)
@@ -1256,12 +1208,12 @@ Parser::parseChoiceValue (ChoiceValue& comp, int& value, int& sequentialValue)
     comp.sequentialValue = 0;
   else
     comp.sequentialValue = sequentialValue++;
-  
+
   if (g_scanner_peek_next_token (scanner) == GTokenType(','))
     parse_or_return (',');
   else
     peek_or_return ('}');
-  
+
   return G_TOKEN_NONE;
 }
 
@@ -1269,7 +1221,7 @@ GTokenType Parser::parseRecord ()
 {
   Record record;
   DEBUG("parse record\n");
-  
+
   parse_or_return (TOKEN_RECORD);
   parse_or_return (G_TOKEN_IDENTIFIER);
   record.name = defineSymbol (scanner->value.v_identifier);
@@ -1281,7 +1233,7 @@ GTokenType Parser::parseRecord ()
       return G_TOKEN_NONE;
     }
   parse_or_return (G_TOKEN_LEFT_CURLY);
-  
+
   bool ready = false;
   while (!ready)
     {
@@ -1291,11 +1243,11 @@ GTokenType Parser::parseRecord ()
         case G_TOKEN_IDENTIFIER:
           {
             Param def;
-            
+
             expected_token = parseRecordField (def, "");
             if (expected_token != G_TOKEN_NONE)
               return expected_token;
-            
+
             if (def.type != "")
               record.contents.push_back(def);
           }
@@ -1331,120 +1283,72 @@ GTokenType Parser::parseRecord ()
     }
   parse_or_return (G_TOKEN_RIGHT_CURLY);
   parse_or_return (';');
-  
   addRecordTodo (record);
   return G_TOKEN_NONE;
 }
-
 GTokenType Parser::parseRecordField (Param& def, const IString& group)
 {
   /* FooVolumeType volume_type; */
   /* float         volume_perc @= ("Volume[%]", "Set how loud something is",
      50, 0.0, 100.0, 5.0,
      ":dial:readwrite"); */
-  
   GTokenType expected_token = parseTypeName (def.type);
   if (expected_token != G_TOKEN_NONE)
     return expected_token;
-
   def.pspec = NamespaceHelper::nameOf (def.type); // FIXME: correct?
   def.group = group;
   def.line = scanner->line;
-  
   parse_or_return (G_TOKEN_IDENTIFIER);
   def.name = scanner->value.v_identifier;
   def.file = fileName();
-  
   /* the hints are optional */
   skip_ascii_at (scanner);
   if (g_scanner_peek_next_token (scanner) == '=')
     {
       g_scanner_get_next_token (scanner);
-      
       GTokenType expected_token = parseParamHints (def);
       if (expected_token != G_TOKEN_NONE)
 	return expected_token;
     }
-  
   parse_or_return (';');
   return G_TOKEN_NONE;
 }
-
 GTokenType
 Parser::parseStream (Stream&      stream,
                      Stream::Type stype)
 {
   /* OStream wave_out @= ("Audio Out", "Wave Output"); */
-
   stream.type = stype;
   stream.line = scanner->line;
-
   parse_or_return (G_TOKEN_IDENTIFIER);
   stream.ident = scanner->value.v_identifier;
-
   skip_ascii_at (scanner);
   parse_or_return ('=');
-
+  parse_or_return (G_TOKEN_IDENTIFIER);
+  if (strcmp (scanner->value.v_identifier, "Stream") != 0)
+    return G_TOKEN_IDENTIFIER;
   parse_or_return ('(');
   parse_istring_or_return (stream.label);
   parse_or_return (',');
   parse_istring_or_return (stream.blurb);
   parse_or_return (')');
-
   parse_or_return (';');
   return G_TOKEN_NONE;
 }
-
 /* like g_scanner_get_token, but accepts ':' within identifiers */
 static GTokenType
 scanner_get_next_token_with_colon_identifiers (GScanner *scanner)
 {
   char *cset_identifier_first_orig = scanner->config->cset_identifier_first;
   char *cset_identifier_nth_orig   = scanner->config->cset_identifier_nth;
-
   String identifier_first_with_colon = cset_identifier_first_orig + String (":");
   String identifier_nth_with_colon = cset_identifier_nth_orig + String (":");
-
   scanner->config->cset_identifier_first = const_cast<char *>(identifier_first_with_colon.c_str());
   scanner->config->cset_identifier_nth   = const_cast<char *>(identifier_nth_with_colon.c_str());
-
   GTokenType token = g_scanner_get_next_token (scanner);
-
   scanner->config->cset_identifier_first = cset_identifier_first_orig;
   scanner->config->cset_identifier_nth   = cset_identifier_nth_orig;
-
   return token;
-}
-
-/* returns true for C++ style identifiers (Foo::BAR) - only the colons are checked, not individual chars */
-static bool
-isCxxTypeName (const String& str)
-{
-  enum { valid, colon1, colon2, invalid } state = valid;
-
-  for (String::const_iterator i = str.begin(); i != str.end(); i++)
-    {
-      if (state == valid)
-	{
-	  if (*i == ':')
-	    state = colon1;
-	}
-      else if (state == colon1)
-	{
-	  if (*i == ':')
-	    state = colon2;
-	  else
-	    state = invalid;
-	}
-      else if (state == colon2)
-	{
-	  if (*i == ':')
-	    state = invalid;
-	  else
-	    state = valid;
-	}
-    }
-  return (state == valid) && (str.size() != 0);
 }
 
 static bool
@@ -1625,7 +1529,7 @@ GTokenType Parser::parseParamHints (Param &def)
     }
   def.args = args;
   if (!makeLiteralOptions (def.options, def.literal_options))
-    printWarning ("can't parse option string: %s", def.options.c_str());
+    print_warning ("can't parse option string: %s", def.options.c_str());
   return G_TOKEN_NONE;
 }
 
@@ -1664,7 +1568,7 @@ GTokenType Parser::parseSequence ()
    *   Int ints @= (...);
    * };
    */
-  
+
   parse_or_return (TOKEN_SEQUENCE);
   parse_or_return (G_TOKEN_IDENTIFIER);
   sequence.name = defineSymbol (scanner->value.v_identifier);
@@ -1691,7 +1595,7 @@ GTokenType Parser::parseSequence ()
 
   parse_or_return ('}');
   parse_or_return (';');
-  
+
   addSequenceTodo (sequence);
   return G_TOKEN_NONE;
 }
@@ -1700,12 +1604,12 @@ GTokenType Parser::parseClass ()
 {
   Class cdef;
   DEBUG("parse class\n");
-  
+
   parse_or_return (TOKEN_CLASS);
   parse_or_return (G_TOKEN_IDENTIFIER);
   cdef.name = defineSymbol (scanner->value.v_identifier);
   cdef.file = fileName();
-  
+
   if (g_scanner_peek_next_token (scanner) == GTokenType(';'))
     {
       parse_or_return (';');
@@ -1715,12 +1619,12 @@ GTokenType Parser::parseClass ()
   if (g_scanner_peek_next_token (scanner) == GTokenType(':'))
     {
       parse_or_return (':');
-      
+
       GTokenType expected_token = parseTypeName (cdef.inherits);
       if (expected_token != G_TOKEN_NONE)
 	return expected_token;
     }
-  
+
   parse_or_return ('{');
   while (g_scanner_peek_next_token (scanner) != G_TOKEN_RIGHT_CURLY)
     {
@@ -1733,7 +1637,7 @@ GTokenType Parser::parseClass ()
 	    GTokenType expected_token = parseMethod (method);
 	    if (expected_token != G_TOKEN_NONE)
 	      return expected_token;
-            
+
 	    if (method.result.type == "signal")
 	      cdef.signals.push_back(method);
 	    else
@@ -1756,7 +1660,7 @@ GTokenType Parser::parseClass ()
 	    expected_token = parseRecordField (property, "");  // no i18n support, deprecated
 	    if (expected_token != G_TOKEN_NONE)
 	      return expected_token;
-            
+
 	    cdef.properties.push_back (property);
 	  }
 	  break;
@@ -1792,7 +1696,7 @@ GTokenType Parser::parseClass ()
             GTokenType expected_token = parseStream (stream, stype);
             if (expected_token != G_TOKEN_NONE)
               return expected_token;
-            
+
             switch (stream.type) {
             case Stream::IStream: cdef.istreams.push_back (stream); break;
             case Stream::JStream: cdef.jstreams.push_back (stream); break;
@@ -1806,7 +1710,7 @@ GTokenType Parser::parseClass ()
     }
   parse_or_return ('}');
   parse_or_return (';');
-  
+
   addClassTodo (cdef);
   return G_TOKEN_NONE;
 }
@@ -1839,7 +1743,7 @@ GTokenType Parser::parseMethod (Method& method)
   parse_or_return (G_TOKEN_IDENTIFIER);
   method.name = scanner->value.v_identifier;
   method.file = fileName();
-  
+
   parse_or_return ('(');
   while (g_scanner_peek_next_token (scanner) == G_TOKEN_IDENTIFIER)
     {
@@ -1850,7 +1754,7 @@ GTokenType Parser::parseMethod (Method& method)
 	return expected_token;
 
       def.pspec = NamespaceHelper::nameOf (def.type); // FIXME: correct?
-  
+
       parse_or_return (G_TOKEN_IDENTIFIER);
       def.name = scanner->value.v_identifier;
       def.file = fileName();
@@ -1905,13 +1809,13 @@ GTokenType Parser::parseMethod (Method& method)
 	  }
 	  else
 	  {
-	    printError("In or Out expected in method/procedure details");
+	    print_error("In or Out expected in method/procedure details");
 	    return G_TOKEN_IDENTIFIER;
 	  }
 
 	  if (!pd)
 	  {
-	    printError("can't associate method/procedure parameter details");
+	    print_error("can't associate method/procedure parameter details");
 	    return G_TOKEN_IDENTIFIER;
 	  }
 
@@ -1935,7 +1839,7 @@ GTokenType Parser::parseMethod (Method& method)
 void Parser::addConstantTodo(const Constant& constant)
 {
   constants.push_back(constant);
-  
+
   if (insideInclude ())
     {
       includedNames.push_back (constant.name);
@@ -1949,7 +1853,7 @@ void Parser::addConstantTodo(const Constant& constant)
 void Parser::addChoiceTodo(const Choice& choice)
 {
   choices.push_back(choice);
-  
+
   if (insideInclude ())
     {
       includedNames.push_back (choice.name);
@@ -1964,7 +1868,7 @@ void Parser::addChoiceTodo(const Choice& choice)
 void Parser::addRecordTodo(const Record& record)
 {
   records.push_back(record);
-  
+
   if (insideInclude ())
     {
       includedNames.push_back (record.name);
@@ -1979,7 +1883,7 @@ void Parser::addRecordTodo(const Record& record)
 void Parser::addSequenceTodo(const Sequence& sequence)
 {
   sequences.push_back(sequence);
-  
+
   if (insideInclude ())
     {
       includedNames.push_back (sequence.name);
@@ -1994,7 +1898,7 @@ void Parser::addSequenceTodo(const Sequence& sequence)
 void Parser::addClassTodo(const Class& cdef)
 {
   classes.push_back(cdef);
-  
+
   if (insideInclude ())
     {
       includedNames.push_back (cdef.name);
@@ -2009,7 +1913,7 @@ void Parser::addClassTodo(const Class& cdef)
 void Parser::addProcedureTodo(const Method& pdef)
 {
   procedures.push_back(pdef);
-  
+
   if (insideInclude ())
     {
       includedNames.push_back (pdef.name);
@@ -2039,7 +1943,7 @@ void Parser::addType (const String& type, TypeDeclaration typeDecl)
     }
   else if (m == typeDecl)
     {
-      printError ("double definition of '%s' as same type", type.c_str());
+      print_error ("double definition of '%s' as same type", type.c_str());
     }
   else if (m == (typeDecl | tdProto))
     {
@@ -2047,7 +1951,7 @@ void Parser::addType (const String& type, TypeDeclaration typeDecl)
     }
   else
     {
-      printError ("double definition of '%s' as different types", type.c_str());
+      print_error ("double definition of '%s' as different types", type.c_str());
     }
 }
 
@@ -2069,7 +1973,7 @@ void Parser::addPrototype (const String& type, TypeDeclaration typeDecl)
     }
   else
     {
-      printError ("double definition of '%s' as different types", type.c_str());
+      print_error ("double definition of '%s' as different types", type.c_str());
     }
 }
 
@@ -2083,33 +1987,6 @@ String Parser::defineSymbol (const String& name)
       currentNamespace->insert (sym);
     }
   return sym->fullName();
-}
-
-static list<String>
-symbolToList (const String& symbol)
-{
-  list<String> result;
-  String current;
-
-  g_return_val_if_fail (isCxxTypeName (symbol), result);
-  
-  for (String::const_iterator si = symbol.begin(); si != symbol.end(); si++)
-    {
-      if (*si != ':')
-	{
-	  current += *si;
-	}
-      else
-	{
-	  if (current != "")
-	    result.push_back(current);
-	  
-	  current = "";
-	}
-    }
-  
-  result.push_back(current);
-  return result;
 }
 
 static Symbol*
@@ -2173,9 +2050,9 @@ Symbol *Parser::qualifyHelper (const String& name)
     return alternatives.front();
 
   /* multiple equally valid candidates? */
-  printError ("there are multiple valid interpretations of %s in this context", name.c_str());
+  print_error ("there are multiple valid interpretations of %s in this context", name.c_str());
   for (list<Symbol *>::iterator ai = alternatives.begin(); ai != alternatives.end(); ai++)
-    printError (" - it could be %s", (*ai)->fullName().c_str());
+    print_error (" - it could be %s", (*ai)->fullName().c_str());
 
   return 0;
 }
@@ -2197,7 +2074,7 @@ bool Parser::enterNamespace (const String& name)
       currentNamespace = dynamic_cast <Namespace *> (symbol);
       if (!currentNamespace)
 	{
-	  printError ("%s is not a namespace", name.c_str());
+	  print_error ("%s is not a namespace", name.c_str());
 	  return false;
 	}
     }
@@ -2223,14 +2100,14 @@ bool Parser::usingNamespace (const String& name)
   Symbol *sym = qualifyHelper (name);
   if (!sym)
     {
-      printError ("%s is an undeclared namespace (can't be used)", name.c_str());
+      print_error ("%s is an undeclared namespace (can't be used)", name.c_str());
       return false;
     }
 
   Namespace *ns = dynamic_cast<Namespace *> (sym);
   if (!ns)
     {
-      printError ("%s is not a namespace (can't be used)", name.c_str());
+      print_error ("%s is not a namespace (can't be used)", name.c_str());
       return false;
     }
   currentNamespace->used.push_back (ns);

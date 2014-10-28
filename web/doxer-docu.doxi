@@ -1,6 +1,0 @@
-@doxer_dnl      # emacs: -*- mode: texinfo; texinfo-open-quote: "\""; texinfo-close-quote: "\""; -*-
-@doxer_set{webmenu} development
-@include "webframe.doxi"
-@doxer_set{title}	BEAST - The Doxer documentation system
-
-@include "../doxer/docu-main.doxi"

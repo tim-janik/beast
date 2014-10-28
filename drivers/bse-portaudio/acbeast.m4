@@ -1,5 +1,4 @@
-dnl # Birnet
-dnl # GNU Lesser General Public License version 2 or any later version.
+dnl # Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 
 ## Portability defines that help interoperate with classic and modern autoconfs
 ifdef([AC_TR_SH],[

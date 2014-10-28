@@ -1,39 +1,25 @@
-/* BSE Resampling Datahandles Test
- * Copyright (C) 2001-2006 Tim Janik
- * Copyright (C) 2006 Stefan Westerfeld
- * 
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * A copy of the GNU Lesser General Public License should ship along
- * with this library; if not, see http://www.gnu.org/copyleft/.
- */
-#include <bse/bsemathsignal.h>
-#include <bse/bsemain.h>
-// #define TEST_VERBOSE
-#include <sfi/sfitests.h>
-#include <bse/gsldatautils.h>
+// Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
+#include <bse/bsemathsignal.hh>
+#include <bse/bsemain.hh>
+#include <sfi/sfitests.hh>
+#include <bse/gsldatautils.hh>
 #include <bse/bseblockutils.hh>
 #include <stdlib.h>
 #include <vector>
+#include <string>
+#include <map>
 
 using std::vector;
+using std::string;
 using std::max;
 using std::min;
+using std::map;
 
 static void
 read_through (GslDataHandle *handle)
 {
   int64 n_values = gsl_data_handle_n_values (handle);
   int64 offset = 0;
-
   while (offset < n_values)
     {
       gfloat values[1024];
@@ -57,12 +43,12 @@ check (const char           *up_down,
        int                   precision_bits,
        double                max_db)
 {
-  char *samplestr = g_strdup_printf ("ResampleHandle-%s%02d%s", up_down, bits, channels);
-  char *streamstr = g_strdup_printf ("CPU Resampling %s%02d%s", up_down, bits, channels);
+  char *samplestr = g_strdup_format ("ResampleHandle-%s%02d%s", up_down, bits, channels);
+  char *streamstr = g_strdup_format ("CPU Resampling %s%02d%s", up_down, bits, channels);
   TSTART ("%s (%s)", samplestr, cpu_type);
 
   TASSERT (input.size() % n_channels == 0);
-  
+
   GslDataHandle *ihandle = gsl_data_handle_new_mem (n_channels, 32, 44100, 440, input.size(), &input[0], NULL);
   GslDataHandle *rhandle;
   if (resampler_mode == BSE_RESAMPLER2_MODE_UPSAMPLE)
@@ -102,16 +88,16 @@ check (const char           *up_down,
       for (int64 i = 0; i < rhandle->setup.n_values; i++)
 	{
 	  double resampled = gsl_data_handle_peek_value (rhandle, i, &peek_buffer);
-	  worst_diff = max (resampled - expected[i], worst_diff);
+	  worst_diff = max (fabs (resampled - expected[i]), worst_diff);
 	}
       worst_diff_db = bse_db_from_factor (worst_diff, -200);
-      TPRINT ("linear(%dst read) read worst_diff = %f (%f dB)\n", repeat, worst_diff, worst_diff_db);
+      TOUT ("linear(%dst read) read worst_diff = %f (%f dB)\n", repeat, worst_diff, worst_diff_db);
       TASSERT (worst_diff_db < max_db);
     }
 
   /* test seeking */
   worst_diff = 0.0;
-  const uint count = sfi_init_settings().test_slow ? 3000 : 100;
+  const uint count = Rapicorn::Test::slow() ? 300 : 100;
   for (uint j = 0; j < count; j++)
     {
       int64 start = rand() % rhandle->setup.n_values;
@@ -121,23 +107,23 @@ check (const char           *up_down,
       for (int64 i = start; i < std::min (start + len, rhandle->setup.n_values); i++)
 	{
 	  double resampled = gsl_data_handle_peek_value (rhandle, i, &peek_buffer);
-	  worst_diff = max (resampled - expected[i], worst_diff);
+	  worst_diff = max (fabs (resampled - expected[i]), worst_diff);
 	}
     }
   worst_diff_db = bse_db_from_factor (worst_diff, -200);
-  TPRINT ("seek worst_diff = %f (%f dB)\n", worst_diff, worst_diff_db);
+  TOUT ("seek worst_diff = %f (%f dB)\n", worst_diff, worst_diff_db);
   TASSERT (worst_diff_db < max_db);
 
   TDONE();
 
   /* test speed */
   double samples_per_second = 0;
-  if (sfi_init_settings().test_perf)
+  if (Rapicorn::Test::slow())
     {
       const guint RUNS = 10;
       GTimer *timer = g_timer_new();
       const guint dups = TEST_CALIBRATION (50.0, read_through (rhandle));
-      
+
       double m = 9e300;
       for (guint i = 0; i < RUNS; i++)
         {
@@ -150,11 +136,11 @@ check (const char           *up_down,
             m = e;
         }
       samples_per_second = input.size() / (m / dups);
-      treport_maximized (samplestr, samples_per_second, TUNIT (SAMPLE, SECOND));
-      treport_maximized (streamstr, samples_per_second / 44100.0, TUNIT_STREAM);
-      //TPRINT ("  samples / second = %f\n", samples_per_second);
-      //TPRINT ("  which means the resampler can process %.2f 44100 Hz streams simultaneusly\n", samples_per_second / 44100.0);
-      //TPRINT ("  or one 44100 Hz stream takes %f %% CPU usage\n", 100.0 / (samples_per_second / 44100.0));
+      TMSG ("    %-28s : %+.14f samples/second", samplestr, samples_per_second);
+      TMSG ("    %-28s : %+.14f streams", streamstr, samples_per_second / 44100.0);
+      //TOUT ("  samples / second = %f\n", samples_per_second);
+      //TOUT ("  which means the resampler can process %.2f 44100 Hz streams simultaneusly\n", samples_per_second / 44100.0);
+      //TOUT ("  or one 44100 Hz stream takes %f %% CPU usage\n", 100.0 / (samples_per_second / 44100.0));
     }
 
   gsl_data_handle_close (rhandle);
@@ -173,20 +159,34 @@ generate_test_signal (vector<Sample> &signal,
                       const double    frequency1,
 		      const double    frequency2 = -1)
 {
-  signal.clear();
-  for (size_t i = 0; i < signal_length; i++)
+  static map<size_t, vector<float> > window_cache;
+  vector<float>& cached_window = window_cache[signal_length];
+  if (cached_window.empty())
     {
-      double wpos = (i * 2 - double (signal_length)) / signal_length;
-
-      double phase1 = i * 2 * M_PI * frequency1 / sample_rate;
-      signal.push_back (sin (phase1) * bse_window_blackman (wpos));
-
-      if (frequency2 > 0)   /* stereo */
-	{
-	  double phase2 = i * 2 * M_PI * frequency2 / sample_rate;
-	  signal.push_back (sin (phase2) * bse_window_blackman (wpos));
-	}
+      cached_window.resize (signal_length);
+      for (size_t i = 0; i < signal_length; i++)
+        {
+          double wpos = (i * 2 - double (signal_length)) / signal_length;
+          cached_window[i] = bse_window_blackman (wpos);
+        }
     }
+  string signal_cache_key = Rapicorn::string_format ("%d/%.1f/%.1f/%.1f", signal_length, sample_rate, frequency1, frequency2);
+  static map<string, vector<Sample> > signal_cache;
+  vector<Sample>& cached_signal = signal_cache[signal_cache_key];
+  if (cached_signal.empty())
+    {
+      for (size_t i = 0; i < signal_length; i++)
+        {
+          double phase1 = i * 2 * M_PI * frequency1 / sample_rate;
+          cached_signal.push_back (sin (phase1) * cached_window[i]);
+          if (frequency2 > 0)   /* stereo */
+            {
+              double phase2 = i * 2 * M_PI * frequency2 / sample_rate;
+              cached_signal.push_back (sin (phase2) * cached_window[i]);
+            }
+        }
+    }
+  signal = cached_signal;
 }
 
 static void
@@ -210,12 +210,12 @@ run_tests (const char *run_type)
 
   for (int p = 0; params[p].bits; p++)
     {
-      const int LEN = 44100 * 4;
+      const int LEN = 44100 / 2;  /* 500ms test signal */
       vector<float> input;
       vector<double> expected;
 
       // mono upsampling test
-      if (!sfi_init_settings().test_quick)
+      if (Rapicorn::Test::slow())
         {
           generate_test_signal (input, LEN, 44100, 440);
           generate_test_signal (expected, LEN * 2, 88200, 440);
@@ -224,7 +224,7 @@ run_tests (const char *run_type)
                  params[p].bits, params[p].mono_upsample_db);
           // g_printerr ("    ===> speed is equivalent to %.2f simultaneous 44100 Hz streams\n", streams);
         }
-      
+
       // stereo upsampling test
       if (1)
         {
@@ -235,9 +235,9 @@ run_tests (const char *run_type)
                  params[p].bits, params[p].stereo_upsample_db);
           // g_printerr ("    ===> speed is equivalent to %.2f simultaneous 44100 Hz streams\n", streams);
         }
-      
+
       // mono downsampling test
-      if (!sfi_init_settings().test_quick)
+      if (Rapicorn::Test::slow())
         {
           generate_test_signal (input, LEN, 44100, 440);
           generate_test_signal (expected, LEN / 2, 22050, 440);
@@ -246,7 +246,7 @@ run_tests (const char *run_type)
                  params[p].bits, params[p].mono_downsample_db);
           // g_printerr ("    ===> speed is equivalent to %.2f simultaneous 44100 Hz streams\n", streams);
         }
-      
+
       // stereo downsampling test
       if (1)
         {
@@ -283,16 +283,12 @@ test_c_api (const char *run_type)
 	              * bse_window_blackman ((double) ((i - delay) * 2 - OUTPUT_SIZE) / OUTPUT_SIZE);
       error = MAX (error, fabs (out[i] - expected));
     }
-
   double error_db = bse_db_from_factor (error, -200);
-
   bse_resampler2_destroy (resampler);
-
-  TPRINT ("Test C API delta: %f\n", error_db);
+  TOUT ("Test C API delta: %f\n", error_db);
   TASSERT (error_db < -95);
   TDONE();
 }
-
 static void
 test_delay_compensation (const char *run_type)
 {
@@ -364,7 +360,7 @@ test_delay_compensation (const char *run_type)
 
       /* check error against bound */
       double error_db = bse_db_from_factor (error, -250);
-      TPRINT ("Resampler Delay Compensation delta: %f\n", error_db);
+      TOUT ("Resampler Delay Compensation delta: %f\n", error_db);
       TASSERT (error_db < -params[p].error_db);
     }
   TDONE();
@@ -409,9 +405,9 @@ test_state_length (const char *run_type)
 	 * implement with a loop handle, and it is inefficient because we read the
 	 * samples one-by-one -> usually: don't use such code, always read in blocks */
 	int64 read_pos = (values_done + state_length) % (period_size * 2) + (period_size * 2 - state_length);
-	TCHECK (read_pos >= state_length);   /* check that input signal was long enough to be for this test */
+	TASSERT (read_pos >= state_length);   /* check that input signal was long enough to be for this test */
 	int64 values_read = gsl_data_handle_read (rhandle, read_pos, 1, &output[values_done]);
-	TCHECK (values_read == 1);
+	TASSERT (values_read == 1);
       }
     double error = 0;
     for (size_t i = 0; i < output.size(); i++)
@@ -458,9 +454,9 @@ test_state_length (const char *run_type)
 	 * implement with a loop handle, and it is inefficient because we read the
 	 * samples one-by-one -> usually: don't use such code, always read in blocks */
 	int64 read_pos = (values_done + state_length) % (period_size / 2) + (period_size / 2 - state_length);
-	TCHECK (read_pos >= state_length);   /* check that input signal was long enough to be for this test */
+	TASSERT (read_pos >= state_length);   /* check that input signal was long enough to be for this test */
 	int64 values_read = gsl_data_handle_read (rhandle, read_pos, 1, &output[values_done]);
-	TCHECK (values_read == 1);
+	TASSERT (values_read == 1);
       }
     double error = 0;
     for (size_t i = 0; i < output.size(); i++)
@@ -479,25 +475,18 @@ int
 main (int   argc,
       char *argv[])
 {
-  sfi_init_test (&argc, &argv, NULL);
-  { /* bse_init_test() usually does this for us */
-    SfiCPUInfo ci = sfi_cpu_info();
-    char *cname = g_strdup_printf ("%s+%s", ci.machine, bse_block_impl_name());
-    treport_cpu_name (cname);
-    g_free (cname);
-  }
-  
+  // usually we'd call bse_init_test() here, but we have tests to rnu before plugins are loaded
+  Rapicorn::init_core_test (RAPICORN_PRETTY_FILE, &argc, argv);
+  Rapicorn::StringVector sv = Rapicorn::string_split (Rapicorn::cpu_info(), " ");
+  Rapicorn::String machine = sv.size() >= 2 ? sv[1] : "Unknown";
+  TMSG ("  NOTE   Running on: %s+%s", machine.c_str(), bse_block_impl_name()); // usually done by bse_init_test
+
   test_c_api ("FPU");
   test_delay_compensation ("FPU");
   test_state_length ("FPU");
   run_tests ("FPU");
-
   /* load plugins */
-  SfiInitValue config[] = {
-    { "load-core-plugins", "1" },
-    { NULL },
-  };
-  bse_init_test (&argc, &argv, config);
+  bse_init_test (&argc, argv, Bse::cstrings_to_vector ("load-core-plugins=1", NULL));
   /* check for possible specialization */
   if (Bse::Block::default_singleton() == Bse::Block::current_singleton())
     return 0;   /* nothing changed */

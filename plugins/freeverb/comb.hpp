@@ -7,7 +7,7 @@
 #ifndef _comb_
 #define _comb_
 
-#include "denormals.h"
+#include "denormals.hh"
 
 class comb
 {

@@ -1,26 +1,12 @@
-/* BSE - Bedevilled Sound Engine	-*-mode: c;-*-
- * Copyright (C) 2003-2004 Tim Janik
- *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * A copy of the GNU Lesser General Public License should ship along
- * with this library; if not, see http://www.gnu.org/copyleft/.
- */
-#include <bse/bseplugin.h>
-#include <bse/bseprocedure.h>
-#include <bse/bsetrack.h>
-#include <bse/bsepart.h>
-#include <bse/bsesong.h>
-#include <bse/bsebus.h>
-#include <bse/bseundostack.h>
+// Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
+#include <bse/bseplugin.hh>
+#include <bse/bseprocedure.hh>
+#include <bse/bsetrack.hh>
+#include <bse/bsepart.hh>
+#include <bse/bsesong.hh>
+#include <bse/bsebus.hh>
+#include <bse/bseundostack.hh>
+#include "bsecxxplugin.hh"
 
 
 AUTHORS	= "Tim Janik <timj@gtk.org>";
@@ -43,9 +29,9 @@ BODY (BseProcedureClass *proc,
       GValue            *out_values)
 {
   /* extract parameter values */
-  BseTrack *self = bse_value_get_object (in_values++);
-  guint     tick = sfi_value_get_int (in_values++);
-  BsePart  *part = bse_value_get_object (in_values++);
+  BseTrack *self = (BseTrack*) bse_value_get_object (in_values++);
+  guint tick = sfi_value_get_int (in_values++);
+  BsePart *part = (BsePart*) bse_value_get_object (in_values++);
   guint id;
 
   /* check parameters */
@@ -80,7 +66,7 @@ BODY (BseProcedureClass *proc,
       GValue            *out_values)
 {
   /* extract parameter values */
-  BseTrack *self = bse_value_get_object (in_values++);
+  BseTrack *self = (BseTrack*) bse_value_get_object (in_values++);
   guint     tick = sfi_value_get_int (in_values++);
   BseTrackEntry *entry;
 
@@ -111,7 +97,7 @@ BODY (BseProcedureClass *proc,
       GValue            *out_values)
 {
   /* extract parameter values */
-  BseTrack *self = bse_value_get_object (in_values++);
+  BseTrack *self = (BseTrack*) bse_value_get_object (in_values++);
   guint     id   = sfi_value_get_int (in_values++);
   BseTrackEntry *entry;
 
@@ -125,7 +111,7 @@ BODY (BseProcedureClass *proc,
   /* action */
   bse_item_push_undo_proc (self, "insert-part", entry->tick, entry->part);
   bse_track_remove_tick (self, entry->tick);
-  
+
   return BSE_ERROR_NONE;
 }
 
@@ -141,7 +127,7 @@ BODY (BseProcedureClass *proc,
       GValue            *out_values)
 {
   /* extract parameter values */
-  BseTrack *self = bse_value_get_object (in_values++);
+  BseTrack *self = (BseTrack*) bse_value_get_object (in_values++);
 
   /* check parameters */
   if (!BSE_IS_TRACK (self))
@@ -165,7 +151,7 @@ BODY (BseProcedureClass *proc,
       GValue            *out_values)
 {
   /* extract parameter values */
-  BseTrack *self = bse_value_get_object (in_values++);
+  BseTrack *self = (BseTrack*) bse_value_get_object (in_values++);
 
   /* check parameters */
   if (!BSE_IS_TRACK (self))
@@ -200,10 +186,10 @@ BODY (BseProcedureClass *proc,
       GValue            *out_values)
 {
   /* extract parameter values */
-  BseTrack *self = bse_value_get_object (in_values++);
+  BseTrack *self = (BseTrack*) bse_value_get_object (in_values++);
   guint     tick = sfi_value_get_int (in_values++);
   BseTrackEntry *entry;
-  
+
   /* check parameters */
   if (!BSE_IS_TRACK (self))
     return BSE_ERROR_PROC_PARAM_INVAL;
@@ -225,7 +211,7 @@ METHOD (BseTrack, get-timing) {
 	GValue            *out_values)
 {
   /* extract parameter values */
-  BseTrack *self = bse_value_get_object (in_values++);
+  BseTrack *self = (BseTrack*) bse_value_get_object (in_values++);
   SfiInt    tick = sfi_value_get_int (in_values++);
   BseItem  *parent;
   BseSongTiming timing = { 0, };
@@ -259,7 +245,7 @@ METHOD (BseTrack, get-output-source) {
         GValue            *out_values)
 {
   /* extract parameter values */
-  BseTrack *track = bse_value_get_object (in_values++);
+  BseTrack *track = (BseTrack*) bse_value_get_object (in_values++);
   BseSource *child = NULL;
 
   /* check parameters */
@@ -286,7 +272,7 @@ METHOD (BseTrack, get-last-tick) {
         GValue            *out_values)
 {
   /* extract parameter values */
-  BseTrack *self = bse_value_get_object (in_values++);
+  BseTrack *self = (BseTrack*) bse_value_get_object (in_values++);
 
   /* check parameters */
   if (!BSE_IS_TRACK (self))
@@ -309,7 +295,7 @@ METHOD (BseTrack, ensure-output) {
         GValue            *out_values)
 {
   /* extract parameter values */
-  BseTrack *self = bse_value_get_object (in_values++);
+  BseTrack *self = (BseTrack*) bse_value_get_object (in_values++);
   BseErrorType error = BSE_ERROR_NONE;
 
   /* check parameters */

@@ -1,7 +1,4 @@
-## Process this file with automake to generate Makefile.in
-# Copyright (C) 2010 Tim Janik
-#
-# This work is provided "as is"; see: http://beast.gtk.org/mirror/LICENSE-AS-IS
+# BEAST - Better Audio System
 include $(top_srcdir)/Makefile.decl
 AUTOMAKE_OPTIONS = -Wno-portability
 
@@ -112,7 +109,7 @@ check-local: check-scm-strings
 check-scm-strings:
 	@echo "Check po files missing translation strings..."
 	@for lang in $(TRANSLATIONS); do	\
-	  file=$$lang.po ;			\
+	  file=$(srcdir)/$$lang.po ;		\
 	  echo $(ECHO_N) "  $$lang.po: " ;	\
 	  for pattern in $(CHECK_SCM_PATS) ; do	\
 	    grep -Fq $$pattern $$file || {	\
@@ -175,7 +172,7 @@ update-po: Makefile
 DISTDIR_HOOK = distdir # use indirection to emulate distdir-hook
 $(DISTDIR_HOOK): $(shell test -w $(srcdir)/messages.pot && echo 'update-po')
 
-$(srcdir)/messages.pot:
+$(srcdir)/messages.pot: POTSCAN
 	@echo "Rebuilding $(@F)..."
 	@rm -f $(POTLIST) $(TMPLIST) ; rm -rf $(TMPDIR)/
 	@sed -e '/^#/d' -e 's/^\[[^:]*:[^]]*][[:space:]]*//' -e '/^[[:space:]]*$$/d' < POTSCAN > $(POTLIST) \

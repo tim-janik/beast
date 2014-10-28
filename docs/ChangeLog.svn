@@ -23819,7 +23819,7 @@
 
 	        * web/style/beast-left.png: "beast" logo drawing by Alper Ersoy.
 
-	        * web/style/beast-right.png: "Bedevilled Audio System" drawing by Alper Ersoy.
+	        * web/style/beast-right.png: "Better Audio System" drawing by Alper Ersoy.
 
 	        * web/style/title-arrow-24x64.png: right arrow for section titles by Alper Ersoy.
 
@@ -57615,7 +57615,7 @@
 	        check whether ov_read_float() from libvorbis has 3 or 4 arguments.
 
 	        * beast-gtk/images/beast-splash.png: splash screen update from
-	        jimmac which says "Bedevilled Audio System".
+	        jimmac which says "Better Audio System".
 
 	svn path=/trunk/; revision=503
 

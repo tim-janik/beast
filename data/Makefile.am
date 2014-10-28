@@ -1,7 +1,4 @@
-# BEAST - Bedevilled Audio System
-# Copyright (C) 2002-2003 Tim Janik
-#
-## GNU Lesser General Public License version 2 or any later version.
+# BEAST - Better Audio System
 include $(top_srcdir)/Makefile.decl
 AUTOMAKE_OPTIONS = -Wno-portability
 
@@ -116,7 +113,7 @@ config-paths.h: $(top_builddir)/config.status Makefile
 	&& echo "#define BSE_PATH_SCRIPTS         \"${bsescriptdir}\"" >> xgen-cph \
 	&& echo "#define BSE_PATH_USER_DATA(dir)  \"${bseuserdatadir}\" dir" >> xgen-cph \
 	&& echo "#define BST_PATH_BINARIES        \"${bindir}\"" >> xgen-cph \
-	&& echo "#define BST_PATH_DOCS            \"${beastdocsdir}\"" >> xgen-cph \
+	&& echo "#define BST_PATH_DOCS            \"${docdir}\"" >> xgen-cph \
 	&& echo "#define BST_PATH_IMAGES          \"${beastimagesdir}\"" >> xgen-cph \
 	&& echo "#define BST_PATH_LOCALE          \"${beastlocaledir}\"" >> xgen-cph \
 	&& echo "#define BST_PATH_KEYS            \"${beastkeysdir}\"" >> xgen-cph \

@@ -1,19 +1,4 @@
-/* BSE - Bedevilled Sound Engine
- * Copyright (C) 2003 Tim Janik
- *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * A copy of the GNU Lesser General Public License should ship along
- * with this library; if not, see http://www.gnu.org/copyleft/.
- */
+// Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bsecxxbase.hh"
 
 namespace Bse {
@@ -297,10 +282,10 @@ CxxBaseClass::add_signal (const gchar *signal_name,
 {
   va_list args;
   guint signal_id;
-  
+
   g_return_val_if_fail (n_params <= SFI_VMARSHAL_MAX_ARGS, 0);
   g_return_val_if_fail (signal_name != NULL, 0);
-  
+
   va_start (args, n_params);
   signal_id = g_signal_new_valist (signal_name,
                                    G_TYPE_FROM_CLASS (this),
@@ -310,7 +295,7 @@ CxxBaseClass::add_signal (const gchar *signal_name,
                                    G_TYPE_NONE,
                                    n_params, args);
   va_end (args);
-  
+
   return signal_id;
 }
 

@@ -6,8 +6,8 @@
 
   <name xml:lang="en">beast</name>
   <shortdesc xml:lang="en">Solution for Music Composition and Synthesis</shortdesc>
-  <homepage rdf:resource="http://beast.gtk.org/" />
-  <download-page rdf:resource="http://beast.gtk.org/beast-ftp/" />
+  <homepage rdf:resource="http://beast.testbit.eu/" />
+  <download-page rdf:resource="http://beast.testbit.eu/Beast_Download" />
   <bug-database rdf:resource="http://bugzilla.gnome.org/browse.cgi?product=beast" />
 
   <category rdf:resource="http://api.gnome.org/doap-extensions#desktop" />

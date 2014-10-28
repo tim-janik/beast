@@ -1,22 +1,6 @@
-/* BseNoise - BSE Noise generator
- * Copyright (C) 1999,2000-2001 Tim Janik
- * Copyright (C) 2004-2007 Stefan Westerfeld
- *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * A copy of the GNU Lesser General Public License should ship along
- * with this library; if not, see http://www.gnu.org/copyleft/.
- */
+// Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bsenoise.genidl.hh"
-#include <bse/bsemain.h>
+#include <bse/bsemain.hh>
 #include <vector>
 
 using namespace std;
@@ -97,7 +81,7 @@ public:
   /* preparation of a long block of random data */
   static vector<float> *noise_data;
   static uint		noise_data_ref_count;
- 
+
   void
   prepare1()
   {

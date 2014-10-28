@@ -1,29 +1,12 @@
-/* BSE - Bedevilled Sound Engine
- * Copyright (C) 2003 Tim Janik
- *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * A copy of the GNU Lesser General Public License should ship along
- * with this library; if not, see http://www.gnu.org/copyleft/.
- */
+// Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bsecxxutils.hh"
-
 #include "bsecxxbase.hh"
-#include "bsecategories.h"
+#include "bsecategories.hh"
 #include <list>
-using namespace std;
+using namespace std;    // FIXME
 
 namespace Bse {
 
-/* --- functions --- */
 struct TypeRegistry::TypeEntry {
   guint               instance_size;
   const gchar        *name;
@@ -54,7 +37,7 @@ struct TypeRegistry::TypeEntry {
     this->flags = flags;
   }
 };
-  
+
 static list<TypeRegistry::TypeEntry> *type_entries = NULL;
 
 TypeRegistry::TypeRegistry (guint             instance_size,
@@ -112,39 +95,10 @@ TypeRegistry::init_types()
   type_entries = NULL;
 }
 
-static void
-bse_terminate_handler ()
-{
-  try {
-    throw;      // rethrow
-  }
-  catch (Exception &e) {
-    g_error ("aborting due to exception: %s [in %s]", e.what(), e.where());
-  }
-  catch (std::exception &e) {
-    g_error ("aborting due to exception: %s", e.what());
-  }
-  catch (...) {
-    g_error ("aborting due to uncaught exception");
-  }
-}
-
-static void
-init_exception_handler ()
-{
-#if 0
-  unexpected_handler former = set_unexpected (bse_unexpected_handler);
-  if (former != std::unexpected)
-    set_unexpected (former);
-#else
-  set_terminate (bse_terminate_handler);
-#endif
-}
-
 extern "C" void
-bse_cxx_init (void)  // prototyped in bseutils.h
+bse_cxx_init (void)  // prototyped in bseutils.hh
 {
-  init_exception_handler ();
+  // FIXME: delete: init_exception_handler ();
   Bse::TypeRegistry::init_types();
 }
 

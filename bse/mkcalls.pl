@@ -1,4 +1,5 @@
 #!/usr/bin/perl -w
+# Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 
 my $magic_id = "MAKE_CALLS_FOR";
 my $prod1 = "";

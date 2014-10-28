@@ -1,19 +1,16 @@
-# BSE - Bedevilled Sound Engine dynamic Plugins
-# Copyright (C) 2003 Tim Janik
-#
-## GNU Lesser General Public License version 2 or any later version.
+# BSE - Better Sound Engine dynamic Plugins
 include $(top_srcdir)/Makefile.decl
 
 SUBDIRS =
 
-INCLUDES += -I$(top_srcdir) -I$(top_builddir) $(SFI_CFLAGS)
-
-DEFS += -DG_LOG_DOMAIN=\"BSE-TEST\" # -DG_DISABLE_CONST_RETURNS
+AM_CPPFLAGS += -I$(top_srcdir) -I$(top_builddir)
+DEFS        += @DEFINE__FILE_DIR__@ -DG_LOG_DOMAIN=\"BSE-TEST\" # -DG_DISABLE_CONST_RETURNS
+AM_CXXFLAGS += $(BSE_CFLAGS) $(SFI_CPPFLAGS) $(RAPICORN_CFLAGS) -DRAPICORN_CONVENIENCE
 
 EXTRA_DIST += arrows.gp filter-defs.gp
 
 noinst_PROGRAMS = $(ALLTESTS)
-progs_ldadd     = $(top_builddir)/bse/libbse.la
+progs_ldadd     = $(top_builddir)/bse/libbse.la $(RAPICORN_LIBS) $(BSE_LIBS)
 
 TESTS            += misctests
 misctests_SOURCES = misctests.cc
@@ -26,7 +23,7 @@ filtertest_LDADD   = $(progs_ldadd)
 EXTRA_DIST        += filtercatalog.cc
 
 TESTS          += testfft
-testfft_SOURCES = testfft.c cxxdummy.cc
+testfft_SOURCES = testfft.cc
 testfft_LDADD   = $(progs_ldadd)
 
 TESTS          += testcxx
@@ -40,7 +37,7 @@ subnormals_LDADD    = $(progs_ldadd)
 subnormals_CXXFLAGS = $(AM_CXXFLAGS) -ffast-math
 
 TESTS             += loophandle
-loophandle_SOURCES = loophandle.c
+loophandle_SOURCES = loophandle.cc
 loophandle_LDADD   = $(progs_ldadd)
 
 TESTS             += blocktests

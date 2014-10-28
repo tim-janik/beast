@@ -1,5 +1,5 @@
-# BEAST/BSE - Bedevilled Audio System / Bedevilled Sound Engine
-## GNU Lesser General Public License version 2 or any later version.
+# BEAST/BSE - Better Audio System / Better Sound Engine
+# Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 
 # $0+0 == number of arrows
 # $1+0 = first arrow

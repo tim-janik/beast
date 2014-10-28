@@ -1,11 +1,10 @@
-# BSE - Bedevilled Sound Engine
-# Copyright (C) 2004 Tim Janik
-#
-## GNU Lesser General Public License version 2 or any later version.
+# BSE - Better Sound Engine
 include $(top_srcdir)/Makefile.decl
 
-INCLUDES += -I$(top_srcdir) -I$(top_builddir) -I$(srcdir) -I. $(SFI_CFLAGS)
-DEFS     += -DG_LOG_DOMAIN="\"BSE-TEST\"" # -DG_DISABLE_CONST_RETURNS
+AM_CPPFLAGS += -I$(top_srcdir) -I$(top_builddir) -I$(srcdir) -I.
+DEFS        += @DEFINE__FILE_DIR__@ -DG_LOG_DOMAIN="\"BSE-TEST\"" # -DG_DISABLE_CONST_RETURNS
+AM_CXXFLAGS += $(SFI_CPPFLAGS) $(RAPICORN_CFLAGS) -DRAPICORN_CONVENIENCE
+
 # IDL Compiler
 SFIDL     = $(top_builddir)/sfi/sfidl
 SFIDL_INC = --nostdinc -I$(top_srcdir) -I$(top_builddir)
@@ -20,8 +19,8 @@ BSESCM    = $(top_builddir)/shell/bsescm-$(BIN_VERSION)
 #
 # bselatencytest:
 bselatencytest_la_SOURCES = bselatencytest.cc
-bselatencytest_la_LDFLAGS = -module -avoid-version
-bselatencytest_la_LIBADD  = $(top_builddir)/bse/libbse.la $(BSE_LIBS) -lm
+bselatencytest_la_LDFLAGS = $(AM_LDFLAGS) -module -avoid-version
+bselatencytest_la_LIBADD  = $(top_builddir)/bse/libbse.la $(RAPICORN_LIBS) $(BSE_LIBS) -lm
 EXTRA_HEADERS += bselatencytest.idl
 $(srcdir)/bselatencytest.cc: bselatencytest.idl
 $(srcdir)/bselatencytest.cc: bselatencytest.genidl.hh

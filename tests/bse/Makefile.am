@@ -1,12 +1,10 @@
 # beast/tests/bse
-# Copyright (C) 2003-2006 Tim Janik
-# Copyright (C) 2005 Stefan Westerfeld
-#
-## GNU Lesser General Public License version 2 or any later version.
 include $(top_srcdir)/Makefile.decl
 
-INCLUDES += -I$(top_srcdir) -I$(top_builddir) -I$(srcdir) -I. $(SFI_CFLAGS)
-DEFS     += -DG_LOG_DOMAIN="\"BSE-TEST\"" # -DG_DISABLE_CONST_RETURNS
+AM_CPPFLAGS += -I$(top_srcdir) -I$(top_builddir) -I$(srcdir) -I.
+DEFS        += @DEFINE__FILE_DIR__@ -DG_LOG_DOMAIN="\"BSE-TEST\"" # -DG_DISABLE_CONST_RETURNS
+AM_CXXFLAGS += $(SFI_CPPFLAGS) $(RAPICORN_CFLAGS) -DRAPICORN_CONVENIENCE
+
 SFIDL = $(top_builddir)/sfi/sfidl
 SFIDL_INC = --nostdinc -I$(top_srcdir) -I$(top_builddir)
 
@@ -48,7 +46,7 @@ generated: clean-generated $(GENERATED)
 # test programs
 #
 noinst_PROGRAMS = $(ALLTESTS)
-progs_ldadd = $(top_builddir)/bse/libbse.la
+progs_ldadd = $(top_builddir)/bse/libbse.la $(RAPICORN_LIBS) $(BSE_LIBS)
 
 SLOWTESTS         += cxxbinding
 cxxbinding_SOURCES = cxxbinding.cc bsecxxapi.cc
@@ -66,8 +64,8 @@ EXTRA_DIST += empty.ogg
 #
 lib_LTLIBRARIES = testplugin.la
 testplugin_la_SOURCES = testplugin.cc
-testplugin_la_LDFLAGS = -module -avoid-version
-testplugin_la_LIBADD  = $(top_builddir)/bse/libbse.la $(BSE_LIBS) -lm
+testplugin_la_LDFLAGS = $(AM_LDFLAGS) -module -avoid-version
+testplugin_la_LIBADD  = $(top_builddir)/bse/libbse.la $(RAPICORN_LIBS) $(BSE_LIBS) -lm
 EXTRA_DIST += testplugin.idl
 GENERATED_CLEANFILES += testplugin.genidl.hh
 $(srcdir)/testplugin.cc: testplugin.genidl.hh

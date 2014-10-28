@@ -1,102 +1,124 @@
-/* BSE - Bedevilled Sound Engine
- * Copyright (C) 2004 Tim Janik
- *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * A copy of the GNU Lesser General Public License should ship along
- * with this library; if not, see http://www.gnu.org/copyleft/.
- */
-#include "bsetype.h"        /* import all required types first */
-#include "bsepart.h"
-#include "bsemain.h"
-#include "bseengine.h"
-#include "bsesequencer.h"
-#include "bsecxxplugin.hh" /* includes bsecore.genidl.hh for us */
+// Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
+#include "bsecore.hh"
+#include "bsemain.hh"
 
 namespace Bse {
 
-namespace Procedure {
-ThreadTotalsHandle
-collect_thread_totals::exec ()
+// == BSE Initialization ==
+
+/** Create SFI glue layer context.
+ * Create and push an SFI glue layer context for the calling thread, to enable communications with the
+ * main BSE thread library.
+ */
+SfiGlueContext*
+init_glue_context (const gchar *client, const std::function<void()> &caller_wakeup)
 {
-  struct Sub {
-    static ThreadState convert (BirnetThreadState ts)
-    {
-      switch (ts)
-        {
-        default:
-        case BIRNET_THREAD_UNKNOWN:     return THREAD_STATE_UNKNOWN;
-        case BIRNET_THREAD_RUNNING:     return THREAD_STATE_RUNNING;
-        case BIRNET_THREAD_SLEEPING:    return THREAD_STATE_SLEEPING;
-        case BIRNET_THREAD_DISKWAIT:    return THREAD_STATE_DISKWAIT;
-        case BIRNET_THREAD_TRACED:      return THREAD_STATE_TRACED;
-        case BIRNET_THREAD_PAGING:      return THREAD_STATE_PAGING;
-        case BIRNET_THREAD_ZOMBIE:      return THREAD_STATE_ZOMBIE;
-        case BIRNET_THREAD_DEAD:        return THREAD_STATE_DEAD;
-        }
-    }
-    static void assign (ThreadInfoHandle &th,
-                        BirnetThreadInfo    *ti)
-    {
-      th->name = ti->name;
-      th->thread_id = ti->thread_id;
-      th->state = convert (ti->state);
-      th->priority = ti->priority;
-      th->processor = ti->processor;
-      th->utime = ti->utime;
-      th->stime = ti->stime;
-      th->cutime = ti->cutime;
-      th->cstime = ti->cstime;
-    }
-  };
-  ThreadTotalsHandle tth (Sfi::INIT_DEFAULT);
-  BirnetThreadInfo *ti;
-  ti = sfi_thread_info_collect (bse_main_thread);
-  tth->main = ThreadInfoHandle (Sfi::INIT_DEFAULT);
-  Sub::assign (tth->main, ti);
-  sfi_thread_info_free (ti);
-  if (bse_sequencer_thread)
-    {
-      ti = sfi_thread_info_collect (bse_sequencer_thread);
-      tth->sequencer = ThreadInfoHandle (Sfi::INIT_DEFAULT);
-      Sub::assign (tth->sequencer, ti);
-      sfi_thread_info_free (ti);
-    }
-  guint n;
-  BirnetThread **t;
-  t = bse_engine_get_threads (&n);
-  for (guint i = 0; i < n; i++)
-    {
-      ti = sfi_thread_info_collect (t[i]);
-      tth->synthesis.resize (i + 1);
-      tth->synthesis[i] = ThreadInfoHandle (Sfi::INIT_DEFAULT);
-      Sub::assign (tth->synthesis[i], ti);
-      sfi_thread_info_free (ti);
-    }
-  g_free (t);
-  return tth;
+  return _bse_glue_context_create (client, caller_wakeup);
 }
 
-} // Procedure
+/** Initialize and start BSE.
+ * Initialize the BSE library and start the main BSE thread. Arguments specific to BSE are removed
+ * from @a argc / @a argv.
+ */
+void
+init_async (int *argc, char **argv, const char *app_name, const StringVector &args)
+{
+  _bse_init_async (argc, argv, app_name, args);
+}
 
-/* export definitions follow */
-BSE_CXX_DEFINE_EXPORTS();
-BSE_CXX_REGISTER_ALL_TYPES_FROM_BSECORE_IDL();
+// == TaskRegistry ==
+static Bse::Mutex         task_registry_mutex_;
+static TaskRegistry::List task_registry_tasks_;
+
+void
+TaskRegistry::add (const std::string &name, int pid, int tid)
+{
+  Rapicorn::TaskStatus task (pid, tid);
+  task.name = name;
+  task.update();
+  Bse::ScopedLock<Bse::Mutex> locker (task_registry_mutex_);
+  task_registry_tasks_.push_back (task);
+}
+
+bool
+TaskRegistry::remove (int tid)
+{
+  Bse::ScopedLock<Bse::Mutex> locker (task_registry_mutex_);
+  for (auto it = task_registry_tasks_.begin(); it != task_registry_tasks_.end(); it++)
+    if (it->task_id == tid)
+      {
+        task_registry_tasks_.erase (it);
+        return true;
+      }
+  return false;
+}
+
+void
+TaskRegistry::update ()
+{
+  Bse::ScopedLock<Bse::Mutex> locker (task_registry_mutex_);
+  for (auto &task : task_registry_tasks_)
+    task.update();
+}
+
+TaskRegistry::List
+TaskRegistry::list ()
+{
+  Bse::ScopedLock<Bse::Mutex> locker (task_registry_mutex_);
+  return task_registry_tasks_;
+}
+
+class AidaGlibSourceImpl : public AidaGlibSource {
+  static AidaGlibSourceImpl* self_         (GSource *src)                     { return (AidaGlibSourceImpl*) src; }
+  static int                 glib_prepare  (GSource *src, int *timeoutp)      { return self_ (src)->prepare (timeoutp); }
+  static int                 glib_check    (GSource *src)                     { return self_ (src)->check(); }
+  static int                 glib_dispatch (GSource *src, GSourceFunc, void*) { return self_ (src)->dispatch(); }
+  static void                glib_finalize (GSource *src)                     { self_ (src)->~AidaGlibSourceImpl(); }
+  Rapicorn::Aida::BaseConnection *connection_;
+  GPollFD                         pfd_;
+  AidaGlibSourceImpl (Rapicorn::Aida::BaseConnection *connection) :
+    connection_ (connection), pfd_ { -1, 0, 0 }
+  {
+    pfd_.fd = connection_->notify_fd();
+    pfd_.events = G_IO_IN;
+    g_source_add_poll (this, &pfd_);
+  }
+  ~AidaGlibSourceImpl ()
+  {
+    g_source_remove_poll (this, &pfd_);
+  }
+  bool
+  prepare (int *timeoutp)
+  {
+    return pfd_.revents || connection_->pending();
+  }
+  bool
+  check ()
+  {
+    return pfd_.revents || connection_->pending();
+  }
+  bool
+  dispatch ()
+  {
+    pfd_.revents = 0;
+    connection_->dispatch();
+    return true;
+  }
+public:
+  static AidaGlibSourceImpl*
+  create (Rapicorn::Aida::BaseConnection *connection)
+  {
+    AIDA_ASSERT (connection != NULL);
+    static GSourceFuncs glib_source_funcs = { glib_prepare, glib_check, glib_dispatch, glib_finalize, NULL, NULL };
+    GSource *src = g_source_new (&glib_source_funcs, sizeof (AidaGlibSourceImpl));
+    return new (src) AidaGlibSourceImpl (connection);
+  }
+};
+
+AidaGlibSource*
+AidaGlibSource::create (Rapicorn::Aida::BaseConnection *connection)
+{
+  return AidaGlibSourceImpl::create (connection);
+}
 
 } // Bse
-
-/* compile and initialize generated C stubs */
-#include "bsegencore.cc"
-void
-_bse_init_c_wrappers (void)
-{
-  sfidl_types_init ();
-}

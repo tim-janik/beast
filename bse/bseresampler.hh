@@ -1,23 +1,8 @@
-/* BseResampler - FPU and SSE optimized FIR Resampling code
- * Copyright (C) 2006 Stefan Westerfeld
- *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * A copy of the GNU Lesser General Public License should ship along
- * with this library; if not, see http://www.gnu.org/copyleft/.
- */
+// Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #ifndef __BSE_RESAMPLER_HH__
 #define __BSE_RESAMPLER_HH__
 
-#include <glib.h>
+#include <bse/bsecxxutils.hh>
 
 G_BEGIN_DECLS
 
@@ -44,23 +29,20 @@ BseResampler2* bse_resampler2_create        (BseResampler2Mode      mode,
 void           bse_resampler2_destroy       (BseResampler2         *resampler);
 void	       bse_resampler2_process_block (BseResampler2         *resampler,
                                              const float           *input,
-                                             unsigned int           n_input_samples,
+                                             uint                   n_input_samples,
 					     float                 *output);
 guint	       bse_resampler2_order         (BseResampler2         *resampler);
 double	       bse_resampler2_delay         (BseResampler2         *resampler);
-
 /* precision <-> bits conversion */
 BseResampler2Precision	bse_resampler2_find_precision_for_bits (guint		       bits);
 const char*		bse_resampler2_precision_name	       (BseResampler2Precision precision);
-
 G_END_DECLS
-
 #ifdef __cplusplus
 #include <vector>
-
 namespace Bse {
-namespace Resampler {
 
+/// The Resampler namespace contains interfaces for factor 2 resampling.
+namespace Resampler {
 /**
  * Interface for factor 2 resampling classes
  */
@@ -86,7 +68,7 @@ public:
   /**
    * resample a data block
    */
-  virtual void	      process_block (const float *input, unsigned int n_input_samples, float *output) = 0;
+  virtual void	      process_block (const float *input, uint n_input_samples, float *output) = 0;
   /**
    * return FIR filter order
    */
@@ -111,7 +93,7 @@ protected:
   static const double halfband_fir_96db_coeffs[32];
   static const double halfband_fir_120db_coeffs[42];
   static const double halfband_fir_144db_coeffs[52];
-  
+
   /* Creates implementation from filter coefficients and Filter implementation class
    *
    * Since up- and downsamplers use different (scaled) coefficients, its possible
@@ -125,7 +107,7 @@ protected:
     float taps[order];
     for (guint i = 0; i < order; i++)
       taps[i] = d[i] * scaling;
-    
+
     Resampler2 *filter = new Filter (taps);
     g_assert (order == filter->order());
     return filter;

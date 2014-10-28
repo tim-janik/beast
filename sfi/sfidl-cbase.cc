@@ -1,19 +1,4 @@
-/* SFI - Synthesis Fusion Kit Interface
- * Copyright (C) 2002-2007 Stefan Westerfeld
- *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * A copy of the GNU Lesser General Public License should ship along
- * with this library; if not, see http://www.gnu.org/copyleft/.
- */
+// Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "sfidl-cbase.hh"
 #include "sfidl-factory.hh"
 #include <fcntl.h>
@@ -24,7 +9,7 @@
 #include "sfidl-namespace.hh"
 #include "sfidl-options.hh"
 #include "sfidl-parser.hh"
-#include "sfiparams.h" /* scatId (SFI_SCAT_*) */
+#include "sfiparams.hh" /* scatId (SFI_SCAT_*) */
 
 using namespace Sfidl;
 using std::min;
@@ -50,7 +35,7 @@ CodeGeneratorCBase::makeParamSpec(const Param& pdef)
 {
   String pspec;
   const String group = (pdef.group != "") ? pdef.group.escaped() : "NULL";
- 
+
   switch (parser.typeOf (pdef.type))
     {
       case CHOICE:
@@ -272,7 +257,7 @@ String CodeGeneratorCBase::createTypeCode (const String& type, const String &nam
       case MODEL_FROM_VALUE:  g_assert (name != ""); break;
       // how to convert the "type" called "name" to a GValue*
       case MODEL_TO_VALUE:    g_assert (name != ""); break;
-      
+
       /*
        * vcall interface: the following models deal with how to perform a
        * method/procedure invocation using a given data type
@@ -301,7 +286,7 @@ String CodeGeneratorCBase::createTypeCode (const String& type, const String &nam
       case SEQUENCE:
 	{
 	  if (model == MODEL_VCALL_RFREE)
-	    return "if ("+name+" != NULL) sfi_glue_gc_add ("+name+", "+makeLowerName (type)+"_free)";
+	    return "if ("+name+" != NULL) sfi_glue_gc_add ("+name+", (SfiGlueGcFreeFunc) "+makeLowerName (type)+"_free)";
 
 	  if (parser.isSequence (type))
 	  {
@@ -496,7 +481,7 @@ void CodeGeneratorCBase::printProcedure (const Method& mdef, bool proto, const S
 {
   vector<Param>::const_iterator pi;
   String dname, mname = makeProcName (className, mdef.name);
-  
+
   if (className == "")
     {
       dname = makeLowerName(mdef.name, '-');
@@ -908,9 +893,8 @@ void CodeGeneratorCBase::printClientSequenceMethodImpl()
       printf("{\n");
       printf("  g_return_if_fail (seq != NULL);\n");
       printf("\n");
-      printf("  seq->%s = g_realloc (seq->%s, "
-	  "(seq->n_%s + 1) * sizeof (seq->%s[0]));\n",
-	  elements.c_str(), elements.c_str(), elements.c_str(), elements.c_str());
+      printf("  seq->%s = (typeof (seq->%s)) g_realloc (seq->%s, (seq->n_%s + 1) * sizeof (seq->%s[0]));\n",
+             elements.c_str(), elements.c_str(), elements.c_str(), elements.c_str(), elements.c_str());
       printf("  seq->%s[seq->n_%s++] = %s (element);\n", elements.c_str(), elements.c_str(),
 	  elementCopy.c_str());
       printf("}\n\n");
@@ -941,8 +925,8 @@ void CodeGeneratorCBase::printClientSequenceMethodImpl()
       printf("  length = sfi_seq_length (sfi_seq);\n");
       printf("  seq = g_new0 (%s, 1);\n",mname.c_str());
       printf("  seq->n_%s = length;\n", elements.c_str());
-      printf("  seq->%s = g_malloc (seq->n_%s * sizeof (seq->%s[0]));\n\n",
-	  elements.c_str(), elements.c_str(), elements.c_str());
+      printf("  seq->%s = (typeof (seq->%s)) g_malloc (seq->n_%s * sizeof (seq->%s[0]));\n\n",
+             elements.c_str(), elements.c_str(), elements.c_str(), elements.c_str());
       printf("  for (i = 0; i < length; i++)\n");
       printf("    {\n");
       printf("      GValue *element = sfi_seq_get (sfi_seq, i);\n");
@@ -994,8 +978,8 @@ void CodeGeneratorCBase::printClientSequenceMethodImpl()
 	  printf("    }\n");
 	}
       printf("\n");
-      printf("  seq->%s = g_realloc (seq->%s, new_size * sizeof (seq->%s[0]));\n",
-	  elements.c_str(), elements.c_str(), elements.c_str());
+      printf("  seq->%s = (typeof (seq->%s)) g_realloc (seq->%s, new_size * sizeof (seq->%s[0]));\n",
+             elements.c_str(), elements.c_str(), elements.c_str(), elements.c_str());
       printf("  if (new_size > seq->n_%s)\n", elements.c_str());
       if (element_i_new != "")
 	{

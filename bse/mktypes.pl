@@ -1,4 +1,5 @@
 #!/usr/bin/perl -w
+# Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 
 # figure whether all { have a corresponding }
 sub brace_level {
@@ -160,7 +161,7 @@ while (<>) {
     }
 
     if ($gen_export_proto) {
-	print "extern BSE_BUILTIN_PROTO ($type);\n";
+	print "extern \"C\" BSE_BUILTIN_PROTO ($type);\n";
     }
     
     if ($gen_interns) {

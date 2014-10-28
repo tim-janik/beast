@@ -1,0 +1,665 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="1368.0032"
+   height="847.99689"
+   id="svg3215"
+   version="1.1"
+   inkscape:version="0.48.3.1 r9886"
+   sodipodi:docname="beast-progs.svg"
+   inkscape:export-filename="/opt/src/beast/docs/images/beast-progs.png"
+   inkscape:export-xdpi="67.368263"
+   inkscape:export-ydpi="67.368263">
+  <defs
+     id="defs3217" />
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="0.6"
+     inkscape:cx="620.66822"
+     inkscape:cy="423.99845"
+     inkscape:current-layer="layer1"
+     inkscape:document-units="px"
+     showgrid="false"
+     fit-margin-top="0"
+     fit-margin-left="0"
+     fit-margin-right="0"
+     fit-margin-bottom="0"
+     inkscape:window-width="1366"
+     inkscape:window-height="744"
+     inkscape:window-x="0"
+     inkscape:window-y="24"
+     inkscape:window-maximized="1" />
+  <metadata
+     id="metadata3220">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     id="layer1"
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     transform="translate(-115.99844,-176.00155)">
+    <g
+       id="g3452"
+       transform="translate(236.66667,-63.333335)">
+      <g
+         transform="matrix(1.79058,0,0,1.789023,-81.275467,171.35201)"
+         id="g4">
+        <rect
+           id="rect6"
+           height="470"
+           width="760"
+           y="40"
+           x="-20"
+           style="fill:#ffffff" />
+        <rect
+           id="rect8"
+           height="470"
+           width="760"
+           y="40"
+           x="-20"
+           style="fill:none;stroke:#000000;stroke-width:4" />
+      </g>
+      <text
+         id="text10"
+         y="305.18085"
+         x="563.2782"
+         style="font-size:48.69622803px;font-style:normal;font-weight:700;text-anchor:middle;fill:#7f7f7f;font-family:sans-serif"
+         font-size="27.2">
+        <tspan
+           id="tspan12"
+           y="305.18085"
+           x="563.2782">Executables and Libraries</tspan>
+      </text>
+      <text
+         id="text14"
+         y="1024.8824"
+         x="1030.5472"
+         style="font-size:42.96725845px;font-style:normal;font-weight:normal;text-anchor:middle;fill:#000000;font-family:sans-serif"
+         font-size="24">
+        <tspan
+           id="tspan16"
+           y="1024.8824"
+           x="1030.5472" />
+      </text>
+      <g
+         transform="matrix(1.7903025,0,0,1.7903025,-81.230676,170.90817)"
+         id="g18">
+        <rect
+           id="rect20"
+           height="40"
+           width="720"
+           y="450"
+           x="0"
+           style="fill:#ffffff" />
+        <rect
+           id="rect22"
+           height="40"
+           width="720"
+           y="450"
+           x="0"
+           style="fill:none;stroke:#000000;stroke-width:2" />
+      </g>
+      <text
+         id="text24"
+         y="1030.2534"
+         x="473.76309"
+         style="font-size:42.96725845px;font-style:normal;font-weight:normal;text-anchor:middle;fill:#000000;font-family:sans-serif"
+         font-size="24">
+        <tspan
+           id="tspan26"
+           y="1030.2534"
+           x="473.76309">GLib</tspan>
+      </text>
+      <text
+         id="text28"
+         y="904.93219"
+         x="-81.230675"
+         style="font-size:42.96725845px;font-style:normal;font-weight:normal;text-anchor:middle;fill:#000000;font-family:sans-serif"
+         font-size="24">
+        <tspan
+           id="tspan30"
+           y="904.93219"
+           x="-81.230675" />
+      </text>
+      <g
+         transform="matrix(1.7903025,0,0,1.7903025,-81.230676,170.90817)"
+         id="g32">
+        <g
+           id="g34">
+          <rect
+             id="rect36"
+             height="80"
+             width="140"
+             y="100"
+             x="120"
+             style="fill:#ffffff" />
+          <rect
+             id="rect38"
+             height="80"
+             width="140"
+             y="100"
+             x="120"
+             style="fill:none;stroke:#000000;stroke-width:2" />
+        </g>
+        <text
+           id="text40"
+           y="130"
+           x="190"
+           style="font-size:24px;font-style:normal;font-weight:normal;text-anchor:middle;fill:#000000;font-family:sans-serif"
+           font-size="24">
+          <tspan
+             id="tspan42"
+             y="130"
+             x="190">BSE -</tspan>
+          <tspan
+             id="tspan44"
+             y="160"
+             x="190">WaveTool</tspan>
+        </text>
+      </g>
+      <g
+         transform="matrix(1.7903025,0,0,1.7903025,-81.230676,170.90817)"
+         id="g46">
+        <rect
+           id="rect48"
+           height="80"
+           width="570"
+           y="370"
+           x="0"
+           style="fill:#ffffff" />
+        <rect
+           id="rect50"
+           height="80"
+           width="570"
+           y="370"
+           x="0"
+           style="fill:none;stroke:#000000;stroke-width:2" />
+      </g>
+      <text
+         id="text52"
+         y="955.06061"
+         x="563.2782"
+         style="font-size:42.96725845px;font-style:normal;font-weight:normal;text-anchor:middle;fill:#000000;font-family:sans-serif"
+         font-size="24">
+        <tspan
+           id="tspan54"
+           y="955.06061"
+           x="563.2782">SFI - Synthesis Fusion Kit Interface</tspan>
+      </text>
+      <text
+         id="text56"
+         y="955.06061"
+         x="61.993534"
+         style="font-size:42.96725845px;font-style:normal;font-weight:normal;text-anchor:middle;fill:#000000;font-family:sans-serif"
+         font-size="24">
+        <tspan
+           id="tspan58"
+           y="955.06061"
+           x="61.993534">GLib-Extra</tspan>
+      </text>
+      <g
+         transform="matrix(1.7903025,0,0,1.7903025,-81.230676,170.90817)"
+         id="g60">
+        <g
+           id="g62">
+          <rect
+             id="rect64"
+             height="270"
+             width="100"
+             y="100"
+             x="0"
+             style="fill:#ffffff" />
+          <rect
+             id="rect66"
+             height="270"
+             width="100"
+             y="100"
+             x="0"
+             style="fill:none;stroke:#000000;stroke-width:2" />
+        </g>
+        <text
+           id="text68"
+           y="130"
+           x="50"
+           style="font-size:24px;font-style:normal;font-weight:normal;text-anchor:middle;fill:#000000;font-family:sans-serif"
+           font-size="24">
+          <tspan
+             id="tspan70"
+             y="130"
+             x="50">SFIDL</tspan>
+        </text>
+      </g>
+      <g
+         transform="matrix(1.7903025,0,0,1.7903025,-81.230676,170.90817)"
+         id="g72">
+        <g
+           id="g74">
+          <rect
+             id="rect76"
+             height="30"
+             width="160"
+             y="380"
+             x="240"
+             style="fill:#ffffff" />
+          <rect
+             id="rect78"
+             height="30"
+             width="160"
+             y="380"
+             x="240"
+             style="fill:none;stroke:#000000;stroke-width:2" />
+        </g>
+        <text
+           id="text80"
+           y="402"
+           x="320"
+           style="font-size:24px;font-style:normal;font-weight:normal;text-anchor:middle;fill:#000000;font-family:sans-serif"
+           font-size="24">
+          <tspan
+             id="tspan82"
+             y="402"
+             x="320">Glue Layer</tspan>
+        </text>
+      </g>
+      <g
+         transform="matrix(1.7903025,0,0,1.7903025,-81.230676,170.90817)"
+         id="g84">
+        <polyline
+           id="polyline86"
+           points="540,379.736 540,395 409.736,395 "
+           style="fill:none;stroke:#000000;stroke-width:2;stroke-dasharray:4" />
+        <polygon
+           id="polygon88"
+           points="535,382.236 540,372.236 545,382.236 540,379.736 "
+           style="fill:none;stroke:#000000;stroke-width:2" />
+        <polygon
+           id="polygon90"
+           points="412.236,400 402.236,395 412.236,390 409.736,395 "
+           style="fill:none;stroke:#000000;stroke-width:2" />
+      </g>
+      <g
+         transform="matrix(1.7903025,0,0,1.7903025,-81.230676,170.90817)"
+         id="g92">
+        <polyline
+           id="polyline94"
+           points="230.264,395 200,395 200,379.736 "
+           style="fill:none;stroke:#000000;stroke-width:2;stroke-dasharray:4" />
+        <polygon
+           id="polygon96"
+           points="227.764,390 237.764,395 227.764,400 230.264,395 "
+           style="fill:none;stroke:#000000;stroke-width:2" />
+        <polygon
+           id="polygon98"
+           points="195,382.236 200,372.236 205,382.236 200,379.736 "
+           style="fill:none;stroke:#000000;stroke-width:2" />
+      </g>
+      <g
+         transform="matrix(1.7903025,0,0,1.7903025,-81.230676,170.90817)"
+         id="g100">
+        <polyline
+           id="polyline102"
+           points="430,379.736 430,395 430,395 "
+           style="fill:none;stroke:#000000;stroke-width:2;stroke-dasharray:4" />
+        <polygon
+           id="polygon104"
+           points="425,382.236 430,372.236 435,382.236 430,379.736 "
+           style="fill:none;stroke:#000000;stroke-width:2" />
+      </g>
+      <g
+         transform="matrix(1.7903025,0,0,1.7903025,-81.230676,170.90817)"
+         id="g106">
+        <g
+           id="g108">
+          <rect
+             id="rect110"
+             height="270"
+             width="100"
+             y="100"
+             x="380"
+             style="fill:#ffffff" />
+          <rect
+             id="rect112"
+             height="270"
+             width="100"
+             y="100"
+             x="380"
+             style="fill:none;stroke:#000000;stroke-width:2" />
+        </g>
+        <text
+           id="text114"
+           y="130"
+           x="430"
+           style="font-size:24px;font-style:normal;font-weight:normal;text-anchor:middle;fill:#000000;font-family:sans-serif"
+           font-size="24">
+          <tspan
+             id="tspan116"
+             y="130"
+             x="430">BSESH</tspan>
+          <tspan
+             id="tspan118"
+             y="160"
+             x="430">(Guile)</tspan>
+        </text>
+      </g>
+      <g
+         transform="matrix(1.7903025,0,0,1.7903025,-81.230676,170.90817)"
+         id="g120">
+        <g
+           id="g122">
+          <rect
+             id="rect124"
+             height="35"
+             width="20"
+             y="335"
+             x="530"
+             style="fill:#ffffff" />
+          <rect
+             id="rect126"
+             height="35"
+             width="20"
+             y="335"
+             x="530"
+             style="fill:none;stroke:#000000;stroke-width:2" />
+        </g>
+        <g
+           id="g128">
+          <rect
+             id="rect130"
+             height="270"
+             width="220"
+             y="100"
+             x="500"
+             style="fill:#ffffff" />
+          <rect
+             id="rect132"
+             height="270"
+             width="220"
+             y="100"
+             x="500"
+             style="fill:none;stroke:#000000;stroke-width:2" />
+        </g>
+        <text
+           id="text134"
+           y="130"
+           x="600"
+           style="font-size:24px;font-style:normal;font-weight:normal;text-anchor:middle;fill:#000000;font-family:sans-serif"
+           font-size="24">
+          <tspan
+             id="tspan136"
+             y="130"
+             x="600">Beast-GTK</tspan>
+        </text>
+        <g
+           id="g138">
+          <rect
+             id="rect140"
+             height="65"
+             width="120"
+             y="270"
+             x="600"
+             style="fill:#ffffff" />
+          <rect
+             id="rect142"
+             height="65"
+             width="120"
+             y="270"
+             x="600"
+             style="fill:none;stroke:#000000;stroke-width:2" />
+        </g>
+        <text
+           id="text144"
+           y="310"
+           x="660"
+           style="font-size:24px;font-style:normal;font-weight:normal;text-anchor:middle;fill:#000000;font-family:sans-serif"
+           font-size="24">
+          <tspan
+             id="tspan146"
+             y="310"
+             x="660">GXK</tspan>
+        </text>
+      </g>
+      <g
+         transform="matrix(1.7903025,0,0,1.7903025,-81.230676,170.90817)"
+         id="g148">
+        <g
+           id="g150">
+          <rect
+             id="rect152"
+             height="115"
+             width="150"
+             y="335"
+             x="570"
+             style="fill:#ffffff" />
+          <rect
+             id="rect154"
+             height="115"
+             width="150"
+             y="335"
+             x="570"
+             style="fill:none;stroke:#000000;stroke-width:2" />
+        </g>
+        <text
+           id="text156"
+           y="400"
+           x="650"
+           style="font-size:24px;font-style:normal;font-weight:normal;text-anchor:middle;fill:#000000;font-family:sans-serif"
+           font-size="24">
+          <tspan
+             id="tspan158"
+             y="400"
+             x="650">GDK/GTK+</tspan>
+        </text>
+      </g>
+      <line
+         id="line160"
+         y2="976.54425"
+         x2="181.21779"
+         y1="833.32007"
+         x1="181.21779"
+         style="fill:none;stroke:#000000;stroke-width:3.58060503;stroke-dasharray:10.741815" />
+      <g
+         transform="matrix(1.7903025,0,0,1.7903025,-81.230676,170.90817)"
+         id="g162">
+        <g
+           id="g164">
+          <rect
+             id="rect166"
+             height="25"
+             width="20"
+             y="345"
+             x="190"
+             style="fill:#ffffff" />
+          <rect
+             id="rect168"
+             height="25"
+             width="20"
+             y="345"
+             x="190"
+             style="fill:none;stroke:#000000;stroke-width:2" />
+        </g>
+        <g
+           id="g170">
+          <rect
+             id="rect172"
+             height="190"
+             width="240"
+             y="180"
+             x="120"
+             style="fill:#ffffff" />
+          <rect
+             id="rect174"
+             height="190"
+             width="240"
+             y="180"
+             x="120"
+             style="fill:none;stroke:#000000;stroke-width:2" />
+        </g>
+        <text
+           id="text176"
+           y="210"
+           x="240"
+           style="font-size:22.34259415px;font-style:normal;font-weight:normal;text-anchor:middle;fill:#000000;font-family:sans-serif"
+           font-size="24">
+          <tspan
+             style="font-size:22.34259415px"
+             id="tspan178"
+             y="210"
+             x="240">BSE - Sound Engine</tspan>
+        </text>
+        <g
+           id="g180">
+          <g
+             id="g182">
+            <rect
+               id="rect184"
+               height="30"
+               width="160"
+               y="250"
+               x="150"
+               style="fill:#ffffff" />
+            <rect
+               id="rect186"
+               height="30"
+               width="160"
+               y="250"
+               x="150"
+               style="fill:none;stroke:#000000;stroke-width:2" />
+          </g>
+          <g
+             id="g188">
+            <rect
+               id="rect190"
+               height="30"
+               width="160"
+               y="240"
+               x="140"
+               style="fill:#ffffff" />
+            <rect
+               id="rect192"
+               height="30"
+               width="160"
+               y="240"
+               x="140"
+               style="fill:none;stroke:#000000;stroke-width:2" />
+          </g>
+          <g
+             id="g194">
+            <rect
+               id="rect196"
+               height="30"
+               width="160"
+               y="230"
+               x="130"
+               style="fill:#ffffff" />
+            <rect
+               id="rect198"
+               height="30"
+               width="160"
+               y="230"
+               x="130"
+               style="fill:none;stroke:#000000;stroke-width:2" />
+          </g>
+          <text
+             id="text200"
+             y="251"
+             x="210"
+             style="font-size:21.22546387px;font-style:normal;font-weight:normal;text-anchor:middle;fill:#000000;font-family:sans-serif"
+             font-size="24">
+            <tspan
+               style="font-size:21.22546387px"
+               id="tspan202"
+               y="251"
+               x="210">Driver Plugins</tspan>
+          </text>
+        </g>
+        <g
+           id="g204">
+          <g
+             id="g206">
+            <rect
+               id="rect208"
+               height="30"
+               width="200"
+               y="320"
+               x="150"
+               style="fill:#ffffff" />
+            <rect
+               id="rect210"
+               height="30"
+               width="200"
+               y="320"
+               x="150"
+               style="fill:none;stroke:#000000;stroke-width:2" />
+          </g>
+          <g
+             id="g212">
+            <rect
+               id="rect214"
+               height="30"
+               width="200"
+               y="310"
+               x="140"
+               style="fill:#ffffff" />
+            <rect
+               id="rect216"
+               height="30"
+               width="200"
+               y="310"
+               x="140"
+               style="fill:none;stroke:#000000;stroke-width:2" />
+          </g>
+          <g
+             id="g218">
+            <rect
+               id="rect220"
+               height="30"
+               width="200"
+               y="300"
+               x="130"
+               style="fill:#ffffff" />
+            <rect
+               id="rect222"
+               height="30"
+               width="200"
+               y="300"
+               x="130"
+               style="fill:none;stroke:#000000;stroke-width:2" />
+          </g>
+          <text
+             id="text224"
+             y="321"
+             x="230"
+             style="font-size:21.22546387px;font-style:normal;font-weight:normal;text-anchor:middle;fill:#000000;font-family:sans-serif"
+             font-size="24">
+            <tspan
+               style="font-size:21.22546387px"
+               id="tspan226"
+               y="321"
+               x="230">Synthesis Plugins</tspan>
+          </text>
+        </g>
+      </g>
+    </g>
+  </g>
+</svg>

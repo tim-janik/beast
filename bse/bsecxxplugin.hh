@@ -1,25 +1,13 @@
-/* BSE - Bedevilled Sound Engine
- * Copyright (C) 2003 Tim Janik
- *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * A copy of the GNU Lesser General Public License should ship along
- * with this library; if not, see http://www.gnu.org/copyleft/.
- */
+// Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #ifndef __BSE_CXX_PLUGIN_H__
 #define __BSE_CXX_PLUGIN_H__
 
 #include <bse/bsecxxmodule.hh>
-#include <bse/bseexports.h>
-#include <bse/bseparam.h>
+#include <bse/bseexports.hh>
+#include <bse/bseparam.hh>
+#include <bse/bsecategories.hh>
+#include <bse/bseplugin.hh>
+#include <sfi/sficxx.hh>
 
 namespace Bse {
 
@@ -41,10 +29,39 @@ const SfiInt  MAX_FINE_TUNE = BSE_MAX_FINE_TUNE;
 #define BSE_CXX_DEFINE_EXPORTS()
 #define BSE_CXX_EXPORT_IDENTITY    &bse_builtin_export_identity
 extern "C" {
-extern ::BseExportIdentity bse_builtin_export_identity; /* sync with bseplugin.h */
+extern ::BseExportIdentity bse_builtin_export_identity; /* sync with bseplugin.hh */
 };
 #endif
 
+// == Resident Type Plugin Registration ==
+#define BSE_RESIDENT_TYPE_DEF(Object, func, anc, category, blurb, icon) \
+  static GType func##_get_type () {                                     \
+    static const GTypeInfo type_info = {                                \
+      sizeof (Object##Class),                                           \
+      (GBaseInitFunc) NULL,                                             \
+      (GBaseFinalizeFunc) NULL,                                         \
+      (GClassInitFunc) func##_class_init,                               \
+      (GClassFinalizeFunc) NULL,                                        \
+      NULL /* class_data */,                                            \
+      sizeof (Object),                                                  \
+      0 /* n_preallocs */,                                              \
+      (GInstanceInitFunc) func##_init,                                  \
+    };                                                                  \
+    static GType type_id = 0;                                           \
+    if (!type_id)                                                       \
+      {                                                                 \
+        type_id = bse_type_register_static (anc,  # Object , blurb, __FILE__, __LINE__, &type_info); \
+        if (category)                                                   \
+          bse_categories_register_stock_module (category, type_id, icon); \
+      }                                                                 \
+    return type_id;                                                     \
+  }                                                                     \
+  static void func##__onload () {                                       \
+    bse_plugin_make_resident();                                         \
+    (void) (volatile GType) func##_get_type();                          \
+  } static Sfi::Init func##__onload_ (func##__onload);
+#define BSE_RESIDENT_SOURCE_DEF(Object, func, category, blurb, icon)    \
+  BSE_RESIDENT_TYPE_DEF(Object, func, BSE_TYPE_SOURCE, category, blurb, icon)
 
 /* --- hook registration --- */
 /* hook registration is based on a static ExportTypeKeeper
@@ -302,7 +319,7 @@ class ExportTypeKeeper
                                         ::BseExportNode           *enode);
   static void       plugin_cleanup     (BsePlugin                 *plugin,
                                         ::BseExportNode           *enode);
-  BIRNET_PRIVATE_CLASS_COPY (ExportTypeKeeper);
+  RAPICORN_CLASS_NON_COPYABLE (ExportTypeKeeper);
 public:
   ExportTypeKeeper (::BseExportNode* (*export_node) (),
                     ::BseExportIdentity *export_identity)
@@ -317,15 +334,11 @@ public:
   }
   const GType get_type()        { return enode->type; }
 };
-
 } // Bse
-
 /* include generated C++ core types */
-#include <bse/bsecore.genidl.hh>        /* includes bsecxxplugin.hh itself */
-
-/* define types dependant on bsecore.idl */
+#include <bse/bsebasics.genidl.hh>        /* includes bsecxxplugin.hh itself */
+/* define types dependant on bsebasics.idl */
 namespace Bse {
-
 /* --- trampoline templates --- */
 template<class ObjectType, typename PropertyID> static void
 cxx_get_candidates_trampoline (BseItem               *item,

@@ -1,7 +1,4 @@
-# BEAST/BSE - Bedevilled Audio System / Bedevilled Sound Engine
-# Copyright (C) 2003 Tim Janik
-#
-## GNU Lesser General Public License version 2 or any later version.
+# BEAST/BSE - Better Audio System / Better Sound Engine
 include $(top_srcdir)/Makefile.decl
 
 

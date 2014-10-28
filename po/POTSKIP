@@ -1,7 +1,7 @@
 #0 List of source files to scan for translatable strings
 #0 Please keep alphabetically sorted
-beast-gtk/bstgentypes.c
-beast-gtk/bststest.c
+beast-gtk/bstgentypes.cc
+beast-gtk/bststest.cc
 plugins/bsefirfilter.c
 plugins/davguitar.c
 plugins/evaluator/bseevaluator.idl

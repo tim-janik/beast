@@ -1,19 +1,4 @@
-/* SFI - Synthesis Fusion Kit Interface
- * Copyright (C) 2003 Tim Janik
- *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * A copy of the GNU Lesser General Public License should ship along
- * with this library; if not, see http://www.gnu.org/copyleft/.
- */
+// Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "sfidl-namespace.hh"
 #include "sfidl-factory.hh"
 #include "sfidl-utils.hh"
@@ -579,10 +564,10 @@ public:
       {
         if (parser.fromInclude (ri->name))
           continue;
-        
+
         nspace.setFromSymbol(ri->name);
         const char *name = nspace.printable_form (ri->name);
-        
+
         printf ("class %s;\n", pure_TypeName (ri->name));
         printf ("typedef Sfi::RecordHandle<%s> %sHandle;\n", name, name);
         printf ("#define %s\t\tBSE_CXX_DECLARED_RECORD_TYPE (%s, %s)\n",
@@ -601,7 +586,7 @@ public:
         if (parser.fromInclude (ri->name))
           continue;
         nspace.setFromSymbol(ri->name);
-        
+
         printf ("class %s : public ::Sfi::GNewable {\n", pure_TypeName (ri->name));
         printf ("public:\n");
         for (vector<Param>::const_iterator pi = ri->contents.begin(); pi != ri->contents.end(); pi++)
@@ -631,7 +616,7 @@ public:
         if (parser.fromInclude (ri->name))
           continue;
         nspace.setFromSymbol(ri->name);
-        
+
         printf ("BSE_CXX_DECLARE_RECORD (%s);\n", pure_TypeName (ri->name));
         printf ("\n");
       }
@@ -646,7 +631,7 @@ public:
           continue;
         nspace.setFromSymbol(ri->name);
         const char *nname = nspace.printable_form (ri->name);
-        
+
         printf ("%s\n", TypeRet (ri->name));
         printf ("%s::from_rec (SfiRec *sfi_rec)\n", nname);
         printf ("{\n");
@@ -664,7 +649,7 @@ public:
           }
         printf ("  return rec;\n");
         printf ("}\n\n");
-        
+
         printf ("SfiRec *\n");
         printf ("%s::to_rec (%s rec)\n", nname, TypeArg (ri->name));
         printf ("{\n");
@@ -683,7 +668,7 @@ public:
           }
         printf ("  return sfi_rec;\n");
         printf ("}\n\n");
-        
+
         printf ("%s\n", TypeRet (ri->name));
         printf ("%s::value_get_boxed (const GValue *value)\n", nname);
         printf ("{\n");
@@ -694,7 +679,7 @@ public:
         printf ("{\n");
         printf ("  %s::value_set_boxed (value, self);\n", TypeRet (ri->name));
         printf ("}\n\n");
-        
+
         printf ("SfiRecFields\n");
         printf ("%s::get_fields()\n", nname);
         printf ("{\n");
@@ -724,7 +709,7 @@ public:
         if (parser.fromInclude (si->name))
           continue;
         nspace.setFromSymbol(si->name);
-        
+
         printf ("class %s;\n", pure_TypeName (si->name));
         printf ("#define %s\t\tBSE_CXX_DECLARED_SEQUENCE_TYPE (%s, %s)\n",
                 make_TYPE_NAME (si->name),
@@ -742,7 +727,7 @@ public:
         if (parser.fromInclude (si->name))
           continue;
         nspace.setFromSymbol(si->name);
-        
+
         printf ("class %s : public Sfi::Sequence< %s > {\n", pure_TypeName (si->name), TypeField (si->content.type));
         printf ("public:\n");
         printf ("  %s (unsigned int n = 0) : Sfi::Sequence< %s > (n) {}\n", pure_TypeName (si->name), TypeField (si->content.type));
@@ -784,7 +769,7 @@ public:
           continue;
         nspace.setFromSymbol(si->name);
         const char *nname = nspace.printable_form (si->name);
-        
+
         printf ("%s\n", TypeRet (si->name));
         printf ("%s::from_seq (SfiSeq *sfi_seq)\n", nname);
         printf ("{\n");
@@ -803,7 +788,7 @@ public:
         printf ("    }\n");
         printf ("  return cseq;\n");
         printf ("}\n\n");
-        
+
         printf ("SfiSeq *\n");
         printf ("%s::to_seq (%s cseq)\n", nname, TypeArg (si->name));
         printf ("{\n");
@@ -815,7 +800,7 @@ public:
         printf ("    }\n");
         printf ("  return sfi_seq;\n");
         printf ("}\n\n");
-        
+
         printf ("%s\n", TypeRet (si->name));
         printf ("%s::value_get_boxed (const GValue *value)\n", nname);
         printf ("{\n");
@@ -826,14 +811,16 @@ public:
         printf ("{\n");
         printf ("  ::Sfi::cxx_value_set_boxed_sequence< %s> (value, self);\n", nname);
         printf ("}\n\n");
-        
+
         printf ("GParamSpec*\n");
         printf ("%s::get_element()\n", nname);
         printf ("{\n");
         printf ("  static GParamSpec *element = NULL;\n");
-        printf ("  if (!element)\n");
+        printf ("  if (!element) {\n");
         // printf ("#line %u \"%s\"\n", si->content.line, parser.fileName().c_str());
-        printf ("    element = %s;\n", untyped_pspec_constructor (si->content).c_str());
+        printf ("    element = g_param_spec_ref (%s);\n", untyped_pspec_constructor (si->content).c_str());
+        printf ("    g_param_spec_sink (element);\n");
+        printf ("  }\n");
         printf ("  return element;\n");
         printf ("}\n\n");
       }
@@ -882,11 +869,11 @@ public:
         const char *ctProperties = intern (ctName + String ("Properties"));
         const char *ctPropertyID = intern (ctName + String ("PropertyID"));
         vector<String> destroy_jobs;
-        
+
         /* skeleton class declaration + type macro */
         printf ("BSE_CXX_DECLARE_CLASS (%s);\n", pure_TypeName (ci->name));
         printf ("class %s : public %s {\n", ctNameBase, make_fqtn (ci->inherits));
-        
+
         /* class Info strings */
         /* pixstream(), this is a bit of a hack, we make it a template rather than
          * a normal inline method to avoid huge images in debugging code
@@ -916,7 +903,7 @@ public:
         printf ("  static inline const char* authors   () { return %s; }\n", ci->infos.get("authors").escaped().c_str());
         printf ("  static inline const char* license   () { return %s; }\n", ci->infos.get("license").escaped().c_str());
         printf ("  static inline const char* type_name () { return \"%s\"; }\n", make_PrefixedTypeName (ci->name));
-        
+
         /* i/j/o channel names */
         if (ci->istreams.size())
           {
@@ -942,7 +929,7 @@ public:
               printf ("    OCHANNEL_%s,\n", pure_UPPER (si->ident));
             printf ("    N_OCHANNELS\n  };\n");
           }
-        
+
         /* property IDs */
         printf ("protected:\n  enum %s {\n", ctPropertyID);
         if (ci->properties.begin() != ci->properties.end())
@@ -953,7 +940,7 @@ public:
               printf ("    PROP_%s,\n", pure_UPPER (pi->name));
           }
         printf ("  };\n");
-        
+
         /* "Properties" structure for synthesis modules */
         if (ci->istreams.size() + ci->jstreams.size() + ci->ostreams.size())
           {
@@ -970,7 +957,7 @@ public:
             printf ("    }\n");
             printf ("  };\n");
           }
-        
+
         /* auto-update type */
         printf ("protected:\n");
         printf ("  typedef %s AutoUpdateCategory;\n", class_has_automation_properties (*ci) ? "::Bse::SynthesisModule::NeedAutoUpdateTag" : "void");
@@ -983,7 +970,7 @@ public:
             if (g_option_check (pi->literal_options.c_str(), "automate"))
               printf ("  guint64 last__%s;\n", pi->name.c_str());
           }
-        
+
         /* get_property() */
         printf ("public:\n");
         printf ("  void get_property (%s prop_id, ::Bse::Value &value, GParamSpec *pspec)\n", ctPropertyID);
@@ -997,7 +984,7 @@ public:
           }
         printf ("    };\n");
         printf ("  }\n");
-        
+
         /* set_property() */
         printf ("  void set_property (%s prop_id, const ::Bse::Value &value, GParamSpec *pspec)\n", ctPropertyID);
         printf ("  {\n");
@@ -1071,15 +1058,15 @@ public:
             printf ("    guint signal_%s;\n", sig_name);
           }
         printf ("  } static_data;\n");
-        
+
         /* property-changed hooking */
         printf ("protected:\n");
         printf ("  virtual bool property_changed (%s) { return false; }\n", ctPropertyID);
-        
+
         /* methods */
         for (vector<Method>::const_iterator mi = ci->methods.begin(); mi != ci->methods.end(); mi++)
           procs.push_back (&(*mi));
-        
+
         /* destructor */
         printf ("  virtual ~%s ()\n", ctNameBase);
         printf ("  {\n");
@@ -1087,7 +1074,7 @@ public:
         for (vector<String>::const_iterator vi = destroy_jobs.begin(); vi != destroy_jobs.end(); vi++)
           printf ("    %s;\n", vi->c_str());
         printf ("  }\n");
-        
+
         /* signal emission methods */
         printf ("public:\n");
         for (vector<Method>::const_iterator si = ci->signals.begin(); si != ci->signals.end(); si++)
@@ -1116,7 +1103,7 @@ public:
               printf ("    g_value_unset (args + %u);\n", i);
             printf ("  }\n");
           }
-        
+
         /* done */
         printf ("};\n"); /* finish: class ... { }; */
       }
@@ -1135,7 +1122,7 @@ public:
         const char *ctPropertyID = intern (ctName + String ("PropertyID"));
         const char *nname = nspace.printable_form (ci->name);
         vector<String> destroy_jobs;
-        
+
         /* class_init */
         printf ("void\n");
         printf ("%sBase::class_init (::Bse::CxxBaseClass *klass)\n", nname);
@@ -1209,7 +1196,7 @@ public:
         printf ("namespace Procedure {\n");
         printf ("BSE_CXX_DECLARE_PROC (%s);\n", pure_lower (mi->name));
         printf ("class %s {\n", pure_lower (mi->name));
-        
+
         /* class Info strings */
         /* pixstream(), this is a bit of a hack, we make it a template rather than
          * a normal inline method to avoid huge images in debugging code
@@ -1238,7 +1225,7 @@ public:
         printf ("  static inline const char* authors   () { return %s; }\n", infos.get("authors").escaped().c_str());
         printf ("  static inline const char* license   () { return %s; }\n", infos.get("license").escaped().c_str());
         printf ("  static inline const char* type_name () { return \"%s\"; }\n", make_scheme_name (mi->name));
-        
+
         /* return type */
         printf ("  static %s exec (", TypeRet (mi->result.type));
         /* args */
@@ -1249,7 +1236,7 @@ public:
             printf ("%s %s", TypeArg (ai->type), ai->name.c_str());
           }
         printf (");\n");
-        
+
         /* marshal */
         printf ("  static BseErrorType marshal (BseProcedureClass *procedure,\n"
                 "                               const GValue      *in_values,\n"
@@ -1276,7 +1263,7 @@ public:
         printf ("    }\n");
         printf ("    return BSE_ERROR_NONE;\n");
         printf ("  }\n");
-        
+
         /* init */
         printf ("  static void init (BseProcedureClass *proc,\n"
                 "                    GParamSpec       **in_pspecs,\n"
@@ -1287,7 +1274,7 @@ public:
         if (!is_void)
           printf ("    *(out_pspecs++) = %s;\n", typed_pspec_constructor (mi->result).c_str());
         printf ("  }\n");
-        
+
         /* done */
         printf ("};\n"); /* finish: class ... { }; */
         printf ("} // Procedure\n\n");
@@ -1297,10 +1284,10 @@ public:
   run ()
   {
     printf ("\n/*-------- begin %s generated code --------*/\n\n\n", Options::the()->sfidlName.c_str());
-    
+
     /* standard includes */
-    printf ("\n#include <bse/bsecxxplugin.hh>\n");
-    
+    printf ("\n#include <bse/bse-internals.hh>\n");
+
     /* reset auxillary structures */
     images.resize (0);
     procs.resize (0);
@@ -1383,7 +1370,7 @@ public:
       }
 
     // printf ("\n}; // ...\n"); // FIXME: do images need a namespace?
-    
+
     /* done */
     printf ("\n/*-------- end %s generated code --------*/\n\n\n", Options::the()->sfidlName.c_str());
     return true;

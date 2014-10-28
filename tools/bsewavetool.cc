@@ -1,29 +1,13 @@
-/* BseWaveTool - BSE Wave creation tool
- * Copyright (C) 2001-2004 Tim Janik
- * Copyright (C) 2005-2007 Stefan Westerfeld
- *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * A copy of the GNU Lesser General Public License should ship along
- * with this library; if not, see http://www.gnu.org/copyleft/.
- */
+// Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bsewavetool.hh"
 #include "topconfig.h"
 #include "bwtwave.hh"
-#include <bse/bsemain.h>	/* for bse_init_intern() */
-#include <bse/bseloader.h>
-#include <bse/gslvorbis-enc.h>
-#include <bse/gsldatahandle-vorbis.h>
+#include <bse/bsemain.hh>	/* for bse_init_intern() */
+#include <bse/bseloader.hh>
+#include <bse/gslvorbis-enc.hh>
+#include <bse/gsldatahandle-vorbis.hh>
 #include <bse/bseresamplerimpl.hh>
-#include <birnet/birnettests.h>
+#include <rapicorn-test.hh>
 #include <stdlib.h>
 #include <errno.h>
 #include <string.h>
@@ -35,19 +19,16 @@
 #include <map>
 #include <algorithm>
 
-
+/// The BseWaveTool namespace contains all functions of the bse wave tool utility.
 namespace BseWaveTool {
-
-using namespace Birnet;
+using namespace Bse;
 
 #define PRG_NAME        ("bsewavetool")
 #define	IROUND(dbl)	((int) (floor (dbl + 0.5)))
-
 /* --- prototypes --- */
 static void     wavetool_parse_args     (int    *argc_p,
                                          char ***argv_p);
 static void     wavetool_print_blurb    (bool    bshort);
-
 /* --- variables --- */
 static bool   skip_errors = false;
 static bool   silent_infos = false;
@@ -73,60 +54,18 @@ Command::blurb (bool bshort)
 }
 
 /* --- main program --- */
-static void
-wavetool_message_handler (const char              *domain,
-                          Msg::Type                mtype,
-                          const vector<Msg::Part> &parts)
-{
-  if (mtype == Msg::INFO)
-    {
-      if (!silent_infos)
-        {
-          String title, primary, secondary, details, checkmsg;
-          for (uint i = 0; i < parts.size(); i++)
-            switch (parts[i].ptype)
-              {
-              case '0': title     += (title.size()     ? "\n" : "") + parts[i].string; break;
-              case '1': primary   += (primary.size()   ? "\n" : "") + parts[i].string; break;
-              case '2': secondary += (secondary.size() ? "\n" : "") + parts[i].string; break;
-              case '3': details   += (details.size()   ? "\n" : "") + parts[i].string; break;
-              case 'c': checkmsg  += (checkmsg.size()  ? "\n" : "") + parts[i].string; break;
-              }
-          if (primary.size())
-            g_printerr ("%s\n", primary.c_str());
-          if (secondary.size())
-            g_printerr ("%s\n", secondary.c_str());
-          if (details.size())
-            g_printerr ("%s\n", details.c_str());
-        }
-    }
-  else
-    Msg::default_handler (domain, mtype, parts);
-}
-
 extern "C" int
 main (int   argc,
       char *argv[])
 {
   std::set_terminate (__gnu_cxx::__verbose_terminate_handler);
-
   /* initialization */
   int orig_argc = argc;
-  SfiInitValue values[] = {
-    { "stand-alone",            "true" }, /* no rcfiles etc. */
-    { "wave-chunk-padding",     NULL, 1, },
-    { "dcache-block-size",      NULL, 8192, },
-    { "dcache-cache-memory",    NULL, 5 * 1024 * 1024, },
-    { NULL }
-  };
-  bse_init_inprocess (&argc, &argv, "BseWaveTool", values);
-  Msg::allow_msgs ("main"); // FIXME
-  Msg::set_thread_handler (wavetool_message_handler);
-  Msg::configure (Msg::INFO, Msg::LOG_TO_HANDLER, "");
-
+  bse_init_inprocess (&argc, argv, "BseWaveTool",
+                      Bse::cstrings_to_vector ("stand-alone=1", "wave-chunk-padding=1",
+                                               "dcache-block-size=8192", "dcache-cache-memory=5242880", NULL));
   /* pre-parse argument list to decide command */
   wavetool_parse_args (&argc, &argv);
-
   /* check args */
   if (command_name == "")
     {
@@ -265,7 +204,7 @@ wavetool_print_version (void)
   g_print ("You may redistribute copies of bsewavetool under the terms\n");
   g_print ("of the GNU Lesser General Public License which can be found in\n");
   g_print ("the BEAST source package. Sources, examples and contact\n");
-  g_print ("information are available at http://beast.gtk.org/.\n");
+  g_print ("information are available at http://beast.testbit.eu/.\n");
 }
 
 static void
@@ -338,6 +277,25 @@ parse_bool_option (char        **argv,
   return false;
 }
 
+/* Since the function g_str_hash has changed between glib 2.26 and glib 2.28,
+ * we include the original code here to make chunk keys behave the same with
+ * both glib versions, so the unit tests pass with any glib version.
+ */
+static guint
+old_g_str_hash (gconstpointer v)
+{
+  /* 31 bit hash function */
+  const signed char *p = static_cast<const signed char *> (v);
+  guint32 h = *p;
+
+  if (h)
+    for (p += 1; *p != '\0'; p++)
+      h = (h << 5) - h + *p;
+
+  return h;
+}
+
+
 /* wave chunk keys for shell iteration */
 class WaveChunkKey {
   BseFloatIEEE754 m_osc_freq;
@@ -365,7 +323,7 @@ public:
 
     const uint64 key_checksum = key_uint & 0x1ff;
     key_uint ^= key_checksum << 32LL;  // deobfuscate high bits with checksum
-    const uint64 checksum = g_str_hash (string_printf ("%lld", key_uint - key_checksum).c_str()) % 509;
+    const uint64 checksum = old_g_str_hash (string_format ("%lld", key_uint - key_checksum).c_str()) % 509;
     if (key_checksum != checksum)
       return; // invalid key
     key_uint >>= 9;
@@ -393,7 +351,7 @@ public:
     key_uint <<= 23;
     key_uint |= m_osc_freq.mpn.mantissa;        // 23 bit
     key_uint <<= 9;                             // +9 bit checksum
-    const uint64 checksum = g_str_hash (string_printf ("%lld", key_uint).c_str()) % 509;
+    const uint64 checksum = old_g_str_hash (string_format ("%lld", key_uint).c_str()) % 509;
     key_uint |= checksum;
     key_uint ^= checksum << 32LL;               // obfuscate high bits with checksum
 
@@ -484,10 +442,10 @@ public:
     for (int i = 0; decode_test[i].key; i++)
       {
         WaveChunkKey key = WaveChunkKey (decode_test[i].key);
-        TCHECK (key.is_valid());
-        TCHECK (fabs ((decode_test[i].value - key.osc_freq()) / decode_test[i].value) < epsilon);
+        TASSERT (key.is_valid());
+        TASSERT (fabs ((decode_test[i].value - key.osc_freq()) / decode_test[i].value) < epsilon);
         if (i % 2 == 0)
-          TICK();
+          TOK();
       }
     TDONE();
     TSTART ("Encoding chunk keys");
@@ -496,10 +454,10 @@ public:
       {
         WaveChunkKey encoded_key (value);
         WaveChunkKey decoded_key (encoded_key.as_string());
-        TCHECK (decoded_key.is_valid());
-        TCHECK (fabs ((value - decoded_key.osc_freq()) / value) < epsilon);
+        TASSERT (decoded_key.is_valid());
+        TASSERT (fabs ((value - decoded_key.osc_freq()) / value) < epsilon);
         if (i++ % 150 == 0)
-          TICK();
+          TOK();
       }
     TDONE();
     TSTART ("Invalid chunk keys");
@@ -566,10 +524,11 @@ verify_chunk_selection (const vector<float> &freq_list,
     {
       if (!wave->lookup (*fi))
         {
-          Msg::display (skip_errors ? Msg::WARNING : Msg::ERROR,
-                        Msg::Primary ("failed to find wave chunk with oscillator frequency: %.2f", *fi));
-          if (!skip_errors)
-            exit (1);
+          String msg = string_format ("failed to find wave chunk with oscillator frequency: %.2f", *fi);
+          if (skip_errors)
+            sfi_warning ("%s", msg.c_str());
+          else
+            sfi_error ("%s", msg.c_str());
         }
     }
 }
@@ -580,16 +539,7 @@ wavetool_parse_args (int    *argc_p,
 {
   guint argc = *argc_p;
   gchar **argv = *argv_p;
-  gchar *envar;
   guint i;
-
-  envar = getenv ("BSEWAVETOOL_DEBUG");
-  if (envar)
-    Msg::allow_msgs (envar);
-  envar = getenv ("BSEWAVETOOL_NO_DEBUG");
-  if (envar)
-    Msg::deny_msgs (envar);
-
   for (i = 1; i < argc; i++)
     {
       const gchar *str = NULL;
@@ -598,16 +548,6 @@ wavetool_parse_args (int    *argc_p,
           argv[i] = NULL;
           break;
         }
-      else if (parse_bool_option (argv, i, "--debug-list"))
-        {
-          g_print ("debug keys: all");
-          g_print ("\n");
-          exit (0);
-        }
-      else if (parse_str_option (argv, i, "--debug", &str, argc))
-        Msg::allow_msgs (str);
-      else if (parse_str_option (argv, i, "--no-debug", &str, argc))
-        Msg::deny_msgs (str);
       else if (parse_bool_option (argv, i, "-h") ||
                parse_bool_option (argv, i, "--help"))
         {
@@ -835,7 +775,7 @@ public:
                        bse_error_blurb (error));
             exit (1);
           }
-        gchar *temp_file = g_strdup_printf ("%s/bsewavetool-pid%u-oggchunk%04X.tmp%06xyXXXXXX", g_get_tmp_dir(), getpid(), 0x1000 + nth, rand() & 0xfffffd);
+        gchar *temp_file = g_strdup_format ("%s/bsewavetool-pid%u-oggchunk%04X.tmp%06xyXXXXXX", g_get_tmp_dir(), getpid(), 0x1000 + nth, rand() & 0xfffffd);
         gint tmpfd = mkstemp (temp_file);
         if (tmpfd < 0)
           {
@@ -1215,11 +1155,12 @@ public:
             }
           if (error)
             {
-              Msg::display (skip_errors ? Msg::WARNING : Msg::ERROR,
-                            Msg::Primary (_("failed to add wave chunk from file \"%s\": %s"),
-                                          ochunk.sample_file, bse_error_blurb (error)));
-              if (!skip_errors)
-                exit (1);
+              String msg = string_format (_("failed to add wave chunk from file \"%s\": %s"),
+                                          ochunk.sample_file, bse_error_blurb (error));
+              if (skip_errors)
+                sfi_warning ("%s", msg.c_str());
+              else
+                sfi_error ("%s", msg.c_str());
             }
           g_strfreev (xinfos);
         }
@@ -1973,11 +1914,13 @@ public:
 
 class NormalizeCmd : public Command {
   bool all_chunks;
+  bool use_volume_xinfo;
   vector<gfloat> freq_list;
 public:
   NormalizeCmd (const char *command_name) :
     Command (command_name),
-    all_chunks (false)
+    all_chunks (false),
+    use_volume_xinfo (false)
   {}
   void
   blurb (bool bshort)
@@ -1992,6 +1935,7 @@ public:
     g_print ("    -m <midi-note>      alternative way to specify oscillator frequency\n");
     g_print ("    --chunk-key <key>   select wave chunk using chunk key from list-chunks\n");
     g_print ("    --all-chunks        try to normalize all chunks\n");
+    g_print ("    --volume-xinfo      keep original sample data, only set volume xinfo\n");
     /*       "**********1*********2*********3*********4*********5*********6*********7*********" */
   }
   guint
@@ -2003,6 +1947,8 @@ public:
       {
 	if (parse_chunk_selection (argv, i, argc, all_chunks, freq_list))
 	  seen_selection = true;
+        else if (parse_bool_option (argv, i, "--volume-xinfo"))
+          use_volume_xinfo = true;
       }
     return !seen_selection ? 1 : 0; /* # args missing */
   }
@@ -2017,17 +1963,27 @@ public:
       if (all_chunks || wave->match (*it, freq_list))
         {
           WaveChunk *chunk = &*it;
-          sfi_info ("NORMALIZE: chunk %f", gsl_data_handle_osc_freq (chunk->dhandle));
+          const double osc_freq = gsl_data_handle_osc_freq (chunk->dhandle);
+          sfi_info ("NORMALIZE: chunk %f", osc_freq);
           double absmax = gsl_data_find_min_max (chunk->dhandle, NULL, NULL);
           gchar **xinfos = bse_xinfos_dup_consolidated (chunk->dhandle->setup.xinfos, FALSE);
           BseErrorType error = BSE_ERROR_NONE;
           if (absmax > 4.6566e-10) /* 32bit threshold */
             {
-              GslDataHandle *shandle = gsl_data_handle_new_scale (chunk->dhandle, 1. / absmax);
-              error = chunk->change_dhandle (shandle, gsl_data_handle_osc_freq (chunk->dhandle), xinfos);
-              if (error)
-                sfi_error ("level normalizeping failed: %s", bse_error_blurb (error));
-              gsl_data_handle_unref (shandle);
+              if (use_volume_xinfo)
+                {
+                  gchar buffer[G_ASCII_DTOSTR_BUF_SIZE * 2 + 1024];
+                  g_ascii_dtostr (buffer, sizeof (buffer), 1. / absmax);
+                  wave->set_chunk_xinfo (osc_freq, "volume", buffer);
+                }
+              else
+                {
+                  GslDataHandle *shandle = gsl_data_handle_new_scale (chunk->dhandle, 1. / absmax);
+                  error = chunk->change_dhandle (shandle, gsl_data_handle_osc_freq (chunk->dhandle), xinfos);
+                  if (error)
+                    sfi_error ("level normalizing failed: %s", bse_error_blurb (error));
+                  gsl_data_handle_unref (shandle);
+                }
             }
           g_strfreev (xinfos);
           if (error && !skip_errors)
@@ -2463,7 +2419,7 @@ public:
       {
 	if (chunk_set[i])
 	  {
-	    char *x = g_strdup_printf ("%4.2f ", chunk_data.freqs[i]);
+	    char *x = g_strdup_format ("%4.2f ", chunk_data.freqs[i]);
 	    result += x;
 	    g_free (x);
 	  }
@@ -2551,13 +2507,12 @@ public:
     BseErrorType error = gsl_data_handle_open (fir_handle);
     if (error)
       return error;
-
-    Birnet::int64 freq_inc = 5; // FIXME
+    int64 freq_inc = 5; // FIXME
     while (freq_inc * 1000 < gsl_data_handle_mix_freq (fir_handle))
       freq_inc *= 2;
     double	  best_diff_db = 100;
-    Birnet::int64 best_freq = 0;
-    for (Birnet::int64 freq = 0; freq < gsl_data_handle_mix_freq (fir_handle) / 2.0; freq += freq_inc)
+    int64 best_freq = 0;
+    for (int64 freq = 0; freq < gsl_data_handle_mix_freq (fir_handle) / 2.0; freq += freq_inc)
       {
 	double diff_db = fabs (bse_data_handle_fir_response_db (fir_handle, freq) + 48);
 	if (diff_db < best_diff_db)
@@ -2933,18 +2888,18 @@ public:
 	      cent = bse_note_fine_tune_from_note_freq (BSE_MUSICAL_TUNING_12_TET, note, gsl_data_handle_osc_freq (dhandle));
 	    }
 
-	  name_addon = g_strdup_printf ("%d", note);
+	  name_addon = g_strdup_format ("%d", note);
 	  substitute (filename, 'N', name_addon);
 	  g_free (name_addon);
 
-	  name_addon = g_strdup_printf ("%.2f", gsl_data_handle_osc_freq (dhandle));
+	  name_addon = g_strdup_format ("%.2f", gsl_data_handle_osc_freq (dhandle));
 	  substitute (filename, 'F', name_addon);
 	  g_free (name_addon);
 
 	  if (cent >= 0)
-	    name_addon = g_strdup_printf ("u%03d", cent); /* up */
+	    name_addon = g_strdup_format ("u%03d", cent); /* up */
 	  else
-	    name_addon = g_strdup_printf ("d%03d", cent); /* down */
+	    name_addon = g_strdup_format ("d%03d", cent); /* down */
 	  substitute (filename, 'C', name_addon);
 	  g_free (name_addon);
 

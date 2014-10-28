@@ -1,8 +1,4 @@
-# BEAST - Bedevilled Audio System                                                                                                                             
-# Copyright (C) 2003 Stefan Westerfeld
-# Copyright (C) 2000-2006 Tim Janik
-#                                                                                                                                                             
-## GNU Lesser General Public License version 2 or any later version.
+# BSE-Plugins - Better Sound Engine dynamic Plugins
 include $(top_srcdir)/Makefile.decl
 
 #
@@ -15,8 +11,8 @@ include $(top_srcdir)/Makefile.decl
 
 ## Evaluator Makefile
 #
-#INCLUDES += -I$(top_srcdir) -I. $(BSE_CFLAGS) -DG_LOG_DOMAIN=BSE_PLUGIN_NAME
-#INCLUDES += -DBSE_PLUGIN_FALLBACK="\"$(strip $(basename $(<F)))\""
+#AM_CPPFLAGS += -I$(top_srcdir) -I. $(BSE_CFLAGS) -DG_LOG_DOMAIN=BSE_PLUGIN_NAME
+#AM_CPPFLAGS += -DBSE_PLUGIN_FALLBACK="\"$(strip $(basename $(<F)))\""
 #
 ## install plugins under:
 #plugindir = $(bseplugindir)
@@ -31,7 +27,7 @@ include $(top_srcdir)/Makefile.decl
 #EVALUATE_SOURCES = instruction.cc compiler.cc cpu.cc
 #
 #bseevaluator_la_SOURCES = bseevaluator.cc $(EVALUATE_SOURCES)
-#bseevaluator_la_LDFLAGS = -module -avoid-version
+#bseevaluator_la_LDFLAGS = $(AM_LDFLAGS) -module -avoid-version
 #bseevaluator_la_LIBADD  = $(top_builddir)/bse/libbse.la $(top_builddir)/sfi/libsfi.la $(BSE_LIBS) -lm
 #plugins_built_sources += bseevaluator.genidl.hh
 #EXTRA_HEADERS += bseevaluator.idl symbols.hh token.hh instruction.hh compiler.hh cpu.hh

@@ -1,0 +1,41 @@
+// Licensed GNU LGPL v3 or later: http://www.gnu.org/licenses/lgpl.html -*-mode:c++;-*-
+/**
+ * @file
+ * @brief Public BSE interface classes.
+ */
+
+namespace Bse {
+
+/// Object to carry out IDL, API, signal, etc tests.
+interface TestObject {
+  int32         echo_test       (String msg) = 0;       ///< Echo custom message to stdout.
+  signal void   echo_reply      (String msg);           ///< Signal emitted in response to echo_test().
+};
+
+enum UserMessageType {
+  ERROR = 1,    ///< Indicate a message about an error condition.
+  WARNING,      ///< Indicate a message about a possibly harmful condition.
+  INFO,         ///< Indicate an informational message.
+  DEBUG,        ///< Indicate a debugging message (usually insignificant).
+};
+
+/// Structure for submission of user interface messages from BSE.
+record UserMessage {
+  UserMessageType type;         ///< Severity classification for this message.
+  String          title;        ///< Usually GUI window title.
+  String          text1;        ///< Primary message to the user, should be limited to 80-100 chars.
+  String          text2;        ///< Explanatory (secondary) message no limitations recommended.
+  String          text3;        ///< Possibly (technical) details or machine error message.
+  String          label;        ///< Message class label, used to enable/disable this type of message.
+};
+
+/** Main Bse remote origin object.
+ * The Bse::Server object controls the main BSE thread and keeps track of all objects
+ * used in the BSE context.
+ */
+interface Server {
+  signal void   user_message    (UserMessage umsg);     ///< Notification signal for user messages from BSE.
+  TestObject    get_test_object () = 0;                 ///< Retrieve object for API, signal, etc tests.
+};
+
+} // Bse

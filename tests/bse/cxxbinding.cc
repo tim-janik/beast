@@ -1,21 +1,6 @@
-/* BSE test program
- * Copyright (C) 2003 Stefan Westerfeld
- *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * A copy of the GNU Lesser General Public License should ship along
- * with this library; if not, see http://www.gnu.org/copyleft/.
- */
+// Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bsecxxapi.hh"
-#include <bse/bse.h>
+#include <bse/bse.hh>
 #include <unistd.h>
 #include <stdio.h>
 
@@ -39,14 +24,10 @@ main (int   argc,
       char *argv[])
 {
   std::set_terminate (__gnu_cxx::__verbose_terminate_handler);
-  bse_init_async (&argc, &argv, "CxxBindingTest", NULL);
-  sfi_msg_allow ("misc");
-  bse_context = bse_init_glue_context (argv[0]);
-
+  Bse::init_async (&argc, argv, "CxxBindingTest");
+  bse_context = Bse::init_glue_context (argv[0], []() { g_main_context_wakeup (g_main_context_default()); });
   sfi_glue_context_push (bse_context);
-
   g_print ("type_blurb(BseContainer)=%s\n", type_blurb("BseContainer").c_str());
-
   const gchar *file_name = "empty.ogg";
   SampleFileInfoHandle info = sample_file_info (file_name);
   if (info.c_ptr())

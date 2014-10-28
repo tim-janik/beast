@@ -1,28 +1,26 @@
-# BEAST - Bedevilled Audio System
-# Copyright (C) 1996-2004 Tim Janik
-#
-## GNU Lesser General Public License version 2 or any later version.
+# BEAST - Better Audio System
 include $(top_srcdir)/Makefile.decl
 
 SUBDIRS = . scripts
 
-INCLUDES += -I$(top_srcdir) -I$(top_builddir) $(BSE_CFLAGS)
-DEFS += -DG_LOG_DOMAIN=\"BSE-TOOLS\" -DG_DISABLE_CONST_RETURNS
+AM_CPPFLAGS += -I$(top_srcdir) -I$(top_builddir)
+DEFS        += @DEFINE__FILE_DIR__@ -DG_LOG_DOMAIN=\"BSE-TOOLS\" -DG_DISABLE_CONST_RETURNS
+AM_CXXFLAGS += $(BSE_CFLAGS) $(RAPICORN_CFLAGS) -DRAPICORN_CONVENIENCE
 
 noinst_PROGRAMS = $(ALLTESTS)
-progs_ldadd     = $(top_builddir)/bse/libbse.la
+progs_ldadd     = $(top_builddir)/bse/libbse.la $(RAPICORN_LIBS) $(BSE_LIBS)
 
 #
 # tools to build
 #
 
 bin_PROGRAMS        = bsewavetool
-bsewavetool_SOURCES = bsewavetool.cc bwtwave.cc bseloopfuncs.c
+bsewavetool_SOURCES = bsewavetool.cc bwtwave.cc bseloopfuncs.cc
 bsewavetool_LDADD   = $(progs_ldadd)
-EXTRA_DIST         += bsewavetool.hh bwtwave.hh bseloopfuncs.h sfiutils.h
+EXTRA_DIST         += bsewavetool.hh bwtwave.hh bseloopfuncs.hh sfiutils.hh
 
 noinst_PROGRAMS  += cutvorbis
-cutvorbis_SOURCES = cutvorbis.c cxxdummy.cc
+cutvorbis_SOURCES = cutvorbis.cc cxxdummy.cc
 cutvorbis_LDADD   = $(progs_ldadd)
 
 noinst_PROGRAMS    += bsefextract
@@ -34,11 +32,11 @@ bsefcompare_SOURCES = bsefcompare.cc
 bsefcompare_LDADD   = $(progs_ldadd)
 
 noinst_PROGRAMS  += magictest
-magictest_SOURCES = magictest.c cxxdummy.cc
+magictest_SOURCES = magictest.cc cxxdummy.cc
 magictest_LDADD   = $(progs_ldadd)
 
 noinst_PROGRAMS += mathtool
-mathtool_SOURCES = mathtool.c cxxdummy.cc
+mathtool_SOURCES = mathtool.cc cxxdummy.cc
 mathtool_LDADD   = $(progs_ldadd)
 
 # === Bsewavetool tests ===

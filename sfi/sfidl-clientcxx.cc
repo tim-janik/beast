@@ -1,19 +1,4 @@
-/* SFI - Synthesis Fusion Kit Interface
- * Copyright (C) 2002-2007 Stefan Westerfeld
- *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * A copy of the GNU Lesser General Public License should ship along
- * with this library; if not, see http://www.gnu.org/copyleft/.
- */
+// Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "sfidl-clientcxx.hh"
 #include "sfidl-factory.hh"
 #include <fcntl.h>
@@ -24,7 +9,7 @@
 #include "sfidl-namespace.hh"
 #include "sfidl-options.hh"
 #include "sfidl-parser.hh"
-#include "sfiparams.h" /* scatId (SFI_SCAT_*) */
+#include "sfiparams.hh" /* scatId (SFI_SCAT_*) */
 
 using namespace Sfidl;
 using std::make_pair;
@@ -261,7 +246,7 @@ void CodeGeneratorClientCxx::printRecSeqDefinition (NamespaceHelper& nspace)
 
       String name = nspace.printableForm (si->name);
       String content = typeField (si->content.type);
-      
+
       printf ("\n");
       printf ("class %s : public Sfi::Sequence<%s> {\n", name.c_str(), content.c_str());
       printf ("public:\n");
@@ -370,7 +355,7 @@ void CodeGeneratorClientCxx::printRecSeqImpl (NamespaceHelper& nspace)
       String name = nspace.printableForm (ri->name);
       String nname = ri->name;
       String type_name = makeMixedName (ri->name).c_str();
-      
+
       printf("%s\n", cTypeRet (ri->name));
       printf("%s::from_rec (SfiRec *sfi_rec)\n", nname.c_str());
       printf("{\n");
@@ -430,7 +415,7 @@ bool CodeGeneratorClientCxx::run ()
   vector<Param>::const_iterator pi;
   vector<Class>::const_iterator ci;
   vector<Method>::const_iterator mi;
- 
+
   printf("\n/*-------- begin %s generated code --------*/\n\n\n", options.sfidlName.c_str());
 
   if (generateHeader)

@@ -1,35 +1,17 @@
-/* SFI - Synthesis Fusion Kit Interface
- * Copyright (C) 2003-2006 Tim Janik and Stefan Westerfeld
- *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * A copy of the GNU Lesser General Public License should ship along
- * with this library; if not, see http://www.gnu.org/copyleft/.
- */
+// Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #ifndef __SFI_CXX_H__
 #define __SFI_CXX_H__
-
-#include <birnet/birnet.hh>
-#include <sfi/sfi.h>
+#include <sfi/sfi.hh>
 #include <string>
 #include <string.h>
 #include <new>
 
+/// The Sfi namespace contains utilities for synthesis.
 namespace Sfi {
-
 typedef SfiBool   Bool;    // FIXME: use bool instead?
 typedef SfiInt    Int;
 typedef SfiNum    Num;
 typedef SfiReal   Real;
-
 class String {
   char *cstring;
   int cmp (const char *ostring) const
@@ -1145,6 +1127,11 @@ cxx_value_set_seq (GValue        *value,
 {
   sfi_value_take_seq (value, SeqType::to_seq (self));
 }
+
+// == C++ Auxillaries ==
+struct Init { // stolen from Rapicorn
+  explicit Init (void (*f) ()) { f(); }
+};
 
 } // Sfi
 

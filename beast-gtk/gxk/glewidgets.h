@@ -57,7 +57,7 @@ typedef struct _GtkWrapBoxChild GtkWrapBoxChild;
 struct _GtkWrapBox
 {
   GtkContainer     container;
-  
+
   guint            homogeneous : 1;
   guint            justify : 4;
   guint            line_justify : 4;
@@ -86,7 +86,7 @@ struct _GtkWrapBoxChild
   guint      vexpand : 1;
   guint      vfill : 1;
   guint      wrapped : 1;
-  
+
   GtkWrapBoxChild *next;
 };
 #define GTK_JUSTIFY_TOP    GTK_JUSTIFY_LEFT
@@ -199,7 +199,7 @@ typedef struct _GtkHWrapBoxClass GtkHWrapBoxClass;
 struct _GtkHWrapBox
 {
   GtkWrapBox parent_widget;
-  
+
   /*<h2v-off>*/
   guint      max_child_width;
   guint      max_child_height;
@@ -274,7 +274,7 @@ typedef struct _GtkVWrapBoxClass GtkVWrapBoxClass;
 struct _GtkVWrapBox
 {
   GtkWrapBox parent_widget;
-  
+
   /*<h2v-off>*/
   guint      max_child_width;
   guint      max_child_height;

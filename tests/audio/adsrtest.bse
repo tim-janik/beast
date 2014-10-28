@@ -1,6 +1,6 @@
 ; BseProject
 
-(bse-version "0.7.1")
+(bse-version "0.8.0")
 
 (container-child "BseWaveRepo::Wave-Repository"
   (modification-time "2006-11-25 00:32:17")
@@ -8,7 +8,7 @@
   (license "Creative Commons Attribution 2.5 (http://creativecommons.org/licenses/by/2.5/)")
   (author "Tim Janik"))
 (container-child "BseCSynth::Unnamed"
-  (modification-time "2006-11-25 00:32:17")
+  (modification-time "2013-03-24 16:48:46")
   (creation-time "2006-11-25 00:15:11")
   (license "Creative Commons Attribution 2.5 (http://creativecommons.org/licenses/by/2.5/)")
   (author "Tim Janik")
@@ -24,7 +24,7 @@
   (container-child "BseAmplifier::ADSR-Volume"
     (master-volume 1)
     (base-level 0)
-    (ostrength 100)
+    (ostrength 50)
     (ctrl-exp #f)
     (ctrl-mul #t)
     (clevel2 100)
@@ -69,7 +69,7 @@
   (container-child "BseAmplifier::ReferenceVolume"
     (master-volume 1)
     (base-level 25)
-    (ostrength 100)
+    (ostrength 50)
     (ctrl-exp #f)
     (ctrl-mul #t)
     (clevel2 100)
@@ -82,7 +82,7 @@
   (denominator 4)
   (numerator 4)
   (tpqn 384)
-  (modification-time "2006-11-25 00:32:17")
+  (modification-time "2013-03-24 16:48:46")
   (creation-time "2006-11-25 00:17:43")
   (license "Creative Commons Attribution 2.5 (http://creativecommons.org/licenses/by/2.5/)")
   (author "Tim Janik")

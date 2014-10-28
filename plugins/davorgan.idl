@@ -1,0 +1,39 @@
+// Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
+include "bse/bsecxxmodule.idl";
+namespace Bse {
+namespace Dav {
+interface Organ : Effect {
+  Info    icon      = "icons/organ.png";
+  Info    authors   = "David A. Bartold";
+  Info    license   = _("GNU Lesser General Public License");
+  Info    category  = _("/Audio Sources/Organ");
+  Info    blurb     = _("DavOrgan is a versatile additive organ synthesizer");
+  IStream freq_in   = Stream (_("Freq In"), _("Frequency Input"));
+  OStream audio_out = Stream (_("Audio Out"), _("Organ output"));
+  group _("Base Frequency") {
+    Real base_freq = Freq (_("Frequency"), _("Organ frequency in Hertz, i.e. the pitch of the base tone"),
+                           BSE_KAMMER_FREQUENCY, STANDARD ":dial");
+    Int  base_note = Note (_("Note"), _("Organ frequency as note, converted to Hertz according to the current musical tuning"),
+			   BSE_KAMMER_NOTE, GUI);
+    Int  transpose = SfiInt (_("Transpose"), _("Transposition of the frequency in semitones"),
+                          0, BSE_MIN_TRANSPOSE, BSE_MAX_TRANSPOSE, 12, STANDARD ":dial:skip-default");
+    Int  fine_tune = FineTune (_("Fine Tune"), _("Amount of detuning in cent (hundredth part of a semitone)"),
+			       STANDARD ":dial:skip-default");
+  };
+  group _("Harmonics") {
+    Real harm0 = Perc (_("16th"),    _("16th Harmonic"), 100.0, STANDARD ":scale");
+    Real harm1 = Perc (_("8th"),     _("8th Harmonic"), 100. * 36. / 127., STANDARD ":scale");
+    Real harm2 = Perc (_("5 1/3rd"), _("5 1/3rd Harmonic"), 100. * 100. / 127., STANDARD ":scale");
+    Real harm3 = Perc (_("4th"),     _("4th Harmonic"), 100. * 32. / 127., STANDARD ":scale");
+    Real harm4 = Perc (_("2 2/3rd"), _("2 2/3rd Harmonic"), 100. * 91. / 127., STANDARD ":scale");
+    Real harm5 = Perc (_("2nd"),     _("2nd Harmonic"), 100. * 55. / 127., STANDARD ":scale");
+   };
+  group _("Instrument flavour") {
+    Bool brass = Bool (_("Brass Sounds"), _("Change the organ to sound more brassy"), false, STANDARD);
+    Bool reed  = Bool (_("Reed Sounds"),  _("Add reeds sound"), false, STANDARD);
+    Bool flute = Bool (_("Flute Sounds"), _("Add flute sounds"), false, STANDARD);
+  };
+};
+
+} // Dav
+} // Bse

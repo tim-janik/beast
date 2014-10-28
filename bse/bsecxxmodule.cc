@@ -1,23 +1,8 @@
-/* BSE - Bedevilled Sound Engine
- * Copyright (C) 2003 Tim Janik
- *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * A copy of the GNU Lesser General Public License should ship along
- * with this library; if not, see http://www.gnu.org/copyleft/.
- */
+// Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bsecxxmodule.hh"
-#include "bseengine.h"
-#include "bsemidireceiver.h"
-#include "bsesnet.h"
+#include "bseengine.hh"
+#include "bsemidireceiver.hh"
+#include "bsesnet.hh"
 
 namespace Bse {
 
@@ -86,33 +71,30 @@ SynthesisModule::set_module (BseModule *engine_module)
 {
   g_return_if_fail (intern_module == NULL);
   g_return_if_fail (engine_module != NULL);
-  
+
   intern_module = engine_module;
 
   /* assert validity of the above casts */
-  BIRNET_STATIC_ASSERT (sizeof   (JStream)                    == sizeof   (BseJStream));
-  BIRNET_STATIC_ASSERT (offsetof (JStream, values)            == offsetof (BseJStream, values));
-  BIRNET_STATIC_ASSERT (sizeof (((JStream*)0)->values)        == sizeof (((BseJStream*)0)->values));
-  BIRNET_STATIC_ASSERT (offsetof (JStream, n_connections)     == offsetof (BseJStream, n_connections));
-  BIRNET_STATIC_ASSERT (sizeof (((JStream*)0)->n_connections) == sizeof (((BseJStream*)0)->n_connections));
-  BIRNET_STATIC_ASSERT (offsetof (JStream, jcount)            == offsetof (BseJStream, jcount));
-  BIRNET_STATIC_ASSERT (sizeof (((JStream*)0)->jcount)        == sizeof (((BseJStream*)0)->jcount));
-  
-  BIRNET_STATIC_ASSERT (sizeof   (IStream)                == sizeof   (BseIStream));
-  BIRNET_STATIC_ASSERT (offsetof (IStream, values)        == offsetof (BseIStream, values));
-  BIRNET_STATIC_ASSERT (sizeof (((IStream*)0)->values)    == sizeof (((BseIStream*)0)->values));
-  BIRNET_STATIC_ASSERT (offsetof (IStream, connected)     == offsetof (BseIStream, connected));
-  BIRNET_STATIC_ASSERT (sizeof (((IStream*)0)->connected) == sizeof (((BseIStream*)0)->connected));
-  
-  BIRNET_STATIC_ASSERT (sizeof   (OStream)                == sizeof   (BseOStream));
-  BIRNET_STATIC_ASSERT (offsetof (OStream, values)        == offsetof (BseOStream, values));
-  BIRNET_STATIC_ASSERT (sizeof (((OStream*)0)->values)    == sizeof (((BseOStream*)0)->values));
-  BIRNET_STATIC_ASSERT (offsetof (OStream, connected)     == offsetof (BseOStream, connected));
-  BIRNET_STATIC_ASSERT (sizeof (((OStream*)0)->connected) == sizeof (((BseOStream*)0)->connected));
+  RAPICORN_STATIC_ASSERT (sizeof   (JStream)                    == sizeof   (BseJStream));
+  RAPICORN_STATIC_ASSERT (offsetof (JStream, values)            == offsetof (BseJStream, values));
+  RAPICORN_STATIC_ASSERT (sizeof (((JStream*)0)->values)        == sizeof (((BseJStream*)0)->values));
+  RAPICORN_STATIC_ASSERT (offsetof (JStream, n_connections)     == offsetof (BseJStream, n_connections));
+  RAPICORN_STATIC_ASSERT (sizeof (((JStream*)0)->n_connections) == sizeof (((BseJStream*)0)->n_connections));
+  RAPICORN_STATIC_ASSERT (offsetof (JStream, jcount)            == offsetof (BseJStream, jcount));
+  RAPICORN_STATIC_ASSERT (sizeof (((JStream*)0)->jcount)        == sizeof (((BseJStream*)0)->jcount));
+  RAPICORN_STATIC_ASSERT (sizeof   (IStream)                == sizeof   (BseIStream));
+  RAPICORN_STATIC_ASSERT (offsetof (IStream, values)        == offsetof (BseIStream, values));
+  RAPICORN_STATIC_ASSERT (sizeof (((IStream*)0)->values)    == sizeof (((BseIStream*)0)->values));
+  RAPICORN_STATIC_ASSERT (offsetof (IStream, connected)     == offsetof (BseIStream, connected));
+  RAPICORN_STATIC_ASSERT (sizeof (((IStream*)0)->connected) == sizeof (((BseIStream*)0)->connected));
+  RAPICORN_STATIC_ASSERT (sizeof   (OStream)                == sizeof   (BseOStream));
+  RAPICORN_STATIC_ASSERT (offsetof (OStream, values)        == offsetof (BseOStream, values));
+  RAPICORN_STATIC_ASSERT (sizeof (((OStream*)0)->values)    == sizeof (((BseOStream*)0)->values));
+  RAPICORN_STATIC_ASSERT (offsetof (OStream, connected)     == offsetof (BseOStream, connected));
+  RAPICORN_STATIC_ASSERT (sizeof (((OStream*)0)->connected) == sizeof (((BseOStream*)0)->connected));
 }
-
 void
-SynthesisModule::ostream_set (unsigned int ostream_index,
+SynthesisModule::ostream_set (uint         ostream_index,
                               const float *values)
 {
   BseModule *m = engine_module();
@@ -360,7 +342,7 @@ handler_setup_func (BseModule      *module,   /* Engine Thread */
 }
 
 BseModule*
-Effect::integrate_engine_module (unsigned int   context_handle,
+Effect::integrate_engine_module (uint           context_handle,
                                  BseTrans      *trans)
 {
   BseSource *source = cast (this);
@@ -415,7 +397,7 @@ Effect::dismiss_engine_module (BseModule       *engine_module,
     }
 }
 
-unsigned int
+uint
 Effect::block_size() const
 {
   g_return_val_if_fail (is_prepared(), 0);
@@ -423,10 +405,17 @@ Effect::block_size() const
   return bse_engine_block_size();
 }
 
-unsigned int
+uint
 Effect::max_block_size() const
 {
   return BSE_STREAM_MAX_VALUES;
+}
+
+BseMusicalTuningType
+Effect::current_musical_tuning() const
+{
+  BseSource *source = cast (const_cast <Effect*> (this));
+  return bse_item_current_musical_tuning (BSE_ITEM (source));
 }
 
 void
@@ -443,17 +432,17 @@ Effect::class_init (CxxBaseClass *klass)
       CxxBase *base = cast (source);
       Effect *self = static_cast<Effect*> (base);
       BseModule *engine_module = self->integrate_engine_module (context_handle, trans);
-      
+
       /* setup module i/o streams with BseSource i/o channels */
       bse_source_set_context_module (source, context_handle, engine_module);
-      
+
       /* reset module */
       bse_trans_add (trans, bse_job_force_reset (engine_module));
       /* configure module */
       SynthesisModule::Closure *clo = self->make_module_config_closure();
       if (clo)
         bse_trans_add (trans, bse_job_access (engine_module, access_trampoline, clo, access_data_free));
-      
+
       /* chain parent class' handler */
       BSE_SOURCE_CLASS (effect_parent_class)->context_create (source, context_handle, trans);
     }

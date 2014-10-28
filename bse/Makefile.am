@@ -1,112 +1,114 @@
-# BSE - Bedevilled Sound Engine
-# Copyright (C) 1998-2002 Tim Janik
-#
-## GNU Lesser General Public License version 2 or any later version.
+# BSE - Better Sound Engine
 include $(top_srcdir)/Makefile.decl
 
 SUBDIRS = icons zintern . tests
 
-# need -I$(top_srcdir) for <bse/bsedefs.h>
+# need -I$(top_srcdir) for <bse/bsedefs.hh>
 # need -I$(top_builddir) for <sfi/sficonfig.h>
-# need -I$(srcdir) for "bseserver.h" in .genprc.c
-# need -I. (builddir) for "bsecore.genidl.hh" in bsecore.cc
-INCLUDES += -I$(top_srcdir) -I$(top_builddir) -I$(srcdir) -I. $(BSE_CFLAGS) -DG_DISABLE_DEPRECATED -DG_DISABLE_CONST_RETURNS
-DEFS     += $(strip \
-	$(patsubst %, -DG_LOG_DOMAIN=\"BSE\" -DBSE_COMPILATION, \
-	              $(filter $(<F), $(bse_sources) $(bse_sources))) \
-)
+# need -I$(srcdir) for "bseserver.hh" in .genprc.cc
+# need -I. (builddir) for "bsebasics.genidl.hh" in bsebasics.cc
+AM_CPPFLAGS += -I$(top_srcdir) -I$(top_builddir) -I$(srcdir) -I.
+DEFS        += @DEFINE__FILE_DIR__@ $(patsubst %, -DG_LOG_DOMAIN=\"BSE\" -DBSE_COMPILATION, $(filter $(<F), $(bse_sources) $(bse_sources))) 
+AM_CXXFLAGS  += $(BSE_CFLAGS) $(RAPICORN_CFLAGS) -DRAPICORN_CONVENIENCE -DG_DISABLE_DEPRECATED -DG_DISABLE_CONST_RETURNS
+AIDACC_VDEBUG = $(AIDACC) $(if $(findstring 1, $(V)), --aida-debug)
 
 #
 # setup source file variables
 #
 # BSE public header files
 bse_public_headers = $(strip \
-	gsldefs.h \
-	gslfft.h		gsloscillator.h	gsldatahandle.h	gslwavechunk.h \
-	gslfilter.h		gslcommon.h \
-	gsldatahandle-vorbis.h	gslvorbis-enc.h	gsldatacache.h	gslvorbis-cutter.h \
-	gsldatahandle-mad.h	           	gslfilehash.h	gsldatautils.h	\
-	gslwaveosc.h		gslosctable.h	gslmagic.h	\
+	gsldefs.hh \
+	gslfft.hh		gsloscillator.hh	gsldatahandle.hh	gslwavechunk.hh \
+	gslfilter.hh		gslcommon.hh \
+	gsldatahandle-vorbis.hh	gslvorbis-enc.hh	gsldatacache.hh	gslvorbis-cutter.hh \
+	gsldatahandle-mad.hh	           	gslfilehash.hh	gsldatautils.hh	\
+	gslwaveosc.hh		gslosctable.hh	gslmagic.hh	\
 	\
 	bsegentypes.h \
 	\
-	bse.h	bsedefs.h	bseexports.h	bseconfig.h	bsegenclosures.h \
-	bseincluder.h	ladspa.h	bseenginenode.h bseieee754.h \
-	\
-	bseengine.h		bseenginemaster.h	bseengineschedule.h		bseengineutils.h \
-	bsebus.h		bsecategories.h 	\
-	bsefilter.h    		bsebiquadfilter.h	\
-	bseconstant.h		bseconstvalues.h	bsecontainer.h			bsecontextmerger.h \
-	bsedatapocket.h		bseeditablesample.h	bseenums.h			bsegconfig.h \
-	bseglobals.h		bseglue.h		bseitem.h			bsejanitor.h \
-	bsemain.h		bsemath.h		bsemathsignal.h			bseladspa.h \
-	bsemidicontroller.h	bsemididevice.h		bsedevice.h 			\
-	bsemididevice-null.h	bsemididevice-oss.h	bsemidievent.h			bsemidinotifier.h \
-	bsemidireceiver.h	bsemidisynth.h		bseobject.h			bsepart.h \
-	bsepcminput.h		bsepcmoutput.h		bseparam.h			bseparasite.h \
-	bsepcmdevice.h		bsepcmdevice-oss.h	bsepcmdevice-null.h		bseplugin.h \
-	bseprocedure.h		bseproject.h		bsescripthelper.h		bseserver.h \
-	bsesnet.h		bsesnooper.h		bsesong.h			bsesequencer.h \
-	bsesource.h		bsestandardosc.h	bsestandardsynths.h		bsestorage.h \
-	bseinstrumentoutput.h	bsesubiport.h		bseinstrumentinput.h		bsesuboport.h \
-	bsesubsynth.h		bsesuper.h		bsetrack.h			bsetype.h \
-	bseutils.h		bsemidivoice.h		bsewave.h			bsewaveosc.h \
-	bsecsynth.h		bsewaverepo.h		bseladspamodule.h		bsepcmwriter.h \
-	bsecompat.h		bseundostack.h		bsemidiinput.h			bsemididecoder.h \
-	bsenote.h		bsemidifile.h		bseblockutils.hh		\
+	bse.hh	bsedefs.hh	bseexports.hh	bseconfig.h	bsegenclosures.hh \
+	bseincluder.hh	ladspa.hh	bseenginenode.hh bseieee754.hh \
+	bsecore.hh		\
+	bseengine.hh		bseenginemaster.hh	bseengineschedule.hh		bseengineutils.hh \
+	bsebus.hh		bsecategories.hh 	\
+	bsefilter.hh    		bsebiquadfilter.hh	\
+	bseconstant.hh		bseconstvalues.hh	bsecontainer.hh			bsecontextmerger.hh \
+	bseclientapi.hh		\
+	bsedatapocket.hh		bseeditablesample.hh	bseenums.hh			bsegconfig.hh \
+	bseglobals.hh		bseglue.hh		bseitem.hh			bsejanitor.hh \
+	bsemain.hh		bsemath.hh		bsemathsignal.hh			bseladspa.hh \
+	bsemidicontroller.hh	bsemididevice.hh		bsedevice.hh 			\
+	bsemididevice-null.hh	bsemididevice-oss.hh	bsemidievent.hh			bsemidinotifier.hh \
+	bsemidireceiver.hh	bsemidisynth.hh		bseobject.hh			bsepart.hh \
+	bsepcminput.hh		bsepcmoutput.hh		bseparam.hh			bseparasite.hh \
+	bsepcmdevice.hh		bsepcmdevice-oss.hh	bsepcmdevice-null.hh		bseplugin.hh \
+	bseprocedure.hh		bseproject.hh		bsescripthelper.hh		bseserver.hh \
+	bsesnet.hh		bsesnooper.hh		bsesong.hh			bsesequencer.hh \
+	bsesource.hh		bsestandardosc.hh	bsestandardsynths.hh		bsestorage.hh \
+	bseinstrumentoutput.hh	bsesubiport.hh		bseinstrumentinput.hh		bsesuboport.hh \
+        bsesoundfont.h          bsesoundfontpreset.h    bsesoundfontosc.h               \
+	bsesubsynth.hh		bsesuper.hh		bsetrack.hh			bsetype.hh \
+	bseutils.hh		bsemidivoice.hh		bsewave.hh			bsewaveosc.hh \
+	bsecsynth.hh		bsewaverepo.hh		bseladspamodule.hh		bsepcmwriter.hh \
+	bsecompat.hh		bseundostack.hh		bsemidiinput.hh			bsemididecoder.hh \
+	bsenote.hh		bsemidifile.hh		bseblockutils.hh		\
 	bsecxxvalue.hh		bsecxxutils.hh		bsecxxbase.hh			bsecxxclosure.hh \
-	bsecxxarg.hh		bsecxxmodule.hh		bsecxxplugin.hh			bseloader.h \
-	bseresampler.hh		bseresamplerimpl.hh	bsesoundfontrepo.h		bsesoundfont.h	\
-	bsesoundfontpreset.h	bsesoundfontosc.h	\
+	bsecxxarg.hh		bsecxxmodule.hh		bsecxxplugin.hh			bseloader.hh \
+	bseresampler.hh		bseresamplerimpl.hh	bsedatahandle-flac.hh           \
+	testobject.hh		\
 )
 # BSE C & C++ sources
 bse_sources = $(strip \
-	gslfft.c		gsloscillator.c	gsldatahandle.c	gslwavechunk.c \
-	gslfilter.c		gslcommon.c \
-	gsldatahandle-vorbis.c	gslvorbis-enc.c	gsldatacache.c	gslvorbis-cutter.c \
-	gsldatahandle-mad.c	           	gslfilehash.c	gsldatautils.c	\
-	gslwaveosc.c		gslosctable.c	gslmagic.c	\
-	\
-	bseengine.c		bseenginemaster.c	bseengineschedule.c		bseengineutils.c \
-	bsebus.c		bsecategories.c 	\
-	bsefilter.cc   		bsebiquadfilter.c	bsefilter-ellf.c	\
-	bseconstant.c		bseconstvalues.c	bsecontainer.c			bsecontextmerger.c \
-	bsedatapocket.c		bseeditablesample.c	bseenums.c			bsegconfig.c \
-	bseglobals.c		bseglue.c		bseitem.c			bsejanitor.c \
-	bsemain.cc		bsemath.c		bsemathsignal.c			bseladspa.cc \
-	bsemidicontroller.c	bsemididevice.c 	bsedevice.c 			\
-	bsemididevice-null.c	bsemididevice-oss.c	bsemidievent.c			bsemidinotifier.c \
-	bsemidireceiver.cc	bsemidisynth.c		bseobject.c			bsepart.c \
-	bsepcminput.c		bsepcmoutput.c		bseparam.c			bseparasite.c \
-	bsepcmdevice.c		bsepcmdevice-oss.c	bsepcmdevice-null.c		bseplugin.c \
-	bseprocedure.c		bseproject.c		bsescripthelper.c		bseserver.c \
-	bsesnet.c		bsesnooper.c		bsesong.c			bsesequencer.cc \
-	bsesource.c		bsestandardosc.c	bsestandardsynths.c		bsestorage.c \
-	bseinstrumentoutput.c	bsesubiport.c		bseinstrumentinput.c		bsesuboport.c \
-	bsesubsynth.c		bsesuper.c		bsetrack.c			bsetype.c \
-	bseutils.c		bsemidivoice.c		bsewave.c			bsewaveosc.c \
-	bsecsynth.c		bsewaverepo.c		bseladspamodule.c		bsepcmwriter.c \
-	bsecompat.c		bseundostack.c		bsemidiinput.c			bsemididecoder.c \
-	bsenote.cc		bsemidifile.c		bseblockutils.cc		\
-	bsecxxvalue.cc		bsecxxutils.cc		bsecxxbase.cc			bsecxxclosure.cc \
-	bsecxxarg.cc		bsecxxmodule.cc		bsecxxplugin.cc			bseloader.c \
-	bseresampler.cc 	bsedatahandle-resample.cc				bsedatahandle-fir.cc \
-	bseloader-aiff.c	bseloader-guspatch.cc	bseloader-oggvorbis.c		bseloader-bsewave.c \
-	bseloader-mad.c		bseloader-wav.c		\
-	bsebusmodule.cc		\
+	gslfft.cc		gsloscillator.cc	gsldatahandle.cc	gslwavechunk.cc \
+	gslfilter.cc		gslcommon.cc \
+	gsldatahandle-vorbis.cc	gslvorbis-enc.cc	gsldatacache.cc	gslvorbis-cutter.cc \
+	gsldatahandle-mad.cc	           	gslfilehash.cc	gsldatautils.cc	\
+	gslwaveosc.cc		gslosctable.cc	gslmagic.cc	                 \
 	bsecore.cc		\
-	bseprobe.cc		\
+	bseengine.cc		bseenginemaster.cc	bseengineschedule.cc		bseengineutils.cc \
+	bsebus.cc		bsecategories.cc 	\
+	bsefilter.cc   		bsebiquadfilter.cc	bsefilter-ellf.cc	\
+	bseconstant.cc		bseconstvalues.cc	bsecontainer.cc			bsecontextmerger.cc \
+	bsedatapocket.cc	bseeditablesample.cc	bseenums.cc			bsegconfig.cc \
+	bseglobals.cc		bseglue.cc		bseitem.cc			bsejanitor.cc \
+	bsemain.cc		bsemath.cc		bsemathsignal.cc		bseladspa.cc \
+	bsemidicontroller.cc	bsemididevice.cc 	bsedevice.cc 			\
+	bsemididevice-null.cc	bsemididevice-oss.cc	bsemidievent.cc			bsemidinotifier.cc \
+	bsemidireceiver.cc	bsemidisynth.cc		bseobject.cc			bsepart.cc \
+	bsepcminput.cc		bsepcmoutput.cc		bseparam.cc			bseparasite.cc \
+	bsepcmdevice.cc		bsepcmdevice-oss.cc	bsepcmdevice-null.cc		bseplugin.cc \
+	bseprocedure.cc		bseproject.cc		bsescripthelper.cc		bseserver.cc \
+	bsesnet.cc		bsesnooper.cc		bsesong.cc			bsesequencer.cc \
+        bsesoundfont.c          bsesoundfontrepo.c      bsesoundfontpreset.c            bsesoundfontosc.c \
 	bsesoundfontrepo.c	bsesoundfont.c		bsesoundfontpreset.c		bsesoundfontosc.c \
+	bsesource.cc		bsestandardosc.cc	bsestandardsynths.cc		bsestorage.cc \
+	bseinstrumentoutput.cc	bsesubiport.cc		bseinstrumentinput.cc		bsesuboport.cc \
+	bsesubsynth.cc		bsesuper.cc		bsetrack.cc			bsetype.cc \
+	bseutils.cc		bsemidivoice.cc		bsewave.cc			bsewaveosc.cc \
+	bsecsynth.cc		bsewaverepo.cc		bseladspamodule.cc		bsepcmwriter.cc \
+	bsecompat.cc		bseundostack.cc		bsemidiinput.cc			bsemididecoder.cc \
+	bsenote.cc		bsemidifile.cc		bseblockutils.cc		\
+	bsecxxvalue.cc		bsecxxutils.cc		bsecxxbase.cc			bsecxxclosure.cc \
+	bsecxxarg.cc		bsecxxmodule.cc		bsecxxplugin.cc			bseloader.cc \
+	bseresampler.cc 	bsedatahandle-resample.cc				bsedatahandle-fir.cc \
+	bseloader-aiff.cc	bseloader-guspatch.cc	bseloader-oggvorbis.cc		bseloader-bsewave.cc \
+	bseloader-mad.cc	bseloader-wav.cc	bseloader-flac.cc               bsedatahandle-flac.cc \
+	bsebusmodule.cc		\
+	bsebasics.cc		\
+	bseprobe.cc		\
+	testobject.cc		\
 )
 # BSE Synthesis Modules
 bse_idl_sources =
 bse_idl_sources += bsebusmodule.idl
 $(srcdir)/bsebusmodule.cc: bsebusmodule.genidl.hh
-bse_idl_sources += bsecore.idl
-$(srcdir)/bsecxxplugin.cc: bsecore.genidl.hh
+bse_idl_sources += bsebasics.idl
+$(srcdir)/bsecxxplugin.cc: bsebasics.genidl.hh
 bse_idl_sources += bseprobe.idl
 $(srcdir)/bseprobe.cc: bseprobe.genidl.hh
 idl_built_sources = $(bse_idl_sources:.idl=.genidl.hh)
+GENERATED += $(idl_built_sources)
+$(srcdir)/bsebus.cc: bsebasics.genidl.hh
 # idl files not used for build rules
 idl_dummy_files = $(strip	\
 	bsecxxmodule.idl	\
@@ -120,19 +122,17 @@ bse_proc_sources = $(strip \
 	bsetrack.proc		bseitem.proc		bsewave.proc		bsewaveosc.proc		bsewaverepo.proc			\
 	bsesoundfontrepo.proc	\
 )
-bse_proc_gen_sources = $(bse_proc_sources:.proc=.genprc.c)
+bse_proc_gen_sources = $(bse_proc_sources:.proc=.genprc.cc)
 # non-compile and non-install sources required
 EXTRA_DIST += $(strip \
-	bsecore.idl	bse.idl					\
+	bsebasics.idl	bse.idl					\
 	mktypes.pl	mkcalls.pl	mkcproc.pl		\
-	bseconfig.h.in	bsepcmmodule.c				\
+	bseconfig.h.in	bsepcmmodule.cc				\
 	bsewave.header						\
-	gsl-fftgen.pl	gsl-fftconf.sh	gsloscillator-aux.c	\
-	gslincluder.c	gslwaveosc-aux.c			\
+	gsl-fftgen.pl	gsl-fftconf.sh	gsloscillator-aux.cc	\
+	gslincluder.hh	gslwaveosc-aux.cc			\
+	bse-internals.hh					\
 )
-
-# -pthread -> -lpthread hack (required for libtool library linkage)
-pthread_2_lpthread = $(if $(findstring -pthread, $1), -lpthread)
 
 #
 # BSE library
@@ -140,15 +140,15 @@ pthread_2_lpthread = $(if $(findstring -pthread, $1), -lpthread)
 lib_LTLIBRARIES              = libbse.la
 libbseincludedir       	     = $(includedir)/bse
 libbseinclude_HEADERS        = $(bse_public_headers) bse.idl $(bse_idl_sources) bsehack.idl $(idl_dummy_files)
-nodist_libbseinclude_HEADERS = bsecore.genidl.hh
+nodist_libbseinclude_HEADERS = bsebasics.genidl.hh
 libbse_la_SOURCES            = $(bse_sources) $(bse_proc_gen_sources)
-libbse_la_LIBADD             = $(top_builddir)/birnet/libbirnet.o $(top_builddir)/sfi/libsfi.o $(BSE_LIBS) $(SFI_LIBS)
+libbse_la_LIBADD             = $(top_builddir)/sfi/libsfi.la $(BSE_LIBS) $(SFI_LIBS) $(RAPICORN_LIBS)
 libbse_la_LDFLAGS            = $(strip				\
 	-Wl,--version-script=$(srcdir)/ldscript.map		\
 	-version-info $(LT_CURRENT):$(LT_REVISION):$(LT_AGE)	\
 	-release $(LT_RELEASE) 					\
 	-no-undefined 						\
-	$(call pthread_2_lpthread, $(BSE_LIBS) $(SFI_LIBS))	\
+	$(AM_LDFLAGS)						\
 )
 EXTRA_DIST += ldscript.map
 #	-Wl,-Bsymbolic
@@ -159,28 +159,28 @@ EXTRA_DIST += $(bse_proc_sources) engine-mplan.txt
 GLIB_MKENUMS = glib-mkenums
 # WATCH OUT: $(SFIDL) works only builddir relative
 SFIDL = $(top_builddir)/sfi/sfidl
-SFIDL_INC = --nostdinc -I$(top_srcdir) -I$(top_builddir)
+SFIDL_INC = --nostdinc -I$(top_builddir) -I$(top_srcdir) -I$(srcdir)
 
 
 #
 # rules to generate built sources
 #
-%.genprc.c: @PERLRULE@ %.proc mkcproc.pl
+%.genprc.cc: @PERLRULE@ %.proc mkcproc.pl
 	$(srcdir)/mkcproc.pl --funcname $@ --preprocess $< >$@
 if WITH_PERLRULE
 CLEANFILES += $(bse_proc_gen_sources)
 else
 MAINTAINERCLEANFILES += $(bse_proc_gen_sources)
 endif
-# gslfft.c
-GENERATED += gslfft.c
-$(srcdir)/gslfft.c: @PERLRULE@ $(srcdir)/gsl-fftgen.pl $(srcdir)/gsl-fftconf.sh
-	$(srcdir)/gsl-fftconf.sh '$(PERL) $(srcdir)/gsl-fftgen.pl' \"gslfft.h\" >$@
+# gslfft.cc
+GENERATED += gslfft.cc
+$(srcdir)/gslfft.cc: @PERLRULE@ $(srcdir)/gsl-fftgen.pl $(srcdir)/gsl-fftconf.sh
+	$(srcdir)/gsl-fftconf.sh '$(PERL) $(srcdir)/gsl-fftgen.pl' \"gslfft.hh\" >$@
 # bsegentypes.h
 GENERATED_EXTRA_DIST += bsegentypes.h
 $(libbse_la_OBJECTS): bsegentypes.h
-bsegentypes.h: @PERLRULE@ mktypes.pl $(filter-out bsegentypes.c, $(bse_sources)) $(filter-out bsegentypes.h, $(bse_public_headers))
-bsegentypes.h: @PERLRULE@ bsecore.idl $(SFIDL)
+bsegentypes.h: @PERLRULE@ mktypes.pl $(filter-out bsegentypes.cc, $(bse_sources)) $(filter-out bsegentypes.h, $(bse_public_headers))
+bsegentypes.h: @PERLRULE@ bsebasics.idl $(SFIDL)
 	( \
 	  cd $(srcdir) \
 	  && $(GLIB_MKENUMS) \
@@ -188,16 +188,16 @@ bsegentypes.h: @PERLRULE@ bsecore.idl $(SFIDL)
 	    --eprod "#define BSE_TYPE_@ENUMSHORT@\t    (BSE_TYPE_ID (@EnumName@))\n" \
 	    --eprod "extern GType BSE_TYPE_ID (@EnumName@);" \
 	      $(filter-out bsegentypes.h, $(bse_public_headers)) \
-	  && $(PERL) mktypes.pl --externs $(filter-out bsegentypes.c, $(bse_sources)) \
+	  && $(PERL) mktypes.pl --externs $(filter-out bsegentypes.cc, $(bse_sources)) \
 	) > xgen-$(@F) \
-	&& $(SFIDL) $(SFIDL_INC) --core-c --header $(srcdir)/bsecore.idl >> xgen-$(@F) \
+	&& $(SFIDL) $(SFIDL_INC) --core-c --header $(srcdir)/bsebasics.idl >> xgen-$(@F) \
 	&& (cmp -s xgen-$(@F) $(srcdir)/bsegentypes.h || cp xgen-$(@F) $(srcdir)/bsegentypes.h) \
 	&& rm -f xgen-$(@F)
 $(bse_sources): bsegentypes.h
-# bsegentypes.c
-GENERATED_EXTRA_DIST += bsegentypes.c
-$(libbse_la_OBJECTS): bsegentypes.c
-bsegentypes.c: @PERLRULE@ bsegentypes.h mktypes.pl bsecore.idl $(SFIDL)
+# bsegentypes.cc
+GENERATED_EXTRA_DIST += bsegentypes.cc
+$(libbse_la_OBJECTS): bsegentypes.cc
+bsegentypes.cc: @PERLRULE@ bsegentypes.h mktypes.pl bsebasics.idl $(SFIDL)
 	( \
 	  cd $(srcdir) \
 	  && $(GLIB_MKENUMS) \
@@ -207,10 +207,10 @@ bsegentypes.c: @PERLRULE@ bsegentypes.h mktypes.pl bsecore.idl $(SFIDL)
 	) > xgen-$(@F) \
 	&& cp xgen-$(@F) $(@F) \
 	&& rm -f xgen-$(@F)
-# bseenum_arrays.c
-GENERATED_CLEANFILES += bseenum_arrays.c
-$(libbse_la_OBJECTS): bseenum_arrays.c
-bseenum_arrays.c: bsegentypes.h
+# bseenum_arrays.cc
+GENERATED_CLEANFILES += bseenum_arrays.cc
+$(libbse_la_OBJECTS): bseenum_arrays.cc
+bseenum_arrays.cc: bsegentypes.h
 	( \
 	  cd $(srcdir) \
 	  && $(GLIB_MKENUMS) \
@@ -223,10 +223,10 @@ bseenum_arrays.c: bsegentypes.h
 	) > xgen-$(@F) \
 	&& cp xgen-$(@F) $@ \
 	&& rm -f xgen-$(@F)
-# bseenum_list.c
-GENERATED_CLEANFILES += bseenum_list.c
-$(libbse_la_OBJECTS): bseenum_list.c
-bseenum_list.c: bsegentypes.h
+# bseenum_list.cc
+GENERATED_CLEANFILES += bseenum_list.cc
+$(libbse_la_OBJECTS): bseenum_list.cc
+bseenum_list.cc: bsegentypes.h
 	( \
 	  cd $(srcdir) \
 	  && $(GLIB_MKENUMS) \
@@ -236,38 +236,38 @@ bseenum_list.c: bsegentypes.h
 	) > xgen-$(@F) \
 	&& cp xgen-$(@F) $@ \
 	&& rm -f xgen-$(@F)
-# bsegentype_array.c
-GENERATED_EXTRA_DIST += bsegentype_array.c
-$(libbse_la_OBJECTS): bsegentype_array.c
-bsegentype_array.c: @PERLRULE@ bsegentypes.h
+# bsegentype_array.cc
+GENERATED_EXTRA_DIST += bsegentype_array.cc
+$(libbse_la_OBJECTS): bsegentype_array.cc
+bsegentype_array.cc: @PERLRULE@ bsegentypes.h
 	cd $(srcdir) \
 	&& $(PERL) mktypes.pl --array $(bse_sources) > xgen-$(@F) \
 	&& cp xgen-$(@F) $(@F) \
 	&& rm -f xgen-$(@F)
-# bsebuiltin_externs.c
-GENERATED_EXTRA_DIST += bsebuiltin_externs.c
-#$(libbse_la_OBJECTS): bsebuiltin_externs.c # forces complete rebuild when *.proc changes
-bseplugin.c: bsebuiltin_externs.c
-bsebuiltin_externs.c: @PERLRULE@ $(bse_proc_gen_sources) mkcproc.pl
+# bsebuiltin_externs.cc
+GENERATED_EXTRA_DIST += bsebuiltin_externs.cc
+#$(libbse_la_OBJECTS): bsebuiltin_externs.cc # forces complete rebuild when *.proc changes
+bseplugin.cc: bsebuiltin_externs.cc
+bsebuiltin_externs.cc: @PERLRULE@ $(bse_proc_gen_sources) mkcproc.pl
 	cd $(srcdir) \
 	&& $(PERL) mkcproc.pl --externs $(bse_proc_gen_sources) > xgen-$(@F) \
 	&& cp xgen-$(@F) $(@F) \
 	&& rm -f xgen-$(@F)
-# bsebuiltin_array.c
-GENERATED_EXTRA_DIST += bsebuiltin_array.c
-#$(libbse_la_OBJECTS): bsebuiltin_array.c # forces complete rebuild when *.proc changes
-bseplugin.c: bsebuiltin_array.c
-bsebuiltin_array.c: @PERLRULE@ $(bse_proc_gen_sources) mkcproc.pl
+# bsebuiltin_array.cc
+GENERATED_EXTRA_DIST += bsebuiltin_array.cc
+#$(libbse_la_OBJECTS): bsebuiltin_array.cc # forces complete rebuild when *.proc changes
+bseplugin.cc: bsebuiltin_array.cc
+bsebuiltin_array.cc: @PERLRULE@ $(bse_proc_gen_sources) mkcproc.pl
 	cd $(srcdir) \
 	&& $(PERL) mkcproc.pl --functions $(bse_proc_gen_sources) > xgen-$(@F) \
 	&& cp xgen-$(@F) $(@F) \
 	&& rm -f xgen-$(@F)
-# bsegencore.cc
-GENERATED_CLEANFILES += bsegencore.cc
-$(srcdir)/bsecore.cc: bsegencore.cc
-bsegencore.cc: bsecore.idl $(SFIDL) bsecore.genidl.hh
+# bsegenbasics.cc
+GENERATED_CLEANFILES += bsegenbasics.cc
+$(srcdir)/bsebasics.cc: bsegenbasics.cc
+bsegenbasics.cc: bsebasics.idl $(SFIDL) bsebasics.genidl.hh
 	cd . \
-	&& $(SFIDL) $(SFIDL_INC) --core-c --source --init sfidl_types_init $(srcdir)/bsecore.idl >> xgen-$(@F) \
+	&& $(SFIDL) $(SFIDL_INC) --core-c --source --init sfidl_types_init $(srcdir)/bsebasics.idl >> xgen-$(@F) \
 	&& cp xgen-$(@F) $(@F) \
 	&& rm -f xgen-$(@F)
 # setup generation of C++ objects from idl files
@@ -279,7 +279,7 @@ bsegencore.cc: bsecore.idl $(SFIDL) bsecore.genidl.hh
 # this file describes the BSE public API and needs to be generated at the
 # end of the build process
 #
-bsehack.idl: bsecore.idl bseprocidl
+bsehack.idl: bsebasics.idl bseprocidl
 	grep -v bsehack.idl $(srcdir)/bse.idl | $(SFIDL) $(SFIDL_INC) --list-types - > xgen-2-$(@F)
 	echo "/* this file was generated from make $< */" > xgen-$(@F) \
 	&& ./bseprocidl xgen-2-$(@F) >> xgen-$(@F) \
@@ -288,14 +288,45 @@ bsehack.idl: bsecore.idl bseprocidl
 CLEANFILES += bsehack.idl
 noinst_DATA = bsehack.idl
 
-#
-# convenience targets for generated source files
-#
-.PHONY: generated clean-generated
-clean-generated: clean
-	rm -f $(GENERATED)
-generated: clean-generated $(GENERATED) $(idl_built_sources)
+# == BSE IDL API (AIDA) ==
+AUXTYPES_PY = $(srcdir)/AuxTypes.py
+EXTRA_DIST += AuxTypes.py
+bseclientapi.hh: $(srcdir)/../bse/bseapi.idl $(AUXTYPES_PY)
+	$(AM_V_GEN)
+	$(Q) ${AIDACC} -x CxxStub -x $(AUXTYPES_PY) -G clienthh -G cppguard=__BST_BSECLIENTAPI_HH_ $< -o xgen-$(@F)
+	$(Q) mv xgen-$(@F) $@
+GENERATED += bseclientapi.hh
+bseclientapi.cc: $(srcdir)/../bse/bseapi.idl $(AUXTYPES_PY)
+	$(AM_V_GEN)
+	$(Q) ${AIDACC} -x CxxStub -x $(AUXTYPES_PY) -G clientcc -G cppguard=__BST_BSECLIENTAPI_CC_ $< -o xgen-$(@F)
+	$(Q) mv xgen-$(@F) $@
+GENERATED += bseclientapi.cc
+bseserverapi.hh: $(srcdir)/bseapi.idl $(AUXTYPES_PY)
+	$(AM_V_GEN)
+	$(Q) ${AIDACC} -x CxxStub -x $(AUXTYPES_PY) -G serverhh -G cppguard=__BST_BSESERVERAPI_HH_ \
+		-G iface-base=Bse::ImplicitBase $< -o xgen-$(@F)
+	$(Q) mv xgen-$(@F) $@
+GENERATED += bseserverapi.hh
+bseserverapi.cc: $(srcdir)/bseapi.idl $(AUXTYPES_PY)
+	$(AM_V_GEN)
+	$(Q) ${AIDACC} -x CxxStub -x $(AUXTYPES_PY) -G servercc -G cppguard=__BST_BSESERVERAPI_CC_ \
+		-G iface-base=Bse::ImplicitBase $< -o xgen-$(@F)
+	$(Q) patch -f < $(srcdir)/patch-bseserverapi.cc.diff || true
+	$(Q) mv xgen-$(@F) $@
+GENERATED  += bseserverapi.cc
+EXTRA_DIST += bseapi.idl patch-bseserverapi.cc.diff
+CLEANFILES += xgen-bseserverapi.cc.rej xgen-bseserverapi.cc.orig
 
+# == GENERATED targets ==
+$(libbse_la_OBJECTS): $(GENERATED)	# need dependency to force file generation
+generated: clean-generated $(GENERATED)
+	$(Q) $(MAKE) $(AM_MAKEFLAGS) clean-generated
+	$(Q) $(MAKE) generated-files
+generated-files: $(GENERATED)
+clean-generated:
+	rm -f $(GENERATED) stamp-*
+clean-local: clean-generated
+.PHONY: clean-generated generated-files generated
 
 #
 # private (birnet) dependancy to make TAGS file after each build
@@ -308,7 +339,7 @@ all: # TAGS
 # other programs, we want to compile
 #
 noinst_PROGRAMS = $(ALLTESTS)
-progs_LDADD = libbse.la $(SFI_LIBS) -lm
+progs_LDADD = libbse.la $(RAPICORN_LIBS) $(SFI_LIBS) -lm
 # source files
 
 noinst_PROGRAMS   += bseprocidl
@@ -316,14 +347,21 @@ bseprocidl_SOURCES = bseprocidl.cc
 bseprocidl_LDADD   = $(progs_LDADD)
 
 noinst_PROGRAMS += bsequery
-bsequery_SOURCES = bsequery.c cxxdummy.cc
+bsequery_SOURCES = bsequery.cc cxxdummy.cc
 bsequery_LDADD   = $(progs_LDADD)
 
 noinst_PROGRAMS   += bseautodoc
-bseautodoc_SOURCES = bseautodoc.c cxxdummy.cc
+bseautodoc_SOURCES = bseautodoc.cc
 bseautodoc_LDADD   = $(progs_LDADD)
 
 noinst_PROGRAMS += bseinfo
-bseinfo_SOURCES  = bseinfo.c cxxdummy.cc
+bseinfo_SOURCES  = bseinfo.cc
 bseinfo_LDADD    = $(progs_LDADD)
 
+# == Tests ==
+EXTRA_DIST += oldidl.idl
+check-oldidl: oldidl.idl AuxTypes.py
+	@echo "  CHECK " $<
+	$(Q) $(AIDACC_VDEBUG) -x $(srcdir)/AuxTypes.py $<
+.PHONY: check-oldidl
+check-local: check-oldidl

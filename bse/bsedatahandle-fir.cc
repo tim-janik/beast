@@ -1,22 +1,7 @@
-/* BSE - Bedevilled Sound Engine
- * Copyright (C) 2001, 2003 Tim Janik and Stefan Westerfeld
- *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * A copy of the GNU Lesser General Public License should ship along
- * with this library; if not, see http://www.gnu.org/copyleft/.
- */
-#include "gsldatahandle.h"
-#include "gsldatautils.h"
-#include "gslfilter.h"
+// Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
+#include "gsldatahandle.hh"
+#include "gsldatautils.hh"
+#include "gslfilter.hh"
 #include "bseblockutils.hh"
 #include <complex>
 #include <vector>
@@ -190,7 +175,7 @@ public:
       }
 
     g_assert (ivoffset == m_input_voffset);
-    
+
     voffset -= ivoffset;
     n_values = min (n_values, m_block_size - voffset);
     fir_apply (voffset, n_values, values);
@@ -370,16 +355,17 @@ public:
 using namespace Bse;
 
 /**
+ * <pre>
  *           __________
  *          /
  *         /
- *        /
- *  _____/
+ *        /|
+ *  _____/ |
  *         |
  *    cutoff_freq
- *
- * @cutoff_freq: cutoff frequency in Hz in intervall [0..SR/2]
- * @order:       number of filter coefficients
+ * </pre>
+ * @param cutoff_freq cutoff frequency in Hz in intervall [0..SR/2]
+ * @param order       number of filter coefficients
  */
 extern "C" GslDataHandle*
 bse_data_handle_new_fir_highpass (GslDataHandle *src_handle,
@@ -391,16 +377,17 @@ bse_data_handle_new_fir_highpass (GslDataHandle *src_handle,
 }
 
 /**
- * ______                    
- *       \    
- *        \  
- *         \
- *          \__________
+ * <pre>
+ * ______
+ *       \
+ *        \
+ *        |\
+ *        | \ __________
  *        |
  *   cutoff_freq
- *
- * @cutoff_freq: cutoff frequency in Hz in intervall [0..SR/2]
- * @order:       number of filter coefficients
+ * </pre>
+ * @param cutoff_freq cutoff frequency in Hz in intervall [0..SR/2]
+ * @param order       number of filter coefficients
  */
 extern "C" GslDataHandle*
 bse_data_handle_new_fir_lowpass (GslDataHandle *src_handle,

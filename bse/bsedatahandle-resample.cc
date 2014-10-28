@@ -1,22 +1,6 @@
-/* BSE Resampling Datahandles
- * Copyright (C) 2001-2003 Tim Janik
- * Copyright (C) 2006 Stefan Westerfeld
- *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * A copy of the GNU Lesser General Public License should ship along
- * with this library; if not, see http://www.gnu.org/copyleft/.
- */
+// Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bseresampler.hh"
-#include "gsldatahandle.h"
+#include "gsldatahandle.hh"
 #include <sfi/sficxx.hh>
 #include <vector>
 
@@ -112,25 +96,25 @@ protected:
     return n_values;
   }
   void
-  deinterleave (float *src,
-                float *dest,
-                int64  n_values)
+  deinterleave (float  *src,
+                float  *dest,
+                size_t  n_values)
   {
-    const int64 n_channels = m_dhandle.setup.n_channels;
+    const guint n_channels = m_dhandle.setup.n_channels;
 
-    for (int64 ch = 0; ch < n_channels; ch++)
-      for (int64 v = ch; v < n_values; v += n_channels)
+    for (guint ch = 0; ch < n_channels; ch++)
+      for (size_t v = ch; v < n_values; v += n_channels)
 	*dest++ = src[v];
   }
   void
-  interleave (float *src,
-              float *dest,
-              int64  n_values)
+  interleave (float  *src,
+              float  *dest,
+              size_t  n_values)
   {
-    const int64 n_channels = m_dhandle.setup.n_channels;
+    const guint n_channels = m_dhandle.setup.n_channels;
 
-    for (int64 ch = 0; ch < n_channels; ch++)
-      for (int64 v = ch; v < n_values; v += n_channels)
+    for (guint ch = 0; ch < n_channels; ch++)
+      for (size_t v = ch; v < n_values; v += n_channels)
 	dest[v] = *src++;
   }
 
@@ -160,7 +144,7 @@ public:
 					    break;
       default:				    g_assert_not_reached();
       }
-    
+
     m_frame_size = 1024 * setup->n_channels;
     m_pcm_frame = -2;
     m_pcm_data.resize (m_frame_size);
@@ -204,7 +188,7 @@ public:
 
     m_resamplers.clear();
     m_pcm_data.clear();
-    
+
     m_dhandle.setup.xinfos = NULL;	/* cleanup pointer reference */
     gsl_data_handle_close (m_src_handle);
   }

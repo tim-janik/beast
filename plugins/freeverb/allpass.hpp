@@ -6,7 +6,7 @@
 
 #ifndef _allpass_
 #define _allpass_
-#include "denormals.h"
+#include "denormals.hh"
 
 class allpass
 {

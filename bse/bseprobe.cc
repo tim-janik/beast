@@ -1,24 +1,11 @@
-/* BSE - Bedevilled Sound Engine
- * Copyright (C) 2003-2006 Tim Janik
- *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * A copy of the GNU Lesser General Public License should ship along
- * with this library; if not, see http://www.gnu.org/copyleft/.
- */
+// Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bseprobe.genidl.hh"
-#include "bseengine.h"
+#include "bseengine.hh"
 #include "bseblockutils.hh"
-#include "gslcommon.h" /* for gsl_tick_stamp() */
-#include "gslfft.h"
+#include "gslcommon.hh" /* for Bse::TickStamp::current() */
+#include "gslfft.hh"
+#include "bsemain.hh"
+#include "bsesequencer.hh"
 #include <stdexcept>
 #include <set>
 using namespace std;
@@ -187,7 +174,7 @@ class ProbeQueue {
               rv[i] = ivalues[i] * blackman_window (i * reci_fft_size);
             gsl_power2_fftar (fft_size, rv, cv);
             probe.fft_data.resize (fft_size);
-            float *fvalues = probe.fft_data.fblock()->values;
+            double *fvalues = &probe.fft_data[0];
             reci_fft_size = 1.0 / fft_size;
             i = fft_size;
             while (i--) /* convert to float */
@@ -197,7 +184,7 @@ class ProbeQueue {
           {
             /* all raw floats are 0.0 and so will be the resulting fft */
             probe.fft_data.resize (fft_size);
-            bse_block_fill_float (fft_size, probe.fft_data.fblock()->values, 0.0);
+            bse_block_fill_0 (fft_size, &probe.fft_data[0]);
           }
         else
           probe_features.probe_fft = false;
@@ -210,9 +197,12 @@ class ProbeQueue {
         if (raw_floats)
           {
             /* if (probe_xrun) bse_block_fill_float (n_computed, raw_floats, 0.0); */
-            SfiFBlock *fblock = sfi_fblock_new_foreign (block_size, raw_floats, g_free);
+            probe.sample_data.resize (block_size);
+            double *fvalues = &probe.fft_data[0];
+            for (int i = 0; i < int (block_size); i++)
+              fvalues[i] = raw_floats[i];
+            g_free (raw_floats);
             raw_floats = NULL;
-            probe.sample_data.take (fblock);
           }
         else
           probe_features.probe_samples = false;
@@ -328,7 +318,7 @@ public:
     }
   };
 private:
-  BIRNET_PRIVATE_CLASS_COPY (ProbeQueue);
+  RAPICORN_CLASS_NON_COPYABLE (ProbeQueue);
 };
 
 
@@ -421,7 +411,7 @@ private:
     {
       g_assert (ostreams == NULL);
     }
-    BIRNET_PRIVATE_CLASS_COPY (ProbeData);
+    RAPICORN_CLASS_NON_COPYABLE (ProbeData);
   };
   void
   handle_probe (ProbeData   &pdata,
@@ -710,13 +700,11 @@ source_mass_request::exec (const ProbeRequestSeq &cprseq)
       channel_features = NULL;
     }
 }
-
 Num
 source_get_tick_stamp::exec (BseSource *self)
 {
-  return gsl_tick_stamp ();
+  return Bse::TickStamp::current();
 }
-
 Int
 source_get_mix_freq::exec (BseSource *self)
 {
@@ -726,15 +714,12 @@ source_get_mix_freq::exec (BseSource *self)
 }
 
 } // Procedure
-
 /* export definitions follow */
 BSE_CXX_DEFINE_EXPORTS();
 BSE_CXX_REGISTER_ALL_TYPES_FROM_BSEPROBE_IDL();
-
 } // Bse
-
-/* --- bsesource.h bits --- */
-extern "C" {    // from bsesource.h
+/* --- bsesource.hh bits --- */
+extern "C" {    // from bsesource.hh
 using namespace Bse;
 
 void
@@ -744,7 +729,7 @@ bse_source_clear_probes (BseSource *source)
   SourceProbes *probes = SourceProbes::peek_from_source (source);
   source->probes = NULL;
   delete probes;
-}                          
+}
 
 void
 bse_source_probes_modules_changed (BseSource *source)

@@ -1,6 +1,6 @@
 ; BseProject
 
-(bse-version "0.7.0")
+(bse-version "0.8.0")
 
 (container-child "BseWaveRepo::Wave-Repository"
   (modification-time "2006-05-18 11:27:10")
@@ -16,7 +16,6 @@
   (creation-time "2002-07-29 10:01:45")
   (license "Green OpenMusic License (http://openmusic.linuxtag.org)")
   (author "Stefan Westerfeld")
-  (blurb "")
   (container-child "BsePart::QuickMelodie"
     (n-channels 4)
     (blurb "Stefan Westerfeld")

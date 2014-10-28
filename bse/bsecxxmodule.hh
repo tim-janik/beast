@@ -1,28 +1,13 @@
-/* BSE - Bedevilled Sound Engine
- * Copyright (C) 2003 Tim Janik
- *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * A copy of the GNU Lesser General Public License should ship along
- * with this library; if not, see http://www.gnu.org/copyleft/.
- */
+// Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #ifndef __BSE_CXX_MODULE_H__
 #define __BSE_CXX_MODULE_H__
 
 #include <bse/bsecxxbase.hh>
-#include <bse/bseieee754.h>
+#include <bse/bseieee754.hh>
 
 namespace Bse {
 
-/* enums/structures mirrored from bseengine.h */
+/* enums/structures mirrored from bseengine.hh */
 enum ProcessCost {
   NORMAL,
   CHEAP,
@@ -30,9 +15,9 @@ enum ProcessCost {
 };
 struct JStream {
   const float **values;
-  unsigned int  n_connections;
+  uint          n_connections;
   /* private: */
-  unsigned int  jcount; /* reserved */
+  uint          jcount; /* reserved */
 };
 struct IStream {
   const float  *values;
@@ -52,16 +37,16 @@ public:
   explicit                  SynthesisModule ();
   virtual                  ~SynthesisModule () = 0;
   virtual void              reset           () = 0;
-  virtual void              process         (unsigned int n_values) = 0;
+  virtual void              process         (uint n_values) = 0;
   virtual const ProcessCost cost            ();
-  inline const IStream&     istream         (unsigned int istream_index) const;
-  inline const JStream&     jstream         (unsigned int jstream_index) const;
-  inline const OStream&     ostream         (unsigned int ostream_index) const;
-  void                      ostream_set     (unsigned int ostream_index,
+  inline const IStream&     istream         (uint istream_index) const;
+  inline const JStream&     jstream         (uint jstream_index) const;
+  inline const OStream&     ostream         (uint ostream_index) const;
+  void                      ostream_set     (uint ostream_index,
                                              const float *values);
   const float*              const_values    (float  value);
-  inline const unsigned int mix_freq        () const;
-  inline const unsigned int block_size      () const;
+  inline const uint         mix_freq        () const;
+  inline const uint         block_size      () const;
   inline guint64            tick_stamp      ();
   inline BseModule*         engine_module   ();
   static inline int         dtoi            (double d) { return bse_dtoi (d); }
@@ -89,7 +74,7 @@ public:
     Effect     *effect;
   };    
   struct NeedAutoUpdateTag {};
-protected:
+public:
   template<class M, class P, class C> struct Trampoline {
     static void auto_update_accessor (BseModule*, gpointer);
   };
@@ -131,7 +116,7 @@ public:
   const gchar*  ochannel_ident    (guint i) const { return BSE_SOURCE_OCHANNEL_IDENT (gobject(), i); }
   const gchar*  ochannel_label    (guint i) const { return BSE_SOURCE_OCHANNEL_LABEL (gobject(), i); }
   const gchar*  ochannel_blurb    (guint i) const { return BSE_SOURCE_OCHANNEL_BLURB (gobject(), i); }
-  virtual SynthesisModule*  create_module              (unsigned int     context_handle,
+  virtual SynthesisModule*  create_module              (uint             context_handle,
                                                         BseTrans        *trans) = 0;
   virtual SynthesisModule::
   Closure*                  make_module_config_closure () = 0;
@@ -144,7 +129,7 @@ public:
   virtual void  prepare2()      { /* override this to do something after parent class prepare */ }
   virtual void  reset1()        { /* override this to do something before parent class dismiss */ }
   virtual void  reset2()        { /* override this to do something after parent class dismiss */ }
-  
+
   static void               class_init                 (CxxBaseClass    *klass);
 protected:
   const BseModuleClass*     create_engine_class        (SynthesisModule *sample_module,
@@ -152,18 +137,20 @@ protected:
                                                         int              n_istreams = -1,
                                                         int              n_jstreams = -1,
                                                         int              n_ostreams = -1);
-  virtual BseModule*        integrate_engine_module    (unsigned int     context_handle,
+  virtual BseModule*        integrate_engine_module    (uint             context_handle,
                                                         BseTrans        *trans);
   virtual void              dismiss_engine_module      (BseModule       *engine_module,
                                                         guint            context_handle,
                                                         BseTrans        *trans);
-  unsigned int              block_size                 () const;
-  unsigned int              max_block_size             () const;
+  uint                      block_size                 () const;
+  uint                      max_block_size             () const;
+public: /* FIXME: make this protected as soon as the modules have their own current_musical_tuning() accessor */
+  BseMusicalTuningType      current_musical_tuning     () const;
 };
 /* implement Bse::Effect and Bse::SynthesisModule methods */
 #define BSE_EFFECT_INTEGRATE_MODULE(ObjectType,ModuleType,ParamType)            \
 Bse::SynthesisModule*                                                           \
-create_module (unsigned int context_handle,                                     \
+create_module (uint         context_handle,                                     \
                BseTrans    *trans)                                              \
 {                                                                               \
   /* check that 'this' is a ObjectType* */                                      \
@@ -215,12 +202,12 @@ SynthesisModule::engine_module ()
 {
   return intern_module;
 }
-inline const unsigned int
+inline const uint
 SynthesisModule::mix_freq () const
 {
   return externC::bse_engine_exvar_sample_freq;
 }
-inline const unsigned int
+inline const uint
 SynthesisModule::block_size () const
 {
   return externC::bse_engine_exvar_block_size;
@@ -231,19 +218,19 @@ SynthesisModule::tick_stamp ()
   return externC::bse_module_tick_stamp (engine_module());
 }
 inline const IStream&
-SynthesisModule::istream (unsigned int istream_index) const
+SynthesisModule::istream (uint         istream_index) const
 {
   void *istreams = BSE_MODULE_GET_ISTREAMSP (intern_module);
   return reinterpret_cast<IStream*> (istreams)[istream_index];
 }
 inline const JStream&
-SynthesisModule::jstream (unsigned int jstream_index) const
+SynthesisModule::jstream (uint         jstream_index) const
 {
   void *jstreams = BSE_MODULE_GET_JSTREAMSP (intern_module);
   return reinterpret_cast<JStream*> (jstreams)[jstream_index];
 }
 inline const OStream&
-SynthesisModule::ostream (unsigned int ostream_index) const
+SynthesisModule::ostream (uint         ostream_index) const
 {
   void *ostreams = BSE_MODULE_GET_OSTREAMSP (intern_module);
   return reinterpret_cast<OStream*> (ostreams)[ostream_index];

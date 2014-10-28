@@ -1,19 +1,4 @@
-/* SFI - Synthesis Fusion Kit Interface
- * Copyright (C) 2002 Stefan Westerfeld
- *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * A copy of the GNU Lesser General Public License should ship along
- * with this library; if not, see http://www.gnu.org/copyleft/.
- */
+// Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "sfidl-generator.hh"
 #include "sfidl-options.hh"
 #include "sfidl-parser.hh"
@@ -69,5 +54,20 @@ int main (int argc, char **argv)
   delete options.codeGenerator;
   return 0;
 }
+
+#include "sfidl-generator.cc"
+#include "sfidl-namespace.cc"
+#include "sfidl-options.cc"
+#include "sfidl-parser.cc"
+#include "sfidl-factory.cc"
+#include "sfidl-typelist.cc"
+#include "sfidl-cbase.cc"
+#include "sfidl-clientc.cc"
+#include "sfidl-clientcxx.cc"
+#include "sfidl-corec.cc"
+#include "sfidl-corecxx.cc"
+#include "sfidl-cxxbase.cc"
+#include "sfidl-hostc.cc"
+#include "sfidl-utils.cc"
 
 /* vim:set ts=8 sts=2 sw=2: */

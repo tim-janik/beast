@@ -1,27 +1,10 @@
-/* BSE - Bedevilled Sound Engine
- * Copyright (C) 2002, 2003 Tim Janik
- *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * A copy of the GNU Lesser General Public License should ship along
- * with this library; if not, see http://www.gnu.org/copyleft/.
- */
-#include "bsenote.h"
-#include "bseutils.h"
-#include "bseieee754.h"
-#include "bsemathsignal.h"
+// Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
+#include "bsenote.hh"
+#include "bseutils.hh"
+#include "bseieee754.hh"
+#include "bsemathsignal.hh"
 #include <string.h>
-#include <birnet/birnet.hh>
-
-
+#include <sfi/sfi.hh>
 /* --- functions --- */
 namespace {
 struct FreqCmp {
@@ -42,7 +25,7 @@ bse_note_from_freq (BseMusicalTuningType musical_tuning,
   const double *table = bse_semitone_table_from_tuning (musical_tuning);
   const double *start = table - 132;
   const double *end = table + 1 + 132;
-  const double *m = Birnet::binary_lookup_sibling (start, end, FreqCmp(), freq);
+  const double *m = Bse::binary_lookup_sibling (start, end, FreqCmp(), freq);
   if (m == end)
     return BSE_NOTE_VOID;
   /* improve from sibling to nearest */
@@ -125,10 +108,10 @@ BseFreqArray*
 bse_freq_array_new (guint prealloc)
 {
   BseFreqArray *farray = g_new0 (BseFreqArray, 1);
-  
+
   farray->n_prealloced = prealloc;
   farray->values = g_new0 (gdouble, farray->n_prealloced);
-  
+
   return farray;
 }
 
@@ -136,7 +119,7 @@ void
 bse_freq_array_free (BseFreqArray *farray)
 {
   g_return_if_fail (farray != NULL);
-  
+
   g_free (farray->values);
   g_free (farray);
 }
@@ -155,7 +138,7 @@ bse_freq_array_get (BseFreqArray *farray,
 {
   g_return_val_if_fail (farray != NULL, 0);
   g_return_val_if_fail (index < farray->n_values, 0);
-  
+
   return farray->values[index];
 }
 
@@ -165,10 +148,10 @@ bse_freq_array_insert (BseFreqArray *farray,
                        gdouble       value)
 {
   guint i;
-  
+
   g_return_if_fail (farray != NULL);
   g_return_if_fail (index <= farray->n_values);
-  
+
   i = farray->n_values;
   i = farray->n_values += 1;
   if (farray->n_values > farray->n_prealloced)
@@ -176,7 +159,7 @@ bse_freq_array_insert (BseFreqArray *farray,
       farray->n_prealloced = farray->n_values;
       farray->values = g_renew (gdouble, farray->values, farray->n_prealloced);
     }
-  g_memmove (farray->values + index + 1,
+  memmove (farray->values + index + 1,
              farray->values + index,
              i - index);
   farray->values[index] = value;
@@ -196,7 +179,7 @@ bse_freq_array_set (BseFreqArray *farray,
 {
   g_return_if_fail (farray != NULL);
   g_return_if_fail (index < farray->n_values);
-  
+
   farray->values[index] = value;
 }
 
@@ -206,23 +189,23 @@ bse_freq_arrays_match_freq (gfloat        match_freq,
                             BseFreqArray *exclusive_set)
 {
   guint i;
-  
+
   if (exclusive_set)
     for (i = 0; i < exclusive_set->n_values; i++)
       {
 	gdouble *value = exclusive_set->values + i;
-        
+
 	if (fabs (*value - match_freq) < BSE_FREQUENCY_EPSILON)
 	  return FALSE;
       }
-  
+
   if (!inclusive_set)
     return TRUE;
-  
+
   for (i = 0; i < inclusive_set->n_values; i++)
     {
       gdouble *value = inclusive_set->values + i;
-      
+
       if (fabs (*value - match_freq) < BSE_FREQUENCY_EPSILON)
 	return TRUE;
     }

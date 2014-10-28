@@ -1,26 +1,11 @@
-/* BSE Feature Extraction Tool
- * Copyright (C) 2004-2006 Stefan Westerfeld
- *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * A copy of the GNU Lesser General Public License should ship along
- * with this library; if not, see http://www.gnu.org/copyleft/.
- */
-#include <bse/bsemain.h>
-#include <bse/bseengine.h>
-#include <bse/bsemathsignal.h>
-#include <bse/gsldatautils.h>
-#include <bse/bseloader.h>
-#include <bse/gslfft.h>
-#include <bse/gslfilter.h>
+// Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
+#include <bse/bsemain.hh>
+#include <bse/bseengine.hh>
+#include <bse/bsemathsignal.hh>
+#include <bse/gsldatautils.hh>
+#include <bse/bseloader.hh>
+#include <bse/gslfft.hh>
+#include <bse/gslfilter.hh>
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -68,7 +53,7 @@ struct Options {
 
 class Signal
 {
-  mutable GslDataPeekBuffer m_peek_buffer;
+  vector<float>   m_samples;
   GslDataHandle	 *m_data_handle;
   guint		  m_n_channels;
   GslLong	  m_length;
@@ -102,8 +87,19 @@ public:
     m_length = gsl_data_handle_length (data_handle);
     m_offset = 0;
 
-    memset (&m_peek_buffer, 0, sizeof (m_peek_buffer));
-    m_peek_buffer.dir = 1; /* incremental direction */;
+    m_samples.resize (m_length);
+    size_t have_samples = 0;
+    while (have_samples < m_length)
+      {
+        int64 r = gsl_data_handle_read (data_handle, have_samples, MIN (m_length - have_samples, 4096 * m_n_channels),
+                                        &m_samples[have_samples]);
+        if (r < 0)
+          {
+            g_printerr ("error reading sample data\n");
+            exit (1);
+          }
+        have_samples += r;
+      }
 
     if (options.cut_zeros_head)
       {
@@ -156,9 +152,9 @@ public:
 
   double operator[] (GslLong k) const
   {
-    return gsl_data_handle_peek_value (m_data_handle, k + m_offset, &m_peek_buffer);
+    return m_samples[k + m_offset];
   }
-  
+
   double mix_freq() const
   {
     return gsl_data_handle_mix_freq (m_data_handle);
@@ -303,22 +299,33 @@ struct SpectrumFeature : public Feature
 {
   vector< vector<double> > spectrum;
   vector< vector<double> > joined_spectrum;
+  vector< double >         window;
 
   SpectrumFeature() :
     Feature ("--spectrum", "generate 30ms sliced frequency spectrums")
   {
   }
 
-  vector<double>
-  build_frequency_vector (GslLong size,
-			  double *samples)
+  void
+  init_window (size_t size)
   {
+    window.resize (size);
+
+    for (size_t i = 0; i < size; i++)
+      window[i] = bse_window_blackman (2.0 * i / size - 1.0); /* the bse blackman window is defined in range [-1, 1] */
+  }
+
+  vector<double>
+  build_frequency_vector (double *samples)
+  {
+    const size_t size = window.size();
+    assert (size > 0);
+
     vector<double> fvector;
     double in[size], c[size + 2], *im;
-    gint i;
 
-    for (i = 0; i < size; i++)
-      in[i] = bse_window_blackman (2.0 * i / size - 1.0) * samples[i]; /* the bse blackman window is defined in range [-1, 1] */
+    for (size_t i = 0; i < size; i++)
+      in[i] = window[i] * samples[i];
 
     gsl_power2_fftar (size, in, c);
     c[size] = c[1];
@@ -326,7 +333,7 @@ struct SpectrumFeature : public Feature
     c[1] = 0;
     im = c + 1;
 
-    for (i = 0; i <= size >> 1; i++)
+    for (size_t i = 0; i <= size >> 1; i++)
       {
 	double abs = sqrt (c[i << 1] * c[i << 1] + im[i << 1] * im[i << 1]);
 	/* FIXME: is this the correct normalization? */
@@ -396,6 +403,8 @@ struct SpectrumFeature : public Feature
     if (spectrum.size()) /* don't compute the same feature twice */
       return;
 
+    init_window (4096);
+
     double file_size_ms = signal.time_ms (signal.length());
 
     for (double offset_ms = 0; offset_ms < file_size_ms; offset_ms += 30) /* extract a feature vector every 30 ms */
@@ -418,7 +427,7 @@ struct SpectrumFeature : public Feature
 
 	if (!skip)
 	  {
-	    vector<double> fvector = build_frequency_vector (4096, samples);
+	    vector<double> fvector = build_frequency_vector (samples);
 	    spectrum.push_back (collapse_frequency_vector (fvector, signal.mix_freq(), 50, 1.6));
 	  }
       }
@@ -1190,7 +1199,7 @@ struct AttackTimes : public Feature
   compute (const Signal &signal)
   {
     timing_slices->compute (signal);
-    
+
     for (int i = 0; i < timing_slices->n_slices(); i++)
       attack_times.push_back (timing_slices->spectral_flux (i - 1, i, TimingSlices::SPECTRAL_FLUX_POSITIVE));
   }
@@ -1219,7 +1228,7 @@ struct ReleaseTimes : public Feature
   compute (const Signal &signal)
   {
     timing_slices->compute (signal);
-    
+
     for (int i = 0; i < timing_slices->n_slices(); i++)
       release_times.push_back (timing_slices->spectral_flux (i - 1, i, TimingSlices::SPECTRAL_FLUX_NEGATIVE));
   }
@@ -1478,22 +1487,15 @@ main (int    argc,
       char **argv)
 {
   /* init */
-  SfiInitValue values[] = {
-    { "stand-alone",            "true" }, /* no rcfiles etc. */
-    { "wave-chunk-padding",     NULL, 1, },
-    { "dcache-block-size",      NULL, 8192, },
-    { "dcache-cache-memory",    NULL, 5 * 1024 * 1024, },
-    { NULL }
-  };
-  bse_init_inprocess (&argc, &argv, NULL, values);
-
+  bse_init_inprocess (&argc, argv, NULL,
+                      Bse::cstrings_to_vector ("stand-alone=1", "wave-chunk-padding=1",
+                                               "dcache-block-size=8192", "dcache-cache-memory=5242880", NULL));
   /* supported features */
   SpectrumFeature *spectrum_feature = new SpectrumFeature;
   ComplexSignalFeature *complex_signal_feature = new ComplexSignalFeature;
   BaseFreqFeature *base_freq_feature = new BaseFreqFeature (complex_signal_feature);
   VolumeFeature *volume_feature = new VolumeFeature (complex_signal_feature);
   TimingSlices *timing_slices = new TimingSlices;  // not user visible
-
   feature_list.push_back (new StartTimeFeature());
   feature_list.push_back (new EndTimeFeature());
   feature_list.push_back (spectrum_feature);

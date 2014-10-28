@@ -1,27 +1,12 @@
-/* SSE optimized FIR Resampling code
- * Copyright (C) 2006 Stefan Westerfeld
- *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * A copy of the GNU Lesser General Public License should ship along
- * with this library; if not, see http://www.gnu.org/copyleft/.
- */
+// Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include <bse/bseresampler.hh>
 #include <bse/bseresamplerimpl.hh>
 #include <bse/bseblockutils.hh>
-#include <birnet/birnettests.h>
-#include <bse/bsemain.h>
-#include <bse/bsemath.h>
-#include <bse/bsemathsignal.h>
-#include <bse/gslfft.h>
+#include <rapicorn-test.hh>
+#include <bse/bsemain.hh>
+#include <bse/bsemath.hh>
+#include <bse/bsemathsignal.hh>
+#include <bse/gslfft.hh>
 #include "topconfig.h"
 
 #include <stdio.h>
@@ -220,7 +205,7 @@ Options::parse (int   *argc_p,
       else if (strcmp (argv[i], "--version") == 0 ||
                strcmp (argv[i], "-v") == 0)
         {
-          printf ("%s %s\n", program_name.c_str(), BSE_VERSION);
+          printf ("%s %s\n", program_name.c_str(), BST_VERSION);
           exit (0);
         }
       else if (check_arg (argc, argv, &i, "--block-size", &opt_arg))
@@ -663,11 +648,7 @@ main (int argc, char **argv)
       argv[i] = g_strdup ("--bse-force-fpu"); /* leak, but we don't care */
 
   /* load plugins */
-  SfiInitValue config[] = {
-	{ "load-core-plugins", "1" },
-	{ NULL },
-  };
-  bse_init_test (&argc, &argv, config);
+  bse_init_test (&argc, argv, Bse::cstrings_to_vector ("load-core-plugins=1", NULL));
   options.parse (&argc, &argv);
 
   if (argc == 2)

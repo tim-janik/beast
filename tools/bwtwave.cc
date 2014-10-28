@@ -1,26 +1,13 @@
-/* BseWaveTool - BSE Wave manipulation tool             -*-mode: c++;-*-
- * Copyright (C) 2001-2004 Tim Janik
- *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * A copy of the GNU Lesser General Public License should ship along
- * with this library; if not, see http://www.gnu.org/copyleft/.
- */
+// Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bwtwave.hh"
-#include <bse/bsemath.h>
-#include <bse/gsldatautils.h>
-#include <bse/gsldatahandle-vorbis.h>
-#include <bse/bseloader.h>
+#include <bse/bsemath.hh>
+#include <bse/gsldatautils.hh>
+#include <bse/gsldatahandle-vorbis.hh>
+#include <bse/bsedatahandle-flac.hh>
+#include <bse/bseloader.hh>
 #include <bse/bsecxxutils.hh>
 #include <sys/stat.h>
+#include <unistd.h>
 #include <fcntl.h>
 #include <errno.h>
 #include <stdio.h>
@@ -28,6 +15,7 @@
 #include <vector>
 #include <map>
 
+using Bse::Flac1Handle;
 
 namespace BseWaveTool {
 
@@ -205,7 +193,7 @@ Wave::match (const WaveChunk &wchunk,
              vector<float>   &sorted_freqs)
 {
   gfloat osc_freq = gsl_data_handle_osc_freq (wchunk.dhandle);
-  vector<float>::iterator it = Birnet::binary_lookup_sibling (sorted_freqs.begin(), sorted_freqs.end(), compare_floats, osc_freq);
+  vector<float>::iterator it = Bse::binary_lookup_sibling (sorted_freqs.begin(), sorted_freqs.end(), compare_floats, osc_freq);
   if (it == sorted_freqs.end())
     return false;
   if (fabs (*it - osc_freq) < 0.01)
@@ -256,7 +244,7 @@ Wave::store (const string file_name)
   do
     {
       g_free (temp_file);
-      temp_file = g_strdup_printf ("%s.tmp%06xyXXXXXX", file_name.c_str(), rand() & 0xfffffd);
+      temp_file = g_strdup_format ("%s.tmp%06xyXXXXXX", file_name.c_str(), rand() & 0xfffffd);
       mktemp (temp_file); /* this is save, due to use of: O_CREAT | O_EXCL */
       fd = open (temp_file, O_WRONLY | O_CREAT | O_EXCL, 0666);
     }
@@ -345,7 +333,7 @@ Wave::store (const string file_name)
           sfi_wstore_putf (wstore, gsl_data_handle_osc_freq (chunk->dhandle));
           sfi_wstore_puts (wstore, "\n");
         }
-      
+
       GslDataHandle *dhandle, *tmp_handle = chunk->dhandle;
       do        /* skip comment or cache handles */
         {
@@ -354,10 +342,17 @@ Wave::store (const string file_name)
         }
       while (tmp_handle);
       GslVorbis1Handle *vhandle = gsl_vorbis1_handle_new (dhandle, gsl_vorbis_make_serialno());
+      Flac1Handle      *flac_handle = Flac1Handle::create (dhandle);
       if (vhandle)      /* save already compressed Ogg/Vorbis data */
         {
           sfi_wstore_puts (wstore, "    vorbis-link = ");
           gsl_vorbis1_handle_put_wstore (vhandle, wstore);
+          sfi_wstore_puts (wstore, "\n");
+        }
+      else if (flac_handle)
+        {
+          sfi_wstore_puts (wstore, "    flac-link = ");
+          flac_handle->put_wstore (wstore);
           sfi_wstore_puts (wstore, "\n");
         }
       else

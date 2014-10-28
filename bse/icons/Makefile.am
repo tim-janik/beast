@@ -1,7 +1,4 @@
-# BSE-Plugins - Bedevilled Sound Engine dynamic Plugins
-# Copyright (C) 1998-2004 Tim Janik
-#
-## GNU Lesser General Public License version 2 or any later version.
+# BSE-Plugins - Better Sound Engine dynamic Plugins
 include $(top_srcdir)/Makefile.decl
 
 # extra images to ship with tarballs

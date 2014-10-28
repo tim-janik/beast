@@ -1,42 +1,26 @@
-/* BSE - Bedevilled Sound Engine
- * Copyright (C) 2006 Stefan Westerfeld
- *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * A copy of the GNU Lesser General Public License should ship along
- * with this library; if not, see http://www.gnu.org/copyleft/.
- */
-#include <bse/bsedefs.h>
+// Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
+#include <bse/bsedefs.hh>
 // #define TEST_VERBOSE
-#include <sfi/sfitests.h>
-#include <bse/gsldatahandle.h>
-#include <bse/gsldatautils.h>
-#include <bse/bsemain.h>
+#include <sfi/sfitests.hh>
+#include <bse/gsldatahandle.hh>
+#include <bse/gsldatautils.hh>
+#include <bse/bsemain.hh>
 #include "topconfig.h"
 #include <math.h>
 #include <stdlib.h>
 #include <complex>
 #include <vector>
 
+using Rapicorn::string_format;
 using std::vector;
 using std::min;
 using std::max;
-using Birnet::string_printf;
 
 static void
 read_through (GslDataHandle *handle)
 {
   int64 n_values = gsl_data_handle_n_values (handle);
   int64 offset = 0;
-
   while (offset < n_values)
     {
       // we don't use 1024 here, because we know that it is the FIR handle internal buffer size
@@ -72,7 +56,7 @@ band_min (const vector<double>& scanned_freq,
 	  double                end_freq)
 {
   g_assert (scanned_freq.size() == scanned_values.size());
-  
+
   bool	  init = false;
   double  min_value = 1e19;
   for (size_t i = 0; i < scanned_values.size(); i++)
@@ -99,7 +83,7 @@ band_max (const vector<double>& scanned_freq,
 	  double                end_freq)
 {
   g_assert (scanned_freq.size() == scanned_values.size());
-  
+
   bool	  init = false;
   double  max_value = -1e19;
   for (size_t i = 0; i < scanned_values.size(); i++)
@@ -202,72 +186,61 @@ test_with_sine_sweep (FirHandleType type)
       scanned_freq.push_back (sweep_freq[i]);
       scanned_level_db.push_back (level_db);
       // printf ("%f %.17g\n", sweep_freq[i], scanned_level_db.back());
-      
+
       if ((i & 15) == 0)
 	{
 	  // check that theoretical and scanned response match
 	  double theoretical_level_db = bse_data_handle_fir_response_db (fir_handle_sin, sweep_freq[i]);
 	  double theoretical_level = bse_db_to_factor (theoretical_level_db);
 	  // printf ("%g %.17g\n", sweep_freq[i], fabs (level - theoretical_level));
-	  TCHECK_CMP (fabs (level - theoretical_level), <, 0.00035);
+	  TCMP (fabs (level - theoretical_level), <, 0.00035);
 	}
-
       // compute phase response
       std::complex<double> orig (sweep_sin[i], sweep_cos[i]);
       scanned_abs_phase_diff.push_back (fabs (phase_diff (arg (orig), arg (filtered))));
       // printf ("%f %.17g\n", sweep_freq[i], scanned_abs_phase_diff.back());
     }
-
   if (type == FIR_HIGHPASS)
     {
       // stop band
-      TASSERT_CMP (band_max (scanned_freq, scanned_level_db,     0,  7050), <, -75);
-
+      TCMP (band_max (scanned_freq, scanned_level_db,     0,  7050), <, -75);
       // transition band
-      TASSERT_CMP (band_min (scanned_freq, scanned_level_db,  7050,  9500), >, -77);
-      TASSERT_CMP (band_max (scanned_freq, scanned_level_db,  7050,  9500), <, -2.8);
-
+      TCMP (band_min (scanned_freq, scanned_level_db,  7050,  9500), >, -77);
+      TCMP (band_max (scanned_freq, scanned_level_db,  7050,  9500), <, -2.8);
       // passband (1)
-      TASSERT_CMP (band_min (scanned_freq, scanned_level_db,  9500, 11000), >, -2.82);
-      TASSERT_CMP (band_max (scanned_freq, scanned_level_db,  9500, 11000), <, -0.002);
-
+      TCMP (band_min (scanned_freq, scanned_level_db,  9500, 11000), >, -2.82);
+      TCMP (band_max (scanned_freq, scanned_level_db,  9500, 11000), <, -0.002);
       // passband (2)
-      TASSERT_CMP (band_min (scanned_freq, scanned_level_db, 11000, 24000), >, -0.004);
-      TASSERT_CMP (band_max (scanned_freq, scanned_level_db, 11000, 24000), <, 0.002);
-
+      TCMP (band_min (scanned_freq, scanned_level_db, 11000, 24000), >, -0.004);
+      TCMP (band_max (scanned_freq, scanned_level_db, 11000, 24000), <, 0.002);
       // zero phase in passband (2)
-      TASSERT_CMP (band_max (scanned_freq, scanned_abs_phase_diff, 11000, 24000), <, 0.0002);
+      TCMP (band_max (scanned_freq, scanned_abs_phase_diff, 11000, 24000), <, 0.0002);
     }
   else	// FIR_LOWPASS
     {
       // passband (2)
-      TASSERT_CMP (band_min (scanned_freq, scanned_level_db,     0,  5500), >, -0.002);
-      TASSERT_CMP (band_max (scanned_freq, scanned_level_db,     0,  5500), <, 0.002);
-
+      TCMP (band_min (scanned_freq, scanned_level_db,     0,  5500), >, -0.002);
+      TCMP (band_max (scanned_freq, scanned_level_db,     0,  5500), <, 0.002);
       // passband (1)
-      TASSERT_CMP (band_min (scanned_freq, scanned_level_db,  5500,  7000), >, -1.9);
-      TASSERT_CMP (band_max (scanned_freq, scanned_level_db,  5500,  7000), <, -0.001);
-
+      TCMP (band_min (scanned_freq, scanned_level_db,  5500,  7000), >, -1.9);
+      TCMP (band_max (scanned_freq, scanned_level_db,  5500,  7000), <, -0.001);
       // transition band
-      TASSERT_CMP (band_min (scanned_freq, scanned_level_db,  7000, 10000), >, -81);
-      TASSERT_CMP (band_max (scanned_freq, scanned_level_db,  7000, 10000), <, -1.8);
-
+      TCMP (band_min (scanned_freq, scanned_level_db,  7000, 10000), >, -81);
+      TCMP (band_max (scanned_freq, scanned_level_db,  7000, 10000), <, -1.8);
       // stop band
-      TASSERT_CMP (band_max (scanned_freq, scanned_level_db, 10000, 24000), <, -75);
-
+      TCMP (band_max (scanned_freq, scanned_level_db, 10000, 24000), <, -75);
       // zero phase in passband (2)
-      TASSERT_CMP (band_max (scanned_freq, scanned_abs_phase_diff, 0, 5500), <, 0.00002);
+      TCMP (band_max (scanned_freq, scanned_abs_phase_diff, 0, 5500), <, 0.00002);
     }
   TDONE();
-
   /* test speed */
   double samples_per_second = 0;
-  if (sfi_init_settings().test_perf)
+  if (Rapicorn::Test::slow())
     {
       const guint RUNS = 10;
       GTimer *timer = g_timer_new();
       const guint dups = TEST_CALIBRATION (50.0, read_through (fir_handle_sin));
-      
+
       double m = 9e300;
       for (guint i = 0; i < RUNS; i++)
         {
@@ -280,10 +253,12 @@ test_with_sine_sweep (FirHandleType type)
             m = e;
         }
       samples_per_second = sweep_sin.size() / (m / dups);
-      treport_maximized (string_printf ("%s O64 mono", handle_name (type)).c_str(),
-                         samples_per_second, TUNIT (SAMPLE, SECOND));
-      treport_maximized (string_printf ("CPU %s mono", handle_name (type)).c_str(),
-			 samples_per_second / 44100.0, TUNIT_STREAM);
+      TMSG ("    %-28s : %+.14f samples/second",
+            string_format ("%s O64 mono", handle_name (type)).c_str(),
+            samples_per_second);
+      TMSG ("    %-28s : %+.14f streams",
+            string_format ("CPU %s mono", handle_name (type)).c_str(),
+            samples_per_second / 44100.0);
     }
 }
 
@@ -338,7 +313,7 @@ test_multi_channel (FirHandleType type)
       GslDataHandle *ihandle = gsl_data_handle_new_mem (n_channels, 32, mix_freq, 440, input.size(), &input[0], NULL);
       const int order = 116;
       GslDataHandle *fir_handle = NULL;
-      
+
       if (type == FIR_HIGHPASS)
 	fir_handle = bse_data_handle_new_fir_highpass (ihandle, cutoff_freq, order);
       else
@@ -358,8 +333,8 @@ test_multi_channel (FirHandleType type)
 	      worst_diff = max (filtered - expected[i], worst_diff);
 	    }
 	  double worst_diff_db = bse_db_from_factor (worst_diff, -200);
-	  TPRINT ("n_channels = %d: linear(%dst read) read worst_diff = %f (%f dB)\n",
-	          n_channels, repeat, worst_diff, worst_diff_db);
+	  TOUT ("n_channels = %d: linear(%dst read) read worst_diff = %f (%f dB)\n",
+                n_channels, repeat, worst_diff, worst_diff_db);
 	  TASSERT (worst_diff_db < -90);
 	}
     }
@@ -384,7 +359,7 @@ test_seek (FirHandleType type)
 
       GslDataHandle *ihandle = gsl_data_handle_new_mem (n_channels, 32, mix_freq, 440, input.size(), &input[0], NULL);
       GslDataHandle *fir_handle = NULL;
-      
+
       if (type == FIR_HIGHPASS)
 	fir_handle = bse_data_handle_new_fir_highpass (ihandle, cutoff_freq, order);
       else
@@ -397,7 +372,7 @@ test_seek (FirHandleType type)
       GslDataPeekBuffer peek_buffer = { +1 /* incremental direction */, 0, };
       for (size_t i = 0; i < output.size(); i++)
         output[i] = gsl_data_handle_peek_value (fir_handle, i, &peek_buffer);
-      
+
       for (int t = 0; t < 400; t++)
 	{
 	  int64 start = rand() % fir_handle->setup.n_values;
@@ -410,36 +385,29 @@ test_seek (FirHandleType type)
 	  while (values_todo > 0)
 	    {
 	      int64 l = gsl_data_handle_read (fir_handle, start + offset, values_todo, &values[offset]);
-	      TCHECK (l > 0);
-	      TCHECK (l <= values_todo);
+	      TASSERT (l > 0);
+	      TASSERT (l <= values_todo);
 	      values_todo -= l;
 	      offset += l;
 	    }
-
-	  for (size_t i = 0; i < len; i++)
-	    TCHECK (values[i] == output[i + start]);
-	    
+	  for (size_t i = 0; i < size_t (len); i++)
+	    TASSERT (values[i] == output[i + start]);
 	  if (t % 40 == 0)
 	    TOK();
 	}
     }
   TDONE();
 }
-
-
 int
 main (int    argc,
       char **argv)
 {
-  bse_init_test (&argc, &argv, NULL);
-
+  bse_init_test (&argc, argv);
   test_with_sine_sweep (FIR_HIGHPASS);
   test_multi_channel (FIR_HIGHPASS);
   test_seek (FIR_HIGHPASS);
-
   test_with_sine_sweep (FIR_LOWPASS);
   test_multi_channel (FIR_LOWPASS);
   test_seek (FIR_LOWPASS);
-
   return 0;
 }

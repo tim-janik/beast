@@ -1,24 +1,11 @@
-# BEAST - Bedevilled Audio System
-# Copyright (C) 1998-2006 Tim Janik
-#
-## GNU Lesser General Public License version 2 or any later version.
+# BEAST - Better Audio System
 include $(top_srcdir)/Makefile.decl
 
 SUBDIRS = # none
 
-dist_images = $(strip		\
-	module-voices.png	\
-	beast-components.png	\
-	beast-progs.png		\
-)
+SVG_FILES = beast-components.svg  beast-progs.svg  module-voices.svg
 
-dist_dias = $(strip		\
-	beast-components.dia	\
-	beast-progs.dia		\
-	module-voices.dia	\
-)
-
-docimages_DATA = ${dist_images}
-docimagesdir = ${beastimagesdir}
-
-EXTRA_DIST += $(dist_images) $(dist_dias)
+# PNG_FILES = beast-components.png  beast-progs.png  module-voices.png
+# docimages_DATA = $(PNG_FILES)
+# docimagesdir = $(beastimagesdir)
+# EXTRA_DIST += $(PNG_FILES)

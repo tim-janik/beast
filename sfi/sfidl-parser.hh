@@ -1,19 +1,4 @@
-/* SFI - Synthesis Fusion Kit Interface
- * Copyright (C) 2002-2007 Stefan Westerfeld
- *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * A copy of the GNU Lesser General Public License should ship along
- * with this library; if not, see http://www.gnu.org/copyleft/.
- */
+// Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 
 #ifndef _SFIDL_PARSER_H_
 #define _SFIDL_PARSER_H_
@@ -31,7 +16,7 @@ private:
 
 public:
   const Value& get(const Key& k) const {
-    typename std::map<Key,Value>::const_iterator i = find(k);
+    typename std::map<Key,Value>::const_iterator i = this->find(k);
     if (i != this->end())
       return i->second;
     else
@@ -51,7 +36,7 @@ public:
 
   IString() : i18n (false) {
   }
-  
+
   IString(const char *str) : String (str), i18n (false) {
   }
 
@@ -78,7 +63,7 @@ struct LineInfo {
   String location() const
   {
     String result;
-    char *x = g_strdup_printf ("%s:%d", (filename == "-") ? "stdin" : filename.c_str(), line);
+    char *x = g_strdup_format ("%s:%d", (filename == "-") ? "stdin" : filename.c_str(), line);
     result = x;
     g_free (x);
     return result;
@@ -108,7 +93,7 @@ struct Param {
   String  type;
   String  name;
   String  file;
-  
+
   IString group;
   String  pspec;
   int     line;
@@ -129,13 +114,13 @@ struct Stream {
   String  file;
   int     line;
 };
- 
+
 struct ChoiceValue {
   String  name;
   String  file;
   IString label;
   IString blurb;
-  
+
   int     value;
   int     sequentialValue;
   bool    neutral;
@@ -149,7 +134,7 @@ struct Choice {
    */
   String name;
   String file;
-  
+
   std::vector<ChoiceValue> contents;
   Map<String, IString> infos;
 };
@@ -157,7 +142,7 @@ struct Choice {
 struct Record {
   String name;
   String file;
-  
+
   std::vector<Param> contents;
   Map<String, IString> infos;
 };
@@ -172,7 +157,7 @@ struct Sequence {
 struct Method {
   String  name;
   String  file;
-  
+
   std::vector<Param> params;
   Param	  result;
   Map<String, IString> infos;
@@ -182,7 +167,7 @@ struct Class {
   String name;
   String file;
   String inherits;
-  
+
   std::vector<Method>	methods;
   std::vector<Method>	signals;
   std::vector<Param>	properties;
@@ -279,8 +264,16 @@ protected:
   // scanner related functions
 
   static void scannerMsgHandler (GScanner *scanner, gchar *message, gboolean is_error);
-  void printError (const gchar *format, ...) G_GNUC_PRINTF (2, 3);
-  void printWarning (const gchar *format, ...) G_GNUC_PRINTF (2, 3);
+
+  template<class... Args> void print_error (const char *format, const Args &...args)
+  {
+    if (scanner->parse_errors < scanner->max_parse_errors)
+      g_scanner_error (scanner, "%s", string_format (format, args...).c_str());
+  }
+  template<class... Args> void print_warning (const char *format, const Args &...args)
+  {
+    g_scanner_warn (scanner, "%s", string_format (format, args...).c_str());
+  }
 
   // preprocessor
 
@@ -317,9 +310,9 @@ protected:
   GTokenType parseInfoOptional (Map<String,IString>& infos);
 public:
   Parser ();
-  
+
   bool parse (const String& fileName);
- 
+
   String fileName() const				  { return scanner->input_name; }
   const std::vector<String>& getIncludes () const	  { return includes; }
   const std::vector<Constant>& getConstants () const	  { return constants; }
@@ -329,13 +322,13 @@ public:
   const std::vector<Class>& getClasses () const 	  { return classes; }
   const std::vector<Method>& getProcedures () const	  { return procedures; }
   const std::vector<String>& getTypes () const		  { return types; }
- 
+
   std::vector<Pragma> getPragmas (const String& binding) const;
 
   Sequence findSequence (const String& name) const;
   Record findRecord (const String& name) const;
   const Class* findClass (const String &name) const;
-  
+
   bool isChoice (const String& type) const;
   bool isSequence (const String& type) const;
   bool isRecord (const String& type) const;
