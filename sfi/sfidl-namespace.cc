@@ -10,31 +10,6 @@ using namespace Sfidl;
 
 /* generic utilities */
 
-static list<String> symbolToList (String symbol)
-{
-  list<String> result;
-  String current;
-
-  String::iterator si;
-  for(si = symbol.begin(); si != symbol.end(); si++)
-    {
-      if(*si != ':')
-	{
-	  current += *si;
-	}
-      else
-	{
-	  if(current != "")
-	    result.push_back(current);
-
-	  current = "";
-	}
-    }
-
-  result.push_back(current);
-  return result;
-}
-
 static String listToSymbol(list<String>& symlist)
 {
   String s;

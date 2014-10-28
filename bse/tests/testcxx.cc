@@ -26,7 +26,6 @@ int
 main (int   argc,
       char *argv[])
 {
-  g_thread_init (NULL);
   bse_init_test (&argc, argv);
   std::set_terminate (__gnu_cxx::__verbose_terminate_handler);
   // g_log_set_always_fatal ((GLogLevelFlags) (G_LOG_LEVEL_WARNING | G_LOG_LEVEL_CRITICAL | (int) g_log_set_always_fatal ((GLogLevelFlags) G_LOG_FATAL_MASK)));

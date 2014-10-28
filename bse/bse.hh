@@ -12,8 +12,6 @@ G_BEGIN_DECLS
 extern const guint   bse_major_version;
 extern const guint   bse_minor_version;
 extern const guint   bse_micro_version;
-extern const guint   bse_interface_age;
-extern const guint   bse_binary_age;
 extern const gchar  *bse_version;
 const char*          bse_check_version	(guint           required_major,
 					 guint           required_minor,

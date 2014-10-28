@@ -529,8 +529,9 @@ main (int   argc,
 {
   // usually we'd call bse_init_test() here, but we have tests to rnu before plugins are loaded
   Rapicorn::init_core_test (RAPICORN_PRETTY_FILE, &argc, argv);
-  Bse::CPUInfo ci = Rapicorn::cpu_info(); // usually done by bse_init_test
-  TMSG ("  NOTE   Running on: %s+%s", ci.machine, bse_block_impl_name());
+  Rapicorn::StringVector sv = Rapicorn::string_split (Rapicorn::cpu_info(), " ");
+  Rapicorn::String machine = sv.size() >= 2 ? sv[1] : "Unknown";
+  TMSG ("  NOTE   Running on: %s+%s", machine.c_str(), bse_block_impl_name()); // usually done by bse_init_test
 
   TSTART ("Running Default Block Ops");
   TASSERT (Bse::Block::default_singleton() == Bse::Block::current_singleton());

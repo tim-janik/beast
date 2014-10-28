@@ -68,7 +68,7 @@ AC_DEFUN([MC_IF_VAR_EQ], [
 dnl # MC_STR_CONTAINS(src-string, sub-string [, contains-action] [, else-action])
 AC_DEFUN([MC_STR_CONTAINS], [
 	case "[$1]" in
-	*"[$2]"*[)]
+	*"m4_bpatsubst([$2], ["], [\\"])"*[)]
 		[$3]
 		;;
 	*[)]
@@ -77,13 +77,13 @@ AC_DEFUN([MC_STR_CONTAINS], [
 	esac
 ])
 
-dnl # MC_EVAR_ADD(environment-variable, check-string, add-string)
+dnl # MC_EVAR_ADD(environment-variable, find-or-add-string)
 AC_DEFUN([MC_EVAR_ADD], [
-	MC_STR_CONTAINS($[$1], [$2], [$1]="$[$1]", [$1]="$[$1] [$3]")
+	MC_STR_CONTAINS($[$1], [$2], :, [$1]="$[$1] [$2]")
 ])
 dnl # MC_EVAR_SUPPLEMENT(environment-variable, check-string, add-string)
 AC_DEFUN([MC_EVAR_SUPPLEMENT], [
-	MC_STR_CONTAINS($[$1], [$2], [$1]="$[$1] [$3]", [$1]="$[$1]")
+	MC_STR_CONTAINS($[$1], [$2], [$1]="$[$1] [$3]", :)
 ])
 
 
@@ -168,6 +168,33 @@ AC_DEFUN([MC_PKG_CONFIG_REQUIRE], [
     unset mc_VERSION
 ])
 
+dnl # MC_CC_TRY_OPTION(ENVVARIABLE, OPTION)
+dnl # Check whether CC accepts OPTION and add to ENVVARIABLE
+AC_DEFUN([MC_CC_TRY_OPTION], [
+AC_MSG_CHECKING([if ${CC-cc} supports [$2]])
+echo >conftest.c;
+if ${CC-cc} $CFLAGS [$2] -c conftest.c >/dev/null 2>&1 ; then
+    AC_MSG_RESULT(yes)
+    MC_STR_CONTAINS($[$1], [$2], :, [$1]="$[$1] [$2]")
+else
+    AC_MSG_RESULT(no)
+fi
+rm -fr conftest*
+])dnl
+dnl # MC_CXX_TRY_OPTION(ENVVARIABLE, OPTION)
+dnl # Check whether CXX accepts OPTION and add to ENVVARIABLE
+AC_DEFUN([MC_CXX_TRY_OPTION], [
+AC_MSG_CHECKING([if ${CXX-c++} supports [$2]])
+echo >conftest.c;
+if ${CXX-c++} $CXXFLAGS [$2] -c conftest.c >/dev/null 2>&1 ; then
+    AC_MSG_RESULT(yes)
+    MC_STR_CONTAINS($[$1], [$2], :, [$1]="$[$1] [$2]")
+else
+    AC_MSG_RESULT(no)
+fi
+rm -fr conftest*
+])dnl
+
 dnl # MC_PROG_CC_SUPPORTS_OPTION(OPTIONS, ACTION-IF-FOUND [,ACTION-IF-NOT-FOUND])
 dnl # Check whether cc accepts a certain option
 AC_DEFUN([MC_PROG_CC_SUPPORTS_OPTION], [
@@ -182,165 +209,3 @@ else
 fi
 rm -fr conftest*
 ])dnl
-
-dnl # MC_PROG_CC_WITH_CFLAGS()
-dnl # Setup CC with default CFLAGS value.
-AC_DEFUN([MC_PROG_CC_WITH_CFLAGS], [
-	MC_IF_VAR_EQ(CFLAGS, "", CFLAGS="-g")
-	CFLAGS_saved="$CFLAGS"
-	unset CFLAGS
-	dnl Checks for compiler characteristics, CFLAGS.
-	AC_PROG_CC
-	MC_STR_CONTAINS($CFLAGS, -g, CFLAGS_include_g=yes)
-	MC_STR_CONTAINS($CFLAGS, -O, CFLAGS_include_O=yes)
-	CFLAGS="$CFLAGS_saved"
-
-	dnl Setup CFLAGS for debugging.
-	MC_IF_VAR_EQ(enable_debug, yes,
-		MC_IF_VAR_EQ(CFLAGS_include_g, yes,
-			MC_EVAR_ADD(CFLAGS, -g, -g)
-		)
-		dnl Reading assembler Code
-		MC_IF_VAR_EQ(GCC, yes,
-			dnl MC_EVAR_ADD(CFLAGS, -fvolatile-global, -fvolatile-global)
-			dnl MC_EVAR_ADD(CFLAGS, -fverbose-asm, -fverbose-asm)
-		)
-	)
-
-	dnl Further setup CFLAGS for GCC.
-	MC_IF_VAR_EQ(GCC, yes,
-		dnl # Sane Behaviour
-		MC_EVAR_ADD(CFLAGS, -fno-cond-mismatch, -fno-cond-mismatch)
-		MC_PROG_CC_SUPPORTS_OPTION(-mcx16, MC_EVAR_ADD(CFLAGS, -mcx16, -mcx16))
-		MC_PROG_CC_SUPPORTS_OPTION(-rdynamic, MC_EVAR_ADD(CFLAGS, -rdynamic, -rdynamic))
-
-		dnl # Debugging
-		MC_EVAR_SUPPLEMENT(CFLAGS, -g, -ggdb3)
-
-		dnl # Warnings.
-		MC_EVAR_ADD(CFLAGS, -Wall, -Wall)
-		MC_EVAR_ADD(CFLAGS, -Wmissing-prototypes, -Wmissing-prototypes)
-		MC_EVAR_ADD(CFLAGS, -Wmissing-declarations, -Wmissing-declarations)
-		MC_EVAR_ADD(CFLAGS, -Wno-cast-qual, -Wno-cast-qual)
-		dnl MC_EVAR_ADD(CFLAGS, -Winline, -Winline)
-		MC_IF_VAR_EQ(enable_pedantic_ansi, yes,
-		    MC_EVAR_ADD(CFLAGS, -ansi, -ansi)
-		    MC_EVAR_ADD(CFLAGS, -pedantic, -pedantic)
-		)
-		dnl # avoid lots of bogus warnings with string pointers
-		MC_PROG_CC_SUPPORTS_OPTION(-Wno-pointer-sign,
-		  MC_EVAR_ADD(CFLAGS, -Wno-pointer-sign, -Wno-pointer-sign))
-		dnl problematic, triggers warnings in glibc headers
-		MC_EVAR_ADD(CFLAGS, -Wpointer-arith, -Wpointer-arith)
-		dnl problematic, warns on prototype arguments:
-		dnl MC_EVAR_ADD(CFLAGS, -Wshadow, -Wshadow)
-		dnl problematic, glibc breakage:
-		MC_EVAR_ADD(CFLAGS, -Wredundant-decls, -Wredundant-decls)
-		dnl instrument function workarounds
-		MC_STR_CONTAINS($CC $CFLAGS, -finstrument-functions,
-		                [mc_opt_warn_no_return=-Wno-missing-noreturn],
-		                [mc_opt_warn_no_return=-Wmissing-noreturn])
-  		MC_PROG_CC_SUPPORTS_OPTION($mc_opt_warn_no_return,
-		      MC_EVAR_ADD(CFLAGS, $mc_opt_warn_no_return, $mc_opt_warn_no_return))
-
-		dnl # Optimizations
-		MC_EVAR_ADD(CFLAGS, -pipe, -pipe)
-		MC_EVAR_ADD(CFLAGS, -O, -O2)
-		MC_PROG_CC_SUPPORTS_OPTION(-ftracer,
-		    MC_EVAR_ADD(CFLAGS, -ftracer, -ftracer))
-		MC_EVAR_ADD(CFLAGS, -finline-functions, -finline-functions) dnl -O3 stuff as of gcc-3.3
-		MC_PROG_CC_SUPPORTS_OPTION(-fno-keep-static-consts,
-		    MC_EVAR_ADD(CFLAGS, -fno-keep-static-consts, -fno-keep-static-consts))
-		dnl MC_EVAR_ADD(CFLAGS, -freg-struct-return, -freg-struct-return) dnl buggy with gcc-3.2
-
-		dnl # Fun options
-		dnl MC_EVAR_ADD(CFLAGS, -Q, -Q)	dnl report each compiled function
-		dnl MC_EVAR_ADD(CFLAGS, -ftime-report, -ftime-report)
-		dnl MC_EVAR_ADD(CFLAGS, -fmem-report, -fmem-report)
-	,
-		MC_IF_VAR_EQ(CFLAGS_include_O, yes,
-			MC_EVAR_ADD(CFLAGS, -O, -O2)
-		)
-	)
-])
-
-dnl # MC_PROG_CC_SPECIAL_FLAGS([VARNAME], [FLAG_LIST])
-AC_DEFUN([MC_PROG_CC_SPECIAL_FLAGS], [
-	for flag in [$2] ; do
-	    MC_PROG_CC_SUPPORTS_OPTION($flag, MC_EVAR_ADD([$1], $flag, $flag))
-	done
-	AC_MSG_CHECKING([[$1]])
-	AC_MSG_RESULT($[$1])
-])
-
-dnl # MC_PROG_CXX_WITH_CXXFLAGS()
-dnl # Setup CXX with default CXXFLAGS value.
-AC_DEFUN([MC_PROG_CXX_WITH_CXXFLAGS], [
-	MC_IF_VAR_EQ(CXXFLAGS, "", CXXFLAGS="-g")
-	CXXFLAGS_saved="$CXXFLAGS"
-	unset CXXFLAGS
-	dnl Checks for compiler characteristics, CXXFLAGS.
-	AC_PROG_CXX
-	MC_STR_CONTAINS($CXXFLAGS, -g, CXXFLAGS_include_g=yes)
-	MC_STR_CONTAINS($CXXFLAGS, -O, CXXFLAGS_include_O=yes)
-	CXXFLAGS="$CXXFLAGS_saved"
-
-	dnl # Setup CXXFLAGS for debugging.
-	MC_IF_VAR_EQ(enable_debug, yes,
-		MC_IF_VAR_EQ(CXXFLAGS_include_g, yes,
-			MC_EVAR_ADD(CXXFLAGS, -g, -g)
-		)
-		dnl Reading assembler Code
-		MC_IF_VAR_EQ(GCC, yes,
-			dnl MC_EVAR_ADD(CXXFLAGS, -fvolatile-global, -fvolatile-global)
-			dnl MC_EVAR_ADD(CXXFLAGS, -fverbose-asm, -fverbose-asm)
-		)
-	)
-
-	dnl # Further setup CXXFLAGS for GXX.
-	MC_IF_VAR_EQ(GXX, yes,
-		dnl # Sane Behaviour
-                MC_PROG_CC_SUPPORTS_OPTION(-mcx16,    MC_EVAR_ADD(CXXFLAGS, -mcx16, -mcx16))
-		MC_PROG_CC_SUPPORTS_OPTION(-rdynamic, MC_EVAR_ADD(CXXFLAGS, -rdynamic, -rdynamic))
-
-		dnl # enable many useful warnings
-		MC_EVAR_ADD(CXXFLAGS, -Wall, -Wall)
-		MC_EVAR_ADD(CXXFLAGS, -Wdeprecated, -Wdeprecated)
-		MC_EVAR_ADD(CXXFLAGS, -Wno-cast-qual, -Wno-cast-qual)
-		dnl # MC_EVAR_ADD(CXXFLAGS, -Wmissing-prototypes, -Wmissing-prototypes)
-		dnl # MC_EVAR_ADD(CXXFLAGS, -Winline, -Winline)
-
-		dnl # avoid bogus offsetof()-usage warnings
-		dnl MC_PROG_CC_SUPPORTS_OPTION(-Wno-invalid-offsetof,
-		dnl   MC_EVAR_ADD(CXXFLAGS, -Wno-invalid-offsetof, -Wno-invalid-offsetof))
-
-		dnl Optimizations
-		MC_EVAR_ADD(CXXFLAGS, -pipe, -pipe)
-		MC_EVAR_ADD(CXXFLAGS, -O, -O2)
-		MC_PROG_CC_SUPPORTS_OPTION(-ftracer,
-		    MC_EVAR_ADD(CXXFLAGS, -ftracer, -ftracer))
-		MC_EVAR_ADD(CXXFLAGS, -finline-functions, -finline-functions) dnl -O3 stuff as of gcc-3.3
-		MC_PROG_CC_SUPPORTS_OPTION(-fno-keep-static-consts,
-		    MC_EVAR_ADD(CXXFLAGS, -fno-keep-static-consts, -fno-keep-static-consts))
-		dnl MC_EVAR_ADD(CXXFLAGS, -freg-struct-return, -freg-struct-return) dnl buggy with gcc-3.2
-		dnl -funroll-loops gives problems with -O and templates (see Rep-CppBug_1.C)
-
-		dnl figure current screen width from ncurses to make g++
-		dnl format errors for screensizes!=80 correctly
-		gxx_columns=0
-		AC_CHECK_PROG(TPUT, tput, yes)
-		if test "$TPUT" = "yes"; then
-		    gxx_columns=`tput cols`
-		fi
-		if test "$gxx_columns" -gt 1 ; then
-		    MC_PROG_CC_SUPPORTS_OPTION(-fmessage-length=$gxx_columns,
-			MC_EVAR_ADD(CXXFLAGS, -fmessage-length=, -fmessage-length=$gxx_columns))
-		fi
-		dnl
-
-	,
-		MC_IF_VAR_EQ(CXXFLAGS_include_O, yes,
-			MC_EVAR_ADD(CXXFLAGS, -O, -O2)
-		)
-	)
-])

@@ -100,6 +100,7 @@ namespace Bse {
 
 class ServerImpl : public ServerIface {
   TestObjectImplP    test_object_;
+  friend class FriendAllocator<ServerImpl>;     // provide make_shared for non-public ctor
 protected:
   explicit           ServerImpl ();
   virtual           ~ServerImpl ();

@@ -205,9 +205,9 @@ bse_storage_reset (BseStorage *self)
     sfi_ppool_destroy (self->referenced_items);
   self->referenced_items = NULL;
 
-  self->major_version = BSE_MAJOR_VERSION;
-  self->minor_version = BSE_MINOR_VERSION;
-  self->micro_version = BSE_MICRO_VERSION;
+  self->major_version = BST_MAJOR_VERSION;
+  self->minor_version = BST_MINOR_VERSION;
+  self->micro_version = BST_MICRO_VERSION;
 
   for (i = 0; i < self->n_dblocks; i++)
     {
@@ -274,7 +274,7 @@ bse_storage_prepare_write (BseStorage    *self,
     mode = BseStorageMode (mode | BSE_STORAGE_SELF_CONTAINED);
   BSE_OBJECT_SET_FLAGS (self, mode);
   bse_storage_break (self);
-  bse_storage_printf (self, "(bse-version \"%u.%u.%u\")\n\n", BSE_MAJOR_VERSION, BSE_MINOR_VERSION, BSE_MICRO_VERSION);
+  bse_storage_printf (self, "(bse-version \"%u.%u.%u\")\n\n", BST_MAJOR_VERSION, BST_MINOR_VERSION, BST_MICRO_VERSION);
 }
 
 void
@@ -353,11 +353,11 @@ storage_parse_bse_version (BseStorage *self)
   parse_or_return (scanner, ')');               /* eat closing paren */
   if (0)
     g_printerr ("bse-version: code: %u.%u.%u file: %u.%u.%u feature(current):%d compat(current):%d compat(-1):%d\n",
-                BSE_MAJOR_VERSION, BSE_MINOR_VERSION, BSE_MICRO_VERSION,
+                BST_MAJOR_VERSION, BST_MINOR_VERSION, BST_MICRO_VERSION,
                 self->major_version, self->minor_version, self->micro_version,
-                BSE_STORAGE_VERSION (self, BSE_MAJOR_VERSION, BSE_MINOR_VERSION, BSE_MICRO_VERSION),
-                BSE_STORAGE_COMPAT (self, BSE_MAJOR_VERSION, BSE_MINOR_VERSION, BSE_MICRO_VERSION),
-                BSE_STORAGE_COMPAT (self, BSE_MAJOR_VERSION, BSE_MINOR_VERSION, BSE_MICRO_VERSION - 1));
+                BSE_STORAGE_VERSION (self, BST_MAJOR_VERSION, BST_MINOR_VERSION, BST_MICRO_VERSION),
+                BSE_STORAGE_COMPAT (self, BST_MAJOR_VERSION, BST_MINOR_VERSION, BST_MICRO_VERSION),
+                BSE_STORAGE_COMPAT (self, BST_MAJOR_VERSION, BST_MINOR_VERSION, BST_MICRO_VERSION - 1));
   return G_TOKEN_NONE;
 }
 

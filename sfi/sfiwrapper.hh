@@ -63,13 +63,6 @@ bool	birnet_file_equals (const char *file1,
 
 /* --- url handling --- */
 void sfi_url_show                   	(const char           *url);
-void sfi_url_show_with_cookie       	(const char           *url,
-					 const char           *url_title,
-					 const char           *cookie);
-bool sfi_url_test_show              	(const char           *url);
-bool sfi_url_test_show_with_cookie	(const char           *url,
-					 const char           *url_title,
-					 const char           *cookie);
 
 } // "C"
 

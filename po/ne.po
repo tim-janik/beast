@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast.HEAD.ne\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-07-05 23:14+0200\n"
+"POT-Creation-Date: 2014-10-28 14:17+0100\n"
 "PO-Revision-Date: 2006-09-01 14:55+0545\n"
 "Last-Translator: Mahesh subedi <submanesh@hotmail.com>\n"
 "Language-Team: Nepali <info@mpp.org.np>\n"
@@ -22,7 +22,7 @@ msgstr ""
 "X-Generator: KBabel 1.10.2\n"
 "Plural-Forms: nplurals=2;plural=(n!=1)\n"
 
-#: bse/bsemain.cc:222
+#: bse/bsemain.cc:218
 msgid ""
 "\n"
 "Available MIDI drivers:\n"
@@ -30,7 +30,7 @@ msgstr ""
 "\n"
 "उपलब्ध मिडि ड्राइभर:\n"
 
-#: bse/bsemain.cc:220
+#: bse/bsemain.cc:216
 msgid ""
 "\n"
 "Available PCM drivers:\n"
@@ -929,7 +929,7 @@ msgstr ""
 "रेकर्डिङ मोडमा खोलिएको छैन । सङ्केत रेकर्डेड सङ्केतको सट्टा आगतमा प्रयोग हुन्छ, त्यसैले "
 "प्लेब्याक सञ्चालनले वास्तवमा इन्डेन्टपरिणाम लेराउन सक्दछ (जस्तै एउटा मौन निर्गत सङ्केत)"
 
-#: beast-gtk/bstusermessage.cc:573
+#: beast-gtk/bstusermessage.cc:572
 #, c-format
 msgid "An error occoured during execution of script procedure '%s': %s"
 msgstr "स्क्रिप्ट कार्यविधिको कार्यान्वयन गरेको बेलामा एउटा त्रटि भयो '%s': %s"
@@ -1266,21 +1266,21 @@ msgstr ""
 msgid "BEAST"
 msgstr "BEAST"
 
-#: beast-gtk/bstmain.cc:852
+#: beast-gtk/bstmain.cc:849
 msgid "BEAST About"
 msgstr "BEAST बारेमा"
 
-#: beast-gtk/bstmain.cc:101
+#: beast-gtk/bstmain.cc:100
 msgid "BEAST Startup"
 msgstr "BEAST सुरुवात"
 
-#: beast-gtk/bstmain.cc:853
+#: beast-gtk/bstmain.cc:850
 #, c-format
 msgid "BEAST Version %s"
 msgstr "BEAST संस्करण %s"
 
 #. start BSE core and connect
-#: beast-gtk/bstmain.cc:136
+#: beast-gtk/bstmain.cc:135
 msgid "BSE Core"
 msgstr "BSE कोर"
 
@@ -1462,7 +1462,7 @@ msgstr "CPU #"
 msgid "CPU%"
 msgstr "CPU%"
 
-#: beast-gtk/bstapp.cc:633
+#: beast-gtk/bstapp.cc:630
 msgid "Cancel"
 msgstr "रद्द गर्नुहोस्"
 
@@ -1494,7 +1494,7 @@ msgstr ""
 msgid "Change..."
 msgstr "परिवर्तन गर्नुहोस्..."
 
-#: beast-gtk/bstapp.cc:628
+#: beast-gtk/bstapp.cc:625
 #, c-format
 msgid ""
 "Changes were made to project \"%s\" since the last time it was saved to disk."
@@ -1559,7 +1559,7 @@ msgstr "खाली गर्नुहोस्"
 msgid "Clear the current selection"
 msgstr "हालको चयन खाली गर्नुहोस्"
 
-#: beast-gtk/bstapp.cc:626
+#: beast-gtk/bstapp.cc:623
 #, c-format
 msgid "Close %s"
 msgstr "%s बन्द गर्नुहोस्"
@@ -1717,7 +1717,7 @@ msgstr "लगातार ९"
 msgid "Continuous MIDI Control #1 - Bank Select"
 msgstr "निरन्तर मिडि नियन्त्रण #1 - बैक चय"
 
-#: beast-gtk/bstmain.cc:854
+#: beast-gtk/bstmain.cc:851
 msgid "Contributions made by:"
 msgstr "योगदानकर्ता:"
 
@@ -2300,7 +2300,7 @@ msgstr "हर"
 msgid "Description"
 msgstr "वर्णन"
 
-#: beast-gtk/bstusermessage.cc:203
+#: beast-gtk/bstusermessage.cc:202
 msgid "Details:"
 msgstr "विवरण:"
 
@@ -2342,7 +2342,7 @@ msgid "Dial (Logarithmic)"
 msgstr "डायल (लोगारिथ्मिक)"
 
 #. listen to BseServer notification
-#: beast-gtk/bstmain.cc:221
+#: beast-gtk/bstmain.cc:220
 msgid "Dialogs"
 msgstr "संवाद"
 
@@ -2366,7 +2366,7 @@ msgstr ""
 msgid "Direction"
 msgstr "दिशा"
 
-#: beast-gtk/bstapp.cc:632
+#: beast-gtk/bstapp.cc:629
 msgid "Discard Changes"
 msgstr "परिवर्तन छोड्नुहोस्"
 
@@ -2426,11 +2426,11 @@ msgstr "सबै कार्यविधि समिक्षा गरी �
 msgid "Display developer and contributor credits"
 msgstr "विकासकर्ता र योगदानकर्ता श्रेय प्रदर्शन गर्नुहोस्"
 
-#: beast-gtk/bstusermessage.cc:411
+#: beast-gtk/bstusermessage.cc:410
 msgid "Display dialogs with debugging messages"
 msgstr "त्रुटि सच्याउने सन्देशसँग संवाद प्रदर्शन गर्नुहोस्"
 
-#: beast-gtk/bstusermessage.cc:409
+#: beast-gtk/bstusermessage.cc:408
 msgid "Display dialogs with information messages"
 msgstr "सूचना सन्देशसँग संवाद प्रदर्शन गर्नुहोस्"
 
@@ -2663,7 +2663,7 @@ msgstr ""
 msgid "Epsilon"
 msgstr "एप्सिलन"
 
-#: beast-gtk/bstusermessage.cc:55
+#: beast-gtk/bstusermessage.cc:54
 msgid "Error: "
 msgstr "त्रुटि: "
 
@@ -2741,7 +2741,7 @@ msgstr "सबै राम्रो भयो"
 msgid "Executing '%s'"
 msgstr "'%s' कार्यान्वयन गर्दैछ"
 
-#: beast-gtk/bstusermessage.cc:496
+#: beast-gtk/bstusermessage.cc:495
 #, c-format
 msgid "Executing procedure '%s' from script '%s'."
 msgstr "स्क्रिप्ट '%s' बाट प्रक्रिया '%s' कार्यसम्पादन गर्दैछ"
@@ -2754,7 +2754,7 @@ msgstr "एक्पोनेन्सियल नियन्त्रण"
 msgid "Exponential FM"
 msgstr "एक्सपोनेन्शल FM"
 
-#: beast-gtk/bstapp.cc:306
+#: beast-gtk/bstapp.cc:304
 msgid "Export Audio"
 msgstr "अडियो निर्यात गर्नुहोस्"
 
@@ -2797,23 +2797,23 @@ msgstr "शीर्षक पत्ता लगाउन (खोल्न) अ
 msgid "Failed to duplicate part range."
 msgstr "शीर्षक पत्ता लगाउन (खोल्न) असफल"
 
-#: beast-gtk/bstusermessage.cc:736
+#: beast-gtk/bstusermessage.cc:735
 #, c-format
 msgid "Failed to execute script procedure '%s': %s"
 msgstr "स्क्रिप्ट कार्यविधि कार्यान्वयन गर्न असफल '%s': %s"
 
-#: beast-gtk/bstmain.cc:306
+#: beast-gtk/bstmain.cc:305
 #, c-format
 msgid "Failed to load project \"%s\": %s"
 msgstr "परियोजना लोड गर्न असफल \"%s\": %s"
 
-#: beast-gtk/bstfiledialog.cc:765 beast-gtk/bstmain.cc:254
-#: beast-gtk/bstmain.cc:271
+#: beast-gtk/bstfiledialog.cc:765 beast-gtk/bstmain.cc:253
+#: beast-gtk/bstmain.cc:270
 #, c-format
 msgid "Failed to load wave file \"%s\": %s"
 msgstr "वेभ फाइल \"%s\" लोड गर्न असफल: %s"
 
-#: beast-gtk/bstmain.cc:312
+#: beast-gtk/bstmain.cc:311
 #, c-format
 msgid "Failed to merge project \"%s\": %s"
 msgstr "परियोजना गाभ्न असफल \"%s\": %s"
@@ -3401,7 +3401,7 @@ msgid "Initial phase of the oscillator wave form (cycle offset in degree)"
 msgstr "ओस्सिलेटर तरङ्ग फारमको प्रारम्भिक फेज (डिग्रीमा साइकल अफसेट)"
 
 #. BEAST initialization
-#: beast-gtk/bstmain.cc:112
+#: beast-gtk/bstmain.cc:111
 msgid "Initializers"
 msgstr "इनिसियलाइजर"
 
@@ -3671,7 +3671,7 @@ msgstr "नब (लोगारिथ्मिक)"
 msgid "LADSPA Path"
 msgstr "LADSPA बाटो"
 
-#: beast-gtk/bstmain.cc:177
+#: beast-gtk/bstmain.cc:176
 msgid "LADSPA Plugins"
 msgstr "लाडस्पा प्लगइन"
 
@@ -3888,12 +3888,12 @@ msgstr "सिन्थेसाइजर मेस बाजा फोल्ड
 msgid "Load..."
 msgstr "लोड गर्नुहोस्..."
 
-#: beast-gtk/bstmain.cc:250 beast-gtk/bstmain.cc:252
+#: beast-gtk/bstmain.cc:249 beast-gtk/bstmain.cc:251
 #, c-format
 msgid "Loading \"%s\""
 msgstr "\"%s\" लोड हुँदैछ"
 
-#: beast-gtk/bstapp.cc:785
+#: beast-gtk/bstapp.cc:782
 #, c-format
 msgid "Loading skin `%s'"
 msgstr "`%s' स्किन लोड हुँदैछ"
@@ -3903,7 +3903,7 @@ msgstr "`%s' स्किन लोड हुँदैछ"
 msgid "Loading wave `%s'"
 msgstr "तरङ `%s' लोड हुँदैछ"
 
-#: beast-gtk/bstmain.cc:230
+#: beast-gtk/bstmain.cc:229
 msgid "Loading..."
 msgstr "लोड हुँदैछ..."
 
@@ -3981,7 +3981,7 @@ msgstr "मिडि सङ्केत ३"
 msgid "MIDI Signal 4"
 msgstr "मिडि सङ्केत ४"
 
-#: beast-gtk/bstapp.cc:511
+#: beast-gtk/bstapp.cc:508
 #, c-format
 msgid "MIDI Synthesizer: %s"
 msgstr "MIDI सिन्थेसाइजर: %s"
@@ -4078,12 +4078,12 @@ msgstr "`%s' परियोजना गाभ्दैछ"
 msgid "Message Type"
 msgstr "सन्देश प्रकार"
 
-#: beast-gtk/bstusermessage.cc:352
+#: beast-gtk/bstusermessage.cc:351
 #, c-format
 msgid "Message has been repeated %u time"
 msgstr "सन्देश %u पटक दोहोरियो"
 
-#: beast-gtk/bstusermessage.cc:352
+#: beast-gtk/bstusermessage.cc:351
 #, c-format
 msgid "Message has been repeated %u times"
 msgstr "सन्देश %u पटक दोहोरियो"
@@ -4665,7 +4665,7 @@ msgstr "खोल्न असफल"
 msgid "Open file browser"
 msgstr "फाइल ब्राउजर खोल्नुहोस्"
 
-#: beast-gtk/bstapp.cc:718 beast-gtk/bstapp.cc:725
+#: beast-gtk/bstapp.cc:715 beast-gtk/bstapp.cc:722
 #: beast-gtk/bstfiledialog.cc:417 beast-gtk/bstfiledialog.cc:423
 #, c-format
 msgid "Opening project `%s'"
@@ -4699,7 +4699,7 @@ msgstr "साधन निर्गत"
 msgid "Orientation"
 msgstr "अभिमुखीकरण"
 
-#: beast-gtk/bstusermessage.cc:220
+#: beast-gtk/bstusermessage.cc:219
 #, c-format
 msgid "Origin:  %s\n"
 msgstr "उत्पत्ती:  %s\n"
@@ -4828,7 +4828,7 @@ msgstr "PCM यन्त्र चयन समस्याको सन्द�
 msgid "PCM recording errors"
 msgstr "रेकर्डिङ फाइल त्रुटि देखाउनुहोस्"
 
-#: beast-gtk/bstusermessage.cc:222
+#: beast-gtk/bstusermessage.cc:221
 #, c-format
 msgid "PID:     %u\n"
 msgstr "पिड:     %u\n"
@@ -5007,7 +5007,7 @@ msgstr "प्लेब्याक सेटिङ"
 msgid "Plugin Path"
 msgstr "प्लगइन बाटो"
 
-#: beast-gtk/bstmain.cc:158
+#: beast-gtk/bstmain.cc:157
 msgid "Plugins"
 msgstr "प्लगइन"
 
@@ -5035,7 +5035,7 @@ msgstr "सकरात्मक मान रङ"
 msgid "Postprocessor"
 msgstr "पोष्टप्रोसेसर"
 
-#: beast-gtk/bstapp.cc:970
+#: beast-gtk/bstapp.cc:967
 msgid "Preferences"
 msgstr "प्राथमिकता"
 
@@ -5050,7 +5050,7 @@ msgstr "असायामिक EOF"
 msgid "Preview"
 msgstr "पूर्वावलोकन"
 
-#: beast-gtk/bstapp.cc:997
+#: beast-gtk/bstapp.cc:994
 msgid "Procedure Browser"
 msgstr "कार्यविधि ब्राउजर"
 
@@ -5075,7 +5075,7 @@ msgstr "कार्यविधि कार्यान्वयन असफ�
 msgid "Procedure parameter invalid"
 msgstr "कार्यविधि परामिति खारेज छ"
 
-#: beast-gtk/bstusermessage.cc:216 beast-gtk/bstusermessage.cc:500
+#: beast-gtk/bstusermessage.cc:215 beast-gtk/bstusermessage.cc:499
 #, c-format
 msgid ""
 "Procedure: %s\n"
@@ -5084,7 +5084,7 @@ msgstr ""
 "प्रक्रिया: %s\n"
 "स्क्रिप्ट: %s\n"
 
-#: beast-gtk/bstusermessage.cc:218
+#: beast-gtk/bstusermessage.cc:217
 #, c-format
 msgid "Process: %s\n"
 msgstr "प्रकृया: %s\n"
@@ -5283,7 +5283,7 @@ msgid ""
 msgstr ""
 
 #. parse rc file
-#: beast-gtk/bstmain.cc:120
+#: beast-gtk/bstmain.cc:119
 msgid "RC Files"
 msgstr "आर सी फाइल"
 
@@ -5296,7 +5296,7 @@ msgid "Rack Editor"
 msgstr "र्याक सम्पादक"
 
 #. FIXME: undo Edit when hide && GXK_DIALOG_HIDE_ON_DELETE
-#: beast-gtk/bstapp.cc:956
+#: beast-gtk/bstapp.cc:953
 msgid "Rack editor"
 msgstr "र्याक सम्पादक"
 
@@ -5643,7 +5643,7 @@ msgstr "प्रभावको रूपमा बचत गर्नुहो
 msgid "Save As Instrument..."
 msgstr "बाजाको रूपमा बचत गर्नुहोस्..."
 
-#: beast-gtk/bstapp.cc:631
+#: beast-gtk/bstapp.cc:628
 msgid "Save Changes"
 msgstr "परिवर्तन बचत गर्नुहोस्"
 
@@ -5667,7 +5667,7 @@ msgstr "सिन्थेसाइजर मेस प्रभाव फोल
 msgid "Save synthesizer mesh to instruments folder"
 msgstr "सिन्थेसाइजर मेस बाजा फोल्डरमा बचत गर्नुहोस्"
 
-#: beast-gtk/bstapp.cc:630
+#: beast-gtk/bstapp.cc:627
 msgid "Save the project before closing its window?"
 msgstr "यसको सञ्झ्याल बन्द गर्नु पहिले परियोजना बचत गर्नुहुन्छ ?"
 
@@ -5695,11 +5695,11 @@ msgstr "परियोजना `%s' बचत हुँदैछ"
 msgid "Script Path"
 msgstr "स्क्रिप्ट बाटो"
 
-#: beast-gtk/bstusermessage.cc:574 beast-gtk/bstusermessage.cc:737
+#: beast-gtk/bstusermessage.cc:573 beast-gtk/bstusermessage.cc:736
 msgid "Script execution error."
 msgstr "कार्यविधि कार्यान्वयन त्रुटि"
 
-#: beast-gtk/bstmain.cc:205
+#: beast-gtk/bstmain.cc:204
 msgid "Scripts"
 msgstr "स्क्रिप्ट"
 
@@ -5949,7 +5949,7 @@ msgstr "आकारको दायरा"
 msgid "Show Info"
 msgstr "सूचना देखाउनुहोस्"
 
-#: beast-gtk/bstusermessage.cc:764
+#: beast-gtk/bstusermessage.cc:763
 #, fuzzy, c-format
 msgid "Show messages about %s"
 msgstr "अडियो आगत समस्याका बारेमा सन्देश देखाउनुहोस्"
@@ -6062,7 +6062,7 @@ msgstr "एकल: अरू बसलाई मौन गराउनुहो�
 msgid "Song"
 msgstr "गीत"
 
-#: beast-gtk/bstapp.cc:506
+#: beast-gtk/bstapp.cc:503
 #, c-format
 msgid "Song: %s"
 msgstr "गीत: %s"
@@ -6081,7 +6081,7 @@ msgid "Spin Button (Logarithmic)"
 msgstr "स्पिन बटन (लोगारिथ्मिक)"
 
 #. show splash images
-#: beast-gtk/bstmain.cc:124
+#: beast-gtk/bstmain.cc:123
 msgid "Splash Image"
 msgstr "स्प्ल्यास छवि"
 
@@ -6161,7 +6161,7 @@ msgstr "सुरु:"
 msgid "Starting Playback"
 msgstr "प्लेब्याक सुरु हुँदैछ"
 
-#: beast-gtk/bstmain.cc:108
+#: beast-gtk/bstmain.cc:107
 msgid "Startup"
 msgstr "सुरुवात"
 
@@ -6346,7 +6346,7 @@ msgstr "सिन्थेसाइजर"
 msgid "Synthesizer Selection: %s"
 msgstr "सिन्थेसाइजर चयन: %s"
 
-#: beast-gtk/bstapp.cc:516
+#: beast-gtk/bstapp.cc:513
 #, c-format
 msgid "Synthesizer: %s"
 msgstr "सिन्थेसाइजर: %s"
@@ -6527,7 +6527,7 @@ msgid ""
 "The port name is a unique name to establish input<->output port relationships"
 msgstr "आगत<->निर्गत पोर्ट सम्बन्ध स्थापना गर्न पोर्टको नाम अद्वितिय नाम छ"
 
-#: beast-gtk/bstapp.cc:627
+#: beast-gtk/bstapp.cc:624
 msgid "The project has been modified."
 msgstr "परियोजना परिमार्जन गरिएको छ।"
 
@@ -6617,7 +6617,7 @@ msgid ""
 "currently using the Master Bus as output."
 msgstr ""
 
-#: beast-gtk/bstusermessage.cc:254
+#: beast-gtk/bstusermessage.cc:253
 msgid ""
 "This setting can be changed in the \"Messages\" section of the preferences "
 "dialog"
@@ -7025,7 +7025,7 @@ msgstr "तरङ्ग फारम"
 msgid "Wave Output"
 msgstr "तरङ निर्गत"
 
-#: beast-gtk/bstapp.cc:501
+#: beast-gtk/bstapp.cc:498
 msgid "Wave Repository"
 msgstr "तरङ्ग भण्डारण"
 
@@ -7042,7 +7042,7 @@ msgstr "ओस्सिलेटर स्रोतको रूपमा प्
 msgid "Wave_s"
 msgstr "तरङ्ग"
 
-#: beast-gtk/bstapp.cc:499 beast-gtk/bstsupershell.cc:217
+#: beast-gtk/bstapp.cc:496 beast-gtk/bstsupershell.cc:217
 msgid "Waves"
 msgstr "तरङ्ग"
 
@@ -7618,7 +7618,7 @@ msgstr "फाइल \"%s\"बाट वेब भाग थप गर्न अ
 msgid "killed by janitor"
 msgstr "ज्यानिटरद्वारा मारियो"
 
-#: beast-gtk/bstusermessage.cc:548 beast-gtk/bstusermessage.cc:550
+#: beast-gtk/bstusermessage.cc:547 beast-gtk/bstusermessage.cc:549
 msgid "processing"
 msgstr "प्रक्रिया हुँदैछ"
 

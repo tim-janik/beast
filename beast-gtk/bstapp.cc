@@ -20,13 +20,13 @@
 
 /* --- prototypes --- */
 static void           bst_app_run_script_proc     (gpointer     data,
-                                                   gulong       category_id);
+                                                   size_t       category_id);
 static GxkActionList* demo_entries_create         (BstApp      *app);
 static GxkActionList* skin_entries_create         (BstApp      *app);
 static void           app_action_exec             (gpointer     data,
-                                                   gulong       action);
+                                                   size_t       action);
 static gboolean       app_action_check            (gpointer     data,
-                                                   gulong       action,
+                                                   size_t       action,
                                                    guint64      action_stamp);
 static void           bst_app_reload_pages        (BstApp      *self);
 
@@ -208,8 +208,6 @@ bst_app_init (BstApp *self)
   BseCategorySeq *cseq;
   GxkActionList *al1, *al2;
 
-  self->cookie = g_strdup ("");
-
   g_object_set (self,
                 "name", "BEAST-Application",
                 "allow_shrink", TRUE,
@@ -377,7 +375,6 @@ bst_app_finalize (GObject *object)
       g_object_unref (self->ppages);
       self->ppages = NULL;
     }
-  g_free (self->cookie);
 
   G_OBJECT_CLASS (bst_app_parent_class)->finalize (object);
 }
@@ -709,7 +706,7 @@ demo_entries_setup (void)
 
 static void
 demo_play_song (gpointer data,
-                gulong   callback_action)
+                size_t   callback_action)
 {
   const gchar *file_name = demo_entries[callback_action - BST_ACTION_LOAD_DEMO_0000].file;
   SfiProxy project = bse_server_use_new_project (BSE_SERVER, file_name);
@@ -778,7 +775,7 @@ skin_entries_setup (void)
 
 static void
 load_skin (gpointer data,
-           gulong   callback_action)
+           size_t   callback_action)
 {
   const gchar *file_name = skin_entries[callback_action - BST_ACTION_LOAD_SKIN_0000].file;
   BseErrorType error = bst_skin_parse (file_name);
@@ -800,7 +797,7 @@ skin_entries_create (BstApp *app)
 
 static void
 bst_app_run_script_proc (gpointer data,
-                         gulong   category_id)
+                         size_t   category_id)
 {
   BstApp *self = BST_APP (data);
   BseCategory *cat = bse_category_from_id (category_id);
@@ -836,11 +833,11 @@ bst_app_show_release_notes (BstApp *app)
 
 static void
 app_action_exec (gpointer data,
-                 gulong   action)
+                 size_t   action)
 {
   static GtkWidget *bst_preferences = NULL;
   BstApp *self = BST_APP (data);
-  const gchar *docs_url = NULL, *docs_title = "";
+  const gchar *docs_url = NULL;
   GtkWidget *widget = GTK_WIDGET (self);
 
   gxk_status_window_push (widget);
@@ -1039,25 +1036,21 @@ app_action_exec (gpointer data,
       break;
     case ACTION_HELP_INDEX:
       docs_url = "html/index.html";
-      docs_title = "BEAST Index";
       goto BROWSE_LOCAL_URL;
     case ACTION_HELP_RELEASE_NOTES:
       docs_url = "html/beast-NEWS.html";
-      docs_title = "BEAST Release Notes";
       goto BROWSE_LOCAL_URL;
     case ACTION_HELP_DSP_ENGINE:
       docs_url = "html/engine-mplan.html";
-      docs_title = "BEAST DSP Engine";
       goto BROWSE_LOCAL_URL;
     case ACTION_HELP_DEVELOPMENT:
       docs_url = "html/index.html";
-      docs_title = "BEAST Development Index";
       goto BROWSE_LOCAL_URL;
     BROWSE_LOCAL_URL:
       if (docs_url)
         {
           gchar *local_url = g_strconcat ("file://", BST_PATH_DOCS, "/", docs_url, NULL);
-          sfi_url_show_with_cookie (local_url, docs_title, self->cookie);
+          sfi_url_show (local_url);
           g_free (local_url);
         }
       break;
@@ -1108,7 +1101,8 @@ app_action_exec (gpointer data,
                                      "are currently looking at a prominent warning or error message, there's no "
                                      "real merit to it."),
                       BST_MSG_TEXT3 ("Demo-Dialog-Type: %s",
-                                     Rapicorn::Aida::TypeCode::from_enum<Bse::UserMessageType>().enum_find (demo_type).ident));
+                                     Rapicorn::Aida::enum_value_find (Rapicorn::Aida::enum_value_list<Bse::UserMessageType> (),
+                                                                      demo_type)->ident));
       break;
     default:
       g_assert_not_reached ();
@@ -1122,7 +1116,7 @@ app_action_exec (gpointer data,
 
 static gboolean
 app_action_check (gpointer data,
-                  gulong   action,
+                  size_t   action,
                   guint64  action_stamp)
 {
   BstApp *self = BST_APP (data);

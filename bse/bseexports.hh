@@ -103,15 +103,14 @@ typedef struct {
 #define BSE_EXPORT_IDENTITY_SYMBOL      bse_export__identity
 #define BSE_EXPORT_IDENTITY_STRING     "bse_export__identity"
 typedef struct {
-  guint          major, minor, micro;
-  guint          binary_age, interface_age;
-  guint          dummy1, dummy2, dummy3;
-  guint64        export_flags;
+  uint           major, minor, micro;
+  uint           dummy1, dummy2, dummy3, dummy4, dummy5;
+  uint64         export_flags;
   BseExportNode *export_chain;
 } BseExportIdentity;
 #define BSE_EXPORT_IDENTITY(HEAD)                               \
-  { BSE_MAJOR_VERSION, BSE_MINOR_VERSION, BSE_MICRO_VERSION,    \
-    BSE_BINARY_AGE, BSE_INTERFACE_AGE, 0, 0, 0,                 \
+  { BST_MAJOR_VERSION, BST_MINOR_VERSION, BST_MICRO_VERSION,    \
+    0, 0, 0, 0, 0,                                              \
     BSE_EXPORT_CONFIG, &HEAD }
 
 #define BSE_EXPORT_FLAG_MMX      (0x1ull << 0)

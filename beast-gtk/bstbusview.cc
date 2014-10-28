@@ -4,9 +4,9 @@
 
 /* --- prototypes --- */
 static void     bus_view_action_exec           (gpointer                data,
-                                                gulong                  action);
+                                                size_t                  action);
 static gboolean bus_view_action_check          (gpointer                data,
-                                                gulong                  action,
+                                                size_t                  action,
                                                 guint64                 action_stamp);
 
 
@@ -64,7 +64,7 @@ bst_bus_view_new (SfiProxy song)
 
 static void
 bus_view_action_exec (gpointer                data,
-                      gulong                  action)
+                      size_t                  action)
 {
   BstBusView *self = BST_BUS_VIEW (data);
   BstItemView *item_view = BST_ITEM_VIEW (self);
@@ -86,7 +86,7 @@ bus_view_action_exec (gpointer                data,
 
 static gboolean
 bus_view_action_check (gpointer                data,
-                       gulong                  action,
+                       size_t                  action,
                        guint64                 action_stamp)
 {
   BstBusView *self = BST_BUS_VIEW (data);

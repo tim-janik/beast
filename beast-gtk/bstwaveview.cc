@@ -8,9 +8,9 @@
 
 /* --- prototypes --- */
 static void     wave_view_action_exec           (gpointer                data,
-                                                 gulong                  action);
+                                                 size_t                  action);
 static gboolean wave_view_action_check          (gpointer                data,
-                                                 gulong                  action,
+                                                 size_t                  action,
                                                  guint64                 action_stamp);
 
 
@@ -125,7 +125,7 @@ bst_wave_view_set_editable (BstWaveView *self,
 
 static void
 wave_view_action_exec (gpointer                data,
-                       gulong                  action)
+                       size_t                  action)
 {
   BstWaveView *self = BST_WAVE_VIEW (data);
   BstItemView *item_view = BST_ITEM_VIEW (self);
@@ -155,7 +155,7 @@ wave_view_action_exec (gpointer                data,
 
 static gboolean
 wave_view_action_check (gpointer                data,
-                        gulong                  action,
+                        size_t                  action,
                         guint64                 action_stamp)
 {
   BstWaveView *self = BST_WAVE_VIEW (data);

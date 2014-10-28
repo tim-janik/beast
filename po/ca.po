@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-07-05 23:14+0200\n"
+"POT-Creation-Date: 2014-10-28 14:17+0100\n"
 "PO-Revision-Date: 2006-08-18 05:28+0200\n"
 "Last-Translator: Gil Forcada <gilforcada@guifi.net>\n"
 "Language-Team: Catalan <gnome@softcatala.org>\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: bse/bsemain.cc:222
+#: bse/bsemain.cc:218
 msgid ""
 "\n"
 "Available MIDI drivers:\n"
@@ -26,7 +26,7 @@ msgstr ""
 "\n"
 "Controladors MIDI disponibles:\n"
 
-#: bse/bsemain.cc:220
+#: bse/bsemain.cc:216
 msgid ""
 "\n"
 "Available PCM drivers:\n"
@@ -976,7 +976,7 @@ msgstr ""
 "l'operació de reproducció pot produir resultats no desitjats (com un senyal "
 "de sortida de silenci)."
 
-#: beast-gtk/bstusermessage.cc:573
+#: beast-gtk/bstusermessage.cc:572
 #, c-format
 msgid "An error occoured during execution of script procedure '%s': %s"
 msgstr ""
@@ -1327,21 +1327,21 @@ msgstr ""
 msgid "BEAST"
 msgstr "BEAST"
 
-#: beast-gtk/bstmain.cc:852
+#: beast-gtk/bstmain.cc:849
 msgid "BEAST About"
 msgstr "Quant al BEAST"
 
-#: beast-gtk/bstmain.cc:101
+#: beast-gtk/bstmain.cc:100
 msgid "BEAST Startup"
 msgstr "Inici del BEAST"
 
-#: beast-gtk/bstmain.cc:853
+#: beast-gtk/bstmain.cc:850
 #, c-format
 msgid "BEAST Version %s"
 msgstr "BEAST versió %s"
 
 #. start BSE core and connect
-#: beast-gtk/bstmain.cc:136
+#: beast-gtk/bstmain.cc:135
 msgid "BSE Core"
 msgstr "Nucli BSE"
 
@@ -1528,7 +1528,7 @@ msgstr "CPU#"
 msgid "CPU%"
 msgstr "CPU%"
 
-#: beast-gtk/bstapp.cc:633
+#: beast-gtk/bstapp.cc:630
 msgid "Cancel"
 msgstr "Cancel·la"
 
@@ -1562,7 +1562,7 @@ msgstr ""
 msgid "Change..."
 msgstr "Canvia..."
 
-#: beast-gtk/bstapp.cc:628
+#: beast-gtk/bstapp.cc:625
 #, c-format
 msgid ""
 "Changes were made to project \"%s\" since the last time it was saved to disk."
@@ -1628,7 +1628,7 @@ msgstr "Neteja"
 msgid "Clear the current selection"
 msgstr "Neteja la selecció actual"
 
-#: beast-gtk/bstapp.cc:626
+#: beast-gtk/bstapp.cc:623
 #, c-format
 msgid "Close %s"
 msgstr "Tanca %s"
@@ -1786,7 +1786,7 @@ msgstr "Continu 9"
 msgid "Continuous MIDI Control #1 - Bank Select"
 msgstr "Control de MIDI continu #1 - Selecció de banc"
 
-#: beast-gtk/bstmain.cc:854
+#: beast-gtk/bstmain.cc:851
 msgid "Contributions made by:"
 msgstr "Hi ha contribuït:"
 
@@ -2367,7 +2367,7 @@ msgstr "Denominador"
 msgid "Description"
 msgstr "Descripció"
 
-#: beast-gtk/bstusermessage.cc:203
+#: beast-gtk/bstusermessage.cc:202
 msgid "Details:"
 msgstr "Detalls:"
 
@@ -2409,7 +2409,7 @@ msgid "Dial (Logarithmic)"
 msgstr "Marcador (logarítmic)"
 
 #. listen to BseServer notification
-#: beast-gtk/bstmain.cc:221
+#: beast-gtk/bstmain.cc:220
 msgid "Dialogs"
 msgstr "Diàlegs"
 
@@ -2433,7 +2433,7 @@ msgstr ""
 msgid "Direction"
 msgstr "Sentit"
 
-#: beast-gtk/bstapp.cc:632
+#: beast-gtk/bstapp.cc:629
 msgid "Discard Changes"
 msgstr "Descarta els canvis"
 
@@ -2493,11 +2493,11 @@ msgstr "Mostra una primera vista de tots els procediments"
 msgid "Display developer and contributor credits"
 msgstr "Mostra els crèdits dels desenvolupadors i els contribuïdors"
 
-#: beast-gtk/bstusermessage.cc:411
+#: beast-gtk/bstusermessage.cc:410
 msgid "Display dialogs with debugging messages"
 msgstr "Mostra diàlegs amb missatges de depuració"
 
-#: beast-gtk/bstusermessage.cc:409
+#: beast-gtk/bstusermessage.cc:408
 msgid "Display dialogs with information messages"
 msgstr "Mostra diàlegs amb missatges d'informació"
 
@@ -2732,7 +2732,7 @@ msgstr ""
 msgid "Epsilon"
 msgstr "Èpsilon"
 
-#: beast-gtk/bstusermessage.cc:55
+#: beast-gtk/bstusermessage.cc:54
 msgid "Error: "
 msgstr "Error: "
 
@@ -2810,7 +2810,7 @@ msgstr "Tot ha anat bé"
 msgid "Executing '%s'"
 msgstr "S'està executant '%s'"
 
-#: beast-gtk/bstusermessage.cc:496
+#: beast-gtk/bstusermessage.cc:495
 #, c-format
 msgid "Executing procedure '%s' from script '%s'."
 msgstr "Executant el procediment '%s' del fitxer de seqüència d'ordres '%s'."
@@ -2823,7 +2823,7 @@ msgstr "Control exponencial"
 msgid "Exponential FM"
 msgstr "FM exponencial"
 
-#: beast-gtk/bstapp.cc:306
+#: beast-gtk/bstapp.cc:304
 msgid "Export Audio"
 msgstr "Exporta l'àudio"
 
@@ -2866,25 +2866,25 @@ msgstr "No s'ha pogut detectar (l'inici de) la capçalera"
 msgid "Failed to duplicate part range."
 msgstr "No s'ha pogut detectar (l'inici de) la capçalera"
 
-#: beast-gtk/bstusermessage.cc:736
+#: beast-gtk/bstusermessage.cc:735
 #, c-format
 msgid "Failed to execute script procedure '%s': %s"
 msgstr ""
 "No s'ha pogut executar el procediment del fitxer de seqüència d'ordres '%s': "
 "%s"
 
-#: beast-gtk/bstmain.cc:306
+#: beast-gtk/bstmain.cc:305
 #, c-format
 msgid "Failed to load project \"%s\": %s"
 msgstr "No s'ha pogut carregar el projecte «%s»: %s"
 
-#: beast-gtk/bstfiledialog.cc:765 beast-gtk/bstmain.cc:254
-#: beast-gtk/bstmain.cc:271
+#: beast-gtk/bstfiledialog.cc:765 beast-gtk/bstmain.cc:253
+#: beast-gtk/bstmain.cc:270
 #, c-format
 msgid "Failed to load wave file \"%s\": %s"
 msgstr "No s'ha pogut obrir el fitxer d'ona «%s»: %s"
 
-#: beast-gtk/bstmain.cc:312
+#: beast-gtk/bstmain.cc:311
 #, c-format
 msgid "Failed to merge project \"%s\": %s"
 msgstr "No s'ha pogut fusionar el projecte «%s»: %s"
@@ -3484,7 +3484,7 @@ msgstr ""
 "graus)"
 
 #. BEAST initialization
-#: beast-gtk/bstmain.cc:112
+#: beast-gtk/bstmain.cc:111
 msgid "Initializers"
 msgstr "Inicialitzadors"
 
@@ -3755,7 +3755,7 @@ msgstr "Control (logarítmic)"
 msgid "LADSPA Path"
 msgstr "Camí als LADSPA"
 
-#: beast-gtk/bstmain.cc:177
+#: beast-gtk/bstmain.cc:176
 msgid "LADSPA Plugins"
 msgstr "Connectors LADSPA"
 
@@ -3980,12 +3980,12 @@ msgstr "Carrega una malla de sintetització del directori d'instruments"
 msgid "Load..."
 msgstr "Carrega..."
 
-#: beast-gtk/bstmain.cc:250 beast-gtk/bstmain.cc:252
+#: beast-gtk/bstmain.cc:249 beast-gtk/bstmain.cc:251
 #, c-format
 msgid "Loading \"%s\""
 msgstr "S'està carregant «%s»"
 
-#: beast-gtk/bstapp.cc:785
+#: beast-gtk/bstapp.cc:782
 #, c-format
 msgid "Loading skin `%s'"
 msgstr "S'està carregant l'aparença '%s'"
@@ -3995,7 +3995,7 @@ msgstr "S'està carregant l'aparença '%s'"
 msgid "Loading wave `%s'"
 msgstr "S'està carregant l'ona '%s'"
 
-#: beast-gtk/bstmain.cc:230
+#: beast-gtk/bstmain.cc:229
 msgid "Loading..."
 msgstr "S'està carregant..."
 
@@ -4073,7 +4073,7 @@ msgstr "Senyal MIDI 3"
 msgid "MIDI Signal 4"
 msgstr "Senyal MIDI 4"
 
-#: beast-gtk/bstapp.cc:511
+#: beast-gtk/bstapp.cc:508
 #, c-format
 msgid "MIDI Synthesizer: %s"
 msgstr "Sintetitzador MIDI: %s"
@@ -4170,12 +4170,12 @@ msgstr "S'està fusionant el projecte `%s'"
 msgid "Message Type"
 msgstr "Tipus de missatge"
 
-#: beast-gtk/bstusermessage.cc:352
+#: beast-gtk/bstusermessage.cc:351
 #, c-format
 msgid "Message has been repeated %u time"
 msgstr "El missatge s'ha estat repetint %u vegada"
 
-#: beast-gtk/bstusermessage.cc:352
+#: beast-gtk/bstusermessage.cc:351
 #, c-format
 msgid "Message has been repeated %u times"
 msgstr "El missatge s'ha estat repetint durant %u vegades"
@@ -4769,7 +4769,7 @@ msgstr "Ha fallat al obrir"
 msgid "Open file browser"
 msgstr "Obre el navegador de fitxers"
 
-#: beast-gtk/bstapp.cc:718 beast-gtk/bstapp.cc:725
+#: beast-gtk/bstapp.cc:715 beast-gtk/bstapp.cc:722
 #: beast-gtk/bstfiledialog.cc:417 beast-gtk/bstfiledialog.cc:423
 #, c-format
 msgid "Opening project `%s'"
@@ -4803,7 +4803,7 @@ msgstr "Sortida d'orgue"
 msgid "Orientation"
 msgstr "Orientació"
 
-#: beast-gtk/bstusermessage.cc:220
+#: beast-gtk/bstusermessage.cc:219
 #, c-format
 msgid "Origin:  %s\n"
 msgstr "Origen:  %s\n"
@@ -4932,7 +4932,7 @@ msgstr "Mostra missatges sobre els problemes de selecció del dispositiu PCM"
 msgid "PCM recording errors"
 msgstr "Mostra errors d'enregistrament a fitxer"
 
-#: beast-gtk/bstusermessage.cc:222
+#: beast-gtk/bstusermessage.cc:221
 #, c-format
 msgid "PID:     %u\n"
 msgstr "PID:     %u\n"
@@ -5113,7 +5113,7 @@ msgstr "Configuració de la reproducció"
 msgid "Plugin Path"
 msgstr "Camí de connectors"
 
-#: beast-gtk/bstmain.cc:158
+#: beast-gtk/bstmain.cc:157
 msgid "Plugins"
 msgstr "Connectors"
 
@@ -5141,7 +5141,7 @@ msgstr "Color del valor positiu"
 msgid "Postprocessor"
 msgstr "Postprocessador"
 
-#: beast-gtk/bstapp.cc:970
+#: beast-gtk/bstapp.cc:967
 msgid "Preferences"
 msgstr "Preferències"
 
@@ -5156,7 +5156,7 @@ msgstr "Fi de fitxer prematur"
 msgid "Preview"
 msgstr "Reproducció de prova"
 
-#: beast-gtk/bstapp.cc:997
+#: beast-gtk/bstapp.cc:994
 msgid "Procedure Browser"
 msgstr "Navegador de procediments"
 
@@ -5181,7 +5181,7 @@ msgstr "S'ha produït un error en l'execució del procediment"
 msgid "Procedure parameter invalid"
 msgstr "Paràmetre del procediment invàlid"
 
-#: beast-gtk/bstusermessage.cc:216 beast-gtk/bstusermessage.cc:500
+#: beast-gtk/bstusermessage.cc:215 beast-gtk/bstusermessage.cc:499
 #, c-format
 msgid ""
 "Procedure: %s\n"
@@ -5190,7 +5190,7 @@ msgstr ""
 "Procediment: %s\n"
 "Fitxer de seqüència: %s\n"
 
-#: beast-gtk/bstusermessage.cc:218
+#: beast-gtk/bstusermessage.cc:217
 #, c-format
 msgid "Process: %s\n"
 msgstr "Procés: %s\n"
@@ -5396,7 +5396,7 @@ msgid ""
 msgstr ""
 
 #. parse rc file
-#: beast-gtk/bstmain.cc:120
+#: beast-gtk/bstmain.cc:119
 msgid "RC Files"
 msgstr "Fitxers RC"
 
@@ -5411,7 +5411,7 @@ msgstr "Editor del rack"
 
 # Si no n'estàs segur, millor no traduir-ho
 #. FIXME: undo Edit when hide && GXK_DIALOG_HIDE_ON_DELETE
-#: beast-gtk/bstapp.cc:956
+#: beast-gtk/bstapp.cc:953
 msgid "Rack editor"
 msgstr "Editor de rack"
 
@@ -5758,7 +5758,7 @@ msgstr "Desa com a efecte..."
 msgid "Save As Instrument..."
 msgstr "Desa com a instrument..."
 
-#: beast-gtk/bstapp.cc:631
+#: beast-gtk/bstapp.cc:628
 msgid "Save Changes"
 msgstr "Desa els canvis"
 
@@ -5782,7 +5782,7 @@ msgstr "Desa la malla de sintetització al directori d'efectes"
 msgid "Save synthesizer mesh to instruments folder"
 msgstr "Desa la malla de sintetització al directori d'instruments"
 
-#: beast-gtk/bstapp.cc:630
+#: beast-gtk/bstapp.cc:627
 msgid "Save the project before closing its window?"
 msgstr "Voleu desar el projecte sense tancar-ne la finestra?"
 
@@ -5810,11 +5810,11 @@ msgstr "S'està desant el projecte '%s'"
 msgid "Script Path"
 msgstr "Camí de seqüències d'ordres"
 
-#: beast-gtk/bstusermessage.cc:574 beast-gtk/bstusermessage.cc:737
+#: beast-gtk/bstusermessage.cc:573 beast-gtk/bstusermessage.cc:736
 msgid "Script execution error."
 msgstr "S'ha produït un error en executar el fitxer de seqüència."
 
-#: beast-gtk/bstmain.cc:205
+#: beast-gtk/bstmain.cc:204
 msgid "Scripts"
 msgstr "Fitxers de seqüència d'ordres"
 
@@ -6067,7 +6067,7 @@ msgstr "Rang de la forma"
 msgid "Show Info"
 msgstr "Mostra informació"
 
-#: beast-gtk/bstusermessage.cc:764
+#: beast-gtk/bstusermessage.cc:763
 #, fuzzy, c-format
 msgid "Show messages about %s"
 msgstr "Mostra missatges sobre els problemes d'entrada d'àudio"
@@ -6181,7 +6181,7 @@ msgstr "Solo: en silenci tots els altres busos"
 msgid "Song"
 msgstr "Ca_nçó"
 
-#: beast-gtk/bstapp.cc:506
+#: beast-gtk/bstapp.cc:503
 #, c-format
 msgid "Song: %s"
 msgstr "Cançó: %s"
@@ -6200,7 +6200,7 @@ msgid "Spin Button (Logarithmic)"
 msgstr "Botó d'increment (logarítmic)"
 
 #. show splash images
-#: beast-gtk/bstmain.cc:124
+#: beast-gtk/bstmain.cc:123
 msgid "Splash Image"
 msgstr "Imatge flaix d'inici"
 
@@ -6284,7 +6284,7 @@ msgstr "Inici:"
 msgid "Starting Playback"
 msgstr "S'està iniciant la reproducció"
 
-#: beast-gtk/bstmain.cc:108
+#: beast-gtk/bstmain.cc:107
 msgid "Startup"
 msgstr "Inici"
 
@@ -6474,7 +6474,7 @@ msgstr "Sintetitzador"
 msgid "Synthesizer Selection: %s"
 msgstr "Selecció del sintetitzador: %s"
 
-#: beast-gtk/bstapp.cc:516
+#: beast-gtk/bstapp.cc:513
 #, c-format
 msgid "Synthesizer: %s"
 msgstr "Sintetitzador: %s"
@@ -6663,7 +6663,7 @@ msgstr ""
 "El nom del port és un nom únic per establir relacions de port d'entrada<-"
 ">sortida"
 
-#: beast-gtk/bstapp.cc:627
+#: beast-gtk/bstapp.cc:624
 msgid "The project has been modified."
 msgstr "S'ha modificat el projecte."
 
@@ -6756,7 +6756,7 @@ msgid ""
 "currently using the Master Bus as output."
 msgstr ""
 
-#: beast-gtk/bstusermessage.cc:254
+#: beast-gtk/bstusermessage.cc:253
 msgid ""
 "This setting can be changed in the \"Messages\" section of the preferences "
 "dialog"
@@ -7172,7 +7172,7 @@ msgstr "Forma d'ona"
 msgid "Wave Output"
 msgstr "Sortida d'ona"
 
-#: beast-gtk/bstapp.cc:501
+#: beast-gtk/bstapp.cc:498
 msgid "Wave Repository"
 msgstr "Magatzem d'ones"
 
@@ -7189,7 +7189,7 @@ msgstr "Ona utilitzada com a font de l'oscil·lador"
 msgid "Wave_s"
 msgstr "O_nes"
 
-#: beast-gtk/bstapp.cc:499 beast-gtk/bstsupershell.cc:217
+#: beast-gtk/bstapp.cc:496 beast-gtk/bstsupershell.cc:217
 msgid "Waves"
 msgstr "Ones"
 
@@ -7764,7 +7764,7 @@ msgstr "No s'ha pogut afegir un tros d'ona des del fitxer «%s»: %s"
 msgid "killed by janitor"
 msgstr "matat per janitor"
 
-#: beast-gtk/bstusermessage.cc:548 beast-gtk/bstusermessage.cc:550
+#: beast-gtk/bstusermessage.cc:547 beast-gtk/bstusermessage.cc:549
 msgid "processing"
 msgstr "s'està processant"
 

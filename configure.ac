@@ -1,63 +1,57 @@
 # Licensed GNU LGPL v2 or later: http://www.gnu.org/licenses/lgpl.html
 
 # include various m4 macros
-m4_include(acbeast.m4)
+m4_include(acbeast.m4)dnl # include special macros
+m4_include(ld-symbolic.m4)dnl # include special macros
 m4_include(autotools/glib-gettext.m4)
 
 
 #
 # Configure script for BEAST/BSE
 #
-AC_INIT(beast, m4_esyscmd(./mkrelease.sh shellvar configure.in:BST_VERSION))
+AC_PREREQ(2.57)
+# VERSION: MAJOR.MINOR.MICRO-RC:
+# * MAJOR, MINOR: increment on ABI/API changes
+# * MICRO: increment when ABI compatible, development versions are odd
+# * RC: release candidate, may be rc[0-9]+ or empty
+AC_INIT([beast], [0.9.0]) # defines PACKAGE_NAME, PACKAGE_VERSION, PACKAGE_STRING
 AC_CONFIG_SRCDIR([bse/bseconfig.h.in])
-AM_CONFIG_HEADER(configure.h)
 AC_CONFIG_AUX_DIR([autotools])
 AC_CONFIG_MACRO_DIR([autotools])
-AC_PREREQ(2.57)
-
-#
-# BSE version numbers
-#
-BSE_MAJOR_VERSION=0
-BSE_MINOR_VERSION=8
-BSE_MICRO_VERSION=3
-BSE_INTERFACE_AGE=0
-BSE_BINARY_AGE=0
-dnl#
-dnl# Making releases:
-dnl#   BSE_MICRO_VERSION += 1;
-dnl#   BSE_INTERFACE_AGE += 1;
-dnl#   BSE_BINARY_AGE += 1;
-dnl# if any functions have been added, set BSE_INTERFACE_AGE to 0.
-dnl# if backwards compatibility has been broken,
-dnl# set BSE_BINARY_AGE _and_ BSE_INTERFACE_AGE to 0.
-dnl# BST_RELEASE_CANDIDATE may contain rc[0-9]+ or nothing
-BST_RELEASE_CANDIDATE= #rc1
-
-# version number setup
-BSE_VERSION=$BSE_MAJOR_VERSION.$BSE_MINOR_VERSION.$BSE_MICRO_VERSION
-BST_VERSION=$BSE_VERSION${BST_RELEASE_CANDIDATE:+-}$BST_RELEASE_CANDIDATE # M.M.M-rcZ
-BIN_VERSION=$BSE_VERSION    # binary version, used for binaries and paths
-AC_SUBST(BSE_MAJOR_VERSION)
-AC_SUBST(BSE_MINOR_VERSION)
-AC_SUBST(BSE_MICRO_VERSION)
-AC_SUBST(BSE_INTERFACE_AGE)
-AC_SUBST(BSE_BINARY_AGE)
-AC_SUBST(BSE_VERSION)
-AC_SUBST(BST_VERSION)
-AC_SUBST(BIN_VERSION)
+AC_CANONICAL_TARGET					# architecture information
+AM_INIT_AUTOMAKE(tar-pax no-define -Wno-portability)	# don't define PACKAGE and VERSION
+AM_CONFIG_HEADER(configure.h)
+# version handling
+BST_VERSION="$PACKAGE_VERSION"
+[BST_MAJOR_VERSION=`echo $PACKAGE_VERSION | sed 's/\([0-9]\+\)\.\([0-9]\+\)\.\([0-9]\+\)\(.*\)/\1/'`]
+[BST_MINOR_VERSION=`echo $PACKAGE_VERSION | sed 's/\([0-9]\+\)\.\([0-9]\+\)\.\([0-9]\+\)\(.*\)/\2/'`]
+[BST_MICRO_VERSION=`echo $PACKAGE_VERSION | sed 's/\([0-9]\+\)\.\([0-9]\+\)\.\([0-9]\+\)\(.*\)/\3/'`]
+[BIN_VERSION=`echo $PACKAGE_VERSION | sed 's/\([0-9]\+\)\.\([0-9]\+\)\.\([0-9]\+\)\(.*\)/\1.\2.\3/'`]
+case "$BST_VERSION" in
+0.99.*)     BST_VERSION_HINT=BETA ;;
+0.*)        BST_VERSION_HINT="ALPHA" ;;
+*)          BST_VERSION_HINT="Stable Release"
+            test `expr $BST_MICRO_VERSION \% 2` = 1 && BST_VERSION_HINT="Development Build" ;;
+esac
+AC_DEFINE_UNQUOTED(BST_VERSION, "$BST_VERSION", [BEAST Version])
 AC_DEFINE_UNQUOTED(BIN_VERSION, "$BIN_VERSION", [Binary Version])
+AC_DEFINE_UNQUOTED(BST_VERSION_HINT, "$BST_VERSION_HINT", [Version classification])
+AC_SUBST(BST_VERSION)
+AC_SUBST(BST_MAJOR_VERSION)
+AC_SUBST(BST_MINOR_VERSION)
+AC_SUBST(BST_MICRO_VERSION)
+AC_SUBST(BIN_VERSION)
 
 # compute libtool versions
-LT_RELEASE=$BSE_MAJOR_VERSION.$BSE_MINOR_VERSION
-LT_CURRENT=`expr $BSE_MICRO_VERSION - $BSE_INTERFACE_AGE`
-LT_REVISION=$BSE_INTERFACE_AGE
-LT_AGE=`expr $BSE_BINARY_AGE - $BSE_INTERFACE_AGE`
+LT_RELEASE=$BST_MAJOR_VERSION.$BST_MINOR_VERSION
+LT_CURRENT=$BST_MICRO_VERSION
+LT_REVISION=0
+LT_AGE=$BST_MICRO_VERSION
 AC_SUBST(LT_RELEASE)
 AC_SUBST(LT_CURRENT)
 AC_SUBST(LT_REVISION)
 AC_SUBST(LT_AGE)
-if test 1 = $(($BSE_MICRO_VERSION & 1)) ; then
+if test 1 = $(($BST_MICRO_VERSION & 1)) ; then
   DEFINE__FILE_DIR__='-D__FILE_DIR__=\"${abs_srcdir}\"'
 else
   DEFINE__FILE_DIR__='-D__FILE_DIR__=\"beast/${subdir}\"'
@@ -71,34 +65,17 @@ AC_SUBST(INGIT)
 result=$(test -z "$INGIT" && echo yes || echo no)
 AC_MSG_RESULT($result)
 
-dnl # figure debugging default, prior to $ac_help setup
-dnl
-if test `expr $BSE_MINOR_VERSION \% 2 \| $BSE_MAJOR_VERSION \< 1` = 1 ; then
-        debug_default=yes
-else
-        debug_default=minimum
-fi
-
-# architecture information
-AC_CANONICAL_TARGET
 dnl # AC_CANONICAL_HOST is provided by AC_CANONICAL_TARGET
 AC_DEFINE_UNQUOTED(BST_ARCH_NAME, "$target", [Architecture Description])
 
-# initialize automake, don't define PACKAGE and VERSION
-AM_INIT_AUTOMAKE(tar-pax no-define)
-
 # We have subdirectories.
 AC_PROG_MAKE_SET
-
-# Disable automatic maintainer mode.
-AM_MAINTAINER_MODE
 m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES([yes])])
 
 # declare --enable-* args and collect ac_help strings
-AC_ARG_ENABLE(debug,           [  --enable-debug=no/minimum/yes  turn on debugging],,enable_debug=$debug_default)
-AC_ARG_ENABLE(toyprof,         [  --enable-toyprof               turn on toy profiler, see sfi/toyprof.README],,)
+AC_ARG_ENABLE(debug,      [  --enable-debug=no/minimum/yes  turn on debugging, default=yes],,enable_debug=yes)
+AC_ARG_ENABLE(devel-mode, [  --enable-devel-mode=[no/yes]   turn on development mode, default=no],,enable_devel_mode=no)
 AC_ARG_ENABLE(distcheck-tests, [  --enable-distcheck-tests       turn on resource and time consuming distcheck tests],,enable_distcheck_tests=no)
-AC_SUBST(DOXRULE)
 
 # set BEAST_BUILD_DEFAULTS from configure's BEAST_BUILD env
 BEAST_BUILD_DEFAULTS="$BEAST_BUILD_DEFAULTS"
@@ -128,36 +105,150 @@ dnl # Foreign defaults:
 MC_IF_VAR_EQ(enable_static, yes, , enable_static=no)
 MC_IF_VAR_EQ(enable_shared, no, , enable_shared=yes)
 
-# check compilers and their behaviour, setup CFLAGS
-MC_PROG_CC_WITH_CFLAGS
-MC_PROG_CXX_WITH_CXXFLAGS
+# compiler, linker & libtool
+saved_CFLAGS="$CFLAGS"
+AC_PROG_CC
+CFLAGS="$saved_CFLAGS" 		# AC_PROG_CC_G called internally consistently breaks $CFLAGS
+saved_CXXFLAGS="$CFLAGS"
 AC_PROG_CPP
+CXXFLAGS="$saved_CXXFLAGS"	# AC_PROG_CXX_G called internally consistently breaks $CXXFLAGS
 AC_PROG_CXX
 AC_PROG_CXXCPP
+AC_PROG_LD
+AC_LANG_CPLUSPLUS	# use CXX for compilation tests
+AC_LIB_PROG_LD
+AC_LIB_PROG_LD_GNU
+ACX_PROG_LD_GNU_SYMBOLIC
+AC_SUBST([SYMBOLIC_LDFLAGS])
+ACX_PROG_LD_GNU_DYNAMIC_LIST_CPP_NEW
+AC_SUBST([DYNAMIC_LIST_CPP_NEW_LDFLAGS])
+AM_PROG_LIBTOOL
+AC_LIBTOOL_DLOPEN
+
+# AM_LDFLAGS, optimize linker to use faster ELF symbol hashing if we have compiler and linker support
+AC_MSG_CHECKING([whether CC and LD support gnu.hash sections])
+if ${CC-cc} -dumpspecs | grep -q -- '--hash-style=\(both\|gnu\).*--as-needed' && \
+   ${LD-ld} --help     | grep -q -- '--hash-style=.*\(both\|gnu\)' ; then
+  MC_EVAR_ADD(AM_LDFLAGS, [-Wl,--hash-style=both -Wl,--as-needed -Wl,-O1])
+  AC_MSG_RESULT(yes)
+else
+  AC_MSG_RESULT(no)
+fi
+MC_EVAR_ADD(AM_LDFLAGS, -pthread)
+MC_EVAR_ADD(AM_LDFLAGS, -lrt)
+MC_EVAR_ADD(AM_LDFLAGS, -Wl,--no-undefined)
+AC_SUBST(AM_LDFLAGS)
+
+# Pick C++ dialect, needed in CXXFLAGS for compile tests
+MC_CXX_TRY_OPTION(CXXFLAGS,  -std=gnu++0x)
+
+# AM_CFLAGS & AM_CXXFLAGS
+MC_CXX_TRY_OPTION(AM_CXXFLAGS,  -std=gnu++0x)
+BOTHCCXXFLAGS=
+if test "x$enable_debug" = "xyes"; then
+  MC_EVAR_ADD(BOTHCCXXFLAGS,      -DG_ENABLE_DEBUG)
+  MC_CC_TRY_OPTION(BOTHCCXXFLAGS, -g)
+  MC_CC_TRY_OPTION(BOTHCCXXFLAGS, -ggdb3)
+  MC_CC_TRY_OPTION(BOTHCCXXFLAGS, -fno-omit-frame-pointer)
+  MC_CC_TRY_OPTION(BOTHCCXXFLAGS, -fverbose-asm)
+  dnl # MC_CC_TRY_OPTION(BOTHCCXXFLAGS, -Q -ftime-report -fmem-report)
+elif test "x$enable_debug" = "xno"; then
+  MC_EVAR_ADD(BOTHCCXXFLAGS, [-DG_DISABLE_CHECKS -DG_DISABLE_CAST_CHECKS]) # -DG_DISABLE_ASSERT
+else
+  : # minimum debugging
+fi
+MC_CC_TRY_OPTION(BOTHCCXXFLAGS, -fmessage-length=0)
+MC_CC_TRY_OPTION(BOTHCCXXFLAGS, -fdiagnostics-color=auto)
+MC_CC_TRY_OPTION(BOTHCCXXFLAGS, -Wall)
+MC_CC_TRY_OPTION(BOTHCCXXFLAGS, -Wdeprecated)
+MC_CC_TRY_OPTION(AM_CFLAGS,     -Wmissing-prototypes)
+MC_CC_TRY_OPTION(AM_CFLAGS,     -Wno-pointer-sign)
+MC_CC_TRY_OPTION(AM_CFLAGS,     -Wnested-externs)
+MC_CC_TRY_OPTION(AM_CFLAGS,     -fno-cond-mismatch)
+MC_CC_TRY_OPTION(BOTHCCXXFLAGS, -Wmissing-declarations)
+MC_CC_TRY_OPTION(BOTHCCXXFLAGS, -Wpointer-arith)
+MC_CC_TRY_OPTION(BOTHCCXXFLAGS, -Wredundant-decls)
+MC_CC_TRY_OPTION(BOTHCCXXFLAGS, -Werror=format-security)
+MC_CXX_TRY_OPTION(AM_CXXFLAGS,  -Wsign-promo)
+MC_CXX_TRY_OPTION(AM_CXXFLAGS,  -Woverloaded-virtual)
+MC_CC_TRY_OPTION(BOTHCCXXFLAGS, -rdynamic)
+MC_CC_TRY_OPTION(BOTHCCXXFLAGS, -pipe)
+MC_CC_TRY_OPTION(BOTHCCXXFLAGS, -O2)
+MC_CC_TRY_OPTION(BOTHCCXXFLAGS, -ftracer)
+MC_CC_TRY_OPTION(BOTHCCXXFLAGS, -mcx16)
+dnl # MC_CXX_TRY_OPTION(AM_CXXFLAGS,  -Wno-invalid-offsetof)
+MC_EVAR_ADD(AM_CFLAGS,   "$BOTHCCXXFLAGS")
+MC_EVAR_ADD(AM_CXXFLAGS, "$BOTHCCXXFLAGS")
+AC_SUBST(AM_CFLAGS)
+AC_SUBST(AM_CXXFLAGS)
+AC_SUBST(AM_CPPFLAGS)
+
+# == CPU Optimizations ==
+# MMX and SSE instruction sets have been introduced way more than a decade ago:
+# Intel Pentium 3: CMOV MMX SSE (1999)
+# VIA C3 Nehemiah: CMOV MMX SSE (2003)
+# Athlon Palomino: CMOV MMX SSE 3DNow (2001)
+MMX_SSE_FLAGS=
+MC_CC_TRY_OPTION(MMX_SSE_FLAGS, -mmmx)
+MC_CC_TRY_OPTION(MMX_SSE_FLAGS, -msse)
+# Note, -mfpmath=sse can harm FPU-algorithm performance
+# Note, -funroll-loops can harm SSE loop performance
+#MC_CC_TRY_OPTION(MMX_SSE_FLAGS, -funroll-loops)
+#AC_SUBST(MMX_SSE_FLAGS)
+# Expect the target architecture to support MMX/SSE if the compiler does it.
+MC_EVAR_ADD(AM_CFLAGS,   "$MMX_SSE_FLAGS")
+MC_EVAR_ADD(AM_CXXFLAGS, "$MMX_SSE_FLAGS")
+# Newer vectorization instruction sets, should be optionally supported
+# SSE >= 2, AVX
+SSEAVX_FLAGS=
+MC_CC_TRY_OPTION(SSEAVX_FLAGS, -msse2)
+MC_CC_TRY_OPTION(SSEAVX_FLAGS, -msse3)
+MC_CC_TRY_OPTION(SSEAVX_FLAGS, -mssse3)
+MC_CC_TRY_OPTION(SSEAVX_FLAGS, -msse4)
+MC_CC_TRY_OPTION(SSEAVX_FLAGS, -msse4.1)
+MC_CC_TRY_OPTION(SSEAVX_FLAGS, -msse4.2)
+MC_CC_TRY_OPTION(SSEAVX_FLAGS, -msse4a)
+MC_CC_TRY_OPTION(SSEAVX_FLAGS, -mavx)
+MC_CC_TRY_OPTION(SSEAVX_FLAGS, -mavx2)
+AC_SUBST(SSEAVX_FLAGS)
+
+# == OPTIMIZE_FAST ==
+# Some critical code paths should be optimized to run as fast as possible
+OPTIMIZE_FAST=
+MC_CC_TRY_OPTION(OPTIMIZE_FAST, -O3)
+MC_CC_TRY_OPTION(OPTIMIZE_FAST, -ftree-vectorize)
+MC_CC_TRY_OPTION(OPTIMIZE_FAST, -finline-functions)
+MC_CC_TRY_OPTION(OPTIMIZE_FAST, -minline-all-stringops)
+AC_SUBST(OPTIMIZE_FAST)
+
+# == Bse Plugin FLAGS ==
+# * -funroll-loops significantly boosts FPU performance
+# * -mfpmath=sse harms FPU-algorithm performance
+# * -funroll-loops harms SSE loop performance
+MC_CXX_TRY_OPTION(FAST_MATH_FLAGS, -ftree-loop-ivcanon)
+MC_CXX_TRY_OPTION(FAST_MATH_FLAGS, -ftree-loop-linear)
+MC_CXX_TRY_OPTION(FAST_MATH_FLAGS, -ftree-loop-im)
+MC_CXX_TRY_OPTION(FAST_MATH_FLAGS, -ffast-math)
+MC_CXX_TRY_OPTION(FAST_MATH_FLAGS, -fivopts)
+AC_SUBST(FAST_MATH_FLAGS)
+MC_CXX_TRY_OPTION(FPU_FLAGS, -funroll-loops)
+AC_SUBST(FPU_FLAGS)
+MMX_SSE_FLAGS="$MMX_SSE_FLAGS"
+AC_SUBST(MMX_SSE_FLAGS)
+
+# == SSE Build Conditionals ==
+lacking_mmx_sse=`echo "$MMX_SSE_FLAGS" | grep 'mmx.*sse' -q ; echo $?` # sh truth values: 1 (without sse) or 0 (with sse)
+AM_CONDITIONAL(WITH_MMX_SSE, test 0 == $lacking_mmx_sse)
+AC_DEFINE_UNQUOTED(BSE_WITH_MMX_SSE, [(0 == $lacking_mmx_sse)], [wether MMX and SSE are supported])
+
+# C & C++ idioms
 AC_C_CONST
 AC_C_INLINE
 AC_HEADER_STDC
 
-# == Compiler Flags ==
-MC_EVAR_ADD(CFLAGS, -Werror=format-security, -Werror=format-security)
-MC_EVAR_ADD(CXXFLAGS, -Werror=format-security, -Werror=format-security)
-MC_EVAR_ADD(CXXFLAGS, -std=gnu++0x, -std=gnu++0x -pthread)
-
 # Checks for programs
 AC_PROG_INSTALL
 AC_PROG_LN_S
-
-# initialize libtool, we need dynamic module support
-AC_LIBTOOL_DLOPEN
-AM_PROG_LIBTOOL
-
-# Check for package requirements.
-MC_IF_VAR_EQ(GCC, yes,,
-    AC_MSG_ERROR(This package requires GNU gcc)
-)
-MC_IF_VAR_EQ(GXX, yes,,
-    AC_MSG_ERROR(This package requires GNU g++)
-)
 
 # require pkg-config
 MC_ASSERT_PROG(PKG_CONFIG, pkg-config, [pkg-config can be found at http://www.freedesktop.org/software/pkgconfig/])
@@ -214,16 +305,13 @@ AC_DEFUN([AC_SFI_REQUIREMENTS],
     PKG_CHECK_MODULES(GLIB_GOMT, glib-2.0 >= 2.32.3 gobject-2.0 gmodule-no-export-2.0 gthread-2.0)
     AC_SUBST(GLIB_GOMT_CFLAGS)
     AC_SUBST(GLIB_GOMT_LIBS)
-    SFI_CFLAGS="$GLIB_GOMT_CFLAGS"
+    SFI_CPPFLAGS="$GLIB_GOMT_CFLAGS"
     SFI_LIBS="$GLIB_GOMT_LIBS"
-    AC_SUBST(SFI_CFLAGS)
+    AC_SUBST(SFI_CPPFLAGS)
     AC_SUBST(SFI_LIBS)
 
     AC_CHECK_FUNCS(getpwnam_r getpwnam)
     AC_CHECK_FUNCS(timegm)
-
-    dnl # --- toy profiler ---
-    AM_CONDITIONAL(IF_TOYPROF, test x"$enable_toyprof" = xyes)
 
     dnl # --- SFI directories ---
     sfidlstdincdir=${includedir}
@@ -231,12 +319,9 @@ AC_DEFUN([AC_SFI_REQUIREMENTS],
 ])
 AC_DEFUN([AC_BSE_REQUIREMENTS],
 [
-    dnl # --- BSE version ---
-    AC_DEFINE_UNQUOTED(BSE_VERSION, "$BSE_VERSION", [BSE Version])
-
     dnl # require Rapicorn
-    PKG_CHECK_MODULES(RAPICORN, rapicorn1307 >= 13.07.0)
-    MC_ASSERT_PROG(AIDACC, aidacc-1307, [aidacc gets shipped with Rapicorn])
+    PKG_CHECK_MODULES(RAPICORN, rapicorn1410 >= 14.10.0)
+    MC_ASSERT_PROG(AIDACC, aidacc-1410, [aidacc gets shipped with Rapicorn])
 
     dnl # --- Ogg/Vorbis check ---
     PKG_CHECK_MODULES(OV, ogg >= 1.2.2 vorbis >= 1.3.2 vorbisfile >= 1.3.2 vorbisenc >= 1.3.2)
@@ -283,7 +368,7 @@ AC_DEFUN([AC_BSE_REQUIREMENTS],
     fi
 
     dnl # --- complete CFLAGS/LIBS setup ---
-    BSE_CFLAGS="$MAD_CFLAGS $FLAC_CFLAGS $SFI_CFLAGS"
+    BSE_CFLAGS="$MAD_CFLAGS $FLAC_CFLAGS $SFI_CPPFLAGS"
     BSE_LIBS="$OV_LIBS $MAD_LIBS $FLAC_LIBS $SFI_LIBS"
     AC_SUBST(BSE_CFLAGS)
     AC_SUBST(BSE_LIBS)
@@ -324,28 +409,10 @@ AC_DEFUN([AC_BSE_REQUIREMENTS],
       AC_MSG_RESULT(no)
     ])
     AC_SUBST(SFI_HAVE_MUTEXATTR_SETTYPE)
-    
+
     dnl # --- math.h glibc extensions
     AC_CHECK_LIB(m, sincos,
       AC_DEFINE(HAVE_SINCOS, 1, [Define if you have the sincos function in <math.h>]))
-
-    # --- setup BSE PLUGIN flags ---
-    MC_PROG_CC_SPECIAL_FLAGS(PLUGIN_FLAGS, -ftree-loop-ivcanon -ftree-loop-linear -ftree-loop-im -fivopts -ffast-math)
-    AC_SUBST(PLUGIN_FLAGS)
-
-    # --- setup BSE FPU flags ---
-    # * -funroll-loops significantly boosts FPU performance
-    MC_PROG_CC_SPECIAL_FLAGS(FPU_FLAGS, -funroll-loops)
-    AC_SUBST(FPU_FLAGS)
-
-    # --- setup BSE SSE flags ---
-    # * -mfpmath=sse harms FPU-algorithm performance
-    # * -funroll-loops harms SSE loop performance
-    MC_PROG_CC_SPECIAL_FLAGS(SSE_FLAGS, -mmmx -msse -ftree-vectorize)
-    AC_SUBST(SSE_FLAGS)
-    not_with_sse_value=`echo "$SSE_FLAGS" | grep 'mmx.*sse' -q ; echo $?` # sh truth value: 1 (without sse) or 0 (with sse)
-    AM_CONDITIONAL(WITH_SSE_FLAGS, test 0 == $not_with_sse_value)
-    AC_DEFINE_UNQUOTED(BSE_WITH_SSE_FLAGS, [(0 == $not_with_sse_value)], [wether SSE_FLAGS are defined])
 
     # --- setup BSE search/install paths ---
     bseplugindir=\${libdir}/bse/v$BIN_VERSION/plugins
@@ -491,22 +558,6 @@ AC_DEFUN([AC_BEAST_REQUIREMENTS],
     CFLAGS=$cflags
     LDFLAGS=$ldflags
 
-    # BEAST version
-    AC_DEFINE_UNQUOTED(BST_VERSION, "$BST_VERSION", [BEAST Version])
-    BST_VERSION_STABLE=0
-    case "$BST_VERSION" in
-    0.99.*)     BST_VERSION_HINT=BETA ;;
-    0.*)        BST_VERSION_HINT="ALPHA" ;;
-    *)          if test `expr $BSE_MINOR_VERSION \% 2` = 1 ; then
-                  BST_VERSION_HINT="Development Branch"
-                else
-		  BST_VERSION_STABLE=1
-	 	  BST_VERSION_HINT="Stable Branch"
-	        fi ;;
-    esac
-    AC_DEFINE_UNQUOTED(BST_VERSION_HINT, "$BST_VERSION_HINT", [Version classification])
-    AC_DEFINE_UNQUOTED(BST_VERSION_STABLE, $BST_VERSION_STABLE, [On stable branch?])
-
     # --- BEAST paths ---
     beastbasedir=\${datadir}/beast
     beastimagesdir=$beastbasedir/v$BIN_VERSION/images
@@ -599,20 +650,30 @@ AC_DEFUN([AC_DOC_REQUIREMENTS],
 # find installation utilities
 AC_PATH_PROG(UPDATE_MIME_DATABASE, update-mime-database)
 
-# check for maintainer mode tools
-AC_CHECK_PROGS(XMLLINT, xmllint)
-# check for maintainer/development build rules
-AC_MSG_CHECKING(whether maintainer and develoment build rules are to be used)
-if test x"$enable_maintainer_mode" = xyes ; then
-    AC_MSG_RESULT(yes)
-    AC_CHECK_PROGS(PYTHON, python2.4 python)
-    if test -z "$PYTHON" || $PYTHON -c "import sys; sys.exit (sys.hexversion >= 0x20401f0)" 2>/dev/null ; then
-	AC_MSG_ERROR([failed to detect python (version >= 2.4.1) required for maintainer mode])
-    fi
-    test -z "$XMLLINT" && { AC_MSG_ERROR([failed to detect xmllint required for maintainer mode]); }
+# --enable-devel-mode: check for development build rules, i.e. autogen.sh
+# based builds with .git repository; these enable additional build rules
+# for files that are pre-packaged in tarballs.
+if test x"$enable_devel_mode" = xyes ; then
+  TEST_SRCDIR=$(cd $srcdir ; /bin/pwd)
+  TEST_BUILDDIR=$(cd . ; /bin/pwd)
+  test "$TEST_SRCDIR" == "$TEST_BUILDDIR" || {
+    AC_MSG_ERROR([development build rules require srcdir == builddir])
+  }
+  git cat-file commit af82337c966c1182e 2>&1 | fgrep -q bb4f6e48724a6731 || { # 0.8.0
+    AC_MSG_ERROR([development build rules require a beast.git repository])
+  }
+  DEVELMODE="" ; NOTDEVELMODE="#"
+  # devel mode build tools
+  MC_ASSERT_PROG(XMLLINT, xmllint, [See: http://xmlsoft.org/xmllint.html])
+  MC_ASSERT_PROG(PYTHON, python2.7)
+  if test -z "$PYTHON" || $PYTHON -c "import sys; sys.exit (sys.hexversion >= 0x2070500)" 2>/dev/null ; then
+     AC_MSG_ERROR([failed to detect python (version >= 2.7.5) required for development mode])
+  fi
 else
-    AC_MSG_RESULT(no)
+  DEVELMODE="#"; NOTDEVELMODE=""
 fi
+AC_SUBST(DEVELMODE)
+AC_SUBST(NOTDEVELMODE)
 
 AC_MSG_CHECKING(whether source dir equals build dir)
 TEST_SRCDIR=`cd $srcdir ; /bin/pwd`
@@ -646,13 +707,6 @@ AC_GXK_REQUIREMENTS
 AC_BEAST_REQUIREMENTS
 AC_SUIDMAIN_REQUIREMENTS
 AC_DOC_REQUIREMENTS
-
-# Decide on global --no-undefined linking
-# we only force all libraries and symbols to be present for development builds,
-# except for when building with toyprof which uses the GLIBC symbol _r_debug.
-if test x"$enable_maintainer_mode" = xyes -a x"$enable_toyprof" != xyes ; then
-	MC_EVAR_ADD(LDFLAGS, --no-undefined, -Xlinker --no-undefined)
-fi
 
 # Automake @VARIABLE@ exports.
 AC_SUBST(CFLAGS)

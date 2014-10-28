@@ -81,7 +81,7 @@ key_bindings_load_file (GtkWidget   *dialog,
 
 static void
 key_bindings_exec_action (gpointer data,
-                          gulong   action)
+                          size_t   action)
 {
   GtkWidget *self = GTK_WIDGET (data);
   BstKeyBinding *kbinding = (BstKeyBinding*) g_object_get_data ((GObject*) self, "BstKeyBinding");
@@ -117,7 +117,7 @@ key_bindings_exec_action (gpointer data,
       if (valid)
         {
           kbinding->keys = (BstKeyBindingKey*) g_realloc (kbinding->keys, sizeof (kbinding->keys[0]) * (kbinding->n_keys + 1));
-          g_memmove (kbinding->keys + nb + 1,
+          memmove (kbinding->keys + nb + 1,
                      kbinding->keys + nb,
                      sizeof (kbinding->keys[0]) * (kbinding->n_keys - nb));
           kbinding->n_keys++;
@@ -205,7 +205,7 @@ key_bindings_exec_action (gpointer data,
           if (nth < kbinding->n_keys)
             {
               kbinding->n_keys--;
-              g_memmove (kbinding->keys + nth,
+              memmove (kbinding->keys + nth,
                          kbinding->keys + nth + 1,
                          sizeof (kbinding->keys[0]) * (kbinding->n_keys - nth));
               gxk_list_wrapper_notify_delete (GXK_LIST_WRAPPER (model), nth);
@@ -232,7 +232,7 @@ key_bindings_exec_action (gpointer data,
 
 static gboolean
 key_bindings_check_action (gpointer data,
-                           gulong   action,
+                           size_t   action,
                            guint64  action_stamp)
 {
   GtkWidget *self = GTK_WIDGET (data);

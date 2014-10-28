@@ -4,6 +4,7 @@
       Birnet::*; vtable*Birnet::*; typeinfo*Birnet::*;
       Bse::*;    vtable*Bse::*;    typeinfo*Bse::*;
       Sfi::*;    vtable*Sfi::*;    typeinfo*Sfi::*;
+      Rapicorn*::Aida::enum_value_list*;
     };
     birnet_*;
     bse_*;

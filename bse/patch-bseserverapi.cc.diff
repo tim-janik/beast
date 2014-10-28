@@ -1,0 +1,23 @@
+--- xgen-bseserverapi.cc
++++ xgen-bseserverapi.cc
+@@ -71,1 +71,1 @@ interface_to_remote_handle ($AIDA_iface_base$ *ibase)
+-  cs_con->cast_interface_handle (target, Rapicorn::BaseObject::shared_ptr (ibase));
++  cs_con->cast_interface_handle (target, ibase ? ibase->shared_from_this() : ImplicitBaseP());
+@@ -78,1 +78,1 @@ field_buffer_add_interface (Rapicorn::Aida::FieldBuffer
+-  server_connection->add_interface (fb, Rapicorn::BaseObject::shared_ptr (instane));
++  server_connection->add_interface (fb, instane ? instane->shared_from_this() : ImplicitBaseP());
+@@ -136,12 +136,14 @@
++#if 0
+ static void operator<<= (Rapicorn::Aida::FieldBuffer &fb, const Rapicorn::Aida::Any &v);
+ static void operator>>= (Rapicorn::Aida::FieldReader &fr, Rapicorn::Aida::Any &v);
+ static void
+ operator<<= (Rapicorn::Aida::FieldBuffer &fb, const Rapicorn::Any &v)
+ {
+   fb.add_any (v, *__AIDA_Local__::server_connection);
+ }
+ static void
+ operator>>= (Rapicorn::Aida::FieldReader &fr, Rapicorn::Any &v)
+ {
+   v = fr.pop_any (*__AIDA_Local__::server_connection);
+ }
++#endif

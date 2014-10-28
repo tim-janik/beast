@@ -1286,7 +1286,7 @@ public:
     printf ("\n/*-------- begin %s generated code --------*/\n\n\n", Options::the()->sfidlName.c_str());
 
     /* standard includes */
-    printf ("\n#include <bse/bsecxxplugin.hh>\n");
+    printf ("\n#include <bse/bse-internals.hh>\n");
 
     /* reset auxillary structures */
     images.resize (0);

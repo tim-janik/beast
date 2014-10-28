@@ -15,7 +15,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast HEAD\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-07-05 23:14+0200\n"
+"POT-Creation-Date: 2014-10-28 14:17+0100\n"
 "PO-Revision-Date: 2005-03-31 20:55-0700\n"
 "Last-Translator: Steve Murphy <murf@e-tools.com>\n"
 "Language-Team: Kinyarwanda <translation-team-rw@lists.sourceforge.net>\n"
@@ -25,13 +25,13 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "ULL NAME <EMAIL@ADDRESS>\n"
 
-#: bse/bsemain.cc:222
+#: bse/bsemain.cc:218
 msgid ""
 "\n"
 "Available MIDI drivers:\n"
 msgstr ""
 
-#: bse/bsemain.cc:220
+#: bse/bsemain.cc:216
 msgid ""
 "\n"
 "Available PCM drivers:\n"
@@ -1077,7 +1077,7 @@ msgstr ""
 "Iyinjiza Modire ni in Gukoresha i APAREYE OYA in Ubwoko A ni Nka Iyinjiza "
 "Bya a Gicurasi Ibisubizo ku OYA Nka i Ibisohoka Kuri"
 
-#: beast-gtk/bstusermessage.cc:573
+#: beast-gtk/bstusermessage.cc:572
 #, c-format
 msgid "An error occoured during execution of script procedure '%s': %s"
 msgstr ""
@@ -1416,21 +1416,21 @@ msgstr "Umubare Bya ISEGONDA Bya Ukoresha: Igihe ku Urudodo"
 msgid "BEAST"
 msgstr ""
 
-#: beast-gtk/bstmain.cc:852
+#: beast-gtk/bstmain.cc:849
 msgid "BEAST About"
 msgstr ""
 
-#: beast-gtk/bstmain.cc:101
+#: beast-gtk/bstmain.cc:100
 msgid "BEAST Startup"
 msgstr ""
 
-#: beast-gtk/bstmain.cc:853
+#: beast-gtk/bstmain.cc:850
 #, c-format
 msgid "BEAST Version %s"
 msgstr ""
 
 #. start BSE core and connect
-#: beast-gtk/bstmain.cc:136
+#: beast-gtk/bstmain.cc:135
 msgid "BSE Core"
 msgstr ""
 
@@ -1631,7 +1631,7 @@ msgid "CPU%"
 msgstr "CPU"
 
 # crashrep/source\all\crashrep.lng:%CANCEL_BUTTON%.text
-#: beast-gtk/bstapp.cc:633
+#: beast-gtk/bstapp.cc:630
 #, fuzzy
 msgid "Cancel"
 msgstr "Kureka"
@@ -1672,7 +1672,7 @@ msgstr ""
 msgid "Change..."
 msgstr "Impinduka"
 
-#: beast-gtk/bstapp.cc:628
+#: beast-gtk/bstapp.cc:625
 #, c-format
 msgid ""
 "Changes were made to project \"%s\" since the last time it was saved to disk."
@@ -1748,7 +1748,7 @@ msgstr "i KIGEZWEHO Ihitamo"
 # basctl/source\basicide\moduldlg.src:RID_TP_MODULS.RID_PB_CLOSE.text
 # #-#-#-#-#  basctl.pot (PACKAGE VERSION)  #-#-#-#-#
 # basctl/source\basicide\moduldlg.src:RID_TP_LIBS.RID_PB_CLOSE.text
-#: beast-gtk/bstapp.cc:626
+#: beast-gtk/bstapp.cc:623
 #, fuzzy, c-format
 msgid "Close %s"
 msgstr "Gufunga"
@@ -1928,7 +1928,7 @@ msgstr "9"
 msgid "Continuous MIDI Control #1 - Bank Select"
 msgstr "1."
 
-#: beast-gtk/bstmain.cc:854
+#: beast-gtk/bstmain.cc:851
 #, fuzzy
 msgid "Contributions made by:"
 msgstr "ku"
@@ -2574,7 +2574,7 @@ msgstr "Icyita"
 msgid "Description"
 msgstr "Isobanuramiterere"
 
-#: beast-gtk/bstusermessage.cc:203
+#: beast-gtk/bstusermessage.cc:202
 msgid "Details:"
 msgstr "Isesengurabyose:"
 
@@ -2620,7 +2620,7 @@ msgid "Dial (Logarithmic)"
 msgstr ""
 
 #. listen to BseServer notification
-#: beast-gtk/bstmain.cc:221
+#: beast-gtk/bstmain.cc:220
 msgid "Dialogs"
 msgstr "Ibiganiro"
 
@@ -2647,7 +2647,7 @@ msgstr ""
 msgid "Direction"
 msgstr "Icyerekezo"
 
-#: beast-gtk/bstapp.cc:632
+#: beast-gtk/bstapp.cc:629
 msgid "Discard Changes"
 msgstr ""
 
@@ -2709,11 +2709,11 @@ msgstr "Incamake Bya Byose"
 msgid "Display developer and contributor credits"
 msgstr "Na"
 
-#: beast-gtk/bstusermessage.cc:411
+#: beast-gtk/bstusermessage.cc:410
 msgid "Display dialogs with debugging messages"
 msgstr ""
 
-#: beast-gtk/bstusermessage.cc:409
+#: beast-gtk/bstusermessage.cc:408
 msgid "Display dialogs with information messages"
 msgstr ""
 
@@ -2977,7 +2977,7 @@ msgstr ""
 msgid "Epsilon"
 msgstr "ebusiloni"
 
-#: beast-gtk/bstusermessage.cc:55
+#: beast-gtk/bstusermessage.cc:54
 #, fuzzy
 msgid "Error: "
 msgstr "Ikosa"
@@ -3071,7 +3071,7 @@ msgstr ""
 msgid "Executing '%s'"
 msgstr "Gukora: %s%s"
 
-#: beast-gtk/bstusermessage.cc:496
+#: beast-gtk/bstusermessage.cc:495
 #, c-format
 msgid "Executing procedure '%s' from script '%s'."
 msgstr ""
@@ -3084,7 +3084,7 @@ msgstr ""
 msgid "Exponential FM"
 msgstr ""
 
-#: beast-gtk/bstapp.cc:306
+#: beast-gtk/bstapp.cc:304
 msgid "Export Audio"
 msgstr ""
 
@@ -3134,23 +3134,23 @@ msgstr "Kuri Gutangira Bya Umutwempangano"
 msgid "Failed to duplicate part range."
 msgstr "Kuri Gutangira Bya Umutwempangano"
 
-#: beast-gtk/bstusermessage.cc:736
+#: beast-gtk/bstusermessage.cc:735
 #, fuzzy, c-format
 msgid "Failed to execute script procedure '%s': %s"
 msgstr "Kuri Gufungura Ibisohoka IDOSIYE"
 
-#: beast-gtk/bstmain.cc:306
+#: beast-gtk/bstmain.cc:305
 #, fuzzy, c-format
 msgid "Failed to load project \"%s\": %s"
 msgstr "Kuri Ibirimo Umushinga"
 
-#: beast-gtk/bstfiledialog.cc:765 beast-gtk/bstmain.cc:254
-#: beast-gtk/bstmain.cc:271
+#: beast-gtk/bstfiledialog.cc:765 beast-gtk/bstmain.cc:253
+#: beast-gtk/bstmain.cc:270
 #, fuzzy, c-format
 msgid "Failed to load wave file \"%s\": %s"
 msgstr "Kuri Ibirimo UMUVUMBA IDOSIYE"
 
-#: beast-gtk/bstmain.cc:312
+#: beast-gtk/bstmain.cc:311
 #, fuzzy, c-format
 msgid "Failed to merge project \"%s\": %s"
 msgstr "Kuri Ibirimo Umushinga"
@@ -3827,7 +3827,7 @@ msgid "Initial phase of the oscillator wave form (cycle offset in degree)"
 msgstr "Bya i UMUVUMBA Ifishi Uruziga Nta- boneza in Dogere"
 
 #. BEAST initialization
-#: beast-gtk/bstmain.cc:112
+#: beast-gtk/bstmain.cc:111
 msgid "Initializers"
 msgstr ""
 
@@ -4133,7 +4133,7 @@ msgstr ""
 msgid "LADSPA Path"
 msgstr ""
 
-#: beast-gtk/bstmain.cc:177
+#: beast-gtk/bstmain.cc:176
 msgid "LADSPA Plugins"
 msgstr ""
 
@@ -4379,12 +4379,12 @@ msgstr "Bivuye Ububiko"
 msgid "Load..."
 msgstr "Gutangiza..."
 
-#: beast-gtk/bstmain.cc:250 beast-gtk/bstmain.cc:252
+#: beast-gtk/bstmain.cc:249 beast-gtk/bstmain.cc:251
 #, fuzzy, c-format
 msgid "Loading \"%s\""
 msgstr "Itangira..."
 
-#: beast-gtk/bstapp.cc:785
+#: beast-gtk/bstapp.cc:782
 #, c-format
 msgid "Loading skin `%s'"
 msgstr ""
@@ -4394,7 +4394,7 @@ msgstr ""
 msgid "Loading wave `%s'"
 msgstr "UMUVUMBA"
 
-#: beast-gtk/bstmain.cc:230
+#: beast-gtk/bstmain.cc:229
 msgid "Loading..."
 msgstr "Itangira..."
 
@@ -4490,7 +4490,7 @@ msgstr "3."
 msgid "MIDI Signal 4"
 msgstr "4."
 
-#: beast-gtk/bstapp.cc:511
+#: beast-gtk/bstapp.cc:508
 #, c-format
 msgid "MIDI Synthesizer: %s"
 msgstr ""
@@ -4595,12 +4595,12 @@ msgstr "Umushinga"
 msgid "Message Type"
 msgstr ""
 
-#: beast-gtk/bstusermessage.cc:352
+#: beast-gtk/bstusermessage.cc:351
 #, fuzzy, c-format
 msgid "Message has been repeated %u time"
 msgstr "byasubiyemo Igihe"
 
-#: beast-gtk/bstusermessage.cc:352
+#: beast-gtk/bstusermessage.cc:351
 #, fuzzy, c-format
 msgid "Message has been repeated %u times"
 msgstr "byasubiyemo Times"
@@ -5231,7 +5231,7 @@ msgstr "Byanze"
 msgid "Open file browser"
 msgstr "IDOSIYE Mucukumbuzi"
 
-#: beast-gtk/bstapp.cc:718 beast-gtk/bstapp.cc:725
+#: beast-gtk/bstapp.cc:715 beast-gtk/bstapp.cc:722
 #: beast-gtk/bstfiledialog.cc:417 beast-gtk/bstfiledialog.cc:423
 #, fuzzy, c-format
 msgid "Opening project `%s'"
@@ -5268,7 +5268,7 @@ msgid "Orientation"
 msgstr "Icyerekezo"
 
 # shell/source\win32\shlxthandler\shlxthdl.lng:%ORIGIN%.text
-#: beast-gtk/bstusermessage.cc:220
+#: beast-gtk/bstusermessage.cc:219
 #, fuzzy, c-format
 msgid "Origin:  %s\n"
 msgstr "Inkomoko"
@@ -5403,7 +5403,7 @@ msgstr "Ubutumwa Ibyerekeye APAREYE"
 msgid "PCM recording errors"
 msgstr "IDOSIYE Amakosa"
 
-#: beast-gtk/bstusermessage.cc:222
+#: beast-gtk/bstusermessage.cc:221
 #, c-format
 msgid "PID:     %u\n"
 msgstr ""
@@ -5606,7 +5606,7 @@ msgstr ""
 msgid "Plugin Path"
 msgstr ""
 
-#: beast-gtk/bstmain.cc:158
+#: beast-gtk/bstmain.cc:157
 msgid "Plugins"
 msgstr ""
 
@@ -5656,7 +5656,7 @@ msgstr ""
 
 # extracted from content/PrefsWindow.xul
 # LOCALIZATION NOTE : FILE UI for the outer parts of the Prefs dialog
-#: beast-gtk/bstapp.cc:970
+#: beast-gtk/bstapp.cc:967
 msgid "Preferences"
 msgstr "Ibyahisemo"
 
@@ -5671,7 +5671,7 @@ msgstr ""
 msgid "Preview"
 msgstr "Igaragazambere"
 
-#: beast-gtk/bstapp.cc:997
+#: beast-gtk/bstapp.cc:994
 msgid "Procedure Browser"
 msgstr ""
 
@@ -5699,14 +5699,14 @@ msgstr "Byanze"
 msgid "Procedure parameter invalid"
 msgstr "Sibyo"
 
-#: beast-gtk/bstusermessage.cc:216 beast-gtk/bstusermessage.cc:500
+#: beast-gtk/bstusermessage.cc:215 beast-gtk/bstusermessage.cc:499
 #, fuzzy, c-format
 msgid ""
 "Procedure: %s\n"
 "Script: %s\n"
 msgstr "Irahuze"
 
-#: beast-gtk/bstusermessage.cc:218
+#: beast-gtk/bstusermessage.cc:217
 #, c-format
 msgid "Process: %s\n"
 msgstr ""
@@ -5933,7 +5933,7 @@ msgid ""
 msgstr ""
 
 #. parse rc file
-#: beast-gtk/bstmain.cc:120
+#: beast-gtk/bstmain.cc:119
 msgid "RC Files"
 msgstr ""
 
@@ -5946,7 +5946,7 @@ msgid "Rack Editor"
 msgstr ""
 
 #. FIXME: undo Edit when hide && GXK_DIALOG_HIDE_ON_DELETE
-#: beast-gtk/bstapp.cc:956
+#: beast-gtk/bstapp.cc:953
 #, fuzzy
 msgid "Rack editor"
 msgstr "Muhinduzi"
@@ -6322,7 +6322,7 @@ msgid "Save As Instrument..."
 msgstr "Kubika"
 
 # basctl/source\basicide\basidesh.src:RID_STR_SAVE.text
-#: beast-gtk/bstapp.cc:631
+#: beast-gtk/bstapp.cc:628
 #, fuzzy
 msgid "Save Changes"
 msgstr "Kubika"
@@ -6353,7 +6353,7 @@ msgstr "Kubika Kuri Ingaruka Ububiko"
 msgid "Save synthesizer mesh to instruments folder"
 msgstr "Kubika Kuri Ububiko"
 
-#: beast-gtk/bstapp.cc:630
+#: beast-gtk/bstapp.cc:627
 msgid "Save the project before closing its window?"
 msgstr ""
 
@@ -6382,11 +6382,11 @@ msgstr "Umushinga"
 msgid "Script Path"
 msgstr ""
 
-#: beast-gtk/bstusermessage.cc:574 beast-gtk/bstusermessage.cc:737
+#: beast-gtk/bstusermessage.cc:573 beast-gtk/bstusermessage.cc:736
 msgid "Script execution error."
 msgstr ""
 
-#: beast-gtk/bstmain.cc:205
+#: beast-gtk/bstmain.cc:204
 msgid "Scripts"
 msgstr "Inyandikoporogaramu"
 
@@ -6655,7 +6655,7 @@ msgstr ""
 msgid "Show Info"
 msgstr ""
 
-#: beast-gtk/bstusermessage.cc:764
+#: beast-gtk/bstusermessage.cc:763
 #, fuzzy, c-format
 msgid "Show messages about %s"
 msgstr "Ubutumwa Ibyerekeye"
@@ -6773,7 +6773,7 @@ msgstr "Mute Byose Ikindi"
 msgid "Song"
 msgstr ""
 
-#: beast-gtk/bstapp.cc:506
+#: beast-gtk/bstapp.cc:503
 #, c-format
 msgid "Song: %s"
 msgstr ""
@@ -6792,7 +6792,7 @@ msgid "Spin Button (Logarithmic)"
 msgstr ""
 
 #. show splash images
-#: beast-gtk/bstmain.cc:124
+#: beast-gtk/bstmain.cc:123
 msgid "Splash Image"
 msgstr ""
 
@@ -6887,7 +6887,7 @@ msgstr "Gutangira..."
 msgid "Starting Playback"
 msgstr ""
 
-#: beast-gtk/bstmain.cc:108
+#: beast-gtk/bstmain.cc:107
 msgid "Startup"
 msgstr ""
 
@@ -7091,7 +7091,7 @@ msgstr ""
 msgid "Synthesizer Selection: %s"
 msgstr ""
 
-#: beast-gtk/bstapp.cc:516
+#: beast-gtk/bstapp.cc:513
 #, c-format
 msgid "Synthesizer: %s"
 msgstr ""
@@ -7288,7 +7288,7 @@ msgstr ""
 "Umuyoboro Izina: ni a Cyo nyine Izina: Kuri Iyinjiza Ibisohoka Umuyoboro "
 "Amasano..."
 
-#: beast-gtk/bstapp.cc:627
+#: beast-gtk/bstapp.cc:624
 msgid "The project has been modified."
 msgstr ""
 
@@ -7380,7 +7380,7 @@ msgid ""
 "currently using the Master Bus as output."
 msgstr ""
 
-#: beast-gtk/bstusermessage.cc:254
+#: beast-gtk/bstusermessage.cc:253
 #, fuzzy
 msgid ""
 "This setting can be changed in the \"Messages\" section of the preferences "
@@ -7840,7 +7840,7 @@ msgstr ""
 msgid "Wave Output"
 msgstr ""
 
-#: beast-gtk/bstapp.cc:501
+#: beast-gtk/bstapp.cc:498
 msgid "Wave Repository"
 msgstr ""
 
@@ -7859,7 +7859,7 @@ msgstr "Nka Inkomoko"
 msgid "Wave_s"
 msgstr ""
 
-#: beast-gtk/bstapp.cc:499 beast-gtk/bstsupershell.cc:217
+#: beast-gtk/bstapp.cc:496 beast-gtk/bstsupershell.cc:217
 msgid "Waves"
 msgstr ""
 
@@ -8585,7 +8585,7 @@ msgid "killed by janitor"
 msgstr ""
 
 # svtools/source\dialogs\prnsetup.src:STR_SVT_PRNDLG_PROCESSING.text
-#: beast-gtk/bstusermessage.cc:548 beast-gtk/bstusermessage.cc:550
+#: beast-gtk/bstusermessage.cc:547 beast-gtk/bstusermessage.cc:549
 #, fuzzy
 msgid "processing"
 msgstr "Inonosora"

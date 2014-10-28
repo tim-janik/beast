@@ -884,7 +884,7 @@ snet_router_tool2text (BstSNetRouter *self)
 
 static void
 snet_router_action_exec (gpointer        user_data,
-                         gulong          action_id)
+                         size_t          action_id)
 {
   BstSNetRouter *self = BST_SNET_ROUTER (user_data);
   GnomeCanvas *canvas = GNOME_CANVAS (self);

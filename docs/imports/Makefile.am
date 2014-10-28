@@ -26,13 +26,13 @@ check-tools:
 
 # = Tagfile Imports =
 tagfile-rapicorn.xml:
-	$(Q) wget --progress=dot --output-document=- http://dev.testbit.eu/rapicorn/latest/tagfile.xml > xtmp-${@F}
+	$(Q) wget --progress=dot --output-document=- http://testbit.eu/pub/docs/rapicorn/latest/tagfile.xml > xtmp-${@F}
 	$(Q) mv xtmp-${@F} $@
 
 # = MANMANS =
 %.1 %.5:
 	$(AM_V_GEN)
-	$(Q) wikihtml2man "http://testbit.eu/$(@F)?action=render" > xtmp-$(@F)
+	$(Q) wikihtml2man "http://testbit.eu/wiki/$(@F)?action=render" > xtmp-$(@F)
 	$(Q) mv xtmp-$(@F) $@
 	$(Q) rm -rf xtmp-$(@F)
 
@@ -53,7 +53,7 @@ STEMTMP = xtmp-$(*F)
 	$(Q) rm -rf $(STEMTMP)
 	$(Q) mkdir $(STEMTMP)
 	$(Q) : # wget -k needs the final target name
-	$(Q) cd $(STEMTMP) && wget -nv -k --no-cache "http://testbit.eu/$(@F:.html=)?action=render" -O $(@F)
+	$(Q) cd $(STEMTMP) && wget -nv -k --no-cache "http://testbit.eu/wiki/$(@F:.html=)?action=render" -O $(@F)
 	$(Q) TITLE="$(@F:.html=)" && echo ${HEADER} > $(STEMTMP)/header
 	$(Q) echo ${FOOTER} > $(STEMTMP)/footer
 	$(Q) cat $(STEMTMP)/header $(STEMTMP)/$(@F) $(STEMTMP)/footer > $(STEMTMP)/combined

@@ -3,9 +3,9 @@ include $(top_srcdir)/Makefile.decl
 
 SUBDIRS = icons . freeverb # evaluator
 
-INCLUDES    += -I$(top_srcdir) -I.
+AM_CPPFLAGS += -I$(top_srcdir) -I.
 DEFS        += @DEFINE__FILE_DIR__@ -DG_LOG_DOMAIN="\"$(strip $(basename $(<F)))\""
-AM_CXXFLAGS  = $(BSE_CFLAGS) $(RAPICORN_CFLAGS) -DRAPICORN_CONVENIENCE -D_BIRNET_SOURCE_EXTENSIONS
+AM_CXXFLAGS += $(BSE_CFLAGS) $(RAPICORN_CFLAGS) -DRAPICORN_CONVENIENCE -D_BIRNET_SOURCE_EXTENSIONS
 
 # == IDL C++ Plugins ==
 idl_plugins = $(strip			\
@@ -38,12 +38,12 @@ cxx_plugin_sources = bseadder.cc bseatandistort.cc bsesimpleadsr.cc bsemixer.cc 
 cxx_plugin_extra   = bsesimpleadsr-aux.cc
 EXTRA_DIST        += $(cxx_plugin_headers) $(cxx_plugin_extra)
 cxxplugins_FPU_la_SOURCES  = $(cxx_plugin_sources)
-cxxplugins_FPU_la_LDFLAGS  = -module $(plugins_ldflags)
+cxxplugins_FPU_la_LDFLAGS  = $(AM_LDFLAGS) -module $(plugins_ldflags)
 cxxplugins_FPU_la_LIBADD   = $(plugins_libs)
 cxxplugins_FPU_la_CFLAGS   = $(FPU_PLUGIN_CFLAGS)
 cxxplugins_FPU_la_CXXFLAGS = $(FPU_PLUGIN_CXXFLAGS)
 cxxplugins_SSE_la_SOURCES  = $(cxx_plugin_sources)
-cxxplugins_SSE_la_LDFLAGS  = -module $(plugins_ldflags)
+cxxplugins_SSE_la_LDFLAGS  = $(AM_LDFLAGS) -module $(plugins_ldflags)
 cxxplugins_SSE_la_LIBADD   = $(plugins_libs)
 cxxplugins_SSE_la_CFLAGS   = $(SSE_PLUGIN_CFLAGS)
 cxxplugins_SSE_la_CXXFLAGS = $(SSE_PLUGIN_CXXFLAGS)
@@ -69,9 +69,9 @@ FPU_PLUGIN_CXXFLAGS	  = $(AM_CXXFLAGS) $(PLUGIN_FLAGS) $(FPU_FLAGS)
 plugin_SSE_ltlibs	  =	# listed in Makefile.plugins
 plugin_SSE_LTLIBRARIES	  = $(plugin_SSE_cond_libs) cxxplugins.SSE.la
 plugin_SSEdir		  = $(bseplugindir)
-SSE_PLUGIN_CFLAGS	  = $(AM_CFLAGS) $(PLUGIN_FLAGS) $(SSE_FLAGS)
-SSE_PLUGIN_CXXFLAGS	  = $(AM_CXXFLAGS) $(PLUGIN_FLAGS) $(SSE_FLAGS)
-if WITH_SSE_FLAGS
+SSE_PLUGIN_CFLAGS	  = $(AM_CFLAGS) $(PLUGIN_FLAGS) $(MMX_SSE_FLAGS)
+SSE_PLUGIN_CXXFLAGS	  = $(AM_CXXFLAGS) $(PLUGIN_FLAGS) $(MMX_SSE_FLAGS)
+if WITH_MMX_SSE
 plugin_SSE_cond_libs	  = $(plugin_SSE_ltlibs)
 else
 plugin_SSE_cond_libs	  =
@@ -80,7 +80,7 @@ endif
 # === CoreHook plugin ===
 plugin_SSE_ltlibs            += bseblockutils.SSE.la
 bseblockutils_SSE_la_SOURCES  = bseblockutils.cc
-bseblockutils_SSE_la_LDFLAGS  = -module $(plugins_ldflags)
+bseblockutils_SSE_la_LDFLAGS  = $(AM_LDFLAGS) -module $(plugins_ldflags)
 bseblockutils_SSE_la_LIBADD   = $(plugins_libs)
 bseblockutils_SSE_la_CXXFLAGS = $(SSE_PLUGIN_CXXFLAGS)
 
@@ -92,7 +92,7 @@ include Makefile.plugins
 ##plugins_built_sources += bsefoo.genidl.hh
 ##plugin_FPU_ltlibs     += bsefoo.FPU.la
 ##bsefoo_FPU_la_SOURCES  = bsefoo.cc
-##bsefoo_FPU_la_LDFLAGS  = -module $(plugins_ldflags)
+##bsefoo_FPU_la_LDFLAGS  = $(AM_LDFLAGS) -module $(plugins_ldflags)
 ##bsefoo_FPU_la_LIBADD   = $(plugins_libs)
 ##bsefoo_FPU_la_CXXFLAGS = $(FPU_PLUGIN_CXXFLAGS)
 .PHONY: refresh-Makefile.plugins
@@ -107,12 +107,12 @@ refresh-Makefile.plugins: Makefile.am Makefile.in Makefile
 	    echo "plugin_FPU_ltlibs          += $$libname.FPU.la"		  >>xgen-$(@F)	;\
 	    echo "$$libname"'_FPU_la_SOURCES  ='				  >>xgen-$(@F)	;\
 	    echo "$$libname"'_FPU_la_CXXFLAGS = $$(FPU_PLUGIN_CXXFLAGS)'	  >>xgen-$(@F)	;\
-	    echo "$$libname"'_FPU_la_LDFLAGS  = -module $$(plugins_ldflags)'	  >>xgen-$(@F)	;\
+	    echo "$$libname"'_FPU_la_LDFLAGS  = $$(AM_LDFLAGS) -module $$(plugins_ldflags)'	  >>xgen-$(@F)	;\
 	    echo "$$libname"'_FPU_la_LIBADD   = $$(plugins_libs)'		  >>xgen-$(@F)	;\
 	    echo "plugin_SSE_ltlibs          += $$libname.SSE.la"		  >>xgen-$(@F)	;\
 	    echo "$$libname"'_SSE_la_SOURCES  = $$('"$$libname"'_FPU_la_SOURCES)' >>xgen-$(@F)	;\
 	    echo "$$libname"'_SSE_la_CXXFLAGS = $$(SSE_PLUGIN_CXXFLAGS)'	  >>xgen-$(@F)	;\
-	    echo "$$libname"'_SSE_la_LDFLAGS  = $$('"$$libname"'_FPU_la_LDFLAGS)' >>xgen-$(@F)	;\
+	    echo "$$libname"'_SSE_la_LDFLAGS  = $$(AM_LDFLAGS) $$('"$$libname"'_FPU_la_LDFLAGS)' >>xgen-$(@F)	;\
 	    echo "$$libname"'_SSE_la_LIBADD   = $$('"$$libname"'_FPU_la_LIBADD)'  >>xgen-$(@F)	;\
 	    continue										;\
 	  }											;\

@@ -1,4 +1,18 @@
-Overview of Changes in BEAST/BSE 0.8.2:
+Overview of Changes in BEAST/BSE 0.9.0:		(2014-10-28)
+
+* Fixed missing includes. [stw]
+* Updates to build with Rapicorn1410.
+* Work around GClosure API breakages in GLib.
+* Work around GLib API deprecations.
+* Remove old autotools and libtool workarounds.
+* Updates to compile with g++-4.9.1.
+* Fix issues on 32bit platforms.
+* Optimize ELF relocations.
+* Dependency update to Python 2.7.5.
+* Updates to the manual pages.
+* Improved utilization of compiler vectorizations.
+
+Overview of Changes in BEAST/BSE 0.8.2:		(2013-07-06)
 
 * Introduced Rapicorn1307 dependency.
 * Establish Aida remote interfacing between Beast and BSE.

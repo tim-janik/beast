@@ -1,9 +1,9 @@
 # BSE - Better Sound Engine
 include $(top_srcdir)/Makefile.decl
 
-INCLUDES    += -I$(top_srcdir) -I$(top_builddir) -I$(srcdir) -I.
+AM_CPPFLAGS += -I$(top_srcdir) -I$(top_builddir) -I$(srcdir) -I.
 DEFS        += @DEFINE__FILE_DIR__@ -DG_LOG_DOMAIN="\"BSE-TEST\"" # -DG_DISABLE_CONST_RETURNS
-AM_CXXFLAGS  = $(SFI_CFLAGS) $(RAPICORN_CFLAGS) -DRAPICORN_CONVENIENCE
+AM_CXXFLAGS += $(SFI_CPPFLAGS) $(RAPICORN_CFLAGS) -DRAPICORN_CONVENIENCE
 
 # IDL Compiler
 SFIDL     = $(top_builddir)/sfi/sfidl
@@ -19,7 +19,7 @@ BSESCM    = $(top_builddir)/shell/bsescm-$(BIN_VERSION)
 #
 # bselatencytest:
 bselatencytest_la_SOURCES = bselatencytest.cc
-bselatencytest_la_LDFLAGS = -module -avoid-version
+bselatencytest_la_LDFLAGS = $(AM_LDFLAGS) -module -avoid-version
 bselatencytest_la_LIBADD  = $(top_builddir)/bse/libbse.la $(RAPICORN_LIBS) $(BSE_LIBS) -lm
 EXTRA_HEADERS += bselatencytest.idl
 $(srcdir)/bselatencytest.cc: bselatencytest.idl

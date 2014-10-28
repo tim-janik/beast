@@ -7,12 +7,9 @@ SUBDIRS = icons zintern . tests
 # need -I$(top_builddir) for <sfi/sficonfig.h>
 # need -I$(srcdir) for "bseserver.hh" in .genprc.cc
 # need -I. (builddir) for "bsebasics.genidl.hh" in bsebasics.cc
-INCLUDES += -I$(top_srcdir) -I$(top_builddir) -I$(srcdir) -I.
-DEFS     += @DEFINE__FILE_DIR__@ $(strip \
-	$(patsubst %, -DG_LOG_DOMAIN=\"BSE\" -DBSE_COMPILATION, \
-	              $(filter $(<F), $(bse_sources) $(bse_sources))) \
-)
-AM_CXXFLAGS  = $(BSE_CFLAGS) $(RAPICORN_CFLAGS) -DRAPICORN_CONVENIENCE -DG_DISABLE_DEPRECATED -DG_DISABLE_CONST_RETURNS
+AM_CPPFLAGS += -I$(top_srcdir) -I$(top_builddir) -I$(srcdir) -I.
+DEFS        += @DEFINE__FILE_DIR__@ $(patsubst %, -DG_LOG_DOMAIN=\"BSE\" -DBSE_COMPILATION, $(filter $(<F), $(bse_sources) $(bse_sources))) 
+AM_CXXFLAGS  += $(BSE_CFLAGS) $(RAPICORN_CFLAGS) -DRAPICORN_CONVENIENCE -DG_DISABLE_DEPRECATED -DG_DISABLE_CONST_RETURNS
 AIDACC_VDEBUG = $(AIDACC) $(if $(findstring 1, $(V)), --aida-debug)
 
 #
@@ -36,6 +33,7 @@ bse_public_headers = $(strip \
 	bsebus.hh		bsecategories.hh 	\
 	bsefilter.hh    		bsebiquadfilter.hh	\
 	bseconstant.hh		bseconstvalues.hh	bsecontainer.hh			bsecontextmerger.hh \
+	bseclientapi.hh		\
 	bsedatapocket.hh		bseeditablesample.hh	bseenums.hh			bsegconfig.hh \
 	bseglobals.hh		bseglue.hh		bseitem.hh			bsejanitor.hh \
 	bsemain.hh		bsemath.hh		bsemathsignal.hh			bseladspa.hh \
@@ -129,10 +127,8 @@ EXTRA_DIST += $(strip \
 	bsewave.header						\
 	gsl-fftgen.pl	gsl-fftconf.sh	gsloscillator-aux.cc	\
 	gslincluder.hh	gslwaveosc-aux.cc			\
+	bse-internals.hh					\
 )
-
-# -pthread -> -lpthread hack (required for libtool library linkage)
-pthread_2_lpthread = $(if $(findstring -pthread, $1), -lpthread)
 
 #
 # BSE library
@@ -142,13 +138,13 @@ libbseincludedir       	     = $(includedir)/bse
 libbseinclude_HEADERS        = $(bse_public_headers) bse.idl $(bse_idl_sources) bsehack.idl $(idl_dummy_files)
 nodist_libbseinclude_HEADERS = bsebasics.genidl.hh
 libbse_la_SOURCES            = $(bse_sources) $(bse_proc_gen_sources)
-libbse_la_LIBADD             = $(top_builddir)/sfi/libsfi.o $(BSE_LIBS) $(SFI_LIBS) $(RAPICORN_LIBS)
+libbse_la_LIBADD             = $(top_builddir)/sfi/libsfi.la $(BSE_LIBS) $(SFI_LIBS) $(RAPICORN_LIBS)
 libbse_la_LDFLAGS            = $(strip				\
 	-Wl,--version-script=$(srcdir)/ldscript.map		\
 	-version-info $(LT_CURRENT):$(LT_REVISION):$(LT_AGE)	\
 	-release $(LT_RELEASE) 					\
 	-no-undefined 						\
-	$(call pthread_2_lpthread, $(BSE_LIBS) $(SFI_LIBS))	\
+	$(AM_LDFLAGS)						\
 )
 EXTRA_DIST += ldscript.map
 #	-Wl,-Bsymbolic
@@ -303,15 +299,19 @@ bseclientapi.cc: $(srcdir)/../bse/bseapi.idl $(AUXTYPES_PY)
 GENERATED += bseclientapi.cc
 bseserverapi.hh: $(srcdir)/bseapi.idl $(AUXTYPES_PY)
 	$(AM_V_GEN)
-	$(Q) ${AIDACC} -x CxxStub -x $(AUXTYPES_PY) -G serverhh -G cppguard=__BST_BSESERVERAPI_HH_ $< -o xgen-$(@F)
+	$(Q) ${AIDACC} -x CxxStub -x $(AUXTYPES_PY) -G serverhh -G cppguard=__BST_BSESERVERAPI_HH_ \
+		-G iface-base=Bse::ImplicitBase $< -o xgen-$(@F)
 	$(Q) mv xgen-$(@F) $@
 GENERATED += bseserverapi.hh
 bseserverapi.cc: $(srcdir)/bseapi.idl $(AUXTYPES_PY)
 	$(AM_V_GEN)
-	$(Q) ${AIDACC} -x CxxStub -x $(AUXTYPES_PY) -G servercc -G cppguard=__BST_BSESERVERAPI_CC_ $< -o xgen-$(@F)
+	$(Q) ${AIDACC} -x CxxStub -x $(AUXTYPES_PY) -G servercc -G cppguard=__BST_BSESERVERAPI_CC_ \
+		-G iface-base=Bse::ImplicitBase $< -o xgen-$(@F)
+	$(Q) patch -f < $(srcdir)/patch-bseserverapi.cc.diff || true
 	$(Q) mv xgen-$(@F) $@
-GENERATED += bseserverapi.cc
-
+GENERATED  += bseserverapi.cc
+EXTRA_DIST += bseapi.idl patch-bseserverapi.cc.diff
+CLEANFILES += xgen-bseserverapi.cc.rej xgen-bseserverapi.cc.orig
 
 # == GENERATED targets ==
 $(libbse_la_OBJECTS): $(GENERATED)	# need dependency to force file generation

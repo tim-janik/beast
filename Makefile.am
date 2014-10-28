@@ -7,7 +7,7 @@ noinst_DATA =
 
 # require automake 1.9
 AUTOMAKE_OPTIONS = 1.9 dist-bzip2 no-dist-gzip -Wno-portability
-ACLOCAL_AMFLAGS = -I autotools
+ACLOCAL_AMFLAGS  = -I autotools
 
 site site-preview site-update site-update-all site-update-pages site-update-galleries:
 	@$(MAKE) -C web/ $(AM_MAKEFLAGS) $@
@@ -15,7 +15,6 @@ site site-preview site-update site-update-all site-update-pages site-update-gall
 MAINTAINERCLEANFILES += configure
 
 EXTRA_DIST += $(strip		\
-	TODO			\
 	topconfig.h		\
 )
 
@@ -25,23 +24,6 @@ check: check-recursive
 	@echo $(ALL_CHECKED_MSG) | sed 's/./=/g'
 	@echo $(ALL_CHECKED_MSG)
 	@echo $(ALL_CHECKED_MSG) | sed 's/./=/g'
-
-# --- ChangeLog ---
-ChangeLog:	$(shell $(srcdir)/mkrelease.sh commit-stamps)
-	$(srcdir)/mkrelease.sh ChangeLog \
-	  -R ce584d04999a7fb9393e1cfedde2048ba73e8878..HEAD
-noinst_DATA += ChangeLog
-EXTRA_DIST  += ChangeLog mkrelease.sh
-
-# --- release helpers ---
-release-news:
-	@$(srcdir)/mkrelease.sh news --first-parent --body
-release-check:
-	@echo "Checking for unlisted contributors..."
-	@$(srcdir)/mkrelease.sh contributors -X -B timj,stw -C $(srcdir)/beast-gtk/bstmain.c
-release-upload: ChangeLog
-	$(srcdir)/mkrelease.sh upload -U dist.testbit.eu:dist/beast/v0.8/ -E configure.in:BSE_MICRO_VERSION
-.PHONY: release-news release-check release-upload
 
 # == Dist Fixes ==
 # Some files remain after distcheck, that we cannot clean up. So we role our own listfiles filter.
@@ -68,3 +50,18 @@ costly-distcheck-tests:
 	@! $(call test_option, $(BEAST_BUILD_DEFAULTS):$(BEAST_BUILD), distcheck-tests) \
 	|| ( $(MAKE) report && mv ./report.out /tmp/beast-distcheck$$$$.report )
 .PHONY: costly-distcheck-tests
+
+# == ChangeLog & Release Rules ==
+ChangeLog:	$(shell $(srcdir)/mkrelease.sh commit-stamps)
+	$(srcdir)/mkrelease.sh ChangeLog -R ce584d04999a7fb9393e1cfedde2048ba73e8878..HEAD
+noinst_DATA += ChangeLog
+MAINTAINERCLEANFILES += ChangeLog
+EXTRA_DIST  += ChangeLog mkrelease.sh
+release-news:
+	@$(srcdir)/mkrelease.sh news --first-parent --body
+release-check:
+	@echo "Checking for unlisted contributors..."
+	@$(srcdir)/mkrelease.sh contributors -X -B timj,stw -C $(srcdir)/beast-gtk/bstmain.c
+release-upload: ChangeLog
+	$(srcdir)/mkrelease.sh upload -U testbit:pub/dists/beast/v0.9/ -E configure.ac
+.PHONY: release-news release-check release-upload

@@ -182,8 +182,8 @@ sniffer_scope_shift (BstSnifferScope *self)
 {
   if (self->n_values)
     {
-      g_memmove (self->lvalues + 1, self->lvalues, (self->n_values - 1) * sizeof (self->lvalues[0]));
-      g_memmove (self->rvalues + 1, self->rvalues, (self->n_values - 1) * sizeof (self->rvalues[0]));
+      memmove (self->lvalues + 1, self->lvalues, (self->n_values - 1) * sizeof (self->lvalues[0]));
+      memmove (self->rvalues + 1, self->rvalues, (self->n_values - 1) * sizeof (self->rvalues[0]));
       if (GTK_WIDGET_DRAWABLE (self))
         {
           GtkWidget *widget = GTK_WIDGET (self);

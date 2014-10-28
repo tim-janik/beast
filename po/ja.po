@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast 0.6.2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-07-05 23:14+0200\n"
+"POT-Creation-Date: 2014-10-28 14:17+0100\n"
 "PO-Revision-Date: 2004-08-06 19:59+0200\n"
 "Last-Translator: Satoru SATOH <ss@gnome.gr.jp>\n"
 "Language-Team: Japanese <translation@gnome.gr.jp>\n"
@@ -16,14 +16,14 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: bse/bsemain.cc:222
+#: bse/bsemain.cc:218
 #, fuzzy
 msgid ""
 "\n"
 "Available MIDI drivers:\n"
 msgstr "利用可能なアイテム:"
 
-#: bse/bsemain.cc:220
+#: bse/bsemain.cc:216
 #, fuzzy
 msgid ""
 "\n"
@@ -905,7 +905,7 @@ msgid ""
 "produce results not actually intended (such as a silent output signal)."
 msgstr ""
 
-#: beast-gtk/bstusermessage.cc:573
+#: beast-gtk/bstusermessage.cc:572
 #, c-format
 msgid "An error occoured during execution of script procedure '%s': %s"
 msgstr ""
@@ -1223,21 +1223,21 @@ msgstr "スレッドが使用するユーザー CPU 時間の平均(msec/sec)"
 msgid "BEAST"
 msgstr "BEAST"
 
-#: beast-gtk/bstmain.cc:852
+#: beast-gtk/bstmain.cc:849
 msgid "BEAST About"
 msgstr "BEAST の情報"
 
-#: beast-gtk/bstmain.cc:101
+#: beast-gtk/bstmain.cc:100
 msgid "BEAST Startup"
 msgstr "BEAST 起動"
 
-#: beast-gtk/bstmain.cc:853
+#: beast-gtk/bstmain.cc:850
 #, c-format
 msgid "BEAST Version %s"
 msgstr "BEAST バージョン %s"
 
 #. start BSE core and connect
-#: beast-gtk/bstmain.cc:136
+#: beast-gtk/bstmain.cc:135
 msgid "BSE Core"
 msgstr "BSE コア"
 
@@ -1420,7 +1420,7 @@ msgstr "CPU%"
 msgid "CPU%"
 msgstr "CPU%"
 
-#: beast-gtk/bstapp.cc:633
+#: beast-gtk/bstapp.cc:630
 #, fuzzy
 msgid "Cancel"
 msgstr "取り消し(_C)"
@@ -1453,7 +1453,7 @@ msgstr ""
 msgid "Change..."
 msgstr "変更..."
 
-#: beast-gtk/bstapp.cc:628
+#: beast-gtk/bstapp.cc:625
 #, c-format
 msgid ""
 "Changes were made to project \"%s\" since the last time it was saved to disk."
@@ -1519,7 +1519,7 @@ msgstr "クリア"
 msgid "Clear the current selection"
 msgstr "選択をクリア"
 
-#: beast-gtk/bstapp.cc:626
+#: beast-gtk/bstapp.cc:623
 #, fuzzy, c-format
 msgid "Close %s"
 msgstr "閉じる(_C)"
@@ -1678,7 +1678,7 @@ msgstr ""
 msgid "Continuous MIDI Control #1 - Bank Select"
 msgstr "連続 MIDI コントロール #1 - バンク選択"
 
-#: beast-gtk/bstmain.cc:854
+#: beast-gtk/bstmain.cc:851
 msgid "Contributions made by:"
 msgstr "貢献した人々:"
 
@@ -2263,7 +2263,7 @@ msgstr ""
 msgid "Description"
 msgstr "説明"
 
-#: beast-gtk/bstusermessage.cc:203
+#: beast-gtk/bstusermessage.cc:202
 msgid "Details:"
 msgstr "詳細:"
 
@@ -2306,7 +2306,7 @@ msgid "Dial (Logarithmic)"
 msgstr "ダイアル (対数)"
 
 #. listen to BseServer notification
-#: beast-gtk/bstmain.cc:221
+#: beast-gtk/bstmain.cc:220
 msgid "Dialogs"
 msgstr "ダイアログ"
 
@@ -2330,7 +2330,7 @@ msgstr ""
 msgid "Direction"
 msgstr "方向"
 
-#: beast-gtk/bstapp.cc:632
+#: beast-gtk/bstapp.cc:629
 msgid "Discard Changes"
 msgstr ""
 
@@ -2387,11 +2387,11 @@ msgstr "すべてのプロセスを表示"
 msgid "Display developer and contributor credits"
 msgstr "開発者と貢献者のクレジットを表示"
 
-#: beast-gtk/bstusermessage.cc:411
+#: beast-gtk/bstusermessage.cc:410
 msgid "Display dialogs with debugging messages"
 msgstr ""
 
-#: beast-gtk/bstusermessage.cc:409
+#: beast-gtk/bstusermessage.cc:408
 msgid "Display dialogs with information messages"
 msgstr ""
 
@@ -2622,7 +2622,7 @@ msgstr ""
 msgid "Epsilon"
 msgstr "イプシロン"
 
-#: beast-gtk/bstusermessage.cc:55
+#: beast-gtk/bstusermessage.cc:54
 #, fuzzy
 msgid "Error: "
 msgstr "エラー"
@@ -2701,7 +2701,7 @@ msgstr "万事オーケー"
 msgid "Executing '%s'"
 msgstr "'%s' を実行"
 
-#: beast-gtk/bstusermessage.cc:496
+#: beast-gtk/bstusermessage.cc:495
 #, c-format
 msgid "Executing procedure '%s' from script '%s'."
 msgstr ""
@@ -2714,7 +2714,7 @@ msgstr "指数コントロール"
 msgid "Exponential FM"
 msgstr "指数関数 FM"
 
-#: beast-gtk/bstapp.cc:306
+#: beast-gtk/bstapp.cc:304
 msgid "Export Audio"
 msgstr "オーディオにエクスポート"
 
@@ -2755,23 +2755,23 @@ msgstr ""
 msgid "Failed to duplicate part range."
 msgstr ""
 
-#: beast-gtk/bstusermessage.cc:736
+#: beast-gtk/bstusermessage.cc:735
 #, fuzzy, c-format
 msgid "Failed to execute script procedure '%s': %s"
 msgstr "出力ファイル \"%s\" を開くのに失敗: %s"
 
-#: beast-gtk/bstmain.cc:306
+#: beast-gtk/bstmain.cc:305
 #, fuzzy, c-format
 msgid "Failed to load project \"%s\": %s"
 msgstr "出力ファイル \"%s\" を開くのに失敗: %s"
 
-#: beast-gtk/bstfiledialog.cc:765 beast-gtk/bstmain.cc:254
-#: beast-gtk/bstmain.cc:271
+#: beast-gtk/bstfiledialog.cc:765 beast-gtk/bstmain.cc:253
+#: beast-gtk/bstmain.cc:270
 #, fuzzy, c-format
 msgid "Failed to load wave file \"%s\": %s"
 msgstr "出力ファイル \"%s\" を開くのに失敗: %s"
 
-#: beast-gtk/bstmain.cc:312
+#: beast-gtk/bstmain.cc:311
 #, fuzzy, c-format
 msgid "Failed to merge project \"%s\": %s"
 msgstr "出力ファイル \"%s\" を開くのに失敗: %s"
@@ -3359,7 +3359,7 @@ msgid "Initial phase of the oscillator wave form (cycle offset in degree)"
 msgstr ""
 
 #. BEAST initialization
-#: beast-gtk/bstmain.cc:112
+#: beast-gtk/bstmain.cc:111
 msgid "Initializers"
 msgstr "初期化"
 
@@ -3635,7 +3635,7 @@ msgstr "ノブ (対数"
 msgid "LADSPA Path"
 msgstr "LADSPA パス"
 
-#: beast-gtk/bstmain.cc:177
+#: beast-gtk/bstmain.cc:176
 msgid "LADSPA Plugins"
 msgstr "LADSPA プラグイン"
 
@@ -3856,12 +3856,12 @@ msgstr "インストゥルメントフォルダからシンセサイザメッシ
 msgid "Load..."
 msgstr "読み込み..."
 
-#: beast-gtk/bstmain.cc:250 beast-gtk/bstmain.cc:252
+#: beast-gtk/bstmain.cc:249 beast-gtk/bstmain.cc:251
 #, c-format
 msgid "Loading \"%s\""
 msgstr "\"%s\" を読み込み中"
 
-#: beast-gtk/bstapp.cc:785
+#: beast-gtk/bstapp.cc:782
 #, c-format
 msgid "Loading skin `%s'"
 msgstr "スキン `%s' を読み込み"
@@ -3871,7 +3871,7 @@ msgstr "スキン `%s' を読み込み"
 msgid "Loading wave `%s'"
 msgstr "WAVE '%s' を読み込み中"
 
-#: beast-gtk/bstmain.cc:230
+#: beast-gtk/bstmain.cc:229
 msgid "Loading..."
 msgstr "読み込み中..."
 
@@ -3949,7 +3949,7 @@ msgstr "MIDI 信号 3"
 msgid "MIDI Signal 4"
 msgstr "MIDI 信号 4"
 
-#: beast-gtk/bstapp.cc:511
+#: beast-gtk/bstapp.cc:508
 #, c-format
 msgid "MIDI Synthesizer: %s"
 msgstr "MIDI シンセサイザ: %s"
@@ -4050,12 +4050,12 @@ msgstr "プロジェクト '%s' を統合中"
 msgid "Message Type"
 msgstr "メッセージタイプ"
 
-#: beast-gtk/bstusermessage.cc:352
+#: beast-gtk/bstusermessage.cc:351
 #, c-format
 msgid "Message has been repeated %u time"
 msgstr "メッセージは %u 回繰り返されました"
 
-#: beast-gtk/bstusermessage.cc:352
+#: beast-gtk/bstusermessage.cc:351
 #, c-format
 msgid "Message has been repeated %u times"
 msgstr "メッセージは %u 回繰り返されました"
@@ -4629,7 +4629,7 @@ msgstr "ファイルブラウザを開く"
 msgid "Open file browser"
 msgstr "ファイルブラウザを開く"
 
-#: beast-gtk/bstapp.cc:718 beast-gtk/bstapp.cc:725
+#: beast-gtk/bstapp.cc:715 beast-gtk/bstapp.cc:722
 #: beast-gtk/bstfiledialog.cc:417 beast-gtk/bstfiledialog.cc:423
 #, c-format
 msgid "Opening project `%s'"
@@ -4663,7 +4663,7 @@ msgstr "オルガン出力"
 msgid "Orientation"
 msgstr "方向"
 
-#: beast-gtk/bstusermessage.cc:220
+#: beast-gtk/bstusermessage.cc:219
 #, c-format
 msgid "Origin:  %s\n"
 msgstr ""
@@ -4794,7 +4794,7 @@ msgstr "PCM デバイス選択の問題についてのメッセージを表示"
 msgid "PCM recording errors"
 msgstr "録音ファイルエラーを表示"
 
-#: beast-gtk/bstusermessage.cc:222
+#: beast-gtk/bstusermessage.cc:221
 #, c-format
 msgid "PID:     %u\n"
 msgstr "PID:     %u\n"
@@ -4974,7 +4974,7 @@ msgstr "再生"
 msgid "Plugin Path"
 msgstr "プラグインパス"
 
-#: beast-gtk/bstmain.cc:158
+#: beast-gtk/bstmain.cc:157
 msgid "Plugins"
 msgstr "プラグイン"
 
@@ -5002,7 +5002,7 @@ msgstr "正の値の色"
 msgid "Postprocessor"
 msgstr "ポストプロセッサ"
 
-#: beast-gtk/bstapp.cc:970
+#: beast-gtk/bstapp.cc:967
 msgid "Preferences"
 msgstr "設定"
 
@@ -5017,7 +5017,7 @@ msgstr ""
 msgid "Preview"
 msgstr "テスト再生"
 
-#: beast-gtk/bstapp.cc:997
+#: beast-gtk/bstapp.cc:994
 msgid "Procedure Browser"
 msgstr "プロセスブラウザ"
 
@@ -5042,14 +5042,14 @@ msgstr "プロセス実行に失敗"
 msgid "Procedure parameter invalid"
 msgstr "プロセスパラメータが不正です"
 
-#: beast-gtk/bstusermessage.cc:216 beast-gtk/bstusermessage.cc:500
+#: beast-gtk/bstusermessage.cc:215 beast-gtk/bstusermessage.cc:499
 #, fuzzy, c-format
 msgid ""
 "Procedure: %s\n"
 "Script: %s\n"
 msgstr "プロセスは現在ビュジーです"
 
-#: beast-gtk/bstusermessage.cc:218
+#: beast-gtk/bstusermessage.cc:217
 #, c-format
 msgid "Process: %s\n"
 msgstr "プロセッサ: %s\n"
@@ -5249,7 +5249,7 @@ msgid ""
 msgstr ""
 
 #. parse rc file
-#: beast-gtk/bstmain.cc:120
+#: beast-gtk/bstmain.cc:119
 msgid "RC Files"
 msgstr "初期化ファイル"
 
@@ -5262,7 +5262,7 @@ msgid "Rack Editor"
 msgstr "ラックエディタ"
 
 #. FIXME: undo Edit when hide && GXK_DIALOG_HIDE_ON_DELETE
-#: beast-gtk/bstapp.cc:956
+#: beast-gtk/bstapp.cc:953
 msgid "Rack editor"
 msgstr "ラックエディタ"
 
@@ -5614,7 +5614,7 @@ msgstr "エフェクトを別名で保存"
 msgid "Save As Instrument..."
 msgstr "インストゥルメントを別名で保存"
 
-#: beast-gtk/bstapp.cc:631
+#: beast-gtk/bstapp.cc:628
 #, fuzzy
 msgid "Save Changes"
 msgstr "シェープ範囲"
@@ -5639,7 +5639,7 @@ msgstr "エフェクトフォルダにシンセサイザメッシュを保存"
 msgid "Save synthesizer mesh to instruments folder"
 msgstr "インストゥルメントフォルダにシンセサイザメッシュを保存"
 
-#: beast-gtk/bstapp.cc:630
+#: beast-gtk/bstapp.cc:627
 msgid "Save the project before closing its window?"
 msgstr ""
 
@@ -5667,12 +5667,12 @@ msgstr "プロジェクト '%s' を保存中"
 msgid "Script Path"
 msgstr "スクリプトパス"
 
-#: beast-gtk/bstusermessage.cc:574 beast-gtk/bstusermessage.cc:737
+#: beast-gtk/bstusermessage.cc:573 beast-gtk/bstusermessage.cc:736
 #, fuzzy
 msgid "Script execution error."
 msgstr "プロセス実行を中止"
 
-#: beast-gtk/bstmain.cc:205
+#: beast-gtk/bstmain.cc:204
 msgid "Scripts"
 msgstr "スクリプト"
 
@@ -5924,7 +5924,7 @@ msgstr "シェープ範囲"
 msgid "Show Info"
 msgstr "情報を表示"
 
-#: beast-gtk/bstusermessage.cc:764
+#: beast-gtk/bstusermessage.cc:763
 #, fuzzy, c-format
 msgid "Show messages about %s"
 msgstr "オーディオ録音障害についてのメッセージを表示"
@@ -6039,7 +6039,7 @@ msgstr "ソロ: 他のすべてのバスをミュート"
 msgid "Song"
 msgstr "曲(_S)"
 
-#: beast-gtk/bstapp.cc:506
+#: beast-gtk/bstapp.cc:503
 #, c-format
 msgid "Song: %s"
 msgstr "曲: %s"
@@ -6058,7 +6058,7 @@ msgid "Spin Button (Logarithmic)"
 msgstr "スピンボタン(対数)"
 
 #. show splash images
-#: beast-gtk/bstmain.cc:124
+#: beast-gtk/bstmain.cc:123
 msgid "Splash Image"
 msgstr "スプラッシュイメージ"
 
@@ -6138,7 +6138,7 @@ msgstr "開始:"
 msgid "Starting Playback"
 msgstr "再生を開始"
 
-#: beast-gtk/bstmain.cc:108
+#: beast-gtk/bstmain.cc:107
 msgid "Startup"
 msgstr "起動"
 
@@ -6325,7 +6325,7 @@ msgstr "シンセサイザ"
 msgid "Synthesizer Selection: %s"
 msgstr "シンセサイザー: %s"
 
-#: beast-gtk/bstapp.cc:516
+#: beast-gtk/bstapp.cc:513
 #, c-format
 msgid "Synthesizer: %s"
 msgstr "シンセサイザー: %s"
@@ -6504,7 +6504,7 @@ msgid ""
 "The port name is a unique name to establish input<->output port relationships"
 msgstr "入出力ポートの関係を確立するためにポート名として固有な名前を与えます"
 
-#: beast-gtk/bstapp.cc:627
+#: beast-gtk/bstapp.cc:624
 msgid "The project has been modified."
 msgstr ""
 
@@ -6594,7 +6594,7 @@ msgid ""
 "currently using the Master Bus as output."
 msgstr ""
 
-#: beast-gtk/bstusermessage.cc:254
+#: beast-gtk/bstusermessage.cc:253
 msgid ""
 "This setting can be changed in the \"Messages\" section of the preferences "
 "dialog"
@@ -7006,7 +7006,7 @@ msgstr "波形"
 msgid "Wave Output"
 msgstr "波形出力"
 
-#: beast-gtk/bstapp.cc:501
+#: beast-gtk/bstapp.cc:498
 msgid "Wave Repository"
 msgstr "Wav リポジトリ"
 
@@ -7023,7 +7023,7 @@ msgstr "発振器ソースとして使う波形"
 msgid "Wave_s"
 msgstr "Wave(_s)"
 
-#: beast-gtk/bstapp.cc:499 beast-gtk/bstsupershell.cc:217
+#: beast-gtk/bstapp.cc:496 beast-gtk/bstsupershell.cc:217
 msgid "Waves"
 msgstr "Wave ファイル"
 
@@ -7603,7 +7603,7 @@ msgstr "出力ファイル \"%s\" を開くのに失敗: %s"
 msgid "killed by janitor"
 msgstr ""
 
-#: beast-gtk/bstusermessage.cc:548 beast-gtk/bstusermessage.cc:550
+#: beast-gtk/bstusermessage.cc:547 beast-gtk/bstusermessage.cc:549
 msgid "processing"
 msgstr "処理中"
 
