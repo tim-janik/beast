@@ -39,7 +39,7 @@ bse-version-check: distfiles.list
 	&& echo $$MESSAGETEXT | sed 's/./=/g' 				\
 	&& echo $$MESSAGETEXT		 				\
 	&& echo $$MESSAGETEXT | sed 's/./=/g'
-check: bse-version-check
+check: # bse-version-check
 
 .PHONY: bse-loading-check
 SKIP_PATTERN = "tests/latency/midi-latency.bse|tests/audio/minisong.bse"

@@ -63,5 +63,5 @@ release-check:
 	@echo "Checking for unlisted contributors..."
 	@$(srcdir)/mkrelease.sh contributors -X -B timj,stw -C $(srcdir)/beast-gtk/bstmain.c
 release-upload: ChangeLog
-	$(srcdir)/mkrelease.sh upload -U testbit:pub/dists/beast/v0.8/ -E configure.ac
+	$(srcdir)/mkrelease.sh upload -U testbit:pub/dists/beast/v0.9/ -E configure.ac
 .PHONY: release-news release-check release-upload
