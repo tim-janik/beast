@@ -1,9 +1,9 @@
 # beast/tests/bse
 include $(top_srcdir)/Makefile.decl
 
-INCLUDES    += -I$(top_srcdir) -I$(top_builddir) -I$(srcdir) -I.
+AM_CPPFLAGS += -I$(top_srcdir) -I$(top_builddir) -I$(srcdir) -I.
 DEFS        += @DEFINE__FILE_DIR__@ -DG_LOG_DOMAIN="\"BSE-TEST\"" # -DG_DISABLE_CONST_RETURNS
-AM_CXXFLAGS  = $(SFI_CFLAGS) $(RAPICORN_CFLAGS) -DRAPICORN_CONVENIENCE
+AM_CXXFLAGS += $(SFI_CPPFLAGS) $(RAPICORN_CFLAGS) -DRAPICORN_CONVENIENCE
 
 SFIDL = $(top_builddir)/sfi/sfidl
 SFIDL_INC = --nostdinc -I$(top_srcdir) -I$(top_builddir)
@@ -64,7 +64,7 @@ EXTRA_DIST += empty.ogg
 #
 lib_LTLIBRARIES = testplugin.la
 testplugin_la_SOURCES = testplugin.cc
-testplugin_la_LDFLAGS = -module -avoid-version
+testplugin_la_LDFLAGS = $(AM_LDFLAGS) -module -avoid-version
 testplugin_la_LIBADD  = $(top_builddir)/bse/libbse.la $(RAPICORN_LIBS) $(BSE_LIBS) -lm
 EXTRA_DIST += testplugin.idl
 GENERATED_CLEANFILES += testplugin.genidl.hh

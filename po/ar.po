@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Project\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-07-05 23:14+0200\n"
+"POT-Creation-Date: 2014-10-28 14:17+0100\n"
 "PO-Revision-Date: 2006-11-17 23:52+0100\n"
 "Last-Translator: Djihed Afifi <djihed@gmail.com>\n"
 "Language-Team: Arabic <doc@arabeyes.org>\n"
@@ -19,13 +19,13 @@ msgstr ""
 "3 && n <= 10 ? 3 : n >= 11 && n <= 99 ? 4 : 5;\n"
 "X-Poedit-Language: Arabic\n"
 
-#: bse/bsemain.cc:222
+#: bse/bsemain.cc:218
 msgid ""
 "\n"
 "Available MIDI drivers:\n"
 msgstr ""
 
-#: bse/bsemain.cc:220
+#: bse/bsemain.cc:216
 msgid ""
 "\n"
 "Available PCM drivers:\n"
@@ -942,7 +942,7 @@ msgid ""
 "produce results not actually intended (such as a silent output signal)."
 msgstr ""
 
-#: beast-gtk/bstusermessage.cc:573
+#: beast-gtk/bstusermessage.cc:572
 #, c-format
 msgid "An error occoured during execution of script procedure '%s': %s"
 msgstr ""
@@ -1286,23 +1286,23 @@ msgstr ""
 msgid "BEAST"
 msgstr ""
 
-#: beast-gtk/bstmain.cc:852
+#: beast-gtk/bstmain.cc:849
 #, fuzzy
 msgid "BEAST About"
 msgstr "_حول الملحق"
 
-#: beast-gtk/bstmain.cc:101
+#: beast-gtk/bstmain.cc:100
 #, fuzzy
 msgid "BEAST Startup"
 msgstr "برامج بدء التشغيل"
 
-#: beast-gtk/bstmain.cc:853
+#: beast-gtk/bstmain.cc:850
 #, fuzzy, c-format
 msgid "BEAST Version %s"
 msgstr "اصدارة الرزمة"
 
 #. start BSE core and connect
-#: beast-gtk/bstmain.cc:136
+#: beast-gtk/bstmain.cc:135
 #, fuzzy
 msgid "BSE Core"
 msgstr "الكلمات النووية"
@@ -1490,7 +1490,7 @@ msgstr "المعالج:"
 msgid "CPU%"
 msgstr "المعالج:"
 
-#: beast-gtk/bstapp.cc:633
+#: beast-gtk/bstapp.cc:630
 #, fuzzy
 msgid "Cancel"
 msgstr "إلغاء"
@@ -1526,7 +1526,7 @@ msgstr ""
 msgid "Change..."
 msgstr "تغيير كلمة المرور"
 
-#: beast-gtk/bstapp.cc:628
+#: beast-gtk/bstapp.cc:625
 #, c-format
 msgid ""
 "Changes were made to project \"%s\" since the last time it was saved to disk."
@@ -1597,7 +1597,7 @@ msgstr "امسح"
 msgid "Clear the current selection"
 msgstr "تعويض المنتقى الحالي"
 
-#: beast-gtk/bstapp.cc:626
+#: beast-gtk/bstapp.cc:623
 #, fuzzy, c-format
 msgid "Close %s"
 msgstr "أ_غلق"
@@ -1784,7 +1784,7 @@ msgstr "م_ستمر"
 msgid "Continuous MIDI Control #1 - Bank Select"
 msgstr ""
 
-#: beast-gtk/bstmain.cc:854
+#: beast-gtk/bstmain.cc:851
 #, fuzzy
 msgid "Contributions made by:"
 msgstr "الاثنان(جنبا بجنب)"
@@ -2401,7 +2401,7 @@ msgstr ""
 msgid "Description"
 msgstr "الوصف"
 
-#: beast-gtk/bstusermessage.cc:203
+#: beast-gtk/bstusermessage.cc:202
 #, fuzzy
 msgid "Details:"
 msgstr "التفاصيل"
@@ -2452,7 +2452,7 @@ msgid "Dial (Logarithmic)"
 msgstr "الاتصال السريع"
 
 #. listen to BseServer notification
-#: beast-gtk/bstmain.cc:221
+#: beast-gtk/bstmain.cc:220
 msgid "Dialogs"
 msgstr ""
 
@@ -2477,7 +2477,7 @@ msgstr ""
 msgid "Direction"
 msgstr "الاتجاه"
 
-#: beast-gtk/bstapp.cc:632
+#: beast-gtk/bstapp.cc:629
 #, fuzzy
 msgid "Discard Changes"
 msgstr "التراجع عن التغييرات؟"
@@ -2537,11 +2537,11 @@ msgstr "عفوا، لم يمكن عرض كل محتويات \"%s\"."
 msgid "Display developer and contributor credits"
 msgstr ""
 
-#: beast-gtk/bstusermessage.cc:411
+#: beast-gtk/bstusermessage.cc:410
 msgid "Display dialogs with debugging messages"
 msgstr ""
 
-#: beast-gtk/bstusermessage.cc:409
+#: beast-gtk/bstusermessage.cc:408
 msgid "Display dialogs with information messages"
 msgstr ""
 
@@ -2799,7 +2799,7 @@ msgstr ""
 msgid "Epsilon"
 msgstr "إبسلون يونانية"
 
-#: beast-gtk/bstusermessage.cc:55
+#: beast-gtk/bstusermessage.cc:54
 #, fuzzy
 msgid "Error: "
 msgstr "خطأ"
@@ -2887,7 +2887,7 @@ msgstr "حل اللغز! حسنا فعلت!"
 msgid "Executing '%s'"
 msgstr "خطأ تنفيذ %s."
 
-#: beast-gtk/bstusermessage.cc:496
+#: beast-gtk/bstusermessage.cc:495
 #, c-format
 msgid "Executing procedure '%s' from script '%s'."
 msgstr ""
@@ -2901,7 +2901,7 @@ msgstr "<b>أسلوب القطعة:</b>"
 msgid "Exponential FM"
 msgstr ""
 
-#: beast-gtk/bstapp.cc:306
+#: beast-gtk/bstapp.cc:304
 #, fuzzy
 msgid "Export Audio"
 msgstr "مُلحق الصوت"
@@ -2951,23 +2951,23 @@ msgstr "فشل فتح الدليل الحاوي على الصور الترويس
 msgid "Failed to duplicate part range."
 msgstr "فشل فتح الدليل الحاوي على الصور الترويسية: %s"
 
-#: beast-gtk/bstusermessage.cc:736
+#: beast-gtk/bstusermessage.cc:735
 #, fuzzy, c-format
 msgid "Failed to execute script procedure '%s': %s"
 msgstr "فشل تنفيذ العملية الإبنة (%s)"
 
-#: beast-gtk/bstmain.cc:306
+#: beast-gtk/bstmain.cc:305
 #, fuzzy, c-format
 msgid "Failed to load project \"%s\": %s"
 msgstr "لم يمكن تحميل البريمج %s"
 
-#: beast-gtk/bstfiledialog.cc:765 beast-gtk/bstmain.cc:254
-#: beast-gtk/bstmain.cc:271
+#: beast-gtk/bstfiledialog.cc:765 beast-gtk/bstmain.cc:253
+#: beast-gtk/bstmain.cc:270
 #, fuzzy, c-format
 msgid "Failed to load wave file \"%s\": %s"
 msgstr "خطأ في إعراب ملف XML"
 
-#: beast-gtk/bstmain.cc:312
+#: beast-gtk/bstmain.cc:311
 #, fuzzy, c-format
 msgid "Failed to merge project \"%s\": %s"
 msgstr "فشل فتح الجهاز"
@@ -3597,7 +3597,7 @@ msgid "Initial phase of the oscillator wave form (cycle offset in degree)"
 msgstr ""
 
 #. BEAST initialization
-#: beast-gtk/bstmain.cc:112
+#: beast-gtk/bstmain.cc:111
 msgid "Initializers"
 msgstr ""
 
@@ -3906,7 +3906,7 @@ msgstr ""
 msgid "LADSPA Path"
 msgstr "مسار الجهاز"
 
-#: beast-gtk/bstmain.cc:177
+#: beast-gtk/bstmain.cc:176
 #, fuzzy
 msgid "LADSPA Plugins"
 msgstr "تنشيط الملحقات %s"
@@ -4156,12 +4156,12 @@ msgstr ""
 msgid "Load..."
 msgstr "_تحميل"
 
-#: beast-gtk/bstmain.cc:250 beast-gtk/bstmain.cc:252
+#: beast-gtk/bstmain.cc:249 beast-gtk/bstmain.cc:251
 #, fuzzy, c-format
 msgid "Loading \"%s\""
 msgstr "تحميل..."
 
-#: beast-gtk/bstapp.cc:785
+#: beast-gtk/bstapp.cc:782
 #, fuzzy, c-format
 msgid "Loading skin `%s'"
 msgstr "تحميل \"%s\"..."
@@ -4171,7 +4171,7 @@ msgstr "تحميل \"%s\"..."
 msgid "Loading wave `%s'"
 msgstr "نيو ويف"
 
-#: beast-gtk/bstmain.cc:230
+#: beast-gtk/bstmain.cc:229
 #, fuzzy
 msgid "Loading..."
 msgstr "تحميل..."
@@ -4263,7 +4263,7 @@ msgstr "<b>قوّة الإشارة</b>"
 msgid "MIDI Signal 4"
 msgstr "<b>قوّة الإشارة</b>"
 
-#: beast-gtk/bstapp.cc:511
+#: beast-gtk/bstapp.cc:508
 #, c-format
 msgid "MIDI Synthesizer: %s"
 msgstr ""
@@ -4367,12 +4367,12 @@ msgstr ""
 msgid "Message Type"
 msgstr "نوع الرسالة"
 
-#: beast-gtk/bstusermessage.cc:352
+#: beast-gtk/bstusermessage.cc:351
 #, c-format
 msgid "Message has been repeated %u time"
 msgstr ""
 
-#: beast-gtk/bstusermessage.cc:352
+#: beast-gtk/bstusermessage.cc:351
 #, c-format
 msgid "Message has been repeated %u times"
 msgstr ""
@@ -5007,7 +5007,7 @@ msgstr "فشل فتح \"%s\": %s\n"
 msgid "Open file browser"
 msgstr "لوح متصفح الملفات"
 
-#: beast-gtk/bstapp.cc:718 beast-gtk/bstapp.cc:725
+#: beast-gtk/bstapp.cc:715 beast-gtk/bstapp.cc:722
 #: beast-gtk/bstfiledialog.cc:417 beast-gtk/bstfiledialog.cc:423
 #, fuzzy, c-format
 msgid "Opening project `%s'"
@@ -5044,7 +5044,7 @@ msgstr "جهاز الخرج:"
 msgid "Orientation"
 msgstr "الإتّجاه"
 
-#: beast-gtk/bstusermessage.cc:220
+#: beast-gtk/bstusermessage.cc:219
 #, c-format
 msgid "Origin:  %s\n"
 msgstr ""
@@ -5186,7 +5186,7 @@ msgstr ""
 msgid "PCM recording errors"
 msgstr "عرض خيارات إنتقاء الملفّات"
 
-#: beast-gtk/bstusermessage.cc:222
+#: beast-gtk/bstusermessage.cc:221
 #, fuzzy, c-format
 msgid "PID:     %u\n"
 msgstr "PID"
@@ -5386,7 +5386,7 @@ msgstr "اختر الإعدادات"
 msgid "Plugin Path"
 msgstr "مسار الجهاز"
 
-#: beast-gtk/bstmain.cc:158
+#: beast-gtk/bstmain.cc:157
 #, fuzzy
 msgid "Plugins"
 msgstr "ملحقات"
@@ -5420,7 +5420,7 @@ msgstr "لون GDK fill"
 msgid "Postprocessor"
 msgstr ""
 
-#: beast-gtk/bstapp.cc:970
+#: beast-gtk/bstapp.cc:967
 #, fuzzy
 msgid "Preferences"
 msgstr "تفضيلات"
@@ -5438,7 +5438,7 @@ msgstr "EOF من التطبيق الإبن\n"
 msgid "Preview"
 msgstr "لمحة"
 
-#: beast-gtk/bstapp.cc:997
+#: beast-gtk/bstapp.cc:994
 #, fuzzy
 msgid "Procedure Browser"
 msgstr "متصفّح الانترنت"
@@ -5469,14 +5469,14 @@ msgstr "فشل تسجيل %s إلى %s"
 msgid "Procedure parameter invalid"
 msgstr "ليس دليل مستخدمين صحيح"
 
-#: beast-gtk/bstusermessage.cc:216 beast-gtk/bstusermessage.cc:500
+#: beast-gtk/bstusermessage.cc:215 beast-gtk/bstusermessage.cc:499
 #, fuzzy, c-format
 msgid ""
 "Procedure: %s\n"
 "Script: %s\n"
 msgstr "مكّن إجراء الت_شغيل السريع"
 
-#: beast-gtk/bstusermessage.cc:218
+#: beast-gtk/bstusermessage.cc:217
 #, fuzzy, c-format
 msgid "Process: %s\n"
 msgstr "قيد العمل"
@@ -5683,7 +5683,7 @@ msgid ""
 msgstr ""
 
 #. parse rc file
-#: beast-gtk/bstmain.cc:120
+#: beast-gtk/bstmain.cc:119
 #, fuzzy
 msgid "RC Files"
 msgstr "كل الملفّات"
@@ -5698,7 +5698,7 @@ msgid "Rack Editor"
 msgstr "<b>خط المحرر:</b>"
 
 #. FIXME: undo Edit when hide && GXK_DIALOG_HIDE_ON_DELETE
-#: beast-gtk/bstapp.cc:956
+#: beast-gtk/bstapp.cc:953
 #, fuzzy
 msgid "Rack editor"
 msgstr "<b>خط المحرر:</b>"
@@ -6091,7 +6091,7 @@ msgstr "حفظ الملف كـ"
 msgid "Save As Instrument..."
 msgstr "حفظ الملف كـ"
 
-#: beast-gtk/bstapp.cc:631
+#: beast-gtk/bstapp.cc:628
 #, fuzzy
 msgid "Save Changes"
 msgstr "التراجع عن التغييرات؟"
@@ -6119,7 +6119,7 @@ msgstr ""
 msgid "Save synthesizer mesh to instruments folder"
 msgstr ""
 
-#: beast-gtk/bstapp.cc:630
+#: beast-gtk/bstapp.cc:627
 msgid "Save the project before closing its window?"
 msgstr ""
 
@@ -6148,12 +6148,12 @@ msgstr "جاري حفظ الصورة"
 msgid "Script Path"
 msgstr "مسار الجهاز"
 
-#: beast-gtk/bstusermessage.cc:574 beast-gtk/bstusermessage.cc:737
+#: beast-gtk/bstusermessage.cc:573 beast-gtk/bstusermessage.cc:736
 #, fuzzy
 msgid "Script execution error."
 msgstr "%s:·تنفيذ النص الشفري PreSession أرجع >·0.·إلغاء."
 
-#: beast-gtk/bstmain.cc:205
+#: beast-gtk/bstmain.cc:204
 #, fuzzy
 msgid "Scripts"
 msgstr "نصوص تشفيرية"
@@ -6416,7 +6416,7 @@ msgstr "فاندنبرغ رينج"
 msgid "Show Info"
 msgstr "عرض خيارات المعلومات"
 
-#: beast-gtk/bstusermessage.cc:764
+#: beast-gtk/bstusermessage.cc:763
 #, c-format
 msgid "Show messages about %s"
 msgstr ""
@@ -6548,7 +6548,7 @@ msgstr ""
 msgid "Song"
 msgstr "فا_صل جديد"
 
-#: beast-gtk/bstapp.cc:506
+#: beast-gtk/bstapp.cc:503
 #, c-format
 msgid "Song: %s"
 msgstr ""
@@ -6569,7 +6569,7 @@ msgid "Spin Button (Logarithmic)"
 msgstr "الزر اللولبي للتحديث"
 
 #. show splash images
-#: beast-gtk/bstmain.cc:124
+#: beast-gtk/bstmain.cc:123
 #, fuzzy
 msgid "Splash Image"
 msgstr "صورة الفيديو"
@@ -6654,7 +6654,7 @@ msgstr "إبدأ"
 msgid "Starting Playback"
 msgstr "عرض الصوت:"
 
-#: beast-gtk/bstmain.cc:108
+#: beast-gtk/bstmain.cc:107
 #, fuzzy
 msgid "Startup"
 msgstr "<b>بدأ التشغيل</b>"
@@ -6854,7 +6854,7 @@ msgstr ""
 msgid "Synthesizer Selection: %s"
 msgstr "<b>الحرف المنتقى:</b>"
 
-#: beast-gtk/bstapp.cc:516
+#: beast-gtk/bstapp.cc:513
 #, c-format
 msgid "Synthesizer: %s"
 msgstr ""
@@ -7038,7 +7038,7 @@ msgid ""
 "The port name is a unique name to establish input<->output port relationships"
 msgstr ""
 
-#: beast-gtk/bstapp.cc:627
+#: beast-gtk/bstapp.cc:624
 #, fuzzy
 msgid "The project has been modified."
 msgstr "تمّ حذف الرّسالة"
@@ -7129,7 +7129,7 @@ msgid ""
 "currently using the Master Bus as output."
 msgstr ""
 
-#: beast-gtk/bstusermessage.cc:254
+#: beast-gtk/bstusermessage.cc:253
 msgid ""
 "This setting can be changed in the \"Messages\" section of the preferences "
 "dialog"
@@ -7585,7 +7585,7 @@ msgstr "شكل الاختصارات"
 msgid "Wave Output"
 msgstr "جهاز الخرج:"
 
-#: beast-gtk/bstapp.cc:501
+#: beast-gtk/bstapp.cc:498
 #, fuzzy
 msgid "Wave Repository"
 msgstr "المستودع غير متّصل"
@@ -7604,7 +7604,7 @@ msgstr ""
 msgid "Wave_s"
 msgstr "نيو ويف"
 
-#: beast-gtk/bstapp.cc:499 beast-gtk/bstsupershell.cc:217
+#: beast-gtk/bstapp.cc:496 beast-gtk/bstsupershell.cc:217
 msgid "Waves"
 msgstr ""
 
@@ -8285,7 +8285,7 @@ msgstr ""
 msgid "killed by janitor"
 msgstr "الاثنان(جنبا بجنب)"
 
-#: beast-gtk/bstusermessage.cc:548 beast-gtk/bstusermessage.cc:550
+#: beast-gtk/bstusermessage.cc:547 beast-gtk/bstusermessage.cc:549
 #, fuzzy
 msgid "processing"
 msgstr "إيقاف المعالجة"

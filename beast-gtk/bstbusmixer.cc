@@ -5,9 +5,9 @@
 
 /* --- prototypes --- */
 static void     bus_mixer_action_exec           (gpointer                data,
-                                                 gulong                  action);
+                                                 size_t                  action);
 static gboolean bus_mixer_action_check          (gpointer                data,
-                                                 gulong                  action,
+                                                 size_t                  action,
                                                  guint64                 action_stamp);
 
 
@@ -167,7 +167,7 @@ bus_mixer_set_container (BstItemView *iview,
 
 static void
 bus_mixer_action_exec (gpointer data,
-                       gulong   action)
+                       size_t   action)
 {
   BstBusMixer *self = BST_BUS_MIXER (data);
   BstItemView *iview = BST_ITEM_VIEW (self);
@@ -197,7 +197,7 @@ bus_mixer_action_exec (gpointer data,
 
 static gboolean
 bus_mixer_action_check (gpointer data,
-                        gulong   action,
+                        size_t   action,
                         guint64  action_stamp)
 {
   BstBusMixer *self = BST_BUS_MIXER (data);

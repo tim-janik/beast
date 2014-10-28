@@ -7,9 +7,9 @@
 
 /* --- prototypes --- */
 static void     bus_editor_action_exec           (gpointer                data,
-                                                  gulong                  action);
+                                                  size_t                  action);
 static gboolean bus_editor_action_check          (gpointer                data,
-                                                  gulong                  action,
+                                                  size_t                  action,
                                                   guint64                 action_stamp);
 
 
@@ -193,7 +193,7 @@ bst_bus_editor_set_bus (BstBusEditor *self,
 
 static void
 bus_editor_action_exec (gpointer data,
-                        gulong   action)
+                        size_t   action)
 {
   BstBusEditor *self = BST_BUS_EDITOR (data);
   switch (action)
@@ -210,7 +210,7 @@ bus_editor_action_exec (gpointer data,
 
 static gboolean
 bus_editor_action_check (gpointer data,
-                         gulong   action,
+                         size_t   action,
                          guint64  action_stamp)
 {
   // BstBusEditor *self = BST_BUS_EDITOR (data);

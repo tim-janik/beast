@@ -2,13 +2,13 @@
 # Copyright (C) 2006 Tim Janik
 include $(top_srcdir)/Makefile.decl
 
-INCLUDES    += -I$(top_srcdir) -I$(top_builddir) -I.
+AM_CPPFLAGS += -I$(top_srcdir) -I$(top_builddir) -I.
 DEFS	    += @DEFINE__FILE_DIR__@ -DG_LOG_DOMAIN='"$(basename $(@F))"' -DPARANOID # -DG_DISABLE_CONST_RETURNS
-AM_CXXFLAGS  = $(SFI_CFLAGS) $(RAPICORN_CFLAGS) -DRAPICORN_CONVENIENCE
+AM_CXXFLAGS += $(SFI_CPPFLAGS) $(RAPICORN_CFLAGS) -DRAPICORN_CONVENIENCE
 
 noinst_PROGRAMS   = $(ALLTESTS)
 progs_nosfi_ldadd = $(RAPICORN_LIBS) $(SFI_LIBS) -lm
-progs_ldadd 	  = $(top_builddir)/sfi/libsfi.o $(RAPICORN_LIBS) $(SFI_LIBS) -lm
+progs_ldadd 	  = $(top_builddir)/sfi/libsfi.la $(RAPICORN_LIBS) $(SFI_LIBS) -lm
 SFIDL 		  = $(top_builddir)/sfi/sfidl
 
 # ring
@@ -30,11 +30,7 @@ $(srcdir)/testcxx.cc: testidl.h testidl.c
 
 # testsfidl
 TESTS	         += testsfidl
-testsfidl_SOURCES = testsfidl.cc \
-			../sfidl-generator.cc ../sfidl-namespace.cc ../sfidl-options.cc ../sfidl-parser.cc \
-			../sfidl-factory.cc ../sfidl-typelist.cc ../sfidl-cbase.cc ../sfidl-clientc.cc \
-			../sfidl-clientcxx.cc ../sfidl-corec.cc ../sfidl-corecxx.cc ../sfidl-cxxbase.cc \
-			../sfidl-hostc.cc ../glib-extra.cc
+testsfidl_SOURCES = testsfidl.cc
 testsfidl_LDADD   = $(progs_nosfi_ldadd)
 $(srcdir)/testsfidl.cc: testidl.h testidl.c
 

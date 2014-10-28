@@ -11,9 +11,9 @@ static void     rack_view_finalize           (GObject          *object);
 static gboolean rack_view_button_press_event (BstRackView      *self,
                                               GdkEventButton   *event);
 static void     rack_view_popup_action       (gpointer          user_data,
-                                              gulong            action_id);
+                                              size_t            action_id);
 static gboolean rack_view_popup_action_check (gpointer          data,
-                                              gulong            action,
+                                              size_t            action,
                                               guint64           action_stamp);
 
 
@@ -216,7 +216,7 @@ rack_view_button_press_event (BstRackView     *self,
 
 static void
 rack_view_popup_action (gpointer                user_data,
-                        gulong                  action_id)
+                        size_t                  action_id)
 {
   BstRackView *self = BST_RACK_VIEW (user_data);
   switch (action_id)
@@ -237,7 +237,7 @@ rack_view_popup_action (gpointer                user_data,
 
 static gboolean
 rack_view_popup_action_check (gpointer data,
-                              gulong   action,
+                              size_t   action,
                               guint64  action_stamp)
 {
   BstRackView *self = BST_RACK_VIEW (data);

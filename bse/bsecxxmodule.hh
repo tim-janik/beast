@@ -74,7 +74,7 @@ public:
     Effect     *effect;
   };    
   struct NeedAutoUpdateTag {};
-protected:
+public:
   template<class M, class P, class C> struct Trampoline {
     static void auto_update_accessor (BseModule*, gpointer);
   };

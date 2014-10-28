@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-07-05 23:14+0200\n"
+"POT-Creation-Date: 2014-10-28 14:17+0100\n"
 "PO-Revision-Date: 2010-09-01 14:42+0100\n"
 "Last-Translator: Bruce Cowan <bruce@bcowan.me.uk>\n"
 "Language-Team: British English <en@li.org>\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: Virtaal 0.6.1\n"
 
-#: bse/bsemain.cc:222
+#: bse/bsemain.cc:218
 msgid ""
 "\n"
 "Available MIDI drivers:\n"
@@ -26,7 +26,7 @@ msgstr ""
 "\n"
 "Available MIDI drivers:\n"
 
-#: bse/bsemain.cc:220
+#: bse/bsemain.cc:216
 msgid ""
 "\n"
 "Available PCM drivers:\n"
@@ -950,7 +950,7 @@ msgstr ""
 "silence will be used instead of a recorded signal, so playback operation may "
 "produce results not actually intended (such as a silent output signal)."
 
-#: beast-gtk/bstusermessage.cc:573
+#: beast-gtk/bstusermessage.cc:572
 #, c-format
 msgid "An error occoured during execution of script procedure '%s': %s"
 msgstr "An error occurred during execution of script procedure '%s': %s"
@@ -1295,21 +1295,21 @@ msgstr ""
 msgid "BEAST"
 msgstr "BEAST"
 
-#: beast-gtk/bstmain.cc:852
+#: beast-gtk/bstmain.cc:849
 msgid "BEAST About"
 msgstr "BEAST About"
 
-#: beast-gtk/bstmain.cc:101
+#: beast-gtk/bstmain.cc:100
 msgid "BEAST Startup"
 msgstr "BEAST Startup"
 
-#: beast-gtk/bstmain.cc:853
+#: beast-gtk/bstmain.cc:850
 #, c-format
 msgid "BEAST Version %s"
 msgstr "BEAST Version %s"
 
 #. start BSE core and connect
-#: beast-gtk/bstmain.cc:136
+#: beast-gtk/bstmain.cc:135
 msgid "BSE Core"
 msgstr "BSE Core"
 
@@ -1493,7 +1493,7 @@ msgstr "CPU#"
 msgid "CPU%"
 msgstr "CPU%"
 
-#: beast-gtk/bstapp.cc:633
+#: beast-gtk/bstapp.cc:630
 msgid "Cancel"
 msgstr "Cancel"
 
@@ -1525,7 +1525,7 @@ msgstr ""
 msgid "Change..."
 msgstr "Change…"
 
-#: beast-gtk/bstapp.cc:628
+#: beast-gtk/bstapp.cc:625
 #, c-format
 msgid ""
 "Changes were made to project \"%s\" since the last time it was saved to disk."
@@ -1590,7 +1590,7 @@ msgstr "Clear"
 msgid "Clear the current selection"
 msgstr "Clear the current selection"
 
-#: beast-gtk/bstapp.cc:626
+#: beast-gtk/bstapp.cc:623
 #, c-format
 msgid "Close %s"
 msgstr "Close %s"
@@ -1749,7 +1749,7 @@ msgstr "Continuous 9"
 msgid "Continuous MIDI Control #1 - Bank Select"
 msgstr "Continuous MIDI Control #1 - Bank Select"
 
-#: beast-gtk/bstmain.cc:854
+#: beast-gtk/bstmain.cc:851
 msgid "Contributions made by:"
 msgstr "Contributions made by:"
 
@@ -2328,7 +2328,7 @@ msgstr "Denominator"
 msgid "Description"
 msgstr "Description"
 
-#: beast-gtk/bstusermessage.cc:203
+#: beast-gtk/bstusermessage.cc:202
 msgid "Details:"
 msgstr "Details:"
 
@@ -2370,7 +2370,7 @@ msgid "Dial (Logarithmic)"
 msgstr "Dial (Logarithmic)"
 
 #. listen to BseServer notification
-#: beast-gtk/bstmain.cc:221
+#: beast-gtk/bstmain.cc:220
 msgid "Dialogs"
 msgstr "Dialogues"
 
@@ -2394,7 +2394,7 @@ msgstr ""
 msgid "Direction"
 msgstr "Direction"
 
-#: beast-gtk/bstapp.cc:632
+#: beast-gtk/bstapp.cc:629
 msgid "Discard Changes"
 msgstr "Discard Changes"
 
@@ -2452,11 +2452,11 @@ msgstr "Display an overview of all procedures"
 msgid "Display developer and contributor credits"
 msgstr "Display developer and contributor credits"
 
-#: beast-gtk/bstusermessage.cc:411
+#: beast-gtk/bstusermessage.cc:410
 msgid "Display dialogs with debugging messages"
 msgstr "Display dialogues with debugging messages"
 
-#: beast-gtk/bstusermessage.cc:409
+#: beast-gtk/bstusermessage.cc:408
 msgid "Display dialogs with information messages"
 msgstr "Display dialogues with information messages"
 
@@ -2688,7 +2688,7 @@ msgstr ""
 msgid "Epsilon"
 msgstr "Epsilon"
 
-#: beast-gtk/bstusermessage.cc:55
+#: beast-gtk/bstusermessage.cc:54
 msgid "Error: "
 msgstr "Error: "
 
@@ -2766,7 +2766,7 @@ msgstr "Everything went well"
 msgid "Executing '%s'"
 msgstr "Executing '%s'"
 
-#: beast-gtk/bstusermessage.cc:496
+#: beast-gtk/bstusermessage.cc:495
 #, c-format
 msgid "Executing procedure '%s' from script '%s'."
 msgstr "Executing procedure '%s' from script '%s'."
@@ -2779,7 +2779,7 @@ msgstr "Exponential Control"
 msgid "Exponential FM"
 msgstr "Exponential FM"
 
-#: beast-gtk/bstapp.cc:306
+#: beast-gtk/bstapp.cc:304
 msgid "Export Audio"
 msgstr "Export Audio"
 
@@ -2822,23 +2822,23 @@ msgstr "Failed to detect (start of) header"
 msgid "Failed to duplicate part range."
 msgstr "Failed to detect (start of) header"
 
-#: beast-gtk/bstusermessage.cc:736
+#: beast-gtk/bstusermessage.cc:735
 #, c-format
 msgid "Failed to execute script procedure '%s': %s"
 msgstr "Failed to execute script procedure '%s': %s"
 
-#: beast-gtk/bstmain.cc:306
+#: beast-gtk/bstmain.cc:305
 #, c-format
 msgid "Failed to load project \"%s\": %s"
 msgstr "Failed to load project \"%s\": %s"
 
-#: beast-gtk/bstfiledialog.cc:765 beast-gtk/bstmain.cc:254
-#: beast-gtk/bstmain.cc:271
+#: beast-gtk/bstfiledialog.cc:765 beast-gtk/bstmain.cc:253
+#: beast-gtk/bstmain.cc:270
 #, c-format
 msgid "Failed to load wave file \"%s\": %s"
 msgstr "Failed to load wave file \"%s\": %s"
 
-#: beast-gtk/bstmain.cc:312
+#: beast-gtk/bstmain.cc:311
 #, c-format
 msgid "Failed to merge project \"%s\": %s"
 msgstr "Failed to merge project \"%s\": %s"
@@ -3438,7 +3438,7 @@ msgid "Initial phase of the oscillator wave form (cycle offset in degree)"
 msgstr "Initial phase of the oscillator wave form (cycle offset in degree)"
 
 #. BEAST initialization
-#: beast-gtk/bstmain.cc:112
+#: beast-gtk/bstmain.cc:111
 msgid "Initializers"
 msgstr "Initialisers"
 
@@ -3714,7 +3714,7 @@ msgstr "Knob (Logarithmic)"
 msgid "LADSPA Path"
 msgstr "LADSPA Path"
 
-#: beast-gtk/bstmain.cc:177
+#: beast-gtk/bstmain.cc:176
 msgid "LADSPA Plugins"
 msgstr "LADSPA Plugins"
 
@@ -3930,12 +3930,12 @@ msgstr "Load synthesizer mesh from instruments folder"
 msgid "Load..."
 msgstr "Load…"
 
-#: beast-gtk/bstmain.cc:250 beast-gtk/bstmain.cc:252
+#: beast-gtk/bstmain.cc:249 beast-gtk/bstmain.cc:251
 #, c-format
 msgid "Loading \"%s\""
 msgstr "Loading \"%s\""
 
-#: beast-gtk/bstapp.cc:785
+#: beast-gtk/bstapp.cc:782
 #, c-format
 msgid "Loading skin `%s'"
 msgstr "Loading skin `%s'"
@@ -3945,7 +3945,7 @@ msgstr "Loading skin `%s'"
 msgid "Loading wave `%s'"
 msgstr "Loading wave `%s'"
 
-#: beast-gtk/bstmain.cc:230
+#: beast-gtk/bstmain.cc:229
 msgid "Loading..."
 msgstr "Loading…"
 
@@ -4023,7 +4023,7 @@ msgstr "MIDI Signal 3"
 msgid "MIDI Signal 4"
 msgstr "MIDI Signal 4"
 
-#: beast-gtk/bstapp.cc:511
+#: beast-gtk/bstapp.cc:508
 #, c-format
 msgid "MIDI Synthesizer: %s"
 msgstr "MIDI Synthesizer: %s"
@@ -4120,12 +4120,12 @@ msgstr "Merging project `%s'"
 msgid "Message Type"
 msgstr "Message Type"
 
-#: beast-gtk/bstusermessage.cc:352
+#: beast-gtk/bstusermessage.cc:351
 #, c-format
 msgid "Message has been repeated %u time"
 msgstr "Message has been repeated %u time"
 
-#: beast-gtk/bstusermessage.cc:352
+#: beast-gtk/bstusermessage.cc:351
 #, c-format
 msgid "Message has been repeated %u times"
 msgstr "Message has been repeated %u times"
@@ -4711,7 +4711,7 @@ msgstr "Open failed"
 msgid "Open file browser"
 msgstr "Open file browser"
 
-#: beast-gtk/bstapp.cc:718 beast-gtk/bstapp.cc:725
+#: beast-gtk/bstapp.cc:715 beast-gtk/bstapp.cc:722
 #: beast-gtk/bstfiledialog.cc:417 beast-gtk/bstfiledialog.cc:423
 #, c-format
 msgid "Opening project `%s'"
@@ -4747,7 +4747,7 @@ msgstr "Organ Output"
 msgid "Orientation"
 msgstr "Orientation"
 
-#: beast-gtk/bstusermessage.cc:220
+#: beast-gtk/bstusermessage.cc:219
 #, c-format
 msgid "Origin:  %s\n"
 msgstr "Origin:  %s\n"
@@ -4879,7 +4879,7 @@ msgstr "Show messages about PCM device selections problems"
 msgid "PCM recording errors"
 msgstr "Show recording file errors"
 
-#: beast-gtk/bstusermessage.cc:222
+#: beast-gtk/bstusermessage.cc:221
 #, c-format
 msgid "PID:     %u\n"
 msgstr "PID:     %u\n"
@@ -5060,7 +5060,7 @@ msgstr "Pluck the string"
 msgid "Plugin Path"
 msgstr "Plugin Path"
 
-#: beast-gtk/bstmain.cc:158
+#: beast-gtk/bstmain.cc:157
 msgid "Plugins"
 msgstr "Plugins"
 
@@ -5088,7 +5088,7 @@ msgstr "Positive Value Colour"
 msgid "Postprocessor"
 msgstr "Postprocessor"
 
-#: beast-gtk/bstapp.cc:970
+#: beast-gtk/bstapp.cc:967
 msgid "Preferences"
 msgstr "Preferences"
 
@@ -5103,7 +5103,7 @@ msgstr "Premature EOF"
 msgid "Preview"
 msgstr "Preview"
 
-#: beast-gtk/bstapp.cc:997
+#: beast-gtk/bstapp.cc:994
 msgid "Procedure Browser"
 msgstr "Procedure Browser"
 
@@ -5128,7 +5128,7 @@ msgstr "Procedure execution failed"
 msgid "Procedure parameter invalid"
 msgstr "Procedure parameter invalid"
 
-#: beast-gtk/bstusermessage.cc:216 beast-gtk/bstusermessage.cc:500
+#: beast-gtk/bstusermessage.cc:215 beast-gtk/bstusermessage.cc:499
 #, c-format
 msgid ""
 "Procedure: %s\n"
@@ -5137,7 +5137,7 @@ msgstr ""
 "Procedure: %s\n"
 "Script: %s\n"
 
-#: beast-gtk/bstusermessage.cc:218
+#: beast-gtk/bstusermessage.cc:217
 #, c-format
 msgid "Process: %s\n"
 msgstr "Process: %s\n"
@@ -5341,7 +5341,7 @@ msgstr ""
 "sixteenth and seventeenth centuries and sometimes used later."
 
 #. parse rc file
-#: beast-gtk/bstmain.cc:120
+#: beast-gtk/bstmain.cc:119
 msgid "RC Files"
 msgstr "RC Files"
 
@@ -5354,7 +5354,7 @@ msgid "Rack Editor"
 msgstr "Rack Editor"
 
 #. FIXME: undo Edit when hide && GXK_DIALOG_HIDE_ON_DELETE
-#: beast-gtk/bstapp.cc:956
+#: beast-gtk/bstapp.cc:953
 msgid "Rack editor"
 msgstr "Rack editor"
 
@@ -5698,7 +5698,7 @@ msgstr "Save As Effect…"
 msgid "Save As Instrument..."
 msgstr "Save As Instrument…"
 
-#: beast-gtk/bstapp.cc:631
+#: beast-gtk/bstapp.cc:628
 msgid "Save Changes"
 msgstr "Save Changes"
 
@@ -5722,7 +5722,7 @@ msgstr "Save synthesizer mesh to effects folder"
 msgid "Save synthesizer mesh to instruments folder"
 msgstr "Save synthesizer mesh to instruments folder"
 
-#: beast-gtk/bstapp.cc:630
+#: beast-gtk/bstapp.cc:627
 msgid "Save the project before closing its window?"
 msgstr "Save the project before closing its window?"
 
@@ -5750,11 +5750,11 @@ msgstr "Saving project `%s'"
 msgid "Script Path"
 msgstr "Script Path"
 
-#: beast-gtk/bstusermessage.cc:574 beast-gtk/bstusermessage.cc:737
+#: beast-gtk/bstusermessage.cc:573 beast-gtk/bstusermessage.cc:736
 msgid "Script execution error."
 msgstr "Script execution error."
 
-#: beast-gtk/bstmain.cc:205
+#: beast-gtk/bstmain.cc:204
 msgid "Scripts"
 msgstr "Scripts"
 
@@ -6004,7 +6004,7 @@ msgstr "Shape Range"
 msgid "Show Info"
 msgstr "Show Info"
 
-#: beast-gtk/bstusermessage.cc:764
+#: beast-gtk/bstusermessage.cc:763
 #, fuzzy, c-format
 msgid "Show messages about %s"
 msgstr "Show messages about audio recording problems"
@@ -6117,7 +6117,7 @@ msgstr "Solo: mute all other busses"
 msgid "Song"
 msgstr "_Song"
 
-#: beast-gtk/bstapp.cc:506
+#: beast-gtk/bstapp.cc:503
 #, c-format
 msgid "Song: %s"
 msgstr "Song: %s"
@@ -6136,7 +6136,7 @@ msgid "Spin Button (Logarithmic)"
 msgstr "Spin Button (Logarithmic)"
 
 #. show splash images
-#: beast-gtk/bstmain.cc:124
+#: beast-gtk/bstmain.cc:123
 msgid "Splash Image"
 msgstr "Splash Image"
 
@@ -6217,7 +6217,7 @@ msgstr "Start:"
 msgid "Starting Playback"
 msgstr "Starting Playback"
 
-#: beast-gtk/bstmain.cc:108
+#: beast-gtk/bstmain.cc:107
 msgid "Startup"
 msgstr "Startup"
 
@@ -6403,7 +6403,7 @@ msgstr "Synthesizer"
 msgid "Synthesizer Selection: %s"
 msgstr "Synthesizer Selection: %s"
 
-#: beast-gtk/bstapp.cc:516
+#: beast-gtk/bstapp.cc:513
 #, c-format
 msgid "Synthesizer: %s"
 msgstr "Synthesizer: %s"
@@ -6596,7 +6596,7 @@ msgid ""
 msgstr ""
 "The port name is a unique name to establish input<->output port relationships"
 
-#: beast-gtk/bstapp.cc:627
+#: beast-gtk/bstapp.cc:624
 msgid "The project has been modified."
 msgstr "The project has been modified."
 
@@ -6691,7 +6691,7 @@ msgid ""
 "currently using the Master Bus as output."
 msgstr ""
 
-#: beast-gtk/bstusermessage.cc:254
+#: beast-gtk/bstusermessage.cc:253
 msgid ""
 "This setting can be changed in the \"Messages\" section of the preferences "
 "dialog"
@@ -7111,7 +7111,7 @@ msgstr "Wave Form"
 msgid "Wave Output"
 msgstr "Wave Output"
 
-#: beast-gtk/bstapp.cc:501
+#: beast-gtk/bstapp.cc:498
 msgid "Wave Repository"
 msgstr "Wave Repository"
 
@@ -7128,7 +7128,7 @@ msgstr "Wave used as oscillator source"
 msgid "Wave_s"
 msgstr "Wave_s"
 
-#: beast-gtk/bstapp.cc:499 beast-gtk/bstsupershell.cc:217
+#: beast-gtk/bstapp.cc:496 beast-gtk/bstsupershell.cc:217
 msgid "Waves"
 msgstr "Waves"
 
@@ -7703,7 +7703,7 @@ msgstr "failed to add wave chunk from file \"%s\": %s"
 msgid "killed by janitor"
 msgstr "killed by janitor"
 
-#: beast-gtk/bstusermessage.cc:548 beast-gtk/bstusermessage.cc:550
+#: beast-gtk/bstusermessage.cc:547 beast-gtk/bstusermessage.cc:549
 msgid "processing"
 msgstr "processing"
 

@@ -388,7 +388,7 @@ BODY (BseProcedureClass *proc,
     return BSE_ERROR_NONE;
 
   wstore = sfi_wstore_new ();
-  sfi_wstore_printf (wstore, "; rc-file for BSE v%s\n", BSE_VERSION);
+  sfi_wstore_printf (wstore, "; rc-file for BSE v%s\n", BST_VERSION);
 
   /* store BseGConfig */
   sfi_wstore_puts (wstore, "\n; BseGConfig Dump\n");
@@ -442,7 +442,7 @@ BODY (BseProcedureClass *proc,
       const GValue      *in_values,
       GValue            *out_values)
 {
-  sfi_value_set_string (out_values++, BSE_VERSION);
+  sfi_value_set_string (out_values++, BST_VERSION);
   return BSE_ERROR_NONE;
 }
 

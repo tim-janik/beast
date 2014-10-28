@@ -16,6 +16,9 @@ using namespace Rapicorn;
 using std::list;
 using std::vector;
 
+bool            isCxxTypeName (const String& str);
+list<String>    symbolToList (const String& symbol);
+
 } // Sfidl
 
 #endif /* _SFIDL_UTILS_HH_ */

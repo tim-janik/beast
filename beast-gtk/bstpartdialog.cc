@@ -23,12 +23,12 @@ static void	event_canvas_clicked		(BstEventRoll           *eroll,
                                                  GdkEvent               *event,
                                                  BstPartDialog          *self);
 static gboolean part_dialog_action_check        (gpointer                data,
-                                                 gulong                  action,
+                                                 size_t                  action,
                                                  guint64                 action_stamp);
 static void     part_dialog_action_exec         (gpointer                data,
-                                                 gulong                  action);
+                                                 size_t                  action);
 static void     part_dialog_run_script_proc     (gpointer                data,
-                                                 gulong                  category_id);
+                                                 size_t                  category_id);
 
 
 /* --- track actions --- */
@@ -324,7 +324,7 @@ event_canvas_clicked (BstEventRoll           *eroll,
 
 static void
 part_dialog_run_script_proc (gpointer                data,
-                             gulong                  category_id)
+                             size_t                  category_id)
 {
   BstPartDialog *self = BST_PART_DIALOG (data);
   BseCategory *cat = bse_category_from_id (category_id);
@@ -338,7 +338,7 @@ part_dialog_run_script_proc (gpointer                data,
 
 static gboolean
 part_dialog_action_check (gpointer data,
-                          gulong   action,
+                          size_t   action,
                           guint64  action_stamp)
 {
   BstPartDialog *self = BST_PART_DIALOG (data);
@@ -378,7 +378,7 @@ part_dialog_action_check (gpointer data,
 
 static void
 part_dialog_action_exec (gpointer data,
-                         gulong   action)
+                         size_t   action)
 {
   BstPartDialog *self = BST_PART_DIALOG (data);
 

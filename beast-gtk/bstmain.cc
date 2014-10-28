@@ -16,7 +16,6 @@
 #include <string.h>
 #include <sys/time.h>
 #include <sys/resource.h>
-// #include "sfi/toyprof-mem.h"
 
 extern "C" void bse_object_debug_leaks (void); // FIXME
 
@@ -679,7 +678,7 @@ bst_exit_print_version (void)
 #endif
   g_print (", GXK %s", BST_VERSION);
   g_print ("\n");
-  g_print ("Compiled for %s %s SSE plugins.\n", BST_ARCH_NAME, BSE_WITH_SSE_FLAGS ? "with" : "without");
+  g_print ("Compiled for %s %s SSE plugins.\n", BST_ARCH_NAME, BSE_WITH_MMX_SSE ? "with" : "without");
   g_print ("Intrinsic code selected according to runtime CPU detection:\n");
   g_print ("%s", Rapicorn::cpu_info().c_str());
   g_print ("\n");

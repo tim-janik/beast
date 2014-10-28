@@ -1,9 +1,9 @@
 # beast/tests/filecheck
 include $(top_srcdir)/Makefile.decl
 
-INCLUDES    += -I$(top_srcdir) -I$(top_builddir) -I$(srcdir)
+AM_CPPFLAGS += -I$(top_srcdir) -I$(top_builddir) -I$(srcdir)
 DEFS        += @DEFINE__FILE_DIR__@ -DG_LOG_DOMAIN="\"BEAST-TEST\"" # -DG_DISABLE_CONST_RETURNS
-AM_CXXFLAGS  = $(SFI_CFLAGS)
+AM_CXXFLAGS += $(SFI_CPPFLAGS)
 
 SFIDL = $(top_builddir)/sfi/sfidl
 SFIDL_INC = --nostdinc -I$(top_srcdir) -I$(top_builddir)
@@ -27,7 +27,7 @@ distfiles.list: Makefile
 
 .PHONY: bse-version-check
 bse-version-check: distfiles.list
-	TESTVERSION="$(BSE_MAJOR_VERSION).$(BSE_MINOR_VERSION)." ;	\
+	TESTVERSION="$(BST_MAJOR_VERSION).$(BST_MINOR_VERSION)." ;	\
 	for tfile in `grep '\.bse$$' distfiles.list` ; do		\
 	  file="$(top_srcdir)/$$tfile" ;				\
 	  echo "Check project version: $$file" ;			\
@@ -39,7 +39,7 @@ bse-version-check: distfiles.list
 	&& echo $$MESSAGETEXT | sed 's/./=/g' 				\
 	&& echo $$MESSAGETEXT		 				\
 	&& echo $$MESSAGETEXT | sed 's/./=/g'
-check: bse-version-check
+check: # bse-version-check
 
 .PHONY: bse-loading-check
 SKIP_PATTERN = "tests/latency/midi-latency.bse|tests/audio/minisong.bse"

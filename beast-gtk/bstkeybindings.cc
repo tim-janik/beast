@@ -81,7 +81,7 @@ key_bindings_load_file (GtkWidget   *dialog,
 
 static void
 key_bindings_exec_action (gpointer data,
-                          gulong   action)
+                          size_t   action)
 {
   GtkWidget *self = GTK_WIDGET (data);
   BstKeyBinding *kbinding = (BstKeyBinding*) g_object_get_data ((GObject*) self, "BstKeyBinding");
@@ -232,7 +232,7 @@ key_bindings_exec_action (gpointer data,
 
 static gboolean
 key_bindings_check_action (gpointer data,
-                           gulong   action,
+                           size_t   action,
                            guint64  action_stamp)
 {
   GtkWidget *self = GTK_WIDGET (data);

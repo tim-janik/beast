@@ -72,11 +72,6 @@ UC_NAME (const String &cstr)    // FIXME: need mammut renaming function
     }
   return r;
 }
-static const char*
-cUC_NAME (const String &cstr) // FIXME: need mammut renaming function
-{
-  return g_intern_string (cstr.c_str());
-}
 
 static String // FIXME: need mammut renaming function
 UC_TYPE_NAME (const String &tname)

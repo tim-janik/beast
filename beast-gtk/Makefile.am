@@ -3,9 +3,9 @@ include $(top_srcdir)/Makefile.decl
 
 SUBDIRS = gxk dialogs icons
 
-INCLUDES    += -I$(top_srcdir) -I$(top_builddir) -I$(srcdir) -I.
+AM_CPPFLAGS += -I$(top_srcdir) -I$(top_builddir) -I$(srcdir) -I.
 DEFS        += @DEFINE__FILE_DIR__@ -DG_LOG_DOMAIN="\"BEAST\""
-AM_CXXFLAGS  = $(BEAST_CFLAGS) $(GXK_CFLAGS) $(BSE_CFLAGS) $(RAPICORN_CFLAGS) -DRAPICORN_CONVENIENCE \
+AM_CXXFLAGS += $(BEAST_CFLAGS) $(GXK_CFLAGS) $(BSE_CFLAGS) $(RAPICORN_CFLAGS) -DRAPICORN_CONVENIENCE \
 			-DG_DISABLE_CONST_RETURNS -DGTK_ENABLE_BROKEN # -DGTK_DISABLE_DEPRECATED -DGTK_DISABLE_COMPAT_H
 
 
