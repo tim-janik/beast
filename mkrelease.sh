@@ -175,14 +175,13 @@ done
   else
     XCOMMIT="$R_REVISION"
   fi
-  [ -n "$XCOMMIT" ] && XCOMMIT="`git name-rev --tags --always --name-only $XCOMMIT`" # beautify
-  [ -n "$XCOMMIT" ] && XCOMMIT="$XCOMMIT^!" # turn into exclude pattern
+  [ -n "$XCOMMIT" ] && XCOMMIT="`git name-rev --tags --always --name-only $XCOMMIT | sed 's/\^0$//'`" # beautify
   # list news, excluding history reachable from previous releases
-  echo "# git log $FIRST --reverse HEAD $XCOMMIT"
+  echo "# git log $FIRST --reverse $XCOMMIT..HEAD"
   if $BODY ; then
-    git log $FIRST --date=short --pretty='%s    # %cd %an %h%d%n%b' --reverse HEAD $XCOMMIT | sed '/^$/d'
+    git log $FIRST --date=short --pretty='%s    # %cd %an %h%d%n%b' --reverse $XCOMMIT..HEAD | sed '/^$/d'
   else
-    git log $FIRST --date=short --pretty='%s    # %cd %an %h%d' --reverse HEAD $XCOMMIT | cat
+    git log $FIRST --date=short --pretty='%s    # %cd %an %h%d'     --reverse $XCOMMIT..HEAD | cat
   fi
   exit
 }
