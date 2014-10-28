@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast master\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-07-05 23:14+0200\n"
+"POT-Creation-Date: 2014-10-28 14:17+0100\n"
 "PO-Revision-Date: 2010-04-11 12:03+0100\n"
 "Last-Translator: Andrej Žnidaršič <andrej.znidarsic@gmail.com>\n"
 "Language-Team: Slovenian GNOME Translation Team <gnome-si@googlegroups.com>\n"
@@ -22,7 +22,7 @@ msgstr ""
 "X-Poedit-Language: Slovenian\n"
 "X-Poedit-SourceCharset: utf-8\n"
 
-#: bse/bsemain.cc:222
+#: bse/bsemain.cc:218
 msgid ""
 "\n"
 "Available MIDI drivers:\n"
@@ -30,7 +30,7 @@ msgstr ""
 "\n"
 "MIDI gonilniki na voljo:\n"
 
-#: bse/bsemain.cc:220
+#: bse/bsemain.cc:216
 msgid ""
 "\n"
 "Available PCM drivers:\n"
@@ -937,7 +937,7 @@ msgstr ""
 "uporabljen signal tišine, zato lahko predvajanje povzroči nepričakovane "
 "rezultate (kot na primer tih izhodni signal)."
 
-#: beast-gtk/bstusermessage.cc:573
+#: beast-gtk/bstusermessage.cc:572
 #, c-format
 msgid "An error occoured during execution of script procedure '%s': %s"
 msgstr "Med izvajanjem postopka skripta '%s' je prišlo do napake: %s"
@@ -1254,21 +1254,21 @@ msgstr ""
 msgid "BEAST"
 msgstr "BEAST"
 
-#: beast-gtk/bstmain.cc:852
+#: beast-gtk/bstmain.cc:849
 msgid "BEAST About"
 msgstr "BEAST o programu"
 
-#: beast-gtk/bstmain.cc:101
+#: beast-gtk/bstmain.cc:100
 msgid "BEAST Startup"
 msgstr "Zagon BEAST"
 
-#: beast-gtk/bstmain.cc:853
+#: beast-gtk/bstmain.cc:850
 #, c-format
 msgid "BEAST Version %s"
 msgstr "BEAST različica %s"
 
 #. start BSE core and connect
-#: beast-gtk/bstmain.cc:136
+#: beast-gtk/bstmain.cc:135
 msgid "BSE Core"
 msgstr "Jedro BSE"
 
@@ -1438,7 +1438,7 @@ msgstr "CPE št."
 msgid "CPU%"
 msgstr "CPE%"
 
-#: beast-gtk/bstapp.cc:633
+#: beast-gtk/bstapp.cc:630
 msgid "Cancel"
 msgstr "Prekliči"
 
@@ -1471,7 +1471,7 @@ msgstr ""
 msgid "Change..."
 msgstr "Spremeni ..."
 
-#: beast-gtk/bstapp.cc:628
+#: beast-gtk/bstapp.cc:625
 #, c-format
 msgid ""
 "Changes were made to project \"%s\" since the last time it was saved to disk."
@@ -1535,7 +1535,7 @@ msgstr "Počisti"
 msgid "Clear the current selection"
 msgstr "Počisti trenutni izbor"
 
-#: beast-gtk/bstapp.cc:626
+#: beast-gtk/bstapp.cc:623
 #, c-format
 msgid "Close %s"
 msgstr "Zapri %s"
@@ -1694,7 +1694,7 @@ msgstr "Stalno 9"
 msgid "Continuous MIDI Control #1 - Bank Select"
 msgstr "Stalni MIDI nadzor št 1 - Izbor banke"
 
-#: beast-gtk/bstmain.cc:854
+#: beast-gtk/bstmain.cc:851
 msgid "Contributions made by:"
 msgstr "Prispevali so:"
 
@@ -2279,7 +2279,7 @@ msgstr "Imenovalec"
 msgid "Description"
 msgstr "Opis"
 
-#: beast-gtk/bstusermessage.cc:203
+#: beast-gtk/bstusermessage.cc:202
 msgid "Details:"
 msgstr "Podrobnosti:"
 
@@ -2323,7 +2323,7 @@ msgid "Dial (Logarithmic)"
 msgstr "_Predpona klicanja:"
 
 #. listen to BseServer notification
-#: beast-gtk/bstmain.cc:221
+#: beast-gtk/bstmain.cc:220
 msgid "Dialogs"
 msgstr "Pogovorna okna"
 
@@ -2346,7 +2346,7 @@ msgstr ""
 msgid "Direction"
 msgstr "Smer"
 
-#: beast-gtk/bstapp.cc:632
+#: beast-gtk/bstapp.cc:629
 msgid "Discard Changes"
 msgstr "Zavrzi spremembe"
 
@@ -2404,11 +2404,11 @@ msgstr "Prikaz pregleda vseh postopkov"
 msgid "Display developer and contributor credits"
 msgstr "Prikaz zahval razvijalcem in sodelavcem"
 
-#: beast-gtk/bstusermessage.cc:411
+#: beast-gtk/bstusermessage.cc:410
 msgid "Display dialogs with debugging messages"
 msgstr "Prikaz pogovornih oken s sporočili razhroščevanja"
 
-#: beast-gtk/bstusermessage.cc:409
+#: beast-gtk/bstusermessage.cc:408
 msgid "Display dialogs with information messages"
 msgstr "Prikaz pogovornih oken s sporočili podrobnosti"
 
@@ -2638,7 +2638,7 @@ msgstr ""
 msgid "Epsilon"
 msgstr "Epsilon"
 
-#: beast-gtk/bstusermessage.cc:55
+#: beast-gtk/bstusermessage.cc:54
 msgid "Error: "
 msgstr "Napaka:"
 
@@ -2716,7 +2716,7 @@ msgstr "Vse je šlo v redu"
 msgid "Executing '%s'"
 msgstr "Izvajanje '%s'"
 
-#: beast-gtk/bstusermessage.cc:496
+#: beast-gtk/bstusermessage.cc:495
 #, c-format
 msgid "Executing procedure '%s' from script '%s'."
 msgstr "Izvajanje postopka '%s' iz skripta '%s'."
@@ -2729,7 +2729,7 @@ msgstr "Eksponentni nadzor"
 msgid "Exponential FM"
 msgstr "Eksponentni FM"
 
-#: beast-gtk/bstapp.cc:306
+#: beast-gtk/bstapp.cc:304
 msgid "Export Audio"
 msgstr "Izvozi zvok"
 
@@ -2772,23 +2772,23 @@ msgstr "Zaznavanje začetka glave je spodletelo"
 msgid "Failed to duplicate part range."
 msgstr "Zaznavanje začetka glave je spodletelo"
 
-#: beast-gtk/bstusermessage.cc:736
+#: beast-gtk/bstusermessage.cc:735
 #, c-format
 msgid "Failed to execute script procedure '%s': %s"
 msgstr "Izvajanje postopka skripte '%s' je spodletelo: %s"
 
-#: beast-gtk/bstmain.cc:306
+#: beast-gtk/bstmain.cc:305
 #, c-format
 msgid "Failed to load project \"%s\": %s"
 msgstr "Nalaganje projekta \"%s\" je spodletelo: %s"
 
-#: beast-gtk/bstfiledialog.cc:765 beast-gtk/bstmain.cc:254
-#: beast-gtk/bstmain.cc:271
+#: beast-gtk/bstfiledialog.cc:765 beast-gtk/bstmain.cc:253
+#: beast-gtk/bstmain.cc:270
 #, c-format
 msgid "Failed to load wave file \"%s\": %s"
 msgstr "Nalaganje datoteke vala \"%s\" je spodletelo: %s"
 
-#: beast-gtk/bstmain.cc:312
+#: beast-gtk/bstmain.cc:311
 #, c-format
 msgid "Failed to merge project \"%s\": %s"
 msgstr "Združevanje projekta \"%s\" je spodletelo: %s"
@@ -3385,7 +3385,7 @@ msgid "Initial phase of the oscillator wave form (cycle offset in degree)"
 msgstr "Začetna faza valovne oblike oscilatorja (zamik cikla v stopinjah)"
 
 #. BEAST initialization
-#: beast-gtk/bstmain.cc:112
+#: beast-gtk/bstmain.cc:111
 msgid "Initializers"
 msgstr "Začetniki"
 
@@ -3657,7 +3657,7 @@ msgstr "Knob Hill"
 msgid "LADSPA Path"
 msgstr "Pot LADSPA"
 
-#: beast-gtk/bstmain.cc:177
+#: beast-gtk/bstmain.cc:176
 msgid "LADSPA Plugins"
 msgstr "Vstavki LADSPA"
 
@@ -3873,12 +3873,12 @@ msgstr ""
 msgid "Load..."
 msgstr "Naloži ..."
 
-#: beast-gtk/bstmain.cc:250 beast-gtk/bstmain.cc:252
+#: beast-gtk/bstmain.cc:249 beast-gtk/bstmain.cc:251
 #, c-format
 msgid "Loading \"%s\""
 msgstr "Nalaganje \"%s\""
 
-#: beast-gtk/bstapp.cc:785
+#: beast-gtk/bstapp.cc:782
 #, c-format
 msgid "Loading skin `%s'"
 msgstr "Nalaganje preobleke `%s'"
@@ -3888,7 +3888,7 @@ msgstr "Nalaganje preobleke `%s'"
 msgid "Loading wave `%s'"
 msgstr "Nalaganje valu `%s'"
 
-#: beast-gtk/bstmain.cc:230
+#: beast-gtk/bstmain.cc:229
 msgid "Loading..."
 msgstr "Nalaganje ..."
 
@@ -3966,7 +3966,7 @@ msgstr "MIDI signal 3"
 msgid "MIDI Signal 4"
 msgstr "MIDI signal 4"
 
-#: beast-gtk/bstapp.cc:511
+#: beast-gtk/bstapp.cc:508
 #, c-format
 msgid "MIDI Synthesizer: %s"
 msgstr "Sintetizator MIDI: %s"
@@ -4063,12 +4063,12 @@ msgstr "Združevanje projekta `%s'"
 msgid "Message Type"
 msgstr "Vrsta sporočila"
 
-#: beast-gtk/bstusermessage.cc:352
+#: beast-gtk/bstusermessage.cc:351
 #, c-format
 msgid "Message has been repeated %u time"
 msgstr "Sporočilo je bilo ponovljeno %u krat"
 
-#: beast-gtk/bstusermessage.cc:352
+#: beast-gtk/bstusermessage.cc:351
 #, c-format
 msgid "Message has been repeated %u times"
 msgstr "Sporočilo je bilo ponovljeno %u krat"
@@ -4658,7 +4658,7 @@ msgstr "Napaka med odpiranjem"
 msgid "Open file browser"
 msgstr "Odpri brskalnik datotek"
 
-#: beast-gtk/bstapp.cc:718 beast-gtk/bstapp.cc:725
+#: beast-gtk/bstapp.cc:715 beast-gtk/bstapp.cc:722
 #: beast-gtk/bstfiledialog.cc:417 beast-gtk/bstfiledialog.cc:423
 #, c-format
 msgid "Opening project `%s'"
@@ -4693,7 +4693,7 @@ msgstr "Izhod orgel"
 msgid "Orientation"
 msgstr "Usmeritev"
 
-#: beast-gtk/bstusermessage.cc:220
+#: beast-gtk/bstusermessage.cc:219
 #, c-format
 msgid "Origin:  %s\n"
 msgstr "Izvor:   %s\n"
@@ -4824,7 +4824,7 @@ msgstr "Pokaži sporočila o težavah izbire naprav PCM"
 msgid "PCM recording errors"
 msgstr "Pokaži posnetek datoteke napak"
 
-#: beast-gtk/bstusermessage.cc:222
+#: beast-gtk/bstusermessage.cc:221
 #, c-format
 msgid "PID:     %u\n"
 msgstr "PID:     %u\n"
@@ -5003,7 +5003,7 @@ msgstr "Trzanje strune"
 msgid "Plugin Path"
 msgstr "Pot vstavka"
 
-#: beast-gtk/bstmain.cc:158
+#: beast-gtk/bstmain.cc:157
 msgid "Plugins"
 msgstr "Vstavki"
 
@@ -5032,7 +5032,7 @@ msgstr "Barva pozitivne vrednosti"
 msgid "Postprocessor"
 msgstr ""
 
-#: beast-gtk/bstapp.cc:970
+#: beast-gtk/bstapp.cc:967
 msgid "Preferences"
 msgstr "Možnosti"
 
@@ -5047,7 +5047,7 @@ msgstr "Prehiter konec datoteke"
 msgid "Preview"
 msgstr "Predogled"
 
-#: beast-gtk/bstapp.cc:997
+#: beast-gtk/bstapp.cc:994
 msgid "Procedure Browser"
 msgstr "Brskalnik postopkov"
 
@@ -5072,7 +5072,7 @@ msgstr "Izvedba postopka je spodletela"
 msgid "Procedure parameter invalid"
 msgstr "Parameter postopka ni veljaven"
 
-#: beast-gtk/bstusermessage.cc:216 beast-gtk/bstusermessage.cc:500
+#: beast-gtk/bstusermessage.cc:215 beast-gtk/bstusermessage.cc:499
 #, c-format
 msgid ""
 "Procedure: %s\n"
@@ -5081,7 +5081,7 @@ msgstr ""
 "Postopek: %s\n"
 "Skripta: %s\n"
 
-#: beast-gtk/bstusermessage.cc:218
+#: beast-gtk/bstusermessage.cc:217
 #, c-format
 msgid "Process: %s\n"
 msgstr "Opravilo: %s\n"
@@ -5281,7 +5281,7 @@ msgid ""
 msgstr ""
 
 #. parse rc file
-#: beast-gtk/bstmain.cc:120
+#: beast-gtk/bstmain.cc:119
 msgid "RC Files"
 msgstr "Datoteke RC"
 
@@ -5294,7 +5294,7 @@ msgid "Rack Editor"
 msgstr "Urejevalnik polic"
 
 #. FIXME: undo Edit when hide && GXK_DIALOG_HIDE_ON_DELETE
-#: beast-gtk/bstapp.cc:956
+#: beast-gtk/bstapp.cc:953
 msgid "Rack editor"
 msgstr "Urejevalnik police"
 
@@ -5638,7 +5638,7 @@ msgstr "Shrani kot učinek ..."
 msgid "Save As Instrument..."
 msgstr "Shrani kot inštrument ..."
 
-#: beast-gtk/bstapp.cc:631
+#: beast-gtk/bstapp.cc:628
 msgid "Save Changes"
 msgstr "Shrani spremembe"
 
@@ -5662,7 +5662,7 @@ msgstr ""
 msgid "Save synthesizer mesh to instruments folder"
 msgstr ""
 
-#: beast-gtk/bstapp.cc:630
+#: beast-gtk/bstapp.cc:627
 msgid "Save the project before closing its window?"
 msgstr "Ali želite shraniti spremembe projekta pred zapiranjem?"
 
@@ -5690,11 +5690,11 @@ msgstr "Shranjevanje projekta `%s'"
 msgid "Script Path"
 msgstr "Pot skripta"
 
-#: beast-gtk/bstusermessage.cc:574 beast-gtk/bstusermessage.cc:737
+#: beast-gtk/bstusermessage.cc:573 beast-gtk/bstusermessage.cc:736
 msgid "Script execution error."
 msgstr "Napaka izvajanja skripta."
 
-#: beast-gtk/bstmain.cc:205
+#: beast-gtk/bstmain.cc:204
 msgid "Scripts"
 msgstr "Skripte"
 
@@ -5942,7 +5942,7 @@ msgstr "Obseg oblike"
 msgid "Show Info"
 msgstr "Pokaži podrobnosti"
 
-#: beast-gtk/bstusermessage.cc:764
+#: beast-gtk/bstusermessage.cc:763
 #, fuzzy, c-format
 msgid "Show messages about %s"
 msgstr "Pokaži sporočila o težavah zvočnega vhoda"
@@ -6057,7 +6057,7 @@ msgstr "Solo: Utišanje vseh ostalih vodil"
 msgid "Song"
 msgstr "_Skladba"
 
-#: beast-gtk/bstapp.cc:506
+#: beast-gtk/bstapp.cc:503
 #, c-format
 msgid "Song: %s"
 msgstr "Skladba: %s"
@@ -6076,7 +6076,7 @@ msgid "Spin Button (Logarithmic)"
 msgstr "Vrtljiv gumb (logaritemski)"
 
 #. show splash images
-#: beast-gtk/bstmain.cc:124
+#: beast-gtk/bstmain.cc:123
 msgid "Splash Image"
 msgstr "Predstavitvena slika"
 
@@ -6155,7 +6155,7 @@ msgstr "Začetek:"
 msgid "Starting Playback"
 msgstr "Začenjanje predvajanja"
 
-#: beast-gtk/bstmain.cc:108
+#: beast-gtk/bstmain.cc:107
 msgid "Startup"
 msgstr "Zagon"
 
@@ -6341,7 +6341,7 @@ msgstr "Sintetizator"
 msgid "Synthesizer Selection: %s"
 msgstr "Izbira sintetizatorja: %s"
 
-#: beast-gtk/bstapp.cc:516
+#: beast-gtk/bstapp.cc:513
 #, c-format
 msgid "Synthesizer: %s"
 msgstr "Sintetizator: %s"
@@ -6529,7 +6529,7 @@ msgid ""
 msgstr ""
 "Ime vrat je edinstveno ime za vzpostavljanje razmerij vhodna<->izhodna vrata"
 
-#: beast-gtk/bstapp.cc:627
+#: beast-gtk/bstapp.cc:624
 msgid "The project has been modified."
 msgstr "Projekt je bil spremenjen."
 
@@ -6621,7 +6621,7 @@ msgid ""
 "currently using the Master Bus as output."
 msgstr ""
 
-#: beast-gtk/bstusermessage.cc:254
+#: beast-gtk/bstusermessage.cc:253
 msgid ""
 "This setting can be changed in the \"Messages\" section of the preferences "
 "dialog"
@@ -7032,7 +7032,7 @@ msgstr "Valovna oblika"
 msgid "Wave Output"
 msgstr "Valovni izhod"
 
-#: beast-gtk/bstapp.cc:501
+#: beast-gtk/bstapp.cc:498
 msgid "Wave Repository"
 msgstr "Skladišče valov"
 
@@ -7049,7 +7049,7 @@ msgstr "Val uporabljen kot vir oscilatorja"
 msgid "Wave_s"
 msgstr "Val_ovi"
 
-#: beast-gtk/bstapp.cc:499 beast-gtk/bstsupershell.cc:217
+#: beast-gtk/bstapp.cc:496 beast-gtk/bstsupershell.cc:217
 msgid "Waves"
 msgstr "Valovi"
 
@@ -7625,7 +7625,7 @@ msgstr ""
 msgid "killed by janitor"
 msgstr "Ubil vas je %s (%s)"
 
-#: beast-gtk/bstusermessage.cc:548 beast-gtk/bstusermessage.cc:550
+#: beast-gtk/bstusermessage.cc:547 beast-gtk/bstusermessage.cc:549
 msgid "processing"
 msgstr "izvajanje"
 
