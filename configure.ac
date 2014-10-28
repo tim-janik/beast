@@ -14,7 +14,7 @@ AC_PREREQ(2.57)
 # * MAJOR, MINOR: increment on ABI/API changes
 # * MICRO: increment when ABI compatible, development versions are odd
 # * RC: release candidate, may be rc[0-9]+ or empty
-AC_INIT([beast], [0.9.0]) # defines PACKAGE_NAME, PACKAGE_VERSION, PACKAGE_STRING
+AC_INIT([beast], [0.9.1]) # defines PACKAGE_NAME, PACKAGE_VERSION, PACKAGE_STRING
 AC_CONFIG_SRCDIR([bse/bseconfig.h.in])
 AC_CONFIG_AUX_DIR([autotools])
 AC_CONFIG_MACRO_DIR([autotools])
