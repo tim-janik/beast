@@ -4,7 +4,7 @@
 #include "bsesnet.hh"
 #include "bsestandardosc.hh"
 #include <string.h>
-#include "bse/zintern/bse-resources.cc" // compile standard synth resources
+#include "bse/res/bse-resources.cc" // compile standard synth resources
 
 /* --- functions --- */
 gchar*

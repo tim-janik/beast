@@ -1,7 +1,7 @@
 # BSE - Better Sound Engine
 include $(top_srcdir)/Makefile.decl
 
-SUBDIRS = icons zintern . tests
+SUBDIRS = icons res . tests
 
 # need -I$(top_srcdir) for <bse/bsedefs.hh>
 # need -I$(top_builddir) for <sfi/sficonfig.h>

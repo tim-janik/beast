@@ -726,7 +726,7 @@ sfi/tests/Makefile
 bse/bseconfig.h
 bse/Makefile
 bse/icons/Makefile
-bse/zintern/Makefile
+bse/res/Makefile
 bse/tests/Makefile
 plugins/Makefile
 plugins/icons/Makefile
