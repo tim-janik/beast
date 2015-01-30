@@ -1,7 +1,7 @@
 # BEAST - Better Audio System
 include $(top_srcdir)/Makefile.decl
 
-SUBDIRS = gxk dialogs icons
+SUBDIRS = gxk res icons
 
 AM_CPPFLAGS += -I$(top_srcdir) -I$(top_builddir) -I$(srcdir) -I.
 DEFS        += @DEFINE__FILE_DIR__@ -DG_LOG_DOMAIN="\"BEAST\""
