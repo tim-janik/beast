@@ -2,23 +2,19 @@
 include $(top_srcdir)/Makefile.decl
 
 RAPIDRES     = rapidres
+XMLLINTCALL  = $(if $(XMLLINT),$(XMLLINT),true) # handle undefined XMLLINT
 
-RESOURCES = $(strip \
-	$(srcdir)/radgets-standard.xml	\
-	$(srcdir)/radgets-beast.xml	\
+RESOURCES = $(strip 		\
+	radgets-standard.xml	\
+	radgets-beast.xml	\
 )
-XML_FILES  = $(filter-out bst-%, $(RESOURCES))
-EXTRA_DIST += $(XML_FILES)
+EXTRA_DIST += $(RESOURCES)
 
-
-XMLLINTCALL=$(if $(XMLLINT),$(XMLLINT),true) # handle undefined XMLLINT
-
-beast-resources.cc: $(XML_FILES)
+noinst_DATA = beast-resources.cc
+beast-resources.cc: $(RESOURCES)
 	cd .						\
-	&& $(XMLLINTCALL) --noout $(XML_FILES)		\
-	&& $(RAPIDRES) $(RESOURCES) > xgen-bxc		\
+	&& $(XMLLINTCALL) --noout $(RESOURCES)		\
+	&& (cd $(srcdir) && $(RAPIDRES) $(RESOURCES) ) > xgen-bxc		\
 	&& cp xgen-bxc $@				\
 	&& rm -f xgen-bxc
 CLEANFILES += xgen-bxc beast-resources.cc
-
-noinst_DATA = beast-resources.cc
