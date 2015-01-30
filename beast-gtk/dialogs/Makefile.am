@@ -1,24 +1,24 @@
 # BEAST - Better Audio System
 include $(top_srcdir)/Makefile.decl
 
-ZINTERN      = rapicorn-zintern
+RAPIDRES     = rapidres
 
-ZFILE_DEFS = $(strip \
-	bst-radgets-standard	$(srcdir)/radgets-standard.xml	\
-	bst-radgets-beast	$(srcdir)/radgets-beast.xml	\
+RESOURCES = $(strip \
+	$(srcdir)/radgets-standard.xml	\
+	$(srcdir)/radgets-beast.xml	\
 )
-XML_FILES  = $(filter-out bst-%, $(ZFILE_DEFS))
+XML_FILES  = $(filter-out bst-%, $(RESOURCES))
 EXTRA_DIST += $(XML_FILES)
 
 
 XMLLINTCALL=$(if $(XMLLINT),$(XMLLINT),true) # handle undefined XMLLINT
 
-beast-xml-zfiles.cc: $(XML_FILES)
+beast-resources.cc: $(XML_FILES)
 	cd .						\
 	&& $(XMLLINTCALL) --noout $(XML_FILES)		\
-	&& $(ZINTERN) -b -z $(ZFILE_DEFS) > xgen-bxc	\
+	&& $(RAPIDRES) $(RESOURCES) > xgen-bxc		\
 	&& cp xgen-bxc $@				\
 	&& rm -f xgen-bxc
-CLEANFILES += xgen-bxc beast-xml-zfiles.cc
+CLEANFILES += xgen-bxc beast-resources.cc
 
-noinst_DATA = beast-xml-zfiles.cc
+noinst_DATA = beast-resources.cc
