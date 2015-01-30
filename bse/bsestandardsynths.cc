@@ -4,20 +4,7 @@
 #include "bsesnet.hh"
 #include "bsestandardosc.hh"
 #include <string.h>
-
-/* --- typedef & structures --- */
-typedef struct {
-  const gchar  *name;
-  guint         text_size;
-  const guint8 *cdata;
-  guint         clength;
-} BseZFile;
-
-/* --- generated ZFiles --- */
-#include "bse/zintern/bse-resources.cc"
-
-/* --- variables --- */
-static GSList	*zfile_names = NULL;
+#include "bse/zintern/bse-resources.cc" // compile standard synth resources
 
 /* --- functions --- */
 gchar*
@@ -37,14 +24,4 @@ bse_standard_synth_inflate (const gchar *synth_name,
     }
   g_warning ("unknown standard synth: %s", synth_name);
   return NULL;
-}
-
-GSList*
-bse_standard_synth_get_list (void)
-{
-  guint i;
-  if (!zfile_names)
-    for (i = 0; i < G_N_ELEMENTS (bse_zfiles); i++)
-      zfile_names = g_slist_prepend (zfile_names, (gchar*) bse_zfiles[i].name);
-  return zfile_names;
 }
