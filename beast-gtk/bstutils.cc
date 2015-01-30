@@ -86,7 +86,7 @@ _bst_init_utils (void)
   }
 }
 
-#include "beast-gtk/dialogs/beast-resources.cc"
+#include "beast-gtk/res/beast-resources.cc"
 void
 _bst_init_radgets (void)
 {
