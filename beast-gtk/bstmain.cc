@@ -437,15 +437,13 @@ static void
 bst_init_aida_idl()
 {
   assert (bse_server == NULL);
+  // connect to BSE thread and fetch server handle
+  bse_server = Rapicorn::Aida::ObjectBroker::connect<Bse::ServerH> ("inproc://BSE-" BST_VERSION);
+  assert (bse_server != NULL);
   // hook Aida connection into our main loop
   Bse::AidaGlibSource *source = Bse::AidaGlibSource::create (Bse::ServerH::__aida_connection__());
   g_source_set_priority (source, G_PRIORITY_DEFAULT);
   g_source_attach (source, g_main_context_default());
-  // fetch initial remote object reference
-  auto aidabsekeys = Rapicorn::string_split ("CxxStub:AidaServerConnection:idl_file=\\bbse/bseapi.idl", ":");
-  Rapicorn::Aida::RemoteHandle smh = Bse::ServerH::__aida_connection__()->remote_origin (aidabsekeys);
-  bse_server = Rapicorn::Aida::RemoteHandle::__aida_reinterpret_down_cast__<Bse::ServerH> (smh);
-  assert (bse_server != NULL);
 
   // performa Bse Aida test
   if (0)
