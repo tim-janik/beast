@@ -575,12 +575,13 @@ namespace Bse {
 static void
 init_aida_idl ()
 {
-  // hook Aida connection into our main loop
+  // setup Aida server connection, so ServerIface::__aida_connection__() yields non-NULL
+  Aida::ObjectBroker::bind<Bse::ServerIface> ("inproc://BSE-" BST_VERSION,
+                                              shared_ptr_cast<Bse::ServerIface> (&Bse::ServerImpl::instance()));
+  // hook up server connection to main loop to process remote calls
   AidaGlibSource *source = AidaGlibSource::create (Bse::ServerIface::__aida_connection__());
   g_source_set_priority (source, BSE_PRIORITY_GLUE);
   g_source_attach (source, bse_main_context);
-  // provide initial remote object reference
-  Bse::ServerIface::__aida_connection__()->remote_origin (Bse::ServerImpl::instance().shared_from_this());
 }
 
 } // Bse
