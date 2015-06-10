@@ -320,7 +320,7 @@ AC_DEFUN([AC_SFI_REQUIREMENTS],
 AC_DEFUN([AC_BSE_REQUIREMENTS],
 [
     dnl # require Rapicorn
-    PKG_CHECK_MODULES(RAPICORN, rapicorn1410 >= 14.10.0)
+    PKG_CHECK_MODULES(RAPICORN, rapicorn1410 >= 14.10.1)
     MC_ASSERT_PROG(AIDACC, aidacc-1410, [aidacc gets shipped with Rapicorn])
 
     dnl # --- Ogg/Vorbis check ---
