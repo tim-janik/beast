@@ -511,7 +511,7 @@ sequence ItemSeq {
   Item   items;
 };
 record PropertyCandidates {
-  Info    blurb      = ("A strcuture describing tentative property values.");
+  Info    blurb      = ("A structure describing tentative property values.");
   String  label;
   String  tooltip;
   ItemSeq items;
