@@ -289,22 +289,22 @@ AUXTYPES_PY = $(srcdir)/AuxTypes.py
 EXTRA_DIST += AuxTypes.py
 bseclientapi.hh: $(srcdir)/../bse/bseapi.idl $(AUXTYPES_PY)
 	$(AM_V_GEN)
-	$(Q) ${AIDACC} -x CxxStub -x $(AUXTYPES_PY) -G clienthh -G cppguard=__BST_BSECLIENTAPI_HH_ $< -o xgen-$(@F)
+	$(Q) ${AIDACC} -x CxxStub -G macro=BSE_IDL -G clienthh -x $(AUXTYPES_PY) $< -o xgen-$(@F)
 	$(Q) mv xgen-$(@F) $@
 GENERATED += bseclientapi.hh
 bseclientapi.cc: $(srcdir)/../bse/bseapi.idl $(AUXTYPES_PY)
 	$(AM_V_GEN)
-	$(Q) ${AIDACC} -x CxxStub -x $(AUXTYPES_PY) -G clientcc -G cppguard=__BST_BSECLIENTAPI_CC_ $< -o xgen-$(@F)
+	$(Q) ${AIDACC} -x CxxStub -G macro=BSE_IDL -G clientcc -x $(AUXTYPES_PY) $< -o xgen-$(@F)
 	$(Q) mv xgen-$(@F) $@
 GENERATED += bseclientapi.cc
 bseserverapi.hh: $(srcdir)/bseapi.idl $(AUXTYPES_PY)
 	$(AM_V_GEN)
-	$(Q) ${AIDACC} -x CxxStub -x $(AUXTYPES_PY) -G serverhh -G cppguard=__BST_BSESERVERAPI_HH_ $< -o xgen-$(@F)
+	$(Q) ${AIDACC} -x CxxStub -G macro=BSE_IDL -G serverhh -x $(AUXTYPES_PY) $< -o xgen-$(@F)
 	$(Q) mv xgen-$(@F) $@
 GENERATED += bseserverapi.hh
 bseserverapi.cc: $(srcdir)/bseapi.idl $(AUXTYPES_PY)
 	$(AM_V_GEN)
-	$(Q) ${AIDACC} -x CxxStub -x $(AUXTYPES_PY) -G servercc -G cppguard=__BST_BSESERVERAPI_CC_ $< -o xgen-$(@F)
+	$(Q) ${AIDACC} -x CxxStub -G macro=BSE_IDL -G servercc -x $(AUXTYPES_PY) $< -o xgen-$(@F)
 	$(Q) patch -f < $(srcdir)/patch-bseserverapi.cc.diff || true
 	$(Q) mv xgen-$(@F) $@
 GENERATED  += bseserverapi.cc
