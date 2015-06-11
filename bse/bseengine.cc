@@ -1,10 +1,10 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bseengine.hh"
-#include "bsecore.hh"
 #include "bsemain.hh"
 #include "gslcommon.hh"
 #include "bseengineutils.hh"
 #include "bseenginemaster.hh"
+#include "bsestartup.hh"        // for TaskRegistry
 #include <fcntl.h>
 #include <errno.h>
 #include <unistd.h>

@@ -1129,12 +1129,12 @@ ServerImpl::ServerImpl ()
 ServerImpl::~ServerImpl ()
 {}
 
-TestObjectIface*
+TestObjectIfaceP
 ServerImpl::get_test_object ()
 {
   if (!test_object_)
-    test_object_ = std::make_shared<TestObjectImpl>();
-  return &*test_object_;
+    test_object_ = FriendAllocator<TestObjectImpl>::make_shared();
+  return test_object_;
 }
 
 ServerImpl&

@@ -268,8 +268,8 @@ shell_parse_args (int *argc_p, char **argv)
           g_print ("BSESCM version %s (%s)\n", BST_VERSION, BST_VERSION_HINT);
           g_print ("Libraries: ");
           g_print ("GLib %u.%u.%u", glib_major_version, glib_minor_version, glib_micro_version);
-          g_print (", SFI %u.%u.%u", bse_major_version, bse_minor_version, bse_micro_version);
-          g_print (", BSE %u.%u.%u", bse_major_version, bse_minor_version, bse_micro_version);
+          g_print (", SFI %s", BST_VERSION);
+          g_print (", BSE %s", BST_VERSION);
           g_print (", Guile %u.%u.%u", SCM_MAJOR_VERSION, SCM_MINOR_VERSION, SCM_MICRO_VERSION);
           g_print ("\n");
           g_print ("Compiled for: %s\n", BST_ARCH_NAME);

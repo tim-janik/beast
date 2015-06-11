@@ -1,6 +1,6 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bsemain.hh"
-#include "bsecore.hh"
+#include "bsestartup.hh"
 #include "topconfig.h"
 #include "bseserver.hh"
 #include "bsesequencer.hh"
@@ -30,10 +30,6 @@ static void     init_aida_idl ();
 
 /* --- variables --- */
 /* from bse.hh */
-const uint		 bse_major_version = BST_MAJOR_VERSION;
-const uint		 bse_minor_version = BST_MINOR_VERSION;
-const uint		 bse_micro_version = BST_MICRO_VERSION;
-const char		*bse_version = BST_VERSION;
 GMainContext            *bse_main_context = NULL;
 static volatile gboolean bse_initialization_stage = 0;
 static gboolean          textdomain_setup = FALSE;
@@ -105,22 +101,6 @@ _bse_init_async (int *argc, char **argv, const char *app_name, const Bse::String
   assert (msg == 'B');
   delete init_queue;
   async_bse_thread.detach();    // FIXME: rather join on exit
-}
-
-const char*
-bse_check_version (uint required_major, uint required_minor, uint required_micro)
-{
-  if (required_major > BST_MAJOR_VERSION)
-    return "BSE version too old (major mismatch)";
-  if (required_major < BST_MAJOR_VERSION)
-    return "BSE version too new (major mismatch)";
-  if (required_minor > BST_MINOR_VERSION)
-    return "BSE version too old (minor mismatch)";
-  if (required_minor < BST_MINOR_VERSION)
-    return "BSE version too new (minor mismatch)";
-  if (required_micro > BST_MICRO_VERSION)
-    return "BSE version too old (micro mismatch)";
-  return NULL; // required_micro <= BST_MICRO_VERSION
 }
 
 struct AsyncData {
@@ -575,12 +555,13 @@ namespace Bse {
 static void
 init_aida_idl ()
 {
-  // hook Aida connection into our main loop
+  // setup Aida server connection, so ServerIface::__aida_connection__() yields non-NULL
+  Aida::ObjectBroker::bind<Bse::ServerIface> ("inproc://BSE-" BST_VERSION,
+                                              shared_ptr_cast<Bse::ServerIface> (&Bse::ServerImpl::instance()));
+  // hook up server connection to main loop to process remote calls
   AidaGlibSource *source = AidaGlibSource::create (Bse::ServerIface::__aida_connection__());
   g_source_set_priority (source, BSE_PRIORITY_GLUE);
   g_source_attach (source, bse_main_context);
-  // provide initial remote object reference
-  Bse::ServerIface::__aida_connection__()->remote_origin (Bse::ServerImpl::instance().shared_from_this());
 }
 
 } // Bse

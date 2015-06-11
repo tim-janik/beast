@@ -437,15 +437,13 @@ static void
 bst_init_aida_idl()
 {
   assert (bse_server == NULL);
+  // connect to BSE thread and fetch server handle
+  bse_server = Rapicorn::Aida::ObjectBroker::connect<Bse::ServerH> ("inproc://BSE-" BST_VERSION);
+  assert (bse_server != NULL);
   // hook Aida connection into our main loop
   Bse::AidaGlibSource *source = Bse::AidaGlibSource::create (Bse::ServerH::__aida_connection__());
   g_source_set_priority (source, G_PRIORITY_DEFAULT);
   g_source_attach (source, g_main_context_default());
-  // fetch initial remote object reference
-  auto aidabsekeys = Rapicorn::string_split ("CxxStub:AidaServerConnection:idl_file=\\bbse/bseapi.idl", ":");
-  Rapicorn::Aida::RemoteHandle smh = Bse::ServerH::__aida_connection__()->remote_origin (aidabsekeys);
-  bse_server = Rapicorn::Aida::RemoteHandle::__aida_reinterpret_down_cast__<Bse::ServerH> (smh);
-  assert (bse_server != NULL);
 
   // performa Bse Aida test
   if (0)
@@ -664,8 +662,8 @@ bst_exit_print_version (void)
   g_print ("BEAST version %s (%s)\n", BST_VERSION, BST_VERSION_HINT);
   g_print ("Libraries: ");
   g_print ("GLib %u.%u.%u", glib_major_version, glib_minor_version, glib_micro_version);
-  g_print (", SFI %u.%u.%u", bse_major_version, bse_minor_version, bse_micro_version);
-  g_print (", BSE %u.%u.%u", bse_major_version, bse_minor_version, bse_micro_version);
+  g_print (", SFI %s", BST_VERSION);
+  g_print (", BSE %s", BST_VERSION);
   c = bse_server_get_vorbis_version (BSE_SERVER);
   if (c)
     g_print (", %s", c);

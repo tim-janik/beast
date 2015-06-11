@@ -1,7 +1,6 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #ifndef __BSE_MAIN_H__
 #define __BSE_MAIN_H__
-#include	<bse/bse.hh>	/* initialization */
 #include        <bse/bsetype.hh>
 G_BEGIN_DECLS
 
@@ -9,9 +8,6 @@ G_BEGIN_DECLS
 void		bse_init_textdomain_only (void);
 void		_bse_init_async		 (int *argc, char **argv, const char *app_name, const Bse::StringVector &args);
 SfiGlueContext* _bse_glue_context_create (const char *client, const std::function<void()> &caller_wakeup);
-const char*     bse_check_version	(guint		 required_major,
-                                         guint		 required_minor,
-                                         guint		 required_micro);       // prototyped in bse.hh
 
 /* initialization for internal utilities */
 void bse_init_inprocess	(int *argc, char **argv, const char *app_name, const Bse::StringVector &args = Bse::StringVector());

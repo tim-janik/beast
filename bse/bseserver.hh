@@ -105,7 +105,7 @@ protected:
   explicit           ServerImpl ();
   virtual           ~ServerImpl ();
 public:
-  virtual TestObjectIface* get_test_object ();
+  virtual TestObjectIfaceP get_test_object ();
   static ServerImpl&       instance        ();
   void                     send_user_message (const UserMessage &umsg);
 };

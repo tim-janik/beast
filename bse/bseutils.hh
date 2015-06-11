@@ -2,24 +2,7 @@
 #ifndef __BSE_UTILS_H__
 #define __BSE_UTILS_H__
 
-#include <bse/bseclientapi.hh>
 #include <rapicorn-core.hh>
-
-namespace Bse {
-
-/// IDL API base class until Rapicorn supports ImplicitBaseP out of the box.
-class ImplicitBase : public virtual Rapicorn::Aida::ImplicitBase,
-                     public virtual std::enable_shared_from_this<ImplicitBase> {
-public:
-  template<class Class, typename std::enable_if<std::is_base_of<ImplicitBase, Class>::value>::type* = nullptr>
-  static std::shared_ptr<Class> shared_ptr (Class *object) ///< Wrap ImplicitBase or derived type into a std::shared_ptr<>().
-  {
-    return object ? std::shared_ptr<Class> (object->shared_from_this()) : std::shared_ptr<Class>();
-  }
-};
-
-} // Bse
-
 #include <bse/bseserverapi.hh>
 
 #include <bse/bseenums.hh>

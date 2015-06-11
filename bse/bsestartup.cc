@@ -1,5 +1,6 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
-#include "bsecore.hh"
+#include "bsestartup.hh"
+#include "bseclientapi.hh"
 #include "bsemain.hh"
 
 namespace Bse {
@@ -122,3 +123,5 @@ AidaGlibSource::create (Rapicorn::Aida::BaseConnection *connection)
 }
 
 } // Bse
+
+#include "bseclientapi.cc"      // build IDL client interface

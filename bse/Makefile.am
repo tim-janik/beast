@@ -28,7 +28,7 @@ bse_public_headers = $(strip \
 	\
 	bse.hh	bsedefs.hh	bseexports.hh	bseconfig.h	bsegenclosures.hh \
 	bseincluder.hh	ladspa.hh	bseenginenode.hh bseieee754.hh \
-	bsecore.hh		\
+	bsestartup.hh		\
 	bseengine.hh		bseenginemaster.hh	bseengineschedule.hh		bseengineutils.hh \
 	bsebus.hh		bsecategories.hh 	\
 	bsefilter.hh    		bsebiquadfilter.hh	\
@@ -63,7 +63,7 @@ bse_sources = $(strip \
 	gsldatahandle-vorbis.cc	gslvorbis-enc.cc	gsldatacache.cc	gslvorbis-cutter.cc \
 	gsldatahandle-mad.cc	           	gslfilehash.cc	gsldatautils.cc	\
 	gslwaveosc.cc		gslosctable.cc	gslmagic.cc	                 \
-	bsecore.cc		\
+	bsestartup.cc		\
 	bseengine.cc		bseenginemaster.cc	bseengineschedule.cc		bseengineutils.cc \
 	bsebus.cc		bsecategories.cc 	\
 	bsefilter.cc   		bsebiquadfilter.cc	bsefilter-ellf.cc	\
@@ -289,24 +289,22 @@ AUXTYPES_PY = $(srcdir)/AuxTypes.py
 EXTRA_DIST += AuxTypes.py
 bseclientapi.hh: $(srcdir)/../bse/bseapi.idl $(AUXTYPES_PY)
 	$(AM_V_GEN)
-	$(Q) ${AIDACC} -x CxxStub -x $(AUXTYPES_PY) -G clienthh -G cppguard=__BST_BSECLIENTAPI_HH_ $< -o xgen-$(@F)
+	$(Q) ${AIDACC} -x CxxStub -G macro=BSE_IDL -G clienthh -x $(AUXTYPES_PY) $< -o xgen-$(@F)
 	$(Q) mv xgen-$(@F) $@
 GENERATED += bseclientapi.hh
 bseclientapi.cc: $(srcdir)/../bse/bseapi.idl $(AUXTYPES_PY)
 	$(AM_V_GEN)
-	$(Q) ${AIDACC} -x CxxStub -x $(AUXTYPES_PY) -G clientcc -G cppguard=__BST_BSECLIENTAPI_CC_ $< -o xgen-$(@F)
+	$(Q) ${AIDACC} -x CxxStub -G macro=BSE_IDL -G clientcc -x $(AUXTYPES_PY) $< -o xgen-$(@F)
 	$(Q) mv xgen-$(@F) $@
 GENERATED += bseclientapi.cc
 bseserverapi.hh: $(srcdir)/bseapi.idl $(AUXTYPES_PY)
 	$(AM_V_GEN)
-	$(Q) ${AIDACC} -x CxxStub -x $(AUXTYPES_PY) -G serverhh -G cppguard=__BST_BSESERVERAPI_HH_ \
-		-G iface-base=Bse::ImplicitBase $< -o xgen-$(@F)
+	$(Q) ${AIDACC} -x CxxStub -G macro=BSE_IDL -G serverhh -x $(AUXTYPES_PY) $< -o xgen-$(@F)
 	$(Q) mv xgen-$(@F) $@
 GENERATED += bseserverapi.hh
 bseserverapi.cc: $(srcdir)/bseapi.idl $(AUXTYPES_PY)
 	$(AM_V_GEN)
-	$(Q) ${AIDACC} -x CxxStub -x $(AUXTYPES_PY) -G servercc -G cppguard=__BST_BSESERVERAPI_CC_ \
-		-G iface-base=Bse::ImplicitBase $< -o xgen-$(@F)
+	$(Q) ${AIDACC} -x CxxStub -G macro=BSE_IDL -G servercc -x $(AUXTYPES_PY) $< -o xgen-$(@F)
 	$(Q) patch -f < $(srcdir)/patch-bseserverapi.cc.diff || true
 	$(Q) mv xgen-$(@F) $@
 GENERATED  += bseserverapi.cc
@@ -358,6 +356,6 @@ bseinfo_LDADD    = $(progs_LDADD)
 EXTRA_DIST += oldidl.idl
 check-oldidl: oldidl.idl AuxTypes.py
 	@echo "  CHECK " $<
-	$(Q) $(AIDACC_VDEBUG) -x $(srcdir)/AuxTypes.py $<
+	$(Q) $(AIDACC_VDEBUG) --bse-extensions -x $(srcdir)/AuxTypes.py $<
 .PHONY: check-oldidl
 check-local: check-oldidl
