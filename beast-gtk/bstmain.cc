@@ -662,8 +662,8 @@ bst_exit_print_version (void)
   g_print ("BEAST version %s (%s)\n", BST_VERSION, BST_VERSION_HINT);
   g_print ("Libraries: ");
   g_print ("GLib %u.%u.%u", glib_major_version, glib_minor_version, glib_micro_version);
-  g_print (", SFI %u.%u.%u", bse_major_version, bse_minor_version, bse_micro_version);
-  g_print (", BSE %u.%u.%u", bse_major_version, bse_minor_version, bse_micro_version);
+  g_print (", SFI %s", BST_VERSION);
+  g_print (", BSE %s", BST_VERSION);
   c = bse_server_get_vorbis_version (BSE_SERVER);
   if (c)
     g_print (", %s", c);

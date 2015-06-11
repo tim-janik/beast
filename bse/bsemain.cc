@@ -30,10 +30,6 @@ static void     init_aida_idl ();
 
 /* --- variables --- */
 /* from bse.hh */
-const uint		 bse_major_version = BST_MAJOR_VERSION;
-const uint		 bse_minor_version = BST_MINOR_VERSION;
-const uint		 bse_micro_version = BST_MICRO_VERSION;
-const char		*bse_version = BST_VERSION;
 GMainContext            *bse_main_context = NULL;
 static volatile gboolean bse_initialization_stage = 0;
 static gboolean          textdomain_setup = FALSE;
@@ -105,22 +101,6 @@ _bse_init_async (int *argc, char **argv, const char *app_name, const Bse::String
   assert (msg == 'B');
   delete init_queue;
   async_bse_thread.detach();    // FIXME: rather join on exit
-}
-
-const char*
-bse_check_version (uint required_major, uint required_minor, uint required_micro)
-{
-  if (required_major > BST_MAJOR_VERSION)
-    return "BSE version too old (major mismatch)";
-  if (required_major < BST_MAJOR_VERSION)
-    return "BSE version too new (major mismatch)";
-  if (required_minor > BST_MINOR_VERSION)
-    return "BSE version too old (minor mismatch)";
-  if (required_minor < BST_MINOR_VERSION)
-    return "BSE version too new (minor mismatch)";
-  if (required_micro > BST_MICRO_VERSION)
-    return "BSE version too old (micro mismatch)";
-  return NULL; // required_micro <= BST_MICRO_VERSION
 }
 
 struct AsyncData {

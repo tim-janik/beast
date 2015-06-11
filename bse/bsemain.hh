@@ -8,9 +8,6 @@ G_BEGIN_DECLS
 void		bse_init_textdomain_only (void);
 void		_bse_init_async		 (int *argc, char **argv, const char *app_name, const Bse::StringVector &args);
 SfiGlueContext* _bse_glue_context_create (const char *client, const std::function<void()> &caller_wakeup);
-const char*     bse_check_version	(guint		 required_major,
-                                         guint		 required_minor,
-                                         guint		 required_micro);       // prototyped in bse.hh
 
 /* initialization for internal utilities */
 void bse_init_inprocess	(int *argc, char **argv, const char *app_name, const Bse::StringVector &args = Bse::StringVector());
