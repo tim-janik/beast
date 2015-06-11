@@ -19,7 +19,7 @@ load_file (BseWaveRepo *wrepo,
            BseWave    **wave_p)
 {
   gchar *fname = g_path_get_basename (file_name);
-  BseWave *wave = (BseWave*) g_object_new (BSE_TYPE_WAVE, "uname", fname, NULL);
+  BseWave *wave = (BseWave*) bse_object_new (BSE_TYPE_WAVE, "uname", fname, NULL);
   g_free (fname);
   BseErrorType error = bse_wave_load_wave_file (wave, file_name, NULL, NULL, NULL, TRUE);
   if (wave->n_wchunks)

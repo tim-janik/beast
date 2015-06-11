@@ -93,7 +93,7 @@ BODY (BseProcedureClass *proc,
   wchunk = (GslWaveChunk*) sfi_ring_nth_data (wave->wave_chunks, chunk_index);
   if (wchunk)
     {
-      esample = (BseEditableSample*) g_object_new (BSE_TYPE_EDITABLE_SAMPLE, NULL);
+      esample = (BseEditableSample*) bse_object_new (BSE_TYPE_EDITABLE_SAMPLE, NULL);
       bse_editable_sample_set_wchunk (esample, wchunk);
       bse_item_use (BSE_ITEM (esample));
       g_object_unref (esample);

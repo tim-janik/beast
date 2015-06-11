@@ -120,9 +120,12 @@ object_unames_ht_insert (BseObject *object)
   g_hash_table_insert (object_unames_ht, BSE_OBJECT_UNAME (object_slist->data), object_slist);
 }
 
+static __thread uint in_bse_object_new = 0;
+
 static void
 bse_object_init (BseObject *object)
 {
+  assert (in_bse_object_new);
   object->flags = 0;
   object->lock_count = 0;
   object->unique_id = bse_id_alloc ();
@@ -855,4 +858,25 @@ BSE_BUILTIN_TYPE (BseObject)
                                      "BSE Object Hierarchy base type",
                                      __FILE__, __LINE__,
                                      &object_info);
+}
+
+// == BseObject -> C++ class Glue ==
+GObject*
+bse_object_new (GType object_type, const gchar *first_property_name, ...)
+{
+  g_return_val_if_fail (G_TYPE_IS_OBJECT (object_type), NULL);
+  va_list var_args;
+  va_start (var_args, first_property_name);
+  GObject *object = bse_object_new_valist (object_type, first_property_name, var_args);
+  va_end (var_args);
+  return object;
+}
+
+GObject*
+bse_object_new_valist (GType object_type, const gchar *first_property_name, va_list var_args)
+{
+  in_bse_object_new++;
+  GObject *object = g_object_new_valist (object_type, first_property_name, var_args);
+  in_bse_object_new--;
+  return object;
 }

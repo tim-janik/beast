@@ -474,7 +474,7 @@ showdoc_print_type (GObjectClass *oclass,
       g_type_is_a (type, BSE_TYPE_SOURCE) &&
       !strequals ("BseServer", g_type_name (type)))
     {
-      BseSource *source = (BseSource*) g_object_new (type, NULL);
+      BseSource *source = (BseSource*) bse_object_new (type, NULL);
       for (j = 0; j < BSE_SOURCE_N_ICHANNELS (source); j++)
         {
           g_print ("  {\n");

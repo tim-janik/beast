@@ -92,6 +92,8 @@ guint	bse_object_class_add_dsignal    	(BseObjectClass	*oclass,
 
 
 /* --- object API --- */
+GObject*        bse_object_new                  (GType object_type, const gchar *first_property_name, ...);
+GObject*        bse_object_new_valist           (GType object_type, const gchar *first_property_name, va_list var_args);
 void		bse_object_lock			(gpointer	 object);
 void		bse_object_unlock		(gpointer	 object);
 gboolean        bse_object_editable_property	(gpointer	 object,

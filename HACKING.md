@@ -16,9 +16,9 @@ IDL-Migration
 
 CXX-Migration
 -------------
-**[PLANNED]** Move from GObject (BseObject) to AIDA C++11 objects, derived from Aida::ImplicitBase and specified in IDL files. The following steps are planned:
-* bse_object_new is used everywhere instead of g_object_new.
-* *bse_object_new* creates the BseObject/GObject and then the IDL based C++ object. Back pointers are installed to link the two together. That way features can be migrated incrementally from BseObject to CxxObject. The C++ objects auto-convert to their BseObject counter parts. This allows *base* object types to be replaced by CxxObjects quickly.
+**[STARTED]** Move from GObject (BseObject) to AIDA C++11 objects, derived from Aida::ImplicitBase and specified in IDL files. The following steps are planned:
+* bse_object_new_valist is used everywhere instead of g_object_new() and its variants.
+* *bse_object_new_valist* creates the BseObject/GObject and then the IDL based C++ object. Back pointers are installed to link the two together. That way features can be migrated incrementally from BseObject to CxxObject. The C++ objects auto-convert to their BseObject counter parts. This allows *base* object types to be replaced by CxxObjects quickly.
     * First, signals should be migrated, as signals are the the main tie to libgobject.so.
     * Second, once all signals are converted, all g_signal_ related code is eliminated from BSE and SFI, bse_proxy_connect will be removed.
     * Last, all g_object_ and g_type_ calls can be replaced.

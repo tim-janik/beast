@@ -292,7 +292,7 @@ bse_container_new_child_bname (BseContainer *container,
 
   g_object_set_data_full (G_OBJECT (container), "BseContainer-base-name", g_strdup (base_name), g_free);
   va_start (var_args, first_param_name);
-  child = g_object_new_valist (child_type, first_param_name, var_args);
+  child = bse_object_new_valist (child_type, first_param_name, var_args);
   va_end (var_args);
   if (base_name)
     g_object_set (child, "uname", NULL, NULL); /* no undo */
@@ -1238,7 +1238,7 @@ static void
 undo_remove_child (BseUndoStep  *ustep,
                    BseUndoStack *ustack)
 {
-  BseItem *child = (BseItem*) g_object_new (ustep->data[0].v_ulong,
+  BseItem *child = (BseItem*) bse_object_new (ustep->data[0].v_ulong,
                                             "uname", ustep->data[1].v_pointer,
                                             NULL);
   bse_container_add_item ((BseContainer*) bse_undo_pointer_unpack ((char*) ustep->data[2].v_pointer, ustack), child);

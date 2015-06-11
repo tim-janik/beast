@@ -350,7 +350,7 @@ bse_server_get (void)
 
   if (!server)
     {
-      server = (BseServer*) g_object_new (BSE_TYPE_SERVER, NULL);
+      server = (BseServer*) bse_object_new (BSE_TYPE_SERVER, NULL);
       g_object_ref (server);
     }
 
@@ -374,7 +374,7 @@ bse_server_create_project (BseServer   *server,
   g_return_val_if_fail (name != NULL, NULL);
   g_return_val_if_fail (bse_server_find_project (server, name) == NULL, NULL);
 
-  project = (BseProject*) g_object_new (BSE_TYPE_PROJECT, "uname", name, NULL);
+  project = (BseProject*) bse_object_new (BSE_TYPE_PROJECT, "uname", name, NULL);
   server->projects = g_list_prepend (server->projects, project);
   g_object_connect (project,
 		    "signal::release", destroy_project, server,
@@ -576,7 +576,7 @@ bse_server_open_devices (BseServer *self)
       if (self->wave_file)
 	{
 	  BseErrorType error;
-	  self->pcm_writer = (BsePcmWriter*) g_object_new (BSE_TYPE_PCM_WRITER, NULL);
+	  self->pcm_writer = (BsePcmWriter*) bse_object_new (BSE_TYPE_PCM_WRITER, NULL);
           const uint n_channels = 2;
 	  error = bse_pcm_writer_open (self->pcm_writer, self->wave_file,
                                        n_channels, bse_engine_sample_freq (),

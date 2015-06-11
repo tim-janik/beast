@@ -165,7 +165,7 @@ METHOD (BseProject, restore-from-file, "File/Restore") {
   /* action */
   if (!project->in_undo && !project->in_redo)
     {
-      BseStorage *storage = (BseStorage*) g_object_new (BSE_TYPE_STORAGE, NULL);
+      BseStorage *storage = (BseStorage*) bse_object_new (BSE_TYPE_STORAGE, NULL);
       error = bse_storage_input_file (storage, file_name);
       if (!error)
         error = bse_project_restore (project, storage);

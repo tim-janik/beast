@@ -1228,7 +1228,7 @@ bse_item_backup_to_undo (BseItem      *self,
 {
   if (!BSE_UNDO_STACK_VOID (ustack))
     {
-      BseStorage *storage = (BseStorage*) g_object_new (BSE_TYPE_STORAGE, NULL);
+      BseStorage *storage = (BseStorage*) bse_object_new (BSE_TYPE_STORAGE, NULL);
       bse_storage_prepare_write (storage, BseStorageMode (BSE_STORAGE_DBLOCK_CONTAINED |
                                                           BSE_STORAGE_SELF_CONTAINED));
       bse_storage_store_item (storage, self);
