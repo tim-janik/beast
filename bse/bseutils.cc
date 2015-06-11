@@ -670,5 +670,4 @@ bse_string_equals (gconstpointer string1,
     return string1 == string2;
 }
 
-#include "bseclientapi.cc"
-#include "bseserverapi.cc"      // build AIDA IDL stubs
+#include "bseserverapi.cc"      // build IDL server interface

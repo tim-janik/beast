@@ -2,7 +2,7 @@
 #ifndef __BSE_PLUGIN_H__
 #define __BSE_PLUGIN_H__
 
-#include	<bse/bse.hh>	/* for bse_check_version() */
+#include	<bse/bsestartup.hh>	// for bse_check_version()
 #include	<bse/bseexports.hh>
 
 G_BEGIN_DECLS

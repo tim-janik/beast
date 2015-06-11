@@ -2,7 +2,6 @@
 #ifndef __BSE_UTILS_H__
 #define __BSE_UTILS_H__
 
-#include <bse/bseclientapi.hh>
 #include <rapicorn-core.hh>
 #include <bse/bseserverapi.hh>
 

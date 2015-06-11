@@ -2,7 +2,6 @@
 #ifndef __BSE_INTERNALS_HH__
 #define __BSE_INTERNALS_HH__
 
-#include <bse/bse.hh>
 #include <bse/bseenums.hh>
 #include <bse/bsemathsignal.hh>
 #include <bse/bseblockutils.hh>

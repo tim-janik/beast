@@ -7,6 +7,7 @@
 #include "bseengineutils.hh"
 #include "bseengineschedule.hh"
 #include "bseieee754.hh"
+#include "bsestartup.hh"        // for TaskRegistry
 #include <string.h>
 #include <unistd.h>
 #include <sys/poll.h>

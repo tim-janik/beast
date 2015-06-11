@@ -1,7 +1,6 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #ifndef __BSE_MAIN_H__
 #define __BSE_MAIN_H__
-#include	<bse/bse.hh>	/* initialization */
 #include        <bse/bsetype.hh>
 G_BEGIN_DECLS
 

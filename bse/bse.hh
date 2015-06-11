@@ -2,9 +2,8 @@
 #ifndef __BSE_H__
 #define __BSE_H__
 
-#include <sfi/sfi.hh>
-#include <bse/bseconfig.h>
-#include <bse/bsecore.hh>
+#include <bse/bsestartup.hh>
+#include <bse/bseclientapi.hh>
 
 G_BEGIN_DECLS
 
