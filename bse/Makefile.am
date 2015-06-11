@@ -356,6 +356,6 @@ bseinfo_LDADD    = $(progs_LDADD)
 EXTRA_DIST += oldidl.idl
 check-oldidl: oldidl.idl AuxTypes.py
 	@echo "  CHECK " $<
-	$(Q) $(AIDACC_VDEBUG) -x $(srcdir)/AuxTypes.py $<
+	$(Q) $(AIDACC_VDEBUG) --bse-extensions -x $(srcdir)/AuxTypes.py $<
 .PHONY: check-oldidl
 check-local: check-oldidl
