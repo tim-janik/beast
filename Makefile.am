@@ -3,7 +3,12 @@ include $(top_srcdir)/Makefile.decl
 
 SUBDIRS = . data sfi bse plugins drivers shell beast-gtk launchers library tools po tests docs
 
-noinst_DATA =
+noinst_DATA = HACKING.html
+
+%.html: %.md
+	pandoc -s --toc -N -S -f markdown_github+pandoc_title_block -t html --email-obfuscation=javascript \
+	  $< -o xgen-$(@F)
+	mv xgen-$(@F) $@
 
 # require automake 1.9
 AUTOMAKE_OPTIONS = 1.9 dist-bzip2 no-dist-gzip -Wno-portability
