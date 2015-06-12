@@ -1055,7 +1055,7 @@ MidiChannel::start_note (guint64         tick_stamp,
         }
   /* grab voice to override */
   if (!vswitch)
-    ; // FIXME: voice = override_candidate;
+    (void) override_candidate; // FIXME: voice = override_candidate;
 
   if (vswitch && vswitch->n_vinputs)
     {
