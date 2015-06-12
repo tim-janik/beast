@@ -54,7 +54,6 @@ sfi_init (int *argcp, char **argv, const char *app_name, const Bse::StringVector
   else
     Rapicorn::init_core (app_name ? app_name : prg_name, argcp, argv);
 
-  g_type_init ();       /* just in case this hasn't been called already */
   _sfi_init_values ();
   _sfi_init_params ();
   _sfi_init_time ();

@@ -256,7 +256,7 @@ sfi_value_take_pspec (GValue     *value,
 {
   g_return_if_fail (SFI_VALUE_HOLDS_PSPEC (value));
 
-  g_value_set_param_take_ownership (value, pspec);
+  g_value_take_param (value, pspec);
 }
 
 SfiSeq*

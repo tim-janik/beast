@@ -842,7 +842,7 @@ GTokenType Parser::parseNamespace()
   bool ready = false;
   do
     {
-      switch (g_scanner_peek_next_token (scanner))
+      switch (int (g_scanner_peek_next_token (scanner)))
 	{
 	  case TOKEN_CHOICE:
 	    {
@@ -1238,7 +1238,7 @@ GTokenType Parser::parseRecord ()
   while (!ready)
     {
       GTokenType expected_token;
-      switch (g_scanner_peek_next_token (scanner))
+      switch (int (g_scanner_peek_next_token (scanner)))
         {
         case G_TOKEN_IDENTIFIER:
           {
@@ -1626,10 +1626,10 @@ GTokenType Parser::parseClass ()
     }
 
   parse_or_return ('{');
-  while (g_scanner_peek_next_token (scanner) != G_TOKEN_RIGHT_CURLY)
+  while (int (g_scanner_peek_next_token (scanner) != G_TOKEN_RIGHT_CURLY))
     {
       GTokenType expected_token;
-      switch (g_scanner_peek_next_token (scanner))
+      switch (int (g_scanner_peek_next_token (scanner)))
         {
 	case G_TOKEN_IDENTIFIER:
 	  {
