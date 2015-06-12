@@ -30,7 +30,6 @@ main (int   argc,
   GxkScrollTextFlags flags = GxkScrollTextFlags (0);
   /* initialize modules
    */
-  g_type_init ();
   gtk_init (&argc, &argv);
   gxk_init ();
 

@@ -82,7 +82,6 @@ main (int   argc,
   Rapicorn::ThreadInfo::self().name ("Beast GUI");
   Bse::TaskRegistry::add (Rapicorn::ThreadInfo::self().name(), Rapicorn::ThisThread::process_pid(), Rapicorn::ThisThread::thread_pid());
 
-  g_type_init ();
   /* initialize Birnet/Sfi */
   sfi_init (&argc, argv, "BEAST");
   /* ensure SFI can wake us up */
