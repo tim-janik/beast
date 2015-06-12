@@ -1,6 +1,6 @@
 // CC0 Public Domain: http://creativecommons.org/publicdomain/zero/1.0/
-#define _ISOC99_SOURCE  /* for INFINITY and NAN */
-#define _GNU_SOURCE     /* provides: _ISOC99_SOURCE */
+#define _ISOC99_SOURCE          // for INFINITY and NAN
+#define _GNU_SOURCE     1       // provides: _ISOC99_SOURCE
 #include <math.h>
 #include <stdarg.h>
 #include <stdio.h>
@@ -78,7 +78,7 @@ _bse_filter_design_ellf (const BseIIRFilterRequest      *ifr,
   fid->n_zeros = 0;
   fid->n_poles = 0;
   uint i;
-  for (i = 0; i < ds.n_solved_poles; i++)
+  for (i = 0; i < uint (ds.n_solved_poles); i++)
     {
       double a = ds.zcpz[i].re, b = ds.zcpz[i].im;
       if (b >= 0.0)
@@ -166,7 +166,6 @@ _bse_filter_design_ellf (const BseIIRFilterRequest      *ifr,
 static double ellik  (double phi, double m); // incomplete elliptic integral of the first kind
 static double ellpk  (double x); // complete elliptic integral of the first kind
 static int    ellpj  (double u, double m, double *sn, double *cn, double *dn, double *ph); // Jacobian Elliptic Functions
-static int    math_set_error (char *name, int code);
 
 /* --- math errors --- */
 static int math_global_error = 0;
@@ -210,7 +209,7 @@ static int math_global_error = 0;
  * to an error logging device.
  */
 static int
-math_set_error (char *name, int code)
+math_set_error (const char *name, int code)
 {
   /* Notice: the order of appearance of the following
    * messages is bound to the error codes defined
@@ -1021,11 +1020,13 @@ static int
 z_plane_zeros_poles_to_numerator_denomerator (const BseIIRFilterRequest *ifr,
                                               EllfDesignState           *ds)
 {
+#if 0
   BseComplex lin[2];
 
   lin[1].re = 1.0;
   lin[1].im = 0.0;
-
+#endif
+  
   if (ifr->kind == BSE_IIR_FILTER_BUTTERWORTH || ifr->kind == BSE_IIR_FILTER_CHEBYSHEV1)
     { /* Butterworth or Chebyshev */
       /* generate the remaining zeros */
@@ -1159,7 +1160,7 @@ z_plane_zeros_poles_to_numerator_denomerator (const BseIIRFilterRequest *ifr,
   BseComplex num = bse_complex (+1, 0);
   BseComplex den = bse_complex (+1, 0);
   uint i;
-  for (i = 0; i < ds->n_solved_poles; i++)
+  for (i = 0; i < uint (ds->n_solved_poles); i++)
     {
       const BseComplex zero = bse_complex (ds->zcpz[ds->n_solved_poles + i].re, ds->zcpz[ds->n_solved_poles + i].im);
       const BseComplex pole = bse_complex (ds->zcpz[i].re, ds->zcpz[i].im);
