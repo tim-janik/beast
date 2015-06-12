@@ -9,6 +9,8 @@
 #include <string>
 #include <set>
 
+#pragma GCC diagnostic ignored "-Wmissing-declarations"
+
 std::set<std::string> needTypes;
 std::set<std::string> needClasses;
 std::set<std::string> excludeTypes;
