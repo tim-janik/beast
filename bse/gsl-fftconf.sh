@@ -17,7 +17,7 @@ $MKFFT $OPTIONS 0
 #
 for dir in --analysis --synthesis --synthesis-scale ; do
   DOPT="$OPTIONS --skip-macros $dir"
-  echo "Generating FFT functions: $dir" >&2
+  #echo "Generating FFT functions: $dir" >&2
   $MKFFT $DOPT	   2 F				# standalone fft2
   $MKFFT $DOPT	   4 S F			# reusable fft4
   $MKFFT $DOPT	   4 F X			# standalone fft4
@@ -48,7 +48,7 @@ done
 #
 # generic variable length implementation
 #
-echo "Generating generic FFT function for sizes >8192" >&2
+#echo "Generating generic FFT function for sizes >8192" >&2
 cat <<__EOF
 
 
@@ -205,7 +205,7 @@ __EOF
 #
 # public complex fft frontends
 #
-echo "Generating public complex FFT frontends" >&2
+#echo "Generating public complex FFT frontends" >&2
 cat <<__EOF
 void
 gsl_power2_fftac (const unsigned int n_values,
@@ -293,7 +293,7 @@ __EOF
 #
 # public real fft frontends
 #
-echo "Generating public real FFT frontends" >&2
+#echo "Generating public real FFT frontends" >&2
 cat <<__EOF
 void
 gsl_power2_fftar (const unsigned int n_values,

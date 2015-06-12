@@ -172,7 +172,8 @@ endif
 # gslfft.cc
 GENERATED += gslfft.cc
 $(srcdir)/gslfft.cc: @PERLRULE@ $(srcdir)/gsl-fftgen.pl $(srcdir)/gsl-fftconf.sh
-	$(srcdir)/gsl-fftconf.sh '$(PERL) $(srcdir)/gsl-fftgen.pl' \"gslfft.hh\" >$@
+	$(AM_V_GEN)
+	$(Q) $(srcdir)/gsl-fftconf.sh '$(PERL) $(srcdir)/gsl-fftgen.pl $(if $(findstring 1, $(V)) ,, --no-verbose)' \"gslfft.hh\" >$@
 # bsegentypes.h
 GENERATED_EXTRA_DIST += bsegentypes.h
 $(libbse_la_OBJECTS): bsegentypes.h
