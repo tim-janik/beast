@@ -350,8 +350,12 @@ bse_server_get (void)
 
   if (!server)
     {
-      server = (BseServer*) bse_object_new (BSE_TYPE_SERVER, NULL);
+      server = (BseServer*) bse_object_new (BSE_TYPE_SERVER, "uname", "ServerImpl", NULL);
       g_object_ref (server);
+      assert (server);
+      assert (server->cxxobject_);
+      assert (dynamic_cast<Bse::ObjectImpl*> (server->cxxobject_));
+      assert (dynamic_cast<Bse::ServerImpl*> (server->cxxobject_));
     }
 
   return server;
@@ -1123,7 +1127,8 @@ engine_shutdown (BseServer *server)
 
 namespace Bse {
 
-ServerImpl::ServerImpl ()
+ServerImpl::ServerImpl (BseObject *bobj) :
+  ObjectImpl (bobj)
 {}
 
 ServerImpl::~ServerImpl ()
@@ -1137,11 +1142,19 @@ ServerImpl::get_test_object ()
   return test_object_;
 }
 
+ObjectIfaceP
+ServerImpl::from_proxy (int64_t proxyid)
+{
+  BseObject *bo = bse_object_from_id (proxyid);
+  if (!bo)
+    return ObjectIfaceP();
+  return shared_ptr_cast<ObjectIface> (bo->as<ObjectIface*>());
+}
+
 ServerImpl&
 ServerImpl::instance()
 {
-  static std::shared_ptr<ServerImpl> singleton = Rapicorn::FriendAllocator<ServerImpl>::make_shared();
-  return *singleton;
+  return *bse_server_get()->as<ServerImpl*>();
 }
 
 void

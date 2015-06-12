@@ -440,14 +440,17 @@ bst_init_aida_idl()
   // connect to BSE thread and fetch server handle
   bse_server = Rapicorn::Aida::ObjectBroker::connect<Bse::ServerH> ("inproc://BSE-" BST_VERSION);
   assert (bse_server != NULL);
+  assert (bse_server.proxy_id() == BSE_SERVER);
+  assert (bse_server.from_proxy (BSE_SERVER) == bse_server);
   // hook Aida connection into our main loop
   Bse::AidaGlibSource *source = Bse::AidaGlibSource::create (Bse::ServerH::__aida_connection__());
   g_source_set_priority (source, G_PRIORITY_DEFAULT);
   g_source_attach (source, g_main_context_default());
 
-  // performa Bse Aida test
+  // perform Bse Aida tests
   if (0)
     {
+      Rapicorn::printerr ("bse_server: %s\n", bse_server.debug_name());
       Bse::TestObjectH test = bse_server.get_test_object();
       test.sig_echo_reply() += echo_test_handler;
       const int test_result = test.echo_test ("foo");

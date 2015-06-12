@@ -11,6 +11,40 @@
 
 #define LDEBUG(...)     BSE_KEY_DEBUG ("leaks", __VA_ARGS__)
 
+namespace Bse {
+ObjectImpl::ObjectImpl (BseObject *bobj) :
+  gobject_ (bobj)
+{
+  assert (gobject_);
+  assert (gobject_->cxxobject_ == NULL);
+  g_object_ref (gobject_);
+  gobject_->cxxobject_ = this;
+}
+
+ObjectImpl::~ObjectImpl ()
+{
+  assert (gobject_->cxxobject_ == this);
+  gobject_->cxxobject_ = NULL;
+  g_object_unref (gobject_);
+  // ObjectImpl keeps BseObject alive until it is destroyed
+  // BseObject keeps ObjectImpl alive until dispose()
+}
+
+std::string
+ObjectImpl::debug_name ()
+{
+  return bse_object_debug_name (this->as<BseObject*>());
+}
+
+int64_t
+ObjectImpl::proxy_id ()
+{
+  BseObject *bo = *this;
+  return bo->unique_id;
+}
+
+} // Bse
+
 enum
 {
   PROP_0,
@@ -126,6 +160,8 @@ static void
 bse_object_init (BseObject *object)
 {
   assert (in_bse_object_new);
+  object->cxxobject_ = NULL;
+  object->cxxobjref_ = NULL;
   object->flags = 0;
   object->lock_count = 0;
   object->unique_id = bse_id_alloc ();
@@ -165,6 +201,13 @@ bse_object_do_dispose (GObject *gobject)
   G_OBJECT_CLASS (parent_class)->dispose (gobject);
 
   BSE_OBJECT_UNSET_FLAGS (object, BSE_OBJECT_FLAG_DISPOSING);
+
+  if (object->cxxobjref_)
+    {
+      object->cxxobjref_->reset();
+      delete object->cxxobjref_;
+      object->cxxobjref_ = NULL;
+    }
 }
 
 static void
@@ -447,10 +490,10 @@ bse_object_unlock (gpointer _object)
     }
 }
 
-gpointer
+BseObject*
 bse_object_from_id (guint unique_id)
 {
-  return sfi_ustore_lookup (object_id_ustore, unique_id);
+  return (BseObject*) sfi_ustore_lookup (object_id_ustore, unique_id);
 }
 
 GList*
@@ -872,11 +915,25 @@ bse_object_new (GType object_type, const gchar *first_property_name, ...)
   return object;
 }
 
+#include "bseserver.hh"
+
 GObject*
 bse_object_new_valist (GType object_type, const gchar *first_property_name, va_list var_args)
 {
   in_bse_object_new++;
-  GObject *object = g_object_new_valist (object_type, first_property_name, var_args);
+  BseObject *object = (BseObject*) g_object_new_valist (object_type, first_property_name, var_args);
   in_bse_object_new--;
+  assert (object->cxxobject_ == NULL);
+  assert (object->cxxobjref_ == NULL);
+  Bse::ObjectImpl *cxxo;
+  if      (object_type == BSE_TYPE_SERVER)
+    cxxo = new Bse::ServerImpl (object);
+  else //  object_type == BSE_TYPE_OBJECT
+    cxxo = new Bse::ObjectImpl (object);
+  assert (object->cxxobject_ == cxxo);
+  assert (object->cxxobjref_ == NULL);
+  object->cxxobjref_ = new Bse::ObjectImplP (cxxo); // shared_ptr that allows enable_shared_from_this
+  assert (cxxo == *object);
+  assert (object == *cxxo);
   return object;
 }

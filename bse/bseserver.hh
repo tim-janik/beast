@@ -98,16 +98,17 @@ G_END_DECLS
 
 namespace Bse {
 
-class ServerImpl : public ServerIface {
+class ServerImpl : public virtual ServerIface, public virtual ObjectImpl {
   TestObjectImplP    test_object_;
   friend class FriendAllocator<ServerImpl>;     // provide make_shared for non-public ctor
 protected:
-  explicit           ServerImpl ();
   virtual           ~ServerImpl ();
 public:
-  virtual TestObjectIfaceP get_test_object ();
+  explicit                 ServerImpl      (BseObject*);
+  virtual TestObjectIfaceP get_test_object () override;
   static ServerImpl&       instance        ();
   void                     send_user_message (const UserMessage &umsg);
+  virtual ObjectIfaceP     from_proxy      (int64_t proxyid) override;
 };
 
 } // Bse

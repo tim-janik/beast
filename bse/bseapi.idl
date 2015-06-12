@@ -6,6 +6,12 @@
 
 namespace Bse {
 
+/// Basic object type for all BSE objects.
+interface Object {
+  String debug_name () = 0;     ///< Object name useful for debugging output.
+  int64  proxy_id   () = 0;     ///< Retrieve the BseObject proxy ID for an Object.
+};
+
 /// Object to carry out IDL, API, signal, etc tests.
 interface TestObject {
   int32         echo_test       (String msg) = 0;       ///< Echo custom message to stdout.
@@ -33,9 +39,10 @@ record UserMessage {
  * The Bse::Server object controls the main BSE thread and keeps track of all objects
  * used in the BSE context.
  */
-interface Server {
+interface Server : Object {
   signal void   user_message    (UserMessage umsg);     ///< Notification signal for user messages from BSE.
   TestObject    get_test_object () = 0;                 ///< Retrieve object for API, signal, etc tests.
+  Object        from_proxy      (int64 proxyid) = 0;    ///< Find an Object from its associated BseObject proxy id.
 };
 
 } // Bse

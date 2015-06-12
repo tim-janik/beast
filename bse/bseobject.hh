@@ -4,6 +4,30 @@
 
 #include	<bse/bseparam.hh>
 
+namespace Bse {
+
+class ObjectImpl : public virtual ObjectIface {
+  BseObject             *gobject_;
+public:
+  explicit               ObjectImpl (BseObject*);
+  virtual               ~ObjectImpl ();
+  virtual std::string    debug_name () override;
+  virtual int64_t        proxy_id   () override;
+  operator               BseObject* ()          { return gobject_; }
+  template<class BseObjectPtr>
+  BseObjectPtr           as ()
+  {
+    static_assert (std::is_pointer<BseObjectPtr>::value, "");
+    typedef typename std::remove_pointer<BseObjectPtr>::type BseObjectT;
+    static_assert (std::is_base_of<GObject, BseObjectT>::value, "");
+    return (BseObjectPtr) gobject_;
+  }
+};
+typedef std::shared_ptr<ObjectImpl> ObjectImplP;
+
+} // Bse
+
+
 G_BEGIN_DECLS
 
 /* --- BSE type macros --- */
@@ -35,12 +59,29 @@ typedef enum				/*< skip >*/
 } BseObjectFlags;
 #define BSE_OBJECT_FLAGS_USHIFT	    (3)
 #define BSE_OBJECT_FLAGS_MAX_SHIFT  (16)
+
+G_END_DECLS // BseObject templates need C++ linkage
+
 /* --- typedefs & structures --- */
 struct BseObject : GObject {
-  guint16		 flags;
-  guint16		 lock_count;
-  guint			 unique_id;
+  Bse::ObjectImpl       *cxxobject_;
+  Bse::ObjectImplP      *cxxobjref_; // shared_ptr that keeps a reference on cxxobject_ until dispose()
+  guint16	         flags;
+  guint16	         lock_count;
+  guint		         unique_id;
+  operator               Bse::ObjectImpl* ()          { return cxxobject_; }
+  template<class ObjectImplPtr>
+  ObjectImplPtr          as ()
+  {
+    static_assert (std::is_pointer<ObjectImplPtr>::value, "");
+    typedef typename std::remove_pointer<ObjectImplPtr>::type ObjectImplT;
+    static_assert (std::is_base_of<Rapicorn::Aida::ImplicitBase, ObjectImplT>::value, "");
+    return dynamic_cast<ObjectImplPtr> (cxxobject_);
+  }
 };
+
+G_BEGIN_DECLS // BseObject templates need C++ linkage
+
 struct BseObjectClass : GObjectClass {
   gboolean              (*editable_property)    (BseObject      *object, /* for set_property/get_property implementations */
                                                  guint           param_id,
@@ -100,7 +141,7 @@ gboolean        bse_object_editable_property	(gpointer	 object,
                                                  const gchar    *property);
 BseIcon*	bse_object_get_icon		(BseObject	*object);
 void		bse_object_notify_icon_changed	(BseObject	*object);
-gpointer	bse_object_from_id		(guint		 unique_id);
+BseObject*	bse_object_from_id		(guint		 unique_id);
 GList*		bse_objects_list		(GType		 type);
 GList*		bse_objects_list_by_uname	(GType		 type,
 						 const gchar	*uname);
