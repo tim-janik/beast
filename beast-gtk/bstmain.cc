@@ -20,7 +20,8 @@
 extern "C" void bse_object_debug_leaks (void); // FIXME
 
 /* --- prototypes --- */
-static void			bst_early_parse_args	(int *argc_p, char **argv);
+static void			bst_args_parse_early	(int *argc_p, char **argv);
+static void			bst_args_process        (int *argc_p, char **argv);
 static void			bst_print_blurb		(void);
 static void			bst_exit_print_version	(void);
 static void                     bst_init_aida_idl       ();
@@ -85,8 +86,30 @@ main (int   argc,
   /* initialize Birnet/Sfi */
   sfi_init (&argc, argv, "BEAST");
   /* ensure SFI can wake us up */
-  /* initialize Gtk+ and go into threading mode */
-  bst_early_parse_args (&argc, argv);
+
+  // early arg parsing without remote calls
+  bst_args_parse_early (&argc, argv);
+
+  // startup BSE, allow remote calls
+  Bse::String bseoptions = Bse::string_format ("debug-extensions=%d", bst_debug_extensions);
+  Bse::init_async (&argc, argv, "BEAST", Bse::string_split (bseoptions, ":")); // initializes Bse AIDA connection
+  // now that the BSE thread runs, drop scheduling priorities if we have any
+  setpriority (PRIO_PROCESS, getpid(), 0);
+  // hook up Bse aida IDL with main loop
+  bst_init_aida_idl();
+  // Setup SFI glue context and wakeup
+  sfi_glue_context_push (Bse::init_glue_context ("BEAST", bst_main_loop_wakeup));
+  source = g_source_simple (GDK_PRIORITY_EVENTS, // G_PRIORITY_HIGH - 100,
+			    (GSourcePending) sfi_glue_context_pending,
+			    (GSourceDispatch) sfi_glue_context_dispatch,
+			    NULL, NULL, NULL);
+  g_source_attach (source, NULL);
+  g_source_unref (source);
+
+  // arg processing with BSE available, --help, --version
+  bst_args_process (&argc, argv);
+
+  // initialize Gtk+ and go into threading mode
   gtk_init (&argc, &argv);
   GDK_THREADS_ENTER ();
   /* initialize Gtk+ Extension Kit */
@@ -133,19 +156,6 @@ main (int   argc,
 
   /* start BSE core and connect */
   bst_splash_update_item (beast_splash, _("BSE Core"));
-  Bse::String bseoptions = Bse::string_format ("debug-extensions=%d", bst_debug_extensions);
-  Bse::init_async (&argc, argv, "BEAST", Bse::string_split (bseoptions, ":"));
-  sfi_glue_context_push (Bse::init_glue_context ("BEAST", bst_main_loop_wakeup));
-  source = g_source_simple (GDK_PRIORITY_EVENTS, // G_PRIORITY_HIGH - 100,
-			    (GSourcePending) sfi_glue_context_pending,
-			    (GSourceDispatch) sfi_glue_context_dispatch,
-			    NULL, NULL, NULL);
-  g_source_attach (source, NULL);
-  g_source_unref (source);
-
-  /* now that the BSE thread runs, drop scheduling priorities if we have any */
-  setpriority (PRIO_PROCESS, getpid(), 0);
-
   /* watch registration notifications on server */
   bse_proxy_connect (BSE_SERVER,
 		     "signal::registration", server_registration, beast_splash,
@@ -218,9 +228,6 @@ main (int   argc,
     }
   /* listen to BseServer notification */
   bst_splash_update_entity (beast_splash, _("Dialogs"));
-
-  // hook up Bse aida IDL with main loop
-  bst_init_aida_idl();
 
   bst_message_connect_to_server ();
   _bst_init_radgets ();
@@ -439,6 +446,8 @@ bst_init_aida_idl()
   assert (bse_server == NULL);
   // connect to BSE thread and fetch server handle
   bse_server = Rapicorn::Aida::ObjectBroker::connect<Bse::ServerH> ("inproc://BSE-" BST_VERSION);
+  if (!bse_server)
+    sfi_error ("failed to connect to BSE: %s", g_strerror (errno));
   assert (bse_server != NULL);
   assert (bse_server.proxy_id() == BSE_SERVER);
   assert (bse_server.from_proxy (BSE_SERVER) == bse_server);
@@ -458,12 +467,13 @@ bst_init_aida_idl()
     }
 }
 
+static bool initialize_bse_and_exit = false;
+
 static void
-bst_early_parse_args (int *argc_p, char **argv)
+bst_args_parse_early (int *argc_p, char **argv)
 {
   uint argc = *argc_p;
   uint i, e;
-  bool initialize_bse_and_exit = false;
   for (i = 1; i < argc; i++)
     {
       if (strcmp (argv[i], "--") == 0)
@@ -533,25 +543,82 @@ bst_early_parse_args (int *argc_p, char **argv)
         { /* handled by priviledged launcher */
           argv[i] = NULL;
         }
-      else if (strcmp ("-h", argv[i]) == 0 ||
-	       strcmp ("--help", argv[i]) == 0)
-	{
-	  bst_print_blurb ();
-          argv[i] = NULL;
-	  exit (0);
-	}
-      else if (strcmp ("-v", argv[i]) == 0 ||
-	       strcmp ("--version", argv[i]) == 0)
-	{
-	  bst_exit_print_version ();
-	  argv[i] = NULL;
-	  exit (0);
-	}
       else if (strcmp ("--skinrc", argv[i]) == 0 ||
 	       strncmp ("--skinrc=", argv[i], 9) == 0)
         {
           const char *arg = argv[i][9 - 1] == '=' ? argv[i] + 9 : (argv[i + 1] ? argv[i + 1] : "");
           bst_skin_config_set_rcfile (arg);
+        }
+      else if (strcmp ("--bse-latency", argv[i]) == 0 ||
+               strncmp ("--bse-latency=", argv[i], 14) == 0)
+        {
+          gchar *equal = argv[i] + 13;
+          may_auto_update_bse_rc_file = FALSE;
+          if (*equal != '=')
+            i++;
+          /* leave args for BSE */
+        }
+      else if (strcmp ("--bse-mixing-freq", argv[i]) == 0 ||
+               strncmp ("--bse-mixing-freq=", argv[i], 18) == 0)
+        {
+          gchar *equal = argv[i] + 17;
+          may_auto_update_bse_rc_file = FALSE;
+          if (*equal != '=')
+            i++;
+          /* leave args for BSE */
+        }
+      else if (strcmp ("--bse-control-freq", argv[i]) == 0 ||
+               strncmp ("--bse-control-freq=", argv[i], 19) == 0)
+        {
+          gchar *equal = argv[i] + 18;
+          may_auto_update_bse_rc_file = FALSE;
+          if (*equal != '=')
+            i++;
+          /* leave args for BSE */
+        }
+      else if (strcmp ("--bse-driver-list", argv[i]) == 0)
+        {
+          initialize_bse_and_exit = true;
+          /* leave args for BSE */
+        }
+      else if (strcmp ("-p", argv[i]) == 0)
+        {
+          /* modify args for BSE */
+          argv[i] = (char*) "--bse-pcm-driver";
+        }
+      else if (strcmp ("-m", argv[i]) == 0)
+        {
+          /* modify args for BSE */
+          argv[i] = (char*) "--bse-midi-driver";
+        }
+    }
+  gxk_param_set_devel_tips (bst_developer_hints);
+
+  e = 1;
+  for (i = 1; i < argc; i++)
+    if (argv[i])
+      {
+        argv[e++] = argv[i];
+        if (i >= e)
+          argv[i] = NULL;
+      }
+  *argc_p = e;
+}
+
+static void
+bst_args_process (int *argc_p, char **argv)
+{
+  assert (bse_server != NULL); // BSE must be initialized by now
+  if (initialize_bse_and_exit)
+    exit (0);
+  uint argc = *argc_p;
+  uint i;
+  for (i = 1; i < argc; i++)
+    {
+      if (strcmp (argv[i], "--") == 0)
+        {
+          argv[i] = NULL;
+          break;
         }
       else if (strcmp ("--print-dir", argv[i]) == 0 ||
 	       strncmp ("--print-dir=", argv[i], 12) == 0)
@@ -593,52 +660,22 @@ bst_early_parse_args (int *argc_p, char **argv)
           g_free (freeme);
 	  exit (0);
 	}
-      else if (strcmp ("--bse-latency", argv[i]) == 0 ||
-               strncmp ("--bse-latency=", argv[i], 14) == 0)
-        {
-          gchar *equal = argv[i] + 13;
-          may_auto_update_bse_rc_file = FALSE;
-          if (*equal != '=')
-            i++;
-          /* leave args for BSE */
-        }
-      else if (strcmp ("--bse-mixing-freq", argv[i]) == 0 ||
-               strncmp ("--bse-mixing-freq=", argv[i], 18) == 0)
-        {
-          gchar *equal = argv[i] + 17;
-          may_auto_update_bse_rc_file = FALSE;
-          if (*equal != '=')
-            i++;
-          /* leave args for BSE */
-        }
-      else if (strcmp ("--bse-control-freq", argv[i]) == 0 ||
-               strncmp ("--bse-control-freq=", argv[i], 19) == 0)
-        {
-          gchar *equal = argv[i] + 18;
-          may_auto_update_bse_rc_file = FALSE;
-          if (*equal != '=')
-            i++;
-          /* leave args for BSE */
-        }
-      else if (strcmp ("--bse-driver-list", argv[i]) == 0)
-        {
-          initialize_bse_and_exit = TRUE;
-          /* leave args for BSE */
-        }
-      else if (strcmp ("-p", argv[i]) == 0)
-        {
-          /* modify args for BSE */
-          argv[i] = (char*) "--bse-pcm-driver";
-        }
-      else if (strcmp ("-m", argv[i]) == 0)
-        {
-          /* modify args for BSE */
-          argv[i] = (char*) "--bse-midi-driver";
-        }
+      else if (strcmp ("-h", argv[i]) == 0 ||
+	       strcmp ("--help", argv[i]) == 0)
+	{
+	  bst_print_blurb ();
+          argv[i] = NULL;
+	  exit (0);
+	}
+      else if (strcmp ("-v", argv[i]) == 0 ||
+	       strcmp ("--version", argv[i]) == 0)
+	{
+	  bst_exit_print_version ();
+	  argv[i] = NULL;
+	  exit (0);
+	}
     }
-  gxk_param_set_devel_tips (bst_developer_hints);
-
-  e = 1;
+  uint e = 1;
   for (i = 1; i < argc; i++)
     if (argv[i])
       {
@@ -647,32 +684,24 @@ bst_early_parse_args (int *argc_p, char **argv)
           argv[i] = NULL;
       }
   *argc_p = e;
-  if (initialize_bse_and_exit)
-    {
-      Bse::init_async (argc_p, argv, "BEAST");
-      exit (0);
-    }
 }
 
 static void G_GNUC_NORETURN
 bst_exit_print_version (void)
 {
+  assert (bse_server != NULL); // we need BSE
   const gchar *c;
   gchar *freeme = NULL;
-  /* hack: start BSE, so we can query it for paths, works since we immediately exit() afterwards */
-  Bse::init_async (NULL, NULL, "BEAST");
-  sfi_glue_context_push (Bse::init_glue_context ("BEAST", bst_main_loop_wakeup));
   g_print ("BEAST version %s (%s)\n", BST_VERSION, BST_VERSION_HINT);
   g_print ("Libraries: ");
   g_print ("GLib %u.%u.%u", glib_major_version, glib_minor_version, glib_micro_version);
-  g_print (", SFI %s", BST_VERSION);
   g_print (", BSE %s", BST_VERSION);
   c = bse_server_get_vorbis_version (BSE_SERVER);
   if (c)
     g_print (", %s", c);
-  c = bse_server_get_mp3_version (BSE_SERVER);
-  if (c)
-    g_print (", %s", c);
+  String s = bse_server.get_mp3_version();
+  if (!s.empty())
+    printout (", %s", s);
   g_print (", GTK+ %u.%u.%u", gtk_major_version, gtk_minor_version, gtk_micro_version);
 #ifdef BST_WITH_XKB
   g_print (", XKBlib");
