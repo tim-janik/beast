@@ -157,7 +157,6 @@ GLIB_MKENUMS = glib-mkenums
 SFIDL = $(top_builddir)/sfi/sfidl
 SFIDL_INC = --nostdinc -I$(top_builddir) -I$(top_srcdir) -I$(srcdir)
 
-
 #
 # rules to generate built sources
 #
@@ -173,7 +172,11 @@ endif
 GENERATED += gslfft.cc
 $(srcdir)/gslfft.cc: @PERLRULE@ $(srcdir)/gsl-fftgen.pl $(srcdir)/gsl-fftconf.sh
 	$(AM_V_GEN)
-	$(Q) $(srcdir)/gsl-fftconf.sh '$(PERL) $(srcdir)/gsl-fftgen.pl $(if $(findstring 1, $(V)) ,, --no-verbose)' \"gslfft.hh\" >$@
+	$(Q) (cd . \
+	&& echo '#pragma GCC diagnostic ignored "-Wunused-but-set-variable"' \
+	&& $(srcdir)/gsl-fftconf.sh '$(PERL) $(srcdir)/gsl-fftgen.pl $(if $(findstring 1, $(V)) ,, --no-verbose)' \"gslfft.hh\" \
+	) > xgen-$(@F) \
+	&& mv xgen-$(@F) $@
 # bsegentypes.h
 GENERATED_EXTRA_DIST += bsegentypes.h
 $(libbse_la_OBJECTS): bsegentypes.h
