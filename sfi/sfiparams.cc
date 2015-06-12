@@ -944,7 +944,7 @@ tmp_choice_values_from_seq (SfiSeq *seq)
     {
       guint i, l = sfi_seq_length (seq), n = l / 3;
       /* check that we got a sequence from choice_values_to_seq() */
-      if (n && l == n * 3 && sfi_seq_check (seq, SFI_TYPE_STRING))
+      if (n && l == n * 3 && sfi_seq_check (seq, SFI_TYPE_SFI_STRING))
 	{
 	  TmpChoiceValues *tcv = g_new0 (TmpChoiceValues, 1);
 	  tcv->ref_count = 1;
@@ -1338,7 +1338,7 @@ sfi_category_type (SfiSCategory cat_type)
     case SFI_SCAT_INT:         return SFI_TYPE_INT;
     case SFI_SCAT_NUM:         return SFI_TYPE_NUM;
     case SFI_SCAT_REAL:        return SFI_TYPE_REAL;
-    case SFI_SCAT_STRING:      return SFI_TYPE_STRING;
+    case SFI_SCAT_STRING:      return SFI_TYPE_SFI_STRING;
     case SFI_SCAT_CHOICE:      return SFI_TYPE_CHOICE;
     case SFI_SCAT_BBLOCK:      return SFI_TYPE_BBLOCK;
     case SFI_SCAT_FBLOCK:      return SFI_TYPE_FBLOCK;

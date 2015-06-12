@@ -184,7 +184,7 @@ bse_script_check_client_msg (SfiGlueDecoder *decoder,
       GValue *retval;
       const guint vargs_pos = 8;
 
-      if (!seq || seq->n_elements < vargs_pos || !sfi_seq_check (seq, SFI_TYPE_STRING))
+      if (!seq || seq->n_elements < vargs_pos || !sfi_seq_check (seq, SFI_TYPE_SFI_STRING))
 	retval = sfi_value_string ("invalid arguments supplied");
       else
 	{

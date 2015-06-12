@@ -24,10 +24,10 @@ sequence IntSeq {
   Int    ints;
 };
 sequence TypeSeq {
-  String types;
+  SfiString types;
 };
 sequence StringSeq {
-  String strings;
+  SfiString strings;
 };
 sequence FloatSeq {
   Real values;
@@ -512,8 +512,8 @@ sequence ItemSeq {
 };
 record PropertyCandidates {
   Info    blurb      = ("A structure describing tentative property values.");
-  String  label;
-  String  tooltip;
+  SfiString  label;
+  SfiString  tooltip;
   ItemSeq items;
   TypeSeq partitions = SfiSeq ("Type Partitions", "List of types which may logically partition the list of items by type discrimination", STANDARD);
 };
@@ -556,7 +556,7 @@ record NoteDescription
   Int    semitone        = SfiInt ("Semitone", "", 0, 0, 11, 1, ":readwrite");
   Bool   upshift;
   Int    letter          = SfiInt ("Letter", "International abbreviation letter for this note", 64, 32, 126, 1, ":readwrite");
-  String name            = String ("Name", "", "", ":readwrite");
+  SfiString name         = SfiString ("Name", "", "", ":readwrite");
   /* constants */
   Int    max_fine_tune   = SfiInt ("Max Fine Tune", "", MAX_FINE_TUNE, MAX_FINE_TUNE, MAX_FINE_TUNE, 0, ":readable");
   Int    kammer_note     = SfiInt ("Kammer Note", "", KAMMER_NOTE, KAMMER_NOTE, KAMMER_NOTE, 0, ":readable");
@@ -583,10 +583,10 @@ record Icon
 record Category
 {
   Int    category_id = SfiInt ("Category ID", "", 1, 1, G_MAXINT, 1, ":readwrite");
-  String category;
+  SfiString category;
   Int    mindex;
   Int    lindex;
-  String type;
+  SfiString type;
   Icon   icon;
 };
 sequence CategorySeq {
@@ -638,10 +638,10 @@ record SongTiming {
   Real  stamp_ticks = SfiReal ("Ticks per stamp increment (valid only during playback)", "", 384, 1, G_MAXINT, 12, STANDARD);
 };
 record SampleFileInfo {
-  String        file    = SfiString ("Filename", "", "", STANDARD);
+  SfiString     file    = SfiString ("Filename", "", "", STANDARD);
   Int           size    = SfiInt ("File Size", "", 0, 0, G_MAXINT, 0, STANDARD);
   Num           mtime   = SfiNum ("Modification Time", "", 0, 0, SFI_MAXNUM, 0, STANDARD);
-  String        loader  = SfiString ("Loader", "", "", STANDARD);
+  SfiString     loader  = SfiString ("Loader", "", "", STANDARD);
   StringSeq     waves   = SfiSeq ("", "", STANDARD);
   Int           error   = SfiInt ("BseErrorType", "", 0, 0, G_MAXINT, 0, STANDARD); // FIXME: use BseErrorType here
 };
@@ -679,29 +679,29 @@ record GConfig {
                            FALSE, STANDARD);
   };
   group _("Default Values") {
-    String author_default  = SfiString (_("Default Author"), _("Default value for 'Author' fields"),
+    SfiString author_default  = SfiString (_("Default Author"), _("Default value for 'Author' fields"),
 					DEFAULT_AUTHOR, STANDARD);
-    String license_default = SfiString (_("Default License"), _("Default value for 'License' fields"),
+    SfiString license_default = SfiString (_("Default License"), _("Default value for 'License' fields"),
 					DEFAULT_LICENSE, STANDARD);
   };
   group _("Search Paths") {
-    String sample_path     = SfiString (_("Sample Path"),
+    SfiString sample_path     = SfiString (_("Sample Path"),
 					_("Search path of directories, seperated by \";\", used to find audio samples."),
 					DEFAULT_SAMPLE_PATH, STANDARD ":searchpath");
-    String effect_path     = SfiString (_("Effect Path"),
+    SfiString effect_path     = SfiString (_("Effect Path"),
 					_("Search path of directories, seperated by \";\", used to find BSE effect files."),
 					DEFAULT_EFFECTS_PATH, STANDARD ":searchpath");
-    String instrument_path = SfiString (_("Instrument Path"),
+    SfiString instrument_path = SfiString (_("Instrument Path"),
 					_("Search path of directories, seperated by \";\", used to find BSE instrument files."),
 					DEFAULT_INSTRUMENTS_PATH, STANDARD ":searchpath");
-    String script_path     = SfiString (_("Script Path"),
+    SfiString script_path     = SfiString (_("Script Path"),
 					_("Search path of directories, seperated by \";\", used to find BSE scheme scripts."),
 					DEFAULT_SCRIPTS_PATH, STANDARD ":searchpath");
-    String plugin_path     = SfiString (_("Plugin Path"),
+    SfiString plugin_path     = SfiString (_("Plugin Path"),
 					_("Search path of directories, seperated by \";\", used to find BSE plugins. This path "
 					  "is searched for in addition to the standard BSE plugin location on this system."),
 					DEFAULT_PLUGINS_PATH, STANDARD ":searchpath");
-    String ladspa_path     = SfiString (_("LADSPA Path"),
+    SfiString ladspa_path     = SfiString (_("LADSPA Path"),
 					_("Search path of directories, seperated by \";\", used to find LADSPA plugins. This "
 					  "path is searched for in addition to the standard LADSPA location on this system. "
 					  "LADSPA is the Linux Audio Developer's Simple Plugin API, more informations about "

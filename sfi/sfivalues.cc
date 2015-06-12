@@ -120,12 +120,12 @@ sfi_check_value (const GValue *value)
     case SFI_TYPE_INT:
     case SFI_TYPE_NUM:
     case SFI_TYPE_REAL:
-    case SFI_TYPE_STRING:
+    case SFI_TYPE_SFI_STRING:
     case SFI_TYPE_PSPEC:
       return TRUE;
     }
   /* non fundamentals */
-  /* SFI_TYPE_CHOICE is derived from SFI_TYPE_STRING */
+  /* SFI_TYPE_CHOICE is derived from SFI_TYPE_SFI_STRING */
   if (ftype == G_TYPE_BOXED)
     return (vtype == SFI_TYPE_REC ||
 	    vtype == SFI_TYPE_SEQ ||
@@ -477,7 +477,7 @@ sfi_value_real (SfiReal vreal)
 GValue*
 sfi_value_string (const gchar *vstring)
 {
-  GValue *value = alloc_value (SFI_TYPE_STRING);
+  GValue *value = alloc_value (SFI_TYPE_SFI_STRING);
   sfi_value_set_string (value, vstring);
   return value;
 }
@@ -486,7 +486,7 @@ GValue*
 sfi_value_lstring (const gchar *vstring,
 		   guint        length)
 {
-  GValue *value = alloc_value (SFI_TYPE_STRING);
+  GValue *value = alloc_value (SFI_TYPE_SFI_STRING);
   sfi_value_take_string (value, g_strndup (vstring, vstring ? length : 0));
   return value;
 }

@@ -25,17 +25,17 @@ main (int   argc,
 {
   sfi_init_test (&argc, argv);
 
-  TSTART ("Test String");
-  TASSERT (sizeof (String) == sizeof (const char*));
-  String s1 = "huhu";
-  String s2;
+  TSTART ("Test SfiString");
+  TASSERT (sizeof (SfiString) == sizeof (const char*));
+  SfiString s1 = "huhu";
+  SfiString s2;
   s2 += "huhu";
   TASSERT (strcmp (s1.c_str(), "huhu") == 0);
   TASSERT (s1 == s2);
   TASSERT (s1 + "HAHA" == std::string ("huhuHAHA"));
   s2 += "1";
   TASSERT (s1 != s2);
-  String s3 = "huhu1";
+  SfiString s3 = "huhu1";
   TASSERT (s2 == s3);
   TDONE();
   TSTART ("Test RecordHandle<>");

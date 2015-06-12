@@ -16,7 +16,7 @@ typedef SfiTime     Time;
 typedef SfiNote     Note;
 typedef SfiReal     Real;
 typedef SfiChoice   Choice;
-typedef std::string String;  /* not using SfiString resp. gchar* here */
+typedef std::string String;
 typedef SfiBBlock   BBlock;
 typedef SfiFBlock   FBlock;
 typedef SfiSeq      Seq;

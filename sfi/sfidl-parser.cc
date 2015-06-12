@@ -212,7 +212,7 @@ Type Parser::typeOf (const String& type) const
   if (type == "Sfi::Int")     return INT;
   if (type == "Sfi::Num")     return NUM;
   if (type == "Sfi::Real")    return REAL;
-  if (type == "Sfi::String")  return STRING;
+  if (type == "Sfi::SfiString")  return STRING;
   if (isChoice (type))	      return CHOICE;
   if (type == "Sfi::BBlock")  return BBLOCK;
   if (type == "Sfi::FBlock")  return FBLOCK;
@@ -795,7 +795,7 @@ bool Parser::parse (const String& filename)
   defineSymbol ("Int");
   defineSymbol ("Num");
   defineSymbol ("Real");
-  defineSymbol ("String");
+  defineSymbol ("SfiString");
   // deprecated: defineSymbol ("BBlock");
   // deprecated: defineSymbol ("FBlock");
   defineSymbol ("Rec");
