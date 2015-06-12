@@ -1,6 +1,7 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include <bse/bse.hh>
 #include <bse/bseieee754.hh>
+#include "subnormals.hh"
 
 float
 test1f (float v)

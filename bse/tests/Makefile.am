@@ -30,11 +30,12 @@ TESTS          += testcxx
 testcxx_SOURCES = testcxx.cc
 testcxx_LDADD   = $(progs_ldadd)
 
-TESTS              += subnormals 
-PERFTESTS          += subnormals 
+TESTS              += subnormals
+PERFTESTS          += subnormals
 subnormals_SOURCES  = subnormals.cc subnormals-aux.cc
 subnormals_LDADD    = $(progs_ldadd)
 subnormals_CXXFLAGS = $(AM_CXXFLAGS) -ffast-math
+EXTRA_DIST         += subnormals.hh
 
 TESTS             += loophandle
 loophandle_SOURCES = loophandle.cc
