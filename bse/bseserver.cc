@@ -1221,4 +1221,24 @@ ServerImpl::get_demo_path ()
   return BSE_PATH_DEMOS;
 }
 
+String
+ServerImpl::get_version ()
+{
+  return BST_VERSION;
+}
+
+String
+ServerImpl::get_custom_effect_dir ()
+{
+  StringVector strings = string_split (BSE_GCONFIG (effect_path), G_SEARCHPATH_SEPARATOR_S);
+  return strings.size() ? strings[0] : "";
+}
+
+String
+ServerImpl::get_custom_instrument_dir ()
+{
+  StringVector strings = string_split (BSE_GCONFIG (instrument_path), G_SEARCHPATH_SEPARATOR_S);
+  return strings.size() ? strings[0] : "";
+}
+
 } // Bse

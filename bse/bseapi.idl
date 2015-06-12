@@ -52,6 +52,9 @@ interface Server : Object {
   String        get_sample_path ();                     ///< Retrieve sample search path.
   String        get_effect_path ();                     ///< Retrieve effect search path.
   String        get_demo_path ();                       ///< Retrieve demo search path.
+  String        get_custom_instrument_dir ();           ///< Retrieve user specific instruments directory.
+  String        get_custom_effect_dir ();               ///< Retrieve user specific effects directory.
+  String        get_version ();                         ///< Retrieve BSE version.
 };
 
 } // Bse

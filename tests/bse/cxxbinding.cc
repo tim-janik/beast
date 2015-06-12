@@ -47,7 +47,7 @@ main (int   argc,
 
   Server server = 1;    // FIXME: users may not hardcode this
 
-  g_print ("server.get_custom_instrument_dir()=%s\n", server.get_custom_instrument_dir().c_str());
+  // g_print ("server.get_custom_instrument_dir()=%s\n", server.get_custom_instrument_dir().c_str());
 
   GConfigHandle prefs = GConfig::from_rec (server.bse_preferences ());
   prefs->plugin_path = "./.libs/testplugin.so";

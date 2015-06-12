@@ -233,12 +233,12 @@ bst_file_dialog_global_effect (void)
   static BstFileDialog *singleton = NULL;
   if (!singleton)
     {
-      const gchar *dir = bse_server_get_custom_effect_dir (BSE_SERVER);
+      const String dir = bse_server.get_custom_effect_dir();
       singleton = (BstFileDialog*) g_object_new (BST_TYPE_FILE_DIALOG, NULL);
-      if (dir)
+      if (!dir.empty())
         {
-          sfi_make_dirpath (dir);
-          gtk_file_selection_complete (singleton->fs, dir);
+          sfi_make_dirpath (dir.c_str());
+          gtk_file_selection_complete (singleton->fs, dir.c_str());
         }
     }
   return singleton;
@@ -250,12 +250,12 @@ bst_file_dialog_global_instrument (void)
   static BstFileDialog *singleton = NULL;
   if (!singleton)
     {
-      const gchar *dir = bse_server_get_custom_instrument_dir (BSE_SERVER);
+      const String dir = bse_server.get_custom_instrument_dir();
       singleton = (BstFileDialog*) g_object_new (BST_TYPE_FILE_DIALOG, NULL);
-      if (dir)
+      if (!dir.empty())
         {
-          sfi_make_dirpath (dir);
-          gtk_file_selection_complete (singleton->fs, dir);
+          sfi_make_dirpath (dir.c_str());
+          gtk_file_selection_complete (singleton->fs, dir.c_str());
         }
     }
   return singleton;
