@@ -91,16 +91,11 @@ BSE_BUILTIN_TYPE (BseContainer)
 static void
 bse_container_class_init (BseContainerClass *klass)
 {
-  GObjectClass *gobject_class;
-  BseObjectClass *object_class;
-  BseItemClass *item_class;
-  BseSourceClass *source_class;
-
   parent_class = (GTypeClass*) g_type_class_peek_parent (klass);
-  gobject_class = G_OBJECT_CLASS (klass);
-  object_class = BSE_OBJECT_CLASS (klass);
-  item_class = BSE_ITEM_CLASS (klass);
-  source_class = BSE_SOURCE_CLASS (klass);
+  GObjectClass *gobject_class = G_OBJECT_CLASS (klass);
+  BseObjectClass *object_class = BSE_OBJECT_CLASS (klass);
+  // BseItemClass *item_class = BSE_ITEM_CLASS (klass);
+  BseSourceClass *source_class = BSE_SOURCE_CLASS (klass);
 
   quark_cross_links = g_quark_from_static_string ("BseContainerCrossLinks");
 

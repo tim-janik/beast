@@ -198,7 +198,7 @@ bse_midi_file_load (const char   *file_name,
         }
     }
   /* extract time signature events from beginning of master track */
-  for (i = 0; i < MIN (16, smf->tracks[0].n_events); i++)
+  for (i = 0; i < int (MIN (16, smf->tracks[0].n_events)); i++)
     {
       BseMidiEvent *event = smf->tracks[0].events[i];
       if (event->status == BSE_MIDI_SET_TEMPO)
