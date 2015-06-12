@@ -305,10 +305,9 @@ GENERATED += bseserverapi.hh
 bseserverapi.cc: $(srcdir)/bseapi.idl $(AUXTYPES_PY)
 	$(AM_V_GEN)
 	$(Q) ${AIDACC} -x CxxStub -G macro=BSE_IDL -G servercc -x $(AUXTYPES_PY) $< -o xgen-$(@F)
-	$(Q) patch -f < $(srcdir)/patch-bseserverapi.cc.diff || true
 	$(Q) mv xgen-$(@F) $@
 GENERATED  += bseserverapi.cc
-EXTRA_DIST += bseapi.idl patch-bseserverapi.cc.diff
+EXTRA_DIST += bseapi.idl
 CLEANFILES += xgen-bseserverapi.cc.rej xgen-bseserverapi.cc.orig
 
 # == GENERATED targets ==
