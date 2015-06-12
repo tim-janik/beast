@@ -106,9 +106,10 @@ protected:
 public:
   explicit                 ServerImpl      (BseObject*);
   virtual TestObjectIfaceP get_test_object () override;
-  static ServerImpl&       instance        ();
-  void                     send_user_message (const UserMessage &umsg);
   virtual ObjectIfaceP     from_proxy      (int64_t proxyid) override;
+  virtual std::string      get_mp3_version () override;
+  void                     send_user_message (const UserMessage &umsg);
+  static ServerImpl&       instance        ();
 };
 
 } // Bse

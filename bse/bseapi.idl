@@ -43,6 +43,7 @@ interface Server : Object {
   signal void   user_message    (UserMessage umsg);     ///< Notification signal for user messages from BSE.
   TestObject    get_test_object () = 0;                 ///< Retrieve object for API, signal, etc tests.
   Object        from_proxy      (int64 proxyid) = 0;    ///< Find an Object from its associated BseObject proxy id.
+  String        get_mp3_version () = 0;                 ///< Retrieve BSE MP3 handler version.
 };
 
 } // Bse

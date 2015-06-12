@@ -17,6 +17,7 @@
 #include <unistd.h>
 #include <string.h>
 #include "bsepcmmodule.cc"
+#include "gsldatahandle-mad.hh"
 using namespace Bse;
 
 /* --- parameters --- */
@@ -1162,6 +1163,12 @@ ServerImpl::send_user_message (const UserMessage &umsg)
 {
   assert_return (umsg.text1.empty() == false);
   sig_user_message.emit (umsg);
+}
+
+std::string
+ServerImpl::get_mp3_version ()
+{
+  return String ("MAD ") + gsl_data_handle_mad_version ();
 }
 
 } // Bse
