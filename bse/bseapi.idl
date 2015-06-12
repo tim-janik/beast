@@ -44,6 +44,7 @@ interface Server : Object {
   TestObject    get_test_object ();                     ///< Retrieve object for API, signal, etc tests.
   Object        from_proxy      (int64 proxyid);        ///< Find an Object from its associated BseObject proxy id.
   String        get_mp3_version ();                     ///< Retrieve BSE MP3 handler version.
+  String        get_vorbis_version ();                  ///< Retrieve BSE Vorbis handler version.
 };
 
 } // Bse

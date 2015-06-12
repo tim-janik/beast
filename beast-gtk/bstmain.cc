@@ -690,16 +690,17 @@ static void G_GNUC_NORETURN
 bst_exit_print_version (void)
 {
   assert (bse_server != NULL); // we need BSE
+  String s;
   const gchar *c;
   gchar *freeme = NULL;
   g_print ("BEAST version %s (%s)\n", BST_VERSION, BST_VERSION_HINT);
   g_print ("Libraries: ");
   g_print ("GLib %u.%u.%u", glib_major_version, glib_minor_version, glib_micro_version);
   g_print (", BSE %s", BST_VERSION);
-  c = bse_server_get_vorbis_version (BSE_SERVER);
-  if (c)
-    g_print (", %s", c);
-  String s = bse_server.get_mp3_version();
+  s = bse_server.get_vorbis_version();
+  if (!s.empty())
+    printout (", %s", s);
+  s = bse_server.get_mp3_version();
   if (!s.empty())
     printout (", %s", s);
   g_print (", GTK+ %u.%u.%u", gtk_major_version, gtk_minor_version, gtk_micro_version);

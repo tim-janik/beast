@@ -18,6 +18,7 @@
 #include <string.h>
 #include "bsepcmmodule.cc"
 #include "gsldatahandle-mad.hh"
+#include "gslvorbis-enc.hh"
 using namespace Bse;
 
 /* --- parameters --- */
@@ -1165,10 +1166,16 @@ ServerImpl::send_user_message (const UserMessage &umsg)
   sig_user_message.emit (umsg);
 }
 
-std::string
+String
 ServerImpl::get_mp3_version ()
 {
   return String ("MAD ") + gsl_data_handle_mad_version ();
+}
+
+String
+ServerImpl::get_vorbis_version ()
+{
+  return "Ogg/Vorbis " + gsl_vorbis_encoder_version();
 }
 
 } // Bse

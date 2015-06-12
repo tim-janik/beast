@@ -108,6 +108,7 @@ public:
   virtual TestObjectIfaceP get_test_object () override;
   virtual ObjectIfaceP     from_proxy      (int64_t proxyid) override;
   virtual std::string      get_mp3_version () override;
+  virtual std::string      get_vorbis_version () override;
   void                     send_user_message (const UserMessage &umsg);
   static ServerImpl&       instance        ();
 };
