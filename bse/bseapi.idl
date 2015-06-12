@@ -8,14 +8,14 @@ namespace Bse {
 
 /// Basic object type for all BSE objects.
 interface Object {
-  String debug_name () = 0;     ///< Object name useful for debugging output.
-  int64  proxy_id   () = 0;     ///< Retrieve the BseObject proxy ID for an Object.
+  String debug_name (); ///< Object name useful for debugging output.
+  int64  proxy_id   (); ///< Retrieve the BseObject proxy ID for an Object.
 };
 
 /// Object to carry out IDL, API, signal, etc tests.
 interface TestObject {
-  int32         echo_test       (String msg) = 0;       ///< Echo custom message to stdout.
-  signal void   echo_reply      (String msg);           ///< Signal emitted in response to echo_test().
+  int32         echo_test       (String msg);   ///< Echo custom message to stdout.
+  signal void   echo_reply      (String msg);   ///< Signal emitted in response to echo_test().
 };
 
 enum UserMessageType {
@@ -41,9 +41,9 @@ record UserMessage {
  */
 interface Server : Object {
   signal void   user_message    (UserMessage umsg);     ///< Notification signal for user messages from BSE.
-  TestObject    get_test_object () = 0;                 ///< Retrieve object for API, signal, etc tests.
-  Object        from_proxy      (int64 proxyid) = 0;    ///< Find an Object from its associated BseObject proxy id.
-  String        get_mp3_version () = 0;                 ///< Retrieve BSE MP3 handler version.
+  TestObject    get_test_object ();                     ///< Retrieve object for API, signal, etc tests.
+  Object        from_proxy      (int64 proxyid);        ///< Find an Object from its associated BseObject proxy id.
+  String        get_mp3_version ();                     ///< Retrieve BSE MP3 handler version.
 };
 
 } // Bse
