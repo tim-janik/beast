@@ -17,6 +17,7 @@
 #include <unistd.h>
 #include <string.h>
 #include "bsepcmmodule.cc"
+#include "topconfig.h"
 #include "gsldatahandle-mad.hh"
 #include "gslvorbis-enc.hh"
 using namespace Bse;
@@ -1176,6 +1177,48 @@ String
 ServerImpl::get_vorbis_version ()
 {
   return "Ogg/Vorbis " + gsl_vorbis_encoder_version();
+}
+
+String
+ServerImpl::get_ladspa_path ()
+{
+  return Path::searchpath_join (BSE_PATH_LADSPA, BSE_GCONFIG (ladspa_path));
+}
+
+String
+ServerImpl::get_plugin_path ()
+{
+  return Path::searchpath_join (BSE_PATH_PLUGINS, BSE_GCONFIG (plugin_path));
+}
+
+String
+ServerImpl::get_script_path ()
+{
+  return Path::searchpath_join (BSE_PATH_SCRIPTS, BSE_GCONFIG (script_path));
+}
+
+String
+ServerImpl::get_instrument_path ()
+{
+  return Path::searchpath_join (BSE_PATH_INSTRUMENTS, BSE_GCONFIG (instrument_path));
+}
+
+String
+ServerImpl::get_sample_path ()
+{
+  return Path::searchpath_join (BSE_PATH_SAMPLES, BSE_GCONFIG (sample_path));
+}
+
+String
+ServerImpl::get_effect_path ()
+{
+  return Path::searchpath_join (BSE_PATH_EFFECTS, BSE_GCONFIG (effect_path));
+}
+
+String
+ServerImpl::get_demo_path ()
+{
+  return BSE_PATH_DEMOS;
 }
 
 } // Bse

@@ -446,34 +446,6 @@ BODY (BseProcedureClass *proc,
   return BSE_ERROR_NONE;
 }
 
-METHOD (BseServer, get-demo-path) {
-  HELP	= "Retrieve demo search path.";
-  IN	= bse_param_spec_object ("server", "Server", NULL,
-				 BSE_TYPE_SERVER, SFI_PARAM_STANDARD);
-  OUT	= sfi_pspec_string ("path", NULL, NULL, NULL, SFI_PARAM_STANDARD);
-}
-BODY (BseProcedureClass *proc,
-      const GValue      *in_values,
-      GValue            *out_values)
-{
-  sfi_value_set_string (out_values++, BSE_PATH_DEMOS);
-  return BSE_ERROR_NONE;
-}
-
-METHOD (BseServer, get-sample-path) {
-  HELP	= "Retrieve sample search path.";
-  IN	= bse_param_spec_object ("server", "Server", NULL,
-				 BSE_TYPE_SERVER, SFI_PARAM_STANDARD);
-  OUT	= sfi_pspec_string ("path", NULL, NULL, NULL, SFI_PARAM_STANDARD);
-}
-BODY (BseProcedureClass *proc,
-      const GValue      *in_values,
-      GValue            *out_values)
-{
-  sfi_value_take_string (out_values++, g_path_concat (BSE_PATH_SAMPLES, BSE_GCONFIG (sample_path), NULL));
-  return BSE_ERROR_NONE;
-}
-
 METHOD (BseServer, get-custom-effect-dir) {
   HELP	= "Retrieve user specific effects directory.";
   IN	= bse_param_spec_object ("server", "Server", NULL,
@@ -490,20 +462,6 @@ BODY (BseProcedureClass *proc,
   return BSE_ERROR_NONE;
 }
 
-METHOD (BseServer, get-effect-path) {
-  HELP	= "Retrieve effect search path.";
-  IN	= bse_param_spec_object ("server", "Server", NULL,
-				 BSE_TYPE_SERVER, SFI_PARAM_STANDARD);
-  OUT	= sfi_pspec_string ("path", NULL, NULL, NULL, SFI_PARAM_STANDARD);
-}
-BODY (BseProcedureClass *proc,
-      const GValue      *in_values,
-      GValue            *out_values)
-{
-  sfi_value_take_string (out_values++, g_path_concat (BSE_PATH_EFFECTS, BSE_GCONFIG (effect_path), NULL));
-  return BSE_ERROR_NONE;
-}
-
 METHOD (BseServer, get-custom-instrument-dir) {
   HELP	= "Retrieve user specific instruments directory.";
   IN	= bse_param_spec_object ("server", "Server", NULL,
@@ -517,61 +475,5 @@ BODY (BseProcedureClass *proc,
   gchar **dirs = g_strsplit (BSE_GCONFIG (instrument_path), G_SEARCHPATH_SEPARATOR_S, 2);
   sfi_value_set_string (out_values++, dirs[0]);
   g_strfreev (dirs);
-  return BSE_ERROR_NONE;
-}
-
-METHOD (BseServer, get-instrument-path) {
-  HELP	= "Retrieve instrument search path.";
-  IN	= bse_param_spec_object ("server", "Server", NULL,
-				 BSE_TYPE_SERVER, SFI_PARAM_STANDARD);
-  OUT	= sfi_pspec_string ("path", NULL, NULL, NULL, SFI_PARAM_STANDARD);
-}
-BODY (BseProcedureClass *proc,
-      const GValue      *in_values,
-      GValue            *out_values)
-{
-  sfi_value_take_string (out_values++, g_path_concat (BSE_PATH_INSTRUMENTS, BSE_GCONFIG (instrument_path), NULL));
-  return BSE_ERROR_NONE;
-}
-
-METHOD (BseServer, get-script-path) {
-  HELP	= "Retrieve script search path.";
-  IN	= bse_param_spec_object ("server", "Server", NULL,
-				 BSE_TYPE_SERVER, SFI_PARAM_STANDARD);
-  OUT	= sfi_pspec_string ("path", NULL, NULL, NULL, SFI_PARAM_STANDARD);
-}
-BODY (BseProcedureClass *proc,
-      const GValue      *in_values,
-      GValue            *out_values)
-{
-  sfi_value_take_string (out_values++, g_path_concat (BSE_PATH_SCRIPTS, BSE_GCONFIG (script_path), NULL));
-  return BSE_ERROR_NONE;
-}
-
-METHOD (BseServer, get-plugin-path) {
-  HELP	= "Retrieve plugin search path.";
-  IN	= bse_param_spec_object ("server", "Server", NULL,
-				 BSE_TYPE_SERVER, SFI_PARAM_STANDARD);
-  OUT	= sfi_pspec_string ("path", NULL, NULL, NULL, SFI_PARAM_STANDARD);
-}
-BODY (BseProcedureClass *proc,
-      const GValue      *in_values,
-      GValue            *out_values)
-{
-  sfi_value_take_string (out_values++, g_path_concat (BSE_PATH_PLUGINS, BSE_GCONFIG (plugin_path), NULL));
-  return BSE_ERROR_NONE;
-}
-
-METHOD (BseServer, get-ladspa-path) {
-  HELP	= "Retrieve ladspa search path.";
-  IN	= bse_param_spec_object ("server", "Server", NULL,
-				 BSE_TYPE_SERVER, SFI_PARAM_STANDARD);
-  OUT	= sfi_pspec_string ("path", NULL, NULL, NULL, SFI_PARAM_STANDARD);
-}
-BODY (BseProcedureClass *proc,
-      const GValue      *in_values,
-      GValue            *out_values)
-{
-  sfi_value_take_string (out_values++, g_path_concat (BSE_PATH_LADSPA, BSE_GCONFIG (ladspa_path), NULL));
   return BSE_ERROR_NONE;
 }

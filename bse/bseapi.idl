@@ -45,6 +45,13 @@ interface Server : Object {
   Object        from_proxy      (int64 proxyid);        ///< Find an Object from its associated BseObject proxy id.
   String        get_mp3_version ();                     ///< Retrieve BSE MP3 handler version.
   String        get_vorbis_version ();                  ///< Retrieve BSE Vorbis handler version.
+  String        get_ladspa_path ();                     ///< Retrieve ladspa search path.
+  String        get_plugin_path ();                     ///< Retrieve plugin search path.
+  String        get_script_path ();                     ///< Retrieve script search path.
+  String        get_instrument_path ();                 ///< Retrieve instrument search path.
+  String        get_sample_path ();                     ///< Retrieve sample search path.
+  String        get_effect_path ();                     ///< Retrieve effect search path.
+  String        get_demo_path ();                       ///< Retrieve demo search path.
 };
 
 } // Bse

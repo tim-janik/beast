@@ -678,7 +678,7 @@ demo_entries_setup (void)
 {
   if (!demo_entries)
     {
-      SfiRing *files = sfi_file_crawler_list_files (bse_server_get_demo_path (BSE_SERVER), "*.bse", GFileTest (0));
+      SfiRing *files = sfi_file_crawler_list_files (bse_server.get_demo_path().c_str(), "*.bse", GFileTest (0));
       while (files)
         {
           char *file = (char*) sfi_ring_pop_head (&files);

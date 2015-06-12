@@ -73,8 +73,6 @@ gchar*		g_strdup_lstrip   (const gchar	 *string);
 const gchar*    g_intern_strconcat      (const gchar   *first_string,
                                          ...) G_GNUC_NULL_TERMINATED;
 
-gchar*          g_path_concat     (const gchar   *first_path,
-                                   ...) G_GNUC_NULL_TERMINATED;
 GString*        g_string_prefix_lines (GString     *gstring,
                                        const gchar *pstr);
 

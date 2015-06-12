@@ -198,18 +198,6 @@ g_intern_strconcat (const gchar *first_string,
   return c;
 }
 
-gchar*
-g_path_concat (const gchar *first_path,
-               ...)
-{
-  va_list args;
-  gchar *s;
-  va_start (args, first_path);
-  s = delim_concat_varargs (first_path, G_SEARCHPATH_SEPARATOR, args);
-  va_end (args);
-  return s;
-}
-
 GString*
 g_string_prefix_lines (GString     *gstring,
                        const gchar *pstr)

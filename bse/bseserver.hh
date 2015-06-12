@@ -104,13 +104,20 @@ class ServerImpl : public virtual ServerIface, public virtual ObjectImpl {
 protected:
   virtual           ~ServerImpl ();
 public:
-  explicit                 ServerImpl      (BseObject*);
-  virtual TestObjectIfaceP get_test_object () override;
-  virtual ObjectIfaceP     from_proxy      (int64_t proxyid) override;
-  virtual std::string      get_mp3_version () override;
-  virtual std::string      get_vorbis_version () override;
-  void                     send_user_message (const UserMessage &umsg);
-  static ServerImpl&       instance        ();
+  explicit                 ServerImpl       (BseObject*);
+  virtual TestObjectIfaceP get_test_object  () override;
+  virtual ObjectIfaceP     from_proxy       (int64_t proxyid) override;
+  virtual String        get_mp3_version     () override;
+  virtual String        get_vorbis_version  () override;
+  virtual String        get_ladspa_path     () override;
+  virtual String        get_plugin_path     () override;
+  virtual String        get_script_path     () override;
+  virtual String        get_instrument_path () override;
+  virtual String        get_sample_path     () override;
+  virtual String        get_effect_path     () override;
+  virtual String        get_demo_path       () override;
+  void                  send_user_message   (const UserMessage &umsg);
+  static ServerImpl&    instance            ();
 };
 
 } // Bse

@@ -263,13 +263,13 @@ bse_wave_load_wave_file (BseWave      *self,
 
   if (!g_path_is_absolute (file_name))	  /* resolve relative path using search dir */
     {
-      char *sample_path;
+      String sample_path;
       SfiRing *files, *walk;
       if (bse_main_args->override_sample_path)
-	sample_path = g_strdup (bse_main_args->override_sample_path);
+	sample_path = bse_main_args->override_sample_path;
       else
-	sample_path = g_path_concat (BSE_PATH_SAMPLES, BSE_GCONFIG (sample_path), NULL);
-      files = sfi_file_crawler_list_files (sample_path, file_name, G_FILE_TEST_IS_REGULAR);
+	sample_path = Rapicorn::Path::searchpath_join (BSE_PATH_SAMPLES, BSE_GCONFIG (sample_path));
+      files = sfi_file_crawler_list_files (sample_path.c_str(), file_name, G_FILE_TEST_IS_REGULAR);
 
       for (walk = files; walk; walk = sfi_ring_walk (files, walk))
 	{
@@ -279,7 +279,6 @@ bse_wave_load_wave_file (BseWave      *self,
 	  g_free (fname);
 	}
       sfi_ring_free (files);
-      g_free (sample_path);
     }
   else
     {

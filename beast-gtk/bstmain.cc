@@ -642,15 +642,15 @@ bst_args_process (int *argc_p, char **argv)
 	  else if (strcmp (arg, "plugins") == 0)
 	    g_print ("%s\n", BSE_PATH_PLUGINS);
 	  else if (strcmp (arg, "samples") == 0)
-	    g_print ("%s\n", bse_server_get_sample_path (BSE_SERVER));
+	    printout ("%s\n", bse_server.get_sample_path());
 	  else if (strcmp (arg, "effects") == 0)
-	    g_print ("%s\n", bse_server_get_effect_path (BSE_SERVER));
+	    printout ("%s\n", bse_server.get_effect_path());
 	  else if (strcmp (arg, "scripts") == 0)
-	    g_print ("%s\n", bse_server_get_script_path (BSE_SERVER));
+	    printout ("%s\n", bse_server.get_script_path());
 	  else if (strcmp (arg, "instruments") == 0)
-	    g_print ("%s\n", bse_server_get_instrument_path (BSE_SERVER));
+	    printout ("%s\n", bse_server.get_instrument_path());
 	  else if (strcmp (arg, "demo") == 0)
-	    g_print ("%s\n", bse_server_get_demo_path (BSE_SERVER));
+	    printout ("%s\n", bse_server.get_demo_path());
 	  else
 	    {
 	      if (arg[0])
@@ -691,7 +691,6 @@ bst_exit_print_version (void)
 {
   assert (bse_server != NULL); // we need BSE
   String s;
-  const gchar *c;
   gchar *freeme = NULL;
   g_print ("BEAST version %s (%s)\n", BST_VERSION, BST_VERSION_HINT);
   g_print ("Libraries: ");
@@ -719,13 +718,13 @@ bst_exit_print_version (void)
   g_print ("Locale Path:     %s\n", BST_PATH_LOCALE);
   g_print ("Keyrc Path:      %s\n", BST_PATH_KEYS);
   g_print ("Skin Path:       %s\n", freeme = BST_STRDUP_SKIN_PATH());
-  g_print ("Sample Path:     %s\n", bse_server_get_sample_path (BSE_SERVER));
-  g_print ("Script Path:     %s\n", bse_server_get_script_path (BSE_SERVER));
-  g_print ("Effect Path:     %s\n", bse_server_get_effect_path (BSE_SERVER));
-  g_print ("Instrument Path: %s\n", bse_server_get_instrument_path (BSE_SERVER));
-  g_print ("Demo Path:       %s\n", bse_server_get_demo_path (BSE_SERVER));
-  g_print ("Plugin Path:     %s\n", bse_server_get_plugin_path (BSE_SERVER));
-  g_print ("LADSPA Path:     %s:$LADSPA_PATH\n", bse_server_get_ladspa_path (BSE_SERVER));
+  printout ("Sample Path:     %s\n", bse_server.get_sample_path());
+  printout ("Script Path:     %s\n", bse_server.get_script_path());
+  printout ("Effect Path:     %s\n", bse_server.get_effect_path());
+  printout ("Instrument Path: %s\n", bse_server.get_instrument_path());
+  printout ("Demo Path:       %s\n", bse_server.get_demo_path());
+  printout ("Plugin Path:     %s\n", bse_server.get_plugin_path());
+  printout ("LADSPA Path:     %s:$LADSPA_PATH\n", bse_server.get_ladspa_path());
   g_print ("\n");
   g_print ("BEAST comes with ABSOLUTELY NO WARRANTY.\n");
   g_print ("You may redistribute copies of BEAST under the terms of\n");
