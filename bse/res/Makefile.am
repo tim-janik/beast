@@ -19,6 +19,8 @@ noinst_DATA = bse-resources.cc
 EXTRA_DIST += $(RESOURCES)
 
 bse-resources.cc: $(srcdir)/*.bse
-	(cd $(srcdir) && $(RAPIDRES) $(RESOURCES) ) > xgen-bzc				\
-	&& cp xgen-bzc $@								\
+	$(AM_V_GEN)
+	$(Q) (cd $(srcdir) \
+	&& $(RAPIDRES) $(RESOURCES) ) > xgen-bzc			\
+	&& cp xgen-bzc $@						\
 	&& rm -f xgen-bzc
