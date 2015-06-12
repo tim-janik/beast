@@ -162,7 +162,8 @@ SFIDL_INC = --nostdinc -I$(top_builddir) -I$(top_srcdir) -I$(srcdir)
 # rules to generate built sources
 #
 %.genprc.cc: @PERLRULE@ %.proc mkcproc.pl
-	$(srcdir)/mkcproc.pl --funcname $@ --preprocess $< >$@
+	$(AM_V_GEN)
+	$(Q) $(srcdir)/mkcproc.pl --funcname $@ --preprocess $< >$@
 if WITH_PERLRULE
 CLEANFILES += $(bse_proc_gen_sources)
 else
@@ -175,16 +176,17 @@ $(srcdir)/gslfft.cc: @PERLRULE@ $(srcdir)/gsl-fftgen.pl $(srcdir)/gsl-fftconf.sh
 # bsegentypes.h
 GENERATED_EXTRA_DIST += bsegentypes.h
 $(libbse_la_OBJECTS): bsegentypes.h
-bsegentypes.h: @PERLRULE@ mktypes.pl $(filter-out bsegentypes.cc, $(bse_sources)) $(filter-out bsegentypes.h, $(bse_public_headers))
+bsegentypes.h: @PERLRULE@ mktypes.pl # $(filter-out bsegentypes.cc gslfft.cc, $(bse_sources)) $(filter-out bsegentypes.h, $(bse_public_headers))
 bsegentypes.h: @PERLRULE@ bsebasics.idl $(SFIDL)
-	( \
+	$(AM_V_GEN)
+	$(Q) ( \
 	  cd $(srcdir) \
 	  && $(GLIB_MKENUMS) \
 	    --fprod "\n/* --- @filename@ --- */" \
 	    --eprod "#define BSE_TYPE_@ENUMSHORT@\t    (BSE_TYPE_ID (@EnumName@))\n" \
 	    --eprod "extern GType BSE_TYPE_ID (@EnumName@);" \
-	      $(filter-out bsegentypes.h, $(bse_public_headers)) \
-	  && $(PERL) mktypes.pl --externs $(filter-out bsegentypes.cc, $(bse_sources)) \
+	      $(filter-out bsegentypes.h bseclientapi.hh, $(bse_public_headers)) \
+	  && $(PERL) mktypes.pl --externs $(filter-out bsegentypes.cc gslfft.cc, $(bse_sources)) \
 	) > xgen-$(@F) \
 	&& $(SFIDL) $(SFIDL_INC) --core-c --header $(srcdir)/bsebasics.idl >> xgen-$(@F) \
 	&& (cmp -s xgen-$(@F) $(srcdir)/bsegentypes.h || cp xgen-$(@F) $(srcdir)/bsegentypes.h) \
@@ -194,11 +196,12 @@ $(bse_sources): bsegentypes.h
 GENERATED_EXTRA_DIST += bsegentypes.cc
 $(libbse_la_OBJECTS): bsegentypes.cc
 bsegentypes.cc: @PERLRULE@ bsegentypes.h mktypes.pl bsebasics.idl $(SFIDL)
-	( \
+	$(AM_V_GEN)
+	$(Q) ( \
 	  cd $(srcdir) \
 	  && $(GLIB_MKENUMS) \
 	    --eprod "\nGType BSE_TYPE_ID (@EnumName@) = 0;" \
-	      $(bse_public_headers) \
+	      $(filter-out bseclientapi.hh, $(bse_public_headers)) \
 	  && $(PERL) mktypes.pl --interns --export-proto $(bse_sources) \
 	) > xgen-$(@F) \
 	&& cp xgen-$(@F) $(@F) \
@@ -207,7 +210,8 @@ bsegentypes.cc: @PERLRULE@ bsegentypes.h mktypes.pl bsebasics.idl $(SFIDL)
 GENERATED_CLEANFILES += bseenum_arrays.cc
 $(libbse_la_OBJECTS): bseenum_arrays.cc
 bseenum_arrays.cc: bsegentypes.h
-	( \
+	$(AM_V_GEN)
+	$(Q) ( \
 	  cd $(srcdir) \
 	  && $(GLIB_MKENUMS) \
 	    --fprod "\n/* --- @filename@ --- */\n#include\t\"@filename@\"" \
@@ -215,7 +219,7 @@ bseenum_arrays.cc: bsegentypes.h
 	    --vhead "static G@Type@Value @enum_name@_values[] = {" \
 	    --vprod "  { @VALUENAME@, \"@VALUENAME@\", \"@valuenick@\" }," \
 	    --vtail "  { 0, NULL, NULL }\n};\n" \
-	      $(filter-out bsegentypes.h, $(bse_public_headers)) \
+	      $(filter-out bseclientapi.hh bsegentypes.h, $(bse_public_headers)) \
 	) > xgen-$(@F) \
 	&& cp xgen-$(@F) $@ \
 	&& rm -f xgen-$(@F)
@@ -223,12 +227,13 @@ bseenum_arrays.cc: bsegentypes.h
 GENERATED_CLEANFILES += bseenum_list.cc
 $(libbse_la_OBJECTS): bseenum_list.cc
 bseenum_list.cc: bsegentypes.h
-	( \
+	$(AM_V_GEN)
+	$(Q) ( \
 	  cd $(srcdir) \
 	  && $(GLIB_MKENUMS) \
 	    --fprod "\n/* --- @filename@ --- */" \
 	    --eprod "  { \"@EnumName@\", G_TYPE_@TYPE@, &BSE_TYPE_ID (@EnumName@), @enum_name@_values }," \
-	      $(filter-out bsegentypes.h, $(bse_public_headers)) \
+	      $(filter-out bseclientapi.hh bsegentypes.h, $(bse_public_headers)) \
 	) > xgen-$(@F) \
 	&& cp xgen-$(@F) $@ \
 	&& rm -f xgen-$(@F)
@@ -236,7 +241,8 @@ bseenum_list.cc: bsegentypes.h
 GENERATED_EXTRA_DIST += bsegentype_array.cc
 $(libbse_la_OBJECTS): bsegentype_array.cc
 bsegentype_array.cc: @PERLRULE@ bsegentypes.h
-	cd $(srcdir) \
+	$(AM_V_GEN)
+	$(Q) cd $(srcdir) \
 	&& $(PERL) mktypes.pl --array $(bse_sources) > xgen-$(@F) \
 	&& cp xgen-$(@F) $(@F) \
 	&& rm -f xgen-$(@F)
@@ -245,7 +251,8 @@ GENERATED_EXTRA_DIST += bsebuiltin_externs.cc
 #$(libbse_la_OBJECTS): bsebuiltin_externs.cc # forces complete rebuild when *.proc changes
 bseplugin.cc: bsebuiltin_externs.cc
 bsebuiltin_externs.cc: @PERLRULE@ $(bse_proc_gen_sources) mkcproc.pl
-	cd $(srcdir) \
+	$(AM_V_GEN)
+	$(Q) cd $(srcdir) \
 	&& $(PERL) mkcproc.pl --externs $(bse_proc_gen_sources) > xgen-$(@F) \
 	&& cp xgen-$(@F) $(@F) \
 	&& rm -f xgen-$(@F)
@@ -254,7 +261,8 @@ GENERATED_EXTRA_DIST += bsebuiltin_array.cc
 #$(libbse_la_OBJECTS): bsebuiltin_array.cc # forces complete rebuild when *.proc changes
 bseplugin.cc: bsebuiltin_array.cc
 bsebuiltin_array.cc: @PERLRULE@ $(bse_proc_gen_sources) mkcproc.pl
-	cd $(srcdir) \
+	$(AM_V_GEN)
+	$(Q) cd $(srcdir) \
 	&& $(PERL) mkcproc.pl --functions $(bse_proc_gen_sources) > xgen-$(@F) \
 	&& cp xgen-$(@F) $(@F) \
 	&& rm -f xgen-$(@F)
@@ -262,13 +270,15 @@ bsebuiltin_array.cc: @PERLRULE@ $(bse_proc_gen_sources) mkcproc.pl
 GENERATED_CLEANFILES += bsegenbasics.cc
 $(srcdir)/bsebasics.cc: bsegenbasics.cc
 bsegenbasics.cc: bsebasics.idl $(SFIDL) bsebasics.genidl.hh
-	cd . \
+	$(AM_V_GEN)
+	$(Q) cd . \
 	&& $(SFIDL) $(SFIDL_INC) --core-c --source --init sfidl_types_init $(srcdir)/bsebasics.idl >> xgen-$(@F) \
 	&& cp xgen-$(@F) $(@F) \
 	&& rm -f xgen-$(@F)
 # setup generation of C++ objects from idl files
 %.genidl.hh: $(srcdir)/%.idl $(SFIDL)
-	$(SFIDL) --core-cxx --macro $(<F) $(SFIDL_INC) $< > $@ || (rm $@ ; exit 1 )
+	$(AM_V_GEN)
+	$(Q) $(SFIDL) --core-cxx --macro $(<F) $(SFIDL_INC) $< > $@ || (rm $@ ; exit 1 )
 
 
 #
