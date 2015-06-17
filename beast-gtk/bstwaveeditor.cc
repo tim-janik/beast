@@ -197,18 +197,18 @@ bst_wave_editor_init (BstWaveEditor *self)
   any = (GtkWidget*) g_object_new (GTK_TYPE_OPTION_MENU, "visible", TRUE, NULL);
   gtk_option_menu_set_menu (GTK_OPTION_MENU (any),
 			    bst_choice_menu_createv ("<BEAST-WaveEditor>/QSamplerDrawType",
-						     BST_CHOICE (BST_QSAMPLER_DRAW_CRANGE, _("Shape Range"), NONE),
-						     BST_CHOICE (BST_QSAMPLER_DRAW_ZERO_SHAPE, _("Shape Average"), NONE),
-						     BST_CHOICE (BST_QSAMPLER_DRAW_MINIMUM_SHAPE, _("Shape Minimum"), NONE),
-						     BST_CHOICE (BST_QSAMPLER_DRAW_MAXIMUM_SHAPE, _("Shape Maximum"), NONE),
-						     BST_CHOICE (BST_QSAMPLER_DRAW_CSHAPE, _("Sketch Range"), NONE),
-						     BST_CHOICE (BST_QSAMPLER_DRAW_MIDDLE_LINE, _("Sketch Average"), NONE),
-						     BST_CHOICE (BST_QSAMPLER_DRAW_MINIMUM_LINE, _("Sketch Minimum"), NONE),
-						     BST_CHOICE (BST_QSAMPLER_DRAW_MAXIMUM_LINE, _("Sketch Maximum"), NONE),
+						     BST_CHOICE (Bst::QSAMPLER_DRAW_CRANGE, _("Shape Range"), NONE),
+						     BST_CHOICE (Bst::QSAMPLER_DRAW_ZERO_SHAPE, _("Shape Average"), NONE),
+						     BST_CHOICE (Bst::QSAMPLER_DRAW_MINIMUM_SHAPE, _("Shape Minimum"), NONE),
+						     BST_CHOICE (Bst::QSAMPLER_DRAW_MAXIMUM_SHAPE, _("Shape Maximum"), NONE),
+						     BST_CHOICE (Bst::QSAMPLER_DRAW_CSHAPE, _("Sketch Range"), NONE),
+						     BST_CHOICE (Bst::QSAMPLER_DRAW_MIDDLE_LINE, _("Sketch Average"), NONE),
+						     BST_CHOICE (Bst::QSAMPLER_DRAW_MINIMUM_LINE, _("Sketch Minimum"), NONE),
+						     BST_CHOICE (Bst::QSAMPLER_DRAW_MAXIMUM_LINE, _("Sketch Maximum"), NONE),
 						     BST_CHOICE_END));
   g_object_connect (any, "swapped_signal::changed", change_draw_mode, self, NULL);
   gtk_option_menu_set_history (GTK_OPTION_MENU (any), 0);
-  self->draw_mode = BST_QSAMPLER_DRAW_CRANGE;
+  self->draw_mode = Bst::QSAMPLER_DRAW_CRANGE;
   gmask = bst_gmask_quick (self->gmask_parent, 2, NULL, any, NULL);
 
   /* playback handle */
@@ -496,7 +496,7 @@ wave_editor_set_n_qsamplers (BstWaveEditor *self,
 	  qsampler->owner = self;
 	  qsampler->owner_index = i;
 	  bst_qsampler_set_source (qsampler, 0, NULL, NULL, NULL);
-	  bst_qsampler_set_draw_mode (qsampler, BstQSamplerDrawMode (self->draw_mode));
+	  bst_qsampler_set_draw_mode (qsampler, self->draw_mode);
 	  self->qsamplers[i] = qsampler;
 	}
       self->n_qsamplers = n_qsamplers;
@@ -611,13 +611,11 @@ static void
 change_draw_mode (BstWaveEditor *self,
 		  GtkOptionMenu *omenu)
 {
-  guint i;
-
-  self->draw_mode = bst_choice_get_last (omenu->menu);
-  for (i = 0; i < self->n_qsamplers; i++)
+  self->draw_mode = (Bst::QSamplerDrawMode) bst_choice_get_last (omenu->menu);
+  for (uint i = 0; i < self->n_qsamplers; i++)
     {
       BstQSampler *qsampler = self->qsamplers[i];
-      bst_qsampler_set_draw_mode (qsampler, BstQSamplerDrawMode (self->draw_mode));
+      bst_qsampler_set_draw_mode (qsampler, self->draw_mode);
     }
 }
 

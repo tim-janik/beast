@@ -60,6 +60,17 @@ enum NoteLength {
   NOTE_LENGTH_128T      = Enum (_("1/128T"),_("Triplet hundred twenty-eighth note")),
 };
 
+enum QSamplerDrawMode {
+  QSAMPLER_DRAW_CRANGE          = Enum (_("Shape Range")),
+  QSAMPLER_DRAW_ZERO_SHAPE      = Enum (_("Shape Average")),
+  QSAMPLER_DRAW_MINIMUM_SHAPE   = Enum (_("Shape Minimum")),
+  QSAMPLER_DRAW_MAXIMUM_SHAPE   = Enum (_("Shape Maximum")),
+  QSAMPLER_DRAW_CSHAPE          = Enum (_("Sketch Range")),
+  QSAMPLER_DRAW_MIDDLE_LINE     = Enum (_("Sketch Average")),
+  QSAMPLER_DRAW_MINIMUM_LINE    = Enum (_("Sketch Minimum")),
+  QSAMPLER_DRAW_MAXIMUM_LINE    = Enum (_("Sketch Maximum")),
+};
+
 enum RowShading {
   ROW_SHADING_NONE    = Enum (0,       	     _("None")),
   ROW_SHADING_2       = Enum (_("2"),        _("Every second row")),

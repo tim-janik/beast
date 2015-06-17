@@ -57,18 +57,6 @@ inline    BstQSamplerType& operator|= (BstQSamplerType &s1, BstQSamplerType s2) 
 constexpr BstQSamplerType  operator~  (BstQSamplerType  s1)                 { return BstQSamplerType (~(long long unsigned) s1); }
 #endif // __cplusplus
 
-typedef enum
-{
-  BST_QSAMPLER_DRAW_CRANGE,
-  BST_QSAMPLER_DRAW_CSHAPE,
-  BST_QSAMPLER_DRAW_ZERO_SHAPE,
-  BST_QSAMPLER_DRAW_MINIMUM_LINE,
-  BST_QSAMPLER_DRAW_MIDDLE_LINE,
-  BST_QSAMPLER_DRAW_MAXIMUM_LINE,
-  BST_QSAMPLER_DRAW_MINIMUM_SHAPE,
-  BST_QSAMPLER_DRAW_MAXIMUM_SHAPE,
-  BST_QSAMPLER_DRAW_MODE_LAST	/*< skip >*/
-} BstQSamplerDrawMode;
 #define	BST_QSAMPLER_RELOAD_PRIORITY	(GTK_PRIORITY_REDRAW + 5)
 
 
@@ -101,7 +89,7 @@ struct _BstQSampler
   GdkColor	     red, green;
   GdkGC		    *red_gc, *green_gc;
   GdkWindow	    *canvas;
-  guint		     draw_mode : 16;
+  Bst::QSamplerDrawMode draw_mode;
   guint		     expose_frame : 1;
   guint		     ignore_adjustment : 1;
   guint		     refresh_queued : 1;
@@ -183,8 +171,7 @@ void	   bst_qsampler_set_zoom	(BstQSampler			*qsampler,
 					 gdouble			 zoom);
 void	   bst_qsampler_set_vscale	(BstQSampler			*qsampler,
 					 gdouble			 vscale);
-void	   bst_qsampler_set_draw_mode	(BstQSampler			*qsampler,
-					 BstQSamplerDrawMode		 dmode);
+void	   bst_qsampler_set_draw_mode	(BstQSampler *qsampler, Bst::QSamplerDrawMode dmode);
 void	   bst_qsampler_set_adjustment	(BstQSampler			*qsampler,
 					 GtkAdjustment			*adjustment);
 
