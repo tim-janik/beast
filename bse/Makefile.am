@@ -322,7 +322,6 @@ bseserverapi.cc: $(srcdir)/bseapi.idl $(AUXTYPES_PY)
 	$(Q) mv xgen-$(@F) $@
 GENERATED  += bseserverapi.cc
 EXTRA_DIST += bseapi.idl
-CLEANFILES += xgen-bseserverapi.cc.rej xgen-bseserverapi.cc.orig
 
 # == GENERATED targets ==
 $(libbse_la_OBJECTS): $(GENERATED)	# need dependency to force file generation
