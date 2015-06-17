@@ -617,7 +617,7 @@ bst_key_binding_dump (const gchar *file_name,
 
   sfi_wstore_printf (wstore, "; key-binding-file for BEAST v%s\n", BST_VERSION);
 
-  /* store BstSkinConfig */
+  /* store BstKeyBinding */
   sfi_wstore_puts (wstore, "\n");
   for (slist = kbindings; slist; slist = slist->next)
     {
