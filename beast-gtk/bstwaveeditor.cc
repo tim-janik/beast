@@ -247,6 +247,7 @@ bst_wave_editor_init (BstWaveEditor *self)
   gtk_widget_show (self->preview_on);
   gtk_widget_hide (self->preview_off);
   gmask = bst_gmask_quick (self->gmask_parent, 2, NULL, any, NULL);
+  (void) gmask;
 }
 
 static void
@@ -571,7 +572,6 @@ tree_selection_changed (BstWaveEditor    *self,
   if (gtk_tree_selection_get_selected (tsel, &model, &iter))
     {
       gchar *osc_str, *mix_str;
-      gfloat osc_freq, mix_freq;
       SfiProxy esample;
 
       g_assert (self->chunk_wrapper == (GxkListWrapper*) model);
@@ -580,8 +580,6 @@ tree_selection_changed (BstWaveEditor    *self,
 			  COL_OSC_FREQ, &osc_str,
 			  COL_MIX_FREQ, &mix_str,
 			  -1);
-      osc_freq = g_strtod (osc_str, NULL);
-      mix_freq = g_strtod (mix_str, NULL);
       g_free (osc_str);
       g_free (mix_str);
 
@@ -668,13 +666,13 @@ wave_chunk_fill_value (BstWaveEditor *self,
     {
       const gchar *string;
     case COL_OSC_FREQ:
-      g_value_set_string_take_ownership (value, g_strdup_format ("%.2f", bse_wave_chunk_get_osc_freq (wave, cidx)));
+      g_value_take_string (value, g_strdup_format ("%.2f", bse_wave_chunk_get_osc_freq (wave, cidx)));
       break;
     case COL_MIX_FREQ:
-      g_value_set_string_take_ownership (value, g_strdup_format ("%.2f", bse_wave_chunk_get_mix_freq (wave, cidx)));
+      g_value_take_string (value, g_strdup_format ("%.2f", bse_wave_chunk_get_mix_freq (wave, cidx)));
       break;
     case COL_LOOP:
-      g_value_set_string_take_ownership (value, g_strdup_format ("L:%u {0x%08x,0x%08x}", 0, 0, 0));
+      g_value_take_string (value, g_strdup_format ("L:%u {0x%08x,0x%08x}", 0, 0, 0));
       break;
     case COL_WAVE_NAME:
       bse_proxy_get (wave, "wave-name", &string, NULL);
