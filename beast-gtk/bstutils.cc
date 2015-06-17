@@ -19,8 +19,6 @@
 #include <errno.h>
 #include <unistd.h>
 #include <string.h>
-/* --- generated enums --- */
-#include "bstenum_arrays.cc"     /* enum string value arrays plus include directives */
 
 /* --- prototypes --- */
 static void     _bst_init_idl                   (void);
@@ -35,31 +33,6 @@ _bst_init_utils (void)
   g_assert (stock_icon_factory == NULL);
   stock_icon_factory = gtk_icon_factory_new ();
   gtk_icon_factory_add_default (stock_icon_factory);
-  /* initialize generated type ids */
-  {
-    static struct {
-      const char       *type_name;
-      GType             parent;
-      GType            *type_id;
-      gconstpointer     pointer1;
-    } builtin_info[] = {
-#include "bstenum_list.cc"       /* type entries */
-    };
-    guint i;
-    for (i = 0; i < sizeof (builtin_info) / sizeof (builtin_info[0]); i++)
-      {
-        GType type_id = 0;
-
-        if (builtin_info[i].parent == G_TYPE_ENUM)
-          type_id = g_enum_register_static (builtin_info[i].type_name, (const GEnumValue*) builtin_info[i].pointer1);
-        else if (builtin_info[i].parent == G_TYPE_FLAGS)
-          type_id = g_flags_register_static (builtin_info[i].type_name, (const GFlagsValue*) builtin_info[i].pointer1);
-        else
-          g_assert_not_reached ();
-        g_assert (g_type_name (type_id) != NULL);
-        *builtin_info[i].type_id = type_id;
-      }
-  }
 
   /* initialize IDL types */
   _bst_init_idl ();

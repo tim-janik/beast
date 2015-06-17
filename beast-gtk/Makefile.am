@@ -72,7 +72,6 @@ beast_extra_files = $(strip 						\
 )
 EXTRA_DIST += $(beast_extra_files)
 
-GLIB_MKENUMS = glib-mkenums
 SFIDL = ../sfi/sfidl
 SFIDL_INC = --nostdinc -I$(top_srcdir) -I$(top_builddir)
 
@@ -87,11 +86,6 @@ bstgentypes.h: stamp-bstgentypes.h ;
 stamp-bstgentypes.h: $(beast_headers) $(srcdir)/bstrecords.idl $(SFIDL)
 	cd .	\
 	&& echo 'G_BEGIN_DECLS;'				 > xgen-$(@F) \
-	&& ( cd $(srcdir) && $(GLIB_MKENUMS) \
-	  --fprod "\n/* --- @filename@ --- */" \
-	  --eprod "#define BST_TYPE_@ENUMSHORT@\t    (bst__type_id__@EnumName@)\n" \
-	  --eprod "extern GType bst__type_id__@EnumName@;" \
-	    $(beast_headers) ) 					>> xgen-$(@F) \
 	&& $(SFIDL) --host-c --header ${srcdir}/bstrecords.idl	>> xgen-$(@F) \
 	&& echo 'G_END_DECLS;'					>> xgen-$(@F) \
 	&& (cmp -s xgen-$(@F) bstgentypes.h || cp xgen-$(@F) bstgentypes.h) \
@@ -102,35 +96,7 @@ GENERATED_CLEANFILES += bstgentypes.cc
 $(beast_vOBJECTS): bstgentypes.cc
 bstgentypes.cc: bstgentypes.h $(beast_headers) ${srcdir}/bstrecords.idl $(SFIDL)
 	cd . \
-	&& ( cd $(srcdir) && $(GLIB_MKENUMS) \
-	  --eprod "\nGType bst__type_id__@EnumName@ = 0;" \
-	    $(beast_headers) ) > xgen-$(@F) \
-	&& $(SFIDL) --host-c --source --init _bst_init_idl ${srcdir}/bstrecords.idl >> xgen-$(@F) \
-	&& cp xgen-$(@F) $@ \
-	&& rm -f xgen-$(@F)
-# bstenum_arrays.cc
-GENERATED_CLEANFILES += bstenum_arrays.cc
-$(beast_vOBJECTS): bstenum_arrays.cc
-bstenum_arrays.cc: $(beast_headers)
-	cd . \
-	&& ( cd ${srcdir} && $(GLIB_MKENUMS) \
-	  --fprod "\n/* --- @filename@ --- */\n#include\t\"@filename@\"" \
-	  --vhead "/* @EnumName@\n */\n" \
-	  --vhead "static G@Type@Value @enum_name@_values[] = {" \
-	  --vprod "  { @VALUENAME@, \"@VALUENAME@\", \"@valuenick@\" }," \
-	  --vtail "  { 0, NULL, NULL }\n};\n" \
-	    $(beast_headers) ) > xgen-$(@F) \
-	&& cp xgen-$(@F) $@ \
-	&& rm -f xgen-$(@F)
-# bstenum_list.cc
-GENERATED_CLEANFILES += bstenum_list.cc
-$(beast_vOBJECTS): bstenum_list.cc
-bstenum_list.cc: $(beast_headers)
-	cd . \
-	&& ( cd $(srcdir) && $(GLIB_MKENUMS) \
-	  --fprod "\n/* --- @filename@ --- */" \
-	  --eprod "  { \"@EnumName@\", G_TYPE_@TYPE@, &bst__type_id__@EnumName@, @enum_name@_values }," \
-	    $(beast_headers) ) > xgen-$(@F) \
+	&& $(SFIDL) --host-c --source --init _bst_init_idl ${srcdir}/bstrecords.idl > xgen-$(@F) \
 	&& cp xgen-$(@F) $@ \
 	&& rm -f xgen-$(@F)
 # bstoldbseapi.h
