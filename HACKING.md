@@ -1,9 +1,6 @@
 % BEAST/BSE HACKING
 
-The Beast + BSE code base origins date back to the 90ties, so hacking on it
-requires some knowledge about ancient aspects and mixings with newer
-technologies. The following gives a high-level overview of the pitfalls
-involved, this file can be discussed at beast@gnome.org.
+The Beast + BSE code base origins date back to the 90ties, so hacking on it requires some knowledge about ancient aspects and mixings with newer technologies. The following gives a high-level overview of the pitfalls involved, this file can be discussed at beast@gnome.org.
 
 Migrations
 ==========
@@ -18,13 +15,9 @@ PROC-Migration
 --------------
 **[STARTED]** Move from PROC files to IDL files. Initially procedures were moved into sfidl files, but now procedures need to be moved to AIDA IDL. Note that during build time, bsehack.idl is generated, that already contains IDL formatting for all procedures.
 
-Enum-Migration
---------------
-**[STARTED]** Beast enums are being migrated from scanned C headers into IDL files. Note that some have been migrated into bstapi.idl (AIDA IDL) while others are still remaining in bstrecords.idl (sfidl).
-
 Bstrecords-Migration
 --------------------
-**[STARTED]** Beast contains some generated structures and enums in bstrecords.idl (sfidl), these all need to be moved into bstapi.idl (ADIA IDL).
+**[STARTED]** Beast generates some structures from bstrecords.idl (sfidl), these all need to be moved into bstapi.idl (ADIA IDL).
 
 CXX-Migration
 -------------
@@ -56,6 +49,10 @@ Plugin-Merging
 causes major slowdowns in the startup phase. As a consequence, all plugins
 shipped together with BSE should be linked into the same ELF library.
 
+Enum-Migration
+--------------
+**[COMPLETE]** Beast enums have all been migrated from scanned C headers into bstapi.idl.
+
 C++11-Compilation
 -----------------
-**[COMPLETE]** Turn all .c files into .cc files so C++11 can be used everywhere.
+**[COMPLETE]** All .c files have been turned into .cc files, so all sources are now compiled as C++11.
