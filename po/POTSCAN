@@ -1,5 +1,6 @@
 #0 List of source files to scan for translatable strings
 #0 Please keep alphabetically sorted
+beast-gtk/bstapi.idl
 beast-gtk/bstapp.cc
 beast-gtk/bstauxdialogs.cc
 beast-gtk/bstbuseditor.cc

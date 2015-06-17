@@ -1,6 +1,8 @@
 #0 List of translatable source files to skip
 #0 Please keep alphabetically sorted
 beast-gtk/bstgentypes.cc
+beast-gtk/bstserverapi.hh
+beast-gtk/bstserverapi.cc
 beast-gtk/bststest.cc
 plugins/bsefirfilter.c
 plugins/davguitar.c
