@@ -79,7 +79,7 @@ bst_scrollgraph_set_property (GObject      *object,
       gtk_widget_queue_draw (widget);
       break;
     case PROP_WINDOW_SIZE:
-      self->window_size = bst_fft_size_to_int (bst_fft_size_from_choice (sfi_value_get_choice (value)));
+      self->window_size = Rapicorn::Aida::enum_info<Bst::FFTSize>().value_from_string (sfi_value_get_choice (value));
       bst_scrollgraph_resize_values (self, self->direction);
       gtk_widget_queue_resize (widget);
       break;
@@ -108,7 +108,7 @@ bst_scrollgraph_get_property (GObject     *object,
       sfi_value_set_real (value, self->boost);
       break;
     case PROP_WINDOW_SIZE:
-      sfi_value_set_choice (value, bst_fft_size_to_choice (bst_fft_size_from_int (self->window_size)));
+      sfi_value_set_choice (value, Rapicorn::Aida::enum_info<Bst::FFTSize>().value_to_string (self->window_size).c_str());
       break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -151,8 +151,8 @@ scrollgraph_resize_values (BstScrollgraph *self,
 {
   GtkWidget *widget = GTK_WIDGET (self);
   gint old_points = self->n_points;
-  gint old_win_points = MIN (self->n_points, FFTSZ2POINTS (self->window_size));
-  gint old_bars = self->n_bars;
+  uint old_win_points = MIN (self->n_points, FFTSZ2POINTS (self->window_size));
+  uint old_bars = self->n_bars;
   gint old_offset = self->bar_offset;
   gfloat *old_values = self->values;
   self->direction = direction;
@@ -338,7 +338,7 @@ bst_scrollgraph_bar_from_coord (BstScrollgraph *self,
       y -= widget->allocation.y;
     }
   gint n = HORIZONTAL (self) ? x : y;
-  if (n < self->n_bars && (self->direction == BST_LEFT || self->direction == BST_UP))
+  if (uint (n) < self->n_bars && (self->direction == BST_LEFT || self->direction == BST_UP))
     n = ((gint) self->n_bars) - 1 - n;
   return n;
 }
@@ -394,7 +394,7 @@ bst_scrollgraph_probes_notify (SfiProxy     source,
   BseProbe *probe = NULL;
   guint i;
   for (i = 0; i < pseq->n_probes && !probe; i++)
-    if (pseq->probes[i]->channel_id == self->ochannel)
+    if (uint (pseq->probes[i]->channel_id) == self->ochannel)
       {
         BseProbe *candidate = pseq->probes[i];
         if (candidate->probe_features->probe_fft &&
@@ -562,8 +562,8 @@ bst_scrollgraph_class_init (BstScrollgraphClass *klass)
                                      sfi_pspec_real ("boost", _("Boost"), _("Adjust frequency level threshold"),
                                                      1.0, 1.0 / 256., 256, 0.1, SFI_PARAM_STANDARD ":scale:db-range"));
   bst_object_class_install_property (gobject_class, _("Spectrograph"), PROP_WINDOW_SIZE,
-                                     sfi_pspec_choice ("window_size", _("Window Size"), _("Adjust FFT window size"),
-                                                       "BST_FFT_SIZE_512", bst_fft_size_get_values(), SFI_PARAM_STANDARD ":db-range"));
+                                     sfi_pspec_choice ("window_size", _("Window Size"), _("Adjust FFT window size"), "FFT_SIZE_512",
+                                                       Bse::choice_values_from_enum<Bst::FFTSize>(), SFI_PARAM_STANDARD));
   signal_resize_values = g_signal_new ("resize-values", G_OBJECT_CLASS_TYPE (klass),
                                        G_SIGNAL_RUN_LAST, G_STRUCT_OFFSET (BstScrollgraphClass, resize_values),
                                        NULL, NULL,

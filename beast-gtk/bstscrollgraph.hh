@@ -21,7 +21,7 @@ struct _BstScrollgraph
 {
   GtkBin          parent_instance;
   BstDirection    direction;
-  guint           window_size : 24;
+  uint            window_size;
   guint           flip : 1;
   guint           delete_toplevel : 1;  /* upon proxy::release */
   guint           mix_freq;

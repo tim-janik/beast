@@ -7,7 +7,7 @@
 #include "bstcluehunter.hh"
 /* generated type IDs, idl types */
 #include "bstgentypes.h"
-
+#include "bstserverapi.hh"
 
 // == Bse Server (BSE remote origin) ==
 extern Bse::ServerH bse_server;
@@ -85,8 +85,6 @@ void       bst_stock_register_icon      (const gchar  *stock_id,
 
 
 /* --- misc utils --- */
-gint            bst_fft_size_to_int     (BstFFTSize    fft_size);
-BstFFTSize      bst_fft_size_from_int   (guint         sz);
 gchar*          bst_file_scan_find_key  (const gchar  *file,
                                          const gchar  *key,
                                          const gchar  *value_prefix);

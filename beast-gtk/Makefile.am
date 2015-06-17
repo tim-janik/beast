@@ -10,9 +10,9 @@ AM_CXXFLAGS += $(BEAST_CFLAGS) $(GXK_CFLAGS) $(BSE_CFLAGS) $(RAPICORN_CFLAGS) -D
 
 
 # special profiling hooks
-PROFILE_SOURCE = # profile.cc
 DEFS += @DEFINE__FILE_DIR__@ # $(subst profile.cc, -pg -a, $(findstring profile.cc, $(<F)))
 LIBS += # -lefence # -pg 
+AUXTYPES_PY = $(top_srcdir)/bse/AuxTypes.py
 
 #
 # setup source file variables
@@ -40,7 +40,7 @@ beast_headers = $(strip \
 )
 EXTRA_DIST += $(beast_headers)
 # BEAST sources to build the program from
-beast_sources = $(strip \
+bst_cc_sources = $(strip \
 	bsttrackrollctrl.cc	bstxframe.cc	bstscrollgraph.cc	\
 	bstdbmeter.cc		bstbusmixer.cc	bstbuseditor.cc		bstitemseqdialog.cc \
 	bstcanvassource.cc	bstapp.cc	bstasciipixbuf.cc	bstcanvaslink.cc    \
@@ -58,7 +58,6 @@ beast_sources = $(strip \
 	bstusermessage.cc	bstdial.cc	bsttracksynthdialog.cc	bstwaveeditor.cc    \
 	bstzoomedwindow.cc     bstskinconfig.cc	bstmsgabsorb.cc		bstsampleeditor.cc  \
 	bstrackview.cc	       bsttreestores.cc	bstbseutils.cc		bstutils.cc	    \
-	$(PROFILE_SOURCE) \
 )
 # BEAST sources that get included (don't have own .lo rules)
 beast_extra_files = $(strip 						\
@@ -170,6 +169,22 @@ bstmarshal.cc: bstmarshal.list
 	&& rm -f xgen-$(@F)
 
 
+# == bstapi.idl ==
+EXTRA_DIST += bstapi.idl
+$(bst_cc_sources): bstserverapi.hh
+bstserverapi.hh: $(srcdir)/bstapi.idl $(AUXTYPES_PY)
+	$(AM_V_GEN)
+	$(Q) ${AIDACC} -x CxxStub -G macro=BST_IDL -G serverhh -x $(AUXTYPES_PY) $< -o xgen-$(@F)
+	$(Q) mv xgen-$(@F) $@
+CLEANFILES += bstserverapi.hh
+$(bst_cc_sources): bstserverapi.cc
+bstserverapi.cc: $(srcdir)/bstapi.idl $(AUXTYPES_PY)
+	$(AM_V_GEN)
+	$(Q) ${AIDACC} -x CxxStub -G macro=BST_IDL -G servercc -x $(AUXTYPES_PY) $< -o xgen-$(@F)
+	$(Q) ${AIDACC} -x CxxStub -G macro=BST_IDL -G clientcc -x $(AUXTYPES_PY) $< -o xgen2-$(@F)
+	$(Q) cat xgen-$(@F) xgen2-$(@F) >$@ && rm -f xgen2-$(@F) xgen-$(@F)
+CLEANFILES += bstserverapi.cc
+
 #
 # convenience targets for generated source files  
 #
@@ -182,10 +197,9 @@ generated: clean-generated $(GENERATED)
 #
 # build rules for programs
 #
-bin_PROGRAMS = beast-$(BIN_VERSION)
-beast___BIN_VERSION__SOURCES = bstmain.cc $(beast_sources)
-beast___BIN_VERSION__LDADD = $(progs_LDADD)
-beast_vOBJECTS  = $(beast___BIN_VERSION__OBJECTS)
+bin_PROGRAMS = beast-@BIN_VERSION@
+beast_@BIN_VERSION@_SOURCES = $(bst_cc_sources) bstmain.cc
+beast_@BIN_VERSION@_LDADD = $(progs_LDADD)
 noinst_PROGRAMS = $(ALLTESTS)
 progs_LDADD     = $(BEAST_LIBS) ./gxk/libgxk.a $(GXK_LIBS) $(top_builddir)/bse/libbse.la $(RAPICORN_LIBS) $(BSE_LIBS)
 
@@ -194,5 +208,5 @@ tsmview_SOURCES  = tsmview.cc
 tsmview_LDADD    = $(progs_LDADD)
 
 noinst_PROGRAMS += testgui
-testgui_SOURCES  = testgui.cc $(beast_sources)
+testgui_SOURCES  = testgui.cc $(bst_cc_sources)
 testgui_LDADD    = $(progs_LDADD)
