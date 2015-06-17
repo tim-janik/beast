@@ -13,12 +13,6 @@ record Test2 {
 using namespace Sfi;
 Const STORAGE = ":r:w:S:";
 Const STANDARD = STORAGE "G:";
-enum Direction {
-  UP    = Enum (_("Up"), _("Move upwards")),
-  LEFT  = Enum (_("Left"), _("Move to the left")),
-  RIGHT = Enum (_("Right"), _("Move to the right")),
-  DOWN  = Enum (_("Down"), _("Move downwards"))
-};
 
 /* BEAST Global Config */
 record GConfig {

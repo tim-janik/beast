@@ -6,6 +6,13 @@
 
 namespace Bst {
 
+enum Direction {
+  DIR_UP    = Enum (_("Up"), _("Move upwards")),
+  DIR_LEFT  = Enum (_("Left"), _("Move to the left")),
+  DIR_RIGHT = Enum (_("Right"), _("Move to the right")),
+  DIR_DOWN  = Enum (_("Down"), _("Move downwards"))
+};
+
 enum FFTSize {
   FFT_SIZE_2     = Enum (    2, _("2 Value FFT Window"), _("A 2 value FFT window corresponds to a spectrum with 2 frequency peaks")),
   FFT_SIZE_4     = Enum (    4, _("4 Value FFT Window"), _("A 4 value FFT window corresponds to a spectrum with 3 frequency peaks")),

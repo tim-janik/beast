@@ -116,7 +116,7 @@ bst_pattern_controller_new (BstPatternView         *pview,
   self->step_dir = gxk_param_new_value (sfi_pspec_choice ("step_dir", _("Direction"),
                                                           _("The direction of cell movement each time "
                                                             "an event or note was edited"),
-                                                          "down", bst_direction_get_values(), SFI_PARAM_STANDARD),
+                                                          "down", Bse::choice_values_from_enum<Bst::Direction>(), SFI_PARAM_STANDARD),
                                         NULL, NULL);
   self->hwrap = gxk_param_new_value (sfi_pspec_bool ("hwrap", _("HWrap"),
                                                      _("Toggle whether horizontal movement of the focus cell will "
@@ -269,11 +269,11 @@ pattern_controller_key_press (BstPatternController *self,
         case BST_PATTERN_JUMP_TOP:      focus_row = 0;                                          break;
         case BST_PATTERN_JUMP_BOTTOM:   focus_row = bst_pattern_view_get_last_row (pview);      break;
         case BST_PATTERN_MOVE_NEXT:
-          d = bst_direction_from_choice (sfi_value_get_choice (&self->step_dir->value));
-          if (d == BST_LEFT || d == BST_RIGHT)
-            focus_col += (d == BST_LEFT ? -1 : +1) * g_value_get_int (&self->steps->value);
+          d = Rapicorn::Aida::enum_value_from_string<Bst::Direction> (sfi_value_get_choice (&self->step_dir->value));
+          if (d == Bst::DIR_LEFT || d == Bst::DIR_RIGHT)
+            focus_col += (d == Bst::DIR_LEFT ? -1 : +1) * g_value_get_int (&self->steps->value);
           else /* UP/DOWN */
-            focus_row += (d == BST_UP ? -1 : +1) * g_value_get_int (&self->steps->value);
+            focus_row += (d == Bst::DIR_UP ? -1 : +1) * g_value_get_int (&self->steps->value);
           break;
         case BST_PATTERN_SET_STEP_WIDTH:
           g_value_set_int (&self->steps->value, param);
