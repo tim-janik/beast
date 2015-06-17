@@ -1727,3 +1727,28 @@ sfi_pspec_copy_commons (GParamSpec *src_pspec,
   if (sfi_pspec_get_log_scale (src_pspec, &log_center, &log_base, &log_n_steps))
     sfi_pspec_set_log_scale (dest_pspec, log_center, log_base, log_n_steps);
 }
+
+namespace Bse { // bsecore
+
+static std::map<String, SfiChoiceValues> aida_enum_choice_map;
+
+SfiChoiceValues
+choice_values_from_enum_values (const String &enumname, size_t n, const ::Rapicorn::Aida::EnumValue *values)
+{
+  SfiChoiceValues &cv = aida_enum_choice_map[enumname];
+  if (!cv.values && values)
+    {
+      SfiChoiceValue *vv = new SfiChoiceValue[n];
+      for (size_t i = 0; i < n; i++)
+        {
+          vv[i].choice_ident = values[i].ident;
+          vv[i].choice_label = values[i].label;
+          vv[i].choice_blurb = values[i].blurb;
+        }
+      cv.n_values = n;
+      cv.values = vv;
+    }
+  return cv;
+}
+
+} // Bse

@@ -60,15 +60,21 @@ typedef GParamSpecParam   SfiParamSpecPSpec;
 
 
 /* --- Sfi param specs --- */
-typedef struct {
+struct SfiChoiceValue {  // auxillary
   const gchar *choice_ident;
   const gchar *choice_label;
   const gchar *choice_blurb;
-} SfiChoiceValue;	// auxillary
-typedef struct {
+  SfiChoiceValue (const char *ident = NULL, const char *label = NULL, const char *blurb = NULL) :
+    choice_ident (ident), choice_label (label), choice_blurb (blurb)
+  {}
+};
+struct SfiChoiceValues { // auxillary
   guint                 n_values;
   const SfiChoiceValue *values;
-} SfiChoiceValues;	// auxillary
+  SfiChoiceValues (uint nv = 0, const SfiChoiceValue *vl = NULL) :
+    n_values (nv), values (vl)
+  {}
+};
 typedef struct {
   GParamSpecString   pspec;
   SfiChoiceValues    cvalues;
@@ -311,8 +317,20 @@ extern GType*	 sfi__param_spec_types;
 SfiRec*		sfi_pspec_to_rec	(GParamSpec	*pspec);
 GParamSpec*	sfi_pspec_from_rec	(SfiRec		*prec);
 
-
 G_END_DECLS
+
+namespace Bse { // bsecore
+
+SfiChoiceValues choice_values_from_enum_values (const String &enumname, size_t n, const ::Rapicorn::Aida::EnumValue *values);
+template<class EnumType> SfiChoiceValues
+choice_values_from_enum ()
+{
+  ::Rapicorn::Aida::EnumInfo einfo = ::Rapicorn::Aida::enum_info<EnumType>();
+  return choice_values_from_enum_values (einfo.name(), einfo.n_values(), einfo.values());
+}
+
+} // Bse
+
 
 #endif /* __SFI_PARAMS_H__ */
 
