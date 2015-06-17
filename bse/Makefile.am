@@ -187,7 +187,7 @@ bsegentypes.h: @PERLRULE@ bsebasics.idl $(SFIDL)
 	  cd $(srcdir) \
 	  && $(GLIB_MKENUMS) \
 	    --fprod "\n/* --- @filename@ --- */" \
-	    --eprod "#define BSE_TYPE_@ENUMSHORT@\t    (BSE_TYPE_ID (@EnumName@))\n" \
+	    --eprod "#define BSE_TYPE_@ENUMSHORT@\t    (BSE_TYPE_ID (@EnumName@)) // enum\n" \
 	    --eprod "extern GType BSE_TYPE_ID (@EnumName@);" \
 	      $(filter-out bsegentypes.h bseclientapi.hh, $(bse_public_headers)) \
 	  && $(PERL) mktypes.pl --externs $(filter-out bsegentypes.cc gslfft.cc, $(bse_sources)) \
@@ -220,7 +220,7 @@ bseenum_arrays.cc: bsegentypes.h
 	  && $(GLIB_MKENUMS) \
 	    --fprod "\n/* --- @filename@ --- */\n#include\t\"@filename@\"" \
 	    --vhead "/* @EnumName@\n */\n" \
-	    --vhead "static G@Type@Value @enum_name@_values[] = {" \
+	    --vhead "static G@Type@Value @enum_name@_values[] = { // enum_values\n" \
 	    --vprod "  { @VALUENAME@, \"@VALUENAME@\", \"@valuenick@\" }," \
 	    --vtail "  { 0, NULL, NULL }\n};\n" \
 	      $(filter-out bseclientapi.hh bsegentypes.h, $(bse_public_headers)) \
