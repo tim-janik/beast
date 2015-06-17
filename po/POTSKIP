@@ -1,4 +1,4 @@
-#0 List of source files to scan for translatable strings
+#0 List of translatable source files to skip
 #0 Please keep alphabetically sorted
 beast-gtk/bstgentypes.cc
 beast-gtk/bststest.cc
