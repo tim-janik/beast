@@ -19,24 +19,6 @@ enum Direction {
   RIGHT = Enum (_("Right"), _("Move to the right")),
   DOWN  = Enum (_("Down"), _("Move downwards"))
 };
-enum RowShading {
-  ROW_SHADING_NONE    = Enum (0,       	     _("None")),
-  ROW_SHADING_2       = Enum (_("2"),        _("Every second row")),
-  ROW_SHADING_4       = Enum (_("4"),        _("Every fourth row")),
-  ROW_SHADING_8       = Enum (_("8"),        _("Every eighth row")),
-  ROW_SHADING_16      = Enum (_("16"),       _("Every sixteenth row")),
-  ROW_SHADING_2_4     = Enum (_("2 & 4"),    _("Every second and fourth row")),
-  ROW_SHADING_4_8     = Enum (_("4 & 8"),    _("Every fourth and eighth row")),
-  ROW_SHADING_4_12    = Enum (_("4 & 12"),   _("Every fourth and twelfth row")),
-  ROW_SHADING_4_16    = Enum (_("4 & 16"),   _("Every fourth and sixteenth row")),
-  ROW_SHADING_8_16    = Enum (_("8 & 16"),   _("Every eighth and sixteenth row")),
-  ROW_SHADING_3       = Enum (_("3"),        _("Every third row")),
-  ROW_SHADING_6       = Enum (_("6"),        _("Every sixth row")),
-  ROW_SHADING_12      = Enum (_("12"),       _("Every twelfth row")),
-  ROW_SHADING_3_6     = Enum (_("3 & 6"),    _("Every third and sixth row")),
-  ROW_SHADING_3_12    = Enum (_("3 & 12"),   _("Every third and twelfth row")),
-  ROW_SHADING_6_12    = Enum (_("6 & 12"),   _("Every sixth and twelfth row")),
-};
 
 /* BEAST Global Config */
 record GConfig {

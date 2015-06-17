@@ -59,27 +59,28 @@ static void
 pattern_controller_row_shading_notify (gpointer  notify_data,
                                        GxkParam *param)
 {
+  using namespace Bst; // for Bst::ROW_SHADING_*
   BstPatternController *self = (BstPatternController*) notify_data;
   BstPatternView *pview = self->pview;
   static const struct { int value, r1, r2, r3, r4; } choices[] = {
-    { BST_ROW_SHADING_NONE,      0, 0, 0, 0 },
-    { BST_ROW_SHADING_2,         2 },
-    { BST_ROW_SHADING_4,         4 },
-    { BST_ROW_SHADING_8,         8 },
-    { BST_ROW_SHADING_16,       16 },
-    { BST_ROW_SHADING_2_4,       4, 2 },
-    { BST_ROW_SHADING_4_8,       8, 4 },
-    { BST_ROW_SHADING_4_12,     12, 4 },
-    { BST_ROW_SHADING_4_16,     16, 4 },
-    { BST_ROW_SHADING_8_16,     16, 8 },
-    { BST_ROW_SHADING_3,         3 },
-    { BST_ROW_SHADING_6,         6 },
-    { BST_ROW_SHADING_12,       12 },
-    { BST_ROW_SHADING_3_6,       6, 3 },
-    { BST_ROW_SHADING_3_12,     12, 3 },
-    { BST_ROW_SHADING_6_12,     12, 6 },
+    { ROW_SHADING_NONE,      0, 0, 0, 0 },
+    { ROW_SHADING_2,         2 },
+    { ROW_SHADING_4,         4 },
+    { ROW_SHADING_8,         8 },
+    { ROW_SHADING_16,       16 },
+    { ROW_SHADING_2_4,       4, 2 },
+    { ROW_SHADING_4_8,       8, 4 },
+    { ROW_SHADING_4_12,     12, 4 },
+    { ROW_SHADING_4_16,     16, 4 },
+    { ROW_SHADING_8_16,     16, 8 },
+    { ROW_SHADING_3,         3 },
+    { ROW_SHADING_6,         6 },
+    { ROW_SHADING_12,       12 },
+    { ROW_SHADING_3_6,       6, 3 },
+    { ROW_SHADING_3_12,     12, 3 },
+    { ROW_SHADING_6_12,     12, 6 },
   };
-  int r1 = 0, r2 = 0, r3 = 0, r4 = 0, vsval = bst_row_shading_from_choice (sfi_value_get_choice (&self->row_shading->value));
+  int r1 = 0, r2 = 0, r3 = 0, r4 = 0, vsval = Rapicorn::Aida::enum_info<RowShading>().value_from_string (sfi_value_get_choice (&self->row_shading->value));
   for (uint i = 0; i < G_N_ELEMENTS (choices); i++)
     if (choices[i].value == vsval)
       {
@@ -127,7 +128,9 @@ bst_pattern_controller_new (BstPatternView         *pview,
                                            NULL, NULL);
   self->row_shading = gxk_param_new_value (sfi_pspec_choice ("row-shading", _("Row Shading"),
                                                              _("Adjust the number of rows between each shaded row"),
-                                                             "row-shading-4-16", bst_row_shading_get_values(), SFI_PARAM_STANDARD),
+                                                             "row-shading-4-16",
+                                                             Bse::choice_values_from_enum<Bst::RowShading>(),
+                                                             SFI_PARAM_STANDARD),
                                            pattern_controller_row_shading_notify, self);
   self->pview = pview;
   self->ref_count = 1;
