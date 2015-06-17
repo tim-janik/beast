@@ -12,7 +12,19 @@ The code base is currently undergoing several migrations and new developments:
 
 IDL-Migration
 -------------
-**[STARTED]** Move from PROC files to IDL files and later move from sfidl to AIDA IDL (aidacc, distributed with Rapicorn). BSE already contains an AIDA style IDL file with C++11 objects that can be used in Beast. Eventually, all BSE idl files need to be ported to AIDA IDL.
+**[STARTED]** (For BSE) Move from sfidl (and the old PROC files) to AIDA IDL (aidacc, distributed with Rapicorn). BSE already contains an AIDA style IDL file with C++11 objects that can be used in Beast. Eventually, all sfidl files need to be ported to AIDA IDL.
+
+PROC-Migration
+--------------
+**[STARTED]** Move from PROC files to IDL files. Initially procedures were moved into sfidl files, but now procedures need to be moved to AIDA IDL. Note that during build time, bsehack.idl is generated, that already contains IDL formatting for all procedures.
+
+Enum-Migration
+--------------
+**[STARTED]** Beast enums are being migrated from scanned C headers into IDL files. Note that some have been migrated into bstapi.idl (AIDA IDL) while others are still remaining in bstrecords.idl (sfidl).
+
+Bstrecords-Migration
+--------------------
+**[STARTED]** Beast contains some generated structures and enums in bstrecords.idl (sfidl), these all need to be moved into bstapi.idl (ADIA IDL).
 
 CXX-Migration
 -------------
