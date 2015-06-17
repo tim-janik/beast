@@ -15,36 +15,37 @@ static void
 pattern_controller_vraster_notify (gpointer             notify_data,
                                    GxkParam            *param)
 {
+  using namespace Bst; // for Bst::NOTE_LENGTH_*
   BstPatternController *self = (BstPatternController*) notify_data;
   BstPatternView *pview = self->pview;
   static const struct { int value, ticks; } choices[] = {
-    { BST_NOTE_LENGTH_1,        1536 }, /* 4 * 384 */
-    { BST_NOTE_LENGTH_2,         768 },
-    { BST_NOTE_LENGTH_4,         384 },
-    { BST_NOTE_LENGTH_8,         192 },
-    { BST_NOTE_LENGTH_16,         96 },
-    { BST_NOTE_LENGTH_32,         48 },
-    { BST_NOTE_LENGTH_64,         24 },
-    { BST_NOTE_LENGTH_128,        12 },
-    { BST_NOTE_LENGTH_1_P,      2304 }, /* 4 * 384 * 3 / 2 */
-    { BST_NOTE_LENGTH_2_P,      1152 },
-    { BST_NOTE_LENGTH_4_P,       576 },
-    { BST_NOTE_LENGTH_8_P,       288 },
-    { BST_NOTE_LENGTH_16_P,      144 },
-    { BST_NOTE_LENGTH_32_P,       72 },
-    { BST_NOTE_LENGTH_64_P,       36 },
-    { BST_NOTE_LENGTH_128_P,      18 },
-    { BST_NOTE_LENGTH_1_T,      1024 }, /* 4 * 384 * 2 / 3 */
-    { BST_NOTE_LENGTH_2_T,       512 },
-    { BST_NOTE_LENGTH_4_T,       256 },
-    { BST_NOTE_LENGTH_8_T,       128 },
-    { BST_NOTE_LENGTH_16_T,       64 },
-    { BST_NOTE_LENGTH_32_T,       32 },
-    { BST_NOTE_LENGTH_64_T,       16 },
-    { BST_NOTE_LENGTH_128_T,       8 },
+    { NOTE_LENGTH_1,        1536 }, /* 4 * 384 */
+    { NOTE_LENGTH_2,         768 },
+    { NOTE_LENGTH_4,         384 },
+    { NOTE_LENGTH_8,         192 },
+    { NOTE_LENGTH_16,         96 },
+    { NOTE_LENGTH_32,         48 },
+    { NOTE_LENGTH_64,         24 },
+    { NOTE_LENGTH_128,        12 },
+    { NOTE_LENGTH_1P,       2304 }, /* 4 * 384 * 3 / 2 */
+    { NOTE_LENGTH_2P,       1152 },
+    { NOTE_LENGTH_4P,        576 },
+    { NOTE_LENGTH_8P,        288 },
+    { NOTE_LENGTH_16P,       144 },
+    { NOTE_LENGTH_32P,        72 },
+    { NOTE_LENGTH_64P,        36 },
+    { NOTE_LENGTH_128P,       18 },
+    { NOTE_LENGTH_1T,       1024 }, /* 4 * 384 * 2 / 3 */
+    { NOTE_LENGTH_2T,        512 },
+    { NOTE_LENGTH_4T,        256 },
+    { NOTE_LENGTH_8T,        128 },
+    { NOTE_LENGTH_16T,        64 },
+    { NOTE_LENGTH_32T,        32 },
+    { NOTE_LENGTH_64T,        16 },
+    { NOTE_LENGTH_128T,        8 },
   };
-  int i, vraster = 384, vsval = bst_note_length_from_choice (sfi_value_get_choice (&self->vraster->value));
-  for (i = 0; i < G_N_ELEMENTS (choices); i++)
+  int vraster = 384, vsval = Rapicorn::Aida::enum_info<NoteLength>().value_from_string (sfi_value_get_choice (&self->vraster->value));
+  for (uint i = 0; i < G_N_ELEMENTS (choices); i++)
     if (choices[i].value == vsval)
       {
         vraster = choices[i].ticks;
@@ -78,8 +79,8 @@ pattern_controller_row_shading_notify (gpointer  notify_data,
     { BST_ROW_SHADING_3_12,     12, 3 },
     { BST_ROW_SHADING_6_12,     12, 6 },
   };
-  int i, r1 = 0, r2 = 0, r3 = 0, r4 = 0, vsval = bst_row_shading_from_choice (sfi_value_get_choice (&self->row_shading->value));
-  for (i = 0; i < G_N_ELEMENTS (choices); i++)
+  int r1 = 0, r2 = 0, r3 = 0, r4 = 0, vsval = bst_row_shading_from_choice (sfi_value_get_choice (&self->row_shading->value));
+  for (uint i = 0; i < G_N_ELEMENTS (choices); i++)
     if (choices[i].value == vsval)
       {
         r1 = choices[i].r1;
@@ -102,7 +103,9 @@ bst_pattern_controller_new (BstPatternView         *pview,
   self = g_new0 (BstPatternController, 1);
   self->vraster = gxk_param_new_value (sfi_pspec_choice ("vertical-raster", _("VZoom"),
                                                          _("The tick/note length per line"),
-                                                         "note-length-4", bst_note_length_get_values(), SFI_PARAM_STANDARD),
+                                                         "note-length-4",
+                                                         Bse::choice_values_from_enum<Bst::NoteLength>(),
+                                                         SFI_PARAM_STANDARD),
                                        pattern_controller_vraster_notify, self);
   self->steps = gxk_param_new_value (sfi_pspec_int ("steps", _("Steps"),
                                                     _("The number of cells to move across each time "
