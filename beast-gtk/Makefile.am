@@ -30,7 +30,7 @@ beast_headers = $(strip \
 	bstsnifferscope.hh	bstwaveview.hh	bstfiledialog.hh		bstgconfig.hh	    \
 	bstlogadjustment.hh	bstitemview.hh	bstservermonitor.hh	bstknob.hh	    \
 	bstparamview.hh		bstmenus.hh	bstparam.hh		bstpartdialog.hh	    \
-	bstprocbrowser.hh	bstqsampler.hh	bstpreferences.hh	bstprocedure.hh	    \
+				bstqsampler.hh	bstpreferences.hh	bstprocedure.hh	    \
 	bstrackeditor.hh		bstrackitem.hh	bstracktable.hh		bstsequence.hh	    \
 	bstsnetrouter.hh		bstsplash.hh	bsttrackview.hh		bstsupershell.hh	    \
 	bstusermessage.hh	bstdial.hh	bsttracksynthdialog.hh	bstwaveeditor.hh	    \
@@ -52,7 +52,7 @@ bst_cc_sources = $(strip \
 	bstsnifferscope.cc	bstwaveview.cc	bstfiledialog.cc	bstgconfig.cc	    \
 	bstlogadjustment.cc	bstitemview.cc	bstservermonitor.cc	bstknob.cc	    \
 	bstparamview.cc		bstmenus.cc	bstparam.cc		bstpartdialog.cc    \
-	bstprocbrowser.cc	bstqsampler.cc	bstpreferences.cc	bstprocedure.cc	    \
+				bstqsampler.cc	bstpreferences.cc	bstprocedure.cc	    \
 	bstrackeditor.cc	bstrackitem.cc	bstracktable.cc		bstsequence.cc	    \
 	bstsnetrouter.cc	bstsplash.cc	bsttrackview.cc		bstsupershell.cc    \
 	bstusermessage.cc	bstdial.cc	bsttracksynthdialog.cc	bstwaveeditor.cc    \

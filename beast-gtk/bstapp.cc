@@ -7,7 +7,6 @@
 #include "bstfiledialog.hh"
 #include "bstgconfig.hh"
 #include "bstpreferences.hh"
-#include "bstprocbrowser.hh"
 #include "bstservermonitor.hh"
 #include "bstrackeditor.hh"
 #include "bstmenus.hh"
