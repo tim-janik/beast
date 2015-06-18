@@ -6,6 +6,7 @@
 
 namespace Bst {
 
+// == Enums ==
 enum Direction {
   DIR_UP    = Enum (_("Up"), _("Move upwards")),
   DIR_LEFT  = Enum (_("Left"), _("Move to the left")),
@@ -89,5 +90,50 @@ enum RowShading {
   ROW_SHADING_3_12    = Enum (_("3 & 12"),   _("Every third and twelfth row")),
   ROW_SHADING_6_12    = Enum (_("6 & 12"),   _("Every sixth and twelfth row")),
 };
+
+
+// == Constants ==
+Const STORAGE = ":r:w:S:";
+Const STANDARD = STORAGE "G:";
+Const STDSCALE = STANDARD ":scale";
+Const STDHEXCOLOR = STANDARD ":rgb:hex";
+Const STDIMAGEFILE = STANDARD ":filename:image";
+
+
+// == SkinConfig ==
+record SkinConfig {
+  String    skin_name   = String (_("Skin Name"), _("Name for the current skin configuration (used for skin selections)."), STANDARD);
+  group "Pattern Editor" {
+    String  pattern_image   = String (_("Background Image"), _("Background image used by the pattern editor."), STDIMAGEFILE);
+    float64 pattern_shade   = Range (_("Image shade"), _("Percentage of background image pixel to blend over background color."), STDSCALE, 0, 100, 5, 2.5);
+    int32   pattern_color   = Range (_("Background Color"),      "", STDHEXCOLOR, 0, 0xffffff, 0x010101, 0xf5f3ed);
+    int32   pattern_scolor1 = Range (_("Background Shade 1"),    "", STDHEXCOLOR, 0, 0xffffff, 0x010101, 0xd3d1cb);
+    int32   pattern_scolor2 = Range (_("Background Shade 2"),    "", STDHEXCOLOR, 0, 0xffffff, 0x010101, 0xe0ded8);
+    int32   pattern_text0   = Range (_("Empty Field Color"),     "", STDHEXCOLOR, 0, 0xffffff, 0x010101, 0x303030);
+    int32   pattern_text1   = Range (_("Text Color"),            "", STDHEXCOLOR, 0, 0xffffff, 0x010101, 0x000000);
+    int32   pattern_vbar1   = Range (_("Vertical Bar Color"),    "", STDHEXCOLOR, 0, 0xffffff, 0x010101, 0x7f7f7f);
+  };
+  group "Piano Roll" {
+    String  piano_image = String (_("Background Image"), _("Background image used by the piano-roll editor."), STDIMAGEFILE);
+    float64 piano_shade = Range (_("Image shade"), _("Percentage of background image pixel to blend over background color."), STDSCALE, 0, 100, 5, 2.5);
+    int32   piano_color = Range (_("Background Color"),      "", STDHEXCOLOR, 0, 0xffffff, 0x010101, 0xf5f3ed);
+    int32   piano_hbar  = Range (_("Horizontal Bar Color"),  "", STDHEXCOLOR, 0, 0xffffff, 0x010101, 0x7f7f7f);
+    int32   piano_vbar  = Range (_("Vertical Bar Color"),    "", STDHEXCOLOR, 0, 0xffffff, 0x010101, 0x7f7f7f);
+    int32   piano_hgrid = Range (_("Horizontal Grid Color"), "", STDHEXCOLOR, 0, 0xffffff, 0x010101, 0xbfbfbf);
+    int32   piano_vgrid = Range (_("Vertical Grid Color"),   "", STDHEXCOLOR, 0, 0xffffff, 0x010101, 0xbfbfbf);
+    int32   piano_mbar  = Range (_("Middle Bar Color"),      "", STDHEXCOLOR, 0, 0xffffff, 0x010101, 0xa0a0a0);
+  };
+  group "Control Events" {
+    String  controls_image    = String (_("Background Image"), _("Background image used by the control events editor."), STDIMAGEFILE);
+    float64 controls_shade    = Range (_("Image shade"), _("Percentage of background image pixel to blend over background color."), STDSCALE, 0, 100, 5, 2.5);
+    int32   controls_color    = Range (_("Background Color"),      "", STDHEXCOLOR, 0, 0xffffff, 0x010101, 0xf5f3ed);
+    int32   controls_hbar     = Range (_("Horizontal Bar Color"),  "", STDHEXCOLOR, 0, 0xffffff, 0x010101, 0x7f7f7f);
+    int32   controls_mbar     = Range (_("Middle Bar Color"),      "", STDHEXCOLOR, 0, 0xffffff, 0x010101, 0xa0a0a0);
+    int32   controls_positive = Range (_("Positive Value Color"),  "", STDHEXCOLOR, 0, 0xffffff, 0x010101, 0x0000ff);
+    int32   controls_zero     = Range (_("Zero Value Color"),      "", STDHEXCOLOR, 0, 0xffffff, 0x010101, 0xff0000);
+    int32   controls_negative = Range (_("Negative Value Color"),  "", STDHEXCOLOR, 0, 0xffffff, 0x010101, 0x0000ff);
+  };
+};
+
 
 } // Bst

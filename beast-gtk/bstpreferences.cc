@@ -68,7 +68,7 @@ bst_preferences_init (BstPreferences *self)
   gxk_notebook_append (self->notebook, self->box_msg_absorb_config, _("Messages"), FALSE);
 
   pspec = bst_skin_config_pspec ();
-  self->rec_skin = bst_skin_config_to_rec (bst_skin_config_get_global ());
+  self->rec_skin = Bse::sfi_rec_new_from_visitable (*bst_skin_config_get_global ());
   pchild = bst_preferences_build_rec_editor (self->rec_skin, sfi_pspec_get_rec_fields (pspec), &self->params_skin);
   gxk_notebook_append (self->notebook, pchild, _("Skin"), FALSE);
 
@@ -191,7 +191,7 @@ bst_preferences_revert (BstPreferences *self)
 
   bst_msg_absorb_config_box_set (self->box_msg_absorb_config, bst_msg_absorb_config_get_global());
 
-  rec = bst_skin_config_to_rec (bst_skin_config_get_global ());
+  rec = Bse::sfi_rec_new_from_visitable (*bst_skin_config_get_global ());
   crec = sfi_rec_copy_deep (rec);
   sfi_rec_unref (rec);
   sfi_rec_swap_fields (self->rec_skin, crec);

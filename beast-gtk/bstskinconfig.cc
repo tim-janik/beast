@@ -4,23 +4,24 @@
 
 
 /* --- variables --- */
-static BstSkinConfig *global_skin_config = NULL;
-static GParamSpec    *pspec_skin_config = NULL;
+static Bst::SkinConfig *global_skin_config = NULL;
+static GParamSpec      *pspec_skin_config = NULL;
 
 
 /* --- functions --- */
 void
 _bst_skin_config_init (void)
 {
-  BstSkinConfig *skin_config;
   GValue *value;
   SfiRec *rec;
 
   g_return_if_fail (global_skin_config == NULL);
 
   /* global config record description */
+  Bst::SkinConfig skin_config;
   pspec_skin_config = sfi_pspec_rec ("beast-skin-config-v1", NULL, NULL,
-                                     bst_skin_config_fields, SFI_PARAM_STANDARD);
+                                     Bse::sfi_psecs_rec_fields_from_visitable (skin_config),
+                                     SFI_PARAM_STANDARD);
   g_param_spec_ref (pspec_skin_config);
   g_param_spec_sink (pspec_skin_config);
   /* create empty config record */
@@ -29,8 +30,8 @@ _bst_skin_config_init (void)
   /* fill out missing values with defaults */
   g_param_value_validate (pspec_skin_config, value);
   /* install global config */
-  skin_config = bst_skin_config_from_rec (rec);
-  global_skin_config = skin_config;
+  Bse::sfi_rec_to_visitable (rec, skin_config);
+  global_skin_config = new Bst::SkinConfig (skin_config);
   /* cleanup */
   sfi_value_free (value);
   sfi_rec_unref (rec);
@@ -42,18 +43,18 @@ bst_skin_config_pspec (void)
   return pspec_skin_config;
 }
 
-BstSkinConfig*
+Bst::SkinConfig*
 bst_skin_config_get_global (void)
 {
   return global_skin_config;
 }
 
 static void
-set_skin_config (BstSkinConfig *skin_config)
+set_skin_config (const Bst::SkinConfig &skin_config)
 {
-  BstSkinConfig *oldconfig = global_skin_config;
-  global_skin_config = skin_config;
-  bst_skin_config_free (oldconfig);
+  Bst::SkinConfig *oldconfig = global_skin_config;
+  global_skin_config = new Bst::SkinConfig (skin_config);
+  delete oldconfig;
 }
 
 static void
@@ -121,11 +122,10 @@ rec_make_relative_pathnames (SfiRec       *rec,
 static gchar *skin_path_prefix = NULL;
 
 void
-bst_skin_config_apply (SfiRec      *rec,
-                       const gchar *skin_file)
+bst_skin_config_apply (SfiRec *rec, const gchar *skin_file)
 {
   SfiRec *vrec;
-  BstSkinConfig *skin_config;
+  Bst::SkinConfig skin_config;
 
   g_return_if_fail (rec != NULL);
 
@@ -137,7 +137,7 @@ bst_skin_config_apply (SfiRec      *rec,
       rec_make_absolute_pathnames (vrec, skindir, sfi_pspec_get_rec_fields (pspec_skin_config));
       g_free (skindir);
     }
-  skin_config = bst_skin_config_from_rec (vrec);
+  Bse::sfi_rec_to_visitable (vrec, skin_config);
   sfi_rec_unref (vrec);
   set_skin_config (skin_config);
   bst_skin_config_notify ();
@@ -211,7 +211,7 @@ bst_skin_dump (const gchar *file_name)
 
   /* store BstSkinConfig */
   sfi_wstore_puts (wstore, "\n");
-  rec = bst_skin_config_to_rec (bst_skin_config_get_global ());
+  rec = Bse::sfi_rec_new_from_visitable (*bst_skin_config_get_global ());
   if (1)
     {
       /* make path names relative */

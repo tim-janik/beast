@@ -8,14 +8,14 @@ G_BEGIN_DECLS
 
 /* --- access skin config --- */
 #define BST_SKIN_CONFIG(field)              (* bst_skin_config_get_global ()) . field
-#define BST_SKIN_CONFIG_STRDUP_PATH(field)  sfi_path_get_filename (BST_SKIN_CONFIG (field), bst_skin_config_dirname())
+#define BST_SKIN_CONFIG_STRDUP_PATH(field)  sfi_path_get_filename (BST_SKIN_CONFIG (field).c_str(), bst_skin_config_dirname())
 
 /* --- prototypes --- */
 void		_bst_skin_config_init		(void);
 void		bst_skin_config_apply		(SfiRec		    *rec,
                                                  const gchar        *skin_file);
 GParamSpec*	bst_skin_config_pspec		(void);
-BstSkinConfig*  bst_skin_config_get_global      (void);
+Bst::SkinConfig* bst_skin_config_get_global      (void);
 typedef void  (*BstSkinConfigNotify)            (gpointer            data);
 void            bst_skin_config_notify          (void);
 void            bst_skin_config_add_notify      (BstSkinConfigNotify func,
