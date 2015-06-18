@@ -11,7 +11,8 @@ sfi_public_headers = $(strip \
 	glib-extra.hh			sfiwrapper.hh	 \
 	sfivmarshal.hh	sfiglue.hh	sfigluecodec.hh	sfiglueproxy.hh	\
 	sfinote.hh	sfiparams.hh	sfiprimitives.hh	sfiserial.hh	\
-	sfitime.hh	sfitypes.hh	sfivalues.hh	sfiustore.hh	\
+	sfitime.hh	sfitypes.hh	sfivalues.hh	\
+	sfivisitors.hh	sfiustore.hh	\
 	sficxx.hh	sfiring.hh	sfimemory.hh	sficomport.hh	\
 	sfitests.hh	sfi.hh						\
 	gbsearcharray.hh \
@@ -21,7 +22,8 @@ sfi_all_sources = $(strip \
 	glib-extra.cc			sfiwrapper.cc	sfiprimitives.cc \
 	sfivmarshal.cc	sfiglue.cc	sfigluecodec.cc	sfiglueproxy.cc	\
 	sfinote.cc	sfiparams.cc			sfiserial.cc	\
-	sfitime.cc	sfitypes.cc	sfivalues.cc	sfiustore.cc	\
+	sfitime.cc	sfitypes.cc	sfivalues.cc	\
+	sfivisitors.cc	sfiustore.cc	\
 			sfiring.cc	sfimemory.cc	sficomport.cc	\
 )
 sfi_extra_sources = $(strip \
