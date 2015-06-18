@@ -28,10 +28,11 @@ typedef struct _SfiFBlock	SfiFBlock;
 typedef struct _SfiSeq		SfiSeq;
 typedef struct _SfiRec		SfiRec;
 typedef GType /* pointer */	SfiProxy;
-typedef struct {
+struct SfiRecFields {
   guint        n_fields;
   GParamSpec **fields;
-} SfiRecFields;
+  SfiRecFields (guint n = 0, GParamSpec **f = NULL) : n_fields (n), fields (f) {}
+};
 typedef struct _SfiUStore	SfiUStore;
 typedef struct _SfiUPool	SfiUPool;
 typedef struct _SfiPPool	SfiPPool;
