@@ -147,12 +147,11 @@ $(bst_cc_sources): bstserverapi.cc
 bstserverapi.cc: $(srcdir)/bstapi.idl $(AUXTYPES_PY)
 	$(AM_V_GEN)
 	$(Q) ${AIDACC} -x CxxStub -G macro=BST_IDL -G servercc -x $(AUXTYPES_PY) $< -o xgen-$(@F)
-	$(Q) ${AIDACC} -x CxxStub -G macro=BST_IDL -G clientcc -x $(AUXTYPES_PY) $< -o xgen2-$(@F)
-	$(Q) cat xgen-$(@F) xgen2-$(@F) >$@ && rm -f xgen2-$(@F) xgen-$(@F)
+	$(Q) mv xgen-$(@F) $@
 CLEANFILES += bstserverapi.cc
 
 #
-# convenience targets for generated source files  
+# convenience targets for generated source files
 #
 .PHONY: generated clean-generated
 clean-generated: clean
