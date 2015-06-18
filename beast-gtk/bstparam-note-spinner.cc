@@ -55,9 +55,16 @@ param_note_spinner_update (GxkParam  *param,
   gtk_editable_set_editable (GTK_EDITABLE (widget), param->editable);
 }
 
-static GxkParamEditor param_note_spinner = {
+static GxkParamEditor param_note_spinner_int = {
   { "note-spinner",     N_("Note Entry"), },
   { G_TYPE_INT, },
+  { "note",             +10,    TRUE, },        /* options, rating, editing */
+  param_note_spinner_create, param_note_spinner_update,
+};
+
+static GxkParamEditor param_note_spinner_num = {
+  { "note-spinner",     N_("Note Entry"), },
+  { SFI_TYPE_NUM, },
   { "note",             +10,    TRUE, },        /* options, rating, editing */
   param_note_spinner_create, param_note_spinner_update,
 };

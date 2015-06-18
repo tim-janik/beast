@@ -430,9 +430,11 @@ _bst_init_params (void)
   gxk_param_register_editor (&param_choice3, NULL);
   gxk_param_register_editor (&param_choice4, NULL);
   gxk_param_register_aliases (param_choice_aliases1);
-  gxk_param_register_editor (&param_color_spinner, NULL);
+  gxk_param_register_editor (&param_color_spinner_int, NULL);
+  gxk_param_register_editor (&param_color_spinner_num, NULL);
   gxk_param_register_editor (&param_note_sequence, NULL);
-  gxk_param_register_editor (&param_note_spinner, NULL);
+  gxk_param_register_editor (&param_note_spinner_int, NULL);
+  gxk_param_register_editor (&param_note_spinner_num, NULL);
   gxk_param_register_editor (&param_proxy, NULL);
   gxk_param_register_editor (&param_item_seq, NULL);
   gxk_param_register_editor (&param_automation, NULL);
