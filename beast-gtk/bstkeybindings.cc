@@ -313,7 +313,7 @@ key_binding_fill_binding_value (GtkWidget      *self,
                                 GxkListWrapper *lwrapper)
 {
   BstKeyBinding *kbinding = (BstKeyBinding*) g_object_get_data ((GObject*) self, "BstKeyBinding");
-  gint nb = row;
+  guint nb = row;
   if (nb >= kbinding->n_keys)
     {
       sfi_value_set_string (value, "<BUG: invalid row count>");
@@ -449,22 +449,21 @@ bst_key_binding_box (const gchar                 *binding_name,
 }
 
 void
-bst_key_binding_box_set (GtkWidget                   *self,
-                         BstKeyBindingItemSeq        *kbseq)
+bst_key_binding_box_set (GtkWidget *self, Bst::KeyBindingItemSeq *kbseq)
 {
   BstKeyBinding *kbinding = (BstKeyBinding*) g_object_get_data ((GObject*) self, "BstKeyBinding");
   GtkTreeView *btview = (GtkTreeView*) gxk_radget_find (self, "binding-tree-view");
   GtkTreeModel *model = gtk_tree_view_get_model (btview);
-  bst_key_binding_set_item_seq (kbinding, kbseq);
+  bst_key_binding_set_item_seq (kbinding, *kbseq);
   gxk_list_wrapper_notify_clear (GXK_LIST_WRAPPER (model));
   gxk_list_wrapper_notify_append (GXK_LIST_WRAPPER (model), kbinding->n_keys);
 }
 
-BstKeyBindingItemSeq*
-bst_key_binding_box_get (GtkWidget *self)
+Bst::KeyBindingItemSeq*
+bst_key_binding_box_get_new (GtkWidget *self)
 {
   BstKeyBinding *kbinding = (BstKeyBinding*) g_object_get_data ((GObject*) self, "BstKeyBinding");
-  return bst_key_binding_get_item_seq (kbinding);
+  return bst_key_binding_get_new_item_seq (kbinding);
 }
 
 BstKeyBindingKey*
@@ -520,28 +519,27 @@ key_binding_find_function (BstKeyBinding *kbinding,
 }
 
 void
-bst_key_binding_set_item_seq (BstKeyBinding        *kbinding,
-                              BstKeyBindingItemSeq *seq)
+bst_key_binding_set_item_seq (BstKeyBinding *kbinding, const Bst::KeyBindingItemSeq &seq)
 {
   BstKeyBindingKey *key;
   guint i;
   /* reset */
   kbinding->n_keys = 0;
   /* raise capacity */
-  kbinding->keys = (BstKeyBindingKey*) g_realloc (kbinding->keys, sizeof (kbinding->keys[0]) * seq->n_items);
+  kbinding->keys = (BstKeyBindingKey*) g_realloc (kbinding->keys, sizeof (kbinding->keys[0]) * seq.size());
   /* convert picewise */
   key = kbinding->keys;
-  for (i = 0; i < seq->n_items; i++)
+  for (i = 0; i < seq.size(); i++)
     {
-      gtk_accelerator_parse (seq->items[i]->key_name, &key->keyval, &key->modifier);
-      key->func_index = key_binding_find_function (kbinding, seq->items[i]->func_name);
+      gtk_accelerator_parse (seq[i].key_name.c_str(), &key->keyval, &key->modifier);
+      key->func_index = key_binding_find_function (kbinding, seq[i].func_name.c_str());
       if (key->func_index < kbinding->n_funcs && bst_key_combo_valid (key->keyval, key->modifier))
         {
-          key->param = key_binding_clamp_param (kbinding->funcs[key->func_index].ptype, seq->items[i]->func_param);
+          key->param = key_binding_clamp_param (kbinding->funcs[key->func_index].ptype, seq[i].func_param);
           key++;
         }
       else
-        g_message ("ignoring unknown key-binding function: %s", seq->items[i]->func_name);
+        g_message ("ignoring unknown key-binding function: %s", seq[i].func_name.c_str());
     }
   /* admit registration */
   kbinding->n_keys = key - kbinding->keys;
@@ -549,20 +547,20 @@ bst_key_binding_set_item_seq (BstKeyBinding        *kbinding,
   kbinding->keys = (BstKeyBindingKey*) g_realloc (kbinding->keys, sizeof (kbinding->keys[0]) * kbinding->n_keys);
 }
 
-BstKeyBindingItemSeq*
-bst_key_binding_get_item_seq (BstKeyBinding *kbinding)
+Bst::KeyBindingItemSeq*
+bst_key_binding_get_new_item_seq (BstKeyBinding *kbinding)
 {
-  BstKeyBindingItemSeq *iseq = bst_key_binding_item_seq_new ();
-  guint i;
-  for (i = 0; i < kbinding->n_keys; i++)
+  Bst::KeyBindingItemSeq *iseq = new Bst::KeyBindingItemSeq();
+  for (size_t i = 0; i < kbinding->n_keys; i++)
     {
       BstKeyBindingKey *key = kbinding->keys + i;
-      BstKeyBindingItem item;
-      item.key_name = gtk_accelerator_name (key->keyval, key->modifier);
+      Bst::KeyBindingItem item;
+      gchar *freeme = gtk_accelerator_name (key->keyval, key->modifier);
+      item.key_name = freeme;
       item.func_name = (char*) kbinding->funcs[key->func_index].function_name;
       item.func_param = key->param;
-      bst_key_binding_item_seq_append (iseq, &item);
-      g_free (item.key_name);
+      iseq->push_back (item);
+      g_free (freeme);
     }
   return iseq;
 }
@@ -573,7 +571,8 @@ bst_key_binding_item_pspec (void)
   static GParamSpec *pspec = NULL;
   if (!pspec)
     {
-      pspec = sfi_pspec_rec ("key", NULL, NULL, bst_key_binding_item_fields, SFI_PARAM_STANDARD);
+      Bst::KeyBindingItem kbitem;
+      pspec = sfi_pspec_rec ("key", NULL, NULL, Bse::sfi_psecs_rec_fields_from_visitable (kbitem), SFI_PARAM_STANDARD);
       g_param_spec_ref (pspec);
       g_param_spec_sink (pspec);
     }
@@ -622,13 +621,13 @@ bst_key_binding_dump (const gchar *file_name,
   for (slist = kbindings; slist; slist = slist->next)
     {
       BstKeyBinding *kbinding = (BstKeyBinding*) slist->data;
-      BstKeyBindingItemSeq *iseq = bst_key_binding_get_item_seq (kbinding);
+      Bst::KeyBindingItemSeq *iseq = bst_key_binding_get_new_item_seq (kbinding);
       GParamSpec *pspec = sfi_pspec_seq (kbinding->binding_name, NULL, NULL, bst_key_binding_item_pspec(), SFI_PARAM_STANDARD);
-      SfiSeq *seq = bst_key_binding_item_seq_to_seq (iseq);
+      SfiSeq *seq = Bse::sfi_seq_new_from_visitable (*iseq);
       GValue *value = sfi_value_seq (seq);
       sfi_wstore_put_param (wstore, value, pspec);
       g_param_spec_unref (pspec);
-      bst_key_binding_item_seq_free (iseq);
+      delete iseq;
       sfi_value_free (value);
       sfi_seq_unref (seq);
       sfi_wstore_puts (wstore, "\n");
@@ -664,9 +663,9 @@ key_binding_try_statement (gpointer   context_data,
           seq = sfi_value_get_seq (value);
           if (token == G_TOKEN_NONE && seq)
             {
-              BstKeyBindingItemSeq *iseq = bst_key_binding_item_seq_from_seq (seq);
+              Bst::KeyBindingItemSeq iseq;
+              Bse::sfi_seq_to_visitable (seq, iseq);
               bst_key_binding_set_item_seq (kbinding, iseq);
-              bst_key_binding_item_seq_free (iseq);
             }
           sfi_value_free (value);
           return token;

@@ -173,4 +173,16 @@ sequence MsgAbsorbStringSeq {
   MsgAbsorbString strings;
 };
 
+
+// == Key Bindings ==
+record KeyBindingItem {
+  String  key_name   = String ("", "", STANDARD);
+  String  func_name  = String ("", "", STANDARD);
+  float64 func_param = Range  ("", "", STANDARD ":scale", -1e37, +1e37, 100);
+};
+sequence KeyBindingItemSeq {
+  KeyBindingItem items;
+};
+
+
 } // Bst

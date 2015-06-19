@@ -383,25 +383,25 @@ pattern_controller_get_functions (gboolean want_piano,
     }
 }
 
-struct ConstKeyBindingItem {
-  const char* key_name;
-  const char* func_name;
-  SfiReal func_param;
+struct StaticKeyBindingItem {
+  const char *key_name;
+  const char *func_name;
+  double      func_param;
 };
-static BstKeyBindingItem*
-BstKeyBindingItem_from_ConstKeyBindingItem (const ConstKeyBindingItem *ckb)
+static Bst::KeyBindingItem
+key_binding_item_from_static (const StaticKeyBindingItem &skb)
 {
-  RAPICORN_STATIC_ASSERT (sizeof (ConstKeyBindingItem) == sizeof (BstKeyBindingItem));
-  RAPICORN_STATIC_ASSERT (offsetof (ConstKeyBindingItem, key_name) == offsetof (BstKeyBindingItem, key_name));
-  RAPICORN_STATIC_ASSERT (offsetof (ConstKeyBindingItem, func_name) == offsetof (BstKeyBindingItem, func_name));
-  RAPICORN_STATIC_ASSERT (offsetof (ConstKeyBindingItem, func_param) == offsetof (BstKeyBindingItem, func_param));
-  return (BstKeyBindingItem*) ckb;
+  Bst::KeyBindingItem kbi;
+  kbi.key_name = skb.key_name;
+  kbi.func_name = skb.func_name;
+  kbi.func_param = skb.func_param;
+  return kbi;
 }
 
 BstKeyBinding*
 bst_pattern_controller_default_generic_keys (void)
 {
-  static ConstKeyBindingItem dflt_keys[] = {
+  static StaticKeyBindingItem dflt_keys[] = {
     /* move in cells */
     {                   "Up",                   "move-up",      	0 },
     {                   "KP_Up",                "move-up",      	0 },
@@ -499,15 +499,12 @@ bst_pattern_controller_default_generic_keys (void)
   static BstKeyBinding kbinding = { (char*) "pattern-controller-default-generic-keys", };
   if (!kbinding.n_funcs)
     {
-      BstKeyBindingItemSeq *iseq;
-      guint i;
       kbinding.funcs = pattern_controller_get_functions (FALSE, &kbinding.n_funcs);
-      /* setup default keys */
-      iseq = bst_key_binding_item_seq_new();
-      for (i = 0; i < G_N_ELEMENTS (dflt_keys); i++)
-        bst_key_binding_item_seq_append (iseq, BstKeyBindingItem_from_ConstKeyBindingItem (&dflt_keys[i]));
+      // setup default keys
+      Bst::KeyBindingItemSeq iseq;
+      for (size_t i = 0; i < G_N_ELEMENTS (dflt_keys); i++)
+        iseq.push_back (key_binding_item_from_static (dflt_keys[i]));
       bst_key_binding_set_item_seq (&kbinding, iseq);
-      bst_key_binding_item_seq_free (iseq);
     }
   return &kbinding;
 }
@@ -515,22 +512,19 @@ bst_pattern_controller_default_generic_keys (void)
 BstKeyBinding*
 bst_pattern_controller_default_piano_keys (void)
 {
-  static ConstKeyBindingItem dflt_keys[] = {
+  static StaticKeyBindingItem dflt_keys[] = {
     /* events */
     {                   "space",                "remove-events",        0 },
   };
   static BstKeyBinding kbinding = { (char*) "pattern-controller-default-piano-keys", };
   if (!kbinding.n_funcs)
     {
-      BstKeyBindingItemSeq *iseq;
-      guint i;
       kbinding.funcs = pattern_controller_get_functions (TRUE, &kbinding.n_funcs);
-      /* setup default keys */
-      iseq = bst_key_binding_item_seq_new();
-      for (i = 0; i < G_N_ELEMENTS (dflt_keys); i++)
-        bst_key_binding_item_seq_append (iseq, BstKeyBindingItem_from_ConstKeyBindingItem (&dflt_keys[i]));
+      Bst::KeyBindingItemSeq iseq;
+      // setup default keys
+      for (size_t i = 0; i < G_N_ELEMENTS (dflt_keys); i++)
+        iseq.push_back (key_binding_item_from_static (dflt_keys[i]));
       bst_key_binding_set_item_seq (&kbinding, iseq);
-      bst_key_binding_item_seq_free (iseq);
     }
   return &kbinding;
 }
@@ -542,12 +536,11 @@ bst_pattern_controller_generic_keys (void)
   if (!kbinding.n_funcs)
     {
       BstKeyBinding *dflt_kbinding = bst_pattern_controller_default_generic_keys();
-      BstKeyBindingItemSeq *iseq;
       kbinding.funcs = pattern_controller_get_functions (FALSE, &kbinding.n_funcs);
-      /* copy keys */
-      iseq = bst_key_binding_get_item_seq (dflt_kbinding);
-      bst_key_binding_set_item_seq (&kbinding, iseq);
-      bst_key_binding_item_seq_free (iseq);
+      // copy keys
+      Bst::KeyBindingItemSeq *iseq = bst_key_binding_get_new_item_seq (dflt_kbinding);
+      bst_key_binding_set_item_seq (&kbinding, *iseq);
+      delete iseq;
     }
   return &kbinding;
 }
@@ -559,12 +552,11 @@ bst_pattern_controller_piano_keys (void)
   if (!kbinding.n_funcs)
     {
       BstKeyBinding *dflt_kbinding = bst_pattern_controller_default_piano_keys();
-      BstKeyBindingItemSeq *iseq;
       kbinding.funcs = pattern_controller_get_functions (TRUE, &kbinding.n_funcs);
-      /* copy keys */
-      iseq = bst_key_binding_get_item_seq (dflt_kbinding);
-      bst_key_binding_set_item_seq (&kbinding, iseq);
-      bst_key_binding_item_seq_free (iseq);
+      // copy keys
+      Bst::KeyBindingItemSeq *iseq = bst_key_binding_get_new_item_seq (dflt_kbinding);
+      bst_key_binding_set_item_seq (&kbinding, *iseq);
+      delete iseq;
     }
   return &kbinding;
 }

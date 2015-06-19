@@ -15,14 +15,5 @@ Const STORAGE = ":r:w:S:";
 Const STANDARD = STORAGE "G:";
 
 
-/* pattern editor key bindings */
-record KeyBindingItem {
-  SfiString key_name   = ("", "", "", STANDARD);
-  SfiString func_name  = ("", "", "", STANDARD);
-  Real      func_param = ("", "", 0, -1e37, 1e30, 100, STANDARD ":scale");
-};
-sequence KeyBindingItemSeq {
-  KeyBindingItem items;
-};
 
 };
