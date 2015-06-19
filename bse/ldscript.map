@@ -3,7 +3,7 @@
     extern "C++" {
       Bse::*;    vtable*Bse::*;    typeinfo*Bse::*;	virtual*Bse::*;	VTT*Bse::*;
       Sfi::*;    vtable*Sfi::*;    typeinfo*Sfi::*;	virtual*Sfi::*; VTT*Sfi::*;
-      Rapicorn*::Aida::enum_value_list*;
+      Rapicorn*::Aida::enum_info*;
     };
     birnet_*;
     bse_*;

@@ -197,18 +197,18 @@ bst_wave_editor_init (BstWaveEditor *self)
   any = (GtkWidget*) g_object_new (GTK_TYPE_OPTION_MENU, "visible", TRUE, NULL);
   gtk_option_menu_set_menu (GTK_OPTION_MENU (any),
 			    bst_choice_menu_createv ("<BEAST-WaveEditor>/QSamplerDrawType",
-						     BST_CHOICE (BST_QSAMPLER_DRAW_CRANGE, _("Shape Range"), NONE),
-						     BST_CHOICE (BST_QSAMPLER_DRAW_ZERO_SHAPE, _("Shape Average"), NONE),
-						     BST_CHOICE (BST_QSAMPLER_DRAW_MINIMUM_SHAPE, _("Shape Minimum"), NONE),
-						     BST_CHOICE (BST_QSAMPLER_DRAW_MAXIMUM_SHAPE, _("Shape Maximum"), NONE),
-						     BST_CHOICE (BST_QSAMPLER_DRAW_CSHAPE, _("Sketch Range"), NONE),
-						     BST_CHOICE (BST_QSAMPLER_DRAW_MIDDLE_LINE, _("Sketch Average"), NONE),
-						     BST_CHOICE (BST_QSAMPLER_DRAW_MINIMUM_LINE, _("Sketch Minimum"), NONE),
-						     BST_CHOICE (BST_QSAMPLER_DRAW_MAXIMUM_LINE, _("Sketch Maximum"), NONE),
+						     BST_CHOICE (Bst::QSAMPLER_DRAW_CRANGE, _("Shape Range"), NONE),
+						     BST_CHOICE (Bst::QSAMPLER_DRAW_ZERO_SHAPE, _("Shape Average"), NONE),
+						     BST_CHOICE (Bst::QSAMPLER_DRAW_MINIMUM_SHAPE, _("Shape Minimum"), NONE),
+						     BST_CHOICE (Bst::QSAMPLER_DRAW_MAXIMUM_SHAPE, _("Shape Maximum"), NONE),
+						     BST_CHOICE (Bst::QSAMPLER_DRAW_CSHAPE, _("Sketch Range"), NONE),
+						     BST_CHOICE (Bst::QSAMPLER_DRAW_MIDDLE_LINE, _("Sketch Average"), NONE),
+						     BST_CHOICE (Bst::QSAMPLER_DRAW_MINIMUM_LINE, _("Sketch Minimum"), NONE),
+						     BST_CHOICE (Bst::QSAMPLER_DRAW_MAXIMUM_LINE, _("Sketch Maximum"), NONE),
 						     BST_CHOICE_END));
   g_object_connect (any, "swapped_signal::changed", change_draw_mode, self, NULL);
   gtk_option_menu_set_history (GTK_OPTION_MENU (any), 0);
-  self->draw_mode = BST_QSAMPLER_DRAW_CRANGE;
+  self->draw_mode = Bst::QSAMPLER_DRAW_CRANGE;
   gmask = bst_gmask_quick (self->gmask_parent, 2, NULL, any, NULL);
 
   /* playback handle */
@@ -247,6 +247,7 @@ bst_wave_editor_init (BstWaveEditor *self)
   gtk_widget_show (self->preview_on);
   gtk_widget_hide (self->preview_off);
   gmask = bst_gmask_quick (self->gmask_parent, 2, NULL, any, NULL);
+  (void) gmask;
 }
 
 static void
@@ -495,7 +496,7 @@ wave_editor_set_n_qsamplers (BstWaveEditor *self,
 	  qsampler->owner = self;
 	  qsampler->owner_index = i;
 	  bst_qsampler_set_source (qsampler, 0, NULL, NULL, NULL);
-	  bst_qsampler_set_draw_mode (qsampler, BstQSamplerDrawMode (self->draw_mode));
+	  bst_qsampler_set_draw_mode (qsampler, self->draw_mode);
 	  self->qsamplers[i] = qsampler;
 	}
       self->n_qsamplers = n_qsamplers;
@@ -571,7 +572,6 @@ tree_selection_changed (BstWaveEditor    *self,
   if (gtk_tree_selection_get_selected (tsel, &model, &iter))
     {
       gchar *osc_str, *mix_str;
-      gfloat osc_freq, mix_freq;
       SfiProxy esample;
 
       g_assert (self->chunk_wrapper == (GxkListWrapper*) model);
@@ -580,8 +580,6 @@ tree_selection_changed (BstWaveEditor    *self,
 			  COL_OSC_FREQ, &osc_str,
 			  COL_MIX_FREQ, &mix_str,
 			  -1);
-      osc_freq = g_strtod (osc_str, NULL);
-      mix_freq = g_strtod (mix_str, NULL);
       g_free (osc_str);
       g_free (mix_str);
 
@@ -613,13 +611,11 @@ static void
 change_draw_mode (BstWaveEditor *self,
 		  GtkOptionMenu *omenu)
 {
-  guint i;
-
-  self->draw_mode = bst_choice_get_last (omenu->menu);
-  for (i = 0; i < self->n_qsamplers; i++)
+  self->draw_mode = (Bst::QSamplerDrawMode) bst_choice_get_last (omenu->menu);
+  for (uint i = 0; i < self->n_qsamplers; i++)
     {
       BstQSampler *qsampler = self->qsamplers[i];
-      bst_qsampler_set_draw_mode (qsampler, BstQSamplerDrawMode (self->draw_mode));
+      bst_qsampler_set_draw_mode (qsampler, self->draw_mode);
     }
 }
 
@@ -668,13 +664,13 @@ wave_chunk_fill_value (BstWaveEditor *self,
     {
       const gchar *string;
     case COL_OSC_FREQ:
-      g_value_set_string_take_ownership (value, g_strdup_format ("%.2f", bse_wave_chunk_get_osc_freq (wave, cidx)));
+      g_value_take_string (value, g_strdup_format ("%.2f", bse_wave_chunk_get_osc_freq (wave, cidx)));
       break;
     case COL_MIX_FREQ:
-      g_value_set_string_take_ownership (value, g_strdup_format ("%.2f", bse_wave_chunk_get_mix_freq (wave, cidx)));
+      g_value_take_string (value, g_strdup_format ("%.2f", bse_wave_chunk_get_mix_freq (wave, cidx)));
       break;
     case COL_LOOP:
-      g_value_set_string_take_ownership (value, g_strdup_format ("L:%u {0x%08x,0x%08x}", 0, 0, 0));
+      g_value_take_string (value, g_strdup_format ("L:%u {0x%08x,0x%08x}", 0, 0, 0));
       break;
     case COL_WAVE_NAME:
       bse_proxy_get (wave, "wave-name", &string, NULL);

@@ -10,9 +10,9 @@ AM_CXXFLAGS += $(BEAST_CFLAGS) $(GXK_CFLAGS) $(BSE_CFLAGS) $(RAPICORN_CFLAGS) -D
 
 
 # special profiling hooks
-PROFILE_SOURCE = # profile.cc
 DEFS += @DEFINE__FILE_DIR__@ # $(subst profile.cc, -pg -a, $(findstring profile.cc, $(<F)))
 LIBS += # -lefence # -pg 
+AUXTYPES_PY = $(top_srcdir)/bse/AuxTypes.py
 
 #
 # setup source file variables
@@ -30,7 +30,7 @@ beast_headers = $(strip \
 	bstsnifferscope.hh	bstwaveview.hh	bstfiledialog.hh		bstgconfig.hh	    \
 	bstlogadjustment.hh	bstitemview.hh	bstservermonitor.hh	bstknob.hh	    \
 	bstparamview.hh		bstmenus.hh	bstparam.hh		bstpartdialog.hh	    \
-	bstprocbrowser.hh	bstqsampler.hh	bstpreferences.hh	bstprocedure.hh	    \
+				bstqsampler.hh	bstpreferences.hh	bstprocedure.hh	    \
 	bstrackeditor.hh		bstrackitem.hh	bstracktable.hh		bstsequence.hh	    \
 	bstsnetrouter.hh		bstsplash.hh	bsttrackview.hh		bstsupershell.hh	    \
 	bstusermessage.hh	bstdial.hh	bsttracksynthdialog.hh	bstwaveeditor.hh	    \
@@ -40,7 +40,7 @@ beast_headers = $(strip \
 )
 EXTRA_DIST += $(beast_headers)
 # BEAST sources to build the program from
-beast_sources = $(strip \
+bst_cc_sources = $(strip \
 	bsttrackrollctrl.cc	bstxframe.cc	bstscrollgraph.cc	\
 	bstdbmeter.cc		bstbusmixer.cc	bstbuseditor.cc		bstitemseqdialog.cc \
 	bstcanvassource.cc	bstapp.cc	bstasciipixbuf.cc	bstcanvaslink.cc    \
@@ -52,13 +52,12 @@ beast_sources = $(strip \
 	bstsnifferscope.cc	bstwaveview.cc	bstfiledialog.cc	bstgconfig.cc	    \
 	bstlogadjustment.cc	bstitemview.cc	bstservermonitor.cc	bstknob.cc	    \
 	bstparamview.cc		bstmenus.cc	bstparam.cc		bstpartdialog.cc    \
-	bstprocbrowser.cc	bstqsampler.cc	bstpreferences.cc	bstprocedure.cc	    \
+				bstqsampler.cc	bstpreferences.cc	bstprocedure.cc	    \
 	bstrackeditor.cc	bstrackitem.cc	bstracktable.cc		bstsequence.cc	    \
 	bstsnetrouter.cc	bstsplash.cc	bsttrackview.cc		bstsupershell.cc    \
 	bstusermessage.cc	bstdial.cc	bsttracksynthdialog.cc	bstwaveeditor.cc    \
 	bstzoomedwindow.cc     bstskinconfig.cc	bstmsgabsorb.cc		bstsampleeditor.cc  \
 	bstrackview.cc	       bsttreestores.cc	bstbseutils.cc		bstutils.cc	    \
-	$(PROFILE_SOURCE) \
 )
 # BEAST sources that get included (don't have own .lo rules)
 beast_extra_files = $(strip 						\
@@ -69,71 +68,16 @@ beast_extra_files = $(strip 						\
 	bstparam-searchpath.cc		bstparam-time.cc			\
 	bstparam-item-seq.cc		bstrackeditor-covers.cc		\
 	\
-	bstmarshal.list			bstrecords.idl			\
+	bstmarshal.list			\
 )
 EXTRA_DIST += $(beast_extra_files)
 
-GLIB_MKENUMS = glib-mkenums
 SFIDL = ../sfi/sfidl
 SFIDL_INC = --nostdinc -I$(top_srcdir) -I$(top_builddir)
 
 #
 # rules to generate built sources
 #
-# bstgentypes.h
-GENERATED_CLEANFILES += bstgentypes.h
-CLEANFILES += stamp-bstgentypes.h
-$(beast_vOBJECTS): bstgentypes.h
-bstgentypes.h: stamp-bstgentypes.h ;
-stamp-bstgentypes.h: $(beast_headers) $(srcdir)/bstrecords.idl $(SFIDL)
-	cd .	\
-	&& echo 'G_BEGIN_DECLS;'				 > xgen-$(@F) \
-	&& ( cd $(srcdir) && $(GLIB_MKENUMS) \
-	  --fprod "\n/* --- @filename@ --- */" \
-	  --eprod "#define BST_TYPE_@ENUMSHORT@\t    (bst__type_id__@EnumName@)\n" \
-	  --eprod "extern GType bst__type_id__@EnumName@;" \
-	    $(beast_headers) ) 					>> xgen-$(@F) \
-	&& $(SFIDL) --host-c --header ${srcdir}/bstrecords.idl	>> xgen-$(@F) \
-	&& echo 'G_END_DECLS;'					>> xgen-$(@F) \
-	&& (cmp -s xgen-$(@F) bstgentypes.h || cp xgen-$(@F) bstgentypes.h) \
-	&& rm -f xgen-$(@F) \
-	&& echo timestamp > $@
-# bstgentypes.cc
-GENERATED_CLEANFILES += bstgentypes.cc
-$(beast_vOBJECTS): bstgentypes.cc
-bstgentypes.cc: bstgentypes.h $(beast_headers) ${srcdir}/bstrecords.idl $(SFIDL)
-	cd . \
-	&& ( cd $(srcdir) && $(GLIB_MKENUMS) \
-	  --eprod "\nGType bst__type_id__@EnumName@ = 0;" \
-	    $(beast_headers) ) > xgen-$(@F) \
-	&& $(SFIDL) --host-c --source --init _bst_init_idl ${srcdir}/bstrecords.idl >> xgen-$(@F) \
-	&& cp xgen-$(@F) $@ \
-	&& rm -f xgen-$(@F)
-# bstenum_arrays.cc
-GENERATED_CLEANFILES += bstenum_arrays.cc
-$(beast_vOBJECTS): bstenum_arrays.cc
-bstenum_arrays.cc: $(beast_headers)
-	cd . \
-	&& ( cd ${srcdir} && $(GLIB_MKENUMS) \
-	  --fprod "\n/* --- @filename@ --- */\n#include\t\"@filename@\"" \
-	  --vhead "/* @EnumName@\n */\n" \
-	  --vhead "static G@Type@Value @enum_name@_values[] = {" \
-	  --vprod "  { @VALUENAME@, \"@VALUENAME@\", \"@valuenick@\" }," \
-	  --vtail "  { 0, NULL, NULL }\n};\n" \
-	    $(beast_headers) ) > xgen-$(@F) \
-	&& cp xgen-$(@F) $@ \
-	&& rm -f xgen-$(@F)
-# bstenum_list.cc
-GENERATED_CLEANFILES += bstenum_list.cc
-$(beast_vOBJECTS): bstenum_list.cc
-bstenum_list.cc: $(beast_headers)
-	cd . \
-	&& ( cd $(srcdir) && $(GLIB_MKENUMS) \
-	  --fprod "\n/* --- @filename@ --- */" \
-	  --eprod "  { \"@EnumName@\", G_TYPE_@TYPE@, &bst__type_id__@EnumName@, @enum_name@_values }," \
-	    $(beast_headers) ) > xgen-$(@F) \
-	&& cp xgen-$(@F) $@ \
-	&& rm -f xgen-$(@F)
 # bstoldbseapi.h
 GENERATED_CLEANFILES += bstoldbseapi.h
 CLEANFILES += stamp-bstoldbseapi.h
@@ -170,8 +114,23 @@ bstmarshal.cc: bstmarshal.list
 	&& rm -f xgen-$(@F)
 
 
+# == bstapi.idl ==
+EXTRA_DIST += bstapi.idl
+$(bst_cc_sources): bstserverapi.hh
+bstserverapi.hh: $(srcdir)/bstapi.idl $(AUXTYPES_PY)
+	$(AM_V_GEN)
+	$(Q) ${AIDACC} -x CxxStub -G macro=BST_IDL -G serverhh -x $(AUXTYPES_PY) $< -o xgen-$(@F)
+	$(Q) mv xgen-$(@F) $@
+CLEANFILES += bstserverapi.hh
+$(bst_cc_sources): bstserverapi.cc
+bstserverapi.cc: $(srcdir)/bstapi.idl $(AUXTYPES_PY)
+	$(AM_V_GEN)
+	$(Q) ${AIDACC} -x CxxStub -G macro=BST_IDL -G servercc -x $(AUXTYPES_PY) $< -o xgen-$(@F)
+	$(Q) mv xgen-$(@F) $@
+CLEANFILES += bstserverapi.cc
+
 #
-# convenience targets for generated source files  
+# convenience targets for generated source files
 #
 .PHONY: generated clean-generated
 clean-generated: clean
@@ -182,10 +141,9 @@ generated: clean-generated $(GENERATED)
 #
 # build rules for programs
 #
-bin_PROGRAMS = beast-$(BIN_VERSION)
-beast___BIN_VERSION__SOURCES = bstmain.cc $(beast_sources)
-beast___BIN_VERSION__LDADD = $(progs_LDADD)
-beast_vOBJECTS  = $(beast___BIN_VERSION__OBJECTS)
+bin_PROGRAMS = beast-@BIN_VERSION@
+beast_@BIN_VERSION@_SOURCES = $(bst_cc_sources) bstmain.cc
+beast_@BIN_VERSION@_LDADD = $(progs_LDADD)
 noinst_PROGRAMS = $(ALLTESTS)
 progs_LDADD     = $(BEAST_LIBS) ./gxk/libgxk.a $(GXK_LIBS) $(top_builddir)/bse/libbse.la $(RAPICORN_LIBS) $(BSE_LIBS)
 
@@ -194,5 +152,5 @@ tsmview_SOURCES  = tsmview.cc
 tsmview_LDADD    = $(progs_LDADD)
 
 noinst_PROGRAMS += testgui
-testgui_SOURCES  = testgui.cc $(beast_sources)
+testgui_SOURCES  = testgui.cc $(bst_cc_sources)
 testgui_LDADD    = $(progs_LDADD)

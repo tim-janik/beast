@@ -47,9 +47,8 @@ GtkWidget*                   bst_key_binding_box          (const gchar          
                                                            guint                        n_funcs,
                                                            const BstKeyBindingFunction *funcs,
                                                            gboolean                     editable);
-void                         bst_key_binding_box_set      (GtkWidget                   *self,
-                                                           BstKeyBindingItemSeq        *kbseq);
-BstKeyBindingItemSeq*        bst_key_binding_box_get      (GtkWidget                   *self);
+void                         bst_key_binding_box_set      (GtkWidget *self, Bst::KeyBindingItemSeq *kbseq);
+Bst::KeyBindingItemSeq*      bst_key_binding_box_get_new  (GtkWidget                   *self);
 BstKeyBindingKey*            bst_key_binding_lookup_key   (BstKeyBinding               *kbinding,
                                                            guint                        keyval,
                                                            GdkModifierType              modifier,
@@ -64,9 +63,8 @@ guint                        bst_key_binding_lookup_id    (BstKeyBinding        
                                                            GdkModifierType              modifier,
                                                            guint                        collision_group,
                                                            gdouble                     *param);
-void                         bst_key_binding_set_item_seq (BstKeyBinding               *kbinding,
-                                                           BstKeyBindingItemSeq        *seq);
-BstKeyBindingItemSeq*        bst_key_binding_get_item_seq (BstKeyBinding               *kbinding);
+void                         bst_key_binding_set_item_seq (BstKeyBinding *kbinding, const Bst::KeyBindingItemSeq &seq);
+Bst::KeyBindingItemSeq*  bst_key_binding_get_new_item_seq (BstKeyBinding *kbinding);
 const gchar*                 bst_key_binding_rcfile       (void);
 BseErrorType                 bst_key_binding_dump         (const gchar                 *file_name,
                                                            GSList                      *kbindings);

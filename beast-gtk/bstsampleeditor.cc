@@ -232,7 +232,7 @@ qsampler_selection_timeout (gpointer data)
 
       gdk_window_get_pointer (GTK_WIDGET (qsampler)->window, &x, NULL, NULL);
       bst_qsampler_get_offset_at (qsampler, &x);
-      retain = x < qsampler->pcm_length && x >= 0;
+      retain = uint (x) < qsampler->pcm_length && x >= 0;
       if (ABS (m1 - x) < ABS (m2 - x))
 	qsampler_set_selection (qsampler, m2, x, 2);
       else
@@ -320,10 +320,8 @@ static void
 change_draw_mode (BstSampleEditor *editor,
 		  GtkOptionMenu   *omenu)
 {
-  guint i;
-  BstQSamplerDrawMode mode = (BstQSamplerDrawMode) bst_choice_get_last (omenu->menu);
-
-  for (i = 0; i < editor->n_channels; i++)
+  Bst::QSamplerDrawMode mode = (Bst::QSamplerDrawMode) bst_choice_get_last (omenu->menu);
+  for (uint i = 0; i < editor->n_channels; i++)
     {
       BstQSampler *qsampler = editor->qsampler[i];
 
@@ -495,14 +493,14 @@ bst_sample_editor_rebuild (BstSampleEditor *editor)
                                    NULL);
   gtk_option_menu_set_menu (GTK_OPTION_MENU (any),
 			    bst_choice_menu_createv ("<BEAST-SampleEditor>/Popup",
-						     BST_CHOICE (BST_QSAMPLER_DRAW_CRANGE, _("Shape Range"), NONE),
-						     BST_CHOICE (BST_QSAMPLER_DRAW_ZERO_SHAPE, _("Shape Average"), NONE),
-						     BST_CHOICE (BST_QSAMPLER_DRAW_MINIMUM_SHAPE, _("Shape Minimum"), NONE),
-						     BST_CHOICE (BST_QSAMPLER_DRAW_MAXIMUM_SHAPE, _("Shape Maximum"), NONE),
-						     BST_CHOICE (BST_QSAMPLER_DRAW_CSHAPE, _("Sketch Range"), NONE),
-						     BST_CHOICE (BST_QSAMPLER_DRAW_MIDDLE_LINE, _("Sketch Average"), NONE),
-						     BST_CHOICE (BST_QSAMPLER_DRAW_MINIMUM_LINE, _("Sketch Minimum"), NONE),
-						     BST_CHOICE (BST_QSAMPLER_DRAW_MAXIMUM_LINE, _("Sketch Maximum"), NONE),
+						     BST_CHOICE (Bst::QSAMPLER_DRAW_CRANGE, _("Shape Range"), NONE),
+						     BST_CHOICE (Bst::QSAMPLER_DRAW_ZERO_SHAPE, _("Shape Average"), NONE),
+						     BST_CHOICE (Bst::QSAMPLER_DRAW_MINIMUM_SHAPE, _("Shape Minimum"), NONE),
+						     BST_CHOICE (Bst::QSAMPLER_DRAW_MAXIMUM_SHAPE, _("Shape Maximum"), NONE),
+						     BST_CHOICE (Bst::QSAMPLER_DRAW_CSHAPE, _("Sketch Range"), NONE),
+						     BST_CHOICE (Bst::QSAMPLER_DRAW_MIDDLE_LINE, _("Sketch Average"), NONE),
+						     BST_CHOICE (Bst::QSAMPLER_DRAW_MINIMUM_LINE, _("Sketch Minimum"), NONE),
+						     BST_CHOICE (Bst::QSAMPLER_DRAW_MAXIMUM_LINE, _("Sketch Maximum"), NONE),
 						     BST_CHOICE_END));
   g_object_connect (any,
 		    "swapped_signal::changed", change_draw_mode, editor,
@@ -523,4 +521,5 @@ bst_sample_editor_rebuild (BstSampleEditor *editor)
 		    "swapped_signal::clicked", play_back_wchunk, editor,
 		    NULL);
   gmask = bst_gmask_quick (mask_parent, 2, NULL, any, NULL);
+  (void) gmask;
 }

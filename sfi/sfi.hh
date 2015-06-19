@@ -36,6 +36,7 @@ using namespace Rapicorn;
 #include <sfi/sfitypes.hh>
 #include <sfi/sfiustore.hh>
 #include <sfi/sfivalues.hh>
+#include <sfi/sfivisitors.hh>
 #include <sfi/sfivmarshal.hh>
 #include <sfi/sfiwrapper.hh>
 

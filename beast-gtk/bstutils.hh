@@ -6,8 +6,7 @@
 #include "bstdefs.hh"
 #include "bstcluehunter.hh"
 /* generated type IDs, idl types */
-#include "bstgentypes.h"
-
+#include "bstserverapi.hh"
 
 // == Bse Server (BSE remote origin) ==
 extern Bse::ServerH bse_server;
@@ -85,8 +84,6 @@ void       bst_stock_register_icon      (const gchar  *stock_id,
 
 
 /* --- misc utils --- */
-gint            bst_fft_size_to_int     (BstFFTSize    fft_size);
-BstFFTSize      bst_fft_size_from_int   (guint         sz);
 gchar*          bst_file_scan_find_key  (const gchar  *file,
                                          const gchar  *key,
                                          const gchar  *value_prefix);
@@ -210,7 +207,7 @@ BstGMask*       bst_gmask_quick         (GtkWidget     *gmask_container,
 /* icon stock IDs */
 #include "beast-gtk/icons/bst-stock-gen.h"
 /* --- config values --- */
-BstGConfig*     bst_gconfig_get_global (void);
+Bst::GConfig*   bst_gconfig_get_global (void);
 #define BST_GCONFIG(field) (* bst_gconfig_get_global ()) . field
 /* --- internal --- */
 void            _bst_init_utils         (void);

@@ -28,7 +28,6 @@ bst_preferences_class_init (BstPreferencesClass *klass)
 static void
 bst_preferences_init (BstPreferences *self)
 {
-  BstKeyBindingItemSeq *iseq;
   BstKeyBinding *kbinding;
   GParamSpec *pspec;
   GtkWidget *pchild;
@@ -45,22 +44,22 @@ bst_preferences_init (BstPreferences *self)
   gxk_nullify_in_object (self, &self->notebook);
 
   pspec = bst_gconfig_pspec ();
-  self->rec_gconfig = bst_gconfig_to_rec (bst_gconfig_get_global ());
+  self->rec_gconfig = Bse::sfi_rec_new_from_visitable (*bst_gconfig_get_global ());
   pchild = bst_preferences_build_rec_editor (self->rec_gconfig, sfi_pspec_get_rec_fields (pspec), &self->params_gconfig);
   gxk_notebook_append (self->notebook, pchild, "BEAST", FALSE);
 
   kbinding = bst_pattern_controller_piano_keys();
-  iseq = bst_key_binding_get_item_seq (kbinding);
+  Bst::KeyBindingItemSeq *iseq = bst_key_binding_get_new_item_seq (kbinding);
   self->box_piano_keys = bst_key_binding_box (kbinding->binding_name, kbinding->n_funcs, kbinding->funcs, TRUE);
   bst_key_binding_box_set (self->box_piano_keys, iseq);
-  bst_key_binding_item_seq_free (iseq);
+  delete iseq;
   gxk_notebook_append (self->notebook, self->box_piano_keys, _("Piano Keys"), FALSE);
 
   kbinding = bst_pattern_controller_generic_keys();
-  iseq = bst_key_binding_get_item_seq (kbinding);
+  iseq = bst_key_binding_get_new_item_seq (kbinding);
   self->box_generic_keys = bst_key_binding_box (kbinding->binding_name, kbinding->n_funcs, kbinding->funcs, FALSE);
   bst_key_binding_box_set (self->box_generic_keys, iseq);
-  bst_key_binding_item_seq_free (iseq);
+  delete iseq;
   gxk_notebook_append (self->notebook, self->box_generic_keys, _("Generic Keys"), FALSE);
 
   self->box_msg_absorb_config = bst_msg_absorb_config_box();
@@ -68,7 +67,7 @@ bst_preferences_init (BstPreferences *self)
   gxk_notebook_append (self->notebook, self->box_msg_absorb_config, _("Messages"), FALSE);
 
   pspec = bst_skin_config_pspec ();
-  self->rec_skin = bst_skin_config_to_rec (bst_skin_config_get_global ());
+  self->rec_skin = Bse::sfi_rec_new_from_visitable (*bst_skin_config_get_global ());
   pchild = bst_preferences_build_rec_editor (self->rec_skin, sfi_pspec_get_rec_fields (pspec), &self->params_skin);
   gxk_notebook_append (self->notebook, pchild, _("Skin"), FALSE);
 
@@ -167,31 +166,30 @@ bst_preferences_update_params (BstPreferences *self)
 void
 bst_preferences_revert (BstPreferences *self)
 {
-  BstKeyBindingItemSeq *iseq;
   BstKeyBinding *kbinding;
   SfiRec *rec, *crec;
 
   g_return_if_fail (BST_IS_PREFERENCES (self));
 
-  rec = bst_gconfig_to_rec (bst_gconfig_get_global ());
+  rec = Bse::sfi_rec_new_from_visitable (*bst_gconfig_get_global ());
   crec = sfi_rec_copy_deep (rec);
   sfi_rec_unref (rec);
   sfi_rec_swap_fields (self->rec_gconfig, crec);
   sfi_rec_unref (crec);
 
   kbinding = bst_pattern_controller_piano_keys();
-  iseq = bst_key_binding_get_item_seq (kbinding);
+  Bst::KeyBindingItemSeq *iseq = bst_key_binding_get_new_item_seq (kbinding);
   bst_key_binding_box_set (self->box_piano_keys, iseq);
-  bst_key_binding_item_seq_free (iseq);
+  delete iseq;
 
   kbinding = bst_pattern_controller_generic_keys();
-  iseq = bst_key_binding_get_item_seq (kbinding);
+  iseq = bst_key_binding_get_new_item_seq (kbinding);
   bst_key_binding_box_set (self->box_generic_keys, iseq);
-  bst_key_binding_item_seq_free (iseq);
+  delete iseq;
 
   bst_msg_absorb_config_box_set (self->box_msg_absorb_config, bst_msg_absorb_config_get_global());
 
-  rec = bst_skin_config_to_rec (bst_skin_config_get_global ());
+  rec = Bse::sfi_rec_new_from_visitable (*bst_skin_config_get_global ());
   crec = sfi_rec_copy_deep (rec);
   sfi_rec_unref (rec);
   sfi_rec_swap_fields (self->rec_skin, crec);
@@ -208,7 +206,6 @@ bst_preferences_revert (BstPreferences *self)
 void
 bst_preferences_default_revert (BstPreferences *self)
 {
-  BstKeyBindingItemSeq *iseq;
   BstKeyBinding *kbinding;
   SfiRec *rec;
 
@@ -222,16 +219,16 @@ bst_preferences_default_revert (BstPreferences *self)
 
   kbinding = bst_pattern_controller_piano_keys();
   (void) kbinding;
-  iseq = bst_key_binding_get_item_seq (bst_pattern_controller_default_piano_keys());
+  Bst::KeyBindingItemSeq *iseq = bst_key_binding_get_new_item_seq (bst_pattern_controller_default_piano_keys());
   bst_key_binding_box_set (self->box_piano_keys, iseq);
-  bst_key_binding_item_seq_free (iseq);
+  delete iseq;
 
   kbinding = bst_pattern_controller_generic_keys();
-  iseq = bst_key_binding_get_item_seq (bst_pattern_controller_default_generic_keys());
+  iseq = bst_key_binding_get_new_item_seq (bst_pattern_controller_default_generic_keys());
   bst_key_binding_box_set (self->box_generic_keys, iseq);
-  bst_key_binding_item_seq_free (iseq);
+  delete iseq;
 
-  BstMsgAbsorbStringSeq empty_mas_seq = { 0, };
+  Bst::MsgAbsorbStringSeq empty_mas_seq;
   bst_msg_absorb_config_box_set (self->box_msg_absorb_config, &empty_mas_seq);
 
   rec = sfi_rec_new ();
@@ -250,24 +247,23 @@ bst_preferences_default_revert (BstPreferences *self)
 void
 bst_preferences_apply (BstPreferences *self)
 {
-  BstKeyBindingItemSeq *iseq;
   BstKeyBinding *kbinding;
   g_return_if_fail (BST_IS_PREFERENCES (self));
 
   bst_gconfig_apply (self->rec_gconfig);
 
   kbinding = bst_pattern_controller_piano_keys();
-  iseq = bst_key_binding_box_get (self->box_piano_keys);
-  bst_key_binding_set_item_seq (kbinding, iseq);
-  bst_key_binding_item_seq_free (iseq);
+  Bst::KeyBindingItemSeq *iseq = bst_key_binding_box_get_new (self->box_piano_keys);
+  bst_key_binding_set_item_seq (kbinding, *iseq);
+  delete iseq;
 
   kbinding = bst_pattern_controller_generic_keys();
-  iseq = bst_key_binding_box_get (self->box_generic_keys);
-  bst_key_binding_set_item_seq (kbinding, iseq);
-  bst_key_binding_item_seq_free (iseq);
+  iseq = bst_key_binding_box_get_new (self->box_generic_keys);
+  bst_key_binding_set_item_seq (kbinding, *iseq);
+  delete iseq;
 
-  BstMsgAbsorbStringSeq *mass = bst_msg_absorb_config_box_get (self->box_msg_absorb_config);
-  SfiSeq *seq = bst_msg_absorb_string_seq_to_seq (mass);
+  Bst::MsgAbsorbStringSeq *mass = bst_msg_absorb_config_box_get (self->box_msg_absorb_config);
+  SfiSeq *seq = Bse::sfi_seq_new_from_visitable (*mass);
   bst_msg_absorb_config_apply (seq);
   sfi_seq_unref (seq);
 

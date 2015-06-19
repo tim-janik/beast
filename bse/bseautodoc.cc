@@ -77,10 +77,10 @@ lookup_boxed_tag (GParamSpec *pspec)
 static gchar*
 type_name (GParamSpec *pspec)
 {
+  SfiRecFields rfields;
   switch (sfi_categorize_pspec (pspec))
     {
       const gchar *btag;
-      SfiRecFields rfields;
     case SFI_SCAT_BOOL:		return g_strdup ("SfiBool");
     case SFI_SCAT_INT:		return g_strdup ("SfiInt");
     case SFI_SCAT_NUM:		return g_strdup ("SfiNum");
