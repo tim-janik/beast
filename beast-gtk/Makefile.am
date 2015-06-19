@@ -68,7 +68,7 @@ beast_extra_files = $(strip 						\
 	bstparam-searchpath.cc		bstparam-time.cc			\
 	bstparam-item-seq.cc		bstrackeditor-covers.cc		\
 	\
-	bstmarshal.list			bstrecords.idl			\
+	bstmarshal.list			\
 )
 EXTRA_DIST += $(beast_extra_files)
 
@@ -78,27 +78,6 @@ SFIDL_INC = --nostdinc -I$(top_srcdir) -I$(top_builddir)
 #
 # rules to generate built sources
 #
-# bstgentypes.h
-GENERATED_CLEANFILES += bstgentypes.h
-CLEANFILES += stamp-bstgentypes.h
-$(beast_vOBJECTS): bstgentypes.h
-bstgentypes.h: stamp-bstgentypes.h ;
-stamp-bstgentypes.h: $(beast_headers) $(srcdir)/bstrecords.idl $(SFIDL)
-	cd .	\
-	&& echo 'G_BEGIN_DECLS;'				 > xgen-$(@F) \
-	&& $(SFIDL) --host-c --header ${srcdir}/bstrecords.idl	>> xgen-$(@F) \
-	&& echo 'G_END_DECLS;'					>> xgen-$(@F) \
-	&& (cmp -s xgen-$(@F) bstgentypes.h || cp xgen-$(@F) bstgentypes.h) \
-	&& rm -f xgen-$(@F) \
-	&& echo timestamp > $@
-# bstgentypes.cc
-GENERATED_CLEANFILES += bstgentypes.cc
-$(beast_vOBJECTS): bstgentypes.cc
-bstgentypes.cc: bstgentypes.h $(beast_headers) ${srcdir}/bstrecords.idl $(SFIDL)
-	cd . \
-	&& $(SFIDL) --host-c --source --init _bst_init_idl ${srcdir}/bstrecords.idl > xgen-$(@F) \
-	&& cp xgen-$(@F) $@ \
-	&& rm -f xgen-$(@F)
 # bstoldbseapi.h
 GENERATED_CLEANFILES += bstoldbseapi.h
 CLEANFILES += stamp-bstoldbseapi.h

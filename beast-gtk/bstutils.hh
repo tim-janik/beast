@@ -6,7 +6,6 @@
 #include "bstdefs.hh"
 #include "bstcluehunter.hh"
 /* generated type IDs, idl types */
-#include "bstgentypes.h"
 #include "bstserverapi.hh"
 
 // == Bse Server (BSE remote origin) ==

@@ -20,8 +20,6 @@
 #include <unistd.h>
 #include <string.h>
 
-/* --- prototypes --- */
-static void     _bst_init_idl                   (void);
 /* --- variables --- */
 static GtkIconFactory *stock_icon_factory = NULL;
 Bse::ServerH bse_server;
@@ -33,9 +31,6 @@ _bst_init_utils (void)
   g_assert (stock_icon_factory == NULL);
   stock_icon_factory = gtk_icon_factory_new ();
   gtk_icon_factory_add_default (stock_icon_factory);
-
-  /* initialize IDL types */
-  _bst_init_idl ();
 
   /* initialize stock icons (included above) */
   {
@@ -1278,56 +1273,6 @@ bst_file_scan_find_key (const gchar *file,
 /* --- generated marshallers --- */
 #include "bstmarshal.cc"
 
-
-/* --- IDL pspecs --- */
-#define sfidl_pspec_Bool(group, name, nick, blurb, dflt, hints) \
-  sfi_pspec_set_group (sfi_pspec_bool (name, nick, blurb, dflt, hints), group)
-#define sfidl_pspec_Bool_default(group, name) \
-  sfi_pspec_set_group (sfi_pspec_bool (name, NULL, NULL, FALSE, SFI_PARAM_STANDARD), group)
-#define sfidl_pspec_Int(group, name, nick, blurb, dflt, min, max, step, hints) \
-  sfi_pspec_set_group (sfi_pspec_int (name, nick, blurb, dflt, min, max, step, hints), group)
-#define sfidl_pspec_Int_default(group, name) \
-  sfi_pspec_set_group (sfi_pspec_int (name, NULL, NULL, 0, G_MININT, G_MAXINT, 256, SFI_PARAM_STANDARD), group)
-#define sfidl_pspec_UInt(group, name, nick, blurb, dflt, hints) \
-  sfi_pspec_set_group (sfi_pspec_int (name, nick, blurb, dflt, 0, G_MAXINT, 1, hints), group)
-#define sfidl_pspec_Real(group, name, nick, blurb, dflt, min, max, step, hints) \
-  sfi_pspec_set_group (sfi_pspec_real (name, nick, blurb, dflt, min, max, step, hints), group)
-#define sfidl_pspec_Real_default(group, name) \
-  sfi_pspec_set_group (sfi_pspec_real (name, NULL, NULL, 0, -SFI_MAXREAL, SFI_MAXREAL, 10, SFI_PARAM_STANDARD), group)
-#define sfidl_pspec_Note(group, name, nick, blurb, dflt, hints) \
-  sfi_pspec_set_group (sfi_pspec_note (name, nick, blurb, dflt, hints), group)
-#define sfidl_pspec_Choice(group, name, nick, blurb, dval, options, cvalues) \
-  sfi_pspec_set_group (sfi_pspec_choice (name, nick, blurb, dval, cvalues, SFI_PARAM_STANDARD), group)
-#define sfidl_pspec_Choice_default(group, name, cvalues) \
-  sfidl_pspec_Choice (group, name, NULL, NULL, NULL, SFI_PARAM_STANDARD, cvalues)
-#define sfidl_pspec_SfiString(group, name, nick, blurb, dflt, options) \
-  sfi_pspec_set_group (sfi_pspec_string (name, nick, blurb, dflt, options), group)
-#define sfidl_pspec_SfiString_default(group, name) \
-  sfidl_pspec_SfiString (group, name, NULL, NULL, NULL, SFI_PARAM_STANDARD)
-#define sfidl_pspec_BBlock(group, name, nick, blurb, options) \
-  sfi_pspec_set_group (sfi_pspec_bblock (name, nick, blurb, options), group)
-#define sfidl_pspec_BBlock_default(group, name) \
-  sfidl_pspec_BBlock (group, name, NULL, NULL, SFI_PARAM_STANDARD)
-#define sfidl_pspec_FBlock(group, name, nick, blurb, options) \
-  sfi_pspec_set_group (sfi_pspec_fblock (name, nick, blurb, options), group)
-#define sfidl_pspec_FBlock_default(group, name) \
-  sfidl_pspec_FBlock (group, name, NULL, NULL, SFI_PARAM_STANDARD)
-#define sfidl_pspec_Rec(group, name, nick, blurb, options) \
-  sfi_pspec_set_group (sfi_pspec_rec_generic (name, nick, blurb, options), group)
-#define sfidl_pspec_Rec_default(group, name, fields) \
-  sfidl_pspec_Rec (group, name, NULL, NULL, SFI_PARAM_STANDARD)
-#define sfidl_pspec_Record(group, name, nick, blurb, options, fields) \
-  sfi_pspec_set_group (sfi_pspec_rec (name, nick, blurb, fields, options), group)
-#define sfidl_pspec_Record_default(group, name, fields) \
-  sfidl_pspec_Record (group, name, NULL, NULL, SFI_PARAM_STANDARD, fields)
-#define sfidl_pspec_Sequence(group, name, nick, blurb, options, element) \
-  sfi_pspec_set_group (sfi_pspec_seq (name, nick, blurb, element, options), group)
-#define sfidl_pspec_Sequence_default(group, name, element) \
-  sfidl_pspec_Sequence (group, name, NULL, NULL, SFI_PARAM_STANDARD, element)
-#define sfidl_pspec_Proxy_default(group, name) \
-  sfi_pspec_set_group (sfi_pspec_proxy (name, NULL, NULL, SFI_PARAM_STANDARD), group)
-/* --- generated type IDs and SFIDL types --- */
-#include "bstgentypes.cc"       /* type id defs */
 
 // == mouse button checks ==
 static bool
