@@ -465,7 +465,7 @@ void
 sfi_seq_append_string (SfiSeq      *seq,
 		       const gchar *string)
 {
-  GValue *value = sfi_seq_append_empty (seq, SFI_TYPE_STRING);
+  GValue *value = sfi_seq_append_empty (seq, SFI_TYPE_SFI_STRING);
   sfi_value_set_string (value, string);
 }
 
@@ -1134,7 +1134,7 @@ sfi_rec_set_string (SfiRec      *rec,
 		    const gchar	*string)
 {
   GValue value = { 0, };
-  g_value_init (&value, SFI_TYPE_STRING);
+  g_value_init (&value, SFI_TYPE_SFI_STRING);
   g_value_set_static_string (&value, string);
   sfi_rec_set (rec, field_name, &value);
   g_value_unset (&value);

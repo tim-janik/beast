@@ -11,7 +11,7 @@ enum FunkynessType {
 // test record
 record TestRecord {
   Int           i;
-  String        str;
+  SfiString     str;
   FunkynessType funky;
 };
 sequence TestSequence {

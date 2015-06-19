@@ -14,6 +14,7 @@
 
 using namespace Sfidl;
 
+#if 0
 static String
 CxxNameToSymbol (const String &str)     // FIXME: need mammut renaming function
 {
@@ -24,6 +25,7 @@ CxxNameToSymbol (const String &str)     // FIXME: need mammut renaming function
       s[i] = '_';
   return s;
 }
+#endif
 
 static vector<String>
 split_string (const String &ctype)      // FIXME: remove once we have general renamer

@@ -80,8 +80,6 @@ main (int   argc,
   textdomain (BST_GETTEXT_DOMAIN);
   setlocale (LC_ALL, "");
 
-  /* initialize GLib */
-  g_type_init ();
   /* initialize Sfi */
   sfi_init (&argc, argv, "TestGUI");
   /* initialize Gtk+ and enter threading mode */

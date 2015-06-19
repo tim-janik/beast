@@ -9,6 +9,8 @@
 #include <string>
 #include <set>
 
+#pragma GCC diagnostic ignored "-Wmissing-declarations"
+
 std::set<std::string> needTypes;
 std::set<std::string> needClasses;
 std::set<std::string> excludeTypes;
@@ -155,7 +157,7 @@ std::string idlType (GType g)
     case G_TYPE_UINT64:         return "Num";
     case G_TYPE_INT:
     case G_TYPE_UINT:           return "Int";
-    case G_TYPE_STRING:         return "String";
+    case G_TYPE_STRING:         return "SfiString";
     case G_TYPE_FLOAT:
     case G_TYPE_DOUBLE:         return "Real";
     case G_TYPE_BOOLEAN:        return "Bool";

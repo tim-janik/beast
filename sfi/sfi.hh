@@ -2,8 +2,18 @@
 #ifndef __SFI_H__
 #define __SFI_H__
 
-// We're migrating to Bse for everything and use Rapicorn core for the lower level stuff
-#include <rapicorn-core.hh>
+
+// == Rapicorn Imports ==
+#include <rapicorn-core.hh>     // We move to Rapicorn core for low level stuff
+using Rapicorn::printerr;
+using Rapicorn::printout;
+using Rapicorn::string_format;
+using Rapicorn::Any;
+typedef std::string String;
+
+namespace Sfi {
+using namespace Rapicorn;
+} // Sfi
 namespace Bse {
 using namespace Rapicorn;
 } // Bse

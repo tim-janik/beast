@@ -213,7 +213,7 @@ device_class_list_entries (GType    type,
   BseDeviceClass *klass = (BseDeviceClass*) g_type_class_ref (type);
   if (BSE_DEVICE_CLASS (klass)->driver_name)
     {
-      BseDevice *device = (BseDevice*) g_object_new (type, NULL);
+      BseDevice *device = (BseDevice*) bse_object_new (type, NULL);
       if (request_callback)
         request_callback (device, data);
       ring = bse_device_list (device);
@@ -385,7 +385,7 @@ bse_device_open_auto (GType           base_type,
   for (ring = class_list; ring; ring = sfi_ring_walk (ring, class_list))
     {
       BseDeviceClass *klass = BSE_DEVICE_CLASS (ring->data);
-      device = (BseDevice*) g_object_new (G_OBJECT_CLASS_TYPE (klass), NULL);
+      device = (BseDevice*) bse_object_new (G_OBJECT_CLASS_TYPE (klass), NULL);
       if (request_callback)
         request_callback (device, data);
       BseErrorType error = bse_device_open (device, need_readable, need_writable, NULL);
@@ -450,7 +450,7 @@ bse_device_open_best (GType           base_type,
       if (node)
         {
           BseDeviceClass *klass = BSE_DEVICE_CLASS (node->data);
-          device = (BseDevice*) g_object_new (G_OBJECT_CLASS_TYPE (klass), NULL);
+          device = (BseDevice*) bse_object_new (G_OBJECT_CLASS_TYPE (klass), NULL);
           if (request_callback)
             request_callback (device, data);
           BseErrorType error = bse_device_open (device, need_readable, need_writable, args ? args + 1 : NULL);

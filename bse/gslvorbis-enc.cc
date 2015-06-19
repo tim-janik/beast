@@ -454,9 +454,10 @@ gsl_vorbis_encoder_ogg_eos (GslVorbisEncoder *self)
   return self->eos && !self->dblocks;
 }
 
-gchar*
-gsl_vorbis_encoder_version (void)
+String
+gsl_vorbis_encoder_version ()
 {
+  String version = "unknown";
   /* encode the first 3 header packets */
   vorbis_info vinfo = { 0 };
   vorbis_info_init (&vinfo);
@@ -464,7 +465,7 @@ gsl_vorbis_encoder_version (void)
   if (r != 0)
     {
       vorbis_info_clear (&vinfo);
-      return g_strdup ("unknown");
+      return version;
     }
   vorbis_dsp_state vdsp = { 0 };
   vorbis_analysis_init (&vdsp, &vinfo);
@@ -485,9 +486,13 @@ gsl_vorbis_encoder_version (void)
   if (r == 0)
     r = vorbis_synthesis_headerin (&oinfo, &ocomment, &opacket3); // vorbis codebooks
   /* save vendor */
-  char *vendor = NULL;
-  if (r == 0)
-    vendor = g_strdup (ocomment.vendor);
+  if (r == 0 && ocomment.vendor) // e.g. "Xiphophorus libVorbis I 20000508" (first beta) or "Xiph.Org libVorbis I 20020717" (1.0)
+    {
+      if (strncmp (ocomment.vendor, "Xiph.Org libVorbis ", 19) == 0)
+        version = ocomment.vendor + 19;
+      else
+        version = ocomment.vendor;
+    }
   /* cleanup decoder state */
   vorbis_comment_clear (&ocomment);
   vorbis_info_clear (&oinfo);
@@ -496,8 +501,5 @@ gsl_vorbis_encoder_version (void)
   vorbis_comment_clear (&vcomment);
   vorbis_dsp_clear (&vdsp);
   vorbis_info_clear (&vinfo);
-  /* return result */
-  if (vendor)
-    return vendor; // e.g. "Xiphophorus libVorbis I 20000508" (first beta) or "Xiph.Org libVorbis I 20020717" (1.0)
-  return g_strdup ("unknown");
+  return version;
 }

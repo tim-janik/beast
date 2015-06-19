@@ -98,16 +98,29 @@ G_END_DECLS
 
 namespace Bse {
 
-class ServerImpl : public ServerIface {
+class ServerImpl : public virtual ServerIface, public virtual ObjectImpl {
   TestObjectImplP    test_object_;
   friend class FriendAllocator<ServerImpl>;     // provide make_shared for non-public ctor
 protected:
-  explicit           ServerImpl ();
   virtual           ~ServerImpl ();
 public:
-  virtual TestObjectIfaceP get_test_object ();
-  static ServerImpl&       instance        ();
-  void                     send_user_message (const UserMessage &umsg);
+  explicit                 ServerImpl       (BseObject*);
+  virtual TestObjectIfaceP get_test_object  () override;
+  virtual ObjectIfaceP     from_proxy       (int64_t proxyid) override;
+  virtual String        get_mp3_version     () override;
+  virtual String        get_vorbis_version  () override;
+  virtual String        get_ladspa_path     () override;
+  virtual String        get_plugin_path     () override;
+  virtual String        get_script_path     () override;
+  virtual String        get_instrument_path () override;
+  virtual String        get_sample_path     () override;
+  virtual String        get_effect_path     () override;
+  virtual String        get_demo_path       () override;
+  virtual String        get_version         () override;
+  virtual String        get_custom_effect_dir () override;
+  virtual String        get_custom_instrument_dir () override;
+  void                  send_user_message   (const UserMessage &umsg);
+  static ServerImpl&    instance            ();
 };
 
 } // Bse

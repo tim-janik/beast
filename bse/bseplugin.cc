@@ -137,7 +137,7 @@ bse_plugin_init_builtins (void)
           if (chain)
             {
               /* create resident plugin struct */
-              BsePlugin *plugin = (BsePlugin*) g_object_new (BSE_TYPE_PLUGIN, NULL);
+              BsePlugin *plugin = (BsePlugin*) bse_object_new (BSE_TYPE_PLUGIN, NULL);
               g_object_ref (plugin);
               plugin->use_count = 1;
               plugin->fname = g_strdup ("BSE-BUILTIN");
@@ -150,7 +150,7 @@ bse_plugin_init_builtins (void)
       if (bse_builtin_export_identity.export_chain)
         {
           /* create resident plugin struct */
-          BsePlugin *plugin = (BsePlugin*) g_object_new (BSE_TYPE_PLUGIN, NULL);
+          BsePlugin *plugin = (BsePlugin*) bse_object_new (BSE_TYPE_PLUGIN, NULL);
           g_object_ref (plugin);
           plugin->use_count = 1;
           plugin->fname = g_strdup ("BSE-CXX-BUILTIN");
@@ -628,7 +628,7 @@ bse_plugin_check_load (const gchar *const_file_name)
     file_name = g_strdup (const_file_name);
   PDEBUG ("register: %s", file_name);
   /* load module */
-  BsePlugin *plugin = (BsePlugin*) g_object_new (BSE_TYPE_PLUGIN, NULL);
+  BsePlugin *plugin = (BsePlugin*) bse_object_new (BSE_TYPE_PLUGIN, NULL);
   plugin->fname = g_strdup (file_name);
   startup_plugin = plugin;
   gmodule = g_module_open (file_name, G_MODULE_BIND_LAZY);

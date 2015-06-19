@@ -358,7 +358,7 @@ public:
       case NUM:         return "Sfi::Num";
       case REAL:        return "Sfi::Real";
       case CHOICE:      return make_fqtn (type);
-      case STRING:      return "Sfi::String";
+      case STRING:      return "Sfi::SfiString";
       case BBLOCK:      return "Sfi::BBlock";
       case FBLOCK:      return "Sfi::FBlock";
       case SFIREC:      return "Sfi::Rec";
@@ -409,7 +409,7 @@ public:
       case REAL:        return "sfi_value_set_real";
       case CHOICE:      return intern (s + "sfi_value_set_enum_auto " +
                                        "SFI_START_ARGS() " + make_TYPE_NAME (type) + ", SFI_END_ARGS2");
-      case STRING:      return "::Sfi::String::value_set_string";
+      case STRING:      return "::Sfi::SfiString::value_set_string";
       case BBLOCK:      return "::Sfi::BBlock::value_set_bblock";
       case FBLOCK:      return "::Sfi::FBlock::value_set_fblock";
       case SFIREC:      return "::Sfi::Rec::value_set_rec";
@@ -435,7 +435,7 @@ public:
       case REAL:        return "sfi_value_get_real";
       case CHOICE:      return intern (s + "(" + make_fqtn (type) + ") sfi_value_get_enum_auto " +
                                        "SFI_START_ARGS() " + make_TYPE_NAME (type) + ", SFI_END_ARGS1");
-      case STRING:      return "::Sfi::String::value_get_string";
+      case STRING:      return "::Sfi::SfiString::value_get_string";
       case BBLOCK:      return "::Sfi::BBlock::value_get_bblock";
       case FBLOCK:      return "::Sfi::FBlock::value_get_fblock";
       case SFIREC:      return "::Sfi::Rec::value_get_rec";

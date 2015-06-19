@@ -20,7 +20,8 @@
 extern "C" void bse_object_debug_leaks (void); // FIXME
 
 /* --- prototypes --- */
-static void			bst_early_parse_args	(int *argc_p, char **argv);
+static void			bst_args_parse_early	(int *argc_p, char **argv);
+static void			bst_args_process        (int *argc_p, char **argv);
 static void			bst_print_blurb		(void);
 static void			bst_exit_print_version	(void);
 static void                     bst_init_aida_idl       ();
@@ -81,12 +82,33 @@ main (int   argc,
   Rapicorn::ThreadInfo::self().name ("Beast GUI");
   Bse::TaskRegistry::add (Rapicorn::ThreadInfo::self().name(), Rapicorn::ThisThread::process_pid(), Rapicorn::ThisThread::thread_pid());
 
-  g_type_init ();
   /* initialize Birnet/Sfi */
   sfi_init (&argc, argv, "BEAST");
   /* ensure SFI can wake us up */
-  /* initialize Gtk+ and go into threading mode */
-  bst_early_parse_args (&argc, argv);
+
+  // early arg parsing without remote calls
+  bst_args_parse_early (&argc, argv);
+
+  // startup BSE, allow remote calls
+  Bse::String bseoptions = Bse::string_format ("debug-extensions=%d", bst_debug_extensions);
+  Bse::init_async (&argc, argv, "BEAST", Bse::string_split (bseoptions, ":")); // initializes Bse AIDA connection
+  // now that the BSE thread runs, drop scheduling priorities if we have any
+  setpriority (PRIO_PROCESS, getpid(), 0);
+  // hook up Bse aida IDL with main loop
+  bst_init_aida_idl();
+  // Setup SFI glue context and wakeup
+  sfi_glue_context_push (Bse::init_glue_context ("BEAST", bst_main_loop_wakeup));
+  source = g_source_simple (GDK_PRIORITY_EVENTS, // G_PRIORITY_HIGH - 100,
+			    (GSourcePending) sfi_glue_context_pending,
+			    (GSourceDispatch) sfi_glue_context_dispatch,
+			    NULL, NULL, NULL);
+  g_source_attach (source, NULL);
+  g_source_unref (source);
+
+  // arg processing with BSE available, --help, --version
+  bst_args_process (&argc, argv);
+
+  // initialize Gtk+ and go into threading mode
   gtk_init (&argc, &argv);
   GDK_THREADS_ENTER ();
   /* initialize Gtk+ Extension Kit */
@@ -133,19 +155,6 @@ main (int   argc,
 
   /* start BSE core and connect */
   bst_splash_update_item (beast_splash, _("BSE Core"));
-  Bse::String bseoptions = Bse::string_format ("debug-extensions=%d", bst_debug_extensions);
-  Bse::init_async (&argc, argv, "BEAST", Bse::string_split (bseoptions, ":"));
-  sfi_glue_context_push (Bse::init_glue_context ("BEAST", bst_main_loop_wakeup));
-  source = g_source_simple (GDK_PRIORITY_EVENTS, // G_PRIORITY_HIGH - 100,
-			    (GSourcePending) sfi_glue_context_pending,
-			    (GSourceDispatch) sfi_glue_context_dispatch,
-			    NULL, NULL, NULL);
-  g_source_attach (source, NULL);
-  g_source_unref (source);
-
-  /* now that the BSE thread runs, drop scheduling priorities if we have any */
-  setpriority (PRIO_PROCESS, getpid(), 0);
-
   /* watch registration notifications on server */
   bse_proxy_connect (BSE_SERVER,
 		     "signal::registration", server_registration, beast_splash,
@@ -218,9 +227,6 @@ main (int   argc,
     }
   /* listen to BseServer notification */
   bst_splash_update_entity (beast_splash, _("Dialogs"));
-
-  // hook up Bse aida IDL with main loop
-  bst_init_aida_idl();
 
   bst_message_connect_to_server ();
   _bst_init_radgets ();
@@ -439,15 +445,20 @@ bst_init_aida_idl()
   assert (bse_server == NULL);
   // connect to BSE thread and fetch server handle
   bse_server = Rapicorn::Aida::ObjectBroker::connect<Bse::ServerH> ("inproc://BSE-" BST_VERSION);
+  if (!bse_server)
+    sfi_error ("failed to connect to BSE: %s", g_strerror (errno));
   assert (bse_server != NULL);
+  assert (bse_server.proxy_id() == BSE_SERVER);
+  assert (bse_server.from_proxy (BSE_SERVER) == bse_server);
   // hook Aida connection into our main loop
   Bse::AidaGlibSource *source = Bse::AidaGlibSource::create (Bse::ServerH::__aida_connection__());
   g_source_set_priority (source, G_PRIORITY_DEFAULT);
   g_source_attach (source, g_main_context_default());
 
-  // performa Bse Aida test
+  // perform Bse Aida tests
   if (0)
     {
+      Rapicorn::printerr ("bse_server: %s\n", bse_server.debug_name());
       Bse::TestObjectH test = bse_server.get_test_object();
       test.sig_echo_reply() += echo_test_handler;
       const int test_result = test.echo_test ("foo");
@@ -455,12 +466,13 @@ bst_init_aida_idl()
     }
 }
 
+static bool initialize_bse_and_exit = false;
+
 static void
-bst_early_parse_args (int *argc_p, char **argv)
+bst_args_parse_early (int *argc_p, char **argv)
 {
   uint argc = *argc_p;
   uint i, e;
-  bool initialize_bse_and_exit = false;
   for (i = 1; i < argc; i++)
     {
       if (strcmp (argv[i], "--") == 0)
@@ -530,66 +542,12 @@ bst_early_parse_args (int *argc_p, char **argv)
         { /* handled by priviledged launcher */
           argv[i] = NULL;
         }
-      else if (strcmp ("-h", argv[i]) == 0 ||
-	       strcmp ("--help", argv[i]) == 0)
-	{
-	  bst_print_blurb ();
-          argv[i] = NULL;
-	  exit (0);
-	}
-      else if (strcmp ("-v", argv[i]) == 0 ||
-	       strcmp ("--version", argv[i]) == 0)
-	{
-	  bst_exit_print_version ();
-	  argv[i] = NULL;
-	  exit (0);
-	}
       else if (strcmp ("--skinrc", argv[i]) == 0 ||
 	       strncmp ("--skinrc=", argv[i], 9) == 0)
         {
           const char *arg = argv[i][9 - 1] == '=' ? argv[i] + 9 : (argv[i + 1] ? argv[i + 1] : "");
           bst_skin_config_set_rcfile (arg);
         }
-      else if (strcmp ("--print-dir", argv[i]) == 0 ||
-	       strncmp ("--print-dir=", argv[i], 12) == 0)
-	{
-	  const char *arg = argv[i][12 - 1] == '=' ? argv[i] + 12 : (argv[i + 1] ? argv[i + 1] : "");
-          char *freeme = NULL;
-	  if (strcmp (arg, "prefix") == 0)
-	    g_print ("%s\n", BST_PATH_PREFIX);
-	  else if (strcmp (arg, "docs") == 0)
-	    g_print ("%s\n", BST_PATH_DOCS);
-	  else if (strcmp (arg, "images") == 0)
-	    g_print ("%s\n", BST_PATH_IMAGES);
-	  else if (strcmp (arg, "locale") == 0)
-	    g_print ("%s\n", BST_PATH_LOCALE);
-	  else if (strcmp (arg, "skins") == 0)
-	    g_print ("%s\n", freeme = BST_STRDUP_SKIN_PATH ());
-	  else if (strcmp (arg, "keys") == 0)
-	    g_print ("%s\n", BST_PATH_KEYS);
-	  else if (strcmp (arg, "ladspa") == 0)
-	    g_print ("%s\n", BSE_PATH_LADSPA);
-	  else if (strcmp (arg, "plugins") == 0)
-	    g_print ("%s\n", BSE_PATH_PLUGINS);
-	  else if (strcmp (arg, "samples") == 0)
-	    g_print ("%s\n", bse_server_get_sample_path (BSE_SERVER));
-	  else if (strcmp (arg, "effects") == 0)
-	    g_print ("%s\n", bse_server_get_effect_path (BSE_SERVER));
-	  else if (strcmp (arg, "scripts") == 0)
-	    g_print ("%s\n", bse_server_get_script_path (BSE_SERVER));
-	  else if (strcmp (arg, "instruments") == 0)
-	    g_print ("%s\n", bse_server_get_instrument_path (BSE_SERVER));
-	  else if (strcmp (arg, "demo") == 0)
-	    g_print ("%s\n", bse_server_get_demo_path (BSE_SERVER));
-	  else
-	    {
-	      if (arg[0])
-                g_message ("no such resource path: %s", arg);
-	      g_message ("supported resource paths: prefix, docs, images, keys, locale, skins, ladspa, plugins, scripts, effects, instruments, demo, samples");
-	    }
-          g_free (freeme);
-	  exit (0);
-	}
       else if (strcmp ("--bse-latency", argv[i]) == 0 ||
                strncmp ("--bse-latency=", argv[i], 14) == 0)
         {
@@ -619,7 +577,7 @@ bst_early_parse_args (int *argc_p, char **argv)
         }
       else if (strcmp ("--bse-driver-list", argv[i]) == 0)
         {
-          initialize_bse_and_exit = TRUE;
+          initialize_bse_and_exit = true;
           /* leave args for BSE */
         }
       else if (strcmp ("-p", argv[i]) == 0)
@@ -644,32 +602,105 @@ bst_early_parse_args (int *argc_p, char **argv)
           argv[i] = NULL;
       }
   *argc_p = e;
+}
+
+static void
+bst_args_process (int *argc_p, char **argv)
+{
+  assert (bse_server != NULL); // BSE must be initialized by now
   if (initialize_bse_and_exit)
+    exit (0);
+  uint argc = *argc_p;
+  uint i;
+  for (i = 1; i < argc; i++)
     {
-      Bse::init_async (argc_p, argv, "BEAST");
-      exit (0);
+      if (strcmp (argv[i], "--") == 0)
+        {
+          argv[i] = NULL;
+          break;
+        }
+      else if (strcmp ("--print-dir", argv[i]) == 0 ||
+	       strncmp ("--print-dir=", argv[i], 12) == 0)
+	{
+	  const char *arg = argv[i][12 - 1] == '=' ? argv[i] + 12 : (argv[i + 1] ? argv[i + 1] : "");
+          char *freeme = NULL;
+	  if (strcmp (arg, "prefix") == 0)
+	    g_print ("%s\n", BST_PATH_PREFIX);
+	  else if (strcmp (arg, "docs") == 0)
+	    g_print ("%s\n", BST_PATH_DOCS);
+	  else if (strcmp (arg, "images") == 0)
+	    g_print ("%s\n", BST_PATH_IMAGES);
+	  else if (strcmp (arg, "locale") == 0)
+	    g_print ("%s\n", BST_PATH_LOCALE);
+	  else if (strcmp (arg, "skins") == 0)
+	    g_print ("%s\n", freeme = BST_STRDUP_SKIN_PATH ());
+	  else if (strcmp (arg, "keys") == 0)
+	    g_print ("%s\n", BST_PATH_KEYS);
+	  else if (strcmp (arg, "ladspa") == 0)
+	    g_print ("%s\n", BSE_PATH_LADSPA);
+	  else if (strcmp (arg, "plugins") == 0)
+	    g_print ("%s\n", BSE_PATH_PLUGINS);
+	  else if (strcmp (arg, "samples") == 0)
+	    printout ("%s\n", bse_server.get_sample_path());
+	  else if (strcmp (arg, "effects") == 0)
+	    printout ("%s\n", bse_server.get_effect_path());
+	  else if (strcmp (arg, "scripts") == 0)
+	    printout ("%s\n", bse_server.get_script_path());
+	  else if (strcmp (arg, "instruments") == 0)
+	    printout ("%s\n", bse_server.get_instrument_path());
+	  else if (strcmp (arg, "demo") == 0)
+	    printout ("%s\n", bse_server.get_demo_path());
+	  else
+	    {
+	      if (arg[0])
+                g_message ("no such resource path: %s", arg);
+	      g_message ("supported resource paths: prefix, docs, images, keys, locale, skins, ladspa, plugins, scripts, effects, instruments, demo, samples");
+	    }
+          g_free (freeme);
+	  exit (0);
+	}
+      else if (strcmp ("-h", argv[i]) == 0 ||
+	       strcmp ("--help", argv[i]) == 0)
+	{
+	  bst_print_blurb ();
+          argv[i] = NULL;
+	  exit (0);
+	}
+      else if (strcmp ("-v", argv[i]) == 0 ||
+	       strcmp ("--version", argv[i]) == 0)
+	{
+	  bst_exit_print_version ();
+	  argv[i] = NULL;
+	  exit (0);
+	}
     }
+  uint e = 1;
+  for (i = 1; i < argc; i++)
+    if (argv[i])
+      {
+        argv[e++] = argv[i];
+        if (i >= e)
+          argv[i] = NULL;
+      }
+  *argc_p = e;
 }
 
 static void G_GNUC_NORETURN
 bst_exit_print_version (void)
 {
-  const gchar *c;
+  assert (bse_server != NULL); // we need BSE
+  String s;
   gchar *freeme = NULL;
-  /* hack: start BSE, so we can query it for paths, works since we immediately exit() afterwards */
-  Bse::init_async (NULL, NULL, "BEAST");
-  sfi_glue_context_push (Bse::init_glue_context ("BEAST", bst_main_loop_wakeup));
   g_print ("BEAST version %s (%s)\n", BST_VERSION, BST_VERSION_HINT);
   g_print ("Libraries: ");
   g_print ("GLib %u.%u.%u", glib_major_version, glib_minor_version, glib_micro_version);
-  g_print (", SFI %s", BST_VERSION);
   g_print (", BSE %s", BST_VERSION);
-  c = bse_server_get_vorbis_version (BSE_SERVER);
-  if (c)
-    g_print (", %s", c);
-  c = bse_server_get_mp3_version (BSE_SERVER);
-  if (c)
-    g_print (", %s", c);
+  s = bse_server.get_vorbis_version();
+  if (!s.empty())
+    printout (", %s", s);
+  s = bse_server.get_mp3_version();
+  if (!s.empty())
+    printout (", %s", s);
   g_print (", GTK+ %u.%u.%u", gtk_major_version, gtk_minor_version, gtk_micro_version);
 #ifdef BST_WITH_XKB
   g_print (", XKBlib");
@@ -686,13 +717,13 @@ bst_exit_print_version (void)
   g_print ("Locale Path:     %s\n", BST_PATH_LOCALE);
   g_print ("Keyrc Path:      %s\n", BST_PATH_KEYS);
   g_print ("Skin Path:       %s\n", freeme = BST_STRDUP_SKIN_PATH());
-  g_print ("Sample Path:     %s\n", bse_server_get_sample_path (BSE_SERVER));
-  g_print ("Script Path:     %s\n", bse_server_get_script_path (BSE_SERVER));
-  g_print ("Effect Path:     %s\n", bse_server_get_effect_path (BSE_SERVER));
-  g_print ("Instrument Path: %s\n", bse_server_get_instrument_path (BSE_SERVER));
-  g_print ("Demo Path:       %s\n", bse_server_get_demo_path (BSE_SERVER));
-  g_print ("Plugin Path:     %s\n", bse_server_get_plugin_path (BSE_SERVER));
-  g_print ("LADSPA Path:     %s:$LADSPA_PATH\n", bse_server_get_ladspa_path (BSE_SERVER));
+  printout ("Sample Path:     %s\n", bse_server.get_sample_path());
+  printout ("Script Path:     %s\n", bse_server.get_script_path());
+  printout ("Effect Path:     %s\n", bse_server.get_effect_path());
+  printout ("Instrument Path: %s\n", bse_server.get_instrument_path());
+  printout ("Demo Path:       %s\n", bse_server.get_demo_path());
+  printout ("Plugin Path:     %s\n", bse_server.get_plugin_path());
+  printout ("LADSPA Path:     %s:$LADSPA_PATH\n", bse_server.get_ladspa_path());
   g_print ("\n");
   g_print ("BEAST comes with ABSOLUTELY NO WARRANTY.\n");
   g_print ("You may redistribute copies of BEAST under the terms of\n");

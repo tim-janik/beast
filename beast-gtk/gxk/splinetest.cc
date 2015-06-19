@@ -47,9 +47,6 @@ int
 main (int   argc,
       char *argv[])
 {
-  /* GLib's thread and object systems */
-  g_type_init ();
-
   /* initialize Gtk+ and go into threading mode */
   gtk_init (&argc, &argv);
   g_set_prgname ("splinetest");	/* overriding Gdk's program name */

@@ -7,6 +7,7 @@
 #ifdef __SSE__
 #include <xmmintrin.h>
 #endif
+#include "subnormals.hh"
 
 #if 1
 inline float  test1f (float v) { return v;     }

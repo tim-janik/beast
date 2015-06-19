@@ -48,7 +48,8 @@ MAKE_CNAME = $(subst .,_,$(subst -,_,$(notdir $(basename $(1)))))
 # generate .c files for all of SRC_IMAGES
 GDK_PIXBUF_CSOURCE=gdk-pixbuf-csource
 %.c: %.png
-	$(GDK_PIXBUF_CSOURCE) --name=$(call MAKE_CNAME,$(<F))_pixstream $< >xgen-$(@F)-temp && cp xgen-$(@F)-temp $@ && rm -f xgen-$(@F)-temp
+	$(AM_V_GEN)
+	$(Q) $(GDK_PIXBUF_CSOURCE) --name=$(call MAKE_CNAME,$(<F))_pixstream $< >xgen-$(@F)-temp && cp xgen-$(@F)-temp $@ && rm -f xgen-$(@F)-temp
 noinst_DATA = $(SRC_IMAGES:.png=.c)
 CLEANFILES += $(noinst_DATA)
 

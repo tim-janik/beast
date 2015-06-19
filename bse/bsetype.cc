@@ -409,7 +409,6 @@ bse_type_init (void)
   quark_authors = g_quark_from_static_string ("BseType-authors");
   quark_license = g_quark_from_static_string ("BseType-license");
   quark_boxed_export_node = g_quark_from_static_string ("BseType-boxed-export-node");
-  g_type_init ();
 
   /* initialize parameter types */
   bse_param_types_init ();

@@ -22,6 +22,7 @@ my $negate_sign = 1;
 my $func_name = "analysis";
 my $scale = 0;
 my $Wtest = 0;
+my $verbose = 1;
 
 #
 # parse options
@@ -40,6 +41,8 @@ while ($_ = $ARGV[0], defined $_ && /^-/) {
     elsif (/^--split-at$/) { $min_split = shift }
     elsif (/^--min-compress$/) { $min_compress = shift }
     elsif (/^--single-stage$/) { $single_stage = shift }
+    elsif (/^--verbose$/) { $verbose = 1 }
+    elsif (/^--no-verbose$/) { $verbose = 0 }
 }
 
 # parse arguments
@@ -818,8 +821,10 @@ print " */\n";
     my $fft_size = $max_fft_size;
     my $skip2 = uc ($arguments[1]) eq 'S';
 
-    printf STDERR "FFT-%-5u: ", $fft_size;
-    
+    if ($verbose) {
+	printf STDERR "FFT-%-5u: ", $fft_size;
+    }
+
     printf "static void\n";
     printf("gsl_power2_fft%u%s%s (const %s *X, %s *Y)\n{\n",
 	   $fft_size, $func_name,
@@ -828,17 +833,21 @@ print " */\n";
     printf "%sregister uint butterfly, block, offset;\n", $indent;
     printf "%sregister %s Wre, Wim;\n\n", $indent, $tmp_ieee_type, $tmp_ieee_type;
     printf "%sbutterfly = block = offset = 0, Wre = Wim = 0.0; /* silence compiler */\n", $indent;
-    
+
     my $seen_rule = 0;
     for (my $i = 1; $i < @arguments && 1 << $i <= $fft_size; $i++) {
 	my $stage = uc ($arguments[$i]);
-	printf STDERR "%u-%s ", 1 << $i, $stage;
+	if ($verbose) {
+	    printf STDERR "%u-%s ", 1 << $i, $stage;
+	}
 	die "X follows non Skip" if ($stage eq "X" && $seen_rule);
 	gen_stage ($fft_size, 1 << $i, $stage);
 	$seen_rule |= (1 << $i) > 2 && !($stage eq "S");
     }
     printf "}\n";
-    printf STDERR "\n";
+    if ($verbose) {
+	printf STDERR "\n";
+    }
 }
 print "\n/*\n";
 print " * Generated data ends here\n";

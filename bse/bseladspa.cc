@@ -616,7 +616,7 @@ bse_ladspa_plugin_check_load (const gchar *file_name)
     }
 
   /* create plugin and register types */
-  self = (BseLadspaPlugin*) g_object_new (BSE_TYPE_LADSPA_PLUGIN, NULL);
+  self = (BseLadspaPlugin*) bse_object_new (BSE_TYPE_LADSPA_PLUGIN, NULL);
   self->fname = g_strdup (file_name);
   self->gmodule = gmodule;
   error = ladspa_plugin_init_type_ids (self, ldf);

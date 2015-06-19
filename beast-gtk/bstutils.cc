@@ -1430,10 +1430,10 @@ bst_file_scan_find_key (const gchar *file,
   sfi_pspec_set_group (sfi_pspec_choice (name, nick, blurb, dval, cvalues, SFI_PARAM_STANDARD), group)
 #define sfidl_pspec_Choice_default(group, name, cvalues) \
   sfidl_pspec_Choice (group, name, NULL, NULL, NULL, SFI_PARAM_STANDARD, cvalues)
-#define sfidl_pspec_String(group, name, nick, blurb, dflt, options) \
+#define sfidl_pspec_SfiString(group, name, nick, blurb, dflt, options) \
   sfi_pspec_set_group (sfi_pspec_string (name, nick, blurb, dflt, options), group)
-#define sfidl_pspec_String_default(group, name) \
-  sfidl_pspec_String (group, name, NULL, NULL, NULL, SFI_PARAM_STANDARD)
+#define sfidl_pspec_SfiString_default(group, name) \
+  sfidl_pspec_SfiString (group, name, NULL, NULL, NULL, SFI_PARAM_STANDARD)
 #define sfidl_pspec_BBlock(group, name, nick, blurb, options) \
   sfi_pspec_set_group (sfi_pspec_bblock (name, nick, blurb, options), group)
 #define sfidl_pspec_BBlock_default(group, name) \

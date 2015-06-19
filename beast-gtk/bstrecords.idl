@@ -85,7 +85,7 @@ enum RowShading {
 
 /* BEAST Global Config */
 record GConfig {
-  String rc_version			= ("", _("Release counter"), "", STORAGE);
+  SfiString rc_version			= ("", _("Release counter"), "", STORAGE);
   group "Synthesis Networks" {
     Int         snet_font_size          = (_("Font Size"), _("Font size in pixels for labels displayed in synthesis networks"),
                                            10, 1, 48, 2, STANDARD);
@@ -112,9 +112,9 @@ record GConfig {
 
 /* skin config */
 record SkinConfig {
-  String         skin_name   = (_("Skin Name"), _("Name for the current skin configuration (used for skin selections)."), "", STANDARD);
+  SfiString     skin_name   = (_("Skin Name"), _("Name for the current skin configuration (used for skin selections)."), "", STANDARD);
   group "Pattern Editor" {
-    String   pattern_image   = (_("Background Image"), _("Background image used by the pattern editor."), "", STANDARD ":filename:image");
+    SfiString   pattern_image   = (_("Background Image"), _("Background image used by the pattern editor."), "", STANDARD ":filename:image");
     Real     pattern_shade   = (_("Image shade"), _("Percentage of background image pixel to blend over background color."), 2.5, 0, 100, 5, STANDARD ":scale");
     Int      pattern_color   = (_("Background Color"),      "", 0xf5f3ed, 0, 0xffffff, 0x010101, STANDARD ":rgb:hex");
     Int      pattern_scolor1 = (_("Background Shade 1"),    "", 0xd3d1cb, 0, 0xffffff, 0x010101, STANDARD ":rgb:hex");
@@ -124,7 +124,7 @@ record SkinConfig {
     Int      pattern_vbar1   = (_("Vertical Bar Color"),    "", 0x7f7f7f, 0, 0xffffff, 0x010101, STANDARD ":rgb:hex");
   };
   group "Piano Roll" {
-    String       piano_image = (_("Background Image"), _("Background image used by the piano-roll editor."), "", STANDARD ":filename:image");
+    SfiString    piano_image = (_("Background Image"), _("Background image used by the piano-roll editor."), "", STANDARD ":filename:image");
     Real         piano_shade = (_("Image shade"), _("Percentage of background image pixel to blend over background color."), 2.5, 0, 100, 5, STANDARD ":scale");
     Int          piano_color = (_("Background Color"),      "", 0xf5f3ed, 0, 0xffffff, 0x010101, STANDARD ":rgb:hex");
     Int          piano_hbar  = (_("Horizontal Bar Color"),  "", 0x7f7f7f, 0, 0xffffff, 0x010101, STANDARD ":rgb:hex");
@@ -134,7 +134,7 @@ record SkinConfig {
     Int          piano_mbar  = (_("Middle Bar Color"),      "", 0xa0a0a0, 0, 0xffffff, 0x010101, STANDARD ":rgb:hex");
   };
   group "Control Events" {
-    String controls_image    = (_("Background Image"), _("Background image used by the control events editor."), "", STANDARD ":filename:image");
+    SfiString controls_image    = (_("Background Image"), _("Background image used by the control events editor."), "", STANDARD ":filename:image");
     Real   controls_shade    = (_("Image shade"), _("Percentage of background image pixel to blend over background color."), 2.5, 0, 100, 5, STANDARD ":scale");
     Int    controls_color    = (_("Background Color"),      "", 0xf5f3ed, 0, 0xffffff, 0x010101, STANDARD ":rgb:hex");
     Int    controls_hbar     = (_("Horizontal Bar Color"),  "", 0x7f7f7f, 0, 0xffffff, 0x010101, STANDARD ":rgb:hex");
@@ -147,9 +147,9 @@ record SkinConfig {
 
 /* message filter */
 record MsgAbsorbString {
-  String version;
-  String cstring;
-  Bool   enabled;
+  SfiString version;
+  SfiString cstring;
+  Bool      enabled;
 };
 sequence MsgAbsorbStringSeq {
   MsgAbsorbString strings;
@@ -157,9 +157,9 @@ sequence MsgAbsorbStringSeq {
 
 /* pattern editor key bindings */
 record KeyBindingItem {
-  String key_name   = ("", "", "", STANDARD);
-  String func_name  = ("", "", "", STANDARD);
-  Real   func_param = ("", "", 0, -1e37, 1e30, 100, STANDARD ":scale");
+  SfiString key_name   = ("", "", "", STANDARD);
+  SfiString func_name  = ("", "", "", STANDARD);
+  Real      func_param = ("", "", 0, -1e37, 1e30, 100, STANDARD ":scale");
 };
 sequence KeyBindingItemSeq {
   KeyBindingItem items;

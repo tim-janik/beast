@@ -20,14 +20,14 @@ interface LatencyTest : Effect {
     Real   threshold_db = Gain (_("Threshold [dB]"),
 				_("Input signal needs to be louder than this to be counted as active"),
 				-24, -96, 0, 1, STANDARD ":scale");
-    String logfile_name	= SfiString (_("Log File Name"), _("When set, the latency information will be written to this log file, stdout otherwise."),
+    SfiString logfile_name = SfiString (_("Log File Name"), _("When set, the latency information will be written to this log file, stdout otherwise."),
                            "", STANDARD);
   };
   group _("MIDI setup") {
     Int	   midi_note	= Note (_("Note"), "", BSE_KAMMER_NOTE, STANDARD);
     Int    midi_channel = SfiInt (_("Midi Output Channel"), _("The midi output device where the tester sends its events"),
                            1, 1, 16, 1, STANDARD);
-    String midi_output	= SfiString (_("Midi Output Device"),
+    SfiString midi_output = SfiString (_("Midi Output Device"),
                            _("The midi output device where the tester sends its events. "
                              "This may be a named pipe (see man 1 mkfifo) which can be used "
                              "with the OSS midi driver. If the name starts out with a \"$\", "

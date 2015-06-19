@@ -510,7 +510,7 @@ bse_project_store_bse (BseProject  *self,
   if (fd < 0)
     return bse_error_from_errno (errno, BSE_ERROR_FILE_OPEN_FAILED);
 
-  storage = (BseStorage*) g_object_new (BSE_TYPE_STORAGE, NULL);
+  storage = (BseStorage*) bse_object_new (BSE_TYPE_STORAGE, NULL);
   flags = 0;
   if (self_contained)
     flags |= BSE_STORAGE_SELF_CONTAINED;
@@ -677,7 +677,7 @@ bse_project_create_intern_synth (BseProject  *self,
   bse_synth = bse_standard_synth_inflate (synth_name, NULL);
   if (bse_synth)
     {
-      BseStorage *storage = (BseStorage*) g_object_new (BSE_TYPE_STORAGE, NULL);
+      BseStorage *storage = (BseStorage*) bse_object_new (BSE_TYPE_STORAGE, NULL);
       BseErrorType error = BSE_ERROR_NONE;
       StorageTrap strap = { 0, TRUE, }, *old_strap = (StorageTrap*) g_object_get_qdata ((GObject*) self, quark_storage_trap);
       bse_storage_input_text (storage, bse_synth, "<builtin-lib>");

@@ -12,7 +12,8 @@ typedef SfiBool   Bool;    // FIXME: use bool instead?
 typedef SfiInt    Int;
 typedef SfiNum    Num;
 typedef SfiReal   Real;
-class String {
+
+class SfiString {
   char *cstring;
   int cmp (const char *ostring) const
   {
@@ -24,29 +25,30 @@ class String {
       return ostring ? SFI_MININT : 0;
   }
 public:
-  String()
+  SfiString()
   {
     cstring = g_strdup ("");
   }
-  String (const String &s)
+  SfiString (const SfiString &s)
   {
     cstring = g_strdup (s.cstring);
   }
-  String (const std::string &s)
+  SfiString (const std::string &s)
   {
     cstring = g_strdup (s.c_str());
   }
-  String (const char *cstr)
+  SfiString (const char *cstr)
   {
     cstring = g_strdup (cstr ? cstr : "");
   }
-  String& operator= (const std::string &s)
+  operator std::string () const { return cstring; }
+  SfiString& operator= (const std::string &s)
   {
     g_free (cstring);
     cstring = g_strdup (s.c_str());
     return *this;
   }
-  String& operator= (const gchar *cstr)
+  SfiString& operator= (const gchar *cstr)
   {
     if (cstr != cstring)
       {
@@ -55,7 +57,7 @@ public:
       }
     return *this;
   }
-  String& operator= (const String &s)
+  SfiString& operator= (const SfiString &s)
   {
     if (s.cstring != cstring)
       {
@@ -68,38 +70,38 @@ public:
   {
     return cstring;
   }
-  String& operator+= (const gchar *cstr)
+  SfiString& operator+= (const gchar *cstr)
   {
     char *old = cstring;
     cstring = g_strconcat (old ? old : "", cstr, NULL);
     g_free (old);
     return *this;
   }
-  String& operator+= (const String &src)
+  SfiString& operator+= (const SfiString &src)
   {
     char *old = cstring;
     cstring = g_strconcat (old ? old : "", src.cstring, NULL);
     g_free (old);
     return *this;
   }
-  String& operator+= (const std::string &src)
+  SfiString& operator+= (const std::string &src)
   {
     char *old = cstring;
     cstring = g_strconcat (old ? old : "", src.c_str(), NULL);
     g_free (old);
     return *this;
   }
-  String operator+ (const gchar *cstr)
+  SfiString operator+ (const gchar *cstr)
   {
-    return String (cstring) += cstr;
+    return SfiString (cstring) += cstr;
   }
-  String operator+ (const String &src)
+  SfiString operator+ (const SfiString &src)
   {
-    return String (cstring) += src;
+    return SfiString (cstring) += src;
   }
-  String operator+ (const std::string &src)
+  SfiString operator+ (const std::string &src)
   {
-    return String (cstring) += src;
+    return SfiString (cstring) += src;
   }
   bool operator<  (const char *src) const { return cmp (src) < 0; }
   bool operator<= (const char *src) const { return cmp (src) <= 0; }
@@ -107,12 +109,12 @@ public:
   bool operator>= (const char *src) const { return cmp (src) >= 0; }
   bool operator!= (const char *src) const { return cmp (src) != 0; }
   bool operator== (const char *src) const { return cmp (src) == 0; }
-  bool operator<  (const String &s) const { return cmp (s.cstring) < 0; }
-  bool operator<= (const String &s) const { return cmp (s.cstring) <= 0; }
-  bool operator>  (const String &s) const { return cmp (s.cstring) > 0; }
-  bool operator>= (const String &s) const { return cmp (s.cstring) >= 0; }
-  bool operator!= (const String &s) const { return cmp (s.cstring) != 0; }
-  bool operator== (const String &s) const { return cmp (s.cstring) == 0; }
+  bool operator<  (const SfiString &s) const { return cmp (s.cstring) < 0; }
+  bool operator<= (const SfiString &s) const { return cmp (s.cstring) <= 0; }
+  bool operator>  (const SfiString &s) const { return cmp (s.cstring) > 0; }
+  bool operator>= (const SfiString &s) const { return cmp (s.cstring) >= 0; }
+  bool operator!= (const SfiString &s) const { return cmp (s.cstring) != 0; }
+  bool operator== (const SfiString &s) const { return cmp (s.cstring) == 0; }
   bool operator<  (const std::string &s) const { return cmp (s.c_str()) < 0; }
   bool operator<= (const std::string &s) const { return cmp (s.c_str()) <= 0; }
   bool operator>  (const std::string &s) const { return cmp (s.c_str()) > 0; }
@@ -123,17 +125,16 @@ public:
   {
     return cstring ? strlen (cstring) : 0;
   }
-  ~String()
+  ~SfiString()
   {
     g_free (cstring);
   }
   /* provide GValue accessors */
-  static String value_get_string (const GValue *value)
+  static SfiString value_get_string (const GValue *value)
   {
     return sfi_value_get_string (value);
   }
-  static void value_set_string (GValue       *value,
-                                const String& str)
+  static void value_set_string (GValue *value, const SfiString& str)
   {
     sfi_value_set_string (value, str.c_str());
   }

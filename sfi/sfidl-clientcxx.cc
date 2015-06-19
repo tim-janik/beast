@@ -19,7 +19,7 @@ CodeGeneratorClientCxx::typeArg (const String& type)
 {
   switch (parser.typeOf (type))
     {
-      case STRING:    return "const Sfi::String&";
+      case STRING:    return "const Sfi::SfiString&";
       case RECORD:    return "const " + type + "Handle&";
       case SEQUENCE:  return "const " + type + "&";
       case CHOICE:    return type;
@@ -33,7 +33,7 @@ CodeGeneratorClientCxx::typeField (const String& type)
 {
   switch (parser.typeOf (type))
     {
-      case STRING:    return "Sfi::String";
+      case STRING:    return "Sfi::SfiString";
       case RECORD:    return type + "Handle";
       case CHOICE:
       case OBJECT:
@@ -47,7 +47,7 @@ CodeGeneratorClientCxx::typeRet (const String& type)
 {
   switch (parser.typeOf (type))
     {
-      case STRING:    return "Sfi::String";
+      case STRING:    return "Sfi::SfiString";
       case RECORD:    return type + "Handle";
       case CHOICE:
       case OBJECT:
@@ -96,7 +96,7 @@ String CodeGeneratorClientCxx::createTypeCode (const String& type, const String&
 	switch (model)
 	  {
 	    case MODEL_TO_VALUE:    return "sfi_value_string ("+name+".c_str())";
-	    case MODEL_FROM_VALUE:  return "::Sfi::String::value_get_string ("+name+")";
+	    case MODEL_FROM_VALUE:  return "::Sfi::SfiString::value_get_string ("+name+")";
 	    case MODEL_VCALL:       return "sfi_glue_vcall_string";
 	    case MODEL_VCALL_ARG:   return "'" + scatId (SFI_SCAT_STRING) + "', "+name+".c_str(),";
 	    case MODEL_VCALL_CARG:  return "";

@@ -212,7 +212,7 @@ Type Parser::typeOf (const String& type) const
   if (type == "Sfi::Int")     return INT;
   if (type == "Sfi::Num")     return NUM;
   if (type == "Sfi::Real")    return REAL;
-  if (type == "Sfi::String")  return STRING;
+  if (type == "Sfi::SfiString")  return STRING;
   if (isChoice (type))	      return CHOICE;
   if (type == "Sfi::BBlock")  return BBLOCK;
   if (type == "Sfi::FBlock")  return FBLOCK;
@@ -795,7 +795,7 @@ bool Parser::parse (const String& filename)
   defineSymbol ("Int");
   defineSymbol ("Num");
   defineSymbol ("Real");
-  defineSymbol ("String");
+  defineSymbol ("SfiString");
   // deprecated: defineSymbol ("BBlock");
   // deprecated: defineSymbol ("FBlock");
   defineSymbol ("Rec");
@@ -842,7 +842,7 @@ GTokenType Parser::parseNamespace()
   bool ready = false;
   do
     {
-      switch (g_scanner_peek_next_token (scanner))
+      switch (int (g_scanner_peek_next_token (scanner)))
 	{
 	  case TOKEN_CHOICE:
 	    {
@@ -1238,7 +1238,7 @@ GTokenType Parser::parseRecord ()
   while (!ready)
     {
       GTokenType expected_token;
-      switch (g_scanner_peek_next_token (scanner))
+      switch (int (g_scanner_peek_next_token (scanner)))
         {
         case G_TOKEN_IDENTIFIER:
           {
@@ -1626,10 +1626,10 @@ GTokenType Parser::parseClass ()
     }
 
   parse_or_return ('{');
-  while (g_scanner_peek_next_token (scanner) != G_TOKEN_RIGHT_CURLY)
+  while (int (g_scanner_peek_next_token (scanner) != G_TOKEN_RIGHT_CURLY))
     {
       GTokenType expected_token;
-      switch (g_scanner_peek_next_token (scanner))
+      switch (int (g_scanner_peek_next_token (scanner)))
         {
 	case G_TOKEN_IDENTIFIER:
 	  {

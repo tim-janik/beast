@@ -233,12 +233,12 @@ bst_file_dialog_global_effect (void)
   static BstFileDialog *singleton = NULL;
   if (!singleton)
     {
-      const gchar *dir = bse_server_get_custom_effect_dir (BSE_SERVER);
+      const String dir = bse_server.get_custom_effect_dir();
       singleton = (BstFileDialog*) g_object_new (BST_TYPE_FILE_DIALOG, NULL);
-      if (dir)
+      if (!dir.empty())
         {
-          sfi_make_dirpath (dir);
-          gtk_file_selection_complete (singleton->fs, dir);
+          sfi_make_dirpath (dir.c_str());
+          gtk_file_selection_complete (singleton->fs, dir.c_str());
         }
     }
   return singleton;
@@ -250,12 +250,12 @@ bst_file_dialog_global_instrument (void)
   static BstFileDialog *singleton = NULL;
   if (!singleton)
     {
-      const gchar *dir = bse_server_get_custom_instrument_dir (BSE_SERVER);
+      const String dir = bse_server.get_custom_instrument_dir();
       singleton = (BstFileDialog*) g_object_new (BST_TYPE_FILE_DIALOG, NULL);
-      if (dir)
+      if (!dir.empty())
         {
-          sfi_make_dirpath (dir);
-          gtk_file_selection_complete (singleton->fs, dir);
+          sfi_make_dirpath (dir.c_str());
+          gtk_file_selection_complete (singleton->fs, dir.c_str());
         }
     }
   return singleton;
@@ -319,7 +319,7 @@ bst_file_dialog_set_mode (BstFileDialog    *self,
     {
     case BST_FILE_DIALOG_LOAD_WAVE:
       g_free (self->search_path);
-      self->search_path = g_strdup (bse_server_get_sample_path (BSE_SERVER));
+      self->search_path = g_strdup (bse_server.get_sample_path().c_str());
       self->search_filter = NULL;
       gtk_widget_show (self->spage);
       gxk_notebook_set_current_page_widget (GTK_NOTEBOOK (self->notebook), self->fpage);
@@ -327,7 +327,7 @@ bst_file_dialog_set_mode (BstFileDialog    *self,
       break;
     case BST_FILE_DIALOG_LOAD_WAVE_LIB:
       g_free (self->search_path);
-      self->search_path = g_strdup (bse_server_get_sample_path (BSE_SERVER));
+      self->search_path = g_strdup (bse_server.get_sample_path().c_str());
       self->search_filter = NULL;
       gtk_widget_show (self->spage);
       gxk_notebook_set_current_page_widget (GTK_NOTEBOOK (self->notebook), self->spage);
@@ -335,7 +335,7 @@ bst_file_dialog_set_mode (BstFileDialog    *self,
       break;
     case BST_FILE_DIALOG_MERGE_EFFECT:
       g_free (self->search_path);
-      self->search_path = g_strdup (bse_server_get_effect_path (BSE_SERVER));
+      self->search_path = g_strdup (bse_server.get_effect_path().c_str());
       self->search_filter = "*";
       gtk_widget_show (self->spage);
       gxk_notebook_set_current_page_widget (GTK_NOTEBOOK (self->notebook), self->spage);
@@ -343,7 +343,7 @@ bst_file_dialog_set_mode (BstFileDialog    *self,
       break;
     case BST_FILE_DIALOG_MERGE_INSTRUMENT:
       g_free (self->search_path);
-      self->search_path = g_strdup (bse_server_get_instrument_path (BSE_SERVER));
+      self->search_path = g_strdup (bse_server.get_instrument_path().c_str());
       self->search_filter = "*";
       gtk_widget_show (self->spage);
       gxk_notebook_set_current_page_widget (GTK_NOTEBOOK (self->notebook), self->spage);

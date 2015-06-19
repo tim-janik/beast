@@ -100,7 +100,7 @@ filter_zp_response (const BseIIRFilterDesign *fdes,
   return freq_magnitude;
 }
 
-bool
+static bool
 bse_iir_filter_dump_gnuplot (const BseIIRFilterDesign *fdes,
                              const char               *fname,
                              uint                      n_consts,

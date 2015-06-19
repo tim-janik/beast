@@ -50,7 +50,7 @@ main (int   argc,
   errorarg.token();
 #endif
 
-  GObject *o = (GObject*) g_object_new (BSE_TYPE_BUS_MODULE, NULL);
+  GObject *o = (GObject*) bse_object_new (BSE_TYPE_BUS_MODULE, NULL);
   CxxBase *b = cast (o);
   Foo f;
   b->connect ("notify", Closure (&f, &Foo::bar));

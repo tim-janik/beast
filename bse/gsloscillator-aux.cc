@@ -1,5 +1,6 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 
+#pragma GCC diagnostic ignored "-Wunused-but-set-variable"
 
 #define	OSC_FLAGS		(GSL_INCLUDER_CASE | OSC_INCLUDER_FLAGS)
 #define ISYNC1_OSYNC0		((OSC_FLAGS & OSC_FLAG_ISYNC) && !(OSC_FLAGS & OSC_FLAG_OSYNC))

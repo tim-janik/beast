@@ -17,6 +17,9 @@
 #include <unistd.h>
 #include <string.h>
 #include "bsepcmmodule.cc"
+#include "topconfig.h"
+#include "gsldatahandle-mad.hh"
+#include "gslvorbis-enc.hh"
 using namespace Bse;
 
 /* --- parameters --- */
@@ -350,8 +353,12 @@ bse_server_get (void)
 
   if (!server)
     {
-      server = (BseServer*) g_object_new (BSE_TYPE_SERVER, NULL);
+      server = (BseServer*) bse_object_new (BSE_TYPE_SERVER, "uname", "ServerImpl", NULL);
       g_object_ref (server);
+      assert (server);
+      assert (server->cxxobject_);
+      assert (dynamic_cast<Bse::ObjectImpl*> (server->cxxobject_));
+      assert (dynamic_cast<Bse::ServerImpl*> (server->cxxobject_));
     }
 
   return server;
@@ -374,7 +381,7 @@ bse_server_create_project (BseServer   *server,
   g_return_val_if_fail (name != NULL, NULL);
   g_return_val_if_fail (bse_server_find_project (server, name) == NULL, NULL);
 
-  project = (BseProject*) g_object_new (BSE_TYPE_PROJECT, "uname", name, NULL);
+  project = (BseProject*) bse_object_new (BSE_TYPE_PROJECT, "uname", name, NULL);
   server->projects = g_list_prepend (server->projects, project);
   g_object_connect (project,
 		    "signal::release", destroy_project, server,
@@ -576,7 +583,7 @@ bse_server_open_devices (BseServer *self)
       if (self->wave_file)
 	{
 	  BseErrorType error;
-	  self->pcm_writer = (BsePcmWriter*) g_object_new (BSE_TYPE_PCM_WRITER, NULL);
+	  self->pcm_writer = (BsePcmWriter*) bse_object_new (BSE_TYPE_PCM_WRITER, NULL);
           const uint n_channels = 2;
 	  error = bse_pcm_writer_open (self->pcm_writer, self->wave_file,
                                        n_channels, bse_engine_sample_freq (),
@@ -1123,7 +1130,8 @@ engine_shutdown (BseServer *server)
 
 namespace Bse {
 
-ServerImpl::ServerImpl ()
+ServerImpl::ServerImpl (BseObject *bobj) :
+  ObjectImpl (bobj)
 {}
 
 ServerImpl::~ServerImpl ()
@@ -1137,11 +1145,19 @@ ServerImpl::get_test_object ()
   return test_object_;
 }
 
+ObjectIfaceP
+ServerImpl::from_proxy (int64_t proxyid)
+{
+  BseObject *bo = bse_object_from_id (proxyid);
+  if (!bo)
+    return ObjectIfaceP();
+  return shared_ptr_cast<ObjectIface> (bo->as<ObjectIface*>());
+}
+
 ServerImpl&
 ServerImpl::instance()
 {
-  static std::shared_ptr<ServerImpl> singleton = Rapicorn::FriendAllocator<ServerImpl>::make_shared();
-  return *singleton;
+  return *bse_server_get()->as<ServerImpl*>();
 }
 
 void
@@ -1149,6 +1165,80 @@ ServerImpl::send_user_message (const UserMessage &umsg)
 {
   assert_return (umsg.text1.empty() == false);
   sig_user_message.emit (umsg);
+}
+
+String
+ServerImpl::get_mp3_version ()
+{
+  return String ("MAD ") + gsl_data_handle_mad_version ();
+}
+
+String
+ServerImpl::get_vorbis_version ()
+{
+  return "Ogg/Vorbis " + gsl_vorbis_encoder_version();
+}
+
+String
+ServerImpl::get_ladspa_path ()
+{
+  return Path::searchpath_join (BSE_PATH_LADSPA, BSE_GCONFIG (ladspa_path));
+}
+
+String
+ServerImpl::get_plugin_path ()
+{
+  return Path::searchpath_join (BSE_PATH_PLUGINS, BSE_GCONFIG (plugin_path));
+}
+
+String
+ServerImpl::get_script_path ()
+{
+  return Path::searchpath_join (BSE_PATH_SCRIPTS, BSE_GCONFIG (script_path));
+}
+
+String
+ServerImpl::get_instrument_path ()
+{
+  return Path::searchpath_join (BSE_PATH_INSTRUMENTS, BSE_GCONFIG (instrument_path));
+}
+
+String
+ServerImpl::get_sample_path ()
+{
+  return Path::searchpath_join (BSE_PATH_SAMPLES, BSE_GCONFIG (sample_path));
+}
+
+String
+ServerImpl::get_effect_path ()
+{
+  return Path::searchpath_join (BSE_PATH_EFFECTS, BSE_GCONFIG (effect_path));
+}
+
+String
+ServerImpl::get_demo_path ()
+{
+  return BSE_PATH_DEMOS;
+}
+
+String
+ServerImpl::get_version ()
+{
+  return BST_VERSION;
+}
+
+String
+ServerImpl::get_custom_effect_dir ()
+{
+  StringVector strings = string_split (BSE_GCONFIG (effect_path), G_SEARCHPATH_SEPARATOR_S);
+  return strings.size() ? strings[0] : "";
+}
+
+String
+ServerImpl::get_custom_instrument_dir ()
+{
+  StringVector strings = string_split (BSE_GCONFIG (instrument_path), G_SEARCHPATH_SEPARATOR_S);
+  return strings.size() ? strings[0] : "";
 }
 
 } // Bse
