@@ -169,7 +169,7 @@ main (int   argc,
        * so we wait until all are done
        */
       registration_done = FALSE;
-      bse_server_register_core_plugins (BSE_SERVER);
+      bse_server.register_core_plugins();
       while (!registration_done)
 	{
 	  GDK_THREADS_LEAVE ();
@@ -188,7 +188,7 @@ main (int   argc,
        * so we wait until all are done
        */
       registration_done = FALSE;
-      bse_server_register_ladspa_plugins (BSE_SERVER);
+      bse_server.register_ladspa_plugins();
       while (!registration_done)
 	{
 	  GDK_THREADS_LEAVE ();
@@ -216,7 +216,7 @@ main (int   argc,
        * so we wait until all are done
        */
       registration_done = FALSE;
-      bse_server_register_scripts (BSE_SERVER);
+      bse_server.register_scripts();
       while (!registration_done)
 	{
 	  GDK_THREADS_LEAVE ();
@@ -247,7 +247,7 @@ main (int   argc,
         }
 
       /* load waves into the last project */
-      if (bse_server_can_load (BSE_SERVER, argv[i]))
+      if (bse_server.can_load (argv[i]))
 	{
 	  if (app)
 	    {
@@ -401,7 +401,7 @@ main (int   argc,
   if (update_rc_files && !bst_preferences_saved())
     {
       if (may_auto_update_bse_rc_file)
-        bse_server_save_preferences (BSE_SERVER);
+        bse_server.save_preferences();
       /* save BEAST configuration and accelerator map */
       gchar *file_name = BST_STRDUP_RC_FILE ();
       BseErrorType error = bst_rc_dump (file_name);

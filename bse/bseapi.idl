@@ -53,8 +53,17 @@ interface Server : Object {
   String        get_effect_path ();                     ///< Retrieve effect search path.
   String        get_demo_path ();                       ///< Retrieve demo search path.
   String        get_custom_instrument_dir ();           ///< Retrieve user specific instruments directory.
-  String        get_custom_effect_dir ();               ///< Retrieve user specific effects directory.
-  String        get_version ();                         ///< Retrieve BSE version.
+  String        get_custom_effect_dir ();    ///< Retrieve user specific effects directory.
+  String        get_version ();              ///< Retrieve BSE version.
+  void          save_preferences ();         ///< Save the bse-preferences property to disk.
+  void          register_ladspa_plugins();   ///< Register LADSPA (Linux Audio Developer's Simple Plugin API) plugins.
+  void          register_core_plugins();     ///< Register core plugins.
+  void          register_scripts();          ///< Register external scripts.
+  bool          preferences_locked();        ///< Returns whether the bse-preferences property is currently locked against modifications or not.
+  int32         n_scripts();                 ///< Return the number of scripts currently running on this server.
+  bool          can_load (String file_name); ///< Check whether a loader can be found for a wave file.
+  void          start_recording (String wave_file, float64 n_seconds); ///< Start recording to a WAV file.
+  // Project    use_new_project (String project_name);  ///< Create a new project, owned by the caller (name is modified to be unique if necessary.
 };
 
 } // Bse

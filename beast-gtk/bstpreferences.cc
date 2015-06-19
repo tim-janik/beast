@@ -316,7 +316,7 @@ bst_preferences_save (BstPreferences *self)
 
   g_return_if_fail (BST_IS_PREFERENCES (self));
 
-  bse_server_save_preferences (BSE_SERVER);
+  bse_server.save_preferences();
 
   file_name = BST_STRDUP_RC_FILE ();
   error = bst_rc_dump (file_name);

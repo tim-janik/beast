@@ -11,15 +11,17 @@
 #include "bsemididevice-null.hh"
 #include "bsejanitor.hh"
 #include "bsecxxplugin.hh"
+#include "bsepcmmodule.cc"
+#include "topconfig.h"
+#include "gsldatahandle-mad.hh"
+#include "gslvorbis-enc.hh"
+#include "bsescripthelper.hh"
+#include "bseladspa.hh"
 #include <sys/time.h>
 #include <sys/resource.h>
 #include <fcntl.h>
 #include <unistd.h>
 #include <string.h>
-#include "bsepcmmodule.cc"
-#include "topconfig.h"
-#include "gsldatahandle-mad.hh"
-#include "gslvorbis-enc.hh"
 using namespace Bse;
 
 /* --- parameters --- */
@@ -1239,6 +1241,223 @@ ServerImpl::get_custom_instrument_dir ()
 {
   StringVector strings = string_split (BSE_GCONFIG (instrument_path), G_SEARCHPATH_SEPARATOR_S);
   return strings.size() ? strings[0] : "";
+}
+
+void
+ServerImpl::save_preferences ()
+{
+  gchar *file_name = g_strconcat (g_get_home_dir (), "/.bserc", NULL);
+  int fd = open (file_name, O_WRONLY | O_CREAT | O_TRUNC /* | O_EXCL */, 0666);
+  g_free (file_name);
+  if (fd < 0)
+    return;
+
+  SfiWStore *wstore = sfi_wstore_new ();
+  sfi_wstore_printf (wstore, "; rc-file for BSE v%s\n", BST_VERSION);
+
+  /* store BseGConfig */
+  sfi_wstore_puts (wstore, "\n; BseGConfig Dump\n");
+  SfiRec *rec = bse_gconfig_to_rec (bse_global_config);
+  GValue *value = sfi_value_rec (rec);
+  sfi_wstore_put_param (wstore, value, bse_gconfig_pspec ());
+  sfi_value_free (value);
+  sfi_rec_unref (rec);
+  sfi_wstore_puts (wstore, "\n");
+
+  /* flush stuff to rc file */
+  sfi_wstore_flush_fd (wstore, fd);
+  sfi_wstore_destroy (wstore);
+  close (fd);
+}
+
+static gboolean
+register_ladspa_plugins_handler (gpointer data)
+{
+  BseServer *server = (BseServer*) data;
+  SfiRing *lplugins = (SfiRing*) g_object_get_data ((GObject*) server, "ladspa-registration-queue");
+  const gchar *error;
+
+  if (g_object_get_data ((GObject*) server, "plugin-registration-queue"))
+    {
+      /* give precedence to core plugins until they're done registering */
+      return TRUE;
+    }
+
+  if (lplugins)
+    {
+      char *name = (char*) sfi_ring_pop_head (&lplugins);
+      g_object_set_data ((GObject*) server, "ladspa-registration-queue", lplugins);
+      error = bse_ladspa_plugin_check_load (name);
+      bse_server_registration (server, BSE_REGISTER_PLUGIN, name, error);
+      g_free (name);
+    }
+  else
+    {
+      bse_server_registration (server, BSE_REGISTER_DONE, NULL, NULL);
+      return FALSE;
+    }
+  return TRUE;
+}
+
+void
+ServerImpl::register_ladspa_plugins ()
+{
+  static bool registration_done = false;
+  if (registration_done)
+    {
+      // always honor register_ladspa_plugins() with register_done signal
+      bse_server_registration (as<BseServer*>(), BSE_REGISTER_DONE, NULL, NULL);
+      return;
+    }
+  SfiRing *ring = bse_ladspa_plugin_path_list_files ();
+  BseServer *server = as<BseServer*>();
+  g_object_set_data (server, "ladspa-registration-queue", ring);
+  bse_idle_normal (register_ladspa_plugins_handler, server);
+  registration_done = true;
+}
+
+static gboolean
+register_core_plugins_handler (gpointer data)
+{
+  BseServer *server = (BseServer*) data;
+  SfiRing *plugins = (SfiRing*) g_object_get_data ((GObject*) server, "plugin-registration-queue");
+  const gchar *error;
+
+  if (plugins)
+    {
+      char *name = (char*) sfi_ring_pop_head (&plugins);
+      g_object_set_data ((GObject*) server, "plugin-registration-queue", plugins);
+      error = bse_plugin_check_load (name);
+      bse_server_registration (server, BSE_REGISTER_PLUGIN, name, error);
+      g_free (name);
+    }
+  else
+    {
+      bse_server_registration (server, BSE_REGISTER_DONE, NULL, NULL);
+      return FALSE;
+    }
+  return TRUE;
+}
+
+void
+ServerImpl::register_core_plugins ()
+{
+  static gboolean registration_done = false;
+  BseServer *server = as<BseServer*>();
+  if (registration_done)
+    {
+      bse_server_registration (server, BSE_REGISTER_DONE, NULL, NULL);
+      return;
+    }
+  SfiRing *ring = bse_plugin_path_list_files (!bse_main_args->load_drivers_early, TRUE);
+  g_object_set_data (server, "plugin-registration-queue", ring);
+  bse_idle_normal (register_core_plugins_handler, server);
+  registration_done = true;
+}
+
+void
+ServerImpl::start_recording (const String &wave_file, double n_seconds)
+{
+  BseServer *server = as<BseServer*>();
+  bse_server_start_recording (server, wave_file.c_str(), n_seconds);
+}
+
+struct ScriptRegistration
+{
+  gchar         *script;
+  BseErrorType (*register_func) (const gchar *script, BseJanitor **janitor_p);
+  ScriptRegistration *next;
+};
+
+static gboolean	register_scripts_handler (gpointer data);
+
+static void
+script_janitor_closed (BseJanitor *janitor,
+		       BseServer  *server)
+{
+  bse_server_registration (server, BSE_REGISTER_SCRIPT, janitor->script_name, NULL);
+  bse_idle_normal (register_scripts_handler, server);
+}
+
+static gboolean
+register_scripts_handler (gpointer data)
+{
+  BseServer *server = (BseServer*) data;
+  ScriptRegistration *scr = (ScriptRegistration*) g_object_get_data ((GObject*) server, "script-registration-queue");
+  BseJanitor *janitor = NULL;
+  BseErrorType error;
+
+  if (!scr)
+    {
+      bse_server_registration (server, BSE_REGISTER_DONE, NULL, NULL);
+      return FALSE;
+    }
+  g_object_set_data ((GObject*) server, "script-registration-queue", scr->next);
+
+  error = scr->register_func (scr->script, &janitor);
+  if (!janitor)
+    bse_server_registration (server, BSE_REGISTER_SCRIPT, scr->script, bse_error_blurb (error));
+  else
+    g_object_connect (janitor, "signal::shutdown", script_janitor_closed, server, NULL);
+  g_free (scr->script);
+  g_free (scr);
+  return !janitor;
+}
+
+void
+ServerImpl::register_scripts ()
+{
+  static gboolean registration_done = false;
+  BseServer *server = as<BseServer*>();
+
+  if (registration_done)
+    {
+      bse_server_registration (server, BSE_REGISTER_DONE, NULL, NULL);
+      return;
+    }
+  registration_done = true;
+
+  SfiRing *ring = bse_script_path_list_files ();
+  ScriptRegistration *scr_list = NULL;
+  while (ring)
+    {
+      ScriptRegistration *scr = g_new0 (ScriptRegistration, 1);
+      scr->script = (char*) sfi_ring_pop_head (&ring);
+      scr->register_func = bse_script_file_register;
+      scr->next = scr_list;
+      scr_list = scr;
+    }
+
+  g_object_set_data (server, "script-registration-queue", scr_list);
+  bse_idle_normal (register_scripts_handler, server);
+}
+
+bool
+ServerImpl::preferences_locked ()
+{
+  return bse_gconfig_locked();
+}
+
+int
+ServerImpl::n_scripts()
+{
+  BseServer *server = as<BseServer*>();
+  // count script controls
+  uint n_scripts = 0;
+  for (GSList *slist = server->children; slist; slist = slist->next)
+    if (BSE_IS_JANITOR (slist->data))
+      n_scripts++;
+  return n_scripts;
+}
+
+bool
+ServerImpl::can_load (const String &file_name)
+{
+  // find a loader
+  BseWaveFileInfo *finfo = bse_wave_file_info_load (file_name.c_str(), NULL);
+  if (finfo)
+    bse_wave_file_info_unref (finfo);
+  return finfo != NULL;
 }
 
 } // Bse

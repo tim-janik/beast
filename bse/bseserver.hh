@@ -119,6 +119,14 @@ public:
   virtual String        get_version         () override;
   virtual String        get_custom_effect_dir () override;
   virtual String        get_custom_instrument_dir () override;
+  virtual void   save_preferences        () override;
+  virtual void   register_ladspa_plugins () override;
+  virtual void   register_core_plugins   () override;
+  virtual void   start_recording         (const String &wave_file, double n_seconds) override;
+  virtual void   register_scripts        () override;
+  virtual bool   preferences_locked      () override;
+  virtual int    n_scripts               () override;
+  virtual bool   can_load                (const std::string &file_name) override;
   void                  send_user_message   (const UserMessage &umsg);
   static ServerImpl&    instance            ();
 };
