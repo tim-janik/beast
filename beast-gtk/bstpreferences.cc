@@ -45,7 +45,7 @@ bst_preferences_init (BstPreferences *self)
   gxk_nullify_in_object (self, &self->notebook);
 
   pspec = bst_gconfig_pspec ();
-  self->rec_gconfig = bst_gconfig_to_rec (bst_gconfig_get_global ());
+  self->rec_gconfig = Bse::sfi_rec_new_from_visitable (*bst_gconfig_get_global ());
   pchild = bst_preferences_build_rec_editor (self->rec_gconfig, sfi_pspec_get_rec_fields (pspec), &self->params_gconfig);
   gxk_notebook_append (self->notebook, pchild, "BEAST", FALSE);
 
@@ -173,7 +173,7 @@ bst_preferences_revert (BstPreferences *self)
 
   g_return_if_fail (BST_IS_PREFERENCES (self));
 
-  rec = bst_gconfig_to_rec (bst_gconfig_get_global ());
+  rec = Bse::sfi_rec_new_from_visitable (*bst_gconfig_get_global ());
   crec = sfi_rec_copy_deep (rec);
   sfi_rec_unref (rec);
   sfi_rec_swap_fields (self->rec_gconfig, crec);

@@ -335,7 +335,7 @@ main (int   argc,
   /* fire up release notes dialog
    */
   gboolean update_rc_files = FALSE;
-  if (!BST_RC_VERSION || strcmp (BST_RC_VERSION, BST_VERSION))
+  if (BST_RC_VERSION != BST_VERSION)
     {
       const char *release_notes_title =
         "BEAST/BSE Release Notes";

@@ -100,6 +100,33 @@ Const STDHEXCOLOR = STANDARD ":rgb:hex";
 Const STDIMAGEFILE = STANDARD ":filename:image";
 
 
+// == Global Config ==
+record GConfig {
+  String rc_version		= String ("RC-Version", _("Release counter"), STORAGE);
+  group "Synthesis Networks" {
+    int32 snet_font_size        = Range (_("Font Size"), _("Font size in pixels for labels displayed in synthesis networks"),
+                                         STANDARD, 1, 48, 2, 10);
+    bool  snet_anti_aliased	= Bool (_("Anti-Alias"), _("Draw synthesis networks anti-aliased?"), STANDARD, TRUE);
+    bool  snet_edit_fallback	= Bool (_("Single Edit"), _("Fallback into Edit mode after creating synthesis modules?"),
+                                        STANDARD, TRUE);
+    bool  snet_swap_io_channels	= Bool (_("Swap IO"), _("Swap input with output channels when displaying synthesis modules?"),
+                                        STANDARD, FALSE);
+  };
+  group "Misc" {
+    bool  gui_enable_error_bell   = Bool (_("Enable Error Bell"), _("Notify users via error bells if edits cannot be carried out"),
+                                          STANDARD, TRUE);
+    bool  size_group_input_fields = Bool (_("Homogeneous Input Fields"),
+                                          _("Enable homogeneous sizes for most (numeric and text) input fields. "
+                                            "For some fields, this will only take effect after a restart."),
+                                          STANDARD, TRUE);
+    bool  slow_scopes             = Bool (_("Slow scopes"),
+                                          _("Slow down the periodic update frequency of scopes aggresively. "
+                                            "Doing this may be desirable on particularly slow machines."),
+                                          STANDARD, FALSE);
+  };
+};
+
+
 // == SkinConfig ==
 record SkinConfig {
   String    skin_name   = String (_("Skin Name"), _("Name for the current skin configuration (used for skin selections)."), STANDARD);

@@ -208,7 +208,7 @@ BstGMask*       bst_gmask_quick         (GtkWidget     *gmask_container,
 /* icon stock IDs */
 #include "beast-gtk/icons/bst-stock-gen.h"
 /* --- config values --- */
-BstGConfig*     bst_gconfig_get_global (void);
+Bst::GConfig*   bst_gconfig_get_global (void);
 #define BST_GCONFIG(field) (* bst_gconfig_get_global ()) . field
 /* --- internal --- */
 void            _bst_init_utils         (void);

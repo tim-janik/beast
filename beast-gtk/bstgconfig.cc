@@ -4,7 +4,7 @@
 #include	<string.h>
 
 /* --- variables --- */
-static BstGConfig *bst_global_config = NULL;
+static Bst::GConfig *bst_global_config = NULL;
 static GParamSpec *pspec_global_config = NULL;
 
 
@@ -12,15 +12,16 @@ static GParamSpec *pspec_global_config = NULL;
 void
 _bst_gconfig_init (void)
 {
-  BstGConfig *gconfig;
   GValue *value;
   SfiRec *rec;
 
   g_return_if_fail (bst_global_config == NULL);
 
   /* global config record description */
+  Bst::GConfig gconfig;
   pspec_global_config = sfi_pspec_rec ("beast-preferences-v1", NULL, NULL,
-				       bst_gconfig_fields, SFI_PARAM_STANDARD);
+                                       Bse::sfi_psecs_rec_fields_from_visitable (gconfig),
+                                       SFI_PARAM_STANDARD);
   g_param_spec_ref (pspec_global_config);
   g_param_spec_sink (pspec_global_config);
   /* create empty config record */
@@ -29,8 +30,8 @@ _bst_gconfig_init (void)
   /* fill out missing values with defaults */
   g_param_value_validate (pspec_global_config, value);
   /* install global config */
-  gconfig = bst_gconfig_from_rec (rec);
-  bst_global_config = gconfig;
+  Bse::sfi_rec_to_visitable (rec, gconfig);
+  bst_global_config = new Bst::GConfig (gconfig);
   /* cleanup */
   sfi_value_free (value);
   sfi_rec_unref (rec);
@@ -42,40 +43,29 @@ bst_gconfig_pspec (void)
   return pspec_global_config;
 }
 
-BstGConfig*
+Bst::GConfig*
 bst_gconfig_get_global (void)
 {
   return bst_global_config;
 }
 
-static BstGConfig*
-copy_gconfig (BstGConfig *src_config)
-{
-  SfiRec *rec = bst_gconfig_to_rec (src_config);
-  BstGConfig *gconfig = bst_gconfig_from_rec (rec);
-  sfi_rec_unref (rec);
-  return gconfig;
-}
-
 static void
-set_gconfig (BstGConfig *gconfig)
+set_gconfig (const Bst::GConfig &gconfig)
 {
-  BstGConfig *oldconfig = bst_global_config;
-  bst_global_config = gconfig;
-  bst_gconfig_free (oldconfig);
+  Bst::GConfig *oldconfig = bst_global_config;
+  bst_global_config = new Bst::GConfig (gconfig);
+  delete oldconfig;
 }
 
 void
 bst_gconfig_apply (SfiRec *rec)
 {
-  SfiRec *vrec;
-  BstGConfig *gconfig;
-
   g_return_if_fail (rec != NULL);
 
-  vrec = sfi_rec_copy_deep (rec);
+  SfiRec *vrec = sfi_rec_copy_deep (rec);
   sfi_rec_validate (vrec, sfi_pspec_get_rec_fields (pspec_global_config));
-  gconfig = bst_gconfig_from_rec (vrec);
+  Bst::GConfig gconfig;
+  Bse::sfi_rec_to_visitable (vrec, gconfig);
   sfi_rec_unref (vrec);
   set_gconfig (gconfig);
   bst_gconfig_push_updates();
@@ -84,11 +74,9 @@ bst_gconfig_apply (SfiRec *rec)
 void
 bst_gconfig_set_rc_version (const gchar *rc_version)
 {
-  BstGConfig *gconfig;
+  Bst::GConfig gconfig (*bst_global_config);
 
-  gconfig = copy_gconfig (bst_global_config);
-  g_free (gconfig->rc_version);
-  gconfig->rc_version = g_strdup (rc_version);
+  gconfig.rc_version = rc_version;
   set_gconfig (gconfig);
   bst_gconfig_push_updates();
 }
@@ -171,7 +159,7 @@ bst_rc_dump (const gchar *file_name)
 
   /* store BstGConfig */
   sfi_wstore_puts (wstore, "\n; BstGConfig Dump\n");
-  rec = bst_gconfig_to_rec (bst_gconfig_get_global ());
+  rec = Bse::sfi_rec_new_from_visitable (*bst_gconfig_get_global ());
   value = sfi_value_rec (rec);
   sfi_wstore_put_param (wstore, value, bst_gconfig_pspec());
   sfi_value_free (value);
