@@ -8,7 +8,10 @@ namespace Bse { // BseCore
 
 template<class Visitable> void         sfi_rec_to_visitable                (SfiRec *rec, Visitable &visitable);
 template<class Visitable> SfiRec*      sfi_rec_new_from_visitable          (Visitable &visitable);
+template<class Visitable> void         sfi_seq_to_visitable                (SfiSeq *seq, Visitable &visitable);
+template<class Visitable> SfiSeq*      sfi_seq_new_from_visitable          (Visitable &visitable);
 template<class Visitable> SfiRecFields sfi_psecs_rec_fields_from_visitable (Visitable &visitable);
+template<class Visitable> GParamSpec*  sfi_pspec_seq_field_from_visitable  (Visitable &visitable);
 bool sfi_psecs_rec_fields_cache (const std::type_info &type_info, SfiRecFields *rf, bool assign = false); // internal
 
 class PspecVisitor : public VisitorDispatcher<PspecVisitor> {
@@ -82,14 +85,10 @@ public:
   template<class SeqA> void
   visit_vector (SeqA &a, Name name)
   { // Note, if A=bool, SeqA is *derived* from std::vector<bool>, so StdVectorValueHandle<> doesn't match
-    typedef typename SeqA::value_type A;
-    std::vector<GParamSpec*> pspecs;
-    PspecVisitor pspec_visitor (pspecs, a.__aida_aux_data__()); // this needs the real SeqA type
-    A example_element = A();
-    pspec_visitor (example_element, name);
-    if (pspecs.size() == 1)
+    GParamSpec *pspec = sfi_pspec_seq_field_from_visitable (a); // this needs the real SeqA type
+    if (pspec)
       {
-        GParamSpec *pspec = sfi_pspec_seq (name, get_label (name).c_str(), get_blurb (name).c_str(), pspecs[0], get_hints (name).c_str());
+        GParamSpec *pspec = sfi_pspec_seq (name, get_label (name).c_str(), get_blurb (name).c_str(), pspec, get_hints (name).c_str());
         pspecs_.push_back (pspec);
       }
   }
@@ -130,28 +129,10 @@ public:
   {
     sfi_rec_set_choice (rec_, name, Rapicorn::Aida::enum_info<A>().value_to_string (a).c_str());
   }
-  template<class A> void
-  visit_vector (::std::vector<A> &a, Name name)
-  {
-    SfiSeq *field_seq = sfi_seq_new();
-    SfiRec *tmp_rec = sfi_rec_new();
-    for (size_t i = 0; i < a.size(); i++)
-      {
-        ToRecVisitor rec_visitor (tmp_rec);
-        typename StdVectorValueHandle<::std::vector<A>>::type value_handle = a[i];
-        rec_visitor (value_handle, "seqelement");
-        if (StdVectorValueHandle<::std::vector<A>>::value) // copy-by-value
-          a[i] = value_handle;
-        GValue *element = sfi_rec_get (tmp_rec, "seqelement");
-        if (element)
-          {
-            sfi_seq_append (field_seq, element);
-            sfi_rec_clear (tmp_rec);
-          }
-        else
-          break;
-      }
-    sfi_rec_unref (tmp_rec);
+  template<class SeqA> void
+  visit_vector (SeqA &a, Name name)
+  { // Note, if A=bool, SeqA is *derived* from std::vector<bool>, so StdVectorValueHandle<> doesn't match
+    SfiSeq *field_seq = sfi_seq_new_from_visitable (a);
     sfi_rec_set_seq (rec_, name, field_seq);
     sfi_seq_unref (field_seq);
   }
@@ -202,28 +183,11 @@ public:
     const char *c = sfi_rec_get_choice (rec_, name);
     a = !c ? (A) 0 : Rapicorn::Aida::enum_value_from_string<A>(c);
   }
-  template<class A> void
-  visit_vector (::std::vector<A> &a, Name name)
-  {
+  template<class SeqA> void
+  visit_vector (SeqA &a, Name name)
+  { // Note, if A=bool, SeqA is *derived* from std::vector<bool>, so StdVectorValueHandle<> doesn't match
     SfiSeq *field_seq = sfi_rec_get_seq (rec_, name);
-    if (!field_seq)
-      {
-        a.resize (0);
-        return;
-      }
-    const size_t n = sfi_seq_length (field_seq);
-    a.resize (n);
-    SfiRec *tmp_rec = sfi_rec_new();
-    for (size_t i = 0; i < n; i++)
-      {
-        sfi_rec_set (tmp_rec, "seqelement", sfi_seq_get (field_seq, i));
-        FromRecVisitor rec_visitor (tmp_rec);
-        typename StdVectorValueHandle<::std::vector<A>>::type value_handle = a[i];
-        rec_visitor (value_handle, "seqelement");
-        if (StdVectorValueHandle<::std::vector<A>>::value) // copy-by-value
-          a[i] = value_handle;
-      }
-    sfi_rec_unref (tmp_rec);
+    sfi_seq_to_visitable (field_seq, a);
   }
   template<class A> void
   visit_visitable (A &a, Name name)
@@ -242,6 +206,55 @@ public:
   }
 };
 
+template<class Visitable> void
+sfi_seq_to_visitable (SfiSeq *seq, Visitable &visitable)
+{
+  if (!seq)
+    {
+      visitable.resize (0);
+      return;
+    }
+  const size_t n = sfi_seq_length (seq);
+  visitable.resize (n);
+  SfiRec *tmp_rec = sfi_rec_new();
+  for (size_t i = 0; i < n; i++)
+    {
+      sfi_rec_set (tmp_rec, "seqelement", sfi_seq_get (seq, i));
+      FromRecVisitor rec_visitor (tmp_rec);
+      typedef typename Visitable::value_type A; // assumes Visitable derives std::vector
+      typename StdVectorValueHandle<::std::vector<A>>::type value_handle = visitable[i];
+      rec_visitor (value_handle, "seqelement");
+      if (StdVectorValueHandle<::std::vector<A>>::value) // copy-by-value
+        visitable[i] = value_handle;
+    }
+  sfi_rec_unref (tmp_rec);
+}
+
+template<class Visitable> SfiSeq*
+sfi_seq_new_from_visitable (Visitable &visitable)
+{
+  SfiSeq *seq = sfi_seq_new();
+  SfiRec *tmp_rec = sfi_rec_new();
+  for (size_t i = 0; i < visitable.size(); i++)
+    {
+      ToRecVisitor rec_visitor (tmp_rec);
+      typedef typename Visitable::value_type A; // assumes Visitable derives std::vector
+      typename StdVectorValueHandle<::std::vector<A>>::type value_handle = visitable[i];
+      rec_visitor (value_handle, "seqelement");
+      if (StdVectorValueHandle<::std::vector<A>>::value) // copy-by-value
+        visitable[i] = value_handle;
+      GValue *element = sfi_rec_get (tmp_rec, "seqelement");
+      if (element)
+        {
+          sfi_seq_append (seq, element);
+          sfi_rec_clear (tmp_rec);
+        }
+      else
+        break;
+    }
+  sfi_rec_unref (tmp_rec);
+  return seq;
+}
 
 template<class Visitable> SfiRec*
 sfi_rec_new_from_visitable (Visitable &visitable)
@@ -278,6 +291,20 @@ sfi_psecs_rec_fields_from_visitable (Visitable &visitable)
     }
   sfi_psecs_rec_fields_cache (typeid (Visitable), &rec_fields, true);
   return rec_fields;
+}
+
+template<class Visitable> GParamSpec*
+sfi_pspec_seq_field_from_visitable (Visitable &visitable)
+{
+  std::vector<GParamSpec*> pspecs;
+  PspecVisitor pspec_visitor (pspecs, visitable.__aida_aux_data__());
+  typedef typename Visitable::value_type A;
+  A example_element = A();
+  pspec_visitor (example_element, "seqelement");
+  GParamSpec *pspec = NULL;
+  if (pspecs.size() == 1)
+    pspec = pspecs[0];
+  return pspec;
 }
 
 } // Bse
