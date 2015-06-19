@@ -231,7 +231,7 @@ bst_preferences_default_revert (BstPreferences *self)
   bst_key_binding_box_set (self->box_generic_keys, iseq);
   bst_key_binding_item_seq_free (iseq);
 
-  BstMsgAbsorbStringSeq empty_mas_seq = { 0, };
+  Bst::MsgAbsorbStringSeq empty_mas_seq;
   bst_msg_absorb_config_box_set (self->box_msg_absorb_config, &empty_mas_seq);
 
   rec = sfi_rec_new ();
@@ -266,8 +266,8 @@ bst_preferences_apply (BstPreferences *self)
   bst_key_binding_set_item_seq (kbinding, iseq);
   bst_key_binding_item_seq_free (iseq);
 
-  BstMsgAbsorbStringSeq *mass = bst_msg_absorb_config_box_get (self->box_msg_absorb_config);
-  SfiSeq *seq = bst_msg_absorb_string_seq_to_seq (mass);
+  Bst::MsgAbsorbStringSeq *mass = bst_msg_absorb_config_box_get (self->box_msg_absorb_config);
+  SfiSeq *seq = Bse::sfi_seq_new_from_visitable (*mass);
   bst_msg_absorb_config_apply (seq);
   sfi_seq_unref (seq);
 

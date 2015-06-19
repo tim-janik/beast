@@ -163,4 +163,14 @@ record SkinConfig {
 };
 
 
+// == MsgAbsorb Filter ==
+record MsgAbsorbString {
+  String version;
+  String cstring;
+  bool   enabled;
+};
+sequence MsgAbsorbStringSeq {
+  MsgAbsorbString strings;
+};
+
 } // Bst

@@ -13,16 +13,13 @@ G_BEGIN_DECLS
 void		       _bst_msg_absorb_config_init	(void);
 void		       bst_msg_absorb_config_apply	(SfiSeq         *seq);
 GParamSpec*	       bst_msg_absorb_config_pspec      (void);
-BstMsgAbsorbStringSeq* bst_msg_absorb_config_get_global (void);
-gboolean               bst_msg_absorb_config_adjust     (const gchar    *config_blurb,
-                                                         gboolean        enabled,
-                                                         gboolean        update_version);
+gboolean               bst_msg_absorb_config_adjust     (const gchar *config_blurb, bool enabled, bool update_version);
 gboolean               bst_msg_absorb_config_match      (const gchar    *config_blurb);
 void                   bst_msg_absorb_config_update     (const gchar    *config_blurb);
 GtkWidget*	       bst_msg_absorb_config_box	(void);
-void                   bst_msg_absorb_config_box_set    (GtkWidget      *box,
-                                                         BstMsgAbsorbStringSeq *mass);
-BstMsgAbsorbStringSeq* bst_msg_absorb_config_box_get    (GtkWidget      *box);
+Bst::MsgAbsorbStringSeq* bst_msg_absorb_config_get_global (void);
+void                     bst_msg_absorb_config_box_set    (GtkWidget *box, Bst::MsgAbsorbStringSeq *mass);
+Bst::MsgAbsorbStringSeq* bst_msg_absorb_config_box_get    (GtkWidget *box);
 
 /* --- config file --- */
 void                   bst_msg_absorb_config_save       (void);

@@ -15,16 +15,6 @@ Const STORAGE = ":r:w:S:";
 Const STANDARD = STORAGE "G:";
 
 
-/* message filter */
-record MsgAbsorbString {
-  SfiString version;
-  SfiString cstring;
-  Bool      enabled;
-};
-sequence MsgAbsorbStringSeq {
-  MsgAbsorbString strings;
-};
-
 /* pattern editor key bindings */
 record KeyBindingItem {
   SfiString key_name   = ("", "", "", STANDARD);
