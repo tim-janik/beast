@@ -66,4 +66,8 @@ interface Server : Object {
   // Project    use_new_project (String project_name);  ///< Create a new project, owned by the caller (name is modified to be unique if necessary.
 };
 
+/// Projects support loading, saving, playback and act as containers for all other sound objects.
+interface Project : Object {
+};
+
 } // Bse

@@ -963,3 +963,14 @@ bse_project_deactivate (BseProject *self)
 
   bse_server_close_devices (bse_server_get ());
 }
+
+namespace Bse {
+
+ProjectImpl::ProjectImpl (BseObject *bobj) :
+  ObjectImpl (bobj)
+{}
+
+ProjectImpl::~ProjectImpl ()
+{}
+
+} // Bse

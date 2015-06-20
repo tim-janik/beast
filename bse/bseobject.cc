@@ -916,6 +916,7 @@ bse_object_new (GType object_type, const gchar *first_property_name, ...)
 }
 
 #include "bseserver.hh"
+#include "bseproject.hh"
 
 GObject*
 bse_object_new_valist (GType object_type, const gchar *first_property_name, va_list var_args)
@@ -928,6 +929,8 @@ bse_object_new_valist (GType object_type, const gchar *first_property_name, va_l
   Bse::ObjectImpl *cxxo;
   if      (object_type == BSE_TYPE_SERVER)
     cxxo = new Bse::ServerImpl (object);
+  else if (object_type == BSE_TYPE_PROJECT)
+    cxxo = new Bse::ProjectImpl (object);
   else //  object_type == BSE_TYPE_OBJECT
     cxxo = new Bse::ObjectImpl (object);
   assert (object->cxxobject_ == cxxo);

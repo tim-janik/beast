@@ -77,6 +77,17 @@ void            bse_project_clear_undo          (BseProject     *project);
 void            bse_project_clean_dirty         (BseProject     *project);
 void    bse_project_push_undo_silent_deactivate (BseProject     *self);
 
+namespace Bse {
+
+class ProjectImpl : public virtual ProjectIface, public virtual ObjectImpl {
+  friend class FriendAllocator<ProjectImpl>;    // provide make_shared for non-public ctor
+protected:
+  virtual      ~ProjectImpl ();
+public:
+  explicit      ProjectImpl       (BseObject*);
+};
+
+} // Bse
 
 G_END_DECLS
 
