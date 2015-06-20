@@ -15,23 +15,23 @@ SFIDL_INC = --nostdinc -I$(top_srcdir) -I$(top_builddir)
 %.genidl.hh: %.idl $(SFIDL)
 	$(SFIDL) --core-cxx $(SFIDL_INC) -I$(top_builddir) $< > $@ || (rm $@ ; exit 1 )
 # bsecxxapi.hh
-GENERATED_CLEANFILES += bsecxxapi.hh
-bsecxxapi.hh: $(top_srcdir)/bse/bse.idl $(SFIDL)
-	cd . \
-	&& echo -e "#include <sfi/sficxx.hh>\n" > xgen-$(@F) \
-	&& $(SFIDL) --client-cxx $(SFIDL_INC) --header $(top_srcdir)/bse/bse.idl >> xgen-$(@F) \
-	&& $(SFIDL) --client-cxx $(SFIDL_INC) --header $(srcdir)/testplugin.idl >> xgen-$(@F) \
-	&& cp xgen-$(@F) $@ \
-	&& rm -f xgen-$(@F)
+#GENERATED_CLEANFILES += bsecxxapi.hh
+#bsecxxapi.hh: $(top_srcdir)/bse/bse.idl $(SFIDL)
+#	cd . \
+#	&& echo -e "#include <sfi/sficxx.hh>\n" > xgen-$(@F) \
+#	&& $(SFIDL) --client-cxx $(SFIDL_INC) --header $(top_srcdir)/bse/bse.idl >> xgen-$(@F) \
+#	&& $(SFIDL) --client-cxx $(SFIDL_INC) --header $(srcdir)/testplugin.idl >> xgen-$(@F) \
+#	&& cp xgen-$(@F) $@ \
+#	&& rm -f xgen-$(@F)
 # bsecxxapi.cc
-GENERATED_CLEANFILES += bsecxxapi.cc
-bsecxxapi.cc: bsecxxapi.hh $(top_srcdir)/bse/bse.idl $(SFIDL)
-	cd . \
-	&& echo -e "#include \"bsecxxapi.hh\"\n" > xgen-$(@F) \
-	&& $(SFIDL) --client-cxx $(SFIDL_INC) --source $(top_srcdir)/bse/bse.idl >> xgen-$(@F) \
-	&& $(SFIDL) --client-cxx $(SFIDL_INC) --source $(srcdir)/testplugin.idl >> xgen-$(@F) \
-	&& cp xgen-$(@F) $@ \
-	&& rm -f xgen-$(@F)
+#GENERATED_CLEANFILES += bsecxxapi.cc
+#bsecxxapi.cc: bsecxxapi.hh $(top_srcdir)/bse/bse.idl $(SFIDL)
+#	cd . \
+#	&& echo -e "#include \"bsecxxapi.hh\"\n" > xgen-$(@F) \
+#	&& $(SFIDL) --client-cxx $(SFIDL_INC) --source $(top_srcdir)/bse/bse.idl >> xgen-$(@F) \
+#	&& $(SFIDL) --client-cxx $(SFIDL_INC) --source $(srcdir)/testplugin.idl >> xgen-$(@F) \
+#	&& cp xgen-$(@F) $@ \
+#	&& rm -f xgen-$(@F)
 
 #
 # convenience targets for generated source files
@@ -48,11 +48,11 @@ generated: clean-generated $(GENERATED)
 noinst_PROGRAMS = $(ALLTESTS)
 progs_ldadd = $(top_builddir)/bse/libbse.la $(RAPICORN_LIBS) $(BSE_LIBS)
 
-SLOWTESTS         += cxxbinding
-cxxbinding_SOURCES = cxxbinding.cc bsecxxapi.cc
-cxxbinding_LDADD   = $(progs_ldadd)
-$(srcdir)/cxxbinding.cc: bsecxxapi.hh
-$(srcdir)/cxxbinding.cc: bsecxxapi.cc
+#SLOWTESTS         += cxxbinding
+#cxxbinding_SOURCES = cxxbinding.cc bsecxxapi.cc
+#cxxbinding_LDADD   = $(progs_ldadd)
+#$(srcdir)/cxxbinding.cc: bsecxxapi.hh
+#$(srcdir)/cxxbinding.cc: bsecxxapi.cc
 
 TESTS             += filtertest
 filtertest_SOURCES = filtertest.cc
