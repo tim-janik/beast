@@ -126,7 +126,8 @@ public:
   virtual void   register_scripts        () override;
   virtual bool   preferences_locked      () override;
   virtual int    n_scripts               () override;
-  virtual bool   can_load                (const std::string &file_name) override;
+  virtual bool   can_load                (const String &file_name) override;
+  virtual ProjectIfaceP use_new_project  (const String &project_name) override;
   void                  send_user_message   (const UserMessage &umsg);
   static ServerImpl&    instance            ();
 };

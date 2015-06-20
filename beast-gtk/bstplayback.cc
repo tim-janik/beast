@@ -19,7 +19,7 @@ bst_play_back_handle_new (void)
   BstPlayBackHandle *handle;
 
   handle = g_new0 (BstPlayBackHandle, 1);
-  handle->project = bse_server_use_new_project (BSE_SERVER, "# BEAST Play Back");
+  handle->project = bse_server.use_new_project ("# BEAST Play Back").proxy_id();
   if (BST_DBG_EXT)
     gxk_idle_show_widget (GTK_WIDGET (bst_app_new (handle->project)));
 

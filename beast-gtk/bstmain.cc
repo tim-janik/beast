@@ -260,7 +260,7 @@ main (int   argc,
 	    }
           else
 	    {
-	      SfiProxy project = bse_server_use_new_project (BSE_SERVER, "Untitled.bse");
+	      SfiProxy project = bse_server.use_new_project ("Untitled.bse").proxy_id();
 	      SfiProxy wrepo = bse_project_get_wave_repo (project);
 	      BseErrorType error = bse_wave_repo_load_file (wrepo, argv[i]);
 	      if (!error)
@@ -281,7 +281,7 @@ main (int   argc,
       // load/merge projects
       if (!app || !merge_with_last)
         {
-          SfiProxy project = bse_server_use_new_project (BSE_SERVER, argv[i]);
+          SfiProxy project = bse_server.use_new_project (argv[i]).proxy_id();
           BseErrorType error = bst_project_restore_from_file (project, argv[i], TRUE, TRUE);
           if (rewrite_bse_file)
             {
@@ -322,7 +322,7 @@ main (int   argc,
    */
   if (!app)
     {
-      SfiProxy project = bse_server_use_new_project (BSE_SERVER, "Untitled.bse");
+      SfiProxy project = bse_server.use_new_project ("Untitled.bse").proxy_id();
 
       bse_project_get_wave_repo (project);
       app = bst_app_new (project);

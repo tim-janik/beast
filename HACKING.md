@@ -65,6 +65,8 @@ Conversion between object handles works as follows:
   // In bse/
   BseServer *server = server_impl->as<BseObject*>();
   ServerImpl *server_impl = server->as<ServerImpl*>();
+  ServerIface *server_iface = server->as<ServerIface*>();
+  ServerIfaceP server_iface_p = shared_ptr_cast<ServerIface> (server_iface);
   // In beast-gtk/
   ServerIface *server_iface;
   ObjectIfaceP server_iface->from_proxy (proxyid);

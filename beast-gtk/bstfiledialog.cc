@@ -410,7 +410,7 @@ static gboolean
 bst_file_dialog_open_project (BstFileDialog *self,
 			      const gchar   *file_name)
 {
-  SfiProxy project = bse_server_use_new_project (BSE_SERVER, file_name);
+  SfiProxy project = bse_server.use_new_project (file_name).proxy_id();
   BseErrorType error = bst_project_restore_from_file (project, file_name, TRUE, TRUE);
 
   if (error)

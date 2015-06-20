@@ -708,7 +708,7 @@ demo_play_song (gpointer data,
                 size_t   callback_action)
 {
   const gchar *file_name = demo_entries[callback_action - BST_ACTION_LOAD_DEMO_0000].file;
-  SfiProxy project = bse_server_use_new_project (BSE_SERVER, file_name);
+  SfiProxy project = bse_server.use_new_project (file_name).proxy_id();
   BseErrorType error = bst_project_restore_from_file (project, file_name, TRUE, TRUE);
   if (error)
     bst_status_eprintf (error, _("Opening project `%s'"), file_name);
@@ -862,7 +862,7 @@ app_action_exec (gpointer data,
     case BST_ACTION_NEW_PROJECT:
       if (1)
         {
-          SfiProxy project = bse_server_use_new_project (BSE_SERVER, "Untitled.bse");
+          SfiProxy project = bse_server.use_new_project ("Untitled.bse").proxy_id();
           BstApp *new_app;
 
           bse_project_get_wave_repo (project);

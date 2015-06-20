@@ -1460,4 +1460,24 @@ ServerImpl::can_load (const String &file_name)
   return finfo != NULL;
 }
 
+ProjectIfaceP
+ServerImpl::use_new_project (const String &project_name)
+{
+  BseServer *server = as<BseServer*>();
+  /* enforce unique name */
+  guint num = 1;
+  gchar *uname = g_strdup (project_name.c_str());
+  while (bse_server_find_project (server, uname))
+    {
+      g_free (uname);
+      uname = g_strdup_format ("%s-%u", project_name.c_str(), num++);
+    }
+  /* create project */
+  BseProject *project = bse_server_create_project (server, uname);
+  g_free (uname);
+  bse_item_use (BSE_ITEM (project));
+  g_object_unref (project);
+  return shared_ptr_cast<ProjectIface> (project->as<ProjectIface*>());
+}
+
 } // Bse
