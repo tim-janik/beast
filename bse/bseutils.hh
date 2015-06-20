@@ -3,7 +3,6 @@
 #define __BSE_UTILS_H__
 
 #include <rapicorn-core.hh>
-#include <bse/bseserverapi.hh>
 
 #include <bse/bseenums.hh>
 #include <bse/bseglobals.hh>
