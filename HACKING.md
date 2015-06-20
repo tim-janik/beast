@@ -56,3 +56,16 @@ Enum-Migration
 C++11-Compilation
 -----------------
 **[COMPLETE]** All .c files have been turned into .cc files, so all sources are now compiled as C++11.
+
+
+Conversions
+===========
+
+Conversion between object handles works as follows:
+  // In bse/
+  BseServer *server = server_impl->as<BseObject*>();
+  ServerImpl *server_impl = server->as<ServerImpl*>();
+  // In beast-gtk/
+  ServerIface *server_iface;
+  ObjectIfaceP server_iface->from_proxy (proxyid);
+  SfiProxy proxy = server_iface->proxy_id();
