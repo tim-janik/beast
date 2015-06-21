@@ -189,7 +189,7 @@ interface Server : Object {
   int32         n_scripts();                 ///< Return the number of scripts currently running on this server.
   bool          can_load (String file_name); ///< Check whether a loader can be found for a wave file.
   void          start_recording (String wave_file, float64 n_seconds); ///< Start recording to a WAV file.
-  Project       use_new_project (String project_name);  ///< Create a new project, owned by the caller (name is modified to be unique if necessary.
+  Project       create_project (String project_name); ///< Create a new project (name is modified to be unique if necessary.
 };
 
 } // Bse

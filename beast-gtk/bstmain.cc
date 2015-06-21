@@ -260,28 +260,24 @@ main (int   argc,
 	    }
           else
 	    {
-              Bse::ProjectH project = bse_server.use_new_project ("Untitled.bse");
+              Bse::ProjectH project = bse_server.create_project ("Untitled.bse");
 	      SfiProxy wrepo = bse_project_get_wave_repo (project.proxy_id());
 	      BseErrorType error = bse_wave_repo_load_file (wrepo, argv[i]);
 	      if (!error)
 		{
 		  app = bst_app_new (project);
 		  gxk_idle_show_widget (GTK_WIDGET (app));
-		  bse_item_unuse (project.proxy_id());
 		  gtk_widget_hide (beast_splash);
 		}
               else
-                {
-		  bse_item_unuse (project.proxy_id());
-                  sfi_error (_("Failed to load wave file \"%s\": %s"), argv[i], bse_error_blurb (error));
-                }
+                sfi_error (_("Failed to load wave file \"%s\": %s"), argv[i], bse_error_blurb (error));
 	    }
           continue;
 	}
       // load/merge projects
       if (!app || !merge_with_last)
         {
-          Bse::ProjectH project = bse_server.use_new_project (argv[i]);
+          Bse::ProjectH project = bse_server.create_project (argv[i]);
           BseErrorType error = bst_project_restore_from_file (project, argv[i], TRUE, TRUE);
           if (rewrite_bse_file)
             {
@@ -306,7 +302,6 @@ main (int   argc,
               gxk_idle_show_widget (GTK_WIDGET (app));
               gtk_widget_hide (beast_splash);
             }
-          bse_item_unuse (project.proxy_id());
           if (error)
             sfi_error (_("Failed to load project \"%s\": %s"), argv[i], bse_error_blurb (error));
         }
@@ -322,11 +317,9 @@ main (int   argc,
    */
   if (!app)
     {
-      Bse::ProjectH project = bse_server.use_new_project ("Untitled.bse");
-
+      Bse::ProjectH project = bse_server.create_project ("Untitled.bse");
       bse_project_get_wave_repo (project.proxy_id());
       app = bst_app_new (project);
-      bse_item_unuse (project.proxy_id());
       gxk_idle_show_widget (GTK_WIDGET (app));
       gtk_widget_hide (beast_splash);
     }

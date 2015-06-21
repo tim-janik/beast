@@ -18,7 +18,7 @@ bst_play_back_handle_new (void)
 {
   BstPlayBackHandle *handle = new BstPlayBackHandle();
 
-  handle->project = bse_server.use_new_project ("# BEAST Play Back");
+  handle->project = bse_server.create_project ("# BEAST Play Back");
   if (BST_DBG_EXT)
     gxk_idle_show_widget (GTK_WIDGET (bst_app_new (handle->project)));
 
@@ -183,7 +183,5 @@ bst_play_back_handle_destroy (BstPlayBackHandle *handle)
 
   if (handle->pcm_timeout)
     g_source_remove (handle->pcm_timeout);
-
-  bse_item_unuse (handle->project.proxy_id());
   delete handle;
 }

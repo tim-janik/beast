@@ -337,7 +337,6 @@ bst_app_destroy (GtkObject *object)
                             "any_signal", bst_app_reload_pages, self,
                             "any_signal", gxk_widget_update_actions, self,
                             NULL);
-      bse_item_unuse (self->project.proxy_id());
       self->project = Bse::ProjectH(); // NULL
     }
 
@@ -366,7 +365,6 @@ bst_app_finalize (GObject *object)
                             "any_signal", bst_app_reload_pages, self,
                             "any_signal", gxk_widget_update_actions, self,
                             NULL);
-      bse_item_unuse (self->project.proxy_id());
       self->project = Bse::ProjectH(); // NULL
     }
   if (self->ppages)
@@ -390,7 +388,6 @@ bst_app_new (Bse::ProjectH project)
   gxk_dialog_set_sizes (GXK_DIALOG (self), 500, 400, 950, 800);
 
   self->project = project;
-  bse_item_use (self->project.proxy_id());
   bse_proxy_connect (self->project.proxy_id(),
                      "swapped_signal::item-added", bst_app_reload_pages, self,
                      "swapped_signal::item-remove", bst_app_reload_pages, self,
@@ -711,7 +708,7 @@ demo_play_song (gpointer data,
                 size_t   callback_action)
 {
   const gchar *file_name = demo_entries[callback_action - BST_ACTION_LOAD_DEMO_0000].file;
-  Bse::ProjectH project = bse_server.use_new_project (file_name);
+  Bse::ProjectH project = bse_server.create_project (file_name);
   BseErrorType error = bst_project_restore_from_file (project, file_name, TRUE, TRUE);
   if (error)
     bst_status_eprintf (error, _("Opening project `%s'"), file_name);
@@ -725,7 +722,6 @@ demo_play_song (gpointer data,
       gxk_status_window_pop ();
       gxk_idle_show_widget (GTK_WIDGET (app));
     }
-  bse_item_unuse (project.proxy_id());
 }
 
 static GxkActionList*
@@ -865,11 +861,9 @@ app_action_exec (gpointer data,
     case BST_ACTION_NEW_PROJECT:
       if (1)
         {
-          Bse::ProjectH project = bse_server.use_new_project ("Untitled.bse");
-
+          Bse::ProjectH project = bse_server.create_project ("Untitled.bse");
           bse_project_get_wave_repo (project.proxy_id());
           BstApp *new_app = bst_app_new (project);
-          bse_item_unuse (project.proxy_id());
 
           gxk_idle_show_widget (GTK_WIDGET (new_app));
         }

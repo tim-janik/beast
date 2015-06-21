@@ -36,8 +36,6 @@ struct BseServerClass : BseContainerClass
 {};
 
 BseServer*	bse_server_get				(void);
-BseProject*	bse_server_create_project		(BseServer	*server,
-							 const gchar	*name);
 BseProject*	bse_server_find_project			(BseServer	*server,
 							 const gchar	*name);
 void    	bse_server_stop_recording		(BseServer	*server);
@@ -127,7 +125,7 @@ public:
   virtual bool   preferences_locked      () override;
   virtual int    n_scripts               () override;
   virtual bool   can_load                (const String &file_name) override;
-  virtual ProjectIfaceP use_new_project  (const String &project_name) override;
+  virtual ProjectIfaceP create_project   (const String &project_name) override;
   void                  send_user_message   (const UserMessage &umsg);
   static ServerImpl&    instance            ();
 };

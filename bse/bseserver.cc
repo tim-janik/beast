@@ -366,32 +366,6 @@ bse_server_get (void)
   return server;
 }
 
-static void
-destroy_project (BseProject *project,
-		 BseServer  *server)
-{
-  server->projects = g_list_remove (server->projects, project);
-}
-
-BseProject*
-bse_server_create_project (BseServer   *server,
-			   const gchar *name)
-{
-  BseProject *project;
-
-  g_return_val_if_fail (BSE_IS_SERVER (server), NULL);
-  g_return_val_if_fail (name != NULL, NULL);
-  g_return_val_if_fail (bse_server_find_project (server, name) == NULL, NULL);
-
-  project = (BseProject*) bse_object_new (BSE_TYPE_PROJECT, "uname", name, NULL);
-  server->projects = g_list_prepend (server->projects, project);
-  g_object_connect (project,
-		    "signal::release", destroy_project, server,
-		    NULL);
-
-  return project;
-}
-
 BseProject*
 bse_server_find_project (BseServer   *server,
 			 const gchar *name)
@@ -1460,8 +1434,15 @@ ServerImpl::can_load (const String &file_name)
   return finfo != NULL;
 }
 
+static void
+destroy_project (BseProject *project, BseServer *server)
+{
+  server->projects = g_list_remove (server->projects, project);
+  bse_item_unuse (project);
+}
+
 ProjectIfaceP
-ServerImpl::use_new_project (const String &project_name)
+ServerImpl::create_project (const String &project_name)
 {
   BseServer *server = as<BseServer*>();
   /* enforce unique name */
@@ -1473,10 +1454,14 @@ ServerImpl::use_new_project (const String &project_name)
       uname = g_strdup_format ("%s-%u", project_name.c_str(), num++);
     }
   /* create project */
-  BseProject *project = bse_server_create_project (server, uname);
-  g_free (uname);
-  bse_item_use (BSE_ITEM (project));
+  BseProject *project = (BseProject*) bse_object_new (BSE_TYPE_PROJECT, "uname", uname, NULL);
+  bse_item_use (project);
+  server->projects = g_list_prepend (server->projects, project);
   g_object_unref (project);
+  g_free (uname);
+  g_object_connect (project,
+		    "signal::release", destroy_project, server,
+		    NULL);
   return shared_ptr_cast<ProjectIface> (project->as<ProjectIface*>());
 }
 

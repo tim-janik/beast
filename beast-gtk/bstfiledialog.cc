@@ -411,7 +411,7 @@ static gboolean
 bst_file_dialog_open_project (BstFileDialog *self,
 			      const gchar   *file_name)
 {
-  Bse::ProjectH project = bse_server.use_new_project (file_name);
+  Bse::ProjectH project = bse_server.create_project (file_name);
   BseErrorType error = bst_project_restore_from_file (project, file_name, TRUE, TRUE);
 
   if (error)
@@ -425,7 +425,6 @@ bst_file_dialog_open_project (BstFileDialog *self,
       gxk_status_window_pop ();
       gxk_idle_show_widget (GTK_WIDGET (app));
     }
-  bse_item_unuse (project.proxy_id());
 
   return TRUE;
 }
