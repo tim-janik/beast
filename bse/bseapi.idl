@@ -116,6 +116,49 @@ record UserMessage {
 
 /// Projects support loading, saving, playback and act as containers for all other sound objects.
 interface Project : Object {
+  void  change_name (String name); ///< Change a project name without recording undo steps.
+  ErrorType play();     ///< Activate a project and start project playback (an already playing project is first halted).
+  ErrorType activate(); ///< Activate a project, precondition to start playback.
+  //ProjectState get_state();     ///< Retrieve the current project activation/playback state.
+  bool  can_play();     ///< Check whether project playback would makes sense.
+  bool  is_playing();   ///< Check whether a project is currently playing (song sequencing).
+  bool  is_active ();   ///< Check whether a project is active (currently synthesizing).
+  void  start_playback(); ///< Start playback in an activated project.
+  void  stop_playback(); ///< Stop project playback.
+  void  deactivate();   ///< Deactivate the project, automatically stop playback.
+  void  stop();         ///< Stop project playback and deactivate project.
+  void  auto_deactivate (int32 msec_delay); ///< Automatically deactivate a few milliseconds after playback stopped.
+  int32 undo_depth();   ///< Check whether a project can perform undo steps.
+  void  undo();         ///< Undo a previous operation in a project.
+  int32 redo_depth();   ///< Get the number of times redo can be called on the project.
+  void  redo();         ///< Redo a previously undone operation in a project.
+  void  clear_undo();   ///< Delete all recorded undo or redo steps.
+  void  clean_dirty();  ///< Clear a project's dirty flags.
+  bool  is_dirty();     ///< Check whether a project needs saving.
+  /// Inject a MIDI control event into the project's MIDI receiver.
+  void  inject_midi_control (int32 midi_channel, int32 midi_control, float64 control_value);
+  //Item    find_item (String uname_path); ///< Find an item within a project, given its uname path.
+  //ItemSeq get_supers(); ///< Retrieve all Super type objects of this project.
+  /// List uname paths for all items of a specified type within a project.
+  /// By their uname paths, items are uniquely identifyable within a project.
+  //StringSeq list_uname_paths (String item_type);
+  /// Retrieve all items of a specific type within a project with matching uname.
+  //ItemSeq match_items_by_uname (String item_type, String uname);
+  /// Save super objects of a project into a BSE file.
+  /// If no Super is specified, the project itself is stored.
+  /// The references to other objects (e.g. samples) can be stored
+  /// by reference (self_contained=false) or embedded in the output
+  /// file (self_contained=true).
+  //ErrorType store_bse (Super super, String file_name, bool self_contained);
+  ErrorType import_midi_file (String file_name); ///< Import a song from a MIDI file.
+  ErrorType restore_from_file (String file_name); ///< Load a project from file.
+  //Song create_song (String name); ///< Create a song for this project.
+  //WaveRepo get_wave_repo (); ///< Retrieve the project's unique wave repository.
+  //DataPocket get_data_pocket (String name); ///< Retrieve a specifically named data pocket for this project.
+  //CSynth create_csynth (String name); ///< Create a synthsizer network for this project.
+  //MidiSynth create_midi_synth (String name); ///< Create a MIDI synthesizer network for this project.
+  //MidiNotifier get_midi_notifier(); ///< Retrieve the project's midi notifier object.
+  //void  remove_snet (SNet snet); ///< Remove an existing synthesizer network from this project.
 };
 
 /** Main Bse remote origin object.

@@ -33,7 +33,7 @@ struct _BstPartDialog
   BstEventRollController *ectrl;
   BstPatternView         *pview;
   BstPatternController   *pvctrl;
-  SfiProxy                project;
+  Bse::ProjectH           project;
 };
 struct _BstPartDialogClass
 {

@@ -13,15 +13,15 @@ bst_project_ctrl_play (BstProjectCtrl *self)
   if (self && self->project)
     {
       gchar *starting;
-      BseErrorType error;
+      Bse::ErrorType error;
 
-      if (bse_project_is_playing (self->project))
+      if (self->project.is_playing())
 	starting = _("Restarting Playback");
       else
 	starting = _("Starting Playback");
-      bse_project_auto_deactivate (self->project, 0);
-      error = bse_project_play (self->project);
-      bst_status_eprintf (error, "%s", starting);
+      self->project.auto_deactivate (0);
+      error = self->project.play();
+      bst_status_eprintf (BseErrorType (error), "%s", starting);
     }
 }
 
@@ -30,7 +30,7 @@ bst_project_ctrl_stop (BstProjectCtrl *self)
 {
   if (self && self->project)
     {
-      bse_project_stop (self->project);
+      self->project.stop();
       gxk_status_set (GXK_STATUS_DONE, _("Stopping Playback"), NULL);
     }
 }
@@ -39,8 +39,10 @@ static void
 bst_project_ctrl_finalize (GObject *object)
 {
   BstProjectCtrl *self = BST_PROJECT_CTRL (object);
-  bst_project_ctrl_set_project (self, 0);
+  bst_project_ctrl_set_project (self, Bse::ProjectH());
   G_OBJECT_CLASS (bst_project_ctrl_parent_class)->finalize (object);
+  using namespace Bse;
+  self->project.~ProjectH();
 }
 
 static void
@@ -67,30 +69,27 @@ project_state_changed (BstProjectCtrl *self,
 static void
 project_release (BstProjectCtrl *self)
 {
-  bst_project_ctrl_set_project (self, 0);
+  bst_project_ctrl_set_project (self, Bse::ProjectH());
 }
 
 void
-bst_project_ctrl_set_project (BstProjectCtrl *self,
-			      SfiProxy        project)
+bst_project_ctrl_set_project (BstProjectCtrl *self, Bse::ProjectH project)
 {
   g_return_if_fail (BST_IS_PROJECT_CTRL (self));
-  if (project)
-    g_return_if_fail (BSE_IS_PROJECT (project));
 
   if (self->project)
-    bse_proxy_disconnect (self->project,
+    bse_proxy_disconnect (self->project.proxy_id(),
 			  "any_signal", project_state_changed, self,
 			  "any_signal::release", project_release, self,
 			  NULL);
   self->project = project;
   if (self->project)
     {
-      bse_proxy_connect (self->project,
+      bse_proxy_connect (self->project.proxy_id(),
 			 "swapped_signal::state-changed", project_state_changed, self,
 			 "swapped_signal::release", project_release, self,
 			 NULL);
-      project_state_changed (self, bse_project_state_to_choice (bse_project_get_state (self->project)));
+      project_state_changed (self, bse_project_state_to_choice (bse_project_get_state (self->project.proxy_id())));
     }
   else if (self->led)
     gxk_led_set_color (self->led, GXK_LED_OFF);
@@ -99,6 +98,7 @@ bst_project_ctrl_set_project (BstProjectCtrl *self,
 static void
 bst_project_ctrl_init (BstProjectCtrl *self)
 {
+  new (&self->project) Bse::ProjectH();
   GtkWidget *box = GTK_WIDGET (self);
   GtkWidget *frame;
   guint spaceing = 0;

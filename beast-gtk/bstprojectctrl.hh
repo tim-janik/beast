@@ -18,7 +18,7 @@ G_BEGIN_DECLS
 /* --- typedefs & structures --- */
 typedef struct {
   GtkHBox	 parent_instance;
-  SfiProxy	 project;
+  Bse::ProjectH  project;
   GxkLed	*led;
   GtkWidget	*stop;
   GtkWidget	*rew;
@@ -31,8 +31,7 @@ typedef GtkHBoxClass BstProjectCtrlClass;
 
 /* --- prototypes --- */
 GType		bst_project_ctrl_get_type	(void);
-void		bst_project_ctrl_set_project	(BstProjectCtrl	*self,
-						 SfiProxy	 project);
+void		bst_project_ctrl_set_project	(BstProjectCtrl	*self, Bse::ProjectH project);
 void		bst_project_ctrl_play		(BstProjectCtrl *self);
 void		bst_project_ctrl_stop		(BstProjectCtrl *self);
 

@@ -251,7 +251,7 @@ main (int   argc,
 	{
 	  if (app)
 	    {
-	      SfiProxy wrepo = bse_project_get_wave_repo (app->project);
+	      SfiProxy wrepo = bse_project_get_wave_repo (app->project.proxy_id());
 	      gxk_status_printf (GXK_STATUS_WAIT, NULL, _("Loading \"%s\""), argv[i]);
 	      BseErrorType error = bse_wave_repo_load_file (wrepo, argv[i]);
               bst_status_eprintf (error, _("Loading \"%s\""), argv[i]);
@@ -260,19 +260,19 @@ main (int   argc,
 	    }
           else
 	    {
-	      SfiProxy project = bse_server.use_new_project ("Untitled.bse").proxy_id();
-	      SfiProxy wrepo = bse_project_get_wave_repo (project);
+              Bse::ProjectH project = bse_server.use_new_project ("Untitled.bse");
+	      SfiProxy wrepo = bse_project_get_wave_repo (project.proxy_id());
 	      BseErrorType error = bse_wave_repo_load_file (wrepo, argv[i]);
 	      if (!error)
 		{
 		  app = bst_app_new (project);
 		  gxk_idle_show_widget (GTK_WIDGET (app));
-		  bse_item_unuse (project);
+		  bse_item_unuse (project.proxy_id());
 		  gtk_widget_hide (beast_splash);
 		}
               else
                 {
-                  bse_item_unuse (project);
+		  bse_item_unuse (project.proxy_id());
                   sfi_error (_("Failed to load wave file \"%s\": %s"), argv[i], bse_error_blurb (error));
                 }
 	    }
@@ -281,7 +281,7 @@ main (int   argc,
       // load/merge projects
       if (!app || !merge_with_last)
         {
-          SfiProxy project = bse_server.use_new_project (argv[i]).proxy_id();
+          Bse::ProjectH project = bse_server.use_new_project (argv[i]);
           BseErrorType error = bst_project_restore_from_file (project, argv[i], TRUE, TRUE);
           if (rewrite_bse_file)
             {
@@ -293,7 +293,7 @@ main (int   argc,
                   perror (Rapicorn::string_format ("%s: failed to remove", argv[i]).c_str());
                   exit (2);
                 }
-              error = bse_project_store_bse (project, 0, argv[i], TRUE);
+              error = bse_project_store_bse (project.proxy_id(), 0, argv[i], TRUE);
               Rapicorn::printerr ("%s: writing: %s\n", argv[i], bse_error_blurb (error));
               if (error)
                 exit (3);
@@ -306,7 +306,7 @@ main (int   argc,
               gxk_idle_show_widget (GTK_WIDGET (app));
               gtk_widget_hide (beast_splash);
             }
-          bse_item_unuse (project);
+          bse_item_unuse (project.proxy_id());
           if (error)
             sfi_error (_("Failed to load project \"%s\": %s"), argv[i], bse_error_blurb (error));
         }
@@ -322,11 +322,11 @@ main (int   argc,
    */
   if (!app)
     {
-      SfiProxy project = bse_server.use_new_project ("Untitled.bse").proxy_id();
+      Bse::ProjectH project = bse_server.use_new_project ("Untitled.bse");
 
-      bse_project_get_wave_repo (project);
+      bse_project_get_wave_repo (project.proxy_id());
       app = bst_app_new (project);
-      bse_item_unuse (project);
+      bse_item_unuse (project.proxy_id());
       gxk_idle_show_widget (GTK_WIDGET (app));
       gtk_widget_hide (beast_splash);
     }

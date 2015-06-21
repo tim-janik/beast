@@ -84,7 +84,28 @@ class ProjectImpl : public virtual ProjectIface, public virtual ObjectImpl {
 protected:
   virtual      ~ProjectImpl ();
 public:
-  explicit      ProjectImpl       (BseObject*);
+  explicit          ProjectImpl         (BseObject*);
+  virtual void      change_name         (const String &name) override;
+  virtual ErrorType play                () override;
+  virtual ErrorType activate            () override;
+  virtual bool      can_play            () override;
+  virtual bool      is_playing          () override;
+  virtual bool      is_active           () override;
+  virtual void      start_playback      () override;
+  virtual void      stop_playback       () override;
+  virtual void      deactivate          () override;
+  virtual void      stop                () override;
+  virtual void      auto_deactivate     (int msec_delay) override;
+  virtual int       undo_depth          () override;
+  virtual void      undo                () override;
+  virtual int       redo_depth          () override;
+  virtual void      redo                () override;
+  virtual void      clear_undo          () override;
+  virtual void      clean_dirty         () override;
+  virtual bool      is_dirty            () override;
+  virtual void      inject_midi_control (int midi_channel, int midi_control, double control_value) override;
+  virtual ErrorType import_midi_file    (const String &file_name) override;
+  virtual ErrorType restore_from_file   (const String &file_name) override;
 };
 
 } // Bse

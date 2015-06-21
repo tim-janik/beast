@@ -103,6 +103,7 @@ eparam_changed (gpointer  data,
 static void
 bst_part_dialog_init (BstPartDialog *self)
 {
+  new (&self->project) Bse::ProjectH();
   GtkRange *srange;
   BseCategorySeq *cseq;
   GxkActionList *al1;
@@ -254,28 +255,27 @@ bst_part_dialog_finalize (GObject *object)
   bst_event_roll_controller_unref (self->ectrl);
 
   G_OBJECT_CLASS (bst_part_dialog_parent_class)->finalize (object);
+  using namespace Bse;
+  self->project.~ProjectH();
 }
 
 void
-bst_part_dialog_set_proxy (BstPartDialog *self,
-			   SfiProxy       part)
+bst_part_dialog_set_proxy (BstPartDialog *self, SfiProxy part)
 {
-  SfiProxy project;
-
   g_return_if_fail (BST_IS_PART_DIALOG (self));
   if (part)
     g_return_if_fail (BSE_IS_PART (part));
 
   if (self->project)
     {
-      bse_proxy_disconnect (self->project,
+      bse_proxy_disconnect (self->project.proxy_id(),
                             "any_signal", gxk_widget_update_actions_downwards, self,
                             NULL);
-      self->project = 0;
+      self->project = Bse::ProjectH();
     }
 
-  project = part ? bse_item_get_project (part) : 0;
-
+  SfiProxy projectid = part ? bse_item_get_project (part) : 0;
+  Bse::ProjectH project = Bse::ProjectH::down_cast (bse_server.from_proxy (projectid));
   if (project)
     {
       bst_window_sync_title_to_proxy (GXK_DIALOG (self), part, "%s");
@@ -286,7 +286,7 @@ bst_part_dialog_set_proxy (BstPartDialog *self,
       if (self->eroll)
         bst_event_roll_set_proxy (self->eroll, part);
       self->project = project;
-      bse_proxy_connect (self->project,
+      bse_proxy_connect (self->project.proxy_id(),
                          "swapped_signal::property-notify::dirty", gxk_widget_update_actions_downwards, self,
                          NULL);
     }
@@ -353,11 +353,11 @@ part_dialog_action_check (gpointer data,
       return (bst_piano_roll_controller_clipboard_full (self->pctrl) ||
               bst_event_roll_controller_clipboard_full (self->ectrl));
     case ACTION_UNDO:
-      return self->project && bse_project_undo_depth (self->project) > 0;
+      return self->project && self->project.undo_depth() > 0;
     case ACTION_REDO:
-      return self->project && bse_project_redo_depth (self->project) > 0;
+      return self->project && self->project.redo_depth() > 0;
     case ACTION_CLEAR_UNDO:
-      return self->project && bse_project_undo_depth (self->project) + bse_project_redo_depth (self->project) > 0;
+      return self->project && self->project.undo_depth() + self->project.redo_depth() > 0;
       /* tools */
     case BST_COMMON_ROLL_TOOL_INSERT:
     case BST_COMMON_ROLL_TOOL_RESIZE:
