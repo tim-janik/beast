@@ -706,7 +706,7 @@ demo_play_song (gpointer data,
 {
   const gchar *file_name = demo_entries[callback_action - BST_ACTION_LOAD_DEMO_0000].file;
   Bse::ProjectH project = bse_server.create_project (file_name);
-  BseErrorType error = bst_project_restore_from_file (project, file_name, TRUE, TRUE);
+  Bse::ErrorType error = bst_project_restore_from_file (project, file_name, TRUE, TRUE);
   if (error)
     {
       bst_status_eprintf (error, _("Opening project `%s'"), file_name);
@@ -776,7 +776,7 @@ load_skin (gpointer data,
            size_t   callback_action)
 {
   const gchar *file_name = skin_entries[callback_action - BST_ACTION_LOAD_SKIN_0000].file;
-  BseErrorType error = bst_skin_parse (file_name);
+  Bse::ErrorType error = bst_skin_parse (file_name);
   bst_status_eprintf (error, _("Loading skin `%s'"), file_name);
 }
 

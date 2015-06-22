@@ -60,7 +60,7 @@ bst_play_back_handle_start (BstPlayBackHandle *handle)
 
   error = handle->project.play();;
   if (error)
-    bst_status_eprintf (BseErrorType (error), _("Playback"));
+    bst_status_eprintf (error, _("Playback"));
 }
 
 void

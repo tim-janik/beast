@@ -637,9 +637,9 @@ bst_snet_router_root_event (BstSNetRouter   *self,
             }
           else
             {
-              BseErrorType error;
+              Bse::ErrorType error;
               if (!csource || (self->drag_is_input ? ochannel : ichannel) == ~uint (0))
-                error = self->drag_is_input ? BSE_ERROR_SOURCE_NO_SUCH_OCHANNEL : BSE_ERROR_SOURCE_NO_SUCH_ICHANNEL;
+                error = self->drag_is_input ? Bse::ERROR_SOURCE_NO_SUCH_OCHANNEL : Bse::ERROR_SOURCE_NO_SUCH_ICHANNEL;
               else if (self->drag_is_input)
                 error = bse_source_set_input_by_id (self->drag_csource->source, self->drag_channel,
                                                     csource->source, ochannel);
@@ -692,7 +692,7 @@ bst_snet_router_root_event (BstSNetRouter   *self,
               switch (i)
                 {
                   GtkWidget *dialog;
-                  BseErrorType error;
+                  Bse::ErrorType error;
                 case 2:
                   bst_canvas_source_popup_params (csource);
                   break;
@@ -738,7 +738,7 @@ bst_snet_router_root_event (BstSNetRouter   *self,
               i = bst_choice_modal (choice, event->button.button, event->button.time);
               switch (i)
                 {
-                  BseErrorType error;
+                  Bse::ErrorType error;
                 case 1:
                   error = bse_source_unset_input_by_id (clink->icsource->source, clink->ichannel,
                                                         clink->ocsource->source, clink->ochannel);
@@ -773,7 +773,7 @@ bst_snet_router_event (GtkWidget *widget,
           ROUTER_TOOL (self) &&
           ROUTER_TOOL (self) != ROUTER_TOOL_CREATE_LINK) /* add new source */
         {
-          BseErrorType error;
+          Bse::ErrorType error;
           BseCategory *cat = bse_category_from_id (ROUTER_TOOL (self));
 
           handled = TRUE;

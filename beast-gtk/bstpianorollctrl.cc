@@ -624,7 +624,7 @@ move_motion (BstPianoRollController *self,
 		       self->obj_tick, note_changed ? 0 : self->obj_duration))
     {
       bse_item_group_undo (part, "Move Note");
-      if (bse_part_delete_event (part, self->obj_id) != BSE_ERROR_NONE)
+      if (bse_part_delete_event (part, self->obj_id) != Bse::ERROR_NONE)
         drag->state = GXK_DRAG_ERROR;
       else
 	{
@@ -697,7 +697,7 @@ resize_motion (BstPianoRollController *self,
       bse_item_group_undo (part, "Resize Note");
       if (self->obj_id)
 	{
-	  BseErrorType error = bse_part_delete_event (part, self->obj_id);
+	  Bse::ErrorType error = bse_part_delete_event (part, self->obj_id);
 	  if (error)
 	    drag->state = GXK_DRAG_ERROR;
 	  self->obj_id = 0;
@@ -729,7 +729,7 @@ delete_start (BstPianoRollController *self,
   SfiProxy part = self->proll->proxy;
   if (self->obj_id)	/* got note to delete */
     {
-      BseErrorType error = bse_part_delete_event (part, self->obj_id);
+      Bse::ErrorType error = bse_part_delete_event (part, self->obj_id);
       bst_status_eprintf (error, _("Delete Note"));
     }
   else
@@ -742,17 +742,17 @@ insert_start (BstPianoRollController *self,
 	      BstPianoRollDrag       *drag)
 {
   SfiProxy part = self->proll->proxy;
-  BseErrorType error = BSE_ERROR_NO_TARGET;
+  Bse::ErrorType error = Bse::ERROR_NO_TARGET;
   if (drag->start_valid)
     {
       guint qtick = bst_piano_roll_controller_quantize (self, drag->start_tick);
       guint duration = drag->proll->ppqn * 4 / NOTE_LENGTH (self);
       if (check_hoverlap (part, qtick, duration, drag->start_note, 0, 0))
-	error = BSE_ERROR_INVALID_OVERLAP;
+	error = Bse::ERROR_INVALID_OVERLAP;
       else
 	{
 	  bse_part_insert_note_auto (part, qtick, duration, drag->start_note, 0, 1.0);
-	  error = BSE_ERROR_NONE;
+	  error = Bse::ERROR_NONE;
 	}
     }
   bst_status_eprintf (error, _("Insert Note"));
@@ -950,7 +950,7 @@ controller_piano_drag (BstPianoRollController *self,
 	  self->obj_note = drag->current_note;
 	  if (error == Bse::ERROR_NONE)
 	    bse_song_synthesize_note (song, track, 384 * 4, self->obj_note, 0, 1.0);
-	  bst_status_eprintf (BseErrorType (error), _("Play note"));
+	  bst_status_eprintf (error, _("Play note"));
 	  drag->state = GXK_DRAG_CONTINUE;
 	}
     }

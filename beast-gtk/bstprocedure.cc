@@ -261,7 +261,7 @@ bst_procedure_shell_execute (BstProcedureShell *self)
   if (widget)
     {
       SfiGlueProc *proc = self->proc;
-      BseErrorType error = BseErrorType (0);
+      Bse::ErrorType error = Bse::ERROR_NONE;
       SfiSeq *pseq = sfi_seq_new ();
       GValue *rvalue;
       guint i;

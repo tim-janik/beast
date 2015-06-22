@@ -412,7 +412,7 @@ bst_file_dialog_open_project (BstFileDialog *self,
 			      const gchar   *file_name)
 {
   Bse::ProjectH project = bse_server.create_project (file_name);
-  BseErrorType error = bst_project_restore_from_file (project, file_name, TRUE, TRUE);
+  Bse::ErrorType error = bst_project_restore_from_file (project, file_name, TRUE, TRUE);
 
   if (error)
     {
@@ -450,7 +450,7 @@ static gboolean
 bst_file_dialog_merge_project (BstFileDialog *self,
 			       const gchar   *file_name)
 {
-  BseErrorType error = bst_project_restore_from_file (self->project, file_name, FALSE, FALSE);
+  Bse::ErrorType error = bst_project_restore_from_file (self->project, file_name, FALSE, FALSE);
 
   bst_status_eprintf (error, _("Merging project `%s'"), file_name);
 
@@ -475,7 +475,7 @@ static gboolean
 bst_file_dialog_import_midi (BstFileDialog *self,
                              const gchar   *file_name)
 {
-  BseErrorType error = bst_project_import_midi_file (self->project, file_name);
+  Bse::ErrorType error = bst_project_import_midi_file (self->project, file_name);
   bst_status_eprintf (error, _("Importing MIDI file `%s'"), file_name);
   return TRUE;
 }
@@ -484,12 +484,12 @@ static gboolean
 store_bse_file (Bse::ProjectH project, SfiProxy super, const gchar *file_name, const gchar *saving_message_format,
                 gboolean self_contained, gboolean want_overwrite)
 {
-  BseErrorType error = bse_project_store_bse (project.proxy_id(), super, file_name, self_contained);
+  Bse::ErrorType error = bse_project_store_bse (project.proxy_id(), super, file_name, self_contained);
   gchar *title = g_strdup_format (saving_message_format, bse_item_get_name (super ? super : project.proxy_id()));
   gboolean handled = TRUE;
   gchar *msg = NULL;
   /* handle file exists cases */
-  if (error == BSE_ERROR_FILE_EXISTS)
+  if (error == Bse::ERROR_FILE_EXISTS)
     {
       if (!want_overwrite)
         {
@@ -507,7 +507,7 @@ store_bse_file (Bse::ProjectH project, SfiProxy super, const gchar *file_name, c
         {
           /* save to temporary file */
           gchar *temp_file = NULL;
-          while (error == BSE_ERROR_FILE_EXISTS)
+          while (error == Bse::ERROR_FILE_EXISTS)
             {
               g_free (temp_file);
               temp_file = g_strdup_format ("%s.tmp%06xyXXXXXX", file_name, rand() & 0xfffffd);
@@ -516,9 +516,9 @@ store_bse_file (Bse::ProjectH project, SfiProxy super, const gchar *file_name, c
               error = bse_project_store_bse (project.proxy_id(), super, temp_file, self_contained);
             }
           /* replace file by temporary file */
-          if (error != BSE_ERROR_NONE)
+          if (error != Bse::ERROR_NONE)
             {
-              unlink (temp_file); /* error != BSE_ERROR_FILE_EXISTS */
+              unlink (temp_file); /* error != Bse::ERROR_FILE_EXISTS */
               msg = g_strdup_format (_("Failed to save to file\n`%s'\ndue to:\n%s"), file_name, bse_error_blurb (error));
             }
           else if (rename (temp_file, file_name) < 0)
@@ -532,7 +532,7 @@ store_bse_file (Bse::ProjectH project, SfiProxy super, const gchar *file_name, c
       else
         handled = FALSE;        /* exists && !overwrite */
     }
-  else if (error != BSE_ERROR_NONE)
+  else if (error != Bse::ERROR_NONE)
     msg = g_strdup_format (_("Failed to save to file\n`%s'\ndue to:\n%s"), file_name, bse_error_blurb (error));
   /* report errors */
   if (msg)
@@ -547,7 +547,7 @@ store_bse_file (Bse::ProjectH project, SfiProxy super, const gchar *file_name, c
       handled = FALSE;
     }
   else if (handled) /* no error */
-    bst_status_eprintf (BSE_ERROR_NONE, "%s", title);
+    bst_status_eprintf (Bse::ERROR_NONE, "%s", title);
   g_free (title);
   return handled;
 }
@@ -624,7 +624,7 @@ static gboolean
 bst_file_dialog_merge_effect (BstFileDialog *self,
                               const gchar   *file_name)
 {
-  BseErrorType error = bst_project_restore_from_file (self->project, file_name, FALSE, FALSE);
+  Bse::ErrorType error = bst_project_restore_from_file (self->project, file_name, FALSE, FALSE);
 
   bst_status_eprintf (error, _("Merging effect `%s'"), file_name);
 
@@ -674,7 +674,7 @@ bst_file_dialog_popup_merge_instrument (gpointer parent_widget, Bse::ProjectH pr
 static gboolean
 bst_file_dialog_merge_instrument (BstFileDialog *self, const gchar *file_name)
 {
-  BseErrorType error = bst_project_restore_from_file (self->project, file_name, FALSE, FALSE);
+  Bse::ErrorType error = bst_project_restore_from_file (self->project, file_name, FALSE, FALSE);
 
   bst_status_eprintf (error, _("Merging instrument `%s'"), file_name);
 
@@ -727,7 +727,7 @@ static gboolean
 bst_file_dialog_load_wave (BstFileDialog *self,
 			   const gchar   *file_name)
 {
-  BseErrorType error;
+  Bse::ErrorType error;
 
   gxk_status_printf (0, NULL, _("Loading wave `%s'"), file_name);
   error = bse_wave_repo_load_file (self->wave_repo, file_name);

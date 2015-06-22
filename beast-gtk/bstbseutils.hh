@@ -4,7 +4,10 @@
 #include <sfi/sfi.hh> /* needed by bstoldbseapi.h */
 #include "bstdefs.hh"
 G_BEGIN_DECLS
+#define SFIDL_SKIPDEF__BseErrorType     // replaced by Bse::ErrorType
+#define BseErrorType Bse::ErrorType
 #include "bstoldbseapi.h" /* include this within extern "C" */
+#undef BseErrorType
 /* --- BSE utilities --- */
 #define BSE_SERVER                              (1 /* HACK */ )
 #define bse_proxy_set_property                  sfi_glue_proxy_set_property
@@ -27,11 +30,11 @@ G_BEGIN_DECLS
 #define bse_proxy_set_data_full(p,n,d,f)        bse_proxy_set_qdata_full ((p), g_quark_from_string (n), (d), (f))
 
 /* --- BEAST utilities --- */
-BseErrorType    bst_project_restore_from_file   (Bse::ProjectH   project,
+Bse::ErrorType    bst_project_restore_from_file   (Bse::ProjectH   project,
                                                  const gchar    *file_name,
                                                  bool            apply_project_file_name,
 						 bool            preserve_non_dirty);
-BseErrorType    bst_project_import_midi_file    (Bse::ProjectH   project,
+Bse::ErrorType    bst_project_import_midi_file    (Bse::ProjectH   project,
                                                  const gchar    *file_name);
 const gchar*    bst_procedure_get_title         (const gchar    *procedure);
 

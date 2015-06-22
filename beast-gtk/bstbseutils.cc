@@ -2,7 +2,7 @@
 #include "bstbseutils.hh"
 
 /* --- BEAST utilities --- */
-BseErrorType
+Bse::ErrorType
 bst_project_restore_from_file (Bse::ProjectH project, const gchar *file_name, bool apply_project_file_name, bool preserve_non_dirty)
 {
   bool was_dirty = project.is_dirty();
@@ -29,13 +29,13 @@ bst_project_restore_from_file (Bse::ProjectH project, const gchar *file_name, bo
     }
   if (preserve_non_dirty && !was_dirty)
     project.clean_dirty();
-  return BseErrorType (error);
+  return error;
 }
 
-BseErrorType
+Bse::ErrorType
 bst_project_import_midi_file (Bse::ProjectH project, const gchar *file_name)
 {
-  BseErrorType error = (BseErrorType) project.import_midi_file (file_name);
+  Bse::ErrorType error = project.import_midi_file (file_name);
   /* regardless of how good the restoration worked, try to
    * keep the resulting project in a GUI usable state.
    */
@@ -66,4 +66,6 @@ bst_procedure_get_title (const gchar *procedure)
 
 
 /* --- generated code --- */
+#define BseErrorType Bse::ErrorType
 #include "bstoldbseapi.cc"
+#undef BseErrorType

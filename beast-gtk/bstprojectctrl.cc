@@ -21,7 +21,7 @@ bst_project_ctrl_play (BstProjectCtrl *self)
 	starting = _("Starting Playback");
       self->project.auto_deactivate (0);
       error = self->project.play();
-      bst_status_eprintf (BseErrorType (error), "%s", starting);
+      bst_status_eprintf (error, "%s", starting);
     }
 }
 

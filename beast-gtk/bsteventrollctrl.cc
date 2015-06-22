@@ -486,7 +486,7 @@ move_motion (BstEventRollController *self,
       BsePartControlSeq *cseq = bse_part_get_controls (part, new_tick, CONTROL_TYPE (self));
       if (!cseq->n_pcontrols)    /* avoid overlap */
         {
-          if (bse_part_change_control (part, self->obj_id, new_tick, CONTROL_TYPE (self), self->obj_value) != BSE_ERROR_NONE)
+          if (bse_part_change_control (part, self->obj_id, new_tick, CONTROL_TYPE (self), self->obj_value) != Bse::ERROR_NONE)
             drag->state = GXK_DRAG_ERROR;
           else
             self->obj_tick = new_tick;
@@ -554,7 +554,7 @@ insert_start (BstEventRollController *self,
 	      BstEventRollDrag       *drag)
 {
   SfiProxy part = self->eroll->proxy;
-  BseErrorType error = BSE_ERROR_INVALID_OVERLAP;
+  Bse::ErrorType error = Bse::ERROR_INVALID_OVERLAP;
   if (!self->obj_id && drag->start_valid)
     {
       guint qtick = bst_event_roll_controller_quantize (self, drag->start_tick);
@@ -563,13 +563,13 @@ insert_start (BstEventRollController *self,
         {
           self->obj_tick = qtick;
           self->obj_value = drag->current_value;
-          error = BSE_ERROR_NONE;
+          error = Bse::ERROR_NONE;
         }
       else
-        error = BSE_ERROR_NO_TARGET;
+        error = Bse::ERROR_NO_TARGET;
     }
   else if (!self->obj_id)
-    error = BSE_ERROR_NO_TARGET;
+    error = Bse::ERROR_NO_TARGET;
   else /* no insertion */
     self->obj_id = 0;
   bst_status_eprintf (error, _("Insert Control Event"));
@@ -614,7 +614,7 @@ resize_motion (BstEventRollController *self,
       bse_item_group_undo (part, "Resize Control Event");
       self->obj_value = drag->current_value;
       if (bse_part_change_control (part, self->obj_id, self->obj_tick, CONTROL_TYPE (self),
-                                   self->obj_value) != BSE_ERROR_NONE)
+                                   self->obj_value) != Bse::ERROR_NONE)
         drag->state = GXK_DRAG_ERROR;
       bse_item_ungroup_undo (part);
     }
@@ -634,7 +634,7 @@ delete_start (BstEventRollController *self,
   SfiProxy part = self->eroll->proxy;
   if (self->obj_id)	/* got control event to delete */
     {
-      BseErrorType error = bse_part_delete_event (part, self->obj_id);
+      Bse::ErrorType error = bse_part_delete_event (part, self->obj_id);
       bst_status_eprintf (error, _("Delete Control Event"));
     }
   else

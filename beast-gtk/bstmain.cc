@@ -253,7 +253,7 @@ main (int   argc,
 	    {
 	      SfiProxy wrepo = bse_project_get_wave_repo (app->project.proxy_id());
 	      gxk_status_printf (GXK_STATUS_WAIT, NULL, _("Loading \"%s\""), argv[i]);
-	      BseErrorType error = bse_wave_repo_load_file (wrepo, argv[i]);
+	      Bse::ErrorType error = bse_wave_repo_load_file (wrepo, argv[i]);
               bst_status_eprintf (error, _("Loading \"%s\""), argv[i]);
               if (error)
                 sfi_error (_("Failed to load wave file \"%s\": %s"), argv[i], bse_error_blurb (error));
@@ -262,7 +262,7 @@ main (int   argc,
 	    {
               Bse::ProjectH project = bse_server.create_project ("Untitled.bse");
 	      SfiProxy wrepo = bse_project_get_wave_repo (project.proxy_id());
-	      BseErrorType error = bse_wave_repo_load_file (wrepo, argv[i]);
+	      Bse::ErrorType error = bse_wave_repo_load_file (wrepo, argv[i]);
 	      if (!error)
 		{
 		  app = bst_app_new (project);
@@ -281,7 +281,7 @@ main (int   argc,
       if (!app || !merge_with_last)
         {
           Bse::ProjectH project = bse_server.create_project (argv[i]);
-          BseErrorType error = bst_project_restore_from_file (project, argv[i], TRUE, TRUE);
+          Bse::ErrorType error = bst_project_restore_from_file (project, argv[i], TRUE, TRUE);
           if (rewrite_bse_file)
             {
               Rapicorn::printerr ("%s: loading: %s\n", argv[i], bse_error_blurb (error));
@@ -298,9 +298,9 @@ main (int   argc,
                 exit (3);
               exit (0);
             }
-          if (!error || error == BSE_ERROR_FILE_NOT_FOUND)
+          if (!error || error == Bse::ERROR_FILE_NOT_FOUND)
             {
-              error = BseErrorType (0);
+              error = Bse::ERROR_NONE;
               app = bst_app_new (project);
               gxk_idle_show_widget (GTK_WIDGET (app));
               gtk_widget_hide (beast_splash);
@@ -312,7 +312,7 @@ main (int   argc,
         }
       else
         {
-          BseErrorType error = bst_project_restore_from_file (app->project, argv[i], TRUE, FALSE);
+          Bse::ErrorType error = bst_project_restore_from_file (app->project, argv[i], TRUE, FALSE);
           if (error)
             sfi_error (_("Failed to merge project \"%s\": %s"), argv[i], bse_error_blurb (error));
         }
@@ -402,7 +402,7 @@ main (int   argc,
         bse_server.save_preferences();
       /* save BEAST configuration and accelerator map */
       gchar *file_name = BST_STRDUP_RC_FILE ();
-      BseErrorType error = bst_rc_dump (file_name);
+      Bse::ErrorType error = bst_rc_dump (file_name);
       if (error)
 	g_warning ("failed to save rc-file \"%s\": %s", file_name, bse_error_blurb (error));
       g_free (file_name);
