@@ -1026,7 +1026,8 @@ bglue_proxy_request_notify (SfiGlueContext *context,
 	  else
 	    p->closures = slist->next;
 	  g_slist_free_1 (slist);
-	  g_signal_handler_disconnect (item, bclosure->handler_id);
+          if (g_signal_handler_is_connected (item, bclosure->handler_id))
+            g_signal_handler_disconnect (item, bclosure->handler_id);
 	  g_closure_invalidate (closure);
 	  g_closure_unref (closure);
 	  return FALSE;
