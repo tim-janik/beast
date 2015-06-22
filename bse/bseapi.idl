@@ -124,6 +124,10 @@ interface Container : Item {
   Item lookup_item (String uname); ///< Find an immediate child of a container by name (unique per container child).
 };
 
+/// Base type for Item managers.
+interface Super : Container {
+};
+
 /// Projects support loading, saving, playback and act as containers for all other sound objects.
 interface Project : Container {
   void  change_name (String name); ///< Change a project name without recording undo steps.
