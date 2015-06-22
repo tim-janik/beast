@@ -98,9 +98,8 @@ namespace Bse {
 
 class ServerImpl : public virtual ServerIface, public virtual ObjectImpl {
   TestObjectImplP    test_object_;
-  friend class FriendAllocator<ServerImpl>;     // provide make_shared for non-public ctor
 protected:
-  virtual           ~ServerImpl ();
+  virtual                 ~ServerImpl ();
 public:
   explicit                 ServerImpl       (BseObject*);
   virtual TestObjectIfaceP get_test_object  () override;

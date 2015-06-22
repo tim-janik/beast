@@ -150,7 +150,6 @@ G_END_DECLS
 namespace Bse {
 
 class ItemImpl : public ObjectImpl, public virtual ItemIface {
-  friend class FriendAllocator<ItemImpl>;    // provide make_shared for non-public ctor
 protected:
   virtual           ~ItemImpl         ();
 public:

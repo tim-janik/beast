@@ -119,8 +119,13 @@ interface Item : Object {
   Item common_ancestor (Item other);    ///< Find a common container (parent or grand-parent) of two items if any.
 };
 
+/// Base type for objects that can be added to a container.
+interface Container : Item {
+  Item lookup_item (String uname); ///< Find an immediate child of a container by name (unique per container child).
+};
+
 /// Projects support loading, saving, playback and act as containers for all other sound objects.
-interface Project : Item {
+interface Project : Container {
   void  change_name (String name); ///< Change a project name without recording undo steps.
   ErrorType play();     ///< Activate a project and start project playback (an already playing project is first halted).
   ErrorType activate(); ///< Activate a project, precondition to start playback.

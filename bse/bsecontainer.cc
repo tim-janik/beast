@@ -1348,3 +1348,22 @@ bse_container_debug_tree (BseContainer *container)
   if (BSE_IS_CONTAINER (container))
     BSE_CONTAINER_GET_CLASS (container)->forall_items (container, container_debug_tree_forall, data);
 }
+
+namespace Bse {
+
+ContainerImpl::ContainerImpl (BseObject *bobj) :
+  ItemImpl (bobj)
+{}
+
+ContainerImpl::~ContainerImpl ()
+{}
+
+ItemIfaceP
+ContainerImpl::lookup_item (const String &uname)
+{
+  BseContainer *self = as<BseContainer*>();
+  BseItem *child = bse_container_lookup_item (self, uname.c_str());
+  return child ? shared_ptr_cast<ItemIface> (child->as<ItemIface*>()) : ItemIfaceP();
+}
+
+} // Bse

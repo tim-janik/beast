@@ -79,10 +79,9 @@ void    bse_project_push_undo_silent_deactivate (BseProject     *self);
 
 namespace Bse {
 
-class ProjectImpl : public ItemImpl, public virtual ProjectIface {
-  friend class FriendAllocator<ProjectImpl>;    // provide make_shared for non-public ctor
+class ProjectImpl : public ContainerImpl, public virtual ProjectIface {
 protected:
-  virtual      ~ProjectImpl ();
+  virtual          ~ProjectImpl ();
 public:
   explicit          ProjectImpl         (BseObject*);
   virtual void      change_name         (const String &name) override;
