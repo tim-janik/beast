@@ -126,6 +126,7 @@ public:
   virtual int    n_scripts               () override;
   virtual bool   can_load                (const String &file_name) override;
   virtual ProjectIfaceP create_project   (const String &project_name) override;
+  virtual void          destroy_project  (ProjectIface &project) override;
   void                  send_user_message   (const UserMessage &umsg);
   static ServerImpl&    instance            ();
 };

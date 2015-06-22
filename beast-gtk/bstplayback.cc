@@ -183,5 +183,7 @@ bst_play_back_handle_destroy (BstPlayBackHandle *handle)
 
   if (handle->pcm_timeout)
     g_source_remove (handle->pcm_timeout);
+
+  bse_server.destroy_project (handle->project);
   delete handle;
 }

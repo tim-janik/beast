@@ -190,6 +190,7 @@ interface Server : Object {
   bool          can_load (String file_name); ///< Check whether a loader can be found for a wave file.
   void          start_recording (String wave_file, float64 n_seconds); ///< Start recording to a WAV file.
   Project       create_project (String project_name); ///< Create a new project (name is modified to be unique if necessary.
+  void          destroy_project (Project project);    ///< Destroy a previously created new project.
 };
 
 } // Bse

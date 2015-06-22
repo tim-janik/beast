@@ -270,7 +270,10 @@ main (int   argc,
 		  gtk_widget_hide (beast_splash);
 		}
               else
-                sfi_error (_("Failed to load wave file \"%s\": %s"), argv[i], bse_error_blurb (error));
+                {
+		  bse_server.destroy_project (project);
+                  sfi_error (_("Failed to load wave file \"%s\": %s"), argv[i], bse_error_blurb (error));
+                }
 	    }
           continue;
 	}
@@ -302,6 +305,8 @@ main (int   argc,
               gxk_idle_show_widget (GTK_WIDGET (app));
               gtk_widget_hide (beast_splash);
             }
+          else
+            bse_server.destroy_project (project);
           if (error)
             sfi_error (_("Failed to load project \"%s\": %s"), argv[i], bse_error_blurb (error));
         }

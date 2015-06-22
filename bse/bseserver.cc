@@ -1435,7 +1435,7 @@ ServerImpl::can_load (const String &file_name)
 }
 
 static void
-destroy_project (BseProject *project, BseServer *server)
+release_project (BseProject *project, BseServer *server)
 {
   server->projects = g_list_remove (server->projects, project);
   bse_item_unuse (project);
@@ -1460,9 +1460,20 @@ ServerImpl::create_project (const String &project_name)
   g_object_unref (project);
   g_free (uname);
   g_object_connect (project,
-		    "signal::release", destroy_project, server,
+		    "signal::release", release_project, server,
 		    NULL);
   return shared_ptr_cast<ProjectIface> (project->as<ProjectIface*>());
+}
+
+void
+ServerImpl::destroy_project (ProjectIface &project_iface)
+{
+  BseServer *server = as<BseServer*>();
+  BseProject *project = project_iface.as<BseProject*>();
+  if (g_list_find (server->projects, project))
+    g_object_run_dispose (project);
+  else
+    critical ("%s: project not found", __func__);
 }
 
 } // Bse

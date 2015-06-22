@@ -415,7 +415,10 @@ bst_file_dialog_open_project (BstFileDialog *self,
   BseErrorType error = bst_project_restore_from_file (project, file_name, TRUE, TRUE);
 
   if (error)
-    bst_status_eprintf (error, _("Opening project `%s'"), file_name);
+    {
+      bst_status_eprintf (error, _("Opening project `%s'"), file_name);
+      bse_server.destroy_project (project);
+    }
   else
     {
       bse_project_get_wave_repo (project.proxy_id());

@@ -337,6 +337,7 @@ bst_app_destroy (GtkObject *object)
                             "any_signal", bst_app_reload_pages, self,
                             "any_signal", gxk_widget_update_actions, self,
                             NULL);
+      bse_server.destroy_project (self->project);
       self->project = Bse::ProjectH(); // NULL
     }
 
@@ -711,7 +712,10 @@ demo_play_song (gpointer data,
   Bse::ProjectH project = bse_server.create_project (file_name);
   BseErrorType error = bst_project_restore_from_file (project, file_name, TRUE, TRUE);
   if (error)
-    bst_status_eprintf (error, _("Opening project `%s'"), file_name);
+    {
+      bst_status_eprintf (error, _("Opening project `%s'"), file_name);
+      bse_server.destroy_project (project);
+    }
   else
     {
       BstApp *app;
