@@ -968,7 +968,7 @@ bse_project_deactivate (BseProject *self)
 namespace Bse {
 
 ProjectImpl::ProjectImpl (BseObject *bobj) :
-  ObjectImpl (bobj)
+  ItemImpl (bobj)
 {}
 
 ProjectImpl::~ProjectImpl ()

@@ -147,4 +147,17 @@ BseMusicalTuningType bse_item_current_musical_tuning (BseItem     *self);
 
 G_END_DECLS
 
+namespace Bse {
+
+class ItemImpl : public ObjectImpl, public virtual ItemIface {
+  friend class FriendAllocator<ItemImpl>;    // provide make_shared for non-public ctor
+protected:
+  virtual           ~ItemImpl         ();
+public:
+  explicit           ItemImpl         (BseObject*);
+  virtual ItemIfaceP common_ancestor  (ItemIface &other) override;
+};
+
+} // Bse
+
 #endif /* __BSE_ITEM_H__ */

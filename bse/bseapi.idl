@@ -85,12 +85,6 @@ enum ErrorType {
   ERROR_INVALID_OVERLAP = Enum (67, "Invalid overlap"),
 };
 
-/// Basic object type for all BSE objects.
-interface Object {
-  String debug_name (); ///< Object name useful for debugging output.
-  int64  proxy_id   (); ///< Retrieve the BseObject proxy ID for an Object.
-};
-
 /// Object to carry out IDL, API, signal, etc tests.
 interface TestObject {
   int32         echo_test       (String msg);   ///< Echo custom message to stdout.
@@ -114,8 +108,19 @@ record UserMessage {
   String          label;        ///< Message class label, used to enable/disable this type of message.
 };
 
+/// Basic object type for all BSE objects.
+interface Object {
+  String debug_name (); ///< Object name useful for debugging output.
+  int64  proxy_id   (); ///< Retrieve the BseObject proxy ID for an Object.
+};
+
+/// Base type for objects that can be added to a container.
+interface Item : Object {
+  Item common_ancestor (Item other);    ///< Find a common container (parent or grand-parent) of two items if any.
+};
+
 /// Projects support loading, saving, playback and act as containers for all other sound objects.
-interface Project : Object {
+interface Project : Item {
   void  change_name (String name); ///< Change a project name without recording undo steps.
   ErrorType play();     ///< Activate a project and start project playback (an already playing project is first halted).
   ErrorType activate(); ///< Activate a project, precondition to start playback.

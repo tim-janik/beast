@@ -1237,3 +1237,23 @@ bse_item_backup_to_undo (BseItem      *self,
       g_object_unref (storage);
     }
 }
+
+namespace Bse {
+
+ItemImpl::ItemImpl (BseObject *bobj) :
+  ObjectImpl (bobj)
+{}
+
+ItemImpl::~ItemImpl ()
+{}
+
+ItemIfaceP
+ItemImpl::common_ancestor (ItemIface &other)
+{
+  BseItem *self = as<BseItem*>();
+  BseItem *bo = other.as<BseItem*>();
+  BseItem *common = bse_item_common_ancestor (self, bo);
+  return common ? shared_ptr_cast<ItemIface> (common->as<ItemIface*>()) : ItemIfaceP();
+}
+
+} // Bse
