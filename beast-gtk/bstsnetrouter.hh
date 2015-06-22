@@ -28,7 +28,7 @@ struct _BstSNetRouter
   GtkWidget	   *palette_text;
   GtkAdjustment    *adjustment;
 
-  SfiProxy	    snet;
+  Bse::SNetH        snet;
 
   GxkActionGroup   *canvas_tool;
   GxkActionGroup   *channel_toggle;
@@ -51,14 +51,12 @@ struct _BstSNetRouterClass
 
 /* --- prototypes --- */
 GType		 bst_snet_router_get_type	      (void);
-GtkWidget*	 bst_snet_router_new		      (SfiProxy	     snet);
-void		 bst_snet_router_set_snet 	      (BstSNetRouter *router,
-						       SfiProxy       snet);
+GtkWidget*	 bst_snet_router_new		      (Bse::SNetH     snet);
+void		 bst_snet_router_set_snet 	      (BstSNetRouter *router, Bse::SNetH snet);
 void		 bst_snet_router_update		      (BstSNetRouter *snet_router);
 void		 bst_snet_router_adjust_region	      (BstSNetRouter *snet_router);
-BstCanvasSource* bst_snet_router_csource_from_source  (BstSNetRouter *snet_router,
-						       SfiProxy       source);
-BstSNetRouter*	 bst_snet_router_build_page	      (SfiProxy	     snet);
+BstCanvasSource* bst_snet_router_csource_from_source  (BstSNetRouter *snet_router, SfiProxy source);
+BstSNetRouter*	 bst_snet_router_build_page	      (Bse::SNetH     snet);
 
 
 G_END_DECLS
