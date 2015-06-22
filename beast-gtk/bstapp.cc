@@ -435,7 +435,7 @@ bst_app_get_current_super (BstApp *app)
       if (BST_IS_SUPER_SHELL (shell))
         {
           BstSuperShell *super_shell = BST_SUPER_SHELL (shell);
-          return super_shell->super;
+          return super_shell->super.proxy_id();
         }
     }
   return 0;
@@ -645,15 +645,11 @@ bst_app_handle_delete_event (GtkWidget   *widget,
 static void
 rebuild_super_shell (BstSuperShell *super_shell)
 {
-  SfiProxy proxy;
-
   g_return_if_fail (BST_IS_SUPER_SHELL (super_shell));
 
-  proxy = super_shell->super;
-  bse_item_use (proxy);
-  bst_super_shell_set_super (super_shell, 0);
-  bst_super_shell_set_super (super_shell, proxy);
-  bse_item_unuse (proxy);
+  Bse::SuperH super = super_shell->super;
+  bst_super_shell_set_super (super_shell, Bse::SuperH());
+  bst_super_shell_set_super (super_shell, super);
 }
 
 typedef struct {

@@ -60,7 +60,7 @@ bst_super_shell_class_init (BstSuperShellClass *klass)
 static void
 bst_super_shell_init (BstSuperShell *self)
 {
-  self->super = 0;
+  new (&self->super) Bse::SuperH();
   gtk_widget_set (GTK_WIDGET (self),
                   "visible", TRUE,
 		  "homogeneous", FALSE,
@@ -76,11 +76,13 @@ bst_super_shell_set_property (GObject         *object,
 			      GParamSpec      *pspec)
 {
   BstSuperShell *self = BST_SUPER_SHELL (object);
+  Bse::SuperH super;
 
   switch (prop_id)
     {
     case PROP_SUPER:
-      bst_super_shell_set_super (self, sfi_value_get_proxy (value));
+      super = Bse::SuperH::down_cast (bse_server.from_proxy (sfi_value_get_proxy (value)));
+      bst_super_shell_set_super (self, super);
       break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -99,7 +101,7 @@ bst_super_shell_get_property (GObject         *object,
   switch (prop_id)
     {
     case PROP_SUPER:
-      sfi_value_set_proxy (value, self->super);
+      sfi_value_set_proxy (value, self->super.proxy_id());
       break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -113,7 +115,7 @@ bst_super_shell_destroy (GtkObject *object)
   BstSuperShell *self = BST_SUPER_SHELL (object);
 
   if (self->super)
-    bst_super_shell_set_super (self, 0);
+    bst_super_shell_set_super (self, Bse::SuperH());
 
   GTK_OBJECT_CLASS (bst_super_shell_parent_class)->destroy (object);
 }
@@ -121,32 +123,25 @@ bst_super_shell_destroy (GtkObject *object)
 static void
 bst_super_shell_finalize (GObject *object)
 {
-  // BstSuperShell *self = BST_SUPER_SHELL (object);
+  BstSuperShell *self = BST_SUPER_SHELL (object);
 
   G_OBJECT_CLASS (bst_super_shell_parent_class)->finalize (object);
+  using namespace Bse;
+  self->super.~SuperH();
 }
 
 void
-bst_super_shell_set_super (BstSuperShell *self,
-			   SfiProxy       super)
+bst_super_shell_set_super (BstSuperShell *self, Bse::SuperH super)
 {
   g_return_if_fail (BST_IS_SUPER_SHELL (self));
-  if (super)
-    g_return_if_fail (BSE_IS_SUPER (super));
 
   if (super != self->super)
     {
       if (self->super)
-	{
-          gtk_container_foreach (GTK_CONTAINER (self), (GtkCallback) gtk_widget_destroy, NULL);
-	  bse_item_unuse (self->super);
-	}
+        gtk_container_foreach (GTK_CONTAINER (self), (GtkCallback) gtk_widget_destroy, NULL);
       self->super = super;
       if (self->super)
-	{
-	  bse_item_use (self->super);
-          super_shell_add_views (self);
-	}
+        super_shell_add_views (self);
     }
 }
 
@@ -160,7 +155,7 @@ static void
 super_shell_build_song (BstSuperShell *self,
                         GtkNotebook   *notebook)
 {
-  SfiProxy song = self->super;
+  SfiProxy song = self->super.proxy_id();
 
   gtk_notebook_append_page (notebook,
                             bst_track_view_new (song),
@@ -189,7 +184,7 @@ static void
 super_shell_build_snet (BstSuperShell *self,
                         GtkNotebook   *notebook)
 {
-  Bse::SNetH snet = Bse::SNetH::down_cast (bse_server.from_proxy (self->super));
+  Bse::SNetH snet = Bse::SNetH::down_cast (self->super);
   GtkWidget *param_view;
 
   if (BST_DBG_EXT && snet.supports_user_synths())
@@ -211,7 +206,7 @@ static void
 super_shell_build_wave_repo (BstSuperShell *self,
                              GtkNotebook   *notebook)
 {
-  SfiProxy wrepo = self->super;
+  SfiProxy wrepo = self->super.proxy_id();
 
   gtk_notebook_append_page (notebook,
                             bst_wave_view_new (wrepo),
@@ -241,9 +236,9 @@ create_notebook (BstSuperShell *self)
 static void
 super_shell_add_views (BstSuperShell *self)
 {
-  if (BSE_IS_SONG (self->super))
+  if (BSE_IS_SONG (self->super.proxy_id()))
     super_shell_build_song (self, create_notebook (self));
-  else if (BSE_IS_WAVE_REPO (self->super))
+  else if (BSE_IS_WAVE_REPO (self->super.proxy_id()))
     super_shell_build_wave_repo (self, create_notebook (self));
   else /* BSE_IS_SNET (self->super) */
     super_shell_build_snet (self, create_notebook (self));
