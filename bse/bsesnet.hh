@@ -3,7 +3,6 @@
 #define	__BSE_SNET_H__
 
 #include	<bse/bsesuper.hh>
-#include	<bse/bseglobals.hh> /* FIXME */
 
 
 G_BEGIN_DECLS
