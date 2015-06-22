@@ -189,21 +189,22 @@ static void
 super_shell_build_snet (BstSuperShell *self,
                         GtkNotebook   *notebook)
 {
-  SfiProxy snet = self->super;
+  Bse::SNetH snet = Bse::SNetH::down_cast (bse_server.from_proxy (self->super));
   GtkWidget *param_view;
 
-  if (BST_DBG_EXT && bse_snet_supports_user_synths (snet))
+  if (BST_DBG_EXT && snet.supports_user_synths())
     gtk_notebook_append_page (notebook,
-                              gtk_widget_get_toplevel (bst_rack_view_new (snet)),
+                              gtk_widget_get_toplevel (bst_rack_view_new (snet.proxy_id())),
                               gxk_notebook_create_tabulator (_("Rack"), NULL, NULL));
-  if (bse_snet_supports_user_synths (snet) || BST_DBG_EXT)
+  if (snet.supports_user_synths() || BST_DBG_EXT)
     gtk_notebook_append_page (notebook,
-                              gtk_widget_get_toplevel (GTK_WIDGET (bst_snet_router_build_page (snet))),
+                              gtk_widget_get_toplevel (GTK_WIDGET (bst_snet_router_build_page (snet.proxy_id()))),
                               gxk_notebook_create_tabulator (_("Routing"), BST_STOCK_MESH, _("Add, edit and connect synthesizer mesh components")));
-  param_view = bst_param_view_new (snet);
+  param_view = bst_param_view_new (snet.proxy_id());
   gtk_notebook_append_page (notebook,
-                            bst_param_view_new (snet),
+                            bst_param_view_new (snet.proxy_id()),
                             gxk_notebook_create_tabulator (_("Properties"), BST_STOCK_PROPERTIES, _("Adjust overall synthesizer behaviour")));
+  (void) param_view;
 }
 
 static void

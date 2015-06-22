@@ -133,6 +133,11 @@ interface Container : Source {
 interface Super : Container {
 };
 
+/// Base type for all kinds of synthesis networks.
+interface SNet : Super {
+  bool supports_user_synths (); ///< Check whether users may edit synthesis modules of this network.
+};
+
 /// Projects support loading, saving, playback and act as containers for all other sound objects.
 interface Project : Container {
   void  change_name (String name); ///< Change a project name without recording undo steps.

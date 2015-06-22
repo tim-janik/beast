@@ -102,7 +102,18 @@ void             bse_snet_set_oport_dest        (BseSNet         *snet,
                                                  guint            istream,
                                                  BseTrans        *trans);
 
-
 G_END_DECLS
+
+namespace Bse {
+
+class SNetImpl : public SuperImpl, public virtual SNetIface {
+protected:
+  virtual              ~SNetImpl             ();
+public:
+  explicit              SNetImpl             (BseObject*);
+  virtual bool          supports_user_synths () override;
+};
+
+} // Bse
 
 #endif /* __BSE_SNET_H__ */
