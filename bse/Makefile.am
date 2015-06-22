@@ -300,7 +300,7 @@ noinst_DATA = bsehack.idl
 
 # == BSE IDL API (AIDA) ==
 AUXTYPES_PY = $(srcdir)/AuxTypes.py
-EXTRA_DIST += AuxTypes.py
+EXTRA_DIST += AuxTypes.py bseserverinsert.hh
 bseclientapi.hh: $(srcdir)/../bse/bseapi.idl $(AUXTYPES_PY)
 	$(AM_V_GEN)
 	$(Q) ${AIDACC} -x CxxStub -G macro=BSE_IDL -G clienthh -x $(AUXTYPES_PY) $< -o xgen-$(@F)
@@ -313,7 +313,8 @@ bseclientapi.cc: $(srcdir)/../bse/bseapi.idl $(AUXTYPES_PY)
 GENERATED += bseclientapi.cc
 bseserverapi.hh: $(srcdir)/bseapi.idl $(AUXTYPES_PY)
 	$(AM_V_GEN)
-	$(Q) ${AIDACC} -x CxxStub -G macro=BSE_IDL -G serverhh -x $(AUXTYPES_PY) $< -o xgen-$(@F)
+	$(Q) ${AIDACC} -x CxxStub -G macro=BSE_IDL -G serverhh -x $(AUXTYPES_PY) \
+	  --insertions $(srcdir)/bseserverinsert.hh $< -o xgen-$(@F)
 	$(Q) mv xgen-$(@F) $@
 GENERATED += bseserverapi.hh
 bseserverapi.cc: $(srcdir)/bseapi.idl $(AUXTYPES_PY)
