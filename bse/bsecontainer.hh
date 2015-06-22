@@ -105,7 +105,7 @@ G_END_DECLS
 
 namespace Bse {
 
-class ContainerImpl : public ItemImpl, public virtual ContainerIface {
+class ContainerImpl : public SourceImpl, public virtual ContainerIface {
 protected:
   virtual           ~ContainerImpl         ();
 public:

@@ -938,6 +938,8 @@ bse_object_new_valist (GType object_type, const gchar *first_property_name, va_l
     cxxo = new Bse::SuperImpl (object);
   else if (g_type_is_a (object_type, BSE_TYPE_CONTAINER))
     cxxo = new Bse::ContainerImpl (object);
+  else if (g_type_is_a (object_type, BSE_TYPE_SOURCE))
+    cxxo = new Bse::SourceImpl (object);
   else if (g_type_is_a (object_type, BSE_TYPE_ITEM))
     cxxo = new Bse::ItemImpl (object);
   else if (g_type_is_a (object_type, BSE_TYPE_OBJECT))

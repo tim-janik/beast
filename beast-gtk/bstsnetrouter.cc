@@ -160,7 +160,11 @@ bst_snet_router_update_links (BstSNetRouter   *self,
       guint j, n_joints = bse_source_ichannel_get_n_joints (csource->source, i);
       for (j = 0; j < n_joints; j++)
         {
-          SfiProxy osource = bse_source_ichannel_get_osource (csource->source, i, j);
+          Bse::ObjectH obj = bse_server.from_proxy (csource->source);
+          assert (obj != NULL);
+          Bse::SourceH isource = Bse::SourceH::down_cast (bse_server.from_proxy (csource->source));
+          assert (isource != NULL);
+          SfiProxy osource = isource.ichannel_get_osource (i, j).proxy_id();
           if (!osource)
             continue;
           guint ochannel = bse_source_ichannel_get_ochannel (csource->source, i, j);

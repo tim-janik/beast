@@ -493,7 +493,11 @@ bst_canvas_source_ichannel_free (BstCanvasSource *csource,
   if (bse_source_is_joint_ichannel_by_id (csource->source, ichannel))
     return TRUE;
   else
-    return bse_source_ichannel_get_osource (csource->source, ichannel, 0) == 0;
+    {
+      Bse::SourceH isource = Bse::SourceH::down_cast (bse_server.from_proxy (csource->source));
+      Bse::SourceH osource = isource.ichannel_get_osource (ichannel, 0);
+      return osource == NULL;
+    }
 }
 
 void

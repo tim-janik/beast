@@ -273,4 +273,16 @@ void    bse_source_probes_modules_changed       (BseSource      *source);
 
 G_END_DECLS
 
+namespace Bse {
+
+class SourceImpl : public ItemImpl, public virtual SourceIface {
+protected:
+  virtual             ~SourceImpl           ();
+public:
+  explicit             SourceImpl           (BseObject*);
+  virtual SourceIfaceP ichannel_get_osource (int input_channel, int input_joint) override;
+};
+
+} // Bse
+
 #endif /* __BSE_SOURCE_H__ */

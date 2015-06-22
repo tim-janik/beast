@@ -1352,7 +1352,7 @@ bse_container_debug_tree (BseContainer *container)
 namespace Bse {
 
 ContainerImpl::ContainerImpl (BseObject *bobj) :
-  ItemImpl (bobj)
+  SourceImpl (bobj)
 {}
 
 ContainerImpl::~ContainerImpl ()

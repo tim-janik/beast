@@ -119,8 +119,13 @@ interface Item : Object {
   Item common_ancestor (Item other);    ///< Find a common container (parent or grand-parent) of two items if any.
 };
 
+/// Base type for synthesis objects with input or output streams.
+interface Source : Item {
+  Source ichannel_get_osource (int32 input_channel, int32 input_joint); ///< Retrieve output module connected to a specific joint of an input channel.
+};
+
 /// Base type for objects that can be added to a container.
-interface Container : Item {
+interface Container : Source {
   Item lookup_item (String uname); ///< Find an immediate child of a container by name (unique per container child).
 };
 

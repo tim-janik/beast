@@ -606,8 +606,8 @@ bse_source_context_ids (BseSource *source,
 {
   guint *cids, i;
 
-  g_return_val_if_fail (BSE_IS_SOURCE (source), FALSE);
-  g_return_val_if_fail (n_ids != NULL, FALSE);
+  g_return_val_if_fail (BSE_IS_SOURCE (source), NULL);
+  g_return_val_if_fail (n_ids != NULL, NULL);
 
   cids = g_new (guint, BSE_SOURCE_N_CONTEXTS (source));
   for (i = 0; i < BSE_SOURCE_N_CONTEXTS (source); i++)
@@ -2061,3 +2061,29 @@ BSE_BUILTIN_TYPE (BseSource)
                                      __FILE__, __LINE__,
                                      &source_info);
 }
+
+namespace Bse {
+
+SourceImpl::SourceImpl (BseObject *bobj) :
+  ItemImpl (bobj)
+{}
+
+SourceImpl::~SourceImpl ()
+{}
+
+SourceIfaceP
+SourceImpl::ichannel_get_osource (int input_channel, int input_joint)
+{
+  BseSource *self = as<BseSource*>();
+  BseSourceInput *input = BSE_SOURCE_INPUT (self, input_channel);
+  BseSource *osource;
+  if (BSE_SOURCE_IS_JOINT_ICHANNEL (self, input_channel) && uint (input_joint) < input->jdata.n_joints)
+    osource = input->jdata.joints[input_joint].osource;
+  else if (input_joint < 1)
+    osource = input->idata.osource;
+  else
+    osource = NULL;
+  return osource ? shared_ptr_cast<SourceIface> (osource->as<SourceIface*>()) : SourceIfaceP();
+}
+
+} // Bse
