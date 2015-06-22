@@ -1025,7 +1025,8 @@ void CodeGeneratorCBase::printClientChoiceDefinitions()
 
       String mname = makeMixedName (ci->name);
       String lname = makeLowerName (ci->name);
-      printf("\ntypedef enum {\n");
+      printf("\n#ifndef SFIDL_SKIPDEF__%s\n", mname.c_str());
+      printf("typedef enum {\n");
       for (vector<ChoiceValue>::const_iterator vi = ci->contents.begin(); vi != ci->contents.end(); vi++)
 	{
 	  /* don't export server side assigned choice values to the client */
@@ -1033,6 +1034,7 @@ void CodeGeneratorCBase::printClientChoiceDefinitions()
 	  printf("  %s = %d,\n", ename.c_str(), vi->sequentialValue);
 	}
       printf("} %s;\n", mname.c_str());
+      printf("#endif // SFIDL_SKIPDEF__%s\n", mname.c_str());
     }
   printf("\n");
 }

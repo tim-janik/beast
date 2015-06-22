@@ -532,10 +532,12 @@ public:
           continue;
         nspace.setFromSymbol(ci->name);
         const char *name = nspace.printable_form (ci->name);
+        printf("#ifndef SFIDL_SKIPDEF__%s\n", name);
         printf ("enum %s {\n", name);
         for (vector<ChoiceValue>::const_iterator vi = ci->contents.begin(); vi != ci->contents.end(); vi++)
           printf ("  %s = %d,\n", pure_UPPER (vi->name), vi->value);
         printf ("};\n");
+        printf("#endif // SFIDL_SKIPDEF__%s\n", name);
       }
   }
   void
