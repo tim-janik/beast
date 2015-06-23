@@ -139,7 +139,7 @@ void
 bst_status_set_error (Bse::ErrorType error, const std::string &message)
 {
   if (error)
-    gxk_status_set (GXK_STATUS_ERROR, message.c_str(), bse_error_blurb (error));
+    gxk_status_set (GXK_STATUS_ERROR, message.c_str(), Bse::error_blurb (error));
   else
     gxk_status_set (GXK_STATUS_DONE, message.c_str(), NULL);
 }

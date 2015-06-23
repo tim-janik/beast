@@ -76,7 +76,7 @@ key_bindings_load_file (GtkWidget   *dialog,
   gxk_list_wrapper_notify_clear (GXK_LIST_WRAPPER (model));
   gxk_list_wrapper_notify_append (GXK_LIST_WRAPPER (model), kbinding->n_keys);
   if (error)
-    g_message ("failed to load \"%s\": %s", file, bse_error_blurb (error));
+    g_message ("failed to load \"%s\": %s", file, Bse::error_blurb (error));
 }
 
 static void

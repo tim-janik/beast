@@ -79,7 +79,7 @@ file_store_idle_handler (gpointer data)
       else
         {
           name = dsep ? dsep + 1 : filename;    /* fallback wave name */
-          loader = info->error ? bse_error_blurb (Bse::ErrorType (info->error)) : info->loader;
+          loader = info->error ? Bse::error_blurb (Bse::ErrorType (info->error)) : info->loader;
           guint l = strlen (filename);
           if (info->error == Bse::ERROR_FORMAT_UNKNOWN &&
               l >= 4 && strcasecmp (filename + l - 4, ".bse") == 0)

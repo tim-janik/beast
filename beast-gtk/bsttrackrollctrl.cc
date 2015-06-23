@@ -526,7 +526,7 @@ move_motion (BstTrackRollController *self,
 	  self->obj_tick = new_tick;
 	  gxk_status_set (GXK_STATUS_PROGRESS, action, NULL);
 	}
-      /* else gxk_status_set (GXK_STATUS_ERROR, "Move Part", bse_error_blurb (error)); */
+      /* else gxk_status_set (GXK_STATUS_ERROR, "Move Part", Bse::error_blurb (error)); */
       bse_item_ungroup_undo (drag->current_track);
     }
 }

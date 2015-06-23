@@ -64,6 +64,17 @@ bst_procedure_get_title (const gchar *procedure)
   return NULL;
 }
 
+namespace Bse {
+
+const char*
+error_blurb (Bse::ErrorType error_value)
+{
+  const Rapicorn::Aida::EnumValue *ev = Rapicorn::Aida::enum_info<Bse::ErrorType>().find_value (error_value);
+  return ev ? ev->blurb : NULL;
+}
+
+} // Bse
+
 
 /* --- generated code --- */
 #define BseErrorType Bse::ErrorType

@@ -40,4 +40,8 @@ const gchar*    bst_procedure_get_title         (const gchar    *procedure);
 
 G_END_DECLS
 
+namespace Bse {
+const char*     error_blurb (Bse::ErrorType error_value); ///< Retrieve the description of an error value
+} // Bse
+
 #endif /* __BST_BSE_UTILS_H__ */

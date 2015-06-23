@@ -256,7 +256,7 @@ main (int   argc,
 	      Bse::ErrorType error = bse_wave_repo_load_file (wrepo, argv[i]);
               bst_status_eprintf (error, _("Loading \"%s\""), argv[i]);
               if (error)
-                sfi_error (_("Failed to load wave file \"%s\": %s"), argv[i], bse_error_blurb (error));
+                sfi_error (_("Failed to load wave file \"%s\": %s"), argv[i], Bse::error_blurb (error));
 	    }
           else
 	    {
@@ -272,7 +272,7 @@ main (int   argc,
               else
                 {
 		  bse_server.destroy_project (project);
-                  sfi_error (_("Failed to load wave file \"%s\": %s"), argv[i], bse_error_blurb (error));
+                  sfi_error (_("Failed to load wave file \"%s\": %s"), argv[i], Bse::error_blurb (error));
                 }
 	    }
           continue;
@@ -284,7 +284,7 @@ main (int   argc,
           Bse::ErrorType error = bst_project_restore_from_file (project, argv[i], TRUE, TRUE);
           if (rewrite_bse_file)
             {
-              Rapicorn::printerr ("%s: loading: %s\n", argv[i], bse_error_blurb (error));
+              Rapicorn::printerr ("%s: loading: %s\n", argv[i], Bse::error_blurb (error));
               if (error)
                 exit (1);
               if (unlink (argv[i]) < 0)
@@ -293,7 +293,7 @@ main (int   argc,
                   exit (2);
                 }
               error = bse_project_store_bse (project.proxy_id(), 0, argv[i], TRUE);
-              Rapicorn::printerr ("%s: writing: %s\n", argv[i], bse_error_blurb (error));
+              Rapicorn::printerr ("%s: writing: %s\n", argv[i], Bse::error_blurb (error));
               if (error)
                 exit (3);
               exit (0);
@@ -308,13 +308,13 @@ main (int   argc,
           else
             bse_server.destroy_project (project);
           if (error)
-            sfi_error (_("Failed to load project \"%s\": %s"), argv[i], bse_error_blurb (error));
+            sfi_error (_("Failed to load project \"%s\": %s"), argv[i], Bse::error_blurb (error));
         }
       else
         {
           Bse::ErrorType error = bst_project_restore_from_file (app->project, argv[i], TRUE, FALSE);
           if (error)
-            sfi_error (_("Failed to merge project \"%s\": %s"), argv[i], bse_error_blurb (error));
+            sfi_error (_("Failed to merge project \"%s\": %s"), argv[i], Bse::error_blurb (error));
         }
     }
 
@@ -404,7 +404,7 @@ main (int   argc,
       gchar *file_name = BST_STRDUP_RC_FILE ();
       Bse::ErrorType error = bst_rc_dump (file_name);
       if (error)
-	g_warning ("failed to save rc-file \"%s\": %s", file_name, bse_error_blurb (error));
+	g_warning ("failed to save rc-file \"%s\": %s", file_name, Bse::error_blurb (error));
       g_free (file_name);
     }
 

@@ -493,7 +493,7 @@ store_bse_file (Bse::ProjectH project, SfiProxy super, const gchar *file_name, c
     {
       if (!want_overwrite)
         {
-          gchar *text = g_strdup_format (_("Failed to save\n`%s'\nto\n`%s':\n%s"), bse_item_get_name (project.proxy_id()), file_name, bse_error_blurb (error));
+          gchar *text = g_strdup_format (_("Failed to save\n`%s'\nto\n`%s':\n%s"), bse_item_get_name (project.proxy_id()), file_name, Bse::error_blurb (error));
           GtkWidget *choice = bst_choice_dialog_createv (BST_CHOICE_TITLE (title),
                                                          BST_CHOICE_TEXT (text),
                                                          BST_CHOICE_D (1, BST_STOCK_OVERWRITE, NONE),
@@ -519,7 +519,7 @@ store_bse_file (Bse::ProjectH project, SfiProxy super, const gchar *file_name, c
           if (error != Bse::ERROR_NONE)
             {
               unlink (temp_file); /* error != Bse::ERROR_FILE_EXISTS */
-              msg = g_strdup_format (_("Failed to save to file\n`%s'\ndue to:\n%s"), file_name, bse_error_blurb (error));
+              msg = g_strdup_format (_("Failed to save to file\n`%s'\ndue to:\n%s"), file_name, Bse::error_blurb (error));
             }
           else if (rename (temp_file, file_name) < 0)
             {
@@ -533,7 +533,7 @@ store_bse_file (Bse::ProjectH project, SfiProxy super, const gchar *file_name, c
         handled = FALSE;        /* exists && !overwrite */
     }
   else if (error != Bse::ERROR_NONE)
-    msg = g_strdup_format (_("Failed to save to file\n`%s'\ndue to:\n%s"), file_name, bse_error_blurb (error));
+    msg = g_strdup_format (_("Failed to save to file\n`%s'\ndue to:\n%s"), file_name, Bse::error_blurb (error));
   /* report errors */
   if (msg)
     {
@@ -733,7 +733,7 @@ bst_file_dialog_load_wave (BstFileDialog *self,
   error = bse_wave_repo_load_file (self->wave_repo, file_name);
   bst_status_eprintf (error, _("Loading wave `%s'"), file_name);
   if (error)
-    sfi_error (_("Failed to load wave file \"%s\": %s"), file_name, bse_error_blurb (error));
+    sfi_error (_("Failed to load wave file \"%s\": %s"), file_name, Bse::error_blurb (error));
 
   return TRUE;
 }
