@@ -41,13 +41,13 @@ device_split_args (const char   *arg_string,
   return strv;
 }
 
-static BseErrorType
+static Bse::ErrorType
 device_open_args (BseDevice      *self,
                   gboolean        need_readable,
                   gboolean        need_writable,
                   const char     *arg_string)
 {
-  BseErrorType error;
+  Bse::ErrorType error;
   uint n;
   char **args = device_split_args (arg_string, &n);
   error = BSE_DEVICE_GET_CLASS (self)->open (self,
@@ -58,35 +58,35 @@ device_open_args (BseDevice      *self,
 
   if (!error)
     {
-      g_return_val_if_fail (BSE_DEVICE_OPEN (self), BSE_ERROR_INTERNAL);
-      g_return_val_if_fail (self->open_device_name != NULL, BSE_ERROR_INTERNAL); /* bse_device_set_opened() was not called */
+      g_return_val_if_fail (BSE_DEVICE_OPEN (self), Bse::ERROR_INTERNAL);
+      g_return_val_if_fail (self->open_device_name != NULL, Bse::ERROR_INTERNAL); /* bse_device_set_opened() was not called */
       if (!self->open_device_args)
         self->open_device_args = g_strdup (arg_string);
       if (BSE_DEVICE_GET_CLASS (self)->post_open)
         BSE_DEVICE_GET_CLASS (self)->post_open (self);
     }
   else
-    g_return_val_if_fail (!BSE_DEVICE_OPEN (self), BSE_ERROR_INTERNAL);
+    g_return_val_if_fail (!BSE_DEVICE_OPEN (self), Bse::ERROR_INTERNAL);
 
   if (!error && ((need_readable && !BSE_DEVICE_READABLE (self)) ||
                  (need_writable && !BSE_DEVICE_WRITABLE (self))))
     {
       bse_device_close (self);
-      error = BSE_ERROR_DEVICE_NOT_AVAILABLE;
+      error = Bse::ERROR_DEVICE_NOT_AVAILABLE;
     }
 
   return error;
 }
 
-BseErrorType
+Bse::ErrorType
 bse_device_open (BseDevice      *self,
                  gboolean        need_readable,
                  gboolean        need_writable,
                  const char     *arg_string)
 {
-  g_return_val_if_fail (BSE_IS_DEVICE (self), BSE_ERROR_INTERNAL);
-  g_return_val_if_fail (!BSE_DEVICE_OPEN (self), BSE_ERROR_INTERNAL);
-  BseErrorType error = BSE_ERROR_DEVICE_NOT_AVAILABLE;
+  g_return_val_if_fail (BSE_IS_DEVICE (self), Bse::ERROR_INTERNAL);
+  g_return_val_if_fail (!BSE_DEVICE_OPEN (self), Bse::ERROR_INTERNAL);
+  Bse::ErrorType error = Bse::ERROR_DEVICE_NOT_AVAILABLE;
   if (arg_string)
     error = device_open_args (self, need_readable, need_writable, arg_string);
   else
@@ -375,10 +375,10 @@ bse_device_open_auto (GType           base_type,
                       void          (*request_callback) (BseDevice *device,
                                                          void      *data),
                       void           *data,
-                      BseErrorType   *errorp)
+                      Bse::ErrorType   *errorp)
 {
   if (errorp)
-    *errorp = BSE_ERROR_DEVICE_NOT_AVAILABLE;
+    *errorp = Bse::ERROR_DEVICE_NOT_AVAILABLE;
   BseDevice *device = NULL;
   SfiRing *ring, *class_list = device_classes_list (base_type, 0);
   class_list = sfi_ring_sort (class_list, device_classes_prio_cmp, NULL);
@@ -388,7 +388,7 @@ bse_device_open_auto (GType           base_type,
       device = (BseDevice*) bse_object_new (G_OBJECT_CLASS_TYPE (klass), NULL);
       if (request_callback)
         request_callback (device, data);
-      BseErrorType error = bse_device_open (device, need_readable, need_writable, NULL);
+      Bse::ErrorType error = bse_device_open (device, need_readable, need_writable, NULL);
       if (errorp)
         *errorp = error;
       if (BSE_DEVICE_OPEN (device))
@@ -419,10 +419,10 @@ bse_device_open_best (GType           base_type,
                       void          (*request_callback) (BseDevice *device,
                                                          void      *data),
                       void           *data,
-                      BseErrorType   *errorp)
+                      Bse::ErrorType   *errorp)
 {
   if (errorp)
-    *errorp = BSE_ERROR_DEVICE_NOT_AVAILABLE;
+    *errorp = Bse::ERROR_DEVICE_NOT_AVAILABLE;
   if (!devices)
     devices = auto_ring();
   BseDevice *device = NULL;
@@ -453,7 +453,7 @@ bse_device_open_best (GType           base_type,
           device = (BseDevice*) bse_object_new (G_OBJECT_CLASS_TYPE (klass), NULL);
           if (request_callback)
             request_callback (device, data);
-          BseErrorType error = bse_device_open (device, need_readable, need_writable, args ? args + 1 : NULL);
+          Bse::ErrorType error = bse_device_open (device, need_readable, need_writable, args ? args + 1 : NULL);
           if (errorp)
             *errorp = error;
           if (!error)

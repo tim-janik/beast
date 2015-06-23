@@ -38,7 +38,7 @@ BODY (BseProcedureClass *proc,
   if (!BSE_IS_TRACK (self) || !BSE_IS_PART (part) ||
       !BSE_ITEM (self)->parent ||
       BSE_ITEM (self)->parent != BSE_ITEM (part)->parent)
-    return BSE_ERROR_PROC_PARAM_INVAL;
+    return Bse::ERROR_PROC_PARAM_INVAL;
 
   /* action */
   id = bse_track_insert_part (self, tick, part);
@@ -51,7 +51,7 @@ BODY (BseProcedureClass *proc,
   /* set output parameters */
   g_value_set_int (out_values++, id);
 
-  return BSE_ERROR_NONE;
+  return Bse::ERROR_NONE;
 }
 
 METHOD (BseTrack, remove-tick) {
@@ -72,7 +72,7 @@ BODY (BseProcedureClass *proc,
 
   /* check parameters */
   if (!BSE_IS_TRACK (self))
-    return BSE_ERROR_PROC_PARAM_INVAL;
+    return Bse::ERROR_PROC_PARAM_INVAL;
 
   /* action */
   entry = bse_track_lookup_tick (self, tick);
@@ -82,7 +82,7 @@ BODY (BseProcedureClass *proc,
       bse_track_remove_tick (self, tick);
     }
 
-  return BSE_ERROR_NONE;
+  return Bse::ERROR_NONE;
 }
 
 METHOD (BseTrack, remove-link) {
@@ -103,16 +103,16 @@ BODY (BseProcedureClass *proc,
 
   /* check parameters */
   if (!BSE_IS_TRACK (self))
-    return BSE_ERROR_PROC_PARAM_INVAL;
+    return Bse::ERROR_PROC_PARAM_INVAL;
   entry = bse_track_find_link (self, id);
   if (!entry)
-    return BSE_ERROR_PROC_PARAM_INVAL;
+    return Bse::ERROR_PROC_PARAM_INVAL;
 
   /* action */
   bse_item_push_undo_proc (self, "insert-part", entry->tick, entry->part);
   bse_track_remove_tick (self, entry->tick);
 
-  return BSE_ERROR_NONE;
+  return Bse::ERROR_NONE;
 }
 
 METHOD (BseTrack, list-parts) {
@@ -131,12 +131,12 @@ BODY (BseProcedureClass *proc,
 
   /* check parameters */
   if (!BSE_IS_TRACK (self))
-    return BSE_ERROR_PROC_PARAM_INVAL;
+    return Bse::ERROR_PROC_PARAM_INVAL;
 
   /* action */
   bse_value_take_boxed (out_values++, bse_track_list_parts (self));
 
-  return BSE_ERROR_NONE;
+  return Bse::ERROR_NONE;
 }
 
 METHOD (BseTrack, list-parts-uniq) {
@@ -155,7 +155,7 @@ BODY (BseProcedureClass *proc,
 
   /* check parameters */
   if (!BSE_IS_TRACK (self))
-    return BSE_ERROR_PROC_PARAM_INVAL;
+    return Bse::ERROR_PROC_PARAM_INVAL;
 
   /* action */
   BseTrackPartSeq *tpseq = bse_track_list_parts (self);
@@ -169,7 +169,7 @@ BODY (BseProcedureClass *proc,
   bse_value_take_boxed (out_values++, bse_item_seq_from_ring (ring));
   sfi_ring_free (ring);
 
-  return BSE_ERROR_NONE;
+  return Bse::ERROR_NONE;
 }
 
 METHOD (BseTrack, get-part) {
@@ -192,13 +192,13 @@ BODY (BseProcedureClass *proc,
 
   /* check parameters */
   if (!BSE_IS_TRACK (self))
-    return BSE_ERROR_PROC_PARAM_INVAL;
+    return Bse::ERROR_PROC_PARAM_INVAL;
 
   /* action */
   entry = bse_track_lookup_tick (self, tick);
   bse_value_set_object (out_values++, entry ? entry->part : NULL);
 
-  return BSE_ERROR_NONE;
+  return Bse::ERROR_NONE;
 }
 
 METHOD (BseTrack, get-timing) {
@@ -218,7 +218,7 @@ METHOD (BseTrack, get-timing) {
 
   /* check parameters */
   if (!BSE_IS_TRACK (self))
-    return BSE_ERROR_PROC_PARAM_INVAL;
+    return Bse::ERROR_PROC_PARAM_INVAL;
 
   /* action */
   parent = BSE_ITEM (self)->parent;
@@ -230,7 +230,7 @@ METHOD (BseTrack, get-timing) {
   /* set output parameters */
   bse_value_set_boxed (out_values++, &timing);
 
-  return BSE_ERROR_NONE;
+  return Bse::ERROR_NONE;
 }
 
 METHOD (BseTrack, get-output-source) {
@@ -250,7 +250,7 @@ METHOD (BseTrack, get-output-source) {
 
   /* check parameters */
   if (!BSE_IS_TRACK (track))
-    return BSE_ERROR_PROC_PARAM_INVAL;
+    return Bse::ERROR_PROC_PARAM_INVAL;
 
   /* action */
   child = bse_track_get_output (track);
@@ -258,7 +258,7 @@ METHOD (BseTrack, get-output-source) {
   /* set output parameters */
   bse_value_set_object (out_values++, child);
 
-  return BSE_ERROR_NONE;
+  return Bse::ERROR_NONE;
 }
 
 METHOD (BseTrack, get-last-tick) {
@@ -276,12 +276,12 @@ METHOD (BseTrack, get-last-tick) {
 
   /* check parameters */
   if (!BSE_IS_TRACK (self))
-    return BSE_ERROR_PROC_PARAM_INVAL;
+    return Bse::ERROR_PROC_PARAM_INVAL;
 
   /* set output parameters */
   sfi_value_set_int (out_values++, bse_track_get_last_tick (self));
 
-  return BSE_ERROR_NONE;
+  return Bse::ERROR_NONE;
 }
 
 METHOD (BseTrack, ensure-output) {
@@ -289,18 +289,18 @@ METHOD (BseTrack, ensure-output) {
   IN    = bse_param_spec_object ("track", "Track", NULL,
                                  BSE_TYPE_TRACK, SFI_PARAM_STANDARD);
   OUT   = bse_param_spec_genum ("error", NULL, NULL,
-                                BSE_TYPE_ERROR_TYPE, BSE_ERROR_NONE, SFI_PARAM_STANDARD);
+                                BSE_TYPE_ERROR_TYPE, Bse::ERROR_NONE, SFI_PARAM_STANDARD);
 } BODY (BseProcedureClass *proc,
         const GValue      *in_values,
         GValue            *out_values)
 {
   /* extract parameter values */
   BseTrack *self = (BseTrack*) bse_value_get_object (in_values++);
-  BseErrorType error = BSE_ERROR_NONE;
+  Bse::ErrorType error = Bse::ERROR_NONE;
 
   /* check parameters */
   if (!BSE_IS_TRACK (self))
-    return BSE_ERROR_PROC_PARAM_INVAL;
+    return Bse::ERROR_PROC_PARAM_INVAL;
 
   /* action */
   BseItem *parent = BSE_ITEM (self)->parent;
@@ -319,5 +319,5 @@ METHOD (BseTrack, ensure-output) {
   /* set output parameters */
   g_value_set_enum (out_values++, error);
 
-  return BSE_ERROR_NONE;
+  return Bse::ERROR_NONE;
 }

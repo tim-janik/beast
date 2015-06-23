@@ -44,11 +44,11 @@ bse_midi_device_oss_init (BseMidiDeviceOSS *oss)
 {
   oss->device_name = g_strdup (BSE_MIDI_DEVICE_CONF_OSS);
 }
-static BseErrorType
+static Bse::ErrorType
 check_device_usage (const char *name,
                     const char *check_mode)
 {
-  BseErrorType error = gsl_file_check (name, check_mode);
+  Bse::ErrorType error = gsl_file_check (name, check_mode);
   if (!error)
     {
       errno = 0;
@@ -58,7 +58,7 @@ check_device_usage (const char *name,
        * might be wrong and the device may be busy.
        */
       if (errno == ENODEV)
-        error = BSE_ERROR_DEVICE_NOT_AVAILABLE;
+        error = Bse::ERROR_DEVICE_NOT_AVAILABLE;
       if (fd >= 0)
         close (fd);
     }
@@ -77,17 +77,17 @@ bse_midi_device_oss_list_devices (BseDevice *device)
       char *dname = g_strconcat (BSE_MIDI_DEVICE_OSS (device)->device_name, postfixes[i], NULL);
       if (!birnet_file_equals (last, dname))
         {
-          if (check_device_usage (dname, "crw") == BSE_ERROR_NONE)
+          if (check_device_usage (dname, "crw") == Bse::ERROR_NONE)
             ring = sfi_ring_append (ring,
                                     bse_device_entry_new (device,
                                                           g_strdup_format ("%s,rw", dname),
                                                           g_strdup_format ("%s (read-write)", dname)));
-          else if (check_device_usage (dname, "cr") == BSE_ERROR_NONE)
+          else if (check_device_usage (dname, "cr") == Bse::ERROR_NONE)
             ring = sfi_ring_append (ring,
                                     bse_device_entry_new (device,
                                                           g_strdup_format ("%s,ro", dname),
                                                           g_strdup_format ("%s (read only)", dname)));
-          else if (check_device_usage (dname, "cw") == BSE_ERROR_NONE)
+          else if (check_device_usage (dname, "cw") == Bse::ERROR_NONE)
             ring = sfi_ring_append (ring,
                                     bse_device_entry_new (device,
                                                           g_strdup_format ("%s,wo", dname),
@@ -102,7 +102,7 @@ bse_midi_device_oss_list_devices (BseDevice *device)
   return ring;
 }
 
-static BseErrorType
+static Bse::ErrorType
 bse_midi_device_oss_open (BseDevice     *device,
                           gboolean       require_readable,
                           gboolean       require_writable,
@@ -129,7 +129,7 @@ bse_midi_device_oss_open (BseDevice     *device,
   oss->fd = -1;
 
   /* try open */
-  BseErrorType error;
+  Bse::ErrorType error;
   int fd = -1;
   handle->readable = (omode & O_RDWR) == O_RDWR || (omode & O_RDONLY) == O_RDONLY;
   handle->writable = (omode & O_RDWR) == O_RDWR || (omode & O_WRONLY) == O_WRONLY;
@@ -148,10 +148,10 @@ bse_midi_device_oss_open (BseDevice     *device,
     {
       oss->fd = fd;
       /* try setup */
-      error = BSE_ERROR_NONE;
+      error = Bse::ERROR_NONE;
     }
   else
-    error = bse_error_from_errno (errno, BSE_ERROR_FILE_OPEN_FAILED);
+    error = bse_error_from_errno (errno, Bse::ERROR_FILE_OPEN_FAILED);
 
   /* setup MIDI handle or shutdown */
   if (!error)

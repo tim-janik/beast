@@ -43,7 +43,7 @@ struct BseWaveClass : BseSourceClass
 {};
 
 void		bse_wave_clear                  (BseWave	*wave);
-BseErrorType	bse_wave_load_wave_file		(BseWave	*wave,
+Bse::ErrorType	bse_wave_load_wave_file		(BseWave	*wave,
 						 const gchar	*file_name,
 						 const gchar	*wave_name,
 						 BseFreqArray	*list_array,

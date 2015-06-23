@@ -125,7 +125,7 @@ gsl_data_find_loop5 (GslDataHandle     *dhandle,
   config->n_details = 0;
 
   /* check out data handle */
-  if (gsl_data_handle_open (dhandle) != BSE_ERROR_NONE)
+  if (gsl_data_handle_open (dhandle) != Bse::ERROR_NONE)
     return FALSE;
   dhandle_n_values = gsl_data_handle_n_values (dhandle);
 
@@ -272,7 +272,7 @@ gsl_data_find_loop4 (GslDataHandle     *dhandle,
   config->n_details = 0;
 
   /* check out data handle */
-  if (gsl_data_handle_open (dhandle) != BSE_ERROR_NONE)
+  if (gsl_data_handle_open (dhandle) != Bse::ERROR_NONE)
     return FALSE;
   dhandle_n_values = gsl_data_handle_n_values (dhandle);
 
@@ -387,7 +387,7 @@ gsl_data_find_loop3 (GslDataHandle     *dhandle,
   g_return_val_if_fail (config != NULL, FALSE);
   config->n_details = 0;
 
-  if (gsl_data_handle_open (dhandle) != BSE_ERROR_NONE)
+  if (gsl_data_handle_open (dhandle) != Bse::ERROR_NONE)
     return FALSE;
   dhandle_n_values = gsl_data_handle_n_values (dhandle);
   config->block_start = CLAMP (config->block_start, 0, dhandle_n_values - 1);
@@ -452,7 +452,7 @@ gsl_data_find_loop2 (GslDataHandle     *dhandle,
   g_return_val_if_fail (config != NULL, FALSE);
   config->n_details = 0;
 
-  if (gsl_data_handle_open (dhandle) != BSE_ERROR_NONE)
+  if (gsl_data_handle_open (dhandle) != Bse::ERROR_NONE)
     return FALSE;
   dhandle_n_values = gsl_data_handle_n_values (dhandle);
   config->block_start = CLAMP (config->block_start, 0, dhandle_n_values - 1);
@@ -636,7 +636,7 @@ gsl_data_find_loop1 (GslDataHandle    *dhandle,
   g_return_val_if_fail (config != NULL, FALSE);
   config->n_details = 0;
 
-  if (gsl_data_handle_open (dhandle) != BSE_ERROR_NONE)
+  if (gsl_data_handle_open (dhandle) != Bse::ERROR_NONE)
     return FALSE;
   dhandle_n_values = gsl_data_handle_n_values (dhandle);
   config->block_start = CLAMP (config->block_start, 0, dhandle_n_values - 1);
@@ -858,7 +858,7 @@ gsl_data_find_loop0 (GslDataHandle         *dhandle,
   g_return_val_if_fail (loop_end_p != NULL, 0);
   g_return_val_if_fail (cfg->min_loop >= 1, 0);
 
-  if (gsl_data_handle_open (dhandle) != BSE_ERROR_NONE)
+  if (gsl_data_handle_open (dhandle) != Bse::ERROR_NONE)
     return 0;
   dhandle_n_values = gsl_data_handle_n_values (dhandle);
 

@@ -487,7 +487,7 @@ compute_missing_supers (BseProject *self,
   return targets;
 }
 
-BseErrorType
+Bse::ErrorType
 bse_project_store_bse (BseProject  *self,
                        BseSuper    *super,
 		       const gchar *bse_file,
@@ -499,17 +499,17 @@ bse_project_store_bse (BseProject  *self,
   guint l, flags;
   gint fd;
 
-  g_return_val_if_fail (BSE_IS_PROJECT (self), BSE_ERROR_INTERNAL);
+  g_return_val_if_fail (BSE_IS_PROJECT (self), Bse::ERROR_INTERNAL);
   if (super)
     {
-      g_return_val_if_fail (BSE_IS_SUPER (super), BSE_ERROR_INTERNAL);
-      g_return_val_if_fail (BSE_ITEM (super)->parent == BSE_ITEM (self), BSE_ERROR_INTERNAL);
+      g_return_val_if_fail (BSE_IS_SUPER (super), Bse::ERROR_INTERNAL);
+      g_return_val_if_fail (BSE_ITEM (super)->parent == BSE_ITEM (self), Bse::ERROR_INTERNAL);
     }
-  g_return_val_if_fail (bse_file != NULL, BSE_ERROR_INTERNAL);
+  g_return_val_if_fail (bse_file != NULL, Bse::ERROR_INTERNAL);
 
   fd = open (bse_file, O_WRONLY | O_CREAT | O_EXCL, 0666);
   if (fd < 0)
-    return bse_error_from_errno (errno, BSE_ERROR_FILE_OPEN_FAILED);
+    return bse_error_from_errno (errno, Bse::ERROR_FILE_OPEN_FAILED);
 
   storage = (BseStorage*) bse_object_new (BSE_TYPE_STORAGE, NULL);
   flags = 0;
@@ -534,27 +534,27 @@ bse_project_store_bse (BseProject  *self,
   while (l < 0 && errno == EINTR);
   g_free (string);
 
-  BseErrorType error = bse_storage_flush_fd (storage, fd);
-  if (close (fd) < 0 && error == BSE_ERROR_NONE)
-    error = bse_error_from_errno (errno, BSE_ERROR_FILE_WRITE_FAILED);
+  Bse::ErrorType error = bse_storage_flush_fd (storage, fd);
+  if (close (fd) < 0 && error == Bse::ERROR_NONE)
+    error = bse_error_from_errno (errno, Bse::ERROR_FILE_WRITE_FAILED);
   bse_storage_reset (storage);
   g_object_unref (storage);
 
   return error;
 }
 
-BseErrorType
+Bse::ErrorType
 bse_project_restore (BseProject *self,
 		     BseStorage *storage)
 {
   GScanner *scanner;
   GTokenType expected_token = G_TOKEN_NONE;
 
-  g_return_val_if_fail (BSE_IS_PROJECT (self), BSE_ERROR_INTERNAL);
-  g_return_val_if_fail (BSE_IS_STORAGE (storage), BSE_ERROR_INTERNAL);
+  g_return_val_if_fail (BSE_IS_PROJECT (self), Bse::ERROR_INTERNAL);
+  g_return_val_if_fail (BSE_IS_STORAGE (storage), Bse::ERROR_INTERNAL);
 
   scanner = bse_storage_get_scanner (storage);
-  g_return_val_if_fail (scanner != NULL, BSE_ERROR_INTERNAL);
+  g_return_val_if_fail (scanner != NULL, Bse::ERROR_INTERNAL);
 
   g_object_ref (self);
 
@@ -578,8 +578,8 @@ bse_project_restore (BseProject *self,
   g_object_unref (self);
 
   return (scanner->parse_errors >= scanner->max_parse_errors ?
-	  BSE_ERROR_PARSE_ERROR :
-	  BSE_ERROR_NONE);
+	  Bse::ERROR_PARSE_ERROR :
+	  Bse::ERROR_NONE);
 }
 
 BseObject*
@@ -679,7 +679,7 @@ bse_project_create_intern_synth (BseProject  *self,
   if (bse_synth)
     {
       BseStorage *storage = (BseStorage*) bse_object_new (BSE_TYPE_STORAGE, NULL);
-      BseErrorType error = BSE_ERROR_NONE;
+      Bse::ErrorType error = Bse::ERROR_NONE;
       StorageTrap strap = { 0, TRUE, }, *old_strap = (StorageTrap*) g_object_get_qdata ((GObject*) self, quark_storage_trap);
       bse_storage_input_text (storage, bse_synth, "<builtin-lib>");
       g_object_set_qdata ((GObject*) self, quark_storage_trap, &strap);
@@ -693,7 +693,7 @@ bse_project_create_intern_synth (BseProject  *self,
       g_free (bse_synth);
       if (error || !strap.items)
 	g_warning ("failed to create internal synth \"%s\": %s",
-		   synth_name, bse_error_blurb (error ? error : BSE_ERROR_NO_ENTRY));
+		   synth_name, bse_error_blurb (error ? error : Bse::ERROR_NO_ENTRY));
       else
 	synth = (BseItem*) strap.items->data;
       g_slist_free (strap.items);
@@ -788,19 +788,19 @@ bse_project_keep_activated (BseProject *self,
     }
 }
 
-BseErrorType
+Bse::ErrorType
 bse_project_activate (BseProject *self)
 {
-  BseErrorType error;
+  Bse::ErrorType error;
   BseTrans *trans;
   GSList *slist;
 
-  g_return_val_if_fail (BSE_IS_PROJECT (self), BSE_ERROR_INTERNAL);
+  g_return_val_if_fail (BSE_IS_PROJECT (self), Bse::ERROR_INTERNAL);
 
   if (self->state != BSE_PROJECT_INACTIVE)
-    return BSE_ERROR_NONE;
+    return Bse::ERROR_NONE;
 
-  g_return_val_if_fail (BSE_SOURCE_PREPARED (self) == FALSE, BSE_ERROR_INTERNAL);
+  g_return_val_if_fail (BSE_SOURCE_PREPARED (self) == FALSE, Bse::ERROR_INTERNAL);
 
   error = bse_server_open_devices (bse_server_get ());
   if (error)
@@ -827,7 +827,7 @@ bse_project_activate (BseProject *self)
     }
   bse_trans_commit (trans);
   bse_project_state_changed (self, BSE_PROJECT_ACTIVE);
-  return BSE_ERROR_NONE;
+  return Bse::ERROR_NONE;
 }
 
 void
@@ -986,7 +986,7 @@ ProjectImpl::play ()
 {
   BseProject *self = as<BseProject*>();
   BseProjectState state_before = self->state;
-  BseErrorType error = bse_project_activate (self);
+  Bse::ErrorType error = bse_project_activate (self);
   if (!error)
     {
       if (self->state == BSE_PROJECT_PLAYING)
@@ -1006,7 +1006,7 @@ ProjectImpl::activate ()
 {
   BseProject *self = as<BseProject*>();
   BseProjectState state_before = self->state;
-  BseErrorType error = bse_project_activate (self);
+  Bse::ErrorType error = bse_project_activate (self);
   if (state_before == BSE_PROJECT_INACTIVE && self->state != BSE_PROJECT_INACTIVE)
     {
       // some things work only (can only be undone) in deactivated projects
@@ -1176,7 +1176,7 @@ ErrorType
 ProjectImpl::import_midi_file (const String &file_name)
 {
   BseProject *self = as<BseProject*>();
-  BseErrorType error = BSE_ERROR_NONE;
+  Bse::ErrorType error = Bse::ERROR_NONE;
   BseMidiFile *smf = bse_midi_file_load (file_name.c_str(), &error);
   if (!error)
     {
@@ -1201,7 +1201,7 @@ ErrorType
 ProjectImpl::restore_from_file (const String &file_name)
 {
   BseProject *self = as<BseProject*>();
-  BseErrorType error;
+  Bse::ErrorType error;
   if (!self->in_undo && !self->in_redo)
     {
       BseStorage *storage = (BseStorage*) bse_object_new (BSE_TYPE_STORAGE, NULL);
@@ -1213,7 +1213,7 @@ ProjectImpl::restore_from_file (const String &file_name)
       bse_project_clear_undo (self);
     }
   else
-    error = BSE_ERROR_PROC_BUSY;
+    error = Bse::ERROR_PROC_BUSY;
   return Bse::ErrorType (error);
 }
 

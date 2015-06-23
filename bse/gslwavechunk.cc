@@ -661,23 +661,23 @@ gsl_wave_chunk_unref (GslWaveChunk *wchunk)
     }
 }
 
-BseErrorType
+Bse::ErrorType
 gsl_wave_chunk_open (GslWaveChunk *wchunk)
 {
-  g_return_val_if_fail (wchunk != NULL, BSE_ERROR_INTERNAL);
-  g_return_val_if_fail (wchunk->ref_count > 0, BSE_ERROR_INTERNAL);
+  g_return_val_if_fail (wchunk != NULL, Bse::ERROR_INTERNAL);
+  g_return_val_if_fail (wchunk->ref_count > 0, Bse::ERROR_INTERNAL);
 
   if (wchunk->open_count == 0)
     {
-      BseErrorType error;
+      Bse::ErrorType error;
 
       error = gsl_data_handle_open (wchunk->dcache->dhandle);
-      if (error != BSE_ERROR_NONE)
+      if (error != Bse::ERROR_NONE)
 	return error;
       if (gsl_data_handle_n_values (wchunk->dcache->dhandle) < gsl_data_handle_n_channels (wchunk->dcache->dhandle))
 	{
 	  gsl_data_handle_close (wchunk->dcache->dhandle);
-	  return BSE_ERROR_FILE_EMPTY;
+	  return Bse::ERROR_FILE_EMPTY;
 	}
       wchunk->mix_freq = gsl_data_handle_mix_freq (wchunk->dcache->dhandle);
       wchunk->osc_freq = gsl_data_handle_osc_freq (wchunk->dcache->dhandle);
@@ -689,7 +689,7 @@ gsl_wave_chunk_open (GslWaveChunk *wchunk)
       wchunk->fine_tune_factor = bse_cent_tune (gsl_data_handle_fine_tune (wchunk->dcache->dhandle));
       gsl_data_cache_open (wchunk->dcache);
       gsl_data_handle_close (wchunk->dcache->dhandle);
-      g_return_val_if_fail (wchunk->dcache->padding >= wchunk->n_pad_values, BSE_ERROR_INTERNAL);
+      g_return_val_if_fail (wchunk->dcache->padding >= wchunk->n_pad_values, Bse::ERROR_INTERNAL);
       wchunk->open_count++;
       wchunk->ref_count++;
       wave_chunk_setup_loop (wchunk);
@@ -697,7 +697,7 @@ gsl_wave_chunk_open (GslWaveChunk *wchunk)
     }
   else
     wchunk->open_count++;
-  return BSE_ERROR_NONE;
+  return Bse::ERROR_NONE;
 }
 
 void

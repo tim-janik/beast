@@ -43,7 +43,7 @@ BODY (BseProcedureClass *proc,
 
   /* check parameters */
   if (!BSE_IS_PART (self))
-    return BSE_ERROR_PROC_PARAM_INVAL;
+    return Bse::ERROR_PROC_PARAM_INVAL;
 
   /* action */
   ustack = bse_item_undo_open (self, "insert-note-auto");
@@ -55,7 +55,7 @@ BODY (BseProcedureClass *proc,
   /* set output parameters */
   sfi_value_set_int (out_values++, id);
 
-  return BSE_ERROR_NONE;
+  return Bse::ERROR_NONE;
 }
 
 METHOD (BsePart, insert-note) {
@@ -94,7 +94,7 @@ BODY (BseProcedureClass *proc,
 
   /* check parameters */
   if (!BSE_IS_PART (self))
-    return BSE_ERROR_PROC_PARAM_INVAL;
+    return Bse::ERROR_PROC_PARAM_INVAL;
 
   /* action */
   ustack = bse_item_undo_open (self, "insert-note");
@@ -106,7 +106,7 @@ BODY (BseProcedureClass *proc,
   /* set output parameters */
   sfi_value_set_int (out_values++, id);
 
-  return BSE_ERROR_NONE;
+  return Bse::ERROR_NONE;
 }
 
 METHOD (BsePart, insert-control) {
@@ -138,7 +138,7 @@ BODY (BseProcedureClass *proc,
 
   /* check parameters */
   if (!BSE_IS_PART (self))
-    return BSE_ERROR_PROC_PARAM_INVAL;
+    return Bse::ERROR_PROC_PARAM_INVAL;
 
   /* action */
   ustack = bse_item_undo_open (self, "insert-event");
@@ -150,7 +150,7 @@ BODY (BseProcedureClass *proc,
   /* set output parameters */
   sfi_value_set_int (out_values++, id);
 
-  return BSE_ERROR_NONE;
+  return Bse::ERROR_NONE;
 }
 
 METHOD (BsePart, change-note) {
@@ -170,7 +170,7 @@ METHOD (BsePart, change-note) {
 			  1.0, 0, 1.0, 0.01,
 			  SFI_PARAM_STANDARD ":scale");
   OUT   = bse_param_spec_genum ("error", "Error", NULL,
-				BSE_TYPE_ERROR_TYPE, BSE_ERROR_NONE,
+				BSE_TYPE_ERROR_TYPE, Bse::ERROR_NONE,
 				SFI_PARAM_STANDARD);
 }
 BODY (BseProcedureClass *proc,
@@ -190,7 +190,7 @@ BODY (BseProcedureClass *proc,
 
   /* check parameters */
   if (!BSE_IS_PART (self))
-    return BSE_ERROR_PROC_PARAM_INVAL;
+    return Bse::ERROR_PROC_PARAM_INVAL;
 
   /* action */
   if (bse_part_query_event (self, id, &equery) == BSE_PART_EVENT_NOTE)
@@ -211,9 +211,9 @@ BODY (BseProcedureClass *proc,
     }
 
   /* set output parameters */
-  g_value_set_enum (out_values++, success ? BSE_ERROR_NONE : BSE_ERROR_NO_EVENT);
+  g_value_set_enum (out_values++, success ? Bse::ERROR_NONE : Bse::ERROR_NO_EVENT);
 
-  return BSE_ERROR_NONE;
+  return Bse::ERROR_NONE;
 }
 
 METHOD (BsePart, change-control) {
@@ -231,7 +231,7 @@ METHOD (BsePart, change-control) {
 			  0.0, -1.0, +1.0, 0.1,
 			  SFI_PARAM_STANDARD ":scale");
   OUT   = bse_param_spec_genum ("error", "Error", NULL,
-				BSE_TYPE_ERROR_TYPE, BSE_ERROR_NONE,
+				BSE_TYPE_ERROR_TYPE, Bse::ERROR_NONE,
 				SFI_PARAM_STANDARD);
 }
 BODY (BseProcedureClass *proc,
@@ -249,7 +249,7 @@ BODY (BseProcedureClass *proc,
 
   /* check parameters */
   if (!BSE_IS_PART (self))
-    return BSE_ERROR_PROC_PARAM_INVAL;
+    return Bse::ERROR_PROC_PARAM_INVAL;
 
   /* action */
   bse_part_query_event (self, id, &equery);
@@ -288,9 +288,9 @@ BODY (BseProcedureClass *proc,
     }
 
   /* set output parameters */
-  g_value_set_enum (out_values++, success ? BSE_ERROR_NONE : BSE_ERROR_NO_EVENT);
+  g_value_set_enum (out_values++, success ? Bse::ERROR_NONE : Bse::ERROR_NO_EVENT);
 
-  return BSE_ERROR_NONE;
+  return Bse::ERROR_NONE;
 }
 
 METHOD (BsePart, delete-event) {
@@ -300,7 +300,7 @@ METHOD (BsePart, delete-event) {
   IN	= sfi_pspec_int ("id", "ID", NULL,
 			 0, 0, BSE_PART_MAX_TICK, 1, SFI_PARAM_STANDARD);
   OUT   = bse_param_spec_genum ("error", "Error", NULL,
-				BSE_TYPE_ERROR_TYPE, BSE_ERROR_NONE,
+				BSE_TYPE_ERROR_TYPE, Bse::ERROR_NONE,
 				SFI_PARAM_STANDARD);
 }
 BODY (BseProcedureClass *proc,
@@ -315,7 +315,7 @@ BODY (BseProcedureClass *proc,
 
   /* check parameters */
   if (!BSE_IS_PART (self))
-    return BSE_ERROR_PROC_PARAM_INVAL;
+    return Bse::ERROR_PROC_PARAM_INVAL;
 
   /* action */
   bse_part_query_event (self, id, &equery);
@@ -338,9 +338,9 @@ BODY (BseProcedureClass *proc,
     }
 
   /* set output parameters */
-  g_value_set_enum (out_values++, deleted ? BSE_ERROR_NONE : BSE_ERROR_NO_EVENT);
+  g_value_set_enum (out_values++, deleted ? Bse::ERROR_NONE : Bse::ERROR_NO_EVENT);
 
-  return BSE_ERROR_NONE;
+  return Bse::ERROR_NONE;
 }
 
 METHOD (BsePart, is-event-selected) {
@@ -364,7 +364,7 @@ BODY (BseProcedureClass *proc,
 
   /* check parameters */
   if (!BSE_IS_PART (self))
-    return BSE_ERROR_PROC_PARAM_INVAL;
+    return Bse::ERROR_PROC_PARAM_INVAL;
 
   /* action */
   if (bse_part_query_event (self, id, &equery) != BSE_PART_EVENT_NONE)
@@ -373,7 +373,7 @@ BODY (BseProcedureClass *proc,
   /* set output parameters */
   sfi_value_set_bool (out_values++, selected);
 
-  return BSE_ERROR_NONE;
+  return Bse::ERROR_NONE;
 }
 
 METHOD (BsePart, list-notes-crossing) {
@@ -398,12 +398,12 @@ BODY (BseProcedureClass *proc,
 
   /* check parameters */
   if (!BSE_IS_PART (self))
-    return BSE_ERROR_PROC_PARAM_INVAL;
+    return Bse::ERROR_PROC_PARAM_INVAL;
 
   /* action */
   bse_value_take_boxed (out_values++, bse_part_list_notes (self, ~0, tick, duration, BSE_MIN_NOTE, BSE_MAX_NOTE, TRUE));
 
-  return BSE_ERROR_NONE;
+  return Bse::ERROR_NONE;
 }
 
 METHOD (BsePart, list-notes-within) {
@@ -431,12 +431,12 @@ BODY (BseProcedureClass *proc,
 
   /* check parameters */
   if (!BSE_IS_PART (self))
-    return BSE_ERROR_PROC_PARAM_INVAL;
+    return Bse::ERROR_PROC_PARAM_INVAL;
 
   /* action */
   bse_value_take_boxed (out_values++, bse_part_list_notes (self, channel, tick, duration, BSE_MIN_NOTE, BSE_MAX_NOTE, FALSE));
 
-  return BSE_ERROR_NONE;
+  return Bse::ERROR_NONE;
 }
 
 METHOD (BsePart, list-controls) {
@@ -465,12 +465,12 @@ BODY (BseProcedureClass *proc,
 
   /* check parameters */
   if (!BSE_IS_PART (self))
-    return BSE_ERROR_PROC_PARAM_INVAL;
+    return Bse::ERROR_PROC_PARAM_INVAL;
 
   /* action */
   bse_value_take_boxed (out_values++, bse_part_list_controls (self, ~0, tick, duration, BseMidiSignalType (ctype)));
 
-  return BSE_ERROR_NONE;
+  return Bse::ERROR_NONE;
 }
 
 METHOD (BsePart, queue-notes) {
@@ -499,12 +499,12 @@ BODY (BseProcedureClass *proc,
 
   /* check parameters */
   if (!BSE_IS_PART (self))
-    return BSE_ERROR_PROC_PARAM_INVAL;
+    return Bse::ERROR_PROC_PARAM_INVAL;
 
   /* action */
   bse_part_queue_notes_within (self, tick, duration, min_note, max_note);
 
-  return BSE_ERROR_NONE;
+  return Bse::ERROR_NONE;
 }
 
 METHOD (BsePart, queue-controls) {
@@ -527,12 +527,12 @@ BODY (BseProcedureClass *proc,
 
   /* check parameters */
   if (!BSE_IS_PART (self))
-    return BSE_ERROR_PROC_PARAM_INVAL;
+    return Bse::ERROR_PROC_PARAM_INVAL;
 
   /* action */
   bse_part_queue_controls (self, tick, duration);
 
-  return BSE_ERROR_NONE;
+  return Bse::ERROR_NONE;
 }
 
 METHOD (BsePart, list-selected-notes) {
@@ -551,12 +551,12 @@ BODY (BseProcedureClass *proc,
 
   /* check parameters */
   if (!BSE_IS_PART (self))
-    return BSE_ERROR_PROC_PARAM_INVAL;
+    return Bse::ERROR_PROC_PARAM_INVAL;
 
   /* action */
   bse_value_take_boxed (out_values++, bse_part_list_selected_notes (self));
 
-  return BSE_ERROR_NONE;
+  return Bse::ERROR_NONE;
 }
 
 METHOD (BsePart, list-selected-controls) {
@@ -579,12 +579,12 @@ BODY (BseProcedureClass *proc,
 
   /* check parameters */
   if (!BSE_IS_PART (self))
-    return BSE_ERROR_PROC_PARAM_INVAL;
+    return Bse::ERROR_PROC_PARAM_INVAL;
 
   /* action */
   bse_value_take_boxed (out_values++, bse_part_list_selected_controls (self, BseMidiSignalType (ctype)));
 
-  return BSE_ERROR_NONE;
+  return Bse::ERROR_NONE;
 }
 
 METHOD (BsePart, check-overlap) {
@@ -611,12 +611,12 @@ BODY (BseProcedureClass *proc,
 
   /* check parameters */
   if (!BSE_IS_PART (self))
-    return BSE_ERROR_PROC_PARAM_INVAL;
+    return Bse::ERROR_PROC_PARAM_INVAL;
 
   /* action */
   bse_value_take_boxed (out_values++, bse_part_list_notes (self, ~0, tick, duration, note, note, TRUE));
 
-  return BSE_ERROR_NONE;
+  return Bse::ERROR_NONE;
 }
 
 METHOD (BsePart, get-notes) {
@@ -641,12 +641,12 @@ BODY (BseProcedureClass *proc,
 
   /* check parameters */
   if (!BSE_IS_PART (self))
-    return BSE_ERROR_PROC_PARAM_INVAL;
+    return Bse::ERROR_PROC_PARAM_INVAL;
 
   /* action */
   bse_value_take_boxed (out_values++, bse_part_list_notes (self, ~0, tick, 1, note, note, TRUE));
 
-  return BSE_ERROR_NONE;
+  return Bse::ERROR_NONE;
 }
 
 METHOD (BsePart, get-controls) {
@@ -672,12 +672,12 @@ BODY (BseProcedureClass *proc,
 
   /* check parameters */
   if (!BSE_IS_PART (self))
-    return BSE_ERROR_PROC_PARAM_INVAL;
+    return Bse::ERROR_PROC_PARAM_INVAL;
 
   /* action */
   bse_value_take_boxed (out_values++, bse_part_list_controls (self, ~0, tick, 1, BseMidiSignalType (ctype)));
 
-  return BSE_ERROR_NONE;
+  return Bse::ERROR_NONE;
 }
 
 METHOD (BsePart, get-channel-controls) {
@@ -709,12 +709,12 @@ BODY (BseProcedureClass *proc,
 
   /* check parameters */
   if (!BSE_IS_PART (self))
-    return BSE_ERROR_PROC_PARAM_INVAL;
+    return Bse::ERROR_PROC_PARAM_INVAL;
 
   /* action */
   bse_value_take_boxed (out_values++, bse_part_list_controls (self, channel, tick, duration, BseMidiSignalType (ctype)));
 
-  return BSE_ERROR_NONE;
+  return Bse::ERROR_NONE;
 }
 
 METHOD (BsePart, get-min-note) {
@@ -733,12 +733,12 @@ BODY (BseProcedureClass *proc,
 
   /* check parameters */
   if (!BSE_IS_PART (self))
-    return BSE_ERROR_PROC_PARAM_INVAL;
+    return Bse::ERROR_PROC_PARAM_INVAL;
 
   /* it doesn't currently make sense to restrict the standard note range */
   sfi_value_set_int (out_values++, BSE_MIN_NOTE);
 
-  return BSE_ERROR_NONE;
+  return Bse::ERROR_NONE;
 }
 
 METHOD (BsePart, get-max-note) {
@@ -757,12 +757,12 @@ BODY (BseProcedureClass *proc,
 
   /* check parameters */
   if (!BSE_IS_PART (self))
-    return BSE_ERROR_PROC_PARAM_INVAL;
+    return Bse::ERROR_PROC_PARAM_INVAL;
 
   /* it doesn't currently make sense to restrict the standard note range */
   sfi_value_set_int (out_values++, BSE_MAX_NOTE);
 
-  return BSE_ERROR_NONE;
+  return Bse::ERROR_NONE;
 }
 
 METHOD (BsePart, select-notes-exclusive) {
@@ -791,11 +791,11 @@ BODY (BseProcedureClass *proc,
 
   /* check parameters */
   if (!BSE_IS_PART (self))
-    return BSE_ERROR_PROC_PARAM_INVAL;
+    return Bse::ERROR_PROC_PARAM_INVAL;
 
   bse_part_select_notes_exclusive (self, ~0, tick, duration, min_note, max_note);
 
-  return BSE_ERROR_NONE;
+  return Bse::ERROR_NONE;
 }
 
 METHOD (BsePart, select-controls-exclusive) {
@@ -822,11 +822,11 @@ BODY (BseProcedureClass *proc,
 
   /* check parameters */
   if (!BSE_IS_PART (self))
-    return BSE_ERROR_PROC_PARAM_INVAL;
+    return Bse::ERROR_PROC_PARAM_INVAL;
 
   bse_part_select_controls_exclusive (self, tick, duration, BseMidiSignalType (ctype));
 
-  return BSE_ERROR_NONE;
+  return Bse::ERROR_NONE;
 }
 
 METHOD (BsePart, select-controls) {
@@ -853,11 +853,11 @@ BODY (BseProcedureClass *proc,
 
   /* check parameters */
   if (!BSE_IS_PART (self))
-    return BSE_ERROR_PROC_PARAM_INVAL;
+    return Bse::ERROR_PROC_PARAM_INVAL;
 
   bse_part_select_controls (self, tick, duration, BseMidiSignalType (ctype), TRUE);
 
-  return BSE_ERROR_NONE;
+  return Bse::ERROR_NONE;
 }
 
 METHOD (BsePart, select-notes) {
@@ -886,11 +886,11 @@ BODY (BseProcedureClass *proc,
 
   /* check parameters */
   if (!BSE_IS_PART (self))
-    return BSE_ERROR_PROC_PARAM_INVAL;
+    return Bse::ERROR_PROC_PARAM_INVAL;
 
   bse_part_select_notes (self, ~0, tick, duration, min_note, max_note, TRUE);
 
-  return BSE_ERROR_NONE;
+  return Bse::ERROR_NONE;
 }
 
 METHOD (BsePart, deselect-notes) {
@@ -919,11 +919,11 @@ BODY (BseProcedureClass *proc,
 
   /* check parameters */
   if (!BSE_IS_PART (self))
-    return BSE_ERROR_PROC_PARAM_INVAL;
+    return Bse::ERROR_PROC_PARAM_INVAL;
 
   bse_part_select_notes (self, ~0, tick, duration, min_note, max_note, FALSE);
 
-  return BSE_ERROR_NONE;
+  return Bse::ERROR_NONE;
 }
 
 METHOD (BsePart, deselect-controls) {
@@ -950,11 +950,11 @@ BODY (BseProcedureClass *proc,
 
   /* check parameters */
   if (!BSE_IS_PART (self))
-    return BSE_ERROR_PROC_PARAM_INVAL;
+    return Bse::ERROR_PROC_PARAM_INVAL;
 
   bse_part_select_controls (self, tick, duration, BseMidiSignalType (ctype), FALSE);
 
-  return BSE_ERROR_NONE;
+  return Bse::ERROR_NONE;
 }
 
 METHOD (BsePart, select-event) {
@@ -975,7 +975,7 @@ BODY (BseProcedureClass *proc,
 
   /* check parameters */
   if (!BSE_IS_PART (self))
-    return BSE_ERROR_PROC_PARAM_INVAL;
+    return Bse::ERROR_PROC_PARAM_INVAL;
 
   /* action */
   bse_part_query_event (self, id, &equery);
@@ -984,8 +984,8 @@ BODY (BseProcedureClass *proc,
   else if (equery.event_type == BSE_PART_EVENT_NOTE)
     bse_part_set_note_selected (self, id, equery.channel, TRUE);
   else
-    return BSE_ERROR_PROC_PARAM_INVAL;
-  return BSE_ERROR_NONE;
+    return Bse::ERROR_PROC_PARAM_INVAL;
+  return Bse::ERROR_NONE;
 }
 
 METHOD (BsePart, deselect-event) {
@@ -1006,7 +1006,7 @@ BODY (BseProcedureClass *proc,
 
   /* check parameters */
   if (!BSE_IS_PART (self))
-    return BSE_ERROR_PROC_PARAM_INVAL;
+    return Bse::ERROR_PROC_PARAM_INVAL;
 
   /* action */
   bse_part_query_event (self, id, &equery);
@@ -1015,8 +1015,8 @@ BODY (BseProcedureClass *proc,
   else if (equery.event_type == BSE_PART_EVENT_NOTE)
     bse_part_set_note_selected (self, id, equery.channel, FALSE);
   else
-    return BSE_ERROR_PROC_PARAM_INVAL;
-  return BSE_ERROR_NONE;
+    return Bse::ERROR_PROC_PARAM_INVAL;
+  return Bse::ERROR_NONE;
 }
 
 METHOD (BsePart, get-timing) {
@@ -1036,7 +1036,7 @@ METHOD (BsePart, get-timing) {
 
   /* check parameters */
   if (!BSE_IS_PART (self))
-    return BSE_ERROR_PROC_PARAM_INVAL;
+    return Bse::ERROR_PROC_PARAM_INVAL;
 
   /* action */
   parent = BSE_ITEM (self)->parent;
@@ -1048,7 +1048,7 @@ METHOD (BsePart, get-timing) {
   /* set output parameters */
   bse_value_set_boxed (out_values++, &timing);
 
-  return BSE_ERROR_NONE;
+  return Bse::ERROR_NONE;
 }
 
 METHOD (BsePart, list-links) {
@@ -1066,10 +1066,10 @@ BODY (BseProcedureClass *proc,
 
   /* check parameters */
   if (!BSE_IS_PART (self))
-    return BSE_ERROR_PROC_PARAM_INVAL;
+    return Bse::ERROR_PROC_PARAM_INVAL;
 
   /* action */
   bse_value_take_boxed (out_values++, bse_part_list_links (self));
 
-  return BSE_ERROR_NONE;
+  return Bse::ERROR_NONE;
 }

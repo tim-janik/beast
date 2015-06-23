@@ -1,4 +1,5 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
+#define BSE_IDL_PSEUDOS 1 // dummy values to satisfy the old code generator
 #include "bseenums.hh"
 #include "gslcommon.hh"
 #include <errno.h>
@@ -37,43 +38,16 @@ bse_type_register_enums (void)
     }
 }
 
-/* BseErrorType is a static type */
-static GEnumClass *bse_error_class = NULL;
-
 const char*
-bse_error_name (BseErrorType error_value)
-{
-  GEnumValue *ev;
-
-  if (!bse_error_class)
-    bse_error_class = (GEnumClass*) g_type_class_ref (BSE_TYPE_ERROR_TYPE);
-
-  ev = g_enum_get_value (bse_error_class, error_value);
-  return ev ? ev->value_name : NULL;
-}
-
-const char*
-bse_error_nick (BseErrorType error_value)
-{
-  GEnumValue *ev;
-
-  if (!bse_error_class)
-    bse_error_class = (GEnumClass*) g_type_class_ref (BSE_TYPE_ERROR_TYPE);
-
-  ev = g_enum_get_value (bse_error_class, error_value);
-  return ev ? ev->value_nick : NULL;
-}
-
-const char*
-bse_error_blurb (BseErrorType error_value)
+bse_error_blurb (Bse::ErrorType error_value)
 {
   const Rapicorn::Aida::EnumValue *ev = Rapicorn::Aida::enum_info<Bse::ErrorType>().find_value (error_value);
   return ev ? ev->blurb : NULL;
 }
 
-BseErrorType
+Bse::ErrorType
 bse_error_from_errno (int             v_errno,
-		      BseErrorType    fallback)
+		      Bse::ErrorType    fallback)
 {
   return gsl_error_from_errno (v_errno, fallback);
 }

@@ -267,7 +267,7 @@ bse_init_intern (int *argc, char **argv, const char *app_name, const Bse::String
     }
   if (bse_main_args->load_core_scripts)
     {
-      BseErrorType error = bse_item_exec (bse_server_get(), "register-scripts", NULL);
+      Bse::ErrorType error = bse_item_exec (bse_server_get(), "register-scripts", NULL);
       if (error)
         sfi_diag ("during script registration: %s", bse_error_blurb (error));
       while (!single_thread_registration_done)

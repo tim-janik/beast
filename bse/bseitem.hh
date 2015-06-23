@@ -108,10 +108,10 @@ BseItem*        bse_item_use                 (BseItem         *item);
 void            bse_item_unuse               (BseItem         *item);
 void            bse_item_set_parent          (BseItem         *item,
                                               BseItem         *parent);
-BseErrorType    bse_item_exec                (gpointer         item,
+Bse::ErrorType    bse_item_exec                (gpointer         item,
                                               const gchar     *procedure,
                                               ...);
-BseErrorType    bse_item_exec_void           (gpointer         item,
+Bse::ErrorType    bse_item_exec_void           (gpointer         item,
                                               const gchar     *procedure,
                                               ...); /* ignore return values */
 /* undo-aware functions */

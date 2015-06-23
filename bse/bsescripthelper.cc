@@ -14,7 +14,7 @@
 /* --- prototypes --- */
 static void		bse_script_procedure_init	(BseScriptProcedureClass *klass,
 							 BseScriptData		 *sdata);
-static BseErrorType	bse_script_procedure_exec	(BseProcedureClass	 *proc,
+static Bse::ErrorType	bse_script_procedure_exec	(BseProcedureClass	 *proc,
 							 const GValue		 *in_values,
 							 GValue			 *out_values);
 static GParamSpec*	bse_script_param_spec		(gchar			 *pspec_desc,
@@ -124,7 +124,7 @@ bse_script_proc_register (const gchar *script_file,
   return type;
 }
 
-static BseErrorType
+static Bse::ErrorType
 bse_script_procedure_exec (BseProcedureClass *proc,
 			   const GValue      *in_values,
 			   GValue            *out_values)
@@ -134,7 +134,7 @@ bse_script_procedure_exec (BseProcedureClass *proc,
   BseServer *server = bse_server_get ();
   SfiRing *params = NULL;
   BseJanitor *janitor;
-  BseErrorType error;
+  Bse::ErrorType error;
   gchar *shellpath;
   guint i;
 
@@ -243,14 +243,14 @@ bse_script_path_list_files (void)
   return ring;
 }
 
-BseErrorType
+Bse::ErrorType
 bse_script_file_register (const gchar *file_name,
 			  BseJanitor **janitor_p)
 {
   BseServer *server = bse_server_get ();
   SfiRing *params = NULL;
   const char *proc_name = "registration hook";
-  BseErrorType error;
+  Bse::ErrorType error;
 
   params = sfi_ring_append (params, g_strdup ("--bse-enable-register"));
   params = sfi_ring_append (params, g_strdup ("--bse-eval"));

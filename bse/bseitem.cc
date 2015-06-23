@@ -749,13 +749,13 @@ find_method_procedure (GType       object_type,
   return proc_type;
 }
 
-static inline BseErrorType
+static inline Bse::ErrorType
 bse_item_execva_i (BseItem     *item,
                    const char  *procedure,
                    va_list      var_args,
                    gboolean     skip_oparams)
 {
-  BseErrorType error;
+  Bse::ErrorType error;
   GType proc_type = find_method_procedure (BSE_OBJECT_TYPE (item), procedure);
   GValue obj_value;
 
@@ -763,7 +763,7 @@ bse_item_execva_i (BseItem     *item,
     {
       g_warning ("no such method \"%s\" of item %s",
                  procedure, bse_object_debug_name (item));
-      return BSE_ERROR_INTERNAL;
+      return Bse::ERROR_INTERNAL;
     }
 
   /* setup first arg (the object) */
@@ -776,17 +776,17 @@ bse_item_execva_i (BseItem     *item,
   return error;
 }
 
-BseErrorType
+Bse::ErrorType
 bse_item_exec (void       *_item,
                const char *procedure,
                ...)
 {
   BseItem *item = (BseItem*) _item;
   va_list var_args;
-  BseErrorType error;
+  Bse::ErrorType error;
 
-  g_return_val_if_fail (BSE_IS_ITEM (item), BSE_ERROR_INTERNAL);
-  g_return_val_if_fail (procedure != NULL, BSE_ERROR_INTERNAL);
+  g_return_val_if_fail (BSE_IS_ITEM (item), Bse::ERROR_INTERNAL);
+  g_return_val_if_fail (procedure != NULL, Bse::ERROR_INTERNAL);
 
   va_start (var_args, procedure);
   error = bse_item_execva_i (item, procedure, var_args, FALSE);
@@ -795,17 +795,17 @@ bse_item_exec (void       *_item,
   return error;
 }
 
-BseErrorType
+Bse::ErrorType
 bse_item_exec_void (void       *_item,
                     const char *procedure,
                     ...)
 {
   BseItem *item = (BseItem*) _item;
   va_list var_args;
-  BseErrorType error;
+  Bse::ErrorType error;
 
-  g_return_val_if_fail (BSE_IS_ITEM (item), BSE_ERROR_INTERNAL);
-  g_return_val_if_fail (procedure != NULL, BSE_ERROR_INTERNAL);
+  g_return_val_if_fail (BSE_IS_ITEM (item), Bse::ERROR_INTERNAL);
+  g_return_val_if_fail (procedure != NULL, Bse::ERROR_INTERNAL);
 
   va_start (var_args, procedure);
   error = bse_item_execva_i (item, procedure, var_args, TRUE);
@@ -885,7 +885,7 @@ undo_call_proc (BseUndoStep  *ustep,
   else /* invoke procedure */
     {
       GValue ovalue = { 0, };
-      BseErrorType error;
+      Bse::ErrorType error;
       uint i;
       /* convert values from undo */
       for (i = 0; i < proc->n_in_pspecs; i++)
@@ -900,7 +900,7 @@ undo_call_proc (BseUndoStep  *ustep,
         {
           /* check returned error if any */
           if (G_PARAM_SPEC_VALUE_TYPE (proc->out_pspecs[0]) == BSE_TYPE_ERROR_TYPE && !error)
-            error = BseErrorType (g_value_get_enum (&ovalue));
+            error = Bse::ErrorType (g_value_get_enum (&ovalue));
           g_value_unset (&ovalue);
         }
       /* we're not tolerating any errors */
@@ -920,7 +920,7 @@ bse_item_push_undo_proc_valist (void        *item,
   BseUndoStack *ustack = bse_item_undo_open (item, "%s: %s", commit_as_redo ? "redo-proc" : "undo-proc", procedure);
   BseProcedureClass *proc;
   GValue *ivalues;
-  BseErrorType error;
+  Bse::ErrorType error;
   uint i;
   if (BSE_UNDO_STACK_VOID (ustack) ||
       BSE_ITEM_INTERNAL (item))

@@ -172,7 +172,7 @@ bus_disconnect_outputs (BseBus *self)
   SfiRing *ring, *outputs = bse_bus_list_outputs (self);
   for (ring = outputs; ring; ring = sfi_ring_walk (ring, outputs))
     {
-      BseErrorType error = bse_bus_disconnect (BSE_BUS (ring->data), BSE_ITEM (self));
+      Bse::ErrorType error = bse_bus_disconnect (BSE_BUS (ring->data), BSE_ITEM (self));
       bse_assert_ok (error);
     }
   bse_source_clear_ochannels (BSE_SOURCE (self));       /* also disconnects master */
@@ -639,7 +639,7 @@ bus_uncross_input (BseItem *owner,
     bse_item_exec_void (owner, "disconnect-bus", item);
 }
 
-BseErrorType
+Bse::ErrorType
 bse_bus_connect (BseBus  *self,
                  BseItem *trackbus)
 {
@@ -660,10 +660,10 @@ bse_bus_connect (BseBus  *self,
   if (found_candidate)
     return bse_bus_connect_unchecked (self, trackbus);
   else
-    return BSE_ERROR_SOURCE_CONNECTION_INVALID;
+    return Bse::ERROR_SOURCE_CONNECTION_INVALID;
 }
 
-BseErrorType
+Bse::ErrorType
 bse_bus_connect_unchecked (BseBus  *self,
                            BseItem *trackbus)
 {
@@ -673,11 +673,11 @@ bse_bus_connect_unchecked (BseBus  *self,
   else if (BSE_IS_BUS (trackbus))
     osource = BSE_SOURCE (trackbus);
   else
-    return BSE_ERROR_SOURCE_TYPE_INVALID;
+    return Bse::ERROR_SOURCE_TYPE_INVALID;
   if (!osource || !bse_bus_ensure_summation (self) ||
       BSE_ITEM (osource)->parent != BSE_ITEM (self)->parent)    /* restrict to siblings */
-    return BSE_ERROR_SOURCE_PARENT_MISMATCH;
-  BseErrorType error = bse_source_set_input (self->summation, 0, osource, 0);
+    return Bse::ERROR_SOURCE_PARENT_MISMATCH;
+  Bse::ErrorType error = bse_source_set_input (self->summation, 0, osource, 0);
   if (!error)
     {
       bse_source_must_set_input (self->summation, 1, osource, 1);
@@ -692,7 +692,7 @@ bse_bus_connect_unchecked (BseBus  *self,
   return error;
 }
 
-BseErrorType
+Bse::ErrorType
 bse_bus_disconnect (BseBus  *self,
                     BseItem *trackbus)
 {
@@ -702,16 +702,16 @@ bse_bus_disconnect (BseBus  *self,
   else if (BSE_IS_BUS (trackbus))
     osource = BSE_SOURCE (trackbus);
   else
-    return BSE_ERROR_SOURCE_TYPE_INVALID;
+    return Bse::ERROR_SOURCE_TYPE_INVALID;
   if (!osource || !self->summation || !sfi_ring_find (self->inputs, trackbus))
-    return BSE_ERROR_SOURCE_PARENT_MISMATCH;
+    return Bse::ERROR_SOURCE_PARENT_MISMATCH;
   bse_object_unproxy_notifies (trackbus, self, "notify::inputs");
   bse_object_unproxy_notifies (self, trackbus, "notify::outputs");
   bse_item_cross_unlink (BSE_ITEM (self), BSE_ITEM (trackbus), bus_uncross_input);
   self->inputs = sfi_ring_remove (self->inputs, trackbus);
   trackbus_update_outputs (trackbus, NULL, self);
-  BseErrorType error1 = bse_source_unset_input (self->summation, 0, osource, 0);
-  BseErrorType error2 = bse_source_unset_input (self->summation, 1, osource, 1);
+  Bse::ErrorType error1 = bse_source_unset_input (self->summation, 0, osource, 0);
+  Bse::ErrorType error2 = bse_source_unset_input (self->summation, 1, osource, 1);
   g_object_notify (G_OBJECT (self), "inputs");
   g_object_notify (G_OBJECT (trackbus), "outputs");
   return error1 ? error1 : error2;
@@ -743,11 +743,11 @@ bus_restore_add_input (gpointer     data,
     bse_storage_warn (storage, "failed to add input to mixer bus \"%s\": %s", BSE_OBJECT_UNAME (self), error);
   else
     {
-      BseErrorType cerror;
+      Bse::ErrorType cerror;
       if (osource)
         cerror = bse_bus_connect (self, BSE_ITEM (osource));
       else
-        cerror = BSE_ERROR_SOURCE_NO_SUCH_MODULE;
+        cerror = Bse::ERROR_SOURCE_NO_SUCH_MODULE;
       if (cerror)
         bse_storage_warn (storage,
                           "failed to add input \"%s\" to mixer bus \"%s\": %s",

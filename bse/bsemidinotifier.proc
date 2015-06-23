@@ -26,7 +26,7 @@ BODY (BseProcedureClass *proc,
 
   /* check parameters */
   if (!BSE_IS_MIDI_NOTIFIER (self))
-    return BSE_ERROR_PROC_PARAM_INVAL;
+    return Bse::ERROR_PROC_PARAM_INVAL;
 
   gettimeofday (&tv, NULL);
   stamp = tv.tv_sec;
@@ -35,5 +35,5 @@ BODY (BseProcedureClass *proc,
   /* set output parameters */
   sfi_value_set_int (out_values++, stamp / 1000);
 
-  return BSE_ERROR_NONE;
+  return Bse::ERROR_NONE;
 }

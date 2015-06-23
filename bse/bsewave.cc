@@ -126,12 +126,12 @@ bse_wave_finalize (GObject *object)
   G_OBJECT_CLASS (parent_class)->finalize (object);
 }
 
-static BseErrorType
+static Bse::ErrorType
 bse_wave_add_inlined_wave_chunk (BseWave      *self,
                                  GslWaveChunk *wchunk)
 {
-  g_return_val_if_fail (BSE_IS_WAVE (self), BSE_ERROR_INTERNAL);
-  BseErrorType error = gsl_data_handle_open (wchunk->dcache->dhandle);
+  g_return_val_if_fail (BSE_IS_WAVE (self), Bse::ERROR_INTERNAL);
+  Bse::ErrorType error = gsl_data_handle_open (wchunk->dcache->dhandle);
   if (!error)
     self->open_handles = sfi_ring_append (self->open_handles, wchunk->dcache->dhandle);
   return error;
@@ -244,7 +244,7 @@ bse_wave_clear (BseWave *wave)
   wave->xinfos = NULL;
 }
 
-BseErrorType
+Bse::ErrorType
 bse_wave_load_wave_file (BseWave      *self,
 			 const gchar  *file_name,
 			 const gchar  *wave_name,
@@ -252,10 +252,10 @@ bse_wave_load_wave_file (BseWave      *self,
 			 BseFreqArray *skip_array,
                          gboolean      rename_wave)
 {
-  BseErrorType error = BSE_ERROR_NONE;
+  Bse::ErrorType error = Bse::ERROR_NONE;
 
-  g_return_val_if_fail (BSE_IS_WAVE (self), BSE_ERROR_INTERNAL);
-  g_return_val_if_fail (file_name != NULL, BSE_ERROR_INTERNAL);
+  g_return_val_if_fail (BSE_IS_WAVE (self), Bse::ERROR_INTERNAL);
+  g_return_val_if_fail (file_name != NULL, Bse::ERROR_INTERNAL);
 
   bse_wave_clear (self);
 
@@ -304,7 +304,7 @@ bse_wave_load_wave_file (BseWave      *self,
 	      for (i = 0; i < wdsc->n_chunks; i++)
 		if (bse_freq_arrays_match_freq (wdsc->chunks[i].osc_freq, list_array, skip_array))
 		  {
-		    BseErrorType tmp_error;
+		    Bse::ErrorType tmp_error;
 		    GslWaveChunk *wchunk = bse_wave_chunk_create (wdsc, i, &tmp_error);
 		    if (wchunk)
                       bse_wave_add_chunk (self, wchunk);
@@ -327,17 +327,17 @@ bse_wave_load_wave_file (BseWave      *self,
 	      bse_wave_dsc_free (wdsc);
 	    }
           else if (wdsc)
-            error = BSE_ERROR_FILE_EMPTY;
+            error = Bse::ERROR_FILE_EMPTY;
 	}
       else
-	error = BSE_ERROR_FILE_NOT_FOUND;
+	error = Bse::ERROR_FILE_NOT_FOUND;
       bse_wave_file_info_unref (fi);
     }
   else
     {
       error = gsl_file_check (file_name, "fr");
       if (!error)
-	error = BSE_ERROR_FILE_OPEN_FAILED;
+	error = Bse::ERROR_FILE_OPEN_FAILED;
     }
   return error;
 }
@@ -370,7 +370,7 @@ bse_wave_store_private (BseObject  *object,
       for (ring = wave->wave_chunks; ring; ring = sfi_ring_walk (ring, wave->wave_chunks))
         {
           GslWaveChunk *wchunk = (GslWaveChunk*) ring->data;
-          BseErrorType error = gsl_data_handle_open (wchunk->dcache->dhandle);
+          Bse::ErrorType error = gsl_data_handle_open (wchunk->dcache->dhandle);
           if (error)
             {
               bse_storage_warn (storage, "failed to open data handle (%s): %s",
@@ -514,7 +514,7 @@ bse_wave_restore_private (BseObject  *object,
     {
       BseFreqArray *skip_list, *load_list, *array;
       gchar *file_name, *wave_name;
-      BseErrorType error;
+      Bse::ErrorType error;
 
       g_scanner_get_next_token (scanner); /* eat quark identifier */
       parse_or_return (scanner, G_TOKEN_STRING);
@@ -656,7 +656,7 @@ bse_wave_restore_private (BseObject  *object,
                                                      loop_type, loop_start, loop_end, loop_count);
 	  gsl_data_cache_unref (dcache);
           /* we need to keep inlined data handles open to protect against storage (.bse file) overwriting */
-          BseErrorType error = bse_wave_add_inlined_wave_chunk (wave, wchunk);
+          Bse::ErrorType error = bse_wave_add_inlined_wave_chunk (wave, wchunk);
           if (!error)
             bse_wave_add_chunk (wave, wchunk);
           else
@@ -701,7 +701,7 @@ bse_wave_get_index_for_modules (BseWave *wave)
       SfiRing *ring;
       for (ring = wave->wave_chunks; ring; ring = sfi_ring_walk (ring, wave->wave_chunks))
 	{
-	  BseErrorType error = gsl_wave_chunk_open ((GslWaveChunk*) ring->data);
+	  Bse::ErrorType error = gsl_wave_chunk_open ((GslWaveChunk*) ring->data);
 	  if (!error)
             {
               index->entries[index->n_entries].wchunk = (GslWaveChunk*) ring->data;

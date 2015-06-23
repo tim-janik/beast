@@ -39,7 +39,7 @@ struct BseProject : BseContainer {
 struct BseProjectClass : BseContainerClass
 {};
 
-BseErrorType	bse_project_activate		(BseProject	*project);
+Bse::ErrorType	bse_project_activate		(BseProject	*project);
 void		bse_project_start_playback	(BseProject	*project);
 void		bse_project_stop_playback	(BseProject	*project);
 void		bse_project_check_auto_stop	(BseProject	*project);
@@ -52,9 +52,9 @@ void		bse_project_state_changed	(BseProject	*project,
 						 BseProjectState state);
 BseStringSeq*	bse_project_list_upaths		(BseProject	*project,
 						 GType  	 item_type);
-BseErrorType	bse_project_restore		(BseProject	*project,
+Bse::ErrorType	bse_project_restore		(BseProject	*project,
 						 BseStorage	*storage);
-BseErrorType	bse_project_store_bse		(BseProject	*project,
+Bse::ErrorType	bse_project_store_bse		(BseProject	*project,
 						 BseSuper       *super,
 						 const gchar	*bse_file,
 						 gboolean        self_contained);

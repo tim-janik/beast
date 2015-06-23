@@ -145,7 +145,7 @@ aiff_read_pstring (int    fd,
   return r;
 }
 
-static BseErrorType
+static Bse::ErrorType
 aiff_read_comm (int       fd,
                 AiffFile *afile,
                 guint32   chunk_size)
@@ -154,24 +154,24 @@ aiff_read_comm (int       fd,
   guint32 num_sample_frames;
   double sample_rate;
   if (chunk_size < 18)
-    return BSE_ERROR_FORMAT_INVALID;
+    return Bse::ERROR_FORMAT_INVALID;
   if (aiff_read_s16 (fd, &num_channels) < 0 ||
       aiff_read_u32 (fd, &num_sample_frames) < 0 ||
       aiff_read_s16 (fd, &sample_size) < 0 ||
       aiff_read_f80 (fd, &sample_rate) < 0)
-    return gsl_error_from_errno (errno, BSE_ERROR_FILE_READ_FAILED);
+    return gsl_error_from_errno (errno, Bse::ERROR_FILE_READ_FAILED);
   LDEBUG ("COMM: num_channels=%d num_sample_frames=%u sample_size=%d sample_rate=%f",
           num_channels, num_sample_frames, sample_size, sample_rate);
   if (num_channels <= 0 || sample_size <= 0 || sample_rate <= 0)
-    return BSE_ERROR_DATA_CORRUPT;
+    return Bse::ERROR_DATA_CORRUPT;
   afile->n_channels = num_channels;
   afile->bit_depth = sample_size;
   afile->n_values = num_sample_frames * num_channels;
   afile->mix_freq = sample_rate;
-  return BSE_ERROR_NONE;
+  return Bse::ERROR_NONE;
 }
 
-static BseErrorType
+static Bse::ErrorType
 aiff_read_mark (int       fd,
                 AiffFile *afile,
                 guint32   chunk_size)
@@ -179,9 +179,9 @@ aiff_read_mark (int       fd,
   guint16 num_markers;
   uint i;
   if (chunk_size < 2)
-    return BSE_ERROR_FORMAT_INVALID;
+    return Bse::ERROR_FORMAT_INVALID;
   if (aiff_read_u16 (fd, &num_markers) < 0)
-    return gsl_error_from_errno (errno, BSE_ERROR_FILE_READ_FAILED);
+    return gsl_error_from_errno (errno, Bse::ERROR_FILE_READ_FAILED);
   for (i = 0; i < num_markers; i++)
     {
       guint16 marker_id;
@@ -190,7 +190,7 @@ aiff_read_mark (int       fd,
       if (aiff_read_u16 (fd, &marker_id) < 0 ||
           aiff_read_u32 (fd, &position) < 0 ||
           aiff_read_pstring (fd, &marker_name) < 0)
-        return gsl_error_from_errno (errno, BSE_ERROR_FILE_READ_FAILED);
+        return gsl_error_from_errno (errno, Bse::ERROR_FILE_READ_FAILED);
       j = afile->n_markers++;
       afile->markers = (AiffFile::Marker*) g_realloc (afile->markers, sizeof (afile->markers[0]) * afile->n_markers);
       afile->markers[j].id = marker_id;
@@ -198,10 +198,10 @@ aiff_read_mark (int       fd,
       afile->markers[j].name = marker_name;
       LDEBUG ("MARK: %u) >%u< \"%s\"", marker_id, position, marker_name);
     }
-  return BSE_ERROR_NONE;
+  return Bse::ERROR_NONE;
 }
 
-static BseErrorType
+static Bse::ErrorType
 aiff_read_inst (int       fd,
                 AiffFile *afile,
                 guint32   chunk_size)
@@ -209,12 +209,12 @@ aiff_read_inst (int       fd,
   int r;
   RAPICORN_STATIC_ASSERT (sizeof (afile->instrument) == 20);
   if (chunk_size < 20)
-    return BSE_ERROR_FORMAT_INVALID;
+    return Bse::ERROR_FORMAT_INVALID;
   do
     r = read (fd, &afile->instrument, 20);
   while (r < 0 && errno == EINTR);
   if (r < 0)
-    return BseErrorType (r);
+    return Bse::ErrorType (r);
   afile->instrument.gain_dB = GINT16_FROM_BE (afile->instrument.gain_dB);
   afile->instrument.sustain_loop_mode = GUINT16_FROM_BE (afile->instrument.sustain_loop_mode);
   afile->instrument.sustain_begin_id = GUINT16_FROM_BE (afile->instrument.sustain_begin_id);
@@ -227,10 +227,10 @@ aiff_read_inst (int       fd,
           afile->instrument.low_velocity, afile->instrument.high_velocity, afile->instrument.gain_dB,
           afile->instrument.sustain_loop_mode, afile->instrument.sustain_begin_id, afile->instrument.sustain_end_id,
           afile->instrument.release_loop_mode, afile->instrument.release_begin_id, afile->instrument.release_end_id);
-  return BSE_ERROR_NONE;
+  return Bse::ERROR_NONE;
 }
 
-static BseErrorType
+static Bse::ErrorType
 aiff_read_ssnd (int       fd,
                 AiffFile *afile,
                 guint32   chunk_size)
@@ -238,24 +238,24 @@ aiff_read_ssnd (int       fd,
   guint32 alignment_offset, alignment_block_size;
   off_t pos;
   if (chunk_size < 8)
-    return BSE_ERROR_FORMAT_INVALID;
+    return Bse::ERROR_FORMAT_INVALID;
   if (aiff_read_u32 (fd, &alignment_offset) < 0 ||
       aiff_read_u32 (fd, &alignment_block_size) < 0)
-    return gsl_error_from_errno (errno, BSE_ERROR_FILE_READ_FAILED);
+    return gsl_error_from_errno (errno, Bse::ERROR_FILE_READ_FAILED);
   do
     pos = lseek (fd, 0, SEEK_CUR);
   while (pos < 0 && errno == EINTR);
   if (pos < 0)
-    return gsl_error_from_errno (errno, BSE_ERROR_FILE_SEEK_FAILED);
+    return gsl_error_from_errno (errno, Bse::ERROR_FILE_SEEK_FAILED);
   if (chunk_size < 8 + alignment_offset)
-    return BSE_ERROR_FORMAT_INVALID;
+    return Bse::ERROR_FORMAT_INVALID;
   afile->data_start = pos + alignment_offset;
   afile->data_size = chunk_size - 8 - alignment_offset;
   LDEBUG ("SSND: pos:>%u< n_bytes:%u", afile->data_start, afile->data_size);
-  return BSE_ERROR_NONE;
+  return Bse::ERROR_NONE;
 }
 
-static BseErrorType
+static Bse::ErrorType
 aiff_append_string (int       fd,
                     AiffFile *afile,
                     guint32   chunk_id,
@@ -274,32 +274,32 @@ aiff_append_string (int       fd,
   *text = g_strconcat (old ? old : "", string, NULL);
   g_free (old);
   g_free (string);
-  return BSE_ERROR_NONE;
+  return Bse::ERROR_NONE;
 }
 
-static BseErrorType
+static Bse::ErrorType
 aiff_file_load (int       fd,
                 AiffFile *afile)
 {
   guint32 form_id, form_size, form_type, seek_pos;
   if (lseek (fd, 0, SEEK_SET) < 0)
-    return gsl_error_from_errno (errno, BSE_ERROR_FILE_SEEK_FAILED);
+    return gsl_error_from_errno (errno, Bse::ERROR_FILE_SEEK_FAILED);
   if (aiff_read_u32 (fd, &form_id) < 0 ||
       aiff_read_u32 (fd, &form_size) < 0 ||
       aiff_read_u32 (fd, &form_type) < 0)
-    return gsl_error_from_errno (errno, BSE_ERROR_FILE_READ_FAILED);
+    return gsl_error_from_errno (errno, Bse::ERROR_FILE_READ_FAILED);
   if (form_id != AIFF_ID ("FORM") || form_size < 4 || form_type != AIFF_ID ("AIFF"))
-    return BSE_ERROR_FORMAT_UNKNOWN;
+    return Bse::ERROR_FORMAT_UNKNOWN;
 
   afile->form_type = form_type;
   seek_pos = 12; /* we've read up 12 bytes so far */
   while (seek_pos < 8 + form_size)
     {
       guint32 chunk_id, chunk_size;
-      BseErrorType error;
+      Bse::ErrorType error;
       if (aiff_read_u32 (fd, &chunk_id) < 0 ||
           aiff_read_u32 (fd, &chunk_size) < 0)
-        return gsl_error_from_errno (errno, BSE_ERROR_FILE_EOF); /* premature eof? */
+        return gsl_error_from_errno (errno, Bse::ERROR_FILE_EOF); /* premature eof? */
       seek_pos += 4 + 4;
       switch (chunk_id)
         {
@@ -311,7 +311,7 @@ aiff_file_load (int       fd,
         case AIFF_ULONG ('A','U','T','H'): error = aiff_append_string (fd, afile, chunk_id, chunk_size, &afile->author); break;
         case AIFF_ULONG ('(','c',')',' '): error = aiff_append_string (fd, afile, chunk_id, chunk_size, &afile->copyright); break;
         case AIFF_ULONG ('A','N','N','O'): error = aiff_append_string (fd, afile, chunk_id, chunk_size, &afile->annotation); break;
-        default:                           error = BSE_ERROR_NONE;      /* ignore unknown chunks */
+        default:                           error = Bse::ERROR_NONE;      /* ignore unknown chunks */
           LDEBUG ("%c%c%c%c: ignored...", chunk_id >> 24, chunk_id >> 16 & 0xff, chunk_id >> 8 & 0xff, chunk_id & 0xff);
         }
       if (error)
@@ -320,9 +320,9 @@ aiff_file_load (int       fd,
       /* align to even seek sizes by skipping pad bytes */
       seek_pos = seek_pos & 1 ? seek_pos + 1 : seek_pos;
       if (lseek (fd, seek_pos, SEEK_SET) < 0)
-        return gsl_error_from_errno (errno, BSE_ERROR_FILE_SEEK_FAILED);
+        return gsl_error_from_errno (errno, Bse::ERROR_FILE_SEEK_FAILED);
     }
-  return BSE_ERROR_NONE;
+  return Bse::ERROR_NONE;
 }
 
 static void
@@ -348,7 +348,7 @@ typedef struct
 static BseWaveFileInfo*
 aiff_load_file_info (void         *data,
                      const char   *file_name,
-                     BseErrorType *error_p)
+                     Bse::ErrorType *error_p)
 {
   AiffFile *afile;
   FileInfo *fi;
@@ -356,7 +356,7 @@ aiff_load_file_info (void         *data,
   char *str;
   if (fd < 0)
     {
-      *error_p = gsl_error_from_errno (errno, BSE_ERROR_FILE_OPEN_FAILED);
+      *error_p = gsl_error_from_errno (errno, Bse::ERROR_FILE_OPEN_FAILED);
       return NULL;
     }
   afile = g_new0 (AiffFile, 1);
@@ -378,14 +378,14 @@ aiff_load_file_info (void         *data,
       afile->bit_depth > 16 || afile->mix_freq < 8000)
     {
       aiff_file_free (afile);
-      *error_p = BSE_ERROR_FORMAT_UNKNOWN;
+      *error_p = Bse::ERROR_FORMAT_UNKNOWN;
       return NULL;
     }
   if (afile->n_values < afile->n_channels ||
       afile->data_size < (afile->bit_depth + 7) / 8 * afile->n_values)
     {
       aiff_file_free (afile);
-      *error_p = BSE_ERROR_NO_DATA;
+      *error_p = Bse::ERROR_NO_DATA;
       return NULL;
     }
   fi = sfi_new_struct0 (FileInfo, 1);
@@ -423,7 +423,7 @@ static BseWaveDsc*
 aiff_load_wave_dsc (void            *data,
                     BseWaveFileInfo *file_info,
                     uint             nth_wave,
-                    BseErrorType    *error_p)
+                    Bse::ErrorType    *error_p)
 {
   FileInfo *fi = (FileInfo*) file_info;
   AiffFile *afile = fi->afile;
@@ -496,7 +496,7 @@ static GslDataHandle*
 aiff_create_chunk_handle (void         *data,
                           BseWaveDsc   *wave_dsc,
                           uint          nth_chunk,
-                          BseErrorType *error_p)
+                          Bse::ErrorType *error_p)
 {
   WaveDsc *dsc = (WaveDsc*) wave_dsc;
   FileInfo *fi = (FileInfo*) dsc->wdsc.file_info;

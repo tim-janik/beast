@@ -359,7 +359,7 @@ printChoices (void)
     {
       const gchar *name = g_type_name (children[i]);
       GEnumClass *eclass = (GEnumClass *)g_type_class_ref (children[i]);
-      gboolean regular_choice = strcmp (name, "BseErrorType") != 0;
+      gboolean regular_choice = strcmp (name, "Bse::ErrorType") != 0;
       GEnumValue *val;
 
       if (needTypes.count (name) && !excludeTypes.count (name))

@@ -22,7 +22,7 @@ typedef struct
 static BseWaveFileInfo*
 oggv_load_file_info (void         *data,
 		     const char   *file_name,
-		     BseErrorType *error_p)
+		     Bse::ErrorType *error_p)
 {
   FileInfo *fi = sfi_new_struct0 (FileInfo, 1);
   FILE *file;
@@ -31,7 +31,7 @@ oggv_load_file_info (void         *data,
   file = fopen (file_name, "r");
   if (!file)
     {
-      *error_p = gsl_error_from_errno (errno, BSE_ERROR_FILE_OPEN_FAILED);
+      *error_p = gsl_error_from_errno (errno, Bse::ERROR_FILE_OPEN_FAILED);
       return NULL;
     }
 
@@ -41,7 +41,7 @@ oggv_load_file_info (void         *data,
     {
       fclose (file);
       sfi_delete_struct (FileInfo, fi);
-      *error_p = BSE_ERROR_CODEC_FAILURE;
+      *error_p = Bse::ERROR_CODEC_FAILURE;
       return NULL;
     }
 
@@ -82,7 +82,7 @@ static BseWaveDsc*
 oggv_load_wave_dsc (void            *data,
 		    BseWaveFileInfo *file_info,
 		    uint             nth_wave,
-		    BseErrorType    *error_p)
+		    Bse::ErrorType    *error_p)
 {
   FileInfo *fi = (FileInfo*) file_info;
   BseWaveDsc *wdsc = sfi_new_struct0 (BseWaveDsc, 1);
@@ -115,7 +115,7 @@ static GslDataHandle*
 oggv_create_chunk_handle (void         *data,
 			  BseWaveDsc   *wdsc,
 			  uint          nth_chunk,
-			  BseErrorType *error_p)
+			  Bse::ErrorType *error_p)
 {
   FileInfo *fi = (FileInfo*) wdsc->file_info;
   GslDataHandle *dhandle;
@@ -132,7 +132,7 @@ oggv_create_chunk_handle (void         *data,
       gsl_data_handle_unref (tmp_handle);
     }
   if (!dhandle)
-    *error_p = BSE_ERROR_FILE_OPEN_FAILED;
+    *error_p = Bse::ERROR_FILE_OPEN_FAILED;
   return dhandle;
 }
 

@@ -579,8 +579,8 @@ bse_track_insert_part (BseTrack *self,
 {
   BseTrackEntry *entry;
 
-  g_return_val_if_fail (BSE_IS_TRACK (self), BSE_ERROR_INTERNAL);
-  g_return_val_if_fail (BSE_IS_PART (part), BSE_ERROR_INTERNAL);
+  g_return_val_if_fail (BSE_IS_TRACK (self), Bse::ERROR_INTERNAL);
+  g_return_val_if_fail (BSE_IS_PART (part), Bse::ERROR_INTERNAL);
 
   entry = track_lookup_entry (self, tick);
   if (entry && entry->tick == tick)

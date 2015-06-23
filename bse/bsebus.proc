@@ -16,7 +16,7 @@ METHOD (BseBus, connect-track) {
   IN    = bse_param_spec_object ("sbus", NULL, NULL, BSE_TYPE_BUS, SFI_PARAM_STANDARD);
   IN    = bse_param_spec_object ("track", NULL, NULL, BSE_TYPE_TRACK, SFI_PARAM_STANDARD);
   OUT   = bse_param_spec_genum ("error", NULL, NULL,
-                                BSE_TYPE_ERROR_TYPE, BSE_ERROR_NONE, SFI_PARAM_STANDARD);
+                                BSE_TYPE_ERROR_TYPE, Bse::ERROR_NONE, SFI_PARAM_STANDARD);
 }
 BODY (BseProcedureClass *proc,
       const GValue      *in_values,
@@ -25,15 +25,15 @@ BODY (BseProcedureClass *proc,
   /* extract parameter values */
   BseBus *self = (BseBus*) bse_value_get_object (in_values++);
   BseTrack *track = (BseTrack*) bse_value_get_object (in_values++);
-  BseErrorType error = BSE_ERROR_NONE;
+  Bse::ErrorType error = Bse::ERROR_NONE;
 
   /* check parameters */
   if (!BSE_IS_BUS (self) || !BSE_IS_TRACK (track))
-    return BSE_ERROR_PROC_PARAM_INVAL;
+    return Bse::ERROR_PROC_PARAM_INVAL;
 
   /* action */
   if (!BSE_ITEM (self)->parent || BSE_ITEM (self)->parent != BSE_ITEM (track)->parent)
-    error = BSE_ERROR_SOURCE_PARENT_MISMATCH;
+    error = Bse::ERROR_SOURCE_PARENT_MISMATCH;
   else
     {
       error = bse_bus_connect (self, BSE_ITEM (track));
@@ -44,7 +44,7 @@ BODY (BseProcedureClass *proc,
   /* set output parameters */
   g_value_set_enum (out_values++, error);
 
-  return BSE_ERROR_NONE;
+  return Bse::ERROR_NONE;
 }
 
 METHOD (BseBus, disconnect-track) {
@@ -52,7 +52,7 @@ METHOD (BseBus, disconnect-track) {
   IN    = bse_param_spec_object ("sbus", NULL, NULL, BSE_TYPE_BUS, SFI_PARAM_STANDARD);
   IN    = bse_param_spec_object ("track", NULL, NULL, BSE_TYPE_TRACK, SFI_PARAM_STANDARD);
   OUT   = bse_param_spec_genum ("error", NULL, NULL,
-                                BSE_TYPE_ERROR_TYPE, BSE_ERROR_NONE, SFI_PARAM_STANDARD);
+                                BSE_TYPE_ERROR_TYPE, Bse::ERROR_NONE, SFI_PARAM_STANDARD);
 }
 BODY (BseProcedureClass *proc,
       const GValue      *in_values,
@@ -61,15 +61,15 @@ BODY (BseProcedureClass *proc,
   /* extract parameter values */
   BseBus *self = (BseBus*) bse_value_get_object (in_values++);
   BseTrack *track = (BseTrack*) bse_value_get_object (in_values++);
-  BseErrorType error = BSE_ERROR_NONE;
+  Bse::ErrorType error = Bse::ERROR_NONE;
 
   /* check parameters */
   if (!BSE_IS_BUS (self) || !BSE_IS_TRACK (track))
-    return BSE_ERROR_PROC_PARAM_INVAL;
+    return Bse::ERROR_PROC_PARAM_INVAL;
 
   /* action */
   if (!BSE_ITEM (self)->parent || BSE_ITEM (self)->parent != BSE_ITEM (track)->parent)
-    error = BSE_ERROR_SOURCE_PARENT_MISMATCH;
+    error = Bse::ERROR_SOURCE_PARENT_MISMATCH;
   else
     {
       error = bse_bus_disconnect (self, BSE_ITEM (track));
@@ -80,7 +80,7 @@ BODY (BseProcedureClass *proc,
   /* set output parameters */
   g_value_set_enum (out_values++, error);
 
-  return BSE_ERROR_NONE;
+  return Bse::ERROR_NONE;
 }
 
 METHOD (BseBus, connect-bus) {
@@ -88,7 +88,7 @@ METHOD (BseBus, connect-bus) {
   IN    = bse_param_spec_object ("sbus", NULL, NULL, BSE_TYPE_BUS, SFI_PARAM_STANDARD);
   IN    = bse_param_spec_object ("bus", NULL, NULL, BSE_TYPE_BUS, SFI_PARAM_STANDARD);
   OUT   = bse_param_spec_genum ("error", NULL, NULL,
-                                BSE_TYPE_ERROR_TYPE, BSE_ERROR_NONE, SFI_PARAM_STANDARD);
+                                BSE_TYPE_ERROR_TYPE, Bse::ERROR_NONE, SFI_PARAM_STANDARD);
 }
 BODY (BseProcedureClass *proc,
       const GValue      *in_values,
@@ -97,15 +97,15 @@ BODY (BseProcedureClass *proc,
   /* extract parameter values */
   BseBus *self = (BseBus*) bse_value_get_object (in_values++);
   BseBus *bus = (BseBus*) bse_value_get_object (in_values++);
-  BseErrorType error = BSE_ERROR_NONE;
+  Bse::ErrorType error = Bse::ERROR_NONE;
 
   /* check parameters */
   if (!BSE_IS_BUS (self) || !BSE_IS_BUS (bus))
-    return BSE_ERROR_PROC_PARAM_INVAL;
+    return Bse::ERROR_PROC_PARAM_INVAL;
 
   /* action */
   if (!BSE_ITEM (self)->parent || BSE_ITEM (self)->parent != BSE_ITEM (bus)->parent)
-    error = BSE_ERROR_SOURCE_PARENT_MISMATCH;
+    error = Bse::ERROR_SOURCE_PARENT_MISMATCH;
   else
     {
       error = bse_bus_connect (self, BSE_ITEM (bus));
@@ -116,7 +116,7 @@ BODY (BseProcedureClass *proc,
   /* set output parameters */
   g_value_set_enum (out_values++, error);
 
-  return BSE_ERROR_NONE;
+  return Bse::ERROR_NONE;
 }
 
 METHOD (BseBus, disconnect-bus) {
@@ -124,7 +124,7 @@ METHOD (BseBus, disconnect-bus) {
   IN    = bse_param_spec_object ("sbus", NULL, NULL, BSE_TYPE_BUS, SFI_PARAM_STANDARD);
   IN    = bse_param_spec_object ("bus", NULL, NULL, BSE_TYPE_BUS, SFI_PARAM_STANDARD);
   OUT   = bse_param_spec_genum ("error", NULL, NULL,
-                                BSE_TYPE_ERROR_TYPE, BSE_ERROR_NONE, SFI_PARAM_STANDARD);
+                                BSE_TYPE_ERROR_TYPE, Bse::ERROR_NONE, SFI_PARAM_STANDARD);
 }
 BODY (BseProcedureClass *proc,
       const GValue      *in_values,
@@ -133,15 +133,15 @@ BODY (BseProcedureClass *proc,
   /* extract parameter values */
   BseBus *self = (BseBus*) bse_value_get_object (in_values++);
   BseBus *bus = (BseBus*) bse_value_get_object (in_values++);
-  BseErrorType error = BSE_ERROR_NONE;
+  Bse::ErrorType error = Bse::ERROR_NONE;
 
   /* check parameters */
   if (!BSE_IS_BUS (self) || !BSE_IS_BUS (bus))
-    return BSE_ERROR_PROC_PARAM_INVAL;
+    return Bse::ERROR_PROC_PARAM_INVAL;
 
   /* action */
   if (!BSE_ITEM (self)->parent || BSE_ITEM (self)->parent != BSE_ITEM (bus)->parent)
-    error = BSE_ERROR_SOURCE_PARENT_MISMATCH;
+    error = Bse::ERROR_SOURCE_PARENT_MISMATCH;
   else
     {
       error = bse_bus_disconnect (self, BSE_ITEM (bus));
@@ -152,14 +152,14 @@ BODY (BseProcedureClass *proc,
   /* set output parameters */
   g_value_set_enum (out_values++, error);
 
-  return BSE_ERROR_NONE;
+  return Bse::ERROR_NONE;
 }
 
 METHOD (BseBus, ensure-output) {
   HELP  = _("Ensure that a bus has an output connection.");
   IN    = bse_param_spec_object ("bus", NULL, NULL, BSE_TYPE_BUS, SFI_PARAM_STANDARD);
   OUT   = bse_param_spec_genum ("error", NULL, NULL,
-                                BSE_TYPE_ERROR_TYPE, BSE_ERROR_NONE, SFI_PARAM_STANDARD);
+                                BSE_TYPE_ERROR_TYPE, Bse::ERROR_NONE, SFI_PARAM_STANDARD);
 }
 BODY (BseProcedureClass *proc,
       const GValue      *in_values,
@@ -167,11 +167,11 @@ BODY (BseProcedureClass *proc,
 {
   /* extract parameter values */
   BseBus *self = (BseBus*) bse_value_get_object (in_values++);
-  BseErrorType error = BSE_ERROR_NONE;
+  Bse::ErrorType error = Bse::ERROR_NONE;
 
   /* check parameters */
   if (!BSE_IS_BUS (self))
-    return BSE_ERROR_PROC_PARAM_INVAL;
+    return Bse::ERROR_PROC_PARAM_INVAL;
 
   /* action */
   BseItem *parent = BSE_ITEM (self)->parent;
@@ -190,5 +190,5 @@ BODY (BseProcedureClass *proc,
   /* set output parameters */
   g_value_set_enum (out_values++, error);
 
-  return BSE_ERROR_NONE;
+  return Bse::ERROR_NONE;
 }

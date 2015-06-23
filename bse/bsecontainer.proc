@@ -22,12 +22,12 @@ METHOD (BseContainer, list-children) {
 
   /* check parameters */
   if (!BSE_IS_CONTAINER (container))
-    return BSE_ERROR_PROC_PARAM_INVAL;
+    return Bse::ERROR_PROC_PARAM_INVAL;
 
   /* set output parameters */
   bse_value_take_boxed (out_values++, bse_container_list_children (container));
 
-  return BSE_ERROR_NONE;
+  return Bse::ERROR_NONE;
 }
 
 METHOD (BseContainer, get-item) {
@@ -50,10 +50,10 @@ METHOD (BseContainer, get-item) {
 
   /* check parameters */
   if (!BSE_IS_CONTAINER (container) || !g_type_is_a (type, BSE_TYPE_ITEM))
-    return BSE_ERROR_PROC_PARAM_INVAL;
+    return Bse::ERROR_PROC_PARAM_INVAL;
 
   /* set output parameters */
   bse_value_set_object (out_values++, bse_container_get_item (container, type, seqid));
 
-  return BSE_ERROR_NONE;
+  return Bse::ERROR_NONE;
 }

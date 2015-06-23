@@ -37,5 +37,5 @@ PROCEDURE (bse-proxy-check, "Proxy Check") {
   /* set output parameters */
   sfi_value_set_bool (out_values++, is_a);
 
-  return BSE_ERROR_NONE;
+  return Bse::ERROR_NONE;
 }

@@ -29,17 +29,17 @@ METHOD (BseSong, create-bus) {
 {
   /* extract parameter values */
   BseSong *self = (BseSong*) bse_value_get_object (in_values++);
-  BseErrorType error = BSE_ERROR_NONE;
+  Bse::ErrorType error = Bse::ERROR_NONE;
   BseUndoStack *ustack;
   BseItem *child = NULL;
 
   /* check parameters */
   if (!BSE_IS_SONG (self))
-    return BSE_ERROR_PROC_PARAM_INVAL;
+    return Bse::ERROR_PROC_PARAM_INVAL;
 
   /* action */
   if (BSE_SOURCE_PREPARED (self))
-    error = BSE_ERROR_SOURCE_BUSY;
+    error = Bse::ERROR_SOURCE_BUSY;
   else
     {
       ustack = bse_item_undo_open (self, "create-bus");
@@ -67,15 +67,15 @@ METHOD (BseSong, remove-bus) {
   /* extract parameter values */
   BseSong *self = (BseSong*) bse_value_get_object (in_values++);
   BseItem *child = (BseItem*) bse_value_get_object (in_values++);
-  BseErrorType error = BSE_ERROR_NONE;
+  Bse::ErrorType error = Bse::ERROR_NONE;
 
   /* check parameters */
   if (!BSE_IS_SONG (self) || !BSE_IS_BUS (child) || BSE_ITEM (child)->parent != BSE_ITEM (self))
-    return BSE_ERROR_PROC_PARAM_INVAL;
+    return Bse::ERROR_PROC_PARAM_INVAL;
 
   /* action */
   if (BSE_SOURCE_PREPARED (self))
-    error = BSE_ERROR_SOURCE_BUSY;
+    error = Bse::ERROR_SOURCE_BUSY;
   else
     {
       BseUndoStack *ustack = bse_item_undo_open (self, "remove-child %s", bse_object_debug_name (child));
@@ -110,7 +110,7 @@ METHOD (BseSong, ensure-master-bus) {
 
   /* check parameters */
   if (!BSE_IS_SONG (self))
-    return BSE_ERROR_PROC_PARAM_INVAL;
+    return Bse::ERROR_PROC_PARAM_INVAL;
 
   /* action */
   child = bse_song_ensure_master (self);
@@ -118,7 +118,7 @@ METHOD (BseSong, ensure-master-bus) {
   /* set output parameters */
   bse_value_set_object (out_values++, child);
 
-  return BSE_ERROR_NONE;
+  return Bse::ERROR_NONE;
 }
 
 METHOD (BseSong, get-master-bus) {
@@ -136,7 +136,7 @@ METHOD (BseSong, get-master-bus) {
 
   /* check parameters */
   if (!BSE_IS_SONG (self))
-    return BSE_ERROR_PROC_PARAM_INVAL;
+    return Bse::ERROR_PROC_PARAM_INVAL;
 
   /* action */
   BseBus *bus = bse_song_find_master (self);
@@ -144,7 +144,7 @@ METHOD (BseSong, get-master-bus) {
   /* set output parameters */
   bse_value_set_object (out_values++, bus);
 
-  return BSE_ERROR_NONE;
+  return Bse::ERROR_NONE;
 }
 
 static const gchar*
@@ -202,7 +202,7 @@ METHOD (BseSong, ensure-track-links) {
 
   /* check parameters */
   if (!BSE_IS_SONG (self))
-    return BSE_ERROR_PROC_PARAM_INVAL;
+    return Bse::ERROR_PROC_PARAM_INVAL;
 
   /* action */
   gboolean clear_undo = FALSE;
@@ -221,7 +221,7 @@ METHOD (BseSong, ensure-track-links) {
         bse_project_clear_undo (project);
     }
 
-  return BSE_ERROR_NONE;
+  return Bse::ERROR_NONE;
 }
 
 METHOD (BseSong, create-part) {
@@ -241,7 +241,7 @@ METHOD (BseSong, create-part) {
 
   /* check parameters */
   if (!BSE_IS_SONG (self))
-    return BSE_ERROR_PROC_PARAM_INVAL;
+    return Bse::ERROR_PROC_PARAM_INVAL;
 
   /* action */
   ustack = bse_item_undo_open (self, "create-part");
@@ -252,7 +252,7 @@ METHOD (BseSong, create-part) {
   /* set output parameters */
   bse_value_set_object (out_values++, child);
 
-  return BSE_ERROR_NONE;
+  return Bse::ERROR_NONE;
 }
 
 METHOD (BseSong, remove-part) {
@@ -268,15 +268,15 @@ METHOD (BseSong, remove-part) {
   /* extract parameter values */
   BseSong *self = (BseSong*) bse_value_get_object (in_values++);
   BseItem *child = (BseItem*) bse_value_get_object (in_values++);
-  BseErrorType error = BSE_ERROR_NONE;
+  Bse::ErrorType error = Bse::ERROR_NONE;
 
   /* check parameters */
   if (!BSE_IS_SONG (self) || !BSE_IS_PART (child) || BSE_ITEM (child)->parent != BSE_ITEM (self))
-    return BSE_ERROR_PROC_PARAM_INVAL;
+    return Bse::ERROR_PROC_PARAM_INVAL;
 
   /* action */
   if (BSE_SOURCE_PREPARED (self))
-    error = BSE_ERROR_SOURCE_BUSY;
+    error = Bse::ERROR_SOURCE_BUSY;
   else
     {
       BseUndoStack *ustack = bse_item_undo_open (self, "remove-child %s", bse_object_debug_name (child));
@@ -305,16 +305,16 @@ METHOD (BseSong, create-track) {
 {
   /* extract parameter values */
   BseSong *self = (BseSong*) bse_value_get_object (in_values++);
-  BseErrorType error = BSE_ERROR_NONE;
+  Bse::ErrorType error = Bse::ERROR_NONE;
   BseItem *child = NULL;
 
   /* check parameters */
   if (!BSE_IS_SONG (self))
-    return BSE_ERROR_PROC_PARAM_INVAL;
+    return Bse::ERROR_PROC_PARAM_INVAL;
 
   /* action */
   if (BSE_SOURCE_PREPARED (self))
-    error = BSE_ERROR_SOURCE_BUSY;
+    error = Bse::ERROR_SOURCE_BUSY;
   else
     {
       BseUndoStack *ustack = bse_item_undo_open (self, "create-track");
@@ -342,16 +342,16 @@ METHOD (BseSong, remove-track) {
   /* extract parameter values */
   BseSong *self = (BseSong*) bse_value_get_object (in_values++);
   BseItem *child = (BseItem*) bse_value_get_object (in_values++);
-  BseErrorType error = BSE_ERROR_NONE;
+  Bse::ErrorType error = Bse::ERROR_NONE;
 
   /* check parameters */
   if (!BSE_IS_SONG (self) || !BSE_IS_TRACK (child) ||
       BSE_ITEM (child)->parent != BSE_ITEM (self))
-    return BSE_ERROR_PROC_PARAM_INVAL;
+    return Bse::ERROR_PROC_PARAM_INVAL;
 
   /* action */
   if (BSE_SOURCE_PREPARED (self))
-    error = BSE_ERROR_SOURCE_BUSY;
+    error = Bse::ERROR_SOURCE_BUSY;
   else
     {
       BseUndoStack *ustack = bse_item_undo_open (self, "remove-child %s", bse_object_debug_name (child));
@@ -390,7 +390,7 @@ METHOD (BseSong, find-track-for-part) {
   /* check parameters */
   if (!BSE_IS_SONG (self) || !BSE_IS_PART (part) ||
       BSE_ITEM (part)->parent != BSE_ITEM (self))
-    return BSE_ERROR_PROC_PARAM_INVAL;
+    return Bse::ERROR_PROC_PARAM_INVAL;
 
   /* action */
   for (ring = self->tracks_SL; ring; ring = sfi_ring_walk (ring, self->tracks_SL))
@@ -408,7 +408,7 @@ METHOD (BseSong, find-track-for-part) {
   /* set output parameters */
   bse_value_set_object (out_values++, track);
 
-  return BSE_ERROR_NONE;
+  return Bse::ERROR_NONE;
 }
 
 METHOD (BseSong, find-any-track-for-part) {
@@ -430,12 +430,12 @@ METHOD (BseSong, find-any-track-for-part) {
   /* check parameters */
   if (!BSE_IS_SONG (self) || !BSE_IS_PART (part) ||
       BSE_ITEM (part)->parent != BSE_ITEM (self))
-    return BSE_ERROR_PROC_PARAM_INVAL;
+    return Bse::ERROR_PROC_PARAM_INVAL;
 
   /* set output parameters */
   bse_value_set_object (out_values++, bse_song_find_first_track (self, part));
 
-  return BSE_ERROR_NONE;
+  return Bse::ERROR_NONE;
 }
 
 METHOD (BseSong, synthesize-note) {
@@ -467,7 +467,7 @@ METHOD (BseSong, synthesize-note) {
   /* check parameters */
   if (!BSE_IS_SONG (self) || !BSE_IS_TRACK (track) ||
       BSE_ITEM (track)->parent != BSE_ITEM (self))
-    return BSE_ERROR_PROC_PARAM_INVAL;
+    return Bse::ERROR_PROC_PARAM_INVAL;
 
   /* action */
   if (BSE_SOURCE_PREPARED (self) && self->midi_receiver_SL)
@@ -484,7 +484,7 @@ METHOD (BseSong, synthesize-note) {
       bse_project_keep_activated (BSE_PROJECT (BSE_ITEM (self)->parent), tstamp + duration);
     }
 
-  return BSE_ERROR_NONE;
+  return Bse::ERROR_NONE;
 }
 
 METHOD (BseSong, get-timing) {
@@ -503,7 +503,7 @@ METHOD (BseSong, get-timing) {
 
   /* check parameters */
   if (!BSE_IS_SONG (self))
-    return BSE_ERROR_PROC_PARAM_INVAL;
+    return Bse::ERROR_PROC_PARAM_INVAL;
 
   /* action */
   bse_song_get_timing (self, tick, &timing);
@@ -511,5 +511,5 @@ METHOD (BseSong, get-timing) {
   /* set output parameters */
   bse_value_set_boxed (out_values++, &timing);
 
-  return BSE_ERROR_NONE;
+  return Bse::ERROR_NONE;
 }

@@ -127,11 +127,11 @@ guint		bse_source_find_ichannel	(BseSource	*source,
 						 const gchar    *ichannel_ident);
 guint		bse_source_find_ochannel	(BseSource	*source,
 						 const gchar    *ochannel_ident);
-BseErrorType	bse_source_set_input		(BseSource	*source,
+Bse::ErrorType	bse_source_set_input		(BseSource	*source,
 						 guint		 ichannel,
 						 BseSource	*osource,
 						 guint		 ochannel);
-BseErrorType	bse_source_unset_input		(BseSource	*source,
+Bse::ErrorType	bse_source_unset_input		(BseSource	*source,
 						 guint		 ichannel,
 						 BseSource	*osource,
 						 guint		 ochannel);
@@ -190,7 +190,7 @@ void		bse_source_access_modules	(BseSource	*source,
 						 gpointer	 data,
 						 BseFreeFunc	 data_free_func,
 						 BseTrans	*trans);
-BseErrorType    bse_source_check_input          (BseSource      *source,
+Bse::ErrorType    bse_source_check_input          (BseSource      *source,
                                                  guint           ichannel,
                                                  BseSource      *osource,
                                                  guint           ochannel);
@@ -223,7 +223,7 @@ typedef struct {
   guint             midi_channel;
   BseMidiSignalType signal_type;
 } BseAutomationProperty;
-BseErrorType                 bse_source_set_automation_property   (BseSource         *source,
+Bse::ErrorType                 bse_source_set_automation_property   (BseSource         *source,
                                                                    const gchar       *prop_name,
                                                                    guint              midi_channel,
                                                                    BseMidiSignalType  signal_type);

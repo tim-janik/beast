@@ -176,7 +176,7 @@ silent_error_handler (const char *file,
 {
 }
 
-static BseErrorType
+static Bse::ErrorType
 bse_midi_device_alsa_open (BseDevice     *device,
                           gboolean       require_readable,
                           gboolean       require_writable,
@@ -202,12 +202,12 @@ bse_midi_device_alsa_open (BseDevice     *device,
     }
 
   /* try setup */
-  BseErrorType error = !aerror ? BSE_ERROR_NONE : bse_error_from_errno (-aerror, BSE_ERROR_FILE_OPEN_FAILED);
+  Bse::ErrorType error = !aerror ? Bse::ERROR_NONE : bse_error_from_errno (-aerror, Bse::ERROR_FILE_OPEN_FAILED);
   snd_rawmidi_params_t *mparams = alsa_alloca0 (snd_rawmidi_params);
   if (alsa->read_handle)
     {
       if (!error && snd_rawmidi_params_current (alsa->read_handle, mparams) < 0)
-        error = BSE_ERROR_FILE_OPEN_FAILED;
+        error = Bse::ERROR_FILE_OPEN_FAILED;
       if (0)
         g_printerr ("midiread:  buffer=%zd active_sensing=%d min_avail=%zd\n",
                     snd_rawmidi_params_get_buffer_size (mparams),
@@ -217,7 +217,7 @@ bse_midi_device_alsa_open (BseDevice     *device,
   if (alsa->write_handle)
     {
       if (!error && snd_rawmidi_params_current (alsa->write_handle, mparams) < 0)
-        error = BSE_ERROR_FILE_OPEN_FAILED;
+        error = Bse::ERROR_FILE_OPEN_FAILED;
       if (0)
         g_printerr ("midiwrite: buffer=%zd active_sensing=%d min_avail=%zd\n",
                     snd_rawmidi_params_get_buffer_size (mparams),
@@ -225,7 +225,7 @@ bse_midi_device_alsa_open (BseDevice     *device,
                     snd_rawmidi_params_get_avail_min (mparams));
     }
   if (!error && alsa->read_handle && snd_rawmidi_poll_descriptors_count (alsa->read_handle) <= 0)
-    error = BSE_ERROR_FILE_OPEN_FAILED;
+    error = Bse::ERROR_FILE_OPEN_FAILED;
 
   /* setup MIDI handle or shutdown */
   if (!error)

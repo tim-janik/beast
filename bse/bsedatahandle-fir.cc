@@ -64,11 +64,11 @@ public:
       }
   }
 
-  BseErrorType
+  Bse::ErrorType
   open (GslDataHandleSetup *setup)
   {
-    BseErrorType error = gsl_data_handle_open (m_src_handle);
-    if (error != BSE_ERROR_NONE)
+    Bse::ErrorType error = gsl_data_handle_open (m_src_handle);
+    if (error != Bse::ERROR_NONE)
       return error;
 
     /* !not! m_dhandle.setup; the framework magically ensures that *m_dhandle.setup
@@ -85,7 +85,7 @@ public:
 
     design_filter_coefficients (gsl_data_handle_mix_freq (m_src_handle));
 
-    return BSE_ERROR_NONE;
+    return Bse::ERROR_NONE;
   }
 
   void
@@ -238,7 +238,7 @@ public:
   }
 private:
 /* for the "C" API (vtable) */
-  static BseErrorType
+  static Bse::ErrorType
   dh_open (GslDataHandle *dhandle, GslDataHandleSetup *setup)
   {
     return dh_cast (dhandle)->open (setup);

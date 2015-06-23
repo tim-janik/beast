@@ -35,7 +35,7 @@ GType		bse_script_proc_register	(const gchar	*script_file,
 						 const gchar	*license,
 						 SfiRing	*params);
 SfiRing*	bse_script_path_list_files	(void);
-BseErrorType    bse_script_file_register	(const gchar	*file_name,
+Bse::ErrorType    bse_script_file_register	(const gchar	*file_name,
 						 BseJanitor    **janitor_p);
 GValue*		bse_script_check_client_msg	(SfiGlueDecoder *decoder,
 						 BseJanitor	*janitor,

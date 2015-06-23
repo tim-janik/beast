@@ -40,7 +40,7 @@ WaveChunk::WaveChunk (const WaveChunk &rhs)
     gsl_data_handle_open (dhandle);
 }
 
-BseErrorType
+Bse::ErrorType
 WaveChunk::change_dhandle (GslDataHandle *xhandle,
                            gdouble        osc_freq,
                            gchar        **copy_xinfos)
@@ -55,25 +55,25 @@ WaveChunk::change_dhandle (GslDataHandle *xhandle,
       gsl_data_handle_unref (xhandle);
       xhandle = tmp_handle;
     }
-  BseErrorType error = gsl_data_handle_open (xhandle);
+  Bse::ErrorType error = gsl_data_handle_open (xhandle);
   gsl_data_handle_unref (xhandle);
   if (!error)
     {
       if (dhandle)
         gsl_data_handle_close (dhandle);
       dhandle = xhandle;
-      return BSE_ERROR_NONE;
+      return Bse::ERROR_NONE;
     }
   else
     return error;
 }
 
-BseErrorType
+Bse::ErrorType
 WaveChunk::set_dhandle_from_file (const string &fname,
                                   gdouble       osc_freq,
                                   gchar       **xinfos)
 {
-  BseErrorType error = BSE_ERROR_NONE;
+  Bse::ErrorType error = Bse::ERROR_NONE;
   BseWaveFileInfo *wfi = bse_wave_file_info_load (fname.c_str(), &error);
   GslDataHandle *xhandle = NULL;
   if (wfi)
@@ -107,11 +107,11 @@ Wave::Wave (const gchar    *wave_name,
 {
 }
 
-BseErrorType
+Bse::ErrorType
 Wave::add_chunk (GslDataHandle  *dhandle,
                  gchar         **xinfos)
 {
-  g_return_val_if_fail (dhandle != NULL, BSE_ERROR_INTERNAL);
+  g_return_val_if_fail (dhandle != NULL, Bse::ERROR_INTERNAL);
 
   if (xinfos)
     {
@@ -122,7 +122,7 @@ Wave::add_chunk (GslDataHandle  *dhandle,
   else
     gsl_data_handle_ref (dhandle);
 
-  BseErrorType error = gsl_data_handle_open (dhandle);
+  Bse::ErrorType error = gsl_data_handle_open (dhandle);
   if (!error)
     {
       WaveChunk wc;
@@ -233,10 +233,10 @@ Wave::sort ()
 #endif
 }
 
-BseErrorType
+Bse::ErrorType
 Wave::store (const string file_name)
 {
-  g_return_val_if_fail (file_name.c_str() != NULL, BSE_ERROR_INTERNAL);
+  g_return_val_if_fail (file_name.c_str() != NULL, Bse::ERROR_INTERNAL);
 
   /* save to temporary file */
   gint fd;
@@ -252,7 +252,7 @@ Wave::store (const string file_name)
   if (fd < 0)
     {
       g_free (temp_file);
-      return bse_error_from_errno (errno, BSE_ERROR_FILE_OPEN_FAILED);
+      return bse_error_from_errno (errno, Bse::ERROR_FILE_OPEN_FAILED);
     }
 
   /* figure default mix_freq */
@@ -397,19 +397,19 @@ Wave::store (const string file_name)
 
   sfi_wstore_puts (wstore, "}\n");
   gint nerrno = sfi_wstore_flush_fd (wstore, fd);
-  BseErrorType error = bse_error_from_errno (-nerrno, BSE_ERROR_FILE_WRITE_FAILED);
-  if (close (fd) < 0 && error == BSE_ERROR_NONE)
-    error = bse_error_from_errno (errno, BSE_ERROR_FILE_WRITE_FAILED);
+  Bse::ErrorType error = bse_error_from_errno (-nerrno, Bse::ERROR_FILE_WRITE_FAILED);
+  if (close (fd) < 0 && error == Bse::ERROR_NONE)
+    error = bse_error_from_errno (errno, Bse::ERROR_FILE_WRITE_FAILED);
   sfi_wstore_destroy (wstore);
 
   /* replace output file by temporary file */
-  if (error != BSE_ERROR_NONE)
+  if (error != Bse::ERROR_NONE)
     {
       unlink (temp_file);
     }
   else if (rename (temp_file, file_name.c_str()) < 0)
     {
-      error = bse_error_from_errno (errno, BSE_ERROR_FILE_WRITE_FAILED);
+      error = bse_error_from_errno (errno, Bse::ERROR_FILE_WRITE_FAILED);
       unlink (temp_file);
     }
   g_free (temp_file);

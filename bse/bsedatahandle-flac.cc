@@ -167,16 +167,16 @@ public:
     if (m_init_ok)
       gsl_data_handle_common_free (&m_dhandle);
   }
-  BseErrorType
+  Bse::ErrorType
   open (GslDataHandleSetup *setup)
   {
     m_decoder = FLAC__stream_decoder_new();
     if (!m_decoder)
-      return BSE_ERROR_FILE_OPEN_FAILED;
+      return Bse::ERROR_FILE_OPEN_FAILED;
 
     m_rfile = gsl_rfile_open (m_file_name.c_str());
     if (!m_rfile)
-      return gsl_error_from_errno (errno, BSE_ERROR_FILE_OPEN_FAILED);
+      return gsl_error_from_errno (errno, Bse::ERROR_FILE_OPEN_FAILED);
 
     if (m_init_byte_offset >= 0 && m_init_byte_size >= 0)
       {
@@ -206,7 +206,7 @@ public:
                                                 file_eof_callback,
                                                 flac_write_callback, NULL, flac_error_callback, this);
     if (err != 0)
-      return BSE_ERROR_FILE_OPEN_FAILED;
+      return Bse::ERROR_FILE_OPEN_FAILED;
 
     /* decode enough to figure out number of channels */
     FLAC__bool mdok;
@@ -215,10 +215,10 @@ public:
     while (FLAC__stream_decoder_get_channels (m_decoder) == 0 && mdok);
 
     if (FLAC__stream_decoder_get_channels (m_decoder) == 0)
-      return BSE_ERROR_WRONG_N_CHANNELS;
+      return Bse::ERROR_WRONG_N_CHANNELS;
 
     if (m_error_occurred)
-      return BSE_ERROR_NO_HEADER;
+      return Bse::ERROR_NO_HEADER;
 
     m_n_channels = setup->n_channels = FLAC__stream_decoder_get_channels (m_decoder);
     setup->n_values = FLAC__stream_decoder_get_total_samples (m_decoder) * m_n_channels;
@@ -226,7 +226,7 @@ public:
     setup->mix_freq = FLAC__stream_decoder_get_sample_rate (m_decoder);
     setup->xinfos = bse_xinfos_add_float (setup->xinfos, "osc-freq", m_osc_freq);
 
-    return BSE_ERROR_NONE;
+    return Bse::ERROR_NONE;
   }
   void
   close()
@@ -296,7 +296,7 @@ public:
   }
 private:
   // for the "C" API (vtable)
-  static BseErrorType
+  static Bse::ErrorType
   dh_open (GslDataHandle *dhandle, GslDataHandleSetup *setup)
   {
     return dh_cast (dhandle)->open (setup);
@@ -357,7 +357,7 @@ bse_data_handle_new_flac_zoffset (const char *file_name,
     return NULL;
 
   /* figure out mix_freq, n_channels */
-  BseErrorType error = gsl_data_handle_open (dhandle);
+  Bse::ErrorType error = gsl_data_handle_open (dhandle);
   if (!error)
     {
       if (n_channels_p)
@@ -380,7 +380,7 @@ Flac1Handle*
 Flac1Handle::create (GslDataHandle *dhandle)
 {
   if (dhandle->vtable == &DataHandleFlac::dh_vtable &&
-      gsl_data_handle_open (dhandle) == BSE_ERROR_NONE)
+      gsl_data_handle_open (dhandle) == Bse::ERROR_NONE)
     {
       return new Flac1Handle (dhandle);
     }
@@ -429,7 +429,7 @@ Flac1Handle::read_data (void *buffer, uint blength)
     {
       rfile = gsl_rfile_open (dhandle->name);
       if (!rfile)
-        return gsl_error_from_errno (errno, BSE_ERROR_FILE_OPEN_FAILED);
+        return gsl_error_from_errno (errno, Bse::ERROR_FILE_OPEN_FAILED);
       byte_length = gsl_rfile_length (rfile);
       gsl_rfile_seek_set (rfile, flac_handle->file_byte_offset());
     }

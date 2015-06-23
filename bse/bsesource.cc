@@ -463,7 +463,7 @@ aprop_array_free (gpointer data)
   g_bsearch_array_free (aparray, &aprop_bconfig);
 }
 
-BseErrorType
+Bse::ErrorType
 bse_source_set_automation_property (BseSource        *source,
                                     const gchar      *prop_name,
                                     guint             midi_channel,
@@ -474,20 +474,20 @@ bse_source_set_automation_property (BseSource        *source,
             BSE_MIDI_CONTROL_CONTINUOUS_31 == BseMidiControlType (BSE_MIDI_SIGNAL_CONTINUOUS_31) &&
             BSE_MIDI_CONTROL_0             == BseMidiControlType (BSE_MIDI_SIGNAL_CONTROL_0) &&
             BSE_MIDI_CONTROL_127           == BseMidiControlType (BSE_MIDI_SIGNAL_CONTROL_127));
-  g_return_val_if_fail (BSE_IS_SOURCE (source), BSE_ERROR_INTERNAL);
-  g_return_val_if_fail (prop_name != NULL, BSE_ERROR_INTERNAL);
+  g_return_val_if_fail (BSE_IS_SOURCE (source), Bse::ERROR_INTERNAL);
+  g_return_val_if_fail (prop_name != NULL, Bse::ERROR_INTERNAL);
   if (BSE_SOURCE_PREPARED (source))
-    return BSE_ERROR_SOURCE_BUSY;
+    return Bse::ERROR_SOURCE_BUSY;
   const BseMidiControlType control_type = BseMidiControlType (signal_type);
   if (control_type != BSE_MIDI_CONTROL_NONE &&
       (control_type < BSE_MIDI_CONTROL_CONTINUOUS_0 || control_type > BSE_MIDI_CONTROL_CONTINUOUS_31) &&
       (control_type < BSE_MIDI_CONTROL_0 || control_type > BSE_MIDI_CONTROL_127))
-    return BSE_ERROR_INVALID_MIDI_CONTROL;
+    return Bse::ERROR_INVALID_MIDI_CONTROL;
   source_class_collect_properties (BSE_SOURCE_GET_CLASS (source));
   GParamSpec *pspec = g_object_class_find_property (G_OBJECT_GET_CLASS (source), prop_name);
   SfiRing *ring = sfi_ring_find (BSE_SOURCE_GET_CLASS (source)->automation_properties, pspec);
   if (!ring)    /* !pspec or pspec not found */
-    return BSE_ERROR_INVALID_PROPERTY;
+    return Bse::ERROR_INVALID_PROPERTY;
   GBSearchArray *aparray = (GBSearchArray*) g_object_get_data (source, "BseSource-AutomationProperties"), *oarray = aparray;
   if (!aparray)
     aparray = g_bsearch_array_create (&aprop_bconfig);
@@ -511,7 +511,7 @@ bse_source_set_automation_property (BseSource        *source,
       ap->signal_type = signal_type;
       g_object_notify (source, pspec->name);
     }
-  return BSE_ERROR_NONE;
+  return Bse::ERROR_NONE;
 }
 
 void
@@ -1215,36 +1215,36 @@ check_jchannel_connection (BseSource *source,
     return ochannel == input->idata.ochannel && osource == input->idata.osource ? 0 : -1;
 }
 
-BseErrorType
+Bse::ErrorType
 bse_source_set_input (BseSource *source,
 		      guint      ichannel,
 		      BseSource *osource,
 		      guint      ochannel)
 {
-  g_return_val_if_fail (BSE_IS_SOURCE (source), BSE_ERROR_INTERNAL);
-  g_return_val_if_fail (BSE_IS_SOURCE (osource), BSE_ERROR_INTERNAL);
-  g_return_val_if_fail (BSE_ITEM (source)->parent == BSE_ITEM (osource)->parent, BSE_ERROR_INTERNAL);
+  g_return_val_if_fail (BSE_IS_SOURCE (source), Bse::ERROR_INTERNAL);
+  g_return_val_if_fail (BSE_IS_SOURCE (osource), Bse::ERROR_INTERNAL);
+  g_return_val_if_fail (BSE_ITEM (source)->parent == BSE_ITEM (osource)->parent, Bse::ERROR_INTERNAL);
   if (BSE_SOURCE_PREPARED (source))	/* FIXME: check context sets */
     {
-      g_return_val_if_fail (BSE_SOURCE_PREPARED (osource), BSE_ERROR_INTERNAL); /* paranoid, checked parent already */
-      g_return_val_if_fail (BSE_SOURCE_N_CONTEXTS (source) == BSE_SOURCE_N_CONTEXTS (osource), BSE_ERROR_INTERNAL);
+      g_return_val_if_fail (BSE_SOURCE_PREPARED (osource), Bse::ERROR_INTERNAL); /* paranoid, checked parent already */
+      g_return_val_if_fail (BSE_SOURCE_N_CONTEXTS (source) == BSE_SOURCE_N_CONTEXTS (osource), Bse::ERROR_INTERNAL);
     }
   else
-    g_return_val_if_fail (!BSE_SOURCE_PREPARED (osource), BSE_ERROR_INTERNAL);
+    g_return_val_if_fail (!BSE_SOURCE_PREPARED (osource), Bse::ERROR_INTERNAL);
 
   if (ichannel >= BSE_SOURCE_N_ICHANNELS (source))
-    return BSE_ERROR_SOURCE_NO_SUCH_ICHANNEL;
+    return Bse::ERROR_SOURCE_NO_SUCH_ICHANNEL;
   if (ochannel >= BSE_SOURCE_N_OCHANNELS (osource))
-    return BSE_ERROR_SOURCE_NO_SUCH_OCHANNEL;
+    return Bse::ERROR_SOURCE_NO_SUCH_OCHANNEL;
   if (BSE_SOURCE_IS_JOINT_ICHANNEL (source, ichannel))
     {
       if (check_jchannel_connection (source, ichannel, osource, ochannel) >= 0)
-	return BSE_ERROR_SOURCE_CHANNELS_CONNECTED;
+	return Bse::ERROR_SOURCE_CHANNELS_CONNECTED;
     }
   else if (BSE_SOURCE_INPUT (source, ichannel)->idata.osource)
-    return BSE_ERROR_SOURCE_ICHANNEL_IN_USE;
+    return Bse::ERROR_SOURCE_ICHANNEL_IN_USE;
   if (bse_source_test_input_recursive (osource, source))
-    return BSE_ERROR_SOURCE_BAD_LOOPBACK;
+    return Bse::ERROR_SOURCE_BAD_LOOPBACK;
 
   g_object_ref (source);
   g_object_ref (osource);
@@ -1254,7 +1254,7 @@ bse_source_set_input (BseSource *source,
   g_object_unref (source);
   g_object_unref (osource);
 
-  return BSE_ERROR_NONE;
+  return Bse::ERROR_NONE;
 }
 
 static void
@@ -1321,43 +1321,43 @@ bse_source_real_remove_input (BseSource *source,
     bse_trans_commit (trans);
 }
 
-BseErrorType
+Bse::ErrorType
 bse_source_check_input (BseSource *source,
 			guint      ichannel,
 			BseSource *osource,
 			guint      ochannel)
 {
-  g_return_val_if_fail (BSE_IS_SOURCE (source), BSE_ERROR_INTERNAL);
-  g_return_val_if_fail (BSE_IS_SOURCE (osource), BSE_ERROR_INTERNAL);
+  g_return_val_if_fail (BSE_IS_SOURCE (source), Bse::ERROR_INTERNAL);
+  g_return_val_if_fail (BSE_IS_SOURCE (osource), Bse::ERROR_INTERNAL);
 
   if (BSE_ITEM (source)->parent != BSE_ITEM (osource)->parent)
-    return BSE_ERROR_SOURCE_PARENT_MISMATCH;
+    return Bse::ERROR_SOURCE_PARENT_MISMATCH;
   if (BSE_SOURCE_PREPARED (source))     /* FIXME: check context sets */
     {
-      g_return_val_if_fail (BSE_SOURCE_PREPARED (osource), BSE_ERROR_INTERNAL);	/* paranoid, checked parent already */
-      /* prolly wrong: */ g_return_val_if_fail (BSE_SOURCE_N_CONTEXTS (source) == BSE_SOURCE_N_CONTEXTS (osource), BSE_ERROR_INTERNAL);
+      g_return_val_if_fail (BSE_SOURCE_PREPARED (osource), Bse::ERROR_INTERNAL);	/* paranoid, checked parent already */
+      /* prolly wrong: */ g_return_val_if_fail (BSE_SOURCE_N_CONTEXTS (source) == BSE_SOURCE_N_CONTEXTS (osource), Bse::ERROR_INTERNAL);
     }
   else
-    g_return_val_if_fail (!BSE_SOURCE_PREPARED (osource), BSE_ERROR_INTERNAL);
+    g_return_val_if_fail (!BSE_SOURCE_PREPARED (osource), Bse::ERROR_INTERNAL);
 
   if (ichannel >= BSE_SOURCE_N_ICHANNELS (source))
-    return BSE_ERROR_SOURCE_NO_SUCH_ICHANNEL;
+    return Bse::ERROR_SOURCE_NO_SUCH_ICHANNEL;
   if (ochannel >= BSE_SOURCE_N_OCHANNELS (osource))
-    return BSE_ERROR_SOURCE_NO_SUCH_OCHANNEL;
+    return Bse::ERROR_SOURCE_NO_SUCH_OCHANNEL;
   if (check_jchannel_connection (source, ichannel, osource, ochannel) < 0)
-    return BSE_ERROR_SOURCE_NO_SUCH_CONNECTION;
+    return Bse::ERROR_SOURCE_NO_SUCH_CONNECTION;
 
-  return BSE_ERROR_NONE;
+  return Bse::ERROR_NONE;
 }
 
-BseErrorType
+Bse::ErrorType
 bse_source_unset_input (BseSource *source,
 			guint      ichannel,
 			BseSource *osource,
 			guint      ochannel)
 {
-  BseErrorType error = bse_source_check_input (source, ichannel, osource, ochannel);
-  if (error != BSE_ERROR_NONE)
+  Bse::ErrorType error = bse_source_check_input (source, ichannel, osource, ochannel);
+  if (error != Bse::ERROR_NONE)
     return error;
 
   g_object_ref (source);
@@ -1368,7 +1368,7 @@ bse_source_unset_input (BseSource *source,
   g_object_unref (osource);
   g_object_unref (source);
 
-  return BSE_ERROR_NONE;
+  return Bse::ERROR_NONE;
 }
 
 gboolean
@@ -1377,7 +1377,7 @@ bse_source_get_input (BseSource      *source,
                       BseSource     **osourcep,
                       guint          *ochannelp)
 {
-  g_return_val_if_fail (BSE_IS_SOURCE (source), BSE_ERROR_INTERNAL);
+  g_return_val_if_fail (BSE_IS_SOURCE (source), Bse::ERROR_INTERNAL);
   if (ichannel < BSE_SOURCE_N_ICHANNELS (source) &&
       !BSE_SOURCE_IS_JOINT_ICHANNEL (source, ichannel))
     {
@@ -1427,7 +1427,7 @@ bse_source_must_set_input_loc (BseSource      *source,
                                guint           ochannel,
                                const gchar    *strloc)
 {
-  BseErrorType error = bse_source_set_input (source, ichannel, osource, ochannel);
+  Bse::ErrorType error = bse_source_set_input (source, ichannel, osource, ochannel);
   if (error)
     g_warning ("%s: failed to connect module %s channel %u to module %s channel %u: %s", strloc,
                bse_object_debug_name (source), ichannel,
@@ -1746,11 +1746,11 @@ bse_source_input_backup_to_undo (BseSource      *source,
                                  BseSource      *osource,
                                  guint           ochannel)
 {
-  BseErrorType error = bse_source_check_input (source, ichannel, osource, ochannel);
+  Bse::ErrorType error = bse_source_check_input (source, ichannel, osource, ochannel);
   BseUndoStack *ustack;
   BseStorage *storage;
 
-  g_return_if_fail (error == BSE_ERROR_NONE);
+  g_return_if_fail (error == Bse::ERROR_NONE);
 
   if (BSE_SOURCE_PRIVATE_INPUTS (source))
     return;
@@ -1803,16 +1803,16 @@ resolve_osource_input (gpointer     data,
 		      error);
   else
     {
-      BseErrorType cerror;
+      Bse::ErrorType cerror;
 
       if (!osource)
-	cerror = BSE_ERROR_SOURCE_NO_SUCH_MODULE;
+	cerror = Bse::ERROR_SOURCE_NO_SUCH_MODULE;
       else if (!dinput->ichannel_ident)
-	cerror = BSE_ERROR_SOURCE_NO_SUCH_ICHANNEL;
+	cerror = Bse::ERROR_SOURCE_NO_SUCH_ICHANNEL;
       else if (!dinput->ochannel_ident)
-	cerror = BSE_ERROR_SOURCE_NO_SUCH_OCHANNEL;
+	cerror = Bse::ERROR_SOURCE_NO_SUCH_OCHANNEL;
       else if (BSE_SOURCE_PRIVATE_INPUTS (source))
-        cerror = BSE_ERROR_SOURCE_PRIVATE_ICHANNEL;
+        cerror = Bse::ERROR_SOURCE_PRIVATE_ICHANNEL;
       else
         {
           const gchar *itype = bse_storage_item_get_compat_type (BSE_ITEM (source));

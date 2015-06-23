@@ -87,7 +87,7 @@ void         bse_storage_prepare_write          (BseStorage             *self,
                                                  BseStorageMode          mode);
 void         bse_storage_turn_readable          (BseStorage             *self,
                                                  const gchar            *storage_name);
-BseErrorType bse_storage_input_file             (BseStorage             *self,
+Bse::ErrorType bse_storage_input_file             (BseStorage             *self,
                                                  const gchar            *file_name);
 void         bse_storage_input_text             (BseStorage             *self,
                                                  const gchar            *text,
@@ -120,7 +120,7 @@ void         bse_storage_put_data_handle        (BseStorage             *self,
                                                  GslDataHandle          *dhandle);
 void         bse_storage_put_xinfos             (BseStorage             *self,
                                                  gchar                 **xinfos);
-BseErrorType bse_storage_flush_fd               (BseStorage             *self,
+Bse::ErrorType bse_storage_flush_fd               (BseStorage             *self,
                                                  gint                    fd);
 
 
