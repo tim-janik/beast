@@ -1,5 +1,5 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
-#define BSE_IDL_PSEUDOS 1 // dummy values to satisfy the old code generator
+#define BSE_IDL_SURROGATES 1 // dummy values to satisfy the old code generator
 #include "bseenums.hh"
 #include "gslcommon.hh"
 #include <errno.h>
