@@ -77,7 +77,7 @@ guint              bse_part_insert_note               (BsePart           *self,
                                                        gfloat             velocity);
 guint              bse_part_insert_control            (BsePart           *self,
                                                        guint              tick,
-                                                       BseMidiSignalType  ctype,
+                                                       Bse::MidiSignalType  ctype,
                                                        gfloat             value);
 gboolean           bse_part_change_note               (BsePart           *self,
                                                        guint              id,
@@ -90,7 +90,7 @@ gboolean           bse_part_change_note               (BsePart           *self,
 gboolean           bse_part_change_control            (BsePart           *self,
                                                        guint              id,
                                                        guint              tick,
-                                                       BseMidiSignalType  ctype,
+                                                       Bse::MidiSignalType  ctype,
                                                        gfloat             value);
 BsePartNoteSeq*    bse_part_list_notes                (BsePart           *self,
                                                        guint              channel,
@@ -99,11 +99,11 @@ BsePartNoteSeq*    bse_part_list_notes                (BsePart           *self,
                                                        gint               min_note,
                                                        gint               max_note,
                                                        gboolean           include_crossings);
-BsePartControlSeq* bse_part_list_controls             (BsePart           *self,
+Bse::PartControlSeq bse_part_list_controls           (BsePart           *self,
                                                        guint              channel, /* for note events */
                                                        guint              tick,
                                                        guint              duration,
-                                                       BseMidiSignalType  ctype);
+                                                       Bse::MidiSignalType  ctype);
 void               bse_part_queue_notes_within        (BsePart           *self,
                                                        guint              tick,
                                                        guint              duration,
@@ -111,8 +111,7 @@ void               bse_part_queue_notes_within        (BsePart           *self,
                                                        gint               max_note);
 #define            bse_part_queue_controls(p,t,d)          bse_part_queue_notes_within (p, t, d, BSE_MIN_NOTE, BSE_MAX_NOTE)
 BsePartNoteSeq*    bse_part_list_selected_notes       (BsePart           *self);
-BsePartControlSeq* bse_part_list_selected_controls    (BsePart           *self,
-                                                       BseMidiSignalType  ctype);
+Bse::PartControlSeq bse_part_list_selected_controls  (BsePart *self, Bse::MidiSignalType ctype);
 void               bse_part_select_notes              (BsePart           *self,
                                                        guint              channel,
                                                        guint              tick,
@@ -123,7 +122,7 @@ void               bse_part_select_notes              (BsePart           *self,
 void               bse_part_select_controls           (BsePart           *self,
                                                        guint              tick,
                                                        guint              duration,
-                                                       BseMidiSignalType  ctype,
+                                                       Bse::MidiSignalType  ctype,
                                                        gboolean           selected);
 void               bse_part_select_notes_exclusive    (BsePart           *self,
                                                        guint              channel,
@@ -134,7 +133,7 @@ void               bse_part_select_notes_exclusive    (BsePart           *self,
 void               bse_part_select_controls_exclusive (BsePart           *self,
                                                        guint              tick,
                                                        guint              duration,
-                                                       BseMidiSignalType  ctype);
+                                                       Bse::MidiSignalType  ctype);
 gboolean           bse_part_set_note_selected         (BsePart           *self,
                                                        guint              id,
                                                        guint              channel,
@@ -157,7 +156,7 @@ struct BsePartQueryEvent {
   gfloat            fine_tune_value;
   gfloat            velocity_value;
   /* control */
-  BseMidiSignalType control_type;
+  Bse::MidiSignalType control_type;
   gfloat            control_value;
 };
 
@@ -170,8 +169,8 @@ BsePartEventType   bse_part_query_event         (BsePart           *self,
 #define BSE_PART_MAX_CHANNELS           (0x1024)
 #define BSE_PART_MAX_TICK               (0x7fffffff)
 #define BSE_PART_INVAL_TICK_FLAG        (0x80000000)
-#define BSE_PART_NOTE_CONTROL(ctype)    ((ctype) == BSE_MIDI_SIGNAL_VELOCITY || \
-                                         (ctype) == BSE_MIDI_SIGNAL_FINE_TUNE)
+#define BSE_PART_NOTE_CONTROL(ctype)    ((ctype) == Bse::MIDI_SIGNAL_VELOCITY || \
+                                         (ctype) == Bse::MIDI_SIGNAL_FINE_TUNE)
 
 /* --- BsePartControlChannel --- */
 struct BsePartEventControl;
@@ -183,7 +182,7 @@ struct BsePartEventControl {
   BsePartEventControl   *next;
   guint                  id : 31;
   guint                  selected : 1;
-  guint                  ctype; /* BseMidiSignalType */
+  guint                  ctype; /* Bse::MidiSignalType */
   gfloat                 value;         /* -1 .. 1 */
 };
 
@@ -274,6 +273,10 @@ protected:
   virtual             ~PartImpl           ();
 public:
   explicit             PartImpl           (BseObject*);
+  virtual PartControlSeq list_selected_controls (MidiSignalType control_type) override;
+  virtual PartControlSeq list_controls          (int tick, int duration, MidiSignalType control_type) override;
+  virtual PartControlSeq get_channel_controls   (int channel, int tick, int duration, MidiSignalType control_type) override;
+  virtual PartControlSeq get_controls           (int tick, MidiSignalType control_type) override;
 };
 
 } // Bse

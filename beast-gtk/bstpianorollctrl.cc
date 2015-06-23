@@ -140,7 +140,7 @@ bst_piano_roll_controller_set_clipboard (BsePartNoteSeq *pseq)
     bse_part_note_seq_free (clipboard_pseq);
   clipboard_pseq = pseq && pseq->n_pnotes ? bse_part_note_seq_copy_shallow (pseq) : NULL;
   if (clipboard_pseq)
-    bst_event_roll_controller_set_clipboard (NULL);
+    bst_event_roll_controller_set_clipboard (Bse::PartControlSeq());
 }
 
 BsePartNoteSeq*

@@ -237,7 +237,7 @@ bse_midi_file_add_part_events (BseMidiFile *smf,
   for (i = 0; i < track->n_events; i++)
     {
       BseMidiEvent *event = track->events[i];
-      BseMidiSignalType msignal = BseMidiSignalType (0);
+      Bse::MidiSignalType msignal = Bse::MidiSignalType (0);
       start += event->delta_time;
       switch (event->status)
         {
@@ -263,25 +263,25 @@ bse_midi_file_add_part_events (BseMidiFile *smf,
         case BSE_MIDI_CONTROL_CHANGE:
           if (!msignal)
             {
-              msignal = BseMidiSignalType (BSE_MIDI_SIGNAL_CONTROL_0 + event->data.control.control);
+              msignal = Bse::MidiSignalType (Bse::MIDI_SIGNAL_CONTROL_0 + event->data.control.control);
               fvalue = event->data.control.value;
             }
         case BSE_MIDI_PROGRAM_CHANGE:
           if (!msignal)
             {
-              msignal = BSE_MIDI_SIGNAL_PROGRAM;
+              msignal = Bse::MIDI_SIGNAL_PROGRAM;
               fvalue = event->data.program * (1.0 / (double) 0x7F);
             }
         case BSE_MIDI_CHANNEL_PRESSURE:
           if (!msignal)
             {
-              msignal = BSE_MIDI_SIGNAL_PRESSURE;
+              msignal = Bse::MIDI_SIGNAL_PRESSURE;
               fvalue = event->data.intensity;
             }
         case BSE_MIDI_PITCH_BEND:
           if (!msignal)
             {
-              msignal = BSE_MIDI_SIGNAL_PITCH_BEND;
+              msignal = Bse::MIDI_SIGNAL_PITCH_BEND;
               fvalue = event->data.pitch_bend;
             }
           bse_item_exec_void (part, "insert-control",

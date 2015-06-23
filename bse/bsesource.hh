@@ -221,16 +221,16 @@ BseMusicalTuningType bse_source_prepared_musical_tuning (BseSource *source);
 typedef struct {
   GParamSpec       *pspec;
   guint             midi_channel;
-  BseMidiSignalType signal_type;
+  Bse::MidiSignalType signal_type;
 } BseAutomationProperty;
 Bse::ErrorType                 bse_source_set_automation_property   (BseSource         *source,
                                                                    const gchar       *prop_name,
                                                                    guint              midi_channel,
-                                                                   BseMidiSignalType  signal_type);
+                                                                   Bse::MidiSignalType  signal_type);
 void                         bse_source_get_automation_property   (BseSource         *source,
                                                                    const gchar       *prop_name,
                                                                    guint             *pmidi_channel,
-                                                                   BseMidiSignalType *psignal_type);
+                                                                   Bse::MidiSignalType *psignal_type);
 BseAutomationProperty*       bse_source_get_automation_properties (BseSource         *source,
                                                                    guint             *n_props);
 

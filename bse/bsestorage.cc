@@ -689,7 +689,7 @@ restore_source_automation (BseItem    *item,
   BseMidiControlType control_type = (BseMidiControlType) sfi_choice2enum (scanner->value.v_identifier, BSE_TYPE_MIDI_CONTROL_TYPE);
   /* close statement */
   parse_or_return (scanner, ')');
-  Bse::ErrorType error = bse_source_set_automation_property (BSE_SOURCE (item), pspec->name, midi_channel, BseMidiSignalType (control_type));
+  Bse::ErrorType error = bse_source_set_automation_property (BSE_SOURCE (item), pspec->name, midi_channel, Bse::MidiSignalType (control_type));
   if (error)
     bse_storage_warn (self, "failed to automate property \"%s\": %s", pspec->name, bse_error_blurb (error));
   return G_TOKEN_NONE;
@@ -1040,7 +1040,7 @@ bse_source_store_automation (BseSource  *source,
                              GParamSpec *pspec)
 {
   guint midi_channel = 0;
-  BseMidiSignalType signal_type = BseMidiSignalType (0);
+  Bse::MidiSignalType signal_type = Bse::MidiSignalType (0);
   bse_source_get_automation_property (source, pspec->name, &midi_channel, &signal_type);
   BseMidiControlType control_type = BseMidiControlType (signal_type);
   if (control_type)

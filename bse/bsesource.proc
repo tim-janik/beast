@@ -694,7 +694,7 @@ BODY (BseProcedureClass *proc,
   BseSource *source = (BseSource*) bse_value_get_object (in_values++);
   const char *property = sfi_value_get_string (in_values++);
   guint      midi_channel = sfi_value_get_int (in_values++);
-  BseMidiSignalType control_type = (BseMidiSignalType) g_value_get_enum (in_values++);
+  Bse::MidiSignalType control_type = (Bse::MidiSignalType) g_value_get_enum (in_values++);
   Bse::ErrorType error = Bse::ERROR_NONE;
 
   /* check parameters */
@@ -703,7 +703,7 @@ BODY (BseProcedureClass *proc,
 
   /* connect */
   guint old_midi_channel = 0;
-  BseMidiSignalType old_control_type = BseMidiSignalType (0);
+  Bse::MidiSignalType old_control_type = Bse::MidiSignalType (0);
   bse_source_get_automation_property (source, property, &old_midi_channel, &old_control_type);
   if (old_midi_channel != midi_channel || old_control_type != control_type)
     {
@@ -768,7 +768,7 @@ BODY (BseProcedureClass *proc,
     return Bse::ERROR_PROC_PARAM_INVAL;
 
   /* connect */
-  BseMidiSignalType control_type = BseMidiSignalType (0);
+  Bse::MidiSignalType control_type = Bse::MidiSignalType (0);
   bse_source_get_automation_property (source, property, NULL, &control_type);
   /* set output parameters */
   g_value_set_enum (out_values++, control_type);

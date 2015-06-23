@@ -84,7 +84,7 @@ bst_event_roll_init (BstEventRoll *self)
   gtk_widget_set_double_buffered (widget, FALSE);
 
   self->proxy = 0;
-  self->control_type = BSE_MIDI_SIGNAL_CONTINUOUS_7; /* valoume */
+  self->control_type = Bse::MIDI_SIGNAL_CONTINUOUS_7; /* volume */
   self->ppqn = 384;	/* default Parts (clock ticks) Per Quarter Note */
   self->qnpt = 1;
   self->max_ticks = 1;
@@ -338,7 +338,6 @@ event_roll_draw_canvas (GxkScrollCanvas *scc,
   guint8 *dash, dashes[3] = { 1, 1, 0 }; // long: { 2, 2, 0 };
   GdkGC *draw_gc, *dark_gc;
   int dlen, line_width = 0; /* line widths != 0 interfere with dash-settings on some X servers */
-  BsePartControlSeq *cseq;
   gint range, mid = event_roll_scale_range (self, &range);
   gint x, xbound, width, height;
   GXK_SCROLL_CANVAS_CLASS (bst_event_roll_parent_class)->draw_canvas (scc, drawable, area);
@@ -375,20 +374,20 @@ event_roll_draw_canvas (GxkScrollCanvas *scc,
 
   /* draw controls */
   dark_gc = STYLE (self)->dark_gc[GTK_STATE_NORMAL];
-  cseq = self->proxy ? bse_part_list_controls (self->proxy,
-                                               coord_to_tick (self, x, FALSE),
-                                               coord_to_tick (self, xbound, FALSE),
-                                               self->control_type) : NULL;
-  for (uint i = 0; cseq && i < cseq->n_pcontrols; i++)
+  Bse::PartH part = Bse::PartH::down_cast (bse_server.from_proxy (self->proxy));
+  Bse::PartControlSeq cseq;
+  if (part)
+    cseq = part.list_controls (coord_to_tick (self, x, false), coord_to_tick (self, xbound, false), self->control_type);
+  for (size_t i = 0; i < cseq.size(); i++)
     {
-      BsePartControl *pctrl = cseq->pcontrols[i];
-      guint tick = pctrl->tick;
+      const Bse::PartControl &pctrl = cseq[i];
+      guint tick = pctrl.tick;
       GdkGC *xdark_gc, *xlight_gc, *xval_gc;
       gint x1, x2, y1, y2;
-      gboolean selected = pctrl->selected;
+      gboolean selected = pctrl.selected;
 
-      selected |= (uint (pctrl->tick) >= self->selection_tick &&
-		   uint (pctrl->tick) < self->selection_tick + self->selection_duration);
+      selected |= (uint (pctrl.tick) >= self->selection_tick &&
+		   uint (pctrl.tick) < self->selection_tick + self->selection_duration);
       if (selected)
 	{
 	  xdark_gc = STYLE (self)->bg_gc[GTK_STATE_SELECTED];
@@ -398,9 +397,9 @@ event_roll_draw_canvas (GxkScrollCanvas *scc,
       else
 	{
 	  xdark_gc = dark_gc;
-          if (ABS (pctrl->value) < 0.00001)
+          if (ABS (pctrl.value) < 0.00001)
             xval_gc = COLOR_GC_ZERO (self);
-          else if (pctrl->value < 0)
+          else if (pctrl.value < 0)
             xval_gc = COLOR_GC_NEGATIVE (self);
           else
             xval_gc = COLOR_GC_POSITIVE (self);
@@ -409,17 +408,17 @@ event_roll_draw_canvas (GxkScrollCanvas *scc,
       x1 = tick_to_coord (self, tick);
       x2 = x1 + XTHICKNESS (self);
       x1 = MAX (0, x1 - XTHICKNESS (self));
-      if (pctrl->value * range > 0)
+      if (pctrl.value * range > 0)
         {
-          y1 = mid - MAX (YTHICKNESS (self), range * pctrl->value);
+          y1 = mid - MAX (YTHICKNESS (self), range * pctrl.value);
           y2 = mid + YTHICKNESS (self);
         }
-      else if (pctrl->value * range < 0)
+      else if (pctrl.value * range < 0)
         {
           y1 = mid - YTHICKNESS (self);
-          y2 = mid + MAX (YTHICKNESS (self), range * -pctrl->value);
+          y2 = mid + MAX (YTHICKNESS (self), range * -pctrl.value);
         }
-      else /* pctrl->value * range == 0 */
+      else /* pctrl.value * range == 0 */
         {
           y1 = mid - YTHICKNESS (self);
           y2 = mid + YTHICKNESS (self);
@@ -706,7 +705,7 @@ bst_event_roll_set_view_selection (BstEventRoll *self,
 }
 
 void
-bst_event_roll_set_control_type (BstEventRoll *self, BseMidiSignalType control_type)
+bst_event_roll_set_control_type (BstEventRoll *self, Bse::MidiSignalType control_type)
 {
   g_return_if_fail (BST_IS_EVENT_ROLL (self));
 

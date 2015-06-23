@@ -85,33 +85,16 @@ bse_part_note_seq_take_append (BsePartNoteSeq *seq,
   bse_part_note_free (element);
 }
 
-BsePartControl*
-bse_part_control (guint              id,
-                  guint              tick,
-                  BseMidiSignalType  ctype,
-                  gfloat             value,
-                  gboolean           selected)
+Bse::PartControl
+bse_part_control (uint id, uint tick, Bse::MidiSignalType ctype, double value, bool selected)
 {
-  BsePartControl *pctrl = bse_part_control_new ();
-
-  pctrl->id = id;
-  pctrl->tick = tick;
-  pctrl->control_type = ctype;
-  pctrl->value = value;
-  pctrl->selected = selected != FALSE;
-
+  Bse::PartControl pctrl;
+  pctrl.id = id;
+  pctrl.tick = tick;
+  pctrl.control_type = ctype;
+  pctrl.value = value;
+  pctrl.selected = selected != false;
   return pctrl;
-}
-
-void
-bse_part_control_seq_take_append (BsePartControlSeq *seq,
-                                  BsePartControl    *element)
-{
-  g_return_if_fail (seq != NULL);
-  g_return_if_fail (element != NULL);
-
-  bse_part_control_seq_append (seq, element);
-  bse_part_control_free (element);
 }
 
 void

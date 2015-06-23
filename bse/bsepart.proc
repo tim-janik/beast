@@ -116,7 +116,7 @@ METHOD (BsePart, insert-control) {
   IN	= sfi_pspec_int ("tick", "Start Tick", NULL,
 			 0, 0, BSE_PART_MAX_TICK - 1, 384, SFI_PARAM_STANDARD);
   IN    = bse_param_spec_genum ("control_type", "Control Type", NULL,
-                                BSE_TYPE_MIDI_SIGNAL_TYPE, BSE_MIDI_SIGNAL_PITCH_BEND,
+                                BSE_TYPE_MIDI_SIGNAL_TYPE, Bse::MIDI_SIGNAL_PITCH_BEND,
                                 SFI_PARAM_STANDARD);
   IN	= sfi_pspec_real ("value", "Value", NULL,
 			  0.0, -1.0, +1.0, 0.1,
@@ -142,7 +142,7 @@ BODY (BseProcedureClass *proc,
 
   /* action */
   ustack = bse_item_undo_open (self, "insert-event");
-  id = bse_part_insert_control (self, tick, BseMidiSignalType (ctype), value);
+  id = bse_part_insert_control (self, tick, Bse::MidiSignalType (ctype), value);
   if (id)
     bse_item_push_undo_proc (self, "delete-event", id);
   bse_item_undo_close (ustack);
@@ -225,7 +225,7 @@ METHOD (BsePart, change-control) {
   IN	= sfi_pspec_int ("tick", "Start Tick", NULL,
 			 0, 0, BSE_PART_MAX_TICK - 1, 384, SFI_PARAM_STANDARD);
   IN    = bse_param_spec_genum ("control_type", "Control Type", NULL,
-                                BSE_TYPE_MIDI_SIGNAL_TYPE, BSE_MIDI_SIGNAL_PITCH_BEND,
+                                BSE_TYPE_MIDI_SIGNAL_TYPE, Bse::MIDI_SIGNAL_PITCH_BEND,
                                 SFI_PARAM_STANDARD);
   IN	= sfi_pspec_real ("value", "Value", NULL,
 			  0.0, -1.0, +1.0, 0.1,
@@ -258,7 +258,7 @@ BODY (BseProcedureClass *proc,
       BseUndoStack *ustack = bse_item_undo_open (self, "change-control");
       if (equery.tick != tick || equery.control_type != ctype || equery.control_value != value)
         {
-          success = bse_part_change_control (self, id, tick, BseMidiSignalType (ctype), value);
+          success = bse_part_change_control (self, id, tick, Bse::MidiSignalType (ctype), value);
           if (success)
             bse_item_push_undo_proc (self, "change-control", id, equery.tick, equery.control_type, equery.control_value);
         }
@@ -270,16 +270,16 @@ BODY (BseProcedureClass *proc,
     {
       BseUndoStack *ustack = bse_item_undo_open (self, "change-control");
       BsePartQueryEvent xquery;
-      success = bse_part_change_control (self, id, tick, BseMidiSignalType (ctype), value);
+      success = bse_part_change_control (self, id, tick, Bse::MidiSignalType (ctype), value);
       if (success && bse_part_query_event (self, id, &xquery) == BSE_PART_EVENT_NOTE &&
           (equery.fine_tune_value != xquery.fine_tune_value ||
            equery.velocity_value  != xquery.velocity_value))
         switch (ctype)
           {
-          case BSE_MIDI_SIGNAL_VELOCITY:
+          case Bse::MIDI_SIGNAL_VELOCITY:
             bse_item_push_undo_proc (self, "change-control", id, equery.tick, ctype, equery.velocity_value);
             break;
-          case BSE_MIDI_SIGNAL_FINE_TUNE:
+          case Bse::MIDI_SIGNAL_FINE_TUNE:
             bse_item_push_undo_proc (self, "change-control", id, equery.tick, ctype, equery.fine_tune_value);
             break;
           default: ;
@@ -439,39 +439,6 @@ BODY (BseProcedureClass *proc,
   return Bse::ERROR_NONE;
 }
 
-METHOD (BsePart, list-controls) {
-  HELP	= "List all control events within a tick range.";
-  IN	= bse_param_spec_object ("part", "Part", NULL,
-				 BSE_TYPE_PART, SFI_PARAM_STANDARD);
-  IN	= sfi_pspec_int ("tick", "Start Tick", NULL,
-			 0, 0, BSE_PART_MAX_TICK - 1, 384, SFI_PARAM_STANDARD);
-  IN	= sfi_pspec_int ("duration", "Tick Duration", NULL,
-			 1, 1, BSE_PART_MAX_TICK, 384, SFI_PARAM_STANDARD);
-  IN    = bse_param_spec_genum ("control_type", "Control Type", NULL,
-                                BSE_TYPE_MIDI_SIGNAL_TYPE, BSE_MIDI_SIGNAL_PITCH_BEND,
-                                SFI_PARAM_STANDARD);
-  OUT   = bse_param_spec_boxed ("control_list", "Control List", NULL,
-                                BSE_TYPE_PART_CONTROL_SEQ, SFI_PARAM_STANDARD);
-}
-BODY (BseProcedureClass *proc,
-      const GValue      *in_values,
-      GValue            *out_values)
-{
-  /* extract parameter values */
-  BsePart *self = (BsePart*) bse_value_get_object (in_values++);
-  guint    tick	     = sfi_value_get_int (in_values++);
-  guint    duration  = sfi_value_get_int (in_values++);
-  guint    ctype     = g_value_get_enum (in_values++);
-
-  /* check parameters */
-  if (!BSE_IS_PART (self))
-    return Bse::ERROR_PROC_PARAM_INVAL;
-
-  /* action */
-  bse_value_take_boxed (out_values++, bse_part_list_controls (self, ~0, tick, duration, BseMidiSignalType (ctype)));
-
-  return Bse::ERROR_NONE;
-}
 
 METHOD (BsePart, queue-notes) {
   HELP	= "Queue updates for all notes starting within the given rectangle.";
@@ -559,33 +526,6 @@ BODY (BseProcedureClass *proc,
   return Bse::ERROR_NONE;
 }
 
-METHOD (BsePart, list-selected-controls) {
-  HELP	= "List all currently selected control events of a specific type.";
-  IN	= bse_param_spec_object ("part", "Part", NULL,
-				 BSE_TYPE_PART, SFI_PARAM_STANDARD);
-  IN    = bse_param_spec_genum ("control_type", "Control Type", NULL,
-                                BSE_TYPE_MIDI_SIGNAL_TYPE, BSE_MIDI_SIGNAL_PITCH_BEND,
-                                SFI_PARAM_STANDARD);
-  OUT   = bse_param_spec_boxed ("control_list", "Control List", NULL,
-                                BSE_TYPE_PART_CONTROL_SEQ, SFI_PARAM_STANDARD);
-}
-BODY (BseProcedureClass *proc,
-      const GValue      *in_values,
-      GValue            *out_values)
-{
-  /* extract parameter values */
-  BsePart *self = (BsePart*) bse_value_get_object (in_values++);
-  guint    ctype    = g_value_get_enum (in_values++);
-
-  /* check parameters */
-  if (!BSE_IS_PART (self))
-    return Bse::ERROR_PROC_PARAM_INVAL;
-
-  /* action */
-  bse_value_take_boxed (out_values++, bse_part_list_selected_controls (self, BseMidiSignalType (ctype)));
-
-  return Bse::ERROR_NONE;
-}
 
 METHOD (BsePart, check-overlap) {
   HELP	= "Check whether a note would overlap with neighbours.";
@@ -645,74 +585,6 @@ BODY (BseProcedureClass *proc,
 
   /* action */
   bse_value_take_boxed (out_values++, bse_part_list_notes (self, ~0, tick, 1, note, note, TRUE));
-
-  return Bse::ERROR_NONE;
-}
-
-METHOD (BsePart, get-controls) {
-  HELP	= "Retrieve all control events of a specific type at specified tick.";
-  IN	= bse_param_spec_object ("part", "Part", NULL,
-				 BSE_TYPE_PART, SFI_PARAM_STANDARD);
-  IN	= sfi_pspec_int ("tick", "Tick", NULL,
-			 0, 0, BSE_PART_MAX_TICK - 1, 384, SFI_PARAM_STANDARD);
-  IN    = bse_param_spec_genum ("control_type", "Control Type", NULL,
-                                BSE_TYPE_MIDI_SIGNAL_TYPE, BSE_MIDI_SIGNAL_PITCH_BEND,
-                                SFI_PARAM_STANDARD);
-  OUT   = bse_param_spec_boxed ("control_list", "Control List", NULL,
-                                BSE_TYPE_PART_CONTROL_SEQ, SFI_PARAM_STANDARD);
-}
-BODY (BseProcedureClass *proc,
-      const GValue      *in_values,
-      GValue            *out_values)
-{
-  /* extract parameter values */
-  BsePart *self = (BsePart*) bse_value_get_object (in_values++);
-  guint    tick	    = sfi_value_get_int (in_values++);
-  guint    ctype    = g_value_get_enum (in_values++);
-
-  /* check parameters */
-  if (!BSE_IS_PART (self))
-    return Bse::ERROR_PROC_PARAM_INVAL;
-
-  /* action */
-  bse_value_take_boxed (out_values++, bse_part_list_controls (self, ~0, tick, 1, BseMidiSignalType (ctype)));
-
-  return Bse::ERROR_NONE;
-}
-
-METHOD (BsePart, get-channel-controls) {
-  HELP	= "Retrieve all control events of a specific type within range of a channel.";
-  IN	= bse_param_spec_object ("part", "Part", NULL,
-				 BSE_TYPE_PART, SFI_PARAM_STANDARD);
-  IN	= sfi_pspec_int ("channel", "Channel", NULL,
-			 0, 0, BSE_PART_MAX_CHANNELS, 4, SFI_PARAM_STANDARD);
-  IN	= sfi_pspec_int ("tick", "Tick", NULL,
-			 0, 0, BSE_PART_MAX_TICK - 1, 384, SFI_PARAM_STANDARD);
-  IN    = sfi_pspec_int ("duration", "Tick Duration", NULL,
-                         1, 1, BSE_PART_MAX_TICK, 384, SFI_PARAM_STANDARD);
-  IN    = bse_param_spec_genum ("control_type", "Control Type", NULL,
-                                BSE_TYPE_MIDI_SIGNAL_TYPE, BSE_MIDI_SIGNAL_PITCH_BEND,
-                                SFI_PARAM_STANDARD);
-  OUT   = bse_param_spec_boxed ("control_list", "Control List", NULL,
-                                BSE_TYPE_PART_CONTROL_SEQ, SFI_PARAM_STANDARD);
-}
-BODY (BseProcedureClass *proc,
-      const GValue      *in_values,
-      GValue            *out_values)
-{
-  /* extract parameter values */
-  BsePart *self = (BsePart*) bse_value_get_object (in_values++);
-  guint    channel  = sfi_value_get_int (in_values++);
-  guint    tick	    = sfi_value_get_int (in_values++);
-  guint    duration = sfi_value_get_int (in_values++);
-  guint    ctype    = g_value_get_enum (in_values++);
-
-  /* check parameters */
-  if (!BSE_IS_PART (self))
-    return Bse::ERROR_PROC_PARAM_INVAL;
-
-  /* action */
-  bse_value_take_boxed (out_values++, bse_part_list_controls (self, channel, tick, duration, BseMidiSignalType (ctype)));
 
   return Bse::ERROR_NONE;
 }
@@ -807,7 +679,7 @@ METHOD (BsePart, select-controls-exclusive) {
   IN	= sfi_pspec_int ("duration", "Duration", "Selection Duration",
 			 0, 0, BSE_PART_MAX_TICK, 384, SFI_PARAM_STANDARD);
   IN    = bse_param_spec_genum ("control_type", "Control Type", NULL,
-                                BSE_TYPE_MIDI_SIGNAL_TYPE, BSE_MIDI_SIGNAL_PITCH_BEND,
+                                BSE_TYPE_MIDI_SIGNAL_TYPE, Bse::MIDI_SIGNAL_PITCH_BEND,
                                 SFI_PARAM_STANDARD);
 }
 BODY (BseProcedureClass *proc,
@@ -824,7 +696,7 @@ BODY (BseProcedureClass *proc,
   if (!BSE_IS_PART (self))
     return Bse::ERROR_PROC_PARAM_INVAL;
 
-  bse_part_select_controls_exclusive (self, tick, duration, BseMidiSignalType (ctype));
+  bse_part_select_controls_exclusive (self, tick, duration, Bse::MidiSignalType (ctype));
 
   return Bse::ERROR_NONE;
 }
@@ -838,7 +710,7 @@ METHOD (BsePart, select-controls) {
   IN	= sfi_pspec_int ("duration", "Duration", "Selection Duration",
 			 0, 0, BSE_PART_MAX_TICK, 384, SFI_PARAM_STANDARD);
   IN    = bse_param_spec_genum ("control_type", "Control Type", NULL,
-                                BSE_TYPE_MIDI_SIGNAL_TYPE, BSE_MIDI_SIGNAL_PITCH_BEND,
+                                BSE_TYPE_MIDI_SIGNAL_TYPE, Bse::MIDI_SIGNAL_PITCH_BEND,
                                 SFI_PARAM_STANDARD);
 }
 BODY (BseProcedureClass *proc,
@@ -855,7 +727,7 @@ BODY (BseProcedureClass *proc,
   if (!BSE_IS_PART (self))
     return Bse::ERROR_PROC_PARAM_INVAL;
 
-  bse_part_select_controls (self, tick, duration, BseMidiSignalType (ctype), TRUE);
+  bse_part_select_controls (self, tick, duration, Bse::MidiSignalType (ctype), TRUE);
 
   return Bse::ERROR_NONE;
 }
@@ -935,7 +807,7 @@ METHOD (BsePart, deselect-controls) {
   IN	= sfi_pspec_int ("duration", "Duration", "Selection Duration",
 			 0, 0, BSE_PART_MAX_TICK, 384, SFI_PARAM_STANDARD);
   IN    = bse_param_spec_genum ("control_type", "Control Type", NULL,
-                                BSE_TYPE_MIDI_SIGNAL_TYPE, BSE_MIDI_SIGNAL_PITCH_BEND,
+                                BSE_TYPE_MIDI_SIGNAL_TYPE, Bse::MIDI_SIGNAL_PITCH_BEND,
                                 SFI_PARAM_STANDARD);
 }
 BODY (BseProcedureClass *proc,
@@ -952,7 +824,7 @@ BODY (BseProcedureClass *proc,
   if (!BSE_IS_PART (self))
     return Bse::ERROR_PROC_PARAM_INVAL;
 
-  bse_part_select_controls (self, tick, duration, BseMidiSignalType (ctype), FALSE);
+  bse_part_select_controls (self, tick, duration, Bse::MidiSignalType (ctype), FALSE);
 
   return Bse::ERROR_NONE;
 }

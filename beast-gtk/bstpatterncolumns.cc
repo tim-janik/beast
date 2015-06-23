@@ -292,11 +292,8 @@ control_get_digit_increment (guint num_type,
 }
 
 static guint
-pattern_column_event_to_string (BstPatternColumn *column,
-                                gchar             buffer[64],
-                                BsePartControl   *pctrl,
-                                gchar             placeholder,
-                                int              *ivalue_p)
+pattern_column_event_to_string (BstPatternColumn *column, gchar buffer[64], const Bse::PartControl &pctrl,
+                                gchar placeholder, int *ivalue_p)
 {
   gboolean is_signed  = (column->lflags & BST_PATTERN_LFLAG_SIGNED) != 0;
   guint num_type = column->lflags & BST_PATTERN_LFLAG_NUM_MASK;
@@ -312,7 +309,7 @@ pattern_column_event_to_string (BstPatternColumn *column,
     {
       const gchar *format;
       gchar *p = buffer;
-      gint ival = control_get_max (num_type, n_digits) * pctrl->value;
+      gint ival = control_get_max (num_type, n_digits) * pctrl.value;
       if (num_type == BST_PATTERN_LFLAG_DEC)
         {
           static const char *formats[] = { "%1u", "%2u", "%3u", "%4u", "%5u", "%6u", "%7u", "%8u", "%9u" };
@@ -374,18 +371,18 @@ pattern_column_event_value_from_string (BstPatternColumn *column,
   return pattern_column_event_value_from_int (column, ival);
 }
 
-static BseMidiSignalType
+static Bse::MidiSignalType
 pattern_column_control_type (BstPatternColumn *column, bool *isnote_p)
 {
-  BseMidiSignalType control_type;
+  Bse::MidiSignalType control_type;
   bool isnote = true;
   if (column->ltype == BST_PATTERN_LTYPE_VELOCITY)
-    control_type = BSE_MIDI_SIGNAL_VELOCITY;
+    control_type = Bse::MIDI_SIGNAL_VELOCITY;
   else if (column->ltype == BST_PATTERN_LTYPE_FINE_TUNE)
-    control_type = BSE_MIDI_SIGNAL_FINE_TUNE;
+    control_type = Bse::MIDI_SIGNAL_FINE_TUNE;
   else
     {
-      control_type = BseMidiSignalType (BSE_MIDI_SIGNAL_CONTINUOUS_0 + column->num);
+      control_type = Bse::MidiSignalType (Bse::MIDI_SIGNAL_CONTINUOUS_0 + column->num);
       isnote = false;
     }
   if (isnote_p)
@@ -393,27 +390,27 @@ pattern_column_control_type (BstPatternColumn *column, bool *isnote_p)
   return control_type;
 }
 
-static BsePartControl*
+static Bse::PartControl
 pattern_column_event_lookup (BstPatternColumn   *column,
                              BstPatternView     *pview,
                              guint               tick,
                              guint               duration,
-                             BsePartControlSeq **cseq_p,
+                             Bse::PartControlSeq *cseq_p,
                              gchar              *placeholder_p)
 {
-  BsePartControl *pctrl = NULL;
-  BsePartControlSeq *cseq;
-  guint control_type = pattern_column_control_type (column, NULL);
-  cseq = bse_part_get_channel_controls (pview->proxy, column->num, tick, duration, BseMidiSignalType (control_type));
-  if ((!cseq || cseq->n_pcontrols < 1) && placeholder_p)
+  Bse::MidiSignalType control_type = (Bse::MidiSignalType) pattern_column_control_type (column, NULL);
+  Bse::PartH part = Bse::PartH::down_cast (bse_server.from_proxy (pview->proxy));
+  Bse::PartControlSeq cseq = part.get_channel_controls (column->num, tick, duration, control_type);
+  Bse::PartControl pctrl;
+  if (cseq.size() < 1 && placeholder_p)
     *placeholder_p = '-';
-  else if (cseq && cseq->n_pcontrols == 1)
+  else if (cseq.size() == 1)
     {
-      pctrl = cseq->pcontrols[0];
+      pctrl = cseq[0];
       if (placeholder_p)
         *placeholder_p = 0;
     }
-  else if (cseq && cseq->n_pcontrols > 1 && placeholder_p)
+  else if (cseq.size() > 1 && placeholder_p)
     *placeholder_p = '*';
   if (cseq_p)
     *cseq_p = cseq;
@@ -435,7 +432,7 @@ pattern_column_event_draw_cell (BstPatternColumn       *column,
   GdkGC *inactive_gc = gcs[BST_PATTERN_COLUMN_GC_TEXT0];
   GdkGC *text_gc = gcs[BST_PATTERN_COLUMN_GC_TEXT1];
   gchar placeholder = 0;
-  BsePartControl *pctrl = pattern_column_event_lookup (column, pview, tick, duration, NULL, &placeholder);
+  Bse::PartControl pctrl = pattern_column_event_lookup (column, pview, tick, duration, NULL, &placeholder);
   gchar buffer[64] = { 0, };
   int n = pattern_column_event_to_string (column, buffer, pctrl, placeholder, NULL);
   GdkGC *draw_gc = placeholder == '-' ? inactive_gc : text_gc;
@@ -493,27 +490,26 @@ pattern_column_event_key_event (BstPatternColumn       *column,
   gboolean is_signed = (column->lflags & BST_PATTERN_LFLAG_SIGNED) != 0;
   SfiProxy proxy = pview->proxy;
   gchar placeholder = 0;
-  BsePartControlSeq *cseq;
-  BsePartControl *pctrl = pattern_column_event_lookup (column, pview, tick, duration, &cseq, &placeholder);
+  Bse::PartControlSeq cseq;
+  Bse::PartControl pctrl = pattern_column_event_lookup (column, pview, tick, duration, &cseq, &placeholder);
   gchar buffer[64] = { 0, };
   int ivalue, handled = FALSE;
   pattern_column_event_to_string (column, buffer, pctrl, placeholder, &ivalue);
   if (action == BST_PATTERN_REMOVE_EVENTS)
     {
-      guint i;
       bse_item_group_undo (proxy, "Remove Events");
-      for (i = 0; i < (cseq ? cseq->n_pcontrols : 0); i++)
-        bse_part_delete_event (proxy, cseq->pcontrols[i]->id);
+      for (size_t i = 0; i < cseq.size(); i++)
+        bse_part_delete_event (proxy, cseq[i].id);
       bse_item_ungroup_undo (proxy);
       handled = TRUE;
     }
   else if (action == BST_PATTERN_SET_DIGIT &&   /* insertions */
-           (!cseq || cseq->n_pcontrols == 0))
+           cseq.size() == 0)
     {
       guint digit = column->n_focus_positions - focus_pos;
       gint dmax = control_get_max (num_type, 1);
       bool isnote;
-      BseMidiSignalType control_type = pattern_column_control_type (column, &isnote);
+      Bse::MidiSignalType control_type = pattern_column_control_type (column, &isnote);
       gfloat value;
       ivalue = MIN (param, dmax) * control_get_digit_increment (num_type, digit);
       value = pattern_column_event_value_from_int (column, ivalue);
@@ -522,7 +518,7 @@ pattern_column_event_key_event (BstPatternColumn       *column,
       else
         bst_gui_error_bell (pview);
     }
-  else if (pctrl && focus_pos < (int) strlen (buffer) && !(modifier & (GDK_CONTROL_MASK | GDK_MOD1_MASK)))
+  else if (pctrl.id && focus_pos < (int) strlen (buffer) && !(modifier & (GDK_CONTROL_MASK | GDK_MOD1_MASK)))
     {
       gfloat value = 0;
       gchar *newstr = g_strdup (buffer);
@@ -563,7 +559,7 @@ pattern_column_event_key_event (BstPatternColumn       *column,
         default: ;
         }
       if (handled)
-        bse_part_change_control (proxy, pctrl->id, pctrl->tick, pctrl->control_type, value);
+        bse_part_change_control (proxy, pctrl.id, pctrl.tick, pctrl.control_type, value);
       g_free (newstr);
     }
   return handled;

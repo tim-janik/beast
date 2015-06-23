@@ -467,13 +467,13 @@ Bse::ErrorType
 bse_source_set_automation_property (BseSource        *source,
                                     const gchar      *prop_name,
                                     guint             midi_channel,
-                                    BseMidiSignalType signal_type)
+                                    Bse::MidiSignalType signal_type)
 {
   g_assert (BSE_MIDI_CONTROL_NONE          == BseMidiControlType (0) &&
-            BSE_MIDI_CONTROL_CONTINUOUS_0  == BseMidiControlType (BSE_MIDI_SIGNAL_CONTINUOUS_0) &&
-            BSE_MIDI_CONTROL_CONTINUOUS_31 == BseMidiControlType (BSE_MIDI_SIGNAL_CONTINUOUS_31) &&
-            BSE_MIDI_CONTROL_0             == BseMidiControlType (BSE_MIDI_SIGNAL_CONTROL_0) &&
-            BSE_MIDI_CONTROL_127           == BseMidiControlType (BSE_MIDI_SIGNAL_CONTROL_127));
+            BSE_MIDI_CONTROL_CONTINUOUS_0  == BseMidiControlType (Bse::MIDI_SIGNAL_CONTINUOUS_0) &&
+            BSE_MIDI_CONTROL_CONTINUOUS_31 == BseMidiControlType (Bse::MIDI_SIGNAL_CONTINUOUS_31) &&
+            BSE_MIDI_CONTROL_0             == BseMidiControlType (Bse::MIDI_SIGNAL_CONTROL_0) &&
+            BSE_MIDI_CONTROL_127           == BseMidiControlType (Bse::MIDI_SIGNAL_CONTROL_127));
   g_return_val_if_fail (BSE_IS_SOURCE (source), Bse::ERROR_INTERNAL);
   g_return_val_if_fail (prop_name != NULL, Bse::ERROR_INTERNAL);
   if (BSE_SOURCE_PREPARED (source))
@@ -495,7 +495,7 @@ bse_source_set_automation_property (BseSource        *source,
   if (!ap)
     {
       key.midi_channel = 0;
-      key.signal_type = BseMidiSignalType (0);
+      key.signal_type = Bse::MidiSignalType (0);
       aparray = g_bsearch_array_insert (aparray, &aprop_bconfig, &key);
       ap = (BseAutomationProperty*) g_bsearch_array_lookup (aparray, &aprop_bconfig, &key);
     }
@@ -518,7 +518,7 @@ void
 bse_source_get_automation_property (BseSource         *source,
                                     const gchar       *prop_name,
                                     guint             *pmidi_channel,
-                                    BseMidiSignalType *psignal_type)
+                                    Bse::MidiSignalType *psignal_type)
 {
   g_return_if_fail (BSE_IS_SOURCE (source));
   g_return_if_fail (prop_name != NULL);

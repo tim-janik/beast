@@ -4,8 +4,10 @@
 #include <sfi/sfi.hh> /* needed by bstoldbseapi.h */
 #include "bstdefs.hh"
 G_BEGIN_DECLS
-#define SFIDL_SKIPDEF__BseErrorType     // replaced by Bse::ErrorType
+#define SFIDL_SKIPDEF__BseErrorType             // replaced by Bse::ErrorType
 #define BseErrorType Bse::ErrorType
+#define SFIDL_SKIPDEF__BseMidiSignalType        // replaced by Bse::MidiSignalType
+#define BseMidiSignalType Bse::MidiSignalType
 #include "bstoldbseapi.h" /* include this within extern "C" */
 #undef BseErrorType
 /* --- BSE utilities --- */
