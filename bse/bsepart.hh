@@ -267,4 +267,16 @@ void              bse_part_note_channel_destroy       (BsePartNoteChannel *self)
 
 G_END_DECLS
 
+namespace Bse {
+
+class PartImpl : public ItemImpl, public virtual PartIface {
+protected:
+  virtual             ~PartImpl           ();
+public:
+  explicit             PartImpl           (BseObject*);
+};
+
+} // Bse
+
+
 #endif /* __BSE_PART_H__ */

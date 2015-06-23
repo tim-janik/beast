@@ -119,6 +119,10 @@ interface Item : Object {
   Item common_ancestor (Item other);    ///< Find a common container (parent or grand-parent) of two items if any.
 };
 
+/// Data object containing piano notes and effects.
+interface Part : Item {
+};
+
 /// Base type for synthesis objects with input or output streams.
 interface Source : Item {
   Source ichannel_get_osource (int32 input_channel, int32 input_joint); ///< Retrieve output module connected to a specific joint of an input channel.

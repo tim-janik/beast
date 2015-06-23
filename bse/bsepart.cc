@@ -2107,3 +2107,17 @@ bse_part_note_channel_destroy (BsePartNoteChannel *self)
   g_bsearch_array_free (self->bsa, &note_channel_bsc);
   self->bsa = NULL;
 }
+
+namespace Bse {
+
+PartImpl::PartImpl (BseObject *bobj) :
+  ItemImpl (bobj)
+{}
+
+PartImpl::~PartImpl ()
+{}
+
+// BsePart *self = as<BsePart*>();
+// shared_ptr_cast<PartIface> (opart->as<PartIface*>());
+
+} // Bse
