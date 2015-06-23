@@ -187,6 +187,9 @@ event_canvas_button_tool (BstEventRollController *self,
                           guint                   button,
                           guint                   have_object)
 {
+  GdkEvent *event = gtk_get_current_event ();
+  if (bst_mouse_button_move (event))
+    return BST_COMMON_ROLL_TOOL_MOVE;
   switch (self->canvas_rtools->action_id | /* user selected tool */
           (have_object ? HAVE_OBJECT : 0))
     {
