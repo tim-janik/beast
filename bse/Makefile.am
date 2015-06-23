@@ -292,7 +292,7 @@ bsegenbasics.cc: bsebasics.idl $(SFIDL) bsebasics.genidl.hh
 bsehack.idl: bsebasics.idl bseprocidl
 	grep -v bsehack.idl $(srcdir)/bse.idl | $(SFIDL) $(SFIDL_INC) --list-types - > xgen-2-$(@F)
 	echo "/* this file was generated from make $< */" > xgen-$(@F) \
-	&& ./bseprocidl xgen-2-$(@F) >> xgen-$(@F) \
+	&& ./bseprocidl xgen-2-$(@F) --g-fatal-warnings >> xgen-$(@F) \
 	&& cp xgen-$(@F) bsehack.idl \
 	&& rm -f xgen-$(@F) xgen-2-$(@F)
 CLEANFILES += bsehack.idl

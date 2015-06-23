@@ -402,7 +402,7 @@ int
 main (int argc, char **argv)
 {
   /* exclude all types given in a file, passed as first argument, from generation */
-  if (argc == 2)
+  if (argc >= 2)
     {
       FILE *excludefile = fopen (argv[1], "r");
       if (!excludefile)
