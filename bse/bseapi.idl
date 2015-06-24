@@ -6,11 +6,13 @@
 
 namespace Bse {
 
+// == Type Constants ==
 Const MAXINT32   = +4294967295;
 Const MAXINT31   = +2147483647;
 Const MININT31   = -2147483648;
 Const MAXFLOAT64 = 1.7976931348623157e+308;
 
+// == Enums ==
 enum ErrorType {
   ERROR_NONE = Enum (0, "OK"),
   ERROR_INTERNAL = Enum (1, "Internal error (please report)"),
@@ -270,6 +272,21 @@ enum MidiSignalType {
   MIDI_SIGNAL_CONTROL_126               = Enum (254, _("Control 126 Monophonic Voices Mode")),
   MIDI_SIGNAL_CONTROL_127               = Enum (255, _("Control 127 Polyphonic Mode On ITrigger")),
 };
+
+// == Bse Constants ==
+Const MIN_NOTE = 0;
+Const MAX_NOTE = 131;           // 123
+Const NOTE_VOID = MAX_NOTE + 1; /// Value represents unparsable/unknown notes
+Const KAMMER_NOTE = 69;         /// Kammer note, representing the kammer frequency's MIDI note value for A' or A4
+Const KAMMER_FREQ = 440.0;      /// Pitch Standard, see also: https://en.wikipedia.org/wiki/A440_(pitch_standard)
+Const KAMMER_OCTAVE = +1;       /// Octave number for MIDI A'
+Const MIN_OCTAVE = -4;          /// Octave of MIN_NOTE
+Const MAX_OCTAVE = +6;          /// Octave of MAX_NOTE
+Const MIN_FINE_TUNE = -100;
+Const MAX_FINE_TUNE = 100;
+Const NOTEHINTS = "r:w:S:G:note";
+Const FINETUNEHINTS = "r:w:S:G:finetune";
+Const VELOCITYHINTS = "r:w:S:G:velocity";
 
 /// Object to carry out IDL, API, signal, etc tests.
 interface TestObject {
