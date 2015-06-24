@@ -77,13 +77,13 @@ event_roll_class_setup_skin (BstEventRollClass *klass)
 static void
 bst_event_roll_init (BstEventRoll *self)
 {
+  new (&self->part) Bse::PartH();
   GtkWidget *widget = GTK_WIDGET (self);
 
   GTK_WIDGET_UNSET_FLAGS (self, GTK_NO_WINDOW);
   GTK_WIDGET_SET_FLAGS (self, GTK_CAN_FOCUS);
   gtk_widget_set_double_buffered (widget, FALSE);
 
-  self->proxy = 0;
   self->control_type = Bse::MIDI_SIGNAL_CONTINUOUS_7; /* volume */
   self->ppqn = 384;	/* default Parts (clock ticks) Per Quarter Note */
   self->qnpt = 1;
@@ -105,7 +105,7 @@ bst_event_roll_destroy (GtkObject *object)
 {
   BstEventRoll *self = BST_EVENT_ROLL (object);
 
-  bst_event_roll_set_proxy (self, 0);
+  bst_event_roll_set_part (self);
 
   GTK_OBJECT_CLASS (bst_event_roll_parent_class)->destroy (object);
 }
@@ -115,7 +115,7 @@ bst_event_roll_dispose (GObject *object)
 {
   BstEventRoll *self = BST_EVENT_ROLL (object);
 
-  bst_event_roll_set_proxy (self, 0);
+  bst_event_roll_set_part (self);
 
   G_OBJECT_CLASS (bst_event_roll_parent_class)->dispose (object);
 }
@@ -125,11 +125,13 @@ bst_event_roll_finalize (GObject *object)
 {
   BstEventRoll *self = BST_EVENT_ROLL (object);
 
-  bst_event_roll_set_proxy (self, 0);
+  bst_event_roll_set_part (self);
 
   bst_ascii_pixbuf_unref ();
 
   G_OBJECT_CLASS (bst_event_roll_parent_class)->finalize (object);
+  using namespace Bse;
+  self->part.~PartH();
 }
 
 static void
@@ -374,7 +376,7 @@ event_roll_draw_canvas (GxkScrollCanvas *scc,
 
   /* draw controls */
   dark_gc = STYLE (self)->dark_gc[GTK_STATE_NORMAL];
-  Bse::PartH part = Bse::PartH::down_cast (bse_server.from_proxy (self->proxy));
+  Bse::PartH part = self->part;
   Bse::PartControlSeq cseq;
   if (part)
     cseq = part.list_controls (coord_to_tick (self, x, false), coord_to_tick (self, xbound, false), self->control_type);
@@ -567,7 +569,7 @@ static void
 event_roll_range_changed (BstEventRoll *self)
 {
   guint max_ticks;
-  bse_proxy_get (self->proxy, "last-tick", &max_ticks, NULL);
+  bse_proxy_get (self->part.proxy_id(), "last-tick", &max_ticks, NULL);
   bst_event_roll_hsetup (self, self->ppqn, self->qnpt, self->max_ticks, self->hzoom);
 }
 
@@ -596,34 +598,24 @@ event_roll_update (BstEventRoll *self,
 static void
 event_roll_unset_proxy (BstEventRoll *self)
 {
-  bst_event_roll_set_proxy (self, 0);
+  bst_event_roll_set_part (self);
 }
 
 void
-bst_event_roll_set_proxy (BstEventRoll *self,
-			  SfiProxy      proxy)
+bst_event_roll_set_part (BstEventRoll *self, Bse::PartH part)
 {
   g_return_if_fail (BST_IS_EVENT_ROLL (self));
-  if (proxy)
-    {
-      g_return_if_fail (BSE_IS_ITEM (proxy));
-      g_return_if_fail (bse_item_get_project (proxy) != 0);
-    }
 
-  if (self->proxy)
+  if (self->part)
+    bse_proxy_disconnect (self->part.proxy_id(),
+                          "any-signal", event_roll_unset_proxy, self,
+                          "any-signal", event_roll_range_changed, self,
+                          "any-signal", event_roll_update, self,
+                          NULL);
+  self->part = part;
+  if (self->part)
     {
-      bse_proxy_disconnect (self->proxy,
-			    "any-signal", event_roll_unset_proxy, self,
-                            "any-signal", event_roll_range_changed, self,
-			    "any-signal", event_roll_update, self,
-			    NULL);
-      bse_item_unuse (self->proxy);
-    }
-  self->proxy = proxy;
-  if (self->proxy)
-    {
-      bse_item_use (self->proxy);
-      bse_proxy_connect (self->proxy,
+      bse_proxy_connect (self->part.proxy_id(),
 			 "swapped-signal::release", event_roll_unset_proxy, self,
                          "swapped-signal::property-notify::last-tick", event_roll_range_changed, self,
 			 "swapped-signal::range-changed", event_roll_update, self,
@@ -649,8 +641,8 @@ event_roll_queue_region (BstEventRoll *self,
 			 guint         tick,
 			 guint         duration)
 {
-  if (self->proxy && duration)
-    bse_part_queue_controls (self->proxy, tick, duration);
+  if (self->part && duration)
+    self->part.queue_controls (tick, duration);
   event_roll_update (self, tick, duration);
 }
 

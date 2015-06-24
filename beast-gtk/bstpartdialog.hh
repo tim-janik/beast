@@ -43,8 +43,7 @@ struct _BstPartDialogClass
 
 /* --- prototypes --- */
 GType		bst_part_dialog_get_type	(void);
-void		bst_part_dialog_set_proxy	(BstPartDialog	*self,
-						 SfiProxy	 part);
+void		bst_part_dialog_set_part	(BstPartDialog *self, Bse::PartH part = Bse::PartH());
 
 G_END_DECLS
 

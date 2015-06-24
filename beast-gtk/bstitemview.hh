@@ -53,6 +53,7 @@ GType		bst_item_view_get_type		(void);
 void		bst_item_view_select		(BstItemView	*item_view,
 						 SfiProxy	 item);
 SfiProxy	bst_item_view_get_current	(BstItemView	*item_view);
+Bse::PartH	bst_item_view_get_current_part	(BstItemView	*self);
 SfiProxy	bst_item_view_get_proxy		(BstItemView	*item_view,
 						 gint            row);
 gint            bst_item_view_get_proxy_row     (BstItemView    *self,

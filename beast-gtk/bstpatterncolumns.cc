@@ -132,8 +132,8 @@ pattern_column_note_draw_cell (BstPatternColumn       *column,
   GdkGC *inactive_gc = gcs[BST_PATTERN_COLUMN_GC_TEXT0];
   GdkGC *text_gc = gcs[BST_PATTERN_COLUMN_GC_TEXT1];
   GdkGC *draw_gc;
-  SfiProxy proxy = pview->proxy;
-  BsePartNoteSeq *pseq = proxy ? bse_part_list_notes_within (proxy, column->num, tick, duration) : NULL;
+  Bse::PartH part = pview->part;
+  BsePartNoteSeq *pseq = part ? bse_part_list_notes_within (part.proxy_id(), column->num, tick, duration) : NULL;
   gchar ch;
   gint accu, yline;
 
@@ -180,30 +180,29 @@ pattern_column_note_key_event (BstPatternColumn       *column,
                                BstPatternFunction     *movement)
 {
   // BstPatternColumnNote *self = (BstPatternColumnNote*) column;
-  SfiProxy proxy = pview->proxy;
-  BsePartNoteSeq *pseq = proxy ? bse_part_list_notes_within (proxy, column->num, tick, duration) : NULL;
+  Bse::PartH part = pview->part;
+  BsePartNoteSeq *pseq = part ? bse_part_list_notes_within (part.proxy_id(), column->num, tick, duration) : NULL;
   guint i, iparam = 0.5 + param;
   switch (action)
     {
     case BST_PATTERN_REMOVE_EVENTS:
-      bse_item_group_undo (proxy, "Remove Events");
+      bse_item_group_undo (part.proxy_id(), "Remove Events");
       for (i = 0; i < pseq->n_pnotes; i++)
-        bse_part_delete_event (proxy, pseq->pnotes[i]->id);
-      bse_item_ungroup_undo (proxy);
+        part.delete_event (pseq->pnotes[i]->id);
+      bse_item_ungroup_undo (part.proxy_id());
       return TRUE;
     case BST_PATTERN_SET_NOTE:
-      bse_item_group_undo (proxy, "Set Note");
+      bse_item_group_undo (part.proxy_id(), "Set Note");
       if (pseq->n_pnotes == 1)
         {
           BsePartNote *pnote = pseq->pnotes[0];
-          bse_part_change_note (proxy, pnote->id, pnote->tick, pnote->duration,
-                                SFI_NOTE_CLAMP (iparam), pnote->fine_tune, pnote->velocity);
+          part.change_note (pnote->id, pnote->tick, pnote->duration, SFI_NOTE_CLAMP (iparam), pnote->fine_tune, pnote->velocity);
         }
       else if (pseq->n_pnotes <= 1)
-        bse_part_insert_note (proxy, column->num, tick, duration, SFI_NOTE_CLAMP (iparam), 0, +1);
+        part.insert_note (column->num, tick, duration, SFI_NOTE_CLAMP (iparam), 0, +1);
       else
         bst_gui_error_bell (pview);
-      bse_item_ungroup_undo (proxy);
+      bse_item_ungroup_undo (part.proxy_id());
       return TRUE;
     default: ;
     }
@@ -399,7 +398,7 @@ pattern_column_event_lookup (BstPatternColumn   *column,
                              gchar              *placeholder_p)
 {
   Bse::MidiSignalType control_type = (Bse::MidiSignalType) pattern_column_control_type (column, NULL);
-  Bse::PartH part = Bse::PartH::down_cast (bse_server.from_proxy (pview->proxy));
+  Bse::PartH part = pview->part;
   Bse::PartControlSeq cseq = part.get_channel_controls (column->num, tick, duration, control_type);
   Bse::PartControl pctrl;
   if (cseq.size() < 1 && placeholder_p)
@@ -488,7 +487,7 @@ pattern_column_event_key_event (BstPatternColumn       *column,
   guint num_type = column->lflags & BST_PATTERN_LFLAG_NUM_MASK;
   guint n_digits = MIN (9, 1 + (column->lflags & BST_PATTERN_LFLAG_DIGIT_MASK));
   gboolean is_signed = (column->lflags & BST_PATTERN_LFLAG_SIGNED) != 0;
-  SfiProxy proxy = pview->proxy;
+  Bse::PartH part = pview->part;
   gchar placeholder = 0;
   Bse::PartControlSeq cseq;
   Bse::PartControl pctrl = pattern_column_event_lookup (column, pview, tick, duration, &cseq, &placeholder);
@@ -497,10 +496,10 @@ pattern_column_event_key_event (BstPatternColumn       *column,
   pattern_column_event_to_string (column, buffer, pctrl, placeholder, &ivalue);
   if (action == BST_PATTERN_REMOVE_EVENTS)
     {
-      bse_item_group_undo (proxy, "Remove Events");
+      bse_item_group_undo (part.proxy_id(), "Remove Events");
       for (size_t i = 0; i < cseq.size(); i++)
-        bse_part_delete_event (proxy, cseq[i].id);
-      bse_item_ungroup_undo (proxy);
+        part.delete_event (cseq[i].id);
+      bse_item_ungroup_undo (part.proxy_id());
       handled = TRUE;
     }
   else if (action == BST_PATTERN_SET_DIGIT &&   /* insertions */
@@ -514,7 +513,7 @@ pattern_column_event_key_event (BstPatternColumn       *column,
       ivalue = MIN (param, dmax) * control_get_digit_increment (num_type, digit);
       value = pattern_column_event_value_from_int (column, ivalue);
       if (!isnote && (!is_signed || focus_pos > 0))
-        bse_part_insert_control (proxy, tick, control_type, value);
+        part.insert_control (tick, control_type, value);
       else
         bst_gui_error_bell (pview);
     }
@@ -559,7 +558,7 @@ pattern_column_event_key_event (BstPatternColumn       *column,
         default: ;
         }
       if (handled)
-        bse_part_change_control (proxy, pctrl.id, pctrl.tick, pctrl.control_type, value);
+        part.change_control (pctrl.id, pctrl.tick, pctrl.control_type, value);
       g_free (newstr);
     }
   return handled;

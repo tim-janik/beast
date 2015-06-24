@@ -270,13 +270,32 @@ namespace Bse {
 
 class PartImpl : public ItemImpl, public virtual PartIface {
 protected:
-  virtual             ~PartImpl           ();
+  virtual               ~PartImpl               ();
 public:
-  explicit             PartImpl           (BseObject*);
+  explicit               PartImpl               (BseObject*);
   virtual PartControlSeq list_selected_controls (MidiSignalType control_type) override;
   virtual PartControlSeq list_controls          (int tick, int duration, MidiSignalType control_type) override;
   virtual PartControlSeq get_channel_controls   (int channel, int tick, int duration, MidiSignalType control_type) override;
   virtual PartControlSeq get_controls           (int tick, MidiSignalType control_type) override;
+  virtual int            get_max_note           () override;
+  virtual int            get_min_note           () override;
+  virtual ErrorType      change_control         (int id, int tick, MidiSignalType control_type, double value) override;
+  virtual ErrorType      change_note            (int id, int tick, int duration, int note, int fine_tune, double velocity) override;
+  virtual ErrorType      delete_event           (int id) override;
+  virtual void deselect_controls         (int tick, int duration, MidiSignalType control_type) override;
+  virtual void deselect_event            (int id) override;
+  virtual void deselect_notes            (int tick, int duration, int min_note, int max_note) override;
+  virtual bool is_event_selected         (int id) override;
+  virtual void select_controls           (int tick, int duration, MidiSignalType control_type) override;
+  virtual void select_controls_exclusive (int tick, int duration, MidiSignalType control_type) override;
+  virtual void select_event              (int id) override;
+  virtual void select_notes              (int tick, int duration, int min_note, int max_note) override;
+  virtual void select_notes_exclusive    (int tick, int duration, int min_note, int max_note) override;
+  virtual int  insert_control            (int tick, MidiSignalType control_type, double value) override;
+  virtual int  insert_note               (int channel, int tick, int duration, int note, int fine_tune, double velocity) override;
+  virtual int  insert_note_auto          (int tick, int duration, int note, int fine_tune, double velocity) override;
+  virtual void queue_controls            (int tick, int duration) override;
+  virtual void queue_notes               (int tick, int duration, int min_note, int max_note) override;
 };
 
 } // Bse

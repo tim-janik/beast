@@ -346,6 +346,13 @@ bst_item_view_get_proxy (BstItemView *self,
   return item;
 }
 
+Bse::PartH
+bst_item_view_get_current_part (BstItemView *self)
+{
+  SfiProxy proxy = bst_item_view_get_current (self);
+  return Bse::PartH::down_cast (bse_server.from_proxy (proxy));
+}
+
 SfiProxy
 bst_item_view_get_current (BstItemView *self)
 {

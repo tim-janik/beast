@@ -321,10 +321,29 @@ sequence PartControlSeq {
 
 /// Data object containing piano notes and effects.
 interface Part : Item {
-  PartControlSeq list_selected_controls (MidiSignalType control_type); ///< List all currently selected control events of a specific type.
-  PartControlSeq list_controls          (int32 tick, int32 duration, MidiSignalType control_type); ///< List all control events within a tick range.
-  PartControlSeq get_channel_controls   (int32 channel, int32 tick, int32 duration, MidiSignalType control_type); ///< Retrieve all control events of a specific type within range of a channel.
-  PartControlSeq get_controls           (int32 tick, MidiSignalType control_type); ///< Retrieve all control events of a specific type at specified tick.
+  PartControlSeq list_selected_controls    (MidiSignalType control_type); ///< List all currently selected control events of a specific type.
+  PartControlSeq list_controls             (int32 tick, int32 duration, MidiSignalType control_type); ///< List all control events within a tick range.
+  PartControlSeq get_channel_controls      (int32 channel, int32 tick, int32 duration, MidiSignalType control_type); ///< Retrieve all control events of a specific type within range of a channel.
+  PartControlSeq get_controls              (int32 tick, MidiSignalType control_type); ///< Retrieve all control events of a specific type at specified tick.
+  int32          get_max_note              (); ///< Retrieve the maximum note supported in this part.
+  int32          get_min_note              (); ///< Retrieve the minimum note supported in this part.
+  ErrorType      change_control            (int32 id, int32 tick, MidiSignalType control_type, float64 value); ///< Change an existing control event within a part.
+  ErrorType      change_note               (int32 id, int32 tick, int32 duration, int32 note, int32 fine_tune, float64 velocity); ///< Change an existing note within a part.
+  ErrorType      delete_event              (int32 id); ///< Delete an existing event from a part.
+  int32          insert_control            (int32 tick, MidiSignalType control_type, float64 value); ///< Insert a new control event into a part.
+  int32          insert_note               (int32 channel, int32 tick, int32 duration, int32 note, int32 fine_tune, float64 velocity); ///< Insert a new note into a part.
+  int32          insert_note_auto          (int32 tick, int32 duration, int32 note, int32 fine_tune, float64 velocity); ///< Insert a new note into a part with automatic channel selection.
+  bool           is_event_selected         (int32 id); ///< Check whether an event is selected.
+  void           queue_controls            (int32 tick, int32 duration); ///< Queue updates for all control events and notes starting within the given range.
+  void           queue_notes               (int32 tick, int32 duration, int32 min_note, int32 max_note); ///< Queue updates for all notes starting within the given rectangle.
+  void           select_notes_exclusive    (int32 tick, int32 duration, int32 min_note, int32 max_note); ///< Select all notes within rectangle and deselect all others.
+  void           select_controls_exclusive (int32 tick, int32 duration, MidiSignalType control_type); ///< Select all control events within range and deselect all others.
+  void           select_notes              (int32 tick, int32 duration, int32 min_note, int32 max_note); ///< Select all notes within rectangle.
+  void           select_event              (int32 id); ///< Select an existing event.
+  void           select_controls           (int32 tick, int32 duration, MidiSignalType control_type); ///< Select all control events within range.
+  void           deselect_notes            (int32 tick, int32 duration, int32 min_note, int32 max_note); ///< Deselect all notes within rectangle.
+  void           deselect_event            (int32 id); ///< Deselect an existing event.
+  void           deselect_controls         (int32 tick, int32 duration, MidiSignalType control_type); ///< Deselect all controls within given range.
 };
 
 /// Base type for synthesis objects with input or output streams.

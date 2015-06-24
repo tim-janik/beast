@@ -250,7 +250,7 @@ bst_part_dialog_finalize (GObject *object)
 {
   BstPartDialog *self = BST_PART_DIALOG (object);
 
-  bst_part_dialog_set_proxy (self, 0);
+  bst_part_dialog_set_part (self);
 
   bst_piano_roll_controller_unref (self->pctrl);
   bst_event_roll_controller_unref (self->ectrl);
@@ -261,11 +261,9 @@ bst_part_dialog_finalize (GObject *object)
 }
 
 void
-bst_part_dialog_set_proxy (BstPartDialog *self, SfiProxy part)
+bst_part_dialog_set_part (BstPartDialog *self, Bse::PartH part)
 {
   g_return_if_fail (BST_IS_PART_DIALOG (self));
-  if (part)
-    g_return_if_fail (BSE_IS_PART (part));
 
   if (self->project)
     {
@@ -275,17 +273,17 @@ bst_part_dialog_set_proxy (BstPartDialog *self, SfiProxy part)
       self->project = Bse::ProjectH();
     }
 
-  SfiProxy projectid = part ? bse_item_get_project (part) : 0;
+  SfiProxy projectid = part ? bse_item_get_project (part.proxy_id()) : 0;
   Bse::ProjectH project = Bse::ProjectH::down_cast (bse_server.from_proxy (projectid));
   if (project)
     {
-      bst_window_sync_title_to_proxy (GXK_DIALOG (self), part, "%s");
+      bst_window_sync_title_to_proxy (GXK_DIALOG (self), part.proxy_id(), "%s");
       if (self->pview)
-        bst_pattern_view_set_proxy (self->pview, part);
+        bst_pattern_view_set_part (self->pview, part);
       if (self->proll)
-        bst_piano_roll_set_proxy (self->proll, part);
+        bst_piano_roll_set_part (self->proll, part);
       if (self->eroll)
-        bst_event_roll_set_proxy (self->eroll, part);
+        bst_event_roll_set_part (self->eroll, part);
       self->project = project;
       bse_proxy_connect (self->project.proxy_id(),
                          "swapped_signal::property-notify::dirty", gxk_widget_update_actions_downwards, self,
@@ -324,16 +322,15 @@ event_canvas_clicked (BstEventRoll           *eroll,
 }
 
 static void
-part_dialog_run_script_proc (gpointer                data,
-                             size_t                  category_id)
+part_dialog_run_script_proc (gpointer data, size_t category_id)
 {
   BstPartDialog *self = BST_PART_DIALOG (data);
   BseCategory *cat = bse_category_from_id (category_id);
-  SfiProxy part = self->proll->proxy;
+  Bse::PartH part = self->proll->part;
 
   bst_procedure_exec_auto (cat->type,
-                           "project", SFI_TYPE_PROXY, bse_item_get_project (part),
-                           "part", SFI_TYPE_PROXY, part,
+                           "project", SFI_TYPE_PROXY, bse_item_get_project (part.proxy_id()),
+                           "part", SFI_TYPE_PROXY, part.proxy_id(),
                            NULL);
 }
 
@@ -404,13 +401,13 @@ part_dialog_action_exec (gpointer data,
       bst_event_roll_controller_paste (self->ectrl);
       break;
     case ACTION_UNDO:
-      bse_item_undo (self->proll->proxy);
+      bse_item_undo (self->proll->part.proxy_id());
       break;
     case ACTION_REDO:
-      bse_item_redo (self->proll->proxy);
+      bse_item_redo (self->proll->part.proxy_id());
       break;
     case ACTION_CLEAR_UNDO:
-      bse_item_clear_undo (self->proll->proxy);
+      bse_item_clear_undo (self->proll->part.proxy_id());
       break;
     default:
       break;
