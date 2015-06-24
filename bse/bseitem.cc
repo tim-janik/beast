@@ -1284,7 +1284,7 @@ void
 ItemImpl::push_undo (const String &blurb, const UndoErrorLambda &lambda)
 {
   UndoVoidLambda void_lambda = [blurb, lambda] (ItemImpl &item) {
-    Bse::ErrorType error = lambda (item);
+    const Bse::ErrorType error = lambda (item);
     if (error) // undo errors shouldn't happen
       g_warning ("error during undo '%s' of item %s: %s", blurb.c_str(),
                  item.debug_name().c_str(), bse_error_blurb (error));

@@ -322,6 +322,23 @@ interface Item : Object {
   Item common_ancestor (Item other);    ///< Find a common container (parent or grand-parent) of two items if any.
 };
 
+/// Part specific note event representation.
+record PartNote
+{
+  int32   id        = Num ("ID", "", 0, ":readwrite");
+  int32   channel   = Range ("Channel", "", ":readwrite", 0, MAXINT31, 1);
+  int32   tick      = Range ("Tick", "", ":readwrite", 0, MAXINT31, 1);
+  int32   duration  = Range ("Duration", "Duration in number of ticks", ":readwrite", 0, MAXINT31, 1);
+  int32   note      = Range ("Note", "", NOTEHINTS, MIN_NOTE, MAX_NOTE, 12, KAMMER_NOTE);
+  int32   fine_tune = Range ("Fine Tune", "", FINETUNEHINTS, MIN_FINE_TUNE, MAX_FINE_TUNE, 1);
+  float64 velocity  = Range ("Velocity", "", VELOCITYHINTS, 0, 1.0, 0.1, 1);
+  bool    selected  = Bool ("Selected", "", ":readwrite", false);
+};
+/// A list of part note events.
+sequence PartNoteSeq {
+  PartNote part_notes;
+};
+
 /// Part specific control event representation.
 record PartControl {
   int32          id           = Num ("ID", "", ":readwrite");
@@ -361,6 +378,17 @@ interface Part : Item {
   void           deselect_notes            (int32 tick, int32 duration, int32 min_note, int32 max_note); ///< Deselect all notes within rectangle.
   void           deselect_event            (int32 id); ///< Deselect an existing event.
   void           deselect_controls         (int32 tick, int32 duration, MidiSignalType control_type); ///< Deselect all controls within given range.
+  PartNoteSeq list_notes_crossing (int32 tick, int32 duration); ///< List all notes within or crossing a tick range.
+  PartNoteSeq list_notes_within   (int32 channel, int32 tick, int32 duration); ///< List all notes within a tick range.
+  PartNoteSeq list_selected_notes (); ///< List all currently selected notes.
+  PartNoteSeq check_overlap       (int32 tick, int32 duration, int32 note); ///< Check whether a note would overlap with neighbours.
+  PartNoteSeq get_notes           (int32 tick, int32 note); ///< Retrieve all notes at a specific frequency or crossing a tick.
+
+  // SongTiming     get_timing                (int32 tick); ///< Retrieve song timing information at a specific tick.
+  // signal void    range_changed             (int32 a, int32 b, int32 c, int32 d);
+  // signal void    links_changed             ();
+  // property int32 n_channels;
+  // property int32 last_tick;
 };
 
 /// Base type for synthesis objects with input or output streams.

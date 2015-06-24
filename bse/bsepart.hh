@@ -92,7 +92,7 @@ gboolean           bse_part_change_control            (BsePart           *self,
                                                        guint              tick,
                                                        Bse::MidiSignalType  ctype,
                                                        gfloat             value);
-BsePartNoteSeq*    bse_part_list_notes                (BsePart           *self,
+Bse::PartNoteSeq   bse_part_list_notes                (BsePart           *self,
                                                        guint              channel,
                                                        guint              tick,
                                                        guint              duration,
@@ -110,7 +110,7 @@ void               bse_part_queue_notes_within        (BsePart           *self,
                                                        gint               min_note,
                                                        gint               max_note);
 #define            bse_part_queue_controls(p,t,d)          bse_part_queue_notes_within (p, t, d, BSE_MIN_NOTE, BSE_MAX_NOTE)
-BsePartNoteSeq*    bse_part_list_selected_notes       (BsePart           *self);
+Bse::PartNoteSeq    bse_part_list_selected_notes      (BsePart           *self);
 Bse::PartControlSeq bse_part_list_selected_controls  (BsePart *self, Bse::MidiSignalType ctype);
 void               bse_part_select_notes              (BsePart           *self,
                                                        guint              channel,
@@ -273,6 +273,11 @@ protected:
   virtual               ~PartImpl               ();
 public:
   explicit               PartImpl               (BseObject*);
+  virtual PartNoteSeq    list_notes_crossing    (int tick, int duration) override;
+  virtual PartNoteSeq    list_notes_within      (int channel, int tick, int duration) override;
+  virtual PartNoteSeq    list_selected_notes    () override;
+  virtual PartNoteSeq    check_overlap          (int tick, int duration, int note) override;
+  virtual PartNoteSeq    get_notes              (int tick, int note) override;
   virtual PartControlSeq list_selected_controls (MidiSignalType control_type) override;
   virtual PartControlSeq list_controls          (int tick, int duration, MidiSignalType control_type) override;
   virtual PartControlSeq get_channel_controls   (int channel, int tick, int duration, MidiSignalType control_type) override;

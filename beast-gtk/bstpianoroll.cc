@@ -692,7 +692,6 @@ bst_piano_roll_draw_canvas (GxkScrollCanvas *scc,
   BstPianoRoll *self = BST_PIANO_ROLL (scc);
   GdkGC *dark_gc = STYLE (self)->dark_gc[GTK_STATE_NORMAL];
   gint pass, dlen, width, height, line_width = 0; /* line widths != 0 interfere with dash-settings on some X servers */
-  BsePartNoteSeq *pseq;
   GXK_SCROLL_CANVAS_CLASS (bst_piano_roll_parent_class)->draw_canvas (scc, drawable, area);
   gdk_window_get_size (drawable, &width, &height);
 
@@ -788,12 +787,13 @@ bst_piano_roll_draw_canvas (GxkScrollCanvas *scc,
 
   /* draw notes */
   dark_gc = STYLE (self)->dark_gc[GTK_STATE_NORMAL];
-  pseq = self->part ? bse_part_list_notes_crossing (self->part.proxy_id(),
-						     coord_to_tick (self, area->x, FALSE),
-						     coord_to_tick (self, area->x + area->width, FALSE)) : NULL;
-  for (uint i = 0; pseq && i < pseq->n_pnotes; i++)
+  Bse::PartNoteSeq pseq;
+  if (self->part)
+    pseq = self->part.list_notes_crossing (coord_to_tick (self, area->x, false),
+                                           coord_to_tick (self, area->x + area->width, false));
+  for (size_t i = 0; i < pseq.size(); i++)
     {
-      BsePartNote *pnote = pseq->pnotes[i];
+      const Bse::PartNote *pnote = &pseq[i];
       gint semitone = SFI_NOTE_SEMITONE (pnote->note);
       guint start = pnote->tick, end = start + pnote->duration;
       GdkGC *xdark_gc, *xlight_gc, *xnote_gc;

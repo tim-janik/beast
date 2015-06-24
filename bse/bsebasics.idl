@@ -336,22 +336,6 @@ record PropertyCandidates {
   ItemSeq items;
   TypeSeq partitions = SfiSeq ("Type Partitions", "List of types which may logically partition the list of items by type discrimination", STANDARD);
 };
-record PartNote
-{
-  Info     blurb        = "Part specific note representation";
-  Int      id           = SfiUInt ("ID", "", 0, ":readwrite");
-  Int      channel      = SfiInt ("Channel", "", 0, 0, MAXINT, 1, ":readwrite");
-  Int      tick         = SfiInt ("Tick", "", 0, 0, MAXINT, 1, ":readwrite");
-  Int      duration     = SfiInt ("Duration", "Duration in number of ticks", 0, 0, MAXINT, 1, ":readwrite");
-  Int      note         = Note ("Note", "", KAMMER_NOTE, ":readwrite");
-  Int      fine_tune    = SfiInt ("Fine Tune", "", 0, MIN_FINE_TUNE, MAX_FINE_TUNE, 1, ":readwrite");
-  Real     velocity     = SfiReal ("Velocity", "", 1, 0, 1.0, 0.1, ":readwrite");
-  Bool     selected     = SfiBool ("Selected", "", FALSE, ":readwrite");
-};
-sequence PartNoteSeq {
-  Info     blurb = "A list of part notes";
-  PartNote pnotes;
-};
 record NoteDescription
 {
   MusicalTuningType musical_tuning;

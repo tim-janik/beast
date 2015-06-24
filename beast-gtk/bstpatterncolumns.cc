@@ -94,18 +94,16 @@ pattern_column_note_width_request (BstPatternColumn       *column,
 }
 
 static char
-pattern_column_note_char (BstPatternColumnNote *self,
-                          BsePartNoteSeq       *pseq,
-                          gint                  pos)
+pattern_column_note_char (BstPatternColumnNote *self, const Bse::PartNoteSeq &pseq, int pos)
 {
   BseNoteDescription *ndesc;
-  if (!pseq || !pseq->n_pnotes)
+  if (pseq.size() == 0)
     return '-';
-  else if (pseq->n_pnotes > 1)
+  else if (pseq.size() > 1)
     return '*';
-  /* pseq->n_pnotes == 1 */
-  ndesc = bse_note_describe (BSE_MUSICAL_TUNING_12_TET, /* tuning is irrelevant if we ignore ->freq */
-                             pseq->pnotes[0]->note, pseq->pnotes[0]->fine_tune);
+  // pseq.size() == 1
+  ndesc = bse_note_describe (BSE_MUSICAL_TUNING_12_TET, // tuning is irrelevant if we ignore ->freq
+                             pseq[0].note, pseq[0].fine_tune);
   switch (pos)
     {
     case 0:     return ndesc->upshift ? '#' : ' ';
@@ -133,7 +131,9 @@ pattern_column_note_draw_cell (BstPatternColumn       *column,
   GdkGC *text_gc = gcs[BST_PATTERN_COLUMN_GC_TEXT1];
   GdkGC *draw_gc;
   Bse::PartH part = pview->part;
-  BsePartNoteSeq *pseq = part ? bse_part_list_notes_within (part.proxy_id(), column->num, tick, duration) : NULL;
+  Bse::PartNoteSeq pseq;
+  if (part)
+    pseq = part.list_notes_within (column->num, tick, duration);
   gchar ch;
   gint accu, yline;
 
@@ -181,24 +181,26 @@ pattern_column_note_key_event (BstPatternColumn       *column,
 {
   // BstPatternColumnNote *self = (BstPatternColumnNote*) column;
   Bse::PartH part = pview->part;
-  BsePartNoteSeq *pseq = part ? bse_part_list_notes_within (part.proxy_id(), column->num, tick, duration) : NULL;
+  Bse::PartNoteSeq pseq;
+  if (part)
+    pseq = part.list_notes_within (column->num, tick, duration);
   guint i, iparam = 0.5 + param;
   switch (action)
     {
     case BST_PATTERN_REMOVE_EVENTS:
       bse_item_group_undo (part.proxy_id(), "Remove Events");
-      for (i = 0; i < pseq->n_pnotes; i++)
-        part.delete_event (pseq->pnotes[i]->id);
+      for (i = 0; i < pseq.size(); i++)
+        part.delete_event (pseq[i].id);
       bse_item_ungroup_undo (part.proxy_id());
       return TRUE;
     case BST_PATTERN_SET_NOTE:
       bse_item_group_undo (part.proxy_id(), "Set Note");
-      if (pseq->n_pnotes == 1)
+      if (pseq.size() == 1)
         {
-          BsePartNote *pnote = pseq->pnotes[0];
+          const Bse::PartNote *pnote = &pseq[0];
           part.change_note (pnote->id, pnote->tick, pnote->duration, SFI_NOTE_CLAMP (iparam), pnote->fine_tune, pnote->velocity);
         }
-      else if (pseq->n_pnotes <= 1)
+      else if (pseq.size() <= 1)
         part.insert_note (column->num, tick, duration, SFI_NOTE_CLAMP (iparam), 0, +1);
       else
         bst_gui_error_bell (pview);

@@ -50,48 +50,28 @@ bse_note_description (BseMusicalTuningType   musical_tuning,
   return info;
 }
 
-BsePartNote*
-bse_part_note (guint    id,
-	       guint    channel,
-	       guint    tick,
-	       guint    duration,
-	       gint     note,
-	       gint     fine_tune,
-	       gfloat   velocity,
-	       gboolean selected)
+Bse::PartNote
+bse_part_note (uint id, uint channel, uint tick, uint duration, int note, int fine_tune, double velocity, bool selected)
 {
-  BsePartNote *pnote = bse_part_note_new ();
-
-  pnote->id = id;
-  pnote->channel = channel;
-  pnote->tick = tick;
-  pnote->duration = duration;
-  pnote->note = note;
-  pnote->fine_tune = fine_tune;
-  pnote->velocity = velocity;
-  pnote->selected = selected != FALSE;
-
+  Bse::PartNote pnote;
+  pnote.id = id;
+  pnote.channel = channel;
+  pnote.tick = tick;
+  pnote.duration = duration;
+  pnote.note = note;
+  pnote.fine_tune = fine_tune;
+  pnote.velocity = velocity;
+  pnote.selected = selected != false;
   return pnote;
 }
 
-void
-bse_part_note_seq_take_append (BsePartNoteSeq *seq,
-			       BsePartNote    *element)
-{
-  g_return_if_fail (seq != NULL);
-  g_return_if_fail (element != NULL);
-
-  bse_part_note_seq_append (seq, element);
-  bse_part_note_free (element);
-}
-
 Bse::PartControl
-bse_part_control (uint id, uint tick, Bse::MidiSignalType ctype, double value, bool selected)
+bse_part_control (uint id, uint tick, Bse::MidiSignalType control_type, double value, bool selected)
 {
   Bse::PartControl pctrl;
   pctrl.id = id;
   pctrl.tick = tick;
-  pctrl.control_type = ctype;
+  pctrl.control_type = control_type;
   pctrl.value = value;
   pctrl.selected = selected != false;
   return pctrl;

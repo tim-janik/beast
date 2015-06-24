@@ -1039,8 +1039,7 @@ bse_part_change_control (BsePart           *self,
 }
 
 static inline gfloat
-note_get_control_value (BsePartEventNote *note,
-                        Bse::MidiSignalType ctype)
+note_get_control_value (const BsePartEventNote *note, Bse::MidiSignalType ctype)
 {
   switch (ctype)
     {
@@ -1123,29 +1122,21 @@ bse_part_query_event (BsePart           *self,
 }
 
 static void
-part_note_seq_append (BsePartNoteSeq   *pseq,
-                      guint             channel,
-                      BsePartEventNote *note)
+part_note_seq_append (Bse::PartNoteSeq &pseq, uint channel, const BsePartEventNote *note)
 {
-  BsePartNote *pnote = bse_part_note (note->id,
-                                      channel,
-                                      note->tick,
-                                      note->duration,
-                                      note->note,
-                                      note->fine_tune,
-                                      note->velocity,
-                                      note->selected);
-  bse_part_note_seq_take_append (pseq, pnote);
+  const Bse::PartNote pnote = bse_part_note (note->id, channel, note->tick, note->duration, note->note,
+                                             note->fine_tune, note->velocity, note->selected);
+  pseq.push_back (pnote);
 }
 
 static void
-part_control_seq_append_note (Bse::PartControlSeq &cseq, BsePartEventNote *note, Bse::MidiSignalType ctype)
+part_control_seq_append_note (Bse::PartControlSeq &cseq, const BsePartEventNote *note, Bse::MidiSignalType ctype)
 {
   Bse::PartControl pctrl = bse_part_control (note->id, note->tick, ctype, note_get_control_value (note, ctype), note->selected);
   cseq.push_back (pctrl);
 }
 
-BsePartNoteSeq*
+Bse::PartNoteSeq
 bse_part_list_notes (BsePart *self,
                      guint    match_channel,
                      guint    tick,
@@ -1154,17 +1145,14 @@ bse_part_list_notes (BsePart *self,
                      gint     max_note,
                      gboolean include_crossings)
 {
+  Bse::PartNoteSeq pseq;
+
+  g_return_val_if_fail (BSE_IS_PART (self), pseq);
+  g_return_val_if_fail (tick < BSE_PART_MAX_TICK, pseq);
+  g_return_val_if_fail (duration > 0 && duration <= BSE_PART_MAX_TICK, pseq);
+
   BsePartEventNote *bound, *note;
-  BsePartNoteSeq *pseq;
-  guint n, j, channel;
-  gulong *ids;
-
-  g_return_val_if_fail (BSE_IS_PART (self), NULL);
-  g_return_val_if_fail (tick < BSE_PART_MAX_TICK, NULL);
-  g_return_val_if_fail (duration > 0 && duration <= BSE_PART_MAX_TICK, NULL);
-
-  pseq = bse_part_note_seq_new ();
-  for (channel = 0; channel < self->n_channels; channel++)
+  for (size_t channel = 0; channel < self->n_channels; channel++)
     {
       SfiUPool *tickpool;
       if (channel != match_channel && match_channel != ~uint (0))
@@ -1173,7 +1161,7 @@ bse_part_list_notes (BsePart *self,
       /* gather notes spanning across tick */
       note = include_crossings ? bse_part_note_channel_lookup_lt (&self->channels[channel], tick) : NULL;
       if (note)
-        for (j = 0; j < BSE_PART_NOTE_N_CROSSINGS (note); j++)
+        for (size_t j = 0; j < BSE_PART_NOTE_N_CROSSINGS (note); j++)
           {
             BsePartEventNote *xnote = bse_part_note_channel_lookup (&self->channels[channel],
                                                                     BSE_PART_NOTE_CROSSING (note, j));
@@ -1194,9 +1182,10 @@ bse_part_list_notes (BsePart *self,
           note++;
         }
       /* add notes to sequence */
-      ids = sfi_upool_list (tickpool, &n);
+      guint n = 0;
+      gulong *ids = sfi_upool_list (tickpool, &n);
       sfi_upool_destroy (tickpool);
-      for (j = 0; j < n; j++)
+      for (size_t j = 0; j < n; j++)
         {
           note = bse_part_note_channel_lookup (&self->channels[channel], ids[j]);
           part_note_seq_append (pseq, channel, note);
@@ -1294,16 +1283,13 @@ bse_part_queue_notes_within (BsePart *self,
   queue_update (self, tick, end_tick - tick, max_note);
 }
 
-BsePartNoteSeq*
+Bse::PartNoteSeq
 bse_part_list_selected_notes (BsePart *self)
 {
-  BsePartNoteSeq *pseq;
-  guint channel;
+  Bse::PartNoteSeq pseq;
+  g_return_val_if_fail (BSE_IS_PART (self), pseq);
 
-  g_return_val_if_fail (BSE_IS_PART (self), NULL);
-
-  pseq = bse_part_note_seq_new ();
-  for (channel = 0; channel < self->n_channels; channel++)
+  for (size_t channel = 0; channel < self->n_channels; channel++)
     {
       BsePartEventNote *note = bse_part_note_channel_lookup_ge (&self->channels[channel], 0);
       BsePartEventNote *bound = note ? bse_part_note_channel_get_bound (&self->channels[channel]) : NULL;
@@ -2096,6 +2082,41 @@ PartImpl::PartImpl (BseObject *bobj) :
 
 PartImpl::~PartImpl ()
 {}
+
+PartNoteSeq
+PartImpl::list_notes_crossing (int tick, int duration)
+{
+  BsePart *self = as<BsePart*>();
+  return bse_part_list_notes (self, ~uint (0), tick, duration, BSE_MIN_NOTE, BSE_MAX_NOTE, true);
+}
+
+PartNoteSeq
+PartImpl::list_notes_within (int channel, int tick, int duration)
+{
+  BsePart *self = as<BsePart*>();
+  return bse_part_list_notes (self, channel, tick, duration, BSE_MIN_NOTE, BSE_MAX_NOTE, false);
+}
+
+PartNoteSeq
+PartImpl::list_selected_notes ()
+{
+  BsePart *self = as<BsePart*>();
+  return bse_part_list_selected_notes (self);
+}
+
+PartNoteSeq
+PartImpl::check_overlap (int tick, int duration, int note)
+{
+  BsePart *self = as<BsePart*>();
+  return bse_part_list_notes (self, ~uint (0), tick, duration, note, note, true);
+}
+
+PartNoteSeq
+PartImpl::get_notes (int tick, int note)
+{
+  BsePart *self = as<BsePart*>();
+  return bse_part_list_notes (self, ~uint (0), tick, 1, note, note, true);
+}
 
 PartControlSeq
 PartImpl::list_controls (int tick, int duration, MidiSignalType control_type)
