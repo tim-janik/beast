@@ -401,3 +401,26 @@ bse_undo_pointer_unpack (const gchar  *packed_pointer,
 
   return item;
 }
+
+namespace Bse {
+
+/// Create a string descriptor for a project's item that survivses future deletion + undo.
+String
+undo_stack_to_descriptor (BseUndoStack *ustack, Bse::ItemImpl &item)
+{
+  BseItem *bitem = item.as<BseItem*>();
+  gchar *dp = bse_undo_pointer_pack (bitem, ustack);
+  String descriptor = dp;
+  g_free (dp);
+  return descriptor;
+}
+
+/// Find an item from an undo descriptor.
+ItemImpl*
+undo_stack_item_from_descriptor (BseUndoStack *ustack, const String &descriptor)
+{
+  BseItem *bitem = (BseItem*) bse_undo_pointer_unpack (descriptor.c_str(), ustack);
+  return bitem ? bitem->as<ItemImpl*>(): NULL;
+}
+
+} // Bse
