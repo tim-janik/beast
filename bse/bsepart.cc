@@ -2147,20 +2147,17 @@ PartImpl::change_control (int id, int tick, MidiSignalType control_type, double 
   bool success = false;
   if (equery.event_type == BSE_PART_EVENT_CONTROL && !BSE_PART_NOTE_CONTROL (control_type))
     {
-      BseUndoStack *ustack = bse_item_undo_open (self, "change-control");
       if (equery.tick != utick || equery.control_type != control_type || equery.control_value != value)
         {
           success = bse_part_change_control (self, id, tick, control_type, value);
           if (success)
-            bse_item_push_undo_proc (self, "change-control", id, equery.tick, equery.control_type, equery.control_value);
+            push_undo ("Change Midi Control", *this, &PartImpl::change_control, id, equery.tick, equery.control_type, equery.control_value);
         }
       else
         success = TRUE;
-      bse_item_undo_close (ustack);
     }
   else if (equery.event_type == BSE_PART_EVENT_NOTE && BSE_PART_NOTE_CONTROL (control_type))
     {
-      BseUndoStack *ustack = bse_item_undo_open (self, "change-control");
       BsePartQueryEvent xquery;
       success = bse_part_change_control (self, id, tick, control_type, value);
       if (success && bse_part_query_event (self, id, &xquery) == BSE_PART_EVENT_NOTE &&
@@ -2169,14 +2166,13 @@ PartImpl::change_control (int id, int tick, MidiSignalType control_type, double 
         switch (control_type)
           {
           case MIDI_SIGNAL_VELOCITY:
-            bse_item_push_undo_proc (self, "change-control", id, equery.tick, control_type, equery.velocity_value);
+            push_undo ("Change Velocity", *this, &PartImpl::change_control, id, equery.tick, control_type, equery.velocity_value);
             break;
           case MIDI_SIGNAL_FINE_TUNE:
-            bse_item_push_undo_proc (self, "change-control", id, equery.tick, control_type, equery.fine_tune_value);
+            push_undo ("Change Fine-Tune", *this, &PartImpl::change_control, id, equery.tick, control_type, equery.fine_tune_value);
             break;
           default: ;
           }
-      bse_item_undo_close (ustack);
     }
   return success ? ERROR_NONE : ERROR_NO_EVENT;
 }
@@ -2191,19 +2187,17 @@ PartImpl::change_note (int id, int tick, int duration, int note, int fine_tune, 
   BsePartQueryEvent equery;
   if (bse_part_query_event (self, id, &equery) == BSE_PART_EVENT_NOTE)
     {
-      BseUndoStack *ustack = bse_item_undo_open (self, "change-note");
       if (equery.tick != utick || equery.duration != uduration ||
           equery.note != note || equery.fine_tune != fine_tune ||
           equery.velocity != velocity)
         {
           success = bse_part_change_note (self, id, ~0, tick, duration, note, fine_tune, velocity);
           if (success)
-            bse_item_push_undo_proc (self, "change-note", id, equery.tick, equery.duration,
-                                     equery.note, equery.fine_tune, equery.velocity);
+            push_undo ("Change Note", *this, &PartImpl::change_note, id, equery.tick, equery.duration,
+                       equery.note, equery.fine_tune, equery.velocity);
         }
       else
         success = true;
-      bse_item_undo_close (ustack);
     }
   return success ? ERROR_NONE : ERROR_NO_EVENT;
 }
@@ -2217,20 +2211,17 @@ PartImpl::delete_event (int id)
   bse_part_query_event (self, id, &equery);
   if (equery.event_type == BSE_PART_EVENT_NOTE)
     {
-      BseUndoStack *ustack = bse_item_undo_open (self, "delete-note");
       deleted = bse_part_delete_note (self, id, equery.channel);
       if (deleted)
-        bse_item_push_undo_proc (self, "insert-note", equery.channel, equery.tick, equery.duration,
-                                 equery.note, equery.fine_tune, equery.velocity);
-      bse_item_undo_close (ustack);
+        push_undo ("Delete Note", *this, &PartImpl::insert_note, equery.channel, equery.tick,
+                   equery.duration, equery.note, equery.fine_tune, equery.velocity);
     }
   else if (equery.event_type == BSE_PART_EVENT_CONTROL)
     {
-      BseUndoStack *ustack = bse_item_undo_open (self, "delete-control");
       deleted = bse_part_delete_control (self, id);
       if (deleted)
-        bse_item_push_undo_proc (self, "insert-control", equery.tick, equery.control_type, equery.control_value);
-      bse_item_undo_close (ustack);
+        push_undo ("Delete MIDI Control", *this, &PartImpl::insert_control, equery.tick,
+                   equery.control_type, equery.control_value);
     }
   return deleted ? ERROR_NONE : ERROR_NO_EVENT;
 }
@@ -2316,11 +2307,9 @@ int
 PartImpl::insert_control (int tick, MidiSignalType control_type, double value)
 {
   BsePart *self = as<BsePart*>();
-  BseUndoStack *ustack = bse_item_undo_open (self, "insert-event");
   uint id = bse_part_insert_control (self, tick, control_type, value);
   if (id)
-    bse_item_push_undo_proc (self, "delete-event", id);
-  bse_item_undo_close (ustack);
+    push_undo ("Insert MIDI Control", *this, &PartImpl::delete_event, id);
   return id;
 }
 
@@ -2328,11 +2317,9 @@ int
 PartImpl::insert_note (int channel, int tick, int duration, int note, int fine_tune, double velocity)
 {
   BsePart *self = as<BsePart*>();
-  BseUndoStack *ustack = bse_item_undo_open (self, "insert-note");
   uint id = bse_part_insert_note (self, channel, tick, duration, note, fine_tune, velocity);
   if (id)
-    bse_item_push_undo_proc (self, "delete-event", id);
-  bse_item_undo_close (ustack);
+    push_undo ("Insert Note", *this, &PartImpl::delete_event, id);
   return id;
 }
 
@@ -2340,11 +2327,9 @@ int
 PartImpl::insert_note_auto (int tick, int duration, int note, int fine_tune, double velocity)
 {
   BsePart *self = as<BsePart*>();
-  BseUndoStack *ustack = bse_item_undo_open (self, "insert-note-auto");
   uint id = bse_part_insert_note (self, ~0, tick, duration, note, fine_tune, velocity);
   if (id)
-    bse_item_push_undo_proc (self, "delete-event", id);
-  bse_item_undo_close (ustack);
+    push_undo ("Insert Note (auto-channel)", *this, &PartImpl::delete_event, id);
   return id;
 }
 
