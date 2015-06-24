@@ -2,6 +2,7 @@
 #include "bsemidifile.hh"
 #include "bsemididecoder.hh"
 #include "bseitem.hh"
+#include "bsepart.hh"
 #include "gslcommon.hh"
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -255,10 +256,7 @@ bse_midi_file_add_part_events (BseMidiFile *smf,
             }
           note = bse_note_from_freq (smf->musical_tuning, frequency);
           fine_tune = bse_note_fine_tune_from_note_freq (smf->musical_tuning, note, frequency);
-          bse_item_exec_void (part, "insert-note-auto",
-                              (uint) (start * smf->tpqn_rate),
-                              (uint) (dur * smf->tpqn_rate),
-                              note, fine_tune, velocity);
+          part->as<Bse::PartImpl*>()->insert_note_auto (start * smf->tpqn_rate, dur * smf->tpqn_rate, note, fine_tune, velocity);
           break;
         case BSE_MIDI_CONTROL_CHANGE:
           if (!msignal)
@@ -284,8 +282,7 @@ bse_midi_file_add_part_events (BseMidiFile *smf,
               msignal = Bse::MIDI_SIGNAL_PITCH_BEND;
               fvalue = event->data.pitch_bend;
             }
-          bse_item_exec_void (part, "insert-control",
-                              (uint) (start * smf->tpqn_rate), msignal, fvalue);
+          part->as<Bse::PartImpl*>()->insert_control (start * smf->tpqn_rate, msignal, fvalue);
           break;
         case BSE_MIDI_TEXT_EVENT:
           if (track)
