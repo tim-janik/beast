@@ -3,6 +3,7 @@
 #define __BSE_ITEM_H__
 
 #include        <bse/bseobject.hh>
+#include        <bse/bseundostack.hh>
 
 G_BEGIN_DECLS
 
@@ -155,6 +156,20 @@ protected:
 public:
   explicit           ItemImpl         (BseObject*);
   virtual ItemIfaceP common_ancestor  (ItemIface &other) override;
+  typedef std::function<void (ItemImpl &item)> UndoVoidLambda;
+  void               push_undo        (const String &blurb, const UndoVoidLambda &lambda);
+  typedef std::function<ErrorType (ItemImpl &item)> UndoErrorLambda;
+  void               push_undo        (const String &blurb, const UndoErrorLambda &lambda);
+  template<typename ItemT, typename R, typename... FuncArgs, typename... CallArgs> void
+  push_undo (const String &blurb, ItemT &self, R (ItemT::*function) (FuncArgs...), CallArgs... args)
+  {
+    assert (this == &self);
+    std::function<R (ItemImpl &item)> lambda = [function, args...] (ItemImpl &item) {
+      ItemT &self = dynamic_cast<ItemT&> (item);
+      return (self.*function) (args...);
+    };
+    push_undo (blurb, lambda);
+  }
 };
 
 } // Bse

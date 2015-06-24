@@ -1247,6 +1247,51 @@ ItemImpl::ItemImpl (BseObject *bobj) :
 ItemImpl::~ItemImpl ()
 {}
 
+static void
+undo_lambda_free (BseUndoStep *ustep)
+{
+  delete (String*) ustep->data[0].v_pointer;
+  delete (ItemImpl::UndoVoidLambda*) ustep->data[1].v_pointer;
+}
+
+static void
+undo_lambda_call (BseUndoStep *ustep, BseUndoStack *ustack)
+{
+  ItemImpl *item_impl = undo_stack_item_from_descriptor (ustack, *(String*) ustep->data[0].v_pointer);
+  auto *lambda = (ItemImpl::UndoVoidLambda*) ustep->data[1].v_pointer;
+  // invoke undo function
+  (*lambda) (*item_impl);
+}
+
+void
+ItemImpl::push_undo (const String &blurb, const UndoVoidLambda &lambda)
+{
+  BseItem *self = as<BseItem*>();
+  BseUndoStack *ustack = bse_item_undo_open (self, "undo: %s", blurb.c_str());
+  if (BSE_UNDO_STACK_VOID (ustack) || BSE_ITEM_INTERNAL (self))
+    {
+      bse_item_undo_close (ustack);
+      return;
+    }
+  BseUndoStep *ustep = bse_undo_step_new (undo_lambda_call, undo_lambda_free, 2);
+  ustep->data[0].v_pointer = new String (undo_stack_to_descriptor (ustack, *this));
+  ustep->data[1].v_pointer = new UndoVoidLambda (lambda);
+  bse_undo_stack_push (ustack, ustep);
+  bse_item_undo_close (ustack);
+}
+
+void
+ItemImpl::push_undo (const String &blurb, const UndoErrorLambda &lambda)
+{
+  UndoVoidLambda void_lambda = [blurb, lambda] (ItemImpl &item) {
+    Bse::ErrorType error = lambda (item);
+    if (error) // undo errors shouldn't happen
+      g_warning ("error during undo '%s' of item %s: %s", blurb.c_str(),
+                 item.debug_name().c_str(), bse_error_blurb (error));
+  };
+  push_undo (blurb, void_lambda);
+}
+
 ItemIfaceP
 ItemImpl::common_ancestor (ItemIface &other)
 {
