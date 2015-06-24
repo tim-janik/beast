@@ -4,6 +4,7 @@
 #include <bse/bseitem.hh>
 #include <bse/bsecontainer.hh>
 #include <bse/bseundostack.hh>
+#include <bse/bseproject.hh>
 #include <bse/bseparasite.hh>	// FIXME
 #include "bsecxxplugin.hh"
 
@@ -549,15 +550,14 @@ METHOD (BseItem, undo) {
 {
   /* extract parameter values */
   BseItem *self = (BseItem*) bse_value_get_object (in_values++);
-  BseProject *project;
 
   /* check parameters */
   if (!BSE_IS_ITEM (self))
     return Bse::ERROR_PROC_PARAM_INVAL;
 
-  project = bse_item_get_project (self);
+  Bse::ProjectIface *project = bse_item_get_project (self)->as<Bse::ProjectIface*>();
   if (project)
-    bse_item_exec_void (project, "undo");
+    project->undo();
 
   return Bse::ERROR_NONE;
 }
@@ -572,15 +572,14 @@ METHOD (BseItem, redo) {
 {
   /* extract parameter values */
   BseItem *self = (BseItem*) bse_value_get_object (in_values++);
-  BseProject *project;
 
   /* check parameters */
   if (!BSE_IS_ITEM (self))
     return Bse::ERROR_PROC_PARAM_INVAL;
 
-  project = bse_item_get_project (self);
+  Bse::ProjectIface *project = bse_item_get_project (self)->as<Bse::ProjectIface*>();
   if (project)
-    bse_item_exec_void (project, "redo");
+    project->redo();
 
   return Bse::ERROR_NONE;
 }
@@ -595,15 +594,14 @@ METHOD (BseItem, clear-undo) {
 {
   /* extract parameter values */
   BseItem *self = (BseItem*) bse_value_get_object (in_values++);
-  BseProject *project;
 
   /* check parameters */
   if (!BSE_IS_ITEM (self))
     return Bse::ERROR_PROC_PARAM_INVAL;
 
-  project = bse_item_get_project (self);
+  Bse::ProjectIface *project = bse_item_get_project (self)->as<Bse::ProjectIface*>();
   if (project)
-    bse_item_exec_void (project, "clear-undo");
+    project->clear_undo();
 
   return Bse::ERROR_NONE;
 }
@@ -620,16 +618,15 @@ METHOD (BseItem, undo-depth) {
 {
   /* extract parameter values */
   BseItem *self = (BseItem*) bse_value_get_object (in_values++);
-  gint depth = 0;
-  BseProject *project;
 
   /* check parameters */
   if (!BSE_IS_ITEM (self))
     return Bse::ERROR_PROC_PARAM_INVAL;
 
-  project = bse_item_get_project (self);
+  int depth = 0;
+  Bse::ProjectIface *project = bse_item_get_project (self)->as<Bse::ProjectIface*>();
   if (project)
-    bse_item_exec (project, "undo-depth", &depth);
+    depth = project->undo_depth();
 
   /* set output parameters */
   sfi_value_set_int (out_values++, depth);
@@ -649,14 +646,13 @@ METHOD (BseItem, redo-depth) {
 {
   /* extract parameter values */
   BseItem *self = (BseItem*) bse_value_get_object (in_values++);
-  gint depth = 0;
-  BseProject *project;
   /* check parameters */
   if (!BSE_IS_ITEM (self))
     return Bse::ERROR_PROC_PARAM_INVAL;
-  project = bse_item_get_project (self);
+  int depth = 0;
+  Bse::ProjectIface *project = bse_item_get_project (self)->as<Bse::ProjectIface*>();
   if (project)
-    bse_item_exec (project, "redo-depth", &depth);
+    depth = project->redo_depth();
   /* set output parameters */
   sfi_value_set_int (out_values++, depth);
   return Bse::ERROR_NONE;
