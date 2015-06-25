@@ -425,7 +425,9 @@ insert_start (BstTrackRollController *self,
 	  SfiProxy song = bse_item_get_parent (drag->current_track);
           bse_item_group_undo (song, "Insert part");
 	  item = bse_song_create_part (song);
-	  if (item && bse_track_insert_part (drag->current_track, tick, item) > 0)
+          Bse::PartH part = Bse::PartH::down_cast (bse_server.from_proxy (item));
+          Bse::TrackH track = Bse::TrackH::down_cast (bse_server.from_proxy (drag->current_track));
+	  if (item && track.insert_part (tick, part) > 0)
 	    gxk_status_set (GXK_STATUS_DONE, _("Insert Part"), NULL);
 	  else
 	    gxk_status_set (GXK_STATUS_ERROR, _("Insert Part"), _("Lost Part"));
@@ -452,7 +454,8 @@ delete_start (BstTrackRollController *self,
   if (self->obj_part)	/* got part to delete */
     {
       bse_item_group_undo (self->song, "Delete Part");
-      bse_track_remove_tick (self->obj_track, self->obj_tick);
+      Bse::TrackH track = Bse::TrackH::down_cast (bse_server.from_proxy (self->obj_track));
+      track.remove_tick (self->obj_tick);
       if (!bse_song_find_any_track_for_part (self->song, self->obj_part.proxy_id()))
         bse_song_remove_part (self->song, self->obj_part.proxy_id());
       bse_item_ungroup_undo (self->song);
@@ -510,10 +513,14 @@ move_motion (BstTrackRollController *self, BstTrackRollDrag *drag)
   if (new_tick != self->obj_tick || self->obj_track != drag->current_track)
     {
       bse_item_group_undo (drag->current_track, "Move part");
-      if (bse_track_insert_part (drag->current_track, new_tick, self->obj_part.proxy_id()) > 0)
+      Bse::TrackH track = Bse::TrackH::down_cast (bse_server.from_proxy (drag->current_track));
+      if (track.insert_part (new_tick, self->obj_part) > 0)
 	{
 	  if (!self->skip_deletion)
-	    bse_track_remove_tick (self->obj_track, self->obj_tick);
+            {
+              Bse::TrackH track = Bse::TrackH::down_cast (bse_server.from_proxy (self->obj_track));
+              track.remove_tick (self->obj_tick);
+            }
 	  else
 	    {
 	      self->skip_deletion = FALSE;

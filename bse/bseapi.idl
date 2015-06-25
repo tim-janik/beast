@@ -400,6 +400,12 @@ interface Source : Item {
 interface ContextMerger : Source {
 };
 
+/// Data object containing sequencing information and links to Part objects.
+interface Track : ContextMerger {
+  int32 insert_part (int32 tick, Part part); ///< Insert Part into Track at @a tick, returns the corresponding link id.
+  void  remove_tick (int32 tick);            ///< Remove Part at specified @a tick from a track.
+};
+
 /// Base type for objects that can be added to a container.
 interface Container : Source {
   Item lookup_item (String uname); ///< Find an immediate child of a container by name (unique per container child).
