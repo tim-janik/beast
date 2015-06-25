@@ -1247,6 +1247,13 @@ ItemImpl::ItemImpl (BseObject *bobj) :
 ItemImpl::~ItemImpl ()
 {}
 
+ContainerImpl*
+ItemImpl::parent ()
+{
+  BseItem *self = as<BseItem*>();
+  return self->parent ? self->parent->as<ContainerImpl*>() : NULL;
+}
+
 static void
 undo_lambda_free (BseUndoStep *ustep)
 {
@@ -1260,7 +1267,7 @@ undo_lambda_call (BseUndoStep *ustep, BseUndoStack *ustack)
   ItemImpl *item_impl = undo_stack_item_from_descriptor (ustack, *(String*) ustep->data[0].v_pointer);
   auto *lambda = (ItemImpl::UndoVoidLambda*) ustep->data[1].v_pointer;
   // invoke undo function
-  (*lambda) (*item_impl);
+  (*lambda) (*item_impl, ustack);
 }
 
 void
@@ -1283,8 +1290,8 @@ ItemImpl::push_undo (const String &blurb, const UndoVoidLambda &lambda)
 void
 ItemImpl::push_undo (const String &blurb, const UndoErrorLambda &lambda)
 {
-  UndoVoidLambda void_lambda = [blurb, lambda] (ItemImpl &item) {
-    const Bse::ErrorType error = lambda (item);
+  UndoVoidLambda void_lambda = [blurb, lambda] (ItemImpl &item, BseUndoStack *ustack) {
+    const Bse::ErrorType error = lambda (item, ustack);
     if (error) // undo errors shouldn't happen
       g_warning ("error during undo '%s' of item %s: %s", blurb.c_str(),
                  item.debug_name().c_str(), bse_error_blurb (error));
