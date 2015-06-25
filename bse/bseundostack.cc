@@ -409,6 +409,9 @@ String
 undo_stack_to_descriptor (BseUndoStack *ustack, Bse::ItemImpl &item)
 {
   BseItem *bitem = item.as<BseItem*>();
+  g_return_val_if_fail (bitem != NULL, "");
+  if (IS_DUMMY_USTACK (ustack))
+    return "";
   gchar *dp = bse_undo_pointer_pack (bitem, ustack);
   String descriptor = dp;
   g_free (dp);
