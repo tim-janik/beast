@@ -917,6 +917,7 @@ bse_object_new (GType object_type, const gchar *first_property_name, ...)
 
 #include "bseserver.hh"
 #include "bseproject.hh"
+#include "bsecontextmerger.hh"
 #include "bsesnet.hh"
 #include "bsepart.hh"
 
@@ -942,6 +943,8 @@ bse_object_new_valist (GType object_type, const gchar *first_property_name, va_l
     cxxo = new Bse::SuperImpl (object);
   else if (g_type_is_a (object_type, BSE_TYPE_CONTAINER))
     cxxo = new Bse::ContainerImpl (object);
+  else if (g_type_is_a (object_type, BSE_TYPE_CONTEXT_MERGER))
+    cxxo = new Bse::ContextMergerImpl (object);
   else if (g_type_is_a (object_type, BSE_TYPE_PART))
     cxxo = new Bse::PartImpl (object);
   else if (g_type_is_a (object_type, BSE_TYPE_SOURCE))

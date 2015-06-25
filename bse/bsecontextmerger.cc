@@ -209,3 +209,17 @@ bse_context_merger_context_dismiss (BseSource     *source,
   /* chain parent class' handler */
   BSE_SOURCE_CLASS (parent_class)->context_dismiss (source, context_handle, trans);
 }
+
+namespace Bse {
+
+ContextMergerImpl::ContextMergerImpl (BseObject *bobj) :
+  SourceImpl (bobj)
+{}
+
+ContextMergerImpl::~ContextMergerImpl ()
+{}
+
+// BseContextMerger *self = as<BseContextMerger*>();
+// shared_ptr_cast<ContextMergerIface> (contextmerger->as<ContextMergerIface*>())
+
+} // Bse
