@@ -92,17 +92,4 @@ const BseUndoStep* bse_undo_group_peek_last_atom (BseUndoStack   *self,
 
 G_END_DECLS
 
-namespace Bse {
-
-template<bool value> using REQUIRES = typename ::std::enable_if<value, bool>::type;
-template<class T> using DERIVES_ItemImpl = typename std::is_base_of<::Bse::ItemImpl, T>;
-
-String    undo_stack_to_descriptor        (BseUndoStack *ustack, Bse::ItemImpl &item);
-ItemImpl* undo_stack_item_from_descriptor (BseUndoStack *ustack, const String &descriptor);
-template<class Item, REQUIRES< DERIVES_ItemImpl<Item>::value > = true>
-Item&     undo_stack_from_descriptor      (BseUndoStack *ustack, const String &descriptor)
-{ return *dynamic_cast<Item*> (undo_stack_item_from_descriptor (ustack, descriptor)); }
-
-} // Bse
-
 #endif /* __BSE_UNDO_STACK_H__ */

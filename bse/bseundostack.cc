@@ -360,6 +360,7 @@ gchar*
 bse_undo_pointer_pack (gpointer      _item,
                        BseUndoStack *ustack)
 {
+  // sync with ItemImpl::make_undo_descriptor_data
   g_return_val_if_fail (ustack != NULL, NULL);
   if (!_item)
     return NULL;
@@ -382,6 +383,7 @@ gpointer
 bse_undo_pointer_unpack (const gchar  *packed_pointer,
                          BseUndoStack *ustack)
 {
+  // sync with ItemImpl::resolve_undo_descriptor_data
   gpointer item;
 
   g_return_val_if_fail (ustack != NULL, NULL);
@@ -401,29 +403,3 @@ bse_undo_pointer_unpack (const gchar  *packed_pointer,
 
   return item;
 }
-
-namespace Bse {
-
-/// Create a string descriptor for a project's item that survivses future deletion + undo.
-String
-undo_stack_to_descriptor (BseUndoStack *ustack, Bse::ItemImpl &item)
-{
-  BseItem *bitem = item.as<BseItem*>();
-  g_return_val_if_fail (bitem != NULL, "");
-  if (IS_DUMMY_USTACK (ustack))
-    return "";
-  gchar *dp = bse_undo_pointer_pack (bitem, ustack);
-  String descriptor = dp;
-  g_free (dp);
-  return descriptor;
-}
-
-/// Find an item from an undo descriptor.
-ItemImpl*
-undo_stack_item_from_descriptor (BseUndoStack *ustack, const String &descriptor)
-{
-  BseItem *bitem = (BseItem*) bse_undo_pointer_unpack (descriptor.c_str(), ustack);
-  return bitem ? bitem->as<ItemImpl*>(): NULL;
-}
-
-} // Bse

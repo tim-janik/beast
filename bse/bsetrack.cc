@@ -1090,20 +1090,15 @@ TrackImpl::remove_tick (int tick)
   if (entry)
     {
       // undoing part removal needs an undo_descriptor b/c future deletions may invalidate the part handle
-      const char *blurb = "Remove Tick";
-      BseUndoStack *ustack = bse_item_undo_open (self, blurb);
-      const String part_descriptor = undo_stack_to_descriptor (ustack, *entry->part->as<PartImpl*>());
       const uint utick = entry->tick;
-      UndoErrorLambda lambda = [utick, part_descriptor] (ItemImpl &item, BseUndoStack *ustack) {
-        TrackImpl &self = dynamic_cast<TrackImpl&> (item);
-        ItemImpl *part_item = undo_stack_item_from_descriptor (ustack, part_descriptor);
-        PartImpl &part = dynamic_cast<PartImpl&> (*part_item);
+      UndoDescriptor<PartImpl> part_descriptor = undo_descriptor (*entry->part->as<PartImpl*>());
+      auto lambda = [utick, part_descriptor] (TrackImpl &self, BseUndoStack *ustack) -> ErrorType {
+        PartImpl &part = self.undo_resolve (part_descriptor);
         const uint id = self.insert_part (utick, part);
         return id ? ERROR_NONE : ERROR_INVALID_OVERLAP;
       };
       bse_track_remove_tick (self, tick);
-      push_undo (blurb, lambda);
-      bse_item_undo_close (ustack);
+      push_undo ("Remove Tick", *this, lambda);
     }
 }
 

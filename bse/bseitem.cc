@@ -1254,24 +1254,71 @@ ItemImpl::parent ()
   return self->parent ? self->parent->as<ContainerImpl*>() : NULL;
 }
 
+ItemImpl::UndoDescriptorData
+ItemImpl::make_undo_descriptor_data (ItemImpl &item)
+{
+  // sync with bse_undo_pointer_pack
+  UndoDescriptorData udd;
+  BseItem *bitem = item.as<BseItem*>();
+  BseProject *bproject = bse_item_get_project (this->as<BseItem*>());
+  if (!bproject) // may happen during destruction
+    return udd;  // this UndoDescriptorData is constructed but will never be used
+  assert_return (bproject == bse_item_get_project (bitem), udd); // undo descriptors work only for items within same project
+  ProjectImpl *project = bproject->as<ProjectImpl*>();
+  udd.projectid = ptrdiff_t (project);
+  if (&item == project)
+    udd.upath = "\002project\003";
+  else
+    {
+      gchar *upath = bse_container_make_upath (bproject, bitem);
+      udd.upath = upath;
+      g_free (upath);
+    }
+  return udd;
+}
+
+ItemImpl&
+ItemImpl::resolve_undo_descriptor_data (const UndoDescriptorData &udd)
+{
+  // sync with bse_undo_pointer_unpack
+  ItemImpl &nullitem = *(ItemImpl*) NULL;
+  assert_return (udd.projectid != 0, nullitem);
+  BseProject *bproject = bse_item_get_project (this->as<BseItem*>());
+  ProjectImpl *project = bproject ? bproject->as<ProjectImpl*>() : NULL;
+  assert_return (udd.projectid == ptrdiff_t (project), nullitem); // undo cannot work on orphans
+  if (udd.upath == "\002project\003")
+    return *project;
+  BseItem *bitem = bse_container_resolve_upath (bproject, udd.upath.c_str());
+  assert_return (bitem != NULL, nullitem); // undo descriptor for NULL objects is not currently supported
+  return *bitem->as<ItemImpl*>();
+}
+
 static void
 undo_lambda_free (BseUndoStep *ustep)
 {
-  delete (String*) ustep->data[0].v_pointer;
-  delete (ItemImpl::UndoVoidLambda*) ustep->data[1].v_pointer;
+  delete (ItemImpl::UndoDescriptor<ItemImpl>*) ustep->data[0].v_pointer;
+  delete (ItemImpl::UndoLambda*) ustep->data[1].v_pointer;
+  delete (String*) ustep->data[2].v_pointer;
 }
 
 static void
 undo_lambda_call (BseUndoStep *ustep, BseUndoStack *ustack)
 {
-  ItemImpl *item_impl = undo_stack_item_from_descriptor (ustack, *(String*) ustep->data[0].v_pointer);
-  auto *lambda = (ItemImpl::UndoVoidLambda*) ustep->data[1].v_pointer;
+  ProjectImpl &project = *ustack->project->as<ProjectImpl*>();
+  ItemImpl &self = project.undo_resolve (*(ItemImpl::UndoDescriptor<ItemImpl>*) ustep->data[0].v_pointer);
+  auto *lambda = (ItemImpl::UndoLambda*) ustep->data[1].v_pointer;
   // invoke undo function
-  (*lambda) (*item_impl, ustack);
+  const Bse::ErrorType error = (*lambda) (self, ustack);
+  if (error) // undo errors shouldn't happen
+    {
+      String *blurb = (String*) ustep->data[2].v_pointer;
+      g_warning ("error during undo '%s' of item %s: %s", blurb->c_str(),
+                 self.debug_name().c_str(), bse_error_blurb (error));
+    }
 }
 
 void
-ItemImpl::push_undo (const String &blurb, const UndoVoidLambda &lambda)
+ItemImpl::push_item_undo (const String &blurb, const UndoLambda &lambda)
 {
   BseItem *self = as<BseItem*>();
   BseUndoStack *ustack = bse_item_undo_open (self, "undo: %s", blurb.c_str());
@@ -1280,23 +1327,12 @@ ItemImpl::push_undo (const String &blurb, const UndoVoidLambda &lambda)
       bse_item_undo_close (ustack);
       return;
     }
-  BseUndoStep *ustep = bse_undo_step_new (undo_lambda_call, undo_lambda_free, 2);
-  ustep->data[0].v_pointer = new String (undo_stack_to_descriptor (ustack, *this));
-  ustep->data[1].v_pointer = new UndoVoidLambda (lambda);
+  BseUndoStep *ustep = bse_undo_step_new (undo_lambda_call, undo_lambda_free, 3);
+  ustep->data[0].v_pointer = new UndoDescriptor<ItemImpl> (undo_descriptor (*this));
+  ustep->data[1].v_pointer = new UndoLambda (lambda);
+  ustep->data[2].v_pointer = new String (blurb);
   bse_undo_stack_push (ustack, ustep);
   bse_item_undo_close (ustack);
-}
-
-void
-ItemImpl::push_undo (const String &blurb, const UndoErrorLambda &lambda)
-{
-  UndoVoidLambda void_lambda = [blurb, lambda] (ItemImpl &item, BseUndoStack *ustack) {
-    const Bse::ErrorType error = lambda (item, ustack);
-    if (error) // undo errors shouldn't happen
-      g_warning ("error during undo '%s' of item %s: %s", blurb.c_str(),
-                 item.debug_name().c_str(), bse_error_blurb (error));
-  };
-  push_undo (blurb, void_lambda);
 }
 
 ItemIfaceP

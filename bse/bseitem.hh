@@ -151,26 +151,69 @@ G_END_DECLS
 namespace Bse {
 
 class ItemImpl : public ObjectImpl, public virtual ItemIface {
+public: typedef std::function<ErrorType (ItemImpl &item, BseUndoStack *ustack)> UndoLambda;
+private:
+  void push_item_undo (const String &blurb, const UndoLambda &lambda);
+  struct UndoDescriptorData {
+    ptrdiff_t projectid;
+    String    upath;
+    UndoDescriptorData() : projectid (0) {}
+  };
+  UndoDescriptorData make_undo_descriptor_data    (ItemImpl &item);
+  ItemImpl&          resolve_undo_descriptor_data (const UndoDescriptorData &udd);
 protected:
   virtual           ~ItemImpl         ();
 public:
   explicit           ItemImpl         (BseObject*);
   ContainerImpl*     parent           ();
   virtual ItemIfaceP common_ancestor  (ItemIface &other) override;
-  typedef std::function<void (ItemImpl &item, BseUndoStack *ustack)> UndoVoidLambda;
-  void               push_undo        (const String &blurb, const UndoVoidLambda &lambda);
-  typedef std::function<ErrorType (ItemImpl &item, BseUndoStack *ustack)> UndoErrorLambda;
-  void               push_undo        (const String &blurb, const UndoErrorLambda &lambda);
   template<typename ItemT, typename R, typename... FuncArgs, typename... CallArgs> void
   push_undo (const String &blurb, ItemT &self, R (ItemT::*function) (FuncArgs...), CallArgs... args)
   {
-    assert (this == &self);
-    std::function<R (ItemImpl&, BseUndoStack*)> lambda = [function, args...] (ItemImpl &item, BseUndoStack *ustack) {
+    assert_return (this == &self);
+    UndoLambda lambda = [function, args...] (ItemImpl &item, BseUndoStack *ustack) {
+      ItemT &self = dynamic_cast<ItemT&> (item);
+      (self.*function) (args...); // ignoring return type R
+      return ERROR_NONE;
+    };
+    push_item_undo (blurb, lambda);
+  }
+  template<typename ItemT, typename... FuncArgs, typename... CallArgs> void
+  push_undo (const String &blurb, ItemT &self, ErrorType (ItemT::*function) (FuncArgs...), CallArgs... args)
+  {
+    assert_return (this == &self);
+    UndoLambda lambda = [function, args...] (ItemImpl &item, BseUndoStack *ustack) {
       ItemT &self = dynamic_cast<ItemT&> (item);
       return (self.*function) (args...);
     };
-    push_undo (blurb, lambda);
+    push_item_undo (blurb, lambda);
   }
+  template<typename ItemT, typename ItemTLambda> void
+  push_undo (const String &blurb, ItemT &self, const ItemTLambda &itemt_lambda)
+  {
+    const std::function<ErrorType (ItemT &item, BseUndoStack *ustack)> &undo_lambda = itemt_lambda;
+    assert_return (this == &self);
+    UndoLambda lambda = [undo_lambda] (ItemImpl &item, BseUndoStack *ustack) {
+      ItemT &self = dynamic_cast<ItemT&> (item);
+      return undo_lambda (self, ustack);
+    };
+    push_item_undo (blurb, lambda);
+  }
+  /// UndoDescriptor - type safe object handle to persist undo/redo steps
+  template<class Obj>
+  class UndoDescriptor {
+    friend class ItemImpl;
+    UndoDescriptorData data_;
+    UndoDescriptor (const UndoDescriptorData &d) : data_ (d) {}
+  public:
+    typedef Obj Type;
+  };
+  /// Create an object descriptor that persists undo/redo steps.
+  template<class Obj>
+  UndoDescriptor<Obj> undo_descriptor (Obj &item)            { return UndoDescriptor<Obj> (make_undo_descriptor_data (item)); }
+  /// Resolve an undo descriptor back to an object, see also undo_descriptor().
+  template<class Obj>
+  Obj&                undo_resolve (UndoDescriptor<Obj> udo) { return dynamic_cast<Obj&> (resolve_undo_descriptor_data (udo.data_)); }
 };
 
 } // Bse
