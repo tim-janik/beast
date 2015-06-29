@@ -167,6 +167,17 @@ public:
   explicit           ItemImpl         (BseObject*);
   ContainerImpl*     parent           ();
   virtual ItemIfaceP common_ancestor  (ItemIface &other) override;
+  /// Push handler onto the undo stack, @a self must match @a this.
+  template<typename ItemT, typename... FuncArgs, typename... CallArgs> void
+  push_undo (const String &blurb, ItemT &self, ErrorType (ItemT::*function) (FuncArgs...), CallArgs... args)
+  {
+    assert_return (this == &self);
+    UndoLambda lambda = [function, args...] (ItemImpl &item, BseUndoStack *ustack) {
+      ItemT &self = dynamic_cast<ItemT&> (item);
+      return (self.*function) (args...);
+    };
+    push_item_undo (blurb, lambda);
+  }
   template<typename ItemT, typename R, typename... FuncArgs, typename... CallArgs> void
   push_undo (const String &blurb, ItemT &self, R (ItemT::*function) (FuncArgs...), CallArgs... args)
   {
@@ -175,16 +186,6 @@ public:
       ItemT &self = dynamic_cast<ItemT&> (item);
       (self.*function) (args...); // ignoring return type R
       return ERROR_NONE;
-    };
-    push_item_undo (blurb, lambda);
-  }
-  template<typename ItemT, typename... FuncArgs, typename... CallArgs> void
-  push_undo (const String &blurb, ItemT &self, ErrorType (ItemT::*function) (FuncArgs...), CallArgs... args)
-  {
-    assert_return (this == &self);
-    UndoLambda lambda = [function, args...] (ItemImpl &item, BseUndoStack *ustack) {
-      ItemT &self = dynamic_cast<ItemT&> (item);
-      return (self.*function) (args...);
     };
     push_item_undo (blurb, lambda);
   }
