@@ -64,13 +64,27 @@ struct BseObject : GObject {
   guint16	         lock_count;
   guint		         unique_id;
   operator               Bse::ObjectImpl* ()          { return cxxobject_; }
-  template<class ObjectImplPtr>
+  // DERIVES_shared_ptr (uses void_t to prevent errors for T without shared_ptr's typedefs)
+  template<class T, typename = void> struct DERIVES_shared_ptr : std::false_type {};
+  template<class T> struct DERIVES_shared_ptr<T, Rapicorn::void_t< typename T::element_type > > :
+  std::is_base_of< std::shared_ptr<typename T::element_type>, T > {};
+  // as<T*>()
+  template<class ObjectImplPtr, typename ::std::enable_if<std::is_pointer<ObjectImplPtr>::value, bool>::type = true>
   ObjectImplPtr          as ()
   {
     static_assert (std::is_pointer<ObjectImplPtr>::value, "");
     typedef typename std::remove_pointer<ObjectImplPtr>::type ObjectImplT;
     static_assert (std::is_base_of<Rapicorn::Aida::ImplicitBase, ObjectImplT>::value, "");
     return dynamic_cast<ObjectImplPtr> (cxxobject_);
+  }
+  // as<shared_ptr<T>>()
+  template<class ObjectImplP, typename ::std::enable_if<DERIVES_shared_ptr<ObjectImplP>::value, bool>::type = true>
+  ObjectImplP            as ()
+  {
+    typedef typename ObjectImplP::element_type ObjectImplT;
+    static_assert (std::is_base_of<Rapicorn::Aida::ImplicitBase, ObjectImplT>::value, "");
+    ObjectImplT *impl = this && cxxobject_ ? as<ObjectImplT*>() : NULL;
+    return impl ? Rapicorn::shared_ptr_cast<ObjectImplT> (impl) : NULL;
   }
 };
 

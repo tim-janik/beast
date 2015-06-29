@@ -2083,7 +2083,7 @@ SourceImpl::ichannel_get_osource (int input_channel, int input_joint)
     osource = input->idata.osource;
   else
     osource = NULL;
-  return osource ? shared_ptr_cast<SourceIface> (osource->as<SourceIface*>()) : SourceIfaceP();
+  return osource->as<SourceIfaceP>();
 }
 
 } // Bse

@@ -1127,7 +1127,7 @@ ServerImpl::from_proxy (int64_t proxyid)
   BseObject *bo = bse_object_from_id (proxyid);
   if (!bo)
     return ObjectIfaceP();
-  return shared_ptr_cast<ObjectIface> (bo->as<ObjectIface*>());
+  return bo->as<ObjectIfaceP>();
 }
 
 ServerImpl&
@@ -1462,7 +1462,7 @@ ServerImpl::create_project (const String &project_name)
   g_object_connect (project,
 		    "signal::release", release_project, server,
 		    NULL);
-  return shared_ptr_cast<ProjectIface> (project->as<ProjectIface*>());
+  return project->as<ProjectIfaceP>();
 }
 
 void

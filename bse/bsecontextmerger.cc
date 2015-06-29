@@ -220,6 +220,6 @@ ContextMergerImpl::~ContextMergerImpl ()
 {}
 
 // BseContextMerger *self = as<BseContextMerger*>();
-// shared_ptr_cast<ContextMergerIface> (contextmerger->as<ContextMergerIface*>())
+// contextmerger->as<ContextMergerIfaceP>()
 
 } // Bse

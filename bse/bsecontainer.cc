@@ -1363,7 +1363,7 @@ ContainerImpl::lookup_item (const String &uname)
 {
   BseContainer *self = as<BseContainer*>();
   BseItem *child = bse_container_lookup_item (self, uname.c_str());
-  return child ? shared_ptr_cast<ItemIface> (child->as<ItemIface*>()) : ItemIfaceP();
+  return child->as<ItemIfaceP>();
 }
 
 } // Bse
