@@ -274,19 +274,25 @@ enum MidiSignalType {
 };
 
 // == Bse Constants ==
-Const MIN_NOTE = 0;
-Const MAX_NOTE = 131;           // 123
-Const NOTE_VOID = MAX_NOTE + 1; /// Value represents unparsable/unknown notes
-Const KAMMER_NOTE = 69;         /// Kammer note, representing the kammer frequency's MIDI note value for A' or A4
-Const KAMMER_FREQ = 440.0;      /// Pitch Standard, see also: https://en.wikipedia.org/wiki/A440_(pitch_standard)
-Const KAMMER_OCTAVE = +1;       /// Octave number for MIDI A'
-Const MIN_OCTAVE = -4;          /// Octave of MIN_NOTE
-Const MAX_OCTAVE = +6;          /// Octave of MAX_NOTE
+Const MIN_NOTE      = 0;
+Const MAX_NOTE      = 131;          // 123
+Const NOTE_VOID     = MAX_NOTE + 1; /// Value represents unparsable/unknown notes
+Const KAMMER_NOTE   = 69;           /// Kammer note, representing the kammer frequency's MIDI note value for A' or A4
+Const KAMMER_FREQ   = 440.0;        /// Pitch Standard, see also: https://en.wikipedia.org/wiki/A440_(pitch_standard)
+Const KAMMER_OCTAVE = +1;           /// Octave number for MIDI A'
+Const MIN_OCTAVE    = -4;           /// Octave of MIN_NOTE
+Const MAX_OCTAVE    = +6;           /// Octave of MAX_NOTE
 Const MIN_FINE_TUNE = -100;
 Const MAX_FINE_TUNE = 100;
-Const NOTEHINTS = "r:w:S:G:note";
-Const FINETUNEHINTS = "r:w:S:G:finetune";
-Const VELOCITYHINTS = "r:w:S:G:velocity";
+Const MIN_BPM       = 1;
+Const MAX_BPM       = 1024;
+Const MIN_TRANSPOSE = -72;
+Const MAX_TRANSPOSE = +72;
+Const STANDARD      = "r:w:S";
+Const GUISTANDARD   = STANDARD ":G";
+Const NOTEHINTS     = GUISTANDARD ":note";
+Const FINETUNEHINTS = GUISTANDARD ":finetune";
+Const VELOCITYHINTS = GUISTANDARD ":velocity";
 
 /// Object to carry out IDL, API, signal, etc tests.
 interface TestObject {
