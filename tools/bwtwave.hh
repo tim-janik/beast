@@ -18,10 +18,10 @@ public:
   /*Con*/         WaveChunk();
   /*Copy*/        WaveChunk (const WaveChunk &rhs);
   WaveChunk&      operator= (const WaveChunk &);
-  BseErrorType    set_dhandle_from_file (const string &fname,
+  Bse::ErrorType    set_dhandle_from_file (const string &fname,
                                          gdouble       osc_freq,
                                          gchar       **xinfos);
-  BseErrorType    change_dhandle        (GslDataHandle *xhandle,
+  Bse::ErrorType    change_dhandle        (GslDataHandle *xhandle,
                                          gdouble        osc_freq,
                                          gchar        **xinfos);
   /*Des*/         ~WaveChunk();
@@ -53,14 +53,14 @@ public:
   {
     set_chunks_xinfo (key, value, osc_freq, false);
   }
-  BseErrorType          add_chunk       (GslDataHandle  *dhandle,
+  Bse::ErrorType          add_chunk       (GslDataHandle  *dhandle,
                                          gchar         **xinfos = NULL);
   GslDataHandle*        lookup          (gfloat          osc_freq);
   bool                  match           (const WaveChunk &wchunk,
                                          vector<float>   &sorted_freqs);
   void                  remove          (list<WaveChunk>::iterator it);
   void                  sort            ();
-  BseErrorType          store           (const string    file_name);
+  Bse::ErrorType          store           (const string    file_name);
   /*Des*/               ~Wave           ();
 };
 

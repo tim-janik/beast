@@ -37,7 +37,7 @@ void              gsl_vorbis_encoder_set_n_channels     (GslVorbisEncoder       
 void              gsl_vorbis_encoder_set_sample_freq    (GslVorbisEncoder       *self,
                                                          guint                   sample_freq);
 /* start encoding */
-BseErrorType      gsl_vorbis_encoder_setup_stream       (GslVorbisEncoder       *self,
+Bse::ErrorType      gsl_vorbis_encoder_setup_stream       (GslVorbisEncoder       *self,
                                                          guint                   serial);
 /* write unencoded data (must be channel aligned) */
 void              gsl_vorbis_encoder_write_pcm          (GslVorbisEncoder       *self,

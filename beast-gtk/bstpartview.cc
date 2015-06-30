@@ -58,13 +58,12 @@ bst_part_view_init (BstPartView *self)
 static void
 popup_part_dialog (BstPartView *part_view)
 {
-  SfiProxy part;
   GtkWidget *pdialog;
 
-  part = bst_item_view_get_current (BST_ITEM_VIEW (part_view));
+  Bse::PartH part = bst_item_view_get_current_part (BST_ITEM_VIEW (part_view));
   pdialog = (GtkWidget*) g_object_new (BST_TYPE_PART_DIALOG, NULL);
 
-  bst_part_dialog_set_proxy (BST_PART_DIALOG (pdialog), part);
+  bst_part_dialog_set_part (BST_PART_DIALOG (pdialog), part);
   g_signal_connect_object (part_view, "destroy", G_CALLBACK (gtk_widget_destroy), pdialog, G_CONNECT_SWAPPED);
   gtk_widget_show (pdialog);
 }

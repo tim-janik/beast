@@ -13,8 +13,8 @@ GslDataHandle*	gsl_data_handle_new_mad		(const gchar  *file_name,
                                                  gfloat        osc_freq);
 GslDataHandle*	gsl_data_handle_new_mad_err	(const gchar  *file_name,
                                                  gfloat        osc_freq,
-                                                 BseErrorType *error);
-BseErrorType	gsl_data_handle_mad_testopen	(const gchar  *file_name,
+                                                 Bse::ErrorType *error);
+Bse::ErrorType	gsl_data_handle_mad_testopen	(const gchar  *file_name,
 						 guint        *n_channels,
 						 gfloat       *mix_freq);
 const gchar*    gsl_data_handle_mad_version     (void);

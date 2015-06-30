@@ -123,11 +123,11 @@ protected:
   virtual int64		    read_frame  (int64 frame) = 0;
 
 public:
-  BseErrorType
+  Bse::ErrorType
   open (GslDataHandleSetup *setup)
   {
-    BseErrorType error = gsl_data_handle_open (m_src_handle);
-    if (error != BSE_ERROR_NONE)
+    Bse::ErrorType error = gsl_data_handle_open (m_src_handle);
+    if (error != Bse::ERROR_NONE)
       return error;
 
     /* !not! m_dhandle.setup; the framework magically ensures that *m_dhandle.setup
@@ -178,7 +178,7 @@ public:
 	m_filter_delay = (int) round (m_resamplers[0]->delay() * 2);
 	m_filter_delay_input = 0;
       }
-    return BSE_ERROR_NONE;
+    return Bse::ERROR_NONE;
   }
   void
   close()
@@ -275,7 +275,7 @@ private:
     return static_cast<CDataHandleResample2 *> (dhandle)->cxx_dh;
     //return reinterpret_cast<DataHandleResample2 *> (dhandle);
   }
-  static BseErrorType
+  static Bse::ErrorType
   dh_open (GslDataHandle *dhandle, GslDataHandleSetup *setup)
   {
     return dh_cast (dhandle)->open (setup);

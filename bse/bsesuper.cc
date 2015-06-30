@@ -223,3 +223,17 @@ BSE_BUILTIN_TYPE (BseSuper)
                                      __FILE__, __LINE__,
                                      &super_info);
 }
+
+namespace Bse {
+
+SuperImpl::SuperImpl (BseObject *bobj) :
+  ContainerImpl (bobj)
+{}
+
+SuperImpl::~SuperImpl ()
+{}
+
+// BseSuper *self = as<BseSuper*>();
+// SuperIfaceP sp = shared_ptr_cast<SuperIface> (super->as<SuperIface*>());
+
+} // Bse

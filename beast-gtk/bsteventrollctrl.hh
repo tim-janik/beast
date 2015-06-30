@@ -13,7 +13,7 @@ typedef struct {
   /* drag data */
   guint		     obj_id, obj_tick;
   gfloat             obj_value;
-  BsePartControlSeq *sel_cseq;
+  Bse::PartControlSeq sel_cseq;
   BstSegment        *segment;
   /* tool data */
   guint		     tool_index;
@@ -35,8 +35,8 @@ void			bst_event_roll_controller_unref		 (BstEventRollController	*self);
 guint                   bst_event_roll_controller_quantize       (BstEventRollController        *self,
                                                                   guint                          fine_tick);
 GxkActionList*          bst_event_roll_controller_select_actions (BstEventRollController        *self);
-void			bst_event_roll_controller_set_clipboard  (BsePartControlSeq	        *cseq);
-BsePartControlSeq*	bst_event_roll_controller_get_clipboard	 (void);
+void			bst_event_roll_controller_set_clipboard  (const Bse::PartControlSeq &cseq);
+Bse::PartControlSeq*	bst_event_roll_controller_get_clipboard	 (void);
 void			bst_event_roll_controller_clear		 (BstEventRollController	*self);
 void			bst_event_roll_controller_cut		 (BstEventRollController	*self);
 gboolean		bst_event_roll_controller_copy		 (BstEventRollController	*self);

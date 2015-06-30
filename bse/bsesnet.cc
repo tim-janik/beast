@@ -949,3 +949,21 @@ BSE_BUILTIN_TYPE (BseSNet)
   g_assert (BSE_SNET_FLAGS_USHIFT < BSE_OBJECT_FLAGS_MAX_SHIFT);
   return bse_type_register_abstract (BSE_TYPE_SUPER, "BseSNet", "BSE Synthesis (Filter) Network", __FILE__, __LINE__, &type_info);
 }
+
+namespace Bse {
+
+SNetImpl::SNetImpl (BseObject *bobj) :
+  SuperImpl (bobj)
+{}
+
+SNetImpl::~SNetImpl ()
+{}
+
+bool
+SNetImpl::supports_user_synths ()
+{
+  BseSNet *self = as<BseSNet*>();
+  return BSE_SNET_USER_SYNTH (self);
+}
+
+} // Bse

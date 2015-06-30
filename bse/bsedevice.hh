@@ -41,7 +41,7 @@ struct BseDeviceClass : BseObjectClass {
   const gchar          *driver_syntax;
   const gchar          *driver_blurb;
   SfiRing*            (*list_devices)  (BseDevice    *device);
-  BseErrorType        (*open)          (BseDevice    *device,
+  Bse::ErrorType        (*open)          (BseDevice    *device,
                                         gboolean        require_readable,
                                         gboolean        require_writable,
                                         guint           n_args,
@@ -65,7 +65,7 @@ void            bse_device_class_setup     (gpointer        klass,
                                             const gchar    *syntax,
                                             const gchar    *blurb);
 SfiRing*        bse_device_list            (BseDevice      *device);
-BseErrorType    bse_device_open            (BseDevice      *device,
+Bse::ErrorType    bse_device_open            (BseDevice      *device,
                                             gboolean        need_readable,
                                             gboolean        need_writable,
                                             const gchar    *arg_string);
@@ -102,14 +102,14 @@ BseDevice*      bse_device_open_best       (GType           base_type,
                                             void          (*request_callback) (BseDevice *device,
                                                                                gpointer   data),
                                             gpointer        data,
-                                            BseErrorType   *errorp);
+                                            Bse::ErrorType   *errorp);
 BseDevice*      bse_device_open_auto       (GType           base_type,
                                             gboolean        need_readable,
                                             gboolean        need_writable,
                                             void          (*request_callback) (BseDevice *device,
                                                                                gpointer   data),
                                             gpointer        data,
-                                            BseErrorType   *errorp);
+                                            Bse::ErrorType   *errorp);
 
 
 G_END_DECLS

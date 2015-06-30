@@ -6,11 +6,287 @@
 
 namespace Bse {
 
-/// Basic object type for all BSE objects.
-interface Object {
-  String debug_name (); ///< Object name useful for debugging output.
-  int64  proxy_id   (); ///< Retrieve the BseObject proxy ID for an Object.
+// == Type Constants ==
+Const MAXINT32   = +4294967295;
+Const MAXINT31   = +2147483647;
+Const MININT31   = -2147483648;
+Const MAXFLOAT64 = 1.7976931348623157e+308;
+
+// == Enums ==
+enum ErrorType {
+  ERROR_NONE                      = Enum (0, "", _("OK")),
+  ERROR_INTERNAL                  = Enum (1, "", _("Internal error (please report)")),
+  ERROR_UNKNOWN                   = Enum (2, "", _("Unknown error")),
+  ERROR_IO                        = Enum (3, "", _("Input/output error")),
+  ERROR_PERMS                     = Enum (4, "", _("Insufficient permissions")),
+  // file errors
+  ERROR_FILE_BUSY                 = Enum (5, "", _("Device or resource busy")),
+  ERROR_FILE_EXISTS               = Enum (6, "", _("File exists already")),
+  ERROR_FILE_EOF                  = Enum (7, "", _("End of file")),
+  ERROR_FILE_EMPTY                = Enum (8, "", _("File empty")),
+  ERROR_FILE_NOT_FOUND            = Enum (9, "", _("No such file, device or directory")),
+  ERROR_FILE_IS_DIR               = Enum (10, "", _("Is a directory")),
+  ERROR_FILE_OPEN_FAILED          = Enum (11, "", _("Open failed")),
+  ERROR_FILE_SEEK_FAILED          = Enum (12, "", _("Seek failed")),
+  ERROR_FILE_READ_FAILED          = Enum (13, "", _("Read failed")),
+  ERROR_FILE_WRITE_FAILED         = Enum (14, "", _("Write failed")),
+  // out of resource conditions
+  ERROR_MANY_FILES                = Enum (15, "", _("Too many open files")),
+  ERROR_NO_FILES                  = Enum (16, "", _("Too many open files in system")),
+  ERROR_NO_SPACE                  = Enum (17, "", _("No space left on device")),
+  ERROR_NO_MEMORY                 = Enum (18, "", _("Out of memory")),
+  // content errors
+  ERROR_NO_HEADER                 = Enum (19, "", _("Failed to detect header")),
+  ERROR_NO_SEEK_INFO              = Enum (20, "", _("Failed to retrieve seek information")),
+  ERROR_NO_DATA                   = Enum (21, "", _("No data available")),
+  ERROR_DATA_CORRUPT              = Enum (22, "", _("Data corrupt")),
+  ERROR_WRONG_N_CHANNELS          = Enum (23, "", _("Wrong number of channels")),
+  ERROR_FORMAT_INVALID            = Enum (24, "", _("Invalid format")),
+  ERROR_FORMAT_UNKNOWN            = Enum (25, "", _("Unknown format")),
+  ERROR_DATA_UNMATCHED            = Enum (26, "", _("Requested data values unmatched")),
+  // miscellaneous errors
+  ERROR_TEMP                      = Enum (27, "", _("Temporary error")),
+  ERROR_WAVE_NOT_FOUND            = Enum (28, "", _("No such wave")),
+  ERROR_CODEC_FAILURE             = Enum (29, "", _("Codec failure")),
+  ERROR_UNIMPLEMENTED             = Enum (30, "", _("Functionality not implemented")),
+  ERROR_INVALID_PROPERTY          = Enum (31, "", _("Invalid object property")),
+  ERROR_INVALID_MIDI_CONTROL      = Enum (32, "", _("Invalid MIDI control type")),
+  ERROR_PARSE_ERROR               = Enum (33, "", _("Parsing error")),
+  ERROR_SPAWN                     = Enum (34, "", _("Failed to spawn child process")),
+  // Device errors
+  ERROR_DEVICE_NOT_AVAILABLE      = Enum (35, "", _("No device (driver) available")),
+  ERROR_DEVICE_ASYNC              = Enum (36, "", _("Device not async capable")),
+  ERROR_DEVICE_BUSY               = Enum (37, "", _("Device busy")),
+  ERROR_DEVICE_FORMAT             = Enum (38, "", _("Failed to configure device format")),
+  ERROR_DEVICE_BUFFER             = Enum (39, "", _("Failed to configure device buffer")),
+  ERROR_DEVICE_LATENCY            = Enum (40, "", _("Failed to configure device latency")),
+  ERROR_DEVICE_CHANNELS           = Enum (41, "", _("Failed to configure number of device channels")),
+  ERROR_DEVICE_FREQUENCY          = Enum (42, "", _("Failed to configure device frequency")),
+  ERROR_DEVICES_MISMATCH          = Enum (43, "", _("Device configurations mismatch")),
+  // BseSource errors
+  ERROR_SOURCE_NO_SUCH_MODULE     = Enum (44, "", _("No such synthesis module")),
+  ERROR_SOURCE_NO_SUCH_ICHANNEL   = Enum (45, "", _("No such input channel")),
+  ERROR_SOURCE_NO_SUCH_OCHANNEL   = Enum (46, "", _("No such output channel")),
+  ERROR_SOURCE_NO_SUCH_CONNECTION = Enum (47, "", _("Input/Output channels not connected")),
+  ERROR_SOURCE_PRIVATE_ICHANNEL   = Enum (48, "", _("Input channel is private")),
+  ERROR_SOURCE_ICHANNEL_IN_USE    = Enum (49, "", _("Input channel already in use")),
+  ERROR_SOURCE_CHANNELS_CONNECTED = Enum (50, "", _("Input/output channels already connected")),
+  ERROR_SOURCE_CONNECTION_INVALID = Enum (51, "", _("Invalid synthesis module connection")),
+  ERROR_SOURCE_PARENT_MISMATCH    = Enum (52, "", _("Parent mismatch")),
+  ERROR_SOURCE_BAD_LOOPBACK       = Enum (53, "", _("Bad loopback")),
+  ERROR_SOURCE_BUSY               = Enum (54, "", _("Synthesis module currently busy")),
+  ERROR_SOURCE_TYPE_INVALID       = Enum (55, "", _("Invalid synthsis module type")),
+  // BseProcedure errors
+  ERROR_PROC_NOT_FOUND            = Enum (56, "", _("No such procedure")),
+  ERROR_PROC_BUSY                 = Enum (57, "", _("Procedure currently busy")),
+  ERROR_PROC_PARAM_INVAL          = Enum (58, "", _("Procedure parameter invalid")),
+  ERROR_PROC_EXECUTION            = Enum (59, "", _("Procedure execution failed")),
+  ERROR_PROC_ABORT                = Enum (60, "", _("Procedure execution aborted")),
+  // various procedure errors
+  ERROR_NO_ENTRY                  = Enum (61, "", _("No such entry")),
+  ERROR_NO_EVENT                  = Enum (62, "", _("No such event")),
+  ERROR_NO_TARGET                 = Enum (63, "", _("No target")),
+  ERROR_NOT_OWNER                 = Enum (64, "", _("Ownership mismatch")),
+  ERROR_INVALID_OFFSET            = Enum (65, "", _("Invalid offset")),
+  ERROR_INVALID_DURATION          = Enum (66, "", _("Invalid duration")),
+  ERROR_INVALID_OVERLAP           = Enum (67, "", _("Invalid overlap")),
 };
+
+enum MidiSignalType {
+  // special case signals
+  MIDI_SIGNAL_PROGRAM                   = Enum (1,   _("Program Change")),     // 7bit
+  MIDI_SIGNAL_PRESSURE                  = Enum (2,   _("Channel Pressure")),   // 7bit
+  MIDI_SIGNAL_PITCH_BEND                = Enum (3,   _("Pitch Bend")),         // 14bit
+  MIDI_SIGNAL_VELOCITY                  = Enum (4,   _("Note Velocity")),
+  MIDI_SIGNAL_FINE_TUNE                 = Enum (5,   _("Note Fine Tune")),
+  // 14bit, continuous controls
+  MIDI_SIGNAL_CONTINUOUS_0              = Enum (64,  _("Bank Select")),
+  MIDI_SIGNAL_CONTINUOUS_1              = Enum (65,  _("Modulation Depth")),
+  MIDI_SIGNAL_CONTINUOUS_2              = Enum (66,  _("Breath Control")),
+  MIDI_SIGNAL_CONTINUOUS_3              = Enum (67,  _("Continuous 3")),
+  MIDI_SIGNAL_CONTINUOUS_4              = Enum (68,  _("Foot Controller")),
+  MIDI_SIGNAL_CONTINUOUS_5              = Enum (69,  _("Portamento Time")),
+  MIDI_SIGNAL_CONTINUOUS_6              = Enum (70,  _("Data Entry")),
+  MIDI_SIGNAL_CONTINUOUS_7              = Enum (71,  _("Volume")),
+  MIDI_SIGNAL_CONTINUOUS_8              = Enum (72,  _("Balance")),
+  MIDI_SIGNAL_CONTINUOUS_9              = Enum (73,  _("Continuous 9")),
+  MIDI_SIGNAL_CONTINUOUS_10             = Enum (74,  _("Panorama")),
+  MIDI_SIGNAL_CONTINUOUS_11             = Enum (75,  _("Expression")),
+  MIDI_SIGNAL_CONTINUOUS_12             = Enum (76,  _("Effect Control 1")),
+  MIDI_SIGNAL_CONTINUOUS_13             = Enum (77,  _("Effect Control 2")),
+  MIDI_SIGNAL_CONTINUOUS_14             = Enum (78,  _("Continuous 14")),
+  MIDI_SIGNAL_CONTINUOUS_15             = Enum (79,  _("Continuous 15")),
+  MIDI_SIGNAL_CONTINUOUS_16             = Enum (80,  _("General Purpose Controller 1")),
+  MIDI_SIGNAL_CONTINUOUS_17             = Enum (81,  _("General Purpose Controller 2")),
+  MIDI_SIGNAL_CONTINUOUS_18             = Enum (82,  _("General Purpose Controller 3")),
+  MIDI_SIGNAL_CONTINUOUS_19             = Enum (83,  _("General Purpose Controller 4")),
+  MIDI_SIGNAL_CONTINUOUS_20             = Enum (84,  _("Continuous 20")),
+  MIDI_SIGNAL_CONTINUOUS_21             = Enum (85,  _("Continuous 21")),
+  MIDI_SIGNAL_CONTINUOUS_22             = Enum (86,  _("Continuous 22")),
+  MIDI_SIGNAL_CONTINUOUS_23             = Enum (87,  _("Continuous 23")),
+  MIDI_SIGNAL_CONTINUOUS_24             = Enum (88,  _("Continuous 24")),
+  MIDI_SIGNAL_CONTINUOUS_25             = Enum (89,  _("Continuous 25")),
+  MIDI_SIGNAL_CONTINUOUS_26             = Enum (90,  _("Continuous 26")),
+  MIDI_SIGNAL_CONTINUOUS_27             = Enum (91,  _("Continuous 27")),
+  MIDI_SIGNAL_CONTINUOUS_28             = Enum (92,  _("Continuous 28")),
+  MIDI_SIGNAL_CONTINUOUS_29             = Enum (93,  _("Continuous 29")),
+  MIDI_SIGNAL_CONTINUOUS_30             = Enum (94,  _("Continuous 30")),
+  MIDI_SIGNAL_CONTINUOUS_31             = Enum (95,  _("Continuous 31")),
+  // 14bit, special case signals
+  MIDI_SIGNAL_CONSTANT_HIGH             = Enum (96,  _("Constant HIGH")),
+  MIDI_SIGNAL_CONSTANT_CENTER           = Enum (97,  _("Constant CENTER")),
+  MIDI_SIGNAL_CONSTANT_LOW              = Enum (98,  _("Constant LOW")),
+  MIDI_SIGNAL_CONSTANT_NEGATIVE_CENTER  = Enum (99,  _("Constant Negative CENTER")),
+  MIDI_SIGNAL_CONSTANT_NEGATIVE_HIGH    = Enum (100, _("Constant Negative HIGH")),
+  MIDI_SIGNAL_PARAMETER                 = Enum (101, _("Registered Parameter")),
+  MIDI_SIGNAL_NON_PARAMETER             = Enum (102, _("Non-Registered Parameter")),
+  // 7bit, literal channel controls, MSB values
+  MIDI_SIGNAL_CONTROL_0                 = Enum (128, _("Control 0 Bank Select MSB")),
+  MIDI_SIGNAL_CONTROL_1                 = Enum (129, _("Control 1 Modulation Depth MSB")),
+  MIDI_SIGNAL_CONTROL_2                 = Enum (130, _("Control 2 Breath Control MSB")),
+  MIDI_SIGNAL_CONTROL_3                 = Enum (131, _("control-3")),
+  MIDI_SIGNAL_CONTROL_4                 = Enum (132, _("Control 4 Foot Controller MSB")),
+  MIDI_SIGNAL_CONTROL_5                 = Enum (133, _("Control 5 Portamento Time MSB")),
+  MIDI_SIGNAL_CONTROL_6                 = Enum (134, _("Control 6 Data Entry MSB")),
+  MIDI_SIGNAL_CONTROL_7                 = Enum (135, _("Control 7 Volume MSB")),
+  MIDI_SIGNAL_CONTROL_8                 = Enum (136, _("Control 8 Balance MSB")),
+  MIDI_SIGNAL_CONTROL_9                 = Enum (137, _("control-9")),
+  MIDI_SIGNAL_CONTROL_10                = Enum (138, _("Control 10 Panorama MSB")),
+  MIDI_SIGNAL_CONTROL_11                = Enum (139, _("Control 11 Expression MSB")),
+  MIDI_SIGNAL_CONTROL_12                = Enum (140, _("Control 12 Effect Control 1 MSB")),
+  MIDI_SIGNAL_CONTROL_13                = Enum (141, _("Control 13 Effect Control 2 MSB")),
+  MIDI_SIGNAL_CONTROL_14                = Enum (142, _("control-14")),
+  MIDI_SIGNAL_CONTROL_15                = Enum (143, _("control-15")),
+  MIDI_SIGNAL_CONTROL_16                = Enum (144, _("Control 16 General Purpose Controller 1 MSB")),
+  MIDI_SIGNAL_CONTROL_17                = Enum (145, _("Control 17 General Purpose Controller 2 MSB")),
+  MIDI_SIGNAL_CONTROL_18                = Enum (146, _("Control 18 General Purpose Controller 3 MSB")),
+  MIDI_SIGNAL_CONTROL_19                = Enum (147, _("Control 19 General Purpose Controller 4 MSB")),
+  MIDI_SIGNAL_CONTROL_20                = Enum (148, _("control-20")),
+  MIDI_SIGNAL_CONTROL_21                = Enum (149, _("control-21")),
+  MIDI_SIGNAL_CONTROL_22                = Enum (150, _("control-22")),
+  MIDI_SIGNAL_CONTROL_23                = Enum (151, _("control-23")),
+  MIDI_SIGNAL_CONTROL_24                = Enum (152, _("control-24")),
+  MIDI_SIGNAL_CONTROL_25                = Enum (153, _("control-25")),
+  MIDI_SIGNAL_CONTROL_26                = Enum (154, _("control-26")),
+  MIDI_SIGNAL_CONTROL_27                = Enum (155, _("control-27")),
+  MIDI_SIGNAL_CONTROL_28                = Enum (156, _("control-28")),
+  MIDI_SIGNAL_CONTROL_29                = Enum (157, _("control-29")),
+  MIDI_SIGNAL_CONTROL_30                = Enum (158, _("control-30")),
+  MIDI_SIGNAL_CONTROL_31                = Enum (159, _("control-31")),
+  // 7bit, literal channel controls, LSB values
+  MIDI_SIGNAL_CONTROL_32                = Enum (160, _("Control 32 Bank Select LSB")),
+  MIDI_SIGNAL_CONTROL_33                = Enum (161, _("Control 33 Modulation Depth LSB")),
+  MIDI_SIGNAL_CONTROL_34                = Enum (162, _("Control 34 Breath Control LSB")),
+  MIDI_SIGNAL_CONTROL_35                = Enum (163, _("control-35")),
+  MIDI_SIGNAL_CONTROL_36                = Enum (164, _("Control 36 Foot Controller LSB")),
+  MIDI_SIGNAL_CONTROL_37                = Enum (165, _("Control 37 Portamento Time LSB")),
+  MIDI_SIGNAL_CONTROL_38                = Enum (166, _("Control 38 Data Entry LSB")),
+  MIDI_SIGNAL_CONTROL_39                = Enum (167, _("Control 39 Volume LSB")),
+  MIDI_SIGNAL_CONTROL_40                = Enum (168, _("Control 40 Balance LSB")),
+  MIDI_SIGNAL_CONTROL_41                = Enum (169, _("control-41")),
+  MIDI_SIGNAL_CONTROL_42                = Enum (170, _("Control 42 Panorama LSB")),
+  MIDI_SIGNAL_CONTROL_43                = Enum (171, _("Control 43 Expression LSB")),
+  MIDI_SIGNAL_CONTROL_44                = Enum (172, _("Control 44 Effect Control 1 LSB")),
+  MIDI_SIGNAL_CONTROL_45                = Enum (173, _("Control 45 Effect Control 2 LSB")),
+  MIDI_SIGNAL_CONTROL_46                = Enum (174, _("control-46")),
+  MIDI_SIGNAL_CONTROL_47                = Enum (175, _("control-47")),
+  MIDI_SIGNAL_CONTROL_48                = Enum (176, _("Control 48 General Purpose Controller 1 LSB")),
+  MIDI_SIGNAL_CONTROL_49                = Enum (177, _("Control 49 General Purpose Controller 2 LSB")),
+  MIDI_SIGNAL_CONTROL_50                = Enum (178, _("Control 50 General Purpose Controller 3 LSB")),
+  MIDI_SIGNAL_CONTROL_51                = Enum (179, _("Control 51 General Purpose Controller 4 LSB")),
+  MIDI_SIGNAL_CONTROL_52                = Enum (180, _("control-52")),
+  MIDI_SIGNAL_CONTROL_53                = Enum (181, _("control-53")),
+  MIDI_SIGNAL_CONTROL_54                = Enum (182, _("control-54")),
+  MIDI_SIGNAL_CONTROL_55                = Enum (183, _("control-55")),
+  MIDI_SIGNAL_CONTROL_56                = Enum (184, _("control-56")),
+  MIDI_SIGNAL_CONTROL_57                = Enum (185, _("control-57")),
+  MIDI_SIGNAL_CONTROL_58                = Enum (186, _("control-58")),
+  MIDI_SIGNAL_CONTROL_59                = Enum (187, _("control-59")),
+  MIDI_SIGNAL_CONTROL_60                = Enum (188, _("control-60")),
+  MIDI_SIGNAL_CONTROL_61                = Enum (189, _("control-61")),
+  MIDI_SIGNAL_CONTROL_62                = Enum (190, _("control-62")),
+  MIDI_SIGNAL_CONTROL_63                = Enum (191, _("control-63")),
+  // 7bit, literal channel controls
+  MIDI_SIGNAL_CONTROL_64                = Enum (192, _("Control 64 Damper Pedal Switch (Sustain)")),
+  MIDI_SIGNAL_CONTROL_65                = Enum (193, _("Control 65 Portamento Switch")),
+  MIDI_SIGNAL_CONTROL_66                = Enum (194, _("Control 66 Sustenuto Switch")),
+  MIDI_SIGNAL_CONTROL_67                = Enum (195, _("Control 67 Soft Switch")),
+  MIDI_SIGNAL_CONTROL_68                = Enum (196, _("Control 68 Legato Pedal Switch")),
+  MIDI_SIGNAL_CONTROL_69                = Enum (197, _("Control 69 Hold Pedal Switch")),
+  MIDI_SIGNAL_CONTROL_70                = Enum (198, _("Control 70 Sound Variation")),
+  MIDI_SIGNAL_CONTROL_71                = Enum (199, _("Control 71 Filter Resonance (Timbre)")),
+  MIDI_SIGNAL_CONTROL_72                = Enum (200, _("Control 72 Sound Release Time")),
+  MIDI_SIGNAL_CONTROL_73                = Enum (201, _("Control 73 Sound Attack Time")),
+  MIDI_SIGNAL_CONTROL_74                = Enum (202, _("Control 74 Sound Brightness")),
+  MIDI_SIGNAL_CONTROL_75                = Enum (203, _("Control 75 Sound Decay Time")),
+  MIDI_SIGNAL_CONTROL_76                = Enum (204, _("Control 76 Vibrato Rate")),
+  MIDI_SIGNAL_CONTROL_77                = Enum (205, _("Control 77 Vibrato Depth")),
+  MIDI_SIGNAL_CONTROL_78                = Enum (206, _("Control 78 Vibrato Delay")),
+  MIDI_SIGNAL_CONTROL_79                = Enum (207, _("Control 79 Sound Control 10")),
+  MIDI_SIGNAL_CONTROL_80                = Enum (208, _("Control 80 General Purpose Switch 5")),
+  MIDI_SIGNAL_CONTROL_81                = Enum (209, _("Control 81 General Purpose Switch 6")),
+  MIDI_SIGNAL_CONTROL_82                = Enum (210, _("Control 82 General Purpose Switch 7")),
+  MIDI_SIGNAL_CONTROL_83                = Enum (211, _("Control 83 General Purpose Switch 8")),
+  MIDI_SIGNAL_CONTROL_84                = Enum (212, _("Control 84 Portamento Control (Note)")),
+  MIDI_SIGNAL_CONTROL_85                = Enum (213, _("control-85")),
+  MIDI_SIGNAL_CONTROL_86                = Enum (214, _("control-86")),
+  MIDI_SIGNAL_CONTROL_87                = Enum (215, _("control-87")),
+  MIDI_SIGNAL_CONTROL_88                = Enum (216, _("control-88")),
+  MIDI_SIGNAL_CONTROL_89                = Enum (217, _("control-89")),
+  MIDI_SIGNAL_CONTROL_90                = Enum (218, _("control-90")),
+  MIDI_SIGNAL_CONTROL_91                = Enum (219, _("Control 91 Reverb Depth")),
+  MIDI_SIGNAL_CONTROL_92                = Enum (220, _("Control 92 Tremolo Depth")),
+  MIDI_SIGNAL_CONTROL_93                = Enum (221, _("Control 93 Chorus Depth")),
+  MIDI_SIGNAL_CONTROL_94                = Enum (222, _("Control 93 Detune Depth")),
+  MIDI_SIGNAL_CONTROL_95                = Enum (223, _("Control 95 Phase Depth")),
+  MIDI_SIGNAL_CONTROL_96                = Enum (224, _("Control 96 Data Increment Trigger")),
+  MIDI_SIGNAL_CONTROL_97                = Enum (225, _("Control 97 Data Decrement Trigger")),
+  MIDI_SIGNAL_CONTROL_98                = Enum (226, _("Control 98 Non-Registered Parameter MSB")),
+  MIDI_SIGNAL_CONTROL_99                = Enum (227, _("Control 99 Non-Registered Parameter LSB")),
+  MIDI_SIGNAL_CONTROL_100               = Enum (228, _("Control 100 Registered Parameter MSB")),
+  MIDI_SIGNAL_CONTROL_101               = Enum (229, _("Control 101 Registered Parameter LSB")),
+  MIDI_SIGNAL_CONTROL_102               = Enum (230, _("control-102")),
+  MIDI_SIGNAL_CONTROL_103               = Enum (231, _("control-103")),
+  MIDI_SIGNAL_CONTROL_104               = Enum (232, _("control-104")),
+  MIDI_SIGNAL_CONTROL_105               = Enum (233, _("control-105")),
+  MIDI_SIGNAL_CONTROL_106               = Enum (234, _("control-106")),
+  MIDI_SIGNAL_CONTROL_107               = Enum (235, _("control-107")),
+  MIDI_SIGNAL_CONTROL_108               = Enum (236, _("control-108")),
+  MIDI_SIGNAL_CONTROL_109               = Enum (237, _("control-109")),
+  MIDI_SIGNAL_CONTROL_110               = Enum (238, _("control-110")),
+  MIDI_SIGNAL_CONTROL_111               = Enum (239, _("control-111")),
+  MIDI_SIGNAL_CONTROL_112               = Enum (240, _("control-112")),
+  MIDI_SIGNAL_CONTROL_113               = Enum (241, _("control-113")),
+  MIDI_SIGNAL_CONTROL_114               = Enum (242, _("control-114")),
+  MIDI_SIGNAL_CONTROL_115               = Enum (243, _("control-115")),
+  MIDI_SIGNAL_CONTROL_116               = Enum (244, _("control-116")),
+  MIDI_SIGNAL_CONTROL_117               = Enum (245, _("control-117")),
+  MIDI_SIGNAL_CONTROL_118               = Enum (246, _("control-118")),
+  MIDI_SIGNAL_CONTROL_119               = Enum (247, _("control-119")),
+  MIDI_SIGNAL_CONTROL_120               = Enum (248, _("Control 120 All Sound Off ITrigger")),
+  MIDI_SIGNAL_CONTROL_121               = Enum (249, _("Control 121 All Controllers Off ITrigger")),
+  MIDI_SIGNAL_CONTROL_122               = Enum (250, _("Control 122 Local Control Switch")),
+  MIDI_SIGNAL_CONTROL_123               = Enum (251, _("Control 123 All Notes Off ITrigger")),
+  MIDI_SIGNAL_CONTROL_124               = Enum (252, _("Control 124 Omni Mode Off ITrigger")),
+  MIDI_SIGNAL_CONTROL_125               = Enum (253, _("Control 125 Omni Mode On ITrigger")),
+  MIDI_SIGNAL_CONTROL_126               = Enum (254, _("Control 126 Monophonic Voices Mode")),
+  MIDI_SIGNAL_CONTROL_127               = Enum (255, _("Control 127 Polyphonic Mode On ITrigger")),
+};
+
+// == Bse Constants ==
+Const MIN_NOTE = 0;
+Const MAX_NOTE = 131;           // 123
+Const NOTE_VOID = MAX_NOTE + 1; /// Value represents unparsable/unknown notes
+Const KAMMER_NOTE = 69;         /// Kammer note, representing the kammer frequency's MIDI note value for A' or A4
+Const KAMMER_FREQ = 440.0;      /// Pitch Standard, see also: https://en.wikipedia.org/wiki/A440_(pitch_standard)
+Const KAMMER_OCTAVE = +1;       /// Octave number for MIDI A'
+Const MIN_OCTAVE = -4;          /// Octave of MIN_NOTE
+Const MAX_OCTAVE = +6;          /// Octave of MAX_NOTE
+Const MIN_FINE_TUNE = -100;
+Const MAX_FINE_TUNE = 100;
+Const NOTEHINTS = "r:w:S:G:note";
+Const FINETUNEHINTS = "r:w:S:G:finetune";
+Const VELOCITYHINTS = "r:w:S:G:velocity";
 
 /// Object to carry out IDL, API, signal, etc tests.
 interface TestObject {
@@ -35,6 +311,162 @@ record UserMessage {
   String          label;        ///< Message class label, used to enable/disable this type of message.
 };
 
+/// Basic object type for all BSE objects.
+interface Object {
+  String debug_name (); ///< Object name useful for debugging output.
+  int64  proxy_id   (); ///< Retrieve the BseObject proxy ID for an Object.
+};
+
+/// Base type for objects that can be added to a container.
+interface Item : Object {
+  Item common_ancestor (Item other);    ///< Find a common container (parent or grand-parent) of two items if any.
+};
+
+/// Part specific note event representation.
+record PartNote
+{
+  int32   id        = Num ("ID", "", 0, ":readwrite");
+  int32   channel   = Range ("Channel", "", ":readwrite", 0, MAXINT31, 1);
+  int32   tick      = Range ("Tick", "", ":readwrite", 0, MAXINT31, 1);
+  int32   duration  = Range ("Duration", "Duration in number of ticks", ":readwrite", 0, MAXINT31, 1);
+  int32   note      = Range ("Note", "", NOTEHINTS, MIN_NOTE, MAX_NOTE, 12, KAMMER_NOTE);
+  int32   fine_tune = Range ("Fine Tune", "", FINETUNEHINTS, MIN_FINE_TUNE, MAX_FINE_TUNE, 1);
+  float64 velocity  = Range ("Velocity", "", VELOCITYHINTS, 0, 1.0, 0.1, 1);
+  bool    selected  = Bool ("Selected", "", ":readwrite", false);
+};
+/// A list of part note events.
+sequence PartNoteSeq {
+  PartNote part_notes;
+};
+
+/// Part specific control event representation.
+record PartControl {
+  int32          id           = Num ("ID", "", ":readwrite");
+  int32          tick         = Range ("Tick", "", ":readwrite", 0, MAXINT31, 1);
+  MidiSignalType control_type;
+  float64        value        = Range ("Value", "", ":readwrite", -1, +1, 0.1);
+  bool           selected     = Bool ("Selected", "", ":readwrite");
+};
+/// A list of part control events.
+sequence PartControlSeq {
+  PartControl pcontrols;
+};
+
+
+/// Data object containing piano notes and effects.
+interface Part : Item {
+  PartControlSeq list_selected_controls    (MidiSignalType control_type); ///< List all currently selected control events of a specific type.
+  PartControlSeq list_controls             (int32 tick, int32 duration, MidiSignalType control_type); ///< List all control events within a tick range.
+  PartControlSeq get_channel_controls      (int32 channel, int32 tick, int32 duration, MidiSignalType control_type); ///< Retrieve all control events of a specific type within range of a channel.
+  PartControlSeq get_controls              (int32 tick, MidiSignalType control_type); ///< Retrieve all control events of a specific type at specified tick.
+  int32          get_max_note              (); ///< Retrieve the maximum note supported in this part.
+  int32          get_min_note              (); ///< Retrieve the minimum note supported in this part.
+  ErrorType      change_control            (int32 id, int32 tick, MidiSignalType control_type, float64 value); ///< Change an existing control event within a part.
+  ErrorType      change_note               (int32 id, int32 tick, int32 duration, int32 note, int32 fine_tune, float64 velocity); ///< Change an existing note within a part.
+  ErrorType      delete_event              (int32 id); ///< Delete an existing event from a part.
+  int32          insert_control            (int32 tick, MidiSignalType control_type, float64 value); ///< Insert a new control event into a part.
+  int32          insert_note               (int32 channel, int32 tick, int32 duration, int32 note, int32 fine_tune, float64 velocity); ///< Insert a new note into a part.
+  int32          insert_note_auto          (int32 tick, int32 duration, int32 note, int32 fine_tune, float64 velocity); ///< Insert a new note into a part with automatic channel selection.
+  bool           is_event_selected         (int32 id); ///< Check whether an event is selected.
+  void           queue_controls            (int32 tick, int32 duration); ///< Queue updates for all control events and notes starting within the given range.
+  void           queue_notes               (int32 tick, int32 duration, int32 min_note, int32 max_note); ///< Queue updates for all notes starting within the given rectangle.
+  void           select_notes_exclusive    (int32 tick, int32 duration, int32 min_note, int32 max_note); ///< Select all notes within rectangle and deselect all others.
+  void           select_controls_exclusive (int32 tick, int32 duration, MidiSignalType control_type); ///< Select all control events within range and deselect all others.
+  void           select_notes              (int32 tick, int32 duration, int32 min_note, int32 max_note); ///< Select all notes within rectangle.
+  void           select_event              (int32 id); ///< Select an existing event.
+  void           select_controls           (int32 tick, int32 duration, MidiSignalType control_type); ///< Select all control events within range.
+  void           deselect_notes            (int32 tick, int32 duration, int32 min_note, int32 max_note); ///< Deselect all notes within rectangle.
+  void           deselect_event            (int32 id); ///< Deselect an existing event.
+  void           deselect_controls         (int32 tick, int32 duration, MidiSignalType control_type); ///< Deselect all controls within given range.
+  PartNoteSeq list_notes_crossing (int32 tick, int32 duration); ///< List all notes within or crossing a tick range.
+  PartNoteSeq list_notes_within   (int32 channel, int32 tick, int32 duration); ///< List all notes within a tick range.
+  PartNoteSeq list_selected_notes (); ///< List all currently selected notes.
+  PartNoteSeq check_overlap       (int32 tick, int32 duration, int32 note); ///< Check whether a note would overlap with neighbours.
+  PartNoteSeq get_notes           (int32 tick, int32 note); ///< Retrieve all notes at a specific frequency or crossing a tick.
+
+  // SongTiming     get_timing                (int32 tick); ///< Retrieve song timing information at a specific tick.
+  // signal void    range_changed             (int32 a, int32 b, int32 c, int32 d);
+  // signal void    links_changed             ();
+  // property int32 n_channels;
+  // property int32 last_tick;
+};
+
+/// Base type for synthesis objects with input or output streams.
+interface Source : Item {
+  Source ichannel_get_osource (int32 input_channel, int32 input_joint); ///< Retrieve output module connected to a specific joint of an input channel.
+};
+
+/// Data object containing sequencing information and links to Part objects.
+interface ContextMerger : Source {
+};
+
+/// Data object containing sequencing information and links to Part objects.
+interface Track : ContextMerger {
+  int32 insert_part (int32 tick, Part part); ///< Insert Part into Track at @a tick, returns the corresponding link id.
+  void  remove_tick (int32 tick);            ///< Remove Part at specified @a tick from a track.
+};
+
+/// Base type for objects that can be added to a container.
+interface Container : Source {
+  Item lookup_item (String uname); ///< Find an immediate child of a container by name (unique per container child).
+};
+
+/// Base type for Item managers.
+interface Super : Container {
+};
+
+/// Base type for all kinds of synthesis networks.
+interface SNet : Super {
+  bool supports_user_synths (); ///< Check whether users may edit synthesis modules of this network.
+};
+
+/// Projects support loading, saving, playback and act as containers for all other sound objects.
+interface Project : Container {
+  void  change_name (String name); ///< Change a project name without recording undo steps.
+  ErrorType play();     ///< Activate a project and start project playback (an already playing project is first halted).
+  ErrorType activate(); ///< Activate a project, precondition to start playback.
+  //ProjectState get_state();     ///< Retrieve the current project activation/playback state.
+  bool  can_play();     ///< Check whether project playback would makes sense.
+  bool  is_playing();   ///< Check whether a project is currently playing (song sequencing).
+  bool  is_active ();   ///< Check whether a project is active (currently synthesizing).
+  void  start_playback(); ///< Start playback in an activated project.
+  void  stop_playback(); ///< Stop project playback.
+  void  deactivate();   ///< Deactivate the project, automatically stop playback.
+  void  stop();         ///< Stop project playback and deactivate project.
+  void  auto_deactivate (int32 msec_delay); ///< Automatically deactivate a few milliseconds after playback stopped.
+  int32 undo_depth();   ///< Check whether a project can perform undo steps.
+  void  undo();         ///< Undo a previous operation in a project.
+  int32 redo_depth();   ///< Get the number of times redo can be called on the project.
+  void  redo();         ///< Redo a previously undone operation in a project.
+  void  clear_undo();   ///< Delete all recorded undo or redo steps.
+  void  clean_dirty();  ///< Clear a project's dirty flags.
+  bool  is_dirty();     ///< Check whether a project needs saving.
+  /// Inject a MIDI control event into the project's MIDI receiver.
+  void  inject_midi_control (int32 midi_channel, int32 midi_control, float64 control_value);
+  //Item    find_item (String uname_path); ///< Find an item within a project, given its uname path.
+  //ItemSeq get_supers(); ///< Retrieve all Super type objects of this project.
+  /// List uname paths for all items of a specified type within a project.
+  /// By their uname paths, items are uniquely identifyable within a project.
+  //StringSeq list_uname_paths (String item_type);
+  /// Retrieve all items of a specific type within a project with matching uname.
+  //ItemSeq match_items_by_uname (String item_type, String uname);
+  /// Save super objects of a project into a BSE file.
+  /// If no Super is specified, the project itself is stored.
+  /// The references to other objects (e.g. samples) can be stored
+  /// by reference (self_contained=false) or embedded in the output
+  /// file (self_contained=true).
+  //ErrorType store_bse (Super super, String file_name, bool self_contained);
+  ErrorType import_midi_file (String file_name); ///< Import a song from a MIDI file.
+  ErrorType restore_from_file (String file_name); ///< Load a project from file.
+  //Song create_song (String name); ///< Create a song for this project.
+  //WaveRepo get_wave_repo (); ///< Retrieve the project's unique wave repository.
+  //DataPocket get_data_pocket (String name); ///< Retrieve a specifically named data pocket for this project.
+  //CSynth create_csynth (String name); ///< Create a synthsizer network for this project.
+  //MidiSynth create_midi_synth (String name); ///< Create a MIDI synthesizer network for this project.
+  //MidiNotifier get_midi_notifier(); ///< Retrieve the project's midi notifier object.
+  //void  remove_snet (SNet snet); ///< Remove an existing synthesizer network from this project.
+};
+
 /** Main Bse remote origin object.
  * The Bse::Server object controls the main BSE thread and keeps track of all objects
  * used in the BSE context.
@@ -53,8 +485,18 @@ interface Server : Object {
   String        get_effect_path ();                     ///< Retrieve effect search path.
   String        get_demo_path ();                       ///< Retrieve demo search path.
   String        get_custom_instrument_dir ();           ///< Retrieve user specific instruments directory.
-  String        get_custom_effect_dir ();               ///< Retrieve user specific effects directory.
-  String        get_version ();                         ///< Retrieve BSE version.
+  String        get_custom_effect_dir ();    ///< Retrieve user specific effects directory.
+  String        get_version ();              ///< Retrieve BSE version.
+  void          save_preferences ();         ///< Save the bse-preferences property to disk.
+  void          register_ladspa_plugins();   ///< Register LADSPA (Linux Audio Developer's Simple Plugin API) plugins.
+  void          register_core_plugins();     ///< Register core plugins.
+  void          register_scripts();          ///< Register external scripts.
+  bool          preferences_locked();        ///< Returns whether the bse-preferences property is currently locked against modifications or not.
+  int32         n_scripts();                 ///< Return the number of scripts currently running on this server.
+  bool          can_load (String file_name); ///< Check whether a loader can be found for a wave file.
+  void          start_recording (String wave_file, float64 n_seconds); ///< Start recording to a WAV file.
+  Project       create_project (String project_name); ///< Create a new project (name is modified to be unique if necessary.
+  void          destroy_project (Project project);    ///< Destroy a previously created new project.
 };
 
 } // Bse

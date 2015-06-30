@@ -113,9 +113,9 @@ idl_dummy_files = $(strip	\
 )
 # BSE procedure sources
 bse_proc_sources = $(strip \
-	bsecategories.proc	bsecontainer.proc	bsedatapocket.proc	bseeditablesample.proc	bseenums.proc	bsemidinotifier.proc	\
+	bsecategories.proc	bsecontainer.proc	bsedatapocket.proc	bseeditablesample.proc			bsemidinotifier.proc	\
 	bsejanitor.proc		bsepart.proc		bseparasite.proc	bseprocedure.proc	bseproject.proc	bsescripthelper.proc	\
-	bseserver.proc		bsesong.proc		bsebus.proc		bsesource.proc		bsecsynth.proc	bsesnet.proc		\
+				bsesong.proc		bsebus.proc		bsesource.proc		bsecsynth.proc	bsesnet.proc		\
 	bsetrack.proc		bseitem.proc		bsewave.proc		bsewaveosc.proc		bsewaverepo.proc			\
 )
 bse_proc_gen_sources = $(bse_proc_sources:.proc=.genprc.cc)
@@ -292,7 +292,7 @@ bsegenbasics.cc: bsebasics.idl $(SFIDL) bsebasics.genidl.hh
 bsehack.idl: bsebasics.idl bseprocidl
 	grep -v bsehack.idl $(srcdir)/bse.idl | $(SFIDL) $(SFIDL_INC) --list-types - > xgen-2-$(@F)
 	echo "/* this file was generated from make $< */" > xgen-$(@F) \
-	&& ./bseprocidl xgen-2-$(@F) >> xgen-$(@F) \
+	&& ./bseprocidl xgen-2-$(@F) --g-fatal-warnings >> xgen-$(@F) \
 	&& cp xgen-$(@F) bsehack.idl \
 	&& rm -f xgen-$(@F) xgen-2-$(@F)
 CLEANFILES += bsehack.idl
@@ -300,7 +300,7 @@ noinst_DATA = bsehack.idl
 
 # == BSE IDL API (AIDA) ==
 AUXTYPES_PY = $(srcdir)/AuxTypes.py
-EXTRA_DIST += AuxTypes.py
+EXTRA_DIST += AuxTypes.py bseserverinsert.hh
 bseclientapi.hh: $(srcdir)/../bse/bseapi.idl $(AUXTYPES_PY)
 	$(AM_V_GEN)
 	$(Q) ${AIDACC} -x CxxStub -G macro=BSE_IDL -G clienthh -x $(AUXTYPES_PY) $< -o xgen-$(@F)
@@ -313,7 +313,8 @@ bseclientapi.cc: $(srcdir)/../bse/bseapi.idl $(AUXTYPES_PY)
 GENERATED += bseclientapi.cc
 bseserverapi.hh: $(srcdir)/bseapi.idl $(AUXTYPES_PY)
 	$(AM_V_GEN)
-	$(Q) ${AIDACC} -x CxxStub -G macro=BSE_IDL -G serverhh -x $(AUXTYPES_PY) $< -o xgen-$(@F)
+	$(Q) ${AIDACC} -x CxxStub -G macro=BSE_IDL -G serverhh -x $(AUXTYPES_PY) \
+	  --insertions $(srcdir)/bseserverinsert.hh $< -o xgen-$(@F)
 	$(Q) mv xgen-$(@F) $@
 GENERATED += bseserverapi.hh
 bseserverapi.cc: $(srcdir)/bseapi.idl $(AUXTYPES_PY)

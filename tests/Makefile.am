@@ -16,23 +16,23 @@ SFIDL_INC = --nostdinc -I$(top_srcdir) -I$(top_builddir)
 # === rules to generate built sources ===
 #
 # bsecxxapi.hh
-GENERATED_CLEANFILES += bsecxxapi.hh
-$(srcdir)/perftest.cc: bsecxxapi.hh
-bsecxxapi.hh: $(top_srcdir)/bse/bse.idl $(SFIDL)
-	cd . \
-	&& echo -e "#include <sfi/sficxx.hh>\n" > xgen-$(@F) \
-	&& $(SFIDL) --client-cxx $(SFIDL_INC) --header $(top_srcdir)/bse/bse.idl >> xgen-$(@F) \
-	&& cp xgen-$(@F) $@ \
-	&& rm -f xgen-$(@F)
+#GENERATED_CLEANFILES += bsecxxapi.hh
+#$(srcdir)/perftest.cc: bsecxxapi.hh
+#bsecxxapi.hh: $(top_srcdir)/bse/bse.idl $(SFIDL)
+#	cd . \
+#	&& echo -e "#include <sfi/sficxx.hh>\n" > xgen-$(@F) \
+#	&& $(SFIDL) --client-cxx $(SFIDL_INC) --header $(top_srcdir)/bse/bse.idl >> xgen-$(@F) \
+#	&& cp xgen-$(@F) $@ \
+#	&& rm -f xgen-$(@F)
 # bsecxxapi.cc
-GENERATED_CLEANFILES += bsecxxapi.cc
-$(srcdir)/perftest.cc: bsecxxapi.cc
-bsecxxapi.cc: bsecxxapi.hh $(top_srcdir)/bse/bse.idl $(SFIDL)
-	cd . \
-	&& echo -e "#include \"bsecxxapi.hh\"\n" > xgen-$(@F) \
-	&& $(SFIDL) --client-cxx $(SFIDL_INC) --source $(top_srcdir)/bse/bse.idl >> xgen-$(@F) \
-	&& cp xgen-$(@F) $@ \
-	&& rm -f xgen-$(@F)
+#GENERATED_CLEANFILES += bsecxxapi.cc
+#$(srcdir)/perftest.cc: bsecxxapi.cc
+#bsecxxapi.cc: bsecxxapi.hh $(top_srcdir)/bse/bse.idl $(SFIDL)
+#	cd . \
+#	&& echo -e "#include \"bsecxxapi.hh\"\n" > xgen-$(@F) \
+#	&& $(SFIDL) --client-cxx $(SFIDL_INC) --source $(top_srcdir)/bse/bse.idl >> xgen-$(@F) \
+#	&& cp xgen-$(@F) $@ \
+#	&& rm -f xgen-$(@F)
 
 
 # === generation targets ===
@@ -53,9 +53,9 @@ SLOWTESTS            += testwavechunk
 testwavechunk_SOURCES = testwavechunk.cc
 testwavechunk_LDADD = $(progs_ldadd)
 # perftest
-TESTS           += perftest
-perftest_SOURCES = perftest.cc bsecxxapi.cc
-perftest_LDADD   = $(progs_ldadd)
+#TESTS           += perftest
+#perftest_SOURCES = perftest.cc bsecxxapi.cc
+#perftest_LDADD   = $(progs_ldadd)
 # testresampler
 noinst_PROGRAMS      += testresampler
 testresampler_SOURCES = testresampler.cc

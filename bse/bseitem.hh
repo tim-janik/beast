@@ -3,6 +3,7 @@
 #define __BSE_ITEM_H__
 
 #include        <bse/bseobject.hh>
+#include        <bse/bseundostack.hh>
 
 G_BEGIN_DECLS
 
@@ -108,10 +109,10 @@ BseItem*        bse_item_use                 (BseItem         *item);
 void            bse_item_unuse               (BseItem         *item);
 void            bse_item_set_parent          (BseItem         *item,
                                               BseItem         *parent);
-BseErrorType    bse_item_exec                (gpointer         item,
+Bse::ErrorType    bse_item_exec                (gpointer         item,
                                               const gchar     *procedure,
                                               ...);
-BseErrorType    bse_item_exec_void           (gpointer         item,
+Bse::ErrorType    bse_item_exec_void           (gpointer         item,
                                               const gchar     *procedure,
                                               ...); /* ignore return values */
 /* undo-aware functions */
@@ -146,5 +147,76 @@ void          bse_item_push_undo_storage     (BseItem         *self,
 BseMusicalTuningType bse_item_current_musical_tuning (BseItem     *self);
 
 G_END_DECLS
+
+namespace Bse {
+
+class ItemImpl : public ObjectImpl, public virtual ItemIface {
+public: typedef std::function<ErrorType (ItemImpl &item, BseUndoStack *ustack)> UndoLambda;
+private:
+  void push_item_undo (const String &blurb, const UndoLambda &lambda);
+  struct UndoDescriptorData {
+    ptrdiff_t projectid;
+    String    upath;
+    UndoDescriptorData() : projectid (0) {}
+  };
+  UndoDescriptorData make_undo_descriptor_data    (ItemImpl &item);
+  ItemImpl&          resolve_undo_descriptor_data (const UndoDescriptorData &udd);
+protected:
+  virtual           ~ItemImpl         ();
+public:
+  explicit           ItemImpl         (BseObject*);
+  ContainerImpl*     parent           ();
+  virtual ItemIfaceP common_ancestor  (ItemIface &other) override;
+  /// Push handler onto the undo stack, @a self must match @a this.
+  template<typename ItemT, typename... FuncArgs, typename... CallArgs> void
+  push_undo (const String &blurb, ItemT &self, ErrorType (ItemT::*function) (FuncArgs...), CallArgs... args)
+  {
+    assert_return (this == &self);
+    UndoLambda lambda = [function, args...] (ItemImpl &item, BseUndoStack *ustack) {
+      ItemT &self = dynamic_cast<ItemT&> (item);
+      return (self.*function) (args...);
+    };
+    push_item_undo (blurb, lambda);
+  }
+  template<typename ItemT, typename R, typename... FuncArgs, typename... CallArgs> void
+  push_undo (const String &blurb, ItemT &self, R (ItemT::*function) (FuncArgs...), CallArgs... args)
+  {
+    assert_return (this == &self);
+    UndoLambda lambda = [function, args...] (ItemImpl &item, BseUndoStack *ustack) {
+      ItemT &self = dynamic_cast<ItemT&> (item);
+      (self.*function) (args...); // ignoring return type R
+      return ERROR_NONE;
+    };
+    push_item_undo (blurb, lambda);
+  }
+  template<typename ItemT, typename ItemTLambda> void
+  push_undo (const String &blurb, ItemT &self, const ItemTLambda &itemt_lambda)
+  {
+    const std::function<ErrorType (ItemT &item, BseUndoStack *ustack)> &undo_lambda = itemt_lambda;
+    assert_return (this == &self);
+    UndoLambda lambda = [undo_lambda] (ItemImpl &item, BseUndoStack *ustack) {
+      ItemT &self = dynamic_cast<ItemT&> (item);
+      return undo_lambda (self, ustack);
+    };
+    push_item_undo (blurb, lambda);
+  }
+  /// UndoDescriptor - type safe object handle to persist undo/redo steps
+  template<class Obj>
+  class UndoDescriptor {
+    friend class ItemImpl;
+    UndoDescriptorData data_;
+    UndoDescriptor (const UndoDescriptorData &d) : data_ (d) {}
+  public:
+    typedef Obj Type;
+  };
+  /// Create an object descriptor that persists undo/redo steps.
+  template<class Obj>
+  UndoDescriptor<Obj> undo_descriptor (Obj &item)            { return UndoDescriptor<Obj> (make_undo_descriptor_data (item)); }
+  /// Resolve an undo descriptor back to an object, see also undo_descriptor().
+  template<class Obj>
+  Obj&                undo_resolve (UndoDescriptor<Obj> udo) { return dynamic_cast<Obj&> (resolve_undo_descriptor_data (udo.data_)); }
+};
+
+} // Bse
 
 #endif /* __BSE_ITEM_H__ */

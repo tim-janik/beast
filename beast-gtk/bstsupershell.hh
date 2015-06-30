@@ -21,7 +21,7 @@ typedef	struct	_BstSuperShellClass	BstSuperShellClass;
 struct _BstSuperShell
 {
   GtkVBox	 parent_object;
-  SfiProxy	 super;
+  Bse::SuperH	 super;
   guint		 name_set_id;
 };
 struct _BstSuperShellClass
@@ -32,8 +32,7 @@ struct _BstSuperShellClass
 
 /* --- prototypes --- */
 GType		bst_super_shell_get_type	(void);
-void		bst_super_shell_set_super	(BstSuperShell	*super_shell,
-						 SfiProxy	 super);
+void		bst_super_shell_set_super	(BstSuperShell *super_shell, Bse::SuperH super);
 GtkWidget*      bst_super_shell_create_label    (BstSuperShell  *super_shell);
 
 G_END_DECLS

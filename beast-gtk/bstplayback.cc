@@ -16,14 +16,13 @@ static void wave_oscillator_pcm_notify (BstPlayBackHandle *handle,
 BstPlayBackHandle*
 bst_play_back_handle_new (void)
 {
-  BstPlayBackHandle *handle;
+  BstPlayBackHandle *handle = new BstPlayBackHandle();
 
-  handle = g_new0 (BstPlayBackHandle, 1);
-  handle->project = bse_server_use_new_project (BSE_SERVER, "# BEAST Play Back");
+  handle->project = bse_server.create_project ("# BEAST Play Back");
   if (BST_DBG_EXT)
     gxk_idle_show_widget (GTK_WIDGET (bst_app_new (handle->project)));
 
-  handle->snet = bse_project_create_csynth (handle->project, NULL);
+  handle->snet = bse_project_create_csynth (handle->project.proxy_id(), NULL);
   bse_proxy_set (handle->snet, "auto_activate", TRUE, NULL);
   handle->speaker = bse_snet_create_source (handle->snet, "BsePcmOutput");
   handle->wosc1 = bse_snet_create_source (handle->snet, "BseWaveOsc");
@@ -57,9 +56,9 @@ bst_play_back_handle_set (BstPlayBackHandle *handle,
 void
 bst_play_back_handle_start (BstPlayBackHandle *handle)
 {
-  BseErrorType error;
+  Bse::ErrorType error;
 
-  error = bse_project_play (handle->project);
+  error = handle->project.play();;
   if (error)
     bst_status_eprintf (error, _("Playback"));
 }
@@ -81,14 +80,14 @@ bst_play_back_handle_seek_perc (BstPlayBackHandle *handle,
 void
 bst_play_back_handle_stop (BstPlayBackHandle *handle)
 {
-  bse_project_stop (handle->project);
+  handle->project.stop();;
   bst_play_back_handle_pcm_notify (handle, 0, NULL, NULL);
 }
 
 void
 bst_play_back_handle_toggle (BstPlayBackHandle *handle)
 {
-  if (bse_project_is_playing (handle->project))
+  if (handle->project.is_playing())
     bst_play_back_handle_stop (handle);
   else
     bst_play_back_handle_start (handle);
@@ -97,7 +96,7 @@ bst_play_back_handle_toggle (BstPlayBackHandle *handle)
 gboolean
 bst_play_back_handle_is_playing (BstPlayBackHandle *handle)
 {
-  return bse_project_is_playing (handle->project);
+  return handle->project.is_playing();
 }
 
 static void
@@ -138,7 +137,7 @@ bst_play_back_handle_pcm_notify (BstPlayBackHandle *handle,
 				 BstPlayBackNotify  notify,
 				 gpointer           data)
 {
-  if (!bse_project_is_playing (handle->project))
+  if (!handle->project.is_playing())
     {
       notify = NULL;
       data = NULL;
@@ -185,6 +184,6 @@ bst_play_back_handle_destroy (BstPlayBackHandle *handle)
   if (handle->pcm_timeout)
     g_source_remove (handle->pcm_timeout);
 
-  bse_item_unuse (handle->project);
-  g_free (handle);
+  bse_server.destroy_project (handle->project);
+  delete handle;
 }

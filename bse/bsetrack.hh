@@ -77,7 +77,19 @@ BsePart*	 bse_track_get_part_SL	(BseTrack		*self,
 					 guint			 tick,
 					 guint			*start,
 					 guint			*next);
-
 G_END_DECLS
+
+namespace Bse {
+
+class TrackImpl : public ContextMergerImpl, public virtual TrackIface {
+protected:
+  virtual              ~TrackImpl       ();
+public:
+  explicit              TrackImpl       (BseObject*);
+  virtual int           insert_part     (int tick, PartIface &part) override;
+  virtual void          remove_tick     (int tick) override;
+};
+
+} // Bse
 
 #endif /* __BSE_TRACK_H__ */

@@ -2,18 +2,15 @@
 #include "bstbseutils.hh"
 
 /* --- BEAST utilities --- */
-BseErrorType
-bst_project_restore_from_file (SfiProxy        project,
-                               const gchar    *file_name,
-                               bool            apply_project_file_name,
-                               bool            preserve_non_dirty)
+Bse::ErrorType
+bst_project_restore_from_file (Bse::ProjectH project, const gchar *file_name, bool apply_project_file_name, bool preserve_non_dirty)
 {
-  bool was_dirty = bse_project_is_dirty (project);
-  BseErrorType error = bse_project_restore_from_file (project, file_name);
+  bool was_dirty = project.is_dirty();
+  Bse::ErrorType error = project.restore_from_file (file_name);
   /* regardless of how good the restoration worked, try to
    * keep the resulting project in a GUI usable state.
    */
-  BseItemSeq *iseq = bse_container_list_children (project);
+  BseItemSeq *iseq = bse_container_list_children (project.proxy_id());
   guint i;
   for (i = 0; i < iseq->n_items; i++)
     if (BSE_IS_SONG (iseq->items[i]))
@@ -25,25 +22,24 @@ bst_project_restore_from_file (SfiProxy        project,
       }
   if (!error && apply_project_file_name)
     {
-      bse_proxy_set_data_full (project, "beast-project-file-name", g_strdup (file_name), g_free);
+      bse_proxy_set_data_full (project.proxy_id(), "beast-project-file-name", g_strdup (file_name), g_free);
       gchar *bname = g_path_get_basename (file_name);
-      bse_project_change_name (project, bname);
+      project.change_name (bname);
       g_free (bname);
     }
   if (preserve_non_dirty && !was_dirty)
-    bse_project_clean_dirty (project);
+    project.clean_dirty();
   return error;
 }
 
-BseErrorType
-bst_project_import_midi_file (SfiProxy        project,
-                              const gchar    *file_name)
+Bse::ErrorType
+bst_project_import_midi_file (Bse::ProjectH project, const gchar *file_name)
 {
-  BseErrorType error = bse_project_import_midi_file (project, file_name);
+  Bse::ErrorType error = project.import_midi_file (file_name);
   /* regardless of how good the restoration worked, try to
    * keep the resulting project in a GUI usable state.
    */
-  BseItemSeq *iseq = bse_container_list_children (project);
+  BseItemSeq *iseq = bse_container_list_children (project.proxy_id());
   guint i;
   for (i = 0; i < iseq->n_items; i++)
     if (BSE_IS_SONG (iseq->items[i]))
@@ -68,6 +64,19 @@ bst_procedure_get_title (const gchar *procedure)
   return NULL;
 }
 
+namespace Bse {
+
+const char*
+error_blurb (Bse::ErrorType error_value)
+{
+  const Rapicorn::Aida::EnumValue *ev = Rapicorn::Aida::enum_info<Bse::ErrorType>().find_value (error_value);
+  return ev ? ev->blurb : NULL;
+}
+
+} // Bse
+
 
 /* --- generated code --- */
+#define BseErrorType Bse::ErrorType
 #include "bstoldbseapi.cc"
+#undef BseErrorType

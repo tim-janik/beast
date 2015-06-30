@@ -133,11 +133,11 @@ piano_roll_class_setup_skin (BstPianoRollClass *klass)
 static void
 bst_piano_roll_init (BstPianoRoll *self)
 {
+  new (&self->part) Bse::PartH();
   GxkScrollCanvas *scc = GXK_SCROLL_CANVAS (self);
 
   GTK_WIDGET_SET_FLAGS (self, GTK_CAN_FOCUS);
 
-  self->proxy = 0;
   self->vzoom = KEY_DEFAULT_VPIXELS;
   self->ppqn = 384;	/* default Parts (clock ticks) Per Quarter Note */
   self->qnpt = 1;
@@ -165,7 +165,7 @@ bst_piano_roll_destroy (GtkObject *object)
 {
   BstPianoRoll *self = BST_PIANO_ROLL (object);
 
-  bst_piano_roll_set_proxy (self, 0);
+  bst_piano_roll_set_part (self);
 
   GTK_OBJECT_CLASS (bst_piano_roll_parent_class)->destroy (object);
 }
@@ -175,7 +175,7 @@ bst_piano_roll_dispose (GObject *object)
 {
   BstPianoRoll *self = BST_PIANO_ROLL (object);
 
-  bst_piano_roll_set_proxy (self, 0);
+  bst_piano_roll_set_part (self);
 
   G_OBJECT_CLASS (bst_piano_roll_parent_class)->dispose (object);
 }
@@ -185,11 +185,13 @@ bst_piano_roll_finalize (GObject *object)
 {
   BstPianoRoll *self = BST_PIANO_ROLL (object);
 
-  bst_piano_roll_set_proxy (self, 0);
+  bst_piano_roll_set_part (self);
 
   bst_ascii_pixbuf_unref ();
 
   G_OBJECT_CLASS (bst_piano_roll_parent_class)->finalize (object);
+  using namespace Bse;
+  self->part.~PartH();
 }
 
 static void
@@ -199,7 +201,7 @@ bst_piano_roll_map (GtkWidget *widget)
   GxkScrollCanvas *scc = GXK_SCROLL_CANVAS (self);
 
   /* initially center the vscrollbar */
-  if (self->proxy)
+  if (self->part)
     gtk_adjustment_set_value (scc->vadjustment,
                               (scc->vadjustment->upper -
                                scc->vadjustment->lower -
@@ -493,14 +495,14 @@ coord_to_note (BstPianoRoll *self,
   /* validate note */
   if (y < 0 ||		/* we calc junk in this case, flag invalidity */
       info->octave > MAX_OCTAVE (self) ||
-      (info->octave == MAX_OCTAVE (self) && info->semitone > MAX_SEMITONE (self)))
+      (info->octave == MAX_OCTAVE (self) && int (info->semitone) > MAX_SEMITONE (self)))
     {
       info->valid_octave = MAX_OCTAVE (self);
       info->valid_semitone = MAX_SEMITONE (self);
       info->valid = FALSE;
     }
   else if (info->octave < MIN_OCTAVE (self) ||
-	   (info->octave == MIN_OCTAVE (self) && info->semitone < MIN_SEMITONE (self)))
+	   (info->octave == MIN_OCTAVE (self) && int (info->semitone) < MIN_SEMITONE (self)))
     {
       info->valid_octave = MIN_OCTAVE (self);
       info->valid_semitone = MIN_SEMITONE (self);
@@ -690,7 +692,6 @@ bst_piano_roll_draw_canvas (GxkScrollCanvas *scc,
   BstPianoRoll *self = BST_PIANO_ROLL (scc);
   GdkGC *dark_gc = STYLE (self)->dark_gc[GTK_STATE_NORMAL];
   gint pass, dlen, width, height, line_width = 0; /* line widths != 0 interfere with dash-settings on some X servers */
-  BsePartNoteSeq *pseq;
   GXK_SCROLL_CANVAS_CLASS (bst_piano_roll_parent_class)->draw_canvas (scc, drawable, area);
   gdk_window_get_size (drawable, &width, &height);
 
@@ -786,12 +787,13 @@ bst_piano_roll_draw_canvas (GxkScrollCanvas *scc,
 
   /* draw notes */
   dark_gc = STYLE (self)->dark_gc[GTK_STATE_NORMAL];
-  pseq = self->proxy ? bse_part_list_notes_crossing (self->proxy,
-						     coord_to_tick (self, area->x, FALSE),
-						     coord_to_tick (self, area->x + area->width, FALSE)) : NULL;
-  for (uint i = 0; pseq && i < pseq->n_pnotes; i++)
+  Bse::PartNoteSeq pseq;
+  if (self->part)
+    pseq = self->part.list_notes_crossing (coord_to_tick (self, area->x, false),
+                                           coord_to_tick (self, area->x + area->width, false));
+  for (size_t i = 0; i < pseq.size(); i++)
     {
-      BsePartNote *pnote = pseq->pnotes[i];
+      const Bse::PartNote *pnote = &pseq[i];
       gint semitone = SFI_NOTE_SEMITONE (pnote->note);
       guint start = pnote->tick, end = start + pnote->duration;
       GdkGC *xdark_gc, *xlight_gc, *xnote_gc;
@@ -1160,9 +1162,9 @@ piano_roll_links_changed (BstPianoRoll *self)
   if (self->plinks)
     bse_part_link_seq_free (self->plinks);
   self->plinks = NULL;
-  if (self->proxy)
+  if (self->part)
     {
-      self->plinks = bse_part_list_links (self->proxy);
+      self->plinks = bse_part_list_links (self->part.proxy_id());
       if (self->plinks)
         self->plinks = bse_part_link_seq_copy_shallow (self->plinks);
     }
@@ -1172,7 +1174,7 @@ static void
 piano_roll_range_changed (BstPianoRoll *self)
 {
   guint max_ticks;
-  bse_proxy_get (self->proxy, "last-tick", &max_ticks, NULL);
+  bse_proxy_get (self->part.proxy_id(), "last-tick", &max_ticks, NULL);
   bst_piano_roll_hsetup (self, self->ppqn, self->qnpt, MAX (max_ticks, 1), self->hzoom);
 }
 
@@ -1195,21 +1197,15 @@ static void
 piano_roll_release_proxy (BstPianoRoll *self)
 {
   gxk_toplevel_delete (GTK_WIDGET (self));
-  bst_piano_roll_set_proxy (self, 0);
+  bst_piano_roll_set_part (self);
 }
 
 void
-bst_piano_roll_set_proxy (BstPianoRoll *self,
-			  SfiProxy      proxy)
+bst_piano_roll_set_part (BstPianoRoll *self, Bse::PartH part)
 {
   g_return_if_fail (BST_IS_PIANO_ROLL (self));
-  if (proxy)
-    {
-      g_return_if_fail (BSE_IS_ITEM (proxy));
-      g_return_if_fail (bse_item_get_project (proxy) != 0);
-    }
 
-  if (self->proxy)
+  if (self->part)
     {
       if (self->song)
         {
@@ -1223,29 +1219,27 @@ bst_piano_roll_set_proxy (BstPianoRoll *self,
       if (self->plinks)
         bse_part_link_seq_free (self->plinks);
       self->plinks = NULL;
-      bse_proxy_disconnect (self->proxy,
+      bse_proxy_disconnect (self->part.proxy_id(),
 			    "any_signal", piano_roll_release_proxy, self,
 			    "any_signal", piano_roll_range_changed, self,
 			    "any_signal", piano_roll_links_changed, self,
 			    "any_signal", piano_roll_update, self,
 			    NULL);
-      bse_item_unuse (self->proxy);
       piano_roll_song_pointer_changed (self, -1);
     }
-  self->proxy = proxy;
-  if (self->proxy)
+  self->part = part;
+  if (self->part)
     {
-      bse_item_use (self->proxy);
-      bse_proxy_connect (self->proxy,
+      bse_proxy_connect (self->part.proxy_id(),
 			 "swapped_signal::release", piano_roll_release_proxy, self,
                          "swapped_signal::property-notify::last-tick", piano_roll_range_changed, self,
                          "swapped_signal::links-changed", piano_roll_links_changed, self,
 			 "swapped_signal::range-changed", piano_roll_update, self,
 			 NULL);
-      self->min_note = bse_part_get_min_note (self->proxy);
-      self->max_note = bse_part_get_max_note (self->proxy);
+      self->min_note = self->part.get_min_note();
+      self->max_note = self->part.get_max_note();
       piano_roll_range_changed (self);
-      SfiProxy song = bse_item_get_parent (self->proxy);
+      SfiProxy song = bse_item_get_parent (self->part.proxy_id());
       if (song)
         {
           self->song = song;
@@ -1262,23 +1256,15 @@ bst_piano_roll_set_proxy (BstPianoRoll *self,
 }
 
 static void
-piano_roll_queue_region (BstPianoRoll *self,
-			 guint         tick,
-			 guint         duration,
-			 gint          min_note,
-			 gint          max_note)
+piano_roll_queue_region (BstPianoRoll *self, int tick, int duration, int min_note, int max_note)
 {
-  if (self->proxy && duration)	/* let the part extend the area by spanning notes if necessary */
-    bse_part_queue_notes (self->proxy, tick, duration, min_note, max_note);
+  if (self->part && duration)	/* let the part extend the area by spanning notes if necessary */
+    self->part.queue_notes (tick, duration, min_note, max_note);
   piano_roll_update (self, tick, duration, min_note, max_note);
 }
 
 void
-bst_piano_roll_set_view_selection (BstPianoRoll *self,
-				   guint         tick,
-				   guint         duration,
-				   gint          min_note,
-				   gint          max_note)
+bst_piano_roll_set_view_selection (BstPianoRoll *self, int tick, int duration, int min_note, int max_note)
 {
   g_return_if_fail (BST_IS_PIANO_ROLL (self));
 
@@ -1295,8 +1281,8 @@ bst_piano_roll_set_view_selection (BstPianoRoll *self,
       /* if at least one corner of the old an the new selection
        * matches, it's probably worth updating only diff-regions
        */
-      if ((tick == uint (self->selection_tick) ||
-	   tick + duration == uint (self->selection_tick + self->selection_duration)) &&
+      if ((tick == self->selection_tick ||
+	   tick + duration == self->selection_tick + self->selection_duration) &&
 	  (min_note == self->selection_min_note ||
 	   max_note == self->selection_max_note))
 	{

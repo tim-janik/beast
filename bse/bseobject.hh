@@ -14,14 +14,8 @@ public:
   virtual std::string    debug_name () override;
   virtual int64_t        proxy_id   () override;
   operator               BseObject* ()          { return gobject_; }
-  template<class BseObjectPtr>
-  BseObjectPtr           as ()
-  {
-    static_assert (std::is_pointer<BseObjectPtr>::value, "");
-    typedef typename std::remove_pointer<BseObjectPtr>::type BseObjectT;
-    static_assert (std::is_base_of<GObject, BseObjectT>::value, "");
-    return (BseObjectPtr) gobject_;
-  }
+  // template<class BseObjectPtr> BseObjectPtr as (); // provided by ObjectIface
+  virtual BseObject*  as_bse_object () override { return gobject_; }
 };
 typedef std::shared_ptr<ObjectImpl> ObjectImplP;
 

@@ -45,7 +45,7 @@ struct _BstPatternView
 {
   GxkScrollCanvas    parent_instance;
 
-  SfiProxy           proxy;
+  Bse::PartH         part;
 
   /* vertical layout */
   guint              row_height;
@@ -91,8 +91,7 @@ struct _BstPatternViewClass
 
 /* --- prototypes --- */
 GType             bst_pattern_view_get_type        (void);
-void              bst_pattern_view_set_proxy       (BstPatternView            *self,
-                                                    SfiProxy                   part);
+void              bst_pattern_view_set_part        (BstPatternView *self, Bse::PartH part = Bse::PartH());
 void              bst_pattern_view_vsetup          (BstPatternView            *self,
                                                     guint                      tpqn,
                                                     guint                      qnpt,

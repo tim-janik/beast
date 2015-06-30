@@ -11,15 +11,17 @@
 #include "bsemididevice-null.hh"
 #include "bsejanitor.hh"
 #include "bsecxxplugin.hh"
+#include "bsepcmmodule.cc"
+#include "topconfig.h"
+#include "gsldatahandle-mad.hh"
+#include "gslvorbis-enc.hh"
+#include "bsescripthelper.hh"
+#include "bseladspa.hh"
 #include <sys/time.h>
 #include <sys/resource.h>
 #include <fcntl.h>
 #include <unistd.h>
 #include <string.h>
-#include "bsepcmmodule.cc"
-#include "topconfig.h"
-#include "gsldatahandle-mad.hh"
-#include "gslvorbis-enc.hh"
 using namespace Bse;
 
 /* --- parameters --- */
@@ -364,32 +366,6 @@ bse_server_get (void)
   return server;
 }
 
-static void
-destroy_project (BseProject *project,
-		 BseServer  *server)
-{
-  server->projects = g_list_remove (server->projects, project);
-}
-
-BseProject*
-bse_server_create_project (BseServer   *server,
-			   const gchar *name)
-{
-  BseProject *project;
-
-  g_return_val_if_fail (BSE_IS_SERVER (server), NULL);
-  g_return_val_if_fail (name != NULL, NULL);
-  g_return_val_if_fail (bse_server_find_project (server, name) == NULL, NULL);
-
-  project = (BseProject*) bse_object_new (BSE_TYPE_PROJECT, "uname", name, NULL);
-  server->projects = g_list_prepend (server->projects, project);
-  g_object_connect (project,
-		    "signal::release", destroy_project, server,
-		    NULL);
-
-  return project;
-}
-
 BseProject*
 bse_server_find_project (BseServer   *server,
 			 const gchar *name)
@@ -483,14 +459,14 @@ pcm_request_callback (BseDevice *device,
   PcmRequest *pr = (PcmRequest*) data;
   bse_pcm_device_request (BSE_PCM_DEVICE (device), pr->n_channels, pr->mix_freq, pr->latency, pr->block_size);
 }
-static BseErrorType
+static Bse::ErrorType
 server_open_pcm_device (BseServer *server,
                         guint      mix_freq,
                         guint      latency,
                         guint      block_size)
 {
-  g_return_val_if_fail (server->pcm_device == NULL, BSE_ERROR_INTERNAL);
-  BseErrorType error = BSE_ERROR_UNKNOWN;
+  g_return_val_if_fail (server->pcm_device == NULL, Bse::ERROR_INTERNAL);
+  Bse::ErrorType error = Bse::ERROR_UNKNOWN;
   PcmRequest pr;
   pr.n_channels = 2;
   pr.mix_freq = mix_freq;
@@ -516,13 +492,13 @@ server_open_pcm_device (BseServer *server,
       ServerImpl::instance().send_user_message (umsg);
     }
   server->pcm_input_checked = FALSE;
-  return server->pcm_device ? BSE_ERROR_NONE : error;
+  return server->pcm_device ? Bse::ERROR_NONE : error;
 }
-static BseErrorType
+static Bse::ErrorType
 server_open_midi_device (BseServer *server)
 {
-  g_return_val_if_fail (server->midi_device == NULL, BSE_ERROR_INTERNAL);
-  BseErrorType error;
+  g_return_val_if_fail (server->midi_device == NULL, Bse::ERROR_INTERNAL);
+  Bse::ErrorType error;
   server->midi_device = (BseMidiDevice*) bse_device_open_best (BSE_TYPE_MIDI_DEVICE, TRUE, FALSE, bse_main_args->midi_drivers, NULL, NULL, &error);
   if (!server->midi_device)
     {
@@ -543,18 +519,18 @@ server_open_midi_device (BseServer *server)
           ServerImpl::instance().send_user_message (umsg);
         }
     }
-  return server->midi_device ? BSE_ERROR_NONE : error;
+  return server->midi_device ? Bse::ERROR_NONE : error;
 }
-BseErrorType
+Bse::ErrorType
 bse_server_open_devices (BseServer *self)
 {
-  BseErrorType error = BSE_ERROR_NONE;
-  g_return_val_if_fail (BSE_IS_SERVER (self), BSE_ERROR_INTERNAL);
+  Bse::ErrorType error = Bse::ERROR_NONE;
+  g_return_val_if_fail (BSE_IS_SERVER (self), Bse::ERROR_INTERNAL);
   /* check whether devices are already opened */
   if (self->dev_use_count)
     {
       self->dev_use_count++;
-      return BSE_ERROR_NONE;
+      return Bse::ERROR_NONE;
     }
   /* lock playback/capture/latency settings */
   bse_gconfig_lock ();
@@ -569,8 +545,8 @@ bse_server_open_devices (BseServer *self)
     {
       mix_freq = aligned_freq;
       bse_engine_constrain (latency, mix_freq, BSE_GCONFIG (synth_control_freq), &block_size, NULL);
-      BseErrorType new_error = server_open_pcm_device (self, mix_freq, latency, block_size);
-      error = new_error ? error : BSE_ERROR_NONE;
+      Bse::ErrorType new_error = server_open_pcm_device (self, mix_freq, latency, block_size);
+      error = new_error ? error : Bse::ERROR_NONE;
     }
   if (!error)
     error = server_open_midi_device (self);
@@ -582,7 +558,7 @@ bse_server_open_devices (BseServer *self)
       self->pcm_imodule = bse_pcm_imodule_insert (pcm_handle, trans);
       if (self->wave_file)
 	{
-	  BseErrorType error;
+	  Bse::ErrorType error;
 	  self->pcm_writer = (BsePcmWriter*) bse_object_new (BSE_TYPE_PCM_WRITER, NULL);
           const uint n_channels = 2;
 	  error = bse_pcm_writer_open (self->pcm_writer, self->wave_file,
@@ -787,7 +763,7 @@ bse_server_remove_io_watch (BseServer *server,
     g_warning (G_STRLOC ": no such io watch installed %p(%p)", watch_func, data);
 }
 
-BseErrorType
+Bse::ErrorType
 bse_server_run_remote (BseServer         *server,
 		       const gchar       *process_name,
 		       SfiRing           *params,
@@ -798,10 +774,10 @@ bse_server_run_remote (BseServer         *server,
   gint child_pid, command_input, command_output;
   BseJanitor *janitor = NULL;
 
-  g_return_val_if_fail (BSE_IS_SERVER (server), BSE_ERROR_INTERNAL);
-  g_return_val_if_fail (process_name != NULL, BSE_ERROR_INTERNAL);
-  g_return_val_if_fail (script_name != NULL, BSE_ERROR_INTERNAL);
-  g_return_val_if_fail (proc_name != NULL, BSE_ERROR_INTERNAL);
+  g_return_val_if_fail (BSE_IS_SERVER (server), Bse::ERROR_INTERNAL);
+  g_return_val_if_fail (process_name != NULL, Bse::ERROR_INTERNAL);
+  g_return_val_if_fail (script_name != NULL, Bse::ERROR_INTERNAL);
+  g_return_val_if_fail (proc_name != NULL, Bse::ERROR_INTERNAL);
 
   child_pid = command_input = command_output = -1;
   const char *reason = sfi_com_spawn_async (process_name,
@@ -842,11 +818,11 @@ bse_server_run_remote (BseServer         *server,
     {
       bse_server_script_error (server, script_name, proc_name, reason);
       g_free (freeme);
-      return BSE_ERROR_SPAWN;
+      return Bse::ERROR_SPAWN;
     }
   g_free (freeme);
   bse_server_script_start (server, janitor);
-  return BSE_ERROR_NONE;
+  return Bse::ERROR_NONE;
 }
 
 
@@ -1239,6 +1215,265 @@ ServerImpl::get_custom_instrument_dir ()
 {
   StringVector strings = string_split (BSE_GCONFIG (instrument_path), G_SEARCHPATH_SEPARATOR_S);
   return strings.size() ? strings[0] : "";
+}
+
+void
+ServerImpl::save_preferences ()
+{
+  gchar *file_name = g_strconcat (g_get_home_dir (), "/.bserc", NULL);
+  int fd = open (file_name, O_WRONLY | O_CREAT | O_TRUNC /* | O_EXCL */, 0666);
+  g_free (file_name);
+  if (fd < 0)
+    return;
+
+  SfiWStore *wstore = sfi_wstore_new ();
+  sfi_wstore_printf (wstore, "; rc-file for BSE v%s\n", BST_VERSION);
+
+  /* store BseGConfig */
+  sfi_wstore_puts (wstore, "\n; BseGConfig Dump\n");
+  SfiRec *rec = bse_gconfig_to_rec (bse_global_config);
+  GValue *value = sfi_value_rec (rec);
+  sfi_wstore_put_param (wstore, value, bse_gconfig_pspec ());
+  sfi_value_free (value);
+  sfi_rec_unref (rec);
+  sfi_wstore_puts (wstore, "\n");
+
+  /* flush stuff to rc file */
+  sfi_wstore_flush_fd (wstore, fd);
+  sfi_wstore_destroy (wstore);
+  close (fd);
+}
+
+static gboolean
+register_ladspa_plugins_handler (gpointer data)
+{
+  BseServer *server = (BseServer*) data;
+  SfiRing *lplugins = (SfiRing*) g_object_get_data ((GObject*) server, "ladspa-registration-queue");
+  const gchar *error;
+
+  if (g_object_get_data ((GObject*) server, "plugin-registration-queue"))
+    {
+      /* give precedence to core plugins until they're done registering */
+      return TRUE;
+    }
+
+  if (lplugins)
+    {
+      char *name = (char*) sfi_ring_pop_head (&lplugins);
+      g_object_set_data ((GObject*) server, "ladspa-registration-queue", lplugins);
+      error = bse_ladspa_plugin_check_load (name);
+      bse_server_registration (server, BSE_REGISTER_PLUGIN, name, error);
+      g_free (name);
+    }
+  else
+    {
+      bse_server_registration (server, BSE_REGISTER_DONE, NULL, NULL);
+      return FALSE;
+    }
+  return TRUE;
+}
+
+void
+ServerImpl::register_ladspa_plugins ()
+{
+  static bool registration_done = false;
+  if (registration_done)
+    {
+      // always honor register_ladspa_plugins() with register_done signal
+      bse_server_registration (as<BseServer*>(), BSE_REGISTER_DONE, NULL, NULL);
+      return;
+    }
+  SfiRing *ring = bse_ladspa_plugin_path_list_files ();
+  BseServer *server = as<BseServer*>();
+  g_object_set_data (server, "ladspa-registration-queue", ring);
+  bse_idle_normal (register_ladspa_plugins_handler, server);
+  registration_done = true;
+}
+
+static gboolean
+register_core_plugins_handler (gpointer data)
+{
+  BseServer *server = (BseServer*) data;
+  SfiRing *plugins = (SfiRing*) g_object_get_data ((GObject*) server, "plugin-registration-queue");
+  const gchar *error;
+
+  if (plugins)
+    {
+      char *name = (char*) sfi_ring_pop_head (&plugins);
+      g_object_set_data ((GObject*) server, "plugin-registration-queue", plugins);
+      error = bse_plugin_check_load (name);
+      bse_server_registration (server, BSE_REGISTER_PLUGIN, name, error);
+      g_free (name);
+    }
+  else
+    {
+      bse_server_registration (server, BSE_REGISTER_DONE, NULL, NULL);
+      return FALSE;
+    }
+  return TRUE;
+}
+
+void
+ServerImpl::register_core_plugins ()
+{
+  static gboolean registration_done = false;
+  BseServer *server = as<BseServer*>();
+  if (registration_done)
+    {
+      bse_server_registration (server, BSE_REGISTER_DONE, NULL, NULL);
+      return;
+    }
+  SfiRing *ring = bse_plugin_path_list_files (!bse_main_args->load_drivers_early, TRUE);
+  g_object_set_data (server, "plugin-registration-queue", ring);
+  bse_idle_normal (register_core_plugins_handler, server);
+  registration_done = true;
+}
+
+void
+ServerImpl::start_recording (const String &wave_file, double n_seconds)
+{
+  BseServer *server = as<BseServer*>();
+  bse_server_start_recording (server, wave_file.c_str(), n_seconds);
+}
+
+struct ScriptRegistration
+{
+  gchar         *script;
+  Bse::ErrorType (*register_func) (const gchar *script, BseJanitor **janitor_p);
+  ScriptRegistration *next;
+};
+
+static gboolean	register_scripts_handler (gpointer data);
+
+static void
+script_janitor_closed (BseJanitor *janitor,
+		       BseServer  *server)
+{
+  bse_server_registration (server, BSE_REGISTER_SCRIPT, janitor->script_name, NULL);
+  bse_idle_normal (register_scripts_handler, server);
+}
+
+static gboolean
+register_scripts_handler (gpointer data)
+{
+  BseServer *server = (BseServer*) data;
+  ScriptRegistration *scr = (ScriptRegistration*) g_object_get_data ((GObject*) server, "script-registration-queue");
+  BseJanitor *janitor = NULL;
+  Bse::ErrorType error;
+
+  if (!scr)
+    {
+      bse_server_registration (server, BSE_REGISTER_DONE, NULL, NULL);
+      return FALSE;
+    }
+  g_object_set_data ((GObject*) server, "script-registration-queue", scr->next);
+
+  error = scr->register_func (scr->script, &janitor);
+  if (!janitor)
+    bse_server_registration (server, BSE_REGISTER_SCRIPT, scr->script, bse_error_blurb (error));
+  else
+    g_object_connect (janitor, "signal::shutdown", script_janitor_closed, server, NULL);
+  g_free (scr->script);
+  g_free (scr);
+  return !janitor;
+}
+
+void
+ServerImpl::register_scripts ()
+{
+  static gboolean registration_done = false;
+  BseServer *server = as<BseServer*>();
+
+  if (registration_done)
+    {
+      bse_server_registration (server, BSE_REGISTER_DONE, NULL, NULL);
+      return;
+    }
+  registration_done = true;
+
+  SfiRing *ring = bse_script_path_list_files ();
+  ScriptRegistration *scr_list = NULL;
+  while (ring)
+    {
+      ScriptRegistration *scr = g_new0 (ScriptRegistration, 1);
+      scr->script = (char*) sfi_ring_pop_head (&ring);
+      scr->register_func = bse_script_file_register;
+      scr->next = scr_list;
+      scr_list = scr;
+    }
+
+  g_object_set_data (server, "script-registration-queue", scr_list);
+  bse_idle_normal (register_scripts_handler, server);
+}
+
+bool
+ServerImpl::preferences_locked ()
+{
+  return bse_gconfig_locked();
+}
+
+int
+ServerImpl::n_scripts()
+{
+  BseServer *server = as<BseServer*>();
+  // count script controls
+  uint n_scripts = 0;
+  for (GSList *slist = server->children; slist; slist = slist->next)
+    if (BSE_IS_JANITOR (slist->data))
+      n_scripts++;
+  return n_scripts;
+}
+
+bool
+ServerImpl::can_load (const String &file_name)
+{
+  // find a loader
+  BseWaveFileInfo *finfo = bse_wave_file_info_load (file_name.c_str(), NULL);
+  if (finfo)
+    bse_wave_file_info_unref (finfo);
+  return finfo != NULL;
+}
+
+static void
+release_project (BseProject *project, BseServer *server)
+{
+  server->projects = g_list_remove (server->projects, project);
+  bse_item_unuse (project);
+}
+
+ProjectIfaceP
+ServerImpl::create_project (const String &project_name)
+{
+  BseServer *server = as<BseServer*>();
+  /* enforce unique name */
+  guint num = 1;
+  gchar *uname = g_strdup (project_name.c_str());
+  while (bse_server_find_project (server, uname))
+    {
+      g_free (uname);
+      uname = g_strdup_format ("%s-%u", project_name.c_str(), num++);
+    }
+  /* create project */
+  BseProject *project = (BseProject*) bse_object_new (BSE_TYPE_PROJECT, "uname", uname, NULL);
+  bse_item_use (project);
+  server->projects = g_list_prepend (server->projects, project);
+  g_object_unref (project);
+  g_free (uname);
+  g_object_connect (project,
+		    "signal::release", release_project, server,
+		    NULL);
+  return shared_ptr_cast<ProjectIface> (project->as<ProjectIface*>());
+}
+
+void
+ServerImpl::destroy_project (ProjectIface &project_iface)
+{
+  BseServer *server = as<BseServer*>();
+  BseProject *project = project_iface.as<BseProject*>();
+  if (g_list_find (server->projects, project))
+    g_object_run_dispose (project);
+  else
+    critical ("%s: project not found", __func__);
 }
 
 } // Bse

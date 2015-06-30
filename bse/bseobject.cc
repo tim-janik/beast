@@ -916,20 +916,48 @@ bse_object_new (GType object_type, const gchar *first_property_name, ...)
 }
 
 #include "bseserver.hh"
+#include "bseproject.hh"
+#include "bsetrack.hh"
+#include "bsecontextmerger.hh"
+#include "bsesnet.hh"
+#include "bsepart.hh"
 
 GObject*
 bse_object_new_valist (GType object_type, const gchar *first_property_name, va_list var_args)
 {
+  if (!g_type_is_a (object_type, BSE_TYPE_OBJECT)) // e.g. BsePlugin
+    return g_object_new_valist (object_type, first_property_name, var_args);
+  // object_type is derived from BSE_TYPE_OBJECT from here on
   in_bse_object_new++;
   BseObject *object = (BseObject*) g_object_new_valist (object_type, first_property_name, var_args);
   in_bse_object_new--;
   assert (object->cxxobject_ == NULL);
   assert (object->cxxobjref_ == NULL);
   Bse::ObjectImpl *cxxo;
-  if      (object_type == BSE_TYPE_SERVER)
+  if      (g_type_is_a (object_type, BSE_TYPE_SERVER))
     cxxo = new Bse::ServerImpl (object);
-  else //  object_type == BSE_TYPE_OBJECT
+  else if (g_type_is_a (object_type, BSE_TYPE_PROJECT))
+    cxxo = new Bse::ProjectImpl (object);
+  else if (g_type_is_a (object_type, BSE_TYPE_SNET))
+    cxxo = new Bse::SNetImpl (object);
+  else if (g_type_is_a (object_type, BSE_TYPE_SUPER))
+    cxxo = new Bse::SuperImpl (object);
+  else if (g_type_is_a (object_type, BSE_TYPE_CONTAINER))
+    cxxo = new Bse::ContainerImpl (object);
+  else if (g_type_is_a (object_type, BSE_TYPE_TRACK))
+    cxxo = new Bse::TrackImpl (object);
+  else if (g_type_is_a (object_type, BSE_TYPE_CONTEXT_MERGER))
+    cxxo = new Bse::ContextMergerImpl (object);
+  else if (g_type_is_a (object_type, BSE_TYPE_PART))
+    cxxo = new Bse::PartImpl (object);
+  else if (g_type_is_a (object_type, BSE_TYPE_SOURCE))
+    cxxo = new Bse::SourceImpl (object);
+  else if (g_type_is_a (object_type, BSE_TYPE_ITEM))
+    cxxo = new Bse::ItemImpl (object);
+  else if (g_type_is_a (object_type, BSE_TYPE_OBJECT))
     cxxo = new Bse::ObjectImpl (object);
+  else
+    assert (!"reached");
   assert (object->cxxobject_ == cxxo);
   assert (object->cxxobjref_ == NULL);
   object->cxxobjref_ = new Bse::ObjectImplP (cxxo); // shared_ptr that allows enable_shared_from_this

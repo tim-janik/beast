@@ -29,7 +29,7 @@ BODY (BseProcedureClass *proc,
 
   /* check parameters */
   if (!pattern)
-    return BSE_ERROR_PROC_PARAM_INVAL;
+    return Bse::ERROR_PROC_PARAM_INVAL;
 
   if (type)
     cseq = bse_categories_match_typed (pattern, type);
@@ -39,7 +39,7 @@ BODY (BseProcedureClass *proc,
   /* set output parameters */
   bse_value_take_boxed (out_values++, cseq);
 
-  return BSE_ERROR_NONE;
+  return Bse::ERROR_NONE;
 }
 
 PROCEDURE (bse-categories-match, "Categories/Match") {
@@ -58,7 +58,7 @@ BODY (BseProcedureClass *proc,
 
   /* check parameters */
   if (!pattern)
-    return BSE_ERROR_PROC_PARAM_INVAL;
+    return Bse::ERROR_PROC_PARAM_INVAL;
 
   cseq = bse_categories_match_typed (pattern, 0);
   if (!cseq)
@@ -67,7 +67,7 @@ BODY (BseProcedureClass *proc,
   /* set output parameters */
   bse_value_take_boxed (out_values++, cseq);
 
-  return BSE_ERROR_NONE;
+  return Bse::ERROR_NONE;
 }
 
 PROCEDURE (bse-category-from-id, "Categories/From ID") {
@@ -89,7 +89,7 @@ BODY (BseProcedureClass *proc,
   /* set output parameters */
   bse_value_take_boxed (out_values++, cat);
 
-  return BSE_ERROR_NONE;
+  return Bse::ERROR_NONE;
 }
 
 static gboolean
@@ -130,7 +130,7 @@ BODY (BseProcedureClass *proc,
 
   /* check parameters */
   if (!pattern)
-    return BSE_ERROR_PROC_PARAM_INVAL;
+    return Bse::ERROR_PROC_PARAM_INVAL;
 
   cseq = bse_categories_match (pattern, BSE_TYPE_PROCEDURE, categories_check_method, &type);
   if (!cseq)
@@ -139,5 +139,5 @@ BODY (BseProcedureClass *proc,
   /* set output parameters */
   bse_value_take_boxed (out_values++, cseq);
 
-  return BSE_ERROR_NONE;
+  return Bse::ERROR_NONE;
 }

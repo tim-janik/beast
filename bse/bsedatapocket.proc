@@ -25,7 +25,7 @@ METHOD (BseDataPocket, create-entry) {
 
   /* check parameters */
   if (!BSE_IS_DATA_POCKET (pocket))
-    return BSE_ERROR_PROC_PARAM_INVAL;
+    return Bse::ERROR_PROC_PARAM_INVAL;
 
   /* action */
   id = _bse_data_pocket_create_entry (pocket);
@@ -33,7 +33,7 @@ METHOD (BseDataPocket, create-entry) {
   /* set output parameters */
   sfi_value_set_int (out_values++, id);
 
-  return BSE_ERROR_NONE;
+  return Bse::ERROR_NONE;
 }
 
 METHOD (BseDataPocket, delete-entry) {
@@ -43,7 +43,7 @@ METHOD (BseDataPocket, delete-entry) {
   IN	= sfi_pspec_int ("entry_id", "Entry ID", "The unique pocket entry ID",
 			 1, 1, G_MAXINT, 1, SFI_PARAM_STANDARD);
   OUT   = bse_param_spec_genum ("error", "Error", "BSE error code",
-				BSE_TYPE_ERROR_TYPE, BSE_ERROR_NONE,
+				BSE_TYPE_ERROR_TYPE, Bse::ERROR_NONE,
 				SFI_PARAM_STANDARD);
 } BODY (BseProcedureClass *proc,
 	const GValue      *in_values,
@@ -56,16 +56,16 @@ METHOD (BseDataPocket, delete-entry) {
 
   /* check parameters */
   if (!BSE_IS_DATA_POCKET (pocket))
-    return BSE_ERROR_PROC_PARAM_INVAL;
+    return Bse::ERROR_PROC_PARAM_INVAL;
 
   /* action */
   if (id)
     fail = _bse_data_pocket_delete_entry (pocket, id);
 
   /* set output parameters */
-  g_value_set_enum (out_values++, fail ? BSE_ERROR_NO_ENTRY : BSE_ERROR_NONE);
+  g_value_set_enum (out_values++, fail ? Bse::ERROR_NO_ENTRY : Bse::ERROR_NONE);
 
-  return BSE_ERROR_NONE;
+  return Bse::ERROR_NONE;
 }
 
 METHOD (BseDataPocket, get-n-entries) {
@@ -83,12 +83,12 @@ METHOD (BseDataPocket, get-n-entries) {
 
   /* check parameters */
   if (!BSE_IS_DATA_POCKET (pocket))
-    return BSE_ERROR_PROC_PARAM_INVAL;
+    return Bse::ERROR_PROC_PARAM_INVAL;
 
   /* set output parameters */
   sfi_value_set_int (out_values++, pocket->n_entries);
 
-  return BSE_ERROR_NONE;
+  return Bse::ERROR_NONE;
 }
 
 METHOD (BseDataPocket, get-nth-entry-id) {
@@ -109,12 +109,12 @@ METHOD (BseDataPocket, get-nth-entry-id) {
 
   /* check parameters */
   if (!BSE_IS_DATA_POCKET (pocket))
-    return BSE_ERROR_PROC_PARAM_INVAL;
+    return Bse::ERROR_PROC_PARAM_INVAL;
 
   /* set output parameters */
   sfi_value_set_int (out_values++, index < pocket->n_entries ? pocket->entries[index].id : 0);
 
-  return BSE_ERROR_NONE;
+  return Bse::ERROR_NONE;
 }
 
 METHOD (BseDataPocket, set-float) {
@@ -130,7 +130,7 @@ METHOD (BseDataPocket, set-float) {
   IN	= sfi_pspec_real ("number", "Number", "The value to store in the data pocket entry",
 			  0, -G_MAXDOUBLE, G_MAXDOUBLE, 1, SFI_PARAM_STANDARD);
   OUT   = bse_param_spec_genum ("error", "Error", "BSE error code",
-				BSE_TYPE_ERROR_TYPE, BSE_ERROR_NONE,
+				BSE_TYPE_ERROR_TYPE, Bse::ERROR_NONE,
 				SFI_PARAM_STANDARD);
 } BODY (BseProcedureClass *proc,
 	const GValue      *in_values,
@@ -146,7 +146,7 @@ METHOD (BseDataPocket, set-float) {
 
   /* check parameters */
   if (!BSE_IS_DATA_POCKET (pocket))
-    return BSE_ERROR_PROC_PARAM_INVAL;
+    return Bse::ERROR_PROC_PARAM_INVAL;
 
   /* action */
   value.v_float = v_float;
@@ -154,9 +154,9 @@ METHOD (BseDataPocket, set-float) {
     success = _bse_data_pocket_entry_set (pocket, id, g_quark_from_string (name), BSE_DATA_POCKET_FLOAT, value);
 
   /* set output parameters */
-  g_value_set_enum (out_values++, success ? BSE_ERROR_NONE : BSE_ERROR_NO_ENTRY);
+  g_value_set_enum (out_values++, success ? Bse::ERROR_NONE : Bse::ERROR_NO_ENTRY);
 
-  return BSE_ERROR_NONE;
+  return Bse::ERROR_NONE;
 }
 
 METHOD (BseDataPocket, set-int) {
@@ -172,7 +172,7 @@ METHOD (BseDataPocket, set-int) {
   IN	= sfi_pspec_int ("number", "Number", "The value to store in the data pocket entry",
 			 0, G_MININT, G_MAXINT, 1, SFI_PARAM_STANDARD);
   OUT   = bse_param_spec_genum ("error", "Error", "BSE error code",
-				BSE_TYPE_ERROR_TYPE, BSE_ERROR_NONE,
+				BSE_TYPE_ERROR_TYPE, Bse::ERROR_NONE,
 				SFI_PARAM_STANDARD);
 } BODY (BseProcedureClass *proc,
 	const GValue      *in_values,
@@ -188,7 +188,7 @@ METHOD (BseDataPocket, set-int) {
 
   /* check parameters */
   if (!BSE_IS_DATA_POCKET (pocket))
-    return BSE_ERROR_PROC_PARAM_INVAL;
+    return Bse::ERROR_PROC_PARAM_INVAL;
 
   /* action */
   value.v_int = v_uint;
@@ -196,9 +196,9 @@ METHOD (BseDataPocket, set-int) {
     success = _bse_data_pocket_entry_set (pocket, id, g_quark_from_string (name), BSE_DATA_POCKET_INT, value);
 
   /* set output parameters */
-  g_value_set_enum (out_values++, success ? BSE_ERROR_NONE : BSE_ERROR_NO_ENTRY);
+  g_value_set_enum (out_values++, success ? Bse::ERROR_NONE : Bse::ERROR_NO_ENTRY);
 
-  return BSE_ERROR_NONE;
+  return Bse::ERROR_NONE;
 }
 
 METHOD (BseDataPocket, set-object) {
@@ -214,7 +214,7 @@ METHOD (BseDataPocket, set-object) {
   IN	= bse_param_spec_object ("item", "Item", "The value to store in the data pocket entry",
 				 BSE_TYPE_ITEM, SFI_PARAM_STANDARD);
   OUT   = bse_param_spec_genum ("error", "Error", "BSE error code",
-				BSE_TYPE_ERROR_TYPE, BSE_ERROR_NONE,
+				BSE_TYPE_ERROR_TYPE, Bse::ERROR_NONE,
 				SFI_PARAM_STANDARD);
 } BODY (BseProcedureClass *proc,
 	const GValue      *in_values,
@@ -231,7 +231,7 @@ METHOD (BseDataPocket, set-object) {
   /* check parameters */
   if (!BSE_IS_DATA_POCKET (pocket) ||
       (v_object && !bse_item_common_ancestor ((BseItem*) pocket, v_object)))
-    return BSE_ERROR_PROC_PARAM_INVAL;
+    return Bse::ERROR_PROC_PARAM_INVAL;
 
   /* action */
   value.v_object = v_object;
@@ -239,9 +239,9 @@ METHOD (BseDataPocket, set-object) {
     success = _bse_data_pocket_entry_set (pocket, id, g_quark_from_string (name), BSE_DATA_POCKET_OBJECT, value);
 
   /* set output parameters */
-  g_value_set_enum (out_values++, success ? BSE_ERROR_NONE : BSE_ERROR_NO_ENTRY);
+  g_value_set_enum (out_values++, success ? Bse::ERROR_NONE : Bse::ERROR_NO_ENTRY);
 
-  return BSE_ERROR_NONE;
+  return Bse::ERROR_NONE;
 }
 
 METHOD (BseDataPocket, set-string) {
@@ -255,7 +255,7 @@ METHOD (BseDataPocket, set-string) {
   IN	= sfi_pspec_string ("string", "String", "The value to store in the data pocket entry",
 			    0, SFI_PARAM_STANDARD);
   OUT   = bse_param_spec_genum ("error", "Error", "BSE error code",
-				BSE_TYPE_ERROR_TYPE, BSE_ERROR_NONE,
+				BSE_TYPE_ERROR_TYPE, Bse::ERROR_NONE,
 				SFI_PARAM_STANDARD);
 } BODY (BseProcedureClass *proc,
 	const GValue      *in_values,
@@ -269,7 +269,7 @@ METHOD (BseDataPocket, set-string) {
   bool success = FALSE;
   /* check parameters */
   if (!BSE_IS_DATA_POCKET (pocket))
-    return BSE_ERROR_PROC_PARAM_INVAL;
+    return Bse::ERROR_PROC_PARAM_INVAL;
   /* action */
   if (id)
     {
@@ -278,8 +278,8 @@ METHOD (BseDataPocket, set-string) {
       success = _bse_data_pocket_entry_set (pocket, id, g_quark_from_string (name), BSE_DATA_POCKET_STRING, value);
     }
   /* set output parameters */
-  g_value_set_enum (out_values++, success ? BSE_ERROR_NONE : BSE_ERROR_NO_ENTRY);
-  return BSE_ERROR_NONE;
+  g_value_set_enum (out_values++, success ? Bse::ERROR_NONE : Bse::ERROR_NO_ENTRY);
+  return Bse::ERROR_NONE;
 }
 
 METHOD (BseDataPocket, get-float) {
@@ -305,7 +305,7 @@ METHOD (BseDataPocket, get-float) {
 
   /* check parameters */
   if (!BSE_IS_DATA_POCKET (pocket))
-    return BSE_ERROR_PROC_PARAM_INVAL;
+    return Bse::ERROR_PROC_PARAM_INVAL;
 
   /* action */
   type = _bse_data_pocket_entry_get (pocket, id, g_quark_try_string (name), &value);
@@ -313,7 +313,7 @@ METHOD (BseDataPocket, get-float) {
   /* set output parameters */
   sfi_value_set_real (out_values++, type == BSE_DATA_POCKET_FLOAT ? value.v_float : 0);
 
-  return BSE_ERROR_NONE;
+  return Bse::ERROR_NONE;
 }
 
 METHOD (BseDataPocket, get-int) {
@@ -339,7 +339,7 @@ METHOD (BseDataPocket, get-int) {
 
   /* check parameters */
   if (!BSE_IS_DATA_POCKET (pocket))
-    return BSE_ERROR_PROC_PARAM_INVAL;
+    return Bse::ERROR_PROC_PARAM_INVAL;
 
   /* action */
   type = _bse_data_pocket_entry_get (pocket, id, g_quark_try_string (name), &value);
@@ -347,7 +347,7 @@ METHOD (BseDataPocket, get-int) {
   /* set output parameters */
   sfi_value_set_int (out_values++, type == BSE_DATA_POCKET_INT ? value.v_int : 0);
 
-  return BSE_ERROR_NONE;
+  return Bse::ERROR_NONE;
 }
 
 METHOD (BseDataPocket, get-object) {
@@ -373,7 +373,7 @@ METHOD (BseDataPocket, get-object) {
 
   /* check parameters */
   if (!BSE_IS_DATA_POCKET (pocket))
-    return BSE_ERROR_PROC_PARAM_INVAL;
+    return Bse::ERROR_PROC_PARAM_INVAL;
 
   /* action */
   type = _bse_data_pocket_entry_get (pocket, id, g_quark_try_string (name), &value);
@@ -381,7 +381,7 @@ METHOD (BseDataPocket, get-object) {
   /* set output parameters */
   bse_value_set_object (out_values++, type == BSE_DATA_POCKET_OBJECT ? value.v_object : 0);
 
-  return BSE_ERROR_NONE;
+  return Bse::ERROR_NONE;
 }
 
 METHOD (BseDataPocket, get-string) {
@@ -407,7 +407,7 @@ METHOD (BseDataPocket, get-string) {
 
   /* check parameters */
   if (!BSE_IS_DATA_POCKET (pocket))
-    return BSE_ERROR_PROC_PARAM_INVAL;
+    return Bse::ERROR_PROC_PARAM_INVAL;
 
   /* action */
   type = _bse_data_pocket_entry_get (pocket, id, g_quark_try_string (name), &value);
@@ -415,5 +415,5 @@ METHOD (BseDataPocket, get-string) {
   /* set output parameters */
   sfi_value_set_string (out_values++, type == BSE_DATA_POCKET_STRING ? value.v_string : 0);
 
-  return BSE_ERROR_NONE;
+  return Bse::ERROR_NONE;
 }

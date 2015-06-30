@@ -82,6 +82,7 @@ pattern_view_class_setup_skin (BstPatternViewClass *klass)
 static void
 bst_pattern_view_init (BstPatternView *self)
 {
+  new (&self->part) Bse::PartH();
   GxkScrollCanvas *scc = GXK_SCROLL_CANVAS (self);
 
   self->row_height = 1;
@@ -105,7 +106,7 @@ bst_pattern_view_dispose (GObject *object)
 {
   BstPatternView *self = BST_PATTERN_VIEW (object);
 
-  bst_pattern_view_set_proxy (self, 0);
+  bst_pattern_view_set_part (self);
 
   G_OBJECT_CLASS (bst_pattern_view_parent_class)->dispose (object);
 }
@@ -140,10 +141,12 @@ bst_pattern_view_finalize (GObject *object)
 {
   BstPatternView *self = BST_PATTERN_VIEW (object);
 
-  bst_pattern_view_set_proxy (self, 0);
+  bst_pattern_view_set_part (self);
   bst_pattern_view_destroy_columns (self);
 
   G_OBJECT_CLASS (bst_pattern_view_parent_class)->finalize (object);
+  using namespace Bse;
+  self->part.~PartH();
 }
 
 static void
@@ -162,42 +165,34 @@ static void
 pattern_view_release_proxy (BstPatternView *self)
 {
   gxk_toplevel_delete (GTK_WIDGET (self));
-  bst_pattern_view_set_proxy (self, 0);
+  bst_pattern_view_set_part (self);
 }
 
 static void
 pattern_view_range_changed (BstPatternView *self)
 {
   guint max_ticks;
-  bse_proxy_get (self->proxy, "last-tick", &max_ticks, NULL);
+  bse_proxy_get (self->part.proxy_id(), "last-tick", &max_ticks, NULL);
   bst_pattern_view_vsetup (self, 384, 4, MAX (max_ticks, 1), self->vticks);
 }
 
 void
-bst_pattern_view_set_proxy (BstPatternView *self,
-                            SfiProxy        proxy)
+bst_pattern_view_set_part (BstPatternView *self, Bse::PartH part)
 {
   g_return_if_fail (BST_PATTERN_VIEW (self));
-  if (proxy)
-    {
-      g_return_if_fail (BSE_IS_PART (proxy));
-      g_return_if_fail (bse_item_get_project (proxy) != 0);
-    }
 
-  if (self->proxy)
+  if (self->part)
     {
-      bse_proxy_disconnect (self->proxy,
+      bse_proxy_disconnect (self->part.proxy_id(),
                             "any_signal", pattern_view_release_proxy, self,
                             "any_signal", pattern_view_range_changed, self,
                             "any_signal", pattern_view_update, self,
                             NULL);
-      bse_item_unuse (self->proxy);
     }
-  self->proxy = proxy;
-  if (self->proxy)
+  self->part = part;
+  if (self->part)
     {
-      bse_item_use (self->proxy);
-      bse_proxy_connect (self->proxy,
+      bse_proxy_connect (self->part.proxy_id(),
                          "swapped_signal::release", pattern_view_release_proxy, self,
                          "swapped_signal::property-notify::last-tick", pattern_view_range_changed, self,
                          "swapped_signal::range-changed", pattern_view_update, self,
@@ -300,8 +295,7 @@ row_to_ticks (BstPatternView *self,
 }
 
 static gint
-pixels_to_row_unscrolled (BstPatternView *self,
-                          gint            y)
+pixels_to_row_unscrolled (BstPatternView *self, gint y)
 {
   double row = y / (double) self->row_height;
   return MIN (G_MAXINT, row);

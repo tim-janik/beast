@@ -127,11 +127,11 @@ guint		bse_source_find_ichannel	(BseSource	*source,
 						 const gchar    *ichannel_ident);
 guint		bse_source_find_ochannel	(BseSource	*source,
 						 const gchar    *ochannel_ident);
-BseErrorType	bse_source_set_input		(BseSource	*source,
+Bse::ErrorType	bse_source_set_input		(BseSource	*source,
 						 guint		 ichannel,
 						 BseSource	*osource,
 						 guint		 ochannel);
-BseErrorType	bse_source_unset_input		(BseSource	*source,
+Bse::ErrorType	bse_source_unset_input		(BseSource	*source,
 						 guint		 ichannel,
 						 BseSource	*osource,
 						 guint		 ochannel);
@@ -190,7 +190,7 @@ void		bse_source_access_modules	(BseSource	*source,
 						 gpointer	 data,
 						 BseFreeFunc	 data_free_func,
 						 BseTrans	*trans);
-BseErrorType    bse_source_check_input          (BseSource      *source,
+Bse::ErrorType    bse_source_check_input          (BseSource      *source,
                                                  guint           ichannel,
                                                  BseSource      *osource,
                                                  guint           ochannel);
@@ -221,16 +221,16 @@ BseMusicalTuningType bse_source_prepared_musical_tuning (BseSource *source);
 typedef struct {
   GParamSpec       *pspec;
   guint             midi_channel;
-  BseMidiSignalType signal_type;
+  Bse::MidiSignalType signal_type;
 } BseAutomationProperty;
-BseErrorType                 bse_source_set_automation_property   (BseSource         *source,
+Bse::ErrorType                 bse_source_set_automation_property   (BseSource         *source,
                                                                    const gchar       *prop_name,
                                                                    guint              midi_channel,
-                                                                   BseMidiSignalType  signal_type);
+                                                                   Bse::MidiSignalType  signal_type);
 void                         bse_source_get_automation_property   (BseSource         *source,
                                                                    const gchar       *prop_name,
                                                                    guint             *pmidi_channel,
-                                                                   BseMidiSignalType *psignal_type);
+                                                                   Bse::MidiSignalType *psignal_type);
 BseAutomationProperty*       bse_source_get_automation_properties (BseSource         *source,
                                                                    guint             *n_props);
 
@@ -272,5 +272,17 @@ void    bse_source_class_add_probe_signals      (BseSourceClass *klass);
 void    bse_source_probes_modules_changed       (BseSource      *source);
 
 G_END_DECLS
+
+namespace Bse {
+
+class SourceImpl : public ItemImpl, public virtual SourceIface {
+protected:
+  virtual             ~SourceImpl           ();
+public:
+  explicit             SourceImpl           (BseObject*);
+  virtual SourceIfaceP ichannel_get_osource (int input_channel, int input_joint) override;
+};
+
+} // Bse
 
 #endif /* __BSE_SOURCE_H__ */

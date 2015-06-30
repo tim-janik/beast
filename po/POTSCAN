@@ -61,6 +61,7 @@ beast-gtk/gxk/gxkparam-scale.cc
 beast-gtk/gxk/gxkparam-spinner.cc
 beast-gtk/gxk/gxkparam-toggle.cc
 beast-gtk/gxk/gxksimplelabel.cc
+bse/bseapi.idl
 bse/bseautodoc.cc
 bse/bsebasics.idl
 bse/bsebiquadfilter.cc

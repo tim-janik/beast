@@ -749,13 +749,13 @@ find_method_procedure (GType       object_type,
   return proc_type;
 }
 
-static inline BseErrorType
+static inline Bse::ErrorType
 bse_item_execva_i (BseItem     *item,
                    const char  *procedure,
                    va_list      var_args,
                    gboolean     skip_oparams)
 {
-  BseErrorType error;
+  Bse::ErrorType error;
   GType proc_type = find_method_procedure (BSE_OBJECT_TYPE (item), procedure);
   GValue obj_value;
 
@@ -763,7 +763,7 @@ bse_item_execva_i (BseItem     *item,
     {
       g_warning ("no such method \"%s\" of item %s",
                  procedure, bse_object_debug_name (item));
-      return BSE_ERROR_INTERNAL;
+      return Bse::ERROR_INTERNAL;
     }
 
   /* setup first arg (the object) */
@@ -776,17 +776,17 @@ bse_item_execva_i (BseItem     *item,
   return error;
 }
 
-BseErrorType
+Bse::ErrorType
 bse_item_exec (void       *_item,
                const char *procedure,
                ...)
 {
   BseItem *item = (BseItem*) _item;
   va_list var_args;
-  BseErrorType error;
+  Bse::ErrorType error;
 
-  g_return_val_if_fail (BSE_IS_ITEM (item), BSE_ERROR_INTERNAL);
-  g_return_val_if_fail (procedure != NULL, BSE_ERROR_INTERNAL);
+  g_return_val_if_fail (BSE_IS_ITEM (item), Bse::ERROR_INTERNAL);
+  g_return_val_if_fail (procedure != NULL, Bse::ERROR_INTERNAL);
 
   va_start (var_args, procedure);
   error = bse_item_execva_i (item, procedure, var_args, FALSE);
@@ -795,17 +795,17 @@ bse_item_exec (void       *_item,
   return error;
 }
 
-BseErrorType
+Bse::ErrorType
 bse_item_exec_void (void       *_item,
                     const char *procedure,
                     ...)
 {
   BseItem *item = (BseItem*) _item;
   va_list var_args;
-  BseErrorType error;
+  Bse::ErrorType error;
 
-  g_return_val_if_fail (BSE_IS_ITEM (item), BSE_ERROR_INTERNAL);
-  g_return_val_if_fail (procedure != NULL, BSE_ERROR_INTERNAL);
+  g_return_val_if_fail (BSE_IS_ITEM (item), Bse::ERROR_INTERNAL);
+  g_return_val_if_fail (procedure != NULL, Bse::ERROR_INTERNAL);
 
   va_start (var_args, procedure);
   error = bse_item_execva_i (item, procedure, var_args, TRUE);
@@ -885,7 +885,7 @@ undo_call_proc (BseUndoStep  *ustep,
   else /* invoke procedure */
     {
       GValue ovalue = { 0, };
-      BseErrorType error;
+      Bse::ErrorType error;
       uint i;
       /* convert values from undo */
       for (i = 0; i < proc->n_in_pspecs; i++)
@@ -900,7 +900,7 @@ undo_call_proc (BseUndoStep  *ustep,
         {
           /* check returned error if any */
           if (G_PARAM_SPEC_VALUE_TYPE (proc->out_pspecs[0]) == BSE_TYPE_ERROR_TYPE && !error)
-            error = BseErrorType (g_value_get_enum (&ovalue));
+            error = Bse::ErrorType (g_value_get_enum (&ovalue));
           g_value_unset (&ovalue);
         }
       /* we're not tolerating any errors */
@@ -920,7 +920,7 @@ bse_item_push_undo_proc_valist (void        *item,
   BseUndoStack *ustack = bse_item_undo_open (item, "%s: %s", commit_as_redo ? "redo-proc" : "undo-proc", procedure);
   BseProcedureClass *proc;
   GValue *ivalues;
-  BseErrorType error;
+  Bse::ErrorType error;
   uint i;
   if (BSE_UNDO_STACK_VOID (ustack) ||
       BSE_ITEM_INTERNAL (item))
@@ -1237,3 +1237,111 @@ bse_item_backup_to_undo (BseItem      *self,
       g_object_unref (storage);
     }
 }
+
+namespace Bse {
+
+ItemImpl::ItemImpl (BseObject *bobj) :
+  ObjectImpl (bobj)
+{}
+
+ItemImpl::~ItemImpl ()
+{}
+
+ContainerImpl*
+ItemImpl::parent ()
+{
+  BseItem *self = as<BseItem*>();
+  return self->parent ? self->parent->as<ContainerImpl*>() : NULL;
+}
+
+ItemImpl::UndoDescriptorData
+ItemImpl::make_undo_descriptor_data (ItemImpl &item)
+{
+  // sync with bse_undo_pointer_pack
+  UndoDescriptorData udd;
+  BseItem *bitem = item.as<BseItem*>();
+  BseProject *bproject = bse_item_get_project (this->as<BseItem*>());
+  if (!bproject) // may happen during destruction
+    return udd;  // this UndoDescriptorData is constructed but will never be used
+  assert_return (bproject == bse_item_get_project (bitem), udd); // undo descriptors work only for items within same project
+  ProjectImpl *project = bproject->as<ProjectImpl*>();
+  udd.projectid = ptrdiff_t (project);
+  if (&item == project)
+    udd.upath = "\002project\003";
+  else
+    {
+      gchar *upath = bse_container_make_upath (bproject, bitem);
+      udd.upath = upath;
+      g_free (upath);
+    }
+  return udd;
+}
+
+ItemImpl&
+ItemImpl::resolve_undo_descriptor_data (const UndoDescriptorData &udd)
+{
+  // sync with bse_undo_pointer_unpack
+  ItemImpl &nullitem = *(ItemImpl*) NULL;
+  assert_return (udd.projectid != 0, nullitem);
+  BseProject *bproject = bse_item_get_project (this->as<BseItem*>());
+  ProjectImpl *project = bproject ? bproject->as<ProjectImpl*>() : NULL;
+  assert_return (udd.projectid == ptrdiff_t (project), nullitem); // undo cannot work on orphans
+  if (udd.upath == "\002project\003")
+    return *project;
+  BseItem *bitem = bse_container_resolve_upath (bproject, udd.upath.c_str());
+  assert_return (bitem != NULL, nullitem); // undo descriptor for NULL objects is not currently supported
+  return *bitem->as<ItemImpl*>();
+}
+
+static void
+undo_lambda_free (BseUndoStep *ustep)
+{
+  delete (ItemImpl::UndoDescriptor<ItemImpl>*) ustep->data[0].v_pointer;
+  delete (ItemImpl::UndoLambda*) ustep->data[1].v_pointer;
+  delete (String*) ustep->data[2].v_pointer;
+}
+
+static void
+undo_lambda_call (BseUndoStep *ustep, BseUndoStack *ustack)
+{
+  ProjectImpl &project = *ustack->project->as<ProjectImpl*>();
+  ItemImpl &self = project.undo_resolve (*(ItemImpl::UndoDescriptor<ItemImpl>*) ustep->data[0].v_pointer);
+  auto *lambda = (ItemImpl::UndoLambda*) ustep->data[1].v_pointer;
+  // invoke undo function
+  const Bse::ErrorType error = (*lambda) (self, ustack);
+  if (error) // undo errors shouldn't happen
+    {
+      String *blurb = (String*) ustep->data[2].v_pointer;
+      g_warning ("error during undo '%s' of item %s: %s", blurb->c_str(),
+                 self.debug_name().c_str(), bse_error_blurb (error));
+    }
+}
+
+void
+ItemImpl::push_item_undo (const String &blurb, const UndoLambda &lambda)
+{
+  BseItem *self = as<BseItem*>();
+  BseUndoStack *ustack = bse_item_undo_open (self, "undo: %s", blurb.c_str());
+  if (BSE_UNDO_STACK_VOID (ustack) || BSE_ITEM_INTERNAL (self))
+    {
+      bse_item_undo_close (ustack);
+      return;
+    }
+  BseUndoStep *ustep = bse_undo_step_new (undo_lambda_call, undo_lambda_free, 3);
+  ustep->data[0].v_pointer = new UndoDescriptor<ItemImpl> (undo_descriptor (*this));
+  ustep->data[1].v_pointer = new UndoLambda (lambda);
+  ustep->data[2].v_pointer = new String (blurb);
+  bse_undo_stack_push (ustack, ustep);
+  bse_item_undo_close (ustack);
+}
+
+ItemIfaceP
+ItemImpl::common_ancestor (ItemIface &other)
+{
+  BseItem *self = as<BseItem*>();
+  BseItem *bo = other.as<BseItem*>();
+  BseItem *common = bse_item_common_ancestor (self, bo);
+  return common ? shared_ptr_cast<ItemIface> (common->as<ItemIface*>()) : ItemIfaceP();
+}
+
+} // Bse

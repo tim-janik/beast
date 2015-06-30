@@ -27,12 +27,12 @@ BODY (BseProcedureClass *proc,
 
   /* check parameters */
   if (!BSE_IS_JANITOR (self) || !action)
-    return BSE_ERROR_PROC_PARAM_INVAL;
+    return Bse::ERROR_PROC_PARAM_INVAL;
 
   /* action */
   bse_janitor_trigger_action (self, action);
 
-  return BSE_ERROR_NONE;
+  return Bse::ERROR_NONE;
 }
 
 METHOD (BseJanitor, get-script-name) {
@@ -51,12 +51,12 @@ BODY (BseProcedureClass *proc,
 
   /* check parameters */
   if (!BSE_IS_JANITOR (self))
-    return BSE_ERROR_PROC_PARAM_INVAL;
+    return Bse::ERROR_PROC_PARAM_INVAL;
 
   /* set output parameters */
   sfi_value_set_string (out_values++, self->script_name);
 
-  return BSE_ERROR_NONE;
+  return Bse::ERROR_NONE;
 }
 
 METHOD (BseJanitor, get-proc-name) {
@@ -75,12 +75,12 @@ BODY (BseProcedureClass *proc,
 
   /* check parameters */
   if (!BSE_IS_JANITOR (self))
-    return BSE_ERROR_PROC_PARAM_INVAL;
+    return Bse::ERROR_PROC_PARAM_INVAL;
 
   /* set output parameters */
   sfi_value_set_string (out_values++, self->proc_name);
 
-  return BSE_ERROR_NONE;
+  return Bse::ERROR_NONE;
 }
 
 METHOD (BseJanitor, n-actions) {
@@ -99,12 +99,12 @@ BODY (BseProcedureClass *proc,
 
   /* check parameters */
   if (!BSE_IS_JANITOR (self))
-    return BSE_ERROR_PROC_PARAM_INVAL;
+    return Bse::ERROR_PROC_PARAM_INVAL;
 
   /* set output parameters */
   sfi_value_set_int (out_values++, g_slist_length (self->actions));
 
-  return BSE_ERROR_NONE;
+  return Bse::ERROR_NONE;
 }
 
 METHOD (BseJanitor, get-action) {
@@ -126,13 +126,13 @@ BODY (BseProcedureClass *proc,
 
   /* check parameters */
   if (!BSE_IS_JANITOR (self))
-    return BSE_ERROR_PROC_PARAM_INVAL;
+    return Bse::ERROR_PROC_PARAM_INVAL;
 
   BseJanitorAction *a = (BseJanitorAction*) g_slist_nth_data (self->actions, nth);
   /* set output parameters */
   sfi_value_set_string (out_values++, a ? g_quark_to_string (a->action) : NULL);
 
-  return BSE_ERROR_NONE;
+  return Bse::ERROR_NONE;
 }
 
 METHOD (BseJanitor, get-action-name) {
@@ -154,14 +154,14 @@ BODY (BseProcedureClass *proc,
 
   /* check parameters */
   if (!BSE_IS_JANITOR (self))
-    return BSE_ERROR_PROC_PARAM_INVAL;
+    return Bse::ERROR_PROC_PARAM_INVAL;
 
   BseJanitorAction *a = (BseJanitorAction*) g_slist_nth_data (self->actions, nth);
 
   /* set output parameters */
   sfi_value_set_string (out_values++, a ? a->name : NULL);
 
-  return BSE_ERROR_NONE;
+  return Bse::ERROR_NONE;
 }
 
 METHOD (BseJanitor, get-action-blurb) {
@@ -183,13 +183,13 @@ BODY (BseProcedureClass *proc,
 
   /* check parameters */
   if (!BSE_IS_JANITOR (self))
-    return BSE_ERROR_PROC_PARAM_INVAL;
+    return Bse::ERROR_PROC_PARAM_INVAL;
 
   BseJanitorAction *a = (BseJanitorAction*) g_slist_nth_data (self->actions, nth);
 
   /* set output parameters */
   sfi_value_set_string (out_values++, a ? a->blurb : NULL);
-  return BSE_ERROR_NONE;
+  return Bse::ERROR_NONE;
 }
 
 METHOD (BseJanitor, kill) {
@@ -206,12 +206,12 @@ BODY (BseProcedureClass *proc,
 
   /* check parameters */
   if (!BSE_IS_JANITOR (self))
-    return BSE_ERROR_PROC_PARAM_INVAL;
+    return Bse::ERROR_PROC_PARAM_INVAL;
 
   /* action */
   bse_janitor_kill (self);
 
-  return BSE_ERROR_NONE;
+  return Bse::ERROR_NONE;
 }
 
 PROCEDURE (bse-script-janitor, "Script/Get Janitor") {
@@ -227,12 +227,12 @@ BODY (BseProcedureClass *proc,
 
   /* check execution context */
   if (!self || !self->port || self->port_closed)
-    return BSE_ERROR_PROC_EXECUTION;
+    return Bse::ERROR_PROC_EXECUTION;
 
   /* set output parameters */
   bse_value_set_object (out_values++, self);
 
-  return BSE_ERROR_NONE;
+  return Bse::ERROR_NONE;
 }
 
 PROCEDURE (bse-script-add-action, "Script/Add Action") {
@@ -256,16 +256,16 @@ BODY (BseProcedureClass *proc,
 
   /* check parameters */
   if (!BSE_IS_JANITOR (self) || !action || !name)
-    return BSE_ERROR_PROC_PARAM_INVAL;
+    return Bse::ERROR_PROC_PARAM_INVAL;
 
   /* check execution context */
   if (!self->port || self->port_closed)
-    return BSE_ERROR_PROC_EXECUTION;
+    return Bse::ERROR_PROC_EXECUTION;
 
   /* action */
   bse_janitor_add_action (self, action, name, blurb);
 
-  return BSE_ERROR_NONE;
+  return Bse::ERROR_NONE;
 }
 
 PROCEDURE (bse-script-remove-action, "Script/Remove Action") {
@@ -283,16 +283,16 @@ BODY (BseProcedureClass *proc,
 
   /* check parameters */
   if (!BSE_IS_JANITOR (self) || !action)
-    return BSE_ERROR_PROC_PARAM_INVAL;
+    return Bse::ERROR_PROC_PARAM_INVAL;
 
   /* check execution context */
   if (!self->port || self->port_closed)
-    return BSE_ERROR_PROC_EXECUTION;
+    return Bse::ERROR_PROC_EXECUTION;
 
   /* action */
   bse_janitor_remove_action (self, action);
 
-  return BSE_ERROR_NONE;
+  return Bse::ERROR_NONE;
 }
 
 PROCEDURE (bse-script-set-status, "Script/Set Status") {
@@ -309,18 +309,18 @@ PROCEDURE (bse-script-set-status, "Script/Set Status") {
 
   /* check parameters */
   if (!BSE_IS_JANITOR (self))
-    return BSE_ERROR_PROC_PARAM_INVAL;
+    return Bse::ERROR_PROC_PARAM_INVAL;
 
   /* check execution context */
   if (!self->port || self->port_closed)
-    return BSE_ERROR_PROC_EXECUTION;
+    return Bse::ERROR_PROC_EXECUTION;
   if (!message)
     message = "";
 
   /* action */
   bse_item_set (self, "status-message", message, NULL);
 
-  return BSE_ERROR_NONE;
+  return Bse::ERROR_NONE;
 }
 
 PROCEDURE (bse-script-progress, "Script/Progress") {
@@ -338,16 +338,16 @@ PROCEDURE (bse-script-progress, "Script/Progress") {
 
   /* check parameters */
   if (!BSE_IS_JANITOR (self))
-    return BSE_ERROR_PROC_PARAM_INVAL;
+    return Bse::ERROR_PROC_PARAM_INVAL;
 
   /* check execution context */
   if (!self->port || self->port_closed)
-    return BSE_ERROR_PROC_EXECUTION;
+    return Bse::ERROR_PROC_EXECUTION;
 
   /* action */
   bse_janitor_progress (self, progress);
 
-  return BSE_ERROR_NONE;
+  return Bse::ERROR_NONE;
 }
 
 PROCEDURE (bse-script-send-message, "Script/Message") {
@@ -367,7 +367,7 @@ PROCEDURE (bse-script-send-message, "Script/Message") {
   /* extract parameter values */
   BseJanitor *janitor = bse_janitor_get_current();
   if (!BSE_IS_JANITOR (janitor) || !janitor->port || janitor->port_closed)
-    return BSE_ERROR_PROC_EXECUTION;
+    return Bse::ERROR_PROC_EXECUTION;
 
   const gchar *domain = sfi_value_get_string (in_values++);
   const gchar *mtype  = sfi_value_get_string (in_values++);
@@ -402,10 +402,10 @@ PROCEDURE (bse-script-send-message, "Script/Message") {
       if (check && check[0])
         umsg.label = check;
       ServerImpl::instance().send_user_message (umsg);
-      return BSE_ERROR_NONE;
+      return Bse::ERROR_NONE;
     }
   else
-    return BSE_ERROR_PROC_PARAM_INVAL;
+    return Bse::ERROR_PROC_PARAM_INVAL;
 }
 PROCEDURE (bse-script-quit, "Script/Quit") {
   HELP  = "Exit a script succesfully (server side).";
@@ -418,11 +418,11 @@ PROCEDURE (bse-script-quit, "Script/Quit") {
 
   /* check execution context */
   if (!BSE_IS_JANITOR (janitor) || !janitor->port || janitor->port_closed)
-    return BSE_ERROR_PROC_EXECUTION;
+    return Bse::ERROR_PROC_EXECUTION;
 
   /* action */
   janitor->force_normal_exit = TRUE;
   bse_janitor_close (janitor);
 
-  return BSE_ERROR_NONE;
+  return Bse::ERROR_NONE;
 }

@@ -146,10 +146,10 @@ typedef struct
   guint          tail_detected : 1;             /* found tail_samples silence */
   guint          clipped_head : 1;
   guint          clipped_tail : 1;
-  BseErrorType   error;
+  Bse::ErrorType   error;
 } GslDataClipResult;
 
-BseErrorType    gsl_data_clip_sample    (GslDataHandle     *dhandle,
+Bse::ErrorType    gsl_data_clip_sample    (GslDataHandle     *dhandle,
                                          GslDataClipConfig *cconfig,
                                          GslDataClipResult *result);
 

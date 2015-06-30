@@ -2,6 +2,7 @@
 #include "bsemidifile.hh"
 #include "bsemididecoder.hh"
 #include "bseitem.hh"
+#include "bsepart.hh"
 #include "gslcommon.hh"
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -42,7 +43,7 @@ dummy_read (int  fd,
   return total;
 }
 
-static BseErrorType
+static Bse::ErrorType
 smf_read_header (int        fd,
                  SMFHeader *header)
 {
@@ -52,7 +53,7 @@ smf_read_header (int        fd,
   if (read (fd, header, n_bytes) != n_bytes)
     {
       MDEBUG ("failed to read midi file header: %s", g_strerror (errno));
-      return gsl_error_from_errno (errno, BSE_ERROR_IO);
+      return gsl_error_from_errno (errno, Bse::ERROR_IO);
     }
   /* endianess corrections */
   header->chunk.type = GUINT32_FROM_BE (header->chunk.type);
@@ -64,43 +65,43 @@ smf_read_header (int        fd,
   if (header->chunk.type != ('M' << 24 | 'T' << 16 | 'h' << 8 | 'd'))
     {
       MDEBUG ("unmatched token 'MThd'");
-      return BSE_ERROR_FORMAT_INVALID;
+      return Bse::ERROR_FORMAT_INVALID;
     }
   if (header->chunk.length < 6)
     {
       MDEBUG ("truncated midi file header");
-      return BSE_ERROR_FORMAT_INVALID;
+      return Bse::ERROR_FORMAT_INVALID;
     }
   if (header->format > 2)
     {
       MDEBUG ("unknown midi file format");
-      return BSE_ERROR_FORMAT_UNKNOWN;
+      return Bse::ERROR_FORMAT_UNKNOWN;
     }
   if (header->format == 0 && header->n_tracks != 1)
     {
       MDEBUG ("invalid number of tracks: %d", header->n_tracks);
-      return BSE_ERROR_FORMAT_INVALID;
+      return Bse::ERROR_FORMAT_INVALID;
     }
   if (header->n_tracks < 1)
     {
       MDEBUG ("midi file without tracks");
-      return BSE_ERROR_NO_DATA;
+      return Bse::ERROR_NO_DATA;
     }
   if (header->division & 0x8000)        // FIXME: this allowes only tpqn
     {
       MDEBUG ("SMPTE time encoding not supported");
-      return BSE_ERROR_FORMAT_UNKNOWN;
+      return Bse::ERROR_FORMAT_UNKNOWN;
     }
   /* read up remaining unused header bytes */
   if (dummy_read (fd, header->chunk.length - 6) != header->chunk.length - 6)
     {
       MDEBUG ("failed to read midi file header: %s", g_strerror (errno));
-      return gsl_error_from_errno (errno, BSE_ERROR_IO);
+      return gsl_error_from_errno (errno, Bse::ERROR_IO);
     }
-  return BSE_ERROR_NONE;
+  return Bse::ERROR_NONE;
 }
 
-static BseErrorType
+static Bse::ErrorType
 smf_read_track (BseMidiFile    *smf,
                 int             fd,
                 BseMidiDecoder *md)
@@ -112,7 +113,7 @@ smf_read_track (BseMidiFile    *smf,
   if (read (fd, &chunk, n_bytes) != n_bytes)
     {
       MDEBUG ("failed to read midi track header: %s", g_strerror (errno));
-      return gsl_error_from_errno (errno, BSE_ERROR_IO);
+      return gsl_error_from_errno (errno, Bse::ERROR_IO);
     }
   /* endianess corrections */
   chunk.type = GUINT32_FROM_BE (chunk.type);
@@ -121,7 +122,7 @@ smf_read_track (BseMidiFile    *smf,
   if (chunk.type != ('M' << 24 | 'T' << 16 | 'r' << 8 | 'k'))
     {
       MDEBUG ("unmatched token 'MTrk'");
-      return BSE_ERROR_FORMAT_INVALID;
+      return Bse::ERROR_FORMAT_INVALID;
     }
   /* read up and decode track data */
   n_bytes = chunk.length;
@@ -132,27 +133,27 @@ smf_read_track (BseMidiFile    *smf,
       if (read (fd, buffer, l) < 0)
         {
           MDEBUG ("failed to read (got %d bytes) midi track: %s", l, g_strerror (errno));
-          return gsl_error_from_errno (errno, BSE_ERROR_IO);
+          return gsl_error_from_errno (errno, Bse::ERROR_IO);
         }
       bse_midi_decoder_push_smf_data (md, l, buffer);
       n_bytes -= l;
     }
-  return BSE_ERROR_NONE;
+  return Bse::ERROR_NONE;
 }
 
 BseMidiFile*
 bse_midi_file_load (const char   *file_name,
-                    BseErrorType *error_p)
+                    Bse::ErrorType *error_p)
 {
   BseMidiFile *smf;
   SMFHeader header;
-  BseErrorType dummy_error;
+  Bse::ErrorType dummy_error;
   int i, fd = open (file_name, O_RDONLY);
   if (!error_p)
     error_p = &dummy_error;
   if (fd < 0)
     {
-      *error_p = gsl_error_from_errno (errno, BSE_ERROR_FILE_OPEN_FAILED);
+      *error_p = gsl_error_from_errno (errno, Bse::ERROR_FILE_OPEN_FAILED);
       return NULL;
     }
 
@@ -209,7 +210,7 @@ bse_midi_file_load (const char   *file_name,
           smf->denominator = event->data.time_signature.denominator;
         }
     }
-  *error_p = BSE_ERROR_NONE;
+  *error_p = Bse::ERROR_NONE;
   return smf;
 }
 
@@ -237,7 +238,7 @@ bse_midi_file_add_part_events (BseMidiFile *smf,
   for (i = 0; i < track->n_events; i++)
     {
       BseMidiEvent *event = track->events[i];
-      BseMidiSignalType msignal = BseMidiSignalType (0);
+      Bse::MidiSignalType msignal = Bse::MidiSignalType (0);
       start += event->delta_time;
       switch (event->status)
         {
@@ -255,37 +256,33 @@ bse_midi_file_add_part_events (BseMidiFile *smf,
             }
           note = bse_note_from_freq (smf->musical_tuning, frequency);
           fine_tune = bse_note_fine_tune_from_note_freq (smf->musical_tuning, note, frequency);
-          bse_item_exec_void (part, "insert-note-auto",
-                              (uint) (start * smf->tpqn_rate),
-                              (uint) (dur * smf->tpqn_rate),
-                              note, fine_tune, velocity);
+          part->as<Bse::PartImpl*>()->insert_note_auto (start * smf->tpqn_rate, dur * smf->tpqn_rate, note, fine_tune, velocity);
           break;
         case BSE_MIDI_CONTROL_CHANGE:
           if (!msignal)
             {
-              msignal = BseMidiSignalType (BSE_MIDI_SIGNAL_CONTROL_0 + event->data.control.control);
+              msignal = Bse::MidiSignalType (Bse::MIDI_SIGNAL_CONTROL_0 + event->data.control.control);
               fvalue = event->data.control.value;
             }
         case BSE_MIDI_PROGRAM_CHANGE:
           if (!msignal)
             {
-              msignal = BSE_MIDI_SIGNAL_PROGRAM;
+              msignal = Bse::MIDI_SIGNAL_PROGRAM;
               fvalue = event->data.program * (1.0 / (double) 0x7F);
             }
         case BSE_MIDI_CHANNEL_PRESSURE:
           if (!msignal)
             {
-              msignal = BSE_MIDI_SIGNAL_PRESSURE;
+              msignal = Bse::MIDI_SIGNAL_PRESSURE;
               fvalue = event->data.intensity;
             }
         case BSE_MIDI_PITCH_BEND:
           if (!msignal)
             {
-              msignal = BSE_MIDI_SIGNAL_PITCH_BEND;
+              msignal = Bse::MIDI_SIGNAL_PITCH_BEND;
               fvalue = event->data.pitch_bend;
             }
-          bse_item_exec_void (part, "insert-control",
-                              (uint) (start * smf->tpqn_rate), msignal, fvalue);
+          part->as<Bse::PartImpl*>()->insert_control (start * smf->tpqn_rate, msignal, fvalue);
           break;
         case BSE_MIDI_TEXT_EVENT:
           if (track)
@@ -335,7 +332,7 @@ bse_midi_file_setup_song (BseMidiFile    *smf,
         {
           BseTrack *track;
           BsePart *part;
-          BseErrorType error;
+          Bse::ErrorType error;
           bse_item_exec (song, "create-track", &track);
           bse_item_exec (track, "ensure-output", &error);
           bse_assert_ok (error);

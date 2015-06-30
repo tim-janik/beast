@@ -519,7 +519,7 @@ Sequencer::process_part_SL (BsePart *part, double start_stamp, uint start_tick,
         {
           BseMidiEvent *event = bse_midi_event_signal (midi_channel,
                                                        bse_dtoull (start_stamp + (node->tick - start_tick) * stamps_per_tick),
-                                                       BseMidiSignalType (cev->ctype), cev->value);
+                                                       Bse::MidiSignalType (cev->ctype), cev->value);
           bse_midi_receiver_push_event (midi_receiver, event);
           SDEBUG ("control:  tick=%llu midisignal=%-3d value=%f now=%llu",
                   uint64 (event->delta_time), cev->ctype, cev->value, Bse::TickStamp::current());

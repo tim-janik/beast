@@ -669,7 +669,7 @@ bse_song_compat_finish (BseSuper       *super,
       BseSource *master = bse_song_ensure_master (self);
       for (node = master ? tracks : NULL; node; node = sfi_ring_walk (node, tracks))
         {
-          BseErrorType error = bse_bus_connect (BSE_BUS (master), (BseItem*) node->data);
+          Bse::ErrorType error = bse_bus_connect (BSE_BUS (master), (BseItem*) node->data);
           if (error)
             sfi_warning ("Failed to connect track %s: %s", bse_object_debug_name (node->data), bse_error_blurb (error));
           clear_undo = TRUE;

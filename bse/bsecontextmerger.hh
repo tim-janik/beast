@@ -24,4 +24,16 @@ struct BseContextMergerClass : BseSourceClass
 void	bse_context_merger_set_merge_context	(BseContextMerger	*self,
 						 guint			 merge_context);
 G_END_DECLS
+
+namespace Bse {
+
+class ContextMergerImpl : public SourceImpl, public virtual ContextMergerIface {
+protected:
+  virtual             ~ContextMergerImpl           ();
+public:
+  explicit             ContextMergerImpl           (BseObject*);
+};
+
+} // Bse
+
 #endif /* __BSE_CONTEXT_MERGER_H__ */

@@ -10,12 +10,12 @@ void			gsl_init	(void);
 /* --- misc --- */
 const gchar* gsl_byte_order_to_string   (guint           byte_order);
 guint        gsl_byte_order_from_string (const gchar    *string);
-BseErrorType gsl_error_from_errno	(gint		 sys_errno,
-					 BseErrorType	 fallback);
-BseErrorType gsl_error_select           (guint           n_errors,
-                                         BseErrorType    first_error,
+Bse::ErrorType gsl_error_from_errno	(gint		 sys_errno,
+					 Bse::ErrorType	 fallback);
+Bse::ErrorType gsl_error_select           (guint           n_errors,
+                                         Bse::ErrorType    first_error,
                                          ...);
-BseErrorType gsl_file_check		(const gchar	*file_name,
+Bse::ErrorType gsl_file_check		(const gchar	*file_name,
 					 const gchar	*mode);
 
 

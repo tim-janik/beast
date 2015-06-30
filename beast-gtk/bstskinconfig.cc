@@ -187,7 +187,7 @@ bst_skin_config_notify (void)
 #include <errno.h>
 #include "topconfig.h"          /* BST_VERSION */
 #include <sfi/sfistore.hh>       /* we rely on internal API here */
-BseErrorType
+Bse::ErrorType
 bst_skin_dump (const gchar *file_name)
 {
   SfiWStore *wstore;
@@ -195,7 +195,7 @@ bst_skin_dump (const gchar *file_name)
   SfiRec *rec;
   gint fd;
 
-  g_return_val_if_fail (file_name != NULL, BSE_ERROR_INTERNAL);
+  g_return_val_if_fail (file_name != NULL, Bse::ERROR_INTERNAL);
 
   sfi_make_dirname_path (file_name);
   fd = open (file_name,
@@ -203,7 +203,7 @@ bst_skin_dump (const gchar *file_name)
              0666);
 
   if (fd < 0)
-    return errno == EEXIST ? BSE_ERROR_FILE_EXISTS : BSE_ERROR_IO;
+    return errno == EEXIST ? Bse::ERROR_FILE_EXISTS : Bse::ERROR_IO;
 
   wstore = sfi_wstore_new ();
 
@@ -229,7 +229,7 @@ bst_skin_dump (const gchar *file_name)
   sfi_wstore_flush_fd (wstore, fd);
   sfi_wstore_destroy (wstore);
 
-  return close (fd) < 0 ? BSE_ERROR_IO : BSE_ERROR_NONE;
+  return close (fd) < 0 ? Bse::ERROR_IO : Bse::ERROR_NONE;
 }
 
 static GTokenType
@@ -257,15 +257,15 @@ skin_file_try_statement (gpointer   context_data,
     return SFI_TOKEN_UNMATCHED;
 }
 
-BseErrorType
+Bse::ErrorType
 bst_skin_parse (const gchar *file_name)
 {
   SfiRStore *rstore;
-  BseErrorType error = BSE_ERROR_NONE;
+  Bse::ErrorType error = Bse::ERROR_NONE;
   gchar *absname;
   gint fd;
 
-  g_return_val_if_fail (file_name != NULL, BSE_ERROR_INTERNAL);
+  g_return_val_if_fail (file_name != NULL, Bse::ERROR_INTERNAL);
 
   absname = sfi_path_get_filename (file_name, NULL);
   fd = open (absname, O_RDONLY, 0);
@@ -273,13 +273,13 @@ bst_skin_parse (const gchar *file_name)
     {
       g_free (absname);
       return (errno == ENOENT || errno == ENOTDIR || errno == ELOOP ?
-              BSE_ERROR_FILE_NOT_FOUND : BSE_ERROR_IO);
+              Bse::ERROR_FILE_NOT_FOUND : Bse::ERROR_IO);
     }
 
   rstore = sfi_rstore_new ();
   sfi_rstore_input_fd (rstore, fd, absname);
   if (sfi_rstore_parse_all (rstore, NULL, skin_file_try_statement, absname) > 0)
-    error = BSE_ERROR_PARSE_ERROR;
+    error = Bse::ERROR_PARSE_ERROR;
   sfi_rstore_destroy (rstore);
   close (fd);
   g_free (absname);

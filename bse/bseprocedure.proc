@@ -44,7 +44,7 @@ PROCEDURE (bse-note-to-freq, "Note to Freq") {
   /* set out params */
   sfi_value_set_real (out_values++, freq);
 
-  return BSE_ERROR_NONE;
+  return Bse::ERROR_NONE;
 }
 
 PROCEDURE (bse-note-from-freq, "Note from Freq") {
@@ -66,7 +66,7 @@ PROCEDURE (bse-note-from-freq, "Note from Freq") {
   /* set out params */
   sfi_value_set_int (out_values++, bse_note_from_freq (musical_tuning, frequency));
 
-  return BSE_ERROR_NONE;
+  return Bse::ERROR_NONE;
 }
 
 PROCEDURE (bse-note-describe, "Describe Note") {
@@ -90,7 +90,7 @@ BODY (BseProcedureClass *proc,
   /* describe note */
   bse_value_take_boxed (out_values++, bse_note_description (musical_tuning, note, fine_tune));
 
-  return BSE_ERROR_NONE;
+  return Bse::ERROR_NONE;
 }
 
 PROCEDURE (bse-note-describe-from-freq, "Describe Note From Freq") {
@@ -117,7 +117,7 @@ BODY (BseProcedureClass *proc,
   note = bse_note_from_freq (musical_tuning, freq);
   bse_value_take_boxed (out_values++, bse_note_description (musical_tuning, note, 0));
 
-  return BSE_ERROR_NONE;
+  return Bse::ERROR_NONE;
 }
 
 PROCEDURE (bse-note-from-string, "Note From String") {
@@ -142,7 +142,7 @@ BODY (BseProcedureClass *proc,
   note = bse_note_from_string (name);
   bse_value_take_boxed (out_values++, bse_note_description (musical_tuning, note, 0));
 
-  return BSE_ERROR_NONE;
+  return Bse::ERROR_NONE;
 }
 
 PROCEDURE (bse-note-construct, "Note Construction") {
@@ -172,7 +172,7 @@ BODY (BseProcedureClass *proc,
   note = BSE_NOTE_GENERIC (octave, semitone);
   bse_value_take_boxed (out_values++, bse_note_description (musical_tuning, note, fine_tune));
 
-  return BSE_ERROR_NONE;
+  return Bse::ERROR_NONE;
 }
 
 PROCEDURE (bse-type-options, "Type Options") {
@@ -189,14 +189,14 @@ PROCEDURE (bse-type-options, "Type Options") {
 
   /* check parameters */
   if (!stype)
-    return BSE_ERROR_PROC_PARAM_INVAL;
+    return Bse::ERROR_PROC_PARAM_INVAL;
 
   type = g_type_from_name (stype);
 
   /* set out params */
   sfi_value_set_string (out_values++, type ? bse_type_get_options (type) : NULL);
 
-  return BSE_ERROR_NONE;
+  return Bse::ERROR_NONE;
 }
 
 PROCEDURE (bse-type-blurb, "Type Blurb") {
@@ -213,14 +213,14 @@ PROCEDURE (bse-type-blurb, "Type Blurb") {
 
   /* check parameters */
   if (!stype)
-    return BSE_ERROR_PROC_PARAM_INVAL;
+    return Bse::ERROR_PROC_PARAM_INVAL;
 
   type = g_type_from_name (stype);
 
   /* set out params */
   sfi_value_set_string (out_values++, type ? bse_type_get_blurb (type) : NULL);
 
-  return BSE_ERROR_NONE;
+  return Bse::ERROR_NONE;
 }
 
 PROCEDURE (bse-type-authors, "Type Authors") {
@@ -237,14 +237,14 @@ PROCEDURE (bse-type-authors, "Type Authors") {
 
   /* check parameters */
   if (!stype)
-    return BSE_ERROR_PROC_PARAM_INVAL;
+    return Bse::ERROR_PROC_PARAM_INVAL;
 
   type = g_type_from_name (stype);
 
   /* set out params */
   sfi_value_set_string (out_values++, type ? bse_type_get_authors (type) : NULL);
 
-  return BSE_ERROR_NONE;
+  return Bse::ERROR_NONE;
 }
 
 PROCEDURE (bse-type-license, "Type License") {
@@ -261,14 +261,14 @@ PROCEDURE (bse-type-license, "Type License") {
 
   /* check parameters */
   if (!stype)
-    return BSE_ERROR_PROC_PARAM_INVAL;
+    return Bse::ERROR_PROC_PARAM_INVAL;
 
   type = g_type_from_name (stype);
 
   /* set out params */
   sfi_value_set_string (out_values++, type ? bse_type_get_license (type) : NULL);
 
-  return BSE_ERROR_NONE;
+  return Bse::ERROR_NONE;
 }
 
 static gdouble
@@ -362,5 +362,5 @@ PROCEDURE (bse-string-extract-number, "String Extract Number") {
         number = str2num (string, 0);
     }
   sfi_value_set_real (out_values++, number);
-  return BSE_ERROR_NONE;
+  return Bse::ERROR_NONE;
 }

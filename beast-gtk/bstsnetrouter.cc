@@ -112,7 +112,7 @@ bst_snet_router_destroy (GtkObject *object)
 
   bst_snet_router_reset_tool (self);
   bst_snet_router_destroy_contents (self);
-  bst_snet_router_set_snet (self, 0);
+  bst_snet_router_set_snet (self, Bse::SNetH());
 
   gxk_action_group_dispose (self->canvas_tool);
   gxk_action_group_dispose (self->channel_toggle);
@@ -132,6 +132,8 @@ bst_snet_router_finalize (GObject *object)
   g_object_unref (self->channel_toggle);
 
   G_OBJECT_CLASS (bst_snet_router_parent_class)->finalize (object);
+  using namespace Bse;
+  self->snet.~SNetH();
 }
 
 static void
@@ -160,7 +162,11 @@ bst_snet_router_update_links (BstSNetRouter   *self,
       guint j, n_joints = bse_source_ichannel_get_n_joints (csource->source, i);
       for (j = 0; j < n_joints; j++)
         {
-          SfiProxy osource = bse_source_ichannel_get_osource (csource->source, i, j);
+          Bse::ObjectH obj = bse_server.from_proxy (csource->source);
+          assert (obj != NULL);
+          Bse::SourceH isource = Bse::SourceH::down_cast (bse_server.from_proxy (csource->source));
+          assert (isource != NULL);
+          SfiProxy osource = isource.ichannel_get_osource (i, j).proxy_id();
           if (!osource)
             continue;
           guint ochannel = bse_source_ichannel_get_ochannel (csource->source, i, j);
@@ -245,11 +251,11 @@ bst_snet_router_queue_link_update (BstSNetRouter   *self,
 }
 
 GtkWidget*
-bst_snet_router_new (SfiProxy snet)
+bst_snet_router_new (Bse::SNetH snet)
 {
   GtkWidget *router;
 
-  g_return_val_if_fail (BSE_IS_SNET (snet), NULL);
+  g_return_val_if_fail (snet != NULL, NULL);
 
   router = gtk_widget_new (BST_TYPE_SNET_ROUTER,
                            "aa", BST_SNET_ANTI_ALIASED,
@@ -281,30 +287,24 @@ bst_snet_router_item_added (BstSNetRouter *self,
 }
 
 void
-bst_snet_router_set_snet (BstSNetRouter *self,
-                          SfiProxy       snet)
+bst_snet_router_set_snet (BstSNetRouter *self, Bse::SNetH snet)
 {
   g_return_if_fail (BST_IS_SNET_ROUTER (self));
-  if (snet)
-    g_return_if_fail (BSE_IS_SNET (snet));
 
   if (self->snet)
     {
       bst_snet_router_destroy_contents (self);
-      bse_proxy_disconnect (self->snet,
+      bse_proxy_disconnect (self->snet.proxy_id(),
                             "any_signal", bst_snet_router_item_added, self,
                             NULL);
-      bse_item_unuse (self->snet);
-      self->snet = 0;
+      self->snet = Bse::SNetH();
     }
   self->snet = snet;
   if (self->snet)
     {
-      bse_item_use (self->snet);      // FIXME: should we hold a use-count on the snet?
-      bse_proxy_connect (self->snet,
+      bse_proxy_connect (self->snet.proxy_id(),
                          "swapped_signal::item_added", bst_snet_router_item_added, self,
                          NULL);
-
       bst_snet_router_update (self);
       bst_snet_router_adjust_region (self);
 #if 0
@@ -328,15 +328,14 @@ bst_router_run_method (gpointer user_data, size_t action_id)
   BstSNetRouter *self = BST_SNET_ROUTER (user_data);
   BseCategory *cat = bse_category_from_id (action_id);
   bst_procedure_exec_auto (cat->type,
-                           "synth-net", SFI_TYPE_PROXY, self->snet,
-                           BSE_IS_CSYNTH (self->snet) ? "custom-synth" : "", SFI_TYPE_PROXY, self->snet,
+                           "synth-net", SFI_TYPE_PROXY, self->snet.proxy_id(),
+                           BSE_IS_CSYNTH (self->snet.proxy_id()) ? "custom-synth" : "", SFI_TYPE_PROXY, self->snet.proxy_id(),
                            NULL);
 }
 
 void
 bst_snet_router_update (BstSNetRouter *self)
 {
-  GnomeCanvasItem *csource;
   GnomeCanvas *canvas;
   BseItemSeq *iseq;
   GSList *slist, *csources = NULL;
@@ -349,7 +348,7 @@ bst_snet_router_update (BstSNetRouter *self)
   /* destroy all canvas sources */
   bst_snet_router_destroy_contents (self);
 
-  if (0)
+#if 0
     {
       /* add canvas source for the snet itself */
       csource = bst_canvas_source_new (GNOME_CANVAS_GROUP (canvas->root), self->snet);
@@ -359,9 +358,10 @@ bst_snet_router_update (BstSNetRouter *self)
                         NULL);
       csources = g_slist_prepend (csources, csource);
     }
+#endif
 
   /* walk all child sources */
-  iseq = bse_container_list_children (self->snet);
+  iseq = bse_container_list_children (self->snet.proxy_id());
   for (i = 0; i < iseq->n_items; i++)
     {
       SfiProxy item = iseq->items[i];
@@ -617,7 +617,7 @@ bst_snet_router_root_event (BstSNetRouter   *self,
                 gxk_status_set (GXK_STATUS_WAIT, _("Create Link"), _("Select input module"));
               handled = TRUE;
             }
-          else if (csource && csource->source != self->snet)
+          else if (csource && csource->source != (SfiProxy) self->snet.proxy_id())
             {
               if (bst_mouse_button_activate2 (event))
                 bst_canvas_source_toggle_info (csource);
@@ -637,9 +637,9 @@ bst_snet_router_root_event (BstSNetRouter   *self,
             }
           else
             {
-              BseErrorType error;
+              Bse::ErrorType error;
               if (!csource || (self->drag_is_input ? ochannel : ichannel) == ~uint (0))
-                error = self->drag_is_input ? BSE_ERROR_SOURCE_NO_SUCH_OCHANNEL : BSE_ERROR_SOURCE_NO_SUCH_ICHANNEL;
+                error = self->drag_is_input ? Bse::ERROR_SOURCE_NO_SUCH_OCHANNEL : Bse::ERROR_SOURCE_NO_SUCH_ICHANNEL;
               else if (self->drag_is_input)
                 error = bse_source_set_input_by_id (self->drag_csource->source, self->drag_channel,
                                                     csource->source, ochannel);
@@ -685,14 +685,14 @@ bst_snet_router_root_event (BstSNetRouter   *self,
                                                 BST_CHOICE (5, _("Show Info"), INFO),
                                                 BST_CHOICE_SUBMENU (_("Output Signal Monitor"), choice, SIGNAL),
                                                 BST_CHOICE_SEPERATOR,
-                                                BST_CHOICE_S (1, _("Delete"), DELETE, csource->source != self->snet),
+                                                BST_CHOICE_S (1, _("Delete"), DELETE, csource->source != (SfiProxy) self->snet.proxy_id()),
                                                 BST_CHOICE_END);
               g_free (source_name);
               int i = bst_choice_modal (choice, event->button.button, event->button.time);
               switch (i)
                 {
                   GtkWidget *dialog;
-                  BseErrorType error;
+                  Bse::ErrorType error;
                 case 2:
                   bst_canvas_source_popup_params (csource);
                   break;
@@ -709,7 +709,7 @@ bst_snet_router_root_event (BstSNetRouter   *self,
                   bst_canvas_source_popup_info (csource);
                   break;
                 case 1:
-                  error = bse_snet_remove_source (self->snet, csource->source);
+                  error = bse_snet_remove_source (self->snet.proxy_id(), csource->source);
                   bst_status_eprintf (error, _("Remove Module"));
                   break;
                 case 0: break;
@@ -738,7 +738,7 @@ bst_snet_router_root_event (BstSNetRouter   *self,
               i = bst_choice_modal (choice, event->button.button, event->button.time);
               switch (i)
                 {
-                  BseErrorType error;
+                  Bse::ErrorType error;
                 case 1:
                   error = bse_source_unset_input_by_id (clink->icsource->source, clink->ichannel,
                                                         clink->ocsource->source, clink->ochannel);
@@ -773,7 +773,7 @@ bst_snet_router_event (GtkWidget *widget,
           ROUTER_TOOL (self) &&
           ROUTER_TOOL (self) != ROUTER_TOOL_CREATE_LINK) /* add new source */
         {
-          BseErrorType error;
+          Bse::ErrorType error;
           BseCategory *cat = bse_category_from_id (ROUTER_TOOL (self));
 
           handled = TRUE;
@@ -781,16 +781,16 @@ bst_snet_router_event (GtkWidget *widget,
                                         event->button.x, event->button.y,
                                         &self->world_x, &self->world_y);
 
-          error = bse_snet_can_create_source (self->snet, cat->type);
+          error = bse_snet_can_create_source (self->snet.proxy_id(), cat->type);
           if (!error)
             {
               SfiProxy module;
-              bse_item_group_undo (self->snet, "Create Module");
-              module = bse_snet_create_source (self->snet, cat->type);
+              bse_item_group_undo (self->snet.proxy_id(), "Create Module");
+              module = bse_snet_create_source (self->snet.proxy_id(), cat->type);
               bse_source_set_pos (module,
                                   self->world_x / BST_CANVAS_SOURCE_PIXEL_SCALE,
                                   self->world_y / -BST_CANVAS_SOURCE_PIXEL_SCALE);
-              bse_item_ungroup_undo (self->snet);
+              bse_item_ungroup_undo (self->snet.proxy_id());
             }
           if (BST_SNET_EDIT_FALLBACK)
             gxk_action_group_select (self->canvas_tool, ROUTER_TOOL_EDIT);
@@ -930,7 +930,7 @@ snet_router_action_exec (gpointer        user_data,
 }
 
 BstSNetRouter*
-bst_snet_router_build_page (SfiProxy snet)
+bst_snet_router_build_page (Bse::SNetH snet)
 {
   static const char *zoom_xpm[] = {
     "12 12 2 1", "  c None", "# c #000000",
@@ -953,7 +953,7 @@ bst_snet_router_build_page (SfiProxy snet)
   GdkBitmap *mask;
   GxkRadget *radget;
 
-  g_return_val_if_fail (BSE_IS_SNET (snet), NULL);
+  g_return_val_if_fail (snet != NULL, NULL);
 
   /* main radget */
   radget = gxk_radget_create ("beast", "snet-view", NULL);
@@ -997,6 +997,7 @@ bst_snet_router_build_page (SfiProxy snet)
 static void
 bst_snet_router_init (BstSNetRouter      *self)
 {
+  new (&self->snet) Bse::SNetH();
   GnomeCanvas *canvas = GNOME_CANVAS (self);
   GxkActionList *al1, *al2, *canvas_modules, *toolbar_modules, *palette_modules;
   BseCategorySeq *cseq;
@@ -1004,7 +1005,6 @@ bst_snet_router_init (BstSNetRouter      *self)
 
   self->palette = NULL;
   self->adjustment = NULL;
-  self->snet = 0;
   self->world_x = 0;
   self->world_y = 0;
   self->drag_is_input = FALSE;

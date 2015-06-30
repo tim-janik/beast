@@ -233,17 +233,17 @@ bst_msg_absorb_config_box_get (GtkWidget *self)
 #include "topconfig.h"          /* BST_VERSION */
 #include <sfi/sfistore.hh>       /* we rely on internal API here */
 
-static BseErrorType
+static Bse::ErrorType
 bst_msg_absorb_config_dump (const gchar *file_name)
 {
-  g_return_val_if_fail (file_name != NULL, BSE_ERROR_INTERNAL);
+  g_return_val_if_fail (file_name != NULL, Bse::ERROR_INTERNAL);
 
   sfi_make_dirname_path (file_name);
   gint fd = open (file_name,
                   O_WRONLY | O_CREAT | O_TRUNC, /* O_EXCL, */
                   0666);
   if (fd < 0)
-    return errno == EEXIST ? BSE_ERROR_FILE_EXISTS : BSE_ERROR_IO;
+    return errno == EEXIST ? Bse::ERROR_FILE_EXISTS : Bse::ERROR_IO;
 
   SfiWStore *wstore = sfi_wstore_new ();
 
@@ -262,16 +262,16 @@ bst_msg_absorb_config_dump (const gchar *file_name)
   sfi_wstore_flush_fd (wstore, fd);
   sfi_wstore_destroy (wstore);
 
-  return close (fd) < 0 ? BSE_ERROR_IO : BSE_ERROR_NONE;
+  return close (fd) < 0 ? Bse::ERROR_IO : Bse::ERROR_NONE;
 }
 
 void
 bst_msg_absorb_config_save (void)
 {
   gchar *file_name = BST_STRDUP_ABSORBRC_FILE();
-  BseErrorType error = bst_msg_absorb_config_dump (file_name);
+  Bse::ErrorType error = bst_msg_absorb_config_dump (file_name);
   if (error)
-    sfi_diag ("Failed to save config-file \"%s\": %s", file_name, bse_error_blurb (error));
+    sfi_diag ("Failed to save config-file \"%s\": %s", file_name, Bse::error_blurb (error));
   g_free (file_name);
 }
 
@@ -297,10 +297,10 @@ msg_absorb_config_try_statement (gpointer   context_data,
     return SFI_TOKEN_UNMATCHED;
 }
 
-static BseErrorType
+static Bse::ErrorType
 bst_msg_absorb_config_parse (const gchar *file_name)
 {
-  g_return_val_if_fail (file_name != NULL, BSE_ERROR_INTERNAL);
+  g_return_val_if_fail (file_name != NULL, Bse::ERROR_INTERNAL);
 
   gchar *absname = sfi_path_get_filename (file_name, NULL);
   gint fd = open (absname, O_RDONLY, 0);
@@ -308,14 +308,14 @@ bst_msg_absorb_config_parse (const gchar *file_name)
     {
       g_free (absname);
       return (errno == ENOENT || errno == ENOTDIR || errno == ELOOP ?
-              BSE_ERROR_FILE_NOT_FOUND : BSE_ERROR_IO);
+              Bse::ERROR_FILE_NOT_FOUND : Bse::ERROR_IO);
     }
 
   SfiRStore *rstore = sfi_rstore_new ();
   sfi_rstore_input_fd (rstore, fd, absname);
-  BseErrorType error = BSE_ERROR_NONE;
+  Bse::ErrorType error = Bse::ERROR_NONE;
   if (sfi_rstore_parse_all (rstore, NULL, msg_absorb_config_try_statement, absname) > 0)
-    error = BSE_ERROR_PARSE_ERROR;
+    error = Bse::ERROR_PARSE_ERROR;
   sfi_rstore_destroy (rstore);
   close (fd);
   g_free (absname);
@@ -370,9 +370,9 @@ void
 bst_msg_absorb_config_load (void)
 {
   gchar *file_name = BST_STRDUP_ABSORBRC_FILE();
-  BseErrorType error = bst_msg_absorb_config_parse (file_name);
+  Bse::ErrorType error = bst_msg_absorb_config_parse (file_name);
   if (0 && error)
-    sfi_diag ("Failed to load config-file \"%s\": %s", file_name, bse_error_blurb (error));
+    sfi_diag ("Failed to load config-file \"%s\": %s", file_name, Bse::error_blurb (error));
   g_free (file_name);
   msg_absorb_config_loaded = TRUE;
   /* filter aged strings */

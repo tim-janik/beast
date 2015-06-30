@@ -94,7 +94,7 @@ eparam_changed (gpointer  data,
   BstPartDialog *self = BST_PART_DIALOG (data);
   if (self->eroll)
     {
-      BseMidiSignalType midi_signal_type = bse_midi_signal_type_from_choice (sfi_value_get_choice (&param->value));
+      Bse::MidiSignalType midi_signal_type = Rapicorn::Aida::enum_value_from_string<Bse::MidiSignalType> (sfi_value_get_choice (&param->value));
       bst_event_roll_set_control_type (self->eroll, midi_signal_type);
       gxk_widget_update_actions (self); /* update controllers */
     }
@@ -103,12 +103,12 @@ eparam_changed (gpointer  data,
 static void
 bst_part_dialog_init (BstPartDialog *self)
 {
+  new (&self->project) Bse::ProjectH();
   GtkRange *srange;
   BseCategorySeq *cseq;
   GxkActionList *al1;
   GtkObject *adjustment;
   GtkAdjustment *adj;
-  GParamSpec *pspec;
   GxkRadget *radget;
 
   /* configure self */
@@ -200,16 +200,18 @@ bst_part_dialog_init (BstPartDialog *self)
   /* event roll children */
   g_object_new (GTK_TYPE_LABEL, "visible", TRUE, "label", "C", "parent", self->eroll, NULL);
 
-  /* event roll control type */
-  pspec = bst_procedure_ref_pspec ("BsePart+change-control", "control-type");
-  if (pspec)
+  // event roll control type
+  static GParamSpec *control_type_pspec =
+    g_param_spec_ref (sfi_pspec_choice ("control_type", NULL, NULL, "MIDI_SIGNAL_PITCH_BEND",
+                                        Bse::choice_values_from_enum<Bse::MidiSignalType>(),
+                                        ":r:w:S:G:"));
+  if (control_type_pspec)
     {
-      GxkParam *param = gxk_param_new_value (pspec, eparam_changed, self);
+      GxkParam *param = gxk_param_new_value (control_type_pspec, eparam_changed, self);
       GtkWidget *rwidget = gxk_param_create_editor (param, "choice-button");
       gxk_radget_add (radget, "event-roll-control-area", rwidget);
       g_object_connect (radget, "swapped_signal::destroy", gxk_param_destroy, param, NULL);
-      g_param_spec_unref (pspec);
-      sfi_value_set_choice (&param->value, bse_midi_signal_type_to_choice (BSE_MIDI_SIGNAL_VELOCITY));
+      sfi_value_set_choice (&param->value, Rapicorn::Aida::enum_value_to_string<Bse::MidiSignalType> (Bse::MIDI_SIGNAL_VELOCITY).c_str());
       gxk_param_apply_value (param); /* update model, auto updates GUI */
     }
 
@@ -248,45 +250,42 @@ bst_part_dialog_finalize (GObject *object)
 {
   BstPartDialog *self = BST_PART_DIALOG (object);
 
-  bst_part_dialog_set_proxy (self, 0);
+  bst_part_dialog_set_part (self);
 
   bst_piano_roll_controller_unref (self->pctrl);
   bst_event_roll_controller_unref (self->ectrl);
 
   G_OBJECT_CLASS (bst_part_dialog_parent_class)->finalize (object);
+  using namespace Bse;
+  self->project.~ProjectH();
 }
 
 void
-bst_part_dialog_set_proxy (BstPartDialog *self,
-			   SfiProxy       part)
+bst_part_dialog_set_part (BstPartDialog *self, Bse::PartH part)
 {
-  SfiProxy project;
-
   g_return_if_fail (BST_IS_PART_DIALOG (self));
-  if (part)
-    g_return_if_fail (BSE_IS_PART (part));
 
   if (self->project)
     {
-      bse_proxy_disconnect (self->project,
+      bse_proxy_disconnect (self->project.proxy_id(),
                             "any_signal", gxk_widget_update_actions_downwards, self,
                             NULL);
-      self->project = 0;
+      self->project = Bse::ProjectH();
     }
 
-  project = part ? bse_item_get_project (part) : 0;
-
+  SfiProxy projectid = part ? bse_item_get_project (part.proxy_id()) : 0;
+  Bse::ProjectH project = Bse::ProjectH::down_cast (bse_server.from_proxy (projectid));
   if (project)
     {
-      bst_window_sync_title_to_proxy (GXK_DIALOG (self), part, "%s");
+      bst_window_sync_title_to_proxy (GXK_DIALOG (self), part.proxy_id(), "%s");
       if (self->pview)
-        bst_pattern_view_set_proxy (self->pview, part);
+        bst_pattern_view_set_part (self->pview, part);
       if (self->proll)
-        bst_piano_roll_set_proxy (self->proll, part);
+        bst_piano_roll_set_part (self->proll, part);
       if (self->eroll)
-        bst_event_roll_set_proxy (self->eroll, part);
+        bst_event_roll_set_part (self->eroll, part);
       self->project = project;
-      bse_proxy_connect (self->project,
+      bse_proxy_connect (self->project.proxy_id(),
                          "swapped_signal::property-notify::dirty", gxk_widget_update_actions_downwards, self,
                          NULL);
     }
@@ -323,16 +322,15 @@ event_canvas_clicked (BstEventRoll           *eroll,
 }
 
 static void
-part_dialog_run_script_proc (gpointer                data,
-                             size_t                  category_id)
+part_dialog_run_script_proc (gpointer data, size_t category_id)
 {
   BstPartDialog *self = BST_PART_DIALOG (data);
   BseCategory *cat = bse_category_from_id (category_id);
-  SfiProxy part = self->proll->proxy;
+  Bse::PartH part = self->proll->part;
 
   bst_procedure_exec_auto (cat->type,
-                           "project", SFI_TYPE_PROXY, bse_item_get_project (part),
-                           "part", SFI_TYPE_PROXY, part,
+                           "project", SFI_TYPE_PROXY, bse_item_get_project (part.proxy_id()),
+                           "part", SFI_TYPE_PROXY, part.proxy_id(),
                            NULL);
 }
 
@@ -353,11 +351,11 @@ part_dialog_action_check (gpointer data,
       return (bst_piano_roll_controller_clipboard_full (self->pctrl) ||
               bst_event_roll_controller_clipboard_full (self->ectrl));
     case ACTION_UNDO:
-      return self->project && bse_project_undo_depth (self->project) > 0;
+      return self->project && self->project.undo_depth() > 0;
     case ACTION_REDO:
-      return self->project && bse_project_redo_depth (self->project) > 0;
+      return self->project && self->project.redo_depth() > 0;
     case ACTION_CLEAR_UNDO:
-      return self->project && bse_project_undo_depth (self->project) + bse_project_redo_depth (self->project) > 0;
+      return self->project && self->project.undo_depth() + self->project.redo_depth() > 0;
       /* tools */
     case BST_COMMON_ROLL_TOOL_INSERT:
     case BST_COMMON_ROLL_TOOL_RESIZE:
@@ -403,13 +401,13 @@ part_dialog_action_exec (gpointer data,
       bst_event_roll_controller_paste (self->ectrl);
       break;
     case ACTION_UNDO:
-      bse_item_undo (self->proll->proxy);
+      bse_item_undo (self->proll->part.proxy_id());
       break;
     case ACTION_REDO:
-      bse_item_redo (self->proll->proxy);
+      bse_item_redo (self->proll->part.proxy_id());
       break;
     case ACTION_CLEAR_UNDO:
-      bse_item_clear_undo (self->proll->proxy);
+      bse_item_clear_undo (self->proll->part.proxy_id());
       break;
     default:
       break;

@@ -587,7 +587,7 @@ bse_plugin_check_load (const gchar *const_file_name)
       gint fd = open (const_file_name, O_RDONLY, 0);
       if (fd < 0)
         return (errno == ENOENT || errno == ENOTDIR || errno == ELOOP ?
-                bse_error_blurb (BSE_ERROR_FILE_NOT_FOUND) :
+                bse_error_blurb (Bse::ERROR_FILE_NOT_FOUND) :
                 "Unable to access plugin");
 
       /* and search libtool's dlname specification */

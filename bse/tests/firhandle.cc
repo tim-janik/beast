@@ -163,7 +163,7 @@ test_with_sine_sweep (FirHandleType type)
       fir_handle_cos = bse_data_handle_new_fir_lowpass (ihandle_cos, 6000.0, order);
     }
 
-  BseErrorType error;
+  Bse::ErrorType error;
   error = gsl_data_handle_open (fir_handle_sin);
   TASSERT (error == 0);
   error = gsl_data_handle_open (fir_handle_cos);
@@ -319,7 +319,7 @@ test_multi_channel (FirHandleType type)
       else
 	fir_handle = bse_data_handle_new_fir_lowpass (ihandle, cutoff_freq, order);
 
-      BseErrorType error;
+      Bse::ErrorType error;
       error = gsl_data_handle_open (fir_handle);
       TASSERT (error == 0);
 
@@ -365,7 +365,7 @@ test_seek (FirHandleType type)
       else
 	fir_handle = bse_data_handle_new_fir_lowpass (ihandle, cutoff_freq, order);
 
-      BseErrorType error;
+      Bse::ErrorType error;
       error = gsl_data_handle_open (fir_handle);
       TASSERT (error == 0);
 

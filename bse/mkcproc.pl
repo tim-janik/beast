@@ -254,7 +254,7 @@ while (<>) {
 	$last_node = "(BseExportNode*) &__enode_". ncanon ($proc_name);
 
 	print "#line $line \"$file\"\n$1 }\n";
-	print "static BseErrorType\n";
+	print "static Bse::ErrorType\n";
 	print "#line $line \"$file\"\n";
 	print ncanon ($proc_name) . "_exec (" . $2 . ")\n";
 	

@@ -66,9 +66,9 @@ guint                        bst_key_binding_lookup_id    (BstKeyBinding        
 void                         bst_key_binding_set_item_seq (BstKeyBinding *kbinding, const Bst::KeyBindingItemSeq &seq);
 Bst::KeyBindingItemSeq*  bst_key_binding_get_new_item_seq (BstKeyBinding *kbinding);
 const gchar*                 bst_key_binding_rcfile       (void);
-BseErrorType                 bst_key_binding_dump         (const gchar                 *file_name,
+Bse::ErrorType                 bst_key_binding_dump         (const gchar                 *file_name,
                                                            GSList                      *kbindings);
-BseErrorType                 bst_key_binding_parse        (const gchar                 *file_name,
+Bse::ErrorType                 bst_key_binding_parse        (const gchar                 *file_name,
                                                            GSList                      *kbindings);
 GParamSpec*                  bst_key_binding_item_pspec   (void);
 

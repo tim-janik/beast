@@ -36,15 +36,13 @@ struct BseServerClass : BseContainerClass
 {};
 
 BseServer*	bse_server_get				(void);
-BseProject*	bse_server_create_project		(BseServer	*server,
-							 const gchar	*name);
 BseProject*	bse_server_find_project			(BseServer	*server,
 							 const gchar	*name);
 void    	bse_server_stop_recording		(BseServer	*server);
 void            bse_server_start_recording              (BseServer      *server,
                                                          const char     *wave_file,
                                                          double          n_seconds);
-BseErrorType	bse_server_open_devices			(BseServer	*server);
+Bse::ErrorType	bse_server_open_devices			(BseServer	*server);
 void		bse_server_close_devices		(BseServer	*server);
 BseModule*	bse_server_retrieve_pcm_output_module	(BseServer	*server,
 							 BseSource	*source,
@@ -84,7 +82,7 @@ void		bse_server_script_error			(BseServer	    *server,
 							 const gchar	    *script_name,
 							 const gchar	    *proc_name,
 							 const gchar        *reason);
-BseErrorType	bse_server_run_remote			(BseServer	    *server,
+Bse::ErrorType	bse_server_run_remote			(BseServer	    *server,
 							 const gchar	    *process_name,
 							 SfiRing	    *params,
 							 const gchar        *script_name,
@@ -100,9 +98,8 @@ namespace Bse {
 
 class ServerImpl : public virtual ServerIface, public virtual ObjectImpl {
   TestObjectImplP    test_object_;
-  friend class FriendAllocator<ServerImpl>;     // provide make_shared for non-public ctor
 protected:
-  virtual           ~ServerImpl ();
+  virtual                 ~ServerImpl ();
 public:
   explicit                 ServerImpl       (BseObject*);
   virtual TestObjectIfaceP get_test_object  () override;
@@ -119,6 +116,16 @@ public:
   virtual String        get_version         () override;
   virtual String        get_custom_effect_dir () override;
   virtual String        get_custom_instrument_dir () override;
+  virtual void   save_preferences        () override;
+  virtual void   register_ladspa_plugins () override;
+  virtual void   register_core_plugins   () override;
+  virtual void   start_recording         (const String &wave_file, double n_seconds) override;
+  virtual void   register_scripts        () override;
+  virtual bool   preferences_locked      () override;
+  virtual int    n_scripts               () override;
+  virtual bool   can_load                (const String &file_name) override;
+  virtual ProjectIfaceP create_project   (const String &project_name) override;
+  virtual void          destroy_project  (ProjectIface &project) override;
   void                  send_user_message   (const UserMessage &umsg);
   static ServerImpl&    instance            ();
 };

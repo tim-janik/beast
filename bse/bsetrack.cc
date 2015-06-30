@@ -242,8 +242,9 @@ track_uncross_part (BseItem *owner,
       {
         guint tick = self->entries_SL[i].tick;
 	XREF_DEBUG ("uncrossing[start]: %p %p (%d)", self, part, tick);
-        /* delete track via procedure so deletion is recorded to undo */
-        bse_item_exec_void (owner, "remove-tick", tick);
+        // delete track via TrackImpl so deletion is recorded to undo
+        Bse::TrackImpl *track = owner->as<Bse::TrackImpl*>();
+        track->remove_tick (tick);
 	XREF_DEBUG ("uncrossing[done]: %p %p (%d)", self, part, tick);
 	return;
       }
@@ -579,8 +580,8 @@ bse_track_insert_part (BseTrack *self,
 {
   BseTrackEntry *entry;
 
-  g_return_val_if_fail (BSE_IS_TRACK (self), BSE_ERROR_INTERNAL);
-  g_return_val_if_fail (BSE_IS_PART (part), BSE_ERROR_INTERNAL);
+  g_return_val_if_fail (BSE_IS_TRACK (self), 0);
+  g_return_val_if_fail (BSE_IS_PART (part), 0);
 
   entry = track_lookup_entry (self, tick);
   if (entry && entry->tick == tick)
@@ -635,9 +636,9 @@ bse_track_list_parts_intern (BseTrack *self,
 	  tp.part = entry->part;
 	  if (song)
 	    bse_song_get_timing (song, tp.tick, &timing);
-	  tp.duration = MAX (timing.tpt, entry->part->last_tick_SL);
+	  tp.duration = MAX (uint (timing.tpt), entry->part->last_tick_SL);
 	  if (i + 1 < self->n_entries_SL)
-	    tp.duration = MIN (tp.duration, entry[1].tick - entry->tick);
+	    tp.duration = MIN (uint (tp.duration), entry[1].tick - entry->tick);
 	  bse_track_part_seq_append (tps, &tp);
 	}
     }
@@ -1056,3 +1057,49 @@ bse_track_class_init (BseTrackClass *klass)
                                                     BSE_TYPE_ITEM_SEQ, SFI_PARAM_GUI ":item-sequence"));
   signal_changed = bse_object_class_add_asignal (object_class, "changed", G_TYPE_NONE, 0);
 }
+
+namespace Bse {
+
+TrackImpl::TrackImpl (BseObject *bobj) :
+  ContextMergerImpl (bobj)
+{}
+
+TrackImpl::~TrackImpl ()
+{}
+
+int
+TrackImpl::insert_part (int tick, PartIface &parti)
+{
+  BseTrack *self = as<BseTrack*>();
+  PartImpl &part = dynamic_cast<PartImpl&> (parti);
+  assert_return (parent() != NULL && parent() == part.parent(), 0); // parent is SongImpl
+  uint id = bse_track_insert_part (self, tick, part.as<BsePart*>());
+  if (id)
+    {
+      // can't use remove_link() here, since id will have changed after undo
+      push_undo ("Insert Part", *this, &TrackImpl::remove_tick, tick);
+    }
+  return id;
+}
+
+void
+TrackImpl::remove_tick (int tick)
+{
+  BseTrack *self = as<BseTrack*>();
+  BseTrackEntry *entry = bse_track_lookup_tick (self, tick);
+  if (entry)
+    {
+      // undoing part removal needs an undo_descriptor b/c future deletions may invalidate the part handle
+      const uint utick = entry->tick;
+      UndoDescriptor<PartImpl> part_descriptor = undo_descriptor (*entry->part->as<PartImpl*>());
+      auto lambda = [utick, part_descriptor] (TrackImpl &self, BseUndoStack *ustack) -> ErrorType {
+        PartImpl &part = self.undo_resolve (part_descriptor);
+        const uint id = self.insert_part (utick, part);
+        return id ? ERROR_NONE : ERROR_INVALID_OVERLAP;
+      };
+      bse_track_remove_tick (self, tick);
+      push_undo ("Remove Tick", *this, lambda);
+    }
+}
+
+} // Bse

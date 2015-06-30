@@ -595,7 +595,7 @@ bglue_iface_children (SfiGlueContext *context,
   return childnames;
 }
 
-static BseErrorType
+static Bse::ErrorType
 bglue_marshal_proc (void              *marshal_data,
 		    BseProcedureClass *proc,
 		    const GValue      *ivalues,
@@ -618,7 +618,7 @@ bglue_exec_proc (SfiGlueContext *context,
       GValue *ovalues = g_new0 (GValue, proc->n_out_pspecs);
       GSList *ilist = NULL, *olist = NULL, *clearlist = NULL;
       uint i, sl = sfi_seq_length (params);
-      BseErrorType error;
+      Bse::ErrorType error;
 
       for (i = 0; i < proc->n_in_pspecs; i++)
 	{
@@ -1026,7 +1026,8 @@ bglue_proxy_request_notify (SfiGlueContext *context,
 	  else
 	    p->closures = slist->next;
 	  g_slist_free_1 (slist);
-	  g_signal_handler_disconnect (item, bclosure->handler_id);
+          if (g_signal_handler_is_connected (item, bclosure->handler_id))
+            g_signal_handler_disconnect (item, bclosure->handler_id);
 	  g_closure_invalidate (closure);
 	  g_closure_unref (closure);
 	  return FALSE;

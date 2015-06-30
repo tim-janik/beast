@@ -103,4 +103,16 @@ void          bse_container_debug_tree          (BseContainer    *container);
 
 G_END_DECLS
 
+namespace Bse {
+
+class ContainerImpl : public SourceImpl, public virtual ContainerIface {
+protected:
+  virtual           ~ContainerImpl         ();
+public:
+  explicit           ContainerImpl  (BseObject*);
+  virtual ItemIfaceP lookup_item    (const String &uname) override;
+};
+
+} // Bse
+
 #endif /* __BSE_CONTAINER_H__ */

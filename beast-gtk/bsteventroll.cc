@@ -77,14 +77,14 @@ event_roll_class_setup_skin (BstEventRollClass *klass)
 static void
 bst_event_roll_init (BstEventRoll *self)
 {
+  new (&self->part) Bse::PartH();
   GtkWidget *widget = GTK_WIDGET (self);
 
   GTK_WIDGET_UNSET_FLAGS (self, GTK_NO_WINDOW);
   GTK_WIDGET_SET_FLAGS (self, GTK_CAN_FOCUS);
   gtk_widget_set_double_buffered (widget, FALSE);
 
-  self->proxy = 0;
-  self->control_type = BSE_MIDI_SIGNAL_CONTINUOUS_7; /* valoume */
+  self->control_type = Bse::MIDI_SIGNAL_CONTINUOUS_7; /* volume */
   self->ppqn = 384;	/* default Parts (clock ticks) Per Quarter Note */
   self->qnpt = 1;
   self->max_ticks = 1;
@@ -105,7 +105,7 @@ bst_event_roll_destroy (GtkObject *object)
 {
   BstEventRoll *self = BST_EVENT_ROLL (object);
 
-  bst_event_roll_set_proxy (self, 0);
+  bst_event_roll_set_part (self);
 
   GTK_OBJECT_CLASS (bst_event_roll_parent_class)->destroy (object);
 }
@@ -115,7 +115,7 @@ bst_event_roll_dispose (GObject *object)
 {
   BstEventRoll *self = BST_EVENT_ROLL (object);
 
-  bst_event_roll_set_proxy (self, 0);
+  bst_event_roll_set_part (self);
 
   G_OBJECT_CLASS (bst_event_roll_parent_class)->dispose (object);
 }
@@ -125,11 +125,13 @@ bst_event_roll_finalize (GObject *object)
 {
   BstEventRoll *self = BST_EVENT_ROLL (object);
 
-  bst_event_roll_set_proxy (self, 0);
+  bst_event_roll_set_part (self);
 
   bst_ascii_pixbuf_unref ();
 
   G_OBJECT_CLASS (bst_event_roll_parent_class)->finalize (object);
+  using namespace Bse;
+  self->part.~PartH();
 }
 
 static void
@@ -338,7 +340,6 @@ event_roll_draw_canvas (GxkScrollCanvas *scc,
   guint8 *dash, dashes[3] = { 1, 1, 0 }; // long: { 2, 2, 0 };
   GdkGC *draw_gc, *dark_gc;
   int dlen, line_width = 0; /* line widths != 0 interfere with dash-settings on some X servers */
-  BsePartControlSeq *cseq;
   gint range, mid = event_roll_scale_range (self, &range);
   gint x, xbound, width, height;
   GXK_SCROLL_CANVAS_CLASS (bst_event_roll_parent_class)->draw_canvas (scc, drawable, area);
@@ -375,20 +376,20 @@ event_roll_draw_canvas (GxkScrollCanvas *scc,
 
   /* draw controls */
   dark_gc = STYLE (self)->dark_gc[GTK_STATE_NORMAL];
-  cseq = self->proxy ? bse_part_list_controls (self->proxy,
-                                               coord_to_tick (self, x, FALSE),
-                                               coord_to_tick (self, xbound, FALSE),
-                                               self->control_type) : NULL;
-  for (uint i = 0; cseq && i < cseq->n_pcontrols; i++)
+  Bse::PartH part = self->part;
+  Bse::PartControlSeq cseq;
+  if (part)
+    cseq = part.list_controls (coord_to_tick (self, x, false), coord_to_tick (self, xbound, false), self->control_type);
+  for (size_t i = 0; i < cseq.size(); i++)
     {
-      BsePartControl *pctrl = cseq->pcontrols[i];
-      guint tick = pctrl->tick;
+      const Bse::PartControl &pctrl = cseq[i];
+      guint tick = pctrl.tick;
       GdkGC *xdark_gc, *xlight_gc, *xval_gc;
       gint x1, x2, y1, y2;
-      gboolean selected = pctrl->selected;
+      gboolean selected = pctrl.selected;
 
-      selected |= (uint (pctrl->tick) >= self->selection_tick &&
-		   uint (pctrl->tick) < self->selection_tick + self->selection_duration);
+      selected |= (uint (pctrl.tick) >= self->selection_tick &&
+		   uint (pctrl.tick) < self->selection_tick + self->selection_duration);
       if (selected)
 	{
 	  xdark_gc = STYLE (self)->bg_gc[GTK_STATE_SELECTED];
@@ -398,9 +399,9 @@ event_roll_draw_canvas (GxkScrollCanvas *scc,
       else
 	{
 	  xdark_gc = dark_gc;
-          if (ABS (pctrl->value) < 0.00001)
+          if (ABS (pctrl.value) < 0.00001)
             xval_gc = COLOR_GC_ZERO (self);
-          else if (pctrl->value < 0)
+          else if (pctrl.value < 0)
             xval_gc = COLOR_GC_NEGATIVE (self);
           else
             xval_gc = COLOR_GC_POSITIVE (self);
@@ -409,17 +410,17 @@ event_roll_draw_canvas (GxkScrollCanvas *scc,
       x1 = tick_to_coord (self, tick);
       x2 = x1 + XTHICKNESS (self);
       x1 = MAX (0, x1 - XTHICKNESS (self));
-      if (pctrl->value * range > 0)
+      if (pctrl.value * range > 0)
         {
-          y1 = mid - MAX (YTHICKNESS (self), range * pctrl->value);
+          y1 = mid - MAX (YTHICKNESS (self), range * pctrl.value);
           y2 = mid + YTHICKNESS (self);
         }
-      else if (pctrl->value * range < 0)
+      else if (pctrl.value * range < 0)
         {
           y1 = mid - YTHICKNESS (self);
-          y2 = mid + MAX (YTHICKNESS (self), range * -pctrl->value);
+          y2 = mid + MAX (YTHICKNESS (self), range * -pctrl.value);
         }
-      else /* pctrl->value * range == 0 */
+      else /* pctrl.value * range == 0 */
         {
           y1 = mid - YTHICKNESS (self);
           y2 = mid + YTHICKNESS (self);
@@ -568,7 +569,7 @@ static void
 event_roll_range_changed (BstEventRoll *self)
 {
   guint max_ticks;
-  bse_proxy_get (self->proxy, "last-tick", &max_ticks, NULL);
+  bse_proxy_get (self->part.proxy_id(), "last-tick", &max_ticks, NULL);
   bst_event_roll_hsetup (self, self->ppqn, self->qnpt, self->max_ticks, self->hzoom);
 }
 
@@ -597,34 +598,24 @@ event_roll_update (BstEventRoll *self,
 static void
 event_roll_unset_proxy (BstEventRoll *self)
 {
-  bst_event_roll_set_proxy (self, 0);
+  bst_event_roll_set_part (self);
 }
 
 void
-bst_event_roll_set_proxy (BstEventRoll *self,
-			  SfiProxy      proxy)
+bst_event_roll_set_part (BstEventRoll *self, Bse::PartH part)
 {
   g_return_if_fail (BST_IS_EVENT_ROLL (self));
-  if (proxy)
-    {
-      g_return_if_fail (BSE_IS_ITEM (proxy));
-      g_return_if_fail (bse_item_get_project (proxy) != 0);
-    }
 
-  if (self->proxy)
+  if (self->part)
+    bse_proxy_disconnect (self->part.proxy_id(),
+                          "any-signal", event_roll_unset_proxy, self,
+                          "any-signal", event_roll_range_changed, self,
+                          "any-signal", event_roll_update, self,
+                          NULL);
+  self->part = part;
+  if (self->part)
     {
-      bse_proxy_disconnect (self->proxy,
-			    "any-signal", event_roll_unset_proxy, self,
-                            "any-signal", event_roll_range_changed, self,
-			    "any-signal", event_roll_update, self,
-			    NULL);
-      bse_item_unuse (self->proxy);
-    }
-  self->proxy = proxy;
-  if (self->proxy)
-    {
-      bse_item_use (self->proxy);
-      bse_proxy_connect (self->proxy,
+      bse_proxy_connect (self->part.proxy_id(),
 			 "swapped-signal::release", event_roll_unset_proxy, self,
                          "swapped-signal::property-notify::last-tick", event_roll_range_changed, self,
 			 "swapped-signal::range-changed", event_roll_update, self,
@@ -650,8 +641,8 @@ event_roll_queue_region (BstEventRoll *self,
 			 guint         tick,
 			 guint         duration)
 {
-  if (self->proxy && duration)
-    bse_part_queue_controls (self->proxy, tick, duration);
+  if (self->part && duration)
+    self->part.queue_controls (tick, duration);
   event_roll_update (self, tick, duration);
 }
 
@@ -706,7 +697,7 @@ bst_event_roll_set_view_selection (BstEventRoll *self,
 }
 
 void
-bst_event_roll_set_control_type (BstEventRoll *self, BseMidiSignalType control_type)
+bst_event_roll_set_control_type (BstEventRoll *self, Bse::MidiSignalType control_type)
 {
   g_return_if_fail (BST_IS_EVENT_ROLL (self));
 

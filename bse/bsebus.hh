@@ -35,11 +35,11 @@ struct BseBusClass : BseSubSynthClass
 {};
 
 /* --- API --- */
-BseErrorType    bse_bus_connect                 (BseBus         *self,
+Bse::ErrorType    bse_bus_connect                 (BseBus         *self,
                                                  BseItem        *item);
-BseErrorType    bse_bus_connect_unchecked       (BseBus         *self,
+Bse::ErrorType    bse_bus_connect_unchecked       (BseBus         *self,
                                                  BseItem        *item);
-BseErrorType    bse_bus_disconnect              (BseBus         *self,
+Bse::ErrorType    bse_bus_disconnect              (BseBus         *self,
                                                  BseItem        *item);
 SfiRing*        bse_bus_list_inputs             (BseBus         *self);
 SfiRing*        bse_bus_list_outputs            (BseBus         *self);
@@ -47,11 +47,11 @@ gboolean        bse_bus_get_stack               (BseBus         *self,
                                                  BseContainer  **snet,
                                                  BseSource     **vin,
                                                  BseSource     **vout);
-BseErrorType    bse_bus_insert_slot             (BseBus         *self,
+Bse::ErrorType    bse_bus_insert_slot             (BseBus         *self,
                                                  guint           slot);
-BseErrorType    bse_bus_delete_slot             (BseBus         *self,
+Bse::ErrorType    bse_bus_delete_slot             (BseBus         *self,
                                                  guint           slot);
-BseErrorType    bse_bus_replace_effect          (BseBus         *self,
+Bse::ErrorType    bse_bus_replace_effect          (BseBus         *self,
                                                  guint           slot,
                                                  const gchar    *etype);
 void            bse_bus_change_solo             (BseBus         *self,

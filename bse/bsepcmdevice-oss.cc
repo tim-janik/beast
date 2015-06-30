@@ -51,7 +51,7 @@ typedef struct
 
 
 /* --- prototypes --- */
-static BseErrorType oss_device_setup			(OSSHandle		*oss,
+static Bse::ErrorType oss_device_setup			(OSSHandle		*oss,
                                                          guint                   req_queue_length);
 static void	    oss_device_retrigger		(OSSHandle		*oss);
 static gsize	    oss_device_read			(BsePcmHandle		*handle,
@@ -74,11 +74,11 @@ bse_pcm_device_oss_init (BsePcmDeviceOSS *oss)
   oss->device_name = g_strdup (BSE_PCM_DEVICE_CONF_OSS);
 }
 
-static BseErrorType
+static Bse::ErrorType
 check_device_usage (const gchar *name,
                     const gchar *check_mode)
 {
-  BseErrorType error = gsl_file_check (name, check_mode);
+  Bse::ErrorType error = gsl_file_check (name, check_mode);
   if (!error && strchr (check_mode, 'w'))
     {
       errno = 0;
@@ -88,7 +88,7 @@ check_device_usage (const gchar *name,
        * might be wrong and the device may be busy.
        */
       if (errno == ENODEV)
-        error = BSE_ERROR_DEVICE_NOT_AVAILABLE;
+        error = Bse::ERROR_DEVICE_NOT_AVAILABLE;
       if (fd >= 0)
         close (fd);
     }
@@ -107,12 +107,12 @@ bse_pcm_device_oss_list_devices (BseDevice    *device)
       gchar *dname = g_strconcat (BSE_PCM_DEVICE_OSS (device)->device_name, postfixes[i], NULL);
       if (!birnet_file_equals (last, dname))
         {
-          if (check_device_usage (dname, "crw") == BSE_ERROR_NONE)
+          if (check_device_usage (dname, "crw") == Bse::ERROR_NONE)
             ring = sfi_ring_append (ring,
                                     bse_device_entry_new (device,
                                                           g_strdup_format ("%s,rw", dname),
                                                           g_strdup_format ("%s (read-write)", dname)));
-          else if (check_device_usage (dname, "cw") == BSE_ERROR_NONE)
+          else if (check_device_usage (dname, "cw") == Bse::ERROR_NONE)
             ring = sfi_ring_append (ring,
                                     bse_device_entry_new (device,
                                                           g_strdup_format ("%s,wo", dname),
@@ -127,7 +127,7 @@ bse_pcm_device_oss_list_devices (BseDevice    *device)
   return ring;
 }
 
-static BseErrorType
+static Bse::ErrorType
 bse_pcm_device_oss_open (BseDevice     *device,
                          gboolean       require_readable,
                          gboolean       require_writable,
@@ -168,7 +168,7 @@ bse_pcm_device_oss_open (BseDevice     *device,
   oss->hard_sync = hard_sync;
 
   /* try open */
-  BseErrorType error;
+  Bse::ErrorType error;
   gint fd = -1;
   handle->readable = omode == O_RDWR || omode == O_RDONLY;      /* O_RDONLY maybe defined to 0 */
   handle->writable = omode == O_RDWR || omode == O_WRONLY;
@@ -185,7 +185,7 @@ bse_pcm_device_oss_open (BseDevice     *device,
       error = oss_device_setup (oss, latency);
     }
   else
-    error = bse_error_from_errno (errno, BSE_ERROR_FILE_OPEN_FAILED);
+    error = bse_error_from_errno (errno, Bse::ERROR_FILE_OPEN_FAILED);
 
   /* setup PCM handle or shutdown */
   if (!error)
@@ -230,7 +230,7 @@ bse_pcm_device_oss_finalize (GObject *object)
   /* chain parent class' handler */
   G_OBJECT_CLASS (parent_class)->finalize (object);
 }
-static BseErrorType
+static Bse::ErrorType
 oss_device_setup (OSSHandle *oss,
                   guint      req_queue_length)
 {
@@ -246,32 +246,32 @@ oss_device_setup (OSSHandle *oss,
   d_long = fcntl (fd, F_GETFL);
   d_long &= ~O_NONBLOCK;
   if (fcntl (fd, F_SETFL, d_long))
-    return BSE_ERROR_DEVICE_ASYNC;
+    return Bse::ERROR_DEVICE_ASYNC;
 
   d_int = 0;
   if (ioctl (fd, SNDCTL_DSP_GETFMTS, &d_int) < 0)
-    return BSE_ERROR_DEVICE_FORMAT;
+    return Bse::ERROR_DEVICE_FORMAT;
   if ((d_int & AFMT_S16_HE) != AFMT_S16_HE)
-    return BSE_ERROR_DEVICE_FORMAT;
+    return Bse::ERROR_DEVICE_FORMAT;
   d_int = AFMT_S16_HE;
   if (ioctl (fd, SNDCTL_DSP_SETFMT, &d_int) < 0 ||
       d_int != AFMT_S16_HE)
-    return BSE_ERROR_DEVICE_FORMAT;
+    return Bse::ERROR_DEVICE_FORMAT;
   guint bytes_per_value = 2;
 
   d_int = handle->n_channels - 1;
   if (ioctl (fd, SNDCTL_DSP_STEREO, &d_int) < 0)
-    return BSE_ERROR_DEVICE_CHANNELS;
+    return Bse::ERROR_DEVICE_CHANNELS;
   if (int (handle->n_channels) != d_int + 1)
-    return BSE_ERROR_DEVICE_CHANNELS;
+    return Bse::ERROR_DEVICE_CHANNELS;
   oss->frame_size = handle->n_channels * bytes_per_value;
 
   d_int = handle->mix_freq;
   if (ioctl (fd, SNDCTL_DSP_SPEED, &d_int) < 0)
-    return BSE_ERROR_DEVICE_FREQUENCY;
+    return Bse::ERROR_DEVICE_FREQUENCY;
   handle->mix_freq = d_int;
   if (MAX (d_int, handle->mix_freq) - MIN (d_int, handle->mix_freq) > handle->mix_freq / 100)
-    return BSE_ERROR_DEVICE_FREQUENCY;
+    return Bse::ERROR_DEVICE_FREQUENCY;
 
   /* Note: fragment = n_fragments << 16;
    *       fragment |= g_bit_storage (fragment_size - 1);
@@ -287,24 +287,24 @@ oss_device_setup (OSSHandle *oss,
     }
   d_int = (oss->n_frags << 16) | g_bit_storage (oss->frag_size - 1);
   if (ioctl (fd, SNDCTL_DSP_SETFRAGMENT, &d_int) < 0)
-    return BSE_ERROR_DEVICE_LATENCY;
+    return Bse::ERROR_DEVICE_LATENCY;
 
   d_int = 0;
   if (ioctl (fd, SNDCTL_DSP_GETBLKSIZE, &d_int) < 0 ||
       d_int < 128 || d_int > 131072 || (d_int & 1))
-    return BSE_ERROR_DEVICE_BUFFER;
+    return Bse::ERROR_DEVICE_BUFFER;
 
   audio_buf_info info = { 0, };
   if (handle->writable && ioctl (fd, SNDCTL_DSP_GETOSPACE, &info) < 0)
-    return BSE_ERROR_DEVICE_BUFFER;
+    return Bse::ERROR_DEVICE_BUFFER;
   else if (!handle->writable && ioctl (fd, SNDCTL_DSP_GETISPACE, &info) < 0)
-    return BSE_ERROR_DEVICE_BUFFER;
+    return Bse::ERROR_DEVICE_BUFFER;
   oss->n_frags = info.fragstotal;
   oss->frag_size = info.fragsize;
   oss->queue_length = info.bytes / oss->frame_size;
   if (oss->queue_length != oss->frag_size * oss->n_frags / oss->frame_size)
     {
-      /* return BSE_ERROR_DEVICE_BUFFER; */
+      /* return Bse::ERROR_DEVICE_BUFFER; */
       sfi_diag ("OSS: buffer size (%d) differs from fragment space (%d)", info.bytes, info.fragstotal * info.fragsize);
       oss->queue_length = oss->n_frags * oss->frag_size / oss->frame_size;
     }
@@ -333,7 +333,7 @@ oss_device_setup (OSSHandle *oss,
           oss->n_frags,
           oss->frag_size / oss->frame_size,
           info.bytes / oss->frame_size);
-  return BSE_ERROR_NONE;
+  return Bse::ERROR_NONE;
 }
 static void
 oss_device_retrigger (OSSHandle *oss)

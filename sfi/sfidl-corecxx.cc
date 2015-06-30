@@ -532,10 +532,12 @@ public:
           continue;
         nspace.setFromSymbol(ci->name);
         const char *name = nspace.printable_form (ci->name);
+        printf("#ifndef SFIDL_SKIPDEF__%s\n", name);
         printf ("enum %s {\n", name);
         for (vector<ChoiceValue>::const_iterator vi = ci->contents.begin(); vi != ci->contents.end(); vi++)
           printf ("  %s = %d,\n", pure_UPPER (vi->name), vi->value);
         printf ("};\n");
+        printf("#endif // SFIDL_SKIPDEF__%s\n", name);
       }
   }
   void
@@ -1238,7 +1240,7 @@ public:
         printf (");\n");
 
         /* marshal */
-        printf ("  static BseErrorType marshal (BseProcedureClass *procedure,\n"
+        printf ("  static Bse::ErrorType marshal (BseProcedureClass *procedure,\n"
                 "                               const GValue      *in_values,\n"
                 "                               GValue            *out_values)\n");
         printf ("  {\n");
@@ -1256,12 +1258,12 @@ public:
           printf ("      %s (out_values, __return_value);\n", func_value_set_param (mi->result.type));
         printf ("    } catch (std::exception &e) {\n");
         printf ("      sfi_diag (\"%%s: %%s\", \"%s\", e.what());\n", name);
-        printf ("      return BSE_ERROR_PROC_EXECUTION;\n");
+        printf ("      return Bse::ERROR_PROC_EXECUTION;\n");
         printf ("    } catch (...) {\n");
         printf ("      sfi_diag (\"%%s: %%s\", \"%s\", \"uncaught exception\");\n", name);
-        printf ("      return BSE_ERROR_PROC_EXECUTION;\n");
+        printf ("      return Bse::ERROR_PROC_EXECUTION;\n");
         printf ("    }\n");
-        printf ("    return BSE_ERROR_NONE;\n");
+        printf ("    return Bse::ERROR_NONE;\n");
         printf ("  }\n");
 
         /* init */

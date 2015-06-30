@@ -25,7 +25,7 @@ struct _BstApp
 {
   GxkDialog       window;
 
-  SfiProxy        project;
+  Bse::ProjectH   project;
 
   guint           select_unseen_super : 1;
 
@@ -91,7 +91,7 @@ enum {
 
 /* --- prototypes --- */
 GType           bst_app_get_type                (void);
-BstApp*         bst_app_new                     (SfiProxy        project);
+BstApp*         bst_app_new                     (Bse::ProjectH   project);
 void            bst_app_create_default          (BstApp         *app);
 BstApp*         bst_app_find                    (SfiProxy        project);
 void            bst_app_show_release_notes      (BstApp         *app);

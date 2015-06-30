@@ -295,22 +295,22 @@ bse_storage_input_text (BseStorage  *self,
   self->restorable_objects = sfi_ppool_new ();
 }
 
-BseErrorType
+Bse::ErrorType
 bse_storage_input_file (BseStorage  *self,
                         const gchar *file_name)
 {
-  g_return_val_if_fail (BSE_IS_STORAGE (self), BSE_ERROR_INTERNAL);
-  g_return_val_if_fail (file_name != NULL, BSE_ERROR_INTERNAL);
+  g_return_val_if_fail (BSE_IS_STORAGE (self), Bse::ERROR_INTERNAL);
+  g_return_val_if_fail (file_name != NULL, Bse::ERROR_INTERNAL);
 
   bse_storage_reset (self);
   self->rstore = sfi_rstore_new_open (file_name);
   if (!self->rstore)
-    return bse_error_from_errno (errno, BSE_ERROR_FILE_OPEN_FAILED);
+    return bse_error_from_errno (errno, Bse::ERROR_FILE_OPEN_FAILED);
   self->rstore->parser_this = self;
   self->path_table = g_hash_table_new_full (uname_child_hash, uname_child_equals, NULL, uname_child_free);
   self->restorable_objects = sfi_ppool_new ();
 
-  return BSE_ERROR_NONE;
+  return Bse::ERROR_NONE;
 }
 
 static GTokenType
@@ -689,7 +689,7 @@ restore_source_automation (BseItem    *item,
   BseMidiControlType control_type = (BseMidiControlType) sfi_choice2enum (scanner->value.v_identifier, BSE_TYPE_MIDI_CONTROL_TYPE);
   /* close statement */
   parse_or_return (scanner, ')');
-  BseErrorType error = bse_source_set_automation_property (BSE_SOURCE (item), pspec->name, midi_channel, BseMidiSignalType (control_type));
+  Bse::ErrorType error = bse_source_set_automation_property (BSE_SOURCE (item), pspec->name, midi_channel, Bse::MidiSignalType (control_type));
   if (error)
     bse_storage_warn (self, "failed to automate property \"%s\": %s", pspec->name, bse_error_blurb (error));
   return G_TOKEN_NONE;
@@ -1040,7 +1040,7 @@ bse_source_store_automation (BseSource  *source,
                              GParamSpec *pspec)
 {
   guint midi_channel = 0;
-  BseMidiSignalType signal_type = BseMidiSignalType (0);
+  Bse::MidiSignalType signal_type = Bse::MidiSignalType (0);
   bse_source_get_automation_property (source, pspec->name, &midi_channel, &signal_type);
   BseMidiControlType control_type = BseMidiControlType (signal_type);
   if (control_type)
@@ -1263,7 +1263,7 @@ wstore_data_handle_reader (gpointer data,
   GslLong n;
   if (!wh->opened)
     {
-      BseErrorType error = gsl_data_handle_open (wh->dhandle);
+      Bse::ErrorType error = gsl_data_handle_open (wh->dhandle);
       if (error)
         {
           bse_storage_error (wh->storage, "failed to open data handle: %s", bse_error_blurb (error));
@@ -1566,16 +1566,16 @@ bse_storage_parse_data_handle_rest (BseStorage     *self,
   return parse_data_handle_trampoline (self, TRUE, data_handle_p, n_channels_p, mix_freq_p, osc_freq_p);
 }
 
-BseErrorType
+Bse::ErrorType
 bse_storage_flush_fd (BseStorage *self,
                       gint        fd)
 {
-  g_return_val_if_fail (BSE_IS_STORAGE (self), BSE_ERROR_INTERNAL);
-  g_return_val_if_fail (self->wstore, BSE_ERROR_INTERNAL);
-  g_return_val_if_fail (fd >= 0, BSE_ERROR_INTERNAL);
+  g_return_val_if_fail (BSE_IS_STORAGE (self), Bse::ERROR_INTERNAL);
+  g_return_val_if_fail (self->wstore, Bse::ERROR_INTERNAL);
+  g_return_val_if_fail (fd >= 0, Bse::ERROR_INTERNAL);
   bse_storage_break (self);
   gint nerrno = sfi_wstore_flush_fd (self->wstore, fd);
-  return bse_error_from_errno (-nerrno, BSE_ERROR_FILE_WRITE_FAILED);
+  return bse_error_from_errno (-nerrno, Bse::ERROR_FILE_WRITE_FAILED);
 }
 
 void

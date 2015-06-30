@@ -4,6 +4,8 @@ beast-gtk/bstgentypes.cc
 beast-gtk/bstserverapi.hh
 beast-gtk/bstserverapi.cc
 beast-gtk/bststest.cc
+bse/bseserverapi.cc
+bse/bseclientapi.cc
 plugins/bsefirfilter.c
 plugins/davguitar.c
 plugins/evaluator/bseevaluator.idl

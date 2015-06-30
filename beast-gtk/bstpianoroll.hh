@@ -42,7 +42,7 @@ struct _BstPianoRoll
 {
   GxkScrollCanvas parent_instance;
 
-  SfiProxy	 proxy;
+  Bse::PartH     part;
   SfiProxy	 song;
   BsePartLinkSeq*plinks;
   gint		 min_note;
@@ -94,17 +94,12 @@ struct _BstPianoRollClass
 
 /* --- prototypes --- */
 GType	bst_piano_roll_get_type			(void);
-void	bst_piano_roll_set_proxy		(BstPianoRoll	*self,
-						 SfiProxy	 proxy);
+void	bst_piano_roll_set_part                 (BstPianoRoll *self, Bse::PartH part = Bse::PartH());
 gfloat	bst_piano_roll_set_hzoom		(BstPianoRoll	*self,
 						 gfloat		 hzoom);
 gfloat	bst_piano_roll_set_vzoom		(BstPianoRoll	*self,
 						 gfloat		 vzoom);
-void	bst_piano_roll_set_view_selection	(BstPianoRoll	*self,
-						 guint		 tick,
-						 guint		 duration,
-						 gint		 min_note,
-						 gint		 max_note);
+void	bst_piano_roll_set_view_selection	(BstPianoRoll	*self, int tick, int duration, int min_note, int max_note);
 gint	bst_piano_roll_get_vpanel_width		(BstPianoRoll	*self);
 void    bst_piano_roll_get_paste_pos		(BstPianoRoll	*self,
 						 guint          *tick_p,

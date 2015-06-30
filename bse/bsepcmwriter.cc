@@ -61,7 +61,7 @@ bse_pcm_writer_finalize (GObject *object)
   self->mutex.~Mutex();
 }
 
-BseErrorType
+Bse::ErrorType
 bse_pcm_writer_open (BsePcmWriter *self,
 		     const gchar  *file,
 		     guint         n_channels,
@@ -69,11 +69,11 @@ bse_pcm_writer_open (BsePcmWriter *self,
                      uint64        recorded_maximum)
 {
   gint fd;
-  g_return_val_if_fail (BSE_IS_PCM_WRITER (self), BSE_ERROR_INTERNAL);
-  g_return_val_if_fail (!self->open, BSE_ERROR_INTERNAL);
-  g_return_val_if_fail (file != NULL, BSE_ERROR_INTERNAL);
-  g_return_val_if_fail (n_channels > 0, BSE_ERROR_INTERNAL);
-  g_return_val_if_fail (sample_freq >= 1000, BSE_ERROR_INTERNAL);
+  g_return_val_if_fail (BSE_IS_PCM_WRITER (self), Bse::ERROR_INTERNAL);
+  g_return_val_if_fail (!self->open, Bse::ERROR_INTERNAL);
+  g_return_val_if_fail (file != NULL, Bse::ERROR_INTERNAL);
+  g_return_val_if_fail (n_channels > 0, Bse::ERROR_INTERNAL);
+  g_return_val_if_fail (sample_freq >= 1000, Bse::ERROR_INTERNAL);
   self->mutex.lock();
   self->n_bytes = 0;
   self->recorded_maximum = recorded_maximum;
@@ -81,7 +81,7 @@ bse_pcm_writer_open (BsePcmWriter *self,
   if (fd < 0)
     {
       self->mutex.unlock();
-      return bse_error_from_errno (errno, BSE_ERROR_FILE_OPEN_FAILED);
+      return bse_error_from_errno (errno, Bse::ERROR_FILE_OPEN_FAILED);
     }
 
   errno = bse_wave_file_dump_header (fd, 0x7fff0000, 16, n_channels, sample_freq);
@@ -89,13 +89,13 @@ bse_pcm_writer_open (BsePcmWriter *self,
     {
       close (fd);
       self->mutex.unlock();
-      return bse_error_from_errno (errno, BSE_ERROR_FILE_OPEN_FAILED);
+      return bse_error_from_errno (errno, Bse::ERROR_FILE_OPEN_FAILED);
     }
   self->fd = fd;
   self->open = TRUE;
   self->broken = FALSE;
   self->mutex.unlock();
-  return BSE_ERROR_NONE;
+  return Bse::ERROR_NONE;
 }
 void
 bse_pcm_writer_close (BsePcmWriter *self)

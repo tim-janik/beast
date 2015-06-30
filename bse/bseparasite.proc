@@ -21,13 +21,13 @@ METHOD (BseItem, list-parasites) {
   SfiRing *ring;
   BseStringSeq *sseq;
   if (!BSE_IS_ITEM (item))
-    return BSE_ERROR_PROC_PARAM_INVAL;
+    return Bse::ERROR_PROC_PARAM_INVAL;
   sseq = bse_string_seq_new ();
   ring = bse_item_list_parasites (item, path);
   while (ring)
     bse_string_seq_append (sseq, (const char*) sfi_ring_pop_head (&ring));
   bse_value_take_boxed (out_values++, sseq);
-  return BSE_ERROR_NONE;
+  return Bse::ERROR_NONE;
 }
 
 METHOD (BseItem, get-parasite) {
@@ -43,9 +43,9 @@ METHOD (BseItem, get-parasite) {
   BseItem *item = (BseItem*) g_value_get_object (in_values++);
   const gchar *path = g_value_get_string (in_values++);
   if (!BSE_IS_ITEM (item))
-    return BSE_ERROR_PROC_PARAM_INVAL;
+    return Bse::ERROR_PROC_PARAM_INVAL;
   sfi_value_set_rec (out_values++, bse_item_get_parasite (item, path));
-  return BSE_ERROR_NONE;
+  return Bse::ERROR_NONE;
 }
 
 METHOD (BseItem, set-parasite) {
@@ -62,9 +62,9 @@ METHOD (BseItem, set-parasite) {
   const gchar *path = g_value_get_string (in_values++);
   SfiRec      *rec  = sfi_value_get_rec (in_values++);
   if (!BSE_IS_ITEM (item))
-    return BSE_ERROR_PROC_PARAM_INVAL;
+    return Bse::ERROR_PROC_PARAM_INVAL;
   bse_item_set_parasite (item, path, rec);
-  return BSE_ERROR_NONE;
+  return Bse::ERROR_NONE;
 }
 
 METHOD (BseItem, add-parasite) {
@@ -81,10 +81,10 @@ METHOD (BseItem, add-parasite) {
   const gchar *path = g_value_get_string (in_values++);
   SfiRec      *rec  = sfi_value_get_rec (in_values++);
   if (!BSE_IS_ITEM (item))
-    return BSE_ERROR_PROC_PARAM_INVAL;
+    return Bse::ERROR_PROC_PARAM_INVAL;
   path = bse_item_create_parasite_name (item, path);
   if (path)
     bse_item_set_parasite (item, path, rec);
   g_print ("%s: %s: %p\n", G_STRFUNC, path, rec);
-  return BSE_ERROR_NONE;
+  return Bse::ERROR_NONE;
 }

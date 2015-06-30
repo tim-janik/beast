@@ -360,6 +360,7 @@ gchar*
 bse_undo_pointer_pack (gpointer      _item,
                        BseUndoStack *ustack)
 {
+  // sync with ItemImpl::make_undo_descriptor_data
   g_return_val_if_fail (ustack != NULL, NULL);
   if (!_item)
     return NULL;
@@ -382,6 +383,7 @@ gpointer
 bse_undo_pointer_unpack (const gchar  *packed_pointer,
                          BseUndoStack *ustack)
 {
+  // sync with ItemImpl::resolve_undo_descriptor_data
   gpointer item;
 
   g_return_val_if_fail (ustack != NULL, NULL);
