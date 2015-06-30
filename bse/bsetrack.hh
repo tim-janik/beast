@@ -83,11 +83,15 @@ namespace Bse {
 
 class TrackImpl : public ContextMergerImpl, public virtual TrackIface {
 protected:
-  virtual              ~TrackImpl       ();
+  virtual             ~TrackImpl         ();
 public:
-  explicit              TrackImpl       (BseObject*);
-  virtual int           insert_part     (int tick, PartIface &part) override;
-  virtual void          remove_tick     (int tick) override;
+  explicit             TrackImpl         (BseObject*);
+  virtual int          insert_part       (int tick, PartIface &part) override;
+  virtual void         remove_tick       (int tick) override;
+  virtual PartIfaceP   get_part          (int tick) override;
+  virtual int          get_last_tick     () override;
+  virtual ErrorType    ensure_output     () override;
+  virtual SourceIfaceP get_output_source () override;
 };
 
 } // Bse

@@ -77,6 +77,8 @@ BODY (BseProcedureClass *proc,
         bse_item_push_undo_proc (self, "connect-track", track);
     }
 
+  // FIXME: porting: grep for 'push_undo.*"disconnect-track"'
+
   /* set output parameters */
   g_value_set_enum (out_values++, error);
 

@@ -433,11 +433,12 @@ track_view_midi_channel_edited (BstTrackView *self,
     }
 }
 
-static SfiProxy
-get_track (gpointer data,
-	   gint     row)
+static Bse::TrackH
+get_track (void *data, int row)
 {
-  return bst_item_view_get_proxy (BST_ITEM_VIEW (data), row);
+  SfiProxy proxy = bst_item_view_get_proxy (BST_ITEM_VIEW (data), row);
+  Bse::TrackH track = Bse::TrackH::down_cast (bse_server.from_proxy (proxy));
+  return track;
 }
 
 static void
@@ -715,11 +716,12 @@ track_view_action_exec (gpointer data,
       item = bse_song_create_track (song);
       if (item)
 	{
-	  gchar *string = g_strdup_format ("Track-%02X", bse_item_get_seqid (item));
-	  bse_item_set_name (item, string);
+          Bse::TrackH track = Bse::TrackH::down_cast (bse_server.from_proxy (item));
+	  gchar *string = g_strdup_format ("Track-%02X", bse_item_get_seqid (track.proxy_id()));
+	  bse_item_set_name (track.proxy_id(), string);
 	  g_free (string);
-	  bst_item_view_select (item_view, item);
-          bse_track_ensure_output (item);
+	  bst_item_view_select (item_view, track.proxy_id());
+          track.ensure_output();
 	}
       bse_item_ungroup_undo (song);
       break;

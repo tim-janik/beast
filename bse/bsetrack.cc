@@ -1102,4 +1102,48 @@ TrackImpl::remove_tick (int tick)
     }
 }
 
+PartIfaceP
+TrackImpl::get_part (int tick)
+{
+  BseTrack *self = as<BseTrack*>();
+  BseTrackEntry *entry = bse_track_lookup_tick (self, tick);
+  return entry ? entry->part->as<PartIfaceP>() : NULL;
+}
+
+int
+TrackImpl::get_last_tick ()
+{
+  BseTrack *self = as<BseTrack*>();
+  return bse_track_get_last_tick (self);
+}
+
+ErrorType
+TrackImpl::ensure_output ()
+{
+  BseTrack *self = as<BseTrack*>();
+  ErrorType error = Bse::ERROR_NONE;
+  BseItem *bparent = self->parent;
+  if (BSE_IS_SONG (bparent) && !self->bus_outputs)
+    {
+      BseSong *song = BSE_SONG (bparent);
+      BseBus *master = bse_song_find_master (song);
+      if (master)
+        {
+          error = bse_bus_connect (master, BSE_ITEM (self));
+          if (!error)
+            bse_item_push_undo_proc (master, "disconnect-track", self);
+        }
+    }
+  return error;
+}
+
+SourceIfaceP
+TrackImpl::get_output_source ()
+{
+  BseTrack *self = as<BseTrack*>();
+  BseSource *child = bse_track_get_output (self);
+  return child->as<SourceIfaceP>();
+  return child->as<SourceIfaceP>();
+}
+
 } // Bse
