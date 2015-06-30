@@ -445,6 +445,41 @@ interface SNet : Super {
   bool supports_user_synths (); ///< Check whether users may edit synthesis modules of this network.
 };
 
+/// Container for Track and Part objects, as well as meta data for sequencing.
+interface Song : SNet {
+  Track         find_any_track_for_part (Part part);   ///< Find the first track that contains part, suitable to check for orphan parts.
+  // Bus        create_bus              ();            ///< Create a new mixer bus for a Song.
+  // Part       create_part             ();            ///< Create a new Part in a Song.
+  // Track      create_track            ();            ///< Create a new Track for a Song.
+  // Bus        ensure_master_bus       ();            ///< Retrieve master output bus of a song, will create one if it doesn't exist.
+  // void       ensure_track_links      ();            ///< Ensure that each part in a song is inserted into at least one track.
+  // Track      find_track_for_part     (Part part);   ///< Find a track suitable for playing notes of a given part.
+  // Bus        get_master_bus          ();            ///< Retrieve master output bus of a song if it exists.
+  // void       remove_bus              (Bus bus);     ///< Delete a mixer bus from a Song.
+  // void       remove_part             (Part part);   ///< Delete a Part from a Song.
+  // void       remove_track            (Track track); ///< Delete a Track from a Song.
+  // SongTiming get_timing              (int32 tick);  ///< Retrieve song timing information at a specific tick.
+  // void synthesize_note (Track track, int32 duration, int32 note, int32 fine_tune, float64 velocity); ///< Synthesize a note on a song of an active project.
+  // signal void   pointer_changed (int32 a);
+  // group _("Tuning") {
+  // MusicalTuningType musical_tuning = Enum ("Musical Tuning", "The tuning system which specifies the tones or pitches to be used. Due to the psychoacoustic properties of tones, various pitch combinations can sound 'natural' or 'pleasing' when used in combination, the musical tuning system defines the number and spacing of frequency values applied.", GUISTANDARD);
+  // };
+  // group _("Timing") {
+  // int32   tpqn          = Range  ("Ticks", "Number of ticks per quarter note", GUISTANDARD, 384, 384, 0, 384);
+  // int32   numerator     = Range  ("Numerator", "Measure numerator", GUISTANDARD, 1, 256, 1, 4);
+  // int32   denominator   = Range  ("Denominator", "Measure denominator, must be a power of 2", GUISTANDARD, 1, 256, 1, 4);
+  // float64 bpm           = Range  ("BPM", "Beats per minute", GUISTANDARD, MIN_BPM, MAX_BPM, 10, 120);
+  // };
+  // group _("MIDI Instrument") {
+  // CSynth  pnet          = Object ("Postprocessor", "Synthesis network to be used as postprocessor", GUISTANDARD);
+  // };
+  // bool  auto_activate = Bool  ("Auto Activate", "", STANDARD, TRUE);
+  // bool  loop_enabled  = Bool  ("Loop Enabled", "", STANDARD, FALSE);
+  // int32 loop_left     = Range ("Loop Left", "", STANDARD, -1, MAXINT31, 384, -1);
+  // int32 loop_right    = Range ("Loop Right", "", STANDARD, -1, MAXINT31, 384, -1);
+  // int32 tick_pointer  = Range ("Tick Pointer", "", STANDARD, -1, MAXINT31, 384, -1);
+};
+
 /// Projects support loading, saving, playback and act as containers for all other sound objects.
 interface Project : Container {
   void  change_name (String name); ///< Change a project name without recording undo steps.

@@ -705,15 +705,15 @@ track_view_action_exec (gpointer data,
 {
   BstTrackView *self = BST_TRACK_VIEW (data);
   BstItemView *item_view = BST_ITEM_VIEW (self);
-  SfiProxy song = item_view->container;
+  Bse::SongH song = Bse::SongH::down_cast (bse_server.from_proxy (item_view->container));
 
   switch (action)
     {
       SfiProxy item;
       guint i;
     case ACTION_ADD_TRACK:
-      bse_item_group_undo (song, "Add Track");
-      item = bse_song_create_track (song);
+      bse_item_group_undo (song.proxy_id(), "Add Track");
+      item = bse_song_create_track (song.proxy_id());
       if (item)
 	{
           Bse::TrackH track = Bse::TrackH::down_cast (bse_server.from_proxy (item));
@@ -723,17 +723,20 @@ track_view_action_exec (gpointer data,
 	  bst_item_view_select (item_view, track.proxy_id());
           track.ensure_output();
 	}
-      bse_item_ungroup_undo (song);
+      bse_item_ungroup_undo (song.proxy_id());
       break;
     case ACTION_DELETE_TRACK:
       item = bst_item_view_get_current (item_view);
-      bse_item_group_undo (song, "Delete Track");
+      bse_item_group_undo (song.proxy_id(), "Delete Track");
       BseItemSeq *iseq = bse_track_list_parts_uniq (item);
-      bse_song_remove_track (song, item);
+      bse_song_remove_track (song.proxy_id(), item);
       for (i = 0; i < iseq->n_items; i++)
-        if (!bse_song_find_any_track_for_part (song, iseq->items[i]))
-          bse_song_remove_part (song, iseq->items[i]);
-      bse_item_ungroup_undo (song);
+        {
+          Bse::PartH part = Bse::PartH::down_cast (bse_server.from_proxy (iseq->items[i]));
+          if (!song.find_any_track_for_part (part))
+            bse_song_remove_part (song.proxy_id(), part.proxy_id());
+        }
+      bse_item_ungroup_undo (song.proxy_id());
       break;
     }
   gxk_widget_update_actions_downwards (self);

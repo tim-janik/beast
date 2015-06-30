@@ -638,6 +638,21 @@ bse_song_ensure_master (BseSong *self)
   return child;
 }
 
+BseTrack*
+bse_song_find_first_track (BseSong *self, BsePart *part)
+{
+  SfiRing *ring;
+  /* action */
+  for (ring = self->tracks_SL; ring; ring = sfi_ring_walk (ring, self->tracks_SL))
+    {
+      BseTrack *track = (BseTrack*) ring->data;
+      guint start;
+      if (bse_track_find_part (track, part, &start))
+        return track;
+    }
+  return NULL;
+}
+
 static void
 bse_song_compat_finish (BseSuper       *super,
                         guint           vmajor,
@@ -778,3 +793,24 @@ bse_song_class_init (BseSongClass *klass)
   signal_pointer_changed = bse_object_class_add_signal (object_class, "pointer-changed",
 							G_TYPE_NONE, 1, SFI_TYPE_INT);
 }
+
+namespace Bse {
+
+SongImpl::SongImpl (BseObject *bobj) :
+  SNetImpl (bobj)
+{}
+
+SongImpl::~SongImpl ()
+{}
+
+TrackIfaceP
+SongImpl::find_any_track_for_part (PartIface &part)
+{
+  BseSong *self = as<BseSong*>();
+  assert_return (dynamic_cast<ItemImpl*> (&part)->parent() == this, NULL);
+  BsePart *bpart = part.as<BsePart*>();
+  BseTrack *track = bse_song_find_first_track (self, bpart);
+  return track->as<TrackIfaceP> ();
+}
+
+} // Bse

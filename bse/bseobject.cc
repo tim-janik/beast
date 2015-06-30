@@ -917,6 +917,7 @@ bse_object_new (GType object_type, const gchar *first_property_name, ...)
 
 #include "bseserver.hh"
 #include "bseproject.hh"
+#include "bsesong.hh"
 #include "bsetrack.hh"
 #include "bsecontextmerger.hh"
 #include "bsesnet.hh"
@@ -938,6 +939,8 @@ bse_object_new_valist (GType object_type, const gchar *first_property_name, va_l
     cxxo = new Bse::ServerImpl (object);
   else if (g_type_is_a (object_type, BSE_TYPE_PROJECT))
     cxxo = new Bse::ProjectImpl (object);
+  else if (g_type_is_a (object_type, BSE_TYPE_SONG))
+    cxxo = new Bse::SongImpl (object);
   else if (g_type_is_a (object_type, BSE_TYPE_SNET))
     cxxo = new Bse::SNetImpl (object);
   else if (g_type_is_a (object_type, BSE_TYPE_SUPER))

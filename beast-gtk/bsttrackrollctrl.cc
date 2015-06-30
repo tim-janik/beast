@@ -453,12 +453,13 @@ delete_start (BstTrackRollController *self,
 {
   if (self->obj_part)	/* got part to delete */
     {
-      bse_item_group_undo (self->song, "Delete Part");
+      Bse::SongH song = Bse::SongH::down_cast (bse_server.from_proxy (self->song));
+      bse_item_group_undo (song.proxy_id(), "Delete Part");
       Bse::TrackH track = self->obj_track;
       track.remove_tick (self->obj_tick);
-      if (!bse_song_find_any_track_for_part (self->song, self->obj_part.proxy_id()))
-        bse_song_remove_part (self->song, self->obj_part.proxy_id());
-      bse_item_ungroup_undo (self->song);
+      if (!song.find_any_track_for_part (self->obj_part))
+        bse_song_remove_part (song.proxy_id(), self->obj_part.proxy_id());
+      bse_item_ungroup_undo (song.proxy_id());
       gxk_status_set (GXK_STATUS_DONE, _("Delete Part"), NULL);
     }
   else
