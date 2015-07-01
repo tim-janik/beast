@@ -318,13 +318,13 @@ record UserMessage {
   String          label;        ///< Message class label, used to enable/disable this type of message.
 };
 
-/// Basic object type for all BSE objects.
+/// Fundamental base type for all BSE objects.
 interface Object {
   String debug_name (); ///< Object name useful for debugging output.
   int64  proxy_id   (); ///< Retrieve the BseObject proxy ID for an Object.
 };
 
-/// Base type for objects that can be added to a container.
+/// Base interface type for objects that can be added to a container.
 interface Item : Object {
   Item common_ancestor (Item other);    ///< Find a common container (parent or grand-parent) of two items if any.
 };
@@ -341,6 +341,7 @@ record PartNote
   float64 velocity  = Range ("Velocity", "", VELOCITYHINTS, 0, 1.0, 0.1, 1);
   bool    selected  = Bool ("Selected", "", ":readwrite", false);
 };
+
 /// A list of part note events.
 sequence PartNoteSeq {
   PartNote part_notes;
@@ -354,13 +355,13 @@ record PartControl {
   float64        value        = Range ("Value", "", ":readwrite", -1, +1, 0.1);
   bool           selected     = Bool ("Selected", "", ":readwrite");
 };
+
 /// A list of part control events.
 sequence PartControlSeq {
   PartControl pcontrols;
 };
 
-
-/// Data object containing piano notes and effects.
+/// Data interface for containment of piano notes and MIDI effects.
 interface Part : Item {
   PartControlSeq list_selected_controls    (MidiSignalType control_type); ///< List all currently selected control events of a specific type.
   PartControlSeq list_controls             (int32 tick, int32 duration, MidiSignalType control_type); ///< List all control events within a tick range.
@@ -398,25 +399,25 @@ interface Part : Item {
   // property int32 last_tick;
 };
 
-/// Base type for synthesis objects with input or output streams.
+/// Base interface type for synthesis modules with input or output streams.
 interface Source : Item {
   Source ichannel_get_osource (int32 input_channel, int32 input_joint); ///< Retrieve output module connected to a specific joint of an input channel.
 };
 
-/// Data object containing sequencing information and links to Part objects.
+/// Source module for merging multiple synthesis contexts, used to implement polyphony.
 interface ContextMerger : Source {
 };
 
-/// Base type for objects that can be added to a container.
+/// Base interface type for containers of Item derived types.
 interface Container : Source {
   Item lookup_item (String uname); ///< Find an immediate child of a container by name (unique per container child).
 };
 
-/// Base type for Item managers.
+/// Base interface type for Item managers.
 interface Super : Container {
 };
 
-/// Base type for all kinds of synthesis networks.
+/// Base interface type for all kinds of synthesis networks.
 interface SNet : Super {
   bool supports_user_synths (); ///< Check whether users may edit synthesis modules of this network.
 };
@@ -446,7 +447,7 @@ interface SubSynth : Source {
   // String out_port_8 = String ("Output Port 8", "Input port name to interface to",                  STANDARD ":skip-default");
 };
 
-/// Data object containing sequencing information and links to Part objects.
+/// Interface for sequencing information and links to Part objects.
 interface Track : ContextMerger {
   int32 insert_part (int32 tick, Part part);    ///< Insert Part into Track at @a tick, returns the corresponding link id.
   void  remove_tick (int32 tick);               ///< Remove Part at specified @a tick from a track.
@@ -471,7 +472,7 @@ interface Track : ContextMerger {
   // property ItemSeq outputs;     ///< _("Mixer busses used as output for this track.")
 };
 
-/// Bus object, implements effect stacks and per-track audio signal routing to the master output.
+/// Interface for effect stacks and per-track audio signal routing to the master output.
 interface Bus : SubSynth {
   ErrorType ensure_output    ();            ///< Ensure that a bus has an output connection.
   // ErrorType connect_bus      (Bus bus);     ///< Add a bus to the input list of a bus.
@@ -489,7 +490,7 @@ interface Bus : SubSynth {
   // bool      master_output = Bool   ("Master Output", "", STORAGE ":skip-default", FALSE);
 };
 
-/// Container for Track and Part objects, as well as meta data for sequencing.
+/// Interface for Track and Part objects, as well as meta data for sequencing.
 interface Song : SNet {
   Track         find_any_track_for_part (Part part);   ///< Find the first track that contains part, suitable to check for orphan parts.
   // Bus        create_bus              ();            ///< Create a new mixer bus for a Song.
