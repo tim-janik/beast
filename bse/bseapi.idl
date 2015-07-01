@@ -288,11 +288,11 @@ Const MIN_BPM       = 1;
 Const MAX_BPM       = 1024;
 Const MIN_TRANSPOSE = -72;
 Const MAX_TRANSPOSE = +72;
-Const STANDARD      = "r:w:S";
-Const GUISTANDARD   = STANDARD ":G";
-Const NOTEHINTS     = GUISTANDARD ":note";
-Const FINETUNEHINTS = GUISTANDARD ":finetune";
-Const VELOCITYHINTS = GUISTANDARD ":velocity";
+Const STORAGE       = "r:w:S";
+Const STANDARD      = STORAGE ":G";
+Const NOTEHINTS     = STANDARD ":note";
+Const FINETUNEHINTS = STANDARD ":finetune";
+Const VELOCITYHINTS = STANDARD ":velocity";
 
 /// Object to carry out IDL, API, signal, etc tests.
 interface TestObject {
@@ -426,23 +426,23 @@ interface CSynth : SNet {
 
 /// Synthesizer module for embedding (rerouting input and output) of another synthesizer network (SNet).
 interface SubSynth : Source {
-  // CSynth snet       = Object ("Synthesizer",   "Synthesis network to use as embedded sub network", GUISTANDARD ":unprepared");
-  // String in_port_1  = String ("Input Port 1",  "Output port name to interface from",               GUISTANDARD ":skip-default");
-  // String out_port_1 = String ("Output Port 1", "Input port name to interface to",                  GUISTANDARD ":skip-default");
-  // String in_port_2  = String ("Input Port 2",  "Output port name to interface from",               GUISTANDARD ":skip-default");
-  // String out_port_2 = String ("Output Port 2", "Input port name to interface to",                  GUISTANDARD ":skip-default");
-  // String in_port_3  = String ("Input Port 3",  "Output port name to interface from",               GUISTANDARD ":skip-default");
-  // String out_port_3 = String ("Output Port 3", "Input port name to interface to",                  GUISTANDARD ":skip-default");
-  // String in_port_4  = String ("Input Port 4",  "Output port name to interface from",               GUISTANDARD ":skip-default");
-  // String out_port_4 = String ("Output Port 4", "Input port name to interface to",                  GUISTANDARD ":skip-default");
-  // String in_port_5  = String ("Input Port 5",  "Output port name to interface from",               GUISTANDARD ":skip-default");
-  // String out_port_5 = String ("Output Port 5", "Input port name to interface to",                  GUISTANDARD ":skip-default");
-  // String in_port_6  = String ("Input Port 6",  "Output port name to interface from",               GUISTANDARD ":skip-default");
-  // String out_port_6 = String ("Output Port 6", "Input port name to interface to",                  GUISTANDARD ":skip-default");
-  // String in_port_7  = String ("Input Port 7",  "Output port name to interface from",               GUISTANDARD ":skip-default");
-  // String out_port_7 = String ("Output Port 7", "Input port name to interface to",                  GUISTANDARD ":skip-default");
-  // String in_port_8  = String ("Input Port 8",  "Output port name to interface from",               GUISTANDARD ":skip-default");
-  // String out_port_8 = String ("Output Port 8", "Input port name to interface to",                  GUISTANDARD ":skip-default");
+  // CSynth snet       = Object ("Synthesizer",   "Synthesis network to use as embedded sub network", STANDARD ":unprepared");
+  // String in_port_1  = String ("Input Port 1",  "Output port name to interface from",               STANDARD ":skip-default");
+  // String out_port_1 = String ("Output Port 1", "Input port name to interface to",                  STANDARD ":skip-default");
+  // String in_port_2  = String ("Input Port 2",  "Output port name to interface from",               STANDARD ":skip-default");
+  // String out_port_2 = String ("Output Port 2", "Input port name to interface to",                  STANDARD ":skip-default");
+  // String in_port_3  = String ("Input Port 3",  "Output port name to interface from",               STANDARD ":skip-default");
+  // String out_port_3 = String ("Output Port 3", "Input port name to interface to",                  STANDARD ":skip-default");
+  // String in_port_4  = String ("Input Port 4",  "Output port name to interface from",               STANDARD ":skip-default");
+  // String out_port_4 = String ("Output Port 4", "Input port name to interface to",                  STANDARD ":skip-default");
+  // String in_port_5  = String ("Input Port 5",  "Output port name to interface from",               STANDARD ":skip-default");
+  // String out_port_5 = String ("Output Port 5", "Input port name to interface to",                  STANDARD ":skip-default");
+  // String in_port_6  = String ("Input Port 6",  "Output port name to interface from",               STANDARD ":skip-default");
+  // String out_port_6 = String ("Output Port 6", "Input port name to interface to",                  STANDARD ":skip-default");
+  // String in_port_7  = String ("Input Port 7",  "Output port name to interface from",               STANDARD ":skip-default");
+  // String out_port_7 = String ("Output Port 7", "Input port name to interface to",                  STANDARD ":skip-default");
+  // String in_port_8  = String ("Input Port 8",  "Output port name to interface from",               STANDARD ":skip-default");
+  // String out_port_8 = String ("Output Port 8", "Input port name to interface to",                  STANDARD ":skip-default");
 };
 
 /// Data object containing sequencing information and links to Part objects.
@@ -487,22 +487,22 @@ interface Song : SNet {
   // void synthesize_note (Track track, int32 duration, int32 note, int32 fine_tune, float64 velocity); ///< Synthesize a note on a song of an active project.
   // signal void   pointer_changed (int32 a);
   // group _("Tuning") {
-  // MusicalTuningType musical_tuning = Enum ("Musical Tuning", "The tuning system which specifies the tones or pitches to be used. Due to the psychoacoustic properties of tones, various pitch combinations can sound 'natural' or 'pleasing' when used in combination, the musical tuning system defines the number and spacing of frequency values applied.", GUISTANDARD);
+  // MusicalTuningType musical_tuning = Enum ("Musical Tuning", "The tuning system which specifies the tones or pitches to be used. Due to the psychoacoustic properties of tones, various pitch combinations can sound 'natural' or 'pleasing' when used in combination, the musical tuning system defines the number and spacing of frequency values applied.", STANDARD);
   // };
   // group _("Timing") {
-  // int32   tpqn          = Range  ("Ticks", "Number of ticks per quarter note", GUISTANDARD, 384, 384, 0, 384);
-  // int32   numerator     = Range  ("Numerator", "Measure numerator", GUISTANDARD, 1, 256, 1, 4);
-  // int32   denominator   = Range  ("Denominator", "Measure denominator, must be a power of 2", GUISTANDARD, 1, 256, 1, 4);
-  // float64 bpm           = Range  ("BPM", "Beats per minute", GUISTANDARD, MIN_BPM, MAX_BPM, 10, 120);
+  // int32   tpqn          = Range  ("Ticks", "Number of ticks per quarter note", STANDARD, 384, 384, 0, 384);
+  // int32   numerator     = Range  ("Numerator", "Measure numerator", STANDARD, 1, 256, 1, 4);
+  // int32   denominator   = Range  ("Denominator", "Measure denominator, must be a power of 2", STANDARD, 1, 256, 1, 4);
+  // float64 bpm           = Range  ("BPM", "Beats per minute", STANDARD, MIN_BPM, MAX_BPM, 10, 120);
   // };
   // group _("MIDI Instrument") {
-  // CSynth  pnet          = Object ("Postprocessor", "Synthesis network to be used as postprocessor", GUISTANDARD);
+  // CSynth  pnet          = Object ("Postprocessor", "Synthesis network to be used as postprocessor", STANDARD);
   // };
-  // bool  auto_activate = Bool  ("Auto Activate", "", STANDARD, TRUE);
-  // bool  loop_enabled  = Bool  ("Loop Enabled", "", STANDARD, FALSE);
-  // int32 loop_left     = Range ("Loop Left", "", STANDARD, -1, MAXINT31, 384, -1);
-  // int32 loop_right    = Range ("Loop Right", "", STANDARD, -1, MAXINT31, 384, -1);
-  // int32 tick_pointer  = Range ("Tick Pointer", "", STANDARD, -1, MAXINT31, 384, -1);
+  // bool  auto_activate = Bool  ("Auto Activate", "", STORAGE, TRUE);
+  // bool  loop_enabled  = Bool  ("Loop Enabled", "", STORAGE, FALSE);
+  // int32 loop_left     = Range ("Loop Left", "", STORAGE, -1, MAXINT31, 384, -1);
+  // int32 loop_right    = Range ("Loop Right", "", STORAGE, -1, MAXINT31, 384, -1);
+  // int32 tick_pointer  = Range ("Tick Pointer", "", STORAGE, -1, MAXINT31, 384, -1);
 };
 
 /// Projects support loading, saving, playback and act as containers for all other sound objects.
