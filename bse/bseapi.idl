@@ -424,6 +424,27 @@ interface SNet : Super {
 interface CSynth : SNet {
 };
 
+/// Synthesizer module for embedding (rerouting input and output) of another synthesizer network (SNet).
+interface SubSynth : Source {
+  // CSynth snet       = Object ("Synthesizer",   "Synthesis network to use as embedded sub network", GUISTANDARD ":unprepared");
+  // String in_port_1  = String ("Input Port 1",  "Output port name to interface from",               GUISTANDARD ":skip-default");
+  // String out_port_1 = String ("Output Port 1", "Input port name to interface to",                  GUISTANDARD ":skip-default");
+  // String in_port_2  = String ("Input Port 2",  "Output port name to interface from",               GUISTANDARD ":skip-default");
+  // String out_port_2 = String ("Output Port 2", "Input port name to interface to",                  GUISTANDARD ":skip-default");
+  // String in_port_3  = String ("Input Port 3",  "Output port name to interface from",               GUISTANDARD ":skip-default");
+  // String out_port_3 = String ("Output Port 3", "Input port name to interface to",                  GUISTANDARD ":skip-default");
+  // String in_port_4  = String ("Input Port 4",  "Output port name to interface from",               GUISTANDARD ":skip-default");
+  // String out_port_4 = String ("Output Port 4", "Input port name to interface to",                  GUISTANDARD ":skip-default");
+  // String in_port_5  = String ("Input Port 5",  "Output port name to interface from",               GUISTANDARD ":skip-default");
+  // String out_port_5 = String ("Output Port 5", "Input port name to interface to",                  GUISTANDARD ":skip-default");
+  // String in_port_6  = String ("Input Port 6",  "Output port name to interface from",               GUISTANDARD ":skip-default");
+  // String out_port_6 = String ("Output Port 6", "Input port name to interface to",                  GUISTANDARD ":skip-default");
+  // String in_port_7  = String ("Input Port 7",  "Output port name to interface from",               GUISTANDARD ":skip-default");
+  // String out_port_7 = String ("Output Port 7", "Input port name to interface to",                  GUISTANDARD ":skip-default");
+  // String in_port_8  = String ("Input Port 8",  "Output port name to interface from",               GUISTANDARD ":skip-default");
+  // String out_port_8 = String ("Output Port 8", "Input port name to interface to",                  GUISTANDARD ":skip-default");
+};
+
 /// Data object containing sequencing information and links to Part objects.
 interface Track : ContextMerger {
   int32 insert_part (int32 tick, Part part);    ///< Insert Part into Track at @a tick, returns the corresponding link id.
