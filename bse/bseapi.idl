@@ -524,6 +524,10 @@ interface Song : SNet {
   // int32 tick_pointer  = Range ("Tick Pointer", "", STORAGE, -1, MAXINT31, 384, -1);
 };
 
+/// Container for Wave objects.
+interface WaveRepo : Super {
+};
+
 /// Projects support loading, saving, playback and act as containers for all other sound objects.
 interface Project : Container {
   void  change_name (String name); ///< Change a project name without recording undo steps.
