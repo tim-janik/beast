@@ -445,6 +445,10 @@ interface SNet : Super {
   bool supports_user_synths (); ///< Check whether users may edit synthesis modules of this network.
 };
 
+/// Customizable synthesis (filter) network container.
+interface CSynth : SNet {
+};
+
 /// Container for Track and Part objects, as well as meta data for sequencing.
 interface Song : SNet {
   Track         find_any_track_for_part (Part part);   ///< Find the first track that contains part, suitable to check for orphan parts.

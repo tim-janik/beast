@@ -102,3 +102,18 @@ bse_csynth_get_property (GObject     *object,
       break;
     }
 }
+
+
+namespace Bse {
+
+CSynthImpl::CSynthImpl (BseObject *bobj) :
+  SNetImpl (bobj)
+{}
+
+CSynthImpl::~CSynthImpl ()
+{}
+
+// BseCSynth *self = as<BseCSynth*>();
+// other->as<CSynthIfaceP> ();
+
+} // Bse
