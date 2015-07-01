@@ -178,7 +178,10 @@ bus_mixer_action_exec (gpointer data,
     case ACTION_ADD_BUS:
       bse_item_group_undo (song, "Create Bus");
       item = bse_song_create_bus (song);
-      bse_bus_ensure_output (item);
+      {
+        Bse::BusH bus = Bse::BusH::down_cast (bse_server.from_proxy (item));
+        bus.ensure_output();
+      }
       bse_item_ungroup_undo (song);
       if (item)
         bst_item_view_select (iview, item);

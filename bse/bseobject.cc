@@ -921,7 +921,7 @@ bse_object_new (GType object_type, const gchar *first_property_name, ...)
 #include "bsecsynth.hh"
 #include "bsetrack.hh"
 #include "bsecontextmerger.hh"
-#include "bsesubsynth.hh"
+#include "bsebus.hh"
 #include "bsesnet.hh"
 #include "bsepart.hh"
 
@@ -957,6 +957,8 @@ bse_object_new_valist (GType object_type, const gchar *first_property_name, va_l
     cxxo = new Bse::ContextMergerImpl (object);
   else if (g_type_is_a (object_type, BSE_TYPE_PART))
     cxxo = new Bse::PartImpl (object);
+  else if (g_type_is_a (object_type, BSE_TYPE_BUS))
+    cxxo = new Bse::BusImpl (object);
   else if (g_type_is_a (object_type, BSE_TYPE_SUB_SYNTH))
     cxxo = new Bse::SubSynthImpl (object);
   else if (g_type_is_a (object_type, BSE_TYPE_SOURCE))
