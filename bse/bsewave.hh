@@ -68,4 +68,15 @@ GslWaveChunk*	bse_wave_index_lookup_best	(BseWaveIndex	*windex,
 
 G_END_DECLS
 
+namespace Bse {
+
+class WaveImpl : public SourceImpl, public virtual WaveIface {
+protected:
+  virtual  ~WaveImpl ();
+public:
+  explicit  WaveImpl (BseObject*);
+};
+
+} // Bse
+
 #endif /* __BSE_WAVE_H__ */

@@ -857,3 +857,14 @@ BSE_BUILTIN_TYPE (BseWave)
                                    __FILE__, __LINE__,
                                    &wave_info);
 }
+
+namespace Bse {
+
+WaveImpl::WaveImpl (BseObject *bobj) :
+  SourceImpl (bobj)
+{}
+
+WaveImpl::~WaveImpl ()
+{}
+
+} // Bse

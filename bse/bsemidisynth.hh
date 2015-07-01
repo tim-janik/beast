@@ -32,4 +32,16 @@ struct BseMidiSynthClass : BseSNetClass
 {};
 
 G_END_DECLS
+
+namespace Bse {
+
+class MidiSynthImpl : public SNetImpl, public virtual MidiSynthIface {
+protected:
+  virtual  ~MidiSynthImpl ();
+public:
+  explicit  MidiSynthImpl (BseObject*);
+};
+
+} // Bse
+
 #endif /* __BSE_MIDI_SYNTH_H__ */

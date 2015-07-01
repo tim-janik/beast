@@ -28,5 +28,18 @@ void bse_midi_notifier_set_receiver     (BseMidiNotifier      *self,
 void bse_midi_notifier_dispatch         (BseMidiNotifier      *self);
 void bse_midi_notifiers_attach_source   (void);
 void bse_midi_notifiers_wakeup          (void);
+
 G_END_DECLS
+
+namespace Bse {
+
+class MidiNotifierImpl : public ItemImpl, public virtual MidiNotifierIface {
+protected:
+  virtual  ~MidiNotifierImpl ();
+public:
+  explicit  MidiNotifierImpl (BseObject*);
+};
+
+} // Bse
+
 #endif /* __BSE_MIDI_NOTIFIER_H__ */
