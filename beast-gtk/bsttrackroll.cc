@@ -168,10 +168,18 @@ track_roll_get_layout (GxkScrollCanvas        *scc,
 }
 
 static void
+track_roll_song_item_removed (BstTrackRoll *self)
+{
+  g_return_if_fail (BST_IS_TRACK_ROLL (self));
+  bst_track_roll_queue_row_change (self, -1);
+}
+
+static void
 track_roll_release_proxy (BstTrackRoll *self)
 {
   bse_proxy_disconnect (self->proxy,
                         "any_signal", track_roll_release_proxy, self,
+                        "any_signal", track_roll_song_item_removed, self,
                         NULL);
   bse_item_unuse (self->proxy);
   self->proxy = 0;
@@ -210,6 +218,7 @@ bst_track_roll_setup (BstTrackRoll   *self,
       bse_item_use (self->proxy);
       bse_proxy_connect (self->proxy,
                          "swapped_signal::release", track_roll_release_proxy, self,
+                         "swapped_signal::item-remove", track_roll_song_item_removed, self,
                          NULL);
     }
   track_roll_update_layout (self, TRUE);
