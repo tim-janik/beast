@@ -454,20 +454,20 @@ bst_piano_roll_controller_quantize (BstPianoRollController *self,
   g_return_val_if_fail (self != NULL, fine_tick);
 
   Bse::PartH part = self->proll->part;
-  BseSongTiming *timing = bse_part_get_timing (part.proxy_id(), fine_tick);
+  Bse::SongTiming timing = part.get_timing (fine_tick);
   uint quant, tick, qtick;
   if (QUANTIZATION (self) == BST_QUANTIZE_NONE)
     quant = 1;
   else if (QUANTIZATION (self) == BST_QUANTIZE_TACT)
-    quant = timing->tpt;
+    quant = timing.tpt;
   else
-    quant = timing->tpqn * 4 / QUANTIZATION (self);
-  tick = fine_tick - timing->tick;
+    quant = timing.tpqn * 4 / QUANTIZATION (self);
+  tick = fine_tick - timing.tick;
   qtick = tick / quant;
   qtick *= quant;
   if (tick - qtick > quant / 2)
     qtick += quant;
-  tick = timing->tick + qtick;
+  tick = timing.tick + qtick;
   return tick;
 }
 

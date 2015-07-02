@@ -282,6 +282,7 @@ public:
   virtual PartControlSeq list_controls          (int tick, int duration, MidiSignalType control_type) override;
   virtual PartControlSeq get_channel_controls   (int channel, int tick, int duration, MidiSignalType control_type) override;
   virtual PartControlSeq get_controls           (int tick, MidiSignalType control_type) override;
+  virtual SongTiming     get_timing             (int tick) override;
   virtual int            get_max_note           () override;
   virtual int            get_min_note           () override;
   virtual ErrorType      change_control         (int id, int tick, MidiSignalType control_type, double value) override;

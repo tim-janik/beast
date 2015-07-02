@@ -300,24 +300,24 @@ guint
 bst_track_roll_controller_quantize (BstTrackRollController *self,
 				    guint                   fine_tick)
 {
-  BseSongTiming *timing;
   guint quant, tick, qtick;
 
   g_return_val_if_fail (self != NULL, fine_tick);
 
-  timing = bse_song_get_timing (self->song, fine_tick);
+  Bse::SongH song = Bse::SongH::down_cast (bse_server.from_proxy (self->song));
+  Bse::SongTiming timing = song.get_timing (fine_tick);
   if (QUANTIZATION (self) == BST_QUANTIZE_NONE)
     quant = 1;
   else if (QUANTIZATION (self) == BST_QUANTIZE_TACT)
-    quant = timing->tpt;
+    quant = timing.tpt;
   else
-    quant = timing->tpqn * 4 / QUANTIZATION (self);
-  tick = fine_tick - timing->tick;
+    quant = timing.tpqn * 4 / QUANTIZATION (self);
+  tick = fine_tick - timing.tick;
   qtick = tick / quant;
   qtick *= quant;
   if (tick - qtick > quant / 2)
     qtick += quant;
-  tick = timing->tick + qtick;
+  tick = timing.tick + qtick;
   return tick;
 }
 

@@ -2146,6 +2146,19 @@ PartImpl::get_channel_controls (int channel, int tick, int duration, MidiSignalT
   return bse_part_list_controls (self, channel, tick, duration, control_type);
 }
 
+SongTiming
+PartImpl::get_timing (int tick)
+{
+  BsePart *self = as<BsePart*>();
+  SongTiming timing;
+  BseItem *parent = BSE_ITEM (self)->parent;
+  if (BSE_IS_SONG (parent))
+    bse_song_get_timing (BSE_SONG (parent), tick, &timing);
+  else
+    bse_song_timing_get_default (&timing);
+  return timing;
+}
+
 int
 PartImpl::get_max_note ()
 {

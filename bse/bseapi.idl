@@ -318,6 +318,20 @@ record UserMessage {
   String          label;        ///< Message class label, used to enable/disable this type of message.
 };
 
+/// Song timing configuration.
+record SongTiming {
+  int32   tick        = Range ("Current tick", "Song position timing applies to", STANDARD, 0, MAXINT31, 384, 0);
+  float64 bpm         = Range ("BPM", "Beats per minute", STANDARD, MIN_BPM, MAX_BPM, 10, 120);
+  // Signature
+  int32   numerator   = Range ("Numerator", "Number of notes per measure", STANDARD, 1, 256, 2, 4);
+  int32   denominator = Range ("Denominator", "Type of notes counted per measure", STANDARD, 1, 256, 2, 4);
+  // Sequencer Timing
+  int32   tpqn        = Range ("TPQN", "Ticks per quarter note", STANDARD, 1, MAXINT31, 12, 384);
+  int32   tpt         = Range ("TPT", "Ticks per tact", STANDARD, 1, MAXINT31, 12, 384);
+  // Playback Timing
+  float64 stamp_ticks = Range ("Tick Increment", "Ticks per stamp increment (useful only during playback)", STANDARD, 1, MAXINT31, 12, 384);
+};
+
 /// Fundamental base type for all BSE objects.
 interface Object {
   String debug_name (); ///< Object name useful for debugging output.
@@ -367,8 +381,9 @@ interface Part : Item {
   PartControlSeq list_controls             (int32 tick, int32 duration, MidiSignalType control_type); ///< List all control events within a tick range.
   PartControlSeq get_channel_controls      (int32 channel, int32 tick, int32 duration, MidiSignalType control_type); ///< Retrieve all control events of a specific type within range of a channel.
   PartControlSeq get_controls              (int32 tick, MidiSignalType control_type); ///< Retrieve all control events of a specific type at specified tick.
-  int32          get_max_note              (); ///< Retrieve the maximum note supported in this part.
-  int32          get_min_note              (); ///< Retrieve the minimum note supported in this part.
+  SongTiming     get_timing                (int32 tick); ///< Retrieve song timing information at a specific tick.
+  int32          get_max_note              ();           ///< Retrieve the maximum note supported in this part.
+  int32          get_min_note              ();           ///< Retrieve the minimum note supported in this part.
   ErrorType      change_control            (int32 id, int32 tick, MidiSignalType control_type, float64 value); ///< Change an existing control event within a part.
   ErrorType      change_note               (int32 id, int32 tick, int32 duration, int32 note, int32 fine_tune, float64 velocity); ///< Change an existing note within a part.
   ErrorType      delete_event              (int32 id); ///< Delete an existing event from a part.
@@ -392,7 +407,6 @@ interface Part : Item {
   PartNoteSeq check_overlap       (int32 tick, int32 duration, int32 note); ///< Check whether a note would overlap with neighbours.
   PartNoteSeq get_notes           (int32 tick, int32 note); ///< Retrieve all notes at a specific frequency or crossing a tick.
 
-  // SongTiming     get_timing                (int32 tick); ///< Retrieve song timing information at a specific tick.
   // signal void    range_changed             (int32 a, int32 b, int32 c, int32 d);
   // signal void    links_changed             ();
   // property int32 n_channels;
@@ -449,8 +463,9 @@ interface SubSynth : Source {
 
 /// Interface for sequencing information and links to Part objects.
 interface Track : ContextMerger {
-  int32 insert_part (int32 tick, Part part);    ///< Insert Part into Track at @a tick, returns the corresponding link id.
-  void  remove_tick (int32 tick);               ///< Remove Part at specified @a tick from a track.
+  SongTiming get_timing  (int32 tick);            ///< Retrieve song timing information at a specific tick.
+  int32      insert_part (int32 tick, Part part); ///< Insert Part into Track at @a tick, returns the corresponding link id.
+  void       remove_tick (int32 tick);            ///< Remove Part at specified @a tick from a track.
 
   // ItemSeq      list_parts_uniq ();              ///< List all parts contained in a track.
   // TrackPartSeq list_parts ();                   ///< List parts scheduled in a track, sorted by tick.
@@ -462,7 +477,6 @@ interface Track : ContextMerger {
   /// The output of this module is the merged result from all polyphonic voices and has all track specific alterations applied.
   Source       get_output_source ();
 
-  // SongTimingHandle get_timing (int32 tick);     ///< Retrieve song timing information at a specific tick.
   // property bool muted;          ///< _("Mute this track by ignoring it in the sequencer.")
   // property CSynth snet;         ///< _("Synthesis network to be used as instrument.")
   // property Wave wave;           ///< _("Wave to be used as instrument.")
@@ -492,6 +506,7 @@ interface Bus : SubSynth {
 
 /// Interface for Track and Part objects, as well as meta data for sequencing.
 interface Song : SNet {
+  SongTiming get_timing              (int32 tick);  ///< Retrieve song timing information at a specific tick.
   Track      find_any_track_for_part (Part part);   ///< Find the first track that contains part, suitable to check for orphan parts.
   Bus        create_bus              ();            ///< Create a new mixer bus for a Song.
   void       remove_bus              (Bus bus);     ///< Delete a mixer bus from a Song.
@@ -503,7 +518,6 @@ interface Song : SNet {
   // void       ensure_track_links      ();            ///< Ensure that each part in a song is inserted into at least one track.
   // Track      find_track_for_part     (Part part);   ///< Find a track suitable for playing notes of a given part.
   // Bus        get_master_bus          ();            ///< Retrieve master output bus of a song if it exists.
-  // SongTiming get_timing              (int32 tick);  ///< Retrieve song timing information at a specific tick.
   // void synthesize_note (Track track, int32 duration, int32 note, int32 fine_tune, float64 velocity); ///< Synthesize a note on a song of an active project.
   // signal void   pointer_changed (int32 a);
   // group _("Tuning") {

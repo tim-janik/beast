@@ -70,7 +70,7 @@ BSE_BUILTIN_TYPE (BseSong)
 }
 
 void
-bse_song_timing_get_default (BseSongTiming *timing)
+bse_song_timing_get_default (Bse::SongTiming *timing)
 {
   g_return_if_fail (timing != NULL);
 
@@ -305,9 +305,7 @@ bse_song_get_property (GObject     *object,
 }
 
 void
-bse_song_get_timing (BseSong       *self,
-		     guint          tick,
-		     BseSongTiming *timing)
+bse_song_get_timing (BseSong *self, uint tick, Bse::SongTiming *timing)
 {
   g_return_if_fail (BSE_IS_SONG (self));
   g_return_if_fail (timing != NULL);
@@ -573,7 +571,7 @@ static void
 bse_song_init (BseSong *self)
 {
   BseSNet *snet = BSE_SNET (self);
-  BseSongTiming timing;
+  Bse::SongTiming timing;
 
   bse_song_timing_get_default (&timing);
 
@@ -716,7 +714,7 @@ bse_song_class_init (BseSongClass *klass)
   BseSourceClass *source_class = BSE_SOURCE_CLASS (klass);
   BseContainerClass *container_class = BSE_CONTAINER_CLASS (klass);
   BseSuperClass *super_class = BSE_SUPER_CLASS (klass);
-  BseSongTiming timing;
+  Bse::SongTiming timing;
 
   parent_class = (GTypeClass*) g_type_class_peek_parent (klass);
 
@@ -949,6 +947,15 @@ SongImpl::remove_track (TrackIface &track_iface)
   bse_container_remove_backedup (BSE_CONTAINER (self), child, ustack);
   // done
   bse_item_undo_close (ustack);
+}
+
+SongTiming
+SongImpl::get_timing (int tick)
+{
+  BseSong *self = as<BseSong*>();
+  SongTiming timing;
+  bse_song_get_timing (self, tick, &timing);
+  return timing;
 }
 
 } // Bse

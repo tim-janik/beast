@@ -622,7 +622,7 @@ bse_track_list_parts_intern (BseTrack *self,
   BseSong *song = NULL;
   if (BSE_IS_SONG (item->parent))
     song = BSE_SONG (item->parent);
-  BseSongTiming timing;
+  Bse::SongTiming timing;
   bse_song_timing_get_default (&timing);
   BseTrackPartSeq *tps = bse_track_part_seq_new ();
   gint i;
@@ -832,7 +832,7 @@ bse_track_get_last_tick (BseTrack *self)
   if (part)
     {
       BseItem *item = BSE_ITEM (self);
-      BseSongTiming timing;
+      Bse::SongTiming timing;
       g_object_get (part, "last-tick", &last_tick, NULL);
       if (BSE_IS_SONG (item->parent))
         bse_song_get_timing (BSE_SONG (item->parent), offset, &timing);
@@ -1066,6 +1066,19 @@ TrackImpl::TrackImpl (BseObject *bobj) :
 
 TrackImpl::~TrackImpl ()
 {}
+
+SongTiming
+TrackImpl::get_timing (int tick)
+{
+  BseTrack *self = as<BseTrack*>();
+  SongTiming timing;
+  BseItem *parent = BSE_ITEM (self)->parent;
+  if (BSE_IS_SONG (parent))
+    bse_song_get_timing (BSE_SONG (parent), tick, &timing);
+  else
+    bse_song_timing_get_default (&timing);
+  return timing;
+}
 
 int
 TrackImpl::insert_part (int tick, PartIface &parti)

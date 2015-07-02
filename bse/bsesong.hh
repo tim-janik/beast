@@ -56,18 +56,15 @@ struct BseSong : BseSNet {
 struct BseSongClass : BseSNetClass
 {};
 
-BseSong*	bse_song_lookup			(BseProject	*project,
-						 const gchar	*name);
-void		bse_song_stop_sequencing_SL	(BseSong	*self);
-void		bse_song_get_timing		(BseSong	*self,
-						 guint		 tick,
-						 BseSongTiming	*timing);
-void		bse_song_timing_get_default	(BseSongTiming	*timing);
-BseSource*      bse_song_create_summation       (BseSong        *self);
-BseBus*         bse_song_find_master            (BseSong        *self);
-BseSource*      bse_song_ensure_master          (BseSong        *self);
-void            bse_song_set_solo_bus           (BseSong *self, BseBus *bus);
-BseTrack*       bse_song_find_first_track       (BseSong *self, BsePart *part);
+BseSong*   bse_song_lookup	       (BseProject *project, const char *name);
+void	   bse_song_stop_sequencing_SL (BseSong	*self);
+void	   bse_song_get_timing	       (BseSong	*self, uint tick, Bse::SongTiming *timing);
+void	   bse_song_timing_get_default (Bse::SongTiming *timing);
+BseSource* bse_song_create_summation   (BseSong *self);
+BseBus*    bse_song_find_master        (BseSong *self);
+BseSource* bse_song_ensure_master      (BseSong *self);
+void       bse_song_set_solo_bus       (BseSong *self, BseBus *bus);
+BseTrack*  bse_song_find_first_track   (BseSong *self, BsePart *part);
 
 G_END_DECLS
 
@@ -78,6 +75,7 @@ protected:
   virtual    ~SongImpl                ();
 public:
   explicit    SongImpl                (BseObject*);
+  SongTiming  get_timing              (int tick);
   TrackIfaceP find_any_track_for_part (PartIface &part) override;
   BusIfaceP   create_bus              () override;
   void        remove_bus              (BusIface &bus) override;

@@ -99,35 +99,3 @@ BODY (BseProcedureClass *proc,
 
   return Bse::ERROR_NONE;
 }
-
-METHOD (BseTrack, get-timing) {
-  HELP  = "Retrieve song timing information at a specific tick.";
-  IN    = bse_param_spec_object ("track", "Track", NULL, BSE_TYPE_TRACK, SFI_PARAM_STANDARD);
-  IN    = sfi_pspec_int ("tick", "Tick", "Tick to retrieve timing info about", 0, 0, G_MAXINT, 384, SFI_PARAM_STANDARD);
-  OUT   = bse_param_spec_boxed ("timing", "Timing", "Song Timing", BSE_TYPE_SONG_TIMING, SFI_PARAM_STANDARD);
-} BODY (BseProcedureClass *proc,
-	const GValue      *in_values,
-	GValue            *out_values)
-{
-  /* extract parameter values */
-  BseTrack *self = (BseTrack*) bse_value_get_object (in_values++);
-  SfiInt    tick = sfi_value_get_int (in_values++);
-  BseItem  *parent;
-  BseSongTiming timing = { 0, };
-
-  /* check parameters */
-  if (!BSE_IS_TRACK (self))
-    return Bse::ERROR_PROC_PARAM_INVAL;
-
-  /* action */
-  parent = BSE_ITEM (self)->parent;
-  if (BSE_IS_SONG (parent))
-    bse_song_get_timing (BSE_SONG (parent), tick, &timing);
-  else
-    bse_song_timing_get_default (&timing);
-
-  /* set output parameters */
-  bse_value_set_boxed (out_values++, &timing);
-
-  return Bse::ERROR_NONE;
-}
