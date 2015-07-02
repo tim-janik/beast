@@ -87,17 +87,20 @@ part_view_action_exec (gpointer                data,
 {
   BstPartView *self = BST_PART_VIEW (data);
   BstItemView *item_view = BST_ITEM_VIEW (self);
-  SfiProxy song = item_view->container;
+  SfiProxy songid = item_view->container;
+  Bse::SongH song = Bse::SongH::down_cast (bse_server.from_proxy (songid));
+  Bse::PartH part;
   switch (action)
     {
       SfiProxy item;
     case ACTION_ADD_PART:
-      item = bse_song_create_part (song);
-      bst_item_view_select (item_view, item);
+      part = song.create_part();
+      bst_item_view_select (item_view, part.proxy_id());
       break;
     case ACTION_DELETE_PART:
       item = bst_item_view_get_current (item_view);
-      bse_song_remove_part (song, item);
+      part = Bse::PartH::down_cast (bse_server.from_proxy (item));
+      song.remove_part (part);
       break;
     case ACTION_EDIT_PART:
       popup_part_dialog (self);

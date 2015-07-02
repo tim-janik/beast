@@ -495,13 +495,13 @@ interface Song : SNet {
   Track      find_any_track_for_part (Part part);   ///< Find the first track that contains part, suitable to check for orphan parts.
   Bus        create_bus              ();            ///< Create a new mixer bus for a Song.
   void       remove_bus              (Bus bus);     ///< Delete a mixer bus from a Song.
-  // Part       create_part             ();            ///< Create a new Part in a Song.
+  Part       create_part             ();            ///< Create a new Part in a Song.
+  void       remove_part             (Part part);   ///< Delete a Part from a Song.
   // Track      create_track            ();            ///< Create a new Track for a Song.
   // Bus        ensure_master_bus       ();            ///< Retrieve master output bus of a song, will create one if it doesn't exist.
   // void       ensure_track_links      ();            ///< Ensure that each part in a song is inserted into at least one track.
   // Track      find_track_for_part     (Part part);   ///< Find a track suitable for playing notes of a given part.
   // Bus        get_master_bus          ();            ///< Retrieve master output bus of a song if it exists.
-  // void       remove_part             (Part part);   ///< Delete a Part from a Song.
   // void       remove_track            (Track track); ///< Delete a Track from a Song.
   // SongTiming get_timing              (int32 tick);  ///< Retrieve song timing information at a specific tick.
   // void synthesize_note (Track track, int32 duration, int32 note, int32 fine_tune, float64 velocity); ///< Synthesize a note on a song of an active project.

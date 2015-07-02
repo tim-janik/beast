@@ -734,7 +734,7 @@ track_view_action_exec (gpointer data,
         {
           Bse::PartH part = Bse::PartH::down_cast (bse_server.from_proxy (iseq->items[i]));
           if (!song.find_any_track_for_part (part))
-            bse_song_remove_part (song.proxy_id(), part.proxy_id());
+            song.remove_part (part);
         }
       bse_item_ungroup_undo (song.proxy_id());
       break;

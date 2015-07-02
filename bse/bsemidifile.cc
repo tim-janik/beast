@@ -2,7 +2,9 @@
 #include "bsemidifile.hh"
 #include "bsemididecoder.hh"
 #include "bseitem.hh"
+#include "bsesong.hh"
 #include "bsepart.hh"
+#include "bsetrack.hh"
 #include "gslcommon.hh"
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -330,18 +332,18 @@ bse_midi_file_setup_song (BseMidiFile    *smf,
         uses_voice = BSE_MIDI_CHANNEL_VOICE_MESSAGE (track->events[j]->status);
       if (uses_voice)
         {
-          BseTrack *track;
-          BsePart *part;
-          Bse::ErrorType error;
-          bse_item_exec (song, "create-track", &track);
-          bse_item_exec (track, "ensure-output", &error);
+          BseTrack *btrack = NULL;
+          bse_item_exec (song, "create-track", &btrack);
+          Bse::TrackImpl *track = btrack->as<Bse::TrackImpl*>();
+          Bse::ErrorType error = track->ensure_output();
           bse_assert_ok (error);
-          bse_item_set_undoable (track, "n-voices", 24, NULL);
-          bse_item_exec (song, "create-part", &part);
+          bse_item_set_undoable (btrack, "n-voices", 24, NULL);
+          Bse::PartIfaceP part_iface = song->as<Bse::SongImpl*>()->create_part();
+          BsePart *bpart = part_iface->as<BsePart*>();
           // g_printerr ("part1: %p %s\n", part, G_OBJECT_TYPE_NAME (part));
-          bse_item_exec_void (track, "insert-part", 0, part);
+          track->insert_part (0, *part_iface);
           // g_printerr ("part2: %p %s\n", part, G_OBJECT_TYPE_NAME (part));
-          bse_midi_file_add_part_events (smf, i, part, track);
+          bse_midi_file_add_part_events (smf, i, bpart, btrack);
         }
     }
 }

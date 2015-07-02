@@ -850,7 +850,7 @@ SongImpl::remove_bus (BusIface &bus_iface)
   BseUndoStack *ustack = bse_item_undo_open (self, "Remove Bus");
   // reset ::master-output property undoable
   bse_item_set (child, "master-output", FALSE, NULL);
-  // resets ::master-output non-undoable
+  // backup object references to undo stack
   bse_container_uncross_undoable (BSE_CONTAINER (self), child);
   // implement "undo" of bse_container_remove_backedup, i.e. redo
   UndoDescriptor<BusImpl> bus_descriptor = undo_descriptor (*bus);
@@ -861,6 +861,48 @@ SongImpl::remove_bus (BusIface &bus_iface)
   };
   push_undo_to_redo ("Remove Bus", *this, lambda);
   // backup and remove (without redo queueing)
+  bse_container_remove_backedup (BSE_CONTAINER (self), child, ustack);
+  // done
+  bse_item_undo_close (ustack);
+}
+
+PartIfaceP
+SongImpl::create_part ()
+{
+  BseSong *self = as<BseSong*>();
+  BseItem *child = (BseItem*) bse_container_new_child (BSE_CONTAINER (self), BSE_TYPE_PART, NULL);
+  PartImpl *part = child->as<PartImpl*>();
+  UndoDescriptor<PartImpl> part_descriptor = undo_descriptor (*part);
+  auto lambda = [part_descriptor] (SongImpl &self, BseUndoStack *ustack) -> ErrorType {
+    PartImpl &part = self.undo_resolve (part_descriptor);
+    self.remove_part (part);
+    return ERROR_NONE;
+  };
+  push_undo ("Create Part", *this, lambda);
+  return part->as<PartIfaceP>();
+}
+
+void
+SongImpl::remove_part (PartIface &part_iface)
+{
+  BseSong *self = as<BseSong*>();
+  PartImpl *part = dynamic_cast<PartImpl*> (&part_iface);
+  return_unless (part->parent() == this);
+  if (BSE_SOURCE_PREPARED (self))
+    return;
+  BseItem *child = part->as<BseItem*>();
+  BseUndoStack *ustack = bse_item_undo_open (self, "Remove Part");
+  // backup object references to undo stack
+  bse_container_uncross_undoable (BSE_CONTAINER (self), child);
+  // implement "undo" of bse_container_remove_backedup, i.e. redo
+  UndoDescriptor<PartImpl> part_descriptor = undo_descriptor (*part);
+  auto lambda = [part_descriptor] (SongImpl &self, BseUndoStack *ustack) -> ErrorType {
+    PartImpl &part = self.undo_resolve (part_descriptor);
+    self.remove_part (part);
+    return ERROR_NONE;
+  };
+  push_undo_to_redo ("Remove Part", *this, lambda);
+  // remove (without redo queueing)
   bse_container_remove_backedup (BSE_CONTAINER (self), child, ustack);
   // done
   bse_item_undo_close (ustack);

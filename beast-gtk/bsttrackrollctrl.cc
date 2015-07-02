@@ -423,15 +423,15 @@ insert_start (BstTrackRollController *self,
       Bse::PartH part = track.get_part (tick);
       if (!part)
 	{
-	  SfiProxy song = bse_item_get_parent (drag->current_track.proxy_id());
-          bse_item_group_undo (song, "Insert part");
-	  SfiProxy item = bse_song_create_part (song);
-          Bse::PartH part = Bse::PartH::down_cast (bse_server.from_proxy (item));
-	  if (item && track.insert_part (tick, part) > 0)
+	  SfiProxy songid = bse_item_get_parent (drag->current_track.proxy_id());
+          Bse::SongH song = Bse::SongH::down_cast (bse_server.from_proxy (songid));
+          bse_item_group_undo (song.proxy_id(), "Insert part");
+          Bse::PartH part = song.create_part();
+	  if (part && track.insert_part (tick, part) > 0)
 	    gxk_status_set (GXK_STATUS_DONE, _("Insert Part"), NULL);
 	  else
 	    gxk_status_set (GXK_STATUS_ERROR, _("Insert Part"), _("Lost Part"));
-          bse_item_ungroup_undo (song);
+          bse_item_ungroup_undo (song.proxy_id());
 	  drag->state = GXK_DRAG_HANDLED;
 	}
       else
@@ -458,7 +458,7 @@ delete_start (BstTrackRollController *self,
       Bse::TrackH track = self->obj_track;
       track.remove_tick (self->obj_tick);
       if (!song.find_any_track_for_part (self->obj_part))
-        bse_song_remove_part (song.proxy_id(), self->obj_part.proxy_id());
+        song.remove_part (self->obj_part);
       bse_item_ungroup_undo (song.proxy_id());
       gxk_status_set (GXK_STATUS_DONE, _("Delete Part"), NULL);
     }
