@@ -79,6 +79,8 @@ protected:
 public:
   explicit    SongImpl                (BseObject*);
   TrackIfaceP find_any_track_for_part (PartIface &part) override;
+  BusIfaceP   create_bus              () override;
+  void        remove_bus              (BusIface &bus) override;
 };
 
 } // Bse

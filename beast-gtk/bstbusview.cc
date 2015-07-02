@@ -68,17 +68,17 @@ bus_view_action_exec (gpointer                data,
 {
   BstBusView *self = BST_BUS_VIEW (data);
   BstItemView *item_view = BST_ITEM_VIEW (self);
-  SfiProxy song = item_view->container;
+  Bse::SongH song = Bse::SongH::down_cast (bse_server.from_proxy (item_view->container));
+  Bse::BusH bus;
   switch (action)
     {
-      SfiProxy item;
     case ACTION_ADD_BUS:
-      item = bse_song_create_bus (song);
-      bst_item_view_select (item_view, item);
+      bus = song.create_bus();
+      bst_item_view_select (item_view, bus.proxy_id());
       break;
     case ACTION_DELETE_BUS:
-      item = bst_item_view_get_current (item_view);
-      bse_song_remove_bus (song, item);
+      bus = Bse::BusH::down_cast (bse_server.from_proxy (bst_item_view_get_current (item_view)));
+      song.remove_bus (bus);
       break;
     }
   gxk_widget_update_actions_downwards (self);
