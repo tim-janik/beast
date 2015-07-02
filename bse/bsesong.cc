@@ -908,4 +908,47 @@ SongImpl::remove_part (PartIface &part_iface)
   bse_item_undo_close (ustack);
 }
 
+TrackIfaceP
+SongImpl::create_track ()
+{
+  BseSong *self = as<BseSong*>();
+  return_unless (BSE_SOURCE_PREPARED (self) == false, NULL);
+  BseItem *child = (BseItem*) bse_container_new_child (BSE_CONTAINER (self), BSE_TYPE_TRACK, NULL);
+  TrackImpl *track = child->as<TrackImpl*>();
+  UndoDescriptor<TrackImpl> track_descriptor = undo_descriptor (*track);
+  auto lambda = [track_descriptor] (SongImpl &self, BseUndoStack *ustack) -> ErrorType {
+    TrackImpl &track = self.undo_resolve (track_descriptor);
+    self.remove_track (track);
+    return ERROR_NONE;
+  };
+  push_undo ("Create Track", *this, lambda);
+  return track->as<TrackIfaceP>();
+}
+
+void
+SongImpl::remove_track (TrackIface &track_iface)
+{
+  BseSong *self = as<BseSong*>();
+  TrackImpl *track = dynamic_cast<TrackImpl*> (&track_iface);
+  return_unless (track->parent() == this);
+  if (BSE_SOURCE_PREPARED (self))
+    return;
+  BseItem *child = track->as<BseItem*>();
+  BseUndoStack *ustack = bse_item_undo_open (self, "Remove Track");
+  // backup object references to undo stack
+  bse_container_uncross_undoable (BSE_CONTAINER (self), child);
+  // implement "undo" of bse_container_remove_backedup, i.e. redo
+  UndoDescriptor<TrackImpl> track_descriptor = undo_descriptor (*track);
+  auto lambda = [track_descriptor] (SongImpl &self, BseUndoStack *ustack) -> ErrorType {
+    TrackImpl &track = self.undo_resolve (track_descriptor);
+    self.remove_track (track);
+    return ERROR_NONE;
+  };
+  push_undo_to_redo ("Remove Track", *this, lambda);
+  // remove (without redo queueing)
+  bse_container_remove_backedup (BSE_CONTAINER (self), child, ustack);
+  // done
+  bse_item_undo_close (ustack);
+}
+
 } // Bse

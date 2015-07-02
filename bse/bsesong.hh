@@ -83,6 +83,8 @@ public:
   void        remove_bus              (BusIface &bus) override;
   PartIfaceP  create_part             () override;
   void        remove_part             (PartIface &part) override;
+  TrackIfaceP create_track            () override;
+  void        remove_track            (TrackIface &track) override;
 };
 
 } // Bse

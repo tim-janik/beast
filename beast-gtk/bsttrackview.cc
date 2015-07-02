@@ -707,16 +707,16 @@ track_view_action_exec (gpointer data,
   BstItemView *item_view = BST_ITEM_VIEW (self);
   Bse::SongH song = Bse::SongH::down_cast (bse_server.from_proxy (item_view->container));
 
+  Bse::TrackH track;
   switch (action)
     {
       SfiProxy item;
       guint i;
     case ACTION_ADD_TRACK:
       bse_item_group_undo (song.proxy_id(), "Add Track");
-      item = bse_song_create_track (song.proxy_id());
-      if (item)
+      track = song.create_track();
+      if (track)
 	{
-          Bse::TrackH track = Bse::TrackH::down_cast (bse_server.from_proxy (item));
 	  gchar *string = g_strdup_format ("Track-%02X", bse_item_get_seqid (track.proxy_id()));
 	  bse_item_set_name (track.proxy_id(), string);
 	  g_free (string);
@@ -727,9 +727,10 @@ track_view_action_exec (gpointer data,
       break;
     case ACTION_DELETE_TRACK:
       item = bst_item_view_get_current (item_view);
+      track = Bse::TrackH::down_cast (bse_server.from_proxy (item));
       bse_item_group_undo (song.proxy_id(), "Delete Track");
       BseItemSeq *iseq = bse_track_list_parts_uniq (item);
-      bse_song_remove_track (song.proxy_id(), item);
+      song.remove_track (track);
       for (i = 0; i < iseq->n_items; i++)
         {
           Bse::PartH part = Bse::PartH::down_cast (bse_server.from_proxy (iseq->items[i]));

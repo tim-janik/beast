@@ -313,17 +313,18 @@ bse_midi_file_add_part_events (BseMidiFile *smf,
 
 void
 bse_midi_file_setup_song (BseMidiFile    *smf,
-                          BseSong        *song)
+                          BseSong        *bsong)
 {
   BseBus *master_bus;
   uint i, j;
-  bse_item_set_undoable (song,
+  bse_item_set_undoable (bsong,
                          "tpqn", smf->tpqn,
                          "numerator", smf->numerator,
                          "denominator", smf->denominator,
                          "bpm", smf->bpm,
                          NULL);
-  bse_item_exec (song, "ensure-master-bus", &master_bus);
+  bse_item_exec (bsong, "ensure-master-bus", &master_bus);
+  Bse::SongImpl &song = *bsong->as<Bse::SongImpl*>();
   for (i = 0; i < smf->n_tracks; i++)
     {
       BseMidiFileTrack *track = smf->tracks + i;
@@ -332,13 +333,12 @@ bse_midi_file_setup_song (BseMidiFile    *smf,
         uses_voice = BSE_MIDI_CHANNEL_VOICE_MESSAGE (track->events[j]->status);
       if (uses_voice)
         {
-          BseTrack *btrack = NULL;
-          bse_item_exec (song, "create-track", &btrack);
-          Bse::TrackImpl *track = btrack->as<Bse::TrackImpl*>();
+          Bse::TrackIfaceP track = song.create_track();
+          BseTrack *btrack = track->as<BseTrack*>();
           Bse::ErrorType error = track->ensure_output();
           bse_assert_ok (error);
           bse_item_set_undoable (btrack, "n-voices", 24, NULL);
-          Bse::PartIfaceP part_iface = song->as<Bse::SongImpl*>()->create_part();
+          Bse::PartIfaceP part_iface = song.create_part();
           BsePart *bpart = part_iface->as<BsePart*>();
           // g_printerr ("part1: %p %s\n", part, G_OBJECT_TYPE_NAME (part));
           track->insert_part (0, *part_iface);
