@@ -9,24 +9,24 @@ The code base is currently undergoing several migrations and new developments:
 
 IDL-Migration
 -------------
-**[STARTED]** (For BSE) Move from sfidl (and the old PROC files) to AIDA IDL (aidacc, distributed with Rapicorn). BSE already contains an AIDA style IDL file with C++11 objects that can be used in Beast. Eventually, all sfidl files need to be ported to AIDA IDL.
+**[ONGOING]** (For BSE) Move from sfidl (and the old PROC files) to AIDA IDL (aidacc, distributed with Rapicorn). BSE already contains an AIDA style IDL file with C++11 objects that can be used in Beast. Eventually, all sfidl files need to be ported to AIDA IDL.
 
-PROC-Migration
---------------
-**[STARTED]** Move from PROC files to IDL files. Initially procedures were moved into sfidl files, but now procedures need to be moved to AIDA IDL. Note that during build time, bsehack.idl is generated, that already contains IDL formatting for all procedures.
-
-Bstrecords-Migration
---------------------
-**[STARTED]** Beast generates some structures from bstrecords.idl (sfidl), these all need to be moved into bstapi.idl (ADIA IDL).
-
-CXX-Migration
+C++-Migration
 -------------
-**[STARTED]** Move from GObject (BseObject) to AIDA C++11 objects, derived from Aida::ImplicitBase and specified in IDL files. The following steps are planned:
-* bse_object_new_valist is used everywhere instead of g_object_new() and its variants.
-* *bse_object_new_valist* creates the BseObject/GObject and then the IDL based C++ object. Back pointers are installed to link the two together. That way features can be migrated incrementally from BseObject to CxxObject. The C++ objects auto-convert to their BseObject counter parts. This allows *base* object types to be replaced by CxxObjects quickly.
-    * First, signals should be migrated, as signals are the the main tie to libgobject.so.
-    * Second, once all signals are converted, all g_signal_ related code is eliminated from BSE and SFI, bse_proxy_connect will be removed.
-    * Last, all g_object_ and g_type_ calls can be replaced.
+**[ONGOING]** Move from GObject (BseObject) to AIDA C++11 objects, derived from Aida::ImplicitBase and specified in IDL files. The following steps are planned:
+* **[DONE]** For object creation, `bse_object_new_valist()` is used everywhere instead of `g_object_new()` and its variants.
+* **[DONE]** `bse_object_new_valist()` creates the GObject based BseObject and then creates and attaches an IDL based C++11 object (derived from Bse::Object). Back pointers are installed to link the two together and to convert back and forth. This way, features can be migrated incrementally from BseObject to Bse::Object and derived types. A template method as<>() is provided to convert between object types. This scheme requires no particular order and allows attaching C++ objects to abstract or concrete GObject types, whatever is easier for migration efforts.
+* **[ONGOING]** Create as much IDL C++ shims as possible, to ease procedure migrations.
+* **[ONGOING]** Move procedures from PROC files into interface methods in IDL files. Initially procedures were moved into sfidl files, but now procedures are being moved to AIDA IDL. Note that during build time, bsehack.idl is generated, that already contains IDL formatting for all procedures.
+* Next, signals should be migrated, as signals are the the main tie to libgobject.so.
+* Once all signals are converted, all g_signal_ related code is eliminated from BSE and SFI, bse_proxy_connect can be removed.
+* Also, migrate all properties from GObject based to AIDA IDL, this might mean more Rapicorn AIDA support for records, sequences and Any than currently available.
+* Develop a suitable replacement for the `sfidl --plugin` mode, which generates very customized code to implement BSE objects and related synthesis engine modules.
+* Last, all g_object_ and g_type_ calls can be replaced.
+
+Plugin-Merging
+--------------
+**[STARTED]** The BSE plugin API has almost no uses, but plugin loading causes major slowdowns in the startup phase. As a consequence, all plugins shipped together with BSE should be linked into the same ELF library.
 
 Rapicorn-Migration
 ------------------
@@ -43,11 +43,9 @@ Python-Scripting
 possible to implement basic Python scripts, SCM scripts may be broken and
 shall be replaced.
 
-Plugin-Merging
---------------
-**[STARTED]** The BSE plugin API has allmost no uses, but pluging loading
-causes major slowdowns in the startup phase. As a consequence, all plugins
-shipped together with BSE should be linked into the same ELF library.
+Bstrecords-Migration
+--------------------
+**[COMPLETED]** Beast used to generate some structures from bstrecords.idl (sfidl), these are all migrated into bstapi.idl (ADIA IDL).
 
 Enum-Migration
 --------------
