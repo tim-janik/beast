@@ -200,6 +200,17 @@ public:
     };
     push_item_undo (blurb, lambda);
   }
+  template<typename ItemT, typename ItemTLambda> void
+  push_undo_to_redo (const String &blurb, ItemT &self, const ItemTLambda &itemt_lambda)
+  { // push itemt_lambda as undo step when this undo step is executed (i.e. itemt_lambda is for redo)
+    const std::function<ErrorType (ItemT &item, BseUndoStack *ustack)> &undo_lambda = itemt_lambda;
+    assert_return (this == &self);
+    auto lambda = [blurb, undo_lambda] (ItemT &self, BseUndoStack *ustack) -> ErrorType {
+      self.push_undo (blurb, self, undo_lambda);
+      return ERROR_NONE;
+    };
+    push_undo (blurb, self, lambda);
+  }
   /// UndoDescriptor - type safe object handle to persist undo/redo steps
   template<class Obj>
   class UndoDescriptor {
