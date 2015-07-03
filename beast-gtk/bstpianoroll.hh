@@ -44,7 +44,7 @@ struct _BstPianoRoll
 
   Bse::PartH     part;
   SfiProxy	 song;
-  BsePartLinkSeq*plinks;
+  Bse::PartLinkSeq plinks;
   gint		 min_note;
   gint		 max_note;
   guint		 vzoom;

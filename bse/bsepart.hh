@@ -62,7 +62,7 @@ typedef enum    /*< skip >*/
 void               bse_part_set_semitone_table        (BsePart           *self,
                                                        const double      *semitone_table);
 void               bse_part_links_changed             (BsePart           *self);
-BsePartLinkSeq*    bse_part_list_links                (BsePart           *self);
+Bse::PartLinkSeq   bse_part_list_links                (BsePart *self);
 gboolean           bse_part_delete_control            (BsePart           *self,
                                                        guint              id);
 gboolean           bse_part_delete_note               (BsePart           *self,
@@ -282,6 +282,7 @@ public:
   virtual PartControlSeq list_controls          (int tick, int duration, MidiSignalType control_type) override;
   virtual PartControlSeq get_channel_controls   (int channel, int tick, int duration, MidiSignalType control_type) override;
   virtual PartControlSeq get_controls           (int tick, MidiSignalType control_type) override;
+  virtual PartLinkSeq    list_links             () override;
   virtual SongTiming     get_timing             (int tick) override;
   virtual int            get_max_note           () override;
   virtual int            get_min_note           () override;

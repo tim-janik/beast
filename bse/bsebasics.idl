@@ -393,16 +393,6 @@ sequence DotSeq {
 /* BSE Part structures */
 interface Part;
 interface Track;
-record PartLink {
-  Track track;
-  Int   tick     = SfiInt ("Tick", "", 0, 0, G_MAXINT, 384, STANDARD);
-  Part  part;
-  Int   duration = SfiInt ("Duration", "", 0, 0, G_MAXINT, 384, STANDARD);
-  // Int   count; /* 1 + repetitions */
-};
-sequence PartLinkSeq {
-  PartLink plinks;
-};
 /* BSE Track structures */
 record TrackPart {
   Int           tick     = SfiInt ("Tick", "", 0, 0, G_MAXINT, 384, STANDARD);

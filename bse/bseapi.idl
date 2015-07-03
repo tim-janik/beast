@@ -332,6 +332,10 @@ record SongTiming {
   float64 stamp_ticks = Range ("Tick Increment", "Ticks per stamp increment (useful only during playback)", STANDARD, 1, MAXINT31, 12, 384);
 };
 
+// Forward declarations.
+record PartLink;
+sequence PartLinkSeq;
+
 /// Fundamental base type for all BSE objects.
 interface Object {
   String debug_name (); ///< Object name useful for debugging output.
@@ -406,6 +410,7 @@ interface Part : Item {
   PartNoteSeq list_selected_notes (); ///< List all currently selected notes.
   PartNoteSeq check_overlap       (int32 tick, int32 duration, int32 note); ///< Check whether a note would overlap with neighbours.
   PartNoteSeq get_notes           (int32 tick, int32 note); ///< Retrieve all notes at a specific frequency or crossing a tick.
+  PartLinkSeq list_links          (); ///< List all places where parts are used (linked) from tracks, sorted by tick.
 
   // signal void    range_changed             (int32 a, int32 b, int32 c, int32 d);
   // signal void    links_changed             ();
@@ -484,6 +489,20 @@ interface Track : ContextMerger {
   // property int32 n_voices;      ///< _("Maximum number of voices for simultaneous playback.")
   // property CSynth pnet;         ///< _("Synthesis network to be used as postprocessor.")
   // property ItemSeq outputs;     ///< _("Mixer busses used as output for this track.")
+};
+
+/// Record representing the use of a Part within a Track at a specific position.
+record PartLink {
+  Track track;
+  int32 tick     = Range ("Tick", "", STANDARD, 0, MAXINT31, 384);
+  Part  part;
+  int32 duration = Range ("Duration", "", STANDARD, 0, MAXINT31, 384);
+  // int32 count; // 1 + repetitions
+};
+
+/// Sequence of PartLink records.
+sequence PartLinkSeq {
+  PartLink plinks;
 };
 
 /// Interface for effect stacks and per-track audio signal routing to the master output.
