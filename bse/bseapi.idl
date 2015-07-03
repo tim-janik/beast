@@ -540,7 +540,12 @@ interface Song : SNet {
   // void synthesize_note (Track track, int32 duration, int32 note, int32 fine_tune, float64 velocity); ///< Synthesize a note on a song of an active project.
   // signal void   pointer_changed (int32 a);
   // group _("Tuning") {
-  // MusicalTuningType musical_tuning = Enum ("Musical Tuning", "The tuning system which specifies the tones or pitches to be used. Due to the psychoacoustic properties of tones, various pitch combinations can sound 'natural' or 'pleasing' when used in combination, the musical tuning system defines the number and spacing of frequency values applied.", STANDARD);
+  //   MusicalTuningType musical_tuning = Enum ("Musical Tuning",
+  //                                            "The tuning system which specifies the tones or pitches to be used. "
+  //                                            "Due to the psychoacoustic properties of tones, various pitch combinations can "
+  //                                            "sound 'natural' or 'pleasing' when used in combination. "
+  //                                            "The musical tuning system defines the number and spacing of frequency values applied.",
+  //                                            STANDARD ":unprepared:skip-default", BSE_MUSICAL_TUNING_12_TET);
   // };
   // group _("Timing") {
   // int32   tpqn          = Range  ("Ticks", "Number of ticks per quarter note", STANDARD, 384, 384, 0, 384);
