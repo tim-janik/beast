@@ -290,8 +290,7 @@ bse_sub_synth_get_property (GObject    *object,
 }
 
 void
-bse_sub_synth_set_midi_channel (BseSubSynth     *self,
-                                guint            midi_channel)
+bse_sub_synth_set_midi_channel (BseSubSynth *self, uint midi_channel)
 {
   g_return_if_fail (BSE_IS_SUB_SYNTH (self));
 
@@ -299,8 +298,7 @@ bse_sub_synth_set_midi_channel (BseSubSynth     *self,
 }
 
 void
-bse_sub_synth_set_null_shortcut (BseSubSynth *self,
-                                 gboolean     enabled)
+bse_sub_synth_set_null_shortcut (BseSubSynth *self, bool enabled)
 {
   g_return_if_fail (BSE_IS_SUB_SYNTH (self));
 
@@ -536,3 +534,17 @@ bse_sub_synth_class_init (BseSubSynthClass *klass)
       g_free (label);
     }
 }
+
+namespace Bse {
+
+SubSynthImpl::SubSynthImpl (BseObject *bobj) :
+  SourceImpl (bobj)
+{}
+
+SubSynthImpl::~SubSynthImpl ()
+{}
+
+// BseSubSynth *self = as<BseSubSynth*>();
+// other->as<SubSynthIfaceP>();
+
+} // Bse

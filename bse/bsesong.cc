@@ -70,7 +70,7 @@ BSE_BUILTIN_TYPE (BseSong)
 }
 
 void
-bse_song_timing_get_default (BseSongTiming *timing)
+bse_song_timing_get_default (Bse::SongTiming *timing)
 {
   g_return_if_fail (timing != NULL);
 
@@ -305,9 +305,7 @@ bse_song_get_property (GObject     *object,
 }
 
 void
-bse_song_get_timing (BseSong       *self,
-		     guint          tick,
-		     BseSongTiming *timing)
+bse_song_get_timing (BseSong *self, uint tick, Bse::SongTiming *timing)
 {
   g_return_if_fail (BSE_IS_SONG (self));
   g_return_if_fail (timing != NULL);
@@ -573,7 +571,7 @@ static void
 bse_song_init (BseSong *self)
 {
   BseSNet *snet = BSE_SNET (self);
-  BseSongTiming timing;
+  Bse::SongTiming timing;
 
   bse_song_timing_get_default (&timing);
 
@@ -626,16 +624,39 @@ master_bus_name (void)
 BseSource*
 bse_song_ensure_master (BseSong *self)
 {
+  Bse::SongImpl *this_ = self->as<Bse::SongImpl*>();
   BseSource *child = (BseSource*) bse_song_find_master (self);
   if (!child)
     {
-      BseUndoStack *ustack = bse_item_undo_open (self, "create-master");
+      BseUndoStack *ustack = bse_item_undo_open (self, "Create Master");
       child = (BseSource*) bse_container_new_child_bname (BSE_CONTAINER (self), BSE_TYPE_BUS, master_bus_name(), NULL);
-      g_object_set (child, "master-output", TRUE, NULL); /* no undo */
-      bse_item_push_undo_proc (self, "remove-bus", child);
+      g_object_set (child, "master-output", TRUE, NULL); // not-undoable
+      Bse::BusImpl *bus = child->as<Bse::BusImpl*>();
+      Bse::ItemImpl::UndoDescriptor<Bse::BusImpl> bus_descriptor = this_->undo_descriptor (*bus);
+      auto lambda = [bus_descriptor] (Bse::SongImpl &self, BseUndoStack *ustack) -> Bse::ErrorType {
+        Bse::BusImpl &bus = self.undo_resolve (bus_descriptor);
+        self.remove_bus (bus);
+        return Bse::ERROR_NONE;
+      };
+      this_->push_undo ("Create Master", *this_, lambda);
       bse_item_undo_close (ustack);
     }
   return child;
+}
+
+BseTrack*
+bse_song_find_first_track (BseSong *self, BsePart *part)
+{
+  SfiRing *ring;
+  /* action */
+  for (ring = self->tracks_SL; ring; ring = sfi_ring_walk (ring, self->tracks_SL))
+    {
+      BseTrack *track = (BseTrack*) ring->data;
+      guint start;
+      if (bse_track_find_part (track, part, &start))
+        return track;
+    }
+  return NULL;
 }
 
 static void
@@ -693,7 +714,7 @@ bse_song_class_init (BseSongClass *klass)
   BseSourceClass *source_class = BSE_SOURCE_CLASS (klass);
   BseContainerClass *container_class = BSE_CONTAINER_CLASS (klass);
   BseSuperClass *super_class = BSE_SUPER_CLASS (klass);
-  BseSongTiming timing;
+  Bse::SongTiming timing;
 
   parent_class = (GTypeClass*) g_type_class_peek_parent (klass);
 
@@ -778,3 +799,163 @@ bse_song_class_init (BseSongClass *klass)
   signal_pointer_changed = bse_object_class_add_signal (object_class, "pointer-changed",
 							G_TYPE_NONE, 1, SFI_TYPE_INT);
 }
+
+namespace Bse {
+
+SongImpl::SongImpl (BseObject *bobj) :
+  SNetImpl (bobj)
+{}
+
+SongImpl::~SongImpl ()
+{}
+
+TrackIfaceP
+SongImpl::find_any_track_for_part (PartIface &part)
+{
+  BseSong *self = as<BseSong*>();
+  assert_return (dynamic_cast<ItemImpl*> (&part)->parent() == this, NULL);
+  BsePart *bpart = part.as<BsePart*>();
+  BseTrack *track = bse_song_find_first_track (self, bpart);
+  return track->as<TrackIfaceP> ();
+}
+
+BusIfaceP
+SongImpl::create_bus ()
+{
+  BseSong *self = as<BseSong*>();
+  if (BSE_SOURCE_PREPARED (self))
+    return NULL;
+  BusImpl *bus = ((BseItem*) bse_container_new_child (BSE_CONTAINER (self), BSE_TYPE_BUS, NULL))->as<BusImpl*>();
+  UndoDescriptor<BusImpl> bus_descriptor = undo_descriptor (*bus);
+  auto lambda = [bus_descriptor] (SongImpl &self, BseUndoStack *ustack) -> ErrorType {
+    BusImpl &bus = self.undo_resolve (bus_descriptor);
+    self.remove_bus (bus);
+    return ERROR_NONE;
+  };
+  push_undo ("Create Bus", *this, lambda);
+  return bus->as<BusIfaceP>();
+}
+
+void
+SongImpl::remove_bus (BusIface &bus_iface)
+{
+  BseSong *self = as<BseSong*>();
+  BusImpl *bus = dynamic_cast<BusImpl*> (&bus_iface);
+  return_unless (bus->parent() == this);
+  if (BSE_SOURCE_PREPARED (self))
+    return;
+  BseItem *child = bus->as<BseItem*>();
+  BseUndoStack *ustack = bse_item_undo_open (self, "Remove Bus");
+  // reset ::master-output property undoable
+  bse_item_set (child, "master-output", FALSE, NULL);
+  // backup object references to undo stack
+  bse_container_uncross_undoable (BSE_CONTAINER (self), child);
+  // implement "undo" of bse_container_remove_backedup, i.e. redo
+  UndoDescriptor<BusImpl> bus_descriptor = undo_descriptor (*bus);
+  auto lambda = [bus_descriptor] (SongImpl &self, BseUndoStack *ustack) -> ErrorType {
+    BusImpl &bus = self.undo_resolve (bus_descriptor);
+    self.remove_bus (bus);
+    return ERROR_NONE;
+  };
+  push_undo_to_redo ("Remove Bus", *this, lambda);
+  // backup and remove (without redo queueing)
+  bse_container_remove_backedup (BSE_CONTAINER (self), child, ustack);
+  // done
+  bse_item_undo_close (ustack);
+}
+
+PartIfaceP
+SongImpl::create_part ()
+{
+  BseSong *self = as<BseSong*>();
+  BseItem *child = (BseItem*) bse_container_new_child (BSE_CONTAINER (self), BSE_TYPE_PART, NULL);
+  PartImpl *part = child->as<PartImpl*>();
+  UndoDescriptor<PartImpl> part_descriptor = undo_descriptor (*part);
+  auto lambda = [part_descriptor] (SongImpl &self, BseUndoStack *ustack) -> ErrorType {
+    PartImpl &part = self.undo_resolve (part_descriptor);
+    self.remove_part (part);
+    return ERROR_NONE;
+  };
+  push_undo ("Create Part", *this, lambda);
+  return part->as<PartIfaceP>();
+}
+
+void
+SongImpl::remove_part (PartIface &part_iface)
+{
+  BseSong *self = as<BseSong*>();
+  PartImpl *part = dynamic_cast<PartImpl*> (&part_iface);
+  return_unless (part->parent() == this);
+  if (BSE_SOURCE_PREPARED (self))
+    return;
+  BseItem *child = part->as<BseItem*>();
+  BseUndoStack *ustack = bse_item_undo_open (self, "Remove Part");
+  // backup object references to undo stack
+  bse_container_uncross_undoable (BSE_CONTAINER (self), child);
+  // implement "undo" of bse_container_remove_backedup, i.e. redo
+  UndoDescriptor<PartImpl> part_descriptor = undo_descriptor (*part);
+  auto lambda = [part_descriptor] (SongImpl &self, BseUndoStack *ustack) -> ErrorType {
+    PartImpl &part = self.undo_resolve (part_descriptor);
+    self.remove_part (part);
+    return ERROR_NONE;
+  };
+  push_undo_to_redo ("Remove Part", *this, lambda);
+  // remove (without redo queueing)
+  bse_container_remove_backedup (BSE_CONTAINER (self), child, ustack);
+  // done
+  bse_item_undo_close (ustack);
+}
+
+TrackIfaceP
+SongImpl::create_track ()
+{
+  BseSong *self = as<BseSong*>();
+  return_unless (BSE_SOURCE_PREPARED (self) == false, NULL);
+  BseItem *child = (BseItem*) bse_container_new_child (BSE_CONTAINER (self), BSE_TYPE_TRACK, NULL);
+  TrackImpl *track = child->as<TrackImpl*>();
+  UndoDescriptor<TrackImpl> track_descriptor = undo_descriptor (*track);
+  auto lambda = [track_descriptor] (SongImpl &self, BseUndoStack *ustack) -> ErrorType {
+    TrackImpl &track = self.undo_resolve (track_descriptor);
+    self.remove_track (track);
+    return ERROR_NONE;
+  };
+  push_undo ("Create Track", *this, lambda);
+  return track->as<TrackIfaceP>();
+}
+
+void
+SongImpl::remove_track (TrackIface &track_iface)
+{
+  BseSong *self = as<BseSong*>();
+  TrackImpl *track = dynamic_cast<TrackImpl*> (&track_iface);
+  return_unless (track->parent() == this);
+  if (BSE_SOURCE_PREPARED (self))
+    return;
+  BseItem *child = track->as<BseItem*>();
+  BseUndoStack *ustack = bse_item_undo_open (self, "Remove Track");
+  // backup object references to undo stack
+  bse_container_uncross_undoable (BSE_CONTAINER (self), child);
+  // implement "undo" of bse_container_remove_backedup, i.e. redo
+  UndoDescriptor<TrackImpl> track_descriptor = undo_descriptor (*track);
+  auto lambda = [track_descriptor] (SongImpl &self, BseUndoStack *ustack) -> ErrorType {
+    TrackImpl &track = self.undo_resolve (track_descriptor);
+    self.remove_track (track);
+    return ERROR_NONE;
+  };
+  push_undo_to_redo ("Remove Track", *this, lambda);
+  // remove (without redo queueing)
+  bse_container_remove_backedup (BSE_CONTAINER (self), child, ustack);
+  // done
+  bse_item_undo_close (ustack);
+}
+
+SongTiming
+SongImpl::get_timing (int tick)
+{
+  BseSong *self = as<BseSong*>();
+  SongTiming timing;
+  bse_song_get_timing (self, tick, &timing);
+  return timing;
+}
+
+} // Bse

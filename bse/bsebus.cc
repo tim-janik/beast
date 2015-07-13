@@ -921,3 +921,34 @@ BSE_BUILTIN_TYPE (BseBus)
                                          &bus_info);
   return type;
 }
+
+namespace Bse {
+
+BusImpl::BusImpl (BseObject *bobj) :
+  SubSynthImpl (bobj)
+{}
+
+BusImpl::~BusImpl ()
+{}
+
+ErrorType
+BusImpl::ensure_output ()
+{
+  BseBus *self = as<BseBus*>();
+  ErrorType error = ERROR_NONE;
+  BseItem *parent = self->parent;
+  if (BSE_IS_SONG (parent) && !self->bus_outputs)
+    {
+      BseSong *song = BSE_SONG (parent);
+      BseBus *master = bse_song_find_master (song);
+      if (master && self != master)
+        {
+          error = bse_bus_connect (master, BSE_ITEM (self));
+          if (!error)
+            bse_item_push_undo_proc (master, "disconnect-bus", self);
+        }
+    }
+  return error;
+}
+
+} // Bse

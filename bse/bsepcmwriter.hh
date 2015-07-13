@@ -43,4 +43,15 @@ void		bse_pcm_writer_write		(BsePcmWriter		*pdev,
 }
 #endif /* __cplusplus */
 
+namespace Bse {
+
+class PcmWriterImpl : public ItemImpl, public virtual PcmWriterIface {
+protected:
+  virtual  ~PcmWriterImpl ();
+public:
+  explicit  PcmWriterImpl (BseObject*);
+};
+
+} // Bse
+
 #endif /* __BSE_PCM_WRITER_H__ */

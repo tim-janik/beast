@@ -445,30 +445,32 @@ bse_part_links_changed (BsePart *self)
     }
 }
 
-static int
-part_link_compare (const void *p1,
-                   const void *p2)
+static bool
+part_link_lesser (const Bse::PartLink &a, const Bse::PartLink &b)
 {
-  const BsePartLink *const*lp1 = (const BsePartLink *const*) p1;
-  const BsePartLink *const*lp2 = (const BsePartLink *const*) p2;
-  const BsePartLink *l1 = lp1[0];
-  const BsePartLink *l2 = lp2[0];
-  if (l1->tick == l2->tick)
-    {
-      if (l1->duration == l2->duration)
-        return l1->track < l2->track ? -1 : l1->track > l2->track;
-      else
-        return l1->duration < l2->duration ? -1 : 1;
-    }
-  else
-    return l1->tick < l2->tick ? -1 : 1;
+  if (a.tick != b.tick)
+    return a.tick < b.tick;
+  if (a.duration != b.duration)
+    return a.duration < b.duration;
+  //if (a.count != b.count)
+  //  return a.count < b.count;
+  int64_t aid, bid;
+  aid = a.track.get() ? a.track->proxy_id() : 0;
+  bid = b.track.get() ? b.track->proxy_id() : 0;
+  if (aid != bid)
+    return aid < bid;
+  aid = a.part.get() ? a.part->proxy_id() : 0;
+  bid = b.part.get() ? b.part->proxy_id() : 0;
+  if (aid != bid)
+    return aid < bid;
+  return false;
 }
 
-BsePartLinkSeq*
+Bse::PartLinkSeq
 bse_part_list_links (BsePart *self)
 {
-  g_return_val_if_fail (BSE_IS_PART (self), NULL);
-  BsePartLinkSeq *pls = bse_part_link_seq_new ();
+  Bse::PartLinkSeq pls;
+  g_return_val_if_fail (BSE_IS_PART (self), pls);
   BseSong *song = (BseSong*) bse_item_get_super (BSE_ITEM (self));
   if (BSE_IS_SONG (song))
     {
@@ -477,19 +479,19 @@ bse_part_list_links (BsePart *self)
         {
           BseTrack *track = (BseTrack*) ring->data;
           BseTrackPartSeq *tps = bse_track_list_part (track, self);
-          for (uint i = 0; i < tps->n_tparts; i++)
+          for (size_t i = 0; i < tps->n_tparts; i++)
             {
               BseTrackPart *tp = tps->tparts[i];
-              BsePartLink pl;
-              pl.track = track;
+              Bse::PartLink pl;
+              pl.track = track->as<Bse::TrackIfaceP>();
               pl.tick = tp->tick;
-              pl.part = self;
+              pl.part = self->as<Bse::PartIfaceP>();
               pl.duration = tp->duration;
-              bse_part_link_seq_append (pls, &pl);
+              pls.push_back (pl);
             }
           bse_track_part_seq_free (tps);
         }
-      qsort (pls->plinks, pls->n_plinks, sizeof (pls->plinks[0]), part_link_compare);
+      stable_sort (pls.begin(), pls.end(), part_link_lesser);
     }
   return pls;
 }
@@ -2144,6 +2146,26 @@ PartImpl::get_channel_controls (int channel, int tick, int duration, MidiSignalT
 {
   BsePart *self = as<BsePart*>();
   return bse_part_list_controls (self, channel, tick, duration, control_type);
+}
+
+PartLinkSeq
+PartImpl::list_links ()
+{
+  BsePart *self = as<BsePart*>();
+  return bse_part_list_links (self);
+}
+
+SongTiming
+PartImpl::get_timing (int tick)
+{
+  BsePart *self = as<BsePart*>();
+  SongTiming timing;
+  BseItem *parent = BSE_ITEM (self)->parent;
+  if (BSE_IS_SONG (parent))
+    bse_song_get_timing (BSE_SONG (parent), tick, &timing);
+  else
+    bse_song_timing_get_default (&timing);
+  return timing;
 }
 
 int

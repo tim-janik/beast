@@ -171,24 +171,25 @@ bus_mixer_action_exec (gpointer data,
 {
   BstBusMixer *self = BST_BUS_MIXER (data);
   BstItemView *iview = BST_ITEM_VIEW (self);
-  SfiProxy song = iview->container;
+  Bse::SongH song = Bse::SongH::down_cast (bse_server.from_proxy (iview->container));
   switch (action)
     {
-      SfiProxy item;
     case ACTION_ADD_BUS:
-      bse_item_group_undo (song, "Create Bus");
-      item = bse_song_create_bus (song);
-      bse_bus_ensure_output (item);
-      bse_item_ungroup_undo (song);
-      if (item)
-        bst_item_view_select (iview, item);
+      {
+        bse_item_group_undo (song.proxy_id(), "Create Bus");
+        Bse::BusH bus = song.create_bus();
+        bus.ensure_output();
+        bse_item_ungroup_undo (song.proxy_id());
+        bst_item_view_select (iview, bus.proxy_id());
+      }
       break;
     case ACTION_DELETE_BUS:
       if (self->hbox && BST_IS_BUS_EDITOR (GTK_CONTAINER (self->hbox)->focus_child))
         {
           BstBusEditor *be = BST_BUS_EDITOR (GTK_CONTAINER (self->hbox)->focus_child);
-          if (be->item != bse_song_get_master_bus (song))
-            bse_song_remove_bus (song, be->item);
+          Bse::BusH bus = Bse::BusH::down_cast (bse_server.from_proxy (be->item));
+          if ((SfiProxy) bus.proxy_id() != bse_song_get_master_bus (song.proxy_id()))
+            song.remove_bus (bus);
         }
       break;
     }

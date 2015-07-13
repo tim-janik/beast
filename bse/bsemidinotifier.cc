@@ -272,3 +272,14 @@ bse_midi_notifiers_wakeup (void)
 {
   bse_main_wakeup();
 }
+
+namespace Bse {
+
+MidiNotifierImpl::MidiNotifierImpl (BseObject *bobj) :
+  ItemImpl (bobj)
+{}
+
+MidiNotifierImpl::~MidiNotifierImpl ()
+{}
+
+} // Bse

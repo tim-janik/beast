@@ -300,24 +300,24 @@ guint
 bst_track_roll_controller_quantize (BstTrackRollController *self,
 				    guint                   fine_tick)
 {
-  BseSongTiming *timing;
   guint quant, tick, qtick;
 
   g_return_val_if_fail (self != NULL, fine_tick);
 
-  timing = bse_song_get_timing (self->song, fine_tick);
+  Bse::SongH song = Bse::SongH::down_cast (bse_server.from_proxy (self->song));
+  Bse::SongTiming timing = song.get_timing (fine_tick);
   if (QUANTIZATION (self) == BST_QUANTIZE_NONE)
     quant = 1;
   else if (QUANTIZATION (self) == BST_QUANTIZE_TACT)
-    quant = timing->tpt;
+    quant = timing.tpt;
   else
-    quant = timing->tpqn * 4 / QUANTIZATION (self);
-  tick = fine_tick - timing->tick;
+    quant = timing.tpqn * 4 / QUANTIZATION (self);
+  tick = fine_tick - timing.tick;
   qtick = tick / quant;
   qtick *= quant;
   if (tick - qtick > quant / 2)
     qtick += quant;
-  tick = timing->tick + qtick;
+  tick = timing.tick + qtick;
   return tick;
 }
 
@@ -419,19 +419,19 @@ insert_start (BstTrackRollController *self,
   if (drag->current_track && drag->current_valid && !self->obj_part)
     {
       guint tick = bst_track_roll_controller_quantize (self, drag->current_tick);
-      SfiProxy item = bse_track_get_part (drag->current_track, tick);
-      if (!item)
+      Bse::TrackH track = drag->current_track;
+      Bse::PartH part = track.get_part (tick);
+      if (!part)
 	{
-	  SfiProxy song = bse_item_get_parent (drag->current_track);
-          bse_item_group_undo (song, "Insert part");
-	  item = bse_song_create_part (song);
-          Bse::PartH part = Bse::PartH::down_cast (bse_server.from_proxy (item));
-          Bse::TrackH track = Bse::TrackH::down_cast (bse_server.from_proxy (drag->current_track));
-	  if (item && track.insert_part (tick, part) > 0)
+	  SfiProxy songid = bse_item_get_parent (drag->current_track.proxy_id());
+          Bse::SongH song = Bse::SongH::down_cast (bse_server.from_proxy (songid));
+          bse_item_group_undo (song.proxy_id(), "Insert part");
+          Bse::PartH part = song.create_part();
+	  if (part && track.insert_part (tick, part) > 0)
 	    gxk_status_set (GXK_STATUS_DONE, _("Insert Part"), NULL);
 	  else
 	    gxk_status_set (GXK_STATUS_ERROR, _("Insert Part"), _("Lost Part"));
-          bse_item_ungroup_undo (song);
+          bse_item_ungroup_undo (song.proxy_id());
 	  drag->state = GXK_DRAG_HANDLED;
 	}
       else
@@ -453,12 +453,13 @@ delete_start (BstTrackRollController *self,
 {
   if (self->obj_part)	/* got part to delete */
     {
-      bse_item_group_undo (self->song, "Delete Part");
-      Bse::TrackH track = Bse::TrackH::down_cast (bse_server.from_proxy (self->obj_track));
+      Bse::SongH song = Bse::SongH::down_cast (bse_server.from_proxy (self->song));
+      bse_item_group_undo (song.proxy_id(), "Delete Part");
+      Bse::TrackH track = self->obj_track;
       track.remove_tick (self->obj_tick);
-      if (!bse_song_find_any_track_for_part (self->song, self->obj_part.proxy_id()))
-        bse_song_remove_part (self->song, self->obj_part.proxy_id());
-      bse_item_ungroup_undo (self->song);
+      if (!song.find_any_track_for_part (self->obj_part))
+        song.remove_part (self->obj_part);
+      bse_item_ungroup_undo (song.proxy_id());
       gxk_status_set (GXK_STATUS_DONE, _("Delete Part"), NULL);
     }
   else
@@ -512,15 +513,12 @@ move_motion (BstTrackRollController *self, BstTrackRollDrag *drag)
   // track_changed = self->obj_track != drag->current_track;
   if (new_tick != self->obj_tick || self->obj_track != drag->current_track)
     {
-      bse_item_group_undo (drag->current_track, "Move part");
-      Bse::TrackH track = Bse::TrackH::down_cast (bse_server.from_proxy (drag->current_track));
+      Bse::TrackH track = drag->current_track;
+      bse_item_group_undo (track.proxy_id(), "Move part");
       if (track.insert_part (new_tick, self->obj_part) > 0)
 	{
 	  if (!self->skip_deletion)
-            {
-              Bse::TrackH track = Bse::TrackH::down_cast (bse_server.from_proxy (self->obj_track));
-              track.remove_tick (self->obj_tick);
-            }
+            self->obj_track.remove_tick (self->obj_tick);
 	  else
 	    {
 	      self->skip_deletion = FALSE;
@@ -531,7 +529,7 @@ move_motion (BstTrackRollController *self, BstTrackRollDrag *drag)
 	  gxk_status_set (GXK_STATUS_PROGRESS, action, NULL);
 	}
       /* else gxk_status_set (GXK_STATUS_ERROR, "Move Part", Bse::error_blurb (error)); */
-      bse_item_ungroup_undo (drag->current_track);
+      bse_item_ungroup_undo (track.proxy_id());
     }
 }
 
@@ -654,8 +652,8 @@ controller_drag (BstTrackRollController *self,
 
       /* setup drag data */
       if (!drag->start_valid)
-	drag->start_track = 0;
-      tps = drag->start_track ? bse_track_list_parts (drag->start_track) : NULL;
+	drag->start_track = Bse::TrackH();
+      tps = drag->start_track ? bse_track_list_parts (drag->start_track.proxy_id()) : NULL;
       if (tps && tps->n_tparts)	/* FIXME: BSE should have a convenience function to find a part */
 	{
 	  for (size_t j = 0; j < tps->n_tparts; j++)

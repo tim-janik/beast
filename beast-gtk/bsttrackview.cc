@@ -433,11 +433,12 @@ track_view_midi_channel_edited (BstTrackView *self,
     }
 }
 
-static SfiProxy
-get_track (gpointer data,
-	   gint     row)
+static Bse::TrackH
+get_track (void *data, int row)
 {
-  return bst_item_view_get_proxy (BST_ITEM_VIEW (data), row);
+  SfiProxy proxy = bst_item_view_get_proxy (BST_ITEM_VIEW (data), row);
+  Bse::TrackH track = Bse::TrackH::down_cast (bse_server.from_proxy (proxy));
+  return track;
 }
 
 static void
@@ -704,34 +705,39 @@ track_view_action_exec (gpointer data,
 {
   BstTrackView *self = BST_TRACK_VIEW (data);
   BstItemView *item_view = BST_ITEM_VIEW (self);
-  SfiProxy song = item_view->container;
+  Bse::SongH song = Bse::SongH::down_cast (bse_server.from_proxy (item_view->container));
 
+  Bse::TrackH track;
   switch (action)
     {
       SfiProxy item;
       guint i;
     case ACTION_ADD_TRACK:
-      bse_item_group_undo (song, "Add Track");
-      item = bse_song_create_track (song);
-      if (item)
+      bse_item_group_undo (song.proxy_id(), "Add Track");
+      track = song.create_track();
+      if (track)
 	{
-	  gchar *string = g_strdup_format ("Track-%02X", bse_item_get_seqid (item));
-	  bse_item_set_name (item, string);
+	  gchar *string = g_strdup_format ("Track-%02X", bse_item_get_seqid (track.proxy_id()));
+	  bse_item_set_name (track.proxy_id(), string);
 	  g_free (string);
-	  bst_item_view_select (item_view, item);
-          bse_track_ensure_output (item);
+	  bst_item_view_select (item_view, track.proxy_id());
+          track.ensure_output();
 	}
-      bse_item_ungroup_undo (song);
+      bse_item_ungroup_undo (song.proxy_id());
       break;
     case ACTION_DELETE_TRACK:
       item = bst_item_view_get_current (item_view);
-      bse_item_group_undo (song, "Delete Track");
+      track = Bse::TrackH::down_cast (bse_server.from_proxy (item));
+      bse_item_group_undo (song.proxy_id(), "Delete Track");
       BseItemSeq *iseq = bse_track_list_parts_uniq (item);
-      bse_song_remove_track (song, item);
+      song.remove_track (track);
       for (i = 0; i < iseq->n_items; i++)
-        if (!bse_song_find_any_track_for_part (song, iseq->items[i]))
-          bse_song_remove_part (song, iseq->items[i]);
-      bse_item_ungroup_undo (song);
+        {
+          Bse::PartH part = Bse::PartH::down_cast (bse_server.from_proxy (iseq->items[i]));
+          if (!song.find_any_track_for_part (part))
+            song.remove_part (part);
+        }
+      bse_item_ungroup_undo (song.proxy_id());
       break;
     }
   gxk_widget_update_actions_downwards (self);

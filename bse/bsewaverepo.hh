@@ -24,4 +24,15 @@ struct BseWaveRepoClass : BseSuperClass
 
 G_END_DECLS
 
+namespace Bse {
+
+class WaveRepoImpl : public SuperImpl, public virtual WaveRepoIface {
+protected:
+  virtual  ~WaveRepoImpl ();
+public:
+  explicit  WaveRepoImpl (BseObject*);
+};
+
+} // Bse
+
 #endif /* __BSE_WAVE_REPO_H__ */

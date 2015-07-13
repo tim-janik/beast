@@ -393,16 +393,6 @@ sequence DotSeq {
 /* BSE Part structures */
 interface Part;
 interface Track;
-record PartLink {
-  Track track;
-  Int   tick     = SfiInt ("Tick", "", 0, 0, G_MAXINT, 384, STANDARD);
-  Part  part;
-  Int   duration = SfiInt ("Duration", "", 0, 0, G_MAXINT, 384, STANDARD);
-  // Int   count; /* 1 + repetitions */
-};
-sequence PartLinkSeq {
-  PartLink plinks;
-};
 /* BSE Track structures */
 record TrackPart {
   Int           tick     = SfiInt ("Tick", "", 0, 0, G_MAXINT, 384, STANDARD);
@@ -411,21 +401,6 @@ record TrackPart {
 };
 sequence TrackPartSeq {
   TrackPart tparts;
-};
-/* BSE Song timing structure */
-record SongTiming {
-  /* song position timing applies to */
-  Int   tick        = SfiInt ("Current tick", "", 0, 0, G_MAXINT, 384, STANDARD);
-  /* tempo */
-  Real  bpm         = SfiReal ("Beats per minute", "", 120, BSE_MIN_BPM, BSE_MAX_BPM, 10, STANDARD);
-  /* signature */
-  Int   numerator   = SfiInt ("Numerator", "Number of notes per measure", 4, 1, 256, 2, STANDARD);
-  Int   denominator = SfiInt ("Denominator", "Type of notes counted per measure", 4, 1, 256, 2, STANDARD);
-  /* sequencer timing */
-  Int   tpqn        = SfiInt ("Ticks per quarter note", "", 384, 1, G_MAXINT, 12, STANDARD);
-  Int   tpt         = SfiInt ("Ticks per tact", "", 384, 1, G_MAXINT, 12, STANDARD);
-  /* playback timing */
-  Real  stamp_ticks = SfiReal ("Ticks per stamp increment (valid only during playback)", "", 384, 1, G_MAXINT, 12, STANDARD);
 };
 record SampleFileInfo {
   SfiString     file    = SfiString ("Filename", "", "", STANDARD);

@@ -274,19 +274,26 @@ enum MidiSignalType {
 };
 
 // == Bse Constants ==
-Const MIN_NOTE = 0;
-Const MAX_NOTE = 131;           // 123
-Const NOTE_VOID = MAX_NOTE + 1; /// Value represents unparsable/unknown notes
-Const KAMMER_NOTE = 69;         /// Kammer note, representing the kammer frequency's MIDI note value for A' or A4
-Const KAMMER_FREQ = 440.0;      /// Pitch Standard, see also: https://en.wikipedia.org/wiki/A440_(pitch_standard)
-Const KAMMER_OCTAVE = +1;       /// Octave number for MIDI A'
-Const MIN_OCTAVE = -4;          /// Octave of MIN_NOTE
-Const MAX_OCTAVE = +6;          /// Octave of MAX_NOTE
+Const MIN_NOTE      = 0;
+Const MAX_NOTE      = 131;          // 123
+Const NOTE_VOID     = MAX_NOTE + 1; /// Value represents unparsable/unknown notes
+Const KAMMER_NOTE   = 69;           /// Kammer note, representing the kammer frequency's MIDI note value for A' or A4
+Const KAMMER_FREQ   = 440.0;        /// Pitch Standard, see also: https://en.wikipedia.org/wiki/A440_(pitch_standard)
+Const KAMMER_OCTAVE = +1;           /// Octave number for MIDI A'
+Const MIN_OCTAVE    = -4;           /// Octave of MIN_NOTE
+Const MAX_OCTAVE    = +6;           /// Octave of MAX_NOTE
 Const MIN_FINE_TUNE = -100;
 Const MAX_FINE_TUNE = 100;
-Const NOTEHINTS = "r:w:S:G:note";
-Const FINETUNEHINTS = "r:w:S:G:finetune";
-Const VELOCITYHINTS = "r:w:S:G:velocity";
+Const MIN_BPM       = 1;
+Const MAX_BPM       = 1024;
+Const MIN_TRANSPOSE = -72;
+Const MAX_TRANSPOSE = +72;
+Const GUI           = "r:w:G";
+Const STORAGE       = "r:w:S";
+Const STANDARD      = STORAGE ":G";
+Const NOTEHINTS     = STANDARD ":note";
+Const FINETUNEHINTS = STANDARD ":finetune";
+Const VELOCITYHINTS = STANDARD ":velocity";
 
 /// Object to carry out IDL, API, signal, etc tests.
 interface TestObject {
@@ -311,13 +318,31 @@ record UserMessage {
   String          label;        ///< Message class label, used to enable/disable this type of message.
 };
 
-/// Basic object type for all BSE objects.
+/// Song timing configuration.
+record SongTiming {
+  int32   tick        = Range ("Current tick", "Song position timing applies to", STANDARD, 0, MAXINT31, 384, 0);
+  float64 bpm         = Range ("BPM", "Beats per minute", STANDARD, MIN_BPM, MAX_BPM, 10, 120);
+  // Signature
+  int32   numerator   = Range ("Numerator", "Number of notes per measure", STANDARD, 1, 256, 2, 4);
+  int32   denominator = Range ("Denominator", "Type of notes counted per measure", STANDARD, 1, 256, 2, 4);
+  // Sequencer Timing
+  int32   tpqn        = Range ("TPQN", "Ticks per quarter note", STANDARD, 1, MAXINT31, 12, 384);
+  int32   tpt         = Range ("TPT", "Ticks per tact", STANDARD, 1, MAXINT31, 12, 384);
+  // Playback Timing
+  float64 stamp_ticks = Range ("Tick Increment", "Ticks per stamp increment (useful only during playback)", STANDARD, 1, MAXINT31, 12, 384);
+};
+
+// Forward declarations.
+record PartLink;
+sequence PartLinkSeq;
+
+/// Fundamental base type for all BSE objects.
 interface Object {
   String debug_name (); ///< Object name useful for debugging output.
   int64  proxy_id   (); ///< Retrieve the BseObject proxy ID for an Object.
 };
 
-/// Base type for objects that can be added to a container.
+/// Base interface type for objects that can be added to a container.
 interface Item : Object {
   Item common_ancestor (Item other);    ///< Find a common container (parent or grand-parent) of two items if any.
 };
@@ -334,6 +359,7 @@ record PartNote
   float64 velocity  = Range ("Velocity", "", VELOCITYHINTS, 0, 1.0, 0.1, 1);
   bool    selected  = Bool ("Selected", "", ":readwrite", false);
 };
+
 /// A list of part note events.
 sequence PartNoteSeq {
   PartNote part_notes;
@@ -347,20 +373,21 @@ record PartControl {
   float64        value        = Range ("Value", "", ":readwrite", -1, +1, 0.1);
   bool           selected     = Bool ("Selected", "", ":readwrite");
 };
+
 /// A list of part control events.
 sequence PartControlSeq {
   PartControl pcontrols;
 };
 
-
-/// Data object containing piano notes and effects.
+/// Data interface for containment of piano notes and MIDI effects.
 interface Part : Item {
   PartControlSeq list_selected_controls    (MidiSignalType control_type); ///< List all currently selected control events of a specific type.
   PartControlSeq list_controls             (int32 tick, int32 duration, MidiSignalType control_type); ///< List all control events within a tick range.
   PartControlSeq get_channel_controls      (int32 channel, int32 tick, int32 duration, MidiSignalType control_type); ///< Retrieve all control events of a specific type within range of a channel.
   PartControlSeq get_controls              (int32 tick, MidiSignalType control_type); ///< Retrieve all control events of a specific type at specified tick.
-  int32          get_max_note              (); ///< Retrieve the maximum note supported in this part.
-  int32          get_min_note              (); ///< Retrieve the minimum note supported in this part.
+  SongTiming     get_timing                (int32 tick); ///< Retrieve song timing information at a specific tick.
+  int32          get_max_note              ();           ///< Retrieve the maximum note supported in this part.
+  int32          get_min_note              ();           ///< Retrieve the minimum note supported in this part.
   ErrorType      change_control            (int32 id, int32 tick, MidiSignalType control_type, float64 value); ///< Change an existing control event within a part.
   ErrorType      change_note               (int32 id, int32 tick, int32 duration, int32 note, int32 fine_tune, float64 velocity); ///< Change an existing note within a part.
   ErrorType      delete_event              (int32 id); ///< Delete an existing event from a part.
@@ -383,41 +410,177 @@ interface Part : Item {
   PartNoteSeq list_selected_notes (); ///< List all currently selected notes.
   PartNoteSeq check_overlap       (int32 tick, int32 duration, int32 note); ///< Check whether a note would overlap with neighbours.
   PartNoteSeq get_notes           (int32 tick, int32 note); ///< Retrieve all notes at a specific frequency or crossing a tick.
+  PartLinkSeq list_links          (); ///< List all places where parts are used (linked) from tracks, sorted by tick.
 
-  // SongTiming     get_timing                (int32 tick); ///< Retrieve song timing information at a specific tick.
   // signal void    range_changed             (int32 a, int32 b, int32 c, int32 d);
   // signal void    links_changed             ();
   // property int32 n_channels;
   // property int32 last_tick;
 };
 
-/// Base type for synthesis objects with input or output streams.
+/// Base interface type for synthesis modules with input or output streams.
 interface Source : Item {
   Source ichannel_get_osource (int32 input_channel, int32 input_joint); ///< Retrieve output module connected to a specific joint of an input channel.
 };
 
-/// Data object containing sequencing information and links to Part objects.
+/// Source module for merging multiple synthesis contexts, used to implement polyphony.
 interface ContextMerger : Source {
 };
 
-/// Data object containing sequencing information and links to Part objects.
-interface Track : ContextMerger {
-  int32 insert_part (int32 tick, Part part); ///< Insert Part into Track at @a tick, returns the corresponding link id.
-  void  remove_tick (int32 tick);            ///< Remove Part at specified @a tick from a track.
-};
-
-/// Base type for objects that can be added to a container.
+/// Base interface type for containers of Item derived types.
 interface Container : Source {
   Item lookup_item (String uname); ///< Find an immediate child of a container by name (unique per container child).
 };
 
-/// Base type for Item managers.
+/// Base interface type for Item managers.
 interface Super : Container {
 };
 
-/// Base type for all kinds of synthesis networks.
+/// Base interface type for all kinds of synthesis networks.
 interface SNet : Super {
   bool supports_user_synths (); ///< Check whether users may edit synthesis modules of this network.
+};
+
+/// Customizable synthesis (filter) network container.
+interface CSynth : SNet {
+};
+
+/// Synthesizer module for embedding (rerouting input and output) of another synthesizer network (SNet).
+interface SubSynth : Source {
+  // CSynth snet       = Object ("Synthesizer",   "Synthesis network to use as embedded sub network", STANDARD ":unprepared");
+  // String in_port_1  = String ("Input Port 1",  "Output port name to interface from",               STANDARD ":skip-default");
+  // String out_port_1 = String ("Output Port 1", "Input port name to interface to",                  STANDARD ":skip-default");
+  // String in_port_2  = String ("Input Port 2",  "Output port name to interface from",               STANDARD ":skip-default");
+  // String out_port_2 = String ("Output Port 2", "Input port name to interface to",                  STANDARD ":skip-default");
+  // String in_port_3  = String ("Input Port 3",  "Output port name to interface from",               STANDARD ":skip-default");
+  // String out_port_3 = String ("Output Port 3", "Input port name to interface to",                  STANDARD ":skip-default");
+  // String in_port_4  = String ("Input Port 4",  "Output port name to interface from",               STANDARD ":skip-default");
+  // String out_port_4 = String ("Output Port 4", "Input port name to interface to",                  STANDARD ":skip-default");
+  // String in_port_5  = String ("Input Port 5",  "Output port name to interface from",               STANDARD ":skip-default");
+  // String out_port_5 = String ("Output Port 5", "Input port name to interface to",                  STANDARD ":skip-default");
+  // String in_port_6  = String ("Input Port 6",  "Output port name to interface from",               STANDARD ":skip-default");
+  // String out_port_6 = String ("Output Port 6", "Input port name to interface to",                  STANDARD ":skip-default");
+  // String in_port_7  = String ("Input Port 7",  "Output port name to interface from",               STANDARD ":skip-default");
+  // String out_port_7 = String ("Output Port 7", "Input port name to interface to",                  STANDARD ":skip-default");
+  // String in_port_8  = String ("Input Port 8",  "Output port name to interface from",               STANDARD ":skip-default");
+  // String out_port_8 = String ("Output Port 8", "Input port name to interface to",                  STANDARD ":skip-default");
+};
+
+/// Interface for sequencing information and links to Part objects.
+interface Track : ContextMerger {
+  SongTiming get_timing  (int32 tick);            ///< Retrieve song timing information at a specific tick.
+  int32      insert_part (int32 tick, Part part); ///< Insert Part into Track at @a tick, returns the corresponding link id.
+  void       remove_tick (int32 tick);            ///< Remove Part at specified @a tick from a track.
+
+  // ItemSeq      list_parts_uniq ();              ///< List all parts contained in a track.
+  // TrackPartSeq list_parts ();                   ///< List parts scheduled in a track, sorted by tick.
+  // void  remove_link (int32 id);                 ///< Remove a specific part link by ID from a track.
+  Part         get_part (int32 tick);           ///< Get the part starting at a specific tick position.
+  int32        get_last_tick ();                ///< Retrieve the last tick for this track.
+  ErrorType    ensure_output ();                ///< Ensure the track has an output connection to a bus.
+  /// Get the output module of a track.
+  /// The output of this module is the merged result from all polyphonic voices and has all track specific alterations applied.
+  Source       get_output_source ();
+
+  // property bool muted;          ///< _("Mute this track by ignoring it in the sequencer.")
+  // property CSynth snet;         ///< _("Synthesis network to be used as instrument.")
+  // property Wave wave;           ///< _("Wave to be used as instrument.")
+  // property int32 midi_channel;  ///< _("Midi channel assigned to this track, 0 uses internal per-track channel.")
+  // property int32 n_voices;      ///< _("Maximum number of voices for simultaneous playback.")
+  // property CSynth pnet;         ///< _("Synthesis network to be used as postprocessor.")
+  // property ItemSeq outputs;     ///< _("Mixer busses used as output for this track.")
+};
+
+/// Record representing the use of a Part within a Track at a specific position.
+record PartLink {
+  Track track;
+  int32 tick     = Range ("Tick", "", STANDARD, 0, MAXINT31, 384);
+  Part  part;
+  int32 duration = Range ("Duration", "", STANDARD, 0, MAXINT31, 384);
+  // int32 count; // 1 + repetitions
+};
+
+/// Sequence of PartLink records.
+sequence PartLinkSeq {
+  PartLink plinks;
+};
+
+/// Interface for effect stacks and per-track audio signal routing to the master output.
+interface Bus : SubSynth {
+  ErrorType ensure_output    ();            ///< Ensure that a bus has an output connection.
+  // ErrorType connect_bus      (Bus bus);     ///< Add a bus to the input list of a bus.
+  // ErrorType connect_track    (Track track); ///< Add a track to the input list of a bus.
+  // ErrorType disconnect_bus   (Bus bus);     ///< Remove a bus from the input list of a bus.
+  // ErrorType disconnect_track (Track track); ///< Remove a track from the input list of a bus.
+  // ItemSeq   inputs        = Object ("Input Signals", "Synthesis signals (from tracks and busses) used as bus input", GUI ":item-sequence");
+  // ItemSeq   outputs       = Object ("Output Signals", "Mixer busses used as output for synthesis signals", GUI ":item-sequence");
+  // CSynth    snet          = Object ("SNet", "Synthesis network used internally to implement effect stack", READWRITE ":skip-undo");
+  // bool      mute          = Bool   ("Mute", "Mute: turn off the bus volume",    STANDARD ":skip-default", FALSE);
+  // bool      solo          = Bool   ("Solo", "Solo: mute all other busses",      STANDARD ":skip-default", FALSE);
+  // bool      sync          = Bool   ("Sync", "Synchronize left and right volume", STANDARD ":skip-default", TRUE);
+  // float64   left_volume   = Num    ("Left Volume",  "Volume adjustment in decibel of left bus channel",  STANDARD ":scale:db-volume");
+  // float64   right_volume  = Num    ("Right Volume", "Volume adjustment in decibel of right bus channel", STANDARD ":scale:db-volume");
+  // bool      master_output = Bool   ("Master Output", "", STORAGE ":skip-default", FALSE);
+};
+
+/// Interface for Track and Part objects, as well as meta data for sequencing.
+interface Song : SNet {
+  SongTiming get_timing              (int32 tick);  ///< Retrieve song timing information at a specific tick.
+  Track      find_any_track_for_part (Part part);   ///< Find the first track that contains part, suitable to check for orphan parts.
+  Bus        create_bus              ();            ///< Create a new mixer bus for a Song.
+  void       remove_bus              (Bus bus);     ///< Delete a mixer bus from a Song.
+  Part       create_part             ();            ///< Create a new Part in a Song.
+  void       remove_part             (Part part);   ///< Delete a Part from a Song.
+  Track      create_track            ();            ///< Create a new Track for a Song.
+  void       remove_track            (Track track); ///< Delete a Track from a Song.
+  // Bus        ensure_master_bus       ();            ///< Retrieve master output bus of a song, will create one if it doesn't exist.
+  // void       ensure_track_links      ();            ///< Ensure that each part in a song is inserted into at least one track.
+  // Track      find_track_for_part     (Part part);   ///< Find a track suitable for playing notes of a given part.
+  // Bus        get_master_bus          ();            ///< Retrieve master output bus of a song if it exists.
+  // void synthesize_note (Track track, int32 duration, int32 note, int32 fine_tune, float64 velocity); ///< Synthesize a note on a song of an active project.
+  // signal void   pointer_changed (int32 a);
+  // group _("Tuning") {
+  //   MusicalTuningType musical_tuning = Enum ("Musical Tuning",
+  //                                            "The tuning system which specifies the tones or pitches to be used. "
+  //                                            "Due to the psychoacoustic properties of tones, various pitch combinations can "
+  //                                            "sound 'natural' or 'pleasing' when used in combination. "
+  //                                            "The musical tuning system defines the number and spacing of frequency values applied.",
+  //                                            STANDARD ":unprepared:skip-default", BSE_MUSICAL_TUNING_12_TET);
+  // };
+  // group _("Timing") {
+  // int32   tpqn          = Range  ("Ticks", "Number of ticks per quarter note", STANDARD, 384, 384, 0, 384);
+  // int32   numerator     = Range  ("Numerator", "Measure numerator", STANDARD, 1, 256, 1, 4);
+  // int32   denominator   = Range  ("Denominator", "Measure denominator, must be a power of 2", STANDARD, 1, 256, 1, 4);
+  // float64 bpm           = Range  ("BPM", "Beats per minute", STANDARD, MIN_BPM, MAX_BPM, 10, 120);
+  // };
+  // group _("MIDI Instrument") {
+  // CSynth  pnet          = Object ("Postprocessor", "Synthesis network to be used as postprocessor", STANDARD);
+  // };
+  // bool  auto_activate = Bool  ("Auto Activate", "", STORAGE, TRUE);
+  // bool  loop_enabled  = Bool  ("Loop Enabled", "", STORAGE, FALSE);
+  // int32 loop_left     = Range ("Loop Left", "", STORAGE, -1, MAXINT31, 384, -1);
+  // int32 loop_right    = Range ("Loop Right", "", STORAGE, -1, MAXINT31, 384, -1);
+  // int32 tick_pointer  = Range ("Tick Pointer", "", STORAGE, -1, MAXINT31, 384, -1);
+};
+
+/// Interface for editable PCM wave samples.
+interface EditableSample : Item {
+};
+
+/// Interface for PCM wave samples.
+interface Wave : Source {
+};
+
+/// Interface serving as container for Wave objects.
+interface WaveRepo : Super {
+};
+
+/// Interface for MIDI event notification.
+interface MidiNotifier : Item {
+};
+
+/// Interface for MIDI synthesis networks.
+interface MidiSynth : SNet {
 };
 
 /// Projects support loading, saving, playback and act as containers for all other sound objects.
@@ -465,6 +628,10 @@ interface Project : Container {
   //MidiSynth create_midi_synth (String name); ///< Create a MIDI synthesizer network for this project.
   //MidiNotifier get_midi_notifier(); ///< Retrieve the project's midi notifier object.
   //void  remove_snet (SNet snet); ///< Remove an existing synthesizer network from this project.
+};
+
+/// Interface for writing PCM wave data.
+interface PcmWriter : Item {
 };
 
 /** Main Bse remote origin object.

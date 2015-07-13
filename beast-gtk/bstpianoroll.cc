@@ -134,6 +134,7 @@ static void
 bst_piano_roll_init (BstPianoRoll *self)
 {
   new (&self->part) Bse::PartH();
+  new (&self->plinks) Bse::PartLinkSeq();
   GxkScrollCanvas *scc = GXK_SCROLL_CANVAS (self);
 
   GTK_WIDGET_SET_FLAGS (self, GTK_CAN_FOCUS);
@@ -192,6 +193,7 @@ bst_piano_roll_finalize (GObject *object)
   G_OBJECT_CLASS (bst_piano_roll_parent_class)->finalize (object);
   using namespace Bse;
   self->part.~PartH();
+  self->plinks.~PartLinkSeq();
 }
 
 static void
@@ -1124,24 +1126,23 @@ piano_roll_handle_drag (GxkScrollCanvas     *scc,
 }
 
 static void
-piano_roll_song_pointer_changed (BstPianoRoll *self,
-                                 SfiInt        position)
+piano_roll_song_pointer_changed (BstPianoRoll *self, SfiInt position)
 {
-  BsePartLink *plink = NULL;
-  if (self->plinks && position >= 0)
+  Bse::PartLink *plink = NULL;
+  if (self->plinks.size() && position >= 0)
     {
       /* find size via binary lookup */
-      guint offset = 0, n_elements = self->plinks->n_plinks;
+      size_t offset = 0, n_elements = self->plinks.size();
       while (offset < n_elements)
         {
           guint i = (offset + n_elements) >> 1;
-          BsePartLink *current = self->plinks->plinks[i];
-          gint cmp = position < current->tick ? -1 : position > current->tick;
+          Bse::PartLink &current = self->plinks[i];
+          gint cmp = position < current.tick ? -1 : position > current.tick;
           if (cmp > 0) /* clamp to within duration */
-            cmp = position < current->tick + current->duration ? 0 : 1;
+            cmp = position < current.tick + current.duration ? 0 : 1;
           if (cmp == 0)
             {
-              plink = current;
+              plink = &current;
               break;
             }
           else if (cmp < 0)
@@ -1159,15 +1160,10 @@ piano_roll_song_pointer_changed (BstPianoRoll *self,
 static void
 piano_roll_links_changed (BstPianoRoll *self)
 {
-  if (self->plinks)
-    bse_part_link_seq_free (self->plinks);
-  self->plinks = NULL;
   if (self->part)
-    {
-      self->plinks = bse_part_list_links (self->part.proxy_id());
-      if (self->plinks)
-        self->plinks = bse_part_link_seq_copy_shallow (self->plinks);
-    }
+    self->plinks = self->part.list_links();
+  else
+    self->plinks.clear();
 }
 
 static void
@@ -1216,9 +1212,7 @@ bst_piano_roll_set_part (BstPianoRoll *self, Bse::PartH part)
           bse_item_unuse (self->song);
           self->song = 0;
         }
-      if (self->plinks)
-        bse_part_link_seq_free (self->plinks);
-      self->plinks = NULL;
+      self->plinks.clear();
       bse_proxy_disconnect (self->part.proxy_id(),
 			    "any_signal", piano_roll_release_proxy, self,
 			    "any_signal", piano_roll_range_changed, self,

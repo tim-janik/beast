@@ -171,3 +171,14 @@ bse_editable_sample_set_wchunk (BseEditableSample *self,
   self->wchunk = wchunk ? gsl_wave_chunk_ref (wchunk) : NULL;
   changed_notify_add (self);
 }
+
+namespace Bse {
+
+EditableSampleImpl::EditableSampleImpl (BseObject *bobj) :
+  ItemImpl (bobj)
+{}
+
+EditableSampleImpl::~EditableSampleImpl ()
+{}
+
+} // Bse

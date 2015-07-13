@@ -234,6 +234,6 @@ SuperImpl::~SuperImpl ()
 {}
 
 // BseSuper *self = as<BseSuper*>();
-// SuperIfaceP sp = shared_ptr_cast<SuperIface> (super->as<SuperIface*>());
+// SuperIfaceP sp = super->as<SuperIfaceP>();
 
 } // Bse

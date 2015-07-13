@@ -917,8 +917,17 @@ bse_object_new (GType object_type, const gchar *first_property_name, ...)
 
 #include "bseserver.hh"
 #include "bseproject.hh"
+#include "bsepcmwriter.hh"
+#include "bseeditablesample.hh"
+#include "bsesong.hh"
+#include "bsecsynth.hh"
 #include "bsetrack.hh"
 #include "bsecontextmerger.hh"
+#include "bsewave.hh"
+#include "bsemidinotifier.hh"
+#include "bsemidisynth.hh"
+#include "bsewaverepo.hh"
+#include "bsebus.hh"
 #include "bsesnet.hh"
 #include "bsepart.hh"
 
@@ -936,8 +945,24 @@ bse_object_new_valist (GType object_type, const gchar *first_property_name, va_l
   Bse::ObjectImpl *cxxo;
   if      (g_type_is_a (object_type, BSE_TYPE_SERVER))
     cxxo = new Bse::ServerImpl (object);
+  else if (g_type_is_a (object_type, BSE_TYPE_PCM_WRITER))
+    cxxo = new Bse::PcmWriterImpl (object);
   else if (g_type_is_a (object_type, BSE_TYPE_PROJECT))
     cxxo = new Bse::ProjectImpl (object);
+  else if (g_type_is_a (object_type, BSE_TYPE_SONG))
+    cxxo = new Bse::SongImpl (object);
+  else if (g_type_is_a (object_type, BSE_TYPE_EDITABLE_SAMPLE))
+    cxxo = new Bse::EditableSampleImpl (object);
+  else if (g_type_is_a (object_type, BSE_TYPE_WAVE))
+    cxxo = new Bse::WaveImpl (object);
+  else if (g_type_is_a (object_type, BSE_TYPE_WAVE_REPO))
+    cxxo = new Bse::WaveRepoImpl (object);
+  else if (g_type_is_a (object_type, BSE_TYPE_MIDI_NOTIFIER))
+    cxxo = new Bse::MidiNotifierImpl (object);
+  else if (g_type_is_a (object_type, BSE_TYPE_MIDI_SYNTH))
+    cxxo = new Bse::MidiSynthImpl (object);
+  else if (g_type_is_a (object_type, BSE_TYPE_CSYNTH))
+    cxxo = new Bse::CSynthImpl (object);
   else if (g_type_is_a (object_type, BSE_TYPE_SNET))
     cxxo = new Bse::SNetImpl (object);
   else if (g_type_is_a (object_type, BSE_TYPE_SUPER))
@@ -950,6 +975,10 @@ bse_object_new_valist (GType object_type, const gchar *first_property_name, va_l
     cxxo = new Bse::ContextMergerImpl (object);
   else if (g_type_is_a (object_type, BSE_TYPE_PART))
     cxxo = new Bse::PartImpl (object);
+  else if (g_type_is_a (object_type, BSE_TYPE_BUS))
+    cxxo = new Bse::BusImpl (object);
+  else if (g_type_is_a (object_type, BSE_TYPE_SUB_SYNTH))
+    cxxo = new Bse::SubSynthImpl (object);
   else if (g_type_is_a (object_type, BSE_TYPE_SOURCE))
     cxxo = new Bse::SourceImpl (object);
   else if (g_type_is_a (object_type, BSE_TYPE_ITEM))

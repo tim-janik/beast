@@ -21,14 +21,22 @@ struct BseSubSynth : BseSource {
 struct BseSubSynthClass : BseSourceClass
 {};
 
-/* whether to shortcut inputs with outputs for snet==NULL */
-void    bse_sub_synth_set_null_shortcut  (BseSubSynth     *self,
-                                          gboolean         enabled);
-/* override midi_channel for snet, or if midi_channel==0 inherit from parent */
-void    bse_sub_synth_set_midi_channel   (BseSubSynth     *self,
-                                          guint            midi_channel);
-
+/// Set whether to pass inputs through to outputs if SNet is unset.
+void bse_sub_synth_set_null_shortcut (BseSubSynth *self, bool enabled);
+/// Override the @a midi_channel for the SNet (unset override with midi_channel=0).
+void bse_sub_synth_set_midi_channel  (BseSubSynth *self, uint midi_channel);
 
 G_END_DECLS
+
+namespace Bse {
+
+class SubSynthImpl : public SourceImpl, public virtual SubSynthIface {
+protected:
+  virtual  ~SubSynthImpl ();
+public:
+  explicit  SubSynthImpl (BseObject*);
+};
+
+} // Bse
 
 #endif /* __BSE_SUB_SYNTH_H__ */

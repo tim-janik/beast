@@ -160,3 +160,14 @@ bse_pcm_writer_write (BsePcmWriter *self,
     }
   self->mutex.unlock();
 }
+
+namespace Bse {
+
+PcmWriterImpl::PcmWriterImpl (BseObject *bobj) :
+  ItemImpl (bobj)
+{}
+
+PcmWriterImpl::~PcmWriterImpl ()
+{}
+
+} // Bse

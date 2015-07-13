@@ -464,3 +464,14 @@ bse_midi_synth_class_init (BseMidiSynthClass *klass)
 					      TRUE, /* change default */
 					      /* override parent property: 0 */ "w"));
 }
+
+namespace Bse {
+
+MidiSynthImpl::MidiSynthImpl (BseObject *bobj) :
+  SNetImpl (bobj)
+{}
+
+MidiSynthImpl::~MidiSynthImpl ()
+{}
+
+} // Bse

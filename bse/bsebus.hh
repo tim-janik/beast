@@ -76,7 +76,18 @@ enum
   BSE_BUS_N_OCHANNELS
 };
 
-
 G_END_DECLS
+
+namespace Bse {
+
+class BusImpl : public SubSynthImpl, public virtual BusIface {
+protected:
+  virtual           ~BusImpl      ();
+public:
+  explicit          BusImpl       (BseObject*);
+  virtual ErrorType ensure_output () override;
+};
+
+} // Bse
 
 #endif /* __BSE_BUS_H__ */
