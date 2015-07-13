@@ -442,14 +442,19 @@ bst_init_aida_idl()
 {
   assert (bse_server == NULL);
   // connect to BSE thread and fetch server handle
-  bse_server = Rapicorn::Aida::ObjectBroker::connect<Bse::ServerH> ("inproc://BSE-" BST_VERSION);
+  Rapicorn::Aida::ClientConnectionP connection =
+    Rapicorn::Aida::ClientConnection::connect ("inproc://BSE-" BST_VERSION);
+  if (connection)
+    bse_server = connection->remote_origin<Bse::ServerH>();
   if (!bse_server)
-    sfi_error ("failed to connect to BSE: %s", g_strerror (errno));
-  assert (bse_server != NULL);
+    sfi_error ("%s: failed to connect to BSE internally: %s", __func__, g_strerror (errno));
   assert (bse_server.proxy_id() == BSE_SERVER);
   assert (bse_server.from_proxy (BSE_SERVER) == bse_server);
+  // keep connection alive for entire runtime
+  static Rapicorn::Aida::ClientConnectionP *static_connection = new Rapicorn::Aida::ClientConnectionP (connection);
+  (void) static_connection;
   // hook Aida connection into our main loop
-  Bse::AidaGlibSource *source = Bse::AidaGlibSource::create (Bse::ServerH::__aida_connection__());
+  Bse::AidaGlibSource *source = Bse::AidaGlibSource::create (connection.get());
   g_source_set_priority (source, G_PRIORITY_DEFAULT);
   g_source_attach (source, g_main_context_default());
 
