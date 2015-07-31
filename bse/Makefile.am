@@ -324,14 +324,7 @@ EXTRA_DIST += bseapi.idl
 
 # == GENERATED targets ==
 $(libbse_la_OBJECTS): $(GENERATED)	# need dependency to force file generation
-generated: clean-generated $(GENERATED)
-	$(Q) $(MAKE) $(AM_MAKEFLAGS) clean-generated
-	$(Q) $(MAKE) generated-files
-generated-files: $(GENERATED)
-clean-generated:
-	rm -f $(GENERATED) stamp-*
-clean-local: clean-generated
-.PHONY: clean-generated generated-files generated
+CLEANFILES += $(GENERATED)
 
 #
 # private (birnet) dependancy to make TAGS file after each build
