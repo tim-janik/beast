@@ -179,7 +179,7 @@ $(srcdir)/gslfft.cc: @PERLRULE@ $(srcdir)/gsl-fftgen.pl $(srcdir)/gsl-fftconf.sh
 	&& mv xgen-$(@F) $@
 # bsegentypes.h
 GENERATED_EXTRA_DIST += bsegentypes.h
-$(libbse_la_OBJECTS): bsegentypes.h
+bsetype.hh $(bse_sources): bsegentypes.h	# $(libbse_la_OBJECTS): bsegentypes.h
 bsegentypes.h: @PERLRULE@ mktypes.pl # $(filter-out bsegentypes.cc gslfft.cc, $(bse_sources)) $(filter-out bsegentypes.h, $(bse_public_headers))
 bsegentypes.h: @PERLRULE@ bsebasics.idl $(SFIDL)
 	$(AM_V_GEN)
@@ -193,9 +193,7 @@ bsegentypes.h: @PERLRULE@ bsebasics.idl $(SFIDL)
 	  && $(PERL) mktypes.pl --externs $(filter-out bsegentypes.cc gslfft.cc, $(bse_sources)) \
 	) > xgen-$(@F) \
 	&& $(SFIDL) $(SFIDL_INC) --core-c --header $(srcdir)/bsebasics.idl >> xgen-$(@F) \
-	&& (cmp -s xgen-$(@F) $(srcdir)/bsegentypes.h || cp xgen-$(@F) $(srcdir)/bsegentypes.h) \
-	&& rm -f xgen-$(@F)
-$(bse_sources): bsegentypes.h
+	&& mv xgen-$(@F) $(srcdir)/bsegentypes.h
 # bsegentypes.cc
 GENERATED_EXTRA_DIST += bsegentypes.cc
 $(libbse_la_OBJECTS): bsegentypes.cc
