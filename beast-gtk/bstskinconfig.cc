@@ -20,7 +20,7 @@ _bst_skin_config_init (void)
   /* global config record description */
   Bst::SkinConfig skin_config;
   pspec_skin_config = sfi_pspec_rec ("beast-skin-config-v1", NULL, NULL,
-                                     Bse::sfi_psecs_rec_fields_from_visitable (skin_config),
+                                     Bse::sfi_pspecs_rec_fields_from_visitable (skin_config),
                                      SFI_PARAM_STANDARD);
   g_param_spec_ref (pspec_skin_config);
   g_param_spec_sink (pspec_skin_config);

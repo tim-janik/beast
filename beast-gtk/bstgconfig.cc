@@ -20,7 +20,7 @@ _bst_gconfig_init (void)
   /* global config record description */
   Bst::GConfig gconfig;
   pspec_global_config = sfi_pspec_rec ("beast-preferences-v1", NULL, NULL,
-                                       Bse::sfi_psecs_rec_fields_from_visitable (gconfig),
+                                       Bse::sfi_pspecs_rec_fields_from_visitable (gconfig),
                                        SFI_PARAM_STANDARD);
   g_param_spec_ref (pspec_global_config);
   g_param_spec_sink (pspec_global_config);
