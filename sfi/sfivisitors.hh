@@ -6,13 +6,15 @@
 
 namespace Bse { // BseCore
 
-template<class Visitable> void         sfi_rec_to_visitable                (SfiRec *rec, Visitable &visitable);
-template<class Visitable> SfiRec*      sfi_rec_new_from_visitable          (Visitable &visitable);
-template<class Visitable> void         sfi_seq_to_visitable                (SfiSeq *seq, Visitable &visitable);
-template<class Visitable> SfiSeq*      sfi_seq_new_from_visitable          (Visitable &visitable);
-template<class Visitable> SfiRecFields sfi_psecs_rec_fields_from_visitable (Visitable &visitable);
-template<class Visitable> GParamSpec*  sfi_pspec_seq_field_from_visitable  (Visitable &visitable);
-bool sfi_psecs_rec_fields_cache (const std::type_info &type_info, SfiRecFields *rf, bool assign = false); // internal
+template<class Visitable> void                            sfi_rec_to_visitable                      (SfiRec *rec, Visitable &visitable);
+template<class Visitable> SfiRec*                         sfi_rec_new_from_visitable                (Visitable &visitable);
+template<class Visitable> void                            sfi_seq_to_visitable                      (SfiSeq *seq, Visitable &visitable);
+template<class Visitable> SfiSeq*                         sfi_seq_new_from_visitable                (Visitable &visitable);
+template<class Visitable> SfiRecFields                    sfi_pspecs_rec_fields_from_visitable      (Visitable &visitable);
+template<class Visitable> GParamSpec*                     sfi_pspec_seq_field_from_visitable        (Visitable &visitable);
+template<class Visitable> const std::vector<GParamSpec*>& sfi_pspecs_fields_from_accessor_visitable (Visitable &visitable);
+bool sfi_pspecs_rec_fields_cache (const std::type_info &type_info, SfiRecFields *rf, bool assign = false); // internal
+bool sfi_pspecs_acs_fields_cache (const std::type_info &type_info, std::vector<GParamSpec*>**, bool assign = false); // internal
 
 class PspecVisitor : public VisitorDispatcher<PspecVisitor> {
   std::vector<GParamSpec*> &pspecs_;
@@ -32,6 +34,13 @@ class PspecVisitor : public VisitorDispatcher<PspecVisitor> {
         return kv.substr (name.size());
     return fallback;
   }
+  void
+  add_group (Name name, GParamSpec *pspec)
+  {
+    const String group = get_aux (name, "group");
+    if (!group.empty())
+      sfi_pspec_set_group (pspec, group.c_str());
+  }
 public:
   PspecVisitor (std::vector<GParamSpec*> &pspecs, const std::vector<String> &aux_data) : pspecs_ (pspecs), aux_ (aux_data) {}
   template<class A> void
@@ -39,6 +48,7 @@ public:
   {
     const bool dfl = string_to_bool (get_dflt (name));
     GParamSpec *pspec = sfi_pspec_bool (name, get_label (name).c_str(), get_blurb (name).c_str(), dfl, get_hints (name).c_str());
+    add_group (name, pspec);
     pspecs_.push_back (pspec);
   }
   template<class A> void
@@ -49,6 +59,7 @@ public:
     const int64 ma  = string_to_int (get_max (name, "+9223372036854775807"));
     const int64 ms  = string_to_int (get_step (name));
     GParamSpec *pspec = sfi_pspec_num (name, get_label (name).c_str(), get_blurb (name).c_str(), dfl, mi, ma, ms, get_hints (name).c_str());
+    add_group (name, pspec);
     pspecs_.push_back (pspec);
   }
   template<class A> void
@@ -59,6 +70,7 @@ public:
     const double ma  = string_to_double (get_max (name, "+1.79769313486231570815e+308"));
     const double ms  = string_to_double (get_step (name));
     GParamSpec *pspec = sfi_pspec_real (name, get_label (name).c_str(), get_blurb (name).c_str(), dfl, mi, ma, ms, get_hints (name).c_str());
+    add_group (name, pspec);
     pspecs_.push_back (pspec);
   }
   void
@@ -66,6 +78,7 @@ public:
   {
     GParamSpec *pspec = sfi_pspec_string (name, get_label (name).c_str(), get_blurb (name).c_str(),
                                           get_dflt (name).c_str(), get_hints (name).c_str());
+    add_group (name, pspec);
     pspecs_.push_back (pspec);
   }
   template<class A> void
@@ -73,13 +86,15 @@ public:
   {
     GParamSpec *pspec = sfi_pspec_choice (name, get_label (name).c_str(), get_blurb (name).c_str(), get_dflt (name).c_str(),
                                           Bse::choice_values_from_enum<A>(), get_hints (name).c_str());
+    add_group (name, pspec);
     pspecs_.push_back (pspec);
   }
   template<class A> void
   visit_visitable (A &a, Name name)
   {
-    SfiRecFields recfields = sfi_psecs_rec_fields_from_visitable (a);
+    SfiRecFields recfields = sfi_pspecs_rec_fields_from_visitable (a);
     GParamSpec *pspec = sfi_pspec_rec (name, get_label (name).c_str(), get_blurb (name).c_str(), recfields, get_hints (name).c_str());
+    add_group (name, pspec);
     pspecs_.push_back (pspec);
   }
   template<class SeqA> void
@@ -89,6 +104,7 @@ public:
     if (pspec)
       {
         GParamSpec *pspec = sfi_pspec_seq (name, get_label (name).c_str(), get_blurb (name).c_str(), pspec, get_hints (name).c_str());
+        add_group (name, pspec);
         pspecs_.push_back (pspec);
       }
   }
@@ -96,6 +112,7 @@ public:
   visit_class (A &a, Name name)
   {
     GParamSpec *pspec = sfi_pspec_proxy (name, get_label (name).c_str(), get_blurb (name).c_str(), get_hints (name).c_str());
+    add_group (name, pspec);
     pspecs_.push_back (pspec);
   }
 };
@@ -273,10 +290,10 @@ sfi_rec_to_visitable (SfiRec *rec, Visitable &visitable)
 }
 
 template<class Visitable> SfiRecFields
-sfi_psecs_rec_fields_from_visitable (Visitable &visitable)
+sfi_pspecs_rec_fields_from_visitable (Visitable &visitable)
 {
   SfiRecFields rec_fields;
-  if (sfi_psecs_rec_fields_cache (typeid (Visitable), &rec_fields))
+  if (sfi_pspecs_rec_fields_cache (typeid (Visitable), &rec_fields))
     return rec_fields;
   std::vector<GParamSpec*> pspecs;
   PspecVisitor pspec_visitor (pspecs, visitable.__aida_aux_data__());
@@ -289,7 +306,7 @@ sfi_psecs_rec_fields_from_visitable (Visitable &visitable)
       g_param_spec_sink (pspecs[i]);
       rec_fields.fields[i] = pspecs[i];
     }
-  sfi_psecs_rec_fields_cache (typeid (Visitable), &rec_fields, true);
+  sfi_pspecs_rec_fields_cache (typeid (Visitable), &rec_fields, true);
   return rec_fields;
 }
 
@@ -305,6 +322,28 @@ sfi_pspec_seq_field_from_visitable (Visitable &visitable)
   if (pspecs.size() == 1)
     pspec = pspecs[0];
   return pspec;
+}
+
+template<class Visitable> const std::vector<GParamSpec*>&
+sfi_pspecs_fields_from_accessor_visitable (Visitable &visitable)
+{
+  std::vector<GParamSpec*> *pspecsp = NULL;
+  if (sfi_pspecs_acs_fields_cache (typeid (Visitable), &pspecsp))
+    return *pspecsp;
+  std::vector<GParamSpec*> pspecs;
+  PspecVisitor pspec_visitor (pspecs, visitable.__aida_aux_data__());
+  visitable.__accept_accessor__ (pspec_visitor);
+  for (size_t i = 0; i < pspecs.size(); i++)
+    {
+      g_param_spec_ref (pspecs[i]);
+      g_param_spec_sink (pspecs[i]);
+    }
+  pspecsp = &pspecs;
+  sfi_pspecs_acs_fields_cache (typeid (Visitable), &pspecsp, true);
+  pspecsp = NULL;
+  bool success = sfi_pspecs_acs_fields_cache (typeid (Visitable), &pspecsp);
+  assert (success && pspecsp);
+  return *pspecsp;
 }
 
 } // Bse
