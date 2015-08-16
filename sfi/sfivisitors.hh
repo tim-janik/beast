@@ -16,7 +16,7 @@ bool sfi_psecs_rec_fields_cache (const std::type_info &type_info, SfiRecFields *
 
 class PspecVisitor : public VisitorDispatcher<PspecVisitor> {
   std::vector<GParamSpec*> &pspecs_;
-  std::vector<const char*>  aux_;
+  std::vector<String>       aux_;
   String get_min (Name name, Name fallback) { return get_aux (name, "min", fallback); }
   String get_max (Name name, Name fallback) { return get_aux (name, "max", fallback); }
   String get_step  (Name name)   { return get_aux (name, "step"); }
@@ -27,13 +27,13 @@ class PspecVisitor : public VisitorDispatcher<PspecVisitor> {
   String get_aux (const char *field, const char *key, const char *fallback = "")
   {
     const String name = String() + field + "." + key + "=";
-    for (const char *kv : aux_)
-      if (name.compare (0, name.size(), kv, name.size()) == 0)
-        return kv + name.size();
+    for (const String &kv : aux_)
+      if (name.compare (0, name.size(), kv, 0, name.size()) == 0)
+        return kv.substr (name.size());
     return fallback;
   }
 public:
-  PspecVisitor (std::vector<GParamSpec*> &pspecs, const std::vector<const char*> &aux_data) : pspecs_ (pspecs), aux_ (aux_data) {}
+  PspecVisitor (std::vector<GParamSpec*> &pspecs, const std::vector<String> &aux_data) : pspecs_ (pspecs), aux_ (aux_data) {}
   template<class A> void
   visit_bool (A &a, Name name)
   {

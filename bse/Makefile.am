@@ -179,7 +179,7 @@ $(srcdir)/gslfft.cc: @PERLRULE@ $(srcdir)/gsl-fftgen.pl $(srcdir)/gsl-fftconf.sh
 	&& mv xgen-$(@F) $@
 # bsegentypes.h
 GENERATED_EXTRA_DIST += bsegentypes.h
-$(libbse_la_OBJECTS): bsegentypes.h
+bsetype.hh $(bse_sources): bsegentypes.h	# $(libbse_la_OBJECTS): bsegentypes.h
 bsegentypes.h: @PERLRULE@ mktypes.pl # $(filter-out bsegentypes.cc gslfft.cc, $(bse_sources)) $(filter-out bsegentypes.h, $(bse_public_headers))
 bsegentypes.h: @PERLRULE@ bsebasics.idl $(SFIDL)
 	$(AM_V_GEN)
@@ -193,9 +193,7 @@ bsegentypes.h: @PERLRULE@ bsebasics.idl $(SFIDL)
 	  && $(PERL) mktypes.pl --externs $(filter-out bsegentypes.cc gslfft.cc, $(bse_sources)) \
 	) > xgen-$(@F) \
 	&& $(SFIDL) $(SFIDL_INC) --core-c --header $(srcdir)/bsebasics.idl >> xgen-$(@F) \
-	&& (cmp -s xgen-$(@F) $(srcdir)/bsegentypes.h || cp xgen-$(@F) $(srcdir)/bsegentypes.h) \
-	&& rm -f xgen-$(@F)
-$(bse_sources): bsegentypes.h
+	&& mv xgen-$(@F) $(srcdir)/bsegentypes.h
 # bsegentypes.cc
 GENERATED_EXTRA_DIST += bsegentypes.cc
 $(libbse_la_OBJECTS): bsegentypes.cc
@@ -310,7 +308,8 @@ bseclientapi.cc: $(srcdir)/../bse/bseapi.idl $(AUXTYPES_PY)
 	$(AM_V_GEN)
 	$(Q) ${AIDACC} -x CxxStub -G macro=BSE_IDL -G clientcc -x $(AUXTYPES_PY) $< -o xgen-$(@F)
 	$(Q) mv xgen-$(@F) $@
-GENERATED += bseclientapi.cc
+bsestartup.cc: bseclientapi.cc
+CLEANFILES += bseclientapi.cc
 bseserverapi.hh: $(srcdir)/bseapi.idl $(AUXTYPES_PY)
 	$(AM_V_GEN)
 	$(Q) ${AIDACC} -x CxxStub -G macro=BSE_IDL -G serverhh -x $(AUXTYPES_PY) \
@@ -321,19 +320,13 @@ bseserverapi.cc: $(srcdir)/bseapi.idl $(AUXTYPES_PY)
 	$(AM_V_GEN)
 	$(Q) ${AIDACC} -x CxxStub -G macro=BSE_IDL -G servercc -x $(AUXTYPES_PY) $< -o xgen-$(@F)
 	$(Q) mv xgen-$(@F) $@
-GENERATED  += bseserverapi.cc
+bseutils.cc: bseserverapi.cc
+CLEANFILES += bseserverapi.cc
 EXTRA_DIST += bseapi.idl
 
 # == GENERATED targets ==
 $(libbse_la_OBJECTS): $(GENERATED)	# need dependency to force file generation
-generated: clean-generated $(GENERATED)
-	$(Q) $(MAKE) $(AM_MAKEFLAGS) clean-generated
-	$(Q) $(MAKE) generated-files
-generated-files: $(GENERATED)
-clean-generated:
-	rm -f $(GENERATED) stamp-*
-clean-local: clean-generated
-.PHONY: clean-generated generated-files generated
+CLEANFILES += $(GENERATED)
 
 #
 # private (birnet) dependancy to make TAGS file after each build
