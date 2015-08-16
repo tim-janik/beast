@@ -186,7 +186,7 @@ bst_param_view_rebuild (BstParamView *self)
   const gchar **pstrings;
   GSList *slist;
   gint border_width = 5;
-  guint i, n;
+  size_t i;
 
   g_return_if_fail (BST_IS_PARAM_VIEW (self));
 
@@ -196,7 +196,43 @@ bst_param_view_rebuild (BstParamView *self)
   if (!self->item)
     return;
 
+  // extract IDL properties
+  std::vector<GParamSpec*> cxxpspecs;
+  std::vector<Rapicorn::Aida::Parameter> cxxparams;
+
+  // build IDL property params
+  for (i = 0; i < cxxpspecs.size(); i++)
+    if ((!self->reject_pattern || !g_pattern_match_string (self->reject_pattern, cxxpspecs[i]->name)) &&
+        (!self->match_pattern ||   g_pattern_match_string (self->match_pattern,  cxxpspecs[i]->name)))
+      {
+        GParamSpec *pspec = cxxpspecs[i];
+        const gchar *param_group = sfi_pspec_get_group (pspec);
+        Rapicorn::Aida::Parameter *cxxparam = NULL;
+        for (size_t j = 0; j < cxxparams.size() && !cxxparam; j++)
+          if (cxxparams[j].name() == pspec->name)
+            cxxparam = &cxxparams[j];
+	if (cxxparam && sfi_pspec_check_option (pspec, "G") && // GUI representable
+            ((pspec->flags & G_PARAM_WRITABLE) || BST_DVL_HINTS))
+	  {
+            GxkParam *param = bst_param_new_aida_parameter (pspec, *cxxparam);
+            if (param_group)
+              {
+                if (!gcontainer)
+                  gcontainer = (GtkWidget*) g_object_new (GTK_TYPE_VBOX, NULL);
+                bst_param_create_gmask (param, NULL, gcontainer);
+              }
+            else
+              {
+                if (!ncontainer)
+                  ncontainer = (GtkWidget*) g_object_new (GTK_TYPE_VBOX, NULL);
+                bst_param_create_gmask (param, NULL, ncontainer);
+              }
+            self->params = g_slist_prepend (self->params, param);
+	  }
+      }
+
   /* create parameter fields */
+  guint n;
   pstrings = bse_proxy_list_properties (self->item, self->first_base_type, self->last_base_type, &n);
   for (i = 0; i < n; i++)
     if ((!self->reject_pattern || !g_pattern_match_string (self->reject_pattern, pstrings[i])) &&

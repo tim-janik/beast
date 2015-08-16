@@ -602,14 +602,148 @@ item_link_resolved (gpointer     data,
     }
 }
 
-static GTokenType item_restore_try_statement (gpointer item, BseStorage *self, GScanner *scanner, gpointer user_data);
+/// Retrive the value of @a field.key through aux_vector_find() and convert the value to @a ValueType.
+template<typename ValueType = String> ValueType
+aux_vector_get (const std::vector<String> &auxvector, const String &field, const String &key, const String &fallback = "")
+{
+  return Rapicorn::string_to_type<ValueType> (Rapicorn::Aida::aux_vector_find (auxvector, field, key, fallback));
+}
+
+static bool
+any_set_from_string (Any &any, const String &string)
+{
+  using namespace Rapicorn;
+  switch (any.kind())
+    {
+    case Aida::BOOL:            any.set (string_to_bool (string));       break;
+    case Aida::INT64:           any.set (string_to_int (string));        break;
+    case Aida::FLOAT64:         any.set (string_to_double (string));     break;
+    case Aida::STRING:          any.set (string_from_cquote (string));   break;
+    default:                    assert (!"reached");
+    }
+  return true;
+}
+
 static GTokenType
-restore_item_property (BseItem    *item,
-                       BseStorage *self)
+scanner_parse_paren_rest (GScanner *scanner, String *result)
+{
+  // configure scanner to pass through most characters, so we can delay parsing
+  const GScannerConfig saved_config = *scanner->config;
+  scanner->config->cset_identifier_first = (char*) "";
+  scanner->config->cset_identifier_nth = (char*) "";
+  scanner->config->cset_skip_characters = (char*) " \t\r\n";
+  scanner->config->scan_identifier = false;
+  scanner->config->scan_identifier_1char = false;
+  scanner->config->scan_symbols = false;
+  scanner->config->scan_binary = false;
+  scanner->config->scan_octal = false;
+  scanner->config->scan_float = false;
+  scanner->config->scan_hex = false;
+  scanner->config->scan_hex_dollar = false;
+  scanner->config->char_2_token = false;
+  GTokenType expected_token = G_TOKEN_NONE, token = g_scanner_get_next_token (scanner);
+  uint level = 1; // need one ')' to terminate
+  String rest;
+  while (token && expected_token == G_TOKEN_NONE)
+    {
+      if (token == G_TOKEN_CHAR)
+        {
+          if (scanner->value.v_char == '(')
+            level += 1;
+          else if (scanner->value.v_char == ')')
+            {
+              level -= 1;
+              if (level == 0)
+                break;
+            }
+          else
+            rest += scanner->value.v_char;
+        }
+      else if (token == G_TOKEN_STRING)
+        {
+          if (!rest.empty())
+            rest += " ";
+          rest += Rapicorn::string_to_cquote (scanner->value.v_string);
+        }
+      else if (token == G_TOKEN_INT)
+        {
+          if (!rest.empty())
+            rest += " ";
+          rest += Rapicorn::string_from_int (scanner->value.v_int);
+        }
+      else
+        {
+          expected_token = G_TOKEN_RIGHT_PAREN; // was expecting a char, got something unknown
+          break;
+        }
+      token = g_scanner_get_next_token (scanner);
+    }
+  *scanner->config = saved_config;
+  if (result && expected_token == G_TOKEN_NONE)
+    *result = rest;
+  return expected_token; // G_TOKEN_NONE on success
+}
+
+static GTokenType
+storage_parse_property_value (BseStorage *self, const String &name, Any &any, const std::vector<std::string> &aux_data)
+{
+  using namespace Rapicorn;
+  assert_return (BSE_IS_STORAGE (self), G_TOKEN_ERROR);
+  GScanner *scanner = bse_storage_get_scanner (self);
+  String rest;
+  GTokenType expected_token = scanner_parse_paren_rest (scanner, &rest);
+  if (expected_token != G_TOKEN_NONE)
+    return expected_token;
+  const bool any_from_string_conversion = any_set_from_string (any, rest);
+  if (any_from_string_conversion)
+    return G_TOKEN_NONE;
+  else
+    {
+      bse_storage_error (self, "failed to parse Any from: \"%s\"", rest.c_str());
+      return G_TOKEN_ERROR;
+    }
+}
+
+static GTokenType
+restore_cxx_item_property (BseItem *bitem, BseStorage *self)
+{
+  using namespace Rapicorn;
+  GScanner *scanner = bse_storage_get_scanner (self);
+  Bse::ItemImpl *item = bitem->as<Bse::ItemImpl*>();
+  // need identifier
+  if (g_scanner_peek_next_token (scanner) != G_TOKEN_IDENTIFIER)
+    return SFI_TOKEN_UNMATCHED;
+  const String identifier = scanner->next_value.v_identifier;
+  // find identifier in item, we could search __aida_dir__, but *getting* is simpler
+  Any any = item->__aida_get__ (identifier);
+  if (any.kind())
+    {
+      const std::vector<String> auxvector = item->__aida_aux_data__();
+      // FIXME: need special casing of object references, see bse_storage_parse_item_link
+      parse_or_return (scanner, G_TOKEN_IDENTIFIER);    // eat pspec name
+      // parse Any value, including the closing ')'
+      GTokenType expected_token = storage_parse_property_value (self, identifier, any, auxvector);
+      if (expected_token != G_TOKEN_NONE)
+        return expected_token;
+      if (Rapicorn::Aida::aux_vector_check_options (auxvector, identifier, "hints", "r:w:S")) // readable, writable, storage
+        {
+          item->__aida_set__ (identifier, any);
+        }
+      else
+        bse_storage_warn (self, "ignoring non-writable object property \"%s\" of type '%s'",
+                          identifier, Aida::type_kind_name (any.kind()));
+      return G_TOKEN_NONE;
+    }
+  return SFI_TOKEN_UNMATCHED;
+}
+
+static GTokenType item_restore_try_statement (gpointer item, BseStorage *self, GScanner *scanner, gpointer user_data);
+
+static GTokenType
+restore_item_property (BseItem *item, BseStorage *self)
 {
   GScanner *scanner = bse_storage_get_scanner (self);
   GTokenType expected_token;
-  GParamSpec *pspec;
   GValue value = { 0, };
   /* check identifier */
   if (g_scanner_peek_next_token (scanner) != G_TOKEN_IDENTIFIER)
@@ -621,9 +755,9 @@ restore_item_property (BseItem    *item,
    * them to SFI_PARAM_SERVE_STORAGE and SFI_PARAM_SERVE_GUI
    * at some point...)
    */
-  pspec = g_object_class_find_property (G_OBJECT_GET_CLASS (item), scanner->next_value.v_identifier);
+  GParamSpec *pspec = g_object_class_find_property (G_OBJECT_GET_CLASS (item), scanner->next_value.v_identifier);
   if (!pspec)
-    return SFI_TOKEN_UNMATCHED;
+    return restore_cxx_item_property (item, self);
   parse_or_return (scanner, G_TOKEN_IDENTIFIER);        /* eat pspec name */
   /* parse value, special casing object references */
   if (g_type_is_a (G_PARAM_SPEC_VALUE_TYPE (pspec), BSE_TYPE_ITEM))
@@ -655,7 +789,7 @@ restore_item_property (BseItem    *item,
     g_object_set_property (G_OBJECT (item), /* no undo */
                            pspec->name, &value);
   else
-    bse_storage_warn (self, "ignoring non-writable object property \"%s\" of type `%s'",
+    bse_storage_warn (self, "ignoring non-writable object property \"%s\" of type '%s'",
                       pspec->name, g_type_name (G_PARAM_SPEC_VALUE_TYPE (pspec)));
   g_value_unset (&value);
   return G_TOKEN_NONE;
@@ -1078,6 +1212,51 @@ store_item_properties (BseItem    *item,
   g_free (pspecs);
 }
 
+static void
+storage_store_property_value (BseStorage *self, const String &property_name, Any any, const std::vector<std::string> &aux_data)
+{
+  using namespace Rapicorn;
+  if (Rapicorn::Aida::aux_vector_check_options (aux_data, property_name, "hints", "skip-default"))
+    {
+      Any dflt;
+      const char *const invalid = "\377\377\376\376\1\2 invalid \3"; // no-value marker, (invalid UTF-8)
+      const String dflt_val = aux_vector_get (aux_data, property_name, "default", invalid);
+      if (dflt_val != invalid)
+        {
+          dflt = any; // copy type
+          const bool any_from_string_conversion = any_set_from_string (any, dflt_val);
+          if (any_from_string_conversion && dflt == any)
+            return;     // skip storing default value
+        }
+    }
+  String target;
+  switch (any.kind())
+    {
+    case Aida::BOOL:            target = string_from_bool (any.get<bool>());            break;
+    case Aida::INT64:           target = string_from_int (any.get<int64>());            break;
+    case Aida::FLOAT64:         target = string_from_double (any.get<double>());        break;
+    case Aida::STRING:          target = string_to_cquote (any.get<String>());          break;
+    default:                    assert (!"reached");
+    }
+  assert (!target.empty());
+  bse_storage_break (self);
+  bse_storage_putc (self, '(');
+  bse_storage_puts (self, property_name.c_str());
+  bse_storage_putc (self, ' ');
+  bse_storage_puts (self, target.c_str());
+  bse_storage_putc (self, ')');
+}
+
+static void
+store_cxx_item_properties (BseItem *bitem, BseStorage *self)
+{
+  Bse::ItemImpl *item = bitem->as<Bse::ItemImpl*>();
+  const std::vector<String> auxvector = item->__aida_aux_data__();
+  for (const String &pname : item->__aida_dir__())
+    if (Rapicorn::Aida::aux_vector_check_options (auxvector, pname, "hints", "r:w:S")) // readable, writable, storage
+      storage_store_property_value (self, pname, item->__aida_get__ (pname), auxvector);
+}
+
 void
 bse_storage_store_item (BseStorage *self, BseItem *item)
 {
@@ -1087,6 +1266,7 @@ bse_storage_store_item (BseStorage *self, BseItem *item)
   g_object_ref (self);
   g_object_ref (item);
   sfi_ppool_set (self->stored_items, item);
+  store_cxx_item_properties (item, self);
   store_item_properties (item, self);
   BSE_OBJECT_GET_CLASS (item)->store_private (BSE_OBJECT (item), self);
   bse_parasite_store (BSE_OBJECT (item), self);

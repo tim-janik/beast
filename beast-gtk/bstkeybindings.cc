@@ -572,7 +572,7 @@ bst_key_binding_item_pspec (void)
   if (!pspec)
     {
       Bst::KeyBindingItem kbitem;
-      pspec = sfi_pspec_rec ("key", NULL, NULL, Bse::sfi_psecs_rec_fields_from_visitable (kbitem), SFI_PARAM_STANDARD);
+      pspec = sfi_pspec_rec ("key", NULL, NULL, Bse::sfi_pspecs_rec_fields_from_visitable (kbitem), SFI_PARAM_STANDARD);
       g_param_spec_ref (pspec);
       g_param_spec_sink (pspec);
     }
