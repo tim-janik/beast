@@ -26,7 +26,7 @@ struct BseSong : BseSNet {
   guint		    tpqn;		/* ticks per querter note */
   guint		    numerator;
   guint		    denominator;
-  gfloat            bpm;
+  float             bpm;
   BseMusicalTuningType musical_tuning;
   SfiRing          *parts;              /* of type BsePart* */
   SfiRing          *busses;             /* of type BseBus* */
@@ -72,17 +72,19 @@ namespace Bse {
 
 class SongImpl : public SNetImpl, public virtual SongIface {
 protected:
-  virtual    ~SongImpl                ();
+  virtual            ~SongImpl                ();
 public:
-  explicit    SongImpl                (BseObject*);
-  SongTiming  get_timing              (int tick);
-  TrackIfaceP find_any_track_for_part (PartIface &part) override;
-  BusIfaceP   create_bus              () override;
-  void        remove_bus              (BusIface &bus) override;
-  PartIfaceP  create_part             () override;
-  void        remove_part             (PartIface &part) override;
-  TrackIfaceP create_track            () override;
-  void        remove_track            (TrackIface &track) override;
+  explicit            SongImpl                (BseObject*);
+  virtual double      bpm                     () const override;
+  virtual void        bpm                     (double val) override;
+  virtual SongTiming  get_timing              (int tick);
+  virtual TrackIfaceP find_any_track_for_part (PartIface &part) override;
+  virtual BusIfaceP   create_bus              () override;
+  virtual void        remove_bus              (BusIface &bus) override;
+  virtual PartIfaceP  create_part             () override;
+  virtual void        remove_part             (PartIface &part) override;
+  virtual TrackIfaceP create_track            () override;
+  virtual void        remove_track            (TrackIface &track) override;
 };
 
 } // Bse

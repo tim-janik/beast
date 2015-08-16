@@ -24,7 +24,6 @@ enum
   PROP_TPQN,
   PROP_NUMERATOR,
   PROP_DENOMINATOR,
-  PROP_BPM,
   PROP_PNET,
   PROP_AUTO_ACTIVATE,
   PROP_LOOP_ENABLED,
@@ -161,10 +160,6 @@ bse_song_set_property (GObject      *object,
             bse_part_set_semitone_table ((BsePart*) ring->data, bse_semitone_table_from_tuning (self->musical_tuning));
         }
       break;
-    case PROP_BPM:
-      self->bpm = sfi_value_get_real (value);
-      bse_song_update_tpsi_SL (self);
-      break;
     case PROP_PNET:
       if (!self->postprocess || !BSE_SOURCE_PREPARED (self->postprocess))
         {
@@ -270,9 +265,6 @@ bse_song_get_property (GObject     *object,
     {
     case PROP_MUSICAL_TUNING:
       g_value_set_enum (value, self->musical_tuning);
-      break;
-    case PROP_BPM:
-      sfi_value_set_real (value, self->bpm);
       break;
     case PROP_PNET:
       bse_value_set_object (value, self->pnet);
@@ -760,13 +752,6 @@ bse_song_class_init (BseSongClass *klass)
 			      PROP_DENOMINATOR,
 			      sfi_pspec_int ("denominator", _("Denominator"), _("Measure denominator, must be a power of 2"),
 					     timing.denominator, 1, 256, 0, SFI_PARAM_STANDARD));
-  bse_object_class_add_param (object_class, _("Timing"),
-			      PROP_BPM,
-			      sfi_pspec_real ("bpm", _("Beats per minute"), NULL,
-					      timing.bpm,
-					      BSE_MIN_BPM, BSE_MAX_BPM,
-                                              10,
-					      SFI_PARAM_STANDARD ":scale"));
   bse_object_class_add_param (object_class, _("MIDI Instrument"),
                               PROP_PNET,
                               bse_param_spec_object ("pnet", _("Postprocessor"), _("Synthesis network to be used as postprocessor"),
@@ -956,6 +941,22 @@ SongImpl::get_timing (int tick)
   SongTiming timing;
   bse_song_get_timing (self, tick, &timing);
   return timing;
+}
+
+double
+SongImpl::bpm () const
+{
+  BseSong *self = const_cast<SongImpl*> (this)->as<BseSong*>();
+  return self->bpm;
+}
+
+void
+SongImpl::bpm (double val)
+{
+  BseSong *self = as<BseSong*>();
+  self->bpm = val;
+  bse_song_update_tpsi_SL (self);
+  // changed ("bpm");
 }
 
 } // Bse
