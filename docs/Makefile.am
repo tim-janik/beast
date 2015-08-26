@@ -32,7 +32,7 @@ uninstall-local:
 # == html/ build rules ==
 include Makefile.doxygen
 git_index_file = $(shell test ! -x $(top_srcdir)/.git/ || echo $(top_srcdir)/.git/index)
-html/doc-version: @INGIT@ $(git_index_file)	# conditionally rebuild, depending on HEAD changes
+html/doc-version: @INGIT@ $(if $(NODOC),, $(git_index_file)) # conditionally rebuild, depending on HEAD changes
 	$(AM_V_GEN)
 	$(Q) test -e $@ && test "`cat $@`" = "$(DOC_VERSION)" \
 	|| $(MAKE) $(AM_MAKEFLAGS) --no-print-directory html-docs
