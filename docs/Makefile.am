@@ -36,16 +36,7 @@ html/doc-version: @INGIT@ $(if $(NODOC),, $(git_index_file)) # conditionally reb
 	$(AM_V_GEN)
 	$(Q) test -e $@ && test "`cat $@`" = "$(DOC_VERSION)" \
 	|| $(MAKE) $(AM_MAKEFLAGS) --no-print-directory html-docs
-	$(Q) rm -f $@ && echo "$(DOC_VERSION)" > $@
-clean-html-docs:
-	rm -rf html/
-clean-local: @INGIT@ clean-html-docs doxygen-clean
-EXTRA_DIST += html
-html-docs: doxygen-check
-	$(Q) rm -rf html/
-	$(Q) $(MAKE) $(AM_MAKEFLAGS) --no-print-directory build-docs DOXYGEN_GRAPHICS=NO DOC_TARGET=html
-	$(Q) echo "$(DOC_VERSION)" > html/doc-version
-.PHONY: html-docs
+	$(Q) test -e $@ # created by 'html-docs'
 
 # == Doxygen Build Rules ==
 HTMLMAN_FILES     	= imports/beast.1.html imports/bse.5.html imports/bsescm.1.html imports/bsewavetool.1.html imports/sfidl.1.html
@@ -61,7 +52,8 @@ DOXYGEN_TAGFILES        = $(strip \
 	imports/cppreference-doxygen-web.tag.xml=http://en.cppreference.com/w/		\
 )
 # imports/tagfile-rapicorn.xml=http://dev.testbit.eu/rapicorn/latest/
-build-docs: doxygen-check
+html-docs: doxygen-check
+	$(AM_V_GEN)
 	$(Q) $(MAKE) $(AM_MAKEFLAGS) --no-print-directory doxygen-clean
 	$(QPRINT) "GEN" "Documentation Sources"
 	$(Q) $(GIT_CHANGELOG) > $(DOXYGEN_CHANGELOG)
@@ -75,14 +67,19 @@ build-docs: doxygen-check
 	$(QPRINT) "GEN" "HTML manual pages..."
 	$(Q) cp $(HTMLMAN_FILES) doxygen-html/
 	$(QPRINT) "MOVE" "HTML Documentation..."
-	$(Q) ! test -e $(DOC_TARGET) || { echo "$@: target directory exists already: $(DOC_TARGET)"; exit 1; }
-	$(Q) mv doxygen-html $(DOC_TARGET)
+	$(Q) rm -rf html/
+	$(Q) mv doxygen-html html/
 	$(Q) $(MAKE) $(AM_MAKEFLAGS) --no-print-directory doxygen-clean
-.PHONY: build-docs
+	$(Q) rm -f html/doc-version && echo "$(DOC_VERSION)" > html/doc-version
+EXTRA_DIST += html
+.PHONY: html-docs
 CLEANFILES += $(DOXYGEN_CHANGELOG)
 GIT_CHANGELOG = ( git log --first-parent --date=short --pretty='%ad  %an 	\# %h%n%n%s%n%n%b' --abbrev=11 \
 		  ce584d04999a7fb9393e1cfedde2048ba73e8878..HEAD \
 		| sed 's/^/	/; s/^	//; /^[ 	]*<unknown>$$/d' )
+clean-html:
+	rm -rf html/
+clean-local: doxygen-clean @INGIT@ clean-html
 
 # == Upload build rules ==
 upload-docs: doxygen-check $(git_index_file)
