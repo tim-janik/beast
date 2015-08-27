@@ -9,10 +9,8 @@ QPRINT = @printf '  %-7s%s\n'
 DSC_VERSION = $(shell git describe --always --match '[0-9]*' HEAD 2>/dev/null)
 # Release version, shows last tag reachable
 REL_VERSION = $(shell git describe --always --abbrev=0 HEAD 2>/dev/null)
-# Project version as configured
-PRJ_VERSION = $(shell sed -ne "/^[ \t]*VERSION[ \t]*=/ { s/^[^=]*=[ \t]*//; p; q }" < $(top_srcdir)/Makefile)
-# Detailed documentation version
-DOC_VERSION = $(or $(DSC_VERSION), $(PRJ_VERSION))
+# Detailed documentation version, falls back to package version for tarballs
+DOC_VERSION = $(or $(DSC_VERSION), $(VERSION))
 
 # == Extra Tarball Files ==
 EXTRA_DIST += bse-categories.txt interpolation.txt ChangeLog.svn
@@ -81,23 +79,15 @@ clean-html:
 	rm -rf html/
 clean-local: doxygen-clean @INGIT@ clean-html
 
-# == Upload build rules ==
-upload-docs: doxygen-check $(git_index_file)
-	$(AM_V_GEN)
-	$(Q) test -e $@ && test "`cat upload-docs/doc-version`" = "$(DOC_VERSION)" || (true \
-	&& rm -rf upload-docs/ \
-	&& $(MAKE) $(AM_MAKEFLAGS) --no-print-directory build-docs DOXYGEN_GRAPHICS=YES DOC_TARGET=upload-docs )
-	$(Q) echo "$(DOC_VERSION)" > upload-docs/doc-version
-clean-upload-docs:
-	rm -rf upload-docs/
-clean-local: clean-upload-docs
+# == Upload Rule ==
+CHECK_RSYNC = { command -v rsync >/dev/null && { echo "3.0.0" ; rsync --version 2>&1 | sed 's/[^0-9]*// ; 1q' ; } | sort -VC ; }
 # Upload release versions as $DOC_VERSION, otherwise upload as latest/
-upload: upload-docs
+upload-docs: html/doc-version
 	$(AM_V_GEN)
 	$(Q) ${CHECK_RSYNC} || { echo "$@: failed to detect recent version: rsync"; exit 1; }
 	$(Q) test "${REL_VERSION}" != "${DSC_VERSION}" || { set -x ; \
-	  rsync -zaHP --del "upload-docs"   "testbit:/srv/dev/html/beast/${DOC_VERSION}" ; }
+	  rsync -zaHP --del "html/"   "testbit:pub/docs/beast/${DOC_VERSION}" ; }
 	$(Q) test "${REL_VERSION}"  = "${DSC_VERSION}" || { set -x ; \
-	  rsync -zaHP --del "upload-docs/"  "testbit:/srv/dev/html/beast/latest/" ; }
+	  rsync -zaHP --del "html/"   "testbit:pub/docs/beast/latest/" ; }
+upload: upload-docs
 .PHONY: upload upload-docs
-CHECK_RSYNC   = { command -v rsync >/dev/null && { echo "3.0.0" ; rsync --version 2>&1 | sed 's/[^0-9]*// ; 1q' ; } | sort -VC ; }
