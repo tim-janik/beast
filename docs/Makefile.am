@@ -53,13 +53,14 @@ DOXYGEN_DOC_FILES	= docs/main.dox
 DOXYGEN_DOC_DIRS	= sfi/ bse/ plugins/ plugins/freeverb/ beast-gtk/ beast-gtk/gxk/ launchers/ shell/ tools/
 DOXYGEN_EXCLUDES	= rope/cpy2rope.cc rope/cxx-client.[hc][hc] rcore/signalvariants.hh
 DOXYGEN_CHANGELOG       = ChangeLog.tmp
+DOXYGEN_CHANGELOG_TITLE = "Development Changes"
 DOXYGEN_NEWS     	= $(top_srcdir)/NEWS
 DOXYGEN_PROJECT_LINK    = http://beast.testbit.eu/
 DOXYGEN_TAGFILES        = imports/tagfile-rapicorn.xml=http://dev.testbit.eu/rapicorn/latest/ \
 			  imports/tagfile-susv4.xml=http://pubs.opengroup.org/onlinepubs/9699919799/
 build-docs: doxygen-check
 	$(Q) $(MAKE) $(AM_MAKEFLAGS) --no-print-directory doxygen-clean
-	$(QPRINT) "GEN" "Git ChangeLog"
+	$(QPRINT) "GEN" "Documentation Sources"
 	$(Q) $(GIT_CHANGELOG) > $(DOXYGEN_CHANGELOG)
 	$(Q) $(MAKE) $(AM_MAKEFLAGS) --no-print-directory doxygen-srctree
 	$(Q) rm -f $(DOXYGEN_CHANGELOG)
