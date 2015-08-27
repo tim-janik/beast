@@ -57,10 +57,10 @@ DOXYGEN_CHANGELOG_TITLE = "Development Changes"
 DOXYGEN_NEWS     	= $(top_srcdir)/NEWS
 DOXYGEN_PROJECT_LINK    = http://beast.testbit.eu/
 DOXYGEN_TAGFILES        = $(strip \
-	imports/tagfile-rapicorn.xml=http://dev.testbit.eu/rapicorn/latest/		\
 	imports/tagfile-susv4.xml=http://pubs.opengroup.org/onlinepubs/9699919799/	\
 	imports/cppreference-doxygen-web.tag.xml=http://en.cppreference.com/w/		\
 )
+# imports/tagfile-rapicorn.xml=http://dev.testbit.eu/rapicorn/latest/
 build-docs: doxygen-check
 	$(Q) $(MAKE) $(AM_MAKEFLAGS) --no-print-directory doxygen-clean
 	$(QPRINT) "GEN" "Documentation Sources"
