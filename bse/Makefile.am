@@ -323,7 +323,7 @@ bseserverapi.cc: $(srcdir)/bseapi.idl $(AUXTYPES_PY)
 	$(AM_V_GEN)
 	$(Q) ${AIDACC} -x CxxStub -G macro=BSE_IDL -G servercc -x $(AUXTYPES_PY) $< -o xgen-$(@F)
 	$(Q) mv xgen-$(@F) $@
-bseutils.cc: bseserverapi.cc
+bseutils.cc bseprocidl.cc: bseserverapi.hh bseserverapi.cc
 CLEANFILES += bseserverapi.cc
 EXTRA_DIST += bseapi.idl
 
