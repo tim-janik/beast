@@ -361,6 +361,11 @@ noinst_PROGRAMS += bseinfo
 bseinfo_SOURCES  = bseinfo.cc
 bseinfo_LDADD    = $(progs_LDADD)
 
+# == bsetool ==
+noinst_PROGRAMS += bsetool
+bsetool_SOURCES  = bsetool.cc
+bsetool_LDADD    = libbse.la
+
 # == Tests ==
 EXTRA_DIST += oldidl.idl
 check-oldidl: oldidl.idl AuxTypes.py
