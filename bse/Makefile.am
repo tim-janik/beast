@@ -364,7 +364,7 @@ bseinfo_LDADD    = $(progs_LDADD)
 # == bsetool ==
 noinst_PROGRAMS += bsetool
 bsetool_SOURCES  = bsetool.cc
-bsetool_LDADD    = libbse.la
+bsetool_LDADD    = libbse.la $(RAPICORN_LIBS)
 
 # == Tests ==
 EXTRA_DIST += oldidl.idl
