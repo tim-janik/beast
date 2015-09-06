@@ -2,25 +2,9 @@
 #ifndef BSE_FILTER_H__
 #define BSE_FILTER_H__
 #include <bse/bsemath.hh>
+#include <bse/bseenums.hh>
 
 extern "C" {
-
-typedef enum /*< skip >*/
-{
-  BSE_IIR_FILTER_BUTTERWORTH = 1,
-  BSE_IIR_FILTER_BESSEL      = 2,
-  BSE_IIR_FILTER_CHEBYSHEV1  = 3,
-  BSE_IIR_FILTER_CHEBYSHEV2  = 4,
-  BSE_IIR_FILTER_ELLIPTIC    = 5,
-} BseIIRFilterKind;
-
-typedef enum /*< skip >*/
-{
-  BSE_IIR_FILTER_LOW_PASS    = 1,
-  BSE_IIR_FILTER_BAND_PASS   = 2,
-  BSE_IIR_FILTER_HIGH_PASS   = 3,
-  BSE_IIR_FILTER_BAND_STOP   = 4,
-} BseIIRFilterType;
 
 typedef struct {
   BseIIRFilterKind      kind;
