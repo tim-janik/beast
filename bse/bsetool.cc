@@ -112,6 +112,32 @@ ArgParser::parse_args (const uint argc, char *const argv[])
   return ""; // success
 }
 
+static ArgDescription render2wav_options[] = {
+  { "-s, --seconds", "<seconds>", "Number of seconds to record", "0" },
+  { "<bse-file>",    "",          "The BSE file for audio rendering", "" },
+  { "<wav-file>",    "",          "The WAV file to use for audio output", "" },
+};
+
+static ErrorType
+render2wav (const ArgParser &ap)
+{
+  const String bsefile = ap["bse-file"];
+  const String wavfile = ap["wav-file"];
+  const double n_seconds = string_to_double (ap["seconds"]);
+  auto project = BSE_SERVER.create_project (bsefile);
+  project->auto_deactivate (0);
+  auto err = project->restore_from_file (bsefile);
+  if (err)
+    return err;
+  BSE_SERVER.start_recording (wavfile, n_seconds);
+  err = project->play();
+  printerr ("Recording %s to %s...\n", bsefile, wavfile);
+  while (project->is_playing())
+    printerr ("Playing\n");
+
+  return ERROR_NONE;
+}
+
 static ArgDescription bsetool_options[] = {
   { "--bse-no-load", "", "Prevent automated plugin and script registration", "" },
 };
@@ -145,5 +171,27 @@ main (int argc, char *argv[])
         }
       printout ("\n");
     }
-  return 0; // success
+  // command parsing
+  if (option_argc < argc && argv[option_argc] == String ("render2wav"))
+    {
+      ArgParser ap (render2wav_options);
+      String error = ap.parse_args (argc - option_argc - 1, argv + option_argc + 1);
+      if (!error.empty())
+        {
+          printerr ("%s: render2wav: %s\n", argv[0], error);
+          return 127;
+        }
+      ErrorType err = render2wav (ap);
+      if (err != ERROR_NONE)
+        {
+          printerr ("%s: render2wav: %s\n", argv[0], bse_error_blurb (err));
+          return 127;
+        }
+      return 0; // success
+    }
+  else
+    {
+      printerr ("%s: %s\n", argv[0], "missing command");
+      return 127;
+    }
 }
