@@ -94,6 +94,8 @@ void		bse_server_notify_gconfig		(BseServer	    *server);
 G_END_DECLS
 
 
+#define BSE_SERVER      (Bse::ServerImpl::instance())
+
 namespace Bse {
 
 class ServerImpl : public virtual ServerIface, public virtual ObjectImpl {
