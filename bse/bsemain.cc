@@ -175,6 +175,13 @@ bse_init_intern()
         }
     }
 
+  // allow aida IDL remoting
+  Bse::init_aida_idl();
+
+  // start other threads
+  struct Internal : Bse::Sequencer { using Bse::Sequencer::_init_threaded; };
+  Internal::_init_threaded();
+
   // unit testing message
   if (initialized_for_unit_testing > 0)
     {
@@ -224,21 +231,19 @@ static void
 bse_main_loop_thread (Rapicorn::AsyncBlockingQueue<int> *init_queue)
 {
   bse_init_intern ();
-  // start other threads
-  struct Internal : Bse::Sequencer { using Bse::Sequencer::_init_threaded; };
-  Internal::_init_threaded();
-  // allow aida IDL remoting
-  Bse::init_aida_idl();
+
   // complete initialization
   bse_initialization_stage++;   // = 2
   init_queue->push ('B');       // signal completion to caller
   init_queue = NULL;            // completion invalidates init_queue
-  // Bse Core Event Loop
+
+  // main BSE thread event loop
   while (true)                  // FIXME: missing exit handler
     {
       g_main_context_pending (bse_main_context);
       g_main_context_iteration (bse_main_context, TRUE);
     }
+
   Bse::TaskRegistry::remove (Rapicorn::ThisThread::thread_pid()); // see bse_init_intern
 }
 
