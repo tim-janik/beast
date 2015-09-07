@@ -100,8 +100,11 @@ bse_init_intern()
     g_error ("%s() may only be called once", "bse_init_inprocess");
   g_assert (G_BYTE_ORDER == G_LITTLE_ENDIAN || G_BYTE_ORDER == G_BIG_ENDIAN);
 
-  // main loop and basic components
+  // threading and main loop
+  Bse::TaskRegistry::add ("BSE Core", Rapicorn::ThisThread::process_pid(), Rapicorn::ThisThread::thread_pid()); // see bse_main_loop_thread
   bse_main_context = g_main_context_new ();
+
+  // basic components
   bse_globals_init ();
   _bse_init_signal();
   _bse_init_categories ();
@@ -214,7 +217,6 @@ bse_init_inprocess (int *argc, char **argv, const char *app_name, const Bse::Str
 static void
 bse_main_loop_thread (Rapicorn::AsyncBlockingQueue<int> *init_queue)
 {
-  Bse::TaskRegistry::add ("BSE Core", Rapicorn::ThisThread::process_pid(), Rapicorn::ThisThread::thread_pid());
   bse_init_intern ();
   // start other threads
   struct Internal : Bse::Sequencer { using Bse::Sequencer::_init_threaded; };
@@ -231,7 +233,7 @@ bse_main_loop_thread (Rapicorn::AsyncBlockingQueue<int> *init_queue)
       g_main_context_pending (bse_main_context);
       g_main_context_iteration (bse_main_context, TRUE);
     }
-  Bse::TaskRegistry::remove (Rapicorn::ThisThread::thread_pid());
+  Bse::TaskRegistry::remove (Rapicorn::ThisThread::thread_pid()); // see bse_init_intern
 }
 
 void
