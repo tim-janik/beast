@@ -53,8 +53,9 @@ static BseMainArgs       default_main_args = {
 BseMainArgs             *bse_main_args = NULL;
 
 // == BSE Initialization ==
+/// Bind the BSE text domain, so bse_gettext() becomes usable; maybe called before initializing BSE.
 void
-bse_init_textdomain_only (void)
+bse_bindtextdomain()
 {
   bindtextdomain (BSE_GETTEXT_DOMAIN, BST_PATH_LOCALE);
   bind_textdomain_codeset (BSE_GETTEXT_DOMAIN, "UTF-8");
@@ -74,7 +75,7 @@ void
 _bse_init_async (int *argc, char **argv, const char *app_name, const Bse::StringVector &args)
 {
   assert (async_bse_thread.get_id() == std::thread::id());      // no async_bse_thread started
-  bse_init_textdomain_only();
+  bse_bindtextdomain();
   if (bse_initialization_stage != 0)
     g_error ("%s() may only be called once", "bse_init_async");
   bse_initialization_stage++;
@@ -222,7 +223,7 @@ server_registration (SfiProxy            server,
 static void
 bse_init_intern (int *argc, char **argv, const char *app_name, const Bse::StringVector &args, bool as_test)
 {
-  bse_init_textdomain_only();
+  bse_bindtextdomain();
 
   if (bse_initialization_stage != 0)
     g_error ("%s() may only be called once", "bse_init_intern");

@@ -4,7 +4,7 @@
 #include <unistd.h>
 #include <guile/gh.h>
 #include <bse/bse.hh>
-#include <bse/bsemain.hh>  /* for bse_init_textdomain_only() */
+#include <bse/bsemain.hh>       // bse_bindtextdomain
 #include <sfi/sfistore.hh> /* no bin-compat */
 #include <sys/time.h>
 #include <libintl.h>
@@ -49,7 +49,7 @@ main (int   argc,
   const gchar *env_str;
   GSource *source;
   sfi_init (&argc, argv, "BSESCM");
-  bse_init_textdomain_only();
+  bse_bindtextdomain();
   setlocale (LC_ALL, "");
   env_str = g_getenv ("BSESCM_SLEEP4GDB");
   if (env_str && atoi (env_str) >= 3)
