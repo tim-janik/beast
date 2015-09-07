@@ -132,8 +132,21 @@ render2wav (const ArgParser &ap)
   BSE_SERVER.start_recording (wavfile, n_seconds);
   err = project->play();
   printerr ("Recording %s to %s...\n", bsefile, wavfile);
+  printout (".");
+  int counter = 0;
   while (project->is_playing())
-    printerr ("Playing\n");
+    {
+      if (counter == 0)
+        printout ("\b*");
+      else if (counter == 25)
+        printout ("\bo");
+      if (g_main_context_pending (bse_main_context))
+        g_main_context_iteration (bse_main_context, false);
+      else
+        usleep (10 * 1000);
+      counter = (counter + 1) % 50;
+    }
+  printerr ("\n");
 
   return ERROR_NONE;
 }
@@ -145,7 +158,6 @@ static ArgDescription bsetool_options[] = {
 int
 main (int argc, char *argv[])
 {
-  printout ("bsetool!\n");
   bse_init_inprocess (&argc, argv, "bsetool"); // Bse::cstrings_to_vector (NULL)
   // now that the BSE thread runs, drop scheduling priorities if we have any
   setpriority (PRIO_PROCESS, getpid(), 0);
@@ -165,11 +177,7 @@ main (int argc, char *argv[])
     {
       BSE_SERVER.register_core_plugins();
       while (g_main_context_pending (bse_main_context))
-        {
-          printout (".");
-          g_main_context_iteration (bse_main_context, false);
-        }
-      printout ("\n");
+        g_main_context_iteration (bse_main_context, false);
     }
   // command parsing
   if (option_argc < argc && argv[option_argc] == String ("render2wav"))
