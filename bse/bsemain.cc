@@ -140,23 +140,22 @@ server_registration (SfiProxy            server,
     }
 }
 
-static void
-bse_init_intern (int *argc, char **argv, const char *app_name, const Bse::StringVector &args, bool as_test)
+static int initialized_for_unit_testing = -1;
+
+void
+bse_init_inprocess (int *argc, char **argv, const char *app_name, const Bse::StringVector &args)
 {
   if (!bindtextdomain_initialized)
     bse_bindtextdomain();
 
-  if (bse_initialization_stage != 0)
-    g_error ("%s() may only be called once", "bse_init_intern");
-  bse_initialization_stage++;
-  if (bse_initialization_stage != 1)
-    g_error ("%s() may only be called once", "bse_init_intern");
+  if (bse_initialization_stage != 0 || ++bse_initialization_stage != 1)
+    g_error ("%s() may only be called once", "bse_init_inprocess");
 
   /* paranoid assertions */
   g_assert (G_BYTE_ORDER == G_LITTLE_ENDIAN || G_BYTE_ORDER == G_BIG_ENDIAN);
 
   /* initialize submodules */
-  if (as_test)
+  if (initialized_for_unit_testing > 0)
     sfi_init_test (argc, argv);
   else
     sfi_init (argc, argv, app_name);
@@ -196,7 +195,7 @@ bse_init_intern (int *argc, char **argv, const char *app_name, const Bse::String
           // sfi_glue_gc_run ();
         }
     }
-  if (as_test)
+  if (initialized_for_unit_testing > 0)
     {
       StringVector sv = Rapicorn::string_split (Rapicorn::cpu_info(), " ");
       String machine = sv.size() >= 2 ? sv[1] : "Unknown";
@@ -290,15 +289,11 @@ bse_main_wakeup ()
 }
 
 void
-bse_init_inprocess (int *argc, char **argv, const char *app_name, const Bse::StringVector &args)
-{
-  bse_init_intern (argc, argv, app_name, args, false);
-}
-
-void
 bse_init_test (int *argc, char **argv, const Bse::StringVector &args)
 {
-  bse_init_intern (argc, argv, NULL, args, true);
+  assert (initialized_for_unit_testing < 0);
+  initialized_for_unit_testing = 1;
+  bse_init_inprocess (argc, argv, NULL, args);
 }
 
 static void
