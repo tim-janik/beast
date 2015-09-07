@@ -22,7 +22,7 @@
 using namespace Rapicorn;
 
 /* --- prototypes --- */
-static void	bse_async_parse_args	(int *argc_p, char **argv_p, BseMainArgs *margs, const Bse::StringVector &args);
+static void	init_parse_args	(int *argc_p, char **argv_p, BseMainArgs *margs, const Bse::StringVector &args);
 namespace Bse {
 static void     init_aida_idl ();
 } // Bse
@@ -186,8 +186,8 @@ bse_init_intern()
 
 static std::thread async_bse_thread;
 
-void
-bse_init_inprocess (int *argc, char **argv, const char *app_name, const Bse::StringVector &args)
+static void
+initialize_with_argv (int *argc, char **argv, const char *app_name, const Bse::StringVector &args)
 {
   assert (async_bse_thread.get_id() == std::thread::id());      // no async_bse_thread started
   assert (bse_main_context == NULL);
@@ -202,13 +202,19 @@ bse_init_inprocess (int *argc, char **argv, const char *app_name, const Bse::Str
   // argument handling
   bse_main_args = &default_main_args;
   if (argc && argv)
-    bse_async_parse_args (argc, argv, bse_main_args, args);
+    init_parse_args (argc, argv, bse_main_args, args);
 
   // initialize SFI
   if (initialized_for_unit_testing > 0)
     sfi_init_test (argc, argv);
   else
     sfi_init (argc, argv, app_name);
+}
+
+void
+bse_init_inprocess (int *argc, char **argv, const char *app_name, const Bse::StringVector &args)
+{
+  initialize_with_argv (argc, argv, app_name, args);
 
   // initialize globals, signals, types, builtins, etc
   bse_init_intern ();
@@ -239,26 +245,7 @@ bse_main_loop_thread (Rapicorn::AsyncBlockingQueue<int> *init_queue)
 void
 _bse_init_async (int *argc, char **argv, const char *app_name, const Bse::StringVector &args)
 {
-  assert (async_bse_thread.get_id() == std::thread::id());      // no async_bse_thread started
-  assert (bse_main_context == NULL);
-
-  // ensure textdomain for error messages
-  if (!bindtextdomain_initialized)
-    bse_bindtextdomain();
-  // setup GLib's prgname for error messages
-  if (argc && argv && *argc && !g_get_prgname ())
-    g_set_prgname (*argv);
-
-  // argument handling
-  bse_main_args = &default_main_args;
-  if (argc && argv)
-    bse_async_parse_args (argc, argv, bse_main_args, args);
-
-  // initialize SFI
-  if (initialized_for_unit_testing > 0)
-    sfi_init_test (argc, argv);
-  else
-    sfi_init (argc, argv, app_name);
+  initialize_with_argv (argc, argv, app_name, args);
 
   // start main BSE thread
   auto *init_queue = new Rapicorn::AsyncBlockingQueue<int>();
@@ -374,7 +361,7 @@ parse_float_option (const String &s, const char *arg, double *fp)
 }
 
 static void
-bse_async_parse_args (int *argc_p, char **argv_p, BseMainArgs *margs, const Bse::StringVector &args)
+init_parse_args (int *argc_p, char **argv_p, BseMainArgs *margs, const Bse::StringVector &args)
 {
   uint argc = *argc_p;
   char **argv = argv_p;
