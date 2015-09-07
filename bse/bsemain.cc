@@ -69,89 +69,6 @@ bse_gettext (const gchar *text)
   return dgettext (BSE_GETTEXT_DOMAIN, text);
 }
 
-static std::thread async_bse_thread;
-
-void
-_bse_init_async (int *argc, char **argv, const char *app_name, const Bse::StringVector &args)
-{
-  assert (async_bse_thread.get_id() == std::thread::id());      // no async_bse_thread started
-  bse_bindtextdomain();
-  if (bse_initialization_stage != 0)
-    g_error ("%s() may only be called once", "bse_init_async");
-  bse_initialization_stage++;
-  if (bse_initialization_stage != 1)
-    g_error ("%s() may only be called once", "bse_init_async");
-  /* this function is running in the user program and needs to start the main BSE thread */
-  /* paranoid assertions */
-  g_assert (G_BYTE_ORDER == G_LITTLE_ENDIAN || G_BYTE_ORDER == G_BIG_ENDIAN);
-  /* initialize submodules */
-  sfi_init (argc, argv, app_name);
-  bse_main_args = &default_main_args;
-  /* handle argument early*/
-  if (argc && argv)
-    {
-      if (*argc && !g_get_prgname ())
-	g_set_prgname (*argv);
-      bse_async_parse_args (argc, argv, bse_main_args, args);
-    }
-  // start main BSE thread
-  auto *init_queue = new Rapicorn::AsyncBlockingQueue<int>();
-  async_bse_thread = std::thread (bse_main_loop, init_queue);
-  // wait for initialization completion of the core thread
-  int msg = init_queue->pop();
-  assert (msg == 'B');
-  delete init_queue;
-  async_bse_thread.detach();    // FIXME: rather join on exit
-}
-
-struct AsyncData {
-  const gchar *client;
-  const std::function<void()> &caller_wakeup;
-  Rapicorn::AsyncBlockingQueue<SfiGlueContext*> result_queue;
-};
-
-static gboolean
-async_create_context (gpointer data)
-{
-  AsyncData *adata = (AsyncData*) data;
-  SfiComPort *port1, *port2;
-  sfi_com_port_create_linked ("Client", adata->caller_wakeup, &port1,
-			      "Server", bse_main_wakeup, &port2);
-  SfiGlueContext *context = sfi_glue_encoder_context (port1);
-  bse_janitor_new (port2);
-  adata->result_queue.push (context);
-  return false; // run-once
-}
-
-SfiGlueContext*
-_bse_glue_context_create (const char *client, const std::function<void()> &caller_wakeup)
-{
-  g_return_val_if_fail (client && caller_wakeup, NULL);
-  AsyncData adata = { client, caller_wakeup };
-  // function runs in user threads and queues handler in BSE thread to create context
-  if (bse_initialization_stage < 2)
-    g_error ("%s: called without prior %s()", __func__, "Bse::init_async");
-  // queue handler to create context
-  GSource *source = g_idle_source_new ();
-  g_source_set_priority (source, G_PRIORITY_HIGH);
-  adata.client = client;
-  g_source_set_callback (source, async_create_context, &adata, NULL);
-  g_source_attach (source, bse_main_context);
-  g_source_unref (source);
-  // wake up BSE thread
-  g_main_context_wakeup (bse_main_context);
-  // receive result asynchronously
-  SfiGlueContext *context = adata.result_queue.pop();
-  return context;
-}
-
-void
-bse_main_wakeup ()
-{
-  g_return_if_fail (bse_main_context != NULL);
-  g_main_context_wakeup (bse_main_context);
-}
-
 static void
 bse_init_core (void)
 {
@@ -282,6 +199,89 @@ bse_init_intern (int *argc, char **argv, const char *app_name, const Bse::String
       TMSG ("  NOTE   Running on: %s+%s", machine.c_str(), bse_block_impl_name());
     }
   // sfi_glue_gc_run ();
+}
+
+static std::thread async_bse_thread;
+
+void
+_bse_init_async (int *argc, char **argv, const char *app_name, const Bse::StringVector &args)
+{
+  assert (async_bse_thread.get_id() == std::thread::id());      // no async_bse_thread started
+  bse_bindtextdomain();
+  if (bse_initialization_stage != 0)
+    g_error ("%s() may only be called once", "bse_init_async");
+  bse_initialization_stage++;
+  if (bse_initialization_stage != 1)
+    g_error ("%s() may only be called once", "bse_init_async");
+  /* this function is running in the user program and needs to start the main BSE thread */
+  /* paranoid assertions */
+  g_assert (G_BYTE_ORDER == G_LITTLE_ENDIAN || G_BYTE_ORDER == G_BIG_ENDIAN);
+  /* initialize submodules */
+  sfi_init (argc, argv, app_name);
+  bse_main_args = &default_main_args;
+  /* handle argument early*/
+  if (argc && argv)
+    {
+      if (*argc && !g_get_prgname ())
+	g_set_prgname (*argv);
+      bse_async_parse_args (argc, argv, bse_main_args, args);
+    }
+  // start main BSE thread
+  auto *init_queue = new Rapicorn::AsyncBlockingQueue<int>();
+  async_bse_thread = std::thread (bse_main_loop, init_queue);
+  // wait for initialization completion of the core thread
+  int msg = init_queue->pop();
+  assert (msg == 'B');
+  delete init_queue;
+  async_bse_thread.detach();    // FIXME: rather join on exit
+}
+
+struct AsyncData {
+  const gchar *client;
+  const std::function<void()> &caller_wakeup;
+  Rapicorn::AsyncBlockingQueue<SfiGlueContext*> result_queue;
+};
+
+static gboolean
+async_create_context (gpointer data)
+{
+  AsyncData *adata = (AsyncData*) data;
+  SfiComPort *port1, *port2;
+  sfi_com_port_create_linked ("Client", adata->caller_wakeup, &port1,
+			      "Server", bse_main_wakeup, &port2);
+  SfiGlueContext *context = sfi_glue_encoder_context (port1);
+  bse_janitor_new (port2);
+  adata->result_queue.push (context);
+  return false; // run-once
+}
+
+SfiGlueContext*
+_bse_glue_context_create (const char *client, const std::function<void()> &caller_wakeup)
+{
+  g_return_val_if_fail (client && caller_wakeup, NULL);
+  AsyncData adata = { client, caller_wakeup };
+  // function runs in user threads and queues handler in BSE thread to create context
+  if (bse_initialization_stage < 2)
+    g_error ("%s: called without prior %s()", __func__, "Bse::init_async");
+  // queue handler to create context
+  GSource *source = g_idle_source_new ();
+  g_source_set_priority (source, G_PRIORITY_HIGH);
+  adata.client = client;
+  g_source_set_callback (source, async_create_context, &adata, NULL);
+  g_source_attach (source, bse_main_context);
+  g_source_unref (source);
+  // wake up BSE thread
+  g_main_context_wakeup (bse_main_context);
+  // receive result asynchronously
+  SfiGlueContext *context = adata.result_queue.pop();
+  return context;
+}
+
+void
+bse_main_wakeup ()
+{
+  g_return_if_fail (bse_main_context != NULL);
+  g_main_context_wakeup (bse_main_context);
 }
 
 void
