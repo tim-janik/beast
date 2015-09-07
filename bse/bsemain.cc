@@ -32,7 +32,6 @@ static void     init_aida_idl ();
 /* from bse.hh */
 GMainContext            *bse_main_context = NULL;
 static volatile gboolean bse_initialization_stage = 0;
-static gboolean          textdomain_setup = FALSE;
 static BseMainArgs       default_main_args = {
   1,                    // n_processors
   64,                   // wave_chunk_padding
@@ -53,19 +52,23 @@ static BseMainArgs       default_main_args = {
 BseMainArgs             *bse_main_args = NULL;
 
 // == BSE Initialization ==
-/// Bind the BSE text domain, so bse_gettext() becomes usable; maybe called before initializing BSE.
+static bool bindtextdomain_initialized = false;
+
+/// Bind the BSE text domain, so bse_gettext() becomes usable; may be called before initializing BSE.
 void
 bse_bindtextdomain()
 {
+  assert_return (bindtextdomain_initialized == false);
   bindtextdomain (BSE_GETTEXT_DOMAIN, BST_PATH_LOCALE);
   bind_textdomain_codeset (BSE_GETTEXT_DOMAIN, "UTF-8");
-  textdomain_setup = TRUE;
+  bindtextdomain_initialized = true;
 }
 
+/// Translate message strings used in the BSE library.
 const gchar*
 bse_gettext (const gchar *text)
 {
-  g_assert (textdomain_setup == TRUE);
+  assert (bindtextdomain_initialized == true);
   return dgettext (BSE_GETTEXT_DOMAIN, text);
 }
 
@@ -140,7 +143,8 @@ server_registration (SfiProxy            server,
 static void
 bse_init_intern (int *argc, char **argv, const char *app_name, const Bse::StringVector &args, bool as_test)
 {
-  bse_bindtextdomain();
+  if (!bindtextdomain_initialized)
+    bse_bindtextdomain();
 
   if (bse_initialization_stage != 0)
     g_error ("%s() may only be called once", "bse_init_intern");
@@ -207,7 +211,8 @@ void
 _bse_init_async (int *argc, char **argv, const char *app_name, const Bse::StringVector &args)
 {
   assert (async_bse_thread.get_id() == std::thread::id());      // no async_bse_thread started
-  bse_bindtextdomain();
+  if (!bindtextdomain_initialized)
+    bse_bindtextdomain();
   if (bse_initialization_stage != 0)
     g_error ("%s() may only be called once", "bse_init_async");
   bse_initialization_stage++;
