@@ -197,8 +197,16 @@ bst_param_view_rebuild (BstParamView *self)
     return;
 
   // extract IDL properties
+  Bse::SongH song = Bse::SongH::down_cast (bse_server.from_proxy (self->item));
   std::vector<GParamSpec*> cxxpspecs;
   std::vector<Rapicorn::Aida::Parameter> cxxparams;
+  if (song)
+    {
+      Bse::SongH song = Bse::SongH::down_cast (bse_server.from_proxy (self->item));
+      cxxpspecs = Bse::sfi_pspecs_fields_from_accessor_visitable (song);
+      Rapicorn::Aida::Parameter::ListVisitor av (cxxparams);
+      song.__accept_accessor__ (av);
+    }
 
   // build IDL property params
   for (i = 0; i < cxxpspecs.size(); i++)

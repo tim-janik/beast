@@ -561,6 +561,9 @@ interface Song : SNet {
   // int32 loop_left     = Range ("Loop Left", "", STORAGE, -1, MAXINT31, 384, -1);
   // int32 loop_right    = Range ("Loop Right", "", STORAGE, -1, MAXINT31, 384, -1);
   // int32 tick_pointer  = Range ("Tick Pointer", "", STORAGE, -1, MAXINT31, 384, -1);
+  group _("Timing") {
+    float64 bpm           = Range  ("BPM", "Beats per minute", STANDARD  ":scale", MIN_BPM, MAX_BPM, 10, 120);
+  };
 };
 
 /// Interface for editable PCM wave samples.
