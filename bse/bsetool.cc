@@ -8,6 +8,9 @@
 
 using namespace Bse;
 
+static bool verbose = true;
+#define printq(...)     do { if (verbose) printout (__VA_ARGS__); } while (0)
+
 struct ArgDescription {
   const char *arg_name, *value_name, *arg_blurb;
   String value;
@@ -131,28 +134,29 @@ render2wav (const ArgParser &ap)
     return err;
   BSE_SERVER.start_recording (wavfile, n_seconds);
   err = project->play();
-  printerr ("Recording %s to %s...\n", bsefile, wavfile);
-  printout (".");
+  printq ("Recording %s to %s...\n", bsefile, wavfile);
+  printq (".");
   int counter = 0;
   while (project->is_playing())
     {
       if (counter == 0)
-        printout ("\b*");
+        printq ("\b*");
       else if (counter == 25)
-        printout ("\bo");
+        printq ("\bo");
       if (g_main_context_pending (bse_main_context))
         g_main_context_iteration (bse_main_context, false);
       else
         usleep (10 * 1000);
       counter = (counter + 1) % 50;
     }
-  printerr ("\n");
+  printq ("\n");
 
   return ERROR_NONE;
 }
 
 static ArgDescription bsetool_options[] = {
   { "--bse-no-load", "", "Prevent automated plugin and script registration", "" },
+  { "--quiet",       "", "Prevent progress output", "" },
 };
 
 int
@@ -172,6 +176,7 @@ main (int argc, char *argv[])
       printerr ("%s: %s\n", argv[0], error);
       return 127;
     }
+  verbose = !string_to_bool (toolap["quiet"]);
   // load BSE plugins, scripts, ladspa plugins, etc
   if (!string_to_bool (toolap["bse-no-load"]))
     {
