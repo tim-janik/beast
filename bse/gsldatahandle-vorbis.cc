@@ -5,6 +5,7 @@
 #include <ogg/ogg.h>
 #include <vorbis/vorbisfile.h>
 #include <errno.h>
+#include "../configure.h"
 
 
 /* --- defines --- */
@@ -135,6 +136,23 @@ static ov_callbacks vfile_ov_callbacks = {
   vfile_tell,
 };
 
+static int
+dh_vorbis_page_seek (VorbisHandle *vhandle, int64 pos)
+{
+  int err;
+#if VORBISFILE_BADSEEK == 1
+  // libvorbisfile-1.3.4 and earlier like to segfault while seeking around EOF on small files
+  // so ov_pcm_seek and ov_pcm_seek_page cannot be used reliably, this is a crude workaround
+  err = ov_raw_seek (&vhandle->ofile, 0);
+  if (err != 0)
+    printerr ("%s: %s: %d\n", __func__, "ov_raw_seek", err);
+#endif
+  err = ov_pcm_seek_page (&vhandle->ofile, pos);
+  if (err != 0)
+    printerr ("%s: %s: %d\n", __func__, "ov_pcm_seek_page", err);
+  return err;
+}
+
 static Bse::ErrorType
 dh_vorbis_open (GslDataHandle      *dhandle,
 		GslDataHandleSetup *setup)
@@ -200,7 +218,7 @@ dh_vorbis_open (GslDataHandle      *dhandle,
 
   n = ov_pcm_total (&vhandle->ofile, vhandle->bitstream);
   vi = ov_info (&vhandle->ofile, vhandle->bitstream);
-  if (n > 0 && vi && vi->channels && ov_pcm_seek (&vhandle->ofile, vhandle->soffset) >= 0)
+  if (n > 0 && vi && vi->channels && dh_vorbis_page_seek (vhandle, vhandle->soffset) >= 0)
     {
       setup->n_channels = vi->channels;
       setup->n_values = n * setup->n_channels;
@@ -225,8 +243,7 @@ dh_vorbis_open (GslDataHandle      *dhandle,
 }
 
 static GslLong
-dh_vorbis_coarse_seek (GslDataHandle *dhandle,
-		       GslLong        voffset)
+dh_vorbis_coarse_seek (GslDataHandle *dhandle, GslLong voffset)
 {
   VorbisHandle *vhandle = (VorbisHandle*) dhandle;
   GslLong opos = vhandle->pcm_pos, pos = voffset / dhandle->setup.n_channels;
@@ -237,10 +254,10 @@ dh_vorbis_coarse_seek (GslDataHandle *dhandle,
   if (pos < vhandle->pcm_pos ||
       pos >= vhandle->pcm_pos + vhandle->pcm_length + SEEK_BY_READ_AHEAD (vhandle))
     {
-      gint err = ov_pcm_seek_page (&vhandle->ofile, vhandle->soffset + pos);
+      int err = dh_vorbis_page_seek (vhandle, vhandle->soffset + pos);
 
       if (err)	/* eek */
-	err = ov_pcm_seek_page (&vhandle->ofile, vhandle->soffset);
+	err = dh_vorbis_page_seek (vhandle, vhandle->soffset);
       else
 	vhandle->pcm_pos = ov_pcm_tell (&vhandle->ofile) - vhandle->soffset;
       if (err || vhandle->pcm_pos < 0)  /* urg, we're completely screwed */
