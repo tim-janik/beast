@@ -19,20 +19,9 @@ BSE2WAV = $(strip						\
 	  --bse-disable-randomization				\
 )
 
-# === audio feature test rule ===
-FEATURE_TESTS = 
-.PHONY: check-feature-tests $(FEATURE_TESTS)
-check-feature-tests: # $(FEATURE_TESTS)
-	@for tst in $(FEATURE_TESTS) ; do 			\
-	  echo "TEST: $$tst" ;					\
-	  $(MAKE) -C ./ $(AM_MAKEFLAGS) $$tst || exit $? ;	\
-	  echo "PASS: $$tst" ;					\
-	done
-	@MESSAGETEXT="All $(words $(FEATURE_TESTS)) audio tests passed"	\
-	&& echo $$MESSAGETEXT | sed 's/./=/g'				\
-	&& echo $$MESSAGETEXT						\
-	&& echo $$MESSAGETEXT | sed 's/./=/g'
-slowcheck: check-feature-tests
+# == audio feature test rule ==
+FEATURE_TESTS =
+check-local: $(FEATURE_TESTS)
 # feature test temporaries
 CLEANFILES += *.tmp *.wav
 
