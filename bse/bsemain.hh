@@ -5,14 +5,12 @@
 G_BEGIN_DECLS
 
 // == BSE Initialization ==
-void		bse_init_textdomain_only (void);
-void		_bse_init_async		 (int *argc, char **argv, const char *app_name, const Bse::StringVector &args);
-SfiGlueContext* _bse_glue_context_create (const char *client, const std::function<void()> &caller_wakeup);
-
-/* initialization for internal utilities */
+void bse_bindtextdomain ();
+void _bse_init_async	(int *argc, char **argv, const char *app_name, const Bse::StringVector &args);
 void bse_init_inprocess	(int *argc, char **argv, const char *app_name, const Bse::StringVector &args = Bse::StringVector());
 void bse_init_test 	(int *argc, char **argv, const Bse::StringVector &args = Bse::StringVector());
 void bse_main_wakeup    ();
+SfiGlueContext* _bse_glue_context_create (const char *client, const std::function<void()> &caller_wakeup);
 
 /* --- global macros --- */
 #define	BSE_THREADS_ENTER()			// bse_main_global_lock ()

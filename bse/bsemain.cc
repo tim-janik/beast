@@ -22,8 +22,7 @@
 using namespace Rapicorn;
 
 /* --- prototypes --- */
-static void	bse_main_loop		(Rapicorn::AsyncBlockingQueue<int> *init_queue);
-static void	bse_async_parse_args	(int *argc_p, char **argv_p, BseMainArgs *margs, const Bse::StringVector &args);
+static void	init_parse_args	(int *argc_p, char **argv_p, BseMainArgs *margs, const Bse::StringVector &args);
 namespace Bse {
 static void     init_aida_idl ();
 } // Bse
@@ -32,7 +31,6 @@ static void     init_aida_idl ();
 /* from bse.hh */
 GMainContext            *bse_main_context = NULL;
 static volatile gboolean bse_initialization_stage = 0;
-static gboolean          textdomain_setup = FALSE;
 static BseMainArgs       default_main_args = {
   1,                    // n_processors
   64,                   // wave_chunk_padding
@@ -53,54 +51,216 @@ static BseMainArgs       default_main_args = {
 BseMainArgs             *bse_main_args = NULL;
 
 // == BSE Initialization ==
+static bool bindtextdomain_initialized = false;
+
+/// Bind the BSE text domain, so bse_gettext() becomes usable; may be called before initializing BSE.
 void
-bse_init_textdomain_only (void)
+bse_bindtextdomain()
 {
+  assert_return (bindtextdomain_initialized == false);
   bindtextdomain (BSE_GETTEXT_DOMAIN, BST_PATH_LOCALE);
   bind_textdomain_codeset (BSE_GETTEXT_DOMAIN, "UTF-8");
-  textdomain_setup = TRUE;
+  bindtextdomain_initialized = true;
 }
 
+/// Translate message strings used in the BSE library.
 const gchar*
 bse_gettext (const gchar *text)
 {
-  g_assert (textdomain_setup == TRUE);
+  assert (bindtextdomain_initialized == true);
   return dgettext (BSE_GETTEXT_DOMAIN, text);
+}
+
+static gboolean single_thread_registration_done = FALSE;
+
+static void
+server_registration (SfiProxy            server,
+                     BseRegistrationType rtype,
+                     const gchar        *what,
+                     const gchar        *error,
+                     gpointer            data)
+{
+  // BseRegistrationType rtype = bse_registration_type_from_choice (rchoice);
+  if (rtype == BSE_REGISTER_DONE)
+    single_thread_registration_done = TRUE;
+  else
+    {
+      if (error && error[0])
+        sfi_diag ("failed to register \"%s\": %s", what, error);
+    }
+}
+
+static int initialized_for_unit_testing = -1;
+
+static void
+bse_init_intern()
+{
+  // paranoid assertions
+  if (bse_initialization_stage != 0 || ++bse_initialization_stage != 1)
+    g_error ("%s() may only be called once", "bse_init_inprocess");
+  g_assert (G_BYTE_ORDER == G_LITTLE_ENDIAN || G_BYTE_ORDER == G_BIG_ENDIAN);
+
+  // main loop
+  bse_main_context = g_main_context_new ();
+
+  // basic components
+  bse_globals_init ();
+  _bse_init_signal();
+  _bse_init_categories ();
+  bse_type_init ();
+  bse_cxx_init ();
+  // FIXME: global spawn dir is evil
+  {
+    gchar *dir = g_get_current_dir ();
+    sfi_com_set_spawn_dir (dir);
+    g_free (dir);
+  }
+  // initialize GSL components
+  gsl_init ();
+  // remaining BSE components
+  bse_plugin_init_builtins ();
+  // initialize C wrappers around C++ generated types
+  _bse_init_c_wrappers ();
+
+  // make sure the server object is alive
+  bse_server_get ();
+
+  // load drivers
+  if (bse_main_args->load_drivers_early)
+    {
+      SfiRing *ring = bse_plugin_path_list_files (TRUE, FALSE);
+      while (ring)
+        {
+          gchar *name = (char*) sfi_ring_pop_head (&ring);
+          const char *error = bse_plugin_check_load (name);
+          if (error)
+            sfi_diag ("while loading \"%s\": %s", name, error);
+          g_free (name);
+        }
+    }
+
+  // dump device list
+  if (bse_main_args->dump_driver_list)
+    {
+      g_printerr ("%s", _("\nAvailable PCM drivers:\n"));
+      bse_device_dump_list (BSE_TYPE_PCM_DEVICE, "  ", TRUE, NULL, NULL);
+      g_printerr ("%s", _("\nAvailable MIDI drivers:\n"));
+      bse_device_dump_list (BSE_TYPE_MIDI_DEVICE, "  ", TRUE, NULL, NULL);
+    }
+
+  // initialize core plugins & scripts
+  if (bse_main_args->load_core_plugins || bse_main_args->load_core_scripts)
+      g_object_connect (bse_server_get(), "signal::registration", server_registration, NULL, NULL);
+  if (bse_main_args->load_core_plugins)
+    {
+      g_object_connect (bse_server_get(), "signal::registration", server_registration, NULL, NULL);
+      SfiRing *ring = bse_plugin_path_list_files (!bse_main_args->load_drivers_early, TRUE);
+      while (ring)
+        {
+          gchar *name = (char*) sfi_ring_pop_head (&ring);
+          const char *error = bse_plugin_check_load (name);
+          if (error)
+            sfi_diag ("while loading \"%s\": %s", name, error);
+          g_free (name);
+        }
+    }
+  if (bse_main_args->load_core_scripts)
+    {
+      Bse::ServerImpl::instance().register_scripts();
+      while (!single_thread_registration_done)
+        {
+          g_main_context_iteration (bse_main_context, TRUE);
+          // sfi_glue_gc_run ();
+        }
+    }
+
+  // allow aida IDL remoting
+  Bse::init_aida_idl();
+
+  // start other threads
+  struct Internal : Bse::Sequencer { using Bse::Sequencer::_init_threaded; };
+  Internal::_init_threaded();
+
+  // unit testing message
+  if (initialized_for_unit_testing > 0)
+    {
+      StringVector sv = Rapicorn::string_split (Rapicorn::cpu_info(), " ");
+      String machine = sv.size() >= 2 ? sv[1] : "Unknown";
+      TMSG ("  NOTE   Running on: %s+%s", machine.c_str(), bse_block_impl_name());
+    }
 }
 
 static std::thread async_bse_thread;
 
+static void
+initialize_with_argv (int *argc, char **argv, const char *app_name, const Bse::StringVector &args)
+{
+  assert (async_bse_thread.get_id() == std::thread::id());      // no async_bse_thread started
+  assert (bse_main_context == NULL);
+
+  // ensure textdomain for error messages
+  if (!bindtextdomain_initialized)
+    bse_bindtextdomain();
+  // setup GLib's prgname for error messages
+  if (argc && argv && *argc && !g_get_prgname ())
+    g_set_prgname (*argv);
+
+  // argument handling
+  bse_main_args = &default_main_args;
+  if (argc && argv)
+    init_parse_args (argc, argv, bse_main_args, args);
+
+  // initialize SFI
+  if (initialized_for_unit_testing > 0)
+    sfi_init_test (argc, argv);
+  else
+    sfi_init (argc, argv, app_name);
+}
+
+void
+bse_init_inprocess (int *argc, char **argv, const char *app_name, const Bse::StringVector &args)
+{
+  initialize_with_argv (argc, argv, app_name, args);
+
+  // initialize globals, signals, types, builtins, etc
+  bse_init_intern ();
+}
+
+static void
+bse_main_loop_thread (Rapicorn::AsyncBlockingQueue<int> *init_queue)
+{
+  Bse::TaskRegistry::add ("BSE Core", Rapicorn::ThisThread::process_pid(), Rapicorn::ThisThread::thread_pid());
+
+  bse_init_intern ();
+
+  // complete initialization
+  bse_initialization_stage++;   // = 2
+  init_queue->push ('B');       // signal completion to caller
+  init_queue = NULL;            // completion invalidates init_queue
+
+  // main BSE thread event loop
+  while (true)                  // FIXME: missing exit handler
+    {
+      g_main_context_pending (bse_main_context);
+      g_main_context_iteration (bse_main_context, TRUE);
+    }
+
+  Bse::TaskRegistry::remove (Rapicorn::ThisThread::thread_pid()); // see bse_init_intern
+}
+
 void
 _bse_init_async (int *argc, char **argv, const char *app_name, const Bse::StringVector &args)
 {
-  assert (async_bse_thread.get_id() == std::thread::id());      // no async_bse_thread started
-  bse_init_textdomain_only();
-  if (bse_initialization_stage != 0)
-    g_error ("%s() may only be called once", "bse_init_async");
-  bse_initialization_stage++;
-  if (bse_initialization_stage != 1)
-    g_error ("%s() may only be called once", "bse_init_async");
-  /* this function is running in the user program and needs to start the main BSE thread */
-  /* paranoid assertions */
-  g_assert (G_BYTE_ORDER == G_LITTLE_ENDIAN || G_BYTE_ORDER == G_BIG_ENDIAN);
-  /* initialize submodules */
-  sfi_init (argc, argv, app_name);
-  bse_main_args = &default_main_args;
-  /* handle argument early*/
-  if (argc && argv)
-    {
-      if (*argc && !g_get_prgname ())
-	g_set_prgname (*argv);
-      bse_async_parse_args (argc, argv, bse_main_args, args);
-    }
+  initialize_with_argv (argc, argv, app_name, args);
+
   // start main BSE thread
   auto *init_queue = new Rapicorn::AsyncBlockingQueue<int>();
-  async_bse_thread = std::thread (bse_main_loop, init_queue);
+  async_bse_thread = std::thread (bse_main_loop_thread, init_queue); // calls bse_init_intern
   // wait for initialization completion of the core thread
   int msg = init_queue->pop();
   assert (msg == 'B');
   delete init_queue;
-  async_bse_thread.detach();    // FIXME: rather join on exit
+  async_bse_thread.detach();    // FIXME: join BSE thread on exit()
 }
 
 struct AsyncData {
@@ -151,171 +311,12 @@ bse_main_wakeup ()
   g_main_context_wakeup (bse_main_context);
 }
 
-static void
-bse_init_core (void)
-{
-  /* global threading things */
-  bse_main_context = g_main_context_new ();
-  /* initialize basic components */
-  bse_globals_init ();
-  _bse_init_signal();
-  _bse_init_categories ();
-  bse_type_init ();
-  bse_cxx_init ();
-  /* FIXME: global spawn dir is evil */
-  {
-    gchar *dir = g_get_current_dir ();
-    sfi_com_set_spawn_dir (dir);
-    g_free (dir);
-  }
-  /* initialize GSL components */
-  gsl_init ();
-  /* remaining BSE components */
-  bse_plugin_init_builtins ();
-  /* initialize C wrappers around C++ generated types */
-  _bse_init_c_wrappers ();
-  /* make sure the server is alive */
-  bse_server_get ();
-  /* load drivers early */
-  if (bse_main_args->load_drivers_early)
-    {
-      SfiRing *ring = bse_plugin_path_list_files (TRUE, FALSE);
-      while (ring)
-        {
-          gchar *name = (char*) sfi_ring_pop_head (&ring);
-          const char *error = bse_plugin_check_load (name);
-          if (error)
-            sfi_diag ("while loading \"%s\": %s", name, error);
-          g_free (name);
-        }
-    }
-
-  /* dump device list */
-  if (bse_main_args->dump_driver_list)
-    {
-      g_printerr ("%s", _("\nAvailable PCM drivers:\n"));
-      bse_device_dump_list (BSE_TYPE_PCM_DEVICE, "  ", TRUE, NULL, NULL);
-      g_printerr ("%s", _("\nAvailable MIDI drivers:\n"));
-      bse_device_dump_list (BSE_TYPE_MIDI_DEVICE, "  ", TRUE, NULL, NULL);
-    }
-}
-
-static gboolean single_thread_registration_done = FALSE;
-
-static void
-server_registration (SfiProxy            server,
-                     BseRegistrationType rtype,
-                     const gchar        *what,
-                     const gchar        *error,
-                     gpointer            data)
-{
-  // BseRegistrationType rtype = bse_registration_type_from_choice (rchoice);
-  if (rtype == BSE_REGISTER_DONE)
-    single_thread_registration_done = TRUE;
-  else
-    {
-      if (error && error[0])
-        sfi_diag ("failed to register \"%s\": %s", what, error);
-    }
-}
-
-static void
-bse_init_intern (int *argc, char **argv, const char *app_name, const Bse::StringVector &args, bool as_test)
-{
-  bse_init_textdomain_only();
-
-  if (bse_initialization_stage != 0)
-    g_error ("%s() may only be called once", "bse_init_intern");
-  bse_initialization_stage++;
-  if (bse_initialization_stage != 1)
-    g_error ("%s() may only be called once", "bse_init_intern");
-
-  /* paranoid assertions */
-  g_assert (G_BYTE_ORDER == G_LITTLE_ENDIAN || G_BYTE_ORDER == G_BIG_ENDIAN);
-
-  /* initialize submodules */
-  if (as_test)
-    sfi_init_test (argc, argv);
-  else
-    sfi_init (argc, argv, app_name);
-  bse_main_args = &default_main_args;
-  /* early argument handling */
-  if (argc && argv)
-    {
-      if (*argc && !g_get_prgname ())
-	g_set_prgname (*argv);
-      bse_async_parse_args (argc, argv, bse_main_args, args);
-    }
-
-  bse_init_core ();
-
-  /* initialize core plugins & scripts */
-  if (bse_main_args->load_core_plugins || bse_main_args->load_core_scripts)
-      g_object_connect (bse_server_get(), "signal::registration", server_registration, NULL, NULL);
-  if (bse_main_args->load_core_plugins)
-    {
-      g_object_connect (bse_server_get(), "signal::registration", server_registration, NULL, NULL);
-      SfiRing *ring = bse_plugin_path_list_files (!bse_main_args->load_drivers_early, TRUE);
-      while (ring)
-        {
-          gchar *name = (char*) sfi_ring_pop_head (&ring);
-          const char *error = bse_plugin_check_load (name);
-          if (error)
-            sfi_diag ("while loading \"%s\": %s", name, error);
-          g_free (name);
-        }
-    }
-  if (bse_main_args->load_core_scripts)
-    {
-      Bse::ServerImpl::instance().register_scripts();
-      while (!single_thread_registration_done)
-        {
-          g_main_context_iteration (bse_main_context, TRUE);
-          // sfi_glue_gc_run ();
-        }
-    }
-  if (as_test)
-    {
-      StringVector sv = Rapicorn::string_split (Rapicorn::cpu_info(), " ");
-      String machine = sv.size() >= 2 ? sv[1] : "Unknown";
-      TMSG ("  NOTE   Running on: %s+%s", machine.c_str(), bse_block_impl_name());
-    }
-  // sfi_glue_gc_run ();
-}
-
-void
-bse_init_inprocess (int *argc, char **argv, const char *app_name, const Bse::StringVector &args)
-{
-  bse_init_intern (argc, argv, app_name, args, false);
-}
-
 void
 bse_init_test (int *argc, char **argv, const Bse::StringVector &args)
 {
-  bse_init_intern (argc, argv, NULL, args, true);
-}
-
-static void
-bse_main_loop (Rapicorn::AsyncBlockingQueue<int> *init_queue)
-{
-  Bse::TaskRegistry::add ("BSE Core", Rapicorn::ThisThread::process_pid(), Rapicorn::ThisThread::thread_pid());
-  bse_init_core ();
-  // start other threads
-  struct Internal : Bse::Sequencer { using Bse::Sequencer::_init_threaded; };
-  Internal::_init_threaded();
-  // allow aida IDL remoting
-  Bse::init_aida_idl();
-  // complete initialization
-  bse_initialization_stage++;   // = 2
-  init_queue->push ('B');       // signal completion to caller
-  init_queue = NULL;            // completion invalidates init_queue
-  // Bse Core Event Loop
-  while (true)                  // FIXME: missing exit handler
-    {
-      g_main_context_pending (bse_main_context);
-      g_main_context_iteration (bse_main_context, TRUE);
-    }
-  Bse::TaskRegistry::remove (Rapicorn::ThisThread::thread_pid());
+  assert (initialized_for_unit_testing < 0);
+  initialized_for_unit_testing = 1;
+  bse_init_inprocess (argc, argv, NULL, args);
 }
 
 static guint
@@ -366,7 +367,7 @@ parse_float_option (const String &s, const char *arg, double *fp)
 }
 
 static void
-bse_async_parse_args (int *argc_p, char **argv_p, BseMainArgs *margs, const Bse::StringVector &args)
+init_parse_args (int *argc_p, char **argv_p, BseMainArgs *margs, const Bse::StringVector &args)
 {
   uint argc = *argc_p;
   char **argv = argv_p;
