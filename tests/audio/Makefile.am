@@ -6,16 +6,16 @@ builddirplugins = '$(top_builddir)/plugins/.libs/*.so:$(top_builddir)/plugins/fr
 samplepath = '$(top_srcdir)/tests/audio:$(top_srcdir)/library/samples'
 BSEFEXTRACT = $(top_builddir)/tools/bsefextract
 BSEFCOMPARE = $(top_builddir)/tools/bsefcompare
-BSE2WAV = $(strip							\
-	$(top_builddir)/shell/bsescm-$(BIN_VERSION)			\
-	  --bse-mixing-freq=48000 -p null=nosleep -m null		\
-	  --bse-rcfile "/dev/null" --bse-no-load			\
-	  --bse-override-plugin-globs $(builddirplugins)		\
-          --bse-override-sample-path $(samplepath)                      \
-	  --bse-disable-randomization					\
-	  -s $(srcdir)/bse2wav.scm					\
+BSE2WAV = $(strip						\
+	$(top_builddir)/bse/bsetool render2wav			\
+	  --bse-mixing-freq=48000				\
+	  --bse-pcm-driver null=nosleep				\
+	  --bse-midi-driver null				\
+	  --bse-rcfile "/dev/null"				\
+	  --bse-override-plugin-globs $(builddirplugins)	\
+	  --bse-override-sample-path $(samplepath)		\
+	  --bse-disable-randomization				\
 )
-EXTRA_DIST += bse2wav.scm
 
 # === audio feature test rule ===
 FEATURE_TESTS = 
