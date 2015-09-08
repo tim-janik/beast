@@ -100,8 +100,7 @@ bse_init_intern()
     g_error ("%s() may only be called once", "bse_init_inprocess");
   g_assert (G_BYTE_ORDER == G_LITTLE_ENDIAN || G_BYTE_ORDER == G_BIG_ENDIAN);
 
-  // threading and main loop
-  Bse::TaskRegistry::add ("BSE Core", Rapicorn::ThisThread::process_pid(), Rapicorn::ThisThread::thread_pid()); // see bse_main_loop_thread
+  // main loop
   bse_main_context = g_main_context_new ();
 
   // basic components
@@ -230,6 +229,8 @@ bse_init_inprocess (int *argc, char **argv, const char *app_name, const Bse::Str
 static void
 bse_main_loop_thread (Rapicorn::AsyncBlockingQueue<int> *init_queue)
 {
+  Bse::TaskRegistry::add ("BSE Core", Rapicorn::ThisThread::process_pid(), Rapicorn::ThisThread::thread_pid());
+
   bse_init_intern ();
 
   // complete initialization
