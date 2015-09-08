@@ -7,7 +7,9 @@ samplepath = '$(top_srcdir)/tests/audio:$(top_srcdir)/library/samples'
 BSEFEXTRACT = $(top_builddir)/tools/bsefextract
 BSEFCOMPARE = $(top_builddir)/tools/bsefcompare
 BSE2WAV = $(strip						\
-	$(top_builddir)/bse/bsetool render2wav			\
+	$(top_builddir)/bse/bsetool				\
+	  $(if $(findstring 1, $(V)),, --quiet)			\
+	  render2wav						\
 	  --bse-mixing-freq=48000				\
 	  --bse-pcm-driver null=nosleep				\
 	  --bse-midi-driver null				\
