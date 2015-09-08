@@ -19,6 +19,7 @@ class Sequencer {
   EventFd    event_fd_;
   std::thread thread_;
 private:
+  static void   reap_thread      ();
   void          sequencer_thread ();
   bool          pool_poll_Lm     (int timeout_ms);
   void          process_part_SL  (BsePart *part, double start_stamp, uint start_tick,
