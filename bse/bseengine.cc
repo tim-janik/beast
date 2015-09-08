@@ -20,9 +20,6 @@
 #define ERESTART        EINTR
 #endif
 
-/* --- prototypes --- */
-static void wakeup_master (void);
-
 /* --- UserThread --- */
 /**
  * @param klass	the BseModuleClass which determines the module's behaviour
@@ -975,7 +972,7 @@ bse_trans_commit (BseTrans *trans)
     {
       trans->comitted = TRUE;
       exec_tick_stamp = _engine_enqueue_trans (trans);
-      wakeup_master ();
+      Bse::MasterThread::wakeup();
     }
   else
     bse_trans_dismiss (trans);
@@ -1199,7 +1196,6 @@ slave (gpointer data)
 /* --- setup & trigger --- */
 static gboolean		bse_engine_initialized = FALSE;
 static gboolean		bse_engine_threaded = FALSE;
-static Bse::MasterThread *master_thread = NULL;
 guint			bse_engine_exvar_block_size = 0;
 guint			bse_engine_exvar_sample_freq = 0;
 guint			bse_engine_exvar_control_mask = 0;
@@ -1382,16 +1378,9 @@ bse_engine_init (gboolean run_threaded)
   bse_engine_threaded = run_threaded;
   if (bse_engine_threaded)
     {
-      master_thread = new Bse::MasterThread (bse_main_wakeup);
+      Bse::MasterThread::start (bse_main_wakeup);
       (void) slave; // FIXME: start slave ("DSP #2")
     }
-}
-
-static void
-wakeup_master (void)
-{
-  g_return_if_fail (master_thread != NULL);
-  master_thread->wakeup();
 }
 
 gboolean
