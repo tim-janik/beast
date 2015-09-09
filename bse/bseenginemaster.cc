@@ -1123,9 +1123,10 @@ MasterThread::MasterThread (const std::function<void()> &caller_wakeup) :
 {
   assert (caller_wakeup_ != NULL);
   if (event_fd_.open() != 0)
-    g_error ("failed to create engine wake-up pipe: %s", strerror (errno));
-  thread_ = std::thread (&MasterThread::master_thread, this); // FIXME: join on exit
+    fatal ("BSE: failed to create master thread wake-up pipe: %s", strerror (errno));
 }
+
+static std::atomic<bool> master_thread_running { false };
 
 void
 MasterThread::master_thread()
@@ -1149,7 +1150,7 @@ MasterThread::master_thread()
   master_n_pollfds = 1;
   master_pollfds_changed = TRUE;
   toyprof_stampinit ();
-  while (1)
+  while (master_thread_running)
     {
       BseEngineLoop loop;
       bool need_dispatch;
@@ -1174,6 +1175,41 @@ MasterThread::master_thread()
 	caller_wakeup_();
     }
   Bse::TaskRegistry::remove (Rapicorn::ThisThread::thread_pid());
+}
+
+static std::atomic<MasterThread*> master_thread_singleton { NULL };
+
+void
+MasterThread::reap_master_thread ()
+{
+  assert (master_thread_singleton != NULL);
+  assert_return (master_thread_running == true);
+  master_thread_running = false;
+  MasterThread::wakeup();
+  MasterThread *mthread = master_thread_singleton;
+  mthread->thread_.join();
+  master_thread_singleton = NULL;
+  delete mthread;
+}
+
+void
+MasterThread::start (const std::function<void()> &caller_wakeup)
+{
+  assert (master_thread_singleton == NULL);
+  MasterThread *mthread = new MasterThread (caller_wakeup);
+  master_thread_singleton = mthread;
+  assert (master_thread_running == false);
+  if (std::atexit (reap_master_thread) != 0)
+    fatal ("BSE: failed to install master thread reaper");
+  master_thread_running = true;
+  mthread->thread_ = std::thread (&MasterThread::master_thread, mthread);
+}
+
+void
+MasterThread::wakeup ()
+{
+  assert_return (master_thread_singleton != NULL);
+  master_thread_singleton.load()->event_fd_.wakeup();
 }
 
 } // Bse

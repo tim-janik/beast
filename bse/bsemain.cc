@@ -226,6 +226,8 @@ bse_init_inprocess (int *argc, char **argv, const char *app_name, const Bse::Str
   bse_init_intern ();
 }
 
+static std::atomic<bool> main_loop_thread_running { true };
+
 static void
 bse_main_loop_thread (Rapicorn::AsyncBlockingQueue<int> *init_queue)
 {
@@ -239,7 +241,7 @@ bse_main_loop_thread (Rapicorn::AsyncBlockingQueue<int> *init_queue)
   init_queue = NULL;            // completion invalidates init_queue
 
   // main BSE thread event loop
-  while (true)                  // FIXME: missing exit handler
+  while (main_loop_thread_running)
     {
       g_main_context_pending (bse_main_context);
       g_main_context_iteration (bse_main_context, TRUE);
@@ -248,19 +250,29 @@ bse_main_loop_thread (Rapicorn::AsyncBlockingQueue<int> *init_queue)
   Bse::TaskRegistry::remove (Rapicorn::ThisThread::thread_pid()); // see bse_init_intern
 }
 
+static void
+reap_main_loop_thread ()
+{
+  assert_return (main_loop_thread_running == true);
+  main_loop_thread_running = false;
+  bse_main_wakeup();
+  async_bse_thread.join();
+}
+
 void
 _bse_init_async (int *argc, char **argv, const char *app_name, const Bse::StringVector &args)
 {
   initialize_with_argv (argc, argv, app_name, args);
 
   // start main BSE thread
+  if (std::atexit (reap_main_loop_thread) != 0)
+    fatal ("BSE: failed to install main thread reaper");
   auto *init_queue = new Rapicorn::AsyncBlockingQueue<int>();
   async_bse_thread = std::thread (bse_main_loop_thread, init_queue); // calls bse_init_intern
   // wait for initialization completion of the core thread
   int msg = init_queue->pop();
   assert (msg == 'B');
   delete init_queue;
-  async_bse_thread.detach();    // FIXME: join BSE thread on exit()
 }
 
 struct AsyncData {

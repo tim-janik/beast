@@ -324,6 +324,8 @@ Sequencer::thread_lagging (uint n_blocks)
   return lagging;
 }
 
+static std::atomic<bool> sequencer_thread_running { false };
+
 void
 Sequencer::sequencer_thread ()
 {
@@ -381,7 +383,7 @@ Sequencer::sequencer_thread ()
       stamp_ = next_stamp;
       wakeup->awake_after (cur_stamp + bse_engine_block_size ());
     }
-  while (pool_poll_Lm (-1));
+  while (pool_poll_Lm (-1) && sequencer_thread_running);
   BSE_SEQUENCER_UNLOCK();
   SDEBUG ("thrdstop: now=%llu", Bse::TickStamp::current());
   Bse::TaskRegistry::remove (Rapicorn::ThisThread::thread_pid());
@@ -541,10 +543,23 @@ Sequencer::Sequencer() :
 }
 
 void
+Sequencer::reap_thread ()
+{
+  assert_return (sequencer_thread_running == true);
+  sequencer_thread_running = false;
+  singleton_->wakeup();
+  singleton_->thread_.join();
+}
+
+void
 Sequencer::_init_threaded ()
 {
   assert (singleton_ == NULL);
+  assert (sequencer_thread_running == false);
   singleton_ = new Sequencer();
+  if (std::atexit (Sequencer::reap_thread) != 0)
+    fatal ("BSE: failed to install sequencer thread reaper");
+  sequencer_thread_running = true;
   singleton_->thread_ = std::thread (&Sequencer::sequencer_thread, singleton_); // FIXME: join on exit
 }
 
