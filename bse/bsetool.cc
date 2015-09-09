@@ -8,6 +8,7 @@
 
 using namespace Bse;
 
+// == arg parsing ==
 static bool verbose = true;
 #define printq(...)     do { if (verbose) printout (__VA_ARGS__); } while (0)
 
@@ -115,6 +116,7 @@ ArgParser::parse_args (const uint argc, char *const argv[])
   return ""; // success
 }
 
+// == render2wav ==
 static ArgDescription render2wav_options[] = {
   { "-s, --seconds", "<seconds>", "Number of seconds to record", "0" },
   { "<bse-file>",    "",          "The BSE file for audio rendering", "" },
@@ -154,6 +156,7 @@ render2wav (const ArgParser &ap)
   return ERROR_NONE;
 }
 
+// == bse tool ==
 static ArgDescription bsetool_options[] = {
   { "--bse-no-load", "", "Prevent automated plugin and script registration", "" },
   { "--quiet",       "", "Prevent progress output", "" },
