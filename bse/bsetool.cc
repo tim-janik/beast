@@ -156,6 +156,24 @@ render2wav (const ArgParser &ap)
   return ERROR_NONE;
 }
 
+// == check-load ==
+static ArgDescription check_load_options[] = {
+  { "<bse-file>",    "",          "The BSE file to load and check for validity", "" },
+};
+
+static String
+check_load (const ArgParser &ap)
+{
+  const String bsefile = ap["bse-file"];
+  auto project = BSE_SERVER.create_project (bsefile);
+  project->auto_deactivate (0);
+  auto err = project->restore_from_file (bsefile);
+  if (err)
+    return string_format ("%s: loading failed: %s", bsefile, bse_error_blurb (err));
+  // success
+  return "";
+}
+
 // == bse tool ==
 static ArgDescription bsetool_options[] = {
   { "--bse-no-load", "", "Prevent automated plugin and script registration", "" },
@@ -201,6 +219,23 @@ main (int argc, char *argv[])
       if (err != ERROR_NONE)
         {
           printerr ("%s: render2wav: %s\n", argv[0], bse_error_blurb (err));
+          return 127;
+        }
+      return 0; // success
+    }
+  else if (option_argc < argc && argv[option_argc] == String ("check-load"))
+    {
+      ArgParser ap (check_load_options);
+      String error = ap.parse_args (argc - option_argc - 1, argv + option_argc + 1);
+      if (!error.empty())
+        {
+          printerr ("%s: check-load: %s\n", argv[0], error);
+          return 127;
+        }
+      error = check_load (ap);
+      if (!error.empty())
+        {
+          printerr ("check-load: %s\n", error);
           return 127;
         }
       return 0; // success
