@@ -30,7 +30,7 @@
     (epsilon 0.12)
     (order 2)
     (filter-type bse-iir-filter-low-pass)
-    (filter-algorithm bse-iir-filter-chebycheff1)
+    (filter-algorithm bse-iir-filter-chebyshev1)
     (pos-y -0.81)
     (pos-x 0.12)
     (source-input "audio-in" (link 1 "BseStandardOsc-1") "audio-out"))
