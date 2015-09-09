@@ -71,7 +71,7 @@ bse_iir_filter_class_init (BseIIRFilterClass *klass)
   bse_object_class_add_param (object_class, _("Filter Choice"),
 			      PARAM_FILTER_ALGO,
 			      bse_param_spec_genum ("filter_algorithm", _("Filter Algorithm"), _("The filter design type"),
-						    BSE_TYPE_IIR_FILTER_ALGORITHM,
+						    BSE_TYPE_IIR_FILTER_KIND,
 						    BSE_IIR_FILTER_BUTTERWORTH,
 						    SFI_PARAM_STANDARD));
   bse_object_class_add_param (object_class, _("Filter Choice"),
@@ -142,7 +142,7 @@ bse_iir_filter_set_property (GObject	  *object,
   switch (param_id)
     {
     case PARAM_FILTER_ALGO:
-      self->filter_algo = (BseIIRFilterAlgorithm) g_value_get_enum (value);
+      self->filter_algo = (BseIIRFilterKind) g_value_get_enum (value);
       self->algo_type_change = TRUE;
       bse_iir_filter_update_modules (self);
       break;
@@ -301,37 +301,37 @@ bse_iir_filter_update_modules (BseIIRFilter *filt)
 	case BSE_IIR_FILTER_BUTTERWORTH << 16 | BSE_IIR_FILTER_LOW_PASS:
 	  gsl_filter_butter_lp (filt->order, freq1, filt->epsilon, filt->a, filt->b);
 	  break;
-	case BSE_IIR_FILTER_CHEBYCHEFF1 << 16 | BSE_IIR_FILTER_LOW_PASS:
+	case BSE_IIR_FILTER_CHEBYSHEV1 << 16 | BSE_IIR_FILTER_LOW_PASS:
 	  gsl_filter_tscheb1_lp (filt->order, freq1, filt->epsilon, filt->a, filt->b);
 	  break;
-	case BSE_IIR_FILTER_CHEBYCHEFF2 << 16 | BSE_IIR_FILTER_LOW_PASS:
+	case BSE_IIR_FILTER_CHEBYSHEV2 << 16 | BSE_IIR_FILTER_LOW_PASS:
 	  gsl_filter_tscheb2_lp (filt->order, freq1, steepness, filt->epsilon, filt->a, filt->b);
 	  break;
 	case BSE_IIR_FILTER_BUTTERWORTH << 16 | BSE_IIR_FILTER_HIGH_PASS:
 	  gsl_filter_butter_hp (filt->order, freq1, filt->epsilon, filt->a, filt->b);
 	  break;
-	case BSE_IIR_FILTER_CHEBYCHEFF1 << 16 | BSE_IIR_FILTER_HIGH_PASS:
+	case BSE_IIR_FILTER_CHEBYSHEV1 << 16 | BSE_IIR_FILTER_HIGH_PASS:
 	  gsl_filter_tscheb1_hp (filt->order, freq1, filt->epsilon, filt->a, filt->b);
 	  break;
-	case BSE_IIR_FILTER_CHEBYCHEFF2 << 16 | BSE_IIR_FILTER_HIGH_PASS:
+	case BSE_IIR_FILTER_CHEBYSHEV2 << 16 | BSE_IIR_FILTER_HIGH_PASS:
 	  gsl_filter_tscheb2_hp (filt->order, freq1, steepness, filt->epsilon, filt->a, filt->b);
 	  break;
 	case BSE_IIR_FILTER_BUTTERWORTH << 16 | BSE_IIR_FILTER_BAND_PASS:
 	  gsl_filter_butter_bp (filt->order & ~1, freq1, freq2, filt->epsilon, filt->a, filt->b);
 	  break;
-	case BSE_IIR_FILTER_CHEBYCHEFF1 << 16 | BSE_IIR_FILTER_BAND_PASS:
+	case BSE_IIR_FILTER_CHEBYSHEV1 << 16 | BSE_IIR_FILTER_BAND_PASS:
 	  gsl_filter_tscheb1_bp (filt->order & ~1, freq1, freq2, filt->epsilon, filt->a, filt->b);
 	  break;
-	case BSE_IIR_FILTER_CHEBYCHEFF2 << 16 | BSE_IIR_FILTER_BAND_PASS:
+	case BSE_IIR_FILTER_CHEBYSHEV2 << 16 | BSE_IIR_FILTER_BAND_PASS:
 	  gsl_filter_tscheb2_bp (filt->order & ~1, freq1, freq2, steepness, filt->epsilon, filt->a, filt->b);
 	  break;
 	case BSE_IIR_FILTER_BUTTERWORTH << 16 | BSE_IIR_FILTER_BAND_STOP:
 	  gsl_filter_butter_bs (filt->order & ~1, freq1, freq2, filt->epsilon, filt->a, filt->b);
 	  break;
-	case BSE_IIR_FILTER_CHEBYCHEFF1 << 16 | BSE_IIR_FILTER_BAND_STOP:
+	case BSE_IIR_FILTER_CHEBYSHEV1 << 16 | BSE_IIR_FILTER_BAND_STOP:
 	  gsl_filter_tscheb1_bs (filt->order & ~1, freq1, freq2, filt->epsilon, filt->a, filt->b);
 	  break;
-	case BSE_IIR_FILTER_CHEBYCHEFF2 << 16 | BSE_IIR_FILTER_BAND_STOP:
+	case BSE_IIR_FILTER_CHEBYSHEV2 << 16 | BSE_IIR_FILTER_BAND_STOP:
 	  gsl_filter_tscheb2_bs (filt->order & ~1, freq1, freq2, steepness, filt->epsilon, filt->a, filt->b);
 	  break;
 	default:

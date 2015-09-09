@@ -3,7 +3,7 @@
 #define __BSE_IEEE754_H__
 
 #include <bse/bsedefs.hh>
-#include <math.h> /* signbit */
+#include <cmath> // signbit
 
 /* override math.h definition of PI */
 #undef PI

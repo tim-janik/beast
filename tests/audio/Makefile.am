@@ -67,7 +67,7 @@ minisong-test:
 	$(BSE2WAV) $(srcdir)/minisong.bse $(@F).wav
 	$(BSEFEXTRACT) $(@F).wav --cut-zeros --channel 0 --avg-spectrum --spectrum --avg-energy  > $(@F).tmp
 	$(BSEFEXTRACT) $(@F).wav --cut-zeros --channel 1 --avg-spectrum --spectrum --avg-energy >> $(@F).tmp
-	$(BSEFCOMPARE) $(srcdir)/minisong.ref $(@F).tmp --threshold 99.99
+	$(BSEFCOMPARE) $(srcdir)/minisong.ref $(@F).tmp --threshold 98.00
 	rm -f $(@F).tmp $(@F).wav
 
 FEATURE_TESTS += syndrum-test
@@ -76,7 +76,7 @@ syndrum-test:
 	$(BSE2WAV) $(srcdir)/syndrum.bse $(@F).wav
 	$(BSEFEXTRACT) $(@F).wav --cut-zeros --channel 0 --avg-spectrum --spectrum --avg-energy  > $(@F).tmp
 	$(BSEFEXTRACT) $(@F).wav --cut-zeros --channel 1 --avg-spectrum --spectrum --avg-energy >> $(@F).tmp
-	$(BSEFCOMPARE) $(srcdir)/syndrum.ref $(@F).tmp --threshold 99.99
+	$(BSEFCOMPARE) $(srcdir)/syndrum.ref $(@F).tmp --threshold 91.00
 	rm -f $(@F).tmp $(@F).wav
 
 FEATURE_TESTS += velocity-test
@@ -94,7 +94,7 @@ EXTRA_DIST += organsong.bse organsong.ref
 organsong-test:
 	$(BSE2WAV) $(srcdir)/organsong.bse $(@F).wav
 	$(BSEFEXTRACT) $(@F).wav --cut-zeros --channel 0 --avg-spectrum --spectrum --avg-energy  > $(@F).tmp
-	$(BSEFCOMPARE) $(srcdir)/organsong.ref $(@F).tmp --threshold 99.99
+	$(BSEFCOMPARE) $(srcdir)/organsong.ref $(@F).tmp --threshold 98.00
 	rm -f $(@F).tmp $(@F).wav
 
 # ADSR Test checks the mono channel envelope rendering
@@ -129,7 +129,7 @@ EXTRA_DIST += xtalstringssong.bse xtalstringssong.ref
 xtalstringssong-test:
 	$(BSE2WAV) $(srcdir)/xtalstringssong.bse $(@F).wav
 	$(BSEFEXTRACT) $(@F).wav --cut-zeros --channel 0 --avg-spectrum --spectrum --avg-energy  > $(@F).tmp
-	$(BSEFCOMPARE) $(srcdir)/xtalstringssong.ref $(@F).tmp --threshold 99.99
+	$(BSEFCOMPARE) $(srcdir)/xtalstringssong.ref $(@F).tmp --threshold 99.90
 	rm -f $(@F).tmp $(@F).wav
 
 # a loop (from toplevel test/ directory)

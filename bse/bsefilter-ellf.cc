@@ -1,5 +1,4 @@
 // CC0 Public Domain: http://creativecommons.org/publicdomain/zero/1.0/
-#define _ISOC99_SOURCE          // for INFINITY and NAN
 #define _GNU_SOURCE     1       // provides: _ISOC99_SOURCE
 #include <math.h>
 #include <stdarg.h>

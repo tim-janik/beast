@@ -40,7 +40,6 @@ beast-gtk/bstprojectctrl.cc
 beast-gtk/bstrackeditor.cc
 beast-gtk/bstrackitem.cc
 beast-gtk/bstrackview.cc
-beast-gtk/bstrecords.idl
 beast-gtk/bstsampleeditor.cc
 beast-gtk/bstscrollgraph.cc
 beast-gtk/bstsnetrouter.cc

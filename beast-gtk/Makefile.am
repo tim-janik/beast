@@ -80,18 +80,14 @@ SFIDL_INC = --nostdinc -I$(top_srcdir) -I$(top_builddir)
 #
 # bstoldbseapi.h
 GENERATED_CLEANFILES += bstoldbseapi.h
-CLEANFILES += stamp-bstoldbseapi.h
-$(beast_vOBJECTS): bstoldbseapi.h
-bstoldbseapi.h: stamp-bstoldbseapi.h ;
-stamp-bstoldbseapi.h: $(top_srcdir)/bse/*.idl $(top_builddir)/bse/*.idl $(SFIDL)
+$(beast_build_objects): bstoldbseapi.h
+bstoldbseapi.h: $(top_srcdir)/bse/*.idl $(top_builddir)/bse/*.idl $(SFIDL)
 	cd . \
 	&& $(SFIDL) $(SFIDL_INC) --client-c --header --prefix beast_ $(top_srcdir)/bse/bse.idl >> xgen-$(@F) \
-	&& (cmp -s xgen-$(@F) bstoldbseapi.h || cp xgen-$(@F) bstoldbseapi.h) \
-	&& rm -f xgen-$(@F) \
-	&& echo timestamp > $@
+	&& mv xgen-$(@F) bstoldbseapi.h
 # bstoldbseapi.cc
 GENERATED_CLEANFILES += bstoldbseapi.cc
-$(beast_vOBJECTS): bstoldbseapi.cc
+$(beast_build_objects): bstoldbseapi.cc
 bstoldbseapi.cc: bstoldbseapi.h $(top_srcdir)/bse/*.idl $(top_builddir)/bse/*.idl $(SFIDL)
 	cd .	\
 	&& echo -e "/* #include \"bstoldbseapi.h\" */\n" > xgen-$(@F) \
@@ -100,7 +96,7 @@ bstoldbseapi.cc: bstoldbseapi.h $(top_srcdir)/bse/*.idl $(top_builddir)/bse/*.id
 	&& rm -f xgen-$(@F)
 # bstmarshal.h
 GENERATED_CLEANFILES += bstmarshal.h
-$(beast_vOBJECTS): bstmarshal.h
+$(beast_build_objects): bstmarshal.h
 bstmarshal.h: bstmarshal.list
 	glib-genmarshal --prefix=bst_marshal $(srcdir)/bstmarshal.list --header > xgen-$(@F) \
 	&& cp xgen-$(@F) $@ \
@@ -134,7 +130,7 @@ CLEANFILES += bstserverapi.cc
 #
 .PHONY: generated clean-generated
 clean-generated: clean
-	rm -f $(GENERATED) stamp-*
+	rm -f $(GENERATED)
 generated: clean-generated $(GENERATED)
 
 
@@ -144,6 +140,7 @@ generated: clean-generated $(GENERATED)
 bin_PROGRAMS = beast-@BIN_VERSION@
 beast_@BIN_VERSION@_SOURCES = $(bst_cc_sources) bstmain.cc
 beast_@BIN_VERSION@_LDADD = $(progs_LDADD)
+beast_build_objects = $(beast_@BIN_VERSION@_OBJECTS) # dependency for generated sources
 noinst_PROGRAMS = $(ALLTESTS)
 progs_LDADD     = $(BEAST_LIBS) ./gxk/libgxk.a $(GXK_LIBS) $(top_builddir)/bse/libbse.la $(RAPICORN_LIBS) $(BSE_LIBS)
 
