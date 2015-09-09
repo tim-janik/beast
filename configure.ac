@@ -324,7 +324,12 @@ AC_DEFUN([AC_BSE_REQUIREMENTS],
     MC_ASSERT_PROG(AIDACC, aidacc-1410, [aidacc gets shipped with Rapicorn])
 
     dnl # --- Ogg/Vorbis check ---
-    PKG_CHECK_MODULES(OV, ogg >= 1.2.2 vorbis >= 1.3.2 vorbisfile >= 1.3.2 vorbisenc >= 1.3.2)
+    PKG_CHECK_MODULES(OGGVORBIS, ogg >= 1.2.2 vorbis >= 1.3.2 vorbisfile >= 1.3.2 vorbisenc >= 1.3.2)
+    AC_MSG_CHECKING([for Vorbisfile versions with buggy pcm_seek])
+    vorbisfile_badseek=0 # pcm_seek bug near EOF for small files in vorbisfile <= 1.3.4
+    PKG_CHECK_EXISTS(vorbisfile <= 1.3.4, vorbisfile_badseek=1)
+    AC_MSG_RESULT([$(test $vorbisfile_badseek = 1 && echo yes || echo no)])
+    AC_DEFINE_UNQUOTED(VORBISFILE_BADSEEK, [$vorbisfile_badseek], [buggy Vorbisfile pcm_seek])
 
     dnl # --- FLAC check ---
     PKG_CHECK_MODULES(FLAC, flac)
@@ -360,7 +365,7 @@ AC_DEFUN([AC_BSE_REQUIREMENTS],
 
     dnl # --- check codec requirements ---
     AC_MSG_CHECKING([the required GSL-Loader library set])
-    if echo " $OV_LIBS" | grep ".*-lvorbis.*" >/dev/null ; then
+    if echo " $OGGVORBIS_LIBS" | grep ".*-lvorbis.*" >/dev/null ; then
       AC_MSG_RESULT([complete])
     else
       AC_MSG_RESULT([])
@@ -369,7 +374,7 @@ AC_DEFUN([AC_BSE_REQUIREMENTS],
 
     dnl # --- complete CFLAGS/LIBS setup ---
     BSE_CFLAGS="$MAD_CFLAGS $FLAC_CFLAGS $SFI_CPPFLAGS"
-    BSE_LIBS="$OV_LIBS $MAD_LIBS $FLAC_LIBS $SFI_LIBS"
+    BSE_LIBS="$OGGVORBIS_LIBS $MAD_LIBS $FLAC_LIBS $SFI_LIBS"
     AC_SUBST(BSE_CFLAGS)
     AC_SUBST(BSE_LIBS)
     dnl # --- figure stuff for bse.pc ---
@@ -379,7 +384,7 @@ AC_DEFUN([AC_BSE_REQUIREMENTS],
     dnl #	BSE_PC_REQUIRE=mad
     dnl #fi
     BSE_PC_CFLAGS=
-    BSE_PC_LIBS="$OV_LIBS"
+    BSE_PC_LIBS="$OGGVORBIS_LIBS"
     AC_SUBST(BSE_PC_REQUIRE)
     AC_SUBST(BSE_PC_CFLAGS)
     AC_SUBST(BSE_PC_LIBS)
