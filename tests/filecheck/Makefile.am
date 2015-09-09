@@ -61,7 +61,7 @@ bse-loading-check: distfiles.list
 	&& echo $$MESSAGETEXT | sed 's/./=/g' 				\
 	&& echo $$MESSAGETEXT		 				\
 	&& echo $$MESSAGETEXT | sed 's/./=/g'
-slowcheck: bse-loading-check
+check-local: bse-loading-check
 
 CLEANFILES += distfiles.list warnings.tmp
 plugin_globs = '$(top_builddir)/plugins/.libs/*.so:$(top_builddir)/plugins/freeverb/.libs/*.so'
