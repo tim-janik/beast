@@ -42,7 +42,7 @@ bse-version-check: distfiles.list
 check: # bse-version-check
 
 .PHONY: bse-loading-check
-SKIP_PATTERN = "tests/latency/midi-latency.bse|tests/audio/minisong.bse"
+SKIP_PATTERN = "tests/latency/midi-latency.bse"
 bse-loading-check: distfiles.list
 	@rm -f warnings.tmp
 	for tfile in `grep '\.bse$$' distfiles.list` ; do		\
