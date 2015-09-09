@@ -51,7 +51,7 @@ bse-loading-check: distfiles.list
 	    echo "-Skipping project: $$file" ;				\
 	  else								\
 	    echo "Test load project: $$file" ;				\
-	    $(BSESCM) "$$file" 2>&1 |					\
+	    $(CHECK_LOAD) "$$file" 2>&1 |				\
 	      tee warnings.tmp ;					\
 	    test ! -s "warnings.tmp" || exit 1 ;			\
 	  fi ;								\
@@ -66,12 +66,13 @@ slowcheck: bse-loading-check
 CLEANFILES += distfiles.list warnings.tmp
 plugin_globs = '$(top_builddir)/plugins/.libs/*.so:$(top_builddir)/plugins/freeverb/.libs/*.so'
 samplepath = '$(top_srcdir)/tests/audio:$(top_srcdir)/library/samples'
-EXTRA_DIST += checkproject.scm
-BSESCM = $(strip								\
-	$(top_builddir)/shell/bsescm-$(BIN_VERSION)				\
-	  -p null -m null							\
-	  --bse-rcfile "/dev/null" --bse-no-load				\
+CHECK_LOAD = $(strip								\
+	$(top_builddir)/bse/bsetool						\
+	  $(if $(findstring 1, $(V)),, --quiet)					\
+	  check-load								\
+	  --bse-pcm-driver null=nosleep						\
+	  --bse-midi-driver null						\
+	  --bse-rcfile "/dev/null"						\
 	  --bse-override-plugin-globs '$(plugin_globs)'				\
           --bse-override-sample-path $(samplepath)                              \
-	  -s "$(top_srcdir)/tests/filecheck/checkproject.scm"			\
 )
