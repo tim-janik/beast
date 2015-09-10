@@ -112,13 +112,13 @@ bstmarshal.cc: bstmarshal.list
 
 # == bstapi.idl ==
 EXTRA_DIST += bstapi.idl
-$(bst_cc_sources): bstserverapi.hh
+$(bst_cc_sources:%=$(srcdir)/%): bstserverapi.hh
 bstserverapi.hh: $(srcdir)/bstapi.idl $(AUXTYPES_PY)
 	$(AM_V_GEN)
 	$(Q) ${AIDACC} -x CxxStub -G macro=BST_IDL -G serverhh -x $(AUXTYPES_PY) $< -o xgen-$(@F)
 	$(Q) mv xgen-$(@F) $@
 CLEANFILES += bstserverapi.hh
-$(bst_cc_sources): bstserverapi.cc
+$(bst_cc_sources:%=$(srcdir)/%): bstserverapi.cc
 bstserverapi.cc: $(srcdir)/bstapi.idl $(AUXTYPES_PY)
 	$(AM_V_GEN)
 	$(Q) ${AIDACC} -x CxxStub -G macro=BST_IDL -G servercc -x $(AUXTYPES_PY) $< -o xgen-$(@F)
