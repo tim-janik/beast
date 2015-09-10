@@ -42,6 +42,7 @@ checklists: distfiles.list # generate checklist-a .. checklist-e
 	$(Q) grep '\.bse$$' distfiles.list > checklist
 	$(Q) split -n l/5 -a 1 checklist checklist-
 	$(Q) rm -f checklist
+CLEANFILES += checklists checklist-? checklist-?-test checklist-?-test.log
 check-local: checklist-a-test checklist-b-test checklist-c-test checklist-d-test checklist-e-test
 plugin_globs = '$(top_builddir)/plugins/.libs/*.so:$(top_builddir)/plugins/freeverb/.libs/*.so'
 samplepath   = '$(top_srcdir)/tests/audio:$(top_srcdir)/library/samples'
