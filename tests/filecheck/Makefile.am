@@ -28,13 +28,11 @@ CLEANFILES += distfiles.list
 
 SKIP_PATTERN = "tests/latency/midi-latency.bse"
 checklist-%-test: checklists
-	$(Q) $(if $(findstring 1, $(V)), set -x, :) ;		\
-	  for tfile in `cat $(@F:-test=)` ; do			\
-	    file="$(top_srcdir)/$$tfile" ;			\
+	$(Q) for tfile in `cat $(@F:-test=)` ; do		\
 	    if echo "$$tfile" | egrep -q $(SKIP_PATTERN) ; then	\
 	      echo "SKIP - Loading: $$tfile" ;			\
 	    else						\
-	      $(CHECK_LOAD) "$$file" 2>&1 | tee $(@F).log ;	\
+	      $(CHECK_LOAD) "$$tfile" 2>&1 | tee $(@F).log ;	\
 	      test ! -s $(@F).log || exit 1			\
 	      && echo "OK   - Loading: $$tfile" ;		\
 	    fi ; done ; rm -f $(@F).log $(@F:-test=)
