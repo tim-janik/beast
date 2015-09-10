@@ -311,7 +311,7 @@ bseclientapi.cc: $(srcdir)/../bse/bseapi.idl $(AUXTYPES_PY)
 	$(AM_V_GEN)
 	$(Q) ${AIDACC} -x CxxStub -G macro=BSE_IDL -G clientcc -x $(AUXTYPES_PY) $< -o xgen-$(@F)
 	$(Q) mv xgen-$(@F) $@
-bsestartup.cc: bseclientapi.cc
+$(srcdir)/bsestartup.cc: bseclientapi.cc
 CLEANFILES += bseclientapi.cc
 bseserverapi.hh: $(srcdir)/bseapi.idl $(AUXTYPES_PY)
 	$(AM_V_GEN)
@@ -323,7 +323,7 @@ bseserverapi.cc: $(srcdir)/bseapi.idl $(AUXTYPES_PY)
 	$(AM_V_GEN)
 	$(Q) ${AIDACC} -x CxxStub -G macro=BSE_IDL -G servercc -x $(AUXTYPES_PY) $< -o xgen-$(@F)
 	$(Q) mv xgen-$(@F) $@
-bseutils.cc bseprocidl.cc: bseserverapi.hh bseserverapi.cc
+$(srcdir)/bseutils.cc $(srcdir)/bseprocidl.cc: bseserverapi.hh bseserverapi.cc
 CLEANFILES += bseserverapi.cc
 EXTRA_DIST += bseapi.idl
 
