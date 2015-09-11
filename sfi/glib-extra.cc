@@ -1037,3 +1037,38 @@ g_scanner_new64 (const GScannerConfig *config_templ)
     g_error ("%s(): attempt to create 64bit scanner with store_int64==FALSE", G_STRFUNC);
   return g_scanner_new (config_templ);
 }
+
+// == BSE_INSTALLPATH ==
+#include "../configure.h"
+std::string
+bse_installpath (BseInstallpathType installpath_type)
+{
+  switch (installpath_type)
+    {
+    case BSE_INSTALLPATH_INCLUDES:                      return INSTALLPATH_INCLUDES;
+    case BSE_INSTALLPATH_BINDIR:                        return INSTALLPATH_BINDIR;
+    case BSE_INSTALLPATH_LOCALEBASE:                    return INSTALLPATH_LOCALEBASE;
+    case BSE_INSTALLPATH_LADSPA:                        return INSTALLPATH_LADSPA;
+    case BSE_INSTALLPATH_PKGDOCDIR:                     return INSTALLPATH_PKGDOCDIR;
+    case BSE_INSTALLPATH_USER_DATA:                     return INSTALLPATH_USER_DATA;
+    case BSE_INSTALLPATH_PKGLIBDIR:                     return INSTALLPATH_PKGLIBDIR;
+    case BSE_INSTALLPATH_PKGLIBDIR_PLUGINS:             return bse_installpath (BSE_INSTALLPATH_PKGLIBDIR) + "/plugins";
+    case BSE_INSTALLPATH_PKGLIBDIR_DRIVERS:             return bse_installpath (BSE_INSTALLPATH_PKGLIBDIR) + "/drivers";
+    case BSE_INSTALLPATH_PKGDATADIR:                    return INSTALLPATH_PKGDATADIR;
+    case BSE_INSTALLPATH_PKGDATADIR_DEMO:               return bse_installpath (BSE_INSTALLPATH_PKGDATADIR) + "/demo";
+    case BSE_INSTALLPATH_PKGDATADIR_SAMPLES:            return bse_installpath (BSE_INSTALLPATH_PKGDATADIR) + "/samples";
+    case BSE_INSTALLPATH_PKGDATADIR_EFFECTS:            return bse_installpath (BSE_INSTALLPATH_PKGDATADIR) + "/effects";
+    case BSE_INSTALLPATH_PKGDATADIR_INSTRUMENTS:        return bse_installpath (BSE_INSTALLPATH_PKGDATADIR) + "/instruments";
+    case BSE_INSTALLPATH_PKGDATADIR_SCRIPTS:            return bse_installpath (BSE_INSTALLPATH_PKGDATADIR) + "/scripts";
+    case BSE_INSTALLPATH_PKGDATADIR_IMAGES:             return bse_installpath (BSE_INSTALLPATH_PKGDATADIR) + "/images";
+    case BSE_INSTALLPATH_PKGDATADIR_KEYS:               return bse_installpath (BSE_INSTALLPATH_PKGDATADIR) + "/keys";
+    case BSE_INSTALLPATH_PKGDATADIR_SKINS:              return bse_installpath (BSE_INSTALLPATH_PKGDATADIR) + "/skins";
+    }
+  return "";
+}
+
+std::string
+bse_version ()
+{
+  return PACKAGE_VERSION;
+}
