@@ -6,7 +6,6 @@
 #include <bse/bsemain.hh>
 #include <bse/gslfilter.hh> // FIXME
 #include <bse/bseglobals.hh> // FIXME
-#include "topconfig.h"
 #include <math.h>
 #include <stdlib.h>
 #include <stdio.h>

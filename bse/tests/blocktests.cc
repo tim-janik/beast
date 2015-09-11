@@ -2,7 +2,6 @@
 #include <bse/bseblockutils.hh>
 #include <sfi/sfitests.hh>
 #include <bse/bsemain.hh>
-#include "topconfig.h"
 
 static void
 report_usecs (const char *what, double usecs)

@@ -5,7 +5,6 @@
 #include <bse/gsldatahandle.hh>
 #include <bse/gsldatautils.hh>
 #include <bse/bsemain.hh>
-#include "topconfig.h"
 #include <math.h>
 #include <stdlib.h>
 #include <complex>
