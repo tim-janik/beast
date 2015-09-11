@@ -2,12 +2,11 @@
 #include "sfidl-options.hh"
 #include "sfidl-factory.hh"
 #include "sfidl-generator.hh"
-#include "topconfig.h"
+#include "topconfig.h"  // BST_VERSION
 #include <sfi/glib-extra.hh>
 #include <stdio.h>
 #include <string.h>
 
-/* FIXME: should be filled out and written into topconfig.h by configure */
 #define SFIDL_VERSION        BST_VERSION
 #define SFIDL_PRG_NAME	     "sfidl"
 
