@@ -568,8 +568,6 @@ AC_DEFUN([AC_BEAST_REQUIREMENTS],
     AC_SUBST(beastimagesdir)
     beastkeysdir=$beastbasedir/v$BIN_VERSION/keys
     AC_SUBST(beastkeysdir)
-    beastskinsdir=$beastbasedir/v$BIN_VERSION/skins
-    AC_SUBST(beastskinsdir)
 ])
 AC_DEFUN([AC_SUIDMAIN_REQUIREMENTS],
 [
