@@ -443,8 +443,6 @@ AC_DEFUN([AC_BSE_REQUIREMENTS],
 
     # --- setup BSE search/install paths ---
     bsedatadir=\${datadir}/bse/v$BIN_VERSION
-    bseinstrumentdir=$bsedatadir/instruments
-    AC_SUBST(bseinstrumentdir)
     bsesampledir=$bsedatadir/samples
     AC_SUBST(bsesampledir)
     bsescriptdir=$bsedatadir/scripts
