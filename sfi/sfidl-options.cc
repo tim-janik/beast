@@ -2,7 +2,6 @@
 #include "sfidl-options.hh"
 #include "sfidl-factory.hh"
 #include "sfidl-generator.hh"
-#include "topconfig.h"  // BST_VERSION
 #include <sfi/glib-extra.hh>
 #include <stdio.h>
 #include <string.h>
@@ -169,14 +168,13 @@ bool Options::parse (int *argc_p, char **argv_p[], const Parser& parser)
   /* add std include path */
   if (!noStdInc)
     {
-      char *x = g_strdup (SFIDL_PATH_STDINC);
-      char *dir = strtok (x, G_SEARCHPATH_SEPARATOR_S);
+      const std::string stdinc_path = bse_installpath (BSE_INSTALLPATH_INCLUDES);
+      char *dir = strtok (const_cast<char*> (stdinc_path.c_str()), G_SEARCHPATH_SEPARATOR_S);
       while (dir && dir[0])
 	{
 	  includePath.push_back (dir);
 	  dir = strtok (NULL, G_SEARCHPATH_SEPARATOR_S);
 	}
-      g_free (x);
     }
 
   /* option validation */
@@ -201,7 +199,7 @@ bool Options::parse (int *argc_p, char **argv_p[], const Parser& parser)
 
   if (printVersion)
     {
-      printf ("%s %s\n", SFIDL_PRG_NAME, SFIDL_VERSION);
+      printf ("%s %s\n", SFIDL_PRG_NAME, bse_version().c_str());
       return true;
     }
 
