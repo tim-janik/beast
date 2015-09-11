@@ -1,7 +1,5 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bstxkb.hh"
-
-#include "topconfig.h"
 #include <string.h>
 
 #ifdef	BST_WITH_XKB

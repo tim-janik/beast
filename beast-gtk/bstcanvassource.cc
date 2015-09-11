@@ -1,7 +1,5 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bstcanvassource.hh"
-
-#include "topconfig.h"
 #include "bstparamview.hh"
 #include "bstgconfig.hh"
 #include <string.h>
