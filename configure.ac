@@ -296,19 +296,6 @@ AC_DEFUN([AC_I18N_REQUIREMENTS],
   GETTEXT_PACKAGE=$BST_GETTEXT_DOMAIN
   AC_SUBST(GETTEXT_PACKAGE)
 
-  # locale directory for all domains
-  # (AM_GLIB_DEFINE_LOCALEDIR() could do this if it would do AC_SUBST())
-  saved_prefix="$prefix"		; saved_exec_prefix="$exec_prefix"
-  test "x$prefix" = xNONE && prefix="$ac_default_prefix"
-  test "x$exec_prefix" = xNONE && exec_prefix="$prefix"
-  if test "x$CATOBJEXT" = "x.mo" ; then
-    beastlocaledir=`eval echo "${libdir}/locale"`
-  else
-    beastlocaledir=`eval echo "${datadir}/locale"`
-  fi
-  exec_prefix="$saved_exec_prefix"	; prefix="$saved_prefix"
-  AC_SUBST(beastlocaledir)
-
   # check for proper gettext support
   AM_GLIB_GNU_GETTEXT([external])
   test -z "$ac_cv_path_XGETTEXT" && {
