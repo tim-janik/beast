@@ -564,8 +564,6 @@ AC_DEFUN([AC_BEAST_REQUIREMENTS],
 
     # --- BEAST paths ---
     beastbasedir=\${datadir}/beast
-    beastimagesdir=$beastbasedir/v$BIN_VERSION/images
-    AC_SUBST(beastimagesdir)
     beastkeysdir=$beastbasedir/v$BIN_VERSION/keys
     AC_SUBST(beastkeysdir)
 ])
