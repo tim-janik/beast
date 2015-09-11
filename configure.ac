@@ -443,8 +443,6 @@ AC_DEFUN([AC_BSE_REQUIREMENTS],
 
     # --- setup BSE search/install paths ---
     bsedatadir=\${datadir}/bse/v$BIN_VERSION
-    bsescriptdir=$bsedatadir/scripts
-    AC_SUBST(bsescriptdir)
     bseuserdatadir='~/beast'
     AC_SUBST(bseuserdatadir)
 ])
