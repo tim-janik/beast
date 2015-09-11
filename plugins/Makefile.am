@@ -62,13 +62,13 @@ CLEANFILES 		 += $(plugins_built_sources)
 # .FPU plugins
 plugin_FPU_ltlibs	  =	# listed in Makefile.plugins
 plugin_FPU_LTLIBRARIES	  = $(plugin_FPU_ltlibs) cxxplugins.FPU.la
-plugin_FPUdir 	  	  = $(bseplugindir)
+plugin_FPUdir 	  	  = $(pkglibdir)/plugins
 FPU_PLUGIN_CFLAGS	  = $(AM_CFLAGS) $(PLUGIN_FLAGS) $(FPU_FLAGS)
 FPU_PLUGIN_CXXFLAGS	  = $(AM_CXXFLAGS) $(PLUGIN_FLAGS) $(FPU_FLAGS)
 # .SSE plugins
 plugin_SSE_ltlibs	  =	# listed in Makefile.plugins
 plugin_SSE_LTLIBRARIES	  = $(plugin_SSE_cond_libs) cxxplugins.SSE.la
-plugin_SSEdir		  = $(bseplugindir)
+plugin_SSEdir		  = $(pkglibdir)/plugins
 SSE_PLUGIN_CFLAGS	  = $(AM_CFLAGS) $(PLUGIN_FLAGS) $(MMX_SSE_FLAGS)
 SSE_PLUGIN_CXXFLAGS	  = $(AM_CXXFLAGS) $(PLUGIN_FLAGS) $(MMX_SSE_FLAGS)
 if WITH_MMX_SSE
