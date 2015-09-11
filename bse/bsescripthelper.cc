@@ -1,7 +1,6 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bsescripthelper.hh"
-
-#include "topconfig.h"
+#include "../configure.h"
 #include "bsecategories.hh"
 #include "bsejanitor.hh"
 #include "bseserver.hh"
@@ -232,7 +231,7 @@ bse_script_path_list_files (void)
     }
   if (1)
     {
-      files = sfi_file_crawler_list_files (BSE_PATH_SCRIPTS, "*.scm", G_FILE_TEST_IS_REGULAR);
+      files = sfi_file_crawler_list_files (bse_installpath (BSE_INSTALLPATH_PKGDATADIR_SCRIPTS).c_str(), "*.scm", G_FILE_TEST_IS_REGULAR);
       ring = sfi_ring_concat (ring, sfi_ring_sort (files, (SfiCompareFunc) strcmp, NULL));
     }
   if (BSE_GCONFIG (script_path) && BSE_GCONFIG (script_path)[0])

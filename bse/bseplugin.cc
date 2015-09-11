@@ -1,6 +1,6 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bseplugin.hh"
-
+#include "../configure.h"
 #include "bsecategories.hh"
 #include "bseprocedure.hh"
 #include "bseobject.hh"
@@ -694,8 +694,6 @@ bse_plugin_check_load (const gchar *const_file_name)
   return error;
 }
 
-#include "topconfig.h"
-
 static bool
 plugin_extension_filter (const char  *fname,
                          guint        n,
@@ -735,16 +733,16 @@ bse_plugin_path_list_files (gboolean include_drivers,
     {
       if (include_drivers)
         {
-          files = sfi_file_crawler_list_files (BSE_PATH_DRIVERS, "*" PLUGIN_EXTENSION, G_FILE_TEST_IS_REGULAR);
+          files = sfi_file_crawler_list_files (bse_installpath (BSE_INSTALLPATH_PKGLIBDIR_DRIVERS).c_str(), "*" PLUGIN_EXTENSION, G_FILE_TEST_IS_REGULAR);
           ring = sfi_ring_concat (ring, sfi_ring_sort (files, (SfiCompareFunc) strcmp, NULL));
-          files = sfi_file_crawler_list_files (BSE_PATH_DRIVERS, "*.o", G_FILE_TEST_IS_REGULAR);
+          files = sfi_file_crawler_list_files (bse_installpath (BSE_INSTALLPATH_PKGLIBDIR_DRIVERS).c_str(), "*.o", G_FILE_TEST_IS_REGULAR);
           ring = sfi_ring_concat (ring, sfi_ring_sort (files, (SfiCompareFunc) strcmp, NULL));
         }
       if (include_plugins)
         {
-          files = sfi_file_crawler_list_files (BSE_PATH_PLUGINS, "*" PLUGIN_EXTENSION, G_FILE_TEST_IS_REGULAR);
+          files = sfi_file_crawler_list_files (bse_installpath (BSE_INSTALLPATH_PKGLIBDIR_PLUGINS).c_str(), "*" PLUGIN_EXTENSION, G_FILE_TEST_IS_REGULAR);
           ring = sfi_ring_concat (ring, sfi_ring_sort (files, (SfiCompareFunc) strcmp, NULL));
-          files = sfi_file_crawler_list_files (BSE_PATH_PLUGINS, "*.o", G_FILE_TEST_IS_REGULAR);
+          files = sfi_file_crawler_list_files (bse_installpath (BSE_INSTALLPATH_PKGLIBDIR_PLUGINS).c_str(), "*.o", G_FILE_TEST_IS_REGULAR);
           ring = sfi_ring_concat (ring, sfi_ring_sort (files, (SfiCompareFunc) strcmp, NULL));
         }
       if (include_plugins && BSE_GCONFIG (plugin_path) && BSE_GCONFIG (plugin_path)[0])
