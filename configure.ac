@@ -440,11 +440,6 @@ AC_DEFUN([AC_BSE_REQUIREMENTS],
     dnl # --- math.h glibc extensions
     AC_CHECK_LIB(m, sincos,
       AC_DEFINE(HAVE_SINCOS, 1, [Define if you have the sincos function in <math.h>]))
-
-    # --- setup BSE search/install paths ---
-    bsedatadir=\${datadir}/bse/v$BIN_VERSION
-    bseuserdatadir='~/beast'
-    AC_SUBST(bseuserdatadir)
 ])
 AC_DEFUN([AC_ASOUND_CHECK],
 [
