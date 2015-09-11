@@ -70,6 +70,19 @@ AC_SUBST(pkglibdir)
 AC_SUBST(pkglibexecdir)
 AC_SUBST(pkgdatadir)
 AC_SUBST(pkgdocdir)
+# Provide directories for C++
+bak_prefix="$prefix" ; bak_exec_prefix="$exec_prefix" ; bak_libdir="$libdir" ; bak_datarootdir="$datarootdir" ; bak_datadir="$datadir"
+test "x$prefix" = xNONE && prefix="$ac_default_prefix" ; test "x$exec_prefix" = xNONE && exec_prefix="$prefix"
+libdir=`eval echo "${libdir}"` ; datarootdir=`eval echo "${datarootdir}"` ; datadir=`eval echo "${datadir}"`
+AC_DEFINE_UNQUOTED(BSE_INSTALLPATH_INCLUDES, ["`eval echo "${includedir}"`"], [Base directory for standard include files])
+AC_DEFINE_UNQUOTED(BSE_INSTALLPATH_BINDIR, ["`eval echo "${bindir}"`"], [Directory to install and execute programs])
+AC_DEFINE_UNQUOTED(BSE_INSTALLPATH_LOCALEBASE, ["`eval echo ${localedir}`"], [Base directory for locale specific message catalogs])
+AC_DEFINE_UNQUOTED(BSE_INSTALLPATH_LADSPA, ["`eval echo ${libdir}/ladspa`"], [Searchpath for LADSPA plugins])
+AC_DEFINE_UNQUOTED(BSE_INSTALLPATH_PKGLIBDIR, ["`eval echo ${pkglibdir}`"], [Directory to install plugins and drivers])
+AC_DEFINE_UNQUOTED(BSE_INSTALLPATH_PKGDATADIR, ["`eval echo ${pkgdatadir}`"], [Directory to install samples, effects, scripts, etc])
+AC_DEFINE_UNQUOTED(BSE_INSTALLPATH_PKGDOCDIR, ["`eval echo ${pkgdocdir}`"], [Directory to install documentation])
+AC_DEFINE_UNQUOTED(BSE_INSTALLPATH_USER_DATA, ["~/beast"], [Searchpath for user owned Beast resources])
+prefix="$bak_prefix" ; exec_prefix="$bak_exec_prefix" ; libdir="$bak_libdir" ; datarootdir="$bak_datarootdir" ; datadir="$bak_datadir"
 
 # Build tree checks
 AC_MSG_CHECKING([for git repository])
