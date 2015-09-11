@@ -1,27 +1,25 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
-#include	"bsepcmdevice-oss.hh"
+#include "bsepcmdevice-oss.hh"
 
-#include	"topconfig.h"
-
-#include	"gsldatautils.hh"
-#include	"gslcommon.hh" // FIXME: remove
+#include "gsldatautils.hh"
+#include "gslcommon.hh" // FIXME: remove
 
 #ifndef	BSE_PCM_DEVICE_CONF_OSS
 BSE_DUMMY_TYPE (BsePcmDeviceOSS);
 #else   /* BSE_PCM_DEVICE_CONF_OSS */
 
 #if HAVE_SYS_SOUNDCARD_H
-#include	<sys/soundcard.h>
+#include <sys/soundcard.h>
 #elif HAVE_SOUNDCARD_H
-#include	<soundcard.h>
+#include <soundcard.h>
 #endif
-#include	<sys/ioctl.h>
-#include	<sys/types.h>
-#include	<sys/time.h>
-#include	<unistd.h>
-#include	<string.h>
-#include	<errno.h>
-#include	<fcntl.h>
+#include <sys/ioctl.h>
+#include <sys/types.h>
+#include <sys/time.h>
+#include <unistd.h>
+#include <string.h>
+#include <errno.h>
+#include <fcntl.h>
 
 #if	G_BYTE_ORDER == G_LITTLE_ENDIAN
 #define	AFMT_S16_HE	AFMT_S16_LE

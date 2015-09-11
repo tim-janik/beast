@@ -3,7 +3,6 @@
 #include "bsecategories.hh"
 #include "bseprocedure.hh"
 #include "bsesource.hh"
-#include "topconfig.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
