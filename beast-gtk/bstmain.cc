@@ -10,8 +10,8 @@
 #include "bstusermessage.hh"
 #include "bstparam.hh"
 #include "bstpreferences.hh"
-#include "topconfig.h"
 #include "data/beast-images.h"
+#include "../configure.h"
 #include <unistd.h>
 #include <string.h>
 #include <sys/time.h>
@@ -68,7 +68,7 @@ main (int   argc,
   gchar *string;
   GSource *source;
   /* initialize i18n */
-  bindtextdomain (BST_GETTEXT_DOMAIN, BST_PATH_LOCALE);
+  bindtextdomain (BST_GETTEXT_DOMAIN, bse_installpath (BSE_INSTALLPATH_LOCALEBASE).c_str());
   bind_textdomain_codeset (BST_GETTEXT_DOMAIN, "UTF-8");
   textdomain (BST_GETTEXT_DOMAIN);
   setlocale (LC_ALL, "");
@@ -114,8 +114,8 @@ main (int   argc,
   /* initialize Gtk+ Extension Kit */
   gxk_init ();
   /* documentation search paths */
-  gxk_text_add_tsm_path (BST_PATH_DOCS);
-  gxk_text_add_tsm_path (BST_PATH_IMAGES);
+  gxk_text_add_tsm_path (bse_installpath (BSE_INSTALLPATH_PKGDOCDIR).c_str());
+  gxk_text_add_tsm_path (bse_installpath (BSE_INSTALLPATH_PKGDATADIR_IMAGES).c_str());
   gxk_text_add_tsm_path (".");
   /* now, we can popup the splash screen */
   beast_splash = bst_splash_new ("BEAST-Splash", BST_SPLASH_WIDTH, BST_SPLASH_HEIGHT, 15);
@@ -143,7 +143,7 @@ main (int   argc,
 
   /* show splash images */
   bst_splash_update_item (beast_splash, _("Splash Image"));
-  string = g_strconcat (BST_PATH_IMAGES, G_DIR_SEPARATOR_S, BST_SPLASH_IMAGE, NULL);
+  string = g_strconcat (bse_installpath (BSE_INSTALLPATH_PKGDATADIR_IMAGES).c_str(), G_DIR_SEPARATOR_S, BST_SPLASH_IMAGE, NULL);
   anim = gdk_pixbuf_animation_new_from_file (string, NULL);
   g_free (string);
   bst_splash_update ();
@@ -627,22 +627,20 @@ bst_args_process (int *argc_p, char **argv)
 	{
 	  const char *arg = argv[i][12 - 1] == '=' ? argv[i] + 12 : (argv[i + 1] ? argv[i + 1] : "");
           char *freeme = NULL;
-	  if (strcmp (arg, "prefix") == 0)
-	    g_print ("%s\n", BST_PATH_PREFIX);
-	  else if (strcmp (arg, "docs") == 0)
-	    g_print ("%s\n", BST_PATH_DOCS);
+          if (strcmp (arg, "docs") == 0)
+	    g_print ("%s\n", bse_installpath (BSE_INSTALLPATH_PKGDOCDIR).c_str());
 	  else if (strcmp (arg, "images") == 0)
-	    g_print ("%s\n", BST_PATH_IMAGES);
+	    g_print ("%s\n", bse_installpath (BSE_INSTALLPATH_PKGDATADIR_IMAGES).c_str());
 	  else if (strcmp (arg, "locale") == 0)
-	    g_print ("%s\n", BST_PATH_LOCALE);
+	    g_print ("%s\n", bse_installpath (BSE_INSTALLPATH_LOCALEBASE).c_str());
 	  else if (strcmp (arg, "skins") == 0)
 	    g_print ("%s\n", freeme = BST_STRDUP_SKIN_PATH ());
 	  else if (strcmp (arg, "keys") == 0)
-	    g_print ("%s\n", BST_PATH_KEYS);
+	    g_print ("%s\n", bse_installpath (BSE_INSTALLPATH_PKGDATADIR_KEYS).c_str());
 	  else if (strcmp (arg, "ladspa") == 0)
-	    g_print ("%s\n", BSE_PATH_LADSPA);
+	    g_print ("%s\n", bse_installpath (BSE_INSTALLPATH_LADSPA).c_str());
 	  else if (strcmp (arg, "plugins") == 0)
-	    g_print ("%s\n", BSE_PATH_PLUGINS);
+	    g_print ("%s\n", bse_installpath (BSE_INSTALLPATH_PKGLIBDIR_PLUGINS).c_str());
 	  else if (strcmp (arg, "samples") == 0)
 	    printout ("%s\n", bse_server.get_sample_path());
 	  else if (strcmp (arg, "effects") == 0)
@@ -714,11 +712,11 @@ bst_exit_print_version (void)
   g_print ("Intrinsic code selected according to runtime CPU detection:\n");
   g_print ("%s", Rapicorn::cpu_info().c_str());
   g_print ("\n");
-  g_print ("Prefix:          %s\n", BST_PATH_PREFIX);
-  g_print ("Doc Path:        %s\n", BST_PATH_DOCS);
-  g_print ("Image Path:      %s\n", BST_PATH_IMAGES);
-  g_print ("Locale Path:     %s\n", BST_PATH_LOCALE);
-  g_print ("Keyrc Path:      %s\n", BST_PATH_KEYS);
+  g_print ("Binaries:        %s\n", bse_installpath (BSE_INSTALLPATH_BINDIR).c_str());
+  g_print ("Doc Path:        %s\n", bse_installpath (BSE_INSTALLPATH_PKGDOCDIR).c_str());
+  g_print ("Image Path:      %s\n", bse_installpath (BSE_INSTALLPATH_PKGDATADIR_IMAGES).c_str());
+  g_print ("Locale Path:     %s\n", bse_installpath (BSE_INSTALLPATH_LOCALEBASE).c_str());
+  g_print ("Keyrc Path:      %s\n", bse_installpath (BSE_INSTALLPATH_PKGDATADIR_KEYS).c_str());
   g_print ("Skin Path:       %s\n", freeme = BST_STRDUP_SKIN_PATH());
   printout ("Sample Path:     %s\n", bse_server.get_sample_path());
   printout ("Script Path:     %s\n", bse_server.get_script_path());

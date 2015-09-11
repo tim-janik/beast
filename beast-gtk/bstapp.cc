@@ -1,5 +1,4 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
-#include "topconfig.h"
 #include "bstapp.hh"
 #include "bstparam.hh"
 #include "bstskinconfig.hh"
@@ -1044,7 +1043,7 @@ app_action_exec (gpointer data,
     BROWSE_LOCAL_URL:
       if (docs_url)
         {
-          gchar *local_url = g_strconcat ("file://", BST_PATH_DOCS, "/", docs_url, NULL);
+          gchar *local_url = g_strconcat ("file://", bse_installpath (BSE_INSTALLPATH_PKGDOCDIR).c_str(), "/", docs_url, NULL);
           sfi_url_show (local_url);
           g_free (local_url);
         }

@@ -185,7 +185,6 @@ bst_skin_config_notify (void)
 #include <unistd.h>
 #include <fcntl.h>
 #include <errno.h>
-#include "topconfig.h"          /* BST_VERSION */
 #include <sfi/sfistore.hh>       /* we rely on internal API here */
 Bse::ErrorType
 bst_skin_dump (const gchar *file_name)
@@ -207,7 +206,7 @@ bst_skin_dump (const gchar *file_name)
 
   wstore = sfi_wstore_new ();
 
-  sfi_wstore_printf (wstore, "; skin-file for BEAST v%s\n", BST_VERSION);
+  sfi_wstore_printf (wstore, "; skin-file for BEAST v%s\n", bse_version().c_str());
 
   /* store BstSkinConfig */
   sfi_wstore_puts (wstore, "\n");

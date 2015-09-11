@@ -49,7 +49,8 @@ typedef enum /*< skip >*/
 /* --- constants & defines --- */
 #define	BST_TAG_DIAMETER	  (20)
 #define BST_STRDUP_RC_FILE()	  (g_strconcat (g_get_home_dir (), "/.beast/beastrc", NULL))
-#define BST_STRDUP_SKIN_PATH()	  (g_strconcat (BST_PATH_SKINS, ":~/.beast/skins/:~/.beast/skins/*/", NULL))
+#define BST_STRDUP_SKIN_PATH()	  (g_strconcat ("~/.beast/skins/:~/.beast/skins/*/:", \
+                                                bse_installpath (BSE_INSTALLPATH_PKGDATADIR_SKINS).c_str(), NULL))
 
 /* --- configuration candidates --- */
 /* mouse button numbers and masks for drag operations */
