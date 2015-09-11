@@ -58,6 +58,19 @@ else
 fi
 AC_SUBST(DEFINE__FILE_DIR__)
 
+# Define package directories per major/minor version
+pkgincludedir="\${includedir}/beast-$BST_MAJOR_VERSION.$BST_MINOR_VERSION"
+pkglibdir="\${libdir}/beast-$BST_MAJOR_VERSION.$BST_MINOR_VERSION"
+pkglibexecdir="\${libexecdir}/beast-$BST_MAJOR_VERSION.$BST_MINOR_VERSION"
+pkgdatadir="\${datadir}/beast-$BST_MAJOR_VERSION.$BST_MINOR_VERSION"
+pkgdocdir="\${datarootdir}/doc/beast-$BST_MAJOR_VERSION.$BST_MINOR_VERSION"
+# Substitute directories in Makefiles
+AC_SUBST(pkgincludedir)
+AC_SUBST(pkglibdir)
+AC_SUBST(pkglibexecdir)
+AC_SUBST(pkgdatadir)
+AC_SUBST(pkgdocdir)
+
 # Build tree checks
 AC_MSG_CHECKING([for git repository])
 test -f "${srcdir}/.git/index" && INGIT= || INGIT='#'
