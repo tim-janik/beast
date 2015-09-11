@@ -445,8 +445,6 @@ AC_DEFUN([AC_BSE_REQUIREMENTS],
     bsedatadir=\${datadir}/bse/v$BIN_VERSION
     bsescriptdir=$bsedatadir/scripts
     AC_SUBST(bsescriptdir)
-    bsedemodir=$bsedatadir/demo
-    AC_SUBST(bsedemodir)
     bseuserdatadir='~/beast'
     AC_SUBST(bseuserdatadir)
 ])
