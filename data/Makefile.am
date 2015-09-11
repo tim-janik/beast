@@ -17,7 +17,7 @@ EXTRA_DIST += $(private_images) $(public_images)
 
 # generate image header files
 noinst_build_sources = beast-images.h
-beast-images.h:	Makefile ${public_images}
+beast-images.h: ${public_images}
 	cd . \
 	&& echo "/* Generated data from $< (by make $@) */" > xgen-bstih \
 	&& echo >> xgen-bstih \
