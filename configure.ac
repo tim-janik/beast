@@ -442,10 +442,6 @@ AC_DEFUN([AC_BSE_REQUIREMENTS],
       AC_DEFINE(HAVE_SINCOS, 1, [Define if you have the sincos function in <math.h>]))
 
     # --- setup BSE search/install paths ---
-    bseladspapath=${libdir}/ladspa
-    AC_SUBST(bseladspapath)
-    bseunversionedsampledir=\${datadir}/bse/samples
-    AC_SUBST(bseunversionedsampledir)
     bsedatadir=\${datadir}/bse/v$BIN_VERSION
     bseeffectdir=$bsedatadir/effects
     AC_SUBST(bseeffectdir)
