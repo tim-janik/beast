@@ -561,11 +561,6 @@ AC_DEFUN([AC_BEAST_REQUIREMENTS],
     )
     CFLAGS=$cflags
     LDFLAGS=$ldflags
-
-    # --- BEAST paths ---
-    beastbasedir=\${datadir}/beast
-    beastkeysdir=$beastbasedir/v$BIN_VERSION/keys
-    AC_SUBST(beastkeysdir)
 ])
 AC_DEFUN([AC_SUIDMAIN_REQUIREMENTS],
 [
