@@ -21,10 +21,6 @@ site site-preview site-update site-update-all site-update-pages site-update-gall
 
 MAINTAINERCLEANFILES += configure
 
-EXTRA_DIST += $(strip		\
-	topconfig.h		\
-)
-
 # check: message
 ALL_CHECKED_MSG = "All package tests passed"
 check: check-recursive
