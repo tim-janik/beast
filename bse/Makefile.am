@@ -280,8 +280,8 @@ bsegenbasics.cc: bsebasics.idl $(SFIDL) bsebasics.genidl.hh
 # setup generation of C++ objects from idl files
 %.genidl.hh: $(srcdir)/%.idl $(SFIDL)
 	$(AM_V_GEN)
-	$(Q) $(SFIDL) --core-cxx --macro $(<F) $(SFIDL_INC) $< > $@ || (rm $@ ; exit 1 )
-
+	$(Q) $(SFIDL) --core-cxx --macro $(<F) $(SFIDL_INC) $< > xgen-$(@F)
+	$(Q) mv xgen-$(@F) $@
 
 # == bsehack.idl ==
 # currently generated from BSE introspection data, needed to build the old IDL bindings
