@@ -28,6 +28,8 @@ beast-images.h: ${public_images}
 	&& echo "/* Generated data ends here */" >> xgen-bstih \
 	&& (cp xgen-bstih $@) \
 	&& rm -f xgen-bstih
+noinst_DATA = $(noinst_build_sources)
+CLEANFILES += $(noinst_build_sources)
 
 
 # install pkg-config files
@@ -92,34 +94,3 @@ install-data-hook:
 	test -z "$(UPDATE_MIME_DATABASE)" || $(UPDATE_MIME_DATABASE) "$(DESTDIR)${sharedmimedir}";
 uninstall-local: uninstall-sharedmimepackageDATA
 	test -z "$(UPDATE_MIME_DATABASE)" || $(UPDATE_MIME_DATABASE) "$(DESTDIR)${sharedmimedir}";
-
-
-noinst_DATA = $(noinst_build_sources)
-CLEANFILES += $(noinst_build_sources)
-noinst_build_sources += config-paths.h
-config-paths.h: $(top_builddir)/config.status Makefile
-	cd . \
-	&& echo "/* Generated data from $< (by make $@) */" > xgen-cph \
-	&& echo >> xgen-cph \
-	&& echo "#define SFIDL_PATH_STDINC        \"${sfidlstdincdir}\"" >> xgen-cph \
-	&& echo "#define BSE_PATH_BINARIES        \"${bindir}\"" >> xgen-cph \
-	&& echo "#define BSE_PATH_LADSPA          \"${bseladspapath}\"" >> xgen-cph \
-	&& echo "#define BSE_PATH_PLUGINS         \"${bseplugindir}\"" >> xgen-cph \
-	&& echo "#define BSE_PATH_DRIVERS         \"${bsedriverdir}\"" >> xgen-cph \
-	&& echo "#define BSE_PATH_DEMOS           \"${bsedemodir}\"" >> xgen-cph \
-	&& echo "#define BSE_PATH_SAMPLES         \"${bsesampledir}:${bseunversionedsampledir}\"" >> xgen-cph \
-	&& echo "#define BSE_PATH_EFFECTS         \"${bseeffectdir}\"" >> xgen-cph \
-	&& echo "#define BSE_PATH_INSTRUMENTS     \"${bseinstrumentdir}\"" >> xgen-cph \
-	&& echo "#define BSE_PATH_SCRIPTS         \"${bsescriptdir}\"" >> xgen-cph \
-	&& echo "#define BSE_PATH_USER_DATA(dir)  \"${bseuserdatadir}\" dir" >> xgen-cph \
-	&& echo "#define BST_PATH_BINARIES        \"${bindir}\"" >> xgen-cph \
-	&& echo "#define BST_PATH_DOCS            \"${docdir}\"" >> xgen-cph \
-	&& echo "#define BST_PATH_IMAGES          \"${beastimagesdir}\"" >> xgen-cph \
-	&& echo "#define BST_PATH_LOCALE          \"${beastlocaledir}\"" >> xgen-cph \
-	&& echo "#define BST_PATH_KEYS            \"${beastkeysdir}\"" >> xgen-cph \
-	&& echo "#define BST_PATH_SKINS           \"${beastskinsdir}\"" >> xgen-cph \
-	&& echo "#define BST_PATH_PREFIX          \"${prefix}\"" >> xgen-cph \
-	&& echo >> xgen-cph \
-	&& echo "/* Generated data ends here */" >> xgen-cph \
-	&& (cp xgen-cph $@) \
-	&& rm -f xgen-cph
