@@ -326,13 +326,14 @@ bseserverapi.cc: $(srcdir)/bseapi.idl $(AUXTYPES_PY)
 	$(AM_V_GEN)
 	$(Q) ${AIDACC} -x CxxStub -G macro=BSE_IDL -G servercc -x $(AUXTYPES_PY) $< -o xgen-$(@F)
 	$(Q) mv xgen-$(@F) $@
-$(srcdir)/bseutils.cc $(srcdir)/bseprocidl.cc: bseserverapi.hh bseserverapi.cc
+$(srcdir)/bseutils.cc: bseserverapi.hh bseserverapi.cc
 CLEANFILES += bseserverapi.cc
 EXTRA_DIST += bseapi.idl
 
 # == GENERATED targets ==
-$(libbse_la_OBJECTS): $(GENERATED)	# need dependency to force file generation
 CLEANFILES += $(GENERATED)
+$(libbse_la_OBJECTS): $(GENERATED)	# needed dependency to force file generation
+$(bseautodoc_OBJECTS) $(bseinfo_OBJECTS) $(bseprocidl_OBJECTS) $(bsequery_OBJECTS) $(bsetool_OBJECTS): $(GENERATED)
 
 #
 # private (birnet) dependancy to make TAGS file after each build
