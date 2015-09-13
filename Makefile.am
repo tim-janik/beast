@@ -31,7 +31,7 @@ check: check-recursive
 # == Dist Fixes ==
 # Some files remain after distcheck, that we cannot clean up. So we role our own listfiles filter.
 distuninstallcheck_listfiles  = find . -type f $(patsubst ./%, ! -path \*/%, $(uninstall_filter_files)) -print
-#distuninstallcheck_listfiles = find . -type f -print	# original automake-1.11 setting
+#distuninstallcheck_listfiles = find . -type f -print	# original automake-1.14.1 setting
 uninstall_filter_files = $(strip	\
 	./share/mime/subclasses		./share/mime/XMLnamespaces	./share/mime/globs2	\
 	./share/mime/version		./share/mime/icons		./share/mime/types	\
