@@ -51,11 +51,17 @@ distfile-list:
 	  fi ; done ; true
 
 # === check: check-before / check-after ===
-.PHONY: check-before check-after
+.PHONY: check-before check-after check-devel
 check-am: check-before
 check-local: check-after
 check-local: ; @:
+check-devel: ; @:
 TESTS=
+
+# == check-devel ==
+if ENABLE_DEVEL_MODE
+check-after: check-devel
+endif
 
 # === slowcheck ===
 # recursive rule supported by all Makefiles to run time consuming checks
