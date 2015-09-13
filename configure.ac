@@ -99,9 +99,9 @@ AC_PROG_MAKE_SET
 m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES([yes])])
 
 # declare --enable-* args and collect ac_help strings
-AC_ARG_ENABLE(debug,      [  --enable-debug=no/minimum/yes  turn on debugging, default=yes],,enable_debug=yes)
-AC_ARG_ENABLE(devel-mode, [  --enable-devel-mode=[no/yes]   turn on development mode, default=no],,enable_devel_mode=no)
-AC_ARG_ENABLE(distcheck-tests, [  --enable-distcheck-tests       turn on resource and time consuming distcheck tests],,enable_distcheck_tests=no)
+AC_ARG_ENABLE(debug,           [  --enable-debug=no/minimum/yes turn on debugging, default=yes],,enable_debug=yes)
+AC_ARG_ENABLE(devel-mode,      [  --enable-devel-mode=no/yes    turn on development mode, default=auto],,enable_devel_mode=auto)
+AC_ARG_ENABLE(distcheck-tests, [  --enable-distcheck-tests      turn on resource and time consuming distcheck tests],,enable_distcheck_tests=no)
 
 # set BEAST_BUILD_DEFAULTS from configure's BEAST_BUILD env
 BEAST_BUILD_DEFAULTS="$BEAST_BUILD_DEFAULTS"
@@ -632,30 +632,24 @@ AC_DEFUN([AC_DOC_REQUIREMENTS],
 # find installation utilities
 AC_PATH_PROG(UPDATE_MIME_DATABASE, update-mime-database)
 
-# --enable-devel-mode: check for development build rules, i.e. autogen.sh
-# based builds with .git repository; these enable additional build rules
-# for files that are pre-packaged in tarballs.
+# == ENABLE_DEVEL_MODE ==
+# check for development build rules, these usually require acess to .git/
+# if 'auto', enable devel mode for odd (development) versions
+AC_MSG_CHECKING(for ENABLE_DEVEL_MODE)
+[test x"$enable_devel_mode" = xauto && { echo " $BST_MICRO_VERSION" | grep -q '[13579]$' ; } && enable_devel_mode=yes]
+test x"$enable_devel_mode" = xyes || enable_devel_mode=no
+AM_CONDITIONAL(ENABLE_DEVEL_MODE, test x"$enable_devel_mode" = xyes)
+AC_MSG_RESULT([$enable_devel_mode])
 if test x"$enable_devel_mode" = xyes ; then
-  TEST_SRCDIR=$(cd $srcdir ; /bin/pwd)
-  TEST_BUILDDIR=$(cd . ; /bin/pwd)
-  test "$TEST_SRCDIR" == "$TEST_BUILDDIR" || {
-    AC_MSG_ERROR([development build rules require srcdir == builddir])
-  }
   git cat-file commit af82337c966c1182e 2>&1 | fgrep -q bb4f6e48724a6731 || { # 0.8.0
     AC_MSG_ERROR([development build rules require a beast.git repository])
   }
-  DEVELMODE="" ; NOTDEVELMODE="#"
-  # devel mode build tools
   MC_ASSERT_PROG(XMLLINT, xmllint, [See: http://xmlsoft.org/xmllint.html])
   MC_ASSERT_PROG(PYTHON, python2.7)
   if test -z "$PYTHON" || $PYTHON -c "import sys; sys.exit (sys.hexversion >= 0x2070500)" 2>/dev/null ; then
      AC_MSG_ERROR([failed to detect python (version >= 2.7.5) required for development mode])
   fi
-else
-  DEVELMODE="#"; NOTDEVELMODE=""
 fi
-AC_SUBST(DEVELMODE)
-AC_SUBST(NOTDEVELMODE)
 
 AC_MSG_CHECKING(whether source dir equals build dir)
 TEST_SRCDIR=`cd $srcdir ; /bin/pwd`

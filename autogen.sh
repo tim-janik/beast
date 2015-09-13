@@ -1,6 +1,6 @@
 #!/bin/bash
 
-CONFIGURE_OPTIONS=--enable-devel-mode=yes
+CONFIGURE_OPTIONS=
 
 echo "$0: Cleaning configure caches..."
 rm -rf autom4te.cache/
