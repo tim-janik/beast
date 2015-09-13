@@ -101,12 +101,6 @@ m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES([yes])])
 # declare --enable-* args and collect ac_help strings
 AC_ARG_ENABLE(debug,           [  --enable-debug=no/minimum/yes turn on debugging, default=yes],,enable_debug=yes)
 AC_ARG_ENABLE(devel-mode,      [  --enable-devel-mode=no/yes    turn on development mode, default=auto],,enable_devel_mode=auto)
-AC_ARG_ENABLE(distcheck-tests, [  --enable-distcheck-tests      turn on resource and time consuming distcheck tests],,enable_distcheck_tests=no)
-
-# set BEAST_BUILD_DEFAULTS from configure's BEAST_BUILD env
-BEAST_BUILD_DEFAULTS="$BEAST_BUILD_DEFAULTS"
-test "$enable_distcheck_tests" = yes && BEAST_BUILD_DEFAULTS="$BEAST_BUILD_DEFAULTS:distcheck-tests:"
-AC_SUBST(BEAST_BUILD_DEFAULTS)
 
 dnl # setup DEBUG defaults
 if test "x$enable_debug" = "xyes"; then
