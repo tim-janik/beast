@@ -24,6 +24,36 @@ distfiles.list: Makefile
 	test -e distfiles.list
 	test -e $(DISTFILE_LIST_NAME)
 	cd $(top_builddir) && make distfile-list DISTFILE_LIST=$(DISTFILE_LIST_NAME)
+CLEANFILES += distfiles.list
+
+SKIP_PATTERN = "tests/latency/midi-latency.bse"
+checklist-%-test: checklists
+	$(Q) $(if $(findstring 1, $(V)), set -x, :) ;		\
+	  for tfile in `cat $(@F:-test=)` ; do			\
+	    file="$(top_srcdir)/$$tfile" ;			\
+	    if echo "$$tfile" | egrep -q $(SKIP_PATTERN) ; then	\
+	      echo "SKIP - Loading: $$tfile" ;			\
+	    else						\
+	      $(CHECK_LOAD) "$$file" 2>&1 | tee $(@F).log ;	\
+	      test ! -s $(@F).log || exit 1			\
+	      && echo "OK   - Loading: $$tfile" ;		\
+	    fi ; done ; rm -f $(@F).log $(@F:-test=)
+checklists: distfiles.list # generate checklist-a .. checklist-e
+	$(Q) grep '\.bse$$' distfiles.list > checklist
+	$(Q) split -n l/5 -a 1 checklist checklist-
+	$(Q) rm -f checklist
+check-local: checklist-a-test checklist-b-test checklist-c-test checklist-d-test checklist-e-test
+plugin_globs = '$(top_builddir)/plugins/.libs/*.so:$(top_builddir)/plugins/freeverb/.libs/*.so'
+samplepath   = '$(top_srcdir)/tests/audio:$(top_srcdir)/library/samples'
+CHECK_LOAD   = $(strip	$(top_builddir)/bse/bsetool				\
+			  $(if $(findstring 1, $(V)),, --quiet)			\
+			  check-load						\
+			  --bse-pcm-driver null=nosleep				\
+			  --bse-midi-driver null				\
+			  --bse-rcfile "/dev/null"				\
+			  --bse-override-plugin-globs '$(plugin_globs)'		\
+		          --bse-override-sample-path $(samplepath)		\
+)
 
 .PHONY: bse-version-check
 bse-version-check: distfiles.list
@@ -41,37 +71,3 @@ bse-version-check: distfiles.list
 	&& echo $$MESSAGETEXT | sed 's/./=/g'
 check: # bse-version-check
 
-.PHONY: bse-loading-check
-SKIP_PATTERN = "tests/latency/midi-latency.bse|tests/audio/minisong.bse"
-bse-loading-check: distfiles.list
-	@rm -f warnings.tmp
-	for tfile in `grep '\.bse$$' distfiles.list` ; do		\
-	  file="$(top_srcdir)/$$tfile" ;				\
-	  if echo "$$tfile" | egrep -q $(SKIP_PATTERN) ; then		\
-	    echo "-Skipping project: $$file" ;				\
-	  else								\
-	    echo "Test load project: $$file" ;				\
-	    $(BSESCM) "$$file" 2>&1 |					\
-	      tee warnings.tmp ;					\
-	    test ! -s "warnings.tmp" || exit 1 ;			\
-	  fi ;								\
-	done
-	@rm -f warnings.tmp
-	@MESSAGETEXT="All tested BSE files passed loading test"		\
-	&& echo $$MESSAGETEXT | sed 's/./=/g' 				\
-	&& echo $$MESSAGETEXT		 				\
-	&& echo $$MESSAGETEXT | sed 's/./=/g'
-slowcheck: bse-loading-check
-
-CLEANFILES += distfiles.list warnings.tmp
-plugin_globs = '$(top_builddir)/plugins/.libs/*.so:$(top_builddir)/plugins/freeverb/.libs/*.so'
-samplepath = '$(top_srcdir)/tests/audio:$(top_srcdir)/library/samples'
-EXTRA_DIST += checkproject.scm
-BSESCM = $(strip								\
-	$(top_builddir)/shell/bsescm-$(BIN_VERSION)				\
-	  -p null -m null							\
-	  --bse-rcfile "/dev/null" --bse-no-load				\
-	  --bse-override-plugin-globs '$(plugin_globs)'				\
-          --bse-override-sample-path $(samplepath)                              \
-	  -s "$(top_srcdir)/tests/filecheck/checkproject.scm"			\
-)

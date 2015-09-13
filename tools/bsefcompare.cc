@@ -724,7 +724,7 @@ main (int argc, char **argv)
   double min_s = similarity.empty() ? 0.0 : similarity[0];
   double max_s = min_s;
 
-  printf ("similarities: ");
+  printf ("%s: similarities: ", argv[1]);
   for (size_t i = 0; i < similarity.size(); i++)
     {
       if (!options.compact)
@@ -759,7 +759,7 @@ main (int argc, char **argv)
       rating = "similarity below threshold";
       result = 1;
     }
-  printf ("average similarity rating (%s): %.3f%%\n", rating.c_str(), average_similarity);
+  printf ("%s: average similarity rating (%s): %.3f%%\n", argv[1], rating.c_str(), average_similarity);
   return result;
 }
 

@@ -10,7 +10,7 @@ G_BEGIN_DECLS
 
 /* --- BSE type macros --- */
 #define BSE_TYPE_SERVER              (BSE_TYPE_ID (BseServer))
-#define BSE_SERVER(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), BSE_TYPE_SERVER, BseServer))
+#define BSE_SERVER_CAST(object)      (G_TYPE_CHECK_INSTANCE_CAST ((object), BSE_TYPE_SERVER, BseServer))
 #define BSE_SERVER_CLASS(class)      (G_TYPE_CHECK_CLASS_CAST ((class), BSE_TYPE_SERVER, BseServerClass))
 #define BSE_IS_SERVER(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), BSE_TYPE_SERVER))
 #define BSE_IS_SERVER_CLASS(class)   (G_TYPE_CHECK_CLASS_TYPE ((class), BSE_TYPE_SERVER))
@@ -93,6 +93,8 @@ void		bse_server_queue_kill_wire		(BseServer	    *server,
 void		bse_server_notify_gconfig		(BseServer	    *server);
 G_END_DECLS
 
+
+#define BSE_SERVER      (Bse::ServerImpl::instance())
 
 namespace Bse {
 

@@ -227,7 +227,7 @@ bse_server_set_property (GObject      *object,
 			 const GValue *value,
 			 GParamSpec   *pspec)
 {
-  BseServer *self = BSE_SERVER (object);
+  BseServer *self = BSE_SERVER_CAST (object);
   switch (param_id)
     {
       SfiRec *rec;
@@ -254,7 +254,7 @@ bse_server_get_property (GObject    *object,
 			 GValue     *value,
 			 GParamSpec *pspec)
 {
-  BseServer *self = BSE_SERVER (object);
+  BseServer *self = BSE_SERVER_CAST (object);
   switch (param_id)
     {
       SfiRec *rec;
@@ -294,7 +294,7 @@ static void
 bse_server_add_item (BseContainer *container,
 		     BseItem      *item)
 {
-  BseServer *self = BSE_SERVER (container);
+  BseServer *self = BSE_SERVER_CAST (container);
 
   self->children = g_slist_prepend (self->children, item);
 
@@ -307,7 +307,7 @@ bse_server_forall_items (BseContainer      *container,
 			 BseForallItemsFunc func,
 			 gpointer           data)
 {
-  BseServer *self = BSE_SERVER (container);
+  BseServer *self = BSE_SERVER_CAST (container);
   GSList *slist = self->children;
 
   while (slist)
@@ -324,7 +324,7 @@ static void
 bse_server_remove_item (BseContainer *container,
 			BseItem      *item)
 {
-  BseServer *self = BSE_SERVER (container);
+  BseServer *self = BSE_SERVER_CAST (container);
 
   self->children = g_slist_remove (self->children, item);
 
