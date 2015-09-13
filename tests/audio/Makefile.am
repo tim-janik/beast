@@ -21,7 +21,7 @@ BSE2WAV = $(strip						\
 
 # == audio feature test rule ==
 FEATURE_TESTS =
-check-local: $(FEATURE_TESTS)
+check-devel: $(FEATURE_TESTS)
 # feature test temporaries
 CLEANFILES += *.tmp *.wav
 
