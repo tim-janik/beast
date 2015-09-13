@@ -106,6 +106,8 @@ $(srcdir)/bseprobe.cc: bseprobe.genidl.hh
 idl_built_sources = $(bse_idl_sources:.idl=.genidl.hh)
 GENERATED += $(idl_built_sources)
 $(srcdir)/bsebus.cc: bsebasics.genidl.hh
+# fix genidl implicit rule matching include file dependencies in parent directories
+../bse/bsebasics.genidl.hh: ;
 # idl files not used for build rules
 idl_dummy_files = $(strip	\
 	bsecxxmodule.idl	\
