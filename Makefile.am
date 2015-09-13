@@ -43,17 +43,6 @@ uninstall_filter_files = $(strip	\
 test_option = test `echo ":$(strip $(1)):" | sed 's/.*:$(strip $(2))://g' | wc -c` -lt \
       `echo ":$(strip $(1)):" | sed 's/.*:$(or $(strip $(3)), no-$(strip $(2)))://g' | wc -c`
 
-# by default, run 'make report' after installcheck from inside distcheck
-DISTCHECK_CONFIGURE_FLAGS = --enable-distcheck-tests
-INSTALLCHECK_HOOK = installcheck # use indirection to emulate installcheck-hook
-$(INSTALLCHECK_HOOK): costly-distcheck-tests
-# --enable-distcheck-tests causes BEAST_BUILD_DEFAULTS=distcheck-tests which can
-# be overridden by the user with BEAST_BUILD=no-distcheck-tests
-costly-distcheck-tests:
-	@! $(call test_option, $(BEAST_BUILD_DEFAULTS):$(BEAST_BUILD), distcheck-tests) \
-	|| ( $(MAKE) report && mv ./report.out /tmp/beast-distcheck$$$$.report )
-.PHONY: costly-distcheck-tests
-
 # == ChangeLog & Release Rules ==
 ChangeLog:	$(shell $(srcdir)/mkrelease.sh commit-stamps)
 	$(srcdir)/mkrelease.sh ChangeLog -R ce584d04999a7fb9393e1cfedde2048ba73e8878..HEAD
