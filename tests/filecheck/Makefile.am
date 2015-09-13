@@ -28,13 +28,11 @@ CLEANFILES += distfiles.list
 
 SKIP_PATTERN = "tests/latency/midi-latency.bse"
 checklist-%-test: checklists
-	$(Q) $(if $(findstring 1, $(V)), set -x, :) ;		\
-	  for tfile in `cat $(@F:-test=)` ; do			\
-	    file="$(top_srcdir)/$$tfile" ;			\
+	$(Q) for tfile in `cat $(@F:-test=)` ; do		\
 	    if echo "$$tfile" | egrep -q $(SKIP_PATTERN) ; then	\
 	      echo "SKIP - Loading: $$tfile" ;			\
 	    else						\
-	      $(CHECK_LOAD) "$$file" 2>&1 | tee $(@F).log ;	\
+	      $(CHECK_LOAD) "$$tfile" 2>&1 | tee $(@F).log ;	\
 	      test ! -s $(@F).log || exit 1			\
 	      && echo "OK   - Loading: $$tfile" ;		\
 	    fi ; done ; rm -f $(@F).log $(@F:-test=)
@@ -42,6 +40,7 @@ checklists: distfiles.list # generate checklist-a .. checklist-e
 	$(Q) grep '\.bse$$' distfiles.list > checklist
 	$(Q) split -n l/5 -a 1 checklist checklist-
 	$(Q) rm -f checklist
+CLEANFILES += checklists checklist-? checklist-?-test checklist-?-test.log
 check-local: checklist-a-test checklist-b-test checklist-c-test checklist-d-test checklist-e-test
 plugin_globs = '$(top_builddir)/plugins/.libs/*.so:$(top_builddir)/plugins/freeverb/.libs/*.so'
 samplepath   = '$(top_srcdir)/tests/audio:$(top_srcdir)/library/samples'

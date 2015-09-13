@@ -181,7 +181,7 @@ $(srcdir)/gslfft.cc: @PERLRULE@ $(srcdir)/gsl-fftgen.pl $(srcdir)/gsl-fftconf.sh
 GENERATED_EXTRA_DIST += bsegentypes.h
 bsetype.hh $(bse_sources): bsegentypes.h	# $(libbse_la_OBJECTS): bsegentypes.h
 bsegentypes.h: @PERLRULE@ mktypes.pl # $(filter-out bsegentypes.cc gslfft.cc, $(bse_sources)) $(filter-out bsegentypes.h, $(bse_public_headers))
-bsegentypes.h: @PERLRULE@ bsebasics.idl $(SFIDL)
+bsegentypes.h: @PERLRULE@ bsebasics.idl # $(SFIDL)
 	$(AM_V_GEN)
 	$(Q) ( \
 	  cd $(srcdir) \
@@ -197,7 +197,7 @@ bsegentypes.h: @PERLRULE@ bsebasics.idl $(SFIDL)
 # bsegentypes.cc
 GENERATED_EXTRA_DIST += bsegentypes.cc
 $(libbse_la_OBJECTS): bsegentypes.cc
-bsegentypes.cc: @PERLRULE@ bsegentypes.h mktypes.pl bsebasics.idl $(SFIDL)
+bsegentypes.cc: @PERLRULE@ bsegentypes.h mktypes.pl bsebasics.idl # $(SFIDL)
 	$(AM_V_GEN)
 	$(Q) ( \
 	  cd $(srcdir) \
@@ -271,17 +271,17 @@ bsebuiltin_array.cc: @PERLRULE@ $(bse_proc_gen_sources) mkcproc.pl
 # bsegenbasics.cc
 GENERATED_CLEANFILES += bsegenbasics.cc
 $(srcdir)/bsebasics.cc: bsegenbasics.cc
-bsegenbasics.cc: bsebasics.idl $(SFIDL) bsebasics.genidl.hh
+bsegenbasics.cc: bsebasics.idl bsebasics.genidl.hh # $(SFIDL)
 	$(AM_V_GEN)
 	$(Q) cd . \
 	&& $(SFIDL) $(SFIDL_INC) --core-c --source --init sfidl_types_init $(srcdir)/bsebasics.idl >> xgen-$(@F) \
 	&& cp xgen-$(@F) $(@F) \
 	&& rm -f xgen-$(@F)
 # setup generation of C++ objects from idl files
-%.genidl.hh: $(srcdir)/%.idl $(SFIDL)
+%.genidl.hh: $(srcdir)/%.idl # $(SFIDL)
 	$(AM_V_GEN)
-	$(Q) $(SFIDL) --core-cxx --macro $(<F) $(SFIDL_INC) $< > $@ || (rm $@ ; exit 1 )
-
+	$(Q) $(SFIDL) --core-cxx --macro $(<F) $(SFIDL_INC) $< > xgen-$(@F)
+	$(Q) mv xgen-$(@F) $@
 
 # == bsehack.idl ==
 # currently generated from BSE introspection data, needed to build the old IDL bindings
@@ -311,7 +311,7 @@ bseclientapi.cc: $(srcdir)/../bse/bseapi.idl $(AUXTYPES_PY)
 	$(AM_V_GEN)
 	$(Q) ${AIDACC} -x CxxStub -G macro=BSE_IDL -G clientcc -x $(AUXTYPES_PY) $< -o xgen-$(@F)
 	$(Q) mv xgen-$(@F) $@
-bsestartup.cc: bseclientapi.cc
+$(srcdir)/bsestartup.cc: bseclientapi.cc
 CLEANFILES += bseclientapi.cc
 bseserverapi.hh: $(srcdir)/bseapi.idl $(AUXTYPES_PY)
 	$(AM_V_GEN)
@@ -323,7 +323,7 @@ bseserverapi.cc: $(srcdir)/bseapi.idl $(AUXTYPES_PY)
 	$(AM_V_GEN)
 	$(Q) ${AIDACC} -x CxxStub -G macro=BSE_IDL -G servercc -x $(AUXTYPES_PY) $< -o xgen-$(@F)
 	$(Q) mv xgen-$(@F) $@
-bseutils.cc bseprocidl.cc: bseserverapi.hh bseserverapi.cc
+$(srcdir)/bseutils.cc $(srcdir)/bseprocidl.cc: bseserverapi.hh bseserverapi.cc
 CLEANFILES += bseserverapi.cc
 EXTRA_DIST += bseapi.idl
 

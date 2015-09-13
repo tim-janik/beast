@@ -11,7 +11,7 @@ SFIDL_INC = --nostdinc -I$(top_srcdir) -I$(top_builddir)
 BSESCM    = $(top_builddir)/shell/bsescm-$(BIN_VERSION)
 
 # IDL generation rule for plugins
-%.genidl.hh: %.idl $(BSEPGEN) $(SFIDL)
+%.genidl.hh: %.idl $(BSEPGEN) # $(SFIDL)
 	$(SFIDL) $(SFIDL_INC) --plugin --macro $(<F) $< > $@ || (rm $@ ; exit 1 )
 
 #

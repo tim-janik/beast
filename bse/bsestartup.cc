@@ -1,7 +1,7 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bsestartup.hh"
-#include "bseclientapi.hh"
 #include "bsemain.hh"
+#include <bse/bseclientapi.hh>
 
 namespace Bse {
 

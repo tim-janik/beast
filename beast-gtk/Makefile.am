@@ -81,14 +81,14 @@ SFIDL_INC = --nostdinc -I$(top_srcdir) -I$(top_builddir)
 # bstoldbseapi.h
 GENERATED_CLEANFILES += bstoldbseapi.h
 $(beast_build_objects): bstoldbseapi.h
-bstoldbseapi.h: $(top_srcdir)/bse/*.idl $(top_builddir)/bse/*.idl $(SFIDL)
+bstoldbseapi.h: $(top_srcdir)/bse/*.idl $(top_builddir)/bse/*.idl # $(SFIDL)
 	cd . \
 	&& $(SFIDL) $(SFIDL_INC) --client-c --header --prefix beast_ $(top_srcdir)/bse/bse.idl >> xgen-$(@F) \
 	&& mv xgen-$(@F) bstoldbseapi.h
 # bstoldbseapi.cc
 GENERATED_CLEANFILES += bstoldbseapi.cc
 $(beast_build_objects): bstoldbseapi.cc
-bstoldbseapi.cc: bstoldbseapi.h $(top_srcdir)/bse/*.idl $(top_builddir)/bse/*.idl $(SFIDL)
+bstoldbseapi.cc: bstoldbseapi.h $(top_srcdir)/bse/*.idl $(top_builddir)/bse/*.idl # $(SFIDL)
 	cd .	\
 	&& echo -e "/* #include \"bstoldbseapi.h\" */\n" > xgen-$(@F) \
 	&& $(SFIDL) $(SFIDL_INC) --client-c --source --prefix beast_ $(top_srcdir)/bse/bse.idl >> xgen-$(@F) \
@@ -112,13 +112,13 @@ bstmarshal.cc: bstmarshal.list
 
 # == bstapi.idl ==
 EXTRA_DIST += bstapi.idl
-$(bst_cc_sources): bstserverapi.hh
+$(bst_cc_sources:%=$(srcdir)/%): bstserverapi.hh
 bstserverapi.hh: $(srcdir)/bstapi.idl $(AUXTYPES_PY)
 	$(AM_V_GEN)
 	$(Q) ${AIDACC} -x CxxStub -G macro=BST_IDL -G serverhh -x $(AUXTYPES_PY) $< -o xgen-$(@F)
 	$(Q) mv xgen-$(@F) $@
 CLEANFILES += bstserverapi.hh
-$(bst_cc_sources): bstserverapi.cc
+$(bst_cc_sources:%=$(srcdir)/%): bstserverapi.cc
 bstserverapi.cc: $(srcdir)/bstapi.idl $(AUXTYPES_PY)
 	$(AM_V_GEN)
 	$(Q) ${AIDACC} -x CxxStub -G macro=BST_IDL -G servercc -x $(AUXTYPES_PY) $< -o xgen-$(@F)

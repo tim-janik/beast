@@ -5,6 +5,7 @@ SUBDIRS = . data sfi bse plugins drivers shell beast-gtk launchers library tools
 
 EXTRA_DIST += HACKING.md
 noinst_DATA = HACKING.html
+CLEANFILES += HACKING.html
 
 %.html: %.md
 	pandoc -s --toc -N -S -f markdown_github+pandoc_title_block -t html --email-obfuscation=javascript \

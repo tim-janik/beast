@@ -27,7 +27,7 @@ EXTRA_DIST += $(filter-out +++%, $(idl_plugins))
 # setup generation of C++ plugins from idl files
 SFIDL = ../sfi/sfidl
 SFIDL_INC = --nostdinc -I$(top_srcdir) -I$(top_builddir)
-%.genidl.hh: %.idl $(SFIDL)
+%.genidl.hh: %.idl # $(SFIDL)
 	$(SFIDL) --plugin  --macro $(<F) $(SFIDL_INC) -I$(top_builddir) $< > $@ || (rm $@ ; exit 1 )
 
 # == C++ Plugins ==
