@@ -58,6 +58,32 @@ else
 fi
 AC_SUBST(DEFINE__FILE_DIR__)
 
+# Define package directories per major/minor version
+pkgincludedir="\${includedir}/beast-$BST_MAJOR_VERSION.$BST_MINOR_VERSION"
+pkglibdir="\${libdir}/beast-$BST_MAJOR_VERSION.$BST_MINOR_VERSION"
+pkglibexecdir="\${libexecdir}/beast-$BST_MAJOR_VERSION.$BST_MINOR_VERSION"
+pkgdatadir="\${datadir}/beast-$BST_MAJOR_VERSION.$BST_MINOR_VERSION"
+pkgdocdir="\${datarootdir}/doc/beast-$BST_MAJOR_VERSION.$BST_MINOR_VERSION"
+# Substitute directories in Makefiles
+AC_SUBST(pkgincludedir)
+AC_SUBST(pkglibdir)
+AC_SUBST(pkglibexecdir)
+AC_SUBST(pkgdatadir)
+AC_SUBST(pkgdocdir)
+# Provide directories for C++
+bak_prefix="$prefix" ; bak_exec_prefix="$exec_prefix" ; bak_libdir="$libdir" ; bak_datarootdir="$datarootdir" ; bak_datadir="$datadir"
+test "x$prefix" = xNONE && prefix="$ac_default_prefix" ; test "x$exec_prefix" = xNONE && exec_prefix="$prefix"
+libdir=`eval echo "${libdir}"` ; datarootdir=`eval echo "${datarootdir}"` ; datadir=`eval echo "${datadir}"`
+AC_DEFINE_UNQUOTED(INSTALLPATH_INCLUDES, ["`eval echo "${includedir}"`"], [Base directory for standard include files])
+AC_DEFINE_UNQUOTED(INSTALLPATH_BINDIR, ["`eval echo "${bindir}"`"], [Directory to install and execute programs])
+AC_DEFINE_UNQUOTED(INSTALLPATH_LOCALEBASE, ["`eval echo ${localedir}`"], [Base directory for locale specific message catalogs])
+AC_DEFINE_UNQUOTED(INSTALLPATH_LADSPA, ["`eval echo ${libdir}/ladspa`"], [Searchpath for LADSPA plugins])
+AC_DEFINE_UNQUOTED(INSTALLPATH_PKGLIBDIR, ["`eval echo ${pkglibdir}`"], [Directory to install plugins and drivers])
+AC_DEFINE_UNQUOTED(INSTALLPATH_PKGDATADIR, ["`eval echo ${pkgdatadir}`"], [Directory to install samples, effects, scripts, etc])
+AC_DEFINE_UNQUOTED(INSTALLPATH_PKGDOCDIR, ["`eval echo ${pkgdocdir}`"], [Directory to install documentation])
+AC_DEFINE_UNQUOTED(INSTALLPATH_USER_DATA, ["~/beast"], [Searchpath for user owned Beast resources])
+prefix="$bak_prefix" ; exec_prefix="$bak_exec_prefix" ; libdir="$bak_libdir" ; datarootdir="$bak_datarootdir" ; datadir="$bak_datadir"
+
 # Build tree checks
 AC_MSG_CHECKING([for git repository])
 test -f "${srcdir}/.git/index" && INGIT= || INGIT='#'
@@ -270,19 +296,6 @@ AC_DEFUN([AC_I18N_REQUIREMENTS],
   GETTEXT_PACKAGE=$BST_GETTEXT_DOMAIN
   AC_SUBST(GETTEXT_PACKAGE)
 
-  # locale directory for all domains
-  # (AM_GLIB_DEFINE_LOCALEDIR() could do this if it would do AC_SUBST())
-  saved_prefix="$prefix"		; saved_exec_prefix="$exec_prefix"
-  test "x$prefix" = xNONE && prefix="$ac_default_prefix"
-  test "x$exec_prefix" = xNONE && exec_prefix="$prefix"
-  if test "x$CATOBJEXT" = "x.mo" ; then
-    beastlocaledir=`eval echo "${libdir}/locale"`
-  else
-    beastlocaledir=`eval echo "${datadir}/locale"`
-  fi
-  exec_prefix="$saved_exec_prefix"	; prefix="$saved_prefix"
-  AC_SUBST(beastlocaledir)
-
   # check for proper gettext support
   AM_GLIB_GNU_GETTEXT([external])
   test -z "$ac_cv_path_XGETTEXT" && {
@@ -312,10 +325,6 @@ AC_DEFUN([AC_SFI_REQUIREMENTS],
 
     AC_CHECK_FUNCS(getpwnam_r getpwnam)
     AC_CHECK_FUNCS(timegm)
-
-    dnl # --- SFI directories ---
-    sfidlstdincdir=${includedir}
-    AC_SUBST(sfidlstdincdir)
 ])
 AC_DEFUN([AC_BSE_REQUIREMENTS],
 [
@@ -418,29 +427,6 @@ AC_DEFUN([AC_BSE_REQUIREMENTS],
     dnl # --- math.h glibc extensions
     AC_CHECK_LIB(m, sincos,
       AC_DEFINE(HAVE_SINCOS, 1, [Define if you have the sincos function in <math.h>]))
-
-    # --- setup BSE search/install paths ---
-    bseplugindir=\${libdir}/bse/v$BIN_VERSION/plugins
-    AC_SUBST(bseplugindir)
-    bsedriverdir=\${libdir}/bse/v$BIN_VERSION/drivers
-    AC_SUBST(bsedriverdir)
-    bseladspapath=${libdir}/ladspa
-    AC_SUBST(bseladspapath)
-    bseunversionedsampledir=\${datadir}/bse/samples
-    AC_SUBST(bseunversionedsampledir)
-    bsedatadir=\${datadir}/bse/v$BIN_VERSION
-    bseeffectdir=$bsedatadir/effects
-    AC_SUBST(bseeffectdir)
-    bseinstrumentdir=$bsedatadir/instruments
-    AC_SUBST(bseinstrumentdir)
-    bsesampledir=$bsedatadir/samples
-    AC_SUBST(bsesampledir)
-    bsescriptdir=$bsedatadir/scripts
-    AC_SUBST(bsescriptdir)
-    bsedemodir=$bsedatadir/demo
-    AC_SUBST(bsedemodir)
-    bseuserdatadir='~/beast'
-    AC_SUBST(bseuserdatadir)
 ])
 AC_DEFUN([AC_ASOUND_CHECK],
 [
@@ -562,15 +548,6 @@ AC_DEFUN([AC_BEAST_REQUIREMENTS],
     )
     CFLAGS=$cflags
     LDFLAGS=$ldflags
-
-    # --- BEAST paths ---
-    beastbasedir=\${datadir}/beast
-    beastimagesdir=$beastbasedir/v$BIN_VERSION/images
-    AC_SUBST(beastimagesdir)
-    beastkeysdir=$beastbasedir/v$BIN_VERSION/keys
-    AC_SUBST(beastkeysdir)
-    beastskinsdir=$beastbasedir/v$BIN_VERSION/skins
-    AC_SUBST(beastskinsdir)
 ])
 AC_DEFUN([AC_SUIDMAIN_REQUIREMENTS],
 [

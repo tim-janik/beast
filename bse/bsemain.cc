@@ -1,7 +1,6 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bsemain.hh"
 #include "bsestartup.hh"
-#include "topconfig.h"
 #include "bseserver.hh"
 #include "bsesequencer.hh"
 #include "bsejanitor.hh"
@@ -39,7 +38,7 @@ static BseMainArgs       default_main_args = {
   10 * 1024 * 1024,     // dcache_cache_memory
   BSE_KAMMER_NOTE,      // midi_kammer_note (69)
   BSE_KAMMER_FREQUENCY, // kammer_freq (440Hz, historically 435Hz)
-  BSE_PATH_BINARIES,    // path_binaries
+  NULL,                 // path_binaries
   NULL,                 // bse_rcfile
   NULL,                 // override_plugin_globs
   NULL,                 // override_script_path
@@ -58,7 +57,7 @@ void
 bse_bindtextdomain()
 {
   assert_return (bindtextdomain_initialized == false);
-  bindtextdomain (BSE_GETTEXT_DOMAIN, BST_PATH_LOCALE);
+  bindtextdomain (BSE_GETTEXT_DOMAIN, bse_installpath (BSE_INSTALLPATH_LOCALEBASE).c_str());
   bind_textdomain_codeset (BSE_GETTEXT_DOMAIN, "UTF-8");
   bindtextdomain_initialized = true;
 }
@@ -206,6 +205,8 @@ initialize_with_argv (int *argc, char **argv, const char *app_name, const Bse::S
     g_set_prgname (*argv);
 
   // argument handling
+  if (!default_main_args.path_binaries)
+    default_main_args.path_binaries = g_strdup (bse_installpath (BSE_INSTALLPATH_BINDIR).c_str());
   bse_main_args = &default_main_args;
   if (argc && argv)
     init_parse_args (argc, argv, bse_main_args, args);
@@ -568,7 +569,7 @@ init_aida_idl ()
 {
   // setup Aida server connection, so ServerIface::__aida_connection__() yields non-NULL
   Aida::ServerConnectionP scon =
-    Aida::ServerConnection::bind<Bse::ServerIface> ("inproc://BSE-" BST_VERSION,
+    Aida::ServerConnection::bind<Bse::ServerIface> (string_format ("inproc://BSE-%s", bse_version()),
                                                     shared_ptr_cast<Bse::ServerIface> (&Bse::ServerImpl::instance()));
   if (!scon)
     sfi_error ("%s: failed to create BSE connection: %s", __func__, g_strerror (errno));

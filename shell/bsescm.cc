@@ -1,4 +1,6 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
+#include "bsescminterp.hh"
+#include "../configure.h"
 #include <string.h>
 #include <errno.h>
 #include <unistd.h>
@@ -9,8 +11,6 @@
 #include <sys/time.h>
 #include <libintl.h>
 #include <sys/resource.h>
-#include "bsescminterp.hh"
-#include "topconfig.h"
 #define	PRG_NAME	"bsescm"
 #define BSE_EXIT_STATUS 102
 /* --- prototypes --- */
@@ -26,7 +26,7 @@ static gboolean        bse_scm_auto_load = TRUE;
 static gboolean        bse_scm_auto_play = TRUE;
 static SfiComPort     *bse_scm_port = NULL;
 static SfiGlueContext *bse_scm_context = NULL;
-static const gchar    *boot_script_path = BSE_PATH_SCRIPTS;
+static std::string     boot_script_path = bse_installpath (BSE_INSTALLPATH_PKGDATADIR_SCRIPTS);
 
 /* --- functions --- */
 static void
@@ -105,7 +105,7 @@ gh_main (int   argc,
   bse_scm_interp_init ();
 
   /* exec Bse Scheme bootup code */
-  const gchar *boot_script = g_intern_format ("%s/%s", boot_script_path, "bse-scm-glue.boot");
+  const gchar *boot_script = g_intern_format ("%s/%s", boot_script_path.c_str(), "bse-scm-glue.boot");
   gh_load (boot_script);
 
   /* eval, auto-play or interactive */

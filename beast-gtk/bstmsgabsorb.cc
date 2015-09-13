@@ -77,8 +77,6 @@ bst_msg_absorb_config_apply (SfiSeq *src_seq)
   set_msg_absorb_config (mconfig);
 }
 
-# include "topconfig.h" /* BST_VERSION */
-
 gboolean
 bst_msg_absorb_config_match (const gchar *config_blurb)
 {
@@ -98,9 +96,9 @@ bst_msg_absorb_config_update (const gchar *config_blurb)
     if (mstrings[i].cstring == config_blurb)
       {
         Bst::MsgAbsorbString &mas = mstrings[i];
-        if (mas.version != BST_VERSION)
+        if (mas.version != bse_version())
           {
-            mas.version = BST_VERSION;
+            mas.version = bse_version();
             changed = TRUE;
           }
         break;
@@ -120,17 +118,17 @@ bst_msg_absorb_config_adjust (const gchar *config_blurb, bool enabled, bool upda
   if (i >= mstrings.size())
     {
       Bst::MsgAbsorbString mas;
-      mas.version = BST_VERSION;
+      mas.version = bse_version();
       mas.cstring = config_blurb;
       mas.enabled = !enabled; // forces change
       i = mstrings.size();
       mstrings.push_back (mas);
     }
-  if (mstrings[i].enabled != enabled || (update_version && BST_VERSION != mstrings[i].version))
+  if (mstrings[i].enabled != enabled || (update_version && bse_version() != mstrings[i].version))
     {
       Bst::MsgAbsorbString &mas = mstrings[i];
       if (update_version)
-        mas.version = BST_VERSION;
+        mas.version = bse_version();
       mas.enabled = enabled;
       return true;
     }
@@ -230,7 +228,6 @@ bst_msg_absorb_config_box_get (GtkWidget *self)
 #include <unistd.h>
 #include <fcntl.h>
 #include <errno.h>
-#include "topconfig.h"          /* BST_VERSION */
 #include <sfi/sfistore.hh>       /* we rely on internal API here */
 
 static Bse::ErrorType
@@ -247,7 +244,7 @@ bst_msg_absorb_config_dump (const gchar *file_name)
 
   SfiWStore *wstore = sfi_wstore_new ();
 
-  sfi_wstore_printf (wstore, "; message-absorb-config-file for BEAST v%s\n", BST_VERSION);
+  sfi_wstore_printf (wstore, "; message-absorb-config-file for BEAST v%s\n", bse_version().c_str());
 
   /* store config */
   sfi_wstore_puts (wstore, "\n");

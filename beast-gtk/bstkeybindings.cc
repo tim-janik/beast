@@ -1,5 +1,4 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
-#include "topconfig.h"  /* BST_PATH_KEYS */
 #include "bstkeybindings.hh"
 #include "bstauxdialogs.hh"
 #include "bstpatternctrl.hh"
@@ -217,7 +216,7 @@ key_bindings_exec_action (gpointer data,
         static GtkWidget *load_dialog = NULL;
         if (!load_dialog)
           load_dialog = bst_file_dialog_create();
-        bst_file_dialog_setup (load_dialog, self, _("Load Key Binding"), BST_PATH_KEYS);
+        bst_file_dialog_setup (load_dialog, self, _("Load Key Binding"), bse_installpath (BSE_INSTALLPATH_PKGDATADIR_KEYS).c_str());
         gxk_widget_showraise (load_dialog);
         bst_file_dialog_set_handler (BST_FILE_DIALOG (load_dialog), key_bindings_load_file, self, NULL);
       }
@@ -584,7 +583,6 @@ bst_key_binding_item_pspec (void)
 #include <unistd.h>
 #include <fcntl.h>
 #include <errno.h>
-#include "topconfig.h"          /* BST_VERSION */
 #include <sfi/sfistore.hh>       /* we rely on internal API here */
 const gchar*
 bst_key_binding_rcfile (void)
@@ -614,7 +612,7 @@ bst_key_binding_dump (const gchar *file_name,
 
   wstore = sfi_wstore_new ();
 
-  sfi_wstore_printf (wstore, "; key-binding-file for BEAST v%s\n", BST_VERSION);
+  sfi_wstore_printf (wstore, "; key-binding-file for BEAST v%s\n", bse_version().c_str());
 
   /* store BstKeyBinding */
   sfi_wstore_puts (wstore, "\n");

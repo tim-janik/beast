@@ -134,7 +134,7 @@ EXTRA_DIST += $(strip \
 # BSE library
 #
 lib_LTLIBRARIES              = libbse.la
-libbseincludedir       	     = $(includedir)/bse
+libbseincludedir       	     = $(pkgincludedir)/bse
 libbseinclude_HEADERS        = $(bse_public_headers) bse.idl $(bse_idl_sources) bsehack.idl $(idl_dummy_files)
 nodist_libbseinclude_HEADERS = bsebasics.genidl.hh
 libbse_la_SOURCES            = $(bse_sources) $(bse_proc_gen_sources)

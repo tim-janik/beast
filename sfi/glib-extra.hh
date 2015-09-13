@@ -299,6 +299,33 @@ GScanner*	g_scanner_new64			(const GScannerConfig *config_templ);
 #define g_scanner_thaw_symbol_table(scanner) ((void)0)
 #endif /* G_DISABLE_DEPRECATED */
 
+// == BSE_INSTALLPATH ==
+// See also configure.ac, this function is here because all of sfi, bse and beast include this file.
+enum BseInstallpathType {
+  BSE_INSTALLPATH_INCLUDES = 1,
+  BSE_INSTALLPATH_BINDIR,
+  BSE_INSTALLPATH_LOCALEBASE,
+  BSE_INSTALLPATH_LADSPA,
+  BSE_INSTALLPATH_PKGDOCDIR,
+  BSE_INSTALLPATH_USER_DATA,
+  BSE_INSTALLPATH_PKGLIBDIR,
+  BSE_INSTALLPATH_PKGLIBDIR_PLUGINS,
+  BSE_INSTALLPATH_PKGLIBDIR_DRIVERS,
+  BSE_INSTALLPATH_PKGDATADIR,
+  BSE_INSTALLPATH_PKGDATADIR_DEMO,
+  BSE_INSTALLPATH_PKGDATADIR_SAMPLES,
+  BSE_INSTALLPATH_PKGDATADIR_EFFECTS,
+  BSE_INSTALLPATH_PKGDATADIR_INSTRUMENTS,
+  BSE_INSTALLPATH_PKGDATADIR_SCRIPTS,
+  BSE_INSTALLPATH_PKGDATADIR_IMAGES,
+  BSE_INSTALLPATH_PKGDATADIR_KEYS,
+  BSE_INSTALLPATH_PKGDATADIR_SKINS,
+};
+/// Provide installation directories and searchpaths for various types of data.
+std::string bse_installpath  (BseInstallpathType installpath_type);
+
+/// Provide a string containing the BSE library version number.
+std::string bse_version ();
 
 G_END_DECLS
 

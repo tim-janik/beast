@@ -1,8 +1,5 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include <gxk/gxk.hh>
-
-#include "topconfig.h"
-
 #include <string.h>
 
 #define PRGNAME "tsmview"
@@ -53,8 +50,8 @@ main (int   argc,
   if (!title)
     title = g_strdup (".");
   gxk_text_add_tsm_path (".");
-  gxk_text_add_tsm_path (BST_PATH_DOCS);
-  gxk_text_add_tsm_path (BST_PATH_IMAGES);
+  gxk_text_add_tsm_path (bse_installpath (BSE_INSTALLPATH_PKGDOCDIR).c_str());
+  gxk_text_add_tsm_path (bse_installpath (BSE_INSTALLPATH_PKGDATADIR_IMAGES).c_str());
   sctext = gxk_scroll_text_create (GXK_SCROLL_TEXT_NAVIGATABLE | flags, NULL);
   gxk_scroll_text_enter (sctext, title);
   for (i = 1; i < argc; i++)

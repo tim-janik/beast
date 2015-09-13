@@ -2,7 +2,7 @@
 #include "bsegconfig.hh"
 #include "bseserver.hh"
 #include "bsepcmdevice.hh"	/* for frequency alignment */
-#include "data/config-paths.h"
+#include "../configure.h"
 #include <sys/types.h>
 #include <regex.h>
 
@@ -45,7 +45,7 @@ _bse_gconfig_init (void)
 static const char*
 intern_path_user_data ()
 {
-  return g_intern_strconcat (BSE_PATH_USER_DATA ("/"), "", NULL);
+  return g_intern_strconcat (bse_installpath (BSE_INSTALLPATH_USER_DATA).c_str(), "", NULL);
 }
 
 static const char*

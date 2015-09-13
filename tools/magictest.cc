@@ -1,6 +1,5 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include <bse/bsemain.hh>
-#include "topconfig.h"
 #include <bse/gslmagic.hh>
 #include <bse/gslcommon.hh>
 #include <bse/bseloader.hh>

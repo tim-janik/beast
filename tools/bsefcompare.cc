@@ -13,8 +13,6 @@
 #include <fcntl.h>
 #include <string.h>
 
-#include "topconfig.h"
-
 #include <map>
 #include <string>
 #include <vector>
@@ -119,7 +117,7 @@ Options::parse (int   *argc_p,
       else if (strcmp (argv[i], "--version") == 0 ||
                strcmp (argv[i], "-v") == 0)
         {
-          printf ("%s %s\n", program_name.c_str(), BST_VERSION);
+          printf ("%s %s\n", program_name.c_str(), bse_version().c_str());
           exit (0);
         }
       else if (check_arg (argc, argv, &i, "--compact"))

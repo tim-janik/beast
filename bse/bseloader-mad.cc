@@ -1,5 +1,5 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
-#include "topconfig.h"
+#include "../configure.h"
 #include "bse/bseloader.hh"
 #include "gsldatahandle-mad.hh"
 

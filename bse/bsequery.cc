@@ -1,16 +1,15 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
-#include        "bsecategories.hh"
-#include        "bsesource.hh"
-#include        "bseprocedure.hh"
-#include        "bsemain.hh"
-#include        "bsestandardsynths.hh"
-#include        "topconfig.h"
-#include	<stdio.h>
-#include	<stdlib.h>
-#include	<string.h>
-#include	<unistd.h>
-#include	<sys/stat.h>
-#include	<fcntl.h>
+#include "bsecategories.hh"
+#include "bsesource.hh"
+#include "bseprocedure.hh"
+#include "bsemain.hh"
+#include "bsestandardsynths.hh"
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+#include <sys/stat.h>
+#include <fcntl.h>
 
 static gchar *indent_inc = NULL;
 static guint spacing = 1;

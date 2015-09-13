@@ -100,7 +100,6 @@ bst_gconfig_push_updates (void)
 #include <unistd.h>
 #include <fcntl.h>
 #include <errno.h>
-#include "topconfig.h"		/* BST_VERSION */
 #include <sfi/sfistore.hh>	/* we rely on internal API here */
 static void
 accel_map_print (gpointer        data,
@@ -155,7 +154,7 @@ bst_rc_dump (const gchar *file_name)
 
   wstore = sfi_wstore_new ();
 
-  sfi_wstore_printf (wstore, "; rc-file for BEAST v%s\n", BST_VERSION);
+  sfi_wstore_printf (wstore, "; rc-file for BEAST v%s\n", bse_version().c_str());
 
   /* store BstGConfig */
   sfi_wstore_puts (wstore, "\n; BstGConfig Dump\n");

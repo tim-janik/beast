@@ -16,7 +16,7 @@ DOC_VERSION = $(or $(DSC_VERSION), $(VERSION))
 EXTRA_DIST += bse-categories.txt interpolation.txt ChangeLog.svn
 
 # == Doxygen Install Rules ==
-htmldocsbase  = ${docdir}
+htmldocsbase  = $(pkgdocdir)
 htmldocsdir   = ${htmldocsbase}/html
 htmldocs_DATA = html/doc-version		# build dependency for doxygen docs
 htmlparent    = $(if $(findstring \#, ..\@INGIT@..), $(srcdir), $(builddir))

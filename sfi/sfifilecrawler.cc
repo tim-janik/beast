@@ -2,7 +2,6 @@
 #include "sfifilecrawler.hh"
 #include "sfiprimitives.hh"
 #include "sfiwrapper.hh"
-#include "topconfig.h"
 #include <string.h>
 #include <sys/types.h>
 #include <dirent.h>

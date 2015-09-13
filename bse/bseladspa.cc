@@ -634,15 +634,13 @@ bse_ladspa_plugin_check_load (const gchar *file_name)
   return error;
 }
 
-#include "topconfig.h"
-
 extern "C" SfiRing*
 bse_ladspa_plugin_path_list_files (void)
 {
   SfiRing *ring1, *ring2 = NULL, *ring3 = NULL;
   const gchar *paths;
 
-  ring1 = sfi_file_crawler_list_files (BSE_PATH_LADSPA, "*.so", GFileTest (0));
+  ring1 = sfi_file_crawler_list_files (bse_installpath (BSE_INSTALLPATH_LADSPA).c_str(), "*.so", GFileTest (0));
   ring1 = sfi_ring_sort (ring1, (SfiCompareFunc) strcmp, NULL);
 
   paths = g_getenv ("LADSPA_PATH");

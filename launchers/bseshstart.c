@@ -1,6 +1,6 @@
 // CC0 Public Domain: http://creativecommons.org/publicdomain/zero/1.0/
-#include "topconfig.h"  /* holds HAVE_SETEUID etc... */
 #include "suidmain.h"
+#include "../configure.h"       // BIN_VERSION
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>

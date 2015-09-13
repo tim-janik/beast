@@ -7,7 +7,6 @@
 #include "gsldatahandle.hh"
 #include "bseserver.hh"
 #include "bseloader.hh"
-#include "topconfig.h"
 
 #include <string.h>
 
@@ -268,7 +267,7 @@ bse_wave_load_wave_file (BseWave      *self,
       if (bse_main_args->override_sample_path)
 	sample_path = bse_main_args->override_sample_path;
       else
-	sample_path = Rapicorn::Path::searchpath_join (BSE_PATH_SAMPLES, BSE_GCONFIG (sample_path));
+	sample_path = Rapicorn::Path::searchpath_join (bse_installpath (BSE_INSTALLPATH_PKGDATADIR_SAMPLES), BSE_GCONFIG (sample_path));
       files = sfi_file_crawler_list_files (sample_path.c_str(), file_name, G_FILE_TEST_IS_REGULAR);
 
       for (walk = files; walk; walk = sfi_ring_walk (files, walk))

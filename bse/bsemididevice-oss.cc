@@ -4,7 +4,6 @@
 #include "bsemididecoder.hh"
 #include "gslcommon.hh" // FIXME: remove
 #include "bsesequencer.hh"
-#include "topconfig.h"
 
 #ifndef	BSE_MIDI_DEVICE_CONF_OSS
 BSE_DUMMY_TYPE (BseMidiDeviceOSS);

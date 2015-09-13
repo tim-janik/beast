@@ -33,7 +33,7 @@ EXTRA_DIST += bsescminterp.hh
 #
 # scripts
 #
-shellscriptdir = $(bsescriptdir)
+shellscriptdir = $(pkgdatadir)/scripts
 shellscript_DATA = bse-scm-glue.boot
 
 EXTRA_DIST += $(shellscript_DATA)

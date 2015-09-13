@@ -1,6 +1,6 @@
 // CC0 Public Domain: http://creativecommons.org/publicdomain/zero/1.0/
-#include "topconfig.h"  /* holds HAVE_SETEUID etc... */
 #include "suidmain.h"
+#include "../configure.h"  // HAVE_SETEUID, HAVE_SETREUID
 #include <sys/time.h>
 #include <sys/resource.h>
 #include <unistd.h>

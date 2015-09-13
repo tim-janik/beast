@@ -5,6 +5,6 @@ keys_DATA = $(strip		\
 	keyrc.de		\
 	keyrc.us		\
 )
-keysdir = $(beastkeysdir)
+keysdir = $(pkgdatadir)/keys
 
 EXTRA_DIST += $(keys_DATA)

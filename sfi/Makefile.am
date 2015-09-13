@@ -35,7 +35,7 @@ $(sfi_all_sources): $(sfi_built_sources)
 
 # SFI library
 noinst_LTLIBRARIES    = libsfi.la
-libsfiincludedir      = $(includedir)/sfi
+libsfiincludedir      = $(pkgincludedir)/sfi
 libsfiinclude_HEADERS = $(sfi_public_headers)
 libsfi_la_SOURCES     = $(sfi_all_sources)
 libsfi_la_LDFLAGS     = $(AM_LDFLAGS) -no-undefined # -Wl,-Bsymbolic

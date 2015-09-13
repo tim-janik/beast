@@ -1,6 +1,5 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bsttreestores.hh"
-#include "topconfig.h"
 #include <string.h>
 
 typedef void (*ListenerFunc) (GtkTreeModel *model, SfiProxy item, gboolean added);
