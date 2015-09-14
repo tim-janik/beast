@@ -44,16 +44,13 @@ test_option = test `echo ":$(strip $(1)):" | sed 's/.*:$(strip $(2))://g' | wc -
       `echo ":$(strip $(1)):" | sed 's/.*:$(or $(strip $(3)), no-$(strip $(2)))://g' | wc -c`
 
 # == ChangeLog & Release Rules ==
-ChangeLog:	$(shell $(srcdir)/mkrelease.sh commit-stamps)
-	$(srcdir)/mkrelease.sh ChangeLog -R ce584d04999a7fb9393e1cfedde2048ba73e8878..HEAD
-noinst_DATA += ChangeLog
+ChangeLog: $(GITSTAMPS)
+	$(AM_V_GEN)
+	$(Q) git log --date=short --pretty='^^%ad  %an 	# %h%n%n%B%n' --abbrev=11 --first-parent \
+		ce584d04999a7fb9393e1cfedde2048ba73e8878..HEAD   > xgen-$(@F) # Generate ChangeLog with ^^-prefixed records
+	$(Q) sed 's/^/	/; s/^	^^// ; s/[[:space:]]\+$$// '    -i xgen-$(@F) # Tab-indent commit bodies, kill trailing whitespaces
+	$(Q) sed '/^\s*$$/{ N; /^\s*\n\s*$$/D }'                -i xgen-$(@F) # Compress multiple newlines
+	$(Q) mv xgen-$(@F) $@
+noinst_DATA          += ChangeLog
 MAINTAINERCLEANFILES += ChangeLog
-EXTRA_DIST  += ChangeLog mkrelease.sh
-release-news:
-	@$(srcdir)/mkrelease.sh news --first-parent --body
-release-check:
-	@echo "Checking for unlisted contributors..."
-	@$(srcdir)/mkrelease.sh contributors -X -B timj,stw -C $(srcdir)/beast-gtk/bstmain.c
-release-upload: ChangeLog
-	$(srcdir)/mkrelease.sh upload -U testbit:pub/dists/beast/v0.9/ -E configure.ac
-.PHONY: release-news release-check release-upload
+EXTRA_DIST           += ChangeLog
