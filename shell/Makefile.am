@@ -1,4 +1,4 @@
-# SHELL - Better Sound Engine Shell
+# BEAST & BSE
 include $(top_srcdir)/Makefile.decl
 
 AM_CPPFLAGS += -I$(top_srcdir) -I. -I$(top_builddir)

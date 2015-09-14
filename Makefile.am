@@ -1,4 +1,4 @@
-# BEAST/BSE - Better Audio System / Better Sound Engine
+# BEAST & BSE
 include $(top_srcdir)/Makefile.decl
 
 SUBDIRS = . data sfi bse plugins drivers shell beast-gtk launchers library tools po tests docs

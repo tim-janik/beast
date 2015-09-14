@@ -1,7 +1,4 @@
-# BEAST/BSE - Better Audio System / Better Sound Engine
-# Copyright (C) 2006 Tim Janik
-#
-## GNU Lesser General Public License version 2 or any later version.
+# BEAST & BSE
 
 # declare variables that we might want to use += on.
 EXTRA_HEADERS=
