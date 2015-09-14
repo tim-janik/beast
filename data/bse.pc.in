@@ -15,8 +15,8 @@ driverdir=@pkglibdir@/drivers
 effectdir=@pkgdatadir@/effects
 instrumentdir=@pkgdatadir@/instruments
 
-Name: BSE
-Description: Better Sound Engine (Synthesis Core)
+Name: Beast & Bse
+Description: Beast & Bse are an audio tracker and audio synthesis engine.
 Requires: @BSE_PC_REQUIRE@ gobject-2.0 gmodule-2.0
 Version: @BST_VERSION@
 Libs: -L${libdir} -lbse-@BST_VERSION_STEM@ @BSE_PC_LIBS@

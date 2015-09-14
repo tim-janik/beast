@@ -1,16 +1,16 @@
 BSE Driver Package
 ==================
 
-This is a BSE (Better Sound Engine) plugin/driver package.  In order to
-build this package, you need recent versions of BSE (>=0.6.4) and PortAudioV19.
+This is a Beast & Bse driver plugin package.  In order to build this
+package, you need recent versions of Beast (>=0.6.4) and PortAudioV19.
 
 PortAudio (>= V19):
   http://www.portaudio.com/
 
-The official ftp site for BEAST/BSE is:
+The official ftp site for Beast & Bse is:
   ftp://beast.testbit.eu/pub/beast
 
-The official web site for BEAST/BSE is:
+The official web site for Beast & Bse is:
   http://beast.testbit.eu/
 
 There also is a mailing list for the project (beast@gnome.org):
@@ -28,7 +28,7 @@ build from this package will be installed under the drivers/. subdirectory of
 an existing libbse installation. The exact installation location can be found
 out via pkg-config with:
 
-  pkg-config --variable=driverdir bse	
+  pkg-config --variable=driverdir bse
 
 For general installation instructions, see the file `INSTALL'.
 
@@ -39,7 +39,7 @@ Known Issues with this Version
 
   Since PortAudioV19 has not publically been released yet, this driver
   currently depends on CVS snapshots which can be obtained from:
-  
+
       http://www.portaudio.com/archives/pa_snapshot_v19.tar.gz
 
 * The BSE-PortAudio is largly untested
@@ -51,7 +51,7 @@ Known Issues with this Version
   but PortAudio can be initialized using:
 
       $ beast -p portaudio=oss:0,wo
-  
+
   to use the writeonly mode which really is supposed to work.
 
 * The default device used may not be right
@@ -61,7 +61,7 @@ Known Issues with this Version
   Thus starting BEAST with:
 
       $ beast -p portaudio
-  
+
   BEAST may or may not be using the default PortAudio driver. For now, you
   may want to explicitely specify the driver to use, since the "default"
   option of the PortAudio driver is also not implemented correctly (it will
@@ -74,11 +74,11 @@ Known Issues with this Version
   very deeply, but it looks like PortAudio should be patched to fix this.
 
 * Feedback request
-  
+
   Please let us know any issues you have with the driver, as mentioned above,
   we're interested in working and non-wroking driver reports.
   Feedback should be send to the BEAST mailing list:
-  
+
   	EMail:   beast@gnome.org
   	List:    http://mail.gnome.org/mailman/listinfo/beast/
   	Archive: http://mail.gnome.org/archives/beast/

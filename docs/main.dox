@@ -6,9 +6,9 @@
 - <a href="beast-ChangeLog.html"><b>ChangeLog</b></a> - Beast Development ChangeLog
 
 @section manpages Manual Pages
-- <a href="beast.1.html"><b>Beast</b></a> - Better Audio System
+- <a href="beast.1.html"><b>Beast</b></a> - BSE Equipped Audio Synthesizer and Tracker
 - <a href="bsewavetool.1.html"><b>Bsewavetool</b></a> - A tool for editing the native multisample format of Beast and Bse
-- <a href="bse.5.html"><b>BSE</b></a> - Better Sound Engine File Format
+- <a href="bse.5.html"><b>BSE</b></a> - Beast Sound Engine (file format)
 - <a href="bsescm.1.html"><b>Bsescm</b></a> - BSE Scheme Shell
 - <a href="sfidl.1.html"><b>Sfidl</b></a> - SFI IDL Compiler
 

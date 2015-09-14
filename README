@@ -1,35 +1,35 @@
 General Information
 ===================
 
-This is a development version of BEAST, the BEtter Audio SysTem.
-BEAST is a powerful music composition and modular synthesis application
-released as free software under the GNU LGPL, that runs under Unix.
-More information about the project can can be found on the website
-and in the documentation.
+This is the development version of Beast & Bse. BEAST is the BSE
+Equipped Audio Synthesizer and Tracker, and BSE is the Beast Sound Engine.
+Beast is a music composition and modular synthesis application, that is
+released as Free Software under the GNU LGPL and runs under Unix.
 
-Beast is a soft realtime application which needs elevated CPU
-scheduling priorities. It installs a small suid wrapper which
-acquires nice level -20 and then immediately drops privileges.
+Beast is a soft realtime application which needs elevated CPU scheduling
+priorities to avoid audio glitches and drop outs. For this purpose, it
+installs a small uid wrapper which acquires nice level -20 for the
+synthesis threads and then immediately drops privileges.
 For Linux kernels of the 2.6.x series and later, this enables the
-low-latency scheduling behavior needed to avoid audio drop outs,
+low-latency scheduling behavior needed to avoid audio artefacts,
 this kernel series is therefore recommended for operating Beast.
 
-In order to build release tarballs, Rapicorn-14.10, the GnomeCanvas,
+In order to build release tarballs, Rapicorn, the GnomeCanvas,
 Guile, the Ogg/Vorbis Codec libraries and libflac are required.
 Support for MP3 files is optional and requires libmad (MPEG audio
-decoder library) when compiling BEAST.
+decoder library) when compiling Beast.
 
-The web site, download and forums for BEAST are:
+The web site, download and forums for Beast are:
   http://beast.testbit.eu/
   http://beast.testbit.eu/beast-ftp/
   http://mail.gnome.org/mailman/listinfo/beast/ (beast@gnome.org)
   #beast on GimpNet (irc.gimp.org:6666)
 
-BEAST also supports the LADSPA plugin API, so various kinds of third
-party plugins can be loaded and executed by BEAST. LADSPA plugins are
+Beast also supports the LADSPA plugin API, so various kinds of third
+party plugins can be loaded and executed by Beast. LADSPA plugins are
 available from:
 	http://www.ladspa.org
-BEAST will look for LADSPA plugins under lib/ladspa/ inside it's own
+Beast will look for LADSPA plugins under lib/ladspa/ inside it's own
 installation prefix, and in the directories listed in $LADSPA_PATH.
 
 
