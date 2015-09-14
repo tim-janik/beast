@@ -21,6 +21,12 @@ QSTDERR = $(Q:@=2>/dev/null)
 AM_CFLAGS   += -D_BIRNET_SOURCE_EXTENSIONS
 AM_CXXFLAGS += -D_BIRNET_SOURCE_EXTENSIONS
 
+# == GITSTAMPS ==
+# list of stamp files touched by commits
+GITSTAMPS = $(shell test -e "$${GIT_DIR:-.git}" && \
+		ls 2>/dev/null "$${GIT_DIR:-.git}/`git symbolic-ref -q HEAD || \
+		echo HEAD`" "$${GIT_DIR:-.git}/packed-refs" "$${GIT_DIR:-.git}/HEAD")
+
 # == download ==
 # recursive rule supported by all Makefiles to download files hosted online
 .PHONY: download download-recursive download-local
