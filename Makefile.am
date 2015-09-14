@@ -51,6 +51,7 @@ ChangeLog: $(GITSTAMPS)
 	$(Q) sed 's/^/	/; s/^	^^// ; s/[[:space:]]\+$$// '    -i xgen-$(@F) # Tab-indent commit bodies, kill trailing whitespaces
 	$(Q) sed '/^\s*$$/{ N; /^\s*\n\s*$$/D }'                -i xgen-$(@F) # Compress multiple newlines
 	$(Q) mv xgen-$(@F) $@
+	$(Q) test -s $@ || { mv $@ $@.empty ; ls -al --full-time $@.empty ; exit 1 ; }
 noinst_DATA          += ChangeLog
 MAINTAINERCLEANFILES += ChangeLog
 EXTRA_DIST           += ChangeLog
