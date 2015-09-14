@@ -1,4 +1,4 @@
-/* BSE - Better Sound Engine
+/* BSE - Beast Sound Engine
  * Copyright (C) 2006 Tim Janik
  * Copyright (C) 1984, 1987, 1988, 1989, 1995, 2000 Stephen L. Moshier
  *
