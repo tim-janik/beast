@@ -354,7 +354,7 @@ bseprocidl_SOURCES = bseprocidl.cc
 bseprocidl_LDADD   = $(progs_LDADD)
 
 noinst_PROGRAMS += bsequery
-bsequery_SOURCES = bsequery.cc cxxdummy.cc
+bsequery_SOURCES = bsequery.cc
 bsequery_LDADD   = $(progs_LDADD)
 
 noinst_PROGRAMS   += bseautodoc
