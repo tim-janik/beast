@@ -641,10 +641,11 @@ if test x"$enable_devel_mode" = xyes ; then
     AC_MSG_ERROR([development build rules require a beast.git repository])
   }
   MC_ASSERT_PROG(XMLLINT, xmllint, [See: http://xmlsoft.org/xmllint.html])
-  MC_ASSERT_PROG(PYTHON, python2.7)
-  if test -z "$PYTHON" || $PYTHON -c "import sys; sys.exit (sys.hexversion >= 0x2070500)" 2>/dev/null ; then
-     AC_MSG_ERROR([failed to detect python (version >= 2.7.5) required for development mode])
-  fi
+fi
+
+MC_ASSERT_PROG(PYTHON, python2.7)
+if test -z "$PYTHON" || $PYTHON -c "import sys; sys.exit (sys.hexversion >= 0x2070500)" 2>/dev/null ; then
+  AC_MSG_ERROR([failed to detect python (version >= 2.7.5) required for development mode])
 fi
 
 AC_MSG_CHECKING(whether source dir equals build dir)
