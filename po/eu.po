@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: eu\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-10-28 14:17+0100\n"
+"POT-Creation-Date: 2015-09-16 00:42+0200\n"
 "PO-Revision-Date: 2006-08-08 17:07+0000\n"
 "Last-Translator: Iñaki Larrañaga Murgoitio <dooteo@euskalgnu.org>\n"
 "Language-Team: Basque <itzulpena@euskalgnu.org>\n"
@@ -21,54 +21,54 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "\n"
 
-#: bse/bsemain.cc:218
+#: bse/bsemain.cc:146
 msgid ""
 "\n"
 "Available MIDI drivers:\n"
 msgstr ""
 
-#: bse/bsemain.cc:216
+#: bse/bsemain.cc:144
 msgid ""
 "\n"
 "Available PCM drivers:\n"
 msgstr ""
 
-#: beast-gtk/bstpatterncolumns.cc:705
+#: beast-gtk/bstpatterncolumns.cc:702
 msgid "  allow folding the column into left/right neighbour"
 msgstr "  zutabea ezkerrekoan/eskuinekoan tolestea onartzen du"
 
-#: beast-gtk/bstpatterncolumns.cc:701
+#: beast-gtk/bstpatterncolumns.cc:698
 msgid "  display 2 (-99..+99) or 3 (-999..+999) digit signed decimal numbers"
 msgstr ""
 "  2 (-99..+99) edo 3 (-999..+999) digituko zeinudun zenbaki hamartarrak "
 "bistaratzen ditu"
 
-#: beast-gtk/bstpatterncolumns.cc:697
+#: beast-gtk/bstpatterncolumns.cc:694
 msgid "  display 2 (-FF..+FF) or 4 (-FFFF..+FFFF) digit signed hex numbers"
 msgstr ""
 "  2 (-FF..+FF) edo 4 (-FFFF..+FFFF) digituko zeinudun zenbaki hamaseitarrak "
 "bistaratzen ditu"
 
-#: beast-gtk/bstpatterncolumns.cc:699
+#: beast-gtk/bstpatterncolumns.cc:696
 msgid "  display 2 (00..99) or 3 (000..999) digit decimal numbers"
 msgstr ""
 "  2 (00..99) edo 3 (000..999) digituko zenbaki hamartarrak bistaratzen ditu"
 
-#: beast-gtk/bstpatterncolumns.cc:695
+#: beast-gtk/bstpatterncolumns.cc:692
 msgid "  display 2 (00..FF) or 4 (0000..FFFF) digit hex numbers"
 msgstr ""
 "  2 (00..FF) edo 4 (0000..FFFF) digituko zenbaki hamaseitarrak bistaratzen "
 "ditu"
 
-#: beast-gtk/bstpatterncolumns.cc:688
+#: beast-gtk/bstpatterncolumns.cc:685
 msgid "  display dotted vertical bar"
 msgstr "  puntukatutako barra bertikala bistaratzen du"
 
-#: beast-gtk/bstpatterncolumns.cc:680
+#: beast-gtk/bstpatterncolumns.cc:677
 msgid "  display notes of the first, second, ... channel"
 msgstr "  lehen, bigarren... kanaleko notak bistaratzen ditu"
 
-#: beast-gtk/bstpatterncolumns.cc:682
+#: beast-gtk/bstpatterncolumns.cc:679
 msgid ""
 "  display offset, length or velocity of notes in the first, second, ... "
 "channel"
@@ -76,20 +76,20 @@ msgstr ""
 "  lehen, bigarren... kanaleko noten desplazamendua, luzera edo abiadura "
 "bistaratzen du"
 
-#: beast-gtk/bstpatterncolumns.cc:686
+#: beast-gtk/bstpatterncolumns.cc:683
 msgid "  display solid vertical bar"
 msgstr "  barra bertikal solidoa bistaratzen du"
 
-#: beast-gtk/bstpatterncolumns.cc:690
+#: beast-gtk/bstpatterncolumns.cc:687
 msgid "  insert vertical space"
 msgstr "  zuriune bertikala txertatzen du"
 
-#: beast-gtk/bstpatterncolumns.cc:684
+#: beast-gtk/bstpatterncolumns.cc:681
 msgid "  select various event types (controls, continuous controllers)"
 msgstr ""
 "  hainbat gertaera-mota hautatzen ditu (kontrolak, etengabeko kontroladoreak)"
 
-#: beast-gtk/bstpatterncolumns.cc:703
+#: beast-gtk/bstpatterncolumns.cc:700
 msgid "  selects one of 3 predefined colors"
 msgstr "  haurrez definitutako 3 koloreetako bat hautatzen du"
 
@@ -116,7 +116,7 @@ msgstr ""
 msgid "%s: automation from MIDI control: %s (MIDI channel: %d)"
 msgstr ""
 
-#: beast-gtk/bstcanvassource.cc:978
+#: beast-gtk/bstcanvassource.cc:980
 msgid "(Hint)"
 msgstr "(Iradokizuna)"
 
@@ -255,107 +255,107 @@ msgstr "/Birtualizazioa/Irteera-birtuala"
 msgid "/Virtualization/Virtual Sub Synth"
 msgstr "/Birtualizazioa/Azpisintesi birtuala"
 
-#: beast-gtk/bstrecords.idl:42
+#: beast-gtk/bstapi.idl:38
 msgid "1/1"
 msgstr "1/1"
 
-#: beast-gtk/bstrecords.idl:50
+#: beast-gtk/bstapi.idl:46
 msgid "1/1."
 msgstr "1/1."
 
-#: beast-gtk/bstrecords.idl:49
+#: beast-gtk/bstapi.idl:45
 msgid "1/128"
 msgstr "1/128"
 
-#: beast-gtk/bstrecords.idl:57
+#: beast-gtk/bstapi.idl:53
 msgid "1/128."
 msgstr "1/128."
 
-#: beast-gtk/bstrecords.idl:65
+#: beast-gtk/bstapi.idl:61
 msgid "1/128T"
 msgstr "1/128T"
 
-#: beast-gtk/bstrecords.idl:46
+#: beast-gtk/bstapi.idl:42
 msgid "1/16"
 msgstr "1/16"
 
-#: beast-gtk/bstrecords.idl:54
+#: beast-gtk/bstapi.idl:50
 msgid "1/16."
 msgstr "1/16."
 
-#: beast-gtk/bstrecords.idl:62
+#: beast-gtk/bstapi.idl:58
 msgid "1/16T"
 msgstr "1/16T"
 
-#: beast-gtk/bstrecords.idl:58
+#: beast-gtk/bstapi.idl:54
 msgid "1/1T"
 msgstr "1/1T"
 
-#: beast-gtk/bstrecords.idl:43
+#: beast-gtk/bstapi.idl:39
 msgid "1/2"
 msgstr "1/2"
 
-#: beast-gtk/bstrecords.idl:51
+#: beast-gtk/bstapi.idl:47
 msgid "1/2."
 msgstr "1/2."
 
-#: beast-gtk/bstrecords.idl:59
+#: beast-gtk/bstapi.idl:55
 msgid "1/2T"
 msgstr "1/2T"
 
-#: beast-gtk/bstrecords.idl:47
+#: beast-gtk/bstapi.idl:43
 msgid "1/32"
 msgstr "1/32"
 
-#: beast-gtk/bstrecords.idl:55
+#: beast-gtk/bstapi.idl:51
 msgid "1/32."
 msgstr "1/32."
 
-#: beast-gtk/bstrecords.idl:63
+#: beast-gtk/bstapi.idl:59
 msgid "1/32T"
 msgstr "1/32T"
 
-#: beast-gtk/bstrecords.idl:44
+#: beast-gtk/bstapi.idl:40
 msgid "1/4"
 msgstr "1/4"
 
-#: beast-gtk/bstrecords.idl:52
+#: beast-gtk/bstapi.idl:48
 msgid "1/4."
 msgstr "1/4."
 
-#: beast-gtk/bstrecords.idl:60
+#: beast-gtk/bstapi.idl:56
 msgid "1/4T"
 msgstr "1/4T"
 
-#: beast-gtk/bstrecords.idl:48
+#: beast-gtk/bstapi.idl:44
 msgid "1/64"
 msgstr "1/64"
 
-#: beast-gtk/bstrecords.idl:56
+#: beast-gtk/bstapi.idl:52
 msgid "1/64."
 msgstr "1/64."
 
-#: beast-gtk/bstrecords.idl:64
+#: beast-gtk/bstapi.idl:60
 msgid "1/64T"
 msgstr "1/64T"
 
-#: beast-gtk/bstrecords.idl:45
+#: beast-gtk/bstapi.idl:41
 msgid "1/8"
 msgstr "1/8"
 
-#: beast-gtk/bstrecords.idl:53
+#: beast-gtk/bstapi.idl:49
 msgid "1/8."
 msgstr "1/8."
 
-#: beast-gtk/bstrecords.idl:61
+#: beast-gtk/bstapi.idl:57
 msgid "1/8T"
 msgstr "1/8T"
 
-#: beast-gtk/bstrecords.idl:32
+#: beast-gtk/bstapi.idl:27
 msgid "1024 Value FFT Window"
 msgstr ""
 
-#: beast-gtk/bstrecords.idl:80
+#: beast-gtk/bstapi.idl:88
 msgid "12"
 msgstr "12"
 
@@ -364,19 +364,19 @@ msgstr "12"
 msgid "12 Tone Equal Temperament"
 msgstr ""
 
-#: beast-gtk/bstrecords.idl:29
+#: beast-gtk/bstapi.idl:24
 msgid "128 Value FFT Window"
 msgstr ""
 
-#: beast-gtk/bstrecords.idl:72
+#: beast-gtk/bstapi.idl:80
 msgid "16"
 msgstr "16"
 
-#: beast-gtk/bstrecords.idl:26
+#: beast-gtk/bstapi.idl:21
 msgid "16 Value FFT Window"
 msgstr ""
 
-#: beast-gtk/bstrecords.idl:36
+#: beast-gtk/bstapi.idl:31
 msgid "16384 Value FFT Window"
 msgstr ""
 
@@ -420,11 +420,11 @@ msgstr "1\\/64"
 msgid "1\\/8"
 msgstr "1\\/8"
 
-#: beast-gtk/bstrecords.idl:69
+#: beast-gtk/bstapi.idl:77
 msgid "2"
 msgstr ""
 
-#: beast-gtk/bstrecords.idl:73
+#: beast-gtk/bstapi.idl:81
 msgid "2 & 4"
 msgstr ""
 
@@ -436,15 +436,15 @@ msgstr ""
 msgid "2 2/3rd Harmonic"
 msgstr ""
 
-#: beast-gtk/bstrecords.idl:23
+#: beast-gtk/bstapi.idl:18
 msgid "2 Value FFT Window"
 msgstr ""
 
-#: beast-gtk/bstrecords.idl:33
+#: beast-gtk/bstapi.idl:28
 msgid "2048 Value FFT Window"
 msgstr ""
 
-#: beast-gtk/bstrecords.idl:30
+#: beast-gtk/bstapi.idl:25
 msgid "256 Value FFT Window"
 msgstr ""
 
@@ -456,47 +456,47 @@ msgstr ""
 msgid "2nd Harmonic"
 msgstr ""
 
-#: beast-gtk/bstrecords.idl:78
+#: beast-gtk/bstapi.idl:86
 msgid "3"
 msgstr ""
 
-#: beast-gtk/bstrecords.idl:82
+#: beast-gtk/bstapi.idl:90
 msgid "3 & 12"
 msgstr ""
 
-#: beast-gtk/bstrecords.idl:81
+#: beast-gtk/bstapi.idl:89
 msgid "3 & 6"
 msgstr ""
 
-#: beast-gtk/bstrecords.idl:27
+#: beast-gtk/bstapi.idl:22
 msgid "32 Value FFT Window"
 msgstr ""
 
-#: beast-gtk/bstrecords.idl:37
+#: beast-gtk/bstapi.idl:32
 msgid "32768 Value FFT Window"
 msgstr ""
 
-#: beast-gtk/bstrecords.idl:70
+#: beast-gtk/bstapi.idl:78
 msgid "4"
 msgstr ""
 
-#: beast-gtk/bstrecords.idl:75
+#: beast-gtk/bstapi.idl:83
 msgid "4 & 12"
 msgstr ""
 
-#: beast-gtk/bstrecords.idl:76
+#: beast-gtk/bstapi.idl:84
 msgid "4 & 16"
 msgstr ""
 
-#: beast-gtk/bstrecords.idl:74
+#: beast-gtk/bstapi.idl:82
 msgid "4 & 8"
 msgstr ""
 
-#: beast-gtk/bstrecords.idl:24
+#: beast-gtk/bstapi.idl:19
 msgid "4 Value FFT Window"
 msgstr ""
 
-#: beast-gtk/bstrecords.idl:34
+#: beast-gtk/bstapi.idl:29
 msgid "4096 Value FFT Window"
 msgstr ""
 
@@ -520,23 +520,23 @@ msgstr ""
 msgid "5 Tone Equal Temperament"
 msgstr ""
 
-#: beast-gtk/bstrecords.idl:31
+#: beast-gtk/bstapi.idl:26
 msgid "512 Value FFT Window"
 msgstr ""
 
-#: beast-gtk/bstrecords.idl:79
+#: beast-gtk/bstapi.idl:87
 msgid "6"
 msgstr ""
 
-#: beast-gtk/bstrecords.idl:83
+#: beast-gtk/bstapi.idl:91
 msgid "6 & 12"
 msgstr ""
 
-#: beast-gtk/bstrecords.idl:28
+#: beast-gtk/bstapi.idl:23
 msgid "64 Value FFT Window"
 msgstr ""
 
-#: beast-gtk/bstrecords.idl:38
+#: beast-gtk/bstapi.idl:33
 msgid "65536 Value FFT Window"
 msgstr ""
 
@@ -544,19 +544,19 @@ msgstr ""
 msgid "7 Tone Equal Temperament"
 msgstr ""
 
-#: beast-gtk/bstrecords.idl:71
+#: beast-gtk/bstapi.idl:79
 msgid "8"
 msgstr ""
 
-#: beast-gtk/bstrecords.idl:77
+#: beast-gtk/bstapi.idl:85
 msgid "8 & 16"
 msgstr ""
 
-#: beast-gtk/bstrecords.idl:25
+#: beast-gtk/bstapi.idl:20
 msgid "8 Value FFT Window"
 msgstr ""
 
-#: beast-gtk/bstrecords.idl:35
+#: beast-gtk/bstapi.idl:30
 msgid "8192 Value FFT Window"
 msgstr ""
 
@@ -568,76 +568,76 @@ msgstr ""
 msgid "8th Harmonic"
 msgstr ""
 
-#: beast-gtk/bstrecords.idl:32
+#: beast-gtk/bstapi.idl:27
 msgid ""
 "A 1024 value FFT window corresponds to a spectrum with 513 frequency peaks"
 msgstr ""
 
-#: beast-gtk/bstrecords.idl:29
+#: beast-gtk/bstapi.idl:24
 msgid ""
 "A 128 value FFT window corresponds to a spectrum with 65 frequency peaks"
 msgstr ""
 
-#: beast-gtk/bstrecords.idl:26
+#: beast-gtk/bstapi.idl:21
 msgid "A 16 value FFT window corresponds to a spectrum with 9 frequency peaks"
 msgstr ""
 
-#: beast-gtk/bstrecords.idl:36
+#: beast-gtk/bstapi.idl:31
 msgid ""
 "A 16384 value FFT window corresponds to a spectrum with 8193 frequency peaks"
 msgstr ""
 
-#: beast-gtk/bstrecords.idl:23
+#: beast-gtk/bstapi.idl:18
 msgid "A 2 value FFT window corresponds to a spectrum with 2 frequency peaks"
 msgstr ""
 
-#: beast-gtk/bstrecords.idl:33
+#: beast-gtk/bstapi.idl:28
 msgid ""
 "A 2048 value FFT window corresponds to a spectrum with 1025 frequency peaks"
 msgstr ""
 
-#: beast-gtk/bstrecords.idl:30
+#: beast-gtk/bstapi.idl:25
 msgid ""
 "A 256 value FFT window corresponds to a spectrum with 129 frequency peaks"
 msgstr ""
 
-#: beast-gtk/bstrecords.idl:27
+#: beast-gtk/bstapi.idl:22
 msgid "A 32 value FFT window corresponds to a spectrum with 17 frequency peaks"
 msgstr ""
 
-#: beast-gtk/bstrecords.idl:37
+#: beast-gtk/bstapi.idl:32
 msgid ""
 "A 32768 value FFT window corresponds to a spectrum with 16385 frequency peaks"
 msgstr ""
 
-#: beast-gtk/bstrecords.idl:24
+#: beast-gtk/bstapi.idl:19
 msgid "A 4 value FFT window corresponds to a spectrum with 3 frequency peaks"
 msgstr ""
 
-#: beast-gtk/bstrecords.idl:34
+#: beast-gtk/bstapi.idl:29
 msgid ""
 "A 4096 value FFT window corresponds to a spectrum with 2049 frequency peaks"
 msgstr ""
 
-#: beast-gtk/bstrecords.idl:31
+#: beast-gtk/bstapi.idl:26
 msgid ""
 "A 512 value FFT window corresponds to a spectrum with 257 frequency peaks"
 msgstr ""
 
-#: beast-gtk/bstrecords.idl:28
+#: beast-gtk/bstapi.idl:23
 msgid "A 64 value FFT window corresponds to a spectrum with 33 frequency peaks"
 msgstr ""
 
-#: beast-gtk/bstrecords.idl:38
+#: beast-gtk/bstapi.idl:33
 msgid ""
 "A 65536 value FFT window corresponds to a spectrum with 32769 frequency peaks"
 msgstr ""
 
-#: beast-gtk/bstrecords.idl:25
+#: beast-gtk/bstapi.idl:20
 msgid "A 8 value FFT window corresponds to a spectrum with 5 frequency peaks"
 msgstr ""
 
-#: beast-gtk/bstrecords.idl:35
+#: beast-gtk/bstapi.idl:30
 msgid ""
 "A 8192 value FFT window corresponds to a spectrum with 4097 frequency peaks"
 msgstr ""
@@ -658,7 +658,7 @@ msgid ""
 "171 cent steps."
 msgstr ""
 
-#: beast-gtk/bstapp.cc:158
+#: beast-gtk/bstapp.cc:156
 msgid "A guide to synthesis plugin development"
 msgstr "Garapeneko plugin-en laburpenaren gida"
 
@@ -682,12 +682,12 @@ msgstr ""
 msgid "ATAN"
 msgstr ""
 
-#: beast-gtk/bsteventrollctrl.cc:549 beast-gtk/bsteventrollctrl.cc:675
-#: beast-gtk/bstpianorollctrl.cc:794 beast-gtk/bstpianorollctrl.cc:830
+#: beast-gtk/bsteventrollctrl.cc:523 beast-gtk/bsteventrollctrl.cc:647
+#: beast-gtk/bstpianorollctrl.cc:758 beast-gtk/bstpianorollctrl.cc:794
 msgid "Aborted"
 msgstr "Abortatuta"
 
-#: beast-gtk/bsteventrollctrl.cc:684 beast-gtk/bstpianorollctrl.cc:839
+#: beast-gtk/bsteventrollctrl.cc:656 beast-gtk/bstpianorollctrl.cc:803
 msgid "Abortion"
 msgstr "Abortatzea"
 
@@ -707,19 +707,19 @@ msgstr "Audio-irteera anplifikatua"
 msgid "Add"
 msgstr "Gehitu"
 
-#: beast-gtk/bstapp.cc:125
+#: beast-gtk/bstapp.cc:123
 msgid "Add Custom Synthesizer"
 msgstr "Gehitu sintetizadore pertsonalizatua"
 
-#: beast-gtk/bstapp.cc:127
+#: beast-gtk/bstapp.cc:125
 msgid "Add MIDI Synthesizer"
 msgstr "Gehitu MIDI sintetizadorea"
 
-#: bse/bsebus.proc:87
+#: bse/bsebus.proc:89
 msgid "Add a bus to the input list of a bus."
 msgstr ""
 
-#: beast-gtk/bstapp.cc:127
+#: beast-gtk/bstapp.cc:125
 msgid ""
 "Add a new MIDI synthesizer to control an instrument from external MIDI events"
 msgstr ""
@@ -730,7 +730,7 @@ msgstr ""
 msgid "Add a new bus to the mixer"
 msgstr "Gehitu bus berria nahastailean"
 
-#: beast-gtk/bstapp.cc:125
+#: beast-gtk/bstapp.cc:123
 msgid "Add a new synthesizer mesh to be used as effect or instrument in songs"
 msgstr ""
 "Gehitu sintetizadore maila berria efektu edo instrumentu gisa abestietan "
@@ -745,7 +745,7 @@ msgstr "Gehitu beste pista bat kanta honi"
 msgid "Add a track to the input list of a bus."
 msgstr "Gehitu beste pista bat kanta honi"
 
-#: beast-gtk/bstparam-searchpath.cc:113
+#: beast-gtk/bstparam-searchpath.cc:112
 msgid "Add directory to searchpath"
 msgstr ""
 
@@ -757,11 +757,11 @@ msgstr ""
 msgid "Add reeds sound"
 msgstr ""
 
-#: beast-gtk/bstsupershell.cc:202
+#: beast-gtk/bstsupershell.cc:198
 msgid "Add, edit and connect synthesizer mesh components"
 msgstr ""
 
-#: beast-gtk/bstkeybindings.cc:34
+#: beast-gtk/bstkeybindings.cc:33
 msgid "Add..."
 msgstr "Gehitu..."
 
@@ -770,11 +770,11 @@ msgstr "Gehitu..."
 msgid "Adds the selection from the \"%s\" list to the \"%s\" list"
 msgstr ""
 
-#: beast-gtk/bstscrollgraph.cc:565
+#: beast-gtk/bstscrollgraph.cc:563
 msgid "Adjust FFT window size"
 msgstr ""
 
-#: beast-gtk/bstscrollgraph.cc:562
+#: beast-gtk/bstscrollgraph.cc:560
 msgid "Adjust frequency level threshold"
 msgstr ""
 
@@ -790,15 +790,15 @@ msgstr "Doitu kontrol-seinaleek zenbat eragiten duten irteera-bolumenean"
 msgid "Adjust output balance between left and right"
 msgstr "Doitu ezkerreko eta eskuineko irteeren balantzea"
 
-#: beast-gtk/bstapp.cc:86
+#: beast-gtk/bstapp.cc:84
 msgid "Adjust overall program behaviour"
 msgstr "Programa osoaren portaera konfiguratzeko"
 
-#: beast-gtk/bstsupershell.cc:173
+#: beast-gtk/bstsupershell.cc:169
 msgid "Adjust overall song behaviour"
 msgstr ""
 
-#: beast-gtk/bstsupershell.cc:206
+#: beast-gtk/bstsupershell.cc:202
 msgid "Adjust overall synthesizer behaviour"
 msgstr ""
 
@@ -806,7 +806,7 @@ msgstr ""
 msgid "Adjust relative alignment of the values or bars to be drawn"
 msgstr ""
 
-#: beast-gtk/bstpatternctrl.cc:126
+#: beast-gtk/bstpatternctrl.cc:130
 msgid "Adjust the number of rows between each shaded row"
 msgstr ""
 
@@ -817,7 +817,7 @@ msgid ""
 msgstr ""
 
 #. tooltip=
-#: beast-gtk/dialogs/radgets-beast.xml:129
+#: beast-gtk/res/radgets-beast.xml:129
 msgid "Adjust the zoom factor of the router display"
 msgstr "Doitu bideratzailearen bistaratzearen zoom faktorea"
 
@@ -827,7 +827,7 @@ msgstr ""
 
 #: bse/bsebus.cc:859 bse/bsebus.cc:861 bse/bsebus.cc:863 bse/bsebus.cc:865
 #: bse/bsebus.cc:869 bse/bsemidisynth.cc:442 bse/bsemidisynth.cc:448
-#: bse/bsemidisynth.cc:455 bse/bsetrack.cc:1023
+#: bse/bsemidisynth.cc:455 bse/bsetrack.cc:1024
 msgid "Adjustments"
 msgstr "Doikuntza"
 
@@ -875,13 +875,7 @@ msgstr "Aftertouch"
 msgid "Aftertouch Out"
 msgstr "Aftertouch irteera"
 
-#: beast-gtk/bstrecords.idl:107
-msgid ""
-"Aggresively slows down the periodic update frequency of scopes. Doing this "
-"may be desirable on particularly slow machines."
-msgstr ""
-
-#: beast-gtk/bsteventrollctrl.cc:516 beast-gtk/bsteventrollctrl.cc:549
+#: beast-gtk/bsteventrollctrl.cc:491 beast-gtk/bsteventrollctrl.cc:523
 msgid "Align Control Events"
 msgstr "Lerrokatu kontrol-gertaerak"
 
@@ -902,7 +896,7 @@ msgstr ""
 msgid "Amplified audio output"
 msgstr "Audio-irteera anplifikatua"
 
-#: bse/bseserver.cc:451
+#: bse/bseserver.cc:433
 msgid ""
 "An audio project is in use which processes an audio input signal, but the "
 "audio device has not been opened in recording mode. An audio signal of "
@@ -915,22 +909,22 @@ msgstr ""
 msgid "An error occoured during execution of script procedure '%s': %s"
 msgstr ""
 
-#: bse/bseserver.cc:590
+#: bse/bseserver.cc:572
 msgid ""
 "An error occoured while opening the recording file, selecting a different "
 "file might fix this situation."
 msgstr ""
 
-#: beast-gtk/bstapp.cc:149
+#: beast-gtk/bstapp.cc:147
 msgid "Answers to frequently asked questions"
 msgstr "Maiz egindako galderen erantzuna eskaintzen du"
 
-#: beast-gtk/bstrecords.idl:92
+#: beast-gtk/bstapi.idl:109
 msgid "Anti-Alias"
 msgstr "Antialias-a"
 
 #. tooltip=
-#: beast-gtk/dialogs/radgets-beast.xml:555
+#: beast-gtk/res/radgets-beast.xml:555
 msgid "Apply configuration changes to the pattern editor layout"
 msgstr "Aplikatu konfigurazio-aldaketak eredu-editorearen diseinuan"
 
@@ -975,7 +969,7 @@ msgid ""
 "never exceeded 0 dB."
 msgstr ""
 
-#: bse/bsesubiport.cc:288 bse/bsesuboport.cc:289 bse/bsesubsynth.cc:495
+#: bse/bsesubiport.cc:288 bse/bsesuboport.cc:289 bse/bsesubsynth.cc:493
 msgid "Assignments"
 msgstr "Esleipenak"
 
@@ -1018,7 +1012,7 @@ msgstr "Audioa"
 msgid "Audio Gate"
 msgstr "Audio-irteera"
 
-#: bse/bseserver.cc:503
+#: bse/bseserver.cc:485
 #, fuzzy
 msgid "Audio I/O Failed"
 msgstr "Audio-irteera"
@@ -1113,7 +1107,7 @@ msgstr "Audio-irteera"
 msgid "Audio Output"
 msgstr "Audio-irteera"
 
-#: bse/bseserver.cc:449
+#: bse/bseserver.cc:431
 msgid "Audio Recording Failed"
 msgstr ""
 
@@ -1137,7 +1131,7 @@ msgstr "Audio-irteera"
 msgid "Audio Sum2"
 msgstr "Audio-irteera"
 
-#: bse/bseserver.cc:456
+#: bse/bseserver.cc:438
 #, c-format
 msgid "Audio device \"%s\" is not open for input, audio driver: %s=%s"
 msgstr ""
@@ -1160,7 +1154,7 @@ msgstr "2. audio-sarrera"
 msgid "Author"
 msgstr "Egilea"
 
-#: bse/bseautodoc.cc:339 bse/bseautodoc.cc:413
+#: bse/bseautodoc.cc:338 bse/bseautodoc.cc:412
 msgid "Authors:"
 msgstr "Egileak:"
 
@@ -1191,24 +1185,24 @@ msgid "Available Inputs"
 msgstr "Sarrera erabilgarriak"
 
 #. label=
-#: beast-gtk/dialogs/radgets-beast.xml:235
+#: beast-gtk/res/radgets-beast.xml:235
 msgid "Available Items:"
 msgstr ""
 
-#: bse/bsebus.cc:131 bse/bsetrack.cc:281
+#: bse/bsebus.cc:131 bse/bsetrack.cc:282
 msgid "Available Outputs"
 msgstr "Irteera erabilgarriak"
 
-#: bse/bsemidisynth.cc:214 bse/bsesong.cc:126 bse/bsetrack.cc:277
+#: bse/bsemidisynth.cc:214 bse/bsesong.cc:125 bse/bsetrack.cc:278
 msgid "Available Postprocessors"
 msgstr ""
 
-#: bse/bsemidisynth.cc:210 bse/bsesubsynth.cc:141 bse/bsetrack.cc:273
+#: bse/bsemidisynth.cc:210 bse/bsesubsynth.cc:141 bse/bsetrack.cc:274
 #, fuzzy
 msgid "Available Synthesizers"
 msgstr "_Sintetizadoreak"
 
-#: beast-gtk/bsttrackview.cc:281 bse/bsetrack.cc:264 bse/bsewaveosc.cc:112
+#: beast-gtk/bsttrackview.cc:281 bse/bsetrack.cc:265 bse/bsewaveosc.cc:112
 msgid "Available Waves"
 msgstr ""
 
@@ -1227,21 +1221,21 @@ msgstr ""
 msgid "BEAST"
 msgstr "BEAST"
 
-#: beast-gtk/bstmain.cc:849
+#: beast-gtk/bstmain.cc:879
 msgid "BEAST About"
 msgstr "BEASTi buruz"
 
-#: beast-gtk/bstmain.cc:100
+#: beast-gtk/bstmain.cc:122
 msgid "BEAST Startup"
 msgstr "BEASTen abioa"
 
-#: beast-gtk/bstmain.cc:850
+#: beast-gtk/bstmain.cc:880
 #, c-format
 msgid "BEAST Version %s"
 msgstr "BEASTen %s bertsioa"
 
 #. start BSE core and connect
-#: beast-gtk/bstmain.cc:135
+#: beast-gtk/bstmain.cc:157
 msgid "BSE Core"
 msgstr "BSE nukleoa"
 
@@ -1257,41 +1251,39 @@ msgstr "BSE Multi-Part uhin-fitxategia"
 msgid "BSE Synthesis File"
 msgstr "BSE sintesi-fitxategia"
 
-#: beast-gtk/bstrecords.idl:119 beast-gtk/bstrecords.idl:129
-#: beast-gtk/bstrecords.idl:139
+#: beast-gtk/bstapi.idl:136 beast-gtk/bstapi.idl:146 beast-gtk/bstapi.idl:156
 msgid "Background Color"
 msgstr "Atzeko planoaren kolorea"
 
-#: beast-gtk/bstrecords.idl:117 beast-gtk/bstrecords.idl:127
-#: beast-gtk/bstrecords.idl:137
+#: beast-gtk/bstapi.idl:134 beast-gtk/bstapi.idl:144 beast-gtk/bstapi.idl:154
 msgid "Background Image"
 msgstr "Atzeko planoko irudia"
 
-#: beast-gtk/bstrecords.idl:120
+#: beast-gtk/bstapi.idl:137
 msgid "Background Shade 1"
 msgstr "Atzeko planoko 1. itzala"
 
-#: beast-gtk/bstrecords.idl:121
+#: beast-gtk/bstapi.idl:138
 msgid "Background Shade 2"
 msgstr "Atzeko planoko 2. itzala"
 
-#: beast-gtk/bstrecords.idl:137
+#: beast-gtk/bstapi.idl:154
 msgid "Background image used by the control events editor."
 msgstr "Kontrol-gertaeren editoreak erabilitako atzeko planoko irudia."
 
-#: beast-gtk/bstrecords.idl:117
+#: beast-gtk/bstapi.idl:134
 msgid "Background image used by the pattern editor."
 msgstr "Eredu-editoreak erabilitako atzeko planoko irudia."
 
-#: beast-gtk/bstrecords.idl:127
+#: beast-gtk/bstapi.idl:144
 msgid "Background image used by the piano-roll editor."
 msgstr "Piano-roll editoreak erabilitako atzeko planoko irudia."
 
-#: bse/bseenums.cc:136
+#: bse/bseapi.idl:76
 msgid "Bad loopback"
 msgstr ""
 
-#: bse/bsebasics.idl:128 bse/bsebasics.idl:304 plugins/bseamplifier.idl:36
+#: bse/bseapi.idl:111 bse/bsebasics.idl:123 plugins/bseamplifier.idl:36
 #: plugins/bseamplifier.idl:41 plugins/bsebalance.idl:27
 #: plugins/bsebalance.idl:32
 msgid "Balance"
@@ -1306,7 +1298,7 @@ msgid "Balance control input levels"
 msgstr "Orekatu kontrol-sarreraren mailak"
 
 #. 14bit, continuous controls
-#: bse/bsebasics.idl:120 bse/bsebasics.idl:296
+#: bse/bseapi.idl:103 bse/bsebasics.idl:115
 msgid "Bank Select"
 msgstr "Hautatu bankua"
 
@@ -1315,7 +1307,7 @@ msgstr "Hautatu bankua"
 msgid "Base Frequency"
 msgstr "Oinarri-maiztasuna"
 
-#: beast-gtk/bstpatternctrl.cc:121
+#: beast-gtk/bstpatternctrl.cc:125
 msgid "Base Octave"
 msgstr "Oinarrizko zortziduna"
 
@@ -1327,11 +1319,7 @@ msgstr "Oinarri-bolumena"
 msgid "Base amplification (the control signal adds up to this)"
 msgstr "Oinarri-anplifikazioa (kontrol-seinalea honi gehitzen zaio)"
 
-#: bse/bsesong.cc:744
-msgid "Beats per minute"
-msgstr ""
-
-#: beast-gtk/bstkeybindings.cc:34
+#: beast-gtk/bstkeybindings.cc:33
 msgid "Bind a new key combination to a program function"
 msgstr "Lotu tekla-konbinazio bat programaren funtzio bati"
 
@@ -1339,7 +1327,7 @@ msgstr "Lotu tekla-konbinazio bat programaren funtzio bati"
 msgid "Bit Depth"
 msgstr ""
 
-#: beast-gtk/bstscrollgraph.cc:562
+#: beast-gtk/bstscrollgraph.cc:560
 msgid "Boost"
 msgstr ""
 
@@ -1347,7 +1335,7 @@ msgstr ""
 msgid "Brass Sounds"
 msgstr ""
 
-#: bse/bsebasics.idl:122 bse/bsebasics.idl:298
+#: bse/bseapi.idl:105 bse/bsebasics.idl:117
 msgid "Breath Control"
 msgstr "Arnas-kontrola"
 
@@ -1391,7 +1379,7 @@ msgstr ""
 
 #. Name
 #. label=
-#: beast-gtk/dialogs/radgets-beast.xml:297
+#: beast-gtk/res/radgets-beast.xml:297
 msgid "Bus Name"
 msgstr "Bus-izena"
 
@@ -1401,15 +1389,11 @@ msgid ""
 "master output."
 msgstr ""
 
-#: beast-gtk/bstsupershell.cc:181
+#: beast-gtk/bstsupershell.cc:177
 msgid "Busses"
 msgstr ""
 
-#: bse/bseenums.cc:110
-msgid "CODEC failure"
-msgstr ""
-
-#: beast-gtk/bstpatterncolumns.cc:678
+#: beast-gtk/bstpatterncolumns.cc:675
 msgid "COLUMN TYPES:"
 msgstr "ZUTABE-MOTAK:"
 
@@ -1426,7 +1410,7 @@ msgstr "#PUZ"
 msgid "CPU%"
 msgstr ""
 
-#: beast-gtk/bstapp.cc:630
+#: beast-gtk/bstapp.cc:629
 #, fuzzy
 msgid "Cancel"
 msgstr "_Utzi"
@@ -1439,15 +1423,15 @@ msgstr "Erdiko maiztasuna"
 msgid "Center Frequency Input"
 msgstr "Maiztasun zentralaren sarrera"
 
-#: beast-gtk/bstpatternctrl.cc:322
+#: beast-gtk/bstpatternctrl.cc:328
 msgid "Change the base octave by a given amount"
 msgstr "Aldatu oinarrizko zortziduna zenbateko jakin batez"
 
-#: beast-gtk/bstkeybindings.cc:36
+#: beast-gtk/bstkeybindings.cc:35
 msgid "Change the currently selected key binding"
 msgstr "Aldatu unean hautatutako tekla-konbinazioa"
 
-#: beast-gtk/bstpatternctrl.cc:326
+#: beast-gtk/bstpatternctrl.cc:332
 msgid "Change the numeric focus cell contents (e.g. octave) by a given amount"
 msgstr ""
 "Aldatu foku-gelaxkaren zenbakizko edukia (adib., zortziduna) zenbateko jakin "
@@ -1457,11 +1441,11 @@ msgstr ""
 msgid "Change the organ to sound more brassy"
 msgstr ""
 
-#: beast-gtk/bstkeybindings.cc:36
+#: beast-gtk/bstkeybindings.cc:35
 msgid "Change..."
 msgstr "Aldatu..."
 
-#: beast-gtk/bstapp.cc:625
+#: beast-gtk/bstapp.cc:624
 #, c-format
 msgid ""
 "Changes were made to project \"%s\" since the last time it was saved to disk."
@@ -1477,7 +1461,7 @@ msgid "Channel Hints"
 msgstr "Kanalen iradokizunak"
 
 #. 7bit
-#: bse/bsebasics.idl:115
+#: bse/bseapi.idl:98
 msgid "Channel Pressure"
 msgstr "Kanalaren presioa"
 
@@ -1505,7 +1489,7 @@ msgstr "%u kanala [mugikorra]"
 msgid "Check/ToggleRadio Button"
 msgstr "Egiaztatze-/Txandakatze-botoia"
 
-#: beast-gtk/bstscrollgraph.cc:559
+#: beast-gtk/bstscrollgraph.cc:556
 msgid "Choose display scrolling direction"
 msgstr ""
 
@@ -1526,25 +1510,30 @@ msgstr "Garbitu"
 msgid "Clear the current selection"
 msgstr "Unean hautatutakoa garbitzen du"
 
-#: beast-gtk/bstapp.cc:623
+#: beast-gtk/bstapp.cc:622
 #, c-format
 msgid "Close %s"
 msgstr "Itxi %s"
 
-#: beast-gtk/bstapp.cc:82
+#: beast-gtk/bstapp.cc:80
 msgid "Close all windows and quit"
 msgstr "Itxi leiho guztiak eta irten"
 
-#: beast-gtk/bstapp.cc:72
+#: beast-gtk/bstapp.cc:70
 msgid "Close the project"
 msgstr "Itxi proiektua"
 
+#: bse/bseapi.idl:50
+msgid "Codec failure"
+msgstr ""
+
 #: beast-gtk/bstparam-color-spinner.cc:100
+#: beast-gtk/bstparam-color-spinner.cc:107
 msgid "Color Entry"
 msgstr "Kolore-sarrera"
 
-#: beast-gtk/bstitemview.cc:195 beast-gtk/bsttrackview.cc:609
-#: bse/bseobject.cc:827
+#: beast-gtk/bstitemview.cc:195 beast-gtk/bsttrackview.cc:610
+#: bse/bseobject.cc:873
 msgid "Comment"
 msgstr "Iruzkina"
 
@@ -1559,12 +1548,12 @@ msgid "Compressed audio output 2"
 msgstr "Konprimitutako audio-irteera"
 
 #. label=
-#: beast-gtk/dialogs/radgets-beast.xml:522
+#: beast-gtk/res/radgets-beast.xml:522
 msgid "Configure"
 msgstr "Konfiguratu"
 
 #. tooltip=
-#: beast-gtk/dialogs/radgets-beast.xml:522
+#: beast-gtk/res/radgets-beast.xml:522
 msgid "Configure the column layout of the pattern editor"
 msgstr "Konfiguratu eredu-editorearen zutabe-diseinua"
 
@@ -1573,24 +1562,24 @@ msgstr "Konfiguratu eredu-editorearen zutabe-diseinua"
 msgid "Const Out%u"
 msgstr "Irteera konstantea %u"
 
-#: bse/bsebasics.idl:154
+#: bse/bseapi.idl:137
 msgid "Constant CENTER"
 msgstr ""
 
-#. 14bit, special cased signals
-#: bse/bsebasics.idl:153
+#. 14bit, special case signals
+#: bse/bseapi.idl:136
 msgid "Constant HIGH"
 msgstr ""
 
-#: bse/bsebasics.idl:155
+#: bse/bseapi.idl:138
 msgid "Constant LOW"
 msgstr ""
 
-#: bse/bsebasics.idl:156
+#: bse/bseapi.idl:139
 msgid "Constant Negative CENTER"
 msgstr ""
 
-#: bse/bsebasics.idl:157
+#: bse/bseapi.idl:140
 msgid "Constant Negative HIGH"
 msgstr ""
 
@@ -1613,377 +1602,377 @@ msgstr ""
 msgid "Constant signal value interpreted as frequency value in Hertz"
 msgstr ""
 
-#: beast-gtk/bstfiledialog.cc:162
+#: beast-gtk/bstfiledialog.cc:163
 msgid "Contents"
 msgstr "Edukia"
 
-#: bse/bsebasics.idl:134 bse/bsebasics.idl:310
+#: bse/bseapi.idl:117 bse/bsebasics.idl:129
 msgid "Continuous 14"
 msgstr "14 etengabe"
 
-#: bse/bsebasics.idl:135 bse/bsebasics.idl:311
+#: bse/bseapi.idl:118 bse/bsebasics.idl:130
 msgid "Continuous 15"
 msgstr ""
 
-#: bse/bsebasics.idl:140 bse/bsebasics.idl:316
+#: bse/bseapi.idl:123 bse/bsebasics.idl:135
 msgid "Continuous 20"
 msgstr ""
 
-#: bse/bsebasics.idl:141 bse/bsebasics.idl:317
+#: bse/bseapi.idl:124 bse/bsebasics.idl:136
 msgid "Continuous 21"
 msgstr ""
 
-#: bse/bsebasics.idl:142 bse/bsebasics.idl:318
+#: bse/bseapi.idl:125 bse/bsebasics.idl:137
 msgid "Continuous 22"
 msgstr ""
 
-#: bse/bsebasics.idl:143 bse/bsebasics.idl:319
+#: bse/bseapi.idl:126 bse/bsebasics.idl:138
 msgid "Continuous 23"
 msgstr ""
 
-#: bse/bsebasics.idl:144 bse/bsebasics.idl:320
+#: bse/bseapi.idl:127 bse/bsebasics.idl:139
 msgid "Continuous 24"
 msgstr ""
 
-#: bse/bsebasics.idl:145 bse/bsebasics.idl:321
+#: bse/bseapi.idl:128 bse/bsebasics.idl:140
 msgid "Continuous 25"
 msgstr ""
 
-#: bse/bsebasics.idl:146 bse/bsebasics.idl:322
+#: bse/bseapi.idl:129 bse/bsebasics.idl:141
 msgid "Continuous 26"
 msgstr ""
 
-#: bse/bsebasics.idl:147 bse/bsebasics.idl:323
+#: bse/bseapi.idl:130 bse/bsebasics.idl:142
 msgid "Continuous 27"
 msgstr ""
 
-#: bse/bsebasics.idl:148 bse/bsebasics.idl:324
+#: bse/bseapi.idl:131 bse/bsebasics.idl:143
 msgid "Continuous 28"
 msgstr ""
 
-#: bse/bsebasics.idl:149 bse/bsebasics.idl:325
+#: bse/bseapi.idl:132 bse/bsebasics.idl:144
 msgid "Continuous 29"
 msgstr ""
 
-#: bse/bsebasics.idl:123 bse/bsebasics.idl:299
+#: bse/bseapi.idl:106 bse/bsebasics.idl:118
 msgid "Continuous 3"
 msgstr "3 etengabe"
 
-#: bse/bsebasics.idl:150 bse/bsebasics.idl:326
+#: bse/bseapi.idl:133 bse/bsebasics.idl:145
 msgid "Continuous 30"
 msgstr ""
 
-#: bse/bsebasics.idl:151 bse/bsebasics.idl:327
+#: bse/bseapi.idl:134 bse/bsebasics.idl:146
 msgid "Continuous 31"
 msgstr ""
 
-#: bse/bsebasics.idl:129 bse/bsebasics.idl:305
+#: bse/bseapi.idl:112 bse/bsebasics.idl:124
 msgid "Continuous 9"
 msgstr "9 etengabe"
 
-#: bse/bsebasics.idl:296
+#: bse/bsebasics.idl:115
 msgid "Continuous MIDI Control #1 - Bank Select"
 msgstr ""
 
-#: beast-gtk/bstmain.cc:851
+#: beast-gtk/bstmain.cc:881
 msgid "Contributions made by:"
 msgstr "Kolaboratzaileak:"
 
 #. 7bit, literal channel controls, MSB values
-#: bse/bsebasics.idl:161 bse/bsebasics.idl:329
+#: bse/bseapi.idl:144 bse/bsebasics.idl:148
 msgid "Control 0 Bank Select MSB"
 msgstr ""
 
-#: bse/bsebasics.idl:162 bse/bsebasics.idl:330
+#: bse/bseapi.idl:145 bse/bsebasics.idl:149
 msgid "Control 1 Modulation Depth MSB"
 msgstr ""
 
-#: bse/bsebasics.idl:171 bse/bsebasics.idl:339
+#: bse/bseapi.idl:154 bse/bsebasics.idl:158
 msgid "Control 10 Panorama MSB"
 msgstr ""
 
-#: bse/bsebasics.idl:263 bse/bsebasics.idl:431
+#: bse/bseapi.idl:246 bse/bsebasics.idl:250
 msgid "Control 100 Registered Parameter MSB"
 msgstr ""
 
-#: bse/bsebasics.idl:264 bse/bsebasics.idl:432
+#: bse/bseapi.idl:247 bse/bsebasics.idl:251
 msgid "Control 101 Registered Parameter LSB"
 msgstr ""
 
-#: bse/bsebasics.idl:172 bse/bsebasics.idl:340
+#: bse/bseapi.idl:155 bse/bsebasics.idl:159
 msgid "Control 11 Expression MSB"
 msgstr ""
 
-#: bse/bsebasics.idl:173 bse/bsebasics.idl:341
+#: bse/bseapi.idl:156 bse/bsebasics.idl:160
 msgid "Control 12 Effect Control 1 MSB"
 msgstr ""
 
-#: bse/bsebasics.idl:283 bse/bsebasics.idl:451
+#: bse/bseapi.idl:266 bse/bsebasics.idl:270
 msgid "Control 120 All Sound Off ITrigger"
 msgstr ""
 
-#: bse/bsebasics.idl:284 bse/bsebasics.idl:452
+#: bse/bseapi.idl:267 bse/bsebasics.idl:271
 msgid "Control 121 All Controllers Off ITrigger"
 msgstr ""
 
-#: bse/bsebasics.idl:285 bse/bsebasics.idl:453
+#: bse/bseapi.idl:268 bse/bsebasics.idl:272
 msgid "Control 122 Local Control Switch"
 msgstr ""
 
-#: bse/bsebasics.idl:286 bse/bsebasics.idl:454
+#: bse/bseapi.idl:269 bse/bsebasics.idl:273
 msgid "Control 123 All Notes Off ITrigger"
 msgstr ""
 
-#: bse/bsebasics.idl:287 bse/bsebasics.idl:455
+#: bse/bseapi.idl:270 bse/bsebasics.idl:274
 msgid "Control 124 Omni Mode Off ITrigger"
 msgstr ""
 
-#: bse/bsebasics.idl:288 bse/bsebasics.idl:456
+#: bse/bseapi.idl:271 bse/bsebasics.idl:275
 msgid "Control 125 Omni Mode On ITrigger"
 msgstr ""
 
-#: bse/bsebasics.idl:289 bse/bsebasics.idl:457
+#: bse/bseapi.idl:272 bse/bsebasics.idl:276
 msgid "Control 126 Monophonic Voices Mode"
 msgstr ""
 
-#: bse/bsebasics.idl:290 bse/bsebasics.idl:458
+#: bse/bseapi.idl:273 bse/bsebasics.idl:277
 msgid "Control 127 Polyphonic Mode On ITrigger"
 msgstr ""
 
-#: bse/bsebasics.idl:174 bse/bsebasics.idl:342
+#: bse/bseapi.idl:157 bse/bsebasics.idl:161
 msgid "Control 13 Effect Control 2 MSB"
 msgstr ""
 
-#: bse/bsebasics.idl:177 bse/bsebasics.idl:345
+#: bse/bseapi.idl:160 bse/bsebasics.idl:164
 msgid "Control 16 General Purpose Controller 1 MSB"
 msgstr ""
 
-#: bse/bsebasics.idl:178 bse/bsebasics.idl:346
+#: bse/bseapi.idl:161 bse/bsebasics.idl:165
 msgid "Control 17 General Purpose Controller 2 MSB"
 msgstr ""
 
-#: bse/bsebasics.idl:179 bse/bsebasics.idl:347
+#: bse/bseapi.idl:162 bse/bsebasics.idl:166
 msgid "Control 18 General Purpose Controller 3 MSB"
 msgstr ""
 
-#: bse/bsebasics.idl:180 bse/bsebasics.idl:348
+#: bse/bseapi.idl:163 bse/bsebasics.idl:167
 msgid "Control 19 General Purpose Controller 4 MSB"
 msgstr ""
 
-#: bse/bsebasics.idl:163 bse/bsebasics.idl:331
+#: bse/bseapi.idl:146 bse/bsebasics.idl:150
 msgid "Control 2 Breath Control MSB"
 msgstr ""
 
 #. 7bit, literal channel controls, LSB values
-#: bse/bsebasics.idl:194 bse/bsebasics.idl:362
+#: bse/bseapi.idl:177 bse/bsebasics.idl:181
 msgid "Control 32 Bank Select LSB"
 msgstr ""
 
-#: bse/bsebasics.idl:195 bse/bsebasics.idl:363
+#: bse/bseapi.idl:178 bse/bsebasics.idl:182
 msgid "Control 33 Modulation Depth LSB"
 msgstr ""
 
-#: bse/bsebasics.idl:196 bse/bsebasics.idl:364
+#: bse/bseapi.idl:179 bse/bsebasics.idl:183
 msgid "Control 34 Breath Control LSB"
 msgstr ""
 
-#: bse/bsebasics.idl:198 bse/bsebasics.idl:366
+#: bse/bseapi.idl:181 bse/bsebasics.idl:185
 msgid "Control 36 Foot Controller LSB"
 msgstr ""
 
-#: bse/bsebasics.idl:199 bse/bsebasics.idl:367
+#: bse/bseapi.idl:182 bse/bsebasics.idl:186
 msgid "Control 37 Portamento Time LSB"
 msgstr ""
 
-#: bse/bsebasics.idl:200 bse/bsebasics.idl:368
+#: bse/bseapi.idl:183 bse/bsebasics.idl:187
 msgid "Control 38 Data Entry LSB"
 msgstr ""
 
-#: bse/bsebasics.idl:201 bse/bsebasics.idl:369
+#: bse/bseapi.idl:184 bse/bsebasics.idl:188
 msgid "Control 39 Volume LSB"
 msgstr ""
 
-#: bse/bsebasics.idl:165 bse/bsebasics.idl:333
+#: bse/bseapi.idl:148 bse/bsebasics.idl:152
 msgid "Control 4 Foot Controller MSB"
 msgstr ""
 
-#: bse/bsebasics.idl:202 bse/bsebasics.idl:370
+#: bse/bseapi.idl:185 bse/bsebasics.idl:189
 msgid "Control 40 Balance LSB"
 msgstr ""
 
-#: bse/bsebasics.idl:204 bse/bsebasics.idl:372
+#: bse/bseapi.idl:187 bse/bsebasics.idl:191
 msgid "Control 42 Panorama LSB"
 msgstr ""
 
-#: bse/bsebasics.idl:205 bse/bsebasics.idl:373
+#: bse/bseapi.idl:188 bse/bsebasics.idl:192
 msgid "Control 43 Expression LSB"
 msgstr ""
 
-#: bse/bsebasics.idl:206 bse/bsebasics.idl:374
+#: bse/bseapi.idl:189 bse/bsebasics.idl:193
 msgid "Control 44 Effect Control 1 LSB"
 msgstr ""
 
-#: bse/bsebasics.idl:207 bse/bsebasics.idl:375
+#: bse/bseapi.idl:190 bse/bsebasics.idl:194
 msgid "Control 45 Effect Control 2 LSB"
 msgstr ""
 
-#: bse/bsebasics.idl:210 bse/bsebasics.idl:378
+#: bse/bseapi.idl:193 bse/bsebasics.idl:197
 msgid "Control 48 General Purpose Controller 1 LSB"
 msgstr ""
 
-#: bse/bsebasics.idl:211 bse/bsebasics.idl:379
+#: bse/bseapi.idl:194 bse/bsebasics.idl:198
 msgid "Control 49 General Purpose Controller 2 LSB"
 msgstr ""
 
-#: bse/bsebasics.idl:166 bse/bsebasics.idl:334
+#: bse/bseapi.idl:149 bse/bsebasics.idl:153
 msgid "Control 5 Portamento Time MSB"
 msgstr ""
 
-#: bse/bsebasics.idl:212 bse/bsebasics.idl:380
+#: bse/bseapi.idl:195 bse/bsebasics.idl:199
 msgid "Control 50 General Purpose Controller 3 LSB"
 msgstr ""
 
-#: bse/bsebasics.idl:213 bse/bsebasics.idl:381
+#: bse/bseapi.idl:196 bse/bsebasics.idl:200
 msgid "Control 51 General Purpose Controller 4 LSB"
 msgstr ""
 
-#: bse/bsebasics.idl:167 bse/bsebasics.idl:335
+#: bse/bseapi.idl:150 bse/bsebasics.idl:154
 msgid "Control 6 Data Entry MSB"
 msgstr ""
 
 #. 7bit, literal channel controls
-#: bse/bsebasics.idl:227 bse/bsebasics.idl:395
+#: bse/bseapi.idl:210 bse/bsebasics.idl:214
 msgid "Control 64 Damper Pedal Switch (Sustain)"
 msgstr ""
 
-#: bse/bsebasics.idl:228 bse/bsebasics.idl:396
+#: bse/bseapi.idl:211 bse/bsebasics.idl:215
 msgid "Control 65 Portamento Switch"
 msgstr ""
 
-#: bse/bsebasics.idl:229 bse/bsebasics.idl:397
+#: bse/bseapi.idl:212 bse/bsebasics.idl:216
 #, fuzzy
 msgid "Control 66 Sustenuto Switch"
 msgstr "Kontrolaren indarra"
 
-#: bse/bsebasics.idl:230 bse/bsebasics.idl:398
+#: bse/bseapi.idl:213 bse/bsebasics.idl:217
 #, fuzzy
 msgid "Control 67 Soft Switch"
 msgstr "Kontrolaren indarra"
 
-#: bse/bsebasics.idl:231 bse/bsebasics.idl:399
+#: bse/bseapi.idl:214 bse/bsebasics.idl:218
 msgid "Control 68 Legato Pedal Switch"
 msgstr ""
 
-#: bse/bsebasics.idl:232 bse/bsebasics.idl:400
+#: bse/bseapi.idl:215 bse/bsebasics.idl:219
 msgid "Control 69 Hold Pedal Switch"
 msgstr ""
 
-#: bse/bsebasics.idl:168 bse/bsebasics.idl:336
+#: bse/bseapi.idl:151 bse/bsebasics.idl:155
 msgid "Control 7 Volume MSB"
 msgstr ""
 
-#: bse/bsebasics.idl:233 bse/bsebasics.idl:401
+#: bse/bseapi.idl:216 bse/bsebasics.idl:220
 msgid "Control 70 Sound Variation"
 msgstr ""
 
-#: bse/bsebasics.idl:234 bse/bsebasics.idl:402
+#: bse/bseapi.idl:217 bse/bsebasics.idl:221
 msgid "Control 71 Filter Resonance (Timbre)"
 msgstr ""
 
-#: bse/bsebasics.idl:235 bse/bsebasics.idl:403
+#: bse/bseapi.idl:218 bse/bsebasics.idl:222
 msgid "Control 72 Sound Release Time"
 msgstr ""
 
-#: bse/bsebasics.idl:236 bse/bsebasics.idl:404
+#: bse/bseapi.idl:219 bse/bsebasics.idl:223
 msgid "Control 73 Sound Attack Time"
 msgstr ""
 
-#: bse/bsebasics.idl:237 bse/bsebasics.idl:405
+#: bse/bseapi.idl:220 bse/bsebasics.idl:224
 msgid "Control 74 Sound Brightness"
 msgstr ""
 
-#: bse/bsebasics.idl:238 bse/bsebasics.idl:406
+#: bse/bseapi.idl:221 bse/bsebasics.idl:225
 msgid "Control 75 Sound Decay Time"
 msgstr ""
 
-#: bse/bsebasics.idl:239 bse/bsebasics.idl:407
+#: bse/bseapi.idl:222 bse/bsebasics.idl:226
 msgid "Control 76 Vibrato Rate"
 msgstr ""
 
-#: bse/bsebasics.idl:240 bse/bsebasics.idl:408
+#: bse/bseapi.idl:223 bse/bsebasics.idl:227
 #, fuzzy
 msgid "Control 77 Vibrato Depth"
 msgstr "Kontrolaren indarra"
 
-#: bse/bsebasics.idl:241 bse/bsebasics.idl:409
+#: bse/bseapi.idl:224 bse/bsebasics.idl:228
 msgid "Control 78 Vibrato Delay"
 msgstr ""
 
-#: bse/bsebasics.idl:242 bse/bsebasics.idl:410
+#: bse/bseapi.idl:225 bse/bsebasics.idl:229
 msgid "Control 79 Sound Control 10"
 msgstr ""
 
-#: bse/bsebasics.idl:169 bse/bsebasics.idl:337
+#: bse/bseapi.idl:152 bse/bsebasics.idl:156
 msgid "Control 8 Balance MSB"
 msgstr ""
 
-#: bse/bsebasics.idl:243 bse/bsebasics.idl:411
+#: bse/bseapi.idl:226 bse/bsebasics.idl:230
 msgid "Control 80 General Purpose Switch 5"
 msgstr ""
 
-#: bse/bsebasics.idl:244 bse/bsebasics.idl:412
+#: bse/bseapi.idl:227 bse/bsebasics.idl:231
 msgid "Control 81 General Purpose Switch 6"
 msgstr ""
 
-#: bse/bsebasics.idl:245 bse/bsebasics.idl:413
+#: bse/bseapi.idl:228 bse/bsebasics.idl:232
 msgid "Control 82 General Purpose Switch 7"
 msgstr ""
 
-#: bse/bsebasics.idl:246 bse/bsebasics.idl:414
+#: bse/bseapi.idl:229 bse/bsebasics.idl:233
 msgid "Control 83 General Purpose Switch 8"
 msgstr ""
 
-#: bse/bsebasics.idl:247 bse/bsebasics.idl:415
+#: bse/bseapi.idl:230 bse/bsebasics.idl:234
 msgid "Control 84 Portamento Control (Note)"
 msgstr ""
 
-#: bse/bsebasics.idl:254 bse/bsebasics.idl:422
+#: bse/bseapi.idl:237 bse/bsebasics.idl:241
 #, fuzzy
 msgid "Control 91 Reverb Depth"
 msgstr "Kontrolaren indarra"
 
-#: bse/bsebasics.idl:255 bse/bsebasics.idl:423
+#: bse/bseapi.idl:238 bse/bsebasics.idl:242
 #, fuzzy
 msgid "Control 92 Tremolo Depth"
 msgstr "Kontrolaren indarra"
 
-#: bse/bsebasics.idl:256 bse/bsebasics.idl:424
+#: bse/bseapi.idl:239 bse/bsebasics.idl:243
 #, fuzzy
 msgid "Control 93 Chorus Depth"
 msgstr "Kontrolaren indarra"
 
-#: bse/bsebasics.idl:257 bse/bsebasics.idl:425
+#: bse/bseapi.idl:240 bse/bsebasics.idl:244
 #, fuzzy
 msgid "Control 93 Detune Depth"
 msgstr "Kontrolaren indarra"
 
-#: bse/bsebasics.idl:258 bse/bsebasics.idl:426
+#: bse/bseapi.idl:241 bse/bsebasics.idl:245
 msgid "Control 95 Phase Depth"
 msgstr ""
 
-#: bse/bsebasics.idl:259 bse/bsebasics.idl:427
+#: bse/bseapi.idl:242 bse/bsebasics.idl:246
 msgid "Control 96 Data Increment Trigger"
 msgstr ""
 
-#: bse/bsebasics.idl:260 bse/bsebasics.idl:428
+#: bse/bseapi.idl:243 bse/bsebasics.idl:247
 msgid "Control 97 Data Decrement Trigger"
 msgstr ""
 
-#: bse/bsebasics.idl:261 bse/bsebasics.idl:429
+#: bse/bseapi.idl:244 bse/bsebasics.idl:248
 msgid "Control 98 Non-Registered Parameter MSB"
 msgstr ""
 
-#: bse/bsebasics.idl:262 bse/bsebasics.idl:430
+#: bse/bseapi.idl:245 bse/bsebasics.idl:249
 msgid "Control 99 Non-Registered Parameter LSB"
 msgstr ""
 
@@ -2005,13 +1994,13 @@ msgstr "Kontrol-sarrera"
 msgid "Control Strength"
 msgstr "Kontrolaren indarra"
 
-#: bse/bsesource.proc:722
+#: bse/bsesource.proc:685
 #, fuzzy
 msgid "Control Type"
 msgstr "Kontrol-mota:"
 
 #. label=
-#: beast-gtk/dialogs/radgets-beast.xml:501
+#: beast-gtk/res/radgets-beast.xml:501
 msgid "Control Type:"
 msgstr "Kontrol-mota:"
 
@@ -2019,7 +2008,7 @@ msgstr "Kontrol-mota:"
 msgid "Controller"
 msgstr "Kontroladorea"
 
-#: beast-gtk/bstpatternctrl.cc:122
+#: beast-gtk/bstpatternctrl.cc:126
 msgid "Controls the octave relative to which notes are entered"
 msgstr "Sartutako noten zortziduna kontrolatzen du"
 
@@ -2040,28 +2029,15 @@ msgstr "Objektu honi dagokion Copyright lizentzia"
 msgid "Create Link"
 msgstr "Sortu esteka"
 
-#: bse/bsesong.proc:228
-msgid "Create a new Part in a Song."
-msgstr ""
-
-#: bse/bsesong.proc:297
-#, fuzzy
-msgid "Create a new Track for a Song."
-msgstr "Gehitu beste pista bat kanta honi"
-
-#: bse/bsesong.proc:21
-msgid "Create a new mixer bus for a Song."
-msgstr ""
-
-#: beast-gtk/bstapp.cc:123
+#: beast-gtk/bstapp.cc:121
 msgid "Create a new song, consisting of a mixer, tracks, parts and notes"
 msgstr "Sortu abesti berria, nahastailea, pistak, zatiak eta notaz osatua"
 
-#: beast-gtk/bstapp.cc:113
+#: beast-gtk/bstapp.cc:111
 msgid "Create an extra view of the project"
 msgstr "Sortu proiektuaren ikuspegi gehigarria"
 
-#: beast-gtk/bstapp.cc:64
+#: beast-gtk/bstapp.cc:62
 msgid "Create new project"
 msgstr "Sortu proiektu berria"
 
@@ -2104,7 +2080,7 @@ msgid "Ctrl Out4"
 msgstr "Ktrl irteera4"
 
 #. label=
-#: beast-gtk/dialogs/radgets-beast.xml:276
+#: beast-gtk/res/radgets-beast.xml:276
 msgid "Current Items:"
 msgstr ""
 
@@ -2133,19 +2109,19 @@ msgstr "Mozte-maiztasuna [Hz]"
 msgid "DCA"
 msgstr "DCA"
 
-#: bse/bsepcmdevice-oss.cc:613
+#: bse/bsepcmdevice-oss.cc:611
 msgid "DEVICE,MODE"
 msgstr ""
 
-#: beast-gtk/bstapp.cc:160
+#: beast-gtk/bstapp.cc:158
 msgid "DSP Engine..."
 msgstr "DSP motorra..."
 
-#: bse/bsebasics.idl:126 bse/bsebasics.idl:302
+#: bse/bseapi.idl:109 bse/bsebasics.idl:121
 msgid "Data Entry"
 msgstr "Data-sarrera"
 
-#: bse/bseenums.cc:102
+#: bse/bseapi.idl:42
 msgid "Data corrupt"
 msgstr ""
 
@@ -2177,26 +2153,26 @@ msgstr "Erortzea [%]"
 msgid "Decay [%]"
 msgstr "Erortzea [%]"
 
-#: bse/bsebasics.idl:682
+#: bse/bsebasics.idl:447
 #, fuzzy
 msgid "Default Author"
 msgstr "Egilea"
 
-#: bse/bsebasics.idl:684
+#: bse/bsebasics.idl:449
 #, fuzzy
 msgid "Default License"
 msgstr "Lizentzia"
 
-#: bse/bsebasics.idl:681
+#: bse/bsebasics.idl:446
 #, fuzzy
 msgid "Default Values"
 msgstr "Marraztu balioak"
 
-#: bse/bsebasics.idl:682
+#: bse/bsebasics.idl:447
 msgid "Default value for 'Author' fields"
 msgstr ""
 
-#: bse/bsebasics.idl:684
+#: bse/bsebasics.idl:449
 msgid "Default value for 'License' fields"
 msgstr ""
 
@@ -2205,7 +2181,7 @@ msgid "Delay (seconds)"
 msgstr ""
 
 #: beast-gtk/bstbuseditor.cc:24 beast-gtk/bstbusmixer.cc:21
-#: beast-gtk/bstbusview.cc:20 beast-gtk/bstkeybindings.cc:42
+#: beast-gtk/bstbusview.cc:20 beast-gtk/bstkeybindings.cc:41
 #: beast-gtk/bstpartview.cc:25 beast-gtk/bstpianorollctrl.cc:64
 #: beast-gtk/bstrackitem.cc:196 beast-gtk/bstsnetrouter.cc:688
 #: beast-gtk/bstsnetrouter.cc:736 beast-gtk/bsttrackrollctrl.cc:35
@@ -2213,7 +2189,7 @@ msgstr ""
 msgid "Delete"
 msgstr "Ezabatu"
 
-#: beast-gtk/bsteventrollctrl.cc:638 beast-gtk/bsteventrollctrl.cc:641
+#: beast-gtk/bsteventrollctrl.cc:610 beast-gtk/bsteventrollctrl.cc:613
 msgid "Delete Control Event"
 msgstr "Ezabatu kontrol-gertaera"
 
@@ -2221,25 +2197,13 @@ msgstr "Ezabatu kontrol-gertaera"
 msgid "Delete Link"
 msgstr "Ezabatu esteka"
 
-#: beast-gtk/bstpianorollctrl.cc:733 beast-gtk/bstpianorollctrl.cc:736
+#: beast-gtk/bstpianorollctrl.cc:697 beast-gtk/bstpianorollctrl.cc:700
 msgid "Delete Note"
 msgstr "Ezabatu nota"
 
-#: beast-gtk/bsttrackrollctrl.cc:461 beast-gtk/bsttrackrollctrl.cc:464
+#: beast-gtk/bsttrackrollctrl.cc:463 beast-gtk/bsttrackrollctrl.cc:466
 msgid "Delete Part"
 msgstr "Ezabatu zatia"
-
-#: bse/bsesong.proc:259
-msgid "Delete a Part from a Song."
-msgstr ""
-
-#: bse/bsesong.proc:333
-msgid "Delete a Track from a Song."
-msgstr ""
-
-#: bse/bsesong.proc:58
-msgid "Delete a mixer bus from a Song."
-msgstr ""
 
 #: beast-gtk/bstpianorollctrl.cc:64
 msgid "Delete note (mouse button 1)"
@@ -2249,7 +2213,7 @@ msgstr "Ezabatu nota (saguaren 1. botoia)"
 msgid "Delete parts"
 msgstr "Ezabatu zatiak"
 
-#: beast-gtk/bstapp.cc:103
+#: beast-gtk/bstapp.cc:101
 msgid "Delete the complete undo history"
 msgstr "Desegiteko historia osoa ezabatzen du"
 
@@ -2257,7 +2221,7 @@ msgstr "Desegiteko historia osoa ezabatzen du"
 msgid "Delete the currently selected bus"
 msgstr "Ezabatu unean hautatutako busa"
 
-#: beast-gtk/bstkeybindings.cc:42
+#: beast-gtk/bstkeybindings.cc:41
 msgid "Delete the currently selected key binding"
 msgstr "Ezabatu unean hautatutako tekla-konbinazioa"
 
@@ -2269,11 +2233,11 @@ msgstr "Ezabatu une honetan hautatutako pista"
 msgid "Delete the currently selected wave"
 msgstr "Ezabatu une honetan hautatutako uhina"
 
-#: bse/bsesong.cc:740
+#: bse/bsesong.cc:753
 msgid "Denominator"
 msgstr ""
 
-#: beast-gtk/bstkeybindings.cc:446 beast-gtk/bstprocedure.cc:187
+#: beast-gtk/bstkeybindings.cc:445 beast-gtk/bstprocedure.cc:187
 msgid "Description"
 msgstr "Azalpena"
 
@@ -2281,32 +2245,32 @@ msgstr "Azalpena"
 msgid "Details:"
 msgstr ""
 
-#: beast-gtk/bstfiledialog.cc:126
+#: beast-gtk/bstfiledialog.cc:127
 msgid "Detected file format"
 msgstr ""
 
-#: beast-gtk/bstapp.cc:158
+#: beast-gtk/bstapp.cc:156
 msgid "Developing Plugins..."
 msgstr "Garapeneko plugin-ak..."
 
-#: beast-gtk/bstapp.cc:162
+#: beast-gtk/bstapp.cc:160
 msgid "Development..."
 msgstr "Garapena..."
 
-#: bse/bseenums.cc:119
+#: bse/bseapi.idl:59
 msgid "Device busy"
 msgstr ""
 
-#: bse/bseenums.cc:125
+#: bse/bseapi.idl:65
 msgid "Device configurations mismatch"
 msgstr ""
 
-#: bse/bseenums.cc:118
+#: bse/bseapi.idl:58
 msgid "Device not async capable"
 msgstr ""
 
 #. file errors
-#: bse/bseenums.cc:83
+#: bse/bseapi.idl:23
 msgid "Device or resource busy"
 msgstr ""
 
@@ -2319,7 +2283,7 @@ msgid "Dial (Logarithmic)"
 msgstr "Markatu (Logaritmikoa)"
 
 #. listen to BseServer notification
-#: beast-gtk/bstmain.cc:220
+#: beast-gtk/bstmain.cc:229
 msgid "Dialogs"
 msgstr "Elkarrizketa-koadroak"
 
@@ -2339,11 +2303,11 @@ msgstr ""
 msgid "Difference between audio outputs 1 and 2"
 msgstr ""
 
-#: beast-gtk/bstpatternctrl.cc:112 beast-gtk/bstscrollgraph.cc:559
+#: beast-gtk/bstpatternctrl.cc:116 beast-gtk/bstscrollgraph.cc:556
 msgid "Direction"
 msgstr "Noranzkoa"
 
-#: beast-gtk/bstapp.cc:629
+#: beast-gtk/bstapp.cc:628
 msgid "Discard Changes"
 msgstr ""
 
@@ -2359,7 +2323,7 @@ msgid ""
 msgstr ""
 
 #. tooltip=
-#: beast-gtk/dialogs/radgets-beast.xml:557
+#: beast-gtk/res/radgets-beast.xml:557
 msgid "Discard changes and close dialog"
 msgstr "Desegin aldaketak eta itxi elkarrizketa-koadroa"
 
@@ -2388,15 +2352,15 @@ msgstr "Deskonektatu irteera"
 msgid "Disconnect Outputs"
 msgstr "Deskonektatu irteera"
 
-#: bse/bseserver.cc:588
+#: bse/bseserver.cc:570
 msgid "Disk Recording Failed"
 msgstr ""
 
-#: beast-gtk/bstapp.cc:107
+#: beast-gtk/bstapp.cc:105
 msgid "Display an overview of all procedures"
 msgstr "Prozedura guztien gainbegiraketa bistaratzen du"
 
-#: beast-gtk/bstapp.cc:93
+#: beast-gtk/bstapp.cc:91
 msgid "Display developer and contributor credits"
 msgstr "Garatzaileen eta laguntzaileen kredituak bistaratzen ditu"
 
@@ -2408,7 +2372,7 @@ msgstr ""
 msgid "Display dialogs with information messages"
 msgstr ""
 
-#: beast-gtk/bstapp.cc:111
+#: beast-gtk/bstapp.cc:109
 msgid "Display statistics and timing information"
 msgstr "Estatistiken eta denboren informazioa bistaratzen du"
 
@@ -2416,7 +2380,7 @@ msgstr "Estatistiken eta denboren informazioa bistaratzen du"
 msgid "Distorted Audio Output"
 msgstr "Audio-irteera distortsionatua"
 
-#: beast-gtk/bstapp.cc:143
+#: beast-gtk/bstapp.cc:141
 msgid "Document _Index..."
 msgstr "Dokumentu-_indizea..."
 
@@ -2430,39 +2394,39 @@ msgstr "Egindakoaren irteera"
 msgid "Done Output"
 msgstr "Egindakoaren irteera"
 
-#: beast-gtk/bstrecords.idl:53
+#: beast-gtk/bstapi.idl:49
 msgid "Dotted eighths note"
 msgstr "Kortxea punttuarekin"
 
-#: beast-gtk/bstrecords.idl:51
+#: beast-gtk/bstapi.idl:47
 msgid "Dotted half note"
 msgstr "Zuria punttuarekin"
 
-#: beast-gtk/bstrecords.idl:57
+#: beast-gtk/bstapi.idl:53
 msgid "Dotted hundred twenty-eighth note"
 msgstr ""
 
-#: beast-gtk/bstrecords.idl:52
+#: beast-gtk/bstapi.idl:48
 msgid "Dotted quarter note"
 msgstr "Beltza punttuarekin"
 
-#: beast-gtk/bstrecords.idl:54
+#: beast-gtk/bstapi.idl:50
 msgid "Dotted sixteenth note"
 msgstr "Semikortxea punttuarekin"
 
-#: beast-gtk/bstrecords.idl:56
+#: beast-gtk/bstapi.idl:52
 msgid "Dotted sixty-fourth note"
 msgstr "Semifusa punttuarekin"
 
-#: beast-gtk/bstrecords.idl:55
+#: beast-gtk/bstapi.idl:51
 msgid "Dotted thirty-secondth note"
 msgstr "Fusa punttuarekin"
 
-#: beast-gtk/bstrecords.idl:50
+#: beast-gtk/bstapi.idl:46
 msgid "Dotted whole note"
 msgstr "Biribila punttuarekin"
 
-#: beast-gtk/bstrecords.idl:20
+#: beast-gtk/bstapi.idl:14
 msgid "Down"
 msgstr "Behera"
 
@@ -2474,7 +2438,7 @@ msgstr "Marraztu balioak"
 msgid "Draw a line to align events to"
 msgstr "Marraztu lerro bat gertaerak han lerrokatzeko"
 
-#: beast-gtk/bstrecords.idl:92
+#: beast-gtk/bstapi.idl:109
 msgid "Draw synthesis networks anti-aliased?"
 msgstr "Marraztu sintesi-sareak antialiasing-a erabiliz?"
 
@@ -2511,16 +2475,16 @@ msgid ""
 "range forward accordingly."
 msgstr ""
 
-#: beast-gtk/bstpatterncolumns.cc:691
+#: beast-gtk/bstpatterncolumns.cc:688
 msgid "EVENTS:"
 msgstr "GERTAERAK:"
 
-#: beast-gtk/bstpatterncolumns.cc:706
+#: beast-gtk/bstpatterncolumns.cc:703
 msgid "EXAMPLE:"
 msgstr "ADIBIDEA:"
 
 #. label=
-#: beast-gtk/dialogs/radgets-beast.xml:115
+#: beast-gtk/res/radgets-beast.xml:115
 msgid "E_xamples"
 msgstr "A_dibideak"
 
@@ -2528,7 +2492,7 @@ msgstr "A_dibideak"
 msgid "Edit"
 msgstr "Editatu"
 
-#: beast-gtk/bsttrackrollctrl.cc:400 beast-gtk/bsttrackrollctrl.cc:412
+#: beast-gtk/bsttrackrollctrl.cc:398 beast-gtk/bsttrackrollctrl.cc:410
 msgid "Edit Part"
 msgstr "Editatu zatia"
 
@@ -2559,19 +2523,19 @@ msgstr "Editatu/Lekuz aldatu/Menua (saguaren 1-3 botoiak)"
 msgid "Editor"
 msgstr "Editorea"
 
-#: bse/bsebasics.idl:132 bse/bsebasics.idl:308
+#: bse/bseapi.idl:115 bse/bsebasics.idl:127
 msgid "Effect Control 1"
 msgstr "1. efektu-kontrola"
 
-#: bse/bsebasics.idl:133 bse/bsebasics.idl:309
+#: bse/bseapi.idl:116 bse/bsebasics.idl:128
 msgid "Effect Control 2"
 msgstr "2. efektu-kontrola"
 
-#: bse/bsebasics.idl:691
+#: bse/bsebasics.idl:456
 msgid "Effect Path"
 msgstr "Efektu-bidea"
 
-#: beast-gtk/bstrecords.idl:45
+#: beast-gtk/bstapi.idl:41
 msgid "Eighths note"
 msgstr "Kortxea"
 
@@ -2579,15 +2543,15 @@ msgstr "Kortxea"
 msgid "Emphasis"
 msgstr "Enfasia"
 
-#: beast-gtk/bstrecords.idl:122
+#: beast-gtk/bstapi.idl:139
 msgid "Empty Field Color"
 msgstr ""
 
-#: beast-gtk/bstrecords.idl:100
+#: beast-gtk/bstapi.idl:116
 msgid "Enable Error Bell"
 msgstr ""
 
-#: beast-gtk/bstrecords.idl:103
+#: beast-gtk/bstapi.idl:119
 msgid ""
 "Enable homogeneous sizes for most (numeric and text) input fields. For some "
 "fields, this will only take effect after a restart."
@@ -2596,11 +2560,16 @@ msgstr ""
 "homogeneoak. Eremu batzuetan, aldaketa honek berrabiarazitakoan bakarrik "
 "izango du eragina."
 
-#: beast-gtk/bstmsgabsorb.cc:209
+#: beast-gtk/bstmsgabsorb.cc:196
 msgid "Enable or disable message display of a specific message type"
 msgstr ""
 
-#: beast-gtk/bstsampleeditor.cc:489
+#: bse/bseapi.idl:25
+#, fuzzy
+msgid "End of file"
+msgstr "Iragazteko ordena"
+
+#: beast-gtk/bstsampleeditor.cc:487
 msgid "End:"
 msgstr "Amaitu:"
 
@@ -2608,16 +2577,12 @@ msgstr "Amaitu:"
 msgid "Enhance/CanyonDelay"
 msgstr ""
 
-#: bse/bsebus.proc:159
-msgid "Ensure that a bus has an output connection."
-msgstr ""
-
-#: bse/bsesong.proc:193
+#: bse/bsesong.proc:100
 msgid "Ensure that each part in a song is inserted into at least one track."
 msgstr ""
 
 #. tooltip=
-#: beast-gtk/dialogs/radgets-standard.xml:476
+#: beast-gtk/res/radgets-standard.xml:476
 msgid "Enter document or file location"
 msgstr "Sartu dokumentuaren edo fitxategiaren kokalekua"
 
@@ -2643,72 +2608,68 @@ msgid "Error: "
 msgstr "Errorea"
 
 #. label=
-#: beast-gtk/dialogs/radgets-beast.xml:481
+#: beast-gtk/res/radgets-beast.xml:481
 msgid "Events"
 msgstr "Gertaerak"
 
-#: beast-gtk/bstrecords.idl:77
+#: beast-gtk/bstapi.idl:85
 msgid "Every eighth and sixteenth row"
 msgstr ""
 
-#: beast-gtk/bstrecords.idl:71
+#: beast-gtk/bstapi.idl:79
 msgid "Every eighth row"
 msgstr ""
 
-#: beast-gtk/bstrecords.idl:74
+#: beast-gtk/bstapi.idl:82
 msgid "Every fourth and eighth row"
 msgstr ""
 
-#: beast-gtk/bstrecords.idl:76
+#: beast-gtk/bstapi.idl:84
 msgid "Every fourth and sixteenth row"
 msgstr ""
 
-#: beast-gtk/bstrecords.idl:75
+#: beast-gtk/bstapi.idl:83
 msgid "Every fourth and twelfth row"
 msgstr ""
 
-#: beast-gtk/bstrecords.idl:70
+#: beast-gtk/bstapi.idl:78
 msgid "Every fourth row"
 msgstr ""
 
-#: beast-gtk/bstrecords.idl:73
+#: beast-gtk/bstapi.idl:81
 msgid "Every second and fourth row"
 msgstr ""
 
-#: beast-gtk/bstrecords.idl:69
+#: beast-gtk/bstapi.idl:77
 msgid "Every second row"
 msgstr ""
 
-#: beast-gtk/bstrecords.idl:72
+#: beast-gtk/bstapi.idl:80
 msgid "Every sixteenth row"
 msgstr ""
 
-#: beast-gtk/bstrecords.idl:83
+#: beast-gtk/bstapi.idl:91
 msgid "Every sixth and twelfth row"
 msgstr ""
 
-#: beast-gtk/bstrecords.idl:79
+#: beast-gtk/bstapi.idl:87
 msgid "Every sixth row"
 msgstr ""
 
-#: beast-gtk/bstrecords.idl:81
+#: beast-gtk/bstapi.idl:89
 msgid "Every third and sixth row"
 msgstr ""
 
-#: beast-gtk/bstrecords.idl:82
+#: beast-gtk/bstapi.idl:90
 msgid "Every third and twelfth row"
 msgstr ""
 
-#: beast-gtk/bstrecords.idl:78
+#: beast-gtk/bstapi.idl:86
 msgid "Every third row"
 msgstr ""
 
-#: beast-gtk/bstrecords.idl:80
+#: beast-gtk/bstapi.idl:88
 msgid "Every twelfth row"
-msgstr ""
-
-#: bse/bseenums.cc:77
-msgid "Everything went well"
 msgstr ""
 
 #: beast-gtk/bstprocedure.cc:276
@@ -2729,31 +2690,31 @@ msgstr "Kontrol esponentziala"
 msgid "Exponential FM"
 msgstr "FM esponentziala"
 
-#: beast-gtk/bstapp.cc:304
+#: beast-gtk/bstapp.cc:303
 msgid "Export Audio"
 msgstr "Esportatu audioa"
 
-#: bse/bsebasics.idl:131 bse/bsebasics.idl:307
+#: bse/bseapi.idl:114 bse/bsebasics.idl:126
 msgid "Expression"
 msgstr "Adierazpena"
 
-#: bse/bseenums.cc:121
+#: bse/bseapi.idl:61
 msgid "Failed to configure device buffer"
 msgstr ""
 
-#: bse/bseenums.cc:120
+#: bse/bseapi.idl:60
 msgid "Failed to configure device format"
 msgstr ""
 
-#: bse/bseenums.cc:124
+#: bse/bseapi.idl:64
 msgid "Failed to configure device frequency"
 msgstr ""
 
-#: bse/bseenums.cc:122
+#: bse/bseapi.idl:62
 msgid "Failed to configure device latency"
 msgstr ""
 
-#: bse/bseenums.cc:123
+#: bse/bseapi.idl:63
 msgid "Failed to configure number of device channels"
 msgstr ""
 
@@ -2763,9 +2724,10 @@ msgid "Failed to crop part range."
 msgstr "Ezin izan da \"%2$s\" script-aren %1$s() hasi: %3$s"
 
 #. content errors
-#: bse/bseenums.cc:99
-msgid "Failed to detect (start of) header"
-msgstr ""
+#: bse/bseapi.idl:39
+#, fuzzy
+msgid "Failed to detect header"
+msgstr "Ezin izan da \"%2$s\" script-aren %1$s() hasi: %3$s"
 
 #: library/scripts/song-parts-operations.scm:63
 msgid "Failed to duplicate part range."
@@ -2776,33 +2738,33 @@ msgstr ""
 msgid "Failed to execute script procedure '%s': %s"
 msgstr "ezin izan da \"%s\" irteera-fitxategia ireki: %s"
 
-#: beast-gtk/bstmain.cc:305
+#: beast-gtk/bstmain.cc:311
 #, c-format
 msgid "Failed to load project \"%s\": %s"
 msgstr "Ezin izan da \"%s\" proiektua kargatu: %s"
 
-#: beast-gtk/bstfiledialog.cc:765 beast-gtk/bstmain.cc:253
-#: beast-gtk/bstmain.cc:270
+#: beast-gtk/bstfiledialog.cc:736 beast-gtk/bstmain.cc:259
+#: beast-gtk/bstmain.cc:275
 #, c-format
 msgid "Failed to load wave file \"%s\": %s"
 msgstr "Ezin izan da \"%s\" uhin-fitxategia kargatu: %s"
 
-#: beast-gtk/bstmain.cc:311
+#: beast-gtk/bstmain.cc:317
 #, fuzzy, c-format
 msgid "Failed to merge project \"%s\": %s"
 msgstr "Ezin izan da \"%s\" proiektua kargatu: %s"
 
-#: bse/bseserver.cc:534
+#: bse/bseserver.cc:516
 #, fuzzy, c-format
 msgid "Failed to open MIDI devices: %s"
 msgstr "ezin izan da \"%s\" irteera-fitxategia ireki: %s"
 
-#: bse/bseserver.cc:507
+#: bse/bseserver.cc:489
 #, fuzzy, c-format
 msgid "Failed to open PCM devices: %s"
 msgstr "ezin izan da \"%s\" irteera-fitxategia ireki: %s"
 
-#: bse/bseserver.cc:592
+#: bse/bseserver.cc:574
 #, fuzzy, c-format
 msgid "Failed to open file \"%s\" for recording: %s"
 msgstr "ezin izan da \"%s\" irteera-fitxategia ireki: %s"
@@ -2812,7 +2774,7 @@ msgstr "ezin izan da \"%s\" irteera-fitxategia ireki: %s"
 msgid "Failed to parse harmony list"
 msgstr "Ezin izan da \"%2$s\" script-aren %1$s() hasi: %3$s"
 
-#: beast-gtk/bstfiledialog.cc:533
+#: beast-gtk/bstfiledialog.cc:527
 #, c-format
 msgid ""
 "Failed to replace file\n"
@@ -2825,11 +2787,11 @@ msgstr ""
 "arrazoi honengatik:\n"
 "%s"
 
-#: bse/bseenums.cc:100
+#: bse/bseapi.idl:40
 msgid "Failed to retrieve seek information"
 msgstr ""
 
-#: beast-gtk/bstfiledialog.cc:502
+#: beast-gtk/bstfiledialog.cc:496
 #, c-format
 msgid ""
 "Failed to save\n"
@@ -2844,8 +2806,8 @@ msgstr ""
 "`%s':\n"
 "%s"
 
-#. error != BSE_ERROR_FILE_EXISTS
-#: beast-gtk/bstfiledialog.cc:528 beast-gtk/bstfiledialog.cc:542
+#. error != Bse::ERROR_FILE_EXISTS
+#: beast-gtk/bstfiledialog.cc:522 beast-gtk/bstfiledialog.cc:536
 #, c-format
 msgid ""
 "Failed to save to file\n"
@@ -2858,20 +2820,20 @@ msgstr ""
 "arrazoi honengatik:\n"
 "%s"
 
-#: bse/bseenums.cc:115
+#: bse/bseapi.idl:55
 msgid "Failed to spawn child process"
 msgstr ""
 
-#: bse/bseserver.cc:589
+#: bse/bseserver.cc:571
 #, fuzzy
 msgid "Failed to start PCM recording to disk."
 msgstr "Ezin izan da \"%2$s\" script-aren %1$s() hasi: %3$s"
 
-#: bse/bseserver.cc:450
+#: bse/bseserver.cc:432
 msgid "Failed to start recording from audio device."
 msgstr ""
 
-#: beast-gtk/bstrecords.idl:94
+#: beast-gtk/bstapi.idl:110
 msgid "Fallback into Edit mode after creating synthesis modules?"
 msgstr "Itzuli editatze-modura sintesi-moduluak sortu eta gero?"
 
@@ -2880,33 +2842,33 @@ msgid "Feedback [%]"
 msgstr ""
 
 #. setup remaining bits
-#: beast-gtk/bstfiledialog.cc:194
+#: beast-gtk/bstfiledialog.cc:195
 msgid "File Selection"
 msgstr "Fitxategi-hautapena"
 
-#: bse/bseenums.cc:86
+#: bse/bseapi.idl:26
 msgid "File empty"
 msgstr ""
 
-#: bse/bseenums.cc:84
+#: bse/bseapi.idl:24
 msgid "File exists already"
 msgstr ""
 
-#: beast-gtk/bstfiledialog.cc:142
+#: beast-gtk/bstfiledialog.cc:143
 #, fuzzy
 msgid "File modification time"
 msgstr "Azken aldatze-ordua"
 
-#: beast-gtk/bstfiledialog.cc:124
+#: beast-gtk/bstfiledialog.cc:125
 msgid "File size in bytes"
 msgstr ""
 
-#: beast-gtk/bstfiledialog.cc:149
+#: beast-gtk/bstfiledialog.cc:150
 #, fuzzy
 msgid "Filename"
 msgstr "Izena aldatu"
 
-#: beast-gtk/bstparam-searchpath.cc:138
+#: beast-gtk/bstparam-searchpath.cc:137
 msgid "Filename Text Entry"
 msgstr "Fitxategi-izenaren testu-sarrera"
 
@@ -2968,19 +2930,14 @@ msgstr ""
 msgid "Filters/IIR Filter"
 msgstr "/Iragazkiak/Baxuen iragazkia"
 
-#: bse/bsesong.proc:372
+#: bse/bsesong.proc:135
 msgid "Find a track suitable for playing notes of a given part."
 msgstr ""
 
 #. tooltip=
-#: beast-gtk/dialogs/radgets-standard.xml:472
+#: beast-gtk/res/radgets-standard.xml:472
 msgid "Find in current document"
 msgstr "Bilatu uneko dokumentuan"
-
-#: bse/bsesong.proc:415
-msgid ""
-"Find the first track that contains part, suitable to check for orphan parts."
-msgstr ""
 
 #: bse/bsestandardosc.cc:144 plugins/davorgan.idl:20
 #: plugins/davxtalstrings.cc:99
@@ -3005,11 +2962,11 @@ msgstr "Lehen kontrol-sarrera"
 msgid "Flavour"
 msgstr ""
 
-#: beast-gtk/bstscrollgraph.cc:556
+#: beast-gtk/bstscrollgraph.cc:553
 msgid "Flip Spectrum"
 msgstr ""
 
-#: beast-gtk/bstscrollgraph.cc:556
+#: beast-gtk/bstscrollgraph.cc:553
 msgid "Flip Spectrum display,  interchaging low and high frequencies"
 msgstr ""
 
@@ -3017,23 +2974,23 @@ msgstr ""
 msgid "Flute Sounds"
 msgstr ""
 
-#: beast-gtk/bstrecords.idl:90
+#: beast-gtk/bstapi.idl:107
 msgid "Font Size"
 msgstr "Letra-tamaina"
 
-#: beast-gtk/bstrecords.idl:90
+#: beast-gtk/bstapi.idl:107
 msgid "Font size in pixels for labels displayed in synthesis networks"
 msgstr "Sintesi-sareetan bistaratutako etiketeten letra-tamaina pixeletan"
 
-#: bse/bsebasics.idl:124 bse/bsebasics.idl:300
+#: bse/bseapi.idl:107 bse/bsebasics.idl:119
 msgid "Foot Controller"
 msgstr "Oineko kontroladorea"
 
-#: beast-gtk/bstfiledialog.cc:126
+#: beast-gtk/bstfiledialog.cc:127
 msgid "Format"
 msgstr ""
 
-#: bse/bseobject.cc:827
+#: bse/bseobject.cc:873
 msgid "Free form comment or description"
 msgstr ""
 
@@ -3080,7 +3037,7 @@ msgstr "Maiztasuna"
 msgid "Frequency Signal"
 msgstr "Maiztasun-seinalea"
 
-#: bse/bsebasics.idl:672
+#: bse/bsebasics.idl:437
 msgid ""
 "Frequency at which control values are evaluated, should be much smaller than "
 "Synth Mixing Frequency to reduce CPU load"
@@ -3095,23 +3052,23 @@ msgstr ""
 "badago)"
 
 #. setup radio buttons
-#: beast-gtk/bstfiledialog.cc:610
+#: beast-gtk/bstfiledialog.cc:598
 msgid "Fully include wave files"
 msgstr "Sartu uhinen fitxategi guztiak"
 
-#: beast-gtk/bstkeybindings.cc:419 beast-gtk/bstkeybindings.cc:443
+#: beast-gtk/bstkeybindings.cc:418 beast-gtk/bstkeybindings.cc:442
 msgid "Function"
 msgstr "Funtzioa"
 
-#: beast-gtk/bstkeybindings.cc:444
+#: beast-gtk/bstkeybindings.cc:443
 msgid "Function used to create new key bindings"
 msgstr "Tekla-konbinazio berriak sortzeko erabilitako funtzioa"
 
-#: bse/bseenums.cc:111
+#: bse/bseapi.idl:51
 msgid "Functionality not implemented"
 msgstr ""
 
-#: beast-gtk/bstkeybindings.cc:420
+#: beast-gtk/bstkeybindings.cc:419
 msgid "Functions to be activated for a key binding"
 msgstr "Tekla-konbinazio bat sakatzean aktibatu beharreko funtzioak"
 
@@ -3165,45 +3122,38 @@ msgstr ""
 msgid "Gate input (activates/deactivates envelope)"
 msgstr "Sarrera-atea (bilkaria aktibatzen/desaktibatzen du)"
 
-#: bse/bsebasics.idl:136 bse/bsebasics.idl:312
+#: bse/bseapi.idl:119 bse/bsebasics.idl:131
 msgid "General Purpose Controller 1"
 msgstr ""
 
-#: bse/bsebasics.idl:137 bse/bsebasics.idl:313
+#: bse/bseapi.idl:120 bse/bsebasics.idl:132
 msgid "General Purpose Controller 2"
 msgstr ""
 
-#: bse/bsebasics.idl:138 bse/bsebasics.idl:314
+#: bse/bseapi.idl:121 bse/bsebasics.idl:133
 msgid "General Purpose Controller 3"
 msgstr ""
 
-#: bse/bsebasics.idl:139 bse/bsebasics.idl:315
+#: bse/bseapi.idl:122 bse/bsebasics.idl:134
 msgid "General Purpose Controller 4"
 msgstr ""
 
-#: beast-gtk/bstpreferences.cc:64
+#: beast-gtk/bstpreferences.cc:62
 msgid "Generic Keys"
 msgstr "Tekla generikoak"
 
-#: bse/bsetrack.proc:237
-msgid ""
-"Get the output module for this track. The output of this module is the "
-"merged result from all polyphonic voices and has all track specific "
-"alterations applied."
-msgstr ""
-
 #. tooltip=
-#: beast-gtk/dialogs/radgets-standard.xml:455
+#: beast-gtk/res/radgets-standard.xml:455
 msgid "Go back one page"
 msgstr "Joan orri bat atzera"
 
 #. tooltip=
-#: beast-gtk/dialogs/radgets-standard.xml:459
+#: beast-gtk/res/radgets-standard.xml:459
 msgid "Go forward one page"
 msgstr "Joan orri bat aurrera"
 
 #. tooltip=
-#: beast-gtk/dialogs/radgets-standard.xml:467
+#: beast-gtk/res/radgets-standard.xml:467
 msgid "Go to browser index"
 msgstr "Joan arakatzailearen indizera"
 
@@ -3219,17 +3169,16 @@ msgstr "Hasi bertikalki"
 msgid "Grow the scrollable area"
 msgstr ""
 
-#: beast-gtk/bstpatternctrl.cc:117
+#: beast-gtk/bstpatternctrl.cc:121
 msgid "HWrap"
 msgstr "Itzulbiratze h."
 
 #. label=
-#: beast-gtk/dialogs/radgets-beast.xml:65
-#: beast-gtk/dialogs/radgets-beast.xml:430
+#: beast-gtk/res/radgets-beast.xml:65 beast-gtk/res/radgets-beast.xml:430
 msgid "HZoom"
 msgstr "Zoom h."
 
-#: beast-gtk/bstrecords.idl:43
+#: beast-gtk/bstapi.idl:39
 msgid "Half note"
 msgstr "Zuria"
 
@@ -3265,15 +3214,15 @@ msgstr "Handiak instrumentuan sintetizazioa egin dela adierazten du"
 msgid "Hit the drum on raising edges"
 msgstr "Jo perkusioa ertzak igotzean"
 
-#: beast-gtk/bstrecords.idl:102
+#: beast-gtk/bstapi.idl:118
 msgid "Homogeneous Input Fields"
 msgstr "Sarrera-eremu homogeneoak"
 
-#: beast-gtk/bstrecords.idl:130 beast-gtk/bstrecords.idl:140
+#: beast-gtk/bstapi.idl:147 beast-gtk/bstapi.idl:157
 msgid "Horizontal Bar Color"
 msgstr "Barra horizontalaren kolorea"
 
-#: beast-gtk/bstrecords.idl:132
+#: beast-gtk/bstapi.idl:149
 msgid "Horizontal Grid Color"
 msgstr "Sareta horizontalaren kolorea"
 
@@ -3286,16 +3235,16 @@ msgid "Horizontal Scale (Logarithmic)"
 msgstr "Eskala horizontala (logaritmikoa)"
 
 #. tooltip=
-#: beast-gtk/dialogs/radgets-beast.xml:428
+#: beast-gtk/res/radgets-beast.xml:428
 msgid "Horizontal piano zoom"
 msgstr "Pianoaren zoom horizontala"
 
 #. tooltip=
-#: beast-gtk/dialogs/radgets-beast.xml:63
+#: beast-gtk/res/radgets-beast.xml:63
 msgid "Horizontal track zoom"
 msgstr "Pistaren zoom horizontala"
 
-#: beast-gtk/bstrecords.idl:49
+#: beast-gtk/bstapi.idl:45
 msgid "Hundred twenty-eighth note"
 msgstr ""
 
@@ -3322,21 +3271,20 @@ msgstr ""
 "Ezarrita badago, nabarmendutako testua ebakiko da eta horren ordez hiru "
 "puntu \"...\" bistaratuko dira"
 
-#: beast-gtk/bstrecords.idl:118 beast-gtk/bstrecords.idl:128
-#: beast-gtk/bstrecords.idl:138
+#: beast-gtk/bstapi.idl:135 beast-gtk/bstapi.idl:145 beast-gtk/bstapi.idl:155
 msgid "Image shade"
 msgstr "Irudiaren itzala"
 
-#: beast-gtk/bstfiledialog.cc:470
+#: beast-gtk/bstfiledialog.cc:468
 #, c-format
 msgid "Import MIDI: %s"
 msgstr "Inportatu MIDI: %s"
 
-#: beast-gtk/bstapp.cc:70
+#: beast-gtk/bstapp.cc:68
 msgid "Import a standard MIDI file into the current project"
 msgstr "Inportatu MIDI fitxategi estandar bat uneko proiektura"
 
-#: beast-gtk/bstfiledialog.cc:481
+#: beast-gtk/bstfiledialog.cc:479
 #, c-format
 msgid "Importing MIDI file `%s'"
 msgstr "`%s' MIDI fitxategia inportatzen"
@@ -3380,11 +3328,11 @@ msgid "Initial phase of the oscillator wave form (cycle offset in degree)"
 msgstr ""
 
 #. BEAST initialization
-#: beast-gtk/bstmain.cc:111
+#: beast-gtk/bstmain.cc:133
 msgid "Initializers"
 msgstr "Abiarazleak"
 
-#: beast-gtk/bstcanvassource.cc:965 beast-gtk/bstsnetrouter.cc:1058
+#: beast-gtk/bstcanvassource.cc:967 beast-gtk/bstsnetrouter.cc:1058
 msgid "Input"
 msgstr "Sarrera"
 
@@ -3398,7 +3346,7 @@ msgstr "Sarrera 1 [%]"
 msgid "Input 2 [%]"
 msgstr "Sarrera 2 [%]"
 
-#: bse/bsesubsynth.cc:507
+#: bse/bsesubsynth.cc:505
 msgid "Input Assignments"
 msgstr "Sarrera-esleipenak"
 
@@ -3411,7 +3359,7 @@ msgstr "Sarrera-katea %u"
 msgid "Input Modulation [%]"
 msgstr "Sarrera-modulazioa [%]"
 
-#: bse/bsesubiport.cc:286 bse/bsesubsynth.cc:505
+#: bse/bsesubiport.cc:286 bse/bsesubsynth.cc:503
 #, c-format
 msgid "Input Port %u"
 msgstr "%u sarrera-ataka"
@@ -3421,7 +3369,7 @@ msgstr "%u sarrera-ataka"
 msgid "Input Signals"
 msgstr "Sarrerako seinaleak"
 
-#: bse/bseenums.cc:132
+#: bse/bseapi.idl:72
 #, fuzzy
 msgid "Input channel already in use"
 msgstr "Sarrera-kanala erabiltzen"
@@ -3430,30 +3378,31 @@ msgstr "Sarrera-kanala erabiltzen"
 msgid "Input channel in use"
 msgstr "Sarrera-kanala erabiltzen"
 
-#: bse/bseenums.cc:131
+#: bse/bseapi.idl:71
 #, fuzzy
 msgid "Input channel is private"
 msgstr "Sarrera-kanala erabiltzen"
 
-#: bse/bsesubsynth.cc:518
+#: bse/bsesubsynth.cc:516
 msgid "Input port name to interface to"
 msgstr "Sarrera-atakaren izena interfaze gisa erabiltzeko"
 
-#: bse/bseenums.cc:133
-msgid "Input/Output channels already connected"
-msgstr ""
-
-#: bse/bseenums.cc:130
+#: bse/bseapi.idl:70
 #, fuzzy
 msgid "Input/Output channels not connected"
 msgstr "Sarrera-kanala erabiltzen"
 
-#: bse/bseenums.cc:80
+#: bse/bseapi.idl:73
+#, fuzzy
+msgid "Input/output channels already connected"
+msgstr "Sarrera-kanala erabiltzen"
+
+#: bse/bseapi.idl:20
 msgid "Input/output error"
 msgstr "Sarrerako/Irteerako errorea"
 
 #. label=
-#: beast-gtk/dialogs/radgets-beast.xml:300
+#: beast-gtk/res/radgets-beast.xml:300
 msgid "Inputs"
 msgstr "Sarrerak"
 
@@ -3461,7 +3410,7 @@ msgstr "Sarrerak"
 msgid "Insert"
 msgstr "Txertatu"
 
-#: beast-gtk/bsteventrollctrl.cc:575
+#: beast-gtk/bsteventrollctrl.cc:549
 msgid "Insert Control Event"
 msgstr "Sartu kontrol-gertaera"
 
@@ -3469,7 +3418,7 @@ msgstr "Sartu kontrol-gertaera"
 msgid "Insert Module"
 msgstr "Txertatu modulua"
 
-#: beast-gtk/bstpianorollctrl.cc:758
+#: beast-gtk/bstpianorollctrl.cc:722
 msgid "Insert Note"
 msgstr "Txertatu nota"
 
@@ -3527,7 +3476,7 @@ msgid "Insert/resize/move notes (mouse button 1 and 2)"
 msgstr ""
 "Txertatu/Aldatu tamainaz/Lekuz aldatu notak (saguaren 1. eta 2. botoiak)"
 
-#: bse/bsebasics.idl:694
+#: bse/bsebasics.idl:459
 msgid "Instrument Path"
 msgstr "Instrumentu-bidea"
 
@@ -3536,11 +3485,11 @@ msgstr "Instrumentu-bidea"
 msgid "Instrument flavour"
 msgstr "Instrumentu-bidea"
 
-#: bse/bseenums.cc:81
-msgid "Insufficient permission"
+#: bse/bseapi.idl:21
+msgid "Insufficient permissions"
 msgstr ""
 
-#: bse/bseenums.cc:78
+#: bse/bseapi.idl:18
 msgid "Internal error (please report)"
 msgstr ""
 
@@ -3548,35 +3497,35 @@ msgstr ""
 msgid "Internals"
 msgstr ""
 
-#: bse/bseenums.cc:113
+#: bse/bseapi.idl:53
 msgid "Invalid MIDI control type"
 msgstr ""
 
-#: bse/bseenums.cc:151
+#: bse/bseapi.idl:91
 msgid "Invalid duration"
 msgstr ""
 
-#: bse/bseenums.cc:104
+#: bse/bseapi.idl:44
 msgid "Invalid format"
 msgstr ""
 
-#: bse/bseenums.cc:112
+#: bse/bseapi.idl:52
 msgid "Invalid object property"
 msgstr ""
 
-#: bse/bseenums.cc:150
+#: bse/bseapi.idl:90
 msgid "Invalid offset"
 msgstr ""
 
-#: bse/bseenums.cc:152
+#: bse/bseapi.idl:92
 msgid "Invalid overlap"
 msgstr ""
 
-#: bse/bseenums.cc:134
+#: bse/bseapi.idl:74
 msgid "Invalid synthesis module connection"
 msgstr ""
 
-#: bse/bseenums.cc:138
+#: bse/bseapi.idl:78
 msgid "Invalid synthsis module type"
 msgstr ""
 
@@ -3584,7 +3533,7 @@ msgstr ""
 msgid "Invert"
 msgstr "Alderantzikatu"
 
-#: bse/bsebasics.idl:677
+#: bse/bsebasics.idl:442
 msgid "Invert Sustain Pedal"
 msgstr ""
 
@@ -3593,12 +3542,12 @@ msgstr ""
 msgid "Invert the current selection"
 msgstr "Alderantzikatu uneko hautapena"
 
-#: bse/bsebasics.idl:678
+#: bse/bsebasics.idl:443
 msgid ""
 "Invert the state of sustain (damper) pedal so on/off meanings are reversed"
 msgstr ""
 
-#: bse/bseenums.cc:88
+#: bse/bseapi.idl:28
 msgid "Is a directory"
 msgstr "Direktorioa da"
 
@@ -3619,11 +3568,11 @@ msgstr "Justifikazioa"
 msgid "Justify"
 msgstr "Justifikazioa"
 
-#: beast-gtk/bstkeybindings.cc:416
+#: beast-gtk/bstkeybindings.cc:415
 msgid "Key Binding"
 msgstr "Tekla-konbinazioa"
 
-#: beast-gtk/bstkeybindings.cc:417
+#: beast-gtk/bstkeybindings.cc:416
 msgid "Key combinations used to activate a function"
 msgstr "Funtzio jakin bat aktibatzeko erabilitako tekla-konbinazioak"
 
@@ -3650,11 +3599,11 @@ msgstr "Potentziometroa"
 msgid "Knob (Logarithmic)"
 msgstr "Potentziometroa (Logaritmikoa)"
 
-#: bse/bsebasics.idl:704
+#: bse/bsebasics.idl:469
 msgid "LADSPA Path"
 msgstr "LADSPA-bidea"
 
-#: beast-gtk/bstmain.cc:176
+#: beast-gtk/bstmain.cc:185
 msgid "LADSPA Plugins"
 msgstr "LADSPA plugin-ak"
 
@@ -3667,16 +3616,16 @@ msgstr "Etiketa"
 msgid "Last modification time"
 msgstr "Azken aldatze-ordua"
 
-#: bse/bsebasics.idl:663
+#: bse/bsebasics.idl:428
 msgid "Latency [ms]"
 msgstr "Latentzia [ms]"
 
 #. label=
-#: beast-gtk/dialogs/radgets-beast.xml:549
+#: beast-gtk/res/radgets-beast.xml:549
 msgid "Layout:"
 msgstr "Diseinua:"
 
-#: beast-gtk/bstrecords.idl:18 beast-gtk/bsttrackrollctrl.cc:48
+#: beast-gtk/bstapi.idl:12 beast-gtk/bsttrackrollctrl.cc:48
 msgid "Left"
 msgstr "Ezkerrera"
 
@@ -3757,7 +3706,7 @@ msgstr "Lib..."
 msgid "License"
 msgstr "Lizentzia"
 
-#: bse/bseautodoc.cc:348 bse/bseautodoc.cc:422
+#: bse/bseautodoc.cc:347 bse/bseautodoc.cc:421
 msgid "License:"
 msgstr "Lizentzia:"
 
@@ -3771,7 +3720,7 @@ msgstr ""
 msgid "Link"
 msgstr "Esteka"
 
-#: beast-gtk/bsttrackrollctrl.cc:473 beast-gtk/bsttrackrollctrl.cc:507
+#: beast-gtk/bsttrackrollctrl.cc:475 beast-gtk/bsttrackrollctrl.cc:508
 msgid "Link Part"
 msgstr "Estekatu zatia"
 
@@ -3783,7 +3732,7 @@ msgstr "Estekatu edo lekuz aldatu zatiak (saguaren 1. eta 2. botoiak)"
 msgid "List of available mixer busses to be used as bus output"
 msgstr ""
 
-#: bse/bsetrack.cc:281
+#: bse/bsetrack.cc:282
 msgid "List of available mixer busses to be used as track output"
 msgstr ""
 
@@ -3791,7 +3740,7 @@ msgstr ""
 msgid "List of available synthesis networks to choose a MIDI instrument from"
 msgstr ""
 
-#: bse/bsemidisynth.cc:214 bse/bsesong.cc:126 bse/bsetrack.cc:277
+#: bse/bsemidisynth.cc:214 bse/bsesong.cc:125 bse/bsetrack.cc:278
 msgid "List of available synthesis networks to choose a postprocessor from"
 msgstr ""
 
@@ -3799,7 +3748,7 @@ msgstr ""
 msgid "List of available synthesis networks to choose a sub network from"
 msgstr ""
 
-#: bse/bsetrack.cc:273
+#: bse/bsetrack.cc:274
 msgid "List of available synthesis networks to choose a track instrument from"
 msgstr ""
 
@@ -3815,39 +3764,39 @@ msgstr ""
 msgid "List of available waves to choose as oscillator source"
 msgstr ""
 
-#: bse/bsetrack.cc:264
+#: bse/bsetrack.cc:265
 msgid "List of available waves to choose as track instrument"
 msgstr ""
 
-#: beast-gtk/bstkeybindings.cc:44
+#: beast-gtk/bstkeybindings.cc:43
 msgid "Load"
 msgstr "Kargatu"
 
-#: beast-gtk/bstfiledialog.cc:630
+#: beast-gtk/bstfiledialog.cc:617
 msgid "Load Effect"
 msgstr "Kargatu efektua"
 
-#: beast-gtk/bstfiledialog.cc:689
+#: beast-gtk/bstfiledialog.cc:668
 msgid "Load Instrument"
 msgstr "Kargatu instrumentua"
 
-#: beast-gtk/bstkeybindings.cc:220
+#: beast-gtk/bstkeybindings.cc:219
 msgid "Load Key Binding"
 msgstr "Kargatu tekla-konbinazioa"
 
-#: beast-gtk/bstfiledialog.cc:749
+#: beast-gtk/bstfiledialog.cc:720
 msgid "Load Wave"
 msgstr "Kargatu uhina"
 
-#: beast-gtk/bstapp.cc:135
+#: beast-gtk/bstapp.cc:133
 msgid "Load _Effect..."
 msgstr "Kargatu _efektua..."
 
-#: beast-gtk/bstapp.cc:133
+#: beast-gtk/bstapp.cc:131
 msgid "Load _Instrument..."
 msgstr "Kargatu _instrumentua..."
 
-#: beast-gtk/bstkeybindings.cc:44
+#: beast-gtk/bstkeybindings.cc:43
 msgid "Load a key binding set"
 msgstr "Kargatu tekla-konbinazioen sorta bat"
 
@@ -3859,11 +3808,11 @@ msgstr "Kargatu uhinen beste fitxategi bat diskotik"
 msgid "Load a new wave file from library paths"
 msgstr "Kargatu uhinen beste fitxategi liburutegi-bideetatik"
 
-#: beast-gtk/bstapp.cc:135
+#: beast-gtk/bstapp.cc:133
 msgid "Load synthesizer mesh from effects folder"
 msgstr "Kargatu sintetizadore maila efektuen karpetatik"
 
-#: beast-gtk/bstapp.cc:133
+#: beast-gtk/bstapp.cc:131
 msgid "Load synthesizer mesh from instruments folder"
 msgstr "Kargatu sintetizadore maila instrumentuen karpetatik"
 
@@ -3871,54 +3820,54 @@ msgstr "Kargatu sintetizadore maila instrumentuen karpetatik"
 msgid "Load..."
 msgstr "Kargatu..."
 
-#: beast-gtk/bstmain.cc:249 beast-gtk/bstmain.cc:251
+#: beast-gtk/bstmain.cc:255 beast-gtk/bstmain.cc:257
 #, c-format
 msgid "Loading \"%s\""
 msgstr "\"%s\" kargatzen"
 
-#: beast-gtk/bstapp.cc:782
+#: beast-gtk/bstapp.cc:779
 #, c-format
 msgid "Loading skin `%s'"
 msgstr "`%s' azala kargatzen"
 
-#: beast-gtk/bstfiledialog.cc:761 beast-gtk/bstfiledialog.cc:763
+#: beast-gtk/bstfiledialog.cc:732 beast-gtk/bstfiledialog.cc:734
 #, c-format
 msgid "Loading wave `%s'"
 msgstr "`%s' uhina kargatzen"
 
-#: beast-gtk/bstmain.cc:229
+#: beast-gtk/bstmain.cc:235
 msgid "Loading..."
 msgstr "Kargatzen..."
 
 #. label=
-#: beast-gtk/dialogs/radgets-standard.xml:476
+#: beast-gtk/res/radgets-standard.xml:476
 msgid "Location"
 msgstr "Kokalekua"
 
 #. change default
 #. override parent property: 0
-#: bse/bsesong.cc:758 bse/bsesong.cc:762 bse/bsesong.cc:767 bse/bsesong.cc:772
+#: bse/bsesong.cc:764 bse/bsesong.cc:768 bse/bsesong.cc:773 bse/bsesong.cc:778
 msgid "Looping"
 msgstr ""
 
-#: beast-gtk/bsteventrollctrl.cc:506 beast-gtk/bsteventrollctrl.cc:627
+#: beast-gtk/bsteventrollctrl.cc:481 beast-gtk/bsteventrollctrl.cc:599
 msgid "Lost Event"
 msgstr "Gertaera galdua"
 
-#: beast-gtk/bstpianorollctrl.cc:651 beast-gtk/bstpianorollctrl.cc:722
+#: beast-gtk/bstpianorollctrl.cc:615 beast-gtk/bstpianorollctrl.cc:686
 msgid "Lost Note"
 msgstr "Nota galdua"
 
-#: beast-gtk/bsttrackrollctrl.cc:433 beast-gtk/bsttrackrollctrl.cc:538
+#: beast-gtk/bsttrackrollctrl.cc:433 beast-gtk/bsttrackrollctrl.cc:540
 msgid "Lost Part"
 msgstr "Galdutako zatia"
 
 #. label=
-#: beast-gtk/bstkeybindings.cc:40 beast-gtk/dialogs/radgets-beast.xml:285
+#: beast-gtk/bstkeybindings.cc:39 beast-gtk/res/radgets-beast.xml:285
 msgid "Lower"
 msgstr "Beheratu"
 
-#: beast-gtk/bstkeybindings.cc:40
+#: beast-gtk/bstkeybindings.cc:39
 msgid "Lower the currently selected key binding, relative to its neighbours"
 msgstr "Beheratu ondokoekiko unean hautatutako tekla-konbinazioa"
 
@@ -3930,22 +3879,22 @@ msgstr "Behe-pasea [Hz]"
 msgid "Lowpass filter frequency for the control signal"
 msgstr "Kontrol-seinalerako behe-paseko iragazkiaren maiztasuna"
 
-#: bse/bsebasics.idl:676
+#: bse/bsebasics.idl:441
 msgid "MIDI"
 msgstr "MIDI"
 
-#: bse/bsemidisynth.cc:425 bse/bsesource.proc:720 bse/bsetrack.cc:1044
+#: bse/bsemidisynth.cc:425 bse/bsesource.proc:683 bse/bsetrack.cc:1045
 #, fuzzy
 msgid "MIDI Channel"
 msgstr "%u kanala"
 
-#: bse/bseserver.cc:530
+#: bse/bseserver.cc:512
 msgid "MIDI I/O Failed"
 msgstr ""
 
 #: bse/bsemidisynth.cc:423 bse/bsemidisynth.cc:428 bse/bsemidisynth.cc:433
-#: bse/bsemidisynth.cc:437 bse/bsesong.cc:749 bse/bsetrack.cc:1042
-#: bse/bsetrack.cc:1048
+#: bse/bsemidisynth.cc:437 bse/bsesong.cc:755 bse/bsetrack.cc:1043
+#: bse/bsetrack.cc:1049
 #, fuzzy
 msgid "MIDI Instrument"
 msgstr "Gorde instrumentua"
@@ -3966,7 +3915,7 @@ msgstr "MIDI seinalea 3"
 msgid "MIDI Signal 4"
 msgstr "MIDI seinalea 4"
 
-#: beast-gtk/bstapp.cc:508
+#: beast-gtk/bstapp.cc:507
 #, c-format
 msgid "MIDI Synthesizer: %s"
 msgstr "MIDI sintetizadorea: %s"
@@ -3976,16 +3925,16 @@ msgstr "MIDI sintetizadorea: %s"
 msgid "MIDI Tracker, Music Composition and Modular Synthesis Application"
 msgstr "MIDI Tracker, musika konposatzeko eta sintesi modularreko aplikazioa"
 
-#: bse/bseserver.cc:535
+#: bse/bseserver.cc:517
 #, fuzzy
 msgid "MIDI device selections problems"
 msgstr "Ohartarazi MIDI gailuen hautapenari buruz"
 
-#: bse/bseserver.cc:531
+#: bse/bseserver.cc:513
 msgid "MIDI input or output is not available."
 msgstr ""
 
-#: beast-gtk/bstpatterncolumns.cc:693
+#: beast-gtk/bstpatterncolumns.cc:690
 msgid "MODIFIERS:"
 msgstr "ALDATZAILEAK:"
 
@@ -3994,7 +3943,7 @@ msgid "Manual trigger for the drum"
 msgstr ""
 
 #. TRANSLATORS: this is the name of the master mixer bus. i.e. the final audio output bus.
-#: bse/bsesong.cc:623
+#: bse/bsesong.cc:613
 #, fuzzy
 msgid "Master"
 msgstr "Itsatsi"
@@ -4022,47 +3971,47 @@ msgstr "Irabazia [dB]"
 msgid "Master [float]"
 msgstr "Balioa [float]"
 
-#: bse/bsemidisynth.cc:430 bse/bsetrack.cc:1039
+#: bse/bsemidisynth.cc:430 bse/bsetrack.cc:1040
 msgid "Max Voices"
 msgstr ""
 
-#: beast-gtk/bsttrackview.cc:594 bse/bsemidisynth.cc:430 bse/bsetrack.cc:1039
+#: beast-gtk/bsttrackview.cc:595 bse/bsemidisynth.cc:430 bse/bsetrack.cc:1040
 msgid "Maximum number of voices for simultaneous playback"
 msgstr ""
 
-#: bse/bsesong.cc:740
+#: bse/bsesong.cc:753
 msgid "Measure denominator, must be a power of 2"
 msgstr ""
 
-#: bse/bsesong.cc:736
+#: bse/bsesong.cc:749
 msgid "Measure numerator"
 msgstr ""
 
-#: beast-gtk/bstapp.cc:68
+#: beast-gtk/bstapp.cc:66
 msgid "Merge an existing project into the current project"
 msgstr "Batu lehendik dagoen proiektua uneko proiektuarekin"
 
-#: beast-gtk/bstfiledialog.cc:441
+#: beast-gtk/bstfiledialog.cc:443
 #, c-format
 msgid "Merge: %s"
 msgstr "Batu: %s"
 
-#: beast-gtk/bstfiledialog.cc:643
+#: beast-gtk/bstfiledialog.cc:629
 #, c-format
 msgid "Merging effect `%s'"
 msgstr "`%s' efektua batzen"
 
-#: beast-gtk/bstfiledialog.cc:702
+#: beast-gtk/bstfiledialog.cc:679
 #, c-format
 msgid "Merging instrument `%s'"
 msgstr "`%s' instrumentua batzen"
 
-#: beast-gtk/bstfiledialog.cc:454
+#: beast-gtk/bstfiledialog.cc:455
 #, c-format
 msgid "Merging project `%s'"
 msgstr "`%s' proiektua batzen"
 
-#: beast-gtk/bstmsgabsorb.cc:211
+#: beast-gtk/bstmsgabsorb.cc:198
 msgid "Message Type"
 msgstr "Mezu mota"
 
@@ -4076,7 +4025,7 @@ msgstr ""
 msgid "Message has been repeated %u times"
 msgstr ""
 
-#: beast-gtk/bstpreferences.cc:68
+#: beast-gtk/bstpreferences.cc:66
 msgid "Messages"
 msgstr ""
 
@@ -4088,15 +4037,15 @@ msgstr ""
 msgid "Metallicness of the string"
 msgstr ""
 
-#: beast-gtk/bstrecords.idl:134 beast-gtk/bstrecords.idl:141
+#: beast-gtk/bstapi.idl:151 beast-gtk/bstapi.idl:158
 msgid "Middle Bar Color"
 msgstr "Erdiko bakarraren kolorea"
 
-#: bse/bsetrack.cc:1045
+#: bse/bsetrack.cc:1046
 msgid "Midi channel assigned to this track, 0 uses internal per-track channel"
 msgstr ""
 
-#: beast-gtk/bsttrackview.cc:600
+#: beast-gtk/bsttrackview.cc:601
 msgid "Midi channel assigned to this track, 0 uses private per-track channel"
 msgstr ""
 
@@ -4104,7 +4053,7 @@ msgstr ""
 msgid "Mix Out"
 msgstr "Irt. nahasia"
 
-#: beast-gtk/bstsupershell.cc:170
+#: beast-gtk/bstsupershell.cc:166
 msgid "Mix track outputs, adjust volume and add effects"
 msgstr ""
 
@@ -4112,11 +4061,11 @@ msgstr ""
 msgid "Mixed audio output"
 msgstr "Audio-irteera nahasia"
 
-#: beast-gtk/bstsupershell.cc:170
+#: beast-gtk/bstsupershell.cc:166
 msgid "Mixer"
 msgstr ""
 
-#: beast-gtk/bsttrackview.cc:603
+#: beast-gtk/bsttrackview.cc:604
 msgid "Mixer busses connected to track output"
 msgstr ""
 
@@ -4124,7 +4073,7 @@ msgstr ""
 msgid "Mixer busses used as output for synthesis signals"
 msgstr ""
 
-#: bse/bsetrack.cc:1055
+#: bse/bsetrack.cc:1056
 msgid "Mixer busses used as output for this track"
 msgstr ""
 
@@ -4148,7 +4097,7 @@ msgstr "Modul. sarrera"
 msgid "Modulation"
 msgstr "Modulazioa"
 
-#: bse/bsebasics.idl:121 bse/bsebasics.idl:297
+#: bse/bseapi.idl:104 bse/bsebasics.idl:116
 msgid "Modulation Depth"
 msgstr "Modulazio-sakonera"
 
@@ -4160,7 +4109,7 @@ msgstr "Modulazio-sarrera"
 msgid "Modulation Strength for linear frequency modulation"
 msgstr "Maiztasun linealaren modulaziorako modulazio-indarra"
 
-#: beast-gtk/bstcanvassource.cc:433
+#: beast-gtk/bstcanvassource.cc:431
 msgid "Module Info"
 msgstr "Moduluari buruzko informazioa"
 
@@ -4172,59 +4121,59 @@ msgstr "Moduluaren esteka: "
 msgid "Module link"
 msgstr "Moduluaren esteka"
 
-#: beast-gtk/bsteventrollctrl.cc:430 beast-gtk/bsteventrollctrl.cc:437
-#: beast-gtk/bsteventrollctrl.cc:506
+#: beast-gtk/bsteventrollctrl.cc:416 beast-gtk/bsteventrollctrl.cc:423
+#: beast-gtk/bsteventrollctrl.cc:481
 msgid "Move Control Event"
 msgstr "Lekuz aldatu kontrol-gertaera"
 
-#: beast-gtk/bstpianorollctrl.cc:557 beast-gtk/bstpianorollctrl.cc:564
-#: beast-gtk/bstpianorollctrl.cc:651
+#: beast-gtk/bstpianorollctrl.cc:533 beast-gtk/bstpianorollctrl.cc:540
+#: beast-gtk/bstpianorollctrl.cc:615
 msgid "Move Note"
 msgstr "Lekuz aldatu nota"
 
-#: beast-gtk/bsttrackrollctrl.cc:473 beast-gtk/bsttrackrollctrl.cc:507
-#: beast-gtk/bsttrackrollctrl.cc:538
+#: beast-gtk/bsttrackrollctrl.cc:475 beast-gtk/bsttrackrollctrl.cc:508
+#: beast-gtk/bsttrackrollctrl.cc:540
 msgid "Move Part"
 msgstr "Lekuz aldatu zatia"
 
-#: beast-gtk/bstrecords.idl:20
+#: beast-gtk/bstapi.idl:14
 msgid "Move downwards"
 msgstr "Eraman behera"
 
-#: beast-gtk/bstpatternctrl.cc:304
+#: beast-gtk/bstpatternctrl.cc:310
 msgid "Move focus cell downwards"
 msgstr "Eraman foku-gelaxka behera"
 
-#: beast-gtk/bstpatternctrl.cc:308
+#: beast-gtk/bstpatternctrl.cc:314
 msgid "Move focus cell downwards page-wise"
 msgstr "Eraman foku-gelaxka beherantz orrian"
 
-#: beast-gtk/bstpatternctrl.cc:302
+#: beast-gtk/bstpatternctrl.cc:308
 msgid "Move focus cell to the left"
 msgstr "Eraman foku-gelaxka ezkerrera"
 
-#: beast-gtk/bstpatternctrl.cc:306
+#: beast-gtk/bstpatternctrl.cc:312
 msgid "Move focus cell to the left page-wise"
 msgstr "Eraman foku-gelaxka ezkerrera orrian"
 
-#: beast-gtk/bstpatternctrl.cc:303
+#: beast-gtk/bstpatternctrl.cc:309
 msgid "Move focus cell to the right"
 msgstr "Eraman foku-gelaxka eskuinera"
 
-#: beast-gtk/bstpatternctrl.cc:307
+#: beast-gtk/bstpatternctrl.cc:313
 msgid "Move focus cell to the right page-wise"
 msgstr "Eraman foku-gelaxka eskuinera orrian"
 
-#: beast-gtk/bstpatternctrl.cc:301
+#: beast-gtk/bstpatternctrl.cc:307
 msgid "Move focus cell upwards"
 msgstr "Eraman foku-gelaxka gora"
 
-#: beast-gtk/bstpatternctrl.cc:305
+#: beast-gtk/bstpatternctrl.cc:311
 msgid "Move focus cell upwards page-wise"
 msgstr "Eraman foku-gelaxka gorantz orrian"
 
 #. movement
-#: beast-gtk/bstpatternctrl.cc:300
+#: beast-gtk/bstpatternctrl.cc:306
 msgid ""
 "Move focus to the next cell (up/left/right/down according to configuration)"
 msgstr ""
@@ -4236,24 +4185,24 @@ msgid "Move the current selection into clipboard"
 msgstr "Unean hautatutakoa arbelera eramaten du"
 
 #. tooltip=
-#: beast-gtk/dialogs/radgets-beast.xml:285
+#: beast-gtk/res/radgets-beast.xml:285
 msgid "Move the selection down by one position"
 msgstr "Eraman hautatutakoa posizio bat behera"
 
 #. tooltip=
-#: beast-gtk/dialogs/radgets-beast.xml:283
+#: beast-gtk/res/radgets-beast.xml:283
 msgid "Move the selection up by one position"
 msgstr ""
 
-#: beast-gtk/bstrecords.idl:18
+#: beast-gtk/bstapi.idl:12
 msgid "Move to the left"
 msgstr "Eraman ezkerrera"
 
-#: beast-gtk/bstrecords.idl:19
+#: beast-gtk/bstapi.idl:13
 msgid "Move to the right"
 msgstr "Eraman eskuinera"
 
-#: beast-gtk/bstrecords.idl:17
+#: beast-gtk/bstapi.idl:11
 msgid "Move upwards"
 msgstr "Eraman gora"
 
@@ -4266,7 +4215,7 @@ msgstr "Biderkatu kontrolak"
 msgid "Music Composer"
 msgstr "Musika-konpositorea"
 
-#: bse/bsesong.cc:722
+#: bse/bsesong.cc:735
 msgid "Musical Tuning"
 msgstr ""
 
@@ -4278,7 +4227,7 @@ msgstr ""
 msgid "Mute: turn off the bus volume"
 msgstr ""
 
-#: bse/bsetrack.cc:1025
+#: bse/bsetrack.cc:1026
 msgid "Muted"
 msgstr ""
 
@@ -4291,28 +4240,28 @@ msgstr "Kokalekua"
 msgid "N Wait Spins"
 msgstr ""
 
-#: beast-gtk/bstfiledialog.cc:121 beast-gtk/bstitemview.cc:192
-#: beast-gtk/bsttrackview.cc:588 bse/bseobject.cc:817
+#: beast-gtk/bstfiledialog.cc:122 beast-gtk/bstitemview.cc:192
+#: beast-gtk/bsttrackview.cc:589 bse/bseobject.cc:863
 msgid "Name"
 msgstr "Izena"
 
-#: beast-gtk/bstrecords.idl:115
+#: beast-gtk/bstapi.idl:132
 msgid "Name for the current skin configuration (used for skin selections)."
 msgstr "Azalaren uneko konfigurazioaren izena (azal-hautapenerako erabilia)."
 
-#: bse/bseserver.cc:119
+#: bse/bseserver.cc:123
 msgid "Name of the WAVE file used for recording BSE sound output"
 msgstr ""
 
-#: beast-gtk/bstrecords.idl:144
+#: beast-gtk/bstapi.idl:161
 msgid "Negative Value Color"
 msgstr "Balio negatiboaren kolorea"
 
-#: beast-gtk/bstapp.cc:123
+#: beast-gtk/bstapp.cc:121
 msgid "New Song"
 msgstr "Kanta berria"
 
-#: beast-gtk/bstapp.cc:113
+#: beast-gtk/bstapp.cc:111
 msgid "New View"
 msgstr "Ikuspegi berria"
 
@@ -4333,7 +4282,7 @@ msgstr "Ikuspegi berria"
 msgid "Nice"
 msgstr "Prioritatea"
 
-#: beast-gtk/bsttrackrollctrl.cc:400
+#: beast-gtk/bsttrackrollctrl.cc:398
 msgid "No Part"
 msgstr "Zatirik ez"
 
@@ -4341,28 +4290,28 @@ msgstr "Zatirik ez"
 msgid "No Track"
 msgstr "Pistarik ez"
 
-#: bse/bseserver.cc:532
+#: bse/bseserver.cc:514
 msgid ""
 "No available MIDI device could be found and opened successfully. Reverting "
 "to null device, no MIDI events will be received or sent."
 msgstr ""
 
-#: bse/bseserver.cc:505
+#: bse/bseserver.cc:487
 msgid ""
 "No available audio device could be found and opened successfully. Sorry, no "
 "fallback selection can be made for audio devices, giving up."
 msgstr ""
 
-#: bse/bseserver.cc:504
+#: bse/bseserver.cc:486
 msgid "No available audio device was found."
 msgstr ""
 
-#: bse/bseenums.cc:101
+#: bse/bseapi.idl:41
 msgid "No data available"
 msgstr ""
 
 #. Device errors
-#: bse/bseenums.cc:117
+#: bse/bseapi.idl:57
 msgid "No device (driver) available"
 msgstr ""
 
@@ -4375,56 +4324,56 @@ msgstr "Ez da kuantizatzerik hautatu"
 msgid "No quantization selected"
 msgstr "Ez da kuantizatzerik hautatu"
 
-#: bse/bseenums.cc:96
+#: bse/bseapi.idl:36
 msgid "No space left on device"
 msgstr ""
 
 #. various procedure errors
-#: bse/bseenums.cc:146
+#: bse/bseapi.idl:86
 #, fuzzy
 msgid "No such entry"
 msgstr "Nota-sarrera"
 
-#: bse/bseenums.cc:147
+#: bse/bseapi.idl:87
 #, fuzzy
 msgid "No such event"
 msgstr "Gertaera galdua"
 
-#: bse/bseenums.cc:87
+#: bse/bseapi.idl:27
 msgid "No such file, device or directory"
 msgstr ""
 
-#: bse/bseenums.cc:128
+#: bse/bseapi.idl:68
 #, fuzzy
 msgid "No such input channel"
 msgstr "Sarrera-kanalak:"
 
-#: bse/bseenums.cc:129
+#: bse/bseapi.idl:69
 #, fuzzy
 msgid "No such output channel"
 msgstr "Irteera-kanalak:"
 
 #. BseProcedure errors
-#: bse/bseenums.cc:140
+#: bse/bseapi.idl:80
 #, fuzzy
 msgid "No such procedure"
 msgstr "Prozedura"
 
 #. BseSource errors
-#: bse/bseenums.cc:127
+#: bse/bseapi.idl:67
 #, fuzzy
 msgid "No such synthesis module"
 msgstr "Sintesi-moduluak"
 
-#: bse/bseenums.cc:109
+#: bse/bseapi.idl:49
 msgid "No such wave"
 msgstr ""
 
-#: beast-gtk/bsteventrollctrl.cc:437 beast-gtk/bsteventrollctrl.cc:591
-#: beast-gtk/bsteventrollctrl.cc:641 beast-gtk/bstpianorollctrl.cc:564
-#: beast-gtk/bstpianorollctrl.cc:673 beast-gtk/bstpianorollctrl.cc:736
-#: beast-gtk/bsttrackrollctrl.cc:464 beast-gtk/bsttrackrollctrl.cc:484
-#: beast-gtk/bsttrackrollctrl.cc:555 bse/bseenums.cc:148
+#: beast-gtk/bsteventrollctrl.cc:423 beast-gtk/bsteventrollctrl.cc:565
+#: beast-gtk/bsteventrollctrl.cc:613 beast-gtk/bstpianorollctrl.cc:540
+#: beast-gtk/bstpianorollctrl.cc:637 beast-gtk/bstpianorollctrl.cc:700
+#: beast-gtk/bsttrackrollctrl.cc:466 beast-gtk/bsttrackrollctrl.cc:486
+#: beast-gtk/bsttrackrollctrl.cc:557 bse/bseapi.idl:88
 msgid "No target"
 msgstr "Helbururik ez"
 
@@ -4458,14 +4407,14 @@ msgstr "Zarata-irteera"
 msgid "Noise is a generator of (supposedly) white noise"
 msgstr ""
 
-#: bse/bsebasics.idl:159
+#: bse/bseapi.idl:142
 msgid "Non-Registered Parameter"
 msgstr ""
 
 #. special cased signals
+#: beast-gtk/bstapi.idl:37 beast-gtk/bstapi.idl:76
 #: beast-gtk/bsteventrollctrl.cc:44 beast-gtk/bstpianorollctrl.cc:44
-#: beast-gtk/bstrecords.idl:41 beast-gtk/bstrecords.idl:68
-#: bse/bsebasics.idl:294
+#: bse/bsebasics.idl:113
 msgid "None"
 msgstr "Bat ere ez"
 
@@ -4500,11 +4449,11 @@ msgstr "Nota"
 msgid "Note Decay"
 msgstr "Notaren abiadura"
 
-#: beast-gtk/bstparam-note-spinner.cc:59
+#: beast-gtk/bstparam-note-spinner.cc:59 beast-gtk/bstparam-note-spinner.cc:66
 msgid "Note Entry"
 msgstr "Nota-sarrera"
 
-#: bse/bsebasics.idl:118
+#: bse/bseapi.idl:101
 msgid "Note Fine Tune"
 msgstr "Notaren afinazio doia"
 
@@ -4525,12 +4474,12 @@ msgid "Note Sync Signal"
 msgstr "Notaren sinkronizazio-seinalea"
 
 #. 14bit
-#: bse/bsebasics.idl:117
+#: bse/bseapi.idl:100
 msgid "Note Velocity"
 msgstr "Notaren abiadura"
 
 #. label=
-#: beast-gtk/dialogs/radgets-beast.xml:461
+#: beast-gtk/res/radgets-beast.xml:461
 msgid "Note _Length"
 msgstr "Notaren _luzera"
 
@@ -4543,16 +4492,16 @@ msgid ""
 "Note values are converted to Hertz according to the current musical tuning"
 msgstr ""
 
-#: beast-gtk/bstapp.cc:145
+#: beast-gtk/bstapp.cc:143
 msgid "Notes and informations about this release cycle"
 msgstr "Argitaratze zikloei buruzko oharrak eta informazioa eskaintzen du"
 
-#: beast-gtk/bsttrackview.cc:591
+#: beast-gtk/bsttrackview.cc:592
 msgid ""
 "Notes from unchecked tracks are ignored by the sequencer during playback"
 msgstr ""
 
-#: beast-gtk/bstrecords.idl:100
+#: beast-gtk/bstapi.idl:116
 msgid "Notify users via error bells if edits cannot be carried out"
 msgstr ""
 
@@ -4564,7 +4513,7 @@ msgstr "Zutabe-kopurua"
 msgid "Number of Rows"
 msgstr "Errenkada-kopurua"
 
-#: bse/bseautodoc.cc:320
+#: bse/bseautodoc.cc:319
 msgid "Number of elements (C specific)"
 msgstr ""
 
@@ -4573,13 +4522,17 @@ msgid "Number of octaves to be affected by exponential frequency modulation"
 msgstr ""
 "Maiztasun esponentzialaren modulazioak eragingo dien zortzidunen kopurua"
 
-#: bse/bsesong.cc:732
+#: bse/bsesong.cc:745
 #, fuzzy
 msgid "Number of ticks per quarter note"
 msgstr "Beltz-hirukotxoa"
 
-#: bse/bsesong.cc:736
+#: bse/bsesong.cc:749
 msgid "Numerator"
+msgstr ""
+
+#: bse/bseapi.idl:17
+msgid "OK"
 msgstr ""
 
 #: beast-gtk/bstparam-proxy.cc:279
@@ -4596,15 +4549,15 @@ msgstr "Objektu hautapena: %s"
 msgid "Octaves"
 msgstr "Zortzidunak"
 
-#: beast-gtk/bstapp.cc:171
+#: beast-gtk/bstapp.cc:169
 msgid "Online Demos..."
 msgstr "Lineako demostrazioak..."
 
-#: beast-gtk/bstapp.cc:167
+#: beast-gtk/bstapp.cc:165
 msgid "Online Sound Archive..."
 msgstr "Lineako soinu artxiboa..."
 
-#: beast-gtk/bstapp.cc:153
+#: beast-gtk/bstapp.cc:151
 msgid "Online _Help Desk..."
 msgstr "Lineako _laguntza..."
 
@@ -4612,12 +4565,12 @@ msgstr "Lineako _laguntza..."
 msgid "Only parts louder than threshold are compressed"
 msgstr ""
 
-#: beast-gtk/bstfiledialog.cc:375
+#: beast-gtk/bstfiledialog.cc:376
 msgid "Open Project"
 msgstr "Ireki proiektua"
 
 #. TRANSLATORS: keep this text to 70 chars in width
-#: bse/bsemididevice-oss.cc:236
+#: bse/bsemididevice-oss.cc:235
 msgid ""
 "Open Sound System MIDI driver:\n"
 "  DEVICE - MIDI device file name.\n"
@@ -4626,7 +4579,7 @@ msgid ""
 msgstr ""
 
 #. TRANSLATORS: keep this text to 70 chars in width
-#: bse/bsepcmdevice-oss.cc:615
+#: bse/bsepcmdevice-oss.cc:613
 msgid ""
 "Open Sound System PCM driver:\n"
 "  DEVICE - PCM device file name\n"
@@ -4635,20 +4588,20 @@ msgid ""
 "           adding \"hs\" forces hard sync on underruns.\n"
 msgstr ""
 
-#: beast-gtk/bstapp.cc:66
+#: beast-gtk/bstapp.cc:64
 msgid "Open existing project"
 msgstr "Ireki lehendik dagoen proiektua"
 
-#: bse/bseenums.cc:89
+#: bse/bseapi.idl:29
 msgid "Open failed"
 msgstr ""
 
-#: beast-gtk/bstparam-searchpath.cc:123
+#: beast-gtk/bstparam-searchpath.cc:122
 msgid "Open file browser"
 msgstr ""
 
-#: beast-gtk/bstapp.cc:715 beast-gtk/bstapp.cc:722
-#: beast-gtk/bstfiledialog.cc:417 beast-gtk/bstfiledialog.cc:423
+#: beast-gtk/bstapp.cc:711 beast-gtk/bstapp.cc:720
+#: beast-gtk/bstfiledialog.cc:419 beast-gtk/bstfiledialog.cc:427
 #, c-format
 msgid "Opening project `%s'"
 msgstr "`%s' proiektua irekitzen"
@@ -4689,7 +4642,7 @@ msgstr ""
 #. TRANSLATORS: this is the name of the track that is used to automatically
 #. * adopt orphan (unlinked) parts.
 #.
-#: bse/bsesong.proc:156
+#: bse/bsesong.proc:79
 msgid "Orphan Parts"
 msgstr ""
 
@@ -4731,16 +4684,16 @@ msgstr "_Bestelako iturriak"
 msgid "Other Sources/Simple ADSR"
 msgstr "_Bestelako iturriak"
 
-#: bse/bseenums.cc:97
+#: bse/bseapi.idl:37
 msgid "Out of memory"
 msgstr ""
 
-#: beast-gtk/bstcanvassource.cc:974 beast-gtk/bstsnetrouter.cc:1062
+#: beast-gtk/bstcanvassource.cc:976 beast-gtk/bstsnetrouter.cc:1062
 #: plugins/bseamplifier.idl:48
 msgid "Output"
 msgstr "Irteera"
 
-#: bse/bsesubsynth.cc:517
+#: bse/bsesubsynth.cc:515
 msgid "Output Assignments"
 msgstr "Irteera-esleipenak"
 
@@ -4752,7 +4705,7 @@ msgstr "Irteera-balantzea"
 msgid "Output Panning"
 msgstr "Irteera panoramikoa"
 
-#: bse/bsesuboport.cc:287 bse/bsesubsynth.cc:515
+#: bse/bsesuboport.cc:287 bse/bsesubsynth.cc:513
 #, c-format
 msgid "Output Port %u"
 msgstr "%u irteera-ataka"
@@ -4761,7 +4714,7 @@ msgstr "%u irteera-ataka"
 msgid "Output Signal Monitor"
 msgstr "Irteera-seinalearen monitorea"
 
-#: bse/bsebus.cc:884 bse/bsetrack.cc:1054
+#: bse/bsebus.cc:884 bse/bsetrack.cc:1055
 msgid "Output Signals"
 msgstr "Irteeraren seinaleak"
 
@@ -4775,7 +4728,7 @@ msgstr "Ezkerreko bolumena"
 msgid "Output [dB]"
 msgstr "Irteera"
 
-#: bse/bsesubsynth.cc:508
+#: bse/bsesubsynth.cc:506
 msgid "Output port name to interface from"
 msgstr "Interfazerako erabiltzekoa den irteera-atakaren izena"
 
@@ -4784,11 +4737,11 @@ msgid "Output stage amplification in decibel"
 msgstr "Irteera-fasearen anplifikazioa dezibeliotan"
 
 #. label=
-#: beast-gtk/dialogs/radgets-beast.xml:322
+#: beast-gtk/res/radgets-beast.xml:322
 msgid "Outputs"
 msgstr "Irteerak"
 
-#: bse/bseenums.cc:149
+#: bse/bseapi.idl:89
 msgid "Ownership mismatch"
 msgstr ""
 
@@ -4800,12 +4753,12 @@ msgstr "PCM sarrera-modulua"
 msgid "PCM Output module"
 msgstr "PCM irteera-modulua"
 
-#: bse/bseserver.cc:508
+#: bse/bseserver.cc:490
 #, fuzzy
 msgid "PCM device selections problems"
 msgstr "Ohartarazi MIDI gailuen hautapenari buruz"
 
-#: bse/bseserver.cc:593
+#: bse/bseserver.cc:575
 msgid "PCM recording errors"
 msgstr ""
 
@@ -4826,15 +4779,15 @@ msgstr "PWM sarrera"
 msgid "Palette"
 msgstr "Paleta"
 
-#: bse/bsebasics.idl:130 bse/bsebasics.idl:306
+#: bse/bseapi.idl:113 bse/bsebasics.idl:125
 msgid "Panorama"
 msgstr ""
 
-#: beast-gtk/bstkeybindings.cc:422
+#: beast-gtk/bstkeybindings.cc:421
 msgid "Parameter"
 msgstr "Parametroa"
 
-#: beast-gtk/bstkeybindings.cc:423
+#: beast-gtk/bstkeybindings.cc:422
 msgid "Parameter to pass to functions upon activation"
 msgstr "Aktibatzean funtzio bihurtzeko parametroa"
 
@@ -4852,11 +4805,11 @@ msgstr "Itsatsi"
 msgid "Parasite Paths"
 msgstr ""
 
-#: bse/bseenums.cc:135
+#: bse/bseapi.idl:75
 msgid "Parent mismatch"
 msgstr ""
 
-#: bse/bseenums.cc:114
+#: bse/bseapi.idl:54
 msgid "Parsing error"
 msgstr ""
 
@@ -4866,7 +4819,7 @@ msgstr ""
 msgid "Part"
 msgstr "Zatiak"
 
-#: beast-gtk/bstsupershell.cc:177
+#: beast-gtk/bstsupershell.cc:173
 msgid "Parts"
 msgstr "Zatiak"
 
@@ -4889,7 +4842,7 @@ msgid "Pattern"
 msgstr "Eredua"
 
 #. GXK_DIALOG_MODAL
-#: beast-gtk/bstpatterncolumns.cc:717
+#: beast-gtk/bstpatterncolumns.cc:714
 msgid "Pattern Editor Layout"
 msgstr "Eredu-editorearen diseinua"
 
@@ -4917,8 +4870,7 @@ msgstr ""
 msgid "Percentage of CPU usage"
 msgstr ""
 
-#: beast-gtk/bstrecords.idl:118 beast-gtk/bstrecords.idl:128
-#: beast-gtk/bstrecords.idl:138
+#: beast-gtk/bstapi.idl:135 beast-gtk/bstapi.idl:145 beast-gtk/bstapi.idl:155
 msgid "Percentage of background image pixel to blend over background color."
 msgstr ""
 "Atzeko planoaren kolorearekin nahastu beharreko atzeko planoko irudiaren "
@@ -4936,33 +4888,33 @@ msgstr "Objektu hau aldatzen edo sortzen duen pertsona"
 msgid "Phase"
 msgstr "Fasea"
 
-#: beast-gtk/bstpreferences.cc:57
+#: beast-gtk/bstpreferences.cc:55
 msgid "Piano Keys"
 msgstr "Pianoko teklak"
 
 #. label=
-#: beast-gtk/dialogs/radgets-beast.xml:445
+#: beast-gtk/res/radgets-beast.xml:445
 msgid "Piano Notes"
 msgstr "Pianoko notak"
 
 #. 7bit
-#: bse/bsebasics.idl:116
+#: bse/bseapi.idl:99
 msgid "Pitch Bend"
 msgstr ""
 
-#: beast-gtk/bstpianorollctrl.cc:951
+#: beast-gtk/bstpianorollctrl.cc:917
 msgid "Play note"
 msgstr "Erreproduzitu nota"
 
-#: beast-gtk/bstapp.cc:117
+#: beast-gtk/bstapp.cc:115
 msgid "Play or restart playback of the project"
 msgstr "Erreproduzitu edo jarraitu erreproduzitzen proiektua"
 
-#: beast-gtk/bstplayback.cc:64
+#: beast-gtk/bstplayback.cc:63
 msgid "Playback"
 msgstr "Erreproduzitzea"
 
-#: bse/bsemidisynth.cc:461 bse/bsesong.cc:753
+#: bse/bsemidisynth.cc:461 bse/bsesong.cc:759
 #, fuzzy
 msgid "Playback Settings"
 msgstr "Erreproduzitzea"
@@ -4989,11 +4941,11 @@ msgstr "Punteatu kateak ertzak igotzean"
 msgid "Pluck the string"
 msgstr "Erreproduzitzea"
 
-#: bse/bsebasics.idl:700
+#: bse/bsebasics.idl:465
 msgid "Plugin Path"
 msgstr "Plugin-bidea"
 
-#: beast-gtk/bstmain.cc:157
+#: beast-gtk/bstmain.cc:166
 msgid "Plugins"
 msgstr "Plugin-ak"
 
@@ -5001,7 +4953,7 @@ msgstr "Plugin-ak"
 msgid "Popup Options"
 msgstr "Laster-menuko aukerak"
 
-#: bse/bsebasics.idl:125 bse/bsebasics.idl:301
+#: bse/bseapi.idl:108 bse/bsebasics.idl:120
 msgid "Portamento Time"
 msgstr "Protamento-ordua"
 
@@ -5013,52 +4965,47 @@ msgstr "Kokalekua"
 msgid "Position taken"
 msgstr "Hartutako kokalekua"
 
-#: beast-gtk/bstrecords.idl:142
+#: beast-gtk/bstapi.idl:159
 msgid "Positive Value Color"
 msgstr "Balio positiboaren kolorea"
 
-#: bse/bsemidisynth.cc:439 bse/bsesong.cc:751 bse/bsetrack.cc:1050
+#: bse/bsemidisynth.cc:439 bse/bsesong.cc:757 bse/bsetrack.cc:1051
 #, fuzzy
 msgid "Postprocessor"
 msgstr "prozesatzen"
 
-#: beast-gtk/bstapp.cc:967
+#: beast-gtk/bstapp.cc:961
 msgid "Preferences"
 msgstr "Hobespenak"
-
-#: bse/bseenums.cc:85
-msgid "Premature EOF"
-msgstr ""
 
 #. TRANSLATORS: here "Preview" is meant audible, i.e. to
 #. * playback the current sample version and listen to it.
 #.
-#: beast-gtk/bstsampleeditor.cc:520
+#: beast-gtk/bstsampleeditor.cc:518
 msgid "Preview"
 msgstr "Aurrebista"
 
-#: beast-gtk/bstapp.cc:994
+#: beast-gtk/bstapp.cc:988
 msgid "Procedure Browser"
 msgstr "Prozedura-arakatzailea"
 
-#: beast-gtk/bstapp.cc:107
+#: beast-gtk/bstapp.cc:105
 msgid "Procedure _Browser"
 msgstr "Prozedura-ara_katzailea"
 
-#: bse/bseenums.cc:141
+#: bse/bseapi.idl:81
 msgid "Procedure currently busy"
 msgstr ""
 
-#: bse/bseenums.cc:144
+#: bse/bseapi.idl:84
 msgid "Procedure execution aborted"
 msgstr ""
 
-#: bse/bseenums.cc:143
+#: bse/bseapi.idl:83
 msgid "Procedure execution failed"
 msgstr ""
 
-#. recursion
-#: bse/bseenums.cc:142
+#: bse/bseapi.idl:82
 msgid "Procedure parameter invalid"
 msgstr ""
 
@@ -5074,7 +5021,7 @@ msgstr ""
 msgid "Process: %s\n"
 msgstr ""
 
-#: bse/bsebasics.idl:664
+#: bse/bsebasics.idl:429
 msgid ""
 "Processing duration between input and output of a single sample, smaller "
 "values increase CPU load"
@@ -5082,12 +5029,12 @@ msgstr ""
 "Lagin soil bat sartu eta ateratzeko prozesuaren iraupena; balio txikiek "
 "PUZaren karga handitzen dute"
 
-#: beast-gtk/bstapp.cc:111 beast-gtk/bstprofiler.cc:116
+#: beast-gtk/bstapp.cc:109 beast-gtk/bstprofiler.cc:116
 msgid "Profiler"
 msgstr "Analizatzailea"
 
-#. special cased signals
-#: bse/bsebasics.idl:114
+#. special case signals
+#: bse/bseapi.idl:97
 msgid "Program Change"
 msgstr ""
 
@@ -5098,8 +5045,8 @@ msgid ""
 "to time. It is a funny example though."
 msgstr ""
 
-#: beast-gtk/bstsnetrouter.cc:680 beast-gtk/bstsupershell.cc:173
-#: beast-gtk/bstsupershell.cc:206 beast-gtk/bstsupershell.cc:220
+#: beast-gtk/bstsnetrouter.cc:680 beast-gtk/bstsupershell.cc:169
+#: beast-gtk/bstsupershell.cc:202 beast-gtk/bstsupershell.cc:217
 #: plugins/standardguspatchenvelope.idl:19
 msgid "Properties"
 msgstr "Propietateak"
@@ -5120,17 +5067,17 @@ msgstr ""
 "Pultsuaren uhin-formaren iraupenaren osagai positiboaren ehunekoa (pultsua "
 "uhin-forma gisa hautatu behar da honek eragina izan dezan)"
 
-#: beast-gtk/bstapp.cc:143
+#: beast-gtk/bstapp.cc:141
 msgid "Provide an overview of all BEAST documentation contents"
 msgstr "BEASTen dokumentazioaren eduki guztiaren gainbegiraketa eskaintzen du"
 
-#: beast-gtk/bstapp.cc:162
+#: beast-gtk/bstapp.cc:160
 msgid "Provide an overview of development related topics and documents"
 msgstr ""
 "Garapenarekin zerikusia dutene gaiei buruzko dokumentuak eta gainbegiraketak "
 "eskaintzen ditu"
 
-#: beast-gtk/bstapp.cc:151
+#: beast-gtk/bstapp.cc:149
 msgid "Provides an introduction about how to accomplish the most common tasks"
 msgstr "Zeregin arruntak nola lantzen diren buruzko sarrera eskaintzen du"
 
@@ -5253,7 +5200,7 @@ msgstr "Kuantizatu fusaren mugetara"
 msgid "Quantize to whole note boundaries"
 msgstr "Kuantizatu biribilen mugetara"
 
-#: beast-gtk/bstrecords.idl:44
+#: beast-gtk/bstapi.idl:40
 msgid "Quarter note"
 msgstr "Beltza"
 
@@ -5271,33 +5218,33 @@ msgid ""
 msgstr ""
 
 #. parse rc file
-#: beast-gtk/bstmain.cc:119
+#: beast-gtk/bstmain.cc:141
 msgid "RC Files"
 msgstr "RC fitxategiak"
 
-#: beast-gtk/bstsupershell.cc:198
+#: beast-gtk/bstsupershell.cc:194
 msgid "Rack"
 msgstr "Armairua"
 
-#: beast-gtk/bstapp.cc:109
+#: beast-gtk/bstapp.cc:107
 msgid "Rack Editor"
 msgstr "Armairu-editorea"
 
 #. FIXME: undo Edit when hide && GXK_DIALOG_HIDE_ON_DELETE
-#: beast-gtk/bstapp.cc:953
+#: beast-gtk/bstapp.cc:947
 msgid "Rack editor"
 msgstr "Armairu-editorea"
 
 #. label=
-#: beast-gtk/bstkeybindings.cc:38 beast-gtk/dialogs/radgets-beast.xml:283
+#: beast-gtk/bstkeybindings.cc:37 beast-gtk/res/radgets-beast.xml:283
 msgid "Raise"
 msgstr "Goratu"
 
-#: beast-gtk/bstkeybindings.cc:38
+#: beast-gtk/bstkeybindings.cc:37
 msgid "Raise the currently selected key binding, relative to its neighbours"
 msgstr "Goratu ondokoekiko unean hautatutako tekla-konbinazioa"
 
-#: bse/bseautodoc.cc:170 bse/bseautodoc.cc:176
+#: bse/bseautodoc.cc:169 bse/bseautodoc.cc:175
 msgid "Range:"
 msgstr "Bitartea:"
 
@@ -5310,11 +5257,11 @@ msgstr "Sarrera-erlazioa"
 msgid "Ratio [x:1]"
 msgstr "Sarrera-erlazioa"
 
-#: bse/bseenums.cc:91
+#: bse/bseapi.idl:31
 msgid "Read failed"
 msgstr ""
 
-#: beast-gtk/bstapp.cc:90
+#: beast-gtk/bstapp.cc:88
 msgid "Rebuild"
 msgstr "Berreraiki"
 
@@ -5332,7 +5279,7 @@ msgstr "Hautatu laukizuzeneko notak"
 msgid "Redo"
 msgstr "Berregin"
 
-#: beast-gtk/bstapp.cc:99
+#: beast-gtk/bstapp.cc:97
 msgid "Redo the last undone action"
 msgstr "Desegindako azken urratsa berregiten du"
 
@@ -5349,7 +5296,7 @@ msgstr ""
 msgid "Reflection cutoff frequency"
 msgstr "Banda-paseko iragazkiaren mozte-maiztasuneko erorketa"
 
-#: bse/bsebasics.idl:158
+#: bse/bseapi.idl:141
 msgid "Registered Parameter"
 msgstr "Erregistratutako parametroa"
 
@@ -5357,12 +5304,12 @@ msgstr "Erregistratutako parametroa"
 msgid "Release [ms]"
 msgstr "Iraungi [ms]"
 
-#: beast-gtk/bstrecords.idl:88
+#: beast-gtk/bstapi.idl:105
 msgid "Release counter"
 msgstr "Bertsio-kontagailua"
 
 #. tooltip=
-#: beast-gtk/dialogs/radgets-standard.xml:463
+#: beast-gtk/res/radgets-standard.xml:463
 msgid "Reload current page"
 msgstr "Birkargatu uneko orria"
 
@@ -5374,11 +5321,11 @@ msgstr "Kendu modulua"
 msgid "Remove Paths"
 msgstr "Kendu bideak"
 
-#: beast-gtk/bstapp.cc:129
+#: beast-gtk/bstapp.cc:127
 msgid "Remove Song or Synthesizer"
 msgstr "Kendu kanta edo sintetizadorea"
 
-#: bse/bsebus.proc:123
+#: bse/bsebus.proc:125
 msgid "Remove a bus from the input list of a bus."
 msgstr ""
 
@@ -5386,15 +5333,15 @@ msgstr ""
 msgid "Remove a track from the input list of a bus."
 msgstr ""
 
-#: beast-gtk/bstpatternctrl.cc:334 beast-gtk/bstpatternctrl.cc:348
+#: beast-gtk/bstpatternctrl.cc:340 beast-gtk/bstpatternctrl.cc:354
 msgid "Remove any events in the focus cell"
 msgstr "Kendu foku-gelaxkako gertaera guztiak"
 
-#: beast-gtk/bstparam-searchpath.cc:112
+#: beast-gtk/bstparam-searchpath.cc:111
 msgid "Remove directory from searchpath"
 msgstr "Kendu direktorioa bilaketa bidetik"
 
-#: beast-gtk/bstapp.cc:129
+#: beast-gtk/bstapp.cc:127
 msgid "Remove the currently selected synthesizer (song)"
 msgstr "Ezabatu unean hautatutako sintetizadorea (abestia)"
 
@@ -5412,20 +5359,20 @@ msgid "Rename parts"
 msgstr "Izena aldatu zatiei"
 
 #. action-name=
-#: beast-gtk/dialogs/radgets-beast.xml:50
+#: beast-gtk/res/radgets-beast.xml:50
 msgid "Repeat"
 msgstr "Errepikatu"
 
 #. action-tooltip=
-#: beast-gtk/dialogs/radgets-beast.xml:50
+#: beast-gtk/res/radgets-beast.xml:50
 msgid "Repeat playback within loop points"
 msgstr "Errepikatu erreprodukzioa begizta-puntuen artean"
 
-#: beast-gtk/bstapp.cc:155
+#: beast-gtk/bstapp.cc:153
 msgid "Report a Beast Bug..."
 msgstr "Eman Beast-en erroreen berri..."
 
-#: bse/bseenums.cc:106
+#: bse/bseapi.idl:46
 msgid "Requested data values unmatched"
 msgstr ""
 
@@ -5433,13 +5380,13 @@ msgstr ""
 msgid "Reset Properties"
 msgstr "Berrezarri propietateak"
 
-#: beast-gtk/bsteventrollctrl.cc:586 beast-gtk/bsteventrollctrl.cc:591
-#: beast-gtk/bsteventrollctrl.cc:627
+#: beast-gtk/bsteventrollctrl.cc:560 beast-gtk/bsteventrollctrl.cc:565
+#: beast-gtk/bsteventrollctrl.cc:599
 msgid "Resize Control Event"
 msgstr "Tamaina aldatu kontrol-gertaerari"
 
-#: beast-gtk/bstpianorollctrl.cc:668 beast-gtk/bstpianorollctrl.cc:673
-#: beast-gtk/bstpianorollctrl.cc:722
+#: beast-gtk/bstpianorollctrl.cc:632 beast-gtk/bstpianorollctrl.cc:637
+#: beast-gtk/bstpianorollctrl.cc:686
 msgid "Resize Note"
 msgstr "Aldatu nota tamainaz"
 
@@ -5460,17 +5407,13 @@ msgstr "Erreprodukzioa berrabiarazten"
 msgid "Retrieve all immediate children of a container"
 msgstr ""
 
-#: bse/bsesong.proc:125
+#: bse/bsesong.proc:48
 msgid "Retrieve master output bus of a song if it exists."
 msgstr ""
 
-#: bse/bsesong.proc:98
+#: bse/bsesong.proc:21
 msgid ""
 "Retrieve master output bus of a song, will create one if it doesn't exist."
-msgstr ""
-
-#: bse/bsesong.proc:491
-msgid "Retrieve song timing information at a specific tick."
 msgstr ""
 
 #: plugins/bsesimpleadsr.cc:98 plugins/standardguspatchenvelope.idl:25
@@ -5481,7 +5424,7 @@ msgstr "Berrabiarazi sarrera"
 msgid "Retrigger input (raising edge retriggers envelope)"
 msgstr "Berrabiarazi sarrera (ertza igotakoan bilkaria berrabiarazten du)"
 
-#: beast-gtk/bstrecords.idl:19 beast-gtk/bsttrackrollctrl.cc:52
+#: beast-gtk/bstapi.idl:13 beast-gtk/bsttrackrollctrl.cc:52
 msgid "Right"
 msgstr "Eskuinera"
 
@@ -5559,7 +5502,7 @@ msgid ""
 "modules within a synthesis network."
 msgstr ""
 
-#: beast-gtk/bstsupershell.cc:185 beast-gtk/bstsupershell.cc:202
+#: beast-gtk/bstsupershell.cc:181 beast-gtk/bstsupershell.cc:198
 msgid "Routing"
 msgstr "Bideratzea"
 
@@ -5578,7 +5521,7 @@ msgstr "/Bideratzea/Anplifikadorea"
 msgid "Routing/Multiply"
 msgstr "/Bideratzea/Anplifikadorea"
 
-#: beast-gtk/bstpatternctrl.cc:125
+#: beast-gtk/bstpatternctrl.cc:129
 msgid "Row Shading"
 msgstr ""
 
@@ -5586,12 +5529,12 @@ msgstr ""
 msgid "STime"
 msgstr ""
 
-#: bse/bsebasics.idl:688
+#: bse/bsebasics.idl:453
 #, fuzzy
 msgid "Sample Path"
 msgstr "Kendu bideak"
 
-#: beast-gtk/bstfiledialog.cc:121
+#: beast-gtk/bstfiledialog.cc:122
 #, fuzzy
 msgid "Sample or instrument name"
 msgstr "Gorde instrumentua"
@@ -5625,64 +5568,64 @@ msgid ""
 "curvature across all levels"
 msgstr ""
 
-#: beast-gtk/bstapp.cc:139
+#: beast-gtk/bstapp.cc:137
 msgid "Save As Effect..."
 msgstr "Gorde efektu gisa..."
 
-#: beast-gtk/bstapp.cc:137
+#: beast-gtk/bstapp.cc:135
 msgid "Save As Instrument..."
 msgstr "Gorde instrumentu gisa..."
 
-#: beast-gtk/bstapp.cc:628
+#: beast-gtk/bstapp.cc:627
 #, fuzzy
 msgid "Save Changes"
 msgstr "Forma-barrutia"
 
-#: beast-gtk/bstfiledialog.cc:660
+#: beast-gtk/bstfiledialog.cc:642
 msgid "Save Effect"
 msgstr "Gorde efektua"
 
-#: beast-gtk/bstfiledialog.cc:719
+#: beast-gtk/bstfiledialog.cc:692
 msgid "Save Instrument"
 msgstr "Gorde instrumentua"
 
-#: beast-gtk/bstapp.cc:78
+#: beast-gtk/bstapp.cc:76
 msgid "Save _As..."
 msgstr "Gorde hone_la..."
 
-#: beast-gtk/bstapp.cc:139
+#: beast-gtk/bstapp.cc:137
 msgid "Save synthesizer mesh to effects folder"
 msgstr "Gorde sintetizadore maila efektuen karpetan"
 
-#: beast-gtk/bstapp.cc:137
+#: beast-gtk/bstapp.cc:135
 msgid "Save synthesizer mesh to instruments folder"
 msgstr "Gorde sintetizadore maila intrumentuen karpetan"
 
-#: beast-gtk/bstapp.cc:627
+#: beast-gtk/bstapp.cc:626
 msgid "Save the project before closing its window?"
 msgstr ""
 
-#: beast-gtk/bstfiledialog.cc:606
+#: beast-gtk/bstfiledialog.cc:594
 #, c-format
 msgid "Save: %s"
 msgstr "Gorde: %s"
 
-#: beast-gtk/bstfiledialog.cc:674
+#: beast-gtk/bstfiledialog.cc:655
 #, c-format
 msgid "Saving effect `%s'"
 msgstr "`%s' efektua gordetzen"
 
-#: beast-gtk/bstfiledialog.cc:733
+#: beast-gtk/bstfiledialog.cc:705
 #, c-format
 msgid "Saving instrument `%s'"
 msgstr "`%s' instrumentua gordetzen"
 
-#: beast-gtk/bstfiledialog.cc:569
+#: beast-gtk/bstfiledialog.cc:560
 #, c-format
 msgid "Saving project `%s'"
 msgstr "`%s' proiektua gordetzen"
 
-#: bse/bsebasics.idl:697
+#: bse/bsebasics.idl:462
 msgid "Script Path"
 msgstr "Script-bidea"
 
@@ -5690,7 +5633,7 @@ msgstr "Script-bidea"
 msgid "Script execution error."
 msgstr ""
 
-#: beast-gtk/bstmain.cc:204
+#: beast-gtk/bstmain.cc:213
 msgid "Scripts"
 msgstr "Script-ak"
 
@@ -5710,36 +5653,36 @@ msgstr "Korritzerik ez"
 msgid "Scroll Right"
 msgstr "Korritu eskuinetara"
 
-#: bse/bsebasics.idl:687
+#: bse/bsebasics.idl:452
 msgid "Search Paths"
 msgstr ""
 
-#: bse/bsebasics.idl:692
+#: bse/bsebasics.idl:457
 msgid ""
 "Search path of directories, seperated by \";\", used to find BSE effect "
 "files."
 msgstr ""
 
-#: bse/bsebasics.idl:695
+#: bse/bsebasics.idl:460
 msgid ""
 "Search path of directories, seperated by \";\", used to find BSE instrument "
 "files."
 msgstr ""
 
-#: bse/bsebasics.idl:701
+#: bse/bsebasics.idl:466
 msgid ""
 "Search path of directories, seperated by \";\", used to find BSE plugins. "
 "This path is searched for in addition to the standard BSE plugin location on "
 "this system."
 msgstr ""
 
-#: bse/bsebasics.idl:698
+#: bse/bsebasics.idl:463
 msgid ""
 "Search path of directories, seperated by \";\", used to find BSE scheme "
 "scripts."
 msgstr ""
 
-#: bse/bsebasics.idl:705
+#: bse/bsebasics.idl:470
 msgid ""
 "Search path of directories, seperated by \";\", used to find LADSPA plugins. "
 "This path is searched for in addition to the standard LADSPA location on "
@@ -5747,12 +5690,12 @@ msgid ""
 "informations about LADSPA plugins can be found at http://www.ladspa.org/."
 msgstr ""
 
-#: bse/bsebasics.idl:689
+#: bse/bsebasics.idl:454
 msgid ""
 "Search path of directories, seperated by \";\", used to find audio samples."
 msgstr ""
 
-#: beast-gtk/bstparam-searchpath.cc:132
+#: beast-gtk/bstparam-searchpath.cc:131
 msgid "Searchpath Text Entry"
 msgstr "Bidea bilatzeko testu-sarrera"
 
@@ -5775,7 +5718,7 @@ msgstr "Bigarren kontrol-sarrera"
 msgid "Second filter cutoff frequency"
 msgstr "Banda-paseko iragazkiaren mozte-maiztasuneko erorketa"
 
-#: bse/bseenums.cc:90
+#: bse/bseapi.idl:30
 #, fuzzy
 msgid "Seek failed"
 msgstr "Hautatu fitxategia"
@@ -5788,16 +5731,16 @@ msgstr "Hautatu"
 msgid "Select Color"
 msgstr "Hautatu kolorea"
 
-#: beast-gtk/bstfiledialog.cc:403
+#: beast-gtk/bstfiledialog.cc:404
 msgid "Select Directory"
 msgstr "Hautatu direktorioa"
 
-#: beast-gtk/bstfiledialog.cc:389
+#: beast-gtk/bstfiledialog.cc:390
 msgid "Select File"
 msgstr "Hautatu fitxategia"
 
-#: beast-gtk/bsteventrollctrl.cc:651 beast-gtk/bsteventrollctrl.cc:675
-#: beast-gtk/bstpianorollctrl.cc:768 beast-gtk/bstpianorollctrl.cc:794
+#: beast-gtk/bsteventrollctrl.cc:623 beast-gtk/bsteventrollctrl.cc:647
+#: beast-gtk/bstpianorollctrl.cc:732 beast-gtk/bstpianorollctrl.cc:758
 msgid "Select Region"
 msgstr "Hautatu eskualdea"
 
@@ -5837,7 +5780,7 @@ msgstr "Ezarri erresonantzia-kopurua ehunekoetan"
 msgid "Set the attack time in milliseconds"
 msgstr "Ezarri eraso-denbora milisegundotan"
 
-#: beast-gtk/bstpatternctrl.cc:319
+#: beast-gtk/bstpatternctrl.cc:325
 msgid "Set the base octave"
 msgstr "Ezarri oinarrizko zortziduna"
 
@@ -5862,31 +5805,31 @@ msgstr "Ezarri bilkariaren magnitudea ehunekoetan"
 msgid "Set the feedback amount; a negative feedback inverts the signal"
 msgstr ""
 
-#: beast-gtk/bstpatternctrl.cc:338 beast-gtk/bstpatternctrl.cc:352
+#: beast-gtk/bstpatternctrl.cc:344 beast-gtk/bstpatternctrl.cc:358
 msgid "Set the focus cell note"
 msgstr "Ezarri foku-gelaxkaren nota"
 
-#: beast-gtk/bstpatternctrl.cc:330
+#: beast-gtk/bstpatternctrl.cc:336
 msgid "Set the focus cell octave"
 msgstr "Ezarri foku-gelaxkako zortziduna"
 
-#: beast-gtk/bstpatternctrl.cc:312
+#: beast-gtk/bstpatternctrl.cc:318
 msgid "Set the focus cell to the bottommost position possible"
 msgstr "Ezarri foku-gelaxka behean ahalik eta gehien"
 
-#: beast-gtk/bstpatternctrl.cc:310
+#: beast-gtk/bstpatternctrl.cc:316
 msgid "Set the focus cell to the leftmost position possible"
 msgstr "Ezarri foku-gelaxka ezkerrean ahalik eta gehien"
 
-#: beast-gtk/bstpatternctrl.cc:311
+#: beast-gtk/bstpatternctrl.cc:317
 msgid "Set the focus cell to the rightmost position possible"
 msgstr "Ezarri foku-gelaxka eskuinean ahalik eta gehien"
 
-#: beast-gtk/bstpatternctrl.cc:309
+#: beast-gtk/bstpatternctrl.cc:315
 msgid "Set the focus cell to the topmost position possible"
 msgstr "Ezarri foku-gelaxka ahal den kokalekurik gorenenean"
 
-#: beast-gtk/bstpatternctrl.cc:315
+#: beast-gtk/bstpatternctrl.cc:321
 msgid "Set the number of steps to make when moving to the next cell"
 msgstr "Ezarri hurrengo gelaxkara joatean egin beharreko urrats-kopurua"
 
@@ -5898,23 +5841,27 @@ msgstr "Ezarri irteera-anplifikazioa"
 msgid "Set the release time in milliseconds"
 msgstr "Ezarri iraungitze-denbora milisegundotan"
 
-#: beast-gtk/bstpatternctrl.cc:342 beast-gtk/bstpatternctrl.cc:356
+#: beast-gtk/bstpatternctrl.cc:348 beast-gtk/bstpatternctrl.cc:362
 msgid "Sets the value of the focus digit"
 msgstr "Foku-digituaren balioa ezartzen du"
 
-#: beast-gtk/bstsampleeditor.cc:499 beast-gtk/bstwaveeditor.cc:201
+#: beast-gtk/bstapi.idl:66 beast-gtk/bstsampleeditor.cc:497
+#: beast-gtk/bstwaveeditor.cc:201
 msgid "Shape Average"
 msgstr "Formen batez bestekoa"
 
-#: beast-gtk/bstsampleeditor.cc:501 beast-gtk/bstwaveeditor.cc:203
+#: beast-gtk/bstapi.idl:68 beast-gtk/bstsampleeditor.cc:499
+#: beast-gtk/bstwaveeditor.cc:203
 msgid "Shape Maximum"
 msgstr "Gehienezko forma"
 
-#: beast-gtk/bstsampleeditor.cc:500 beast-gtk/bstwaveeditor.cc:202
+#: beast-gtk/bstapi.idl:67 beast-gtk/bstsampleeditor.cc:498
+#: beast-gtk/bstwaveeditor.cc:202
 msgid "Shape Minimum"
 msgstr "Gutxieneko forma"
 
-#: beast-gtk/bstsampleeditor.cc:498 beast-gtk/bstwaveeditor.cc:200
+#: beast-gtk/bstapi.idl:65 beast-gtk/bstsampleeditor.cc:496
+#: beast-gtk/bstwaveeditor.cc:200
 msgid "Shape Range"
 msgstr "Forma-barrutia"
 
@@ -5922,7 +5869,7 @@ msgstr "Forma-barrutia"
 msgid "Show Info"
 msgstr "Erakutsi informazioa"
 
-#: beast-gtk/bstusermessage.cc:763
+#: beast-gtk/bstusermessage.cc:762
 #, fuzzy, c-format
 msgid "Show messages about %s"
 msgstr "Ohartarazi MIDI gailuen hautapenari buruz"
@@ -5947,7 +5894,7 @@ msgstr "Seinalearen sarrera"
 msgid "Signal Inputs"
 msgstr "Seinalearen sarrerak"
 
-#: bse/bsebus.cc:882 bse/bsetrack.cc:1052
+#: bse/bsebus.cc:882 bse/bsetrack.cc:1053
 msgid "Signal Outputs"
 msgstr "Seinalearen irteerak"
 
@@ -5956,48 +5903,58 @@ msgstr "Seinalearen irteerak"
 msgid "Silbermann-Sorge Temperament"
 msgstr ""
 
-#: beast-gtk/bstrecords.idl:94
+#: beast-gtk/bstapi.idl:110
 msgid "Single Edit"
 msgstr "Editatze soila"
 
-#: beast-gtk/bstrecords.idl:46
+#: beast-gtk/bstapi.idl:42
 msgid "Sixteenth note"
 msgstr "Semikortxea"
 
-#: beast-gtk/bstrecords.idl:48
+#: beast-gtk/bstapi.idl:44
 msgid "Sixty-fourth note"
 msgstr "Semifusa"
 
-#: beast-gtk/bstfiledialog.cc:124
+#: beast-gtk/bstfiledialog.cc:125
 #, fuzzy
 msgid "Size"
 msgstr "Letra-tamaina"
 
-#: beast-gtk/bstsampleeditor.cc:503 beast-gtk/bstwaveeditor.cc:205
+#: beast-gtk/bstapi.idl:70 beast-gtk/bstsampleeditor.cc:501
+#: beast-gtk/bstwaveeditor.cc:205
 msgid "Sketch Average"
 msgstr "Esketxen batezbestekoa"
 
-#: beast-gtk/bstsampleeditor.cc:505 beast-gtk/bstwaveeditor.cc:207
+#: beast-gtk/bstapi.idl:72 beast-gtk/bstsampleeditor.cc:503
+#: beast-gtk/bstwaveeditor.cc:207
 msgid "Sketch Maximum"
 msgstr "Gehienezko esketxa"
 
-#: beast-gtk/bstsampleeditor.cc:504 beast-gtk/bstwaveeditor.cc:206
+#: beast-gtk/bstapi.idl:71 beast-gtk/bstsampleeditor.cc:502
+#: beast-gtk/bstwaveeditor.cc:206
 msgid "Sketch Minimum"
 msgstr "Gutxieneko esketxa"
 
-#: beast-gtk/bstsampleeditor.cc:502 beast-gtk/bstwaveeditor.cc:204
+#: beast-gtk/bstapi.idl:69 beast-gtk/bstsampleeditor.cc:500
+#: beast-gtk/bstwaveeditor.cc:204
 msgid "Sketch Range"
 msgstr "Esketxaren barrutia"
 
-#: beast-gtk/bstpreferences.cc:73
+#: beast-gtk/bstpreferences.cc:71
 msgid "Skin"
 msgstr "Azala"
 
-#: beast-gtk/bstrecords.idl:115
+#: beast-gtk/bstapi.idl:132
 msgid "Skin Name"
 msgstr "Azalaren izena"
 
-#: beast-gtk/bstrecords.idl:106
+#: beast-gtk/bstapi.idl:123
+msgid ""
+"Slow down the periodic update frequency of scopes aggresively. Doing this "
+"may be desirable on particularly slow machines."
+msgstr ""
+
+#: beast-gtk/bstapi.idl:122
 msgid "Slow scopes"
 msgstr ""
 
@@ -6036,13 +5993,13 @@ msgstr ""
 msgid "Song"
 msgstr "Ka_nta"
 
-#: beast-gtk/bstapp.cc:503
+#: beast-gtk/bstapp.cc:502
 #, c-format
 msgid "Song: %s"
 msgstr "Abestia: %s"
 
-#: beast-gtk/bstscrollgraph.cc:555 beast-gtk/bstscrollgraph.cc:558
-#: beast-gtk/bstscrollgraph.cc:561 beast-gtk/bstscrollgraph.cc:564
+#: beast-gtk/bstscrollgraph.cc:552 beast-gtk/bstscrollgraph.cc:555
+#: beast-gtk/bstscrollgraph.cc:559 beast-gtk/bstscrollgraph.cc:562
 msgid "Spectrograph"
 msgstr ""
 
@@ -6055,7 +6012,7 @@ msgid "Spin Button (Logarithmic)"
 msgstr "Biratze-botoia (logaritmikoa)"
 
 #. show splash images
-#: beast-gtk/bstmain.cc:123
+#: beast-gtk/bstmain.cc:145
 msgid "Splash Image"
 msgstr "Splash irudia"
 
@@ -6090,7 +6047,7 @@ msgstr ""
 "StandardOsc BSEren oinarri-osziladorea da eta uhin-formen eta modulazio-"
 "sarreren hainbat mota onartzen ditu."
 
-#: beast-gtk/bsttrackrollctrl.cc:550 beast-gtk/bsttrackrollctrl.cc:555
+#: beast-gtk/bsttrackrollctrl.cc:552 beast-gtk/bsttrackrollctrl.cc:557
 msgid "Start Editor"
 msgstr "Abiarazi editorea"
 
@@ -6105,33 +6062,33 @@ msgstr "Abiarazi editorea"
 msgid "Start Procedure"
 msgstr "Prozedura"
 
-#: beast-gtk/bstapp.cc:171
+#: beast-gtk/bstapp.cc:169
 msgid "Start a web browser pointing to online demo songs"
 msgstr ""
 "Web arakatzaile bat abiarazten du lineako demostrazioko abestiei zuzenduta"
 
-#: beast-gtk/bstapp.cc:147
+#: beast-gtk/bstapp.cc:145
 msgid "Start a web browser pointing to the BEAST website"
 msgstr "Web arakatzaile bat abiarazten du, BEASTen web gunera zuzenduta"
 
-#: beast-gtk/bstapp.cc:153
+#: beast-gtk/bstapp.cc:151
 msgid ""
 "Start a web browser pointing to the online help desk at the BEAST website"
 msgstr ""
 "Web arakatzaile bat abiarazten du BEASTen web guneko lineako laguntza "
 "bistaratzeko"
 
-#: beast-gtk/bstapp.cc:167
+#: beast-gtk/bstapp.cc:165
 msgid "Start a web browser pointing to the online sound archive"
 msgstr "Web arakatzaile bat abiarazten du lineako soinuen artxibora zuzenduta"
 
-#: beast-gtk/bstapp.cc:155
+#: beast-gtk/bstapp.cc:153
 #, fuzzy
 msgid ""
 "Start a web browser with the bug report form for the BEAST bugzilla product"
 msgstr "Web arakatzaile bat abiarazten du, BEASTen web gunera zuzenduta"
 
-#: beast-gtk/bstsampleeditor.cc:482
+#: beast-gtk/bstsampleeditor.cc:480
 msgid "Start:"
 msgstr "Hasi:"
 
@@ -6139,15 +6096,15 @@ msgstr "Hasi:"
 msgid "Starting Playback"
 msgstr "Erreprodukzioa hasten"
 
-#: beast-gtk/bstmain.cc:107
+#: beast-gtk/bstmain.cc:129
 msgid "Startup"
 msgstr "Abioa"
 
-#: beast-gtk/bstpatternctrl.cc:107
+#: beast-gtk/bstpatternctrl.cc:111
 msgid "Steps"
 msgstr "Urratsak"
 
-#: beast-gtk/bstapp.cc:119
+#: beast-gtk/bstapp.cc:117
 msgid "Stop playback of the project"
 msgstr "Gelditu proiektua erreproduzitzea"
 
@@ -6155,7 +6112,7 @@ msgstr "Gelditu proiektua erreproduzitzea"
 msgid "Stopping Playback"
 msgstr "Erreprodukzioa geratzen"
 
-#: beast-gtk/bstfiledialog.cc:611
+#: beast-gtk/bstfiledialog.cc:599
 msgid "Store references to wave files"
 msgstr "Gorde uhinen fitxategien erreferentziak"
 
@@ -6191,11 +6148,11 @@ msgstr ""
 msgid "String oscillation frequency in Hertz"
 msgstr "Oszilazio-maiztasunaren sarrera"
 
-#: beast-gtk/bstrecords.idl:96
+#: beast-gtk/bstapi.idl:112
 msgid "Swap IO"
 msgstr "Aldatu S/I"
 
-#: beast-gtk/bstrecords.idl:96
+#: beast-gtk/bstapi.idl:112
 msgid "Swap input with output channels when displaying synthesis modules?"
 msgstr ""
 "Sarrera irteerako kanalekin aldatu nahi duzu sintesi-moduluak bistaratzean?"
@@ -6209,7 +6166,7 @@ msgstr ""
 "orekaren bidez bata bestearekin nahasi beharrean."
 
 #. label=
-#: beast-gtk/dialogs/radgets-beast.xml:312
+#: beast-gtk/res/radgets-beast.xml:312
 msgid "Switches"
 msgstr "Kommutadoreak"
 
@@ -6241,7 +6198,7 @@ msgstr "Sinkronizazio-irteera"
 msgid "Syncronize left and right volume"
 msgstr ""
 
-#: bse/bsebasics.idl:671
+#: bse/bsebasics.idl:436
 msgid "Synth Control Frequency"
 msgstr "Sintesiaren kontrol-maiztasuna"
 
@@ -6249,12 +6206,12 @@ msgstr "Sintesiaren kontrol-maiztasuna"
 msgid "Synth Done"
 msgstr "Sintetizazioa eginda"
 
-#: bse/bsetrack.cc:1027 bse/bsetrack.cc:1032 bse/bsetrack.cc:1037
+#: bse/bsetrack.cc:1028 bse/bsetrack.cc:1033 bse/bsetrack.cc:1038
 #, fuzzy
 msgid "Synth Input"
 msgstr "Ezkerreko irteera"
 
-#: bse/bsebasics.idl:667
+#: bse/bsebasics.idl:432
 msgid "Synth Mixing Frequency"
 msgstr "Sintesi-nahasketaren maiztasuna"
 
@@ -6264,21 +6221,21 @@ msgid "Synth Net"
 msgstr "Sintetizazioa eginda"
 
 #. label=
-#: beast-gtk/dialogs/radgets-beast.xml:98
+#: beast-gtk/res/radgets-beast.xml:98
 msgid "Synthesis Modules"
 msgstr "Sintesi-moduluak"
 
-#: bse/bsebasics.idl:661
+#: bse/bsebasics.idl:426
 msgid "Synthesis Settings"
 msgstr "Sintesi-ezarpenak"
 
-#: bse/bsebasics.idl:668
+#: bse/bsebasics.idl:433
 msgid "Synthesis mixing frequency, common values are: 22050, 44100, 48000"
 msgstr ""
 "Sintesi-nahasketaren maiztasuna, ohiko balioak hauek dira: 22050, 44100, "
 "48000"
 
-#: bse/bseenums.cc:137
+#: bse/bseapi.idl:77
 #, fuzzy
 msgid "Synthesis module currently busy"
 msgstr "Sintesi-moduluak"
@@ -6288,7 +6245,7 @@ msgstr "Sintesi-moduluak"
 msgid "Synthesis module used internally by BseBus"
 msgstr "Sintesi-moduluak"
 
-#: beast-gtk/bsttrackview.cc:597
+#: beast-gtk/bsttrackview.cc:598
 msgid "Synthesis network or wave to be used as instrument by this track"
 msgstr ""
 
@@ -6297,17 +6254,17 @@ msgstr ""
 msgid "Synthesis network to be used as MIDI instrument"
 msgstr "Sintesi-sarea interfaze gisa erabiltzeko"
 
-#: bse/bsetrack.cc:1029
+#: bse/bsetrack.cc:1030
 #, fuzzy
 msgid "Synthesis network to be used as instrument"
 msgstr "Sintesi-sarea interfaze gisa erabiltzeko"
 
-#: beast-gtk/bsttrackview.cc:606 bse/bsemidisynth.cc:439 bse/bsesong.cc:751
-#: bse/bsetrack.cc:1050
+#: beast-gtk/bsttrackview.cc:607 bse/bsemidisynth.cc:439 bse/bsesong.cc:757
+#: bse/bsetrack.cc:1051
 msgid "Synthesis network to be used as postprocessor"
 msgstr "Sintesi-sarea ondorengo prozesatze gisa erabiltzeko"
 
-#: bse/bsesubsynth.cc:498
+#: bse/bsesubsynth.cc:496
 #, fuzzy
 msgid "Synthesis network to use as embedded sub network"
 msgstr "Sintesi-sarea interfaze gisa erabiltzeko"
@@ -6319,11 +6276,11 @@ msgstr "Sintesi-sarea interfaze gisa erabiltzeko"
 msgid "Synthesis signals (from tracks and busses) used as bus input"
 msgstr ""
 
-#: bse/bsesong.proc:442
+#: bse/bsesong.proc:178
 msgid "Synthesize a note on a song of an active project."
 msgstr ""
 
-#: bse/bsemidisynth.cc:435 bse/bsesubsynth.cc:497 bse/bsetrack.cc:1029
+#: bse/bsemidisynth.cc:435 bse/bsesubsynth.cc:495 bse/bsetrack.cc:1030
 #, fuzzy
 msgid "Synthesizer"
 msgstr "_Sintetizadoreak"
@@ -6334,7 +6291,7 @@ msgstr "_Sintetizadoreak"
 msgid "Synthesizer Selection: %s"
 msgstr "Sintetizadore hautapena: %s"
 
-#: beast-gtk/bstapp.cc:513
+#: beast-gtk/bstapp.cc:512
 #, c-format
 msgid "Synthesizer: %s"
 msgstr "Sintetizadorea: %s"
@@ -6347,12 +6304,12 @@ msgstr ""
 msgid "TID"
 msgstr "HIDa"
 
-#: beast-gtk/bstapp.cc:160
+#: beast-gtk/bstapp.cc:158
 msgid "Technical description of the multi-threaded synthesis engine innards"
 msgstr ""
 
 #. miscellaneous errors
-#: bse/bseenums.cc:108
+#: bse/bseapi.idl:48
 msgid "Temporary error"
 msgstr ""
 
@@ -6364,7 +6321,7 @@ msgstr ""
 msgid "Tension of the string"
 msgstr ""
 
-#: beast-gtk/bstrecords.idl:123
+#: beast-gtk/bstapi.idl:140
 msgid "Text Color"
 msgstr "Testu-kolorea"
 
@@ -6372,7 +6329,7 @@ msgstr "Testu-kolorea"
 msgid "Text Entry"
 msgstr "Testu-sarrera"
 
-#: bse/bsesource.proc:720
+#: bse/bsesource.proc:683
 msgid ""
 "The MIDI Channel from which automation events should be received, 0 "
 "designates the default MIDI channel"
@@ -6427,7 +6384,7 @@ msgid ""
 "which is referred to as the \"blues note\"."
 msgstr ""
 
-#: beast-gtk/bstpatternctrl.cc:113
+#: beast-gtk/bstpatternctrl.cc:117
 msgid "The direction of cell movement each time an event or note was edited"
 msgstr ""
 "Gertaera edo nota bat editatzen den bakoitzean gelaxkak egin behar duen "
@@ -6471,7 +6428,7 @@ msgid ""
 "this value. Then all notes will be transposed up."
 msgstr ""
 
-#: beast-gtk/bstmsgabsorb.cc:215
+#: beast-gtk/bstmsgabsorb.cc:202
 msgid "The last program version that displayed this message type"
 msgstr ""
 
@@ -6497,7 +6454,7 @@ msgstr ""
 msgid "The number of bits the quantization steps correspond to."
 msgstr ""
 
-#: beast-gtk/bstpatternctrl.cc:108
+#: beast-gtk/bstpatternctrl.cc:112
 msgid ""
 "The number of cells to move across each time an event or note was edited"
 msgstr ""
@@ -6508,7 +6465,7 @@ msgstr ""
 msgid "The number of different steps the output signal is quantized to."
 msgstr ""
 
-#: beast-gtk/bstpatterncolumns.cc:676
+#: beast-gtk/bstpatterncolumns.cc:673
 msgid ""
 "The pattern editor column layout is specified by listing column types with "
 "possible modifiers in display order."
@@ -6523,7 +6480,7 @@ msgstr ""
 "Atakaren izena sarrera<->irteera ataken arteko harremanak ezartzeko "
 "erabiltzen den izen esklusiboa da"
 
-#: beast-gtk/bstapp.cc:624
+#: beast-gtk/bstapp.cc:623
 msgid "The project has been modified."
 msgstr "Proiketua aldatua izan da."
 
@@ -6555,7 +6512,7 @@ msgstr "Ezarri iraungitze-denbora milisegundotan"
 msgid "The text of the label"
 msgstr "Etiketaren testua"
 
-#: beast-gtk/bstpatternctrl.cc:104
+#: beast-gtk/bstpatternctrl.cc:106
 msgid "The tick/note length per line"
 msgstr "Kolpearen/Notaren luzera lerroko"
 
@@ -6567,7 +6524,7 @@ msgstr ""
 msgid "The time for the right to left delay"
 msgstr ""
 
-#: bse/bsesong.cc:723
+#: bse/bsesong.cc:736
 msgid ""
 "The tuning system which specifies the tones or pitches to be used. Due to "
 "the psychoacoustic properties of tones, various pitch combinations can sound "
@@ -6575,7 +6532,7 @@ msgid ""
 "system defines the number and spacing of frequency values applied."
 msgstr ""
 
-#: bse/bsesource.proc:722
+#: bse/bsesource.proc:685
 msgid "The type of control events used for automation"
 msgstr ""
 
@@ -6596,11 +6553,11 @@ msgstr ""
 msgid "The widget to be activated when the label's mnemonic key is pressed"
 msgstr "Etiketaren tekla mnemoteknikoa sakatutakoan aktibatu beharreko trepeta"
 
-#: beast-gtk/bstrecords.idl:47
+#: beast-gtk/bstapi.idl:43
 msgid "Thirty-secondth note"
 msgstr "Fusa"
 
-#: bse/bseautodoc.cc:248
+#: bse/bseautodoc.cc:247
 msgid "This procedure has multiple return values."
 msgstr ""
 
@@ -6671,12 +6628,12 @@ msgstr ""
 msgid "Threshold [dB]"
 msgstr "Atalasea"
 
-#: bse/bsesong.cc:732
+#: bse/bsesong.cc:745
 #, fuzzy
 msgid "Ticks"
 msgstr "Pistak"
 
-#: beast-gtk/bstfiledialog.cc:142
+#: beast-gtk/bstfiledialog.cc:143
 msgid "Time"
 msgstr ""
 
@@ -6684,7 +6641,43 @@ msgstr ""
 msgid "Time Entry"
 msgstr "Denbora-sarrera"
 
-#: bse/bsesong.cc:730 bse/bsesong.cc:734 bse/bsesong.cc:738 bse/bsesong.cc:742
+#. /< Retrieve song timing information at a specific tick.
+#. /< Find the first track that contains part, suitable to check for orphan parts.
+#. /< Create a new mixer bus for a Song.
+#. /< Delete a mixer bus from a Song.
+#. /< Create a new Part in a Song.
+#. /< Delete a Part from a Song.
+#. /< Create a new Track for a Song.
+#. /< Delete a Track from a Song.
+#. Bus        ensure_master_bus       ();            ///< Retrieve master output bus of a song, will create one if it doesn't exist.
+#. void       ensure_track_links      ();            ///< Ensure that each part in a song is inserted into at least one track.
+#. Track      find_track_for_part     (Part part);   ///< Find a track suitable for playing notes of a given part.
+#. Bus        get_master_bus          ();            ///< Retrieve master output bus of a song if it exists.
+#. void synthesize_note (Track track, int32 duration, int32 note, int32 fine_tune, float64 velocity); ///< Synthesize a note on a song of an active project.
+#. signal void   pointer_changed (int32 a);
+#. group _("Tuning") {
+#. MusicalTuningType musical_tuning = Enum ("Musical Tuning",
+#. "The tuning system which specifies the tones or pitches to be used. "
+#. "Due to the psychoacoustic properties of tones, various pitch combinations can "
+#. "sound 'natural' or 'pleasing' when used in combination. "
+#. "The musical tuning system defines the number and spacing of frequency values applied.",
+#. STANDARD ":unprepared:skip-default", BSE_MUSICAL_TUNING_12_TET);
+#. };
+#. group _("Timing") {
+#. int32   tpqn          = Range  ("Ticks", "Number of ticks per quarter note", STANDARD, 384, 384, 0, 384);
+#. int32   numerator     = Range  ("Numerator", "Measure numerator", STANDARD, 1, 256, 1, 4);
+#. int32   denominator   = Range  ("Denominator", "Measure denominator, must be a power of 2", STANDARD, 1, 256, 1, 4);
+#. float64 bpm           = Range  ("BPM", "Beats per minute", STANDARD, MIN_BPM, MAX_BPM, 10, 120);
+#. };
+#. group _("MIDI Instrument") {
+#. CSynth  pnet          = Object ("Postprocessor", "Synthesis network to be used as postprocessor", STANDARD);
+#. };
+#. bool  auto_activate = Bool  ("Auto Activate", "", STORAGE, TRUE);
+#. bool  loop_enabled  = Bool  ("Loop Enabled", "", STORAGE, FALSE);
+#. int32 loop_left     = Range ("Loop Left", "", STORAGE, -1, MAXINT31, 384, -1);
+#. int32 loop_right    = Range ("Loop Right", "", STORAGE, -1, MAXINT31, 384, -1);
+#. int32 tick_pointer  = Range ("Tick Pointer", "", STORAGE, -1, MAXINT31, 384, -1);
+#: bse/bseapi.idl:564 bse/bsesong.cc:743 bse/bsesong.cc:747 bse/bsesong.cc:751
 msgid "Timing"
 msgstr ""
 
@@ -6704,7 +6697,7 @@ msgstr "Txandakatu kontrol esponentzialaren eta linealaren erantzuna"
 msgid "Toggle visibility of the tool palette"
 msgstr "Txandakatu tresna-paletaren ikusgaitasuna"
 
-#: beast-gtk/bstpatternctrl.cc:118
+#: beast-gtk/bstpatternctrl.cc:122
 msgid ""
 "Toggle whether horizontal movement of the focus cell will wrap around edges"
 msgstr ""
@@ -6712,11 +6705,11 @@ msgstr ""
 "itzulbiratzea "
 
 #. out of resource conditions
-#: bse/bseenums.cc:94
+#: bse/bseapi.idl:34
 msgid "Too many open files"
 msgstr ""
 
-#: bse/bseenums.cc:95
+#: bse/bseapi.idl:35
 msgid "Too many open files in system"
 msgstr ""
 
@@ -6724,11 +6717,11 @@ msgstr ""
 msgid "Totals"
 msgstr "Guztira"
 
-#: beast-gtk/bstsupershell.cc:167
+#: beast-gtk/bstsupershell.cc:163
 msgid "Tracks"
 msgstr "Pistak"
 
-#: beast-gtk/bstsupershell.cc:167
+#: beast-gtk/bstsupershell.cc:163
 msgid "Tracks contain instrument definitions and parts with notes"
 msgstr ""
 
@@ -6784,39 +6777,39 @@ msgstr "Abiarazi iragazkia"
 msgid "Trigger input"
 msgstr "Abiarazi sarrera"
 
-#: beast-gtk/bstrecords.idl:61
+#: beast-gtk/bstapi.idl:57
 msgid "Triplet eighths note"
 msgstr "Kortxea-hirukotxoa"
 
-#: beast-gtk/bstrecords.idl:59
+#: beast-gtk/bstapi.idl:55
 msgid "Triplet half note"
 msgstr "Zuri-hirukotxoa"
 
-#: beast-gtk/bstrecords.idl:65
+#: beast-gtk/bstapi.idl:61
 msgid "Triplet hundred twenty-eighth note"
 msgstr ""
 
-#: beast-gtk/bstrecords.idl:60
+#: beast-gtk/bstapi.idl:56
 msgid "Triplet quarter note"
 msgstr "Beltz-hirukotxoa"
 
-#: beast-gtk/bstrecords.idl:62
+#: beast-gtk/bstapi.idl:58
 msgid "Triplet sixteenth note"
 msgstr "Semikortxea-hirukotxoa"
 
-#: beast-gtk/bstrecords.idl:64
+#: beast-gtk/bstapi.idl:60
 msgid "Triplet sixty-fourth note"
 msgstr "Semifusa-hirukotxoa"
 
-#: beast-gtk/bstrecords.idl:63
+#: beast-gtk/bstapi.idl:59
 msgid "Triplet thirty-secondth note"
 msgstr "Fusa-hirukotxoa"
 
-#: beast-gtk/bstrecords.idl:58
+#: beast-gtk/bstapi.idl:54
 msgid "Triplet whole note"
 msgstr "Biribil-hirukotxoa"
 
-#: bse/bsesong.cc:720
+#: bse/bsesong.cc:733
 #, fuzzy
 msgid "Tuning"
 msgstr "Bideratzea"
@@ -6829,7 +6822,7 @@ msgstr "Mota"
 msgid "UTime"
 msgstr ""
 
-#: beast-gtk/bstscrollgraph.cc:655
+#: beast-gtk/bstscrollgraph.cc:649
 msgid "Unconnected Output Channel"
 msgstr "Irteera-kanala deskonektatuta"
 
@@ -6841,7 +6834,7 @@ msgstr "Desegin"
 msgid "Undo last editing step"
 msgstr "Editatutako azken urratsa desegiten du"
 
-#: beast-gtk/bstapp.cc:97
+#: beast-gtk/bstapp.cc:95
 msgid "Undo the effect of the last action"
 msgstr "Azken ekintzaren efektua desegiten du"
 
@@ -6853,15 +6846,15 @@ msgstr "Iragazi gabeko audio-seinalea"
 msgid "Unfiltered Input"
 msgstr "Iragazi gabeko sarrera"
 
-#: bse/bseobject.cc:817
+#: bse/bseobject.cc:863
 msgid "Unique name of this object"
 msgstr ""
 
-#: bse/bseenums.cc:79
+#: bse/bseapi.idl:19
 msgid "Unknown error"
 msgstr ""
 
-#: bse/bseenums.cc:105
+#: bse/bseapi.idl:45
 msgid "Unknown format"
 msgstr ""
 
@@ -6873,7 +6866,7 @@ msgstr "Desautatu gertaera guztiak"
 msgid "Unselect all notes"
 msgstr "Desautatu nota guztiak"
 
-#: beast-gtk/bstrecords.idl:41
+#: beast-gtk/bstapi.idl:37
 msgid "Unspecified length"
 msgstr "Zehaztu gabeko luzera"
 
@@ -6881,7 +6874,7 @@ msgstr "Zehaztu gabeko luzera"
 msgid "Unused"
 msgstr "Erabili gabe"
 
-#: beast-gtk/bstrecords.idl:17
+#: beast-gtk/bstapi.idl:11
 msgid "Up"
 msgstr "Gora"
 
@@ -6889,8 +6882,8 @@ msgstr "Gora"
 msgid "Update Percentage"
 msgstr ""
 
-#: beast-gtk/bstutils.cc:277 beast-gtk/bstutils.cc:299
-#: beast-gtk/bstutils.cc:302
+#: beast-gtk/bstutils.cc:243 beast-gtk/bstutils.cc:265
+#: beast-gtk/bstutils.cc:268
 msgid "Updating View"
 msgstr ""
 
@@ -6910,12 +6903,12 @@ msgstr "Erabili erregela horizontala eskuineko begizta-erakuslea doitzeko"
 msgid "Use underline"
 msgstr "Erabili azpimarra"
 
-#: beast-gtk/bstsampleeditor.cc:472 beast-gtk/bstwaveeditor.cc:194
+#: beast-gtk/bstsampleeditor.cc:470 beast-gtk/bstwaveeditor.cc:194
 msgid "VScale:"
 msgstr "Eskala b.:"
 
 #. label=
-#: beast-gtk/bstpatternctrl.cc:103 beast-gtk/dialogs/radgets-beast.xml:434
+#: beast-gtk/bstpatternctrl.cc:105 beast-gtk/res/radgets-beast.xml:434
 msgid "VZoom"
 msgstr "Zoom b."
 
@@ -6944,19 +6937,19 @@ msgstr "Sakatutako notaren abiadura"
 msgid "Velocity while the note is pressed"
 msgstr "Notak sakatuta dagoela duen abiadura"
 
-#: beast-gtk/bstmsgabsorb.cc:214
+#: beast-gtk/bstmsgabsorb.cc:201
 msgid "Version"
 msgstr "Bertsioa"
 
-#: beast-gtk/bstrecords.idl:124 beast-gtk/bstrecords.idl:131
+#: beast-gtk/bstapi.idl:141 beast-gtk/bstapi.idl:148
 msgid "Vertical Bar Color"
 msgstr "Barra bertikalaren kolorea"
 
-#: beast-gtk/bstrecords.idl:133
+#: beast-gtk/bstapi.idl:150
 msgid "Vertical Grid Color"
 msgstr "Sareta bertikalaren kolorea"
 
-#: beast-gtk/bstpianorollctrl.cc:830
+#: beast-gtk/bstpianorollctrl.cc:794
 msgid "Vertical Region"
 msgstr "Eskualde bertikala"
 
@@ -6968,31 +6961,31 @@ msgstr "Eskala bertikala"
 msgid "Vertical Scale (Logarithmic)"
 msgstr "Eskala bertikala (logaritmikoa)"
 
-#: beast-gtk/bstpianorollctrl.cc:70 beast-gtk/bstpianorollctrl.cc:804
+#: beast-gtk/bstpianorollctrl.cc:70 beast-gtk/bstpianorollctrl.cc:768
 msgid "Vertical Select"
 msgstr "Hautatu bertikalki"
 
 #. tooltip=
-#: beast-gtk/dialogs/radgets-beast.xml:432
+#: beast-gtk/res/radgets-beast.xml:432
 msgid "Vertical piano zoom"
 msgstr "Pianoaren zoom bertikala"
 
 #. label=
-#: beast-gtk/dialogs/radgets-beast.xml:87
+#: beast-gtk/res/radgets-beast.xml:87
 msgid "Virtual Rack"
 msgstr "Armairu birtuala"
 
-#: bse/bsesubiport.cc:279 bse/bsesubsynth.cc:525
+#: bse/bsesubiport.cc:279 bse/bsesubsynth.cc:523
 #, c-format
 msgid "Virtual input %u"
 msgstr "%u sarrera birtuala"
 
-#: bse/bsesuboport.cc:280 bse/bsesubsynth.cc:532
+#: bse/bsesuboport.cc:280 bse/bsesubsynth.cc:530
 #, c-format
 msgid "Virtual output %u"
 msgstr "%u irteera birtuala"
 
-#: bse/bsebasics.idl:127 bse/bsebasics.idl:303 bse/bsebusmodule.idl:13
+#: bse/bseapi.idl:110 bse/bsebasics.idl:122 bse/bsebusmodule.idl:13
 msgid "Volume"
 msgstr "Bolumena"
 
@@ -7004,16 +6997,16 @@ msgstr ""
 msgid "Volume adjustment in decibel of right bus channel"
 msgstr ""
 
-#: bse/bseserver.cc:118
+#: bse/bseserver.cc:122
 msgid "WAVE File"
 msgstr ""
 
-#: bse/bsestandardosc.cc:118 bse/bsetrack.cc:1034 bse/bsewaveosc.cc:543
+#: bse/bsestandardosc.cc:118 bse/bsetrack.cc:1035 bse/bsewaveosc.cc:543
 #: bse/bsewaveosc.cc:545 bse/bsewaveosc.cc:547
 msgid "Wave"
 msgstr "Uhina"
 
-#: bse/bsewave.cc:315
+#: bse/bsewave.cc:313
 #, c-format
 msgid "Wave \"%s\": failed to load wave chunk for frequency %f: %s"
 msgstr ""
@@ -7026,11 +7019,11 @@ msgstr "Uhinaren forma"
 msgid "Wave Output"
 msgstr "Uhin-irteera"
 
-#: beast-gtk/bstapp.cc:498
+#: beast-gtk/bstapp.cc:497
 msgid "Wave Repository"
 msgstr "Uhin biltegia"
 
-#: bse/bsetrack.cc:1034
+#: bse/bsetrack.cc:1035
 #, fuzzy
 msgid "Wave to be used as instrument"
 msgstr "Gorde instrumentu gisa"
@@ -7040,11 +7033,11 @@ msgid "Wave used as oscillator source"
 msgstr ""
 
 #. label=
-#: beast-gtk/dialogs/radgets-beast.xml:634
+#: beast-gtk/res/radgets-beast.xml:634
 msgid "Wave_s"
 msgstr "U_hinak"
 
-#: beast-gtk/bstapp.cc:496 beast-gtk/bstsupershell.cc:217
+#: beast-gtk/bstapp.cc:495 beast-gtk/bstsupershell.cc:214
 msgid "Waves"
 msgstr "Uhinak"
 
@@ -7069,28 +7062,28 @@ msgstr ""
 msgid "Wet out [%]"
 msgstr "Prozesatua [%]"
 
-#: beast-gtk/bstrecords.idl:42
+#: beast-gtk/bstapi.idl:38
 msgid "Whole note"
 msgstr "Biribila"
 
-#: beast-gtk/bstscrollgraph.cc:565
+#: beast-gtk/bstscrollgraph.cc:563
 msgid "Window Size"
 msgstr "Leiho-tamaina"
 
-#: bse/bseenums.cc:92
+#: bse/bseapi.idl:32
 #, fuzzy
 msgid "Write failed"
 msgstr "Abiarazi iragazkia"
 
-#: beast-gtk/bstapp.cc:78
+#: beast-gtk/bstapp.cc:76
 msgid "Write project to a specific file"
 msgstr "Gorde proiektua fitxategi zehatz batean"
 
-#: beast-gtk/bstapp.cc:76
+#: beast-gtk/bstapp.cc:74
 msgid "Write project to disk"
 msgstr "Gorde proiektua diskoan"
 
-#: bse/bseenums.cc:103
+#: bse/bseapi.idl:43
 msgid "Wrong number of channels"
 msgstr ""
 
@@ -7106,16 +7099,16 @@ msgstr ""
 msgid "Young Temperament"
 msgstr ""
 
-#: beast-gtk/bstrecords.idl:143
+#: beast-gtk/bstapi.idl:160
 msgid "Zero Value Color"
 msgstr "Zero balioaren kolorea"
 
 #. label=
-#: beast-gtk/dialogs/radgets-beast.xml:130
+#: beast-gtk/res/radgets-beast.xml:130
 msgid "Zoom"
 msgstr "Zooma"
 
-#: beast-gtk/bstsampleeditor.cc:461 beast-gtk/bstwaveeditor.cc:183
+#: beast-gtk/bstsampleeditor.cc:459 beast-gtk/bstwaveeditor.cc:183
 msgid "Zoom:"
 msgstr "Zooma:"
 
@@ -7123,257 +7116,252 @@ msgstr "Zooma:"
 msgid "[nosleep]"
 msgstr ""
 
-#: beast-gtk/bstapp.cc:93
+#: beast-gtk/bstapp.cc:91
 msgid "_About..."
 msgstr "Honi _buruz..."
 
 #. label=
-#: beast-gtk/dialogs/radgets-beast.xml:251
+#: beast-gtk/res/radgets-beast.xml:251
 msgid "_Add"
 msgstr "_Gehitu"
 
 #. label=
-#: beast-gtk/dialogs/radgets-beast.xml:555
+#: beast-gtk/res/radgets-beast.xml:555
 msgid "_Apply"
 msgstr "_Aplikatu"
 
 #. label=
-#: beast-gtk/dialogs/radgets-beast.xml:105
+#: beast-gtk/res/radgets-beast.xml:105
 msgid "_Audio Sources"
 msgstr "_Audio-iturriak"
 
 #. label=
-#: beast-gtk/dialogs/radgets-standard.xml:455
+#: beast-gtk/res/radgets-standard.xml:455
 msgid "_Back"
 msgstr "At_zera"
 
-#: beast-gtk/bstapp.cc:147
+#: beast-gtk/bstapp.cc:145
 msgid "_Beast Website..."
 msgstr "_Beast web gunea..."
 
 #. label=
-#: beast-gtk/dialogs/radgets-beast.xml:557
+#: beast-gtk/res/radgets-beast.xml:557
 msgid "_Cancel"
 msgstr "_Utzi"
 
-#: beast-gtk/bstapp.cc:103 beast-gtk/bstpartdialog.cc:56
+#: beast-gtk/bstapp.cc:101 beast-gtk/bstpartdialog.cc:56
 msgid "_Clear Undo"
 msgstr "_Garbitu desegiteko ekintzak"
 
-#: beast-gtk/bstapp.cc:72
+#: beast-gtk/bstapp.cc:70
 msgid "_Close"
 msgstr "It_xi"
 
 #. label=
-#: beast-gtk/dialogs/radgets-beast.xml:639
+#: beast-gtk/res/radgets-beast.xml:639
 msgid "_Demo"
 msgstr "_Demoa"
 
 #. label=
-#: beast-gtk/dialogs/radgets-beast.xml:111
+#: beast-gtk/res/radgets-beast.xml:111
 msgid "_Distortion"
 msgstr "_Distortsioa"
 
 #. label=
 #: beast-gtk/bstrackeditor.cc:92 beast-gtk/bstrackview.cc:27
-#: beast-gtk/dialogs/radgets-beast.xml:450
-#: beast-gtk/dialogs/radgets-beast.xml:486
-#: beast-gtk/dialogs/radgets-beast.xml:599
+#: beast-gtk/res/radgets-beast.xml:450 beast-gtk/res/radgets-beast.xml:486
+#: beast-gtk/res/radgets-beast.xml:599
 msgid "_Edit"
 msgstr "_Editatu"
 
 #. label=
-#: beast-gtk/dialogs/radgets-beast.xml:110
+#: beast-gtk/res/radgets-beast.xml:110
 msgid "_Enhance"
 msgstr "_Nabarmendu"
 
-#: beast-gtk/bstapp.cc:149
+#: beast-gtk/bstapp.cc:147
 msgid "_FAQ..."
 msgstr "_FAQ..."
 
 #. label=
-#: beast-gtk/dialogs/radgets-beast.xml:592
+#: beast-gtk/res/radgets-beast.xml:592
 msgid "_File"
 msgstr "_Fitxategia"
 
 #. label=
-#: beast-gtk/dialogs/radgets-beast.xml:109
+#: beast-gtk/res/radgets-beast.xml:109
 msgid "_Filters"
 msgstr "_Iragazkiak"
 
 #. label=
-#: beast-gtk/dialogs/radgets-standard.xml:472
+#: beast-gtk/res/radgets-standard.xml:472
 msgid "_Find"
 msgstr "Bila_tu"
 
 #. label=
-#: beast-gtk/dialogs/radgets-standard.xml:459
+#: beast-gtk/res/radgets-standard.xml:459
 msgid "_Forward"
 msgstr "Au_rrera"
 
 #. label=
-#: beast-gtk/dialogs/radgets-beast.xml:645
+#: beast-gtk/res/radgets-beast.xml:645
 msgid "_Help"
 msgstr "_Laguntza"
 
-#: beast-gtk/bstapp.cc:70
+#: beast-gtk/bstapp.cc:68
 msgid "_Import MIDI..."
 msgstr "_Inportatu MIDI..."
 
 #. label=
-#: beast-gtk/dialogs/radgets-standard.xml:467
+#: beast-gtk/res/radgets-standard.xml:467
 msgid "_Index"
 msgstr "_Indizea"
 
 #. label=
-#: beast-gtk/dialogs/radgets-beast.xml:114
+#: beast-gtk/res/radgets-beast.xml:114
 msgid "_Input & Output"
 msgstr "_Sarrera eta irteera"
 
 #. label=
-#: beast-gtk/dialogs/radgets-beast.xml:112
+#: beast-gtk/res/radgets-beast.xml:112
 msgid "_LADSPA"
 msgstr "_LADSPA"
 
-#: beast-gtk/bstapp.cc:68
+#: beast-gtk/bstapp.cc:66
 msgid "_Merge..."
 msgstr "Ba_tu..."
 
 #. label=
-#: beast-gtk/dialogs/radgets-beast.xml:116
+#: beast-gtk/res/radgets-beast.xml:116
 msgid "_Misc"
 msgstr "_Askotarikoak"
 
-#: beast-gtk/bstapp.cc:64
+#: beast-gtk/bstapp.cc:62
 msgid "_New"
 msgstr "_Berria"
 
-#: beast-gtk/bstapp.cc:66
+#: beast-gtk/bstapp.cc:64
 msgid "_Open..."
 msgstr "_Ireki..."
 
 #. label=
-#: beast-gtk/dialogs/radgets-beast.xml:106
+#: beast-gtk/res/radgets-beast.xml:106
 msgid "_Other Sources"
 msgstr "_Bestelako iturriak"
 
-#: beast-gtk/bstapp.cc:117
+#: beast-gtk/bstapp.cc:115
 msgid "_Play"
 msgstr "_Erreproduzitu"
 
-#: beast-gtk/bstapp.cc:86
+#: beast-gtk/bstapp.cc:84
 msgid "_Preferences..."
 msgstr "_Hobespenak..."
 
 #. label=
-#: beast-gtk/dialogs/radgets-beast.xml:616
+#: beast-gtk/res/radgets-beast.xml:616
 msgid "_Project"
 msgstr "_Proiektua"
 
 #. label=
-#: beast-gtk/dialogs/radgets-beast.xml:458
-#: beast-gtk/dialogs/radgets-beast.xml:494
+#: beast-gtk/res/radgets-beast.xml:458 beast-gtk/res/radgets-beast.xml:494
 msgid "_Quantization"
 msgstr "_Kuantizatzea"
 
-#: beast-gtk/bstapp.cc:151
+#: beast-gtk/bstapp.cc:149
 msgid "_Quick Start..."
 msgstr "_Abiarazte bizkorra..."
 
-#: beast-gtk/bstapp.cc:82
+#: beast-gtk/bstapp.cc:80
 msgid "_Quit"
 msgstr "Irte_n"
 
-#: beast-gtk/bstapp.cc:99
+#: beast-gtk/bstapp.cc:97
 msgid "_Redo"
 msgstr "B_erregin"
 
-#: beast-gtk/bstapp.cc:145
+#: beast-gtk/bstapp.cc:143
 msgid "_Release Notes..."
 msgstr "_Bertsioaren oharrak..."
 
 #. label=
-#: beast-gtk/dialogs/radgets-standard.xml:463
+#: beast-gtk/res/radgets-standard.xml:463
 msgid "_Reload"
 msgstr "_Birkargatu"
 
 #. label=
-#: beast-gtk/dialogs/radgets-beast.xml:264
+#: beast-gtk/res/radgets-beast.xml:264
 msgid "_Remove"
 msgstr "_Kendu"
 
 #. label=
-#: beast-gtk/dialogs/radgets-beast.xml:107
+#: beast-gtk/res/radgets-beast.xml:107
 msgid "_Routing"
 msgstr "_Bideratzea"
 
-#: beast-gtk/bstapp.cc:76
+#: beast-gtk/bstapp.cc:74
 msgid "_Save"
 msgstr "_Gorde"
 
 #. label=
-#: beast-gtk/dialogs/radgets-beast.xml:455
-#: beast-gtk/dialogs/radgets-beast.xml:491
+#: beast-gtk/res/radgets-beast.xml:455 beast-gtk/res/radgets-beast.xml:491
 msgid "_Select"
 msgstr "_Hautatu"
 
 #. label=
-#: beast-gtk/dialogs/radgets-beast.xml:609
+#: beast-gtk/res/radgets-beast.xml:609
 msgid "_Skins"
 msgstr "_Azalak"
 
 #. label=
-#: beast-gtk/dialogs/radgets-beast.xml:628
+#: beast-gtk/res/radgets-beast.xml:628
 msgid "_Song"
 msgstr "Ka_nta"
 
 #. label=
-#: beast-gtk/dialogs/radgets-beast.xml:108
+#: beast-gtk/res/radgets-beast.xml:108
 msgid "_Spatial"
 msgstr "_Espaziala"
 
-#: beast-gtk/bstapp.cc:119
+#: beast-gtk/bstapp.cc:117
 msgid "_Stop"
 msgstr "_Gelditu"
 
 #. label=
-#: beast-gtk/dialogs/radgets-beast.xml:631
+#: beast-gtk/res/radgets-beast.xml:631
 msgid "_Synth"
 msgstr "_Sintetizatu"
 
 #. label=
-#: beast-gtk/dialogs/radgets-beast.xml:621
+#: beast-gtk/res/radgets-beast.xml:621
 msgid "_Synthesizers"
 msgstr "_Sintetizadoreak"
 
 #. label=
-#: beast-gtk/dialogs/radgets-beast.xml:447
-#: beast-gtk/dialogs/radgets-beast.xml:483
-#: beast-gtk/dialogs/radgets-beast.xml:626
+#: beast-gtk/res/radgets-beast.xml:447 beast-gtk/res/radgets-beast.xml:483
+#: beast-gtk/res/radgets-beast.xml:626
 msgid "_Tools"
 msgstr "_Tresnak"
 
-#: beast-gtk/bstapp.cc:97
+#: beast-gtk/bstapp.cc:95
 msgid "_Undo"
 msgstr "_Desegin"
 
 #. label=
-#: beast-gtk/dialogs/radgets-beast.xml:100
-#: beast-gtk/dialogs/radgets-beast.xml:465
+#: beast-gtk/res/radgets-beast.xml:100 beast-gtk/res/radgets-beast.xml:465
 msgid "_Utilities"
 msgstr "_Utilitateak"
 
 #. label=
-#: beast-gtk/dialogs/radgets-beast.xml:605
+#: beast-gtk/res/radgets-beast.xml:605
 msgid "_View"
 msgstr "I_kusi"
 
 #. label=
-#: beast-gtk/dialogs/radgets-beast.xml:113
+#: beast-gtk/res/radgets-beast.xml:113
 msgid "_Virtualization"
 msgstr "_Birtualizazioa"
 
-#: bse/bseserver.cc:460
+#: bse/bseserver.cc:442
 #, fuzzy
 msgid "audio input problems"
 msgstr "Ohartarazi MIDI gailuen hautapenari buruz"
@@ -7382,244 +7370,244 @@ msgstr "Ohartarazi MIDI gailuen hautapenari buruz"
 msgid "connection terminated"
 msgstr ""
 
-#: bse/bsebasics.idl:265 bse/bsebasics.idl:433
+#: bse/bseapi.idl:248 bse/bsebasics.idl:252
 msgid "control-102"
 msgstr ""
 
-#: bse/bsebasics.idl:266 bse/bsebasics.idl:434
+#: bse/bseapi.idl:249 bse/bsebasics.idl:253
 msgid "control-103"
 msgstr ""
 
-#: bse/bsebasics.idl:267 bse/bsebasics.idl:435
+#: bse/bseapi.idl:250 bse/bsebasics.idl:254
 msgid "control-104"
 msgstr ""
 
-#: bse/bsebasics.idl:268 bse/bsebasics.idl:436
+#: bse/bseapi.idl:251 bse/bsebasics.idl:255
 msgid "control-105"
 msgstr ""
 
-#: bse/bsebasics.idl:269 bse/bsebasics.idl:437
+#: bse/bseapi.idl:252 bse/bsebasics.idl:256
 msgid "control-106"
 msgstr ""
 
-#: bse/bsebasics.idl:270 bse/bsebasics.idl:438
+#: bse/bseapi.idl:253 bse/bsebasics.idl:257
 msgid "control-107"
 msgstr ""
 
-#: bse/bsebasics.idl:271 bse/bsebasics.idl:439
+#: bse/bseapi.idl:254 bse/bsebasics.idl:258
 msgid "control-108"
 msgstr ""
 
-#: bse/bsebasics.idl:272 bse/bsebasics.idl:440
+#: bse/bseapi.idl:255 bse/bsebasics.idl:259
 msgid "control-109"
 msgstr ""
 
-#: bse/bsebasics.idl:273 bse/bsebasics.idl:441
+#: bse/bseapi.idl:256 bse/bsebasics.idl:260
 msgid "control-110"
 msgstr ""
 
-#: bse/bsebasics.idl:274 bse/bsebasics.idl:442
+#: bse/bseapi.idl:257 bse/bsebasics.idl:261
 msgid "control-111"
 msgstr ""
 
-#: bse/bsebasics.idl:275 bse/bsebasics.idl:443
+#: bse/bseapi.idl:258 bse/bsebasics.idl:262
 msgid "control-112"
 msgstr ""
 
-#: bse/bsebasics.idl:276 bse/bsebasics.idl:444
+#: bse/bseapi.idl:259 bse/bsebasics.idl:263
 msgid "control-113"
 msgstr ""
 
-#: bse/bsebasics.idl:277 bse/bsebasics.idl:445
+#: bse/bseapi.idl:260 bse/bsebasics.idl:264
 msgid "control-114"
 msgstr ""
 
-#: bse/bsebasics.idl:278 bse/bsebasics.idl:446
+#: bse/bseapi.idl:261 bse/bsebasics.idl:265
 msgid "control-115"
 msgstr ""
 
-#: bse/bsebasics.idl:279 bse/bsebasics.idl:447
+#: bse/bseapi.idl:262 bse/bsebasics.idl:266
 msgid "control-116"
 msgstr ""
 
-#: bse/bsebasics.idl:280 bse/bsebasics.idl:448
+#: bse/bseapi.idl:263 bse/bsebasics.idl:267
 msgid "control-117"
 msgstr ""
 
-#: bse/bsebasics.idl:281 bse/bsebasics.idl:449
+#: bse/bseapi.idl:264 bse/bsebasics.idl:268
 msgid "control-118"
 msgstr ""
 
-#: bse/bsebasics.idl:282 bse/bsebasics.idl:450
+#: bse/bseapi.idl:265 bse/bsebasics.idl:269
 msgid "control-119"
 msgstr ""
 
-#: bse/bsebasics.idl:175 bse/bsebasics.idl:343
+#: bse/bseapi.idl:158 bse/bsebasics.idl:162
 msgid "control-14"
 msgstr ""
 
-#: bse/bsebasics.idl:176 bse/bsebasics.idl:344
+#: bse/bseapi.idl:159 bse/bsebasics.idl:163
 msgid "control-15"
 msgstr ""
 
-#: bse/bsebasics.idl:181 bse/bsebasics.idl:349
+#: bse/bseapi.idl:164 bse/bsebasics.idl:168
 msgid "control-20"
 msgstr ""
 
-#: bse/bsebasics.idl:182 bse/bsebasics.idl:350
+#: bse/bseapi.idl:165 bse/bsebasics.idl:169
 msgid "control-21"
 msgstr ""
 
-#: bse/bsebasics.idl:183 bse/bsebasics.idl:351
+#: bse/bseapi.idl:166 bse/bsebasics.idl:170
 msgid "control-22"
 msgstr ""
 
-#: bse/bsebasics.idl:184 bse/bsebasics.idl:352
+#: bse/bseapi.idl:167 bse/bsebasics.idl:171
 msgid "control-23"
 msgstr ""
 
-#: bse/bsebasics.idl:185 bse/bsebasics.idl:353
+#: bse/bseapi.idl:168 bse/bsebasics.idl:172
 msgid "control-24"
 msgstr ""
 
-#: bse/bsebasics.idl:186 bse/bsebasics.idl:354
+#: bse/bseapi.idl:169 bse/bsebasics.idl:173
 msgid "control-25"
 msgstr ""
 
-#: bse/bsebasics.idl:187 bse/bsebasics.idl:355
+#: bse/bseapi.idl:170 bse/bsebasics.idl:174
 msgid "control-26"
 msgstr ""
 
-#: bse/bsebasics.idl:188 bse/bsebasics.idl:356
+#: bse/bseapi.idl:171 bse/bsebasics.idl:175
 msgid "control-27"
 msgstr ""
 
-#: bse/bsebasics.idl:189 bse/bsebasics.idl:357
+#: bse/bseapi.idl:172 bse/bsebasics.idl:176
 msgid "control-28"
 msgstr ""
 
-#: bse/bsebasics.idl:190 bse/bsebasics.idl:358
+#: bse/bseapi.idl:173 bse/bsebasics.idl:177
 msgid "control-29"
 msgstr ""
 
-#: bse/bsebasics.idl:164 bse/bsebasics.idl:332
+#: bse/bseapi.idl:147 bse/bsebasics.idl:151
 msgid "control-3"
 msgstr ""
 
-#: bse/bsebasics.idl:191 bse/bsebasics.idl:359
+#: bse/bseapi.idl:174 bse/bsebasics.idl:178
 msgid "control-30"
 msgstr ""
 
-#: bse/bsebasics.idl:192 bse/bsebasics.idl:360
+#: bse/bseapi.idl:175 bse/bsebasics.idl:179
 msgid "control-31"
 msgstr ""
 
-#: bse/bsebasics.idl:197 bse/bsebasics.idl:365
+#: bse/bseapi.idl:180 bse/bsebasics.idl:184
 msgid "control-35"
 msgstr ""
 
-#: bse/bsebasics.idl:203 bse/bsebasics.idl:371
+#: bse/bseapi.idl:186 bse/bsebasics.idl:190
 msgid "control-41"
 msgstr ""
 
-#: bse/bsebasics.idl:208 bse/bsebasics.idl:376
+#: bse/bseapi.idl:191 bse/bsebasics.idl:195
 msgid "control-46"
 msgstr ""
 
-#: bse/bsebasics.idl:209 bse/bsebasics.idl:377
+#: bse/bseapi.idl:192 bse/bsebasics.idl:196
 msgid "control-47"
 msgstr ""
 
-#: bse/bsebasics.idl:214 bse/bsebasics.idl:382
+#: bse/bseapi.idl:197 bse/bsebasics.idl:201
 #, fuzzy
 msgid "control-52"
 msgstr "Kontroladorea"
 
-#: bse/bsebasics.idl:215 bse/bsebasics.idl:383
+#: bse/bseapi.idl:198 bse/bsebasics.idl:202
 #, fuzzy
 msgid "control-53"
 msgstr "Kontroladorea"
 
-#: bse/bsebasics.idl:216 bse/bsebasics.idl:384
+#: bse/bseapi.idl:199 bse/bsebasics.idl:203
 #, fuzzy
 msgid "control-54"
 msgstr "Kontroladorea"
 
-#: bse/bsebasics.idl:217 bse/bsebasics.idl:385
+#: bse/bseapi.idl:200 bse/bsebasics.idl:204
 #, fuzzy
 msgid "control-55"
 msgstr "Kontroladorea"
 
-#: bse/bsebasics.idl:218 bse/bsebasics.idl:386
+#: bse/bseapi.idl:201 bse/bsebasics.idl:205
 #, fuzzy
 msgid "control-56"
 msgstr "Kontroladorea"
 
-#: bse/bsebasics.idl:219 bse/bsebasics.idl:387
+#: bse/bseapi.idl:202 bse/bsebasics.idl:206
 #, fuzzy
 msgid "control-57"
 msgstr "Kontroladorea"
 
-#: bse/bsebasics.idl:220 bse/bsebasics.idl:388
+#: bse/bseapi.idl:203 bse/bsebasics.idl:207
 #, fuzzy
 msgid "control-58"
 msgstr "Kontroladorea"
 
-#: bse/bsebasics.idl:221 bse/bsebasics.idl:389
+#: bse/bseapi.idl:204 bse/bsebasics.idl:208
 #, fuzzy
 msgid "control-59"
 msgstr "Kontroladorea"
 
-#: bse/bsebasics.idl:222 bse/bsebasics.idl:390
+#: bse/bseapi.idl:205 bse/bsebasics.idl:209
 #, fuzzy
 msgid "control-60"
 msgstr "Kontroladorea"
 
-#: bse/bsebasics.idl:223 bse/bsebasics.idl:391
+#: bse/bseapi.idl:206 bse/bsebasics.idl:210
 #, fuzzy
 msgid "control-61"
 msgstr "Kontroladorea"
 
-#: bse/bsebasics.idl:224 bse/bsebasics.idl:392
+#: bse/bseapi.idl:207 bse/bsebasics.idl:211
 #, fuzzy
 msgid "control-62"
 msgstr "Kontroladorea"
 
-#: bse/bsebasics.idl:225 bse/bsebasics.idl:393
+#: bse/bseapi.idl:208 bse/bsebasics.idl:212
 #, fuzzy
 msgid "control-63"
 msgstr "Kontroladorea"
 
-#: bse/bsebasics.idl:248 bse/bsebasics.idl:416
+#: bse/bseapi.idl:231 bse/bsebasics.idl:235
 #, fuzzy
 msgid "control-85"
 msgstr "Kontroladorea"
 
-#: bse/bsebasics.idl:249 bse/bsebasics.idl:417
+#: bse/bseapi.idl:232 bse/bsebasics.idl:236
 #, fuzzy
 msgid "control-86"
 msgstr "Kontroladorea"
 
-#: bse/bsebasics.idl:250 bse/bsebasics.idl:418
+#: bse/bseapi.idl:233 bse/bsebasics.idl:237
 #, fuzzy
 msgid "control-87"
 msgstr "Kontroladorea"
 
-#: bse/bsebasics.idl:251 bse/bsebasics.idl:419
+#: bse/bseapi.idl:234 bse/bsebasics.idl:238
 #, fuzzy
 msgid "control-88"
 msgstr "Kontroladorea"
 
-#: bse/bsebasics.idl:252 bse/bsebasics.idl:420
+#: bse/bseapi.idl:235 bse/bsebasics.idl:239
 #, fuzzy
 msgid "control-89"
 msgstr "Kontroladorea"
 
-#: bse/bsebasics.idl:170 bse/bsebasics.idl:338
+#: bse/bseapi.idl:153 bse/bsebasics.idl:157
 msgid "control-9"
 msgstr ""
 
-#: bse/bsebasics.idl:253 bse/bsebasics.idl:421
+#: bse/bseapi.idl:236 bse/bsebasics.idl:240
 #, fuzzy
 msgid "control-90"
 msgstr "Kontroladorea"
@@ -7679,6 +7667,10 @@ msgstr "prozesatzen"
 #~ "modulua da. Audio-sarreraren seinaleari sarrera deitzen zaio eta audio-"
 #~ "irteeraren seinaleari irteera. Hona hemen programen adibide soil batzuk: "
 #~ "\"output = input * 5\" , \"output = 2 * input + 1\"."
+
+#, fuzzy
+#~ msgid "Create a new Track for a Song."
+#~ msgstr "Gehitu beste pista bat kanta honi"
 
 #, fuzzy
 #~ msgid "Delete Inputs"
