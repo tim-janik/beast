@@ -951,4 +951,20 @@ BusImpl::ensure_output ()
   return error;
 }
 
+ErrorType
+BusImpl::connect_track (TrackIface &tracki)
+{
+  BseBus *self = as<BseBus*>();
+  TrackImpl &track = dynamic_cast<TrackImpl&> (tracki);
+
+  if (!this->parent() || this->parent() != track.parent())
+    return ERROR_SOURCE_PARENT_MISMATCH;
+
+  BseItem *track_item = track.as<BseItem*>();
+  ErrorType error = bse_bus_connect (self, track_item);
+  if (!error)
+    bse_item_push_undo_proc (self, "disconnect-track", track_item);
+  return error;
+}
+
 } // Bse

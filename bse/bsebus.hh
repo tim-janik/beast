@@ -86,6 +86,7 @@ protected:
 public:
   explicit          BusImpl       (BseObject*);
   virtual ErrorType ensure_output () override;
+  virtual ErrorType connect_track (TrackIface &track);
 };
 
 } // Bse
