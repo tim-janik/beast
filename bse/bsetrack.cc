@@ -1115,6 +1115,15 @@ TrackImpl::remove_tick (int tick)
     }
 }
 
+void
+TrackImpl::remove_link (int link_id)
+{
+  BseTrack *self = as<BseTrack*>();
+  BseTrackEntry *entry = bse_track_find_link (self, link_id);
+  if (entry)
+    remove_tick (entry->tick);
+}
+
 PartIfaceP
 TrackImpl::get_part (int tick)
 {
