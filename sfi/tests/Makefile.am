@@ -1,5 +1,4 @@
-# Birnet
-# Copyright (C) 2006 Tim Janik
+# BEAST & BSE
 include $(top_srcdir)/Makefile.decl
 
 AM_CPPFLAGS += -I$(top_srcdir) -I$(top_builddir) -I.

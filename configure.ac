@@ -26,6 +26,7 @@ BST_VERSION="$PACKAGE_VERSION"
 [BST_MAJOR_VERSION=`echo $PACKAGE_VERSION | sed 's/\([0-9]\+\)\.\([0-9]\+\)\.\([0-9]\+\)\(.*\)/\1/'`]
 [BST_MINOR_VERSION=`echo $PACKAGE_VERSION | sed 's/\([0-9]\+\)\.\([0-9]\+\)\.\([0-9]\+\)\(.*\)/\2/'`]
 [BST_MICRO_VERSION=`echo $PACKAGE_VERSION | sed 's/\([0-9]\+\)\.\([0-9]\+\)\.\([0-9]\+\)\(.*\)/\3/'`]
+[BST_VERSION_STEM="$BST_MAJOR_VERSION.$BST_MINOR_VERSION"]
 [BIN_VERSION=`echo $PACKAGE_VERSION | sed 's/\([0-9]\+\)\.\([0-9]\+\)\.\([0-9]\+\)\(.*\)/\1.\2.\3/'`]
 case "$BST_VERSION" in
 0.99.*)     BST_VERSION_HINT=BETA ;;
@@ -36,14 +37,15 @@ esac
 AC_DEFINE_UNQUOTED(BST_VERSION, "$BST_VERSION", [BEAST Version])
 AC_DEFINE_UNQUOTED(BIN_VERSION, "$BIN_VERSION", [Binary Version])
 AC_DEFINE_UNQUOTED(BST_VERSION_HINT, "$BST_VERSION_HINT", [Version classification])
-AC_SUBST(BST_VERSION)
-AC_SUBST(BST_MAJOR_VERSION)
-AC_SUBST(BST_MINOR_VERSION)
-AC_SUBST(BST_MICRO_VERSION)
-AC_SUBST(BIN_VERSION)
+AC_SUBST(BST_MAJOR_VERSION)	# 1
+AC_SUBST(BST_MINOR_VERSION)	# 2
+AC_SUBST(BST_MICRO_VERSION)	# 3
+AC_SUBST(BST_VERSION_STEM)	# 1.2
+AC_SUBST(BIN_VERSION)		# 1.2.3
+AC_SUBST(BST_VERSION)		# 1.2.3-rc4
 
 # compute libtool versions
-LT_RELEASE=$BST_MAJOR_VERSION.$BST_MINOR_VERSION
+LT_RELEASE=$BST_VERSION_STEM
 LT_CURRENT=$BST_MICRO_VERSION
 LT_REVISION=0
 LT_AGE=$BST_MICRO_VERSION
@@ -101,12 +103,6 @@ m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES([yes])])
 # declare --enable-* args and collect ac_help strings
 AC_ARG_ENABLE(debug,           [  --enable-debug=no/minimum/yes turn on debugging, default=yes],,enable_debug=yes)
 AC_ARG_ENABLE(devel-mode,      [  --enable-devel-mode=no/yes    turn on development mode, default=auto],,enable_devel_mode=auto)
-AC_ARG_ENABLE(distcheck-tests, [  --enable-distcheck-tests      turn on resource and time consuming distcheck tests],,enable_distcheck_tests=no)
-
-# set BEAST_BUILD_DEFAULTS from configure's BEAST_BUILD env
-BEAST_BUILD_DEFAULTS="$BEAST_BUILD_DEFAULTS"
-test "$enable_distcheck_tests" = yes && BEAST_BUILD_DEFAULTS="$BEAST_BUILD_DEFAULTS:distcheck-tests:"
-AC_SUBST(BEAST_BUILD_DEFAULTS)
 
 dnl # setup DEBUG defaults
 if test "x$enable_debug" = "xyes"; then
@@ -329,8 +325,8 @@ AC_DEFUN([AC_SFI_REQUIREMENTS],
 AC_DEFUN([AC_BSE_REQUIREMENTS],
 [
     dnl # require Rapicorn
-    PKG_CHECK_MODULES(RAPICORN, rapicorn1410 >= 14.10.1)
-    MC_ASSERT_PROG(AIDACC, aidacc-1410, [aidacc gets shipped with Rapicorn])
+    PKG_CHECK_MODULES(RAPICORN, rapicorn1509 >= 15.09.0)
+    MC_ASSERT_PROG(AIDACC, aidacc-1509, [aidacc gets shipped with Rapicorn])
 
     dnl # --- Ogg/Vorbis check ---
     PKG_CHECK_MODULES(OGGVORBIS, ogg >= 1.2.2 vorbis >= 1.3.2 vorbisfile >= 1.3.2 vorbisenc >= 1.3.2)
@@ -645,10 +641,11 @@ if test x"$enable_devel_mode" = xyes ; then
     AC_MSG_ERROR([development build rules require a beast.git repository])
   }
   MC_ASSERT_PROG(XMLLINT, xmllint, [See: http://xmlsoft.org/xmllint.html])
-  MC_ASSERT_PROG(PYTHON, python2.7)
-  if test -z "$PYTHON" || $PYTHON -c "import sys; sys.exit (sys.hexversion >= 0x2070500)" 2>/dev/null ; then
-     AC_MSG_ERROR([failed to detect python (version >= 2.7.5) required for development mode])
-  fi
+fi
+
+MC_ASSERT_PROG(PYTHON, python2.7)
+if test -z "$PYTHON" || $PYTHON -c "import sys; sys.exit (sys.hexversion >= 0x2070500)" 2>/dev/null ; then
+  AC_MSG_ERROR([failed to detect python (version >= 2.7.5) required for development mode])
 fi
 
 AC_MSG_CHECKING(whether source dir equals build dir)
@@ -695,7 +692,6 @@ AC_SUBST(LDFLAGS)
 AC_CONFIG_FILES([
 Makefile
 data/Makefile
-data/bse.pc
 data/beast.applications
 sfi/Makefile
 sfi/tests/Makefile

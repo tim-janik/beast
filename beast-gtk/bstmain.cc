@@ -123,7 +123,7 @@ main (int   argc,
   gtk_object_set_user_data (GTK_OBJECT (beast_splash), NULL);	/* fix for broken user_data in 2.2 */
   bst_splash_set_text (beast_splash,
 		       Rapicorn::string_format ("<b><big>BEAST</big></b>\n"
-                                                "<b>The Better Audio System</b>\n"
+                                                "<b>The BSE Equipped Audio Synthesizer and Tracker</b>\n"
                                                 "<b>Version %s (%s)</b>\n",
                                                 BST_VERSION, BST_VERSION_HINT));
   bst_splash_update_entity (beast_splash, _("Startup"));

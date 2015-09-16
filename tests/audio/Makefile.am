@@ -1,4 +1,4 @@
-# Beast Tests
+# BEAST & BSE
 include $(top_srcdir)/Makefile.decl
 
 # === feature test tools ===

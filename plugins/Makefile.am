@@ -1,4 +1,4 @@
-# BSE-Plugins - Better Sound Engine dynamic Plugins
+# BEAST & BSE
 include $(top_srcdir)/Makefile.decl
 
 SUBDIRS = icons . freeverb # evaluator

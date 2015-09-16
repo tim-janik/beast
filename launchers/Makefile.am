@@ -1,4 +1,4 @@
-# launchers - Beast program starters
+# BEAST & BSE
 include $(top_srcdir)/Makefile.decl
 
 AM_CPPFLAGS += -I$(top_srcdir) -I$(top_builddir) -I.

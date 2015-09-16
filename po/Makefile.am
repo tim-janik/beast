@@ -1,4 +1,4 @@
-# BEAST - Better Audio System
+# BEAST & BSE
 include $(top_srcdir)/Makefile.decl
 AUTOMAKE_OPTIONS = -Wno-portability
 
@@ -237,7 +237,7 @@ DISTDIRPAT = '^$(PACKAGE)-$(VERSION)/' # ignore $(distdir)/*
 FIND_NOHIDDEN = \( -name '.?*' -prune -false -o ! -name '.?*' \) # skip .foobar dirs & files
 # (test_unlisted, POSRC_TYPE, INFILE, OUTFILE)
 define test_unlisted
-	printf "  %-32s" "Scanning $(strip $(or $(POSRC_$(strip $(1))_NAME), $(1) Files)): " ; \
+	printf "  %-50s" "Scanning for unlisted $(strip $(or $(POSRC_$(strip $(1))_NAME), $(1) Files)): " ; \
 	grep $(POSRC_$(strip $(1))_PATTERN) $(2) | \
 	  $(if $(POSRC_$(strip $(1))_FILTER), \
 	    while read file ; do \

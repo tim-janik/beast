@@ -1,4 +1,4 @@
-# BEAST - Better Audio System
+# BEAST & BSE
 include $(top_srcdir)/Makefile.decl
 AUTOMAKE_OPTIONS = -Wno-portability
 
@@ -34,10 +34,16 @@ CLEANFILES += $(noinst_build_sources)
 
 # install pkg-config files
 pkgconfigdir = $(libdir)/pkgconfig
-pkgconfig_DATA = bse.pc # sfi.pc
+pkgconfig_DATA = bse-@BST_VERSION_STEM@.pc
 $(pkgconfig_DATA): $(top_builddir)/config.status
-CLEANFILES += bse.pc sfi.pc
-EXTRA_DIST += bse.pc.in # sfi.pc.in
+EXTRA_DIST += bse.pc.in
+bse-@BST_VERSION_STEM@.pc: bse.pc.in
+CLEANFILES += bse-@BST_VERSION_STEM@.pc
+bse-@BST_VERSION_STEM@.pc: bse.pc.in
+	$(AM_V_GEN)
+	$(Q) cp $(srcdir)/bse.pc.in $@.in
+	$(Q) cd $(top_builddir) && $(SHELL) ./config.status --file=$(subdir)/$@
+	$(Q) rm -f $@.in
 
 # install .applications files
 dotapplicationsdir = $(datadir)/application-registry

@@ -1,4 +1,4 @@
-# BSE - Better Sound Engine dynamic Plugins
+# BEAST & BSE
 include $(top_srcdir)/Makefile.decl
 
 SUBDIRS =

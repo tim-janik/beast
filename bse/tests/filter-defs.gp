@@ -1,4 +1,4 @@
-# BEAST/BSE - Better Audio System / Better Sound Engine
+# BEAST & BSE
 # Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 
 dB(x)=20*log(abs(x))/log(10)	# logarithmische Filterdarstellung in dB (s/20/10/ for abs(x)^2)

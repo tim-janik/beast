@@ -1,21 +1,23 @@
 prefix=@prefix@
 exec_prefix=@exec_prefix@
 libdir=@libdir@
+datarootdir=@datarootdir@
 datadir=@datadir@
 includedir=@includedir@
+pkgincludedir=@pkgincludedir@
 
 sfidl=@exec_prefix@/sfidl
-demodir=@bsedemodir@
-sampledir=@bsesampledir@
-scriptdir=@bsescriptdir@
-plugindir=@bseplugindir@
-driverdir=@bsedriverdir@
-effectdir=@bseeffectdir@
-instrumentdir=@bseinstrumentdir@
+demodir=@pkgdatadir@/demo
+sampledir=@pkgdatadir@/samples
+scriptdir=@pkgdatadir@/scripts
+plugindir=@pkglibdir@/plugins
+driverdir=@pkglibdir@/drivers
+effectdir=@pkgdatadir@/effects
+instrumentdir=@pkgdatadir@/instruments
 
-Name: BSE
-Description: Better Sound Engine (Synthesis Core)
+Name: Beast & Bse
+Description: Beast & Bse are an audio tracker and audio synthesis engine.
 Requires: @BSE_PC_REQUIRE@ gobject-2.0 gmodule-2.0
-Version: @VERSION@
-Libs: -L${libdir} -lbse @BSE_PC_LIBS@
-Cflags: -I${includedir} @BSE_PC_CFLAGS@
+Version: @BST_VERSION@
+Libs: -L${libdir} -lbse-@BST_VERSION_STEM@ @BSE_PC_LIBS@
+Cflags: -I${pkgincludedir} @BSE_PC_CFLAGS@

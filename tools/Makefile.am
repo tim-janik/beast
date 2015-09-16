@@ -1,4 +1,4 @@
-# BEAST - Better Audio System
+# BEAST & BSE
 include $(top_srcdir)/Makefile.decl
 
 SUBDIRS = . scripts
@@ -20,7 +20,7 @@ bsewavetool_LDADD   = $(progs_ldadd)
 EXTRA_DIST         += bsewavetool.hh bwtwave.hh bseloopfuncs.hh sfiutils.hh
 
 noinst_PROGRAMS  += cutvorbis
-cutvorbis_SOURCES = cutvorbis.cc cxxdummy.cc
+cutvorbis_SOURCES = cutvorbis.cc
 cutvorbis_LDADD   = $(progs_ldadd)
 
 noinst_PROGRAMS    += bsefextract
@@ -32,11 +32,11 @@ bsefcompare_SOURCES = bsefcompare.cc
 bsefcompare_LDADD   = $(progs_ldadd)
 
 noinst_PROGRAMS  += magictest
-magictest_SOURCES = magictest.cc cxxdummy.cc
+magictest_SOURCES = magictest.cc
 magictest_LDADD   = $(progs_ldadd)
 
 noinst_PROGRAMS += mathtool
-mathtool_SOURCES = mathtool.cc cxxdummy.cc
+mathtool_SOURCES = mathtool.cc
 mathtool_LDADD   = $(progs_ldadd)
 
 # === Bsewavetool tests ===
