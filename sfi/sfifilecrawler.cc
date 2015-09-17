@@ -237,8 +237,11 @@ file_crawler_queue_abs_file_path (SfiFileCrawler *self,
     }
   g_free (tmp);
 
-  /* add root to dir list ("" on unix) */
-  self->dlist = sfi_ring_prepend (self->dlist, g_strdup (p));
+  // add root to dir list
+  if (sep[0] == 0)              // path_pattern == root, i.e. we're done
+    self->dlist = sfi_ring_prepend (self->dlist, g_strdup (path_pattern));
+  else // on unix, this root segment is ""
+    self->dlist = sfi_ring_prepend (self->dlist, g_strdup (p));
 
   /* compress multiple dir seperators */
   while (*sep == G_DIR_SEPARATOR)
