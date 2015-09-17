@@ -116,6 +116,27 @@ ArgParser::parse_args (const uint argc, char *const argv[])
   return ""; // success
 }
 
+// == crawl ==
+static ArgDescription crawl_options[] = {
+  { "<glob>",   "",     "Glob pattern to list matching files", "" },
+};
+
+static String
+crawl (const ArgParser &ap)
+{
+  const String glob = ap["glob"];
+  // plist = bse_search_path_list_files (argv[1], NULL);
+  SfiRing *ring = sfi_file_crawler_list_files (glob.c_str(), NULL, GFileTest (0));
+  while (ring)
+    {
+      const char *name = (const char*) sfi_ring_pop_head (&ring);
+      printout ("%s\n", name);
+    }
+  sfi_ring_free_deep (ring, g_free);
+  return "";
+}
+
+
 // == render2wav ==
 static ArgDescription render2wav_options[] = {
   { "-s, --seconds", "<seconds>", "Number of seconds to record", "0" },
@@ -181,9 +202,10 @@ static ArgDescription bsetool_options[] = {
 };
 
 int
-main (int argc, char *argv[])
+main (int argc_int, char *argv[])
 {
-  bse_init_inprocess (&argc, argv, "bsetool"); // Bse::cstrings_to_vector (NULL)
+  bse_init_inprocess (&argc_int, argv, "bsetool"); // Bse::cstrings_to_vector (NULL)
+  const unsigned int argc = argc_int;
   // now that the BSE thread runs, drop scheduling priorities if we have any
   setpriority (PRIO_PROCESS, getpid(), 0);
   // pre-command option argument parsing
@@ -236,6 +258,23 @@ main (int argc, char *argv[])
       if (!error.empty())
         {
           printerr ("check-load: %s\n", error);
+          return 127;
+        }
+      return 0; // success
+    }
+  else if (option_argc < argc && argv[option_argc] == String ("crawl"))
+    {
+      ArgParser ap (crawl_options);
+      String error = ap.parse_args (argc - option_argc - 1, argv + option_argc + 1);
+      if (!error.empty())
+        {
+          printerr ("%s: crawl: %s\n", argv[0], error);
+          return 127;
+        }
+      error = crawl (ap);
+      if (!error.empty())
+        {
+          printerr ("crawl: %s\n", error);
           return 127;
         }
       return 0; // success

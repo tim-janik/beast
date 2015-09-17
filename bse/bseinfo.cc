@@ -87,18 +87,5 @@ main (int   argc,
 	g_free (name);
       }
 
-  if (argc == 2)
-    {
-      SfiRing *ring;
-      g_print ("search path: \"%s\"\n", argv[1]);
-      // plist = bse_search_path_list_files (argv[1], NULL);
-      ring = sfi_file_crawler_list_files (argv[1], NULL, GFileTest (0));
-      while (ring)
-        {
-          char *name = (char*) sfi_ring_pop_head (&ring);
-          g_print ("%s\n", name);
-        }
-    }
-
   return 0;
 }
