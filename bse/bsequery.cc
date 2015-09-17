@@ -200,7 +200,8 @@ main (gint   argc,
   const char *scriptbool = "load-core-scripts=0";
   f_out = stdout;
 
-  bse_init_test (&argc, argv);
+  bse_init_inprocess (&argc, argv, "BseQuery", Bse::cstrings_to_vector (pluginbool, scriptbool, NULL));
+  // bse_init_test (&argc, argv);
   int i;
   for (i = 1; i < argc; i++)
     {
@@ -293,7 +294,7 @@ main (gint   argc,
       else
 	return help (argv[i]);
     }
-  bse_init_inprocess (&argc, argv, "BseQuery", Bse::cstrings_to_vector (pluginbool, scriptbool, NULL));
+  // bse_init_inprocess (&argc, argv, "BseQuery", Bse::cstrings_to_vector (pluginbool, scriptbool, NULL));
   if (root_name)
     root = g_type_from_name (root_name);
   else
