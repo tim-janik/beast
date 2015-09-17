@@ -2,6 +2,7 @@
 #include <bse/bsemain.hh>
 #include <bse/bseserver.hh>
 #include <bse/bsemathsignal.hh>
+#include <bse/bsecategories.hh>
 #include <sys/resource.h>
 #include <unordered_map>
 #include <unistd.h>
@@ -124,12 +125,13 @@ static CommandRegistry *command_registry_chain = NULL;
 class CommandRegistry {
   ArgParser        arg_parser_;
   String         (*cmd_) (const ArgParser&);
-  String           name_;
+  String           name_, blurb_;
   CommandRegistry *next_;
 public:
   template<size_t N>
-  explicit CommandRegistry (ArgDescription (&adescs) [N], String (*cmd) (const ArgParser&), const String &name) :
-    arg_parser_ (adescs), cmd_ (cmd), name_ (name), next_ (command_registry_chain)
+  explicit CommandRegistry (ArgDescription (&adescs) [N], String (*cmd) (const ArgParser&),
+                            const String &name, const String &blurb = "") :
+    arg_parser_ (adescs), cmd_ (cmd), name_ (name), blurb_ (blurb), next_ (command_registry_chain)
   {
     command_registry_chain = this;
   }
@@ -242,6 +244,25 @@ dump_info (const ArgParser &ap)
 }
 
 static CommandRegistry dump_info_cmd (dump_info_options, dump_info, "dump-info");
+
+
+// == dump-categories ==
+static ArgDescription dump_categories_options[] = {
+  { "", "", "", "" }, // dummy, no options currently
+};
+
+static String
+dump_categories (const ArgParser &ap)
+{
+  BseCategorySeq *cseq = bse_categories_match_typed ("*", 0);
+  for (uint i = 0; i < cseq->n_cats; i++)
+    printout ("%s\t(%s)\n", cseq->cats[i]->category, cseq->cats[i]->type);
+  bse_category_seq_free (cseq);
+  return "";
+}
+
+static CommandRegistry dump_categories_cmd (dump_categories_options, dump_categories, "dump-categories",
+                                            "print categories");
 
 
 // == render2wav ==

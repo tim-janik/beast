@@ -106,20 +106,6 @@ show_nodes (GType        type,
 }
 
 static void
-show_cats (void)
-{
-  BseCategorySeq *cseq;
-  guint i;
-
-  cseq = bse_categories_match_typed ("*", 0);
-  for (i = 0; i < cseq->n_cats; i++)
-    fprintf (f_out, "%s\t(%s)\n",
-	     cseq->cats[i]->category,
-	     cseq->cats[i]->type);
-  bse_category_seq_free (cseq);
-}
-
-static void
 show_procdoc (void)
 {
   BseCategorySeq *cseq;
@@ -178,7 +164,6 @@ help (gchar *arg)
   fprintf (stderr, "qualifiers:\n");
   fprintf (stderr, "       froots     iterate over fundamental roots\n");
   fprintf (stderr, "       tree       print BSE type tree\n");
-  fprintf (stderr, "       cats       print categories\n");
   fprintf (stderr, "       procdoc    print procedure documentation\n");
   fprintf (stderr, "       synth <x>  dump standard synth <x> definition\n");
 
@@ -191,7 +176,6 @@ main (gint   argc,
 {
   gboolean gen_froots = 0;
   gboolean gen_tree = 0;
-  gboolean gen_cats = 0;
   gboolean gen_procdoc = 0;
   gchar *show_synth = NULL;
   gchar *root_name = NULL;
@@ -268,10 +252,6 @@ main (gint   argc,
 	{
 	  gen_tree = 1;
 	}
-      else if (strcmp ("cats", argv[i]) == 0)
-	{
-	  gen_cats = 1;
-	}
       else if (strcmp ("procdoc", argv[i]) == 0)
 	{
 	  gen_procdoc = 1;
@@ -299,7 +279,7 @@ main (gint   argc,
     root = g_type_from_name (root_name);
   else
     root = BSE_TYPE_OBJECT;
-  if (!gen_froots && !gen_tree && !gen_cats && !gen_procdoc && !show_synth)
+  if (!gen_froots && !gen_tree && !gen_procdoc && !show_synth)
     return help (argv[i-1]);
   if (!indent_inc)
     {
@@ -322,8 +302,6 @@ main (gint   argc,
 	    show_nodes (i, 0, iindent);
 	}
     }
-  if (gen_cats)
-    show_cats ();
   if (gen_procdoc)
     show_procdoc ();
   if (show_synth)
