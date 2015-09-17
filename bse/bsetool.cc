@@ -130,7 +130,7 @@ class CommandRegistry {
 public:
   template<size_t N>
   explicit CommandRegistry (ArgDescription (&adescs) [N], String (*cmd) (const ArgParser&),
-                            const String &name, const String &blurb = "") :
+                            const String &name, const String &blurb) :
     arg_parser_ (adescs), cmd_ (cmd), name_ (name), blurb_ (blurb), next_ (command_registry_chain)
   {
     command_registry_chain = this;
@@ -166,7 +166,7 @@ crawl (const ArgParser &ap)
   return "";
 }
 
-static CommandRegistry crawl_cmd (crawl_options, crawl, "crawl");
+static CommandRegistry crawl_cmd (crawl_options, crawl, "crawl", "Test filesystem crawling");
 
 // == dump-info ==
 static ArgDescription dump_info_options[] = {
@@ -243,7 +243,7 @@ dump_info (const ArgParser &ap)
   return "";
 }
 
-static CommandRegistry dump_info_cmd (dump_info_options, dump_info, "dump-info");
+static CommandRegistry dump_info_cmd (dump_info_options, dump_info, "dump-info", "Printout common constants");
 
 
 // == dump-categories ==
@@ -262,7 +262,7 @@ dump_categories (const ArgParser &ap)
 }
 
 static CommandRegistry dump_categories_cmd (dump_categories_options, dump_categories, "dump-categories",
-                                            "print categories");
+                                            "Printout the BSE category registry");
 
 
 // == render2wav ==
@@ -305,7 +305,7 @@ render2wav (const ArgParser &ap)
   return "";
 }
 
-static CommandRegistry render2wav_cmd (render2wav_options, render2wav, "render2wav");
+static CommandRegistry render2wav_cmd (render2wav_options, render2wav, "render2wav", "Render audio from a .bse file into a WAV file");
 
 
 // == check-load ==
@@ -326,7 +326,7 @@ check_load (const ArgParser &ap)
   return "";
 }
 
-static CommandRegistry check_load_cmd (check_load_options, check_load, "check-load");
+static CommandRegistry check_load_cmd (check_load_options, check_load, "check-load", "Test if a .bse file can be successfully loaded");
 
 
 // == bse tool ==
