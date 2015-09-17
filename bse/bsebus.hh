@@ -82,11 +82,14 @@ namespace Bse {
 
 class BusImpl : public SubSynthImpl, public virtual BusIface {
 protected:
-  virtual           ~BusImpl      ();
+  virtual          ~BusImpl          ();
 public:
-  explicit          BusImpl       (BseObject*);
-  virtual ErrorType ensure_output () override;
-  virtual ErrorType connect_track (TrackIface &track);
+  explicit          BusImpl          (BseObject*);
+  virtual ErrorType ensure_output    () override;
+  virtual ErrorType connect_bus      (BusIface &bus) override;
+  virtual ErrorType connect_track    (TrackIface &track) override;
+  virtual ErrorType disconnect_bus   (BusIface &bus) override;
+  virtual ErrorType disconnect_track (TrackIface &track) override;
 };
 
 } // Bse

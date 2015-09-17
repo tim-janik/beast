@@ -508,10 +508,10 @@ sequence PartLinkSeq {
 /// Interface for effect stacks and per-track audio signal routing to the master output.
 interface Bus : SubSynth {
   ErrorType ensure_output    ();            ///< Ensure that a bus has an output connection.
-  // ErrorType connect_bus      (Bus bus);     ///< Add a bus to the input list of a bus.
+  ErrorType connect_bus      (Bus bus);     ///< Add a bus to the input list of a bus.
   ErrorType connect_track    (Track track); ///< Add a track to the input list of a bus.
-  // ErrorType disconnect_bus   (Bus bus);     ///< Remove a bus from the input list of a bus.
-  // ErrorType disconnect_track (Track track); ///< Remove a track from the input list of a bus.
+  ErrorType disconnect_bus   (Bus bus);     ///< Remove a bus from the input list of a bus.
+  ErrorType disconnect_track (Track track); ///< Remove a track from the input list of a bus.
   // ItemSeq   inputs        = Object ("Input Signals", "Synthesis signals (from tracks and busses) used as bus input", GUI ":item-sequence");
   // ItemSeq   outputs       = Object ("Output Signals", "Mixer busses used as output for synthesis signals", GUI ":item-sequence");
   // CSynth    snet          = Object ("SNet", "Synthesis network used internally to implement effect stack", READWRITE ":skip-undo");
