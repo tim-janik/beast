@@ -3,7 +3,6 @@
 #include "bsesource.hh"
 #include "bseprocedure.hh"
 #include "bsemain.hh"
-#include "bsestandardsynths.hh"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -165,7 +164,6 @@ help (gchar *arg)
   fprintf (stderr, "       froots     iterate over fundamental roots\n");
   fprintf (stderr, "       tree       print BSE type tree\n");
   fprintf (stderr, "       procdoc    print procedure documentation\n");
-  fprintf (stderr, "       synth <x>  dump standard synth <x> definition\n");
 
   return arg != NULL;
 }
@@ -177,7 +175,6 @@ main (gint   argc,
   gboolean gen_froots = 0;
   gboolean gen_tree = 0;
   gboolean gen_procdoc = 0;
-  gchar *show_synth = NULL;
   gchar *root_name = NULL;
   const char *iindent = "";
   const char *pluginbool = "load-core-plugins=0";
@@ -244,10 +241,6 @@ main (gint   argc,
 	{
 	  gen_froots = 1;
 	}
-      else if (strcmp ("synth", argv[i]) == 0 && i + 1 < argc)
-	{
-	  show_synth = argv[++i];
-	}
       else if (strcmp ("tree", argv[i]) == 0)
 	{
 	  gen_tree = 1;
@@ -279,7 +272,7 @@ main (gint   argc,
     root = g_type_from_name (root_name);
   else
     root = BSE_TYPE_OBJECT;
-  if (!gen_froots && !gen_tree && !gen_procdoc && !show_synth)
+  if (!gen_froots && !gen_tree && !gen_procdoc)
     return help (argv[i-1]);
   if (!indent_inc)
     {
@@ -304,12 +297,6 @@ main (gint   argc,
     }
   if (gen_procdoc)
     show_procdoc ();
-  if (show_synth)
-    {
-      gchar *text = bse_standard_synth_inflate (show_synth, NULL);
-      g_print ("%s", text);
-      g_free (text);
-    }
 
   return 0;
 }

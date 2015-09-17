@@ -3,6 +3,7 @@
 #include <bse/bseserver.hh>
 #include <bse/bsemathsignal.hh>
 #include <bse/bsecategories.hh>
+#include <bse/bsestandardsynths.hh>
 #include <sys/resource.h>
 #include <unordered_map>
 #include <unistd.h>
@@ -263,6 +264,26 @@ dump_categories (const ArgParser &ap)
 
 static CommandRegistry dump_categories_cmd (dump_categories_options, dump_categories, "dump-categories",
                                             "Printout the BSE category registry");
+
+
+// == standard-synth ==
+static ArgDescription standard_synth_options[] = {
+  { "<synth-name>", "", "The BSE synth to show (e.g. 'adsr-wave-1')", "" },
+};
+
+static String
+standard_synth (const ArgParser &ap)
+{
+  const String bsefile = ap["synth-name"];
+  gchar *text = bse_standard_synth_inflate (bsefile.c_str(), NULL);
+  if (!text)
+    return string_format ("no such synth: %s", bsefile);
+  printout ("%s", text);
+  g_free (text);
+  return ""; // success
+}
+
+static CommandRegistry standard_synth_cmd (standard_synth_options, standard_synth, "standard-synth", "Display definition of standard synthesizers");
 
 
 // == render2wav ==
