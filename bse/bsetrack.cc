@@ -1090,7 +1090,7 @@ TrackImpl::insert_part (int tick, PartIface &parti)
   if (id)
     {
       // can't use remove_link() here, since id will have changed after undo
-      push_undo ("Insert Part", *this, &TrackImpl::remove_tick, tick);
+      push_undo (__func__, *this, &TrackImpl::remove_tick, tick);
     }
   return id;
 }
@@ -1111,7 +1111,7 @@ TrackImpl::remove_tick (int tick)
         return id ? ERROR_NONE : ERROR_INVALID_OVERLAP;
       };
       bse_track_remove_tick (self, tick);
-      push_undo ("Remove Tick", *this, lambda);
+      push_undo (__func__, *this, lambda);
     }
 }
 

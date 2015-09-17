@@ -2236,7 +2236,7 @@ PartImpl::change_note (int id, int tick, int duration, int note, int fine_tune, 
         {
           success = bse_part_change_note (self, id, ~0, tick, duration, note, fine_tune, velocity);
           if (success)
-            push_undo ("Change Note", *this, &PartImpl::change_note, id, equery.tick, equery.duration,
+            push_undo (__func__, *this, &PartImpl::change_note, id, equery.tick, equery.duration,
                        equery.note, equery.fine_tune, equery.velocity);
         }
       else
@@ -2362,7 +2362,7 @@ PartImpl::insert_note (int channel, int tick, int duration, int note, int fine_t
   BsePart *self = as<BsePart*>();
   uint id = bse_part_insert_note (self, channel, tick, duration, note, fine_tune, velocity);
   if (id)
-    push_undo ("Insert Note", *this, &PartImpl::delete_event, id);
+    push_undo (__func__, *this, &PartImpl::delete_event, id);
   return id;
 }
 

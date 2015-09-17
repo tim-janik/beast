@@ -953,7 +953,7 @@ BusImpl::ensure_output ()
                 BusImpl &bus = master.undo_resolve (bus_descriptor);
                 return master.disconnect_bus (bus);
               };
-              master.push_undo ("Ensure Output", master, lambda);
+              master.push_undo (__func__, master, lambda);
             }
         }
     }
@@ -976,7 +976,7 @@ BusImpl::connect_bus (BusIface &busi)
       auto lambda = [bus_descriptor] (BusImpl &self, BseUndoStack *ustack) -> ErrorType {
         return self.disconnect_bus (self.undo_resolve (bus_descriptor));
       };
-      push_undo ("Connect Bus", *this, lambda);
+      push_undo (__func__, *this, lambda);
     }
   return error;
 }
@@ -997,7 +997,7 @@ BusImpl::connect_track (TrackIface &tracki)
       auto lambda = [track_descriptor] (BusImpl &self, BseUndoStack *ustack) -> ErrorType {
         return self.disconnect_track (self.undo_resolve (track_descriptor));
       };
-      push_undo ("Connect Track", *this, lambda);
+      push_undo (__func__, *this, lambda);
     }
   return error;
 }
@@ -1015,7 +1015,7 @@ BusImpl::disconnect_bus (BusIface &busi)
       auto lambda = [bus_descriptor] (BusImpl &self, BseUndoStack *ustack) -> ErrorType {
         return self.connect_bus (self.undo_resolve (bus_descriptor));
       };
-      push_undo ("Remove Bus", *this, lambda);
+      push_undo (__func__, *this, lambda);
     }
   return error;
 }
@@ -1033,7 +1033,7 @@ BusImpl::disconnect_track (TrackIface &tracki)
       auto lambda = [track_descriptor] (BusImpl &self, BseUndoStack *ustack) -> ErrorType {
         return self.connect_track (self.undo_resolve (track_descriptor));
       };
-      push_undo ("Remove Track", *this, lambda);
+      push_undo (__func__, *this, lambda);
     }
   return error;
 }
