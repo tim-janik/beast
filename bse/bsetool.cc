@@ -118,6 +118,32 @@ ArgParser::parse_args (const uint argc, char *const argv[])
   return ""; // success
 }
 
+// == CommandRegistry ==
+class CommandRegistry;
+static CommandRegistry *command_registry_chain = NULL;
+class CommandRegistry {
+  ArgParser        arg_parser_;
+  String         (*cmd_) (const ArgParser&);
+  String           name_;
+  CommandRegistry *next_;
+public:
+  template<size_t N>
+  explicit CommandRegistry (ArgDescription (&adescs) [N], String (*cmd) (const ArgParser&), const String &name) :
+    arg_parser_ (adescs), cmd_ (cmd), name_ (name), next_ (command_registry_chain)
+  {
+    command_registry_chain = this;
+  }
+  ~CommandRegistry()
+  {
+    command_registry_chain = NULL;
+  }
+  CommandRegistry* next       ()                                    { return next_; }
+  String           name       ()                                    { return name_; }
+  String           run        ()                                    { return cmd_ (arg_parser_); }
+  String           parse_args (const uint argc, char *const argv[]) { return arg_parser_.parse_args (argc, argv); }
+};
+
+
 // == crawl ==
 static ArgDescription crawl_options[] = {
   { "<glob>",   "",     "Glob pattern to list matching files", "" },
@@ -137,6 +163,8 @@ crawl (const ArgParser &ap)
   sfi_ring_free_deep (ring, g_free);
   return "";
 }
+
+static CommandRegistry crawl_cmd (crawl_options, crawl, "crawl");
 
 // == dump-info ==
 static ArgDescription dump_info_options[] = {
@@ -213,6 +241,9 @@ dump_info (const ArgParser &ap)
   return "";
 }
 
+static CommandRegistry dump_info_cmd (dump_info_options, dump_info, "dump-info");
+
+
 // == render2wav ==
 static ArgDescription render2wav_options[] = {
   { "-s, --seconds", "<seconds>", "Number of seconds to record", "0" },
@@ -220,7 +251,7 @@ static ArgDescription render2wav_options[] = {
   { "<wav-file>",    "",          "The WAV file to use for audio output", "" },
 };
 
-static ErrorType
+static String
 render2wav (const ArgParser &ap)
 {
   const String bsefile = ap["bse-file"];
@@ -230,7 +261,7 @@ render2wav (const ArgParser &ap)
   project->auto_deactivate (0);
   auto err = project->restore_from_file (bsefile);
   if (err)
-    return err;
+    return bse_error_blurb (err);
   BSE_SERVER.start_recording (wavfile, n_seconds);
   err = project->play();
   printq ("Recording %s to %s...\n", bsefile, wavfile);
@@ -250,8 +281,11 @@ render2wav (const ArgParser &ap)
     }
   printq ("\n");
 
-  return ERROR_NONE;
+  return "";
 }
+
+static CommandRegistry render2wav_cmd (render2wav_options, render2wav, "render2wav");
+
 
 // == check-load ==
 static ArgDescription check_load_options[] = {
@@ -270,6 +304,9 @@ check_load (const ArgParser &ap)
   // success
   return "";
 }
+
+static CommandRegistry check_load_cmd (check_load_options, check_load, "check-load");
+
 
 // == bse tool ==
 static ArgDescription bsetool_options[] = {
@@ -304,77 +341,25 @@ main (int argc_int, char *argv[])
         g_main_context_iteration (bse_main_context, false);
     }
   // command parsing
-  if (option_argc < argc && argv[option_argc] == String ("render2wav"))
-    {
-      ArgParser ap (render2wav_options);
-      String error = ap.parse_args (argc - option_argc - 1, argv + option_argc + 1);
-      if (!error.empty())
+  if (option_argc < argc)
+    for (CommandRegistry *cmd = command_registry_chain; cmd; cmd = cmd->next())
+      if (cmd->name() == argv[option_argc])
         {
-          printerr ("%s: render2wav: %s\n", argv[0], error);
-          return 127;
+          String error = cmd->parse_args (argc - option_argc - 1, argv + option_argc + 1);
+          if (!error.empty())
+            {
+              printerr ("%s: %s: %s\n", argv[0], cmd->name(), error);
+              return 127;
+            }
+          error = cmd->run();
+          if (!error.empty())
+            {
+              printerr ("%s: %s\n", cmd->name(), error);
+              return 127;
+            }
+          return 0; // success
         }
-      ErrorType err = render2wav (ap);
-      if (err != ERROR_NONE)
-        {
-          printerr ("%s: render2wav: %s\n", argv[0], bse_error_blurb (err));
-          return 127;
-        }
-      return 0; // success
-    }
-  else if (option_argc < argc && argv[option_argc] == String ("check-load"))
-    {
-      ArgParser ap (check_load_options);
-      String error = ap.parse_args (argc - option_argc - 1, argv + option_argc + 1);
-      if (!error.empty())
-        {
-          printerr ("%s: check-load: %s\n", argv[0], error);
-          return 127;
-        }
-      error = check_load (ap);
-      if (!error.empty())
-        {
-          printerr ("check-load: %s\n", error);
-          return 127;
-        }
-      return 0; // success
-    }
-  else if (option_argc < argc && argv[option_argc] == String ("dump-info"))
-    {
-      ArgParser ap (dump_info_options);
-      String error = ap.parse_args (argc - option_argc - 1, argv + option_argc + 1);
-      if (!error.empty())
-        {
-          printerr ("%s: dump-info: %s\n", argv[0], error);
-          return 127;
-        }
-      error = dump_info (ap);
-      if (!error.empty())
-        {
-          printerr ("dump-info: %s\n", error);
-          return 127;
-        }
-      return 0; // success
-    }
-  else if (option_argc < argc && argv[option_argc] == String ("crawl"))
-    {
-      ArgParser ap (crawl_options);
-      String error = ap.parse_args (argc - option_argc - 1, argv + option_argc + 1);
-      if (!error.empty())
-        {
-          printerr ("%s: crawl: %s\n", argv[0], error);
-          return 127;
-        }
-      error = crawl (ap);
-      if (!error.empty())
-        {
-          printerr ("crawl: %s\n", error);
-          return 127;
-        }
-      return 0; // success
-    }
-  else
-    {
-      printerr ("%s: %s\n", argv[0], "missing command");
-      return 127;
-    }
+
+  printerr ("%s: %s\n", argv[0], "missing command");
+  return 127;
 }
