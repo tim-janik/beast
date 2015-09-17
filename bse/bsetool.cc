@@ -350,6 +350,119 @@ check_load (const ArgParser &ap)
 static CommandRegistry check_load_cmd (check_load_options, check_load, "check-load", "Test if a .bse file can be successfully loaded");
 
 
+// == type-tree ==
+static void
+show_nodes (GType root, GType type, GType sibling, const String &indent, const ArgParser &ap)
+{
+  constexpr const char O_KEY_FILL[] = "_";
+  constexpr const char O_SPACE[] = " ";
+  constexpr const char O_ESPACE[] = "";
+  constexpr const char O_BRANCH[] = "+";
+  constexpr const char O_VLINE[] = "|";
+  constexpr const char O_LLEAF[] = "`";
+  uint spacing = 1;
+  bool feature_blurb = string_to_bool (ap["blurb"]);
+  bool feature_channels = string_to_bool (ap["channels"]);
+  bool recursion = true;
+  String indent_inc;
+
+  if (!type)
+    return;
+
+  if (indent_inc.empty())
+    {
+      indent_inc += O_SPACE;
+      indent_inc += O_SPACE;
+      indent_inc += O_SPACE;
+    }
+
+  GType *children = g_type_children (type, NULL);
+
+  if (type != root)
+    for (uint i = 0; i < spacing; i++)
+      printout ("%s%s\n", indent, O_VLINE);
+
+  printout ("%s%s%s%s",
+            indent,
+            sibling ? O_BRANCH : (type != root ? O_LLEAF : O_SPACE),
+            O_ESPACE,
+            g_type_name (type));
+
+  for (uint i = strlen (g_type_name (type)); i <= indent_inc.size(); i++)
+    printout ("%s", O_KEY_FILL);
+
+  if (feature_blurb && bse_type_get_blurb (type))
+    {
+      printout ("\t[");
+      printout ("%s", bse_type_get_blurb (type));
+      printout ("]");
+    }
+
+  if (G_TYPE_IS_ABSTRACT (type))
+    printout ("\t(abstract)");
+
+  if (feature_channels && g_type_is_a (type, BSE_TYPE_SOURCE))
+    {
+      BseSourceClass *klass = (BseSourceClass*) g_type_class_ref (type);
+      gchar buffer[1024];
+
+      sprintf (buffer,
+	       "\t(ichannels %u) (ochannels %u)",
+	       klass->channel_defs.n_ichannels,
+	       klass->channel_defs.n_ochannels);
+      printout ("%s", buffer);
+      g_type_class_unref (klass);
+    }
+
+  printout ("\n");
+
+  if (children && recursion)
+    {
+      String new_indent;
+
+      if (sibling)
+	new_indent = indent + O_VLINE + indent_inc;
+      else
+	new_indent = indent + O_SPACE + indent_inc;
+
+      for (GType *child = children; *child; child++)
+	show_nodes (root, child[0], child[1], new_indent, ap);
+    }
+
+  g_free (children);
+}
+
+static ArgDescription type_tree_options[] = {
+  { "[root-node]",    "", "Name of the type tree root node (or \"\" for all fundamentals)", "BseObject" },
+  { "-b, --blurb",    "", "Show type blurb", "" },
+  { "-c, --channels", "", "Show type channels", "" },
+};
+
+static String
+type_tree (const ArgParser &ap)
+{
+  const String root_name = ap["root-node"];
+  const char *iindent = "";
+  if (root_name.empty())
+    for (uint i = 0; i <= G_TYPE_FUNDAMENTAL_MAX; i += G_TYPE_MAKE_FUNDAMENTAL (1))
+      {
+        const char *name = g_type_name (i);
+        if (name)
+          show_nodes (~0, i, 0, iindent, ap);
+      }
+  else
+    {
+      GType root = g_type_from_name (root_name.c_str());
+      if (root == 0)
+        return string_format ("unknown type name: %s", root_name);
+      show_nodes (root, root, 0, iindent, ap);
+    }
+  return ""; // success
+}
+
+static CommandRegistry type_tree_cmd (type_tree_options, type_tree, "type-tree", "Printout the BSE type tree");
+
+
 // == bse tool ==
 static ArgDescription bsetool_options[] = {
   { "--bse-no-load", "", "Prevent automated plugin and script registration", "" },
