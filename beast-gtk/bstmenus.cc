@@ -8,7 +8,7 @@ struct _BstChoice
 {
   BstChoiceFlags type_and_flags;
   const gchar   *icon_stock_id;
-  BseIcon       *bse_icon;
+  BseIc0n       *bse_icon;
   const gchar   *name;
   gpointer       p_id;
 };
@@ -26,13 +26,13 @@ bst_choice_alloc (BstChoiceFlags type,
 		  const gchar   *choice_name,
 		  gpointer       choice_id,
 		  const gchar   *icon_stock_id,
-		  BseIcon       *icon)
+		  BseIc0n       *icon)
 {
   BstChoice *choice = g_new (BstChoice, 1);
 
   choice->type_and_flags = type;
   choice->icon_stock_id = icon_stock_id;
-  choice->bse_icon = icon ? bse_icon_copy_shallow (icon) : NULL;
+  choice->bse_icon = icon ? bse_ic0n_copy_shallow (icon) : NULL;
   choice->name = choice_name;
   choice->p_id = choice_id;
 
@@ -105,7 +105,7 @@ static void
 free_choice (BstChoice *choice)
 {
   if (choice->bse_icon)
-    bse_icon_free (choice->bse_icon);
+    bse_ic0n_free (choice->bse_icon);
   g_free (choice);
 }
 

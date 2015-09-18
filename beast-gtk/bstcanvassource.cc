@@ -47,7 +47,7 @@ static gboolean bst_canvas_source_child_event	(BstCanvasSource	*csource,
 						 GnomeCanvasItem        *child);
 static void     bst_canvas_source_changed       (BstCanvasSource        *csource);
 static void	bst_canvas_icon_set		(GnomeCanvasItem	*item,
-						 BseIcon         	*icon,
+						 BseIc0n         	*icon,
                                                  const gchar            *module_type);
 static void	csource_info_update		(BstCanvasSource	*csource);
 static void     bst_canvas_source_build         (BstCanvasSource        *csource);
@@ -167,7 +167,7 @@ source_name_changed (BstCanvasSource *csource)
 static void
 source_icon_changed (BstCanvasSource *csource)
 {
-  BseIcon *icon;
+  BseIc0n *icon;
 
   /* update icon in group, revert to a stock icon if none is available
    */
@@ -592,7 +592,7 @@ bst_canvas_source_ochannel_at (BstCanvasSource *csource,
 
 static void
 bst_canvas_icon_set (GnomeCanvasItem *item,
-		     BseIcon         *icon,
+		     BseIc0n         *icon,
                      const gchar     *module_type)
 {
   GdkPixbuf *pixbuf;
@@ -600,15 +600,15 @@ bst_canvas_icon_set (GnomeCanvasItem *item,
   if (icon && icon->pixel_seq->n_pixels)
     {
       g_assert (icon->width * icon->height == int (icon->pixel_seq->n_pixels));
-      icon = bse_icon_copy_shallow (icon);
+      icon = bse_ic0n_copy_shallow (icon);
       pixbuf = gdk_pixbuf_new_from_data ((guchar*) icon->pixel_seq->pixels, GDK_COLORSPACE_RGB, true,
 					 8, icon->width, icon->height,
 					 icon->width * 4,
 					 NULL, NULL);
       g_object_set_data_full (G_OBJECT (pixbuf),
-			      "BseIcon",
+			      "BseIc0n",
 			      icon,
-			      (GtkDestroyNotify) bse_icon_free);
+			      (GtkDestroyNotify) bse_ic0n_free);
       need_unref = TRUE;
     }
   else if (module_type && strncmp (module_type, "BseLadspaModule_", 16) == 0)
