@@ -944,17 +944,7 @@ BusImpl::ensure_output ()
       if (masterp && self != masterp)
         {
           BusImpl &master = *masterp->as<BusImpl*>();
-          error = bse_bus_connect (masterp, self);
-          if (!error)
-            {
-              // an undo lambda is needed for wrapping object argument references
-              UndoDescriptor<BusImpl> bus_descriptor = master.undo_descriptor (*this);
-              auto lambda = [bus_descriptor] (BusImpl &master, BseUndoStack *ustack) -> ErrorType {
-                BusImpl &bus = master.undo_resolve (bus_descriptor);
-                return master.disconnect_bus (bus);
-              };
-              master.push_undo (__func__, master, lambda);
-            }
+          error = master.connect_bus (*this);
         }
     }
   return error;
