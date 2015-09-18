@@ -22,7 +22,7 @@ struct BseAdder : BseSource {
   gboolean	  subtract;
 };
 struct BseAdderClass : BseSourceClass {
-  BseIcon	*sub_icon;
+  BseIc0n	*sub_icon;
 };
 
 enum
