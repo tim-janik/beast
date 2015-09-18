@@ -295,6 +295,18 @@ Const NOTEHINTS     = STANDARD ":note";
 Const FINETUNEHINTS = STANDARD ":finetune";
 Const VELOCITYHINTS = STANDARD ":velocity";
 
+/// Representation of an image pixel sequence in ARGB format.
+sequence PixelSeq {
+  int32 argb = Num ("ARGB", "ARGB Format: (alpha << 24) | (red << 16) | (green << 8) | blue", STANDARD);
+};
+
+/// Representation of an icon pixel image.
+record Icon {
+  int32    width  = Range    ("Width",  "Width in pixels or 0 for no icon",  STANDARD, 0, 4096, 1, 0);
+  int32    height = Range    ("Height", "Height in pixels or 0 for no icon", STANDARD, 0, 4096, 1, 0);
+  PixelSeq pixels = Sequence ("Pixels", "Array of width*height ARGB pixels", STANDARD);
+};
+
 /// Object to carry out IDL, API, signal, etc tests.
 interface TestObject {
   int32         echo_test       (String msg);   ///< Echo custom message to stdout.
