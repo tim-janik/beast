@@ -46,9 +46,7 @@ static gboolean bst_canvas_source_child_event	(BstCanvasSource	*csource,
 						 GdkEvent               *event,
 						 GnomeCanvasItem        *child);
 static void     bst_canvas_source_changed       (BstCanvasSource        *csource);
-static void	bst_canvas_icon_set		(GnomeCanvasItem	*item,
-						 BseIc0n         	*icon,
-                                                 const gchar            *module_type);
+static void     bst_canvas_icon_set             (GnomeCanvasItem *item, Bse::Icon &icon2, const char *module_type);
 static void	csource_info_update		(BstCanvasSource	*csource);
 static void     bst_canvas_source_build         (BstCanvasSource        *csource);
 
@@ -167,13 +165,13 @@ source_name_changed (BstCanvasSource *csource)
 static void
 source_icon_changed (BstCanvasSource *csource)
 {
-  BseIc0n *icon;
-
-  /* update icon in group, revert to a stock icon if none is available
-   */
-  icon = bse_item_get_icon (csource->source);
+  // update icon in group, revert to a stock icon if none is available
   if (csource->icon_item)
-    bst_canvas_icon_set (csource->icon_item, icon, bse_item_get_type (csource->source));
+    {
+      Bse::ItemH source_item = Bse::ItemH::down_cast (bse_server.from_proxy (csource->source));
+      Bse::Icon icon = source_item.icon();
+      bst_canvas_icon_set (csource->icon_item, icon, bse_item_get_type (csource->source));
+    }
 }
 
 static void
@@ -591,25 +589,17 @@ bst_canvas_source_ochannel_at (BstCanvasSource *csource,
 }
 
 static void
-bst_canvas_icon_set (GnomeCanvasItem *item,
-		     BseIc0n         *icon,
-                     const gchar     *module_type)
+bst_canvas_icon_set (GnomeCanvasItem *item, Bse::Icon &icon, const char *module_type)
 {
   GdkPixbuf *pixbuf;
   gboolean need_unref = FALSE;
-  if (icon && icon->pixel_seq->n_pixels)
+  if (icon.width && icon.height && icon.width * icon.height == ssize_t (icon.pixels.size()))
     {
-      g_assert (icon->width * icon->height == int (icon->pixel_seq->n_pixels));
-      icon = bse_ic0n_copy_shallow (icon);
-      pixbuf = gdk_pixbuf_new_from_data ((guchar*) icon->pixel_seq->pixels, GDK_COLORSPACE_RGB, true,
-					 8, icon->width, icon->height,
-					 icon->width * 4,
-					 NULL, NULL);
-      g_object_set_data_full (G_OBJECT (pixbuf),
-			      "BseIc0n",
-			      icon,
-			      (GtkDestroyNotify) bse_ic0n_free);
-      need_unref = TRUE;
+      guchar *pixels = (guchar*) g_memdup (icon.pixels.data(), icon.height * icon.width * 4);
+      pixbuf = gdk_pixbuf_new_from_data (pixels, GDK_COLORSPACE_RGB, true,
+					 8, icon.width, icon.height, icon.width * 4,
+                                         (GdkPixbufDestroyNotify) g_free, NULL);
+      need_unref = true;
     }
   else if (module_type && strncmp (module_type, "BseLadspaModule_", 16) == 0)
     pixbuf = bst_pixbuf_ladspa ();
