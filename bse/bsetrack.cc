@@ -1143,17 +1143,16 @@ ErrorType
 TrackImpl::ensure_output ()
 {
   BseTrack *self = as<BseTrack*>();
-  ErrorType error = Bse::ERROR_NONE;
+  ErrorType error = ERROR_NONE;
   BseItem *bparent = self->parent;
   if (BSE_IS_SONG (bparent) && !self->bus_outputs)
     {
       BseSong *song = BSE_SONG (bparent);
-      BseBus *master = bse_song_find_master (song);
-      if (master)
+      BseBus *bmaster = bse_song_find_master (song);
+      if (bmaster)
         {
-          error = bse_bus_connect (master, BSE_ITEM (self));
-          if (!error)
-            bse_item_push_undo_proc (master, "disconnect-track", self);
+          BusImpl &master = *bmaster->as<BusImpl*>();
+          error = master.connect_track (*this);
         }
     }
   return error;
