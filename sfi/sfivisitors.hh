@@ -103,9 +103,9 @@ public:
     GParamSpec *pspec = sfi_pspec_seq_field_from_visitable (a); // this needs the real SeqA type
     if (pspec)
       {
-        GParamSpec *pspec = sfi_pspec_seq (name, get_label (name).c_str(), get_blurb (name).c_str(), pspec, get_hints (name).c_str());
-        add_group (name, pspec);
-        pspecs_.push_back (pspec);
+        GParamSpec *seq_pspec = sfi_pspec_seq (name, get_label (name).c_str(), get_blurb (name).c_str(), pspec, get_hints (name).c_str());
+        add_group (name, seq_pspec);
+        pspecs_.push_back (seq_pspec);
       }
   }
   template<class A> void
