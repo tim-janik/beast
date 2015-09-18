@@ -632,11 +632,18 @@ static void
 bus_uncross_input (BseItem *owner,
                    BseItem *item)
 {
-  /* delete item via procedure so deletion is recorded to undo */
+  // delete item via undoable method for undo-rcording
   if (BSE_IS_TRACK (item))
-    bse_item_exec_void (owner, "disconnect-track", item);
+    {
+      Bse::BusImpl &self = *owner->as<Bse::BusImpl*>();
+      self.disconnect_track (*item->as<Bse::TrackImpl*>());
+    }
   else /* IS_BUS */
-    bse_item_exec_void (owner, "disconnect-bus", item);
+    {
+      Bse::BusImpl &self = *owner->as<Bse::BusImpl*>();
+      Bse::BusImpl &bus = *item->as<Bse::BusImpl*>();
+      self.disconnect_bus (bus);
+    }
 }
 
 Bse::ErrorType
