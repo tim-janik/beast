@@ -14,6 +14,7 @@ template<class Visitable> SfiRecFields                    sfi_pspecs_rec_fields_
 template<class Visitable> GParamSpec*                     sfi_pspec_seq_field_from_visitable        (Visitable &visitable);
 template<class Visitable> const std::vector<GParamSpec*>& sfi_pspecs_fields_from_accessor_visitable (Visitable &visitable);
 bool sfi_pspecs_rec_fields_cache (const std::type_info &type_info, SfiRecFields *rf, bool assign = false); // internal
+bool sfi_pspecs_seq_field_cache  (const std::type_info &type_info, GParamSpec  **pp, bool assign = false); // internal
 bool sfi_pspecs_acs_fields_cache (const std::type_info &type_info, std::vector<GParamSpec*>**, bool assign = false); // internal
 
 class PspecVisitor : public VisitorDispatcher<PspecVisitor> {
@@ -313,14 +314,27 @@ sfi_pspecs_rec_fields_from_visitable (Visitable &visitable)
 template<class Visitable> GParamSpec*
 sfi_pspec_seq_field_from_visitable (Visitable &visitable)
 {
+  GParamSpec *pspec = NULL;
+  if (sfi_pspecs_seq_field_cache (typeid (Visitable), &pspec))
+    return pspec;
   std::vector<GParamSpec*> pspecs;
   PspecVisitor pspec_visitor (pspecs, visitable.__aida_aux_data__());
   typedef typename Visitable::value_type A;
   A example_element = A();
   pspec_visitor (example_element, "seqelement");
-  GParamSpec *pspec = NULL;
   if (pspecs.size() == 1)
-    pspec = pspecs[0];
+    {
+      pspec = pspecs[0];
+      g_param_spec_ref (pspec);
+      g_param_spec_sink (pspec);
+      sfi_pspecs_seq_field_cache (typeid (Visitable), &pspec, true);
+    }
+  for (size_t i = 0; i < pspecs.size(); i++)
+    {
+      g_param_spec_ref (pspecs[i]);
+      g_param_spec_sink (pspecs[i]);
+      g_param_spec_unref (pspecs[i]);
+    }
   return pspec;
 }
 
