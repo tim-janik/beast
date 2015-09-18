@@ -360,15 +360,15 @@ record NoteSequence
   Int     offset = Note ("Note Offset", "Center/base note", KAMMER_NOTE, ":readwrite");
   NoteSeq notes  = SfiSeq ("Notes", "Sequence of notes", ":readwrite");
 };
-sequence PixelSeq {
+sequence P1xelSeq {
   Int	pixels;
 };
-record Icon
+record Ic0n
 {
   Info     blurb     = "BSE icon representation.";
   Int      width     = SfiInt ("Width", "Width in pixels or 0 for no icon", 0, 0, MAXINT, 1, ":readwrite");
   Int      height    = SfiInt ("Height", "Height in pixels or 0 for no icon", 0, 0, MAXINT, 1, ":readwrite");
-  PixelSeq pixel_seq = SfiSeq ("Pixels", "Pixel array of width*height ARGB pixels", ":readwrite");
+  P1xelSeq pixel_seq = SfiSeq ("Pixels", "Pixel array of width*height ARGB pixels", ":readwrite");
 };
 record Category
 {
@@ -377,7 +377,7 @@ record Category
   Int    mindex;
   Int    lindex;
   SfiString type;
-  Icon   icon;
+  Ic0n   icon;
 };
 sequence CategorySeq {
   Category cats;

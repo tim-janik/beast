@@ -18,7 +18,7 @@ struct _CEntry
   GQuark   category;
   guint    mindex, lindex;
   GType    type;
-  BseIcon *icon;
+  BseIc0n *icon;
 };
 
 
@@ -188,7 +188,7 @@ bse_categories_register (const gchar  *category,
     {
       centry->type = type;
       if (pixstream)
-        centry->icon = bse_icon_from_pixstream (pixstream);
+        centry->icon = bse_ic0n_from_pixstream (pixstream);
       else
         centry->icon = NULL;
     }
@@ -340,8 +340,8 @@ bse_category_from_id (guint id)
       g_free (cat->type);
       cat->type = g_strdup (g_type_name (centry->type));
       if (cat->icon)
-        bse_icon_free (cat->icon);
-      cat->icon = centry->icon ? bse_icon_copy_shallow (centry->icon) : NULL;
+        bse_ic0n_free (cat->icon);
+      cat->icon = centry->icon ? bse_ic0n_copy_shallow (centry->icon) : NULL;
       return cat;
     }
   return NULL;

@@ -228,10 +228,10 @@ typedef struct
   guint          height : 12;
   const guint8  *encoded_pix_data;
 } BsePixdata;
-static BseIcon*
-bse_icon_from_pixdata (const BsePixdata *pixdata)
+static BseIc0n*
+bse_ic0n_from_pixdata (const BsePixdata *pixdata)
 {
-  BseIcon *icon;
+  BseIc0n *icon;
   guint bpp, encoding;
 
   g_return_val_if_fail (pixdata != NULL, NULL);
@@ -254,10 +254,10 @@ bse_icon_from_pixdata (const BsePixdata *pixdata)
     }
   if (!pixdata->encoded_pix_data)
     return NULL;
-  icon = bse_icon_new ();
+  icon = bse_ic0n_new ();
   icon->width = pixdata->width;
   icon->height = pixdata->height;
-  bse_pixel_seq_resize (icon->pixel_seq, icon->width * icon->height);
+  bse_p1xel_seq_resize (icon->pixel_seq, icon->width * icon->height);
   guint8 *image_buffer = (guint8*) icon->pixel_seq->pixels;
   if (encoding == BSE_PIXDATA_1BYTE_RLE)
     {
@@ -319,8 +319,8 @@ get_uint32 (const guint8 *stream, guint *result)
   *result = (stream[0] << 24) + (stream[1] << 16) + (stream[2] << 8) + stream[3];
   return stream + 4;
 }
-BseIcon*
-bse_icon_from_pixstream (const guint8 *pixstream)
+BseIc0n*
+bse_ic0n_from_pixstream (const guint8 *pixstream)
 {
   BsePixdata pixd;
   const guint8 *s = pixstream;
@@ -345,7 +345,7 @@ bse_icon_from_pixstream (const guint8 *pixstream)
   pixd.width = width;
   pixd.height = height;
   pixd.encoded_pix_data = s;
-  return bse_icon_from_pixdata (&pixd);
+  return bse_ic0n_from_pixdata (&pixd);
 }
 /* --- ID allocator --- */
 #define	ID_WITHHOLD_BUFFER_SIZE		59
