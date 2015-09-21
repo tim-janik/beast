@@ -370,7 +370,7 @@ bse_fir_filter_calc_chunk (BseSource *source,
   gfloat *coeffs;
   guint i, n_coeffs, history_pos;
 
-  g_return_val_if_fail (ochannel_id == BSE_FIR_FILTER_OCHANNEL_MONO, NULL);
+  assert_return (ochannel_id == BSE_FIR_FILTER_OCHANNEL_MONO, NULL);
 
   input = bse_source_get_input (source, BSE_FIR_FILTER_ICHANNEL_MONO); /* mono */
   if (!input) /* silence */

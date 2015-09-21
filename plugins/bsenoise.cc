@@ -63,7 +63,7 @@ class Noise : public NoiseBase {
     void
     process (unsigned int n_values)
     {
-      g_return_if_fail (n_values <= block_size()); /* paranoid */
+      assert_return (n_values <= block_size()); /* paranoid */
 
       if (allow_randomization) /* fast */
       {
@@ -98,7 +98,7 @@ public:
   void
   reset1()
   {
-    g_return_if_fail (noise_data_ref_count > 0);
+    assert_return (noise_data_ref_count > 0);
 
     noise_data_ref_count--;
     if (noise_data_ref_count == 0)

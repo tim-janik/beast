@@ -325,7 +325,7 @@ dav_guitar_do_destroy (BseObject *object)
 static void
 dav_guitar_trigger_string (DavGuitar *guitar, int str)
 {
-  g_return_if_fail (DAV_IS_GUITAR (guitar));
+  assert_return (DAV_IS_GUITAR (guitar));
 
   wave_guide_pluck (&guitar->strings[str], guitar->metallic_factor, guitar->snap_factor, guitar->trigger_vel);
   wave_guide_unstop (&guitar->body);
@@ -588,7 +588,7 @@ dav_guitar_calc_chunk (BseSource *source,
   gfloat sample;
   guint i, j;
 
-  g_return_val_if_fail (ochannel_id == DAV_GUITAR_OCHANNEL_MONO, NULL);
+  assert_return (ochannel_id == DAV_GUITAR_OCHANNEL_MONO, NULL);
 
   hunk = bse_hunk_alloc (1);
 
