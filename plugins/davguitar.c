@@ -277,7 +277,7 @@ dav_guitar_class_init (DavGuitarClass *class)
 						  BSE_PARAM_DEFAULT | BSE_PARAM_HINT_SCALE));
 
   ochannel_id = bse_source_class_add_ochannel (source_class, "mono-out", _("Guitar Output"));
-  g_assert (ochannel_id == DAV_GUITAR_OCHANNEL_MONO);
+  assert (ochannel_id == DAV_GUITAR_OCHANNEL_MONO);
 }
 
 static void
