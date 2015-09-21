@@ -24,11 +24,11 @@ read_through (GslDataHandle *handle)
     {
       gfloat values[1024];
       int64 values_read = gsl_data_handle_read (handle, offset, 1024, values);
-      g_assert (values_read > 0);
+      assert (values_read > 0);
       offset += values_read;
     }
 
-  g_assert (offset == n_values);
+  assert (offset == n_values);
 }
 
 static double
@@ -342,7 +342,7 @@ test_delay_compensation (const char *run_type)
       if (j % 2)
 	{
 	  /* implement half a output sample delay (for downsampling only) */
-	  g_assert (params[p].mode == BSE_RESAMPLER2_MODE_DOWNSAMPLE);
+	  assert (params[p].mode == BSE_RESAMPLER2_MODE_DOWNSAMPLE);
 	  i++;
 	  j += 2;
 	}

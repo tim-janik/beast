@@ -305,7 +305,7 @@ public:
   }
   ~MidiReceiver()
   {
-    g_assert (ref_count == 0);
+    assert (ref_count == 0);
     for (Channels::iterator it = midi_channels.begin(); it != midi_channels.end(); it++)
       delete *it;
     while (events)
@@ -743,7 +743,7 @@ change_voice_input_L (VoiceInput      *vinput,
           assert_return (vinput->iter == vinput->table->end());
           vinput->next = (*vinput->table)[freq_value];
           vinput->iter = vinput->table->find (freq_value);
-          g_assert (vinput->iter != vinput->table->end());
+          assert (vinput->iter != vinput->table->end());
           vinput->iter->second = vinput;
         }
       vinput->queue_state = VSTATE_BUSY;
@@ -787,7 +787,7 @@ voice_input_module_free_U (gpointer        data,
                            const BseModuleClass *klass)
 {
   VoiceInput *vinput = (VoiceInput*) data;
-  g_assert (vinput->next == NULL);
+  assert (vinput->next == NULL);
   delete vinput;
 }
 

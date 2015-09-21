@@ -424,7 +424,7 @@ bse_type_init (void)
   bse_type_register_procedure_info (&info);
   g_type_register_fundamental (BSE_TYPE_PROCEDURE, "BseProcedure", &info, &finfo, GTypeFlags (0));
   bse_type_add_blurb (BSE_TYPE_PROCEDURE, "BSE Procedure base type", __FILE__, __LINE__);
-  g_assert (BSE_TYPE_PROCEDURE == g_type_from_name ("BseProcedure"));
+  assert (BSE_TYPE_PROCEDURE == g_type_from_name ("BseProcedure"));
 
   /* initialize extra types */
   {

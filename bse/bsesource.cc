@@ -469,7 +469,7 @@ bse_source_set_automation_property (BseSource        *source,
                                     guint             midi_channel,
                                     Bse::MidiSignalType signal_type)
 {
-  g_assert (BSE_MIDI_CONTROL_NONE          == BseMidiControlType (0) &&
+  assert (BSE_MIDI_CONTROL_NONE          == BseMidiControlType (0) &&
             BSE_MIDI_CONTROL_CONTINUOUS_0  == BseMidiControlType (Bse::MIDI_SIGNAL_CONTINUOUS_0) &&
             BSE_MIDI_CONTROL_CONTINUOUS_31 == BseMidiControlType (Bse::MIDI_SIGNAL_CONTINUOUS_31) &&
             BSE_MIDI_CONTROL_0             == BseMidiControlType (Bse::MIDI_SIGNAL_CONTROL_0) &&
@@ -2053,7 +2053,7 @@ BSE_BUILTIN_TYPE (BseSource)
     (GInstanceInitFunc) bse_source_init,
   };
 
-  g_assert (BSE_SOURCE_FLAGS_USHIFT < BSE_OBJECT_FLAGS_MAX_SHIFT);
+  assert (BSE_SOURCE_FLAGS_USHIFT < BSE_OBJECT_FLAGS_MAX_SHIFT);
 
   return bse_type_register_abstract (BSE_TYPE_ITEM,
                                      "BseSource",

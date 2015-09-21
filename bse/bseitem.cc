@@ -66,7 +66,7 @@ BSE_BUILTIN_TYPE (BseItem)
     (GInstanceInitFunc) bse_item_init,
   };
 
-  g_assert (BSE_ITEM_FLAGS_USHIFT < BSE_OBJECT_FLAGS_MAX_SHIFT);
+  assert (BSE_ITEM_FLAGS_USHIFT < BSE_OBJECT_FLAGS_MAX_SHIFT);
 
   return bse_type_register_abstract (BSE_TYPE_OBJECT,
                                      "BseItem",

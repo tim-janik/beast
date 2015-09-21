@@ -276,7 +276,7 @@ bse_part_alloc_id (BsePart *self,
     {
       guint i = self->last_id - 1;
 
-      g_assert (self->ids[i] >= BSE_PART_INVAL_TICK_FLAG);
+      assert (self->ids[i] >= BSE_PART_INVAL_TICK_FLAG);
 
       self->last_id = self->ids[i] - BSE_PART_INVAL_TICK_FLAG;
       id = i + 1;
@@ -1664,7 +1664,7 @@ bse_part_controls_lookup_ge (BsePartControls     *self,
     {
       guint ix = 1 + g_bsearch_array_get_index (self->bsa, &controls_bsc, node);
       node = (BsePartTickNode*) g_bsearch_array_get_nth (self->bsa, &controls_bsc, ix); /* returns NULL for i >= n_nodes */
-      g_assert (!node || node->tick >= tick);
+      assert (!node || node->tick >= tick);
     }
   return node;
 }
@@ -1679,7 +1679,7 @@ bse_part_controls_lookup_le (BsePartControls     *self,
   if (node && node->tick > tick)        /* adjust smaller ticks */
     {
       node = g_bsearch_array_get_index (self->bsa, &controls_bsc, node) > 0 ? node - 1 : NULL;
-      g_assert (!node || node->tick <= tick);
+      assert (!node || node->tick <= tick);
     }
   return node;
 }
@@ -1876,7 +1876,7 @@ bse_part_note_channel_lookup_le (BsePartNoteChannel     *self,
   if (note && note->tick > tick)        /* adjust greater ticks */
     {
       note = g_bsearch_array_get_index (self->bsa, &note_channel_bsc, note) > 0 ? note - 1 : NULL;
-      g_assert (!note || note->tick <= tick);
+      assert (!note || note->tick <= tick);
     }
   return note;
 }
@@ -1899,7 +1899,7 @@ bse_part_note_channel_lookup_ge (BsePartNoteChannel     *self,
     {
       guint ix = 1 + g_bsearch_array_get_index (self->bsa, &note_channel_bsc, note);
       note = (BsePartEventNote*) g_bsearch_array_get_nth (self->bsa, &note_channel_bsc, ix); /* returns NULL for i >= n_nodes */
-      g_assert (!note || note->tick >= tick);
+      assert (!note || note->tick >= tick);
     }
   return note;
 }
@@ -1933,7 +1933,7 @@ part_note_channel_check_crossing (BsePartNoteChannel *self,
   BsePartEventNote key, *note;
   key.tick = note_tick;
   note = (BsePartEventNote*) g_bsearch_array_lookup (self->bsa, &note_channel_bsc, &key);
-  g_assert (note);
+  assert (note);
   return note->tick + note->duration > tick_mark;
 }
 
@@ -1960,7 +1960,7 @@ part_note_channel_crossings_remove (guint *crossings,
         crossings[i] = crossings[n_crossings];
         break;
       }
-  g_assert (i <= n_crossings);  /* must have found one */
+  assert (i <= n_crossings);  /* must have found one */
   n_crossings--;
   if (n_crossings)
     crossings[0] = n_crossings;
@@ -1983,7 +1983,7 @@ bse_part_note_channel_insert (BsePartNoteChannel *self, BsePartEventNote key)
   self->bsa = g_bsearch_array_insert (self->bsa, &note_channel_bsc, &key);
   BSE_SEQUENCER_UNLOCK ();
   note = (BsePartEventNote*) g_bsearch_array_lookup (self->bsa, &note_channel_bsc, &key);
-  g_assert (note->crossings == NULL && note->id == key.id);
+  assert (note->crossings == NULL && note->id == key.id);
   ix = g_bsearch_array_get_index (self->bsa, &note_channel_bsc, note);
   /* copy predecessor crossings */
   if (ix > 0)

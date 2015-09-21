@@ -522,7 +522,7 @@ tailmatch_score_loop (GslDataHandle *shandle,
   gfloat v1[GSL_DATA_HANDLE_PEEK_BUFFER], v2[GSL_DATA_HANDLE_PEEK_BUFFER];
   gdouble score = 0;
 
-  g_assert (start < length);
+  assert (start < length);
 
   for (l = start; l < length; )
     {
@@ -530,7 +530,7 @@ tailmatch_score_loop (GslDataHandle *shandle,
 
       b = gsl_data_handle_read (shandle, l, b, v1);
       b = gsl_data_handle_read (dhandle, l, b, v2);
-      g_assert (b >= 1);        // FIXME
+      assert (b >= 1);        // FIXME
       l += b;
 
       while (b--)
@@ -785,7 +785,7 @@ gsl_data_clip_sample (GslDataHandle     *dhandle,
       return result->error;
     }
   SfiNum tail = gsl_data_find_sample (dhandle, +cconfig->threshold, -cconfig->threshold,  -1, -1);
-  g_assert (tail >= 0);
+  assert (tail >= 0);
 
   /* verify silence detection */
   if (last_value - tail < cconfig->tail_samples)

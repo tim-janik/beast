@@ -46,7 +46,7 @@ bse_midi_device_null_close (BseDevice *device)
   NULLHandle *null = (NULLHandle*) BSE_MIDI_DEVICE (device)->handle;
   BseMidiHandle *handle = &null->handle;
   BSE_MIDI_DEVICE (device)->handle = NULL;
-  g_assert (handle->running_thread == FALSE);
+  assert (handle->running_thread == FALSE);
   /* midi_handle_abort_wait (handle); */
   g_free (null);
 }

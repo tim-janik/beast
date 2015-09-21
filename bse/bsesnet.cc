@@ -732,7 +732,7 @@ bse_snet_context_clone_branch (BseSNet         *self,
       ContextData *cdata;
       SfiRing *node;
 
-      g_assert (self->tmp_context_children == NULL);
+      assert (self->tmp_context_children == NULL);
       for (node = ring; node; node = sfi_ring_walk (node, ring))
 	self->tmp_context_children = g_slist_prepend (self->tmp_context_children, node->data);
       self->tmp_context_children = g_slist_prepend (self->tmp_context_children, context_merger);
@@ -740,7 +740,7 @@ bse_snet_context_clone_branch (BseSNet         *self,
       bcid = bse_id_alloc ();
       cdata = create_context_data (self, bcid, context, mcontext.midi_receiver, mcontext.midi_channel);
       bse_source_create_context_with_data (BSE_SOURCE (self), bcid, cdata, free_context_data, trans);
-      g_assert (self->tmp_context_children == NULL);
+      assert (self->tmp_context_children == NULL);
     }
   else
     {
@@ -851,7 +851,7 @@ bse_snet_context_create (BseSource *source,
       BseContextMerger *context_merger = (BseContextMerger*) self->tmp_context_children->data;
       ContextData *cdata = find_context_data (self, context_handle);
 
-      g_assert (BSE_IS_CONTEXT_MERGER (context_merger));
+      assert (BSE_IS_CONTEXT_MERGER (context_merger));
 
       bse_context_merger_set_merge_context (context_merger, cdata->parent_context);
       /* chain parent class' handler */
@@ -946,7 +946,7 @@ BSE_BUILTIN_TYPE (BseSNet)
     0 /* n_preallocs */,
     (GInstanceInitFunc) bse_snet_init,
   };
-  g_assert (BSE_SNET_FLAGS_USHIFT < BSE_OBJECT_FLAGS_MAX_SHIFT);
+  assert (BSE_SNET_FLAGS_USHIFT < BSE_OBJECT_FLAGS_MAX_SHIFT);
   return bse_type_register_abstract (BSE_TYPE_SUPER, "BseSNet", "BSE Synthesis (Filter) Network", __FILE__, __LINE__, &type_info);
 }
 

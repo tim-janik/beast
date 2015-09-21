@@ -89,7 +89,7 @@ expand_sub14 (char *gstr)
       // UTF-8: "\xef\xbf\xb9\x1a\xef\xbf\xba{{...}}\xef\xbf\xbb";
       const char *pattern = "\357\277\271\357\277\272\\{\\{([^{}]*)\\}\\}\357\277\273";
       rc = regcomp (&preg, pattern, REG_EXTENDED); // FIXME: should be atomic
-      g_assert (rc == 0 && preg.re_nsub);
+      assert (rc == 0 && preg.re_nsub);
       // if non-static: regfree (&preg);
     }
   regmatch_t pm[2] = { { 0, }, };

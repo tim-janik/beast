@@ -195,7 +195,7 @@ _gsl_init_loader_mad (void)
   };
   static gboolean initialized = FALSE;
 
-  g_assert (initialized == FALSE);
+  assert (initialized == FALSE);
   initialized = TRUE;
 
   if (BSE_HAVE_LIBMAD)

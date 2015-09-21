@@ -276,7 +276,7 @@ _bse_data_pocket_create_entry (BseDataPocket *pocket)
   assert_return (BSE_IS_DATA_POCKET (pocket), 0);
 
   id = pocket->free_id++;
-  g_assert (id != 0);
+  assert (id != 0);
 
   i = pocket->n_entries++;
   pocket->entries = g_renew (BseDataPocketEntry, pocket->entries, pocket->n_entries);

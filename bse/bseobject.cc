@@ -453,7 +453,7 @@ bse_object_lock (gpointer _object)
   assert_return (BSE_IS_OBJECT (object));
   assert_return (gobject->ref_count > 0);
 
-  g_assert (object->lock_count < 65535);	// if this breaks, we need to fix the guint16
+  assert (object->lock_count < 65535);	// if this breaks, we need to fix the guint16
 
   if (!object->lock_count)
     {

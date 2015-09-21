@@ -146,7 +146,7 @@ rc_file_try_statement (gpointer   context_data,
 		       gpointer   user_data)
 {
   BseServer *server = (BseServer*) context_data;
-  g_assert (scanner->next_token == G_TOKEN_IDENTIFIER);
+  assert (scanner->next_token == G_TOKEN_IDENTIFIER);
   if (strcmp ("bse-preferences", scanner->next_value.v_identifier) == 0)
     {
       GValue *value = sfi_value_rec (NULL);
@@ -169,7 +169,7 @@ rc_file_try_statement (gpointer   context_data,
 static void
 bse_server_init (BseServer *self)
 {
-  g_assert (BSE_OBJECT_ID (self) == 1);	/* assert being the first object */
+  assert (BSE_OBJECT_ID (self) == 1);	/* assert being the first object */
   BSE_OBJECT_SET_FLAGS (self, BSE_ITEM_FLAG_SINGLETON);
 
   self->engine_source = NULL;
@@ -884,7 +884,7 @@ main_thread_source_setup (BseServer *self)
   MainSource *xsource = (MainSource*) source;
   static gboolean single_call = 0;
 
-  g_assert (single_call++ == 0);
+  assert (single_call++ == 0);
 
   xsource->server = self;
   g_source_set_priority (source, BSE_PRIORITY_NORMAL);

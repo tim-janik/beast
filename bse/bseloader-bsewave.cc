@@ -145,7 +145,7 @@ bsewave_load_file_info (void         *data,
     {
       const char *p = strrchr (_file_name, G_DIR_SEPARATOR);
 
-      g_assert (p != NULL);
+      assert (p != NULL);
       cwd = g_strndup (_file_name, p - _file_name + 1);
       file_name = g_strdup (_file_name);
     }
@@ -863,7 +863,7 @@ _gsl_init_loader_gslwave (void)
   };
   static gboolean initialized = FALSE;
 
-  g_assert (initialized == FALSE);
+  assert (initialized == FALSE);
   initialized = TRUE;
 
   bse_loader_register (&loader);

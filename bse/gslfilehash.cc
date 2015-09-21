@@ -39,7 +39,7 @@ hfile_equals (gconstpointer key1,
 void
 _gsl_init_fd_pool (void)
 {
-  g_assert (hfile_ht == NULL);
+  assert (hfile_ht == NULL);
   hfile_ht = g_hash_table_new (hfile_hash, hfile_equals);
 }
 static gboolean

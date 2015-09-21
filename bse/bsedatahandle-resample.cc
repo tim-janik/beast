@@ -153,11 +153,11 @@ public:
     for (guint i = 0; i < setup->n_channels; i++)
       {
 	Resampler2 *resampler = Resampler2::create (mode(), precision);
-	g_assert (resampler);
+	assert (resampler);
 
 	m_resamplers.push_back (resampler);
       }
-    g_assert (!m_resamplers.empty());	  /* n_channels is always > 0 */
+    assert (!m_resamplers.empty());	  /* n_channels is always > 0 */
     m_filter_order = m_resamplers[0]->order();
 
     /* Resampler2::delay() is defined in output samples, but we need to
@@ -209,10 +209,10 @@ public:
 	if (l < 0)
 	  return l;
       }
-    g_assert (m_pcm_frame == frame);
+    assert (m_pcm_frame == frame);
 
     voffset -= m_pcm_frame * m_frame_size;
-    g_assert (voffset >= 0);
+    assert (voffset >= 0);
 
     n_values = std::min (n_values, m_frame_size - voffset);
     for (int64 i = 0; i < n_values; i++)

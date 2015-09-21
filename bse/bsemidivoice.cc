@@ -92,13 +92,13 @@ bse_midi_voice_input_class_init (BseMidiVoiceInputClass *klass)
   source_class->context_dismiss = bse_midi_voice_input_context_dismiss;
 
   channel_id = bse_source_class_add_ochannel (source_class, "freq-out", _("Freq Out"), NULL);
-  g_assert (channel_id == BSE_MIDI_VOICE_INPUT_OCHANNEL_FREQUENCY);
+  assert (channel_id == BSE_MIDI_VOICE_INPUT_OCHANNEL_FREQUENCY);
   channel_id = bse_source_class_add_ochannel (source_class, "gate-out", _("Gate Out"), NULL);
-  g_assert (channel_id == BSE_MIDI_VOICE_INPUT_OCHANNEL_GATE);
+  assert (channel_id == BSE_MIDI_VOICE_INPUT_OCHANNEL_GATE);
   channel_id = bse_source_class_add_ochannel (source_class, "velocity-out", _("Velocity Out"), NULL);
-  g_assert (channel_id == BSE_MIDI_VOICE_INPUT_OCHANNEL_VELOCITY);
+  assert (channel_id == BSE_MIDI_VOICE_INPUT_OCHANNEL_VELOCITY);
   channel_id = bse_source_class_add_ochannel (source_class, "aftertouch-out", _("Aftertouch Out"), NULL);
-  g_assert (channel_id == BSE_MIDI_VOICE_INPUT_OCHANNEL_AFTERTOUCH);
+  assert (channel_id == BSE_MIDI_VOICE_INPUT_OCHANNEL_AFTERTOUCH);
 }
 
 static void
@@ -116,17 +116,17 @@ bse_midi_voice_switch_class_init (BseMidiVoiceSwitchClass *klass)
   source_class->context_dismiss = bse_midi_voice_switch_context_dismiss;
 
   channel_id = bse_source_class_add_ichannel (source_class, "left-in", _("Left In"), NULL);
-  g_assert (channel_id == BSE_MIDI_VOICE_SWITCH_ICHANNEL_LEFT);
+  assert (channel_id == BSE_MIDI_VOICE_SWITCH_ICHANNEL_LEFT);
   channel_id = bse_source_class_add_ichannel (source_class, "right-in", _("Right In"), NULL);
-  g_assert (channel_id == BSE_MIDI_VOICE_SWITCH_ICHANNEL_RIGHT);
+  assert (channel_id == BSE_MIDI_VOICE_SWITCH_ICHANNEL_RIGHT);
   channel_id = bse_source_class_add_ichannel (source_class, "disconnect-in", _("Disconnect In"), NULL);
-  g_assert (channel_id == BSE_MIDI_VOICE_SWITCH_ICHANNEL_DISCONNECT);
+  assert (channel_id == BSE_MIDI_VOICE_SWITCH_ICHANNEL_DISCONNECT);
   channel_id = bse_source_class_add_ochannel (source_class, "left-out", _("Left Out"), NULL);
-  g_assert (channel_id == BSE_MIDI_VOICE_SWITCH_ICHANNEL_LEFT);
+  assert (channel_id == BSE_MIDI_VOICE_SWITCH_ICHANNEL_LEFT);
   channel_id = bse_source_class_add_ochannel (source_class, "right-out", _("Right Out"), NULL);
-  g_assert (channel_id == BSE_MIDI_VOICE_SWITCH_ICHANNEL_RIGHT);
+  assert (channel_id == BSE_MIDI_VOICE_SWITCH_ICHANNEL_RIGHT);
   channel_id = bse_source_class_add_ochannel (source_class, "disconnect-out", _("Disconnect Out"), NULL);
-  g_assert (channel_id == BSE_MIDI_VOICE_SWITCH_ICHANNEL_DISCONNECT);
+  assert (channel_id == BSE_MIDI_VOICE_SWITCH_ICHANNEL_DISCONNECT);
 }
 
 static void

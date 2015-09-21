@@ -126,7 +126,7 @@ master_idisconnect_node (EngineNode *node,
   guint ostream = node->inputs[istream].src_stream;
   gboolean was_consumer;
 
-  g_assert (ostream < ENGINE_NODE_N_OSTREAMS (src_node) &&
+  assert (ostream < ENGINE_NODE_N_OSTREAMS (src_node) &&
 	    src_node->outputs[ostream].n_outputs > 0);	/* these checks better pass */
 
   node->inputs[istream].src_node = NULL;
@@ -154,7 +154,7 @@ master_jdisconnect_node (EngineNode *node,
   guint i, ostream = node->jinputs[jstream][con].src_stream;
   gboolean was_consumer;
 
-  g_assert (ostream < ENGINE_NODE_N_OSTREAMS (src_node) &&
+  assert (ostream < ENGINE_NODE_N_OSTREAMS (src_node) &&
 	    node->module.jstreams[jstream].jcount > 0 &&
 	    src_node->outputs[ostream].n_outputs > 0);	/* these checks better pass */
 
@@ -711,7 +711,7 @@ master_take_probes (EngineNode   *node,
   if (ptype == PROBE_SCHEDULED)
     {
       uint i;
-      g_assert (tjob->probe.n_ostreams == ENGINE_NODE_N_OSTREAMS (node));
+      assert (tjob->probe.n_ostreams == ENGINE_NODE_N_OSTREAMS (node));
       /* swap output buffers with probe buffers */
       BseOStream *ostreams = node->module.ostreams;
       node->module.ostreams = tjob->probe.ostreams;
@@ -873,7 +873,7 @@ master_process_flow (void)
 
   assert_return (master_need_process == TRUE);
 
-  g_assert (bse_fpu_okround () == TRUE);
+  assert (bse_fpu_okround () == TRUE);
 
   if (master_schedule)
     {

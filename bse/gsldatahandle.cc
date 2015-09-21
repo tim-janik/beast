@@ -723,7 +723,7 @@ reverse_handle_read (GslDataHandle *dhandle,
   int64  left, new_offset = dhandle->setup.n_values - (voffset + n_values);
   gfloat *t, *p = values;
 
-  g_assert (new_offset >= 0);
+  assert (new_offset >= 0);
 
   left = n_values;
   do

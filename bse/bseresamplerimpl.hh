@@ -289,7 +289,7 @@ public:
     history (2 * ORDER),
     sse_taps (fir_compute_sse_taps (taps))
   {
-    g_assert ((ORDER & 1) == 0);    /* even order filter */
+    assert ((ORDER & 1) == 0);    /* even order filter */
   }
   /**
    * The function process_block() takes a block of input samples and produces a
@@ -428,7 +428,7 @@ public:
     history_odd (2 * ORDER),
     sse_taps (fir_compute_sse_taps (taps))
   {
-    g_assert ((ORDER & 1) == 0);    /* even order filter */
+    assert ((ORDER & 1) == 0);    /* even order filter */
   }
   /**
    * The function process_block() takes a block of input samples and produces
@@ -439,7 +439,7 @@ public:
                  guint        n_input_samples,
 		 float       *output)
   {
-    g_assert ((n_input_samples & 1) == 0);
+    assert ((n_input_samples & 1) == 0);
 
     const uint BLOCKSIZE = 1024;
 

@@ -338,7 +338,7 @@ bse_sub_synth_context_create (BseSource *source,
       recursion_stack = g_slist_prepend (recursion_stack, self);
       foreign_context_handle = bse_snet_create_context (snet, mcontext, trans);
       recursion_stack = g_slist_remove (recursion_stack, self);
-      g_assert (foreign_context_handle > 0);
+      assert (foreign_context_handle > 0);
     }
   else
     shortcut = self->null_shortcut;
@@ -522,14 +522,14 @@ bse_sub_synth_class_init (BseSubSynthClass *klass)
       ident = g_strdup_format ("input-%u", i + 1);
       label = g_strdup_format (_("Virtual input %u"), i + 1);
       channel_id = bse_source_class_add_ichannel (source_class, ident, label, NULL);
-      g_assert (channel_id == i);
+      assert (channel_id == i);
       g_free (ident);
       g_free (label);
 
       ident = g_strdup_format ("output-%u", i + 1);
       label = g_strdup_format (_("Virtual output %u"), i + 1);
       channel_id = bse_source_class_add_ochannel (source_class, ident, label, NULL);
-      g_assert (channel_id == i);
+      assert (channel_id == i);
       g_free (ident);
       g_free (label);
     }

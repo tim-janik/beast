@@ -625,7 +625,7 @@ bse_init_loader_gus_patch (void)
   };
   static gboolean initialized = FALSE;
 
-  g_assert (initialized == FALSE);
+  assert (initialized == FALSE);
   initialized = TRUE;
 
   bse_loader_register (&loader);

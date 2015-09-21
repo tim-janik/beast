@@ -120,17 +120,17 @@ bse_track_dispose (GObject *object)
   /* we may assert removal here, since if these assertions fail,
    * our parent (BseSong) doesn't properly implement track support
    */
-  g_assert (self->sub_synth == NULL);
+  assert (self->sub_synth == NULL);
 
   /* check uncrossed references */
-  g_assert (self->snet == NULL);
-  g_assert (self->pnet == NULL);
-  g_assert (self->n_entries_SL == 0);
+  assert (self->snet == NULL);
+  assert (self->pnet == NULL);
+  assert (self->n_entries_SL == 0);
 
   /* chain parent class' handler */
   G_OBJECT_CLASS (parent_class)->dispose (object);
 
-  g_assert (self->bus_outputs == NULL);
+  assert (self->bus_outputs == NULL);
 }
 
 static void
@@ -138,9 +138,9 @@ bse_track_finalize (GObject *object)
 {
   BseTrack *self = BSE_TRACK (object);
 
-  g_assert (self->bus_outputs == NULL);
+  assert (self->bus_outputs == NULL);
 
-  g_assert (self->n_entries_SL == 0);
+  assert (self->n_entries_SL == 0);
   g_free (self->entries_SL);
   bse_id_free (self->channel_id);
 

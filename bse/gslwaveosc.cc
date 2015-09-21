@@ -205,8 +205,8 @@ gsl_wave_osc_process (GslWaveOscData *wosc,
 	    wosc->y[i] = 0.0;
 	}
     }
-  g_assert (!BSE_DOUBLE_IS_NANINF (wosc->y[0]));
-  g_assert (!BSE_DOUBLE_IS_SUBNORMAL (wosc->y[0]));
+  assert (!BSE_DOUBLE_IS_NANINF (wosc->y[0]));
+  assert (!BSE_DOUBLE_IS_SUBNORMAL (wosc->y[0]));
 
   wosc->done = (wosc->block.is_silent &&   /* FIXME, let filter state run out? */
 		((wosc->block.play_dir < 0 && wosc->block.offset < 0) ||
@@ -370,7 +370,7 @@ gsl_wave_osc_init (GslWaveOscData *wosc)
 {
   assert_return (wosc != NULL);
 
-  g_assert (GSL_WAVE_OSC_FILTER_ORDER <= BSE_CONFIG (wave_chunk_padding));
+  assert (GSL_WAVE_OSC_FILTER_ORDER <= BSE_CONFIG (wave_chunk_padding));
 
   memset (wosc, 0, sizeof (GslWaveOscData));
   wosc->mix_freq = bse_engine_sample_freq ();

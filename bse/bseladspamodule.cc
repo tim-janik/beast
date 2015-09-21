@@ -75,7 +75,7 @@ ladspa_derived_class_init (BseLadspaModuleClass *klass,
 
   derived_parent_class = g_type_class_peek_parent (klass);
 
-  g_assert (class_data != NULL);
+  assert (class_data != NULL);
   klass->bli = (BseLadspaInfo*) class_data;
 
   gobject_class->finalize = ladspa_derived_finalize;
@@ -97,7 +97,7 @@ bse_ladspa_module_derived_type_info (GType                  type,
 				     BseLadspaInfo         *bli,
 				     GTypeInfo             *type_info)
 {
-  g_assert (bli != NULL);
+  assert (bli != NULL);
   type_info->class_size = sizeof (BseLadspaModuleClass);
   type_info->class_init = (GClassInitFunc) ladspa_derived_class_init;
   type_info->class_finalize = (GClassFinalizeFunc) ladspa_derived_class_finalize;
@@ -115,7 +115,7 @@ bse_ladspa_module_class_init_from_info (BseLadspaModuleClass *ladspa_module_clas
   BseLadspaInfo *bli = ladspa_module_class->bli;
   uint ochannel, ichannel, i;
 
-  g_assert (ladspa_module_class->bli != NULL &&
+  assert (ladspa_module_class->bli != NULL &&
 	    gobject_class->set_property == NULL &&
 	    gobject_class->get_property == NULL);
 

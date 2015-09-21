@@ -76,7 +76,7 @@ parasite_node_cmp (gconstpointer  bsn1,
 static void
 parasite_init (BseItem *item)
 {
-  g_assert (item->parasite == NULL);
+  assert (item->parasite == NULL);
   item->parasite = g_new0 (BseParasite, 1);
   item->parasite->nodes = g_bsearch_array_create (&bconfig_nodes);
   item->parasite->crefs = g_bsearch_array_create (&bconfig_crefs);
@@ -355,7 +355,7 @@ bse_item_delete_parasites (BseItem *item)
                                                         g_bsearch_array_get_n_nodes (item->parasite->nodes) - 1);
           bse_item_set_parasite (item, node->path, NULL);
         }
-      g_assert (g_bsearch_array_get_n_nodes (item->parasite->crefs) == 0);
+      assert (g_bsearch_array_get_n_nodes (item->parasite->crefs) == 0);
       g_bsearch_array_free (item->parasite->nodes, &bconfig_nodes);
       g_bsearch_array_free (item->parasite->crefs, &bconfig_crefs);
       g_free (item->parasite);

@@ -97,7 +97,7 @@ bse_init_intern()
   // paranoid assertions
   if (bse_initialization_stage != 0 || ++bse_initialization_stage != 1)
     g_error ("%s() may only be called once", "bse_init_inprocess");
-  g_assert (G_BYTE_ORDER == G_LITTLE_ENDIAN || G_BYTE_ORDER == G_BIG_ENDIAN);
+  assert (G_BYTE_ORDER == G_LITTLE_ENDIAN || G_BYTE_ORDER == G_BIG_ENDIAN);
 
   // main loop
   bse_main_context = g_main_context_new ();

@@ -510,7 +510,7 @@ bse_song_reset (BseSource *source)
   Bse::Sequencer::instance().remove_song (self);
   // chain parent class' handler
   BSE_SOURCE_CLASS (parent_class)->reset (source);
-  g_assert (self->sequencer_start_request_SL == 0);
+  assert (self->sequencer_start_request_SL == 0);
   /* outside of sequencer reach, so no locks needed */
   self->sequencer_start_SL = 0;
   self->sequencer_done_SL = 0;
@@ -529,7 +529,7 @@ bse_song_create_summation (BseSong *self)
   if (!g_type_is_a (type, BSE_TYPE_SOURCE))
     g_error ("%s: failed to resolve %s object type, probably missing or broken plugin installation", G_STRFUNC, "BseSummation");
   BseSource *summation = (BseSource*) bse_container_new_child (BSE_CONTAINER (self), type, "uname", "Summation", NULL);
-  g_assert (summation != NULL);
+  assert (summation != NULL);
   bse_snet_intern_child (BSE_SNET (self), summation);
   return summation;
 }

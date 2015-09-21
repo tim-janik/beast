@@ -82,7 +82,7 @@ class ProbeQueue {
                        const gfloat *oblock,
                        bool          connected)
   {
-    g_assert (n <= block_size - n_computed);
+    assert (n <= block_size - n_computed);
     /* store samples, possibly for fft */
     if (requests.samples || requests.fft)
       {
@@ -297,7 +297,7 @@ public:
     probes (_probes), block_size (_block_size),
     first_stamp (0), n_computed (0), raw_floats (NULL)
   {
-    g_assert (block_size > 0);
+    assert (block_size > 0);
     memset (&requests, 0, sizeof (requests));
     reset_probe_state();
   }
@@ -365,7 +365,7 @@ private:
         std::pair<ProbeQueueSet::iterator,bool> result;
         result = channel_sets[channel].insert (new ProbeQueue (*this, block_size));
         it = result.first;
-        g_assert (result.second == true);
+        assert (result.second == true);
       }
     return *it;
   }
@@ -382,7 +382,7 @@ public:
   {}
   ~SourceProbes ()
   {
-    g_assert (queued_jobs == 0);
+    assert (queued_jobs == 0);
     reset_omodules();
     for (uint j = 0; j < channel_sets.size(); j++)
       {
@@ -409,7 +409,7 @@ private:
     {}
     ~ProbeData()
     {
-      g_assert (ostreams == NULL);
+      assert (ostreams == NULL);
     }
     RAPICORN_CLASS_NON_COPYABLE (ProbeData);
   };
@@ -420,14 +420,14 @@ private:
                 guint        n_ostreams, /* ENGINE_NODE_N_OSTREAMS() */
                 BseOStream **ostreams_p)
   {
-    g_assert (pdata.n_pending > 0);
-    g_assert (n_ostreams == channel_sets.size());
+    assert (pdata.n_pending > 0);
+    assert (n_ostreams == channel_sets.size());
     /* preprocess data from multiple modules */
     if (!pdata.ostreams)                        /* first module */
       {
         /* upon first block, "steal" ostreams */
-        g_assert (pdata.ostreams == NULL);
-        g_assert (pdata.debug_stamp == 0);
+        assert (pdata.ostreams == NULL);
+        assert (pdata.debug_stamp == 0);
         pdata.ostreams = *ostreams_p;
         *ostreams_p = NULL;
         pdata.debug_n_values = n_values;
@@ -436,8 +436,8 @@ private:
     else                                        /* successive modules */
       {
         /* add up all successive blocks */
-        g_assert (pdata.debug_stamp == tick_stamp);
-        g_assert (pdata.debug_n_values == n_values);
+        assert (pdata.debug_stamp == tick_stamp);
+        assert (pdata.debug_n_values == n_values);
         BseOStream *ostreams = *ostreams_p;
         for (uint j = 0; j < n_ostreams; j++)
           if (ostreams[j].connected && channel_sets[j].size() > 0)
@@ -483,9 +483,9 @@ private:
   {
     ProbeData *pdata = reinterpret_cast<ProbeData*> (data);
     SourceProbes *probes = peek_from_source (pdata->source);
-    g_assert (probes != NULL);
-    g_assert (probes->queued_jobs > 0);
-    g_assert (pdata->n_pending > 0);
+    assert (probes != NULL);
+    assert (probes->queued_jobs > 0);
+    assert (pdata->n_pending > 0);
     probes->handle_probe (*pdata, n_values, tick_stamp, n_ostreams, ostreams_p);
     if (!pdata->n_pending)
       {
@@ -742,7 +742,7 @@ bse_source_probes_modules_changed (BseSource *source)
 void
 bse_source_class_add_probe_signals (BseSourceClass *klass)
 {
-  g_assert (bse_source_signal_probes == 0);
+  assert (bse_source_signal_probes == 0);
   BseObjectClass *object_class = BSE_OBJECT_CLASS (klass);
   bse_source_signal_probes = bse_object_class_add_signal (object_class, "probes", G_TYPE_NONE, 1, BSE_TYPE_PROBE_SEQ);
 }

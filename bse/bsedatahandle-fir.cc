@@ -174,7 +174,7 @@ public:
 	  return l;
       }
 
-    g_assert (ivoffset == m_input_voffset);
+    assert (ivoffset == m_input_voffset);
 
     voffset -= ivoffset;
     n_values = min (n_values, m_block_size - voffset);

@@ -67,7 +67,7 @@ void
 bse_engine_free_ostreams (guint         n_ostreams,
                           BseOStream   *ostreams)
 {
-  g_assert (n_ostreams > 0);
+  assert (n_ostreams > 0);
   /* bse_engine_block_size() may have changed since allocation */
   g_free (ostreams);
 }
@@ -413,7 +413,7 @@ engine_fetch_process_queue_trash_jobs_U (EngineTimedJob **trash_tjobs_head,
        * during processing. to ensure this, we assert that no flow processing
        * schedule is currently set.
        */
-      g_assert (pqueue_schedule == NULL);
+      assert (pqueue_schedule == NULL);
       pqueue_mutex.unlock();
     }
   else
@@ -511,7 +511,7 @@ _engine_push_processed_node (EngineNode *node)
   assert_return (pqueue_n_nodes > 0);
   assert_return (ENGINE_NODE_IS_SCHEDULED (node));
   pqueue_mutex.lock();
-  g_assert (pqueue_n_nodes > 0);        /* paranoid */
+  assert (pqueue_n_nodes > 0);        /* paranoid */
   collect_user_jobs_L (node);
   pqueue_n_nodes -= 1;
   ENGINE_NODE_UNLOCK (node);
@@ -588,7 +588,7 @@ _engine_mnl_integrate (EngineNode *node)
   master_node_list_tail = node;
   if (!master_node_list_head)
     master_node_list_head = master_node_list_tail;
-  g_assert (node->mnl_next == NULL);
+  assert (node->mnl_next == NULL);
 }
 
 void
@@ -646,7 +646,7 @@ bse_engine_const_zeros (guint smaller_than_BSE_STREAM_MAX_VALUES)
 {
   static const float engine_const_zero_block[BSE_STREAM_MAX_VALUES + 16 /* SIMD alignment */] = { 0, };
   /* this function is callable from any thread */
-  g_assert (smaller_than_BSE_STREAM_MAX_VALUES <= BSE_STREAM_MAX_VALUES);
+  assert (smaller_than_BSE_STREAM_MAX_VALUES <= BSE_STREAM_MAX_VALUES);
   return (float*) engine_const_zero_block;
 }
 
@@ -714,7 +714,7 @@ const_values_insert (ConstValuesArray *array,
       array->nodes = (float**) g_realloc (array->nodes, new_size);
       array->nodes_used = (guint8*) g_realloc (array->nodes_used, new_size / sizeof (gfloat*));
       array->n_nodes = 1;
-      g_assert (index == 0);
+      assert (index == 0);
     }
   else
     {

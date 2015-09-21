@@ -305,7 +305,7 @@ dh_vorbis_read (GslDataHandle *dhandle,
 
       /* suckage, needs to seek in file, this takes ages */
       tmp = dh_vorbis_coarse_seek (dhandle, voffset);
-      g_assert (tmp <= voffset);
+      assert (tmp <= voffset);
     }
 
   while (pos >= vhandle->pcm_pos + vhandle->pcm_length)
