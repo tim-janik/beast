@@ -254,30 +254,30 @@ String CodeGeneratorCBase::createTypeCode (const String& type, const String &nam
        * GValues
        */
       // how to create a new "type" called "name" from a GValue*
-      case MODEL_FROM_VALUE:  g_assert (name != ""); break;
+      case MODEL_FROM_VALUE:  assert (name != ""); break;
       // how to convert the "type" called "name" to a GValue*
-      case MODEL_TO_VALUE:    g_assert (name != ""); break;
+      case MODEL_TO_VALUE:    assert (name != ""); break;
 
       /*
        * vcall interface: the following models deal with how to perform a
        * method/procedure invocation using a given data type
        */
       // the name of the VCALL function for calling functions returning "type"
-      case MODEL_VCALL:	      g_assert (name == ""); break;
+      case MODEL_VCALL:	      assert (name == ""); break;
       // how to pass a "type" called "name" to the VCALL function
-      case MODEL_VCALL_ARG:   g_assert (name != ""); break;
+      case MODEL_VCALL_ARG:   assert (name != ""); break;
       // what type a conversion results in (== MODEL_VCALL_RET ?)
-      case MODEL_VCALL_CARG:  g_assert (name == ""); break;
+      case MODEL_VCALL_CARG:  assert (name == ""); break;
       // how to perform the conversion of a vcall parameter called "name" (optional: "" if unused)
-      case MODEL_VCALL_CONV:  g_assert (name != ""); break;
+      case MODEL_VCALL_CONV:  assert (name != ""); break;
       // how to free the conversion result of "name" (optional: "" if unused)
-      case MODEL_VCALL_CFREE: g_assert (name != ""); break;
+      case MODEL_VCALL_CFREE: assert (name != ""); break;
       // what type a vcall result is
-      case MODEL_VCALL_RET:   g_assert (name == ""); break;
+      case MODEL_VCALL_RET:   assert (name == ""); break;
       // how to convert the result of a vcall called "name" (optional: name if unused)
-      case MODEL_VCALL_RCONV: g_assert (name != ""); break;
+      case MODEL_VCALL_RCONV: assert (name != ""); break;
       // how to free (using GC) the result of the conversion (optional: "" if unused)
-      case MODEL_VCALL_RFREE: g_assert (name != ""); break;
+      case MODEL_VCALL_RFREE: assert (name != ""); break;
     }
 
   switch (parser.typeOf (type))

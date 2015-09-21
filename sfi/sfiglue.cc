@@ -13,7 +13,7 @@ static GQuark      quark_context_stack = 0;
 void
 _sfi_init_glue (void)
 {
-  g_assert (quark_context_stack == 0);
+  assert (quark_context_stack == 0);
   quark_context_stack = g_quark_from_static_string ("sfi-glue-context-stack");
 }
 void
@@ -150,7 +150,7 @@ sfi_glue_context_destroy (SfiGlueContext *context)
   sfi_glue_context_push (context);
   sfi_glue_gc_run ();
   _sfi_glue_context_clear_proxies (context);
-  g_assert (context->proxies == NULL);
+  assert (context->proxies == NULL);
   sfi_glue_gc_run ();
   sfi_glue_context_pop ();
   destroy = context->table.destroy;

@@ -77,7 +77,7 @@ _sfi_init_params (void)
   };
   static GType pspec_types[7] = { 0, };
 
-  g_assert (sfi__param_spec_types == NULL);
+  assert (sfi__param_spec_types == NULL);
 
   sfi__param_spec_types = pspec_types;
 

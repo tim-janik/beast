@@ -307,7 +307,7 @@ sfi_wstore_flush_fd (SfiWStore *wstore,
 	  n = bblock->reader (bblock->data, buffer, bsize);
 	  if (n < 0)
 	    break;	// FIXME: error handling
-	  g_assert (n <= int (bsize));
+	  assert (n <= int (bsize));
 	  do
 	    l = write (fd, buffer, n);
 	  while (l < 0 && errno == EINTR);

@@ -262,7 +262,7 @@ static inline SfiRing*
 sfi_ring_unlink_node_dangling (SfiRing *head,
                                SfiRing *node)
 {
-  g_assert (head && node);
+  assert (head && node);
   /* special case one item ring */
   if (head->prev == head)
     return NULL;
