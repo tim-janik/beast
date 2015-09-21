@@ -191,12 +191,12 @@ void
 bse_scm_destroy_gc_plateau (SCM s_gcplateau)
 {
   GcPlateau *gp;
-  g_assert (SCM_IS_GLUE_GC_PLATEAU (s_gcplateau));
+  assert (SCM_IS_GLUE_GC_PLATEAU (s_gcplateau));
   gp = SCM_GET_GLUE_GC_PLATEAU (s_gcplateau);
   if (gp->active_plateau)
     {
       gp->active_plateau = FALSE;
-      g_assert (scm_glue_gc_plateau_blocker > 0);
+      assert (scm_glue_gc_plateau_blocker > 0);
       scm_glue_gc_plateau_blocker--;
       if (scm_glue_gc_plateau_blocker == 0)
 	sfi_glue_gc_run ();
