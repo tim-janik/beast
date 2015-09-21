@@ -9,7 +9,6 @@
 #include <sfi/sfi.hh>
 #include <stdlib.h>
 #include <stdio.h>
-#include <assert.h>
 using Bse::Resampler::Resampler2;
 using Rapicorn::AlignedArray;
 using std::vector;
