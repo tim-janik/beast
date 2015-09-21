@@ -170,7 +170,7 @@ track_roll_get_layout (GxkScrollCanvas        *scc,
 static void
 track_roll_song_item_removed (BstTrackRoll *self)
 {
-  g_return_if_fail (BST_IS_TRACK_ROLL (self));
+  assert_return (BST_IS_TRACK_ROLL (self));
   bst_track_roll_queue_row_change (self, -1);
 }
 
@@ -190,11 +190,11 @@ bst_track_roll_setup (BstTrackRoll   *self,
                       GtkTreeView    *tree,
                       SfiProxy        song)
 {
-  g_return_if_fail (BST_IS_TRACK_ROLL (self));
+  assert_return (BST_IS_TRACK_ROLL (self));
   if (tree)
-    g_return_if_fail (GTK_IS_TREE_VIEW (tree));
+    assert_return (GTK_IS_TREE_VIEW (tree));
   if (song)
-    g_return_if_fail (BSE_IS_SONG (song));
+    assert_return (BSE_IS_SONG (song));
 
   if (self->tree)
     {
@@ -229,7 +229,7 @@ bst_track_roll_setup (BstTrackRoll   *self,
 void
 bst_track_roll_reselect (BstTrackRoll *self)
 {
-  g_return_if_fail (BST_IS_TRACK_ROLL (self));
+  assert_return (BST_IS_TRACK_ROLL (self));
 
   if (self->tree)
     {
@@ -535,7 +535,7 @@ void
 bst_track_roll_check_update_scopes (BstTrackRoll *self)
 {
   guint i;
-  g_return_if_fail (BST_IS_TRACK_ROLL (self));
+  assert_return (BST_IS_TRACK_ROLL (self));
 
   /* check whether scope update is necessary and schedule one */
   if (!GTK_WIDGET_REALIZED (self) || !self->get_track)
@@ -977,7 +977,7 @@ bst_track_roll_button_press (GtkWidget	    *widget,
 void
 bst_track_roll_set_track_callback (BstTrackRoll *self, gpointer data, BstTrackRollTrackFunc get_track)
 {
-  g_return_if_fail (BST_IS_TRACK_ROLL (self));
+  assert_return (BST_IS_TRACK_ROLL (self));
 
   self->proxy_data = data;
   self->get_track = get_track;
@@ -990,7 +990,7 @@ bst_track_roll_queue_row_change (BstTrackRoll *self, int row)
 {
   GxkScrollCanvas *scc;
 
-  g_return_if_fail (BST_IS_TRACK_ROLL (self));
+  assert_return (BST_IS_TRACK_ROLL (self));
 
   scc = GXK_SCROLL_CANVAS (self);
   GdkRectangle rect  { 0, 0, 0, 0 };
@@ -1020,7 +1020,7 @@ void
 bst_track_roll_set_prelight_row (BstTrackRoll *self,
 				 guint         row)
 {
-  g_return_if_fail (BST_IS_TRACK_ROLL (self));
+  assert_return (BST_IS_TRACK_ROLL (self));
 
   if (self->prelight_row != row)
     {
@@ -1067,12 +1067,12 @@ bst_track_roll_start_edit (BstTrackRoll    *self,
 {
   gint ry, rheight, validrow;
 
-  g_return_if_fail (BST_IS_TRACK_ROLL (self));
-  g_return_if_fail (GTK_WIDGET_REALIZED (self));
-  g_return_if_fail (GTK_IS_CELL_EDITABLE (ecell));
-  g_return_if_fail (GTK_WIDGET_CAN_FOCUS (ecell));
-  g_return_if_fail (GTK_WIDGET (ecell)->parent == NULL);
-  g_return_if_fail (self->ecell == NULL);
+  assert_return (BST_IS_TRACK_ROLL (self));
+  assert_return (GTK_WIDGET_REALIZED (self));
+  assert_return (GTK_IS_CELL_EDITABLE (ecell));
+  assert_return (GTK_WIDGET_CAN_FOCUS (ecell));
+  assert_return (GTK_WIDGET (ecell)->parent == NULL);
+  assert_return (self->ecell == NULL);
 
   validrow = row_to_coords (self, row, &ry, &rheight);
   if (!validrow)
@@ -1098,7 +1098,7 @@ static void
 track_roll_stop_edit (BstTrackRoll *self,
 		      gboolean      canceled)
 {
-  g_return_if_fail (BST_IS_TRACK_ROLL (self));
+  assert_return (BST_IS_TRACK_ROLL (self));
   if (self->ecell)
     {
       g_signal_emit (self, signal_stop_edit, 0,
@@ -1116,7 +1116,7 @@ track_roll_stop_edit (BstTrackRoll *self,
 void
 bst_track_roll_abort_edit (BstTrackRoll *self)
 {
-  g_return_if_fail (BST_IS_TRACK_ROLL (self));
+  assert_return (BST_IS_TRACK_ROLL (self));
 
   track_roll_stop_edit (self, TRUE);
 }
@@ -1124,7 +1124,7 @@ bst_track_roll_abort_edit (BstTrackRoll *self)
 void
 bst_track_roll_stop_edit (BstTrackRoll *self)
 {
-  g_return_if_fail (BST_IS_TRACK_ROLL (self));
+  assert_return (BST_IS_TRACK_ROLL (self));
 
   track_roll_stop_edit (self, FALSE);
 }
@@ -1138,7 +1138,7 @@ bst_track_roll_set_marker (BstTrackRoll          *self,
   GxkScrollCanvas *scc = GXK_SCROLL_CANVAS (self);
   GxkScrollMarker *marker;
   guint count;
-  g_return_if_fail (mark_index > 0);
+  assert_return (mark_index > 0);
 
   marker = gxk_scroll_canvas_lookup_marker (scc, mark_index, &count);
   if (!marker && !mtype)
@@ -1159,7 +1159,7 @@ bst_track_roll_set_marker (BstTrackRoll          *self,
       return;
     }
 
-  g_return_if_fail (count == 2);
+  assert_return (count == 2);
 
   marker[0].coords.x = position;
   marker[1].coords.x = position;

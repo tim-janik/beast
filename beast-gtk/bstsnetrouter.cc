@@ -255,7 +255,7 @@ bst_snet_router_new (Bse::SNetH snet)
 {
   GtkWidget *router;
 
-  g_return_val_if_fail (snet != NULL, NULL);
+  assert_return (snet != NULL, NULL);
 
   router = gtk_widget_new (BST_TYPE_SNET_ROUTER,
                            "aa", BST_SNET_ANTI_ALIASED,
@@ -289,7 +289,7 @@ bst_snet_router_item_added (BstSNetRouter *self,
 void
 bst_snet_router_set_snet (BstSNetRouter *self, Bse::SNetH snet)
 {
-  g_return_if_fail (BST_IS_SNET_ROUTER (self));
+  assert_return (BST_IS_SNET_ROUTER (self));
 
   if (self->snet)
     {
@@ -341,7 +341,7 @@ bst_snet_router_update (BstSNetRouter *self)
   GSList *slist, *csources = NULL;
   guint i;
 
-  g_return_if_fail (BST_IS_SNET_ROUTER (self));
+  assert_return (BST_IS_SNET_ROUTER (self));
 
   canvas = GNOME_CANVAS (self);
 
@@ -439,7 +439,7 @@ bst_snet_router_adjust_region (BstSNetRouter *router)
   GnomeCanvas *canvas;
   gdouble x1, y1, x2, y2;
 
-  g_return_if_fail (BST_IS_SNET_ROUTER (router));
+  assert_return (BST_IS_SNET_ROUTER (router));
 
   canvas = GNOME_CANVAS (router);
   layout = GTK_LAYOUT (router);
@@ -477,8 +477,8 @@ bst_snet_router_csource_from_source (BstSNetRouter *router,
   GnomeCanvasGroup *root;
   GList *list;
 
-  g_return_val_if_fail (BST_IS_SNET_ROUTER (router), NULL);
-  g_return_val_if_fail (BSE_IS_SOURCE (source), NULL);
+  assert_return (BST_IS_SNET_ROUTER (router), NULL);
+  assert_return (BSE_IS_SOURCE (source), NULL);
 
   canvas = GNOME_CANVAS (router);
   root = GNOME_CANVAS_GROUP (canvas->root);
@@ -582,7 +582,7 @@ bst_snet_router_root_event (BstSNetRouter   *self,
           bst_mouse_button_activate (event) &&
           ROUTER_TOOL (self) == 0)                                      /* start link (or popup property dialog) */
         {
-          g_return_val_if_fail (self->tmp_line == NULL, FALSE);
+          assert_return (self->tmp_line == NULL, FALSE);
           self->drag_is_input = ichannel != ~uint (0);
           if (csource && at_channel && self->drag_is_input &&  /* ichannel in use */
               !bst_canvas_source_ichannel_free (csource, ichannel))
@@ -953,7 +953,7 @@ bst_snet_router_build_page (Bse::SNetH snet)
   GdkBitmap *mask;
   GxkRadget *radget;
 
-  g_return_val_if_fail (snet != NULL, NULL);
+  assert_return (snet != NULL, NULL);
 
   /* main radget */
   radget = gxk_radget_create ("beast", "snet-view", NULL);

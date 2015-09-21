@@ -177,9 +177,9 @@ void
 bst_rack_editor_set_rack_view (BstRackEditor *ed,
 			       SfiProxy      pocket)
 {
-  g_return_if_fail (BST_IS_RACK_EDITOR (ed));
+  assert_return (BST_IS_RACK_EDITOR (ed));
   if (pocket)
-    g_return_if_fail (BSE_IS_DATA_POCKET (pocket));
+    assert_return (BSE_IS_DATA_POCKET (pocket));
 
   if (ed->pocket)
     {
@@ -205,9 +205,9 @@ bst_rack_editor_add_property (BstRackEditor *ed,
 			      SfiProxy       item,
 			      const gchar   *property_name)
 {
-  g_return_if_fail (BST_IS_RACK_EDITOR (ed));
-  g_return_if_fail (BSE_IS_ITEM (item));
-  g_return_if_fail (property_name != NULL);
+  assert_return (BST_IS_RACK_EDITOR (ed));
+  assert_return (BSE_IS_ITEM (item));
+  assert_return (property_name != NULL);
 
   if (ed->pocket)
     {

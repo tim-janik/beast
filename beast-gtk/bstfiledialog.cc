@@ -278,7 +278,7 @@ bst_file_dialog_set_mode (BstFileDialog *self, gpointer parent_widget, BstFileDi
 {
   GtkWindow *window = GTK_WINDOW (self);
 
-  g_return_if_fail (BST_IS_FILE_DIALOG (self));
+  assert_return (BST_IS_FILE_DIALOG (self));
 
   gtk_widget_hide (GTK_WIDGET (self));
   gtk_widget_hide (self->osave);
@@ -792,7 +792,7 @@ bst_file_dialog_set_handler (BstFileDialog    *self,
 {
   BstFileDialogData *data = g_new0 (BstFileDialogData, 1);
 
-  g_return_if_fail (GTK_WIDGET_VISIBLE (self));
+  assert_return (GTK_WIDGET_VISIBLE (self));
 
   data->handler = handler;
   data->data = handler_data;

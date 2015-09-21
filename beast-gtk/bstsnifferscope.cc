@@ -265,7 +265,7 @@ bst_sniffer_scope_set_sniffer (BstSnifferScope *self,
 {
   if (proxy)
     {
-      g_return_if_fail (BSE_IS_SOURCE (proxy));
+      assert_return (BSE_IS_SOURCE (proxy));
       if (!bse_source_has_outputs (proxy))
         proxy = 0;
     }

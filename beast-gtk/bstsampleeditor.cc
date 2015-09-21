@@ -128,9 +128,9 @@ void
 bst_sample_editor_set_sample (BstSampleEditor *editor,
 			      SfiProxy	       sample)
 {
-  g_return_if_fail (BST_IS_SAMPLE_EDITOR (editor));
+  assert_return (BST_IS_SAMPLE_EDITOR (editor));
   if (sample)
-    g_return_if_fail (BSE_IS_EDITABLE_SAMPLE (sample));
+    assert_return (BSE_IS_EDITABLE_SAMPLE (sample));
 
   if (sample != editor->esample)
     {
@@ -388,7 +388,7 @@ bst_sample_editor_rebuild (BstSampleEditor *editor)
   gpointer gmask;
   guint i;
 
-  g_return_if_fail (BST_IS_SAMPLE_EDITOR (editor));
+  assert_return (BST_IS_SAMPLE_EDITOR (editor));
 
   gtk_container_foreach (GTK_CONTAINER (editor), (GtkCallback) gtk_widget_destroy, NULL);
   g_free (editor->qsampler);

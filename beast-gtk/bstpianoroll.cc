@@ -216,7 +216,7 @@ gfloat
 bst_piano_roll_set_vzoom (BstPianoRoll *self,
 			  gfloat        vzoom)
 {
-  g_return_val_if_fail (BST_IS_PIANO_ROLL (self), 0);
+  assert_return (BST_IS_PIANO_ROLL (self), 0);
 
   self->vzoom = vzoom; //  * KEY_DEFAULT_VPIXELS;
   self->vzoom = CLAMP (self->vzoom, 1, 16);
@@ -1060,7 +1060,7 @@ bst_piano_roll_set_hzoom (BstPianoRoll *self,
 			  gfloat        hzoom)
 {
   GxkScrollCanvas *scc = GXK_SCROLL_CANVAS (self);
-  g_return_val_if_fail (BST_IS_PIANO_ROLL (self), 0);
+  assert_return (BST_IS_PIANO_ROLL (self), 0);
 
   bst_piano_roll_hsetup (self, self->ppqn, self->qnpt, self->max_ticks, hzoom);
   guint i;
@@ -1199,7 +1199,7 @@ piano_roll_release_proxy (BstPianoRoll *self)
 void
 bst_piano_roll_set_part (BstPianoRoll *self, Bse::PartH part)
 {
-  g_return_if_fail (BST_IS_PIANO_ROLL (self));
+  assert_return (BST_IS_PIANO_ROLL (self));
 
   if (self->part)
     {
@@ -1260,7 +1260,7 @@ piano_roll_queue_region (BstPianoRoll *self, int tick, int duration, int min_not
 void
 bst_piano_roll_set_view_selection (BstPianoRoll *self, int tick, int duration, int min_note, int max_note)
 {
-  g_return_if_fail (BST_IS_PIANO_ROLL (self));
+  assert_return (BST_IS_PIANO_ROLL (self));
 
   if (min_note > max_note || !duration)	/* invalid selection */
     {
@@ -1332,7 +1332,7 @@ gint
 bst_piano_roll_get_vpanel_width (BstPianoRoll *self)
 {
   gint width = 0;
-  g_return_val_if_fail (BST_IS_PIANO_ROLL (self), 0);
+  assert_return (BST_IS_PIANO_ROLL (self), 0);
   if (VPANEL (self))
     gdk_window_get_size (VPANEL (self), &width, NULL);
   else
@@ -1348,7 +1348,7 @@ bst_piano_roll_get_paste_pos (BstPianoRoll *self,
   guint tick, semitone;
   gint octave;
 
-  g_return_if_fail (BST_IS_PIANO_ROLL (self));
+  assert_return (BST_IS_PIANO_ROLL (self));
 
   if (GTK_WIDGET_DRAWABLE (self))
     {
@@ -1388,7 +1388,7 @@ bst_piano_roll_set_marker (BstPianoRoll          *self,
   GxkScrollCanvas *scc = GXK_SCROLL_CANVAS (self);
   GxkScrollMarker *marker;
   guint count;
-  g_return_if_fail (mark_index > 0);
+  assert_return (mark_index > 0);
 
   marker = gxk_scroll_canvas_lookup_marker (scc, mark_index, &count);
   if (!marker && !mtype)
@@ -1408,7 +1408,7 @@ bst_piano_roll_set_marker (BstPianoRoll          *self,
       return;
     }
 
-  g_return_if_fail (count == 1);
+  assert_return (count == 1);
 
   marker[0].coords.x = position;
   if (marker[0].mtype != mtype || !marker[0].pixmap)

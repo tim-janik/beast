@@ -15,7 +15,7 @@ _bst_gconfig_init (void)
   GValue *value;
   SfiRec *rec;
 
-  g_return_if_fail (bst_global_config == NULL);
+  assert_return (bst_global_config == NULL);
 
   /* global config record description */
   Bst::GConfig gconfig;
@@ -60,7 +60,7 @@ set_gconfig (const Bst::GConfig &gconfig)
 void
 bst_gconfig_apply (SfiRec *rec)
 {
-  g_return_if_fail (rec != NULL);
+  assert_return (rec != NULL);
 
   SfiRec *vrec = sfi_rec_copy_deep (rec);
   sfi_rec_validate (vrec, sfi_pspec_get_rec_fields (pspec_global_config));
@@ -142,7 +142,7 @@ bst_rc_dump (const gchar *file_name)
   SfiRec *rec;
   gint fd;
 
-  g_return_val_if_fail (file_name != NULL, Bse::ERROR_INTERNAL);
+  assert_return (file_name != NULL, Bse::ERROR_INTERNAL);
 
   sfi_make_dirname_path (file_name);
   fd = open (file_name,
@@ -221,7 +221,7 @@ bst_rc_parse (const gchar *file_name)
   Bse::ErrorType error = Bse::ERROR_NONE;
   gint fd;
 
-  g_return_val_if_fail (file_name != NULL, Bse::ERROR_INTERNAL);
+  assert_return (file_name != NULL, Bse::ERROR_INTERNAL);
 
   fd = open (file_name, O_RDONLY, 0);
   if (fd < 0)

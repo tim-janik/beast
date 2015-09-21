@@ -59,7 +59,7 @@ bst_bus_editor_finalize (GObject *object)
 GtkWidget*
 bst_bus_editor_new (SfiProxy bus)
 {
-  g_return_val_if_fail (BSE_IS_BUS (bus), NULL);
+  assert_return (BSE_IS_BUS (bus), NULL);
   GtkWidget *widget = (GtkWidget*) g_object_new (BST_TYPE_BUS_EDITOR, NULL);
   BstBusEditor *self = BST_BUS_EDITOR (widget);
   bst_bus_editor_set_bus (self, bus);
@@ -125,7 +125,7 @@ bst_bus_editor_set_bus (BstBusEditor *self,
                         SfiProxy      item)
 {
   if (item)
-    g_return_if_fail (BSE_IS_BUS (item));
+    assert_return (BSE_IS_BUS (item));
   if (self->item)
     {
       bse_proxy_disconnect (self->item,

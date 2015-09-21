@@ -44,9 +44,9 @@ bst_play_back_handle_set (BstPlayBackHandle *handle,
 			  SfiProxy	     esample,
 			  gdouble            osc_freq)
 {
-  g_return_if_fail (handle != NULL);
+  assert_return (handle != NULL);
   if (esample)
-    g_return_if_fail (BSE_IS_EDITABLE_SAMPLE (esample));
+    assert_return (BSE_IS_EDITABLE_SAMPLE (esample));
 
   bse_proxy_set (handle->constant, "frequency_1", osc_freq, NULL);
   bse_wave_osc_set_from_editable_sample (handle->wosc1, esample);
@@ -175,7 +175,7 @@ bst_play_back_handle_time_pcm_notify (BstPlayBackHandle *handle,
 void
 bst_play_back_handle_destroy (BstPlayBackHandle *handle)
 {
-  g_return_if_fail (handle != NULL);
+  assert_return (handle != NULL);
 
   bst_play_back_handle_stop (handle);
 

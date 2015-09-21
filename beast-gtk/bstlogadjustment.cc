@@ -66,7 +66,7 @@ bst_log_adjustment_from_adj (GtkAdjustment *client)
 {
   BstLogAdjustment *ladj;
 
-  g_return_val_if_fail (GTK_IS_ADJUSTMENT (client), NULL);
+  assert_return (GTK_IS_ADJUSTMENT (client), NULL);
 
   ladj = (BstLogAdjustment*) g_object_new (BST_TYPE_LOG_ADJUSTMENT, NULL);
   bst_log_adjustment_set_client (ladj, client);
@@ -78,9 +78,9 @@ void
 bst_log_adjustment_set_client (BstLogAdjustment *ladj,
 			       GtkAdjustment    *client)
 {
-  g_return_if_fail (BST_IS_LOG_ADJUSTMENT (ladj));
+  assert_return (BST_IS_LOG_ADJUSTMENT (ladj));
   if (client)
-    g_return_if_fail (GTK_IS_ADJUSTMENT (client));
+    assert_return (GTK_IS_ADJUSTMENT (client));
 
   g_object_ref (ladj);
   if (ladj->client)
@@ -110,9 +110,9 @@ bst_log_adjustment_setup (BstLogAdjustment *ladj,
 {
   GtkAdjustment *adj;
 
-  g_return_if_fail (BST_IS_LOG_ADJUSTMENT (ladj));
-  g_return_if_fail (n_steps > 0);
-  g_return_if_fail (base > 0);
+  assert_return (BST_IS_LOG_ADJUSTMENT (ladj));
+  assert_return (n_steps > 0);
+  assert_return (base > 0);
 
   adj = GTK_ADJUSTMENT (ladj);
   ladj->center = center;

@@ -79,7 +79,7 @@ bst_item_view_name_edited (BstItemView *self,
 			   const gchar *strpath,
 			   const gchar *text)
 {
-  g_return_if_fail (BST_IS_ITEM_VIEW (self));
+  assert_return (BST_IS_ITEM_VIEW (self));
 
   if (strpath)
     {
@@ -95,7 +95,7 @@ bst_item_view_blurb_edited (BstItemView *self,
 			    const gchar *strpath,
 			    const gchar *text)
 {
-  g_return_if_fail (BST_IS_ITEM_VIEW (self));
+  assert_return (BST_IS_ITEM_VIEW (self));
 
   if (strpath)
     {
@@ -123,9 +123,9 @@ GtkTreeModel*
 bst_item_view_adapt_list_wrapper (BstItemView    *self,
 				  GxkListWrapper *lwrapper)
 {
-  g_return_val_if_fail (BST_IS_ITEM_VIEW (self), NULL);
-  g_return_val_if_fail (GXK_IS_LIST_WRAPPER (lwrapper), NULL);
-  g_return_val_if_fail (self->wlist == NULL, NULL);
+  assert_return (BST_IS_ITEM_VIEW (self), NULL);
+  assert_return (GXK_IS_LIST_WRAPPER (lwrapper), NULL);
+  assert_return (self->wlist == NULL, NULL);
 
   g_object_set_data ((GObject*) lwrapper, "item-view", self);
   bst_child_list_wrapper_set_listener (lwrapper, item_view_listener);
@@ -146,7 +146,7 @@ void
 bst_item_view_set_tree (BstItemView *self,
                         GtkTreeView *tree)
 {
-  g_return_if_fail (self->tree == NULL);
+  assert_return (self->tree == NULL);
 
   self->tree = tree;
   gxk_nullify_in_object (self, &self->tree);
@@ -168,7 +168,7 @@ bst_item_view_complete_tree (BstItemView *self,
   GtkTreeModel *smodel;
   GxkListWrapper *lwrapper;
 
-  g_return_if_fail (self->tree == NULL);
+  assert_return (self->tree == NULL);
 
   /* item list model */
   lwrapper = bst_child_list_wrapper_store_new ();
@@ -254,9 +254,9 @@ void
 bst_item_view_set_container (BstItemView *self,
 			     SfiProxy     new_container)
 {
-  g_return_if_fail (BST_IS_ITEM_VIEW (self));
+  assert_return (BST_IS_ITEM_VIEW (self));
   if (new_container)
-    g_return_if_fail (BSE_IS_CONTAINER (new_container));
+    assert_return (BSE_IS_CONTAINER (new_container));
 
   BST_ITEM_VIEW_GET_CLASS (self)->set_container (self, new_container);
 
@@ -267,8 +267,8 @@ void
 bst_item_view_select (BstItemView *self,
 		      SfiProxy	   item)
 {
-  g_return_if_fail (BST_IS_ITEM_VIEW (self));
-  g_return_if_fail (BSE_IS_ITEM (item));
+  assert_return (BST_IS_ITEM_VIEW (self));
+  assert_return (BSE_IS_ITEM (item));
 
   if (self->tree && bse_item_get_parent (item) == self->container)
     {
@@ -292,8 +292,8 @@ gint
 bst_item_view_get_proxy_row (BstItemView *self,
                              SfiProxy	  item)
 {
-  g_return_val_if_fail (BST_IS_ITEM_VIEW (self), -1);
-  g_return_val_if_fail (BSE_IS_ITEM (item), -1);
+  assert_return (BST_IS_ITEM_VIEW (self), -1);
+  assert_return (BSE_IS_ITEM (item), -1);
 
   if (self->tree && bse_item_get_parent (item) == self->container)
     {
@@ -324,7 +324,7 @@ bst_item_view_get_proxy (BstItemView *self,
 {
   SfiProxy item = 0;
 
-  g_return_val_if_fail (BST_IS_ITEM_VIEW (self), 0);
+  assert_return (BST_IS_ITEM_VIEW (self), 0);
 
   if (self->tree && row >= 0)
     {
@@ -342,7 +342,7 @@ bst_item_view_get_proxy (BstItemView *self,
       gtk_tree_path_free (path);
     }
   if (item)
-    g_return_val_if_fail (BSE_IS_ITEM (item), 0);
+    assert_return (BSE_IS_ITEM (item), 0);
   return item;
 }
 
@@ -360,7 +360,7 @@ bst_item_view_get_current (BstItemView *self)
   GtkTreeIter siter;
   GtkTreeModel *smodel;
 
-  g_return_val_if_fail (BST_IS_ITEM_VIEW (self), 0);
+  assert_return (BST_IS_ITEM_VIEW (self), 0);
 
   if (self->tree &&
       gtk_tree_selection_get_selected (gtk_tree_view_get_selection (self->tree), &smodel, &siter))
@@ -373,7 +373,7 @@ bst_item_view_get_current (BstItemView *self)
       item = bst_child_list_wrapper_get_from_iter (self->wlist, &witer);
     }
   if (item)
-    g_return_val_if_fail (BSE_IS_ITEM (item), 0);
+    assert_return (BSE_IS_ITEM (item), 0);
   return item;
 }
 
@@ -381,8 +381,8 @@ void
 bst_item_view_build_param_view (BstItemView  *self,
                                 GtkContainer *container)
 {
-  g_return_if_fail (BST_IS_ITEM_VIEW (self));
-  g_return_if_fail (self->pview == NULL);
+  assert_return (BST_IS_ITEM_VIEW (self));
+  assert_return (self->pview == NULL);
 
   /* property view */
   self->pview = bst_param_view_new (0);

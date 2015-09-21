@@ -75,7 +75,7 @@ project_release (BstProjectCtrl *self)
 void
 bst_project_ctrl_set_project (BstProjectCtrl *self, Bse::ProjectH project)
 {
-  g_return_if_fail (BST_IS_PROJECT_CTRL (self));
+  assert_return (BST_IS_PROJECT_CTRL (self));
 
   if (self->project)
     bse_proxy_disconnect (self->project.proxy_id(),

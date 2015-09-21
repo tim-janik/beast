@@ -372,7 +372,7 @@ bst_scrollgraph_expose (GtkWidget      *widget,
 void
 bst_scrollgraph_clear (BstScrollgraph *self)
 {
-  g_return_if_fail (BST_IS_SCROLLGRAPH (self));
+  assert_return (BST_IS_SCROLLGRAPH (self));
   GtkWidget *widget = GTK_WIDGET (self);
   guint i, j;
   for (i = 0; i < self->n_bars; i++)
@@ -454,9 +454,9 @@ bst_scrollgraph_set_source (BstScrollgraph *self,
                             SfiProxy        source,
                             guint           ochannel)
 {
-  g_return_if_fail (BST_IS_SCROLLGRAPH (self));
+  assert_return (BST_IS_SCROLLGRAPH (self));
   if (source)
-    g_return_if_fail (BSE_IS_SOURCE (source));
+    assert_return (BSE_IS_SOURCE (source));
   if (self->source)
     {
       bse_proxy_disconnect (self->source,
@@ -639,7 +639,7 @@ bst_scrollgraph_build_dialog (GtkWidget   *alive_object,
                               SfiProxy     source,
                               guint        ochannel)
 {
-  g_return_val_if_fail (BSE_IS_SOURCE (source), NULL);
+  assert_return (BSE_IS_SOURCE (source), NULL);
 
   GxkRadget *radget = gxk_radget_create ("beast", "scrollgraph-dialog", NULL);
   BstScrollgraph *scg = (BstScrollgraph*) gxk_radget_find (radget, "scrollgraph");

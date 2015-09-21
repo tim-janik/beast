@@ -99,7 +99,7 @@ bst_pattern_controller_new (BstPatternView         *pview,
 {
   BstPatternController *self;
 
-  g_return_val_if_fail (BST_IS_PATTERN_VIEW (pview), NULL);
+  assert_return (BST_IS_PATTERN_VIEW (pview), NULL);
 
   self = g_new0 (BstPatternController, 1);
   self->vraster = gxk_param_new_value (sfi_pspec_choice ("vertical-raster", _("VZoom"),
@@ -151,8 +151,8 @@ bst_pattern_controller_new (BstPatternView         *pview,
 BstPatternController*
 bst_pattern_controller_ref (BstPatternController   *self)
 {
-  g_return_val_if_fail (self != NULL, NULL);
-  g_return_val_if_fail (self->ref_count >= 1, NULL);
+  assert_return (self != NULL, NULL);
+  assert_return (self->ref_count >= 1, NULL);
 
   self->ref_count++;
 
@@ -162,8 +162,8 @@ bst_pattern_controller_ref (BstPatternController   *self)
 void
 bst_pattern_controller_unref (BstPatternController   *self)
 {
-  g_return_if_fail (self != NULL);
-  g_return_if_fail (self->ref_count >= 1);
+  assert_return (self != NULL);
+  assert_return (self->ref_count >= 1);
 
   self->ref_count--;
   if (!self->ref_count)

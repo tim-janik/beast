@@ -123,7 +123,7 @@ bst_preferences_build_rec_editor (SfiRec      *rec,
   SfiRing *ring, *params = NULL;
   guint i;
 
-  g_return_val_if_fail (rec != NULL, NULL);
+  assert_return (rec != NULL, NULL);
 
   GtkWidget *vbox = (GtkWidget*) g_object_new (GTK_TYPE_VBOX,
                                   "visible", TRUE,
@@ -168,7 +168,7 @@ bst_preferences_revert (BstPreferences *self)
   BstKeyBinding *kbinding;
   SfiRec *rec, *crec;
 
-  g_return_if_fail (BST_IS_PREFERENCES (self));
+  assert_return (BST_IS_PREFERENCES (self));
 
   rec = Bse::sfi_rec_new_from_visitable (*bst_gconfig_get_global ());
   crec = sfi_rec_copy_deep (rec);
@@ -208,7 +208,7 @@ bst_preferences_default_revert (BstPreferences *self)
   BstKeyBinding *kbinding;
   SfiRec *rec;
 
-  g_return_if_fail (BST_IS_PREFERENCES (self));
+  assert_return (BST_IS_PREFERENCES (self));
 
   rec = sfi_rec_new ();
   sfi_rec_validate (rec, sfi_pspec_get_rec_fields (bst_gconfig_pspec ()));
@@ -247,7 +247,7 @@ void
 bst_preferences_apply (BstPreferences *self)
 {
   BstKeyBinding *kbinding;
-  g_return_if_fail (BST_IS_PREFERENCES (self));
+  assert_return (BST_IS_PREFERENCES (self));
 
   bst_gconfig_apply (self->rec_gconfig);
 
@@ -313,7 +313,7 @@ bst_preferences_save (BstPreferences *self)
   gchar *file_name;
   GSList *slist = NULL;
 
-  g_return_if_fail (BST_IS_PREFERENCES (self));
+  assert_return (BST_IS_PREFERENCES (self));
 
   bse_server.save_preferences();
 
@@ -348,9 +348,9 @@ bst_preferences_create_buttons (BstPreferences *self,
 {
   GtkWidget *widget;
 
-  g_return_if_fail (BST_IS_PREFERENCES (self));
-  g_return_if_fail (GXK_IS_DIALOG (dialog));
-  g_return_if_fail (self->apply == NULL);
+  assert_return (BST_IS_PREFERENCES (self));
+  assert_return (GXK_IS_DIALOG (dialog));
+  assert_return (self->apply == NULL);
 
   /* Apply
    */

@@ -92,7 +92,7 @@ bst_param_view_new (SfiProxy item)
   GtkWidget *self = gtk_widget_new (BST_TYPE_PARAM_VIEW, NULL);
 
   if (item)
-    g_return_val_if_fail (BSE_IS_ITEM (item), NULL);
+    assert_return (BSE_IS_ITEM (item), NULL);
 
   if (item)
     bst_param_view_set_item (BST_PARAM_VIEW (self), item);
@@ -112,9 +112,9 @@ bst_param_view_set_item (BstParamView *self,
 {
   GSList *slist;
 
-  g_return_if_fail (BST_IS_PARAM_VIEW (self));
+  assert_return (BST_IS_PARAM_VIEW (self));
   if (item)
-    g_return_if_fail (BSE_IS_ITEM (item));
+    assert_return (BSE_IS_ITEM (item));
 
   if (item == self->item)
     return;
@@ -147,7 +147,7 @@ bst_param_view_set_mask (BstParamView *param_view,
 			 const gchar  *reject_pattern,
 			 const gchar  *match_pattern)
 {
-  g_return_if_fail (BST_IS_PARAM_VIEW (param_view));
+  assert_return (BST_IS_PARAM_VIEW (param_view));
 
   if (param_view->reject_pattern)
     g_pattern_spec_free (param_view->reject_pattern);
@@ -166,7 +166,7 @@ bst_param_view_set_mask (BstParamView *param_view,
 void
 bst_param_view_apply_defaults (BstParamView *self)
 {
-  g_return_if_fail (BST_IS_PARAM_VIEW (self));
+  assert_return (BST_IS_PARAM_VIEW (self));
 
   if (self->item)
     {
@@ -188,7 +188,7 @@ bst_param_view_rebuild (BstParamView *self)
   gint border_width = 5;
   size_t i;
 
-  g_return_if_fail (BST_IS_PARAM_VIEW (self));
+  assert_return (BST_IS_PARAM_VIEW (self));
 
   bst_param_view_destroy_contents (self);
 

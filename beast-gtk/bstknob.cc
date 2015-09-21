@@ -430,7 +430,7 @@ bst_knob_new (GtkAdjustment *adjustment)
   GtkWidget *knob;
 
   if (adjustment)
-    g_return_val_if_fail (GTK_IS_ADJUSTMENT (adjustment), NULL);
+    assert_return (GTK_IS_ADJUSTMENT (adjustment), NULL);
   else
     adjustment = (GtkAdjustment*) gtk_adjustment_new (0.0, 0.0, 250.0, 0.0, 0.0, 0.0);
 
@@ -444,7 +444,7 @@ bst_knob_new (GtkAdjustment *adjustment)
 GtkAdjustment*
 bst_knob_get_adjustment (BstKnob *knob)
 {
-  g_return_val_if_fail (BST_IS_KNOB (knob), NULL);
+  assert_return (BST_IS_KNOB (knob), NULL);
 
   return GTK_ADJUSTMENT (knob->adjustment);
 }
@@ -453,7 +453,7 @@ void
 bst_knob_set_update_policy (BstKnob      *knob,
 			     GtkUpdateType policy)
 {
-  g_return_if_fail (BST_IS_KNOB (knob));
+  assert_return (BST_IS_KNOB (knob));
 
   if (knob->update_policy != policy)
     {
@@ -477,8 +477,8 @@ void
 bst_knob_set_adjustment (BstKnob      *knob,
 			  GtkAdjustment *adjustment)
 {
-  g_return_if_fail (BST_IS_KNOB (knob));
-  g_return_if_fail (GTK_IS_ADJUSTMENT (adjustment));
+  assert_return (BST_IS_KNOB (knob));
+  assert_return (GTK_IS_ADJUSTMENT (adjustment));
 
   if (knob->adjustment)
     {
@@ -514,8 +514,8 @@ bst_knob_adjustment_changed (GtkAdjustment *adjustment,
 {
   BstKnob *knob;
 
-  g_return_if_fail (GTK_IS_ADJUSTMENT (adjustment));
-  g_return_if_fail (data != NULL);
+  assert_return (GTK_IS_ADJUSTMENT (adjustment));
+  assert_return (data != NULL);
 
   knob = BST_KNOB (data);
 
@@ -539,8 +539,8 @@ bst_knob_adjustment_value_changed (GtkAdjustment *adjustment,
 {
   BstKnob *knob;
 
-  g_return_if_fail (GTK_IS_ADJUSTMENT (adjustment));
-  g_return_if_fail (data != NULL);
+  assert_return (GTK_IS_ADJUSTMENT (adjustment));
+  assert_return (data != NULL);
 
   knob = BST_KNOB (data);
 
@@ -559,7 +559,7 @@ bst_knob_update (BstKnob *knob)
   GtkWidget *widget;
   gdouble new_value;
 
-  g_return_if_fail (BST_IS_KNOB (knob));
+  assert_return (BST_IS_KNOB (knob));
 
   widget = GTK_WIDGET (knob);
   adjustment = GTK_ADJUSTMENT (knob->adjustment);

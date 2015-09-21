@@ -330,9 +330,9 @@ bst_xframe_set_cover_widget (BstXFrame *xframe,
 			     GtkWidget *widget,
 			     gboolean   steal_button)
 {
-  g_return_if_fail (BST_IS_XFRAME (xframe));
+  assert_return (BST_IS_XFRAME (xframe));
   if (widget)
-    g_return_if_fail (GTK_IS_WIDGET (widget));
+    assert_return (GTK_IS_WIDGET (widget));
 
   if (xframe->cover)
     {

@@ -131,7 +131,7 @@ bst_rack_view_new (SfiProxy item)
   GtkWidget *self = (GtkWidget*) g_object_new (BST_TYPE_RACK_VIEW, NULL);
   if (item)
     {
-      g_return_val_if_fail (BSE_IS_ITEM (item), NULL);
+      assert_return (BSE_IS_ITEM (item), NULL);
       bst_rack_view_set_item (BST_RACK_VIEW (self), item);
     }
   return self;
@@ -161,9 +161,9 @@ void
 bst_rack_view_set_item (BstRackView *self,
                         SfiProxy     item)
 {
-  g_return_if_fail (BST_IS_RACK_VIEW (self));
+  assert_return (BST_IS_RACK_VIEW (self));
   if (item)
-    g_return_if_fail (BSE_IS_ITEM (item));
+    assert_return (BSE_IS_ITEM (item));
 
   if (item == self->item)
     return;
@@ -190,7 +190,7 @@ void
 bst_rack_view_rebuild (BstRackView *self)
 {
   GtkWidget *toggle;
-  g_return_if_fail (BST_IS_RACK_VIEW (self));
+  assert_return (BST_IS_RACK_VIEW (self));
 
   gtk_container_foreach (GTK_CONTAINER (self->rack_table), (GtkCallback) gtk_widget_destroy, NULL);
   toggle = (GtkWidget*) gxk_radget_find (self, "edit-toggle");

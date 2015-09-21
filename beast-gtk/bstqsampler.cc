@@ -288,7 +288,7 @@ bst_qsampler_get_bounds (BstQSampler *qsampler,
 {
   guint ostart, oend;
 
-  g_return_if_fail (BST_IS_QSAMPLER (qsampler));
+  assert_return (BST_IS_QSAMPLER (qsampler));
 
   // GtkWidget *widget = GTK_WIDGET (qsampler);
 
@@ -310,8 +310,8 @@ bst_qsampler_get_offset_at (BstQSampler *qsampler,
   gboolean fits_visible = FALSE;
   gint x_coord = 0;
 
-  g_return_val_if_fail (BST_IS_QSAMPLER (qsampler), FALSE);
-  g_return_val_if_fail (x_coord_p != NULL, FALSE);
+  assert_return (BST_IS_QSAMPLER (qsampler), FALSE);
+  assert_return (x_coord_p != NULL, FALSE);
 
   if (GTK_WIDGET_DRAWABLE (qsampler))
     {
@@ -994,11 +994,11 @@ bst_qsampler_set_source (BstQSampler    *qsampler,
 			 gpointer        data,
 			 GDestroyNotify  destroy)
 {
-  g_return_if_fail (BST_IS_QSAMPLER (qsampler));
+  assert_return (BST_IS_QSAMPLER (qsampler));
   if (n_total_samples > 0)
-    g_return_if_fail (fill_func != NULL);
+    assert_return (fill_func != NULL);
   else
-    g_return_if_fail (fill_func == NULL && destroy == NULL);
+    assert_return (fill_func == NULL && destroy == NULL);
 
   if (qsampler->src_destroy)
     {
@@ -1031,8 +1031,8 @@ bst_qsampler_get_mark_offset (BstQSampler *qsampler,
 {
   guint n;
 
-  g_return_val_if_fail (BST_IS_QSAMPLER (qsampler), -1);
-  g_return_val_if_fail (mark_index > 0, -1);
+  assert_return (BST_IS_QSAMPLER (qsampler), -1);
+  assert_return (mark_index > 0, -1);
 
   for (n = 0; n < qsampler->n_marks; n++)
     if (qsampler->marks[n].index == mark_index)
@@ -1051,10 +1051,10 @@ bst_qsampler_set_mark (BstQSampler    *qsampler,
 {
   guint n;
 
-  g_return_if_fail (BST_IS_QSAMPLER (qsampler));
-  g_return_if_fail (mark_index > 0);
-  g_return_if_fail ((type & ~BST_QSAMPLER_MARK_MASK) == 0);
-  g_return_if_fail (offset < offset + 1);	/* catch guint wraps */
+  assert_return (BST_IS_QSAMPLER (qsampler));
+  assert_return (mark_index > 0);
+  assert_return ((type & ~BST_QSAMPLER_MARK_MASK) == 0);
+  assert_return (offset < offset + 1);	/* catch guint wraps */
 
   if (type)
     type |= BST_QSAMPLER_MARK;
@@ -1102,10 +1102,10 @@ bst_qsampler_set_region (BstQSampler    *qsampler,
 {
   guint n;
 
-  g_return_if_fail (BST_IS_QSAMPLER (qsampler));
-  g_return_if_fail (region_index > 0);
-  g_return_if_fail ((type & ~BST_QSAMPLER_REGION_MASK) == 0);
-  g_return_if_fail (offset < offset + length);	/* catch guint wraps */
+  assert_return (BST_IS_QSAMPLER (qsampler));
+  assert_return (region_index > 0);
+  assert_return ((type & ~BST_QSAMPLER_REGION_MASK) == 0);
+  assert_return (offset < offset + length);	/* catch guint wraps */
 
   for (n = 0; n < qsampler->n_regions; n++)
     if (qsampler->regions[n].index == region_index)
@@ -1149,7 +1149,7 @@ void
 bst_qsampler_set_zoom (BstQSampler *qsampler,
 		       gdouble	    zoom)
 {
-  g_return_if_fail (BST_IS_QSAMPLER (qsampler));
+  assert_return (BST_IS_QSAMPLER (qsampler));
 
   zoom = CLAMP (zoom, 1e-16, 1e+16);
   qsampler->zoom_factor = 100. / zoom;
@@ -1163,7 +1163,7 @@ void
 bst_qsampler_set_vscale (BstQSampler *qsampler,
 			 gdouble      vscale)
 {
-  g_return_if_fail (BST_IS_QSAMPLER (qsampler));
+  assert_return (BST_IS_QSAMPLER (qsampler));
 
   vscale = CLAMP (vscale, 1e-16, 1e+16);
   qsampler->vscale_factor = vscale / 100.;
@@ -1176,7 +1176,7 @@ bst_qsampler_set_vscale (BstQSampler *qsampler,
 void
 bst_qsampler_set_draw_mode (BstQSampler *qsampler, Bst::QSamplerDrawMode dmode)
 {
-  g_return_if_fail (BST_IS_QSAMPLER (qsampler));
+  assert_return (BST_IS_QSAMPLER (qsampler));
 
   qsampler->draw_mode = dmode;
   gtk_widget_queue_draw (GTK_WIDGET (qsampler));
@@ -1214,9 +1214,9 @@ bst_qsampler_scroll_rbounded (BstQSampler *qsampler,
 			      gfloat       boundary_padding,
 			      gfloat       padding)
 {
-  g_return_if_fail (BST_IS_QSAMPLER (qsampler));
-  g_return_if_fail (boundary_padding >= 0.1 && boundary_padding <= 1.0);
-  g_return_if_fail (padding >= 0 && padding <= 1.0);
+  assert_return (BST_IS_QSAMPLER (qsampler));
+  assert_return (boundary_padding >= 0.1 && boundary_padding <= 1.0);
+  assert_return (padding >= 0 && padding <= 1.0);
 
   bst_qsampler_scroll_internal (qsampler, pcm_offset, boundary_padding, padding, 1);
   gtk_adjustment_value_changed (qsampler->adjustment);
@@ -1228,9 +1228,9 @@ bst_qsampler_scroll_lbounded (BstQSampler *qsampler,
 			      gfloat       boundary_padding,
 			      gfloat       padding)
 {
-  g_return_if_fail (BST_IS_QSAMPLER (qsampler));
-  g_return_if_fail (boundary_padding >= 0.1 && boundary_padding <= 1.0);
-  g_return_if_fail (padding >= 0 && padding <= 1.0);
+  assert_return (BST_IS_QSAMPLER (qsampler));
+  assert_return (boundary_padding >= 0.1 && boundary_padding <= 1.0);
+  assert_return (padding >= 0 && padding <= 1.0);
 
   bst_qsampler_scroll_internal (qsampler, pcm_offset, 1.0 - boundary_padding, padding, 2);
   gtk_adjustment_value_changed (qsampler->adjustment);
@@ -1242,9 +1242,9 @@ bst_qsampler_scroll_bounded (BstQSampler *qsampler,
 			     gfloat       boundary_padding,
 			     gfloat       padding)
 {
-  g_return_if_fail (BST_IS_QSAMPLER (qsampler));
-  g_return_if_fail (boundary_padding >= 0.1 && boundary_padding <= 1.0);
-  g_return_if_fail (padding >= 0 && padding <= 1.0);
+  assert_return (BST_IS_QSAMPLER (qsampler));
+  assert_return (boundary_padding >= 0.1 && boundary_padding <= 1.0);
+  assert_return (padding >= 0 && padding <= 1.0);
 
   bst_qsampler_scroll_internal (qsampler, pcm_offset, boundary_padding, padding, 1);
   bst_qsampler_scroll_internal (qsampler, pcm_offset, 1.0 - boundary_padding, padding, 2);
@@ -1255,7 +1255,7 @@ void
 bst_qsampler_scroll_show (BstQSampler *qsampler,
 			  guint	       pcm_offset)
 {
-  g_return_if_fail (BST_IS_QSAMPLER (qsampler));
+  assert_return (BST_IS_QSAMPLER (qsampler));
 
   bst_qsampler_scroll_internal (qsampler, pcm_offset, 1.0, 0, 1);
   bst_qsampler_scroll_internal (qsampler, pcm_offset, 0, 0, 2);
@@ -1268,7 +1268,7 @@ bst_qsampler_scroll_to (BstQSampler *qsampler,
 {
   GtkAdjustment *adjustment;
 
-  g_return_if_fail (BST_IS_QSAMPLER (qsampler));
+  assert_return (BST_IS_QSAMPLER (qsampler));
 
   adjustment = qsampler->adjustment;
   adjustment->value = pcm_offset;
@@ -1279,7 +1279,7 @@ bst_qsampler_scroll_to (BstQSampler *qsampler,
 void
 bst_qsampler_force_refresh (BstQSampler *qsampler)
 {
-  g_return_if_fail (BST_IS_QSAMPLER (qsampler));
+  assert_return (BST_IS_QSAMPLER (qsampler));
 
   if (GTK_WIDGET_DRAWABLE (qsampler))
     bst_qsampler_redraw (qsampler, FALSE);
@@ -1289,9 +1289,9 @@ void
 bst_qsampler_set_adjustment (BstQSampler   *qsampler,
 			     GtkAdjustment *adjustment)
 {
-  g_return_if_fail (BST_IS_QSAMPLER (qsampler));
+  assert_return (BST_IS_QSAMPLER (qsampler));
   if (adjustment)
-    g_return_if_fail (GTK_IS_ADJUSTMENT (adjustment));
+    assert_return (GTK_IS_ADJUSTMENT (adjustment));
 
   if (qsampler->adjustment)
     {
@@ -1361,8 +1361,8 @@ bst_qsampler_set_source_from_esample (BstQSampler *qsampler,
 {
   ESampleFiller *fill;
 
-  g_return_if_fail (BST_IS_QSAMPLER (qsampler));
-  g_return_if_fail (BSE_IS_EDITABLE_SAMPLE (esample));
+  assert_return (BST_IS_QSAMPLER (qsampler));
+  assert_return (BSE_IS_EDITABLE_SAMPLE (esample));
 
   fill = g_new (ESampleFiller, 1);
   fill->esample = esample;

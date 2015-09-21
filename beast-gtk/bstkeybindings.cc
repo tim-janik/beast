@@ -601,7 +601,7 @@ bst_key_binding_dump (const gchar *file_name,
   GSList *slist;
   gint fd;
 
-  g_return_val_if_fail (file_name != NULL, Bse::ERROR_INTERNAL);
+  assert_return (file_name != NULL, Bse::ERROR_INTERNAL);
 
   sfi_make_dirname_path (file_name);
   fd = open (file_name,
@@ -680,7 +680,7 @@ bst_key_binding_parse (const gchar *file_name,
   SfiRStore *rstore;
   gchar *absname;
   gint fd;
-  g_return_val_if_fail (file_name != NULL, Bse::ERROR_INTERNAL);
+  assert_return (file_name != NULL, Bse::ERROR_INTERNAL);
 
   absname = sfi_path_get_filename (file_name, NULL);
   fd = open (absname, O_RDONLY, 0);

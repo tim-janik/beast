@@ -60,7 +60,7 @@ bst_db_setup_new (GxkSpline *db2pixel_spline,
                   double     maxdb,
                   double     mindb)
 {
-  g_return_val_if_fail (db2pixel_spline != NULL, NULL);
+  assert_return (db2pixel_spline != NULL, NULL);
   guint i, zindex = 0;
   double miny = db2pixel_spline->segs[0].y, maxy = miny;
   for (i = 1; i < db2pixel_spline->n_segs; i++)
@@ -70,8 +70,8 @@ bst_db_setup_new (GxkSpline *db2pixel_spline,
       if (!db2pixel_spline->segs[i].x)
         zindex = i;
     }
-  g_return_val_if_fail (miny == 0, NULL);
-  g_return_val_if_fail (miny < maxy, NULL);
+  assert_return (miny == 0, NULL);
+  assert_return (miny < maxy, NULL);
   BstDBSetup *dbsetup = g_new0 (BstDBSetup, 1);
   dbsetup->ref_count = 1;
   dbsetup->spline = gxk_spline_copy (db2pixel_spline);
@@ -158,8 +158,8 @@ bst_db_setup_get_color (BstDBSetup *dbsetup,
 BstDBSetup*
 bst_db_setup_copy (BstDBSetup *srcdb)
 {
-  g_return_val_if_fail (srcdb != NULL, NULL);
-  g_return_val_if_fail (srcdb->ref_count > 0, NULL);
+  assert_return (srcdb != NULL, NULL);
+  assert_return (srcdb->ref_count > 0, NULL);
   BstDBSetup *dbsetup = (BstDBSetup*) g_memdup (srcdb, sizeof (srcdb[0]));
   dbsetup->spline = gxk_spline_copy (srcdb->spline);
   dbsetup->colors = (BstDBColor*) g_memdup (srcdb->colors, sizeof (dbsetup->colors[0]) * dbsetup->n_colors);
@@ -170,8 +170,8 @@ bst_db_setup_copy (BstDBSetup *srcdb)
 BstDBSetup*
 bst_db_setup_ref (BstDBSetup *dbsetup)
 {
-  g_return_val_if_fail (dbsetup != NULL, NULL);
-  g_return_val_if_fail (dbsetup->ref_count > 0, NULL);
+  assert_return (dbsetup != NULL, NULL);
+  assert_return (dbsetup->ref_count > 0, NULL);
   dbsetup->ref_count += 1;
   return dbsetup;
 }
@@ -179,8 +179,8 @@ bst_db_setup_ref (BstDBSetup *dbsetup)
 void
 bst_db_setup_unref (BstDBSetup *dbsetup)
 {
-  g_return_if_fail (dbsetup != NULL);
-  g_return_if_fail (dbsetup->ref_count > 0);
+  assert_return (dbsetup != NULL);
+  assert_return (dbsetup->ref_count > 0);
   dbsetup->ref_count -= 1;
   if (!dbsetup)
     {
@@ -362,7 +362,7 @@ db_labeling_draw_lateral_line (BstDBLabeling   *self,
 {
   GtkWidget *widget = GTK_WIDGET (self);
   GdkWindow *drawable = widget->window;
-  g_return_if_fail (indent <= 0.5);
+  assert_return (indent <= 0.5);
   gint pixindent = indent * breadth;
   gint breadth_reduz = 2 * pixindent;
   switch (self->justify)
@@ -1170,8 +1170,8 @@ void
 bst_db_meter_propagate_setup (BstDBMeter     *self,
                               BstDBSetup     *db_setup)
 {
-  g_return_if_fail (BST_IS_DB_METER (self));
-  g_return_if_fail (db_setup != NULL);
+  assert_return (BST_IS_DB_METER (self));
+  assert_return (db_setup != NULL);
   bst_db_setup_unref (self->dbsetup);
   self->dbsetup = bst_db_setup_copy (db_setup);
   db_meter_setup_recursive (GTK_WIDGET (self), self->dbsetup);
@@ -1194,7 +1194,7 @@ void
 bst_db_meter_propagate_border (BstDBMeter     *self,
                                guint           border)
 {
-  g_return_if_fail (BST_IS_DB_METER (self));
+  assert_return (BST_IS_DB_METER (self));
   if (self->border != border)
     {
       self->border = border;

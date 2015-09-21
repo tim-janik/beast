@@ -381,7 +381,7 @@ bst_app_finalize (GObject *object)
 BstApp*
 bst_app_new (Bse::ProjectH project)
 {
-  g_return_val_if_fail (project, NULL);
+  assert_return (project, NULL);
 
   BstApp *self = (BstApp*) g_object_new (BST_TYPE_APP, NULL);
   gxk_dialog_set_sizes (GXK_DIALOG (self), 500, 400, 950, 800);
@@ -411,7 +411,7 @@ bst_app_find (SfiProxy project)
 {
   GSList *slist;
 
-  g_return_val_if_fail (BSE_IS_PROJECT (project), NULL);
+  assert_return (BSE_IS_PROJECT (project), NULL);
 
   for (slist = bst_app_class->apps; slist; slist = slist->next)
     {
@@ -426,7 +426,7 @@ bst_app_find (SfiProxy project)
 static SfiProxy
 bst_app_get_current_super (BstApp *app)
 {
-  g_return_val_if_fail (BST_IS_APP (app), 0);
+  assert_return (BST_IS_APP (app), 0);
   if (app->notebook && app->notebook->cur_page)
     {
       GtkWidget *shell = gtk_notebook_current_widget (app->notebook);
@@ -538,7 +538,7 @@ proxyp_cmp_items (gconstpointer v1,
 static void
 bst_app_reload_pages (BstApp *self)
 {
-  g_return_if_fail (BST_IS_APP (self));
+  assert_return (BST_IS_APP (self));
 
   GtkWidget *old_focus = GTK_WINDOW (self)->focus_widget;
   if (old_focus)
@@ -643,7 +643,7 @@ bst_app_handle_delete_event (GtkWidget   *widget,
 static void
 rebuild_super_shell (BstSuperShell *super_shell)
 {
-  g_return_if_fail (BST_IS_SUPER_SHELL (super_shell));
+  assert_return (BST_IS_SUPER_SHELL (super_shell));
 
   Bse::SuperH super = super_shell->super;
   bst_super_shell_set_super (super_shell, Bse::SuperH());
