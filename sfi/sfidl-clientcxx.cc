@@ -308,7 +308,7 @@ void CodeGeneratorClientCxx::printRecSeqImpl (NamespaceHelper& nspace)
       printf("  %s seq;\n", cTypeRet (si->name));
       printf("  guint i, length;\n");
       printf("\n");
-      printf("  g_return_val_if_fail (sfi_seq != NULL, seq);\n");
+      printf("  assert_return (sfi_seq != NULL, seq);\n");
       printf("\n");
       printf("  length = sfi_seq_length (sfi_seq);\n");
       printf("  seq.resize (length);\n");

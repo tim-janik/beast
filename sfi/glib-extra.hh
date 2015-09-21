@@ -167,7 +167,7 @@ g_bit_matrix_change (GBitMatrix     *matrix,
                      gboolean        bit_set)
 {
   guint32 cons, index, shift;
-  g_return_if_fail (matrix && x < matrix->width && y < matrix->height);
+  assert_return (matrix && x < matrix->width && y < matrix->height);
   cons = y * matrix->width + x;
   index = cons >> 5; /* / 32 */
   shift = cons & 0x1f;  /* % 32 */

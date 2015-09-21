@@ -110,7 +110,7 @@ sfi_vmarshal_void (void          *func,
   guint32 sig;
   guint i;
 
-  g_return_if_fail (n_args <= SFI_VMARSHAL_MAX_ARGS);
+  assert_return (n_args <= SFI_VMARSHAL_MAX_ARGS);
 
   sig = 0;
   for (i = 0; i < n_args; i++)

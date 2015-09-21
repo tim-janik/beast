@@ -46,7 +46,7 @@ sfi_com_wire_from_child (const gchar *ident,
 {
   SfiComWire *wire;
 
-  g_return_val_if_fail (ident != NULL, NULL);
+  assert_return (ident != NULL, NULL);
 
   wire = g_new0 (SfiComWire, 1);
   if (remote_pid > 1)
@@ -81,7 +81,7 @@ sfi_com_wire_from_pipe (const gchar *ident,
 			gint         remote_input,
 			gint         remote_output)
 {
-  g_return_val_if_fail (ident != NULL, NULL);
+  assert_return (ident != NULL, NULL);
 
   return sfi_com_wire_from_child (ident,
 				  remote_input,
@@ -156,7 +156,7 @@ wire_send (SfiComWire *wire,
 {
   guint strl;
 
-  g_return_if_fail (msg->mlength == 0);
+  assert_return (msg->mlength == 0);
 
   strl = strlen (msg->message) + 1;	/* include trailing 0 */
   msg->mlength = (4 +	/* magic */
@@ -379,8 +379,8 @@ sfi_com_wire_send_request (SfiComWire  *wire,
   SfiComMsg *msg;
   guint request;
 
-  g_return_val_if_fail (wire != NULL, 0);
-  g_return_val_if_fail (request_msg != NULL, 0);
+  assert_return (wire != NULL, 0);
+  assert_return (request_msg != NULL, 0);
 
   request = wire_alloc_request (wire);
   msg = alloc_msg (SFI_COM_MSG_REQUEST);
@@ -401,10 +401,10 @@ sfi_com_wire_receive_result (SfiComWire *wire,
 {
   GList *out_link, *in_link;
 
-  g_return_val_if_fail (wire != NULL, NULL);
-  g_return_val_if_fail (request > 0, NULL);
+  assert_return (wire != NULL, NULL);
+  assert_return (request > 0, NULL);
   out_link = wire_find_link (wire->orequests, request);
-  g_return_val_if_fail (out_link != NULL, NULL);
+  assert_return (out_link != NULL, NULL);
 
   wire_receive (wire);
   wire_update_alive (wire);
@@ -429,10 +429,10 @@ sfi_com_wire_forget_request (SfiComWire *wire,
 {
   GList *out_link;
 
-  g_return_if_fail (wire != NULL);
-  g_return_if_fail (request > 0);
+  assert_return (wire != NULL);
+  assert_return (request > 0);
   out_link = wire_find_link (wire->orequests, request);
-  g_return_if_fail (out_link != NULL);
+  assert_return (out_link != NULL);
 
   SfiComMsg *omsg = (SfiComMsg*) out_link->data;
   wire->orequests = g_list_delete_link (wire->orequests, out_link);
@@ -442,7 +442,7 @@ sfi_com_wire_forget_request (SfiComWire *wire,
 guint
 sfi_com_wire_peek_first_result (SfiComWire *wire)
 {
-  g_return_val_if_fail (wire != NULL, 0);
+  assert_return (wire != NULL, 0);
 
   SfiComMsg *msg = (SfiComMsg*) (wire->iresults ? wire->iresults->data : NULL);
   return msg ? msg->request : 0;
@@ -452,8 +452,8 @@ const gchar*
 sfi_com_wire_receive_request (SfiComWire *wire,
 			      guint      *request_p)
 {
-  g_return_val_if_fail (wire != NULL, NULL);
-  g_return_val_if_fail (request_p != NULL, NULL);
+  assert_return (wire != NULL, NULL);
+  assert_return (request_p != NULL, NULL);
 
   wire_receive (wire);
   wire_update_alive (wire);
@@ -490,11 +490,11 @@ sfi_com_wire_send_result (SfiComWire  *wire,
   SfiComMsg *msg;
   GList *received_link;
 
-  g_return_if_fail (wire != NULL);
-  g_return_if_fail (request > 0);
-  g_return_if_fail (result_msg != NULL);
+  assert_return (wire != NULL);
+  assert_return (request > 0);
+  assert_return (result_msg != NULL);
   received_link = wire_find_link (wire->rrequests, request);
-  g_return_if_fail (received_link != NULL);
+  assert_return (received_link != NULL);
 
   msg = alloc_msg (SFI_COM_MSG_RESULT);
   msg->request = request;
@@ -514,10 +514,10 @@ sfi_com_wire_discard_request (SfiComWire *wire,
 {
   GList *received_link;
 
-  g_return_if_fail (wire != NULL);
-  g_return_if_fail (request > 0);
+  assert_return (wire != NULL);
+  assert_return (request > 0);
   received_link = wire_find_link (wire->rrequests, request);
-  g_return_if_fail (received_link != NULL);
+  assert_return (received_link != NULL);
 
   free_msg ((SfiComMsg*) received_link->data);
   wire->rrequests = g_list_delete_link (wire->rrequests, received_link);
@@ -542,7 +542,7 @@ sfi_com_wire_set_dispatcher (SfiComWire    *wire,
 			     gpointer       dispatch_data,
 			     GDestroyNotify destroy_data)
 {
-  g_return_if_fail (wire != NULL);
+  assert_return (wire != NULL);
 
   if (wire->destroy_data)
     wire->destroy_data (wire->dispatch_data);
@@ -567,10 +567,10 @@ sfi_com_wire_dispatch (SfiComWire  *wire,
   GList *received_link;
   gboolean handled;
 
-  g_return_if_fail (wire != NULL);
-  g_return_if_fail (request > 0);
+  assert_return (wire != NULL);
+  assert_return (request > 0);
   received_link = wire_find_link (wire->rrequests, request);
-  g_return_if_fail (received_link != NULL);
+  assert_return (received_link != NULL);
 
   SfiComMsg *msg = (SfiComMsg*) received_link->data;
   handled = wire->dispatch_func (wire->dispatch_data, msg->request, msg->message, wire);
@@ -581,7 +581,7 @@ sfi_com_wire_dispatch (SfiComWire  *wire,
 gboolean
 sfi_com_wire_need_dispatch (SfiComWire *wire)
 {
-  g_return_val_if_fail (wire != NULL, FALSE);
+  assert_return (wire != NULL, FALSE);
 
   return wire->iresults || wire->irequests || wire->gstring_stdout->len || wire->gstring_stderr->len;
 }
@@ -590,8 +590,8 @@ gint*
 sfi_com_wire_get_read_fds (SfiComWire *wire,
 			   guint      *n_fds_p)
 {
-  g_return_val_if_fail (wire != NULL, NULL);
-  g_return_val_if_fail (n_fds_p != NULL, NULL);
+  assert_return (wire != NULL, NULL);
+  assert_return (n_fds_p != NULL, NULL);
 
   if (wire->remote_input >= 0 ||
       wire->standard_output >= 0 ||
@@ -620,8 +620,8 @@ gint*
 sfi_com_wire_get_write_fds (SfiComWire *wire,
 			    guint      *n_fds_p)
 {
-  g_return_val_if_fail (wire != NULL, NULL);
-  g_return_val_if_fail (n_fds_p != NULL, NULL);
+  assert_return (wire != NULL, NULL);
+  assert_return (n_fds_p != NULL, NULL);
 
   if (wire->obp - wire->obuffer && wire->remote_output >= 0)
     {
@@ -643,8 +643,8 @@ GPollFD*
 sfi_com_wire_get_poll_fds (SfiComWire *wire,
 			   guint      *n_pfds_p)
 {
-  g_return_val_if_fail (wire != NULL, NULL);
-  g_return_val_if_fail (n_pfds_p != NULL, NULL);
+  assert_return (wire != NULL, NULL);
+  assert_return (n_pfds_p != NULL, NULL);
 
   if (wire->remote_input >= 0 ||
       wire->standard_output >= 0 ||
@@ -690,7 +690,7 @@ sfi_com_wire_get_poll_fds (SfiComWire *wire,
 void
 sfi_com_wire_process_io (SfiComWire *wire)
 {
-  g_return_if_fail (wire != NULL);
+  assert_return (wire != NULL);
 
   wire_capture (wire);
   wire_write_remote (wire);
@@ -733,7 +733,7 @@ void
 sfi_com_wire_close_remote (SfiComWire *wire,
 			   gboolean    terminate)
 {
-  g_return_if_fail (wire != NULL);
+  assert_return (wire != NULL);
 
   wire->connected = FALSE;
   if (wire->remote_input >= 0)
@@ -761,7 +761,7 @@ sfi_com_wire_destroy (SfiComWire *wire)
 {
   GList *list;
 
-  g_return_if_fail (wire != NULL);
+  assert_return (wire != NULL);
 
   sfi_com_wire_set_dispatcher (wire, NULL, NULL, NULL);
   sfi_com_wire_close_remote (wire, TRUE);
@@ -790,7 +790,7 @@ sfi_com_wire_receive_dispatch (SfiComWire *wire)
 {
   guint request;
 
-  g_return_val_if_fail (wire != NULL, FALSE);
+  assert_return (wire != NULL, FALSE);
 
   if (sfi_com_wire_receive_request (wire, &request))
     {
@@ -808,7 +808,7 @@ sfi_com_wire_select (SfiComWire *wire,
   uint i, n;
   struct timeval tv;
 
-  g_return_if_fail (wire != NULL);
+  assert_return (wire != NULL);
 
   fd_set rfds, wfds, efds;
   FD_ZERO (&rfds);
@@ -846,8 +846,8 @@ sfi_com_wire_ping_pong (SfiComWire  *wire,
   guint request;
   gchar *pong;
 
-  g_return_val_if_fail (wire != NULL, NULL);
-  g_return_val_if_fail (ping != NULL, NULL);
+  assert_return (wire != NULL, NULL);
+  assert_return (ping != NULL, NULL);
 
   request = sfi_com_wire_send_request (wire, ping);
   pong = sfi_com_wire_receive_result (wire, request);
@@ -941,11 +941,11 @@ sfi_com_spawn_async (const gchar *executable,
   GError *error = NULL;
   uint l;
 
-  g_return_val_if_fail (executable != NULL, NULL);
+  assert_return (executable != NULL, NULL);
   if (command_fd_option)
-    g_return_val_if_fail (command_fd_option && command_input && command_output, NULL);
+    assert_return (command_fd_option && command_input && command_output, NULL);
   else
-    g_return_val_if_fail (!command_fd_option && !command_input && !command_output, NULL);
+    assert_return (!command_fd_option && !command_input && !command_output, NULL);
 
   if (command_fd_option)
     {

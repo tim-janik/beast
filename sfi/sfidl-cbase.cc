@@ -614,7 +614,7 @@ void CodeGeneratorCBase::printChoiceConverters()
       printf("const gchar*\n");
       printf("%s_to_choice (%s value)\n", name.c_str(), arg.c_str());
       printf("{\n");
-      printf("  g_return_val_if_fail (value >= %d && value <= %d, NULL);\n", minval, maxval);
+      printf("  assert_return (value >= %d && value <= %d, NULL);\n", minval, maxval);
       printf("  return sfi_constants_get_name (G_N_ELEMENTS (%s_vals), %s_vals, value);\n",
 	  name.c_str(), name.c_str());
       printf("}\n\n");
@@ -851,7 +851,7 @@ void CodeGeneratorCBase::printClientRecordMethodImpl()
       printf("void\n");
       printf("%s_free (%s rec)\n", lname.c_str(), arg.c_str());
       printf("{\n");
-      printf("  g_return_if_fail (rec != NULL);\n");
+      printf("  assert_return (rec != NULL);\n");
       /* FIXME (tim): should free functions generally demand non-NULL structures? */
       printf("  \n");
       for (pi = ri->contents.begin(); pi != ri->contents.end(); pi++)
@@ -891,7 +891,7 @@ void CodeGeneratorCBase::printClientSequenceMethodImpl()
       printf("void\n");
       printf("%s_append (%s seq, %s element)\n", lname.c_str(), arg.c_str(), element.c_str());
       printf("{\n");
-      printf("  g_return_if_fail (seq != NULL);\n");
+      printf("  assert_return (seq != NULL);\n");
       printf("\n");
       printf("  seq->%s = (typeof (seq->%s)) g_realloc (seq->%s, (seq->n_%s + 1) * sizeof (seq->%s[0]));\n",
              elements.c_str(), elements.c_str(), elements.c_str(), elements.c_str(), elements.c_str());
@@ -920,7 +920,7 @@ void CodeGeneratorCBase::printClientSequenceMethodImpl()
       printf("  %s seq;\n", arg.c_str());
       printf("  guint i, length;\n");
       printf("\n");
-      printf("  g_return_val_if_fail (sfi_seq != NULL, NULL);\n");
+      printf("  assert_return (sfi_seq != NULL, NULL);\n");
       printf("\n");
       printf("  length = sfi_seq_length (sfi_seq);\n");
       printf("  seq = g_new0 (%s, 1);\n",mname.c_str());
@@ -942,7 +942,7 @@ void CodeGeneratorCBase::printClientSequenceMethodImpl()
       printf("  SfiSeq *sfi_seq;\n");
       printf("  guint i;\n");
       printf("\n");
-      printf("  g_return_val_if_fail (seq != NULL, NULL);\n");
+      printf("  assert_return (seq != NULL, NULL);\n");
       printf("\n");
       printf("  sfi_seq = sfi_seq_new ();\n");
       printf("  for (i = 0; i < seq->n_%s; i++)\n", elements.c_str());
@@ -965,7 +965,7 @@ void CodeGeneratorCBase::printClientSequenceMethodImpl()
       printf("void\n");
       printf("%s_resize (%s seq, guint new_size)\n", lname.c_str(), arg.c_str());
       printf("{\n");
-      printf("  g_return_if_fail (seq != NULL);\n");
+      printf("  assert_return (seq != NULL);\n");
       printf("\n");
       if (element_i_free != "")
 	{
@@ -1002,7 +1002,7 @@ void CodeGeneratorCBase::printClientSequenceMethodImpl()
       printf("{\n");
       if (element_i_free != "")
 	printf("  guint i;\n\n");
-      printf("  g_return_if_fail (seq != NULL);\n");
+      printf("  assert_return (seq != NULL);\n");
       printf("  \n");
       if (element_i_free != "")
 	{

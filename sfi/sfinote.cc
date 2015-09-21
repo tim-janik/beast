@@ -63,7 +63,7 @@ sfi_note_from_string_err (const gchar *note_string,
 
   if (error_p)
     *error_p = NULL;
-  g_return_val_if_fail (note_string != NULL, SFI_NOTE_VOID);
+  assert_return (note_string != NULL, SFI_NOTE_VOID);
 
   string = freeme = g_strdup_stripped (note_string);
   g_ascii_strdown (string, -1);
@@ -153,7 +153,7 @@ sfi_note_examine (gint      note,
   guint semitone;
   gint octave;
 
-  g_return_if_fail (SFI_NOTE_IS_VALID (note));
+  assert_return (SFI_NOTE_IS_VALID (note));
 
   semitone = note % 12 + (9 - (SFI_KAMMER_NOTE % 12));
   note -= semitone;

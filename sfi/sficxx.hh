@@ -611,7 +611,7 @@ public:
   void
   unref ()
   {
-    g_return_if_fail (block != NULL && block->ref_count > 1);
+    assert_return (block != NULL && block->ref_count > 1);
     sfi_fblock_unref (block);
   }
   void
@@ -752,7 +752,7 @@ public:
   void
   unref ()
   {
-    g_return_if_fail (block != NULL && block->ref_count > 1);
+    assert_return (block != NULL && block->ref_count > 1);
     sfi_bblock_unref (block);
   }
   void resize (unsigned int length)
@@ -883,7 +883,7 @@ public:
   void
   unref ()
   {
-    g_return_if_fail (crec != NULL && crec->ref_count > 1);
+    assert_return (crec != NULL && crec->ref_count > 1);
     sfi_rec_unref (crec);
   }
   void
@@ -989,13 +989,13 @@ public:
   void
   ref ()
   {
-    g_return_if_fail (cobj != NULL && cobj->ref_count > 0);
+    assert_return (cobj != NULL && cobj->ref_count > 0);
     g_object_ref (cobj);
   }
   void
   unref ()
   {
-    g_return_if_fail (cobj != NULL && cobj->ref_count > 1);
+    assert_return (cobj != NULL && cobj->ref_count > 1);
     g_object_unref (cobj);
   }
   void

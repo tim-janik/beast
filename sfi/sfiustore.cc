@@ -37,7 +37,7 @@ gpointer
 sfi_ustore_lookup (SfiUStore *store,
 		   gulong     unique_id)
 {
-  g_return_val_if_fail (store != NULL, NULL);
+  assert_return (store != NULL, NULL);
 
   return g_tree_lookup (tcast (store), (gpointer) unique_id);
 }
@@ -47,7 +47,7 @@ sfi_ustore_insert (SfiUStore *store,
 		   gulong     unique_id,
 		   gpointer   value)
 {
-  g_return_if_fail (store != NULL);
+  assert_return (store != NULL);
 
   if (!value)
     g_tree_remove (tcast (store), (gpointer) unique_id);
@@ -59,7 +59,7 @@ void
 sfi_ustore_remove (SfiUStore *store,
 		   gulong     unique_id)
 {
-  g_return_if_fail (store != NULL);
+  assert_return (store != NULL);
 
   g_tree_remove (tcast (store), (gpointer) unique_id);
 }
@@ -86,7 +86,7 @@ sfi_ustore_foreach (SfiUStore       *store,
 {
   FData fdata;
 
-  g_return_if_fail (store != NULL);
+  assert_return (store != NULL);
 
   fdata.data = data;
   fdata.foreach = foreach;
@@ -96,7 +96,7 @@ sfi_ustore_foreach (SfiUStore       *store,
 void
 sfi_ustore_destroy (SfiUStore *store)
 {
-  g_return_if_fail (store != NULL);
+  assert_return (store != NULL);
 
   g_tree_destroy (tcast (store));
 }
@@ -224,7 +224,7 @@ gboolean
 sfi_ppool_lookup (SfiPPool *pool,
 		  gpointer  unique_ptr)
 {
-  g_return_val_if_fail (pool != NULL, FALSE);
+  assert_return (pool != NULL, FALSE);
   return g_tree_lookup (ppool_tree (pool), unique_ptr) != NULL;
 }
 
@@ -232,7 +232,7 @@ void
 sfi_ppool_set (SfiPPool *pool,
 	       gpointer  unique_ptr)
 {
-  g_return_if_fail (pool != NULL);
+  assert_return (pool != NULL);
   g_tree_insert (ppool_tree (pool), unique_ptr, PPOOL_TAG);
 }
 
@@ -240,7 +240,7 @@ void
 sfi_ppool_unset (SfiPPool *pool,
 		 gpointer  unique_ptr)
 {
-  g_return_if_fail (pool != NULL);
+  assert_return (pool != NULL);
   g_tree_remove (ppool_tree (pool), unique_ptr);
 }
 
@@ -265,7 +265,7 @@ sfi_ppool_foreach (SfiPPool        *pool,
 		   gpointer         data)
 {
   PPoolData pdata;
-  g_return_if_fail (pool != NULL);
+  assert_return (pool != NULL);
   pdata.data = data;
   pdata.foreach = foreach;
   g_tree_foreach (ppool_tree (pool), ppool_foreach_wrapper, &pdata);
@@ -285,7 +285,7 @@ GSList*
 sfi_ppool_slist (SfiPPool *pool)
 {
   GSList *slist = NULL;
-  g_return_val_if_fail (pool != NULL, NULL);
+  assert_return (pool != NULL, NULL);
   g_tree_foreach (ppool_tree (pool), ppool_foreach_slist, &slist);
   return slist;
 }
@@ -293,6 +293,6 @@ sfi_ppool_slist (SfiPPool *pool)
 void
 sfi_ppool_destroy (SfiPPool *pool)
 {
-  g_return_if_fail (pool != NULL);
+  assert_return (pool != NULL);
   g_tree_destroy (ppool_tree (pool));
 }

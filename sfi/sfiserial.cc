@@ -580,8 +580,8 @@ sfi_value_store_typed (const GValue *value,
 {
   SfiSCategory scat;
 
-  g_return_if_fail (G_IS_VALUE (value));
-  g_return_if_fail (gstring != NULL);
+  assert_return (G_IS_VALUE (value));
+  assert_return (gstring != NULL);
 
   scat = SfiSCategory (sfi_categorize_type (G_VALUE_TYPE (value)) & SFI_SCAT_TYPE_MASK);
   switch (scat)
@@ -638,8 +638,8 @@ GTokenType
 sfi_value_parse_typed (GValue   *value,
 		       GScanner *scanner)
 {
-  g_return_val_if_fail (value != NULL && G_VALUE_TYPE (value) == 0, G_TOKEN_ERROR);
-  g_return_val_if_fail (scanner != NULL, G_TOKEN_ERROR);
+  assert_return (value != NULL && G_VALUE_TYPE (value) == 0, G_TOKEN_ERROR);
+  assert_return (scanner != NULL, G_TOKEN_ERROR);
 
   parse_or_return (scanner, '(');
   char scat = g_scanner_get_next_token (scanner);
@@ -817,10 +817,10 @@ sfi_value_store_param (const GValue *value,
 {
   gboolean needs_break = FALSE;
 
-  g_return_if_fail (G_IS_VALUE (value));
-  g_return_if_fail (gstring != NULL);
-  g_return_if_fail (G_IS_PARAM_SPEC (pspec));
-  g_return_if_fail (G_VALUE_HOLDS (value, G_PARAM_SPEC_VALUE_TYPE (pspec)));
+  assert_return (G_IS_VALUE (value));
+  assert_return (gstring != NULL);
+  assert_return (G_IS_PARAM_SPEC (pspec));
+  assert_return (G_VALUE_HOLDS (value, G_PARAM_SPEC_VALUE_TYPE (pspec)));
 
   gstring_check_break (gstring, &needs_break, indent);
   gstring_printf (gstring, "(%s ", pspec->name);
@@ -952,13 +952,13 @@ sfi_value_parse_param_rest (GValue     *value,
 			    GScanner   *scanner,
 			    GParamSpec *pspec)
 {
-  g_return_val_if_fail (value != NULL && G_VALUE_TYPE (value) == 0, G_TOKEN_ERROR);
-  g_return_val_if_fail (scanner != NULL, G_TOKEN_ERROR);
-  g_return_val_if_fail (G_IS_PARAM_SPEC (pspec), G_TOKEN_ERROR);
+  assert_return (value != NULL && G_VALUE_TYPE (value) == 0, G_TOKEN_ERROR);
+  assert_return (scanner != NULL, G_TOKEN_ERROR);
+  assert_return (G_IS_PARAM_SPEC (pspec), G_TOKEN_ERROR);
 
   /* the scanner better be at the pspec name */
-  g_return_val_if_fail (scanner->token == G_TOKEN_IDENTIFIER, G_TOKEN_ERROR);
-  g_return_val_if_fail (strcmp (scanner->value.v_identifier, pspec->name) == 0, G_TOKEN_ERROR);
+  assert_return (scanner->token == G_TOKEN_IDENTIFIER, G_TOKEN_ERROR);
+  assert_return (strcmp (scanner->value.v_identifier, pspec->name) == 0, G_TOKEN_ERROR);
 
   g_value_init (value, G_PARAM_SPEC_VALUE_TYPE (pspec));
 
@@ -968,7 +968,7 @@ sfi_value_parse_param_rest (GValue     *value,
 gboolean
 sfi_serial_check_parse_null_token (GScanner *scanner)
 {
-  g_return_val_if_fail (scanner != NULL, FALSE);
+  assert_return (scanner != NULL, FALSE);
 
   if (scanner->token == '#' && g_scanner_peek_next_token (scanner) == 'f')
     {

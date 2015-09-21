@@ -114,7 +114,7 @@ g_bsearch_array_create (const GBSearchConfig *bconfig)
   GBSearchArray *barray;
   guint size;
 
-  g_return_val_if_fail (bconfig != NULL, NULL);
+  assert_return (bconfig != NULL, NULL);
 
   size = sizeof (GBSearchArray) + bconfig->sizeof_node;
   if (bconfig->flags & G_BSEARCH_ARRAY_ALIGN_POWER2)
@@ -172,7 +172,7 @@ g_bsearch_array_get_index (GBSearchArray        *barray,
 {
   guint distance = ((guint8*) node_in_array) - G_BSEARCH_ARRAY_NODES (barray);
 
-  g_return_val_if_fail (node_in_array != NULL, barray->n_nodes);
+  assert_return (node_in_array != NULL, barray->n_nodes);
 
   distance /= bconfig->sizeof_node;
 
@@ -187,7 +187,7 @@ g_bsearch_array_grow (GBSearchArray        *barray,
   guint new_size = old_size + bconfig->sizeof_node;
   guint8 *node;
 
-  g_return_val_if_fail (index <= barray->n_nodes, NULL);
+  assert_return (index <= barray->n_nodes, NULL);
 
   if (G_UNLIKELY (bconfig->flags & G_BSEARCH_ARRAY_ALIGN_POWER2))
     {
@@ -251,7 +251,7 @@ g_bsearch_array_remove (GBSearchArray        *barray,
 {
   guint8 *node;
 
-  g_return_val_if_fail (index < barray->n_nodes, NULL);
+  assert_return (index < barray->n_nodes, NULL);
 
   barray->n_nodes -= 1;
   node = G_BSEARCH_ARRAY_NODES (barray) + index * bconfig->sizeof_node;
@@ -284,7 +284,7 @@ static inline void
 g_bsearch_array_free (GBSearchArray        *barray,
                       const GBSearchConfig *bconfig)
 {
-  g_return_if_fail (barray != NULL);
+  assert_return (barray != NULL);
 
   g_free (barray);
 }

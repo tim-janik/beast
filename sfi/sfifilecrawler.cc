@@ -60,7 +60,7 @@ sfi_file_crawler_new (void)
 char*
 sfi_file_crawler_pop (SfiFileCrawler *self)
 {
-  g_return_val_if_fail (self != NULL, NULL);
+  assert_return (self != NULL, NULL);
   return (char*) sfi_ring_pop_head (&self->results);
 }
 
@@ -74,8 +74,8 @@ void
 sfi_file_crawler_set_cwd (SfiFileCrawler *self,
 			  const gchar    *cwd)
 {
-  g_return_if_fail (self != NULL);
-  g_return_if_fail (cwd != NULL && g_path_is_absolute (cwd));
+  assert_return (self != NULL);
+  assert_return (cwd != NULL && g_path_is_absolute (cwd));
 
   g_free (self->cwd);
   self->cwd = g_strdup (cwd);
@@ -93,7 +93,7 @@ void
 sfi_file_crawler_add_tests (SfiFileCrawler *self,
                             GFileTest       tests)
 {
-  g_return_if_fail (self != NULL);
+  assert_return (self != NULL);
 
   self->ptest = GFileTest (self->ptest | tests);
 }
@@ -117,7 +117,7 @@ sfi_file_crawler_add_search_path (SfiFileCrawler *self,
 				  const gchar    *pattern_paths,
                                   const gchar    *file_pattern)
 {
-  g_return_if_fail (self != NULL);
+  assert_return (self != NULL);
   if (pattern_paths)
     {
       const gchar *sep, *p = pattern_paths;
@@ -224,7 +224,7 @@ file_crawler_queue_abs_file_path (SfiFileCrawler *self,
 
   /* seperate root */
   sep = strchr (p, G_DIR_SEPARATOR);
-  g_return_if_fail (sep != NULL);	/* absolute paths must have a seperator */
+  assert_return (sep != NULL);	/* absolute paths must have a seperator */
   *sep++ = 0;
 
   /* check root existance */
@@ -376,7 +376,7 @@ file_crawler_crawl_dpatterns (SfiFileCrawler *self)
 gboolean
 sfi_file_crawler_needs_crawl (SfiFileCrawler *self)
 {
-  g_return_val_if_fail (self != NULL, FALSE);
+  assert_return (self != NULL, FALSE);
 
   return (self->dpatterns ||
 	  self->pdqueue || self->dlist ||
@@ -395,7 +395,7 @@ sfi_file_crawler_needs_crawl (SfiFileCrawler *self)
 void
 sfi_file_crawler_crawl (SfiFileCrawler *self)
 {
-  g_return_if_fail (self != NULL);
+  assert_return (self != NULL);
   if (self->dhandle)
     {
 #if INCREMENTAL_RESULTS
@@ -420,7 +420,7 @@ sfi_file_crawler_crawl (SfiFileCrawler *self)
 void
 sfi_file_crawler_destroy (SfiFileCrawler *self)
 {
-  g_return_if_fail (self != NULL);
+  assert_return (self != NULL);
 
   g_free (self->cwd);
   sfi_ring_free_deep (self->results, g_free);
@@ -476,7 +476,7 @@ sfi_make_dirpath (const gchar *dir)
   gchar *str, *dirpath = NULL;
   guint i;
 
-  g_return_if_fail (dir != NULL);
+  assert_return (dir != NULL);
 
   if (!g_path_is_absolute (dir))
     {

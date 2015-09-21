@@ -14,7 +14,7 @@ using namespace Sfidl;
 static Options *Options_the = 0;
 
 Options *Options::the() {
-  g_return_val_if_fail (Options_the != 0, 0);
+  assert_return (Options_the != 0, 0);
 
   return Options_the;
 };
@@ -40,9 +40,9 @@ bool Options::parse (int *argc_p, char **argv_p[], const Parser& parser)
   char **argv;
   unsigned int i, e;
 
-  g_return_val_if_fail (argc_p != NULL, false);
-  g_return_val_if_fail (argv_p != NULL, false);
-  g_return_val_if_fail (*argc_p >= 0, false);
+  assert_return (argc_p != NULL, false);
+  assert_return (argv_p != NULL, false);
+  assert_return (*argc_p >= 0, false);
 
   argc = *argc_p;
   argv = *argv_p;
