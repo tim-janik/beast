@@ -320,29 +320,3 @@ bse_categories_from_type (GType type)
       }
   return cseq;
 }
-
-BseCategory*
-bse_category_from_id (guint id)
-{
-  CEntry *centry;
-
-  g_return_val_if_fail (id > 0, NULL);
-
-  centry = (CEntry*) sfi_ustore_lookup (category_ustore, id);
-  if (centry)
-    {
-      BseCategory *cat = bse_category_new ();
-      g_free (cat->category);
-      cat->category = g_strdup (g_quark_to_string (centry->category));
-      cat->category_id = centry->category_id;
-      cat->mindex = centry->mindex;
-      cat->lindex = centry->lindex;
-      g_free (cat->type);
-      cat->type = g_strdup (g_type_name (centry->type));
-      if (cat->icon)
-        bse_ic0n_free (cat->icon);
-      cat->icon = centry->icon ? bse_ic0n_copy_shallow (centry->icon) : NULL;
-      return cat;
-    }
-  return NULL;
-}
