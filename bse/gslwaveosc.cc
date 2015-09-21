@@ -189,7 +189,7 @@ gsl_wave_osc_process (GslWaveOscData *wosc,
       wosc_process_sfme (wosc, n_values, freq_in, mod_in, sync_in, mono_out);
       break;
     default:
-      g_assert_not_reached ();
+      assert_unreached ();
     }
   if (wosc->y[0] != 0.0 &&
       !(fabs (wosc->y[0]) > BSE_SIGNAL_EPSILON && fabs (wosc->y[0]) < BSE_SIGNAL_KAPPA))

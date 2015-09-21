@@ -142,7 +142,7 @@ public:
       case BSE_RESAMPLER2_MODE_DOWNSAMPLE:  setup->mix_freq /= 2.0;
 					    setup->n_values = (setup->n_values + 1) / 2;
 					    break;
-      default:				    g_assert_not_reached();
+      default:				    assert_unreached();
       }
 
     m_frame_size = 1024 * setup->n_channels;

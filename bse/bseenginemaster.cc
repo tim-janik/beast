@@ -626,7 +626,7 @@ master_process_job (BseJob *job)
       master_timer_list = timer;
       break;
     default:
-      g_assert_not_reached ();
+      assert_unreached ();
     }
   JOB_DEBUG ("done");
 }

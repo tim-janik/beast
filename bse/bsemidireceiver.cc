@@ -650,7 +650,7 @@ voice_input_remove_from_table_L (VoiceInput *vinput)    /* UserThread */
             vinput->queue_state = VSTATE_IDLE;
             return;
           }
-      g_assert_not_reached ();
+      assert_unreached ();
     }
 }
 

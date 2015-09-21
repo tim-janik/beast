@@ -34,7 +34,7 @@ bse_type_register_enums (void)
       else if (enums[i].parent_type == G_TYPE_FLAGS)
 	*(enums[i].type_p) = g_flags_register_static (enums[i].name, (GFlagsValue*) enums[i].values);
       else
-	g_assert_not_reached ();
+	assert_unreached ();
     }
 }
 

@@ -115,7 +115,7 @@ handle_name (FirHandleType type)
     {
       case FIR_HIGHPASS:  return "Highpass";
       case FIR_LOWPASS:	  return "Lowpass";
-      default:		  g_assert_not_reached();
+      default:		  assert_unreached();
     }
 }
 

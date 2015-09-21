@@ -172,7 +172,7 @@ bse_part_set_property (GObject        *object,
         bse_part_note_channel_destroy (&self->channels[--self->n_channels]);
       break;
     case PROP_LAST_TICK:
-      g_assert_not_reached ();
+      assert_unreached ();
       break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (self, param_id, pspec);

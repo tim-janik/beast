@@ -512,7 +512,7 @@ bse_data_pocket_do_store_private (BseObject  *object,
 	      bse_storage_put_item_link (storage, BSE_ITEM (pocket), entry->items[j].value.v_object);
 	      break;
 	    default:
-	      g_assert_not_reached ();
+	      assert_unreached ();
 	    }
 	  bse_storage_putc (storage, ')');
 	}

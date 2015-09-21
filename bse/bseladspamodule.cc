@@ -242,7 +242,7 @@ ladspa_value_get_float (BseLadspaModule *self,
     case SFI_SCAT_REAL:
       return sfi_value_get_real (value);
     default:
-      g_assert_not_reached ();
+      assert_unreached ();
       return 0;
     }
 }
@@ -268,7 +268,7 @@ ladspa_value_set_float (BseLadspaModule *self,
       sfi_value_set_real (value, v_float);
       break;
     default:
-      g_assert_not_reached ();
+      assert_unreached ();
     }
 }
 

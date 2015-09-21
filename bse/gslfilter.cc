@@ -1167,7 +1167,7 @@ gsl_biquad_filter_config (GslBiquadFilter *f,
 	  f->yc1 = -f->yc1;
 	  break;
 	default:
-	  g_assert_not_reached ();
+	  assert_unreached ();
 	}
       c->dirty = FALSE;
     }

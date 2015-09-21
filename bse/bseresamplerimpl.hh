@@ -98,7 +98,7 @@ fir_process_4samples_sse (const float *input,
   *out2 = out2_v.f[0] + out2_v.f[1] + out2_v.f[2] + out2_v.f[3];
   *out3 = out3_v.f[0] + out3_v.f[1] + out3_v.f[2] + out3_v.f[3];
 #else
-  g_assert_not_reached();
+  assert_unreached();
 #endif
 }
 

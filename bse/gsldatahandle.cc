@@ -1599,7 +1599,7 @@ wave_handle_read (GslDataHandle *dhandle,
       break;
     default:
       l = -1;
-      g_assert_not_reached ();
+      assert_unreached ();
     }
 
   return l;

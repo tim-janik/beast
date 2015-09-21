@@ -323,7 +323,7 @@ bse_type_reinit_boxed (BseExportNodeBoxed *bnode)
     case BSE_EXPORT_NODE_SEQUENCE:
       sfi_boxed_type_set_seq_element (bnode->node.type, bnode->func.get_element());
       break;
-    default:    g_assert_not_reached();
+    default:    assert_unreached();
     }
 }
 
@@ -340,7 +340,7 @@ bse_type_uninit_boxed (BseExportNodeBoxed *bnode)
     case BSE_EXPORT_NODE_SEQUENCE:
       sfi_boxed_type_set_seq_element (bnode->node.type, NULL);
       break;
-    default:    g_assert_not_reached();
+    default:    assert_unreached();
     }
   g_type_set_qdata (bnode->node.type, quark_boxed_export_node, NULL);
 }
