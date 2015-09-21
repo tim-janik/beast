@@ -527,7 +527,7 @@ bst_param_xframe_check_button (GxkParam *param,
 void
 _bst_init_params (void)
 {
-  g_assert (quark_null_group == 0);
+  assert (quark_null_group == 0);
 
   quark_null_group = g_quark_from_static_string ("bst-param-null-group");
   quark_param_choice_values = g_quark_from_static_string ("bst-param-choice-values");

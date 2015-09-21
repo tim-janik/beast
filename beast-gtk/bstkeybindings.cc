@@ -645,7 +645,7 @@ key_binding_try_statement (gpointer   context_data,
                            gpointer   user_data)
 {
   GSList *slist, *kbindings = (GSList*) context_data;
-  g_assert (scanner->next_token == G_TOKEN_IDENTIFIER);
+  assert (scanner->next_token == G_TOKEN_IDENTIFIER);
   for (slist = kbindings; slist; slist = slist->next)
     {
       BstKeyBinding *kbinding = (BstKeyBinding*) slist->data;

@@ -443,7 +443,7 @@ static void
 bst_scrollgraph_release_item (SfiProxy        item,
                               BstScrollgraph *self)
 {
-  g_assert (self->source == item);
+  assert (self->source == item);
   bst_scrollgraph_set_source (self, 0, 0);
   if (self->delete_toplevel)
     gxk_toplevel_delete (GTK_WIDGET (self));

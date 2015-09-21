@@ -805,7 +805,7 @@ guint
 gxk_param_create_size_group (void)
 {
   guint i;
-  g_assert (n_size_groups < 0xff);
+  assert (n_size_groups < 0xff);
   i = n_size_groups++;
   size_groups = g_renew (GxkParamEditorSizes, size_groups, n_size_groups);
   size_groups[i] = param_editor_default_sizes;

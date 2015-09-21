@@ -465,7 +465,7 @@ bst_init_aida_idl()
       Bse::TestObjectH test = bse_server.get_test_object();
       test.sig_echo_reply() += echo_test_handler;
       const int test_result = test.echo_test ("foo");
-      g_assert (test_result == 3);
+      assert (test_result == 3);
     }
 }
 

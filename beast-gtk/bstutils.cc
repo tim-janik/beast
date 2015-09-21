@@ -28,7 +28,7 @@ Bse::ServerH bse_server;
 void
 _bst_init_utils (void)
 {
-  g_assert (stock_icon_factory == NULL);
+  assert (stock_icon_factory == NULL);
   stock_icon_factory = gtk_icon_factory_new ();
   gtk_icon_factory_add_default (stock_icon_factory);
 
@@ -456,7 +456,7 @@ bst_action_list_add_cat (GxkActionList          *alist,
   if (cat->icon)
     {
       BseIc0n *icon = cat->icon;
-      g_assert (icon->width * icon->height == int (icon->pixel_seq->n_pixels));
+      assert (icon->width * icon->height == int (icon->pixel_seq->n_pixels));
       bst_stock_register_icon (cat->category, 4,
                                icon->width, icon->height,
                                icon->width * 4,

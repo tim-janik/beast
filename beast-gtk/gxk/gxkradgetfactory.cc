@@ -129,7 +129,7 @@ gxk_radget_factory_finalize (GObject *object)
 {
   GxkRadgetFactory *self = GXK_RADGET_FACTORY (object);
 
-  g_assert (self->window == NULL);
+  assert (self->window == NULL);
   g_datalist_clear (&self->branch_widgets);
   g_free (self->action_root);
   g_free (self->per_action);

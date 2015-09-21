@@ -1094,7 +1094,7 @@ bst_snet_router_init (BstSNetRouter      *self)
         if (cat->icon)
           {
             BseIc0n *icon = cat->icon;
-            g_assert (icon->width * icon->height == int (icon->pixel_seq->n_pixels));
+            assert (icon->width * icon->height == int (icon->pixel_seq->n_pixels));
             bst_stock_register_icon (cat->category, 4,
                                      icon->width, icon->height,
                                      icon->width * 4,

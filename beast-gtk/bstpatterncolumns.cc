@@ -285,7 +285,7 @@ static guint
 control_get_digit_increment (guint num_type,
                              guint nth_digits)
 {
-  g_assert (nth_digits > 0);
+  assert (nth_digits > 0);
   if (num_type == BST_PATTERN_LFLAG_DEC)
     return pow (10, nth_digits - 1);
   else /* if (num_type == BST_PATTERN_LFLAG_HEX) */
@@ -868,7 +868,7 @@ bst_pattern_column_create (BstPatternLType   ltype,
       klass = &pattern_column_event_class;
       break;
     }
-  g_assert (klass->instance_size >= sizeof (BstPatternColumn));
+  assert (klass->instance_size >= sizeof (BstPatternColumn));
   column = (BstPatternColumn*) g_malloc0 (klass->instance_size);
   column->klass = klass;
   column->num = num;

@@ -598,7 +598,7 @@ bst_knob_init (BstKnob *knob)
   knob->old_page_size = 0.0;
   knob->adjustment = NULL;
   knob->pixbuf = (GdkPixbuf*) g_object_ref (bst_pixbuf_knob ());
-  g_assert (knob->pixbuf);
+  assert (knob->pixbuf);
 
   gtk_image_set_from_pixbuf (GTK_IMAGE (knob), knob->pixbuf);
   w = gdk_pixbuf_get_width (knob->pixbuf);

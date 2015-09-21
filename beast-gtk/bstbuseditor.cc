@@ -70,7 +70,7 @@ static void
 bus_editor_release_item (SfiProxy      item,
                          BstBusEditor *self)
 {
-  g_assert (self->item == item);
+  assert (self->item == item);
   bst_bus_editor_set_bus (self, 0);
 }
 
