@@ -3,7 +3,6 @@
 #include "cpu.hh"
 
 #include <algorithm>
-#include <assert.h>
 
 using std::vector;
 using std::max;
