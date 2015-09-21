@@ -222,7 +222,7 @@ key_bindings_exec_action (gpointer data,
       }
       break;
     default:
-      g_assert_not_reached ();
+      assert_unreached ();
       break;
     }
   gxk_status_window_pop ();

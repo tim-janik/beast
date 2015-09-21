@@ -1096,7 +1096,7 @@ app_action_exec (gpointer data,
                                      Rapicorn::Aida::enum_info<Bse::UserMessageType>().find_value (demo_type)->ident));
       break;
     default:
-      g_assert_not_reached ();
+      assert_unreached ();
       break;
     }
 
