@@ -64,6 +64,18 @@ bst_procedure_get_title (const gchar *procedure)
   return NULL;
 }
 
+
+BseCategory*
+bse_category_find (const gchar* pattern)
+{
+  BseCategorySeq *cseq = NULL;
+  if (pattern)
+    cseq = bse_categories_match (pattern);
+  if (cseq && cseq->n_cats == 1)
+    return cseq->cats[0];
+  return NULL;
+}
+
 /// Return the character index of the last string segment not containing @a separator.
 uint
 bst_path_leaf_index (const String &path, char separator)

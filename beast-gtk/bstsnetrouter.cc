@@ -17,7 +17,7 @@
 
 enum {
   ROUTER_TOOL_EDIT              = 0,
-  ROUTER_TOOL_CREATE_LINK       = G_MAXINT - 1024,      /* don't clash with category IDs */
+  ROUTER_TOOL_CREATE_LINK       = G_MAXINT - 1024,      /* don't clash with category IDs / GQuarks */
   ROUTER_TOOL_TOGGLE_PALETTE,
   ROUTER_TOOL_CHANNEL_HINTS
 };
@@ -326,7 +326,7 @@ static void
 bst_router_run_method (gpointer user_data, size_t action_id)
 {
   BstSNetRouter *self = BST_SNET_ROUTER (user_data);
-  BseCategory *cat = bse_category_from_id (action_id);
+  BseCategory *cat = bse_category_find (g_quark_to_string (action_id));
   bst_procedure_exec_auto (cat->type,
                            "synth-net", SFI_TYPE_PROXY, self->snet.proxy_id(),
                            BSE_IS_CSYNTH (self->snet.proxy_id()) ? "custom-synth" : "", SFI_TYPE_PROXY, self->snet.proxy_id(),
@@ -774,7 +774,7 @@ bst_snet_router_event (GtkWidget *widget,
           ROUTER_TOOL (self) != ROUTER_TOOL_CREATE_LINK) /* add new source */
         {
           Bse::ErrorType error;
-          BseCategory *cat = bse_category_from_id (ROUTER_TOOL (self));
+          BseCategory *cat = bse_category_find (g_quark_to_string (ROUTER_TOOL (self)));
 
           handled = TRUE;
           gnome_canvas_window_to_world (canvas,
@@ -844,7 +844,7 @@ static void
 snet_router_tool2text (BstSNetRouter *self)
 {
   GtkLabel *label = (GtkLabel*) gxk_radget_find (self->palette, "type-label");
-  BseCategory *cat = ROUTER_TOOL (self) ? bse_category_from_id (ROUTER_TOOL (self)) : 0;
+  BseCategory *cat = ROUTER_TOOL (self) ? bse_category_find (g_quark_to_string (ROUTER_TOOL (self))) : 0;
   const gchar *blurb = cat ? bse_type_blurb (cat->type) : NULL;
   const gchar *authors = cat ? bse_type_authors (cat->type) : NULL;
   const gchar *license = cat ? bse_type_license (cat->type) : NULL;
@@ -1106,7 +1106,7 @@ bst_snet_router_init (BstSNetRouter      *self)
         gxk_action_list_add_translated (toolbar_modules, cat->type,
                                         _(toolbar_types[n].name), NULL,
                                         _(toolbar_types[n].tip),
-                                        cat->category_id,
+                                        g_quark_from_string (cat->category),
                                         stock_id,
                                         NULL, bst_router_popup_select, self);
       }
