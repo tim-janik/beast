@@ -3,7 +3,6 @@
 #include <bse/gsldatahandle-mad.hh>
 #include "gslfilehash.hh"
 #include <bse/gsldatautils.hh>
-#include <assert.h>
 #include <stdio.h>
 #include <unistd.h>
 #include <sys/mman.h>
