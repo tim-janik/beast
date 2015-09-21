@@ -335,7 +335,7 @@ bse_iir_filter_update_modules (BseIIRFilter *filt)
 	  gsl_filter_tscheb2_bs (filt->order & ~1, freq1, freq2, steepness, filt->epsilon, filt->a, filt->b);
 	  break;
 	default:
-	  g_assert_not_reached ();
+	  assert_unreached ();
 	}
 
       fmod->iir.order = filt->order;
