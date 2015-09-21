@@ -111,7 +111,7 @@ Bse::ErrorType
 Wave::add_chunk (GslDataHandle  *dhandle,
                  gchar         **xinfos)
 {
-  g_return_val_if_fail (dhandle != NULL, Bse::ERROR_INTERNAL);
+  assert_return (dhandle != NULL, Bse::ERROR_INTERNAL);
 
   if (xinfos)
     {
@@ -236,7 +236,7 @@ Wave::sort ()
 Bse::ErrorType
 Wave::store (const string file_name)
 {
-  g_return_val_if_fail (file_name.c_str() != NULL, Bse::ERROR_INTERNAL);
+  assert_return (file_name.c_str() != NULL, Bse::ERROR_INTERNAL);
 
   /* save to temporary file */
   gint fd;

@@ -1546,7 +1546,7 @@ public:
     int64 n_channels = gsl_data_handle_n_channels (dhandle);
     int64 n_frames = n_values / n_channels;
 
-    g_return_val_if_fail (n_values % n_channels == 0, n_frames);  /* a datahandle cannot contain half frames */
+    assert_return (n_values % n_channels == 0, n_frames);  /* a datahandle cannot contain half frames */
     return n_frames;
   }
   static double
@@ -1554,7 +1554,7 @@ public:
                       double         volume_adjustment)
   {
     const double min_db = -200;
-    g_return_val_if_fail (GSL_DATA_HANDLE_OPENED (dhandle), min_db);
+    assert_return (GSL_DATA_HANDLE_OPENED (dhandle), min_db);
 
     /* We do not take into account that a data handle can contain many separate
      * channels, so we're effectively averaging over all channels here.

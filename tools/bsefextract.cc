@@ -378,13 +378,13 @@ struct SpectrumFeature : public Feature
 		      double                                   normalize)
   {
     const vector < double > empty_return; // this can't be inlined in g_return* due to a bug in g++-3.3
-    g_return_val_if_fail (end - start > 0, empty_return);
+    assert_return (end - start > 0, empty_return);
 
     vector<double> result (start->size());
 
     for (vector< vector<double> >::const_iterator spect_it = start; spect_it != end; spect_it++)
       {
-	g_return_val_if_fail (spect_it->size() == result.size(), result);
+	assert_return (spect_it->size() == result.size(), result);
 
 	for (size_t i = 0; i < result.size(); i++)
 	  result[i] += (*spect_it)[i];
@@ -1292,8 +1292,8 @@ check_arg (uint         argc,
            const char  *opt,		  /* for example: --foo */
            const char **opt_arg = NULL)	  /* if foo needs an argument, pass a pointer to get the argument */
 {
-  g_return_val_if_fail (opt != NULL, false);
-  g_return_val_if_fail (*nth < argc, false);
+  assert_return (opt != NULL, false);
+  assert_return (*nth < argc, false);
 
   const char *arg = argv[*nth];
   if (!arg)
@@ -1341,7 +1341,7 @@ Options::parse (int   *argc_p,
   gchar **argv = *argv_p;
   unsigned int i, e;
 
-  g_return_if_fail (argc >= 0);
+  assert_return (argc >= 0);
 
   /*  I am tired of seeing .libs/lt-bsefextract all the time,
    *  but basically this should be done (to allow renaming the binary):
