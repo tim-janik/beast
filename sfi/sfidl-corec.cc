@@ -119,7 +119,7 @@ class CodeGeneratorCoreC : public CodeGenerator {
       case RECORD:      return TypeName (type, "*");
       case SEQUENCE:    return TypeName (type, "*");
       case OBJECT:      return TypeName (type, "*");
-      default:          g_assert_not_reached(); return NULL;
+      default:          assert_unreached(); return NULL;
       }
   }
   const char*

@@ -599,7 +599,7 @@ generate_vmarshal_code (void)
   g_print ("static VMarshal\nsfi_vmarshal_switch (guint sig)\n{\n");
   g_print ("  switch (sig)\n    {\n");
   generate_vmarshal_loop ();
-  g_print ("    default: g_assert_not_reached (); return NULL;\n");
+  g_print ("    default: assert_unreached (); return NULL;\n");
   g_print ("    }\n}\n");
 }
 static const char *pointer1 = "huhu";

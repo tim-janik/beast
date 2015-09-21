@@ -94,7 +94,7 @@ put_val (Arg          *a,
 #endif
     default:
       t = 0;
-      g_assert_not_reached ();
+      assert_unreached ();
     }
   return t;
 }
@@ -2087,6 +2087,6 @@ sfi_vmarshal_switch (guint sig)
     case 0x3fd: return sfi_vmarshal_33331; /* 241 */
     case 0x3fe: return sfi_vmarshal_33332; /* 242 */
     case 0x3ff: return sfi_vmarshal_33333; /* 243 */
-    default: g_assert_not_reached (); return NULL;
+    default: assert_unreached (); return NULL;
     }
 }

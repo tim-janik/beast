@@ -161,7 +161,7 @@ String CodeGenerator::toWordCase (const String& word, WordCase wc)
 			      break;
 	  case UPPER:	      result += toupper (*si);
 			      break;
-	  default:	      g_assert_not_reached();
+	  default:	      assert_unreached();
 	}
     }
   return result;
@@ -225,7 +225,7 @@ CodeGenerator::rename (NamespaceHelper& nsh, const String& name, WordCase namesp
 		       const String& namespace_join, const vector<String>& namespace_append,
 		       WordCase typename_wc, const String& typename_join)
 {
-  g_assert_not_reached ();
+  assert_unreached ();
   String pform = nsh.printableForm (name);
   return pform;
 }
