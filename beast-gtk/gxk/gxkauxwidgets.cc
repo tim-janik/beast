@@ -503,14 +503,19 @@ widget_mute_events (GtkWidget *widget,
 static void
 widget_lower_windows (GtkWidget *widget)
 {
-  GList *list = gdk_window_peek_children (widget->window);
-  for (; list; list = list->next)
+  std::vector<GdkWindow*> wins;
+  // gdk_window_peek_children's result is modified by gdk_window_lower
+  for (GList *list = gdk_window_peek_children (widget->window); list; list = list->next)
     {
-      gpointer user_data;
-      gdk_window_get_user_data ((GdkWindow*) list->data, &user_data);
+      GdkWindow *win = (GdkWindow*) list->data;
+      gpointer user_data = NULL;
+      gdk_window_get_user_data (win, &user_data);
       if (user_data == (gpointer) widget)
-        gdk_window_lower ((GdkWindow*) list->data);
+        wins.push_back (win);
     }
+  // so here we walk the list of windows that need lowering
+  for (GdkWindow *win : wins)
+    gdk_window_lower (win);
 }
 static void
 widget_hide_insensitive (GtkWidget *widget)
