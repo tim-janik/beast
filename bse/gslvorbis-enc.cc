@@ -85,7 +85,7 @@ gsl_vorbis_encoder_new (void)
 void
 gsl_vorbis_encoder_destroy (GslVorbisEncoder *self)
 {
-  g_return_if_fail (self != NULL);
+  assert_return (self != NULL);
 
   gsl_vorbis_encoder_reset (self);
   vorbis_comment_clear (&self->vcomment);
@@ -96,9 +96,9 @@ void
 gsl_vorbis_encoder_add_comment (GslVorbisEncoder *self,
                                 const gchar      *comment)
 {
-  g_return_if_fail (self != NULL);
-  g_return_if_fail (self->stream_setup == FALSE);
-  g_return_if_fail (comment != NULL);
+  assert_return (self != NULL);
+  assert_return (self->stream_setup == FALSE);
+  assert_return (comment != NULL);
 
   vorbis_comment_add (&self->vcomment, comment);
 }
@@ -108,10 +108,10 @@ gsl_vorbis_encoder_add_named_comment (GslVorbisEncoder *self,
                                       const gchar      *tag_name,
                                       const gchar      *comment)
 {
-  g_return_if_fail (self != NULL);
-  g_return_if_fail (self->stream_setup == FALSE);
-  g_return_if_fail (tag_name != NULL);
-  g_return_if_fail (comment != NULL);
+  assert_return (self != NULL);
+  assert_return (self->stream_setup == FALSE);
+  assert_return (tag_name != NULL);
+  assert_return (comment != NULL);
 
   vorbis_comment_add_tag (&self->vcomment, tag_name, comment);
 }
@@ -143,9 +143,9 @@ gsl_vorbis_encoder_add_lcomment (GslVorbisEncoder *self,
 {
   gchar *utf8_comment;
 
-  g_return_if_fail (self != NULL);
-  g_return_if_fail (self->stream_setup == FALSE);
-  g_return_if_fail (comment != NULL);
+  assert_return (self != NULL);
+  assert_return (self->stream_setup == FALSE);
+  assert_return (comment != NULL);
 
   utf8_comment = convert_latin1_to_utf8 (comment);
   vorbis_comment_add (&self->vcomment, utf8_comment);
@@ -159,10 +159,10 @@ gsl_vorbis_encoder_add_named_lcomment (GslVorbisEncoder *self,
 {
   gchar *utf8_comment;
 
-  g_return_if_fail (self != NULL);
-  g_return_if_fail (self->stream_setup == FALSE);
-  g_return_if_fail (tag_name != NULL);
-  g_return_if_fail (comment != NULL);
+  assert_return (self != NULL);
+  assert_return (self->stream_setup == FALSE);
+  assert_return (tag_name != NULL);
+  assert_return (comment != NULL);
 
   utf8_comment = convert_latin1_to_utf8 (comment);
   vorbis_comment_add_tag (&self->vcomment, tag_name, utf8_comment);
@@ -173,8 +173,8 @@ void
 gsl_vorbis_encoder_set_quality (GslVorbisEncoder *self,
 				gfloat            quality)
 {
-  g_return_if_fail (self != NULL);
-  g_return_if_fail (self->stream_setup == FALSE);
+  assert_return (self != NULL);
+  assert_return (self->stream_setup == FALSE);
 
   self->vbr_quality = CLAMP (quality, -1.0, 10.0) * 0.1;
   self->vbr_nominal = -1;
@@ -184,9 +184,9 @@ void
 gsl_vorbis_encoder_set_bitrate (GslVorbisEncoder *self,
 				guint             nominal)
 {
-  g_return_if_fail (self != NULL);
-  g_return_if_fail (self->stream_setup == FALSE);
-  g_return_if_fail (nominal >= 32 && nominal <= 1048576);
+  assert_return (self != NULL);
+  assert_return (self->stream_setup == FALSE);
+  assert_return (nominal >= 32 && nominal <= 1048576);
 
   self->vbr_quality = -1;
   self->vbr_nominal = nominal;
@@ -196,9 +196,9 @@ void
 gsl_vorbis_encoder_set_n_channels (GslVorbisEncoder *self,
 				   guint             n_channels)
 {
-  g_return_if_fail (self != NULL);
-  g_return_if_fail (self->stream_setup == FALSE);
-  g_return_if_fail (n_channels >= 1 && n_channels <= 2);
+  assert_return (self != NULL);
+  assert_return (self->stream_setup == FALSE);
+  assert_return (n_channels >= 1 && n_channels <= 2);
 
   self->n_channels = n_channels;
 }
@@ -207,9 +207,9 @@ void
 gsl_vorbis_encoder_set_sample_freq (GslVorbisEncoder *self,
 				    guint             sample_freq)
 {
-  g_return_if_fail (self != NULL);
-  g_return_if_fail (self->stream_setup == FALSE);
-  g_return_if_fail (sample_freq >= 8000 && sample_freq <= 96000);
+  assert_return (self != NULL);
+  assert_return (self->stream_setup == FALSE);
+  assert_return (sample_freq >= 8000 && sample_freq <= 96000);
 
   self->sample_freq = sample_freq;
 }
@@ -217,7 +217,7 @@ gsl_vorbis_encoder_set_sample_freq (GslVorbisEncoder *self,
 static void
 gsl_vorbis_encoder_reset (GslVorbisEncoder *self)
 {
-  g_return_if_fail (self != NULL);
+  assert_return (self != NULL);
 
   /* cleanup codec state */
   if (self->stream_setup)
@@ -249,8 +249,8 @@ gsl_vorbis_encoder_setup_stream (GslVorbisEncoder *self,
   ogg_page opage;
   gint result;
 
-  g_return_val_if_fail (self != NULL, Bse::ERROR_INTERNAL);
-  g_return_val_if_fail (self->stream_setup == FALSE, Bse::ERROR_INTERNAL);
+  assert_return (self != NULL, Bse::ERROR_INTERNAL);
+  assert_return (self->stream_setup == FALSE, Bse::ERROR_INTERNAL);
 
   self->serial = serial;
   vorbis_info_init (&self->vinfo);
@@ -331,12 +331,12 @@ gsl_vorbis_encoder_write_pcm (GslVorbisEncoder *self,
 			      guint             n_values,
 			      gfloat           *values)
 {
-  g_return_if_fail (self != NULL);
-  g_return_if_fail (self->stream_setup == TRUE);
-  g_return_if_fail (self->pcm_done == FALSE);
-  g_return_if_fail (self->n_channels * (n_values / self->n_channels) == n_values); /* check alignment */
+  assert_return (self != NULL);
+  assert_return (self->stream_setup == TRUE);
+  assert_return (self->pcm_done == FALSE);
+  assert_return (self->n_channels * (n_values / self->n_channels) == n_values); /* check alignment */
   if (n_values)
-    g_return_if_fail (values != NULL);
+    assert_return (values != NULL);
 
   /* compress away remaining data so we only buffer encoded data */
   while (gsl_vorbis_encoder_needs_processing (self))
@@ -355,8 +355,8 @@ gsl_vorbis_encoder_write_pcm (GslVorbisEncoder *self,
 void
 gsl_vorbis_encoder_pcm_done (GslVorbisEncoder *self)
 {
-  g_return_if_fail (self != NULL);
-  g_return_if_fail (self->stream_setup == TRUE);
+  assert_return (self != NULL);
+  assert_return (self->stream_setup == TRUE);
 
   if (!self->pcm_done)
     {
@@ -376,7 +376,7 @@ gsl_vorbis_encoder_blockout (GslVorbisEncoder *self)
 gboolean
 gsl_vorbis_encoder_needs_processing (GslVorbisEncoder *self)
 {
-  g_return_val_if_fail (self != NULL, FALSE);
+  assert_return (self != NULL, FALSE);
 
   return self->stream_setup && !self->eos && gsl_vorbis_encoder_blockout (self);
 }
@@ -384,8 +384,8 @@ gsl_vorbis_encoder_needs_processing (GslVorbisEncoder *self)
 void
 gsl_vorbis_encoder_process (GslVorbisEncoder *self)
 {
-  g_return_if_fail (self != NULL);
-  g_return_if_fail (self->stream_setup == TRUE);
+  assert_return (self != NULL);
+  assert_return (self->stream_setup == TRUE);
 
   /* analyse data blockwise */
   if (gsl_vorbis_encoder_blockout (self))
@@ -423,8 +423,8 @@ gsl_vorbis_encoder_read_ogg (GslVorbisEncoder *self,
 {
   guint8 *ubytes = bytes;
 
-  g_return_val_if_fail (self != NULL, 0);
-  g_return_val_if_fail (self->stream_setup == TRUE, 0);
+  assert_return (self != NULL, 0);
+  assert_return (self->stream_setup == TRUE, 0);
 
   if (!self->dblocks)
     gsl_vorbis_encoder_process (self);
@@ -448,8 +448,8 @@ gsl_vorbis_encoder_read_ogg (GslVorbisEncoder *self,
 gboolean
 gsl_vorbis_encoder_ogg_eos (GslVorbisEncoder *self)
 {
-  g_return_val_if_fail (self != NULL, FALSE);
-  g_return_val_if_fail (self->stream_setup == TRUE, FALSE);
+  assert_return (self != NULL, FALSE);
+  assert_return (self->stream_setup == TRUE, FALSE);
 
   return self->eos && !self->dblocks;
 }

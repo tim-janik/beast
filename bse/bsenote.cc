@@ -118,7 +118,7 @@ bse_freq_array_new (guint prealloc)
 void
 bse_freq_array_free (BseFreqArray *farray)
 {
-  g_return_if_fail (farray != NULL);
+  assert_return (farray != NULL);
 
   g_free (farray->values);
   g_free (farray);
@@ -127,7 +127,7 @@ bse_freq_array_free (BseFreqArray *farray)
 guint
 bse_freq_array_n_values (BseFreqArray *farray)
 {
-  g_return_val_if_fail (farray != NULL, 0);
+  assert_return (farray != NULL, 0);
 
   return farray->n_values;
 }
@@ -136,8 +136,8 @@ gdouble
 bse_freq_array_get (BseFreqArray *farray,
                     guint         index)
 {
-  g_return_val_if_fail (farray != NULL, 0);
-  g_return_val_if_fail (index < farray->n_values, 0);
+  assert_return (farray != NULL, 0);
+  assert_return (index < farray->n_values, 0);
 
   return farray->values[index];
 }
@@ -149,8 +149,8 @@ bse_freq_array_insert (BseFreqArray *farray,
 {
   guint i;
 
-  g_return_if_fail (farray != NULL);
-  g_return_if_fail (index <= farray->n_values);
+  assert_return (farray != NULL);
+  assert_return (index <= farray->n_values);
 
   i = farray->n_values;
   i = farray->n_values += 1;
@@ -177,8 +177,8 @@ bse_freq_array_set (BseFreqArray *farray,
                     guint         index,
                     gdouble       value)
 {
-  g_return_if_fail (farray != NULL);
-  g_return_if_fail (index < farray->n_values);
+  assert_return (farray != NULL);
+  assert_return (index < farray->n_values);
 
   farray->values[index] = value;
 }

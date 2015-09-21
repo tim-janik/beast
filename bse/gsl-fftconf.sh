@@ -212,7 +212,7 @@ gsl_power2_fftac (const unsigned int n_values,
                   const $IEEE_TYPE  *rivalues_in,
                   $IEEE_TYPE        *rivalues_out)
 {
-  g_return_if_fail ((n_values & (n_values - 1)) == 0 && n_values >= 1);
+  assert_return ((n_values & (n_values - 1)) == 0 && n_values >= 1);
 
   switch (n_values)
     {
@@ -238,7 +238,7 @@ gsl_power2_fftsc (const unsigned int n_values,
                   const $IEEE_TYPE  *rivalues_in,
                   $IEEE_TYPE        *rivalues_out)
 {
-  g_return_if_fail ((n_values & (n_values - 1)) == 0 && n_values >= 1);
+  assert_return ((n_values & (n_values - 1)) == 0 && n_values >= 1);
 
   switch (n_values)
     {
@@ -265,7 +265,7 @@ gsl_power2_fftsc_scale (const unsigned int n_values,
                         const $IEEE_TYPE  *rivalues_in,
                         $IEEE_TYPE        *rivalues_out)
 {
-  g_return_if_fail ((n_values & (n_values - 1)) == 0 && n_values >= 1);
+  assert_return ((n_values & (n_values - 1)) == 0 && n_values >= 1);
 
   switch (n_values)
     {
@@ -304,7 +304,7 @@ gsl_power2_fftar (const unsigned int n_values,
   double Dre, Dim, Wre, Wim, theta;
   unsigned int i;
 
-  g_return_if_fail ((n_values & (n_values - 1)) == 0 && n_values >= 2);
+  assert_return ((n_values & (n_values - 1)) == 0 && n_values >= 2);
 
   gsl_power2_fftsc (n_cvalues, r_values_in, rivalues_out);
   theta = 3.1415926535897932384626433832795029;
@@ -361,7 +361,7 @@ gsl_power2_fftsr_impl (const unsigned int n_values,
   double Dre, Dim, Wre, Wim, theta, scale;
   unsigned int i, ri;
 
-  g_return_if_fail ((n_values & (n_values - 1)) == 0 && n_values >= 2);
+  assert_return ((n_values & (n_values - 1)) == 0 && n_values >= 2);
 
   theta = -3.1415926535897932384626433832795029;
   theta /= (double) n_cvalues;
@@ -479,7 +479,7 @@ gsl_power2_fftar_simple (const unsigned int n_values,
   double *rv, *cv;
   guint i;
 
-  g_return_if_fail ((n_values & (n_values - 1)) == 0 && n_values >= 2);
+  assert_return ((n_values & (n_values - 1)) == 0 && n_values >= 2);
 
   rv = g_new (double, n_values * 2);
   cv = rv + n_values;
@@ -507,7 +507,7 @@ gsl_power2_${FUNC_NAME}_simple (const unsigned int n_values,
   double *cv, *rv;
   guint i;
 
-  g_return_if_fail ((n_values & (n_values - 1)) == 0 && n_values >= 2);
+  assert_return ((n_values & (n_values - 1)) == 0 && n_values >= 2);
 
   cv = g_new (double, n_values * 2);
   rv = cv + n_values;

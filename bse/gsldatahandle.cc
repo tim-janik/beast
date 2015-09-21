@@ -23,10 +23,10 @@ gboolean
 gsl_data_handle_common_init (GslDataHandle *dhandle,
 			     const gchar   *file_name)
 {
-  g_return_val_if_fail (dhandle != NULL, FALSE);
-  g_return_val_if_fail (dhandle->vtable == NULL, FALSE);
-  g_return_val_if_fail (dhandle->name == NULL, FALSE);
-  g_return_val_if_fail (dhandle->ref_count == 0, FALSE);
+  assert_return (dhandle != NULL, FALSE);
+  assert_return (dhandle->vtable == NULL, FALSE);
+  assert_return (dhandle->name == NULL, FALSE);
+  assert_return (dhandle->ref_count == 0, FALSE);
   dhandle->name = g_strdup (file_name);
   new (&dhandle->spinlock) Bse::Spinlock();
   dhandle->ref_count = 1;
@@ -37,8 +37,8 @@ gsl_data_handle_common_init (GslDataHandle *dhandle,
 GslDataHandle*
 gsl_data_handle_ref (GslDataHandle *dhandle)
 {
-  g_return_val_if_fail (dhandle != NULL, NULL);
-  g_return_val_if_fail (dhandle->ref_count > 0, NULL);
+  assert_return (dhandle != NULL, NULL);
+  assert_return (dhandle->ref_count > 0, NULL);
   dhandle->spinlock.lock();
   dhandle->ref_count++;
   dhandle->spinlock.unlock();
@@ -47,9 +47,9 @@ gsl_data_handle_ref (GslDataHandle *dhandle)
 void
 gsl_data_handle_common_free (GslDataHandle *dhandle)
 {
-  g_return_if_fail (dhandle != NULL);
-  g_return_if_fail (dhandle->vtable != NULL);
-  g_return_if_fail (dhandle->ref_count == 0);
+  assert_return (dhandle != NULL);
+  assert_return (dhandle->vtable != NULL);
+  assert_return (dhandle->ref_count == 0);
   g_free (dhandle->name);
   dhandle->name = NULL;
   dhandle->spinlock.~Spinlock();
@@ -58,23 +58,23 @@ void
 gsl_data_handle_unref (GslDataHandle *dhandle)
 {
   gboolean destroy;
-  g_return_if_fail (dhandle != NULL);
-  g_return_if_fail (dhandle->ref_count > 0);
+  assert_return (dhandle != NULL);
+  assert_return (dhandle->ref_count > 0);
   dhandle->spinlock.lock();
   dhandle->ref_count--;
   destroy = dhandle->ref_count == 0;
   dhandle->spinlock.unlock();
   if (destroy)
     {
-      g_return_if_fail (dhandle->open_count == 0);
+      assert_return (dhandle->open_count == 0);
       dhandle->vtable->destroy (dhandle);
     }
 }
 Bse::ErrorType
 gsl_data_handle_open (GslDataHandle *dhandle)
 {
-  g_return_val_if_fail (dhandle != NULL, Bse::ERROR_INTERNAL);
-  g_return_val_if_fail (dhandle->ref_count > 0, Bse::ERROR_INTERNAL);
+  assert_return (dhandle != NULL, Bse::ERROR_INTERNAL);
+  assert_return (dhandle->ref_count > 0, Bse::ERROR_INTERNAL);
   dhandle->spinlock.lock();
   if (dhandle->open_count == 0)
     {
@@ -108,9 +108,9 @@ void
 gsl_data_handle_close (GslDataHandle *dhandle)
 {
   gboolean need_unref;
-  g_return_if_fail (dhandle != NULL);
-  g_return_if_fail (dhandle->ref_count > 0);
-  g_return_if_fail (dhandle->open_count > 0);
+  assert_return (dhandle != NULL);
+  assert_return (dhandle->ref_count > 0);
+  assert_return (dhandle->open_count > 0);
   dhandle->spinlock.lock();
   dhandle->open_count--;
   need_unref = !dhandle->open_count;
@@ -134,13 +134,13 @@ gsl_data_handle_read (GslDataHandle *dhandle,
 {
   int64 l;
 
-  g_return_val_if_fail (dhandle != NULL, -1);
-  g_return_val_if_fail (dhandle->open_count > 0, -1);
-  g_return_val_if_fail (value_offset >= 0, -1);
+  assert_return (dhandle != NULL, -1);
+  assert_return (dhandle->open_count > 0, -1);
+  assert_return (value_offset >= 0, -1);
   if (n_values < 1)
     return 0;
-  g_return_val_if_fail (values != NULL, -1);
-  g_return_val_if_fail (value_offset < dhandle->setup.n_values, -1);
+  assert_return (values != NULL, -1);
+  assert_return (value_offset < dhandle->setup.n_values, -1);
   n_values = MIN (n_values, dhandle->setup.n_values - value_offset);
   dhandle->spinlock.lock();
   l = dhandle->vtable->read (dhandle, value_offset, n_values, values);
@@ -150,7 +150,7 @@ gsl_data_handle_read (GslDataHandle *dhandle,
 GslDataHandle*
 gsl_data_handle_get_source (GslDataHandle *dhandle)
 {
-  g_return_val_if_fail (dhandle != NULL, NULL);
+  assert_return (dhandle != NULL, NULL);
   dhandle->spinlock.lock();
   GslDataHandle *src_handle = dhandle->vtable->get_source ? dhandle->vtable->get_source (dhandle) : NULL;
   dhandle->spinlock.unlock();
@@ -182,8 +182,8 @@ gsl_data_handle_get_source (GslDataHandle *dhandle)
 int64
 gsl_data_handle_get_state_length (GslDataHandle *dhandle)
 {
-  g_return_val_if_fail (dhandle != NULL, -1);
-  g_return_val_if_fail (dhandle->open_count > 0, -1);
+  assert_return (dhandle != NULL, -1);
+  assert_return (dhandle->open_count > 0, -1);
   dhandle->spinlock.lock();
   int64 state_length = dhandle->vtable->get_state_length ? dhandle->vtable->get_state_length (dhandle) : 0;
   dhandle->spinlock.unlock();
@@ -193,8 +193,8 @@ int64
 gsl_data_handle_length (GslDataHandle *dhandle)
 {
   int64 l;
-  g_return_val_if_fail (dhandle != NULL, 0);
-  g_return_val_if_fail (dhandle->open_count > 0, 0);
+  assert_return (dhandle != NULL, 0);
+  assert_return (dhandle->open_count > 0, 0);
   dhandle->spinlock.lock();
   l = dhandle->open_count ? dhandle->setup.n_values : 0;
   dhandle->spinlock.unlock();
@@ -204,8 +204,8 @@ guint
 gsl_data_handle_n_channels (GslDataHandle *dhandle)
 {
   guint n;
-  g_return_val_if_fail (dhandle != NULL, 0);
-  g_return_val_if_fail (dhandle->open_count > 0, 0);
+  assert_return (dhandle != NULL, 0);
+  assert_return (dhandle->open_count > 0, 0);
   dhandle->spinlock.lock();
   n = dhandle->open_count ? dhandle->setup.n_channels : 0;
   dhandle->spinlock.unlock();
@@ -214,22 +214,22 @@ gsl_data_handle_n_channels (GslDataHandle *dhandle)
 guint
 gsl_data_handle_bit_depth (GslDataHandle *dhandle)
 {
-  g_return_val_if_fail (dhandle != NULL, 0);
-  g_return_val_if_fail (dhandle->open_count > 0, 0);
+  assert_return (dhandle != NULL, 0);
+  assert_return (dhandle->open_count > 0, 0);
   return dhandle->setup.bit_depth;
 }
 gfloat
 gsl_data_handle_mix_freq (GslDataHandle *dhandle)
 {
-  g_return_val_if_fail (dhandle != NULL, 0);
-  g_return_val_if_fail (dhandle->open_count > 0, 0);
+  assert_return (dhandle != NULL, 0);
+  assert_return (dhandle->open_count > 0, 0);
   return dhandle->setup.mix_freq;
 }
 gfloat
 gsl_data_handle_osc_freq (GslDataHandle *dhandle)
 {
-  g_return_val_if_fail (dhandle != NULL, 0);
-  g_return_val_if_fail (dhandle->open_count > 0, 0);
+  assert_return (dhandle != NULL, 0);
+  assert_return (dhandle->open_count > 0, 0);
   dhandle->spinlock.lock();
   gfloat f = bse_xinfos_get_float (dhandle->setup.xinfos, "osc-freq");
   dhandle->spinlock.unlock();
@@ -238,8 +238,8 @@ gsl_data_handle_osc_freq (GslDataHandle *dhandle)
 gfloat
 gsl_data_handle_volume (GslDataHandle *dhandle)
 {
-  g_return_val_if_fail (dhandle != NULL, 0);
-  g_return_val_if_fail (dhandle->open_count > 0, 0);
+  assert_return (dhandle != NULL, 0);
+  assert_return (dhandle->open_count > 0, 0);
   dhandle->spinlock.lock();
   gfloat f = bse_xinfos_get_float (dhandle->setup.xinfos, "volume");
   dhandle->spinlock.unlock();
@@ -251,8 +251,8 @@ gsl_data_handle_volume (GslDataHandle *dhandle)
 gfloat
 gsl_data_handle_fine_tune (GslDataHandle *dhandle)
 {
-  g_return_val_if_fail (dhandle != NULL, 0);
-  g_return_val_if_fail (dhandle->open_count > 0, 0);
+  assert_return (dhandle != NULL, 0);
+  assert_return (dhandle->open_count > 0, 0);
   dhandle->spinlock.lock();
   gfloat f = bse_xinfos_get_float (dhandle->setup.xinfos, "fine-tune");
   dhandle->spinlock.unlock();
@@ -261,15 +261,15 @@ gsl_data_handle_fine_tune (GslDataHandle *dhandle)
 const gchar*
 gsl_data_handle_name (GslDataHandle *dhandle)
 {
-  g_return_val_if_fail (dhandle != NULL, NULL);
+  assert_return (dhandle != NULL, NULL);
   return dhandle->name;
 }
 gboolean
 gsl_data_handle_needs_cache (GslDataHandle *dhandle)
 {
-  g_return_val_if_fail (dhandle != NULL, FALSE);
-  g_return_val_if_fail (dhandle->ref_count > 0, FALSE);
-  g_return_val_if_fail (dhandle->open_count > 0, FALSE);
+  assert_return (dhandle != NULL, FALSE);
+  assert_return (dhandle->ref_count > 0, FALSE);
+  assert_return (dhandle->open_count > 0, FALSE);
   return dhandle->setup.needs_cache;
 }
 /* --- const memory handle --- */
@@ -331,7 +331,7 @@ mem_handle_read (GslDataHandle *dhandle,
 {
   MemHandle *mhandle = (MemHandle*) dhandle;
 
-  g_return_val_if_fail (voffset + n_values <= mhandle->n_values, -1);
+  assert_return (voffset + n_values <= mhandle->n_values, -1);
 
   memcpy (values, mhandle->values + voffset, n_values * sizeof (values[0]));
 
@@ -358,13 +358,13 @@ gsl_data_handle_new_mem (guint         n_channels,
   MemHandle *mhandle;
   gboolean success;
 
-  g_return_val_if_fail (n_channels > 0, NULL);
-  g_return_val_if_fail (bit_depth > 0, NULL);
-  g_return_val_if_fail (mix_freq >= 4000, NULL);
-  g_return_val_if_fail (osc_freq > 0, NULL);
-  g_return_val_if_fail (n_values >= n_channels, NULL);
+  assert_return (n_channels > 0, NULL);
+  assert_return (bit_depth > 0, NULL);
+  assert_return (mix_freq >= 4000, NULL);
+  assert_return (osc_freq > 0, NULL);
+  assert_return (n_values >= n_channels, NULL);
   if (n_values)
-    g_return_val_if_fail (values != NULL, NULL);
+    assert_return (values != NULL, NULL);
 
   mhandle = sfi_new_struct0 (MemHandle, 1);
   success = gsl_data_handle_common_init (&mhandle->dhandle, NULL);
@@ -765,7 +765,7 @@ gsl_data_handle_new_reverse (GslDataHandle *src_handle)
   ReversedHandle *rhandle;
   gboolean success;
 
-  g_return_val_if_fail (src_handle != NULL, NULL);
+  assert_return (src_handle != NULL, NULL);
 
   rhandle = sfi_new_struct0 (ReversedHandle, 1);
   success = gsl_data_handle_common_init (&rhandle->dhandle, NULL);
@@ -830,7 +830,7 @@ gsl_data_handle_new_scale (GslDataHandle *src_handle,
   ScaledHandle *shandle;
   gboolean success;
 
-  g_return_val_if_fail (src_handle != NULL, NULL);
+  assert_return (src_handle != NULL, NULL);
 
   shandle = sfi_new_struct0 (ScaledHandle, 1);
   success = gsl_data_handle_common_init (&shandle->dhandle, NULL);
@@ -939,8 +939,8 @@ gsl_data_handle_new_translate (GslDataHandle *src_handle,
   CutHandle *chandle;
   gboolean success;
 
-  g_return_val_if_fail (src_handle != NULL, NULL);
-  g_return_val_if_fail (cut_offset >= 0 && n_cut_values >= 0 && tail_cut >= 0, NULL);
+  assert_return (src_handle != NULL, NULL);
+  assert_return (cut_offset >= 0 && n_cut_values >= 0 && tail_cut >= 0, NULL);
 
   chandle = sfi_new_struct0 (CutHandle, 1);
   success = gsl_data_handle_common_init (&chandle->dhandle, NULL);
@@ -1138,10 +1138,10 @@ gsl_data_handle_new_insert (GslDataHandle *src_handle,
   InsertHandle *ihandle;
   gboolean success;
 
-  g_return_val_if_fail (src_handle != NULL, NULL);
-  g_return_val_if_fail (n_paste_values >= 0, NULL);
+  assert_return (src_handle != NULL, NULL);
+  assert_return (n_paste_values >= 0, NULL);
   if (n_paste_values)
-    g_return_val_if_fail (paste_values != NULL, NULL);
+    assert_return (paste_values != NULL, NULL);
 
   ihandle = sfi_new_struct0 (InsertHandle, 1);
   success = gsl_data_handle_common_init (&ihandle->dhandle, NULL);
@@ -1255,9 +1255,9 @@ gsl_data_handle_new_looped (GslDataHandle *src_handle,
   LoopHandle *lhandle;
   gboolean success;
 
-  g_return_val_if_fail (src_handle != NULL, NULL);
-  g_return_val_if_fail (loop_first >= 0, NULL);
-  g_return_val_if_fail (loop_last >= loop_first, NULL);
+  assert_return (src_handle != NULL, NULL);
+  assert_return (loop_first >= 0, NULL);
+  assert_return (loop_last >= loop_first, NULL);
 
   lhandle = sfi_new_struct0 (LoopHandle, 1);
   success = gsl_data_handle_common_init (&lhandle->dhandle, NULL);
@@ -1369,7 +1369,7 @@ gsl_data_handle_new_dcached (GslDataCache *dcache)
   DCacheHandle *dhandle;
   gboolean success;
 
-  g_return_val_if_fail (dcache != NULL, NULL);
+  assert_return (dcache != NULL, NULL);
 
   dhandle = sfi_new_struct0 (DCacheHandle, 1);
   success = gsl_data_handle_common_init (&dhandle->dhandle, NULL);
@@ -1626,14 +1626,14 @@ gsl_wave_handle_new (const gchar      *file_name,
   };
   WaveHandle *whandle;
 
-  g_return_val_if_fail (file_name != NULL, NULL);
-  g_return_val_if_fail (format > GSL_WAVE_FORMAT_NONE && format < GSL_WAVE_FORMAT_LAST, NULL);
-  g_return_val_if_fail (byte_order == G_LITTLE_ENDIAN || byte_order == G_BIG_ENDIAN, NULL);
-  g_return_val_if_fail (mix_freq >= 4000, NULL);
-  g_return_val_if_fail (osc_freq > 0, NULL);
-  g_return_val_if_fail (byte_offset >= 0, NULL);
-  g_return_val_if_fail (n_channels >= 1, NULL);
-  g_return_val_if_fail (n_values >= 1 || n_values == -1, NULL);
+  assert_return (file_name != NULL, NULL);
+  assert_return (format > GSL_WAVE_FORMAT_NONE && format < GSL_WAVE_FORMAT_LAST, NULL);
+  assert_return (byte_order == G_LITTLE_ENDIAN || byte_order == G_BIG_ENDIAN, NULL);
+  assert_return (mix_freq >= 4000, NULL);
+  assert_return (osc_freq > 0, NULL);
+  assert_return (byte_offset >= 0, NULL);
+  assert_return (n_channels >= 1, NULL);
+  assert_return (n_values >= 1 || n_values == -1, NULL);
 
   whandle = sfi_new_struct0 (WaveHandle, 1);
   if (gsl_data_handle_common_init (&whandle->dhandle, file_name))
@@ -1694,7 +1694,7 @@ gsl_wave_format_to_string (GslWaveFormatType format)
     case GSL_WAVE_FORMAT_SIGNED_32:       return "signed-32";
     case GSL_WAVE_FORMAT_FLOAT:           return "float";
     default:
-      g_return_val_if_fail (format > GSL_WAVE_FORMAT_NONE && format < GSL_WAVE_FORMAT_LAST, NULL);
+      assert_return (format > GSL_WAVE_FORMAT_NONE && format < GSL_WAVE_FORMAT_LAST, NULL);
       return NULL;
     }
 }
@@ -1704,7 +1704,7 @@ gsl_wave_format_from_string (const gchar *string)
 {
   gboolean is_unsigned = FALSE;
 
-  g_return_val_if_fail (string != NULL, GSL_WAVE_FORMAT_NONE);
+  assert_return (string != NULL, GSL_WAVE_FORMAT_NONE);
 
   while (*string == ' ')
     string++;

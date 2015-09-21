@@ -250,8 +250,8 @@ void
 bse_part_set_semitone_table (BsePart      *self,
                              const double *semitone_table)
 {
-  g_return_if_fail (BSE_IS_PART (self));
-  g_return_if_fail (semitone_table != NULL);
+  assert_return (BSE_IS_PART (self));
+  assert_return (semitone_table != NULL);
   self->semitone_table = semitone_table;
 }
 
@@ -261,7 +261,7 @@ bse_part_alloc_id (BsePart *self,
 {
   guint id;
 
-  g_return_val_if_fail (tick <= BSE_PART_MAX_TICK, 0);
+  assert_return (tick <= BSE_PART_MAX_TICK, 0);
 
   /* we keep an array of ids to implement a fast lookup
    * from id to tick of the event containing id. ticks
@@ -296,9 +296,9 @@ bse_part_move_id (BsePart *self,
 		  guint	   id,
 		  guint    tick)
 {
-  g_return_if_fail (tick <= BSE_PART_MAX_TICK);
-  g_return_if_fail (id > 0 && id <= self->n_ids);
-  g_return_if_fail (self->ids[id - 1] < BSE_PART_INVAL_TICK_FLAG);	/* check !freed id */
+  assert_return (tick <= BSE_PART_MAX_TICK);
+  assert_return (id > 0 && id <= self->n_ids);
+  assert_return (self->ids[id - 1] < BSE_PART_INVAL_TICK_FLAG);	/* check !freed id */
 
   self->ids[id - 1] = tick;
 }
@@ -309,8 +309,8 @@ bse_part_free_id (BsePart *self,
 {
   guint i;
 
-  g_return_if_fail (id > 0 && id <= self->n_ids);
-  g_return_if_fail (self->ids[id - 1] < BSE_PART_INVAL_TICK_FLAG);	/* check !freed id */
+  assert_return (id > 0 && id <= self->n_ids);
+  assert_return (self->ids[id - 1] < BSE_PART_INVAL_TICK_FLAG);	/* check !freed id */
 
   i = id - 1;
   self->ids[i] = self->last_id + BSE_PART_INVAL_TICK_FLAG;
@@ -371,7 +371,7 @@ queue_update (BsePart *self,
 {
   guint bound = tick + duration;
 
-  g_return_if_fail (duration > 0);
+  assert_return (duration > 0);
 
   if (!BSE_OBJECT_DISPOSING (self))
     {
@@ -435,7 +435,7 @@ links_changed_notify_handler (gpointer data)
 void
 bse_part_links_changed (BsePart *self)
 {
-  g_return_if_fail (BSE_IS_PART (self));
+  assert_return (BSE_IS_PART (self));
   if (!BSE_OBJECT_DISPOSING (self) && !self->links_queued)
     {
       self->links_queued = TRUE;
@@ -470,7 +470,7 @@ Bse::PartLinkSeq
 bse_part_list_links (BsePart *self)
 {
   Bse::PartLinkSeq pls;
-  g_return_val_if_fail (BSE_IS_PART (self), pls);
+  assert_return (BSE_IS_PART (self), pls);
   BseSong *song = (BseSong*) bse_item_get_super (BSE_ITEM (self));
   if (BSE_IS_SONG (song))
     {
@@ -506,7 +506,7 @@ bse_part_select_notes (BsePart *self,
                        gboolean selected)
 {
   guint channel;
-  g_return_if_fail (BSE_IS_PART (self));
+  assert_return (BSE_IS_PART (self));
   selected = selected != FALSE;
 
   min_note = BSE_NOTE_CLAMP (min_note);
@@ -540,7 +540,7 @@ bse_part_select_controls (BsePart          *self,
                           Bse::MidiSignalType ctype,
                           gboolean          selected)
 {
-  g_return_if_fail (BSE_IS_PART (self));
+  assert_return (BSE_IS_PART (self));
   selected = selected != FALSE;
 
   if (BSE_PART_NOTE_CONTROL (ctype))
@@ -576,7 +576,7 @@ bse_part_select_notes_exclusive (BsePart *self,
 {
   BsePartTickNode *node, *cbound;
   guint channel;
-  g_return_if_fail (BSE_IS_PART (self));
+  assert_return (BSE_IS_PART (self));
 
   min_note = BSE_NOTE_CLAMP (min_note);
   max_note = BSE_NOTE_CLAMP (max_note);
@@ -625,7 +625,7 @@ bse_part_select_controls_exclusive (BsePart           *self,
 {
   BsePartTickNode *node, *bound;
 
-  g_return_if_fail (BSE_IS_PART (self));
+  assert_return (BSE_IS_PART (self));
 
   if (BSE_PART_NOTE_CONTROL (ctype))
     {
@@ -666,8 +666,8 @@ bse_part_set_note_selected (BsePart           *self,
 {
   BsePartEventNote *note;
   guint tick;
-  g_return_val_if_fail (BSE_IS_PART (self), FALSE);
-  g_return_val_if_fail (channel < self->n_channels, FALSE);
+  assert_return (BSE_IS_PART (self), FALSE);
+  assert_return (channel < self->n_channels, FALSE);
 
   tick = bse_part_tick_from_id (self, id);
   if (tick > BSE_PART_MAX_TICK)
@@ -690,7 +690,7 @@ bse_part_set_control_selected (BsePart           *self,
 {
   BsePartEventControl *cev;
   guint tick;
-  g_return_val_if_fail (BSE_IS_PART (self), FALSE);
+  assert_return (BSE_IS_PART (self), FALSE);
   selected = selected != FALSE;
 
   tick = bse_part_tick_from_id (self, id);
@@ -718,8 +718,8 @@ bse_part_delete_note (BsePart           *self,
 {
   BsePartEventNote *note;
   guint tick;
-  g_return_val_if_fail (BSE_IS_PART (self), FALSE);
-  g_return_val_if_fail (channel < self->n_channels, FALSE);
+  assert_return (BSE_IS_PART (self), FALSE);
+  assert_return (channel < self->n_channels, FALSE);
 
   tick = bse_part_tick_from_id (self, id);
   if (tick > BSE_PART_MAX_TICK)
@@ -745,7 +745,7 @@ bse_part_delete_control (BsePart *self,
 {
   BsePartEventControl *cev;
   guint tick;
-  g_return_val_if_fail (BSE_IS_PART (self), FALSE);
+  assert_return (BSE_IS_PART (self), FALSE);
 
   tick = bse_part_tick_from_id (self, id);
   if (tick > BSE_PART_MAX_TICK)
@@ -776,7 +776,7 @@ bse_part_insert_note (BsePart *self,
 {
   BsePartEventNote key = { 0 };
   const bool use_any_channel = channel == ~uint (0);
-  g_return_val_if_fail (BSE_IS_PART (self), Bse::ERROR_INTERNAL);
+  assert_return (BSE_IS_PART (self), Bse::ERROR_INTERNAL);
   if (use_any_channel)
     channel = 0;
   else if (channel >= self->n_channels)
@@ -840,7 +840,7 @@ bse_part_insert_control (BsePart          *self,
   BsePartTickNode *node;
   BsePartEventControl *cev;
   guint id;
-  g_return_val_if_fail (BSE_IS_PART (self), Bse::ERROR_INTERNAL);
+  assert_return (BSE_IS_PART (self), Bse::ERROR_INTERNAL);
 
   if (!(value >= -1 && value <= +1 &&
         tick < BSE_PART_MAX_TICK &&
@@ -882,10 +882,10 @@ bse_part_change_note (BsePart *self,
   const bool use_any_channel = channel == ~uint (0);
   guint i, old_tick;
 
-  g_return_val_if_fail (BSE_IS_PART (self), FALSE);
+  assert_return (BSE_IS_PART (self), FALSE);
   if (use_any_channel)
     channel = 0;
-  g_return_val_if_fail (channel < self->n_channels, FALSE);
+  assert_return (channel < self->n_channels, FALSE);
 
   if (!(BSE_NOTE_IS_VALID (vnote) && channel < self->n_channels &&
 	BSE_FINE_TUNE_IS_VALID (fine_tune) &&
@@ -963,7 +963,7 @@ bse_part_change_control (BsePart           *self,
                          gfloat             value)
 {
   guint old_tick;
-  g_return_val_if_fail (BSE_IS_PART (self), FALSE);
+  assert_return (BSE_IS_PART (self), FALSE);
 
   if (!(tick < BSE_PART_MAX_TICK &&
         check_valid_control_type (ctype) &&
@@ -1063,7 +1063,7 @@ bse_part_query_event (BsePart           *self,
   BsePartEventControl *cev;
   guint tick, channel;
 
-  g_return_val_if_fail (BSE_IS_PART (self), BSE_PART_EVENT_NONE);
+  assert_return (BSE_IS_PART (self), BSE_PART_EVENT_NONE);
 
   tick = bse_part_tick_from_id (self, id);
   if (tick > BSE_PART_MAX_TICK)
@@ -1149,9 +1149,9 @@ bse_part_list_notes (BsePart *self,
 {
   Bse::PartNoteSeq pseq;
 
-  g_return_val_if_fail (BSE_IS_PART (self), pseq);
-  g_return_val_if_fail (tick < BSE_PART_MAX_TICK, pseq);
-  g_return_val_if_fail (duration > 0 && duration <= BSE_PART_MAX_TICK, pseq);
+  assert_return (BSE_IS_PART (self), pseq);
+  assert_return (tick < BSE_PART_MAX_TICK, pseq);
+  assert_return (duration > 0 && duration <= BSE_PART_MAX_TICK, pseq);
 
   BsePartEventNote *bound, *note;
   for (size_t channel = 0; channel < self->n_channels; channel++)
@@ -1206,9 +1206,9 @@ bse_part_list_controls (BsePart          *self,
 {
   Bse::PartControlSeq cseq;
 
-  g_return_val_if_fail (BSE_IS_PART (self), cseq);
-  g_return_val_if_fail (tick < BSE_PART_MAX_TICK, cseq);
-  g_return_val_if_fail (duration > 0 && duration <= BSE_PART_MAX_TICK, cseq);
+  assert_return (BSE_IS_PART (self), cseq);
+  assert_return (tick < BSE_PART_MAX_TICK, cseq);
+  assert_return (duration > 0 && duration <= BSE_PART_MAX_TICK, cseq);
 
   if (BSE_PART_NOTE_CONTROL (ctype))
     {
@@ -1254,9 +1254,9 @@ bse_part_queue_notes_within (BsePart *self,
 			     gint     max_note)
 {
   guint end_tick, channel;
-  g_return_if_fail (BSE_IS_PART (self));
-  g_return_if_fail (tick < BSE_PART_MAX_TICK);
-  g_return_if_fail (duration > 0 && duration <= BSE_PART_MAX_TICK);
+  assert_return (BSE_IS_PART (self));
+  assert_return (tick < BSE_PART_MAX_TICK);
+  assert_return (duration > 0 && duration <= BSE_PART_MAX_TICK);
 
   min_note = BSE_NOTE_CLAMP (min_note);
   max_note = BSE_NOTE_CLAMP (max_note);
@@ -1289,7 +1289,7 @@ Bse::PartNoteSeq
 bse_part_list_selected_notes (BsePart *self)
 {
   Bse::PartNoteSeq pseq;
-  g_return_val_if_fail (BSE_IS_PART (self), pseq);
+  assert_return (BSE_IS_PART (self), pseq);
 
   for (size_t channel = 0; channel < self->n_channels; channel++)
     {
@@ -1310,7 +1310,7 @@ Bse::PartControlSeq
 bse_part_list_selected_controls (BsePart *self, Bse::MidiSignalType ctype)
 {
   Bse::PartControlSeq cseq;
-  g_return_val_if_fail (BSE_IS_PART (self), cseq);
+  assert_return (BSE_IS_PART (self), cseq);
 
   if (BSE_PART_NOTE_CONTROL (ctype))
     {
@@ -1783,7 +1783,7 @@ bse_part_controls_remove (BsePartControls     *self,
 {
   BsePartTickNode *node = bse_part_controls_lookup (self, tick);
   BsePartEventControl *last = NULL, *cev;
-  g_return_if_fail (node != NULL);
+  assert_return (node != NULL);
   for (cev = node->events; cev; last = cev, cev = cev->next)
     if (cev == delcev)
       {

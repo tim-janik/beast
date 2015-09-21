@@ -429,7 +429,7 @@ aiff_load_wave_dsc (void            *data,
   AiffFile *afile = fi->afile;
   WaveDsc *dsc;
 
-  g_return_val_if_fail (nth_wave == 0, NULL);
+  assert_return (nth_wave == 0, NULL);
 
   dsc = sfi_new_struct0 (WaveDsc, 1);
   dsc->wdsc.name = fi->wfi.waves[0].name;
@@ -502,7 +502,7 @@ aiff_create_chunk_handle (void         *data,
   FileInfo *fi = (FileInfo*) dsc->wdsc.file_info;
   GslDataHandle *dhandle;
 
-  g_return_val_if_fail (nth_chunk == 0, NULL);
+  assert_return (nth_chunk == 0, NULL);
 
   dhandle = gsl_wave_handle_new (fi->wfi.file_name,
 				 dsc->wdsc.n_channels,

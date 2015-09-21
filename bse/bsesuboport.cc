@@ -239,7 +239,7 @@ bse_sub_oport_update_modules (BseSubOPort *self,
   BseTrans *trans = bse_trans_open ();
   guint *cids, n, i;
 
-  g_return_if_fail (BSE_SOURCE_PREPARED (self));
+  assert_return (BSE_SOURCE_PREPARED (self));
 
   cids = bse_source_context_ids (source, &n);
   for (i = 0; i < n; i++)

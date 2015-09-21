@@ -116,7 +116,7 @@ bse_editable_sample_finalize (GObject *object)
   /* chain parent class' handler */
   G_OBJECT_CLASS (parent_class)->finalize (object);
 
-  g_return_if_fail (self->wchunk == NULL);
+  assert_return (self->wchunk == NULL);
 }
 
 static gboolean
@@ -159,7 +159,7 @@ void
 bse_editable_sample_set_wchunk (BseEditableSample *self,
 				GslWaveChunk      *wchunk)
 {
-  g_return_if_fail (BSE_IS_EDITABLE_SAMPLE (self));
+  assert_return (BSE_IS_EDITABLE_SAMPLE (self));
 
   if (self->wchunk)
     {

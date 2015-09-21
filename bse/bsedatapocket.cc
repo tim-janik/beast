@@ -125,7 +125,7 @@ bse_data_pocket_dispose (GObject *object)
   /* chain parent class' handler */
   G_OBJECT_CLASS (parent_class)->dispose (object);
 
-  g_return_if_fail (pocket->cr_items == NULL);
+  assert_return (pocket->cr_items == NULL);
 }
 
 static void
@@ -161,7 +161,7 @@ bse_data_pocket_finalize (GObject *object)
   /* chain parent class' handler */
   G_OBJECT_CLASS (parent_class)->finalize (object);
 
-  g_return_if_fail (pocket->cr_items == NULL);
+  assert_return (pocket->cr_items == NULL);
 }
 
 static gboolean
@@ -233,8 +233,8 @@ static void
 add_cross_ref (BseDataPocket *pocket,
 	       BseItem       *item)
 {
-  g_return_if_fail (BSE_IS_ITEM (item));
-  g_return_if_fail (bse_item_common_ancestor (BSE_ITEM (pocket), item) != NULL); // FIXME: delete
+  assert_return (BSE_IS_ITEM (item));
+  assert_return (bse_item_common_ancestor (BSE_ITEM (pocket), item) != NULL); // FIXME: delete
 
   if (!g_slist_find (pocket->cr_items, item))
     {
@@ -249,9 +249,9 @@ remove_cross_ref (BseDataPocket *pocket,
 {
   uint i;
 
-  g_return_if_fail (BSE_IS_ITEM (item));
-  g_return_if_fail (bse_item_common_ancestor (BSE_ITEM (pocket), item) != NULL); // FIXME: delete
-  g_return_if_fail (g_slist_find (pocket->cr_items, item) != NULL);
+  assert_return (BSE_IS_ITEM (item));
+  assert_return (bse_item_common_ancestor (BSE_ITEM (pocket), item) != NULL); // FIXME: delete
+  assert_return (g_slist_find (pocket->cr_items, item) != NULL);
 
   for (i = 0; i < pocket->n_entries; i++)
     {
@@ -273,7 +273,7 @@ _bse_data_pocket_create_entry (BseDataPocket *pocket)
 {
   uint id, i;
 
-  g_return_val_if_fail (BSE_IS_DATA_POCKET (pocket), 0);
+  assert_return (BSE_IS_DATA_POCKET (pocket), 0);
 
   id = pocket->free_id++;
   g_assert (id != 0);
@@ -297,8 +297,8 @@ _bse_data_pocket_delete_entry (BseDataPocket *pocket,
   GSList *cr_del = NULL;
   uint i, n;
 
-  g_return_val_if_fail (BSE_IS_DATA_POCKET (pocket), FALSE);
-  g_return_val_if_fail (entry_id > 0, FALSE);
+  assert_return (BSE_IS_DATA_POCKET (pocket), FALSE);
+  assert_return (entry_id > 0, FALSE);
 
   for (i = 0; i < pocket->n_entries; i++)
     if (pocket->entries[i].id == entry_id)
@@ -351,11 +351,11 @@ _bse_data_pocket_entry_set (BseDataPocket     *pocket,
   uint i, n;
   bool delete_item;
 
-  g_return_val_if_fail (BSE_IS_DATA_POCKET (pocket), FALSE);
-  g_return_val_if_fail (id > 0, FALSE);
-  g_return_val_if_fail (data_quark > 0, FALSE);
+  assert_return (BSE_IS_DATA_POCKET (pocket), FALSE);
+  assert_return (id > 0, FALSE);
+  assert_return (data_quark > 0, FALSE);
   if (type == BSE_DATA_POCKET_OBJECT && value.v_object)
-    g_return_val_if_fail (BSE_IS_ITEM (value.v_object), FALSE);
+    assert_return (BSE_IS_ITEM (value.v_object), FALSE);
 
   delete_item = ((type == BSE_DATA_POCKET_INT && value.v_int == 0) ||
 	         (type == BSE_DATA_POCKET_INT64 && value.v_int64 == 0) ||
@@ -430,7 +430,7 @@ _bse_data_pocket_entry_get (BseDataPocket      *pocket,
   BseDataPocketEntry *entry;
   uint i, n;
 
-  g_return_val_if_fail (BSE_IS_DATA_POCKET (pocket), 0);
+  assert_return (BSE_IS_DATA_POCKET (pocket), 0);
 
   if (!data_quark)
     return 0;

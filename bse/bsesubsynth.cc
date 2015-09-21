@@ -292,7 +292,7 @@ bse_sub_synth_get_property (GObject    *object,
 void
 bse_sub_synth_set_midi_channel (BseSubSynth *self, uint midi_channel)
 {
-  g_return_if_fail (BSE_IS_SUB_SYNTH (self));
+  assert_return (BSE_IS_SUB_SYNTH (self));
 
   self->midi_channel = midi_channel;
 }
@@ -300,7 +300,7 @@ bse_sub_synth_set_midi_channel (BseSubSynth *self, uint midi_channel)
 void
 bse_sub_synth_set_null_shortcut (BseSubSynth *self, bool enabled)
 {
-  g_return_if_fail (BSE_IS_SUB_SYNTH (self));
+  assert_return (BSE_IS_SUB_SYNTH (self));
 
   self->null_shortcut = enabled != FALSE;
 }
@@ -436,7 +436,7 @@ bse_sub_synth_update_port_contexts (BseSubSynth *self,
   BseTrans *trans = bse_trans_open ();
   guint *cids, n, i;
 
-  g_return_if_fail (BSE_SOURCE_PREPARED (self));
+  assert_return (BSE_SOURCE_PREPARED (self));
 
   cids = bse_source_context_ids (source, &n);
   for (i = 0; i < n; i++)

@@ -88,8 +88,8 @@ bse_script_proc_register (const gchar *script_file,
   gchar *tname;
   GType type;
 
-  g_return_val_if_fail (script_file != NULL, 0);
-  g_return_val_if_fail (name != NULL, 0);
+  assert_return (script_file != NULL, 0);
+  assert_return (name != NULL, 0);
   if (sfi_ring_length (params) > BSE_PROCEDURE_MAX_IN_PARAMS)
     {
       g_message ("not registering script \"%s\" which needs more than %u parameters",

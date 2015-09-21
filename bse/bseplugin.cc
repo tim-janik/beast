@@ -250,7 +250,7 @@ static void
 bse_plugin_use (GTypePlugin *gplugin)
 {
   BsePlugin *plugin = BSE_PLUGIN (gplugin);
-  g_return_if_fail (plugin != NULL);
+  assert_return (plugin != NULL);
   g_object_ref (G_OBJECT (plugin));
   if (!plugin->use_count)
     {
@@ -297,9 +297,9 @@ bse_exports__del_node (BsePlugin               *plugin,
 static void
 bse_plugin_unload (BsePlugin *plugin)
 {
-  g_return_if_fail (plugin->gmodule != NULL && plugin->fname != NULL);
-  g_return_if_fail (plugin->use_count == 0);
-  g_return_if_fail (plugin->resident_types == 0);
+  assert_return (plugin->gmodule != NULL && plugin->fname != NULL);
+  assert_return (plugin->use_count == 0);
+  assert_return (plugin->resident_types == 0);
   bse_plugin_uninit_types (plugin);
   g_module_close ((GModule*) plugin->gmodule);
   plugin->gmodule = NULL;
@@ -312,7 +312,7 @@ static void
 bse_plugin_unuse (GTypePlugin *gplugin)
 {
   BsePlugin *plugin = BSE_PLUGIN (gplugin);
-  g_return_if_fail (plugin->use_count > 0);
+  assert_return (plugin->use_count > 0);
   plugin->use_count--;
   if (!plugin->use_count)
     {
@@ -354,8 +354,8 @@ bse_plugin_complete_info (GTypePlugin     *gplugin,
   BsePlugin *plugin = BSE_PLUGIN (gplugin);
   BseExportNode *node;
 
-  g_return_if_fail (plugin != NULL);
-  g_return_if_fail (plugin->use_count > 0);
+  assert_return (plugin != NULL);
+  assert_return (plugin->use_count > 0);
 
   for (node = plugin->chain; node && node->ntype; node = node->next)
     if (node->type == type)
@@ -577,7 +577,7 @@ bse_plugin_check_load (const gchar *const_file_name)
   gchar *error = NULL;
   const gchar *cerror = NULL;
 
-  g_return_val_if_fail (const_file_name != NULL, NULL);
+  assert_return (const_file_name != NULL, NULL);
 
   if (0)        /* want to read .la files? */
     {

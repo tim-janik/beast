@@ -82,15 +82,15 @@ void
 bse_context_merger_set_merge_context (BseContextMerger *self,
 				      uint              merge_context)
 {
-  g_return_if_fail (BSE_CONTEXT_MERGER (self));
+  assert_return (BSE_CONTEXT_MERGER (self));
 
   if (merge_context)
     {
-      g_return_if_fail (self->merge_context == 0);
-      g_return_if_fail (bse_source_has_context (BSE_SOURCE (self), merge_context) == TRUE);
+      assert_return (self->merge_context == 0);
+      assert_return (bse_source_has_context (BSE_SOURCE (self), merge_context) == TRUE);
     }
   else
-    g_return_if_fail (self->merge_context != 0);
+    assert_return (self->merge_context != 0);
 
   self->merge_context = merge_context;
 }
@@ -197,7 +197,7 @@ bse_context_merger_context_dismiss (BseSource     *source,
   if (module)
     {
       ContextModuleData *cmdata = (ContextModuleData*) module->user_data;
-      g_return_if_fail (cmdata->ref_count > 0);
+      assert_return (cmdata->ref_count > 0);
       cmdata->ref_count--;
       if (cmdata->ref_count)	/* prevent discarding from engine */
 	{

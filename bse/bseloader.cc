@@ -29,16 +29,16 @@ loader_find_by_name (const char *name)
 void
 bse_loader_register (BseLoader *loader)
 {
-  g_return_if_fail (loader != NULL);
-  g_return_if_fail (loader->name != NULL);
-  g_return_if_fail (loader->extensions || loader->mime_types || loader->magic_specs);
-  g_return_if_fail (loader_find_by_name (loader->name) == NULL);
-  g_return_if_fail (loader->next == NULL);
-  g_return_if_fail (loader->load_file_info != NULL);
-  g_return_if_fail (loader->free_file_info != NULL);
-  g_return_if_fail (loader->load_wave_dsc != NULL);
-  g_return_if_fail (loader->free_wave_dsc != NULL);
-  g_return_if_fail (loader->create_chunk_handle != NULL);
+  assert_return (loader != NULL);
+  assert_return (loader->name != NULL);
+  assert_return (loader->extensions || loader->mime_types || loader->magic_specs);
+  assert_return (loader_find_by_name (loader->name) == NULL);
+  assert_return (loader->next == NULL);
+  assert_return (loader->load_file_info != NULL);
+  assert_return (loader->free_file_info != NULL);
+  assert_return (loader->load_wave_dsc != NULL);
+  assert_return (loader->free_wave_dsc != NULL);
+  assert_return (loader->create_chunk_handle != NULL);
 
   loader->next = bse_loader_list;
   bse_loader_list = loader;
@@ -89,7 +89,7 @@ bse_loader_match (const char *file_name)
 {
   GslMagic *magic = NULL;
 
-  g_return_val_if_fail (file_name != NULL, NULL);
+  assert_return (file_name != NULL, NULL);
 
   /* normal magic check */
   magic = gsl_magic_list_match_file (gsl_magic_list1, file_name);
@@ -139,7 +139,7 @@ bse_wave_file_info_load (const char   *file_name,
 
   if (error_p)
     *error_p = Bse::ERROR_INTERNAL;
-  g_return_val_if_fail (file_name != NULL, NULL);
+  assert_return (file_name != NULL, NULL);
 
   loader = bse_loader_match (file_name);
   if (loader)
@@ -159,11 +159,11 @@ bse_wave_file_info_load (const char   *file_name,
 	    {
 	      uint i;
 
-	      g_return_val_if_fail (finfo->loader == NULL, NULL);
-	      g_return_val_if_fail (finfo->file_name == NULL, NULL);
+	      assert_return (finfo->loader == NULL, NULL);
+	      assert_return (finfo->file_name == NULL, NULL);
 
 	      for (i = 0; i < finfo->n_waves; i++)
-		g_return_val_if_fail (finfo->waves[i].name != NULL, NULL);
+		assert_return (finfo->waves[i].name != NULL, NULL);
 
 	      finfo->file_name = g_strdup (file_name);
 	      finfo->loader = loader;
@@ -194,8 +194,8 @@ bse_wave_file_info_load (const char   *file_name,
 void
 bse_wave_file_info_unref (BseWaveFileInfo *wave_file_info)
 {
-  g_return_if_fail (wave_file_info != NULL);
-  g_return_if_fail (wave_file_info->ref_count > 0);
+  assert_return (wave_file_info != NULL);
+  assert_return (wave_file_info->ref_count > 0);
 
   wave_file_info->ref_count--;
   if (!wave_file_info->ref_count)
@@ -215,8 +215,8 @@ bse_wave_file_info_unref (BseWaveFileInfo *wave_file_info)
 BseWaveFileInfo*
 bse_wave_file_info_ref (BseWaveFileInfo *wave_file_info)
 {
-  g_return_val_if_fail (wave_file_info != NULL, NULL);
-  g_return_val_if_fail (wave_file_info->ref_count > 0, NULL);
+  assert_return (wave_file_info != NULL, NULL);
+  assert_return (wave_file_info->ref_count > 0, NULL);
 
   wave_file_info->ref_count++;
 
@@ -226,7 +226,7 @@ bse_wave_file_info_ref (BseWaveFileInfo *wave_file_info)
 const char*
 bse_wave_file_info_loader (BseWaveFileInfo *fi)
 {
-  g_return_val_if_fail (fi != NULL, NULL);
+  assert_return (fi != NULL, NULL);
 
   return fi->loader->name;
 }
@@ -243,9 +243,9 @@ bse_wave_dsc_load (BseWaveFileInfo *wave_file_info,
 
   if (error_p)
     *error_p = Bse::ERROR_INTERNAL;
-  g_return_val_if_fail (wave_file_info != NULL, NULL);
-  g_return_val_if_fail (wave_file_info->loader != NULL, NULL);
-  g_return_val_if_fail (nth_wave < wave_file_info->n_waves, NULL);
+  assert_return (wave_file_info != NULL, NULL);
+  assert_return (wave_file_info->loader != NULL, NULL);
+  assert_return (nth_wave < wave_file_info->n_waves, NULL);
 
   loader = wave_file_info->loader;
   wdsc = loader->load_wave_dsc (loader->data, wave_file_info, nth_wave,&error);
@@ -262,8 +262,8 @@ bse_wave_dsc_load (BseWaveFileInfo *wave_file_info,
     {
       if (accept_empty || wdsc->n_chunks > 0)
 	{
-	  g_return_val_if_fail (wdsc->file_info == NULL, NULL);
-	  g_return_val_if_fail (wdsc->name && strcmp (wdsc->name, wave_file_info->waves[nth_wave].name) == 0, NULL);
+	  assert_return (wdsc->file_info == NULL, NULL);
+	  assert_return (wdsc->name && strcmp (wdsc->name, wave_file_info->waves[nth_wave].name) == 0, NULL);
 
 	  wdsc->file_info = wave_file_info;
 	  bse_wave_file_info_ref (wave_file_info);
@@ -285,8 +285,8 @@ bse_wave_dsc_load (BseWaveFileInfo *wave_file_info,
 void
 bse_wave_dsc_free (BseWaveDsc *wave_dsc)
 {
-  g_return_if_fail (wave_dsc != NULL);
-  g_return_if_fail (wave_dsc->file_info != NULL);
+  assert_return (wave_dsc != NULL);
+  assert_return (wave_dsc->file_info != NULL);
 
   BseWaveFileInfo *file_info = wave_dsc->file_info;
 
@@ -306,9 +306,9 @@ bse_wave_handle_create (BseWaveDsc   *wave_dsc,
 
   if (error_p)
     *error_p = Bse::ERROR_INTERNAL;
-  g_return_val_if_fail (wave_dsc != NULL, NULL);
-  g_return_val_if_fail (wave_dsc->file_info != NULL, NULL);
-  g_return_val_if_fail (nth_chunk < wave_dsc->n_chunks, NULL);
+  assert_return (wave_dsc != NULL, NULL);
+  assert_return (wave_dsc->file_info != NULL, NULL);
+  assert_return (nth_chunk < wave_dsc->n_chunks, NULL);
 
   loader = wave_dsc->file_info->loader;
 
@@ -342,8 +342,8 @@ bse_wave_chunk_create (BseWaveDsc   *wave_dsc,
 
   if (error_p)
     *error_p = Bse::ERROR_INTERNAL;
-  g_return_val_if_fail (wave_dsc != NULL, NULL);
-  g_return_val_if_fail (nth_chunk < wave_dsc->n_chunks, NULL);
+  assert_return (wave_dsc != NULL, NULL);
+  assert_return (nth_chunk < wave_dsc->n_chunks, NULL);
 
   dhandle = bse_wave_handle_create (wave_dsc, nth_chunk, error_p);
   if (!dhandle)

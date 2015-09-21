@@ -41,7 +41,7 @@ protected:
     m_filter_order (0),			  // unnecessary, but makes debugging easier - just in case
     m_init_ok (false)
   {
-    g_return_if_fail (src_handle != NULL);
+    assert_return (src_handle != NULL);
 
     memset (&m_dhandle, 0, sizeof (m_dhandle));
     m_init_ok = gsl_data_handle_common_init (&m_dhandle, NULL);
@@ -225,7 +225,7 @@ public:
   {
     int64 source_state_length = gsl_data_handle_get_state_length (m_src_handle);
     // m_src_handle must be opened and have valid state size
-    g_return_val_if_fail (source_state_length >= 0, 0);  
+    assert_return (source_state_length >= 0, 0);  
 
     if (mode() == BSE_RESAMPLER2_MODE_UPSAMPLE)
       source_state_length *= 2;
@@ -233,7 +233,7 @@ public:
       source_state_length = (source_state_length + 1) / 2;
 
     // we must be opened => n_channels > 0, 1 Resampler per Channel
-    g_return_val_if_fail (!m_resamplers.empty(), 0);
+    assert_return (!m_resamplers.empty(), 0);
 
     /* For fractional delays, a delay of 10.5 for instance means that input[0]
      * affects samples 10 and 11, and thus the state length we assume for

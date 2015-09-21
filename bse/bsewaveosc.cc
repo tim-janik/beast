@@ -175,12 +175,12 @@ void
 bse_wave_osc_set_from_esample (BseWaveOsc        *self,
                                BseEditableSample *esample)
 {
-  g_return_if_fail (BSE_WAVE_OSC (self));
+  assert_return (BSE_WAVE_OSC (self));
 
   clear_wave_and_esample (self);
   if (esample)
     {
-      g_return_if_fail (BSE_EDITABLE_SAMPLE (esample));
+      assert_return (BSE_EDITABLE_SAMPLE (esample));
 
       if (esample->wchunk && gsl_wave_chunk_open (esample->wchunk) == Bse::ERROR_NONE)
         {
@@ -481,12 +481,12 @@ bse_wave_osc_mass_seek (guint              n_woscs,
                         gfloat             perc)
 {
   guint i;
-  g_return_if_fail (perc >= 0 && perc <= 100);
+  assert_return (perc >= 0 && perc <= 100);
   BseTrans *trans = bse_trans_open();
   for (i = 0; i < n_woscs; i++)
     {
       BseWaveOsc *wosc = woscs[i];
-      g_return_if_fail (BSE_IS_WAVE_OSC (wosc));
+      assert_return (BSE_IS_WAVE_OSC (wosc));
       if (BSE_SOURCE_PREPARED (wosc))
         {
           PcmPos *pos = g_new (PcmPos, 1);
@@ -505,7 +505,7 @@ bse_wave_osc_mass_seek (guint              n_woscs,
 void
 bse_wave_osc_request_pcm_position (BseWaveOsc *self)
 {
-  g_return_if_fail (BSE_IS_WAVE_OSC (self));
+  assert_return (BSE_IS_WAVE_OSC (self));
 
   if (BSE_SOURCE_PREPARED (self))
     {

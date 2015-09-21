@@ -37,7 +37,7 @@ bse_midi_decoder_new (gboolean             auto_queue,
 void
 bse_midi_decoder_destroy (BseMidiDecoder *self)
 {
-  g_return_if_fail (self != NULL);
+  assert_return (self != NULL);
 
   while (self->events)
     {
@@ -51,7 +51,7 @@ bse_midi_decoder_destroy (BseMidiDecoder *self)
 BseMidiEvent*
 bse_midi_decoder_pop_event (BseMidiDecoder *self)
 {
-  g_return_val_if_fail (self != NULL, NULL);
+  assert_return (self != NULL, NULL);
 
   return (BseMidiEvent*) sfi_ring_pop_head (&self->events);
 }
@@ -60,7 +60,7 @@ SfiRing*
 bse_midi_decoder_pop_event_list (BseMidiDecoder *self)
 {
   SfiRing *events;
-  g_return_val_if_fail (self != NULL, NULL);
+  assert_return (self != NULL, NULL);
   events = self->events;
   self->events = NULL;
   return events;
@@ -294,9 +294,9 @@ bse_midi_decoder_push_data (BseMidiDecoder *self,
 {
   Data data;
 
-  g_return_if_fail (self != NULL);
+  assert_return (self != NULL);
   if (n_bytes)
-    g_return_if_fail (bytes != NULL);
+    assert_return (bytes != NULL);
 
   data.delta_time = bse_engine_tick_stamp_from_systime (usec_systime);
   data.bytes = bytes;
@@ -324,10 +324,10 @@ bse_midi_decoder_push_smf_data (BseMidiDecoder       *self,
                                 uint                  n_bytes,
                                 uint8                *bytes)
 {
-  g_return_if_fail (self != NULL);
+  assert_return (self != NULL);
   if (n_bytes)
-    g_return_if_fail (bytes != NULL);
-  g_return_if_fail (self->smf_support == TRUE);
+    assert_return (bytes != NULL);
+  assert_return (self->smf_support == TRUE);
   bse_midi_decoder_push_data (self, n_bytes, bytes, 0);
 }
 
@@ -511,8 +511,8 @@ static void
 bse_midi_decoder_construct_event (BseMidiDecoder *self)
 {
   BseMidiEvent *event = bse_midi_alloc_event ();
-  g_return_if_fail (self->event_type >= 0x080);
-  g_return_if_fail (self->left_bytes == 0);
+  assert_return (self->event_type >= 0x080);
+  assert_return (self->left_bytes == 0);
 
   /* try to collapse multi packet sys-ex to normal sys-ex */
   if (self->event_type == BSE_MIDI_MULTI_SYS_EX_START &&

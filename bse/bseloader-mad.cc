@@ -100,7 +100,7 @@ mad_create_chunk_handle (void         *data,
   FileInfo *fi = (FileInfo*) wdsc->file_info;
   GslDataHandle *dhandle;
 
-  g_return_val_if_fail (nth_chunk == 0, NULL);
+  assert_return (nth_chunk == 0, NULL);
 
   dhandle = gsl_data_handle_new_mad_err (fi->wfi.file_name, wdsc->chunks[0].osc_freq, error_p);
   if (dhandle && wdsc->chunks[0].xinfos)

@@ -277,7 +277,7 @@ bse_project_get_undo (BseItem *item)
 void
 bse_project_clear_undo (BseProject *self)
 {
-  g_return_if_fail (BSE_IS_PROJECT (self));
+  assert_return (BSE_IS_PROJECT (self));
   if (!self->in_undo && !self->in_redo)
     {
       bse_undo_stack_clear (self->undo_stack);
@@ -289,7 +289,7 @@ bse_project_clear_undo (BseProject *self)
 void
 bse_project_clean_dirty (BseProject *self)
 {
-  g_return_if_fail (BSE_IS_PROJECT (self));
+  assert_return (BSE_IS_PROJECT (self));
   bse_undo_stack_clean_dirty (self->undo_stack);
   bse_undo_stack_clean_dirty (self->redo_stack);
   g_object_notify ((GObject*) self, "dirty");
@@ -312,7 +312,7 @@ project_undo_do_deactivate_free (BseUndoStep *ustep)
 void
 bse_project_push_undo_silent_deactivate (BseProject *self)
 {
-  g_return_if_fail (BSE_IS_PROJECT (self));
+  assert_return (BSE_IS_PROJECT (self));
 
   /* certain things work only (can only be undone/redone) in deactivated projects,
    * so we need to push an undo step here. this step isn't required however
@@ -458,8 +458,8 @@ bse_project_list_upaths (BseProject *self,
   gpointer data[3];
   BseStringSeq *sseq;
 
-  g_return_val_if_fail (BSE_IS_PROJECT (self), NULL);
-  g_return_val_if_fail (g_type_is_a (item_type, BSE_TYPE_ITEM), NULL);
+  assert_return (BSE_IS_PROJECT (self), NULL);
+  assert_return (g_type_is_a (item_type, BSE_TYPE_ITEM), NULL);
 
   sseq = bse_string_seq_new ();
   data[0] = sseq;
@@ -499,13 +499,13 @@ bse_project_store_bse (BseProject  *self,
   guint l, flags;
   gint fd;
 
-  g_return_val_if_fail (BSE_IS_PROJECT (self), Bse::ERROR_INTERNAL);
+  assert_return (BSE_IS_PROJECT (self), Bse::ERROR_INTERNAL);
   if (super)
     {
-      g_return_val_if_fail (BSE_IS_SUPER (super), Bse::ERROR_INTERNAL);
-      g_return_val_if_fail (BSE_ITEM (super)->parent == BSE_ITEM (self), Bse::ERROR_INTERNAL);
+      assert_return (BSE_IS_SUPER (super), Bse::ERROR_INTERNAL);
+      assert_return (BSE_ITEM (super)->parent == BSE_ITEM (self), Bse::ERROR_INTERNAL);
     }
-  g_return_val_if_fail (bse_file != NULL, Bse::ERROR_INTERNAL);
+  assert_return (bse_file != NULL, Bse::ERROR_INTERNAL);
 
   fd = open (bse_file, O_WRONLY | O_CREAT | O_EXCL, 0666);
   if (fd < 0)
@@ -550,11 +550,11 @@ bse_project_restore (BseProject *self,
   GScanner *scanner;
   GTokenType expected_token = G_TOKEN_NONE;
 
-  g_return_val_if_fail (BSE_IS_PROJECT (self), Bse::ERROR_INTERNAL);
-  g_return_val_if_fail (BSE_IS_STORAGE (storage), Bse::ERROR_INTERNAL);
+  assert_return (BSE_IS_PROJECT (self), Bse::ERROR_INTERNAL);
+  assert_return (BSE_IS_STORAGE (storage), Bse::ERROR_INTERNAL);
 
   scanner = bse_storage_get_scanner (storage);
-  g_return_val_if_fail (scanner != NULL, Bse::ERROR_INTERNAL);
+  assert_return (scanner != NULL, Bse::ERROR_INTERNAL);
 
   g_object_ref (self);
 
@@ -593,8 +593,8 @@ bse_project_upath_resolver (gpointer     func_data,
 
   if (error_p)
     *error_p = NULL;
-  g_return_val_if_fail (BSE_IS_PROJECT (self), NULL);
-  g_return_val_if_fail (upath != NULL, NULL);
+  assert_return (BSE_IS_PROJECT (self), NULL);
+  assert_return (upath != NULL, NULL);
 
   /* FIXME: need error handling, warnings.... */
 
@@ -613,8 +613,8 @@ bse_project_lookup_typed_item (BseProject  *self,
 {
   BseItem *item;
 
-  g_return_val_if_fail (BSE_IS_PROJECT (self), NULL);
-  g_return_val_if_fail (uname != NULL, NULL);
+  assert_return (BSE_IS_PROJECT (self), NULL);
+  assert_return (uname != NULL, NULL);
 
   item = bse_container_lookup_item (BSE_CONTAINER (self), uname);
   if (item && G_OBJECT_TYPE (item) == item_type)
@@ -626,7 +626,7 @@ bse_project_lookup_typed_item (BseProject  *self,
 BseWaveRepo*
 bse_project_get_wave_repo (BseProject *self)
 {
-  g_return_val_if_fail (BSE_IS_PROJECT (self), NULL);
+  assert_return (BSE_IS_PROJECT (self), NULL);
   GSList *slist;
   for (slist = self->supers; slist; slist = slist->next)
     if (BSE_IS_WAVE_REPO (slist->data))
@@ -637,7 +637,7 @@ bse_project_get_wave_repo (BseProject *self)
 BseSong*
 bse_project_get_song (BseProject *self)
 {
-  g_return_val_if_fail (BSE_IS_PROJECT (self), NULL);
+  assert_return (BSE_IS_PROJECT (self), NULL);
   GSList *slist;
   for (slist = self->supers; slist; slist = slist->next)
     if (BSE_IS_SONG (slist->data))
@@ -672,8 +672,8 @@ bse_project_create_intern_synth (BseProject  *self,
   BseItem *synth = NULL;
   gchar *bse_synth;
 
-  g_return_val_if_fail (BSE_IS_PROJECT (self), NULL);
-  g_return_val_if_fail (synth_name != NULL, NULL);
+  assert_return (BSE_IS_PROJECT (self), NULL);
+  assert_return (synth_name != NULL, NULL);
 
   bse_synth = bse_standard_synth_inflate (synth_name, NULL);
   if (bse_synth)
@@ -755,7 +755,7 @@ void
 bse_project_state_changed (BseProject     *self,
 			   BseProjectState state)
 {
-  g_return_if_fail (BSE_IS_PROJECT (self));
+  assert_return (BSE_IS_PROJECT (self));
 
   if (self->deactivate_timer)
     {
@@ -778,7 +778,7 @@ void
 bse_project_keep_activated (BseProject *self,
 			    guint64     min_tick)
 {
-  g_return_if_fail (BSE_IS_PROJECT (self));
+  assert_return (BSE_IS_PROJECT (self));
 
   if (min_tick > self->deactivate_min_tick)
     {
@@ -795,12 +795,12 @@ bse_project_activate (BseProject *self)
   BseTrans *trans;
   GSList *slist;
 
-  g_return_val_if_fail (BSE_IS_PROJECT (self), Bse::ERROR_INTERNAL);
+  assert_return (BSE_IS_PROJECT (self), Bse::ERROR_INTERNAL);
 
   if (self->state != BSE_PROJECT_INACTIVE)
     return Bse::ERROR_NONE;
 
-  g_return_val_if_fail (BSE_SOURCE_PREPARED (self) == FALSE, Bse::ERROR_INTERNAL);
+  assert_return (BSE_SOURCE_PREPARED (self) == FALSE, Bse::ERROR_INTERNAL);
 
   error = bse_server_open_devices (bse_server_get ());
   if (error)
@@ -837,11 +837,11 @@ bse_project_start_playback (BseProject *self)
   GSList *slist;
   guint seen_synth = 0;
 
-  g_return_if_fail (BSE_IS_PROJECT (self));
+  assert_return (BSE_IS_PROJECT (self));
 
   if (self->state != BSE_PROJECT_ACTIVE)
     return;
-  g_return_if_fail (BSE_SOURCE_PREPARED (self) == TRUE);
+  assert_return (BSE_SOURCE_PREPARED (self) == TRUE);
 
   SfiRing *songs = NULL;
   trans = bse_trans_open ();
@@ -882,11 +882,11 @@ bse_project_stop_playback (BseProject *self)
   BseTrans *trans;
   GSList *slist;
 
-  g_return_if_fail (BSE_IS_PROJECT (self));
+  assert_return (BSE_IS_PROJECT (self));
 
   if (self->state != BSE_PROJECT_PLAYING)
     return;
-  g_return_if_fail (BSE_SOURCE_PREPARED (self) == TRUE);
+  assert_return (BSE_SOURCE_PREPARED (self) == TRUE);
 
   trans = bse_trans_open ();
   for (slist = self->supers; slist; slist = slist->next)
@@ -913,7 +913,7 @@ bse_project_stop_playback (BseProject *self)
 void
 bse_project_check_auto_stop (BseProject *self)
 {
-  g_return_if_fail (BSE_IS_PROJECT (self));
+  assert_return (BSE_IS_PROJECT (self));
 
   if (self->state == BSE_PROJECT_PLAYING)
     {
@@ -937,11 +937,11 @@ bse_project_deactivate (BseProject *self)
   BseTrans *trans;
   GSList *slist;
 
-  g_return_if_fail (BSE_IS_PROJECT (self));
+  assert_return (BSE_IS_PROJECT (self));
 
   if (self->state == BSE_PROJECT_INACTIVE)
     return;
-  g_return_if_fail (BSE_SOURCE_PREPARED (self) == TRUE);
+  assert_return (BSE_SOURCE_PREPARED (self) == TRUE);
 
   bse_project_stop_playback (self);
 

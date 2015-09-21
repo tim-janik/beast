@@ -33,7 +33,7 @@ static SfiUStore *category_ustore = NULL;
 void
 _bse_init_categories (void)
 {
-  g_return_if_fail (category_ustore == NULL);
+  assert_return (category_ustore == NULL);
 
   category_ustore = sfi_ustore_new ();
 }
@@ -181,7 +181,7 @@ bse_categories_register (const gchar  *category,
                          const guint8 *pixstream)
 {
   CEntry *centry;
-  g_return_if_fail (category != NULL);
+  assert_return (category != NULL);
   centry = centry_new (RAPICORN_SIMPLE_FUNCTION, category, type);
   check_type (type);
   if (centry)
@@ -199,7 +199,7 @@ bse_categories_register_stock_module (const gchar      *untranslated_category_tr
                                       GType             type,
                                       const guint8     *pixstream)
 {
-  g_return_if_fail (untranslated_category_trunk != NULL);
+  assert_return (untranslated_category_trunk != NULL);
   const gchar *category = sfi_category_concat ("/Modules", untranslated_category_trunk);
   const gchar *i18n_category = sfi_category_concat ("/Modules", _(untranslated_category_trunk));
   bse_categories_register (category, i18n_category, type, pixstream);
@@ -282,7 +282,7 @@ bse_categories_match (const gchar      *pattern,
                       BseCategoryCheck  check,
                       gpointer          data)
 {
-  g_return_val_if_fail (pattern != NULL, NULL);
+  assert_return (pattern != NULL, NULL);
 
   cats_sort ();
 
@@ -293,7 +293,7 @@ BseCategorySeq*
 bse_categories_match_typed (const gchar *pattern,
 			    GType        base_type)
 {
-  g_return_val_if_fail (pattern != NULL, NULL);
+  assert_return (pattern != NULL, NULL);
 
   cats_sort ();
 

@@ -187,7 +187,7 @@ bse_midi_notifier_notify_event (BseMidiNotifier *self,
 void
 bse_midi_notifier_dispatch (BseMidiNotifier *self)
 {
-  g_return_if_fail (BSE_IS_MIDI_NOTIFIER (self));
+  assert_return (BSE_IS_MIDI_NOTIFIER (self));
   if (!self->midi_receiver)
     return;
   SfiRing *ring = bse_midi_receiver_fetch_notify_events (self->midi_receiver);

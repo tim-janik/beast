@@ -149,7 +149,7 @@ flac_create_chunk_handle (gpointer      data,
 			  guint         nth_chunk,
 			  Bse::ErrorType *error_p)
 {
-  g_return_val_if_fail (nth_chunk == 0, NULL);
+  assert_return (nth_chunk == 0, NULL);
 
   FileInfo *file_info = reinterpret_cast<FileInfo*> (wave_dsc->file_info);
   const BseWaveChunkDsc *chunk = &wave_dsc->chunks[nth_chunk];

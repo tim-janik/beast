@@ -45,7 +45,7 @@ public:
     m_a (order + 1),
     m_init_ok (false)
   {
-    g_return_if_fail (src_handle != NULL);
+    assert_return (src_handle != NULL);
 
     memset (&m_dhandle, 0, sizeof (m_dhandle));
     m_init_ok = gsl_data_handle_common_init (&m_dhandle, NULL);
@@ -121,7 +121,7 @@ public:
   seek (int64 voffset)
   {
     int64 i = 0;
-    g_return_val_if_fail (voffset % m_block_size == 0, -1);
+    assert_return (voffset % m_block_size == 0, -1);
 
     // if this is a consecutive read, the history can be built from the values
     // we already read last time
@@ -187,7 +187,7 @@ public:
   {
     int64 source_state_length = gsl_data_handle_get_state_length (m_src_handle);
     // m_src_handle must be opened and have valid state size
-    g_return_val_if_fail (source_state_length >= 0, 0);  
+    assert_return (source_state_length >= 0, 0);  
 
     return source_state_length + m_history;
   }

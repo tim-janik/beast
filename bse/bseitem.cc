@@ -178,7 +178,7 @@ bse_item_do_finalize (GObject *object)
   /* chain parent class' handler */
   G_OBJECT_CLASS (parent_class)->finalize (object);
 
-  g_return_if_fail (item->use_count == 0);
+  assert_return (item->use_count == 0);
 }
 
 static void
@@ -250,7 +250,7 @@ bse_item_set_internal (void    *item,
 {
   BseItem *self = BSE_ITEM (item);
 
-  g_return_if_fail (BSE_IS_ITEM (self));
+  assert_return (BSE_IS_ITEM (self));
 
   if (internal)
     BSE_OBJECT_SET_FLAGS (self, BSE_ITEM_FLAG_INTERN);
@@ -270,8 +270,8 @@ gboolean
 bse_item_needs_storage (BseItem    *self,
                         BseStorage *storage)
 {
-  g_return_val_if_fail (BSE_IS_ITEM (self), FALSE);
-  g_return_val_if_fail (BSE_IS_STORAGE (storage), FALSE);
+  assert_return (BSE_IS_ITEM (self), FALSE);
+  assert_return (BSE_IS_STORAGE (storage), FALSE);
 
   return BSE_ITEM_GET_CLASS (self)->needs_storage (self, storage);
 }
@@ -282,7 +282,7 @@ bse_item_compat_setup (BseItem         *self,
                        uint             vminor,
                        uint             vmicro)
 {
-  g_return_if_fail (BSE_IS_ITEM (self));
+  assert_return (BSE_IS_ITEM (self));
 
   if (BSE_ITEM_GET_CLASS (self)->compat_setup)
     BSE_ITEM_GET_CLASS (self)->compat_setup (self, vmajor, vminor, vmicro);
@@ -333,9 +333,9 @@ bse_item_gather_items (BseItem              *item,
 {
   GatherData gdata;
 
-  g_return_val_if_fail (BSE_IS_ITEM (item), NULL);
-  g_return_val_if_fail (iseq != NULL, NULL);
-  g_return_val_if_fail (g_type_is_a (base_type, BSE_TYPE_ITEM), NULL);
+  assert_return (BSE_IS_ITEM (item), NULL);
+  assert_return (iseq != NULL, NULL);
+  assert_return (g_type_is_a (base_type, BSE_TYPE_ITEM), NULL);
 
   gdata.item = item;
   gdata.data = data;
@@ -407,9 +407,9 @@ bse_item_get_candidates (BseItem                *item,
   BseItemClass *klass;
   GParamSpec *pspec;
 
-  g_return_val_if_fail (BSE_IS_ITEM (item), FALSE);
-  g_return_val_if_fail (property != NULL, FALSE);
-  g_return_val_if_fail (pc != NULL, FALSE);
+  assert_return (BSE_IS_ITEM (item), FALSE);
+  assert_return (property != NULL, FALSE);
+  assert_return (pc != NULL, FALSE);
 
   pspec = g_object_class_find_property (G_OBJECT_GET_CLASS (item), property);
   if (!pspec)
@@ -427,8 +427,8 @@ bse_item_get_candidates (BseItem                *item,
 BseItem*
 bse_item_use (BseItem *item)
 {
-  g_return_val_if_fail (BSE_IS_ITEM (item), NULL);
-  g_return_val_if_fail (G_OBJECT (item)->ref_count > 0, NULL);
+  assert_return (BSE_IS_ITEM (item), NULL);
+  assert_return (G_OBJECT (item)->ref_count > 0, NULL);
 
   if (!item->use_count)
     g_object_ref (item);
@@ -439,8 +439,8 @@ bse_item_use (BseItem *item)
 void
 bse_item_unuse (BseItem *item)
 {
-  g_return_if_fail (BSE_IS_ITEM (item));
-  g_return_if_fail (item->use_count > 0);
+  assert_return (BSE_IS_ITEM (item));
+  assert_return (item->use_count > 0);
 
   item->use_count--;
   if (!item->use_count)
@@ -455,15 +455,15 @@ void
 bse_item_set_parent (BseItem *item,
                      BseItem *parent)
 {
-  g_return_if_fail (BSE_IS_ITEM (item));
+  assert_return (BSE_IS_ITEM (item));
   if (parent)
     {
-      g_return_if_fail (item->parent == NULL);
-      g_return_if_fail (BSE_IS_CONTAINER (parent));
+      assert_return (item->parent == NULL);
+      assert_return (BSE_IS_CONTAINER (parent));
     }
   else
-    g_return_if_fail (item->parent != NULL);
-  g_return_if_fail (BSE_ITEM_GET_CLASS (item)->set_parent != NULL); /* paranoid */
+    assert_return (item->parent != NULL);
+  assert_return (BSE_ITEM_GET_CLASS (item)->set_parent != NULL); /* paranoid */
 
   g_object_ref (item);
   if (parent)
@@ -507,8 +507,8 @@ idle_handler_seqid_changed (void *data)
 void
 bse_item_queue_seqid_changed (BseItem *item)
 {
-  g_return_if_fail (BSE_IS_ITEM (item));
-  g_return_if_fail (BSE_ITEM (item)->parent != NULL);
+  assert_return (BSE_IS_ITEM (item));
+  assert_return (BSE_ITEM (item)->parent != NULL);
 
   if (!item_seqid_changed_queue)
     bse_idle_notify (idle_handler_seqid_changed, NULL);
@@ -520,8 +520,8 @@ bse_item_queue_seqid_changed (BseItem *item)
 uint
 bse_item_get_seqid (BseItem *item)
 {
-  g_return_val_if_fail (BSE_IS_ITEM (item), 0);
-  g_return_val_if_fail (BSE_ITEM_GET_CLASS (item)->get_seqid != NULL, 0); /* paranoid */
+  assert_return (BSE_IS_ITEM (item), 0);
+  assert_return (BSE_ITEM_GET_CLASS (item)->get_seqid != NULL, 0); /* paranoid */
 
   return BSE_ITEM_GET_CLASS (item)->get_seqid (item);
 }
@@ -530,8 +530,8 @@ BseItem*
 bse_item_common_ancestor (BseItem *item1,
                           BseItem *item2)
 {
-  g_return_val_if_fail (BSE_IS_ITEM (item1), NULL);
-  g_return_val_if_fail (BSE_IS_ITEM (item2), NULL);
+  assert_return (BSE_IS_ITEM (item1), NULL);
+  assert_return (BSE_IS_ITEM (item2), NULL);
 
   do
     {
@@ -569,9 +569,9 @@ bse_item_cross_link (BseItem         *owner,
 {
   BseItem *container;
 
-  g_return_if_fail (BSE_IS_ITEM (owner));
-  g_return_if_fail (BSE_IS_ITEM (link));
-  g_return_if_fail (uncross_func != NULL);
+  assert_return (BSE_IS_ITEM (owner));
+  assert_return (BSE_IS_ITEM (link));
+  assert_return (uncross_func != NULL);
 
   container = bse_item_common_ancestor (owner, link);
 
@@ -598,9 +598,9 @@ bse_item_cross_unlink (BseItem        *owner,
 {
   BseItem *container;
 
-  g_return_if_fail (BSE_IS_ITEM (owner));
-  g_return_if_fail (BSE_IS_ITEM (link));
-  g_return_if_fail (uncross_func != NULL);
+  assert_return (BSE_IS_ITEM (owner));
+  assert_return (BSE_IS_ITEM (link));
+  assert_return (uncross_func != NULL);
 
   container = bse_item_common_ancestor (owner, link);
 
@@ -625,8 +625,8 @@ bse_item_uncross_links (BseItem *owner,
 {
   BseItem *container;
 
-  g_return_if_fail (BSE_IS_ITEM (owner));
-  g_return_if_fail (BSE_IS_ITEM (link));
+  assert_return (BSE_IS_ITEM (owner));
+  assert_return (BSE_IS_ITEM (link));
 
   container = bse_item_common_ancestor (owner, link);
 
@@ -637,7 +637,7 @@ bse_item_uncross_links (BseItem *owner,
 BseSuper*
 bse_item_get_super (BseItem *item)
 {
-  g_return_val_if_fail (BSE_IS_ITEM (item), NULL);
+  assert_return (BSE_IS_ITEM (item), NULL);
 
   while (!BSE_IS_SUPER (item) && item)
     item = item->parent;
@@ -648,7 +648,7 @@ bse_item_get_super (BseItem *item)
 BseSNet*
 bse_item_get_snet (BseItem *item)
 {
-  g_return_val_if_fail (BSE_IS_ITEM (item), NULL);
+  assert_return (BSE_IS_ITEM (item), NULL);
 
   while (!BSE_IS_SNET (item) && item)
     item = item->parent;
@@ -659,7 +659,7 @@ bse_item_get_snet (BseItem *item)
 BseItem*
 bse_item_get_toplevel (BseItem *item)
 {
-  g_return_val_if_fail (BSE_IS_ITEM (item), NULL);
+  assert_return (BSE_IS_ITEM (item), NULL);
 
   while (item->parent)
     item = item->parent;
@@ -670,7 +670,7 @@ bse_item_get_toplevel (BseItem *item)
 BseProject*
 bse_item_get_project (BseItem *item)
 {
-  g_return_val_if_fail (BSE_IS_ITEM (item), NULL);
+  assert_return (BSE_IS_ITEM (item), NULL);
 
   while (item->parent)
     item = item->parent;
@@ -682,8 +682,8 @@ gboolean
 bse_item_has_ancestor (BseItem *item,
                        BseItem *ancestor)
 {
-  g_return_val_if_fail (BSE_IS_ITEM (item), FALSE);
-  g_return_val_if_fail (BSE_IS_ITEM (ancestor), FALSE);
+  assert_return (BSE_IS_ITEM (item), FALSE);
+  assert_return (BSE_IS_ITEM (ancestor), FALSE);
 
   while (item->parent)
     {
@@ -705,7 +705,7 @@ bse_item_has_ancestor (BseItem *item,
 BseMusicalTuningType
 bse_item_current_musical_tuning (BseItem *self)
 {
-  g_return_val_if_fail (BSE_IS_ITEM (self), BSE_MUSICAL_TUNING_12_TET);
+  assert_return (BSE_IS_ITEM (self), BSE_MUSICAL_TUNING_12_TET);
   /* finding the musical tuning *should* be possible by just visiting
    * an items parents. however, .bse objects are not currently (0.7.1)
    * structured that way, so we get the tuning from the first song in
@@ -785,8 +785,8 @@ bse_item_exec (void       *_item,
   va_list var_args;
   Bse::ErrorType error;
 
-  g_return_val_if_fail (BSE_IS_ITEM (item), Bse::ERROR_INTERNAL);
-  g_return_val_if_fail (procedure != NULL, Bse::ERROR_INTERNAL);
+  assert_return (BSE_IS_ITEM (item), Bse::ERROR_INTERNAL);
+  assert_return (procedure != NULL, Bse::ERROR_INTERNAL);
 
   va_start (var_args, procedure);
   error = bse_item_execva_i (item, procedure, var_args, FALSE);
@@ -804,8 +804,8 @@ bse_item_exec_void (void       *_item,
   va_list var_args;
   Bse::ErrorType error;
 
-  g_return_val_if_fail (BSE_IS_ITEM (item), Bse::ERROR_INTERNAL);
-  g_return_val_if_fail (procedure != NULL, Bse::ERROR_INTERNAL);
+  assert_return (BSE_IS_ITEM (item), Bse::ERROR_INTERNAL);
+  assert_return (procedure != NULL, Bse::ERROR_INTERNAL);
 
   va_start (var_args, procedure);
   error = bse_item_execva_i (item, procedure, var_args, TRUE);
@@ -985,8 +985,8 @@ bse_item_push_undo_proc (void       *item,
 {
   va_list var_args;
 
-  g_return_if_fail (BSE_IS_ITEM (item));
-  g_return_if_fail (procedure != NULL);
+  assert_return (BSE_IS_ITEM (item));
+  assert_return (procedure != NULL);
 
   va_start (var_args, procedure);
   bse_item_push_undo_proc_valist (item, procedure, FALSE, var_args);
@@ -1000,8 +1000,8 @@ bse_item_push_redo_proc (void       *item,
 {
   va_list var_args;
 
-  g_return_if_fail (BSE_IS_ITEM (item));
-  g_return_if_fail (procedure != NULL);
+  assert_return (BSE_IS_ITEM (item));
+  assert_return (procedure != NULL);
 
   va_start (var_args, procedure);
   bse_item_push_undo_proc_valist (item, procedure, TRUE, var_args);
@@ -1015,7 +1015,7 @@ bse_item_set_undoable (void          *object,
 {
   va_list var_args;
 
-  g_return_if_fail (BSE_IS_ITEM (object));
+  assert_return (BSE_IS_ITEM (object));
 
   va_start (var_args, first_property_name);
   bse_item_set_valist_undoable (object, first_property_name, var_args);
@@ -1030,7 +1030,7 @@ bse_item_set_valist_undoable (void       *object,
   BseItem *self = BSE_ITEM (object);
   const char *name;
 
-  g_return_if_fail (BSE_IS_ITEM (self));
+  assert_return (BSE_IS_ITEM (self));
 
   g_object_ref (object);
   g_object_freeze_notify (G_OBJECT (object));

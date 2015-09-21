@@ -98,7 +98,7 @@ parasite_uncross_object (BseItem *item,
   CRef key = { 0, };
   key.link = link;
   CRef *cref = (CRef*) g_bsearch_array_lookup (item->parasite->crefs, &bconfig_crefs, &key);
-  g_return_if_fail (cref != NULL);
+  assert_return (cref != NULL);
   while (cref->paths)
     {
       const char *path = (const char*) cref->paths->data;
@@ -133,9 +133,9 @@ parasite_unref_object (BseItem     *item,
   GSList *plink;
   key.link = link;
   cref = (CRef*) g_bsearch_array_lookup (item->parasite->crefs, &bconfig_crefs, &key);
-  g_return_if_fail (cref != NULL);
+  assert_return (cref != NULL);
   plink = g_slist_find (cref->paths, path);
-  g_return_if_fail (plink != NULL);
+  assert_return (plink != NULL);
   cref->paths = g_slist_remove_link (cref->paths, plink);
   if (!cref->paths)
     {
@@ -333,8 +333,8 @@ bse_item_backup_parasite (BseItem        *item,
 {
   BseUndoStack *ustack;
   BseUndoStep *ustep;
-  g_return_if_fail (BSE_IS_ITEM (item));
-  g_return_if_fail (parasite_path && parasite_path[0] == '/');
+  assert_return (BSE_IS_ITEM (item));
+  assert_return (parasite_path && parasite_path[0] == '/');
   ustack = bse_item_undo_open (item, "set-parasite");
   ustep = bse_undo_step_new (undo_set_parasite, unde_free_parasite, 3);
   ustep->data[0].v_pointer = bse_undo_pointer_pack (item, ustack);
@@ -669,11 +669,11 @@ bse_parasite_set_floats (BseObject   *object,
 			 guint        n_values,
 			 gfloat      *float_values)
 {
-  g_return_if_fail (BSE_IS_OBJECT (object));
-  g_return_if_fail (name != NULL);
-  g_return_if_fail (n_values < MAX_PARASITE_VALUES);
+  assert_return (BSE_IS_OBJECT (object));
+  assert_return (name != NULL);
+  assert_return (n_values < MAX_PARASITE_VALUES);
   if (n_values)
-    g_return_if_fail (float_values != NULL);
+    assert_return (float_values != NULL);
 
   if (!n_values)
     delete_parasite (object, g_quark_try_string (name), PARASITE_FLOAT);
@@ -699,8 +699,8 @@ SfiFBlock*
 bse_parasite_get_floats (BseObject   *object,
 			 const gchar *name)
 {
-  g_return_val_if_fail (BSE_IS_OBJECT (object), 0);
-  g_return_val_if_fail (name != NULL, 0);
+  assert_return (BSE_IS_OBJECT (object), 0);
+  assert_return (name != NULL, 0);
   Parasite *parasite = fetch_parasite (object, g_quark_try_string (name), PARASITE_FLOAT, FALSE);
   SfiFBlock *fblock = sfi_fblock_new ();
   if (parasite)

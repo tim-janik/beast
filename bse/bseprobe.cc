@@ -725,7 +725,7 @@ using namespace Bse;
 void
 bse_source_clear_probes (BseSource *source)
 {
-  g_return_if_fail (!BSE_SOURCE_PREPARED (source));
+  assert_return (!BSE_SOURCE_PREPARED (source));
   SourceProbes *probes = SourceProbes::peek_from_source (source);
   source->probes = NULL;
   delete probes;

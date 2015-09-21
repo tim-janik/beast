@@ -128,7 +128,7 @@ bse_glue_context_intern (const char *user)
   };
   BContext *bcontext;
 
-  g_return_val_if_fail (user != NULL, NULL);
+  assert_return (user != NULL, NULL);
   if (!quark_original_enum)
     {
       quark_original_enum = g_quark_from_static_string ("bse-glue-original-enum");
@@ -223,7 +223,7 @@ bcontext_queue_signal (BContext     *bcontext,
 {
   SfiSeq *seq;
 
-  g_return_if_fail (args != NULL && args->n_elements > 0 && SFI_VALUE_HOLDS_PROXY (args->elements));
+  assert_return (args != NULL && args->n_elements > 0 && SFI_VALUE_HOLDS_PROXY (args->elements));
 
   seq = sfi_seq_new ();
   sfi_seq_append_int (seq, SFI_GLUE_EVENT_NOTIFY);
@@ -301,8 +301,8 @@ bse_value_from_sfi (const GValue *value,
 {
   GValue *rvalue;
 
-  g_return_val_if_fail (SFI_IS_VALUE (value), NULL);
-  g_return_val_if_fail (G_IS_PARAM_SPEC (pspec), NULL);
+  assert_return (SFI_IS_VALUE (value), NULL);
+  assert_return (G_IS_PARAM_SPEC (pspec), NULL);
 
   rvalue = bglue_value_from_serializable (value, pspec);
   return rvalue ? rvalue : sfi_value_clone_shallow (value);
@@ -357,7 +357,7 @@ bglue_value_to_serializable (const GValue *svalue)
 GValue*
 bse_value_to_sfi (const GValue *value)
 {
-  g_return_val_if_fail (G_IS_VALUE (value), NULL);
+  assert_return (G_IS_VALUE (value), NULL);
 
   return bglue_value_to_serializable (value);
 }
@@ -375,8 +375,8 @@ bse_glue_boxed_to_value (GType    boxed_type,
    * by the GC.
    */
 
-  g_return_val_if_fail (G_TYPE_IS_BOXED (boxed_type) && G_TYPE_IS_DERIVED (boxed_type), NULL);
-  g_return_val_if_fail (boxed != NULL, NULL);
+  assert_return (G_TYPE_IS_BOXED (boxed_type) && G_TYPE_IS_DERIVED (boxed_type), NULL);
+  assert_return (boxed != NULL, NULL);
 
   b2rec = (BseGlueBoxedToRec) g_type_get_qdata (boxed_type, g_quark_from_string ("BseGlueBoxedToRec"));
   b2seq = (BseGlueBoxedToSeq) g_type_get_qdata (boxed_type, g_quark_from_string ("BseGlueBoxedToSeq"));
@@ -403,7 +403,7 @@ bse_glue_boxed_to_value (GType    boxed_type,
 GType
 bse_glue_pspec_get_original_enum (GParamSpec *pspec)
 {
-  g_return_val_if_fail (G_IS_PARAM_SPEC (pspec), 0);
+  assert_return (G_IS_PARAM_SPEC (pspec), 0);
   return (GType) g_param_spec_get_qdata (pspec, quark_original_enum);
 }
 
@@ -472,8 +472,8 @@ bse_glue_enum_index (GType enum_type,
   GEnumValue *ev;
   uint index;
 
-  g_return_val_if_fail (G_TYPE_IS_ENUM (enum_type), G_MAXINT);
-  g_return_val_if_fail (G_TYPE_IS_DERIVED (enum_type), G_MAXINT);
+  assert_return (G_TYPE_IS_ENUM (enum_type), G_MAXINT);
+  assert_return (G_TYPE_IS_DERIVED (enum_type), G_MAXINT);
 
   eclass = (GEnumClass*) g_type_class_ref (enum_type);
   ev = g_enum_get_value (eclass, enum_value);

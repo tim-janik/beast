@@ -298,7 +298,7 @@ async_create_context (gpointer data)
 SfiGlueContext*
 _bse_glue_context_create (const char *client, const std::function<void()> &caller_wakeup)
 {
-  g_return_val_if_fail (client && caller_wakeup, NULL);
+  assert_return (client && caller_wakeup, NULL);
   AsyncData adata = { client, caller_wakeup };
   // function runs in user threads and queues handler in BSE thread to create context
   if (bse_initialization_stage < 2)
@@ -320,7 +320,7 @@ _bse_glue_context_create (const char *client, const std::function<void()> &calle
 void
 bse_main_wakeup ()
 {
-  g_return_if_fail (bse_main_context != NULL);
+  assert_return (bse_main_context != NULL);
   g_main_context_wakeup (bse_main_context);
 }
 

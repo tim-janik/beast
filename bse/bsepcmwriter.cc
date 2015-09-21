@@ -69,11 +69,11 @@ bse_pcm_writer_open (BsePcmWriter *self,
                      uint64        recorded_maximum)
 {
   gint fd;
-  g_return_val_if_fail (BSE_IS_PCM_WRITER (self), Bse::ERROR_INTERNAL);
-  g_return_val_if_fail (!self->open, Bse::ERROR_INTERNAL);
-  g_return_val_if_fail (file != NULL, Bse::ERROR_INTERNAL);
-  g_return_val_if_fail (n_channels > 0, Bse::ERROR_INTERNAL);
-  g_return_val_if_fail (sample_freq >= 1000, Bse::ERROR_INTERNAL);
+  assert_return (BSE_IS_PCM_WRITER (self), Bse::ERROR_INTERNAL);
+  assert_return (!self->open, Bse::ERROR_INTERNAL);
+  assert_return (file != NULL, Bse::ERROR_INTERNAL);
+  assert_return (n_channels > 0, Bse::ERROR_INTERNAL);
+  assert_return (sample_freq >= 1000, Bse::ERROR_INTERNAL);
   self->mutex.lock();
   self->n_bytes = 0;
   self->recorded_maximum = recorded_maximum;
@@ -100,8 +100,8 @@ bse_pcm_writer_open (BsePcmWriter *self,
 void
 bse_pcm_writer_close (BsePcmWriter *self)
 {
-  g_return_if_fail (BSE_IS_PCM_WRITER (self));
-  g_return_if_fail (self->open);
+  assert_return (BSE_IS_PCM_WRITER (self));
+  assert_return (self->open);
   self->mutex.lock();
   bse_wave_file_patch_length (self->fd, self->n_bytes);
   close (self->fd);
@@ -123,10 +123,10 @@ bse_pcm_writer_write (BsePcmWriter *self,
 		      gsize         n_values,
 		      const gfloat *values)
 {
-  g_return_if_fail (BSE_IS_PCM_WRITER (self));
-  g_return_if_fail (self->open);
+  assert_return (BSE_IS_PCM_WRITER (self));
+  assert_return (self->open);
   if (n_values)
-    g_return_if_fail (values != NULL);
+    assert_return (values != NULL);
   else
     return;
   self->mutex.lock();

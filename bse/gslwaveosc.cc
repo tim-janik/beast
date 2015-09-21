@@ -90,9 +90,9 @@ gsl_wave_osc_process (GslWaveOscData *wosc,
 {
   guint mode = 0;
 
-  g_return_val_if_fail (wosc != NULL, FALSE);
-  g_return_val_if_fail (n_values > 0, FALSE);
-  g_return_val_if_fail (mono_out != NULL, FALSE);
+  assert_return (wosc != NULL, FALSE);
+  assert_return (n_values > 0, FALSE);
+  assert_return (mono_out != NULL, FALSE);
 
   if (UNLIKELY (!wosc->config.lookup_wchunk))
     return FALSE;
@@ -224,7 +224,7 @@ gsl_wave_osc_set_filter (GslWaveOscData *wosc,
   gfloat step;
   guint i, istep;
 
-  g_return_if_fail (play_freq > 0);
+  assert_return (play_freq > 0);
 
   if (UNLIKELY (!wosc->config.lookup_wchunk))
     return;
@@ -291,7 +291,7 @@ wave_osc_transform_filter (GslWaveOscData *wosc,
 GslLong
 gsl_wave_osc_cur_pos (GslWaveOscData *wosc)
 {
-  g_return_val_if_fail (wosc != NULL, -1);
+  assert_return (wosc != NULL, -1);
 
   if (wosc->wchunk)
     return wosc->block.offset;
@@ -303,7 +303,7 @@ void
 gsl_wave_osc_retrigger (GslWaveOscData *wosc,
 			gfloat          base_freq)
 {
-  g_return_if_fail (wosc != NULL);
+  assert_return (wosc != NULL);
 
   if (UNLIKELY (!wosc->config.lookup_wchunk))
     return;
@@ -324,8 +324,8 @@ void
 gsl_wave_osc_config (GslWaveOscData   *wosc,
 		     GslWaveOscConfig *config)
 {
-  g_return_if_fail (wosc != NULL);
-  g_return_if_fail (config != NULL);
+  assert_return (wosc != NULL);
+  assert_return (config != NULL);
   if (wosc->config.wchunk_data != config->wchunk_data ||
       wosc->config.lookup_wchunk != config->lookup_wchunk ||
       wosc->config.channel != config->channel)
@@ -355,7 +355,7 @@ gsl_wave_osc_config (GslWaveOscData   *wosc,
 void
 gsl_wave_osc_reset (GslWaveOscData *wosc)
 {
-  g_return_if_fail (wosc != NULL);
+  assert_return (wosc != NULL);
 
   gsl_wave_osc_set_filter (wosc, wosc->config.cfreq, TRUE);
   wosc->last_mode = 0;
@@ -368,7 +368,7 @@ gsl_wave_osc_reset (GslWaveOscData *wosc)
 void
 gsl_wave_osc_init (GslWaveOscData *wosc)
 {
-  g_return_if_fail (wosc != NULL);
+  assert_return (wosc != NULL);
 
   g_assert (GSL_WAVE_OSC_FILTER_ORDER <= BSE_CONFIG (wave_chunk_padding));
 
@@ -379,7 +379,7 @@ gsl_wave_osc_init (GslWaveOscData *wosc)
 void
 gsl_wave_osc_shutdown (GslWaveOscData *wosc)
 {
-  g_return_if_fail (wosc != NULL);
+  assert_return (wosc != NULL);
 
   if (wosc->wchunk)
     gsl_wave_chunk_unuse_block (wosc->wchunk, &wosc->block);

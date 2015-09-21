@@ -703,8 +703,8 @@ gsl_data_handle_new_mad_err (const gchar  *file_name,
                              gfloat        osc_freq,
                              Bse::ErrorType *errorp)
 {
-  g_return_val_if_fail (file_name != NULL, NULL);
-  g_return_val_if_fail (osc_freq > 0, NULL);
+  assert_return (file_name != NULL, NULL);
+  assert_return (osc_freq > 0, NULL);
 
   Bse::ErrorType error = Bse::ERROR_NONE;
   return dh_mad_new (file_name, osc_freq, FALSE, errorp ? errorp : &error);
@@ -718,7 +718,7 @@ gsl_data_handle_mad_testopen (const gchar *file_name,
   GslDataHandle *dhandle;
   MadHandle *handle;
 
-  g_return_val_if_fail (file_name != NULL, Bse::ERROR_INTERNAL);
+  assert_return (file_name != NULL, Bse::ERROR_INTERNAL);
 
   Bse::ErrorType error = Bse::ERROR_NONE;
   dhandle = dh_mad_new (file_name, 439, TRUE, &error);

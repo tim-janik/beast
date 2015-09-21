@@ -311,7 +311,7 @@ wav_load_wave_dsc (void            *data,
   WaveDsc *dsc;
   GslWaveFormatType format;
   GslLong data_offset, data_width;
-  g_return_val_if_fail (nth_wave == 0, NULL);
+  assert_return (nth_wave == 0, NULL);
   if (lseek (fi->fd, sizeof (WavHeader), SEEK_SET) != sizeof (WavHeader))
     {
       LDEBUG ("failed to seek to end of WavHeader");
@@ -397,7 +397,7 @@ wav_create_chunk_handle (void         *data,
   WaveDsc *dsc = (WaveDsc*) wave_dsc;
   GslDataHandle *dhandle;
 
-  g_return_val_if_fail (nth_chunk == 0, NULL);
+  assert_return (nth_chunk == 0, NULL);
 
   dhandle = gsl_wave_handle_new (dsc->wdsc.file_info->file_name,
 				 dsc->wdsc.n_channels,

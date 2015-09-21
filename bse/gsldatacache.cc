@@ -63,11 +63,11 @@ gsl_data_cache_new (GslDataHandle *dhandle,
 {
   guint node_size = CONFIG_NODE_SIZE () / sizeof (GslDataType);
   GslDataCache *dcache;
-  g_return_val_if_fail (dhandle != NULL, NULL);
-  g_return_val_if_fail (padding > 0, NULL);
-  g_return_val_if_fail (dhandle->name != NULL, NULL);
+  assert_return (dhandle != NULL, NULL);
+  assert_return (padding > 0, NULL);
+  assert_return (dhandle->name != NULL, NULL);
   g_assert (node_size == sfi_alloc_upper_power2 (node_size));
-  g_return_val_if_fail (padding < node_size / 2, NULL);
+  assert_return (padding < node_size / 2, NULL);
   /* allocate new closed dcache if necessary */
   dcache = sfi_new_struct (GslDataCache, 1);
   new (&dcache->mutex) Bse::Mutex();
@@ -89,8 +89,8 @@ gsl_data_cache_new (GslDataHandle *dhandle,
 void
 gsl_data_cache_open (GslDataCache *dcache)
 {
-  g_return_if_fail (dcache != NULL);
-  g_return_if_fail (dcache->ref_count > 0);
+  assert_return (dcache != NULL);
+  assert_return (dcache->ref_count > 0);
   dcache->mutex.lock();
   if (!dcache->open_count)
     {
@@ -116,9 +116,9 @@ void
 gsl_data_cache_close (GslDataCache *dcache)
 {
   gboolean need_unref;
-  g_return_if_fail (dcache != NULL);
-  g_return_if_fail (dcache->ref_count > 0);
-  g_return_if_fail (dcache->open_count > 0);
+  assert_return (dcache != NULL);
+  assert_return (dcache->ref_count > 0);
+  assert_return (dcache->open_count > 0);
   dcache->mutex.lock();
   dcache->open_count--;
   need_unref = !dcache->open_count;
@@ -134,8 +134,8 @@ gsl_data_cache_close (GslDataCache *dcache)
 GslDataCache*
 gsl_data_cache_ref (GslDataCache *dcache)
 {
-  g_return_val_if_fail (dcache != NULL, NULL);
-  g_return_val_if_fail (dcache->ref_count > 0, NULL);
+  assert_return (dcache != NULL, NULL);
+  assert_return (dcache->ref_count > 0, NULL);
   /* we might get invoked with global_dcache_spinlock locked */
   dcache->mutex.lock();
   dcache->ref_count++;
@@ -146,8 +146,8 @@ static void
 dcache_free (GslDataCache *dcache)
 {
   guint i;
-  g_return_if_fail (dcache->ref_count == 0);
-  g_return_if_fail (dcache->open_count == 0);
+  assert_return (dcache->ref_count == 0);
+  assert_return (dcache->open_count == 0);
   gsl_data_handle_unref (dcache->dhandle);
   for (i = 0; i < dcache->n_nodes; i++)
     {
@@ -164,12 +164,12 @@ dcache_free (GslDataCache *dcache)
 void
 gsl_data_cache_unref (GslDataCache *dcache)
 {
-  g_return_if_fail (dcache != NULL);
+  assert_return (dcache != NULL);
  restart:
-  g_return_if_fail (dcache->ref_count > 0);
+  assert_return (dcache->ref_count > 0);
   if (dcache->ref_count == 1)	/* possible destruction, need global lock */
     {
-      g_return_if_fail (dcache->open_count == 0);
+      assert_return (dcache->open_count == 0);
       global_dcache_spinlock.lock();
       dcache->mutex.lock();
       if (dcache->ref_count != 1)
@@ -339,10 +339,10 @@ gsl_data_cache_ref_node (GslDataCache       *dcache,
 {
   GslDataCacheNode **node_p, *node;
   guint insertion_pos;
-  g_return_val_if_fail (dcache != NULL, NULL);
-  g_return_val_if_fail (dcache->ref_count > 0, NULL);
-  g_return_val_if_fail (dcache->open_count > 0, NULL);
-  g_return_val_if_fail (offset < gsl_data_handle_length (dcache->dhandle), NULL);
+  assert_return (dcache != NULL, NULL);
+  assert_return (dcache->ref_count > 0, NULL);
+  assert_return (dcache->open_count > 0, NULL);
+  assert_return (offset < gsl_data_handle_length (dcache->dhandle), NULL);
   dcache->mutex.lock();
   node_p = data_cache_lookup_nextmost_node_L (dcache, offset);
   if (node_p)
@@ -403,7 +403,7 @@ data_cache_free_olders_Lunlock (GslDataCache *dcache,
   guint i, rejuvenate, size;
   guint n_freed = 0;
 
-  g_return_val_if_fail (dcache != NULL, TRUE);
+  assert_return (dcache != NULL, TRUE);
 
   /* it doesn't make sense to free nodes below the jitter that
    * AGE_EPSILON attempts to prevent.
@@ -463,9 +463,9 @@ gsl_data_cache_unref_node (GslDataCache     *dcache,
 {
   GslDataCacheNode **node_p;
   gboolean check_cache;
-  g_return_if_fail (dcache != NULL);
-  g_return_if_fail (node != NULL);
-  g_return_if_fail (node->ref_count > 0);
+  assert_return (dcache != NULL);
+  assert_return (node != NULL);
+  assert_return (node->ref_count > 0);
   dcache->mutex.lock();
   node_p = data_cache_lookup_nextmost_node_L (dcache, node->offset);
   g_assert (node_p && *node_p == node);	/* paranoid check lookup, yeah! */
@@ -540,7 +540,7 @@ void
 gsl_data_cache_free_olders (GslDataCache *dcache,
 			    guint         max_age)
 {
-  g_return_if_fail (dcache != NULL);
+  assert_return (dcache != NULL);
   dcache->mutex.lock();
   bool needs_unlock = data_cache_free_olders_Lunlock (dcache, max_age);
   if (needs_unlock)
@@ -551,7 +551,7 @@ gsl_data_cache_from_dhandle (GslDataHandle *dhandle,
 			     guint          min_padding)
 {
   SfiRing *ring;
-  g_return_val_if_fail (dhandle != NULL, NULL);
+  assert_return (dhandle != NULL, NULL);
   global_dcache_spinlock.lock();
   for (ring = global_dcache_list; ring; ring = sfi_ring_walk (ring, global_dcache_list))
     {

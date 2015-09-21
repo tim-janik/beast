@@ -143,10 +143,10 @@ void
 bse_midi_voice_input_set_voice_switch (BseMidiVoiceInput  *self,
 				       BseMidiVoiceSwitch *voice_switch)
 {
-  g_return_if_fail (BSE_IS_MIDI_VOICE_INPUT (self));
-  g_return_if_fail (!BSE_SOURCE_PREPARED (self));
+  assert_return (BSE_IS_MIDI_VOICE_INPUT (self));
+  assert_return (!BSE_SOURCE_PREPARED (self));
   if (voice_switch)
-    g_return_if_fail (BSE_IS_MIDI_VOICE_SWITCH (voice_switch));
+    assert_return (BSE_IS_MIDI_VOICE_SWITCH (voice_switch));
 
   if (self->voice_switch)
     g_object_unref (self->voice_switch);
@@ -268,8 +268,8 @@ void
 bse_midi_voice_switch_set_midi_channel (BseMidiVoiceSwitch *self,
                                         guint               midi_channel)
 {
-  g_return_if_fail (BSE_IS_MIDI_VOICE_SWITCH (self));
-  g_return_if_fail (!BSE_SOURCE_PREPARED (self));
+  assert_return (BSE_IS_MIDI_VOICE_SWITCH (self));
+  assert_return (!BSE_SOURCE_PREPARED (self));
 
   self->midi_channel = midi_channel;
 }
@@ -289,9 +289,9 @@ bse_midi_voice_switch_ref_poly_voice (BseMidiVoiceSwitch     *self,
   MidiVoice *mvoice;
   GSList *slist;
 
-  g_return_val_if_fail (BSE_IS_MIDI_VOICE_SWITCH (self), mcontext);
-  g_return_val_if_fail (BSE_SOURCE_PREPARED (self), mcontext);
-  g_return_val_if_fail (trans != NULL, mcontext);
+  assert_return (BSE_IS_MIDI_VOICE_SWITCH (self), mcontext);
+  assert_return (BSE_SOURCE_PREPARED (self), mcontext);
+  assert_return (trans != NULL, mcontext);
 
   mcontext = bse_snet_get_midi_context (BSE_SNET (BSE_ITEM (self)->parent), context_handle);
   mcontext.midi_channel = self->midi_channel;
@@ -323,8 +323,8 @@ bse_midi_voice_switch_peek_poly_voice (BseMidiVoiceSwitch     *self,
   MidiVoice *mvoice;
   GSList *slist;
 
-  g_return_val_if_fail (BSE_IS_MIDI_VOICE_SWITCH (self), mcontext);
-  g_return_val_if_fail (BSE_SOURCE_PREPARED (self), mcontext);
+  assert_return (BSE_IS_MIDI_VOICE_SWITCH (self), mcontext);
+  assert_return (BSE_SOURCE_PREPARED (self), mcontext);
 
   for (slist = self->midi_voices; slist; slist = slist->next)
     {
@@ -350,9 +350,9 @@ bse_midi_voice_switch_unref_poly_voice (BseMidiVoiceSwitch *self,
   MidiVoice *mvoice;
   GSList *slist;
 
-  g_return_if_fail (BSE_IS_MIDI_VOICE_SWITCH (self));
-  g_return_if_fail (BSE_SOURCE_PREPARED (self));
-  g_return_if_fail (trans != NULL);
+  assert_return (BSE_IS_MIDI_VOICE_SWITCH (self));
+  assert_return (BSE_SOURCE_PREPARED (self));
+  assert_return (trans != NULL);
 
   mcontext = bse_snet_get_midi_context (BSE_SNET (BSE_ITEM (self)->parent), context_handle);
   mcontext.midi_channel = self->midi_channel;

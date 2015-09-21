@@ -111,7 +111,7 @@ static GTokenType
 bsewave_skip_rest_statement (GScanner *scanner,
 			     uint      level)
 {
-  g_return_val_if_fail (scanner != NULL, G_TOKEN_ERROR);
+  assert_return (scanner != NULL, G_TOKEN_ERROR);
 
   while (level)
     {

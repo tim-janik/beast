@@ -71,7 +71,7 @@ BSE_BUILTIN_TYPE (BseSong)
 void
 bse_song_timing_get_default (Bse::SongTiming *timing)
 {
-  g_return_if_fail (timing != NULL);
+  assert_return (timing != NULL);
 
   timing->tick = 0;
   timing->bpm = 120;
@@ -299,8 +299,8 @@ bse_song_get_property (GObject     *object,
 void
 bse_song_get_timing (BseSong *self, uint tick, Bse::SongTiming *timing)
 {
-  g_return_if_fail (BSE_IS_SONG (self));
-  g_return_if_fail (timing != NULL);
+  assert_return (BSE_IS_SONG (self));
+  assert_return (timing != NULL);
 
   timing->tick = 0;
   timing->bpm = self->bpm;
@@ -320,8 +320,8 @@ bse_song_lookup (BseProject  *project,
 {
   BseItem *item;
 
-  g_return_val_if_fail (BSE_IS_PROJECT (project), NULL);
-  g_return_val_if_fail (name != NULL, NULL);
+  assert_return (BSE_IS_PROJECT (project), NULL);
+  assert_return (name != NULL, NULL);
 
   item = bse_container_lookup_item (BSE_CONTAINER (project), name);
 
