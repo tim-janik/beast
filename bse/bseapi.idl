@@ -460,7 +460,7 @@ interface SNet : Super {
     bool      auto_activate = Bool (_("Auto Activate"),
                                     _("Automatic activation only needs to be enabled for synthesis networks that don't "
                                       "use virtual ports for their input and output"),
-                                    STANDARD, false);
+                                    STANDARD, true);
   };
 };
 

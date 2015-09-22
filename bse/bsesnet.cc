@@ -63,15 +63,16 @@ static const GBSearchConfig port_array_config = {
 
 /* --- functions --- */
 static void
-bse_snet_init (BseSNet *snet)
+bse_snet_init (BseSNet *self)
 {
-  BSE_OBJECT_SET_FLAGS (snet, BSE_SNET_FLAG_USER_SYNTH);
-  snet->sources = NULL;
-  snet->isources = NULL;
-  snet->iport_names = NULL;
-  snet->oport_names = NULL;
-  snet->port_array = NULL;
-  snet->port_unregistered_id = 0;
+  BSE_OBJECT_UNSET_FLAGS (self, BSE_SNET_FLAG_USER_SYNTH);
+  BSE_OBJECT_SET_FLAGS (self, BSE_SUPER_FLAG_NEEDS_CONTEXT);
+  self->sources = NULL;
+  self->isources = NULL;
+  self->iport_names = NULL;
+  self->oport_names = NULL;
+  self->port_array = NULL;
+  self->port_unregistered_id = 0;
 }
 
 /**
