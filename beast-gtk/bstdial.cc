@@ -632,8 +632,8 @@ bst_dial_update (BstDial *dial)
   if (new_value != adjustment->value)
     {
       if (0)
-	g_print ("dial-adjustment: %f <= %f <= %f, adjust: %f\n",
-		 adjustment->lower, adjustment->value, adjustment->upper, new_value);
+	printout ("dial-adjustment: %f <= %f <= %f, adjust: %f\n",
+                  adjustment->lower, adjustment->value, adjustment->upper, new_value);
       adjustment->value = new_value;
       gtk_adjustment_value_changed (GTK_ADJUSTMENT (dial->adjustment));
     }
