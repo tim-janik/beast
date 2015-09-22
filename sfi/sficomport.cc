@@ -453,13 +453,13 @@ com_port_read_pending (SfiComPort *port)
 		  port->rbuffer.header[2] != ((SFI_COM_PORT_MAGIC >> 8) & 0xff) ||
 		  port->rbuffer.header[3] != (SFI_COM_PORT_MAGIC & 0xff))
 		{
-		  g_printerr ("ComPort:%s: received data with invalid magic", port->ident);
+		  printerr ("ComPort:%s: received data with invalid magic", port->ident);
 		  return FALSE;
 		}
 	      /* check length */
 	      if (port->rbuffer.dlen < 1 || port->rbuffer.dlen > 10 * 1024 * 1024)
 		{
-		  g_printerr ("ComPort:%s: received data with excessive length", port->ident);
+		  printerr ("ComPort:%s: received data with excessive length", port->ident);
 		  return FALSE;
 		}
 	    }
@@ -497,7 +497,7 @@ com_port_scanner_msg (GScanner *scanner,
 		      gboolean  error)
 {
   SfiComPort *port = (SfiComPort*) scanner->user_data;
-  g_printerr ("ComPort:%s: while processing data: %s", port->ident, message);
+  printerr ("ComPort:%s: while processing data: %s", port->ident, message);
 }
 
 static void

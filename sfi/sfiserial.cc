@@ -984,6 +984,6 @@ sfi_value_store_stderr (const GValue *value)
 {
   GString *gstring = g_string_new ("");
   sfi_value_store_typed (value, gstring);
-  g_printerr ("((GValue*)%p)=%s\n", value, gstring->str);
+  printerr ("((GValue*)%p)=%s\n", value, gstring->str);
   g_string_free (gstring, TRUE);
 }

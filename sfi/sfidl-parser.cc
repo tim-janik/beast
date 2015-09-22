@@ -507,7 +507,7 @@ void Parser::preprocessContents (const String& input_filename)
 			break;
 	    case '<':	state = filenameIn2;
 			break;
-	    default:	g_printerr ("bad char after include statement");
+	    default:	printerr ("bad char after include statement");
 			assert_unreached (); // error handling!
 	    }
 	}

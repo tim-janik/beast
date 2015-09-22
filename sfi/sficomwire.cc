@@ -235,13 +235,13 @@ wire_receive (SfiComWire *wire)
       p = get_uint32 (p, &type);
       if (magic != BSE_MAGIC_BSEm)
 	{
-	  g_printerr ("%s: message with invalid magic: 0x%08x\n", wire->ident, magic);
+	  printerr ("%s: message with invalid magic: 0x%08x\n", wire->ident, magic);
 	  wire->remote_input_broke = TRUE;
 	  wire->ibp = wire->ibuffer;
 	}
       else if (mlength <= mheader_length || mlength >= max_mlength)
 	{
-	  g_printerr ("%s: message (type=%u) with invalid length: %u < %u < %u\n",
+	  printerr ("%s: message (type=%u) with invalid length: %u < %u < %u\n",
 		      wire->ident, type, mheader_length, mlength, max_mlength);
 	  wire->remote_input_broke = TRUE;
 	  wire->ibp = wire->ibuffer;
@@ -271,7 +271,7 @@ wire_receive (SfiComWire *wire)
 		    wire->iresults = g_list_prepend (wire->iresults, msg);
 		  else
 		    {
-		      g_printerr ("%s: ignoring spurious result (request=%u): %s\n", wire->ident, msg->request, msg->message);
+		      printerr ("%s: ignoring spurious result (request=%u): %s\n", wire->ident, msg->request, msg->message);
 		      free_msg (msg);
 		    }
 		}
@@ -283,7 +283,7 @@ wire_receive (SfiComWire *wire)
 	    case SFI_COM_MSG_RESERVED2:
 	    case SFI_COM_MSG_RESERVED3:
 	    case SFI_COM_MSG_RESERVED4:
-	      g_printerr ("%s: ignoring message with unknown type: %u\n",
+	      printerr ("%s: ignoring message with unknown type: %u\n",
 			  wire->ident, type);
 	      p += 4;	/* request */
 	      p += strl;
@@ -292,7 +292,7 @@ wire_receive (SfiComWire *wire)
 	      wire->ibp = wire->ibuffer + n;
 	      break;
 	    default:
-	      g_printerr ("%s: message with invalid type: %u\n",
+	      printerr ("%s: message with invalid type: %u\n",
 			  wire->ident, type);
 	      wire->remote_input_broke = TRUE;
 	      wire->ibp = wire->ibuffer;
@@ -466,7 +466,7 @@ sfi_com_wire_receive_request (SfiComWire *wire,
       if (msg->request == 0)
 	{
 	  /* 0-requests are low-level messages, currently unhandled */
-	  g_printerr ("%s: ignoring message with request_id=0\n", wire->ident);
+	  printerr ("%s: ignoring message with request_id=0\n", wire->ident);
 	  free_msg (msg);
 	  return sfi_com_wire_receive_request (wire, request_p);
 	}
@@ -531,7 +531,7 @@ wire_default_dispatch (gpointer     data,
 		       const gchar *request_msg,
 		       SfiComWire  *wire)
 {
-  g_printerr ("%s: unhandled request (id=%u): %s\n", wire->ident, request, request_msg);
+  printerr ("%s: unhandled request (id=%u): %s\n", wire->ident, request, request_msg);
   sfi_com_wire_discard_request (wire, request);
   return TRUE;
 }
