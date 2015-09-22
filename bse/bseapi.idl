@@ -451,7 +451,11 @@ interface Super : Container {
 
 /// Base interface type for all kinds of synthesis networks.
 interface SNet : Super {
-  bool supports_user_synths (); ///< Check whether users may edit synthesis modules of this network.
+  bool        supports_user_synths ();                ///< Check whether users may edit synthesis modules of this network.
+  ErrorType   can_create_source (String module_type); ///< Check whether inserting a new module into a synthesis network is possible.
+  Source      create_source     (String module_type); ///< Insert a new module into a synthesis network.
+  ErrorType   remove_source     (Source module);      ///< Remove an existing module from its synthesis network.
+  signal void port_unregistered ();                   ///< Signal that notifies when a named output port is unregistered.
 };
 
 /// Customizable synthesis (filter) network container.
