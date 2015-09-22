@@ -26,14 +26,6 @@ typedef struct
   guint		   parent_context;
 } ContextData;
 
-/* --- parameters --- */
-enum
-{
-  PARAM_0,
-  PARAM_AUTO_ACTIVATE
-};
-
-
 /* --- prototypes --- */
 static void      bse_snet_add_item               (BseContainer   *container,
 						  BseItem        *item);
@@ -169,47 +161,6 @@ bse_snet_queue_port_unregistered (BseSNet *snet)
 {
   if (!snet->port_unregistered_id)
     snet->port_unregistered_id = bse_idle_notify (snet_notify_port_unregistered, snet);
-}
-
-static void
-bse_snet_set_property (GObject      *object,
-		       guint         param_id,
-		       const GValue *value,
-		       GParamSpec   *pspec)
-{
-  BseSNet *self = BSE_SNET (object);
-
-  switch (param_id)
-    {
-    case PARAM_AUTO_ACTIVATE:
-      if (sfi_value_get_bool (value))
-	BSE_OBJECT_SET_FLAGS (self, BSE_SUPER_FLAG_NEEDS_CONTEXT);
-      else
-	BSE_OBJECT_UNSET_FLAGS (self, BSE_SUPER_FLAG_NEEDS_CONTEXT);
-      break;
-    default:
-      G_OBJECT_WARN_INVALID_PROPERTY_ID (self, param_id, pspec);
-      break;
-    }
-}
-
-static void
-bse_snet_get_property (GObject    *object,
-		       guint       param_id,
-		       GValue     *value,
-		       GParamSpec *pspec)
-{
-  BseSNet *self = BSE_SNET (object);
-
-  switch (param_id)
-    {
-    case PARAM_AUTO_ACTIVATE:
-      sfi_value_set_bool (value, BSE_SUPER_NEEDS_CONTEXT (self));
-      break;
-    default:
-      G_OBJECT_WARN_INVALID_PROPERTY_ID (self, param_id, pspec);
-      break;
-    }
 }
 
 static void
@@ -906,8 +857,6 @@ bse_snet_class_init (BseSNetClass *klass)
 
   parent_class = (GTypeClass*) g_type_class_peek_parent (klass);
 
-  gobject_class->set_property = bse_snet_set_property;
-  gobject_class->get_property = bse_snet_get_property;
   gobject_class->dispose = bse_snet_dispose;
   gobject_class->finalize = bse_snet_finalize;
 
@@ -923,14 +872,7 @@ bse_snet_class_init (BseSNetClass *klass)
   container_class->context_children = snet_context_children;
   container_class->release_children = bse_snet_release_children;
 
-  bse_object_class_add_param (object_class, "Playback Settings",
-			      PARAM_AUTO_ACTIVATE,
-			      sfi_pspec_bool ("auto_activate", "Auto Activate",
-					      "Automatic activation only needs to be enabled for synthesis networks "
-					      "that don't use virtual ports for their input and output",
-					      FALSE, SFI_PARAM_STANDARD ":skip-default"));
-  signal_port_unregistered = bse_object_class_add_signal (object_class, "port_unregistered",
-							  G_TYPE_NONE, 0);
+  signal_port_unregistered = bse_object_class_add_signal (object_class, "port_unregistered", G_TYPE_NONE, 0);
 }
 
 BSE_BUILTIN_TYPE (BseSNet)
@@ -964,6 +906,23 @@ SNetImpl::supports_user_synths ()
 {
   BseSNet *self = as<BseSNet*>();
   return BSE_SNET_USER_SYNTH (self);
+}
+
+bool
+SNetImpl::auto_activate () const
+{
+  BseSNet *self = const_cast<SNetImpl*> (this)->as<BseSNet*>();
+  return BSE_SUPER_NEEDS_CONTEXT (self);
+}
+
+void
+SNetImpl::auto_activate (bool v)
+{
+  BseSNet *self = as<BseSNet*>();
+  if (v)
+    BSE_OBJECT_SET_FLAGS (self, BSE_SUPER_FLAG_NEEDS_CONTEXT);
+  else
+    BSE_OBJECT_UNSET_FLAGS (self, BSE_SUPER_FLAG_NEEDS_CONTEXT);
 }
 
 ErrorType

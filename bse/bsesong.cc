@@ -25,7 +25,6 @@ enum
   PROP_NUMERATOR,
   PROP_DENOMINATOR,
   PROP_PNET,
-  PROP_AUTO_ACTIVATE,
   PROP_LOOP_ENABLED,
   PROP_LOOP_LEFT,
   PROP_LOOP_RIGHT,
@@ -756,11 +755,6 @@ bse_song_class_init (BseSongClass *klass)
                               PROP_PNET,
                               bse_param_spec_object ("pnet", _("Postprocessor"), _("Synthesis network to be used as postprocessor"),
                                                      BSE_TYPE_CSYNTH, SFI_PARAM_STANDARD ":unprepared"));
-  bse_object_class_add_param (object_class, _("Playback Settings"),
-			      PROP_AUTO_ACTIVATE,
-			      sfi_pspec_bool ("auto_activate", NULL, NULL,
-					      TRUE, /* change default */
-					      /* override parent property: 0 */ "w"));
   bse_object_class_add_param (object_class, _("Looping"),
 			      PROP_LOOP_ENABLED,
 			      sfi_pspec_bool ("loop_enabled", NULL, NULL,
