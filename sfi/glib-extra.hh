@@ -6,6 +6,10 @@
 #include <glib-object.h>
 #include <rapicorn-core.hh>     // for Rapicorn::string_format
 
+using Rapicorn::printout;
+using Rapicorn::printerr;
+using Rapicorn::string_format;
+
 G_BEGIN_DECLS
 
 #if (GLIB_SIZEOF_LONG > 4)
