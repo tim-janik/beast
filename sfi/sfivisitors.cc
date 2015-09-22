@@ -24,6 +24,25 @@ sfi_pspecs_rec_fields_cache (const std::type_info &type_info, SfiRecFields *rf, 
   return true;
 }
 
+typedef std::unordered_map<std::type_index, GParamSpec*> VisitableTypeSeqFieldMap;
+
+static VisitableTypeSeqFieldMap visitable_type_seq_field_map;
+
+bool
+sfi_pspecs_seq_field_cache (const std::type_info &type_info, GParamSpec  **pp, bool assign)
+{
+  if (assign)
+    {
+      visitable_type_seq_field_map[type_info] = *pp;
+      return true;
+    }
+  auto it = visitable_type_seq_field_map.find (type_info);
+  if (it == visitable_type_seq_field_map.end())
+    return false;
+  *pp = it->second;
+  return true;
+}
+
 typedef std::unordered_map<std::type_index, std::vector<GParamSpec*> > VisitableTypeAcsFieldMap;
 
 static VisitableTypeAcsFieldMap visitable_type_acs_fields;

@@ -404,14 +404,12 @@ sfi_ring_nth_data (const SfiRing *head,
 }
 
 void
-sfi_ring_free_deep (SfiRing        *head,
-                    GDestroyNotify  data_destroy)
+sfi_ring_free_deep (SfiRing *head, GDestroyNotify data_destroy)
 {
   while (head)
     {
       gpointer data = sfi_ring_pop_head (&head);
       data_destroy (data);
-      data = sfi_ring_pop_head (&head);
     }
 }
 
