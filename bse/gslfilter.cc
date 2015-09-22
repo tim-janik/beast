@@ -1244,7 +1244,7 @@ gsl_biquad_lphp_reso (GslBiquadFilter   *c,
   denominator = 1 + (k + sqrt2_reso) * k;
 
   if (0)
-    g_printerr ("BIQUAD-lp: R=%f\n", BSE_SQRT2 * sqrt2_reso);
+    printerr ("BIQUAD-lp: R=%f\n", BSE_SQRT2 * sqrt2_reso);
 
   switch (normalize)
     {

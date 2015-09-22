@@ -201,7 +201,7 @@ Sequencer::pool_poll_Lm (gint timeout_ms)
   BSE_SEQUENCER_UNLOCK();
   int result = poll ((struct pollfd*) pfds, n_pfds, timeout_ms);
   if (result < 0 && errno != EINTR)
-    g_printerr ("%s: poll() error: %s\n", G_STRFUNC, g_strerror (errno));
+    printerr ("%s: poll() error: %s\n", G_STRFUNC, g_strerror (errno));
   BSE_SEQUENCER_LOCK();
   if (result > 0 && pfds[0].revents)
     {
@@ -372,7 +372,7 @@ Sequencer::sequencer_thread ()
                 {
                   gchar *dh = bse_object_strdup_debug_handle (song);    /* thread safe */
                   /* if (!song->sequencer_underrun_detected_SL) */
-                  g_printerr ("BseSequencer: underrun by %lld blocks for song: %s\n",
+                  printerr ("BseSequencer: underrun by %lld blocks for song: %s\n",
                               uint64 ((cur_stamp - old_song_pos) / bse_engine_block_size() + 1),
                               dh);
                   song->sequencer_underrun_detected_SL = TRUE;

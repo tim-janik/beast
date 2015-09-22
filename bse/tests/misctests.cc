@@ -146,7 +146,7 @@ main (gint   argc,
   for (int j = BSE_MUSICAL_TUNING_12_TET; j <= last_tuning; j++)
     {
       BseMusicalTuningType musical_tuning = BseMusicalTuningType (j);
-      g_printerr ("Tuning System: %s\n", sfi_enum2choice (musical_tuning, BSE_TYPE_MUSICAL_TUNING_TYPE));
+      printerr ("Tuning System: %s\n", sfi_enum2choice (musical_tuning, BSE_TYPE_MUSICAL_TUNING_TYPE));
       check_tuning_monotony (musical_tuning);
       check_freq_vs_notes (musical_tuning);
     }

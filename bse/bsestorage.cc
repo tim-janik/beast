@@ -352,7 +352,7 @@ storage_parse_bse_version (BseStorage *self)
     bse_storage_warn (self, "ignoring invalid version string: %s", scanner->value.v_string);
   parse_or_return (scanner, ')');               /* eat closing paren */
   if (0)
-    g_printerr ("bse-version: code: %u.%u.%u file: %u.%u.%u feature(current):%d compat(current):%d compat(-1):%d\n",
+    printerr ("bse-version: code: %u.%u.%u file: %u.%u.%u feature(current):%d compat(current):%d compat(-1):%d\n",
                 BST_MAJOR_VERSION, BST_MINOR_VERSION, BST_MICRO_VERSION,
                 self->major_version, self->minor_version, self->micro_version,
                 BSE_STORAGE_VERSION (self, BST_MAJOR_VERSION, BST_MINOR_VERSION, BST_MICRO_VERSION),
@@ -1131,7 +1131,7 @@ bse_storage_warn_str (BseStorage *self, const std::string &string)
   if (self->rstore)
     sfi_rstore_warn (self->rstore, string);
   else
-    g_printerr ("BseStorage: while storing: %s", string.c_str());
+    printerr ("BseStorage: while storing: %s", string.c_str());
 }
 
 GTokenType
@@ -1151,7 +1151,7 @@ bse_storage_error_str (BseStorage *self, const std::string &string)
   if (self->rstore)
     sfi_rstore_error (self->rstore, string);
   else
-    g_printerr ("BseStorage: ERROR: while storing: %s\n", string.c_str());
+    printerr ("BseStorage: ERROR: while storing: %s\n", string.c_str());
 }
 
 static void

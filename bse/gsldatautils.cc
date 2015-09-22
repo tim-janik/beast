@@ -426,8 +426,8 @@ gsl_data_detect_signal (GslDataHandle *handle,
        */
     }
   if (xcheck - minsamp > 0)
-    g_printerr("###################");
-  g_printerr ("active area %lld .. %lld, signal>16 at: %lld\t diff: %lld\n",minsamp,maxsamp,xcheck, xcheck-minsamp);
+    printerr("###################");
+  printerr ("active area %lld .. %lld, signal>16 at: %lld\t diff: %lld\n",minsamp,maxsamp,xcheck, xcheck-minsamp);
 
   /* release open reference */
   gsl_data_handle_close (handle);

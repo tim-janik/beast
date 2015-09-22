@@ -559,7 +559,7 @@ master_process_job (BseJob *job)
       if (job->data.message)
         {
           JOB_DEBUG ("debug");
-          g_printerr ("BSE-ENGINE: %s\n", job->data.message);
+          printerr ("BSE-ENGINE: %s\n", job->data.message);
         }
       else
         JOB_DEBUG ("nop");
@@ -1162,7 +1162,7 @@ MasterThread::master_thread()
 	  if (err >= 0)
 	    loop.revents_filled = TRUE;
 	  else if (errno != EINTR)
-	    g_printerr ("%s: poll() error: %s\n", G_STRFUNC, g_strerror (errno));
+	    printerr ("%s: poll() error: %s\n", G_STRFUNC, g_strerror (errno));
 	  if (loop.revents_filled)
 	    need_dispatch = _engine_master_check (&loop);
 	}

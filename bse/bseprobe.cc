@@ -246,7 +246,7 @@ public:
             first_stamp = tick_stamp;                   /* record probe stamp */
           }
         else if (tick_stamp != first_stamp + n_computed)
-          probe_xrun = true; // g_printerr ("%s: gap in probe block: %lld\n", G_STRFUNC, tick_stamp - first_stamp - n_computed);
+          probe_xrun = true; // printerr ("%s: gap in probe block: %lld\n", G_STRFUNC, tick_stamp - first_stamp - n_computed);
         /* compute features */
         uint n = block_size - n_computed;
         if (n)
@@ -472,7 +472,7 @@ private:
           g_signal_emit (source, bse_source_signal_probes, 0, probe_seq.c_ptr());
       }
     if (0)
-      g_printerr ("BseProbe: got probe: %d %d (left=%d)\n", n_values, n_ostreams, pdata.n_pending);
+      printerr ("BseProbe: got probe: %d %d (left=%d)\n", n_values, n_ostreams, pdata.n_pending);
   }
   static void
   source_probe_callback (gpointer     data,

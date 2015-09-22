@@ -429,12 +429,12 @@ oss_device_check_io (BsePcmHandle *handle,
         {
           if (oss->hard_sync)
             {
-              g_printerr ("OSS: underrun detected (diff=%d), forcing hard sync (retrigger)\n", n_capture_avail - oss->queue_length);
+              printerr ("OSS: underrun detected (diff=%d), forcing hard sync (retrigger)\n", n_capture_avail - oss->queue_length);
               oss->needs_trigger = TRUE;
             }
           else /* soft-sync */
             {
-              g_printerr ("OSS: underrun detected (diff=%d), skipping input\n", n_capture_avail - oss->queue_length);
+              printerr ("OSS: underrun detected (diff=%d), skipping input\n", n_capture_avail - oss->queue_length);
               /* soft sync, throw away extra data */
               guint n_bytes = oss->frame_size * (n_capture_avail - oss->queue_length);
               do

@@ -10,7 +10,7 @@
 
 #define PDEBUG(...)     BSE_KEY_DEBUG ("procs", __VA_ARGS__)
 #define CHECK_DEBUG()   Bse::bse_debug_enabled ("procs")
-#define HACK_DEBUG /* very slow and leaks memory */ while (0) g_printerr
+#define HACK_DEBUG /* very slow and leaks memory */ while (0) printerr
 
 /* --- macros --- */
 #define parse_or_return         bse_storage_scanner_parse_or_return
@@ -657,7 +657,7 @@ proc_cache_dispatch (GSource    *source,
       proc = ulist;
       ulist = (BseProcedureClass*) proc->cache_next;
       proc->cache_next = NULL;
-      // g_printerr ("release-procedure: %s\n", BSE_PROCEDURE_NAME (proc));
+      // printerr ("release-procedure: %s\n", BSE_PROCEDURE_NAME (proc));
       g_type_class_unref (proc);
     }
   g_source_get_current_time (source, &current_time);
@@ -674,7 +674,7 @@ procedure_class_unref (BseProcedureClass *proc)
    */
   if (!proc->cache_stamp)
     {
-      // g_printerr ("cache-procedure: %s\n", BSE_PROCEDURE_NAME (proc));
+      // printerr ("cache-procedure: %s\n", BSE_PROCEDURE_NAME (proc));
       assert (proc->cache_next == NULL);
       proc->cache_stamp = 2;        /* 'recent' stamp */
       proc->cache_next = proc_cache;

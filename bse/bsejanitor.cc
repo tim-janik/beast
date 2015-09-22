@@ -455,12 +455,12 @@ janitor_dispatch (GSource    *source,
 #if 0
   if (port->gstring_stdout->len)
     {
-      g_printerr ("%s:O: %s", port->ident, port->gstring_stdout->str);
+      printerr ("%s:O: %s", port->ident, port->gstring_stdout->str);
       g_string_truncate (port->gstring_stdout, 0);
     }
   if (port->gstring_stderr->len)
     {
-      g_printerr ("%s:E: %s", port->ident, port->gstring_stderr->str);
+      printerr ("%s:E: %s", port->ident, port->gstring_stderr->str);
       g_string_truncate (port->gstring_stderr, 0);
     }
 #endif

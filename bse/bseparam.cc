@@ -56,7 +56,7 @@ bse_param_spec_freq (const gchar *name,
         max_freq - min_freq >= 10 &&
         max_freq >= 15053 &&
         min_freq <= 51.9))
-    g_printerr ("bse_param_spec_freq(\"%s\",\"%s\",\"%s\") assertion:\n", name, nick, blurb);
+    printerr ("bse_param_spec_freq(\"%s\",\"%s\",\"%s\") assertion:\n", name, nick, blurb);
 #endif
   assert_return (default_freq >= min_freq && default_freq <= max_freq, NULL);
   assert_return (max_freq - min_freq >= 10, NULL); /* check stepping */
