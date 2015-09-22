@@ -136,7 +136,7 @@ bse_scm_enter_gc (SCM           *scm_gc_list,
   SCM s_cell = 0;
   assert_return (scm_gc_list != NULL);
   assert_return (free_func != NULL);
-  // g_printerr ("GCCell allocating %u bytes (%p).\n", size_hint, free_func);
+  // printerr ("GCCell allocating %u bytes (%p).\n", size_hint, free_func);
   gc_cell = g_new (BseScmGCCell, 1);
   gc_cell->data = data;
   gc_cell->free_func = free_func;
@@ -149,7 +149,7 @@ static SCM
 bse_scm_mark_gc_cell (SCM scm_gc_cell) /* called from any thread */
 {
   // BseScmGCCell *gc_cell = (BseScmGCCell*) SCM_CDR (scm_gc_cell);
-  // g_printerr ("GCCell mark %u bytes (%p).\n", gc_cell->size_hint, gc_cell->free_func);
+  // printerr ("GCCell mark %u bytes (%p).\n", gc_cell->size_hint, gc_cell->free_func);
   /* scm_gc_mark (gc_cell->something); */
   return SCM_BOOL_F;
 }
@@ -158,7 +158,7 @@ static scm_sizet
 bse_scm_free_gc_cell (SCM scm_gc_cell) /* called from any thread */
 {
   BseScmGCCell *gc_cell = SCM_GET_GLUE_GC_CELL (scm_gc_cell);
-  // g_printerr ("GCCell freeing %u bytes (%p).\n", size, gc_cell->free_func);
+  // printerr ("GCCell freeing %u bytes (%p).\n", size, gc_cell->free_func);
   gc_cell->free_func (gc_cell->data);
   g_free (gc_cell);
   return 0;

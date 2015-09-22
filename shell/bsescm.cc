@@ -70,7 +70,7 @@ main (int   argc,
       sfi_com_port_set_close_func (bse_scm_port, port_closed, NULL);
       if (!bse_scm_port->connected)
 	{
-	  g_printerr ("%s: failed to connect to pipe (%d, %d)\n", PRG_NAME, bse_scm_pipe[0], bse_scm_pipe[1]);
+	  printerr ("%s: failed to connect to pipe (%d, %d)\n", PRG_NAME, bse_scm_pipe[0], bse_scm_pipe[1]);
 	  exit (BSE_EXIT_STATUS);
 	}
       bse_scm_context = sfi_glue_encoder_context (bse_scm_port);
@@ -190,7 +190,7 @@ shell_parse_args (int *argc_p, char **argv)
 	  argv[i] = NULL;
 	  if (bse_scm_pipe[0] < 2 || bse_scm_pipe[1] < 2)
 	    {
-	      g_printerr ("%s: invalid arguments supplied for: --bse-pipe <inpipe> <outpipe>\n", PRG_NAME);
+	      printerr ("%s: invalid arguments supplied for: --bse-pipe <inpipe> <outpipe>\n", PRG_NAME);
 	      exit (BSE_EXIT_STATUS);
 	    }
 	}
@@ -205,7 +205,7 @@ shell_parse_args (int *argc_p, char **argv)
 	  argv[i] = NULL;
 	  if (!bse_scm_eval_expr)
 	    {
-	      g_printerr ("%s: invalid arguments supplied for: --bse-eval <expression>\n", PRG_NAME);
+	      printerr ("%s: invalid arguments supplied for: --bse-eval <expression>\n", PRG_NAME);
 	      exit (BSE_EXIT_STATUS);
 	    }
 	}

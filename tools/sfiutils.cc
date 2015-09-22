@@ -149,18 +149,18 @@ parse_arguments (gint              *argc_p,
   if (unknown_short || missing < n_arguments || extraneous < n_arguments || extraneous_arg)
     {
       if (unknown_short)
-        g_printerr ("unknown short options: \"%s\"\n", unknown_short);
+        printerr ("unknown short options: \"%s\"\n", unknown_short);
       if (missing < n_arguments)
         if (arguments[missing].long_opt)
-          g_printerr ("missing option argument for \"--%s\"\n", arguments[missing].long_opt);
+          printerr ("missing option argument for \"--%s\"\n", arguments[missing].long_opt);
         else
-          g_printerr ("missing option argument for \"-%c\"\n", arguments[missing].short_opt);
+          printerr ("missing option argument for \"-%c\"\n", arguments[missing].short_opt);
       else
         ;
       if (extraneous < n_arguments)
-        g_printerr ("extraneous argument to option \"%s\"\n", arguments[extraneous].long_opt);
+        printerr ("extraneous argument to option \"%s\"\n", arguments[extraneous].long_opt);
       if (extraneous_arg)
-        g_printerr ("extraneous argument: \"%s\"\n", extraneous_arg);
+        printerr ("extraneous argument: \"%s\"\n", extraneous_arg);
       exit (127);
     }
 

@@ -116,7 +116,7 @@ main (int   argc,
     }
 
   /* load wave file */
-  g_printerr ("LOAD: %s\n", input_file.c_str());
+  printerr ("LOAD: %s\n", input_file.c_str());
   Wave *wave = command->create ();
   Bse::ErrorType error = Bse::ERROR_NONE;
   if (!wave)
@@ -171,13 +171,13 @@ main (int   argc,
     }
 
   /* process */
-  g_printerr ("EXEC: %s\n", command_name.c_str());
+  printerr ("EXEC: %s\n", command_name.c_str());
   bool needs_saving = command->exec (wave);
 
   /* save */
   if (needs_saving)
     {
-      g_printerr ("SAVE: %s\n", output_file.c_str());
+      printerr ("SAVE: %s\n", output_file.c_str());
       wave->sort();
       error = wave->store (output_file);
       if (error)
@@ -816,7 +816,7 @@ public:
                   }
               }
             if (!silent_infos)
-              g_printerr ("chunk % 7.2f/%.0f, processed %0.1f%%       \r",
+              printerr ("chunk % 7.2f/%.0f, processed %0.1f%%       \r",
                           gsl_data_handle_osc_freq (chunk->dhandle), gsl_data_handle_mix_freq (chunk->dhandle),
                           n * 99.999999 / l);
           }
@@ -843,7 +843,7 @@ public:
         gsl_vorbis_encoder_destroy (enc);
         guint n_bytes = (gsl_data_handle_bit_depth (dhandle) + 7) / 8;
         if (!silent_infos)
-          g_printerr ("chunk % 7.2f/%.0f, processed %0.1f%% (reduced to: %5.2f%%)      \n",
+          printerr ("chunk % 7.2f/%.0f, processed %0.1f%% (reduced to: %5.2f%%)      \n",
                       gsl_data_handle_osc_freq (chunk->dhandle), gsl_data_handle_mix_freq (chunk->dhandle),
                   n * 100.0 / l, v * 100.0 / (l * MAX (1, n_bytes)));
         if (close (tmpfd) < 0)
