@@ -439,7 +439,7 @@ alsa_device_check_io (BsePcmHandle *handle,
           ws = snd_pcm_state (alsa->write_handle);
         }
       guint wn = snd_pcm_status_get_avail (stat);
-      g_printerr ("ALSA: check_io: read=%4u/%4u (%s) write=%4u/%4u (%s) block=%u: %s\n",
+      printerr ("ALSA: check_io: read=%4u/%4u (%s) write=%4u/%4u (%s) block=%u: %s\n",
                   rn, alsa->period_size * alsa->n_periods, snd_pcm_state_name (rs),
                   wn, alsa->period_size * alsa->n_periods, snd_pcm_state_name (ws),
                   handle->block_length,

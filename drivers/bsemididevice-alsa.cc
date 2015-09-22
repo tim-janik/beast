@@ -209,7 +209,7 @@ bse_midi_device_alsa_open (BseDevice     *device,
       if (!error && snd_rawmidi_params_current (alsa->read_handle, mparams) < 0)
         error = Bse::ERROR_FILE_OPEN_FAILED;
       if (0)
-        g_printerr ("midiread:  buffer=%zd active_sensing=%d min_avail=%zd\n",
+        printerr ("midiread:  buffer=%zd active_sensing=%d min_avail=%zd\n",
                     snd_rawmidi_params_get_buffer_size (mparams),
                     !snd_rawmidi_params_get_no_active_sensing (mparams),
                     snd_rawmidi_params_get_avail_min (mparams));
@@ -219,7 +219,7 @@ bse_midi_device_alsa_open (BseDevice     *device,
       if (!error && snd_rawmidi_params_current (alsa->write_handle, mparams) < 0)
         error = Bse::ERROR_FILE_OPEN_FAILED;
       if (0)
-        g_printerr ("midiwrite: buffer=%zd active_sensing=%d min_avail=%zd\n",
+        printerr ("midiwrite: buffer=%zd active_sensing=%d min_avail=%zd\n",
                     snd_rawmidi_params_get_buffer_size (mparams),
                     !snd_rawmidi_params_get_no_active_sensing (mparams),
                     snd_rawmidi_params_get_avail_min (mparams));
