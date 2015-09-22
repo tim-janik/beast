@@ -22,15 +22,16 @@ bst_play_back_handle_new (void)
   if (BST_DBG_EXT)
     gxk_idle_show_widget (GTK_WIDGET (bst_app_new (handle->project)));
 
-  handle->snet = bse_project_create_csynth (handle->project.proxy_id(), NULL);
-  bse_proxy_set (handle->snet, "auto_activate", TRUE, NULL);
-  handle->speaker = bse_snet_create_source (handle->snet, "BsePcmOutput");
-  handle->wosc1 = bse_snet_create_source (handle->snet, "BseWaveOsc");
-  handle->wosc2 = bse_snet_create_source (handle->snet, "BseWaveOsc");
+  SfiProxy snet_proxy = bse_project_create_csynth (handle->project.proxy_id(), NULL);
+  handle->snet = Bse::SNetH::down_cast (bse_server.from_proxy (snet_proxy));
+  bse_proxy_set (handle->snet.proxy_id(), "auto_activate", TRUE, NULL);
+  handle->speaker = handle->snet.create_source ("BsePcmOutput").proxy_id();
+  handle->wosc1 = handle->snet.create_source ("BseWaveOsc").proxy_id();
+  handle->wosc2 = handle->snet.create_source ("BseWaveOsc").proxy_id();
   bse_proxy_set (handle->wosc2, "channel", 2, NULL);
   bse_source_set_input_by_id (handle->speaker, 0, handle->wosc1, 0);
   bse_source_set_input_by_id (handle->speaker, 1, handle->wosc2, 0);
-  handle->constant = bse_snet_create_source (handle->snet, "BseConstant");
+  handle->constant = handle->snet.create_source ("BseConstant").proxy_id();
   bse_source_set_input_by_id (handle->wosc1, 0, handle->constant, 0);
   bse_source_set_input_by_id (handle->wosc2, 0, handle->constant, 0);
   bse_proxy_connect (handle->wosc1,
