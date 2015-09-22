@@ -333,7 +333,7 @@ EXTRA_DIST += bseapi.idl
 # == GENERATED targets ==
 CLEANFILES += $(GENERATED)
 $(libbse_la_OBJECTS): $(GENERATED)	# needed dependency to force file generation
-$(bseautodoc_OBJECTS) $(bseinfo_OBJECTS) $(bseprocidl_OBJECTS) $(bsequery_OBJECTS) $(bsetool_OBJECTS): $(GENERATED)
+$(bseprocidl_OBJECTS) $(bsetool_OBJECTS): $(GENERATED)
 
 #
 # private (birnet) dependancy to make TAGS file after each build
@@ -352,18 +352,6 @@ progs_LDADD = libbse.la $(RAPICORN_LIBS) $(SFI_LIBS) -lm
 noinst_PROGRAMS   += bseprocidl
 bseprocidl_SOURCES = bseprocidl.cc
 bseprocidl_LDADD   = $(progs_LDADD)
-
-noinst_PROGRAMS += bsequery
-bsequery_SOURCES = bsequery.cc
-bsequery_LDADD   = $(progs_LDADD)
-
-noinst_PROGRAMS   += bseautodoc
-bseautodoc_SOURCES = bseautodoc.cc
-bseautodoc_LDADD   = $(progs_LDADD)
-
-noinst_PROGRAMS += bseinfo
-bseinfo_SOURCES  = bseinfo.cc
-bseinfo_LDADD    = $(progs_LDADD)
 
 # == bsetool ==
 noinst_PROGRAMS += bsetool
