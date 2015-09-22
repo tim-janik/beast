@@ -414,8 +414,8 @@ data_cache_free_olders_Lunlock (GslDataCache *dcache,
 
   rejuvenate = dcache->max_age - max_lru;
   if (0)
-    g_print ("start sweep: dcache (%p) with %u nodes, max_age: %u, rejuvenate: %u (max_lru: %u)\n",
-	     dcache, dcache->n_nodes, dcache->max_age, rejuvenate, max_lru);
+    printout ("start sweep: dcache (%p) with %u nodes, max_age: %u, rejuvenate: %u (max_lru: %u)\n",
+              dcache, dcache->n_nodes, dcache->max_age, rejuvenate, max_lru);
   size = dcache->node_size + (dcache->padding << 1);
   slot_p = NULL;
   for (i = 0; i < dcache->n_nodes; i++)

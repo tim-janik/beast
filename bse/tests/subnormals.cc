@@ -166,8 +166,8 @@ benchmark_subnormal_eliminations ()
   TOK();
   TDONE();
   if (0)
-    g_print ("subnormal cancellation times: keep=%fs zap=%fs inlined-cond=%fs if-cond=%fs arithmetic=%f bse=%f\n",
-             test1_time, test2_time, test3_time, test4_time, test5_time, test6_time);
+    printout ("subnormal cancellation times: keep=%fs zap=%fs inlined-cond=%fs if-cond=%fs arithmetic=%f bse=%f\n",
+              test1_time, test2_time, test3_time, test4_time, test5_time, test6_time);
   constexpr const char *format = "    %-28s : %+.14f milliseconds";
   TMSG (format, "Subnormals-keep",         test1_time * 1000);
   TMSG (format, "Subnormals-bse-zap",      test2_time * 1000);

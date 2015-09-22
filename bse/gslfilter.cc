@@ -776,7 +776,7 @@ gsl_filter_tscheb1_test	(uint         iorder,
 
   /* choose roots from the left half-plane */
   if (0)
-    g_print ("zhqr-root:\n%s\n", bse_complex_list (iorder, roots, "  ").c_str());
+    printout ("zhqr-root:\n%s\n", bse_complex_list (iorder, roots, "  ").c_str());
   r = roots;
   for (i = 0; i < iorder; i++)
     if (roots[i].re < 0)
@@ -790,7 +790,7 @@ gsl_filter_tscheb1_test	(uint         iorder,
   /* assert roots found */
   if (!(r - roots == iorder))
     {
-      g_print ("ERROR: n_roots=%u != iorder=%u\n", r - roots, iorder);
+      printout ("ERROR: n_roots=%u != iorder=%u\n", r - roots, iorder);
       abort ();
     }
 
@@ -1256,7 +1256,7 @@ gsl_biquad_lphp_reso (GslBiquadFilter   *c,
       break;
     case GSL_BIQUAD_NORMALIZE_PEAK_GAIN:
       r2p_norm = (BSE_SQRT2 * sqrt2_reso - 1.0) / (sqrt2_reso * sqrt2_reso - 0.5);
-      g_print ("BIQUAD-lp: (peak-gain) r2p_norm = %f \n", r2p_norm);
+      printout ("BIQUAD-lp: (peak-gain) r2p_norm = %f \n", r2p_norm);
       r2p_norm = r2p_norm > 1 ? kk * sqrt2_reso : kk * r2p_norm * sqrt2_reso;
       break;
     }

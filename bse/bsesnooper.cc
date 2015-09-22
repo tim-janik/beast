@@ -179,16 +179,16 @@ snooper_process (BseModule *module,
 		 seen_subn = TRUE;
 	}
       avg /= (gdouble) n_values;
-      g_print ("C%2u: max=%+1.5f min=%+1.5f avg=%+1.5f %u[%+1.5f,..,%+1.5f] freq=%+1.2f %s%s%s%s\r",
-	       data->context_id,
-	       max, min, avg,
-	       n_values,
-	       first, last,
-	       BSE_FREQ_FROM_VALUE (avg),
-	       seen_nan ? " +NAN" : "",
-	       seen_pinf ? " +PINF" : "",
-	       seen_ninf ? " +NINF" : "",
-	       seen_subn ? " +SUBNORM" : "");
+      printout ("C%2u: max=%+1.5f min=%+1.5f avg=%+1.5f %u[%+1.5f,..,%+1.5f] freq=%+1.2f %s%s%s%s\r",
+                data->context_id,
+                max, min, avg,
+                n_values,
+                first, last,
+                BSE_FREQ_FROM_VALUE (avg),
+                seen_nan ? " +NAN" : "",
+                seen_pinf ? " +PINF" : "",
+                seen_ninf ? " +NINF" : "",
+                seen_subn ? " +SUBNORM" : "");
     }
 }
 

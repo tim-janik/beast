@@ -939,11 +939,11 @@ master_process_flow (void)
 	  if (profile_node)
 	    {
 	      if (profile_maxtime > guint64 (profile_modules))
-		g_print ("Excess Node: %p  Duration: %llu usecs     ((void(*)())%p)         \n",
-			 profile_node, (long long unsigned int) profile_maxtime, profile_node->module.klass->process);
+		printout ("Excess Node: %p  Duration: %llu usecs     ((void(*)())%p)         \n",
+                          profile_node, (long long unsigned int) profile_maxtime, profile_node->module.klass->process);
 	      else
-		g_print ("Slowest Node: %p  Duration: %llu usecs     ((void(*)())%p)         \r",
-			 profile_node, (long long unsigned int) profile_maxtime, profile_node->module.klass->process);
+		printout ("Slowest Node: %p  Duration: %llu usecs     ((void(*)())%p)         \r",
+                          profile_node, (long long unsigned int) profile_maxtime, profile_node->module.klass->process);
 	    }
 	}
 

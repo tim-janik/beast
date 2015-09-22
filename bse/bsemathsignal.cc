@@ -707,7 +707,7 @@ main (int   argc,
   if (1)	/* print errors */
     for (x = -3; x < 3.01; x += 0.1)
       {
-	g_print ("%+f %+1.20f \t (%.20f - %.20f)\n",
+	printout ("%+f %+1.20f \t (%.20f - %.20f)\n",
 		 x, exp (x * BSE_LN2) - bse_approx5_exp2 (x),
 		 exp (x * BSE_LN2), bse_approx5_exp2 (x));
       }
@@ -719,7 +719,7 @@ main (int   argc,
 	// dummy += exp2f (x);
       }
 
-  g_print ("%f\r                            \n", dummy);
+  printout ("%f\r                            \n", dummy);
 
   return 0;
 }

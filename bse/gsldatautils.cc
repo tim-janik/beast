@@ -493,7 +493,7 @@ gsl_data_find_sample (GslDataHandle *dhandle,
       {
 	gfloat val = gsl_data_handle_peek_value (dhandle, i, &peekbuf);
 
-	/* g_print ("(%lu): %f <= %f <= %f\n", i, min_value, val, max_value); */
+	/* printout ("(%lu): %f <= %f <= %f\n", i, min_value, val, max_value); */
 	if (val >= min_value && val <= max_value)
 	  break;
       }
@@ -502,7 +502,7 @@ gsl_data_find_sample (GslDataHandle *dhandle,
       {
 	gfloat val = gsl_data_handle_peek_value (dhandle, i, &peekbuf);
 
-	/* g_print ("(%lu): %f > %f || %f < %f\n", i, val, max_value, val, min_value); */
+	/* printout ("(%lu): %f > %f || %f < %f\n", i, val, max_value, val, min_value); */
 	if (val > min_value || val < max_value)
 	  break;
       }
@@ -615,7 +615,7 @@ gsl_data_find_tailmatch (GslDataHandle     *dhandle,
 	    {
 	      start = offset + l;
 	      end = offset + l + lsize - 1;
-	      g_print ("\nimproved: %f < %f: [0x%llx..0x%llx] (%llu)\n", score, best_score, start, end, lsize);
+	      printout ("\nimproved: %f < %f: [0x%llx..0x%llx] (%llu)\n", score, best_score, start, end, lsize);
 	      best_score = score;
 	    }
 	  else
@@ -626,12 +626,12 @@ gsl_data_find_tailmatch (GslDataHandle     *dhandle,
 	  pcount = 100;
 	  pval = lsize - lspec->min_loop;
 	  pbound = (lspec->max_loop - lspec->min_loop + 1.);
-	  g_print ("\rprocessed: %f%%                  \r", pval / pbound);
+	  printout ("\rprocessed: %f%%                  \r", pval / pbound);
 	}
     }
   gsl_data_handle_close (shandle);
 
-  g_print ("\nhalted: %f: [0x%llx..0x%llx] (%llu)\n", best_score, start, end, end - start + 1);
+  printout ("\nhalted: %f: [0x%llx..0x%llx] (%llu)\n", best_score, start, end, end - start + 1);
 
   *loop_start_p = start;
   *loop_end_p = end;

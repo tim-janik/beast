@@ -146,7 +146,7 @@ set_gconfig (BseGConfig *gconfig)
       GValue *v = sfi_value_rec (prec);
       GString *gstring = g_string_new (NULL);
       sfi_value_store_param (v, gstring, pspec_global_config, 2);
-      g_print ("CONFIG:\n%s\n", gstring->str);
+      printout ("CONFIG:\n%s\n", gstring->str);
       g_string_free (gstring, TRUE);
       sfi_value_free (v);
       sfi_rec_unref (prec);

@@ -592,7 +592,7 @@ bse_wave_restore_private (BseObject  *object,
 	  g_free (wave_name);
 	  return GTokenType (')');
 	}
-      // g_print ("set-locator \"%s\" \"%s\"\n", file_name, wave_name);
+      // printout ("set-locator \"%s\" \"%s\"\n", file_name, wave_name);
       bse_wave_set_locator (wave, file_name, wave_name);
       expected_token = G_TOKEN_NONE; /* got ')' */
     }

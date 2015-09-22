@@ -127,7 +127,7 @@ bse_ladspa_module_class_init_from_info (BseLadspaModuleClass *ladspa_module_clas
       BseLadspaPort *port = bli->cports + i;
       GParamSpec *pspec, *pspec2 = NULL;
       const char *group;
-      // g_print ("LADSPA-PORT: %s\n", bse_ladspa_info_port_2str (port));
+      // printout ("LADSPA-PORT: %s\n", bse_ladspa_info_port_2str (port));
       if (port->boolean)
 	{
 	  group = "Switches";
