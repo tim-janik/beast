@@ -179,6 +179,15 @@ bst_param_view_apply_defaults (BstParamView *self)
     }
 }
 
+template<size_t N> static bool
+property_match (const String &name, const char *const (&prop_names) [N])
+{
+  for (size_t i = 0; i < N; i++)
+    if (g_sname_equals (name, prop_names[i]))
+      return true;
+  return false;
+}
+
 void
 bst_param_view_rebuild (BstParamView *self)
 {
@@ -199,26 +208,36 @@ bst_param_view_rebuild (BstParamView *self)
 
   // extract IDL properties
   Bse::SongH song = Bse::SongH::down_cast (bse_server.from_proxy (self->item));
+  Bse::SNetH snet = Bse::SNetH::down_cast (bse_server.from_proxy (self->item));
   std::vector<GParamSpec*> cxxpspecs;
   std::vector<Rapicorn::Aida::Parameter> cxxparams;
   if (song)
     {
-      Bse::SongH song = Bse::SongH::down_cast (bse_server.from_proxy (self->item));
       cxxpspecs = Bse::sfi_pspecs_fields_from_accessor_visitable (song);
       Rapicorn::Aida::Parameter::ListVisitor av (cxxparams);
       song.__accept_accessor__ (av);
     }
+  else if (snet)
+    {
+      cxxpspecs = Bse::sfi_pspecs_fields_from_accessor_visitable (snet);
+      Rapicorn::Aida::Parameter::ListVisitor av (cxxparams);
+      snet.__accept_accessor__ (av);
+    }
+
+  // properties that are useless at the UI
+  static const char *const song_reject_properties[] = { "auto_activate" };
 
   // build IDL property params
   for (i = 0; i < cxxpspecs.size(); i++)
     if ((!self->reject_pattern || !g_pattern_match_string (self->reject_pattern, cxxpspecs[i]->name)) &&
-        (!self->match_pattern ||   g_pattern_match_string (self->match_pattern,  cxxpspecs[i]->name)))
+        (!self->match_pattern ||   g_pattern_match_string (self->match_pattern,  cxxpspecs[i]->name)) &&
+        !(song && property_match (cxxpspecs[i]->name, song_reject_properties)))
       {
         GParamSpec *pspec = cxxpspecs[i];
         const gchar *param_group = sfi_pspec_get_group (pspec);
         Rapicorn::Aida::Parameter *cxxparam = NULL;
         for (size_t j = 0; j < cxxparams.size() && !cxxparam; j++)
-          if (cxxparams[j].name() == pspec->name)
+          if (g_sname_equals (cxxparams[j].name(), pspec->name))
             cxxparam = &cxxparams[j];
 	if (cxxparam && sfi_pspec_check_option (pspec, "G") && // GUI representable
             ((pspec->flags & G_PARAM_WRITABLE) || BST_DVL_HINTS))
