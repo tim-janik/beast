@@ -233,7 +233,7 @@ main (int argc, char **argv)
     }
   assert (options.rand_samples <= options.test_size / 2);
   assert (options.test_size >= 128);
-  g_print ("Resampler test parameters: test_size=%zd rand_samples=%zd\n",
+  printout ("Resampler test parameters: test_size=%zd rand_samples=%zd\n",
            options.test_size, options.rand_samples);
   run_tests ("FPU");
 
