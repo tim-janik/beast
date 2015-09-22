@@ -140,7 +140,7 @@ main (int   argc,
       g_printerr ("Error: failed to flush \"%s\": %s\n", ofile, g_strerror (errno));
       exit (1);
     }
-  g_print ("done\n");
+  printout ("done\n");
 
   return 0;
 }
