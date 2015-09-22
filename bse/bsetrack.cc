@@ -1090,7 +1090,7 @@ TrackImpl::insert_part (int tick, PartIface &parti)
   if (id)
     {
       // can't use remove_link() here, since id will have changed after undo
-      push_undo ("Insert Part", *this, &TrackImpl::remove_tick, tick);
+      push_undo (__func__, *this, &TrackImpl::remove_tick, tick);
     }
   return id;
 }
@@ -1111,8 +1111,17 @@ TrackImpl::remove_tick (int tick)
         return id ? ERROR_NONE : ERROR_INVALID_OVERLAP;
       };
       bse_track_remove_tick (self, tick);
-      push_undo ("Remove Tick", *this, lambda);
+      push_undo (__func__, *this, lambda);
     }
+}
+
+void
+TrackImpl::remove_link (int link_id)
+{
+  BseTrack *self = as<BseTrack*>();
+  BseTrackEntry *entry = bse_track_find_link (self, link_id);
+  if (entry)
+    remove_tick (entry->tick);
 }
 
 PartIfaceP
@@ -1134,17 +1143,16 @@ ErrorType
 TrackImpl::ensure_output ()
 {
   BseTrack *self = as<BseTrack*>();
-  ErrorType error = Bse::ERROR_NONE;
+  ErrorType error = ERROR_NONE;
   BseItem *bparent = self->parent;
   if (BSE_IS_SONG (bparent) && !self->bus_outputs)
     {
       BseSong *song = BSE_SONG (bparent);
-      BseBus *master = bse_song_find_master (song);
-      if (master)
+      BseBus *bmaster = bse_song_find_master (song);
+      if (bmaster)
         {
-          error = bse_bus_connect (master, BSE_ITEM (self));
-          if (!error)
-            bse_item_push_undo_proc (master, "disconnect-track", self);
+          BusImpl &master = *bmaster->as<BusImpl*>();
+          error = master.connect_track (*this);
         }
     }
   return error;

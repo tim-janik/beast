@@ -89,6 +89,7 @@ public:
   virtual SongTiming   get_timing        (int tick) override;
   virtual int          insert_part       (int tick, PartIface &part) override;
   virtual void         remove_tick       (int tick) override;
+  virtual void         remove_link       (int id) override;
   virtual PartIfaceP   get_part          (int tick) override;
   virtual int          get_last_tick     () override;
   virtual ErrorType    ensure_output     () override;

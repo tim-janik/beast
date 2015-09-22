@@ -630,7 +630,7 @@ bse_song_ensure_master (BseSong *self)
         self.remove_bus (bus);
         return Bse::ERROR_NONE;
       };
-      this_->push_undo ("Create Master", *this_, lambda);
+      this_->push_undo (__func__, *this_, lambda);
       bse_item_undo_close (ustack);
     }
   return child;
@@ -817,7 +817,7 @@ SongImpl::create_bus ()
     self.remove_bus (bus);
     return ERROR_NONE;
   };
-  push_undo ("Create Bus", *this, lambda);
+  push_undo (__func__, *this, lambda);
   return bus->as<BusIfaceP>();
 }
 
@@ -842,7 +842,7 @@ SongImpl::remove_bus (BusIface &bus_iface)
     self.remove_bus (bus);
     return ERROR_NONE;
   };
-  push_undo_to_redo ("Remove Bus", *this, lambda);
+  push_undo_to_redo (__func__, *this, lambda);
   // backup and remove (without redo queueing)
   bse_container_remove_backedup (BSE_CONTAINER (self), child, ustack);
   // done
@@ -861,7 +861,7 @@ SongImpl::create_part ()
     self.remove_part (part);
     return ERROR_NONE;
   };
-  push_undo ("Create Part", *this, lambda);
+  push_undo (__func__, *this, lambda);
   return part->as<PartIfaceP>();
 }
 
@@ -884,7 +884,7 @@ SongImpl::remove_part (PartIface &part_iface)
     self.remove_part (part);
     return ERROR_NONE;
   };
-  push_undo_to_redo ("Remove Part", *this, lambda);
+  push_undo_to_redo (__func__, *this, lambda);
   // remove (without redo queueing)
   bse_container_remove_backedup (BSE_CONTAINER (self), child, ustack);
   // done
@@ -904,7 +904,7 @@ SongImpl::create_track ()
     self.remove_track (track);
     return ERROR_NONE;
   };
-  push_undo ("Create Track", *this, lambda);
+  push_undo (__func__, *this, lambda);
   return track->as<TrackIfaceP>();
 }
 
@@ -927,7 +927,7 @@ SongImpl::remove_track (TrackIface &track_iface)
     self.remove_track (track);
     return ERROR_NONE;
   };
-  push_undo_to_redo ("Remove Track", *this, lambda);
+  push_undo_to_redo (__func__, *this, lambda);
   // remove (without redo queueing)
   bse_container_remove_backedup (BSE_CONTAINER (self), child, ustack);
   // done
