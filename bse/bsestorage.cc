@@ -713,7 +713,10 @@ restore_cxx_item_property (BseItem *bitem, BseStorage *self)
   // need identifier
   if (g_scanner_peek_next_token (scanner) != G_TOKEN_IDENTIFIER)
     return SFI_TOKEN_UNMATCHED;
-  const String identifier = scanner->next_value.v_identifier;
+  String identifier = scanner->next_value.v_identifier;
+  for (size_t i = 0; i < identifier.size(); i++)
+    if (identifier.data()[i] == '-')
+      identifier[i] = '_';
   // find identifier in item, we could search __aida_dir__, but *getting* is simpler
   Any any = item->__aida_get__ (identifier);
   if (any.kind())
