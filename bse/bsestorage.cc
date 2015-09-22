@@ -615,7 +615,12 @@ any_set_from_string (Any &any, const String &string)
   using namespace Rapicorn;
   switch (any.kind())
     {
-    case Aida::BOOL:            any.set (string_to_bool (string));       break;
+    case Aida::BOOL:
+      if (string.size() == 2 && string.data()[0] == '#')
+        any.set (bool (string.data()[1] == 't' || string.data()[1] == 'T'));
+      else
+        any.set (string_to_bool (string));
+      break;
     case Aida::INT64:           any.set (string_to_int (string));        break;
     case Aida::FLOAT64:         any.set (string_to_double (string));     break;
     case Aida::STRING:          any.set (string_from_cquote (string));   break;
