@@ -59,9 +59,30 @@ bst_procedure_get_title (const gchar *procedure)
     {
       BseCategorySeq *cseq = bse_categories_match_typed ("*", procedure);
       if (cseq->n_cats)
-        return cseq->cats[0]->category + cseq->cats[0]->lindex + 1;
+        return cseq->cats[0]->category + bst_path_leaf_index (cseq->cats[0]->category);
     }
   return NULL;
+}
+
+
+BseCategory*
+bse_category_find (const gchar* pattern)
+{
+  BseCategorySeq *cseq = NULL;
+  if (pattern)
+    cseq = bse_categories_match (pattern);
+  if (cseq && cseq->n_cats == 1)
+    return cseq->cats[0];
+  return NULL;
+}
+
+/// Return the character index of the last string segment not containing @a separator.
+uint
+bst_path_leaf_index (const String &path, char separator)
+{
+  const char *data = path.data();
+  const char *d = strrchr (data, separator);
+  return d && d >= data && d < data + path.size() ? d - data + 1 : 0;
 }
 
 namespace Bse {

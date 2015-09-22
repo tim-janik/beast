@@ -39,6 +39,9 @@ Bse::ErrorType    bst_project_restore_from_file   (Bse::ProjectH   project,
 Bse::ErrorType    bst_project_import_midi_file    (Bse::ProjectH   project,
                                                  const gchar    *file_name);
 const gchar*    bst_procedure_get_title         (const gchar    *procedure);
+uint            bst_path_leaf_index             (const String &path, char separator = '/');
+BseCategory*    bse_category_find               (const gchar* pattern);
+
 
 G_END_DECLS
 

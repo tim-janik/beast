@@ -455,7 +455,7 @@ bst_action_list_add_cat (GxkActionList          *alist,
 
   if (cat->icon)
     {
-      BseIcon *icon = cat->icon;
+      BseIc0n *icon = cat->icon;
       g_assert (icon->width * icon->height == int (icon->pixel_seq->n_pixels));
       bst_stock_register_icon (cat->category, 4,
                                icon->width, icon->height,
@@ -475,7 +475,7 @@ bst_action_list_add_cat (GxkActionList          *alist,
 
   gxk_action_list_add_translated (alist, NULL, p, NULL,
                                   gxk_factory_path_get_leaf (cat->category),
-                                  cat->category_id, stock_id,
+                                  g_quark_from_string (cat->category), stock_id,
                                   acheck, aexec, user_data);
 }
 

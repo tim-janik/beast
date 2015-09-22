@@ -54,7 +54,7 @@ enum
 enum
 {
   SIGNAL_RELEASE,
-  SIGNAL_ICON_CHANGED,
+  SIGNAL_IC0N_CHANGED,
   SIGNAL_LAST
 };
 
@@ -569,13 +569,13 @@ bse_object_notify_icon_changed (BseObject *object)
 {
   g_return_if_fail (BSE_IS_OBJECT (object));
 
-  g_signal_emit (object, object_signals[SIGNAL_ICON_CHANGED], 0);
+  g_signal_emit (object, object_signals[SIGNAL_IC0N_CHANGED], 0);
 }
 
-BseIcon*
+BseIc0n*
 bse_object_get_icon (BseObject *object)
 {
-  BseIcon *icon;
+  BseIc0n *icon;
 
   g_return_val_if_fail (BSE_IS_OBJECT (object), NULL);
 
@@ -588,14 +588,14 @@ bse_object_get_icon (BseObject *object)
   return icon;
 }
 
-static BseIcon*
+static BseIc0n*
 bse_object_do_get_icon (BseObject *object)
 {
-  BseIcon *icon;
+  BseIc0n *icon;
 
   g_return_val_if_fail (BSE_IS_OBJECT (object), NULL);
 
-  icon = (BseIcon*) g_object_get_qdata (G_OBJECT (object), bse_quark_icon);
+  icon = (BseIc0n*) g_object_get_qdata (G_OBJECT (object), bse_quark_icon);
   if (!icon)
     {
       BseCategorySeq *cseq;
@@ -608,8 +608,8 @@ bse_object_do_get_icon (BseObject *object)
       for (i = 0; i < cseq->n_cats; i++)
 	if (cseq->cats[i]->icon)
 	  {
-	    icon = bse_icon_copy_shallow (cseq->cats[i]->icon);
-	    g_object_set_qdata_full (G_OBJECT (object), bse_quark_icon, icon, (GDestroyNotify) bse_icon_free);
+	    icon = bse_ic0n_copy_shallow (cseq->cats[i]->icon);
+	    g_object_set_qdata_full (G_OBJECT (object), bse_quark_icon, icon, (GDestroyNotify) bse_ic0n_free);
 	    break;
 	  }
       bse_category_seq_free (cseq);
@@ -876,7 +876,7 @@ bse_object_class_init (BseObjectClass *klass)
 
   object_signals[SIGNAL_RELEASE] = bse_object_class_add_signal (klass, "release",
 								G_TYPE_NONE, 0);
-  object_signals[SIGNAL_ICON_CHANGED] = bse_object_class_add_signal (klass, "icon_changed",
+  object_signals[SIGNAL_IC0N_CHANGED] = bse_object_class_add_signal (klass, "icon_changed",
 								     G_TYPE_NONE, 0);
 }
 

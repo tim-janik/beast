@@ -162,11 +162,13 @@ private:
   UndoDescriptorData make_undo_descriptor_data    (ItemImpl &item);
   ItemImpl&          resolve_undo_descriptor_data (const UndoDescriptorData &udd);
 protected:
-  virtual           ~ItemImpl         ();
+  virtual           ~ItemImpl        ();
 public:
-  explicit           ItemImpl         (BseObject*);
-  ContainerImpl*     parent           ();
-  virtual ItemIfaceP common_ancestor  (ItemIface &other) override;
+  explicit           ItemImpl        (BseObject*);
+  ContainerImpl*     parent          ();
+  virtual ItemIfaceP common_ancestor (ItemIface &other) override;
+  virtual Icon       icon            () const override;
+  virtual void       icon            (const Icon&) override;
   /// Push handler onto the undo stack, @a self must match @a this.
   template<typename ItemT, typename... FuncArgs, typename... CallArgs> void
   push_undo (const String &blurb, ItemT &self, ErrorType (ItemT::*function) (FuncArgs...), CallArgs... args)

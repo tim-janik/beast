@@ -17,8 +17,7 @@
 
 
 /* --- prototypes --- */
-static void           bst_app_run_script_proc     (gpointer     data,
-                                                   size_t       category_id);
+static void           bst_app_run_script_proc     (gpointer data, size_t action_id);
 static GxkActionList* demo_entries_create         (BstApp      *app);
 static GxkActionList* skin_entries_create         (BstApp      *app);
 static void           app_action_exec             (gpointer     data,
@@ -793,11 +792,10 @@ skin_entries_create (BstApp *app)
 }
 
 static void
-bst_app_run_script_proc (gpointer data,
-                         size_t   category_id)
+bst_app_run_script_proc (gpointer data, size_t action_id)
 {
   BstApp *self = BST_APP (data);
-  BseCategory *cat = bse_category_from_id (category_id);
+  BseCategory *cat = bse_category_find (g_quark_to_string (action_id));
   SfiProxy super = bst_app_get_current_super (self);
   const gchar *song = "", *wave_repo = "", *snet = "", *csynth = "";
 

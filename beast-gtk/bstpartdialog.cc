@@ -27,8 +27,7 @@ static gboolean part_dialog_action_check        (gpointer                data,
                                                  guint64                 action_stamp);
 static void     part_dialog_action_exec         (gpointer                data,
                                                  size_t                  action);
-static void     part_dialog_run_script_proc     (gpointer                data,
-                                                 size_t                  category_id);
+static void     part_dialog_run_script_proc     (gpointer data, size_t action_id);
 
 
 /* --- track actions --- */
@@ -322,10 +321,10 @@ event_canvas_clicked (BstEventRoll           *eroll,
 }
 
 static void
-part_dialog_run_script_proc (gpointer data, size_t category_id)
+part_dialog_run_script_proc (gpointer data, size_t action_id)
 {
   BstPartDialog *self = BST_PART_DIALOG (data);
-  BseCategory *cat = bse_category_from_id (category_id);
+  BseCategory *cat = bse_category_find (g_quark_to_string (action_id));
   Bse::PartH part = self->proll->part;
 
   bst_procedure_exec_auto (cat->type,

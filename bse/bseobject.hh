@@ -111,7 +111,7 @@ struct BseObjectClass : GObjectClass {
                                                  guint            vminor,
                                                  guint            vmicro);
   void			(*unlocked)		(BseObject	*object);
-  BseIcon*		(*get_icon)		(BseObject	*object);
+  BseIc0n*		(*get_icon)		(BseObject	*object);
 };
 
 /* --- object class API ---*/
@@ -147,7 +147,7 @@ void		bse_object_lock			(gpointer	 object);
 void		bse_object_unlock		(gpointer	 object);
 gboolean        bse_object_editable_property	(gpointer	 object,
                                                  const gchar    *property);
-BseIcon*	bse_object_get_icon		(BseObject	*object);
+BseIc0n*	bse_object_get_icon		(BseObject	*object);
 void		bse_object_notify_icon_changed	(BseObject	*object);
 BseObject*	bse_object_from_id		(guint		 unique_id);
 GList*		bse_objects_list		(GType		 type);

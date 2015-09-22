@@ -483,7 +483,7 @@ message_fill_from_script (BstMessage    *msg,
     {
       BseCategorySeq *cseq = bse_categories_match_typed ("*", proc_name);
       if (cseq->n_cats)
-        proc_title = cseq->cats[0]->category + cseq->cats[0]->lindex + 1;
+        proc_title = cseq->cats[0]->category + bst_path_leaf_index (cseq->cats[0]->category);
     }
   msg->title = g_strdup (proc_title);
   msg->primary = g_strdup (primary ? primary : proc_title);
