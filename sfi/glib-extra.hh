@@ -129,6 +129,7 @@ gchar*  g_type_name_to_cname            (const gchar    *type_name);
 gchar*  g_type_name_to_sname            (const gchar    *type_name);
 gchar*  g_type_name_to_cupper           (const gchar    *type_name);
 gchar*  g_type_name_to_type_macro       (const gchar    *type_name);
+bool    g_sname_equals                  (const std::string &s1, const std::string &s2);
 
 
 /* --- simple main loop source --- */

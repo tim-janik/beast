@@ -767,6 +767,20 @@ g_type_name_to_type_macro (const gchar *type_name)
   return type_name_to_cname (type_name, "_TYPE", '_', TRUE);
 }
 
+/// Check if @a s1 is equal to @a s2, while ignoring separator differences like '-' vs '_'.
+bool
+g_sname_equals (const std::string &s1, const std::string &s2)
+{
+  if (s1.size() != s2.size())
+    return false;
+  for (size_t i = 0; i < s1.size(); i++)
+    if (s1.data()[i] != s2.data()[i] &&
+        (s1.data()[i] == '_' ? '-' : s1.data()[i]) !=
+        (s2.data()[i] == '_' ? '-' : s2.data()[i]))
+      return false;
+  return true;
+}
+
 
 /* --- simple main loop source --- */
 typedef struct {
