@@ -329,6 +329,13 @@ bst_param_get_proxy (GxkParam *param)
   return 0;
 }
 
+bool
+bst_param_is_proxy (GxkParam *param)
+{
+  assert_return (GXK_IS_PARAM (param), 0);
+  return param->binding == &proxy_binding;
+}
+
 
 /* --- record binding --- */
 static void
