@@ -127,7 +127,8 @@ bst_param_view_set_item (BstParamView *self,
       self->item = 0;
 
       for (slist = self->params; slist; slist = slist->next)
-	bst_param_set_proxy ((GxkParam*) slist->data, 0);
+	if (bst_param_is_proxy ((GxkParam*) slist->data))
+          bst_param_set_proxy ((GxkParam*) slist->data, 0);
     }
 
   self->item = item;
