@@ -486,7 +486,7 @@ bst_args_parse_early (int *argc_p, char **argv)
       else if (strncmp (argv[i], "-:", 2) == 0)
 	{
 	  const gchar *flags = argv[i] + 2;
-	  g_printerr ("BEAST(%s): pid = %u\n", BST_VERSION, getpid ());
+	  printerr ("BEAST(%s): pid = %u\n", BST_VERSION, getpid ());
 	  if (strchr (flags, 'N') != NULL)
 	    {
 	      register_core_plugins = FALSE;
