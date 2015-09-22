@@ -221,8 +221,8 @@ private:
       }
     if (!(resp > min_resp_db - DB_EPSILON) || !(resp < max_resp_db + DB_EPSILON))
       {
-	g_printerr ("\n*** check_response_db: computed response at frequency %f is %f\n", freq, resp);
-	g_printerr ("*** check_response_db: but should be in interval [%f..%f]\n", min_resp_db, max_resp_db);
+	printerr ("\n*** check_response_db: computed response at frequency %f is %f\n", freq, resp);
+	printerr ("*** check_response_db: but should be in interval [%f..%f]\n", min_resp_db, max_resp_db);
       }
     TASSERT (resp > min_resp_db - DB_EPSILON);
     TASSERT (resp < max_resp_db + DB_EPSILON);
@@ -317,19 +317,19 @@ public:
     FILE *data_file = fopen (data_filename.c_str(), "w");
     if (!data_file)
       {
-	g_printerr ("\ncan't open gnuplot datafile '%s': %s\n",
+	printerr ("\ncan't open gnuplot datafile '%s': %s\n",
 	            data_filename.c_str(), strerror (errno));
 	return false;
       }
     FILE *gp_file = fopen (gp_filename.c_str(), "w");
     if (!gp_file)
       {
-	g_printerr ("\ncan't open gnuplot scriptfile '%s': %s\n",
+	printerr ("\ncan't open gnuplot scriptfile '%s': %s\n",
 	            gp_filename.c_str(), strerror (errno));
 	fclose (data_file);
 	return false;
       }
-    g_printerr ("creating gnuplot files '%s', '%s'... ", gp_filename.c_str(), data_filename.c_str());
+    printerr ("creating gnuplot files '%s', '%s'... ", gp_filename.c_str(), data_filename.c_str());
 
     for (double f = 0; f < FS/2; f += delta_f)
       {
@@ -360,7 +360,7 @@ public:
     fclose (gp_file);
     fclose (data_file);
 
-    g_printerr ("ok.\n");
+    printerr ("ok.\n");
     return 0;
   }
 };
@@ -480,7 +480,7 @@ setup_all_filter_tests (vector<FilterTest>& filter_tests)
 void
 check_computed_response (const vector<FilterTest>& filter_tests)
 {
-  g_printerr ("---> checking computed filter responses:\n");
+  printerr ("---> checking computed filter responses:\n");
   for (vector<FilterTest>::const_iterator fi = filter_tests.begin(); fi != filter_tests.end(); fi++)
     fi->perform_checks (FilterTest::TEST_COMPUTED_RESPONSE, 10000);
 }
@@ -488,7 +488,7 @@ check_computed_response (const vector<FilterTest>& filter_tests)
 void
 check_scanned_response (const vector<FilterTest>& filter_tests)
 {
-  g_printerr ("---> checking scanned filter responses:\n");
+  printerr ("---> checking scanned filter responses:\n");
   for (vector<FilterTest>::const_iterator fi = filter_tests.begin(); fi != filter_tests.end(); fi++)
     fi->perform_checks (FilterTest::TEST_SCANNED_RESPONSE, 67);  /* prime number scan points */
 }
@@ -508,8 +508,8 @@ main (int     argc,
     {
       int a;
       for (a = 1; a < argc; a++)
-	g_printerr ("%s: unknown extra arg: %s\n", options.program_name.c_str(), argv[a]);
-      g_printerr ("%s: use the --help option for help.\n", options.program_name.c_str());
+	printerr ("%s: unknown extra arg: %s\n", options.program_name.c_str(), argv[a]);
+      printerr ("%s: use the --help option for help.\n", options.program_name.c_str());
       return 1;
     }
 
