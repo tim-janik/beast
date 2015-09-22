@@ -24,7 +24,7 @@ bst_play_back_handle_new (void)
 
   SfiProxy snet_proxy = bse_project_create_csynth (handle->project.proxy_id(), NULL);
   handle->snet = Bse::SNetH::down_cast (bse_server.from_proxy (snet_proxy));
-  bse_proxy_set (handle->snet.proxy_id(), "auto_activate", TRUE, NULL);
+  handle->snet.auto_activate (true);
   handle->speaker = handle->snet.create_source ("BsePcmOutput").proxy_id();
   handle->wosc1 = handle->snet.create_source ("BseWaveOsc").proxy_id();
   handle->wosc2 = handle->snet.create_source ("BseWaveOsc").proxy_id();
