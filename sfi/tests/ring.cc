@@ -6,11 +6,11 @@
 static void
 print_ring_ints (SfiRing *ring)
 {
-  g_print ("SfiRing(%p): {", ring);
+  printout ("SfiRing(%p): {", ring);
   SfiRing *node;
   for (node = ring; node; node = sfi_ring_walk (node, ring))
-    g_print (" %zd,", (size_t) node->data);
-  g_print (" };");
+    printout (" %zd,", (size_t) node->data);
+  printout (" };");
 }
 
 static void
