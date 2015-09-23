@@ -91,13 +91,13 @@ bse_midi_input_class_init (BseMidiInputClass *klass)
 					     SFI_PARAM_GUI SFI_PARAM_STORAGE ":scale:skip-default"));
 
   ochannel_id = bse_source_class_add_ochannel (source_class, "frequency", _("Frequency"), _("Note Frequency"));
-  g_assert (ochannel_id == BSE_MIDI_INPUT_OCHANNEL_FREQUENCY);
+  assert (ochannel_id == BSE_MIDI_INPUT_OCHANNEL_FREQUENCY);
   ochannel_id = bse_source_class_add_ochannel (source_class, "gate", _("Gate"), _("High if the note is currently being pressed"));
-  g_assert (ochannel_id == BSE_MIDI_INPUT_OCHANNEL_GATE);
+  assert (ochannel_id == BSE_MIDI_INPUT_OCHANNEL_GATE);
   ochannel_id = bse_source_class_add_ochannel (source_class, "velocity", _("Velocity"), _("Velocity of the note press"));
-  g_assert (ochannel_id == BSE_MIDI_INPUT_OCHANNEL_VELOCITY);
+  assert (ochannel_id == BSE_MIDI_INPUT_OCHANNEL_VELOCITY);
   ochannel_id = bse_source_class_add_ochannel (source_class, "aftertouch", _("Aftertouch"), _("Velocity while the note is pressed"));
-  g_assert (ochannel_id == BSE_MIDI_INPUT_OCHANNEL_AFTERTOUCH);
+  assert (ochannel_id == BSE_MIDI_INPUT_OCHANNEL_AFTERTOUCH);
 }
 
 static void

@@ -88,7 +88,7 @@ bst_track_view_new (SfiProxy song)
 {
   GtkWidget *track_view;
 
-  g_return_val_if_fail (BSE_IS_SONG (song), NULL);
+  assert_return (BSE_IS_SONG (song), NULL);
 
   track_view = gtk_widget_new (BST_TYPE_TRACK_VIEW, NULL);
   bst_item_view_set_container (BST_ITEM_VIEW (track_view), song);
@@ -174,7 +174,7 @@ track_view_synth_edited (BstTrackView *self,
 			 const gchar  *strpath,
 			 const gchar  *text)
 {
-  g_return_if_fail (BST_IS_TRACK_VIEW (self));
+  assert_return (BST_IS_TRACK_VIEW (self));
 
   if (strpath)
     {
@@ -209,7 +209,7 @@ track_view_post_synth_edited (BstTrackView *self,
                               const gchar  *strpath,
                               const gchar  *text)
 {
-  g_return_if_fail (BST_IS_TRACK_VIEW (self));
+  assert_return (BST_IS_TRACK_VIEW (self));
 
   if (strpath)
     {
@@ -266,7 +266,7 @@ track_view_synth_popup (BstTrackView         *self,
 			const gchar          *text,
 			GxkCellRendererPopup *pcell)
 {
-  g_return_if_fail (BST_IS_TRACK_VIEW (self));
+  assert_return (BST_IS_TRACK_VIEW (self));
 
   if (strpath)
     {
@@ -295,7 +295,7 @@ track_view_post_synth_popup (BstTrackView         *self,
                              const gchar          *text,
                              GxkCellRendererPopup *pcell)
 {
-  g_return_if_fail (BST_IS_TRACK_VIEW (self));
+  assert_return (BST_IS_TRACK_VIEW (self));
 
   if (strpath)
     {
@@ -350,7 +350,7 @@ track_view_outputs_popup (BstTrackView         *self,
                           const gchar          *text,
                           GxkCellRendererPopup *pcell)
 {
-  g_return_if_fail (BST_IS_TRACK_VIEW (self));
+  assert_return (BST_IS_TRACK_VIEW (self));
 
   if (strpath)
     {
@@ -376,7 +376,7 @@ track_view_mute_toggled (BstTrackView          *self,
 			 const gchar           *strpath,
 			 GtkCellRendererToggle *tcell)
 {
-  g_return_if_fail (BST_IS_TRACK_VIEW (self));
+  assert_return (BST_IS_TRACK_VIEW (self));
 
   if (strpath)
     {
@@ -398,7 +398,7 @@ track_view_voice_edited (BstTrackView *self,
                          const gchar  *strpath,
                          const gchar  *text)
 {
-  g_return_if_fail (BST_IS_TRACK_VIEW (self));
+  assert_return (BST_IS_TRACK_VIEW (self));
 
   if (strpath)
     {
@@ -418,7 +418,7 @@ track_view_midi_channel_edited (BstTrackView *self,
                                 const gchar  *strpath,
                                 const gchar  *text)
 {
-  g_return_if_fail (BST_IS_TRACK_VIEW (self));
+  assert_return (BST_IS_TRACK_VIEW (self));
 
   if (strpath)
     {

@@ -156,10 +156,10 @@ bse_procedure_type_register (const gchar *name,
                              GType       *ret_type)
 {
   GType base_type = 0;
-  g_return_val_if_fail (ret_type != NULL, bse_error_blurb (Bse::ERROR_INTERNAL));
+  assert_return (ret_type != NULL, bse_error_blurb (Bse::ERROR_INTERNAL));
   *ret_type = 0;
-  g_return_val_if_fail (name != NULL, bse_error_blurb (Bse::ERROR_INTERNAL));
-  g_return_val_if_fail (plugin != NULL, bse_error_blurb (Bse::ERROR_INTERNAL));
+  assert_return (name != NULL, bse_error_blurb (Bse::ERROR_INTERNAL));
+  assert_return (plugin != NULL, bse_error_blurb (Bse::ERROR_INTERNAL));
   GType type = g_type_from_name (name);
   if (type)
     return "Procedure already registered";
@@ -188,7 +188,7 @@ bse_procedure_lookup (const gchar *proc_name)
 {
   GType type;
 
-  g_return_val_if_fail (proc_name != NULL, 0);
+  assert_return (proc_name != NULL, 0);
 
   type = g_type_from_name (proc_name);
   return BSE_TYPE_IS_PROCEDURE (type) ? type : 0;
@@ -278,7 +278,7 @@ bse_procedure_marshal (GType               proc_type,
   GValue tmp_ivalues[BSE_PROCEDURE_MAX_IN_PARAMS], tmp_ovalues[BSE_PROCEDURE_MAX_OUT_PARAMS];
   uint i, bail_out = FALSE;
   Bse::ErrorType error;
-  g_return_val_if_fail (BSE_TYPE_IS_PROCEDURE (proc_type), Bse::ERROR_INTERNAL);
+  assert_return (BSE_TYPE_IS_PROCEDURE (proc_type), Bse::ERROR_INTERNAL);
   BseProcedureClass *proc = (BseProcedureClass*) g_type_class_ref (proc_type);
   for (i = 0; i < proc->n_in_pspecs; i++)
     {
@@ -455,7 +455,7 @@ bse_procedure_marshal_valist (GType               proc_type,
                               gboolean            skip_ovalues,
                               va_list             var_args)
 {
-  g_return_val_if_fail (BSE_TYPE_IS_PROCEDURE (proc_type), Bse::ERROR_INTERNAL);
+  assert_return (BSE_TYPE_IS_PROCEDURE (proc_type), Bse::ERROR_INTERNAL);
   GValue tmp_ivalues[BSE_PROCEDURE_MAX_IN_PARAMS], tmp_ovalues[BSE_PROCEDURE_MAX_OUT_PARAMS];
   BseProcedureClass *proc = (BseProcedureClass*) g_type_class_ref (proc_type);
   Bse::ErrorType error = bse_procedure_call_collect (proc, first_value, marshal, marshal_data,
@@ -486,7 +486,7 @@ bse_procedure_collect_input_args (BseProcedureClass  *proc,
                                   GValue              ivalues[BSE_PROCEDURE_MAX_IN_PARAMS])
 {
   Bse::ErrorType error;
-  g_return_val_if_fail (BSE_IS_PROCEDURE_CLASS (proc), Bse::ERROR_INTERNAL);
+  assert_return (BSE_IS_PROCEDURE_CLASS (proc), Bse::ERROR_INTERNAL);
 
   /* add an extra reference count to the class */
   proc = (BseProcedureClass*) g_type_class_ref (BSE_PROCEDURE_TYPE (proc));
@@ -503,7 +503,7 @@ bse_procedure_exec (const gchar *proc_name,
 {
   GType proc_type;
 
-  g_return_val_if_fail (proc_name != NULL, Bse::ERROR_INTERNAL);
+  assert_return (proc_name != NULL, Bse::ERROR_INTERNAL);
 
   proc_type = bse_procedure_lookup (proc_name);
   if (!proc_type)
@@ -529,7 +529,7 @@ bse_procedure_exec_void (const gchar *proc_name,
 {
   GType proc_type;
 
-  g_return_val_if_fail (proc_name != NULL, Bse::ERROR_INTERNAL);
+  assert_return (proc_name != NULL, Bse::ERROR_INTERNAL);
 
   proc_type = bse_procedure_lookup (proc_name);
   if (!proc_type)
@@ -675,7 +675,7 @@ procedure_class_unref (BseProcedureClass *proc)
   if (!proc->cache_stamp)
     {
       // g_printerr ("cache-procedure: %s\n", BSE_PROCEDURE_NAME (proc));
-      g_assert (proc->cache_next == NULL);
+      assert (proc->cache_next == NULL);
       proc->cache_stamp = 2;        /* 'recent' stamp */
       proc->cache_next = proc_cache;
       proc_cache = proc;

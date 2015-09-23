@@ -78,8 +78,8 @@ bst_param_create_gmask_intern (GxkParam    *param,
   gboolean expand_action;
   gchar *tooltip;
 
-  g_return_val_if_fail (GXK_IS_PARAM (param), NULL);
-  g_return_val_if_fail (GTK_IS_CONTAINER (parent), NULL);
+  assert_return (GXK_IS_PARAM (param), NULL);
+  assert_return (GTK_IS_CONTAINER (parent), NULL);
 
   gxk_param_set_sizes (param_size_group, BST_GCONFIG (size_group_input_fields) ? &param_editor_homogeneous_sizes : NULL);
   group = sfi_pspec_get_group (param->pspec);
@@ -305,8 +305,8 @@ void
 bst_param_set_proxy (GxkParam *param,
                      SfiProxy  proxy)
 {
-  g_return_if_fail (GXK_IS_PARAM (param));
-  g_return_if_fail (param->binding == &proxy_binding);
+  assert_return (GXK_IS_PARAM (param));
+  assert_return (param->binding == &proxy_binding);
 
   proxy_binding_destroy (param);
   param->bdata[0].v_long = proxy;
@@ -322,7 +322,7 @@ bst_param_set_proxy (GxkParam *param,
 SfiProxy
 bst_param_get_proxy (GxkParam *param)
 {
-  g_return_val_if_fail (GXK_IS_PARAM (param), 0);
+  assert_return (GXK_IS_PARAM (param), 0);
 
   if (param->binding == &proxy_binding)
     return param->bdata[0].v_long;
@@ -369,7 +369,7 @@ bst_param_new_rec (GParamSpec *pspec,
                    SfiRec     *rec)
 {
   GxkParam *param = gxk_param_new (pspec, &record_binding, (gpointer) FALSE);
-  g_return_val_if_fail (rec != NULL, NULL);
+  assert_return (rec != NULL, NULL);
   param->bdata[0].v_pointer = sfi_rec_ref (rec);
   gxk_param_set_size_group (param, param_size_group);
   return param;
@@ -488,7 +488,7 @@ static gboolean
 bst_param_xframe_check_button (GxkParam *param,
                                guint     button)
 {
-  g_return_val_if_fail (GXK_IS_PARAM (param), FALSE);
+  assert_return (GXK_IS_PARAM (param), FALSE);
 #if 0
   if (bparam->binding->rack_item)
     {
@@ -527,7 +527,7 @@ bst_param_xframe_check_button (GxkParam *param,
 void
 _bst_init_params (void)
 {
-  g_assert (quark_null_group == 0);
+  assert (quark_null_group == 0);
 
   quark_null_group = g_quark_from_static_string ("bst-param-null-group");
   quark_param_choice_values = g_quark_from_static_string ("bst-param-choice-values");

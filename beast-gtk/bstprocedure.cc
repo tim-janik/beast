@@ -123,7 +123,7 @@ void
 bst_procedure_shell_set_proc (BstProcedureShell *self,
 			      SfiGlueProc       *proc)
 {
-  g_return_if_fail (BST_IS_PROCEDURE_SHELL (self));
+  assert_return (BST_IS_PROCEDURE_SHELL (self));
 
   if (proc != self->proc)
     {
@@ -145,7 +145,7 @@ bst_procedure_shell_rebuild (BstProcedureShell *self)
   SfiRing *ring, *pspecs = NULL;
   guint i;
 
-  g_return_if_fail (BST_IS_PROCEDURE_SHELL (self));
+  assert_return (BST_IS_PROCEDURE_SHELL (self));
 
   sfi_rec_clear (self->prec);
   bst_procedure_shell_destroy_contents (self);
@@ -224,7 +224,7 @@ bst_procedure_shell_update (BstProcedureShell *self)
 {
   SfiRing *ring;
 
-  g_return_if_fail (BST_IS_PROCEDURE_SHELL (self));
+  assert_return (BST_IS_PROCEDURE_SHELL (self));
 
   for (ring = self->params; ring; ring = sfi_ring_walk (ring, self->params))
     gxk_param_update ((GxkParam*) ring->data);
@@ -247,9 +247,9 @@ bst_procedure_shell_execute (BstProcedureShell *self)
   GtkWidget *widget;
   SfiRing *ring;
 
-  g_return_if_fail (BST_IS_PROCEDURE_SHELL (self));
-  g_return_if_fail (self->proc != NULL);
-  g_return_if_fail (self->in_execution == FALSE);
+  assert_return (BST_IS_PROCEDURE_SHELL (self));
+  assert_return (self->proc != NULL);
+  assert_return (self->in_execution == FALSE);
 
   widget = GTK_WIDGET (self);
   gtk_widget_ref (widget);
@@ -294,7 +294,7 @@ bst_procedure_shell_reset (BstProcedureShell *self)
   SfiGlueProc *proc;
   SfiRing *ring;
 
-  g_return_if_fail (BST_IS_PROCEDURE_SHELL (self));
+  assert_return (BST_IS_PROCEDURE_SHELL (self));
 
   proc = self->proc;
   sfi_rec_clear (self->prec);
@@ -327,7 +327,7 @@ bst_procedure_shell_unpreset (BstProcedureShell *self)
 {
   SfiRing *ring;
 
-  g_return_if_fail (BST_IS_PROCEDURE_SHELL (self));
+  assert_return (BST_IS_PROCEDURE_SHELL (self));
 
   for (ring = self->params; ring; ring = sfi_ring_walk (ring, self->params))
     {
@@ -360,10 +360,10 @@ bst_procedure_shell_preset (BstProcedureShell *self,
   SfiGlueProc *proc;
   SfiRing *ring;
 
-  g_return_val_if_fail (BST_IS_PROCEDURE_SHELL (self), 0);
-  g_return_val_if_fail (self->proc != NULL, 0);
-  g_return_val_if_fail (name != NULL, 0);
-  g_return_val_if_fail (G_IS_VALUE (value), 0);
+  assert_return (BST_IS_PROCEDURE_SHELL (self), 0);
+  assert_return (self->proc != NULL, 0);
+  assert_return (name != NULL, 0);
+  assert_return (G_IS_VALUE (value), 0);
 
   proc = self->proc;
 
@@ -524,7 +524,7 @@ bst_procedure_exec_modal (const gchar *procedure_name,
 {
   va_list var_args;
 
-  g_return_if_fail (procedure_name != NULL);
+  assert_return (procedure_name != NULL);
 
   va_start (var_args, preset_param);
   bst_procedure_exec_internal (procedure_name, preset_param, TRUE, TRUE, TRUE, var_args);
@@ -538,7 +538,7 @@ bst_procedure_exec (const gchar *procedure_name,
 {
   va_list var_args;
 
-  g_return_if_fail (procedure_name != NULL);
+  assert_return (procedure_name != NULL);
 
   va_start (var_args, preset_param);
   bst_procedure_exec_internal (procedure_name, preset_param, FALSE, FALSE, FALSE, var_args);
@@ -552,7 +552,7 @@ bst_procedure_exec_auto (const gchar *procedure_name,
 {
   va_list var_args;
 
-  g_return_if_fail (procedure_name != NULL);
+  assert_return (procedure_name != NULL);
 
   va_start (var_args, preset_param);
   bst_procedure_exec_internal (procedure_name, preset_param, FALSE, TRUE, FALSE, var_args);

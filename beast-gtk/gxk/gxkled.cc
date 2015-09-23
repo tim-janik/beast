@@ -116,7 +116,7 @@ void
 gxk_led_set_color (GxkLed *self,
 		   guint   color)
 {
-  g_return_if_fail (GXK_IS_LED (self));
+  assert_return (GXK_IS_LED (self));
 
   if (!color)	/* lazy bum! */
     color = GXK_LED_OFF;
@@ -129,7 +129,7 @@ void
 gxk_led_set_border_width (GxkLed *self,
 			  guint   border_width)
 {
-  g_return_if_fail (GXK_IS_LED (self));
+  assert_return (GXK_IS_LED (self));
 
   self->border_width = border_width;
   gtk_widget_queue_resize (GTK_WIDGET (self));

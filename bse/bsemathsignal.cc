@@ -653,7 +653,7 @@ bse_approx_atan1_prescale (double boost_amount)
   double recip_tan_1_div_0_75 = 0.24202942695518667705824990442766; /* 1/tan(1/0.75) */
   double scale;
 
-  g_return_val_if_fail (boost_amount >= 0 && boost_amount <= 1.0, 1.0);
+  assert_return (boost_amount >= 0 && boost_amount <= 1.0, 1.0);
 
   /* scale boost_amount from [0..1] to -1..1 */
   boost_amount = boost_amount * 2 - 1.0;

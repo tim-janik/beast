@@ -67,7 +67,7 @@ void
 bse_engine_free_ostreams (guint         n_ostreams,
                           BseOStream   *ostreams)
 {
-  g_assert (n_ostreams > 0);
+  assert (n_ostreams > 0);
   /* bse_engine_block_size() may have changed since allocation */
   g_free (ostreams);
 }
@@ -79,15 +79,15 @@ bse_engine_free_node (EngineNode *node)
   gpointer user_data;
   guint j;
 
-  g_return_if_fail (node != NULL);
-  g_return_if_fail (node->output_nodes == NULL);
-  g_return_if_fail (node->integrated == FALSE);
-  g_return_if_fail (node->sched_tag == FALSE);
-  g_return_if_fail (node->sched_recurse_tag == FALSE);
-  g_return_if_fail (node->flow_jobs == NULL);
-  g_return_if_fail (node->boundary_jobs == NULL);
-  g_return_if_fail (node->tjob_head == NULL);
-  g_return_if_fail (node->probe_jobs == NULL);
+  assert_return (node != NULL);
+  assert_return (node->output_nodes == NULL);
+  assert_return (node->integrated == FALSE);
+  assert_return (node->sched_tag == FALSE);
+  assert_return (node->sched_recurse_tag == FALSE);
+  assert_return (node->flow_jobs == NULL);
+  assert_return (node->boundary_jobs == NULL);
+  assert_return (node->tjob_head == NULL);
+  assert_return (node->probe_jobs == NULL);
   if (node->module.ostreams)
     {
       /* bse_engine_block_size() may have changed since allocation */
@@ -122,7 +122,7 @@ bse_engine_free_node (EngineNode *node)
 static void
 bse_engine_free_job (BseJob *job)
 {
-  g_return_if_fail (job != NULL);
+  assert_return (job != NULL);
 
   switch (job->job_id)
     {
@@ -163,10 +163,10 @@ bse_engine_free_transaction (BseTrans *trans)
 {
   BseJob *job;
 
-  g_return_if_fail (trans != NULL);
-  g_return_if_fail (trans->comitted == FALSE);
+  assert_return (trans != NULL);
+  assert_return (trans->comitted == FALSE);
   if (trans->jobs_tail)
-    g_return_if_fail (trans->jobs_tail->next == NULL);	/* paranoid */
+    assert_return (trans->jobs_tail->next == NULL);	/* paranoid */
 
   job = trans->jobs_head;
   while (job)
@@ -196,9 +196,9 @@ static guint64         cqueue_commit_base_stamp = 1;
 guint64
 _engine_enqueue_trans (BseTrans *trans)
 {
-  g_return_val_if_fail (trans != NULL, 0);
-  g_return_val_if_fail (trans->comitted == TRUE, 0);
-  g_return_val_if_fail (trans->jobs_head != NULL, 0);
+  assert_return (trans != NULL, 0);
+  assert_return (trans->comitted == TRUE, 0);
+  assert_return (trans->jobs_head != NULL, 0);
   cqueue_trans_mutex.lock();
   if (cqueue_trans_pending_tail)
     {
@@ -240,10 +240,10 @@ _engine_job_pending (void)
 void
 _engine_free_trans (BseTrans *trans)
 {
-  g_return_if_fail (trans != NULL);
-  g_return_if_fail (trans->comitted == FALSE);
+  assert_return (trans != NULL);
+  assert_return (trans->comitted == FALSE);
   if (trans->jobs_tail)
-    g_return_if_fail (trans->jobs_tail->next == NULL);  /* paranoid */
+    assert_return (trans->jobs_tail->next == NULL);  /* paranoid */
   cqueue_trans_mutex.lock();
   trans->cqt_next = NULL;
   if (cqueue_trans_trash_tail)
@@ -413,7 +413,7 @@ engine_fetch_process_queue_trash_jobs_U (EngineTimedJob **trash_tjobs_head,
        * during processing. to ensure this, we assert that no flow processing
        * schedule is currently set.
        */
-      g_assert (pqueue_schedule == NULL);
+      assert (pqueue_schedule == NULL);
       pqueue_mutex.unlock();
     }
   else
@@ -422,8 +422,8 @@ engine_fetch_process_queue_trash_jobs_U (EngineTimedJob **trash_tjobs_head,
 void
 _engine_set_schedule (EngineSchedule *sched)
 {
-  g_return_if_fail (sched != NULL);
-  g_return_if_fail (sched->secured == TRUE);
+  assert_return (sched != NULL);
+  assert_return (sched->secured == TRUE);
   pqueue_mutex.lock();
   if (UNLIKELY (pqueue_schedule != NULL))
     {
@@ -439,7 +439,7 @@ void
 _engine_unset_schedule (EngineSchedule *sched)
 {
   EngineTimedJob *trash_tjobs_head, *trash_tjobs_tail;
-  g_return_if_fail (sched != NULL);
+  assert_return (sched != NULL);
   pqueue_mutex.lock();
   if (UNLIKELY (pqueue_schedule != sched))
     {
@@ -499,7 +499,7 @@ collect_user_jobs_L (EngineNode *node)
 void
 _engine_node_collect_jobs (EngineNode *node)
 {
-  g_return_if_fail (node != NULL);
+  assert_return (node != NULL);
   pqueue_mutex.lock();
   collect_user_jobs_L (node);
   pqueue_mutex.unlock();
@@ -507,11 +507,11 @@ _engine_node_collect_jobs (EngineNode *node)
 void
 _engine_push_processed_node (EngineNode *node)
 {
-  g_return_if_fail (node != NULL);
-  g_return_if_fail (pqueue_n_nodes > 0);
-  g_return_if_fail (ENGINE_NODE_IS_SCHEDULED (node));
+  assert_return (node != NULL);
+  assert_return (pqueue_n_nodes > 0);
+  assert_return (ENGINE_NODE_IS_SCHEDULED (node));
   pqueue_mutex.lock();
-  g_assert (pqueue_n_nodes > 0);        /* paranoid */
+  assert (pqueue_n_nodes > 0);        /* paranoid */
   collect_user_jobs_L (node);
   pqueue_n_nodes -= 1;
   ENGINE_NODE_UNLOCK (node);
@@ -529,9 +529,9 @@ _engine_pop_unprocessed_cycle (void)
 void
 _engine_push_processed_cycle (SfiRing *cycle)
 {
-  g_return_if_fail (cycle != NULL);
-  g_return_if_fail (pqueue_n_cycles > 0);
-  g_return_if_fail (ENGINE_NODE_IS_SCHEDULED (cycle->data));
+  assert_return (cycle != NULL);
+  assert_return (pqueue_n_cycles > 0);
+  assert_return (ENGINE_NODE_IS_SCHEDULED (cycle->data));
 }
 
 void
@@ -557,7 +557,7 @@ _engine_mnl_head (void)
 void
 _engine_mnl_remove (EngineNode *node)
 {
-  g_return_if_fail (node->integrated == TRUE);
+  assert_return (node->integrated == TRUE);
 
   node->integrated = FALSE;
   /* remove */
@@ -576,9 +576,9 @@ _engine_mnl_remove (EngineNode *node)
 void
 _engine_mnl_integrate (EngineNode *node)
 {
-  g_return_if_fail (node->integrated == FALSE);
-  g_return_if_fail (node->flow_jobs == NULL);
-  g_return_if_fail (node->boundary_jobs == NULL);
+  assert_return (node->integrated == FALSE);
+  assert_return (node->flow_jobs == NULL);
+  assert_return (node->boundary_jobs == NULL);
 
   node->integrated = TRUE;
   /* append */
@@ -588,7 +588,7 @@ _engine_mnl_integrate (EngineNode *node)
   master_node_list_tail = node;
   if (!master_node_list_head)
     master_node_list_head = master_node_list_tail;
-  g_assert (node->mnl_next == NULL);
+  assert (node->mnl_next == NULL);
 }
 
 void
@@ -596,7 +596,7 @@ _engine_mnl_node_changed (EngineNode *node)
 {
   EngineNode *sibling;
 
-  g_return_if_fail (node->integrated == TRUE);
+  assert_return (node->integrated == TRUE);
 
   /* the master node list is partially sorted. that is, all
    * nodes which are not scheduled and have pending user jobs
@@ -646,7 +646,7 @@ bse_engine_const_zeros (guint smaller_than_BSE_STREAM_MAX_VALUES)
 {
   static const float engine_const_zero_block[BSE_STREAM_MAX_VALUES + 16 /* SIMD alignment */] = { 0, };
   /* this function is callable from any thread */
-  g_assert (smaller_than_BSE_STREAM_MAX_VALUES <= BSE_STREAM_MAX_VALUES);
+  assert (smaller_than_BSE_STREAM_MAX_VALUES <= BSE_STREAM_MAX_VALUES);
   return (float*) engine_const_zero_block;
 }
 
@@ -714,7 +714,7 @@ const_values_insert (ConstValuesArray *array,
       array->nodes = (float**) g_realloc (array->nodes, new_size);
       array->nodes_used = (guint8*) g_realloc (array->nodes_used, new_size / sizeof (gfloat*));
       array->n_nodes = 1;
-      g_assert (index == 0);
+      assert (index == 0);
     }
   else
     {

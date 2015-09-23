@@ -114,9 +114,9 @@ bse_iir_filter_class_init (BseIIRFilterClass *klass)
 					      SFI_PARAM_GUI));
 
   ichannel_id = bse_source_class_add_ichannel (source_class, "audio-in", _("Audio In"), _("Unfiltered Input"));
-  g_assert (ichannel_id == BSE_IIR_FILTER_ICHANNEL_MONO);
+  assert (ichannel_id == BSE_IIR_FILTER_ICHANNEL_MONO);
   ochannel_id = bse_source_class_add_ochannel (source_class, "audio-out", _("Audio Out"), _("Filtered Output"));
-  g_assert (ochannel_id == BSE_IIR_FILTER_OCHANNEL_MONO);
+  assert (ochannel_id == BSE_IIR_FILTER_OCHANNEL_MONO);
 }
 
 static void
@@ -335,7 +335,7 @@ bse_iir_filter_update_modules (BseIIRFilter *filt)
 	  gsl_filter_tscheb2_bs (filt->order & ~1, freq1, freq2, steepness, filt->epsilon, filt->a, filt->b);
 	  break;
 	default:
-	  g_assert_not_reached ();
+	  assert_unreached ();
 	}
 
       fmod->iir.order = filt->order;

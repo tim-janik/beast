@@ -28,7 +28,7 @@ void
 bse_type_add_options (GType        type,
                       const gchar *options)
 {
-  g_return_if_fail (bse_type_get_options (type) == NULL);
+  assert_return (bse_type_get_options (type) == NULL);
   g_type_set_qdata (type, quark_options, g_strdup (options));
 }
 
@@ -56,7 +56,7 @@ bse_type_add_blurb (GType        type,
                     const gchar *file,
                     guint        line)
 {
-  g_return_if_fail (bse_type_get_blurb (type) == NULL);
+  assert_return (bse_type_get_blurb (type) == NULL);
   g_type_set_qdata (type, quark_blurb, g_strdup (blurb));
   g_type_set_qdata (type, quark_loc_file, g_strdup (file));
   g_type_set_qdata (type, quark_loc_line, (void*) size_t (line));
@@ -72,7 +72,7 @@ void
 bse_type_add_authors (GType        type,
                       const gchar *authors)
 {
-  g_return_if_fail (bse_type_get_authors (type) == NULL);
+  assert_return (bse_type_get_authors (type) == NULL);
   g_type_set_qdata (type, quark_authors, g_strdup (authors));
 }
 
@@ -86,7 +86,7 @@ void
 bse_type_add_license (GType        type,
                       const gchar *license)
 {
-  g_return_if_fail (bse_type_get_license (type) == NULL);
+  assert_return (bse_type_get_license (type) == NULL);
   g_type_set_qdata (type, quark_license, g_strdup (license));
 }
 
@@ -290,11 +290,11 @@ bse_type_register_loadable_boxed (BseExportNodeBoxed *bnode,
     &boxed_vtable,              /* value_table */
   };
   GType type;
-  g_return_val_if_fail (bnode->node.name != NULL, 0);
-  g_return_val_if_fail (bnode->copy != NULL, 0);
-  g_return_val_if_fail (bnode->free != NULL, 0);
-  g_return_val_if_fail (bnode->node.ntype == BSE_EXPORT_NODE_RECORD || bnode->node.ntype == BSE_EXPORT_NODE_SEQUENCE, 0);
-  g_return_val_if_fail (g_type_from_name (bnode->node.name) == 0, 0);
+  assert_return (bnode->node.name != NULL, 0);
+  assert_return (bnode->copy != NULL, 0);
+  assert_return (bnode->free != NULL, 0);
+  assert_return (bnode->node.ntype == BSE_EXPORT_NODE_RECORD || bnode->node.ntype == BSE_EXPORT_NODE_SEQUENCE, 0);
+  assert_return (g_type_from_name (bnode->node.name) == 0, 0);
 
   type = g_type_register_static (G_TYPE_BOXED, bnode->node.name, &info, GTypeFlags (0));
   if (bnode->boxed2recseq)
@@ -313,7 +313,7 @@ bse_type_register_loadable_boxed (BseExportNodeBoxed *bnode,
 void
 bse_type_reinit_boxed (BseExportNodeBoxed *bnode)
 {
-  g_return_if_fail (G_TYPE_IS_BOXED (bnode->node.type));
+  assert_return (G_TYPE_IS_BOXED (bnode->node.type));
   g_type_set_qdata (bnode->node.type, quark_boxed_export_node, bnode);
   switch (bnode->node.ntype)
     {
@@ -323,7 +323,7 @@ bse_type_reinit_boxed (BseExportNodeBoxed *bnode)
     case BSE_EXPORT_NODE_SEQUENCE:
       sfi_boxed_type_set_seq_element (bnode->node.type, bnode->func.get_element());
       break;
-    default:    g_assert_not_reached();
+    default:    assert_unreached();
     }
 }
 
@@ -331,7 +331,7 @@ void
 bse_type_uninit_boxed (BseExportNodeBoxed *bnode)
 {
   static SfiRecFields rfields = { 0, NULL };
-  g_return_if_fail (G_TYPE_IS_BOXED (bnode->node.type));
+  assert_return (G_TYPE_IS_BOXED (bnode->node.type));
   switch (bnode->node.ntype)
     {
     case BSE_EXPORT_NODE_RECORD:
@@ -340,7 +340,7 @@ bse_type_uninit_boxed (BseExportNodeBoxed *bnode)
     case BSE_EXPORT_NODE_SEQUENCE:
       sfi_boxed_type_set_seq_element (bnode->node.type, NULL);
       break;
-    default:    g_assert_not_reached();
+    default:    assert_unreached();
     }
   g_type_set_qdata (bnode->node.type, quark_boxed_export_node, NULL);
 }
@@ -358,8 +358,8 @@ bse_param_spec_enum (const gchar    *name,
 {
   GParamSpec *pspec;
 
-  g_return_val_if_fail (G_TYPE_IS_ENUM (enum_type), NULL);
-  g_return_val_if_fail (enum_type != G_TYPE_ENUM, NULL);
+  assert_return (G_TYPE_IS_ENUM (enum_type), NULL);
+  assert_return (enum_type != G_TYPE_ENUM, NULL);
 
   /* g_param_spec_enum() validates default_value, which we allways allow
    * to be 0, so we might need to adjust it to pass validation
@@ -398,7 +398,7 @@ bse_type_init (void)
   static GTypeFundamentalInfo finfo = { GTypeFundamentalFlags (0), };
   guint i;
 
-  g_return_if_fail (quark_blurb == 0);
+  assert_return (quark_blurb == 0);
 
   /* type system initialization
    */
@@ -424,7 +424,7 @@ bse_type_init (void)
   bse_type_register_procedure_info (&info);
   g_type_register_fundamental (BSE_TYPE_PROCEDURE, "BseProcedure", &info, &finfo, GTypeFlags (0));
   bse_type_add_blurb (BSE_TYPE_PROCEDURE, "BSE Procedure base type", __FILE__, __LINE__);
-  g_assert (BSE_TYPE_PROCEDURE == g_type_from_name ("BseProcedure"));
+  assert (BSE_TYPE_PROCEDURE == g_type_from_name ("BseProcedure"));
 
   /* initialize extra types */
   {

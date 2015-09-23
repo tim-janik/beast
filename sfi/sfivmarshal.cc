@@ -94,7 +94,7 @@ put_val (Arg          *a,
 #endif
     default:
       t = 0;
-      g_assert_not_reached ();
+      assert_unreached ();
     }
   return t;
 }
@@ -110,7 +110,7 @@ sfi_vmarshal_void (void          *func,
   guint32 sig;
   guint i;
 
-  g_return_if_fail (n_args <= SFI_VMARSHAL_MAX_ARGS);
+  assert_return (n_args <= SFI_VMARSHAL_MAX_ARGS);
 
   sig = 0;
   for (i = 0; i < n_args; i++)
@@ -2087,6 +2087,6 @@ sfi_vmarshal_switch (guint sig)
     case 0x3fd: return sfi_vmarshal_33331; /* 241 */
     case 0x3fe: return sfi_vmarshal_33332; /* 242 */
     case 0x3ff: return sfi_vmarshal_33333; /* 243 */
-    default: g_assert_not_reached (); return NULL;
+    default: assert_unreached (); return NULL;
     }
 }

@@ -56,7 +56,7 @@ bst_canvas_link_new (GnomeCanvasGroup *group)
 {
   GnomeCanvasItem *item;
 
-  g_return_val_if_fail (GNOME_IS_CANVAS_GROUP (group), NULL);
+  assert_return (GNOME_IS_CANVAS_GROUP (group), NULL);
 
   item = gnome_canvas_item_new (group,
 				BST_TYPE_CANVAS_LINK,
@@ -83,7 +83,7 @@ bst_canvas_link_csource_at (BstCanvasLink *clink,
 {
   GnomeCanvasItem *tag;
 
-  g_return_val_if_fail (BST_IS_CANVAS_LINK (clink), NULL);
+  assert_return (BST_IS_CANVAS_LINK (clink), NULL);
 
   tag = gnome_canvas_typed_item_at (GNOME_CANVAS_ITEM (clink)->canvas, GNOME_TYPE_CANVAS_ELLIPSE, world_x, world_y);
   if (tag && tag == clink->tag_start)
@@ -157,7 +157,7 @@ clink_view_update (BstCanvasLink *clink,
 void
 bst_canvas_link_popup_view (BstCanvasLink *clink)
 {
-  g_return_if_fail (BST_IS_CANVAS_LINK (clink));
+  assert_return (BST_IS_CANVAS_LINK (clink));
 
   if (!clink->link_view)
     clink->link_view = (GtkWidget*) gxk_dialog_new (&clink->link_view,
@@ -177,7 +177,7 @@ bst_canvas_link_popup_view (BstCanvasLink *clink)
 void
 bst_canvas_link_toggle_view (BstCanvasLink *clink)
 {
-  g_return_if_fail (BST_IS_CANVAS_LINK (clink));
+  assert_return (BST_IS_CANVAS_LINK (clink));
 
   if (!clink->link_view || !GTK_WIDGET_VISIBLE (clink->link_view))
     bst_canvas_link_popup_view (clink);
@@ -188,7 +188,7 @@ bst_canvas_link_toggle_view (BstCanvasLink *clink)
 static void
 clink_view_check_update (BstCanvasLink *clink)
 {
-  g_return_if_fail (BST_IS_CANVAS_LINK (clink));
+  assert_return (BST_IS_CANVAS_LINK (clink));
 
   clink_view_update (clink, FALSE);
 }
@@ -198,9 +198,9 @@ bst_canvas_link_set_ocsource (BstCanvasLink   *clink,
 			      BstCanvasSource *ocsource,
 			      guint            ochannel)
 {
-  g_return_if_fail (BST_IS_CANVAS_LINK (clink));
+  assert_return (BST_IS_CANVAS_LINK (clink));
   if (ocsource)
-    g_return_if_fail (BST_CANVAS_SOURCE (ocsource));
+    assert_return (BST_CANVAS_SOURCE (ocsource));
 
   if (clink->ocsource)
     {
@@ -233,9 +233,9 @@ bst_canvas_link_set_icsource (BstCanvasLink   *clink,
 			      BstCanvasSource *icsource,
 			      guint            ichannel)
 {
-  g_return_if_fail (BST_IS_CANVAS_LINK (clink));
+  assert_return (BST_IS_CANVAS_LINK (clink));
   if (icsource)
-    g_return_if_fail (BST_CANVAS_SOURCE (icsource));
+    assert_return (BST_CANVAS_SOURCE (icsource));
 
   if (clink->icsource)
     {

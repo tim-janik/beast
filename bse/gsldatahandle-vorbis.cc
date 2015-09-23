@@ -305,7 +305,7 @@ dh_vorbis_read (GslDataHandle *dhandle,
 
       /* suckage, needs to seek in file, this takes ages */
       tmp = dh_vorbis_coarse_seek (dhandle, voffset);
-      g_assert (tmp <= voffset);
+      assert (tmp <= voffset);
     }
 
   while (pos >= vhandle->pcm_pos + vhandle->pcm_length)
@@ -430,7 +430,7 @@ gsl_data_handle_new_ogg_vorbis_muxed (const gchar *file_name,
                                       guint        lbitstream,
                                       gfloat       osc_freq)
 {
-  g_return_val_if_fail (file_name != NULL, NULL);
+  assert_return (file_name != NULL, NULL);
 
   return gsl_data_handle_new_ogg_vorbis_any (file_name, lbitstream, osc_freq, FALSE, 0, 0, NULL, NULL);
 }
@@ -443,9 +443,9 @@ gsl_data_handle_new_ogg_vorbis_zoffset (const gchar *file_name,
                                         guint       *n_channelsp,
                                         gfloat      *mix_freq_p)
 {
-  g_return_val_if_fail (file_name != NULL, NULL);
-  g_return_val_if_fail (byte_offset >= 0, NULL);
-  g_return_val_if_fail (byte_size > 0, NULL);
+  assert_return (file_name != NULL, NULL);
+  assert_return (byte_offset >= 0, NULL);
+  assert_return (byte_size > 0, NULL);
 
   return gsl_data_handle_new_ogg_vorbis_any (file_name, 0, osc_freq, TRUE, byte_offset, byte_size, n_channelsp, mix_freq_p);
 }

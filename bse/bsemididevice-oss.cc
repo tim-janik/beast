@@ -177,7 +177,7 @@ bse_midi_device_oss_close (BseDevice *device)
   OSSHandle *oss = (OSSHandle*) BSE_MIDI_DEVICE (device)->handle;
   BseMidiHandle *handle = &oss->handle;
   BSE_MIDI_DEVICE (device)->handle = NULL;
-  g_assert (handle->running_thread == FALSE);
+  assert (handle->running_thread == FALSE);
   /* midi_handle_abort_wait (handle); */
   Bse::Sequencer::instance().remove_io_watch (oss_midi_io_handler, oss);
   (void) close (oss->fd);
@@ -205,7 +205,7 @@ oss_midi_io_handler (void          *data,       /* Sequencer Thread */
   gssize l;
 
   /* this should spawn its own thread someday */
-  g_assert (handle->running_thread == FALSE);
+  assert (handle->running_thread == FALSE);
 
   systime = sfi_time_system ();
   do

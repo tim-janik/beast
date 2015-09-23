@@ -78,7 +78,7 @@ static SfiRing        *probe_node_list = NULL;
 static void
 add_consumer (EngineNode *node)
 {
-  g_return_if_fail (ENGINE_NODE_IS_CONSUMER (node) && node->toplevel_next == NULL && node->integrated);
+  assert_return (ENGINE_NODE_IS_CONSUMER (node) && node->toplevel_next == NULL && node->integrated);
 
   node->toplevel_next = master_consumer_list;
   master_consumer_list = node;
@@ -89,12 +89,12 @@ remove_consumer (EngineNode *node)
 {
   EngineNode *tmp, *last = NULL;
 
-  g_return_if_fail (!ENGINE_NODE_IS_CONSUMER (node) || !node->integrated);
+  assert_return (!ENGINE_NODE_IS_CONSUMER (node) || !node->integrated);
 
   for (tmp = master_consumer_list; tmp; last = tmp, tmp = last->toplevel_next)
     if (tmp == node)
       break;
-  g_return_if_fail (tmp != NULL);
+  assert_return (tmp != NULL);
   if (last)
     last->toplevel_next = node->toplevel_next;
   else
@@ -126,7 +126,7 @@ master_idisconnect_node (EngineNode *node,
   guint ostream = node->inputs[istream].src_stream;
   gboolean was_consumer;
 
-  g_assert (ostream < ENGINE_NODE_N_OSTREAMS (src_node) &&
+  assert (ostream < ENGINE_NODE_N_OSTREAMS (src_node) &&
 	    src_node->outputs[ostream].n_outputs > 0);	/* these checks better pass */
 
   node->inputs[istream].src_node = NULL;
@@ -154,7 +154,7 @@ master_jdisconnect_node (EngineNode *node,
   guint i, ostream = node->jinputs[jstream][con].src_stream;
   gboolean was_consumer;
 
-  g_assert (ostream < ENGINE_NODE_N_OSTREAMS (src_node) &&
+  assert (ostream < ENGINE_NODE_N_OSTREAMS (src_node) &&
 	    node->module.jstreams[jstream].jcount > 0 &&
 	    src_node->outputs[ostream].n_outputs > 0);	/* these checks better pass */
 
@@ -305,8 +305,8 @@ master_process_job (BseJob *job)
     case ENGINE_JOB_INTEGRATE:
       node = job->data.node;
       JOB_DEBUG ("integrate(%p)", node);
-      g_return_if_fail (node->integrated == FALSE);
-      g_return_if_fail (node->sched_tag == FALSE);
+      assert_return (node->integrated == FALSE);
+      assert_return (node->sched_tag == FALSE);
       job->data.free_with_job = FALSE;  /* ownership taken over */
       _engine_mnl_integrate (node);
       if (ENGINE_NODE_IS_CONSUMER (node))
@@ -321,7 +321,7 @@ master_process_job (BseJob *job)
     case ENGINE_JOB_KILL_INPUTS:
       node = job->data.node;
       JOB_DEBUG ("kill_inputs(%p)", node);
-      g_return_if_fail (node->integrated == TRUE);
+      assert_return (node->integrated == TRUE);
       for (istream = 0; istream < ENGINE_NODE_N_ISTREAMS (node); istream++)
 	if (node->inputs[istream].src_node)
 	  master_idisconnect_node (node, istream);
@@ -333,7 +333,7 @@ master_process_job (BseJob *job)
     case ENGINE_JOB_KILL_OUTPUTS:
       node = job->data.node;
       JOB_DEBUG ("kill_outputs(%p)", node);
-      g_return_if_fail (node->integrated == TRUE);
+      assert_return (node->integrated == TRUE);
       while (node->output_nodes)
 	master_disconnect_node_outputs (node, (EngineNode*) node->output_nodes->data);
       master_need_reflow |= TRUE;
@@ -341,7 +341,7 @@ master_process_job (BseJob *job)
     case ENGINE_JOB_DISCARD:
       node = job->data.node;
       JOB_DEBUG ("discard(%p, %p)", node, node->module.klass);
-      g_return_if_fail (node->integrated == TRUE);
+      assert_return (node->integrated == TRUE);
       job->data.free_with_job = TRUE;  /* ownership passed on to cause destruction in UserThread */
       /* discard schedule so node may be freed */
       master_need_reflow |= TRUE;
@@ -391,7 +391,7 @@ master_process_job (BseJob *job)
     case ENGINE_JOB_UNSET_CONSUMER:
       node = job->data.node;
       JOB_DEBUG ("toggle_consumer(%p)", node);
-      g_return_if_fail (node->integrated == TRUE);
+      assert_return (node->integrated == TRUE);
       was_consumer = ENGINE_NODE_IS_CONSUMER (node);
       node->is_consumer = job->job_id == ENGINE_JOB_SET_CONSUMER;
       if (was_consumer != ENGINE_NODE_IS_CONSUMER (node))
@@ -407,7 +407,7 @@ master_process_job (BseJob *job)
       node = job->tick.node;
       stamp = job->tick.stamp;
       JOB_DEBUG ("suspend(%p,%llu)", node, (long long unsigned int) stamp);
-      g_return_if_fail (node->integrated == TRUE);
+      assert_return (node->integrated == TRUE);
       if (node->local_active < stamp)
 	{
 	  propagate_update_suspend (node);
@@ -420,7 +420,7 @@ master_process_job (BseJob *job)
       node = job->tick.node;
       stamp = job->tick.stamp;
       JOB_DEBUG ("resume(%p,%llu)", node, (long long unsigned int) stamp);
-      g_return_if_fail (node->integrated == TRUE);
+      assert_return (node->integrated == TRUE);
       if (node->local_active > stamp)
 	{
 	  propagate_update_suspend (node);
@@ -435,9 +435,9 @@ master_process_job (BseJob *job)
       istream = job->connection.dest_ijstream;
       ostream = job->connection.src_ostream;
       JOB_DEBUG ("connect(%p,%u,%p,%u)", node, istream, src_node, ostream);
-      g_return_if_fail (node->integrated == TRUE);
-      g_return_if_fail (src_node->integrated == TRUE);
-      g_return_if_fail (node->inputs[istream].src_node == NULL);
+      assert_return (node->integrated == TRUE);
+      assert_return (src_node->integrated == TRUE);
+      assert_return (node->inputs[istream].src_node == NULL);
       node->inputs[istream].src_node = src_node;
       node->inputs[istream].src_stream = ostream;
       node->module.istreams[istream].connected = 0;	/* scheduler update */
@@ -460,8 +460,8 @@ master_process_job (BseJob *job)
       jstream = job->connection.dest_ijstream;
       ostream = job->connection.src_ostream;
       JOB_DEBUG ("jconnect(%p,%u,%p,%u)", node, jstream, src_node, ostream);
-      g_return_if_fail (node->integrated == TRUE);
-      g_return_if_fail (src_node->integrated == TRUE);
+      assert_return (node->integrated == TRUE);
+      assert_return (src_node->integrated == TRUE);
       con = node->module.jstreams[jstream].jcount++;
       node->jinputs[jstream] = g_renew (EngineJInput, node->jinputs[jstream], node->module.jstreams[jstream].jcount);
       node->module.jstreams[jstream].values = g_renew (const gfloat*, node->module.jstreams[jstream].values, node->module.jstreams[jstream].jcount + 1);
@@ -484,8 +484,8 @@ master_process_job (BseJob *job)
     case ENGINE_JOB_IDISCONNECT:
       node = job->connection.dest_node;
       JOB_DEBUG ("idisconnect(%p,%u)", node, job->connection.dest_ijstream);
-      g_return_if_fail (node->integrated == TRUE);
-      g_return_if_fail (node->inputs[job->connection.dest_ijstream].src_node != NULL);
+      assert_return (node->integrated == TRUE);
+      assert_return (node->inputs[job->connection.dest_ijstream].src_node != NULL);
       master_idisconnect_node (node, job->connection.dest_ijstream);
       master_need_reflow |= TRUE;
       break;
@@ -495,8 +495,8 @@ master_process_job (BseJob *job)
       src_node = job->connection.src_node;
       ostream = job->connection.src_ostream;
       JOB_DEBUG ("jdisconnect(%p,%u,%p,%u)", node, jstream, src_node, ostream);
-      g_return_if_fail (node->integrated == TRUE);
-      g_return_if_fail (node->module.jstreams[jstream].jcount > 0);
+      assert_return (node->integrated == TRUE);
+      assert_return (node->module.jstreams[jstream].jcount > 0);
       for (con = 0; con < node->module.jstreams[jstream].jcount; con++)
 	if (node->jinputs[jstream][con].src_node == src_node &&
 	    node->jinputs[jstream][con].src_stream == ostream)
@@ -512,14 +512,14 @@ master_process_job (BseJob *job)
     case ENGINE_JOB_FORCE_RESET:
       node = job->data.node;
       JOB_DEBUG ("reset(%p)", node);
-      g_return_if_fail (node->integrated == TRUE);
+      assert_return (node->integrated == TRUE);
       node->counter = Bse::TickStamp::current();
       node->needs_reset = TRUE;
       break;
     case ENGINE_JOB_ACCESS:
       node = job->access.node;
       JOB_DEBUG ("access node(%p): %p(%p)", node, job->access.access_func, job->access.data);
-      g_return_if_fail (node->integrated == TRUE);
+      assert_return (node->integrated == TRUE);
       node->counter = Bse::TickStamp::current();
       job->access.access_func (&node->module, job->access.data);
       break;
@@ -527,8 +527,8 @@ master_process_job (BseJob *job)
       node = job->timed_job.node;
       tjob = job->timed_job.tjob;
       JOB_DEBUG ("add probe_job(%p,%p)", node, tjob);
-      g_return_if_fail (node->integrated == TRUE);
-      g_return_if_fail (tjob->next == NULL);
+      assert_return (node->integrated == TRUE);
+      assert_return (tjob->next == NULL);
       job->timed_job.tjob = NULL;       /* ownership taken over */
       if (!node->probe_jobs)
         probe_node_list = sfi_ring_append (probe_node_list, node);
@@ -539,7 +539,7 @@ master_process_job (BseJob *job)
       node = job->timed_job.node;
       tjob = job->timed_job.tjob;
       JOB_DEBUG ("add flow_job(%p,%p)", node, tjob);
-      g_return_if_fail (node->integrated == TRUE);
+      assert_return (node->integrated == TRUE);
       job->timed_job.tjob = NULL;	/* ownership taken over */
       node->flow_jobs = insert_timed_job (node->flow_jobs, tjob);
       _engine_mnl_node_changed (node);
@@ -548,7 +548,7 @@ master_process_job (BseJob *job)
       node = job->timed_job.node;
       tjob = job->timed_job.tjob;
       JOB_DEBUG ("add boundary_job(%p,%p)", node, tjob);
-      g_return_if_fail (node->integrated == TRUE);
+      assert_return (node->integrated == TRUE);
       job->timed_job.tjob = NULL;	/* ownership taken over */
       master_new_boundary_jobs = TRUE;
       if (!node->boundary_jobs)
@@ -626,7 +626,7 @@ master_process_job (BseJob *job)
       master_timer_list = timer;
       break;
     default:
-      g_assert_not_reached ();
+      assert_unreached ();
     }
   JOB_DEBUG ("done");
 }
@@ -711,7 +711,7 @@ master_take_probes (EngineNode   *node,
   if (ptype == PROBE_SCHEDULED)
     {
       uint i;
-      g_assert (tjob->probe.n_ostreams == ENGINE_NODE_N_OSTREAMS (node));
+      assert (tjob->probe.n_ostreams == ENGINE_NODE_N_OSTREAMS (node));
       /* swap output buffers with probe buffers */
       BseOStream *ostreams = node->module.ostreams;
       node->module.ostreams = tjob->probe.ostreams;
@@ -786,7 +786,7 @@ master_process_locked_node (EngineNode *node,
   guint i, j, diff;
   bool needs_probe_reset = node->probe_jobs != NULL;
 
-  g_return_if_fail (node->integrated && node->sched_tag);
+  assert_return (node->integrated && node->sched_tag);
 
   while (node->counter < final_counter)
     {
@@ -871,9 +871,9 @@ master_process_flow (void)
   gboolean profile_modules = gsl_profile_modules;
   EngineNode *profile_node = NULL;
 
-  g_return_if_fail (master_need_process == TRUE);
+  assert_return (master_need_process == TRUE);
 
-  g_assert (bse_fpu_okround () == TRUE);
+  assert (bse_fpu_okround () == TRUE);
 
   if (master_schedule)
     {
@@ -959,7 +959,7 @@ master_reschedule_flow (void)
 {
   EngineNode *node;
 
-  g_return_if_fail (master_need_reflow == TRUE);
+  assert_return (master_need_reflow == TRUE);
 
   if (!master_schedule)
     master_schedule = _engine_schedule_new ();
@@ -977,7 +977,7 @@ master_reschedule_flow (void)
 static void
 master_schedule_discard (void)
 {
-  g_return_if_fail (master_need_reflow == TRUE);
+  assert_return (master_need_reflow == TRUE);
 
   if (master_schedule)
     {
@@ -995,7 +995,7 @@ _engine_master_prepare (BseEngineLoop *loop)
   gboolean need_dispatch;
   guint i;
 
-  g_return_val_if_fail (loop != NULL, FALSE);
+  assert_return (loop != NULL, FALSE);
 
   /* setup and clear pollfds here already, so master_poll_check() gets no junk (and IRIX can't handle non-0 revents) */
   loop->fds_changed = master_pollfds_changed;
@@ -1029,11 +1029,11 @@ _engine_master_check (const BseEngineLoop *loop)
 {
   gboolean need_dispatch;
 
-  g_return_val_if_fail (loop != NULL, FALSE);
-  g_return_val_if_fail (loop->n_fds == master_n_pollfds, FALSE);
-  g_return_val_if_fail (loop->fds == master_pollfds, FALSE);
+  assert_return (loop != NULL, FALSE);
+  assert_return (loop->n_fds == master_n_pollfds, FALSE);
+  assert_return (loop->fds == master_pollfds, FALSE);
   if (loop->n_fds)
-    g_return_val_if_fail (loop->revents_filled == TRUE, FALSE);
+    assert_return (loop->revents_filled == TRUE, FALSE);
 
   /* cached checks first */
   need_dispatch = master_need_reflow || master_need_process;

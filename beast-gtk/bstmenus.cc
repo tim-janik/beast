@@ -63,7 +63,7 @@ menu_choice_activate (GtkWidget *item,
 	  if (GTK_IS_MENU_ITEM (tmp))
 	    item = tmp;
 	}
-      g_assert (GTK_IS_MENU (item));
+      assert (GTK_IS_MENU (item));
 
       gtk_object_set_data (GTK_OBJECT (item), "BstChoice", udata);
     }
@@ -116,8 +116,8 @@ bst_choice_menu_add_choice_and_free (GtkWidget *menu,
   guint choice_type, choice_flags;
   GtkWidget *item;
 
-  g_return_if_fail (GTK_IS_MENU (menu));
-  g_return_if_fail (choice != NULL);
+  assert_return (GTK_IS_MENU (menu));
+  assert_return (choice != NULL);
 
   choice_type = choice->type_and_flags & BST_CHOICE_TYPE_MASK;
   choice_flags = choice->type_and_flags & BST_CHOICE_FLAG_MASK;
@@ -162,7 +162,7 @@ bst_choice_menu_set_item_sensitive (GtkWidget *menu,
   GtkMenuShell *shell;
   GList *list;
 
-  g_return_if_fail (GTK_IS_MENU (menu));
+  assert_return (GTK_IS_MENU (menu));
 
   shell = GTK_MENU_SHELL (menu);
   for (list = shell->children; list; list = list->next)
@@ -214,7 +214,7 @@ bst_choice_dialog_createv (BstChoice *first_choice,
   GtkWidget *vbox, *dialog;
   va_list args;
 
-  g_return_val_if_fail (first_choice != NULL, NULL);
+  assert_return (first_choice != NULL, NULL);
 
   /* text portions
    */
@@ -301,7 +301,7 @@ bst_choice_dialog_createv (BstChoice *first_choice,
 void
 bst_choice_destroy (GtkWidget *choice)
 {
-  g_return_if_fail (GTK_IS_CONTAINER (choice));
+  assert_return (GTK_IS_CONTAINER (choice));
 
   gtk_widget_destroy (choice);
   gtk_widget_unref (choice);
@@ -312,7 +312,7 @@ bst_choice_selectable (GtkWidget *widget)
 {
   gboolean selectable = FALSE;
 
-  g_return_val_if_fail (GTK_IS_CONTAINER (widget), FALSE);
+  assert_return (GTK_IS_CONTAINER (widget), FALSE);
 
   if (GTK_IS_MENU (widget))
     {

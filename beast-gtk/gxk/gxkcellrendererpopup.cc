@@ -252,9 +252,9 @@ void
 gxk_cell_renderer_popup_dialog (GxkCellRendererPopup *self,
 				GtkWidget            *dialog)
 {
-  g_return_if_fail (GXK_IS_CELL_RENDERER_POPUP (self));
+  assert_return (GXK_IS_CELL_RENDERER_POPUP (self));
   if (dialog)
-    g_return_if_fail (GTK_IS_WINDOW (dialog));
+    assert_return (GTK_IS_WINDOW (dialog));
 
   if (self->dialog)
     {
@@ -292,7 +292,7 @@ gxk_cell_renderer_popup_change (GxkCellRendererPopup   *self,
                                 gboolean                preserve_popup,
                                 gboolean                keep_editing)
 {
-  g_return_if_fail (GXK_IS_CELL_RENDERER_POPUP (self));
+  assert_return (GXK_IS_CELL_RENDERER_POPUP (self));
 
   if (self->entry && text)
     gtk_entry_set_text (GTK_ENTRY (self->entry), text);
@@ -466,9 +466,9 @@ void
 gxk_proxy_editable_set_cell_editable (GxkProxyEditable *self,
 				      GtkCellEditable  *ecell)
 {
-  g_return_if_fail (GXK_IS_PROXY_EDITABLE (self));
-  g_return_if_fail (GTK_IS_CELL_EDITABLE (ecell));
-  g_return_if_fail (self->ecell == NULL);
+  assert_return (GXK_IS_PROXY_EDITABLE (self));
+  assert_return (GTK_IS_CELL_EDITABLE (ecell));
+  assert_return (self->ecell == NULL);
 
   self->ecell = ecell;
   g_signal_connect_object (ecell, "remove_widget",

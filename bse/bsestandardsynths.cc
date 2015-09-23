@@ -11,7 +11,7 @@ gchar*
 bse_standard_synth_inflate (const gchar *synth_name,
 			    guint       *text_len)
 {
-  g_return_val_if_fail (synth_name != NULL, NULL);
+  assert_return (synth_name != NULL, NULL);
 
   const Rapicorn::String synth_res = Rapicorn::String ("@res ") + synth_name + ".bse";
   Rapicorn::Blob blob = Rapicorn::Res (synth_res);

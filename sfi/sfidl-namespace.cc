@@ -75,7 +75,7 @@ String NamespaceHelper::printableForm(String symbol)
   while(!current.empty())
     {
       // namespace longer than symbol?
-      g_assert (!symlist.empty());
+      assert (!symlist.empty());
 
       if(*current.begin() == *symlist.begin())
 	{

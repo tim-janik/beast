@@ -58,8 +58,8 @@ check_arg (uint         argc,
            const char  *opt,              /* for example: --foo */
            const char **opt_arg = NULL)   /* if foo needs an argument, pass a pointer to get the argument */
 {
-  g_return_val_if_fail (opt != NULL, false);
-  g_return_val_if_fail (*nth < argc, false);
+  assert_return (opt != NULL, false);
+  assert_return (*nth < argc, false);
 
   const char *arg = argv[*nth];
   if (!arg)
@@ -107,7 +107,7 @@ Options::parse (int   *argc_p,
   gchar **argv = *argv_p;
   unsigned int i;
 
-  g_return_if_fail (argc >= 0);
+  assert_return (argc >= 0);
 
   for (i = 1; i < argc; i++)
     {
@@ -233,8 +233,8 @@ private:
 	      guint	  scan_points) const
   {
     const double delta_f = (FS / 2) / scan_points;
-    g_return_if_fail (band.freq_start <= band.freq_end);
-    g_return_if_fail (band.freq_end <= FS/2);
+    assert_return (band.freq_start <= band.freq_end);
+    assert_return (band.freq_end <= FS/2);
     TOUT ("checking band: response in interval [%f..%f] should be in interval [%f..%f] dB\n",
           band.freq_start, band.freq_end, band.min_resp_db, band.max_resp_db);
     int tok = 0;

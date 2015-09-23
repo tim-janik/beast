@@ -365,7 +365,7 @@ public:
       case RECORD:      return make_fqtn (type, "Handle");
       case SEQUENCE:    return make_fqtn (type);
       case OBJECT:      return is_cxx_class (type) ? make_fqtn (type, "*") : make_PrefixedTypeName (type, "*");
-      default:          g_assert_not_reached(); return NULL;
+      default:          assert_unreached(); return NULL;
       }
   }
   const char*
@@ -386,7 +386,7 @@ public:
       case RECORD:
       case SEQUENCE:    return intern (String ("const ") + TypeField (type) + " &");
       case OBJECT:      return TypeField (type);
-      default:          g_assert_not_reached(); return NULL;
+      default:          assert_unreached(); return NULL;
       }
   }
   const char*
@@ -420,7 +420,7 @@ public:
           return intern (String() + "::Bse::CxxBase::value_set_casted< " + type + ", " + type + "Base>");
         else
           return intern (String() + "::Bse::CxxBase::value_set_gobject");
-      default:          g_assert_not_reached(); return NULL;
+      default:          assert_unreached(); return NULL;
       }
   }
   const char*
@@ -447,7 +447,7 @@ public:
                          "::Bse::CxxBase::value_get_object< " + make_fqtn (type) + "Base* >");
         else
           return intern (String ("::Bse::CxxBase::value_get_gobject< ") + make_PrefixedTypeName (type) + ">");
-      default:          g_assert_not_reached(); return NULL;
+      default:          assert_unreached(); return NULL;
       }
   }
   const char*

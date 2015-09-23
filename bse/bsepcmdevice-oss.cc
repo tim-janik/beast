@@ -527,7 +527,7 @@ oss_device_read (BsePcmHandle *handle,
   gfloat *dest = values;
   gsize n_left = n_values;
 
-  g_return_val_if_fail (oss->frame_size == 4, 0);
+  assert_return (oss->frame_size == 4, 0);
 
   do
     {
@@ -570,7 +570,7 @@ oss_device_write (BsePcmHandle *handle,
     while (oss->read_write_count < 1)
       oss_device_read (handle, NULL);   /* dummy read to sync device */
 
-  g_return_if_fail (oss->frame_size == 4);
+  assert_return (oss->frame_size == 4);
 
   do
     {

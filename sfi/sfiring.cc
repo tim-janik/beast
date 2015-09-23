@@ -245,9 +245,9 @@ sfi_ring_split (SfiRing *head1,
 {
   SfiRing *tail1, *tail2;
 
-  g_return_val_if_fail (head1 != NULL, NULL);
-  g_return_val_if_fail (head2 != NULL, NULL);
-  g_return_val_if_fail (head1 != head2, NULL);
+  assert_return (head1 != NULL, NULL);
+  assert_return (head2 != NULL, NULL);
+  assert_return (head1 != head2, NULL);
 
   tail1 = head2->prev;
   tail2 = head1->prev;
@@ -262,7 +262,7 @@ static inline SfiRing*
 sfi_ring_unlink_node_dangling (SfiRing *head,
                                SfiRing *node)
 {
-  g_assert (head && node);
+  assert (head && node);
   /* special case one item ring */
   if (head->prev == head)
     return NULL;
@@ -280,19 +280,19 @@ sfi_ring_remove_node (SfiRing *head,
                       SfiRing *node)
 {
   if (!head)
-    g_return_val_if_fail (head == NULL && node == NULL, NULL);
+    assert_return (head == NULL && node == NULL, NULL);
   if (!head || !node)
     return NULL;
 
   /* special case one item ring */
   if (head->prev == head)
     {
-      g_return_val_if_fail (node == head, head);
+      assert_return (node == head, head);
 
       node_free (node);
       return NULL;
     }
-  g_return_val_if_fail (node != node->next, head); /* node can't be a one item ring here */
+  assert_return (node != node->next, head); /* node can't be a one item ring here */
 
   node->next->prev = node->prev;
   node->prev->next = node->next;
@@ -428,7 +428,7 @@ sfi_ring_pop_head (SfiRing **head_p)
 {
   gpointer data;
 
-  g_return_val_if_fail (head_p != NULL, NULL);
+  assert_return (head_p != NULL, NULL);
 
   if (!*head_p)
     return NULL;
@@ -443,7 +443,7 @@ sfi_ring_pop_tail (SfiRing **head_p)
 {
   gpointer data;
 
-  g_return_val_if_fail (head_p != NULL, NULL);
+  assert_return (head_p != NULL, NULL);
 
   if (!*head_p)
     return NULL;
@@ -499,7 +499,7 @@ sfi_ring_insert_sorted (SfiRing	      *head,
                         SfiCompareFunc cmp,
                         gpointer       cmp_data)
 {
-  g_return_val_if_fail (cmp != NULL, head);
+  assert_return (cmp != NULL, head);
   if (!head)
     return sfi_ring_prepend (head, insertion_data);
 
@@ -581,7 +581,7 @@ sfi_ring_sort (SfiRing        *head,
                SfiCompareFunc  cmp,
                gpointer        data)
 {
-  g_return_val_if_fail (cmp != NULL, head);
+  assert_return (cmp != NULL, head);
 
   /* stable sorting guaranteed by sfi_ring_merge_sorted() */
 

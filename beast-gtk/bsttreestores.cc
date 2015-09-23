@@ -145,7 +145,7 @@ bst_file_store_update_list (GtkTreeModel *model,
   SfiFileCrawler *crawler = sfi_file_crawler_new ();
   glong l;
 
-  g_return_if_fail (search_path != NULL);
+  assert_return (search_path != NULL);
 
   sfi_file_crawler_add_search_path (crawler, search_path, filter);
   g_object_set_data_full ((GObject*) store, "file-crawler", crawler, (GDestroyNotify) sfi_file_crawler_destroy);

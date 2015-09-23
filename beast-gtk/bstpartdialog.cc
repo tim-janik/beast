@@ -262,7 +262,7 @@ bst_part_dialog_finalize (GObject *object)
 void
 bst_part_dialog_set_part (BstPartDialog *self, Bse::PartH part)
 {
-  g_return_if_fail (BST_IS_PART_DIALOG (self));
+  assert_return (BST_IS_PART_DIALOG (self));
 
   if (self->project)
     {

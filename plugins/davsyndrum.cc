@@ -97,13 +97,13 @@ dav_syn_drum_class_init (DavSynDrumClass *klass)
                                               SFI_PARAM_STANDARD ":scale"));
 
   ichannel_id = bse_source_class_add_ichannel (source_class, "freq-in", _("Freq In"), _("Drum Frequency Input"));
-  g_assert (ichannel_id == DAV_SYN_DRUM_ICHANNEL_FREQ);
+  assert (ichannel_id == DAV_SYN_DRUM_ICHANNEL_FREQ);
   ichannel_id = bse_source_class_add_ichannel (source_class, "ratio-in", _("Ratio In"), _("Frequency shift ratio (assumed 1.0 if not connected)"));
-  g_assert (ichannel_id == DAV_SYN_DRUM_ICHANNEL_RATIO);
+  assert (ichannel_id == DAV_SYN_DRUM_ICHANNEL_RATIO);
   ichannel_id = bse_source_class_add_ichannel (source_class, "trigger-in", _("Trigger In"), _("Hit the drum on raising edges"));
-  g_assert (ichannel_id == DAV_SYN_DRUM_ICHANNEL_TRIGGER);
+  assert (ichannel_id == DAV_SYN_DRUM_ICHANNEL_TRIGGER);
   ochannel_id = bse_source_class_add_ochannel (source_class, "audio-out", _("Audio Out"), _("SynDrum Output"));
-  g_assert (ochannel_id == DAV_SYN_DRUM_OCHANNEL_MONO);
+  assert (ochannel_id == DAV_SYN_DRUM_OCHANNEL_MONO);
 }
 
 static void

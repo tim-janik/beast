@@ -25,11 +25,11 @@ read_through (GslDataHandle *handle)
       // we don't use 1024 here, because we know that it is the FIR handle internal buffer size
       gfloat values[700];
       int64 values_read = gsl_data_handle_read (handle, offset, 700, values);
-      g_assert (values_read > 0);
+      assert (values_read > 0);
       offset += values_read;
     }
 
-  g_assert (offset == n_values);
+  assert (offset == n_values);
 }
 
 static double
@@ -54,7 +54,7 @@ band_min (const vector<double>& scanned_freq,
 	  double                start_freq,
 	  double                end_freq)
 {
-  g_assert (scanned_freq.size() == scanned_values.size());
+  assert (scanned_freq.size() == scanned_values.size());
 
   bool	  init = false;
   double  min_value = 1e19;
@@ -71,7 +71,7 @@ band_min (const vector<double>& scanned_freq,
 	    }
 	}
     }
-  g_assert (init);
+  assert (init);
   return min_value;
 }
 
@@ -81,7 +81,7 @@ band_max (const vector<double>& scanned_freq,
 	  double                start_freq,
 	  double                end_freq)
 {
-  g_assert (scanned_freq.size() == scanned_values.size());
+  assert (scanned_freq.size() == scanned_values.size());
 
   bool	  init = false;
   double  max_value = -1e19;
@@ -98,7 +98,7 @@ band_max (const vector<double>& scanned_freq,
 	    }
 	}
     }
-  g_assert (init);
+  assert (init);
   return max_value;
 }
 
@@ -115,7 +115,7 @@ handle_name (FirHandleType type)
     {
       case FIR_HIGHPASS:  return "Highpass";
       case FIR_LOWPASS:	  return "Lowpass";
-      default:		  g_assert_not_reached();
+      default:		  assert_unreached();
     }
 }
 

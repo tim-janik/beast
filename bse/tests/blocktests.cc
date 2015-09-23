@@ -268,7 +268,7 @@ bench_copy (void)
       if (e < m)
         m = e;
     }
-  g_assert (dest_fblock[0] == 2.f);
+  assert (dest_fblock[0] == 2.f);
   report_usecs ("Block::copy", 1000000.0 * m / dups * BENCH_SCALE);
   if (0)
     g_print ("CopyBench:            %.6f msecs (test-duration: %.6f calibration: %.6f)\n",
@@ -356,7 +356,7 @@ bench_mul (void)
       if (e < m)
         m = e;
     }
-  g_assert (fblock1[0] < 1e30); /* not close to infinity */
+  assert (fblock1[0] < 1e30); /* not close to infinity */
   report_usecs ("Block::mul", 1000000.0 * m / dups * BENCH_SCALE);
   if (0)
     g_print ("MulBench:             %.6f msecs (test-duration: %.6f calibration: %.6f)\n",
@@ -422,8 +422,8 @@ bench_range (void)
       if (e < m)
         m = e;
     }
-  g_assert (min_value == correct_min_value);
-  g_assert (max_value == correct_max_value);
+  assert (min_value == correct_min_value);
+  assert (max_value == correct_max_value);
   report_usecs ("Block::range", 1000000.0 * m / dups * BENCH_SCALE);
   if (0)
     g_print ("RangeBench:           %.6f msecs (test-duration: %.6f calibration: %.6f)\n",
@@ -488,8 +488,8 @@ bench_range_and_square_sum (void)
       if (e < m)
         m = e;
     }
-  g_assert (min_value == correct_min_value);
-  g_assert (max_value == correct_max_value);
+  assert (min_value == correct_min_value);
+  assert (max_value == correct_max_value);
   report_usecs ("Block::range_and_square_sum", 1000000.0 * m / dups * BENCH_SCALE);
   if (0)
     g_print ("Range+SquareSumBench: %.6f msecs (test-duration: %.6f calibration: %.6f)\n",

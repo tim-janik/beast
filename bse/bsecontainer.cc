@@ -193,7 +193,7 @@ bse_container_do_add_item (BseContainer *container,
       BseTrans *trans = bse_trans_open ();
       guint *cids, n, c;
 
-      g_return_if_fail (BSE_SOURCE_PREPARED (item) == FALSE);
+      assert_return (BSE_SOURCE_PREPARED (item) == FALSE);
 
       bse_source_prepare (BSE_SOURCE (item));
 
@@ -214,10 +214,10 @@ bse_container_add_item (BseContainer *container,
 {
   BseUndoStack *ustack;
 
-  g_return_if_fail (BSE_IS_CONTAINER (container));
-  g_return_if_fail (BSE_IS_ITEM (item));
-  g_return_if_fail (item->parent == NULL);
-  g_return_if_fail (BSE_CONTAINER_GET_CLASS (container)->add_item != NULL); /* paranoid */
+  assert_return (BSE_IS_CONTAINER (container));
+  assert_return (BSE_IS_ITEM (item));
+  assert_return (item->parent == NULL);
+  assert_return (BSE_CONTAINER_GET_CLASS (container)->add_item != NULL); /* paranoid */
 
   g_object_ref (container);
   g_object_ref (item);
@@ -281,9 +281,9 @@ bse_container_new_child_bname (BseContainer *container,
   gpointer child;
   va_list var_args;
 
-  g_return_val_if_fail (BSE_IS_CONTAINER (container), NULL);
-  g_return_val_if_fail (g_type_is_a (child_type, BSE_TYPE_ITEM), NULL);
-  g_return_val_if_fail (!G_TYPE_IS_ABSTRACT (child_type), NULL);
+  assert_return (BSE_IS_CONTAINER (container), NULL);
+  assert_return (g_type_is_a (child_type, BSE_TYPE_ITEM), NULL);
+  assert_return (!G_TYPE_IS_ABSTRACT (child_type), NULL);
 
   g_object_set_data_full (G_OBJECT (container), "BseContainer-base-name", g_strdup (base_name), g_free);
   va_start (var_args, first_param_name);
@@ -320,7 +320,7 @@ bse_container_do_remove_item (BseContainer *container,
       /* before mudling with its state */
       if (BSE_SOURCE_PREPARED (container))
         {
-          g_return_if_fail (BSE_SOURCE_PREPARED (item) == TRUE);
+          assert_return (BSE_SOURCE_PREPARED (item) == TRUE);
 
           bse_source_reset (BSE_SOURCE (item));
         }
@@ -342,10 +342,10 @@ bse_container_remove_item (BseContainer *container,
   BseUndoStack *ustack;
   guint seqid;
 
-  g_return_if_fail (BSE_IS_CONTAINER (container));
-  g_return_if_fail (BSE_IS_ITEM (item));
-  g_return_if_fail (item->parent == BSE_ITEM (container));
-  g_return_if_fail (BSE_CONTAINER_GET_CLASS (container)->remove_item != NULL); /* paranoid */
+  assert_return (BSE_IS_CONTAINER (container));
+  assert_return (BSE_IS_ITEM (item));
+  assert_return (item->parent == BSE_ITEM (container));
+  assert_return (BSE_CONTAINER_GET_CLASS (container)->remove_item != NULL); /* paranoid */
 
   finalizing_container = G_OBJECT (container)->ref_count == 0;
   if (!finalizing_container)
@@ -375,12 +375,12 @@ bse_container_forall_items (BseContainer      *container,
                             BseForallItemsFunc func,
                             gpointer           data)
 {
-  g_return_if_fail (BSE_IS_CONTAINER (container));
-  g_return_if_fail (func != NULL);
+  assert_return (BSE_IS_CONTAINER (container));
+  assert_return (func != NULL);
 
   if (container->n_items)
     {
-      g_return_if_fail (BSE_CONTAINER_GET_CLASS (container)->forall_items != NULL); /* paranoid */
+      assert_return (BSE_CONTAINER_GET_CLASS (container)->forall_items != NULL); /* paranoid */
 
       BSE_CONTAINER_GET_CLASS (container)->forall_items (container, func, data);
     }
@@ -402,12 +402,12 @@ bse_container_list_children (BseContainer *container)
 {
   BseItemSeq *iseq;
 
-  g_return_val_if_fail (BSE_IS_CONTAINER (container), NULL);
+  assert_return (BSE_IS_CONTAINER (container), NULL);
 
   iseq = bse_item_seq_new ();
   if (container->n_items)
     {
-      g_return_val_if_fail (BSE_CONTAINER_GET_CLASS (container)->forall_items != NULL, NULL); /* paranoid */
+      assert_return (BSE_CONTAINER_GET_CLASS (container)->forall_items != NULL, NULL); /* paranoid */
 
       BSE_CONTAINER_GET_CLASS (container)->forall_items (container, list_items, iseq);
     }
@@ -437,15 +437,15 @@ guint
 bse_container_get_item_seqid (BseContainer *container,
                               BseItem      *item)
 {
-  g_return_val_if_fail (BSE_IS_CONTAINER (container), 0);
-  g_return_val_if_fail (BSE_IS_ITEM (item), 0);
-  g_return_val_if_fail (item->parent == BSE_ITEM (container), 0);
+  assert_return (BSE_IS_CONTAINER (container), 0);
+  assert_return (BSE_IS_ITEM (item), 0);
+  assert_return (item->parent == BSE_ITEM (container), 0);
 
   if (container->n_items)
     {
       gpointer data[3];
 
-      g_return_val_if_fail (BSE_CONTAINER_GET_CLASS (container)->forall_items != NULL, 0); /* paranoid */
+      assert_return (BSE_CONTAINER_GET_CLASS (container)->forall_items != NULL, 0); /* paranoid */
 
       data[0] = GUINT_TO_POINTER (0);
       data[1] = item;
@@ -482,15 +482,15 @@ bse_container_get_item (BseContainer *container,
                         GType         item_type,
                         guint         seqid)
 {
-  g_return_val_if_fail (BSE_IS_CONTAINER (container), NULL);
-  g_return_val_if_fail (seqid > 0, NULL);
-  g_return_val_if_fail (g_type_is_a (item_type, BSE_TYPE_ITEM), NULL);
+  assert_return (BSE_IS_CONTAINER (container), NULL);
+  assert_return (seqid > 0, NULL);
+  assert_return (g_type_is_a (item_type, BSE_TYPE_ITEM), NULL);
 
   if (container->n_items)
     {
       gpointer data[3];
 
-      g_return_val_if_fail (BSE_CONTAINER_GET_CLASS (container)->forall_items != NULL, NULL); /* paranoid */
+      assert_return (BSE_CONTAINER_GET_CLASS (container)->forall_items != NULL, NULL); /* paranoid */
 
       data[0] = GUINT_TO_POINTER (seqid);
       data[1] = NULL;
@@ -519,8 +519,8 @@ void
 bse_container_store_children (BseContainer *container,
                               BseStorage   *storage)
 {
-  g_return_if_fail (BSE_IS_CONTAINER (container));
-  g_return_if_fail (BSE_IS_STORAGE (storage));
+  assert_return (BSE_IS_CONTAINER (container));
+  assert_return (BSE_IS_STORAGE (storage));
 
   g_object_ref (container);
   bse_container_forall_items (container, store_forall, storage);
@@ -539,8 +539,8 @@ gboolean
 bse_container_check_restore (BseContainer   *self,
                              const gchar    *child_type)
 {
-  g_return_val_if_fail (BSE_IS_CONTAINER (self), FALSE);
-  g_return_val_if_fail (child_type != NULL, FALSE);
+  assert_return (BSE_IS_CONTAINER (self), FALSE);
+  assert_return (child_type != NULL, FALSE);
 
   return BSE_CONTAINER_GET_CLASS (self)->check_restore (self, child_type);
 }
@@ -566,8 +566,8 @@ bse_container_lookup_item (BseContainer *container,
 {
   gpointer data[2] = { NULL, };
 
-  g_return_val_if_fail (BSE_IS_CONTAINER (container), NULL);
-  g_return_val_if_fail (uname != NULL, NULL);
+  assert_return (BSE_IS_CONTAINER (container), NULL);
+  assert_return (uname != NULL, NULL);
 
   /* FIXME: better use a hashtable here */
 
@@ -595,8 +595,8 @@ bse_container_retrieve_child (BseContainer *container,
   gchar *type_name, *uname;
   GType type;
 
-  g_return_val_if_fail (BSE_IS_CONTAINER (container), NULL);
-  g_return_val_if_fail (type_uname != NULL, NULL);
+  assert_return (BSE_IS_CONTAINER (container), NULL);
+  assert_return (type_uname != NULL, NULL);
 
   /* type_uname syntax:
    * <TYPE> [ <::> <UNAME> ]
@@ -635,8 +635,8 @@ bse_container_resolve_upath (BseContainer *container,
 {
   const gchar *next_uname;
 
-  g_return_val_if_fail (BSE_IS_CONTAINER (container), NULL);
-  g_return_val_if_fail (upath != NULL, NULL);
+  assert_return (BSE_IS_CONTAINER (container), NULL);
+  assert_return (upath != NULL, NULL);
 
   /* upaths consist of colon seperated unames from the item's ancestry */
 
@@ -665,10 +665,10 @@ bse_container_make_upath (BseContainer *container,
   gchar *path, *p;
   guint n;
 
-  g_return_val_if_fail (BSE_IS_CONTAINER (container), NULL);
-  g_return_val_if_fail (BSE_IS_ITEM (item), NULL);
+  assert_return (BSE_IS_CONTAINER (container), NULL);
+  assert_return (BSE_IS_ITEM (item), NULL);
   self_item = BSE_ITEM (container);
-  g_return_val_if_fail (bse_item_has_ancestor (item, self_item), NULL); /* item != self_item */
+  assert_return (bse_item_has_ancestor (item, self_item), NULL); /* item != self_item */
 
   n = 0;
   for (; item != self_item; item = item->parent)
@@ -760,7 +760,7 @@ uncross_link_R (BseContainerCrossLinks *clinks,
       unode.next = uncross_stack;
       uncross_stack = &unode;
       unode.uncross (unode.owner, unode.link); /* may recurse */
-      g_assert (uncross_stack == &unode); /* paranoid */
+      assert (uncross_stack == &unode); /* paranoid */
       uncross_stack = unode.next;
     }
 }
@@ -807,10 +807,10 @@ _bse_container_cross_link (BseContainer    *container,
    * + implies: owner != link
    */
 
-  g_return_if_fail (BSE_IS_CONTAINER (container));
-  g_return_if_fail (BSE_IS_ITEM (owner));
-  g_return_if_fail (BSE_IS_ITEM (link));
-  g_return_if_fail (uncross != NULL);
+  assert_return (BSE_IS_CONTAINER (container));
+  assert_return (BSE_IS_ITEM (owner));
+  assert_return (BSE_IS_ITEM (link));
+  assert_return (uncross != NULL);
 
   clinks = container_get_clinks (container);
   if (!clinks)
@@ -847,10 +847,10 @@ _bse_container_cross_unlink (BseContainer  *container,
   UncrossNode *unode;
   gboolean found_one = FALSE;
 
-  g_return_if_fail (BSE_IS_CONTAINER (container));
-  g_return_if_fail (BSE_IS_ITEM (owner));
-  g_return_if_fail (BSE_IS_ITEM (link));
-  g_return_if_fail (uncross != NULL);
+  assert_return (BSE_IS_CONTAINER (container));
+  assert_return (BSE_IS_ITEM (owner));
+  assert_return (BSE_IS_ITEM (link));
+  assert_return (uncross != NULL);
 
   g_object_ref (container);
   g_object_ref (owner);
@@ -912,9 +912,9 @@ _bse_container_uncross (BseContainer  *container,
 {
   BseContainerCrossLinks *clinks;
 
-  g_return_if_fail (BSE_IS_CONTAINER (container));
-  g_return_if_fail (BSE_IS_ITEM (owner));
-  g_return_if_fail (BSE_IS_ITEM (link));
+  assert_return (BSE_IS_CONTAINER (container));
+  assert_return (BSE_IS_ITEM (owner));
+  assert_return (BSE_IS_ITEM (link));
 
   g_object_ref (container);
   g_object_ref (owner);
@@ -975,8 +975,8 @@ bse_container_uncross_descendant (BseContainer *container,
    * bse_item_has_ancestor (item, container) == TRUE
    */
 
-  g_return_if_fail (BSE_IS_CONTAINER (container));
-  g_return_if_fail (BSE_IS_ITEM (item));
+  assert_return (BSE_IS_CONTAINER (container));
+  assert_return (BSE_IS_ITEM (item));
 
   clinks = container_get_clinks (container);
   if (clinks)
@@ -1065,7 +1065,7 @@ bse_container_prepare (BseSource *source)
   /* make sure all BseSource children are prepared last */
   if (container->n_items)
     {
-      g_return_if_fail (BSE_CONTAINER_GET_CLASS (container)->forall_items != NULL); /* paranoid */
+      assert_return (BSE_CONTAINER_GET_CLASS (container)->forall_items != NULL); /* paranoid */
 
       BSE_CONTAINER_GET_CLASS (container)->forall_items (container, forall_prepare, NULL);
     }
@@ -1088,7 +1088,7 @@ container_context_children (BseContainer *container)
 {
   GSList *slist = NULL;
 
-  g_return_val_if_fail (BSE_CONTAINER_GET_CLASS (container)->forall_items != NULL, NULL); /* paranoid */
+  assert_return (BSE_CONTAINER_GET_CLASS (container)->forall_items != NULL, NULL); /* paranoid */
 
   BSE_CONTAINER_GET_CLASS (container)->forall_items (container, forall_slist_prepend, &slist);
 
@@ -1127,7 +1127,7 @@ forall_context_connect (BseItem *item,
     {
       BseSource *source = BSE_SOURCE (item);
 
-      g_return_val_if_fail (BSE_SOURCE_PREPARED (item), TRUE);
+      assert_return (BSE_SOURCE_PREPARED (item), TRUE);
 
       if (bse_source_has_context (source, cid))
         bse_source_connect_context (source, cid, (BseTrans*) data[1]);
@@ -1148,7 +1148,7 @@ bse_container_context_connect (BseSource *source,
     {
       gpointer data[2] = { GUINT_TO_POINTER (context_handle), trans };
 
-      g_return_if_fail (BSE_CONTAINER_GET_CLASS (container)->forall_items != NULL); /* paranoid */
+      assert_return (BSE_CONTAINER_GET_CLASS (container)->forall_items != NULL); /* paranoid */
 
       BSE_CONTAINER_GET_CLASS (container)->forall_items (container, forall_context_connect, data);
     }
@@ -1168,7 +1168,7 @@ forall_context_dismiss (BseItem *item,
     {
       BseSource *source = BSE_SOURCE (item);
 
-      g_return_val_if_fail (BSE_SOURCE_PREPARED (item), TRUE);
+      assert_return (BSE_SOURCE_PREPARED (item), TRUE);
 
       if (bse_source_has_context (source, cid))
         bse_source_dismiss_context (source, cid, (BseTrans*) data[1]);
@@ -1189,7 +1189,7 @@ bse_container_context_dismiss (BseSource *source,
     {
       gpointer data[2] = { GUINT_TO_POINTER (context_handle), trans };
 
-      g_return_if_fail (BSE_CONTAINER_GET_CLASS (container)->forall_items != NULL); /* paranoid */
+      assert_return (BSE_CONTAINER_GET_CLASS (container)->forall_items != NULL); /* paranoid */
 
       BSE_CONTAINER_GET_CLASS (container)->forall_items (container, forall_context_dismiss, data);
     }
@@ -1204,7 +1204,7 @@ forall_reset (BseItem *item,
 {
   if (BSE_IS_SOURCE (item))
     {
-      g_return_val_if_fail (BSE_SOURCE_PREPARED (item), TRUE);
+      assert_return (BSE_SOURCE_PREPARED (item), TRUE);
 
       bse_source_reset (BSE_SOURCE (item));
     }
@@ -1220,7 +1220,7 @@ bse_container_reset (BseSource *source)
   /* make sure all BseSource children are reset first */
   if (container->n_items)
     {
-      g_return_if_fail (BSE_CONTAINER_GET_CLASS (container)->forall_items != NULL); /* paranoid */
+      assert_return (BSE_CONTAINER_GET_CLASS (container)->forall_items != NULL); /* paranoid */
 
       BSE_CONTAINER_GET_CLASS (container)->forall_items (container, forall_reset, NULL);
     }
@@ -1253,9 +1253,9 @@ bse_container_uncross_undoable (BseContainer *container,
 {
   BseItem *ancestor;
 
-  g_return_if_fail (BSE_IS_CONTAINER (container));
-  g_return_if_fail (BSE_IS_ITEM (child));
-  g_return_if_fail (child->parent == (BseItem*) container);
+  assert_return (BSE_IS_CONTAINER (container));
+  assert_return (BSE_IS_ITEM (child));
+  assert_return (child->parent == (BseItem*) container);
 
   /* backup source channels state */
   if (BSE_IS_SOURCE (child))
@@ -1280,9 +1280,9 @@ bse_container_remove_backedup (BseContainer *container,
                                BseItem      *child,
                                BseUndoStack *ustack)
 {
-  g_return_if_fail (BSE_IS_CONTAINER (container));
-  g_return_if_fail (BSE_IS_ITEM (child));
-  g_return_if_fail (child->parent == (BseItem*) container);
+  assert_return (BSE_IS_CONTAINER (container));
+  assert_return (BSE_IS_ITEM (child));
+  assert_return (child->parent == (BseItem*) container);
 
   /* _no_ redo facility is queued by this function */
 

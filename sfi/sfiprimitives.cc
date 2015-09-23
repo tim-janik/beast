@@ -29,8 +29,8 @@ sfi_bblock_new_sized (guint size)
 SfiBBlock*
 sfi_bblock_ref (SfiBBlock *bblock)
 {
-  g_return_val_if_fail (bblock != NULL, NULL);
-  g_return_val_if_fail (bblock->ref_count > 0, NULL);
+  assert_return (bblock != NULL, NULL);
+  assert_return (bblock->ref_count > 0, NULL);
 
   bblock->ref_count++;
   return bblock;
@@ -39,8 +39,8 @@ sfi_bblock_ref (SfiBBlock *bblock)
 void
 sfi_bblock_unref (SfiBBlock *bblock)
 {
-  g_return_if_fail (bblock != NULL);
-  g_return_if_fail (bblock->ref_count > 0);
+  assert_return (bblock != NULL);
+  assert_return (bblock->ref_count > 0);
 
   bblock->ref_count--;
   if (bblock->ref_count == 0)
@@ -56,7 +56,7 @@ sfi_bblock_resize (SfiBBlock *bblock,
 {
   guint i;
 
-  g_return_if_fail (bblock != NULL);
+  assert_return (bblock != NULL);
 
   i = bblock->n_bytes;
   bblock->n_bytes = size;
@@ -70,8 +70,8 @@ sfi_bblock_copy_deep (const SfiBBlock *bblock)
 {
   SfiBBlock *fb;
 
-  g_return_val_if_fail (bblock != NULL, NULL);
-  g_return_val_if_fail (bblock->ref_count > 0, NULL);
+  assert_return (bblock != NULL, NULL);
+  assert_return (bblock->ref_count > 0, NULL);
 
   fb = sfi_bblock_new ();
   fb->n_bytes = bblock->n_bytes;
@@ -84,13 +84,13 @@ sfi_bblock_append (SfiBBlock    *bblock,
 		   guint         n_bytes,
 		   const guint8 *bytes)
 {
-  g_return_if_fail (bblock != NULL);
+  assert_return (bblock != NULL);
 
   if (n_bytes)
     {
       guint i;
 
-      g_return_if_fail (bytes != NULL);
+      assert_return (bytes != NULL);
 
       i = bblock->n_bytes;
       bblock->n_bytes += n_bytes;
@@ -105,7 +105,7 @@ sfi_bblock_append1 (SfiBBlock *bblock,
 {
   guint i;
 
-  g_return_if_fail (bblock != NULL);
+  assert_return (bblock != NULL);
 
   i = bblock->n_bytes++;
   bblock->bytes = g_renew (guint8, bblock->bytes, bblock->n_bytes);
@@ -115,14 +115,14 @@ sfi_bblock_append1 (SfiBBlock *bblock,
 guint
 sfi_bblock_length (const SfiBBlock *bblock)
 {
-  g_return_val_if_fail (bblock != NULL, 0);
+  assert_return (bblock != NULL, 0);
   return bblock->n_bytes;
 }
 
 guint8*
 sfi_bblock_get (const SfiBBlock *bblock)
 {
-  g_return_val_if_fail (bblock != NULL, NULL);
+  assert_return (bblock != NULL, NULL);
   return bblock->bytes;
 }
 
@@ -152,7 +152,7 @@ sfi_fblock_new_foreign (guint     n_values,
                         gfloat   *values,
                         GFreeFunc freefunc)
 {
-  g_return_val_if_fail (n_values == 0 || values != NULL, NULL);
+  assert_return (n_values == 0 || values != NULL, NULL);
   SfiFBlock *fblock = sfi_fblock_new ();
   fblock->n_values = n_values;
   fblock->values = values;
@@ -163,8 +163,8 @@ sfi_fblock_new_foreign (guint     n_values,
 SfiFBlock*
 sfi_fblock_ref (SfiFBlock *fblock)
 {
-  g_return_val_if_fail (fblock != NULL, NULL);
-  g_return_val_if_fail (fblock->ref_count > 0, NULL);
+  assert_return (fblock != NULL, NULL);
+  assert_return (fblock->ref_count > 0, NULL);
 
   fblock->ref_count++;
   return fblock;
@@ -173,8 +173,8 @@ sfi_fblock_ref (SfiFBlock *fblock)
 void
 sfi_fblock_unref (SfiFBlock *fblock)
 {
-  g_return_if_fail (fblock != NULL);
-  g_return_if_fail (fblock->ref_count > 0);
+  assert_return (fblock != NULL);
+  assert_return (fblock->ref_count > 0);
 
   fblock->ref_count--;
   if (fblock->ref_count == 0)
@@ -206,7 +206,7 @@ void
 sfi_fblock_resize (SfiFBlock *fblock,
 		   guint      size)
 {
-  g_return_if_fail (fblock != NULL);
+  assert_return (fblock != NULL);
 
   guint osize = fblock->n_values;
   fblock_resize (fblock, size);
@@ -219,8 +219,8 @@ sfi_fblock_copy_deep (const SfiFBlock *fblock)
 {
   SfiFBlock *fb;
 
-  g_return_val_if_fail (fblock != NULL, NULL);
-  g_return_val_if_fail (fblock->ref_count > 0, NULL);
+  assert_return (fblock != NULL, NULL);
+  assert_return (fblock->ref_count > 0, NULL);
 
   fb = sfi_fblock_new ();
   fb->n_values = fblock->n_values;
@@ -233,11 +233,11 @@ sfi_fblock_append (SfiFBlock    *fblock,
 		   guint         n_values,
 		   const gfloat *values)
 {
-  g_return_if_fail (fblock != NULL);
+  assert_return (fblock != NULL);
 
   if (n_values)
     {
-      g_return_if_fail (values != NULL);
+      assert_return (values != NULL);
       guint oldsize = fblock->n_values;
       fblock_resize (fblock, oldsize + n_values);
       memcpy (fblock->values + oldsize, values, n_values * sizeof (fblock->values[0]));
@@ -248,7 +248,7 @@ void
 sfi_fblock_append1 (SfiFBlock *fblock,
 		    gfloat     float0)
 {
-  g_return_if_fail (fblock != NULL);
+  assert_return (fblock != NULL);
   fblock_resize (fblock, fblock->n_values + 1);
   fblock->values[fblock->n_values - 1] = float0;
 }
@@ -256,14 +256,14 @@ sfi_fblock_append1 (SfiFBlock *fblock,
 guint
 sfi_fblock_length (const SfiFBlock *fblock)
 {
-  g_return_val_if_fail (fblock != NULL, 0);
+  assert_return (fblock != NULL, 0);
   return fblock->n_values;
 }
 
 gfloat*
 sfi_fblock_get (const SfiFBlock *fblock)
 {
-  g_return_val_if_fail (fblock != NULL, NULL);
+  assert_return (fblock != NULL, NULL);
   return fblock->values;
 }
 
@@ -284,8 +284,8 @@ sfi_seq_new (void)
 SfiSeq*
 sfi_seq_ref (SfiSeq *seq)
 {
-  g_return_val_if_fail (seq != NULL, NULL);
-  g_return_val_if_fail (seq->ref_count > 0, NULL);
+  assert_return (seq != NULL, NULL);
+  assert_return (seq->ref_count > 0, NULL);
 
   seq->ref_count++;
   return seq;
@@ -294,8 +294,8 @@ sfi_seq_ref (SfiSeq *seq)
 void
 sfi_seq_clear (SfiSeq *seq)
 {
-  g_return_if_fail (seq != NULL);
-  g_return_if_fail (seq->ref_count > 0);
+  assert_return (seq != NULL);
+  assert_return (seq->ref_count > 0);
 
   while (seq->n_elements)
     g_value_unset (seq->elements + --seq->n_elements);
@@ -306,8 +306,8 @@ sfi_seq_clear (SfiSeq *seq)
 void
 sfi_seq_unref (SfiSeq *seq)
 {
-  g_return_if_fail (seq != NULL);
-  g_return_if_fail (seq->ref_count > 0);
+  assert_return (seq != NULL);
+  assert_return (seq->ref_count > 0);
 
   seq->ref_count--;
   if (seq->ref_count == 0)
@@ -333,7 +333,7 @@ sfi_seq_append_copy (SfiSeq       *seq,
 {
   guint i, l, n;
 
-  g_return_if_fail (seq != NULL);
+  assert_return (seq != NULL);
 
   l = upper_power2 (seq->n_elements);
   i = seq->n_elements++;
@@ -356,8 +356,8 @@ sfi_seq_copy_deep (const SfiSeq *seq)
   SfiSeq *s;
   guint i;
 
-  g_return_val_if_fail (seq != NULL, NULL);
-  g_return_val_if_fail (seq->ref_count > 0, NULL);
+  assert_return (seq != NULL, NULL);
+  assert_return (seq->ref_count > 0, NULL);
 
   s = sfi_seq_new ();
   for (i = 0; i < seq->n_elements; i++)
@@ -369,8 +369,8 @@ void
 sfi_seq_append (SfiSeq       *seq,
 		const GValue *value)
 {
-  g_return_if_fail (seq != NULL);
-  g_return_if_fail (G_IS_VALUE (value));
+  assert_return (seq != NULL);
+  assert_return (G_IS_VALUE (value));
 
   sfi_seq_append_copy (seq, G_VALUE_TYPE (value), FALSE, value);
 }
@@ -379,8 +379,8 @@ GValue*
 sfi_seq_append_empty (SfiSeq          *seq,
                       GType            value_type)
 {
-  g_return_val_if_fail (seq != NULL, NULL);
-  g_return_val_if_fail (G_TYPE_IS_VALUE (value_type), NULL);
+  assert_return (seq != NULL, NULL);
+  assert_return (G_TYPE_IS_VALUE (value_type), NULL);
 
   sfi_seq_append_copy (seq, value_type, FALSE, NULL);
   return seq->elements + seq->n_elements - 1;
@@ -396,8 +396,8 @@ GValue*
 sfi_seq_get (const SfiSeq *seq,
 	     guint         index)
 {
-  g_return_val_if_fail (seq != NULL, NULL);
-  g_return_val_if_fail (index < seq->n_elements, NULL);
+  assert_return (seq != NULL, NULL);
+  assert_return (index < seq->n_elements, NULL);
 
   return seq->elements + index;
 }
@@ -408,7 +408,7 @@ sfi_seq_check (SfiSeq *seq,
 {
   guint i;
 
-  g_return_val_if_fail (seq != NULL, FALSE);
+  assert_return (seq != NULL, FALSE);
 
   for (i = 0; i < seq->n_elements; i++)
     if (!G_VALUE_HOLDS (seq->elements + i, element_type))
@@ -420,8 +420,8 @@ gboolean
 sfi_seq_validate (SfiSeq     *seq,
                   GParamSpec *pspec)
 {
-  g_return_val_if_fail (seq != NULL, FALSE);
-  g_return_val_if_fail (pspec != NULL, FALSE);
+  assert_return (seq != NULL, FALSE);
+  assert_return (pspec != NULL, FALSE);
 
   GValue *v = sfi_value_seq (seq);
   gboolean changed = g_param_value_validate (pspec, v);
@@ -681,7 +681,7 @@ sfi_seq_to_strv (SfiSeq *seq)
   gchar **strv;
   guint i;
 
-  g_return_val_if_fail (seq != NULL, NULL);
+  assert_return (seq != NULL, NULL);
 
   for (i = 0; i < seq->n_elements; i++)
     if (G_VALUE_HOLDS_STRING (seq->elements + i))
@@ -737,8 +737,8 @@ sfi_rec_new (void)
 SfiRec*
 sfi_rec_ref (SfiRec *rec)
 {
-  g_return_val_if_fail (rec != NULL, NULL);
-  g_return_val_if_fail (rec->ref_count > 0, NULL);
+  assert_return (rec != NULL, NULL);
+  assert_return (rec->ref_count > 0, NULL);
 
   rec->ref_count++;
 
@@ -766,8 +766,8 @@ sfi_rec_empty (SfiRec *rec)
 void
 sfi_rec_unref (SfiRec *rec)
 {
-  g_return_if_fail (rec != NULL);
-  g_return_if_fail (rec->ref_count > 0);
+  assert_return (rec != NULL);
+  assert_return (rec->ref_count > 0);
 
   rec->ref_count--;
   if (rec->ref_count == 0)
@@ -780,8 +780,8 @@ sfi_rec_unref (SfiRec *rec)
 void
 sfi_rec_clear (SfiRec *rec)
 {
-  g_return_if_fail (rec != NULL);
-  g_return_if_fail (rec->ref_count > 0);
+  assert_return (rec != NULL);
+  assert_return (rec->ref_count > 0);
 
   sfi_rec_empty (rec);
 }
@@ -789,7 +789,7 @@ sfi_rec_clear (SfiRec *rec)
 guint
 sfi_rec_n_fields (const SfiRec *rec)
 {
-  g_return_val_if_fail (rec != NULL, 0);
+  assert_return (rec != NULL, 0);
   return rec ? rec->n_fields : 0;
 }
 
@@ -797,8 +797,8 @@ GValue*
 sfi_rec_field (const SfiRec *rec,
 	       guint         index)
 {
-  g_return_val_if_fail (rec != NULL, NULL);
-  g_return_val_if_fail (index < rec->n_fields, NULL);
+  assert_return (rec != NULL, NULL);
+  assert_return (index < rec->n_fields, NULL);
 
   return rec->fields + index;
 }
@@ -906,9 +906,9 @@ sfi_rec_set (SfiRec       *rec,
 	     const gchar  *field_name,
 	     const GValue *value)
 {
-  g_return_if_fail (rec != NULL);
-  g_return_if_fail (field_name != NULL);
-  g_return_if_fail (SFI_IS_VALUE (value));
+  assert_return (rec != NULL);
+  assert_return (field_name != NULL);
+  assert_return (SFI_IS_VALUE (value));
 
   sfi_rec_set_copy (rec, field_name, G_VALUE_TYPE (value), FALSE, value);
 }
@@ -921,8 +921,8 @@ sfi_rec_get (SfiRec      *rec,
   gchar *dupcanon_name;
   guint i;
 
-  g_return_val_if_fail (rec != NULL, NULL);
-  g_return_val_if_fail (field_name != NULL, NULL);
+  assert_return (rec != NULL, NULL);
+  assert_return (field_name != NULL, NULL);
 
   if (!rec->sorted)
     sfi_rec_sort (rec);
@@ -943,9 +943,9 @@ sfi_rec_forced_get (SfiRec          *rec,
   const gchar *name;
   gchar *dupcanon_name;
   guint i;
-  g_return_val_if_fail (rec != NULL, NULL);
-  g_return_val_if_fail (field_name != NULL, NULL);
-  g_return_val_if_fail (G_TYPE_IS_VALUE (value_type), NULL);
+  assert_return (rec != NULL, NULL);
+  assert_return (field_name != NULL, NULL);
+  assert_return (G_TYPE_IS_VALUE (value_type), NULL);
   if (!rec->sorted)
     sfi_rec_sort (rec);
   dupcanon_name = may_dupcanon (field_name);
@@ -975,8 +975,8 @@ sfi_rec_copy_deep (SfiRec *rec)
   SfiRec *r;
   guint i;
 
-  g_return_val_if_fail (rec != NULL, NULL);
-  g_return_val_if_fail (rec->ref_count > 0, NULL);
+  assert_return (rec != NULL, NULL);
+  assert_return (rec->ref_count > 0, NULL);
 
   sfi_rec_sort (rec);
   r = sfi_rec_new ();
@@ -992,8 +992,8 @@ sfi_rec_check (SfiRec      *rec,
 {
   guint i;
 
-  g_return_val_if_fail (rec != NULL, FALSE);
-  g_return_val_if_fail (rfields.n_fields > 0, FALSE);
+  assert_return (rec != NULL, FALSE);
+  assert_return (rfields.n_fields > 0, FALSE);
 
   if (!rec->sorted)
     sfi_rec_sort (rec);
@@ -1019,7 +1019,7 @@ strpointercmp (const void *p1,
 void
 sfi_rec_sort (SfiRec *rec)
 {
-  g_return_if_fail (rec != NULL);
+  assert_return (rec != NULL);
 
   if (!rec->sorted && rec->n_fields > 1)
     {
@@ -1054,8 +1054,8 @@ sfi_rec_swap_fields (SfiRec *rec,
   GValue *fields;
   gchar **names;
 
-  g_return_if_fail (rec != NULL);
-  g_return_if_fail (swapper != NULL);
+  assert_return (rec != NULL);
+  assert_return (swapper != NULL);
 
   sfi_rec_sort (rec);
   sfi_rec_sort (swapper);
@@ -1078,7 +1078,7 @@ sfi_rec_validate (SfiRec      *rec,
   GValue *v;
   gboolean changed;
 
-  g_return_val_if_fail (rec != NULL, FALSE);
+  assert_return (rec != NULL, FALSE);
 
   pspec = sfi_pspec_rec ("auto", NULL, NULL, fields, ":readwrite");
   v = sfi_value_rec (rec);

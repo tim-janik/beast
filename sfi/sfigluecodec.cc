@@ -86,7 +86,7 @@ sfi_glue_encoder_context (SfiComPort *port)
   };
   SfiGlueEncoder *encoder;
 
-  g_return_val_if_fail (port != NULL, NULL);
+  assert_return (port != NULL, NULL);
 
   encoder = g_new0 (SfiGlueEncoder, 1);
   sfi_glue_context_common_init (&encoder->context, &encoder_vtable);
@@ -897,8 +897,8 @@ sfi_glue_context_decoder (SfiComPort     *port,
 {
   SfiGlueDecoder *decoder;
 
-  g_return_val_if_fail (port != NULL, NULL);
-  g_return_val_if_fail (context != NULL, NULL);
+  assert_return (port != NULL, NULL);
+  assert_return (context != NULL, NULL);
 
   decoder = g_new0 (SfiGlueDecoder, 1);
   decoder->context = context;
@@ -914,8 +914,8 @@ sfi_glue_decoder_add_handler (SfiGlueDecoder         *decoder,
 			      SfiGlueDecoderClientMsg func,
 			      gpointer                user_data)
 {
-  g_return_if_fail (decoder != NULL);
-  g_return_if_fail (func != NULL);
+  assert_return (decoder != NULL);
+  assert_return (func != NULL);
   uint i = decoder->n_chandler++;
   decoder->chandler = (SfiGlueDecoder::ClientMsg*) g_realloc (decoder->chandler, sizeof (decoder->chandler[0]) * decoder->n_chandler);
   decoder->chandler[i].client_msg = func;
@@ -927,7 +927,7 @@ sfi_glue_decoder_pending (SfiGlueDecoder *decoder)
 {
   gboolean pending;
 
-  g_return_val_if_fail (decoder != NULL, FALSE);
+  assert_return (decoder != NULL, FALSE);
 
   pending = decoder->outgoing || decoder->incoming;
   if (!pending)
@@ -952,7 +952,7 @@ sfi_glue_decoder_dispatch (SfiGlueDecoder *decoder)
 {
   SfiSeq *seq;
 
-  g_return_if_fail (decoder != NULL);
+  assert_return (decoder != NULL);
 
   sfi_glue_context_push (decoder->context);
 
@@ -999,7 +999,7 @@ sfi_glue_decoder_dispatch (SfiGlueDecoder *decoder)
 	  sfi_seq_unref (seq);
 	}
       else
-	g_assert (rvalue == NULL);
+	assert (rvalue == NULL);
     }
 
   /* queue emitted signals */
@@ -1032,7 +1032,7 @@ sfi_glue_decoder_list_poll_fds (SfiGlueDecoder *decoder)
   SfiRing *ring;
   guint n;
 
-  g_return_val_if_fail (decoder != NULL, NULL);
+  assert_return (decoder != NULL, NULL);
 
   sfi_glue_context_push (decoder->context);
   ring = sfi_ring_copy (sfi_glue_context_list_poll_fds ());
@@ -1048,7 +1048,7 @@ sfi_glue_decoder_destroy (SfiGlueDecoder *decoder)
 {
   SfiRing *ring;
 
-  g_return_if_fail (decoder != NULL);
+  assert_return (decoder != NULL);
 
   sfi_com_port_unref (decoder->port);
   for (ring = decoder->outgoing; ring; ring = sfi_ring_walk (ring, decoder->outgoing))

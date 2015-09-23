@@ -54,7 +54,7 @@ bst_bus_view_new (SfiProxy song)
 {
   GtkWidget *bus_view;
 
-  g_return_val_if_fail (BSE_IS_SONG (song), NULL);
+  assert_return (BSE_IS_SONG (song), NULL);
 
   bus_view = gtk_widget_new (BST_TYPE_BUS_VIEW, NULL);
   bst_item_view_set_container (BST_ITEM_VIEW (bus_view), song);

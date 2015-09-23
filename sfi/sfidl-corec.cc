@@ -119,7 +119,7 @@ class CodeGeneratorCoreC : public CodeGenerator {
       case RECORD:      return TypeName (type, "*");
       case SEQUENCE:    return TypeName (type, "*");
       case OBJECT:      return TypeName (type, "*");
-      default:          g_assert_not_reached(); return NULL;
+      default:          assert_unreached(); return NULL;
       }
   }
   const char*
@@ -712,7 +712,7 @@ class CodeGeneratorCoreC : public CodeGenerator {
         printf ("void\n");
         printf ("%s_append (%s cseq, %s element)\n", lname.c_str(), arg.c_str(), element.c_str());
         printf ("{\n");
-        printf ("  g_return_if_fail (cseq != NULL);\n");
+        printf ("  assert_return (cseq != NULL);\n");
         printf ("  %s sh (0);\n", type);
         printf ("  sh.take (hack_cast (cseq));\n");
         printf ("  sh += %s;\n", cxx_handle (si->content.type, "element"));
@@ -747,7 +747,7 @@ class CodeGeneratorCoreC : public CodeGenerator {
         printf ("void\n");
         printf ("%s_resize (%s cseq, guint n)\n", lname.c_str(), arg.c_str());
         printf ("{\n");
-        printf ("  g_return_if_fail (cseq != NULL);\n");
+        printf ("  assert_return (cseq != NULL);\n");
         printf ("  %s sh (0);\n", type);
         printf ("  sh.take (hack_cast (cseq));\n");
         printf ("  sh.resize (n);\n");

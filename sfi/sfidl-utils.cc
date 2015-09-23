@@ -39,7 +39,7 @@ symbolToList (const String& symbol)
   list<String> result;
   String current;
 
-  g_return_val_if_fail (isCxxTypeName (symbol), result);
+  assert_return (isCxxTypeName (symbol), result);
 
   for (String::const_iterator si = symbol.begin(); si != symbol.end(); si++)
     {

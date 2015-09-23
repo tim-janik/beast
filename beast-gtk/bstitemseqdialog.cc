@@ -67,7 +67,7 @@ bst_item_seq_dialog_setup (BstItemSeqDialog *self,
 {
   GtkWindow *window = GTK_WINDOW (self);
 
-  g_return_if_fail (BST_IS_ITEM_SEQ_DIALOG (self));
+  assert_return (BST_IS_ITEM_SEQ_DIALOG (self));
 
   GxkFreeFunc selected_cleanup = self->selected_cleanup;
   self->selected_callback = NULL;
@@ -165,7 +165,7 @@ bst_item_seq_dialog_set (BstItemSeqDialog *self,
                          BseItemSeq       *candidates,
                          BseItemSeq       *iseq)
 {
-  g_return_if_fail (BST_IS_ITEM_SEQ_DIALOG (self));
+  assert_return (BST_IS_ITEM_SEQ_DIALOG (self));
 
   bst_item_seq_store_set (self->candidate_store, candidates);
   bst_item_seq_store_set (self->item_store, iseq);

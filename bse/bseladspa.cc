@@ -105,7 +105,7 @@ static void
 ladspa_plugin_unload (BseLadspaPlugin *self)
 {
   guint i;
-  g_return_if_fail (self->gmodule != NULL);
+  assert_return (self->gmodule != NULL);
   g_module_close (self->gmodule);
   self->gmodule = NULL;
   for (i = 0; i < self->n_types; i++)
@@ -120,7 +120,7 @@ static void
 ladspa_plugin_unuse (GTypePlugin *gplugin)
 {
   BseLadspaPlugin *self = BSE_LADSPA_PLUGIN (gplugin);
-  g_return_if_fail (self->use_count > 0);
+  assert_return (self->use_count > 0);
   self->use_count--;
   if (!self->use_count)
     ladspa_plugin_unload (self);
@@ -435,7 +435,7 @@ bse_ladspa_info_assemble (const gchar  *file_path,
   PortCounter pcounter = { 0, 1, 1, 1, 1 };
   bool seen_control_output = false, seen_audio_output = false;
 
-  g_return_val_if_fail (cld != NULL, NULL);
+  assert_return (cld != NULL, NULL);
 
   bli->file_path = g_strdup (file_path);
   if (!file_path)
@@ -559,7 +559,7 @@ bse_ladspa_info_free (BseLadspaInfo *bli)
 {
   guint i;
 
-  g_return_if_fail (bli != NULL);
+  assert_return (bli != NULL);
 
   for (i = 0; i < bli->n_cports; i++)
     {
@@ -598,7 +598,7 @@ bse_ladspa_plugin_check_load (const gchar *file_name)
   const gchar *error;
   GModule *gmodule;
 
-  g_return_val_if_fail (file_name != NULL, "Internal Error");
+  assert_return (file_name != NULL, "Internal Error");
 
   if (ladspa_plugin_find (file_name))
     return "Plugin already registered";

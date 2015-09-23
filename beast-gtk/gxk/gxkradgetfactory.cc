@@ -129,7 +129,7 @@ gxk_radget_factory_finalize (GObject *object)
 {
   GxkRadgetFactory *self = GXK_RADGET_FACTORY (object);
 
-  g_assert (self->window == NULL);
+  assert (self->window == NULL);
   g_datalist_clear (&self->branch_widgets);
   g_free (self->action_root);
   g_free (self->per_action);
@@ -145,7 +145,7 @@ gxk_radget_factory_finalize (GObject *object)
       g_object_unref (b);
     }
 
-  g_return_if_fail (self->timer == 0);
+  assert_return (self->timer == 0);
 
   /* chain parent class' handler */
   G_OBJECT_CLASS (gxk_radget_factory_parent_class)->finalize (object);
@@ -395,8 +395,8 @@ gxk_radget_factory_attach (GxkRadgetFactory *self,
 {
   GSList *slist;
 
-  g_return_if_fail (self->radget == NULL);
-  g_return_if_fail (GTK_IS_WIDGET (radget));
+  assert_return (self->radget == NULL);
+  assert_return (GTK_IS_WIDGET (radget));
 
   g_object_ref (self);
   slist = (GSList*) g_object_steal_qdata ((GObject*) radget, quark_radget_factory_hook);

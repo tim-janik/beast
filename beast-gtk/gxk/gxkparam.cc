@@ -57,8 +57,8 @@ gxk_param_new (GParamSpec      *pspec,
                GxkParamBinding *binding,
                gpointer         user_data)
 {
-  g_return_val_if_fail (G_IS_PARAM_SPEC (pspec), NULL);
-  g_return_val_if_fail (binding != NULL, NULL);
+  assert_return (G_IS_PARAM_SPEC (pspec), NULL);
+  assert_return (binding != NULL, NULL);
   return param_new (pspec, FALSE, binding, user_data);
 }
 
@@ -67,8 +67,8 @@ gxk_param_new_constant (GParamSpec      *pspec,
                         GxkParamBinding *binding,
                         gpointer         user_data)
 {
-  g_return_val_if_fail (G_IS_PARAM_SPEC (pspec), NULL);
-  g_return_val_if_fail (binding != NULL, NULL);
+  assert_return (G_IS_PARAM_SPEC (pspec), NULL);
+  assert_return (binding != NULL, NULL);
   return param_new (pspec, TRUE, binding, user_data);
 }
 
@@ -94,7 +94,7 @@ gxk_object_set_param_callback (GtkObject          *object,
                                GxkParamUpdateFunc  ufunc)
 {
   /* sets the callback to apply param->value to object (update GUI) */
-  g_return_if_fail (GTK_IS_OBJECT (object));
+  assert_return (GTK_IS_OBJECT (object));
   g_object_set_data ((GObject*) object, "GxkParamUpdateFunc", (void*) ufunc);
 }
 
@@ -104,7 +104,7 @@ gxk_param_update (GxkParam *param)
   GSList *slist;
   gboolean updating;
 
-  g_return_if_fail (GXK_IS_PARAM (param));
+  assert_return (GXK_IS_PARAM (param));
 
   updating = param->updating;
   param->updating = TRUE;
@@ -166,9 +166,9 @@ gxk_param_remove_object (GxkParam          *param,
                          GtkObject         *object)
 {
   GSList *slist;
-  g_return_if_fail (GXK_IS_PARAM (param));
+  assert_return (GXK_IS_PARAM (param));
   slist = g_slist_find (param->objects, object);
-  g_return_if_fail (slist != NULL);
+  assert_return (slist != NULL);
   param->objects = g_slist_delete_link (param->objects, slist);
   g_object_disconnect (object, "any_signal::destroy", gxk_param_remove_object, param, NULL);
   if (GTK_IS_WIDGET (object) && /* check for grab_widget: */
@@ -184,7 +184,7 @@ void
 gxk_param_add_object (GxkParam          *param,
                       GtkObject         *object)
 {
-  g_return_if_fail (GXK_IS_PARAM (param));
+  assert_return (GXK_IS_PARAM (param));
   if (gxk_signal_handler_pending (object, "destroy", G_CALLBACK (gxk_param_remove_object), param) == FALSE)
     {
       if (GTK_IS_WIDGET (object))
@@ -198,7 +198,7 @@ gxk_param_add_object (GxkParam          *param,
 void
 gxk_param_apply_value (GxkParam *param)
 {
-  g_return_if_fail (GXK_IS_PARAM (param));
+  assert_return (GXK_IS_PARAM (param));
   if (param->updating)
     {
       g_warning ("%s: param (%p) currently in update", G_STRFUNC, param);
@@ -216,7 +216,7 @@ gxk_param_apply_value (GxkParam *param)
 void
 gxk_param_apply_default (GxkParam *param)
 {
-  g_return_if_fail (GXK_IS_PARAM (param));
+  assert_return (GXK_IS_PARAM (param));
   if (!param->updating && param->editable && param->sensitive)
     {
       g_param_value_set_default (param->pspec, &param->value);
@@ -228,7 +228,7 @@ void
 gxk_param_set_editable (GxkParam *param,
 			gboolean  editable)
 {
-  g_return_if_fail (GXK_IS_PARAM (param));
+  assert_return (GXK_IS_PARAM (param));
   editable = editable != FALSE;
   if (param->ueditable != editable)
     {
@@ -248,7 +248,7 @@ gxk_param_set_editable (GxkParam *param,
 const gchar*
 gxk_param_get_name (GxkParam *param)
 {
-  g_return_val_if_fail (GXK_IS_PARAM (param), NULL);
+  assert_return (GXK_IS_PARAM (param), NULL);
   return param->pspec->name;
 }
 
@@ -264,7 +264,7 @@ gxk_param_dup_tooltip (GxkParam *param)
 {
   gchar *tooltip;
   const gchar *ctip;
-  g_return_val_if_fail (GXK_IS_PARAM (param), NULL);
+  assert_return (GXK_IS_PARAM (param), NULL);
   ctip = g_param_spec_get_blurb (param->pspec);
   if (!_param_devel_tips)
     tooltip = g_strdup (ctip);
@@ -278,9 +278,9 @@ gxk_param_dup_tooltip (GxkParam *param)
 void
 gxk_param_start_grouping (GxkParam *param)
 {
-  g_return_if_fail (GXK_IS_PARAM (param));
-  g_return_if_fail (param->binding != NULL);
-  g_return_if_fail (param->grouping < 0xff);
+  assert_return (GXK_IS_PARAM (param));
+  assert_return (param->binding != NULL);
+  assert_return (param->grouping < 0xff);
   if (!param->grouping++ &&
       param->binding->start_grouping)
     param->binding->start_grouping (param);
@@ -289,8 +289,8 @@ gxk_param_start_grouping (GxkParam *param)
 void
 gxk_param_stop_grouping (GxkParam *param)
 {
-  g_return_if_fail (GXK_IS_PARAM (param));
-  g_return_if_fail (param->binding != NULL);
+  assert_return (GXK_IS_PARAM (param));
+  assert_return (param->binding != NULL);
   if (param->grouping)
     {
       if (!--param->grouping &&
@@ -302,8 +302,8 @@ gxk_param_stop_grouping (GxkParam *param)
 void
 gxk_param_destroy (GxkParam *param)
 {
-  g_return_if_fail (GXK_IS_PARAM (param));
-  g_return_if_fail (param->binding != NULL);
+  assert_return (GXK_IS_PARAM (param));
+  assert_return (param->binding != NULL);
 
   while (param->grouping)
     gxk_param_stop_grouping (param);
@@ -475,10 +475,10 @@ void
 gxk_param_set_object (GxkParam           *param,
                       GObject            *object)
 {
-  g_return_if_fail (GXK_IS_PARAM (param));
-  g_return_if_fail (param->binding == &g_object_binding);
+  assert_return (GXK_IS_PARAM (param));
+  assert_return (param->binding == &g_object_binding);
   if (object)
-    g_return_if_fail (G_IS_OBJECT (object));
+    assert_return (G_IS_OBJECT (object));
 
   object_binding_destroy (param);
   param->bdata[0].v_pointer = object;
@@ -494,7 +494,7 @@ gxk_param_set_object (GxkParam           *param,
 GObject*
 gxk_param_get_object (GxkParam *param)
 {
-  g_return_val_if_fail (GXK_IS_PARAM (param), NULL);
+  assert_return (GXK_IS_PARAM (param), NULL);
 
   if (param->binding == &g_object_binding)
     return (GObject*) param->bdata[0].v_pointer;
@@ -528,7 +528,7 @@ gxk_param_register_editor (GxkParamEditor *editor,
 {
   if (editor->type_match.all_int_nums)
     {
-      g_return_if_fail (editor->type_match.type == G_TYPE_NONE);
+      assert_return (editor->type_match.type == G_TYPE_NONE);
       params_register_editor_dup_typed (editor, i18n_domain, G_TYPE_CHAR);
       params_register_editor_dup_typed (editor, i18n_domain, G_TYPE_UCHAR);
       params_register_editor_dup_typed (editor, i18n_domain, G_TYPE_INT);
@@ -540,13 +540,13 @@ gxk_param_register_editor (GxkParamEditor *editor,
     }
   if (editor->type_match.all_float_nums)
     {
-      g_return_if_fail (editor->type_match.type == G_TYPE_NONE);
+      assert_return (editor->type_match.type == G_TYPE_NONE);
       params_register_editor_dup_typed (editor, i18n_domain, G_TYPE_FLOAT);
       params_register_editor_dup_typed (editor, i18n_domain, G_TYPE_DOUBLE);
     }
   if (!editor->type_match.all_int_nums && !editor->type_match.all_float_nums)
     {
-      g_return_if_fail (editor->type_match.type != G_TYPE_NONE);
+      assert_return (editor->type_match.type != G_TYPE_NONE);
       param_register_editor (editor, i18n_domain);
     }
 }
@@ -711,8 +711,8 @@ gxk_param_editor_score (const gchar *editor_name,
 {
   guint rating = 0;             /* threshold for mismatch */
   GSList *slist;
-  g_return_val_if_fail (G_IS_PARAM_SPEC (pspec), 0);
-  g_return_val_if_fail (editor_name != NULL, 0);
+  assert_return (G_IS_PARAM_SPEC (pspec), 0);
+  assert_return (editor_name != NULL, 0);
   for (slist = _param_editor_list; slist; slist = slist->next)
     {
       GxkParamEditor *editor = (GxkParamEditor*) slist->data;
@@ -730,7 +730,7 @@ gxk_param_editor_debug_score (GParamSpec *pspec)
 {
   guint rating = 0;             /* threshold for mismatch */
   GSList *slist;
-  g_return_if_fail (G_IS_PARAM_SPEC (pspec));
+  assert_return (G_IS_PARAM_SPEC (pspec));
   const gchar *options = g_param_spec_get_options (pspec);
   g_printerr ("GxkParamEditor: rating for pspec: name=%s fundamental=%s type=%s options=%s nick=\"%s\" blurb=\"%s\"\n",
               pspec->name,
@@ -750,8 +750,8 @@ const gchar*
 gxk_param_lookup_editor (const gchar *editor_name,
                          GParamSpec  *pspec)
 {
-  g_return_val_if_fail (editor_name != NULL, 0);
-  g_return_val_if_fail (G_IS_PARAM_SPEC (pspec), 0);
+  assert_return (editor_name != NULL, 0);
+  assert_return (G_IS_PARAM_SPEC (pspec), 0);
   return param_lookup_editor (editor_name, pspec)->ident.name;
 }
 
@@ -805,7 +805,7 @@ guint
 gxk_param_create_size_group (void)
 {
   guint i;
-  g_assert (n_size_groups < 0xff);
+  assert (n_size_groups < 0xff);
   i = n_size_groups++;
   size_groups = g_renew (GxkParamEditorSizes, size_groups, n_size_groups);
   size_groups[i] = param_editor_default_sizes;
@@ -826,8 +826,8 @@ void
 gxk_param_set_size_group (GxkParam                  *param,
                           guint                      size_group)
 {
-  g_return_if_fail (GXK_IS_PARAM (param));
-  g_return_if_fail (size_group <= n_size_groups);
+  assert_return (GXK_IS_PARAM (param));
+  assert_return (size_group <= n_size_groups);
   param->size_group = size_group;
 }
 
@@ -835,7 +835,7 @@ void
 gxk_param_set_sizes (guint                      size_group,
                      const GxkParamEditorSizes *esizes)
 {
-  g_return_if_fail (size_group > 0 && size_group <= n_size_groups);
+  assert_return (size_group > 0 && size_group <= n_size_groups);
   size_groups[size_group - 1] = esizes ? *esizes : param_editor_default_sizes;
 }
 
@@ -907,7 +907,7 @@ gxk_param_entry_set_text (GxkParam    *param,
                           const gchar *text)
 {
   GtkEntry *entry = (GtkEntry*) _entry;
-  g_return_if_fail (GTK_IS_ENTRY (entry));
+  assert_return (GTK_IS_ENTRY (entry));
   if (!text)
     text = "";
   if (!g_str_equal (gtk_entry_get_text (entry), text))

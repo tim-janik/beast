@@ -64,8 +64,8 @@ sfi_choice_match_detailed (const gchar *choice_val1,
 			   const gchar *choice_val2,
 			   gboolean     l1_ge_l2)
 {
-  g_return_val_if_fail (choice_val1 != NULL, FALSE);
-  g_return_val_if_fail (choice_val2 != NULL, FALSE);
+  assert_return (choice_val1 != NULL, FALSE);
+  assert_return (choice_val2 != NULL, FALSE);
 
   guint l1 = strlen (choice_val1);
   guint l2 = strlen (choice_val2);
@@ -122,7 +122,7 @@ sfi_constants_get_index (guint               n_consts,
   gchar *key;
   gint i, cmp;
 
-  g_return_val_if_fail (constant != NULL, 0);
+  assert_return (constant != NULL, 0);
 
   /* canonicalize key */
   l = strlen (constant);
@@ -186,8 +186,8 @@ sfi_constants_rcmp (const gchar *canon_identifier1,
 {
   gint cmp, l1, l2;
 
-  g_return_val_if_fail (canon_identifier1 != NULL, 0);
-  g_return_val_if_fail (canon_identifier2 != NULL, 0);
+  assert_return (canon_identifier1 != NULL, 0);
+  assert_return (canon_identifier2 != NULL, 0);
 
   l1 = strlen (canon_identifier1);
   l2 = strlen (canon_identifier2);

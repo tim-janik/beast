@@ -246,7 +246,7 @@ gxk_rack_item_button_press (GxkRackItem    *self,
 void
 gxk_rack_item_gui_changed (GxkRackItem *self)
 {
-  g_return_if_fail (GXK_IS_RACK_ITEM (self));
+  assert_return (GXK_IS_RACK_ITEM (self));
 }
 
 gboolean

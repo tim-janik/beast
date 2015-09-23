@@ -272,8 +272,8 @@ Parser::Parser () : options (*Options::the())
 void
 Parser::scannerMsgHandler (GScanner *scanner, gchar *message, gboolean is_error)
 {
-  g_return_if_fail (scanner != NULL);
-  g_return_if_fail (scanner->user_data != NULL);
+  assert_return (scanner != NULL);
+  assert_return (scanner->user_data != NULL);
 
   Parser *parser = static_cast<Parser *>(scanner->user_data);
   if (scanner->line > 0 && parser->scannerLineInfo.size() >= scanner->line)
@@ -508,7 +508,7 @@ void Parser::preprocessContents (const String& input_filename)
 	    case '<':	state = filenameIn2;
 			break;
 	    default:	g_printerr ("bad char after include statement");
-			g_assert_not_reached (); // error handling!
+			assert_unreached (); // error handling!
 	    }
 	}
       else if((state == filenameIn1 && *i == '"')
@@ -626,7 +626,7 @@ void Parser::preprocessContents (const String& input_filename)
 bool Parser::insideInclude () const
 {
   int scanner_line = scanner->line - 1;
-  g_return_val_if_fail (scanner_line >= 0 && scanner_line < (gint) scannerLineInfo.size(), false);
+  assert_return (scanner_line >= 0 && scanner_line < (gint) scannerLineInfo.size(), false);
 
   return scannerLineInfo[scanner_line].isInclude;
 }
@@ -986,7 +986,7 @@ GTokenType Parser::parseStringOrConst (String &s)
 		    s = ci->str;
 		    break;
 		  default:
-		    g_assert_not_reached ();
+		    assert_unreached ();
 		    break;
 		}
 	      return G_TOKEN_NONE;
@@ -1008,7 +1008,7 @@ GTokenType Parser::parseConstant (bool isident)
   Constant cdef;
 
   if (isident)
-    g_assert_not_reached (); /* parse_or_return (TOKEN_CONST_IDENT); */
+    assert_unreached (); /* parse_or_return (TOKEN_CONST_IDENT); */
   else
     parse_or_return (TOKEN_CONST);
   parse_or_return (G_TOKEN_IDENTIFIER);
@@ -1495,7 +1495,7 @@ GTokenType Parser::parseParamHints (Param &def)
 		}
                 break;
               default:
-                g_assert_not_reached ();
+                assert_unreached ();
                 break;
               }
           }

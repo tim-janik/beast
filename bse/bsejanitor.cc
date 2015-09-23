@@ -187,8 +187,8 @@ bse_janitor_finalize (GObject *object)
 {
   BseJanitor *self = BSE_JANITOR (object);
 
-  g_return_if_fail (self->port == NULL);
-  g_return_if_fail (self->source == NULL);
+  assert_return (self->port == NULL);
+  assert_return (self->source == NULL);
 
   while (self->actions)
     {
@@ -210,7 +210,7 @@ bse_janitor_new (SfiComPort *port)
 {
   BseJanitor *self;
 
-  g_return_val_if_fail (port != NULL, NULL);
+  assert_return (port != NULL, NULL);
 
   self = (BseJanitor*) bse_container_new_child ((BseContainer*) bse_server_get (), BSE_TYPE_JANITOR, NULL);
   g_object_ref (self);
@@ -234,7 +234,7 @@ bse_janitor_set_procedure (BseJanitor *self,
                            const char *script_name,
                            const char *proc_name)
 {
-  g_return_if_fail (BSE_IS_JANITOR (self));
+  assert_return (BSE_IS_JANITOR (self));
 
   g_free (self->proc_name);
   self->proc_name = g_strdup (proc_name);
@@ -246,7 +246,7 @@ bse_janitor_set_procedure (BseJanitor *self,
 const char*
 bse_janitor_get_ident (BseJanitor *self)
 {
-  g_return_val_if_fail (BSE_IS_JANITOR (self), NULL);
+  assert_return (BSE_IS_JANITOR (self), NULL);
 
   return self->port ? self->port->ident : NULL;
 }
@@ -263,7 +263,7 @@ void
 bse_janitor_progress (BseJanitor *self,
 		      float       progress)
 {
-  g_return_if_fail (BSE_IS_JANITOR (self));
+  assert_return (BSE_IS_JANITOR (self));
 
   if (progress < 0)
     progress = -1;
@@ -294,10 +294,10 @@ bse_janitor_add_action (BseJanitor *self,
 {
   BseJanitorAction *a;
 
-  g_return_if_fail (BSE_IS_JANITOR (self));
-  g_return_if_fail (action != NULL);
-  g_return_if_fail (name != NULL);
-  g_return_if_fail (!BSE_OBJECT_DISPOSING (self));
+  assert_return (BSE_IS_JANITOR (self));
+  assert_return (action != NULL);
+  assert_return (name != NULL);
+  assert_return (!BSE_OBJECT_DISPOSING (self));
 
   a = find_action (self, g_quark_try_string (action));
   if (!a)
@@ -317,8 +317,8 @@ bse_janitor_remove_action (BseJanitor *self,
 {
   BseJanitorAction *a;
 
-  g_return_if_fail (BSE_IS_JANITOR (self));
-  g_return_if_fail (action != NULL);
+  assert_return (BSE_IS_JANITOR (self));
+  assert_return (action != NULL);
 
   a = find_action (self, g_quark_try_string (action));
   if (a)
@@ -341,8 +341,8 @@ bse_janitor_trigger_action (BseJanitor *self,
 {
   BseJanitorAction *a;
 
-  g_return_if_fail (BSE_IS_JANITOR (self));
-  g_return_if_fail (action != NULL);
+  assert_return (BSE_IS_JANITOR (self));
+  assert_return (action != NULL);
 
   a = find_action (self, g_quark_try_string (action));
   if (a && !BSE_OBJECT_DISPOSING (self))
@@ -370,7 +370,7 @@ janitor_shutdown (BseJanitor *self)
 void
 bse_janitor_close (BseJanitor *self)
 {
-  g_return_if_fail (BSE_IS_JANITOR (self));
+  assert_return (BSE_IS_JANITOR (self));
   if (self->port && !self->port_closed)
     janitor_shutdown (self);
 }
@@ -378,7 +378,7 @@ bse_janitor_close (BseJanitor *self)
 void
 bse_janitor_kill (BseJanitor *self)
 {
-  g_return_if_fail (BSE_IS_JANITOR (self));
+  assert_return (BSE_IS_JANITOR (self));
 
   if (!self->port_closed)
     {
@@ -482,7 +482,7 @@ janitor_install_jsource (BseJanitor *self)
   SfiRing *ring;
   GPollFD *pfd;
 
-  g_return_if_fail (self->source == NULL);
+  assert_return (self->source == NULL);
 
   jsource->janitor = self;
   self->source = source;
@@ -503,7 +503,7 @@ janitor_idle_clean_jsource (void *data)
   BseJanitor *self = BSE_JANITOR (data);
   SfiComPort *port = self->port;
 
-  g_return_val_if_fail (self->source != NULL, FALSE);
+  assert_return (self->source != NULL, FALSE);
 
   g_source_destroy (self->source);
   self->source = NULL;

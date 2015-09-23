@@ -18,7 +18,7 @@ static gboolean                 msg_absorb_config_loaded = FALSE;
 void
 _bst_msg_absorb_config_init (void)
 {
-  g_return_if_fail (global_msg_absorb_config == NULL);
+  assert_return (global_msg_absorb_config == NULL);
 
   /* global config record description */
   Bst::MsgAbsorbStringSeq mconfig;
@@ -67,7 +67,7 @@ set_msg_absorb_config (const Bst::MsgAbsorbStringSeq &msg_absorb_config)
 void
 bst_msg_absorb_config_apply (SfiSeq *src_seq)
 {
-  g_return_if_fail (src_seq != NULL);
+  assert_return (src_seq != NULL);
 
   SfiSeq *seq = sfi_seq_copy_deep (src_seq);
   sfi_seq_validate (seq, bst_msg_absorb_config_pspec());
@@ -233,7 +233,7 @@ bst_msg_absorb_config_box_get (GtkWidget *self)
 static Bse::ErrorType
 bst_msg_absorb_config_dump (const gchar *file_name)
 {
-  g_return_val_if_fail (file_name != NULL, Bse::ERROR_INTERNAL);
+  assert_return (file_name != NULL, Bse::ERROR_INTERNAL);
 
   sfi_make_dirname_path (file_name);
   gint fd = open (file_name,
@@ -278,7 +278,7 @@ msg_absorb_config_try_statement (gpointer   context_data,
                                  GScanner  *scanner,
                                  gpointer   user_data)
 {
-  g_assert (scanner->next_token == G_TOKEN_IDENTIFIER);
+  assert (scanner->next_token == G_TOKEN_IDENTIFIER);
   if (strcmp (bst_msg_absorb_config_pspec()->name, scanner->next_value.v_identifier) == 0)
     {
       GValue *value = sfi_value_seq (NULL);
@@ -297,7 +297,7 @@ msg_absorb_config_try_statement (gpointer   context_data,
 static Bse::ErrorType
 bst_msg_absorb_config_parse (const gchar *file_name)
 {
-  g_return_val_if_fail (file_name != NULL, Bse::ERROR_INTERNAL);
+  assert_return (file_name != NULL, Bse::ERROR_INTERNAL);
 
   gchar *absname = sfi_path_get_filename (file_name, NULL);
   gint fd = open (absname, O_RDONLY, 0);

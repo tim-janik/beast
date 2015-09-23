@@ -18,14 +18,14 @@ public:
   /* FIXME */
   Bse::SynthesisModule* create_module(unsigned int, BseTrans*)
   {
-    g_assert_not_reached ();
+    assert_unreached ();
     return 0;
   }
 
   /* FIXME */
   Bse::SynthesisModule::Accessor* module_configurator()
   {
-    g_assert_not_reached ();
+    assert_unreached ();
     return 0;
   }
 #else

@@ -35,7 +35,7 @@ _sfi_init_time (void)
   time_t t;
   gint error;
 
-  g_assert (initialized++ == FALSE);
+  assert (initialized++ == FALSE);
 
   tzset ();
   error = gettimeofday (&tv, NULL);
@@ -237,7 +237,7 @@ sfi_time_from_string_err (const gchar *time_string,
   SfiRing *ring, *warnings = NULL;
   guint i;
 
-  g_return_val_if_fail (time_string != NULL, 0);
+  assert_return (time_string != NULL, 0);
 
   /* here, we support several date formats by making several attempts
    * to match a string and pick the best one. if we acquire a full match

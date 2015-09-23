@@ -545,7 +545,7 @@ static GtkWidget*
 menu_button_create_button (GxkMenuButton *self,
                            gpointer       child)
 {
-  g_return_val_if_fail (self->button == NULL, NULL);
+  assert_return (self->button == NULL, NULL);
   self->button = (GtkWidget*) g_object_new (GTK_TYPE_BUTTON,
                                             "relief", self->relief,
                                             "child", child ? gtk_widget_get_toplevel ((GtkWidget*) child) : NULL,

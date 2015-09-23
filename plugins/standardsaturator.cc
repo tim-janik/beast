@@ -52,7 +52,7 @@ class Saturator : public SaturatorBase {
       float *block = g_new0 (float, n * 2), *out = block + n;
       for (double d = -25; d <= +25; d += 0.01)
         block[i++] = d;
-      g_assert (i < n);
+      assert (i < n);
       double saved_olevel = olevel;
       olevel = 1 / 1.0;
       process_block (i, block, out, SaturateTanh (1.0));

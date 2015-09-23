@@ -222,7 +222,7 @@ key_bindings_exec_action (gpointer data,
       }
       break;
     default:
-      g_assert_not_reached ();
+      assert_unreached ();
       break;
     }
   gxk_status_window_pop ();
@@ -601,7 +601,7 @@ bst_key_binding_dump (const gchar *file_name,
   GSList *slist;
   gint fd;
 
-  g_return_val_if_fail (file_name != NULL, Bse::ERROR_INTERNAL);
+  assert_return (file_name != NULL, Bse::ERROR_INTERNAL);
 
   sfi_make_dirname_path (file_name);
   fd = open (file_name,
@@ -645,7 +645,7 @@ key_binding_try_statement (gpointer   context_data,
                            gpointer   user_data)
 {
   GSList *slist, *kbindings = (GSList*) context_data;
-  g_assert (scanner->next_token == G_TOKEN_IDENTIFIER);
+  assert (scanner->next_token == G_TOKEN_IDENTIFIER);
   for (slist = kbindings; slist; slist = slist->next)
     {
       BstKeyBinding *kbinding = (BstKeyBinding*) slist->data;
@@ -680,7 +680,7 @@ bst_key_binding_parse (const gchar *file_name,
   SfiRStore *rstore;
   gchar *absname;
   gint fd;
-  g_return_val_if_fail (file_name != NULL, Bse::ERROR_INTERNAL);
+  assert_return (file_name != NULL, Bse::ERROR_INTERNAL);
 
   absname = sfi_path_get_filename (file_name, NULL);
   fd = open (absname, O_RDONLY, 0);

@@ -247,9 +247,9 @@ gsl_filter_tscheb2_rp (uint         iorder,
   /* triggers an internal compiler error with gcc-2.95.4 (and certain
    * combinations of optimization options)
    */
-  g_return_if_fail (c_freq * steepness < PI);
+  assert_return (c_freq * steepness < PI);
 #endif
-  g_return_if_fail (steepness > 1.0);
+  assert_return (steepness > 1.0);
 
   epsilon = bse_trans_zepsilon2ss (epsilon);
   tepsilon = epsilon * tschebyscheff_eval (iorder, kappa_r / kappa_c);
@@ -350,7 +350,7 @@ gsl_filter_butter_lp (uint         iorder,
   BseComplex *poles = g_newa (BseComplex, iorder);
   double norm;
 
-  g_return_if_fail (freq > 0 && freq < PI);
+  assert_return (freq > 0 && freq < PI);
 
   gsl_filter_butter_rp (iorder, freq, epsilon, roots, poles);
   filter_rp_to_z (iorder, roots, poles, a, b);
@@ -380,7 +380,7 @@ gsl_filter_tscheb1_lp (uint         iorder,
   BseComplex *poles = g_newa (BseComplex, iorder);
   double norm;
 
-  g_return_if_fail (freq > 0 && freq < PI);
+  assert_return (freq > 0 && freq < PI);
 
   gsl_filter_tscheb1_rp (iorder, freq, epsilon, roots, poles);
   filter_rp_to_z (iorder, roots, poles, a, b);
@@ -420,9 +420,9 @@ gsl_filter_tscheb2_lp (uint         iorder,
   BseComplex *poles = g_newa (BseComplex, iorder);
   double norm;
 
-  g_return_if_fail (freq > 0 && freq < PI);
-  g_return_if_fail (freq * steepness < PI);
-  g_return_if_fail (steepness > 1.0);
+  assert_return (freq > 0 && freq < PI);
+  assert_return (freq * steepness < PI);
+  assert_return (steepness > 1.0);
 
   gsl_filter_tscheb2_rp (iorder, freq, steepness, epsilon, roots, poles);
   filter_rp_to_z (iorder, roots, poles, a, b);
@@ -450,7 +450,7 @@ gsl_filter_butter_hp (uint         iorder,
 		      double      *a,    /* [0..iorder] */
 		      double      *b)
 {
-  g_return_if_fail (freq > 0 && freq < PI);
+  assert_return (freq > 0 && freq < PI);
 
   freq = PI - freq;
   gsl_filter_butter_lp (iorder, freq, epsilon, a, b);
@@ -473,7 +473,7 @@ gsl_filter_tscheb1_hp (uint         iorder,
 		       double      *a,    /* [0..iorder] */
 		       double      *b)
 {
-  g_return_if_fail (freq > 0 && freq < PI);
+  assert_return (freq > 0 && freq < PI);
 
   freq = PI - freq;
   gsl_filter_tscheb1_lp (iorder, freq, epsilon, a, b);
@@ -498,7 +498,7 @@ gsl_filter_tscheb2_hp   (uint         iorder,
 			 double      *a,      /* [0..iorder] */
 			 double      *b)
 {
-  g_return_if_fail (freq > 0 && freq < PI);
+  assert_return (freq > 0 && freq < PI);
 
   freq = PI - freq;
   gsl_filter_tscheb2_lp (iorder, freq, steepness, epsilon, a, b);
@@ -530,10 +530,10 @@ gsl_filter_butter_bp (uint         iorder,
   BseComplex *poles = g_newa (BseComplex, iorder2);
   double theta;
 
-  g_return_if_fail ((iorder & 0x01) == 0);
-  g_return_if_fail (freq1 > 0);
-  g_return_if_fail (freq1 < freq2);
-  g_return_if_fail (freq2 < PI);
+  assert_return ((iorder & 0x01) == 0);
+  assert_return (freq1 > 0);
+  assert_return (freq1 < freq2);
+  assert_return (freq2 < PI);
 
   theta = 2. * atan2 (1., cotan ((freq2 - freq1) * 0.5));
 
@@ -564,10 +564,10 @@ gsl_filter_tscheb1_bp (uint         iorder,
   BseComplex *poles = g_newa (BseComplex, iorder2);
   double theta;
 
-  g_return_if_fail ((iorder & 0x01) == 0);
-  g_return_if_fail (freq1 > 0);
-  g_return_if_fail (freq1 < freq2);
-  g_return_if_fail (freq2 < PI);
+  assert_return ((iorder & 0x01) == 0);
+  assert_return (freq1 > 0);
+  assert_return (freq1 < freq2);
+  assert_return (freq2 < PI);
 
   theta = 2. * atan2 (1., cotan ((freq2 - freq1) * 0.5));
 
@@ -600,10 +600,10 @@ gsl_filter_tscheb2_bp (uint         iorder,
   BseComplex *poles = g_newa (BseComplex, iorder2);
   double theta;
 
-  g_return_if_fail ((iorder & 0x01) == 0);
-  g_return_if_fail (freq1 > 0);
-  g_return_if_fail (freq1 < freq2);
-  g_return_if_fail (freq2 < PI);
+  assert_return ((iorder & 0x01) == 0);
+  assert_return (freq1 > 0);
+  assert_return (freq1 < freq2);
+  assert_return (freq2 < PI);
 
   theta = 2. * atan2 (1., cotan ((freq2 - freq1) * 0.5));
 
@@ -636,10 +636,10 @@ gsl_filter_butter_bs (uint         iorder,
   BseComplex *poles = g_newa (BseComplex, iorder2);
   double theta;
 
-  g_return_if_fail ((iorder & 0x01) == 0);
-  g_return_if_fail (freq1 > 0);
-  g_return_if_fail (freq1 < freq2);
-  g_return_if_fail (freq2 < PI);
+  assert_return ((iorder & 0x01) == 0);
+  assert_return (freq1 > 0);
+  assert_return (freq1 < freq2);
+  assert_return (freq2 < PI);
 
   theta = 2. * atan2 (1., tan ((freq2 - freq1) * 0.5));
 
@@ -670,10 +670,10 @@ gsl_filter_tscheb1_bs (uint         iorder,
   BseComplex *poles = g_newa (BseComplex, iorder2);
   double theta;
 
-  g_return_if_fail ((iorder & 0x01) == 0);
-  g_return_if_fail (freq1 > 0);
-  g_return_if_fail (freq1 < freq2);
-  g_return_if_fail (freq2 < PI);
+  assert_return ((iorder & 0x01) == 0);
+  assert_return (freq1 > 0);
+  assert_return (freq1 < freq2);
+  assert_return (freq2 < PI);
 
   theta = 2. * atan2 (1., tan ((freq2 - freq1) * 0.5));
 
@@ -706,10 +706,10 @@ gsl_filter_tscheb2_bs (uint         iorder,
   BseComplex *poles = g_newa (BseComplex, iorder2);
   double theta;
 
-  g_return_if_fail ((iorder & 0x01) == 0);
-  g_return_if_fail (freq1 > 0);
-  g_return_if_fail (freq1 < freq2);
-  g_return_if_fail (freq2 < PI);
+  assert_return ((iorder & 0x01) == 0);
+  assert_return (freq1 > 0);
+  assert_return (freq1 < freq2);
+  assert_return (freq2 < PI);
 
   theta = 2. * atan2 (1., tan ((freq2 - freq1) * 0.5));
 
@@ -867,8 +867,8 @@ gsl_filter_fir_approx (uint          iorder,
   double *fft_in, *fft_out;
   double ffact;
 
-  g_return_if_fail (iorder >= 2);
-  g_return_if_fail ((iorder & 1) == 0);
+  assert_return (iorder >= 2);
+  assert_return ((iorder & 1) == 0);
 
   while (fft_size / 2 <= iorder)
     fft_size *= 2;
@@ -927,8 +927,8 @@ gsl_iir_filter_setup (GslIIRFilter  *f,
 {
   guint i;
 
-  g_return_if_fail (f != NULL && a != NULL && b != NULL && buffer != NULL);
-  g_return_if_fail (order > 0);
+  assert_return (f != NULL && a != NULL && b != NULL && buffer != NULL);
+  assert_return (order > 0);
 
   f->order = order;
   f->a = buffer;
@@ -940,7 +940,7 @@ gsl_iir_filter_setup (GslIIRFilter  *f,
     f->b[i] = -b[i];
   memset (f->w, 0, sizeof (f->w[0]) * (order + 1) * 2);
 
-  g_return_if_fail (fabs (b[0] - 1.0) < 1e-14);
+  assert_return (fabs (b[0] - 1.0) < 1e-14);
 }
 
 void
@@ -952,13 +952,13 @@ gsl_iir_filter_change (GslIIRFilter  *f,
 {
   guint i;
 
-  g_return_if_fail (f != NULL && a != NULL && b != NULL && buffer != NULL);
-  g_return_if_fail (order > 0);
+  assert_return (f != NULL && a != NULL && b != NULL && buffer != NULL);
+  assert_return (order > 0);
 
   /* there's no point in calling this function if f wasn't setup properly
    * and it's only the As and Bs that changed
    */
-  g_return_if_fail (f->a == buffer && f->b == f->a + f->order + 1 && f->w == f->b + f->order + 1);
+  assert_return (f->a == buffer && f->b == f->a + f->order + 1 && f->w == f->b + f->order + 1);
 
   /* if the order changed there's no chance preserving state */
   if (f->order != order)
@@ -972,7 +972,7 @@ gsl_iir_filter_change (GslIIRFilter  *f,
     f->b[i] = -b[i];
   /* leaving f->w to preserve state */
 
-  g_return_if_fail (fabs (b[0] - 1.0) < 1e-14);
+  assert_return (fabs (b[0] - 1.0) < 1e-14);
 }
 
 static inline gdouble /* Y */
@@ -1043,8 +1043,8 @@ gsl_iir_filter_eval (GslIIRFilter *f,
 {
   const gfloat *bound;
 
-  g_return_if_fail (f != NULL && x != NULL && y != NULL);
-  g_return_if_fail (f->order > 0);
+  assert_return (f != NULL && x != NULL && y != NULL);
+  assert_return (f->order > 0);
 
   bound = x + n_values;
   while (x < bound)
@@ -1062,7 +1062,7 @@ gsl_biquad_config_init (GslBiquadConfig   *c,
 			GslBiquadType      type,
 			GslBiquadNormalize normalize)
 {
-  g_return_if_fail (c != NULL);
+  assert_return (c != NULL);
 
   memset (c, 0, sizeof (*c));
   c->type = type;
@@ -1077,8 +1077,8 @@ gsl_biquad_config_setup (GslBiquadConfig *c,
 			 gfloat           gain,
 			 gfloat           quality)
 {
-  g_return_if_fail (c != NULL);
-  g_return_if_fail (f_fn >= 0 && f_fn <= 1);
+  assert_return (c != NULL);
+  assert_return (f_fn >= 0 && f_fn <= 1);
 
   if (c->type == GSL_BIQUAD_RESONANT_HIGHPASS)
     f_fn = 1.0 - f_fn;
@@ -1095,7 +1095,7 @@ void
 gsl_biquad_config_approx_freq (GslBiquadConfig *c,
 			       gfloat           f_fn)
 {
-  g_return_if_fail (f_fn >= 0 && f_fn <= 1);
+  assert_return (f_fn >= 0 && f_fn <= 1);
 
   if (c->type == GSL_BIQUAD_RESONANT_HIGHPASS)
     f_fn = 1.0 - f_fn;
@@ -1151,8 +1151,8 @@ gsl_biquad_filter_config (GslBiquadFilter *f,
 			  GslBiquadConfig *c,
 			  gboolean         reset_state)
 {
-  g_return_if_fail (f != NULL);
-  g_return_if_fail (c != NULL);
+  assert_return (f != NULL);
+  assert_return (c != NULL);
 
   if (c->dirty)
     {
@@ -1167,7 +1167,7 @@ gsl_biquad_filter_config (GslBiquadFilter *f,
 	  f->yc1 = -f->yc1;
 	  break;
 	default:
-	  g_assert_not_reached ();
+	  assert_unreached ();
 	}
       c->dirty = FALSE;
     }
@@ -1185,7 +1185,7 @@ gsl_biquad_filter_eval (GslBiquadFilter *f,
   const gfloat *bound;
   gdouble xc0, xc1, xc2, yc1, yc2, xd1, xd2, yd1, yd2;
 
-  g_return_if_fail (f != NULL && x != NULL && y != NULL);
+  assert_return (f != NULL && x != NULL && y != NULL);
 
   xc0 = f->xc0;
   xc1 = f->xc1;
@@ -1231,8 +1231,8 @@ gsl_biquad_lphp_reso (GslBiquadFilter   *c,
   double denominator;
   double r2p_norm = 0;			/* resonance gain to peak gain (pole: -sqrt2_reso+-j) */
 
-  g_return_if_fail (c != NULL);
-  g_return_if_fail (f_fn >= 0 && f_fn <= 1);
+  assert_return (c != NULL);
+  assert_return (f_fn >= 0 && f_fn <= 1);
 
   if (design_highpass)
     f_fn = 1.0 - f_fn;
@@ -1330,10 +1330,10 @@ gsl_filter_sine_scan (guint	     order,
   gdouble *filter_state_r;
   gdouble *filter_state_i;
 
-  g_return_val_if_fail (order > 0, 0.0);
-  g_return_val_if_fail (a != NULL, 0.0);
-  g_return_val_if_fail (b != NULL, 0.0);
-  g_return_val_if_fail (freq >= 0 && freq < (mix_freq / 2), 0.0);
+  assert_return (order > 0, 0.0);
+  assert_return (a != NULL, 0.0);
+  assert_return (b != NULL, 0.0);
+  assert_return (freq >= 0 && freq < (mix_freq / 2), 0.0);
 
   filter_state_r = g_newa (double, (order + 1) * 4);
   filter_state_i = g_newa (double, (order + 1) * 4);

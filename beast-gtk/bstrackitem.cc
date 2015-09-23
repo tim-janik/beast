@@ -146,7 +146,7 @@ bst_rack_item_set_parasite (BstRackItem    *self,
                             SfiProxy        proxy,
                             const gchar    *path)
 {
-  g_return_if_fail (BST_IS_RACK_ITEM (self));
+  assert_return (BST_IS_RACK_ITEM (self));
 
   if (self->proxy)
     {

@@ -133,7 +133,7 @@ bst_super_shell_finalize (GObject *object)
 void
 bst_super_shell_set_super (BstSuperShell *self, Bse::SuperH super)
 {
-  g_return_if_fail (BST_IS_SUPER_SHELL (self));
+  assert_return (BST_IS_SUPER_SHELL (self));
 
   if (super != self->super)
     {

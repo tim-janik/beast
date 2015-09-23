@@ -298,7 +298,7 @@ cache_table_ref_entry (GslOscWaveForm wave_form,
 static void
 cache_table_unref_entry (OscTableEntry *e)
 {
-  g_return_if_fail (e->ref_count > 0);
+  assert_return (e->ref_count > 0);
 
   e->ref_count -= 1;
   if (e->ref_count == 0)
@@ -320,9 +320,9 @@ gsl_osc_table_create (gfloat         mix_freq,
   gfloat nyquist;
   guint i;
 
-  g_return_val_if_fail (mix_freq > 0, NULL);
-  g_return_val_if_fail (n_freqs > 0, NULL);
-  g_return_val_if_fail (freqs != NULL, NULL);
+  assert_return (mix_freq > 0, NULL);
+  assert_return (n_freqs > 0, NULL);
+  assert_return (freqs != NULL, NULL);
 
   if (!cache_entries)
     cache_entries = g_bsearch_array_create (&cache_taconfig);
@@ -362,8 +362,8 @@ gsl_osc_table_lookup (const GslOscTable	*table,
   OscTableEntry *e;
   gfloat mfreq, min_mfreq;
 
-  g_return_if_fail (table != NULL);
-  g_return_if_fail (wave != NULL);
+  assert_return (table != NULL);
+  assert_return (wave != NULL);
 
   mfreq = freq / table->mix_freq;
   e = osc_table_entry_lookup_best (table, mfreq, &min_mfreq);
@@ -401,7 +401,7 @@ gsl_osc_table_free (GslOscTable *table)
 {
   guint n;
 
-  g_return_if_fail (table != NULL);
+  assert_return (table != NULL);
 
   n = g_bsearch_array_get_n_nodes (table->entry_array);
   while (n--)
@@ -548,7 +548,7 @@ gsl_osc_wave_extrema (guint         n_values,
 {
   guint minp, maxp;
 
-  g_return_if_fail (n_values > 0 && values != NULL && min_p != NULL && max_p != NULL);
+  assert_return (n_values > 0 && values != NULL && min_p != NULL && max_p != NULL);
 
   osc_wave_extrema_pos (n_values, values, &minp, &maxp);
   *min_p = values[minp];
@@ -566,7 +566,7 @@ gsl_osc_wave_adjust_range (guint   n_values,
   gfloat center;
   guint i;
 
-  g_return_if_fail (n_values > 0 && values != NULL);
+  assert_return (n_values > 0 && values != NULL);
 
   center = (min + max) / 2;
   center = new_center - center;
@@ -591,7 +591,7 @@ gsl_osc_wave_normalize (guint   n_values,
   gfloat min, max;
   guint i;
 
-  g_return_if_fail (n_values > 0 && values != NULL);
+  assert_return (n_values > 0 && values != NULL);
 
   min = values[0];
   max = min;

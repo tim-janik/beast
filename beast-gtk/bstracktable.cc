@@ -516,8 +516,8 @@ bst_rack_table_on_area (BstRackTable *rtable,
   GtkTable *table = GTK_TABLE (rtable);
   guint i, x, y, width, height, hcell2 = hcell1 + hspan, vcell2 = vcell1 + vspan;
 
-  g_return_if_fail (hspan > 0 && hcell2 <= table->ncols);
-  g_return_if_fail (vspan > 0 && vcell2 <= table->nrows);
+  assert_return (hspan > 0 && hcell2 <= table->ncols);
+  assert_return (vspan > 0 && vcell2 <= table->nrows);
 
   x = GTK_CONTAINER (widget)->border_width + widget->allocation.x;
   width = 0;
@@ -825,7 +825,7 @@ bst_rack_table_check_cell (BstRackTable *rtable,
 {
   GtkTable *table;
 
-  g_return_val_if_fail (BST_IS_RACK_TABLE (rtable), FALSE);
+  assert_return (BST_IS_RACK_TABLE (rtable), FALSE);
 
   table = GTK_TABLE (rtable);
   if (col >= table->ncols || row >= table->nrows)
@@ -847,7 +847,7 @@ bst_rack_table_expand_rect (BstRackTable *rtable,
   GtkTable *table;
   guint i, j, f;
 
-  g_return_val_if_fail (BST_IS_RACK_TABLE (rtable), FALSE);
+  assert_return (BST_IS_RACK_TABLE (rtable), FALSE);
 
   table = GTK_TABLE (rtable);
   if (col + 1 >= table->ncols || row + 1 >= table->nrows ||
@@ -895,7 +895,7 @@ bst_rack_table_check_area (BstRackTable *rtable,
   GtkTable *table;
   guint i, j;
 
-  g_return_val_if_fail (BST_IS_RACK_TABLE (rtable), FALSE);
+  assert_return (BST_IS_RACK_TABLE (rtable), FALSE);
 
   table = GTK_TABLE (rtable);
   if (col >= table->ncols || row >= table->nrows)
@@ -912,7 +912,7 @@ void
 bst_rack_table_set_edit_mode (BstRackTable *rtable,
 			      gboolean      enable_editing)
 {
-  g_return_if_fail (BST_IS_RACK_TABLE (rtable));
+  assert_return (BST_IS_RACK_TABLE (rtable));
 
   rtable->edit_mode = enable_editing != FALSE;
   if (GTK_WIDGET_REALIZED (rtable))
@@ -933,8 +933,8 @@ void
 bst_rack_child_get_info (GtkWidget         *widget,
 			 BstRackChildInfo *info)
 {
-  g_return_if_fail (GTK_IS_WIDGET (widget));
-  g_return_if_fail (info != NULL);
+  assert_return (GTK_IS_WIDGET (widget));
+  assert_return (info != NULL);
 
 #if 0
   if (BST_IS_RACK_ITEM (widget))
@@ -964,7 +964,7 @@ bst_rack_child_set_info (GtkWidget *widget,
 {
   GtkWidget *parent = NULL;
 
-  g_return_if_fail (GTK_IS_WIDGET (widget));
+  assert_return (GTK_IS_WIDGET (widget));
 
   g_object_ref (widget);
   if (BST_IS_RACK_TABLE (widget->parent))

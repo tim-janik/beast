@@ -25,7 +25,7 @@ static std::list<TickStampWakeupP> tick_stamp_wakeups;
 void
 TickStamp::_init_forgsl()
 {
-  g_return_if_fail (global_tick_stamp == 0);    // assert we're uninitialized
+  assert_return (global_tick_stamp == 0);    // assert we're uninitialized
   global_tick_stamp = 1;
 }
 
@@ -39,7 +39,7 @@ TickStamp::_set_leap (uint64 ticks)
 void
 TickStamp::_increment ()
 {
-  g_return_if_fail (tick_stamp_leaps > 0);
+  assert_return (tick_stamp_leaps > 0);
   volatile guint64 newstamp;
   uint64 systime;
   systime = sfi_time_system ();
@@ -142,7 +142,7 @@ TickStamp::Wakeup::awake_after (uint64 stamp)
 void
 TickStamp::Wakeup::awake_before (uint64 stamp)
 {
-  g_return_if_fail (stamp > 0);
+  assert_return (stamp > 0);
   if (stamp > tick_stamp_leaps)
     stamp -= tick_stamp_leaps;
   awake_after (stamp);
@@ -174,7 +174,7 @@ TickStamp::Wakeup::_emit_wakeups (uint64 wakeup_stamp)
 const gchar*
 gsl_byte_order_to_string (guint byte_order)
 {
-  g_return_val_if_fail (byte_order == G_LITTLE_ENDIAN || byte_order == G_BIG_ENDIAN, NULL);
+  assert_return (byte_order == G_LITTLE_ENDIAN || byte_order == G_BIG_ENDIAN, NULL);
   if (byte_order == G_LITTLE_ENDIAN)
     return "little-endian";
   if (byte_order == G_BIG_ENDIAN)
@@ -184,7 +184,7 @@ gsl_byte_order_to_string (guint byte_order)
 guint
 gsl_byte_order_from_string (const gchar *string)
 {
-  g_return_val_if_fail (string != NULL, 0);
+  assert_return (string != NULL, 0);
   while (*string == ' ')
     string++;
   if (strncasecmp (string, "little", 6) == 0)
@@ -322,7 +322,7 @@ gsl_progress_notify (GslProgressState *pstate,
 {
   gboolean need_update;
 
-  g_return_if_fail (pstate != NULL);
+  assert_return (pstate != NULL);
 
   if (pval >= 0)
     {
@@ -356,7 +356,7 @@ gsl_progress_notify (GslProgressState *pstate,
 void
 gsl_progress_wipe (GslProgressState *pstate)
 {
-  g_return_if_fail (pstate != NULL);
+  assert_return (pstate != NULL);
 
   if (pstate->wipe_length)
     {
@@ -396,7 +396,7 @@ gsl_progress_printerr (gpointer          message,
 void
 gsl_init (void)
 {
-  g_return_if_fail (Bse::TickStamp::current() == 0);     // assert single initialization
+  assert_return (Bse::TickStamp::current() == 0);     // assert single initialization
   struct Internal : Bse::TickStamp { using TickStamp::_init_forgsl; };
   Internal::_init_forgsl();
   /* initialize subsystems */

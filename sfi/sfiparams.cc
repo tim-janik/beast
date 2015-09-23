@@ -77,7 +77,7 @@ _sfi_init_params (void)
   };
   static GType pspec_types[7] = { 0, };
 
-  g_assert (sfi__param_spec_types == NULL);
+  assert (sfi__param_spec_types == NULL);
 
   sfi__param_spec_types = pspec_types;
 
@@ -452,7 +452,7 @@ sfi_pspec_bool (const gchar    *name,
 		SfiBool         default_value,
 		const gchar    *hints)
 {
-  g_return_val_if_fail (default_value == TRUE || default_value == FALSE, NULL);
+  assert_return (default_value == TRUE || default_value == FALSE, NULL);
 
   GParamSpec *pspec = g_param_spec_boolean (name, NULL_CHECKED (nick), NULL_CHECKED (blurb), default_value, GParamFlags (0));
   sfi_pspec_set_options (pspec, hints);
@@ -470,9 +470,9 @@ sfi_pspec_int (const gchar    *name,
 	       SfiInt          stepping,
 	       const gchar    *hints)
 {
-  g_return_val_if_fail (default_value >= minimum_value && default_value <= maximum_value, NULL);
-  g_return_val_if_fail (minimum_value <= maximum_value, NULL);
-  g_return_val_if_fail (minimum_value + stepping <= maximum_value, NULL);
+  assert_return (default_value >= minimum_value && default_value <= maximum_value, NULL);
+  assert_return (minimum_value <= maximum_value, NULL);
+  assert_return (minimum_value + stepping <= maximum_value, NULL);
 
   GParamSpec *pspec = g_param_spec_int (name, NULL_CHECKED (nick), NULL_CHECKED (blurb), minimum_value, maximum_value, default_value, GParamFlags (0));
   sfi_pspec_set_options (pspec, hints);
@@ -491,9 +491,9 @@ sfi_pspec_num (const gchar    *name,
 	       SfiNum          stepping,
 	       const gchar    *hints)
 {
-  g_return_val_if_fail (default_value >= minimum_value && default_value <= maximum_value, NULL);
-  g_return_val_if_fail (minimum_value <= maximum_value, NULL);
-  g_return_val_if_fail (minimum_value + stepping <= maximum_value, NULL);
+  assert_return (default_value >= minimum_value && default_value <= maximum_value, NULL);
+  assert_return (minimum_value <= maximum_value, NULL);
+  assert_return (minimum_value + stepping <= maximum_value, NULL);
 
   GParamSpec *pspec = g_param_spec_int64 (name, NULL_CHECKED (nick), NULL_CHECKED (blurb), minimum_value, maximum_value, default_value, GParamFlags (0));
   sfi_pspec_set_options (pspec, hints);
@@ -512,9 +512,9 @@ sfi_pspec_real (const gchar    *name,
 		SfiReal         stepping,
 		const gchar    *hints)
 {
-  g_return_val_if_fail (default_value >= minimum_value && default_value <= maximum_value, NULL);
-  g_return_val_if_fail (minimum_value <= maximum_value, NULL);
-  g_return_val_if_fail (minimum_value + stepping <= maximum_value, NULL);
+  assert_return (default_value >= minimum_value && default_value <= maximum_value, NULL);
+  assert_return (minimum_value <= maximum_value, NULL);
+  assert_return (minimum_value + stepping <= maximum_value, NULL);
 
   GParamSpec *pspec = g_param_spec_double (name, NULL_CHECKED (nick), NULL_CHECKED (blurb), minimum_value, maximum_value, default_value, GParamFlags (0));
   sfi_pspec_set_options (pspec, hints);
@@ -537,8 +537,8 @@ sfi_pspec_log_scale (const gchar    *name,
 {
   GParamSpec *pspec;
 
-  g_return_val_if_fail (n_steps > 0, NULL);
-  g_return_val_if_fail (base > 0, NULL);
+  assert_return (n_steps > 0, NULL);
+  assert_return (base > 0, NULL);
 
   pspec = sfi_pspec_real (name, nick, blurb, default_value, minimum_value, maximum_value, stepping, hints);
   if (pspec)
@@ -570,7 +570,7 @@ sfi_pspec_choice (const gchar    *name,
 		  SfiChoiceValues static_const_cvalues,
 		  const gchar    *hints)
 {
-  g_return_val_if_fail (static_const_cvalues.n_values >= 1, NULL);
+  assert_return (static_const_cvalues.n_values >= 1, NULL);
 
   GParamSpec *pspec = param_spec_internal (SFI_TYPE_PARAM_CHOICE, name, NULL_CHECKED (nick), NULL_CHECKED (blurb), GParamFlags (0));
   sfi_pspec_set_options (pspec, hints);
@@ -634,7 +634,7 @@ sfi_pspec_seq (const gchar    *name,
 	       const gchar    *hints)
 {
   if (element_spec)
-    g_return_val_if_fail (G_IS_PARAM_SPEC (element_spec), NULL);
+    assert_return (G_IS_PARAM_SPEC (element_spec), NULL);
 
   GParamSpec *pspec = param_spec_internal (SFI_TYPE_PARAM_SEQ, name, NULL_CHECKED (nick), NULL_CHECKED (blurb), GParamFlags (0));
   sfi_pspec_set_options (pspec, hints);
@@ -706,11 +706,11 @@ sfi_pspec_note (const gchar *name,
 
   if (default_value == SFI_NOTE_VOID)
     {
-      g_return_val_if_fail (min_note <= max_note, NULL);
-      g_return_val_if_fail (default_value == SFI_NOTE_VOID && allow_void == TRUE, NULL);
+      assert_return (min_note <= max_note, NULL);
+      assert_return (default_value == SFI_NOTE_VOID && allow_void == TRUE, NULL);
     }
   else
-    g_return_val_if_fail (default_value >= min_note && default_value <= max_note, NULL);
+    assert_return (default_value >= min_note && default_value <= max_note, NULL);
 
   pspec = param_spec_internal (SFI_TYPE_PARAM_NOTE, name, NULL_CHECKED (nick), NULL_CHECKED (blurb), GParamFlags (0));
   nspec = SFI_PSPEC_NOTE (pspec);
@@ -743,7 +743,7 @@ sfi_boxed_type_set_rec_fields (GType               boxed_type,
                                const SfiRecFields  static_const_fields)
 {
   BoxedInfo *binfo = (BoxedInfo*) g_type_get_qdata (boxed_type, quark_boxed_info);
-  g_return_if_fail (G_TYPE_IS_BOXED (boxed_type));
+  assert_return (G_TYPE_IS_BOXED (boxed_type));
   if (static_const_fields.n_fields)
     {
       binfo = (BoxedInfo*) g_realloc (binfo, (sizeof (BoxedInfo) +
@@ -765,7 +765,7 @@ sfi_boxed_type_get_rec_fields (GType boxed_type)
 {
   BoxedInfo *binfo = (BoxedInfo*) g_type_get_qdata (boxed_type, quark_boxed_info);
   SfiRecFields rfields = { 0, NULL };
-  g_return_val_if_fail (G_TYPE_IS_BOXED (boxed_type), rfields);
+  assert_return (G_TYPE_IS_BOXED (boxed_type), rfields);
   if (binfo && binfo->boxed_kind == BOXED_RECORD)
     {
       rfields.n_fields = binfo->n_fields;
@@ -779,7 +779,7 @@ sfi_boxed_type_set_seq_element (GType               boxed_type,
                                 GParamSpec         *element)
 {
   BoxedInfo *binfo = (BoxedInfo*) g_type_get_qdata (boxed_type, quark_boxed_info);
-  g_return_if_fail (G_TYPE_IS_BOXED (boxed_type));
+  assert_return (G_TYPE_IS_BOXED (boxed_type));
   guint i;
   for (i = 0; i < (binfo ? binfo->n_fields : 0); i++)
     if (binfo->fields[i])
@@ -805,7 +805,7 @@ sfi_boxed_type_get_seq_element (GType               boxed_type)
 {
   BoxedInfo *binfo = (BoxedInfo*) g_type_get_qdata (boxed_type, quark_boxed_info);
   GParamSpec *pspec = NULL;
-  g_return_val_if_fail (G_TYPE_IS_BOXED (boxed_type), NULL);
+  assert_return (G_TYPE_IS_BOXED (boxed_type), NULL);
   if (binfo && binfo->boxed_kind == BOXED_SEQUENCE)
     pspec = binfo->fields[0];
   return pspec;
@@ -815,7 +815,7 @@ void
 sfi_enum_type_set_choice_value_getter (GType                 gtype,
                                        SfiChoiceValueGetter  cvgetter)
 {
-  g_return_if_fail (G_TYPE_IS_ENUM (gtype));
+  assert_return (G_TYPE_IS_ENUM (gtype));
   if (g_type_get_qdata (gtype, quark_tmp_choice_values) != NULL)
     g_warning ("%s: unsetting choice value getter of type `%s' while keeping old choice value references", G_STRFUNC, g_type_name (gtype));
   g_type_set_qdata (gtype, quark_enum_choice_value_getter, (void*) cvgetter);
@@ -853,8 +853,8 @@ typedef struct {
 static void
 tmp_record_fields_unref (TmpRecordFields *trf)
 {
-  g_return_if_fail (trf != NULL);
-  g_return_if_fail (trf->ref_count > 0);
+  assert_return (trf != NULL);
+  assert_return (trf->ref_count > 0);
 
   trf->ref_count--;
   if (!trf->ref_count)
@@ -911,8 +911,8 @@ typedef struct {
 static void
 tmp_choice_values_unref (TmpChoiceValues *tcv)
 {
-  g_return_if_fail (tcv != NULL);
-  g_return_if_fail (tcv->ref_count > 0);
+  assert_return (tcv != NULL);
+  assert_return (tcv->ref_count > 0);
 
   tcv->ref_count--;
   if (!tcv->ref_count)
@@ -1015,7 +1015,7 @@ sfi_pspec_choice_from_enum (GParamSpec *enum_pspec)
   TmpChoiceValues *tcv;
   GEnumValue *default_evalue;
 
-  g_return_val_if_fail (G_IS_PARAM_SPEC_ENUM (enum_pspec), NULL);
+  assert_return (G_IS_PARAM_SPEC_ENUM (enum_pspec), NULL);
 
   espec = G_PARAM_SPEC_ENUM (enum_pspec);
   tcv = tmp_choice_values_from_enum (espec->enum_class);
@@ -1035,7 +1035,7 @@ sfi_pspec_proxy_from_object (GParamSpec *object_pspec)
 {
   GParamSpec *pspec;
 
-  g_return_val_if_fail (G_IS_PARAM_SPEC_OBJECT (object_pspec), NULL);
+  assert_return (G_IS_PARAM_SPEC_OBJECT (object_pspec), NULL);
 
   pspec = sfi_pspec_proxy (object_pspec->name,
 			   object_pspec->_nick,
@@ -1050,7 +1050,7 @@ sfi_pspec_to_serializable (GParamSpec *xpspec)
 {
   GParamSpec *pspec = NULL;
 
-  g_return_val_if_fail (G_IS_PARAM_SPEC (xpspec), NULL);
+  assert_return (G_IS_PARAM_SPEC (xpspec), NULL);
 
   if (sfi_categorize_pspec (xpspec))
     pspec = g_param_spec_ref (xpspec);
@@ -1087,7 +1087,7 @@ GParamSpec *
 sfi_pspec_set_group (GParamSpec  *pspec,
                      const gchar *group)
 {
-  g_return_val_if_fail (G_IS_PARAM_SPEC (pspec), pspec);
+  assert_return (G_IS_PARAM_SPEC (pspec), pspec);
 
   g_param_spec_set_qdata_full (pspec, quark_param_group, g_strdup (group), group ? g_free : NULL);
   return pspec;
@@ -1096,7 +1096,7 @@ sfi_pspec_set_group (GParamSpec  *pspec,
 const gchar*
 sfi_pspec_get_group (GParamSpec *pspec)
 {
-  g_return_val_if_fail (G_IS_PARAM_SPEC (pspec), NULL);
+  assert_return (G_IS_PARAM_SPEC (pspec), NULL);
   return (const char*) g_param_spec_get_qdata (pspec, quark_param_group);
 }
 
@@ -1104,8 +1104,8 @@ void
 sfi_pspec_set_owner (GParamSpec  *pspec,
 		     const gchar *owner)
 {
-  g_return_if_fail (G_IS_PARAM_SPEC (pspec));
-  g_return_if_fail (owner != NULL);
+  assert_return (G_IS_PARAM_SPEC (pspec));
+  assert_return (owner != NULL);
 
   g_param_spec_set_qdata_full (pspec, quark_param_owner, g_strdup (owner), g_free);
 }
@@ -1113,7 +1113,7 @@ sfi_pspec_set_owner (GParamSpec  *pspec,
 const gchar*
 sfi_pspec_get_owner (GParamSpec *pspec)
 {
-  g_return_val_if_fail (G_IS_PARAM_SPEC (pspec), NULL);
+  assert_return (G_IS_PARAM_SPEC (pspec), NULL);
 
   const char *owner = (char*) g_param_spec_get_qdata (pspec, quark_param_owner);
   if (!owner && pspec->owner_type)
@@ -1131,7 +1131,7 @@ sfi_pspec_set_void_note (GParamSpec *pspec,
 {
   SfiParamSpecNote *nspec;
 
-  g_return_if_fail (SFI_IS_PSPEC_NOTE (pspec));
+  assert_return (SFI_IS_PSPEC_NOTE (pspec));
 
   nspec = SFI_PSPEC_NOTE (pspec);
   nspec->allow_void = allow_void != FALSE;
@@ -1141,7 +1141,7 @@ sfi_pspec_set_void_note (GParamSpec *pspec,
 gboolean
 sfi_pspec_allows_void_note (GParamSpec *pspec)
 {
-  g_return_val_if_fail (G_IS_PARAM_SPEC (pspec), FALSE);
+  assert_return (G_IS_PARAM_SPEC (pspec), FALSE);
 
   return SFI_IS_PSPEC_NOTE (pspec) && SFI_PSPEC_NOTE (pspec)->allow_void;
 }
@@ -1155,7 +1155,7 @@ typedef struct {
 SfiBool
 sfi_pspec_get_bool_default (GParamSpec *pspec)
 {
-  g_return_val_if_fail (SFI_IS_PSPEC_BOOL (pspec), FALSE);
+  assert_return (SFI_IS_PSPEC_BOOL (pspec), FALSE);
 
   return SFI_PSPEC_BOOL (pspec)->default_value;
 }
@@ -1163,7 +1163,7 @@ sfi_pspec_get_bool_default (GParamSpec *pspec)
 SfiInt
 sfi_pspec_get_int_default (GParamSpec *pspec)
 {
-  g_return_val_if_fail (SFI_IS_PSPEC_INT (pspec), 0);
+  assert_return (SFI_IS_PSPEC_INT (pspec), 0);
 
   return SFI_PSPEC_INT (pspec)->default_value;
 }
@@ -1176,7 +1176,7 @@ sfi_pspec_get_int_range (GParamSpec *pspec,
 {
   SfiParamSpecInt *ispec;
 
-  g_return_if_fail (SFI_IS_PSPEC_INT (pspec));
+  assert_return (SFI_IS_PSPEC_INT (pspec));
 
   ispec = SFI_PSPEC_INT (pspec);
   if (minimum_value)
@@ -1190,7 +1190,7 @@ sfi_pspec_get_int_range (GParamSpec *pspec,
 SfiNum
 sfi_pspec_get_num_default (GParamSpec *pspec)
 {
-  g_return_val_if_fail (SFI_IS_PSPEC_NUM (pspec), 0);
+  assert_return (SFI_IS_PSPEC_NUM (pspec), 0);
 
   return SFI_PSPEC_NUM (pspec)->default_value;
 }
@@ -1203,7 +1203,7 @@ sfi_pspec_get_num_range (GParamSpec *pspec,
 {
   SfiParamSpecNum *nspec;
 
-  g_return_if_fail (SFI_IS_PSPEC_NUM (pspec));
+  assert_return (SFI_IS_PSPEC_NUM (pspec));
 
   nspec = SFI_PSPEC_NUM (pspec);
   if (minimum_value)
@@ -1217,7 +1217,7 @@ sfi_pspec_get_num_range (GParamSpec *pspec,
 SfiReal
 sfi_pspec_get_real_default (GParamSpec *pspec)
 {
-  g_return_val_if_fail (SFI_IS_PSPEC_REAL (pspec), 0);
+  assert_return (SFI_IS_PSPEC_REAL (pspec), 0);
 
   return SFI_PSPEC_REAL (pspec)->default_value;
 }
@@ -1230,7 +1230,7 @@ sfi_pspec_get_real_range (GParamSpec *pspec,
 {
   SfiParamSpecReal *nspec;
 
-  g_return_if_fail (SFI_IS_PSPEC_REAL (pspec));
+  assert_return (SFI_IS_PSPEC_REAL (pspec));
 
   nspec = SFI_PSPEC_REAL (pspec);
   if (minimum_value)
@@ -1244,7 +1244,7 @@ sfi_pspec_get_real_range (GParamSpec *pspec,
 const gchar*
 sfi_pspec_get_string_default (GParamSpec *pspec)
 {
-  g_return_val_if_fail (SFI_IS_PSPEC_STRING (pspec), NULL);
+  assert_return (SFI_IS_PSPEC_STRING (pspec), NULL);
 
   return SFI_PSPEC_STRING (pspec)->default_value;
 }
@@ -1252,7 +1252,7 @@ sfi_pspec_get_string_default (GParamSpec *pspec)
 const gchar*
 sfi_pspec_get_choice_default (GParamSpec *pspec)
 {
-  g_return_val_if_fail (SFI_IS_PSPEC_CHOICE (pspec), NULL);
+  assert_return (SFI_IS_PSPEC_CHOICE (pspec), NULL);
 
   return G_PARAM_SPEC_STRING (pspec)->default_value;
 }
@@ -1263,7 +1263,7 @@ sfi_pspec_get_choice_values (GParamSpec *pspec)
   SfiParamSpecChoice *cspec;
   SfiChoiceValues dummy = { 0, };
 
-  g_return_val_if_fail (SFI_IS_PSPEC_CHOICE (pspec), dummy);
+  assert_return (SFI_IS_PSPEC_CHOICE (pspec), dummy);
 
   cspec = SFI_PSPEC_CHOICE (pspec);
   return cspec->cvalues;
@@ -1275,7 +1275,7 @@ sfi_pspec_get_choice_hash (GParamSpec *pspec)
   SfiParamSpecChoice *cspec;
   guint64 hash;
   guint i;
-  g_return_val_if_fail (SFI_IS_PSPEC_CHOICE (pspec), 0);
+  assert_return (SFI_IS_PSPEC_CHOICE (pspec), 0);
   cspec = SFI_PSPEC_CHOICE (pspec);
   /* choices are not registered with the type system,
    * so have no unique identifier. for some purposes
@@ -1293,7 +1293,7 @@ sfi_pspec_get_seq_element (GParamSpec *pspec)
 {
   SfiParamSpecSeq *sspec;
 
-  g_return_val_if_fail (SFI_IS_PSPEC_SEQ (pspec), NULL);
+  assert_return (SFI_IS_PSPEC_SEQ (pspec), NULL);
 
   sspec = SFI_PSPEC_SEQ (pspec);
   return sspec->element;
@@ -1305,7 +1305,7 @@ sfi_pspec_get_rec_fields (GParamSpec *pspec)
   SfiParamSpecRec *rspec;
   SfiRecFields dummy = { 0, };
 
-  g_return_val_if_fail (SFI_IS_PSPEC_REC (pspec), dummy);
+  assert_return (SFI_IS_PSPEC_REC (pspec), dummy);
 
   rspec = SFI_PSPEC_REC (pspec);
   return rspec->fields;
@@ -1318,7 +1318,7 @@ sfi_pspec_get_rec_field (GParamSpec  *pspec,
   SfiParamSpecRec *rspec;
   guint i;
 
-  g_return_val_if_fail (SFI_IS_PSPEC_REC (pspec), NULL);
+  assert_return (SFI_IS_PSPEC_REC (pspec), NULL);
 
   rspec = SFI_PSPEC_REC (pspec);
   for (i = 0; i < rspec->fields.n_fields; i++)
@@ -1415,7 +1415,7 @@ sfi_categorize_pspec (GParamSpec *pspec)
   GType value_type, pspec_type;
   SfiSCategory cat;
 
-  g_return_val_if_fail (G_IS_PARAM_SPEC (pspec), SFI_SCAT_INVAL);
+  assert_return (G_IS_PARAM_SPEC (pspec), SFI_SCAT_INVAL);
 
   value_type = G_PARAM_SPEC_VALUE_TYPE (pspec);
   pspec_type = G_PARAM_SPEC_TYPE (pspec);
@@ -1469,7 +1469,7 @@ sfi_pspec_to_rec (GParamSpec *pspec)
   SfiRec *prec;
   const gchar *string;
 
-  g_return_val_if_fail (pspec != NULL, NULL);
+  assert_return (pspec != NULL, NULL);
 
   scat = sfi_categorize_pspec (pspec);
   if (!scat)
@@ -1586,7 +1586,7 @@ sfi_pspec_from_rec (SfiRec *prec)
   SfiRecFields zero_rfields = { 0, 0, };
   GType ptype;
 
-  g_return_val_if_fail (prec != NULL, NULL);
+  assert_return (prec != NULL, NULL);
 
   SfiSCategory scat = (SfiSCategory) sfi_rec_get_int (prec, "sfi_scategory");
   name = sfi_rec_get_string (prec, "name");

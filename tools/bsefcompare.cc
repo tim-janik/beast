@@ -7,7 +7,6 @@
 #include <bse/gslfft.hh>
 #include <stdio.h>
 #include <errno.h>
-#include <assert.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
@@ -47,8 +46,8 @@ check_arg (uint         argc,
            const char  *opt,              /* for example: --foo */
            const char **opt_arg = NULL)   /* if foo needs an argument, pass a pointer to get the argument */
 {
-  g_return_val_if_fail (opt != NULL, false);
-  g_return_val_if_fail (*nth < argc, false);
+  assert_return (opt != NULL, false);
+  assert_return (*nth < argc, false);
 
   const char *arg = argv[*nth];
   if (!arg)
@@ -96,7 +95,7 @@ Options::parse (int   *argc_p,
   gchar **argv = *argv_p;
   unsigned int i;
 
-  g_return_if_fail (argc >= 0);
+  assert_return (argc >= 0);
 
   /*  I am tired of seeing .libs/lt-bsefcompare all the time,
    *  but basically this should be done (to allow renaming the binary):
@@ -412,7 +411,7 @@ public:
   void
   register_strategy (const string& feature_name)
   {
-    g_return_if_fail (!m_strategies[feature_name]);
+    assert_return (!m_strategies[feature_name]);
 
     m_strategies[feature_name] = this;
   }
@@ -425,7 +424,7 @@ public:
     // produce a warning for a strategy with the right feature name but a wrong type
     if (s)
       {
-	g_return_val_if_fail (type == s->type(), 0);
+	assert_return (type == s->type(), 0);
       }
     return s;
   }
@@ -636,7 +635,7 @@ FeatureValueFile::parseFeatureValue (GScanner *scanner)
 void
 FeatureValueFile::parse (const string& filename)
 {
-  g_return_if_fail (this->filename == "");
+  assert_return (this->filename == "");
   this->filename = filename;
 
   GScanner *scanner = g_scanner_new64 (&scanner_config_template);

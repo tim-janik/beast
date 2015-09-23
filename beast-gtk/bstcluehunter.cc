@@ -346,11 +346,11 @@ bst_clue_hunter_set_clist (BstClueHunter *self,
 {
   GtkWidget *clist_parent;
 
-  g_return_if_fail (BST_IS_CLUE_HUNTER (self));
-  g_return_if_fail (GTK_IS_CLIST (clist));
+  assert_return (BST_IS_CLUE_HUNTER (self));
+  assert_return (GTK_IS_CLIST (clist));
   clist_parent = GTK_WIDGET (clist)->parent;
-  g_return_if_fail (clist_parent == NULL);
-  g_return_if_fail (column < GTK_CLIST (clist)->columns);
+  assert_return (clist_parent == NULL);
+  assert_return (column < GTK_CLIST (clist)->columns);
 
   if (self->clist)
     {
@@ -381,7 +381,7 @@ bst_clue_hunter_set_clist (BstClueHunter *self,
 static void
 bst_clue_hunter_popdown (BstClueHunter *self)
 {
-  g_return_if_fail (BST_IS_CLUE_HUNTER (self));
+  assert_return (BST_IS_CLUE_HUNTER (self));
 
   if (self->popped_up)
     g_signal_emit (self, clue_hunter_signals[SIGNAL_POPDOWN], 0);
@@ -390,7 +390,7 @@ bst_clue_hunter_popdown (BstClueHunter *self)
 void
 bst_clue_hunter_popup (BstClueHunter *self)
 {
-  g_return_if_fail (BST_IS_CLUE_HUNTER (self));
+  assert_return (BST_IS_CLUE_HUNTER (self));
 
   if (self->popped_up == FALSE &&
       self->entry && GTK_WIDGET_DRAWABLE (self->entry))
@@ -401,8 +401,8 @@ void
 bst_clue_hunter_select_on (BstClueHunter *self,
 			   const gchar   *string)
 {
-  g_return_if_fail (BST_IS_CLUE_HUNTER (self));
-  g_return_if_fail (string != NULL);
+  assert_return (BST_IS_CLUE_HUNTER (self));
+  assert_return (string != NULL);
 
   g_signal_emit (self, clue_hunter_signals[SIGNAL_SELECT_ON], 0, string);
 }
@@ -420,7 +420,7 @@ bst_clue_hunter_create_arrow (BstClueHunter *self,
 {
   GtkWidget *button, *arrow;
 
-  g_return_val_if_fail (BST_IS_CLUE_HUNTER (self), NULL);
+  assert_return (BST_IS_CLUE_HUNTER (self), NULL);
 
   button = (GtkWidget*) g_object_new (GTK_TYPE_BUTTON,
                                       "visible", TRUE,
@@ -497,11 +497,11 @@ void
 bst_clue_hunter_set_entry (BstClueHunter *self,
 			   GtkEntry      *entry)
 {
-  g_return_if_fail (BST_IS_CLUE_HUNTER (self));
+  assert_return (BST_IS_CLUE_HUNTER (self));
   if (entry)
     {
-      g_return_if_fail (GTK_IS_ENTRY (entry));
-      g_return_if_fail (bst_clue_hunter_from_entry (entry) == NULL);
+      assert_return (GTK_IS_ENTRY (entry));
+      assert_return (bst_clue_hunter_from_entry (entry) == NULL);
     }
 
   bst_clue_hunter_popdown (self);
@@ -537,7 +537,7 @@ bst_clue_hunter_set_entry (BstClueHunter *self,
 gpointer
 bst_clue_hunter_from_entry (gpointer entry)
 {
-  g_return_val_if_fail (GTK_IS_ENTRY (entry), NULL);
+  assert_return (GTK_IS_ENTRY (entry), NULL);
 
   return g_object_get_data (G_OBJECT (entry), "BstClueHunter");
 }
@@ -548,8 +548,8 @@ bst_clue_hunter_add_string (BstClueHunter *self,
 {
   gchar **text;
 
-  g_return_if_fail (BST_IS_CLUE_HUNTER (self));
-  g_return_if_fail (string != NULL);
+  assert_return (BST_IS_CLUE_HUNTER (self));
+  assert_return (string != NULL);
 
   text = g_new0 (gchar*, self->clist->columns);
   text[self->clist_column] = (gchar*) string;
@@ -564,8 +564,8 @@ bst_clue_hunter_remove_string (BstClueHunter *self,
   GList *list;
   guint n = 0;
 
-  g_return_if_fail (BST_IS_CLUE_HUNTER (self));
-  g_return_if_fail (string != NULL);
+  assert_return (BST_IS_CLUE_HUNTER (self));
+  assert_return (string != NULL);
 
   for (list = self->clist->row_list; list; list = list->next)
     {
@@ -589,7 +589,7 @@ bst_clue_hunter_remove_matches (BstClueHunter *self,
   GList *list;
   guint n = 0;
 
-  g_return_if_fail (BST_IS_CLUE_HUNTER (self));
+  assert_return (BST_IS_CLUE_HUNTER (self));
   if (!pattern)
     pattern = "*";
 
@@ -656,7 +656,7 @@ bst_clue_hunter_try_complete (BstClueHunter *self)
   GSList *strings = NULL;
   guint max_len = 0, n = 0;
 
-  g_return_val_if_fail (BST_IS_CLUE_HUNTER (self), NULL);
+  assert_return (BST_IS_CLUE_HUNTER (self), NULL);
 
   for (list = self->clist->row_list; list; list = list->next)
     {
@@ -683,7 +683,7 @@ bst_clue_hunter_try_complete (BstClueHunter *self)
 void
 bst_clue_hunter_poll_refresh (BstClueHunter *self)
 {
-  g_return_if_fail (BST_IS_CLUE_HUNTER (self));
+  assert_return (BST_IS_CLUE_HUNTER (self));
 
   if (self->entry && GTK_WIDGET_HAS_FOCUS (self->entry))
     g_signal_emit (self, clue_hunter_signals[SIGNAL_POLL_REFRESH], 0);
@@ -709,7 +709,7 @@ bst_clue_hunter_do_popup (BstClueHunter *self)
   gint swidth = gdk_screen_width ();
   gint x = 0, y = 0, width = 0, height = 0;
 
-  g_return_if_fail (!self->popped_up);
+  assert_return (!self->popped_up);
 
   gtk_widget_grab_focus (GTK_WIDGET (self->entry));
   if (!self->cstring)
@@ -812,7 +812,7 @@ bst_clue_hunter_do_popdown (BstClueHunter *self)
 {
   GtkWidget *widget = GTK_WIDGET (self);
 
-  g_return_if_fail (self->popped_up);
+  assert_return (self->popped_up);
 
   gtk_widget_hide (widget);
   gdk_flush ();	/* remove pointer instantly */

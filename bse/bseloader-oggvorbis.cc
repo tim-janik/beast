@@ -120,7 +120,7 @@ oggv_create_chunk_handle (void         *data,
   FileInfo *fi = (FileInfo*) wdsc->file_info;
   GslDataHandle *dhandle;
 
-  g_return_val_if_fail (nth_chunk == 0, NULL);
+  assert_return (nth_chunk == 0, NULL);
 
   dhandle = gsl_data_handle_new_ogg_vorbis_muxed (fi->wfi.file_name,
 					          LOADER_LOGICAL_BIT_STREAM (wdsc->chunks[0]),
@@ -158,7 +158,7 @@ _gsl_init_loader_oggvorbis (void)
   };
   static gboolean initialized = FALSE;
 
-  g_assert (initialized == FALSE);
+  assert (initialized == FALSE);
   initialized = TRUE;
 
   bse_loader_register (&loader);

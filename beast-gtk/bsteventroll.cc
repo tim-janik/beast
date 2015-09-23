@@ -177,8 +177,8 @@ bst_event_roll_add (GtkContainer *container,
 {
   BstEventRoll *self = BST_EVENT_ROLL (container);
 
-  g_return_if_fail (GTK_IS_WIDGET (child));
-  g_return_if_fail (self->child == NULL);
+  assert_return (GTK_IS_WIDGET (child));
+  assert_return (self->child == NULL);
 
   gtk_widget_set_parent_window (child, VPANEL (self));
   self->child = child;
@@ -191,8 +191,8 @@ bst_event_roll_remove (GtkContainer *container,
 {
   BstEventRoll *self = BST_EVENT_ROLL (container);
 
-  g_return_if_fail (GTK_IS_WIDGET (child));
-  g_return_if_fail (self->child == child);
+  assert_return (GTK_IS_WIDGET (child));
+  assert_return (self->child == child);
 
   gtk_widget_unparent (child);
   self->child = NULL;
@@ -206,7 +206,7 @@ bst_event_roll_forall (GtkContainer *container,
 {
   BstEventRoll *self = BST_EVENT_ROLL (container);
 
-  g_return_if_fail (callback != NULL);
+  assert_return (callback != NULL);
 
   if (self->child)
     callback (self->child, callback_data);
@@ -499,7 +499,7 @@ gfloat
 bst_event_roll_set_hzoom (BstEventRoll *self,
 			  gfloat        hzoom)
 {
-  g_return_val_if_fail (BST_IS_EVENT_ROLL (self), 0);
+  assert_return (BST_IS_EVENT_ROLL (self), 0);
 
   bst_event_roll_hsetup (self, self->ppqn, self->qnpt, self->max_ticks, hzoom);
 
@@ -604,7 +604,7 @@ event_roll_unset_proxy (BstEventRoll *self)
 void
 bst_event_roll_set_part (BstEventRoll *self, Bse::PartH part)
 {
-  g_return_if_fail (BST_IS_EVENT_ROLL (self));
+  assert_return (BST_IS_EVENT_ROLL (self));
 
   if (self->part)
     bse_proxy_disconnect (self->part.proxy_id(),
@@ -630,7 +630,7 @@ bst_event_roll_set_vpanel_width_hook (BstEventRoll   *self,
                                       gint          (*fetch_vpanel_width) (gpointer data),
                                       gpointer        data)
 {
-  g_return_if_fail (BST_IS_EVENT_ROLL (self));
+  assert_return (BST_IS_EVENT_ROLL (self));
 
   self->fetch_vpanel_width = fetch_vpanel_width;
   self->fetch_vpanel_width_data = data;
@@ -651,7 +651,7 @@ bst_event_roll_set_view_selection (BstEventRoll *self,
 				   guint         tick,
 				   guint         duration)
 {
-  g_return_if_fail (BST_IS_EVENT_ROLL (self));
+  assert_return (BST_IS_EVENT_ROLL (self));
 
   if (!duration)	/* invalid selection */
     {
@@ -699,7 +699,7 @@ bst_event_roll_set_view_selection (BstEventRoll *self,
 void
 bst_event_roll_set_control_type (BstEventRoll *self, Bse::MidiSignalType control_type)
 {
-  g_return_if_fail (BST_IS_EVENT_ROLL (self));
+  assert_return (BST_IS_EVENT_ROLL (self));
 
   self->control_type = control_type;
   gtk_widget_queue_draw (GTK_WIDGET (self));

@@ -124,9 +124,9 @@ bse_fir_filter_class_init (BseFIRFilterClass *class)
 						 BSE_PARAM_GUI));
 
   ochannel_id = bse_source_class_add_ochannel (source_class, "mono_out", _("Mono Out"), _("Mono Filtered Output"), 1);
-  g_assert (ochannel_id == BSE_FIR_FILTER_OCHANNEL_MONO);
+  assert (ochannel_id == BSE_FIR_FILTER_OCHANNEL_MONO);
   ichannel_id = bse_source_class_add_ichannel (source_class, "mono_in", _("Mono In"), _("Mono Signal Input"), 1, 1);
-  g_assert (ichannel_id == BSE_FIR_FILTER_ICHANNEL_MONO);
+  assert (ichannel_id == BSE_FIR_FILTER_ICHANNEL_MONO);
   // BSE_SOURCE_CLASS_ICHANNEL_DEF (class, BSE_FIR_FILTER_ICHANNEL_MONO)->history = 2;
 }
 
@@ -370,7 +370,7 @@ bse_fir_filter_calc_chunk (BseSource *source,
   gfloat *coeffs;
   guint i, n_coeffs, history_pos;
 
-  g_return_val_if_fail (ochannel_id == BSE_FIR_FILTER_OCHANNEL_MONO, NULL);
+  assert_return (ochannel_id == BSE_FIR_FILTER_OCHANNEL_MONO, NULL);
 
   input = bse_source_get_input (source, BSE_FIR_FILTER_ICHANNEL_MONO); /* mono */
   if (!input) /* silence */

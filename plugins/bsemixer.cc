@@ -89,7 +89,7 @@ bse_mixer_class_init (BseMixerClass *klass)
 					     0, bse_db_to_factor (BSE_MAX_VOLUME_dB) * 100, 1,
 					     SFI_PARAM_GUI ":dial"));
   ochannel = bse_source_class_add_ochannel (source_class, "audio-out", _("Audio Out"), _("Sole Output"));
-  g_assert (ochannel == BSE_MIXER_OCHANNEL_MONO);
+  assert (ochannel == BSE_MIXER_OCHANNEL_MONO);
   for (i = 1; i <= BSE_MIXER_N_INPUTS; i++)
     {
       gchar *group, *ident, *label, *blurb;
@@ -131,7 +131,7 @@ bse_mixer_class_init (BseMixerClass *klass)
       label = g_strdup_format (_("Audio In%u"), i);
       blurb = g_strdup_format (_("Input Channel %u"), i);
       ichannel = bse_source_class_add_ichannel (source_class, ident, label, blurb);
-      g_assert (ichannel == i - 1);
+      assert (ichannel == i - 1);
       g_free (blurb);
       g_free (label);
       g_free (ident);

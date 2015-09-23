@@ -313,9 +313,9 @@ bse_object_class_add_grouped_property (BseObjectClass *klass,
                                        guint	       property_id,
                                        GParamSpec     *pspec)
 {
-  g_return_if_fail (BSE_IS_OBJECT_CLASS (klass));
-  g_return_if_fail (G_IS_PARAM_SPEC (pspec));
-  g_return_if_fail (property_id > 0);
+  assert_return (BSE_IS_OBJECT_CLASS (klass));
+  assert_return (G_IS_PARAM_SPEC (pspec));
+  assert_return (property_id > 0);
 
   g_object_class_install_property (G_OBJECT_CLASS (klass), property_id, pspec);
 }
@@ -326,9 +326,9 @@ bse_object_class_add_property (BseObjectClass *klass,
 			       guint	       property_id,
 			       GParamSpec     *pspec)
 {
-  g_return_if_fail (BSE_IS_OBJECT_CLASS (klass));
-  g_return_if_fail (G_IS_PARAM_SPEC (pspec));
-  g_return_if_fail (sfi_pspec_get_group (pspec) == NULL);
+  assert_return (BSE_IS_OBJECT_CLASS (klass));
+  assert_return (G_IS_PARAM_SPEC (pspec));
+  assert_return (sfi_pspec_get_group (pspec) == NULL);
 
   sfi_pspec_set_group (pspec, property_group);
   bse_object_class_add_grouped_property (klass, property_id, pspec);
@@ -344,9 +344,9 @@ bse_object_marshal_signal (GClosure       *closure,
 {
   gpointer arg0, argN;
 
-  g_return_if_fail (return_value == NULL);
-  g_return_if_fail (n_param_values >= 1 && n_param_values <= 1 + SFI_VMARSHAL_MAX_ARGS);
-  g_return_if_fail (G_VALUE_HOLDS_OBJECT (param_values));
+  assert_return (return_value == NULL);
+  assert_return (n_param_values >= 1 && n_param_values <= 1 + SFI_VMARSHAL_MAX_ARGS);
+  assert_return (G_VALUE_HOLDS_OBJECT (param_values));
 
   arg0 = g_value_get_object (param_values);
   if (G_CCLOSURE_SWAP_DATA (closure))
@@ -373,9 +373,9 @@ bse_object_class_add_signal (BseObjectClass    *oclass,
   va_list args;
   guint signal_id;
 
-  g_return_val_if_fail (BSE_IS_OBJECT_CLASS (oclass), 0);
-  g_return_val_if_fail (n_params <= SFI_VMARSHAL_MAX_ARGS, 0);
-  g_return_val_if_fail (signal_name != NULL, 0);
+  assert_return (BSE_IS_OBJECT_CLASS (oclass), 0);
+  assert_return (n_params <= SFI_VMARSHAL_MAX_ARGS, 0);
+  assert_return (signal_name != NULL, 0);
 
   va_start (args, n_params);
   signal_id = g_signal_new_valist (signal_name,
@@ -400,9 +400,9 @@ bse_object_class_add_asignal (BseObjectClass    *oclass,
   va_list args;
   guint signal_id;
 
-  g_return_val_if_fail (BSE_IS_OBJECT_CLASS (oclass), 0);
-  g_return_val_if_fail (n_params <= SFI_VMARSHAL_MAX_ARGS, 0);
-  g_return_val_if_fail (signal_name != NULL, 0);
+  assert_return (BSE_IS_OBJECT_CLASS (oclass), 0);
+  assert_return (n_params <= SFI_VMARSHAL_MAX_ARGS, 0);
+  assert_return (signal_name != NULL, 0);
 
   va_start (args, n_params);
   signal_id = g_signal_new_valist (signal_name,
@@ -427,9 +427,9 @@ bse_object_class_add_dsignal (BseObjectClass    *oclass,
   va_list args;
   guint signal_id;
 
-  g_return_val_if_fail (BSE_IS_OBJECT_CLASS (oclass), 0);
-  g_return_val_if_fail (n_params <= SFI_VMARSHAL_MAX_ARGS, 0);
-  g_return_val_if_fail (signal_name != NULL, 0);
+  assert_return (BSE_IS_OBJECT_CLASS (oclass), 0);
+  assert_return (n_params <= SFI_VMARSHAL_MAX_ARGS, 0);
+  assert_return (signal_name != NULL, 0);
 
   va_start (args, n_params);
   signal_id = g_signal_new_valist (signal_name,
@@ -450,10 +450,10 @@ bse_object_lock (gpointer _object)
   BseObject *object = (BseObject*) _object;
   GObject *gobject = (GObject*) _object;
 
-  g_return_if_fail (BSE_IS_OBJECT (object));
-  g_return_if_fail (gobject->ref_count > 0);
+  assert_return (BSE_IS_OBJECT (object));
+  assert_return (gobject->ref_count > 0);
 
-  g_assert (object->lock_count < 65535);	// if this breaks, we need to fix the guint16
+  assert (object->lock_count < 65535);	// if this breaks, we need to fix the guint16
 
   if (!object->lock_count)
     {
@@ -473,8 +473,8 @@ bse_object_unlock (gpointer _object)
 {
   BseObject *object = (BseObject*) _object;
 
-  g_return_if_fail (BSE_IS_OBJECT (object));
-  g_return_if_fail (object->lock_count > 0);
+  assert_return (BSE_IS_OBJECT (object));
+  assert_return (object->lock_count > 0);
 
   object->lock_count -= 1;
 
@@ -502,7 +502,7 @@ bse_objects_list_by_uname (GType	type,
 {
   GList *object_list = NULL;
 
-  g_return_val_if_fail (BSE_TYPE_IS_OBJECT (type) == TRUE, NULL);
+  assert_return (BSE_TYPE_IS_OBJECT (type) == TRUE, NULL);
 
   if (object_unames_ht)
     {
@@ -531,7 +531,7 @@ list_objects (gpointer key,
 GList* /* list_free result */
 bse_objects_list (GType	  type)
 {
-  g_return_val_if_fail (BSE_TYPE_IS_OBJECT (type) == TRUE, NULL);
+  assert_return (BSE_TYPE_IS_OBJECT (type) == TRUE, NULL);
   if (object_unames_ht)
     {
       gpointer data[2] = { NULL, (gpointer) type, };
@@ -567,7 +567,7 @@ bse_object_editable_property (gpointer        object,
 void
 bse_object_notify_icon_changed (BseObject *object)
 {
-  g_return_if_fail (BSE_IS_OBJECT (object));
+  assert_return (BSE_IS_OBJECT (object));
 
   g_signal_emit (object, object_signals[SIGNAL_IC0N_CHANGED], 0);
 }
@@ -577,7 +577,7 @@ bse_object_get_icon (BseObject *object)
 {
   BseIc0n *icon;
 
-  g_return_val_if_fail (BSE_IS_OBJECT (object), NULL);
+  assert_return (BSE_IS_OBJECT (object), NULL);
 
   g_object_ref (object);
 
@@ -593,7 +593,7 @@ bse_object_do_get_icon (BseObject *object)
 {
   BseIc0n *icon;
 
-  g_return_val_if_fail (BSE_IS_OBJECT (object), NULL);
+  assert_return (BSE_IS_OBJECT (object), NULL);
 
   icon = (BseIc0n*) g_object_get_qdata (G_OBJECT (object), bse_quark_icon);
   if (!icon)
@@ -627,7 +627,7 @@ void
 bse_object_restore_start (BseObject  *object,
                           BseStorage *storage)
 {
-  g_return_if_fail (BSE_IS_STORAGE (storage));
+  assert_return (BSE_IS_STORAGE (storage));
   if (!BSE_OBJECT_IN_RESTORE (object))
     {
       BSE_OBJECT_SET_FLAGS (object, BSE_OBJECT_FLAG_IN_RESTORE);
@@ -794,7 +794,7 @@ bse_object_remove_reemit (gpointer     src_object,
       e = (EClosure*) g_hash_table_lookup (eclosures_ht, &key);
       if (e)
 	{
-	  g_return_if_fail (e->erefs > 0);
+	  assert_return (e->erefs > 0);
 
 	  e->erefs--;
 	  if (!e->erefs)
@@ -907,7 +907,7 @@ BSE_BUILTIN_TYPE (BseObject)
 GObject*
 bse_object_new (GType object_type, const gchar *first_property_name, ...)
 {
-  g_return_val_if_fail (G_TYPE_IS_OBJECT (object_type), NULL);
+  assert_return (G_TYPE_IS_OBJECT (object_type), NULL);
   va_list var_args;
   va_start (var_args, first_property_name);
   GObject *object = bse_object_new_valist (object_type, first_property_name, var_args);

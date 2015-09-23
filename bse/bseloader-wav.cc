@@ -41,7 +41,7 @@ wav_read_header (int        fd,
 
   /* read header contents */
   n_bytes = 4 + 4 + 4;
-  g_assert (n_bytes == sizeof (*header));
+  assert (n_bytes == sizeof (*header));
   if (read (fd, header, n_bytes) != n_bytes)
     {
       LDEBUG ("failed to read WavHeader: %s", g_strerror (errno));
@@ -94,7 +94,7 @@ wav_read_fmt_header (int        fd,
 
   /* read header contents */
   n_bytes = 4 + 4 + 2 + 2 + 4 + 4 + 2 + 2;
-  g_assert (n_bytes == sizeof (*header));
+  assert (n_bytes == sizeof (*header));
   if (read (fd, header, n_bytes) != n_bytes)
     {
       LDEBUG ("failed to read FmtHeader");
@@ -196,7 +196,7 @@ wav_read_data_header (int         fd,
 
   /* read header contents */
   n_bytes = 4 + 4;
-  g_assert (n_bytes == sizeof (*header));
+  assert (n_bytes == sizeof (*header));
   if (read (fd, header, n_bytes) != n_bytes)
     {
       LDEBUG ("failed to read DataHeader");
@@ -311,7 +311,7 @@ wav_load_wave_dsc (void            *data,
   WaveDsc *dsc;
   GslWaveFormatType format;
   GslLong data_offset, data_width;
-  g_return_val_if_fail (nth_wave == 0, NULL);
+  assert_return (nth_wave == 0, NULL);
   if (lseek (fi->fd, sizeof (WavHeader), SEEK_SET) != sizeof (WavHeader))
     {
       LDEBUG ("failed to seek to end of WavHeader");
@@ -397,7 +397,7 @@ wav_create_chunk_handle (void         *data,
   WaveDsc *dsc = (WaveDsc*) wave_dsc;
   GslDataHandle *dhandle;
 
-  g_return_val_if_fail (nth_chunk == 0, NULL);
+  assert_return (nth_chunk == 0, NULL);
 
   dhandle = gsl_wave_handle_new (dsc->wdsc.file_info->file_name,
 				 dsc->wdsc.n_channels,
@@ -456,7 +456,7 @@ _gsl_init_loader_wav (void)
   };
   static gboolean initialized = FALSE;
 
-  g_assert (initialized == FALSE);
+  assert (initialized == FALSE);
   initialized = TRUE;
 
   bse_loader_register (&loader);

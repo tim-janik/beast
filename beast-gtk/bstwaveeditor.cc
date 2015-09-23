@@ -271,7 +271,7 @@ bst_wave_editor_finalize (GObject *object)
 {
   BstWaveEditor *self = BST_WAVE_EDITOR (object);
 
-  g_return_if_fail (self->qsamplers == NULL);
+  assert_return (self->qsamplers == NULL);
 
   g_object_unref (self->chunk_wrapper);
 
@@ -282,7 +282,7 @@ void
 bst_wave_editor_set_wave (BstWaveEditor *self,
 			  SfiProxy	 wave)
 {
-  g_return_if_fail (BST_IS_WAVE_EDITOR (self));
+  assert_return (BST_IS_WAVE_EDITOR (self));
 
   if (wave != self->wave)
     {
@@ -509,9 +509,9 @@ void
 bst_wave_editor_set_esample (BstWaveEditor *self,
 			     SfiProxy       esample)
 {
-  g_return_if_fail (BST_IS_WAVE_EDITOR (self));
+  assert_return (BST_IS_WAVE_EDITOR (self));
   if (esample)
-    g_return_if_fail (BSE_IS_EDITABLE_SAMPLE (esample));
+    assert_return (BSE_IS_EDITABLE_SAMPLE (esample));
 
   if (esample != self->esample)
     {
@@ -574,7 +574,7 @@ tree_selection_changed (BstWaveEditor    *self,
       gchar *osc_str, *mix_str;
       SfiProxy esample;
 
-      g_assert (self->chunk_wrapper == (GxkListWrapper*) model);
+      assert (self->chunk_wrapper == (GxkListWrapper*) model);
 
       gtk_tree_model_get (model, &iter,
 			  COL_OSC_FREQ, &osc_str,

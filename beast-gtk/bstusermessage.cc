@@ -268,7 +268,7 @@ static void
 bst_msg_dialog_janitor_update (GxkDialog        *dialog,
                                SfiProxy          janitor)
 {
-  g_return_if_fail (BSE_IS_JANITOR (janitor));
+  assert_return (BSE_IS_JANITOR (janitor));
 
   guint i, n = bse_janitor_n_actions (janitor);
   for (i = 0; i < n; i++)
@@ -321,7 +321,7 @@ bst_msg_bit_create_choice (guint                   id,
                            const gchar            *options)
 {
   int saved_errno = errno;
-  // g_return_val_if_fail (options && options[0], NULL);
+  // assert_return (options && options[0], NULL);
   BstMsgBit *mbit = g_new0 (BstMsgBit, 1);
   mbit->id = id;
   mbit->text = g_strdup (name);

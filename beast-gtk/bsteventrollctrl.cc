@@ -83,8 +83,8 @@ bst_event_roll_controller_new (BstEventRoll   *eroll,
 {
   BstEventRollController *self;
 
-  g_return_val_if_fail (BST_IS_EVENT_ROLL (eroll), NULL);
-  g_return_val_if_fail (quant_rtools && canvas_rtools, NULL);
+  assert_return (BST_IS_EVENT_ROLL (eroll), NULL);
+  assert_return (quant_rtools && canvas_rtools, NULL);
 
   self = g_new0 (BstEventRollController, 1);
   self->eroll = eroll;
@@ -113,8 +113,8 @@ bst_event_roll_controller_new (BstEventRoll   *eroll,
 BstEventRollController*
 bst_event_roll_controller_ref (BstEventRollController *self)
 {
-  g_return_val_if_fail (self != NULL, NULL);
-  g_return_val_if_fail (self->ref_count >= 1, NULL);
+  assert_return (self != NULL, NULL);
+  assert_return (self->ref_count >= 1, NULL);
 
   self->ref_count++;
 
@@ -124,8 +124,8 @@ bst_event_roll_controller_ref (BstEventRollController *self)
 void
 bst_event_roll_controller_unref (BstEventRollController *self)
 {
-  g_return_if_fail (self != NULL);
-  g_return_if_fail (self->ref_count >= 1);
+  assert_return (self != NULL);
+  assert_return (self->ref_count >= 1);
 
   self->ref_count--;
   if (!self->ref_count)
@@ -260,7 +260,7 @@ event_canvas_button_tool (BstEventRollController *self,
 void
 bst_event_roll_controller_clear (BstEventRollController *self)
 {
-  g_return_if_fail (self != NULL);
+  assert_return (self != NULL);
 
   Bse::PartH part = self->eroll->part;
   const Bse::PartControlSeq &cseq = part.list_selected_controls (CONTROL_TYPE (self));
@@ -276,7 +276,7 @@ bst_event_roll_controller_clear (BstEventRollController *self)
 void
 bst_event_roll_controller_cut (BstEventRollController *self)
 {
-  g_return_if_fail (self != NULL);
+  assert_return (self != NULL);
 
   Bse::PartH part = self->eroll->part;
   const Bse::PartControlSeq &cseq = part.list_selected_controls (CONTROL_TYPE (self));
@@ -293,7 +293,7 @@ bst_event_roll_controller_cut (BstEventRollController *self)
 gboolean
 bst_event_roll_controller_copy (BstEventRollController *self)
 {
-  g_return_val_if_fail (self != NULL, FALSE);
+  assert_return (self != NULL, FALSE);
 
   Bse::PartH part = self->eroll->part;
   const Bse::PartControlSeq &cseq = part.list_selected_controls (CONTROL_TYPE (self));
@@ -304,7 +304,7 @@ bst_event_roll_controller_copy (BstEventRollController *self)
 void
 bst_event_roll_controller_paste (BstEventRollController *self)
 {
-  g_return_if_fail (self != NULL);
+  assert_return (self != NULL);
 
   Bse::PartH part = self->eroll->part;
   const Bse::PartControlSeq *cseq = bst_event_roll_controller_get_clipboard ();
@@ -360,7 +360,7 @@ guint
 bst_event_roll_controller_quantize (BstEventRollController *self,
                                     guint                   fine_tick)
 {
-  g_return_val_if_fail (self != NULL, fine_tick);
+  assert_return (self != NULL, fine_tick);
 
   /* quantize tick */
   if (QUANTIZATION (self) && self->eroll)
@@ -734,7 +734,7 @@ controller_canvas_drag (BstEventRollController *self,
 	return;		/* unhandled */
     }
   size_t i = self->tool_index;
-  g_return_if_fail (i < G_N_ELEMENTS (tool_table));
+  assert_return (i < G_N_ELEMENTS (tool_table));
   switch (drag->type)
     {
     case GXK_DRAG_START:

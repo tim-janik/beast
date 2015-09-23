@@ -94,7 +94,7 @@ image_cache_create_item (const gchar    *file_name,
 static void
 image_cache_item_unuse (GxkImageCacheItem *citem)
 {
-  g_return_if_fail (citem->use_count > 0);
+  assert_return (citem->use_count > 0);
   citem->use_count--;
   if (citem->use_count)
     return;

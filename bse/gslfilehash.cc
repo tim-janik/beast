@@ -39,7 +39,7 @@ hfile_equals (gconstpointer key1,
 void
 _gsl_init_fd_pool (void)
 {
-  g_assert (hfile_ht == NULL);
+  assert (hfile_ht == NULL);
   hfile_ht = g_hash_table_new (hfile_hash, hfile_equals);
 }
 static gboolean
@@ -75,7 +75,7 @@ gsl_hfile_open (const gchar *file_name)
   GslHFile key, *hfile;
   gint ret_errno;
   errno = EFAULT;
-  g_return_val_if_fail (file_name != NULL, NULL);
+  assert_return (file_name != NULL, NULL);
   key.file_name = (gchar*) file_name;
   if (!stat_file (file_name, &key.mtime, &key.n_bytes))
     return NULL;	/* errno from stat() */
@@ -124,8 +124,8 @@ void
 gsl_hfile_close (GslHFile *hfile)
 {
   gboolean destroy = FALSE;
-  g_return_if_fail (hfile != NULL);
-  g_return_if_fail (hfile->ocount > 0);
+  assert_return (hfile != NULL);
+  assert_return (hfile->ocount > 0);
   fdpool_mutex.lock();
   hfile->mutex.lock();
   if (hfile->ocount > 1)
@@ -173,15 +173,15 @@ gsl_hfile_pread (GslHFile *hfile,
   gint ret_errno;
 
   errno = EFAULT;
-  g_return_val_if_fail (hfile != NULL, -1);
-  g_return_val_if_fail (hfile->ocount > 0, -1);
-  g_return_val_if_fail (offset >= 0, -1);
+  assert_return (hfile != NULL, -1);
+  assert_return (hfile->ocount > 0, -1);
+  assert_return (offset >= 0, -1);
   if (offset >= hfile->n_bytes || n_bytes < 1)
     {
       errno = 0;
       return 0;
     }
-  g_return_val_if_fail (bytes != NULL, -1);
+  assert_return (bytes != NULL, -1);
   hfile->mutex.lock();
   if (hfile->ocount)
     {
@@ -242,8 +242,8 @@ gsl_hfile_zoffset (GslHFile *hfile)
   guint8 sdata[1024], *p;
   gboolean seen_zero = FALSE;
   errno = EFAULT;
-  g_return_val_if_fail (hfile != NULL, -1);
-  g_return_val_if_fail (hfile->ocount > 0, -1);
+  assert_return (hfile != NULL, -1);
+  assert_return (hfile->ocount > 0, -1);
   hfile->mutex.lock();
   if (hfile->zoffset > -2) /* got valid offset already */
     {
@@ -321,7 +321,7 @@ gchar*
 gsl_rfile_name (GslRFile *rfile)
 {
   errno = EFAULT;
-  g_return_val_if_fail (rfile != NULL, NULL);
+  assert_return (rfile != NULL, NULL);
 
   errno = 0;
   return rfile->hfile->file_name;
@@ -341,7 +341,7 @@ gsl_rfile_seek_set (GslRFile *rfile,
   GslLong l;
 
   errno = EFAULT;
-  g_return_val_if_fail (rfile != NULL, 0);
+  assert_return (rfile != NULL, 0);
 
   l = rfile->hfile->n_bytes;
   rfile->offset = CLAMP (offset, 0, l);
@@ -360,7 +360,7 @@ GslLong
 gsl_rfile_position (GslRFile *rfile)
 {
   errno = EFAULT;
-  g_return_val_if_fail (rfile != NULL, 0);
+  assert_return (rfile != NULL, 0);
 
   errno = 0;
   return rfile->offset;
@@ -378,7 +378,7 @@ gsl_rfile_length (GslRFile *rfile)
   GslLong l;
 
   errno = EFAULT;
-  g_return_val_if_fail (rfile != NULL, 0);
+  assert_return (rfile != NULL, 0);
 
   l = rfile->hfile->n_bytes;
 
@@ -402,7 +402,7 @@ gsl_rfile_pread (GslRFile *rfile,
 		 gpointer  bytes)
 {
   errno = EFAULT;
-  g_return_val_if_fail (rfile != NULL, -1);
+  assert_return (rfile != NULL, -1);
 
   return gsl_hfile_pread (rfile->hfile, offset, n_bytes, bytes);
 }
@@ -424,7 +424,7 @@ gsl_rfile_read (GslRFile *rfile,
   GslLong l;
 
   errno = EFAULT;
-  g_return_val_if_fail (rfile != NULL, -1);
+  assert_return (rfile != NULL, -1);
 
   l = gsl_hfile_pread (rfile->hfile, rfile->offset, n_bytes, bytes);
   if (l > 0)
@@ -441,7 +441,7 @@ void
 gsl_rfile_close (GslRFile *rfile)
 {
   errno = EFAULT;
-  g_return_if_fail (rfile != NULL);
+  assert_return (rfile != NULL);
 
   gsl_hfile_close (rfile->hfile);
   sfi_delete_struct (GslRFile, rfile);

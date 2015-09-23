@@ -182,7 +182,7 @@ g_object_set_double (gpointer     object,
 {
   gdouble zero = 0;
 
-  g_return_if_fail (G_IS_OBJECT (object));
+  assert_return (G_IS_OBJECT (object));
 
   if (memcmp (&v_double, &zero, sizeof (zero)) == 0)
     g_object_set_data ((GObject*) object, name, NULL);
@@ -206,7 +206,7 @@ gdouble
 g_object_get_double (gpointer     object,
 		     const gchar *name)
 {
-  g_return_val_if_fail (G_IS_OBJECT (object), 0);
+  assert_return (G_IS_OBJECT (object), 0);
 
   double *dp = (double*) g_object_get_data ((GObject*) object, name);
   return dp ? *dp : 0;
@@ -225,7 +225,7 @@ g_object_set_long (gpointer     object,
 		   const gchar *name,
 		   glong        v_long)
 {
-  g_return_if_fail (G_IS_OBJECT (object));
+  assert_return (G_IS_OBJECT (object));
 
   g_object_set_data ((GObject*) object, name, (gpointer) v_long);
 }
@@ -242,7 +242,7 @@ glong
 g_object_get_long (gpointer     object,
 		   const gchar *name)
 {
-  g_return_val_if_fail (G_IS_OBJECT (object), 0);
+  assert_return (G_IS_OBJECT (object), 0);
 
   return (glong) g_object_get_data ((GObject*) object, name);
 }
@@ -328,7 +328,7 @@ gxk_factory_path_unescape_uline (const gchar *path)
 gboolean
 gxk_widget_viewable (GtkWidget *widget)
 {
-  g_return_val_if_fail (GTK_IS_WIDGET (widget), FALSE);
+  assert_return (GTK_IS_WIDGET (widget), FALSE);
 
   while (widget)
     {
@@ -355,7 +355,7 @@ gxk_widget_viewable (GtkWidget *widget)
 void
 gxk_widget_viewable_changed (GtkWidget *widget)
 {
-  g_return_if_fail (GTK_IS_WIDGET (widget));
+  assert_return (GTK_IS_WIDGET (widget));
 
   g_signal_emit (widget, signal_viewable_changed, 0);
 }
@@ -384,7 +384,7 @@ gxk_traverse_viewable_changed (GtkWidget *widget,
 void
 gxk_widget_attached_hierarchy_changed (GtkWidget *widget)
 {
-  g_return_if_fail (GTK_IS_WIDGET (widget));
+  assert_return (GTK_IS_WIDGET (widget));
 
   g_signal_emit (widget, signal_attached_hierarchy_changed, 0);
 }
@@ -441,7 +441,7 @@ void
 gxk_window_set_cursor_type (GdkWindow    *window,
 			    GdkCursorType cursor)
 {
-  g_return_if_fail (GDK_IS_WINDOW (window));
+  assert_return (GDK_IS_WINDOW (window));
 
   if (cursor >= GDK_LAST_CURSOR || cursor < 0)
     gdk_window_set_cursor (window, NULL);
@@ -489,7 +489,7 @@ void
 gxk_window_process_next (GdkWindow *window,
 			 gboolean   update_children)
 {
-  g_return_if_fail (GDK_IS_WINDOW (window));
+  assert_return (GDK_IS_WINDOW (window));
 
   if (update_children)
     cexpose_windows = g_slist_append_uniq (cexpose_windows, window);
@@ -616,7 +616,7 @@ GxkColorDots*
 gxk_color_dots_new (guint              n_dots,
                     const GxkColorDot *dots)
 {
-  g_return_val_if_fail (n_dots >= 2, NULL);
+  assert_return (n_dots >= 2, NULL);
   GxkColorDots *cdots = g_new0 (GxkColorDots, 1);
   guint sizeof_color_dot = sizeof (GxkColorDot);
   cdots->n_colors = n_dots;
@@ -630,7 +630,7 @@ gxk_color_dots_interpolate (GxkColorDots   *cdots,
                             double          value,
                             double          saturation)
 {
-  g_return_val_if_fail (cdots != NULL, 0);
+  assert_return (cdots != NULL, 0);
   /* find segment via bisection */
   guint offset = 0, n = cdots->n_colors;
   while (offset + 1 < n)
@@ -641,7 +641,7 @@ gxk_color_dots_interpolate (GxkColorDots   *cdots,
       else
         offset = i;
     }
-  g_assert (offset == 0 || value >= cdots->colors[offset].value);
+  assert (offset == 0 || value >= cdots->colors[offset].value);
   if (value >= cdots->colors[offset].value && offset + 1 < cdots->n_colors)
     {   /* linear interpolation */
       guint c1 = cdots->colors[offset].rgb;
@@ -668,7 +668,7 @@ gxk_color_dots_interpolate (GxkColorDots   *cdots,
 void
 gxk_color_dots_destroy (GxkColorDots *cdots)
 {
-  g_return_if_fail (cdots != NULL);
+  assert_return (cdots != NULL);
   g_free (cdots->colors);
   g_free (cdots);
 }
@@ -684,7 +684,7 @@ gxk_color_dots_destroy (GxkColorDots *cdots)
 void
 gxk_widget_make_insensitive (GtkWidget *widget)
 {
-  g_return_if_fail (GTK_IS_WIDGET (widget));
+  assert_return (GTK_IS_WIDGET (widget));
 
   if (GTK_WIDGET_IS_SENSITIVE (widget))
     gtk_widget_set_sensitive (widget, FALSE);
@@ -699,7 +699,7 @@ gxk_widget_make_insensitive (GtkWidget *widget)
 void
 gxk_widget_make_sensitive (GtkWidget *widget)
 {
-  g_return_if_fail (GTK_IS_WIDGET (widget));
+  assert_return (GTK_IS_WIDGET (widget));
 
   if (!GTK_WIDGET_IS_SENSITIVE (widget))
     gtk_widget_set_sensitive (widget, TRUE);
@@ -738,7 +738,7 @@ gxk_idle_showraise (GtkWidget *widget)
 {
   GtkWidget **widget_p;
 
-  g_return_if_fail (GTK_IS_WIDGET (widget));
+  assert_return (GTK_IS_WIDGET (widget));
 
   widget_p = g_new (GtkWidget*, 1);
 
@@ -781,7 +781,7 @@ gxk_idle_show_widget (GtkWidget *widget)
 {
   GtkWidget **widget_p;
 
-  g_return_if_fail (GTK_IS_WIDGET (widget));
+  assert_return (GTK_IS_WIDGET (widget));
 
   widget_p = g_new (GtkWidget*, 1);
 
@@ -827,7 +827,7 @@ gxk_idle_unrealize_widget (GtkWidget *widget)
 {
   GtkWidget **widget_p;
 
-  g_return_if_fail (GTK_IS_WINDOW (widget));
+  assert_return (GTK_IS_WINDOW (widget));
 
   widget_p = g_new (GtkWidget*, 1);
 
@@ -1006,7 +1006,7 @@ GtkWidget*
 gtk_box_get_nth_child (GtkBox *box,
                        gint    pos)
 {
-  g_return_val_if_fail (GTK_IS_BOX (box), NULL);
+  assert_return (GTK_IS_BOX (box), NULL);
 
   GList *child = box->children;
 
@@ -1027,7 +1027,7 @@ gtk_box_get_nth_child (GtkBox *box,
 void
 gxk_widget_showraise (GtkWidget *widget)
 {
-  g_return_if_fail (GTK_IS_WIDGET (widget));
+  assert_return (GTK_IS_WIDGET (widget));
 
   gtk_widget_show (widget);
   if (GTK_WIDGET_REALIZED (widget) && !widget->parent)
@@ -1065,7 +1065,7 @@ async_delete_event_handler (gpointer data)
 void
 gxk_toplevel_delete (GtkWidget *widget)
 {
-  g_return_if_fail (GTK_IS_WIDGET (widget));
+  assert_return (GTK_IS_WIDGET (widget));
 
   widget = gtk_widget_get_toplevel (widget);
   if (GTK_IS_WINDOW (widget) && GTK_WIDGET_DRAWABLE (widget))
@@ -1080,7 +1080,7 @@ gxk_toplevel_delete (GtkWidget *widget)
 void
 gxk_toplevel_activate_default (GtkWidget *widget)
 {
-  g_return_if_fail (GTK_IS_WIDGET (widget));
+  assert_return (GTK_IS_WIDGET (widget));
 
   widget = gtk_widget_get_toplevel (widget);
   if (GTK_IS_WINDOW (widget))
@@ -1095,7 +1095,7 @@ gxk_toplevel_activate_default (GtkWidget *widget)
 void
 gxk_toplevel_hide (GtkWidget *widget)
 {
-  g_return_if_fail (GTK_IS_WIDGET (widget));
+  assert_return (GTK_IS_WIDGET (widget));
 
   widget = gtk_widget_get_toplevel (widget);
   gtk_widget_hide (widget);
@@ -1212,7 +1212,7 @@ widget_modify_style (GtkWidget *widget)
 void
 gxk_widget_modify_as_title (GtkWidget *widget)
 {
-  g_return_if_fail (GTK_IS_WIDGET (widget));
+  assert_return (GTK_IS_WIDGET (widget));
 
   if (!gxk_signal_handler_exists (widget, "realize", G_CALLBACK (widget_modify_style), NULL))
     {
@@ -1237,7 +1237,7 @@ gxk_widget_modify_as_title (GtkWidget *widget)
 void
 gxk_widget_modify_bg_as_base (GtkWidget *widget)
 {
-  g_return_if_fail (GTK_IS_WIDGET (widget));
+  assert_return (GTK_IS_WIDGET (widget));
 
   if (!gxk_signal_handler_exists (widget, "realize", G_CALLBACK (widget_modify_style), NULL))
     {
@@ -1257,7 +1257,7 @@ gxk_widget_modify_bg_as_base (GtkWidget *widget)
 void
 gxk_widget_modify_normal_bg_as_base (GtkWidget *widget)
 {
-  g_return_if_fail (GTK_IS_WIDGET (widget));
+  assert_return (GTK_IS_WIDGET (widget));
 
   if (!gxk_signal_handler_exists (widget, "realize", G_CALLBACK (widget_modify_style), NULL))
     {
@@ -1280,7 +1280,7 @@ gxk_widget_modify_normal_bg_as_base (GtkWidget *widget)
 void
 gxk_widget_modify_base_as_bg (GtkWidget *widget)
 {
-  g_return_if_fail (GTK_IS_WIDGET (widget));
+  assert_return (GTK_IS_WIDGET (widget));
 
   if (!gxk_signal_handler_exists (widget, "realize", G_CALLBACK (widget_modify_style), NULL))
     {
@@ -1300,7 +1300,7 @@ gxk_widget_modify_base_as_bg (GtkWidget *widget)
 void
 gxk_widget_modify_bg_as_active (GtkWidget *widget)
 {
-  g_return_if_fail (GTK_IS_WIDGET (widget));
+  assert_return (GTK_IS_WIDGET (widget));
 
   if (!gxk_signal_handler_exists (widget, "realize", G_CALLBACK (widget_modify_style), NULL))
     {
@@ -1333,7 +1333,7 @@ expose_bg_clear (GtkWidget      *widget,
 void
 gxk_widget_force_bg_clear (GtkWidget *widget)
 {
-  g_return_if_fail (GTK_IS_WIDGET (widget));
+  assert_return (GTK_IS_WIDGET (widget));
 
   gtk_widget_set_redraw_on_allocate (widget, TRUE);
   if (!gxk_signal_handler_exists (widget, "expose_event", G_CALLBACK (expose_bg_clear), NULL))
@@ -1352,7 +1352,7 @@ void
 gxk_widget_set_tooltip (gpointer     widget,
                         const gchar *tooltip)
 {
-  g_return_if_fail (GTK_IS_WIDGET (widget));
+  assert_return (GTK_IS_WIDGET (widget));
   gxk_widget_set_latent_tooltip ((GtkWidget*) widget, tooltip);
   gtk_tooltips_set_tip (GXK_TOOLTIPS, (GtkWidget*) widget, tooltip, NULL);
 }
@@ -1426,11 +1426,11 @@ void
 gxk_widget_activate_accel_group (GtkWidget     *widget,
 				 GtkAccelGroup *accel_group)
 {
-  g_return_if_fail (GTK_IS_WIDGET (widget));
+  assert_return (GTK_IS_WIDGET (widget));
 
   if (accel_group)
     {
-      g_return_if_fail (GTK_IS_ACCEL_GROUP (accel_group));
+      assert_return (GTK_IS_ACCEL_GROUP (accel_group));
 
       gtk_accel_group_lock (accel_group);
       g_signal_connect_data (widget, "key_press_event",
@@ -1557,10 +1557,10 @@ gxk_tree_view_add_column (GtkTreeView       *tree_view,
   guint n_cols;
   va_list var_args;
 
-  g_return_val_if_fail (GTK_IS_TREE_VIEW (tree_view), 0);
-  g_return_val_if_fail (GTK_IS_TREE_VIEW_COLUMN (column), 0);
-  g_return_val_if_fail (column->tree_view == NULL, 0);
-  g_return_val_if_fail (GTK_IS_CELL_RENDERER (cell), 0);
+  assert_return (GTK_IS_TREE_VIEW (tree_view), 0);
+  assert_return (GTK_IS_TREE_VIEW_COLUMN (column), 0);
+  assert_return (column->tree_view == NULL, 0);
+  assert_return (GTK_IS_CELL_RENDERER (cell), 0);
 
   g_object_ref (column);
   g_object_ref (cell);
@@ -1624,7 +1624,7 @@ gxk_tree_view_append_text_columns (GtkTreeView *tree_view,
 {
   va_list var_args;
 
-  g_return_if_fail (GTK_IS_TREE_VIEW (tree_view));
+  assert_return (GTK_IS_TREE_VIEW (tree_view));
 
   va_start (var_args, n_cols);
   while (n_cols--)
@@ -1799,7 +1799,7 @@ gxk_tree_view_add_text_column (GtkTreeView  *tree_view,
                                gpointer      data,
                                GConnectFlags cflags)
 {
-  g_return_val_if_fail (GTK_IS_TREE_VIEW (tree_view), NULL);
+  assert_return (GTK_IS_TREE_VIEW (tree_view), NULL);
 
   return tree_view_add_column (tree_view, model_column, xalign, title, tooltip,
                                edited_callback, NULL, data, cflags,
@@ -1836,7 +1836,7 @@ gxk_tree_view_add_popup_column (GtkTreeView  *tree_view,
 				gpointer      data,
 				GConnectFlags cflags)
 {
-  g_return_val_if_fail (GTK_IS_TREE_VIEW (tree_view), NULL);
+  assert_return (GTK_IS_TREE_VIEW (tree_view), NULL);
 
   return tree_view_add_column (tree_view, model_column, xalign, title, tooltip,
 			       edited_callback, popup_callback, data, cflags,
@@ -1874,7 +1874,7 @@ gxk_tree_view_add_toggle_column (GtkTreeView  *tree_view,
 				 gpointer      data,
 				 GConnectFlags cflags)
 {
-  g_return_val_if_fail (GTK_IS_TREE_VIEW (tree_view), NULL);
+  assert_return (GTK_IS_TREE_VIEW (tree_view), NULL);
 
   return tree_view_add_column (tree_view, model_column, xalign, title, tooltip,
 			       toggled_callback, NULL, data, cflags,
@@ -1942,7 +1942,7 @@ gxk_tree_view_column_set_tip_title (GtkTreeViewColumn   *tree_column,
 {
   GtkWidget *label;
 
-  g_return_if_fail (GTK_IS_TREE_VIEW_COLUMN (tree_column));
+  assert_return (GTK_IS_TREE_VIEW_COLUMN (tree_column));
 
   gtk_tree_view_column_set_title (tree_column, title);
   label = (GtkWidget*) g_object_new (GTK_TYPE_LABEL,
@@ -1968,8 +1968,8 @@ gxk_tree_selection_select_spath (GtkTreeSelection *selection,
 {
   GtkTreePath *path;
 
-  g_return_if_fail (GTK_IS_TREE_SELECTION (selection));
-  g_return_if_fail (str_path != NULL);
+  assert_return (GTK_IS_TREE_SELECTION (selection));
+  assert_return (str_path != NULL);
 
   path = gtk_tree_path_new_from_string (str_path);
   gtk_tree_selection_select_path (selection, path);
@@ -1988,8 +1988,8 @@ gxk_tree_selection_unselect_spath (GtkTreeSelection *selection,
 {
   GtkTreePath *path;
 
-  g_return_if_fail (GTK_IS_TREE_SELECTION (selection));
-  g_return_if_fail (str_path != NULL);
+  assert_return (GTK_IS_TREE_SELECTION (selection));
+  assert_return (str_path != NULL);
 
   path = gtk_tree_path_new_from_string (str_path);
   gtk_tree_selection_unselect_path (selection, path);
@@ -2012,7 +2012,7 @@ gxk_tree_selection_select_ipath (GtkTreeSelection *selection,
   va_list args;
   gint i;
 
-  g_return_if_fail (GTK_IS_TREE_SELECTION (selection));
+  assert_return (GTK_IS_TREE_SELECTION (selection));
 
   path = gtk_tree_path_new ();
   i = first_index;
@@ -2043,7 +2043,7 @@ gxk_tree_selection_unselect_ipath (GtkTreeSelection *selection,
   va_list args;
   gint i;
 
-  g_return_if_fail (GTK_IS_TREE_SELECTION (selection));
+  assert_return (GTK_IS_TREE_SELECTION (selection));
 
   path = gtk_tree_path_new ();
   i = first_index;
@@ -2064,7 +2064,7 @@ gxk_tree_view_select_index (GtkTreeView           *tview,
 {
   GtkTreeSelection *tsel;
   GtkTreePath *path;
-  g_return_if_fail (GTK_IS_TREE_VIEW (tview));
+  assert_return (GTK_IS_TREE_VIEW (tview));
   tsel = gtk_tree_view_get_selection (tview);
   path = gtk_tree_path_new ();
   gtk_tree_path_append_index (path, index);
@@ -2198,9 +2198,9 @@ void
 gxk_tree_selection_force_browse (GtkTreeSelection *selection,
 				 GtkTreeModel     *model)
 {
-  g_return_if_fail (GTK_IS_TREE_SELECTION (selection));
+  assert_return (GTK_IS_TREE_SELECTION (selection));
   if (model)
-    g_return_if_fail (GTK_IS_TREE_MODEL (model));
+    assert_return (GTK_IS_TREE_MODEL (model));
   if (!gxk_signal_handler_exists (selection, "changed", G_CALLBACK (browse_selection_changed), selection))
     g_signal_connect_data (selection, "changed", G_CALLBACK (browse_selection_changed), selection, NULL, GConnectFlags (0));
   if (model && !gxk_signal_handler_exists (model, "row-inserted", G_CALLBACK (browse_selection_changed), selection))
@@ -2224,7 +2224,7 @@ gxk_tree_view_get_bin_window_pos (GtkTreeView *tree,
   GdkWindow *window;
   gint ax = 0, ay = 0;
 
-  g_return_if_fail (GTK_IS_TREE_VIEW (tree));
+  assert_return (GTK_IS_TREE_VIEW (tree));
 
   window = gtk_tree_view_get_bin_window (tree);
   if (window)
@@ -2265,7 +2265,7 @@ gxk_tree_view_get_row_area (GtkTreeView *tree,
 {
   GdkRectangle rect = { 0, 0, 0, 0 };
 
-  g_return_val_if_fail (GTK_IS_TREE_VIEW (tree), FALSE);
+  assert_return (GTK_IS_TREE_VIEW (tree), FALSE);
 
   if (row >= 0)
     {
@@ -2305,7 +2305,7 @@ gxk_tree_view_focus_row (GtkTreeView *tree,
 {
   GtkTreePath *path;
 
-  g_return_if_fail (GTK_IS_TREE_VIEW (tree));
+  assert_return (GTK_IS_TREE_VIEW (tree));
 
   path = gtk_tree_path_new ();
   gtk_tree_path_append_index (path, row);
@@ -2324,7 +2324,7 @@ gboolean
 gxk_tree_view_is_row_selected (GtkTreeView *tree,
 			       gint         row)
 {
-  g_return_val_if_fail (GTK_IS_TREE_VIEW (tree), FALSE);
+  assert_return (GTK_IS_TREE_VIEW (tree), FALSE);
 
   if (row >= 0)
     {
@@ -2353,7 +2353,7 @@ gxk_tree_view_get_selected_row (GtkTreeView *tree)
   GtkTreeIter iter;
   gint row = -1;
 
-  g_return_val_if_fail (GTK_IS_TREE_VIEW (tree), -1);
+  assert_return (GTK_IS_TREE_VIEW (tree), -1);
 
   if (gtk_tree_selection_get_selected (gtk_tree_view_get_selection (tree),
 				       &model, &iter))
@@ -2384,7 +2384,7 @@ gxk_tree_view_get_row_from_coord (GtkTreeView *tree,
   GtkTreePath *path = NULL;
   gint row = -1, outside = FALSE;
 
-  g_return_val_if_fail (GTK_IS_TREE_VIEW (tree), FALSE);
+  assert_return (GTK_IS_TREE_VIEW (tree), FALSE);
 
   if (!gtk_tree_view_get_path_at_pos (tree, GTK_WIDGET (tree)->allocation.width / 2,
 				      y, &path, NULL, NULL, NULL))
@@ -2454,9 +2454,9 @@ gxk_signal_handler_exists (gpointer     instance,
   guint signal_id;
   GQuark detail = 0;
 
-  g_return_val_if_fail (G_TYPE_CHECK_INSTANCE (instance), FALSE);
-  g_return_val_if_fail (detailed_signal != NULL, FALSE);
-  g_return_val_if_fail (callback != NULL, FALSE);
+  assert_return (G_TYPE_CHECK_INSTANCE (instance), FALSE);
+  assert_return (detailed_signal != NULL, FALSE);
+  assert_return (callback != NULL, FALSE);
 
   if (detailed_signal && g_signal_parse_name (detailed_signal, G_TYPE_FROM_INSTANCE (instance),
 					      &signal_id, &detail, FALSE))
@@ -2499,9 +2499,9 @@ gxk_signal_handler_pending (gpointer     instance,
   guint signal_id;
   GQuark detail = 0;
 
-  g_return_val_if_fail (G_TYPE_CHECK_INSTANCE (instance), FALSE);
-  g_return_val_if_fail (detailed_signal != NULL, FALSE);
-  g_return_val_if_fail (callback != NULL, FALSE);
+  assert_return (G_TYPE_CHECK_INSTANCE (instance), FALSE);
+  assert_return (detailed_signal != NULL, FALSE);
+  assert_return (callback != NULL, FALSE);
 
   if (detailed_signal && g_signal_parse_name (detailed_signal, G_TYPE_FROM_INSTANCE (instance),
 					      &signal_id, &detail, FALSE))
@@ -2533,7 +2533,7 @@ gxk_signal_handler_pending (gpointer     instance,
 gboolean
 gxk_cell_editable_canceled (GtkCellEditable *ecell)
 {
-  g_return_val_if_fail (GTK_IS_CELL_EDITABLE (ecell), FALSE);
+  assert_return (GTK_IS_CELL_EDITABLE (ecell), FALSE);
 
   if (GTK_IS_ENTRY (ecell))
     return GTK_ENTRY (ecell)->editing_canceled;
@@ -2551,7 +2551,7 @@ gxk_cell_editable_canceled (GtkCellEditable *ecell)
 void
 gxk_cell_editable_is_focus_handler (GtkCellEditable *ecell)
 {
-  g_return_if_fail (GTK_IS_CELL_EDITABLE (ecell));
+  assert_return (GTK_IS_CELL_EDITABLE (ecell));
 
   if (!gtk_widget_is_focus (GTK_WIDGET (ecell)))
     {
@@ -2715,7 +2715,7 @@ gxk_widget_proxy_requisition (GtkWidget *widget,
                               gdouble    xscale,
                               gdouble    yscale)
 {
-  g_return_if_fail (GTK_IS_WIDGET (widget));
+  assert_return (GTK_IS_WIDGET (widget));
 
   g_signal_handlers_disconnect_by_func (widget, (void*) requisition_to_aux_info, NULL);
   double xyscale[2] = { xscale, yscale };
@@ -2874,8 +2874,8 @@ gxk_widget_has_ancestor (gpointer widget,
                          gpointer ancestor)
 {
   GtkWidget *w = (GtkWidget*) widget, *a = (GtkWidget*) ancestor;
-  g_return_val_if_fail (GTK_IS_WIDGET (widget), FALSE);
-  g_return_val_if_fail (GTK_IS_WIDGET (ancestor), FALSE);
+  assert_return (GTK_IS_WIDGET (widget), FALSE);
+  assert_return (GTK_IS_WIDGET (ancestor), FALSE);
 
   while (w)
     {
@@ -2900,8 +2900,8 @@ void
 gxk_menu_set_active (GtkMenu         *menu,
                      GtkWidget       *child)
 {
-  g_return_if_fail (GTK_IS_MENU (menu));
-  g_return_if_fail (GTK_IS_WIDGET (child));
+  assert_return (GTK_IS_MENU (menu));
+  assert_return (GTK_IS_WIDGET (child));
 
   gint nth = g_list_index (GTK_MENU_SHELL (menu)->children, child);
   if (nth >= 0 && child != menu->old_active_menu_item)
@@ -2938,7 +2938,7 @@ gxk_widget_regulate (GtkWidget      *widget,
                      gboolean        sensitive,
                      gboolean        active)
 {
-  g_return_if_fail (GTK_IS_WIDGET (widget));
+  assert_return (GTK_IS_WIDGET (widget));
   if (((GObject*) widget)->ref_count > 0)
     {
       GParamSpec *pspec = g_object_class_find_property (G_OBJECT_GET_CLASS (widget), "active");
@@ -3063,7 +3063,7 @@ adjust_visibility (GtkWidget  *expander,
                    GtkWidget  *widget)
 {
   gboolean expanded;
-  g_return_if_fail (G_IS_PARAM_SPEC_BOOLEAN (pspec));
+  assert_return (G_IS_PARAM_SPEC_BOOLEAN (pspec));
   g_object_get (expander, "expanded", &expanded, NULL);
   if (expanded)
     gtk_widget_show (widget);
@@ -3111,7 +3111,7 @@ gxk_label_set_attributes (GtkLabel *label,
   /* this function is based on gimp_label_set_attributes(), which is
    * Copyright (C) 2000 Michael Natterer <mitch@gimp.org>
    */
-  g_return_if_fail (GTK_IS_LABEL (label));
+  assert_return (GTK_IS_LABEL (label));
 
   va_list         args;
   va_start (args, label);
@@ -3363,8 +3363,8 @@ void
 gxk_menu_attach_as_submenu (GtkMenu     *menu,
                             GtkMenuItem *menu_item)
 {
-  g_return_if_fail (GTK_IS_MENU (menu));
-  g_return_if_fail (GTK_IS_MENU_ITEM (menu_item));
+  assert_return (GTK_IS_MENU (menu));
+  assert_return (GTK_IS_MENU_ITEM (menu_item));
 
   gtk_menu_item_set_submenu (menu_item, GTK_WIDGET (menu));
 
@@ -3395,8 +3395,8 @@ void
 gxk_option_menu_set_menu (GtkOptionMenu *option_menu,
                           GtkMenu       *menu)
 {
-  g_return_if_fail (GTK_IS_OPTION_MENU (option_menu));
-  g_return_if_fail (GTK_IS_MENU (menu));
+  assert_return (GTK_IS_OPTION_MENU (option_menu));
+  assert_return (GTK_IS_MENU (menu));
 
   gtk_option_menu_set_menu (option_menu, GTK_WIDGET (menu));
 
@@ -3443,8 +3443,8 @@ gxk_menu_attach_as_popup_with_func (GtkMenu          *menu,
                                     GtkWidget        *widget,
                                     GtkMenuDetachFunc mdfunc)
 {
-  g_return_if_fail (GTK_IS_MENU (menu));
-  g_return_if_fail (GTK_IS_WIDGET (widget));
+  assert_return (GTK_IS_MENU (menu));
+  assert_return (GTK_IS_WIDGET (widget));
 
   GList *menu_list = (GList*) g_object_steal_data ((GObject*) widget, "GxkWidget-popup-menus");
   menu_list = g_list_prepend (menu_list, menu);
@@ -3572,7 +3572,7 @@ gxk_menu_popup (GtkMenu *menu,
                 guint    mouse_button,
                 guint32  time)
 {
-  g_return_if_fail (GTK_IS_MENU (menu));
+  assert_return (GTK_IS_MENU (menu));
   PopupData *pdata = g_new0 (PopupData, 1);
   pdata->x = x;
   pdata->y = y;
@@ -3588,7 +3588,7 @@ gxk_menu_popup_pushable (GtkMenu         *menu,
                          guint            mouse_button,
                          guint32          time)
 {
-  g_return_if_fail (GTK_IS_MENU (menu));
+  assert_return (GTK_IS_MENU (menu));
   PopupData *pdata = g_new0 (PopupData, 1);
   pdata->x = x;
   pdata->y = y;
@@ -3605,7 +3605,7 @@ gxk_menu_popup_pushed_in (GtkMenu         *menu,
                           guint            mouse_button,
                           guint32          time)
 {
-  g_return_if_fail (GTK_IS_MENU (menu));
+  assert_return (GTK_IS_MENU (menu));
   PopupData *pdata = g_new0 (PopupData, 1);
   pdata->pushed_x = pushed_x;
   pdata->pushed_y = pushed_y;
@@ -3670,8 +3670,8 @@ GtkWidget*
 gxk_widget_find_level_ordered (GtkWidget   *toplevel,
                                const gchar *name)
 {
-  g_return_val_if_fail (GTK_IS_WIDGET (toplevel), NULL);
-  g_return_val_if_fail (name != NULL, NULL);
+  assert_return (GTK_IS_WIDGET (toplevel), NULL);
+  assert_return (name != NULL, NULL);
 
   return widget_find_level_ordered (toplevel, name);
 }
@@ -3753,7 +3753,7 @@ gxk_widget_add_font_requisition (GtkWidget       *widget,
 const gchar*
 gxk_widget_get_options (gpointer widget)
 {
-  g_return_val_if_fail (GTK_IS_WIDGET (widget), NULL);
+  assert_return (GTK_IS_WIDGET (widget), NULL);
   return (const char*) g_object_get_data ((GObject*) widget, "GxkWidget-options");
 }
 
@@ -3775,9 +3775,9 @@ gxk_widget_add_option (gpointer         widget,
 {
   const gchar *options;
   guint append = 0;
-  g_return_if_fail (GTK_IS_WIDGET (widget));
-  g_return_if_fail (option != NULL && !strchr (option, ':'));
-  g_return_if_fail (value == NULL || !strcmp (value, "-") || !strcmp (value, "+"));
+  assert_return (GTK_IS_WIDGET (widget));
+  assert_return (option != NULL && !strchr (option, ':'));
+  assert_return (value == NULL || !strcmp (value, "-") || !strcmp (value, "+"));
   options = (const char*) g_object_get_data ((GObject*) widget, "GxkWidget-options");
   if (!options)
     options = "";
@@ -3811,7 +3811,7 @@ gxk_widget_check_option (gpointer         widget,
                          const gchar     *option)
 {
   const gchar *options;
-  g_return_val_if_fail (GTK_IS_WIDGET (widget), FALSE);
+  assert_return (GTK_IS_WIDGET (widget), FALSE);
   options = (const char*) g_object_get_data ((GObject*) widget, "GxkWidget-options");
   return g_option_check (options, option);
 }
@@ -3823,7 +3823,7 @@ gxk_file_selection_split (GtkFileSelection *fs,
   GtkWidget *main_vbox;
   GtkWidget *hbox;
 
-  g_return_val_if_fail (GTK_IS_FILE_SELECTION (fs), NULL);
+  assert_return (GTK_IS_FILE_SELECTION (fs), NULL);
 
   /* nuke GUI junk */
   gtk_file_selection_hide_fileop_buttons (fs);

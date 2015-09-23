@@ -65,8 +65,8 @@ bse_midi_signal_name (Bse::MidiSignalType signal)
 void
 bse_midi_free_event (BseMidiEvent *event)
 {
-  g_return_if_fail (event != NULL);
-  g_return_if_fail (event->status != 0);
+  assert_return (event != NULL);
+  assert_return (event->status != 0);
 
   switch (event->status)
     {
@@ -103,7 +103,7 @@ bse_midi_copy_event (const BseMidiEvent *src)
 {
   BseMidiEvent *event;
 
-  g_return_val_if_fail (src != NULL, NULL);
+  assert_return (src != NULL, NULL);
 
   event = bse_midi_alloc_event ();
   *event = *src;
@@ -126,9 +126,9 @@ bse_midi_event_note_on (uint   midi_channel,
 {
   BseMidiEvent *event;
 
-  g_return_val_if_fail (frequency > 0 && frequency < BSE_MAX_FREQUENCY, NULL);
-  g_return_val_if_fail (velocity >= 0 && velocity <= 1, NULL);
-  g_return_val_if_fail (midi_channel > 0, NULL);
+  assert_return (frequency > 0 && frequency < BSE_MAX_FREQUENCY, NULL);
+  assert_return (velocity >= 0 && velocity <= 1, NULL);
+  assert_return (midi_channel > 0, NULL);
 
   event = bse_midi_alloc_event ();
   event->status = BSE_MIDI_NOTE_ON;
@@ -147,8 +147,8 @@ bse_midi_event_note_off (uint   midi_channel,
 {
   BseMidiEvent *event;
 
-  g_return_val_if_fail (frequency > 0 && frequency < BSE_MAX_FREQUENCY, NULL);
-  g_return_val_if_fail (midi_channel > 0, NULL);
+  assert_return (frequency > 0 && frequency < BSE_MAX_FREQUENCY, NULL);
+  assert_return (midi_channel > 0, NULL);
 
   event = bse_midi_alloc_event ();
   event->status = BSE_MIDI_NOTE_OFF;
@@ -168,8 +168,8 @@ bse_midi_event_signal (uint              midi_channel,
 {
   BseMidiEvent *event;
 
-  g_return_val_if_fail (value >= -1 && value <= +1, NULL);
-  g_return_val_if_fail (midi_channel > 0, NULL);
+  assert_return (value >= -1 && value <= +1, NULL);
+  assert_return (midi_channel > 0, NULL);
 
   event = bse_midi_alloc_event ();
   switch (signal_type)

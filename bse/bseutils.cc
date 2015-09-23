@@ -234,7 +234,7 @@ bse_ic0n_from_pixdata (const BsePixdata *pixdata)
   BseIc0n *icon;
   guint bpp, encoding;
 
-  g_return_val_if_fail (pixdata != NULL, NULL);
+  assert_return (pixdata != NULL, NULL);
 
   if (pixdata->width < 1 || pixdata->width > 128 ||
       pixdata->height < 1 || pixdata->height > 128)
@@ -325,7 +325,7 @@ bse_ic0n_from_pixstream (const guint8 *pixstream)
   BsePixdata pixd;
   const guint8 *s = pixstream;
   guint len, type, rowstride, width, height;
-  g_return_val_if_fail (pixstream != NULL, NULL);
+  assert_return (pixstream != NULL, NULL);
   if (strncmp ((const char*) s, "GdkP", 4) != 0)
     return NULL;
   s += 4;
@@ -359,7 +359,7 @@ static gulong *free_id_buffer = NULL;
 void
 bse_id_free (gulong id)
 {
-  g_return_if_fail (id > 0);
+  assert_return (id > 0);
 
   /* release oldest withheld id */
   if (n_buffer_ids >= ID_WITHHOLD_BUFFER_SIZE)
@@ -409,7 +409,7 @@ bse_xinfos_add_value (gchar          **xinfos,
                       const gchar     *key,
                       const gchar     *value)
 {
-  g_return_val_if_fail (key != NULL && strchr (key, '=') == NULL, xinfos);
+  assert_return (key != NULL && strchr (key, '=') == NULL, xinfos);
   if (!value || !value[0])
     return bse_xinfos_del_value (xinfos, key);
   else
@@ -444,7 +444,7 @@ gchar**
 bse_xinfos_parse_assignment (gchar          **xinfos,
                              const gchar     *assignment)
 {
-  g_return_val_if_fail (assignment != NULL, xinfos);
+  assert_return (assignment != NULL, xinfos);
   const gchar *e = strchr (assignment, '=');
   if (e && e > assignment)
     {
@@ -463,7 +463,7 @@ gchar**
 bse_xinfos_del_value (gchar       **xinfos,
                       const gchar  *key)
 {
-  g_return_val_if_fail (key != NULL && strchr (key, '=') == NULL, xinfos);
+  assert_return (key != NULL && strchr (key, '=') == NULL, xinfos);
   if (xinfos)
     {
       gchar *ckey = canonify_xinfo_key (key);
@@ -510,7 +510,7 @@ const gchar*
 bse_xinfos_get_value (gchar          **xinfos,
                       const gchar     *key)
 {
-  g_return_val_if_fail (key != NULL && strchr (key, '=') == NULL, NULL);
+  assert_return (key != NULL && strchr (key, '=') == NULL, NULL);
   if (xinfos)
     {
       guint i, l = strlen (key);

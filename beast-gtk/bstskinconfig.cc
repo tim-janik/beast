@@ -15,7 +15,7 @@ _bst_skin_config_init (void)
   GValue *value;
   SfiRec *rec;
 
-  g_return_if_fail (global_skin_config == NULL);
+  assert_return (global_skin_config == NULL);
 
   /* global config record description */
   Bst::SkinConfig skin_config;
@@ -127,7 +127,7 @@ bst_skin_config_apply (SfiRec *rec, const gchar *skin_file)
   SfiRec *vrec;
   Bst::SkinConfig skin_config;
 
-  g_return_if_fail (rec != NULL);
+  assert_return (rec != NULL);
 
   vrec = sfi_rec_copy_deep (rec);
   sfi_rec_validate (vrec, sfi_pspec_get_rec_fields (pspec_skin_config));
@@ -194,7 +194,7 @@ bst_skin_dump (const gchar *file_name)
   SfiRec *rec;
   gint fd;
 
-  g_return_val_if_fail (file_name != NULL, Bse::ERROR_INTERNAL);
+  assert_return (file_name != NULL, Bse::ERROR_INTERNAL);
 
   sfi_make_dirname_path (file_name);
   fd = open (file_name,
@@ -238,7 +238,7 @@ skin_file_try_statement (gpointer   context_data,
                          gpointer   user_data)
 {
   const char *absname = (const char*) user_data;
-  g_assert (scanner->next_token == G_TOKEN_IDENTIFIER);
+  assert (scanner->next_token == G_TOKEN_IDENTIFIER);
   if (strcmp (bst_skin_config_pspec()->name, scanner->next_value.v_identifier) == 0)
     {
       GValue *value = sfi_value_rec (NULL);
@@ -264,7 +264,7 @@ bst_skin_parse (const gchar *file_name)
   gchar *absname;
   gint fd;
 
-  g_return_val_if_fail (file_name != NULL, Bse::ERROR_INTERNAL);
+  assert_return (file_name != NULL, Bse::ERROR_INTERNAL);
 
   absname = sfi_path_get_filename (file_name, NULL);
   fd = open (absname, O_RDONLY, 0);

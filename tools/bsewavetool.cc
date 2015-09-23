@@ -367,7 +367,7 @@ public:
           key_string += 'a' + digit - 10 - 26;
         key_uint /= 62;
       }
-    g_assert (key_uint == 0);
+    assert (key_uint == 0);
 
     return key_string;
   }
@@ -1546,7 +1546,7 @@ public:
     int64 n_channels = gsl_data_handle_n_channels (dhandle);
     int64 n_frames = n_values / n_channels;
 
-    g_return_val_if_fail (n_values % n_channels == 0, n_frames);  /* a datahandle cannot contain half frames */
+    assert_return (n_values % n_channels == 0, n_frames);  /* a datahandle cannot contain half frames */
     return n_frames;
   }
   static double
@@ -1554,7 +1554,7 @@ public:
                       double         volume_adjustment)
   {
     const double min_db = -200;
-    g_return_val_if_fail (GSL_DATA_HANDLE_OPENED (dhandle), min_db);
+    assert_return (GSL_DATA_HANDLE_OPENED (dhandle), min_db);
 
     /* We do not take into account that a data handle can contain many separate
      * channels, so we're effectively averaging over all channels here.
@@ -2239,8 +2239,8 @@ public:
 	chunk_data.iterators.push_back (it);
       }
 
-    g_assert (chunk_data.sizes.size() > 0);
-    g_assert (chunk_data.sizes.size() == chunk_data.errors.size());
+    assert (chunk_data.sizes.size() > 0);
+    assert (chunk_data.sizes.size() == chunk_data.errors.size());
 
     ChunkSet chunk_set;
     init_empty_set (chunk_data, chunk_set);

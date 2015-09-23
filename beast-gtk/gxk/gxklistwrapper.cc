@@ -136,7 +136,7 @@ gxk_list_wrapper_set_property (GObject      *object,
     case PROP_COLUMN_TYPES:
       self->column_types = g_new0 (GType, self->n_cols);
       ctypes = (GType*) g_value_get_pointer (value);
-      g_return_if_fail (ctypes != NULL);
+      assert_return (ctypes != NULL);
       for (i = 0; i < self->n_cols; i++)
 	self->column_types[i] = ctypes[i];
       for (i = 0; i < self->n_cols; i++)
@@ -194,8 +194,8 @@ gxk_list_wrapper_newv (guint  n_cols,
 {
   GxkListWrapper *self;
 
-  g_return_val_if_fail (n_cols > 0, NULL);
-  g_return_val_if_fail (column_types != NULL, NULL);
+  assert_return (n_cols > 0, NULL);
+  assert_return (column_types != NULL, NULL);
 
   self = (GxkListWrapper*) g_object_new (GXK_TYPE_LIST_WRAPPER,
                                          "n_cols", n_cols,
@@ -215,7 +215,7 @@ gxk_list_wrapper_new (guint  n_cols,
   va_list var_args;
   guint i;
 
-  g_return_val_if_fail (n_cols > 0, NULL);
+  assert_return (n_cols > 0, NULL);
 
   ctypes = g_new (GType, n_cols);
 
@@ -254,7 +254,7 @@ gxk_list_wrapper_get_column_type (GtkTreeModel *tree_model,
 {
   GxkListWrapper *self = GXK_LIST_WRAPPER (tree_model);
 
-  g_return_val_if_fail (index >= 0 && index < int (self->n_cols), G_TYPE_INVALID);
+  assert_return (index >= 0 && index < int (self->n_cols), G_TYPE_INVALID);
 
   return self->column_types[index];
 }
@@ -267,7 +267,7 @@ gxk_list_wrapper_get_iter (GtkTreeModel *tree_model,
   GxkListWrapper *self = GXK_LIST_WRAPPER (tree_model);
   gint *ind;
 
-  g_return_val_if_fail (gtk_tree_path_get_depth (path) > 0, FALSE);
+  assert_return (gtk_tree_path_get_depth (path) > 0, FALSE);
 
   ind = gtk_tree_path_get_indices (path);
   if (ind[0] < 0 || ind[0] >= int (self->n_rows))
@@ -286,7 +286,7 @@ gxk_list_wrapper_get_path (GtkTreeModel *tree_model,
   GxkListWrapper *self = GXK_LIST_WRAPPER (tree_model);
   GtkTreePath *path;
 
-  g_return_val_if_fail (iter->stamp == int (self->stamp), NULL);
+  assert_return (iter->stamp == int (self->stamp), NULL);
 
   uint i = P2I (iter->user_data);
   if (i < 0 || i >= self->n_rows)
@@ -306,8 +306,8 @@ gxk_list_wrapper_get_value (GtkTreeModel *tree_model,
 {
   GxkListWrapper *self = GXK_LIST_WRAPPER (tree_model);
 
-  g_return_if_fail (iter->stamp == int (self->stamp));
-  g_return_if_fail (column >= 0 && uint (column) < self->n_cols);
+  assert_return (iter->stamp == int (self->stamp));
+  assert_return (column >= 0 && uint (column) < self->n_cols);
 
   g_value_init (value, self->column_types[column]);
 
@@ -324,7 +324,7 @@ gxk_list_wrapper_iter_next (GtkTreeModel *tree_model,
 {
   GxkListWrapper *self = GXK_LIST_WRAPPER (tree_model);
 
-  g_return_val_if_fail (iter->stamp == int (self->stamp), FALSE);
+  assert_return (iter->stamp == int (self->stamp), FALSE);
 
   uint i = P2I (iter->user_data);
   if (i < 0 || i >= self->n_rows)
@@ -366,7 +366,7 @@ gxk_list_wrapper_iter_nth_child (GtkTreeModel *tree_model,
   if (parent)	/* nodes of a list don't have a parent */
     return FALSE;
 
-  g_return_val_if_fail (n >= 0 && uint (n) < self->n_rows, FALSE);
+  assert_return (n >= 0 && uint (n) < self->n_rows, FALSE);
 
   iter->stamp = self->stamp;
   iter->user_data = I2P (n);
@@ -399,8 +399,8 @@ gxk_list_wrapper_notify_insert (GxkListWrapper *self,
   GtkTreeIter iter;
   GtkTreePath *path;
 
-  g_return_if_fail (GXK_IS_LIST_WRAPPER (self));
-  g_return_if_fail (nth_row <= self->n_rows);
+  assert_return (GXK_IS_LIST_WRAPPER (self));
+  assert_return (nth_row <= self->n_rows);
 
   g_signal_emit (self, signal_row_change, 0, -1);
   tree_model = GTK_TREE_MODEL (self);
@@ -425,8 +425,8 @@ gxk_list_wrapper_notify_change (GxkListWrapper *self,
   GtkTreeIter iter;
   GtkTreePath *path;
 
-  g_return_if_fail (GXK_IS_LIST_WRAPPER (self));
-  g_return_if_fail (nth_row < self->n_rows);
+  assert_return (GXK_IS_LIST_WRAPPER (self));
+  assert_return (nth_row < self->n_rows);
 
   g_signal_emit (self, signal_row_change, 0, nth_row);
   tree_model = GTK_TREE_MODEL (self);
@@ -447,8 +447,8 @@ gxk_list_wrapper_notify_delete (GxkListWrapper *self,
   GtkTreeIter iter;
   GtkTreePath *path;
 
-  g_return_if_fail (GXK_IS_LIST_WRAPPER (self));
-  g_return_if_fail (nth_row < self->n_rows);
+  assert_return (GXK_IS_LIST_WRAPPER (self));
+  assert_return (nth_row < self->n_rows);
 
   g_signal_emit (self, signal_row_change, 0, -1);
   tree_model = GTK_TREE_MODEL (self);
@@ -467,7 +467,7 @@ void
 gxk_list_wrapper_notify_prepend (GxkListWrapper *self,
 				 guint           n_rows)
 {
-  g_return_if_fail (GXK_IS_LIST_WRAPPER (self));
+  assert_return (GXK_IS_LIST_WRAPPER (self));
 
   g_object_freeze_notify (G_OBJECT (self));
   g_signal_emit (self, signal_row_change, 0, -1);
@@ -480,7 +480,7 @@ void
 gxk_list_wrapper_notify_append (GxkListWrapper *self,
 				guint           n_rows)
 {
-  g_return_if_fail (GXK_IS_LIST_WRAPPER (self));
+  assert_return (GXK_IS_LIST_WRAPPER (self));
 
   g_object_freeze_notify (G_OBJECT (self));
   g_signal_emit (self, signal_row_change, 0, -1);
@@ -492,7 +492,7 @@ gxk_list_wrapper_notify_append (GxkListWrapper *self,
 void
 gxk_list_wrapper_notify_clear (GxkListWrapper *self)
 {
-  g_return_if_fail (GXK_IS_LIST_WRAPPER (self));
+  assert_return (GXK_IS_LIST_WRAPPER (self));
 
   g_object_freeze_notify (G_OBJECT (self));
   g_signal_emit (self, signal_row_change, 0, -1);
@@ -506,9 +506,9 @@ gxk_list_wrapper_get_iter_at (GxkListWrapper *self,
 			      GtkTreeIter    *iter,
 			      guint           index)
 {
-  g_return_if_fail (GXK_IS_LIST_WRAPPER (self));
-  g_return_if_fail (iter != NULL);
-  g_return_if_fail (index < self->n_rows);
+  assert_return (GXK_IS_LIST_WRAPPER (self));
+  assert_return (iter != NULL);
+  assert_return (index < self->n_rows);
 
   iter->stamp = self->stamp;
   iter->user_data = I2P (index);
@@ -518,9 +518,9 @@ guint
 gxk_list_wrapper_get_index (GxkListWrapper *self,
 			    GtkTreeIter    *iter)
 {
-  g_return_val_if_fail (GXK_IS_LIST_WRAPPER (self), G_MAXUINT);
-  g_return_val_if_fail (iter != NULL, G_MAXUINT);
-  g_return_val_if_fail (iter->stamp == int (self->stamp), G_MAXUINT);
+  assert_return (GXK_IS_LIST_WRAPPER (self), G_MAXUINT);
+  assert_return (iter != NULL, G_MAXUINT);
+  assert_return (iter->stamp == int (self->stamp), G_MAXUINT);
 
   return P2I (iter->user_data);
 }

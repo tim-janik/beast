@@ -69,8 +69,8 @@ SynthesisModule::SynthesisModule()
 void
 SynthesisModule::set_module (BseModule *engine_module)
 {
-  g_return_if_fail (intern_module == NULL);
-  g_return_if_fail (engine_module != NULL);
+  assert_return (intern_module == NULL);
+  assert_return (engine_module != NULL);
 
   intern_module = engine_module;
 
@@ -233,7 +233,7 @@ midi_control_handler (gpointer                  handler_data,  /* MIDI Device Th
                       BseTrans                 *trans)
 {
   GParamSpec *pspec = static_cast<GParamSpec*> (handler_data);
-  g_return_if_fail (n_mcdatas > 0);
+  assert_return (n_mcdatas > 0);
   if (!user_data)
     return;     /* ignore events before bse_midi_receiver_set_control_handler_data() */
   HandlerData *hd = static_cast<HandlerData*> (user_data);
@@ -400,7 +400,7 @@ Effect::dismiss_engine_module (BseModule       *engine_module,
 uint
 Effect::block_size() const
 {
-  g_return_val_if_fail (is_prepared(), 0);
+  assert_return (is_prepared(), 0);
 
   return bse_engine_block_size();
 }

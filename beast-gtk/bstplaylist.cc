@@ -39,7 +39,7 @@ static GdkAtom		 atom_beast_pattern_pointer = 0;
 static void
 container_remove (GtkWidget *widget)
 {
-  g_return_if_fail (GTK_IS_WIDGET (widget));
+  assert_return (GTK_IS_WIDGET (widget));
 
   if (widget->parent)
     gtk_container_remove (GTK_CONTAINER (widget->parent), widget);
@@ -404,15 +404,15 @@ group_list_drag_data_received (GtkWidget        *group_list,
   gint position;
   guint action;
 
-  g_return_if_fail (selection_data->type == atom_beast_pattern_group_pointer);
-  g_return_if_fail (selection_data->format == 8);
-  g_return_if_fail (selection_data->length == sizeof (gpointer));
+  assert_return (selection_data->type == atom_beast_pattern_group_pointer);
+  assert_return (selection_data->format == 8);
+  assert_return (selection_data->length == sizeof (gpointer));
 
   action = context->actions & context->suggested_action;
-  g_return_if_fail ((action & (GDK_ACTION_COPY | GDK_ACTION_MOVE | GDK_ACTION_LINK)) != 0);
+  assert_return ((action & (GDK_ACTION_COPY | GDK_ACTION_MOVE | GDK_ACTION_LINK)) != 0);
 
   drag_contents = *((gpointer*) selection_data->data);
-  g_return_if_fail (BSE_IS_PATTERN_GROUP (drag_contents));
+  assert_return (BSE_IS_PATTERN_GROUP (drag_contents));
 
   position = bst_container_get_insertion_position (GTK_CONTAINER (group_list),
 						   FALSE, y,
@@ -479,9 +479,9 @@ void
 bst_play_list_set_song (BstPlayList *plist,
 			BseSong     *song)
 {
-  g_return_if_fail (BST_IS_PLAY_LIST (plist));
+  assert_return (BST_IS_PLAY_LIST (plist));
   if (song)
-    g_return_if_fail (BSE_IS_SONG (song));
+    assert_return (BSE_IS_SONG (song));
 
   if (plist->song)
     {
@@ -525,7 +525,7 @@ bst_play_list_set_song (BstPlayList *plist,
 void
 bst_play_list_rebuild (BstPlayList *plist)
 {
-  g_return_if_fail (BST_IS_PLAY_LIST (plist));
+  assert_return (BST_IS_PLAY_LIST (plist));
 
   if (plist->song)
     {
@@ -545,7 +545,7 @@ bst_play_list_new (BseSong *song)
 {
   GtkWidget *play_list;
 
-  g_return_val_if_fail (BSE_IS_SONG (song), NULL);
+  assert_return (BSE_IS_SONG (song), NULL);
 
   play_list = gtk_widget_new (BST_TYPE_PLAY_LIST, NULL);
   bst_play_list_set_song (BST_PLAY_LIST (play_list), song);

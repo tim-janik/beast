@@ -26,7 +26,7 @@ parse_arguments (gint              *argc_p,
 
   for (i = 0; i < n_arguments; i++)
     {
-      g_return_val_if_fail (arguments[i].value_p != NULL, NULL);
+      assert_return (arguments[i].value_p != NULL, NULL);
 
       lengths[i] = arguments[i].long_opt ? strlen (arguments[i].long_opt) : 0;
     }
@@ -212,8 +212,8 @@ sfi_util_file_name_subst_ext (const gchar *file_name,
 {
   gchar *p, *name;
 
-  g_return_val_if_fail (file_name != NULL, NULL);
-  g_return_val_if_fail (new_extension != NULL, NULL);
+  assert_return (file_name != NULL, NULL);
+  assert_return (new_extension != NULL, NULL);
 
   name = g_strdup (file_name);
   p = strrchr (name, '.');
@@ -339,8 +339,8 @@ sfi_util_file_list_read_simple (const gchar *file_name,
   guint i;
   gint fd;
 
-  g_return_val_if_fail (file_name != NULL, NULL);
-  g_return_val_if_fail (n_formats < 1000, NULL);
+  assert_return (file_name != NULL, NULL);
+  assert_return (n_formats < 1000, NULL);
 
   fd = open (file_name, O_RDONLY);
   if (fd < 0)

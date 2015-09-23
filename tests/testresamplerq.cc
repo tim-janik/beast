@@ -9,7 +9,6 @@
 #include <sfi/sfi.hh>
 #include <stdlib.h>
 #include <stdio.h>
-#include <assert.h>
 using Bse::Resampler::Resampler2;
 using Rapicorn::AlignedArray;
 using std::vector;
@@ -172,7 +171,7 @@ band_err (BseResampler2Precision p)
       case BSE_RESAMPLER2_PREC_96DB:    return -95;
       case BSE_RESAMPLER2_PREC_120DB:   return -120;
       case BSE_RESAMPLER2_PREC_144DB:   return -144;
-      default:                          g_assert_not_reached();
+      default:                          assert_unreached();
     }
 }
 

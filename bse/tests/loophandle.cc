@@ -111,9 +111,9 @@ gsl_data_handle_new_looped_reference (GslDataHandle *src_handle,
   LoopHandleReference *lhandle;
   gboolean success;
 
-  g_return_val_if_fail (src_handle != NULL, NULL);
-  g_return_val_if_fail (loop_first >= 0, NULL);
-  g_return_val_if_fail (loop_last >= loop_first, NULL);
+  assert_return (src_handle != NULL, NULL);
+  assert_return (loop_first >= 0, NULL);
+  assert_return (loop_last >= loop_first, NULL);
 
   lhandle = sfi_new_struct0 (LoopHandleReference, 1);
   success = gsl_data_handle_common_init (&lhandle->dhandle, NULL);
@@ -143,10 +143,10 @@ check_loop (GslDataHandle *src_handle,
             GslLong loop_start,
 	    GslLong loop_end)
 {
-  g_return_if_fail (loop_start >= 0);
-  g_return_if_fail (loop_start < n_values);
-  g_return_if_fail (loop_end > loop_start);
-  g_return_if_fail (loop_end < n_values);
+  assert_return (loop_start >= 0);
+  assert_return (loop_start < n_values);
+  assert_return (loop_end > loop_start);
+  assert_return (loop_end < n_values);
 
   GslDataHandle *loop_handle           = gsl_data_handle_new_looped (src_handle, loop_start, loop_end);
   GslDataHandle *loop_handle_reference = gsl_data_handle_new_looped_reference (src_handle, loop_start, loop_end);

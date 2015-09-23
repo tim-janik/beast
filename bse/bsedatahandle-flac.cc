@@ -347,9 +347,9 @@ bse_data_handle_new_flac_zoffset (const char *file_name,
                                   uint       *n_channels_p,
                                   float      *mix_freq_p)
 {
-  g_return_val_if_fail (file_name != NULL, NULL);
-  g_return_val_if_fail (byte_offset >= 0, NULL);
-  g_return_val_if_fail (byte_size > 0, NULL);
+  assert_return (file_name != NULL, NULL);
+  assert_return (byte_offset >= 0, NULL);
+  assert_return (byte_size > 0, NULL);
 
   DataHandleFlac *cxx_dh = new DataHandleFlac (file_name, osc_freq, ADD_ZOFFSET, byte_offset, byte_size);
   GslDataHandle *dhandle = DataHandleFlac::dh_create (cxx_dh);

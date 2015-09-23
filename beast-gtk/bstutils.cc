@@ -28,7 +28,7 @@ Bse::ServerH bse_server;
 void
 _bst_init_utils (void)
 {
-  g_assert (stock_icon_factory == NULL);
+  assert (stock_icon_factory == NULL);
   stock_icon_factory = gtk_icon_factory_new ();
   gtk_icon_factory_add_default (stock_icon_factory);
 
@@ -117,8 +117,8 @@ bst_stock_register_icon (const gchar    *stock_id,
                          guint           rowstride,
                          const guint8   *pixels)
 {
-  g_return_if_fail (bytes_per_pixel == 3 || bytes_per_pixel == 4);
-  g_return_if_fail (width > 0 && height > 0 && rowstride >= width * bytes_per_pixel);
+  assert_return (bytes_per_pixel == 3 || bytes_per_pixel == 4);
+  assert_return (width > 0 && height > 0 && rowstride >= width * bytes_per_pixel);
 
   if (!gtk_icon_factory_lookup (stock_icon_factory, stock_id))
     {
@@ -147,7 +147,7 @@ bst_status_set_error (Bse::ErrorType error, const std::string &message)
 void
 bst_gui_error_bell (gpointer widget)
 {
-  g_return_if_fail (GTK_IS_WIDGET (widget));
+  assert_return (GTK_IS_WIDGET (widget));
 
   if (GTK_WIDGET_DRAWABLE (widget) && BST_GUI_ENABLE_ERROR_BELL)
     {
@@ -197,12 +197,12 @@ bst_window_sync_title_to_proxy (gpointer     window,
 {
   const char *p;
 
-  g_return_if_fail (GTK_IS_WINDOW (window));
+  assert_return (GTK_IS_WINDOW (window));
   if (proxy)
     {
-      g_return_if_fail (BSE_IS_ITEM (proxy));
-      g_return_if_fail (title_format != NULL);
-      /* g_return_if_fail (strstr (title_format, "%s") != NULL); */
+      assert_return (BSE_IS_ITEM (proxy));
+      assert_return (title_format != NULL);
+      /* assert_return (strstr (title_format, "%s") != NULL); */
     }
   p = title_format ? strstr (title_format, "%s") : NULL;
   if (proxy && p)
@@ -281,7 +281,7 @@ bst_background_handler_add (gboolean       (*handler) (gpointer data),
                             void           (*free_func) (gpointer data),
                             gint             prio)
 {
-  g_return_if_fail (handler != NULL);
+  assert_return (handler != NULL);
   BackgroundHandler *bgh = g_new0 (BackgroundHandler, 1);
   bgh->handler = handler;
   bgh->data = data;
@@ -456,7 +456,7 @@ bst_action_list_add_cat (GxkActionList          *alist,
   if (cat->icon)
     {
       BseIc0n *icon = cat->icon;
-      g_assert (icon->width * icon->height == int (icon->pixel_seq->n_pixels));
+      assert (icon->width * icon->height == int (icon->pixel_seq->n_pixels));
       bst_stock_register_icon (cat->category, 4,
                                icon->width, icon->height,
                                icon->width * 4,
@@ -492,7 +492,7 @@ bst_action_list_from_cats_pred (BseCategorySeq  *cseq,
   GxkActionList *alist = gxk_action_list_create ();
   guint i;
 
-  g_return_val_if_fail (cseq != NULL, alist);
+  assert_return (cseq != NULL, alist);
 
   for (i = 0; i < cseq->n_cats; i++)
     if (!predicate || predicate (predicate_data, cseq->cats[i]))
@@ -553,14 +553,14 @@ gmask_form (GtkWidget   *parent,
 {
   GMask *gmask;
 
-  g_return_val_if_fail (GTK_IS_TABLE (parent), NULL);
-  g_return_val_if_fail (GTK_IS_WIDGET (action), NULL);
+  assert_return (GTK_IS_TABLE (parent), NULL);
+  assert_return (GTK_IS_WIDGET (action), NULL);
 
   if (!gmask_quark)
     gmask_quark = g_quark_from_static_string ("GMask");
 
   gmask = GMASK_GET (action);
-  g_return_val_if_fail (gmask == NULL, NULL);
+  assert_return (gmask == NULL, NULL);
 
   gmask = g_new0 (GMask, 1);
   g_object_set_qdata_full (G_OBJECT (action), gmask_quark, gmask, gmask_destroy);
@@ -647,9 +647,9 @@ bst_gmask_set_tip (BstGMask    *mask,
 {
   GMask *gmask;
 
-  g_return_if_fail (GTK_IS_WIDGET (mask));
+  assert_return (GTK_IS_WIDGET (mask));
   gmask = GMASK_GET (mask);
-  g_return_if_fail (gmask != NULL);
+  assert_return (gmask != NULL);
 
   g_free (gmask->tip);
   gmask->tip = g_strdup (tip_text);
@@ -667,10 +667,10 @@ bst_gmask_set_prompt (BstGMask *mask,
 {
   GMask *gmask;
 
-  g_return_if_fail (GTK_IS_WIDGET (mask));
+  assert_return (GTK_IS_WIDGET (mask));
   gmask = GMASK_GET (mask);
-  g_return_if_fail (gmask != NULL);
-  g_return_if_fail (GTK_IS_WIDGET (widget));
+  assert_return (gmask != NULL);
+  assert_return (GTK_IS_WIDGET (widget));
 
   if (gmask->prompt)
     g_object_unref (gmask->prompt);
@@ -690,10 +690,10 @@ bst_gmask_set_aux1 (BstGMask *mask,
 {
   GMask *gmask;
 
-  g_return_if_fail (GTK_IS_WIDGET (mask));
+  assert_return (GTK_IS_WIDGET (mask));
   gmask = GMASK_GET (mask);
-  g_return_if_fail (gmask != NULL);
-  g_return_if_fail (GTK_IS_WIDGET (widget));
+  assert_return (gmask != NULL);
+  assert_return (GTK_IS_WIDGET (widget));
 
   if (gmask->aux1)
     g_object_unref (gmask->aux1);
@@ -715,10 +715,10 @@ bst_gmask_set_aux2 (BstGMask *mask,
 {
   GMask *gmask;
 
-  g_return_if_fail (GTK_IS_WIDGET (mask));
+  assert_return (GTK_IS_WIDGET (mask));
   gmask = GMASK_GET (mask);
-  g_return_if_fail (gmask != NULL);
-  g_return_if_fail (GTK_IS_WIDGET (widget));
+  assert_return (gmask != NULL);
+  assert_return (GTK_IS_WIDGET (widget));
 
   if (gmask->aux2)
     g_object_unref (gmask->aux2);
@@ -738,10 +738,10 @@ bst_gmask_set_aux3 (BstGMask *mask,
 {
   GMask *gmask;
 
-  g_return_if_fail (GTK_IS_WIDGET (mask));
+  assert_return (GTK_IS_WIDGET (mask));
   gmask = GMASK_GET (mask);
-  g_return_if_fail (gmask != NULL);
-  g_return_if_fail (GTK_IS_WIDGET (widget));
+  assert_return (gmask != NULL);
+  assert_return (GTK_IS_WIDGET (widget));
 
   if (gmask->aux3)
     g_object_unref (gmask->aux3);
@@ -762,9 +762,9 @@ bst_gmask_set_column (BstGMask *mask,
 {
   GMask *gmask;
 
-  g_return_if_fail (GTK_IS_WIDGET (mask));
+  assert_return (GTK_IS_WIDGET (mask));
   gmask = GMASK_GET (mask);
-  g_return_if_fail (gmask != NULL);
+  assert_return (gmask != NULL);
 
   gmask->column = column;
 }
@@ -780,9 +780,9 @@ bst_gmask_get_prompt (BstGMask *mask)
 {
   GMask *gmask;
 
-  g_return_val_if_fail (GTK_IS_WIDGET (mask), NULL);
+  assert_return (GTK_IS_WIDGET (mask), NULL);
   gmask = GMASK_GET (mask);
-  g_return_val_if_fail (gmask != NULL, NULL);
+  assert_return (gmask != NULL, NULL);
 
   return gmask->prompt;
 }
@@ -798,9 +798,9 @@ bst_gmask_get_aux1 (BstGMask *mask)
 {
   GMask *gmask;
 
-  g_return_val_if_fail (GTK_IS_WIDGET (mask), NULL);
+  assert_return (GTK_IS_WIDGET (mask), NULL);
   gmask = GMASK_GET (mask);
-  g_return_val_if_fail (gmask != NULL, NULL);
+  assert_return (gmask != NULL, NULL);
 
   return gmask->aux1;
 }
@@ -816,9 +816,9 @@ bst_gmask_get_aux2 (BstGMask *mask)
 {
   GMask *gmask;
 
-  g_return_val_if_fail (GTK_IS_WIDGET (mask), NULL);
+  assert_return (GTK_IS_WIDGET (mask), NULL);
   gmask = GMASK_GET (mask);
-  g_return_val_if_fail (gmask != NULL, NULL);
+  assert_return (gmask != NULL, NULL);
 
   return gmask->aux2;
 }
@@ -834,9 +834,9 @@ bst_gmask_get_aux3 (BstGMask *mask)
 {
   GMask *gmask;
 
-  g_return_val_if_fail (GTK_IS_WIDGET (mask), NULL);
+  assert_return (GTK_IS_WIDGET (mask), NULL);
   gmask = GMASK_GET (mask);
-  g_return_val_if_fail (gmask != NULL, NULL);
+  assert_return (gmask != NULL, NULL);
 
   return gmask->aux3;
 }
@@ -852,9 +852,9 @@ bst_gmask_get_action (BstGMask *mask)
 {
   GMask *gmask;
 
-  g_return_val_if_fail (GTK_IS_WIDGET (mask), NULL);
+  assert_return (GTK_IS_WIDGET (mask), NULL);
   gmask = GMASK_GET (mask);
-  g_return_val_if_fail (gmask != NULL, NULL);
+  assert_return (gmask != NULL, NULL);
 
   return gmask->action;
 }
@@ -875,10 +875,10 @@ bst_gmask_foreach (BstGMask *mask,
   GMask *gmask;
   GtkCallback callback = GtkCallback (func);
 
-  g_return_if_fail (GTK_IS_WIDGET (mask));
+  assert_return (GTK_IS_WIDGET (mask));
   gmask = GMASK_GET (mask);
-  g_return_if_fail (gmask != NULL);
-  g_return_if_fail (func != NULL);
+  assert_return (gmask != NULL);
+  assert_return (func != NULL);
 
   if (gmask->prompt)
     callback (gmask->prompt, data);
@@ -957,9 +957,9 @@ bst_gmask_pack (BstGMask *mask)
   guint row, n, c, dislodge_columns;
   GMask *gmask;
 
-  g_return_if_fail (GTK_IS_WIDGET (mask));
+  assert_return (GTK_IS_WIDGET (mask));
   gmask = GMASK_GET (mask);
-  g_return_if_fail (gmask != NULL);
+  assert_return (gmask != NULL);
 
   /* GUI mask layout:
    * row: |Prompt|Aux1| Aux2 |Aux3| PreAction#Action#PostAction|
@@ -1158,11 +1158,11 @@ bst_container_set_named_child (GtkWidget *container,
 {
   NChildren *children;
 
-  g_return_if_fail (GTK_IS_CONTAINER (container));
-  g_return_if_fail (qname > 0);
-  g_return_if_fail (GTK_IS_WIDGET (child));
+  assert_return (GTK_IS_CONTAINER (container));
+  assert_return (qname > 0);
+  assert_return (GTK_IS_WIDGET (child));
   if (child)
-    g_return_if_fail (gtk_widget_is_ancestor (child, container));
+    assert_return (gtk_widget_is_ancestor (child, container));
 
   if (!quark_container_named_children)
     quark_container_named_children = g_quark_from_static_string ("BstContainer-named_children");
@@ -1187,8 +1187,8 @@ bst_container_get_named_child (GtkWidget *container,
 {
   NChildren *children;
 
-  g_return_val_if_fail (GTK_IS_CONTAINER (container), NULL);
-  g_return_val_if_fail (qname > 0, NULL);
+  assert_return (GTK_IS_CONTAINER (container), NULL);
+  assert_return (qname > 0, NULL);
 
   children = quark_container_named_children ? (NChildren*) g_object_get_qdata (G_OBJECT (container), quark_container_named_children) : NULL;
   if (children)
@@ -1214,8 +1214,8 @@ bst_xpm_view_create (const gchar **xpm,
   GdkPixmap *pixmap;
   GdkBitmap *mask;
 
-  g_return_val_if_fail (xpm != NULL, NULL);
-  g_return_val_if_fail (GTK_IS_WIDGET (colormap_widget), NULL);
+  assert_return (xpm != NULL, NULL);
+  assert_return (GTK_IS_WIDGET (colormap_widget), NULL);
 
   pixmap = gdk_pixmap_colormap_create_from_xpm_d (NULL, gtk_widget_get_colormap (colormap_widget),
                                                   &mask, NULL, (gchar**) xpm);
@@ -1237,7 +1237,7 @@ bst_file_scan_find_key (const gchar *file,
 {
   SfiRStore *rstore;
 
-  g_return_val_if_fail (file != NULL, NULL);
+  assert_return (file != NULL, NULL);
 
   rstore = sfi_rstore_new_open (file);
   if (rstore)

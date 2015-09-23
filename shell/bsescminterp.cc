@@ -134,8 +134,8 @@ bse_scm_enter_gc (SCM           *scm_gc_list,
 {
   BseScmGCCell *gc_cell;
   SCM s_cell = 0;
-  g_return_if_fail (scm_gc_list != NULL);
-  g_return_if_fail (free_func != NULL);
+  assert_return (scm_gc_list != NULL);
+  assert_return (free_func != NULL);
   // g_printerr ("GCCell allocating %u bytes (%p).\n", size_hint, free_func);
   gc_cell = g_new (BseScmGCCell, 1);
   gc_cell->data = data;
@@ -191,12 +191,12 @@ void
 bse_scm_destroy_gc_plateau (SCM s_gcplateau)
 {
   GcPlateau *gp;
-  g_assert (SCM_IS_GLUE_GC_PLATEAU (s_gcplateau));
+  assert (SCM_IS_GLUE_GC_PLATEAU (s_gcplateau));
   gp = SCM_GET_GLUE_GC_PLATEAU (s_gcplateau);
   if (gp->active_plateau)
     {
       gp->active_plateau = FALSE;
-      g_assert (scm_glue_gc_plateau_blocker > 0);
+      assert (scm_glue_gc_plateau_blocker > 0);
       scm_glue_gc_plateau_blocker--;
       if (scm_glue_gc_plateau_blocker == 0)
 	sfi_glue_gc_run ();
@@ -222,7 +222,7 @@ bse_scm_from_glue_rec (SfiRec *rec)
 {
   SCM s_rec = 0;
 
-  g_return_val_if_fail (rec != NULL, SCM_UNSPECIFIED);
+  assert_return (rec != NULL, SCM_UNSPECIFIED);
 
   sfi_rec_ref (rec);
   SCM_NEWSMOB (s_rec, tc_glue_rec, rec);
@@ -673,7 +673,7 @@ signal_marshal_sproc (void *data)
   guint i;
 
   i = sdata->n_args;
-  g_return_val_if_fail (sdata->n_args > 0, SCM_UNSPECIFIED);
+  assert_return (sdata->n_args > 0, SCM_UNSPECIFIED);
   sdata->n_args = 0;
 
   while (i--)

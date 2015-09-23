@@ -103,7 +103,7 @@ controller_reset_hpanel_cursor (BstTrackRollController *self)
 BstTrackRollController*
 bst_track_roll_controller_new (BstTrackRoll *troll)
 {
-  g_return_val_if_fail (BST_IS_TRACK_ROLL (troll), NULL);
+  assert_return (BST_IS_TRACK_ROLL (troll), NULL);
 
   BstTrackRollController *self = new BstTrackRollController();
   self->ref_count = 1;
@@ -256,8 +256,8 @@ canvas_button_tool (BstTrackRollController *self,
 BstTrackRollController*
 bst_track_roll_controller_ref (BstTrackRollController *self)
 {
-  g_return_val_if_fail (self != NULL, NULL);
-  g_return_val_if_fail (self->ref_count >= 1, NULL);
+  assert_return (self != NULL, NULL);
+  assert_return (self->ref_count >= 1, NULL);
 
   self->ref_count++;
 
@@ -267,8 +267,8 @@ bst_track_roll_controller_ref (BstTrackRollController *self)
 void
 bst_track_roll_controller_unref (BstTrackRollController *self)
 {
-  g_return_if_fail (self != NULL);
-  g_return_if_fail (self->ref_count >= 1);
+  assert_return (self != NULL);
+  assert_return (self->ref_count >= 1);
 
   self->ref_count--;
   if (!self->ref_count)
@@ -287,8 +287,8 @@ void
 bst_track_roll_controller_set_song (BstTrackRollController *self,
 				    SfiProxy                song)
 {
-  g_return_if_fail (self != NULL);
-  g_return_if_fail (self->ref_count >= 1);
+  assert_return (self != NULL);
+  assert_return (self->ref_count >= 1);
 
   if (BSE_IS_SONG (song))
     self->song = song;
@@ -302,7 +302,7 @@ bst_track_roll_controller_quantize (BstTrackRollController *self,
 {
   guint quant, tick, qtick;
 
-  g_return_val_if_fail (self != NULL, fine_tick);
+  assert_return (self != NULL, fine_tick);
 
   Bse::SongH song = Bse::SongH::down_cast (bse_server.from_proxy (self->song));
   Bse::SongTiming timing = song.get_timing (fine_tick);

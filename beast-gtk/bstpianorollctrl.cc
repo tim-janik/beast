@@ -160,7 +160,7 @@ bst_piano_roll_controller_new (BstPianoRoll *proll)
 {
   BstPianoRollController *self;
 
-  g_return_val_if_fail (BST_IS_PIANO_ROLL (proll), NULL);
+  assert_return (BST_IS_PIANO_ROLL (proll), NULL);
 
   self = g_new0 (BstPianoRollController, 1);
   self->proll = proll;
@@ -194,8 +194,8 @@ bst_piano_roll_controller_new (BstPianoRoll *proll)
 BstPianoRollController*
 bst_piano_roll_controller_ref (BstPianoRollController *self)
 {
-  g_return_val_if_fail (self != NULL, NULL);
-  g_return_val_if_fail (self->ref_count >= 1, NULL);
+  assert_return (self != NULL, NULL);
+  assert_return (self->ref_count >= 1, NULL);
 
   self->ref_count++;
 
@@ -205,8 +205,8 @@ bst_piano_roll_controller_ref (BstPianoRollController *self)
 void
 bst_piano_roll_controller_unref (BstPianoRollController *self)
 {
-  g_return_if_fail (self != NULL);
-  g_return_if_fail (self->ref_count >= 1);
+  assert_return (self != NULL);
+  assert_return (self->ref_count >= 1);
 
   self->ref_count--;
   if (!self->ref_count)
@@ -342,7 +342,7 @@ piano_canvas_button_tool (BstPianoRollController *self,
 void
 bst_piano_roll_controller_clear (BstPianoRollController *self)
 {
-  g_return_if_fail (self != NULL);
+  assert_return (self != NULL);
   Bse::PartH part = self->proll->part;
   Bse::PartNoteSeq pseq = part.list_selected_notes();
   bse_item_group_undo (part.proxy_id(), "Clear Selection");
@@ -357,7 +357,7 @@ bst_piano_roll_controller_clear (BstPianoRollController *self)
 void
 bst_piano_roll_controller_cut (BstPianoRollController *self)
 {
-  g_return_if_fail (self != NULL);
+  assert_return (self != NULL);
 
   Bse::PartH part = self->proll->part;
   Bse::PartNoteSeq pseq = part.list_selected_notes();
@@ -374,7 +374,7 @@ bst_piano_roll_controller_cut (BstPianoRollController *self)
 gboolean
 bst_piano_roll_controller_copy (BstPianoRollController *self)
 {
-  g_return_val_if_fail (self != NULL, FALSE);
+  assert_return (self != NULL, FALSE);
 
   Bse::PartH part = self->proll->part;
   Bse::PartNoteSeq pseq = part.list_selected_notes();
@@ -385,7 +385,7 @@ bst_piano_roll_controller_copy (BstPianoRollController *self)
 void
 bst_piano_roll_controller_paste (BstPianoRollController *self)
 {
-  g_return_if_fail (self != NULL);
+  assert_return (self != NULL);
 
   Bse::PartH part = self->proll->part;
   Bse::PartNoteSeq *pseq = bst_piano_roll_controller_get_clipboard ();
@@ -451,7 +451,7 @@ guint
 bst_piano_roll_controller_quantize (BstPianoRollController *self,
                                     guint                   fine_tick)
 {
-  g_return_val_if_fail (self != NULL, fine_tick);
+  assert_return (self != NULL, fine_tick);
 
   Bse::PartH part = self->proll->part;
   Bse::SongTiming timing = part.get_timing (fine_tick);
@@ -867,7 +867,7 @@ controller_canvas_drag (BstPianoRollController *self,
 	return;		/* unhandled */
     }
   i = self->tool_index;
-  g_return_if_fail (i < G_N_ELEMENTS (tool_table));
+  assert_return (i < G_N_ELEMENTS (tool_table));
   switch (drag->type)
     {
     case GXK_DRAG_START:

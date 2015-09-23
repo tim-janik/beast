@@ -12,7 +12,7 @@ gxk_init (void)
 {
   static GxkGlobals globals = { NULL, };
 
-  g_return_if_fail (gxk_globals == NULL);
+  assert_return (gxk_globals == NULL);
 
   gxk_globals = &globals;
 
@@ -34,10 +34,10 @@ gxk_nullify_in_object (gpointer object,
 {
   GObject **location = (GObject**) _location;
   GClosure *closure;
-  g_return_val_if_fail (object != NULL, 0);
-  g_return_val_if_fail (location != NULL, 0);
-  g_return_val_if_fail (G_IS_OBJECT (object), 0);
-  g_return_val_if_fail (GTK_IS_OBJECT (*location), 0);
+  assert_return (object != NULL, 0);
+  assert_return (location != NULL, 0);
+  assert_return (G_IS_OBJECT (object), 0);
+  assert_return (GTK_IS_OBJECT (*location), 0);
   closure = g_cclosure_new_swap (G_CALLBACK (g_nullify_pointer), location, NULL);
   g_object_watch_closure ((GObject*) object, closure);
   return g_signal_connect_closure (*location, "destroy", closure, 0);

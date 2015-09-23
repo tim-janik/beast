@@ -97,13 +97,13 @@ dav_canyon_delay_class_init (DavCanyonDelayClass *klass)
                                                      SFI_PARAM_GUI));
 
   channel = bse_source_class_add_ichannel (source_class, "left-in", _("Left In"), _("Left Audio Input"));
-  g_assert (channel == DAV_CANYON_DELAY_ICHANNEL_LEFT);
+  assert (channel == DAV_CANYON_DELAY_ICHANNEL_LEFT);
   channel = bse_source_class_add_ichannel (source_class, "right-in", _("Right In"), _("Right Audio Input"));
-  g_assert (channel == DAV_CANYON_DELAY_ICHANNEL_RIGHT);
+  assert (channel == DAV_CANYON_DELAY_ICHANNEL_RIGHT);
   channel = bse_source_class_add_ochannel (source_class, "left-out", _("Left Out"), _("Left Audio Output"));
-  g_assert (channel == DAV_CANYON_DELAY_OCHANNEL_LEFT);
+  assert (channel == DAV_CANYON_DELAY_OCHANNEL_LEFT);
   channel = bse_source_class_add_ochannel (source_class, "right-out", _("Right Out"), _("Right Audio Output"));
-  g_assert (channel == DAV_CANYON_DELAY_OCHANNEL_RIGHT);
+  assert (channel == DAV_CANYON_DELAY_OCHANNEL_RIGHT);
 }
 
 static void

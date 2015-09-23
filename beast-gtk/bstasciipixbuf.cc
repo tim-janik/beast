@@ -29,7 +29,7 @@ bst_ascii_pixbuf_child_destroy (guint8  *pixels,
 {
   GdkPixbuf *pixbuf = (GdkPixbuf*) data;
 
-  g_return_if_fail (pixbuf == ascii_pixbuf);
+  assert_return (pixbuf == ascii_pixbuf);
   g_object_unref (pixbuf);
 }
 
@@ -42,7 +42,7 @@ bst_ascii_pixbuf_new (gchar character,
   guint width, i;
   guint8 *pixels;
 
-  g_return_val_if_fail (character >= 32 && character <= 126, NULL);
+  assert_return (character >= 32 && character <= 126, NULL);
 
   bst_ascii_pixbuf_ref ();
   width = gdk_pixbuf_get_width (ascii_pixbuf);
@@ -75,7 +75,7 @@ bst_ascii_pixbuf_new (gchar character,
 void
 bst_ascii_pixbuf_unref (void)
 {
-  g_return_if_fail (ascii_pixbuf != NULL);
+  assert_return (ascii_pixbuf != NULL);
 
   g_object_unref (ascii_pixbuf);
 }

@@ -37,9 +37,9 @@ bst_segment_init (BstSegment     *self,
                   BstSegmentType  type,
                   GdkDrawable    *drawable)
 {
-  g_return_if_fail (self != NULL);
-  g_return_if_fail (self->type == 0);
-  g_return_if_fail (GDK_IS_DRAWABLE (drawable));
+  assert_return (self != NULL);
+  assert_return (self->type == 0);
+  assert_return (GDK_IS_DRAWABLE (drawable));
 
   self->type = type;
   self->any.drawable = (GdkDrawable*) g_object_ref (drawable);

@@ -146,7 +146,7 @@ rc_file_try_statement (gpointer   context_data,
 		       gpointer   user_data)
 {
   BseServer *server = (BseServer*) context_data;
-  g_assert (scanner->next_token == G_TOKEN_IDENTIFIER);
+  assert (scanner->next_token == G_TOKEN_IDENTIFIER);
   if (strcmp ("bse-preferences", scanner->next_value.v_identifier) == 0)
     {
       GValue *value = sfi_value_rec (NULL);
@@ -169,7 +169,7 @@ rc_file_try_statement (gpointer   context_data,
 static void
 bse_server_init (BseServer *self)
 {
-  g_assert (BSE_OBJECT_ID (self) == 1);	/* assert being the first object */
+  assert (BSE_OBJECT_ID (self) == 1);	/* assert being the first object */
   BSE_OBJECT_SET_FLAGS (self, BSE_ITEM_FLAG_SINGLETON);
 
   self->engine_source = NULL;
@@ -277,7 +277,7 @@ bse_server_get_property (GObject    *object,
 void
 bse_server_notify_gconfig (BseServer *server)
 {
-  g_return_if_fail (BSE_IS_SERVER (server));
+  assert_return (BSE_IS_SERVER (server));
 
   g_object_notify ((GObject*) server, bse_gconfig_pspec ()->name);
 }
@@ -371,8 +371,8 @@ bse_server_find_project (BseServer   *server,
 {
   GList *node;
 
-  g_return_val_if_fail (BSE_IS_SERVER (server), NULL);
-  g_return_val_if_fail (name != NULL, NULL);
+  assert_return (BSE_IS_SERVER (server), NULL);
+  assert_return (name != NULL, NULL);
 
   for (node = server->projects; node; node = node->next)
     {
@@ -464,7 +464,7 @@ server_open_pcm_device (BseServer *server,
                         guint      latency,
                         guint      block_size)
 {
-  g_return_val_if_fail (server->pcm_device == NULL, Bse::ERROR_INTERNAL);
+  assert_return (server->pcm_device == NULL, Bse::ERROR_INTERNAL);
   Bse::ErrorType error = Bse::ERROR_UNKNOWN;
   PcmRequest pr;
   pr.n_channels = 2;
@@ -496,7 +496,7 @@ server_open_pcm_device (BseServer *server,
 static Bse::ErrorType
 server_open_midi_device (BseServer *server)
 {
-  g_return_val_if_fail (server->midi_device == NULL, Bse::ERROR_INTERNAL);
+  assert_return (server->midi_device == NULL, Bse::ERROR_INTERNAL);
   Bse::ErrorType error;
   server->midi_device = (BseMidiDevice*) bse_device_open_best (BSE_TYPE_MIDI_DEVICE, TRUE, FALSE, bse_main_args->midi_drivers, NULL, NULL, &error);
   if (!server->midi_device)
@@ -524,7 +524,7 @@ Bse::ErrorType
 bse_server_open_devices (BseServer *self)
 {
   Bse::ErrorType error = Bse::ERROR_NONE;
-  g_return_val_if_fail (BSE_IS_SERVER (self), Bse::ERROR_INTERNAL);
+  assert_return (BSE_IS_SERVER (self), Bse::ERROR_INTERNAL);
   /* check whether devices are already opened */
   if (self->dev_use_count)
     {
@@ -605,8 +605,8 @@ bse_server_open_devices (BseServer *self)
 void
 bse_server_close_devices (BseServer *self)
 {
-  g_return_if_fail (BSE_IS_SERVER (self));
-  g_return_if_fail (self->dev_use_count > 0);
+  assert_return (BSE_IS_SERVER (self));
+  assert_return (self->dev_use_count > 0);
 
   self->dev_use_count--;
   if (!self->dev_use_count)
@@ -641,10 +641,10 @@ bse_server_retrieve_pcm_output_module (BseServer   *self,
 				       BseSource   *source,
 				       const gchar *uplink_name)
 {
-  g_return_val_if_fail (BSE_IS_SERVER (self), NULL);
-  g_return_val_if_fail (BSE_IS_SOURCE (source), NULL);
-  g_return_val_if_fail (uplink_name != NULL, NULL);
-  g_return_val_if_fail (self->dev_use_count > 0, NULL);
+  assert_return (BSE_IS_SERVER (self), NULL);
+  assert_return (BSE_IS_SOURCE (source), NULL);
+  assert_return (uplink_name != NULL, NULL);
+  assert_return (self->dev_use_count > 0, NULL);
 
   self->dev_use_count += 1;
 
@@ -655,9 +655,9 @@ void
 bse_server_discard_pcm_output_module (BseServer *self,
 				      BseModule *module)
 {
-  g_return_if_fail (BSE_IS_SERVER (self));
-  g_return_if_fail (module != NULL);
-  g_return_if_fail (self->dev_use_count > 0);
+  assert_return (BSE_IS_SERVER (self));
+  assert_return (module != NULL);
+  assert_return (self->dev_use_count > 0);
 
   /* decrement dev_use_count */
   bse_server_close_devices (self);
@@ -668,10 +668,10 @@ bse_server_retrieve_pcm_input_module (BseServer   *self,
 				      BseSource   *source,
 				      const gchar *uplink_name)
 {
-  g_return_val_if_fail (BSE_IS_SERVER (self), NULL);
-  g_return_val_if_fail (BSE_IS_SOURCE (source), NULL);
-  g_return_val_if_fail (uplink_name != NULL, NULL);
-  g_return_val_if_fail (self->dev_use_count > 0, NULL);
+  assert_return (BSE_IS_SERVER (self), NULL);
+  assert_return (BSE_IS_SOURCE (source), NULL);
+  assert_return (uplink_name != NULL, NULL);
+  assert_return (self->dev_use_count > 0, NULL);
 
   self->dev_use_count += 1;
 
@@ -682,9 +682,9 @@ void
 bse_server_discard_pcm_input_module (BseServer *self,
 				     BseModule *module)
 {
-  g_return_if_fail (BSE_IS_SERVER (self));
-  g_return_if_fail (module != NULL);
-  g_return_if_fail (self->dev_use_count > 0);
+  assert_return (BSE_IS_SERVER (self));
+  assert_return (module != NULL);
+  assert_return (self->dev_use_count > 0);
 
   /* decrement dev_use_count */
   bse_server_close_devices (self);
@@ -699,8 +699,8 @@ void
 bse_server_script_start (BseServer  *server,
 			 BseJanitor *janitor)
 {
-  g_return_if_fail (BSE_IS_SERVER (server));
-  g_return_if_fail (BSE_IS_JANITOR (janitor));
+  assert_return (BSE_IS_SERVER (server));
+  assert_return (BSE_IS_JANITOR (janitor));
 
   g_signal_emit (server, signal_script_start, 0, janitor);
 }
@@ -711,7 +711,7 @@ bse_server_registration (BseServer          *server,
 			 const gchar	    *what,
 			 const gchar	    *error)
 {
-  g_return_if_fail (BSE_IS_SERVER (server));
+  assert_return (BSE_IS_SERVER (server));
 
   g_signal_emit (server, signal_registration, 0, rtype, what, error);
 }
@@ -729,10 +729,10 @@ bse_server_script_error (BseServer   *server,
 			 const gchar *proc_name,
 			 const gchar *reason)
 {
-  g_return_if_fail (BSE_IS_SERVER (server));
-  g_return_if_fail (script_name != NULL);
-  g_return_if_fail (proc_name != NULL);
-  g_return_if_fail (reason != NULL);
+  assert_return (BSE_IS_SERVER (server));
+  assert_return (script_name != NULL);
+  assert_return (proc_name != NULL);
+  assert_return (reason != NULL);
   g_signal_emit (server, signal_script_error, 0,
 		 script_name, proc_name, reason);
 }
@@ -744,9 +744,9 @@ bse_server_add_io_watch (BseServer      *server,
 			 BseIOWatch      watch_func,
 			 gpointer        data)
 {
-  g_return_if_fail (BSE_IS_SERVER (server));
-  g_return_if_fail (watch_func != NULL);
-  g_return_if_fail (fd >= 0);
+  assert_return (BSE_IS_SERVER (server));
+  assert_return (watch_func != NULL);
+  assert_return (fd >= 0);
   iowatch_add (server, fd, events, watch_func, data);
 }
 
@@ -755,8 +755,8 @@ bse_server_remove_io_watch (BseServer *server,
 			    BseIOWatch watch_func,
 			    gpointer   data)
 {
-  g_return_if_fail (BSE_IS_SERVER (server));
-  g_return_if_fail (watch_func != NULL);
+  assert_return (BSE_IS_SERVER (server));
+  assert_return (watch_func != NULL);
 
   if (!iowatch_remove (server, watch_func, data))
     g_warning (G_STRLOC ": no such io watch installed %p(%p)", watch_func, data);
@@ -773,10 +773,10 @@ bse_server_run_remote (BseServer         *server,
   gint child_pid, command_input, command_output;
   BseJanitor *janitor = NULL;
 
-  g_return_val_if_fail (BSE_IS_SERVER (server), Bse::ERROR_INTERNAL);
-  g_return_val_if_fail (process_name != NULL, Bse::ERROR_INTERNAL);
-  g_return_val_if_fail (script_name != NULL, Bse::ERROR_INTERNAL);
-  g_return_val_if_fail (proc_name != NULL, Bse::ERROR_INTERNAL);
+  assert_return (BSE_IS_SERVER (server), Bse::ERROR_INTERNAL);
+  assert_return (process_name != NULL, Bse::ERROR_INTERNAL);
+  assert_return (script_name != NULL, Bse::ERROR_INTERNAL);
+  assert_return (proc_name != NULL, Bse::ERROR_INTERNAL);
 
   child_pid = command_input = command_output = -1;
   const char *reason = sfi_com_spawn_async (process_name,
@@ -884,7 +884,7 @@ main_thread_source_setup (BseServer *self)
   MainSource *xsource = (MainSource*) source;
   static gboolean single_call = 0;
 
-  g_assert (single_call++ == 0);
+  assert (single_call++ == 0);
 
   xsource->server = self;
   g_source_set_priority (source, BSE_PRIORITY_NORMAL);
@@ -1069,7 +1069,7 @@ engine_init (BseServer *server,
   };
   static gboolean engine_is_initialized = FALSE;
 
-  g_return_if_fail (server->engine_source == NULL);
+  assert_return (server->engine_source == NULL);
 
   bse_gconfig_lock ();
   server->engine_source = g_source_new (&engine_gsource_funcs, sizeof (PSource));
@@ -1093,7 +1093,7 @@ engine_init (BseServer *server,
 static void
 engine_shutdown (BseServer *server)
 {
-  g_return_if_fail (server->engine_source != NULL);
+  assert_return (server->engine_source != NULL);
 
   g_source_destroy (server->engine_source);
   server->engine_source = NULL;

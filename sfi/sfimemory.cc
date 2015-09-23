@@ -92,7 +92,7 @@ sfi_alloc_memblock (gsize block_size)
 {
   uint8 *cmem;
   size_t *debug_size;
-  g_return_val_if_fail (block_size >= sizeof (gpointer), NULL);	/* cache-link size */
+  assert_return (block_size >= sizeof (gpointer), NULL);	/* cache-link size */
   cmem = (uint8*) low_alloc (block_size + DBG8_SIZE);
   debug_size = (gsize*) cmem;
   *debug_size = block_size;
@@ -105,7 +105,7 @@ sfi_free_memblock (gsize    block_size,
 {
   size_t *debug_size;
   uint8 *cmem;
-  g_return_if_fail (mem != NULL);
+  assert_return (mem != NULL);
   cmem = (uint8*) mem;
   cmem -= DBG8_SIZE;
   debug_size = (gsize*) cmem;
@@ -155,8 +155,8 @@ _sfi_free_node_list (gpointer mem,
   struct LinkedData { gpointer data; LinkedData *next; };
   LinkedData *tmp, *node = (LinkedData*) mem;
 
-  g_return_if_fail (node != NULL);
-  g_return_if_fail (node_size >= 2 * sizeof (gpointer));
+  assert_return (node != NULL);
+  assert_return (node_size >= 2 * sizeof (gpointer));
 
   /* FIXME: this can be optimized to an O(1) operation with T-style links in mem-caches */
   do

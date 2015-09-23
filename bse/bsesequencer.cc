@@ -49,7 +49,7 @@ public:
   fill_pfds (guint    n_pfds,
              GPollFD *pfds)
   {
-    g_assert (n_pfds == watch_pfds.size());
+    assert (n_pfds == watch_pfds.size());
     copy (watch_pfds.begin(), watch_pfds.end(), pfds);
     for (guint i = 0; i < watches.size(); i++)
       watches[i].notify_pfds = pfds + watches[i].index;
@@ -132,7 +132,7 @@ public:
 void
 Sequencer::add_io_watch (uint n_pfds, const GPollFD *pfds, BseIOWatch watch_func, void *watch_data)
 {
-  g_return_if_fail (watch_func != NULL);
+  assert_return (watch_func != NULL);
   BSE_SEQUENCER_LOCK();
   poll_pool_->add_watch (n_pfds, pfds, watch_func, watch_data);
   BSE_SEQUENCER_UNLOCK();
@@ -146,7 +146,7 @@ static bool       current_watch_needs_remove2 = false;
 void
 Sequencer::remove_io_watch (BseIOWatch watch_func, void *watch_data)
 {
-  g_return_if_fail (watch_func != NULL);
+  assert_return (watch_func != NULL);
   /* removal requirements:
    * - any thread should be able to remove an io watch (once)
    * - a watch_func() should be able to remove its own io watch
@@ -215,7 +215,7 @@ Sequencer::pool_poll_Lm (gint timeout_ms)
       GPollFD *watch_pfds;
       while (poll_pool_->fetch_notify_watch (current_watch_func, current_watch_data, watch_n_pfds, watch_pfds))
         {
-          g_assert (!current_watch_needs_remove1 && !current_watch_needs_remove2);
+          assert (!current_watch_needs_remove1 && !current_watch_needs_remove2);
           BSE_SEQUENCER_UNLOCK();
           bool current_watch_stays_alive = current_watch_func (current_watch_data, watch_n_pfds, watch_pfds);
           BSE_SEQUENCER_LOCK();
@@ -236,10 +236,10 @@ Sequencer::pool_poll_Lm (gint timeout_ms)
 void
 Sequencer::start_song (BseSong *song, uint64 start_stamp)
 {
-  g_return_if_fail (BSE_IS_SONG (song));
-  g_return_if_fail (BSE_SOURCE_PREPARED (song));
-  g_return_if_fail (song->sequencer_start_request_SL == 0);
-  g_assert (song->sequencer_owns_refcount_SL == false);
+  assert_return (BSE_IS_SONG (song));
+  assert_return (BSE_SOURCE_PREPARED (song));
+  assert_return (song->sequencer_start_request_SL == 0);
+  assert (song->sequencer_owns_refcount_SL == false);
   start_stamp = MAX (start_stamp, 1);
 
   g_object_ref (song);
@@ -264,11 +264,11 @@ Sequencer::start_song (BseSong *song, uint64 start_stamp)
 void
 Sequencer::remove_song (BseSong *song)
 {
-  g_return_if_fail (BSE_IS_SONG (song));
-  g_return_if_fail (BSE_SOURCE_PREPARED (song));
+  assert_return (BSE_IS_SONG (song));
+  assert_return (BSE_SOURCE_PREPARED (song));
   if (song->sequencer_start_request_SL == 0)
     {
-      g_assert (song->sequencer_owns_refcount_SL == false);
+      assert (song->sequencer_owns_refcount_SL == false);
       return;   // uncontained
     }
   BSE_SEQUENCER_LOCK();
@@ -306,7 +306,7 @@ sequencer_remove_song_async (gpointer data) /* UserThread */
 static void
 sequencer_queue_remove_song_SL (BseSong *song)
 {
-  g_return_if_fail (song->sequencer_owns_refcount_SL == true);
+  assert_return (song->sequencer_owns_refcount_SL == true);
   song->sequencer_owns_refcount_SL = false;     // g_object_unref() in sequencer_remove_song_async()
   // queue a job into the BSE core for immediate execution
   bse_idle_now (sequencer_remove_song_async, song);

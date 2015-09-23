@@ -192,9 +192,9 @@ void
 gxk_scroll_canvas_set_hadjustment (GxkScrollCanvas *self,
                                    GtkAdjustment   *adjustment)
 {
-  g_return_if_fail (GXK_IS_SCROLL_CANVAS (self));
+  assert_return (GXK_IS_SCROLL_CANVAS (self));
   if (adjustment)
-    g_return_if_fail (GTK_IS_ADJUSTMENT (adjustment));
+    assert_return (GTK_IS_ADJUSTMENT (adjustment));
 
   if (self->hadjustment)
     {
@@ -221,9 +221,9 @@ void
 gxk_scroll_canvas_set_vadjustment (GxkScrollCanvas *self,
                                    GtkAdjustment   *adjustment)
 {
-  g_return_if_fail (GXK_IS_SCROLL_CANVAS (self));
+  assert_return (GXK_IS_SCROLL_CANVAS (self));
   if (adjustment)
-    g_return_if_fail (GTK_IS_ADJUSTMENT (adjustment));
+    assert_return (GTK_IS_ADJUSTMENT (adjustment));
 
   if (self->vadjustment)
     {
@@ -260,7 +260,7 @@ scroll_canvas_set_scroll_adjustments (GxkScrollCanvas *self,
 void
 gxk_scroll_canvas_reset_pango_layouts (GxkScrollCanvas *self)
 {
-  g_return_if_fail (GXK_IS_SCROLL_CANVAS (self));
+  assert_return (GXK_IS_SCROLL_CANVAS (self));
   /* resort to destroying the layouts to force recreation,
    * so things like merging a font_desc with STYLE->font_desc
    * take effect.
@@ -447,7 +447,7 @@ void
 gxk_scroll_canvas_reallocate (GxkScrollCanvas *self)
 {
   GxkScrollCanvasClass *klass;
-  g_return_if_fail (GXK_IS_SCROLL_CANVAS (self));
+  assert_return (GXK_IS_SCROLL_CANVAS (self));
   klass = GXK_SCROLL_CANVAS_GET_CLASS (self);
 
   /* one reason we could be called is simply that self->layout has changed */
@@ -1034,7 +1034,7 @@ gxk_scroll_canvas_set_window_cursor (GxkScrollCanvas *self,
                                      GdkCursorType    cursor)
 {
   GdkCursorType ocursor;
-  g_return_if_fail (GXK_IS_SCROLL_CANVAS (self));
+  assert_return (GXK_IS_SCROLL_CANVAS (self));
   ocursor = (GdkCursorType) g_object_get_long (self, "window_cursor");
   if (cursor != ocursor)
     {
@@ -1050,7 +1050,7 @@ gxk_scroll_canvas_set_canvas_cursor (GxkScrollCanvas *self,
                                      GdkCursorType    cursor)
 {
   GdkCursorType ocursor;
-  g_return_if_fail (GXK_IS_SCROLL_CANVAS (self));
+  assert_return (GXK_IS_SCROLL_CANVAS (self));
   ocursor = (GdkCursorType) g_object_get_long (self, "canvas_cursor");
   if (cursor != ocursor)
     {
@@ -1065,7 +1065,7 @@ gxk_scroll_canvas_set_top_panel_cursor (GxkScrollCanvas *self,
                                         GdkCursorType    cursor)
 {
   GdkCursorType ocursor;
-  g_return_if_fail (GXK_IS_SCROLL_CANVAS (self));
+  assert_return (GXK_IS_SCROLL_CANVAS (self));
   ocursor = (GdkCursorType) g_object_get_long (self, "top_panel_cursor");
   if (cursor != ocursor)
     {
@@ -1080,7 +1080,7 @@ gxk_scroll_canvas_set_left_panel_cursor (GxkScrollCanvas *self,
                                          GdkCursorType    cursor)
 {
   GdkCursorType ocursor;
-  g_return_if_fail (GXK_IS_SCROLL_CANVAS (self));
+  assert_return (GXK_IS_SCROLL_CANVAS (self));
   ocursor = (GdkCursorType) g_object_get_long (self, "left_panel_cursor");
   if (cursor != ocursor)
     {
@@ -1095,7 +1095,7 @@ gxk_scroll_canvas_set_right_panel_cursor (GxkScrollCanvas *self,
                                           GdkCursorType    cursor)
 {
   GdkCursorType ocursor;
-  g_return_if_fail (GXK_IS_SCROLL_CANVAS (self));
+  assert_return (GXK_IS_SCROLL_CANVAS (self));
   ocursor = (GdkCursorType) g_object_get_long (self, "right_panel_cursor");
   if (cursor != ocursor)
     {
@@ -1110,7 +1110,7 @@ gxk_scroll_canvas_set_bottom_panel_cursor (GxkScrollCanvas *self,
                                            GdkCursorType    cursor)
 {
   GdkCursorType ocursor;
-  g_return_if_fail (GXK_IS_SCROLL_CANVAS (self));
+  assert_return (GXK_IS_SCROLL_CANVAS (self));
   ocursor = (GdkCursorType) g_object_get_long (self, "bottom_panel_cursor");
   if (cursor != ocursor)
     {
@@ -1125,7 +1125,7 @@ gxk_scroll_canvas_get_pango_layout (GxkScrollCanvas        *self,
                                     guint                   nth)
 {
   guint i;
-  g_return_val_if_fail (GXK_IS_SCROLL_CANVAS (self), NULL);
+  assert_return (GXK_IS_SCROLL_CANVAS (self), NULL);
 
   if (nth >= self->n_pango_layouts)
     {
@@ -1147,7 +1147,7 @@ PangoLayout*
 gxk_scroll_canvas_peek_pango_layout (GxkScrollCanvas        *self,
                                      guint                   nth)
 {
-  g_return_val_if_fail (GXK_IS_SCROLL_CANVAS (self), NULL);
+  assert_return (GXK_IS_SCROLL_CANVAS (self), NULL);
   return nth < self->n_pango_layouts ? self->pango_layouts[nth] : NULL;
 }
 
@@ -1346,7 +1346,7 @@ scroll_canvas_scroll_adjustments (GxkScrollCanvas *self,
 gboolean
 gxk_scroll_canvas_dragging (GxkScrollCanvas *self)
 {
-  g_return_val_if_fail (GXK_IS_SCROLL_CANVAS (self), FALSE);
+  assert_return (GXK_IS_SCROLL_CANVAS (self), FALSE);
   GxkScrollCanvasDrag *drag = DRAG (self);
   return drag != NULL;
 }
@@ -1354,7 +1354,7 @@ gxk_scroll_canvas_dragging (GxkScrollCanvas *self)
 void
 gxk_scroll_canvas_drag_abort (GxkScrollCanvas *self)
 {
-  g_return_if_fail (GXK_IS_SCROLL_CANVAS (self));
+  assert_return (GXK_IS_SCROLL_CANVAS (self));
   GxkScrollCanvasDrag *drag = DRAG (self);
   if (drag)
     {
@@ -1566,7 +1566,7 @@ gxk_scroll_canvas_scroll_to (GxkScrollCanvas *self,
                              gint             scroll_area_x,
                              gint             scroll_area_y)
 {
-  g_return_if_fail (GXK_IS_SCROLL_CANVAS (self));
+  assert_return (GXK_IS_SCROLL_CANVAS (self));
 
   if (GTK_WIDGET_REALIZED (self))
     {
@@ -1598,7 +1598,7 @@ gxk_scroll_canvas_make_visible (GxkScrollCanvas *self,
                                 gint             scroll_area_width,
                                 gint             scroll_area_height)
 {
-  g_return_if_fail (GXK_IS_SCROLL_CANVAS (self));
+  assert_return (GXK_IS_SCROLL_CANVAS (self));
   if (GTK_WIDGET_REALIZED (self))
     {
       gint ihv = self->hadjustment->value;
@@ -1626,7 +1626,7 @@ gxk_scroll_canvas_lookup_marker (GxkScrollCanvas *self,
                                  guint           *countp)
 {
   guint i;
-  g_return_val_if_fail (GXK_IS_SCROLL_CANVAS (self), NULL);
+  assert_return (GXK_IS_SCROLL_CANVAS (self), NULL);
 
   if (countp)
     *countp = 0;
@@ -1651,8 +1651,8 @@ gxk_scroll_canvas_add_marker (GxkScrollCanvas *self,
 {
   GxkScrollMarker *marker;
   guint i;
-  g_return_val_if_fail (GXK_IS_SCROLL_CANVAS (self), NULL);
-  g_return_val_if_fail (index > 0, NULL);
+  assert_return (GXK_IS_SCROLL_CANVAS (self), NULL);
+  assert_return (index > 0, NULL);
 
   for (i = 0; i < self->n_markers; i++)
     if (index < self->markers[i].index)
@@ -1671,8 +1671,8 @@ gxk_scroll_canvas_remove_marker (GxkScrollCanvas *self,
                                  GxkScrollMarker *marker)
 {
   guint i;
-  g_return_if_fail (GXK_IS_SCROLL_CANVAS (self));
-  g_return_if_fail (marker != NULL);
+  assert_return (GXK_IS_SCROLL_CANVAS (self));
+  assert_return (marker != NULL);
 
   i = marker - self->markers;
   gxk_scroll_canvas_setup_marker (self, marker, NULL, 0, 0, 0, 0);
@@ -1690,11 +1690,11 @@ gxk_scroll_canvas_setup_marker (GxkScrollCanvas *self,
                                 guint            height)
 {
   GtkWidget *widget;
-  g_return_if_fail (GXK_IS_SCROLL_CANVAS (self));
-  g_return_if_fail (marker != NULL);
+  assert_return (GXK_IS_SCROLL_CANVAS (self));
+  assert_return (marker != NULL);
   widget = GTK_WIDGET (self);
   if (windowp)
-    g_return_if_fail (windowp == &widget->window || windowp == &self->canvas ||
+    assert_return (windowp == &widget->window || windowp == &self->canvas ||
                       windowp == &self->top_panel || windowp == &self->left_panel ||
                       windowp == &self->right_panel || windowp == &self->bottom_panel);
 
@@ -1714,8 +1714,8 @@ gxk_scroll_canvas_move_marker (GxkScrollCanvas        *self,
                                guint                   x,
                                guint                   y)
 {
-  g_return_if_fail (GXK_IS_SCROLL_CANVAS (self));
-  g_return_if_fail (marker != NULL);
+  assert_return (GXK_IS_SCROLL_CANVAS (self));
+  assert_return (marker != NULL);
 
   uint ox = marker->extends.x;
   uint oy = marker->extends.y;
@@ -1872,7 +1872,7 @@ void
 gxk_scroll_canvas_class_skin_changed (GxkScrollCanvasClass *klass)
 {
   GSList *slist;
-  g_return_if_fail (GXK_IS_SCROLL_CANVAS_CLASS (klass));
+  assert_return (GXK_IS_SCROLL_CANVAS_CLASS (klass));
   for (slist = klass->realized_widgets; slist; slist = slist->next)
     scroll_canvas_reset_skin_and_style ((GxkScrollCanvas*) slist->data, TRUE);
 }

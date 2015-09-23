@@ -231,7 +231,7 @@ bst_effect_view_new (BseSong *song)
 {
   GtkWidget *effect_view;
 
-  g_return_val_if_fail (BSE_IS_SONG (song), NULL);
+  assert_return (BSE_IS_SONG (song), NULL);
 
   effect_view = gtk_widget_new (BST_TYPE_EFFECT_VIEW, NULL);
 
@@ -244,12 +244,12 @@ bst_effect_view_set_note (BstEffectView *effect_view,
 			  guint          channel,
 			  guint          row)
 {
-  g_return_if_fail (BST_IS_EFFECT_VIEW (effect_view));
+  assert_return (BST_IS_EFFECT_VIEW (effect_view));
   if (pattern)
     {
-      g_return_if_fail (BSE_IS_PATTERN (pattern));
-      g_return_if_fail (channel < BSE_PATTERN_N_CHANNELS (pattern));
-      g_return_if_fail (row < BSE_PATTERN_N_ROWS (pattern));
+      assert_return (BSE_IS_PATTERN (pattern));
+      assert_return (channel < BSE_PATTERN_N_CHANNELS (pattern));
+      assert_return (row < BSE_PATTERN_N_ROWS (pattern));
     }
   else
     {
@@ -283,7 +283,7 @@ bst_effect_view_note_changed (BstEffectView *effect_view,
 			      guint          row,
 			      BsePattern    *pattern)
 {
-  g_return_if_fail (effect_view->pattern == pattern);
+  assert_return (effect_view->pattern == pattern);
 
   if (channel == effect_view->channel && row == effect_view->row)
     update_effect_lists (effect_view);

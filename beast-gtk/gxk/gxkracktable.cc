@@ -273,8 +273,8 @@ gxk_rack_table_draw_area (GxkRackTable *self,
   GtkTable *table = GTK_TABLE (self);
   guint i, x, y, width, height, hcell2 = hcell1 + hspan, vcell2 = vcell1 + vspan;
 
-  g_return_if_fail (hspan > 0 && hcell2 <= table->ncols);
-  g_return_if_fail (vspan > 0 && vcell2 <= table->nrows);
+  assert_return (hspan > 0 && hcell2 <= table->ncols);
+  assert_return (vspan > 0 && vcell2 <= table->nrows);
 
   x = GTK_CONTAINER (widget)->border_width + widget->allocation.x;
   width = 0;
@@ -673,7 +673,7 @@ gxk_rack_table_update_child_map (GxkRackTable *self)
 void
 gxk_rack_table_cover_up (GxkRackTable *self)
 {
-  g_return_if_fail (GXK_IS_RACK_TABLE (self));
+  assert_return (GXK_IS_RACK_TABLE (self));
   if (!self->covers)
     self->covers = rack_cover_add_plates (self);
 }
@@ -681,7 +681,7 @@ gxk_rack_table_cover_up (GxkRackTable *self)
 void
 gxk_rack_table_uncover (GxkRackTable *self)
 {
-  g_return_if_fail (GXK_IS_RACK_TABLE (self));
+  assert_return (GXK_IS_RACK_TABLE (self));
   while (self->covers)
     {
       GtkWidget *widget = (GtkWidget*) g_slist_pop_head (&self->covers);

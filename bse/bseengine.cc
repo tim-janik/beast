@@ -38,8 +38,8 @@ bse_module_new (const BseModuleClass *klass,
   EngineNode *node;
   guint i;
 
-  g_return_val_if_fail (klass != NULL, NULL);
-  g_return_val_if_fail (klass->process != NULL || klass->process_defer != NULL, NULL);
+  assert_return (klass != NULL, NULL);
+  assert_return (klass->process != NULL || klass->process_defer != NULL, NULL);
   if (klass->process_defer)
     {
       g_warning ("%s: Delay cycle processing not yet implemented", G_STRLOC);
@@ -85,7 +85,7 @@ bse_module_new (const BseModuleClass *klass,
 guint64
 bse_module_tick_stamp (BseModule *module)
 {
-  g_return_val_if_fail (module != NULL, 0);
+  assert_return (module != NULL, 0);
 
   return ENGINE_NODE (module)->counter;
 }
@@ -108,8 +108,8 @@ gboolean
 bse_module_has_source (BseModule *module,
                        guint      istream)
 {
-  g_return_val_if_fail (module != NULL, FALSE);
-  g_return_val_if_fail (istream < module->klass->n_istreams, FALSE);
+  assert_return (module != NULL, FALSE);
+  assert_return (istream < module->klass->n_istreams, FALSE);
 
   return ENGINE_NODE (module)->inputs[istream].src_node != NULL;
 }
@@ -127,7 +127,7 @@ bse_module_has_source (BseModule *module,
 gboolean
 bse_module_is_scheduled (BseModule *module)
 {
-  g_return_val_if_fail (module != NULL, FALSE);
+  assert_return (module != NULL, FALSE);
   EngineNode *node = ENGINE_NODE (module);
   return ENGINE_NODE_IS_INTEGRATED (node) && ENGINE_NODE_IS_SCHEDULED (node);
 }
@@ -144,7 +144,7 @@ bse_job_integrate (BseModule *module)
 {
   BseJob *job;
 
-  g_return_val_if_fail (module != NULL, NULL);
+  assert_return (module != NULL, NULL);
 
   job = sfi_new_struct0 (BseJob, 1);
   job->job_id = ENGINE_JOB_INTEGRATE;
@@ -167,7 +167,7 @@ bse_job_discard (BseModule *module)
 {
   BseJob *job;
 
-  g_return_val_if_fail (module != NULL, NULL);
+  assert_return (module != NULL, NULL);
 
   job = sfi_new_struct0 (BseJob, 1);
   job->job_id = ENGINE_JOB_DISCARD;
@@ -189,7 +189,7 @@ bse_job_kill_inputs (BseModule *module)
 {
   BseJob *job;
 
-  g_return_val_if_fail (module != NULL, NULL);
+  assert_return (module != NULL, NULL);
 
   job = sfi_new_struct0 (BseJob, 1);
   job->job_id = ENGINE_JOB_KILL_INPUTS;
@@ -211,7 +211,7 @@ bse_job_kill_outputs (BseModule *module)
 {
   BseJob *job;
 
-  g_return_val_if_fail (module != NULL, NULL);
+  assert_return (module != NULL, NULL);
 
   job = sfi_new_struct0 (BseJob, 1);
   job->job_id = ENGINE_JOB_KILL_OUTPUTS;
@@ -241,10 +241,10 @@ bse_job_connect (BseModule *src_module,
 {
   BseJob *job;
 
-  g_return_val_if_fail (src_module != NULL, NULL);
-  g_return_val_if_fail (src_ostream < src_module->klass->n_ostreams, NULL);
-  g_return_val_if_fail (dest_module != NULL, NULL);
-  g_return_val_if_fail (dest_istream < dest_module->klass->n_istreams, NULL);
+  assert_return (src_module != NULL, NULL);
+  assert_return (src_ostream < src_module->klass->n_ostreams, NULL);
+  assert_return (dest_module != NULL, NULL);
+  assert_return (dest_istream < dest_module->klass->n_istreams, NULL);
 
   job = sfi_new_struct0 (BseJob, 1);
   job->job_id = ENGINE_JOB_IC0NNECT;
@@ -276,10 +276,10 @@ bse_job_jconnect (BseModule *src_module,
 {
   BseJob *job;
 
-  g_return_val_if_fail (src_module != NULL, NULL);
-  g_return_val_if_fail (src_ostream < src_module->klass->n_ostreams, NULL);
-  g_return_val_if_fail (dest_module != NULL, NULL);
-  g_return_val_if_fail (dest_jstream < dest_module->klass->n_jstreams, NULL);
+  assert_return (src_module != NULL, NULL);
+  assert_return (src_ostream < src_module->klass->n_ostreams, NULL);
+  assert_return (dest_module != NULL, NULL);
+  assert_return (dest_jstream < dest_module->klass->n_jstreams, NULL);
 
   job = sfi_new_struct0 (BseJob, 1);
   job->job_id = ENGINE_JOB_JCONNECT;
@@ -307,8 +307,8 @@ bse_job_disconnect (BseModule *dest_module,
 {
   BseJob *job;
 
-  g_return_val_if_fail (dest_module != NULL, NULL);
-  g_return_val_if_fail (dest_istream < dest_module->klass->n_istreams, NULL);
+  assert_return (dest_module != NULL, NULL);
+  assert_return (dest_istream < dest_module->klass->n_istreams, NULL);
 
   job = sfi_new_struct0 (BseJob, 1);
   job->job_id = ENGINE_JOB_IDISCONNECT;
@@ -343,10 +343,10 @@ bse_job_jdisconnect (BseModule *dest_module,
 {
   BseJob *job;
 
-  g_return_val_if_fail (dest_module != NULL, NULL);
-  g_return_val_if_fail (dest_jstream < dest_module->klass->n_jstreams, NULL);
-  g_return_val_if_fail (src_module != NULL, NULL);
-  g_return_val_if_fail (src_ostream < src_module->klass->n_ostreams, NULL);
+  assert_return (dest_module != NULL, NULL);
+  assert_return (dest_jstream < dest_module->klass->n_jstreams, NULL);
+  assert_return (src_module != NULL, NULL);
+  assert_return (src_ostream < src_module->klass->n_ostreams, NULL);
 
   job = sfi_new_struct0 (BseJob, 1);
   job->job_id = ENGINE_JOB_JDISCONNECT;
@@ -364,8 +364,8 @@ bse_job_set_consumer (BseModule *module,
 {
   BseJob *job;
 
-  g_return_val_if_fail (module != NULL, NULL);
-  g_return_val_if_fail (ENGINE_MODULE_IS_VIRTUAL (module) == FALSE, NULL);
+  assert_return (module != NULL, NULL);
+  assert_return (ENGINE_MODULE_IS_VIRTUAL (module) == FALSE, NULL);
 
   job = sfi_new_struct0 (BseJob, 1);
   job->job_id = is_toplevel_consumer ? ENGINE_JOB_SET_CONSUMER : ENGINE_JOB_UNSET_CONSUMER;
@@ -392,7 +392,7 @@ bse_job_force_reset (BseModule *module)
 {
   BseJob *job;
 
-  g_return_val_if_fail (module != NULL, NULL);
+  assert_return (module != NULL, NULL);
 
   job = sfi_new_struct0 (BseJob, 1);
   job->job_id = ENGINE_JOB_FORCE_RESET;
@@ -432,8 +432,8 @@ bse_job_access (BseModule    *module,
 {
   BseJob *job;
 
-  g_return_val_if_fail (module != NULL, NULL);
-  g_return_val_if_fail (access_func != NULL, NULL);
+  assert_return (module != NULL, NULL);
+  assert_return (access_func != NULL, NULL);
 
   job = sfi_new_struct0 (BseJob, 1);
   job->job_id = ENGINE_JOB_ACCESS;
@@ -458,7 +458,7 @@ void
 bse_engine_add_user_callback (gpointer      data,
                               BseFreeFunc   free_func)
 {
-  g_return_if_fail (free_func != NULL);
+  assert_return (free_func != NULL);
 
   BseJob *job = sfi_new_struct0 (BseJob, 1);
   job->job_id = ENGINE_JOB_ACCESS;
@@ -516,9 +516,9 @@ bse_job_probe_request (BseModule         *module,
                        BseEngineProbeFunc probe_func,
                        gpointer           data)
 {
-  g_return_val_if_fail (module != NULL, NULL);
+  assert_return (module != NULL, NULL);
   EngineNode *node = ENGINE_NODE (module);
-  g_return_val_if_fail (probe_func != NULL, NULL);
+  assert_return (probe_func != NULL, NULL);
 
   EngineTimedJob *tjob = (EngineTimedJob*) g_malloc0 (sizeof (tjob->probe));
   tjob->type = ENGINE_JOB_PROBE_JOB;
@@ -562,10 +562,10 @@ bse_job_flow_access (BseModule    *module,
 		     BseFreeFunc   free_func)
 {
   BseJob *job;
-  g_return_val_if_fail (module != NULL, NULL);
-  g_return_val_if_fail (ENGINE_MODULE_IS_VIRTUAL (module) == FALSE, NULL);
-  g_return_val_if_fail (tick_stamp < Bse::TickStamp::max_stamp(), NULL);
-  g_return_val_if_fail (access_func != NULL, NULL);
+  assert_return (module != NULL, NULL);
+  assert_return (ENGINE_MODULE_IS_VIRTUAL (module) == FALSE, NULL);
+  assert_return (tick_stamp < Bse::TickStamp::max_stamp(), NULL);
+  assert_return (access_func != NULL, NULL);
   EngineTimedJob *tjob = (EngineTimedJob*) g_malloc0 (sizeof (tjob->access));
   tjob->type = ENGINE_JOB_FLOW_JOB;
   tjob->tick_stamp = tick_stamp;
@@ -603,10 +603,10 @@ bse_job_boundary_access (BseModule    *module,
                          BseFreeFunc   free_func)
 {
   BseJob *job;
-  g_return_val_if_fail (module != NULL, NULL);
-  g_return_val_if_fail (ENGINE_MODULE_IS_VIRTUAL (module) == FALSE, NULL);
-  g_return_val_if_fail (tick_stamp < Bse::TickStamp::max_stamp(), NULL);
-  g_return_val_if_fail (access_func != NULL, NULL);
+  assert_return (module != NULL, NULL);
+  assert_return (ENGINE_MODULE_IS_VIRTUAL (module) == FALSE, NULL);
+  assert_return (tick_stamp < Bse::TickStamp::max_stamp(), NULL);
+  assert_return (access_func != NULL, NULL);
   EngineTimedJob *tjob = (EngineTimedJob*) g_malloc0 (sizeof (tjob->access));
   tjob->type = ENGINE_JOB_BOUNDARY_JOB;
   tjob->tick_stamp = tick_stamp;
@@ -643,7 +643,7 @@ bse_engine_boundary_discard (BseModule      *module,
 BseJob*
 bse_job_boundary_discard (BseModule *module)
 {
-  g_return_val_if_fail (module != NULL, NULL);
+  assert_return (module != NULL, NULL);
 
   EngineTimedJob *tjob = (EngineTimedJob*) g_malloc0 (sizeof (tjob->access));
   tjob->type = ENGINE_JOB_BOUNDARY_JOB;
@@ -674,8 +674,8 @@ bse_job_boundary_discard (BseModule *module)
 BseJob*
 bse_job_suspend_now (BseModule *module)
 {
-  g_return_val_if_fail (module != NULL, NULL);
-  g_return_val_if_fail (ENGINE_MODULE_IS_VIRTUAL (module) == FALSE, NULL);
+  assert_return (module != NULL, NULL);
+  assert_return (ENGINE_MODULE_IS_VIRTUAL (module) == FALSE, NULL);
   BseJob *job = sfi_new_struct0 (BseJob, 1);
   job->job_id = ENGINE_JOB_SUSPEND;
   job->tick.node = ENGINE_NODE (module);
@@ -701,9 +701,9 @@ BseJob*
 bse_job_resume_at (BseModule *module,
                    guint64    tick_stamp)
 {
-  g_return_val_if_fail (module != NULL, NULL);
-  g_return_val_if_fail (ENGINE_MODULE_IS_VIRTUAL (module) == FALSE, NULL);
-  g_return_val_if_fail (tick_stamp < Bse::TickStamp::max_stamp(), NULL);
+  assert_return (module != NULL, NULL);
+  assert_return (ENGINE_MODULE_IS_VIRTUAL (module) == FALSE, NULL);
+  assert_return (tick_stamp < Bse::TickStamp::max_stamp(), NULL);
   BseJob *job = sfi_new_struct0 (BseJob, 1);
   job->job_id = ENGINE_JOB_RESUME;
   job->tick.node = ENGINE_NODE (module);
@@ -754,9 +754,9 @@ bse_job_add_poll (BseEnginePollFunc    poll_func,
 {
   BseJob *job;
 
-  g_return_val_if_fail (poll_func != NULL, NULL);
+  assert_return (poll_func != NULL, NULL);
   if (n_fds)
-    g_return_val_if_fail (fds != NULL, NULL);
+    assert_return (fds != NULL, NULL);
 
   job = sfi_new_struct0 (BseJob, 1);
   job->job_id = ENGINE_JOB_ADD_POLL;
@@ -784,7 +784,7 @@ bse_job_remove_poll (BseEnginePollFunc poll_func,
 {
   BseJob *job;
 
-  g_return_val_if_fail (poll_func != NULL, NULL);
+  assert_return (poll_func != NULL, NULL);
 
   job = sfi_new_struct0 (BseJob, 1);
   job->job_id = ENGINE_JOB_REMOVE_POLL;
@@ -815,7 +815,7 @@ bse_job_add_timer (BseEngineTimerFunc timer_func,
 {
   BseJob *job;
 
-  g_return_val_if_fail (timer_func != NULL, NULL);
+  assert_return (timer_func != NULL, NULL);
 
   job = sfi_new_struct0 (BseJob, 1);
   job->job_id = ENGINE_JOB_ADD_TIMER;
@@ -838,7 +838,7 @@ bse_job_add_timer (BseEngineTimerFunc timer_func,
 BseJob*
 bse_job_debug (const gchar *debug)
 {
-  g_return_val_if_fail (debug != NULL, NULL);
+  assert_return (debug != NULL, NULL);
 
   BseJob *job = sfi_new_struct0 (BseJob, 1);
   job->job_id = ENGINE_JOB_MESSAGE;
@@ -900,10 +900,10 @@ void
 bse_trans_add (BseTrans *trans,
 	       BseJob   *job)
 {
-  g_return_if_fail (trans != NULL);
-  g_return_if_fail (trans->comitted == FALSE);
-  g_return_if_fail (job != NULL);
-  g_return_if_fail (job->next == NULL);
+  assert_return (trans != NULL);
+  assert_return (trans->comitted == FALSE);
+  assert_return (job != NULL);
+  assert_return (job->next == NULL);
 
   if (trans->jobs_tail)
     trans->jobs_tail->next = job;
@@ -926,10 +926,10 @@ BseTrans*
 bse_trans_merge (BseTrans *trans1,
 		 BseTrans *trans2)
 {
-  g_return_val_if_fail (trans1 != NULL, trans2);
-  g_return_val_if_fail (trans1->comitted == FALSE, trans2);
-  g_return_val_if_fail (trans2 != NULL, trans1);
-  g_return_val_if_fail (trans2->comitted == FALSE, trans1);
+  assert_return (trans1 != NULL, trans2);
+  assert_return (trans1->comitted == FALSE, trans2);
+  assert_return (trans2 != NULL, trans1);
+  assert_return (trans2->comitted == FALSE, trans1);
 
   if (!trans1->jobs_head)
     {
@@ -964,8 +964,8 @@ bse_trans_merge (BseTrans *trans1,
 guint64
 bse_trans_commit (BseTrans *trans)
 {
-  g_return_val_if_fail (trans != NULL, 0);
-  g_return_val_if_fail (trans->comitted == FALSE, 0);
+  assert_return (trans != NULL, 0);
+  assert_return (trans->comitted == FALSE, 0);
 
   guint64 exec_tick_stamp = 0;
   if (trans->jobs_head)
@@ -1023,8 +1023,8 @@ void
 bse_trans_commit_delayed (BseTrans *trans,
 			  guint64   tick_stamp)
 {
-  g_return_if_fail (trans != NULL);
-  g_return_if_fail (trans->comitted == FALSE);
+  assert_return (trans != NULL);
+  assert_return (trans->comitted == FALSE);
   if (tick_stamp <= Bse::TickStamp::current())
     bse_trans_commit (trans);
   else
@@ -1052,8 +1052,8 @@ bse_trans_commit_delayed (BseTrans *trans,
 void
 bse_trans_dismiss (BseTrans *trans)
 {
-  g_return_if_fail (trans != NULL);
-  g_return_if_fail (trans->comitted == FALSE);
+  assert_return (trans != NULL);
+  assert_return (trans->comitted == FALSE);
 
   _engine_free_trans (trans);
 }
@@ -1163,7 +1163,7 @@ bse_module_new_virtual (guint       n_iostreams,
   };
   VirtualModuleClass *vclass;
   BseModule *module;
-  g_return_val_if_fail (n_iostreams > 0, NULL);
+  assert_return (n_iostreams > 0, NULL);
   vclass = (VirtualModuleClass*) g_memdup (&virtual_module_class, sizeof (virtual_module_class));
   vclass->klass.n_istreams = n_iostreams;
   vclass->klass.n_ostreams = n_iostreams;
@@ -1224,7 +1224,7 @@ bse_engine_constrain (guint            latency_ms,
                       guint           *block_size_p,
                       guint           *control_raster_p)
 {
-  g_return_if_fail (sample_freq >= 100);
+  assert_return (sample_freq >= 100);
 
   /* depending on how stable the overall system (cpu, kernel scheduler, etc.)
    * behaves, calculating a single block may take longer than expected,
@@ -1292,7 +1292,7 @@ bse_engine_configure (guint            latency_ms,
   guint block_size, control_raster, success = FALSE;
   BseTrans *trans;
   BseJob *job;
-  g_return_val_if_fail (bse_engine_initialized == TRUE, FALSE);
+  assert_return (bse_engine_initialized == TRUE, FALSE);
 
   bse_engine_constrain (latency_ms, sample_freq, control_freq, &block_size, &control_raster);
   /* optimize */
@@ -1365,13 +1365,13 @@ bse_engine_configure (guint            latency_ms,
 void
 bse_engine_init (gboolean run_threaded)
 {
-  g_return_if_fail (bse_engine_initialized == FALSE);
+  assert_return (bse_engine_initialized == FALSE);
   bse_engine_initialized = TRUE;
   /* assert correct implmentation of accessor macros defined in bsedefs.hh */
-  g_assert (&BSE_MODULE_GET_USER_DATA ((BseModule*) 42) == &((BseModule*) 42)->user_data);
-  g_assert (&BSE_MODULE_GET_ISTREAMSP ((BseModule*) 42) == (void*) &((BseModule*) 42)->istreams);
-  g_assert (&BSE_MODULE_GET_JSTREAMSP ((BseModule*) 42) == (void*) &((BseModule*) 42)->jstreams);
-  g_assert (&BSE_MODULE_GET_OSTREAMSP ((BseModule*) 42) == (void*) &((BseModule*) 42)->ostreams);
+  assert (&BSE_MODULE_GET_USER_DATA ((BseModule*) 42) == &((BseModule*) 42)->user_data);
+  assert (&BSE_MODULE_GET_ISTREAMSP ((BseModule*) 42) == (void*) &((BseModule*) 42)->istreams);
+  assert (&BSE_MODULE_GET_JSTREAMSP ((BseModule*) 42) == (void*) &((BseModule*) 42)->jstreams);
+  assert (&BSE_MODULE_GET_OSTREAMSP ((BseModule*) 42) == (void*) &((BseModule*) 42)->ostreams);
   /* first configure */
   bse_engine_configure (50, 44100, 50);
   /* then setup threading */
@@ -1386,8 +1386,8 @@ bse_engine_init (gboolean run_threaded)
 gboolean
 bse_engine_prepare (BseEngineLoop *loop)
 {
-  g_return_val_if_fail (loop != NULL, FALSE);
-  g_return_val_if_fail (bse_engine_initialized == TRUE, FALSE);
+  assert_return (loop != NULL, FALSE);
+  assert_return (bse_engine_initialized == TRUE, FALSE);
   if (!bse_engine_threaded)
     return _engine_master_prepare (loop) || bse_engine_has_garbage ();
   else
@@ -1402,9 +1402,9 @@ bse_engine_prepare (BseEngineLoop *loop)
 gboolean
 bse_engine_check (const BseEngineLoop *loop)
 {
-  g_return_val_if_fail (loop != NULL, FALSE);
+  assert_return (loop != NULL, FALSE);
   if (loop->n_fds)
-    g_return_val_if_fail (loop->revents_filled == TRUE, FALSE);
+    assert_return (loop->revents_filled == TRUE, FALSE);
   if (!bse_engine_threaded)
     return _engine_master_check (loop) || bse_engine_has_garbage ();
   else
@@ -1424,7 +1424,7 @@ bse_engine_check (const BseEngineLoop *loop)
 void
 bse_engine_dispatch (void)
 {
-  g_return_if_fail (bse_engine_initialized == TRUE);
+  assert_return (bse_engine_initialized == TRUE);
   if (!bse_engine_threaded)
     _engine_master_dispatch ();
   if (bse_engine_has_garbage ())	/* prevent extra mutex locking */
@@ -1488,7 +1488,7 @@ bse_engine_tick_stamp_from_systime (guint64 systime)
 void
 bse_engine_wait_on_trans (void)
 {
-  g_return_if_fail (bse_engine_initialized == TRUE);
+  assert_return (bse_engine_initialized == TRUE);
 
   /* non-threaded */
   if (!bse_engine_threaded)

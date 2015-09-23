@@ -14,7 +14,7 @@ bse_device_init (BseDevice *self)
 SfiRing*
 bse_device_list (BseDevice    *self)
 {
-  g_return_val_if_fail (BSE_IS_DEVICE (self), NULL);
+  assert_return (BSE_IS_DEVICE (self), NULL);
   SfiRing *ring = NULL;
   if (BSE_DEVICE_GET_CLASS (self)->list_devices)
     ring = BSE_DEVICE_GET_CLASS (self)->list_devices (self);
@@ -58,15 +58,15 @@ device_open_args (BseDevice      *self,
 
   if (!error)
     {
-      g_return_val_if_fail (BSE_DEVICE_OPEN (self), Bse::ERROR_INTERNAL);
-      g_return_val_if_fail (self->open_device_name != NULL, Bse::ERROR_INTERNAL); /* bse_device_set_opened() was not called */
+      assert_return (BSE_DEVICE_OPEN (self), Bse::ERROR_INTERNAL);
+      assert_return (self->open_device_name != NULL, Bse::ERROR_INTERNAL); /* bse_device_set_opened() was not called */
       if (!self->open_device_args)
         self->open_device_args = g_strdup (arg_string);
       if (BSE_DEVICE_GET_CLASS (self)->post_open)
         BSE_DEVICE_GET_CLASS (self)->post_open (self);
     }
   else
-    g_return_val_if_fail (!BSE_DEVICE_OPEN (self), Bse::ERROR_INTERNAL);
+    assert_return (!BSE_DEVICE_OPEN (self), Bse::ERROR_INTERNAL);
 
   if (!error && ((need_readable && !BSE_DEVICE_READABLE (self)) ||
                  (need_writable && !BSE_DEVICE_WRITABLE (self))))
@@ -84,8 +84,8 @@ bse_device_open (BseDevice      *self,
                  gboolean        need_writable,
                  const char     *arg_string)
 {
-  g_return_val_if_fail (BSE_IS_DEVICE (self), Bse::ERROR_INTERNAL);
-  g_return_val_if_fail (!BSE_DEVICE_OPEN (self), Bse::ERROR_INTERNAL);
+  assert_return (BSE_IS_DEVICE (self), Bse::ERROR_INTERNAL);
+  assert_return (!BSE_DEVICE_OPEN (self), Bse::ERROR_INTERNAL);
   Bse::ErrorType error = Bse::ERROR_DEVICE_NOT_AVAILABLE;
   if (arg_string)
     error = device_open_args (self, need_readable, need_writable, arg_string);
@@ -113,10 +113,10 @@ bse_device_set_opened (BseDevice      *self,
                        gboolean        readable,
                        gboolean        writable)
 {
-  g_return_if_fail (BSE_IS_DEVICE (self));
-  g_return_if_fail (!BSE_DEVICE_OPEN (self));
-  g_return_if_fail (device_name != NULL);
-  g_return_if_fail (readable || writable);
+  assert_return (BSE_IS_DEVICE (self));
+  assert_return (!BSE_DEVICE_OPEN (self));
+  assert_return (device_name != NULL);
+  assert_return (readable || writable);
   self->open_device_name = g_strdup (device_name);
   BSE_OBJECT_SET_FLAGS (self, BSE_DEVICE_FLAG_OPEN);
   if (readable)
@@ -130,8 +130,8 @@ bse_device_set_opened (BseDevice      *self,
 void
 bse_device_close (BseDevice *self)
 {
-  g_return_if_fail (BSE_IS_DEVICE (self));
-  g_return_if_fail (BSE_DEVICE_OPEN (self));
+  assert_return (BSE_IS_DEVICE (self));
+  assert_return (BSE_DEVICE_OPEN (self));
 
   if (BSE_DEVICE_GET_CLASS (self)->pre_close)
     BSE_DEVICE_GET_CLASS (self)->pre_close (self);
@@ -256,7 +256,7 @@ bse_device_class_setup (void          *klass_arg,
                         const char    *syntax,
                         const char    *blurb)
 {
-  g_return_if_fail (BSE_IS_DEVICE_CLASS (klass_arg));
+  assert_return (BSE_IS_DEVICE_CLASS (klass_arg));
   BseDeviceClass *klass = BSE_DEVICE_CLASS (klass_arg);
   klass->driver_rating = rating;
   klass->driver_name = name;
@@ -492,7 +492,7 @@ BSE_BUILTIN_TYPE (BseDevice)
     (GInstanceInitFunc) bse_device_init,
   };
 
-  g_assert (BSE_DEVICE_FLAGS_USHIFT < BSE_OBJECT_FLAGS_MAX_SHIFT);
+  assert (BSE_DEVICE_FLAGS_USHIFT < BSE_OBJECT_FLAGS_MAX_SHIFT);
 
   return bse_type_register_abstract (BSE_TYPE_OBJECT,
                                      "BseDevice",

@@ -179,7 +179,7 @@ pattern_view_range_changed (BstPatternView *self)
 void
 bst_pattern_view_set_part (BstPatternView *self, Bse::PartH part)
 {
-  g_return_if_fail (BST_PATTERN_VIEW (self));
+  assert_return (BST_PATTERN_VIEW (self));
 
   if (self->part)
     {
@@ -916,7 +916,7 @@ bst_pattern_view_add_column (BstPatternView   *self,
                              BstPatternLFlags  lflags)
 {
   BstPatternColumn *col;
-  g_return_if_fail (BST_PATTERN_VIEW (self));
+  assert_return (BST_PATTERN_VIEW (self));
 
   self->cols = g_renew (BstPatternColumn*, self->cols, self->n_cols + 1);
   col = bst_pattern_column_create (ltype, num, lflags);
@@ -933,14 +933,14 @@ bst_pattern_view_add_column (BstPatternView   *self,
 gint
 bst_pattern_view_get_focus_width (BstPatternView           *self)
 {
-  g_return_val_if_fail (BST_PATTERN_VIEW (self), 0);
+  assert_return (BST_PATTERN_VIEW (self), 0);
   return (XTHICKNESS (self) + YTHICKNESS (self)) / 2;
 }
 
 gint
 bst_pattern_view_get_last_row (BstPatternView *self)
 {
-  g_return_val_if_fail (BST_PATTERN_VIEW (self), 0);
+  assert_return (BST_PATTERN_VIEW (self), 0);
   return last_visible_row (self);
 }
 
@@ -990,7 +990,7 @@ bst_pattern_view_set_focus (BstPatternView *self, int focus_col, int focus_row)
 {
   GdkRectangle rect;
   gint last_row;
-  g_return_if_fail (BST_PATTERN_VIEW (self));
+  assert_return (BST_PATTERN_VIEW (self));
 
   focus_col = MIN (focus_col + 1, self->n_focus_cols) - 1;
   last_row = bst_pattern_view_get_last_row (self);
@@ -1043,7 +1043,7 @@ bst_pattern_view_set_marker (BstPatternView          *self,
   GxkScrollCanvas *scc = GXK_SCROLL_CANVAS (self);
   GxkScrollMarker *marker;
   guint count;
-  g_return_if_fail (mark_index > 0);
+  assert_return (mark_index > 0);
   mark_index += CUSTOM_MARKER_OFFSET;
 
   marker = gxk_scroll_canvas_lookup_marker (scc, mark_index, &count);
@@ -1065,7 +1065,7 @@ bst_pattern_view_set_marker (BstPatternView          *self,
       return;
     }
 
-  g_return_if_fail (count == 2);
+  assert_return (count == 2);
 
   marker[0].coords.y = position;
   marker[1].coords.y = position;
@@ -1091,7 +1091,7 @@ bst_pattern_view_set_pixmarker (BstPatternView           *self,
   GxkScrollCanvas *scc = GXK_SCROLL_CANVAS (self);
   GxkScrollMarker *marker;
   guint count;
-  g_return_if_fail (mark_index > 0 && mark_index < CUSTOM_MARKER_OFFSET);
+  assert_return (mark_index > 0 && mark_index < CUSTOM_MARKER_OFFSET);
 
   marker = gxk_scroll_canvas_lookup_marker (scc, mark_index, &count);
   if (!marker && !mtype)
@@ -1111,7 +1111,7 @@ bst_pattern_view_set_pixmarker (BstPatternView           *self,
       return;
     }
 
-  g_return_if_fail (count == 1);
+  assert_return (count == 1);
 
   if (marker->mtype == mtype && marker->windowp == &CANVAS (self) &&
       marker->extends.width == width && marker->extends.height == height)

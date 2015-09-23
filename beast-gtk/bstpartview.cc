@@ -73,7 +73,7 @@ bst_part_view_new (SfiProxy song)
 {
   GtkWidget *part_view;
 
-  g_return_val_if_fail (BSE_IS_SONG (song), NULL);
+  assert_return (BSE_IS_SONG (song), NULL);
 
   part_view = gtk_widget_new (BST_TYPE_PART_VIEW, NULL);
   bst_item_view_set_container (BST_ITEM_VIEW (part_view), song);

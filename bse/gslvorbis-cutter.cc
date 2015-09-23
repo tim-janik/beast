@@ -107,7 +107,7 @@ gsl_vorbis_cutter_set_cutpoint (GslVorbisCutter    *self,
                                 GslVorbisCutterMode cutmode,
                                 SfiNum              cutpoint)
 {
-  g_return_if_fail (self != NULL);
+  assert_return (self != NULL);
 
   /* cutpoint is interpreted as last_sample + 1,
    * i.e. sample[cutpoint] is removed for SAMPLE_BOUNDARY
@@ -132,7 +132,7 @@ void
 gsl_vorbis_cutter_filter_serialno (GslVorbisCutter        *self,
                                    guint                   serialno)
 {
-  g_return_if_fail (self != NULL);
+  assert_return (self != NULL);
 
   /* only read an input Ogg/Vorbis stream with serial number "serialno" */
 
@@ -144,7 +144,7 @@ void
 gsl_vorbis_cutter_force_serialno (GslVorbisCutter        *self,
                                   guint                   serialno)
 {
-  g_return_if_fail (self != NULL);
+  assert_return (self != NULL);
 
   /* change the Ogg/Vorbis stream serial number on output to "serialno" */
 
@@ -155,7 +155,7 @@ gsl_vorbis_cutter_force_serialno (GslVorbisCutter        *self,
 void
 gsl_vorbis_cutter_destroy (GslVorbisCutter *self)
 {
-  g_return_if_fail (self != NULL);
+  assert_return (self != NULL);
 
   /* cleanup codec state */
   if (self->vorbis_initialized)
@@ -185,7 +185,7 @@ vorbis_cutter_abort (GslVorbisCutter *self)
 gboolean
 gsl_vorbis_cutter_ogg_eos (GslVorbisCutter *self)
 {
-  g_return_val_if_fail (self != NULL, FALSE);
+  assert_return (self != NULL, FALSE);
 
   return self->eos && !self->dblocks;
 }
@@ -197,7 +197,7 @@ gsl_vorbis_cutter_read_ogg (GslVorbisCutter *self,
 {
   guint8 *ubytes = bytes;
 
-  g_return_val_if_fail (self != NULL, 0);
+  assert_return (self != NULL, 0);
 
   while (n_bytes && self->dblocks)
     {
@@ -355,9 +355,9 @@ gsl_vorbis_cutter_write_ogg (GslVorbisCutter *self,
                              guint            n_bytes,
                              guint8          *bytes)
 {
-  g_return_if_fail (self != NULL);
+  assert_return (self != NULL);
   if (n_bytes)
-    g_return_if_fail (bytes != NULL);
+    assert_return (bytes != NULL);
   else
     return;
 

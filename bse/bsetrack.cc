@@ -120,17 +120,17 @@ bse_track_dispose (GObject *object)
   /* we may assert removal here, since if these assertions fail,
    * our parent (BseSong) doesn't properly implement track support
    */
-  g_assert (self->sub_synth == NULL);
+  assert (self->sub_synth == NULL);
 
   /* check uncrossed references */
-  g_assert (self->snet == NULL);
-  g_assert (self->pnet == NULL);
-  g_assert (self->n_entries_SL == 0);
+  assert (self->snet == NULL);
+  assert (self->pnet == NULL);
+  assert (self->n_entries_SL == 0);
 
   /* chain parent class' handler */
   G_OBJECT_CLASS (parent_class)->dispose (object);
 
-  g_assert (self->bus_outputs == NULL);
+  assert (self->bus_outputs == NULL);
 }
 
 static void
@@ -138,9 +138,9 @@ bse_track_finalize (GObject *object)
 {
   BseTrack *self = BSE_TRACK (object);
 
-  g_assert (self->bus_outputs == NULL);
+  assert (self->bus_outputs == NULL);
 
-  g_assert (self->n_entries_SL == 0);
+  assert (self->n_entries_SL == 0);
   g_free (self->entries_SL);
   bse_id_free (self->channel_id);
 
@@ -159,11 +159,11 @@ track_add_entry (BseTrack *self,
 {
   guint n, size;
 
-  g_return_val_if_fail (index <= self->n_entries_SL, NULL);
+  assert_return (index <= self->n_entries_SL, NULL);
   if (index > 0)
-    g_return_val_if_fail (self->entries_SL[index - 1].tick < tick, NULL);
+    assert_return (self->entries_SL[index - 1].tick < tick, NULL);
   if (index < self->n_entries_SL)
-    g_return_val_if_fail (self->entries_SL[index].tick > tick, NULL);
+    assert_return (self->entries_SL[index].tick > tick, NULL);
 
   BSE_SEQUENCER_LOCK ();
   n = self->n_entries_SL++;
@@ -187,7 +187,7 @@ static void
 track_delete_entry (BseTrack *self,
 		    guint     index)
 {
-  g_return_if_fail (index < self->n_entries_SL);
+  assert_return (index < self->n_entries_SL);
 
   BsePart *part = self->entries_SL[index].part;
   bse_object_remove_reemit (part, "notify::last-tick", self, "changed");
@@ -348,7 +348,7 @@ static void
 create_wnet (BseTrack *self,
 	     BseWave  *wave)
 {
-  g_return_if_fail (self->wnet == NULL);
+  assert_return (self->wnet == NULL);
 
   const gchar *play_type = bse_xinfos_get_value (wave->xinfos, "play-type");
   const gchar *synthesis_network = play_type ? play_type : "adsr-wave-1";
@@ -406,7 +406,7 @@ create_wnet (BseTrack *self,
 static void
 clear_snet_and_wave (BseTrack *self)
 {
-  g_return_if_fail (!self->sub_synth || !BSE_SOURCE_PREPARED (self->sub_synth));
+  assert_return (!self->sub_synth || !BSE_SOURCE_PREPARED (self->sub_synth));
 
   if (self->sub_synth)
     g_object_set (self->sub_synth, /* no undo */
@@ -580,8 +580,8 @@ bse_track_insert_part (BseTrack *self,
 {
   BseTrackEntry *entry;
 
-  g_return_val_if_fail (BSE_IS_TRACK (self), 0);
-  g_return_val_if_fail (BSE_IS_PART (part), 0);
+  assert_return (BSE_IS_TRACK (self), 0);
+  assert_return (BSE_IS_PART (part), 0);
 
   entry = track_lookup_entry (self, tick);
   if (entry && entry->tick == tick)
@@ -602,7 +602,7 @@ bse_track_remove_tick (BseTrack *self,
 {
   BseTrackEntry *entry;
 
-  g_return_if_fail (BSE_IS_TRACK (self));
+  assert_return (BSE_IS_TRACK (self));
 
   entry = track_lookup_entry (self, tick);
   if (entry && entry->tick == tick)
@@ -648,7 +648,7 @@ bse_track_list_parts_intern (BseTrack *self,
 BseTrackPartSeq*
 bse_track_list_parts (BseTrack *self)
 {
-  g_return_val_if_fail (BSE_IS_TRACK (self), NULL);
+  assert_return (BSE_IS_TRACK (self), NULL);
   return bse_track_list_parts_intern (self, NULL);
 }
 
@@ -656,8 +656,8 @@ BseTrackPartSeq*
 bse_track_list_part (BseTrack *self,
                      BsePart  *part)
 {
-  g_return_val_if_fail (BSE_IS_TRACK (self), NULL);
-  g_return_val_if_fail (BSE_IS_PART (part), NULL);
+  assert_return (BSE_IS_TRACK (self), NULL);
+  assert_return (BSE_IS_PART (part), NULL);
   return bse_track_list_parts_intern (self, part);
 }
 
@@ -668,8 +668,8 @@ bse_track_find_part (BseTrack *self,
 {
   guint i;
 
-  g_return_val_if_fail (BSE_IS_TRACK (self), FALSE);
-  g_return_val_if_fail (BSE_IS_PART (part), FALSE);
+  assert_return (BSE_IS_TRACK (self), FALSE);
+  assert_return (BSE_IS_PART (part), FALSE);
 
   for (i = 0; i < self->n_entries_SL; i++)
     if (self->entries_SL[i].part == part)
@@ -687,7 +687,7 @@ bse_track_lookup_tick (BseTrack               *self,
 {
   BseTrackEntry *entry;
 
-  g_return_val_if_fail (BSE_IS_TRACK (self), NULL);
+  assert_return (BSE_IS_TRACK (self), NULL);
 
   entry = track_lookup_entry (self, tick);
   if (entry && entry->tick == tick)
@@ -701,7 +701,7 @@ bse_track_find_link (BseTrack *self,
 {
   guint i;
 
-  g_return_val_if_fail (BSE_IS_TRACK (self), NULL);
+  assert_return (BSE_IS_TRACK (self), NULL);
 
   for (i = 0; i < self->n_entries_SL; i++)
     if (self->entries_SL[i].id == id)
@@ -717,7 +717,7 @@ bse_track_get_part_SL (BseTrack *self,
 {
   BseTrackEntry *entry;
 
-  g_return_val_if_fail (BSE_IS_TRACK (self), NULL);
+  assert_return (BSE_IS_TRACK (self), NULL);
 
   /* we return the nearest part with start <= tick and
    * set *next to the start of the following part if any
@@ -744,10 +744,10 @@ bse_track_add_modules (BseTrack        *self,
 		       BseContainer    *container,
                        BseMidiReceiver *midi_receiver)
 {
-  g_return_if_fail (BSE_IS_TRACK (self));
-  g_return_if_fail (BSE_IS_CONTAINER (container));
-  g_return_if_fail (self->sub_synth == NULL);
-  g_return_if_fail (midi_receiver != NULL);
+  assert_return (BSE_IS_TRACK (self));
+  assert_return (BSE_IS_CONTAINER (container));
+  assert_return (self->sub_synth == NULL);
+  assert_return (midi_receiver != NULL);
 
   /* midi voice input */
   self->voice_input = (BseSource*) bse_container_new_child (container, BSE_TYPE_MIDI_VOICE_INPUT, NULL);
@@ -888,9 +888,9 @@ void
 bse_track_remove_modules (BseTrack     *self,
 			  BseContainer *container)
 {
-  g_return_if_fail (BSE_IS_TRACK (self));
-  g_return_if_fail (BSE_IS_CONTAINER (container));
-  g_return_if_fail (self->sub_synth != NULL);
+  assert_return (BSE_IS_TRACK (self));
+  assert_return (BSE_IS_CONTAINER (container));
+  assert_return (self->sub_synth != NULL);
 
   bse_container_remove_item (container, BSE_ITEM (self->sub_synth));
   self->sub_synth = NULL;
@@ -911,9 +911,9 @@ bse_track_clone_voices (BseTrack       *self,
 {
   guint i;
 
-  g_return_if_fail (BSE_IS_TRACK (self));
-  g_return_if_fail (BSE_IS_SNET (snet));
-  g_return_if_fail (trans != NULL);
+  assert_return (BSE_IS_TRACK (self));
+  assert_return (BSE_IS_SNET (snet));
+  assert_return (trans != NULL);
 
   for (i = 0; i < self->max_voices - 1; i++)
     bse_snet_context_clone_branch (snet, context, BSE_SOURCE (self), mcontext, trans);

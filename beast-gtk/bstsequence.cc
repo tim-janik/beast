@@ -99,7 +99,7 @@ void
 bst_sequence_set_seq (BstSequence     *seq,
 		      BseNoteSequence *sdata)
 {
-  g_return_if_fail (BST_IS_SEQUENCE (seq));
+  assert_return (BST_IS_SEQUENCE (seq));
 
   bse_note_sequence_free (seq->sdata);
   if (sdata)

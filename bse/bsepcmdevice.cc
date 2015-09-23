@@ -27,10 +27,10 @@ bse_pcm_device_request (BsePcmDevice  *self,
                         guint          latency_ms,
                         guint          block_length) /* in frames */
 {
-  g_return_if_fail (BSE_IS_PCM_DEVICE (self));
-  g_return_if_fail (!BSE_DEVICE_OPEN (self));
-  g_return_if_fail (n_channels >= 1 && n_channels <= 128);
-  g_return_if_fail (mix_freq >= 1000 && mix_freq <= 192000);
+  assert_return (BSE_IS_PCM_DEVICE (self));
+  assert_return (!BSE_DEVICE_OPEN (self));
+  assert_return (n_channels >= 1 && n_channels <= 128);
+  assert_return (mix_freq >= 1000 && mix_freq <= 192000);
 
   self->req_n_channels = n_channels;
   self->req_mix_freq = mix_freq;
@@ -58,8 +58,8 @@ static void
 pcm_device_post_open (BseDevice *device)
 {
   BsePcmDevice *self = BSE_PCM_DEVICE (device);
-  g_return_if_fail (BSE_DEVICE_OPEN (self) && self->handle);
-  g_return_if_fail (BSE_DEVICE_OPEN (self) && self->handle->block_length == 0);
+  assert_return (BSE_DEVICE_OPEN (self) && self->handle);
+  assert_return (BSE_DEVICE_OPEN (self) && self->handle->block_length == 0);
   new (&self->handle->spinlock) Bse::Spinlock();
 }
 
@@ -73,7 +73,7 @@ pcm_device_pre_close (BseDevice *device)
 guint
 bse_pcm_device_get_mix_freq (BsePcmDevice *pdev)
 {
-  g_return_val_if_fail (BSE_IS_PCM_DEVICE (pdev), 0);
+  assert_return (BSE_IS_PCM_DEVICE (pdev), 0);
   if (BSE_DEVICE_OPEN (pdev))
     return pdev->handle->mix_freq;
   else
@@ -84,9 +84,9 @@ BsePcmHandle*
 bse_pcm_device_get_handle (BsePcmDevice *pdev,
                            guint         block_length)
 {
-  g_return_val_if_fail (BSE_IS_PCM_DEVICE (pdev), NULL);
-  g_return_val_if_fail (BSE_DEVICE_OPEN (pdev), NULL);
-  g_return_val_if_fail (block_length > 0, NULL);
+  assert_return (BSE_IS_PCM_DEVICE (pdev), NULL);
+  assert_return (BSE_DEVICE_OPEN (pdev), NULL);
+  assert_return (block_length > 0, NULL);
   pdev->handle->spinlock.lock();
   if (!pdev->handle->block_length)
     pdev->handle->block_length = block_length;
@@ -102,13 +102,13 @@ bse_pcm_handle_read (BsePcmHandle *handle,
 		     gfloat       *values)
 {
   gsize n;
-  g_return_val_if_fail (handle != NULL, 0);
-  g_return_val_if_fail (handle->readable, 0);
-  g_return_val_if_fail (n_values == handle->block_length * handle->n_channels, 0);
+  assert_return (handle != NULL, 0);
+  assert_return (handle->readable, 0);
+  assert_return (n_values == handle->block_length * handle->n_channels, 0);
   handle->spinlock.lock();
   n = handle->read (handle, values);
   handle->spinlock.unlock();
-  g_return_val_if_fail (n == handle->block_length * handle->n_channels, n);
+  assert_return (n == handle->block_length * handle->n_channels, n);
   return n;
 }
 void
@@ -116,10 +116,10 @@ bse_pcm_handle_write (BsePcmHandle *handle,
 		      gsize         n_values,
 		      const gfloat *values)
 {
-  g_return_if_fail (handle != NULL);
-  g_return_if_fail (handle->writable);
-  g_return_if_fail (values != NULL);
-  g_return_if_fail (n_values == handle->block_length * handle->n_channels);
+  assert_return (handle != NULL);
+  assert_return (handle->writable);
+  assert_return (values != NULL);
+  assert_return (n_values == handle->block_length * handle->n_channels);
   handle->spinlock.lock();
   handle->write (handle, values);
   handle->spinlock.unlock();
@@ -128,7 +128,7 @@ gboolean
 bse_pcm_handle_check_io (BsePcmHandle           *handle,
                          glong                  *timeoutp)
 {
-  g_return_val_if_fail (handle != NULL, 0);
+  assert_return (handle != NULL, 0);
   glong dummy;
   if (!timeoutp)
     timeoutp = &dummy;
@@ -141,7 +141,7 @@ bse_pcm_handle_check_io (BsePcmHandle           *handle,
 guint
 bse_pcm_handle_latency (BsePcmHandle *handle)
 {
-  g_return_val_if_fail (handle != NULL, 0);
+  assert_return (handle != NULL, 0);
   handle->spinlock.lock();
   guint n_frames = handle->latency (handle);
   handle->spinlock.unlock();

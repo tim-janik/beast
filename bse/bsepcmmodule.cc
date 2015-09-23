@@ -63,7 +63,7 @@ bse_pcm_omodule_process (BseModule *module,
   const gfloat *src;
   guint i;
 
-  g_return_if_fail (n_values == mdata->n_values / BSE_PCM_MODULE_N_JSTREAMS);
+  assert_return (n_values == mdata->n_values / BSE_PCM_MODULE_N_JSTREAMS);
 
   if (BSE_MODULE_JSTREAM (module, BSE_PCM_MODULE_JSTREAM_LEFT).n_connections)
     src = BSE_MODULE_JBUFFER (module, BSE_PCM_MODULE_JSTREAM_LEFT, 0);
@@ -124,9 +124,9 @@ bse_pcm_omodule_insert (BsePcmHandle *handle,
   BsePCMModuleData *mdata;
   BseModule *module;
 
-  g_return_val_if_fail (handle != NULL, NULL);
-  g_return_val_if_fail (handle->write != NULL, NULL);
-  g_return_val_if_fail (trans != NULL, NULL);
+  assert_return (handle != NULL, NULL);
+  assert_return (handle->write != NULL, NULL);
+  assert_return (trans != NULL, NULL);
 
   mdata = g_new0 (BsePCMModuleData, 1);
   mdata->n_values = bse_engine_block_size () * BSE_PCM_MODULE_N_JSTREAMS;
@@ -150,8 +150,8 @@ static void
 bse_pcm_omodule_remove (BseModule *pcm_module,
 			BseTrans  *trans)
 {
-  g_return_if_fail (pcm_module != NULL);
-  g_return_if_fail (trans != NULL);
+  assert_return (pcm_module != NULL);
+  assert_return (trans != NULL);
 
   BsePCMModuleData *mdata = (BsePCMModuleData*) pcm_module->user_data;
   bse_trans_add (trans,
@@ -188,12 +188,12 @@ bse_pcm_imodule_process (BseModule *module,     /* EngineThread */
   gfloat *right = BSE_MODULE_OBUFFER (module, BSE_PCM_MODULE_OSTREAM_RIGHT);
   gsize l;
 
-  g_return_if_fail (n_values <= mdata->n_values / BSE_PCM_MODULE_N_OSTREAMS);
+  assert_return (n_values <= mdata->n_values / BSE_PCM_MODULE_N_OSTREAMS);
 
   if (mdata->handle->readable)
     {
       l = bse_pcm_handle_read (mdata->handle, mdata->n_values, mdata->buffer);
-      g_return_if_fail (l == mdata->n_values);
+      assert_return (l == mdata->n_values);
     }
   else
     memset (mdata->buffer, 0, mdata->n_values * sizeof (gfloat));
@@ -226,9 +226,9 @@ bse_pcm_imodule_insert (BsePcmHandle *handle,
   BsePCMModuleData *mdata;
   BseModule *module;
 
-  g_return_val_if_fail (handle != NULL, NULL);
-  g_return_val_if_fail (handle->write != NULL, NULL);
-  g_return_val_if_fail (trans != NULL, NULL);
+  assert_return (handle != NULL, NULL);
+  assert_return (handle->write != NULL, NULL);
+  assert_return (trans != NULL, NULL);
 
   mdata = g_new0 (BsePCMModuleData, 1);
   mdata->n_values = bse_engine_block_size () * BSE_PCM_MODULE_N_OSTREAMS;
@@ -248,8 +248,8 @@ static void
 bse_pcm_imodule_remove (BseModule *pcm_module,
 			BseTrans  *trans)
 {
-  g_return_if_fail (pcm_module != NULL);
-  g_return_if_fail (trans != NULL);
+  assert_return (pcm_module != NULL);
+  assert_return (trans != NULL);
 
   bse_trans_add (trans,
 		 bse_job_discard (pcm_module));
