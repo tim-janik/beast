@@ -291,7 +291,7 @@ simple_label_mnemonic_activate (GtkWidget *widget,
           GTK_IS_MENU_ITEM (parent))
         {
           gboolean cc = gtk_widget_mnemonic_activate (parent, group_cycling);
-          g_print ("simple_label_mnemonic_activate: %s: %u (%d %d %d %d)\n", G_OBJECT_TYPE_NAME (parent), cc,
+          printout ("simple_label_mnemonic_activate: %s: %u (%d %d %d %d)\n", G_OBJECT_TYPE_NAME (parent), cc,
                    GTK_WIDGET_CAN_FOCUS (parent), GTK_WIDGET_GET_CLASS (parent)->activate_signal,
                    (parent->parent && GTK_IS_NOTEBOOK (parent->parent)),
                    GTK_IS_MENU_ITEM (parent));

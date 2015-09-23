@@ -1120,7 +1120,7 @@ property_value_from_string (GtkType      widget_type,
       break;
     }
   if (0 && G_VALUE_TYPE (value) && strchr (pvalue, '$'))
-    g_print ("property[%s]: expr=%s result=%s GValue=%s\n", pspec->name, pvalue, exvalue, g_strdup_value_contents (value));
+    printout ("property[%s]: expr=%s result=%s GValue=%s\n", pspec->name, pvalue, exvalue, g_strdup_value_contents (value));
   g_free (exvalue);
 }
 
@@ -2398,10 +2398,10 @@ mf_println (GSList *args,
   while (argiter)
     {
       gchar *arg = argiter_exp (&argiter, env);
-      g_print ("%s", arg ? arg : "(null)");
+      printout ("%s", arg ? arg : "(null)");
       g_free (arg);
     }
-  g_print ("\n");
+  printout ("\n");
   return NULL;
 }
 
