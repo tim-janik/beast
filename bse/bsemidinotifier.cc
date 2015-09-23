@@ -52,12 +52,7 @@ bse_midi_notifier_class_init (BseMidiNotifierClass *klass)
   gobject_class->finalize = bse_midi_notifier_finalize;
 
   for (i = 0; i < BSE_MIDI_MAX_CHANNELS; i++)
-    {
-      gchar buffer[32];
-
-      g_snprintf (buffer, 32, "%u", i);
-      number_quarks[i] = g_quark_from_string (buffer);
-    }
+    number_quarks[i] = g_quark_from_string (string_format ("%u", i).c_str());
 
   signal_midi_event = bse_object_class_add_dsignal (object_class, "midi-event",
 						    G_TYPE_NONE, 1,

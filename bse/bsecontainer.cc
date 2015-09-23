@@ -232,11 +232,8 @@ bse_container_add_item (BseContainer *container,
    */
   if (!uname || bse_container_lookup_item (container, uname))
     {
-      gchar *buffer, *p;
-      guint i = 0, l;
-
       if (!uname)
-        uname = (char*) g_object_get_data (G_OBJECT (container), "BseContainer-base-name");
+        uname = (const char*) g_object_get_data (G_OBJECT (container), "BseContainer-base-name");
       if (!uname)
         {
           uname = BSE_OBJECT_TYPE_NAME (item);
@@ -246,16 +243,13 @@ bse_container_add_item (BseContainer *container,
             uname += 3;                 /* strip Bse namespace for convenient naming */
         }
 
-      l = strlen (uname);
-      buffer = g_new (gchar, l + 12);
-      strcpy (buffer, uname);
-      p = buffer + l;
+      String next_name;
+      uint i = 0;
       do
-        g_snprintf (p, 11, "-%u", ++i);
-      while (bse_container_lookup_item (container, buffer));
+        next_name = string_format ("%s-%u", uname, ++i);
+      while (bse_container_lookup_item (container, next_name.c_str()));
 
-      g_object_set (item, "uname", buffer, NULL); /* no undo */
-      g_free (buffer);
+      g_object_set (item, "uname", next_name.c_str(), NULL); /* no undo */
     }
   g_object_set_data (G_OBJECT (container), "BseContainer-base-name", NULL);
 
