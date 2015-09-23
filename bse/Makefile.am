@@ -117,7 +117,7 @@ idl_dummy_files = $(strip	\
 bse_proc_sources = $(strip \
 	bsecategories.proc	bsecontainer.proc	bsedatapocket.proc	bseeditablesample.proc	\
 	bsejanitor.proc					bseparasite.proc	bseprocedure.proc	bseproject.proc	\
-				bsesong.proc					bsesource.proc		bsesnet.proc \
+				bsesong.proc					bsesource.proc		\
 	bsetrack.proc		bseitem.proc		bsewave.proc		bsewaveosc.proc		bsewaverepo.proc \
 )
 bse_proc_gen_sources = $(bse_proc_sources:.proc=.genprc.cc)

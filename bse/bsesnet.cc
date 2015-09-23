@@ -26,14 +26,6 @@ typedef struct
   guint		   parent_context;
 } ContextData;
 
-/* --- parameters --- */
-enum
-{
-  PARAM_0,
-  PARAM_AUTO_ACTIVATE
-};
-
-
 /* --- prototypes --- */
 static void      bse_snet_add_item               (BseContainer   *container,
 						  BseItem        *item);
@@ -71,15 +63,16 @@ static const GBSearchConfig port_array_config = {
 
 /* --- functions --- */
 static void
-bse_snet_init (BseSNet *snet)
+bse_snet_init (BseSNet *self)
 {
-  BSE_OBJECT_SET_FLAGS (snet, BSE_SNET_FLAG_USER_SYNTH);
-  snet->sources = NULL;
-  snet->isources = NULL;
-  snet->iport_names = NULL;
-  snet->oport_names = NULL;
-  snet->port_array = NULL;
-  snet->port_unregistered_id = 0;
+  BSE_OBJECT_UNSET_FLAGS (self, BSE_SNET_FLAG_USER_SYNTH);
+  BSE_OBJECT_SET_FLAGS (self, BSE_SUPER_FLAG_NEEDS_CONTEXT);
+  self->sources = NULL;
+  self->isources = NULL;
+  self->iport_names = NULL;
+  self->oport_names = NULL;
+  self->port_array = NULL;
+  self->port_unregistered_id = 0;
 }
 
 /**
@@ -169,47 +162,6 @@ bse_snet_queue_port_unregistered (BseSNet *snet)
 {
   if (!snet->port_unregistered_id)
     snet->port_unregistered_id = bse_idle_notify (snet_notify_port_unregistered, snet);
-}
-
-static void
-bse_snet_set_property (GObject      *object,
-		       guint         param_id,
-		       const GValue *value,
-		       GParamSpec   *pspec)
-{
-  BseSNet *self = BSE_SNET (object);
-
-  switch (param_id)
-    {
-    case PARAM_AUTO_ACTIVATE:
-      if (sfi_value_get_bool (value))
-	BSE_OBJECT_SET_FLAGS (self, BSE_SUPER_FLAG_NEEDS_CONTEXT);
-      else
-	BSE_OBJECT_UNSET_FLAGS (self, BSE_SUPER_FLAG_NEEDS_CONTEXT);
-      break;
-    default:
-      G_OBJECT_WARN_INVALID_PROPERTY_ID (self, param_id, pspec);
-      break;
-    }
-}
-
-static void
-bse_snet_get_property (GObject    *object,
-		       guint       param_id,
-		       GValue     *value,
-		       GParamSpec *pspec)
-{
-  BseSNet *self = BSE_SNET (object);
-
-  switch (param_id)
-    {
-    case PARAM_AUTO_ACTIVATE:
-      sfi_value_set_bool (value, BSE_SUPER_NEEDS_CONTEXT (self));
-      break;
-    default:
-      G_OBJECT_WARN_INVALID_PROPERTY_ID (self, param_id, pspec);
-      break;
-    }
 }
 
 static void
@@ -906,8 +858,6 @@ bse_snet_class_init (BseSNetClass *klass)
 
   parent_class = (GTypeClass*) g_type_class_peek_parent (klass);
 
-  gobject_class->set_property = bse_snet_set_property;
-  gobject_class->get_property = bse_snet_get_property;
   gobject_class->dispose = bse_snet_dispose;
   gobject_class->finalize = bse_snet_finalize;
 
@@ -923,14 +873,7 @@ bse_snet_class_init (BseSNetClass *klass)
   container_class->context_children = snet_context_children;
   container_class->release_children = bse_snet_release_children;
 
-  bse_object_class_add_param (object_class, "Playback Settings",
-			      PARAM_AUTO_ACTIVATE,
-			      sfi_pspec_bool ("auto_activate", "Auto Activate",
-					      "Automatic activation only needs to be enabled for synthesis networks "
-					      "that don't use virtual ports for their input and output",
-					      FALSE, SFI_PARAM_STANDARD ":skip-default"));
-  signal_port_unregistered = bse_object_class_add_signal (object_class, "port_unregistered",
-							  G_TYPE_NONE, 0);
+  signal_port_unregistered = bse_object_class_add_signal (object_class, "port_unregistered", G_TYPE_NONE, 0);
 }
 
 BSE_BUILTIN_TYPE (BseSNet)
@@ -964,6 +907,81 @@ SNetImpl::supports_user_synths ()
 {
   BseSNet *self = as<BseSNet*>();
   return BSE_SNET_USER_SYNTH (self);
+}
+
+bool
+SNetImpl::auto_activate () const
+{
+  BseSNet *self = const_cast<SNetImpl*> (this)->as<BseSNet*>();
+  return BSE_SUPER_NEEDS_CONTEXT (self);
+}
+
+void
+SNetImpl::auto_activate (bool v)
+{
+  BseSNet *self = as<BseSNet*>();
+  if (v)
+    BSE_OBJECT_SET_FLAGS (self, BSE_SUPER_FLAG_NEEDS_CONTEXT);
+  else
+    BSE_OBJECT_UNSET_FLAGS (self, BSE_SUPER_FLAG_NEEDS_CONTEXT);
+}
+
+ErrorType
+SNetImpl::can_create_source (const String &module_type)
+{
+  BseSNet *self = as<BseSNet*>();
+  GType type = g_type_from_name (module_type.c_str());
+  ErrorType error = ERROR_NONE;
+  if (!BSE_SNET_USER_SYNTH (self) && !BSE_DBG_EXT)
+    error = ERROR_NOT_OWNER;
+  else if (!g_type_is_a (type, BSE_TYPE_SOURCE) ||
+	   g_type_is_a (type, BSE_TYPE_CONTAINER))
+    error = ERROR_SOURCE_TYPE_INVALID;
+  return error;
+}
+
+SourceIfaceP
+SNetImpl::create_source (const String &module_type)
+{
+  BseSNet *self = as<BseSNet*>();
+  if (can_create_source (module_type) != ERROR_NONE)
+    return NULL;
+  BseUndoStack *ustack = bse_item_undo_open (self, __func__);
+  BseSource *child = (BseSource*) bse_container_new_child (self, g_type_from_name (module_type.c_str()), NULL);
+  if (child)
+    {
+      // an undo lambda is needed for wrapping object argument references
+      UndoDescriptor<SourceImpl> child_descriptor = undo_descriptor (*child->as<SourceImpl*>());
+      auto lambda = [child_descriptor] (SNetImpl &self, BseUndoStack *ustack) -> ErrorType {
+        return self.remove_source (self.undo_resolve (child_descriptor));
+      };
+      push_undo (__func__, *this, lambda);
+    }
+  bse_item_undo_close (ustack);
+  return child ? child->as<SourceIfaceP>() : NULL;
+}
+
+ErrorType
+SNetImpl::remove_source (SourceIface &module)
+{
+  BseSNet *self = as<BseSNet*>();
+  BseSource *child = module.as<BseSource*>();
+  Bse::ErrorType error = Bse::ERROR_NONE;
+  if (!BSE_IS_SOURCE (child) || child->parent != self || (!BSE_SNET_USER_SYNTH (self) && !BSE_DBG_EXT))
+    return ERROR_PROC_PARAM_INVAL;
+  BseUndoStack *ustack = bse_item_undo_open (self, string_format ("%s: %s", __func__, bse_object_debug_name (child)).c_str());
+  bse_container_uncross_undoable (self, child);
+  {
+    // an undo lambda is needed for wrapping object argument references
+    UndoDescriptor<SourceImpl> child_descriptor = undo_descriptor (*child->as<SourceImpl*>());
+    auto lambda = [child_descriptor] (SNetImpl &self, BseUndoStack *ustack) -> ErrorType {
+      return self.remove_source (self.undo_resolve (child_descriptor));
+    };
+    push_undo_to_redo (__func__, *this, lambda); // how to get rid of the item once backed up
+  }
+  bse_container_remove_backedup (BSE_CONTAINER (self), child, ustack); // remove (without redo queueing)
+  bse_item_undo_close (ustack);
+  return error;
 }
 
 } // Bse

@@ -615,7 +615,12 @@ any_set_from_string (Any &any, const String &string)
   using namespace Rapicorn;
   switch (any.kind())
     {
-    case Aida::BOOL:            any.set (string_to_bool (string));       break;
+    case Aida::BOOL:
+      if (string.size() == 2 && string.data()[0] == '#')
+        any.set (bool (string.data()[1] == 't' || string.data()[1] == 'T'));
+      else
+        any.set (string_to_bool (string));
+      break;
     case Aida::INT64:           any.set (string_to_int (string));        break;
     case Aida::FLOAT64:         any.set (string_to_double (string));     break;
     case Aida::STRING:          any.set (string_from_cquote (string));   break;
@@ -713,7 +718,10 @@ restore_cxx_item_property (BseItem *bitem, BseStorage *self)
   // need identifier
   if (g_scanner_peek_next_token (scanner) != G_TOKEN_IDENTIFIER)
     return SFI_TOKEN_UNMATCHED;
-  const String identifier = scanner->next_value.v_identifier;
+  String identifier = scanner->next_value.v_identifier;
+  for (size_t i = 0; i < identifier.size(); i++)
+    if (identifier.data()[i] == '-')
+      identifier[i] = '_';
   // find identifier in item, we could search __aida_dir__, but *getting* is simpler
   Any any = item->__aida_get__ (identifier);
   if (any.kind())

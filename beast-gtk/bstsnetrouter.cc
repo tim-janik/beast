@@ -709,7 +709,10 @@ bst_snet_router_root_event (BstSNetRouter   *self,
                   bst_canvas_source_popup_info (csource);
                   break;
                 case 1:
-                  error = bse_snet_remove_source (self->snet.proxy_id(), csource->source);
+                  {
+                    Bse::SourceH source = Bse::SourceH::down_cast (bse_server.from_proxy (csource->source));
+                    error = self->snet.remove_source (source);
+                  }
                   bst_status_eprintf (error, _("Remove Module"));
                   break;
                 case 0: break;
@@ -781,12 +784,11 @@ bst_snet_router_event (GtkWidget *widget,
                                         event->button.x, event->button.y,
                                         &self->world_x, &self->world_y);
 
-          error = bse_snet_can_create_source (self->snet.proxy_id(), cat->type);
+          error = self->snet.can_create_source (cat->type);
           if (!error)
             {
-              SfiProxy module;
               bse_item_group_undo (self->snet.proxy_id(), "Create Module");
-              module = bse_snet_create_source (self->snet.proxy_id(), cat->type);
+              SfiProxy module = self->snet.create_source (cat->type).proxy_id();
               bse_source_set_pos (module,
                                   self->world_x / BST_CANVAS_SOURCE_PIXEL_SCALE,
                                   self->world_y / -BST_CANVAS_SOURCE_PIXEL_SCALE);

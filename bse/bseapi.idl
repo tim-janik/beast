@@ -451,7 +451,17 @@ interface Super : Container {
 
 /// Base interface type for all kinds of synthesis networks.
 interface SNet : Super {
-  bool supports_user_synths (); ///< Check whether users may edit synthesis modules of this network.
+  bool        supports_user_synths ();                ///< Check whether users may edit synthesis modules of this network.
+  ErrorType   can_create_source (String module_type); ///< Check whether inserting a new module into a synthesis network is possible.
+  Source      create_source     (String module_type); ///< Insert a new module into a synthesis network.
+  ErrorType   remove_source     (Source module);      ///< Remove an existing module from its synthesis network.
+  signal void port_unregistered ();                   ///< Signal that notifies when a named output port is unregistered.
+  group _("Playback Settings") {
+    bool      auto_activate = Bool (_("Auto Activate"),
+                                    _("Automatic activation only needs to be enabled for synthesis networks that don't "
+                                      "use virtual ports for their input and output"),
+                                    STANDARD, true);
+  };
 };
 
 /// Customizable synthesis (filter) network container.
@@ -569,7 +579,6 @@ interface Song : SNet {
   // group _("MIDI Instrument") {
   // CSynth  pnet          = Object ("Postprocessor", "Synthesis network to be used as postprocessor", STANDARD);
   // };
-  // bool  auto_activate = Bool  ("Auto Activate", "", STORAGE, TRUE);
   // bool  loop_enabled  = Bool  ("Loop Enabled", "", STORAGE, FALSE);
   // int32 loop_left     = Range ("Loop Left", "", STORAGE, -1, MAXINT31, 384, -1);
   // int32 loop_right    = Range ("Loop Right", "", STORAGE, -1, MAXINT31, 384, -1);
