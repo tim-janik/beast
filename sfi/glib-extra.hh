@@ -65,7 +65,6 @@ void g_object_disconnect_any (gpointer object,
 #define g_strdup_format(...)            g_strdup (Rapicorn::string_format (__VA_ARGS__).c_str())
 
 /* --- string functions --- */
-const gchar*    g_printf_find_localised_directive (const gchar *format);
 gchar**		g_straddv	  (gchar	**str_array,
 				   const gchar	 *new_str);
 gchar**		g_strslistv	  (GSList	 *slist);
