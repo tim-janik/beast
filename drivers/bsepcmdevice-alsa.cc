@@ -124,10 +124,9 @@ bse_pcm_device_alsa_list_devices (BseDevice *device)
   while (cindex >= 0)
     {
       snd_ctl_card_info_clear (cinfo);
-      char hwid[128];
-      g_snprintf (hwid, 128, "hw:CARD=%u", cindex);
+      String hwid = string_format ("hw:CARD=%u", cindex);
       snd_ctl_t *chandle = NULL;
-      if (snd_ctl_open (&chandle, hwid, SND_CTL_NONBLOCK) < 0 || !chandle)
+      if (snd_ctl_open (&chandle, hwid.c_str(), SND_CTL_NONBLOCK) < 0 || !chandle)
         continue;
       if (snd_ctl_card_info (chandle, cinfo) < 0)
         {
