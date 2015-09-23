@@ -17,7 +17,7 @@ assortment_entry_copy (gpointer boxed)
 static void
 assortment_entry_free (GxkAssortmentEntry *aentry)
 {
-  g_return_if_fail (aentry->ref_count > 0);
+  assert_return (aentry->ref_count > 0);
   aentry->ref_count -= 1;
   if (!aentry->ref_count)
     {
@@ -68,22 +68,22 @@ gxk_assortment_new (void)
 void
 gxk_assortment_dispose (GxkAssortment *self)
 {
-  g_return_if_fail (GXK_IS_ASSORTMENT (self));
+  assert_return (GXK_IS_ASSORTMENT (self));
   g_object_run_dispose ((GObject*) self);
 }
 
 void
 gxk_assortment_block_selection (GxkAssortment *self)
 {
-  g_return_if_fail (GXK_IS_ASSORTMENT (self));
+  assert_return (GXK_IS_ASSORTMENT (self));
   self->block_count++;
 }
 
 void
 gxk_assortment_unblock_selection (GxkAssortment *self)
 {
-  g_return_if_fail (GXK_IS_ASSORTMENT (self));
-  g_return_if_fail (self->block_count > 0);
+  assert_return (GXK_IS_ASSORTMENT (self));
+  assert_return (self->block_count > 0);
   self->block_count--;
 }
 
@@ -91,7 +91,7 @@ void
 gxk_assortment_select (GxkAssortment      *self,
                        GxkAssortmentEntry *entry)
 {
-  g_return_if_fail (GXK_IS_ASSORTMENT (self));
+  assert_return (GXK_IS_ASSORTMENT (self));
   if (!self->block_count && entry != self->selected)
     {
       self->selected = entry;
@@ -103,7 +103,7 @@ void
 gxk_assortment_select_data (GxkAssortment          *self,
                             gpointer                entry_user_data)
 {
-  g_return_if_fail (GXK_IS_ASSORTMENT (self));
+  assert_return (GXK_IS_ASSORTMENT (self));
   gxk_assortment_select (self, gxk_assortment_find_data (self, entry_user_data));
 }
 
@@ -111,7 +111,7 @@ GxkAssortmentEntry*
 gxk_assortment_find_data (GxkAssortment          *self,
                           gpointer                entry_user_data)
 {
-  g_return_val_if_fail (GXK_IS_ASSORTMENT (self), NULL);
+  assert_return (GXK_IS_ASSORTMENT (self), NULL);
   GSList *slist;
   for (slist = self->entries; slist; slist = slist->next)
     {
@@ -133,7 +133,7 @@ gxk_assortment_insert (GxkAssortment          *self,
                        gpointer                owner,
                        GxkAssortmentDelete     free_func)
 {
-  g_return_val_if_fail (GXK_IS_ASSORTMENT (self), NULL);
+  assert_return (GXK_IS_ASSORTMENT (self), NULL);
 
   GxkAssortmentEntry *aentry = g_new0 (GxkAssortmentEntry, 1);
   aentry->label = g_strdup (label);
@@ -153,8 +153,8 @@ void
 gxk_assortment_changed (GxkAssortment          *self,
                         GxkAssortmentEntry     *entry)
 {
-  g_return_if_fail (GXK_IS_ASSORTMENT (self));
-  g_return_if_fail (g_slist_find (self->entries, entry) != NULL);
+  assert_return (GXK_IS_ASSORTMENT (self));
+  assert_return (g_slist_find (self->entries, entry) != NULL);
 
   g_signal_emit (self, signal_entry_changed, 0, entry);
 }
@@ -163,13 +163,13 @@ void
 gxk_assortment_remove (GxkAssortment          *self,
                        GxkAssortmentEntry     *entry)
 {
-  g_return_if_fail (GXK_IS_ASSORTMENT (self));
+  assert_return (GXK_IS_ASSORTMENT (self));
 
   GSList *last = NULL, *slist;
   for (slist = self->entries; slist; last = slist, slist = last->next)
     if (slist->data == entry)
       break;
-  g_return_if_fail (slist != NULL);
+  assert_return (slist != NULL);
 
   gboolean selection_changed = FALSE;
   if (self->selected == entry)
@@ -202,7 +202,7 @@ static void
 assortment_dispose (GObject *object)
 {
   GxkAssortment *self = GXK_ASSORTMENT (object);
-  g_return_if_fail (GXK_IS_ASSORTMENT (self));
+  assert_return (GXK_IS_ASSORTMENT (self));
   gboolean was_selected = self->selected != NULL;
   self->selected = NULL;
   while (self->entries)
@@ -220,7 +220,7 @@ static void
 assortment_finalize (GObject *object)
 {
   GxkAssortment *self = GXK_ASSORTMENT (object);
-  g_return_if_fail (GXK_IS_ASSORTMENT (self));
+  assert_return (GXK_IS_ASSORTMENT (self));
   self->selected = NULL;
   while (self->entries)
     {
@@ -286,7 +286,7 @@ struct AssortmentLink {
 static void
 assortment_link_unref (AssortmentLink *alink)
 {
-  g_return_if_fail (alink->ref_count > 0);
+  assert_return (alink->ref_count > 0);
   alink->ref_count--;
   if (!alink->ref_count)
     {
@@ -319,10 +319,10 @@ static void
 window_add_assortment_link (GtkWidget      *window,
                             AssortmentLink *alink)
 {
-  g_return_if_fail (GTK_IS_WINDOW (window));
-  g_return_if_fail (GTK_IS_WIDGET (alink->widget));
-  g_return_if_fail (alink->toplevel == NULL);
-  g_return_if_fail (alink->next == NULL);
+  assert_return (GTK_IS_WINDOW (window));
+  assert_return (GTK_IS_WIDGET (alink->widget));
+  assert_return (alink->toplevel == NULL);
+  assert_return (alink->next == NULL);
   alink->next = (AssortmentLink*) g_object_steal_qdata ((GObject*) window, quark_window_assortments);
   alink->toplevel = window;
   alink->ref_count++;
@@ -341,7 +341,7 @@ static void
 window_remove_assortment_link (AssortmentLink *alink)
 {
   GtkWidget *window = alink->toplevel;
-  g_return_if_fail (GTK_IS_WINDOW (window));
+  assert_return (GTK_IS_WINDOW (window));
 
   AssortmentLink *last = NULL, *anode = (AssortmentLink*) g_object_get_qdata ((GObject*) window, quark_window_assortments);
   for (; anode; last = anode, anode = last->next)
@@ -427,9 +427,9 @@ gxk_widget_publish_assortment (gpointer       widget,
                                GxkAssortment *assortment)
 {
   AssortmentLink *alink = g_new0 (AssortmentLink, 1);
-  g_return_if_fail (GTK_IS_WIDGET (widget));
-  g_return_if_fail (GXK_IS_ASSORTMENT (assortment));
-  g_return_if_fail (assortment->publishing_name == NULL);
+  assert_return (GTK_IS_WIDGET (widget));
+  assert_return (GXK_IS_ASSORTMENT (assortment));
+  assert_return (assortment->publishing_name == NULL);
   assortment->publishing_name = g_strdup (publishing_name);
   alink->assortment = (GxkAssortment*) g_object_ref (assortment);
   alink->ref_count = 1;
@@ -448,8 +448,8 @@ gxk_window_add_assortment_client (GtkWindow              *window,
                                   GxkAssortmentClient     removed_func,
                                   gpointer                client_data)
 {
-  g_return_if_fail (GTK_IS_WINDOW (window));
-  g_return_if_fail (client_data != NULL);
+  assert_return (GTK_IS_WINDOW (window));
+  assert_return (client_data != NULL);
   AssortmentClient *aclient = g_new0 (AssortmentClient, 1);
   aclient->client_data = client_data;
   aclient->added_func = added_func;
@@ -466,8 +466,8 @@ void
 gxk_window_remove_assortment_client (GtkWindow *window,
                                      gpointer   client_data)
 {
-  g_return_if_fail (GTK_IS_WINDOW (window));
-  g_return_if_fail (client_data != NULL);
+  assert_return (GTK_IS_WINDOW (window));
+  assert_return (client_data != NULL);
   GSList *last = NULL, *slist = (GSList*) g_object_get_qdata ((GObject*) window, quark_assortment_clients);
   while (slist)
     {
@@ -615,8 +615,8 @@ void
 gxk_assortment_manage_menu (GxkAssortment          *self,
                             GtkMenu                *menu)
 {
-  g_return_if_fail (GXK_IS_ASSORTMENT (self));
-  g_return_if_fail (GTK_IS_MENU (menu));
+  assert_return (GXK_IS_ASSORTMENT (self));
+  assert_return (GTK_IS_MENU (menu));
 
   g_signal_connect_object (self, "entry-added", G_CALLBACK (assortment_menu_entry_added), menu, GConnectFlags (0));
   g_signal_connect_object (self, "entry-changed", G_CALLBACK (assortment_menu_entry_changed), menu, GConnectFlags (0));

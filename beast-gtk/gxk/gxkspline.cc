@@ -87,7 +87,7 @@ gxk_spline_new (guint                   n_points,
                 double                  dy_start,
                 double                  dy_end)
 {
-  g_return_val_if_fail (n_points >= 2, NULL);
+  assert_return (n_points >= 2, NULL);
   GxkSpline *spline = (GxkSpline*) g_malloc (sizeof (spline[0]) + n_points * sizeof (spline->segs[0]));
   /* initialize segments */
   spline->n_segs = n_points;
@@ -380,7 +380,7 @@ gxk_spline_findx (const GxkSpline *spline,
 void
 gxk_spline_free (GxkSpline *spline)
 {
-  g_return_if_fail (spline != NULL);
+  assert_return (spline != NULL);
   g_free (spline);
 }
 

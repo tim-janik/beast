@@ -98,7 +98,7 @@ action_class_ref_new (GxkActionCheck  acheck,
 static ActionClass*
 action_class_ref (ActionClass *aclass)
 {
-  g_return_val_if_fail (aclass->ref_count > 0, NULL);
+  assert_return (aclass->ref_count > 0, NULL);
   aclass->ref_count++;
   return aclass;
 }
@@ -106,7 +106,7 @@ action_class_ref (ActionClass *aclass)
 static void
 action_class_unref (ActionClass *aclass)
 {
-  g_return_if_fail (aclass->ref_count > 0);
+  assert_return (aclass->ref_count > 0);
   aclass->ref_count--;
   if (!aclass->ref_count)
     {
@@ -205,7 +205,7 @@ gxk_action_list_add_actions (GxkActionList        *alist,
   guint i;
   for (i = 0; i < n_actions; i++)
     {
-      g_return_if_fail (actions[i].name != NULL);
+      assert_return (actions[i].name != NULL);
       action_list_add (alist, klass, TRUE, actions[i].name, actions + i, idomain);
     }
   action_class_unref (klass);
@@ -225,7 +225,7 @@ gxk_action_list_add_translated (GxkActionList          *alist,
 {
   ActionClass *klass = action_class_ref_new (acheck, aexec, user_data, alist->agroup, 0);
   GxkStockAction a = { 0, };
-  g_return_if_fail (name);
+  assert_return (name);
   if (!key)
     key = name;
   a.name = name;
@@ -298,7 +298,7 @@ gxk_action_list_get_action (GxkActionList          *alist,
                             GxkAction              *action)
 {
   ActionEntry *e;
-  g_return_if_fail (nth < alist->n_entries);
+  assert_return (nth < alist->n_entries);
   e = alist->entries[nth];
   action->key = e->key;
   action->action_data = e;
@@ -330,7 +330,7 @@ gxk_action_list_regulate_widget (GxkActionList          *alist,
                                  GtkWidget              *widget)
 {
   ActionEntry *e;
-  g_return_if_fail (nth < alist->n_entries);
+  assert_return (nth < alist->n_entries);
   e = alist->entries[nth];
   e->widgets = g_slist_prepend (e->widgets, g_object_ref (widget));
   g_object_set_qdata ((GObject*) widget, quark_action_entry, e);
@@ -370,7 +370,7 @@ void
 gxk_action_activate_callback (gconstpointer action_data)
 {
   const ActionEntry *e = (const ActionEntry*) action_data;
-  g_return_if_fail (e && e->klass && e->klass->ref_count > 0);
+  assert_return (e && e->klass && e->klass->ref_count > 0);
   if (!e->klass->agroup || e->klass->agroup->lock_count == 0)
     {
       if (ACTION_CHECK (e->klass->acheck, e->klass->user_data, e->action.action_id))
@@ -418,7 +418,7 @@ static GQuark quark_action_factories = 0;
 static void
 action_link_unref (ActionLink *alink)
 {
-  g_return_if_fail (alink->ref_count > 0);
+  assert_return (alink->ref_count > 0);
   alink->ref_count--;
   if (!alink->ref_count)
     {
@@ -446,8 +446,8 @@ static void
 window_add_action_link (GtkWidget *window,
                         ActionLink *alink)
 {
-  g_return_if_fail (GTK_IS_WIDGET (alink->widget));
-  g_return_if_fail (alink->toplevel == NULL);
+  assert_return (GTK_IS_WIDGET (alink->widget));
+  assert_return (alink->toplevel == NULL);
   alink->next = (ActionLink*) g_object_steal_qdata ((GObject*) window, quark_action_links);
   alink->toplevel = window;
   alink->ref_count++;
@@ -466,7 +466,7 @@ static void
 window_remove_action_link (ActionLink *alink)
 {
   GtkWidget *window = alink->toplevel;
-  g_return_if_fail (GTK_IS_WIDGET (alink->toplevel));
+  assert_return (GTK_IS_WIDGET (alink->toplevel));
 
   ActionLink *last = NULL, *anode = (ActionLink*) g_object_get_qdata ((GObject*) window, quark_action_links);
   for (; anode; last = anode, anode = last->next)
@@ -625,7 +625,7 @@ void
 gxk_widget_update_actions_upwards (gpointer widget)
 {
   GtkWidget *toplevel = gtk_widget_get_toplevel ((GtkWidget*) widget);
-  g_return_if_fail (GTK_IS_WIDGET (widget));
+  assert_return (GTK_IS_WIDGET (widget));
   if (GTK_IS_WINDOW (toplevel))
     window_queue_action_updates (toplevel, (GtkWidget*) widget, NULL);
 }
@@ -634,7 +634,7 @@ void
 gxk_widget_update_actions_downwards (gpointer widget)
 {
   GtkWidget *toplevel = gtk_widget_get_toplevel ((GtkWidget*) widget);
-  g_return_if_fail (GTK_IS_WIDGET (widget));
+  assert_return (GTK_IS_WIDGET (widget));
   if (GTK_IS_WINDOW (toplevel))
     window_queue_action_updates (toplevel, NULL, (GtkWidget*) widget);
 }
@@ -643,7 +643,7 @@ void
 gxk_widget_update_actions (gpointer widget)
 {
   GtkWidget *toplevel = gtk_widget_get_toplevel ((GtkWidget*) widget);
-  g_return_if_fail (GTK_IS_WIDGET (widget));
+  assert_return (GTK_IS_WIDGET (widget));
   if (GTK_IS_WINDOW (toplevel))
     window_queue_action_updates (toplevel, (GtkWidget*) widget, (GtkWidget*) widget);
 }
@@ -710,7 +710,7 @@ gxk_widget_publish_action_list (gpointer       widget,
                                 GxkActionList *alist)
 {
   ActionLink *alink = g_new0 (ActionLink, 1);
-  g_return_if_fail (GTK_IS_WIDGET (widget));
+  assert_return (GTK_IS_WIDGET (widget));
   alink->ref_count = 1;
   alink->widget = (GtkWidget*) widget;
   alink->prefix = g_strdup (prefix);
@@ -775,7 +775,7 @@ gxk_widget_publish_actions_grouped (gpointer                widget,
                                     GxkActionExec           aexec)
 {
   GxkActionList *alist = gxk_action_list_create_grouped (group);
-  g_return_if_fail (GTK_IS_WIDGET (widget));
+  assert_return (GTK_IS_WIDGET (widget));
   gxk_action_list_add_actions (alist, n_actions, actions, i18n_domain, acheck, aexec, widget);
   gxk_widget_publish_action_list (widget, prefix, alist);
 }
@@ -806,7 +806,7 @@ gxk_widget_publish_grouped_translated (gpointer                widget,
                                        GxkActionExec           aexec)
 {
   GxkActionList *alist = gxk_action_list_create_grouped (group);
-  g_return_if_fail (name != NULL);
+  assert_return (name != NULL);
   gxk_action_list_add_translated (alist, g_intern_string (key ? key : name), name,
                                   accelerator, tooltip, action_id, stock_icon,
                                   acheck, aexec, widget);
@@ -825,7 +825,7 @@ gxk_widget_publish_translated (gpointer                widget,
                                GxkActionCheck          acheck,
                                GxkActionExec           aexec)
 {
-  g_return_if_fail (name != NULL);
+  assert_return (name != NULL);
   gxk_widget_publish_grouped_translated (widget, NULL, prefix, key ? key : name, name, accelerator,
                                          tooltip, action_id, stock_icon, acheck, aexec);
 }
@@ -835,8 +835,8 @@ gxk_window_add_action_client (GtkWindow              *window,
                               GxkActionClient         added_func,
                               gpointer                client_data)
 {
-  g_return_if_fail (GTK_IS_WINDOW (window));
-  g_return_if_fail (client_data != NULL);
+  assert_return (GTK_IS_WINDOW (window));
+  assert_return (client_data != NULL);
   ActionClient *aclient = g_new0 (ActionClient, 1);
   aclient->client_data = client_data;
   aclient->added_func = added_func;
@@ -851,8 +851,8 @@ void
 gxk_window_remove_action_client (GtkWindow              *window,
                                  gpointer                client_data)
 {
-  g_return_if_fail (GTK_IS_WINDOW (window));
-  g_return_if_fail (client_data != NULL);
+  assert_return (GTK_IS_WINDOW (window));
+  assert_return (client_data != NULL);
   GSList *last = NULL, *slist = (GSList*) g_object_get_qdata ((GObject*) window, quark_action_clients);
   while (slist)
     {
@@ -925,7 +925,7 @@ void
 gxk_action_group_select (GxkActionGroup *self,
                          size_t          action_id)
 {
-  g_return_if_fail (GXK_IS_ACTION_GROUP (self));
+  assert_return (GXK_IS_ACTION_GROUP (self));
   if (!self->lock_count && (action_id != self->action_id || self->invert_dups))
     {
       if (action_id == self->action_id)
@@ -941,22 +941,22 @@ gxk_action_group_select (GxkActionGroup *self,
 void
 gxk_action_group_lock (GxkActionGroup *self)
 {
-  g_return_if_fail (GXK_IS_ACTION_GROUP (self));
+  assert_return (GXK_IS_ACTION_GROUP (self));
   self->lock_count++;
 }
 
 void
 gxk_action_group_unlock (GxkActionGroup *self)
 {
-  g_return_if_fail (GXK_IS_ACTION_GROUP (self));
-  g_return_if_fail (self->lock_count > 0);
+  assert_return (GXK_IS_ACTION_GROUP (self));
+  assert_return (self->lock_count > 0);
   self->lock_count--;
 }
 
 void
 gxk_action_group_dispose (GxkActionGroup *self)
 {
-  g_return_if_fail (GXK_IS_ACTION_GROUP (self));
+  assert_return (GXK_IS_ACTION_GROUP (self));
   g_object_run_dispose ((GObject*) self);
 }
 

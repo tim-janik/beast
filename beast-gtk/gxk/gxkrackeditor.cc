@@ -523,8 +523,8 @@ gxk_rack_table_handle_button_release (GxkRackTable   *self,
 void
 gxk_rack_table_destroy_editor (GxkRackTable *self)
 {
-  g_return_if_fail (GXK_IS_RACK_TABLE (self));
-  g_return_if_fail (self->editor);
+  assert_return (GXK_IS_RACK_TABLE (self));
+  assert_return (self->editor);
   rack_table_abort_drag (self, GDK_CURRENT_TIME);
   rack_table_editor_unrealize (self);
   g_free (self->editor);
@@ -535,7 +535,7 @@ void
 gxk_rack_table_set_edit_mode (GxkRackTable *self,
                               gboolean      enable_editing)
 {
-  g_return_if_fail (GXK_IS_RACK_TABLE (self));
+  assert_return (GXK_IS_RACK_TABLE (self));
 
   enable_editing = enable_editing && GTK_WIDGET_DRAWABLE (self);
   if (!self->editor && enable_editing)
@@ -560,7 +560,7 @@ gxk_rack_table_check_cell (GxkRackTable *self,
                            guint         col,
                            guint         row)
 {
-  g_return_val_if_fail (GXK_IS_RACK_TABLE (self), FALSE);
+  assert_return (GXK_IS_RACK_TABLE (self), FALSE);
 
   gxk_rack_table_update_child_map (self);
   return g_bit_matrix_test (self->child_map, col, row);
@@ -578,7 +578,7 @@ gxk_rack_table_check_area (GxkRackTable *self,
   guint ecol, erow, ehspan, evspan, i, j;
   gboolean empty_frame;
 
-  g_return_val_if_fail (GXK_IS_RACK_TABLE (self), FALSE);
+  assert_return (GXK_IS_RACK_TABLE (self), FALSE);
 
   gxk_rack_table_update_child_map (self);
   if (col + hspan > self->child_map->width ||
@@ -622,7 +622,7 @@ gxk_rack_table_expand_rect (GxkRackTable *self,
   GtkTable *table;
   guint i, j, f;
 
-  g_return_val_if_fail (GXK_IS_RACK_TABLE (self), FALSE);
+  assert_return (GXK_IS_RACK_TABLE (self), FALSE);
 
   gxk_rack_table_update_child_map (self);
   table = GTK_TABLE (self);

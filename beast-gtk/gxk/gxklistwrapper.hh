@@ -2,7 +2,7 @@
 #ifndef __GXK_LIST_WRAPPER_H__
 #define __GXK_LIST_WRAPPER_H__
 
-#include <gtk/gtktreemodel.h>
+#include <gxk/gxkglobals.hh>
 
 G_BEGIN_DECLS
 

@@ -359,9 +359,9 @@ void
 gxk_simple_label_set_mnemonic_widget (GxkSimpleLabel  *self,
                                       GtkWidget       *widget)
 {
-  g_return_if_fail (GXK_IS_SIMPLE_LABEL (self));
+  assert_return (GXK_IS_SIMPLE_LABEL (self));
   if (widget)
-    g_return_if_fail (GTK_IS_WIDGET (widget));
+    assert_return (GTK_IS_WIDGET (widget));
 
   if (self->mnemonic_widget)
     g_object_weak_unref (G_OBJECT (self->mnemonic_widget),

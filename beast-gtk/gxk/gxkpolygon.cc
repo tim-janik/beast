@@ -109,9 +109,9 @@ gxk_polygon_set_lines (GxkPolygon     *self,
 		       guint           n_lines,
 		       GxkPolygonLine *lines)
 {
-  g_return_if_fail (GXK_IS_POLYGON (self));
+  assert_return (GXK_IS_POLYGON (self));
   if (n_lines)
-    g_return_if_fail (lines != NULL);
+    assert_return (lines != NULL);
 
   g_free (self->lines);
   self->n_lines = n_lines;
@@ -132,9 +132,9 @@ gxk_polygon_set_arcs (GxkPolygon    *self,
 		      guint          n_arcs,
 		      GxkPolygonArc *arcs)
 {
-  g_return_if_fail (GXK_IS_POLYGON (self));
+  assert_return (GXK_IS_POLYGON (self));
   if (n_arcs)
-    g_return_if_fail (arcs != NULL);
+    assert_return (arcs != NULL);
 
   g_free (self->arcs);
   self->n_arcs = n_arcs;
@@ -153,7 +153,7 @@ void
 gxk_polygon_set_graph (GxkPolygon      *self,
 		       GxkPolygonGraph *polygon_graph)
 {
-  g_return_if_fail (GXK_IS_POLYGON (self));
+  assert_return (GXK_IS_POLYGON (self));
   if (polygon_graph)
     {
       gxk_polygon_set_lines (self, polygon_graph->n_lines, polygon_graph->lines);
@@ -179,7 +179,7 @@ void
 gxk_polygon_set_length (GxkPolygon *self,
 			guint       length)
 {
-  g_return_if_fail (GXK_IS_POLYGON (self));
+  assert_return (GXK_IS_POLYGON (self));
 
   self->request_length = length;
   gtk_widget_queue_resize (GTK_WIDGET (self));
