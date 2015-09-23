@@ -404,13 +404,8 @@ show_nodes (GType root, GType type, GType sibling, const String &indent, const A
   if (feature_channels && g_type_is_a (type, BSE_TYPE_SOURCE))
     {
       BseSourceClass *klass = (BseSourceClass*) g_type_class_ref (type);
-      gchar buffer[1024];
 
-      sprintf (buffer,
-	       "\t(ichannels %u) (ochannels %u)",
-	       klass->channel_defs.n_ichannels,
-	       klass->channel_defs.n_ochannels);
-      printout ("%s", buffer);
+      printout ("\t(ichannels %u) (ochannels %u)", klass->channel_defs.n_ichannels, klass->channel_defs.n_ochannels);
       g_type_class_unref (klass);
     }
 

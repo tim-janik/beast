@@ -27,11 +27,9 @@ CxxClosure::gclosure()
 #include <stdio.h>
 using namespace std;
 inline string
-String (long long int i)
+as_string (long long int i)
 {
-  char buf[16];
-  sprintf (buf, "%lld", i);
-  return string (buf);
+  return string_format ("%d", i);
 }
 
 void
@@ -47,7 +45,7 @@ print_closure (bool withreturn,
     s += "typename R, ";
   s += "class T";
   for (int i = 1; i <= n_args; i++)
-    s += ", typename A" + String (i);
+    s += ", typename A" + as_string (i);
   const char *tmpldecl = strdup (s.c_str());
   /* template args: <R, T, A1, A2, ...> */
   s = "";
@@ -55,14 +53,14 @@ print_closure (bool withreturn,
     s += "R, ";
   s += "T";
   for (int i = 1; i <= n_args; i++)
-    s += ", A" + String (i);
+    s += ", A" + as_string (i);
   const char *tmplargs = strdup (s.c_str());
   /* argtypes: (A1, A2, A3) */
   s = "";
   if (n_args)
     s += "A1";
   for (int i = 2; i <= n_args; i++)
-    s += ", A" + String (i);
+    s += ", A" + as_string (i);
   const char *argtypes = strdup (s.c_str());
   /* introductionary comment */
   printf ("\n/* %s%uClosure */\n", rpref, n_args);
