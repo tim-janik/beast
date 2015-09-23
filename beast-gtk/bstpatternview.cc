@@ -221,7 +221,6 @@ pattern_view_get_layout (GxkScrollCanvas        *scc,
   BstPatternView *self = BST_PATTERN_VIEW (scc);
   PangoFontDescription *fdesc;
   PangoRectangle rect = { 0 };
-  gchar buffer[64];
   guint i, accu = 0;
 
   /* hpanel writings */
@@ -235,8 +234,7 @@ pattern_view_get_layout (GxkScrollCanvas        *scc,
   pango_font_description_merge (fdesc, STYLE (self)->font_desc, FALSE);
   pango_layout_set_font_description (PLAYOUT_VPANEL (self), fdesc);
   pango_font_description_free (fdesc);
-  g_snprintf (buffer, 64, "%05x", self->max_ticks);
-  pango_layout_set_text (PLAYOUT_VPANEL (self), buffer, -1);
+  pango_layout_set_text (PLAYOUT_VPANEL (self), string_format ("%05x", self->max_ticks).c_str(), -1);
   pango_layout_get_pixel_extents (PLAYOUT_VPANEL (self), NULL, &rect);
   layout->left_panel_width = rect.width + 2 * XTHICKNESS (self);
 
@@ -622,7 +620,6 @@ bst_pattern_view_draw_hpanel (GxkScrollCanvas *scc,
   BstPatternView *self = BST_PATTERN_VIEW (scc);
   GdkGC *draw_gc = STYLE (self)->fg_gc[STATE (self)];
   PangoRectangle rect = { 0 };
-  gchar buffer[64];
   gint i, width, height;
   gdk_window_get_size (drawable, &width, &height);
   bst_pattern_view_overlap_grow_hpanel_area (self, area);
@@ -640,8 +637,8 @@ bst_pattern_view_draw_hpanel (GxkScrollCanvas *scc,
 	  tact4 /= (self->tpt * 4);
 	  next_pixel = tick_to_coord (self, (tact4 + 1) * (self->tpt * 4));
 
-	  g_snprintf (buffer, 64, "%u", tact4 + 1);
-          pango_layout_set_text (PLAYOUT_HPANEL (self), buffer, -1);
+	  String tact4str = string_format ("%u", tact4 + 1);
+          pango_layout_set_text (PLAYOUT_HPANEL (self), tact4str.c_str(), -1);
           pango_layout_get_pixel_extents (PLAYOUT_HPANEL (self), NULL, &rect);
 
 	  /* draw this tact if there's enough space */
@@ -660,8 +657,8 @@ bst_pattern_view_draw_hpanel (GxkScrollCanvas *scc,
           if (tact == 1444)
             continue;   /* would draw on top of tact4 number */
 
-	  g_snprintf (buffer, 64, ":%u", tact % 4 + 1);
-          pango_layout_set_text (PLAYOUT_HPANEL (self), buffer, -1);
+	  String tact4str = string_format (":%u", tact % 4 + 1);
+          pango_layout_set_text (PLAYOUT_HPANEL (self), tact4str.c_str(), -1);
           pango_layout_get_pixel_extents (PLAYOUT_HPANEL (self), NULL, &rect);
 
 	  /* draw this tact if there's enough space */
@@ -683,7 +680,6 @@ bst_pattern_view_draw_vpanel (GxkScrollCanvas *scc,
   GdkGC *draw_gc = STYLE (self)->fg_gc[STATE (self)];
   gint row = coord_to_row (self, area->y, NULL);
   gint validrow, width, height;
-  gchar buffer[64];
   GdkRectangle rect;
   gdk_window_get_size (VPANEL (self), &width, &height);
 
@@ -693,8 +689,8 @@ bst_pattern_view_draw_vpanel (GxkScrollCanvas *scc,
       PangoRectangle prect = { 0 };
       gint tick;
       row_to_ticks (self, row, &tick, NULL);
-      g_snprintf (buffer, 64, "%05x", tick);
-      pango_layout_set_text (PLAYOUT_VPANEL (self), buffer, -1);
+      String tickstr = string_format ("%05x", tick);
+      pango_layout_set_text (PLAYOUT_VPANEL (self), tickstr.c_str(), -1);
       pango_layout_get_pixel_extents (PLAYOUT_VPANEL (self), NULL, &prect);
       gdk_draw_layout (drawable, draw_gc,
                        width - prect.width - XTHICKNESS (self),

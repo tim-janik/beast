@@ -321,9 +321,10 @@ pattern_column_event_to_string (BstPatternColumn *column, gchar buffer[64], cons
           static const char *formats[] = { "%01x", "%02x", "%03x", "%04x", "%05x", "%06x", "%07x", "%08x", "%09x" };
           format = formats[n_digits - 1];
         }
+      String tmp = string_format (format, ABS (ival));
       if (is_signed)
         *p++ = ival == 0 ? ' ' : ival > 0 ? '+' : '-';
-      g_snprintf (p, 63, format, ABS (ival));
+      strcpy (p, tmp.c_str());
       if (ivalue_p)
         *ivalue_p = ival;
     }
