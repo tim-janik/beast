@@ -220,21 +220,6 @@ vector_similarity (const vector<double>& f1, const vector<double>& f2)
   return diff / f1len / f2len;
 }
 
-static string string_printf (const char *format, ...) G_GNUC_PRINTF (1, 2);
-
-static string
-string_printf (const char *format, ...)
-{
-  va_list ap;
-  va_start(ap, format);
-  char *c_str = g_strdup_vprintf (format, ap);
-  va_end(ap);
-  string str = c_str;
-  g_free (c_str);
-  return str;
-}
-
-
 static  GScannerConfig  scanner_config_template = {
   const_cast<gchar *>   /* FIXME: glib should use const gchar* here */
   (
@@ -487,7 +472,7 @@ FeatureValueVector::parse (GScanner *scanner)
 string
 FeatureValueVector::printable_type() const
 {
-  return string_printf ("%d element vector", n);
+  return string_format ("%d element vector", n);
 }
 
 double
@@ -544,7 +529,7 @@ FeatureValueMatrix::parse (GScanner *scanner)
 string
 FeatureValueMatrix::printable_type() const
 {
-  return string_printf ("%d x %d matrix", m, n);
+  return string_format ("%d x %d matrix", m, n);
 }
 
 double

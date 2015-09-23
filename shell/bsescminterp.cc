@@ -371,10 +371,9 @@ bse_scm_proxy_print (SCM              scm_p1,
                      scm_print_state *pstate)
 {
   SfiProxy p1 = SCM_GET_GLUE_PROXY (scm_p1);
-  char buffer[128];
-  g_snprintf (buffer, sizeof (buffer), "%08lx (ID:%04lx)", (unsigned long) SCM_SMOB_DATA (scm_p1), (unsigned long) p1);
+  String str = string_format ("%08lx (ID:%04lx)", (unsigned long) SCM_SMOB_DATA (scm_p1), (unsigned long) p1);
   scm_puts ("#<SfiProxy ", port);
-  scm_puts (buffer, port);
+  scm_puts (str.c_str(), port);
   scm_puts (">", port);
   return 1;
 }
@@ -973,9 +972,8 @@ bse_scm_script_register (SCM s_name,
       else
         sfi_seq_append (seq, val = sfi_value_string ("Scheme"));
       sfi_value_free (val);
-      char buffer[64] = "";
-      g_snprintf (buffer, 64, "%u", (int) (IS_SCM_SFI_NUM (s_line) ? num_from_scm (s_line) + 1 : 0));
-      sfi_seq_append (seq, val = sfi_value_string (buffer));
+      String str = string_format ("%u", (int) (IS_SCM_SFI_NUM (s_line) ? num_from_scm (s_line) + 1 : 0));
+      sfi_seq_append (seq, val = sfi_value_string (str.c_str()));
       sfi_value_free (val);
       sfi_seq_append (seq, val = string_value_from_scm (s_author));
       sfi_value_free (val);
