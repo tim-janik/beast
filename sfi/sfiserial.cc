@@ -82,31 +82,6 @@ scanner_skip_statement (GScanner *scanner,
 }
 
 static String
-string_vprintf (const char *format, va_list vargs) // FIXME: move
-{
-  char *str = NULL;
-  if (vasprintf (&str, format, vargs) >= 0 && str)
-    {
-      String s = str;
-      free (str);
-      return s;
-    }
-  else
-    return format;
-}
-
-static String
-string_printf (const char *format, ...) // FIXME: move
-{
-  String str;
-  va_list args;
-  va_start (args, format);
-  str = string_vprintf (format, args);
-  va_end (args);
-  return str;
-}
-
-static String
 string_to_cescape (const String &str)   // FIXME: move
 {
   String buffer;
@@ -114,7 +89,7 @@ string_to_cescape (const String &str)   // FIXME: move
     {
       uint8 d = *it;
       if (d < 32 || d > 126 || d == '?')
-        buffer += string_printf ("\\%03o", d);
+        buffer += string_format ("\\%03o", d);
       else if (d == '\\')
         buffer += "\\\\";
       else if (d == '"')

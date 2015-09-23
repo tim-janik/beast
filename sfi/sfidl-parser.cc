@@ -84,7 +84,7 @@ static  GScannerConfig  scanner_config_template = {
 
 /* --- defines --- */
 
-#define DEBUG(x)         // dprintf(2,"%s",x)
+#define DEBUG(x)         // printerr ("%s", x)
 
 enum ExtraToken {
   TOKEN_NAMESPACE = G_TOKEN_LAST + 1,
