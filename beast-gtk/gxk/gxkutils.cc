@@ -3119,7 +3119,7 @@ gxk_label_set_attributes (GtkLabel *label,
   PangoAttribute *attr  = NULL;
   do
     {
-      PangoAttrType attr_type = (PangoAttrType) va_arg (args, int); // PangoAttrType
+      const int attr_type = va_arg (args, int); // PangoAttrType
 
       switch (attr_type)
         {
