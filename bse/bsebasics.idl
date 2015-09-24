@@ -382,14 +382,6 @@ record Category
 sequence CategorySeq {
   Category cats;
 };
-record Dot
-{
-  Real  x;
-  Real  y;
-};
-sequence DotSeq {
-  Dot dots;
-};
 /* BSE Part structures */
 interface Part;
 interface Track;
