@@ -536,11 +536,9 @@ static gboolean
 bst_canvas_link_child_event (GnomeCanvasItem *item,
 			     GdkEvent        *event)
 {
-  BstCanvasLink *clink;
+  // BstCanvasLink *clink = BST_CANVAS_LINK (item);
   GtkWidget *widget = GTK_WIDGET (item->canvas);
   gboolean handled = FALSE;
-
-  clink = BST_CANVAS_LINK (item);
 
   switch (event->type)
     {
@@ -589,11 +587,10 @@ bst_canvas_link_class_init (BstCanvasLinkClass *klass)
 {
   GtkObjectClass *object_class;
   GnomeCanvasItemClass *canvas_item_class;
-  GnomeCanvasGroupClass *canvas_group_class;
+  // GnomeCanvasGroupClass *canvas_group_class = GNOME_CANVAS_GROUP_CLASS (klass);
 
   object_class = GTK_OBJECT_CLASS (klass);
   canvas_item_class = GNOME_CANVAS_ITEM_CLASS (klass);
-  canvas_group_class = GNOME_CANVAS_GROUP_CLASS (klass);
 
   object_class->destroy = bst_canvas_link_destroy;
   canvas_item_class->event = bst_canvas_link_event;
