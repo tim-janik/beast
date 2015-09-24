@@ -3,6 +3,7 @@
 #include <bse/bseprocedure.hh>
 #include <bse/bsewave.hh>
 #include <bse/bseeditablesample.hh>
+#include "bsebuiltin_externs.cc"
 
 
 AUTHORS = "Tim Janik <timj@gtk.org>";

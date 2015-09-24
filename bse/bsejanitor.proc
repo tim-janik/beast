@@ -4,6 +4,7 @@
 #include <bse/bsejanitor.hh>
 #include <bse/bseserver.hh>
 #include <string.h>
+#include "bsebuiltin_externs.cc"
 
 
 AUTHORS	= "Tim Janik <timj@gtk.org>";

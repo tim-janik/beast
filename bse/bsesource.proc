@@ -6,6 +6,7 @@
 #include <bse/bseieee754.hh>
 #include <bse/bsemidievent.hh>
 #include "bsecxxplugin.hh"
+#include "bsebuiltin_externs.cc"
 
 
 AUTHORS	= "Tim Janik <timj@gtk.org>";
