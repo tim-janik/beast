@@ -668,7 +668,7 @@ static SCM
 signal_marshal_sproc (void *data)
 {
   SignalData *sdata = (SignalData*) data;
-  SCM s_ret, args = SCM_EOL;
+  SCM args = SCM_EOL;
   guint i;
 
   i = sdata->n_args;
@@ -678,7 +678,8 @@ signal_marshal_sproc (void *data)
   while (i--)
     args = gh_cons (bse_scm_from_value (sdata->args + i), args);
 
-  s_ret = scm_apply (sdata->s_lambda, args, SCM_EOL);
+  SCM s_ret = scm_apply (sdata->s_lambda, args, SCM_EOL);
+  (void) s_ret;
 
   return SCM_UNSPECIFIED;
 }
