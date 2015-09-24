@@ -569,7 +569,7 @@ dcache_headloop_score (GslDataCache     *dcache,
                        GslDataCacheNode **cnp,
                        gboolean           weighted)
 {
-  gsize node_size = GSL_DATA_CACHE_NODE_SIZE (dcache);
+  ssize_t node_size = GSL_DATA_CACHE_NODE_SIZE (dcache);
   GslDataCacheNode *lnode = *lnp, *cnode = *cnp;
   gdouble wmax = clength, score = 0.0;
   GslLong i = 0, loop_length = cstart - lstart;
@@ -768,8 +768,8 @@ tailloop_score (GslDataCache          *dcache,
 		GslLong	               loopsize,
 		gfloat                 worstscore)
 {
-  gsize node_size = GSL_DATA_CACHE_NODE_SIZE (dcache);
-  GslLong looppos, i, compare = cfg->pre_loop_compare;
+  ssize_t node_size = GSL_DATA_CACHE_NODE_SIZE (dcache);
+  GslLong looppos, compare = cfg->pre_loop_compare;
   gfloat score = 0.0;
   GslDataCacheNode *snode, *lnode;
 
@@ -784,7 +784,7 @@ tailloop_score (GslDataCache          *dcache,
 
   snode = gsl_data_cache_ref_node (dcache, loopstart - compare, GSL_DATA_CACHE_DEMAND_LOAD);
   lnode = gsl_data_cache_ref_node (dcache, looppos, GSL_DATA_CACHE_DEMAND_LOAD);
-  for (i = loopstart - compare; i < loopstart;)
+  for (ssize_t i = loopstart - compare; i < loopstart;)
     {
       GslLong sdiff, ldiff, slen, llen, loop_len, compare_len, j;
       gfloat *sb, *lb;
