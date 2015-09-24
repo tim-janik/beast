@@ -456,8 +456,8 @@ gxk_rack_table_add (GtkContainer *container,
   if (col < 0 || row < 0)
     {
       guint r, c;
-      for (r = row < 0 ? 0 : row; r < (row < 0 ? table->nrows : row + 1); r++)
-        for (c = col < 0 ? 0 : col; c < (col < 0 ? table->ncols : col + 1); c++)
+      for (r = row < 0 ? 0 : row; r < uint (row < 0 ? table->nrows : row + 1); r++)
+        for (c = col < 0 ? 0 : col; c < uint (col < 0 ? table->ncols : col + 1); c++)
           if (gxk_rack_table_check_area (self,
                                          GXK_IS_RACK_ITEM (child) &&
                                          GXK_RACK_ITEM (child)->empty_frame,
