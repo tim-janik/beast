@@ -409,7 +409,8 @@ aida_parameter_binding_set_value (GxkParam *param, const GValue *value)
         any.set (g_value_get_string (value));
       break;
     default:
-      assert_unreached();
+      critical ("%s: unsupported type: %s", __func__, g_type_name (G_PARAM_SPEC_VALUE_TYPE (param->pspec)));
+      return;
     }
   apa->set (any);
 }
@@ -447,7 +448,8 @@ aida_parameter_binding_get_value (GxkParam *param, GValue *param_value)
         }
       break;
     default:
-      assert_unreached();
+      critical ("%s: unsupported type: %s", __func__, g_type_name (G_PARAM_SPEC_VALUE_TYPE (param->pspec)));
+      return;
     }
   if (G_VALUE_TYPE (&value))
     {
