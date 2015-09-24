@@ -54,9 +54,17 @@ main (int    argc,
   if (euid != uid)
     {
 #if     HAVE_SETEUID
-      seteuid (uid);
+      if (seteuid (uid) < 0)
+        {
+          perror ("seteuid()");
+          _exit (127);
+        }
 #elif   HAVE_SETREUID
-      setreuid (-1, uid);
+      if (setreuid (-1, uid) < 0)
+        {
+          perror ("setreuid()");
+          _exit (127);
+        }
 #else
 #error platform misses facility to drop privileges
 #endif
