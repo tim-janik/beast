@@ -3178,8 +3178,7 @@ gxk_label_set_attributes (GtkLabel *label,
           attr = pango_attr_scale_new (va_arg (args, gdouble));
           break;
         default:
-          g_warning ("%s: invalid PangoAttribute type %d",
-                     G_STRFUNC, attr_type);
+          g_warning ("%s: invalid PangoAttribute type %d", __func__, attr_type);
         case -1:
         case PANGO_ATTR_INVALID:
           attr = NULL;
