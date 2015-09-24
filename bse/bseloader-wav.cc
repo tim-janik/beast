@@ -324,7 +324,7 @@ wav_load_wave_dsc (void            *data,
   data_width = (fmt_header.bit_per_sample + 7) / 8;
   *error_p = wav_read_data_header (fi->fd, &data_header, data_width * fmt_header.n_channels);
   data_offset = lseek (fi->fd, 0, SEEK_CUR);
-  if (data_offset < sizeof (WavHeader) && !*error_p)
+  if (data_offset < ssize_t (sizeof (WavHeader)) && !*error_p)
     {
       LDEBUG ("failed to seek to start of data");
       *error_p = gsl_error_from_errno (errno, Bse::ERROR_IO);
