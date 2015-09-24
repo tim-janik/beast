@@ -32,7 +32,7 @@ main (int   argc,
 
   gxk_text_register_textget_handler ("textget-label", textget_handler, NULL);
 
-  for (i = 1; i < argc; i++)
+  for (i = 1; i < uint (argc); i++)
     if (!flags && strcmp (argv[i], "--edit") == 0)
       {
 	flags = GXK_SCROLL_TEXT_EDITABLE;
@@ -54,7 +54,7 @@ main (int   argc,
   gxk_text_add_tsm_path (bse_installpath (BSE_INSTALLPATH_PKGDATADIR_IMAGES).c_str());
   sctext = gxk_scroll_text_create (GXK_SCROLL_TEXT_NAVIGATABLE | flags, NULL);
   gxk_scroll_text_enter (sctext, title);
-  for (i = 1; i < argc; i++)
+  for (i = 1; i < uint (argc); i++)
     if (argv[i])
       {
 	gxk_scroll_text_enter (sctext, argv[i]);

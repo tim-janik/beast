@@ -960,7 +960,7 @@ bst_clue_hunter_event (GtkWidget *widget,
 							       &row, NULL);
 	      if (event->type == GDK_BUTTON_RELEASE &&
 		  on_row && self->clist->selection &&
-		  GPOINTER_TO_UINT (self->clist->selection->data) == row)
+		  GPOINTER_TO_UINT (self->clist->selection->data) == uint (row))
 		{
 		  gchar *string = bst_clue_hunter_try_complete (self);
 		  gtk_entry_set_text (GTK_ENTRY (self->entry), string ? string : "");

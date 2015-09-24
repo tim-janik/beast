@@ -288,7 +288,7 @@ bst_dial_paint (BstDial *dial)
       n_steps = 8;
       thick_step = 2;
     }
-  for (i = 0; i < n_steps + 1; i++)
+  for (i = 0; i < uint (n_steps + 1); i++)
     {
       theta = M_PI - (i * M_PI / ((double) n_steps));
       s = sin (theta);

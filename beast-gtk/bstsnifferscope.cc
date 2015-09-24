@@ -143,7 +143,7 @@ bst_sniffer_scope_expose (GtkWidget      *widget,
   gint i, xl, xr, width;
   sniffer_scope_lregion (self, &xl, &width);
   sniffer_scope_rregion (self, &xr, &width);
-  for (i = 0; i < self->n_values; i++)
+  for (i = 0; i < int (self->n_values); i++)
     {
       sniffer_scope_draw_bar (self, xl + width - 1 - i, self->lvalues[i]);
       sniffer_scope_draw_bar (self, xr + i, self->rvalues[i]);
