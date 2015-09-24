@@ -407,7 +407,9 @@ PROCEDURE (bse-script-send-message, "Script/Message") {
     }
   else
     return Bse::ERROR_PROC_PARAM_INVAL;
+  (void) domain;
 }
+
 PROCEDURE (bse-script-quit, "Script/Quit") {
   HELP  = "Exit a script succesfully (server side).";
 } BODY (BseProcedureClass *proc,
