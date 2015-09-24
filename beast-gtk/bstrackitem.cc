@@ -91,7 +91,7 @@ bst_rack_item_new (SfiProxy        proxy,
 {
   BstRackItem *self;
   SfiRec *rec = bse_item_get_parasite (proxy, path);
-  g_print ("bst_rack_item_new: %p\n", rec);
+  printout ("bst_rack_item_new: %p\n", rec);
   if (!rec)
     return NULL;
   self = (BstRackItem*) g_object_new (BST_TYPE_RACK_ITEM, NULL);

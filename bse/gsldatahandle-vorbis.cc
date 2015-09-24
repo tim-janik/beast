@@ -189,7 +189,7 @@ dh_vorbis_open (GslDataHandle      *dhandle,
   if (err < 0)
     {
       if (0)
-        g_printerr ("failed to open ogg at offset %d (real offset=%lld) (add-zoffset=%d): %s\n",
+        printerr ("failed to open ogg at offset %d (real offset=%lld) (add-zoffset=%d): %s\n",
                     vhandle->rfile_byte_offset,
                     vfile->byte_offset,
                     vhandle->rfile_add_zoffset,
@@ -204,7 +204,7 @@ dh_vorbis_open (GslDataHandle      *dhandle,
       vhandle->bitstream_serialno = ov_serialnumber (&vhandle->ofile, vhandle->bitstream);
       vhandle->n_bitstreams = n;
       if (0)
-        g_printerr ("Ogg/Vorbis: opening ogg: bitstream=%d/%d serialno=%d\n", vhandle->bitstream, vhandle->n_bitstreams, vhandle->bitstream_serialno);
+        printerr ("Ogg/Vorbis: opening ogg: bitstream=%d/%d serialno=%d\n", vhandle->bitstream, vhandle->n_bitstreams, vhandle->bitstream_serialno);
     }
   else
     {
@@ -265,7 +265,7 @@ dh_vorbis_coarse_seek (GslDataHandle *dhandle, GslLong voffset)
       vhandle->pcm_length = 0;
     }
   if (0)
-    g_printerr ("OggS-SEEK: at %llu want %llu got %llu (diff-requested %lld)\n",
+    printerr ("OggS-SEEK: at %llu want %llu got %llu (diff-requested %lld)\n",
 		opos, pos, vhandle->pcm_pos, pos - opos);
 
   return vhandle->pcm_pos * dhandle->setup.n_channels;

@@ -55,7 +55,7 @@ run_loop_test (GslWaveLoopType loop_type,
     g_error ("failed to open wave chunk: %s", bse_error_blurb (error));
   gsl_wave_chunk_unref (wchunk);
   if (verbosity >= VERBOSITY_SETUP)
-    g_print ("SETUP: loop_type=%u loop_first=%lld loop_last=%lld loop_count=%d playdir=%+d\n",
+    printout ("SETUP: loop_type=%u loop_first=%lld loop_last=%lld loop_count=%d playdir=%+d\n",
 	     wchunk->loop_type, wchunk->loop_first, wchunk->loop_last, wchunk->loop_count, play_dir);
   gsl_wave_chunk_debug_block (wchunk, - DEBUG_SIZE / 2, DEBUG_SIZE, cmpblock - DEBUG_SIZE / 2);
   block.play_dir = play_dir;
@@ -86,7 +86,7 @@ run_loop_test (GslWaveLoopType loop_type,
 	      verbosity = 99;
 	    }
 	  if (verbosity >= VERBOSITY_CHECKS)
-	    g_print ("%s: offset=%d (block.offset=%lld) value=%.16f found=%.16f\n",
+	    printout ("%s: offset=%d (block.offset=%lld) value=%.16f found=%.16f\n",
 		     fabs (cmpblock[i] - v) > 1e-15 ? "MISMATCH" : "match",
 		     i, (i - block.offset), cmpblock[i], v);
 	}
@@ -112,47 +112,47 @@ print_block (GslWaveChunk      *wchunk,
   guint i;
   if (verbosity >= VERBOSITY_BLOCKS)
     {
-      g_print ("BLOCK:");
-      g_print (" offset=%lld", block->offset);
-      g_print (" length=%lld", block->length);
-      g_print (" dirstride=%d", block->dirstride);
+      printout ("BLOCK:");
+      printout (" offset=%lld", block->offset);
+      printout (" length=%lld", block->length);
+      printout (" dirstride=%d", block->dirstride);
     }
   if (verbosity >= VERBOSITY_PADDING)
     {
-      g_print (" {prepad:");
+      printout (" {prepad:");
       i = wchunk->n_pad_values;
       p = block->start - (block->dirstride > 0 ? i : -i);
       while (i--)
 	{
-	  g_print (" %.1f", *p);
+	  printout (" %.1f", *p);
 	  p += block->dirstride;
 	}
-      g_print ("}");
+      printout ("}");
     }
   if (verbosity >= VERBOSITY_DATA)
     {
-      g_print (" {data:");
+      printout (" {data:");
       p = block->start;
       while (p != block->end)
 	{
-	  g_print (" %.1f", *p);
+	  printout (" %.1f", *p);
 	  p += block->dirstride;
 	}
-      g_print ("}");
+      printout ("}");
     }
   if (verbosity >= VERBOSITY_PADDING)
     {
       i = wchunk->n_pad_values;
-      g_print (" {postpad:");
+      printout (" {postpad:");
       while (i--)
 	{
-	  g_print (" %.1f", *p);
+	  printout (" %.1f", *p);
 	  p += block->dirstride;
 	}
-      g_print ("}");
+      printout ("}");
     }
   if (verbosity >= VERBOSITY_BLOCKS)
-    g_print ("\n");
+    printout ("\n");
 }
 static void
 reversed_datahandle_test (void)

@@ -686,7 +686,7 @@ ladspa_test_load (const gchar *file)
 	    break;
 	  bli = bse_ladspa_info_assemble (file, cld);
 	  if (!bli->broken)
-	    g_print ("LADSPA: found %s\n", bli->ident);
+	    printout ("LADSPA: found %s\n", bli->ident);
 	}
       if (i == 0)
 	error = "missing LADSPA descriptor";

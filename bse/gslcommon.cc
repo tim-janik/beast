@@ -364,7 +364,7 @@ gsl_progress_wipe (GslProgressState *pstate)
       memset (wstr, ' ', pstate->wipe_length);
       wstr[pstate->wipe_length] = '\r';
       wstr[pstate->wipe_length + 1] = 0;
-      g_printerr ("%s", wstr);
+      printerr ("%s", wstr);
       g_free (wstr);
       pstate->wipe_length = 0;
     }
@@ -388,7 +388,7 @@ gsl_progress_printerr (gpointer          message,
                          detail ? detail : "",
                          detail ? ")" : "");
   l = strlen (str);
-  g_printerr ("%s            \r", str);
+  printerr ("%s            \r", str);
   g_free (str);
   return l;
 }

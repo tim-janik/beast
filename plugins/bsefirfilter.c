@@ -244,8 +244,8 @@ bse_fir_filter_update_locals (BseFIRFilter *filter)
 
 #if 0
       for (i = 0; i < filter->n_coeffs; i++)
-	g_print ("a[%d]=%f ", i - z, filter->coeffs[i]);
-      g_print ("\n=======\n");
+	printout ("a[%d]=%f ", i - z, filter->coeffs[i]);
+      printout ("\n=======\n");
 #endif
     }
 }

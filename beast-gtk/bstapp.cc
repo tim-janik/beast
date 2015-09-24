@@ -1007,14 +1007,14 @@ app_action_exec (gpointer data,
           }
         for (i = 0; i < n_buckets; i++)
           {
-            g_printerr ("bucket[%u] = %u\n", i, buckets[i]);
+            printerr ("bucket[%u] = %u\n", i, buckets[i]);
             max = MAX (max, buckets[i]);
             min = MIN (min, buckets[i]);
             avg += buckets[i];
             if (!buckets[i])
               empty++;
           }
-        g_printerr ("n_objects: %u, minbucket=%u, maxbucket=%u, empty=%u, avg=%u\n",
+        printerr ("n_objects: %u, minbucket=%u, maxbucket=%u, empty=%u, avg=%u\n",
                     avg, min, max, empty, avg / n_buckets);
         g_slist_free (olist);
       }

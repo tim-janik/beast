@@ -240,7 +240,7 @@ gxk_rack_item_button_press (GxkRackItem    *self,
   if (event->button == 3)
     {
     }
-  g_print ("rack-item, button-%u pressed\n", event->button);
+  printout ("rack-item, button-%u pressed\n", event->button);
 }
 
 void

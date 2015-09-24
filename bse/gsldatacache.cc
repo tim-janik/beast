@@ -372,7 +372,7 @@ gsl_data_cache_ref_node (GslDataCache       *dcache,
 	    while (!node->data)
 	      global_dcache_cond_node_filled.wait (dcache->mutex);
 	  dcache->mutex.unlock();
-	  /* g_printerr ("hit: %d :%d: %d\n", node->offset, offset, node->offset + dcache->node_size); */
+	  /* printerr ("hit: %d :%d: %d\n", node->offset, offset, node->offset + dcache->node_size); */
 	  if (rejuvenate_node)
 	    {
 	      global_dcache_spinlock.lock(); /* different lock */
@@ -384,7 +384,7 @@ gsl_data_cache_ref_node (GslDataCache       *dcache,
       insertion_pos = NODEP_INDEX (dcache, node_p);	/* insert before neighbour */
       if (offset > node->offset)			/* insert after neighbour */
 	insertion_pos += 1;
-      /* g_printerr ("mis: %d :%d: %d\n", node->offset, offset, node->offset + dcache->node_size); */
+      /* printerr ("mis: %d :%d: %d\n", node->offset, offset, node->offset + dcache->node_size); */
     }
   else
     insertion_pos = 0;	/* insert at start */
@@ -414,8 +414,8 @@ data_cache_free_olders_Lunlock (GslDataCache *dcache,
 
   rejuvenate = dcache->max_age - max_lru;
   if (0)
-    g_print ("start sweep: dcache (%p) with %u nodes, max_age: %u, rejuvenate: %u (max_lru: %u)\n",
-	     dcache, dcache->n_nodes, dcache->max_age, rejuvenate, max_lru);
+    printout ("start sweep: dcache (%p) with %u nodes, max_age: %u, rejuvenate: %u (max_lru: %u)\n",
+              dcache, dcache->n_nodes, dcache->max_age, rejuvenate, max_lru);
   size = dcache->node_size + (dcache->padding << 1);
   slot_p = NULL;
   for (i = 0; i < dcache->n_nodes; i++)
@@ -451,7 +451,7 @@ data_cache_free_olders_Lunlock (GslDataCache *dcache,
       global_dcache_spinlock.unlock();
     }
   if (0)
-    g_printerr ("freed %u nodes (%u bytes) remaining %u bytes (this dcache: n_nodes=%u)\n",
+    printerr ("freed %u nodes (%u bytes) remaining %u bytes (this dcache: n_nodes=%u)\n",
 		n_freed, n_freed * CONFIG_NODE_SIZE (),
 		global_dcache_n_aged_nodes * CONFIG_NODE_SIZE (),
 		dcache->n_nodes);
@@ -523,7 +523,7 @@ gsl_data_cache_unref_node (GslDataCache     *dcache,
             }
 #if DEBUG_TRASHING
           if (dcache->dhandle->open_count)
-            g_printerr ("shrunk dcache by: dhandle=%p - %s - highp=%d: %d bytes (kept: %d)\n",
+            printerr ("shrunk dcache by: dhandle=%p - %s - highp=%d: %d bytes (kept: %d)\n",
                         dcache->dhandle, gsl_data_handle_name (dcache->dhandle),
                         dcache->high_persistency,
                         -(gint) node_size * (debug_gnaged - global_dcache_n_aged_nodes),

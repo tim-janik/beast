@@ -462,7 +462,7 @@ parse_formula (const gchar *c,
     }
   args = g_slist_prepend (args, g_strndup (last, c - last));
   if (!*c)
-    g_printerr ("malformed formula: $(%s\n", start);
+    printerr ("malformed formula: $(%s\n", start);
   else
     c++;        /* ')' */
   if (args)
@@ -1120,7 +1120,7 @@ property_value_from_string (GtkType      widget_type,
       break;
     }
   if (0 && G_VALUE_TYPE (value) && strchr (pvalue, '$'))
-    g_print ("property[%s]: expr=%s result=%s GValue=%s\n", pspec->name, pvalue, exvalue, g_strdup_value_contents (value));
+    printout ("property[%s]: expr=%s result=%s GValue=%s\n", pspec->name, pvalue, exvalue, g_strdup_value_contents (value));
   g_free (exvalue);
 }
 
@@ -1354,7 +1354,7 @@ radget_add_to_parent (GxkRadget    *parent,
                 }
             }
           else
-            g_printerr ("GXK: no such pack property: %s,%s,%s\n", G_OBJECT_TYPE_NAME (parent), G_OBJECT_TYPE_NAME (radget), pname);
+            printerr ("GXK: no such pack property: %s,%s,%s\n", G_OBJECT_TYPE_NAME (parent), G_OBJECT_TYPE_NAME (radget), pname);
         }
       gxk_radget_free_args (args);
     }
@@ -1405,7 +1405,7 @@ radget_apply_hooks (GxkRadget    *radget,
             }
         }
       else
-        g_printerr ("GXK: no such hook property: %s (radget=%s)\n", hname, G_OBJECT_TYPE_NAME (radget));
+        printerr ("GXK: no such hook property: %s (radget=%s)\n", hname, G_OBJECT_TYPE_NAME (radget));
     }
   /* cleanup */
   while (n_pops--)
@@ -2102,7 +2102,7 @@ gxk_radget_register_hook (GParamSpec   *pspec,
   assert_return (hook_func != NULL);
   if (find_hook (pspec->name, NULL))
     {
-      g_printerr ("GXK: not re-registering hook property: %s\n", pspec->name);
+      printerr ("GXK: not re-registering hook property: %s\n", pspec->name);
       return;
     }
   RadgetHook *hook = g_new0 (RadgetHook, 1);
@@ -2398,10 +2398,10 @@ mf_println (GSList *args,
   while (argiter)
     {
       gchar *arg = argiter_exp (&argiter, env);
-      g_print ("%s", arg ? arg : "(null)");
+      printout ("%s", arg ? arg : "(null)");
       g_free (arg);
     }
-  g_print ("\n");
+  printout ("\n");
   return NULL;
 }
 

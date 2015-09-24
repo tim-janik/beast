@@ -501,9 +501,7 @@ bse_xinfos_add_num (gchar          **xinfos,
                     const gchar     *key,
                     SfiNum           num)
 {
-  gchar buffer[128];
-  g_snprintf (buffer, sizeof (buffer), "%lld", num);
-  return bse_xinfos_add_value (xinfos, key, buffer);
+  return bse_xinfos_add_value (xinfos, key, string_format ("%d", num).c_str());
 }
 
 const gchar*

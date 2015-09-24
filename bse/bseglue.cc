@@ -284,7 +284,7 @@ bglue_value_from_serializable (const GValue *svalue,
   if (!dtype || !sfi_value_transform (svalue, value))
     {
       if (0)
-        g_printerr ("from=%s to=%s, transformable=%u\n",
+        printerr ("from=%s to=%s, transformable=%u\n",
                     g_type_name (G_VALUE_TYPE (svalue)),
                     g_type_name (dtype),
                     g_value_type_transformable (G_VALUE_TYPE (svalue), dtype));

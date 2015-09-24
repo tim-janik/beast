@@ -83,7 +83,7 @@ check_freq_vs_notes (BseMusicalTuningType musical_tuning)
           int note, fine_tune;
           int verbose = 0;
           if (verbose)
-            g_print ("compose  : note=%4d fine_tune=%4d freq=%" FLF "f\n", j, k, freq);
+            printout ("compose  : note=%4d fine_tune=%4d freq=%" FLF "f\n", j, k, freq);
           f = freq;
           note = bse_note_from_freq (musical_tuning, freq);
           TASSERT (note != BSE_NOTE_VOID);
@@ -92,7 +92,7 @@ check_freq_vs_notes (BseMusicalTuningType musical_tuning)
           double freq_error = freq - f;
           double freq_ratio = MAX (freq, f) / MIN (freq, f);
           if (verbose)
-            g_print ("decompose: note=%4d fine_tune=%4d freq=%" FLF "f   (diff=%" FLF "f)\n", note, fine_tune, freq, freq - f);
+            printout ("decompose: note=%4d fine_tune=%4d freq=%" FLF "f   (diff=%" FLF "f)\n", note, fine_tune, freq, freq - f);
           if (ABS (k) < 11)
             TASSERT (note == j);
           if (musical_tuning == BSE_MUSICAL_TUNING_12_TET)
@@ -146,7 +146,7 @@ main (gint   argc,
   for (int j = BSE_MUSICAL_TUNING_12_TET; j <= last_tuning; j++)
     {
       BseMusicalTuningType musical_tuning = BseMusicalTuningType (j);
-      g_printerr ("Tuning System: %s\n", sfi_enum2choice (musical_tuning, BSE_TYPE_MUSICAL_TUNING_TYPE));
+      printerr ("Tuning System: %s\n", sfi_enum2choice (musical_tuning, BSE_TYPE_MUSICAL_TUNING_TYPE));
       check_tuning_monotony (musical_tuning);
       check_freq_vs_notes (musical_tuning);
     }

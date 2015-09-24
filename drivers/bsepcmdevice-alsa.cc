@@ -124,10 +124,9 @@ bse_pcm_device_alsa_list_devices (BseDevice *device)
   while (cindex >= 0)
     {
       snd_ctl_card_info_clear (cinfo);
-      char hwid[128];
-      g_snprintf (hwid, 128, "hw:CARD=%u", cindex);
+      String hwid = string_format ("hw:CARD=%u", cindex);
       snd_ctl_t *chandle = NULL;
-      if (snd_ctl_open (&chandle, hwid, SND_CTL_NONBLOCK) < 0 || !chandle)
+      if (snd_ctl_open (&chandle, hwid.c_str(), SND_CTL_NONBLOCK) < 0 || !chandle)
         continue;
       if (snd_ctl_card_info (chandle, cinfo) < 0)
         {
@@ -439,7 +438,7 @@ alsa_device_check_io (BsePcmHandle *handle,
           ws = snd_pcm_state (alsa->write_handle);
         }
       guint wn = snd_pcm_status_get_avail (stat);
-      g_printerr ("ALSA: check_io: read=%4u/%4u (%s) write=%4u/%4u (%s) block=%u: %s\n",
+      printerr ("ALSA: check_io: read=%4u/%4u (%s) write=%4u/%4u (%s) block=%u: %s\n",
                   rn, alsa->period_size * alsa->n_periods, snd_pcm_state_name (rs),
                   wn, alsa->period_size * alsa->n_periods, snd_pcm_state_name (ws),
                   handle->block_length,

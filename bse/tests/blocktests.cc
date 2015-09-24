@@ -241,8 +241,8 @@ bench_fill (void)
     }
   report_usecs ("Block::fill", 1000000.0 * m / dups * BENCH_SCALE);
   if (0)
-    g_print ("FillBench:            %.6f msecs (test-duration: %.6f calibration: %.6f)\n",
-             1000.0 * m / dups * BENCH_SCALE, m * RUNS, c);
+    printout ("FillBench:            %.6f msecs (test-duration: %.6f calibration: %.6f)\n",
+              1000.0 * m / dups * BENCH_SCALE, m * RUNS, c);
 }
 
 static inline void
@@ -271,8 +271,8 @@ bench_copy (void)
   assert (dest_fblock[0] == 2.f);
   report_usecs ("Block::copy", 1000000.0 * m / dups * BENCH_SCALE);
   if (0)
-    g_print ("CopyBench:            %.6f msecs (test-duration: %.6f calibration: %.6f)\n",
-             1000.0 * m / dups * BENCH_SCALE, m * RUNS, c);
+    printout ("CopyBench:            %.6f msecs (test-duration: %.6f calibration: %.6f)\n",
+              1000.0 * m / dups * BENCH_SCALE, m * RUNS, c);
 }
 
 static inline void
@@ -300,8 +300,8 @@ bench_add (void)
     }
   report_usecs ("Block::add", 1000000.0 * m / dups * BENCH_SCALE);
   if (0)
-    g_print ("AddBench:             %.6f msecs (test-duration: %.6f calibration: %.6f)\n",
-             1000.0 * m / dups * BENCH_SCALE, m * RUNS, c);
+    printout ("AddBench:             %.6f msecs (test-duration: %.6f calibration: %.6f)\n",
+              1000.0 * m / dups * BENCH_SCALE, m * RUNS, c);
 }
 
 static inline void
@@ -329,8 +329,8 @@ bench_sub (void)
     }
   report_usecs ("Block::sub", 1000000.0 * m / dups * BENCH_SCALE);
   if (0)
-    g_print ("SubBench:             %.6f msecs (test-duration: %.6f calibration: %.6f)\n",
-             1000.0 * m / dups * BENCH_SCALE, m * RUNS, c);
+    printout ("SubBench:             %.6f msecs (test-duration: %.6f calibration: %.6f)\n",
+              1000.0 * m / dups * BENCH_SCALE, m * RUNS, c);
 }
 
 static inline void
@@ -359,8 +359,8 @@ bench_mul (void)
   assert (fblock1[0] < 1e30); /* not close to infinity */
   report_usecs ("Block::mul", 1000000.0 * m / dups * BENCH_SCALE);
   if (0)
-    g_print ("MulBench:             %.6f msecs (test-duration: %.6f calibration: %.6f)\n",
-             1000.0 * m / dups * BENCH_SCALE, m * RUNS, c);
+    printout ("MulBench:             %.6f msecs (test-duration: %.6f calibration: %.6f)\n",
+              1000.0 * m / dups * BENCH_SCALE, m * RUNS, c);
 }
 
 static inline void
@@ -388,8 +388,8 @@ bench_scale (void)
     }
   report_usecs ("Block::scale", 1000000.0 * m / dups * BENCH_SCALE);
   if (0)
-    g_print ("ScaleBench:           %.6f msecs (test-duration: %.6f calibration: %.6f)\n",
-             1000.0 * m / dups * BENCH_SCALE, m * RUNS, c);
+    printout ("ScaleBench:           %.6f msecs (test-duration: %.6f calibration: %.6f)\n",
+              1000.0 * m / dups * BENCH_SCALE, m * RUNS, c);
 }
 
 static inline void
@@ -426,8 +426,8 @@ bench_range (void)
   assert (max_value == correct_max_value);
   report_usecs ("Block::range", 1000000.0 * m / dups * BENCH_SCALE);
   if (0)
-    g_print ("RangeBench:           %.6f msecs (test-duration: %.6f calibration: %.6f)\n",
-             1000.0 * m / dups * BENCH_SCALE, m * RUNS, c);
+    printout ("RangeBench:           %.6f msecs (test-duration: %.6f calibration: %.6f)\n",
+              1000.0 * m / dups * BENCH_SCALE, m * RUNS, c);
 }
 
 static inline void
@@ -454,8 +454,8 @@ bench_square_sum (void)
     }
   report_usecs ("Block::square_sum", 1000000.0 * m / dups * BENCH_SCALE);
   if (0)
-    g_print ("SquareSumBench:       %.6f msecs (test-duration: %.6f calibration: %.6f)\n",
-             1000.0 * m / dups * BENCH_SCALE, m * RUNS, c);
+    printout ("SquareSumBench:       %.6f msecs (test-duration: %.6f calibration: %.6f)\n",
+              1000.0 * m / dups * BENCH_SCALE, m * RUNS, c);
 }
 
 static inline void
@@ -492,8 +492,8 @@ bench_range_and_square_sum (void)
   assert (max_value == correct_max_value);
   report_usecs ("Block::range_and_square_sum", 1000000.0 * m / dups * BENCH_SCALE);
   if (0)
-    g_print ("Range+SquareSumBench: %.6f msecs (test-duration: %.6f calibration: %.6f)\n",
-             1000.0 * m / dups * BENCH_SCALE, m * RUNS, c);
+    printout ("Range+SquareSumBench: %.6f msecs (test-duration: %.6f calibration: %.6f)\n",
+              1000.0 * m / dups * BENCH_SCALE, m * RUNS, c);
 }
 
 static void

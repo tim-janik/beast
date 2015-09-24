@@ -93,7 +93,7 @@ public:
                                         &m_samples[have_samples]);
         if (r < 0)
           {
-            g_printerr ("error reading sample data\n");
+            printerr ("error reading sample data\n");
             exit (1);
           }
         have_samples += r;
@@ -377,7 +377,7 @@ struct SpectrumFeature : public Feature
 		      vector< vector<double> >::const_iterator end,
 		      double                                   normalize)
   {
-    const vector < double > empty_return; // this can't be inlined in g_return* due to a bug in g++-3.3
+    const vector < double > empty_return; // this can't be inlined as return-statement due to a bug in g++-3.3
     assert_return (end - start > 0, empty_return);
 
     vector<double> result (start->size());
@@ -1121,11 +1121,11 @@ struct TimingSlices
 
     if (options.verbose)
       {
-	g_printerr ("timing window (for attack and release detection):\n");
-	g_printerr ("  * size         %5.2f ms    %6u samples\n",
+	printerr ("timing window (for attack and release detection):\n");
+	printerr ("  * size         %5.2f ms    %6u samples\n",
 	  fft_size_samples / signal.mix_freq() * 1000,
 	  fft_size_samples);
-	g_printerr ("  * stepping     %5.2f ms    %6u samples\n",
+	printerr ("  * stepping     %5.2f ms    %6u samples\n",
 	  float (options.timing_window_stepping_ms),
 	  uint (options.timing_window_stepping_ms * signal.mix_freq() / 1000));
       }

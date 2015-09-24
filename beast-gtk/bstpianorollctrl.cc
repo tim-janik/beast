@@ -898,7 +898,7 @@ controller_piano_drag (BstPianoRollController *self,
   SfiProxy projectid = song ? bse_item_get_parent (song) : 0;
   SfiProxy track = song ? bse_song_find_track_for_part (song, part.proxy_id()) : 0;
 
-  // g_printerr ("piano drag event, note=%d (valid=%d)", drag->current_note, drag->current_valid);
+  // printerr ("piano drag event, note=%d (valid=%d)", drag->current_note, drag->current_valid);
 
   if (projectid && track)
     {

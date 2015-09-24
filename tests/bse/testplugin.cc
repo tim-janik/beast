@@ -41,7 +41,7 @@ Procedure::test_exception::exec (SfiInt        i,
                                  SfiInt        bar,
                                  FunkynessType ft)
 {
-  g_print ("testplugin.cc: test_exception: i=%d obj=%p bar=%d ft=%d (MODERATELY_FUNKY=%d)\n",
+  printout ("testplugin.cc: test_exception: i=%d obj=%p bar=%d ft=%d (MODERATELY_FUNKY=%d)\n",
            i, o, bar, ft, (int) MODERATELY_FUNKY);
   if (ft != MODERATELY_FUNKY)
     throw std::runtime_error ("need to be moderately funky");

@@ -84,7 +84,7 @@ static  GScannerConfig  scanner_config_template = {
 
 /* --- defines --- */
 
-#define DEBUG(x)         // dprintf(2,"%s",x)
+#define DEBUG(x)         // printerr ("%s", x)
 
 enum ExtraToken {
   TOKEN_NAMESPACE = G_TOKEN_LAST + 1,
@@ -507,7 +507,7 @@ void Parser::preprocessContents (const String& input_filename)
 			break;
 	    case '<':	state = filenameIn2;
 			break;
-	    default:	g_printerr ("bad char after include statement");
+	    default:	printerr ("bad char after include statement");
 			assert_unreached (); // error handling!
 	    }
 	}

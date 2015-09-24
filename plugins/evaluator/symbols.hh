@@ -42,9 +42,7 @@ public:
 		return smi->first;
 	}
 
-	char buffer[1024];
-	sprintf(buffer,"R%02d", reg);
-	return buffer;
+	return string_format ("R%02d", reg);
     }
 
     void clear()

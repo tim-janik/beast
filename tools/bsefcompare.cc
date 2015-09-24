@@ -220,21 +220,6 @@ vector_similarity (const vector<double>& f1, const vector<double>& f2)
   return diff / f1len / f2len;
 }
 
-static string string_printf (const char *format, ...) G_GNUC_PRINTF (1, 2);
-
-static string
-string_printf (const char *format, ...)
-{
-  va_list ap;
-  va_start(ap, format);
-  char *c_str = g_strdup_vprintf (format, ap);
-  va_end(ap);
-  string str = c_str;
-  g_free (c_str);
-  return str;
-}
-
-
 static  GScannerConfig  scanner_config_template = {
   const_cast<gchar *>   /* FIXME: glib should use const gchar* here */
   (
@@ -487,7 +472,7 @@ FeatureValueVector::parse (GScanner *scanner)
 string
 FeatureValueVector::printable_type() const
 {
-  return string_printf ("%d element vector", n);
+  return string_format ("%d element vector", n);
 }
 
 double
@@ -544,7 +529,7 @@ FeatureValueMatrix::parse (GScanner *scanner)
 string
 FeatureValueMatrix::printable_type() const
 {
-  return string_printf ("%d x %d matrix", m, n);
+  return string_format ("%d x %d matrix", m, n);
 }
 
 double
@@ -693,9 +678,9 @@ main (int argc, char **argv)
 
   if (file1.feature_values.size() != file2.feature_values.size())
     {
-      g_printerr ("%s: can't compare files\n", options.program_name.c_str());
-      g_printerr ("  * file \"%s\" contains %zd feature values\n", file1.filename.c_str(), file1.feature_values.size());
-      g_printerr ("  * file \"%s\" contains %zd feature values\n", file2.filename.c_str(), file2.feature_values.size());
+      printerr ("%s: can't compare files\n", options.program_name.c_str());
+      printerr ("  * file \"%s\" contains %zd feature values\n", file1.filename.c_str(), file1.feature_values.size());
+      printerr ("  * file \"%s\" contains %zd feature values\n", file2.filename.c_str(), file2.feature_values.size());
       exit (1);
     }
 
@@ -707,10 +692,10 @@ main (int argc, char **argv)
       double s = f1->similarity (f2);
       if (s < 0)
 	{
-	  g_printerr ("%s: can't compare features:\n", options.program_name.c_str());
-	  g_printerr ("  * %s which is a %s from file \"%s\"\n",
+	  printerr ("%s: can't compare features:\n", options.program_name.c_str());
+	  printerr ("  * %s which is a %s from file \"%s\"\n",
 	              f1->name.c_str(), f1->printable_type().c_str(), file1.filename.c_str());
-	  g_printerr ("  * %s which is a %s from file \"%s\"\n",
+	  printerr ("  * %s which is a %s from file \"%s\"\n",
 	              f2->name.c_str(), f2->printable_type().c_str(), file2.filename.c_str());
 	  return 1;
 	}
@@ -777,7 +762,7 @@ public:
     const FeatureValueVector *vec1 = static_cast<const FeatureValueVector *> (value1);
     const FeatureValueVector *vec2 = static_cast<const FeatureValueVector *> (value2);
 
-    g_printerr ("using custom TimingComparisionStrategy\n");
+    printerr ("using custom TimingComparisionStrategy\n");
 
     // the sizes of the two vectors can be different
     uint   size = min (vec1->data.size(), vec2->data.size());

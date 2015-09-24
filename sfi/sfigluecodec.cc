@@ -121,15 +121,7 @@ encoder_process_message (SfiGlueEncoder *encoder,
 	    sfi_diag ("ignoring message with spurious return value");
 	  break;
 	case SFI_GLUE_CODEC_ASYNC_MESSAGE:
-#if 0
-	  if (seq->n_elements >= 4)
-	    sfi_log_printf (sfi_seq_get_string (seq, 1),
-                            sfi_seq_get_int (seq, 2),
-                            SfiLogger (NULL, NULL, NULL),
-                            sfi_seq_get_string (seq, 3));
-	  else
-#endif
-	    sfi_diag ("ignoring message with invalid message contents");
+          sfi_diag ("ignoring message with invalid message contents");
 	  break;
 	case SFI_GLUE_CODEC_ASYNC_EVENT:
 	  seq = seq->n_elements >= 2 ? sfi_seq_get_seq (seq, 1) : NULL;

@@ -1355,11 +1355,11 @@ public:
         String cmd = String() + "gdk-pixbuf-csource " + "--name=local_pixstream " + ii->file;
         g_spawn_command_line_sync (cmd.c_str(), &out, &err, &estatus, &error);
         if (err && *err)
-          g_printerr ("gdk-pixbuf-csource: %s", err);
+          printerr ("gdk-pixbuf-csource: %s", err);
         if (error || estatus)
           {
             if (error)
-              g_printerr ("failed to convert image file \"%s\" with gdk-pixbuf-csource%c %s",
+              printerr ("failed to convert image file \"%s\" with gdk-pixbuf-csource%c %s",
                           ii->file.c_str(), error ? ':' : ' ', error->message);
             exit (estatus & 255 ? estatus : 1);
           }

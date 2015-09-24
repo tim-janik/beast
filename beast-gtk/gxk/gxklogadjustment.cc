@@ -106,7 +106,7 @@ adapter_adjustment_adjust_ranges (GxkAdapterAdjustment *self)
       if (0)
         {
           GtkAdjustment *client = self->client;
-          g_printerr ("Tadj(%p): range-changed: [%f %f] (%f %f %f), client(%p): [%f %f] (%f %f %f)\n",
+          printerr ("Tadj(%p): range-changed: [%f %f] (%f %f %f), client(%p): [%f %f] (%f %f %f)\n",
                       self, adj->lower, adj->upper, adj->step_increment, adj->page_increment, adj->page_size,
                       client, client->lower, client->upper, client->step_increment, client->page_increment, client->page_size);
         }
@@ -136,7 +136,7 @@ adapter_adjustment_client_value_changed (GxkAdapterAdjustment *self)
       adj->value = adapter_adjustment_convert (self, GXK_ADAPTER_ADJUSTMENT_CONVERT_FROM_CLIENT, client->value);
       adj->value = CLAMP (adj->value, adj->lower, adj->upper - adj->page_size);
       if (0)
-        g_printerr ("Tadj(%p): value-changed: [%f %f] %g client(%p): [%f %f] %g\n",
+        printerr ("Tadj(%p): value-changed: [%f %f] %g client(%p): [%f %f] %g\n",
                     self, adj->lower, adj->upper, adj->value,
                     client, client->lower, client->upper, client->value);
       if (!self->block_client)
@@ -406,7 +406,7 @@ log_adjustment_adjust_ranges (GxkLogAdjustment *self)
   if (0)
     {
       GtkAdjustment *client = self->client;
-      g_printerr ("ladj: client-changed: [%f %f] (%f %f %f) center: %g   CLIENT: [%f %f]\n",
+      printerr ("ladj: client-changed: [%f %f] (%f %f %f) center: %g   CLIENT: [%f %f]\n",
                   adj->lower, adj->upper,
                   adj->step_increment, adj->page_increment, adj->page_size,
                   self->center,
@@ -432,7 +432,7 @@ log_adjustment_client_value_changed (GxkLogAdjustment *self)
   adj->value = CLAMP (adj->value, adj->lower, adj->upper);
 
   if (0)
-    g_printerr ("ladj: client-value-changed: [%f %f] %g   CLIENT: [%f %f] %g\n",
+    printerr ("ladj: client-value-changed: [%f %f] %g   CLIENT: [%f %f] %g\n",
                 adj->lower, adj->upper, adj->value,
                 client->lower, client->upper, client->value);
 

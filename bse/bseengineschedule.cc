@@ -98,16 +98,16 @@ unschedule_cycle (EngineSchedule *sched,
 static void
 _engine_schedule_debug_dump (EngineSchedule *sched)
 {
-  g_printerr ("sched(%p) = {\n", sched);
+  printerr ("sched(%p) = {\n", sched);
   if (sched)
     {
       guint i;
 
-      g_printerr ("  n_items=%u, n_vnodes=%u, leaf_levels=%u, secured=%u,\n",
+      printerr ("  n_items=%u, n_vnodes=%u, leaf_levels=%u, secured=%u,\n",
 		  sched->n_items, sfi_ring_length (sched->vnodes), sched->leaf_levels, sched->secured);
-      g_printerr ("  in_pqueue=%u, cur_leaf_level=%u,\n",
+      printerr ("  in_pqueue=%u, cur_leaf_level=%u,\n",
 		  sched->in_pqueue, sched->cur_leaf_level);
-      g_printerr ("  cur_node=%p, cur_cycle=%p,\n",
+      printerr ("  cur_node=%p, cur_cycle=%p,\n",
 		  sched->cur_node, sched->cur_cycle);
       for (i = 0; i < sched->leaf_levels; i++)
 	{
@@ -115,20 +115,20 @@ _engine_schedule_debug_dump (EngineSchedule *sched)
 
 	  if (!head)
 	    continue;
-	  g_printerr ("  { leaf_level=%u:", i);
+	  printerr ("  { leaf_level=%u:", i);
 	  for (ring = head; ring; ring = sfi_ring_walk (ring, head))
-	    g_printerr (" node(%p(i:%u,s:%u))", ring->data,
+	    printerr (" node(%p(i:%u,s:%u))", ring->data,
 			((EngineNode*) ring->data)->integrated,
 			((EngineNode*) ring->data)->sched_tag);
-	  g_printerr (" },\n");
+	  printerr (" },\n");
 	}
       SfiRing *ring;
-      g_printerr ("  { vnodes:");
+      printerr ("  { vnodes:");
       for (ring = sched->vnodes; ring; ring = sfi_ring_walk (ring, sched->vnodes))
-        g_printerr (" vnode(%p(pj:%u))", ring->data, ((EngineNode*) ring->data)->probe_jobs != 0);
-      g_printerr (" },\n");
+        printerr (" vnode(%p(pj:%u))", ring->data, ((EngineNode*) ring->data)->probe_jobs != 0);
+      printerr (" },\n");
     }
-  g_printerr ("};\n");
+  printerr ("};\n");
 }
 
 

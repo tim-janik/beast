@@ -171,7 +171,7 @@ ladj_adjust_ranges (BstLogAdjustment *ladj)
   if (0)
     {
       GtkAdjustment *client = ladj->client;
-      g_printerr ("ladj: client-changed: [%f %f] (%f %f %f) center: %g   CLIENT: [%f %f]\n",
+      printerr ("ladj: client-changed: [%f %f] (%f %f %f) center: %g   CLIENT: [%f %f]\n",
                   adj->lower, adj->upper,
                   adj->step_increment, adj->page_increment, adj->page_size,
                   ladj->center,
@@ -197,7 +197,7 @@ ladj_client_value_changed (BstLogAdjustment *ladj)
   adj->value = CLAMP (adj->value, adj->lower, adj->upper);
 
   if (0)
-    g_printerr ("ladj: client-value-changed: [%f %f] %g   CLIENT: [%f %f] %g\n",
+    printerr ("ladj: client-value-changed: [%f %f] %g   CLIENT: [%f %f] %g\n",
                 adj->lower, adj->upper, adj->value,
                 client->lower, client->upper, client->value);
 

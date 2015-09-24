@@ -295,8 +295,8 @@ sfi_time_from_string_err (const gchar *time_string,
 				 minute[(index)] <= 59 &&	\
 				 second[(index)] >= 0 &&	\
 				 second[(index)] <= 61)
-  /* g_print ("DEBUG: \"%s\" -> y%u m%u d%u h%u m%u s%u\n", string,
-   *          year[i], month[i], day[i], hour[i], minute[i], second[i]);
+  /* printout ("DEBUG: \"%s\" -> y%u m%u d%u h%u m%u s%u\n", string,
+   *           year[i], month[i], day[i], hour[i], minute[i], second[i]);
    */
   if (!finished) /* parse "yyyy-mm-dd hh:mm:ss" e.g. "1998-04-16 23:59:59" */
     {
@@ -616,7 +616,7 @@ sfi_time_from_string_err (const gchar *time_string,
       ustime *= SFI_USEC_FACTOR;
       ustime = MAX (ustime, 0);
 
-      /* g_print ("mktime(): year(%u) month(%u) day(%u) hour(%u) minute(%u) second(%u)\n",
+      /* printout ("mktime(): year(%u) month(%u) day(%u) hour(%u) minute(%u) second(%u)\n",
        *           year[i], month[i], day[i], hour[i], minute[i], second[i]);
        */
 

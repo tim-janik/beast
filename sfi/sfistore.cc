@@ -323,19 +323,15 @@ sfi_wstore_flush_fd (SfiWStore *wstore,
     {
       BBlock *bblock = (BBlock*) ring->data;
       off_t foff;
-      gchar ptext[2 + 8 + 1 + 2 + 8 + 1];
-      /*          0x *0* ' '  0x *0* '\0' */
 
       do
 	foff = lseek (fd, text_offset + bblock->patch_offset, SEEK_SET);
       while (foff < 0 && errno == EINTR);
       if (foff < 0 && errno)
         return -errno;
-      g_snprintf (ptext, sizeof (ptext), "0x%08x 0x%08x",
-		  (guint32) (bblock->offset - binary_offset),
-		  (guint32) bblock->length);
+      std::string str = string_format ("0x%08x 0x%08x", guint32 (bblock->offset - binary_offset), guint32 (bblock->length));
       do
-	l = write (fd, ptext, sizeof (ptext) - 1);
+	l = write (fd, str.data(), str.size());
       while (l < 0 && errno == EINTR);
       if (l < 0 && errno)
         return -errno;

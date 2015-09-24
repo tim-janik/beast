@@ -213,13 +213,13 @@ Options::parse (int   *argc_p,
 	  if ((block_size & 1) == 1)
 	    {
 	      block_size++;
-	      g_printerr ("testresampler: block size needs to be even (fixed: using %d as block size)\n", block_size);
+	      printerr ("testresampler: block size needs to be even (fixed: using %d as block size)\n", block_size);
 	    }
 
 	  if (block_size < 2)
 	    {
 	      block_size = 2;
-	      g_printerr ("testresampler: block size needs to be at least 2 (fixed: using %d as block size)\n", block_size);
+	      printerr ("testresampler: block size needs to be at least 2 (fixed: using %d as block size)\n", block_size);
 	    }
 	}
       else if (check_arg (argc, argv, &i, "--precision", &opt_arg))
@@ -233,7 +233,7 @@ Options::parse (int   *argc_p,
 	    case 20:
 	    case 24: precision = static_cast<BseResampler2Precision> (p);
 	      break;
-	    default: g_printerr ("testresampler: unsupported precision: %d\n", p);
+	    default: printerr ("testresampler: unsupported precision: %d\n", p);
 		     exit (1);
 	    }
 	}
@@ -256,7 +256,7 @@ Options::parse (int   *argc_p,
 	    }
 	  if (freq_inc < 1)
 	    {
-	      g_printerr ("testresampler: invalid frequency scanning specification\n");
+	      printerr ("testresampler: invalid frequency scanning specification\n");
 	      exit (1);
 	    }
 	  g_free (oa);
@@ -525,7 +525,7 @@ perform_test()
 	  const guint FFT_SIZE = 16384;
 	  if (error_spectrum_error.size() < FFT_SIZE)
 	    {
-	      g_printerr ("too few values for computing error spectrum, increase block size\n");
+	      printerr ("too few values for computing error spectrum, increase block size\n");
 	    }
 	  else
 	    {
@@ -667,7 +667,7 @@ main (int argc, char **argv)
 	test_type = TEST_FILTER_IMPL;
       else
 	{
-	  g_printerr ("testresampler: unknown mode command: '%s'\n", command.c_str());
+	  printerr ("testresampler: unknown mode command: '%s'\n", command.c_str());
 	  exit (1);
 	}
     }
@@ -678,7 +678,7 @@ main (int argc, char **argv)
     }
   else
     {
-      g_printerr ("testresampler: too many arguments\n");
+      printerr ("testresampler: too many arguments\n");
       exit (1);
     }
   return perform_test();

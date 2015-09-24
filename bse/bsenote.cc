@@ -42,7 +42,7 @@ bse_note_from_freq (BseMusicalTuningType musical_tuning,
 #endif
   /* transform to note */
   if (0)
-    g_printerr ("freqlookup: %.9f < %.9f < %.9f : key = %.9f diffs = %+.9f %+.9f %+.9f\n", m[-1], m[0], m[1], freq,
+    printerr ("freqlookup: %.9f < %.9f < %.9f : key = %.9f diffs = %+.9f %+.9f %+.9f\n", m[-1], m[0], m[1], freq,
                 freq - m[-1], freq - m[0], m[1] - freq);
   int note = m - table + BSE_KAMMER_NOTE;
   /* yield VOID when exceeding corner cases */

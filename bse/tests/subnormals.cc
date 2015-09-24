@@ -166,8 +166,8 @@ benchmark_subnormal_eliminations ()
   TOK();
   TDONE();
   if (0)
-    g_print ("subnormal cancellation times: keep=%fs zap=%fs inlined-cond=%fs if-cond=%fs arithmetic=%f bse=%f\n",
-             test1_time, test2_time, test3_time, test4_time, test5_time, test6_time);
+    printout ("subnormal cancellation times: keep=%fs zap=%fs inlined-cond=%fs if-cond=%fs arithmetic=%f bse=%f\n",
+              test1_time, test2_time, test3_time, test4_time, test5_time, test6_time);
   constexpr const char *format = "    %-28s : %+.14f milliseconds";
   TMSG (format, "Subnormals-keep",         test1_time * 1000);
   TMSG (format, "Subnormals-bse-zap",      test2_time * 1000);
@@ -196,9 +196,9 @@ main (int   argc,
       char *argv[])
 {
   bse_init_test (&argc, argv);
-  g_printerr ("Checking if your processor is in 'denormals are zero' (DAZ) mode... ");
+  printerr ("Checking if your processor is in 'denormals are zero' (DAZ) mode... ");
   bool daz_mode = check_denormals_are_zero();
-  g_printerr (daz_mode ? "yes - skipping subnormal elimination tests.\n" : "no.\n");
+  printerr (daz_mode ? "yes - skipping subnormal elimination tests.\n" : "no.\n");
   if (!daz_mode)
     {
       test_correct_subnormal_elimination<test2f> ("zap");

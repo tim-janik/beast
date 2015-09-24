@@ -222,7 +222,7 @@ run_tests (const char *run_type)
           check ("Up", "M", params[p].bits, run_type,
                  input, expected, 1, BSE_RESAMPLER2_MODE_UPSAMPLE,
                  params[p].bits, params[p].mono_upsample_db);
-          // g_printerr ("    ===> speed is equivalent to %.2f simultaneous 44100 Hz streams\n", streams);
+          // printerr ("    ===> speed is equivalent to %.2f simultaneous 44100 Hz streams\n", streams);
         }
 
       // stereo upsampling test
@@ -233,7 +233,7 @@ run_tests (const char *run_type)
           check ("Up", "S", params[p].bits, run_type,
                  input, expected, 2, BSE_RESAMPLER2_MODE_UPSAMPLE,
                  params[p].bits, params[p].stereo_upsample_db);
-          // g_printerr ("    ===> speed is equivalent to %.2f simultaneous 44100 Hz streams\n", streams);
+          // printerr ("    ===> speed is equivalent to %.2f simultaneous 44100 Hz streams\n", streams);
         }
 
       // mono downsampling test
@@ -244,7 +244,7 @@ run_tests (const char *run_type)
           check ("Dn", "M", params[p].bits, run_type,
                  input, expected, 1, BSE_RESAMPLER2_MODE_DOWNSAMPLE,
                  params[p].bits, params[p].mono_downsample_db);
-          // g_printerr ("    ===> speed is equivalent to %.2f simultaneous 44100 Hz streams\n", streams);
+          // printerr ("    ===> speed is equivalent to %.2f simultaneous 44100 Hz streams\n", streams);
         }
 
       // stereo downsampling test
@@ -255,7 +255,7 @@ run_tests (const char *run_type)
           check ("Dn", "S", params[p].bits, run_type,
                  input, expected, 2, BSE_RESAMPLER2_MODE_DOWNSAMPLE,
                  params[p].bits, params[p].stereo_downsample_db);
-          // g_printerr ("    ===> speed is equivalent to %.2f simultaneous 44100 Hz streams\n", streams);
+          // printerr ("    ===> speed is equivalent to %.2f simultaneous 44100 Hz streams\n", streams);
         }
     }
 }

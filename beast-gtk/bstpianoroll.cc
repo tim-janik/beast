@@ -868,7 +868,6 @@ bst_piano_roll_draw_hpanel (GxkScrollCanvas *scc,
   BstPianoRoll *self = BST_PIANO_ROLL (scc);
   GdkGC *draw_gc = STYLE (self)->fg_gc[STATE (self)];
   PangoRectangle rect = { 0 };
-  gchar buffer[64];
   int width, height;
   gdk_window_get_size (drawable, &width, &height);
   bst_piano_roll_overlap_grow_hpanel_area (self, area);
@@ -887,8 +886,8 @@ bst_piano_roll_draw_hpanel (GxkScrollCanvas *scc,
 	  tact /= (self->ppqn * self->qnpt);
 	  next_pixel = tick_to_coord (self, (tact + 1) * (self->ppqn * self->qnpt));
 
-	  g_snprintf (buffer, 64, "%u", tact + 1);
-          pango_layout_set_text (PLAYOUT_HPANEL (self), buffer, -1);
+	  String tact1str = string_format ("%u", tact + 1);
+          pango_layout_set_text (PLAYOUT_HPANEL (self), tact1str.c_str(), -1);
           pango_layout_get_pixel_extents (PLAYOUT_HPANEL (self), NULL, &rect);
 
 	  /* draw this tact if there's enough space */
@@ -908,8 +907,8 @@ bst_piano_roll_draw_hpanel (GxkScrollCanvas *scc,
           if (qn == 1)
             continue;   /* would draw on top of tact number */
 
-	  g_snprintf (buffer, 64, ":%u", qn);
-          pango_layout_set_text (PLAYOUT_HPANEL (self), buffer, -1);
+	  String qnstr = string_format (":%u", qn);
+          pango_layout_set_text (PLAYOUT_HPANEL (self), qnstr.c_str(), -1);
           pango_layout_get_pixel_extents (PLAYOUT_HPANEL (self), NULL, &rect);
 
 	  /* draw this tact if there's enough space */

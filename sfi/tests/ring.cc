@@ -6,11 +6,11 @@
 static void
 print_ring_ints (SfiRing *ring)
 {
-  g_print ("SfiRing(%p): {", ring);
+  printout ("SfiRing(%p): {", ring);
   SfiRing *node;
   for (node = ring; node; node = sfi_ring_walk (node, ring))
-    g_print (" %zd,", (size_t) node->data);
-  g_print (" };");
+    printout (" %zd,", (size_t) node->data);
+  printout (" };");
 }
 
 static void
@@ -18,15 +18,15 @@ print_rings_side_by_side (SfiRing *ring1,
                           SfiRing *ring2)
 {
   SfiRing *r1 = ring1, *r2 = ring2;
-  g_printerr ("\nRing=%p Ring=%p\n", r1, r2);
+  printerr ("\nRing=%p Ring=%p\n", r1, r2);
   while (r1 || r2)
     {
       if (r1 && r2)
-        g_printerr ("  %10p  %10p\n", r1->data, r2->data);
+        printerr ("  %10p  %10p\n", r1->data, r2->data);
       else if (r1)
-        g_printerr ("  %10p\n", r1->data);
+        printerr ("  %10p\n", r1->data);
       else
-        g_printerr ("              %10p\n", r2->data);
+        printerr ("              %10p\n", r2->data);
       if (r1)
         r1 = sfi_ring_walk (r1, ring1);
       if (r2)

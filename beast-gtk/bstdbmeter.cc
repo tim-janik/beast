@@ -1373,7 +1373,7 @@ db_scale_size_allocate (GtkRange      *range,
   tlength = CLAMP (tlength, 1, wlength);
   slider = CLAMP (slider, 1, tlength);
   if (0)        // GTKFIX: GtkRange should simply export the slide rectangle through a function call
-    g_printerr ("y=%d h=%d ty=%d th=%d trough-borders=%d slider=%d (start=%d)\n",
+    printerr ("y=%d h=%d ty=%d th=%d trough-borders=%d slider=%d (start=%d)\n",
                 woffset, wlength, toffset, tlength, range_trough_border, slider, range->slider_start);
   border = toffset + slider / 2;
   if (range_trough_border && range_trough_border + slider <= tlength / 2)

@@ -676,7 +676,7 @@ controller_canvas_drag (BstEventRollController *self,
     { BST_COMMON_ROLL_TOOL_SELECT,	select_start,	        select_motion,	select_abort,	},
   };
 
-  // g_printerr ("canvas drag event, tick=%d (valid=%d) value=%f", drag->current_tick, drag->current_valid, drag->current_value);
+  // printerr ("canvas drag event, tick=%d (valid=%d) value=%f", drag->current_tick, drag->current_valid, drag->current_value);
 
   if (drag->type == GXK_DRAG_START)
     {
@@ -760,7 +760,7 @@ void
 controller_vpanel_drag (BstEventRollController *self,
                         BstEventRollDrag       *drag)
 {
-  // g_printerr ("vpanel drag event, tick=%d (valid=%d) value=%f", drag->current_tick, drag->current_valid, drag->current_value);
+  // printerr ("vpanel drag event, tick=%d (valid=%d) value=%f", drag->current_tick, drag->current_valid, drag->current_value);
 
   if (drag->type == GXK_DRAG_START ||
       drag->type == GXK_DRAG_MOTION)

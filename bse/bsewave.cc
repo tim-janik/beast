@@ -592,7 +592,7 @@ bse_wave_restore_private (BseObject  *object,
 	  g_free (wave_name);
 	  return GTokenType (')');
 	}
-      // g_print ("set-locator \"%s\" \"%s\"\n", file_name, wave_name);
+      // printout ("set-locator \"%s\" \"%s\"\n", file_name, wave_name);
       bse_wave_set_locator (wave, file_name, wave_name);
       expected_token = G_TOKEN_NONE; /* got ')' */
     }
@@ -628,7 +628,7 @@ bse_wave_restore_private (BseObject  *object,
       if (expected_token == G_TOKEN_NONE && parsed_wchunk.data_handle)
 	{
 	  if (0)
-	    g_printerr ("restore-wave-chunk: nch=%u of=%f mf=%f dh=%p\n",
+	    printerr ("restore-wave-chunk: nch=%u of=%f mf=%f dh=%p\n",
                         parsed_wchunk.wh_n_channels,
                         parsed_wchunk.wh_osc_freq, parsed_wchunk.wh_mix_freq,
                         parsed_wchunk.data_handle);

@@ -434,7 +434,7 @@ bst_main_loop_wakeup ()
 static void
 echo_test_handler (const std::string &msg)
 {
-  g_print ("BST-Thread: got signal with message: %s\n", msg.c_str());
+  printout ("BST-Thread: got signal with message: %s\n", msg.c_str());
 }
 
 static void
@@ -486,7 +486,7 @@ bst_args_parse_early (int *argc_p, char **argv)
       else if (strncmp (argv[i], "-:", 2) == 0)
 	{
 	  const gchar *flags = argv[i] + 2;
-	  g_printerr ("BEAST(%s): pid = %u\n", BST_VERSION, getpid ());
+	  printerr ("BEAST(%s): pid = %u\n", BST_VERSION, getpid ());
 	  if (strchr (flags, 'N') != NULL)
 	    {
 	      register_core_plugins = FALSE;
@@ -628,19 +628,19 @@ bst_args_process (int *argc_p, char **argv)
 	  const char *arg = argv[i][12 - 1] == '=' ? argv[i] + 12 : (argv[i + 1] ? argv[i + 1] : "");
           char *freeme = NULL;
           if (strcmp (arg, "docs") == 0)
-	    g_print ("%s\n", bse_installpath (BSE_INSTALLPATH_PKGDOCDIR).c_str());
+	    printout ("%s\n", bse_installpath (BSE_INSTALLPATH_PKGDOCDIR).c_str());
 	  else if (strcmp (arg, "images") == 0)
-	    g_print ("%s\n", bse_installpath (BSE_INSTALLPATH_PKGDATADIR_IMAGES).c_str());
+	    printout ("%s\n", bse_installpath (BSE_INSTALLPATH_PKGDATADIR_IMAGES).c_str());
 	  else if (strcmp (arg, "locale") == 0)
-	    g_print ("%s\n", bse_installpath (BSE_INSTALLPATH_LOCALEBASE).c_str());
+	    printout ("%s\n", bse_installpath (BSE_INSTALLPATH_LOCALEBASE).c_str());
 	  else if (strcmp (arg, "skins") == 0)
-	    g_print ("%s\n", freeme = BST_STRDUP_SKIN_PATH ());
+	    printout ("%s\n", freeme = BST_STRDUP_SKIN_PATH ());
 	  else if (strcmp (arg, "keys") == 0)
-	    g_print ("%s\n", bse_installpath (BSE_INSTALLPATH_PKGDATADIR_KEYS).c_str());
+	    printout ("%s\n", bse_installpath (BSE_INSTALLPATH_PKGDATADIR_KEYS).c_str());
 	  else if (strcmp (arg, "ladspa") == 0)
-	    g_print ("%s\n", bse_installpath (BSE_INSTALLPATH_LADSPA).c_str());
+	    printout ("%s\n", bse_installpath (BSE_INSTALLPATH_LADSPA).c_str());
 	  else if (strcmp (arg, "plugins") == 0)
-	    g_print ("%s\n", bse_installpath (BSE_INSTALLPATH_PKGLIBDIR_PLUGINS).c_str());
+	    printout ("%s\n", bse_installpath (BSE_INSTALLPATH_PKGLIBDIR_PLUGINS).c_str());
 	  else if (strcmp (arg, "samples") == 0)
 	    printout ("%s\n", bse_server.get_sample_path());
 	  else if (strcmp (arg, "effects") == 0)
@@ -692,32 +692,32 @@ bst_exit_print_version (void)
   assert (bse_server != NULL); // we need BSE
   String s;
   gchar *freeme = NULL;
-  g_print ("BEAST version %s (%s)\n", BST_VERSION, BST_VERSION_HINT);
-  g_print ("Libraries: ");
-  g_print ("GLib %u.%u.%u", glib_major_version, glib_minor_version, glib_micro_version);
-  g_print (", BSE %s", BST_VERSION);
+  printout ("BEAST version %s (%s)\n", BST_VERSION, BST_VERSION_HINT);
+  printout ("Libraries: ");
+  printout ("GLib %u.%u.%u", glib_major_version, glib_minor_version, glib_micro_version);
+  printout (", BSE %s", BST_VERSION);
   s = bse_server.get_vorbis_version();
   if (!s.empty())
     printout (", %s", s);
   s = bse_server.get_mp3_version();
   if (!s.empty())
     printout (", %s", s);
-  g_print (", GTK+ %u.%u.%u", gtk_major_version, gtk_minor_version, gtk_micro_version);
+  printout (", GTK+ %u.%u.%u", gtk_major_version, gtk_minor_version, gtk_micro_version);
 #ifdef BST_WITH_XKB
-  g_print (", XKBlib");
+  printout (", XKBlib");
 #endif
-  g_print (", GXK %s", BST_VERSION);
-  g_print ("\n");
-  g_print ("Compiled for %s %s SSE plugins.\n", BST_ARCH_NAME, BSE_WITH_MMX_SSE ? "with" : "without");
-  g_print ("Intrinsic code selected according to runtime CPU detection:\n");
-  g_print ("%s", Rapicorn::cpu_info().c_str());
-  g_print ("\n");
-  g_print ("Binaries:        %s\n", bse_installpath (BSE_INSTALLPATH_BINDIR).c_str());
-  g_print ("Doc Path:        %s\n", bse_installpath (BSE_INSTALLPATH_PKGDOCDIR).c_str());
-  g_print ("Image Path:      %s\n", bse_installpath (BSE_INSTALLPATH_PKGDATADIR_IMAGES).c_str());
-  g_print ("Locale Path:     %s\n", bse_installpath (BSE_INSTALLPATH_LOCALEBASE).c_str());
-  g_print ("Keyrc Path:      %s\n", bse_installpath (BSE_INSTALLPATH_PKGDATADIR_KEYS).c_str());
-  g_print ("Skin Path:       %s\n", freeme = BST_STRDUP_SKIN_PATH());
+  printout (", GXK %s", BST_VERSION);
+  printout ("\n");
+  printout ("Compiled for %s %s SSE plugins.\n", BST_ARCH_NAME, BSE_WITH_MMX_SSE ? "with" : "without");
+  printout ("Intrinsic code selected according to runtime CPU detection:\n");
+  printout ("%s", Rapicorn::cpu_info().c_str());
+  printout ("\n");
+  printout ("Binaries:        %s\n", bse_installpath (BSE_INSTALLPATH_BINDIR).c_str());
+  printout ("Doc Path:        %s\n", bse_installpath (BSE_INSTALLPATH_PKGDOCDIR).c_str());
+  printout ("Image Path:      %s\n", bse_installpath (BSE_INSTALLPATH_PKGDATADIR_IMAGES).c_str());
+  printout ("Locale Path:     %s\n", bse_installpath (BSE_INSTALLPATH_LOCALEBASE).c_str());
+  printout ("Keyrc Path:      %s\n", bse_installpath (BSE_INSTALLPATH_PKGDATADIR_KEYS).c_str());
+  printout ("Skin Path:       %s\n", freeme = BST_STRDUP_SKIN_PATH());
   printout ("Sample Path:     %s\n", bse_server.get_sample_path());
   printout ("Script Path:     %s\n", bse_server.get_script_path());
   printout ("Effect Path:     %s\n", bse_server.get_effect_path());
@@ -725,12 +725,12 @@ bst_exit_print_version (void)
   printout ("Demo Path:       %s\n", bse_server.get_demo_path());
   printout ("Plugin Path:     %s\n", bse_server.get_plugin_path());
   printout ("LADSPA Path:     %s:$LADSPA_PATH\n", bse_server.get_ladspa_path());
-  g_print ("\n");
-  g_print ("BEAST comes with ABSOLUTELY NO WARRANTY.\n");
-  g_print ("You may redistribute copies of BEAST under the terms of\n");
-  g_print ("the GNU Lesser General Public License which can be found in\n");
-  g_print ("the BEAST source package. Sources, examples and contact\n");
-  g_print ("information are available at http://beast.testbit.eu/.\n");
+  printout ("\n");
+  printout ("BEAST comes with ABSOLUTELY NO WARRANTY.\n");
+  printout ("You may redistribute copies of BEAST under the terms of\n");
+  printout ("the GNU Lesser General Public License which can be found in\n");
+  printout ("the BEAST source package. Sources, examples and contact\n");
+  printout ("information are available at http://beast.testbit.eu/.\n");
   g_free (freeme);
   exit (0);
 }
@@ -738,57 +738,57 @@ bst_exit_print_version (void)
 static void
 bst_print_blurb (void)
 {
-  g_print ("Usage: beast [options] [files...]\n");
+  printout ("Usage: beast [options] [files...]\n");
   /*        12345678901234567890123456789012345678901234567890123456789012345678901234567890 */
 #ifdef BST_WITH_XKB
-  g_print ("  --force-xkb             force XKB keytable queries\n");
+  printout ("  --force-xkb             force XKB keytable queries\n");
 #endif
-  g_print ("  --skinrc[=FILENAME]     Skin resource file name\n");
-  g_print ("  --print-dir[=RESOURCE]  Print the directory for a specific resource\n");
-  g_print ("  --merge                 Merge the following files into the previous project\n");
-  g_print ("  --devel                 Enrich the GUI with hints useful for developers,\n");
-  g_print ("                          enable unstable plugins and experimental code\n");
-  g_print ("  -h, --help              Show this help message\n");
-  g_print ("  -v, --version           Print version and file paths\n");
-  g_print ("  -n NICELEVEL            Run with priority NICELEVEL (for suid wrapper beast)\n");
-  g_print ("  -N                      Disable renicing\n");
-  g_print ("  --display=DISPLAY       X server for the GUI; see X(1)\n");
-  g_print ("  --bse-latency=USECONDS  Specify synthesis latency in milliseconds\n");
-  g_print ("  --bse-mixing-freq=FREQ  Specify synthesis mixing frequency in Hz \n");
-  g_print ("  --bse-control-freq=FREQ Specify control frequency in Hz\n");
-  g_print ("  --bse-force-fpu         Disable loading of SSE or similarly optimized plugins\n");
-  g_print ("  --bse-pcm-driver DRIVERCONF\n");
-  g_print ("  -p DRIVERCONF           Try to use the PCM driver DRIVERCONF, multiple\n");
-  g_print ("                          options may be supplied to try a variety of\n");
-  g_print ("                          drivers. Uunless -p auto is given, only the\n");
-  g_print ("                          drivers listed by -p options are used; each\n");
-  g_print ("                          DRIVERCONF consists of a driver name and may be\n");
-  g_print ("                          assigned an optional comma seperated list of\n");
-  g_print ("                          arguments, e.g.: -p oss=/dev/dsp2,rw\n");
-  g_print ("  --bse-midi-driver DRIVERCONF\n");
-  g_print ("  -m DRIVERCONF           Try to use the MIDI driver DRIVERCONF, multiple\n");
-  g_print ("                          options may be specified similarly to the\n");
-  g_print ("                          option handling for --bse-pcm-driver\n");
-  g_print ("  --bse-driver-list       List available PCM and MIDI drivers\n");
-  g_print ("Development Options:\n");
-  g_print ("  -:[Flags]               [Flags] can be any combination of:\n");
-  g_print ("                          f - fatal warnings\n");
-  g_print ("                          N - disable script and plugin registration\n");
-  g_print ("                          p - enable core plugin registration\n");
-  g_print ("                          P - disable core plugin registration\n");
-  g_print ("                          l - enable LADSPA plugin registration\n");
-  g_print ("                          L - disable LADSPA plugin registration\n");
-  g_print ("                          s - enable script registration\n");
-  g_print ("                          S - disable script registration\n");
-  g_print ("                          d - enable debugging extensions (harmfull)\n");
-  g_print ("Gtk+ Options:\n");
-  g_print ("  --gtk-debug=FLAGS       Gtk+ debugging flags to enable\n");
-  g_print ("  --gtk-no-debug=FLAGS    Gtk+ debugging flags to disable\n");
-  g_print ("  --gtk-module=MODULE     Load additional Gtk+ modules\n");
-  g_print ("  --gdk-debug=FLAGS       Gdk debugging flags to enable\n");
-  g_print ("  --gdk-no-debug=FLAGS    Gdk debugging flags to disable\n");
-  g_print ("  --g-fatal-warnings      Make warnings fatal (abort)\n");
-  g_print ("  --sync                  Do all X calls synchronously\n");
+  printout ("  --skinrc[=FILENAME]     Skin resource file name\n");
+  printout ("  --print-dir[=RESOURCE]  Print the directory for a specific resource\n");
+  printout ("  --merge                 Merge the following files into the previous project\n");
+  printout ("  --devel                 Enrich the GUI with hints useful for developers,\n");
+  printout ("                          enable unstable plugins and experimental code\n");
+  printout ("  -h, --help              Show this help message\n");
+  printout ("  -v, --version           Print version and file paths\n");
+  printout ("  -n NICELEVEL            Run with priority NICELEVEL (for suid wrapper beast)\n");
+  printout ("  -N                      Disable renicing\n");
+  printout ("  --display=DISPLAY       X server for the GUI; see X(1)\n");
+  printout ("  --bse-latency=USECONDS  Specify synthesis latency in milliseconds\n");
+  printout ("  --bse-mixing-freq=FREQ  Specify synthesis mixing frequency in Hz \n");
+  printout ("  --bse-control-freq=FREQ Specify control frequency in Hz\n");
+  printout ("  --bse-force-fpu         Disable loading of SSE or similarly optimized plugins\n");
+  printout ("  --bse-pcm-driver DRIVERCONF\n");
+  printout ("  -p DRIVERCONF           Try to use the PCM driver DRIVERCONF, multiple\n");
+  printout ("                          options may be supplied to try a variety of\n");
+  printout ("                          drivers. Uunless -p auto is given, only the\n");
+  printout ("                          drivers listed by -p options are used; each\n");
+  printout ("                          DRIVERCONF consists of a driver name and may be\n");
+  printout ("                          assigned an optional comma seperated list of\n");
+  printout ("                          arguments, e.g.: -p oss=/dev/dsp2,rw\n");
+  printout ("  --bse-midi-driver DRIVERCONF\n");
+  printout ("  -m DRIVERCONF           Try to use the MIDI driver DRIVERCONF, multiple\n");
+  printout ("                          options may be specified similarly to the\n");
+  printout ("                          option handling for --bse-pcm-driver\n");
+  printout ("  --bse-driver-list       List available PCM and MIDI drivers\n");
+  printout ("Development Options:\n");
+  printout ("  -:[Flags]               [Flags] can be any combination of:\n");
+  printout ("                          f - fatal warnings\n");
+  printout ("                          N - disable script and plugin registration\n");
+  printout ("                          p - enable core plugin registration\n");
+  printout ("                          P - disable core plugin registration\n");
+  printout ("                          l - enable LADSPA plugin registration\n");
+  printout ("                          L - disable LADSPA plugin registration\n");
+  printout ("                          s - enable script registration\n");
+  printout ("                          S - disable script registration\n");
+  printout ("                          d - enable debugging extensions (harmfull)\n");
+  printout ("Gtk+ Options:\n");
+  printout ("  --gtk-debug=FLAGS       Gtk+ debugging flags to enable\n");
+  printout ("  --gtk-no-debug=FLAGS    Gtk+ debugging flags to disable\n");
+  printout ("  --gtk-module=MODULE     Load additional Gtk+ modules\n");
+  printout ("  --gdk-debug=FLAGS       Gdk debugging flags to enable\n");
+  printout ("  --gdk-no-debug=FLAGS    Gdk debugging flags to disable\n");
+  printout ("  --g-fatal-warnings      Make warnings fatal (abort)\n");
+  printout ("  --sync                  Do all X calls synchronously\n");
 }
 
 void
