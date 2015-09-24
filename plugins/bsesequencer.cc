@@ -133,11 +133,11 @@ bse_sequencer_set_property (BseSequencer *seq,
       sdata = (BseNoteSequence*) bse_value_get_boxed (value);
       if (sdata)
 	{
-	  guint i, l, mnote = SFI_MAX_NOTE;
+	  int mnote = SFI_MAX_NOTE;
 	  seq->sdata = bse_note_sequence_copy_shallow (sdata);
 	  /* fixup offset */
-	  l = bse_note_sequence_length (seq->sdata);
-	  for (i = 0; i < l; i++)
+	  uint l = bse_note_sequence_length (seq->sdata);
+	  for (uint i = 0; i < l; i++)
 	    mnote = MIN (mnote, seq->sdata->notes->notes[i]);
 	  if (l && ABS (mnote - seq->sdata->offset) >= 12)
 	    seq->sdata->offset = (mnote < SFI_NOTE_A (SFI_NOTE_OCTAVE (mnote)) ?
