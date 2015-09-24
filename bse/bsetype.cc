@@ -165,7 +165,7 @@ bse_boxed_value_free (GValue *value)
       if (bnode)
         bnode->free (value->data[0].v_pointer);
       else
-        g_critical ("%s: %s due to missing implementation: %s", G_STRFUNC, "leaking boxed structure", g_type_name (G_VALUE_TYPE (value)));
+        g_critical ("%s: %s due to missing implementation: %s", __func__, "leaking boxed structure", g_type_name (G_VALUE_TYPE (value)));
     }
 }
 
@@ -180,7 +180,7 @@ bse_boxed_value_copy (const GValue *src_value,
       if (bnode)
         dest_value->data[0].v_pointer = bnode->copy (src_value->data[0].v_pointer);
       else
-        g_critical ("%s: %s due to missing implementation: %s", G_STRFUNC, "not copying boxed structure", g_type_name (G_VALUE_TYPE (src_value)));
+        g_critical ("%s: %s due to missing implementation: %s", __func__, "not copying boxed structure", g_type_name (G_VALUE_TYPE (src_value)));
     }
 }
 
@@ -211,7 +211,7 @@ bse_boxed_collect_value (GValue      *value,
           if (bnode)
             value->data[0].v_pointer = bnode->copy (collect_values[0].v_pointer);
           else
-            g_critical ("%s: %s due to missing implementation: %s", G_STRFUNC, "not copying boxed structure", g_type_name (G_VALUE_TYPE (value)));
+            g_critical ("%s: %s due to missing implementation: %s", __func__, "not copying boxed structure", g_type_name (G_VALUE_TYPE (value)));
         }
     }
   return NULL;
@@ -236,7 +236,7 @@ bse_boxed_lcopy_value (const GValue *value,
       if (bnode)
         *boxed_p = bnode->copy (value->data[0].v_pointer);
       else
-        g_critical ("%s: %s due to missing implementation: %s", G_STRFUNC, "not copying boxed structure", g_type_name (G_VALUE_TYPE (value)));
+        g_critical ("%s: %s due to missing implementation: %s", __func__, "not copying boxed structure", g_type_name (G_VALUE_TYPE (value)));
     }
   return NULL;
 }
@@ -249,7 +249,7 @@ bse_boxed_to_record (const GValue *src_value,
   if (bnode)
     bnode->boxed2recseq (src_value, dest_value);
   else
-    g_critical ("%s: %s due to missing implementation: %s", G_STRFUNC, "not converting boxed structure", g_type_name (G_VALUE_TYPE (src_value)));
+    g_critical ("%s: %s due to missing implementation: %s", __func__, "not converting boxed structure", g_type_name (G_VALUE_TYPE (src_value)));
 }
 
 static void
@@ -260,7 +260,7 @@ bse_boxed_from_record (const GValue *src_value,
   if (bnode)
     bnode->seqrec2boxed (src_value, dest_value);
   else
-    g_critical ("%s: %s due to missing implementation: %s", G_STRFUNC, "not converting boxed structure", g_type_name (G_VALUE_TYPE (dest_value)));
+    g_critical ("%s: %s due to missing implementation: %s", __func__, "not converting boxed structure", g_type_name (G_VALUE_TYPE (dest_value)));
 }
 
 GType

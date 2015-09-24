@@ -246,7 +246,7 @@ public:
             first_stamp = tick_stamp;                   /* record probe stamp */
           }
         else if (tick_stamp != first_stamp + n_computed)
-          probe_xrun = true; // printerr ("%s: gap in probe block: %lld\n", G_STRFUNC, tick_stamp - first_stamp - n_computed);
+          probe_xrun = true; // printerr ("%s: gap in probe block: %lld\n", __func__, tick_stamp - first_stamp - n_computed);
         /* compute features */
         uint n = block_size - n_computed;
         if (n)

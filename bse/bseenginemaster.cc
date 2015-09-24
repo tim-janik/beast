@@ -1162,7 +1162,7 @@ MasterThread::master_thread()
 	  if (err >= 0)
 	    loop.revents_filled = TRUE;
 	  else if (errno != EINTR)
-	    printerr ("%s: poll() error: %s\n", G_STRFUNC, g_strerror (errno));
+	    printerr ("%s: poll() error: %s\n", __func__, g_strerror (errno));
 	  if (loop.revents_filled)
 	    need_dispatch = _engine_master_check (&loop);
 	}

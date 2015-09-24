@@ -86,6 +86,6 @@ METHOD (BseItem, add-parasite) {
   path = bse_item_create_parasite_name (item, path);
   if (path)
     bse_item_set_parasite (item, path, rec);
-  printout ("%s: %s: %p\n", G_STRFUNC, path, rec);
+  printerr ("%s: %s: %p\n", __func__, path, rec);
   return Bse::ERROR_NONE;
 }

@@ -72,7 +72,7 @@ bse_plugin_dispose (GObject *object)
   BsePlugin *plugin = BSE_PLUGIN (object);
 
   if (plugin->gmodule || plugin->use_count || plugin->n_types)
-    g_warning ("%s: plugin partially initialized during destruciton", G_STRFUNC);
+    g_warning ("%s: plugin partially initialized during destruciton", __func__);
 
   /* chain parent class handler */
   G_OBJECT_CLASS (g_type_class_peek_parent (BSE_PLUGIN_GET_CLASS (plugin)))->dispose (object);
@@ -84,7 +84,7 @@ bse_plugin_finalize (GObject *object)
   BsePlugin *plugin = BSE_PLUGIN (object);
 
   if (plugin->gmodule || plugin->use_count || plugin->n_types)
-    g_warning ("%s: plugin partially initialized during destruciton", G_STRFUNC);
+    g_warning ("%s: plugin partially initialized during destruciton", __func__);
 
   /* chain parent class handler */
   G_OBJECT_CLASS (g_type_class_peek_parent (BSE_PLUGIN_GET_CLASS (plugin)))->finalize (object);
@@ -202,7 +202,7 @@ bse_exports__add_node (const BseExportIdentity *identity,
                        BseExportNode           *enode)
 {
   if (!startup_plugin)
-    g_error ("%s: plugin startup called without plugin", G_STRFUNC);
+    g_error ("%s: plugin startup called without plugin", __func__);
   if (!enode || enode->next)
     return NULL;
   if (identity->major != BST_MAJOR_VERSION ||
@@ -279,7 +279,7 @@ bse_exports__del_node (BsePlugin               *plugin,
 {
   if (!plugin || !enode)
     {
-      g_warning ("%s: invalid plugin shutdown", G_STRFUNC);
+      g_warning ("%s: invalid plugin shutdown", __func__);
       return;
     }
   BseExportNode *last = NULL, *link;
