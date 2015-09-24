@@ -95,11 +95,12 @@ TypeRegistry::init_types()
   type_entries = NULL;
 }
 
+} // Bse
+
+
 extern "C" void
 bse_cxx_init (void)  // prototyped in bseutils.hh
 {
   // FIXME: delete: init_exception_handler ();
   Bse::TypeRegistry::init_types();
 }
-
-} // Bse
