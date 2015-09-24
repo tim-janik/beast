@@ -594,20 +594,17 @@ proc_cache_prepare (GSource *source,
   gboolean need_dispatch = FALSE;
   if (proc_cache)
     {
-      const guint delay_msecs = 500;
-      GTimeVal current_time;
-      guint64 stime;
-      g_source_get_current_time (source, &current_time);
+      const guint delay_usecs = 500 * 1000;
+      guint64 stime = g_source_get_time (source);
       BSE_THREADS_ENTER ();
-      stime = current_time.tv_sec * 1000 + current_time.tv_usec / 1000; /* milliseconds */
-      if (stime >= cache_time + delay_msecs)
+      if (stime >= cache_time + delay_usecs)
         need_dispatch = TRUE;
       else
         {
           if (stime < cache_time)       /* handle time warp */
             cache_time = stime;
           if (timeout_p)
-            *timeout_p = delay_msecs - (stime - cache_time);
+            *timeout_p = delay_usecs - (stime - cache_time);
         }
       BSE_THREADS_LEAVE ();
     }
@@ -626,7 +623,6 @@ proc_cache_dispatch (GSource    *source,
                      gpointer    user_data)
 {
   BseProcedureClass *ulist = NULL, *proc, *last = NULL;
-  GTimeVal current_time;
 
   BSE_THREADS_ENTER ();
   proc = proc_cache;
@@ -660,8 +656,7 @@ proc_cache_dispatch (GSource    *source,
       // printerr ("release-procedure: %s\n", BSE_PROCEDURE_NAME (proc));
       g_type_class_unref (proc);
     }
-  g_source_get_current_time (source, &current_time);
-  cache_time = current_time.tv_sec * 1000 + current_time.tv_usec / 1000; /* milliseconds */
+  cache_time = g_source_get_time (source);
   BSE_THREADS_LEAVE ();
   return TRUE;
 }
