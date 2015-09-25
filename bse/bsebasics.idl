@@ -20,9 +20,6 @@ Const MAXNUM = +9223372036854775807;
 Const MINNUM = -9223372036854775808;
 Const MINDB = -96; /* 32bit:-192 24bit:-144 16bit:-96 */
 /* standard sequences */
-sequence IntSeq {
-  Int    ints;
-};
 sequence TypeSeq {
   SfiString types;
 };
