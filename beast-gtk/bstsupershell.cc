@@ -6,7 +6,6 @@
 #include "bstbusmixer.hh"
 #include "bstbusview.hh"
 #include "bstwaveview.hh"
-#include "bstrackview.hh"
 #include "bstsnetrouter.hh"
 #include "bstgconfig.hh"
 #include <string.h>
@@ -188,10 +187,6 @@ super_shell_build_snet (BstSuperShell *self,
   Bse::SNetH snet = Bse::SNetH::down_cast (self->super);
   GtkWidget *param_view;
 
-  if (BST_DBG_EXT && snet.supports_user_synths())
-    gtk_notebook_append_page (notebook,
-                              gtk_widget_get_toplevel (bst_rack_view_new (snet.proxy_id())),
-                              gxk_notebook_create_tabulator (_("Rack"), NULL, NULL));
   if (snet.supports_user_synths() || BST_DBG_EXT)
     gtk_notebook_append_page (notebook,
                               gtk_widget_get_toplevel (GTK_WIDGET (bst_snet_router_build_page (snet))),
