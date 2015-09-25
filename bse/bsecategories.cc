@@ -1,7 +1,7 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bsecategories.hh"
-
 #include "bseutils.hh"
+#include "bseserver.hh"
 #include <string.h>
 
 
@@ -191,6 +191,25 @@ bse_categories_register (const gchar  *category,
         centry->icon = bse_ic0n_from_pixstream (pixstream);
       else
         centry->icon = NULL;
+    }
+  if (g_type_is_a (centry->type, BSE_TYPE_SOURCE))
+    {
+      // parse "/Modules////tag1/tag2/tag3///Title" into tags and title
+      const char *name = i18n_category;
+      if (strncmp (name, "/Modules/", 9) == 0)
+        name += 9;
+      while (name[0] == '/')
+        ++name;
+      const char *title = strrchr (name, '/'), *end = title ? title : name;
+      title = title ? title + 1 : name;
+      while (end > name && end[-1] == '/')
+        --end;
+      Rapicorn::StringVector tags;
+      if (name < end)
+        tags = Rapicorn::string_split (String (name, end - name), "/");
+      Bse::ServerImpl::register_source_module (g_type_name (centry->type), title,
+                                               Rapicorn::string_join (";", tags),
+                                               pixstream);
     }
 }
 

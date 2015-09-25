@@ -1475,4 +1475,75 @@ ServerImpl::destroy_project (ProjectIface &project_iface)
     critical ("%s: project not found", __func__);
 }
 
+struct AuxDataAndIcon : AuxData {
+  Icon icon;
+};
+
+static std::vector<AuxDataAndIcon> registered_module_types;
+
+/// Register a synthesis module type at program startup.
+void
+ServerImpl::register_source_module (const String &type, const String &title, const String &tags, const uint8 *pixstream)
+{
+  assert_return (type.empty() == false);
+  registered_module_types.push_back (AuxDataAndIcon());
+  AuxDataAndIcon &ad = registered_module_types.back();
+  ad.entity = type;
+  if (!title.empty())
+    ad.attributes.push_back ("title=" + title);
+  if (!tags.empty())
+    ad.attributes.push_back ("tags=" + tags);
+  if (pixstream)
+    ad.icon = icon_from_pixstream (pixstream);
+  GType gtypeid = g_type_from_name (type.c_str());
+  if (gtypeid)
+    {
+      const char *txt;
+      txt = bse_type_get_blurb (gtypeid);
+      if (txt)
+        ad.attributes.push_back ("blurb=" + String (txt));
+      txt = bse_type_get_authors (gtypeid);
+      if (txt)
+        ad.attributes.push_back ("authors=" + String (txt));
+      txt = bse_type_get_license (gtypeid);
+      if (txt)
+        ad.attributes.push_back ("license=" + String (txt));
+      txt = bse_type_get_options (gtypeid);
+      if (txt)
+        ad.attributes.push_back ("hints=" + String (txt));
+    }
+  if (0)
+    printerr ("%s\n  %s\n  tags=%s\n  icon=...%s\n",
+              type,
+              title,
+              Rapicorn::string_join (", ", Rapicorn::string_split_any (tags, ":;")),
+              ad.icon.width && ad.icon.height ? string_format ("%ux%u", ad.icon.width, ad.icon.height) : "0");
+}
+
+AuxDataSeq
+ServerImpl::list_module_types ()
+{
+  AuxDataSeq ads;
+  ads.insert (ads.end(), registered_module_types.begin(), registered_module_types.end());
+  return ads;
+}
+
+AuxData
+ServerImpl::find_module_type (const String &module_type)
+{
+  for (const auto &ad : registered_module_types)
+    if (ad.entity == module_type)
+      return ad;
+  return AuxData();
+}
+
+Icon
+ServerImpl::module_type_icon (const String &module_type)
+{
+  for (const AuxDataAndIcon &ad : registered_module_types)
+    if (ad.entity == module_type)
+      return ad.icon;
+  return Icon();
+}
+
 } // Bse
