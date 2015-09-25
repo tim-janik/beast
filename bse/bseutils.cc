@@ -630,4 +630,101 @@ bse_string_equals (gconstpointer string1,
     return string1 == string2;
 }
 
+namespace Bse {
+
+/// Create a Bse::Icon from a GdkPixbuf pixstream.
+Icon
+icon_from_pixstream (const uint8 *pixstream)
+{
+  const Icon none;
+  assert_return (pixstream != NULL, none);
+  const uint8 *s = pixstream;
+  if (strncmp ((const char*) s, "GdkP", 4) != 0)
+    return none;
+  s += 4;
+  uint len = 0, type = 0, rowstride = 0, width = 0, height = 0;
+  s = get_uint32 (s, &len);
+  if (len < 24)
+    return none;
+  s = get_uint32 (s, &type);
+  if (type != 0x02010002 &&     /* RLE/8bit/RGBA */
+      type != 0x01010002)       /* RAW/8bit/RGBA */
+    return none;
+  const int bpp = 4; // RGBA
+  const bool rle_encoded = type >> 24 == 2;
+  s = get_uint32 (s, &rowstride);
+  s = get_uint32 (s, &width);
+  s = get_uint32 (s, &height);
+  const uint8 *const encoded_pix_data = s;
+  if (width < 1 || height < 1 || width > 128 || height > 128)
+    return none;
+  Bse::Icon icon;
+  icon.width = width;
+  icon.height = height;
+  icon.pixels.resize (icon.width * icon.height);
+  static_assert (sizeof (icon.pixels[0]) == 4, "sizeof (pixel) == bpp"); // == bpp
+  uint8 *image_buffer = (uint8*) &icon.pixels[0];
+  if (bpp != BSE_PIXDATA_RGB && bpp != BSE_PIXDATA_RGBA)
+    return none;
+  if (rle_encoded)
+    {
+      const uint8 *const image_limit = image_buffer + icon.width * icon.height * bpp;
+      const uint8 *rle_buffer = encoded_pix_data;
+      while (image_buffer < image_limit)
+	{
+	  uint length = *(rle_buffer++);
+          bool check_overrun = false;
+	  if (length & 128)
+	    {
+	      length = length - 128;
+	      check_overrun = image_buffer + length * bpp > image_limit;
+	      if (check_overrun)
+		length = (image_limit - image_buffer) / bpp;
+	      if (bpp < 4)
+		do
+		  {
+		    memcpy (image_buffer, rle_buffer, 3);
+                    image_buffer[3] = 0xff;
+		    image_buffer += 4;
+		  }
+		while (--length);
+	      else
+		do
+		  {
+		    memcpy (image_buffer, rle_buffer, 4);
+		    image_buffer += 4;
+		  }
+		while (--length);
+	      rle_buffer += bpp;
+	    }
+	  else
+	    {
+	      length *= bpp;
+	      check_overrun = image_buffer + length > image_limit;
+	      if (check_overrun)
+		length = image_limit - image_buffer;
+              for (uint i = 0; i < length / bpp; i++)
+                {
+                  memcpy (image_buffer + i * 4, rle_buffer + i * bpp, bpp);
+                  if (bpp == 3)
+                    *(image_buffer + i * 4 + 3) = 0xff;
+                }
+	      image_buffer += length;
+	      rle_buffer += length;
+	    }
+          if (check_overrun)
+            {
+              critical ("%s: pixdata with invalid encoding", RAPICORN_SIMPLE_FUNCTION);
+              return none;
+            }
+        }
+    }
+  else
+    memcpy (image_buffer, encoded_pix_data, icon.width * icon.height * bpp);
+  return icon;
+}
+
+} // Bse
+
+
 #include "bseserverapi.cc"      // build IDL server interface

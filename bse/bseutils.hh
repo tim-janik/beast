@@ -88,4 +88,11 @@ gint		bse_string_equals		(gconstpointer	 string1,
 						 gconstpointer	 string2);
 G_END_DECLS
 
+
+namespace Bse {
+
+Icon icon_from_pixstream (const guint8 *pixstream);
+
+} // Bse
+
 #endif /* __BSE_UTILS_H__ */
