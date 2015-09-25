@@ -5,7 +5,6 @@
 #include "bsestorage.hh"
 #include "bseprocedure.hh"
 #include "bsemain.hh"
-#include "bseparasite.hh"
 #include "bseproject.hh"
 #include "bsesong.hh" // for song->musical_tuning
 #include "bseundostack.hh"
@@ -110,7 +109,6 @@ bse_item_class_init (BseItemClass *klass)
                               PROP_SEQID,
                               sfi_pspec_int ("seqid", "Sequential ID", NULL,
                                              0, 0, SFI_MAXINT, 1, "r"));
-  bse_item_class_add_parasite_signals (klass);
 }
 
 static void
@@ -161,8 +159,6 @@ bse_item_do_dispose (GObject *gobject)
   if (item->parent)
     bse_container_remove_item (BSE_CONTAINER (item->parent), item);
 
-  bse_item_delete_parasites (item);
-
   /* chain parent class' handler */
   G_OBJECT_CLASS (parent_class)->dispose (gobject);
 }
@@ -172,7 +168,6 @@ bse_item_do_finalize (GObject *object)
 {
   BseItem *item = BSE_ITEM (object);
 
-  bse_item_delete_parasites (item);
   item_seqid_changed_queue = g_slist_remove (item_seqid_changed_queue, item);
 
   /* chain parent class' handler */

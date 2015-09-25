@@ -7,7 +7,6 @@
 #include "gsldatautils.hh"
 #include "gslcommon.hh"
 #include "bseproject.hh"
-#include "bseparasite.hh"
 #include "bsecxxplugin.hh"
 #include <unistd.h>
 #include <fcntl.h>
@@ -924,8 +923,6 @@ item_restore_try_statement (gpointer    _item,
     expected_token = restore_source_automation (item, self);
   if (expected_token == SFI_TOKEN_UNMATCHED)
     expected_token = BSE_OBJECT_GET_CLASS (item)->restore_private ((BseObject*) item, self, scanner);
-  if (expected_token == SFI_TOKEN_UNMATCHED)
-    expected_token = bse_parasite_restore ((BseObject*) item, self);
   if (expected_token == SFI_TOKEN_UNMATCHED && BSE_IS_CONTAINER (item))
     expected_token = restore_container_child ((BseContainer*) item, self);
   if (expected_token == SFI_TOKEN_UNMATCHED && strcmp (scanner->next_value.v_identifier, "bse-version") == 0)
@@ -1277,7 +1274,6 @@ bse_storage_store_item (BseStorage *self, BseItem *item)
   store_cxx_item_properties (item, self);
   store_item_properties (item, self);
   BSE_OBJECT_GET_CLASS (item)->store_private (BSE_OBJECT (item), self);
-  bse_parasite_store (BSE_OBJECT (item), self);
   if (BSE_IS_CONTAINER (item))
     bse_container_store_children ((BseContainer*) item, self);
   g_object_unref (item);

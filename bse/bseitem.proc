@@ -5,7 +5,6 @@
 #include <bse/bsecontainer.hh>
 #include <bse/bseundostack.hh>
 #include <bse/bseproject.hh>
-#include <bse/bseparasite.hh>	// FIXME
 #include "bsecxxplugin.hh"
 #include "bsebuiltin_externs.cc"
 

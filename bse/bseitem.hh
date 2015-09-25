@@ -2,8 +2,8 @@
 #ifndef __BSE_ITEM_H__
 #define __BSE_ITEM_H__
 
-#include        <bse/bseobject.hh>
-#include        <bse/bseundostack.hh>
+#include <bse/bseobject.hh>
+#include <bse/bseundostack.hh>
 
 G_BEGIN_DECLS
 
@@ -34,7 +34,6 @@ typedef enum                            /*< skip >*/
 struct BseItem : BseObject {
   guint         use_count;
   BseItem      *parent;
-  BseParasite  *parasite;
 };
 
 struct BseItemClass : BseObjectClass {

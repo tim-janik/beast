@@ -40,7 +40,7 @@ bse_public_headers = $(strip \
 	bsemidicontroller.hh	bsemididevice.hh		bsedevice.hh 			\
 	bsemididevice-null.hh	bsemididevice-oss.hh	bsemidievent.hh			bsemidinotifier.hh \
 	bsemidireceiver.hh	bsemidisynth.hh		bseobject.hh			bsepart.hh \
-	bsepcminput.hh		bsepcmoutput.hh		bseparam.hh			bseparasite.hh \
+	bsepcminput.hh		bsepcmoutput.hh		bseparam.hh			\
 	bsepcmdevice.hh		bsepcmdevice-oss.hh	bsepcmdevice-null.hh		bseplugin.hh \
 	bseprocedure.hh		bseproject.hh		bsescripthelper.hh		bseserver.hh \
 	bsesnet.hh		bsesnooper.hh		bsesong.hh			bsesequencer.hh \
@@ -74,7 +74,7 @@ bse_sources = $(strip \
 	bsemidicontroller.cc	bsemididevice.cc 	bsedevice.cc 			\
 	bsemididevice-null.cc	bsemididevice-oss.cc	bsemidievent.cc			bsemidinotifier.cc \
 	bsemidireceiver.cc	bsemidisynth.cc		bseobject.cc			bsepart.cc \
-	bsepcminput.cc		bsepcmoutput.cc		bseparam.cc			bseparasite.cc \
+	bsepcminput.cc		bsepcmoutput.cc		bseparam.cc			\
 	bsepcmdevice.cc		bsepcmdevice-oss.cc	bsepcmdevice-null.cc		bseplugin.cc \
 	bseprocedure.cc		bseproject.cc		bsescripthelper.cc		bseserver.cc \
 	bsesnet.cc		bsesnooper.cc		bsesong.cc			bsesequencer.cc \
@@ -116,7 +116,7 @@ idl_dummy_files = $(strip	\
 # BSE procedure sources
 bse_proc_sources = $(strip \
 	bsecategories.proc	bsecontainer.proc	bsedatapocket.proc	bseeditablesample.proc	\
-	bsejanitor.proc					bseparasite.proc	bseprocedure.proc	bseproject.proc	\
+	bsejanitor.proc					bseprocedure.proc	bseproject.proc		\
 				bsesong.proc					bsesource.proc		\
 	bsetrack.proc		bseitem.proc		bsewave.proc		bsewaveosc.proc		bsewaverepo.proc \
 )

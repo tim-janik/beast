@@ -48,7 +48,6 @@ struct BseMidiSynthClass;
 struct BseMidiContext;
 struct BseObject;
 struct BseObjectClass;
-struct BseParasite;
 struct BsePart;
 struct BsePartClass;
 struct BsePcmWriter;
