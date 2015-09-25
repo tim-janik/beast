@@ -138,7 +138,7 @@ BODY (BseProcedureClass *proc,
   /* construct info */
   BseSampleFileInfo info = { 0, };
   info.file = (char*) filename;
-  info.waves = bse_string_seq_new ();
+  info.waves = bse_str1ng_seq_new ();
   if (stat (filename, &sbuf) < 0)
     info.error = bse_error_from_errno (errno, Bse::ERROR_FILE_OPEN_FAILED);
   else
@@ -150,7 +150,7 @@ BODY (BseProcedureClass *proc,
 	{
 	  guint i;
 	  for (i = 0; i < wfi->n_waves; i++)
-	    bse_string_seq_append (info.waves, wfi->waves[i].name);
+	    bse_str1ng_seq_append (info.waves, wfi->waves[i].name);
 	  info.loader = (gchar*) bse_wave_file_info_loader (wfi);
 	}
     }
@@ -159,7 +159,7 @@ BODY (BseProcedureClass *proc,
   bse_value_set_boxed (out_values++, &info);
 
   /* cleanup */
-  bse_string_seq_free (info.waves);
+  bse_str1ng_seq_free (info.waves);
   if (wfi)
     bse_wave_file_info_unref (wfi);
 

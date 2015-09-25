@@ -435,14 +435,14 @@ add_item_upaths (BseItem *item,
 		 gpointer data_p)
 {
   gpointer *data = (void**) data_p;
-  BseStringSeq *sseq = (BseStringSeq*) data[0];
+  BseStr1ngSeq *sseq = (BseStr1ngSeq*) data[0];
   GType item_type = (GType) data[1];
   BseContainer *container = (BseContainer*) data[2];
 
   if (g_type_is_a (BSE_OBJECT_TYPE (item), item_type))
     {
       gchar *upath = bse_container_make_upath (container, item);
-      bse_string_seq_append (sseq, upath);
+      bse_str1ng_seq_append (sseq, upath);
       g_free (upath);
     }
   if (BSE_IS_CONTAINER (item))
@@ -451,17 +451,17 @@ add_item_upaths (BseItem *item,
   return TRUE;
 }
 
-BseStringSeq*
+BseStr1ngSeq*
 bse_project_list_upaths (BseProject *self,
 			 GType       item_type)
 {
   gpointer data[3];
-  BseStringSeq *sseq;
+  BseStr1ngSeq *sseq;
 
   assert_return (BSE_IS_PROJECT (self), NULL);
   assert_return (g_type_is_a (item_type, BSE_TYPE_ITEM), NULL);
 
-  sseq = bse_string_seq_new ();
+  sseq = bse_str1ng_seq_new ();
   data[0] = sseq;
   data[1] = (gpointer) item_type;
   data[2] = self;
