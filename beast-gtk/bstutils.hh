@@ -35,13 +35,10 @@ GtkWidget*     bst_vpack0                     (const gchar     *first_location,
                                                ...) G_GNUC_NULL_TERMINATED;
 GtkWidget*     bst_hpack0                     (const gchar     *first_location,
                                                ...) G_GNUC_NULL_TERMINATED;
-void           bst_action_list_add_cat        (GxkActionList   *alist,
-                                               BseCategory     *cat,
-                                               guint            skip_levels,
-                                               const gchar     *stock_fallback,
-                                               GxkActionCheck   acheck,
-                                               GxkActionExec    aexec,
-                                               gpointer         user_data);
+void bst_action_list_add_cat    (GxkActionList *alist, BseCategory *cat, uint skip_levels, const char *stock_fallback,
+                                 GxkActionCheck acheck, GxkActionExec aexec, gpointer user_data);
+void bst_action_list_add_module (GxkActionList *alist, const Bse::AuxData &ad, const Bse::Icon &icon, const char *stock_fallback,
+                                 GxkActionCheck acheck, GxkActionExec aexec, gpointer user_data);
 GxkActionList* bst_action_list_from_cats      (BseCategorySeq  *cseq,
                                                guint            skip_levels,
                                                const gchar     *stock_fallback,

@@ -479,6 +479,35 @@ bst_action_list_add_cat (GxkActionList          *alist,
                                   acheck, aexec, user_data);
 }
 
+void
+bst_action_list_add_module (GxkActionList *alist, const Bse::AuxData &ad, const Bse::Icon &icon, const char *stock_fallback,
+                            GxkActionCheck acheck, GxkActionExec aexec, gpointer user_data)
+{
+  const char *stock_id;
+  if (icon.width && icon.height)
+    {
+      assert (icon.width * icon.height == int (icon.pixels.size()));
+      bst_stock_register_icon (ad.entity.c_str(), 4, icon.width, icon.height, icon.width * 4, (const uint8*) icon.pixels.data());
+      stock_id = ad.entity.c_str();
+    }
+  else
+    stock_id = stock_fallback;
+
+  String title = Rapicorn::string_vector_find_value (ad.attributes, "title=");
+  if (title.empty())
+    title = ad.entity;
+  Rapicorn::StringVector tags = Rapicorn::string_split (Rapicorn::string_vector_find_value (ad.attributes, "tags="), ";:");
+  if (tags.size())
+    {
+      tags.push_back (title);
+      title = Rapicorn::string_join ("/", tags);
+    }
+  gxk_action_list_add_translated (alist, NULL, title.c_str(), NULL,
+                                  ad.entity.c_str(), // tooltip
+                                  g_quark_from_string (ad.entity.c_str()), stock_id,
+                                  acheck, aexec, user_data);
+}
+
 GxkActionList*
 bst_action_list_from_cats_pred (BseCategorySeq  *cseq,
                                 guint            skip_levels,
