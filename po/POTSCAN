@@ -37,9 +37,6 @@ beast-gtk/bstpreferences.cc
 beast-gtk/bstprocedure.cc
 beast-gtk/bstprofiler.cc
 beast-gtk/bstprojectctrl.cc
-beast-gtk/bstrackeditor.cc
-beast-gtk/bstrackitem.cc
-beast-gtk/bstrackview.cc
 beast-gtk/bstsampleeditor.cc
 beast-gtk/bstscrollgraph.cc
 beast-gtk/bstsnetrouter.cc
@@ -61,12 +58,10 @@ beast-gtk/gxk/gxkparam-spinner.cc
 beast-gtk/gxk/gxkparam-toggle.cc
 beast-gtk/gxk/gxksimplelabel.cc
 bse/bseapi.idl
-bse/bseautodoc.cc
 bse/bsebasics.idl
 bse/bsebiquadfilter.cc
 bse/bsebus.cc
 bse/bsebusmodule.idl
-bse/bsebus.proc
 bse/bseconstant.cc
 bse/bsecontainer.proc
 bse/bsedevice.cc
@@ -83,7 +78,6 @@ bse/bsemidiinput.cc
 bse/bsemidisynth.cc
 bse/bsemidivoice.cc
 bse/bseobject.cc
-bse/bseparasite.proc
 bse/bsepcmdevice-null.cc
 bse/bsepcmdevice-oss.cc
 bse/bsepcminput.cc
