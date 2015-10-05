@@ -186,7 +186,7 @@ Sequencer::remove_io_watch (BseIOWatch watch_func, void *watch_data)
     }
   BSE_SEQUENCER_UNLOCK();
   if (!removal_success)
-    g_warning ("%s: failed to remove %p(%p)", G_STRFUNC, watch_func, watch_data);
+    g_warning ("%s: failed to remove %p(%p)", __func__, watch_func, watch_data);
 }
 
 bool
@@ -201,7 +201,7 @@ Sequencer::pool_poll_Lm (gint timeout_ms)
   BSE_SEQUENCER_UNLOCK();
   int result = poll ((struct pollfd*) pfds, n_pfds, timeout_ms);
   if (result < 0 && errno != EINTR)
-    printerr ("%s: poll() error: %s\n", G_STRFUNC, g_strerror (errno));
+    printerr ("%s: poll() error: %s\n", __func__, g_strerror (errno));
   BSE_SEQUENCER_LOCK();
   if (result > 0 && pfds[0].revents)
     {

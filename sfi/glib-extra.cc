@@ -1022,7 +1022,7 @@ GScanner*
 g_scanner_new64 (const GScannerConfig *config_templ)
 {
   if (!config_templ->store_int64)
-    g_error ("%s(): attempt to create 64bit scanner with store_int64==FALSE", G_STRFUNC);
+    g_error ("%s(): attempt to create 64bit scanner with store_int64==FALSE", __func__);
   return g_scanner_new (config_templ);
 }
 

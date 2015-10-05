@@ -211,7 +211,7 @@ bse_source_class_add_ijchannel (BseSourceClass *source_class,
   if (bse_source_class_has_channel (source_class, cname))
     {
       g_warning ("%s: attempt to reregister channel \"%s\" with source class `%s'",
-                 G_STRFUNC, cname, G_OBJECT_CLASS_NAME (source_class));
+                 __func__, cname, G_OBJECT_CLASS_NAME (source_class));
       g_free (cname);
       return ~0;
     }
@@ -287,7 +287,7 @@ bse_source_class_add_ochannel (BseSourceClass *source_class,
   if (bse_source_class_has_channel (source_class, cname))
     {
       g_warning ("%s: attempt to reregister channel \"%s\" with source class `%s'",
-                 G_STRFUNC, cname, G_OBJECT_CLASS_NAME (source_class));
+                 __func__, cname, G_OBJECT_CLASS_NAME (source_class));
       g_free (cname);
       return ~0;
     }

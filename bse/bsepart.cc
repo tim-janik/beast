@@ -1797,7 +1797,7 @@ bse_part_controls_remove (BsePartControls     *self,
         break;
       }
   if (!cev)
-    g_warning ("%s: failed to remove event at tick=%u", G_STRFUNC, tick);
+    g_warning ("%s: failed to remove event at tick=%u", __func__, tick);
   else if (!node->events)
     {
       /* remove node */
