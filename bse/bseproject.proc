@@ -14,6 +14,7 @@
 #include <bse/bsemidinotifier.hh>
 #include <bse/bseengine.hh>
 #include "bsecxxplugin.hh"
+#include "bsebuiltin_externs.cc"
 
 
 AUTHORS = "Tim Janik <timj@gtk.org>";
@@ -437,5 +438,3 @@ METHOD (BseProject, get-state) {
 
   return Bse::ERROR_NONE;
 }
-
-

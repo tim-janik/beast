@@ -172,7 +172,7 @@ bsewave_load_file_info (void         *data,
   while (!abort)
     {
       g_scanner_get_next_token (scanner);
-      switch (GslWaveTokenType (scanner->token))
+      switch (int (scanner->token))
 	{
 	case BSEWAVE_TOKEN_WAVE:
 	  if (g_scanner_peek_next_token (scanner) == '{')
@@ -256,7 +256,7 @@ bsewave_parse_chunk_dsc (GScanner        *scanner,
 {
   parse_or_return (scanner, '{');
   do
-    switch (GslWaveTokenType (g_scanner_get_next_token (scanner)))
+    switch (int (g_scanner_get_next_token (scanner)))
       {
         char *key;
         float vfloat;
@@ -420,7 +420,7 @@ bsewave_parse_wave_dsc (GScanner   *scanner,
 {
   parse_or_return (scanner, '{');
   do
-    switch (GslWaveTokenType (g_scanner_get_next_token (scanner)))
+    switch (int (g_scanner_get_next_token (scanner)))
       {
 	uint i;
         int token;

@@ -60,7 +60,7 @@ bst_ascii_pixbuf_new (gchar character,
     char_width = width;
   if (!char_height)
     char_height = gdk_pixbuf_get_height (pixbuf);
-  if (char_width != width || char_height != gdk_pixbuf_get_height (pixbuf))
+  if (char_width != width || char_height != (uint) gdk_pixbuf_get_height (pixbuf))
     {
       GdkPixbuf *tmp_pixbuf = pixbuf;
 

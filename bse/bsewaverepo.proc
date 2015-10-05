@@ -5,6 +5,7 @@
 #include <bse/bseloader.hh>
 #include <bse/bsewave.hh>
 #include "bsecxxplugin.hh"
+#include "bsebuiltin_externs.cc"
 
 #include <sys/types.h>
 #include <sys/stat.h>

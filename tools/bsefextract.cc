@@ -86,7 +86,7 @@ public:
     m_offset = 0;
 
     m_samples.resize (m_length);
-    size_t have_samples = 0;
+    ssize_t have_samples = 0;
     while (have_samples < m_length)
       {
         int64 r = gsl_data_handle_read (data_handle, have_samples, MIN (m_length - have_samples, 4096 * m_n_channels),
@@ -1168,8 +1168,8 @@ struct TimingSlices
      * at a sufficiently large null slice (where sufficiently large may be 0,
      * if both slices were out of the range for which features have been extracted) */
     vector<double> null_slice;
-    vector<double>& s1 = (slice1 >= 0 && slice1 < slices.size()) ? slices[slice1] : null_slice;
-    vector<double>& s2 = (slice2 >= 0 && slice2 < slices.size()) ? slices[slice2] : null_slice;
+    vector<double>& s1 = (slice1 >= 0 && slice1 < (ssize_t) slices.size()) ? slices[slice1] : null_slice;
+    vector<double>& s2 = (slice2 >= 0 && slice2 < (ssize_t) slices.size()) ? slices[slice2] : null_slice;
     null_slice.resize (max (s1.size(), s2.size()));
 
     double sf = 0;

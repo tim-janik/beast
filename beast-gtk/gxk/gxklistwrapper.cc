@@ -6,6 +6,7 @@
 
 #define	I2P(x)		GINT_TO_POINTER (x)
 #define	P2I(x)		GPOINTER_TO_INT (x)
+#undef  _
 #define	_(x)		(x)
 
 enum {

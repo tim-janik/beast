@@ -153,7 +153,7 @@ rack_cover_add_plates (BstRackTable *rtable)
 		  l = j;
 		  m = t;
 		  n = u;
-		  if (max > max_free / 2)
+		  if (max > uint (max_free / 2))
 		    goto max_found;
 		}
 	    }

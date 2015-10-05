@@ -4,6 +4,9 @@
 #include <bse/bseeditablesample.hh>
 #include <bse/gsldatahandle.hh>
 #include "bsecxxplugin.hh"
+#include "bsebuiltin_externs.cc"
+
+
 AUTHORS	= "Tim Janik <timj@gtk.org>";
 LICENSE = "GNU Lesser General Public License";
 METHOD (BseEditableSample, open) {

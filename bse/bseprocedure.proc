@@ -6,6 +6,7 @@
 #include "bsemath.hh"    /* bse_temp_freq */
 #include "bsemain.hh"
 #include "bsecxxplugin.hh"
+#include "bsebuiltin_externs.cc"
 #include <string.h>     /* strchr */
 #include <stdlib.h>     /* strtol */
 

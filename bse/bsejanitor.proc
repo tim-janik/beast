@@ -4,6 +4,7 @@
 #include <bse/bsejanitor.hh>
 #include <bse/bseserver.hh>
 #include <string.h>
+#include "bsebuiltin_externs.cc"
 
 
 AUTHORS	= "Tim Janik <timj@gtk.org>";
@@ -406,7 +407,9 @@ PROCEDURE (bse-script-send-message, "Script/Message") {
     }
   else
     return Bse::ERROR_PROC_PARAM_INVAL;
+  (void) domain;
 }
+
 PROCEDURE (bse-script-quit, "Script/Quit") {
   HELP  = "Exit a script succesfully (server side).";
 } BODY (BseProcedureClass *proc,

@@ -70,8 +70,8 @@ void         bse_type_uninit_boxed              (BseExportNodeBoxed *bnode);
 #ifdef BSE_COMPILATION
 #  define BSE_BUILTIN_PROTO(BseTypeName) GType bse_type_builtin_register_##BseTypeName (void)
 #  define BSE_BUILTIN_TYPE(BseTypeName)	 EXTERN_C BSE_BUILTIN_PROTO (BseTypeName); EXTERN_C BSE_BUILTIN_PROTO (BseTypeName)
-#  define BSE_DUMMY_TYPE(BseTypeName)	 EXTERN_C BSE_BUILTIN_PROTO (BseTypeName) { return 0; } \
-                                         EXTERN_C BSE_BUILTIN_PROTO (BseTypeName)
+#  define BSE_DUMMY_TYPE(BseTypeName)	 EXTERN_C BSE_BUILTIN_PROTO (BseTypeName); \
+                                         EXTERN_C BSE_BUILTIN_PROTO (BseTypeName) { return 0; }
 #endif /* BSE_COMPILATION */
 
 

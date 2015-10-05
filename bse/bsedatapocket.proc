@@ -1,7 +1,8 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
-#include        <bse/bseplugin.hh>
-#include        <bse/bseprocedure.hh>
-#include        <bse/bsedatapocket.hh>
+#include <bse/bseplugin.hh>
+#include <bse/bseprocedure.hh>
+#include <bse/bsedatapocket.hh>
+#include "bsebuiltin_externs.cc"
 
 
 AUTHORS	= "Tim Janik <timj@gtk.org>";

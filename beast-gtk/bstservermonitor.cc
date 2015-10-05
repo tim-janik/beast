@@ -22,7 +22,7 @@ bst_server_monitor_get_type (void)
     {
       GtkTypeInfo server_monitor_info =
       {
-	"BstServerMonitor",
+	(char*) "BstServerMonitor",
 	sizeof (BstServerMonitor),
 	sizeof (BstServerMonitorClass),
 	(GtkClassInitFunc) bst_server_monitor_class_init,

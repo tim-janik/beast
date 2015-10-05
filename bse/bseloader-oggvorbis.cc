@@ -26,7 +26,7 @@ oggv_load_file_info (void         *data,
 {
   FileInfo *fi = sfi_new_struct0 (FileInfo, 1);
   FILE *file;
-  int err, i;
+  int err;
 
   file = fopen (file_name, "r");
   if (!file)
@@ -47,10 +47,10 @@ oggv_load_file_info (void         *data,
 
   fi->wfi.n_waves = ov_streams (&fi->ofile);
   fi->wfi.waves = (BseWaveFileInfo::Wave*) g_malloc0 (sizeof (fi->wfi.waves[0]) * fi->wfi.n_waves);
-  for (i = 0; i < fi->wfi.n_waves; i++)
+  for (size_t i = 0; i < fi->wfi.n_waves; i++)
     {
       vorbis_comment *vc = ov_comment (&fi->ofile, i);
-      uint n;
+      ssize_t n;
 
       for (n = 0; n < vc->comments; n++)
 	if (strcmp (vc->user_comments[n], "title=") == 0)

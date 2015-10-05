@@ -44,8 +44,8 @@
 #define CANVAS_Y(self)            (TOP_PANEL_OFRAME (self) + TOP_PANEL_HEIGHT (self) + TOP_PANEL_CFRAME (self))
 #define CANVAS_HREST(self)        (RIGHT_PANEL_CFRAME (self) + RIGHT_PANEL_WIDTH (self) + RIGHT_PANEL_OFRAME (self))
 #define CANVAS_VREST(self)        (BOTTOM_PANEL_CFRAME (self) + BOTTOM_PANEL_HEIGHT (self) + BOTTOM_PANEL_OFRAME (self))
-#define WINDOW_WIDTH(self, rq_w)  MIN (G_MAXINT, CANVAS_X (self) + CANVAS_HREST (self) + (guint) rq_w)
-#define WINDOW_HEIGHT(self, rq_h) MIN (G_MAXINT, CANVAS_Y (self) + CANVAS_VREST (self) + (guint) rq_h)
+#define WINDOW_WIDTH(self, rq_w)  (int (MIN (uint (G_MAXINT), CANVAS_X (self) + CANVAS_HREST (self) + uint (rq_w))))
+#define WINDOW_HEIGHT(self, rq_h) (int (MIN (uint (G_MAXINT), CANVAS_Y (self) + CANVAS_VREST (self) + uint (rq_h))))
 /* layout (allocation) */
 #define CANVAS_WIDTH(self)        (ALLOCATION (self)->width - 2 * BORDER_WIDTH (self) - CANVAS_X (self) - CANVAS_HREST (self))
 #define CANVAS_HEIGHT(self)       (ALLOCATION (self)->height - 2 * BORDER_WIDTH (self) - CANVAS_Y (self) - CANVAS_VREST (self))

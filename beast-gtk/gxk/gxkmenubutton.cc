@@ -234,7 +234,7 @@ menu_button_max_size (GxkMenuButton *self)
     {
       GList *list, *children = GTK_MENU_SHELL (self->menu)->children;
       GtkRequisition child_requisition = { 0, };
-      guint width = 0, height = 0;
+      int width = 0, height = 0;
       for (list = children; list; list = list->next)
         {
           GtkWidget *mitem = (GtkWidget*) list->data;
