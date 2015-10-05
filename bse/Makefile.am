@@ -34,13 +34,13 @@ bse_public_headers = $(strip \
 	bsefilter.hh    		bsebiquadfilter.hh	\
 	bseconstant.hh		bseconstvalues.hh	bsecontainer.hh			bsecontextmerger.hh \
 	bseclientapi.hh		\
-	bsedatapocket.hh		bseeditablesample.hh	bseenums.hh			bsegconfig.hh \
+				bseeditablesample.hh	bseenums.hh			bsegconfig.hh \
 	bseglobals.hh		bseglue.hh		bseitem.hh			bsejanitor.hh \
 	bsemain.hh		bsemath.hh		bsemathsignal.hh			bseladspa.hh \
 	bsemidicontroller.hh	bsemididevice.hh		bsedevice.hh 			\
 	bsemididevice-null.hh	bsemididevice-oss.hh	bsemidievent.hh			bsemidinotifier.hh \
 	bsemidireceiver.hh	bsemidisynth.hh		bseobject.hh			bsepart.hh \
-	bsepcminput.hh		bsepcmoutput.hh		bseparam.hh			bseparasite.hh \
+	bsepcminput.hh		bsepcmoutput.hh		bseparam.hh			\
 	bsepcmdevice.hh		bsepcmdevice-oss.hh	bsepcmdevice-null.hh		bseplugin.hh \
 	bseprocedure.hh		bseproject.hh		bsescripthelper.hh		bseserver.hh \
 	bsesnet.hh		bsesnooper.hh		bsesong.hh			bsesequencer.hh \
@@ -68,13 +68,13 @@ bse_sources = $(strip \
 	bsebus.cc		bsecategories.cc 	\
 	bsefilter.cc   		bsebiquadfilter.cc	bsefilter-ellf.cc	\
 	bseconstant.cc		bseconstvalues.cc	bsecontainer.cc			bsecontextmerger.cc \
-	bsedatapocket.cc	bseeditablesample.cc	bseenums.cc			bsegconfig.cc \
+				bseeditablesample.cc	bseenums.cc			bsegconfig.cc \
 	bseglobals.cc		bseglue.cc		bseitem.cc			bsejanitor.cc \
 	bsemain.cc		bsemath.cc		bsemathsignal.cc		bseladspa.cc \
 	bsemidicontroller.cc	bsemididevice.cc 	bsedevice.cc 			\
 	bsemididevice-null.cc	bsemididevice-oss.cc	bsemidievent.cc			bsemidinotifier.cc \
 	bsemidireceiver.cc	bsemidisynth.cc		bseobject.cc			bsepart.cc \
-	bsepcminput.cc		bsepcmoutput.cc		bseparam.cc			bseparasite.cc \
+	bsepcminput.cc		bsepcmoutput.cc		bseparam.cc			\
 	bsepcmdevice.cc		bsepcmdevice-oss.cc	bsepcmdevice-null.cc		bseplugin.cc \
 	bseprocedure.cc		bseproject.cc		bsescripthelper.cc		bseserver.cc \
 	bsesnet.cc		bsesnooper.cc		bsesong.cc			bsesequencer.cc \
@@ -115,8 +115,8 @@ idl_dummy_files = $(strip	\
 )
 # BSE procedure sources
 bse_proc_sources = $(strip \
-	bsecategories.proc	bsecontainer.proc	bsedatapocket.proc	bseeditablesample.proc	\
-	bsejanitor.proc					bseparasite.proc	bseprocedure.proc	bseproject.proc	\
+	bsecategories.proc	bsecontainer.proc				bseeditablesample.proc	\
+	bsejanitor.proc					bseprocedure.proc	bseproject.proc		\
 				bsesong.proc					bsesource.proc		\
 	bsetrack.proc		bseitem.proc		bsewave.proc		bsewaveosc.proc		bsewaverepo.proc \
 )

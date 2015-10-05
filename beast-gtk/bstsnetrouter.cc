@@ -307,11 +307,6 @@ bst_snet_router_set_snet (BstSNetRouter *self, Bse::SNetH snet)
                          NULL);
       bst_snet_router_update (self);
       bst_snet_router_adjust_region (self);
-#if 0
-      float zoom;
-      if (bse_parasite_get_floats (self->snet, "BstRouterZoom", 1, &zoom) == 1)
-        gtk_adjustment_set_value (self->adjustment, zoom);
-#endif
     }
 }
 
@@ -409,14 +404,6 @@ bst_snet_router_adjust_zoom (BstSNetRouter *router)
 {
   GtkObject *object = GTK_OBJECT (router);
   double *d = (double*) gtk_object_get_data (object, "zoom_d");
-
-  if (router->snet)
-    {
-#if 0
-      gfloat zoom = router->adjustment->value;
-      bse_parasite_set_floats (router->snet, "BstRouterZoom", 1, &zoom);
-#endif
-    }
 
   if (!d)
     {

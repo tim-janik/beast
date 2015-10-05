@@ -210,9 +210,7 @@ bst_canvas_source_destroy (GtkObject *object)
 #define EPSILON 1e-6
 
 static void
-bse_object_set_parasite_coords (SfiProxy proxy,
-				SfiReal  x,
-				SfiReal  y)
+bse_source_set_module_coords (SfiProxy proxy, SfiReal x, SfiReal y)
 {
   bse_source_set_pos (proxy,
                       x / BST_CANVAS_SOURCE_PIXEL_SCALE,
@@ -900,7 +898,7 @@ bst_canvas_source_changed (BstCanvasSource *csource)
       GnomeCanvasItem *item = GNOME_CANVAS_ITEM (csource);
       gdouble x = 0, y = 0;
       gnome_canvas_item_i2w (item, &x, &y);
-      bse_object_set_parasite_coords (csource->source, x, y);
+      bse_source_set_module_coords (csource->source, x, y);
     }
 }
 

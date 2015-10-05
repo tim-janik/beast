@@ -7,7 +7,6 @@
 #include "bstgconfig.hh"
 #include "bstpreferences.hh"
 #include "bstservermonitor.hh"
-#include "bstrackeditor.hh"
 #include "bstmenus.hh"
 #include "bstprocedure.hh"
 #include "bstprojectctrl.hh"
@@ -36,7 +35,6 @@ enum {
   ACTION_SHOW_PROC_BROWSER,
   ACTION_SHOW_PROFILER,
   ACTION_EXTRA_VIEW,
-  ACTION_RACK_EDITOR,
 #define ACTION_HELP_FIRST   ACTION_HELP_INDEX
   ACTION_HELP_INDEX,
   ACTION_HELP_FAQ,
@@ -103,8 +101,6 @@ static const GxkStockAction undo_dvl_actions[] = {
 static const GxkStockAction dialog_actions[] = {
   { N_("Procedure _Browser"),   NULL,           N_("Display an overview of all procedures"),
     ACTION_SHOW_PROC_BROWSER, },
-  { N_("Rack Editor"),          NULL,           NULL,
-    ACTION_RACK_EDITOR, },
   { N_("Profiler"),             NULL,           N_("Display statistics and timing information"),
     ACTION_SHOW_PROFILER, },
   { N_("New View"),             NULL,           N_("Create an extra view of the project"),
@@ -930,23 +926,6 @@ app_action_exec (gpointer data,
     case BST_ACTION_STOP_PLAYBACK:
       bst_project_ctrl_stop (BST_PROJECT_CTRL (self->pcontrols));
       break;
-    case ACTION_RACK_EDITOR:
-      if (!self->rack_dialog)
-        {
-          BstRackEditor *ed = (BstRackEditor*) g_object_new (BST_TYPE_RACK_EDITOR,
-                                            "visible", TRUE,
-                                            NULL);
-
-          self->rack_editor = (GtkWidget*) g_object_connect (ed, "swapped_signal::destroy", g_nullify_pointer, &self->rack_editor, NULL);
-          bst_rack_editor_set_rack_view (ed, bse_project_get_data_pocket (self->project.proxy_id(), "BEAST-Rack-View"));
-          self->rack_dialog = (GtkWidget*) gxk_dialog_new (&self->rack_dialog,
-                                                           GTK_OBJECT (self),
-                                                           GxkDialogFlags (0), // FIXME: undo Edit when hide && GXK_DIALOG_HIDE_ON_DELETE
-                                                           _("Rack editor"),
-                                                           self->rack_editor);
-        }
-      gxk_widget_showraise (self->rack_dialog);
-      break;
     case ACTION_SHOW_PREFERENCES:
       if (!bst_preferences)
         {
@@ -1154,7 +1133,6 @@ app_action_check (gpointer data,
       if (self->project && self->project.is_playing())
         return TRUE;
       return FALSE;
-    case ACTION_RACK_EDITOR:
     case ACTION_SHOW_PROC_BROWSER:
       return FALSE;
     case ACTION_SHOW_PREFERENCES:

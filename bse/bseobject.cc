@@ -3,7 +3,6 @@
 
 #include "bseexports.hh"
 #include "bsestorage.hh"
-#include "bseparasite.hh"
 #include "bsecategories.hh"
 #include "bsegconfig.hh"
 #include "bsesource.hh"		/* debug hack */

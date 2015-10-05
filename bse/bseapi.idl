@@ -648,7 +648,6 @@ interface Project : Container {
   ErrorType restore_from_file (String file_name); ///< Load a project from file.
   //Song create_song (String name); ///< Create a song for this project.
   //WaveRepo get_wave_repo (); ///< Retrieve the project's unique wave repository.
-  //DataPocket get_data_pocket (String name); ///< Retrieve a specifically named data pocket for this project.
   //CSynth create_csynth (String name); ///< Create a synthsizer network for this project.
   //MidiSynth create_midi_synth (String name); ///< Create a MIDI synthesizer network for this project.
   //MidiNotifier get_midi_notifier(); ///< Retrieve the project's midi notifier object.

@@ -30,12 +30,11 @@ beast_headers = $(strip \
 	bstsnifferscope.hh	bstwaveview.hh	bstfiledialog.hh		bstgconfig.hh	    \
 	bstlogadjustment.hh	bstitemview.hh	bstservermonitor.hh	bstknob.hh	    \
 	bstparamview.hh		bstmenus.hh	bstparam.hh		bstpartdialog.hh	    \
-				bstqsampler.hh	bstpreferences.hh	bstprocedure.hh	    \
-	bstrackeditor.hh		bstrackitem.hh	bstracktable.hh		bstsequence.hh	    \
+	bstqsampler.hh		bstpreferences.hh	bstprocedure.hh	bstsequence.hh	    	\
 	bstsnetrouter.hh		bstsplash.hh	bsttrackview.hh		bstsupershell.hh	    \
 	bstusermessage.hh	bstdial.hh	bsttracksynthdialog.hh	bstwaveeditor.hh	    \
 	bstzoomedwindow.hh	bstskinconfig.hh	bstmsgabsorb.hh		bstsampleeditor.hh   \
-	bstrackview.hh		bsttreestores.hh	bstbseutils.hh		bstutils.hh	    \
+				bsttreestores.hh	bstbseutils.hh		bstutils.hh	    \
 	bstdefs.hh \
 )
 EXTRA_DIST += $(beast_headers)
@@ -52,23 +51,20 @@ bst_cc_sources = $(strip \
 	bstsnifferscope.cc	bstwaveview.cc	bstfiledialog.cc	bstgconfig.cc	    \
 	bstlogadjustment.cc	bstitemview.cc	bstservermonitor.cc	bstknob.cc	    \
 	bstparamview.cc		bstmenus.cc	bstparam.cc		bstpartdialog.cc    \
-				bstqsampler.cc	bstpreferences.cc	bstprocedure.cc	    \
-	bstrackeditor.cc	bstrackitem.cc	bstracktable.cc		bstsequence.cc	    \
+	bstqsampler.cc	      bstpreferences.cc	bstprocedure.cc		bstsequence.cc	    \
 	bstsnetrouter.cc	bstsplash.cc	bsttrackview.cc		bstsupershell.cc    \
 	bstusermessage.cc	bstdial.cc	bsttracksynthdialog.cc	bstwaveeditor.cc    \
 	bstzoomedwindow.cc     bstskinconfig.cc	bstmsgabsorb.cc		bstsampleeditor.cc  \
-	bstrackview.cc	       bsttreestores.cc	bstbseutils.cc		bstutils.cc	    \
+			       bsttreestores.cc	bstbseutils.cc		bstutils.cc	    \
 )
 # BEAST sources that get included (don't have own .lo rules)
 beast_extra_files = $(strip 						\
 	bstparam-automation.cc						\
 	bstparam-choice.cc		bstparam-note-sequence.cc	\
-	bstparam-note-spinner.cc		bstparam-proxy.cc		\
+	bstparam-note-spinner.cc	bstparam-proxy.cc		\
 	bstparam-color-spinner.cc	bstparam-scale.cc		\
-	bstparam-searchpath.cc		bstparam-time.cc			\
-	bstparam-item-seq.cc		bstrackeditor-covers.cc		\
-	\
-	bstmarshal.list			\
+	bstparam-searchpath.cc		bstparam-time.cc		\
+	bstparam-item-seq.cc		bstmarshal.list			\
 )
 EXTRA_DIST += $(beast_extra_files)
 

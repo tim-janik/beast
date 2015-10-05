@@ -1,19 +1,18 @@
 ; BseProject
 
-(bse-version "0.8.0")
+(bse-version "0.9.3")
 
 (container-child "BseWaveRepo::Wave-Repository"
-  (modification-time "2013-03-24 18:57:02")
+  (modification-time "2015-09-25 07:15:50")
   (creation-time "2002-02-06 14:05:19")
   (license "Provided \"as is\", WITHOUT ANY WARRANTY (http://beast.testbit.eu/LICENSE-AS-IS)")
   (author "Tim Janik"))
 (container-child "BseCSynth::Simple-Loop"
-  (auto-activate #t)
-  (modification-time "2013-03-24 18:57:02")
+  (auto_activate 1)
+  (modification-time "2015-09-25 07:15:50")
   (creation-time "2002-02-06 14:05:24")
   (license "Provided \"as is\", WITHOUT ANY WARRANTY (http://beast.testbit.eu/LICENSE-AS-IS)")
   (author "Tim Janik")
-  (parasite f "BstRouterZoom" 1 1)
   (container-child "BsePcmOutput::PcmOutput"
     (pos-y -0.55)
     (pos-x 0.06)

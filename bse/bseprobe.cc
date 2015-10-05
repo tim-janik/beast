@@ -700,11 +700,7 @@ source_mass_request::exec (const ProbeRequestSeq &cprseq)
       channel_features = NULL;
     }
 }
-Num
-source_get_tick_stamp::exec (BseSource *self)
-{
-  return Bse::TickStamp::current();
-}
+
 Int
 source_get_mix_freq::exec (BseSource *self)
 {
