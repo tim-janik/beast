@@ -65,7 +65,7 @@ namespace Bse {
 
 // == TickStamp ==
 class TickStamp {
-  static Rapicorn::Atomic<uint64> global_tick_stamp;
+  static std::atomic<uint64> global_tick_stamp;
 protected:
   static void           _init_forgsl  ();
 public:

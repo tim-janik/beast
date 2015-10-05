@@ -19,7 +19,7 @@ namespace Bse {
 static Bse::Mutex               global_tick_stamp_mutex;
 static uint64	                tick_stamp_system_time = 0;
 static uint64                   tick_stamp_leaps = 0;
-Rapicorn::Atomic<uint64>        TickStamp::global_tick_stamp = 0;       // initialized to 1 from gsl_init(), so 0 == invalid
+std::atomic<uint64>             TickStamp::global_tick_stamp { 0 }; // initialized to 1 from gsl_init(), so 0 == invalid
 static std::list<TickStampWakeupP> tick_stamp_wakeups;
 
 void
