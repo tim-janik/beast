@@ -32,7 +32,7 @@ addons:
       # Rapicorn1509 dependencies
       cython, libcroco3-dev,
       # Beast09 dependencies
-      libxml2-utils,
+      libasound2-dev, libflac-dev, libvorbis-dev, libmad0-dev, guile-1.8-dev, libgnomecanvas2-dev, libxml2-utils,
       # devel-mode dependencies
       intltool, autoconf-archive, bison, flex, pandoc, doxygen, graphviz, texlive-binaries, xvfb ]
 
