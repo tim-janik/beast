@@ -44,10 +44,12 @@ test_option = test `echo ":$(strip $(1)):" | sed 's/.*:$(strip $(2))://g' | wc -
       `echo ":$(strip $(1)):" | sed 's/.*:$(or $(strip $(3)), no-$(strip $(2)))://g' | wc -c`
 
 # == ChangeLog & Release Rules ==
+CHANGELOG_RANGE = $(shell git cat-file -e ce584d04999a7fb9393e1cfedde2048ba73e8878 && \
+		    echo ce584d04999a7fb9393e1cfedde2048ba73e8878..HEAD || echo HEAD)
 ChangeLog: $(GITSTAMPS)
 	$(AM_V_GEN)
-	$(Q) git log --date=short --pretty='^^%ad  %an 	# %h%n%n%B%n' --abbrev=11 --first-parent \
-		ce584d04999a7fb9393e1cfedde2048ba73e8878..HEAD   > xgen-$(@F) # Generate ChangeLog with ^^-prefixed records
+	$(Q) git log --pretty='^^%ad  %an 	# %h%n%n%B%n' --abbrev=11 \
+		--date=short --first-parent $(CHANGELOG_RANGE)   > xgen-$(@F) # Generate ChangeLog with ^^-prefixed records
 	$(Q) sed 's/^/	/; s/^	^^// ; s/[[:space:]]\+$$// '    -i xgen-$(@F) # Tab-indent commit bodies, kill trailing whitespaces
 	$(Q) sed '/^\s*$$/{ N; /^\s*\n\s*$$/D }'                -i xgen-$(@F) # Compress multiple newlines
 	$(Q) mv xgen-$(@F) $@
