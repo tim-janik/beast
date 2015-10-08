@@ -172,6 +172,8 @@ update-po: Makefile
 DISTDIR_HOOK = distdir # use indirection to emulate distdir-hook
 $(DISTDIR_HOOK): $(shell test -w $(srcdir)/messages.pot && echo 'update-po')
 
+CLEANFILES += $(POTLIST) $(TMPLIST) $(TMPDIR)/
+
 $(srcdir)/messages.pot: POTSCAN
 	@echo "Rebuilding $(@F)..."
 	@rm -f $(POTLIST) $(TMPLIST) ; rm -rf $(TMPDIR)/

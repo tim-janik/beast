@@ -158,7 +158,7 @@ else
 fi
 MC_EVAR_ADD(AM_LDFLAGS, -pthread)
 MC_EVAR_ADD(AM_LDFLAGS, -lrt)
-MC_EVAR_ADD(AM_LDFLAGS, -Wl,--no-undefined)
+MC_EVAR_ADD(AM_LDFLAGS, [-Wl,--no-undefined])
 AC_SUBST(AM_LDFLAGS)
 
 # Pick C++ dialect, needed in CXXFLAGS for compile tests
@@ -637,7 +637,7 @@ test x"$enable_devel_mode" = xyes || enable_devel_mode=no
 AM_CONDITIONAL(ENABLE_DEVEL_MODE, test x"$enable_devel_mode" = xyes)
 AC_MSG_RESULT([$enable_devel_mode])
 if test x"$enable_devel_mode" = xyes ; then
-  git cat-file commit af82337c966c1182e 2>&1 | fgrep -q bb4f6e48724a6731 || { # 0.8.0
+  git show HEAD:configure.ac 2>&1 | grep -q 'AC'_'INIT.*\bbeast\b.*,' || {
     AC_MSG_ERROR([development build rules require a beast.git repository])
   }
   MC_ASSERT_PROG(XMLLINT, xmllint, [See: http://xmlsoft.org/xmllint.html])
