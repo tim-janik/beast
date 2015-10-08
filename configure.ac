@@ -19,7 +19,7 @@ AC_CONFIG_SRCDIR([bse/bseconfig.h.in])
 AC_CONFIG_AUX_DIR([autotools])
 AC_CONFIG_MACRO_DIR([autotools])
 AC_CANONICAL_TARGET					# architecture information
-AM_INIT_AUTOMAKE(tar-pax no-define -Wno-portability)	# don't define PACKAGE and VERSION
+AM_INIT_AUTOMAKE(tar-pax no-define foreign -Wno-portability)	# don't define PACKAGE and VERSION
 AM_CONFIG_HEADER(configure.h)
 # version handling
 BST_VERSION="$PACKAGE_VERSION"
