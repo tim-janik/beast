@@ -158,7 +158,7 @@ else
 fi
 MC_EVAR_ADD(AM_LDFLAGS, -pthread)
 MC_EVAR_ADD(AM_LDFLAGS, -lrt)
-MC_EVAR_ADD(AM_LDFLAGS, -Wl,--no-undefined)
+MC_EVAR_ADD(AM_LDFLAGS, [-Wl,--no-undefined])
 AC_SUBST(AM_LDFLAGS)
 
 # Pick C++ dialect, needed in CXXFLAGS for compile tests
