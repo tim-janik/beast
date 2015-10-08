@@ -632,7 +632,8 @@ AC_PATH_PROG(UPDATE_MIME_DATABASE, update-mime-database)
 # check for development build rules, these usually require acess to .git/
 # if 'auto', enable devel mode for odd (development) versions
 AC_MSG_CHECKING(for ENABLE_DEVEL_MODE)
-[test x"$enable_devel_mode" = xauto && { echo " $BST_MICRO_VERSION" | grep -q '[13579]$' ; } && enable_devel_mode=yes]
+[test x"$enable_devel_mode" = xauto -a -d "$srcdir/.git/" &&
+  { echo " $BST_MICRO_VERSION" | grep -q '[13579]$' ; } && enable_devel_mode=yes]
 test x"$enable_devel_mode" = xyes || enable_devel_mode=no
 AM_CONDITIONAL(ENABLE_DEVEL_MODE, test x"$enable_devel_mode" = xyes)
 AC_MSG_RESULT([$enable_devel_mode])
