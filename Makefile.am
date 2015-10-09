@@ -7,19 +7,16 @@ EXTRA_DIST += HACKING.md
 noinst_DATA = HACKING.html
 CLEANFILES += HACKING.html
 
+MAINTAINERCLEANFILES += configure
+ACLOCAL_AMFLAGS  = -I autotools
+
 %.html: %.md
 	pandoc -s --toc -N -S -f markdown_github+pandoc_title_block -t html --email-obfuscation=javascript \
 	  $< -o xgen-$(@F)
 	mv xgen-$(@F) $@
 
-# require automake 1.9
-AUTOMAKE_OPTIONS = 1.9 dist-bzip2 no-dist-gzip -Wno-portability
-ACLOCAL_AMFLAGS  = -I autotools
-
 site site-preview site-update site-update-all site-update-pages site-update-galleries:
 	@$(MAKE) -C web/ $(AM_MAKEFLAGS) $@
-
-MAINTAINERCLEANFILES += configure
 
 # check: message
 ALL_CHECKED_MSG = "All package tests passed"
