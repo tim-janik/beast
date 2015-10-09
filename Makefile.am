@@ -18,6 +18,11 @@ ACLOCAL_AMFLAGS  = -I autotools
 site site-preview site-update site-update-all site-update-pages site-update-galleries:
 	@$(MAKE) -C web/ $(AM_MAKEFLAGS) $@
 
+# === doc/ files ===
+maindocsdir   = $(pkgdocdir)/
+maindocs_DATA = README.md NEWS
+EXTRA_DIST   += $(maindocs_DATA)
+
 # check: message
 ALL_CHECKED_MSG = "All package tests passed"
 check: check-recursive
