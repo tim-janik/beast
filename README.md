@@ -12,6 +12,8 @@ for Linux Audio Plugins
 ([LADSPA](http://wikipedia.org/wiki/LADSPA)),
 multitrack editing, unlimited undo, real-time synthesis, MIDI and various
 free audio codecs.
+Bse is the Beast Sound Engine, a library providing the synthesis and
+audio functions used by Beast.
 
 * For a full description, visit the project page:
 	http://beast.testbit.eu
@@ -33,6 +35,8 @@ In order to build release tarballs, `Rapicorn`, `GnomeCanvas`,
 `Guile-1.8`, `Ogg/Vorbis` and `libflac` are required.
 Support for MP3 files is optional and requires `libmad` (MPEG audio
 decoder library) when compiling Beast.
+Compilation requires `g++-4.9` or later and a recent Linux
+distribution like Ubuntu-14.04.
 
 
 # INSTALLATION
