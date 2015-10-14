@@ -121,7 +121,7 @@ extern ::BseExportIdentity bse_builtin_export_identity; /* sync with bseplugin.h
         if (!values[0].value_name) {                                    \
           GEnumValue *v = values;                                       \
           ICode; /* initializes values via *v++ = ...; */               \
-          assert (v == values + N);                                   \
+          RAPICORN_ASSERT (v == values + N);                            \
           *v++ = ::Bse::EnumValue (0, 0, 0); /* NULL termination */     \
         }                                                               \
         return values;                                                  \

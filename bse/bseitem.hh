@@ -172,7 +172,7 @@ public:
   template<typename ItemT, typename... FuncArgs, typename... CallArgs> void
   push_undo (const String &blurb, ItemT &self, ErrorType (ItemT::*function) (FuncArgs...), CallArgs... args)
   {
-    assert_return (this == &self);
+    RAPICORN_ASSERT_RETURN (this == &self);
     UndoLambda lambda = [function, args...] (ItemImpl &item, BseUndoStack *ustack) {
       ItemT &self = dynamic_cast<ItemT&> (item);
       return (self.*function) (args...);
@@ -182,7 +182,7 @@ public:
   template<typename ItemT, typename R, typename... FuncArgs, typename... CallArgs> void
   push_undo (const String &blurb, ItemT &self, R (ItemT::*function) (FuncArgs...), CallArgs... args)
   {
-    assert_return (this == &self);
+    RAPICORN_ASSERT_RETURN (this == &self);
     UndoLambda lambda = [function, args...] (ItemImpl &item, BseUndoStack *ustack) {
       ItemT &self = dynamic_cast<ItemT&> (item);
       (self.*function) (args...); // ignoring return type R
@@ -194,7 +194,7 @@ public:
   push_undo (const String &blurb, ItemT &self, const ItemTLambda &itemt_lambda)
   {
     const std::function<ErrorType (ItemT &item, BseUndoStack *ustack)> &undo_lambda = itemt_lambda;
-    assert_return (this == &self);
+    RAPICORN_ASSERT_RETURN (this == &self);
     UndoLambda lambda = [undo_lambda] (ItemImpl &item, BseUndoStack *ustack) {
       ItemT &self = dynamic_cast<ItemT&> (item);
       return undo_lambda (self, ustack);
@@ -205,7 +205,7 @@ public:
   push_undo_to_redo (const String &blurb, ItemT &self, const ItemTLambda &itemt_lambda)
   { // push itemt_lambda as undo step when this undo step is executed (i.e. itemt_lambda is for redo)
     const std::function<ErrorType (ItemT &item, BseUndoStack *ustack)> &undo_lambda = itemt_lambda;
-    assert_return (this == &self);
+    RAPICORN_ASSERT_RETURN (this == &self);
     auto lambda = [blurb, undo_lambda] (ItemT &self, BseUndoStack *ustack) -> ErrorType {
       self.push_undo (blurb, self, undo_lambda);
       return ERROR_NONE;
