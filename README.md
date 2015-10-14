@@ -1,8 +1,8 @@
 BEAST & BSE
 ===========
 
-[![Build Status](https://travis-ci.org/tim-janik/beast.svg)](https://travis-ci.org/tim-janik/beast)
 [![License MPL2](http://testbit.eu/~timj/pics/license-lgpl-3.svg)](https://github.com/tim-janik/beast/blob/master/COPYING)
+[![Build Status](https://travis-ci.org/tim-janik/beast.svg)](https://travis-ci.org/tim-janik/beast)
 
 
 # DESCRIPTION
