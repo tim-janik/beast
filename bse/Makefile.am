@@ -33,7 +33,7 @@ bse_public_headers = $(strip \
 	bsebus.hh		bsecategories.hh 	\
 	bsefilter.hh    		bsebiquadfilter.hh	\
 	bseconstant.hh		bseconstvalues.hh	bsecontainer.hh			bsecontextmerger.hh \
-	bseclientapi.hh		\
+	bseclientapi.hh		bseserverapi.hh		bse-internals.hh		\
 				bseeditablesample.hh	bseenums.hh			bsegconfig.hh \
 	bseglobals.hh		bseglue.hh		bseitem.hh			bsejanitor.hh \
 	bsemain.hh		bsemath.hh		bsemathsignal.hh			bseladspa.hh \
@@ -129,7 +129,6 @@ EXTRA_DIST += $(strip \
 	bsewave.header						\
 	gsl-fftgen.pl	gsl-fftconf.sh	gsloscillator-aux.cc	\
 	gslincluder.hh	gslwaveosc-aux.cc			\
-	bse-internals.hh					\
 )
 
 #
