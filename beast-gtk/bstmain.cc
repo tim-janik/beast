@@ -640,7 +640,7 @@ bst_args_process (int *argc_p, char **argv)
 	  else if (strcmp (arg, "ladspa") == 0)
 	    printout ("%s\n", bse_installpath (BSE_INSTALLPATH_LADSPA).c_str());
 	  else if (strcmp (arg, "plugins") == 0)
-	    printout ("%s\n", bse_installpath (BSE_INSTALLPATH_PKGLIBDIR_PLUGINS).c_str());
+	    printout ("%s\n", bse_installpath (BSE_INSTALLPATH_BSELIBDIR_PLUGINS).c_str());
 	  else if (strcmp (arg, "samples") == 0)
 	    printout ("%s\n", bse_server.get_sample_path());
 	  else if (strcmp (arg, "effects") == 0)

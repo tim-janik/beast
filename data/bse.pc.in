@@ -10,8 +10,8 @@ sfidl=@exec_prefix@/sfidl
 demodir=@pkgdatadir@/demo
 sampledir=@pkgdatadir@/samples
 scriptdir=@pkgdatadir@/scripts
-plugindir=@pkglibdir@/plugins
-driverdir=@pkglibdir@/drivers
+plugindir=@bselibdir@/plugins
+driverdir=@bselibdir@/drivers
 effectdir=@pkgdatadir@/effects
 instrumentdir=@pkgdatadir@/instruments
 

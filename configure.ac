@@ -80,12 +80,12 @@ fi
 AC_SUBST(DEFINE__FILE_DIR__)
 
 # Define package directories per major/minor version
-pkglibdir="\${libdir}/beast-$MAJOR"
+bselibdir="\${libdir}/bse-$MAJOR"
 pkglibexecdir="\${libexecdir}/beast-$MAJOR"
 pkgdatadir="\${datadir}/beast-$MAJOR"
 pkgdocdir="\${datarootdir}/doc/beast-$MAJOR"
 # Substitute directories in Makefiles
-AC_SUBST(pkglibdir)
+AC_SUBST(bselibdir)
 AC_SUBST(pkglibexecdir)
 AC_SUBST(pkgdatadir)
 AC_SUBST(pkgdocdir)
@@ -97,7 +97,7 @@ AC_DEFINE_UNQUOTED(INSTALLPATH_INCLUDES, ["`eval echo "${includedir}"`"], [Base 
 AC_DEFINE_UNQUOTED(INSTALLPATH_BINDIR, ["`eval echo "${bindir}"`"], [Directory to install and execute programs])
 AC_DEFINE_UNQUOTED(INSTALLPATH_LOCALEBASE, ["`eval echo ${localedir}`"], [Base directory for locale specific message catalogs])
 AC_DEFINE_UNQUOTED(INSTALLPATH_LADSPA, ["`eval echo ${libdir}/ladspa`"], [Searchpath for LADSPA plugins])
-AC_DEFINE_UNQUOTED(INSTALLPATH_PKGLIBDIR, ["`eval echo ${pkglibdir}`"], [Directory to install plugins and drivers])
+AC_DEFINE_UNQUOTED(INSTALLPATH_BSELIBDIR, ["`eval echo ${bselibdir}`"], [Directory to install plugins and drivers])
 AC_DEFINE_UNQUOTED(INSTALLPATH_PKGDATADIR, ["`eval echo ${pkgdatadir}`"], [Directory to install samples, effects, scripts, etc])
 AC_DEFINE_UNQUOTED(INSTALLPATH_PKGDOCDIR, ["`eval echo ${pkgdocdir}`"], [Directory to install documentation])
 AC_DEFINE_UNQUOTED(INSTALLPATH_USER_DATA, ["~/beast"], [Searchpath for user owned Beast resources])

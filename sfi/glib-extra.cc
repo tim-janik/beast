@@ -1039,9 +1039,9 @@ bse_installpath (BseInstallpathType installpath_type)
     case BSE_INSTALLPATH_LADSPA:                        return INSTALLPATH_LADSPA;
     case BSE_INSTALLPATH_PKGDOCDIR:                     return INSTALLPATH_PKGDOCDIR;
     case BSE_INSTALLPATH_USER_DATA:                     return INSTALLPATH_USER_DATA;
-    case BSE_INSTALLPATH_PKGLIBDIR:                     return INSTALLPATH_PKGLIBDIR;
-    case BSE_INSTALLPATH_PKGLIBDIR_PLUGINS:             return bse_installpath (BSE_INSTALLPATH_PKGLIBDIR) + "/plugins";
-    case BSE_INSTALLPATH_PKGLIBDIR_DRIVERS:             return bse_installpath (BSE_INSTALLPATH_PKGLIBDIR) + "/drivers";
+    case BSE_INSTALLPATH_BSELIBDIR:                     return INSTALLPATH_BSELIBDIR;
+    case BSE_INSTALLPATH_BSELIBDIR_PLUGINS:             return bse_installpath (BSE_INSTALLPATH_BSELIBDIR) + "/plugins";
+    case BSE_INSTALLPATH_BSELIBDIR_DRIVERS:             return bse_installpath (BSE_INSTALLPATH_BSELIBDIR) + "/drivers";
     case BSE_INSTALLPATH_PKGDATADIR:                    return INSTALLPATH_PKGDATADIR;
     case BSE_INSTALLPATH_PKGDATADIR_DEMO:               return bse_installpath (BSE_INSTALLPATH_PKGDATADIR) + "/demo";
     case BSE_INSTALLPATH_PKGDATADIR_SAMPLES:            return bse_installpath (BSE_INSTALLPATH_PKGDATADIR) + "/samples";
