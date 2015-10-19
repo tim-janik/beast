@@ -18,7 +18,7 @@ generated: clean-generated $(GENERATED)
 # test programs
 #
 noinst_PROGRAMS = $(ALLTESTS)
-progs_ldadd = $(top_builddir)/bse/libbse.la $(RAPICORN_LIBS) $(BSE_LIBS)
+progs_ldadd = $(top_builddir)/bse/libbse-@MAJOR@.la $(RAPICORN_LIBS) $(BSE_LIBS)
 
 #SLOWTESTS         += cxxbinding
 #cxxbinding_SOURCES = cxxbinding.cc bsecxxapi.cc
@@ -38,7 +38,7 @@ SFIDL_INC = --nostdinc -I$(top_srcdir) -I$(top_builddir)
 lib_LTLIBRARIES = testplugin.la
 testplugin_la_SOURCES = testplugin.cc
 testplugin_la_LDFLAGS = $(AM_LDFLAGS) -module -avoid-version
-testplugin_la_LIBADD  = $(top_builddir)/bse/libbse.la $(RAPICORN_LIBS) $(BSE_LIBS) -lm
+testplugin_la_LIBADD  = $(top_builddir)/bse/libbse-@MAJOR@.la $(RAPICORN_LIBS) $(BSE_LIBS) -lm
 EXTRA_DIST += testplugin.idl
 testplugin.genidl.hh: testplugin.idl $(SFIDL)
 	$(SFIDL) --core-cxx $(SFIDL_INC) -I$(top_builddir) $< > xgen-$(@F)

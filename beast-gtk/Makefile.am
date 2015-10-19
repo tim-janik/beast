@@ -133,12 +133,12 @@ generated: clean-generated $(GENERATED)
 #
 # build rules for programs
 #
-bin_PROGRAMS = beast-@BIN_VERSION@
-beast_@BIN_VERSION@_SOURCES = $(bst_cc_sources) bstmain.cc
-beast_@BIN_VERSION@_LDADD = $(progs_LDADD)
-beast_build_objects = $(beast_@BIN_VERSION@_OBJECTS) # dependency for generated sources
+bin_PROGRAMS = beast-@MAJOR@
+beast_@MAJOR@_SOURCES = $(bst_cc_sources) bstmain.cc
+beast_@MAJOR@_LDADD = $(progs_LDADD)
+beast_build_objects = $(beast_@MAJOR@_OBJECTS) # dependency for generated sources
 noinst_PROGRAMS = $(ALLTESTS)
-progs_LDADD     = $(BEAST_LIBS) ./gxk/libgxk.a $(GXK_LIBS) $(top_builddir)/bse/libbse.la $(RAPICORN_LIBS) $(BSE_LIBS)
+progs_LDADD     = $(BEAST_LIBS) ./gxk/libgxk.a $(GXK_LIBS) $(top_builddir)/bse/libbse-@MAJOR@.la $(RAPICORN_LIBS) $(BSE_LIBS)
 
 noinst_PROGRAMS += tsmview
 tsmview_SOURCES  = tsmview.cc
