@@ -11,10 +11,15 @@ m4_include(autotools/glib-gettext.m4)
 #
 AC_PREREQ(2.57)
 # VERSION: MAJOR.MINOR.MICRO-RC:
-# * MAJOR, MINOR: increment on ABI/API changes
-# * MICRO: increment when ABI compatible, development versions are odd
-# * RC: release candidate, may be rc[0-9]+ or empty
+# * MICRO:           Increment with every release
+# * MINOR:           Increment for significant changes or ABI breaks, reset MICRO on increments
+# * ABI_VERSION:     Record the latest version since ABI compatibility has been kept
+# * MAJOR:           Increment on major API breaks, enforces ABI breaks, reset MINOR, MICRO and ABI_VERSION
+# * ABI changes:     Reset ABI_VERSION to the current VERSION
+# * -RC:             Release candidate, may contain -rc[0-9]+ or nothing
 AC_INIT([beast], [0.9.3]) # defines PACKAGE_NAME, PACKAGE_VERSION, PACKAGE_STRING
+:;   ABI_VERSION=[0.9.3]
+BST_VERSION_HINT=alpha
 AC_CONFIG_SRCDIR([bse/bseconfig.h.in])
 AC_CONFIG_AUX_DIR([autotools])
 AC_CONFIG_MACRO_DIR([autotools])
@@ -23,37 +28,51 @@ AM_INIT_AUTOMAKE(1.9 dist-xz tar-pax no-dist-gzip no-define foreign)
 AM_CONFIG_HEADER(configure.h)
 # version handling
 BST_VERSION="$PACKAGE_VERSION"
-[BST_MAJOR_VERSION=`echo $PACKAGE_VERSION | sed 's/\([0-9]\+\)\.\([0-9]\+\)\.\([0-9]\+\)\(.*\)/\1/'`]
-[BST_MINOR_VERSION=`echo $PACKAGE_VERSION | sed 's/\([0-9]\+\)\.\([0-9]\+\)\.\([0-9]\+\)\(.*\)/\2/'`]
-[BST_MICRO_VERSION=`echo $PACKAGE_VERSION | sed 's/\([0-9]\+\)\.\([0-9]\+\)\.\([0-9]\+\)\(.*\)/\3/'`]
-[BST_VERSION_STEM="$BST_MAJOR_VERSION.$BST_MINOR_VERSION"]
-[BIN_VERSION=`echo $PACKAGE_VERSION | sed 's/\([0-9]\+\)\.\([0-9]\+\)\.\([0-9]\+\)\(.*\)/\1.\2.\3/'`]
-case "$BST_VERSION" in
-0.99.*)     BST_VERSION_HINT=BETA ;;
-0.*)        BST_VERSION_HINT="ALPHA" ;;
-*)          BST_VERSION_HINT="Stable Release"
-            test `expr $BST_MICRO_VERSION \% 2` = 1 && BST_VERSION_HINT="Development Build" ;;
-esac
-AC_DEFINE_UNQUOTED(BST_VERSION, "$BST_VERSION", [BEAST Version])
-AC_DEFINE_UNQUOTED(BIN_VERSION, "$BIN_VERSION", [Binary Version])
+[MAJOR=`echo $PACKAGE_VERSION | sed 's/\([0-9]\+\)\.\([0-9]\+\)\.\([0-9]\+\)\(.*\)/\1/'`]
+[MINOR=`echo $PACKAGE_VERSION | sed 's/\([0-9]\+\)\.\([0-9]\+\)\.\([0-9]\+\)\(.*\)/\2/'`]
+[MICRO=`echo $PACKAGE_VERSION | sed 's/\([0-9]\+\)\.\([0-9]\+\)\.\([0-9]\+\)\(.*\)/\3/'`]
+AC_SUBST(BEAST_VERSION)
+AC_DEFINE_UNQUOTED(BST_ARCH_NAME, "$target", [Architecture Description])
+AC_DEFINE_UNQUOTED(BST_VERSION, "$BST_VERSION", [Beast Version])
 AC_DEFINE_UNQUOTED(BST_VERSION_HINT, "$BST_VERSION_HINT", [Version classification])
-AC_SUBST(BST_MAJOR_VERSION)	# 1
-AC_SUBST(BST_MINOR_VERSION)	# 2
-AC_SUBST(BST_MICRO_VERSION)	# 3
-AC_SUBST(BST_VERSION_STEM)	# 1.2
-AC_SUBST(BIN_VERSION)		# 1.2.3
-AC_SUBST(BST_VERSION)		# 1.2.3-rc4
-
-# compute libtool versions
-LT_RELEASE=$BST_VERSION_STEM
-LT_CURRENT=$BST_MICRO_VERSION
-LT_REVISION=0
-LT_AGE=$BST_MICRO_VERSION
-AC_SUBST(LT_RELEASE)
-AC_SUBST(LT_CURRENT)
-AC_SUBST(LT_REVISION)
-AC_SUBST(LT_AGE)
-if test 1 = $(($BST_MICRO_VERSION & 1)) ; then
+AC_DEFINE_UNQUOTED(BSE_MAJOR_VERSION, $MAJOR, [Beast/Bse Major Version])
+AC_DEFINE_UNQUOTED(BSE_MINOR_VERSION, $MINOR, [Beast/Bse Minor Version])
+AC_DEFINE_UNQUOTED(BSE_MICRO_VERSION, $MICRO, [Beast/Bse Micro Version])
+AC_DEFINE_UNQUOTED(BSE_MAJOR_VERSION_STR, "$MAJOR", [Beast/Bse Major Version as String])
+# For automake, we need to easily provide MAJOR.MINOR.MICRO and MAJOR_MINOR_MICRO:
+AC_SUBST(MAJOR)
+AC_SUBST(MINOR)
+AC_SUBST(MICRO)
+# calculate ABI age
+ABI_MAJOR=[`echo "$ABI_VERSION" | sed 's/\([0-9]\+\)\.\([0-9]\+\)\.\([0-9]\+\)\(.*\)/\1/'`]
+ABI_MINOR=[`echo "$ABI_VERSION" | sed 's/\([0-9]\+\)\.\([0-9]\+\)\.\([0-9]\+\)\(.*\)/\2/'`]
+ABI_MICRO=[`echo "$ABI_VERSION" | sed 's/\([0-9]\+\)\.\([0-9]\+\)\.\([0-9]\+\)\(.*\)/\3/'`]
+test "$ABI_MAJOR" = "$MAJOR" || {
+  AC_MSG_ERROR([ABI_VERSION must match MAJOR version: $ABI_MAJOR == $MAJOR])
+}
+test "$ABI_MINOR" -le "$MINOR" || {
+  AC_MSG_ERROR([ABI_VERSION must predate MINOR version: $ABI_MINOR <= $MINOR])
+}
+test "$ABI_MICRO" -le "$MICRO" -o "$ABI_MINOR" -lt "$MINOR" || {
+  AC_MSG_ERROR([ABI_VERSION must predate MINOR.MICRO version: $ABI_MINOR.$ABI_MICRO <= $MINOR.$MICRO])
+}
+ABI_AGE=$(($MINOR - $ABI_MINOR))
+# https://www.gnu.org/software/libtool/manual/html_node/Updating-version-info.html
+# Note, Beast provides backwards binary compatibility only within
+# MINOR.MICRO increments, and only since ABI_VERSION.
+# Interface additions occour with pretty much every release.
+# For libtool this means:
+# - the library name needs to encode MAJOR
+# - the '-release X.Y' option cannot be used, because it's ignored for naming .a, .la, .so files.
+# - lt_current=MINOR  # disallow forward compatible builds, i.e. enforce runtime-lib >= build-time-lib
+# - lt_age=ABI_AGE    # allow backward compatibility between ABI_VERSION .. VERSION
+# - lt_revision=MICRO # pick the latest SO revision for unchanged MAJOR.MINOR,
+#                     # see also: https://autotools.io/libtool/version.html
+lt_current=$MINOR ; lt_age=$ABI_AGE ; lt_revision=$MICRO
+LT_VERSION_INFO="$lt_current:$lt_revision:$lt_age"
+AC_SUBST(LT_VERSION_INFO)
+# define debugging paths for devel-mode
+if test 1 = $(($MICRO & 1)) ; then
   DEFINE__FILE_DIR__='-D__FILE_DIR__=\"${abs_srcdir}\"'
 else
   DEFINE__FILE_DIR__='-D__FILE_DIR__=\"beast/${subdir}\"'
@@ -61,13 +80,11 @@ fi
 AC_SUBST(DEFINE__FILE_DIR__)
 
 # Define package directories per major/minor version
-pkgincludedir="\${includedir}/beast-$BST_MAJOR_VERSION.$BST_MINOR_VERSION"
-pkglibdir="\${libdir}/beast-$BST_MAJOR_VERSION.$BST_MINOR_VERSION"
-pkglibexecdir="\${libexecdir}/beast-$BST_MAJOR_VERSION.$BST_MINOR_VERSION"
-pkgdatadir="\${datadir}/beast-$BST_MAJOR_VERSION.$BST_MINOR_VERSION"
-pkgdocdir="\${datarootdir}/doc/beast-$BST_MAJOR_VERSION.$BST_MINOR_VERSION"
+pkglibdir="\${libdir}/beast-$MAJOR"
+pkglibexecdir="\${libexecdir}/beast-$MAJOR"
+pkgdatadir="\${datadir}/beast-$MAJOR"
+pkgdocdir="\${datarootdir}/doc/beast-$MAJOR"
 # Substitute directories in Makefiles
-AC_SUBST(pkgincludedir)
 AC_SUBST(pkglibdir)
 AC_SUBST(pkglibexecdir)
 AC_SUBST(pkgdatadir)
@@ -92,9 +109,6 @@ test -f "${srcdir}/.git/index" && INGIT= || INGIT='#'
 AC_SUBST(INGIT)
 result=$(test -z "$INGIT" && echo yes || echo no)
 AC_MSG_RESULT($result)
-
-dnl # AC_CANONICAL_HOST is provided by AC_CANONICAL_TARGET
-AC_DEFINE_UNQUOTED(BST_ARCH_NAME, "$target", [Architecture Description])
 
 # We have subdirectories.
 AC_PROG_MAKE_SET
@@ -286,7 +300,7 @@ AC_DEFUN([AC_I18N_REQUIREMENTS],
   AC_SUBST([CONFIG_STATUS_DEPENDENCIES], ['$(top_srcdir)/po/LINGUAS'])
 
   # versioned BEAST gettext domain (po/)
-  BST_GETTEXT_DOMAIN=beast-v$BIN_VERSION    # version without -rcZ
+  BST_GETTEXT_DOMAIN=beast-$MAJOR
   AC_SUBST(BST_GETTEXT_DOMAIN)
   AC_DEFINE_UNQUOTED(BST_GETTEXT_DOMAIN, "$BST_GETTEXT_DOMAIN", [Versioned BEAST gettext domain])
   GETTEXT_PACKAGE=$BST_GETTEXT_DOMAIN
@@ -634,7 +648,7 @@ AC_PATH_PROG(UPDATE_MIME_DATABASE, update-mime-database)
 # if 'auto', enable devel mode for odd (development) versions
 AC_MSG_CHECKING(for ENABLE_DEVEL_MODE)
 [test x"$enable_devel_mode" = xauto -a -d "$srcdir/.git/" &&
-  { echo " $BST_MICRO_VERSION" | grep -q '[13579]$' ; } && enable_devel_mode=yes]
+  { echo " $MICRO" | grep -q '[13579]$' ; } && enable_devel_mode=yes]
 test x"$enable_devel_mode" = xyes || enable_devel_mode=no
 AM_CONDITIONAL(ENABLE_DEVEL_MODE, test x"$enable_devel_mode" = xyes)
 AC_MSG_RESULT([$enable_devel_mode])

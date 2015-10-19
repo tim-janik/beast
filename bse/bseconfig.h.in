@@ -10,9 +10,9 @@ extern "C" {
 
 /* BSE version
  */
-#define BST_MAJOR_VERSION                               (@BST_MAJOR_VERSION@)
-#define BST_MINOR_VERSION                               (@BST_MINOR_VERSION@)
-#define BST_MICRO_VERSION                               (@BST_MICRO_VERSION@)
+#define BST_MAJOR_VERSION                               (@MAJOR@)
+#define BST_MINOR_VERSION                               (@MINOR@)
+#define BST_MICRO_VERSION                               (@MICRO@)
 #define	BSE_GETTEXT_DOMAIN				("@BST_GETTEXT_DOMAIN@")
 
 /* check for header versions
