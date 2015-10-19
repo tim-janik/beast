@@ -81,12 +81,10 @@ AC_SUBST(DEFINE__FILE_DIR__)
 
 # Define package directories per major/minor version
 bselibdir="\${libdir}/bse-$MAJOR"
-pkglibexecdir="\${libexecdir}/beast-$MAJOR"
 pkgdatadir="\${datadir}/beast-$MAJOR"
 pkgdocdir="\${datarootdir}/doc/beast-$MAJOR"
 # Substitute directories in Makefiles
 AC_SUBST(bselibdir)
-AC_SUBST(pkglibexecdir)
 AC_SUBST(pkgdatadir)
 AC_SUBST(pkgdocdir)
 # Provide directories for C++
