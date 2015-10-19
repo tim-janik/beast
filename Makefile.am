@@ -30,6 +30,24 @@ check: check-recursive
 	@echo $(ALL_CHECKED_MSG)
 	@echo $(ALL_CHECKED_MSG) | sed 's/./=/g'
 
+# == BSE App Test ==
+bse-app-test:
+	$(Q) cd . \
+	&& echo '#include <bse/bse.hh>'					 > tmpx.cc \
+	&& echo 'extern "C" int main (int argc, char *argv[]) {'	>> tmpx.cc \
+	&& echo '  Bse::init_async (&argc, argv, "bse-app-test");'	>> tmpx.cc \
+	&& echo '  return 0; }'						>> tmpx.cc \
+		; X=$$? ; echo -n "Create  BSE sample program: " ; test 0 == $$X && echo OK || { echo FAIL; exit $$X ; }
+	$(Q) $(CXX) -Werror tmpx.cc -c `PKG_CONFIG_PATH="$(libdir)/pkgconfig:$$PKG_CONFIG_PATH" pkg-config --cflags bse-@MAJOR@` \
+		; X=$$? ; echo -n "Compile BSE sample program: " ; test 0 == $$X && echo OK || { echo FAIL; exit $$X ; }
+	$(Q) $(CXX) -Werror tmpx.o -o tmpx `PKG_CONFIG_PATH="$(libdir)/pkgconfig:$$PKG_CONFIG_PATH" pkg-config --libs bse-@MAJOR@` \
+		; X=$$? ; echo -n "Link    BSE sample program: " ; test 0 == $$X && echo OK || { echo FAIL; exit $$X ; }
+	$(Q) LD_LIBRARY_PATH="$(libdir):$$LD_LIBRARY_PATH" ./tmpx \
+		; X=$$? ; echo -n "Execute BSE sample program: " ; test 0 == $$X && echo OK || { echo FAIL; exit $$X ; }
+	$(Q) rm -f tmpx.o tmpx.cc tmpx
+installcheck-local: bse-app-test
+
+
 # == Dist Fixes ==
 # Some files remain after distcheck, that we cannot clean up. So we role our own listfiles filter.
 distuninstallcheck_listfiles  = find . -type f $(patsubst ./%, ! -path \*/%, $(uninstall_filter_files)) -print
