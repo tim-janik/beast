@@ -71,13 +71,6 @@ ABI_AGE=$(($MINOR - $ABI_MINOR))
 lt_current=$MINOR ; lt_age=$ABI_AGE ; lt_revision=$MICRO
 LT_VERSION_INFO="$lt_current:$lt_revision:$lt_age"
 AC_SUBST(LT_VERSION_INFO)
-# define debugging paths for devel-mode
-if test 1 = $(($MICRO & 1)) ; then
-  DEFINE__FILE_DIR__='-D__FILE_DIR__=\"${abs_srcdir}\"'
-else
-  DEFINE__FILE_DIR__='-D__FILE_DIR__=\"beast/${subdir}\"'
-fi
-AC_SUBST(DEFINE__FILE_DIR__)
 
 # Define package directories per major/minor version
 bselibdir="\${libdir}/bse-$MAJOR"
@@ -642,24 +635,26 @@ AC_DEFUN([AC_DOC_REQUIREMENTS],
 AC_PATH_PROG(UPDATE_MIME_DATABASE, update-mime-database)
 
 # == ENABLE_DEVEL_MODE ==
-# check for development build rules, these usually require acess to .git/
-# if 'auto', enable devel mode for odd (development) versions
+# check for development build rules, which require acess to .git/
 AC_MSG_CHECKING(for ENABLE_DEVEL_MODE)
-[test x"$enable_devel_mode" = xauto -a -d "$srcdir/.git/" &&
-  { echo " $MICRO" | grep -q '[13579]$' ; } && enable_devel_mode=yes]
+[test x"$enable_devel_mode" = xauto -a -d "$srcdir/.git/" && enable_devel_mode=yes]
 test x"$enable_devel_mode" = xyes || enable_devel_mode=no
-AM_CONDITIONAL(ENABLE_DEVEL_MODE, test x"$enable_devel_mode" = xyes)
 AC_MSG_RESULT([$enable_devel_mode])
+AM_CONDITIONAL(ENABLE_DEVEL_MODE, test x"$enable_devel_mode" = xyes)
 if test x"$enable_devel_mode" = xyes ; then
   git show HEAD:configure.ac 2>&1 | grep -q 'AC'_'INIT.*\bbeast\b.*,' || {
     AC_MSG_ERROR([development build rules require a beast.git repository])
   }
   MC_ASSERT_PROG(XMLLINT, xmllint, [See: http://xmlsoft.org/xmllint.html])
+  DEFINE__FILE_DIR__='-D__FILE_DIR__=\"${abs_srcdir}\"' # full debugging paths for devel-mode
+else
+  DEFINE__FILE_DIR__='-D__FILE_DIR__=\"beast/${subdir}\"'
 fi
+AC_SUBST(DEFINE__FILE_DIR__)
 
 MC_ASSERT_PROG(PYTHON, python2.7)
 if test -z "$PYTHON" || $PYTHON -c "import sys; sys.exit (sys.hexversion >= 0x2070500)" 2>/dev/null ; then
-  AC_MSG_ERROR([failed to detect python (version >= 2.7.5) required for development mode])
+  AC_MSG_ERROR([failed to detect python (version >= 2.7.5)])
 fi
 
 AC_MSG_CHECKING(whether source dir equals build dir)
