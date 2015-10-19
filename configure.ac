@@ -19,7 +19,7 @@ AC_CONFIG_SRCDIR([bse/bseconfig.h.in])
 AC_CONFIG_AUX_DIR([autotools])
 AC_CONFIG_MACRO_DIR([autotools])
 AC_CANONICAL_TARGET					# architecture information
-AM_INIT_AUTOMAKE(tar-pax no-define -Wno-portability)	# don't define PACKAGE and VERSION
+AM_INIT_AUTOMAKE(1.9 dist-xz tar-pax no-dist-gzip no-define foreign)
 AM_CONFIG_HEADER(configure.h)
 # version handling
 BST_VERSION="$PACKAGE_VERSION"
@@ -325,8 +325,8 @@ AC_DEFUN([AC_SFI_REQUIREMENTS],
 AC_DEFUN([AC_BSE_REQUIREMENTS],
 [
     dnl # require Rapicorn
-    PKG_CHECK_MODULES(RAPICORN, rapicorn1509 >= 15.09.0)
-    MC_ASSERT_PROG(AIDACC, aidacc-1509, [aidacc gets shipped with Rapicorn])
+    PKG_CHECK_MODULES(RAPICORN, rapicorn-15.09 >= 15.09.1)
+    MC_ASSERT_PROG(AIDACC, aidacc-15.09, [aidacc gets shipped with Rapicorn])
 
     dnl # --- Ogg/Vorbis check ---
     PKG_CHECK_MODULES(OGGVORBIS, ogg >= 1.2.2 vorbis >= 1.3.2 vorbisfile >= 1.3.2 vorbisenc >= 1.3.2)
@@ -632,7 +632,8 @@ AC_PATH_PROG(UPDATE_MIME_DATABASE, update-mime-database)
 # check for development build rules, these usually require acess to .git/
 # if 'auto', enable devel mode for odd (development) versions
 AC_MSG_CHECKING(for ENABLE_DEVEL_MODE)
-[test x"$enable_devel_mode" = xauto && { echo " $BST_MICRO_VERSION" | grep -q '[13579]$' ; } && enable_devel_mode=yes]
+[test x"$enable_devel_mode" = xauto -a -d "$srcdir/.git/" &&
+  { echo " $BST_MICRO_VERSION" | grep -q '[13579]$' ; } && enable_devel_mode=yes]
 test x"$enable_devel_mode" = xyes || enable_devel_mode=no
 AM_CONDITIONAL(ENABLE_DEVEL_MODE, test x"$enable_devel_mode" = xyes)
 AC_MSG_RESULT([$enable_devel_mode])

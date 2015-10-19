@@ -98,7 +98,7 @@ fir_process_4samples_sse (const float *input,
   *out2 = out2_v.f[0] + out2_v.f[1] + out2_v.f[2] + out2_v.f[3];
   *out3 = out3_v.f[0] + out3_v.f[1] + out3_v.f[2] + out3_v.f[3];
 #else
-  assert_unreached();
+  RAPICORN_ASSERT_UNREACHED();
 #endif
 }
 
@@ -289,7 +289,7 @@ public:
     history (2 * ORDER),
     sse_taps (fir_compute_sse_taps (taps))
   {
-    assert ((ORDER & 1) == 0);    /* even order filter */
+    RAPICORN_ASSERT ((ORDER & 1) == 0);    /* even order filter */
   }
   /**
    * The function process_block() takes a block of input samples and produces a
@@ -428,7 +428,7 @@ public:
     history_odd (2 * ORDER),
     sse_taps (fir_compute_sse_taps (taps))
   {
-    assert ((ORDER & 1) == 0);    /* even order filter */
+    RAPICORN_ASSERT ((ORDER & 1) == 0);    /* even order filter */
   }
   /**
    * The function process_block() takes a block of input samples and produces
@@ -439,7 +439,7 @@ public:
                  guint        n_input_samples,
 		 float       *output)
   {
-    assert ((n_input_samples & 1) == 0);
+    RAPICORN_ASSERT ((n_input_samples & 1) == 0);
 
     const uint BLOCKSIZE = 1024;
 

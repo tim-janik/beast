@@ -158,7 +158,7 @@ bse_type_id_wrapper (const char *type_name)
   if (!type)
     {
       type = g_type_from_name (type_name);
-      assert (type);
+      RAPICORN_ASSERT (type);
     }
   return type;
 }

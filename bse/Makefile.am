@@ -160,7 +160,7 @@ SFIDL = $(top_builddir)/sfi/sfidl
 SFIDL_INC = --nostdinc -I$(top_builddir) -I$(top_srcdir) -I$(srcdir)
 
 install-exec-ldconfig: # libtool >= 1.5.2 doesn't always set rpath, requiring ldconfig
-	test `id -u` != 0 -o ! -x /sbin/ldconfig || /sbin/ldconfig $(DESTDIR)$(libdir)
+	test ! -x /sbin/ldconfig -o ! -w /etc/ld.so.cache || /sbin/ldconfig $(DESTDIR)$(libdir)
 install-exec-hook: install-exec-ldconfig
 
 #
