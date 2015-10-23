@@ -1,0 +1,7 @@
+# https://wiki.debian.org/debian/watch
+
+version=3
+
+http://testbit.eu/pub/dists/beast/beast-(\d+\S+)\.(?:zip|tgz|tbz|txz|(?:tar\.(?:gz|bz2|xz)))
+
+# uscan --no-download --verbose --debug
