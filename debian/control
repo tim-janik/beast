@@ -24,6 +24,8 @@ Section: libs
 Architecture: any
 Pre-Depends: ${misc:Pre-Depends}
 Depends: librapicorn-15-9, ${shlibs:Depends}, ${misc:Depends}
+Breaks: beast (<< 0.7.4)
+Replaces: beast (<< 0.7.4)
 Description: Music Synthesizer and Composer
  Beast is a free software music composer and modular synthesizer.
  .
@@ -33,6 +35,8 @@ Package: libbse-dev
 Section: libdevel
 Architecture: any
 Depends: libbse-0-9 (= ${binary:Version}), librapicorn-dev (>= 15.9.1), ${shlibs:Depends}, ${misc:Depends}
+Breaks: libbse-0.7-4, bse-alsa (<< 0.9.3)
+Replaces: libbse-0.7-4, bse-alsa (<< 0.9.3)
 Description: Music Synthesizer and Composer
  Beast is a free software music composer and modular synthesizer.
  .
