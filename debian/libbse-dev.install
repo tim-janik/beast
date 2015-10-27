@@ -1,0 +1,8 @@
+# usr/lib/*/lib*.a
+usr/lib/*/lib*.so
+usr/lib/*/pkgconfig/*
+# usr/share/pkgconfig/*
+usr/include/*
+usr/bin/sfidl
+usr/share/man/man1/sfidl.1
+usr/share/man/man5/bse.5
