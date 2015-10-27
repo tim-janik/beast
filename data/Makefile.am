@@ -34,16 +34,12 @@ CLEANFILES += $(noinst_build_sources)
 
 # install pkg-config files
 pkgconfigdir = $(libdir)/pkgconfig
-pkgconfig_DATA = bse-@MAJOR@.pc
-$(pkgconfig_DATA): $(top_builddir)/config.status
-EXTRA_DIST += bse.pc.in
-bse-@MAJOR@.pc: bse.pc.in
-CLEANFILES += bse-@MAJOR@.pc
-bse-@MAJOR@.pc: bse.pc.in
+pkgconfig_DATA = bse.pc # bse-@MAJOR@.pc
+bse.pc: bse.pc.in $(top_builddir)/config.status
 	$(AM_V_GEN)
-	$(Q) cp $(srcdir)/bse.pc.in $@.in
 	$(Q) cd $(top_builddir) && $(SHELL) ./config.status --file=$(subdir)/$@
-	$(Q) rm -f $@.in
+EXTRA_DIST += bse.pc.in
+CLEANFILES += bse.pc
 
 # install .applications files
 dotapplicationsdir = $(datadir)/application-registry
