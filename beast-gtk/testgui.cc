@@ -90,7 +90,7 @@ main (int   argc,
   /* initialize Gtk+ Extension Kit */
   gxk_init ();
   /* add documentation search paths */
-  gxk_text_add_tsm_path (bse_installpath (BSE_INSTALLPATH_PKGDOCDIR).c_str());
+  gxk_text_add_tsm_path (bse_installpath (BSE_INSTALLPATH_DOCDIR).c_str());
   gxk_text_add_tsm_path (bse_installpath (BSE_INSTALLPATH_PKGDATADIR_IMAGES).c_str());
   gxk_text_add_tsm_path (".");
   /* initialize BEAST GUI components */

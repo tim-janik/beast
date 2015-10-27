@@ -73,13 +73,13 @@ LT_VERSION_INFO="$lt_current:$lt_revision:$lt_age"
 AC_SUBST(LT_VERSION_INFO)
 
 # Define package directories per major/minor version
-bselibdir="\${libdir}/bse-$MAJOR"
+bselibdir="\${libdir}/bse-$MAJOR.$MINOR.$MICRO"
 pkgdatadir="\${datadir}/beast-$MAJOR"
-pkgdocdir="\${datarootdir}/doc/beast-$MAJOR"
+docdir="${datarootdir}/doc/beast" # "beast-$MAJOR"
 # Substitute directories in Makefiles
 AC_SUBST(bselibdir)
 AC_SUBST(pkgdatadir)
-AC_SUBST(pkgdocdir)
+AC_SUBST(docdir)
 # Provide directories for C++
 bak_prefix="$prefix" ; bak_exec_prefix="$exec_prefix" ; bak_libdir="$libdir" ; bak_datarootdir="$datarootdir" ; bak_datadir="$datadir"
 test "x$prefix" = xNONE && prefix="$ac_default_prefix" ; test "x$exec_prefix" = xNONE && exec_prefix="$prefix"
@@ -90,7 +90,7 @@ AC_DEFINE_UNQUOTED(INSTALLPATH_LOCALEBASE, ["`eval echo ${localedir}`"], [Base d
 AC_DEFINE_UNQUOTED(INSTALLPATH_LADSPA, ["`eval echo ${libdir}/ladspa`"], [Searchpath for LADSPA plugins])
 AC_DEFINE_UNQUOTED(INSTALLPATH_BSELIBDIR, ["`eval echo ${bselibdir}`"], [Directory to install plugins and drivers])
 AC_DEFINE_UNQUOTED(INSTALLPATH_PKGDATADIR, ["`eval echo ${pkgdatadir}`"], [Directory to install samples, effects, scripts, etc])
-AC_DEFINE_UNQUOTED(INSTALLPATH_PKGDOCDIR, ["`eval echo ${pkgdocdir}`"], [Directory to install documentation])
+AC_DEFINE_UNQUOTED(INSTALLPATH_DOCDIR, ["`eval echo ${docdir}`"], [Directory to install documentation])
 AC_DEFINE_UNQUOTED(INSTALLPATH_USER_DATA, ["~/beast"], [Searchpath for user owned Beast resources])
 prefix="$bak_prefix" ; exec_prefix="$bak_exec_prefix" ; libdir="$bak_libdir" ; datarootdir="$bak_datarootdir" ; datadir="$bak_datadir"
 

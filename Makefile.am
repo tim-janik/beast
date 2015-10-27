@@ -18,7 +18,7 @@ site site-preview site-update site-update-all site-update-pages site-update-gall
 	@$(MAKE) -C web/ $(AM_MAKEFLAGS) $@
 
 # === doc/ files ===
-maindocsdir   = $(pkgdocdir)/
+maindocsdir   = $(docdir)/
 maindocs_DATA = README.md NEWS
 EXTRA_DIST   += $(maindocs_DATA)
 

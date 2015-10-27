@@ -1037,7 +1037,7 @@ bse_installpath (BseInstallpathType installpath_type)
     case BSE_INSTALLPATH_BINDIR:                        return INSTALLPATH_BINDIR;
     case BSE_INSTALLPATH_LOCALEBASE:                    return INSTALLPATH_LOCALEBASE;
     case BSE_INSTALLPATH_LADSPA:                        return INSTALLPATH_LADSPA;
-    case BSE_INSTALLPATH_PKGDOCDIR:                     return INSTALLPATH_PKGDOCDIR;
+    case BSE_INSTALLPATH_DOCDIR:                        return INSTALLPATH_DOCDIR;
     case BSE_INSTALLPATH_USER_DATA:                     return INSTALLPATH_USER_DATA;
     case BSE_INSTALLPATH_BSELIBDIR:                     return INSTALLPATH_BSELIBDIR;
     case BSE_INSTALLPATH_BSELIBDIR_PLUGINS:             return bse_installpath (BSE_INSTALLPATH_BSELIBDIR) + "/plugins";
