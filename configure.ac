@@ -290,8 +290,8 @@ AC_DEFUN([AC_I18N_REQUIREMENTS],
   AC_SUBST(ALL_LINGUAS)
   AC_SUBST([CONFIG_STATUS_DEPENDENCIES], ['$(top_srcdir)/po/LINGUAS'])
 
-  # versioned BEAST gettext domain (po/)
-  BST_GETTEXT_DOMAIN=beast-$MAJOR
+  # for simplicity, Beast and Bse translations are currently in the same domain
+  BST_GETTEXT_DOMAIN="beast-bse-$MAJOR.$MINOR.$MICRO"
   AC_SUBST(BST_GETTEXT_DOMAIN)
   AC_DEFINE_UNQUOTED(BST_GETTEXT_DOMAIN, "$BST_GETTEXT_DOMAIN", [Versioned BEAST gettext domain])
   GETTEXT_PACKAGE=$BST_GETTEXT_DOMAIN
