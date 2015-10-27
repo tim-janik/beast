@@ -1163,7 +1163,7 @@ ServerImpl::get_ladspa_path ()
 String
 ServerImpl::get_plugin_path ()
 {
-  return Path::searchpath_join (bse_installpath (BSE_INSTALLPATH_PKGLIBDIR_PLUGINS), BSE_GCONFIG (plugin_path));
+  return Path::searchpath_join (bse_installpath (BSE_INSTALLPATH_BSELIBDIR_PLUGINS), BSE_GCONFIG (plugin_path));
 }
 
 String

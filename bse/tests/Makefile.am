@@ -10,7 +10,7 @@ AM_CXXFLAGS += $(BSE_CFLAGS) $(SFI_CPPFLAGS) $(RAPICORN_CFLAGS) -DRAPICORN_CONVE
 EXTRA_DIST += arrows.gp filter-defs.gp
 
 noinst_PROGRAMS = $(ALLTESTS)
-progs_ldadd     = $(top_builddir)/bse/libbse.la $(RAPICORN_LIBS) $(BSE_LIBS)
+progs_ldadd     = $(top_builddir)/bse/libbse-@MAJOR@.la $(RAPICORN_LIBS) $(BSE_LIBS)
 
 TESTS            += misctests
 misctests_SOURCES = misctests.cc

@@ -135,18 +135,16 @@ EXTRA_DIST += $(strip \
 #
 # BSE library
 #
-lib_LTLIBRARIES              = libbse.la
-libbseincludedir       	     = $(pkgincludedir)/bse
-libbseinclude_HEADERS        = $(bse_public_headers) bse.idl $(bse_idl_sources) bsehack.idl $(idl_dummy_files)
-nodist_libbseinclude_HEADERS = bsebasics.genidl.hh
-libbse_la_SOURCES            = $(bse_sources) $(bse_proc_gen_sources)
-libbse_la_LIBADD             = $(top_builddir)/sfi/libsfi.la $(BSE_LIBS) $(SFI_LIBS) $(RAPICORN_LIBS)
-libbse_la_LDFLAGS            = $(strip				\
-	-Wl,--version-script=$(srcdir)/ldscript.map		\
-	-version-info $(LT_CURRENT):$(LT_REVISION):$(LT_AGE)	\
-	-release $(LT_RELEASE) 					\
-	-no-undefined 						\
-	$(AM_LDFLAGS)						\
+lib_LTLIBRARIES                      = libbse-@MAJOR@.la
+libbse_@MAJOR@includedir             = $(includedir)/bse-@MAJOR@/bse
+libbse_@MAJOR@include_HEADERS        = $(bse_public_headers) bse.idl $(bse_idl_sources) bsehack.idl $(idl_dummy_files)
+nodist_libbse_@MAJOR@include_HEADERS = bsebasics.genidl.hh
+libbse_@MAJOR@_la_SOURCES            = $(bse_sources) $(bse_proc_gen_sources)
+libbse_@MAJOR@_la_LIBADD             = $(top_builddir)/sfi/libsfi-@MAJOR@.la $(BSE_LIBS) $(SFI_LIBS) $(RAPICORN_LIBS)
+libbse_@MAJOR@_la_LDFLAGS            = $(strip		\
+	$(AM_LDFLAGS) -no-undefined			\
+	-Wl,--version-script=$(srcdir)/ldscript.map	\
+	-version-info $(LT_VERSION_INFO)		\
 )
 EXTRA_DIST += ldscript.map
 #	-Wl,-Bsymbolic
@@ -186,7 +184,7 @@ $(srcdir)/gslfft.cc: @PERLRULE@ $(srcdir)/gsl-fftgen.pl $(srcdir)/gsl-fftconf.sh
 # bsegentypes.h
 mktypes_bse_sources = $(filter-out bsegentypes.cc gslfft.cc, $(bse_sources))
 GENERATED_EXTRA_DIST += bsegentypes.h
-bsetype.hh $(bse_sources): bsegentypes.h	# $(libbse_la_OBJECTS): bsegentypes.h
+bsetype.hh $(bse_sources): bsegentypes.h	# $(libbse_@MAJOR@_la_OBJECTS): bsegentypes.h
 bsegentypes.h: @PERLRULE@ mktypes.pl # $(filter-out bsegentypes.cc gslfft.cc, $(bse_sources)) $(filter-out bsegentypes.h, $(bse_public_headers))
 bsegentypes.h: @PERLRULE@ bsebasics.idl # $(SFIDL)
 	$(AM_V_GEN)
@@ -203,7 +201,7 @@ bsegentypes.h: @PERLRULE@ bsebasics.idl # $(SFIDL)
 	&& mv xgen-$(@F) $(srcdir)/bsegentypes.h
 # bsegentypes.cc
 GENERATED_EXTRA_DIST += bsegentypes.cc
-$(libbse_la_OBJECTS): bsegentypes.cc
+$(libbse_@MAJOR@_la_OBJECTS): bsegentypes.cc
 bsegentypes.cc: @PERLRULE@ bsegentypes.h mktypes.pl bsebasics.idl # $(SFIDL)
 	$(AM_V_GEN)
 	$(Q) ( \
@@ -217,7 +215,7 @@ bsegentypes.cc: @PERLRULE@ bsegentypes.h mktypes.pl bsebasics.idl # $(SFIDL)
 	&& rm -f xgen-$(@F)
 # bseenum_arrays.cc
 GENERATED_CLEANFILES += bseenum_arrays.cc
-$(libbse_la_OBJECTS): bseenum_arrays.cc
+$(libbse_@MAJOR@_la_OBJECTS): bseenum_arrays.cc
 bseenum_arrays.cc: bsegentypes.h
 	$(AM_V_GEN)
 	$(Q) ( \
@@ -234,7 +232,7 @@ bseenum_arrays.cc: bsegentypes.h
 	&& rm -f xgen-$(@F)
 # bseenum_list.cc
 GENERATED_CLEANFILES += bseenum_list.cc
-$(libbse_la_OBJECTS): bseenum_list.cc
+$(libbse_@MAJOR@_la_OBJECTS): bseenum_list.cc
 bseenum_list.cc: bsegentypes.h
 	$(AM_V_GEN)
 	$(Q) ( \
@@ -248,7 +246,7 @@ bseenum_list.cc: bsegentypes.h
 	&& rm -f xgen-$(@F)
 # bsegentype_array.cc
 GENERATED_EXTRA_DIST += bsegentype_array.cc
-$(libbse_la_OBJECTS): bsegentype_array.cc
+$(libbse_@MAJOR@_la_OBJECTS): bsegentype_array.cc
 bsegentype_array.cc: @PERLRULE@ bsegentypes.h
 	$(AM_V_GEN)
 	$(Q) cd $(srcdir) \
@@ -257,7 +255,7 @@ bsegentype_array.cc: @PERLRULE@ bsegentypes.h
 	&& rm -f xgen-$(@F)
 # bsebuiltin_externs.cc
 GENERATED_EXTRA_DIST += bsebuiltin_externs.cc
-#$(libbse_la_OBJECTS): bsebuiltin_externs.cc # forces complete rebuild when *.proc changes
+#$(libbse_@MAJOR@_la_OBJECTS): bsebuiltin_externs.cc # forces complete rebuild when *.proc changes
 bseplugin.cc: bsebuiltin_externs.cc
 bsebuiltin_externs.cc: @PERLRULE@ $(bse_proc_gen_sources) mkcproc.pl
 	$(AM_V_GEN)
@@ -267,7 +265,7 @@ bsebuiltin_externs.cc: @PERLRULE@ $(bse_proc_gen_sources) mkcproc.pl
 	&& rm -f xgen-$(@F)
 # bsebuiltin_array.cc
 GENERATED_EXTRA_DIST += bsebuiltin_array.cc
-#$(libbse_la_OBJECTS): bsebuiltin_array.cc # forces complete rebuild when *.proc changes
+#$(libbse_@MAJOR@_la_OBJECTS): bsebuiltin_array.cc # forces complete rebuild when *.proc changes
 bseplugin.cc: bsebuiltin_array.cc
 bsebuiltin_array.cc: @PERLRULE@ $(bse_proc_gen_sources) mkcproc.pl
 	$(AM_V_GEN)
@@ -336,7 +334,7 @@ EXTRA_DIST += bseapi.idl
 
 # == GENERATED targets ==
 CLEANFILES += $(GENERATED)
-$(libbse_la_OBJECTS): $(GENERATED)	# needed dependency to force file generation
+$(libbse_@MAJOR@_la_OBJECTS): $(GENERATED)	# needed dependency to force file generation
 $(bseprocidl_OBJECTS) $(bsetool_OBJECTS): $(GENERATED)
 
 #
@@ -350,7 +348,7 @@ all: # TAGS
 # other programs, we want to compile
 #
 noinst_PROGRAMS = $(ALLTESTS)
-progs_LDADD = libbse.la $(RAPICORN_LIBS) $(SFI_LIBS) -lm
+progs_LDADD = libbse-@MAJOR@.la $(RAPICORN_LIBS) $(SFI_LIBS) -lm
 # source files
 
 noinst_PROGRAMS   += bseprocidl
@@ -360,7 +358,7 @@ bseprocidl_LDADD   = $(progs_LDADD)
 # == bsetool ==
 noinst_PROGRAMS += bsetool
 bsetool_SOURCES  = bsetool.cc
-bsetool_LDADD    = libbse.la $(RAPICORN_LIBS)
+bsetool_LDADD    = libbse-@MAJOR@.la $(RAPICORN_LIBS)
 
 # == Tests ==
 EXTRA_DIST += oldidl.idl

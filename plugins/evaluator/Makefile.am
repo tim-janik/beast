@@ -15,7 +15,7 @@ include $(top_srcdir)/Makefile.decl
 #AM_CPPFLAGS += -DBSE_PLUGIN_FALLBACK="\"$(strip $(basename $(<F)))\""
 #
 ## install plugins under:
-#plugindir = $(pkglibdir)/plugins
+#plugindir = $(bselibdir)/plugins
 #
 ## setup generation of C++ plugins from idl files
 #SFIDL = ../../sfi/sfidl
@@ -28,7 +28,7 @@ include $(top_srcdir)/Makefile.decl
 #
 #bseevaluator_la_SOURCES = bseevaluator.cc $(EVALUATE_SOURCES)
 #bseevaluator_la_LDFLAGS = $(AM_LDFLAGS) -module -avoid-version
-#bseevaluator_la_LIBADD  = $(top_builddir)/bse/libbse.la $(top_builddir)/sfi/libsfi.la $(BSE_LIBS) -lm
+#bseevaluator_la_LIBADD  = $(top_builddir)/bse/libbse-@MAJOR@.la $(BSE_LIBS) -lm
 #plugins_built_sources += bseevaluator.genidl.hh
 #EXTRA_HEADERS += bseevaluator.idl symbols.hh token.hh instruction.hh compiler.hh cpu.hh
 #$(bseevaluator_la_OBJECTS): bseevaluator.genidl.hh

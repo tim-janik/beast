@@ -733,16 +733,16 @@ bse_plugin_path_list_files (gboolean include_drivers,
     {
       if (include_drivers)
         {
-          files = sfi_file_crawler_list_files (bse_installpath (BSE_INSTALLPATH_PKGLIBDIR_DRIVERS).c_str(), "*" PLUGIN_EXTENSION, G_FILE_TEST_IS_REGULAR);
+          files = sfi_file_crawler_list_files (bse_installpath (BSE_INSTALLPATH_BSELIBDIR_DRIVERS).c_str(), "*" PLUGIN_EXTENSION, G_FILE_TEST_IS_REGULAR);
           ring = sfi_ring_concat (ring, sfi_ring_sort (files, (SfiCompareFunc) strcmp, NULL));
-          files = sfi_file_crawler_list_files (bse_installpath (BSE_INSTALLPATH_PKGLIBDIR_DRIVERS).c_str(), "*.o", G_FILE_TEST_IS_REGULAR);
+          files = sfi_file_crawler_list_files (bse_installpath (BSE_INSTALLPATH_BSELIBDIR_DRIVERS).c_str(), "*.o", G_FILE_TEST_IS_REGULAR);
           ring = sfi_ring_concat (ring, sfi_ring_sort (files, (SfiCompareFunc) strcmp, NULL));
         }
       if (include_plugins)
         {
-          files = sfi_file_crawler_list_files (bse_installpath (BSE_INSTALLPATH_PKGLIBDIR_PLUGINS).c_str(), "*" PLUGIN_EXTENSION, G_FILE_TEST_IS_REGULAR);
+          files = sfi_file_crawler_list_files (bse_installpath (BSE_INSTALLPATH_BSELIBDIR_PLUGINS).c_str(), "*" PLUGIN_EXTENSION, G_FILE_TEST_IS_REGULAR);
           ring = sfi_ring_concat (ring, sfi_ring_sort (files, (SfiCompareFunc) strcmp, NULL));
-          files = sfi_file_crawler_list_files (bse_installpath (BSE_INSTALLPATH_PKGLIBDIR_PLUGINS).c_str(), "*.o", G_FILE_TEST_IS_REGULAR);
+          files = sfi_file_crawler_list_files (bse_installpath (BSE_INSTALLPATH_BSELIBDIR_PLUGINS).c_str(), "*.o", G_FILE_TEST_IS_REGULAR);
           ring = sfi_ring_concat (ring, sfi_ring_sort (files, (SfiCompareFunc) strcmp, NULL));
         }
       if (include_plugins && BSE_GCONFIG (plugin_path) && BSE_GCONFIG (plugin_path)[0])

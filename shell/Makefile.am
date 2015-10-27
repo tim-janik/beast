@@ -16,14 +16,14 @@ gen_sources = xgen-bsggc
 CLEANFILES += $(gen_sources)
 
 # libraries to link programs against
-programs_ldadd = $(top_builddir)/bse/libbse.la $(RAPICORN_LIBS)
+programs_ldadd = $(top_builddir)/bse/libbse-@MAJOR@.la $(RAPICORN_LIBS)
 
 #
 # programs to build
 #
-bin_PROGRAMS = bsescm-$(BIN_VERSION)		# this expands to bsescm-0.7.0 or similar
-bsescm___BIN_VERSION__SOURCES = bsescm.cc bsescminterp.cc
-bsescm___BIN_VERSION__LDADD = $(programs_ldadd) $(BSESCM_LIBS)
+bin_PROGRAMS = bsescm-@MAJOR@		# this expands to bsescm-0
+bsescm_@MAJOR@_SOURCES = bsescm.cc bsescminterp.cc
+bsescm_@MAJOR@_LDADD = $(programs_ldadd) $(BSESCM_LIBS)
 
 # source setups
 bsescminterp.cc: # bsescm-genglue.c

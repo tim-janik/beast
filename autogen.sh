@@ -6,4 +6,4 @@ rm -rf autom4te.cache/ config.cache
 
 autoreconf -vfsi
 
-./configure "$@"
+./configure --enable-devel-mode=yes "$@"

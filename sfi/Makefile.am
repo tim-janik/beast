@@ -34,12 +34,12 @@ sfi_built_sources = $(strip \
 $(sfi_all_sources): $(sfi_built_sources)
 
 # SFI library
-noinst_LTLIBRARIES    = libsfi.la
-libsfiincludedir      = $(pkgincludedir)/sfi
-libsfiinclude_HEADERS = $(sfi_public_headers)
-libsfi_la_SOURCES     = $(sfi_all_sources)
-libsfi_la_LDFLAGS     = $(AM_LDFLAGS) -no-undefined # -Wl,-Bsymbolic
-libsfi_la_LIBADD      = $(SFI_LIBS) -lm
+noinst_LTLIBRARIES            = libsfi-@MAJOR@.la
+libsfi_@MAJOR@includedir      = $(includedir)/bse-@MAJOR@/sfi
+libsfi_@MAJOR@include_HEADERS = $(sfi_public_headers)
+libsfi_@MAJOR@_la_SOURCES     = $(sfi_all_sources)
+libsfi_@MAJOR@_la_LIBADD      = $(SFI_LIBS) -lm
+libsfi_@MAJOR@_la_LDFLAGS     = $(AM_LDFLAGS) -no-undefined -version-info $(LT_VERSION_INFO)
 
 #
 # programs to build

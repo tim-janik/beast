@@ -34,12 +34,12 @@ CLEANFILES += $(noinst_build_sources)
 
 # install pkg-config files
 pkgconfigdir = $(libdir)/pkgconfig
-pkgconfig_DATA = bse-@BST_VERSION_STEM@.pc
+pkgconfig_DATA = bse-@MAJOR@.pc
 $(pkgconfig_DATA): $(top_builddir)/config.status
 EXTRA_DIST += bse.pc.in
-bse-@BST_VERSION_STEM@.pc: bse.pc.in
-CLEANFILES += bse-@BST_VERSION_STEM@.pc
-bse-@BST_VERSION_STEM@.pc: bse.pc.in
+bse-@MAJOR@.pc: bse.pc.in
+CLEANFILES += bse-@MAJOR@.pc
+bse-@MAJOR@.pc: bse.pc.in
 	$(AM_V_GEN)
 	$(Q) cp $(srcdir)/bse.pc.in $@.in
 	$(Q) cd $(top_builddir) && $(SHELL) ./config.status --file=$(subdir)/$@
