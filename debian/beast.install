@@ -1,5 +1,5 @@
 usr/bin/beast*
-usr/share/man/man1/beast.1
+usr/share/man/man1/beast*.1
 usr/bin/bsescm
 usr/share/man/man1/bsescm.1
 usr/bin/bsewavetool

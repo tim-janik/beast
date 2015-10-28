@@ -30,6 +30,10 @@ override_dh_install:
 	dh_install --fail-missing
 override_dh_auto_install:
 	dh_auto_install
+	@ # https://wiki.debian.org/ReleaseGoals/LAFileRemoval
 	find debian/tmp -name '*.la' -delete
+	@ # fix binary-without-manpage usr/bin/beast-0.9.3
+	LNK=`basename debian/tmp/usr/bin/beast-*` && \
+	ln -s beast.1 debian/tmp/usr/share/man/man1/$$LNK.1
 override_dh_makeshlibs: # for -X<findpattern>, see: fgrep -C5 EXCLUDE_FIND /usr/share/perl5/Debian/Debhelper/Dh_Lib.pm
 	dh_makeshlibs '-X/bse-[0-9.]+/drivers/'
