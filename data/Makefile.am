@@ -12,7 +12,7 @@ public_images = $(strip         \
 	beast-splash.png	\
 )
 images_DATA = ${public_images}
-imagesdir = $(pkgdatadir)/images
+imagesdir = $(datadir)/images
 EXTRA_DIST += $(private_images) $(public_images)
 
 # generate image header files

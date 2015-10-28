@@ -1042,15 +1042,15 @@ bse_installpath (BseInstallpathType installpath_type)
     case BSE_INSTALLPATH_BSELIBDIR:                     return INSTALLPATH_BSELIBDIR;
     case BSE_INSTALLPATH_BSELIBDIR_PLUGINS:             return bse_installpath (BSE_INSTALLPATH_BSELIBDIR) + "/plugins";
     case BSE_INSTALLPATH_BSELIBDIR_DRIVERS:             return bse_installpath (BSE_INSTALLPATH_BSELIBDIR) + "/drivers";
-    case BSE_INSTALLPATH_PKGDATADIR:                    return INSTALLPATH_PKGDATADIR;
-    case BSE_INSTALLPATH_PKGDATADIR_DEMO:               return bse_installpath (BSE_INSTALLPATH_PKGDATADIR) + "/demo";
-    case BSE_INSTALLPATH_PKGDATADIR_SAMPLES:            return bse_installpath (BSE_INSTALLPATH_PKGDATADIR) + "/samples";
-    case BSE_INSTALLPATH_PKGDATADIR_EFFECTS:            return bse_installpath (BSE_INSTALLPATH_PKGDATADIR) + "/effects";
-    case BSE_INSTALLPATH_PKGDATADIR_INSTRUMENTS:        return bse_installpath (BSE_INSTALLPATH_PKGDATADIR) + "/instruments";
-    case BSE_INSTALLPATH_PKGDATADIR_SCRIPTS:            return bse_installpath (BSE_INSTALLPATH_PKGDATADIR) + "/scripts";
-    case BSE_INSTALLPATH_PKGDATADIR_IMAGES:             return bse_installpath (BSE_INSTALLPATH_PKGDATADIR) + "/images";
-    case BSE_INSTALLPATH_PKGDATADIR_KEYS:               return bse_installpath (BSE_INSTALLPATH_PKGDATADIR) + "/keys";
-    case BSE_INSTALLPATH_PKGDATADIR_SKINS:              return bse_installpath (BSE_INSTALLPATH_PKGDATADIR) + "/skins";
+    case BSE_INSTALLPATH_DATADIR:                       return INSTALLPATH_DATADIR;
+    case BSE_INSTALLPATH_DATADIR_DEMO:                  return bse_installpath (BSE_INSTALLPATH_DATADIR) + "/demo";
+    case BSE_INSTALLPATH_DATADIR_SAMPLES:               return bse_installpath (BSE_INSTALLPATH_DATADIR) + "/samples";
+    case BSE_INSTALLPATH_DATADIR_EFFECTS:               return bse_installpath (BSE_INSTALLPATH_DATADIR) + "/effects";
+    case BSE_INSTALLPATH_DATADIR_INSTRUMENTS:           return bse_installpath (BSE_INSTALLPATH_DATADIR) + "/instruments";
+    case BSE_INSTALLPATH_DATADIR_SCRIPTS:               return bse_installpath (BSE_INSTALLPATH_DATADIR) + "/scripts";
+    case BSE_INSTALLPATH_DATADIR_IMAGES:                return bse_installpath (BSE_INSTALLPATH_DATADIR) + "/images";
+    case BSE_INSTALLPATH_DATADIR_KEYS:                  return bse_installpath (BSE_INSTALLPATH_DATADIR) + "/keys";
+    case BSE_INSTALLPATH_DATADIR_SKINS:                 return bse_installpath (BSE_INSTALLPATH_DATADIR) + "/skins";
     }
   return "";
 }
