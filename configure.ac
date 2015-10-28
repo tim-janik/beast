@@ -74,7 +74,7 @@ AC_SUBST(LT_VERSION_INFO)
 
 # Define package directories per major/minor version
 bselibdir="\${libdir}/bse-$MAJOR.$MINOR.$MICRO"
-pkgdatadir="\${datadir}/beast-$MAJOR"
+pkgdatadir="\${datarootdir}/beast"
 docdir="${datarootdir}/doc/beast" # "beast-$MAJOR"
 # Substitute directories in Makefiles
 AC_SUBST(bselibdir)

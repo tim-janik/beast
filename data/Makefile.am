@@ -42,12 +42,12 @@ EXTRA_DIST += bse.pc.in
 CLEANFILES += bse.pc
 
 # install .applications files
-dotapplicationsdir = $(datadir)/application-registry
+dotapplicationsdir = $(datarootdir)/application-registry
 dotapplications_DATA = beast.applications
 EXTRA_DIST += $(dotapplications_DATA)
 
 # install related pixmaps
-sharedpixmapsdir = $(datadir)/pixmaps
+sharedpixmapsdir = $(datarootdir)/pixmaps
 sharedpixmaps_DATA = beast.png beast-audio-x-bse.png
 beast-audio-x-bse.png: $(srcdir)/bse-mime.png
 	cp $< $@
@@ -67,7 +67,7 @@ $(INTLMERGE_CACHE): $(PODEPS)
 	LC_ALL=C $(INTLMERGE) -k -u -c $(INTLMERGE_CACHE) $(top_srcdir)/po $< $@
 
 # generate and install .desktop file
-dotdesktopdir = $(datadir)/applications
+dotdesktopdir = $(datarootdir)/applications
 dotdesktop_in_files = beast.desktop.in
 dotdesktop_DATA = $(dotdesktop_in_files:.desktop.in=.desktop)
 beast.desktop: beast.desktop.in
@@ -75,7 +75,7 @@ CLEANFILES += beast.desktop
 EXTRA_DIST += $(dotdesktop_in_files)
 
 # generate and install .xml mime info file
-sharedmimedir = $(datadir)/mime
+sharedmimedir = $(datarootdir)/mime
 sharedmimepackagedir = $(sharedmimedir)/packages
 sharedmimepackage_in_files = beast.xml.in
 sharedmimepackage_DATA = $(sharedmimepackage_in_files:.xml.in=.xml)
@@ -84,7 +84,7 @@ beast.xml: beast.xml.in
 EXTRA_DIST += $(sharedmimepackage_in_files)
 
 # generate and install .mime and .keys files
-mimedir = $(datadir)/mime-info
+mimedir = $(datarootdir)/mime-info
 mime_in_file = bse.keys.in bse.mime
 mime_DATA = $(mime_in_file:.keys.in=.keys)
 CLEANFILES += bse.keys
