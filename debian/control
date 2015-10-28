@@ -11,6 +11,23 @@ Standards-Version: 3.9.6
 Homepage: http://beast.testbit.eu
 Vcs-Browser: https://github.com/tim-janik/beast/tree/master/debian
 
+Package: beast
+Architecture: any
+Depends:
+ libbse-0-9 (= ${binary:Version}), beast-doc (= ${source:Version}),
+ rapicorn (>= 15.9.1), python-rapicorn (>= 15.9.1),
+ ${shlibs:Depends}, ${misc:Depends}
+Description: Music Synthesizer and Composer
+ Beast is a free software music composer and modular synthesizer.
+ .
+ It supports a wide range of standards in the field, such as MIDI,
+ FLAC/WAV/AIFF/MP3/OggVorbis audio files and LADSPA modules.
+ It allows for multitrack editing, unlimited undo/redo support,
+ real-time synthesis support, 32bit audio rendering and MMX/SSE
+ utilisation for synthesis plugins.
+ .
+ This package contains the main executable.
+
 Package: beast-doc
 Section: doc
 Architecture: all
@@ -42,20 +59,3 @@ Description: Music Synthesizer and Composer
  Beast is a free software music composer and modular synthesizer.
  .
  This package contains the BSE library include files.
-
-Package: beast
-Architecture: any
-Depends:
- libbse-0-9 (= ${binary:Version}), beast-doc (= ${source:Version}),
- rapicorn (>= 15.9.1), python-rapicorn (>= 15.9.1),
- ${shlibs:Depends}, ${misc:Depends}
-Description: Music Synthesizer and Composer
- Beast is a free software music composer and modular synthesizer.
- .
- It supports a wide range of standards in the field, such as MIDI,
- FLAC/WAV/AIFF/MP3/OggVorbis audio files and LADSPA modules.
- It allows for multitrack editing, unlimited undo/redo support,
- real-time synthesis support, 32bit audio rendering and MMX/SSE
- utilisation for synthesis plugins.
- .
- This package contains the main executable.
