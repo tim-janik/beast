@@ -21,9 +21,9 @@ programs_ldadd = $(top_builddir)/bse/libbse-@MAJOR@.la $(RAPICORN_LIBS)
 #
 # programs to build
 #
-bin_PROGRAMS = bsescm-@MAJOR@		# this expands to bsescm-0
-bsescm_@MAJOR@_SOURCES = bsescm.cc bsescminterp.cc
-bsescm_@MAJOR@_LDADD = $(programs_ldadd) $(BSESCM_LIBS)
+bin_PROGRAMS = bsescm
+bsescm_SOURCES = bsescm.cc bsescminterp.cc
+bsescm_LDADD = $(programs_ldadd) $(BSESCM_LIBS)
 
 # source setups
 bsescminterp.cc: # bsescm-genglue.c
@@ -33,7 +33,7 @@ EXTRA_DIST += bsescminterp.hh
 #
 # scripts
 #
-shellscriptdir = $(pkgdatadir)/scripts
+shellscriptdir = $(datadir)/scripts
 shellscript_DATA = bse-scm-glue.boot
 
 EXTRA_DIST += $(shellscript_DATA)

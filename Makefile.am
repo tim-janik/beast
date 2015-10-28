@@ -7,7 +7,6 @@ EXTRA_DIST += HACKING.md
 noinst_DATA = HACKING.html
 CLEANFILES += HACKING.html
 
-MAINTAINERCLEANFILES += configure
 ACLOCAL_AMFLAGS  = -I autotools
 
 %.html: %.md
@@ -19,7 +18,7 @@ site site-preview site-update site-update-all site-update-pages site-update-gall
 	@$(MAKE) -C web/ $(AM_MAKEFLAGS) $@
 
 # === doc/ files ===
-maindocsdir   = $(pkgdocdir)/
+maindocsdir   = $(docdir)/
 maindocs_DATA = README.md NEWS
 EXTRA_DIST   += $(maindocs_DATA)
 
@@ -38,9 +37,9 @@ bse-app-test:
 	&& echo '  Bse::init_async (&argc, argv, "bse-app-test");'	>> tmpx.cc \
 	&& echo '  return 0; }'						>> tmpx.cc \
 		; X=$$? ; echo -n "Create  BSE sample program: " ; test 0 == $$X && echo OK || { echo FAIL; exit $$X ; }
-	$(Q) $(CXX) -Werror tmpx.cc -c `PKG_CONFIG_PATH="$(libdir)/pkgconfig:$$PKG_CONFIG_PATH" pkg-config --cflags bse-@MAJOR@` \
+	$(Q) $(CXX) -Werror tmpx.cc -c `PKG_CONFIG_PATH="$(libdir)/pkgconfig:$$PKG_CONFIG_PATH" pkg-config --cflags bse` \
 		; X=$$? ; echo -n "Compile BSE sample program: " ; test 0 == $$X && echo OK || { echo FAIL; exit $$X ; }
-	$(Q) $(CXX) -Werror tmpx.o -o tmpx `PKG_CONFIG_PATH="$(libdir)/pkgconfig:$$PKG_CONFIG_PATH" pkg-config --libs bse-@MAJOR@` \
+	$(Q) $(CXX) -Werror tmpx.o -o tmpx `PKG_CONFIG_PATH="$(libdir)/pkgconfig:$$PKG_CONFIG_PATH" pkg-config --libs bse` \
 		; X=$$? ; echo -n "Link    BSE sample program: " ; test 0 == $$X && echo OK || { echo FAIL; exit $$X ; }
 	$(Q) LD_LIBRARY_PATH="$(libdir):$$LD_LIBRARY_PATH" ./tmpx \
 		; X=$$? ; echo -n "Execute BSE sample program: " ; test 0 == $$X && echo OK || { echo FAIL; exit $$X ; }

@@ -133,10 +133,10 @@ generated: clean-generated $(GENERATED)
 #
 # build rules for programs
 #
-bin_PROGRAMS = beast-@MAJOR@
-beast_@MAJOR@_SOURCES = $(bst_cc_sources) bstmain.cc
-beast_@MAJOR@_LDADD = $(progs_LDADD)
-beast_build_objects = $(beast_@MAJOR@_OBJECTS) # dependency for generated sources
+bin_PROGRAMS = beast-@MAJOR@.@MINOR@.@MICRO@
+beast_@MAJOR@_@MINOR@_@MICRO@_SOURCES = $(bst_cc_sources) bstmain.cc
+beast_@MAJOR@_@MINOR@_@MICRO@_LDADD = $(progs_LDADD)
+beast_build_objects = $(beast_@MAJOR@_@MINOR@_@MICRO@_OBJECTS) # dependency for generated sources
 noinst_PROGRAMS = $(ALLTESTS)
 progs_LDADD     = $(BEAST_LIBS) ./gxk/libgxk.a $(GXK_LIBS) $(top_builddir)/bse/libbse-@MAJOR@.la $(RAPICORN_LIBS) $(BSE_LIBS)
 

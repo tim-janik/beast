@@ -291,7 +291,7 @@ bst_preferences_load_rc_files (void)
   if (error == Bse::ERROR_FILE_NOT_FOUND)
     {
       /* try loading fallback table */
-      gchar *file = g_strconcat (bse_installpath (BSE_INSTALLPATH_PKGDATADIR_KEYS).c_str(), G_DIR_SEPARATOR_S, "keyrc.us", NULL);
+      gchar *file = g_strconcat (bse_installpath (BSE_INSTALLPATH_DATADIR_KEYS).c_str(), G_DIR_SEPARATOR_S, "keyrc.us", NULL);
       error = bst_key_binding_parse (file, slist);
       g_free (file);
     }

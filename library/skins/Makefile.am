@@ -11,6 +11,6 @@ skins_DATA = $(strip		\
 	silvervein.skin		\
 	white.skin		\
 )
-skinsdir = $(pkgdatadir)/skins
+skinsdir = $(datadir)/skins
 
 EXTRA_DIST += $(skins_DATA)

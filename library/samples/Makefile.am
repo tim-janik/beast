@@ -5,6 +5,6 @@ include $(top_srcdir)/Makefile.decl
 sample_DATA = $(strip			\
 	retrokit.bsewave		\
 )
-sampledir = $(pkgdatadir)/samples
+sampledir = $(datadir)/samples
 
 EXTRA_DIST += $(sample_DATA)

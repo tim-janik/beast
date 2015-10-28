@@ -142,7 +142,7 @@ bse_script_procedure_exec (BseProcedureClass *proc,
 						     "(apply %s (bse-script-fetch-args))",
 						     sdata->script_file,
 						     sdata->name));
-  shellpath = g_strdup_format ("%s/%s-%u", bse_main_args->path_binaries, "bsescm", BSE_MAJOR_VERSION);
+  shellpath = g_strdup_format ("%s/%s", bse_main_args->path_binaries, "bsescm");
   error = bse_server_run_remote (server, shellpath,
 				 params, sdata->script_file, BSE_PROCEDURE_NAME (proc), &janitor);
   g_free (shellpath);
@@ -231,7 +231,7 @@ bse_script_path_list_files (void)
     }
   if (1)
     {
-      files = sfi_file_crawler_list_files (bse_installpath (BSE_INSTALLPATH_PKGDATADIR_SCRIPTS).c_str(), "*.scm", G_FILE_TEST_IS_REGULAR);
+      files = sfi_file_crawler_list_files (bse_installpath (BSE_INSTALLPATH_DATADIR_SCRIPTS).c_str(), "*.scm", G_FILE_TEST_IS_REGULAR);
       ring = sfi_ring_concat (ring, sfi_ring_sort (files, (SfiCompareFunc) strcmp, NULL));
     }
   if (BSE_GCONFIG (script_path) && BSE_GCONFIG (script_path)[0])
@@ -254,7 +254,7 @@ bse_script_file_register (const gchar *file_name,
   params = sfi_ring_append (params, g_strdup ("--bse-enable-register"));
   params = sfi_ring_append (params, g_strdup ("--bse-eval"));
   params = sfi_ring_append (params, g_strdup_format ("(load \"%s\")", file_name));
-  char *shellpath = g_strdup_format ("%s/%s-%u", bse_main_args->path_binaries, "bsescm", BSE_MAJOR_VERSION);
+  char *shellpath = g_strdup_format ("%s/%s", bse_main_args->path_binaries, "bsescm");
   *janitor_p = NULL;
   error = bse_server_run_remote (server, shellpath,
 				 params, file_name, proc_name, janitor_p);
