@@ -6,6 +6,7 @@ Build-Depends: debhelper (>= 9), dh-python, python, autotools-dev,
  libflac-dev, libvorbis-dev, libmad0-dev, guile-1.8-dev,
  libgnomecanvas2-dev, libgtk2.0-dev, libxml2-utils,
  librapicorn-dev, python-rapicorn
+Build-Depends-Indep: doxygen
 Standards-Version: 3.9.5
 Homepage: http://beast.testbit.eu
 Vcs-Browser: https://github.com/tim-janik/beast/tree/master/debian

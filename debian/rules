@@ -37,3 +37,7 @@ override_dh_auto_install:
 	ln -s beast.1 debian/tmp/usr/share/man/man1/$$LNK.1
 override_dh_makeshlibs: # for -X<findpattern>, see: fgrep -C5 EXCLUDE_FIND /usr/share/perl5/Debian/Debhelper/Dh_Lib.pm
 	dh_makeshlibs '-X/bse-[0-9.]+/drivers/'
+override_dh_installdocs-indep:
+	dh_installdocs --indep
+	@ # remove unused doxygen files
+	dh_doxygen --indep
