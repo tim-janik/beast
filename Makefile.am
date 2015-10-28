@@ -7,7 +7,6 @@ EXTRA_DIST += HACKING.md
 noinst_DATA = HACKING.html
 CLEANFILES += HACKING.html
 
-MAINTAINERCLEANFILES += configure
 ACLOCAL_AMFLAGS  = -I autotools
 
 %.html: %.md
