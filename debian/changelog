@@ -1,0 +1,6 @@
+beast (0.9.3+git5555-0) experimental; urgency=low
+
+  * Debian package build setup for Beast and libbse, hosted at:
+    https://github.com/tim-janik/beast/
+
+ -- Tim Janik <timj@gnu.org>  Wed, 28 Oct 2015 14:09:07 +0100
