@@ -21,7 +21,7 @@ include /usr/share/dpkg/default.mk
 
 # main packaging script based on dh7 syntax
 %:
-	dh $@ --parallel --with autotools-dev --with python2
+	dh $@ --parallel --with autoreconf --with python2
 
 # debmake generated override targets
 override_dh_auto_configure:
