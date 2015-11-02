@@ -2,9 +2,9 @@ Source: beast
 Section: sound
 Priority: optional
 Maintainer: Tim Janik <timj@gnu.org>
-Build-Depends: debhelper (>= 9), dh-python, python, autotools-dev,
- libflac-dev, libvorbis-dev, libmad0-dev, guile-1.8-dev,
- libgnomecanvas2-dev, libgtk2.0-dev, libxml2-utils,
+Build-Depends: debhelper (>= 9), dh-python, python, dh-autoreconf,
+ libasound2-dev, libflac-dev, libvorbis-dev, libmad0-dev, guile-1.8-dev,
+ libgnomecanvas2-dev, libgtk2.0-dev, libxml2-utils, libxml-parser-perl,
  librapicorn-dev, python-rapicorn
 Build-Depends-Indep: doxygen
 Standards-Version: 3.9.6
