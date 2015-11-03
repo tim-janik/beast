@@ -17,7 +17,7 @@ sudo: required # needed for apt-get and pbuilder
 
 addons:
   apt:
-    packages: [ pbuilder, devscripts, debhelper ] # debootstrap
+    packages: [ pbuilder, devscripts, debhelper, dh-autoreconf ] # debootstrap
 
 before_install:
   - uname -a
