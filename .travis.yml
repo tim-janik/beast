@@ -34,7 +34,7 @@ install:
   - travis_retry git fetch --unshallow
   - git clean -f && pwd
   # fetch citool.sh from Rapicorn
-  - travis_retry wget -c https://raw.githubusercontent.com/tim-janik/rapicorn/6475a867181b84e1/citool.sh
+  - travis_retry wget -c https://raw.githubusercontent.com/tim-janik/rapicorn/772653869a2b0e70/citool.sh
   - chmod +x citool.sh
   # show CI config
   - ./citool.sh config
