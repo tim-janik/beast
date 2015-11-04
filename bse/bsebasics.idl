@@ -23,9 +23,6 @@ Const MINDB = -96; /* 32bit:-192 24bit:-144 16bit:-96 */
 sequence TypeSeq {
   SfiString types;
 };
-sequence StringSeq {
-  SfiString strings;
-};
 sequence FloatSeq {
   Real values;
 };
@@ -390,14 +387,6 @@ record TrackPart {
 };
 sequence TrackPartSeq {
   TrackPart tparts;
-};
-record SampleFileInfo {
-  SfiString     file    = SfiString ("Filename", "", "", STANDARD);
-  Int           size    = SfiInt ("File Size", "", 0, 0, G_MAXINT, 0, STANDARD);
-  Num           mtime   = SfiNum ("Modification Time", "", 0, 0, SFI_MAXNUM, 0, STANDARD);
-  SfiString     loader  = SfiString ("Loader", "", "", STANDARD);
-  StringSeq     waves   = SfiSeq ("", "", STANDARD);
-  Int           error   = SfiInt ("BseErrorType", "", 0, 0, G_MAXINT, 0, STANDARD); // FIXME: use BseErrorType here
 };
 interface Janitor;
 

@@ -7,6 +7,7 @@
 namespace Bse {
 
 // == Type Constants ==
+Const MAXINT63   = +9223372036854775807;
 Const MAXINT32   = +4294967295;
 Const MAXINT31   = +2147483647;
 Const MININT31   = -2147483648;
@@ -295,6 +296,11 @@ Const NOTEHINTS     = STANDARD ":note";
 Const FINETUNEHINTS = STANDARD ":finetune";
 Const VELOCITYHINTS = STANDARD ":velocity";
 
+/// Stringeq - a variable length list of test strings.
+sequence StringSeq {
+  String string;
+};
+
 /// Representation of an image pixel sequence in ARGB format.
 sequence PixelSeq {
   int32 argb = Num ("ARGB", "ARGB Format: (alpha << 24) | (red << 16) | (green << 8) | blue", STANDARD);
@@ -305,6 +311,17 @@ record Icon {
   int32    width  = Range    ("Width",  "Width in pixels or 0 for no icon",  STANDARD, 0, 4096, 1, 0);
   int32    height = Range    ("Height", "Height in pixels or 0 for no icon", STANDARD, 0, 4096, 1, 0);
   PixelSeq pixels = Sequence ("Pixels", "Array of width*height ARGB pixels", STANDARD);
+};
+
+/// AuxData - record to describe entity attributes with "key=value" strings.
+record AuxData {
+  String    entity;             ///< Entity that has an auxillary data list.
+  StringSeq attributes;         ///< List of "key=value" auxillary data strings.
+};
+
+/// AuxDataSeq - a variable length list of AuxData records.
+sequence AuxDataSeq {
+  AuxData aux_data;
 };
 
 /// Object to carry out IDL, API, signal, etc tests.
@@ -588,6 +605,16 @@ interface Song : SNet {
   };
 };
 
+///< Structure containing meta data for multi wave samples.
+record SampleFileInfo {
+  String     file    = String ("Filename", "", STANDARD);
+  int64      size    = Range ("File Size", "File size in bytes", ":readwrite", 0, MAXINT63);
+  int64      mtime   = Range ("MTime", "Last modification time in µseconds", ":readwrite", 0, MAXINT63);
+  String     loader  = String ("Loader", "Sample loader implementation", STANDARD);
+  StringSeq  waves   = Sequence ("Waves", "List of embedded waves", STANDARD);
+  ErrorType  error   = Enum ("Error", "Indicator for errors during sample operation", STANDARD);
+};
+
 /// Interface for editable PCM wave samples.
 interface EditableSample : Item {
 };
@@ -688,6 +715,10 @@ interface Server : Object {
   void          start_recording (String wave_file, float64 n_seconds); ///< Start recording to a WAV file.
   Project       create_project (String project_name); ///< Create a new project (name is modified to be unique if necessary.
   void          destroy_project (Project project);    ///< Destroy a previously created new project.
+  AuxDataSeq     list_module_types ();                   ///< A list of Source type names for create_source().
+  AuxData        find_module_type  (String module_type); ///< Retrieve info about a Source type names.
+  Icon           module_type_icon  (String module_type); ///< Retrieve the icon associated with a module type.
+  SampleFileInfo sample_file_info  (String file_name); ///< Load sample file info from file.
 };
 
 } // Bse

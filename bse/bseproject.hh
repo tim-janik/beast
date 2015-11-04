@@ -50,8 +50,6 @@ void		bse_project_keep_activated	(BseProject	*project,
 						 guint64	 min_tick);
 void		bse_project_state_changed	(BseProject	*project,
 						 BseProjectState state);
-BseStringSeq*	bse_project_list_upaths		(BseProject	*project,
-						 GType  	 item_type);
 Bse::ErrorType	bse_project_restore		(BseProject	*project,
 						 BseStorage	*storage);
 Bse::ErrorType	bse_project_store_bse		(BseProject	*project,
