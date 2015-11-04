@@ -131,6 +131,7 @@ public:
   virtual AuxDataSeq list_module_types      () override;
   virtual AuxData    find_module_type       (const String &module_type) override;
   virtual Icon       module_type_icon       (const String &module_type) override;
+  virtual SampleFileInfo sample_file_info   (const String &filename) override;
   void               send_user_message      (const UserMessage &umsg);
   static void        register_source_module (const String &type, const String &title, const String &tags, const uint8 *pixstream);
   static ServerImpl& instance               ();

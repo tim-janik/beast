@@ -60,17 +60,16 @@ file_store_idle_handler (gpointer data)
       GtkTreePath *path = gtk_tree_path_new_from_indices (n_completed, -1);
       const gchar *filename = NULL;
       GtkTreeIter iter;
-      BseSampleFileInfo *info;
-      const gchar *loader, *name = NULL;
+      String loader, name;
       gchar *nstr = NULL;
       gtk_tree_model_get_iter (model, &iter, path);
       gtk_tree_path_free (path);
       gtk_tree_model_get (model, &iter,
                           BST_FILE_STORE_COL_FILE, &filename,
                           -1);
-      info = bse_sample_file_info (filename);
+      Bse::SampleFileInfo info = bse_server.sample_file_info (filename);
       const gchar *dsep = strrchr (filename, G_DIR_SEPARATOR);
-      if (info->error == Bse::ERROR_FILE_IS_DIR)
+      if (info.error == Bse::ERROR_FILE_IS_DIR)
         {
           loader = "Directory";
           name = dsep ? dsep + 1 : filename;    /* fallback wave name */
@@ -78,9 +77,9 @@ file_store_idle_handler (gpointer data)
       else
         {
           name = dsep ? dsep + 1 : filename;    /* fallback wave name */
-          loader = info->error ? Bse::error_blurb (Bse::ErrorType (info->error)) : info->loader;
+          loader = info.error ? Bse::error_blurb (info.error) : info.loader;
           guint l = strlen (filename);
-          if (info->error == Bse::ERROR_FORMAT_UNKNOWN &&
+          if (info.error == Bse::ERROR_FORMAT_UNKNOWN &&
               l >= 4 && strcasecmp (filename + l - 4, ".bse") == 0)
             {
               nstr = bst_file_scan_find_key (filename, "container-child", NULL);
@@ -91,21 +90,21 @@ file_store_idle_handler (gpointer data)
                     {
                       name = col + 1;
                       loader = "BSE Project";
-                      info->error = 0;
+                      info.error = Bse::ErrorType (0);
                     }
                 }
             }
         }
-      if (info->waves->n_strings)
-        name = info->waves->strings[0];
-      gchar *tstr = sfi_time_to_string (info->mtime);
+      if (info.waves.size())
+        name = info.waves[0];
+      gchar *tstr = sfi_time_to_string (info.mtime);
       gtk_tree_store_set (store, &iter,
-                          BST_FILE_STORE_COL_WAVE_NAME, name,   /* real wave name */
-                          BST_FILE_STORE_COL_SIZE, (guint) info->size,
-                          BST_FILE_STORE_COL_TIME_USECS, info->mtime,
+                          BST_FILE_STORE_COL_WAVE_NAME, name.c_str(),   /* real wave name */
+                          BST_FILE_STORE_COL_SIZE, size_t (info.size),
+                          BST_FILE_STORE_COL_TIME_USECS, info.mtime,
                           BST_FILE_STORE_COL_TIME_STR, tstr,
-                          BST_FILE_STORE_COL_LOADER, loader,
-                          BST_FILE_STORE_COL_LOADABLE, info->error == 0 && info->loader,
+                          BST_FILE_STORE_COL_LOADER, loader.c_str(),
+                          BST_FILE_STORE_COL_LOADABLE, info.error == 0 && !info.loader.empty(),
                           -1);
       g_free (tstr);
       g_free (nstr);

@@ -18,6 +18,7 @@
 #include "bseladspa.hh"
 #include <sys/time.h>
 #include <sys/resource.h>
+#include <sys/stat.h>
 #include <fcntl.h>
 #include <unistd.h>
 #include <string.h>
@@ -1544,6 +1545,30 @@ ServerImpl::module_type_icon (const String &module_type)
     if (ad.entity == module_type)
       return ad.icon;
   return Icon();
+}
+
+SampleFileInfo
+ServerImpl::sample_file_info (const String &filename)
+{
+  SampleFileInfo info;
+  info.file = filename;
+  struct stat sbuf = { 0, };
+  if (stat (filename.c_str(), &sbuf) < 0)
+    info.error = bse_error_from_errno (errno, Bse::ERROR_FILE_OPEN_FAILED);
+  else
+    {
+      info.size = sbuf.st_size;
+      info.mtime = sbuf.st_mtime * SFI_USEC_FACTOR;
+      BseWaveFileInfo *wfi = bse_wave_file_info_load (filename.c_str(), &info.error);
+      if (wfi)
+	{
+	  for (size_t i = 0; i < wfi->n_waves; i++)
+	    info.waves.push_back (wfi->waves[i].name);
+	  info.loader = bse_wave_file_info_loader (wfi);
+          bse_wave_file_info_unref (wfi);
+        }
+    }
+  return info;
 }
 
 } // Bse
