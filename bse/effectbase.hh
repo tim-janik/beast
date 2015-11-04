@@ -1,6 +1,6 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
-#ifndef __BSE_INTERNALS_HH__
-#define __BSE_INTERNALS_HH__
+#ifndef __BSE_EFFECTBASE_HH__
+#define __BSE_EFFECTBASE_HH__
 
 #include <bse/bseenums.hh>
 #include <bse/bsemathsignal.hh>
@@ -11,4 +11,4 @@
 #include <bse/bsemain.hh>
 #include <bse/bsecxxplugin.hh>
 
-#endif /* __BSE_INTERNALS_HH__ */
+#endif /* __BSE_EFFECTBASE_HH__ */

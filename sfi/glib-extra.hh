@@ -306,7 +306,7 @@ GScanner*	g_scanner_new64			(const GScannerConfig *config_templ);
 // == BSE_INSTALLPATH ==
 // See also configure.ac, this function is here because all of sfi, bse and beast include this file.
 enum BseInstallpathType {
-  BSE_INSTALLPATH_INCLUDES = 1,
+  BSE_INSTALLPATH_BSEINCLUDEDIR = 1,
   BSE_INSTALLPATH_BINDIR,
   BSE_INSTALLPATH_LOCALEBASE,
   BSE_INSTALLPATH_LADSPA,

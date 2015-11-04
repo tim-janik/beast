@@ -33,7 +33,7 @@ bse_public_headers = $(strip \
 	bsebus.hh		bsecategories.hh 	\
 	bsefilter.hh    		bsebiquadfilter.hh	\
 	bseconstant.hh		bseconstvalues.hh	bsecontainer.hh			bsecontextmerger.hh \
-	bseclientapi.hh		\
+	bseclientapi.hh		bseserverapi.hh		effectbase.hh			\
 				bseeditablesample.hh	bseenums.hh			bsegconfig.hh \
 	bseglobals.hh		bseglue.hh		bseitem.hh			bsejanitor.hh \
 	bsemain.hh		bsemath.hh		bsemathsignal.hh			bseladspa.hh \
@@ -129,14 +129,13 @@ EXTRA_DIST += $(strip \
 	bsewave.header						\
 	gsl-fftgen.pl	gsl-fftconf.sh	gsloscillator-aux.cc	\
 	gslincluder.hh	gslwaveosc-aux.cc			\
-	bse-internals.hh					\
 )
 
 #
 # BSE library
 #
 lib_LTLIBRARIES                      = libbse-@MAJOR@.la
-libbse_@MAJOR@includedir             = $(includedir)/bse-@MAJOR@/bse
+libbse_@MAJOR@includedir             = $(bseincludedir)/bse
 libbse_@MAJOR@include_HEADERS        = $(bse_public_headers) bse.idl $(bse_idl_sources) bsehack.idl $(idl_dummy_files)
 nodist_libbse_@MAJOR@include_HEADERS = bsebasics.genidl.hh
 libbse_@MAJOR@_la_SOURCES            = $(bse_sources) $(bse_proc_gen_sources)
