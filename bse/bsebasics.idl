@@ -23,9 +23,6 @@ Const MINDB = -96; /* 32bit:-192 24bit:-144 16bit:-96 */
 sequence TypeSeq {
   SfiString types;
 };
-sequence Str1ngSeq {
-  SfiString strings;
-};
 sequence FloatSeq {
   Real values;
 };

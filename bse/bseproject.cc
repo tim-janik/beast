@@ -430,46 +430,6 @@ bse_project_retrieve_child (BseContainer *container,
     }
 }
 
-static gboolean
-add_item_upaths (BseItem *item,
-		 gpointer data_p)
-{
-  gpointer *data = (void**) data_p;
-  BseStr1ngSeq *sseq = (BseStr1ngSeq*) data[0];
-  GType item_type = (GType) data[1];
-  BseContainer *container = (BseContainer*) data[2];
-
-  if (g_type_is_a (BSE_OBJECT_TYPE (item), item_type))
-    {
-      gchar *upath = bse_container_make_upath (container, item);
-      bse_str1ng_seq_append (sseq, upath);
-      g_free (upath);
-    }
-  if (BSE_IS_CONTAINER (item))
-    bse_container_forall_items (BSE_CONTAINER (item), add_item_upaths, data);
-
-  return TRUE;
-}
-
-BseStr1ngSeq*
-bse_project_list_upaths (BseProject *self,
-			 GType       item_type)
-{
-  gpointer data[3];
-  BseStr1ngSeq *sseq;
-
-  assert_return (BSE_IS_PROJECT (self), NULL);
-  assert_return (g_type_is_a (item_type, BSE_TYPE_ITEM), NULL);
-
-  sseq = bse_str1ng_seq_new ();
-  data[0] = sseq;
-  data[1] = (gpointer) item_type;
-  data[2] = self;
-  bse_container_forall_items (BSE_CONTAINER (self), add_item_upaths, data);
-
-  return sseq;
-}
-
 static GSList*
 compute_missing_supers (BseProject *self,
                         BseStorage *storage)
