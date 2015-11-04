@@ -1,83 +1,80 @@
-# This Source Code Form is licensed MPLv2: http://mozilla.org/MPL/2.0
+# This Source Code Form is licensed MPL-2.0: http://mozilla.org/MPL/2.0
 #
 # http://docs.travis-ci.com/user/customizing-the-build/
 # http://lint.travis-ci.org/
 
 language: cpp
 
-os:
-  - linux
+os: linux
 
 dist: trusty
-
-compiler:
-  - gcc
-  #- clang
 
 matrix:
   fast_finish: true
 
+sudo: required # needed for apt-get and pbuilder
 #sudo: false   # http://docs.travis-ci.com/user/workers/container-based-infrastructure/
-sudo: required # needed to install cython and libcroco3-dev
 
 addons:
   apt:
-    sources: # https://github.com/travis-ci/apt-source-whitelist/blob/master/ubuntu.json
-      - ubuntu-toolchain-r-test
-    packages: [
-      # g++ >= 4.8 is required for -std=c++11
-      gcc-5, g++-5,
-      # Rapicorn1410 dependencies
-      libcairo2-dev, libpango1.0-dev, python2.7-dev, libxml2-dev, libgdk-pixbuf2.0-dev, libreadline6-dev,
-      # Rapicorn1509 dependencies
-      cython, libcroco3-dev,
-      # Beast09 dependencies
-      libasound2-dev, libflac-dev, libvorbis-dev, libmad0-dev, guile-1.8-dev, libgnomecanvas2-dev, libxml2-utils,
-      # devel-mode dependencies
-      intltool, autoconf-archive, bison, flex, pandoc, doxygen, graphviz, texlive-binaries, xvfb ]
+    packages: [ pbuilder, devscripts, debhelper, dh-autoreconf ] # debootstrap
 
 before_install:
   - uname -a
-  - cat /etc/lsb-release
+  - cat /etc/os-release
   - pwd
   - free -tm
   - make --version
-  - autoconf --version
-  - automake --version
   - python --version
-  - flex --version
-  - bison --version
-  - which doxygen && doxygen --version
-  - which bibtex && bibtex --version
-  - if [ "$CXX" = "g++" ]; then export CXX="g++-5" CC="gcc-5"; fi
+  - $CC --version
   - $CXX --version
 
 install:
-  - travis_retry sudo apt-get install -y libcroco3-dev
-  - travis_retry sudo pip install 'cython>=0.20.2'
-  - travis_retry git clone --depth=1 https://github.com/tim-janik/rapicorn.git ../rapicorn
-  - (cd ../rapicorn && ./autogen.sh && make && sudo make install)
+  # a complete repository is required for versioned package builds
+  - travis_retry git fetch --unshallow
+  - git clean -f && pwd
+  # fetch citool.sh from Rapicorn
+  - travis_retry wget -c https://raw.githubusercontent.com/tim-janik/rapicorn/772653869a2b0e70/citool.sh
+  - chmod +x citool.sh
+  # show CI config
+  - ./citool.sh config
+  # sources for build packages
+  - SOURCES=$'deb [trusted=yes] https://dl.bintray.com/beast-team/deb vivid main'
+  # setup pbuilder environment
+  - travis_retry ./citool.sh pcreate vivid "$SOURCES"
+  #- echo 'apt-get -y install ccache' | sudo pbuilder --login --save-after-login
+  # packages needed for an upstream git build
+  - P="build-essential automake autoconf autoconf-archive libtool intltool bison flex"
+    P="$P libcairo2-dev libcroco3-dev libpango1.0-dev python2.7-dev libxml2-dev libgdk-pixbuf2.0-dev libreadline6-dev"
+    P="$P cython doxygen graphviz texlive-binaries xvfb pandoc git"
+    P="$P libasound2-dev libflac-dev libvorbis-dev libmad0-dev guile-1.8-dev libgnomecanvas2-dev libxml2-utils rapicorn"
+  # build dist tarball
+  - ./citool.sh pdist $P
+  # check/show single dist tarball
+  - TARBALL=`ls cidir/*tar.xz | head -1` && ls -dl $TARBALL | tee /dev/stderr | test 1 -eq `wc -l`
+  # build debian packages
+  - EMAIL=beast@gnome.org ./citool.sh pbuild $TARBALL debian/
+  - ls -al "cidir/"
 
 before_script:
-  - travis_retry sudo apt-get install -y guile-1.8-dev libgnomecanvas2-dev
-  - git clean -f
-  - ./autogen.sh
-  - make V=1
+  - true
 
 script:
-  - make check V=1
-  - sudo make install V=1
-  - make installcheck V=1
-  - make report V=1
-  - make dist V=1
-  - sudo make uninstall V=1
-  - make clean
+  # upload debian packages
+  - ./citool.sh bintrayup beast-team vivid deb/beast cidir/*.deb
 
 after_success:
-  - echo "Done, build OK!"
+  - echo "Done, all OK!"
 
 notifications:
   irc:
     channels:
       - "irc.gimp.org#beast"
+    on_success: change # always / never / change
+    on_failure: change # always / never / change
+    skip_join: true
   email: false
+    #recipients:
+    #  - beast@gnome.org
+    #on_success: change
+    #on_failure: change

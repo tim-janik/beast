@@ -3,8 +3,8 @@ include $(top_srcdir)/Makefile.decl
 
 SUBDIRS = . data sfi bse plugins drivers shell beast-gtk launchers library tools po tests docs
 
-EXTRA_DIST += HACKING.md
 noinst_DATA = HACKING.html
+EXTRA_DIST += HACKING.html
 CLEANFILES += HACKING.html
 
 ACLOCAL_AMFLAGS  = -I autotools

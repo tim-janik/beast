@@ -1,0 +1,33 @@
+Description: Leave mime updates to dh_installmime.
+Author: Tim Janik <timj@gnu.org>
+---
+This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
+Index: ./configure.ac
+===================================================================
+--- orig/configure.ac
++++ ./configure.ac
+@@ -631,7 +631,7 @@ AC_DEFUN([AC_DOC_REQUIREMENTS],
+ ])
+ 
+ # find installation utilities
+-AC_PATH_PROG(UPDATE_MIME_DATABASE, update-mime-database)
++dnl # AC_PATH_PROG(UPDATE_MIME_DATABASE, update-mime-database)
+ 
+ # == ENABLE_DEVEL_MODE ==
+ # check for development build rules, which require acess to .git/
+Index: data/Makefile.am
+===================================================================
+--- orig/data/Makefile.am
++++ ./data/Makefile.am
+@@ -96,7 +96,7 @@ bse.keys: bse.keys.in
+ EXTRA_DIST += $(mime_in_file)
+ 
+ # update mime database according to: http://www.freedesktop.org/Standards/shared-mime-info-spec
+-install-data-hook:
+-	test -z "$(UPDATE_MIME_DATABASE)" || $(UPDATE_MIME_DATABASE) "$(DESTDIR)${sharedmimedir}";
+-uninstall-local: uninstall-sharedmimepackageDATA
+-	test -z "$(UPDATE_MIME_DATABASE)" || $(UPDATE_MIME_DATABASE) "$(DESTDIR)${sharedmimedir}";
++#install-data-hook:
++#	test -z "$(UPDATE_MIME_DATABASE)" || $(UPDATE_MIME_DATABASE) "$(DESTDIR)${sharedmimedir}";
++#uninstall-local: uninstall-sharedmimepackageDATA
++#	test -z "$(UPDATE_MIME_DATABASE)" || $(UPDATE_MIME_DATABASE) "$(DESTDIR)${sharedmimedir}";

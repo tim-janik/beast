@@ -1,0 +1,61 @@
+Source: beast
+Section: sound
+Priority: optional
+Maintainer: Tim Janik <timj@gnu.org>
+Build-Depends: debhelper (>= 9), dh-python, python, dh-autoreconf,
+ libasound2-dev, libflac-dev, libvorbis-dev, libmad0-dev, guile-1.8-dev,
+ libgnomecanvas2-dev, libgtk2.0-dev, libxml2-utils, libxml-parser-perl,
+ librapicorn-dev, python-rapicorn
+Build-Depends-Indep: doxygen
+Standards-Version: 3.9.6
+Homepage: http://beast.testbit.eu
+Vcs-Browser: https://github.com/tim-janik/beast/tree/master/debian
+
+Package: beast
+Architecture: any
+Depends:
+ libbse-0-9 (= ${binary:Version}), beast-doc (= ${source:Version}),
+ rapicorn (>= 15.9.1), python-rapicorn (>= 15.9.1),
+ ${shlibs:Depends}, ${misc:Depends}
+Description: Music Synthesizer and Composer
+ Beast is a free software music composer and modular synthesizer.
+ .
+ It supports a wide range of standards in the field, such as MIDI,
+ FLAC/WAV/AIFF/MP3/OggVorbis audio files and LADSPA modules.
+ It allows for multitrack editing, unlimited undo/redo support,
+ real-time synthesis support, 32bit audio rendering and MMX/SSE
+ utilisation for synthesis plugins.
+ .
+ This package contains the main executable.
+
+Package: beast-doc
+Section: doc
+Architecture: all
+Depends: librapicorn-doc, ${misc:Depends}
+Description: Music Synthesizer and Composer
+ Beast is a free software music composer and modular synthesizer.
+ .
+ This package contains the reference documentation and user manual.
+
+Package: libbse-0-9
+Section: libs
+Architecture: any
+Pre-Depends: ${misc:Pre-Depends}
+Depends: librapicorn-15-9, ${shlibs:Depends}, ${misc:Depends}
+Breaks: beast (<< 0.7.4)
+Replaces: beast (<< 0.7.4)
+Description: Music Synthesizer and Composer
+ Beast is a free software music composer and modular synthesizer.
+ .
+ This package contains the BSE library.
+
+Package: libbse-dev
+Section: libdevel
+Architecture: any
+Depends: libbse-0-9 (= ${binary:Version}), librapicorn-dev (>= 15.9.1), ${shlibs:Depends}, ${misc:Depends}
+Breaks: libbse-0.7-4, bse-alsa (<< 0.9.3)
+Replaces: libbse-0.7-4, bse-alsa (<< 0.9.3)
+Description: Music Synthesizer and Composer
+ Beast is a free software music composer and modular synthesizer.
+ .
+ This package contains the BSE library include files.

@@ -1,0 +1,152 @@
+Format: http://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: beast
+Upstream-Contact: Tim Janik <timj@gnu.org>
+Source: https://github.com/tim-janik/beast/
+
+Files: *
+Copyright:
+  Copyright (C) 1997-2015, Tim Janik
+  Copyright (C) 2003-2015, Stefan Westerfeld
+License: LGPL-2.1+
+
+Files: debian/*
+Copyright:
+  Copyright (C) 2015 Tim Janik
+License: MPL-2.0
+Comment:
+ The debian/* are under MPL-2.0 so parts can be contributed to
+ rapicorn/debian/, Rapicorn is MPL-2.0 licensed as a whole.
+
+Files: po/*
+Copyright:
+ Copyright (C) 2003-2010, GNOME Translation Teams
+License: LGPL-2.1+
+
+Files: bse/ladspa.hh
+Copyright:
+ Copyright (C) 2000-2002 Richard W.E. Furse
+ Copyright (C) 2000-2002 Paul Barton-Davis
+ Copyright (C) 2000-2002 Stefan Westerfeld
+License: LGPL-2.1+
+
+Files: plugins/davbassfilter.cc
+Copyright:
+ Copyright (C) 1999, 2000 David A. Bartold
+ Copyright (C) 1998 Andy Sloane
+License: LGPL-2.1+
+Comment: Only the code in update_locals() is
+ Copyright (C) 1998 Andy Sloane.
+
+Files: plugins/davcanyondelay.cc plugins/davchorus.cc plugins/davguitar.c
+ plugins/davorgan.cc plugins/davsyndrum.cc plugins/davxtalstrings.cc
+Copyright: Copyright (C) 1999, 2000 David A. Bartold
+License: LGPL-2.1+
+
+Files: plugins/bsecontribsampleandhold.cc
+Copyright: Copyright (C) 2004 Artem Popov <tfwo@mail.ru>
+License: LGPL-2.1+
+
+Files: plugins/artscompressor.cc
+Copyright: Copyright (C) 2001 Matthias Kretz <kretz@kde.org>
+License: LGPL-2.1+
+
+Files: beast-gtk/gxk/gxksimplelabel.c
+Copyright: Copyright (C) 1997-2000 the GTK+ Team and others
+License: LGPL-2.1+
+
+Files: beast-gtk/gxk/gxkutils.cc
+Copyright: Copyright (C) 2000 Michael Natterer <mitch@gimp.org>
+License: LGPL-2.1+
+Comment: Only the code in gxk_label_set_attributes() is
+ Copyright (C) 2000 Michael Natterer.
+
+Files: launchers/beaststart.c launchers/bseshstart.c
+ launchers/suidmain.c launchers/suidmain.h
+Copyright: Public Domain - no copyright holder
+ Authors 1997-2015 Tim Janik, Stefan Westerfeld
+License: cc0-public-domain
+
+Files: plugins/freeverb/*
+Copyright: Public Domain - no copyright holder
+ Written by Jezar at Dreampoint, June 2000
+License: freeverb-public-domain
+ Freeverb - Free, studio-quality reverb
+ SOURCE CODE in the public domain
+ .
+ This software and source code is given away for
+ free, without any warranties of any kind.
+ .
+ This code is public domain
+
+Files: library/instruments/*
+Copyright: Public Domain - no copyright holder
+ Author 2007 William DeVore
+ Author 2007 Krzysztof Foltman
+ Author 2003-2015 Tim Janik, Stefan Westerfeld
+License: public-domain-without-warranty
+
+License: LGPL-2.1+
+ This library is free software: you can redistribute it and/or
+ modify it under the terms of the GNU Lesser General Public
+ License as published by the Free Software Foundation, either
+ version 2.1 of the License, or (at your option) any later version.
+ .
+ This library is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU Lesser General Public License for more details.
+ .
+ You should have received a copy of the GNU Lesser General Public
+ License along with this library.  If not, see:
+   http://www.gnu.org/licenses/.
+ .
+ On Debian systems, the complete text of the GNU Lesser General
+ Public License version 2.1 can be found in:
+   /usr/share/common-licenses/LGPL-2.1
+
+License: MPL-2.0
+ This Source Code Form is subject to the terms of the Mozilla Public
+ License Version 2.0. If a copy of the MPL was not distributed with
+ this file, You can obtain one at:
+   https://mozilla.org/MPL/2.0/.
+
+License: cc0-public-domain
+ Public Domain Dedication - No Copyright
+ .
+ The person who associated a work with this deed has dedicated the work
+ to the public domain by waiving all of his or her rights to the work
+ worldwide under copyright law, including all related and neighboring
+ rights, to the extent allowed by law.
+ You can copy, modify, distribute and perform the work, even for
+ commercial purposes, all without asking permission.
+ .
+ In no way are the patent or trademark rights of any person affected
+ by CC0, nor are the rights that other persons may have in the work
+ or in how the work is used, such as publicity or privacy rights.
+ Unless expressly stated otherwise, the person who associated a work
+ with this deed makes no warranties about the work, and disclaims
+ liability for all uses of the work, to the fullest extent permitted
+ by applicable law.
+ When using or citing the work, you should not imply endorsement by
+ the author or the affirmer.
+ .
+ The complete text of the CC0 Public Domain License is provided here:
+   http://creativecommons.org/publicdomain/zero/1.0/
+
+License: public-domain-without-warranty
+ This work is provided "as is"; redistribution and modification
+ in whole or in part, in any medium, physical or electronic is
+ permitted without restriction.
+ .
+ This work is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ .
+ In no event shall the authors or contributors be liable for any
+ direct, indirect, incidental, special, exemplary, or consequential
+ damages (including, but not limited to, procurement of substitute
+ goods or services; loss of use, data, or profits; or business
+ interruption) however caused and on any theory of liability, whether
+ in contract, strict liability, or tort (including negligence or
+ otherwise) arising in any way out of the use of this software, even
+ if advised of the possibility of such damage.
