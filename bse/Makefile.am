@@ -33,7 +33,7 @@ bse_public_headers = $(strip \
 	bsebus.hh		bsecategories.hh 	\
 	bsefilter.hh    		bsebiquadfilter.hh	\
 	bseconstant.hh		bseconstvalues.hh	bsecontainer.hh			bsecontextmerger.hh \
-	bseclientapi.hh		bseserverapi.hh		bse-internals.hh		\
+	bseclientapi.hh		bseserverapi.hh		effectbase.hh			\
 				bseeditablesample.hh	bseenums.hh			bsegconfig.hh \
 	bseglobals.hh		bseglue.hh		bseitem.hh			bsejanitor.hh \
 	bsemain.hh		bsemath.hh		bsemathsignal.hh			bseladspa.hh \
