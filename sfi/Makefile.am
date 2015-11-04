@@ -35,7 +35,7 @@ $(sfi_all_sources): $(sfi_built_sources)
 
 # SFI library
 noinst_LTLIBRARIES            = libsfi-@MAJOR@.la
-libsfi_@MAJOR@includedir      = $(includedir)/bse-@MAJOR@/sfi
+libsfi_@MAJOR@includedir      = $(bseincludedir)/sfi
 libsfi_@MAJOR@include_HEADERS = $(sfi_public_headers)
 libsfi_@MAJOR@_la_SOURCES     = $(sfi_all_sources)
 libsfi_@MAJOR@_la_LIBADD      = $(SFI_LIBS) -lm

@@ -3,8 +3,7 @@ exec_prefix=@exec_prefix@
 libdir=@libdir@
 datarootdir=@datarootdir@
 datadir=@datadir@
-includedir=@includedir@
-pkgincludedir=@includedir@/bse-@MAJOR@
+bseincludedir=@bseincludedir@
 
 sfidl=@exec_prefix@/sfidl
 demodir=@datadir@/demo
@@ -20,4 +19,4 @@ Description: Beast & Bse are an audio tracker and audio synthesis engine.
 Requires: @BSE_PC_REQUIRE@ gobject-2.0 gmodule-2.0 rapicorn
 Version: @PACKAGE_VERSION@
 Libs: -L${libdir} -lbse-@MAJOR@ @BSE_PC_LIBS@
-Cflags: -I${pkgincludedir} @BSE_PC_CFLAGS@
+Cflags: -I${bseincludedir} @BSE_PC_CFLAGS@

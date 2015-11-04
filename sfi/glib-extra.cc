@@ -1033,7 +1033,7 @@ bse_installpath (BseInstallpathType installpath_type)
 {
   switch (installpath_type)
     {
-    case BSE_INSTALLPATH_INCLUDES:                      return INSTALLPATH_INCLUDES;
+    case BSE_INSTALLPATH_BSEINCLUDEDIR:                 return INSTALLPATH_BSEINCLUDEDIR;
     case BSE_INSTALLPATH_BINDIR:                        return INSTALLPATH_BINDIR;
     case BSE_INSTALLPATH_LOCALEBASE:                    return INSTALLPATH_LOCALEBASE;
     case BSE_INSTALLPATH_LADSPA:                        return INSTALLPATH_LADSPA;

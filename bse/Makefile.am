@@ -135,7 +135,7 @@ EXTRA_DIST += $(strip \
 # BSE library
 #
 lib_LTLIBRARIES                      = libbse-@MAJOR@.la
-libbse_@MAJOR@includedir             = $(includedir)/bse-@MAJOR@/bse
+libbse_@MAJOR@includedir             = $(bseincludedir)/bse
 libbse_@MAJOR@include_HEADERS        = $(bse_public_headers) bse.idl $(bse_idl_sources) bsehack.idl $(idl_dummy_files)
 nodist_libbse_@MAJOR@include_HEADERS = bsebasics.genidl.hh
 libbse_@MAJOR@_la_SOURCES            = $(bse_sources) $(bse_proc_gen_sources)

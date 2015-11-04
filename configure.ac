@@ -73,18 +73,22 @@ LT_VERSION_INFO="$lt_current:$lt_revision:$lt_age"
 AC_SUBST(LT_VERSION_INFO)
 
 # Define package directories per major/minor version
+bseincludedir="\${includedir}/bse-$MAJOR"
 bselibdir="\${libdir}/bse-$MAJOR.$MINOR.$MICRO"
 datadir="\${datarootdir}/beast"
 docdir="${datarootdir}/doc/beast" # "beast-$MAJOR"
 # Substitute directories in Makefiles
+AC_SUBST(bseincludedir)
 AC_SUBST(bselibdir)
 AC_SUBST(datadir)
 AC_SUBST(docdir)
 # Provide directories for C++
-bak_prefix="$prefix" ; bak_exec_prefix="$exec_prefix" ; bak_libdir="$libdir" ; bak_datarootdir="$datarootdir" ; bak_datadir="$datadir"
+bak_prefix="$prefix"; bak_exec_prefix="$exec_prefix"; bak_libdir="$libdir"
+bak_datarootdir="$datarootdir"; bak_datadir="$datadir"; bak_includedir="$includedir"
 test "x$prefix" = xNONE && prefix="$ac_default_prefix" ; test "x$exec_prefix" = xNONE && exec_prefix="$prefix"
-libdir=`eval echo "${libdir}"` ; datarootdir=`eval echo "${datarootdir}"` ; datadir=`eval echo "${datadir}"`
-AC_DEFINE_UNQUOTED(INSTALLPATH_INCLUDES, ["`eval echo "${includedir}"`"], [Base directory for standard include files])
+libdir=`eval echo "${libdir}"` ; datarootdir=`eval echo "${datarootdir}"` ;
+datadir=`eval echo "${datadir}"`; bseincludedir=`eval echo "${bseincludedir}"`
+AC_DEFINE_UNQUOTED(INSTALLPATH_BSEINCLUDEDIR, ["`eval echo "${bseincludedir}"`"], [Sfidl standard include directory])
 AC_DEFINE_UNQUOTED(INSTALLPATH_BINDIR, ["`eval echo "${bindir}"`"], [Directory to install and execute programs])
 AC_DEFINE_UNQUOTED(INSTALLPATH_LOCALEBASE, ["`eval echo ${localedir}`"], [Base directory for locale specific message catalogs])
 AC_DEFINE_UNQUOTED(INSTALLPATH_LADSPA, ["`eval echo ${libdir}/ladspa`"], [Searchpath for LADSPA plugins])
@@ -92,7 +96,8 @@ AC_DEFINE_UNQUOTED(INSTALLPATH_BSELIBDIR, ["`eval echo ${bselibdir}`"], [Directo
 AC_DEFINE_UNQUOTED(INSTALLPATH_DATADIR, ["`eval echo ${datadir}`"], [Directory to install samples, effects, scripts, etc])
 AC_DEFINE_UNQUOTED(INSTALLPATH_DOCDIR, ["`eval echo ${docdir}`"], [Directory to install documentation])
 AC_DEFINE_UNQUOTED(INSTALLPATH_USER_DATA, ["~/beast"], [Searchpath for user owned Beast resources])
-prefix="$bak_prefix" ; exec_prefix="$bak_exec_prefix" ; libdir="$bak_libdir" ; datarootdir="$bak_datarootdir" ; datadir="$bak_datadir"
+prefix="$bak_prefix"; exec_prefix="$bak_exec_prefix"; libdir="$bak_libdir"
+datarootdir="$bak_datarootdir"; datadir="$bak_datadir"; includedir="$bak_includedir"
 
 # Build tree checks
 AC_MSG_CHECKING([for git repository])
