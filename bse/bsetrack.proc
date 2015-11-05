@@ -43,7 +43,7 @@ METHOD (BseTrack, list-parts-uniq) {
   IN    = bse_param_spec_object ("track", "Track", NULL,
 				 BSE_TYPE_TRACK, SFI_PARAM_STANDARD);
   OUT   = bse_param_spec_boxed ("part_list", "Part List", NULL,
-				BSE_TYPE_ITEM_SEQ, SFI_PARAM_STANDARD); // FIXME: should use BsePartSeq here
+				BSE_TYPE_IT3M_SEQ, SFI_PARAM_STANDARD); // FIXME: should use BsePartSeq here
 }
 BODY (BseProcedureClass *proc,
       const GValue      *in_values,
@@ -65,7 +65,7 @@ BODY (BseProcedureClass *proc,
   bse_track_part_seq_free (tpseq);
   ring = sfi_ring_sort (ring, sfi_pointer_cmp, NULL);
   ring = sfi_ring_uniq (ring, sfi_pointer_cmp, NULL);
-  bse_value_take_boxed (out_values++, bse_item_seq_from_ring (ring));
+  bse_value_take_boxed (out_values++, bse_it3m_seq_from_ring (ring));
   sfi_ring_free (ring);
 
   return Bse::ERROR_NONE;

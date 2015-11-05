@@ -286,7 +286,7 @@ bse_item_compat_setup (BseItem         *self,
 typedef struct {
   BseItem              *item;
   void                 *data;
-  BseItemSeq           *iseq;
+  BseIt3mSeq           *iseq;
   GType                 base_type;
   BseItemCheckContainer ccheck;
   BseItemCheckProxy     pcheck;
@@ -301,7 +301,7 @@ gather_child (BseItem *child,
   if (child != gdata->item && !BSE_ITEM_INTERNAL (child) &&
       g_type_is_a (G_OBJECT_TYPE (child), gdata->base_type) &&
       (!gdata->pcheck || gdata->pcheck (child, gdata->item, gdata->data)))
-    bse_item_seq_append (gdata->iseq, child);
+    bse_it3m_seq_append (gdata->iseq, child);
   return TRUE;
 }
 
@@ -318,9 +318,9 @@ gather_child (BseItem *child,
  * starting out with @a item. For each container passing @a ccheck(), all
  * immediate children are tested for addition with @a pcheck.
  */
-BseItemSeq*
+BseIt3mSeq*
 bse_item_gather_items (BseItem              *item,
-                       BseItemSeq           *iseq,
+                       BseIt3mSeq           *iseq,
                        GType                 base_type,
                        BseItemCheckContainer ccheck,
                        BseItemCheckProxy     pcheck,
@@ -380,9 +380,9 @@ gather_typed_acheck (BseItem  *proxy,
  * and @a proxy_type respectively. Gathered items may not be ancestors
  * of @a item if @a allow_ancestor is FALSE.
  */
-BseItemSeq*
+BseIt3mSeq*
 bse_item_gather_items_typed (BseItem              *item,
-                             BseItemSeq           *iseq,
+                             BseIt3mSeq           *iseq,
                              GType                 proxy_type,
                              GType                 container_type,
                              gboolean              allow_ancestor)
@@ -410,7 +410,7 @@ bse_item_get_candidates (BseItem                *item,
   if (!pspec)
     return FALSE;
   if (!pc->items)
-    pc->items = bse_item_seq_new();
+    pc->items = bse_it3m_seq_new();
   if (!pc->partitions)
     pc->partitions = bse_type_seq_new();
   klass = (BseItemClass*) g_type_class_peek (pspec->owner_type);

@@ -48,14 +48,14 @@ bst_preferences_init (BstPreferences *self)
   gxk_notebook_append (self->notebook, pchild, "BEAST", FALSE);
 
   kbinding = bst_pattern_controller_piano_keys();
-  Bst::KeyBindingItemSeq *iseq = bst_key_binding_get_new_item_seq (kbinding);
+  Bst::KeyBindingItemSeq *iseq = bst_key_binding_get_new_it3m_seq (kbinding);
   self->box_piano_keys = bst_key_binding_box (kbinding->binding_name, kbinding->n_funcs, kbinding->funcs, TRUE);
   bst_key_binding_box_set (self->box_piano_keys, iseq);
   delete iseq;
   gxk_notebook_append (self->notebook, self->box_piano_keys, _("Piano Keys"), FALSE);
 
   kbinding = bst_pattern_controller_generic_keys();
-  iseq = bst_key_binding_get_new_item_seq (kbinding);
+  iseq = bst_key_binding_get_new_it3m_seq (kbinding);
   self->box_generic_keys = bst_key_binding_box (kbinding->binding_name, kbinding->n_funcs, kbinding->funcs, FALSE);
   bst_key_binding_box_set (self->box_generic_keys, iseq);
   delete iseq;
@@ -177,12 +177,12 @@ bst_preferences_revert (BstPreferences *self)
   sfi_rec_unref (crec);
 
   kbinding = bst_pattern_controller_piano_keys();
-  Bst::KeyBindingItemSeq *iseq = bst_key_binding_get_new_item_seq (kbinding);
+  Bst::KeyBindingItemSeq *iseq = bst_key_binding_get_new_it3m_seq (kbinding);
   bst_key_binding_box_set (self->box_piano_keys, iseq);
   delete iseq;
 
   kbinding = bst_pattern_controller_generic_keys();
-  iseq = bst_key_binding_get_new_item_seq (kbinding);
+  iseq = bst_key_binding_get_new_it3m_seq (kbinding);
   bst_key_binding_box_set (self->box_generic_keys, iseq);
   delete iseq;
 
@@ -218,12 +218,12 @@ bst_preferences_default_revert (BstPreferences *self)
 
   kbinding = bst_pattern_controller_piano_keys();
   (void) kbinding;
-  Bst::KeyBindingItemSeq *iseq = bst_key_binding_get_new_item_seq (bst_pattern_controller_default_piano_keys());
+  Bst::KeyBindingItemSeq *iseq = bst_key_binding_get_new_it3m_seq (bst_pattern_controller_default_piano_keys());
   bst_key_binding_box_set (self->box_piano_keys, iseq);
   delete iseq;
 
   kbinding = bst_pattern_controller_generic_keys();
-  iseq = bst_key_binding_get_new_item_seq (bst_pattern_controller_default_generic_keys());
+  iseq = bst_key_binding_get_new_it3m_seq (bst_pattern_controller_default_generic_keys());
   bst_key_binding_box_set (self->box_generic_keys, iseq);
   delete iseq;
 
@@ -253,12 +253,12 @@ bst_preferences_apply (BstPreferences *self)
 
   kbinding = bst_pattern_controller_piano_keys();
   Bst::KeyBindingItemSeq *iseq = bst_key_binding_box_get_new (self->box_piano_keys);
-  bst_key_binding_set_item_seq (kbinding, *iseq);
+  bst_key_binding_set_it3m_seq (kbinding, *iseq);
   delete iseq;
 
   kbinding = bst_pattern_controller_generic_keys();
   iseq = bst_key_binding_box_get_new (self->box_generic_keys);
-  bst_key_binding_set_item_seq (kbinding, *iseq);
+  bst_key_binding_set_it3m_seq (kbinding, *iseq);
   delete iseq;
 
   Bst::MsgAbsorbStringSeq *mass = bst_msg_absorb_config_box_get (self->box_msg_absorb_config);

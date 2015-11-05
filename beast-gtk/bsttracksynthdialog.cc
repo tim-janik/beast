@@ -217,7 +217,7 @@ bst_track_synth_dialog_popup (gpointer     parent_widget,
                               SfiProxy     track,
                               const gchar *candidate_label,
                               const gchar *candidate_tooltip,
-                              BseItemSeq  *candidates,
+                              BseIt3mSeq  *candidates,
                               const gchar *wrepo_label,
                               const gchar *wrepo_tooltip,
                               SfiProxy     wrepo,
@@ -255,7 +255,7 @@ bst_track_synth_dialog_popup (gpointer     parent_widget,
 
 void
 bst_track_synth_dialog_set (BstTrackSynthDialog *self,
-                            BseItemSeq          *iseq,
+                            BseIt3mSeq          *iseq,
                             SfiProxy             wrepo)
 {
   assert_return (BST_IS_TRACK_SYNTH_DIALOG (self));

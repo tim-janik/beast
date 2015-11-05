@@ -453,7 +453,7 @@ bst_key_binding_box_set (GtkWidget *self, Bst::KeyBindingItemSeq *kbseq)
   BstKeyBinding *kbinding = (BstKeyBinding*) g_object_get_data ((GObject*) self, "BstKeyBinding");
   GtkTreeView *btview = (GtkTreeView*) gxk_radget_find (self, "binding-tree-view");
   GtkTreeModel *model = gtk_tree_view_get_model (btview);
-  bst_key_binding_set_item_seq (kbinding, *kbseq);
+  bst_key_binding_set_it3m_seq (kbinding, *kbseq);
   gxk_list_wrapper_notify_clear (GXK_LIST_WRAPPER (model));
   gxk_list_wrapper_notify_append (GXK_LIST_WRAPPER (model), kbinding->n_keys);
 }
@@ -462,7 +462,7 @@ Bst::KeyBindingItemSeq*
 bst_key_binding_box_get_new (GtkWidget *self)
 {
   BstKeyBinding *kbinding = (BstKeyBinding*) g_object_get_data ((GObject*) self, "BstKeyBinding");
-  return bst_key_binding_get_new_item_seq (kbinding);
+  return bst_key_binding_get_new_it3m_seq (kbinding);
 }
 
 BstKeyBindingKey*
@@ -518,7 +518,7 @@ key_binding_find_function (BstKeyBinding *kbinding,
 }
 
 void
-bst_key_binding_set_item_seq (BstKeyBinding *kbinding, const Bst::KeyBindingItemSeq &seq)
+bst_key_binding_set_it3m_seq (BstKeyBinding *kbinding, const Bst::KeyBindingItemSeq &seq)
 {
   BstKeyBindingKey *key;
   guint i;
@@ -547,7 +547,7 @@ bst_key_binding_set_item_seq (BstKeyBinding *kbinding, const Bst::KeyBindingItem
 }
 
 Bst::KeyBindingItemSeq*
-bst_key_binding_get_new_item_seq (BstKeyBinding *kbinding)
+bst_key_binding_get_new_it3m_seq (BstKeyBinding *kbinding)
 {
   Bst::KeyBindingItemSeq *iseq = new Bst::KeyBindingItemSeq();
   for (size_t i = 0; i < kbinding->n_keys; i++)
@@ -619,7 +619,7 @@ bst_key_binding_dump (const gchar *file_name,
   for (slist = kbindings; slist; slist = slist->next)
     {
       BstKeyBinding *kbinding = (BstKeyBinding*) slist->data;
-      Bst::KeyBindingItemSeq *iseq = bst_key_binding_get_new_item_seq (kbinding);
+      Bst::KeyBindingItemSeq *iseq = bst_key_binding_get_new_it3m_seq (kbinding);
       GParamSpec *pspec = sfi_pspec_seq (kbinding->binding_name, NULL, NULL, bst_key_binding_item_pspec(), SFI_PARAM_STANDARD);
       SfiSeq *seq = Bse::sfi_seq_new_from_visitable (*iseq);
       GValue *value = sfi_value_seq (seq);
@@ -663,7 +663,7 @@ key_binding_try_statement (gpointer   context_data,
             {
               Bst::KeyBindingItemSeq iseq;
               Bse::sfi_seq_to_visitable (seq, iseq);
-              bst_key_binding_set_item_seq (kbinding, iseq);
+              bst_key_binding_set_it3m_seq (kbinding, iseq);
             }
           sfi_value_free (value);
           return token;

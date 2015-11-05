@@ -542,7 +542,7 @@ bst_app_reload_pages (BstApp *self)
   SfiProxy old_item = self->ppages->selected ? (SfiProxy) self->ppages->selected->user_data : 0;
 
   /* collect page objects */
-  BseItemSeq *iseq = bse_project_get_supers (self->project.proxy_id());
+  BseIt3mSeq *iseq = bse_project_get_supers (self->project.proxy_id());
   SfiRing *ring, *proxies = NULL;
   guint i;
   for (i = 0; i < iseq->n_items; i++)
@@ -1095,7 +1095,7 @@ app_action_check (gpointer data,
   switch (action)
     {
       SfiProxy super;
-      BseItemSeq *iseq;
+      BseIt3mSeq *iseq;
       guint i;
     case BST_ACTION_NEW_PROJECT:
     case BST_ACTION_OPEN_PROJECT:

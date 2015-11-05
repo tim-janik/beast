@@ -64,14 +64,14 @@ typedef gboolean (*BseItemCheckProxy)        (BseItem        *proxy,
 
 
 /* --- prototypes --- */
-BseItemSeq*    bse_item_gather_items         (BseItem                *item,
-                                              BseItemSeq             *iseq,
+BseIt3mSeq*    bse_item_gather_items         (BseItem                *item,
+                                              BseIt3mSeq             *iseq,
                                               GType                   base_type,
                                               BseItemCheckContainer   ccheck,
                                               BseItemCheckProxy       pcheck,
                                               gpointer                data);
-BseItemSeq*    bse_item_gather_items_typed   (BseItem                *item,
-                                              BseItemSeq             *iseq,
+BseIt3mSeq*    bse_item_gather_items_typed   (BseItem                *item,
+                                              BseIt3mSeq             *iseq,
                                               GType                   proxy_type,
                                               GType                   container_type,
                                               gboolean                allow_ancestor);

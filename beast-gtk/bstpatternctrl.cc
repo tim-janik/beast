@@ -504,7 +504,7 @@ bst_pattern_controller_default_generic_keys (void)
       Bst::KeyBindingItemSeq iseq;
       for (size_t i = 0; i < G_N_ELEMENTS (dflt_keys); i++)
         iseq.push_back (key_binding_item_from_static (dflt_keys[i]));
-      bst_key_binding_set_item_seq (&kbinding, iseq);
+      bst_key_binding_set_it3m_seq (&kbinding, iseq);
     }
   return &kbinding;
 }
@@ -524,7 +524,7 @@ bst_pattern_controller_default_piano_keys (void)
       // setup default keys
       for (size_t i = 0; i < G_N_ELEMENTS (dflt_keys); i++)
         iseq.push_back (key_binding_item_from_static (dflt_keys[i]));
-      bst_key_binding_set_item_seq (&kbinding, iseq);
+      bst_key_binding_set_it3m_seq (&kbinding, iseq);
     }
   return &kbinding;
 }
@@ -538,8 +538,8 @@ bst_pattern_controller_generic_keys (void)
       BstKeyBinding *dflt_kbinding = bst_pattern_controller_default_generic_keys();
       kbinding.funcs = pattern_controller_get_functions (FALSE, &kbinding.n_funcs);
       // copy keys
-      Bst::KeyBindingItemSeq *iseq = bst_key_binding_get_new_item_seq (dflt_kbinding);
-      bst_key_binding_set_item_seq (&kbinding, *iseq);
+      Bst::KeyBindingItemSeq *iseq = bst_key_binding_get_new_it3m_seq (dflt_kbinding);
+      bst_key_binding_set_it3m_seq (&kbinding, *iseq);
       delete iseq;
     }
   return &kbinding;
@@ -554,8 +554,8 @@ bst_pattern_controller_piano_keys (void)
       BstKeyBinding *dflt_kbinding = bst_pattern_controller_default_piano_keys();
       kbinding.funcs = pattern_controller_get_functions (TRUE, &kbinding.n_funcs);
       // copy keys
-      Bst::KeyBindingItemSeq *iseq = bst_key_binding_get_new_item_seq (dflt_kbinding);
-      bst_key_binding_set_item_seq (&kbinding, *iseq);
+      Bst::KeyBindingItemSeq *iseq = bst_key_binding_get_new_it3m_seq (dflt_kbinding);
+      bst_key_binding_set_it3m_seq (&kbinding, *iseq);
       delete iseq;
     }
   return &kbinding;

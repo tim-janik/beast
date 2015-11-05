@@ -121,7 +121,7 @@ track_view_fill_value (BstItemView *iview,
       gboolean vbool;
       SfiInt vint;
       SfiProxy snet, wave;
-      BseItemSeq *iseq;
+      BseIt3mSeq *iseq;
       SfiSeq *seq;
     case COL_SEQID:
       sfi_value_take_string (value, g_strdup_format ("%03d", seqid));
@@ -148,14 +148,14 @@ track_view_fill_value (BstItemView *iview,
       break;
     case COL_OUTPUTS:
       bse_proxy_get (item, "outputs", &seq, NULL);
-      iseq = bse_item_seq_from_seq (seq);
+      iseq = bse_it3m_seq_from_seq (seq);
       if (iseq && iseq->n_items == 1)
         g_value_take_string (value, g_strdup_format ("%s", bse_item_get_name_or_type (iseq->items[0])));
       else if (iseq && iseq->n_items > 1)
         g_value_take_string (value, g_strdup_format ("#%u", iseq ? iseq->n_items : 0));
       else
         g_value_set_string (value, "");
-      bse_item_seq_free (iseq);
+      bse_it3m_seq_free (iseq);
       break;
     case COL_POST_SYNTH:
       snet = 0;
@@ -332,12 +332,12 @@ track_view_outputs_cleanup (gpointer data)
 
 static void
 track_view_outputs_changed (gpointer              data,
-                            BseItemSeq           *iseq,
+                            BseIt3mSeq           *iseq,
                             BstItemSeqDialog     *isdialog)
 {
   OutputsPopup *odata = (OutputsPopup*) data;
   gxk_cell_renderer_popup_change (odata->pcell, NULL, FALSE, FALSE);
-  SfiSeq *seq = bse_item_seq_to_seq (iseq);
+  SfiSeq *seq = bse_it3m_seq_to_seq (iseq);
   GValue *value = sfi_value_seq (seq);
   sfi_seq_unref (seq);
   bse_proxy_set_property (odata->item, "outputs", value);
@@ -360,13 +360,13 @@ track_view_outputs_popup (BstTrackView         *self,
       GParamSpec *pspec = bse_proxy_get_pspec (item, "outputs");
       const GValue *value = bse_proxy_get_property (item, "outputs");
       SfiSeq *seq = (SfiSeq*) g_value_get_boxed (value);
-      BseItemSeq *iseq = bse_item_seq_from_seq (seq);
+      BseIt3mSeq *iseq = bse_it3m_seq_from_seq (seq);
       OutputsPopup odata = { self, pcell, item };
       GtkWidget *dialog = bst_item_seq_dialog_popup (self, item,
                                                      pc->label, pc->tooltip, pc->items,
                                                      g_param_spec_get_nick (pspec), g_param_spec_get_blurb (pspec), iseq,
                                                      track_view_outputs_changed, g_memdup (&odata, sizeof (odata)), track_view_outputs_cleanup);
-      bse_item_seq_free (iseq);
+      bse_it3m_seq_free (iseq);
       gxk_cell_renderer_popup_dialog (pcell, dialog);
     }
 }
@@ -729,7 +729,7 @@ track_view_action_exec (gpointer data,
       item = bst_item_view_get_current (item_view);
       track = Bse::TrackH::down_cast (bse_server.from_proxy (item));
       bse_item_group_undo (song.proxy_id(), "Delete Track");
-      BseItemSeq *iseq = bse_track_list_parts_uniq (item);
+      BseIt3mSeq *iseq = bse_track_list_parts_uniq (item);
       song.remove_track (track);
       for (i = 0; i < iseq->n_items; i++)
         {

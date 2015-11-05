@@ -331,7 +331,7 @@ void
 bst_snet_router_update (BstSNetRouter *self)
 {
   GnomeCanvas *canvas;
-  BseItemSeq *iseq;
+  BseIt3mSeq *iseq;
   GSList *slist, *csources = NULL;
   guint i;
 

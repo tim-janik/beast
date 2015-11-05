@@ -10,7 +10,7 @@ bst_project_restore_from_file (Bse::ProjectH project, const gchar *file_name, bo
   /* regardless of how good the restoration worked, try to
    * keep the resulting project in a GUI usable state.
    */
-  BseItemSeq *iseq = bse_container_list_children (project.proxy_id());
+  BseIt3mSeq *iseq = bse_container_list_children (project.proxy_id());
   guint i;
   for (i = 0; i < iseq->n_items; i++)
     if (BSE_IS_SONG (iseq->items[i]))
@@ -39,7 +39,7 @@ bst_project_import_midi_file (Bse::ProjectH project, const gchar *file_name)
   /* regardless of how good the restoration worked, try to
    * keep the resulting project in a GUI usable state.
    */
-  BseItemSeq *iseq = bse_container_list_children (project.proxy_id());
+  BseIt3mSeq *iseq = bse_container_list_children (project.proxy_id());
   guint i;
   for (i = 0; i < iseq->n_items; i++)
     if (BSE_IS_SONG (iseq->items[i]))

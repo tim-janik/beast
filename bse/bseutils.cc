@@ -105,7 +105,7 @@ bse_property_candidate_relabel (BsePropertyCandidates *pc,
 }
 
 void
-bse_item_seq_remove (BseItemSeq *iseq,
+bse_it3m_seq_remove (BseIt3mSeq *iseq,
                      BseItem    *item)
 {
   guint i;
@@ -120,7 +120,7 @@ bse_item_seq_remove (BseItemSeq *iseq,
 }
 
 SfiRing*
-bse_item_seq_to_ring (BseItemSeq *iseq)
+bse_it3m_seq_to_ring (BseIt3mSeq *iseq)
 {
   SfiRing *ring = NULL;
   guint i;
@@ -130,13 +130,13 @@ bse_item_seq_to_ring (BseItemSeq *iseq)
   return ring;
 }
 
-BseItemSeq*
-bse_item_seq_from_ring (SfiRing *ring)
+BseIt3mSeq*
+bse_it3m_seq_from_ring (SfiRing *ring)
 {
-  BseItemSeq *iseq = bse_item_seq_new();
+  BseIt3mSeq *iseq = bse_it3m_seq_new();
   SfiRing *node;
   for (node = ring; node; node = sfi_ring_walk (node, ring))
-    bse_item_seq_append (iseq, (BseItem*) node->data);
+    bse_it3m_seq_append (iseq, (BseItem*) node->data);
   return iseq;
 }
 

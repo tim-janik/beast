@@ -283,7 +283,7 @@ bse_track_get_candidates (BseItem               *item,
       bse_bus_or_track_list_output_candidates (BSE_ITEM (self), pc->items);
       /* remove existing outputs */
       for (ring = self->bus_outputs; ring; ring = sfi_ring_walk (ring, self->bus_outputs))
-        bse_item_seq_remove (pc->items, (BseItem*) ring->data);
+        bse_it3m_seq_remove (pc->items, (BseItem*) ring->data);
       break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (self, param_id, pspec);
@@ -523,7 +523,7 @@ bse_track_set_property (GObject      *object,
 	}
       break;
     case PROP_OUTPUTS:
-      bse_bus_or_track_set_outputs (BSE_ITEM (self), (BseItemSeq*) g_value_get_boxed (value));
+      bse_bus_or_track_set_outputs (BSE_ITEM (self), (BseIt3mSeq*) g_value_get_boxed (value));
       break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (self, param_id, pspec);
@@ -541,7 +541,7 @@ bse_track_get_property (GObject    *object,
 
   switch (param_id)
     {
-      BseItemSeq *iseq;
+      BseIt3mSeq *iseq;
       SfiRing *ring;
     case PROP_MUTED:
       sfi_value_set_bool (value, self->muted_SL);
@@ -553,9 +553,9 @@ bse_track_get_property (GObject    *object,
       bse_value_set_object (value, self->pnet);
       break;
     case PROP_OUTPUTS:
-      iseq = bse_item_seq_new();
+      iseq = bse_it3m_seq_new();
       for (ring = self->bus_outputs; ring; ring = sfi_ring_walk (ring, self->bus_outputs))
-        bse_item_seq_append (iseq, (BseItem*) ring->data);
+        bse_it3m_seq_append (iseq, (BseItem*) ring->data);
       g_value_take_boxed (value, iseq);
       break;
     case PROP_WAVE:
@@ -1054,7 +1054,7 @@ bse_track_class_init (BseTrackClass *klass)
                               PROP_OUTPUTS,
                               bse_param_spec_boxed ("outputs", _("Output Signals"),
                                                     _("Mixer busses used as output for this track"),
-                                                    BSE_TYPE_ITEM_SEQ, SFI_PARAM_GUI ":item-sequence"));
+                                                    BSE_TYPE_IT3M_SEQ, SFI_PARAM_GUI ":item-sequence"));
   signal_changed = bse_object_class_add_asignal (object_class, "changed", G_TYPE_NONE, 0);
 }
 
