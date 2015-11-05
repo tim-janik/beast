@@ -379,15 +379,6 @@ sequence CategorySeq {
 /* BSE Part structures */
 interface Part;
 interface Track;
-/* BSE Track structures */
-record TrackPart {
-  Int           tick     = SfiInt ("Tick", "", 0, 0, G_MAXINT, 384, STANDARD);
-  Part          part;
-  Int           duration = SfiInt ("Duration", "", 0, 0, G_MAXINT, 384, STANDARD);
-};
-sequence TrackPartSeq {
-  TrackPart tparts;
-};
 interface Janitor;
 
 // == BSE Global Config ==

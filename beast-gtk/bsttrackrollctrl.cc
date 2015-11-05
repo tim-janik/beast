@@ -625,10 +625,8 @@ controller_drag (BstTrackRollController *self,
   if (drag->type == GXK_DRAG_START)
     {
       BstCommonRollTool obj_tool, tool;
-      BseTrackPart *tpart = NULL;
       const BstTrackRollUtil *tool_table;
       guint i, n_tools;
-      BseTrackPartSeq *tps;
 
       self->current_tool = NULL;	/* paranoid */
 
@@ -653,19 +651,19 @@ controller_drag (BstTrackRollController *self,
       /* setup drag data */
       if (!drag->start_valid)
 	drag->start_track = Bse::TrackH();
-      tps = drag->start_track ? bse_track_list_parts (drag->start_track.proxy_id()) : NULL;
-      if (tps && tps->n_tparts)	/* FIXME: BSE should have a convenience function to find a part */
-	{
-	  for (size_t j = 0; j < tps->n_tparts; j++)
-	    if (tps->tparts[j]->tick <= int (drag->start_tick) &&
-		tps->tparts[j]->tick + tps->tparts[j]->duration > int (drag->start_tick))
-	      {
-		tpart = tps->tparts[j];
-		break;
-	      }
-	}
+      Bse::TrackPartSeq tps;
+      if (drag->start_track)
+        tps = drag->start_track.list_parts();
+      const Bse::TrackPart *tpart = NULL;
+      for (const auto &tp : tps) // FIXME: BSE could have a convenience function to find a part
+        if (tp.tick <= int (drag->start_tick) &&
+            tp.tick + tp.duration > int (drag->start_tick))
+          {
+            tpart = &tp;
+            break;
+          }
       self->obj_track = drag->start_track;
-      self->obj_part = Bse::PartH::down_cast (bse_server.from_proxy (tpart ? tpart->part : 0));
+      self->obj_part = tpart ? Bse::PartH (tpart->part) : Bse::PartH();
       self->obj_tick = tpart ? tpart->tick : 0;
       self->obj_duration = tpart ? tpart->duration : 0;
       self->xoffset = 0;

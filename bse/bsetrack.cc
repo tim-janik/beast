@@ -614,9 +614,8 @@ bse_track_remove_tick (BseTrack *self,
     }
 }
 
-static BseTrackPartSeq*
-bse_track_list_parts_intern (BseTrack *self,
-                             BsePart  *part)
+static Bse::TrackPartSeq
+bse_track_list_parts_intern (BseTrack *self, BsePart *part)
 {
   BseItem *item = BSE_ITEM (self);
   BseSong *song = NULL;
@@ -624,40 +623,39 @@ bse_track_list_parts_intern (BseTrack *self,
     song = BSE_SONG (item->parent);
   Bse::SongTiming timing;
   bse_song_timing_get_default (&timing);
-  BseTrackPartSeq *tps = bse_track_part_seq_new ();
+  Bse::TrackPartSeq tps;
   gint i;
   for (i = 0; i < self->n_entries_SL; i++)
     {
       BseTrackEntry *entry = self->entries_SL + i;
       if (entry->part && (entry->part == part || !part))
 	{
-	  BseTrackPart tp = { 0, };
+          Bse::TrackPart tp;
 	  tp.tick = entry->tick;
-	  tp.part = entry->part;
+	  tp.part = entry->part->as<Bse::PartIfaceP>();
 	  if (song)
 	    bse_song_get_timing (song, tp.tick, &timing);
 	  tp.duration = MAX (uint (timing.tpt), entry->part->last_tick_SL);
 	  if (i + 1 < self->n_entries_SL)
 	    tp.duration = MIN (uint (tp.duration), entry[1].tick - entry->tick);
-	  bse_track_part_seq_append (tps, &tp);
+	  tps.push_back (tp);
 	}
     }
   return tps;
 }
 
-BseTrackPartSeq*
+Bse::TrackPartSeq
 bse_track_list_parts (BseTrack *self)
 {
-  assert_return (BSE_IS_TRACK (self), NULL);
+  assert_return (BSE_IS_TRACK (self), Bse::TrackPartSeq());
   return bse_track_list_parts_intern (self, NULL);
 }
 
-BseTrackPartSeq*
-bse_track_list_part (BseTrack *self,
-                     BsePart  *part)
+Bse::TrackPartSeq
+bse_track_list_part (BseTrack *self, BsePart *part)
 {
-  assert_return (BSE_IS_TRACK (self), NULL);
-  assert_return (BSE_IS_PART (part), NULL);
+  assert_return (BSE_IS_TRACK (self), Bse::TrackPartSeq());
+  assert_return (BSE_IS_PART (part), Bse::TrackPartSeq());
   return bse_track_list_parts_intern (self, part);
 }
 
@@ -1122,6 +1120,26 @@ TrackImpl::remove_link (int link_id)
   BseTrackEntry *entry = bse_track_find_link (self, link_id);
   if (entry)
     remove_tick (entry->tick);
+}
+
+PartSeq
+TrackImpl::list_parts_uniq ()
+{
+  BseTrack *self = as<BseTrack*>();
+  const TrackPartSeq &tpseq = bse_track_list_parts (self);
+  PartSeq parts;
+  for (const auto &tp : tpseq)
+    parts.push_back (tp.part);
+  std::sort (parts.begin(), parts.end());
+  parts.erase (std::unique (parts.begin(), parts.end()), parts.end());
+  return parts;
+}
+
+TrackPartSeq
+TrackImpl::list_parts ()
+{
+  BseTrack *self = as<BseTrack*>();
+  return bse_track_list_parts (self);
 }
 
 PartIfaceP
