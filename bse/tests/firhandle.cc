@@ -252,12 +252,12 @@ test_with_sine_sweep (FirHandleType type)
             m = e;
         }
       samples_per_second = sweep_sin.size() / (m / dups);
-      TMSG ("    %-28s : %+.14f samples/second",
-            string_format ("%s O64 mono", handle_name (type)).c_str(),
-            samples_per_second);
-      TMSG ("    %-28s : %+.14f streams",
-            string_format ("CPU %s mono", handle_name (type)).c_str(),
-            samples_per_second / 44100.0);
+      printout ("    %-28s : %+.14f samples/second",
+                string_format ("%s O64 mono", handle_name (type)).c_str(),
+                samples_per_second);
+      printout ("    %-28s : %+.14f streams",
+                string_format ("CPU %s mono", handle_name (type)).c_str(),
+                samples_per_second / 44100.0);
     }
 }
 
@@ -332,9 +332,9 @@ test_multi_channel (FirHandleType type)
 	      worst_diff = max (filtered - expected[i], worst_diff);
 	    }
 	  double worst_diff_db = bse_db_from_factor (worst_diff, -200);
-	  TOUT ("n_channels = %d: linear(%dst read) read worst_diff = %f (%f dB)\n",
-                n_channels, repeat, worst_diff, worst_diff_db);
-	  TASSERT (worst_diff_db < -90);
+          double max_db = -90;
+	  TCHECK (worst_diff_db < -90, "MultiChannel worst_diff check, n=%d r=%d d=%f db: %f < %f",
+                  n_channels, repeat, worst_diff, worst_diff_db, max_db);
 	}
     }
   TDONE();

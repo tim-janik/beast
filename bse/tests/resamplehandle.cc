@@ -91,7 +91,7 @@ check (const char           *up_down,
 	  worst_diff = max (fabs (resampled - expected[i]), worst_diff);
 	}
       worst_diff_db = bse_db_from_factor (worst_diff, -200);
-      TOUT ("linear(%dst read) read worst_diff = %f (%f dB)\n", repeat, worst_diff, worst_diff_db);
+      TPASS ("linear(%dst read) read worst_diff = %f (%f dB)", repeat, worst_diff, worst_diff_db);
       TASSERT (worst_diff_db < max_db);
     }
 
@@ -111,8 +111,7 @@ check (const char           *up_down,
 	}
     }
   worst_diff_db = bse_db_from_factor (worst_diff, -200);
-  TOUT ("seek worst_diff = %f (%f dB)\n", worst_diff, worst_diff_db);
-  TASSERT (worst_diff_db < max_db);
+  TCHECK (worst_diff_db < max_db, "seeking worst_diff (%f dB) below epsilon: %f < %f", worst_diff_db, worst_diff_db, max_db);
 
   TDONE();
 
@@ -136,8 +135,8 @@ check (const char           *up_down,
             m = e;
         }
       samples_per_second = input.size() / (m / dups);
-      TMSG ("    %-28s : %+.14f samples/second", samplestr, samples_per_second);
-      TMSG ("    %-28s : %+.14f streams", streamstr, samples_per_second / 44100.0);
+      TPASS ("    %-28s : %+.14f samples/second", samplestr, samples_per_second);
+      TPASS ("    %-28s : %+.14f streams", streamstr, samples_per_second / 44100.0);
       //TOUT ("  samples / second = %f\n", samples_per_second);
       //TOUT ("  which means the resampler can process %.2f 44100 Hz streams simultaneusly\n", samples_per_second / 44100.0);
       //TOUT ("  or one 44100 Hz stream takes %f %% CPU usage\n", 100.0 / (samples_per_second / 44100.0));
@@ -285,8 +284,7 @@ test_c_api (const char *run_type)
     }
   double error_db = bse_db_from_factor (error, -200);
   bse_resampler2_destroy (resampler);
-  TOUT ("Test C API delta: %f\n", error_db);
-  TASSERT (error_db < -95);
+  TCHECK (error_db < -95, "C API delta below epsilon: %f < -95\n", error_db);
   TDONE();
 }
 static void
@@ -360,8 +358,7 @@ test_delay_compensation (const char *run_type)
 
       /* check error against bound */
       double error_db = bse_db_from_factor (error, -250);
-      TOUT ("Resampler Delay Compensation delta: %f\n", error_db);
-      TASSERT (error_db < -params[p].error_db);
+      TCHECK (error_db < -params[p].error_db, "Resampler Delay Compensation delta below epsilon: %f < %f\n", error_db, -params[p].error_db);
     }
   TDONE();
 }
@@ -479,7 +476,7 @@ main (int   argc,
   Rapicorn::init_core_test (RAPICORN_PRETTY_FILE, &argc, argv);
   Rapicorn::StringVector sv = Rapicorn::string_split (Rapicorn::cpu_info(), " ");
   Rapicorn::String machine = sv.size() >= 2 ? sv[1] : "Unknown";
-  TMSG ("  NOTE   Running on: %s+%s", machine.c_str(), bse_block_impl_name()); // usually done by bse_init_test
+  printout ("  NOTE     Running on: %s+%s", machine.c_str(), bse_block_impl_name()); // usually done by bse_init_test
 
   test_c_api ("FPU");
   test_delay_compensation ("FPU");

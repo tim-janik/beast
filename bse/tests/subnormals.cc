@@ -169,12 +169,12 @@ benchmark_subnormal_eliminations ()
     printout ("subnormal cancellation times: keep=%fs zap=%fs inlined-cond=%fs if-cond=%fs arithmetic=%f bse=%f\n",
               test1_time, test2_time, test3_time, test4_time, test5_time, test6_time);
   constexpr const char *format = "    %-28s : %+.14f milliseconds";
-  TMSG (format, "Subnormals-keep",         test1_time * 1000);
-  TMSG (format, "Subnormals-bse-zap",      test2_time * 1000);
-  TMSG (format, "Subnormals-inlined-cond", test3_time * 1000);
-  TMSG (format, "Subnormals-if-cond",      test4_time * 1000);
-  TMSG (format, "Subnormals-arithmetic",   test5_time * 1000);
-  TMSG (format, "Subnormals-bse-flush",    test6_time * 1000);
+  TPASS (format, "Subnormals-keep",         test1_time * 1000);
+  TPASS (format, "Subnormals-bse-zap",      test2_time * 1000);
+  TPASS (format, "Subnormals-inlined-cond", test3_time * 1000);
+  TPASS (format, "Subnormals-if-cond",      test4_time * 1000);
+  TPASS (format, "Subnormals-arithmetic",   test5_time * 1000);
+  TPASS (format, "Subnormals-bse-flush",    test6_time * 1000);
 }
 bool
 check_denormals_are_zero()

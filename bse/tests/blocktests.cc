@@ -6,7 +6,7 @@
 static void
 report_usecs (const char *what, double usecs)
 {
-  TMSG ("    %-28s : %+.14f µseconds", what, usecs);
+  TPASS ("    %-28s : %+.14f µseconds", what, usecs);
 }
 
 template<typename T> static bool
@@ -155,7 +155,7 @@ test_square_sum (void)
 	fblock[i] = sin (i * 2 * M_PI / 1024);
       energy = bse_block_calc_float_square_sum (1024, fblock) / 1024.;
       energy_db = 10 * log10 (energy);
-      TOUT ("sine wave: energy = %f, energy_db = %f\n", energy, energy_db);
+      TPASS ("sine wave: energy = %f, energy_db = %f\n", energy, energy_db);
       TASSERT (fabs (energy - 0.5) < 0.0000001);
       energy = bse_block_calc_float_range_and_square_sum (1024, fblock, &min_value, &max_value) / 1024.;
       TASSERT (fabs (energy - 0.5) < 0.0000001);
@@ -163,7 +163,7 @@ test_square_sum (void)
 	fblock[i] = i < 512 ? -1 : 1;
       energy = bse_block_calc_float_square_sum (1024, fblock) / 1024.;
       energy_db = 10 * log10 (energy);
-      TOUT ("square wave: energy = %f, energy_db = %f\n", energy, energy_db);
+      TPASS ("square wave: energy = %f, energy_db = %f\n", energy, energy_db);
       TASSERT (fabs (energy - 1.0) < 0.0000001);
       energy = bse_block_calc_float_range_and_square_sum (1024, fblock, &min_value, &max_value) / 1024.;
       TASSERT (fabs (energy - 1.0) < 0.0000001);
@@ -530,7 +530,7 @@ main (int   argc,
   Rapicorn::init_core_test (RAPICORN_PRETTY_FILE, &argc, argv);
   Rapicorn::StringVector sv = Rapicorn::string_split (Rapicorn::cpu_info(), " ");
   Rapicorn::String machine = sv.size() >= 2 ? sv[1] : "Unknown";
-  TMSG ("  NOTE   Running on: %s+%s", machine.c_str(), bse_block_impl_name()); // usually done by bse_init_test
+  printout ("  NOTE     Running on: %s+%s\n", machine.c_str(), bse_block_impl_name()); // usually done by bse_init_test
 
   TSTART ("Running Default Block Ops");
   TASSERT (Bse::Block::default_singleton() == Bse::Block::current_singleton());
