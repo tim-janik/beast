@@ -221,7 +221,7 @@ main (int argc, char **argv)
   Rapicorn::init_core_test (RAPICORN_PRETTY_FILE, &argc, argv);
   Rapicorn::StringVector sv = Rapicorn::string_split (Rapicorn::cpu_info(), " ");
   Rapicorn::String machine = sv.size() >= 2 ? sv[1] : "Unknown";
-  TMSG ("  NOTE   Running on: %s+%s", machine.c_str(), bse_block_impl_name()); // usually done by bse_init_test
+  printout ("  NOTE     Running on: %s+%s", machine.c_str(), bse_block_impl_name()); // usually done by bse_init_test
 
   if (argc > 1)
     {
