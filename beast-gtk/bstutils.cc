@@ -496,7 +496,7 @@ bst_action_list_add_module (GxkActionList *alist, const Bse::AuxData &ad, const 
   String title = Rapicorn::string_vector_find_value (ad.attributes, "title=");
   if (title.empty())
     title = ad.entity;
-  Rapicorn::StringVector tags = Rapicorn::string_split (Rapicorn::string_vector_find_value (ad.attributes, "tags="), ";:");
+  Rapicorn::StringVector tags = Rapicorn::string_split_any (Rapicorn::string_vector_find_value (ad.attributes, "tags="), ";:");
   if (tags.size())
     {
       tags.push_back (title);
