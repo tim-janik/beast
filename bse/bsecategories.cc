@@ -195,7 +195,7 @@ bse_categories_register (const gchar  *category,
   if (g_type_is_a (centry->type, BSE_TYPE_SOURCE))
     {
       // parse "/Modules////tag1/tag2/tag3///Title" into tags and title
-      const char *name = i18n_category;
+      const char *name = i18n_category ? i18n_category : category;
       if (strncmp (name, "/Modules/", 9) == 0)
         name += 9;
       while (name[0] == '/')
