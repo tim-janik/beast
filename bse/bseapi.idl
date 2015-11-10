@@ -807,13 +807,6 @@ interface Server : Object {
   /// Retrieve the frequency of a certain note.
   // float64 note_to_freq (MusicalTuningType musical_tuning, int32 note, int32 fine_tune);
 
-  /// Retrieve numbers from a string.
-  // float64 string_extract_number (String string, String format, float64 aux_base, float64 dflt);
-  // String type_authors (String type); ///< Retrieve the authors who implemented a specific type.
-  // String type_blurb (String type);   ///< Retrieve the description of a specific type.
-  // String type_license (String type); ///< Retrieve the license of a type impementation.
-  // String type_options (String type); ///< Retrieve the options of a specific type.
-
   // *** Old Janitor ***
   // void   trigger_action   (String action); ///< Trigger an installed user action of this janitor.
   // String get_script_name  (); ///< Retrieve the script name of this janitor.
