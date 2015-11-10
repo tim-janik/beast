@@ -57,7 +57,6 @@ check_equal_tempered_tuning (void)
 static void
 check_tuning_monotony (BseMusicalTuningType musical_tuning)
 {
-  TSTART ("Monotony");
   const double *table = bse_semitone_table_from_tuning (musical_tuning); /* returns [-132..+132] */
   for (int i = -132; i <= +132; i++)
     if (ABS (i) != 132)
@@ -67,14 +66,12 @@ check_tuning_monotony (BseMusicalTuningType musical_tuning)
         if (i % 13 == 0)
           TOK();
       }
-  TDONE();
 }
 
 static void
 check_freq_vs_notes (BseMusicalTuningType musical_tuning)
 {
   /* check freq/note mapping */
-  TSTART ("Frequency lookup");
   for (int j = BSE_MIN_NOTE; j <= BSE_MAX_NOTE; j++)
     {
       for (int k = BSE_MIN_FINE_TUNE / 2; k <= BSE_MAX_FINE_TUNE / 2; k++)
@@ -103,7 +100,6 @@ check_freq_vs_notes (BseMusicalTuningType musical_tuning)
       if (j % 3 == 0)
         TOK();
     }
-  TDONE();
 }
 
 static void
@@ -146,9 +142,9 @@ main (gint   argc,
   for (int j = BSE_MUSICAL_TUNING_12_TET; j <= last_tuning; j++)
     {
       BseMusicalTuningType musical_tuning = BseMusicalTuningType (j);
-      printerr ("Tuning System: %s\n", sfi_enum2choice (musical_tuning, BSE_TYPE_MUSICAL_TUNING_TYPE));
       check_tuning_monotony (musical_tuning);
       check_freq_vs_notes (musical_tuning);
+      TPASS ("Tuning System: %s\n", sfi_enum2choice (musical_tuning, BSE_TYPE_MUSICAL_TUNING_TYPE));
     }
 
   return 0;
