@@ -29,10 +29,6 @@ TAPTESTS             += testwavechunk
 SLOWTESTS            += testwavechunk
 testwavechunk_SOURCES = testwavechunk.cc
 testwavechunk_LDADD = $(progs_ldadd)
-# perftest
-TAPTESTS        += perftest
-perftest_SOURCES = perftest.cc
-perftest_LDADD   = $(progs_ldadd)
 # testresampler
 noinst_PROGRAMS      += testresampler
 testresampler_SOURCES = testresampler.cc
@@ -121,7 +117,3 @@ resampler-perf:
 	./testresampler perf       --precision=24 --down
 	./testresampler perf       --precision=24 --subsample
 	./testresampler perf       --precision=24 --oversample
-
-# perf tests
-perf:
-	./perftest
