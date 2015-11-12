@@ -27,7 +27,7 @@ struct BseSong : BseSNet {
   guint		    numerator;
   guint		    denominator;
   float             bpm;
-  BseMusicalTuningType musical_tuning;
+  Bse::MusicalTuningType musical_tuning;
   SfiRing          *parts;              /* of type BsePart* */
   SfiRing          *busses;             /* of type BseBus* */
   BseBus           *solo_bus;
@@ -74,17 +74,19 @@ class SongImpl : public SNetImpl, public virtual SongIface {
 protected:
   virtual            ~SongImpl                ();
 public:
-  explicit            SongImpl                (BseObject*);
-  virtual double      bpm                     () const override;
-  virtual void        bpm                     (double val) override;
-  virtual SongTiming  get_timing              (int tick);
-  virtual TrackIfaceP find_any_track_for_part (PartIface &part) override;
-  virtual BusIfaceP   create_bus              () override;
-  virtual void        remove_bus              (BusIface &bus) override;
-  virtual PartIfaceP  create_part             () override;
-  virtual void        remove_part             (PartIface &part) override;
-  virtual TrackIfaceP create_track            () override;
-  virtual void        remove_track            (TrackIface &track) override;
+  explicit                  SongImpl                (BseObject*);
+  virtual double            bpm                     () const override;
+  virtual void              bpm                     (double val) override;
+  virtual MusicalTuningType musical_tuning          () const override;
+  virtual void              musical_tuning          (MusicalTuningType tuning) override;
+  virtual SongTiming        get_timing              (int tick);
+  virtual TrackIfaceP       find_any_track_for_part (PartIface &part) override;
+  virtual BusIfaceP         create_bus              () override;
+  virtual void              remove_bus              (BusIface &bus) override;
+  virtual PartIfaceP        create_part             () override;
+  virtual void              remove_part             (PartIface &part) override;
+  virtual TrackIfaceP       create_track            () override;
+  virtual void              remove_track            (TrackIface &track) override;
 };
 
 } // Bse

@@ -2884,8 +2884,8 @@ public:
 
 	  if (!note)
 	    {
-	      note = bse_note_from_freq_bounded (BSE_MUSICAL_TUNING_12_TET, gsl_data_handle_osc_freq (dhandle));
-	      cent = bse_note_fine_tune_from_note_freq (BSE_MUSICAL_TUNING_12_TET, note, gsl_data_handle_osc_freq (dhandle));
+	      note = bse_note_from_freq_bounded (Bse::MUSICAL_TUNING_12_TET, gsl_data_handle_osc_freq (dhandle));
+	      cent = bse_note_fine_tune_from_note_freq (Bse::MUSICAL_TUNING_12_TET, note, gsl_data_handle_osc_freq (dhandle));
 	    }
 
 	  name_addon = g_strdup_format ("%d", note);

@@ -11,9 +11,7 @@ static void     bse_midi_decoder_construct_event   (BseMidiDecoder *self);
 
 /* --- function --- */
 BseMidiDecoder*
-bse_midi_decoder_new (gboolean             auto_queue,
-                      gboolean             smf_support,
-                      BseMusicalTuningType musical_tuning)
+bse_midi_decoder_new (gboolean auto_queue, gboolean smf_support, Bse::MusicalTuningType musical_tuning)
 {
   BseMidiDecoder *self;
 

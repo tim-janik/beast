@@ -96,20 +96,19 @@ pattern_column_note_width_request (BstPatternColumn       *column,
 static char
 pattern_column_note_char (BstPatternColumnNote *self, const Bse::PartNoteSeq &pseq, int pos)
 {
-  BseNoteDescription *ndesc;
   if (pseq.size() == 0)
     return '-';
   else if (pseq.size() > 1)
     return '*';
   // pseq.size() == 1
-  ndesc = bse_note_describe (BSE_MUSICAL_TUNING_12_TET, // tuning is irrelevant if we ignore ->freq
-                             pseq[0].note, pseq[0].fine_tune);
+  Bse::NoteDescription ndesc = bse_server.note_describe (Bse::MUSICAL_TUNING_12_TET, // tuning is irrelevant if we ignore ->freq
+                                                         pseq[0].note, pseq[0].fine_tune);
   switch (pos)
     {
-    case 0:     return ndesc->upshift ? '#' : ' ';
-    case 1:     return ndesc->letter;
-    case 2:     return ndesc->octave <= 0 ? '-' : '+';
-    case 3:     return ABS (ndesc->octave) + '0';
+    case 0:     return ndesc.upshift ? '#' : ' ';
+    case 1:     return ndesc.letter;
+    case 2:     return ndesc.octave <= 0 ? '-' : '+';
+    case 3:     return ABS (ndesc.octave) + '0';
     default:    return '-';     /* not reached */
     }
 }

@@ -20,7 +20,6 @@
 enum
 {
   PROP_0,
-  PROP_MUSICAL_TUNING,
   PROP_TPQN,
   PROP_NUMERATOR,
   PROP_DENOMINATOR,
@@ -150,15 +149,6 @@ bse_song_set_property (GObject      *object,
       gboolean vbool;
       SfiInt vint;
       SfiRing *ring;
-    case PROP_MUSICAL_TUNING:
-      if (!BSE_SOURCE_PREPARED (self))
-        {
-          self->musical_tuning = (BseMusicalTuningType) g_value_get_enum (value);
-          SfiRing *ring;
-          for (ring = self->parts; ring; ring = sfi_ring_walk (ring, self->parts))
-            bse_part_set_semitone_table ((BsePart*) ring->data, bse_semitone_table_from_tuning (self->musical_tuning));
-        }
-      break;
     case PROP_PNET:
       if (!self->postprocess || !BSE_SOURCE_PREPARED (self->postprocess))
         {
@@ -262,9 +252,6 @@ bse_song_get_property (GObject     *object,
   BseSong *self = BSE_SONG (object);
   switch (param_id)
     {
-    case PROP_MUSICAL_TUNING:
-      g_value_set_enum (value, self->musical_tuning);
-      break;
     case PROP_PNET:
       bse_value_set_object (value, self->pnet);
       break;
@@ -569,7 +556,7 @@ bse_song_init (BseSong *self)
   BSE_OBJECT_UNSET_FLAGS (self, BSE_SNET_FLAG_USER_SYNTH);
   BSE_OBJECT_SET_FLAGS (self, BSE_SUPER_FLAG_NEEDS_CONTEXT);
 
-  self->musical_tuning = BSE_MUSICAL_TUNING_12_TET;
+  self->musical_tuning = Bse::MUSICAL_TUNING_12_TET;
 
   self->tpqn = timing.tpqn;
   self->numerator = timing.numerator;
@@ -728,16 +715,6 @@ bse_song_class_init (BseSongClass *klass)
   super_class->compat_finish = bse_song_compat_finish;
 
   bse_song_timing_get_default (&timing);
-
-  bse_object_class_add_param (object_class, _("Tuning"),
-			      PROP_MUSICAL_TUNING,
-                              bse_param_spec_enum ("musical_tuning", _("Musical Tuning"),
-                                                   _("The tuning system which specifies the tones or pitches to be used. "
-                                                     "Due to the psychoacoustic properties of tones, various pitch combinations can "
-                                                     "sound \"natural\" or \"pleasing\" when used in combination, the musical "
-                                                     "tuning system defines the number and spacing of frequency values applied."),
-                                                   BSE_MUSICAL_TUNING_12_TET, BSE_TYPE_MUSICAL_TUNING_TYPE,
-                                                   SFI_PARAM_STANDARD ":unprepared:skip-default"));
 
   bse_object_class_add_param (object_class, _("Timing"),
 			      PROP_TPQN,
@@ -951,6 +928,27 @@ SongImpl::bpm (double val)
   self->bpm = val;
   bse_song_update_tpsi_SL (self);
   // changed ("bpm");
+}
+
+MusicalTuningType
+SongImpl::musical_tuning () const
+{
+  BseSong *self = const_cast<SongImpl*> (this)->as<BseSong*>();
+  return self->musical_tuning;
+}
+
+void
+SongImpl::musical_tuning (MusicalTuningType tuning)
+{
+  BseSong *self = as<BseSong*>();
+  if (!BSE_SOURCE_PREPARED (self))
+    {
+      self->musical_tuning = tuning;
+      SfiRing *ring;
+      for (ring = self->parts; ring; ring = sfi_ring_walk (ring, self->parts))
+        bse_part_set_semitone_table ((BsePart*) ring->data, bse_semitone_table_from_tuning (self->musical_tuning));
+      // changed ("musical_tuning");
+    }
 }
 
 } // Bse

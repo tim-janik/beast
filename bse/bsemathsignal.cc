@@ -587,55 +587,54 @@ static const double semitone_table265_young_temperament[132 + 1 + 132] = {
 };
 
 const double*
-bse_semitone_table_from_tuning (BseMusicalTuningType musical_tuning)
+bse_semitone_table_from_tuning (Bse::MusicalTuningType musical_tuning)
 {
   switch (musical_tuning)
     {
       /* Equal Temperament: http://en.wikipedia.org/wiki/Equal_temperament */
     default:
-    case BSE_MUSICAL_TUNING_12_TET:
+    case Bse::MUSICAL_TUNING_12_TET:
       return 132 + semitone_table265_equal_temperament_12_tet;
-    case BSE_MUSICAL_TUNING_7_TET:
+    case Bse::MUSICAL_TUNING_7_TET:
       return 132 + semitone_table265_equal_temperament_7_tet;
-    case BSE_MUSICAL_TUNING_5_TET:
+    case Bse::MUSICAL_TUNING_5_TET:
       return 132 + semitone_table265_equal_temperament_5_tet;
       /* Rational Intonation: http://en.wikipedia.org/wiki/Just_intonation */
-    case BSE_MUSICAL_TUNING_DIATONIC_SCALE:
+    case Bse::MUSICAL_TUNING_DIATONIC_SCALE:
       return 132 + semitone_table265_diatonic_scale;
-    case BSE_MUSICAL_TUNING_INDIAN_SCALE:
+    case Bse::MUSICAL_TUNING_INDIAN_SCALE:
       return 132 + semitone_table265_indian_scale;
-    case BSE_MUSICAL_TUNING_PYTHAGOREAN_TUNING:
+    case Bse::MUSICAL_TUNING_PYTHAGOREAN_TUNING:
       return 132 + semitone_table265_pythagorean_tuning;
-    case BSE_MUSICAL_TUNING_PENTATONIC_5_LIMIT:
+    case Bse::MUSICAL_TUNING_PENTATONIC_5_LIMIT:
       return 132 + semitone_table265_pentatonic_5_limit;
-    case BSE_MUSICAL_TUNING_PENTATONIC_BLUES:
+    case Bse::MUSICAL_TUNING_PENTATONIC_BLUES:
       return 132 + semitone_table265_pentatonic_blues;
-    case BSE_MUSICAL_TUNING_PENTATONIC_GOGO:
+    case Bse::MUSICAL_TUNING_PENTATONIC_GOGO:
       return 132 + semitone_table265_pentatonic_gogo;
       /* Meantone Temperament: http://en.wikipedia.org/wiki/Meantone_temperament */
-    case BSE_MUSICAL_TUNING_QUARTER_COMMA_MEANTONE:
+    case Bse::MUSICAL_TUNING_QUARTER_COMMA_MEANTONE:
       return 132 + semitone_table265_quarter_comma_meantone;
-    case BSE_MUSICAL_TUNING_SILBERMANN_SORGE:
+    case Bse::MUSICAL_TUNING_SILBERMANN_SORGE:
       return 132 + semitone_table265_silbermann_sorge_temperament;
       /* Well Temperament: http://en.wikipedia.org/wiki/Well_temperament */
-    case BSE_MUSICAL_TUNING_WERCKMEISTER_3:
+    case Bse::MUSICAL_TUNING_WERCKMEISTER_3:
       return 132 + semitone_table265_werckmeister3_temperament;
-    case BSE_MUSICAL_TUNING_WERCKMEISTER_4:
+    case Bse::MUSICAL_TUNING_WERCKMEISTER_4:
       return 132 + semitone_table265_werckmeister4_temperament;
-    case BSE_MUSICAL_TUNING_WERCKMEISTER_5:
+    case Bse::MUSICAL_TUNING_WERCKMEISTER_5:
       return 132 + semitone_table265_werckmeister5_temperament;
-    case BSE_MUSICAL_TUNING_WERCKMEISTER_6:
+    case Bse::MUSICAL_TUNING_WERCKMEISTER_6:
       return 132 + semitone_table265_werckmeister6_temperament;
-    case BSE_MUSICAL_TUNING_KIRNBERGER_3:
+    case Bse::MUSICAL_TUNING_KIRNBERGER_3:
       return 132 + semitone_table265_kirnberger_temperament;
-    case BSE_MUSICAL_TUNING_YOUNG:
+    case Bse::MUSICAL_TUNING_YOUNG:
       return 132 + semitone_table265_young_temperament;
     }
 }
 
 double
-bse_transpose_factor (BseMusicalTuningType musical_tuning,
-                      int                  index /* [-132..+132] */)
+bse_transpose_factor (Bse::MusicalTuningType musical_tuning, int index /* [-132..+132] */)
 {
   const double *table = bse_semitone_table_from_tuning (musical_tuning);
   return table[CLAMP (index, -132, +132)];
