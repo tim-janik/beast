@@ -15,9 +15,9 @@ static GSList *msg_windows = NULL;
 const char*
 bst_msg_type_ident (BstMsgType bmt)
 {
-  const Rapicorn::Aida::EnumValue *ev = Rapicorn::Aida::enum_info<Bse::UserMessageType>().find_value (bmt);
-  if (ev && ev->ident)
-    return ev->ident;
+  const Rapicorn::Aida::EnumValue ev = Rapicorn::Aida::enum_info<Bse::UserMessageType>().find_value (bmt);
+  if (ev.ident)
+    return ev.ident;
   switch (bmt)
     {
     case BST_MSG_SCRIPT:        return "script";
@@ -761,8 +761,8 @@ server_user_message (const Bse::UserMessage &umsg)
   msg.details = umsg.text3.c_str();
   Bse::String cfg = Bse::string_format (_("Show messages about %s"), umsg.label.c_str());
   msg.config_check = cfg.c_str();
-  const Rapicorn::Aida::EnumValue *ev = Rapicorn::Aida::enum_info<Bse::UserMessageType>().find_value (umsg.type);
-  msg.ident = ev ? ev->ident : NULL;
+  const Rapicorn::Aida::EnumValue ev = Rapicorn::Aida::enum_info<Bse::UserMessageType>().find_value (umsg.type);
+  msg.ident = ev.ident;
   msg.label = NULL;
   msg.janitor = 0;
   msg.process = 0;

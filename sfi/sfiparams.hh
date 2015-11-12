@@ -321,12 +321,12 @@ G_END_DECLS
 
 namespace Bse { // bsecore
 
-SfiChoiceValues choice_values_from_enum_values (const String &enumname, size_t n, const ::Rapicorn::Aida::EnumValue *values);
+SfiChoiceValues choice_values_from_enum_values (const String &enumname, const ::Rapicorn::Aida::EnumValueVector &evvec);
 template<class EnumType> SfiChoiceValues
 choice_values_from_enum ()
 {
   ::Rapicorn::Aida::EnumInfo einfo = ::Rapicorn::Aida::enum_info<EnumType>();
-  return choice_values_from_enum_values (einfo.name(), einfo.n_values(), einfo.values());
+  return choice_values_from_enum_values (einfo.name(), einfo.value_vector());
 }
 
 } // Bse
