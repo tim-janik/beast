@@ -1229,7 +1229,7 @@ storage_store_property_value (BseStorage *self, const String &property_name, Any
       if (dflt_val != invalid)
         {
           dflt = any; // copy type
-          const bool any_from_string_conversion = any_set_from_string (any, dflt_val);
+          const bool any_from_string_conversion = any_set_from_string (dflt, dflt_val);
           if (any_from_string_conversion && dflt == any)
             return;     // skip storing default value
         }
