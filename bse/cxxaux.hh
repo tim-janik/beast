@@ -6,6 +6,7 @@
 #include <sys/types.h>                  // uint, ssize
 #include <cstdint>                      // uint64_t
 #include <memory>
+#include <mutex>
 #include <vector>
 #include <map>
 
@@ -215,6 +216,45 @@ make_jump_table (const J &mkjump)
 {
   return make_jump_table_indexed (mkjump, std::make_index_sequence<N>());
 }
+
+/// Create an instance of `Class` on demand that is constructed and never destructed.
+/// PersistentStaticInstance<Class> provides the memory for a `Class` instance and calls it's
+/// constructor on demand, but it's destructor is never called (so the memory allocated
+/// to the PersistentStaticInstance must not be freed). Due to its constexpr ctor and on-demand
+/// creation of `Class`, a PersistentStaticInstance<> can be accessed at any time during the
+/// static ctor (or dtor) phases and will always yield a properly initialized `Class`.
+/// A PersistentStaticInstance is useful for static variables that need to be accessible from
+/// other static ctor/dtor calls.
+template<class Class>
+class PersistentStaticInstance final {
+  static_assert (std::is_class<Class>::value, "PersistentStaticInstance<Class> requires class template argument");
+  Class *ptr_;
+  uint64 mem_[(sizeof (Class) + sizeof (uint64) - 1) / sizeof (uint64)];
+  void
+  initialize() BSE_NOINLINE
+  {
+    static std::mutex mtx;
+    std::unique_lock<std::mutex> lock (mtx);
+    if (ptr_ == nullptr)
+      ptr_ = new (mem_) Class(); // exclusive construction
+  }
+public:
+  constexpr  PersistentStaticInstance() : ptr_ (nullptr) {}
+  /// Retrieve pointer to `Class` instance, always returns the same pointer.
+  Class*
+  operator->() __attribute__ ((pure))
+  {
+    if (BSE_UNLIKELY (ptr_ == nullptr))
+      initialize();
+    return ptr_;
+  }
+  /// Retrieve reference to `Class` instance, always returns the same reference.
+  Class&       operator*     () __attribute__ ((pure))       { return *operator->(); }
+  const Class* operator->    () const __attribute__ ((pure)) { return const_cast<PersistentStaticInstance*> (this)->operator->(); }
+  const Class& operator*     () const __attribute__ ((pure)) { return const_cast<PersistentStaticInstance*> (this)->operator*(); }
+  /// Check if `this` stores a `Class` instance yet.
+  explicit     operator bool () const                        { return ptr_ != nullptr; }
+};
 
 } // Bse
 
