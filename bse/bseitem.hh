@@ -168,7 +168,7 @@ public:
   virtual ItemIfaceP common_ancestor (ItemIface &other) override;
   virtual Icon       icon            () const override;
   virtual void       icon            (const Icon&) override;
-  /// Push handler onto the undo stack, @a self must match @a this.
+  /// Push an undo @a function onto the undo stack, the @a self argument to @a function must match @a this.
   template<typename ItemT, typename... FuncArgs, typename... CallArgs> void
   push_undo (const String &blurb, ItemT &self, ErrorType (ItemT::*function) (FuncArgs...), CallArgs... args)
   {
@@ -179,6 +179,7 @@ public:
     };
     push_item_undo (blurb, lambda);
   }
+  /// Push an undo @a function like push_undo(), but ignore the return value of @a function.
   template<typename ItemT, typename R, typename... FuncArgs, typename... CallArgs> void
   push_undo (const String &blurb, ItemT &self, R (ItemT::*function) (FuncArgs...), CallArgs... args)
   {
@@ -190,6 +191,7 @@ public:
     };
     push_item_undo (blurb, lambda);
   }
+  /// Push an undo lambda, using the signature: ErrorType lambda (TypeDerivedFromItem&, BseUndoStack*);
   template<typename ItemT, typename ItemTLambda> void
   push_undo (const String &blurb, ItemT &self, const ItemTLambda &itemt_lambda)
   {
@@ -201,6 +203,7 @@ public:
     };
     push_item_undo (blurb, lambda);
   }
+  /// Push an undo step, that when executed, pushes @a itemt_lambda to the redo stack.
   template<typename ItemT, typename ItemTLambda> void
   push_undo_to_redo (const String &blurb, ItemT &self, const ItemTLambda &itemt_lambda)
   { // push itemt_lambda as undo step when this undo step is executed (i.e. itemt_lambda is for redo)
