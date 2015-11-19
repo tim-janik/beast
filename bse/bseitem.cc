@@ -1330,6 +1330,25 @@ ItemImpl::push_item_undo (const String &blurb, const UndoLambda &lambda)
   bse_item_undo_close (ustack);
 }
 
+void
+ItemImpl::push_property_undo (const String &property_name)
+{
+  assert_return (property_name.empty() == false);
+  Any saved_value = __aida_get__ (property_name);
+  if (saved_value.empty())
+    critical ("%s: invalid property name: %s", __func__, property_name);
+  else
+    {
+      auto lambda = [property_name, saved_value] (ItemImpl &self, BseUndoStack *ustack) -> ErrorType {
+        const bool success = self.__aida_set__ (property_name, saved_value);
+        if (!success)
+          critical ("%s: failed to undo property change for '%s': %s", __func__, property_name, saved_value.repr());
+        return ERROR_NONE;
+      };
+      push_undo (__func__, *this, lambda);
+    }
+}
+
 ItemIfaceP
 ItemImpl::common_ancestor (ItemIface &other)
 {
