@@ -925,9 +925,13 @@ void
 SongImpl::bpm (double val)
 {
   BseSong *self = as<BseSong*>();
-  self->bpm = val;
-  bse_song_update_tpsi_SL (self);
-  // changed ("bpm");
+  if (self->bpm != val)
+    {
+      push_property_undo ("bpm");
+      self->bpm = val;
+      bse_song_update_tpsi_SL (self);
+      // changed ("bpm");
+    }
 }
 
 MusicalTuningType
@@ -941,8 +945,9 @@ void
 SongImpl::musical_tuning (MusicalTuningType tuning)
 {
   BseSong *self = as<BseSong*>();
-  if (!BSE_SOURCE_PREPARED (self))
+  if (!BSE_SOURCE_PREPARED (self) && self->musical_tuning != tuning)
     {
+      push_property_undo ("musical_tuning");
       self->musical_tuning = tuning;
       SfiRing *ring;
       for (ring = self->parts; ring; ring = sfi_ring_walk (ring, self->parts))
