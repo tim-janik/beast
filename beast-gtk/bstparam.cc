@@ -465,16 +465,16 @@ aida_parameter_binding_get_value (GxkParam *param, GValue *param_value)
 static void
 aida_parameter_binding_destroy (GxkParam *param)
 {
-  Rapicorn::Aida::Parameter *const apa = (Rapicorn::Aida::Parameter*) param->bdata[0].v_pointer;
+  Rapicorn::Aida::Parameter *const cxxparam = (Rapicorn::Aida::Parameter*) param->bdata[0].v_pointer;
   param->bdata[0].v_pointer = NULL;
-  delete apa;
+  delete cxxparam;
 }
 
 static gboolean
 aida_parameter_binding_check_writable (GxkParam *param)
 {
-  // Rapicorn::Aida::Parameter *const apa = (Rapicorn::Aida::Parameter*) param->bdata[0].v_pointer;
-  // assert (apa);
+  // Rapicorn::Aida::Parameter *const cxxparam = (Rapicorn::Aida::Parameter*) param->bdata[0].v_pointer;
+  // assert (cxxparam);
   return true;
 }
 
@@ -491,8 +491,20 @@ GxkParam*
 bst_param_new_aida_parameter (GParamSpec *pspec, const Rapicorn::Aida::Parameter &aparameter)
 {
   GxkParam *param = gxk_param_new (pspec, &aida_parameter_binding, NULL);
-  param->bdata[0].v_pointer = new Rapicorn::Aida::Parameter (aparameter);
+  Rapicorn::Aida::Parameter *cxxparam = new Rapicorn::Aida::Parameter (aparameter);
+  param->bdata[0].v_pointer = cxxparam;
   param->bdata[1].v_pointer = NULL;
+  auto handler = [param] (const String &what) {
+    bool match = what == param->pspec->name;
+    if (!match && what.size() == strlen (param->pspec->name))
+      {
+        const String pname = Rapicorn::string_canonify (Rapicorn::string_tolower (param->pspec->name), "abcdefghijklmnopqrstuvwxyz0123456789", "_");
+        match = what == pname;
+      }
+    if (match)
+      gxk_param_update (param);
+  };
+  cxxparam->sig_changed() += handler; // disconnected by delete cxxparam
   gxk_param_set_size_group (param, param_size_group);
   return param;
 }
