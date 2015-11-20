@@ -50,8 +50,8 @@ bse_midi_signal_default (Bse::MidiSignalType type)
 const char*
 bse_midi_signal_name (Bse::MidiSignalType signal)
 {
-  const Rapicorn::Aida::EnumValue *ev = Rapicorn::Aida::enum_info<Bse::MidiSignalType>().find_value (signal);
-  return ev ? ev->blurb : NULL;
+  const Rapicorn::Aida::EnumValue ev = Rapicorn::Aida::enum_info<Bse::MidiSignalType>().find_value (signal);
+  return ev.blurb;
 }
 
 

@@ -1733,19 +1733,19 @@ namespace Bse { // bsecore
 static std::map<String, SfiChoiceValues> aida_enum_choice_map;
 
 SfiChoiceValues
-choice_values_from_enum_values (const String &enumname, size_t n, const ::Rapicorn::Aida::EnumValue *values)
+choice_values_from_enum_values (const String &enumname, const ::Rapicorn::Aida::EnumValueVector &evvec)
 {
   SfiChoiceValues &cv = aida_enum_choice_map[enumname];
-  if (!cv.values && values)
+  if (!cv.values && !evvec.empty())
     {
-      SfiChoiceValue *vv = new SfiChoiceValue[n];
-      for (size_t i = 0; i < n; i++)
+      SfiChoiceValue *vv = new SfiChoiceValue[evvec.size()];
+      for (size_t i = 0; i < evvec.size(); i++)
         {
-          vv[i].choice_ident = values[i].ident;
-          vv[i].choice_label = values[i].label;
-          vv[i].choice_blurb = values[i].blurb;
+          vv[i].choice_ident = evvec[i].ident;
+          vv[i].choice_label = evvec[i].label;
+          vv[i].choice_blurb = evvec[i].blurb;
         }
-      cv.n_values = n;
+      cv.n_values = evvec.size();
       cv.values = vv;
     }
   return cv;

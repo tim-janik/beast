@@ -609,7 +609,7 @@ aux_vector_get (const std::vector<String> &auxvector, const String &field, const
 }
 
 static bool
-any_set_from_string (Any &any, const String &string)
+any_set_from_string (BseStorage *self, Any &any, const String &string)
 {
   using namespace Rapicorn;
   switch (any.kind())
@@ -623,7 +623,22 @@ any_set_from_string (Any &any, const String &string)
     case Aida::INT64:           any.set (string_to_int (string));        break;
     case Aida::FLOAT64:         any.set (string_to_double (string));     break;
     case Aida::STRING:          any.set (string_from_cquote (string));   break;
-    default:                    assert (!"reached");
+    case Aida::ENUM:
+      {
+        const Aida::EnumInfo &einfo = any.get_enum_info();
+        const int64 v = einfo.value_from_string (string);
+        if (!einfo.find_value (v).ident) // 'v' is no valid enum value
+          {
+            const Aida::EnumValueVector evv = einfo.value_vector();
+            if (evv.size())
+              any.set_enum (einfo, evv[0].value);
+            bse_storage_warn (self, "fixing invalid enum value: %s (%d) -> %s", einfo.name(), v, evv[0].ident);
+          }
+        else
+          any.set_enum (einfo, v);
+        break;
+      }
+    default:                    fatal ("unhandled Any: %s; string=%s", any.repr(), string);
     }
   return true;
 }
@@ -633,11 +648,10 @@ scanner_parse_paren_rest (GScanner *scanner, String *result)
 {
   // configure scanner to pass through most characters, so we can delay parsing
   const GScannerConfig saved_config = *scanner->config;
-  scanner->config->cset_identifier_first = (char*) "";
-  scanner->config->cset_identifier_nth = (char*) "";
   scanner->config->cset_skip_characters = (char*) " \t\r\n";
-  scanner->config->scan_identifier = false;
+  scanner->config->scan_identifier = true;
   scanner->config->scan_identifier_1char = false;
+  scanner->config->identifier_2_string = false;
   scanner->config->scan_symbols = false;
   scanner->config->scan_binary = false;
   scanner->config->scan_octal = false;
@@ -669,6 +683,12 @@ scanner_parse_paren_rest (GScanner *scanner, String *result)
             rest += " ";
           rest += Rapicorn::string_to_cquote (scanner->value.v_string);
         }
+      else if (token == G_TOKEN_IDENTIFIER)
+        {
+          if (!rest.empty())
+            rest += " ";
+          rest += scanner->value.v_string;
+        }
       else if (token == G_TOKEN_INT)
         {
           if (!rest.empty())
@@ -698,7 +718,7 @@ storage_parse_property_value (BseStorage *self, const String &name, Any &any, co
   GTokenType expected_token = scanner_parse_paren_rest (scanner, &rest);
   if (expected_token != G_TOKEN_NONE)
     return expected_token;
-  const bool any_from_string_conversion = any_set_from_string (any, rest);
+  const bool any_from_string_conversion = any_set_from_string (self, any, rest);
   if (any_from_string_conversion)
     return G_TOKEN_NONE;
   else
@@ -1223,13 +1243,12 @@ storage_store_property_value (BseStorage *self, const String &property_name, Any
   using namespace Rapicorn;
   if (Rapicorn::Aida::aux_vector_check_options (aux_data, property_name, "hints", "skip-default"))
     {
-      Any dflt;
       const char *const invalid = "\377\377\376\376\1\2 invalid \3"; // no-value marker, (invalid UTF-8)
       const String dflt_val = aux_vector_get (aux_data, property_name, "default", invalid);
       if (dflt_val != invalid)
         {
-          dflt = any; // copy type
-          const bool any_from_string_conversion = any_set_from_string (any, dflt_val);
+          Any dflt = any; // copy type
+          const bool any_from_string_conversion = any_set_from_string (self, dflt, dflt_val);
           if (any_from_string_conversion && dflt == any)
             return;     // skip storing default value
         }
@@ -1241,6 +1260,12 @@ storage_store_property_value (BseStorage *self, const String &property_name, Any
     case Aida::INT64:           target = string_from_int (any.get<int64>());            break;
     case Aida::FLOAT64:         target = string_from_double (any.get<double>());        break;
     case Aida::STRING:          target = string_to_cquote (any.get<String>());          break;
+    case Aida::ENUM:
+      {
+        const Aida::EnumInfo &einfo = any.get_enum_info();
+        target = einfo.value_to_string (any.as_int64());
+        break;
+      }
     default:                    assert (!"reached");
     }
   assert (!target.empty());

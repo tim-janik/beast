@@ -403,7 +403,9 @@ aida_parameter_binding_set_value (GxkParam *param, const GValue *value)
     case G_TYPE_STRING:
       if (G_VALUE_TYPE (value) == SFI_TYPE_CHOICE)      // sfi_pspec_choice
         {
-          any.set (Rapicorn::string_to_int (sfi_value_get_choice (value)));
+          const Rapicorn::Aida::EnumInfo &enum_info = *(const Rapicorn::Aida::EnumInfo*) param->bdata[1].v_pointer;
+          assert_return (NULL != &enum_info);
+          any.set_enum (enum_info, enum_info.value_from_string (sfi_value_get_choice (value)));
         }
       else                      // sfi_pspec_string
         any.set (g_value_get_string (value));
@@ -438,8 +440,10 @@ aida_parameter_binding_get_value (GxkParam *param, GValue *param_value)
     case G_TYPE_STRING:
       if (G_PARAM_SPEC_VALUE_TYPE (param->pspec) == SFI_TYPE_CHOICE)    // sfi_pspec_choice
         {
+          const Rapicorn::Aida::EnumInfo &enum_info = any.get_enum_info();
           g_value_init (&value, SFI_TYPE_CHOICE);
-          sfi_value_set_choice (&value, Rapicorn::string_from_int (any.get<int64>()).c_str());
+          sfi_value_set_choice (&value, enum_info.value_to_string (any.as_int64()).c_str());
+          param->bdata[1].v_pointer = (void*) &enum_info;
         }
       else                      // sfi_pspec_string
         {
@@ -475,7 +479,8 @@ aida_parameter_binding_check_writable (GxkParam *param)
 }
 
 static GxkParamBinding aida_parameter_binding = {
-  1, NULL,
+  2, // Aida::Parameter*, const Aida::EnumInfo*
+  NULL,
   aida_parameter_binding_set_value,
   aida_parameter_binding_get_value,
   aida_parameter_binding_destroy,
@@ -487,6 +492,7 @@ bst_param_new_aida_parameter (GParamSpec *pspec, const Rapicorn::Aida::Parameter
 {
   GxkParam *param = gxk_param_new (pspec, &aida_parameter_binding, NULL);
   param->bdata[0].v_pointer = new Rapicorn::Aida::Parameter (aparameter);
+  param->bdata[1].v_pointer = NULL;
   gxk_param_set_size_group (param, param_size_group);
   return param;
 }

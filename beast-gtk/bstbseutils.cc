@@ -90,8 +90,8 @@ namespace Bse {
 const char*
 error_blurb (Bse::ErrorType error_value)
 {
-  const Rapicorn::Aida::EnumValue *ev = Rapicorn::Aida::enum_info<Bse::ErrorType>().find_value (error_value);
-  return ev ? ev->blurb : NULL;
+  const Rapicorn::Aida::EnumValue ev = Rapicorn::Aida::enum_info<Bse::ErrorType>().find_value (error_value);
+  return ev.blurb;
 }
 
 } // Bse
