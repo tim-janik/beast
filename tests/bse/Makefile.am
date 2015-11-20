@@ -26,7 +26,7 @@ progs_ldadd = $(top_builddir)/bse/libbse-@MAJOR@.la $(RAPICORN_LIBS) $(BSE_LIBS)
 #$(srcdir)/cxxbinding.cc: bsecxxapi.hh
 #$(srcdir)/cxxbinding.cc: bsecxxapi.cc
 
-TESTS             += filtertest
+TAPTESTS          += filtertest
 filtertest_SOURCES = filtertest.cc
 filtertest_LDADD   = $(progs_ldadd)
 EXTRA_DIST += empty.ogg

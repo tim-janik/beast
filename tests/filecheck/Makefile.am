@@ -30,11 +30,11 @@ SKIP_PATTERN = "tests/latency/midi-latency.bse"
 checklist-%-test: checklists
 	$(Q) for tfile in `cat $(@F:-test=)` ; do		\
 	    if echo "$$tfile" | egrep -q $(SKIP_PATTERN) ; then	\
-	      echo "SKIP - Loading: $$tfile" ;			\
+	      echo "  SKIP     Loading: $$tfile" ;		\
 	    else						\
 	      $(CHECK_LOAD) "$$tfile" 2>&1 | tee $(@F).log ;	\
 	      test ! -s $(@F).log || exit 1			\
-	      && echo "OK   - Loading: $$tfile" ;		\
+	      && echo "  OK       Loading: $$tfile" ;		\
 	    fi ; done ; rm -f $(@F).log $(@F:-test=)
 checklists: distfiles.list # generate checklist-a .. checklist-e
 	$(Q) grep '\.bse$$' distfiles.list > checklist

@@ -185,7 +185,7 @@ bse_init_intern()
     {
       StringVector sv = Rapicorn::string_split (Rapicorn::cpu_info(), " ");
       String machine = sv.size() >= 2 ? sv[1] : "Unknown";
-      TMSG ("  NOTE   Running on: %s+%s", machine.c_str(), bse_block_impl_name());
+      Test::tprintout ("  NOTE   Running on: %s+%s", machine.c_str(), bse_block_impl_name());
     }
 }
 

@@ -12,47 +12,43 @@ EXTRA_DIST += arrows.gp filter-defs.gp
 noinst_PROGRAMS = $(ALLTESTS)
 progs_ldadd     = $(top_builddir)/bse/libbse-@MAJOR@.la $(RAPICORN_LIBS) $(BSE_LIBS)
 
-TESTS            += misctests
+TAPTESTS         += misctests
 misctests_SOURCES = misctests.cc
 misctests_LDADD   = $(progs_ldadd)
 
-TESTS             += filtertest
+TAPTESTS          += filtertest
 SLOWTESTS         += filtertest
 filtertest_SOURCES = filtertest.cc
 filtertest_LDADD   = $(progs_ldadd)
 EXTRA_DIST        += filtercatalog.cc
 
-TESTS          += testfft
+TAPTESTS       += testfft
 testfft_SOURCES = testfft.cc
 testfft_LDADD   = $(progs_ldadd)
 
-TESTS          += testcxx
+TAPTESTS       += testcxx
 testcxx_SOURCES = testcxx.cc
 testcxx_LDADD   = $(progs_ldadd)
 
-TESTS              += subnormals
-PERFTESTS          += subnormals
+TAPTESTS           += subnormals
 subnormals_SOURCES  = subnormals.cc subnormals-aux.cc
 subnormals_LDADD    = $(progs_ldadd)
 subnormals_CXXFLAGS = $(AM_CXXFLAGS) -ffast-math
 EXTRA_DIST         += subnormals.hh
 
-TESTS             += loophandle
+TAPTESTS          += loophandle
 loophandle_SOURCES = loophandle.cc
 loophandle_LDADD   = $(progs_ldadd)
 
-TESTS             += blocktests
-PERFTESTS         += blocktests
+TAPTESTS          += blocktests
 blocktests_SOURCES = blocktests.cc
 blocktests_LDADD   = $(progs_ldadd)
 
-TESTS                 += resamplehandle
+TAPTESTS              += resamplehandle
 SLOWTESTS             += resamplehandle
-PERFTESTS             += resamplehandle
 resamplehandle_SOURCES = resamplehandle.cc
 resamplehandle_LDADD   = $(progs_ldadd)
 
-TESTS                 += firhandle
-PERFTESTS             += firhandle
+TAPTESTS              += firhandle
 firhandle_SOURCES      = firhandle.cc
 firhandle_LDADD        = $(progs_ldadd)

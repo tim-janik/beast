@@ -25,12 +25,12 @@ noinst_PROGRAMS = $(ALLTESTS)
 progs_ldadd     = $(top_builddir)/bse/libbse-@MAJOR@.la $(RAPICORN_LIBS) $(BSE_LIBS)
 
 # testwavechunk
-TESTS                += testwavechunk
+TAPTESTS             += testwavechunk
 SLOWTESTS            += testwavechunk
 testwavechunk_SOURCES = testwavechunk.cc
 testwavechunk_LDADD = $(progs_ldadd)
 # perftest
-TESTS           += perftest
+TAPTESTS        += perftest
 perftest_SOURCES = perftest.cc
 perftest_LDADD   = $(progs_ldadd)
 # testresampler
@@ -38,7 +38,7 @@ noinst_PROGRAMS      += testresampler
 testresampler_SOURCES = testresampler.cc
 testresampler_LDADD   = $(progs_ldadd)
 # testresamplerq
-TESTS                 += testresamplerq
+TAPTESTS              += testresamplerq
 testresamplerq_SOURCES = testresamplerq.cc
 testresamplerq_LDADD   = $(progs_ldadd)
 

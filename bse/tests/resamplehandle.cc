@@ -14,6 +14,7 @@ using std::string;
 using std::max;
 using std::min;
 using std::map;
+using namespace Rapicorn::Test;
 
 static void
 read_through (GslDataHandle *handle)
@@ -31,7 +32,7 @@ read_through (GslDataHandle *handle)
   assert (offset == n_values);
 }
 
-static double
+static void
 check (const char           *up_down,
        const char           *channels,
        uint                  bits,
@@ -45,7 +46,6 @@ check (const char           *up_down,
 {
   char *samplestr = g_strdup_format ("ResampleHandle-%s%02d%s", up_down, bits, channels);
   char *streamstr = g_strdup_format ("CPU Resampling %s%02d%s", up_down, bits, channels);
-  TSTART ("%s (%s)", samplestr, cpu_type);
 
   TASSERT (input.size() % n_channels == 0);
 
@@ -91,13 +91,13 @@ check (const char           *up_down,
 	  worst_diff = max (fabs (resampled - expected[i]), worst_diff);
 	}
       worst_diff_db = bse_db_from_factor (worst_diff, -200);
-      TOUT ("linear(%dst read) read worst_diff = %f (%f dB)\n", repeat, worst_diff, worst_diff_db);
+      Rapicorn::Test::tprintout ("%s: linear(%dst read) read worst_diff = %f (%f dB)\n", samplestr, repeat, worst_diff, worst_diff_db);
       TASSERT (worst_diff_db < max_db);
     }
 
   /* test seeking */
   worst_diff = 0.0;
-  const uint count = Rapicorn::Test::slow() ? 300 : 100;
+  const uint count = 200;
   for (uint j = 0; j < count; j++)
     {
       int64 start = rand() % rhandle->setup.n_values;
@@ -111,36 +111,31 @@ check (const char           *up_down,
 	}
     }
   worst_diff_db = bse_db_from_factor (worst_diff, -200);
-  TOUT ("seek worst_diff = %f (%f dB)\n", worst_diff, worst_diff_db);
-  TASSERT (worst_diff_db < max_db);
+  TCHECK (worst_diff_db < max_db, "%s: seeking below epsilon: %.1f < %.1f dB", samplestr, worst_diff_db, max_db);
 
-  TDONE();
-
-  /* test speed */
-  double samples_per_second = 0;
-  if (Rapicorn::Test::slow())
+  // benchmarks
+  if (1)
     {
-      const guint RUNS = 10;
-      GTimer *timer = g_timer_new();
-      const guint dups = TEST_CALIBRATION (50.0, read_through (rhandle));
-
-      double m = 9e300;
-      for (guint i = 0; i < RUNS; i++)
-        {
-          g_timer_start (timer);
-          for (guint j = 0; j < dups; j++)
-            read_through (rhandle);
-          g_timer_stop (timer);
-          double e = g_timer_elapsed (timer, NULL);
-          if (e < m)
-            m = e;
-        }
-      samples_per_second = input.size() / (m / dups);
-      TMSG ("    %-28s : %+.14f samples/second", samplestr, samples_per_second);
-      TMSG ("    %-28s : %+.14f streams", streamstr, samples_per_second / 44100.0);
-      //TOUT ("  samples / second = %f\n", samples_per_second);
-      //TOUT ("  which means the resampler can process %.2f 44100 Hz streams simultaneusly\n", samples_per_second / 44100.0);
-      //TOUT ("  or one 44100 Hz stream takes %f %% CPU usage\n", 100.0 / (samples_per_second / 44100.0));
+      const uint RUNS = 1;
+      const uint bytes_per_run = sizeof (float) * gsl_data_handle_n_values (rhandle);
+      auto loop = [&rhandle] () {
+        for (uint j = 0; j < RUNS; j++)
+          read_through (rhandle);
+      };
+      Rapicorn::Test::Timer timer (0.03);
+      const double bench_time = timer.benchmark (loop);
+      const double input_samples_per_second = RUNS * input.size() / bench_time;
+      const double output_samples_per_second = RUNS * gsl_data_handle_n_values (rhandle) / bench_time;
+      TPASS ("%s benchmark # timing: %+.1f streams, throughput=%.1fMB/s\n",
+             samplestr, (input_samples_per_second + output_samples_per_second) / 2.0 / 44100.0,
+             RUNS * bytes_per_run / bench_time / 1048576.);
+#if 0
+      tprintout ("  NOTE     %-28s : %+.14f samples/second\n", samplestr, samples_per_second);
+      tprintout ("  NOTE     %-28s : %+.14f streams\n", streamstr, samples_per_second / 44100.0);
+      tprintout ("  NOTE     samples / second = %f\n", samples_per_second);
+      tprintout ("  NOTE     which means the resampler can process %.2f 44100 Hz streams simultaneusly\n", samples_per_second / 44100.0);
+      tprintout ("  NOTE     or one 44100 Hz stream takes %f %% CPU usage\n", 100.0 / (samples_per_second / 44100.0));
+#endif
     }
 
   gsl_data_handle_close (rhandle);
@@ -148,8 +143,6 @@ check (const char           *up_down,
 
   g_free (samplestr);
   g_free (streamstr);
-
-  return samples_per_second / 44100.0;
 }
 
 template<typename Sample> static void
@@ -215,48 +208,36 @@ run_tests (const char *run_type)
       vector<double> expected;
 
       // mono upsampling test
-      if (Rapicorn::Test::slow())
-        {
-          generate_test_signal (input, LEN, 44100, 440);
-          generate_test_signal (expected, LEN * 2, 88200, 440);
-          check ("Up", "M", params[p].bits, run_type,
-                 input, expected, 1, BSE_RESAMPLER2_MODE_UPSAMPLE,
-                 params[p].bits, params[p].mono_upsample_db);
-          // printerr ("    ===> speed is equivalent to %.2f simultaneous 44100 Hz streams\n", streams);
-        }
+      generate_test_signal (input, LEN, 44100, 440);
+      generate_test_signal (expected, LEN * 2, 88200, 440);
+      check ("Up", "M", params[p].bits, run_type,
+             input, expected, 1, BSE_RESAMPLER2_MODE_UPSAMPLE,
+             params[p].bits, params[p].mono_upsample_db);
+      // printerr ("    ===> speed is equivalent to %.2f simultaneous 44100 Hz streams\n", streams);
 
       // stereo upsampling test
-      if (1)
-        {
-          generate_test_signal (input, LEN, 44100, 440, 1000);
-          generate_test_signal (expected, LEN * 2, 88200, 440, 1000);
-          check ("Up", "S", params[p].bits, run_type,
-                 input, expected, 2, BSE_RESAMPLER2_MODE_UPSAMPLE,
-                 params[p].bits, params[p].stereo_upsample_db);
-          // printerr ("    ===> speed is equivalent to %.2f simultaneous 44100 Hz streams\n", streams);
-        }
+      generate_test_signal (input, LEN, 44100, 440, 1000);
+      generate_test_signal (expected, LEN * 2, 88200, 440, 1000);
+      check ("Up", "S", params[p].bits, run_type,
+             input, expected, 2, BSE_RESAMPLER2_MODE_UPSAMPLE,
+             params[p].bits, params[p].stereo_upsample_db);
+      // printerr ("    ===> speed is equivalent to %.2f simultaneous 44100 Hz streams\n", streams);
 
       // mono downsampling test
-      if (Rapicorn::Test::slow())
-        {
-          generate_test_signal (input, LEN, 44100, 440);
-          generate_test_signal (expected, LEN / 2, 22050, 440);
-          check ("Dn", "M", params[p].bits, run_type,
-                 input, expected, 1, BSE_RESAMPLER2_MODE_DOWNSAMPLE,
-                 params[p].bits, params[p].mono_downsample_db);
-          // printerr ("    ===> speed is equivalent to %.2f simultaneous 44100 Hz streams\n", streams);
-        }
+      generate_test_signal (input, LEN, 44100, 440);
+      generate_test_signal (expected, LEN / 2, 22050, 440);
+      check ("Dn", "M", params[p].bits, run_type,
+             input, expected, 1, BSE_RESAMPLER2_MODE_DOWNSAMPLE,
+             params[p].bits, params[p].mono_downsample_db);
+      // printerr ("    ===> speed is equivalent to %.2f simultaneous 44100 Hz streams\n", streams);
 
       // stereo downsampling test
-      if (1)
-        {
-          generate_test_signal (input, LEN, 44100, 440, 1000);
-          generate_test_signal (expected, LEN / 2, 22050, 440, 1000);
-          check ("Dn", "S", params[p].bits, run_type,
-                 input, expected, 2, BSE_RESAMPLER2_MODE_DOWNSAMPLE,
-                 params[p].bits, params[p].stereo_downsample_db);
-          // printerr ("    ===> speed is equivalent to %.2f simultaneous 44100 Hz streams\n", streams);
-        }
+      generate_test_signal (input, LEN, 44100, 440, 1000);
+      generate_test_signal (expected, LEN / 2, 22050, 440, 1000);
+      check ("Dn", "S", params[p].bits, run_type,
+             input, expected, 2, BSE_RESAMPLER2_MODE_DOWNSAMPLE,
+             params[p].bits, params[p].stereo_downsample_db);
+      // printerr ("    ===> speed is equivalent to %.2f simultaneous 44100 Hz streams\n", streams);
     }
 }
 
@@ -285,8 +266,7 @@ test_c_api (const char *run_type)
     }
   double error_db = bse_db_from_factor (error, -200);
   bse_resampler2_destroy (resampler);
-  TOUT ("Test C API delta: %f\n", error_db);
-  TASSERT (error_db < -95);
+  TCHECK (error_db < -95, "C API delta below epsilon: %f < -95\n", error_db);
   TDONE();
 }
 static void
@@ -360,8 +340,7 @@ test_delay_compensation (const char *run_type)
 
       /* check error against bound */
       double error_db = bse_db_from_factor (error, -250);
-      TOUT ("Resampler Delay Compensation delta: %f\n", error_db);
-      TASSERT (error_db < -params[p].error_db);
+      TCHECK (error_db < -params[p].error_db, "Resampler Delay Compensation delta below epsilon: %f < %f\n", error_db, -params[p].error_db);
     }
   TDONE();
 }
@@ -479,7 +458,7 @@ main (int   argc,
   Rapicorn::init_core_test (RAPICORN_PRETTY_FILE, &argc, argv);
   Rapicorn::StringVector sv = Rapicorn::string_split (Rapicorn::cpu_info(), " ");
   Rapicorn::String machine = sv.size() >= 2 ? sv[1] : "Unknown";
-  TMSG ("  NOTE   Running on: %s+%s", machine.c_str(), bse_block_impl_name()); // usually done by bse_init_test
+  printout ("  NOTE     Running on: %s+%s", machine.c_str(), bse_block_impl_name()); // usually done by bse_init_test
 
   test_c_api ("FPU");
   test_delay_compensation ("FPU");

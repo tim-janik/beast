@@ -204,7 +204,7 @@ private:
     return gsl_filter_sine_scan (m_order, &m_a[0], &m_b[0], f, FS);
   }
 
-  void
+  bool
   check_response_db (double   freq,
                      double   min_resp_db,
 		     double   max_resp_db,
@@ -217,15 +217,14 @@ private:
 				    break;
       case TEST_SCANNED_RESPONSE:   resp = bse_db_from_factor (scan_response (freq), MIN_DB);
 				    break;
-      default:			    return;	/* huh? */
+      default:			    return false;	/* huh? */
       }
     if (!(resp > min_resp_db - DB_EPSILON) || !(resp < max_resp_db + DB_EPSILON))
       {
-	printerr ("\n*** check_response_db: computed response at frequency %f is %f\n", freq, resp);
-	printerr ("*** check_response_db: but should be in interval [%f..%f]\n", min_resp_db, max_resp_db);
+	printerr ("\tcheck_response_db: computed response at frequency %f is %f\n", freq, resp);
+	printerr ("\tcheck_response_db: but should be in interval [%f..%f]\n", min_resp_db, max_resp_db);
       }
-    TASSERT (resp > min_resp_db - DB_EPSILON);
-    TASSERT (resp < max_resp_db + DB_EPSILON);
+    return resp > min_resp_db - DB_EPSILON && resp < max_resp_db + DB_EPSILON;
   }
   void
   check_band (const Band& band,
@@ -235,19 +234,20 @@ private:
     const double delta_f = (FS / 2) / scan_points;
     assert_return (band.freq_start <= band.freq_end);
     assert_return (band.freq_end <= FS/2);
-    TOUT ("checking band: response in interval [%f..%f] should be in interval [%f..%f] dB\n",
-          band.freq_start, band.freq_end, band.min_resp_db, band.max_resp_db);
     int tok = 0;
     int tok_dots = int ((FS / delta_f) / 50) + 1;
+    bool success = true;
     for (double f = band.freq_start; f < band.freq_end; f += delta_f)
       {
 	if (tok++ % tok_dots == 0)
 	  TOK();
-	check_response_db (f, band.min_resp_db, band.max_resp_db, test_mode);
+	success &= check_response_db (f, band.min_resp_db, band.max_resp_db, test_mode);
       }
-
     if (band.freq_start != band.freq_end)
-      check_response_db (band.freq_end, band.min_resp_db, band.max_resp_db, test_mode);
+      success &= check_response_db (band.freq_end, band.min_resp_db, band.max_resp_db, test_mode);
+
+    TCHECK (success, "filter band response for [%f..%f] Hz is within [%f..%f] dB",
+            band.freq_start, band.freq_end, band.min_resp_db, band.max_resp_db);
   }
 public:
   FilterTest (const char   *name,
@@ -365,7 +365,7 @@ public:
   }
 };
 
-void
+static void
 setup_all_filter_tests (vector<FilterTest>& filter_tests)
 {
   {
@@ -477,22 +477,22 @@ setup_all_filter_tests (vector<FilterTest>& filter_tests)
   }
 }
 
-void
+static void
 check_computed_response (const vector<FilterTest>& filter_tests)
 {
-  printerr ("---> checking computed filter responses:\n");
+  Rapicorn::Test::tprintout ("---> checking computed filter responses:\n");
   for (vector<FilterTest>::const_iterator fi = filter_tests.begin(); fi != filter_tests.end(); fi++)
     fi->perform_checks (FilterTest::TEST_COMPUTED_RESPONSE, 10000);
 }
 
-void
+static void
 check_scanned_response (const vector<FilterTest>& filter_tests)
 {
-  printerr ("---> checking scanned filter responses:\n");
+  Rapicorn::Test::tprintout ("---> checking scanned filter responses:\n");
   for (vector<FilterTest>::const_iterator fi = filter_tests.begin(); fi != filter_tests.end(); fi++)
     fi->perform_checks (FilterTest::TEST_SCANNED_RESPONSE, 67);  /* prime number scan points */
 }
-void
+static void
 dump_gnuplot_data (vector<FilterTest>& filter_tests)
 {
   for (vector<FilterTest>::iterator fi = filter_tests.begin(); fi != filter_tests.end(); fi++)
