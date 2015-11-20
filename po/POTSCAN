@@ -93,7 +93,6 @@ bse/bsesuboport.cc
 bse/bsesubsynth.cc
 bse/bsesuper.cc
 bse/bsetrack.cc
-bse/bsetrack.proc
 bse/bsewave.cc
 bse/bsewaveosc.cc
 data/beast.desktop.in
