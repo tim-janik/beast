@@ -99,7 +99,7 @@ bse_iir_filter_class_init (BseIIRFilterClass *klass)
 			      PARAM_CUT_OFF_NOTE1,
 			      bse_pspec_note ("cut_off_note", _("Note"),
                                               _("Filter cutoff frequency as note, converted to Hertz according to the current musical tuning"),
-					      bse_note_from_freq (BSE_MUSICAL_TUNING_12_TET, BSE_KAMMER_FREQUENCY / 2),
+					      bse_note_from_freq (Bse::MUSICAL_TUNING_12_TET, BSE_KAMMER_FREQUENCY / 2),
 					      SFI_PARAM_GUI));
   bse_object_class_add_param (object_class, _("Cutoff Frequency 2 (Band Pass/Stop)"),
 			      PARAM_CUT_OFF_FREQ2,
@@ -110,7 +110,7 @@ bse_iir_filter_class_init (BseIIRFilterClass *klass)
 			      PARAM_CUT_OFF_NOTE2,
 			      bse_pspec_note ("cut_off_note_2", _("Note"),
                                               _("Filter cutoff frequency as note, converted to Hertz according to the current musical tuning"),
-					      bse_note_from_freq (BSE_MUSICAL_TUNING_12_TET, BSE_KAMMER_FREQUENCY / 2 + FREQ_DELTA),
+					      bse_note_from_freq (Bse::MUSICAL_TUNING_12_TET, BSE_KAMMER_FREQUENCY / 2 + FREQ_DELTA),
 					      SFI_PARAM_GUI));
 
   ichannel_id = bse_source_class_add_ichannel (source_class, "audio-in", _("Audio In"), _("Unfiltered Input"));

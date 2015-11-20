@@ -69,7 +69,7 @@ dav_syn_drum_class_init (DavSynDrumClass *klass)
   bse_object_class_add_param (object_class, _("Frequency"), PROP_BASE_FREQ,
                               bse_param_spec_freq ("base_freq", _("Frequency"),
                                                    _("Drum frequency in Hertz"),
-                                                   bse_note_to_freq (BSE_MUSICAL_TUNING_12_TET, SFI_NOTE_Gis (-1)),
+                                                   bse_note_to_freq (Bse::MUSICAL_TUNING_12_TET, SFI_NOTE_Gis (-1)),
                                                    BSE_MIN_OSC_FREQUENCY, BSE_MAX_OSC_FREQUENCY,
                                                    SFI_PARAM_STANDARD ":dial"));
   bse_object_class_add_param (object_class, _("Frequency"), PROP_BASE_NOTE,

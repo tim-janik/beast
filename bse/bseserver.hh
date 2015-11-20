@@ -132,6 +132,12 @@ public:
   virtual AuxData    find_module_type       (const String &module_type) override;
   virtual Icon       module_type_icon       (const String &module_type) override;
   virtual SampleFileInfo sample_file_info   (const String &filename) override;
+  virtual NoteDescription note_describe_from_freq (MusicalTuningType musical_tuning, double freq) override;
+  virtual NoteDescription note_describe    (MusicalTuningType musical_tuning, int note, int fine_tune) override;
+  virtual NoteDescription note_construct   (MusicalTuningType musical_tuning, int semitone, int octave, int fine_tune) override;
+  virtual NoteDescription note_from_string (MusicalTuningType musical_tuning, const String &name) override;
+  virtual int             note_from_freq   (MusicalTuningType musical_tuning, double frequency) override;
+  virtual double          note_to_freq     (MusicalTuningType musical_tuning, int note, int fine_tune) override;
   void               send_user_message      (const UserMessage &umsg);
   static void        register_source_module (const String &type, const String &title, const String &tags, const uint8 *pixstream);
   static ServerImpl& instance               ();

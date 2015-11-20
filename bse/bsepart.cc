@@ -127,7 +127,7 @@ bse_part_class_init (BsePartClass *klass)
 static void
 bse_part_init (BsePart *self)
 {
-  self->semitone_table = bse_semitone_table_from_tuning (BSE_MUSICAL_TUNING_12_TET);
+  self->semitone_table = bse_semitone_table_from_tuning (Bse::MUSICAL_TUNING_12_TET);
   self->n_ids = 0;
   self->ids = NULL;
   self->last_id = 0;

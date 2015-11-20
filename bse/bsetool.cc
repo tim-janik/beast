@@ -187,8 +187,8 @@ dump_info (const ArgParser &ap)
     char *string = bse_note_to_string (note);
     printout ("%s =%-4d \tfactor=%" FLF "f [%-5s] (freq=%" FLF "f)\n",
               note_name, note,
-              bse_transpose_factor (BSE_MUSICAL_TUNING_12_TET, note - BSE_KAMMER_NOTE),
-              string, bse_note_to_freq (BSE_MUSICAL_TUNING_12_TET, note));
+              bse_transpose_factor (Bse::MUSICAL_TUNING_12_TET, note - BSE_KAMMER_NOTE),
+              string, bse_note_to_freq (Bse::MUSICAL_TUNING_12_TET, note));
     g_free (string);
   };
   auto print_fine_tune = [] (const char *tune_name, int tune) {
@@ -220,13 +220,13 @@ dump_info (const ArgParser &ap)
     for (j = BSE_MIN_NOTE; j <= BSE_MAX_NOTE; j += 3)
       for (k = BSE_MIN_FINE_TUNE / 2; k <= BSE_MAX_FINE_TUNE / 2; k += 10)
 	{
-	  double f, freq = bse_note_to_tuned_freq (BSE_MUSICAL_TUNING_12_TET, j, k);
+	  double f, freq = bse_note_to_tuned_freq (Bse::MUSICAL_TUNING_12_TET, j, k);
 	  int note, fine_tune;
 	  printout ("compose  : note=%4d fine_tune=%4d freq=%" FLF "f\n", j, k, freq);
 	  f = freq;
-	  note = bse_note_from_freq (BSE_MUSICAL_TUNING_12_TET, freq);
-	  fine_tune = bse_note_fine_tune_from_note_freq (BSE_MUSICAL_TUNING_12_TET, note, freq);
-	  freq = bse_note_to_tuned_freq (BSE_MUSICAL_TUNING_12_TET, note, fine_tune);
+	  note = bse_note_from_freq (Bse::MUSICAL_TUNING_12_TET, freq);
+	  fine_tune = bse_note_fine_tune_from_note_freq (Bse::MUSICAL_TUNING_12_TET, note, freq);
+	  freq = bse_note_to_tuned_freq (Bse::MUSICAL_TUNING_12_TET, note, fine_tune);
 	  printout ("decompose: note=%4d fine_tune=%4d freq=%" FLF "f   (diff=%g)\n", note, fine_tune, freq, freq - f);
 	}
   if (0)

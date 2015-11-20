@@ -167,7 +167,7 @@ bse_midi_file_load (const char   *file_name,
     }
 
   smf = (BseMidiFile*) g_malloc0 (sizeof (BseMidiFile) + header.n_tracks * sizeof (smf->tracks[0]));
-  smf->musical_tuning = BSE_MUSICAL_TUNING_12_TET;
+  smf->musical_tuning = Bse::MUSICAL_TUNING_12_TET;
 #if 0
   smf->tpqn = header.division;
   smf->tpqn_rate = 1;

@@ -13,9 +13,6 @@ G_BEGIN_DECLS
 /* --- C++ helper declaration --- */
 void    bse_cxx_init      (void);
 /* --- record utils --- */
-BseNoteDescription* bse_note_description             (BseMusicalTuningType   musical_tuning,
-                                                      int                    note,
-                                                      int                    fine_tune);
 Bse::PartNote    bse_part_note    (uint id, uint channel, uint tick, uint duration, int note, int fine_tune, double velocity, bool selected);
 Bse::PartControl bse_part_control (uint id, uint tick, Bse::MidiSignalType control_type, double value, bool selected);
 void                bse_note_sequence_resize         (BseNoteSequence       *rec,

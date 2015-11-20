@@ -2,12 +2,12 @@
 #ifndef __BSE_NOTE_H__
 #define __BSE_NOTE_H__
 
-#include        <bse/bseglobals.hh>
-#include        <bse/bsetype.hh>
+#include <bse/bseglobals.hh>
+#include <bse/bseenums.hh>
 
 G_BEGIN_DECLS
 
-/* --- import Sfi macros --- */
+// == Sfi imports ==
 #define BSE_MIN_NOTE            SFI_MIN_NOTE
 #define BSE_MAX_NOTE            SFI_MAX_NOTE
 #define BSE_KAMMER_NOTE         SFI_KAMMER_NOTE
@@ -19,12 +19,10 @@ G_BEGIN_DECLS
 #define BSE_KAMMER_OCTAVE       SFI_KAMMER_OCTAVE
 #define BSE_MIN_OCTAVE          SFI_MIN_OCTAVE
 #define BSE_MAX_OCTAVE          SFI_MAX_OCTAVE
-#define bse_note_from_string    sfi_note_from_string
 #define bse_note_to_string      sfi_note_to_string
 #define bse_note_examine        sfi_note_examine
 
-
-/* --- construct notes --- */
+// == Construct Notes ==
 #define BSE_NOTE_OCTAVE(n)              SFI_NOTE_OCTAVE (n)
 #define BSE_NOTE_SEMITONE(n)            SFI_NOTE_SEMITONE (n)
 #define BSE_NOTE_GENERIC(o,ht_i)        SFI_NOTE_GENERIC (o, ht_i)
@@ -49,20 +47,15 @@ G_BEGIN_DECLS
 #define BSE_NOTE_OCTAVE_UP(n)           (BSE_NOTE_SHIFT ((n), +12))
 #define BSE_NOTE_OCTAVE_DOWN(n)         (BSE_NOTE_SHIFT ((n), -12))
 
+// Internals, use Bse::Server API instead
+int    bse_note_from_freq                (Bse::MusicalTuningType musical_tuning, double freq);
+int    bse_note_from_freq_bounded        (Bse::MusicalTuningType musical_tuning, double freq);
+int    bse_note_fine_tune_from_note_freq (Bse::MusicalTuningType musical_tuning, int note, double freq);
+double bse_note_to_freq                  (Bse::MusicalTuningType musical_tuning, int note);
+double bse_note_to_tuned_freq            (Bse::MusicalTuningType musical_tuning, int note, int fine_tune);
 
-/* --- functions --- */
-int             bse_note_from_freq                      (BseMusicalTuningType   musical_tuning,
-                                                         double                 freq);
-int             bse_note_from_freq_bounded              (BseMusicalTuningType   musical_tuning,
-                                                         double                 freq);
-int             bse_note_fine_tune_from_note_freq       (BseMusicalTuningType   musical_tuning,
-                                                         int                    note,
-                                                         double                 freq);
-double          bse_note_to_freq                        (BseMusicalTuningType   musical_tuning,
-                                                         int                    note);
-double          bse_note_to_tuned_freq                  (BseMusicalTuningType   musical_tuning,
-                                                         int                    note,
-                                                         int                    fine_tune);
+Bse::NoteDescription bse_note_description (Bse::MusicalTuningType musical_tuning, int note, int finetune);
+int    bse_note_from_string              (const String &note_string);
 
 
 /* --- freq array --- */

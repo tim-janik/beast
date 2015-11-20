@@ -42,7 +42,7 @@ static void
 check_equal_tempered_tuning (void)
 {
   TSTART ("Equal Temperament");
-  const double *table = bse_semitone_table_from_tuning (BSE_MUSICAL_TUNING_12_TET); /* returns [-132..+132] */
+  const double *table = bse_semitone_table_from_tuning (Bse::MUSICAL_TUNING_12_TET); /* returns [-132..+132] */
   const double epsilon = 1e-11;
   for (int i = -132; i <= +132; i++)
     {
@@ -55,7 +55,7 @@ check_equal_tempered_tuning (void)
 }
 
 static void
-check_tuning_monotony (BseMusicalTuningType musical_tuning)
+check_tuning_monotony (Bse::MusicalTuningType musical_tuning)
 {
   const double *table = bse_semitone_table_from_tuning (musical_tuning); /* returns [-132..+132] */
   for (int i = -132; i <= +132; i++)
@@ -69,7 +69,7 @@ check_tuning_monotony (BseMusicalTuningType musical_tuning)
 }
 
 static void
-check_freq_vs_notes (BseMusicalTuningType musical_tuning)
+check_freq_vs_notes (Bse::MusicalTuningType musical_tuning)
 {
   /* check freq/note mapping */
   for (int j = BSE_MIN_NOTE; j <= BSE_MAX_NOTE; j++)
@@ -92,7 +92,7 @@ check_freq_vs_notes (BseMusicalTuningType musical_tuning)
             printout ("decompose: note=%4d fine_tune=%4d freq=%" FLF "f   (diff=%" FLF "f)\n", note, fine_tune, freq, freq - f);
           if (ABS (k) < 11)
             TASSERT (note == j);
-          if (musical_tuning == BSE_MUSICAL_TUNING_12_TET)
+          if (musical_tuning == Bse::MUSICAL_TUNING_12_TET)
             TCMP (fabs (freq_error), <, 0.00000000001);   /* equal temperament is fairly accurate */
           else
             TCMP (freq_ratio, <, 1.00057778950655485930); /* detuning should be smaller than a cent */
@@ -133,18 +133,19 @@ main (gint   argc,
   check_cent_tune();
   check_cent_tune_fast();
   check_equal_tempered_tuning();
-  BseMusicalTuningType last_tuning = BSE_MUSICAL_TUNING_YOUNG;
+  Bse::MusicalTuningType last_tuning = Bse::MUSICAL_TUNING_YOUNG;
   /* check last tuning value by asserting defaulting behavior of succeding values */
-  TCMP (bse_semitone_table_from_tuning (BseMusicalTuningType (last_tuning + 1)),
+  TCMP (bse_semitone_table_from_tuning (Bse::MusicalTuningType (last_tuning + 1)),
         ==,
-        bse_semitone_table_from_tuning (BseMusicalTuningType (0)));
+        bse_semitone_table_from_tuning (Bse::MusicalTuningType (0)));
   /* check monotonic musical tuning systems */
-  for (int j = BSE_MUSICAL_TUNING_12_TET; j <= last_tuning; j++)
+  for (int j = Bse::MUSICAL_TUNING_12_TET; j <= last_tuning; j++)
     {
-      BseMusicalTuningType musical_tuning = BseMusicalTuningType (j);
+      Bse::MusicalTuningType musical_tuning = Bse::MusicalTuningType (j);
       check_tuning_monotony (musical_tuning);
       check_freq_vs_notes (musical_tuning);
-      TPASS ("Tuning System: %s\n", sfi_enum2choice (musical_tuning, BSE_TYPE_MUSICAL_TUNING_TYPE));
+      TPASS ("Tuning System: %s\n",
+             Rapicorn::Aida::enum_info<Bse::MusicalTuningType>().find_value (musical_tuning).ident);
     }
 
   return 0;

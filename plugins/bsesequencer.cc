@@ -194,9 +194,7 @@ bse_sequencer_get_property (BseSequencer *seq,
 }
 
 static gfloat*
-freq_values_from_seq (BseMusicalTuningType musical_tuning,
-                      BseNoteSequence     *sdata,
-		      gint                 transpose)
+freq_values_from_seq (Bse::MusicalTuningType musical_tuning, BseNoteSequence *sdata, int transpose)
 {
   gfloat *v = g_new (gfloat, bse_note_sequence_length (sdata));
   guint i;

@@ -378,9 +378,8 @@ static inline double    bse_saturate_branching (double value,
                                                 double limit)   G_GNUC_CONST;
 
 /* --- semitone factors (for +-11 octaves) --- */
-const double* bse_semitone_table_from_tuning (BseMusicalTuningType musical_tuning); /* returns [-132..+132] */
-double        bse_transpose_factor           (BseMusicalTuningType musical_tuning,
-                                              int                  index /* [-132..+132] */);
+const double* bse_semitone_table_from_tuning (Bse::MusicalTuningType musical_tuning); /* returns [-132..+132] */
+double        bse_transpose_factor           (Bse::MusicalTuningType musical_tuning, int index /* [-132..+132] */);
 
 /* --- cents (1/100th of a semitone) --- */
 

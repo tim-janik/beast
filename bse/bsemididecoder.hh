@@ -22,7 +22,7 @@ typedef enum {
 struct BseMidiDecoder {
   SfiRing             *events;      /* BseMidiEvent* */
   /* configuration */
-  BseMusicalTuningType musical_tuning;
+  Bse::MusicalTuningType musical_tuning;
   uint                 auto_queue : 1;
   uint                 smf_support : 1;
   /*< private >*/
@@ -42,7 +42,7 @@ struct BseMidiDecoder {
 /* --- API --- */
 BseMidiDecoder* bse_midi_decoder_new                      (gboolean              auto_queue,
                                                            gboolean              smf_support,
-                                                           BseMusicalTuningType  musical_tuning);
+                                                           Bse::MusicalTuningType musical_tuning);
 void            bse_midi_decoder_destroy                  (BseMidiDecoder       *self);
 void            bse_midi_decoder_push_data                (BseMidiDecoder       *self,
                                                            uint                  n_bytes,
