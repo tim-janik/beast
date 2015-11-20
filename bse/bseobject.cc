@@ -42,6 +42,12 @@ ObjectImpl::proxy_id ()
   return bo->unique_id;
 }
 
+void
+ObjectImpl::changed (const String &what)
+{
+  sig_changed.emit (what);
+}
+
 } // Bse
 
 enum
