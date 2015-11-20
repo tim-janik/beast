@@ -75,4 +75,4 @@ ChangeLog: $(GITSTAMPS)
 	$(Q) test -s $@ || { mv $@ $@.empty ; ls -al --full-time $@.empty ; exit 1 ; }
 noinst_DATA          += ChangeLog
 MAINTAINERCLEANFILES += ChangeLog
-EXTRA_DIST           += ChangeLog
+EXTRA_DIST           += ChangeLog taptool.sh
