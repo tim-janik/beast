@@ -58,9 +58,9 @@ void            bse_bus_change_solo             (BseBus         *self,
                                                  gboolean        solo_muted);
 #define         bse_bus_create_stack(b)         bse_bus_get_stack (b,0,0,0)
 void    bse_bus_or_track_list_output_candidates (BseItem        *trackbus,
-                                                 BseItemSeq     *iseq);
+                                                 BseIt3mSeq     *iseq);
 void    bse_bus_or_track_set_outputs            (BseItem        *trackbus,
-                                                 BseItemSeq     *iseq);
+                                                 BseIt3mSeq     *iseq);
 
 /* --- channels --- */
 enum

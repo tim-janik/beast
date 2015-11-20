@@ -478,18 +478,17 @@ bse_part_list_links (BsePart *self)
       for (ring = song->tracks_SL; ring; ring = sfi_ring_walk (ring, song->tracks_SL))
         {
           BseTrack *track = (BseTrack*) ring->data;
-          BseTrackPartSeq *tps = bse_track_list_part (track, self);
-          for (size_t i = 0; i < tps->n_tparts; i++)
+          const Bse::TrackPartSeq &tps = bse_track_list_part (track, self);
+          for (size_t i = 0; i < tps.size(); i++)
             {
-              BseTrackPart *tp = tps->tparts[i];
+              const Bse::TrackPart &tp = tps[i];
               Bse::PartLink pl;
               pl.track = track->as<Bse::TrackIfaceP>();
-              pl.tick = tp->tick;
+              pl.tick = tp.tick;
               pl.part = self->as<Bse::PartIfaceP>();
-              pl.duration = tp->duration;
+              pl.duration = tp.duration;
               pls.push_back (pl);
             }
-          bse_track_part_seq_free (tps);
         }
       stable_sort (pls.begin(), pls.end(), part_link_lesser);
     }

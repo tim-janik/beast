@@ -19,7 +19,7 @@ G_BEGIN_DECLS
 typedef struct _BstItemSeqDialog          BstItemSeqDialog;
 typedef struct _BstItemSeqDialogClass     BstItemSeqDialogClass;
 typedef void (*BstItemSeqDialogSelected) (gpointer             data,
-                                          BseItemSeq          *iseq,
+                                          BseIt3mSeq          *iseq,
                                           BstItemSeqDialog    *isdialog);
 struct _BstItemSeqDialog
 {
@@ -48,16 +48,16 @@ GtkWidget* bst_item_seq_dialog_popup    (gpointer                  parent_widget
                                          SfiProxy                  item,
                                          const gchar              *candidate_label,
                                          const gchar              *candidate_tooltip,
-                                         BseItemSeq               *candidates,
+                                         BseIt3mSeq               *candidates,
                                          const gchar              *item_label,
                                          const gchar              *item_tooltip,
-                                         BseItemSeq               *iseq,
+                                         BseIt3mSeq               *iseq,
                                          BstItemSeqDialogSelected  selected_callback,
                                          gpointer                  selected_data,
                                          GxkFreeFunc               selected_cleanup);
 void       bst_item_seq_dialog_set      (BstItemSeqDialog         *self,
-                                         BseItemSeq               *candidates,
-                                         BseItemSeq               *iseq);
+                                         BseIt3mSeq               *candidates,
+                                         BseIt3mSeq               *iseq);
 
 
 

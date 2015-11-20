@@ -558,7 +558,7 @@ _bst_init_params (void)
   gxk_param_register_editor (&param_note_spinner_int, NULL);
   gxk_param_register_editor (&param_note_spinner_num, NULL);
   gxk_param_register_editor (&param_proxy, NULL);
-  gxk_param_register_editor (&param_item_seq, NULL);
+  gxk_param_register_editor (&param_it3m_seq, NULL);
   gxk_param_register_editor (&param_automation, NULL);
   gxk_param_register_editor (&param_scale1, NULL);
   gxk_param_register_editor (&param_scale2, NULL);

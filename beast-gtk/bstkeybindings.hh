@@ -63,8 +63,8 @@ guint                        bst_key_binding_lookup_id    (BstKeyBinding        
                                                            GdkModifierType              modifier,
                                                            guint                        collision_group,
                                                            gdouble                     *param);
-void                         bst_key_binding_set_item_seq (BstKeyBinding *kbinding, const Bst::KeyBindingItemSeq &seq);
-Bst::KeyBindingItemSeq*  bst_key_binding_get_new_item_seq (BstKeyBinding *kbinding);
+void                         bst_key_binding_set_it3m_seq (BstKeyBinding *kbinding, const Bst::KeyBindingItemSeq &seq);
+Bst::KeyBindingItemSeq*  bst_key_binding_get_new_it3m_seq (BstKeyBinding *kbinding);
 const gchar*                 bst_key_binding_rcfile       (void);
 Bse::ErrorType                 bst_key_binding_dump         (const gchar                 *file_name,
                                                            GSList                      *kbindings);

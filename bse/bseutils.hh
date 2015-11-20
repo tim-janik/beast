@@ -24,10 +24,10 @@ guint               bse_note_sequence_length         (BseNoteSequence       *rec
 void                bse_property_candidate_relabel   (BsePropertyCandidates *pc,
                                                       const gchar           *label,
                                                       const gchar           *tooltip);
-void                bse_item_seq_remove              (BseItemSeq            *iseq,
+void                bse_it3m_seq_remove              (BseIt3mSeq            *iseq,
                                                       BseItem               *item);
-SfiRing*            bse_item_seq_to_ring             (BseItemSeq            *iseq);
-BseItemSeq*         bse_item_seq_from_ring           (SfiRing               *ring);
+SfiRing*            bse_it3m_seq_to_ring             (BseIt3mSeq            *iseq);
+BseIt3mSeq*         bse_it3m_seq_from_ring           (SfiRing               *ring);
 
 
 /* --- debugging --- */

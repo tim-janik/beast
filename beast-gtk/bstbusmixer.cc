@@ -158,7 +158,7 @@ bus_mixer_set_container (BstItemView *iview,
                          "signal::item_added", bus_mixer_item_added, self,
                          "signal::item_remove", bus_mixer_item_removed, self,
                          NULL);
-      BseItemSeq *iseq = bse_container_list_children (iview->container);
+      BseIt3mSeq *iseq = bse_container_list_children (iview->container);
       guint i;
       for (i = 0; i < iseq->n_items; i++)
         bus_mixer_item_added (iview->container, iseq->items[i], self);

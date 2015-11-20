@@ -319,7 +319,7 @@ sequence NoteSeq {
   Int    notes   = Note ("Note", "", KAMMER_NOTE, ":readwrite"); /* FIXME: s/notes/note/ for pspecs, but not the C API */
 };
 interface Item;
-sequence ItemSeq {
+sequence It3mSeq {
   Info   blurb = ("A list of BSE items or derived types.");
   Item   items;
 };
@@ -327,7 +327,7 @@ record PropertyCandidates {
   Info    blurb      = ("A structure describing tentative property values.");
   SfiString  label;
   SfiString  tooltip;
-  ItemSeq items;
+  It3mSeq items;
   TypeSeq partitions = SfiSeq ("Type Partitions", "List of types which may logically partition the list of items by type discrimination", STANDARD);
 };
 record NoteDescription
@@ -379,15 +379,6 @@ sequence CategorySeq {
 /* BSE Part structures */
 interface Part;
 interface Track;
-/* BSE Track structures */
-record TrackPart {
-  Int           tick     = SfiInt ("Tick", "", 0, 0, G_MAXINT, 384, STANDARD);
-  Part          part;
-  Int           duration = SfiInt ("Duration", "", 0, 0, G_MAXINT, 384, STANDARD);
-};
-sequence TrackPartSeq {
-  TrackPart tparts;
-};
 interface Janitor;
 
 // == BSE Global Config ==

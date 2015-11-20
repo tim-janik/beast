@@ -616,15 +616,14 @@ bst_track_roll_draw_canvas (GxkScrollCanvas *scc,
 			  0, ry, width, rheight);
       if (track)
 	{
-	  BseTrackPartSeq *tps = bse_track_list_parts (track.proxy_id());
-	  for (uint i = 0; i < tps->n_tparts; i++)
+          Bse::TrackPartSeq tps = track.list_parts();
+          for (auto &tp : tps)
 	    {
               static const int ENTRY_INNER_BORDER = 2;      /* sigh, no way around this */
               PangoRectangle rect = { 0 };
-	      guint tick = tps->tparts[i]->tick;
-	      SfiProxy part = tps->tparts[i]->part;
-	      guint duration = tps->tparts[i]->duration;
-	      const gchar *name = bse_item_get_name (part);
+	      guint tick = tp.tick;
+	      guint duration = tp.duration;
+	      const gchar *name = bse_item_get_name (tp.part.proxy_id());
 	      GdkRectangle area, carea;
 	      carea.x = tick_to_coord (self, tick);
               carea.width = ticks_to_pixels (self, duration);

@@ -328,7 +328,7 @@ bst_child_list_wrapper_setup (GxkListWrapper *self,
   if (parent)
     {
       ProxyStore *ps = g_new0 (ProxyStore, 1);
-      BseItemSeq *iseq;
+      BseIt3mSeq *iseq;
       guint i;
       ps->self = self;
       ps->row_from_proxy = child_list_wrapper_row_from_proxy;
@@ -563,7 +563,7 @@ proxy_cmp_sorted (gconstpointer   value1,
 
 void
 bst_item_seq_store_set (GtkTreeModel   *model,
-                        BseItemSeq     *iseq)
+                        BseIt3mSeq     *iseq)
 {
   g_object_set_data ((GObject*) model, "ProxyStore", NULL);
   if (iseq)
@@ -662,14 +662,14 @@ bst_item_seq_store_lower (GtkTreeModel   *model,
   return row;
 }
 
-BseItemSeq*
+BseIt3mSeq*
 bst_item_seq_store_dup (GtkTreeModel   *model)
 {
   ProxyStore *ps = (ProxyStore*) g_object_get_data ((GObject*) model, "ProxyStore");
-  BseItemSeq *iseq = bse_item_seq_new ();
+  BseIt3mSeq *iseq = bse_it3m_seq_new ();
   SfiRing *ring;
   for (ring = ps->u.pq.items; ring; ring = sfi_ring_walk (ring, ps->u.pq.items))
-    bse_item_seq_append (iseq, (SfiProxy) ring->data);
+    bse_it3m_seq_append (iseq, (SfiProxy) ring->data);
   return iseq;
 }
 

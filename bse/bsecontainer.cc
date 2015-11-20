@@ -384,21 +384,21 @@ static gboolean
 list_items (BseItem *item,
             gpointer data)
 {
-  BseItemSeq *iseq = (BseItemSeq*) data;
+  BseIt3mSeq *iseq = (BseIt3mSeq*) data;
 
-  bse_item_seq_append (iseq, item);
+  bse_it3m_seq_append (iseq, item);
 
   return TRUE;
 }
 
-BseItemSeq*
+BseIt3mSeq*
 bse_container_list_children (BseContainer *container)
 {
-  BseItemSeq *iseq;
+  BseIt3mSeq *iseq;
 
   assert_return (BSE_IS_CONTAINER (container), NULL);
 
-  iseq = bse_item_seq_new ();
+  iseq = bse_it3m_seq_new ();
   if (container->n_items)
     {
       assert_return (BSE_CONTAINER_GET_CLASS (container)->forall_items != NULL, NULL); /* paranoid */

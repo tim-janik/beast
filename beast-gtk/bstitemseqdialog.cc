@@ -118,10 +118,10 @@ bst_item_seq_dialog_popup (gpointer     parent_widget,
                            SfiProxy     item,
                            const gchar *candidate_label,
                            const gchar *candidate_tooltip,
-                           BseItemSeq  *candidates,
+                           BseIt3mSeq  *candidates,
                            const gchar *item_label,
                            const gchar *item_tooltip,
-                           BseItemSeq  *items,
+                           BseIt3mSeq  *items,
                            BstItemSeqDialogSelected selected_callback,
                            gpointer                 selected_data,
                            GxkFreeFunc              selected_cleanup)
@@ -162,8 +162,8 @@ bst_item_seq_dialog_popup (gpointer     parent_widget,
 
 void
 bst_item_seq_dialog_set (BstItemSeqDialog *self,
-                         BseItemSeq       *candidates,
-                         BseItemSeq       *iseq)
+                         BseIt3mSeq       *candidates,
+                         BseIt3mSeq       *iseq)
 {
   assert_return (BST_IS_ITEM_SEQ_DIALOG (self));
 
@@ -289,9 +289,9 @@ bst_item_seq_dialog_activate (BstItemSeqDialog *self)
   self->selected_cleanup = NULL;
   if (selected_callback)        /* notify popup caller */
     {
-      BseItemSeq *iseq = bst_item_seq_store_dup (self->item_store);
+      BseIt3mSeq *iseq = bst_item_seq_store_dup (self->item_store);
       selected_callback (selected_data, iseq, self);
-      bse_item_seq_free (iseq);
+      bse_it3m_seq_free (iseq);
     }
   if (selected_cleanup)
     selected_cleanup (selected_data);

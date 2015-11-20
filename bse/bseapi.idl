@@ -364,6 +364,8 @@ record SongTiming {
 // Forward declarations.
 record PartLink;
 sequence PartLinkSeq;
+record TrackPart;
+sequence TrackPartSeq;
 
 /// Fundamental base type for all BSE objects.
 interface Object {
@@ -375,6 +377,31 @@ interface Object {
 interface Item : Object {
   Icon icon = Record ("Icon", "State dependent icon representation of this item", "r:G");
   Item common_ancestor (Item other);    ///< Find a common container (parent or grand-parent) of two items if any.
+
+  // bool   check_is_a        (String type_name); ///< Check whether an item has a certain type.
+  // void   clear_undo        (); ///< Call the clear-undo function of the project corresponding to this item if any.
+  // bool   editable_property (String property_name); ///< Test whether a property is editable according to object state and property options.
+  // String get_name          (); ///< Retrieve an item's name.
+  // String get_name_or_type  (); ///< Retrieve an item's name or type if it has no name.
+  // Item   get_parent        (); ///< Retrieve an item's parent.
+  // Item   get_project       (); ///< Retrieve an item's project.
+  // PropertyCandidates get_property_candidates (String property_name); ///< Retrieve tentative values for an item or item sequence property.
+  // int32  get_seqid        (); ///< Retrieve an item's sequential ID. The sequential ID depends on the item's type an it's position inbetween siblings of the same type within it's immediate container.
+  // String get_type         (); ///< Retrieve an item's type name.
+  // String get_type_authors (); ///< Retrieve authors of an item's type implementation.
+  // String get_type_blurb   (); ///< Retrieve an item's type description.
+  // String get_type_license (); ///< Retrieve the license for an item's type implementation.
+  // String get_type_name    (); ///< Retrieve an item's type name.
+  // String get_uname_path   (); ///< Retrieve the project relative uname path for this item.
+  // void   group_undo   (String name); ///< Request multiple modifying actions on an item to be grouped together as single undo operation.
+  // bool   internal     (); ///< Check whether an item is internal, i.e. owned by another non-internal item.
+  // void   redo         (); ///< Call the redo function of the project corresponding to this item if any.
+  // void   set_name     (String name); ///< Set an item's name.
+  // void   undo         (); ///< Call the undo function of the project corresponding to this item if any.
+  // void   ungroup_undo (); ///< Ends the undo grouping opened up by a previous group-undo() call.
+  // void   unuse        (); ///< Decrement use count for when an item is not needed anymore.
+  // Item   use          (); ///< Increment use count to keep an item alive.
+  // int32 seqid = Range ("Sequential ID", "", ":readwrite", 0, MAXINT31, 1);
 };
 
 /// Part specific note event representation.
@@ -448,9 +475,44 @@ interface Part : Item {
   // property int32 last_tick;
 };
 
+/// A list of Part or derived types.
+sequence PartSeq {
+  Part part;
+};
+
 /// Base interface type for synthesis modules with input or output streams.
 interface Source : Item {
   Source ichannel_get_osource (int32 input_channel, int32 input_joint); ///< Retrieve output module connected to a specific joint of an input channel.
+
+  // void clear_inputs (); ///< Disconnect all module inputs.
+  // void clear_outputs (); ///< Disconnect all module outputs.
+  // int32 get_automation_channel (String property_name); ///< Get MIDI channel from an automation property.
+  // MidiControlType get_automation_control (String property_name); ///< Get control type from an automation property.
+  // bool has_output (int32 ochannel); ///< Check whether a module's output channel is connected.
+  // bool has_outputs (); ///< Check whether a module has output channel connections.
+  // String ichannel_blurb (int32 input_channel); ///< Get input channel description.
+  // int32 ichannel_get_n_joints (int32 input_channel); ///< Retrieve the number of inputs connected to an input channel.
+  // int32 ichannel_get_ochannel (int32 input_channel, int32 input_joint); ///< Retrieve output channel of the module connected to a specific joint of an input channel.
+  // String ichannel_ident (int32 input_channel); ///< Get canonical input channel name.
+  // String ichannel_label (int32 input_channel); ///< Get input channel name.
+  // bool is_joint_ichannel (String input_channel); ///< Check if an input channel is a joint (multi-connect) channel.
+  // bool is_joint_ichannel_by_id (int32 input_channel); ///< Check if an input channel is a joint (multi-connect) channel.
+  // bool is_prepared (); ///< Check whether a source is prepared for synthesis processing.
+  // int32 n_ichannels (); ///< Get the number of input channels of a module.
+  // int32 n_ochannels (); ///< Get the number of output channels of a module.
+  // String ochannel_blurb (int32 output_channel); ///< Get output channel description.
+  // String ochannel_ident (int32 output_channel); ///< Get canonical output channel name.
+  // String ochannel_label (int32 output_channel); ///< Get output channel name.
+  // ErrorType set_automation (String property_name, int32 midi_channel, MidiControlType control_type); ///< Setup automation parameters for a property.
+  // ErrorType set_input (String input_channel, Source omodule, String output_channel); ///< Connect a module input to another module's output.
+  // ErrorType set_input_by_id (int32 input_channel, Source omodule, int32 output_channel); ///< Connect a module input to another module's output.
+  // void set_pos (float64 x_pos, float64 y_pos); ///< Set the x and y position of a module. In contrast to setting the position through ordinary object property setters, this function will not update the module position if the passed in arguments are sufficiently equal to the values already set on the object. As such, it does not record an extra undo step for setting properties to values they already have and if necessary turns setting of x and y positions into an atomic undo operation.
+  // ErrorType unset_input (String input_channel, Source omodule, String output_channel); ///< Disconnect a module input.
+  // ErrorType unset_input_by_id (int32 input_channel, Source omodule, int32 output_channel); ///< Disconnect a module input.
+  // signal void probes (ProbeSeq a);
+  // signal void io_changed ();
+  // float64 pos_x = Range ("Position X", "", STANDARD ":scale");
+  // float64 pos_y = Range ("Position Y", "", STANDARD ":scale");
 };
 
 /// Source module for merging multiple synthesis contexts, used to implement polyphony.
@@ -513,8 +575,8 @@ interface Track : ContextMerger {
   void       remove_tick (int32 tick);            ///< Remove Part at specified @a tick from a track.
   void       remove_link (int32 id);              ///< Remove a specific part link by ID from a track.
 
-  // ItemSeq      list_parts_uniq ();              ///< List all parts contained in a track.
-  // TrackPartSeq list_parts ();                   ///< List parts scheduled in a track, sorted by tick.
+  PartSeq      list_parts_uniq ();              ///< List all parts contained in a track.
+  TrackPartSeq list_parts ();                   ///< List parts scheduled in a track, sorted by tick.
   Part         get_part (int32 tick);           ///< Get the part starting at a specific tick position.
   int32        get_last_tick ();                ///< Retrieve the last tick for this track.
   ErrorType    ensure_output ();                ///< Ensure the track has an output connection to a bus.
@@ -543,6 +605,18 @@ record PartLink {
 /// Sequence of PartLink records.
 sequence PartLinkSeq {
   PartLink plinks;
+};
+
+/// Structure linking to a Track from within a Part.
+record TrackPart {
+  int32 tick     = Range ("Tick", "", STANDARD, 0, MAXINT31, 384);
+  Part  part;
+  int32 duration = Range ("Duration", "", STANDARD, 0, MAXINT31, 384);
+};
+
+/// Sequence of TrackPart records.
+sequence TrackPartSeq {
+  TrackPart parts;
 };
 
 /// Interface for effect stacks and per-track audio signal routing to the master output.
@@ -719,6 +793,29 @@ interface Server : Object {
   AuxData        find_module_type  (String module_type); ///< Retrieve info about a Source type names.
   Icon           module_type_icon  (String module_type); ///< Retrieve the icon associated with a module type.
   SampleFileInfo sample_file_info  (String file_name); ///< Load sample file info from file.
+
+  /// Describe a note, providing information about its octave, semitone, frequency, etc.
+  // NoteDescription note_describe (MusicalTuningType musical_tuning, int32 note, int32 fine_tune);
+  // Describe a note, given its frequency.
+  // NoteDescription note_describe_from_freq (MusicalTuningType musical_tuning, float64 freq);
+  /// Describe a note, given its semitone, octave and fine tune.
+  // NoteDescription note_construct (MusicalTuningType musical_tuning, int32 semitone, int32 octave, int32 fine_tune);
+  /// Describe a note, given its name and octave offset.
+  // NoteDescription note_from_string (MusicalTuningType musical_tuning, String name);
+  /// Retrieve the note of a certain frequency.
+  // int32 note_from_freq (MusicalTuningType musical_tuning, float64 frequency);
+  /// Retrieve the frequency of a certain note.
+  // float64 note_to_freq (MusicalTuningType musical_tuning, int32 note, int32 fine_tune);
+
+  // *** Old Janitor ***
+  // void   trigger_action   (String action); ///< Trigger an installed user action of this janitor.
+  // String get_script_name  (); ///< Retrieve the script name of this janitor.
+  // String get_proc_name    (); ///< Retrieve the procedure name of this janitor.
+  // int32  n_actions        (); ///< Retrieve number of user actions of this janitor.
+  // String get_action       (int32 nth_action); ///< Retrieve an action of this janitor.
+  // String get_action_name  (int32 nth_action); ///< Retrieve the name of an action of this janitor.
+  // String get_action_blurb (int32 nth_action); ///< Retrieve the help string of an action of this janitor.
+  // void kill (); ///< Kill a currently running janitor.
 };
 
 } // Bse

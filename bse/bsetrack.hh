@@ -63,8 +63,8 @@ guint        	 bse_track_insert_part	(BseTrack		*self,
 					 BsePart		*part);
 void		 bse_track_remove_tick	(BseTrack		*self,
 					 guint			 tick);
-BseTrackPartSeq* bse_track_list_parts	(BseTrack		*self);
-BseTrackPartSeq* bse_track_list_part	(BseTrack		*self,
+Bse::TrackPartSeq bse_track_list_parts	(BseTrack		*self);
+Bse::TrackPartSeq bse_track_list_part	(BseTrack		*self,
                                          BsePart                *part);
 gboolean	 bse_track_find_part	(BseTrack		*self,
 					 BsePart		*part,
@@ -90,6 +90,8 @@ public:
   virtual int          insert_part       (int tick, PartIface &part) override;
   virtual void         remove_tick       (int tick) override;
   virtual void         remove_link       (int id) override;
+  virtual PartSeq      list_parts_uniq   () override;
+  virtual TrackPartSeq list_parts        () override;
   virtual PartIfaceP   get_part          (int tick) override;
   virtual int          get_last_tick     () override;
   virtual ErrorType    ensure_output     () override;
