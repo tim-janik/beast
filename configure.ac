@@ -1,4 +1,4 @@
-# Licensed GNU LGPL v2 or later: http://www.gnu.org/licenses/lgpl.html
+dnl # Beast & Bse                                    -*- Mode: shell-script; -*-
 
 # include various m4 macros
 m4_include(acbeast.m4)dnl # include special macros
@@ -114,25 +114,6 @@ m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES([yes])])
 AC_ARG_ENABLE(debug,           [  --enable-debug=no/minimum/yes turn on debugging, default=yes],,enable_debug=yes)
 AC_ARG_ENABLE(devel-mode,      [  --enable-devel-mode=no/yes    turn on development mode, default=auto],,enable_devel_mode=auto)
 
-dnl # setup DEBUG defaults
-if test "x$enable_debug" = "xyes"; then
-  DEBUG_FLAGS="-g -DG_ENABLE_DEBUG"
-else if test "x$enable_debug" = "xno"; then
-  DEBUG_FLAGS="-DG_DISABLE_CHECKS -DG_DISABLE_CAST_CHECKS" # -DG_DISABLE_ASSERT
-else
-  DEBUG_FLAGS="-DG_DISABLE_CAST_CHECKS"
-fi fi
-if test -z "$CFLAGS"; then
-  CFLAGS="$DEBUG_FLAGS"
-else
-  CFLAGS="$CFLAGS $DEBUG_FLAGS"
-fi
-if test -z "$CXXFLAGS"; then
-  CXXFLAGS="$DEBUG_FLAGS"
-else
-  CXXFLAGS="$CXXFLAGS $DEBUG_FLAGS"
-fi
-
 dnl # Foreign defaults:
 MC_IF_VAR_EQ(enable_static, yes, , enable_static=no)
 MC_IF_VAR_EQ(enable_shared, no, , enable_shared=yes)
@@ -182,8 +163,7 @@ MC_CXX_TRY_OPTION(AM_CXXFLAGS,  -std=gnu++0x)
 BOTHCCXXFLAGS=
 if test "x$enable_debug" = "xyes"; then
   MC_EVAR_ADD(BOTHCCXXFLAGS,      -DG_ENABLE_DEBUG)
-  MC_CC_TRY_OPTION(BOTHCCXXFLAGS, -g)
-  MC_CC_TRY_OPTION(BOTHCCXXFLAGS, -ggdb3)
+  MC_CC_TRY_OPTION(BOTHCCXXFLAGS, -g3)
   MC_CC_TRY_OPTION(BOTHCCXXFLAGS, -fno-omit-frame-pointer)
   MC_CC_TRY_OPTION(BOTHCCXXFLAGS, -fverbose-asm)
   dnl # MC_CC_TRY_OPTION(BOTHCCXXFLAGS, -Q -ftime-report -fmem-report)
