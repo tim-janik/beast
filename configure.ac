@@ -172,8 +172,6 @@ elif test "x$enable_debug" = "xno"; then
 else
   : # minimum debugging
 fi
-MC_CC_TRY_OPTION(BOTHCCXXFLAGS, -fmessage-length=0)
-MC_CC_TRY_OPTION(BOTHCCXXFLAGS, -fdiagnostics-color=auto)
 MC_CC_TRY_OPTION(BOTHCCXXFLAGS, -Wall)
 MC_CC_TRY_OPTION(BOTHCCXXFLAGS, -Wdeprecated)
 MC_CC_TRY_OPTION(AM_CFLAGS,     -Wmissing-prototypes)
