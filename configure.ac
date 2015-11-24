@@ -155,9 +155,6 @@ else
 fi
 AC_SUBST(AM_LDFLAGS)
 
-# Pick C++ dialect, needed in CXXFLAGS for compile tests
-MC_CXX_TRY_OPTION(CXXFLAGS,  -std=gnu++0x)
-
 # AM_CFLAGS & AM_CXXFLAGS
 MC_CXX_TRY_OPTION(AM_CXXFLAGS,  -std=gnu++0x)
 BOTHCCXXFLAGS=
@@ -451,13 +448,9 @@ AC_DEFUN([AC_ASOUND_CHECK],
     dnl --- check for -lasound ---
     found_libasound=0
     dnl snd_asoundlib_version() was introduced in ALSA 1.0.5
-    cflags=$CFLAGS
-    ldflags=$LDFLAGS
-    CFLAGS=""
-    LDFLAGS=""
+    CFLAGS=""  # kept in saved_cflags
+    LDFLAGS="" # kept in saved_ldflags
     AC_CHECK_LIB(asound, snd_asoundlib_version, ALSA_LIBS="-lasound"; found_libasound=1)
-    CFLAGS="$cflags"
-    LDFLAGS="$ldflags"
     if test $found_libasound = 0; then
 	AC_MSG_ERROR([ALSA version 1.0.5 is required to build this package])
     fi
@@ -675,13 +668,6 @@ AC_GXK_REQUIREMENTS
 AC_BEAST_REQUIREMENTS
 AC_SUIDMAIN_REQUIREMENTS
 AC_DOC_REQUIREMENTS
-
-# Automake @VARIABLE@ exports.
-AC_SUBST(CFLAGS)
-AC_SUBST(CXXFLAGS)
-AC_SUBST(CPPFLAGS)
-AC_SUBST(LDFLAGS)
-
 
 # create output files
 AC_CONFIG_FILES([
