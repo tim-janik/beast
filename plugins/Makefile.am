@@ -69,8 +69,8 @@ FPU_PLUGIN_CXXFLAGS	  = $(AM_CXXFLAGS) $(PLUGIN_FLAGS) $(FPU_FLAGS)
 plugin_SSE_ltlibs	  =	# listed in Makefile.plugins
 plugin_SSE_LTLIBRARIES	  = $(plugin_SSE_cond_libs) cxxplugins.SSE.la
 plugin_SSEdir		  = $(bselibdir)/plugins
-SSE_PLUGIN_CFLAGS	  = $(AM_CFLAGS) $(PLUGIN_FLAGS) $(MMX_SSE_FLAGS)
-SSE_PLUGIN_CXXFLAGS	  = $(AM_CXXFLAGS) $(PLUGIN_FLAGS) $(MMX_SSE_FLAGS)
+SSE_PLUGIN_CFLAGS	  = $(AM_CFLAGS) $(PLUGIN_FLAGS) $(SIMD_FLAGS)
+SSE_PLUGIN_CXXFLAGS	  = $(AM_CXXFLAGS) $(PLUGIN_FLAGS) $(SIMD_FLAGS)
 if WITH_MMX_SSE
 plugin_SSE_cond_libs	  = $(plugin_SSE_ltlibs)
 else
