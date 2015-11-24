@@ -266,7 +266,7 @@ MC_ASSERT_PROG(PKG_CONFIG, pkg-config, [pkg-config can be found at http://www.fr
 dnl #
 dnl # Define package requirements.
 dnl #
-AC_DEFUN([AC_I18N_REQUIREMENTS],
+AC_DEFUN([MC_I18N_REQUIREMENTS],
 [
   # LINGUAS
   ALL_LINGUAS=`cat "$srcdir/po/LINGUAS" | grep -v '^#' | xargs echo -n `
@@ -296,7 +296,7 @@ AC_DEFUN([AC_I18N_REQUIREMENTS],
   INTLMERGE='$(top_builddir)/$(ac_aux_dir)/intltool-merge'
   AC_SUBST(INTLMERGE) dnl # AC_PATH_PROG(INTLMERGE, intltool-merge, intltool-merge)
 ])
-AC_DEFUN([AC_SFI_REQUIREMENTS],
+AC_DEFUN([MC_SFI_REQUIREMENTS],
 [
     dnl # check for GLib libs
     PKG_CHECK_MODULES(GLIB_GOMT, glib-2.0 >= 2.32.3 gobject-2.0 gmodule-no-export-2.0 gthread-2.0)
@@ -310,7 +310,7 @@ AC_DEFUN([AC_SFI_REQUIREMENTS],
     AC_CHECK_FUNCS(getpwnam_r getpwnam)
     AC_CHECK_FUNCS(timegm)
 ])
-AC_DEFUN([AC_BSE_REQUIREMENTS],
+AC_DEFUN([MC_BSE_REQUIREMENTS],
 [
     dnl # require Rapicorn
     PKG_CHECK_MODULES(RAPICORN, rapicorn >= 15.09.1)
@@ -413,7 +413,7 @@ AC_DEFUN([AC_BSE_REQUIREMENTS],
     AC_CHECK_LIB(m, sincos,
       AC_DEFINE(HAVE_SINCOS, 1, [Define if you have the sincos function in <math.h>]))
 ])
-AC_DEFUN([AC_ASOUND_CHECK],
+AC_DEFUN([MC_ASOUND_CHECK],
 [
     saved_cflags="$CFLAGS"
     saved_cxxflags="$CXXFLAGS"
@@ -461,7 +461,7 @@ AC_DEFUN([AC_ASOUND_CHECK],
     CXXFLAGS="$saved_cxxflags"
     LDFLAGS="$saved_ldflags"
 ])
-AC_DEFUN([AC_BSESCM_REQUIREMENTS],
+AC_DEFUN([MC_BSESCM_REQUIREMENTS],
 [
     BSESCM_CFLAGS="$BSE_CFLAGS"
     BSESCM_LIBS="$BSE_LIBS"
@@ -494,7 +494,7 @@ AC_DEFUN([AC_BSESCM_REQUIREMENTS],
     AC_SUBST(BSESCM_CFLAGS)
     AC_SUBST(BSESCM_LIBS)
 ])
-AC_DEFUN([AC_GXK_REQUIREMENTS],
+AC_DEFUN([MC_GXK_REQUIREMENTS],
 [
     dnl # required libraries, defines LIB*_CFLAGS and LIB*_LIBS:
     PKG_CHECK_MODULES(LIBPANGO, pangoft2 >= 1.4.0)
@@ -506,7 +506,7 @@ AC_DEFUN([AC_GXK_REQUIREMENTS],
     AC_SUBST(GXK_CFLAGS)
     AC_SUBST(GXK_LIBS)
 ])
-AC_DEFUN([AC_BEAST_REQUIREMENTS],
+AC_DEFUN([MC_BEAST_REQUIREMENTS],
 [
     dnl # start where GXK left off
     BEAST_CFLAGS="$GXK_CFLAGS"
@@ -530,13 +530,13 @@ AC_DEFUN([AC_BEAST_REQUIREMENTS],
     CFLAGS=$cflags
     LDFLAGS=$ldflags
 ])
-AC_DEFUN([AC_SUIDMAIN_REQUIREMENTS],
+AC_DEFUN([MC_SUIDMAIN_REQUIREMENTS],
 [
     dnl # figure everything required by the suid wrapper
     AC_CHECK_FUNCS(seteuid)
     AC_CHECK_FUNCS(setreuid)
 ])
-AC_DEFUN([AC_BSE_SNDDEV_CHECK],
+AC_DEFUN([MC_BSE_SNDDEV_CHECK],
 [
     dnl # OSS-Lite driver check
     AC_CHECK_HEADERS(sys/soundcard.h soundcard.h, have_oss_header=yes, have_oss_header=no)
@@ -606,7 +606,7 @@ AC_DEFUN([AC_BSE_SNDDEV_CHECK],
 	AC_MSG_WARN([failed to detect proper sound device files])
     fi
 ])
-AC_DEFUN([AC_DOC_REQUIREMENTS],
+AC_DEFUN([MC_DOC_REQUIREMENTS],
 [
 ])
 
@@ -658,16 +658,16 @@ AC_SUBST(PERLRULE)
 AM_CONDITIONAL(WITH_PERLRULE, [test "$PERLRULE" != "#"])
 
 # Check requirement sets
-AC_I18N_REQUIREMENTS
-AC_SFI_REQUIREMENTS
-AC_BSE_REQUIREMENTS
-AC_ASOUND_CHECK
-AC_BSESCM_REQUIREMENTS
-AC_BSE_SNDDEV_CHECK
-AC_GXK_REQUIREMENTS
-AC_BEAST_REQUIREMENTS
-AC_SUIDMAIN_REQUIREMENTS
-AC_DOC_REQUIREMENTS
+MC_I18N_REQUIREMENTS
+MC_SFI_REQUIREMENTS
+MC_BSE_REQUIREMENTS
+MC_ASOUND_CHECK
+MC_BSESCM_REQUIREMENTS
+MC_BSE_SNDDEV_CHECK
+MC_GXK_REQUIREMENTS
+MC_BEAST_REQUIREMENTS
+MC_SUIDMAIN_REQUIREMENTS
+MC_DOC_REQUIREMENTS
 
 # create output files
 AC_CONFIG_FILES([
