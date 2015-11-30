@@ -60,6 +60,7 @@ server_registration (SfiProxy     server,
     }
 }
 
+static void     main_run_event_loops ();
 static bool     force_saving_rc_files = false;
 static void     main_save_rc_files ();
 static void     main_cleanup ();
@@ -378,6 +379,16 @@ main (int argc, char *argv[])
   gtk_widget_hide (beast_splash);
   bst_splash_release_grab (beast_splash);
 
+  main_run_event_loops();
+  main_save_rc_files();
+  main_cleanup();
+
+  return 0;
+}
+
+static void
+main_run_event_loops ()
+{
   /* away into the main loop */
   while (bst_main_loop_running)
     {
@@ -396,11 +407,6 @@ main (int argc, char *argv[])
       GDK_THREADS_LEAVE ();
     }
   GDK_THREADS_ENTER ();
-
-  main_save_rc_files();
-  main_cleanup();
-
-  return 0;
 }
 
 static void
