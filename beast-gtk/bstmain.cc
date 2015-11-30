@@ -60,6 +60,7 @@ server_registration (SfiProxy     server,
     }
 }
 
+static void     main_init_ladspa();
 static void     main_sleep4gdb();
 static void     main_init_scripts();
 static void     main_init_dialogs();
@@ -190,7 +191,25 @@ main (int argc, char *argv[])
 	}
     }
 
-  /* register LADSPA plugins */
+  main_init_ladspa();
+  main_sleep4gdb();
+  main_init_scripts();
+  main_init_dialogs();
+  BstApp *app = main_open_files (argc - 1, &argv[1]);
+  if (!app)
+    app = main_open_default_window();
+  main_show_release_notes();
+  main_splash_down();
+  main_run_event_loops();
+  main_save_rc_files();
+  main_cleanup();
+
+  return 0;
+}
+
+static void
+main_init_ladspa()
+{
   if (register_ladspa_plugins)
     {
       bst_splash_update_entity (beast_splash, _("LADSPA Plugins"));
@@ -208,20 +227,6 @@ main (int argc, char *argv[])
 	  sfi_glue_gc_run ();
 	}
     }
-
-  main_sleep4gdb();
-  main_init_scripts();
-  main_init_dialogs();
-  BstApp *app = main_open_files (argc - 1, &argv[1]);
-  if (!app)
-    app = main_open_default_window();
-  main_show_release_notes();
-  main_splash_down();
-  main_run_event_loops();
-  main_save_rc_files();
-  main_cleanup();
-
-  return 0;
 }
 
 static void
