@@ -60,6 +60,8 @@ server_registration (SfiProxy     server,
     }
 }
 
+static bool     force_saving_rc_files = false;
+static void     main_save_rc_files ();
 static void     main_cleanup ();
 
 int
@@ -333,7 +335,6 @@ main (int argc, char *argv[])
 
   /* fire up release notes dialog
    */
-  gboolean update_rc_files = FALSE;
   if (BST_RC_VERSION != BST_VERSION)
     {
       const char *release_notes_title =
@@ -369,8 +370,8 @@ main (int argc, char *argv[])
       gxk_dialog_set_sizes (GXK_DIALOG (rndialog), 320, 200, 540, 420);
       gxk_scroll_text_rewind (sctext);
       gxk_idle_show_widget (rndialog);
-      update_rc_files = TRUE;
       bst_gconfig_set_rc_version (BST_VERSION);
+      force_saving_rc_files = true;
     }
 
   /* release splash grab */
@@ -396,8 +397,18 @@ main (int argc, char *argv[])
     }
   GDK_THREADS_ENTER ();
 
-  /* save BSE configuration */
-  if (update_rc_files && !bst_preferences_saved())
+  main_save_rc_files();
+  main_cleanup();
+
+  return 0;
+}
+
+static void
+main_save_rc_files ()
+{
+  if (!force_saving_rc_files)
+    return;
+  if (!bst_preferences_saved())
     {
       if (may_auto_update_bse_rc_file)
         bse_server.save_preferences();
@@ -408,10 +419,6 @@ main (int argc, char *argv[])
 	g_warning ("failed to save rc-file \"%s\": %s", file_name, Bse::error_blurb (error));
       g_free (file_name);
     }
-
-  main_cleanup();
-
-  return 0;
 }
 
 static void
