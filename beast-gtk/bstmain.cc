@@ -60,6 +60,7 @@ server_registration (SfiProxy     server,
     }
 }
 
+static BstApp*  main_open_files (int filesc, char **filesv);
 static BstApp*  main_open_default_window();
 static void     main_show_release_notes();
 static void     main_splash_down ();
@@ -237,39 +238,55 @@ main (int argc, char *argv[])
 
   bst_message_connect_to_server ();
   _bst_init_radgets ();
-  /* open files given on command line */
-  if (argc > 1)
+
+  BstApp *app = main_open_files (argc - 1, &argv[1]);
+  if (!app)
+    app = main_open_default_window();
+  main_show_release_notes();
+  main_splash_down();
+  main_run_event_loops();
+  main_save_rc_files();
+  main_cleanup();
+
+  return 0;
+}
+
+static BstApp*
+main_open_files (int filesc, char **filesv)
+{
+  // open files given on command line
+  if (filesc > 0)
     bst_splash_update_entity (beast_splash, _("Loading..."));
   BstApp *app = NULL;
-  gboolean merge_with_last = FALSE;
-  for (int i = 1; i < argc; i++)
+  bool merge_with_last = false;
+  for (int i = 0; i < filesc; i++)
     {
       bst_splash_update ();
 
       /* parse non-file args */
-      if (strcmp (argv[i], "--merge") == 0)
+      if (strcmp (filesv[i], "--merge") == 0)
         {
-          merge_with_last = TRUE;
+          merge_with_last = true;
           continue;
         }
 
       /* load waves into the last project */
-      if (bse_server.can_load (argv[i]))
+      if (bse_server.can_load (filesv[i]))
 	{
 	  if (app)
 	    {
 	      SfiProxy wrepo = bse_project_get_wave_repo (app->project.proxy_id());
-	      gxk_status_printf (GXK_STATUS_WAIT, NULL, _("Loading \"%s\""), argv[i]);
-	      Bse::ErrorType error = bse_wave_repo_load_file (wrepo, argv[i]);
-              bst_status_eprintf (error, _("Loading \"%s\""), argv[i]);
+	      gxk_status_printf (GXK_STATUS_WAIT, NULL, _("Loading \"%s\""), filesv[i]);
+	      Bse::ErrorType error = bse_wave_repo_load_file (wrepo, filesv[i]);
+              bst_status_eprintf (error, _("Loading \"%s\""), filesv[i]);
               if (error)
-                sfi_error (_("Failed to load wave file \"%s\": %s"), argv[i], Bse::error_blurb (error));
+                sfi_error (_("Failed to load wave file \"%s\": %s"), filesv[i], Bse::error_blurb (error));
 	    }
           else
 	    {
               Bse::ProjectH project = bse_server.create_project ("Untitled.bse");
 	      SfiProxy wrepo = bse_project_get_wave_repo (project.proxy_id());
-	      Bse::ErrorType error = bse_wave_repo_load_file (wrepo, argv[i]);
+	      Bse::ErrorType error = bse_wave_repo_load_file (wrepo, filesv[i]);
 	      if (!error)
 		{
 		  app = bst_app_new (project);
@@ -279,7 +296,7 @@ main (int argc, char *argv[])
               else
                 {
 		  bse_server.destroy_project (project);
-                  sfi_error (_("Failed to load wave file \"%s\": %s"), argv[i], Bse::error_blurb (error));
+                  sfi_error (_("Failed to load wave file \"%s\": %s"), filesv[i], Bse::error_blurb (error));
                 }
 	    }
           continue;
@@ -287,20 +304,20 @@ main (int argc, char *argv[])
       // load/merge projects
       if (!app || !merge_with_last)
         {
-          Bse::ProjectH project = bse_server.create_project (argv[i]);
-          Bse::ErrorType error = bst_project_restore_from_file (project, argv[i], TRUE, TRUE);
+          Bse::ProjectH project = bse_server.create_project (filesv[i]);
+          Bse::ErrorType error = bst_project_restore_from_file (project, filesv[i], TRUE, TRUE);
           if (rewrite_bse_file)
             {
-              Rapicorn::printerr ("%s: loading: %s\n", argv[i], Bse::error_blurb (error));
+              Rapicorn::printerr ("%s: loading: %s\n", filesv[i], Bse::error_blurb (error));
               if (error)
                 exit (1);
-              if (unlink (argv[i]) < 0)
+              if (unlink (filesv[i]) < 0)
                 {
-                  perror (Rapicorn::string_format ("%s: failed to remove", argv[i]).c_str());
+                  perror (Rapicorn::string_format ("%s: failed to remove", filesv[i]).c_str());
                   exit (2);
                 }
-              error = bse_project_store_bse (project.proxy_id(), 0, argv[i], TRUE);
-              Rapicorn::printerr ("%s: writing: %s\n", argv[i], Bse::error_blurb (error));
+              error = bse_project_store_bse (project.proxy_id(), 0, filesv[i], TRUE);
+              Rapicorn::printerr ("%s: writing: %s\n", filesv[i], Bse::error_blurb (error));
               if (error)
                 exit (3);
               exit (0);
@@ -315,25 +332,16 @@ main (int argc, char *argv[])
           else
             bse_server.destroy_project (project);
           if (error)
-            sfi_error (_("Failed to load project \"%s\": %s"), argv[i], Bse::error_blurb (error));
+            sfi_error (_("Failed to load project \"%s\": %s"), filesv[i], Bse::error_blurb (error));
         }
       else
         {
-          Bse::ErrorType error = bst_project_restore_from_file (app->project, argv[i], TRUE, FALSE);
+          Bse::ErrorType error = bst_project_restore_from_file (app->project, filesv[i], TRUE, FALSE);
           if (error)
-            sfi_error (_("Failed to merge project \"%s\": %s"), argv[i], Bse::error_blurb (error));
+            sfi_error (_("Failed to merge project \"%s\": %s"), filesv[i], Bse::error_blurb (error));
         }
     }
-
-  if (!app)
-    app = main_open_default_window();
-  main_show_release_notes();
-  main_splash_down();
-  main_run_event_loops();
-  main_save_rc_files();
-  main_cleanup();
-
-  return 0;
+  return app;
 }
 
 static BstApp*
