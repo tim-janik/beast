@@ -60,6 +60,7 @@ server_registration (SfiProxy     server,
     }
 }
 
+static void     main_init_scripts();
 static void     main_init_dialogs();
 static BstApp*  main_open_files (int filesc, char **filesv);
 static BstApp*  main_open_default_window();
@@ -216,6 +217,23 @@ main (int argc, char *argv[])
       g_usleep (2147483647);
     }
 
+  main_init_scripts();
+  main_init_dialogs();
+  BstApp *app = main_open_files (argc - 1, &argv[1]);
+  if (!app)
+    app = main_open_default_window();
+  main_show_release_notes();
+  main_splash_down();
+  main_run_event_loops();
+  main_save_rc_files();
+  main_cleanup();
+
+  return 0;
+}
+
+static void
+main_init_scripts()
+{
   /* register BSE scripts */
   if (register_scripts)
     {
@@ -234,18 +252,6 @@ main (int argc, char *argv[])
 	  sfi_glue_gc_run ();
 	}
     }
-
-  main_init_dialogs();
-  BstApp *app = main_open_files (argc - 1, &argv[1]);
-  if (!app)
-    app = main_open_default_window();
-  main_show_release_notes();
-  main_splash_down();
-  main_run_event_loops();
-  main_save_rc_files();
-  main_cleanup();
-
-  return 0;
 }
 
 static void
