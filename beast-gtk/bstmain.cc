@@ -60,9 +60,10 @@ server_registration (SfiProxy     server,
     }
 }
 
+static void     main_cleanup ();
+
 int
-main (int   argc,
-      char *argv[])
+main (int argc, char *argv[])
 {
   GdkPixbufAnimation *anim;
   gchar *string;
@@ -408,6 +409,14 @@ main (int   argc,
       g_free (file_name);
     }
 
+  main_cleanup();
+
+  return 0;
+}
+
+static void
+main_cleanup ()
+{
   // perform necessary cleanup cycles
   GDK_THREADS_LEAVE ();
   while (g_main_iteration (FALSE))
@@ -421,7 +430,6 @@ main (int   argc,
   bse_object_debug_leaks ();
   Bse::TaskRegistry::remove (Rapicorn::ThisThread::thread_pid());
 
-  return 0;
 }
 
 /// wake up the main context used by the Beast main event looop.
