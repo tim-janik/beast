@@ -60,6 +60,7 @@ server_registration (SfiProxy     server,
     }
 }
 
+static void     main_show_release_notes();
 static void     main_splash_down ();
 static void     main_run_event_loops ();
 static bool     force_saving_rc_files = false;
@@ -335,8 +336,18 @@ main (int argc, char *argv[])
     }
   /* splash screen is definitely hidden here (still grabbing) */
 
-  /* fire up release notes dialog
-   */
+  main_show_release_notes();
+  main_splash_down();
+  main_run_event_loops();
+  main_save_rc_files();
+  main_cleanup();
+
+  return 0;
+}
+
+static void
+main_show_release_notes ()
+{
   if (BST_RC_VERSION != BST_VERSION)
     {
       const char *release_notes_title =
@@ -375,13 +386,6 @@ main (int argc, char *argv[])
       bst_gconfig_set_rc_version (BST_VERSION);
       force_saving_rc_files = true;
     }
-
-  main_splash_down();
-  main_run_event_loops();
-  main_save_rc_files();
-  main_cleanup();
-
-  return 0;
 }
 
 static void
