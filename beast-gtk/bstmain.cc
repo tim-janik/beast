@@ -60,6 +60,7 @@ server_registration (SfiProxy     server,
     }
 }
 
+static void     main_splash_down ();
 static void     main_run_event_loops ();
 static bool     force_saving_rc_files = false;
 static void     main_save_rc_files ();
@@ -375,15 +376,19 @@ main (int argc, char *argv[])
       force_saving_rc_files = true;
     }
 
-  /* release splash grab */
-  gtk_widget_hide (beast_splash);
-  bst_splash_release_grab (beast_splash);
-
+  main_splash_down();
   main_run_event_loops();
   main_save_rc_files();
   main_cleanup();
 
   return 0;
+}
+
+static void
+main_splash_down ()
+{
+  gtk_widget_hide (beast_splash);
+  bst_splash_release_grab (beast_splash);
 }
 
 static void
