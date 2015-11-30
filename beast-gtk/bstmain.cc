@@ -60,6 +60,7 @@ server_registration (SfiProxy     server,
     }
 }
 
+static BstApp*  main_open_default_window();
 static void     main_show_release_notes();
 static void     main_splash_down ();
 static void     main_run_event_loops ();
@@ -324,18 +325,8 @@ main (int argc, char *argv[])
         }
     }
 
-  /* open default app window
-   */
   if (!app)
-    {
-      Bse::ProjectH project = bse_server.create_project ("Untitled.bse");
-      bse_project_get_wave_repo (project.proxy_id());
-      app = bst_app_new (project);
-      gxk_idle_show_widget (GTK_WIDGET (app));
-      gtk_widget_hide (beast_splash);
-    }
-  /* splash screen is definitely hidden here (still grabbing) */
-
+    app = main_open_default_window();
   main_show_release_notes();
   main_splash_down();
   main_run_event_loops();
@@ -343,6 +334,18 @@ main (int argc, char *argv[])
   main_cleanup();
 
   return 0;
+}
+
+static BstApp*
+main_open_default_window ()
+{
+  Bse::ProjectH project = bse_server.create_project ("Untitled.bse");
+  bse_project_get_wave_repo (project.proxy_id());
+  BstApp *app = bst_app_new (project);
+  gxk_idle_show_widget (GTK_WIDGET (app));
+  if (beast_splash)
+    gtk_widget_hide (beast_splash);
+  return app;
 }
 
 static void
