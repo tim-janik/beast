@@ -60,6 +60,7 @@ server_registration (SfiProxy     server,
     }
 }
 
+static void     main_init_dialogs();
 static BstApp*  main_open_files (int filesc, char **filesv);
 static BstApp*  main_open_default_window();
 static void     main_show_release_notes();
@@ -233,12 +234,8 @@ main (int argc, char *argv[])
 	  sfi_glue_gc_run ();
 	}
     }
-  /* listen to BseServer notification */
-  bst_splash_update_entity (beast_splash, _("Dialogs"));
 
-  bst_message_connect_to_server ();
-  _bst_init_radgets ();
-
+  main_init_dialogs();
   BstApp *app = main_open_files (argc - 1, &argv[1]);
   if (!app)
     app = main_open_default_window();
@@ -249,6 +246,14 @@ main (int argc, char *argv[])
   main_cleanup();
 
   return 0;
+}
+
+static void
+main_init_dialogs()
+{
+  bst_splash_update_entity (beast_splash, _("Dialogs"));
+  bst_message_connect_to_server (); // listen to BseServer notification
+  _bst_init_radgets ();
 }
 
 static BstApp*
