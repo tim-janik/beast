@@ -60,6 +60,7 @@ server_registration (SfiProxy     server,
     }
 }
 
+static void     main_sleep4gdb();
 static void     main_init_scripts();
 static void     main_init_dialogs();
 static BstApp*  main_open_files (int filesc, char **filesv);
@@ -208,15 +209,7 @@ main (int argc, char *argv[])
 	}
     }
 
-  /* debugging hook */
-  const char *estring = g_getenv ("BEAST_SLEEP4GDB");
-  if (estring && atoi (estring) > 0)
-    {
-      bst_splash_update_entity (beast_splash, "Debugging Hook");
-      g_message ("going into sleep mode due to debugging request (pid=%u)", getpid ());
-      g_usleep (2147483647);
-    }
-
+  main_sleep4gdb();
   main_init_scripts();
   main_init_dialogs();
   BstApp *app = main_open_files (argc - 1, &argv[1]);
@@ -229,6 +222,18 @@ main (int argc, char *argv[])
   main_cleanup();
 
   return 0;
+}
+
+static void
+main_sleep4gdb()
+{
+  const char *estring = g_getenv ("BEAST_SLEEP4GDB");
+  if (estring && atoi (estring) > 0)
+    {
+      bst_splash_update_entity (beast_splash, "Debugging Hook");
+      g_message ("going into sleep mode due to debugging request (pid=%u)", getpid ());
+      g_usleep (2147483647);
+    }
 }
 
 static void
