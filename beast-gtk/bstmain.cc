@@ -60,6 +60,7 @@ server_registration (SfiProxy     server,
     }
 }
 
+static void     main_init_gxk (int *argc, char *argv[]);
 static void     main_init_bst_systems();
 static void     main_load_rc_files();
 static void     main_show_splash_image();
@@ -122,27 +123,7 @@ main (int argc, char *argv[])
   // arg processing with BSE available, --help, --version
   bst_args_process (&argc, argv);
 
-  // initialize Gtk+ and go into threading mode
-  gtk_init (&argc, &argv);
-  GDK_THREADS_ENTER ();
-  /* initialize Gtk+ Extension Kit */
-  gxk_init ();
-  /* documentation search paths */
-  gxk_text_add_tsm_path (bse_installpath (BSE_INSTALLPATH_DOCDIR).c_str());
-  gxk_text_add_tsm_path (bse_installpath (BSE_INSTALLPATH_DATADIR_IMAGES).c_str());
-  gxk_text_add_tsm_path (".");
-  /* now, we can popup the splash screen */
-  beast_splash = bst_splash_new ("BEAST-Splash", BST_SPLASH_WIDTH, BST_SPLASH_HEIGHT, 15);
-  bst_splash_set_title (beast_splash, _("BEAST Startup"));
-  gtk_object_set_user_data (GTK_OBJECT (beast_splash), NULL);	/* fix for broken user_data in 2.2 */
-  bst_splash_set_text (beast_splash,
-		       Rapicorn::string_format ("<b><big>BEAST</big></b>\n"
-                                                "<b>The BSE Equipped Audio Synthesizer and Tracker</b>\n"
-                                                "<b>Version %s (%s)</b>\n",
-                                                BST_VERSION, BST_VERSION_HINT));
-  bst_splash_update_entity (beast_splash, _("Startup"));
-  bst_splash_show_grab (beast_splash);
-
+  main_init_gxk (&argc, argv);
   main_init_bst_systems();
   main_load_rc_files();
   main_show_splash_image();
@@ -161,6 +142,31 @@ main (int argc, char *argv[])
   main_cleanup();
 
   return 0;
+}
+
+static void
+main_init_gxk (int *argc, char *argv[])
+{
+  // initialize Gtk+ and go into threading mode
+  gtk_init (argc, &argv);
+  GDK_THREADS_ENTER ();
+  // initialize Gtk+ Extensions
+  gxk_init ();
+  // documentation search paths
+  gxk_text_add_tsm_path (bse_installpath (BSE_INSTALLPATH_DOCDIR).c_str());
+  gxk_text_add_tsm_path (bse_installpath (BSE_INSTALLPATH_DATADIR_IMAGES).c_str());
+  gxk_text_add_tsm_path (".");
+  // now, we can popup the splash screen
+  beast_splash = bst_splash_new ("BEAST-Splash", BST_SPLASH_WIDTH, BST_SPLASH_HEIGHT, 15);
+  bst_splash_set_title (beast_splash, _("BEAST Startup"));
+  gtk_object_set_user_data (GTK_OBJECT (beast_splash), NULL);	/* fix for broken user_data in 2.2 */
+  bst_splash_set_text (beast_splash,
+		       Rapicorn::string_format ("<b><big>BEAST</big></b>\n"
+                                                "<b>The BSE Equipped Audio Synthesizer and Tracker</b>\n"
+                                                "<b>Version %s (%s)</b>\n",
+                                                BST_VERSION, BST_VERSION_HINT));
+  bst_splash_update_entity (beast_splash, _("Startup"));
+  bst_splash_show_grab (beast_splash);
 }
 
 static void
