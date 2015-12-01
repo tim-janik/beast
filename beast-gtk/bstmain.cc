@@ -60,6 +60,7 @@ server_registration (SfiProxy     server,
     }
 }
 
+static void     main_init_bst_systems();
 static void     main_load_rc_files();
 static void     main_show_splash_image();
 static void     main_init_core_plugins();
@@ -142,14 +143,7 @@ main (int argc, char *argv[])
   bst_splash_update_entity (beast_splash, _("Startup"));
   bst_splash_show_grab (beast_splash);
 
-  /* BEAST initialization */
-  bst_splash_update_item (beast_splash, _("Initializers"));
-  _bst_init_utils ();
-  _bst_init_params ();
-  _bst_gconfig_init ();
-  _bst_skin_config_init ();
-  _bst_msg_absorb_config_init ();
-
+  main_init_bst_systems();
   main_load_rc_files();
   main_show_splash_image();
   main_init_core_plugins();
@@ -167,6 +161,17 @@ main (int argc, char *argv[])
   main_cleanup();
 
   return 0;
+}
+
+static void
+main_init_bst_systems()
+{
+  bst_splash_update_item (beast_splash, _("Initializers"));
+  _bst_init_utils ();
+  _bst_init_params ();
+  _bst_gconfig_init ();
+  _bst_skin_config_init ();
+  _bst_msg_absorb_config_init ();
 }
 
 static void
