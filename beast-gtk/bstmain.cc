@@ -60,6 +60,7 @@ server_registration (SfiProxy     server,
     }
 }
 
+static void     main_show_splash_image();
 static void     main_init_core_plugins();
 static void     main_init_ladspa();
 static void     main_sleep4gdb();
@@ -77,8 +78,6 @@ static void     main_cleanup ();
 int
 main (int argc, char *argv[])
 {
-  GdkPixbufAnimation *anim;
-  gchar *string;
   GSource *source;
   /* initialize i18n */
   bindtextdomain (BST_GETTEXT_DOMAIN, bse_installpath (BSE_INSTALLPATH_LOCALEBASE).c_str());
@@ -154,18 +153,7 @@ main (int argc, char *argv[])
   bst_splash_update_item (beast_splash, _("RC Files"));
   bst_preferences_load_rc_files();
 
-  /* show splash images */
-  bst_splash_update_item (beast_splash, _("Splash Image"));
-  string = g_strconcat (bse_installpath (BSE_INSTALLPATH_DATADIR_IMAGES).c_str(), G_DIR_SEPARATOR_S, BST_SPLASH_IMAGE, NULL);
-  anim = gdk_pixbuf_animation_new_from_file (string, NULL);
-  g_free (string);
-  bst_splash_update ();
-  if (anim)
-    {
-      bst_splash_set_animation (beast_splash, anim);
-      g_object_unref (anim);
-    }
-
+  main_show_splash_image();
   main_init_core_plugins();
   main_init_ladspa();
   main_sleep4gdb();
@@ -181,6 +169,22 @@ main (int argc, char *argv[])
   main_cleanup();
 
   return 0;
+}
+
+static void
+main_show_splash_image()
+{
+  /* show splash images */
+  bst_splash_update_item (beast_splash, _("Splash Image"));
+  gchar *string = g_strconcat (bse_installpath (BSE_INSTALLPATH_DATADIR_IMAGES).c_str(), G_DIR_SEPARATOR_S, BST_SPLASH_IMAGE, NULL);
+  GdkPixbufAnimation *anim = gdk_pixbuf_animation_new_from_file (string, NULL);
+  g_free (string);
+  bst_splash_update ();
+  if (anim)
+    {
+      bst_splash_set_animation (beast_splash, anim);
+      g_object_unref (anim);
+    }
 }
 
 static void
