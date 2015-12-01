@@ -60,6 +60,7 @@ server_registration (SfiProxy     server,
     }
 }
 
+static void     main_init_sfi_glue();
 static void     main_init_gxk (int *argc, char *argv[]);
 static void     main_init_bst_systems();
 static void     main_load_rc_files();
@@ -81,7 +82,6 @@ static void     main_cleanup ();
 int
 main (int argc, char *argv[])
 {
-  GSource *source;
   /* initialize i18n */
   bindtextdomain (BST_GETTEXT_DOMAIN, bse_installpath (BSE_INSTALLPATH_LOCALEBASE).c_str());
   bind_textdomain_codeset (BST_GETTEXT_DOMAIN, "UTF-8");
@@ -111,18 +111,11 @@ main (int argc, char *argv[])
   setpriority (PRIO_PROCESS, getpid(), 0);
   // hook up Bse aida IDL with main loop
   bst_init_aida_idl();
-  // Setup SFI glue context and wakeup
-  sfi_glue_context_push (Bse::init_glue_context ("BEAST", bst_main_loop_wakeup));
-  source = g_source_simple (GDK_PRIORITY_EVENTS, // G_PRIORITY_HIGH - 100,
-			    (GSourcePending) sfi_glue_context_pending,
-			    (GSourceDispatch) sfi_glue_context_dispatch,
-			    NULL, NULL, NULL);
-  g_source_attach (source, NULL);
-  g_source_unref (source);
 
   // arg processing with BSE available, --help, --version
   bst_args_process (&argc, argv);
 
+  main_init_sfi_glue();
   main_init_gxk (&argc, argv);
   main_init_bst_systems();
   main_load_rc_files();
@@ -142,6 +135,19 @@ main (int argc, char *argv[])
   main_cleanup();
 
   return 0;
+}
+
+static void
+main_init_sfi_glue()
+{
+  // setup SFI glue context and its wakeup
+  sfi_glue_context_push (Bse::init_glue_context ("BEAST", bst_main_loop_wakeup));
+  GSource *source = g_source_simple (GDK_PRIORITY_EVENTS, // G_PRIORITY_HIGH - 100,
+                                     (GSourcePending) sfi_glue_context_pending,
+                                     (GSourceDispatch) sfi_glue_context_dispatch,
+                                     NULL, NULL, NULL);
+  g_source_attach (source, NULL);
+  g_source_unref (source);
 }
 
 static void
