@@ -60,6 +60,7 @@ server_registration (SfiProxy     server,
     }
 }
 
+static void     main_load_rc_files();
 static void     main_show_splash_image();
 static void     main_init_core_plugins();
 static void     main_init_ladspa();
@@ -149,10 +150,7 @@ main (int argc, char *argv[])
   _bst_skin_config_init ();
   _bst_msg_absorb_config_init ();
 
-  /* parse rc file */
-  bst_splash_update_item (beast_splash, _("RC Files"));
-  bst_preferences_load_rc_files();
-
+  main_load_rc_files();
   main_show_splash_image();
   main_init_core_plugins();
   main_init_ladspa();
@@ -169,6 +167,13 @@ main (int argc, char *argv[])
   main_cleanup();
 
   return 0;
+}
+
+static void
+main_load_rc_files()
+{
+  bst_splash_update_item (beast_splash, _("RC Files"));
+  bst_preferences_load_rc_files();
 }
 
 static void
