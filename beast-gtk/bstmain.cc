@@ -60,6 +60,7 @@ server_registration (SfiProxy     server,
     }
 }
 
+static void     main_init_bse (int *argc, char *argv[]);
 static void     main_init_sfi_glue();
 static void     main_init_gxk (int *argc, char *argv[]);
 static void     main_init_bst_systems();
@@ -104,11 +105,11 @@ main (int argc, char *argv[])
   // early arg parsing without remote calls
   bst_args_parse_early (&argc, argv);
 
-  // startup BSE, allow remote calls
-  Bse::String bseoptions = Bse::string_format ("debug-extensions=%d", bst_debug_extensions);
-  Bse::init_async (&argc, argv, "BEAST", Bse::string_split (bseoptions, ":")); // initializes Bse AIDA connection
+  main_init_bse (&argc, argv);
+
   // now that the BSE thread runs, drop scheduling priorities if we have any
   setpriority (PRIO_PROCESS, getpid(), 0);
+
   // hook up Bse aida IDL with main loop
   bst_init_aida_idl();
 
@@ -135,6 +136,14 @@ main (int argc, char *argv[])
   main_cleanup();
 
   return 0;
+}
+
+static void
+main_init_bse (int *argc, char *argv[])
+{
+  // startup BSE, allow remote calls
+  Bse::String bseoptions = Bse::string_format ("debug-extensions=%d", bst_debug_extensions);
+  Bse::init_async (argc, argv, "BEAST", Bse::string_split (bseoptions, ":")); // initializes Bse AIDA connection
 }
 
 static void
