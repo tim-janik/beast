@@ -12,6 +12,7 @@
 #include "bstpreferences.hh"
 #include "data/beast-images.h"
 #include "../configure.h"
+#include <Python.h>
 #include <unistd.h>
 #include <string.h>
 #include <sys/time.h>
@@ -93,6 +94,10 @@ main (int argc, char *argv[])
   gettimeofday (&tv, NULL);
   srand48 (tv.tv_usec + (tv.tv_sec << 16));
   srand (tv.tv_usec + (tv.tv_sec << 16));
+
+  // setup Python
+  Py_SetProgramName (argv[0]);
+  Py_Initialize();
 
   // initialize threading and GLib types
   Rapicorn::ThreadInfo::self().name ("Beast GUI");
@@ -517,6 +522,9 @@ main_cleanup ()
       sfi_glue_gc_run ();
       GDK_THREADS_LEAVE ();
     }
+
+  // Python cleanup
+  Py_Finalize();
 
   // misc cleanups
   bse_object_debug_leaks ();
