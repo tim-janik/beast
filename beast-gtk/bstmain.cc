@@ -84,7 +84,7 @@ int
 main (int argc, char *argv[])
 {
   /* initialize i18n */
-  bindtextdomain (BST_GETTEXT_DOMAIN, bse_installpath (BSE_INSTALLPATH_LOCALEBASE).c_str());
+  bindtextdomain (BST_GETTEXT_DOMAIN, Bse::installpath (Bse::INSTALLPATH_LOCALEBASE).c_str());
   bind_textdomain_codeset (BST_GETTEXT_DOMAIN, "UTF-8");
   textdomain (BST_GETTEXT_DOMAIN);
   setlocale (LC_ALL, "");
@@ -168,8 +168,8 @@ main_init_gxk (int *argc, char *argv[])
   // initialize Gtk+ Extensions
   gxk_init ();
   // documentation search paths
-  gxk_text_add_tsm_path (bse_installpath (BSE_INSTALLPATH_DOCDIR).c_str());
-  gxk_text_add_tsm_path (bse_installpath (BSE_INSTALLPATH_DATADIR_IMAGES).c_str());
+  gxk_text_add_tsm_path (Bse::installpath (Bse::INSTALLPATH_DOCDIR).c_str());
+  gxk_text_add_tsm_path (Bse::installpath (Bse::INSTALLPATH_DATADIR_IMAGES).c_str());
   gxk_text_add_tsm_path (".");
   // now, we can popup the splash screen
   beast_splash = bst_splash_new ("BEAST-Splash", BST_SPLASH_WIDTH, BST_SPLASH_HEIGHT, 15);
@@ -207,7 +207,7 @@ main_show_splash_image()
 {
   /* show splash images */
   bst_splash_update_item (beast_splash, _("Splash Image"));
-  gchar *string = g_strconcat (bse_installpath (BSE_INSTALLPATH_DATADIR_IMAGES).c_str(), G_DIR_SEPARATOR_S, BST_SPLASH_IMAGE, NULL);
+  gchar *string = g_strconcat (Bse::installpath (Bse::INSTALLPATH_DATADIR_IMAGES).c_str(), G_DIR_SEPARATOR_S, BST_SPLASH_IMAGE, NULL);
   GdkPixbufAnimation *anim = gdk_pixbuf_animation_new_from_file (string, NULL);
   g_free (string);
   bst_splash_update ();
@@ -728,19 +728,19 @@ bst_args_process (int *argc_p, char **argv)
 	  const char *arg = argv[i][12 - 1] == '=' ? argv[i] + 12 : (argv[i + 1] ? argv[i + 1] : "");
           char *freeme = NULL;
           if (strcmp (arg, "docs") == 0)
-	    printout ("%s\n", bse_installpath (BSE_INSTALLPATH_DOCDIR).c_str());
+	    printout ("%s\n", Bse::installpath (Bse::INSTALLPATH_DOCDIR).c_str());
 	  else if (strcmp (arg, "images") == 0)
-	    printout ("%s\n", bse_installpath (BSE_INSTALLPATH_DATADIR_IMAGES).c_str());
+	    printout ("%s\n", Bse::installpath (Bse::INSTALLPATH_DATADIR_IMAGES).c_str());
 	  else if (strcmp (arg, "locale") == 0)
-	    printout ("%s\n", bse_installpath (BSE_INSTALLPATH_LOCALEBASE).c_str());
+	    printout ("%s\n", Bse::installpath (Bse::INSTALLPATH_LOCALEBASE).c_str());
 	  else if (strcmp (arg, "skins") == 0)
 	    printout ("%s\n", freeme = BST_STRDUP_SKIN_PATH ());
 	  else if (strcmp (arg, "keys") == 0)
-	    printout ("%s\n", bse_installpath (BSE_INSTALLPATH_DATADIR_KEYS).c_str());
+	    printout ("%s\n", Bse::installpath (Bse::INSTALLPATH_DATADIR_KEYS).c_str());
 	  else if (strcmp (arg, "ladspa") == 0)
-	    printout ("%s\n", bse_installpath (BSE_INSTALLPATH_LADSPA).c_str());
+	    printout ("%s\n", Bse::installpath (Bse::INSTALLPATH_LADSPA).c_str());
 	  else if (strcmp (arg, "plugins") == 0)
-	    printout ("%s\n", bse_installpath (BSE_INSTALLPATH_BSELIBDIR_PLUGINS).c_str());
+	    printout ("%s\n", Bse::installpath (Bse::INSTALLPATH_BSELIBDIR_PLUGINS).c_str());
 	  else if (strcmp (arg, "samples") == 0)
 	    printout ("%s\n", bse_server.get_sample_path());
 	  else if (strcmp (arg, "effects") == 0)
@@ -812,11 +812,11 @@ bst_exit_print_version (void)
   printout ("Intrinsic code selected according to runtime CPU detection:\n");
   printout ("%s", Rapicorn::cpu_info().c_str());
   printout ("\n");
-  printout ("Binaries:        %s\n", bse_installpath (BSE_INSTALLPATH_BINDIR).c_str());
-  printout ("Doc Path:        %s\n", bse_installpath (BSE_INSTALLPATH_DOCDIR).c_str());
-  printout ("Image Path:      %s\n", bse_installpath (BSE_INSTALLPATH_DATADIR_IMAGES).c_str());
-  printout ("Locale Path:     %s\n", bse_installpath (BSE_INSTALLPATH_LOCALEBASE).c_str());
-  printout ("Keyrc Path:      %s\n", bse_installpath (BSE_INSTALLPATH_DATADIR_KEYS).c_str());
+  printout ("Binaries:        %s\n", Bse::installpath (Bse::INSTALLPATH_BINDIR).c_str());
+  printout ("Doc Path:        %s\n", Bse::installpath (Bse::INSTALLPATH_DOCDIR).c_str());
+  printout ("Image Path:      %s\n", Bse::installpath (Bse::INSTALLPATH_DATADIR_IMAGES).c_str());
+  printout ("Locale Path:     %s\n", Bse::installpath (Bse::INSTALLPATH_LOCALEBASE).c_str());
+  printout ("Keyrc Path:      %s\n", Bse::installpath (Bse::INSTALLPATH_DATADIR_KEYS).c_str());
   printout ("Skin Path:       %s\n", freeme = BST_STRDUP_SKIN_PATH());
   printout ("Sample Path:     %s\n", bse_server.get_sample_path());
   printout ("Script Path:     %s\n", bse_server.get_script_path());

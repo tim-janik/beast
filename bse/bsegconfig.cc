@@ -45,7 +45,7 @@ _bse_gconfig_init (void)
 static const char*
 intern_path_user_data ()
 {
-  return g_intern_strconcat (bse_installpath (BSE_INSTALLPATH_USER_DATA).c_str(), "", NULL);
+  return g_intern_strconcat (Bse::installpath (Bse::INSTALLPATH_USER_DATA).c_str(), "", NULL);
 }
 
 static const char*

@@ -1158,49 +1158,49 @@ ServerImpl::get_vorbis_version ()
 String
 ServerImpl::get_ladspa_path ()
 {
-  return Path::searchpath_join (bse_installpath (BSE_INSTALLPATH_LADSPA), BSE_GCONFIG (ladspa_path));
+  return Path::searchpath_join (Bse::installpath (Bse::INSTALLPATH_LADSPA), BSE_GCONFIG (ladspa_path));
 }
 
 String
 ServerImpl::get_plugin_path ()
 {
-  return Path::searchpath_join (bse_installpath (BSE_INSTALLPATH_BSELIBDIR_PLUGINS), BSE_GCONFIG (plugin_path));
+  return Path::searchpath_join (Bse::installpath (Bse::INSTALLPATH_BSELIBDIR_PLUGINS), BSE_GCONFIG (plugin_path));
 }
 
 String
 ServerImpl::get_script_path ()
 {
-  return Path::searchpath_join (bse_installpath (BSE_INSTALLPATH_DATADIR_SCRIPTS), BSE_GCONFIG (script_path));
+  return Path::searchpath_join (Bse::installpath (Bse::INSTALLPATH_DATADIR_SCRIPTS), BSE_GCONFIG (script_path));
 }
 
 String
 ServerImpl::get_instrument_path ()
 {
-  return Path::searchpath_join (bse_installpath (BSE_INSTALLPATH_DATADIR_INSTRUMENTS), BSE_GCONFIG (instrument_path));
+  return Path::searchpath_join (Bse::installpath (Bse::INSTALLPATH_DATADIR_INSTRUMENTS), BSE_GCONFIG (instrument_path));
 }
 
 String
 ServerImpl::get_sample_path ()
 {
-  return Path::searchpath_join (bse_installpath (BSE_INSTALLPATH_DATADIR_SAMPLES), BSE_GCONFIG (sample_path));
+  return Path::searchpath_join (Bse::installpath (Bse::INSTALLPATH_DATADIR_SAMPLES), BSE_GCONFIG (sample_path));
 }
 
 String
 ServerImpl::get_effect_path ()
 {
-  return Path::searchpath_join (bse_installpath (BSE_INSTALLPATH_DATADIR_EFFECTS), BSE_GCONFIG (effect_path));
+  return Path::searchpath_join (Bse::installpath (Bse::INSTALLPATH_DATADIR_EFFECTS), BSE_GCONFIG (effect_path));
 }
 
 String
 ServerImpl::get_demo_path ()
 {
-  return bse_installpath (BSE_INSTALLPATH_DATADIR_DEMO);
+  return Bse::installpath (Bse::INSTALLPATH_DATADIR_DEMO);
 }
 
 String
 ServerImpl::get_version ()
 {
-  return bse_version();
+  return Bse::version();
 }
 
 String
@@ -1227,7 +1227,7 @@ ServerImpl::save_preferences ()
     return;
 
   SfiWStore *wstore = sfi_wstore_new ();
-  sfi_wstore_printf (wstore, "; rc-file for BSE v%s\n", bse_version());
+  sfi_wstore_printf (wstore, "; rc-file for BSE v%s\n", Bse::version());
 
   /* store BseGConfig */
   sfi_wstore_puts (wstore, "\n; BseGConfig Dump\n");

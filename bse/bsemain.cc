@@ -57,7 +57,7 @@ void
 bse_bindtextdomain()
 {
   assert_return (bindtextdomain_initialized == false);
-  bindtextdomain (BSE_GETTEXT_DOMAIN, bse_installpath (BSE_INSTALLPATH_LOCALEBASE).c_str());
+  bindtextdomain (BSE_GETTEXT_DOMAIN, Bse::installpath (Bse::INSTALLPATH_LOCALEBASE).c_str());
   bind_textdomain_codeset (BSE_GETTEXT_DOMAIN, "UTF-8");
   bindtextdomain_initialized = true;
 }
@@ -206,7 +206,7 @@ initialize_with_argv (int *argc, char **argv, const char *app_name, const Bse::S
 
   // argument handling
   if (!default_main_args.path_binaries)
-    default_main_args.path_binaries = g_strdup (bse_installpath (BSE_INSTALLPATH_BINDIR).c_str());
+    default_main_args.path_binaries = g_strdup (Bse::installpath (Bse::INSTALLPATH_BINDIR).c_str());
   bse_main_args = &default_main_args;
   if (argc && argv)
     init_parse_args (argc, argv, bse_main_args, args);
@@ -569,7 +569,7 @@ init_aida_idl ()
 {
   // setup Aida server connection, so ServerIface::__aida_connection__() yields non-NULL
   Aida::ServerConnectionP scon =
-    Aida::ServerConnection::bind<Bse::ServerIface> (string_format ("inproc://BSE-%s", bse_version()),
+    Aida::ServerConnection::bind<Bse::ServerIface> (string_format ("inproc://BSE-%s", Bse::version()),
                                                     shared_ptr_cast<Bse::ServerIface> (&Bse::ServerImpl::instance()));
   if (!scon)
     sfi_error ("%s: failed to create BSE connection: %s", __func__, g_strerror (errno));

@@ -212,7 +212,7 @@ bst_preferences_default_revert (BstPreferences *self)
 
   rec = sfi_rec_new ();
   sfi_rec_validate (rec, sfi_pspec_get_rec_fields (bst_gconfig_pspec ()));
-  bst_gconfig_set_rec_rc_version (rec, bse_version().c_str());
+  bst_gconfig_set_rec_rc_version (rec, Bse::version().c_str());
   sfi_rec_swap_fields (self->rec_gconfig, rec);
   sfi_rec_unref (rec);
 
@@ -291,7 +291,7 @@ bst_preferences_load_rc_files (void)
   if (error == Bse::ERROR_FILE_NOT_FOUND)
     {
       /* try loading fallback table */
-      gchar *file = g_strconcat (bse_installpath (BSE_INSTALLPATH_DATADIR_KEYS).c_str(), G_DIR_SEPARATOR_S, "keyrc.us", NULL);
+      gchar *file = g_strconcat (Bse::installpath (Bse::INSTALLPATH_DATADIR_KEYS).c_str(), G_DIR_SEPARATOR_S, "keyrc.us", NULL);
       error = bst_key_binding_parse (file, slist);
       g_free (file);
     }

@@ -231,7 +231,7 @@ bse_script_path_list_files (void)
     }
   if (1)
     {
-      files = sfi_file_crawler_list_files (bse_installpath (BSE_INSTALLPATH_DATADIR_SCRIPTS).c_str(), "*.scm", G_FILE_TEST_IS_REGULAR);
+      files = sfi_file_crawler_list_files (Bse::installpath (Bse::INSTALLPATH_DATADIR_SCRIPTS).c_str(), "*.scm", G_FILE_TEST_IS_REGULAR);
       ring = sfi_ring_concat (ring, sfi_ring_sort (files, (SfiCompareFunc) strcmp, NULL));
     }
   if (BSE_GCONFIG (script_path) && BSE_GCONFIG (script_path)[0])

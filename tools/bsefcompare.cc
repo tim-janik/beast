@@ -116,7 +116,7 @@ Options::parse (int   *argc_p,
       else if (strcmp (argv[i], "--version") == 0 ||
                strcmp (argv[i], "-v") == 0)
         {
-          printf ("%s %s\n", program_name.c_str(), bse_version().c_str());
+          printf ("%s %s\n", program_name.c_str(), Bse::version().c_str());
           exit (0);
         }
       else if (check_arg (argc, argv, &i, "--compact"))

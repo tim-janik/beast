@@ -1026,37 +1026,42 @@ g_scanner_new64 (const GScannerConfig *config_templ)
   return g_scanner_new (config_templ);
 }
 
+
+namespace Bse {
+
 // == BSE_INSTALLPATH ==
 #include "../configure.h"
 std::string
-bse_installpath (BseInstallpathType installpath_type)
+installpath (InstallpathType installpath_type)
 {
   switch (installpath_type)
     {
-    case BSE_INSTALLPATH_BSEINCLUDEDIR:                 return INSTALLPATH_BSEINCLUDEDIR;
-    case BSE_INSTALLPATH_BINDIR:                        return INSTALLPATH_BINDIR;
-    case BSE_INSTALLPATH_LOCALEBASE:                    return INSTALLPATH_LOCALEBASE;
-    case BSE_INSTALLPATH_LADSPA:                        return INSTALLPATH_LADSPA;
-    case BSE_INSTALLPATH_DOCDIR:                        return INSTALLPATH_DOCDIR;
-    case BSE_INSTALLPATH_USER_DATA:                     return INSTALLPATH_USER_DATA;
-    case BSE_INSTALLPATH_BSELIBDIR:                     return INSTALLPATH_BSELIBDIR;
-    case BSE_INSTALLPATH_BSELIBDIR_PLUGINS:             return bse_installpath (BSE_INSTALLPATH_BSELIBDIR) + "/plugins";
-    case BSE_INSTALLPATH_BSELIBDIR_DRIVERS:             return bse_installpath (BSE_INSTALLPATH_BSELIBDIR) + "/drivers";
-    case BSE_INSTALLPATH_DATADIR:                       return INSTALLPATH_DATADIR;
-    case BSE_INSTALLPATH_DATADIR_DEMO:                  return bse_installpath (BSE_INSTALLPATH_DATADIR) + "/demo";
-    case BSE_INSTALLPATH_DATADIR_SAMPLES:               return bse_installpath (BSE_INSTALLPATH_DATADIR) + "/samples";
-    case BSE_INSTALLPATH_DATADIR_EFFECTS:               return bse_installpath (BSE_INSTALLPATH_DATADIR) + "/effects";
-    case BSE_INSTALLPATH_DATADIR_INSTRUMENTS:           return bse_installpath (BSE_INSTALLPATH_DATADIR) + "/instruments";
-    case BSE_INSTALLPATH_DATADIR_SCRIPTS:               return bse_installpath (BSE_INSTALLPATH_DATADIR) + "/scripts";
-    case BSE_INSTALLPATH_DATADIR_IMAGES:                return bse_installpath (BSE_INSTALLPATH_DATADIR) + "/images";
-    case BSE_INSTALLPATH_DATADIR_KEYS:                  return bse_installpath (BSE_INSTALLPATH_DATADIR) + "/keys";
-    case BSE_INSTALLPATH_DATADIR_SKINS:                 return bse_installpath (BSE_INSTALLPATH_DATADIR) + "/skins";
+    case INSTALLPATH_BSEINCLUDEDIR:                     return CONFIGURE_INSTALLPATH_BSEINCLUDEDIR;
+    case INSTALLPATH_BINDIR:                            return CONFIGURE_INSTALLPATH_BINDIR;
+    case INSTALLPATH_LOCALEBASE:                        return CONFIGURE_INSTALLPATH_LOCALEBASE;
+    case INSTALLPATH_LADSPA:                            return CONFIGURE_INSTALLPATH_LADSPA;
+    case INSTALLPATH_DOCDIR:                            return CONFIGURE_INSTALLPATH_DOCDIR;
+    case INSTALLPATH_USER_DATA:                         return CONFIGURE_INSTALLPATH_USER_DATA;
+    case INSTALLPATH_BSELIBDIR:                         return CONFIGURE_INSTALLPATH_BSELIBDIR;
+    case INSTALLPATH_BSELIBDIR_PLUGINS:                 return installpath (INSTALLPATH_BSELIBDIR) + "/plugins";
+    case INSTALLPATH_BSELIBDIR_DRIVERS:                 return installpath (INSTALLPATH_BSELIBDIR) + "/drivers";
+    case INSTALLPATH_DATADIR:                           return CONFIGURE_INSTALLPATH_DATADIR;
+    case INSTALLPATH_DATADIR_DEMO:                      return installpath (INSTALLPATH_DATADIR) + "/demo";
+    case INSTALLPATH_DATADIR_SAMPLES:                   return installpath (INSTALLPATH_DATADIR) + "/samples";
+    case INSTALLPATH_DATADIR_EFFECTS:                   return installpath (INSTALLPATH_DATADIR) + "/effects";
+    case INSTALLPATH_DATADIR_INSTRUMENTS:               return installpath (INSTALLPATH_DATADIR) + "/instruments";
+    case INSTALLPATH_DATADIR_SCRIPTS:                   return installpath (INSTALLPATH_DATADIR) + "/scripts";
+    case INSTALLPATH_DATADIR_IMAGES:                    return installpath (INSTALLPATH_DATADIR) + "/images";
+    case INSTALLPATH_DATADIR_KEYS:                      return installpath (INSTALLPATH_DATADIR) + "/keys";
+    case INSTALLPATH_DATADIR_SKINS:                     return installpath (INSTALLPATH_DATADIR) + "/skins";
     }
   return "";
 }
 
 std::string
-bse_version ()
+version ()
 {
   return PACKAGE_VERSION;
 }
+
+} // Bse
