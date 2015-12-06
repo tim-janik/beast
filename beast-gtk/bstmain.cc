@@ -30,7 +30,6 @@ static void                     bst_init_aida_idl       ();
 /* --- variables --- */
 gboolean            bst_developer_hints = FALSE;
 gboolean            bst_debug_extensions = FALSE;
-gboolean            bst_main_loop_running = TRUE;
 static GtkWidget   *beast_splash = NULL;
 static gboolean     registration_done = FALSE;
 static gboolean     arg_force_xkb = FALSE;
@@ -76,7 +75,7 @@ static BstApp*  main_open_files (int filesc, char **filesv);
 static BstApp*  main_open_default_window();
 static void     main_show_release_notes();
 static void     main_splash_down ();
-static void     main_run_event_loops ();
+static void     main_run_event_loop ();
 static bool     force_saving_rc_files = false;
 static void     main_save_rc_files ();
 static void     main_cleanup ();
@@ -136,7 +135,9 @@ main (int argc, char *argv[])
     app = main_open_default_window();
   main_show_release_notes();
   main_splash_down();
-  main_run_event_loops();
+
+  main_run_event_loop();
+
   main_save_rc_files();
   main_cleanup();
 
@@ -470,19 +471,50 @@ main_splash_down ()
   bst_splash_release_grab (beast_splash);
 }
 
-static void
-main_run_event_loops ()
+#define Py_None_INCREF()        ({ Py_INCREF (Py_None); Py_None;  })
+
+static PyObject*
+main_quit (PyObject *self, PyObject *args)
 {
-  /* away into the main loop */
-  while (bst_main_loop_running)
+  int exit_code = 0;
+  if (PyTuple_Check (args) && PyTuple_GET_SIZE (args) > 0)
     {
-      sfi_glue_gc_run ();
-      GDK_THREADS_LEAVE ();
-      g_main_iteration (TRUE);
-      GDK_THREADS_ENTER ();
+      if (!PyArg_ParseTuple (args, "i:main_quit", &exit_code))
+        return NULL;
     }
+  Bst::event_loop_quit (exit_code);
+  return Py_None_INCREF();
+}
+
+static PyObject*
+main_loop (PyObject *self, PyObject *args)
+{
+  if (!PyArg_ParseTuple (args, ":main_loop"))
+    return NULL;
+  const int quit_code = Bst::event_loop_run();
+  return Py_BuildValue ("i", quit_code);
+}
+
+static PyMethodDef embedded_bst_methods[] = {
+  { "main_quit", main_quit, METH_VARARGS, "Quit the currently running main event loop." },
+  { "main_loop", main_loop, METH_VARARGS, "Run the main event loop until main_quit()." },
+  { NULL, NULL, 0, NULL }
+};
+
+static void
+main_run_event_loop ()
+{
+  // register embedded methods
+  static __unused bool initialized = []() { Py_InitModule ("bst", embedded_bst_methods); return true; } ();
+
+  // run main loop from Python
+  const char commands[] =
+    "import bst;\n"
+    "bst.main_loop()\n";
+  PyRun_SimpleString (commands);
+
+  // run pending cleanup handlers
   bst_message_dialogs_popdown ();
-  /* perform necessary cleanup cycles */
   GDK_THREADS_LEAVE ();
   while (g_main_iteration (FALSE))
     {

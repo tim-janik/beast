@@ -8,8 +8,18 @@
 /* generated type IDs, idl types */
 #include "bstserverapi.hh"
 
+namespace Bst {
+
+// == event loop ==
+int  event_loop_run  ();
+void event_loop_quit (uint8 exit_code = 0);
+
+} // Bst
+
+
 // == Bse Server (BSE remote origin) ==
 extern Bse::ServerH bse_server;
+
 
 G_BEGIN_DECLS
 

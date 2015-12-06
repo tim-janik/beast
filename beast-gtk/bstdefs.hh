@@ -6,6 +6,9 @@
 #include "bstzoomedwindow.hh"
 #include "bse/bse.hh"
 
+// == G++ attributes ==
+#define __unused        __attribute__ ((unused))
+
 G_BEGIN_DECLS
 
 /* --- generic constants --- */
@@ -63,7 +66,6 @@ typedef enum /*< skip >*/
 /* --- miscellaneous --- */
 #define	BST_DVL_HINTS		(bst_developer_hints != FALSE)
 #define	BST_DBG_EXT     	(bst_debug_extensions != FALSE)
-#define	BST_MAIN_LOOP_QUIT()	do { bst_main_loop_running = FALSE; } while (0)
 #define	GNOME_CANVAS_NOTIFY(object)	G_STMT_START { \
     if (GTK_IS_OBJECT (object)) \
       g_signal_emit_by_name (object, "notify::generic-change", NULL); \
@@ -79,7 +81,6 @@ void    beast_show_about_box (void);
 void    bst_main_loop_wakeup    ();
 extern gboolean bst_developer_hints;
 extern gboolean bst_debug_extensions;
-extern gboolean bst_main_loop_running;
 
 G_END_DECLS
 
