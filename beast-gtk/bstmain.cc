@@ -60,13 +60,29 @@ server_registration (SfiProxy     server,
     }
 }
 
+static void     main_init_bse (int *argc, char *argv[]);
+static void     main_init_sfi_glue();
+static void     main_init_gxk (int *argc, char *argv[]);
+static void     main_init_bst_systems();
+static void     main_load_rc_files();
+static void     main_show_splash_image();
+static void     main_init_core_plugins();
+static void     main_init_ladspa();
+static void     main_sleep4gdb();
+static void     main_init_scripts();
+static void     main_init_dialogs();
+static BstApp*  main_open_files (int filesc, char **filesv);
+static BstApp*  main_open_default_window();
+static void     main_show_release_notes();
+static void     main_splash_down ();
+static void     main_run_event_loops ();
+static bool     force_saving_rc_files = false;
+static void     main_save_rc_files ();
+static void     main_cleanup ();
+
 int
-main (int   argc,
-      char *argv[])
+main (int argc, char *argv[])
 {
-  GdkPixbufAnimation *anim;
-  gchar *string;
-  GSource *source;
   /* initialize i18n */
   bindtextdomain (BST_GETTEXT_DOMAIN, bse_installpath (BSE_INSTALLPATH_LOCALEBASE).c_str());
   bind_textdomain_codeset (BST_GETTEXT_DOMAIN, "UTF-8");
@@ -89,35 +105,73 @@ main (int   argc,
   // early arg parsing without remote calls
   bst_args_parse_early (&argc, argv);
 
-  // startup BSE, allow remote calls
-  Bse::String bseoptions = Bse::string_format ("debug-extensions=%d", bst_debug_extensions);
-  Bse::init_async (&argc, argv, "BEAST", Bse::string_split (bseoptions, ":")); // initializes Bse AIDA connection
+  main_init_bse (&argc, argv);
+
   // now that the BSE thread runs, drop scheduling priorities if we have any
   setpriority (PRIO_PROCESS, getpid(), 0);
+
   // hook up Bse aida IDL with main loop
   bst_init_aida_idl();
-  // Setup SFI glue context and wakeup
-  sfi_glue_context_push (Bse::init_glue_context ("BEAST", bst_main_loop_wakeup));
-  source = g_source_simple (GDK_PRIORITY_EVENTS, // G_PRIORITY_HIGH - 100,
-			    (GSourcePending) sfi_glue_context_pending,
-			    (GSourceDispatch) sfi_glue_context_dispatch,
-			    NULL, NULL, NULL);
-  g_source_attach (source, NULL);
-  g_source_unref (source);
 
   // arg processing with BSE available, --help, --version
   bst_args_process (&argc, argv);
 
+  main_init_sfi_glue();
+  main_init_gxk (&argc, argv);
+  main_init_bst_systems();
+  main_load_rc_files();
+  main_show_splash_image();
+  main_init_core_plugins();
+  main_init_ladspa();
+  main_sleep4gdb();
+  main_init_scripts();
+  main_init_dialogs();
+  BstApp *app = main_open_files (argc - 1, &argv[1]);
+  if (!app)
+    app = main_open_default_window();
+  main_show_release_notes();
+  main_splash_down();
+  main_run_event_loops();
+  main_save_rc_files();
+  main_cleanup();
+
+  return 0;
+}
+
+static void
+main_init_bse (int *argc, char *argv[])
+{
+  // startup BSE, allow remote calls
+  Bse::String bseoptions = Bse::string_format ("debug-extensions=%d", bst_debug_extensions);
+  Bse::init_async (argc, argv, "BEAST", Bse::string_split (bseoptions, ":")); // initializes Bse AIDA connection
+}
+
+static void
+main_init_sfi_glue()
+{
+  // setup SFI glue context and its wakeup
+  sfi_glue_context_push (Bse::init_glue_context ("BEAST", bst_main_loop_wakeup));
+  GSource *source = g_source_simple (GDK_PRIORITY_EVENTS, // G_PRIORITY_HIGH - 100,
+                                     (GSourcePending) sfi_glue_context_pending,
+                                     (GSourceDispatch) sfi_glue_context_dispatch,
+                                     NULL, NULL, NULL);
+  g_source_attach (source, NULL);
+  g_source_unref (source);
+}
+
+static void
+main_init_gxk (int *argc, char *argv[])
+{
   // initialize Gtk+ and go into threading mode
-  gtk_init (&argc, &argv);
+  gtk_init (argc, &argv);
   GDK_THREADS_ENTER ();
-  /* initialize Gtk+ Extension Kit */
+  // initialize Gtk+ Extensions
   gxk_init ();
-  /* documentation search paths */
+  // documentation search paths
   gxk_text_add_tsm_path (bse_installpath (BSE_INSTALLPATH_DOCDIR).c_str());
   gxk_text_add_tsm_path (bse_installpath (BSE_INSTALLPATH_DATADIR_IMAGES).c_str());
   gxk_text_add_tsm_path (".");
-  /* now, we can popup the splash screen */
+  // now, we can popup the splash screen
   beast_splash = bst_splash_new ("BEAST-Splash", BST_SPLASH_WIDTH, BST_SPLASH_HEIGHT, 15);
   bst_splash_set_title (beast_splash, _("BEAST Startup"));
   gtk_object_set_user_data (GTK_OBJECT (beast_splash), NULL);	/* fix for broken user_data in 2.2 */
@@ -128,23 +182,33 @@ main (int   argc,
                                                 BST_VERSION, BST_VERSION_HINT));
   bst_splash_update_entity (beast_splash, _("Startup"));
   bst_splash_show_grab (beast_splash);
+}
 
-  /* BEAST initialization */
+static void
+main_init_bst_systems()
+{
   bst_splash_update_item (beast_splash, _("Initializers"));
   _bst_init_utils ();
   _bst_init_params ();
   _bst_gconfig_init ();
   _bst_skin_config_init ();
   _bst_msg_absorb_config_init ();
+}
 
-  /* parse rc file */
+static void
+main_load_rc_files()
+{
   bst_splash_update_item (beast_splash, _("RC Files"));
   bst_preferences_load_rc_files();
+}
 
+static void
+main_show_splash_image()
+{
   /* show splash images */
   bst_splash_update_item (beast_splash, _("Splash Image"));
-  string = g_strconcat (bse_installpath (BSE_INSTALLPATH_DATADIR_IMAGES).c_str(), G_DIR_SEPARATOR_S, BST_SPLASH_IMAGE, NULL);
-  anim = gdk_pixbuf_animation_new_from_file (string, NULL);
+  gchar *string = g_strconcat (bse_installpath (BSE_INSTALLPATH_DATADIR_IMAGES).c_str(), G_DIR_SEPARATOR_S, BST_SPLASH_IMAGE, NULL);
+  GdkPixbufAnimation *anim = gdk_pixbuf_animation_new_from_file (string, NULL);
   g_free (string);
   bst_splash_update ();
   if (anim)
@@ -152,15 +216,16 @@ main (int   argc,
       bst_splash_set_animation (beast_splash, anim);
       g_object_unref (anim);
     }
+}
 
-  /* start BSE core and connect */
+static void
+main_init_core_plugins()
+{
   bst_splash_update_item (beast_splash, _("BSE Core"));
-  /* watch registration notifications on server */
+  // watch registration notifications on server
   bse_proxy_connect (BSE_SERVER,
 		     "signal::registration", server_registration, beast_splash,
 		     NULL);
-
-  /* register core plugins */
   if (register_core_plugins)
     {
       bst_splash_update_entity (beast_splash, _("Plugins"));
@@ -178,8 +243,11 @@ main (int   argc,
 	  sfi_glue_gc_run ();
 	}
     }
+}
 
-  /* register LADSPA plugins */
+static void
+main_init_ladspa()
+{
   if (register_ladspa_plugins)
     {
       bst_splash_update_entity (beast_splash, _("LADSPA Plugins"));
@@ -197,8 +265,11 @@ main (int   argc,
 	  sfi_glue_gc_run ();
 	}
     }
+}
 
-  /* debugging hook */
+static void
+main_sleep4gdb()
+{
   const char *estring = g_getenv ("BEAST_SLEEP4GDB");
   if (estring && atoi (estring) > 0)
     {
@@ -206,7 +277,11 @@ main (int   argc,
       g_message ("going into sleep mode due to debugging request (pid=%u)", getpid ());
       g_usleep (2147483647);
     }
+}
 
+static void
+main_init_scripts()
+{
   /* register BSE scripts */
   if (register_scripts)
     {
@@ -225,44 +300,52 @@ main (int   argc,
 	  sfi_glue_gc_run ();
 	}
     }
-  /* listen to BseServer notification */
-  bst_splash_update_entity (beast_splash, _("Dialogs"));
+}
 
-  bst_message_connect_to_server ();
+static void
+main_init_dialogs()
+{
+  bst_splash_update_entity (beast_splash, _("Dialogs"));
+  bst_message_connect_to_server (); // listen to BseServer notification
   _bst_init_radgets ();
-  /* open files given on command line */
-  if (argc > 1)
+}
+
+static BstApp*
+main_open_files (int filesc, char **filesv)
+{
+  // open files given on command line
+  if (filesc > 0)
     bst_splash_update_entity (beast_splash, _("Loading..."));
   BstApp *app = NULL;
-  gboolean merge_with_last = FALSE;
-  for (int i = 1; i < argc; i++)
+  bool merge_with_last = false;
+  for (int i = 0; i < filesc; i++)
     {
       bst_splash_update ();
 
       /* parse non-file args */
-      if (strcmp (argv[i], "--merge") == 0)
+      if (strcmp (filesv[i], "--merge") == 0)
         {
-          merge_with_last = TRUE;
+          merge_with_last = true;
           continue;
         }
 
       /* load waves into the last project */
-      if (bse_server.can_load (argv[i]))
+      if (bse_server.can_load (filesv[i]))
 	{
 	  if (app)
 	    {
 	      SfiProxy wrepo = bse_project_get_wave_repo (app->project.proxy_id());
-	      gxk_status_printf (GXK_STATUS_WAIT, NULL, _("Loading \"%s\""), argv[i]);
-	      Bse::ErrorType error = bse_wave_repo_load_file (wrepo, argv[i]);
-              bst_status_eprintf (error, _("Loading \"%s\""), argv[i]);
+	      gxk_status_printf (GXK_STATUS_WAIT, NULL, _("Loading \"%s\""), filesv[i]);
+	      Bse::ErrorType error = bse_wave_repo_load_file (wrepo, filesv[i]);
+              bst_status_eprintf (error, _("Loading \"%s\""), filesv[i]);
               if (error)
-                sfi_error (_("Failed to load wave file \"%s\": %s"), argv[i], Bse::error_blurb (error));
+                sfi_error (_("Failed to load wave file \"%s\": %s"), filesv[i], Bse::error_blurb (error));
 	    }
           else
 	    {
               Bse::ProjectH project = bse_server.create_project ("Untitled.bse");
 	      SfiProxy wrepo = bse_project_get_wave_repo (project.proxy_id());
-	      Bse::ErrorType error = bse_wave_repo_load_file (wrepo, argv[i]);
+	      Bse::ErrorType error = bse_wave_repo_load_file (wrepo, filesv[i]);
 	      if (!error)
 		{
 		  app = bst_app_new (project);
@@ -272,7 +355,7 @@ main (int   argc,
               else
                 {
 		  bse_server.destroy_project (project);
-                  sfi_error (_("Failed to load wave file \"%s\": %s"), argv[i], Bse::error_blurb (error));
+                  sfi_error (_("Failed to load wave file \"%s\": %s"), filesv[i], Bse::error_blurb (error));
                 }
 	    }
           continue;
@@ -280,20 +363,20 @@ main (int   argc,
       // load/merge projects
       if (!app || !merge_with_last)
         {
-          Bse::ProjectH project = bse_server.create_project (argv[i]);
-          Bse::ErrorType error = bst_project_restore_from_file (project, argv[i], TRUE, TRUE);
+          Bse::ProjectH project = bse_server.create_project (filesv[i]);
+          Bse::ErrorType error = bst_project_restore_from_file (project, filesv[i], TRUE, TRUE);
           if (rewrite_bse_file)
             {
-              Rapicorn::printerr ("%s: loading: %s\n", argv[i], Bse::error_blurb (error));
+              Rapicorn::printerr ("%s: loading: %s\n", filesv[i], Bse::error_blurb (error));
               if (error)
                 exit (1);
-              if (unlink (argv[i]) < 0)
+              if (unlink (filesv[i]) < 0)
                 {
-                  perror (Rapicorn::string_format ("%s: failed to remove", argv[i]).c_str());
+                  perror (Rapicorn::string_format ("%s: failed to remove", filesv[i]).c_str());
                   exit (2);
                 }
-              error = bse_project_store_bse (project.proxy_id(), 0, argv[i], TRUE);
-              Rapicorn::printerr ("%s: writing: %s\n", argv[i], Bse::error_blurb (error));
+              error = bse_project_store_bse (project.proxy_id(), 0, filesv[i], TRUE);
+              Rapicorn::printerr ("%s: writing: %s\n", filesv[i], Bse::error_blurb (error));
               if (error)
                 exit (3);
               exit (0);
@@ -308,31 +391,33 @@ main (int   argc,
           else
             bse_server.destroy_project (project);
           if (error)
-            sfi_error (_("Failed to load project \"%s\": %s"), argv[i], Bse::error_blurb (error));
+            sfi_error (_("Failed to load project \"%s\": %s"), filesv[i], Bse::error_blurb (error));
         }
       else
         {
-          Bse::ErrorType error = bst_project_restore_from_file (app->project, argv[i], TRUE, FALSE);
+          Bse::ErrorType error = bst_project_restore_from_file (app->project, filesv[i], TRUE, FALSE);
           if (error)
-            sfi_error (_("Failed to merge project \"%s\": %s"), argv[i], Bse::error_blurb (error));
+            sfi_error (_("Failed to merge project \"%s\": %s"), filesv[i], Bse::error_blurb (error));
         }
     }
+  return app;
+}
 
-  /* open default app window
-   */
-  if (!app)
-    {
-      Bse::ProjectH project = bse_server.create_project ("Untitled.bse");
-      bse_project_get_wave_repo (project.proxy_id());
-      app = bst_app_new (project);
-      gxk_idle_show_widget (GTK_WIDGET (app));
-      gtk_widget_hide (beast_splash);
-    }
-  /* splash screen is definitely hidden here (still grabbing) */
+static BstApp*
+main_open_default_window ()
+{
+  Bse::ProjectH project = bse_server.create_project ("Untitled.bse");
+  bse_project_get_wave_repo (project.proxy_id());
+  BstApp *app = bst_app_new (project);
+  gxk_idle_show_widget (GTK_WIDGET (app));
+  if (beast_splash)
+    gtk_widget_hide (beast_splash);
+  return app;
+}
 
-  /* fire up release notes dialog
-   */
-  gboolean update_rc_files = FALSE;
+static void
+main_show_release_notes ()
+{
   if (BST_RC_VERSION != BST_VERSION)
     {
       const char *release_notes_title =
@@ -368,14 +453,21 @@ main (int   argc,
       gxk_dialog_set_sizes (GXK_DIALOG (rndialog), 320, 200, 540, 420);
       gxk_scroll_text_rewind (sctext);
       gxk_idle_show_widget (rndialog);
-      update_rc_files = TRUE;
       bst_gconfig_set_rc_version (BST_VERSION);
+      force_saving_rc_files = true;
     }
+}
 
-  /* release splash grab */
+static void
+main_splash_down ()
+{
   gtk_widget_hide (beast_splash);
   bst_splash_release_grab (beast_splash);
+}
 
+static void
+main_run_event_loops ()
+{
   /* away into the main loop */
   while (bst_main_loop_running)
     {
@@ -394,9 +486,14 @@ main (int   argc,
       GDK_THREADS_LEAVE ();
     }
   GDK_THREADS_ENTER ();
+}
 
-  /* save BSE configuration */
-  if (update_rc_files && !bst_preferences_saved())
+static void
+main_save_rc_files ()
+{
+  if (!force_saving_rc_files)
+    return;
+  if (!bst_preferences_saved())
     {
       if (may_auto_update_bse_rc_file)
         bse_server.save_preferences();
@@ -407,7 +504,11 @@ main (int   argc,
 	g_warning ("failed to save rc-file \"%s\": %s", file_name, Bse::error_blurb (error));
       g_free (file_name);
     }
+}
 
+static void
+main_cleanup ()
+{
   // perform necessary cleanup cycles
   GDK_THREADS_LEAVE ();
   while (g_main_iteration (FALSE))
@@ -421,7 +522,6 @@ main (int   argc,
   bse_object_debug_leaks ();
   Bse::TaskRegistry::remove (Rapicorn::ThisThread::thread_pid());
 
-  return 0;
 }
 
 /// wake up the main context used by the Beast main event looop.
