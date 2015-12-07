@@ -76,7 +76,7 @@ static BstApp*  main_open_files (int filesc, char **filesv);
 static BstApp*  main_open_default_window();
 static void     main_show_release_notes();
 static void     main_splash_down ();
-static void     main_run_event_loop ();
+static int      main_run_event_loop ();
 static bool     force_saving_rc_files = false;
 static void     main_save_rc_files ();
 static void     main_cleanup ();
@@ -138,12 +138,12 @@ main (int argc, char *argv[])
   main_show_release_notes();
   main_splash_down();
 
-  main_run_event_loop();
+  const int exitcode = main_run_event_loop();
 
   main_save_rc_files();
   main_cleanup();
 
-  return 0;
+  return exitcode;
 }
 
 static void
@@ -522,17 +522,22 @@ static PyMethodDef embedded_bst_methods[] = {
   { NULL, NULL, 0, NULL }
 };
 
-static void
+static int
 main_run_event_loop ()
 {
   // register embedded methods
   static __unused bool initialized = []() { Py_InitModule ("bst", embedded_bst_methods); return true; } ();
 
   // run main loop from Python
-  const char commands[] =
-    "import bst;\n"
-    "bst.main_loop()\n";
-  PyRun_SimpleString (commands);
+  String pyfile = Bse::Path::join (Bse::installpath (Bse::INSTALLPATH_PYBEASTDIR), "main.py");
+  FILE *fp = fopen (pyfile.c_str(), "r");
+  if (!fp)
+    {
+      perror (string_format ("%s: failed to open file %s", Rapicorn::program_argv0(), Rapicorn::string_to_cquote (pyfile)).c_str());
+      exit (7);
+    }
+  const int pyexitcode = PyRun_AnyFileExFlags (fp, pyfile.c_str(), false, NULL);
+  fclose (fp);
 
   // run pending cleanup handlers
   bst_message_dialogs_popdown ();
@@ -544,6 +549,8 @@ main_run_event_loop ()
       GDK_THREADS_LEAVE ();
     }
   GDK_THREADS_ENTER ();
+
+  return pyexitcode;
 }
 
 static void
