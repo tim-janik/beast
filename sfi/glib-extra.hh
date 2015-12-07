@@ -334,6 +334,10 @@ constexpr GConnectFlags  operator~  (GConnectFlags  s1)                 { return
 // these definitions need to move into bse/utils or similar
 namespace Bse {
 
+// import helpers from Rapicorn
+using Rapicorn::String;
+namespace Path = Rapicorn::Path;
+
 // == INSTALLPATH ==
 // See also configure.ac, this function is here because beast and all libs include this file.
 enum InstallpathType {
@@ -359,7 +363,8 @@ enum InstallpathType {
   INSTALLPATH_PYBEASTDIR,
 };
 /// Provide installation directories and searchpaths for various types of data.
-std::string installpath  (InstallpathType installpath_type);
+String installpath          (InstallpathType installpath_type);
+void   installpath_override (const String &topdir);
 
 /// Provide a string containing the BSE library version number.
 std::string version ();

@@ -1027,13 +1027,23 @@ g_scanner_new64 (const GScannerConfig *config_templ)
 }
 
 
+#include "../configure.h"
+
 namespace Bse {
 
 // == BSE_INSTALLPATH ==
-#include "../configure.h"
+static String installpath_topdir;
+
+void
+installpath_override (const String &topdir)
+{
+  installpath_topdir = topdir;
+}
+
 std::string
 installpath (InstallpathType installpath_type)
 {
+  const bool ovr = !installpath_topdir.empty();
   switch (installpath_type)
     {
     case INSTALLPATH_BSEINCLUDEDIR:                     return CONFIGURE_INSTALLPATH_BSEINCLUDEDIR;
@@ -1042,7 +1052,7 @@ installpath (InstallpathType installpath_type)
     case INSTALLPATH_LADSPA:                            return CONFIGURE_INSTALLPATH_LADSPA;
     case INSTALLPATH_DOCDIR:                            return CONFIGURE_INSTALLPATH_DOCDIR;
     case INSTALLPATH_USER_DATA:                         return CONFIGURE_INSTALLPATH_USER_DATA;
-    case INSTALLPATH_BSELIBDIR:                         return CONFIGURE_INSTALLPATH_BSELIBDIR;
+    case INSTALLPATH_BSELIBDIR:                         return ovr ? installpath_topdir : CONFIGURE_INSTALLPATH_BSELIBDIR;
     case INSTALLPATH_BSELIBDIR_PLUGINS:                 return installpath (INSTALLPATH_BSELIBDIR) + "/plugins";
     case INSTALLPATH_BSELIBDIR_DRIVERS:                 return installpath (INSTALLPATH_BSELIBDIR) + "/drivers";
     case INSTALLPATH_DATADIR:                           return CONFIGURE_INSTALLPATH_DATADIR;
@@ -1054,7 +1064,7 @@ installpath (InstallpathType installpath_type)
     case INSTALLPATH_DATADIR_IMAGES:                    return installpath (INSTALLPATH_DATADIR) + "/images";
     case INSTALLPATH_DATADIR_KEYS:                      return installpath (INSTALLPATH_DATADIR) + "/keys";
     case INSTALLPATH_DATADIR_SKINS:                     return installpath (INSTALLPATH_DATADIR) + "/skins";
-    case INSTALLPATH_BEASTEXECDIR:                      return CONFIGURE_INSTALLPATH_BEASTEXECDIR;
+    case INSTALLPATH_BEASTEXECDIR:                      return ovr ? installpath_topdir : CONFIGURE_INSTALLPATH_BEASTEXECDIR;
     case INSTALLPATH_PYBEASTDIR:                        return installpath (INSTALLPATH_BEASTEXECDIR) + "/pybeast";
     }
   return "";
