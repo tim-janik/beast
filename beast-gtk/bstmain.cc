@@ -60,6 +60,7 @@ server_registration (SfiProxy     server,
     }
 }
 
+static void     main_init_argv0_installpaths (const char *argv0);
 static void     main_init_bse (int *argc, char *argv[]);
 static void     main_init_sfi_glue();
 static void     main_init_gxk (int *argc, char *argv[]);
@@ -83,6 +84,8 @@ static void     main_cleanup ();
 int
 main (int argc, char *argv[])
 {
+  main_init_argv0_installpaths (argv[0]);
+
   /* initialize i18n */
   bindtextdomain (BST_GETTEXT_DOMAIN, Bse::installpath (Bse::INSTALLPATH_LOCALEBASE).c_str());
   bind_textdomain_codeset (BST_GETTEXT_DOMAIN, "UTF-8");
@@ -95,7 +98,6 @@ main (int argc, char *argv[])
   srand (tv.tv_usec + (tv.tv_sec << 16));
 
   // setup Python
-  Py_SetProgramName (argv[0]);
   Py_Initialize();
 
   // initialize threading and GLib types
@@ -142,6 +144,25 @@ main (int argc, char *argv[])
   main_cleanup();
 
   return 0;
+}
+
+static void
+main_init_argv0_installpaths (const char *argv0)
+{
+  // Rapicorn and Python both need accurate argv0 excutable names
+  Rapicorn::program_argv0_init (argv0);
+  Py_SetProgramName (const_cast<char*> (argv0));
+  // check for a libtool-linked, uninstalled executable (name)
+  const char *const exe = argv0;
+  const char *const slash = strrchr (exe, '/');
+  if (slash && slash >= exe + 6 && strncmp (slash - 6, "/.libs/lt-", 10) == 0)
+    {
+      using namespace Rapicorn;
+      // use source dir relative installpaths for uninstalled executables
+      const String program_abspath = Path::abspath (argv0);
+      const String dirpath = Path::join (Path::dirname (program_abspath), "..", ".."); // topdir/subdir/.libs/../..
+      Bse::installpath_override (Path::realpath (dirpath));
+    }
 }
 
 static void
