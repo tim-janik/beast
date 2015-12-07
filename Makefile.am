@@ -1,7 +1,7 @@
 # BEAST & BSE
 include $(top_srcdir)/Makefile.decl
 
-SUBDIRS = . data sfi bse plugins drivers shell beast-gtk launchers library tools po tests docs
+SUBDIRS = . data sfi bse plugins drivers shell pybeast beast-gtk launchers library tools po tests docs
 
 noinst_DATA = HACKING.html
 EXTRA_DIST += HACKING.html

@@ -707,6 +707,7 @@ plugins/icons/Makefile
 plugins/freeverb/Makefile
 drivers/Makefile
 shell/Makefile
+pybeast/Makefile
 beast-gtk/Makefile
 beast-gtk/gxk/Makefile
 beast-gtk/res/Makefile
