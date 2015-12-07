@@ -63,7 +63,7 @@ server_registration (SfiProxy     server,
 static void     main_init_argv0_installpaths (const char *argv0);
 static void     main_init_bse (int *argc, char *argv[]);
 static void     main_init_sfi_glue();
-static void     main_init_gxk (int *argc, char *argv[]);
+static void     main_init_gxk();
 static void     main_init_bst_systems();
 static void     main_load_rc_files();
 static void     main_show_splash_image();
@@ -111,6 +111,13 @@ main (int argc, char *argv[])
   // early arg parsing without remote calls
   bst_args_parse_early (&argc, argv);
 
+  // startup Gtk+ *lightly*
+  if (!gtk_parse_args (&argc, &argv))
+    {
+      printerr ("%s: failed to setup Gtk+\n", Rapicorn::program_argv0());
+      exit (7);
+    }
+
   main_init_bse (&argc, argv);
 
   // now that the BSE thread runs, drop scheduling priorities if we have any
@@ -123,7 +130,8 @@ main (int argc, char *argv[])
   bst_args_process (&argc, argv);
 
   main_init_sfi_glue();
-  main_init_gxk (&argc, argv);
+
+  main_init_gxk();
   main_init_bst_systems();
   main_load_rc_files();
   main_show_splash_image();
@@ -187,10 +195,10 @@ main_init_sfi_glue()
 }
 
 static void
-main_init_gxk (int *argc, char *argv[])
+main_init_gxk()
 {
-  // initialize Gtk+ and go into threading mode
-  gtk_init (argc, &argv);
+  // late Gtk+ initialization, args have been parsed with gtk_parse_args()
+  gtk_init (NULL, NULL);
   GDK_THREADS_ENTER ();
   // initialize Gtk+ Extensions
   gxk_init ();
