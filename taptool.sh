@@ -108,12 +108,8 @@ check_reference_output() {
 }
 export RAPICORN_OUTPUT_TEST_LOG
 
-# == test invocation ==
-test ! -z "$TEST_NAME" || TEST_NAME="${1#./}"
-printf "%s  START%s    $TEST_NAME: testing...\n" "$color_pass" "$color_reset"
-rm -f "$RAPICORN_OUTPUT_TEST_LOG"
-set +e -o pipefail # catch pipeline errors
-"$@" | {
+# == process and check the test ouput ==
+check_test_output() {
   set -e # catch errors other than the pipeline errors
 
   # == output processing ==
@@ -197,6 +193,13 @@ set +e -o pipefail # catch pipeline errors
   echo "$ERROR" > $TMPFILE
   exit 0 # don't clutter "$1" exit status
 }
+
+# == test invocation ==
+test ! -z "$TEST_NAME" || TEST_NAME="${1#./}"
+printf "%s  START%s    $TEST_NAME: testing...\n" "$color_pass" "$color_reset"
+rm -f "$RAPICORN_OUTPUT_TEST_LOG"
+set +e -o pipefail # catch pipeline errors
+"$@" | check_test_output
 
 # check exit status from $1, possible b/c the output-processing exit status is in $TMPFILE,
 # and pipefail then retains the "$1" exit status.
