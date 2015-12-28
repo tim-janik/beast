@@ -129,6 +129,8 @@ main (int argc, char *argv[])
   // arg processing with BSE available, --help, --version
   bst_args_process (&argc, argv);
 
+  PySys_SetArgvEx (argc, argv, 0);
+
   main_init_sfi_glue();
 
   main_init_gxk();
