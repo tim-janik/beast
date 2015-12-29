@@ -1,4 +1,4 @@
-# Licensed GNU LGPL v2 or later: http://www.gnu.org/licenses/lgpl.html
+dnl # Beast & Bse                                    -*- Mode: shell-script; -*-
 
 # include various m4 macros
 m4_include(acbeast.m4)dnl # include special macros
@@ -114,25 +114,6 @@ m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES([yes])])
 AC_ARG_ENABLE(debug,           [  --enable-debug=no/minimum/yes turn on debugging, default=yes],,enable_debug=yes)
 AC_ARG_ENABLE(devel-mode,      [  --enable-devel-mode=no/yes    turn on development mode, default=auto],,enable_devel_mode=auto)
 
-dnl # setup DEBUG defaults
-if test "x$enable_debug" = "xyes"; then
-  DEBUG_FLAGS="-g -DG_ENABLE_DEBUG"
-else if test "x$enable_debug" = "xno"; then
-  DEBUG_FLAGS="-DG_DISABLE_CHECKS -DG_DISABLE_CAST_CHECKS" # -DG_DISABLE_ASSERT
-else
-  DEBUG_FLAGS="-DG_DISABLE_CAST_CHECKS"
-fi fi
-if test -z "$CFLAGS"; then
-  CFLAGS="$DEBUG_FLAGS"
-else
-  CFLAGS="$CFLAGS $DEBUG_FLAGS"
-fi
-if test -z "$CXXFLAGS"; then
-  CXXFLAGS="$DEBUG_FLAGS"
-else
-  CXXFLAGS="$CXXFLAGS $DEBUG_FLAGS"
-fi
-
 dnl # Foreign defaults:
 MC_IF_VAR_EQ(enable_static, yes, , enable_static=no)
 MC_IF_VAR_EQ(enable_shared, no, , enable_shared=yes)
@@ -150,12 +131,18 @@ AC_PROG_LD
 AC_LANG_CPLUSPLUS	# use CXX for compilation tests
 AC_LIB_PROG_LD
 AC_LIB_PROG_LD_GNU
-ACX_PROG_LD_GNU_SYMBOLIC
-AC_SUBST([SYMBOLIC_LDFLAGS])
-ACX_PROG_LD_GNU_DYNAMIC_LIST_CPP_NEW
-AC_SUBST([DYNAMIC_LIST_CPP_NEW_LDFLAGS])
 AM_PROG_LIBTOOL
 AC_LIBTOOL_DLOPEN
+ACX_PROG_LD_GNU_SYMBOLIC
+# SYMBOLIC_LDFLAGS is included in DYNAMIC_LIST_CPP_NEW_LDFLAGS
+ACX_PROG_LD_GNU_DYNAMIC_LIST_CPP_NEW
+MC_EVAR_ADD(AM_LDFLAGS, $DYNAMIC_LIST_CPP_NEW_LDFLAGS)
+MC_EVAR_ADD(AM_LDFLAGS, -pthread)
+MC_EVAR_ADD(AM_LDFLAGS, -lrt)
+MC_EVAR_ADD(AM_LDFLAGS, [-Wl,--no-undefined])
+if ${LD} --help 2>&1 | grep -q -- '-export-dynamic\b' ; then
+  MC_EVAR_ADD(AM_LDFLAGS, [-Wl,-export-dynamic])
+fi
 
 # AM_LDFLAGS, optimize linker to use faster ELF symbol hashing if we have compiler and linker support
 AC_MSG_CHECKING([whether CC and LD support gnu.hash sections])
@@ -166,21 +153,14 @@ if ${CC-cc} -dumpspecs | grep -q -- '--hash-style=\(both\|gnu\).*--as-needed' &&
 else
   AC_MSG_RESULT(no)
 fi
-MC_EVAR_ADD(AM_LDFLAGS, -pthread)
-MC_EVAR_ADD(AM_LDFLAGS, -lrt)
-MC_EVAR_ADD(AM_LDFLAGS, [-Wl,--no-undefined])
 AC_SUBST(AM_LDFLAGS)
-
-# Pick C++ dialect, needed in CXXFLAGS for compile tests
-MC_CXX_TRY_OPTION(CXXFLAGS,  -std=gnu++0x)
 
 # AM_CFLAGS & AM_CXXFLAGS
 MC_CXX_TRY_OPTION(AM_CXXFLAGS,  -std=gnu++0x)
 BOTHCCXXFLAGS=
 if test "x$enable_debug" = "xyes"; then
   MC_EVAR_ADD(BOTHCCXXFLAGS,      -DG_ENABLE_DEBUG)
-  MC_CC_TRY_OPTION(BOTHCCXXFLAGS, -g)
-  MC_CC_TRY_OPTION(BOTHCCXXFLAGS, -ggdb3)
+  MC_CC_TRY_OPTION(BOTHCCXXFLAGS, -g3)
   MC_CC_TRY_OPTION(BOTHCCXXFLAGS, -fno-omit-frame-pointer)
   MC_CC_TRY_OPTION(BOTHCCXXFLAGS, -fverbose-asm)
   dnl # MC_CC_TRY_OPTION(BOTHCCXXFLAGS, -Q -ftime-report -fmem-report)
@@ -189,8 +169,6 @@ elif test "x$enable_debug" = "xno"; then
 else
   : # minimum debugging
 fi
-MC_CC_TRY_OPTION(BOTHCCXXFLAGS, -fmessage-length=0)
-MC_CC_TRY_OPTION(BOTHCCXXFLAGS, -fdiagnostics-color=auto)
 MC_CC_TRY_OPTION(BOTHCCXXFLAGS, -Wall)
 MC_CC_TRY_OPTION(BOTHCCXXFLAGS, -Wdeprecated)
 MC_CC_TRY_OPTION(AM_CFLAGS,     -Wmissing-prototypes)
@@ -220,16 +198,16 @@ AC_SUBST(AM_CPPFLAGS)
 # Intel Pentium 3: CMOV MMX SSE (1999)
 # VIA C3 Nehemiah: CMOV MMX SSE (2003)
 # Athlon Palomino: CMOV MMX SSE 3DNow (2001)
-MMX_SSE_FLAGS=
-MC_CC_TRY_OPTION(MMX_SSE_FLAGS, -mmmx)
-MC_CC_TRY_OPTION(MMX_SSE_FLAGS, -msse)
+SIMD_FLAGS=
+MC_CC_TRY_OPTION(SIMD_FLAGS, -mmmx)
+MC_CC_TRY_OPTION(SIMD_FLAGS, -msse)
 # Note, -mfpmath=sse can harm FPU-algorithm performance
 # Note, -funroll-loops can harm SSE loop performance
-#MC_CC_TRY_OPTION(MMX_SSE_FLAGS, -funroll-loops)
-#AC_SUBST(MMX_SSE_FLAGS)
+#MC_CC_TRY_OPTION(SIMD_FLAGS, -funroll-loops)
+#AC_SUBST(SIMD_FLAGS)
 # Expect the target architecture to support MMX/SSE if the compiler does it.
-MC_EVAR_ADD(AM_CFLAGS,   "$MMX_SSE_FLAGS")
-MC_EVAR_ADD(AM_CXXFLAGS, "$MMX_SSE_FLAGS")
+MC_EVAR_ADD(AM_CFLAGS,   "$SIMD_FLAGS")
+MC_EVAR_ADD(AM_CXXFLAGS, "$SIMD_FLAGS")
 # Newer vectorization instruction sets, should be optionally supported
 # SSE >= 2, AVX
 SSEAVX_FLAGS=
@@ -265,11 +243,11 @@ MC_CXX_TRY_OPTION(FAST_MATH_FLAGS, -fivopts)
 AC_SUBST(FAST_MATH_FLAGS)
 MC_CXX_TRY_OPTION(FPU_FLAGS, -funroll-loops)
 AC_SUBST(FPU_FLAGS)
-MMX_SSE_FLAGS="$MMX_SSE_FLAGS"
-AC_SUBST(MMX_SSE_FLAGS)
+SIMD_FLAGS="$SIMD_FLAGS"
+AC_SUBST(SIMD_FLAGS)
 
 # == SSE Build Conditionals ==
-lacking_mmx_sse=`echo "$MMX_SSE_FLAGS" | grep 'mmx.*sse' -q ; echo $?` # sh truth values: 1 (without sse) or 0 (with sse)
+lacking_mmx_sse=`echo "$SIMD_FLAGS" | grep 'mmx.*sse' -q ; echo $?` # sh truth values: 1 (without sse) or 0 (with sse)
 AM_CONDITIONAL(WITH_MMX_SSE, test 0 == $lacking_mmx_sse)
 AC_DEFINE_UNQUOTED(BSE_WITH_MMX_SSE, [(0 == $lacking_mmx_sse)], [wether MMX and SSE are supported])
 
@@ -288,7 +266,7 @@ MC_ASSERT_PROG(PKG_CONFIG, pkg-config, [pkg-config can be found at http://www.fr
 dnl #
 dnl # Define package requirements.
 dnl #
-AC_DEFUN([AC_I18N_REQUIREMENTS],
+AC_DEFUN([MC_I18N_REQUIREMENTS],
 [
   # LINGUAS
   ALL_LINGUAS=`cat "$srcdir/po/LINGUAS" | grep -v '^#' | xargs echo -n `
@@ -318,7 +296,7 @@ AC_DEFUN([AC_I18N_REQUIREMENTS],
   INTLMERGE='$(top_builddir)/$(ac_aux_dir)/intltool-merge'
   AC_SUBST(INTLMERGE) dnl # AC_PATH_PROG(INTLMERGE, intltool-merge, intltool-merge)
 ])
-AC_DEFUN([AC_SFI_REQUIREMENTS],
+AC_DEFUN([MC_SFI_REQUIREMENTS],
 [
     dnl # check for GLib libs
     PKG_CHECK_MODULES(GLIB_GOMT, glib-2.0 >= 2.32.3 gobject-2.0 gmodule-no-export-2.0 gthread-2.0)
@@ -332,7 +310,7 @@ AC_DEFUN([AC_SFI_REQUIREMENTS],
     AC_CHECK_FUNCS(getpwnam_r getpwnam)
     AC_CHECK_FUNCS(timegm)
 ])
-AC_DEFUN([AC_BSE_REQUIREMENTS],
+AC_DEFUN([MC_BSE_REQUIREMENTS],
 [
     dnl # require Rapicorn
     PKG_CHECK_MODULES(RAPICORN, rapicorn >= 15.09.1)
@@ -435,7 +413,7 @@ AC_DEFUN([AC_BSE_REQUIREMENTS],
     AC_CHECK_LIB(m, sincos,
       AC_DEFINE(HAVE_SINCOS, 1, [Define if you have the sincos function in <math.h>]))
 ])
-AC_DEFUN([AC_ASOUND_CHECK],
+AC_DEFUN([MC_ASOUND_CHECK],
 [
     saved_cflags="$CFLAGS"
     saved_cxxflags="$CXXFLAGS"
@@ -470,13 +448,9 @@ AC_DEFUN([AC_ASOUND_CHECK],
     dnl --- check for -lasound ---
     found_libasound=0
     dnl snd_asoundlib_version() was introduced in ALSA 1.0.5
-    cflags=$CFLAGS
-    ldflags=$LDFLAGS
-    CFLAGS=""
-    LDFLAGS=""
+    CFLAGS=""  # kept in saved_cflags
+    LDFLAGS="" # kept in saved_ldflags
     AC_CHECK_LIB(asound, snd_asoundlib_version, ALSA_LIBS="-lasound"; found_libasound=1)
-    CFLAGS="$cflags"
-    LDFLAGS="$ldflags"
     if test $found_libasound = 0; then
 	AC_MSG_ERROR([ALSA version 1.0.5 is required to build this package])
     fi
@@ -487,7 +461,7 @@ AC_DEFUN([AC_ASOUND_CHECK],
     CXXFLAGS="$saved_cxxflags"
     LDFLAGS="$saved_ldflags"
 ])
-AC_DEFUN([AC_BSESCM_REQUIREMENTS],
+AC_DEFUN([MC_BSESCM_REQUIREMENTS],
 [
     BSESCM_CFLAGS="$BSE_CFLAGS"
     BSESCM_LIBS="$BSE_LIBS"
@@ -520,7 +494,7 @@ AC_DEFUN([AC_BSESCM_REQUIREMENTS],
     AC_SUBST(BSESCM_CFLAGS)
     AC_SUBST(BSESCM_LIBS)
 ])
-AC_DEFUN([AC_GXK_REQUIREMENTS],
+AC_DEFUN([MC_GXK_REQUIREMENTS],
 [
     dnl # required libraries, defines LIB*_CFLAGS and LIB*_LIBS:
     PKG_CHECK_MODULES(LIBPANGO, pangoft2 >= 1.4.0)
@@ -532,7 +506,7 @@ AC_DEFUN([AC_GXK_REQUIREMENTS],
     AC_SUBST(GXK_CFLAGS)
     AC_SUBST(GXK_LIBS)
 ])
-AC_DEFUN([AC_BEAST_REQUIREMENTS],
+AC_DEFUN([MC_BEAST_REQUIREMENTS],
 [
     dnl # start where GXK left off
     BEAST_CFLAGS="$GXK_CFLAGS"
@@ -556,13 +530,13 @@ AC_DEFUN([AC_BEAST_REQUIREMENTS],
     CFLAGS=$cflags
     LDFLAGS=$ldflags
 ])
-AC_DEFUN([AC_SUIDMAIN_REQUIREMENTS],
+AC_DEFUN([MC_SUIDMAIN_REQUIREMENTS],
 [
     dnl # figure everything required by the suid wrapper
     AC_CHECK_FUNCS(seteuid)
     AC_CHECK_FUNCS(setreuid)
 ])
-AC_DEFUN([AC_BSE_SNDDEV_CHECK],
+AC_DEFUN([MC_BSE_SNDDEV_CHECK],
 [
     dnl # OSS-Lite driver check
     AC_CHECK_HEADERS(sys/soundcard.h soundcard.h, have_oss_header=yes, have_oss_header=no)
@@ -632,7 +606,7 @@ AC_DEFUN([AC_BSE_SNDDEV_CHECK],
 	AC_MSG_WARN([failed to detect proper sound device files])
     fi
 ])
-AC_DEFUN([AC_DOC_REQUIREMENTS],
+AC_DEFUN([MC_DOC_REQUIREMENTS],
 [
 ])
 
@@ -684,23 +658,16 @@ AC_SUBST(PERLRULE)
 AM_CONDITIONAL(WITH_PERLRULE, [test "$PERLRULE" != "#"])
 
 # Check requirement sets
-AC_I18N_REQUIREMENTS
-AC_SFI_REQUIREMENTS
-AC_BSE_REQUIREMENTS
-AC_ASOUND_CHECK
-AC_BSESCM_REQUIREMENTS
-AC_BSE_SNDDEV_CHECK
-AC_GXK_REQUIREMENTS
-AC_BEAST_REQUIREMENTS
-AC_SUIDMAIN_REQUIREMENTS
-AC_DOC_REQUIREMENTS
-
-# Automake @VARIABLE@ exports.
-AC_SUBST(CFLAGS)
-AC_SUBST(CXXFLAGS)
-AC_SUBST(CPPFLAGS)
-AC_SUBST(LDFLAGS)
-
+MC_I18N_REQUIREMENTS
+MC_SFI_REQUIREMENTS
+MC_BSE_REQUIREMENTS
+MC_ASOUND_CHECK
+MC_BSESCM_REQUIREMENTS
+MC_BSE_SNDDEV_CHECK
+MC_GXK_REQUIREMENTS
+MC_BEAST_REQUIREMENTS
+MC_SUIDMAIN_REQUIREMENTS
+MC_DOC_REQUIREMENTS
 
 # create output files
 AC_CONFIG_FILES([
