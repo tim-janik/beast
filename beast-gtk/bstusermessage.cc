@@ -754,14 +754,14 @@ server_user_message (const Bse::UserMessage &umsg)
   };
   BstMessage msg = { 0, };
   msg.log_domain = "BSE";
-  msg.type = convert_msg_type (umsg.type);
+  msg.type = convert_msg_type (umsg.utype);
   msg.title = umsg.title.c_str();
   msg.primary = umsg.text1.c_str();
   msg.secondary = umsg.text2.c_str();
   msg.details = umsg.text3.c_str();
   Bse::String cfg = Bse::string_format (_("Show messages about %s"), umsg.label.c_str());
   msg.config_check = cfg.c_str();
-  const Rapicorn::Aida::EnumValue ev = Rapicorn::Aida::enum_info<Bse::UserMessageType>().find_value (umsg.type);
+  const Rapicorn::Aida::EnumValue ev = Rapicorn::Aida::enum_info<Bse::UserMessageType>().find_value (umsg.utype);
   msg.ident = ev.ident;
   msg.label = NULL;
   msg.janitor = 0;

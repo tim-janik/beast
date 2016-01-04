@@ -428,7 +428,7 @@ bse_server_require_pcm_input (BseServer *server)
       if (!BSE_DEVICE_READABLE (server->pcm_device))
         {
           UserMessage umsg;
-          umsg.type = Bse::WARNING;
+          umsg.utype = Bse::WARNING;
           umsg.title = _("Audio Recording Failed");
           umsg.text1 = _("Failed to start recording from audio device.");
           umsg.text2 = _("An audio project is in use which processes an audio input signal, but the audio device "
@@ -482,7 +482,7 @@ server_open_pcm_device (BseServer *server,
   if (!server->pcm_device)
     {
       UserMessage umsg;
-      umsg.type = Bse::ERROR;
+      umsg.utype = Bse::ERROR;
       umsg.title = _("Audio I/O Failed");
       umsg.text1 = _("No available audio device was found.");
       umsg.text2 = _("No available audio device could be found and opened successfully. "
@@ -509,7 +509,7 @@ server_open_midi_device (BseServer *server)
       if (server->midi_device)
         {
           UserMessage umsg;
-          umsg.type = Bse::WARNING;
+          umsg.utype = Bse::WARNING;
           umsg.title = _("MIDI I/O Failed");
           umsg.text1 = _("MIDI input or output is not available.");
           umsg.text2 = _("No available MIDI device could be found and opened successfully. "
@@ -567,7 +567,7 @@ bse_server_open_devices (BseServer *self)
 	  if (error)
 	    {
               UserMessage umsg;
-              umsg.type = Bse::ERROR;
+              umsg.utype = Bse::ERROR;
               umsg.title = _("Disk Recording Failed");
               umsg.text1 = _("Failed to start PCM recording to disk.");
               umsg.text2 = _("An error occoured while opening the recording file, selecting a different "

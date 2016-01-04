@@ -393,7 +393,7 @@ PROCEDURE (bse-script-send-message, "Script/Message") {
     {
       using namespace Bse;
       UserMessage umsg;
-      umsg.type = stupid_convert (mtype ? mtype[0] : 0);
+      umsg.utype = stupid_convert (mtype ? mtype[0] : 0);
       umsg.title = text0 ? text0 : "WARNING";
       umsg.text1 = text1;
       if (text2)
