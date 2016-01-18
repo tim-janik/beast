@@ -321,7 +321,7 @@ bst_router_run_method (gpointer user_data, size_t action_id)
 {
   BstSNetRouter *self = BST_SNET_ROUTER (user_data);
   BseCategory *cat = bse_category_find (g_quark_to_string (action_id));
-  bst_procedure_exec_auto (cat->type,
+  bst_procedure_exec_auto (cat->otype,
                            "synth-net", SFI_TYPE_PROXY, self->snet.proxy_id(),
                            BSE_IS_CSYNTH (self->snet.proxy_id()) ? "custom-synth" : "", SFI_TYPE_PROXY, self->snet.proxy_id(),
                            NULL);
