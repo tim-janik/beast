@@ -2,6 +2,8 @@
 #include "bsestartup.hh"
 #include "bsemain.hh"
 #include <bse/bseclientapi.hh>
+#include <bse/bse.hh>           // init_server_connection
+#include "../configure.h"       // BST_VERSION
 
 namespace Bse {
 
@@ -120,6 +122,41 @@ AidaGlibSource*
 AidaGlibSource::create (Rapicorn::Aida::BaseConnection *connection)
 {
   return AidaGlibSourceImpl::create (connection);
+}
+
+static Rapicorn::Aida::ClientConnectionP *client_connection = NULL;
+
+/// Retrieve a handle for the Bse::Server instance managing the Bse thread.
+ServerHandle
+init_server_instance () // bse.hh
+{
+  ServerH server;
+  Rapicorn::Aida::ClientConnectionP connection = init_server_connection();
+  if (connection)
+    server = connection->remote_origin<ServerH>();
+  return server;
+}
+
+/// Retrieve the ClientConnection used for RPC communication with the Bse thread.
+Rapicorn::Aida::ClientConnectionP
+init_server_connection () // bse.hh
+{
+  if (!client_connection)
+    {
+      using namespace Rapicorn::Aida;
+      ClientConnectionP connection = ClientConnection::connect ("inproc://BSE-" BST_VERSION);
+      ServerH server;
+      if (connection)
+        server = connection->remote_origin<ServerH>();
+      if (!server) // shouldn't happen
+        sfi_error ("%s: failed to establish BSE connection: %s", __func__, g_strerror (errno));
+      constexpr SfiProxy BSE_SERVER = 1;
+      assert (server.proxy_id() == BSE_SERVER);
+      assert (server.from_proxy (BSE_SERVER) == server);
+      assert (client_connection == NULL);
+      client_connection = new Rapicorn::Aida::ClientConnectionP (connection);
+    }
+  return *client_connection;
 }
 
 } // Bse

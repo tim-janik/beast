@@ -5,4 +5,9 @@
 #include <bse/bsestartup.hh>
 #include <bse/bseclientapi.hh>
 
+namespace Bse { // clientapi glue code, see bsestartup.cc
+ServerHandle                      init_server_instance   ();
+Rapicorn::Aida::ClientConnectionP init_server_connection ();
+} // Bse
+
 #endif /* __BSE_H__ */
