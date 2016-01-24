@@ -29,6 +29,13 @@ init_async (int *argc, char **argv, const char *app_name, const StringVector &ar
   _bse_init_async (argc, argv, app_name, args);
 }
 
+/// Check wether init_async() still needs to be called.
+bool
+init_needed ()
+{
+  return _bse_initialized() == false;
+}
+
 // == TaskRegistry ==
 static Bse::Mutex         task_registry_mutex_;
 static TaskRegistry::List task_registry_tasks_;
