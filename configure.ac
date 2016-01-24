@@ -701,6 +701,7 @@ bse/bseconfig.h
 bse/Makefile
 bse/icons/Makefile
 bse/res/Makefile
+bse/pybse/Makefile
 bse/tests/Makefile
 plugins/Makefile
 plugins/icons/Makefile
