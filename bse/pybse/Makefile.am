@@ -13,13 +13,24 @@ AIDACC_VDEBUG = $(AIDACC) $(if $(findstring 1, $(V)), --aida-debug)
 # == Pyx ==
 AIDASTDINC = $(shell ${AIDACC} -x PyxxStub.py -G --print-include-path /dev/null)
 # Python 'Bse' module build via Cython
+Bse.pyx: bseidlapi.pyx
 bseidlapi.pyx: ../bseapi.idl
 	$(AM_V_GEN)
 	$(Q) ${AIDACC} -x PyxxStub.py $< -o $@ -G strip-path=$(abs_top_srcdir)/
+Bse.cc: Bse.pyx bseidlapi.pyx
+	@echo "  CYTHON  " $@
+	$(Q) cython --cplus -Wextra -Werror --fast-fail -I. -I$(AIDASTDINC) Bse.pyx -o $@
+	@: # FIXME: CYTHON
 # pythondir = ${prefix}/lib/pythonX.Y/site-packages
 pymodulesdir          = ${bselibdir}/pymodules
+pymodules_LTLIBRARIES = Bse.la
 # Pyx Bse module
-CLEANFILES           += bseidlapi.pyx
+nodist_Bse_la_SOURCES = Bse.cc        # nodist_ forces build time generation
+Bse_la_CXXFLAGS       = $(PYTHON_CPPFLAGS) $(AM_CXXFLAGS) -I$(AIDASTDINC) -Wno-redundant-decls -Wno-unused-function
+Bse_la_LDFLAGS        = $(PYTHON_LDFLAGS) $(AM_LDFLAGS) -no-undefined -module -avoid-version
+Bse_la_LIBADD         = $(RAPICORN_LIBS)  ../libbse-@MAJOR@.la # $(top_builddir)/bse/libbse-@MAJOR@.la
+EXTRA_DIST           += Bse.pyx
+CLEANFILES           += bseidlapi.pyx Bse.cc
 
 # call python with uninstalled or fully installed modules
 FPYTHON      = PYTHONPATH="$$PYTHONPATH:${pymodulesdir}" $(PYTHON)
