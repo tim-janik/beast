@@ -105,7 +105,7 @@ main (int argc, char *argv[])
   Bse::TaskRegistry::add (Rapicorn::ThreadInfo::self().name(), Rapicorn::ThisThread::process_pid(), Rapicorn::ThisThread::thread_pid());
 
   /* initialize Birnet/Sfi */
-  sfi_init (&argc, argv, "BEAST");
+  sfi_init (&argc, argv);
   /* ensure SFI can wake us up */
 
   // early arg parsing without remote calls

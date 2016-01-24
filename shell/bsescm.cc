@@ -48,7 +48,7 @@ main (int   argc,
 {
   const gchar *env_str;
   GSource *source;
-  sfi_init (&argc, argv, "BSESCM");
+  sfi_init (&argc, argv);
   bse_bindtextdomain();
   setlocale (LC_ALL, "");
   env_str = g_getenv ("BSESCM_SLEEP4GDB");

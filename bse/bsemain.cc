@@ -215,7 +215,7 @@ initialize_with_argv (int *argc, char **argv, const char *app_name, const Bse::S
   if (initialized_for_unit_testing > 0)
     sfi_init_test (argc, argv);
   else
-    sfi_init (argc, argv, app_name);
+    sfi_init (argc, argv);
 }
 
 void
