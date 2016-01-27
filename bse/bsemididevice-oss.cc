@@ -57,7 +57,7 @@ check_device_usage (const char *name,
        * might be wrong and the device may be busy.
        */
       if (errno == ENODEV)
-        error = Bse::ERROR_DEVICE_NOT_AVAILABLE;
+        error = Bse::Error::DEVICE_NOT_AVAILABLE;
       if (fd >= 0)
         close (fd);
     }
@@ -76,17 +76,17 @@ bse_midi_device_oss_list_devices (BseDevice *device)
       char *dname = g_strconcat (BSE_MIDI_DEVICE_OSS (device)->device_name, postfixes[i], NULL);
       if (!birnet_file_equals (last, dname))
         {
-          if (check_device_usage (dname, "crw") == Bse::ERROR_NONE)
+          if (check_device_usage (dname, "crw") == Bse::Error::NONE)
             ring = sfi_ring_append (ring,
                                     bse_device_entry_new (device,
                                                           g_strdup_format ("%s,rw", dname),
                                                           g_strdup_format ("%s (read-write)", dname)));
-          else if (check_device_usage (dname, "cr") == Bse::ERROR_NONE)
+          else if (check_device_usage (dname, "cr") == Bse::Error::NONE)
             ring = sfi_ring_append (ring,
                                     bse_device_entry_new (device,
                                                           g_strdup_format ("%s,ro", dname),
                                                           g_strdup_format ("%s (read only)", dname)));
-          else if (check_device_usage (dname, "cw") == Bse::ERROR_NONE)
+          else if (check_device_usage (dname, "cw") == Bse::Error::NONE)
             ring = sfi_ring_append (ring,
                                     bse_device_entry_new (device,
                                                           g_strdup_format ("%s,wo", dname),
@@ -147,10 +147,10 @@ bse_midi_device_oss_open (BseDevice     *device,
     {
       oss->fd = fd;
       /* try setup */
-      error = Bse::ERROR_NONE;
+      error = Bse::Error::NONE;
     }
   else
-    error = bse_error_from_errno (errno, Bse::ERROR_FILE_OPEN_FAILED);
+    error = bse_error_from_errno (errno, Bse::Error::FILE_OPEN_FAILED);
 
   /* setup MIDI handle or shutdown */
   if (!error)

@@ -62,7 +62,7 @@ WaveChunk::change_dhandle (GslDataHandle *xhandle,
       if (dhandle)
         gsl_data_handle_close (dhandle);
       dhandle = xhandle;
-      return Bse::ERROR_NONE;
+      return Bse::Error::NONE;
     }
   else
     return error;
@@ -73,7 +73,7 @@ WaveChunk::set_dhandle_from_file (const string &fname,
                                   gdouble       osc_freq,
                                   gchar       **xinfos)
 {
-  Bse::ErrorType error = Bse::ERROR_NONE;
+  Bse::ErrorType error = Bse::Error::NONE;
   BseWaveFileInfo *wfi = bse_wave_file_info_load (fname.c_str(), &error);
   GslDataHandle *xhandle = NULL;
   if (wfi)
@@ -111,7 +111,7 @@ Bse::ErrorType
 Wave::add_chunk (GslDataHandle  *dhandle,
                  gchar         **xinfos)
 {
-  assert_return (dhandle != NULL, Bse::ERROR_INTERNAL);
+  assert_return (dhandle != NULL, Bse::Error::INTERNAL);
 
   if (xinfos)
     {
@@ -236,7 +236,7 @@ Wave::sort ()
 Bse::ErrorType
 Wave::store (const string file_name)
 {
-  assert_return (file_name.c_str() != NULL, Bse::ERROR_INTERNAL);
+  assert_return (file_name.c_str() != NULL, Bse::Error::INTERNAL);
 
   /* save to temporary file */
   gint fd;
@@ -252,7 +252,7 @@ Wave::store (const string file_name)
   if (fd < 0)
     {
       g_free (temp_file);
-      return bse_error_from_errno (errno, Bse::ERROR_FILE_OPEN_FAILED);
+      return bse_error_from_errno (errno, Bse::Error::FILE_OPEN_FAILED);
     }
 
   /* figure default mix_freq */
@@ -397,19 +397,19 @@ Wave::store (const string file_name)
 
   sfi_wstore_puts (wstore, "}\n");
   gint nerrno = sfi_wstore_flush_fd (wstore, fd);
-  Bse::ErrorType error = bse_error_from_errno (-nerrno, Bse::ERROR_FILE_WRITE_FAILED);
-  if (close (fd) < 0 && error == Bse::ERROR_NONE)
-    error = bse_error_from_errno (errno, Bse::ERROR_FILE_WRITE_FAILED);
+  Bse::ErrorType error = bse_error_from_errno (-nerrno, Bse::Error::FILE_WRITE_FAILED);
+  if (close (fd) < 0 && error == Bse::Error::NONE)
+    error = bse_error_from_errno (errno, Bse::Error::FILE_WRITE_FAILED);
   sfi_wstore_destroy (wstore);
 
   /* replace output file by temporary file */
-  if (error != Bse::ERROR_NONE)
+  if (error != Bse::Error::NONE)
     {
       unlink (temp_file);
     }
   else if (rename (temp_file, file_name.c_str()) < 0)
     {
-      error = bse_error_from_errno (errno, Bse::ERROR_FILE_WRITE_FAILED);
+      error = bse_error_from_errno (errno, Bse::Error::FILE_WRITE_FAILED);
       unlink (temp_file);
     }
   g_free (temp_file);

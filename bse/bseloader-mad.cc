@@ -110,7 +110,7 @@ mad_create_chunk_handle (void         *data,
       gsl_data_handle_unref (tmp_handle);
     }
   if (!dhandle && !*error_p)
-    *error_p = Bse::ERROR_FILE_OPEN_FAILED;
+    *error_p = Bse::Error::FILE_OPEN_FAILED;
   return dhandle;
 }
 

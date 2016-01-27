@@ -58,21 +58,21 @@ device_open_args (BseDevice      *self,
 
   if (!error)
     {
-      assert_return (BSE_DEVICE_OPEN (self), Bse::ERROR_INTERNAL);
-      assert_return (self->open_device_name != NULL, Bse::ERROR_INTERNAL); /* bse_device_set_opened() was not called */
+      assert_return (BSE_DEVICE_OPEN (self), Bse::Error::INTERNAL);
+      assert_return (self->open_device_name != NULL, Bse::Error::INTERNAL); /* bse_device_set_opened() was not called */
       if (!self->open_device_args)
         self->open_device_args = g_strdup (arg_string);
       if (BSE_DEVICE_GET_CLASS (self)->post_open)
         BSE_DEVICE_GET_CLASS (self)->post_open (self);
     }
   else
-    assert_return (!BSE_DEVICE_OPEN (self), Bse::ERROR_INTERNAL);
+    assert_return (!BSE_DEVICE_OPEN (self), Bse::Error::INTERNAL);
 
   if (!error && ((need_readable && !BSE_DEVICE_READABLE (self)) ||
                  (need_writable && !BSE_DEVICE_WRITABLE (self))))
     {
       bse_device_close (self);
-      error = Bse::ERROR_DEVICE_NOT_AVAILABLE;
+      error = Bse::Error::DEVICE_NOT_AVAILABLE;
     }
 
   return error;
@@ -84,9 +84,9 @@ bse_device_open (BseDevice      *self,
                  gboolean        need_writable,
                  const char     *arg_string)
 {
-  assert_return (BSE_IS_DEVICE (self), Bse::ERROR_INTERNAL);
-  assert_return (!BSE_DEVICE_OPEN (self), Bse::ERROR_INTERNAL);
-  Bse::ErrorType error = Bse::ERROR_DEVICE_NOT_AVAILABLE;
+  assert_return (BSE_IS_DEVICE (self), Bse::Error::INTERNAL);
+  assert_return (!BSE_DEVICE_OPEN (self), Bse::Error::INTERNAL);
+  Bse::ErrorType error = Bse::Error::DEVICE_NOT_AVAILABLE;
   if (arg_string)
     error = device_open_args (self, need_readable, need_writable, arg_string);
   else
@@ -378,7 +378,7 @@ bse_device_open_auto (GType           base_type,
                       Bse::ErrorType   *errorp)
 {
   if (errorp)
-    *errorp = Bse::ERROR_DEVICE_NOT_AVAILABLE;
+    *errorp = Bse::Error::DEVICE_NOT_AVAILABLE;
   BseDevice *device = NULL;
   SfiRing *ring, *class_list = device_classes_list (base_type, 0);
   class_list = sfi_ring_sort (class_list, device_classes_prio_cmp, NULL);
@@ -422,7 +422,7 @@ bse_device_open_best (GType           base_type,
                       Bse::ErrorType   *errorp)
 {
   if (errorp)
-    *errorp = Bse::ERROR_DEVICE_NOT_AVAILABLE;
+    *errorp = Bse::Error::DEVICE_NOT_AVAILABLE;
   if (!devices)
     devices = auto_ring();
   BseDevice *device = NULL;

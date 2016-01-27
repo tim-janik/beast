@@ -189,7 +189,7 @@ public:
     UndoLambda lambda = [function, args...] (ItemImpl &item, BseUndoStack *ustack) {
       ItemT &self = dynamic_cast<ItemT&> (item);
       (self.*function) (args...); // ignoring return type R
-      return ERROR_NONE;
+      return Error::NONE;
     };
     push_item_undo (blurb, lambda);
   }
@@ -213,7 +213,7 @@ public:
     RAPICORN_ASSERT_RETURN (this == &self);
     auto lambda = [blurb, undo_lambda] (ItemT &self, BseUndoStack *ustack) -> ErrorType {
       self.push_undo (blurb, self, undo_lambda);
-      return ERROR_NONE;
+      return Error::NONE;
     };
     push_undo (blurb, self, lambda);
   }

@@ -26,12 +26,12 @@ BODY (BseProcedureClass *proc,
 
   /* check parameters */
   if (!BSE_IS_WAVE (wave))
-    return Bse::ERROR_PROC_PARAM_INVAL;
+    return Bse::Error::PROC_PARAM_INVAL;
 
   /* set output parameters */
   sfi_value_set_int (out_values++, wave->n_wchunks);
 
-  return Bse::ERROR_NONE;
+  return Bse::Error::NONE;
 }
 
 METHOD (BseWave, use-editable) {
@@ -55,7 +55,7 @@ BODY (BseProcedureClass *proc,
 
   /* check parameters */
   if (!BSE_IS_WAVE (wave))
-    return Bse::ERROR_PROC_PARAM_INVAL;
+    return Bse::Error::PROC_PARAM_INVAL;
 
   wchunk = (GslWaveChunk*) sfi_ring_nth_data (wave->wave_chunks, chunk_index);
   if (wchunk)
@@ -69,7 +69,7 @@ BODY (BseProcedureClass *proc,
   /* set output parameters */
   bse_value_set_object (out_values++, esample);
 
-  return Bse::ERROR_NONE;
+  return Bse::Error::NONE;
 }
 
 METHOD (BseWave, chunk-get-osc-freq) {
@@ -93,13 +93,13 @@ BODY (BseProcedureClass *proc,
 
   /* check parameters */
   if (!BSE_IS_WAVE (wave))
-    return Bse::ERROR_PROC_PARAM_INVAL;
+    return Bse::Error::PROC_PARAM_INVAL;
 
   wchunk = (GslWaveChunk*) sfi_ring_nth_data (wave->wave_chunks, chunk_index);
   if (wchunk)
     sfi_value_set_real (out_values++, wchunk->osc_freq);
 
-  return Bse::ERROR_NONE;
+  return Bse::Error::NONE;
 }
 
 METHOD (BseWave, chunk-get-mix-freq) {
@@ -123,11 +123,11 @@ BODY (BseProcedureClass *proc,
 
   /* check parameters */
   if (!BSE_IS_WAVE (wave))
-    return Bse::ERROR_PROC_PARAM_INVAL;
+    return Bse::Error::PROC_PARAM_INVAL;
 
   wchunk = (GslWaveChunk*) sfi_ring_nth_data (wave->wave_chunks, chunk_index);
   if (wchunk)
     sfi_value_set_real (out_values++, wchunk->mix_freq);
 
-  return Bse::ERROR_NONE;
+  return Bse::Error::NONE;
 }

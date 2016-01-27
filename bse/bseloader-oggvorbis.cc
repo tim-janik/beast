@@ -31,7 +31,7 @@ oggv_load_file_info (void         *data,
   file = fopen (file_name, "r");
   if (!file)
     {
-      *error_p = gsl_error_from_errno (errno, Bse::ERROR_FILE_OPEN_FAILED);
+      *error_p = gsl_error_from_errno (errno, Bse::Error::FILE_OPEN_FAILED);
       return NULL;
     }
 
@@ -41,7 +41,7 @@ oggv_load_file_info (void         *data,
     {
       fclose (file);
       sfi_delete_struct (FileInfo, fi);
-      *error_p = Bse::ERROR_CODEC_FAILURE;
+      *error_p = Bse::Error::CODEC_FAILURE;
       return NULL;
     }
 
@@ -132,7 +132,7 @@ oggv_create_chunk_handle (void         *data,
       gsl_data_handle_unref (tmp_handle);
     }
   if (!dhandle)
-    *error_p = Bse::ERROR_FILE_OPEN_FAILED;
+    *error_p = Bse::Error::FILE_OPEN_FAILED;
   return dhandle;
 }
 

@@ -614,7 +614,7 @@ bse_song_ensure_master (BseSong *self)
       auto lambda = [bus_descriptor] (Bse::SongImpl &self, BseUndoStack *ustack) -> Bse::ErrorType {
         Bse::BusImpl &bus = self.undo_resolve (bus_descriptor);
         self.remove_bus (bus);
-        return Bse::ERROR_NONE;
+        return Bse::Error::NONE;
       };
       this_->push_undo (__func__, *this_, lambda);
       bse_item_undo_close (ustack);
@@ -786,7 +786,7 @@ SongImpl::create_bus ()
   auto lambda = [bus_descriptor] (SongImpl &self, BseUndoStack *ustack) -> ErrorType {
     BusImpl &bus = self.undo_resolve (bus_descriptor);
     self.remove_bus (bus);
-    return ERROR_NONE;
+    return Error::NONE;
   };
   push_undo (__func__, *this, lambda);
   return bus->as<BusIfaceP>();
@@ -811,7 +811,7 @@ SongImpl::remove_bus (BusIface &bus_iface)
   auto lambda = [bus_descriptor] (SongImpl &self, BseUndoStack *ustack) -> ErrorType {
     BusImpl &bus = self.undo_resolve (bus_descriptor);
     self.remove_bus (bus);
-    return ERROR_NONE;
+    return Error::NONE;
   };
   push_undo_to_redo (__func__, *this, lambda);
   // backup and remove (without redo queueing)
@@ -830,7 +830,7 @@ SongImpl::create_part ()
   auto lambda = [part_descriptor] (SongImpl &self, BseUndoStack *ustack) -> ErrorType {
     PartImpl &part = self.undo_resolve (part_descriptor);
     self.remove_part (part);
-    return ERROR_NONE;
+    return Error::NONE;
   };
   push_undo (__func__, *this, lambda);
   return part->as<PartIfaceP>();
@@ -853,7 +853,7 @@ SongImpl::remove_part (PartIface &part_iface)
   auto lambda = [part_descriptor] (SongImpl &self, BseUndoStack *ustack) -> ErrorType {
     PartImpl &part = self.undo_resolve (part_descriptor);
     self.remove_part (part);
-    return ERROR_NONE;
+    return Error::NONE;
   };
   push_undo_to_redo (__func__, *this, lambda);
   // remove (without redo queueing)
@@ -873,7 +873,7 @@ SongImpl::create_track ()
   auto lambda = [track_descriptor] (SongImpl &self, BseUndoStack *ustack) -> ErrorType {
     TrackImpl &track = self.undo_resolve (track_descriptor);
     self.remove_track (track);
-    return ERROR_NONE;
+    return Error::NONE;
   };
   push_undo (__func__, *this, lambda);
   return track->as<TrackIfaceP>();
@@ -896,7 +896,7 @@ SongImpl::remove_track (TrackIface &track_iface)
   auto lambda = [track_descriptor] (SongImpl &self, BseUndoStack *ustack) -> ErrorType {
     TrackImpl &track = self.undo_resolve (track_descriptor);
     self.remove_track (track);
-    return ERROR_NONE;
+    return Error::NONE;
   };
   push_undo_to_redo (__func__, *this, lambda);
   // remove (without redo queueing)

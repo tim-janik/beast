@@ -459,17 +459,17 @@ bse_project_store_bse (BseProject  *self,
   guint l, flags;
   gint fd;
 
-  assert_return (BSE_IS_PROJECT (self), Bse::ERROR_INTERNAL);
+  assert_return (BSE_IS_PROJECT (self), Bse::Error::INTERNAL);
   if (super)
     {
-      assert_return (BSE_IS_SUPER (super), Bse::ERROR_INTERNAL);
-      assert_return (BSE_ITEM (super)->parent == BSE_ITEM (self), Bse::ERROR_INTERNAL);
+      assert_return (BSE_IS_SUPER (super), Bse::Error::INTERNAL);
+      assert_return (BSE_ITEM (super)->parent == BSE_ITEM (self), Bse::Error::INTERNAL);
     }
-  assert_return (bse_file != NULL, Bse::ERROR_INTERNAL);
+  assert_return (bse_file != NULL, Bse::Error::INTERNAL);
 
   fd = open (bse_file, O_WRONLY | O_CREAT | O_EXCL, 0666);
   if (fd < 0)
-    return bse_error_from_errno (errno, Bse::ERROR_FILE_OPEN_FAILED);
+    return bse_error_from_errno (errno, Bse::Error::FILE_OPEN_FAILED);
 
   storage = (BseStorage*) bse_object_new (BSE_TYPE_STORAGE, NULL);
   flags = 0;
@@ -495,8 +495,8 @@ bse_project_store_bse (BseProject  *self,
   g_free (string);
 
   Bse::ErrorType error = bse_storage_flush_fd (storage, fd);
-  if (close (fd) < 0 && error == Bse::ERROR_NONE)
-    error = bse_error_from_errno (errno, Bse::ERROR_FILE_WRITE_FAILED);
+  if (close (fd) < 0 && error == Bse::Error::NONE)
+    error = bse_error_from_errno (errno, Bse::Error::FILE_WRITE_FAILED);
   bse_storage_reset (storage);
   g_object_unref (storage);
 
@@ -510,11 +510,11 @@ bse_project_restore (BseProject *self,
   GScanner *scanner;
   GTokenType expected_token = G_TOKEN_NONE;
 
-  assert_return (BSE_IS_PROJECT (self), Bse::ERROR_INTERNAL);
-  assert_return (BSE_IS_STORAGE (storage), Bse::ERROR_INTERNAL);
+  assert_return (BSE_IS_PROJECT (self), Bse::Error::INTERNAL);
+  assert_return (BSE_IS_STORAGE (storage), Bse::Error::INTERNAL);
 
   scanner = bse_storage_get_scanner (storage);
-  assert_return (scanner != NULL, Bse::ERROR_INTERNAL);
+  assert_return (scanner != NULL, Bse::Error::INTERNAL);
 
   g_object_ref (self);
 
@@ -538,8 +538,8 @@ bse_project_restore (BseProject *self,
   g_object_unref (self);
 
   return (scanner->parse_errors >= scanner->max_parse_errors ?
-	  Bse::ERROR_PARSE_ERROR :
-	  Bse::ERROR_NONE);
+	  Bse::Error::PARSE_ERROR :
+	  Bse::Error::NONE);
 }
 
 BseObject*
@@ -639,7 +639,7 @@ bse_project_create_intern_synth (BseProject  *self,
   if (bse_synth)
     {
       BseStorage *storage = (BseStorage*) bse_object_new (BSE_TYPE_STORAGE, NULL);
-      Bse::ErrorType error = Bse::ERROR_NONE;
+      Bse::ErrorType error = Bse::Error::NONE;
       StorageTrap strap = { 0, TRUE, }, *old_strap = (StorageTrap*) g_object_get_qdata ((GObject*) self, quark_storage_trap);
       bse_storage_input_text (storage, bse_synth, "<builtin-lib>");
       g_object_set_qdata ((GObject*) self, quark_storage_trap, &strap);
@@ -653,7 +653,7 @@ bse_project_create_intern_synth (BseProject  *self,
       g_free (bse_synth);
       if (error || !strap.items)
 	g_warning ("failed to create internal synth \"%s\": %s",
-		   synth_name, bse_error_blurb (error ? error : Bse::ERROR_NO_ENTRY));
+		   synth_name, bse_error_blurb (error ? error : Bse::Error::NO_ENTRY));
       else
 	synth = (BseItem*) strap.items->data;
       g_slist_free (strap.items);
@@ -755,12 +755,12 @@ bse_project_activate (BseProject *self)
   BseTrans *trans;
   GSList *slist;
 
-  assert_return (BSE_IS_PROJECT (self), Bse::ERROR_INTERNAL);
+  assert_return (BSE_IS_PROJECT (self), Bse::Error::INTERNAL);
 
   if (self->state != BSE_PROJECT_INACTIVE)
-    return Bse::ERROR_NONE;
+    return Bse::Error::NONE;
 
-  assert_return (BSE_SOURCE_PREPARED (self) == FALSE, Bse::ERROR_INTERNAL);
+  assert_return (BSE_SOURCE_PREPARED (self) == FALSE, Bse::Error::INTERNAL);
 
   error = bse_server_open_devices (bse_server_get ());
   if (error)
@@ -787,7 +787,7 @@ bse_project_activate (BseProject *self)
     }
   bse_trans_commit (trans);
   bse_project_state_changed (self, BSE_PROJECT_ACTIVE);
-  return Bse::ERROR_NONE;
+  return Bse::Error::NONE;
 }
 
 void
@@ -1136,7 +1136,7 @@ ErrorType
 ProjectImpl::import_midi_file (const String &file_name)
 {
   BseProject *self = as<BseProject*>();
-  Bse::ErrorType error = Bse::ERROR_NONE;
+  Bse::ErrorType error = Bse::Error::NONE;
   BseMidiFile *smf = bse_midi_file_load (file_name.c_str(), &error);
   if (!error)
     {
@@ -1173,7 +1173,7 @@ ProjectImpl::restore_from_file (const String &file_name)
       bse_project_clear_undo (self);
     }
   else
-    error = Bse::ERROR_PROC_BUSY;
+    error = Bse::Error::PROC_BUSY;
   return Bse::ErrorType (error);
 }
 

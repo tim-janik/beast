@@ -68,7 +68,7 @@ public:
   open (GslDataHandleSetup *setup)
   {
     Bse::ErrorType error = gsl_data_handle_open (m_src_handle);
-    if (error != Bse::ERROR_NONE)
+    if (error != Bse::Error::NONE)
       return error;
 
     /* !not! m_dhandle.setup; the framework magically ensures that *m_dhandle.setup
@@ -85,7 +85,7 @@ public:
 
     design_filter_coefficients (gsl_data_handle_mix_freq (m_src_handle));
 
-    return Bse::ERROR_NONE;
+    return Bse::Error::NONE;
   }
 
   void

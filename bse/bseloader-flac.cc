@@ -46,14 +46,14 @@ struct FileInfo
     FLAC__StreamDecoder* decoder = FLAC__stream_decoder_new();
     if (!decoder)
       {
-        *error_p = Bse::ERROR_INTERNAL;  // should not happen
+        *error_p = Bse::Error::INTERNAL;  // should not happen
         return;
       }
     error_occurred = false;
     int r = FLAC__stream_decoder_init_file (decoder, file_name, flac_write_callback, NULL, flac_error_callback, this);
     if (r != 0)
       {
-        *error_p = gsl_error_from_errno (errno, Bse::ERROR_FILE_OPEN_FAILED);
+        *error_p = gsl_error_from_errno (errno, Bse::Error::FILE_OPEN_FAILED);
         return;
       }
 
@@ -65,7 +65,7 @@ struct FileInfo
 
     if (error_occurred || FLAC__stream_decoder_get_channels (decoder) == 0)
       {
-        *error_p = Bse::ERROR_IO;
+        *error_p = Bse::Error::IO;
         return;
       }
 

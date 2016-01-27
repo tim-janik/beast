@@ -55,7 +55,7 @@ smf_read_header (int        fd,
   if (read (fd, header, n_bytes) != n_bytes)
     {
       MDEBUG ("failed to read midi file header: %s", g_strerror (errno));
-      return gsl_error_from_errno (errno, Bse::ERROR_IO);
+      return gsl_error_from_errno (errno, Bse::Error::IO);
     }
   /* endianess corrections */
   header->chunk.type = GUINT32_FROM_BE (header->chunk.type);
@@ -67,40 +67,40 @@ smf_read_header (int        fd,
   if (header->chunk.type != ('M' << 24 | 'T' << 16 | 'h' << 8 | 'd'))
     {
       MDEBUG ("unmatched token 'MThd'");
-      return Bse::ERROR_FORMAT_INVALID;
+      return Bse::Error::FORMAT_INVALID;
     }
   if (header->chunk.length < 6)
     {
       MDEBUG ("truncated midi file header");
-      return Bse::ERROR_FORMAT_INVALID;
+      return Bse::Error::FORMAT_INVALID;
     }
   if (header->format > 2)
     {
       MDEBUG ("unknown midi file format");
-      return Bse::ERROR_FORMAT_UNKNOWN;
+      return Bse::Error::FORMAT_UNKNOWN;
     }
   if (header->format == 0 && header->n_tracks != 1)
     {
       MDEBUG ("invalid number of tracks: %d", header->n_tracks);
-      return Bse::ERROR_FORMAT_INVALID;
+      return Bse::Error::FORMAT_INVALID;
     }
   if (header->n_tracks < 1)
     {
       MDEBUG ("midi file without tracks");
-      return Bse::ERROR_NO_DATA;
+      return Bse::Error::NO_DATA;
     }
   if (header->division & 0x8000)        // FIXME: this allowes only tpqn
     {
       MDEBUG ("SMPTE time encoding not supported");
-      return Bse::ERROR_FORMAT_UNKNOWN;
+      return Bse::Error::FORMAT_UNKNOWN;
     }
   /* read up remaining unused header bytes */
   if (dummy_read (fd, header->chunk.length - 6) != header->chunk.length - 6)
     {
       MDEBUG ("failed to read midi file header: %s", g_strerror (errno));
-      return gsl_error_from_errno (errno, Bse::ERROR_IO);
+      return gsl_error_from_errno (errno, Bse::Error::IO);
     }
-  return Bse::ERROR_NONE;
+  return Bse::Error::NONE;
 }
 
 static Bse::ErrorType
@@ -115,7 +115,7 @@ smf_read_track (BseMidiFile    *smf,
   if (read (fd, &chunk, n_bytes) != n_bytes)
     {
       MDEBUG ("failed to read midi track header: %s", g_strerror (errno));
-      return gsl_error_from_errno (errno, Bse::ERROR_IO);
+      return gsl_error_from_errno (errno, Bse::Error::IO);
     }
   /* endianess corrections */
   chunk.type = GUINT32_FROM_BE (chunk.type);
@@ -124,7 +124,7 @@ smf_read_track (BseMidiFile    *smf,
   if (chunk.type != ('M' << 24 | 'T' << 16 | 'r' << 8 | 'k'))
     {
       MDEBUG ("unmatched token 'MTrk'");
-      return Bse::ERROR_FORMAT_INVALID;
+      return Bse::Error::FORMAT_INVALID;
     }
   /* read up and decode track data */
   n_bytes = chunk.length;
@@ -135,12 +135,12 @@ smf_read_track (BseMidiFile    *smf,
       if (read (fd, buffer, l) < 0)
         {
           MDEBUG ("failed to read (got %d bytes) midi track: %s", l, g_strerror (errno));
-          return gsl_error_from_errno (errno, Bse::ERROR_IO);
+          return gsl_error_from_errno (errno, Bse::Error::IO);
         }
       bse_midi_decoder_push_smf_data (md, l, buffer);
       n_bytes -= l;
     }
-  return Bse::ERROR_NONE;
+  return Bse::Error::NONE;
 }
 
 BseMidiFile*
@@ -155,7 +155,7 @@ bse_midi_file_load (const char   *file_name,
     error_p = &dummy_error;
   if (fd < 0)
     {
-      *error_p = gsl_error_from_errno (errno, Bse::ERROR_FILE_OPEN_FAILED);
+      *error_p = gsl_error_from_errno (errno, Bse::Error::FILE_OPEN_FAILED);
       return NULL;
     }
 
@@ -212,7 +212,7 @@ bse_midi_file_load (const char   *file_name,
           smf->denominator = event->data.time_signature.denominator;
         }
     }
-  *error_p = Bse::ERROR_NONE;
+  *error_p = Bse::Error::NONE;
   return smf;
 }
 

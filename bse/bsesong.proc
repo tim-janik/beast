@@ -34,7 +34,7 @@ METHOD (BseSong, ensure-master-bus) {
 
   /* check parameters */
   if (!BSE_IS_SONG (self))
-    return Bse::ERROR_PROC_PARAM_INVAL;
+    return Bse::Error::PROC_PARAM_INVAL;
 
   /* action */
   child = bse_song_ensure_master (self);
@@ -42,7 +42,7 @@ METHOD (BseSong, ensure-master-bus) {
   /* set output parameters */
   bse_value_set_object (out_values++, child);
 
-  return Bse::ERROR_NONE;
+  return Bse::Error::NONE;
 }
 
 METHOD (BseSong, get-master-bus) {
@@ -60,7 +60,7 @@ METHOD (BseSong, get-master-bus) {
 
   /* check parameters */
   if (!BSE_IS_SONG (self))
-    return Bse::ERROR_PROC_PARAM_INVAL;
+    return Bse::Error::PROC_PARAM_INVAL;
 
   /* action */
   BseBus *bus = bse_song_find_master (self);
@@ -68,7 +68,7 @@ METHOD (BseSong, get-master-bus) {
   /* set output parameters */
   bse_value_set_object (out_values++, bus);
 
-  return Bse::ERROR_NONE;
+  return Bse::Error::NONE;
 }
 
 static const gchar*
@@ -110,7 +110,7 @@ METHOD (BseSong, ensure-track-links) {
 
   /* check parameters */
   if (!BSE_IS_SONG (self))
-    return Bse::ERROR_PROC_PARAM_INVAL;
+    return Bse::Error::PROC_PARAM_INVAL;
 
   /* action */
   gboolean clear_undo = FALSE;
@@ -129,7 +129,7 @@ METHOD (BseSong, ensure-track-links) {
         bse_project_clear_undo (project);
     }
 
-  return Bse::ERROR_NONE;
+  return Bse::Error::NONE;
 }
 
 METHOD (BseSong, find-track-for-part) {
@@ -154,7 +154,7 @@ METHOD (BseSong, find-track-for-part) {
   /* check parameters */
   if (!BSE_IS_SONG (self) || !BSE_IS_PART (part) ||
       BSE_ITEM (part)->parent != BSE_ITEM (self))
-    return Bse::ERROR_PROC_PARAM_INVAL;
+    return Bse::Error::PROC_PARAM_INVAL;
 
   /* action */
   for (ring = self->tracks_SL; ring; ring = sfi_ring_walk (ring, self->tracks_SL))
@@ -172,7 +172,7 @@ METHOD (BseSong, find-track-for-part) {
   /* set output parameters */
   bse_value_set_object (out_values++, track);
 
-  return Bse::ERROR_NONE;
+  return Bse::Error::NONE;
 }
 
 METHOD (BseSong, synthesize-note) {
@@ -204,7 +204,7 @@ METHOD (BseSong, synthesize-note) {
   /* check parameters */
   if (!BSE_IS_SONG (self) || !BSE_IS_TRACK (track) ||
       BSE_ITEM (track)->parent != BSE_ITEM (self))
-    return Bse::ERROR_PROC_PARAM_INVAL;
+    return Bse::Error::PROC_PARAM_INVAL;
 
   /* action */
   if (BSE_SOURCE_PREPARED (self) && self->midi_receiver_SL)
@@ -221,5 +221,5 @@ METHOD (BseSong, synthesize-note) {
       bse_project_keep_activated (BSE_PROJECT (BSE_ITEM (self)->parent), tstamp + duration);
     }
 
-  return Bse::ERROR_NONE;
+  return Bse::Error::NONE;
 }

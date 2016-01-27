@@ -667,7 +667,7 @@ bse_bus_connect (BseBus  *self,
   if (found_candidate)
     return bse_bus_connect_unchecked (self, trackbus);
   else
-    return Bse::ERROR_SOURCE_CONNECTION_INVALID;
+    return Bse::Error::SOURCE_CONNECTION_INVALID;
 }
 
 Bse::ErrorType
@@ -680,10 +680,10 @@ bse_bus_connect_unchecked (BseBus  *self,
   else if (BSE_IS_BUS (trackbus))
     osource = BSE_SOURCE (trackbus);
   else
-    return Bse::ERROR_SOURCE_TYPE_INVALID;
+    return Bse::Error::SOURCE_TYPE_INVALID;
   if (!osource || !bse_bus_ensure_summation (self) ||
       BSE_ITEM (osource)->parent != BSE_ITEM (self)->parent)    /* restrict to siblings */
-    return Bse::ERROR_SOURCE_PARENT_MISMATCH;
+    return Bse::Error::SOURCE_PARENT_MISMATCH;
   Bse::ErrorType error = bse_source_set_input (self->summation, 0, osource, 0);
   if (!error)
     {
@@ -709,9 +709,9 @@ bse_bus_disconnect (BseBus  *self,
   else if (BSE_IS_BUS (trackbus))
     osource = BSE_SOURCE (trackbus);
   else
-    return Bse::ERROR_SOURCE_TYPE_INVALID;
+    return Bse::Error::SOURCE_TYPE_INVALID;
   if (!osource || !self->summation || !sfi_ring_find (self->inputs, trackbus))
-    return Bse::ERROR_SOURCE_PARENT_MISMATCH;
+    return Bse::Error::SOURCE_PARENT_MISMATCH;
   bse_object_unproxy_notifies (trackbus, self, "notify::inputs");
   bse_object_unproxy_notifies (self, trackbus, "notify::outputs");
   bse_item_cross_unlink (BSE_ITEM (self), BSE_ITEM (trackbus), bus_uncross_input);
@@ -754,7 +754,7 @@ bus_restore_add_input (gpointer     data,
       if (osource)
         cerror = bse_bus_connect (self, BSE_ITEM (osource));
       else
-        cerror = Bse::ERROR_SOURCE_NO_SUCH_MODULE;
+        cerror = Bse::Error::SOURCE_NO_SUCH_MODULE;
       if (cerror)
         bse_storage_warn (storage,
                           "failed to add input \"%s\" to mixer bus \"%s\": %s",
@@ -942,7 +942,7 @@ ErrorType
 BusImpl::ensure_output ()
 {
   BseBus *self = as<BseBus*>();
-  ErrorType error = ERROR_NONE;
+  ErrorType error = Error::NONE;
   BseItem *parent = self->parent;
   if (BSE_IS_SONG (parent) && !self->bus_outputs)
     {
@@ -963,7 +963,7 @@ BusImpl::connect_bus (BusIface &busi)
   BseBus *self = as<BseBus*>();
   BusImpl &bus = dynamic_cast<BusImpl&> (busi);
   if (!this->parent() || this->parent() != bus.parent())
-    return ERROR_SOURCE_PARENT_MISMATCH;
+    return Error::SOURCE_PARENT_MISMATCH;
 
   ErrorType error = bse_bus_connect (self, bus.as<BseItem*>());
   if (!error)
@@ -984,7 +984,7 @@ BusImpl::connect_track (TrackIface &tracki)
   BseBus *self = as<BseBus*>();
   TrackImpl &track = dynamic_cast<TrackImpl&> (tracki);
   if (!this->parent() || this->parent() != track.parent())
-    return ERROR_SOURCE_PARENT_MISMATCH;
+    return Error::SOURCE_PARENT_MISMATCH;
 
   ErrorType error = bse_bus_connect (self, track.as<BseItem*>());
   if (!error)

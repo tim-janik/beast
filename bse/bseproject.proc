@@ -34,14 +34,14 @@ METHOD (BseProject, get-midi-notifier) {
 
   /* check parameters */
   if (!BSE_IS_PROJECT (self))
-    return Bse::ERROR_PROC_PARAM_INVAL;
+    return Bse::Error::PROC_PARAM_INVAL;
 
   BseMidiNotifier *notifier = bse_project_get_midi_notifier (self);
 
   /* set output parameters */
   bse_value_set_object (out_values++, G_OBJECT (notifier));
 
-  return Bse::ERROR_NONE;
+  return Bse::Error::NONE;
 }
 
 
@@ -60,7 +60,7 @@ METHOD (BseProject, store-bse, "File/Store") {
                           "be stored or whether to include everything in a self-contained .bse file",
                           FALSE, SFI_PARAM_STANDARD);
   OUT   = bse_param_spec_genum ("error", "Error", "Error indicating possible failures",
-                                BSE_TYPE_ERROR_TYPE, Bse::ERROR_NONE,
+                                BSE_TYPE_ERROR_TYPE, Bse::Error::NONE,
                                 SFI_PARAM_STANDARD);
 } BODY (BseProcedureClass *proc,
         const GValue      *in_values,
@@ -75,16 +75,16 @@ METHOD (BseProject, store-bse, "File/Store") {
 
   /* check parameters */
   if (!BSE_IS_PROJECT (project) || !file_name)
-    return Bse::ERROR_PROC_PARAM_INVAL;
+    return Bse::Error::PROC_PARAM_INVAL;
   if (super && BSE_ITEM (super)->parent != BSE_ITEM (project))
-    return Bse::ERROR_PROC_PARAM_INVAL;
+    return Bse::Error::PROC_PARAM_INVAL;
 
   error = bse_project_store_bse (project, super, file_name, self_contained);
 
   /* set output parameters */
   g_value_set_enum (out_values++, error);
 
-  return Bse::ERROR_NONE;
+  return Bse::Error::NONE;
 }
 
 METHOD (BseProject, create-song) {
@@ -107,7 +107,7 @@ METHOD (BseProject, create-song) {
 
   /* check parameters */
   if (!BSE_IS_PROJECT (container))
-    return Bse::ERROR_PROC_PARAM_INVAL;
+    return Bse::Error::PROC_PARAM_INVAL;
 
   /* action */
   ustack = bse_item_undo_open (container, "create-song");
@@ -120,7 +120,7 @@ METHOD (BseProject, create-song) {
   /* set output parameters */
   bse_value_set_object (out_values++, child);
 
-  return Bse::ERROR_NONE;
+  return Bse::Error::NONE;
 }
 
 METHOD (BseProject, get-wave-repo) {
@@ -139,7 +139,7 @@ METHOD (BseProject, get-wave-repo) {
 
   /* check parameters */
   if (!BSE_IS_PROJECT (project))
-    return Bse::ERROR_PROC_PARAM_INVAL;
+    return Bse::Error::PROC_PARAM_INVAL;
 
   /* action */
   wrepo = bse_project_get_wave_repo (project);
@@ -147,7 +147,7 @@ METHOD (BseProject, get-wave-repo) {
   /* set output parameters */
   bse_value_set_object (out_values++, wrepo);
 
-  return Bse::ERROR_NONE;
+  return Bse::Error::NONE;
 }
 
 METHOD (BseProject, create-csynth) {
@@ -170,7 +170,7 @@ METHOD (BseProject, create-csynth) {
 
   /* check parameters */
   if (!BSE_IS_PROJECT (container))
-    return Bse::ERROR_PROC_PARAM_INVAL;
+    return Bse::Error::PROC_PARAM_INVAL;
 
   /* action */
   ustack = bse_item_undo_open (container, "create-csynth");
@@ -183,7 +183,7 @@ METHOD (BseProject, create-csynth) {
   /* set output parameters */
   bse_value_set_object (out_values++, child);
 
-  return Bse::ERROR_NONE;
+  return Bse::Error::NONE;
 }
 
 METHOD (BseProject, create-midi-synth) {
@@ -206,7 +206,7 @@ METHOD (BseProject, create-midi-synth) {
 
   /* check parameters */
   if (!BSE_IS_PROJECT (container))
-    return Bse::ERROR_PROC_PARAM_INVAL;
+    return Bse::Error::PROC_PARAM_INVAL;
 
   /* action */
   ustack = bse_item_undo_open (container, "create-midi-synth");
@@ -219,7 +219,7 @@ METHOD (BseProject, create-midi-synth) {
   /* set output parameters */
   bse_value_set_object (out_values++, child);
 
-  return Bse::ERROR_NONE;
+  return Bse::Error::NONE;
 }
 
 METHOD (BseProject, remove-snet) {
@@ -239,7 +239,7 @@ METHOD (BseProject, remove-snet) {
 
   /* check parameters */
   if (!BSE_IS_PROJECT (self) || !BSE_IS_SNET (child) || child->parent != (BseItem*) self)
-    return Bse::ERROR_PROC_PARAM_INVAL;
+    return Bse::Error::PROC_PARAM_INVAL;
 
   /* action */
   if (!BSE_SOURCE_PREPARED (self))
@@ -255,7 +255,7 @@ METHOD (BseProject, remove-snet) {
       bse_item_undo_close (ustack);
     }
 
-  return Bse::ERROR_NONE;
+  return Bse::Error::NONE;
 }
 
 METHOD (BseProject, get-supers) {
@@ -274,7 +274,7 @@ METHOD (BseProject, get-supers) {
 
   /* check parameters */
   if (!BSE_IS_PROJECT (project))
-    return Bse::ERROR_PROC_PARAM_INVAL;
+    return Bse::Error::PROC_PARAM_INVAL;
 
   /* action */
   iseq = bse_it3m_seq_new ();
@@ -284,7 +284,7 @@ METHOD (BseProject, get-supers) {
   /* set output parameters */
   bse_value_take_boxed (out_values++, iseq);
 
-  return Bse::ERROR_NONE;
+  return Bse::Error::NONE;
 }
 
 
@@ -303,10 +303,10 @@ METHOD (BseProject, get-state) {
 
   /* check parameters */
   if (!BSE_IS_PROJECT (self))
-    return Bse::ERROR_PROC_PARAM_INVAL;
+    return Bse::Error::PROC_PARAM_INVAL;
 
   /* set output parameters */
   g_value_set_enum (out_values++, self->state);
 
-  return Bse::ERROR_NONE;
+  return Bse::Error::NONE;
 }

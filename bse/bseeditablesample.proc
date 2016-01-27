@@ -14,7 +14,7 @@ METHOD (BseEditableSample, open) {
   IN	= bse_param_spec_object ("esample", "Editable Sample", NULL,
 				 BSE_TYPE_EDITABLE_SAMPLE, SFI_PARAM_STANDARD);
   OUT   = bse_param_spec_genum ("error", "Error", NULL,
-				BSE_TYPE_ERROR_TYPE, Bse::ERROR_NONE,
+				BSE_TYPE_ERROR_TYPE, Bse::Error::NONE,
 				SFI_PARAM_STANDARD);
 } BODY (BseProcedureClass *proc,
 	const GValue      *in_values,
@@ -26,15 +26,15 @@ METHOD (BseEditableSample, open) {
 
   /* check parameters */
   if (!BSE_IS_EDITABLE_SAMPLE (esample))
-    return Bse::ERROR_PROC_PARAM_INVAL;
+    return Bse::Error::PROC_PARAM_INVAL;
 
   /* action */
   if (!esample->wchunk)
-    error = Bse::ERROR_WAVE_NOT_FOUND;
+    error = Bse::Error::WAVE_NOT_FOUND;
   else if (esample->open_count)
     {
       esample->open_count++;
-      error = Bse::ERROR_NONE;
+      error = Bse::Error::NONE;
     }
   else
     {
@@ -46,7 +46,7 @@ METHOD (BseEditableSample, open) {
   /* set output parameters */
   g_value_set_enum (out_values++, error);
 
-  return Bse::ERROR_NONE;
+  return Bse::Error::NONE;
 }
 
 METHOD (BseEditableSample, close) {
@@ -62,14 +62,14 @@ METHOD (BseEditableSample, close) {
 
   /* check parameters */
   if (!BSE_IS_EDITABLE_SAMPLE (esample) || !esample->wchunk || !esample->open_count)
-    return Bse::ERROR_PROC_PARAM_INVAL;
+    return Bse::Error::PROC_PARAM_INVAL;
 
   /* action */
   esample->open_count--;
   if (!esample->open_count)
     gsl_wave_chunk_close (esample->wchunk);
 
-  return Bse::ERROR_NONE;
+  return Bse::Error::NONE;
 }
 
 METHOD (BseEditableSample, get-length) {
@@ -88,14 +88,14 @@ METHOD (BseEditableSample, get-length) {
 
   /* check parameters */
   if (!BSE_IS_EDITABLE_SAMPLE (esample))
-    return Bse::ERROR_PROC_PARAM_INVAL;
+    return Bse::Error::PROC_PARAM_INVAL;
 
   /* set output parameters */
   if (BSE_EDITABLE_SAMPLE_OPENED (esample) && esample->wchunk)
     dcache = esample->wchunk->dcache;
   sfi_value_set_int (out_values++, dcache ? gsl_data_handle_length (dcache->dhandle) : 0);
 
-  return Bse::ERROR_NONE;
+  return Bse::Error::NONE;
 }
 
 METHOD (BseEditableSample, get-n-channels) {
@@ -113,12 +113,12 @@ METHOD (BseEditableSample, get-n-channels) {
 
   /* check parameters */
   if (!BSE_IS_EDITABLE_SAMPLE (esample))
-    return Bse::ERROR_PROC_PARAM_INVAL;
+    return Bse::Error::PROC_PARAM_INVAL;
 
   /* set output parameters */
   sfi_value_set_int (out_values++, esample->wchunk ? esample->wchunk->n_channels : 1);
 
-  return Bse::ERROR_NONE;
+  return Bse::Error::NONE;
 }
 
 METHOD (BseEditableSample, get-osc-freq) {
@@ -136,12 +136,12 @@ METHOD (BseEditableSample, get-osc-freq) {
 
   /* check parameters */
   if (!BSE_IS_EDITABLE_SAMPLE (esample))
-    return Bse::ERROR_PROC_PARAM_INVAL;
+    return Bse::Error::PROC_PARAM_INVAL;
 
   /* set output parameters */
   sfi_value_set_real (out_values++, esample->wchunk ? esample->wchunk->osc_freq : BSE_KAMMER_FREQUENCY);
 
-  return Bse::ERROR_NONE;
+  return Bse::Error::NONE;
 }
 
 METHOD (BseEditableSample, collect-stats) {
@@ -174,7 +174,7 @@ METHOD (BseEditableSample, collect-stats) {
   BseFloatSeq *fseq;
   /* check parameters */
   if (!BSE_IS_EDITABLE_SAMPLE (esample) || stepping < 1)
-    return Bse::ERROR_PROC_PARAM_INVAL;
+    return Bse::Error::PROC_PARAM_INVAL;
   if (BSE_EDITABLE_SAMPLE_OPENED (esample) && esample->wchunk)
     dcache = esample->wchunk->dcache;
   if (!dcache || voffset + block_size > gsl_data_handle_length (dcache->dhandle))
@@ -220,5 +220,5 @@ METHOD (BseEditableSample, collect-stats) {
     }
   /* set output parameters */
   g_value_take_boxed (out_values++, fseq);
-  return Bse::ERROR_NONE;
+  return Bse::Error::NONE;
 }

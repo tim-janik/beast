@@ -465,8 +465,8 @@ server_open_pcm_device (BseServer *server,
                         guint      latency,
                         guint      block_size)
 {
-  assert_return (server->pcm_device == NULL, Bse::ERROR_INTERNAL);
-  Bse::ErrorType error = Bse::ERROR_UNKNOWN;
+  assert_return (server->pcm_device == NULL, Bse::Error::INTERNAL);
+  Bse::ErrorType error = Bse::Error::UNKNOWN;
   PcmRequest pr;
   pr.n_channels = 2;
   pr.mix_freq = mix_freq;
@@ -492,12 +492,12 @@ server_open_pcm_device (BseServer *server,
       ServerImpl::instance().send_user_message (umsg);
     }
   server->pcm_input_checked = FALSE;
-  return server->pcm_device ? Bse::ERROR_NONE : error;
+  return server->pcm_device ? Bse::Error::NONE : error;
 }
 static Bse::ErrorType
 server_open_midi_device (BseServer *server)
 {
-  assert_return (server->midi_device == NULL, Bse::ERROR_INTERNAL);
+  assert_return (server->midi_device == NULL, Bse::Error::INTERNAL);
   Bse::ErrorType error;
   server->midi_device = (BseMidiDevice*) bse_device_open_best (BSE_TYPE_MIDI_DEVICE, TRUE, FALSE, bse_main_args->midi_drivers, NULL, NULL, &error);
   if (!server->midi_device)
@@ -519,18 +519,18 @@ server_open_midi_device (BseServer *server)
           ServerImpl::instance().send_user_message (umsg);
         }
     }
-  return server->midi_device ? Bse::ERROR_NONE : error;
+  return server->midi_device ? Bse::Error::NONE : error;
 }
 Bse::ErrorType
 bse_server_open_devices (BseServer *self)
 {
-  Bse::ErrorType error = Bse::ERROR_NONE;
-  assert_return (BSE_IS_SERVER (self), Bse::ERROR_INTERNAL);
+  Bse::ErrorType error = Bse::Error::NONE;
+  assert_return (BSE_IS_SERVER (self), Bse::Error::INTERNAL);
   /* check whether devices are already opened */
   if (self->dev_use_count)
     {
       self->dev_use_count++;
-      return Bse::ERROR_NONE;
+      return Bse::Error::NONE;
     }
   /* lock playback/capture/latency settings */
   bse_gconfig_lock ();
@@ -546,7 +546,7 @@ bse_server_open_devices (BseServer *self)
       mix_freq = aligned_freq;
       bse_engine_constrain (latency, mix_freq, BSE_GCONFIG (synth_control_freq), &block_size, NULL);
       Bse::ErrorType new_error = server_open_pcm_device (self, mix_freq, latency, block_size);
-      error = new_error ? error : Bse::ERROR_NONE;
+      error = new_error ? error : Bse::Error::NONE;
     }
   if (!error)
     error = server_open_midi_device (self);
@@ -774,10 +774,10 @@ bse_server_run_remote (BseServer         *server,
   gint child_pid, command_input, command_output;
   BseJanitor *janitor = NULL;
 
-  assert_return (BSE_IS_SERVER (server), Bse::ERROR_INTERNAL);
-  assert_return (process_name != NULL, Bse::ERROR_INTERNAL);
-  assert_return (script_name != NULL, Bse::ERROR_INTERNAL);
-  assert_return (proc_name != NULL, Bse::ERROR_INTERNAL);
+  assert_return (BSE_IS_SERVER (server), Bse::Error::INTERNAL);
+  assert_return (process_name != NULL, Bse::Error::INTERNAL);
+  assert_return (script_name != NULL, Bse::Error::INTERNAL);
+  assert_return (proc_name != NULL, Bse::Error::INTERNAL);
 
   child_pid = command_input = command_output = -1;
   const char *reason = sfi_com_spawn_async (process_name,
@@ -818,11 +818,11 @@ bse_server_run_remote (BseServer         *server,
     {
       bse_server_script_error (server, script_name, proc_name, reason);
       g_free (freeme);
-      return Bse::ERROR_SPAWN;
+      return Bse::Error::SPAWN;
     }
   g_free (freeme);
   bse_server_script_start (server, janitor);
-  return Bse::ERROR_NONE;
+  return Bse::Error::NONE;
 }
 
 
@@ -1554,7 +1554,7 @@ ServerImpl::sample_file_info (const String &filename)
   info.file = filename;
   struct stat sbuf = { 0, };
   if (stat (filename.c_str(), &sbuf) < 0)
-    info.error = bse_error_from_errno (errno, Bse::ERROR_FILE_OPEN_FAILED);
+    info.error = bse_error_from_errno (errno, Bse::Error::FILE_OPEN_FAILED);
   else
     {
       info.size = sbuf.st_size;

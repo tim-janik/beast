@@ -298,18 +298,18 @@ Bse::ErrorType
 bse_storage_input_file (BseStorage  *self,
                         const gchar *file_name)
 {
-  assert_return (BSE_IS_STORAGE (self), Bse::ERROR_INTERNAL);
-  assert_return (file_name != NULL, Bse::ERROR_INTERNAL);
+  assert_return (BSE_IS_STORAGE (self), Bse::Error::INTERNAL);
+  assert_return (file_name != NULL, Bse::Error::INTERNAL);
 
   bse_storage_reset (self);
   self->rstore = sfi_rstore_new_open (file_name);
   if (!self->rstore)
-    return bse_error_from_errno (errno, Bse::ERROR_FILE_OPEN_FAILED);
+    return bse_error_from_errno (errno, Bse::Error::FILE_OPEN_FAILED);
   self->rstore->parser_this = self;
   self->path_table = g_hash_table_new_full (uname_child_hash, uname_child_equals, NULL, uname_child_free);
   self->restorable_objects = sfi_ppool_new ();
 
-  return Bse::ERROR_NONE;
+  return Bse::Error::NONE;
 }
 
 static GTokenType
@@ -1779,12 +1779,12 @@ Bse::ErrorType
 bse_storage_flush_fd (BseStorage *self,
                       gint        fd)
 {
-  assert_return (BSE_IS_STORAGE (self), Bse::ERROR_INTERNAL);
-  assert_return (self->wstore, Bse::ERROR_INTERNAL);
-  assert_return (fd >= 0, Bse::ERROR_INTERNAL);
+  assert_return (BSE_IS_STORAGE (self), Bse::Error::INTERNAL);
+  assert_return (self->wstore, Bse::Error::INTERNAL);
+  assert_return (fd >= 0, Bse::Error::INTERNAL);
   bse_storage_break (self);
   gint nerrno = sfi_wstore_flush_fd (self->wstore, fd);
-  return bse_error_from_errno (-nerrno, Bse::ERROR_FILE_WRITE_FAILED);
+  return bse_error_from_errno (-nerrno, Bse::Error::FILE_WRITE_FAILED);
 }
 
 void

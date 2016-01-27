@@ -758,7 +758,7 @@ bse_item_execva_i (BseItem     *item,
     {
       g_warning ("no such method \"%s\" of item %s",
                  procedure, bse_object_debug_name (item));
-      return Bse::ERROR_INTERNAL;
+      return Bse::Error::INTERNAL;
     }
 
   /* setup first arg (the object) */
@@ -780,8 +780,8 @@ bse_item_exec (void       *_item,
   va_list var_args;
   Bse::ErrorType error;
 
-  assert_return (BSE_IS_ITEM (item), Bse::ERROR_INTERNAL);
-  assert_return (procedure != NULL, Bse::ERROR_INTERNAL);
+  assert_return (BSE_IS_ITEM (item), Bse::Error::INTERNAL);
+  assert_return (procedure != NULL, Bse::Error::INTERNAL);
 
   va_start (var_args, procedure);
   error = bse_item_execva_i (item, procedure, var_args, FALSE);
@@ -799,8 +799,8 @@ bse_item_exec_void (void       *_item,
   va_list var_args;
   Bse::ErrorType error;
 
-  assert_return (BSE_IS_ITEM (item), Bse::ERROR_INTERNAL);
-  assert_return (procedure != NULL, Bse::ERROR_INTERNAL);
+  assert_return (BSE_IS_ITEM (item), Bse::Error::INTERNAL);
+  assert_return (procedure != NULL, Bse::Error::INTERNAL);
 
   va_start (var_args, procedure);
   error = bse_item_execva_i (item, procedure, var_args, TRUE);
@@ -1343,7 +1343,7 @@ ItemImpl::push_property_undo (const String &property_name)
         const bool success = self.__aida_set__ (property_name, saved_value);
         if (!success)
           critical ("%s: failed to undo property change for '%s': %s", __func__, property_name, saved_value.repr());
-        return ERROR_NONE;
+        return Error::NONE;
       };
       push_undo (__func__, *this, lambda);
     }

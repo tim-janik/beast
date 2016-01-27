@@ -129,7 +129,7 @@ static Bse::ErrorType
 bse_wave_add_inlined_wave_chunk (BseWave      *self,
                                  GslWaveChunk *wchunk)
 {
-  assert_return (BSE_IS_WAVE (self), Bse::ERROR_INTERNAL);
+  assert_return (BSE_IS_WAVE (self), Bse::Error::INTERNAL);
   Bse::ErrorType error = gsl_data_handle_open (wchunk->dcache->dhandle);
   if (!error)
     self->open_handles = sfi_ring_append (self->open_handles, wchunk->dcache->dhandle);
@@ -251,10 +251,10 @@ bse_wave_load_wave_file (BseWave      *self,
 			 BseFreqArray *skip_array,
                          gboolean      rename_wave)
 {
-  Bse::ErrorType error = Bse::ERROR_NONE;
+  Bse::ErrorType error = Bse::Error::NONE;
 
-  assert_return (BSE_IS_WAVE (self), Bse::ERROR_INTERNAL);
-  assert_return (file_name != NULL, Bse::ERROR_INTERNAL);
+  assert_return (BSE_IS_WAVE (self), Bse::Error::INTERNAL);
+  assert_return (file_name != NULL, Bse::Error::INTERNAL);
 
   bse_wave_clear (self);
 
@@ -326,17 +326,17 @@ bse_wave_load_wave_file (BseWave      *self,
 	      bse_wave_dsc_free (wdsc);
 	    }
           else if (wdsc)
-            error = Bse::ERROR_FILE_EMPTY;
+            error = Bse::Error::FILE_EMPTY;
 	}
       else
-	error = Bse::ERROR_FILE_NOT_FOUND;
+	error = Bse::Error::FILE_NOT_FOUND;
       bse_wave_file_info_unref (fi);
     }
   else
     {
       error = gsl_file_check (file_name, "fr");
       if (!error)
-	error = Bse::ERROR_FILE_OPEN_FAILED;
+	error = Bse::Error::FILE_OPEN_FAILED;
     }
   return error;
 }

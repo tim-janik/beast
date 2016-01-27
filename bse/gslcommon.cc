@@ -199,8 +199,8 @@ gsl_file_check (const gchar *file_name,
 		const gchar *mode)
 {
   if (birnet_file_check (file_name, mode))
-    return Bse::ERROR_NONE;
-  return gsl_error_from_errno (errno, Bse::ERROR_FILE_OPEN_FAILED);
+    return Bse::Error::NONE;
+  return gsl_error_from_errno (errno, Bse::Error::FILE_OPEN_FAILED);
 }
 
 Bse::ErrorType
@@ -209,31 +209,31 @@ gsl_error_from_errno (gint         sys_errno,
 {
   switch (sys_errno)
     {
-    case 0:             return Bse::ERROR_NONE;
+    case 0:             return Bse::Error::NONE;
     case ELOOP:
     case ENAMETOOLONG:
-    case ENOENT:        return Bse::ERROR_FILE_NOT_FOUND;
-    case EISDIR:        return Bse::ERROR_FILE_IS_DIR;
+    case ENOENT:        return Bse::Error::FILE_NOT_FOUND;
+    case EISDIR:        return Bse::Error::FILE_IS_DIR;
     case EROFS:
     case EPERM:
-    case EACCES:        return Bse::ERROR_PERMS;
+    case EACCES:        return Bse::Error::PERMS;
 #ifdef ENODATA  /* GNU/kFreeBSD lacks this */
     case ENODATA:
 #endif
-    case ENOMSG:        return Bse::ERROR_FILE_EOF;
-    case ENOMEM:	return Bse::ERROR_NO_MEMORY;
-    case ENOSPC:	return Bse::ERROR_NO_SPACE;
-    case ENFILE:	return Bse::ERROR_NO_FILES;
-    case EMFILE:	return Bse::ERROR_MANY_FILES;
+    case ENOMSG:        return Bse::Error::FILE_EOF;
+    case ENOMEM:	return Bse::Error::NO_MEMORY;
+    case ENOSPC:	return Bse::Error::NO_SPACE;
+    case ENFILE:	return Bse::Error::NO_FILES;
+    case EMFILE:	return Bse::Error::MANY_FILES;
     case EFBIG:
     case ESPIPE:
-    case EIO:           return Bse::ERROR_IO;
-    case EEXIST:        return Bse::ERROR_FILE_EXISTS;
+    case EIO:           return Bse::Error::IO;
+    case EEXIST:        return Bse::Error::FILE_EXISTS;
     case ETXTBSY:
-    case EBUSY:         return Bse::ERROR_FILE_BUSY;
+    case EBUSY:         return Bse::Error::FILE_BUSY;
     case EAGAIN:
-    case EINTR:		return Bse::ERROR_TEMP;
-    case EFAULT:        return Bse::ERROR_INTERNAL;
+    case EINTR:		return Bse::Error::TEMP;
+    case EFAULT:        return Bse::Error::INTERNAL;
     case EBADF:
     case ENOTDIR:
     case ENODEV:
@@ -247,12 +247,12 @@ score_error (Bse::ErrorType error)
 {
   /* errors are sorted by increasing descriptiveness */
   static const Bse::ErrorType error_score[] = {
-    Bse::ERROR_NONE /* least descriptive, indicates 0-initialized error variable */,
-    Bse::ERROR_UNKNOWN, Bse::ERROR_INTERNAL, Bse::ERROR_TEMP,
-    Bse::ERROR_IO, Bse::ERROR_FILE_EOF,
-    Bse::ERROR_FILE_OPEN_FAILED, Bse::ERROR_FILE_SEEK_FAILED,
-    Bse::ERROR_FILE_READ_FAILED, Bse::ERROR_FILE_WRITE_FAILED,
-    Bse::ERROR_FILE_NOT_FOUND, Bse::ERROR_WAVE_NOT_FOUND,
+    Bse::Error::NONE /* least descriptive, indicates 0-initialized error variable */,
+    Bse::Error::UNKNOWN, Bse::Error::INTERNAL, Bse::Error::TEMP,
+    Bse::Error::IO, Bse::Error::FILE_EOF,
+    Bse::Error::FILE_OPEN_FAILED, Bse::Error::FILE_SEEK_FAILED,
+    Bse::Error::FILE_READ_FAILED, Bse::Error::FILE_WRITE_FAILED,
+    Bse::Error::FILE_NOT_FOUND, Bse::Error::WAVE_NOT_FOUND,
   };
   guint i;
   for (i = 0; i < G_N_ELEMENTS (error_score); i++)

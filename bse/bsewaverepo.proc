@@ -27,12 +27,12 @@ load_file (BseWaveRepo *wrepo,
     {
       bse_container_add_item (BSE_CONTAINER (wrepo), BSE_ITEM (wave));
       *wave_p = wave;
-      error = Bse::ERROR_NONE;
+      error = Bse::Error::NONE;
     }
   else
     {
       if (!error)
-        error = Bse::ERROR_WAVE_NOT_FOUND;
+        error = Bse::Error::WAVE_NOT_FOUND;
       *wave_p = NULL;
     }
   g_object_unref (wave);
@@ -52,7 +52,7 @@ METHOD (BseWaveRepo, load-file) {
   IN	= sfi_pspec_string ("file_name", "File Name", "The file to import waves from",
 			    NULL, SFI_PARAM_STANDARD);
   OUT   = bse_param_spec_genum ("error", "Error", NULL,
-				BSE_TYPE_ERROR_TYPE, Bse::ERROR_NONE,
+				BSE_TYPE_ERROR_TYPE, Bse::Error::NONE,
 				SFI_PARAM_STANDARD);
 }
 BODY (BseProcedureClass *proc,
@@ -68,7 +68,7 @@ BODY (BseProcedureClass *proc,
 
   /* check parameters */
   if (!BSE_IS_WAVE_REPO (self) || !file_name)
-    return Bse::ERROR_PROC_PARAM_INVAL;
+    return Bse::Error::PROC_PARAM_INVAL;
 
   ustack = bse_item_undo_open (self, "load-wave");
   error = load_file (self, file_name, &wave);
@@ -79,7 +79,7 @@ BODY (BseProcedureClass *proc,
   /* set output parameters */
   g_value_set_enum (out_values++, error);
 
-  return Bse::ERROR_NONE;
+  return Bse::Error::NONE;
 }
 
 METHOD (BseWaveRepo, remove-wave) {
@@ -100,7 +100,7 @@ METHOD (BseWaveRepo, remove-wave) {
   /* check parameters */
   if (!BSE_IS_WAVE_REPO (self) || !BSE_IS_WAVE (child) ||
       child->parent != BSE_ITEM (self))
-    return Bse::ERROR_PROC_PARAM_INVAL;
+    return Bse::Error::PROC_PARAM_INVAL;
 
   /* action */
   ustack = bse_item_undo_open (self, "remove-wave %s", bse_object_debug_name (child));
@@ -113,5 +113,5 @@ METHOD (BseWaveRepo, remove-wave) {
   /* done */
   bse_item_undo_close (ustack);
 
-  return Bse::ERROR_NONE;
+  return Bse::Error::NONE;
 }

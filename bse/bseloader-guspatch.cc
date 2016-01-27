@@ -38,11 +38,11 @@ fread_block (FILE *file,
   if (fread (data, len, 1, file) != 1)
     {
       if (feof (file))
-        return Bse::ERROR_FILE_EOF;
+        return Bse::Error::FILE_EOF;
       else
-        return gsl_error_from_errno (errno, Bse::ERROR_FILE_READ_FAILED);
+        return gsl_error_from_errno (errno, Bse::Error::FILE_READ_FAILED);
     }
-  return Bse::ERROR_NONE;
+  return Bse::Error::NONE;
 }
 static inline Bse::ErrorType
 skip (FILE *file,
@@ -54,7 +54,7 @@ skip (FILE *file,
       read_or_return_error (fread_block (file, 1, &junk));
       len--;
     }
-  return Bse::ERROR_NONE;
+  return Bse::Error::NONE;
 }
 
 static inline Bse::ErrorType
@@ -92,7 +92,7 @@ fread_word (FILE *file,
   read_or_return_error (fread_block (file, 1, &h));
   w = (h << 8) + l;
 
-  return Bse::ERROR_NONE;
+  return Bse::Error::NONE;
 }
 
 static inline Bse::ErrorType
@@ -104,7 +104,7 @@ fread_short_word (FILE  *file,
   read_or_return_error (fread_word (file, w));
   sw = (sword) w;
 
-  return Bse::ERROR_NONE;
+  return Bse::Error::NONE;
 }
 
 /* readXXX with sizeof(xxx) == 4 */
@@ -119,7 +119,7 @@ fread_dword (FILE *file, dword& dw)
   read_or_return_error (fread_block (file, 1, &hh));
   dw = (hh << 24) + (hl << 16) + (h << 8) + l;
 
-  return Bse::ERROR_NONE;
+  return Bse::Error::NONE;
 }
 
 struct PatHeader
@@ -159,7 +159,7 @@ struct PatHeader
 
     read_or_return_error (fread_string (file, reserved, 36));
 
-    return Bse::ERROR_NONE;
+    return Bse::Error::NONE;
   }
 };
 
@@ -196,7 +196,7 @@ struct PatInstrument
     read_or_return_error (fread_byte (file, sampleCount));
     read_or_return_error (fread_string (file, reserved, 40));
 
-    return Bse::ERROR_NONE;
+    return Bse::Error::NONE;
   }
 };
 
@@ -269,7 +269,7 @@ struct PatPatch
     read_or_return_error (fread_word (file, freqScaleFactor));
     read_or_return_error (fread_string (file, reserved, 36));
 
-    return Bse::ERROR_NONE;
+    return Bse::Error::NONE;
   }
 };
 #undef read_or_return_error
@@ -387,7 +387,7 @@ struct FileInfo
     FILE *patfile = fopen (file_name, "r");
     if (!patfile)
       {
-	*error_p = gsl_error_from_errno (errno, Bse::ERROR_FILE_OPEN_FAILED);
+	*error_p = gsl_error_from_errno (errno, Bse::Error::FILE_OPEN_FAILED);
 	return;
       }
 

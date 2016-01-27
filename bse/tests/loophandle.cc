@@ -23,7 +23,7 @@ loop_handle_reference_open (GslDataHandle      *dhandle,
   Bse::ErrorType error;
 
   error = gsl_data_handle_open (lhandle->src_handle);
-  if (error != Bse::ERROR_NONE)
+  if (error != Bse::Error::NONE)
     return error;
 
   *setup = lhandle->src_handle->setup; /* copies setup.xinfos by pointer */
@@ -39,7 +39,7 @@ loop_handle_reference_open (GslDataHandle      *dhandle,
       lhandle->loop_width = 0;
     }
 
-  return Bse::ERROR_NONE;
+  return Bse::Error::NONE;
 }
 
 static void

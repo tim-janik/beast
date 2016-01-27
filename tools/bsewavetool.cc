@@ -118,7 +118,7 @@ main (int   argc,
   /* load wave file */
   printerr ("LOAD: %s\n", input_file.c_str());
   Wave *wave = command->create ();
-  Bse::ErrorType error = Bse::ERROR_NONE;
+  Bse::ErrorType error = Bse::Error::NONE;
   if (!wave)
     {
       BseWaveFileInfo *winfo = bse_wave_file_info_load (input_file.c_str(), &error);
@@ -137,7 +137,7 @@ main (int   argc,
                       sfi_warning ("failed to load wave chunk (%.3f) of wave \"%s\" in file \"%s\": %s (loader: %s)",
                                    wdsc->chunks[i].osc_freq, wdsc->name, input_file.c_str(), bse_error_blurb (error), bse_wave_file_info_loader (winfo));
                       if (skip_errors)
-                        error = Bse::ERROR_NONE;
+                        error = Bse::Error::NONE;
                       else
                         {
                           delete wave;
@@ -157,13 +157,13 @@ main (int   argc,
             {
               sfi_warning ("failed to load wave description from file \"%s\": %s (loader: %s)",
                            input_file.c_str(), bse_error_blurb (error), bse_wave_file_info_loader (winfo));
-              error = Bse::ERROR_NONE;
+              error = Bse::Error::NONE;
             }
           bse_wave_file_info_unref (winfo);
         }
     }
   if (!wave && !error)
-    error = Bse::ERROR_IO;       /* unknown */
+    error = Bse::Error::IO;       /* unknown */
   if (error)
     {
       sfi_error ("problems encountered loading bsewave file \"%s\": %s", input_file.c_str(), bse_error_blurb (error));
@@ -1055,12 +1055,12 @@ public:
         if (wdsc && wdsc->n_chunks == 1)
           dhandle = bse_wave_handle_create (wdsc, 0, &error);
         else if (wdsc)
-          error = Bse::ERROR_FORMAT_INVALID;
+          error = Bse::Error::FORMAT_INVALID;
         if (wdsc)
           bse_wave_dsc_free (wdsc);
       }
     else if (winfo)
-      error = Bse::ERROR_FORMAT_INVALID;
+      error = Bse::Error::FORMAT_INVALID;
     if (winfo)
       bse_wave_file_info_unref (winfo);
     return dhandle;
@@ -1077,7 +1077,7 @@ public:
     dhandle = gsl_wave_handle_new (sample_file, n_channels,
                                    opt.load_format, opt.load_byte_order, opt.load_mix_freq, osc_freq,
                                    0, -1, NULL);
-    error = dhandle ? Bse::ERROR_NONE : Bse::ERROR_IO;
+    error = dhandle ? Bse::Error::NONE : Bse::Error::IO;
     return dhandle;
   }
   bool
@@ -1141,7 +1141,7 @@ public:
               exit (1);
             }
           /* add sample file */
-          Bse::ErrorType error = Bse::ERROR_NONE;
+          Bse::ErrorType error = Bse::Error::NONE;
           GslDataHandle *dhandle;
           sfi_info ("LOAD: osc-freq=%g file=%s", osc_freq, ochunk.sample_file);
           if (load_raw)
@@ -1871,11 +1871,11 @@ public:
           GslDataHandle *dhandle = chunk->dhandle;
           Bse::ErrorType error;
           error = gsl_data_clip_sample (dhandle, &cconfig, &cresult);
-          if (error == Bse::ERROR_DATA_UNMATCHED && cresult.clipped_to_0length)
+          if (error == Bse::Error::DATA_UNMATCHED && cresult.clipped_to_0length)
             {
               sfi_info ("Deleting 0-length chunk");
               deleted.push_back (it);
-              error = Bse::ERROR_NONE;
+              error = Bse::Error::NONE;
             }
           else if (error)
             {
@@ -1967,7 +1967,7 @@ public:
           sfi_info ("NORMALIZE: chunk %f", osc_freq);
           double absmax = gsl_data_find_min_max (chunk->dhandle, NULL, NULL);
           gchar **xinfos = bse_xinfos_dup_consolidated (chunk->dhandle->setup.xinfos, FALSE);
-          Bse::ErrorType error = Bse::ERROR_NONE;
+          Bse::ErrorType error = Bse::Error::NONE;
           if (absmax > 4.6566e-10) /* 32bit threshold */
             {
               if (use_volume_xinfo)
@@ -2525,7 +2525,7 @@ public:
 	bse_data_handle_fir_response_db (fir_handle, best_freq), best_freq);
     gsl_data_handle_close (fir_handle);
 
-    return Bse::ERROR_NONE;
+    return Bse::Error::NONE;
   }
   bool
   exec (Wave *wave)
@@ -2918,14 +2918,14 @@ public:
 	  int fd = open (filename.c_str(), O_WRONLY | O_CREAT | O_TRUNC, 0666);
 	  if (fd < 0)
 	    {
-	      Bse::ErrorType error = bse_error_from_errno (errno, Bse::ERROR_FILE_OPEN_FAILED);
+	      Bse::ErrorType error = bse_error_from_errno (errno, Bse::Error::FILE_OPEN_FAILED);
 	      sfi_error ("export to file %s failed: %s", filename.c_str(), bse_error_blurb (error));
 	    }
 
 	  int xerrno = gsl_data_handle_dump_wav (dhandle, fd, 16, dhandle->setup.n_channels, (guint) dhandle->setup.mix_freq);
 	  if (xerrno)
 	    {
-	      Bse::ErrorType error = bse_error_from_errno (xerrno, Bse::ERROR_FILE_WRITE_FAILED);
+	      Bse::ErrorType error = bse_error_from_errno (xerrno, Bse::Error::FILE_WRITE_FAILED);
 	      sfi_error ("export to file %s failed: %s", filename.c_str(), bse_error_blurb (error));
 	    }
 	  close (fd);

@@ -127,7 +127,7 @@ public:
   open (GslDataHandleSetup *setup)
   {
     Bse::ErrorType error = gsl_data_handle_open (m_src_handle);
-    if (error != Bse::ERROR_NONE)
+    if (error != Bse::Error::NONE)
       return error;
 
     /* !not! m_dhandle.setup; the framework magically ensures that *m_dhandle.setup
@@ -178,7 +178,7 @@ public:
 	m_filter_delay = (int) round (m_resamplers[0]->delay() * 2);
 	m_filter_delay_input = 0;
       }
-    return Bse::ERROR_NONE;
+    return Bse::Error::NONE;
   }
   void
   close()

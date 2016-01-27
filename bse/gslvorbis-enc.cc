@@ -249,8 +249,8 @@ gsl_vorbis_encoder_setup_stream (GslVorbisEncoder *self,
   ogg_page opage;
   gint result;
 
-  assert_return (self != NULL, Bse::ERROR_INTERNAL);
-  assert_return (self->stream_setup == FALSE, Bse::ERROR_INTERNAL);
+  assert_return (self != NULL, Bse::Error::INTERNAL);
+  assert_return (self->stream_setup == FALSE, Bse::Error::INTERNAL);
 
   self->serial = serial;
   vorbis_info_init (&self->vinfo);
@@ -273,7 +273,7 @@ gsl_vorbis_encoder_setup_stream (GslVorbisEncoder *self,
   if (result != 0)
     {
       vorbis_info_clear (&self->vinfo);
-      return Bse::ERROR_CODEC_FAILURE;
+      return Bse::Error::CODEC_FAILURE;
     }
 
   self->stream_setup = TRUE;
@@ -289,7 +289,7 @@ gsl_vorbis_encoder_setup_stream (GslVorbisEncoder *self,
   while (ogg_stream_flush (&self->ostream, &opage))
     gsl_vorbis_encoder_enqueue_page (self, &opage);
 
-  return Bse::ERROR_NONE;
+  return Bse::Error::NONE;
 }
 
 static void

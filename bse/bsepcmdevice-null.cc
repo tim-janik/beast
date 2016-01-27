@@ -62,8 +62,8 @@ bse_pcm_device_null_open (BseDevice     *device,
   else
     null->sleep_us = 10 * 1000;
   BSE_PCM_DEVICE (device)->handle = handle;
-  PDEBUG ("NULL: opening PCM readable=%d writable=%d: %s", require_readable, require_writable, bse_error_blurb (Bse::ERROR_NONE));
-  return Bse::ERROR_NONE;
+  PDEBUG ("NULL: opening PCM readable=%d writable=%d: %s", require_readable, require_writable, bse_error_blurb (Bse::Error::NONE));
+  return Bse::Error::NONE;
 }
 
 static void

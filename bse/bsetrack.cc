@@ -1106,7 +1106,7 @@ TrackImpl::remove_tick (int tick)
       auto lambda = [utick, part_descriptor] (TrackImpl &self, BseUndoStack *ustack) -> ErrorType {
         PartImpl &part = self.undo_resolve (part_descriptor);
         const uint id = self.insert_part (utick, part);
-        return id ? ERROR_NONE : ERROR_INVALID_OVERLAP;
+        return id ? Error::NONE : Error::INVALID_OVERLAP;
       };
       bse_track_remove_tick (self, tick);
       push_undo (__func__, *this, lambda);
@@ -1161,7 +1161,7 @@ ErrorType
 TrackImpl::ensure_output ()
 {
   BseTrack *self = as<BseTrack*>();
-  ErrorType error = ERROR_NONE;
+  ErrorType error = Error::NONE;
   BseItem *bparent = self->parent;
   if (BSE_IS_SONG (bparent) && !self->bus_outputs)
     {
