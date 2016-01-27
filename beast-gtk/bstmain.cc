@@ -418,9 +418,9 @@ main_open_files (int filesc, char **filesv)
                 exit (3);
               exit (0);
             }
-          if (!error || error == Bse::ERROR_FILE_NOT_FOUND)
+          if (!error || error == Bse::Error::FILE_NOT_FOUND)
             {
-              error = Bse::ERROR_NONE;
+              error = Bse::Error::NONE;
               app = bst_app_new (project);
               gxk_idle_show_widget (GTK_WIDGET (app));
               gtk_widget_hide (beast_splash);

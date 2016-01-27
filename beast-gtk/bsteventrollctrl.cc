@@ -465,7 +465,7 @@ move_motion (BstEventRollController *self,
       const Bse::PartControlSeq &cseq = part.get_controls (new_tick, CONTROL_TYPE (self));
       if (!cseq.size()) // avoid overlap
         {
-          if (part.change_control (self->obj_id, new_tick, CONTROL_TYPE (self), self->obj_value) != Bse::ERROR_NONE)
+          if (part.change_control (self->obj_id, new_tick, CONTROL_TYPE (self), self->obj_value) != Bse::Error::NONE)
             drag->state = GXK_DRAG_ERROR;
           else
             self->obj_tick = new_tick;
@@ -528,7 +528,7 @@ insert_start (BstEventRollController *self,
 	      BstEventRollDrag       *drag)
 {
   Bse::PartH part = self->eroll->part;
-  Bse::ErrorType error = Bse::ERROR_INVALID_OVERLAP;
+  Bse::ErrorType error = Bse::Error::INVALID_OVERLAP;
   if (!self->obj_id && drag->start_valid)
     {
       guint qtick = bst_event_roll_controller_quantize (self, drag->start_tick);
@@ -537,13 +537,13 @@ insert_start (BstEventRollController *self,
         {
           self->obj_tick = qtick;
           self->obj_value = drag->current_value;
-          error = Bse::ERROR_NONE;
+          error = Bse::Error::NONE;
         }
       else
-        error = Bse::ERROR_NO_TARGET;
+        error = Bse::Error::NO_TARGET;
     }
   else if (!self->obj_id)
-    error = Bse::ERROR_NO_TARGET;
+    error = Bse::Error::NO_TARGET;
   else /* no insertion */
     self->obj_id = 0;
   bst_status_eprintf (error, _("Insert Control Event"));
@@ -586,7 +586,7 @@ resize_motion (BstEventRollController *self,
     {
       bse_item_group_undo (part.proxy_id(), "Resize Control Event");
       self->obj_value = drag->current_value;
-      if (part.change_control (self->obj_id, self->obj_tick, CONTROL_TYPE (self), self->obj_value) != Bse::ERROR_NONE)
+      if (part.change_control (self->obj_id, self->obj_tick, CONTROL_TYPE (self), self->obj_value) != Bse::Error::NONE)
         drag->state = GXK_DRAG_ERROR;
       bse_item_ungroup_undo (part.proxy_id());
     }

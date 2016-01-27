@@ -625,7 +625,7 @@ bst_snet_router_root_event (BstSNetRouter   *self,
             {
               Bse::ErrorType error;
               if (!csource || (self->drag_is_input ? ochannel : ichannel) == ~uint (0))
-                error = self->drag_is_input ? Bse::ERROR_SOURCE_NO_SUCH_OCHANNEL : Bse::ERROR_SOURCE_NO_SUCH_ICHANNEL;
+                error = self->drag_is_input ? Bse::Error::SOURCE_NO_SUCH_OCHANNEL : Bse::Error::SOURCE_NO_SUCH_ICHANNEL;
               else if (self->drag_is_input)
                 error = bse_source_set_input_by_id (self->drag_csource->source, self->drag_channel,
                                                     csource->source, ochannel);

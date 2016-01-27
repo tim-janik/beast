@@ -592,7 +592,7 @@ move_motion (BstPianoRollController *self,
 		       self->obj_tick, note_changed ? 0 : self->obj_duration))
     {
       bse_item_group_undo (part.proxy_id(), "Move Note");
-      if (part.delete_event (self->obj_id) != Bse::ERROR_NONE)
+      if (part.delete_event (self->obj_id) != Bse::Error::NONE)
         drag->state = GXK_DRAG_ERROR;
       else
 	{
@@ -706,17 +706,17 @@ insert_start (BstPianoRollController *self,
 	      BstPianoRollDrag       *drag)
 {
   Bse::PartH part = self->proll->part;
-  Bse::ErrorType error = Bse::ERROR_NO_TARGET;
+  Bse::ErrorType error = Bse::Error::NO_TARGET;
   if (drag->start_valid)
     {
       guint qtick = bst_piano_roll_controller_quantize (self, drag->start_tick);
       guint duration = drag->proll->ppqn * 4 / NOTE_LENGTH (self);
       if (check_hoverlap (part, qtick, duration, drag->start_note, 0, 0))
-	error = Bse::ERROR_INVALID_OVERLAP;
+	error = Bse::Error::INVALID_OVERLAP;
       else
 	{
 	  part.insert_note_auto (qtick, duration, drag->start_note, 0, 1.0);
-	  error = Bse::ERROR_NONE;
+	  error = Bse::Error::NONE;
 	}
     }
   bst_status_eprintf (error, _("Insert Note"));
@@ -912,7 +912,7 @@ controller_piano_drag (BstPianoRollController *self,
 	  project.auto_deactivate (5 * 1000);
 	  error = project.activate();
 	  self->obj_note = drag->current_note;
-	  if (error == Bse::ERROR_NONE)
+	  if (error == Bse::Error::NONE)
 	    bse_song_synthesize_note (song, track, 384 * 4, self->obj_note, 0, 1.0);
 	  bst_status_eprintf (error, _("Play note"));
 	  drag->state = GXK_DRAG_CONTINUE;

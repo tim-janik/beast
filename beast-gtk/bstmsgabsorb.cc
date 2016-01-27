@@ -233,14 +233,14 @@ bst_msg_absorb_config_box_get (GtkWidget *self)
 static Bse::ErrorType
 bst_msg_absorb_config_dump (const gchar *file_name)
 {
-  assert_return (file_name != NULL, Bse::ERROR_INTERNAL);
+  assert_return (file_name != NULL, Bse::Error::INTERNAL);
 
   sfi_make_dirname_path (file_name);
   gint fd = open (file_name,
                   O_WRONLY | O_CREAT | O_TRUNC, /* O_EXCL, */
                   0666);
   if (fd < 0)
-    return errno == EEXIST ? Bse::ERROR_FILE_EXISTS : Bse::ERROR_IO;
+    return errno == EEXIST ? Bse::Error::FILE_EXISTS : Bse::Error::IO;
 
   SfiWStore *wstore = sfi_wstore_new ();
 
@@ -259,7 +259,7 @@ bst_msg_absorb_config_dump (const gchar *file_name)
   sfi_wstore_flush_fd (wstore, fd);
   sfi_wstore_destroy (wstore);
 
-  return close (fd) < 0 ? Bse::ERROR_IO : Bse::ERROR_NONE;
+  return close (fd) < 0 ? Bse::Error::IO : Bse::Error::NONE;
 }
 
 void
@@ -297,7 +297,7 @@ msg_absorb_config_try_statement (gpointer   context_data,
 static Bse::ErrorType
 bst_msg_absorb_config_parse (const gchar *file_name)
 {
-  assert_return (file_name != NULL, Bse::ERROR_INTERNAL);
+  assert_return (file_name != NULL, Bse::Error::INTERNAL);
 
   gchar *absname = sfi_path_get_filename (file_name, NULL);
   gint fd = open (absname, O_RDONLY, 0);
@@ -305,14 +305,14 @@ bst_msg_absorb_config_parse (const gchar *file_name)
     {
       g_free (absname);
       return (errno == ENOENT || errno == ENOTDIR || errno == ELOOP ?
-              Bse::ERROR_FILE_NOT_FOUND : Bse::ERROR_IO);
+              Bse::Error::FILE_NOT_FOUND : Bse::Error::IO);
     }
 
   SfiRStore *rstore = sfi_rstore_new ();
   sfi_rstore_input_fd (rstore, fd, absname);
-  Bse::ErrorType error = Bse::ERROR_NONE;
+  Bse::ErrorType error = Bse::Error::NONE;
   if (sfi_rstore_parse_all (rstore, NULL, msg_absorb_config_try_statement, absname) > 0)
-    error = Bse::ERROR_PARSE_ERROR;
+    error = Bse::Error::PARSE_ERROR;
   sfi_rstore_destroy (rstore);
   close (fd);
   g_free (absname);

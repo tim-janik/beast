@@ -489,7 +489,7 @@ store_bse_file (Bse::ProjectH project, SfiProxy super, const gchar *file_name, c
   gboolean handled = TRUE;
   gchar *msg = NULL;
   /* handle file exists cases */
-  if (error == Bse::ERROR_FILE_EXISTS)
+  if (error == Bse::Error::FILE_EXISTS)
     {
       if (!want_overwrite)
         {
@@ -507,7 +507,7 @@ store_bse_file (Bse::ProjectH project, SfiProxy super, const gchar *file_name, c
         {
           /* save to temporary file */
           gchar *temp_file = NULL;
-          while (error == Bse::ERROR_FILE_EXISTS)
+          while (error == Bse::Error::FILE_EXISTS)
             {
               g_free (temp_file);
               temp_file = g_strdup_format ("%s.tmp%06xyXXXXXX", file_name, rand() & 0xfffffd);
@@ -516,9 +516,9 @@ store_bse_file (Bse::ProjectH project, SfiProxy super, const gchar *file_name, c
               error = bse_project_store_bse (project.proxy_id(), super, temp_file, self_contained);
             }
           /* replace file by temporary file */
-          if (error != Bse::ERROR_NONE)
+          if (error != Bse::Error::NONE)
             {
-              unlink (temp_file); /* error != Bse::ERROR_FILE_EXISTS */
+              unlink (temp_file); /* error != Bse::Error::FILE_EXISTS */
               msg = g_strdup_format (_("Failed to save to file\n`%s'\ndue to:\n%s"), file_name, Bse::error_blurb (error));
             }
           else if (rename (temp_file, file_name) < 0)
@@ -532,7 +532,7 @@ store_bse_file (Bse::ProjectH project, SfiProxy super, const gchar *file_name, c
       else
         handled = FALSE;        /* exists && !overwrite */
     }
-  else if (error != Bse::ERROR_NONE)
+  else if (error != Bse::Error::NONE)
     msg = g_strdup_format (_("Failed to save to file\n`%s'\ndue to:\n%s"), file_name, Bse::error_blurb (error));
   /* report errors */
   if (msg)
@@ -547,7 +547,7 @@ store_bse_file (Bse::ProjectH project, SfiProxy super, const gchar *file_name, c
       handled = FALSE;
     }
   else if (handled) /* no error */
-    bst_status_eprintf (Bse::ERROR_NONE, "%s", title);
+    bst_status_eprintf (Bse::Error::NONE, "%s", title);
   g_free (title);
   return handled;
 }
