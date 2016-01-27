@@ -4,7 +4,13 @@ include "Aida.pyx"
 # Generated Bse bindings (via PyxxStub.py)
 include "bseidlapi.pyx"
 
-# Provide main Bse singleton
-cdef extern from "bse/bse.hh" namespace "Bse":
+# provide libbse setup functions
+cdef extern from "pysupport.hh" namespace "Bse":
   Bse__Server Bse__init_server_instance   "Bse::init_server_instance" ()
+  bool        Bse__py_init_async          "Bse::py_init_async" () except *
+
+# initialize libbse from sys.argv if init_needed()
+Bse__py_init_async()
+
+# provide main libbse server singleton
 server = Bse__Object__wrap (Bse__init_server_instance())
