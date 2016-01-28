@@ -378,12 +378,12 @@ pattern_column_control_type (BstPatternColumn *column, bool *isnote_p)
   Bse::MidiSignalType control_type;
   bool isnote = true;
   if (column->ltype == BST_PATTERN_LTYPE_VELOCITY)
-    control_type = Bse::MIDI_SIGNAL_VELOCITY;
+    control_type = Bse::MidiSignal::VELOCITY;
   else if (column->ltype == BST_PATTERN_LTYPE_FINE_TUNE)
-    control_type = Bse::MIDI_SIGNAL_FINE_TUNE;
+    control_type = Bse::MidiSignal::FINE_TUNE;
   else
     {
-      control_type = Bse::MidiSignalType (Bse::MIDI_SIGNAL_CONTINUOUS_0 + column->num);
+      control_type = Bse::MidiSignalType (Bse::MidiSignal::CONTINUOUS_0 + column->num);
       isnote = false;
     }
   if (isnote_p)

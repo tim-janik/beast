@@ -201,7 +201,7 @@ bst_part_dialog_init (BstPartDialog *self)
 
   // event roll control type
   static GParamSpec *control_type_pspec =
-    g_param_spec_ref (sfi_pspec_choice ("control_type", NULL, NULL, "MIDI_SIGNAL_PITCH_BEND",
+    g_param_spec_ref (sfi_pspec_choice ("control_type", NULL, NULL, "MidiSignal::PITCH_BEND",
                                         Bse::choice_values_from_enum<Bse::MidiSignalType>(),
                                         ":r:w:S:G:"));
   if (control_type_pspec)
@@ -210,7 +210,7 @@ bst_part_dialog_init (BstPartDialog *self)
       GtkWidget *rwidget = gxk_param_create_editor (param, "choice-button");
       gxk_radget_add (radget, "event-roll-control-area", rwidget);
       g_object_connect (radget, "swapped_signal::destroy", gxk_param_destroy, param, NULL);
-      sfi_value_set_choice (&param->value, Rapicorn::Aida::enum_value_to_string<Bse::MidiSignalType> (Bse::MIDI_SIGNAL_VELOCITY).c_str());
+      sfi_value_set_choice (&param->value, Rapicorn::Aida::enum_value_to_string<Bse::MidiSignalType> (Bse::MidiSignal::VELOCITY).c_str());
       gxk_param_apply_value (param); /* update model, auto updates GUI */
     }
 
