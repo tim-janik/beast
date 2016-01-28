@@ -101,7 +101,7 @@ pattern_column_note_char (BstPatternColumnNote *self, const Bse::PartNoteSeq &ps
   else if (pseq.size() > 1)
     return '*';
   // pseq.size() == 1
-  Bse::NoteDescription ndesc = bse_server.note_describe (Bse::MUSICAL_TUNING_12_TET, // tuning is irrelevant if we ignore ->freq
+  Bse::NoteDescription ndesc = bse_server.note_describe (Bse::MusicalTuning::OD_12_TET, // tuning is irrelevant if we ignore ->freq
                                                          pseq[0].note, pseq[0].fine_tune);
   switch (pos)
     {
