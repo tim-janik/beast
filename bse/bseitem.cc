@@ -700,7 +700,7 @@ bse_item_has_ancestor (BseItem *item,
 Bse::MusicalTuningType
 bse_item_current_musical_tuning (BseItem *self)
 {
-  assert_return (BSE_IS_ITEM (self), Bse::MUSICAL_TUNING_12_TET);
+  assert_return (BSE_IS_ITEM (self), Bse::MusicalTuning::OD_12_TET);
   /* finding the musical tuning *should* be possible by just visiting
    * an items parents. however, .bse objects are not currently (0.7.1)
    * structured that way, so we get the tuning from the first song in
@@ -714,7 +714,7 @@ bse_item_current_musical_tuning (BseItem *self)
         if (BSE_IS_SONG (slist->data))
           return BSE_SONG (slist->data)->musical_tuning;
     }
-  return Bse::MUSICAL_TUNING_12_TET;
+  return Bse::MusicalTuning::OD_12_TET;
 }
 
 static inline GType

@@ -556,7 +556,7 @@ bse_song_init (BseSong *self)
   BSE_OBJECT_UNSET_FLAGS (self, BSE_SNET_FLAG_USER_SYNTH);
   BSE_OBJECT_SET_FLAGS (self, BSE_SUPER_FLAG_NEEDS_CONTEXT);
 
-  self->musical_tuning = Bse::MUSICAL_TUNING_12_TET;
+  self->musical_tuning = Bse::MusicalTuning::OD_12_TET;
 
   self->tpqn = timing.tpqn;
   self->numerator = timing.numerator;

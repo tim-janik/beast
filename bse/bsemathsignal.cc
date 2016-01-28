@@ -593,42 +593,42 @@ bse_semitone_table_from_tuning (Bse::MusicalTuningType musical_tuning)
     {
       /* Equal Temperament: http://en.wikipedia.org/wiki/Equal_temperament */
     default:
-    case Bse::MUSICAL_TUNING_12_TET:
+    case Bse::MusicalTuning::OD_12_TET:
       return 132 + semitone_table265_equal_temperament_12_tet;
-    case Bse::MUSICAL_TUNING_7_TET:
+    case Bse::MusicalTuning::OD_7_TET:
       return 132 + semitone_table265_equal_temperament_7_tet;
-    case Bse::MUSICAL_TUNING_5_TET:
+    case Bse::MusicalTuning::OD_5_TET:
       return 132 + semitone_table265_equal_temperament_5_tet;
       /* Rational Intonation: http://en.wikipedia.org/wiki/Just_intonation */
-    case Bse::MUSICAL_TUNING_DIATONIC_SCALE:
+    case Bse::MusicalTuning::DIATONIC_SCALE:
       return 132 + semitone_table265_diatonic_scale;
-    case Bse::MUSICAL_TUNING_INDIAN_SCALE:
+    case Bse::MusicalTuning::INDIAN_SCALE:
       return 132 + semitone_table265_indian_scale;
-    case Bse::MUSICAL_TUNING_PYTHAGOREAN_TUNING:
+    case Bse::MusicalTuning::PYTHAGOREAN_TUNING:
       return 132 + semitone_table265_pythagorean_tuning;
-    case Bse::MUSICAL_TUNING_PENTATONIC_5_LIMIT:
+    case Bse::MusicalTuning::PENTATONIC_5_LIMIT:
       return 132 + semitone_table265_pentatonic_5_limit;
-    case Bse::MUSICAL_TUNING_PENTATONIC_BLUES:
+    case Bse::MusicalTuning::PENTATONIC_BLUES:
       return 132 + semitone_table265_pentatonic_blues;
-    case Bse::MUSICAL_TUNING_PENTATONIC_GOGO:
+    case Bse::MusicalTuning::PENTATONIC_GOGO:
       return 132 + semitone_table265_pentatonic_gogo;
       /* Meantone Temperament: http://en.wikipedia.org/wiki/Meantone_temperament */
-    case Bse::MUSICAL_TUNING_QUARTER_COMMA_MEANTONE:
+    case Bse::MusicalTuning::QUARTER_COMMA_MEANTONE:
       return 132 + semitone_table265_quarter_comma_meantone;
-    case Bse::MUSICAL_TUNING_SILBERMANN_SORGE:
+    case Bse::MusicalTuning::SILBERMANN_SORGE:
       return 132 + semitone_table265_silbermann_sorge_temperament;
       /* Well Temperament: http://en.wikipedia.org/wiki/Well_temperament */
-    case Bse::MUSICAL_TUNING_WERCKMEISTER_3:
+    case Bse::MusicalTuning::WERCKMEISTER_3:
       return 132 + semitone_table265_werckmeister3_temperament;
-    case Bse::MUSICAL_TUNING_WERCKMEISTER_4:
+    case Bse::MusicalTuning::WERCKMEISTER_4:
       return 132 + semitone_table265_werckmeister4_temperament;
-    case Bse::MUSICAL_TUNING_WERCKMEISTER_5:
+    case Bse::MusicalTuning::WERCKMEISTER_5:
       return 132 + semitone_table265_werckmeister5_temperament;
-    case Bse::MUSICAL_TUNING_WERCKMEISTER_6:
+    case Bse::MusicalTuning::WERCKMEISTER_6:
       return 132 + semitone_table265_werckmeister6_temperament;
-    case Bse::MUSICAL_TUNING_KIRNBERGER_3:
+    case Bse::MusicalTuning::KIRNBERGER_3:
       return 132 + semitone_table265_kirnberger_temperament;
-    case Bse::MUSICAL_TUNING_YOUNG:
+    case Bse::MusicalTuning::YOUNG:
       return 132 + semitone_table265_young_temperament;
     }
 }

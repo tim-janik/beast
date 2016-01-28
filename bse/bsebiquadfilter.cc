@@ -123,7 +123,7 @@ bse_biquad_filter_class_init (BseBiquadFilterClass *klass)
 			      PROP_NOTE,
 			      sfi_pspec_note ("note", _("Note"), _("Filter cutoff frequency as note, "
                                                                    "converted to Hertz according to the current musical tuning"),
-					      bse_note_from_freq (Bse::MUSICAL_TUNING_12_TET, BSE_KAMMER_FREQUENCY * 2),
+					      bse_note_from_freq (Bse::MusicalTuning::OD_12_TET, BSE_KAMMER_FREQUENCY * 2),
 					      BSE_MIN_NOTE, BSE_MAX_NOTE,
 					      FALSE,
 					      SFI_PARAM_GUI));

@@ -1912,8 +1912,8 @@ bse_source_class_base_init (BseSourceClass *klass)
 Bse::MusicalTuningType
 bse_source_prepared_musical_tuning (BseSource *source)
 {
-  assert_return (BSE_IS_SOURCE (source), Bse::MUSICAL_TUNING_12_TET);
-  assert_return (BSE_SOURCE_PREPARED (source), Bse::MUSICAL_TUNING_12_TET);
+  assert_return (BSE_IS_SOURCE (source), Bse::MusicalTuning::OD_12_TET);
+  assert_return (BSE_SOURCE_PREPARED (source), Bse::MusicalTuning::OD_12_TET);
   return bse_item_current_musical_tuning (BSE_ITEM (source)); // FIXME: cache this, once we have source->SynthesisContext
 }
 

@@ -173,8 +173,8 @@ bse_ladspa_module_class_init_from_info (BseLadspaModuleClass *ladspa_module_clas
 	  if (port->concert_a)
 	    {
 	      /* when defaulting to A', we probably have note-aligned port values */
-	      int min_note = bse_note_from_freq_bounded (Bse::MUSICAL_TUNING_12_TET, minimum);
-	      int max_note = bse_note_from_freq_bounded (Bse::MUSICAL_TUNING_12_TET, maximum);
+	      int min_note = bse_note_from_freq_bounded (Bse::MusicalTuning::OD_12_TET, minimum);
+	      int max_note = bse_note_from_freq_bounded (Bse::MusicalTuning::OD_12_TET, maximum);
 	      if (max_note - min_note > 2)
 		{
 		  char *ident2 = g_strconcat (port->ident, "-note", NULL);
