@@ -819,13 +819,13 @@ bse_part_insert_note (BsePart *self,
 static gboolean
 check_valid_control_type (Bse::MidiSignalType ctype)
 {
-  if (ctype >= Bse::MIDI_SIGNAL_PROGRAM && ctype <= Bse::MIDI_SIGNAL_FINE_TUNE)
+  if (ctype >= Bse::MidiSignal::PROGRAM && ctype <= Bse::MidiSignal::FINE_TUNE)
     return TRUE;
-  if (ctype >= Bse::MIDI_SIGNAL_CONTINUOUS_0 && ctype <= Bse::MIDI_SIGNAL_CONTINUOUS_31)
+  if (ctype >= Bse::MidiSignal::CONTINUOUS_0 && ctype <= Bse::MidiSignal::CONTINUOUS_31)
     return TRUE;
-  if (ctype >= Bse::MIDI_SIGNAL_PARAMETER && ctype <= Bse::MIDI_SIGNAL_NON_PARAMETER)
+  if (ctype >= Bse::MidiSignal::PARAMETER && ctype <= Bse::MidiSignal::NON_PARAMETER)
     return TRUE;
-  if (ctype >= Bse::MIDI_SIGNAL_CONTROL_0 && ctype <= Bse::MIDI_SIGNAL_CONTROL_127)
+  if (ctype >= Bse::MidiSignal::CONTROL_0 && ctype <= Bse::MidiSignal::CONTROL_127)
     return TRUE;
   return FALSE;
 }
@@ -1022,10 +1022,10 @@ bse_part_change_control (BsePart           *self,
               gfloat velocity = note->velocity;
               switch (ctype)
                 {
-                case Bse::MIDI_SIGNAL_VELOCITY:
+                case Bse::MidiSignal::VELOCITY:
                   velocity = CLAMP (value, 0, +1);
                   break;
-                case Bse::MIDI_SIGNAL_FINE_TUNE:
+                case Bse::MidiSignal::FINE_TUNE:
                   fine_tune = bse_ftoi (value * BSE_MAX_FINE_TUNE);
                   fine_tune = CLAMP (fine_tune, BSE_MIN_FINE_TUNE, BSE_MAX_FINE_TUNE);
                   break;
@@ -1044,9 +1044,9 @@ note_get_control_value (const BsePartEventNote *note, Bse::MidiSignalType ctype)
 {
   switch (ctype)
     {
-    case Bse::MIDI_SIGNAL_VELOCITY:
+    case Bse::MidiSignal::VELOCITY:
       return note->velocity;
-    case Bse::MIDI_SIGNAL_FINE_TUNE:
+    case Bse::MidiSignal::FINE_TUNE:
       return note->fine_tune * (1.0 / BSE_MAX_FINE_TUNE);
     default:
       return 0;
@@ -1111,8 +1111,8 @@ bse_part_query_event (BsePart           *self,
           equery->note = note->note;
           equery->fine_tune = note->fine_tune;
           equery->velocity = note->velocity;
-          equery->fine_tune_value = note_get_control_value (note, Bse::MIDI_SIGNAL_FINE_TUNE);
-          equery->velocity_value = note_get_control_value (note, Bse::MIDI_SIGNAL_VELOCITY);
+          equery->fine_tune_value = note_get_control_value (note, Bse::MidiSignal::FINE_TUNE);
+          equery->velocity_value = note_get_control_value (note, Bse::MidiSignal::VELOCITY);
           equery->control_type = Bse::MidiSignalType (0);
           equery->control_value = 0;
         }
@@ -2207,10 +2207,10 @@ PartImpl::change_control (int id, int tick, MidiSignalType control_type, double 
            equery.velocity_value  != xquery.velocity_value))
         switch (control_type)
           {
-          case MIDI_SIGNAL_VELOCITY:
+          case MidiSignal::VELOCITY:
             push_undo ("Change Velocity", *this, &PartImpl::change_control, id, equery.tick, control_type, equery.velocity_value);
             break;
-          case MIDI_SIGNAL_FINE_TUNE:
+          case MidiSignal::FINE_TUNE:
             push_undo ("Change Fine-Tune", *this, &PartImpl::change_control, id, equery.tick, control_type, equery.fine_tune_value);
             break;
           default: ;

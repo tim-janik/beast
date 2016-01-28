@@ -1884,29 +1884,29 @@ process_midi_control_L (BseMidiReceiver *self,
       break;
     case 98:			/* Non-Registered Parameter MSB */
       update_midi_signal_continuous_msb_L (self, channel, tick_stamp,
-					   Bse::MIDI_SIGNAL_NON_PARAMETER,	/* continuous signal */
+					   Bse::MidiSignal::NON_PARAMETER,	/* continuous signal */
 					   value,                 		/* MSB value */
-					   Bse::MIDI_SIGNAL_CONTROL_99,		/* LSB signal */
+					   Bse::MidiSignal::CONTROL_99,		/* LSB signal */
 					   trans);
       break;
     case 99:			/* Non-Registered Parameter LSB */
       update_midi_signal_continuous_lsb_L (self, channel, tick_stamp,
-					   Bse::MIDI_SIGNAL_NON_PARAMETER,	/* continuous signal */
-					   Bse::MIDI_SIGNAL_CONTROL_98,		/* MSB signal */
+					   Bse::MidiSignal::NON_PARAMETER,	/* continuous signal */
+					   Bse::MidiSignal::CONTROL_98,		/* MSB signal */
 					   value,                 		/* LSB value */
 					   trans);
       break;
     case 100:			/* Registered Parameter MSB */
       update_midi_signal_continuous_msb_L (self, channel, tick_stamp,
-					   Bse::MIDI_SIGNAL_PARAMETER,		/* continuous signal */
+					   Bse::MidiSignal::PARAMETER,		/* continuous signal */
 					   value,                 		/* MSB value */
-					   Bse::MIDI_SIGNAL_CONTROL_101,		/* LSB signal */
+					   Bse::MidiSignal::CONTROL_101,		/* LSB signal */
 					   trans);
       break;
     case 101:			/* Registered Parameter LSB */
       update_midi_signal_continuous_lsb_L (self, channel, tick_stamp,
-					   Bse::MIDI_SIGNAL_PARAMETER,		/* continuous signal */
-					   Bse::MIDI_SIGNAL_CONTROL_100,		/* MSB signal */
+					   Bse::MidiSignal::PARAMETER,		/* continuous signal */
+					   Bse::MidiSignal::CONTROL_100,		/* MSB signal */
 					   value,                 		/* LSB value */
 					   trans);
       break;
@@ -1964,7 +1964,7 @@ midi_receiver_process_event_L (BseMidiReceiver *self,
             {
               gboolean sustained_note = event->status == BSE_MIDI_NOTE_OFF &&
                                         (BSE_GCONFIG (invert_sustain) ^
-                                         (self->get_control (event->channel, Bse::MIDI_SIGNAL_CONTROL_64) >= 0.5));
+                                         (self->get_control (event->channel, Bse::MidiSignal::CONTROL_64) >= 0.5));
               mchannel->adjust_note (event->delta_time,
                                      event->data.note.frequency, event->status,
                                      event->data.note.velocity, sustained_note, trans);
@@ -1990,21 +1990,21 @@ midi_receiver_process_event_L (BseMidiReceiver *self,
 	  EDEBUG ("MidiChannel[%u]: Program %u (Value=%f) (stamp:%llu)", event->channel,
                         event->data.program, event->data.program / (gfloat) 0x7f, event->delta_time);
 	  update_midi_signal_L (self, event->channel, event->delta_time,
-				Bse::MIDI_SIGNAL_PROGRAM, event->data.program / (gfloat) 0x7f,
+				Bse::MidiSignal::PROGRAM, event->data.program / (gfloat) 0x7f,
 				trans);
 	  break;
 	case BSE_MIDI_CHANNEL_PRESSURE:
 	  EDEBUG ("MidiChannel[%u]: Channel Pressure Value=%f (stamp:%llu)", event->channel,
                         event->data.intensity, event->delta_time);
 	  update_midi_signal_L (self, event->channel, event->delta_time,
-				Bse::MIDI_SIGNAL_PRESSURE, event->data.intensity,
+				Bse::MidiSignal::PRESSURE, event->data.intensity,
 				trans);
 	  break;
 	case BSE_MIDI_PITCH_BEND:
 	  EDEBUG ("MidiChannel[%u]: Pitch Bend Value=%f (stamp:%llu)", event->channel,
                         event->data.pitch_bend, event->delta_time);
 	  update_midi_signal_L (self, event->channel, event->delta_time,
-				Bse::MIDI_SIGNAL_PITCH_BEND, event->data.pitch_bend,
+				Bse::MidiSignal::PITCH_BEND, event->data.pitch_bend,
 				trans);
 	  break;
 	default:

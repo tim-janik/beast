@@ -470,10 +470,10 @@ bse_source_set_automation_property (BseSource        *source,
                                     Bse::MidiSignalType signal_type)
 {
   assert (BSE_MIDI_CONTROL_NONE          == BseMidiControlType (0) &&
-            BSE_MIDI_CONTROL_CONTINUOUS_0  == BseMidiControlType (Bse::MIDI_SIGNAL_CONTINUOUS_0) &&
-            BSE_MIDI_CONTROL_CONTINUOUS_31 == BseMidiControlType (Bse::MIDI_SIGNAL_CONTINUOUS_31) &&
-            BSE_MIDI_CONTROL_0             == BseMidiControlType (Bse::MIDI_SIGNAL_CONTROL_0) &&
-            BSE_MIDI_CONTROL_127           == BseMidiControlType (Bse::MIDI_SIGNAL_CONTROL_127));
+            BSE_MIDI_CONTROL_CONTINUOUS_0  == BseMidiControlType (Bse::MidiSignal::CONTINUOUS_0) &&
+            BSE_MIDI_CONTROL_CONTINUOUS_31 == BseMidiControlType (Bse::MidiSignal::CONTINUOUS_31) &&
+            BSE_MIDI_CONTROL_0             == BseMidiControlType (Bse::MidiSignal::CONTROL_0) &&
+            BSE_MIDI_CONTROL_127           == BseMidiControlType (Bse::MidiSignal::CONTROL_127));
   assert_return (BSE_IS_SOURCE (source), Bse::Error::INTERNAL);
   assert_return (prop_name != NULL, Bse::Error::INTERNAL);
   if (BSE_SOURCE_PREPARED (source))

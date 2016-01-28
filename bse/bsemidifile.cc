@@ -263,25 +263,25 @@ bse_midi_file_add_part_events (BseMidiFile *smf,
         case BSE_MIDI_CONTROL_CHANGE:
           if (!msignal)
             {
-              msignal = Bse::MidiSignalType (Bse::MIDI_SIGNAL_CONTROL_0 + event->data.control.control);
+              msignal = Bse::MidiSignalType (Bse::MidiSignal::CONTROL_0 + event->data.control.control);
               fvalue = event->data.control.value;
             }
         case BSE_MIDI_PROGRAM_CHANGE:
           if (!msignal)
             {
-              msignal = Bse::MIDI_SIGNAL_PROGRAM;
+              msignal = Bse::MidiSignal::PROGRAM;
               fvalue = event->data.program * (1.0 / (double) 0x7F);
             }
         case BSE_MIDI_CHANNEL_PRESSURE:
           if (!msignal)
             {
-              msignal = Bse::MIDI_SIGNAL_PRESSURE;
+              msignal = Bse::MidiSignal::PRESSURE;
               fvalue = event->data.intensity;
             }
         case BSE_MIDI_PITCH_BEND:
           if (!msignal)
             {
-              msignal = Bse::MIDI_SIGNAL_PITCH_BEND;
+              msignal = Bse::MidiSignal::PITCH_BEND;
               fvalue = event->data.pitch_bend;
             }
           part->as<Bse::PartImpl*>()->insert_control (start * smf->tpqn_rate, msignal, fvalue);

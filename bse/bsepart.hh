@@ -169,8 +169,8 @@ BsePartEventType   bse_part_query_event         (BsePart           *self,
 #define BSE_PART_MAX_CHANNELS           (0x1024)
 #define BSE_PART_MAX_TICK               (0x7fffffff)
 #define BSE_PART_INVAL_TICK_FLAG        (0x80000000)
-#define BSE_PART_NOTE_CONTROL(ctype)    ((ctype) == Bse::MIDI_SIGNAL_VELOCITY || \
-                                         (ctype) == Bse::MIDI_SIGNAL_FINE_TUNE)
+#define BSE_PART_NOTE_CONTROL(ctype)    ((ctype) == Bse::MidiSignal::VELOCITY || \
+                                         (ctype) == Bse::MidiSignal::FINE_TUNE)
 
 /* --- BsePartControlChannel --- */
 struct BsePartEventControl;

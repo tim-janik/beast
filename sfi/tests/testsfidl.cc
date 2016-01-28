@@ -74,7 +74,7 @@ public:
     ASSERT_EQ (rename (ABSOLUTE, "XWindows::WMHints", UPPER, "_",
                        empty, UPPER, "_"),
               "XWINDOWS_WM_HINTS");
-    ASSERT_EQ (rename (ABSOLUTE, "Bse::MIDI_SIGNAL_PROGRAM", UPPER, "_",
+    ASSERT_EQ (rename (ABSOLUTE, "Bse::MidiSignal::PROGRAM", UPPER, "_",
                        empty, UPPER, "_"),
               "BSE_MIDI_SIGNAL_PROGRAM");
     TDONE();
