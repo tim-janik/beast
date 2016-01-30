@@ -23,7 +23,7 @@ bse_midi_device_null_list_devices (BseDevice *device)
   return ring;
 }
 
-static Bse::ErrorType
+static Bse::Error
 bse_midi_device_null_open (BseDevice     *device,
                            gboolean       require_readable,
                            gboolean       require_writable,

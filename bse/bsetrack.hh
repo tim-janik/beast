@@ -94,7 +94,7 @@ public:
   virtual TrackPartSeq list_parts        () override;
   virtual PartIfaceP   get_part          (int tick) override;
   virtual int          get_last_tick     () override;
-  virtual ErrorType    ensure_output     () override;
+  virtual Error    ensure_output     () override;
   virtual SourceIfaceP get_output_source () override;
 };
 

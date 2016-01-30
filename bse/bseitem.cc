@@ -744,13 +744,13 @@ find_method_procedure (GType       object_type,
   return proc_type;
 }
 
-static inline Bse::ErrorType
+static inline Bse::Error
 bse_item_execva_i (BseItem     *item,
                    const char  *procedure,
                    va_list      var_args,
                    gboolean     skip_oparams)
 {
-  Bse::ErrorType error;
+  Bse::Error error;
   GType proc_type = find_method_procedure (BSE_OBJECT_TYPE (item), procedure);
   GValue obj_value;
 
@@ -771,14 +771,14 @@ bse_item_execva_i (BseItem     *item,
   return error;
 }
 
-Bse::ErrorType
+Bse::Error
 bse_item_exec (void       *_item,
                const char *procedure,
                ...)
 {
   BseItem *item = (BseItem*) _item;
   va_list var_args;
-  Bse::ErrorType error;
+  Bse::Error error;
 
   assert_return (BSE_IS_ITEM (item), Bse::Error::INTERNAL);
   assert_return (procedure != NULL, Bse::Error::INTERNAL);
@@ -790,14 +790,14 @@ bse_item_exec (void       *_item,
   return error;
 }
 
-Bse::ErrorType
+Bse::Error
 bse_item_exec_void (void       *_item,
                     const char *procedure,
                     ...)
 {
   BseItem *item = (BseItem*) _item;
   va_list var_args;
-  Bse::ErrorType error;
+  Bse::Error error;
 
   assert_return (BSE_IS_ITEM (item), Bse::Error::INTERNAL);
   assert_return (procedure != NULL, Bse::Error::INTERNAL);
@@ -880,7 +880,7 @@ undo_call_proc (BseUndoStep  *ustep,
   else /* invoke procedure */
     {
       GValue ovalue = { 0, };
-      Bse::ErrorType error;
+      Bse::Error error;
       uint i;
       /* convert values from undo */
       for (i = 0; i < proc->n_in_pspecs; i++)
@@ -895,7 +895,7 @@ undo_call_proc (BseUndoStep  *ustep,
         {
           /* check returned error if any */
           if (G_PARAM_SPEC_VALUE_TYPE (proc->out_pspecs[0]) == BSE_TYPE_ERROR_TYPE && !error)
-            error = Bse::ErrorType (g_value_get_enum (&ovalue));
+            error = Bse::Error (g_value_get_enum (&ovalue));
           g_value_unset (&ovalue);
         }
       /* we're not tolerating any errors */
@@ -915,7 +915,7 @@ bse_item_push_undo_proc_valist (void        *item,
   BseUndoStack *ustack = bse_item_undo_open (item, "%s: %s", commit_as_redo ? "redo-proc" : "undo-proc", procedure);
   BseProcedureClass *proc;
   GValue *ivalues;
-  Bse::ErrorType error;
+  Bse::Error error;
   uint i;
   if (BSE_UNDO_STACK_VOID (ustack) ||
       BSE_ITEM_INTERNAL (item))
@@ -1303,7 +1303,7 @@ undo_lambda_call (BseUndoStep *ustep, BseUndoStack *ustack)
   ItemImpl &self = project.undo_resolve (*(ItemImpl::UndoDescriptor<ItemImpl>*) ustep->data[0].v_pointer);
   auto *lambda = (ItemImpl::UndoLambda*) ustep->data[1].v_pointer;
   // invoke undo function
-  const Bse::ErrorType error = (*lambda) (self, ustack);
+  const Bse::Error error = (*lambda) (self, ustack);
   if (error) // undo errors shouldn't happen
     {
       String *blurb = (String*) ustep->data[2].v_pointer;
@@ -1339,7 +1339,7 @@ ItemImpl::push_property_undo (const String &property_name)
     critical ("%s: invalid property name: %s", __func__, property_name);
   else
     {
-      auto lambda = [property_name, saved_value] (ItemImpl &self, BseUndoStack *ustack) -> ErrorType {
+      auto lambda = [property_name, saved_value] (ItemImpl &self, BseUndoStack *ustack) -> Error {
         const bool success = self.__aida_set__ (property_name, saved_value);
         if (!success)
           critical ("%s: failed to undo property change for '%s': %s", __func__, property_name, saved_value.repr());

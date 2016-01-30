@@ -46,9 +46,9 @@ bse_pcm_device_port_audio_init (BsePcmDevicePortAudio *self)
   Pa_Initialize();
 }
 
-static Bse::ErrorType
+static Bse::Error
 bse_error_from_pa_error (PaError      pa_error,
-                         Bse::ErrorType fallback)
+                         Bse::Error fallback)
 {
   switch (pa_error)
     {
@@ -159,7 +159,7 @@ bse_pcm_device_port_audio_list_devices (BseDevice *device)
   return ring;
 }
 
-static Bse::ErrorType
+static Bse::Error
 bse_pcm_device_port_audio_open (BseDevice     *device,
 			        gboolean       require_readable,
 			        gboolean       require_writable,
@@ -193,7 +193,7 @@ bse_pcm_device_port_audio_open (BseDevice     *device,
 	}
     }
 
-  Bse::ErrorType error = Bse::Error::NONE;
+  Bse::Error error = Bse::Error::NONE;
 
   PaStreamParameters inputParameters = { 0, };
   inputParameters.device = Pa_GetDefaultInputDevice();

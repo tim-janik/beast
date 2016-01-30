@@ -134,7 +134,7 @@ accel_map_print (gpointer        data,
   g_string_free (gstring, TRUE);
 }
 
-Bse::ErrorType
+Bse::Error
 bst_rc_dump (const gchar *file_name)
 {
   SfiWStore *wstore;
@@ -214,11 +214,11 @@ rc_file_try_statement (gpointer   context_data,
     return SFI_TOKEN_UNMATCHED;
 }
 
-Bse::ErrorType
+Bse::Error
 bst_rc_parse (const gchar *file_name)
 {
   SfiRStore *rstore;
-  Bse::ErrorType error = Bse::Error::NONE;
+  Bse::Error error = Bse::Error::NONE;
   gint fd;
 
   assert_return (file_name != NULL, Bse::Error::INTERNAL);

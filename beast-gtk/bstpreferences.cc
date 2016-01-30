@@ -277,7 +277,7 @@ void
 bst_preferences_load_rc_files (void)
 {
   gchar *file_name = BST_STRDUP_RC_FILE ();
-  Bse::ErrorType error;
+  Bse::Error error;
   GSList *slist = NULL;
 
   bst_rc_parse (file_name);
@@ -309,7 +309,7 @@ bst_preferences_saved (void)
 void
 bst_preferences_save (BstPreferences *self)
 {
-  Bse::ErrorType error = Bse::Error::NONE;
+  Bse::Error error = Bse::Error::NONE;
   gchar *file_name;
   GSList *slist = NULL;
 

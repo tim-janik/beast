@@ -43,11 +43,11 @@ bse_midi_device_oss_init (BseMidiDeviceOSS *oss)
 {
   oss->device_name = g_strdup (BSE_MIDI_DEVICE_CONF_OSS);
 }
-static Bse::ErrorType
+static Bse::Error
 check_device_usage (const char *name,
                     const char *check_mode)
 {
-  Bse::ErrorType error = gsl_file_check (name, check_mode);
+  Bse::Error error = gsl_file_check (name, check_mode);
   if (!error)
     {
       errno = 0;
@@ -101,7 +101,7 @@ bse_midi_device_oss_list_devices (BseDevice *device)
   return ring;
 }
 
-static Bse::ErrorType
+static Bse::Error
 bse_midi_device_oss_open (BseDevice     *device,
                           gboolean       require_readable,
                           gboolean       require_writable,
@@ -128,7 +128,7 @@ bse_midi_device_oss_open (BseDevice     *device,
   oss->fd = -1;
 
   /* try open */
-  Bse::ErrorType error;
+  Bse::Error error;
   int fd = -1;
   handle->readable = (omode & O_RDWR) == O_RDWR || (omode & O_RDONLY) == O_RDONLY;
   handle->writable = (omode & O_RDWR) == O_RDWR || (omode & O_WRONLY) == O_WRONLY;

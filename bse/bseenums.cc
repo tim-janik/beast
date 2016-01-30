@@ -39,15 +39,15 @@ bse_type_register_enums (void)
 }
 
 const char*
-bse_error_blurb (Bse::ErrorType error_value)
+bse_error_blurb (Bse::Error error_value)
 {
-  const Rapicorn::Aida::EnumValue ev = Rapicorn::Aida::enum_info<Bse::ErrorType>().find_value (error_value);
+  const Rapicorn::Aida::EnumValue ev = Rapicorn::Aida::enum_info<Bse::Error>().find_value (error_value);
   return ev.blurb;
 }
 
-Bse::ErrorType
+Bse::Error
 bse_error_from_errno (int             v_errno,
-		      Bse::ErrorType    fallback)
+		      Bse::Error    fallback)
 {
   return gsl_error_from_errno (v_errno, fallback);
 }

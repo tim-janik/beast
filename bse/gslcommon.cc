@@ -194,7 +194,7 @@ gsl_byte_order_from_string (const gchar *string)
   return 0;
 }
 
-Bse::ErrorType
+Bse::Error
 gsl_file_check (const gchar *file_name,
 		const gchar *mode)
 {
@@ -203,9 +203,9 @@ gsl_file_check (const gchar *file_name,
   return gsl_error_from_errno (errno, Bse::Error::FILE_OPEN_FAILED);
 }
 
-Bse::ErrorType
+Bse::Error
 gsl_error_from_errno (gint         sys_errno,
-		      Bse::ErrorType fallback)
+		      Bse::Error fallback)
 {
   switch (sys_errno)
     {
@@ -243,10 +243,10 @@ gsl_error_from_errno (gint         sys_errno,
 }
 
 static guint
-score_error (Bse::ErrorType error)
+score_error (Bse::Error error)
 {
   /* errors are sorted by increasing descriptiveness */
-  static const Bse::ErrorType error_score[] = {
+  static const Bse::Error error_score[] = {
     Bse::Error::NONE /* least descriptive, indicates 0-initialized error variable */,
     Bse::Error::UNKNOWN, Bse::Error::INTERNAL, Bse::Error::TEMP,
     Bse::Error::IO, Bse::Error::FILE_EOF,
@@ -261,12 +261,12 @@ score_error (Bse::ErrorType error)
   return i;
 }
 
-Bse::ErrorType
+Bse::Error
 gsl_error_select (guint           n_errors,
-                  Bse::ErrorType    first_error,
+                  Bse::Error    first_error,
                   ...)
 {
-  Bse::ErrorType *errors = g_new (Bse::ErrorType, MAX (1, n_errors));
+  Bse::Error *errors = g_new (Bse::Error, MAX (1, n_errors));
   va_list args;
   guint i, score;
   /* function used to select a descriptive error in
@@ -276,12 +276,12 @@ gsl_error_select (guint           n_errors,
   for (i = 0; i < n_errors; i++)
     {
       if (i)
-        first_error = (Bse::ErrorType) va_arg (args, int); // Bse::ErrorType
+        first_error = (Bse::Error) va_arg (args, int); // Bse::Error
       errors[i] = first_error;
     }
   va_end (args);
   /* grab first error, unless followed by an error with higher score */
-  Bse::ErrorType e = errors[0];
+  Bse::Error e = errors[0];
   score = score_error (e);
   for (i = 1; i < n_errors; i++)
     {

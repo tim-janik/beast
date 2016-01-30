@@ -35,7 +35,7 @@ BODY (BseProcedureClass *proc,
   guint ichannel     = sfi_value_get_int (in_values++);
   BseSource *osource = (BseSource*) bse_value_get_object (in_values++);
   guint ochannel     = sfi_value_get_int (in_values++);
-  Bse::ErrorType error;
+  Bse::Error error;
 
   /* check parameters */
   if (!BSE_IS_SOURCE (isource) || !BSE_IS_SOURCE (osource) ||
@@ -77,7 +77,7 @@ BODY (BseProcedureClass *proc,
   BseSource *osource = (BseSource*) bse_value_get_object (in_values++);
   const char *ochannel_ident = sfi_value_get_string (in_values++);
   guint ichannel, ochannel;
-  Bse::ErrorType error;
+  Bse::Error error;
 
   /* check parameters */
   if (!BSE_IS_SOURCE (isource) || !BSE_IS_SOURCE (osource) ||
@@ -121,7 +121,7 @@ BODY (BseProcedureClass *proc,
   guint ichannel     = sfi_value_get_int (in_values++);
   BseSource *osource = (BseSource*) bse_value_get_object (in_values++);
   guint ochannel     = sfi_value_get_int (in_values++);
-  Bse::ErrorType error = Bse::Error::NONE;
+  Bse::Error error = Bse::Error::NONE;
 
   /* check parameters */
   if (!BSE_IS_SOURCE (isource) || !BSE_IS_SOURCE (osource))
@@ -168,7 +168,7 @@ BODY (BseProcedureClass *proc,
   BseSource *osource = (BseSource*) bse_value_get_object (in_values++);
   const char *ochannel_ident = sfi_value_get_string (in_values++);
   guint ichannel, ochannel;
-  Bse::ErrorType error = Bse::Error::NONE;
+  Bse::Error error = Bse::Error::NONE;
 
   /* check parameters */
   if (!BSE_IS_SOURCE (isource) || !BSE_IS_SOURCE (osource) ||
@@ -696,7 +696,7 @@ BODY (BseProcedureClass *proc,
   const char *property = sfi_value_get_string (in_values++);
   guint      midi_channel = sfi_value_get_int (in_values++);
   Bse::MidiSignalType control_type = (Bse::MidiSignalType) g_value_get_enum (in_values++);
-  Bse::ErrorType error = Bse::Error::NONE;
+  Bse::Error error = Bse::Error::NONE;
 
   /* check parameters */
   if (!BSE_IS_SOURCE (source) || !property)

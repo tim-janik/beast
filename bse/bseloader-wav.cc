@@ -31,7 +31,7 @@ typedef struct
   DWord file_length;	/* file length */
   DWord chunk_type;     /* 'WAVE', big endian as int */
 } WavHeader;
-static Bse::ErrorType
+static Bse::Error
 wav_read_header (int        fd,
 		 WavHeader *header)
 {
@@ -84,7 +84,7 @@ typedef struct
   Word  byte_per_sample;        /* 1 = 8bit, 2 = 16bit, 3 = 24bit, 4 = 24bit or 32 bit */
   Word  bit_per_sample;         /* 8, 12, 16, 32 */
 } FmtHeader;
-static Bse::ErrorType
+static Bse::Error
 wav_read_fmt_header (int        fd,
 		     FmtHeader *header)
 {
@@ -185,7 +185,7 @@ typedef struct
   DWord data_chunk;             /* 'data', big endian as int */
   DWord data_length;
 } DataHeader;
-static Bse::ErrorType
+static Bse::Error
 wav_read_data_header (int         fd,
 		      DataHeader *header,
 		      uint        byte_alignment)
@@ -249,7 +249,7 @@ typedef struct
 static BseWaveFileInfo*
 wav_load_file_info (void         *data,
 		    const char   *file_name,
-		    Bse::ErrorType *error_p)
+		    Bse::Error *error_p)
 {
   WavHeader wav_header;
   FileInfo *fi;
@@ -303,7 +303,7 @@ static BseWaveDsc*
 wav_load_wave_dsc (void            *data,
 		   BseWaveFileInfo *file_info,
 		   uint             nth_wave,
-		   Bse::ErrorType    *error_p)
+		   Bse::Error    *error_p)
 {
   FileInfo *fi = (FileInfo*) file_info;
   DataHeader data_header;
@@ -392,7 +392,7 @@ static GslDataHandle*
 wav_create_chunk_handle (void         *data,
 			 BseWaveDsc   *wave_dsc,
 			 uint          nth_chunk,
-			 Bse::ErrorType *error_p)
+			 Bse::Error *error_p)
 {
   WaveDsc *dsc = (WaveDsc*) wave_dsc;
   GslDataHandle *dhandle;

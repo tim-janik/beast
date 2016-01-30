@@ -459,14 +459,14 @@ pcm_request_callback (BseDevice *device,
   PcmRequest *pr = (PcmRequest*) data;
   bse_pcm_device_request (BSE_PCM_DEVICE (device), pr->n_channels, pr->mix_freq, pr->latency, pr->block_size);
 }
-static Bse::ErrorType
+static Bse::Error
 server_open_pcm_device (BseServer *server,
                         guint      mix_freq,
                         guint      latency,
                         guint      block_size)
 {
   assert_return (server->pcm_device == NULL, Bse::Error::INTERNAL);
-  Bse::ErrorType error = Bse::Error::UNKNOWN;
+  Bse::Error error = Bse::Error::UNKNOWN;
   PcmRequest pr;
   pr.n_channels = 2;
   pr.mix_freq = mix_freq;
@@ -494,11 +494,11 @@ server_open_pcm_device (BseServer *server,
   server->pcm_input_checked = FALSE;
   return server->pcm_device ? Bse::Error::NONE : error;
 }
-static Bse::ErrorType
+static Bse::Error
 server_open_midi_device (BseServer *server)
 {
   assert_return (server->midi_device == NULL, Bse::Error::INTERNAL);
-  Bse::ErrorType error;
+  Bse::Error error;
   server->midi_device = (BseMidiDevice*) bse_device_open_best (BSE_TYPE_MIDI_DEVICE, TRUE, FALSE, bse_main_args->midi_drivers, NULL, NULL, &error);
   if (!server->midi_device)
     {
@@ -521,10 +521,10 @@ server_open_midi_device (BseServer *server)
     }
   return server->midi_device ? Bse::Error::NONE : error;
 }
-Bse::ErrorType
+Bse::Error
 bse_server_open_devices (BseServer *self)
 {
-  Bse::ErrorType error = Bse::Error::NONE;
+  Bse::Error error = Bse::Error::NONE;
   assert_return (BSE_IS_SERVER (self), Bse::Error::INTERNAL);
   /* check whether devices are already opened */
   if (self->dev_use_count)
@@ -545,7 +545,7 @@ bse_server_open_devices (BseServer *self)
     {
       mix_freq = aligned_freq;
       bse_engine_constrain (latency, mix_freq, BSE_GCONFIG (synth_control_freq), &block_size, NULL);
-      Bse::ErrorType new_error = server_open_pcm_device (self, mix_freq, latency, block_size);
+      Bse::Error new_error = server_open_pcm_device (self, mix_freq, latency, block_size);
       error = new_error ? error : Bse::Error::NONE;
     }
   if (!error)
@@ -558,7 +558,7 @@ bse_server_open_devices (BseServer *self)
       self->pcm_imodule = bse_pcm_imodule_insert (pcm_handle, trans);
       if (self->wave_file)
 	{
-	  Bse::ErrorType error;
+	  Bse::Error error;
 	  self->pcm_writer = (BsePcmWriter*) bse_object_new (BSE_TYPE_PCM_WRITER, NULL);
           const uint n_channels = 2;
 	  error = bse_pcm_writer_open (self->pcm_writer, self->wave_file,
@@ -763,7 +763,7 @@ bse_server_remove_io_watch (BseServer *server,
     g_warning (G_STRLOC ": no such io watch installed %p(%p)", watch_func, data);
 }
 
-Bse::ErrorType
+Bse::Error
 bse_server_run_remote (BseServer         *server,
 		       const gchar       *process_name,
 		       SfiRing           *params,
@@ -1339,7 +1339,7 @@ ServerImpl::start_recording (const String &wave_file, double n_seconds)
 struct ScriptRegistration
 {
   gchar         *script;
-  Bse::ErrorType (*register_func) (const gchar *script, BseJanitor **janitor_p);
+  Bse::Error (*register_func) (const gchar *script, BseJanitor **janitor_p);
   ScriptRegistration *next;
 };
 
@@ -1359,7 +1359,7 @@ register_scripts_handler (gpointer data)
   BseServer *server = (BseServer*) data;
   ScriptRegistration *scr = (ScriptRegistration*) g_object_get_data ((GObject*) server, "script-registration-queue");
   BseJanitor *janitor = NULL;
-  Bse::ErrorType error;
+  Bse::Error error;
 
   if (!scr)
     {

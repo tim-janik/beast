@@ -108,10 +108,10 @@ BseItem*        bse_item_use                 (BseItem         *item);
 void            bse_item_unuse               (BseItem         *item);
 void            bse_item_set_parent          (BseItem         *item,
                                               BseItem         *parent);
-Bse::ErrorType    bse_item_exec                (gpointer         item,
+Bse::Error    bse_item_exec                (gpointer         item,
                                               const gchar     *procedure,
                                               ...);
-Bse::ErrorType    bse_item_exec_void           (gpointer         item,
+Bse::Error    bse_item_exec_void           (gpointer         item,
                                               const gchar     *procedure,
                                               ...); /* ignore return values */
 /* undo-aware functions */
@@ -150,7 +150,7 @@ G_END_DECLS
 namespace Bse {
 
 class ItemImpl : public ObjectImpl, public virtual ItemIface {
-public: typedef std::function<ErrorType (ItemImpl &item, BseUndoStack *ustack)> UndoLambda;
+public: typedef std::function<Error (ItemImpl &item, BseUndoStack *ustack)> UndoLambda;
 private:
   void push_item_undo (const String &blurb, const UndoLambda &lambda);
   struct UndoDescriptorData {
@@ -172,7 +172,7 @@ public:
   void               push_property_undo (const String &property_name);
   /// Push an undo @a function onto the undo stack, the @a self argument to @a function must match @a this.
   template<typename ItemT, typename... FuncArgs, typename... CallArgs> void
-  push_undo (const String &blurb, ItemT &self, ErrorType (ItemT::*function) (FuncArgs...), CallArgs... args)
+  push_undo (const String &blurb, ItemT &self, Error (ItemT::*function) (FuncArgs...), CallArgs... args)
   {
     RAPICORN_ASSERT_RETURN (this == &self);
     UndoLambda lambda = [function, args...] (ItemImpl &item, BseUndoStack *ustack) {
@@ -193,11 +193,11 @@ public:
     };
     push_item_undo (blurb, lambda);
   }
-  /// Push an undo lambda, using the signature: ErrorType lambda (TypeDerivedFromItem&, BseUndoStack*);
+  /// Push an undo lambda, using the signature: Error lambda (TypeDerivedFromItem&, BseUndoStack*);
   template<typename ItemT, typename ItemTLambda> void
   push_undo (const String &blurb, ItemT &self, const ItemTLambda &itemt_lambda)
   {
-    const std::function<ErrorType (ItemT &item, BseUndoStack *ustack)> &undo_lambda = itemt_lambda;
+    const std::function<Error (ItemT &item, BseUndoStack *ustack)> &undo_lambda = itemt_lambda;
     RAPICORN_ASSERT_RETURN (this == &self);
     UndoLambda lambda = [undo_lambda] (ItemImpl &item, BseUndoStack *ustack) {
       ItemT &self = dynamic_cast<ItemT&> (item);
@@ -209,9 +209,9 @@ public:
   template<typename ItemT, typename ItemTLambda> void
   push_undo_to_redo (const String &blurb, ItemT &self, const ItemTLambda &itemt_lambda)
   { // push itemt_lambda as undo step when this undo step is executed (i.e. itemt_lambda is for redo)
-    const std::function<ErrorType (ItemT &item, BseUndoStack *ustack)> &undo_lambda = itemt_lambda;
+    const std::function<Error (ItemT &item, BseUndoStack *ustack)> &undo_lambda = itemt_lambda;
     RAPICORN_ASSERT_RETURN (this == &self);
-    auto lambda = [blurb, undo_lambda] (ItemT &self, BseUndoStack *ustack) -> ErrorType {
+    auto lambda = [blurb, undo_lambda] (ItemT &self, BseUndoStack *ustack) -> Error {
       self.push_undo (blurb, self, undo_lambda);
       return Error::NONE;
     };

@@ -39,7 +39,7 @@ struct BseProject : BseContainer {
 struct BseProjectClass : BseContainerClass
 {};
 
-Bse::ErrorType	bse_project_activate		(BseProject	*project);
+Bse::Error	bse_project_activate		(BseProject	*project);
 void		bse_project_start_playback	(BseProject	*project);
 void		bse_project_stop_playback	(BseProject	*project);
 void		bse_project_check_auto_stop	(BseProject	*project);
@@ -50,9 +50,9 @@ void		bse_project_keep_activated	(BseProject	*project,
 						 guint64	 min_tick);
 void		bse_project_state_changed	(BseProject	*project,
 						 BseProjectState state);
-Bse::ErrorType	bse_project_restore		(BseProject	*project,
+Bse::Error	bse_project_restore		(BseProject	*project,
 						 BseStorage	*storage);
-Bse::ErrorType	bse_project_store_bse		(BseProject	*project,
+Bse::Error	bse_project_store_bse		(BseProject	*project,
 						 BseSuper       *super,
 						 const gchar	*bse_file,
 						 gboolean        self_contained);
@@ -83,8 +83,8 @@ protected:
 public:
   explicit          ProjectImpl         (BseObject*);
   virtual void      change_name         (const String &name) override;
-  virtual ErrorType play                () override;
-  virtual ErrorType activate            () override;
+  virtual Error play                () override;
+  virtual Error activate            () override;
   virtual bool      can_play            () override;
   virtual bool      is_playing          () override;
   virtual bool      is_active           () override;
@@ -101,8 +101,8 @@ public:
   virtual void      clean_dirty         () override;
   virtual bool      is_dirty            () override;
   virtual void      inject_midi_control (int midi_channel, int midi_control, double control_value) override;
-  virtual ErrorType import_midi_file    (const String &file_name) override;
-  virtual ErrorType restore_from_file   (const String &file_name) override;
+  virtual Error import_midi_file    (const String &file_name) override;
+  virtual Error restore_from_file   (const String &file_name) override;
 };
 
 } // Bse

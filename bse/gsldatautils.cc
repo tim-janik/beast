@@ -337,7 +337,7 @@ wstore_context_reader (gpointer data,
 
   if (!wc->opened)
     {
-      Bse::ErrorType error = gsl_data_handle_open (wc->dhandle);
+      Bse::Error error = gsl_data_handle_open (wc->dhandle);
       if (error)
 	return -ENOENT; /* approximation of OPEN_FAILED */
       wc->opened = TRUE;
@@ -751,7 +751,7 @@ gsl_data_make_fade_ramp (GslDataHandle *handle,
  * according to a given threshold and optionally produce
  * a fade ramp.
  */
-Bse::ErrorType
+Bse::Error
 gsl_data_clip_sample (GslDataHandle     *dhandle,
                       GslDataClipConfig *cconfig,
                       GslDataClipResult *result)

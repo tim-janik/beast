@@ -22,7 +22,7 @@ METHOD (BseEditableSample, open) {
 {
   /* extract parameter values */
   BseEditableSample *esample = (BseEditableSample*) bse_value_get_object (in_values++);
-  Bse::ErrorType error;
+  Bse::Error error;
 
   /* check parameters */
   if (!BSE_IS_EDITABLE_SAMPLE (esample))

@@ -230,7 +230,7 @@ bst_msg_absorb_config_box_get (GtkWidget *self)
 #include <errno.h>
 #include <sfi/sfistore.hh>       /* we rely on internal API here */
 
-static Bse::ErrorType
+static Bse::Error
 bst_msg_absorb_config_dump (const gchar *file_name)
 {
   assert_return (file_name != NULL, Bse::Error::INTERNAL);
@@ -266,7 +266,7 @@ void
 bst_msg_absorb_config_save (void)
 {
   gchar *file_name = BST_STRDUP_ABSORBRC_FILE();
-  Bse::ErrorType error = bst_msg_absorb_config_dump (file_name);
+  Bse::Error error = bst_msg_absorb_config_dump (file_name);
   if (error)
     sfi_diag ("Failed to save config-file \"%s\": %s", file_name, Bse::error_blurb (error));
   g_free (file_name);
@@ -294,7 +294,7 @@ msg_absorb_config_try_statement (gpointer   context_data,
     return SFI_TOKEN_UNMATCHED;
 }
 
-static Bse::ErrorType
+static Bse::Error
 bst_msg_absorb_config_parse (const gchar *file_name)
 {
   assert_return (file_name != NULL, Bse::Error::INTERNAL);
@@ -310,7 +310,7 @@ bst_msg_absorb_config_parse (const gchar *file_name)
 
   SfiRStore *rstore = sfi_rstore_new ();
   sfi_rstore_input_fd (rstore, fd, absname);
-  Bse::ErrorType error = Bse::Error::NONE;
+  Bse::Error error = Bse::Error::NONE;
   if (sfi_rstore_parse_all (rstore, NULL, msg_absorb_config_try_statement, absname) > 0)
     error = Bse::Error::PARSE_ERROR;
   sfi_rstore_destroy (rstore);
@@ -367,7 +367,7 @@ void
 bst_msg_absorb_config_load (void)
 {
   gchar *file_name = BST_STRDUP_ABSORBRC_FILE();
-  Bse::ErrorType error = bst_msg_absorb_config_parse (file_name);
+  Bse::Error error = bst_msg_absorb_config_parse (file_name);
   if (0 && error)
     sfi_diag ("Failed to load config-file \"%s\": %s", file_name, Bse::error_blurb (error));
   g_free (file_name);

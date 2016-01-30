@@ -123,10 +123,10 @@ protected:
   virtual int64		    read_frame  (int64 frame) = 0;
 
 public:
-  Bse::ErrorType
+  Bse::Error
   open (GslDataHandleSetup *setup)
   {
-    Bse::ErrorType error = gsl_data_handle_open (m_src_handle);
+    Bse::Error error = gsl_data_handle_open (m_src_handle);
     if (error != Bse::Error::NONE)
       return error;
 
@@ -275,7 +275,7 @@ private:
     return static_cast<CDataHandleResample2 *> (dhandle)->cxx_dh;
     //return reinterpret_cast<DataHandleResample2 *> (dhandle);
   }
-  static Bse::ErrorType
+  static Bse::Error
   dh_open (GslDataHandle *dhandle, GslDataHandleSetup *setup)
   {
     return dh_cast (dhandle)->open (setup);

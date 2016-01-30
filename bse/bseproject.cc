@@ -447,7 +447,7 @@ compute_missing_supers (BseProject *self,
   return targets;
 }
 
-Bse::ErrorType
+Bse::Error
 bse_project_store_bse (BseProject  *self,
                        BseSuper    *super,
 		       const gchar *bse_file,
@@ -494,7 +494,7 @@ bse_project_store_bse (BseProject  *self,
   while (l < 0 && errno == EINTR);
   g_free (string);
 
-  Bse::ErrorType error = bse_storage_flush_fd (storage, fd);
+  Bse::Error error = bse_storage_flush_fd (storage, fd);
   if (close (fd) < 0 && error == Bse::Error::NONE)
     error = bse_error_from_errno (errno, Bse::Error::FILE_WRITE_FAILED);
   bse_storage_reset (storage);
@@ -503,7 +503,7 @@ bse_project_store_bse (BseProject  *self,
   return error;
 }
 
-Bse::ErrorType
+Bse::Error
 bse_project_restore (BseProject *self,
 		     BseStorage *storage)
 {
@@ -639,7 +639,7 @@ bse_project_create_intern_synth (BseProject  *self,
   if (bse_synth)
     {
       BseStorage *storage = (BseStorage*) bse_object_new (BSE_TYPE_STORAGE, NULL);
-      Bse::ErrorType error = Bse::Error::NONE;
+      Bse::Error error = Bse::Error::NONE;
       StorageTrap strap = { 0, TRUE, }, *old_strap = (StorageTrap*) g_object_get_qdata ((GObject*) self, quark_storage_trap);
       bse_storage_input_text (storage, bse_synth, "<builtin-lib>");
       g_object_set_qdata ((GObject*) self, quark_storage_trap, &strap);
@@ -748,10 +748,10 @@ bse_project_keep_activated (BseProject *self,
     }
 }
 
-Bse::ErrorType
+Bse::Error
 bse_project_activate (BseProject *self)
 {
-  Bse::ErrorType error;
+  Bse::Error error;
   BseTrans *trans;
   GSList *slist;
 
@@ -941,12 +941,12 @@ ProjectImpl::change_name (const String &name)
   g_object_set (self, "uname", name.c_str(), NULL); /* no undo */
 }
 
-ErrorType
+Error
 ProjectImpl::play ()
 {
   BseProject *self = as<BseProject*>();
   BseProjectState state_before = self->state;
-  Bse::ErrorType error = bse_project_activate (self);
+  Bse::Error error = bse_project_activate (self);
   if (!error)
     {
       if (self->state == BSE_PROJECT_PLAYING)
@@ -958,21 +958,21 @@ ProjectImpl::play ()
       // some things work only (can only be undone) in deactivated projects
       bse_project_push_undo_silent_deactivate (self);
     }
-  return Bse::ErrorType (error);
+  return Bse::Error (error);
 }
 
-ErrorType
+Error
 ProjectImpl::activate ()
 {
   BseProject *self = as<BseProject*>();
   BseProjectState state_before = self->state;
-  Bse::ErrorType error = bse_project_activate (self);
+  Bse::Error error = bse_project_activate (self);
   if (state_before == BSE_PROJECT_INACTIVE && self->state != BSE_PROJECT_INACTIVE)
     {
       // some things work only (can only be undone) in deactivated projects
       bse_project_push_undo_silent_deactivate (self);
     }
-  return Bse::ErrorType (error);
+  return Bse::Error (error);
 }
 
 bool
@@ -1132,11 +1132,11 @@ ProjectImpl::inject_midi_control (int midi_channel, int midi_control, double con
     }
 }
 
-ErrorType
+Error
 ProjectImpl::import_midi_file (const String &file_name)
 {
   BseProject *self = as<BseProject*>();
-  Bse::ErrorType error = Bse::Error::NONE;
+  Bse::Error error = Bse::Error::NONE;
   BseMidiFile *smf = bse_midi_file_load (file_name.c_str(), &error);
   if (!error)
     {
@@ -1154,14 +1154,14 @@ ProjectImpl::import_midi_file (const String &file_name)
     }
   if (smf)
     bse_midi_file_free (smf);
-  return Bse::ErrorType (error);
+  return Bse::Error (error);
 }
 
-ErrorType
+Error
 ProjectImpl::restore_from_file (const String &file_name)
 {
   BseProject *self = as<BseProject*>();
-  Bse::ErrorType error;
+  Bse::Error error;
   if (!self->in_undo && !self->in_redo)
     {
       BseStorage *storage = (BseStorage*) bse_object_new (BSE_TYPE_STORAGE, NULL);
@@ -1174,7 +1174,7 @@ ProjectImpl::restore_from_file (const String &file_name)
     }
   else
     error = Bse::Error::PROC_BUSY;
-  return Bse::ErrorType (error);
+  return Bse::Error (error);
 }
 
 } // Bse

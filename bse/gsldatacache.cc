@@ -94,7 +94,7 @@ gsl_data_cache_open (GslDataCache *dcache)
   dcache->mutex.lock();
   if (!dcache->open_count)
     {
-      Bse::ErrorType error;
+      Bse::Error error;
       error = gsl_data_handle_open (dcache->dhandle);
       if (error)
 	{

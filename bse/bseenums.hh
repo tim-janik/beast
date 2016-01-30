@@ -303,8 +303,8 @@ typedef enum
 
 
 /* --- convenience functions --- */
-const gchar*	bse_error_blurb			(Bse::ErrorType	 error_value);
-Bse::ErrorType	bse_error_from_errno		(gint v_errno, Bse::ErrorType fallback);
+const gchar*	bse_error_blurb			(Bse::Error	 error_value);
+Bse::Error	bse_error_from_errno		(gint v_errno, Bse::Error fallback);
 
 #define bse_assert_ok(error)    G_STMT_START{                           \
      if G_UNLIKELY (error)                                              \

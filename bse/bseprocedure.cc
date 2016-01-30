@@ -195,17 +195,17 @@ bse_procedure_lookup (const gchar *proc_name)
 }
 
 static void
-signal_exec_status (Bse::ErrorType       error,
+signal_exec_status (Bse::Error       error,
                     BseProcedureClass *proc,
                     GValue            *first_ovalue)
 {
 #if 0
-  /* signal script status, supporting Bse::ErrorType-outparam procedures
+  /* signal script status, supporting Bse::Error-outparam procedures
    */
   if (!error && proc->n_out_pspecs == 1 &&
       g_type_is_a (G_VALUE_TYPE (first_ovalue), BSE_TYPE_ERROR_TYPE))
     {
-      Bse::ErrorType verror = g_value_get_enum (first_ovalue);
+      Bse::Error verror = g_value_get_enum (first_ovalue);
 
       bse_server_exec_status (bse_server_get (), BSE_EXEC_STATUS_DONE, BSE_PROCEDURE_NAME (proc), verror ? 0 : 1, verror);
     }
@@ -214,7 +214,7 @@ signal_exec_status (Bse::ErrorType       error,
 #endif
 }
 
-static Bse::ErrorType
+static Bse::Error
 bse_procedure_call (BseProcedureClass  *proc,
                     GValue             *ivalues,
                     GValue             *ovalues,
@@ -222,7 +222,7 @@ bse_procedure_call (BseProcedureClass  *proc,
                     gpointer            marshal_data)
 {
   guint i, bail_out = FALSE;
-  Bse::ErrorType error;
+  Bse::Error error;
 
   for (i = 0; i < proc->n_in_pspecs; i++)
     {
@@ -268,7 +268,7 @@ bse_procedure_call (BseProcedureClass  *proc,
   return error;
 }
 
-Bse::ErrorType
+Bse::Error
 bse_procedure_marshal (GType               proc_type,
                        const GValue       *ivalues,
                        GValue             *ovalues,
@@ -277,7 +277,7 @@ bse_procedure_marshal (GType               proc_type,
 {
   GValue tmp_ivalues[BSE_PROCEDURE_MAX_IN_PARAMS], tmp_ovalues[BSE_PROCEDURE_MAX_OUT_PARAMS];
   uint i, bail_out = FALSE;
-  Bse::ErrorType error;
+  Bse::Error error;
   assert_return (BSE_TYPE_IS_PROCEDURE (proc_type), Bse::Error::INTERNAL);
   BseProcedureClass *proc = (BseProcedureClass*) g_type_class_ref (proc_type);
   for (i = 0; i < proc->n_in_pspecs; i++)
@@ -326,7 +326,7 @@ bse_procedure_marshal (GType               proc_type,
   return error;
 }
 
-static inline Bse::ErrorType
+static inline Bse::Error
 bse_procedure_call_collect (BseProcedureClass  *proc,
                             const GValue       *first_value,
                             BseProcedureMarshal marshal,
@@ -338,7 +338,7 @@ bse_procedure_call_collect (BseProcedureClass  *proc,
                             va_list             var_args)
 {
   guint i, bail_out = FALSE;
-  Bse::ErrorType error = Bse::Error::NONE;
+  Bse::Error error = Bse::Error::NONE;
   PDEBUG ("call %s: ", BSE_PROCEDURE_NAME (proc));
   /* collect first arg */
   if (first_value && first_value != ivalues) /* may skip this since bse_procedure_call() does extra validation */
@@ -440,14 +440,14 @@ bse_procedure_call_collect (BseProcedureClass  *proc,
  * @param marshal_data	data passed in to @a marshal
  * @param skip_ovalues	whether return value locations should be collected and filled in
  * @param var_args	va_list to collect input args from
- * @return		Bse::ErrorType value of error if any occoured
+ * @return		Bse::Error value of error if any occoured
  *
  * Collect input arguments for a procedure call from a va_list and
  * call the procedure, optionally via @a marshal. If @a skip_ovalues is
  * FALSE, the procedure return values will be stored in return
  * value locations also collected from @a var_args.
  */
-Bse::ErrorType
+Bse::Error
 bse_procedure_marshal_valist (GType               proc_type,
                               const GValue       *first_value,
                               BseProcedureMarshal marshal,
@@ -458,7 +458,7 @@ bse_procedure_marshal_valist (GType               proc_type,
   assert_return (BSE_TYPE_IS_PROCEDURE (proc_type), Bse::Error::INTERNAL);
   GValue tmp_ivalues[BSE_PROCEDURE_MAX_IN_PARAMS], tmp_ovalues[BSE_PROCEDURE_MAX_OUT_PARAMS];
   BseProcedureClass *proc = (BseProcedureClass*) g_type_class_ref (proc_type);
-  Bse::ErrorType error = bse_procedure_call_collect (proc, first_value, marshal, marshal_data,
+  Bse::Error error = bse_procedure_call_collect (proc, first_value, marshal, marshal_data,
                                                    FALSE, skip_ovalues, tmp_ivalues, tmp_ovalues, var_args);
   procedure_class_unref (proc);
   return error;
@@ -469,7 +469,7 @@ bse_procedure_marshal_valist (GType               proc_type,
  * @param first_value	the first input argument if not to be collected
  * @param var_args	va_list to collect input args from
  * @param ivalues	uninitialized GValue array with at least proc->n_in_pspecs members
- * @return		Bse::ErrorType value of error if any occoured during collection
+ * @return		Bse::Error value of error if any occoured during collection
  *
  * Collect input arguments for a procedure call from a va_list. The first
  * value may be supplied as @a first_value and will then not be collected.
@@ -479,13 +479,13 @@ bse_procedure_marshal_valist (GType               proc_type,
  * argument is entirely ignored and collection simply starts out with the
  * second argument.
  */
-Bse::ErrorType
+Bse::Error
 bse_procedure_collect_input_args (BseProcedureClass  *proc,
                                   const GValue       *first_value,
                                   va_list             var_args,
                                   GValue              ivalues[BSE_PROCEDURE_MAX_IN_PARAMS])
 {
-  Bse::ErrorType error;
+  Bse::Error error;
   assert_return (BSE_IS_PROCEDURE_CLASS (proc), Bse::Error::INTERNAL);
 
   /* add an extra reference count to the class */
@@ -497,7 +497,7 @@ bse_procedure_collect_input_args (BseProcedureClass  *proc,
   return error;
 }
 
-Bse::ErrorType
+Bse::Error
 bse_procedure_exec (const gchar *proc_name,
                     ...)
 {
@@ -513,7 +513,7 @@ bse_procedure_exec (const gchar *proc_name,
     }
   else
     {
-      Bse::ErrorType error;
+      Bse::Error error;
       va_list var_args;
 
       va_start (var_args, proc_name);
@@ -523,7 +523,7 @@ bse_procedure_exec (const gchar *proc_name,
     }
 }
 
-Bse::ErrorType
+Bse::Error
 bse_procedure_exec_void (const gchar *proc_name,
                          ...)
 {
@@ -539,7 +539,7 @@ bse_procedure_exec_void (const gchar *proc_name,
     }
   else
     {
-      Bse::ErrorType error;
+      Bse::Error error;
       va_list var_args;
 
       va_start (var_args, proc_name);
@@ -549,7 +549,7 @@ bse_procedure_exec_void (const gchar *proc_name,
     }
 }
 
-Bse::ErrorType
+Bse::Error
 bse_procedure_execvl (BseProcedureClass  *proc,
                       GSList             *in_value_list,
                       GSList             *out_value_list,
@@ -558,7 +558,7 @@ bse_procedure_execvl (BseProcedureClass  *proc,
 {
   GValue tmp_ivalues[BSE_PROCEDURE_MAX_IN_PARAMS];
   GValue tmp_ovalues[BSE_PROCEDURE_MAX_OUT_PARAMS];
-  Bse::ErrorType error;
+  Bse::Error error;
   GSList *slist;
   guint i;
 

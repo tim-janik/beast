@@ -21,12 +21,12 @@ typedef struct
 static BseWaveFileInfo*
 mad_load_file_info (void         *data,
 		    const char   *file_name,
-		    Bse::ErrorType *error_p)
+		    Bse::Error *error_p)
 {
   FileInfo *fi;
   uint n_channels;
   float mix_freq;
-  Bse::ErrorType error;
+  Bse::Error error;
 
   error = gsl_data_handle_mad_testopen (file_name, &n_channels, &mix_freq);
   if (error)
@@ -64,7 +64,7 @@ static BseWaveDsc*
 mad_load_wave_dsc (void            *data,
 		   BseWaveFileInfo *file_info,
 		   uint             nth_wave,
-		   Bse::ErrorType    *error_p)
+		   Bse::Error    *error_p)
 {
   FileInfo *fi = (FileInfo*) file_info;
   BseWaveDsc *wdsc = sfi_new_struct0 (BseWaveDsc, 1);
@@ -95,7 +95,7 @@ static GslDataHandle*
 mad_create_chunk_handle (void         *data,
 			 BseWaveDsc   *wdsc,
 			 uint          nth_chunk,
-			 Bse::ErrorType *error_p)
+			 Bse::Error *error_p)
 {
   FileInfo *fi = (FileInfo*) wdsc->file_info;
   GslDataHandle *dhandle;

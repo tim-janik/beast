@@ -2179,7 +2179,7 @@ PartImpl::get_min_note ()
   return BSE_MIN_NOTE;
 }
 
-ErrorType
+Error
 PartImpl::change_control (int id, int tick, MidiSignalType control_type, double value)
 {
   BsePart *self = as<BsePart*>();
@@ -2219,7 +2219,7 @@ PartImpl::change_control (int id, int tick, MidiSignalType control_type, double 
   return success ? Error::NONE : Error::NO_EVENT;
 }
 
-ErrorType
+Error
 PartImpl::change_note (int id, int tick, int duration, int note, int fine_tune, double velocity)
 {
   BsePart *self = as<BsePart*>();
@@ -2244,7 +2244,7 @@ PartImpl::change_note (int id, int tick, int duration, int note, int fine_tune, 
   return success ? Error::NONE : Error::NO_EVENT;
 }
 
-ErrorType
+Error
 PartImpl::delete_event (int id)
 {
   BsePart *self = as<BsePart*>();

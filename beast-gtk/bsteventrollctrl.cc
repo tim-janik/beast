@@ -528,7 +528,7 @@ insert_start (BstEventRollController *self,
 	      BstEventRollDrag       *drag)
 {
   Bse::PartH part = self->eroll->part;
-  Bse::ErrorType error = Bse::Error::INVALID_OVERLAP;
+  Bse::Error error = Bse::Error::INVALID_OVERLAP;
   if (!self->obj_id && drag->start_valid)
     {
       guint qtick = bst_event_roll_controller_quantize (self, drag->start_tick);
@@ -606,7 +606,7 @@ delete_start (BstEventRollController *self,
   Bse::PartH part = self->eroll->part;
   if (self->obj_id)	/* got control event to delete */
     {
-      Bse::ErrorType error = part.delete_event (self->obj_id);
+      Bse::Error error = part.delete_event (self->obj_id);
       bst_status_eprintf (error, _("Delete Control Event"));
     }
   else

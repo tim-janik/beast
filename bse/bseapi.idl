@@ -14,7 +14,7 @@ Const MININT31   = -2147483648;
 Const MAXFLOAT64 = 1.7976931348623157e+308;
 
 // == Enums ==
-enum ErrorType {
+enum Error {
   ERROR_NONE                      = Enum (0, "", _("OK")),
   ERROR_INTERNAL                  = Enum (1, "", _("Internal error (please report)")),
   ERROR_UNKNOWN                   = Enum (2, "", _("Unknown error")),
@@ -537,9 +537,9 @@ interface Part : Item {
   SongTiming     get_timing                (int32 tick); ///< Retrieve song timing information at a specific tick.
   int32          get_max_note              ();           ///< Retrieve the maximum note supported in this part.
   int32          get_min_note              ();           ///< Retrieve the minimum note supported in this part.
-  ErrorType      change_control            (int32 id, int32 tick, MidiSignalType control_type, float64 value); ///< Change an existing control event within a part.
-  ErrorType      change_note               (int32 id, int32 tick, int32 duration, int32 note, int32 fine_tune, float64 velocity); ///< Change an existing note within a part.
-  ErrorType      delete_event              (int32 id); ///< Delete an existing event from a part.
+  Error          change_control            (int32 id, int32 tick, MidiSignalType control_type, float64 value); ///< Change an existing control event within a part.
+  Error          change_note               (int32 id, int32 tick, int32 duration, int32 note, int32 fine_tune, float64 velocity); ///< Change an existing note within a part.
+  Error          delete_event              (int32 id); ///< Delete an existing event from a part.
   int32          insert_control            (int32 tick, MidiSignalType control_type, float64 value); ///< Insert a new control event into a part.
   int32          insert_note               (int32 channel, int32 tick, int32 duration, int32 note, int32 fine_tune, float64 velocity); ///< Insert a new note into a part.
   int32          insert_note_auto          (int32 tick, int32 duration, int32 note, int32 fine_tune, float64 velocity); ///< Insert a new note into a part with automatic channel selection.
@@ -595,12 +595,12 @@ interface Source : Item {
   // String ochannel_blurb (int32 output_channel); ///< Get output channel description.
   // String ochannel_ident (int32 output_channel); ///< Get canonical output channel name.
   // String ochannel_label (int32 output_channel); ///< Get output channel name.
-  // ErrorType set_automation (String property_name, int32 midi_channel, MidiControlType control_type); ///< Setup automation parameters for a property.
-  // ErrorType set_input (String input_channel, Source omodule, String output_channel); ///< Connect a module input to another module's output.
-  // ErrorType set_input_by_id (int32 input_channel, Source omodule, int32 output_channel); ///< Connect a module input to another module's output.
+  // Error set_automation (String property_name, int32 midi_channel, MidiControlType control_type); ///< Setup automation parameters for a property.
+  // Error set_input (String input_channel, Source omodule, String output_channel); ///< Connect a module input to another module's output.
+  // Error set_input_by_id (int32 input_channel, Source omodule, int32 output_channel); ///< Connect a module input to another module's output.
   // void set_pos (float64 x_pos, float64 y_pos); ///< Set the x and y position of a module. In contrast to setting the position through ordinary object property setters, this function will not update the module position if the passed in arguments are sufficiently equal to the values already set on the object. As such, it does not record an extra undo step for setting properties to values they already have and if necessary turns setting of x and y positions into an atomic undo operation.
-  // ErrorType unset_input (String input_channel, Source omodule, String output_channel); ///< Disconnect a module input.
-  // ErrorType unset_input_by_id (int32 input_channel, Source omodule, int32 output_channel); ///< Disconnect a module input.
+  // Error unset_input (String input_channel, Source omodule, String output_channel); ///< Disconnect a module input.
+  // Error unset_input_by_id (int32 input_channel, Source omodule, int32 output_channel); ///< Disconnect a module input.
   // signal void probes (ProbeSeq a);
   // signal void io_changed ();
   // float64 pos_x = Range ("Position X", "", STANDARD ":scale");
@@ -623,9 +623,9 @@ interface Super : Container {
 /// Base interface type for all kinds of synthesis networks.
 interface SNet : Super {
   bool        supports_user_synths ();                ///< Check whether users may edit synthesis modules of this network.
-  ErrorType   can_create_source (String module_type); ///< Check whether inserting a new module into a synthesis network is possible.
+  Error       can_create_source (String module_type); ///< Check whether inserting a new module into a synthesis network is possible.
   Source      create_source     (String module_type); ///< Insert a new module into a synthesis network.
-  ErrorType   remove_source     (Source module);      ///< Remove an existing module from its synthesis network.
+  Error       remove_source     (Source module);      ///< Remove an existing module from its synthesis network.
   signal void port_unregistered ();                   ///< Signal that notifies when a named output port is unregistered.
   group _("Playback Settings") {
     bool      auto_activate = Bool (_("Auto Activate"),
@@ -671,7 +671,7 @@ interface Track : ContextMerger {
   TrackPartSeq list_parts ();                   ///< List parts scheduled in a track, sorted by tick.
   Part         get_part (int32 tick);           ///< Get the part starting at a specific tick position.
   int32        get_last_tick ();                ///< Retrieve the last tick for this track.
-  ErrorType    ensure_output ();                ///< Ensure the track has an output connection to a bus.
+  Error        ensure_output ();                ///< Ensure the track has an output connection to a bus.
   /// Get the output module of a track.
   /// The output of this module is the merged result from all polyphonic voices and has all track specific alterations applied.
   Source       get_output_source ();
@@ -713,11 +713,11 @@ sequence TrackPartSeq {
 
 /// Interface for effect stacks and per-track audio signal routing to the master output.
 interface Bus : SubSynth {
-  ErrorType ensure_output    ();            ///< Ensure that a bus has an output connection.
-  ErrorType connect_bus      (Bus bus);     ///< Add a bus to the input list of a bus.
-  ErrorType connect_track    (Track track); ///< Add a track to the input list of a bus.
-  ErrorType disconnect_bus   (Bus bus);     ///< Remove a bus from the input list of a bus.
-  ErrorType disconnect_track (Track track); ///< Remove a track from the input list of a bus.
+  Error ensure_output    ();            ///< Ensure that a bus has an output connection.
+  Error connect_bus      (Bus bus);     ///< Add a bus to the input list of a bus.
+  Error connect_track    (Track track); ///< Add a track to the input list of a bus.
+  Error disconnect_bus   (Bus bus);     ///< Remove a bus from the input list of a bus.
+  Error disconnect_track (Track track); ///< Remove a track from the input list of a bus.
   // ItemSeq   inputs        = Object ("Input Signals", "Synthesis signals (from tracks and busses) used as bus input", GUI ":item-sequence");
   // ItemSeq   outputs       = Object ("Output Signals", "Mixer busses used as output for synthesis signals", GUI ":item-sequence");
   // CSynth    snet          = Object ("SNet", "Synthesis network used internally to implement effect stack", READWRITE ":skip-undo");
@@ -778,7 +778,7 @@ record SampleFileInfo {
   int64      mtime   = Range ("MTime", "Last modification time in µseconds", ":readwrite", 0, MAXINT63);
   String     loader  = String ("Loader", "Sample loader implementation", STANDARD);
   StringSeq  waves   = Sequence ("Waves", "List of embedded waves", STANDARD);
-  ErrorType  error   = Enum ("Error", "Indicator for errors during sample operation", STANDARD);
+  Error      error   = Enum ("Error", "Indicator for errors during sample operation", STANDARD);
 };
 
 /// Interface for editable PCM wave samples.
@@ -804,8 +804,8 @@ interface MidiSynth : SNet {
 /// Projects support loading, saving, playback and act as containers for all other sound objects.
 interface Project : Container {
   void  change_name (String name); ///< Change a project name without recording undo steps.
-  ErrorType play();     ///< Activate a project and start project playback (an already playing project is first halted).
-  ErrorType activate(); ///< Activate a project, precondition to start playback.
+  Error play();     ///< Activate a project and start project playback (an already playing project is first halted).
+  Error activate(); ///< Activate a project, precondition to start playback.
   //ProjectState get_state();     ///< Retrieve the current project activation/playback state.
   bool  can_play();     ///< Check whether project playback would makes sense.
   bool  is_playing();   ///< Check whether a project is currently playing (song sequencing).
@@ -836,9 +836,9 @@ interface Project : Container {
   /// The references to other objects (e.g. samples) can be stored
   /// by reference (self_contained=false) or embedded in the output
   /// file (self_contained=true).
-  //ErrorType store_bse (Super super, String file_name, bool self_contained);
-  ErrorType import_midi_file (String file_name); ///< Import a song from a MIDI file.
-  ErrorType restore_from_file (String file_name); ///< Load a project from file.
+  //Error store_bse (Super super, String file_name, bool self_contained);
+  Error import_midi_file (String file_name); ///< Import a song from a MIDI file.
+  Error restore_from_file (String file_name); ///< Load a project from file.
   //Song create_song (String name); ///< Create a song for this project.
   //WaveRepo get_wave_repo (); ///< Retrieve the project's unique wave repository.
   //CSynth create_csynth (String name); ///< Create a synthsizer network for this project.

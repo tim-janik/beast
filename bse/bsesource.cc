@@ -463,7 +463,7 @@ aprop_array_free (gpointer data)
   g_bsearch_array_free (aparray, &aprop_bconfig);
 }
 
-Bse::ErrorType
+Bse::Error
 bse_source_set_automation_property (BseSource        *source,
                                     const gchar      *prop_name,
                                     guint             midi_channel,
@@ -1215,7 +1215,7 @@ check_jchannel_connection (BseSource *source,
     return ochannel == input->idata.ochannel && osource == input->idata.osource ? 0 : -1;
 }
 
-Bse::ErrorType
+Bse::Error
 bse_source_set_input (BseSource *source,
 		      guint      ichannel,
 		      BseSource *osource,
@@ -1321,7 +1321,7 @@ bse_source_real_remove_input (BseSource *source,
     bse_trans_commit (trans);
 }
 
-Bse::ErrorType
+Bse::Error
 bse_source_check_input (BseSource *source,
 			guint      ichannel,
 			BseSource *osource,
@@ -1350,13 +1350,13 @@ bse_source_check_input (BseSource *source,
   return Bse::Error::NONE;
 }
 
-Bse::ErrorType
+Bse::Error
 bse_source_unset_input (BseSource *source,
 			guint      ichannel,
 			BseSource *osource,
 			guint      ochannel)
 {
-  Bse::ErrorType error = bse_source_check_input (source, ichannel, osource, ochannel);
+  Bse::Error error = bse_source_check_input (source, ichannel, osource, ochannel);
   if (error != Bse::Error::NONE)
     return error;
 
@@ -1427,7 +1427,7 @@ bse_source_must_set_input_loc (BseSource      *source,
                                guint           ochannel,
                                const gchar    *strloc)
 {
-  Bse::ErrorType error = bse_source_set_input (source, ichannel, osource, ochannel);
+  Bse::Error error = bse_source_set_input (source, ichannel, osource, ochannel);
   if (error)
     g_warning ("%s: failed to connect module %s channel %u to module %s channel %u: %s", strloc,
                bse_object_debug_name (source), ichannel,
@@ -1746,7 +1746,7 @@ bse_source_input_backup_to_undo (BseSource      *source,
                                  BseSource      *osource,
                                  guint           ochannel)
 {
-  Bse::ErrorType error = bse_source_check_input (source, ichannel, osource, ochannel);
+  Bse::Error error = bse_source_check_input (source, ichannel, osource, ochannel);
   BseUndoStack *ustack;
   BseStorage *storage;
 
@@ -1803,7 +1803,7 @@ resolve_osource_input (gpointer     data,
 		      error);
   else
     {
-      Bse::ErrorType cerror;
+      Bse::Error cerror;
 
       if (!osource)
 	cerror = Bse::Error::SOURCE_NO_SUCH_MODULE;

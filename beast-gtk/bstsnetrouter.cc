@@ -623,7 +623,7 @@ bst_snet_router_root_event (BstSNetRouter   *self,
             }
           else
             {
-              Bse::ErrorType error;
+              Bse::Error error;
               if (!csource || (self->drag_is_input ? ochannel : ichannel) == ~uint (0))
                 error = self->drag_is_input ? Bse::Error::SOURCE_NO_SUCH_OCHANNEL : Bse::Error::SOURCE_NO_SUCH_ICHANNEL;
               else if (self->drag_is_input)
@@ -678,7 +678,7 @@ bst_snet_router_root_event (BstSNetRouter   *self,
               switch (i)
                 {
                   GtkWidget *dialog;
-                  Bse::ErrorType error;
+                  Bse::Error error;
                 case 2:
                   bst_canvas_source_popup_params (csource);
                   break;
@@ -727,7 +727,7 @@ bst_snet_router_root_event (BstSNetRouter   *self,
               i = bst_choice_modal (choice, event->button.button, event->button.time);
               switch (i)
                 {
-                  Bse::ErrorType error;
+                  Bse::Error error;
                 case 1:
                   error = bse_source_unset_input_by_id (clink->icsource->source, clink->ichannel,
                                                         clink->ocsource->source, clink->ochannel);
@@ -769,7 +769,7 @@ bst_snet_router_event (GtkWidget *widget,
                                         event->button.x, event->button.y,
                                         &self->world_x, &self->world_y);
 
-          Bse::ErrorType error = self->snet.can_create_source (ad.entity);
+          Bse::Error error = self->snet.can_create_source (ad.entity);
           if (!error)
             {
               bse_item_group_undo (self->snet.proxy_id(), "Create Module");

@@ -42,7 +42,7 @@ void    	bse_server_stop_recording		(BseServer	*server);
 void            bse_server_start_recording              (BseServer      *server,
                                                          const char     *wave_file,
                                                          double          n_seconds);
-Bse::ErrorType	bse_server_open_devices			(BseServer	*server);
+Bse::Error	bse_server_open_devices			(BseServer	*server);
 void		bse_server_close_devices		(BseServer	*server);
 BseModule*	bse_server_retrieve_pcm_output_module	(BseServer	*server,
 							 BseSource	*source,
@@ -82,7 +82,7 @@ void		bse_server_script_error			(BseServer	    *server,
 							 const gchar	    *script_name,
 							 const gchar	    *proc_name,
 							 const gchar        *reason);
-Bse::ErrorType	bse_server_run_remote			(BseServer	    *server,
+Bse::Error	bse_server_run_remote			(BseServer	    *server,
 							 const gchar	    *process_name,
 							 SfiRing	    *params,
 							 const gchar        *script_name,

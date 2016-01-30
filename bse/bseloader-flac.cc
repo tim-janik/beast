@@ -36,7 +36,7 @@ struct FileInfo
     return FLAC__STREAM_DECODER_WRITE_STATUS_CONTINUE;
   }
   FileInfo (const gchar  *file_name,
-            Bse::ErrorType *error_p)
+            Bse::Error *error_p)
   {
     /* initialize C structures with zeros */
     memset (&wfi, 0, sizeof (wfi));
@@ -108,7 +108,7 @@ struct FileInfo
 static BseWaveFileInfo*
 flac_load_file_info (gpointer      data,
 		     const gchar  *file_name,
-		     Bse::ErrorType *error_p)
+		     Bse::Error *error_p)
 {
   FileInfo *file_info = new FileInfo (file_name, error_p);
   if (*error_p)
@@ -131,7 +131,7 @@ static BseWaveDsc*
 flac_load_wave_dsc (gpointer         data,
 		    BseWaveFileInfo *wave_file_info,
 		    guint            nth_wave,
-		    Bse::ErrorType    *error_p)
+		    Bse::Error    *error_p)
 {
   FileInfo *file_info = reinterpret_cast<FileInfo*> (wave_file_info);
   return &file_info->wdsc;
@@ -147,7 +147,7 @@ static GslDataHandle*
 flac_create_chunk_handle (gpointer      data,
 			  BseWaveDsc   *wave_dsc,
 			  guint         nth_chunk,
-			  Bse::ErrorType *error_p)
+			  Bse::Error *error_p)
 {
   assert_return (nth_chunk == 0, NULL);
 

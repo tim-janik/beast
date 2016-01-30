@@ -42,9 +42,9 @@ typedef struct {
 
 
 /* --- functions --- */
-static Bse::ErrorType
+static Bse::Error
 ov_errno_to_error (gint         ov_errno,
-		   Bse::ErrorType fallback)
+		   Bse::Error fallback)
 {
   switch (ov_errno)
     {
@@ -153,7 +153,7 @@ dh_vorbis_page_seek (VorbisHandle *vhandle, int64 pos)
   return err;
 }
 
-static Bse::ErrorType
+static Bse::Error
 dh_vorbis_open (GslDataHandle      *dhandle,
 		GslDataHandleSetup *setup)
 {
@@ -389,7 +389,7 @@ gsl_data_handle_new_ogg_vorbis_any (const gchar *file_name,
   gboolean success = gsl_data_handle_common_init (&vhandle->dhandle, file_name);
   if (success)
     {
-      Bse::ErrorType error;
+      Bse::Error error;
 
       vhandle->dhandle.vtable = &dh_vorbis_vtable;
       vhandle->n_bitstreams = 0;

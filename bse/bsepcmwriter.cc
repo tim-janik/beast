@@ -61,7 +61,7 @@ bse_pcm_writer_finalize (GObject *object)
   self->mutex.~Mutex();
 }
 
-Bse::ErrorType
+Bse::Error
 bse_pcm_writer_open (BsePcmWriter *self,
 		     const gchar  *file,
 		     guint         n_channels,

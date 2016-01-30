@@ -661,7 +661,7 @@ resize_motion (BstPianoRollController *self,
       bse_item_group_undo (part.proxy_id(), "Resize Note");
       if (self->obj_id)
 	{
-	  Bse::ErrorType error = part.delete_event (self->obj_id);
+	  Bse::Error error = part.delete_event (self->obj_id);
 	  if (error)
 	    drag->state = GXK_DRAG_ERROR;
 	  self->obj_id = 0;
@@ -693,7 +693,7 @@ delete_start (BstPianoRollController *self,
   Bse::PartH part = self->proll->part;
   if (self->obj_id)	/* got note to delete */
     {
-      Bse::ErrorType error = part.delete_event (self->obj_id);
+      Bse::Error error = part.delete_event (self->obj_id);
       bst_status_eprintf (error, _("Delete Note"));
     }
   else
@@ -706,7 +706,7 @@ insert_start (BstPianoRollController *self,
 	      BstPianoRollDrag       *drag)
 {
   Bse::PartH part = self->proll->part;
-  Bse::ErrorType error = Bse::Error::NO_TARGET;
+  Bse::Error error = Bse::Error::NO_TARGET;
   if (drag->start_valid)
     {
       guint qtick = bst_piano_roll_controller_quantize (self, drag->start_tick);
@@ -908,7 +908,7 @@ controller_piano_drag (BstPianoRollController *self,
 	  (drag->type == GXK_DRAG_MOTION &&
 	   self->obj_note != drag->current_note))
 	{
-          Bse::ErrorType error;
+          Bse::Error error;
 	  project.auto_deactivate (5 * 1000);
 	  error = project.activate();
 	  self->obj_note = drag->current_note;

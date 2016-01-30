@@ -1240,7 +1240,7 @@ public:
         printf (");\n");
 
         /* marshal */
-        printf ("  static Bse::ErrorType marshal (BseProcedureClass *procedure,\n"
+        printf ("  static Bse::Error marshal (BseProcedureClass *procedure,\n"
                 "                               const GValue      *in_values,\n"
                 "                               GValue            *out_values)\n");
         printf ("  {\n");

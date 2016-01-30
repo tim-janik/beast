@@ -90,7 +90,7 @@ file_store_idle_handler (gpointer data)
                     {
                       name = col + 1;
                       loader = "BSE Project";
-                      info.error = Bse::ErrorType (0);
+                      info.error = Bse::Error (0);
                     }
                 }
             }

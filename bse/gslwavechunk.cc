@@ -661,7 +661,7 @@ gsl_wave_chunk_unref (GslWaveChunk *wchunk)
     }
 }
 
-Bse::ErrorType
+Bse::Error
 gsl_wave_chunk_open (GslWaveChunk *wchunk)
 {
   assert_return (wchunk != NULL, Bse::Error::INTERNAL);
@@ -669,7 +669,7 @@ gsl_wave_chunk_open (GslWaveChunk *wchunk)
 
   if (wchunk->open_count == 0)
     {
-      Bse::ErrorType error;
+      Bse::Error error;
 
       error = gsl_data_handle_open (wchunk->dcache->dhandle);
       if (error != Bse::Error::NONE)

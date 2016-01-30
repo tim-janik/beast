@@ -49,7 +49,7 @@ typedef struct
 
 
 /* --- prototypes --- */
-static Bse::ErrorType oss_device_setup			(OSSHandle		*oss,
+static Bse::Error oss_device_setup			(OSSHandle		*oss,
                                                          guint                   req_queue_length);
 static void	    oss_device_retrigger		(OSSHandle		*oss);
 static gsize	    oss_device_read			(BsePcmHandle		*handle,
@@ -72,11 +72,11 @@ bse_pcm_device_oss_init (BsePcmDeviceOSS *oss)
   oss->device_name = g_strdup (BSE_PCM_DEVICE_CONF_OSS);
 }
 
-static Bse::ErrorType
+static Bse::Error
 check_device_usage (const gchar *name,
                     const gchar *check_mode)
 {
-  Bse::ErrorType error = gsl_file_check (name, check_mode);
+  Bse::Error error = gsl_file_check (name, check_mode);
   if (!error && strchr (check_mode, 'w'))
     {
       errno = 0;
@@ -125,7 +125,7 @@ bse_pcm_device_oss_list_devices (BseDevice    *device)
   return ring;
 }
 
-static Bse::ErrorType
+static Bse::Error
 bse_pcm_device_oss_open (BseDevice     *device,
                          gboolean       require_readable,
                          gboolean       require_writable,
@@ -166,7 +166,7 @@ bse_pcm_device_oss_open (BseDevice     *device,
   oss->hard_sync = hard_sync;
 
   /* try open */
-  Bse::ErrorType error;
+  Bse::Error error;
   gint fd = -1;
   handle->readable = omode == O_RDWR || omode == O_RDONLY;      /* O_RDONLY maybe defined to 0 */
   handle->writable = omode == O_RDWR || omode == O_WRONLY;
@@ -228,7 +228,7 @@ bse_pcm_device_oss_finalize (GObject *object)
   /* chain parent class' handler */
   G_OBJECT_CLASS (parent_class)->finalize (object);
 }
-static Bse::ErrorType
+static Bse::Error
 oss_device_setup (OSSHandle *oss,
                   guint      req_queue_length)
 {

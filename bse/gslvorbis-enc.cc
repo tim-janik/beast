@@ -241,7 +241,7 @@ gsl_vorbis_encoder_reset (GslVorbisEncoder *self)
   self->have_vblock = FALSE;
 }
 
-Bse::ErrorType
+Bse::Error
 gsl_vorbis_encoder_setup_stream (GslVorbisEncoder *self,
 				 guint		   serial)
 {

@@ -167,7 +167,7 @@ public:
     if (m_init_ok)
       gsl_data_handle_common_free (&m_dhandle);
   }
-  Bse::ErrorType
+  Bse::Error
   open (GslDataHandleSetup *setup)
   {
     m_decoder = FLAC__stream_decoder_new();
@@ -296,7 +296,7 @@ public:
   }
 private:
   // for the "C" API (vtable)
-  static Bse::ErrorType
+  static Bse::Error
   dh_open (GslDataHandle *dhandle, GslDataHandleSetup *setup)
   {
     return dh_cast (dhandle)->open (setup);
@@ -357,7 +357,7 @@ bse_data_handle_new_flac_zoffset (const char *file_name,
     return NULL;
 
   /* figure out mix_freq, n_channels */
-  Bse::ErrorType error = gsl_data_handle_open (dhandle);
+  Bse::Error error = gsl_data_handle_open (dhandle);
   if (!error)
     {
       if (n_channels_p)

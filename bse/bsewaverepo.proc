@@ -14,7 +14,7 @@
 
 
 /* --- auxlillary functions --- */
-static Bse::ErrorType
+static Bse::Error
 load_file (BseWaveRepo *wrepo,
 	   const gchar *file_name,
            BseWave    **wave_p)
@@ -22,7 +22,7 @@ load_file (BseWaveRepo *wrepo,
   gchar *fname = g_path_get_basename (file_name);
   BseWave *wave = (BseWave*) bse_object_new (BSE_TYPE_WAVE, "uname", fname, NULL);
   g_free (fname);
-  Bse::ErrorType error = bse_wave_load_wave_file (wave, file_name, NULL, NULL, NULL, TRUE);
+  Bse::Error error = bse_wave_load_wave_file (wave, file_name, NULL, NULL, NULL, TRUE);
   if (wave->n_wchunks)
     {
       bse_container_add_item (BSE_CONTAINER (wrepo), BSE_ITEM (wave));
@@ -63,7 +63,7 @@ BODY (BseProcedureClass *proc,
   BseWaveRepo *self = (BseWaveRepo*) bse_value_get_object (in_values++);
   const char *file_name = sfi_value_get_string (in_values++);
   BseUndoStack *ustack;
-  Bse::ErrorType error;
+  Bse::Error error;
   BseWave *wave;
 
   /* check parameters */

@@ -64,10 +64,10 @@ public:
       }
   }
 
-  Bse::ErrorType
+  Bse::Error
   open (GslDataHandleSetup *setup)
   {
-    Bse::ErrorType error = gsl_data_handle_open (m_src_handle);
+    Bse::Error error = gsl_data_handle_open (m_src_handle);
     if (error != Bse::Error::NONE)
       return error;
 
@@ -238,7 +238,7 @@ public:
   }
 private:
 /* for the "C" API (vtable) */
-  static Bse::ErrorType
+  static Bse::Error
   dh_open (GslDataHandle *dhandle, GslDataHandleSetup *setup)
   {
     return dh_cast (dhandle)->open (setup);

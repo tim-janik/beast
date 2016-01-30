@@ -294,7 +294,7 @@ bse_storage_input_text (BseStorage  *self,
   self->restorable_objects = sfi_ppool_new ();
 }
 
-Bse::ErrorType
+Bse::Error
 bse_storage_input_file (BseStorage  *self,
                         const gchar *file_name)
 {
@@ -850,7 +850,7 @@ restore_source_automation (BseItem    *item,
   BseMidiControlType control_type = (BseMidiControlType) sfi_choice2enum (scanner->value.v_identifier, BSE_TYPE_MIDI_CONTROL_TYPE);
   /* close statement */
   parse_or_return (scanner, ')');
-  Bse::ErrorType error = bse_source_set_automation_property (BSE_SOURCE (item), pspec->name, midi_channel, Bse::MidiSignalType (control_type));
+  Bse::Error error = bse_source_set_automation_property (BSE_SOURCE (item), pspec->name, midi_channel, Bse::MidiSignalType (control_type));
   if (error)
     bse_storage_warn (self, "failed to automate property \"%s\": %s", pspec->name, bse_error_blurb (error));
   return G_TOKEN_NONE;
@@ -1472,7 +1472,7 @@ wstore_data_handle_reader (gpointer data,
   GslLong n;
   if (!wh->opened)
     {
-      Bse::ErrorType error = gsl_data_handle_open (wh->dhandle);
+      Bse::Error error = gsl_data_handle_open (wh->dhandle);
       if (error)
         {
           bse_storage_error (wh->storage, "failed to open data handle: %s", bse_error_blurb (error));
@@ -1775,7 +1775,7 @@ bse_storage_parse_data_handle_rest (BseStorage     *self,
   return parse_data_handle_trampoline (self, TRUE, data_handle_p, n_channels_p, mix_freq_p, osc_freq_p);
 }
 
-Bse::ErrorType
+Bse::Error
 bse_storage_flush_fd (BseStorage *self,
                       gint        fd)
 {

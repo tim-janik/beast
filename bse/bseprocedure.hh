@@ -21,7 +21,7 @@ G_BEGIN_DECLS
 typedef void          (*BseProcedureInit)   (BseProcedureClass *proc,
                                              GParamSpec       **in_pspecs,
                                              GParamSpec       **out_pspecs);
-typedef Bse::ErrorType  (*BseProcedureExec)   (BseProcedureClass *procedure,
+typedef Bse::Error  (*BseProcedureExec)   (BseProcedureClass *procedure,
                                              const GValue      *in_values,
                                              GValue	       *out_values);
 struct _BseProcedureClass
@@ -48,8 +48,8 @@ struct _BseProcedureClass
 /* --- notifiers --- */
 typedef gboolean (*BseProcedureNotify) (gpointer     func_data,
 					const gchar *proc_name,
-					Bse::ErrorType exit_status);
-typedef Bse::ErrorType (*BseProcedureMarshal) (gpointer		marshal_data,
+					Bse::Error exit_status);
+typedef Bse::Error (*BseProcedureMarshal) (gpointer		marshal_data,
 					     BseProcedureClass *proc,
 					     const GValue      *ivalues,
 					     GValue	       *ovalues);
@@ -59,27 +59,27 @@ typedef Bse::ErrorType (*BseProcedureMarshal) (gpointer		marshal_data,
 /* execute procedure, passing n_in_pspecs param values for in
  * values and n_out_pspecs param value locations for out values
  */
-Bse::ErrorType bse_procedure_exec	  	  (const gchar		*proc_name,
+Bse::Error bse_procedure_exec	  	  (const gchar		*proc_name,
 					   ...);
-Bse::ErrorType bse_procedure_exec_void  	  (const gchar		*proc_name,
+Bse::Error bse_procedure_exec_void  	  (const gchar		*proc_name,
 					   ...);
 GType	     bse_procedure_lookup	  (const gchar		*proc_name);
-Bse::ErrorType bse_procedure_marshal_valist (GType		 proc_type,
+Bse::Error bse_procedure_marshal_valist (GType		 proc_type,
 					   const GValue		*first_value,
 					   BseProcedureMarshal	 marshal,
 					   gpointer		 marshal_data,
 					   gboolean		 skip_ovalues,
 					   va_list		 var_args);
-Bse::ErrorType bse_procedure_marshal        (GType		 proc_type,
+Bse::Error bse_procedure_marshal        (GType		 proc_type,
 					   const GValue		*ivalues,
 					   GValue		*ovalues,
 					   BseProcedureMarshal	 marshal,
 					   gpointer		 marshal_data);
-Bse::ErrorType bse_procedure_collect_input_args (BseProcedureClass  *proc,
+Bse::Error bse_procedure_collect_input_args (BseProcedureClass  *proc,
                                                const GValue       *first_value,
                                                va_list             var_args,
                                                GValue              ivalues[BSE_PROCEDURE_MAX_IN_PARAMS]);
-Bse::ErrorType bse_procedure_execvl	  (BseProcedureClass	*proc,
+Bse::Error bse_procedure_execvl	  (BseProcedureClass	*proc,
 					   GSList		*in_value_list,
 					   GSList		*out_value_list,
 					   BseProcedureMarshal	 marshal,

@@ -131,7 +131,7 @@ bsewave_skip_rest_statement (GScanner *scanner,
 static BseWaveFileInfo*
 bsewave_load_file_info (void         *data,
 			const char   *_file_name,
-			Bse::ErrorType *error_p)
+			Bse::Error *error_p)
 {
   FileInfo *fi = NULL;
   gboolean in_wave = FALSE, abort = FALSE;
@@ -567,7 +567,7 @@ static BseWaveDsc*
 bsewave_load_wave_dsc (void            *data,
 		       BseWaveFileInfo *file_info,
 		       uint             nth_wave,
-		       Bse::ErrorType    *error_p)
+		       Bse::Error    *error_p)
 {
   uint token, i;
 
@@ -642,7 +642,7 @@ static GslDataHandle*
 bsewave_load_singlechunk_wave (BseWaveFileInfo *fi,
 			       const char      *wave_name,
                                float            osc_freq,
-			       Bse::ErrorType    *error_p,
+			       Bse::Error    *error_p,
                                uint            *n_channelsp)
 {
   BseWaveDsc *wdsc;
@@ -699,7 +699,7 @@ static GslDataHandle*
 bsewave_create_chunk_handle (void         *data,
 			     BseWaveDsc   *wave_dsc,
 			     uint          nth_chunk,
-			     Bse::ErrorType *error_p)
+			     Bse::Error *error_p)
 {
   WaveDsc *dsc = (WaveDsc*) wave_dsc;
   FileInfo *fi = (FileInfo*) dsc->wdsc.file_info;

@@ -28,9 +28,9 @@ typedef int sdword;
  * executes read_me (which should be a function call to read something from the file),
  * and returns from the calling function if that fails
  */
-#define read_or_return_error(read_me) G_STMT_START{ Bse::ErrorType _error = read_me; if (_error) return _error; }G_STMT_END
+#define read_or_return_error(read_me) G_STMT_START{ Bse::Error _error = read_me; if (_error) return _error; }G_STMT_END
 
-static inline Bse::ErrorType
+static inline Bse::Error
 fread_block (FILE *file,
              int   len,
              void *data)
@@ -44,7 +44,7 @@ fread_block (FILE *file,
     }
   return Bse::Error::NONE;
 }
-static inline Bse::ErrorType
+static inline Bse::Error
 skip (FILE *file,
       int   len)
 {
@@ -57,7 +57,7 @@ skip (FILE *file,
   return Bse::Error::NONE;
 }
 
-static inline Bse::ErrorType
+static inline Bse::Error
 fread_bytes (FILE          *file,
              unsigned char *bytes,
              int            len)
@@ -65,7 +65,7 @@ fread_bytes (FILE          *file,
   return fread_block (file, len, bytes);
 }
 
-static inline Bse::ErrorType
+static inline Bse::Error
 fread_string (FILE *file,
               char *str,
               int   len)
@@ -74,7 +74,7 @@ fread_string (FILE *file,
 }
 
 /* readXXX with sizeof(xxx) == 1 */
-static inline Bse::ErrorType
+static inline Bse::Error
 fread_byte (FILE *file,
           byte &b)
 {
@@ -82,7 +82,7 @@ fread_byte (FILE *file,
 }
 
 /* readXXX with sizeof(xxx) == 2 */
-static inline Bse::ErrorType
+static inline Bse::Error
 fread_word (FILE *file,
           word &w)
 {
@@ -95,7 +95,7 @@ fread_word (FILE *file,
   return Bse::Error::NONE;
 }
 
-static inline Bse::ErrorType
+static inline Bse::Error
 fread_short_word (FILE  *file,
                   sword &sw)
 {
@@ -108,7 +108,7 @@ fread_short_word (FILE  *file,
 }
 
 /* readXXX with sizeof(xxx) == 4 */
-static inline Bse::ErrorType
+static inline Bse::Error
 fread_dword (FILE *file, dword& dw)
 {
   byte h, l, hh, hl;
@@ -141,7 +141,7 @@ struct PatHeader
   {
   }
 
-  Bse::ErrorType
+  Bse::Error
   load (FILE *file)
   {
     read_or_return_error (fread_string (file, id, 12));
@@ -181,7 +181,7 @@ struct PatInstrument
   {
   }
 
-  Bse::ErrorType
+  Bse::Error
   load (FILE *file)
   {
     read_or_return_error (fread_word (file, number));
@@ -242,7 +242,7 @@ struct PatPatch
   {
   }
 
-  Bse::ErrorType
+  Bse::Error
   load (FILE *file)
   {
     read_or_return_error (fread_string (file, filename, 7));
@@ -377,7 +377,7 @@ struct FileInfo
 
 
   FileInfo (const gchar  *file_name,
-            Bse::ErrorType *error_p)
+            Bse::Error *error_p)
   {
     /* initialize C structures with zeros */
     memset (&wfi, 0, sizeof (wfi));
@@ -528,7 +528,7 @@ struct FileInfo
 static BseWaveFileInfo*
 pat_load_file_info (gpointer      data,
 		    const gchar  *file_name,
-		    Bse::ErrorType *error_p)
+		    Bse::Error *error_p)
 {
   FileInfo *file_info = new FileInfo (file_name, error_p);
   if (*error_p)
@@ -552,7 +552,7 @@ static BseWaveDsc*
 pat_load_wave_dsc (gpointer         data,
 		   BseWaveFileInfo *wave_file_info,
 		   guint            nth_wave,
-		   Bse::ErrorType    *error_p)
+		   Bse::Error    *error_p)
 {
   FileInfo *file_info = reinterpret_cast<FileInfo*> (wave_file_info);
   return &file_info->wdsc;
@@ -568,7 +568,7 @@ static GslDataHandle*
 pat_create_chunk_handle (gpointer      data,
 			 BseWaveDsc   *wave_dsc,
 			 guint         nth_chunk,
-			 Bse::ErrorType *error_p)
+			 Bse::Error *error_p)
 {
   assert_return (nth_chunk < wave_dsc->n_chunks, NULL);
   FileInfo *file_info = reinterpret_cast<FileInfo*> (wave_dsc->file_info);

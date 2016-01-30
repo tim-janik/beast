@@ -186,7 +186,7 @@ bst_skin_config_notify (void)
 #include <fcntl.h>
 #include <errno.h>
 #include <sfi/sfistore.hh>       /* we rely on internal API here */
-Bse::ErrorType
+Bse::Error
 bst_skin_dump (const gchar *file_name)
 {
   SfiWStore *wstore;
@@ -256,11 +256,11 @@ skin_file_try_statement (gpointer   context_data,
     return SFI_TOKEN_UNMATCHED;
 }
 
-Bse::ErrorType
+Bse::Error
 bst_skin_parse (const gchar *file_name)
 {
   SfiRStore *rstore;
-  Bse::ErrorType error = Bse::Error::NONE;
+  Bse::Error error = Bse::Error::NONE;
   gchar *absname;
   gint fd;
 

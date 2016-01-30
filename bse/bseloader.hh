@@ -47,21 +47,21 @@ struct _BseWaveChunkDsc
 
 /* --- functions --- */
 BseWaveFileInfo*      bse_wave_file_info_load	(const gchar	 *file_name,
-						 Bse::ErrorType	 *error);
+						 Bse::Error	 *error);
 BseWaveFileInfo*      bse_wave_file_info_ref	(BseWaveFileInfo *wave_file_info);
 void                  bse_wave_file_info_unref	(BseWaveFileInfo *wave_file_info);
 const gchar*	      bse_wave_file_info_loader	(BseWaveFileInfo *fi);
 BseWaveDsc*	      bse_wave_dsc_load		(BseWaveFileInfo *wave_file_info,
 						 guint		  nth_wave,
                                                  gboolean         accept_empty,
-						 Bse::ErrorType	 *error);
+						 Bse::Error	 *error);
 void		      bse_wave_dsc_free		(BseWaveDsc	 *wave_dsc);
 GslDataHandle*	      bse_wave_handle_create	(BseWaveDsc	 *wave_dsc,
 						 guint		  nth_chunk,
-						 Bse::ErrorType	 *error);
+						 Bse::Error	 *error);
 GslWaveChunk*	      bse_wave_chunk_create	(BseWaveDsc	 *wave_dsc,
 						 guint		  nth_chunk,
-						 Bse::ErrorType	 *error);
+						 Bse::Error	 *error);
 
 
 /* --- loader impl --- */
@@ -88,19 +88,19 @@ struct BseLoader {
   gpointer		  data;
   BseWaveFileInfo*	(*load_file_info)	(gpointer	   data,
 						 const gchar	  *file_name,
-						 Bse::ErrorType	  *error);
+						 Bse::Error	  *error);
   void			(*free_file_info)	(gpointer	   data,
 						 BseWaveFileInfo  *file_info);
   BseWaveDsc*		(*load_wave_dsc)	(gpointer	   data,
 						 BseWaveFileInfo  *file_info,
 						 guint		   nth_wave,
-						 Bse::ErrorType	  *error);
+						 Bse::Error	  *error);
   void			(*free_wave_dsc)	(gpointer	   data,
 						 BseWaveDsc	  *wave_dsc);
   GslDataHandle*	(*create_chunk_handle)	(gpointer	   data,
 						 BseWaveDsc	  *wave_dsc,
 						 guint		   nth_chunk,
-						 Bse::ErrorType	  *error);
+						 Bse::Error	  *error);
   BseLoader   *next;	/* must be NULL */
 };
 

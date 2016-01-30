@@ -45,7 +45,7 @@ dummy_read (int  fd,
   return total;
 }
 
-static Bse::ErrorType
+static Bse::Error
 smf_read_header (int        fd,
                  SMFHeader *header)
 {
@@ -103,7 +103,7 @@ smf_read_header (int        fd,
   return Bse::Error::NONE;
 }
 
-static Bse::ErrorType
+static Bse::Error
 smf_read_track (BseMidiFile    *smf,
                 int             fd,
                 BseMidiDecoder *md)
@@ -145,11 +145,11 @@ smf_read_track (BseMidiFile    *smf,
 
 BseMidiFile*
 bse_midi_file_load (const char   *file_name,
-                    Bse::ErrorType *error_p)
+                    Bse::Error *error_p)
 {
   BseMidiFile *smf;
   SMFHeader header;
-  Bse::ErrorType dummy_error;
+  Bse::Error dummy_error;
   int i, fd = open (file_name, O_RDONLY);
   if (!error_p)
     error_p = &dummy_error;
@@ -335,7 +335,7 @@ bse_midi_file_setup_song (BseMidiFile    *smf,
         {
           Bse::TrackIfaceP track = song.create_track();
           BseTrack *btrack = track->as<BseTrack*>();
-          Bse::ErrorType error = track->ensure_output();
+          Bse::Error error = track->ensure_output();
           bse_assert_ok (error);
           bse_item_set_undoable (btrack, "n-voices", 24, NULL);
           Bse::PartIfaceP part_iface = song.create_part();

@@ -172,7 +172,7 @@ bus_disconnect_outputs (BseBus *self)
   SfiRing *ring, *outputs = bse_bus_list_outputs (self);
   for (ring = outputs; ring; ring = sfi_ring_walk (ring, outputs))
     {
-      Bse::ErrorType error = bse_bus_disconnect (BSE_BUS (ring->data), BSE_ITEM (self));
+      Bse::Error error = bse_bus_disconnect (BSE_BUS (ring->data), BSE_ITEM (self));
       bse_assert_ok (error);
     }
   bse_source_clear_ochannels (BSE_SOURCE (self));       /* also disconnects master */
@@ -646,7 +646,7 @@ bus_uncross_input (BseItem *owner,
     }
 }
 
-Bse::ErrorType
+Bse::Error
 bse_bus_connect (BseBus  *self,
                  BseItem *trackbus)
 {
@@ -670,7 +670,7 @@ bse_bus_connect (BseBus  *self,
     return Bse::Error::SOURCE_CONNECTION_INVALID;
 }
 
-Bse::ErrorType
+Bse::Error
 bse_bus_connect_unchecked (BseBus  *self,
                            BseItem *trackbus)
 {
@@ -684,7 +684,7 @@ bse_bus_connect_unchecked (BseBus  *self,
   if (!osource || !bse_bus_ensure_summation (self) ||
       BSE_ITEM (osource)->parent != BSE_ITEM (self)->parent)    /* restrict to siblings */
     return Bse::Error::SOURCE_PARENT_MISMATCH;
-  Bse::ErrorType error = bse_source_set_input (self->summation, 0, osource, 0);
+  Bse::Error error = bse_source_set_input (self->summation, 0, osource, 0);
   if (!error)
     {
       bse_source_must_set_input (self->summation, 1, osource, 1);
@@ -699,7 +699,7 @@ bse_bus_connect_unchecked (BseBus  *self,
   return error;
 }
 
-Bse::ErrorType
+Bse::Error
 bse_bus_disconnect (BseBus  *self,
                     BseItem *trackbus)
 {
@@ -717,8 +717,8 @@ bse_bus_disconnect (BseBus  *self,
   bse_item_cross_unlink (BSE_ITEM (self), BSE_ITEM (trackbus), bus_uncross_input);
   self->inputs = sfi_ring_remove (self->inputs, trackbus);
   trackbus_update_outputs (trackbus, NULL, self);
-  Bse::ErrorType error1 = bse_source_unset_input (self->summation, 0, osource, 0);
-  Bse::ErrorType error2 = bse_source_unset_input (self->summation, 1, osource, 1);
+  Bse::Error error1 = bse_source_unset_input (self->summation, 0, osource, 0);
+  Bse::Error error2 = bse_source_unset_input (self->summation, 1, osource, 1);
   g_object_notify (G_OBJECT (self), "inputs");
   g_object_notify (G_OBJECT (trackbus), "outputs");
   return error1 ? error1 : error2;
@@ -750,7 +750,7 @@ bus_restore_add_input (gpointer     data,
     bse_storage_warn (storage, "failed to add input to mixer bus \"%s\": %s", BSE_OBJECT_UNAME (self), error);
   else
     {
-      Bse::ErrorType cerror;
+      Bse::Error cerror;
       if (osource)
         cerror = bse_bus_connect (self, BSE_ITEM (osource));
       else
@@ -938,11 +938,11 @@ BusImpl::BusImpl (BseObject *bobj) :
 BusImpl::~BusImpl ()
 {}
 
-ErrorType
+Error
 BusImpl::ensure_output ()
 {
   BseBus *self = as<BseBus*>();
-  ErrorType error = Error::NONE;
+  Error error = Error::NONE;
   BseItem *parent = self->parent;
   if (BSE_IS_SONG (parent) && !self->bus_outputs)
     {
@@ -957,7 +957,7 @@ BusImpl::ensure_output ()
   return error;
 }
 
-ErrorType
+Error
 BusImpl::connect_bus (BusIface &busi)
 {
   BseBus *self = as<BseBus*>();
@@ -965,12 +965,12 @@ BusImpl::connect_bus (BusIface &busi)
   if (!this->parent() || this->parent() != bus.parent())
     return Error::SOURCE_PARENT_MISMATCH;
 
-  ErrorType error = bse_bus_connect (self, bus.as<BseItem*>());
+  Error error = bse_bus_connect (self, bus.as<BseItem*>());
   if (!error)
     {
       // an undo lambda is needed for wrapping object argument references
       UndoDescriptor<BusImpl> bus_descriptor = undo_descriptor (bus);
-      auto lambda = [bus_descriptor] (BusImpl &self, BseUndoStack *ustack) -> ErrorType {
+      auto lambda = [bus_descriptor] (BusImpl &self, BseUndoStack *ustack) -> Error {
         return self.disconnect_bus (self.undo_resolve (bus_descriptor));
       };
       push_undo (__func__, *this, lambda);
@@ -978,7 +978,7 @@ BusImpl::connect_bus (BusIface &busi)
   return error;
 }
 
-ErrorType
+Error
 BusImpl::connect_track (TrackIface &tracki)
 {
   BseBus *self = as<BseBus*>();
@@ -986,12 +986,12 @@ BusImpl::connect_track (TrackIface &tracki)
   if (!this->parent() || this->parent() != track.parent())
     return Error::SOURCE_PARENT_MISMATCH;
 
-  ErrorType error = bse_bus_connect (self, track.as<BseItem*>());
+  Error error = bse_bus_connect (self, track.as<BseItem*>());
   if (!error)
     {
       // an undo lambda is needed for wrapping object argument references
       UndoDescriptor<TrackImpl> track_descriptor = undo_descriptor (track);
-      auto lambda = [track_descriptor] (BusImpl &self, BseUndoStack *ustack) -> ErrorType {
+      auto lambda = [track_descriptor] (BusImpl &self, BseUndoStack *ustack) -> Error {
         return self.disconnect_track (self.undo_resolve (track_descriptor));
       };
       push_undo (__func__, *this, lambda);
@@ -999,17 +999,17 @@ BusImpl::connect_track (TrackIface &tracki)
   return error;
 }
 
-ErrorType
+Error
 BusImpl::disconnect_bus (BusIface &busi)
 {
   BseBus *self = as<BseBus*>();
   BusImpl &bus = dynamic_cast<BusImpl&> (busi);
-  ErrorType error = bse_bus_disconnect (self, busi.as<BseItem*>());
+  Error error = bse_bus_disconnect (self, busi.as<BseItem*>());
   if (!error)
     {
       // an undo lambda is needed for wrapping object argument references
       UndoDescriptor<BusImpl> bus_descriptor = undo_descriptor (bus);
-      auto lambda = [bus_descriptor] (BusImpl &self, BseUndoStack *ustack) -> ErrorType {
+      auto lambda = [bus_descriptor] (BusImpl &self, BseUndoStack *ustack) -> Error {
         return self.connect_bus (self.undo_resolve (bus_descriptor));
       };
       push_undo (__func__, *this, lambda);
@@ -1017,17 +1017,17 @@ BusImpl::disconnect_bus (BusIface &busi)
   return error;
 }
 
-ErrorType
+Error
 BusImpl::disconnect_track (TrackIface &tracki)
 {
   BseBus *self = as<BseBus*>();
   TrackImpl &track = dynamic_cast<TrackImpl&> (tracki);
-  ErrorType error = bse_bus_disconnect (self, tracki.as<BseItem*>());
+  Error error = bse_bus_disconnect (self, tracki.as<BseItem*>());
   if (!error)
     {
       // an undo lambda is needed for wrapping object argument references
       UndoDescriptor<TrackImpl> track_descriptor = undo_descriptor (track);
-      auto lambda = [track_descriptor] (BusImpl &self, BseUndoStack *ustack) -> ErrorType {
+      auto lambda = [track_descriptor] (BusImpl &self, BseUndoStack *ustack) -> Error {
         return self.connect_track (self.undo_resolve (track_descriptor));
       };
       push_undo (__func__, *this, lambda);

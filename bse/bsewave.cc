@@ -125,12 +125,12 @@ bse_wave_finalize (GObject *object)
   G_OBJECT_CLASS (parent_class)->finalize (object);
 }
 
-static Bse::ErrorType
+static Bse::Error
 bse_wave_add_inlined_wave_chunk (BseWave      *self,
                                  GslWaveChunk *wchunk)
 {
   assert_return (BSE_IS_WAVE (self), Bse::Error::INTERNAL);
-  Bse::ErrorType error = gsl_data_handle_open (wchunk->dcache->dhandle);
+  Bse::Error error = gsl_data_handle_open (wchunk->dcache->dhandle);
   if (!error)
     self->open_handles = sfi_ring_append (self->open_handles, wchunk->dcache->dhandle);
   return error;
@@ -243,7 +243,7 @@ bse_wave_clear (BseWave *wave)
   wave->xinfos = NULL;
 }
 
-Bse::ErrorType
+Bse::Error
 bse_wave_load_wave_file (BseWave      *self,
 			 const gchar  *file_name,
 			 const gchar  *wave_name,
@@ -251,7 +251,7 @@ bse_wave_load_wave_file (BseWave      *self,
 			 BseFreqArray *skip_array,
                          gboolean      rename_wave)
 {
-  Bse::ErrorType error = Bse::Error::NONE;
+  Bse::Error error = Bse::Error::NONE;
 
   assert_return (BSE_IS_WAVE (self), Bse::Error::INTERNAL);
   assert_return (file_name != NULL, Bse::Error::INTERNAL);
@@ -303,7 +303,7 @@ bse_wave_load_wave_file (BseWave      *self,
 	      for (i = 0; i < wdsc->n_chunks; i++)
 		if (bse_freq_arrays_match_freq (wdsc->chunks[i].osc_freq, list_array, skip_array))
 		  {
-		    Bse::ErrorType tmp_error;
+		    Bse::Error tmp_error;
 		    GslWaveChunk *wchunk = bse_wave_chunk_create (wdsc, i, &tmp_error);
 		    if (wchunk)
                       bse_wave_add_chunk (self, wchunk);
@@ -369,7 +369,7 @@ bse_wave_store_private (BseObject  *object,
       for (ring = wave->wave_chunks; ring; ring = sfi_ring_walk (ring, wave->wave_chunks))
         {
           GslWaveChunk *wchunk = (GslWaveChunk*) ring->data;
-          Bse::ErrorType error = gsl_data_handle_open (wchunk->dcache->dhandle);
+          Bse::Error error = gsl_data_handle_open (wchunk->dcache->dhandle);
           if (error)
             {
               bse_storage_warn (storage, "failed to open data handle (%s): %s",
@@ -513,7 +513,7 @@ bse_wave_restore_private (BseObject  *object,
     {
       BseFreqArray *skip_list, *load_list, *array;
       gchar *file_name, *wave_name;
-      Bse::ErrorType error;
+      Bse::Error error;
 
       g_scanner_get_next_token (scanner); /* eat quark identifier */
       parse_or_return (scanner, G_TOKEN_STRING);
@@ -655,7 +655,7 @@ bse_wave_restore_private (BseObject  *object,
                                                      loop_type, loop_start, loop_end, loop_count);
 	  gsl_data_cache_unref (dcache);
           /* we need to keep inlined data handles open to protect against storage (.bse file) overwriting */
-          Bse::ErrorType error = bse_wave_add_inlined_wave_chunk (wave, wchunk);
+          Bse::Error error = bse_wave_add_inlined_wave_chunk (wave, wchunk);
           if (!error)
             bse_wave_add_chunk (wave, wchunk);
           else
@@ -700,7 +700,7 @@ bse_wave_get_index_for_modules (BseWave *wave)
       SfiRing *ring;
       for (ring = wave->wave_chunks; ring; ring = sfi_ring_walk (ring, wave->wave_chunks))
 	{
-	  Bse::ErrorType error = gsl_wave_chunk_open ((GslWaveChunk*) ring->data);
+	  Bse::Error error = gsl_wave_chunk_open ((GslWaveChunk*) ring->data);
 	  if (!error)
             {
               index->entries[index->n_entries].wchunk = (GslWaveChunk*) ring->data;

@@ -71,7 +71,7 @@ key_bindings_load_file (GtkWidget   *dialog,
   GtkTreeView *btview = (GtkTreeView*) gxk_radget_find (self, "binding-tree-view");
   GtkTreeModel *model = gtk_tree_view_get_model (btview);
   GSList slist = { kbinding, NULL };
-  Bse::ErrorType error = bst_key_binding_parse (file, &slist);
+  Bse::Error error = bst_key_binding_parse (file, &slist);
   gxk_list_wrapper_notify_clear (GXK_LIST_WRAPPER (model));
   gxk_list_wrapper_notify_append (GXK_LIST_WRAPPER (model), kbinding->n_keys);
   if (error)
@@ -593,7 +593,7 @@ bst_key_binding_rcfile (void)
   return key_binding_rc;
 }
 
-Bse::ErrorType
+Bse::Error
 bst_key_binding_dump (const gchar *file_name,
                       GSList      *kbindings)
 {
@@ -672,11 +672,11 @@ key_binding_try_statement (gpointer   context_data,
   return SFI_TOKEN_UNMATCHED;
 }
 
-Bse::ErrorType
+Bse::Error
 bst_key_binding_parse (const gchar *file_name,
                        GSList      *kbindings)
 {
-  Bse::ErrorType error = Bse::Error::NONE;
+  Bse::Error error = Bse::Error::NONE;
   SfiRStore *rstore;
   gchar *absname;
   gint fd;

@@ -131,10 +131,10 @@ bse_loader_match (const char *file_name)
 
 BseWaveFileInfo*
 bse_wave_file_info_load (const char   *file_name,
-			 Bse::ErrorType *error_p)
+			 Bse::Error *error_p)
 {
   BseWaveFileInfo *finfo = NULL;
-  Bse::ErrorType error = Bse::Error::NONE;
+  Bse::Error error = Bse::Error::NONE;
   BseLoader *loader;
 
   if (error_p)
@@ -235,9 +235,9 @@ BseWaveDsc*
 bse_wave_dsc_load (BseWaveFileInfo *wave_file_info,
 		   uint             nth_wave,
                    gboolean         accept_empty,
-                   Bse::ErrorType    *error_p)
+                   Bse::Error    *error_p)
 {
-  Bse::ErrorType error = Bse::Error::NONE;
+  Bse::Error error = Bse::Error::NONE;
   BseWaveDsc *wdsc;
   BseLoader *loader;
 
@@ -298,9 +298,9 @@ bse_wave_dsc_free (BseWaveDsc *wave_dsc)
 GslDataHandle*
 bse_wave_handle_create (BseWaveDsc   *wave_dsc,
 			uint	      nth_chunk,
-			Bse::ErrorType *error_p)
+			Bse::Error *error_p)
 {
-  Bse::ErrorType error = Bse::Error::NONE;
+  Bse::Error error = Bse::Error::NONE;
   GslDataHandle *dhandle;
   BseLoader *loader;
 
@@ -334,7 +334,7 @@ bse_wave_handle_create (BseWaveDsc   *wave_dsc,
 GslWaveChunk*
 bse_wave_chunk_create (BseWaveDsc   *wave_dsc,
 		       uint          nth_chunk,
-		       Bse::ErrorType *error_p)
+		       Bse::Error *error_p)
 {
   GslDataHandle *dhandle;
   GslDataCache *dcache;

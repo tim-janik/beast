@@ -2,11 +2,11 @@
 #include "bstbseutils.hh"
 
 /* --- BEAST utilities --- */
-Bse::ErrorType
+Bse::Error
 bst_project_restore_from_file (Bse::ProjectH project, const gchar *file_name, bool apply_project_file_name, bool preserve_non_dirty)
 {
   bool was_dirty = project.is_dirty();
-  Bse::ErrorType error = project.restore_from_file (file_name);
+  Bse::Error error = project.restore_from_file (file_name);
   /* regardless of how good the restoration worked, try to
    * keep the resulting project in a GUI usable state.
    */
@@ -32,10 +32,10 @@ bst_project_restore_from_file (Bse::ProjectH project, const gchar *file_name, bo
   return error;
 }
 
-Bse::ErrorType
+Bse::Error
 bst_project_import_midi_file (Bse::ProjectH project, const gchar *file_name)
 {
-  Bse::ErrorType error = project.import_midi_file (file_name);
+  Bse::Error error = project.import_midi_file (file_name);
   /* regardless of how good the restoration worked, try to
    * keep the resulting project in a GUI usable state.
    */
@@ -88,9 +88,9 @@ bst_path_leaf_index (const String &path, char separator)
 namespace Bse {
 
 const char*
-error_blurb (Bse::ErrorType error_value)
+error_blurb (Bse::Error error_value)
 {
-  const Rapicorn::Aida::EnumValue ev = Rapicorn::Aida::enum_info<Bse::ErrorType>().find_value (error_value);
+  const Rapicorn::Aida::EnumValue ev = Rapicorn::Aida::enum_info<Bse::Error>().find_value (error_value);
   return ev.blurb;
 }
 
@@ -98,6 +98,6 @@ error_blurb (Bse::ErrorType error_value)
 
 
 /* --- generated code --- */
-#define BseErrorType Bse::ErrorType
+#define BseErrorType Bse::Error
 #include "bstoldbseapi.cc"
 #undef BseErrorType

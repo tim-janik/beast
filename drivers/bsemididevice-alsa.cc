@@ -175,7 +175,7 @@ silent_error_handler (const char *file,
 {
 }
 
-static Bse::ErrorType
+static Bse::Error
 bse_midi_device_alsa_open (BseDevice     *device,
                           gboolean       require_readable,
                           gboolean       require_writable,
@@ -201,7 +201,7 @@ bse_midi_device_alsa_open (BseDevice     *device,
     }
 
   /* try setup */
-  Bse::ErrorType error = !aerror ? Bse::Error::NONE : bse_error_from_errno (-aerror, Bse::Error::FILE_OPEN_FAILED);
+  Bse::Error error = !aerror ? Bse::Error::NONE : bse_error_from_errno (-aerror, Bse::Error::FILE_OPEN_FAILED);
   snd_rawmidi_params_t *mparams = alsa_alloca0 (snd_rawmidi_params);
   if (alsa->read_handle)
     {

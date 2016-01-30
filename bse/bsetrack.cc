@@ -1103,7 +1103,7 @@ TrackImpl::remove_tick (int tick)
       // undoing part removal needs an undo_descriptor b/c future deletions may invalidate the part handle
       const uint utick = entry->tick;
       UndoDescriptor<PartImpl> part_descriptor = undo_descriptor (*entry->part->as<PartImpl*>());
-      auto lambda = [utick, part_descriptor] (TrackImpl &self, BseUndoStack *ustack) -> ErrorType {
+      auto lambda = [utick, part_descriptor] (TrackImpl &self, BseUndoStack *ustack) -> Error {
         PartImpl &part = self.undo_resolve (part_descriptor);
         const uint id = self.insert_part (utick, part);
         return id ? Error::NONE : Error::INVALID_OVERLAP;
@@ -1157,11 +1157,11 @@ TrackImpl::get_last_tick ()
   return bse_track_get_last_tick (self);
 }
 
-ErrorType
+Error
 TrackImpl::ensure_output ()
 {
   BseTrack *self = as<BseTrack*>();
-  ErrorType error = Error::NONE;
+  Error error = Error::NONE;
   BseItem *bparent = self->parent;
   if (BSE_IS_SONG (bparent) && !self->bus_outputs)
     {

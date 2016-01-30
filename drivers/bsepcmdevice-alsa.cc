@@ -36,7 +36,7 @@ typedef struct
 /* --- prototypes --- */
 static void             bse_pcm_device_alsa_class_init  (BsePcmDeviceALSAClass  *klass);
 static void             bse_pcm_device_alsa_init        (BsePcmDeviceALSA       *self);
-static Bse::ErrorType     alsa_device_setup               (AlsaPcmHandle          *alsa,
+static Bse::Error     alsa_device_setup               (AlsaPcmHandle          *alsa,
                                                          snd_pcm_t              *phandle,
                                                          guint                   latency_ms,
                                                          guint                  *mix_freq,
@@ -199,7 +199,7 @@ silent_error_handler (const char *file,
 {
 }
 
-static Bse::ErrorType
+static Bse::Error
 bse_pcm_device_alsa_open (BseDevice     *device,
                           gboolean       require_readable,
                           gboolean       require_writable,
@@ -224,7 +224,7 @@ bse_pcm_device_alsa_open (BseDevice     *device,
   snd_lib_error_set_handler (NULL);
   /* try setup */
   const guint period_size = BSE_PCM_DEVICE (device)->req_block_length;
-  Bse::ErrorType error = !aerror ? Bse::Error::NONE : bse_error_from_errno (-aerror, Bse::Error::FILE_OPEN_FAILED);
+  Bse::Error error = !aerror ? Bse::Error::NONE : bse_error_from_errno (-aerror, Bse::Error::FILE_OPEN_FAILED);
   guint rh_freq = BSE_PCM_DEVICE (device)->req_mix_freq, rh_n_periods = 0, rh_period_size = period_size;
   if (!aerror && alsa->read_handle)
     error = alsa_device_setup (alsa, alsa->read_handle, BSE_PCM_DEVICE (device)->req_latency_ms, &rh_freq, &rh_n_periods, &rh_period_size);
@@ -304,7 +304,7 @@ bse_pcm_device_alsa_finalize (GObject *object)
   G_OBJECT_CLASS (parent_class)->finalize (object);
 }
 
-static Bse::ErrorType
+static Bse::Error
 alsa_device_setup (AlsaPcmHandle       *alsa,
                    snd_pcm_t           *phandle,
                    guint                latency_ms,

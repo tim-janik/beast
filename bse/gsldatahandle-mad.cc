@@ -40,7 +40,7 @@ typedef struct
   guint         eof : 1;
   GslHFile     *hfile;
   guint		file_pos;
-  Bse::ErrorType  error;
+  Bse::Error  error;
 
   /* seek table */
   GTime		seek_mtime;
@@ -67,9 +67,9 @@ static GslLong	dh_mad_coarse_seek	(GslDataHandle *dhandle,
 
 
 /* --- functions --- */
-static Bse::ErrorType
+static Bse::Error
 error_from_mad_stream (struct mad_stream *mstream,
-                       Bse::ErrorType       fallback)
+                       Bse::Error       fallback)
 {
   switch (mstream->error)
     {
@@ -321,7 +321,7 @@ create_seek_table (MadHandle *handle,
   return seeks;
 }
 
-static Bse::ErrorType
+static Bse::Error
 dh_mad_open (GslDataHandle      *dhandle,
 	     GslDataHandleSetup *setup)
 {
@@ -329,7 +329,7 @@ dh_mad_open (GslDataHandle      *dhandle,
   GslHFile *hfile;
   GslLong n;
   gboolean seek_invalidated = FALSE;
-  Bse::ErrorType error;
+  Bse::Error error;
 
   hfile = gsl_hfile_open (handle->dhandle.name);
   if (!hfile)
@@ -648,7 +648,7 @@ static GslDataHandle*
 dh_mad_new (const gchar  *file_name,
             gfloat        osc_freq,
 	    gboolean      skip_seek_keep_open,
-            Bse::ErrorType *errorp)
+            Bse::Error *errorp)
 {
   MadHandle *handle;
   gboolean success;
@@ -676,7 +676,7 @@ dh_mad_new (const gchar  *file_name,
       /* we can only check matters upon opening
        */
       handle->skip_seek_table = skip_seek_keep_open != FALSE;
-      Bse::ErrorType error = gsl_data_handle_open (&handle->dhandle);
+      Bse::Error error = gsl_data_handle_open (&handle->dhandle);
       if (!error)
 	{
 	  if (!skip_seek_keep_open)
@@ -701,16 +701,16 @@ dh_mad_new (const gchar  *file_name,
 GslDataHandle*
 gsl_data_handle_new_mad_err (const gchar  *file_name,
                              gfloat        osc_freq,
-                             Bse::ErrorType *errorp)
+                             Bse::Error *errorp)
 {
   assert_return (file_name != NULL, NULL);
   assert_return (osc_freq > 0, NULL);
 
-  Bse::ErrorType error = Bse::Error::NONE;
+  Bse::Error error = Bse::Error::NONE;
   return dh_mad_new (file_name, osc_freq, FALSE, errorp ? errorp : &error);
 }
 
-Bse::ErrorType
+Bse::Error
 gsl_data_handle_mad_testopen (const gchar *file_name,
 			      guint       *n_channels,
 			      gfloat      *mix_freq)
@@ -720,7 +720,7 @@ gsl_data_handle_mad_testopen (const gchar *file_name,
 
   assert_return (file_name != NULL, Bse::Error::INTERNAL);
 
-  Bse::ErrorType error = Bse::Error::NONE;
+  Bse::Error error = Bse::Error::NONE;
   dhandle = dh_mad_new (file_name, 439, TRUE, &error);
   if (!dhandle)
     return error ? error : Bse::Error::FILE_OPEN_FAILED;
@@ -747,14 +747,14 @@ gsl_data_handle_mad_version (void)
 GslDataHandle*
 gsl_data_handle_new_mad_err (const gchar  *file_name,
                              gfloat        osc_freq,
-                             Bse::ErrorType *errorp)
+                             Bse::Error *errorp)
 {
   if (errorp)
     *errorp = Bse::Error::FORMAT_UNKNOWN;
   return NULL;
 }
 
-Bse::ErrorType
+Bse::Error
 gsl_data_handle_mad_testopen (const gchar *file_name,
                               guint       *n_channels,
                               gfloat      *mix_freq)

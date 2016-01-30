@@ -57,7 +57,7 @@ bst_play_back_handle_set (BstPlayBackHandle *handle,
 void
 bst_play_back_handle_start (BstPlayBackHandle *handle)
 {
-  Bse::ErrorType error;
+  Bse::Error error;
 
   error = handle->project.play();;
   if (error)
