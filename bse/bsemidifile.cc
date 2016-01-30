@@ -240,7 +240,7 @@ bse_midi_file_add_part_events (BseMidiFile *smf,
   for (i = 0; i < track->n_events; i++)
     {
       BseMidiEvent *event = track->events[i];
-      Bse::MidiSignalType msignal = Bse::MidiSignalType (0);
+      Bse::MidiSignal msignal = Bse::MidiSignal (0);
       start += event->delta_time;
       switch (event->status)
         {
@@ -261,25 +261,25 @@ bse_midi_file_add_part_events (BseMidiFile *smf,
           part->as<Bse::PartImpl*>()->insert_note_auto (start * smf->tpqn_rate, dur * smf->tpqn_rate, note, fine_tune, velocity);
           break;
         case BSE_MIDI_CONTROL_CHANGE:
-          if (!msignal)
+          if (msignal == 0)
             {
-              msignal = Bse::MidiSignalType (Bse::MidiSignal::CONTROL_0 + event->data.control.control);
+              msignal = Bse::MidiSignal (int64 (Bse::MidiSignal::CONTROL_0) + event->data.control.control);
               fvalue = event->data.control.value;
             }
         case BSE_MIDI_PROGRAM_CHANGE:
-          if (!msignal)
+          if (msignal == 0)
             {
               msignal = Bse::MidiSignal::PROGRAM;
               fvalue = event->data.program * (1.0 / (double) 0x7F);
             }
         case BSE_MIDI_CHANNEL_PRESSURE:
-          if (!msignal)
+          if (msignal == 0)
             {
               msignal = Bse::MidiSignal::PRESSURE;
               fvalue = event->data.intensity;
             }
         case BSE_MIDI_PITCH_BEND:
-          if (!msignal)
+          if (msignal == 0)
             {
               msignal = Bse::MidiSignal::PITCH_BEND;
               fvalue = event->data.pitch_bend;

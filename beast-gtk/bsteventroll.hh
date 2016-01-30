@@ -39,7 +39,7 @@ struct _BstEventRoll
   GxkScrollCanvas parent_instance;
 
   Bse::PartH          part;
-  Bse::MidiSignalType control_type;
+  Bse::MidiSignal control_type;
   GtkWidget          *child;
 
   /* horizontal layout */
@@ -99,7 +99,7 @@ void        bst_event_roll_set_view_selection    (BstEventRoll   *self,
 void        bst_event_roll_set_vpanel_width_hook (BstEventRoll   *self,
                                                   gint          (*fetch_vpanel_width) (gpointer data),
                                                   gpointer        data);
-void        bst_event_roll_set_control_type      (BstEventRoll *self, Bse::MidiSignalType control_type);
+void        bst_event_roll_set_control_type      (BstEventRoll *self, Bse::MidiSignal control_type);
 void        bst_event_roll_init_segment          (BstEventRoll   *self,
                                                   BstSegmentType  type);
 void        bst_event_roll_segment_start         (BstEventRoll   *self,

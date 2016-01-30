@@ -467,7 +467,7 @@ Bse::Error
 bse_source_set_automation_property (BseSource        *source,
                                     const gchar      *prop_name,
                                     guint             midi_channel,
-                                    Bse::MidiSignalType signal_type)
+                                    Bse::MidiSignal signal_type)
 {
   assert (BSE_MIDI_CONTROL_NONE          == BseMidiControlType (0) &&
             BSE_MIDI_CONTROL_CONTINUOUS_0  == BseMidiControlType (Bse::MidiSignal::CONTINUOUS_0) &&
@@ -495,7 +495,7 @@ bse_source_set_automation_property (BseSource        *source,
   if (!ap)
     {
       key.midi_channel = 0;
-      key.signal_type = Bse::MidiSignalType (0);
+      key.signal_type = Bse::MidiSignal (0);
       aparray = g_bsearch_array_insert (aparray, &aprop_bconfig, &key);
       ap = (BseAutomationProperty*) g_bsearch_array_lookup (aparray, &aprop_bconfig, &key);
     }
@@ -518,7 +518,7 @@ void
 bse_source_get_automation_property (BseSource         *source,
                                     const gchar       *prop_name,
                                     guint             *pmidi_channel,
-                                    Bse::MidiSignalType *psignal_type)
+                                    Bse::MidiSignal *psignal_type)
 {
   assert_return (BSE_IS_SOURCE (source));
   assert_return (prop_name != NULL);

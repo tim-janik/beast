@@ -372,10 +372,10 @@ pattern_column_event_value_from_string (BstPatternColumn *column,
   return pattern_column_event_value_from_int (column, ival);
 }
 
-static Bse::MidiSignalType
+static Bse::MidiSignal
 pattern_column_control_type (BstPatternColumn *column, bool *isnote_p)
 {
-  Bse::MidiSignalType control_type;
+  Bse::MidiSignal control_type;
   bool isnote = true;
   if (column->ltype == BST_PATTERN_LTYPE_VELOCITY)
     control_type = Bse::MidiSignal::VELOCITY;
@@ -383,7 +383,7 @@ pattern_column_control_type (BstPatternColumn *column, bool *isnote_p)
     control_type = Bse::MidiSignal::FINE_TUNE;
   else
     {
-      control_type = Bse::MidiSignalType (Bse::MidiSignal::CONTINUOUS_0 + column->num);
+      control_type = Bse::MidiSignal (int64 (Bse::MidiSignal::CONTINUOUS_0) + column->num);
       isnote = false;
     }
   if (isnote_p)
@@ -399,7 +399,7 @@ pattern_column_event_lookup (BstPatternColumn   *column,
                              Bse::PartControlSeq *cseq_p,
                              gchar              *placeholder_p)
 {
-  Bse::MidiSignalType control_type = (Bse::MidiSignalType) pattern_column_control_type (column, NULL);
+  Bse::MidiSignal control_type = (Bse::MidiSignal) pattern_column_control_type (column, NULL);
   Bse::PartH part = pview->part;
   Bse::PartControlSeq cseq = part.get_channel_controls (column->num, tick, duration, control_type);
   Bse::PartControl pctrl;
@@ -510,7 +510,7 @@ pattern_column_event_key_event (BstPatternColumn       *column,
       guint digit = column->n_focus_positions - focus_pos;
       gint dmax = control_get_max (num_type, 1);
       bool isnote;
-      Bse::MidiSignalType control_type = pattern_column_control_type (column, &isnote);
+      Bse::MidiSignal control_type = pattern_column_control_type (column, &isnote);
       gfloat value;
       ivalue = MIN (param, dmax) * control_get_digit_increment (num_type, digit);
       value = pattern_column_event_value_from_int (column, ivalue);

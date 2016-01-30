@@ -6,8 +6,8 @@
 G_BEGIN_DECLS
 #define SFIDL_SKIPDEF__BseErrorType             // replaced by Bse::Error
 #define BseErrorType Bse::Error
-#define SFIDL_SKIPDEF__BseMidiSignalType        // replaced by Bse::MidiSignalType
-#define BseMidiSignalType Bse::MidiSignalType
+#define SFIDL_SKIPDEF__BseMidiSignalType        // replaced by Bse::MidiSignal
+#define BseMidiSignalType Bse::MidiSignal
 #include "bstoldbseapi.h" /* include this within extern "C" */
 #undef BseErrorType
 /* --- BSE utilities --- */

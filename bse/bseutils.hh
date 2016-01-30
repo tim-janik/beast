@@ -14,7 +14,7 @@ G_BEGIN_DECLS
 void    bse_cxx_init      (void);
 /* --- record utils --- */
 Bse::PartNote    bse_part_note    (uint id, uint channel, uint tick, uint duration, int note, int fine_tune, double velocity, bool selected);
-Bse::PartControl bse_part_control (uint id, uint tick, Bse::MidiSignalType control_type, double value, bool selected);
+Bse::PartControl bse_part_control (uint id, uint tick, Bse::MidiSignal control_type, double value, bool selected);
 void                bse_note_sequence_resize         (BseNoteSequence       *rec,
                                                       guint                  length);
 guint               bse_note_sequence_length         (BseNoteSequence       *rec);

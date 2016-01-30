@@ -225,7 +225,7 @@ auto_update_data_free (gpointer data)   /* UserThread */
 static void
 midi_control_handler (gpointer                  handler_data,  /* MIDI Device Thread (and possibly others) */
                       guint64                   tick_stamp,
-                      Bse::MidiSignalType         signal_type,
+                      Bse::MidiSignal         signal_type,
                       gfloat                    control_value, /* -1 .. +1 */
                       guint                     n_mcdatas,
                       BseModule          *const*modules,

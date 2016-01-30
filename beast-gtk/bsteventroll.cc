@@ -697,7 +697,7 @@ bst_event_roll_set_view_selection (BstEventRoll *self,
 }
 
 void
-bst_event_roll_set_control_type (BstEventRoll *self, Bse::MidiSignalType control_type)
+bst_event_roll_set_control_type (BstEventRoll *self, Bse::MidiSignal control_type)
 {
   assert_return (BST_IS_EVENT_ROLL (self));
 

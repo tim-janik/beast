@@ -11,13 +11,13 @@
 
 /* --- functions --- */
 /**
- * @param type Bse::MidiSignalType type
+ * @param type Bse::MidiSignal type
  *
  * Get the initial default value for a midi signal.
  * This function is MT-safe and may be called from any thread.
  */
 double
-bse_midi_signal_default (Bse::MidiSignalType type)
+bse_midi_signal_default (Bse::MidiSignal type)
 {
   switch (type)
     {
@@ -48,9 +48,9 @@ bse_midi_signal_default (Bse::MidiSignalType type)
 }
 
 const char*
-bse_midi_signal_name (Bse::MidiSignalType signal)
+bse_midi_signal_name (Bse::MidiSignal signal)
 {
-  const Rapicorn::Aida::EnumValue ev = Rapicorn::Aida::enum_info<Bse::MidiSignalType>().find_value (signal);
+  const Rapicorn::Aida::EnumValue ev = Rapicorn::Aida::enum_info<Bse::MidiSignal>().find_value (signal);
   return ev.blurb;
 }
 
@@ -163,15 +163,14 @@ bse_midi_event_note_off (uint   midi_channel,
 BseMidiEvent*
 bse_midi_event_signal (uint              midi_channel,
                        uint64            delta_time,
-                       Bse::MidiSignalType signal_type,
+                       Bse::MidiSignal signal_type,
                        float             value)
 {
-  BseMidiEvent *event;
-
   assert_return (value >= -1 && value <= +1, NULL);
   assert_return (midi_channel > 0, NULL);
 
-  event = bse_midi_alloc_event ();
+  BseMidiEvent *event = bse_midi_alloc_event ();
+  const int64 signal_int = int64 (signal_type);
   switch (signal_type)
     {
     case Bse::MidiSignal::PROGRAM:
@@ -197,16 +196,16 @@ bse_midi_event_signal (uint              midi_channel,
       sfi_delete_struct (BseMidiEvent, event);
       return NULL;
     default:
-      if (signal_type >= 128)   /* literal controls */
+      if (signal_int >= 128)   /* literal controls */
         {
           event->status = BSE_MIDI_CONTROL_CHANGE;
-          event->data.control.control = signal_type - 128;
+          event->data.control.control = signal_int - 128;
           event->data.control.value = value;
         }
       else /* continuous controls */
         {
           event->status = BSE_MIDI_X_CONTINUOUS_CHANGE;
-          event->data.control.control = signal_type - 64;
+          event->data.control.control = signal_int - 64;
           event->data.control.value = value;
         }
       break;
