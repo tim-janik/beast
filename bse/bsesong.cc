@@ -935,7 +935,7 @@ SongImpl::bpm (double val)
     }
 }
 
-MusicalTuningType
+MusicalTuning
 SongImpl::musical_tuning () const
 {
   BseSong *self = const_cast<SongImpl*> (this)->as<BseSong*>();
@@ -943,7 +943,7 @@ SongImpl::musical_tuning () const
 }
 
 void
-SongImpl::musical_tuning (MusicalTuningType tuning)
+SongImpl::musical_tuning (MusicalTuning tuning)
 {
   BseSong *self = as<BseSong*>();
   if (!BSE_SOURCE_PREPARED (self) && self->musical_tuning != tuning)

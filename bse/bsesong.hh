@@ -27,7 +27,7 @@ struct BseSong : BseSNet {
   guint		    numerator;
   guint		    denominator;
   float             bpm;
-  Bse::MusicalTuningType musical_tuning;
+  Bse::MusicalTuning musical_tuning;
   SfiRing          *parts;              /* of type BsePart* */
   SfiRing          *busses;             /* of type BseBus* */
   BseBus           *solo_bus;
@@ -77,8 +77,8 @@ public:
   explicit                  SongImpl                (BseObject*);
   virtual double            bpm                     () const override;
   virtual void              bpm                     (double val) override;
-  virtual MusicalTuningType musical_tuning          () const override;
-  virtual void              musical_tuning          (MusicalTuningType tuning) override;
+  virtual MusicalTuning musical_tuning          () const override;
+  virtual void              musical_tuning          (MusicalTuning tuning) override;
   virtual SongTiming        get_timing              (int tick);
   virtual TrackIfaceP       find_any_track_for_part (PartIface &part) override;
   virtual BusIfaceP         create_bus              () override;

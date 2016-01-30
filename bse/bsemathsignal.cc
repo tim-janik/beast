@@ -587,7 +587,7 @@ static const double semitone_table265_young_temperament[132 + 1 + 132] = {
 };
 
 const double*
-bse_semitone_table_from_tuning (Bse::MusicalTuningType musical_tuning)
+bse_semitone_table_from_tuning (Bse::MusicalTuning musical_tuning)
 {
   switch (musical_tuning)
     {
@@ -634,7 +634,7 @@ bse_semitone_table_from_tuning (Bse::MusicalTuningType musical_tuning)
 }
 
 double
-bse_transpose_factor (Bse::MusicalTuningType musical_tuning, int index /* [-132..+132] */)
+bse_transpose_factor (Bse::MusicalTuning musical_tuning, int index /* [-132..+132] */)
 {
   const double *table = bse_semitone_table_from_tuning (musical_tuning);
   return table[CLAMP (index, -132, +132)];

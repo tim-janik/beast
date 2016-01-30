@@ -1909,7 +1909,7 @@ bse_source_class_base_init (BseSourceClass *klass)
   klass->automation_properties = NULL;
 }
 
-Bse::MusicalTuningType
+Bse::MusicalTuning
 bse_source_prepared_musical_tuning (BseSource *source)
 {
   assert_return (BSE_IS_SOURCE (source), Bse::MusicalTuning::OD_12_TET);

@@ -697,7 +697,7 @@ bse_item_has_ancestor (BseItem *item,
  * The musical tuning depends on project wide settings that may change after
  * this funciton has been called, so the result should be used with caution.
  */
-Bse::MusicalTuningType
+Bse::MusicalTuning
 bse_item_current_musical_tuning (BseItem *self)
 {
   assert_return (BSE_IS_ITEM (self), Bse::MusicalTuning::OD_12_TET);

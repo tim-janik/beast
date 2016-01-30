@@ -1572,40 +1572,40 @@ ServerImpl::sample_file_info (const String &filename)
 }
 
 NoteDescription
-ServerImpl::note_describe_from_freq (MusicalTuningType musical_tuning, double freq)
+ServerImpl::note_describe_from_freq (MusicalTuning musical_tuning, double freq)
 {
   const int note = bse_note_from_freq (musical_tuning, freq);
   return bse_note_description (musical_tuning, note, 0);
 }
 
 NoteDescription
-ServerImpl::note_describe (MusicalTuningType musical_tuning, int note, int fine_tune)
+ServerImpl::note_describe (MusicalTuning musical_tuning, int note, int fine_tune)
 {
   return bse_note_description (musical_tuning, note, fine_tune);
 }
 
 NoteDescription
-ServerImpl::note_construct (MusicalTuningType musical_tuning, int semitone, int octave, int fine_tune)
+ServerImpl::note_construct (MusicalTuning musical_tuning, int semitone, int octave, int fine_tune)
 {
   const int note = BSE_NOTE_GENERIC (octave, semitone);
   return bse_note_description (musical_tuning, note, fine_tune);
 }
 
 NoteDescription
-ServerImpl::note_from_string (MusicalTuningType musical_tuning, const String &name)
+ServerImpl::note_from_string (MusicalTuning musical_tuning, const String &name)
 {
   const int note = bse_note_from_string (name);
   return bse_note_description (musical_tuning, note, 0);
 }
 
 int
-ServerImpl::note_from_freq (MusicalTuningType musical_tuning, double frequency)
+ServerImpl::note_from_freq (MusicalTuning musical_tuning, double frequency)
 {
   return bse_note_from_freq (musical_tuning, frequency);
 }
 
 double
-ServerImpl::note_to_freq (MusicalTuningType musical_tuning, int note, int fine_tune)
+ServerImpl::note_to_freq (MusicalTuning musical_tuning, int note, int fine_tune)
 {
   const Bse::NoteDescription info = bse_note_description (musical_tuning, note, fine_tune);
   return info.name.empty() ? 0 : info.freq;

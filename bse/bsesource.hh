@@ -215,7 +215,7 @@ void	   bse_source_update_modules	        (BseSource	*source,
 						 BseTrans	*trans);
 void	   bse_source_clear_ichannels	        (BseSource	*source);
 void	   bse_source_clear_ochannels	        (BseSource	*source);
-Bse::MusicalTuningType bse_source_prepared_musical_tuning (BseSource *source);
+Bse::MusicalTuning bse_source_prepared_musical_tuning (BseSource *source);
 
 /* automation */
 typedef struct {
