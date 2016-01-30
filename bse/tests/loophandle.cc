@@ -157,14 +157,14 @@ check_loop (GslDataHandle *src_handle,
 
   Bse::Error error;
   error = gsl_data_handle_open (loop_handle);
-  if (error)
+  if (error != 0)
     {
       sfi_error ("loop_handle open failed: %s", bse_error_blurb (error));
       exit (1);
     }
 
   error = gsl_data_handle_open (loop_handle_reference);
-  if (error)
+  if (error != 0)
     {
       sfi_error ("loop_handle_reference open failed: %s", bse_error_blurb (error));
       exit (1);

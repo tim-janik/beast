@@ -533,7 +533,7 @@ bst_wave_editor_set_esample (BstWaveEditor *self,
 	  bse_item_use (self->esample);
 	  error = bse_editable_sample_open (self->esample);
 	  self->esample_open = error == Bse::Error::NONE;
-	  if (error)
+	  if (error != 0)
 	    g_message ("failed to open sample: %s", Bse::error_blurb (error));
 	}
       wave_editor_set_n_qsamplers (self, self->esample ? bse_editable_sample_get_n_channels (self->esample) : 0);

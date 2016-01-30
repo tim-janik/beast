@@ -314,7 +314,7 @@ aiff_file_load (int       fd,
         default:                           error = Bse::Error::NONE;      /* ignore unknown chunks */
           LDEBUG ("%c%c%c%c: ignored...", chunk_id >> 24, chunk_id >> 16 & 0xff, chunk_id >> 8 & 0xff, chunk_id & 0xff);
         }
-      if (error)
+      if (error != 0)
         return error;
       seek_pos += chunk_size;
       /* align to even seek sizes by skipping pad bytes */
@@ -368,7 +368,7 @@ aiff_load_file_info (void         *data,
   afile->instrument.high_velocity = 127;
   *error_p = aiff_file_load (fd, afile);
   close (fd);
-  if (*error_p)
+  if (*error_p != 0)
     {
       aiff_file_free (afile);
       return NULL;

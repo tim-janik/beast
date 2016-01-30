@@ -338,7 +338,7 @@ wstore_context_reader (gpointer data,
   if (!wc->opened)
     {
       Bse::Error error = gsl_data_handle_open (wc->dhandle);
-      if (error)
+      if (error != 0)
 	return -ENOENT; /* approximation of OPEN_FAILED */
       wc->opened = TRUE;
     }

@@ -1377,7 +1377,7 @@ bse_source_get_input (BseSource      *source,
                       BseSource     **osourcep,
                       guint          *ochannelp)
 {
-  assert_return (BSE_IS_SOURCE (source), Bse::Error::INTERNAL);
+  assert_return (BSE_IS_SOURCE (source), false);
   if (ichannel < BSE_SOURCE_N_ICHANNELS (source) &&
       !BSE_SOURCE_IS_JOINT_ICHANNEL (source, ichannel))
     {
@@ -1428,7 +1428,7 @@ bse_source_must_set_input_loc (BseSource      *source,
                                const gchar    *strloc)
 {
   Bse::Error error = bse_source_set_input (source, ichannel, osource, ochannel);
-  if (error)
+  if (error != 0)
     g_warning ("%s: failed to connect module %s channel %u to module %s channel %u: %s", strloc,
                bse_object_debug_name (source), ichannel,
 	       bse_object_debug_name (osource), ochannel,
@@ -1825,7 +1825,7 @@ resolve_osource_input (gpointer     data,
           g_free (compat_ochannel_ident);
           cerror = bse_source_set_input (source, ichannel, osource, ochannel);
         }
-      if (cerror)
+      if (cerror != 0)
 	bse_storage_warn (storage,
 			  "failed to connect input \"%s\" of `%s' to output \"%s\" of `%s': %s",
 			  dinput->ichannel_ident ? dinput->ichannel_ident : "???",

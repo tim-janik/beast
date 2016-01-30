@@ -429,7 +429,7 @@ Flac1Handle::read_data (void *buffer, uint blength)
     {
       rfile = gsl_rfile_open (dhandle->name);
       if (!rfile)
-        return gsl_error_from_errno (errno, Bse::Error::FILE_OPEN_FAILED);
+        return errno ? -errno : -EIO;
       byte_length = gsl_rfile_length (rfile);
       gsl_rfile_seek_set (rfile, flac_handle->file_byte_offset());
     }

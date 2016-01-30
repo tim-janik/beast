@@ -160,7 +160,7 @@ bse_midi_file_load (const char   *file_name,
     }
 
   *error_p = smf_read_header (fd, &header);
-  if (*error_p)
+  if (*error_p != 0)
     {
       close (fd);
       return NULL;
@@ -193,7 +193,7 @@ bse_midi_file_load (const char   *file_name,
         }
       // printerr ("track%u: n_events=%u\n", i, smf->tracks[i].n_events);
       bse_midi_decoder_destroy (md);
-      if (*error_p)
+      if (*error_p != 0)
         {
           close (fd);
           bse_midi_file_free (smf);
@@ -336,7 +336,8 @@ bse_midi_file_setup_song (BseMidiFile    *smf,
           Bse::TrackIfaceP track = song.create_track();
           BseTrack *btrack = track->as<BseTrack*>();
           Bse::Error error = track->ensure_output();
-          bse_assert_ok (error);
+          if (error != 0)
+            g_warning ("%s:%d: unexpected error: %s", __FILE__, __LINE__, bse_error_blurb (error));
           bse_item_set_undoable (btrack, "n-voices", 24, NULL);
           Bse::PartIfaceP part_iface = song.create_part();
           BsePart *bpart = part_iface->as<BsePart*>();

@@ -302,7 +302,7 @@ render2wav (const ArgParser &ap)
   auto project = BSE_SERVER.create_project (bsefile);
   project->auto_deactivate (0);
   auto err = project->restore_from_file (bsefile);
-  if (err)
+  if (err != 0)
     return bse_error_blurb (err);
   BSE_SERVER.start_recording (wavfile, n_seconds);
   err = project->play();
@@ -341,7 +341,7 @@ check_load (const ArgParser &ap)
   auto project = BSE_SERVER.create_project (bsefile);
   project->auto_deactivate (0);
   auto err = project->restore_from_file (bsefile);
-  if (err)
+  if (err != 0)
     return string_format ("%s: loading failed: %s", bsefile, bse_error_blurb (err));
   // success
   return "";

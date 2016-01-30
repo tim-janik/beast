@@ -111,7 +111,7 @@ flac_load_file_info (gpointer      data,
 		     Bse::Error *error_p)
 {
   FileInfo *file_info = new FileInfo (file_name, error_p);
-  if (*error_p)
+  if (*error_p != 0)
     {
       delete file_info;
       return NULL;

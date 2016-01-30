@@ -148,7 +148,7 @@ bse_script_procedure_exec (BseProcedureClass *proc,
   g_free (shellpath);
   sfi_ring_free_deep (params, g_free);
 
-  if (error)
+  if (error != 0)
     g_message ("failed to start script \"%s::%s\": %s",
 	       sdata->script_file, BSE_PROCEDURE_NAME (proc), bse_error_blurb (error));
   else

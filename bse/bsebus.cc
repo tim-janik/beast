@@ -173,7 +173,8 @@ bus_disconnect_outputs (BseBus *self)
   for (ring = outputs; ring; ring = sfi_ring_walk (ring, outputs))
     {
       Bse::Error error = bse_bus_disconnect (BSE_BUS (ring->data), BSE_ITEM (self));
-      bse_assert_ok (error);
+      if (error != 0)
+        g_warning ("%s:%d: unexpected error: %s", __FILE__, __LINE__, bse_error_blurb (error));
     }
   bse_source_clear_ochannels (BSE_SOURCE (self));       /* also disconnects master */
   g_object_notify (G_OBJECT (self), "master-output");   /* master may have changed */
@@ -721,7 +722,7 @@ bse_bus_disconnect (BseBus  *self,
   Bse::Error error2 = bse_source_unset_input (self->summation, 1, osource, 1);
   g_object_notify (G_OBJECT (self), "inputs");
   g_object_notify (G_OBJECT (trackbus), "outputs");
-  return error1 ? error1 : error2;
+  return error1 != 0 ? error1 : error2;
 }
 
 SfiRing*
@@ -755,7 +756,7 @@ bus_restore_add_input (gpointer     data,
         cerror = bse_bus_connect (self, BSE_ITEM (osource));
       else
         cerror = Bse::Error::SOURCE_NO_SUCH_MODULE;
-      if (cerror)
+      if (cerror != 0)
         bse_storage_warn (storage,
                           "failed to add input \"%s\" to mixer bus \"%s\": %s",
                           osource ? BSE_OBJECT_UNAME (osource) : ":<NULL>:",

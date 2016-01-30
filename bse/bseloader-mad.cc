@@ -29,7 +29,7 @@ mad_load_file_info (void         *data,
   Bse::Error error;
 
   error = gsl_data_handle_mad_testopen (file_name, &n_channels, &mix_freq);
-  if (error)
+  if (error != 0)
     {
       *error_p = error;
       return NULL;

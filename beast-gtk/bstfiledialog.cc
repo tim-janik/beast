@@ -414,7 +414,7 @@ bst_file_dialog_open_project (BstFileDialog *self,
   Bse::ProjectH project = bse_server.create_project (file_name);
   Bse::Error error = bst_project_restore_from_file (project, file_name, TRUE, TRUE);
 
-  if (error)
+  if (error != 0)
     {
       bst_status_eprintf (error, _("Opening project `%s'"), file_name);
       bse_server.destroy_project (project);
@@ -732,7 +732,7 @@ bst_file_dialog_load_wave (BstFileDialog *self,
   gxk_status_printf (0, NULL, _("Loading wave `%s'"), file_name);
   error = bse_wave_repo_load_file (self->wave_repo, file_name);
   bst_status_eprintf (error, _("Loading wave `%s'"), file_name);
-  if (error)
+  if (error != 0)
     sfi_error (_("Failed to load wave file \"%s\": %s"), file_name, Bse::error_blurb (error));
 
   return TRUE;

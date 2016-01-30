@@ -496,7 +496,7 @@ gsl_vorbis1_handle_read (GslVorbis1Handle *v1h, /* returns -errno || length */
     {
       v1h->rfile = gsl_rfile_open (v1h->dhandle->name);
       if (!v1h->rfile)
-        return gsl_error_from_errno (errno, Bse::Error::FILE_OPEN_FAILED);
+        return -(errno ? errno : ENOENT);
       v1h->byte_length = gsl_rfile_length (v1h->rfile);
       if (v1h->rfile_add_zoffset)
         {

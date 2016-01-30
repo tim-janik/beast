@@ -775,7 +775,7 @@ bse_part_insert_note (BsePart *self,
 {
   BsePartEventNote key = { 0 };
   const bool use_any_channel = channel == ~uint (0);
-  assert_return (BSE_IS_PART (self), Bse::Error::INTERNAL);
+  assert_return (BSE_IS_PART (self), 0);
   if (use_any_channel)
     channel = 0;
   else if (channel >= self->n_channels)
@@ -839,7 +839,7 @@ bse_part_insert_control (BsePart          *self,
   BsePartTickNode *node;
   BsePartEventControl *cev;
   guint id;
-  assert_return (BSE_IS_PART (self), Bse::Error::INTERNAL);
+  assert_return (BSE_IS_PART (self), 0);
 
   if (!(value >= -1 && value <= +1 &&
         tick < BSE_PART_MAX_TICK &&

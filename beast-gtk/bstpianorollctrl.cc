@@ -662,7 +662,7 @@ resize_motion (BstPianoRollController *self,
       if (self->obj_id)
 	{
 	  Bse::Error error = part.delete_event (self->obj_id);
-	  if (error)
+	  if (error != 0)
 	    drag->state = GXK_DRAG_ERROR;
 	  self->obj_id = 0;
 	}

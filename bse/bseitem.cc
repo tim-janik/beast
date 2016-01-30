@@ -899,7 +899,7 @@ undo_call_proc (BseUndoStep  *ustep,
           g_value_unset (&ovalue);
         }
       /* we're not tolerating any errors */
-      if (error)
+      if (error != 0)
         g_warning ("while executing undo method \"%s\" of item %s: %s", BSE_PROCEDURE_NAME (proc),
                    bse_object_debug_name (g_value_get_object (ivalues + 0)), bse_error_blurb (error));
     }
@@ -1304,7 +1304,7 @@ undo_lambda_call (BseUndoStep *ustep, BseUndoStack *ustack)
   auto *lambda = (ItemImpl::UndoLambda*) ustep->data[1].v_pointer;
   // invoke undo function
   const Bse::Error error = (*lambda) (self, ustack);
-  if (error) // undo errors shouldn't happen
+  if (error != 0) // undo errors shouldn't happen
     {
       String *blurb = (String*) ustep->data[2].v_pointer;
       g_warning ("error during undo '%s' of item %s: %s", blurb->c_str(),

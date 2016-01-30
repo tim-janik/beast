@@ -164,7 +164,7 @@ main (int   argc,
     }
   if (!wave && !error)
     error = Bse::Error::IO;       /* unknown */
-  if (error)
+  if (error != 0)
     {
       sfi_error ("problems encountered loading bsewave file \"%s\": %s", input_file.c_str(), bse_error_blurb (error));
       exit (1);
@@ -180,7 +180,7 @@ main (int   argc,
       printerr ("SAVE: %s\n", output_file.c_str());
       wave->sort();
       error = wave->store (output_file);
-      if (error)
+      if (error != 0)
         {
           sfi_error ("failed to store wave \"%s\" to file \"%s\": %s", wave->name.c_str(), output_file.c_str(), bse_error_blurb (error));
           exit (1);
@@ -768,7 +768,7 @@ public:
         gsl_vorbis_encoder_set_n_channels (enc, wave->n_channels);
         gsl_vorbis_encoder_set_sample_freq (enc, guint (gsl_data_handle_mix_freq (dhandle)));
         Bse::Error error = gsl_vorbis_encoder_setup_stream (enc, gsl_vorbis_make_serialno());
-        if (error)
+        if (error != 0)
           {
             sfi_error ("chunk % 7.2f/%.0f: failed to encode: %s",
                        gsl_data_handle_osc_freq (chunk->dhandle), gsl_data_handle_mix_freq (chunk->dhandle),
@@ -854,7 +854,7 @@ public:
             exit (1);
           }
         error = chunk->set_dhandle_from_file (temp_file, gsl_data_handle_osc_freq (dhandle), dhandle->setup.xinfos);
-        if (error)
+        if (error != 0)
           {
             sfi_error ("chunk % 7.2f/%.0f: failed to read wave \"%s\": %s",
                        gsl_data_handle_osc_freq (chunk->dhandle), gsl_data_handle_mix_freq (chunk->dhandle),
@@ -1153,7 +1153,7 @@ public:
               error = wave->add_chunk (dhandle, xinfos);
               gsl_data_handle_unref (dhandle);
             }
-          if (error)
+          if (error != 0)
             {
               String msg = string_format (_("failed to add wave chunk from file \"%s\": %s"),
                                           ochunk.sample_file, bse_error_blurb (error));
@@ -1877,7 +1877,7 @@ public:
               deleted.push_back (it);
               error = Bse::Error::NONE;
             }
-          else if (error)
+          else if (error != 0)
             {
               const gchar *reason = bse_error_blurb (error);
               if (!cresult.tail_detected)
@@ -1894,12 +1894,12 @@ public:
               if (cresult.dhandle != chunk->dhandle)
                 {
                   error = chunk->change_dhandle (cresult.dhandle, gsl_data_handle_osc_freq (chunk->dhandle), xinfos);
-                  if (error)
+                  if (error != 0)
                     sfi_error ("level clipping failed: %s", bse_error_blurb (error));
                 }
               g_strfreev (xinfos);
             }
-          if (error && !skip_errors)
+          if (error != 0 && !skip_errors)
             exit (1);
         }
     /* really delete chunks */
@@ -1980,13 +1980,13 @@ public:
                 {
                   GslDataHandle *shandle = gsl_data_handle_new_scale (chunk->dhandle, 1. / absmax);
                   error = chunk->change_dhandle (shandle, gsl_data_handle_osc_freq (chunk->dhandle), xinfos);
-                  if (error)
+                  if (error != 0)
                     sfi_error ("level normalizing failed: %s", bse_error_blurb (error));
                   gsl_data_handle_unref (shandle);
                 }
             }
           g_strfreev (xinfos);
-          if (error && !skip_errors)
+          if (error != 0 && !skip_errors)
             exit (1);
         }
     return true;
@@ -2075,7 +2075,7 @@ public:
 
 	      gsl_data_handle_ref (dhandle);
 	      Bse::Error error = chunk->change_dhandle (dhandle, gsl_data_handle_osc_freq (dhandle), xinfos);
-	      if (error)
+	      if (error != 0)
 		sfi_error ("looping failed: %s", bse_error_blurb (error));
 	      g_strfreev (xinfos);
 	    }
@@ -2505,7 +2505,7 @@ public:
   print_effective_stopband_start (GslDataHandle *fir_handle)
   {
     Bse::Error error = gsl_data_handle_open (fir_handle);
-    if (error)
+    if (error != 0)
       return error;
     int64 freq_inc = 5; // FIXME
     while (freq_inc * 1000 < gsl_data_handle_mix_freq (fir_handle))
@@ -2552,7 +2552,7 @@ public:
 	    if (!error)
 	      error = chunk->change_dhandle (fir_handle, 0, 0);
 
-	    if (error)
+	    if (error != 0)
 	      {
 		sfi_error ("chunk % 7.2f/%.0f: %s",
 			   gsl_data_handle_osc_freq (chunk->dhandle), gsl_data_handle_mix_freq (chunk->dhandle),
@@ -2657,7 +2657,7 @@ public:
                     bse_resampler2_precision_name (bse_resampler2_find_precision_for_bits (m_precision_bits)));
 
           Bse::Error error = chunk->change_dhandle (bse_data_handle_new_upsample2 (dhandle, m_precision_bits), 0, 0);
-          if (error)
+          if (error != 0)
             {
               sfi_error ("chunk % 7.2f/%.0f: %s",
                          gsl_data_handle_osc_freq (chunk->dhandle), gsl_data_handle_mix_freq (chunk->dhandle),
@@ -2733,7 +2733,7 @@ public:
                     bse_resampler2_precision_name (bse_resampler2_find_precision_for_bits (m_precision_bits)));
 
           Bse::Error error = chunk->change_dhandle (bse_data_handle_new_downsample2 (dhandle, 24), 0, 0);
-          if (error)
+          if (error != 0)
             {
               sfi_error ("chunk % 7.2f/%.0f: %s",
                          gsl_data_handle_osc_freq (chunk->dhandle), gsl_data_handle_mix_freq (chunk->dhandle),

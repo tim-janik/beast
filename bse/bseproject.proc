@@ -82,7 +82,7 @@ METHOD (BseProject, store-bse, "File/Store") {
   error = bse_project_store_bse (project, super, file_name, self_contained);
 
   /* set output parameters */
-  g_value_set_enum (out_values++, error);
+  g_value_set_enum (out_values++, int (error));
 
   return Bse::Error::NONE;
 }

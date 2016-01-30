@@ -851,7 +851,7 @@ restore_source_automation (BseItem    *item,
   /* close statement */
   parse_or_return (scanner, ')');
   Bse::Error error = bse_source_set_automation_property (BSE_SOURCE (item), pspec->name, midi_channel, Bse::MidiSignalType (control_type));
-  if (error)
+  if (error != 0)
     bse_storage_warn (self, "failed to automate property \"%s\": %s", pspec->name, bse_error_blurb (error));
   return G_TOKEN_NONE;
 }
@@ -1473,7 +1473,7 @@ wstore_data_handle_reader (gpointer data,
   if (!wh->opened)
     {
       Bse::Error error = gsl_data_handle_open (wh->dhandle);
-      if (error)
+      if (error != 0)
         {
           bse_storage_error (wh->storage, "failed to open data handle: %s", bse_error_blurb (error));
           return -ENOENT;

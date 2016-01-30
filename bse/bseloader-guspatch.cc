@@ -28,7 +28,7 @@ typedef int sdword;
  * executes read_me (which should be a function call to read something from the file),
  * and returns from the calling function if that fails
  */
-#define read_or_return_error(read_me) G_STMT_START{ Bse::Error _error = read_me; if (_error) return _error; }G_STMT_END
+#define read_or_return_error(read_me) G_STMT_START{ Bse::Error _error = read_me; if (_error != 0) return _error; }G_STMT_END
 
 static inline Bse::Error
 fread_block (FILE *file,
@@ -395,7 +395,7 @@ struct FileInfo
     header = new PatHeader();
 
     *error_p = header->load (patfile);
-    if (*error_p)
+    if (*error_p != 0)
       {
 	fclose (patfile);
 	return;
@@ -407,7 +407,7 @@ struct FileInfo
     instrument = new PatInstrument();
 
     *error_p = instrument->load (patfile);
-    if (*error_p)
+    if (*error_p != 0)
       {
 	fclose (patfile);
         return;
@@ -423,13 +423,13 @@ struct FileInfo
 	patches.push_back (patch);
 
         *error_p = patch->load (patfile);
-        if (*error_p)
+        if (*error_p != 0)
           return;
 
 	data_offset (i) = (guint) ftell (patfile);
 
 	*error_p = skip (patfile, patch->wavesize);
-        if (*error_p)
+        if (*error_p != 0)
 	  {
 	    fclose (patfile);
 	    return;
@@ -531,7 +531,7 @@ pat_load_file_info (gpointer      data,
 		    Bse::Error *error_p)
 {
   FileInfo *file_info = new FileInfo (file_name, error_p);
-  if (*error_p)
+  if (*error_p != 0)
     {
       delete file_info;
       return NULL;

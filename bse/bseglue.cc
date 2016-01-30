@@ -655,7 +655,7 @@ bglue_exec_proc (SfiGlueContext *context,
 	sfi_value_free ((GValue*) ilist->data);
       g_slist_free (clearlist);
 
-      if (error)
+      if (error != 0)
         g_warning ("while executing \"%s\": %s", BSE_PROCEDURE_NAME (proc), bse_error_blurb (error));
       if (proc->n_out_pspecs)
 	retval = bglue_value_to_serializable (ovalues + 0);

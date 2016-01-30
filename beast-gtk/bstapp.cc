@@ -701,7 +701,7 @@ demo_play_song (gpointer data,
   const gchar *file_name = demo_entries[callback_action - BST_ACTION_LOAD_DEMO_0000].file;
   Bse::ProjectH project = bse_server.create_project (file_name);
   Bse::Error error = bst_project_restore_from_file (project, file_name, TRUE, TRUE);
-  if (error)
+  if (error != 0)
     {
       bst_status_eprintf (error, _("Opening project `%s'"), file_name);
       bse_server.destroy_project (project);

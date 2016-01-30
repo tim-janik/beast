@@ -319,7 +319,7 @@ bst_preferences_save (BstPreferences *self)
 
   file_name = BST_STRDUP_RC_FILE ();
   error = bst_rc_dump (file_name);
-  if (error)
+  if (error != 0)
     g_warning ("failed to save rc-file \"%s\": %s", file_name, Bse::error_blurb (error));
   else
     successfull_rc_dump = TRUE;
@@ -329,7 +329,7 @@ bst_preferences_save (BstPreferences *self)
   slist = g_slist_append (slist, bst_pattern_controller_piano_keys());
   // slist = g_slist_append (slist, bst_pattern_controller_generic_keys());
   error = bst_key_binding_dump (file_name, slist);
-  if (error)
+  if (error != 0)
     g_warning ("failed to save keyrc \"%s\": %s", file_name, Bse::error_blurb (error));
   g_slist_free (slist);
 
@@ -337,7 +337,7 @@ bst_preferences_save (BstPreferences *self)
 
   file_name = g_strdup (bst_skin_config_rcfile ());
   error = bst_skin_dump (file_name);
-  if (error)
+  if (error != 0)
     g_warning ("failed to save skinrc \"%s\": %s", file_name, Bse::error_blurb (error));
   g_free (file_name);
 }

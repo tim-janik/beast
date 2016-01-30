@@ -651,9 +651,9 @@ bse_project_create_intern_synth (BseProject  *self,
       bse_storage_reset (storage);
       g_object_unref (storage);
       g_free (bse_synth);
-      if (error || !strap.items)
+      if (error != 0 || !strap.items)
 	g_warning ("failed to create internal synth \"%s\": %s",
-		   synth_name, bse_error_blurb (error ? error : Bse::Error::NO_ENTRY));
+		   synth_name, bse_error_blurb (error != 0 ? error : Bse::Error::NO_ENTRY));
       else
 	synth = (BseItem*) strap.items->data;
       g_slist_free (strap.items);
@@ -763,7 +763,7 @@ bse_project_activate (BseProject *self)
   assert_return (BSE_SOURCE_PREPARED (self) == FALSE, Bse::Error::INTERNAL);
 
   error = bse_server_open_devices (bse_server_get ());
-  if (error)
+  if (error != 0)
     return error;
 
   bse_source_prepare (BSE_SOURCE (self));

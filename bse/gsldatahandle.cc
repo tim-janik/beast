@@ -88,7 +88,7 @@ gsl_data_handle_open (GslDataHandle *dhandle)
 	  dhandle->vtable->close (dhandle);
 	  error = Bse::Error::FORMAT_INVALID;
 	}
-      if (error)
+      if (error != 0)
 	{
 	  dhandle->spinlock.unlock();
           if (setup.xinfos)

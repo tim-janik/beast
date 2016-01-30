@@ -370,7 +370,7 @@ bse_wave_store_private (BseObject  *object,
         {
           GslWaveChunk *wchunk = (GslWaveChunk*) ring->data;
           Bse::Error error = gsl_data_handle_open (wchunk->dcache->dhandle);
-          if (error)
+          if (error != 0)
             {
               bse_storage_warn (storage, "failed to open data handle (%s): %s",
                                 gsl_data_handle_name (wchunk->dcache->dhandle),
@@ -565,7 +565,7 @@ bse_wave_restore_private (BseObject  *object,
       error = bse_wave_load_wave_file (wave, file_name, wave_name,
                                        bse_freq_array_n_values (load_list) ? load_list : 0, skip_list,
                                        FALSE);
-      if (error)
+      if (error != 0)
 	bse_storage_warn (storage, "failed to load wave \"%s\" from \"%s\": %s",
 			  wave_name, file_name, bse_error_blurb (error));
       expected_token = G_TOKEN_NONE; /* got ')' */

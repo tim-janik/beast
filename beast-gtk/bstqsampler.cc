@@ -93,8 +93,10 @@ bst_qsampler_class_init (BstQSamplerClass *klass)
   g_object_class_install_property (G_OBJECT_CLASS (object_class),
 				   PROP_DRAW_MODE,
 				   g_param_spec_int ("draw_mode", "Draw Mode", NULL,
-                                                     Bst::QSAMPLER_DRAW_CRANGE, Bst::QSAMPLER_DRAW_MAXIMUM_LINE,
-                                                     Bst::QSAMPLER_DRAW_CRANGE, G_PARAM_READWRITE));
+                                                     int64 (Bst::QSAMPLER_DRAW_CRANGE),
+                                                     int64 (Bst::QSAMPLER_DRAW_MAXIMUM_LINE),
+                                                     int64 (Bst::QSAMPLER_DRAW_CRANGE),
+                                                     G_PARAM_READWRITE));
 }
 
 static void

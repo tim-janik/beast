@@ -426,7 +426,7 @@ dh_mad_open (GslDataHandle      *dhandle,
   return Bse::Error::NONE;
 
  OPEN_FAILED:
-  if (handle->error)
+  if (handle->error != 0)
     error = handle->error;
   g_free (handle->seeks);
   handle->seeks = NULL;
@@ -723,7 +723,7 @@ gsl_data_handle_mad_testopen (const gchar *file_name,
   Bse::Error error = Bse::Error::NONE;
   dhandle = dh_mad_new (file_name, 439, TRUE, &error);
   if (!dhandle)
-    return error ? error : Bse::Error::FILE_OPEN_FAILED;
+    return error != 0 ? error : Bse::Error::FILE_OPEN_FAILED;
 
   handle = (MadHandle*) dhandle;
   if (n_channels)

@@ -263,7 +263,7 @@ wav_load_file_info (void         *data,
     }
 
   *error_p = wav_read_header (fd, &wav_header);
-  if (*error_p)
+  if (*error_p != 0)
     {
       close (fd);
       return NULL;
@@ -319,7 +319,7 @@ wav_load_wave_dsc (void            *data,
       return NULL;
     }
   *error_p = wav_read_fmt_header (fi->fd, &fmt_header);
-  if (*error_p)
+  if (*error_p != 0)
     return NULL;
   data_width = (fmt_header.bit_per_sample + 7) / 8;
   *error_p = wav_read_data_header (fi->fd, &data_header, data_width * fmt_header.n_channels);
@@ -329,7 +329,7 @@ wav_load_wave_dsc (void            *data,
       LDEBUG ("failed to seek to start of data");
       *error_p = gsl_error_from_errno (errno, Bse::Error::IO);
     }
-  if (*error_p)
+  if (*error_p != 0)
     return NULL;
 
   if (fmt_header.bit_per_sample == 8 && FORMAT_IS_ALAW (fmt_header.format))

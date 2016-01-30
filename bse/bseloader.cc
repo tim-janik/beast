@@ -145,7 +145,7 @@ bse_wave_file_info_load (const char   *file_name,
   if (loader)
     {
       finfo = loader->load_file_info (loader->data, file_name, &error);
-      if (error && finfo)
+      if (error != 0 && finfo)
 	{
 	  /* loaders shouldn't do this */
 	  loader->free_file_info (loader->data, finfo);
@@ -250,7 +250,7 @@ bse_wave_dsc_load (BseWaveFileInfo *wave_file_info,
   loader = wave_file_info->loader;
   wdsc = loader->load_wave_dsc (loader->data, wave_file_info, nth_wave,&error);
 
-  if (error && wdsc)
+  if (error != 0 && wdsc)
     {
       /* loaders shouldn't do this */
       loader->free_wave_dsc (loader->data, wdsc);
@@ -316,7 +316,7 @@ bse_wave_handle_create (BseWaveDsc   *wave_dsc,
 					 wave_dsc,
 					 nth_chunk,
 					 &error);
-  if (error && dhandle)
+  if (error != 0 && dhandle)
     {
       /* loaders shouldn't do this */
       gsl_data_handle_unref (dhandle);
