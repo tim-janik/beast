@@ -745,11 +745,11 @@ server_user_message (const Bse::UserMessage &umsg)
   auto convert_msg_type = [] (Bse::UserMessageType mtype) {
     switch (mtype)
       {
-      case Bse::ERROR:          return BST_MSG_ERROR;
-      case Bse::WARNING:        return BST_MSG_WARNING;
-      case Bse::DEBUG:          return BST_MSG_DEBUG;
+      case Bse::UserMessageType::ERROR:          return BST_MSG_ERROR;
+      case Bse::UserMessageType::WARNING:        return BST_MSG_WARNING;
+      case Bse::UserMessageType::DEBUG:          return BST_MSG_DEBUG;
       default:
-      case Bse::INFO:           return BST_MSG_INFO;
+      case Bse::UserMessageType::INFO:           return BST_MSG_INFO;
       }
   };
   BstMessage msg = { 0, };

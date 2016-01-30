@@ -381,11 +381,11 @@ PROCEDURE (bse-script-send-message, "Script/Message") {
   auto stupid_convert = [] (char c) {
     switch (c)
       {
-      case 'E': case 'e':       return Bse::ERROR;
-      case 'W': case 'w':       return Bse::WARNING;
+      case 'E': case 'e':       return Bse::UserMessageType::ERROR;
+      case 'W': case 'w':       return Bse::UserMessageType::WARNING;
       default:
-      case 'I': case 'i':       return Bse::INFO;
-      case 'D': case 'd':       return Bse::DEBUG;
+      case 'I': case 'i':       return Bse::UserMessageType::INFO;
+      case 'D': case 'd':       return Bse::UserMessageType::DEBUG;
       }
   };
 

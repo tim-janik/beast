@@ -6,10 +6,10 @@ G_BEGIN_DECLS
 
 /* --- structures --- */
 typedef enum {
-  BST_MSG_ERROR         = Bse::ERROR,
-  BST_MSG_WARNING       = Bse::WARNING,
-  BST_MSG_INFO          = Bse::INFO,
-  BST_MSG_DEBUG         = Bse::DEBUG,
+  BST_MSG_ERROR         = int64 (Bse::UserMessageType::ERROR),
+  BST_MSG_WARNING       = int64 (Bse::UserMessageType::WARNING),
+  BST_MSG_INFO          = int64 (Bse::UserMessageType::INFO),
+  BST_MSG_DEBUG         = int64 (Bse::UserMessageType::DEBUG),
   BST_MSG_SCRIPT,
 } BstMsgType;
 const char* bst_msg_type_ident (BstMsgType);
