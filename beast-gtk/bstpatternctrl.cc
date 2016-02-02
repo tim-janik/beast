@@ -255,7 +255,6 @@ pattern_controller_key_press (BstPatternController *self,
       /* movement */
       switch (movement)
         {
-          guint d;
         case BST_PATTERN_MOVE_LEFT:     focus_col--;                                            break;
         case BST_PATTERN_MOVE_RIGHT:    focus_col++;                                            break;
         case BST_PATTERN_MOVE_UP:       focus_row--;                                            break;
@@ -269,11 +268,13 @@ pattern_controller_key_press (BstPatternController *self,
         case BST_PATTERN_JUMP_TOP:      focus_row = 0;                                          break;
         case BST_PATTERN_JUMP_BOTTOM:   focus_row = bst_pattern_view_get_last_row (pview);      break;
         case BST_PATTERN_MOVE_NEXT:
-          d = Rapicorn::Aida::enum_value_from_string<Bst::Direction> (sfi_value_get_choice (&self->step_dir->value));
-          if (d == Bst::DIR_LEFT || d == Bst::DIR_RIGHT)
-            focus_col += (d == Bst::DIR_LEFT ? -1 : +1) * g_value_get_int (&self->steps->value);
-          else /* UP/DOWN */
-            focus_row += (d == Bst::DIR_UP ? -1 : +1) * g_value_get_int (&self->steps->value);
+          {
+            Bst::Direction d = Rapicorn::Aida::enum_value_from_string<Bst::Direction> (sfi_value_get_choice (&self->step_dir->value));
+            if (d == Bst::Direction::DIR_LEFT || d == Bst::Direction::DIR_RIGHT)
+              focus_col += (d == Bst::Direction::DIR_LEFT ? -1 : +1) * g_value_get_int (&self->steps->value);
+            else /* UP/DOWN */
+              focus_row += (d == Bst::Direction::DIR_UP ? -1 : +1) * g_value_get_int (&self->steps->value);
+          }
           break;
         case BST_PATTERN_SET_STEP_WIDTH:
           g_value_set_int (&self->steps->value, param);
