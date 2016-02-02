@@ -77,7 +77,7 @@ bst_scrollgraph_set_property (GObject      *object,
       gtk_widget_queue_draw (widget);
       break;
     case PROP_WINDOW_SIZE:
-      self->window_size = Rapicorn::Aida::enum_value_from_string<Bst::FFTSize> (sfi_value_get_choice (value));
+      self->window_size = int64 (Rapicorn::Aida::enum_value_from_string<Bst::FFTSize> (sfi_value_get_choice (value)));
       bst_scrollgraph_resize_values (self, self->direction);
       gtk_widget_queue_resize (widget);
       break;
