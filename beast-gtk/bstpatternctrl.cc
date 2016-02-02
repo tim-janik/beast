@@ -19,32 +19,33 @@ pattern_controller_vraster_notify (gpointer             notify_data,
   BstPatternController *self = (BstPatternController*) notify_data;
   BstPatternView *pview = self->pview;
   static const struct { int value, ticks; } choices[] = {
-    { NOTE_LENGTH_1,        1536 }, /* 4 * 384 */
-    { NOTE_LENGTH_2,         768 },
-    { NOTE_LENGTH_4,         384 },
-    { NOTE_LENGTH_8,         192 },
-    { NOTE_LENGTH_16,         96 },
-    { NOTE_LENGTH_32,         48 },
-    { NOTE_LENGTH_64,         24 },
-    { NOTE_LENGTH_128,        12 },
-    { NOTE_LENGTH_1P,       2304 }, /* 4 * 384 * 3 / 2 */
-    { NOTE_LENGTH_2P,       1152 },
-    { NOTE_LENGTH_4P,        576 },
-    { NOTE_LENGTH_8P,        288 },
-    { NOTE_LENGTH_16P,       144 },
-    { NOTE_LENGTH_32P,        72 },
-    { NOTE_LENGTH_64P,        36 },
-    { NOTE_LENGTH_128P,       18 },
-    { NOTE_LENGTH_1T,       1024 }, /* 4 * 384 * 2 / 3 */
-    { NOTE_LENGTH_2T,        512 },
-    { NOTE_LENGTH_4T,        256 },
-    { NOTE_LENGTH_8T,        128 },
-    { NOTE_LENGTH_16T,        64 },
-    { NOTE_LENGTH_32T,        32 },
-    { NOTE_LENGTH_64T,        16 },
-    { NOTE_LENGTH_128T,        8 },
+    { int64 (NoteLength::NOTE_LENGTH_1),        1536 }, /* 4 * 384 */
+    { int64 (NoteLength::NOTE_LENGTH_2),         768 },
+    { int64 (NoteLength::NOTE_LENGTH_4),         384 },
+    { int64 (NoteLength::NOTE_LENGTH_8),         192 },
+    { int64 (NoteLength::NOTE_LENGTH_16),         96 },
+    { int64 (NoteLength::NOTE_LENGTH_32),         48 },
+    { int64 (NoteLength::NOTE_LENGTH_64),         24 },
+    { int64 (NoteLength::NOTE_LENGTH_128),        12 },
+    { int64 (NoteLength::NOTE_LENGTH_1P),       2304 }, /* 4 * 384 * 3 / 2 */
+    { int64 (NoteLength::NOTE_LENGTH_2P),       1152 },
+    { int64 (NoteLength::NOTE_LENGTH_4P),        576 },
+    { int64 (NoteLength::NOTE_LENGTH_8P),        288 },
+    { int64 (NoteLength::NOTE_LENGTH_16P),       144 },
+    { int64 (NoteLength::NOTE_LENGTH_32P),        72 },
+    { int64 (NoteLength::NOTE_LENGTH_64P),        36 },
+    { int64 (NoteLength::NOTE_LENGTH_128P),       18 },
+    { int64 (NoteLength::NOTE_LENGTH_1T),       1024 }, /* 4 * 384 * 2 / 3 */
+    { int64 (NoteLength::NOTE_LENGTH_2T),        512 },
+    { int64 (NoteLength::NOTE_LENGTH_4T),        256 },
+    { int64 (NoteLength::NOTE_LENGTH_8T),        128 },
+    { int64 (NoteLength::NOTE_LENGTH_16T),        64 },
+    { int64 (NoteLength::NOTE_LENGTH_32T),        32 },
+    { int64 (NoteLength::NOTE_LENGTH_64T),        16 },
+    { int64 (NoteLength::NOTE_LENGTH_128T),        8 },
   };
-  int vraster = 384, vsval = Rapicorn::Aida::enum_value_from_string<NoteLength> (sfi_value_get_choice (&self->vraster->value));
+  int vraster = 384;
+  const int64 vsval = int64 (Rapicorn::Aida::enum_value_from_string<NoteLength> (sfi_value_get_choice (&self->vraster->value)));
   for (uint i = 0; i < G_N_ELEMENTS (choices); i++)
     if (choices[i].value == vsval)
       {
