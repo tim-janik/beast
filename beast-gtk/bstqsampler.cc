@@ -93,9 +93,9 @@ bst_qsampler_class_init (BstQSamplerClass *klass)
   g_object_class_install_property (G_OBJECT_CLASS (object_class),
 				   PROP_DRAW_MODE,
 				   g_param_spec_int ("draw_mode", "Draw Mode", NULL,
-                                                     int64 (Bst::QSAMPLER_DRAW_CRANGE),
-                                                     int64 (Bst::QSAMPLER_DRAW_MAXIMUM_LINE),
-                                                     int64 (Bst::QSAMPLER_DRAW_CRANGE),
+                                                     int64 (Bst::QSamplerDrawMode::CRANGE),
+                                                     int64 (Bst::QSamplerDrawMode::MAXIMUM_LINE),
+                                                     int64 (Bst::QSamplerDrawMode::CRANGE),
                                                      G_PARAM_READWRITE));
 }
 
@@ -119,7 +119,7 @@ bst_qsampler_init (BstQSampler *qsampler)
   qsampler->green = default_green;
   qsampler->red_gc = NULL;
   qsampler->green_gc = NULL;
-  qsampler->draw_mode = Bst::QSAMPLER_DRAW_CRANGE;
+  qsampler->draw_mode = Bst::QSamplerDrawMode::CRANGE;
   qsampler->src_filler = NULL;
   qsampler->src_data = NULL;
   qsampler->src_destroy = NULL;
@@ -403,7 +403,7 @@ bst_qsampler_get_property (GObject    *object,
       g_value_set_double (value, qsampler->vscale_factor * 100.0);
       break;
     case PROP_DRAW_MODE:
-      g_value_set_int (value, qsampler->draw_mode);
+      g_value_set_int (value, int64 (qsampler->draw_mode));
       break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -781,15 +781,15 @@ bst_qsampler_draw_peak (BstQSampler *qsampler,
   switch (qsampler->draw_mode)
     {
       gint yb, yn;
-    case Bst::QSAMPLER_DRAW_MINIMUM_LINE:
+    case Bst::QSamplerDrawMode::MINIMUM_LINE:
       last_middle_value = last_mvalue;
       middle_value = mvalue;
       next_middle_value = next_mvalue;
-    case Bst::QSAMPLER_DRAW_MIDDLE_LINE:
+    case Bst::QSamplerDrawMode::MIDDLE_LINE:
       last_value = last_middle_value;
       value = middle_value;
       next_value = next_middle_value;
-    case Bst::QSAMPLER_DRAW_MAXIMUM_LINE:
+    case Bst::QSamplerDrawMode::MAXIMUM_LINE:
       y = zero - range * value;
       yb = zero - range * last_value;
       yn = zero - range * next_value;
@@ -797,20 +797,20 @@ bst_qsampler_draw_peak (BstQSampler *qsampler,
       yn = (y + yn) / 2;
       gdk_draw_line (canvas, fore_gc, x, MIN (y, MIN (yb, yn)), x, MAX (y, MAX (yb, yn)));
       break;
-    case Bst::QSAMPLER_DRAW_MINIMUM_SHAPE:
+    case Bst::QSamplerDrawMode::MINIMUM_SHAPE:
       y = low - (mvalue + 1) * range;
       gdk_draw_line (canvas, fore_gc, x, hi, x, y);
       break;
-    case Bst::QSAMPLER_DRAW_MAXIMUM_SHAPE:
+    case Bst::QSamplerDrawMode::MAXIMUM_SHAPE:
       y = low - (value + 1) * range;
       gdk_draw_line (canvas, fore_gc, x,  y, x, low);
       break;
-    case Bst::QSAMPLER_DRAW_CSHAPE:
+    case Bst::QSamplerDrawMode::CSHAPE:
       y = low - (value + 1) * range;
       yb = low - (mvalue + 1) * range;
       gdk_draw_line (canvas, fore_gc, x,  y, x, yb);
       break;
-    case Bst::QSAMPLER_DRAW_CRANGE:
+    case Bst::QSamplerDrawMode::CRANGE:
       {
 	gint last_min = last_mpeak, last_max = last_peak;
 	gint next_min = next_mpeak, next_max = next_peak;
@@ -840,7 +840,7 @@ bst_qsampler_draw_peak (BstQSampler *qsampler,
 	gdk_draw_line (canvas, fore_gc, x, y1, x, y2);
       }
       break;
-    case Bst::QSAMPLER_DRAW_ZERO_SHAPE:
+    case Bst::QSamplerDrawMode::ZERO_SHAPE:
       if (middle_value > 0)
 	{
 	  y = zero - middle_value * range;

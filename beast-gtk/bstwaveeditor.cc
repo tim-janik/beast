@@ -197,18 +197,18 @@ bst_wave_editor_init (BstWaveEditor *self)
   any = (GtkWidget*) g_object_new (GTK_TYPE_OPTION_MENU, "visible", TRUE, NULL);
   gtk_option_menu_set_menu (GTK_OPTION_MENU (any),
 			    bst_choice_menu_createv ("<BEAST-WaveEditor>/QSamplerDrawType",
-						     BST_CHOICE (Bst::QSAMPLER_DRAW_CRANGE, _("Shape Range"), NONE),
-						     BST_CHOICE (Bst::QSAMPLER_DRAW_ZERO_SHAPE, _("Shape Average"), NONE),
-						     BST_CHOICE (Bst::QSAMPLER_DRAW_MINIMUM_SHAPE, _("Shape Minimum"), NONE),
-						     BST_CHOICE (Bst::QSAMPLER_DRAW_MAXIMUM_SHAPE, _("Shape Maximum"), NONE),
-						     BST_CHOICE (Bst::QSAMPLER_DRAW_CSHAPE, _("Sketch Range"), NONE),
-						     BST_CHOICE (Bst::QSAMPLER_DRAW_MIDDLE_LINE, _("Sketch Average"), NONE),
-						     BST_CHOICE (Bst::QSAMPLER_DRAW_MINIMUM_LINE, _("Sketch Minimum"), NONE),
-						     BST_CHOICE (Bst::QSAMPLER_DRAW_MAXIMUM_LINE, _("Sketch Maximum"), NONE),
+						     BST_CHOICE (Bst::QSamplerDrawMode::CRANGE, _("Shape Range"), NONE),
+						     BST_CHOICE (Bst::QSamplerDrawMode::ZERO_SHAPE, _("Shape Average"), NONE),
+						     BST_CHOICE (Bst::QSamplerDrawMode::MINIMUM_SHAPE, _("Shape Minimum"), NONE),
+						     BST_CHOICE (Bst::QSamplerDrawMode::MAXIMUM_SHAPE, _("Shape Maximum"), NONE),
+						     BST_CHOICE (Bst::QSamplerDrawMode::CSHAPE, _("Sketch Range"), NONE),
+						     BST_CHOICE (Bst::QSamplerDrawMode::MIDDLE_LINE, _("Sketch Average"), NONE),
+						     BST_CHOICE (Bst::QSamplerDrawMode::MINIMUM_LINE, _("Sketch Minimum"), NONE),
+						     BST_CHOICE (Bst::QSamplerDrawMode::MAXIMUM_LINE, _("Sketch Maximum"), NONE),
 						     BST_CHOICE_END));
   g_object_connect (any, "swapped_signal::changed", change_draw_mode, self, NULL);
   gtk_option_menu_set_history (GTK_OPTION_MENU (any), 0);
-  self->draw_mode = Bst::QSAMPLER_DRAW_CRANGE;
+  self->draw_mode = Bst::QSamplerDrawMode::CRANGE;
   gmask = bst_gmask_quick (self->gmask_parent, 2, NULL, any, NULL);
 
   /* playback handle */
