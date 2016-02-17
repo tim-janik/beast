@@ -640,7 +640,7 @@ bse_ladspa_plugin_path_list_files (void)
   SfiRing *ring1, *ring2 = NULL, *ring3 = NULL;
   const gchar *paths;
 
-  ring1 = sfi_file_crawler_list_files (bse_installpath (BSE_INSTALLPATH_LADSPA).c_str(), "*.so", GFileTest (0));
+  ring1 = sfi_file_crawler_list_files (Bse::installpath (Bse::INSTALLPATH_LADSPA).c_str(), "*.so", GFileTest (0));
   ring1 = sfi_ring_sort (ring1, (SfiCompareFunc) strcmp, NULL);
 
   paths = g_getenv ("LADSPA_PATH");

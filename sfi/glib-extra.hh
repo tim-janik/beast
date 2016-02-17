@@ -303,34 +303,6 @@ GScanner*	g_scanner_new64			(const GScannerConfig *config_templ);
 #define g_scanner_thaw_symbol_table(scanner) ((void)0)
 #endif /* G_DISABLE_DEPRECATED */
 
-// == BSE_INSTALLPATH ==
-// See also configure.ac, this function is here because all of sfi, bse and beast include this file.
-enum BseInstallpathType {
-  BSE_INSTALLPATH_BSEINCLUDEDIR = 1,
-  BSE_INSTALLPATH_BINDIR,
-  BSE_INSTALLPATH_LOCALEBASE,
-  BSE_INSTALLPATH_LADSPA,
-  BSE_INSTALLPATH_DOCDIR,
-  BSE_INSTALLPATH_USER_DATA,
-  BSE_INSTALLPATH_BSELIBDIR,
-  BSE_INSTALLPATH_BSELIBDIR_PLUGINS,
-  BSE_INSTALLPATH_BSELIBDIR_DRIVERS,
-  BSE_INSTALLPATH_DATADIR,
-  BSE_INSTALLPATH_DATADIR_DEMO,
-  BSE_INSTALLPATH_DATADIR_SAMPLES,
-  BSE_INSTALLPATH_DATADIR_EFFECTS,
-  BSE_INSTALLPATH_DATADIR_INSTRUMENTS,
-  BSE_INSTALLPATH_DATADIR_SCRIPTS,
-  BSE_INSTALLPATH_DATADIR_IMAGES,
-  BSE_INSTALLPATH_DATADIR_KEYS,
-  BSE_INSTALLPATH_DATADIR_SKINS,
-};
-/// Provide installation directories and searchpaths for various types of data.
-std::string bse_installpath  (BseInstallpathType installpath_type);
-
-/// Provide a string containing the BSE library version number.
-std::string bse_version ();
-
 G_END_DECLS
 
 // == Flags Enumeration Operators in C++ ==
@@ -356,4 +328,47 @@ constexpr GConnectFlags  operator|  (GConnectFlags  s1, GConnectFlags s2) { retu
 inline    GConnectFlags& operator|= (GConnectFlags &s1, GConnectFlags s2) { s1 = s1 | s2; return s1; }
 constexpr GConnectFlags  operator~  (GConnectFlags  s1)                 { return GConnectFlags (~(long long unsigned) s1); }
 #endif // __cplusplus
+
+
+// == Fundamental BSE Utilities ==
+// these definitions need to move into bse/utils or similar
+namespace Bse {
+
+// import helpers from Rapicorn
+using Rapicorn::String;
+namespace Path = Rapicorn::Path;
+
+// == INSTALLPATH ==
+// See also configure.ac, this function is here because beast and all libs include this file.
+enum InstallpathType {
+  INSTALLPATH_BSEINCLUDEDIR = 1,
+  INSTALLPATH_BINDIR,
+  INSTALLPATH_LOCALEBASE,
+  INSTALLPATH_LADSPA,
+  INSTALLPATH_DOCDIR,
+  INSTALLPATH_USER_DATA,
+  INSTALLPATH_BSELIBDIR,
+  INSTALLPATH_BSELIBDIR_PLUGINS,
+  INSTALLPATH_BSELIBDIR_DRIVERS,
+  INSTALLPATH_DATADIR,
+  INSTALLPATH_DATADIR_DEMO,
+  INSTALLPATH_DATADIR_SAMPLES,
+  INSTALLPATH_DATADIR_EFFECTS,
+  INSTALLPATH_DATADIR_INSTRUMENTS,
+  INSTALLPATH_DATADIR_SCRIPTS,
+  INSTALLPATH_DATADIR_IMAGES,
+  INSTALLPATH_DATADIR_KEYS,
+  INSTALLPATH_DATADIR_SKINS,
+  INSTALLPATH_BEASTEXECDIR,
+  INSTALLPATH_PYBEASTDIR,
+};
+/// Provide installation directories and searchpaths for various types of data.
+String installpath          (InstallpathType installpath_type);
+void   installpath_override (const String &topdir);
+
+/// Provide a string containing the BSE library version number.
+std::string version ();
+
+} // Bse
+
 #endif /* __SFI_GLIB_EXTRA_H__ */

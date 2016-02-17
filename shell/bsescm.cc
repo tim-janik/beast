@@ -26,7 +26,7 @@ static gboolean        bse_scm_auto_load = TRUE;
 static gboolean        bse_scm_auto_play = TRUE;
 static SfiComPort     *bse_scm_port = NULL;
 static SfiGlueContext *bse_scm_context = NULL;
-static std::string     boot_script_path = bse_installpath (BSE_INSTALLPATH_DATADIR_SCRIPTS);
+static std::string     boot_script_path = Bse::installpath (Bse::INSTALLPATH_DATADIR_SCRIPTS);
 
 /* --- functions --- */
 static void

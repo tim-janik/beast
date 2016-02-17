@@ -154,7 +154,7 @@ bst_rc_dump (const gchar *file_name)
 
   wstore = sfi_wstore_new ();
 
-  sfi_wstore_printf (wstore, "; rc-file for BEAST v%s\n", bse_version().c_str());
+  sfi_wstore_printf (wstore, "; rc-file for BEAST v%s\n", Bse::version().c_str());
 
   /* store BstGConfig */
   sfi_wstore_puts (wstore, "\n; BstGConfig Dump\n");

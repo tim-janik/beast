@@ -96,9 +96,9 @@ bst_msg_absorb_config_update (const gchar *config_blurb)
     if (mstrings[i].cstring == config_blurb)
       {
         Bst::MsgAbsorbString &mas = mstrings[i];
-        if (mas.version != bse_version())
+        if (mas.version != Bse::version())
           {
-            mas.version = bse_version();
+            mas.version = Bse::version();
             changed = TRUE;
           }
         break;
@@ -118,17 +118,17 @@ bst_msg_absorb_config_adjust (const gchar *config_blurb, bool enabled, bool upda
   if (i >= mstrings.size())
     {
       Bst::MsgAbsorbString mas;
-      mas.version = bse_version();
+      mas.version = Bse::version();
       mas.cstring = config_blurb;
       mas.enabled = !enabled; // forces change
       i = mstrings.size();
       mstrings.push_back (mas);
     }
-  if (mstrings[i].enabled != enabled || (update_version && bse_version() != mstrings[i].version))
+  if (mstrings[i].enabled != enabled || (update_version && Bse::version() != mstrings[i].version))
     {
       Bst::MsgAbsorbString &mas = mstrings[i];
       if (update_version)
-        mas.version = bse_version();
+        mas.version = Bse::version();
       mas.enabled = enabled;
       return true;
     }
@@ -244,7 +244,7 @@ bst_msg_absorb_config_dump (const gchar *file_name)
 
   SfiWStore *wstore = sfi_wstore_new ();
 
-  sfi_wstore_printf (wstore, "; message-absorb-config-file for BEAST v%s\n", bse_version().c_str());
+  sfi_wstore_printf (wstore, "; message-absorb-config-file for BEAST v%s\n", Bse::version().c_str());
 
   /* store config */
   sfi_wstore_puts (wstore, "\n");

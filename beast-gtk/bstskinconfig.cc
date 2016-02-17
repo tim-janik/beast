@@ -206,7 +206,7 @@ bst_skin_dump (const gchar *file_name)
 
   wstore = sfi_wstore_new ();
 
-  sfi_wstore_printf (wstore, "; skin-file for BEAST v%s\n", bse_version().c_str());
+  sfi_wstore_printf (wstore, "; skin-file for BEAST v%s\n", Bse::version().c_str());
 
   /* store BstSkinConfig */
   sfi_wstore_puts (wstore, "\n");

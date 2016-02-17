@@ -75,28 +75,31 @@ AC_SUBST(LT_VERSION_INFO)
 # Define package directories per major/minor version
 bseincludedir="\${includedir}/bse-$MAJOR"
 bselibdir="\${libdir}/bse-$MAJOR.$MINOR.$MICRO"
+beastexecdir="\${libexecdir}/beast-$MAJOR.$MINOR.$MICRO"
 datadir="\${datarootdir}/beast"
 docdir="${datarootdir}/doc/beast" # "beast-$MAJOR"
 # Substitute directories in Makefiles
 AC_SUBST(bseincludedir)
 AC_SUBST(bselibdir)
+AC_SUBST(beastexecdir)
 AC_SUBST(datadir)
 AC_SUBST(docdir)
 # Provide directories for C++
-bak_prefix="$prefix"; bak_exec_prefix="$exec_prefix"; bak_libdir="$libdir"
+bak_prefix="$prefix"; bak_exec_prefix="$exec_prefix"; bak_libdir="$libdir"; bak_libexecdir="$libexecdir"
 bak_datarootdir="$datarootdir"; bak_datadir="$datadir"; bak_includedir="$includedir"
 test "x$prefix" = xNONE && prefix="$ac_default_prefix" ; test "x$exec_prefix" = xNONE && exec_prefix="$prefix"
-libdir=`eval echo "${libdir}"` ; datarootdir=`eval echo "${datarootdir}"` ;
+libdir=`eval echo "${libdir}"` ; libexecdir=`eval echo "${libexecdir}"` ; datarootdir=`eval echo "${datarootdir}"` ;
 datadir=`eval echo "${datadir}"`; bseincludedir=`eval echo "${bseincludedir}"`
-AC_DEFINE_UNQUOTED(INSTALLPATH_BSEINCLUDEDIR, ["`eval echo "${bseincludedir}"`"], [Sfidl standard include directory])
-AC_DEFINE_UNQUOTED(INSTALLPATH_BINDIR, ["`eval echo "${bindir}"`"], [Directory to install and execute programs])
-AC_DEFINE_UNQUOTED(INSTALLPATH_LOCALEBASE, ["`eval echo ${localedir}`"], [Base directory for locale specific message catalogs])
-AC_DEFINE_UNQUOTED(INSTALLPATH_LADSPA, ["`eval echo ${libdir}/ladspa`"], [Searchpath for LADSPA plugins])
-AC_DEFINE_UNQUOTED(INSTALLPATH_BSELIBDIR, ["`eval echo ${bselibdir}`"], [Directory to install plugins and drivers])
-AC_DEFINE_UNQUOTED(INSTALLPATH_DATADIR, ["`eval echo ${datadir}`"], [Directory to install samples, effects, scripts, etc])
-AC_DEFINE_UNQUOTED(INSTALLPATH_DOCDIR, ["`eval echo ${docdir}`"], [Directory to install documentation])
-AC_DEFINE_UNQUOTED(INSTALLPATH_USER_DATA, ["~/beast"], [Searchpath for user owned Beast resources])
-prefix="$bak_prefix"; exec_prefix="$bak_exec_prefix"; libdir="$bak_libdir"
+AC_DEFINE_UNQUOTED(CONFIGURE_INSTALLPATH_BSEINCLUDEDIR, ["`eval echo "${bseincludedir}"`"], [Sfidl standard include directory])
+AC_DEFINE_UNQUOTED(CONFIGURE_INSTALLPATH_BINDIR, ["`eval echo "${bindir}"`"], [Directory to install and execute programs])
+AC_DEFINE_UNQUOTED(CONFIGURE_INSTALLPATH_LOCALEBASE, ["`eval echo ${localedir}`"], [Base directory for locale specific message catalogs])
+AC_DEFINE_UNQUOTED(CONFIGURE_INSTALLPATH_LADSPA, ["`eval echo ${libdir}/ladspa`"], [Searchpath for LADSPA plugins])
+AC_DEFINE_UNQUOTED(CONFIGURE_INSTALLPATH_BSELIBDIR, ["`eval echo ${bselibdir}`"], [Directory to install plugins and drivers])
+AC_DEFINE_UNQUOTED(CONFIGURE_INSTALLPATH_BEASTEXECDIR, ["`eval echo ${beastexecdir}`"], [Directory under whic to install Beast executable files])
+AC_DEFINE_UNQUOTED(CONFIGURE_INSTALLPATH_DATADIR, ["`eval echo ${datadir}`"], [Directory to install samples, effects, scripts, etc])
+AC_DEFINE_UNQUOTED(CONFIGURE_INSTALLPATH_DOCDIR, ["`eval echo ${docdir}`"], [Directory to install documentation])
+AC_DEFINE_UNQUOTED(CONFIGURE_INSTALLPATH_USER_DATA, ["~/beast"], [Searchpath for user owned Beast resources])
+prefix="$bak_prefix"; exec_prefix="$bak_exec_prefix"; libdir="$bak_libdir"; libexecdir="$bak_libexecdir"
 datarootdir="$bak_datarootdir"; datadir="$bak_datadir"; includedir="$bak_includedir"
 
 # Build tree checks
@@ -631,10 +634,27 @@ else
 fi
 AC_SUBST(DEFINE__FILE_DIR__)
 
-MC_ASSERT_PROG(PYTHON, python2.7)
-if test -z "$PYTHON" || $PYTHON -c "import sys; sys.exit (sys.hexversion >= 0x2070500)" 2>/dev/null ; then
-  AC_MSG_ERROR([failed to detect python (version >= 2.7.5)])
-fi
+dnl # MC_PYTHON_REQUIREMENTS() - python checks
+AC_DEFUN([MC_PYTHON_REQUIREMENTS],
+[
+  PYTHON_REQUIRED=2.7
+  AM_PATH_PYTHON($PYTHON_REQUIRED)
+  dnl # AC_REQUIRE([AC_PYTHON_DEVEL]) # AC_PYTHON_DEVEL is usually provided by autoconf-archive
+  AC_PYTHON_DEVEL([>= $PYTHON_REQUIRED])
+  AC_MSG_CHECKING([for working Python extension compilation])
+  PYTHON_CPPFLAGS="$PYTHON_CPPFLAGS -fno-strict-aliasing" # needed by Python headers
+  saved_CPPFLAGS="$CPPFLAGS"
+  CPPFLAGS="$CPPFLAGS $PYTHON_CPPFLAGS -Wall -Werror"     # verify sane Python module builds
+  AC_TRY_COMPILE([#include <Python.h>], [Py_InitModule(0,0);], py_build=ok, py_build=failed)
+  CPPFLAGS="$saved_CPPFLAGS"
+  AC_MSG_RESULT($py_build)
+  if test "$py_build" != "ok" ; then
+    AC_MSG_ERROR([failed to build extension against Python (>=$PYTHON_REQUIRED) headers])
+  fi
+  if test -z "$PYTHON" || $PYTHON -c "import sys; sys.exit (sys.hexversion >= 0x2070500)" 2>/dev/null ; then
+    AC_MSG_ERROR([failed to detect python (version >= 2.7.5)])
+  fi
+])
 
 AC_MSG_CHECKING(whether source dir equals build dir)
 TEST_SRCDIR=`cd $srcdir ; /bin/pwd`
@@ -664,6 +684,7 @@ MC_BSE_REQUIREMENTS
 MC_ASOUND_CHECK
 MC_BSESCM_REQUIREMENTS
 MC_BSE_SNDDEV_CHECK
+MC_PYTHON_REQUIREMENTS
 MC_GXK_REQUIREMENTS
 MC_BEAST_REQUIREMENTS
 MC_SUIDMAIN_REQUIREMENTS
@@ -686,6 +707,7 @@ plugins/icons/Makefile
 plugins/freeverb/Makefile
 drivers/Makefile
 shell/Makefile
+pybeast/Makefile
 beast-gtk/Makefile
 beast-gtk/gxk/Makefile
 beast-gtk/res/Makefile

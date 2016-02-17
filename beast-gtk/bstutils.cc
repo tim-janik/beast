@@ -20,6 +20,39 @@
 #include <unistd.h>
 #include <string.h>
 
+
+namespace Bst {
+
+static const uint16 EVENT_LOOP_RUNNING   = 0xffff;
+static uint16       event_loop_quit_code = EVENT_LOOP_RUNNING;
+
+int
+event_loop_run ()
+{
+  // run main event loop until main_quit()
+  while (event_loop_quit_code == EVENT_LOOP_RUNNING)
+    {
+      sfi_glue_gc_run ();
+      GDK_THREADS_LEAVE ();
+      g_main_iteration (TRUE);
+      GDK_THREADS_ENTER ();
+    }
+  // return exit status and reset state to allow restarts
+  const int quit_code = event_loop_quit_code;
+  event_loop_quit_code = EVENT_LOOP_RUNNING;
+  return quit_code;
+}
+
+void
+event_loop_quit (uint8 exit_code)
+{
+  if (event_loop_quit_code == EVENT_LOOP_RUNNING)
+    event_loop_quit_code = exit_code;
+}
+
+} // Bst                                                                                                 |
+
+
 /* --- variables --- */
 static GtkIconFactory *stock_icon_factory = NULL;
 Bse::ServerH bse_server;

@@ -12,6 +12,7 @@
 #include "bstpreferences.hh"
 #include "data/beast-images.h"
 #include "../configure.h"
+#include <Python.h>
 #include <unistd.h>
 #include <string.h>
 #include <sys/time.h>
@@ -29,7 +30,6 @@ static void                     bst_init_aida_idl       ();
 /* --- variables --- */
 gboolean            bst_developer_hints = FALSE;
 gboolean            bst_debug_extensions = FALSE;
-gboolean            bst_main_loop_running = TRUE;
 static GtkWidget   *beast_splash = NULL;
 static gboolean     registration_done = FALSE;
 static gboolean     arg_force_xkb = FALSE;
@@ -60,9 +60,10 @@ server_registration (SfiProxy     server,
     }
 }
 
+static void     main_init_argv0_installpaths (const char *argv0);
 static void     main_init_bse (int *argc, char *argv[]);
 static void     main_init_sfi_glue();
-static void     main_init_gxk (int *argc, char *argv[]);
+static void     main_init_gxk();
 static void     main_init_bst_systems();
 static void     main_load_rc_files();
 static void     main_show_splash_image();
@@ -75,7 +76,7 @@ static BstApp*  main_open_files (int filesc, char **filesv);
 static BstApp*  main_open_default_window();
 static void     main_show_release_notes();
 static void     main_splash_down ();
-static void     main_run_event_loops ();
+static int      main_run_event_loop ();
 static bool     force_saving_rc_files = false;
 static void     main_save_rc_files ();
 static void     main_cleanup ();
@@ -83,8 +84,10 @@ static void     main_cleanup ();
 int
 main (int argc, char *argv[])
 {
+  main_init_argv0_installpaths (argv[0]);
+
   /* initialize i18n */
-  bindtextdomain (BST_GETTEXT_DOMAIN, bse_installpath (BSE_INSTALLPATH_LOCALEBASE).c_str());
+  bindtextdomain (BST_GETTEXT_DOMAIN, Bse::installpath (Bse::INSTALLPATH_LOCALEBASE).c_str());
   bind_textdomain_codeset (BST_GETTEXT_DOMAIN, "UTF-8");
   textdomain (BST_GETTEXT_DOMAIN);
   setlocale (LC_ALL, "");
@@ -93,6 +96,9 @@ main (int argc, char *argv[])
   gettimeofday (&tv, NULL);
   srand48 (tv.tv_usec + (tv.tv_sec << 16));
   srand (tv.tv_usec + (tv.tv_sec << 16));
+
+  // setup Python
+  Py_Initialize();
 
   // initialize threading and GLib types
   Rapicorn::ThreadInfo::self().name ("Beast GUI");
@@ -105,6 +111,13 @@ main (int argc, char *argv[])
   // early arg parsing without remote calls
   bst_args_parse_early (&argc, argv);
 
+  // startup Gtk+ *lightly*
+  if (!gtk_parse_args (&argc, &argv))
+    {
+      printerr ("%s: failed to setup Gtk+\n", Rapicorn::program_argv0());
+      exit (7);
+    }
+
   main_init_bse (&argc, argv);
 
   // now that the BSE thread runs, drop scheduling priorities if we have any
@@ -116,8 +129,11 @@ main (int argc, char *argv[])
   // arg processing with BSE available, --help, --version
   bst_args_process (&argc, argv);
 
+  PySys_SetArgvEx (argc, argv, 0);
+
   main_init_sfi_glue();
-  main_init_gxk (&argc, argv);
+
+  main_init_gxk();
   main_init_bst_systems();
   main_load_rc_files();
   main_show_splash_image();
@@ -131,11 +147,32 @@ main (int argc, char *argv[])
     app = main_open_default_window();
   main_show_release_notes();
   main_splash_down();
-  main_run_event_loops();
+
+  const int exitcode = main_run_event_loop();
+
   main_save_rc_files();
   main_cleanup();
 
-  return 0;
+  return exitcode;
+}
+
+static void
+main_init_argv0_installpaths (const char *argv0)
+{
+  // Rapicorn and Python both need accurate argv0 excutable names
+  Rapicorn::program_argv0_init (argv0);
+  Py_SetProgramName (const_cast<char*> (argv0));
+  // check for a libtool-linked, uninstalled executable (name)
+  const char *const exe = argv0;
+  const char *const slash = strrchr (exe, '/');
+  if (slash && slash >= exe + 6 && strncmp (slash - 6, "/.libs/lt-", 10) == 0)
+    {
+      using namespace Rapicorn;
+      // use source dir relative installpaths for uninstalled executables
+      const String program_abspath = Path::abspath (argv0);
+      const String dirpath = Path::join (Path::dirname (program_abspath), "..", ".."); // topdir/subdir/.libs/../..
+      Bse::installpath_override (Path::realpath (dirpath));
+    }
 }
 
 static void
@@ -160,16 +197,16 @@ main_init_sfi_glue()
 }
 
 static void
-main_init_gxk (int *argc, char *argv[])
+main_init_gxk()
 {
-  // initialize Gtk+ and go into threading mode
-  gtk_init (argc, &argv);
+  // late Gtk+ initialization, args have been parsed with gtk_parse_args()
+  gtk_init (NULL, NULL);
   GDK_THREADS_ENTER ();
   // initialize Gtk+ Extensions
   gxk_init ();
   // documentation search paths
-  gxk_text_add_tsm_path (bse_installpath (BSE_INSTALLPATH_DOCDIR).c_str());
-  gxk_text_add_tsm_path (bse_installpath (BSE_INSTALLPATH_DATADIR_IMAGES).c_str());
+  gxk_text_add_tsm_path (Bse::installpath (Bse::INSTALLPATH_DOCDIR).c_str());
+  gxk_text_add_tsm_path (Bse::installpath (Bse::INSTALLPATH_DATADIR_IMAGES).c_str());
   gxk_text_add_tsm_path (".");
   // now, we can popup the splash screen
   beast_splash = bst_splash_new ("BEAST-Splash", BST_SPLASH_WIDTH, BST_SPLASH_HEIGHT, 15);
@@ -207,7 +244,7 @@ main_show_splash_image()
 {
   /* show splash images */
   bst_splash_update_item (beast_splash, _("Splash Image"));
-  gchar *string = g_strconcat (bse_installpath (BSE_INSTALLPATH_DATADIR_IMAGES).c_str(), G_DIR_SEPARATOR_S, BST_SPLASH_IMAGE, NULL);
+  gchar *string = g_strconcat (Bse::installpath (Bse::INSTALLPATH_DATADIR_IMAGES).c_str(), G_DIR_SEPARATOR_S, BST_SPLASH_IMAGE, NULL);
   GdkPixbufAnimation *anim = gdk_pixbuf_animation_new_from_file (string, NULL);
   g_free (string);
   bst_splash_update ();
@@ -465,19 +502,55 @@ main_splash_down ()
   bst_splash_release_grab (beast_splash);
 }
 
-static void
-main_run_event_loops ()
+#define Py_None_INCREF()        ({ Py_INCREF (Py_None); Py_None;  })
+
+static PyObject*
+main_quit (PyObject *self, PyObject *args)
 {
-  /* away into the main loop */
-  while (bst_main_loop_running)
+  int exit_code = 0;
+  if (PyTuple_Check (args) && PyTuple_GET_SIZE (args) > 0)
     {
-      sfi_glue_gc_run ();
-      GDK_THREADS_LEAVE ();
-      g_main_iteration (TRUE);
-      GDK_THREADS_ENTER ();
+      if (!PyArg_ParseTuple (args, "i:main_quit", &exit_code))
+        return NULL;
     }
+  Bst::event_loop_quit (exit_code);
+  return Py_None_INCREF();
+}
+
+static PyObject*
+main_loop (PyObject *self, PyObject *args)
+{
+  if (!PyArg_ParseTuple (args, ":main_loop"))
+    return NULL;
+  const int quit_code = Bst::event_loop_run();
+  return Py_BuildValue ("i", quit_code);
+}
+
+static PyMethodDef embedded_bst_methods[] = {
+  { "main_quit", main_quit, METH_VARARGS, "Quit the currently running main event loop." },
+  { "main_loop", main_loop, METH_VARARGS, "Run the main event loop until main_quit()." },
+  { NULL, NULL, 0, NULL }
+};
+
+static int
+main_run_event_loop ()
+{
+  // register embedded methods
+  static __unused bool initialized = []() { Py_InitModule ("bst", embedded_bst_methods); return true; } ();
+
+  // run main loop from Python
+  String pyfile = Bse::Path::join (Bse::installpath (Bse::INSTALLPATH_PYBEASTDIR), "main.py");
+  FILE *fp = fopen (pyfile.c_str(), "r");
+  if (!fp)
+    {
+      perror (string_format ("%s: failed to open file %s", Rapicorn::program_argv0(), Rapicorn::string_to_cquote (pyfile)).c_str());
+      exit (7);
+    }
+  const int pyexitcode = PyRun_AnyFileExFlags (fp, pyfile.c_str(), false, NULL);
+  fclose (fp);
+
+  // run pending cleanup handlers
   bst_message_dialogs_popdown ();
-  /* perform necessary cleanup cycles */
   GDK_THREADS_LEAVE ();
   while (g_main_iteration (FALSE))
     {
@@ -486,6 +559,8 @@ main_run_event_loops ()
       GDK_THREADS_LEAVE ();
     }
   GDK_THREADS_ENTER ();
+
+  return pyexitcode;
 }
 
 static void
@@ -517,6 +592,9 @@ main_cleanup ()
       sfi_glue_gc_run ();
       GDK_THREADS_LEAVE ();
     }
+
+  // Python cleanup
+  Py_Finalize();
 
   // misc cleanups
   bse_object_debug_leaks ();
@@ -728,19 +806,19 @@ bst_args_process (int *argc_p, char **argv)
 	  const char *arg = argv[i][12 - 1] == '=' ? argv[i] + 12 : (argv[i + 1] ? argv[i + 1] : "");
           char *freeme = NULL;
           if (strcmp (arg, "docs") == 0)
-	    printout ("%s\n", bse_installpath (BSE_INSTALLPATH_DOCDIR).c_str());
+	    printout ("%s\n", Bse::installpath (Bse::INSTALLPATH_DOCDIR).c_str());
 	  else if (strcmp (arg, "images") == 0)
-	    printout ("%s\n", bse_installpath (BSE_INSTALLPATH_DATADIR_IMAGES).c_str());
+	    printout ("%s\n", Bse::installpath (Bse::INSTALLPATH_DATADIR_IMAGES).c_str());
 	  else if (strcmp (arg, "locale") == 0)
-	    printout ("%s\n", bse_installpath (BSE_INSTALLPATH_LOCALEBASE).c_str());
+	    printout ("%s\n", Bse::installpath (Bse::INSTALLPATH_LOCALEBASE).c_str());
 	  else if (strcmp (arg, "skins") == 0)
 	    printout ("%s\n", freeme = BST_STRDUP_SKIN_PATH ());
 	  else if (strcmp (arg, "keys") == 0)
-	    printout ("%s\n", bse_installpath (BSE_INSTALLPATH_DATADIR_KEYS).c_str());
+	    printout ("%s\n", Bse::installpath (Bse::INSTALLPATH_DATADIR_KEYS).c_str());
 	  else if (strcmp (arg, "ladspa") == 0)
-	    printout ("%s\n", bse_installpath (BSE_INSTALLPATH_LADSPA).c_str());
+	    printout ("%s\n", Bse::installpath (Bse::INSTALLPATH_LADSPA).c_str());
 	  else if (strcmp (arg, "plugins") == 0)
-	    printout ("%s\n", bse_installpath (BSE_INSTALLPATH_BSELIBDIR_PLUGINS).c_str());
+	    printout ("%s\n", Bse::installpath (Bse::INSTALLPATH_BSELIBDIR_PLUGINS).c_str());
 	  else if (strcmp (arg, "samples") == 0)
 	    printout ("%s\n", bse_server.get_sample_path());
 	  else if (strcmp (arg, "effects") == 0)
@@ -812,11 +890,11 @@ bst_exit_print_version (void)
   printout ("Intrinsic code selected according to runtime CPU detection:\n");
   printout ("%s", Rapicorn::cpu_info().c_str());
   printout ("\n");
-  printout ("Binaries:        %s\n", bse_installpath (BSE_INSTALLPATH_BINDIR).c_str());
-  printout ("Doc Path:        %s\n", bse_installpath (BSE_INSTALLPATH_DOCDIR).c_str());
-  printout ("Image Path:      %s\n", bse_installpath (BSE_INSTALLPATH_DATADIR_IMAGES).c_str());
-  printout ("Locale Path:     %s\n", bse_installpath (BSE_INSTALLPATH_LOCALEBASE).c_str());
-  printout ("Keyrc Path:      %s\n", bse_installpath (BSE_INSTALLPATH_DATADIR_KEYS).c_str());
+  printout ("Binaries:        %s\n", Bse::installpath (Bse::INSTALLPATH_BINDIR).c_str());
+  printout ("Doc Path:        %s\n", Bse::installpath (Bse::INSTALLPATH_DOCDIR).c_str());
+  printout ("Image Path:      %s\n", Bse::installpath (Bse::INSTALLPATH_DATADIR_IMAGES).c_str());
+  printout ("Locale Path:     %s\n", Bse::installpath (Bse::INSTALLPATH_LOCALEBASE).c_str());
+  printout ("Keyrc Path:      %s\n", Bse::installpath (Bse::INSTALLPATH_DATADIR_KEYS).c_str());
   printout ("Skin Path:       %s\n", freeme = BST_STRDUP_SKIN_PATH());
   printout ("Sample Path:     %s\n", bse_server.get_sample_path());
   printout ("Script Path:     %s\n", bse_server.get_script_path());

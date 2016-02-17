@@ -168,7 +168,7 @@ bool Options::parse (int *argc_p, char **argv_p[], const Parser& parser)
   /* add std include path */
   if (!noStdInc)
     {
-      const std::string stdinc_path = bse_installpath (BSE_INSTALLPATH_BSEINCLUDEDIR);
+      const std::string stdinc_path = Bse::installpath (Bse::INSTALLPATH_BSEINCLUDEDIR);
       char *dir = strtok (const_cast<char*> (stdinc_path.c_str()), G_SEARCHPATH_SEPARATOR_S);
       while (dir && dir[0])
 	{
@@ -199,7 +199,7 @@ bool Options::parse (int *argc_p, char **argv_p[], const Parser& parser)
 
   if (printVersion)
     {
-      printf ("%s %s\n", SFIDL_PRG_NAME, bse_version().c_str());
+      printf ("%s %s\n", SFIDL_PRG_NAME, Bse::version().c_str());
       return true;
     }
 

@@ -428,7 +428,7 @@ bse_server_require_pcm_input (BseServer *server)
       if (!BSE_DEVICE_READABLE (server->pcm_device))
         {
           UserMessage umsg;
-          umsg.type = Bse::WARNING;
+          umsg.utype = Bse::WARNING;
           umsg.title = _("Audio Recording Failed");
           umsg.text1 = _("Failed to start recording from audio device.");
           umsg.text2 = _("An audio project is in use which processes an audio input signal, but the audio device "
@@ -482,7 +482,7 @@ server_open_pcm_device (BseServer *server,
   if (!server->pcm_device)
     {
       UserMessage umsg;
-      umsg.type = Bse::ERROR;
+      umsg.utype = Bse::ERROR;
       umsg.title = _("Audio I/O Failed");
       umsg.text1 = _("No available audio device was found.");
       umsg.text2 = _("No available audio device could be found and opened successfully. "
@@ -509,7 +509,7 @@ server_open_midi_device (BseServer *server)
       if (server->midi_device)
         {
           UserMessage umsg;
-          umsg.type = Bse::WARNING;
+          umsg.utype = Bse::WARNING;
           umsg.title = _("MIDI I/O Failed");
           umsg.text1 = _("MIDI input or output is not available.");
           umsg.text2 = _("No available MIDI device could be found and opened successfully. "
@@ -567,7 +567,7 @@ bse_server_open_devices (BseServer *self)
 	  if (error)
 	    {
               UserMessage umsg;
-              umsg.type = Bse::ERROR;
+              umsg.utype = Bse::ERROR;
               umsg.title = _("Disk Recording Failed");
               umsg.text1 = _("Failed to start PCM recording to disk.");
               umsg.text2 = _("An error occoured while opening the recording file, selecting a different "
@@ -1158,49 +1158,49 @@ ServerImpl::get_vorbis_version ()
 String
 ServerImpl::get_ladspa_path ()
 {
-  return Path::searchpath_join (bse_installpath (BSE_INSTALLPATH_LADSPA), BSE_GCONFIG (ladspa_path));
+  return Path::searchpath_join (Bse::installpath (Bse::INSTALLPATH_LADSPA), BSE_GCONFIG (ladspa_path));
 }
 
 String
 ServerImpl::get_plugin_path ()
 {
-  return Path::searchpath_join (bse_installpath (BSE_INSTALLPATH_BSELIBDIR_PLUGINS), BSE_GCONFIG (plugin_path));
+  return Path::searchpath_join (Bse::installpath (Bse::INSTALLPATH_BSELIBDIR_PLUGINS), BSE_GCONFIG (plugin_path));
 }
 
 String
 ServerImpl::get_script_path ()
 {
-  return Path::searchpath_join (bse_installpath (BSE_INSTALLPATH_DATADIR_SCRIPTS), BSE_GCONFIG (script_path));
+  return Path::searchpath_join (Bse::installpath (Bse::INSTALLPATH_DATADIR_SCRIPTS), BSE_GCONFIG (script_path));
 }
 
 String
 ServerImpl::get_instrument_path ()
 {
-  return Path::searchpath_join (bse_installpath (BSE_INSTALLPATH_DATADIR_INSTRUMENTS), BSE_GCONFIG (instrument_path));
+  return Path::searchpath_join (Bse::installpath (Bse::INSTALLPATH_DATADIR_INSTRUMENTS), BSE_GCONFIG (instrument_path));
 }
 
 String
 ServerImpl::get_sample_path ()
 {
-  return Path::searchpath_join (bse_installpath (BSE_INSTALLPATH_DATADIR_SAMPLES), BSE_GCONFIG (sample_path));
+  return Path::searchpath_join (Bse::installpath (Bse::INSTALLPATH_DATADIR_SAMPLES), BSE_GCONFIG (sample_path));
 }
 
 String
 ServerImpl::get_effect_path ()
 {
-  return Path::searchpath_join (bse_installpath (BSE_INSTALLPATH_DATADIR_EFFECTS), BSE_GCONFIG (effect_path));
+  return Path::searchpath_join (Bse::installpath (Bse::INSTALLPATH_DATADIR_EFFECTS), BSE_GCONFIG (effect_path));
 }
 
 String
 ServerImpl::get_demo_path ()
 {
-  return bse_installpath (BSE_INSTALLPATH_DATADIR_DEMO);
+  return Bse::installpath (Bse::INSTALLPATH_DATADIR_DEMO);
 }
 
 String
 ServerImpl::get_version ()
 {
-  return bse_version();
+  return Bse::version();
 }
 
 String
@@ -1227,7 +1227,7 @@ ServerImpl::save_preferences ()
     return;
 
   SfiWStore *wstore = sfi_wstore_new ();
-  sfi_wstore_printf (wstore, "; rc-file for BSE v%s\n", bse_version());
+  sfi_wstore_printf (wstore, "; rc-file for BSE v%s\n", Bse::version());
 
   /* store BseGConfig */
   sfi_wstore_puts (wstore, "\n; BseGConfig Dump\n");
