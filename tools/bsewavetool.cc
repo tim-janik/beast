@@ -162,7 +162,7 @@ main (int   argc,
           bse_wave_file_info_unref (winfo);
         }
     }
-  if (!wave && !error)
+  if (!wave && error == 0)
     error = Bse::Error::IO;       /* unknown */
   if (error != 0)
     {
@@ -2549,7 +2549,7 @@ public:
 	    GslDataHandle *fir_handle = create_fir_handle (dhandle);
 
 	    Bse::Error error = print_effective_stopband_start (fir_handle);
-	    if (!error)
+	    if (error == 0)
 	      error = chunk->change_dhandle (fir_handle, 0, 0);
 
 	    if (error != 0)

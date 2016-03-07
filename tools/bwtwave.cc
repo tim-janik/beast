@@ -57,7 +57,7 @@ WaveChunk::change_dhandle (GslDataHandle *xhandle,
     }
   Bse::Error error = gsl_data_handle_open (xhandle);
   gsl_data_handle_unref (xhandle);
-  if (!error)
+  if (error == 0)
     {
       if (dhandle)
         gsl_data_handle_close (dhandle);
@@ -123,7 +123,7 @@ Wave::add_chunk (GslDataHandle  *dhandle,
     gsl_data_handle_ref (dhandle);
 
   Bse::Error error = gsl_data_handle_open (dhandle);
-  if (!error)
+  if (error == 0)
     {
       WaveChunk wc;
       wc.dhandle = dhandle;
