@@ -232,23 +232,23 @@ bse_pcm_device_alsa_open (BseDevice     *device,
   if (!aerror && alsa->write_handle)
     error = alsa_device_setup (alsa, alsa->write_handle, BSE_PCM_DEVICE (device)->req_latency_ms, &wh_freq, &wh_n_periods, &wh_period_size);
   /* check duplex */
-  if (!error && alsa->read_handle && alsa->write_handle && rh_freq != wh_freq)
+  if (error == 0 && alsa->read_handle && alsa->write_handle && rh_freq != wh_freq)
     error = Bse::Error::DEVICES_MISMATCH;
   handle->mix_freq = alsa->read_handle ? rh_freq : wh_freq;
-  if (!error && alsa->read_handle && alsa->write_handle && rh_n_periods != wh_n_periods)
+  if (error == 0 && alsa->read_handle && alsa->write_handle && rh_n_periods != wh_n_periods)
     error = Bse::Error::DEVICES_MISMATCH;
   alsa->n_periods = alsa->read_handle ? rh_n_periods : wh_n_periods;
-  if (!error && alsa->read_handle && alsa->write_handle && rh_period_size != wh_period_size)
+  if (error == 0 && alsa->read_handle && alsa->write_handle && rh_period_size != wh_period_size)
     error = Bse::Error::DEVICES_MISMATCH;
   alsa->period_size = alsa->read_handle ? rh_period_size : wh_period_size;
-  if (!error && alsa->read_handle && alsa->write_handle &&
+  if (error == 0 && alsa->read_handle && alsa->write_handle &&
       snd_pcm_link (alsa->read_handle, alsa->write_handle) < 0)
     error = Bse::Error::DEVICES_MISMATCH;
-  if (!error && snd_pcm_prepare (alsa->read_handle ? alsa->read_handle : alsa->write_handle) < 0)
+  if (error == 0 && snd_pcm_prepare (alsa->read_handle ? alsa->read_handle : alsa->write_handle) < 0)
     error = Bse::Error::FILE_OPEN_FAILED;
 
   /* setup PCM handle or shutdown */
-  if (!error)
+  if (error == 0)
     {
       alsa->period_buffer = (gint16*) g_malloc (alsa->period_size * alsa->frame_size);
       bse_device_set_opened (device, dname, handle->readable, handle->writable);
