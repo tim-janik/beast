@@ -770,7 +770,7 @@ bst_snet_router_event (GtkWidget *widget,
                                         &self->world_x, &self->world_y);
 
           Bse::Error error = self->snet.can_create_source (ad.entity);
-          if (!error)
+          if (error == 0)
             {
               bse_item_group_undo (self->snet.proxy_id(), "Create Module");
               SfiProxy module = self->snet.create_source (ad.entity).proxy_id();

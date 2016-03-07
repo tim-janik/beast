@@ -20,7 +20,7 @@ bst_project_restore_from_file (Bse::ProjectH project, const gchar *file_name, bo
         /* songs always need a master bus */
         bse_song_ensure_master_bus (iseq->items[i]);
       }
-  if (!error && apply_project_file_name)
+  if (error == 0 && apply_project_file_name)
     {
       bse_proxy_set_data_full (project.proxy_id(), "beast-project-file-name", g_strdup (file_name), g_free);
       gchar *bname = g_path_get_basename (file_name);
