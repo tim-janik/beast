@@ -80,8 +80,7 @@ gsl_data_handle_open (GslDataHandle *dhandle)
     {
       GslDataHandleSetup setup = { 0, };
       Bse::Error error = dhandle->vtable->open (dhandle, &setup);
-      if (!error && (setup.n_values < 0 ||
-		     setup.n_channels < 1))
+      if (error == 0 && (setup.n_values < 0 || setup.n_channels < 1))
 	{
 	  sfi_warning ("invalid parameters in data handle open() (%p()): nv=%lld nc=%u",
                        dhandle->vtable->open, setup.n_values, setup.n_channels);

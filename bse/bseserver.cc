@@ -538,7 +538,7 @@ bse_server_open_devices (BseServer *self)
   guint block_size, latency = BSE_GCONFIG (synth_latency), mix_freq = BSE_GCONFIG (synth_mixing_freq);
   bse_engine_constrain (latency, mix_freq, BSE_GCONFIG (synth_control_freq), &block_size, NULL);
   /* try opening devices */
-  if (!error)
+  if (error == 0)
     error = server_open_pcm_device (self, mix_freq, latency, block_size);
   guint aligned_freq = bse_pcm_device_frequency_align (mix_freq);
   if (error != 0 && aligned_freq != mix_freq)
@@ -548,9 +548,9 @@ bse_server_open_devices (BseServer *self)
       Bse::Error new_error = server_open_pcm_device (self, mix_freq, latency, block_size);
       error = new_error != 0 ? error : Bse::Error::NONE;
     }
-  if (!error)
+  if (error == 0)
     error = server_open_midi_device (self);
-  if (!error)
+  if (error == 0)
     {
       BseTrans *trans = bse_trans_open ();
       engine_init (self, bse_pcm_device_get_mix_freq (self->pcm_device));

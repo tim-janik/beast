@@ -39,7 +39,7 @@ METHOD (BseEditableSample, open) {
   else
     {
       error = gsl_wave_chunk_open (esample->wchunk);
-      if (!error)
+      if (error == 0)
 	esample->open_count++;
     }
 

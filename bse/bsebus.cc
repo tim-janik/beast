@@ -686,7 +686,7 @@ bse_bus_connect_unchecked (BseBus  *self,
       BSE_ITEM (osource)->parent != BSE_ITEM (self)->parent)    /* restrict to siblings */
     return Bse::Error::SOURCE_PARENT_MISMATCH;
   Bse::Error error = bse_source_set_input (self->summation, 0, osource, 0);
-  if (!error)
+  if (error == 0)
     {
       bse_source_must_set_input (self->summation, 1, osource, 1);
       self->inputs = sfi_ring_append (self->inputs, trackbus);
@@ -967,7 +967,7 @@ BusImpl::connect_bus (BusIface &busi)
     return Error::SOURCE_PARENT_MISMATCH;
 
   Error error = bse_bus_connect (self, bus.as<BseItem*>());
-  if (!error)
+  if (error == 0)
     {
       // an undo lambda is needed for wrapping object argument references
       UndoDescriptor<BusImpl> bus_descriptor = undo_descriptor (bus);
@@ -988,7 +988,7 @@ BusImpl::connect_track (TrackIface &tracki)
     return Error::SOURCE_PARENT_MISMATCH;
 
   Error error = bse_bus_connect (self, track.as<BseItem*>());
-  if (!error)
+  if (error == 0)
     {
       // an undo lambda is needed for wrapping object argument references
       UndoDescriptor<TrackImpl> track_descriptor = undo_descriptor (track);
@@ -1006,7 +1006,7 @@ BusImpl::disconnect_bus (BusIface &busi)
   BseBus *self = as<BseBus*>();
   BusImpl &bus = dynamic_cast<BusImpl&> (busi);
   Error error = bse_bus_disconnect (self, busi.as<BseItem*>());
-  if (!error)
+  if (error == 0)
     {
       // an undo lambda is needed for wrapping object argument references
       UndoDescriptor<BusImpl> bus_descriptor = undo_descriptor (bus);
@@ -1024,7 +1024,7 @@ BusImpl::disconnect_track (TrackIface &tracki)
   BseBus *self = as<BseBus*>();
   TrackImpl &track = dynamic_cast<TrackImpl&> (tracki);
   Error error = bse_bus_disconnect (self, tracki.as<BseItem*>());
-  if (!error)
+  if (error == 0)
     {
       // an undo lambda is needed for wrapping object argument references
       UndoDescriptor<TrackImpl> track_descriptor = undo_descriptor (track);

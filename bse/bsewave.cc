@@ -131,7 +131,7 @@ bse_wave_add_inlined_wave_chunk (BseWave      *self,
 {
   assert_return (BSE_IS_WAVE (self), Bse::Error::INTERNAL);
   Bse::Error error = gsl_data_handle_open (wchunk->dcache->dhandle);
-  if (!error)
+  if (error == 0)
     self->open_handles = sfi_ring_append (self->open_handles, wchunk->dcache->dhandle);
   return error;
 }
@@ -335,7 +335,7 @@ bse_wave_load_wave_file (BseWave      *self,
   else
     {
       error = gsl_file_check (file_name, "fr");
-      if (!error)
+      if (error == 0)
 	error = Bse::Error::FILE_OPEN_FAILED;
     }
   return error;
@@ -656,7 +656,7 @@ bse_wave_restore_private (BseObject  *object,
 	  gsl_data_cache_unref (dcache);
           /* we need to keep inlined data handles open to protect against storage (.bse file) overwriting */
           Bse::Error error = bse_wave_add_inlined_wave_chunk (wave, wchunk);
-          if (!error)
+          if (error == 0)
             bse_wave_add_chunk (wave, wchunk);
           else
             {
@@ -701,7 +701,7 @@ bse_wave_get_index_for_modules (BseWave *wave)
       for (ring = wave->wave_chunks; ring; ring = sfi_ring_walk (ring, wave->wave_chunks))
 	{
 	  Bse::Error error = gsl_wave_chunk_open ((GslWaveChunk*) ring->data);
-	  if (!error)
+	  if (error == 0)
             {
               index->entries[index->n_entries].wchunk = (GslWaveChunk*) ring->data;
               index->entries[index->n_entries].osc_freq = index->entries[index->n_entries].wchunk->osc_freq;

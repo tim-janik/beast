@@ -109,7 +109,7 @@ mad_create_chunk_handle (void         *data,
       dhandle = gsl_data_handle_new_add_xinfos (dhandle, wdsc->chunks[0].xinfos);
       gsl_data_handle_unref (tmp_handle);
     }
-  if (!dhandle && !*error_p)
+  if (!dhandle && 0 == *error_p)
     *error_p = Bse::Error::FILE_OPEN_FAILED;
   return dhandle;
 }

@@ -358,7 +358,7 @@ bse_data_handle_new_flac_zoffset (const char *file_name,
 
   /* figure out mix_freq, n_channels */
   Bse::Error error = gsl_data_handle_open (dhandle);
-  if (!error)
+  if (error == 0)
     {
       if (n_channels_p)
         *n_channels_p = dhandle->setup.n_channels;

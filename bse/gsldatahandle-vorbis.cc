@@ -403,7 +403,7 @@ gsl_data_handle_new_ogg_vorbis_any (const gchar *file_name,
        * to initialize things like the bitstream_serialno.
        */
       error = gsl_data_handle_open (&vhandle->dhandle);
-      if (!error)
+      if (error == 0)
 	{
           if (n_channelsp)
             *n_channelsp = vhandle->dhandle.setup.n_channels;

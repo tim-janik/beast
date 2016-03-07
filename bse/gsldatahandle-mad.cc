@@ -300,7 +300,7 @@ create_seek_table (MadHandle *handle,
 	{
 	  g_free (seeks);
 	  /* frame read failed for a reason other than eof */
-          if (!handle->error)
+          if (handle->error == 0)
             handle->error = Bse::Error::IO;
 	  MDEBUG ("failed to read seektable frame: %s", handle->stream.error ? mad_stream_errorstr (&handle->stream) : bse_error_blurb (handle->error));
 	  return NULL;
@@ -677,7 +677,7 @@ dh_mad_new (const gchar  *file_name,
        */
       handle->skip_seek_table = skip_seek_keep_open != FALSE;
       Bse::Error error = gsl_data_handle_open (&handle->dhandle);
-      if (!error)
+      if (error == 0)
 	{
 	  if (!skip_seek_keep_open)
 	    gsl_data_handle_close (&handle->dhandle);

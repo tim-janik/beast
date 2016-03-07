@@ -56,7 +56,7 @@ device_open_args (BseDevice      *self,
                                              n, (const char**) args);
   g_strfreev (args);
 
-  if (!error)
+  if (error == 0)
     {
       assert_return (BSE_DEVICE_OPEN (self), Bse::Error::INTERNAL);
       assert_return (self->open_device_name != NULL, Bse::Error::INTERNAL); /* bse_device_set_opened() was not called */
@@ -68,8 +68,8 @@ device_open_args (BseDevice      *self,
   else
     assert_return (!BSE_DEVICE_OPEN (self), Bse::Error::INTERNAL);
 
-  if (!error && ((need_readable && !BSE_DEVICE_READABLE (self)) ||
-                 (need_writable && !BSE_DEVICE_WRITABLE (self))))
+  if (error == 0 && ((need_readable && !BSE_DEVICE_READABLE (self)) ||
+                     (need_writable && !BSE_DEVICE_WRITABLE (self))))
     {
       bse_device_close (self);
       error = Bse::Error::DEVICE_NOT_AVAILABLE;
@@ -98,7 +98,7 @@ bse_device_open (BseDevice      *self,
           if (!entry->device_error)
             {
               error = device_open_args (self, need_readable, need_writable, entry->device_args);
-              if (!error)
+              if (error == 0)
                 break;
             }
         }
@@ -456,7 +456,7 @@ bse_device_open_best (GType           base_type,
           Bse::Error error = bse_device_open (device, need_readable, need_writable, args ? args + 1 : NULL);
           if (errorp)
             *errorp = error;
-          if (!error)
+          if (error == 0)
             break;
           g_object_unref (device);
           device = NULL;

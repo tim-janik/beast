@@ -31,7 +31,7 @@ load_file (BseWaveRepo *wrepo,
     }
   else
     {
-      if (!error)
+      if (error == 0)
         error = Bse::Error::WAVE_NOT_FOUND;
       *wave_p = NULL;
     }

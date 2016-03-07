@@ -151,7 +151,7 @@ bse_wave_file_info_load (const char   *file_name,
 	  loader->free_file_info (loader->data, finfo);
 	  finfo = NULL;
 	}
-      if (!finfo && !error)
+      if (!finfo && error == 0)
 	error = Bse::Error::FILE_EMPTY;	/* FIXME: try next loader */
       if (finfo)
 	{
@@ -181,7 +181,7 @@ bse_wave_file_info_load (const char   *file_name,
     {
       /* try to provide apropriate error code */
       error = gsl_file_check (file_name, "rf");
-      if (!error)
+      if (error == 0)
 	error = Bse::Error::FORMAT_UNKNOWN;
     }
 
@@ -256,7 +256,7 @@ bse_wave_dsc_load (BseWaveFileInfo *wave_file_info,
       loader->free_wave_dsc (loader->data, wdsc);
       wdsc = NULL;
     }
-  if (!wdsc && !error)
+  if (!wdsc && error == 0)
     error = Bse::Error::FILE_EMPTY;
   if (wdsc)
     {
@@ -322,7 +322,7 @@ bse_wave_handle_create (BseWaveDsc   *wave_dsc,
       gsl_data_handle_unref (dhandle);
       dhandle = NULL;
     }
-  if (!dhandle && !error)
+  if (!dhandle && error == 0)
     error = Bse::Error::FORMAT_INVALID;
 
   if (error_p)

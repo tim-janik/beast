@@ -646,7 +646,7 @@ bse_project_create_intern_synth (BseProject  *self,
       strap.max_items = 1;
       strap.base_type = check_type;
       strap.items = NULL;
-      if (!error)
+      if (error == 0)
 	error = bse_project_restore (self, storage);
       bse_storage_reset (storage);
       g_object_unref (storage);
@@ -947,7 +947,7 @@ ProjectImpl::play ()
   BseProject *self = as<BseProject*>();
   BseProjectState state_before = self->state;
   Bse::Error error = bse_project_activate (self);
-  if (!error)
+  if (error == 0)
     {
       if (self->state == BSE_PROJECT_PLAYING)
         bse_project_stop_playback (self);
@@ -1138,7 +1138,7 @@ ProjectImpl::import_midi_file (const String &file_name)
   BseProject *self = as<BseProject*>();
   Bse::Error error = Bse::Error::NONE;
   BseMidiFile *smf = bse_midi_file_load (file_name.c_str(), &error);
-  if (!error)
+  if (error == 0)
     {
       BseUndoStack *ustack = bse_item_undo_open (self, "import-midi-file");
       BseSong *song = bse_project_get_song (self);
@@ -1166,7 +1166,7 @@ ProjectImpl::restore_from_file (const String &file_name)
     {
       BseStorage *storage = (BseStorage*) bse_object_new (BSE_TYPE_STORAGE, NULL);
       error = bse_storage_input_file (storage, file_name.c_str());
-      if (!error)
+      if (error == 0)
         error = bse_project_restore (self, storage);
       bse_storage_reset (storage);
       g_object_unref (storage);

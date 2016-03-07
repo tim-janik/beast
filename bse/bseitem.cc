@@ -894,7 +894,7 @@ undo_call_proc (BseUndoStep  *ustep,
       if (proc->n_out_pspecs)
         {
           /* check returned error if any */
-          if (G_PARAM_SPEC_VALUE_TYPE (proc->out_pspecs[0]) == BSE_TYPE_ERROR_TYPE && !error)
+          if (G_PARAM_SPEC_VALUE_TYPE (proc->out_pspecs[0]) == BSE_TYPE_ERROR_TYPE && error == 0)
             error = Bse::Error (g_value_get_enum (&ovalue));
           g_value_unset (&ovalue);
         }
@@ -950,7 +950,7 @@ bse_item_push_undo_proc_valist (void        *item,
 
   /* collect procedure args */
   error = bse_procedure_collect_input_args (proc, ivalues + 0, var_args, ivalues);
-  if (!error)
+  if (error == 0)
     {
       BseUndoStep *ustep = bse_undo_step_new (undo_call_proc, unde_free_proc, 3);
       /* convert values for undo */
