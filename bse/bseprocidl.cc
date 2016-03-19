@@ -222,12 +222,12 @@ void printMethods (const std::string& iface)
   cseq = bse_categories_match_typed ("*", BSE_TYPE_PROCEDURE);
   for (i = 0; i < cseq->n_cats; i++)
     {
-      GType type_id = g_type_from_name (cseq->cats[i]->type);
+      GType type_id = g_type_from_name (cseq->cats[i]->otype);
       const gchar *blurb = bse_type_get_blurb (type_id);
       BseProcedureClass *klass = (BseProcedureClass *)g_type_class_ref (type_id);
 
       /* procedures */
-      std::string t = cseq->cats[i]->type;
+      std::string t = cseq->cats[i]->otype;
       std::string iname = getInterface (t);
       std::string mname = getMethod (t);
       std::string rtype = klass->n_out_pspecs ?

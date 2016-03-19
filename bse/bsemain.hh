@@ -7,6 +7,7 @@ G_BEGIN_DECLS
 // == BSE Initialization ==
 void bse_bindtextdomain ();
 void _bse_init_async	(int *argc, char **argv, const char *app_name, const Bse::StringVector &args);
+bool _bse_initialized	();
 void bse_init_inprocess	(int *argc, char **argv, const char *app_name, const Bse::StringVector &args = Bse::StringVector());
 void bse_init_test 	(int *argc, char **argv, const Bse::StringVector &args = Bse::StringVector());
 void bse_main_wakeup    ();

@@ -275,7 +275,7 @@ record Category
   SfiString category;
   Int    mindex;
   Int    lindex;
-  SfiString type;
+  SfiString otype;
   Ic0n   icon;
 };
 sequence CategorySeq {

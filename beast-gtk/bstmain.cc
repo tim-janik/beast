@@ -105,7 +105,7 @@ main (int argc, char *argv[])
   Bse::TaskRegistry::add (Rapicorn::ThreadInfo::self().name(), Rapicorn::ThisThread::process_pid(), Rapicorn::ThisThread::thread_pid());
 
   /* initialize Birnet/Sfi */
-  sfi_init (&argc, argv, "BEAST");
+  sfi_init (&argc, argv);
   /* ensure SFI can wake us up */
 
   // early arg parsing without remote calls
@@ -618,19 +618,15 @@ echo_test_handler (const std::string &msg)
 static void
 bst_init_aida_idl()
 {
+  using namespace Rapicorn::Aida;
   assert (bse_server == NULL);
   // connect to BSE thread and fetch server handle
-  Rapicorn::Aida::ClientConnectionP connection =
-    Rapicorn::Aida::ClientConnection::connect ("inproc://BSE-" BST_VERSION);
-  if (connection)
-    bse_server = connection->remote_origin<Bse::ServerH>();
-  if (!bse_server)
-    sfi_error ("%s: failed to connect to BSE internally: %s", __func__, g_strerror (errno));
+  ClientConnectionP connection = Bse::init_server_connection();
+  assert (connection != NULL);
+  bse_server = Bse::init_server_instance();
+  assert (bse_server != NULL);
   assert (bse_server.proxy_id() == BSE_SERVER);
   assert (bse_server.from_proxy (BSE_SERVER) == bse_server);
-  // keep connection alive for entire runtime
-  static Rapicorn::Aida::ClientConnectionP *static_connection = new Rapicorn::Aida::ClientConnectionP (connection);
-  (void) static_connection;
   // hook Aida connection into our main loop
   Bse::AidaGlibSource *source = Bse::AidaGlibSource::create (connection.get());
   g_source_set_priority (source, G_PRIORITY_DEFAULT);

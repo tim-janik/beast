@@ -327,7 +327,7 @@ part_dialog_run_script_proc (gpointer data, size_t action_id)
   BseCategory *cat = bse_category_find (g_quark_to_string (action_id));
   Bse::PartH part = self->proll->part;
 
-  bst_procedure_exec_auto (cat->type,
+  bst_procedure_exec_auto (cat->otype,
                            "project", SFI_TYPE_PROXY, bse_item_get_project (part.proxy_id()),
                            "part", SFI_TYPE_PROXY, part.proxy_id(),
                            NULL);

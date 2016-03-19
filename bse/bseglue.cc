@@ -532,7 +532,7 @@ bglue_list_proc_names (SfiGlueContext *context)
 
   p = g_new (char*, cseq->n_cats + 1);
   for (i = 0; i < cseq->n_cats; i++)
-    p[i] = g_strdup (cseq->cats[i]->type);
+    p[i] = g_strdup (cseq->cats[i]->otype);
   p[i] = NULL;
   bse_category_seq_free (cseq);
 
@@ -558,8 +558,8 @@ bglue_list_method_names (SfiGlueContext *context,
   p = g_new (char*, cseq->n_cats + 1);
   n_procs = 0;
   for (i = 0; i < cseq->n_cats; i++)
-    if (strncmp (cseq->cats[i]->type, prefix, l) == 0)
-      p[n_procs++] = g_strdup (cseq->cats[i]->type + l);
+    if (strncmp (cseq->cats[i]->otype, prefix, l) == 0)
+      p[n_procs++] = g_strdup (cseq->cats[i]->otype + l);
   p[n_procs] = NULL;
   bse_category_seq_free (cseq);
   g_free (prefix);

@@ -257,7 +257,7 @@ dump_categories (const ArgParser &ap)
 {
   BseCategorySeq *cseq = bse_categories_match_typed ("*", 0);
   for (uint i = 0; i < cseq->n_cats; i++)
-    printout ("%s\t(%s)\n", cseq->cats[i]->category, cseq->cats[i]->type);
+    printout ("%s\t(%s)\n", cseq->cats[i]->category, cseq->cats[i]->otype);
   bse_category_seq_free (cseq);
   return "";
 }

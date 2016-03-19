@@ -81,7 +81,7 @@ main (int   argc,
   setlocale (LC_ALL, "");
 
   /* initialize Sfi */
-  sfi_init (&argc, argv, "TestGUI");
+  sfi_init (&argc, argv);
   /* initialize Gtk+ and enter threading mode */
   gtk_init (&argc, &argv);
   g_set_prgname ("testgui");            /* override Gdk's program name */

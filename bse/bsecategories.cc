@@ -284,7 +284,7 @@ categories_match (const gchar      *pattern,
 	  cat.category_id = centry->category_id;
 	  cat.mindex = centry->mindex;
 	  cat.lindex = centry->lindex;
-	  cat.type = const_cast<char*>  (g_type_name (centry->type));
+	  cat.otype = const_cast<char*>  (g_type_name (centry->type));
 	  cat.icon = centry->icon ? centry->icon : NULL;
           if (!check || check (&cat, data))
             bse_category_seq_append (cseq, &cat);
@@ -333,7 +333,7 @@ bse_categories_from_type (GType type)
 	cat.category_id = centry->category_id;
 	cat.mindex = centry->mindex;
 	cat.lindex = centry->lindex;
-	cat.type = const_cast<char*> (g_type_name (centry->type));
+	cat.otype = const_cast<char*> (g_type_name (centry->type));
 	cat.icon = centry->icon ? centry->icon : NULL;
 	bse_category_seq_append (cseq, &cat);
       }

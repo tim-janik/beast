@@ -1,7 +1,7 @@
 # BEAST & BSE
 include $(top_srcdir)/Makefile.decl
 
-SUBDIRS = icons res . tests
+SUBDIRS = icons res . pybse tests
 
 # need -I$(top_srcdir) for <bse/bsedefs.hh>
 # need -I$(top_builddir) for <sfi/sficonfig.h>

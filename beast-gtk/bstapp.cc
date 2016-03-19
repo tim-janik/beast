@@ -806,7 +806,7 @@ bst_app_run_script_proc (gpointer data, size_t action_id)
         csynth = "custom-synth";
     }
 
-  bst_procedure_exec_auto (cat->type,
+  bst_procedure_exec_auto (cat->otype,
                            "project", SFI_TYPE_PROXY, self->project.proxy_id(),
                            song, SFI_TYPE_PROXY, super,
                            wave_repo, SFI_TYPE_PROXY, super,

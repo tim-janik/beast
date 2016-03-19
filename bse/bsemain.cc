@@ -191,10 +191,16 @@ bse_init_intern()
 
 static std::thread async_bse_thread;
 
+bool
+_bse_initialized ()
+{
+  return async_bse_thread.get_id() != std::thread::id(); // has async_bse_thread started?
+}
+
 static void
 initialize_with_argv (int *argc, char **argv, const char *app_name, const Bse::StringVector &args)
 {
-  assert (async_bse_thread.get_id() == std::thread::id());      // no async_bse_thread started
+  assert (_bse_initialized() == false);
   assert (bse_main_context == NULL);
 
   // ensure textdomain for error messages
@@ -215,7 +221,7 @@ initialize_with_argv (int *argc, char **argv, const char *app_name, const Bse::S
   if (initialized_for_unit_testing > 0)
     sfi_init_test (argc, argv);
   else
-    sfi_init (argc, argv, app_name);
+    sfi_init (argc, argv);
 }
 
 void

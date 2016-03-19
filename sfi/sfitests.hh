@@ -8,7 +8,7 @@
 static void RAPICORN_UNUSED
 sfi_init_test (int *argcp, char **argv)
 {
-  sfi_init (argcp, argv, RAPICORN_PRETTY_FILE, Bse::cstrings_to_vector ("rapicorn-test-initialization=1", NULL));
+  sfi_init (argcp, argv, Bse::cstrings_to_vector ("rapicorn-test-initialization=1", NULL));
   unsigned int flags = g_log_set_always_fatal ((GLogLevelFlags) G_LOG_FATAL_MASK);
   g_log_set_always_fatal ((GLogLevelFlags) (flags | G_LOG_LEVEL_WARNING | G_LOG_LEVEL_CRITICAL));
 }
