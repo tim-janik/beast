@@ -6,7 +6,7 @@ SCRIPTNAME=`basename $0`;
 function die { e="$1" ; shift ; [ -n "$*" ] && echo "$SCRIPTNAME: $*" >&2 ; exit "${e:-127}" ; } # die <exitcode> [message]
 
 # == config ==
-mkconfig()	# print shell variables describing package, version, commit id, monotonic revision
+mkconfig() # print shell variables describing package, version, commit id, monotonic revision
 {
   set -e # abort on errors
   # ensure we're in the project directory and have full git history
@@ -43,9 +43,9 @@ mkconfig()	# print shell variables describing package, version, commit id, monot
   popd >/dev/null					# cd OLDPWD
 }
 
-
 # == bintrayup ==
-bintrayup() {
+bintrayup() # Usage: bintrayup <bintrayaccount> <packagepath> <packagedistribution> [packages...]
+{
   set +x # avoid printing authentication secrets
   mkconfig >/dev/null # PACKAGE, VERSION, ...
   ACCNAME="$1"; PKGPATH="$2"; PKGDIST="$3" # BINTRAY_APITOKEN must be set by caller
@@ -76,6 +76,30 @@ bintrayup() {
   test $ALLOK = 0 || die 2 "Some files failed to upload"
 }
 
+# == applyenv ==
+applyenv() # Usage: applyenv <inputfile> [inputargs...]
+{
+  # NOTE: avoid using unprefixed environment variables, they could become output substitutions
+  applyenv__input___="$1"; shift
+  test -r "$applyenv__input___" || { echo "$0: failed to read: $applyenv__input___"; exit 1; }
+  applyenv__sedprogram___=""
+  for applyenv__word___ in \
+    $(grep -oE '@[0123456789abcdefghijklmnopqrstuvwxyz_ABCDEFGHIJKLMNOPQRSTUVWXYZ]+@' "$applyenv__input___" | sort | uniq)
+  do
+    applyenv__varname___=${applyenv__word___//@/} # word=@EXAMPLE@ varname=EXAMPLE
+    if [[ ${!applyenv__varname___} == *\|* ]]; then
+      echo "$0: detected '|', skipping variable: \$$applyenv__varname___" >&2
+    elif test "$applyenv__word___" == "@0@"; then
+      applyenv__sedprogram___="$applyenv__sedprogram___; s|$applyenv__word___|${applyenv__input___}|g"
+    else
+      applyenv__sedprogram___="$applyenv__sedprogram___; s|$applyenv__word___|${!applyenv__varname___}|g"
+    fi
+  done
+  sed "$applyenv__sedprogram___" "$applyenv__input___"
+}
+
+
 # == commands ==
 [[ "$1" != config ]]	|| { shift; mkconfig "$@" ; exit $? ; }
 [[ "$1" != bintrayup ]]	|| { shift; bintrayup "$@" ; exit $? ; }
+[[ "$1" != applyenv ]]	|| { shift; applyenv "$@" ; exit $? ; }

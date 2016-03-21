@@ -2,10 +2,13 @@
 
 # Pick distribution to start from
 FROM @XFROM@
-
-# Maintainer information and contact information
 MAINTAINER Tim Janik <timj@gnu.org>
+
+# Carry over enviroment variables
 ENV EMAIL beast@gnome.org
+ENV TRAVIS_JOB_NUMBER "@TRAVIS_JOB_NUMBER@"
+ENV http_proxy "@http_proxy@"
+ENV RAPICORNREPO "@RAPICORNREPO@"
 
 # Automation tools and convenience commands
 ENV DEBIAN_FRONTEND noninteractive

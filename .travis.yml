@@ -13,7 +13,7 @@ matrix:
 
 env:
   global:
-    - http_proxy=""
+    #- http_proxy="http://example.com"
     - bintray_url="https://dl.bintray.com/beast-team"
   matrix:
     - XFROM="ubuntu:wily"   XUP="wily"
@@ -30,10 +30,9 @@ before_install:
 install:
   # Complete history is required for VCSREVISION
   - travis_retry git fetch --unshallow
-  # Configure Dockerfile
-  - RAPICORNREPO="$bintray_url/$XUP snapshot main" && \
-    sed -e "s&@XFROM@&$XFROM&""g" -e "s&@RAPICORNREPO@&$RAPICORNREPO&""g" \
-        -e "${http_proxy:+/^FROM\b/aENV http_proxy $http_proxy}" < .travis.docker > Dockerfile
+  # Configure Dockerfile by substituting @VAR@ with $VAR
+  - export RAPICORNREPO="$bintray_url/$XUP snapshot main" && \
+    ./buildtool.sh applyenv .travis.docker > Dockerfile
   # Build and run tests, create packages
   - docker build -t beast .
 
