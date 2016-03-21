@@ -3,21 +3,20 @@
 # http://docs.travis-ci.com/user/customizing-the-build/
 # http://lint.travis-ci.org/
 
-language: cpp
-
 os: linux
-
 dist: trusty
-
+sudo: required
+services: docker
+language: c
 matrix:
   fast_finish: true
 
-sudo: required # needed for apt-get and pbuilder
-#sudo: false   # http://docs.travis-ci.com/user/workers/container-based-infrastructure/
-
-addons:
-  apt:
-    packages: [ pbuilder, devscripts, debhelper, dh-autoreconf ] # debootstrap
+env:
+  global:
+    - http_proxy=""
+    - bintray_url="https://dl.bintray.com/beast-team"
+  matrix:
+    - XFROM="ubuntu:wily"   XUP="wily"
 
 before_install:
   - uname -a
@@ -27,41 +26,22 @@ before_install:
   - make --version
   - python --version
   - $CC --version
-  - $CXX --version
 
 install:
-  # a complete repository is required for versioned package builds
+  # Complete history is required for VCSREVISION
   - travis_retry git fetch --unshallow
-  - git clean -f && pwd
-  # fetch citool.sh from Rapicorn
-  - travis_retry wget -c https://raw.githubusercontent.com/tim-janik/rapicorn/772653869a2b0e70/citool.sh
-  - chmod +x citool.sh
-  # show CI config
-  - ./citool.sh config
-  # sources for build packages
-  - SOURCES=$'deb [trusted=yes] https://dl.bintray.com/beast-team/deb vivid main'
-  # setup pbuilder environment
-  - travis_retry ./citool.sh pcreate vivid "$SOURCES"
-  #- echo 'apt-get -y install ccache' | sudo pbuilder --login --save-after-login
-  # packages needed for an upstream git build
-  - P="build-essential automake autoconf autoconf-archive libtool intltool bison flex"
-    P="$P libcairo2-dev libcroco3-dev libpango1.0-dev python2.7-dev libxml2-dev libgdk-pixbuf2.0-dev libreadline6-dev"
-    P="$P cython doxygen graphviz texlive-binaries xvfb pandoc git"
-    P="$P libasound2-dev libflac-dev libvorbis-dev libmad0-dev guile-1.8-dev libgnomecanvas2-dev libxml2-utils rapicorn"
-  # build dist tarball
-  - ./citool.sh pdist $P
-  # check/show single dist tarball
-  - TARBALL=`ls cidir/*tar.xz | head -1` && ls -dl $TARBALL | tee /dev/stderr | test 1 -eq `wc -l`
-  # build debian packages
-  - EMAIL=beast@gnome.org ./citool.sh pbuild $TARBALL debian/
-  - ls -al "cidir/"
-
-before_script:
-  - true
+  # Configure Dockerfile
+  - RAPICORNREPO="$bintray_url/$XUP snapshot main" && \
+    sed -e "s&@XFROM@&$XFROM&""g" -e "s&@RAPICORNREPO@&$RAPICORNREPO&""g" \
+        -e "${http_proxy:+/^FROM\b/aENV http_proxy $http_proxy}" < .travis.docker > Dockerfile
+  # Build and run tests, create packages
+  - docker build -t beast .
 
 script:
-  # upload debian packages
-  - ./citool.sh bintrayup beast-team vivid deb/beast cidir/*.deb
+  # Upload packages
+  - test -z "$XUP" || docker run -ti --rm beast /bin/bash -c \
+        "export BINTRAY_APITOKEN=$BINTRAY_APITOKEN && ls -al && beast/buildtool.sh bintrayup beast-team $XUP/beast snapshot *.deb"
+  - docker ps -a
 
 after_success:
   - echo "Done, all OK!"
