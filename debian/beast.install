@@ -14,3 +14,4 @@ usr/share/pixmaps/beast-audio-x-bse.png
 usr/share/mime-info/bse.keys
 usr/share/mime-info/bse.mime
 usr/share/mime/packages/beast.xml
+usr/lib/*/beast-*/pybeast/
