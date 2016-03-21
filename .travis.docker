@@ -1,0 +1,72 @@
+# This Source Code Form is licensed MPL-2.0: http://mozilla.org/MPL/2.0
+
+# Pick distribution to start from
+FROM @XFROM@
+
+# Maintainer information and contact information
+MAINTAINER Tim Janik <timj@gnu.org>
+ENV EMAIL beast@gnome.org
+
+# Automation tools and convenience commands
+ENV DEBIAN_FRONTEND noninteractive
+RUN echo '#!/bin/bash\n"$@" || { sleep 5 ; "$@" ; } || { sleep 60 ; "$@" ; }' > /bin/retry && chmod +x /bin/retry && \
+    echo '\n' \
+    "\nalias ls='ls --color=auto' ; alias l='ls -al' ;" \
+    "\nalias grep='grep --color=auto' ; alias fgrep='fgrep --color=auto' ; alias egrep='egrep --color=auto' ;" \
+    '\nfunction regrep { (shopt -s globstar extglob; IFS=; set - ; /usr/bin/nice /bin/egrep --color=auto -d skip "") }' \
+    | tee -a /etc/bash.bashrc >> /root/.bashrc
+
+# Ensure uptodate distribution
+RUN retry apt-get update && retry apt-get -y install apt-utils && retry apt-get -y upgrade
+
+# Install Rapicorn packages
+RUN echo 'deb [trusted=yes] @RAPICORNREPO@' | \
+    tee /etc/apt/sources.list.d/bintray-beast-team.list && \
+    retry apt-get -y install apt-transport-https ca-certificates && \
+    retry apt-get update && retry apt-get -y install rapicorn && \
+    sed 's/^/#/' -i /etc/apt/sources.list.d/bintray-beast-team.list && \
+    apt-get -y purge apt-transport-https ca-certificates && \
+    apt-get -y --purge autoremove
+
+# Provide build essentials and dependencies
+RUN retry apt-get install -y \
+    build-essential devscripts lintian automake autoconf autoconf-archive libtool intltool git xvfb libxml-parser-perl \
+    bison flex cython doxygen graphviz texlive-binaries pandoc \
+    libcairo2-dev libcroco3-dev libpango1.0-dev python2.7-dev libxml2-dev libgdk-pixbuf2.0-dev libreadline6-dev \
+    libreadline-dev python-all-dev \
+    libasound2-dev libflac-dev libvorbis-dev libmad0-dev libgnomecanvas2-dev libxml2-utils guile-1.8-dev
+
+# Setup build environment by copying the git history
+WORKDIR /usr/src/
+COPY .git /tmp/beast.git
+RUN git clone /tmp/beast.git
+
+# Build sources, run tests and create distribution tarball
+RUN cd beast && \
+    nice ./autogen.sh --prefix=/usr --enable-devel-mode=no && \
+    nice make -j4 && \
+    nice make check && \
+    nice make install && \
+    nice make installcheck && \
+    nice make dist && \
+    nice make uninstall && \
+    nice make clean && \
+    DIST_TARBALL=`echo *.tar.xz` && \
+    ls -l "$DIST_TARBALL"
+
+# Create packages as follows:
+# Eval configuration, prepare debian source tarball, prepare debian/ directory,
+# update 'changelog', install dependencies, build debian packages.
+RUN eval `beast/buildtool.sh config` && \
+    DIST_TARBALL="$PACKAGE/$PACKAGE-$VERSION.tar.xz" && \
+    DEBVERSION="$VERSION$VCSREVISION" && \
+    DEB_TARBALL="$PACKAGE"_"${DEBVERSION%-*}.orig.tar.xz" && \
+    cp $DIST_TARBALL $DEB_TARBALL && tar xf $DEB_TARBALL && \
+    cd $PACKAGE-$VERSION/ && cp -r ../$PACKAGE/debian/ . && \
+    dch -v "$DEBVERSION" "$CHANGELOGMSG" && dch -r "" && cat debian/changelog && \
+    retry apt-get -y install $(dpkg-checkbuilddeps 2>&1 | sed 's/.*: //') && \
+    nice debuild -j`nproc` -rfakeroot -us -uc && \
+    cd .. && ls -al
+
+# nice -n19 docker build -t beast .
+# docker run -ti --rm beast /bin/bash
