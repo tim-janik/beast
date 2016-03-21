@@ -71,10 +71,10 @@ key_bindings_load_file (GtkWidget   *dialog,
   GtkTreeView *btview = (GtkTreeView*) gxk_radget_find (self, "binding-tree-view");
   GtkTreeModel *model = gtk_tree_view_get_model (btview);
   GSList slist = { kbinding, NULL };
-  Bse::ErrorType error = bst_key_binding_parse (file, &slist);
+  Bse::Error error = bst_key_binding_parse (file, &slist);
   gxk_list_wrapper_notify_clear (GXK_LIST_WRAPPER (model));
   gxk_list_wrapper_notify_append (GXK_LIST_WRAPPER (model), kbinding->n_keys);
-  if (error)
+  if (error != 0)
     g_message ("failed to load \"%s\": %s", file, Bse::error_blurb (error));
 }
 
@@ -593,7 +593,7 @@ bst_key_binding_rcfile (void)
   return key_binding_rc;
 }
 
-Bse::ErrorType
+Bse::Error
 bst_key_binding_dump (const gchar *file_name,
                       GSList      *kbindings)
 {
@@ -601,14 +601,14 @@ bst_key_binding_dump (const gchar *file_name,
   GSList *slist;
   gint fd;
 
-  assert_return (file_name != NULL, Bse::ERROR_INTERNAL);
+  assert_return (file_name != NULL, Bse::Error::INTERNAL);
 
   sfi_make_dirname_path (file_name);
   fd = open (file_name,
              O_WRONLY | O_CREAT | O_TRUNC, /* O_EXCL, */
              0666);
   if (fd < 0)
-    return errno == EEXIST ? Bse::ERROR_FILE_EXISTS : Bse::ERROR_IO;
+    return errno == EEXIST ? Bse::Error::FILE_EXISTS : Bse::Error::IO;
 
   wstore = sfi_wstore_new ();
 
@@ -635,7 +635,7 @@ bst_key_binding_dump (const gchar *file_name,
   sfi_wstore_flush_fd (wstore, fd);
   sfi_wstore_destroy (wstore);
 
-  return close (fd) < 0 ? Bse::ERROR_IO : Bse::ERROR_NONE;
+  return close (fd) < 0 ? Bse::Error::IO : Bse::Error::NONE;
 }
 
 static GTokenType
@@ -672,15 +672,15 @@ key_binding_try_statement (gpointer   context_data,
   return SFI_TOKEN_UNMATCHED;
 }
 
-Bse::ErrorType
+Bse::Error
 bst_key_binding_parse (const gchar *file_name,
                        GSList      *kbindings)
 {
-  Bse::ErrorType error = Bse::ERROR_NONE;
+  Bse::Error error = Bse::Error::NONE;
   SfiRStore *rstore;
   gchar *absname;
   gint fd;
-  assert_return (file_name != NULL, Bse::ERROR_INTERNAL);
+  assert_return (file_name != NULL, Bse::Error::INTERNAL);
 
   absname = sfi_path_get_filename (file_name, NULL);
   fd = open (absname, O_RDONLY, 0);
@@ -688,13 +688,13 @@ bst_key_binding_parse (const gchar *file_name,
     {
       g_free (absname);
       return (errno == ENOENT || errno == ENOTDIR || errno == ELOOP ?
-              Bse::ERROR_FILE_NOT_FOUND : Bse::ERROR_IO);
+              Bse::Error::FILE_NOT_FOUND : Bse::Error::IO);
     }
 
   rstore = sfi_rstore_new ();
   sfi_rstore_input_fd (rstore, fd, absname);
   if (sfi_rstore_parse_all (rstore, kbindings, key_binding_try_statement, absname) > 0)
-    error = Bse::ERROR_PARSE_ERROR;
+    error = Bse::Error::PARSE_ERROR;
   sfi_rstore_destroy (rstore);
   close (fd);
   g_free (absname);

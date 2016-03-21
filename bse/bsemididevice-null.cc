@@ -23,7 +23,7 @@ bse_midi_device_null_list_devices (BseDevice *device)
   return ring;
 }
 
-static Bse::ErrorType
+static Bse::Error
 bse_midi_device_null_open (BseDevice     *device,
                            gboolean       require_readable,
                            gboolean       require_writable,
@@ -37,8 +37,8 @@ bse_midi_device_null_open (BseDevice     *device,
   handle->writable = require_writable;
   bse_device_set_opened (device, "null", handle->readable, handle->writable);
   BSE_MIDI_DEVICE (device)->handle = handle;
-  MDEBUG ("opening MIDI readable=%d writable=%d: %s", require_readable, require_writable, bse_error_blurb (Bse::ERROR_NONE));
-  return Bse::ERROR_NONE;
+  MDEBUG ("opening MIDI readable=%d writable=%d: %s", require_readable, require_writable, bse_error_blurb (Bse::Error::NONE));
+  return Bse::Error::NONE;
 }
 static void
 bse_midi_device_null_close (BseDevice *device)

@@ -169,9 +169,9 @@ bst_stock_register_icon (const gchar    *stock_id,
 
 /* --- beast/bse specific extensions --- */
 void
-bst_status_set_error (Bse::ErrorType error, const std::string &message)
+bst_status_set_error (Bse::Error error, const std::string &message)
 {
-  if (error)
+  if (error != 0)
     gxk_status_set (GXK_STATUS_ERROR, message.c_str(), Bse::error_blurb (error));
   else
     gxk_status_set (GXK_STATUS_DONE, message.c_str(), NULL);

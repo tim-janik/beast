@@ -62,14 +62,14 @@ enum NoteLength {
 };
 
 enum QSamplerDrawMode {
-  QSAMPLER_DRAW_CRANGE          = Enum (_("Shape Range")),
-  QSAMPLER_DRAW_ZERO_SHAPE      = Enum (_("Shape Average")),
-  QSAMPLER_DRAW_MINIMUM_SHAPE   = Enum (_("Shape Minimum")),
-  QSAMPLER_DRAW_MAXIMUM_SHAPE   = Enum (_("Shape Maximum")),
-  QSAMPLER_DRAW_CSHAPE          = Enum (_("Sketch Range")),
-  QSAMPLER_DRAW_MIDDLE_LINE     = Enum (_("Sketch Average")),
-  QSAMPLER_DRAW_MINIMUM_LINE    = Enum (_("Sketch Minimum")),
-  QSAMPLER_DRAW_MAXIMUM_LINE    = Enum (_("Sketch Maximum")),
+  CRANGE          = Enum (_("Shape Range")),
+  ZERO_SHAPE      = Enum (_("Shape Average")),
+  MINIMUM_SHAPE   = Enum (_("Shape Minimum")),
+  MAXIMUM_SHAPE   = Enum (_("Shape Maximum")),
+  CSHAPE          = Enum (_("Sketch Range")),
+  MIDDLE_LINE     = Enum (_("Sketch Average")),
+  MINIMUM_LINE    = Enum (_("Sketch Minimum")),
+  MAXIMUM_LINE    = Enum (_("Sketch Maximum")),
 };
 
 enum RowShading {

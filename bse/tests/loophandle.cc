@@ -15,15 +15,15 @@ typedef struct {
   GslLong	    loop_width;
 } LoopHandleReference;
 
-static Bse::ErrorType
+static Bse::Error
 loop_handle_reference_open (GslDataHandle      *dhandle,
 			    GslDataHandleSetup *setup)
 {
   LoopHandleReference *lhandle = (LoopHandleReference*) dhandle;
-  Bse::ErrorType error;
+  Bse::Error error;
 
   error = gsl_data_handle_open (lhandle->src_handle);
-  if (error != Bse::ERROR_NONE)
+  if (error != Bse::Error::NONE)
     return error;
 
   *setup = lhandle->src_handle->setup; /* copies setup.xinfos by pointer */
@@ -39,7 +39,7 @@ loop_handle_reference_open (GslDataHandle      *dhandle,
       lhandle->loop_width = 0;
     }
 
-  return Bse::ERROR_NONE;
+  return Bse::Error::NONE;
 }
 
 static void
@@ -155,16 +155,16 @@ check_loop (GslDataHandle *src_handle,
   GslDataPeekBuffer peek_buffer_reference = { +1 /* incremental direction */, 0, };
   sfi_info ("check_loop<%lld,%lld>", loop_start, loop_end);
 
-  Bse::ErrorType error;
+  Bse::Error error;
   error = gsl_data_handle_open (loop_handle);
-  if (error)
+  if (error != 0)
     {
       sfi_error ("loop_handle open failed: %s", bse_error_blurb (error));
       exit (1);
     }
 
   error = gsl_data_handle_open (loop_handle_reference);
-  if (error)
+  if (error != 0)
     {
       sfi_error ("loop_handle_reference open failed: %s", bse_error_blurb (error));
       exit (1);

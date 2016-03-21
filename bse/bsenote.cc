@@ -15,7 +15,7 @@ bse_note_from_string (const String &note_string)
 }
 
 Bse::NoteDescription
-bse_note_description (Bse::MusicalTuningType musical_tuning, int note, int finetune)
+bse_note_description (Bse::MusicalTuning musical_tuning, int note, int finetune)
 {
   Bse::NoteDescription info;
   info.musical_tuning = musical_tuning;
@@ -54,7 +54,7 @@ struct FreqCmp {
 } // Anon
 
 int
-bse_note_from_freq (Bse::MusicalTuningType musical_tuning, double freq)
+bse_note_from_freq (Bse::MusicalTuning musical_tuning, double freq)
 {
   freq /= BSE_KAMMER_FREQUENCY;
   const double *table = bse_semitone_table_from_tuning (musical_tuning);
@@ -87,7 +87,7 @@ bse_note_from_freq (Bse::MusicalTuningType musical_tuning, double freq)
 }
 
 int
-bse_note_from_freq_bounded (Bse::MusicalTuningType musical_tuning, double freq)
+bse_note_from_freq_bounded (Bse::MusicalTuning musical_tuning, double freq)
 {
   int note = bse_note_from_freq (musical_tuning, freq);
   if (note != BSE_NOTE_VOID)
@@ -97,7 +97,7 @@ bse_note_from_freq_bounded (Bse::MusicalTuningType musical_tuning, double freq)
 }
 
 int
-bse_note_fine_tune_from_note_freq (Bse::MusicalTuningType musical_tuning, int note, double freq)
+bse_note_fine_tune_from_note_freq (Bse::MusicalTuning musical_tuning, int note, double freq)
 {
   double semitone_factor = bse_transpose_factor (musical_tuning, CLAMP (note, BSE_MIN_NOTE, BSE_MAX_NOTE) - SFI_KAMMER_NOTE);
   freq /= BSE_KAMMER_FREQUENCY * semitone_factor;
@@ -108,7 +108,7 @@ bse_note_fine_tune_from_note_freq (Bse::MusicalTuningType musical_tuning, int no
 }
 
 double
-bse_note_to_freq (Bse::MusicalTuningType musical_tuning, int note)
+bse_note_to_freq (Bse::MusicalTuning musical_tuning, int note)
 {
   if (note < BSE_MIN_NOTE || note > BSE_MAX_NOTE)
     return 0.0;
@@ -117,7 +117,7 @@ bse_note_to_freq (Bse::MusicalTuningType musical_tuning, int note)
 }
 
 double
-bse_note_to_tuned_freq (Bse::MusicalTuningType musical_tuning, int note, int fine_tune)
+bse_note_to_tuned_freq (Bse::MusicalTuning musical_tuning, int note, int fine_tune)
 {
   if (note < BSE_MIN_NOTE || note > BSE_MAX_NOTE)
     return 0.0;

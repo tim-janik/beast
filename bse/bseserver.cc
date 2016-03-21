@@ -428,7 +428,7 @@ bse_server_require_pcm_input (BseServer *server)
       if (!BSE_DEVICE_READABLE (server->pcm_device))
         {
           UserMessage umsg;
-          umsg.utype = Bse::WARNING;
+          umsg.utype = Bse::UserMessageType::WARNING;
           umsg.title = _("Audio Recording Failed");
           umsg.text1 = _("Failed to start recording from audio device.");
           umsg.text2 = _("An audio project is in use which processes an audio input signal, but the audio device "
@@ -459,14 +459,14 @@ pcm_request_callback (BseDevice *device,
   PcmRequest *pr = (PcmRequest*) data;
   bse_pcm_device_request (BSE_PCM_DEVICE (device), pr->n_channels, pr->mix_freq, pr->latency, pr->block_size);
 }
-static Bse::ErrorType
+static Bse::Error
 server_open_pcm_device (BseServer *server,
                         guint      mix_freq,
                         guint      latency,
                         guint      block_size)
 {
-  assert_return (server->pcm_device == NULL, Bse::ERROR_INTERNAL);
-  Bse::ErrorType error = Bse::ERROR_UNKNOWN;
+  assert_return (server->pcm_device == NULL, Bse::Error::INTERNAL);
+  Bse::Error error = Bse::Error::UNKNOWN;
   PcmRequest pr;
   pr.n_channels = 2;
   pr.mix_freq = mix_freq;
@@ -474,15 +474,15 @@ server_open_pcm_device (BseServer *server,
   pr.block_size = block_size;
   server->pcm_device = (BsePcmDevice*) bse_device_open_best (BSE_TYPE_PCM_DEVICE, TRUE, TRUE,
                                                              bse_main_args->pcm_drivers,
-                                                             pcm_request_callback, &pr, error ? NULL : &error);
+                                                             pcm_request_callback, &pr, error != 0 ? NULL : &error);
   if (!server->pcm_device)
     server->pcm_device = (BsePcmDevice*) bse_device_open_best (BSE_TYPE_PCM_DEVICE, FALSE, TRUE,
                                                                bse_main_args->pcm_drivers,
-                                                               pcm_request_callback, &pr, error ? NULL : &error);
+                                                               pcm_request_callback, &pr, error != 0 ? NULL : &error);
   if (!server->pcm_device)
     {
       UserMessage umsg;
-      umsg.utype = Bse::ERROR;
+      umsg.utype = Bse::UserMessageType::ERROR;
       umsg.title = _("Audio I/O Failed");
       umsg.text1 = _("No available audio device was found.");
       umsg.text2 = _("No available audio device could be found and opened successfully. "
@@ -492,13 +492,13 @@ server_open_pcm_device (BseServer *server,
       ServerImpl::instance().send_user_message (umsg);
     }
   server->pcm_input_checked = FALSE;
-  return server->pcm_device ? Bse::ERROR_NONE : error;
+  return server->pcm_device ? Bse::Error::NONE : error;
 }
-static Bse::ErrorType
+static Bse::Error
 server_open_midi_device (BseServer *server)
 {
-  assert_return (server->midi_device == NULL, Bse::ERROR_INTERNAL);
-  Bse::ErrorType error;
+  assert_return (server->midi_device == NULL, Bse::Error::INTERNAL);
+  Bse::Error error;
   server->midi_device = (BseMidiDevice*) bse_device_open_best (BSE_TYPE_MIDI_DEVICE, TRUE, FALSE, bse_main_args->midi_drivers, NULL, NULL, &error);
   if (!server->midi_device)
     {
@@ -509,7 +509,7 @@ server_open_midi_device (BseServer *server)
       if (server->midi_device)
         {
           UserMessage umsg;
-          umsg.utype = Bse::WARNING;
+          umsg.utype = Bse::UserMessageType::WARNING;
           umsg.title = _("MIDI I/O Failed");
           umsg.text1 = _("MIDI input or output is not available.");
           umsg.text2 = _("No available MIDI device could be found and opened successfully. "
@@ -519,18 +519,18 @@ server_open_midi_device (BseServer *server)
           ServerImpl::instance().send_user_message (umsg);
         }
     }
-  return server->midi_device ? Bse::ERROR_NONE : error;
+  return server->midi_device ? Bse::Error::NONE : error;
 }
-Bse::ErrorType
+Bse::Error
 bse_server_open_devices (BseServer *self)
 {
-  Bse::ErrorType error = Bse::ERROR_NONE;
-  assert_return (BSE_IS_SERVER (self), Bse::ERROR_INTERNAL);
+  Bse::Error error = Bse::Error::NONE;
+  assert_return (BSE_IS_SERVER (self), Bse::Error::INTERNAL);
   /* check whether devices are already opened */
   if (self->dev_use_count)
     {
       self->dev_use_count++;
-      return Bse::ERROR_NONE;
+      return Bse::Error::NONE;
     }
   /* lock playback/capture/latency settings */
   bse_gconfig_lock ();
@@ -538,19 +538,19 @@ bse_server_open_devices (BseServer *self)
   guint block_size, latency = BSE_GCONFIG (synth_latency), mix_freq = BSE_GCONFIG (synth_mixing_freq);
   bse_engine_constrain (latency, mix_freq, BSE_GCONFIG (synth_control_freq), &block_size, NULL);
   /* try opening devices */
-  if (!error)
+  if (error == 0)
     error = server_open_pcm_device (self, mix_freq, latency, block_size);
   guint aligned_freq = bse_pcm_device_frequency_align (mix_freq);
-  if (error && aligned_freq != mix_freq)
+  if (error != 0 && aligned_freq != mix_freq)
     {
       mix_freq = aligned_freq;
       bse_engine_constrain (latency, mix_freq, BSE_GCONFIG (synth_control_freq), &block_size, NULL);
-      Bse::ErrorType new_error = server_open_pcm_device (self, mix_freq, latency, block_size);
-      error = new_error ? error : Bse::ERROR_NONE;
+      Bse::Error new_error = server_open_pcm_device (self, mix_freq, latency, block_size);
+      error = new_error != 0 ? error : Bse::Error::NONE;
     }
-  if (!error)
+  if (error == 0)
     error = server_open_midi_device (self);
-  if (!error)
+  if (error == 0)
     {
       BseTrans *trans = bse_trans_open ();
       engine_init (self, bse_pcm_device_get_mix_freq (self->pcm_device));
@@ -558,16 +558,16 @@ bse_server_open_devices (BseServer *self)
       self->pcm_imodule = bse_pcm_imodule_insert (pcm_handle, trans);
       if (self->wave_file)
 	{
-	  Bse::ErrorType error;
+	  Bse::Error error;
 	  self->pcm_writer = (BsePcmWriter*) bse_object_new (BSE_TYPE_PCM_WRITER, NULL);
           const uint n_channels = 2;
 	  error = bse_pcm_writer_open (self->pcm_writer, self->wave_file,
                                        n_channels, bse_engine_sample_freq (),
                                        n_channels * bse_engine_sample_freq() * self->wave_seconds);
-	  if (error)
+	  if (error != 0)
 	    {
               UserMessage umsg;
-              umsg.utype = Bse::ERROR;
+              umsg.utype = Bse::UserMessageType::ERROR;
               umsg.title = _("Disk Recording Failed");
               umsg.text1 = _("Failed to start PCM recording to disk.");
               umsg.text2 = _("An error occoured while opening the recording file, selecting a different "
@@ -763,7 +763,7 @@ bse_server_remove_io_watch (BseServer *server,
     g_warning (G_STRLOC ": no such io watch installed %p(%p)", watch_func, data);
 }
 
-Bse::ErrorType
+Bse::Error
 bse_server_run_remote (BseServer         *server,
 		       const gchar       *process_name,
 		       SfiRing           *params,
@@ -774,10 +774,10 @@ bse_server_run_remote (BseServer         *server,
   gint child_pid, command_input, command_output;
   BseJanitor *janitor = NULL;
 
-  assert_return (BSE_IS_SERVER (server), Bse::ERROR_INTERNAL);
-  assert_return (process_name != NULL, Bse::ERROR_INTERNAL);
-  assert_return (script_name != NULL, Bse::ERROR_INTERNAL);
-  assert_return (proc_name != NULL, Bse::ERROR_INTERNAL);
+  assert_return (BSE_IS_SERVER (server), Bse::Error::INTERNAL);
+  assert_return (process_name != NULL, Bse::Error::INTERNAL);
+  assert_return (script_name != NULL, Bse::Error::INTERNAL);
+  assert_return (proc_name != NULL, Bse::Error::INTERNAL);
 
   child_pid = command_input = command_output = -1;
   const char *reason = sfi_com_spawn_async (process_name,
@@ -818,11 +818,11 @@ bse_server_run_remote (BseServer         *server,
     {
       bse_server_script_error (server, script_name, proc_name, reason);
       g_free (freeme);
-      return Bse::ERROR_SPAWN;
+      return Bse::Error::SPAWN;
     }
   g_free (freeme);
   bse_server_script_start (server, janitor);
-  return Bse::ERROR_NONE;
+  return Bse::Error::NONE;
 }
 
 
@@ -1339,7 +1339,7 @@ ServerImpl::start_recording (const String &wave_file, double n_seconds)
 struct ScriptRegistration
 {
   gchar         *script;
-  Bse::ErrorType (*register_func) (const gchar *script, BseJanitor **janitor_p);
+  Bse::Error (*register_func) (const gchar *script, BseJanitor **janitor_p);
   ScriptRegistration *next;
 };
 
@@ -1359,7 +1359,7 @@ register_scripts_handler (gpointer data)
   BseServer *server = (BseServer*) data;
   ScriptRegistration *scr = (ScriptRegistration*) g_object_get_data ((GObject*) server, "script-registration-queue");
   BseJanitor *janitor = NULL;
-  Bse::ErrorType error;
+  Bse::Error error;
 
   if (!scr)
     {
@@ -1554,7 +1554,7 @@ ServerImpl::sample_file_info (const String &filename)
   info.file = filename;
   struct stat sbuf = { 0, };
   if (stat (filename.c_str(), &sbuf) < 0)
-    info.error = bse_error_from_errno (errno, Bse::ERROR_FILE_OPEN_FAILED);
+    info.error = bse_error_from_errno (errno, Bse::Error::FILE_OPEN_FAILED);
   else
     {
       info.size = sbuf.st_size;
@@ -1572,40 +1572,40 @@ ServerImpl::sample_file_info (const String &filename)
 }
 
 NoteDescription
-ServerImpl::note_describe_from_freq (MusicalTuningType musical_tuning, double freq)
+ServerImpl::note_describe_from_freq (MusicalTuning musical_tuning, double freq)
 {
   const int note = bse_note_from_freq (musical_tuning, freq);
   return bse_note_description (musical_tuning, note, 0);
 }
 
 NoteDescription
-ServerImpl::note_describe (MusicalTuningType musical_tuning, int note, int fine_tune)
+ServerImpl::note_describe (MusicalTuning musical_tuning, int note, int fine_tune)
 {
   return bse_note_description (musical_tuning, note, fine_tune);
 }
 
 NoteDescription
-ServerImpl::note_construct (MusicalTuningType musical_tuning, int semitone, int octave, int fine_tune)
+ServerImpl::note_construct (MusicalTuning musical_tuning, int semitone, int octave, int fine_tune)
 {
   const int note = BSE_NOTE_GENERIC (octave, semitone);
   return bse_note_description (musical_tuning, note, fine_tune);
 }
 
 NoteDescription
-ServerImpl::note_from_string (MusicalTuningType musical_tuning, const String &name)
+ServerImpl::note_from_string (MusicalTuning musical_tuning, const String &name)
 {
   const int note = bse_note_from_string (name);
   return bse_note_description (musical_tuning, note, 0);
 }
 
 int
-ServerImpl::note_from_freq (MusicalTuningType musical_tuning, double frequency)
+ServerImpl::note_from_freq (MusicalTuning musical_tuning, double frequency)
 {
   return bse_note_from_freq (musical_tuning, frequency);
 }
 
 double
-ServerImpl::note_to_freq (MusicalTuningType musical_tuning, int note, int fine_tune)
+ServerImpl::note_to_freq (MusicalTuning musical_tuning, int note, int fine_tune)
 {
   const Bse::NoteDescription info = bse_note_description (musical_tuning, note, fine_tune);
   return info.name.empty() ? 0 : info.freq;

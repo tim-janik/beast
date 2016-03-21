@@ -697,10 +697,10 @@ bse_item_has_ancestor (BseItem *item,
  * The musical tuning depends on project wide settings that may change after
  * this funciton has been called, so the result should be used with caution.
  */
-Bse::MusicalTuningType
+Bse::MusicalTuning
 bse_item_current_musical_tuning (BseItem *self)
 {
-  assert_return (BSE_IS_ITEM (self), Bse::MUSICAL_TUNING_12_TET);
+  assert_return (BSE_IS_ITEM (self), Bse::MusicalTuning::OD_12_TET);
   /* finding the musical tuning *should* be possible by just visiting
    * an items parents. however, .bse objects are not currently (0.7.1)
    * structured that way, so we get the tuning from the first song in
@@ -714,7 +714,7 @@ bse_item_current_musical_tuning (BseItem *self)
         if (BSE_IS_SONG (slist->data))
           return BSE_SONG (slist->data)->musical_tuning;
     }
-  return Bse::MUSICAL_TUNING_12_TET;
+  return Bse::MusicalTuning::OD_12_TET;
 }
 
 static inline GType
@@ -744,13 +744,13 @@ find_method_procedure (GType       object_type,
   return proc_type;
 }
 
-static inline Bse::ErrorType
+static inline Bse::Error
 bse_item_execva_i (BseItem     *item,
                    const char  *procedure,
                    va_list      var_args,
                    gboolean     skip_oparams)
 {
-  Bse::ErrorType error;
+  Bse::Error error;
   GType proc_type = find_method_procedure (BSE_OBJECT_TYPE (item), procedure);
   GValue obj_value;
 
@@ -758,7 +758,7 @@ bse_item_execva_i (BseItem     *item,
     {
       g_warning ("no such method \"%s\" of item %s",
                  procedure, bse_object_debug_name (item));
-      return Bse::ERROR_INTERNAL;
+      return Bse::Error::INTERNAL;
     }
 
   /* setup first arg (the object) */
@@ -771,17 +771,17 @@ bse_item_execva_i (BseItem     *item,
   return error;
 }
 
-Bse::ErrorType
+Bse::Error
 bse_item_exec (void       *_item,
                const char *procedure,
                ...)
 {
   BseItem *item = (BseItem*) _item;
   va_list var_args;
-  Bse::ErrorType error;
+  Bse::Error error;
 
-  assert_return (BSE_IS_ITEM (item), Bse::ERROR_INTERNAL);
-  assert_return (procedure != NULL, Bse::ERROR_INTERNAL);
+  assert_return (BSE_IS_ITEM (item), Bse::Error::INTERNAL);
+  assert_return (procedure != NULL, Bse::Error::INTERNAL);
 
   va_start (var_args, procedure);
   error = bse_item_execva_i (item, procedure, var_args, FALSE);
@@ -790,17 +790,17 @@ bse_item_exec (void       *_item,
   return error;
 }
 
-Bse::ErrorType
+Bse::Error
 bse_item_exec_void (void       *_item,
                     const char *procedure,
                     ...)
 {
   BseItem *item = (BseItem*) _item;
   va_list var_args;
-  Bse::ErrorType error;
+  Bse::Error error;
 
-  assert_return (BSE_IS_ITEM (item), Bse::ERROR_INTERNAL);
-  assert_return (procedure != NULL, Bse::ERROR_INTERNAL);
+  assert_return (BSE_IS_ITEM (item), Bse::Error::INTERNAL);
+  assert_return (procedure != NULL, Bse::Error::INTERNAL);
 
   va_start (var_args, procedure);
   error = bse_item_execva_i (item, procedure, var_args, TRUE);
@@ -880,7 +880,7 @@ undo_call_proc (BseUndoStep  *ustep,
   else /* invoke procedure */
     {
       GValue ovalue = { 0, };
-      Bse::ErrorType error;
+      Bse::Error error;
       uint i;
       /* convert values from undo */
       for (i = 0; i < proc->n_in_pspecs; i++)
@@ -894,12 +894,12 @@ undo_call_proc (BseUndoStep  *ustep,
       if (proc->n_out_pspecs)
         {
           /* check returned error if any */
-          if (G_PARAM_SPEC_VALUE_TYPE (proc->out_pspecs[0]) == BSE_TYPE_ERROR_TYPE && !error)
-            error = Bse::ErrorType (g_value_get_enum (&ovalue));
+          if (G_PARAM_SPEC_VALUE_TYPE (proc->out_pspecs[0]) == BSE_TYPE_ERROR_TYPE && error == 0)
+            error = Bse::Error (g_value_get_enum (&ovalue));
           g_value_unset (&ovalue);
         }
       /* we're not tolerating any errors */
-      if (error)
+      if (error != 0)
         g_warning ("while executing undo method \"%s\" of item %s: %s", BSE_PROCEDURE_NAME (proc),
                    bse_object_debug_name (g_value_get_object (ivalues + 0)), bse_error_blurb (error));
     }
@@ -915,7 +915,7 @@ bse_item_push_undo_proc_valist (void        *item,
   BseUndoStack *ustack = bse_item_undo_open (item, "%s: %s", commit_as_redo ? "redo-proc" : "undo-proc", procedure);
   BseProcedureClass *proc;
   GValue *ivalues;
-  Bse::ErrorType error;
+  Bse::Error error;
   uint i;
   if (BSE_UNDO_STACK_VOID (ustack) ||
       BSE_ITEM_INTERNAL (item))
@@ -950,7 +950,7 @@ bse_item_push_undo_proc_valist (void        *item,
 
   /* collect procedure args */
   error = bse_procedure_collect_input_args (proc, ivalues + 0, var_args, ivalues);
-  if (!error)
+  if (error == 0)
     {
       BseUndoStep *ustep = bse_undo_step_new (undo_call_proc, unde_free_proc, 3);
       /* convert values for undo */
@@ -1303,8 +1303,8 @@ undo_lambda_call (BseUndoStep *ustep, BseUndoStack *ustack)
   ItemImpl &self = project.undo_resolve (*(ItemImpl::UndoDescriptor<ItemImpl>*) ustep->data[0].v_pointer);
   auto *lambda = (ItemImpl::UndoLambda*) ustep->data[1].v_pointer;
   // invoke undo function
-  const Bse::ErrorType error = (*lambda) (self, ustack);
-  if (error) // undo errors shouldn't happen
+  const Bse::Error error = (*lambda) (self, ustack);
+  if (error != 0) // undo errors shouldn't happen
     {
       String *blurb = (String*) ustep->data[2].v_pointer;
       g_warning ("error during undo '%s' of item %s: %s", blurb->c_str(),
@@ -1339,11 +1339,11 @@ ItemImpl::push_property_undo (const String &property_name)
     critical ("%s: invalid property name: %s", __func__, property_name);
   else
     {
-      auto lambda = [property_name, saved_value] (ItemImpl &self, BseUndoStack *ustack) -> ErrorType {
+      auto lambda = [property_name, saved_value] (ItemImpl &self, BseUndoStack *ustack) -> Error {
         const bool success = self.__aida_set__ (property_name, saved_value);
         if (!success)
           critical ("%s: failed to undo property change for '%s': %s", __func__, property_name, saved_value.repr());
-        return ERROR_NONE;
+        return Error::NONE;
       };
       push_undo (__func__, *this, lambda);
     }

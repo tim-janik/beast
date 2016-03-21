@@ -114,9 +114,9 @@ public:
   virtual bool         supports_user_synths () override;
   virtual bool         auto_activate        () const override;
   virtual void         auto_activate        (bool) override;
-  virtual ErrorType    can_create_source    (const String &module_type) override;
+  virtual Error    can_create_source    (const String &module_type) override;
   virtual SourceIfaceP create_source        (const String &module_type) override;
-  virtual ErrorType    remove_source        (SourceIface &module) override;
+  virtual Error    remove_source        (SourceIface &module) override;
 };
 
 } // Bse

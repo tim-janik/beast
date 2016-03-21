@@ -42,7 +42,7 @@ void    	bse_server_stop_recording		(BseServer	*server);
 void            bse_server_start_recording              (BseServer      *server,
                                                          const char     *wave_file,
                                                          double          n_seconds);
-Bse::ErrorType	bse_server_open_devices			(BseServer	*server);
+Bse::Error	bse_server_open_devices			(BseServer	*server);
 void		bse_server_close_devices		(BseServer	*server);
 BseModule*	bse_server_retrieve_pcm_output_module	(BseServer	*server,
 							 BseSource	*source,
@@ -82,7 +82,7 @@ void		bse_server_script_error			(BseServer	    *server,
 							 const gchar	    *script_name,
 							 const gchar	    *proc_name,
 							 const gchar        *reason);
-Bse::ErrorType	bse_server_run_remote			(BseServer	    *server,
+Bse::Error	bse_server_run_remote			(BseServer	    *server,
 							 const gchar	    *process_name,
 							 SfiRing	    *params,
 							 const gchar        *script_name,
@@ -132,12 +132,12 @@ public:
   virtual AuxData    find_module_type       (const String &module_type) override;
   virtual Icon       module_type_icon       (const String &module_type) override;
   virtual SampleFileInfo sample_file_info   (const String &filename) override;
-  virtual NoteDescription note_describe_from_freq (MusicalTuningType musical_tuning, double freq) override;
-  virtual NoteDescription note_describe    (MusicalTuningType musical_tuning, int note, int fine_tune) override;
-  virtual NoteDescription note_construct   (MusicalTuningType musical_tuning, int semitone, int octave, int fine_tune) override;
-  virtual NoteDescription note_from_string (MusicalTuningType musical_tuning, const String &name) override;
-  virtual int             note_from_freq   (MusicalTuningType musical_tuning, double frequency) override;
-  virtual double          note_to_freq     (MusicalTuningType musical_tuning, int note, int fine_tune) override;
+  virtual NoteDescription note_describe_from_freq (MusicalTuning musical_tuning, double freq) override;
+  virtual NoteDescription note_describe    (MusicalTuning musical_tuning, int note, int fine_tune) override;
+  virtual NoteDescription note_construct   (MusicalTuning musical_tuning, int semitone, int octave, int fine_tune) override;
+  virtual NoteDescription note_from_string (MusicalTuning musical_tuning, const String &name) override;
+  virtual int             note_from_freq   (MusicalTuning musical_tuning, double frequency) override;
+  virtual double          note_to_freq     (MusicalTuning musical_tuning, int note, int fine_tune) override;
   void               send_user_message      (const UserMessage &umsg);
   static void        register_source_module (const String &type, const String &title, const String &tags, const uint8 *pixstream);
   static ServerImpl& instance               ();

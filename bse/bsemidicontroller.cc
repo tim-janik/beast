@@ -98,25 +98,25 @@ bse_midi_controller_class_init (BseMidiControllerClass *klass)
 			      PROP_CONTROL_1,
 			      bse_param_spec_genum ("control_1", "Signal 1", NULL,
 						    BSE_TYPE_MIDI_SIGNAL_TYPE,
-						    Bse::MIDI_SIGNAL_PITCH_BEND,
+						    int64 (Bse::MidiSignal::PITCH_BEND),
 						    SFI_PARAM_STANDARD));
   bse_object_class_add_param (object_class, "MIDI Controls",
 			      PROP_CONTROL_2,
 			      bse_param_spec_genum ("control_2", "Signal 2", NULL,
 						    BSE_TYPE_MIDI_SIGNAL_TYPE,
-						    Bse::MIDI_SIGNAL_CONTINUOUS_1,
+						    int64 (Bse::MidiSignal::CONTINUOUS_1),
 						    SFI_PARAM_STANDARD));
   bse_object_class_add_param (object_class, "MIDI Controls",
 			      PROP_CONTROL_3,
 			      bse_param_spec_genum ("control_3", "Signal 3", NULL,
 						    BSE_TYPE_MIDI_SIGNAL_TYPE,
-						    Bse::MIDI_SIGNAL_CONTINUOUS_7,
+						    int64 (Bse::MidiSignal::CONTINUOUS_7),
 						    SFI_PARAM_STANDARD));
   bse_object_class_add_param (object_class, "MIDI Controls",
 			      PROP_CONTROL_4,
 			      bse_param_spec_genum ("control_4", "Signal 4", NULL,
 						    BSE_TYPE_MIDI_SIGNAL_TYPE,
-						    Bse::MIDI_SIGNAL_PRESSURE,
+						    int64 (Bse::MidiSignal::PRESSURE),
 						    SFI_PARAM_STANDARD));
 
   ochannel_id = bse_source_class_add_ochannel (source_class, "ctrl-out1", _("Ctrl Out1"), _("MIDI Signal 1"));
@@ -133,10 +133,10 @@ static void
 bse_midi_controller_init (BseMidiController *self)
 {
   self->midi_channel = 0;
-  self->controls[0] = Bse::MIDI_SIGNAL_PITCH_BEND;
-  self->controls[1] = Bse::MIDI_SIGNAL_CONTINUOUS_1;
-  self->controls[2] = Bse::MIDI_SIGNAL_CONTINUOUS_7;
-  self->controls[3] = Bse::MIDI_SIGNAL_PRESSURE;
+  self->controls[0] = Bse::MidiSignal::PITCH_BEND;
+  self->controls[1] = Bse::MidiSignal::CONTINUOUS_1;
+  self->controls[2] = Bse::MidiSignal::CONTINUOUS_7;
+  self->controls[3] = Bse::MidiSignal::PRESSURE;
 }
 
 static void
@@ -154,19 +154,19 @@ bse_midi_controller_set_property (GObject      *object,
       bse_midi_controller_update_modules (self);
       break;
     case PROP_CONTROL_1:
-      self->controls[0] = Bse::MidiSignalType (g_value_get_enum (value));
+      self->controls[0] = Bse::MidiSignal (g_value_get_enum (value));
       bse_midi_controller_update_modules (self);
       break;
     case PROP_CONTROL_2:
-      self->controls[1] = Bse::MidiSignalType (g_value_get_enum (value));
+      self->controls[1] = Bse::MidiSignal (g_value_get_enum (value));
       bse_midi_controller_update_modules (self);
       break;
     case PROP_CONTROL_3:
-      self->controls[2] = Bse::MidiSignalType (g_value_get_enum (value));
+      self->controls[2] = Bse::MidiSignal (g_value_get_enum (value));
       bse_midi_controller_update_modules (self);
       break;
     case PROP_CONTROL_4:
-      self->controls[3] = Bse::MidiSignalType (g_value_get_enum (value));
+      self->controls[3] = Bse::MidiSignal (g_value_get_enum (value));
       bse_midi_controller_update_modules (self);
       break;
     default:
@@ -189,16 +189,16 @@ bse_midi_controller_get_property (GObject    *object,
       sfi_value_set_int (value, self->midi_channel);
       break;
     case PROP_CONTROL_1:
-      g_value_set_enum (value, self->controls[0]);
+      g_value_set_enum (value, int64 (self->controls[0]));
       break;
     case PROP_CONTROL_2:
-      g_value_set_enum (value, self->controls[1]);
+      g_value_set_enum (value, int64 (self->controls[1]));
       break;
     case PROP_CONTROL_3:
-      g_value_set_enum (value, self->controls[2]);
+      g_value_set_enum (value, int64 (self->controls[2]));
       break;
     case PROP_CONTROL_4:
-      g_value_set_enum (value, self->controls[3]);
+      g_value_set_enum (value, int64 (self->controls[3]));
       break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (self, param_id, pspec);

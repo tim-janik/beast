@@ -94,9 +94,9 @@ gsl_data_cache_open (GslDataCache *dcache)
   dcache->mutex.lock();
   if (!dcache->open_count)
     {
-      Bse::ErrorType error;
+      Bse::Error error;
       error = gsl_data_handle_open (dcache->dhandle);
-      if (error)
+      if (error != 0)
 	{
 	  /* FIXME: this is pretty fatal, throw out zero blocks now? */
 	  sfi_diag ("%s: failed to open \"%s\": %s", G_STRLOC, dcache->dhandle->name, bse_error_blurb (error));

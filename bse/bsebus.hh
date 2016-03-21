@@ -35,11 +35,11 @@ struct BseBusClass : BseSubSynthClass
 {};
 
 /* --- API --- */
-Bse::ErrorType    bse_bus_connect                 (BseBus         *self,
+Bse::Error    bse_bus_connect                 (BseBus         *self,
                                                  BseItem        *item);
-Bse::ErrorType    bse_bus_connect_unchecked       (BseBus         *self,
+Bse::Error    bse_bus_connect_unchecked       (BseBus         *self,
                                                  BseItem        *item);
-Bse::ErrorType    bse_bus_disconnect              (BseBus         *self,
+Bse::Error    bse_bus_disconnect              (BseBus         *self,
                                                  BseItem        *item);
 SfiRing*        bse_bus_list_inputs             (BseBus         *self);
 SfiRing*        bse_bus_list_outputs            (BseBus         *self);
@@ -47,11 +47,11 @@ gboolean        bse_bus_get_stack               (BseBus         *self,
                                                  BseContainer  **snet,
                                                  BseSource     **vin,
                                                  BseSource     **vout);
-Bse::ErrorType    bse_bus_insert_slot             (BseBus         *self,
+Bse::Error    bse_bus_insert_slot             (BseBus         *self,
                                                  guint           slot);
-Bse::ErrorType    bse_bus_delete_slot             (BseBus         *self,
+Bse::Error    bse_bus_delete_slot             (BseBus         *self,
                                                  guint           slot);
-Bse::ErrorType    bse_bus_replace_effect          (BseBus         *self,
+Bse::Error    bse_bus_replace_effect          (BseBus         *self,
                                                  guint           slot,
                                                  const gchar    *etype);
 void            bse_bus_change_solo             (BseBus         *self,
@@ -85,11 +85,11 @@ protected:
   virtual          ~BusImpl          ();
 public:
   explicit          BusImpl          (BseObject*);
-  virtual ErrorType ensure_output    () override;
-  virtual ErrorType connect_bus      (BusIface &bus) override;
-  virtual ErrorType connect_track    (TrackIface &track) override;
-  virtual ErrorType disconnect_bus   (BusIface &bus) override;
-  virtual ErrorType disconnect_track (TrackIface &track) override;
+  virtual Error ensure_output    () override;
+  virtual Error connect_bus      (BusIface &bus) override;
+  virtual Error connect_track    (TrackIface &track) override;
+  virtual Error disconnect_bus   (BusIface &bus) override;
+  virtual Error disconnect_track (TrackIface &track) override;
 };
 
 } // Bse

@@ -70,25 +70,24 @@ gsl_data_handle_unref (GslDataHandle *dhandle)
       dhandle->vtable->destroy (dhandle);
     }
 }
-Bse::ErrorType
+Bse::Error
 gsl_data_handle_open (GslDataHandle *dhandle)
 {
-  assert_return (dhandle != NULL, Bse::ERROR_INTERNAL);
-  assert_return (dhandle->ref_count > 0, Bse::ERROR_INTERNAL);
+  assert_return (dhandle != NULL, Bse::Error::INTERNAL);
+  assert_return (dhandle->ref_count > 0, Bse::Error::INTERNAL);
   dhandle->spinlock.lock();
   if (dhandle->open_count == 0)
     {
       GslDataHandleSetup setup = { 0, };
-      Bse::ErrorType error = dhandle->vtable->open (dhandle, &setup);
-      if (!error && (setup.n_values < 0 ||
-		     setup.n_channels < 1))
+      Bse::Error error = dhandle->vtable->open (dhandle, &setup);
+      if (error == 0 && (setup.n_values < 0 || setup.n_channels < 1))
 	{
 	  sfi_warning ("invalid parameters in data handle open() (%p()): nv=%lld nc=%u",
                        dhandle->vtable->open, setup.n_values, setup.n_channels);
 	  dhandle->vtable->close (dhandle);
-	  error = Bse::ERROR_FORMAT_INVALID;
+	  error = Bse::Error::FORMAT_INVALID;
 	}
-      if (error)
+      if (error != 0)
 	{
 	  dhandle->spinlock.unlock();
           if (setup.xinfos)
@@ -102,7 +101,7 @@ gsl_data_handle_open (GslDataHandle *dhandle)
   else
     dhandle->open_count++;
   dhandle->spinlock.unlock();
-  return Bse::ERROR_NONE;
+  return Bse::Error::NONE;
 }
 void
 gsl_data_handle_close (GslDataHandle *dhandle)
@@ -284,7 +283,7 @@ typedef struct {
   guint             bit_depth : 8;
 } MemHandle;
 
-static Bse::ErrorType
+static Bse::Error
 mem_handle_open (GslDataHandle      *dhandle,
 		 GslDataHandleSetup *setup)
 {
@@ -296,7 +295,7 @@ mem_handle_open (GslDataHandle      *dhandle,
   setup->mix_freq = mhandle->mix_freq;
   setup->bit_depth = mhandle->bit_depth;
 
-  return Bse::ERROR_NONE;
+  return Bse::Error::NONE;
 }
 
 static void
@@ -416,14 +415,14 @@ ring_remove_dups (SfiRing        *ring,
   return ring;
 }
 
-static Bse::ErrorType
+static Bse::Error
 xinfo_handle_open (GslDataHandle      *dhandle,
                    GslDataHandleSetup *setup)
 {
   XInfoHandle *chandle = (XInfoHandle*) dhandle;
   GslDataHandle *src_handle = chandle->src_handle;
-  Bse::ErrorType error = gsl_data_handle_open (src_handle);
-  if (error != Bse::ERROR_NONE)
+  Bse::Error error = gsl_data_handle_open (src_handle);
+  if (error != Bse::Error::NONE)
     return error;
   *setup = src_handle->setup;
   setup->xinfos = NULL;
@@ -456,7 +455,7 @@ xinfo_handle_open (GslDataHandle      *dhandle,
         }
       setup->xinfos[i] = NULL;
     }
-  return Bse::ERROR_NONE;
+  return Bse::Error::NONE;
 }
 
 static int64 
@@ -669,19 +668,19 @@ gsl_data_handle_new_clear_xinfos (GslDataHandle *src_handle)
 
 
 /* --- chain handle --- */
-static Bse::ErrorType
+static Bse::Error
 chain_handle_open (GslDataHandle      *dhandle,
 		   GslDataHandleSetup *setup)
 {
   ChainHandle *chandle = (ChainHandle*) dhandle;
-  Bse::ErrorType error;
+  Bse::Error error;
 
   error = gsl_data_handle_open (chandle->src_handle);
-  if (error != Bse::ERROR_NONE)
+  if (error != Bse::Error::NONE)
     return error;
   *setup = chandle->src_handle->setup; /* copies setup.xinfos by pointer */
 
-  return Bse::ERROR_NONE;
+  return Bse::Error::NONE;
 }
 
 static void
@@ -858,21 +857,21 @@ typedef struct {
   int64 	    tail_cut;
 } CutHandle;
 
-static Bse::ErrorType
+static Bse::Error
 cut_handle_open (GslDataHandle      *dhandle,
 		 GslDataHandleSetup *setup)
 {
   CutHandle *chandle = (CutHandle*) dhandle;
-  Bse::ErrorType error;
+  Bse::Error error;
 
   error = gsl_data_handle_open (chandle->src_handle);
-  if (error != Bse::ERROR_NONE)
+  if (error != Bse::Error::NONE)
     return error;
   *setup = chandle->src_handle->setup; /* copies setup.xinfos by pointer */
   setup->n_values -= MIN (setup->n_values, chandle->tail_cut);
   setup->n_values -= MIN (setup->n_values, chandle->n_cut_values);
 
-  return Bse::ERROR_NONE;
+  return Bse::Error::NONE;
 }
 
 static void
@@ -1009,15 +1008,15 @@ typedef struct {
   void            (*free_values) (gpointer);
 } InsertHandle;
 
-static Bse::ErrorType
+static Bse::Error
 insert_handle_open (GslDataHandle      *dhandle,
 		    GslDataHandleSetup *setup)
 {
   InsertHandle *ihandle = (InsertHandle*) dhandle;
-  Bse::ErrorType error;
+  Bse::Error error;
 
   error = gsl_data_handle_open (ihandle->src_handle);
-  if (error != Bse::ERROR_NONE)
+  if (error != Bse::Error::NONE)
     return error;
   *setup = ihandle->src_handle->setup; /* copies setup.xinfos by pointer */
   ihandle->paste_offset = ihandle->requested_paste_offset < 0 ? setup->n_values : ihandle->requested_paste_offset;
@@ -1028,7 +1027,7 @@ insert_handle_open (GslDataHandle      *dhandle,
   guint n = gsl_data_handle_bit_depth (ihandle->src_handle);
   setup->bit_depth = MAX (n, ihandle->paste_bit_depth);
 
-  return Bse::ERROR_NONE;
+  return Bse::Error::NONE;
 }
 
 static void
@@ -1176,15 +1175,15 @@ typedef struct {
   int64 	    loop_width;
 } LoopHandle;
 
-static Bse::ErrorType
+static Bse::Error
 loop_handle_open (GslDataHandle      *dhandle,
 		  GslDataHandleSetup *setup)
 {
   LoopHandle *lhandle = (LoopHandle*) dhandle;
-  Bse::ErrorType error;
+  Bse::Error error;
 
   error = gsl_data_handle_open (lhandle->src_handle);
-  if (error != Bse::ERROR_NONE)
+  if (error != Bse::Error::NONE)
     return error;
 
   *setup = lhandle->src_handle->setup; /* copies setup.xinfos by pointer */
@@ -1200,7 +1199,7 @@ loop_handle_open (GslDataHandle      *dhandle,
       lhandle->loop_width = 0;
     }
 
-  return Bse::ERROR_NONE;
+  return Bse::Error::NONE;
 }
 
 static void
@@ -1298,21 +1297,21 @@ dcache_handle_destroy (GslDataHandle *dhandle)
   sfi_delete_struct (DCacheHandle, chandle);
 }
 
-static Bse::ErrorType
+static Bse::Error
 dcache_handle_open (GslDataHandle      *dhandle,
 		    GslDataHandleSetup *setup)
 {
   DCacheHandle *chandle = (DCacheHandle*) dhandle;
-  Bse::ErrorType error;
+  Bse::Error error;
 
   error = gsl_data_handle_open (chandle->dcache->dhandle);
-  if (error != Bse::ERROR_NONE)
+  if (error != Bse::Error::NONE)
     return error;
   gsl_data_cache_open (chandle->dcache);
   *setup = chandle->dcache->dhandle->setup; /* copies setup.xinfos by pointer */
   gsl_data_handle_close (chandle->dcache->dhandle);
 
-  return Bse::ERROR_NONE;
+  return Bse::Error::NONE;
 }
 
 static void
@@ -1468,7 +1467,7 @@ wave_handle_destroy (GslDataHandle *dhandle)
   sfi_delete_struct (WaveHandle, whandle);
 }
 
-static Bse::ErrorType
+static Bse::Error
 wave_handle_open (GslDataHandle      *dhandle,
 		  GslDataHandleSetup *setup)
 {
@@ -1476,7 +1475,7 @@ wave_handle_open (GslDataHandle      *dhandle,
 
   whandle->hfile = gsl_hfile_open (whandle->dhandle.name);
   if (!whandle->hfile)
-    return gsl_error_from_errno (errno, Bse::ERROR_FILE_OPEN_FAILED);
+    return gsl_error_from_errno (errno, Bse::Error::FILE_OPEN_FAILED);
   else
     {
       int64 l, fwidth = wave_format_byte_width (whandle->format);
@@ -1508,7 +1507,7 @@ wave_handle_open (GslDataHandle      *dhandle,
       /* linux does proper caching and WAVs are easily readable */
       setup->needs_cache = TRUE;
 #endif
-      return Bse::ERROR_NONE;
+      return Bse::Error::NONE;
     }
 }
 

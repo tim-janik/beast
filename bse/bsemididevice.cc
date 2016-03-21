@@ -14,7 +14,7 @@ static void *parent_class = NULL;
 static void
 bse_midi_device_init (BseMidiDevice *self)
 {
-  self->midi_decoder = bse_midi_decoder_new (TRUE, FALSE, Bse::MUSICAL_TUNING_12_TET);
+  self->midi_decoder = bse_midi_decoder_new (TRUE, FALSE, Bse::MusicalTuning::OD_12_TET);
   self->handle = NULL;
 }
 

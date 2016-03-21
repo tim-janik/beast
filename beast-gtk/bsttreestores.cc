@@ -69,7 +69,7 @@ file_store_idle_handler (gpointer data)
                           -1);
       Bse::SampleFileInfo info = bse_server.sample_file_info (filename);
       const gchar *dsep = strrchr (filename, G_DIR_SEPARATOR);
-      if (info.error == Bse::ERROR_FILE_IS_DIR)
+      if (info.error == Bse::Error::FILE_IS_DIR)
         {
           loader = "Directory";
           name = dsep ? dsep + 1 : filename;    /* fallback wave name */
@@ -77,9 +77,9 @@ file_store_idle_handler (gpointer data)
       else
         {
           name = dsep ? dsep + 1 : filename;    /* fallback wave name */
-          loader = info.error ? Bse::error_blurb (info.error) : info.loader;
+          loader = info.error != 0 ? Bse::error_blurb (info.error) : info.loader;
           guint l = strlen (filename);
-          if (info.error == Bse::ERROR_FORMAT_UNKNOWN &&
+          if (info.error == Bse::Error::FORMAT_UNKNOWN &&
               l >= 4 && strcasecmp (filename + l - 4, ".bse") == 0)
             {
               nstr = bst_file_scan_find_key (filename, "container-child", NULL);
@@ -90,7 +90,7 @@ file_store_idle_handler (gpointer data)
                     {
                       name = col + 1;
                       loader = "BSE Project";
-                      info.error = Bse::ErrorType (0);
+                      info.error = Bse::Error (0);
                     }
                 }
             }

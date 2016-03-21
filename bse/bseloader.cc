@@ -131,28 +131,28 @@ bse_loader_match (const char *file_name)
 
 BseWaveFileInfo*
 bse_wave_file_info_load (const char   *file_name,
-			 Bse::ErrorType *error_p)
+			 Bse::Error *error_p)
 {
   BseWaveFileInfo *finfo = NULL;
-  Bse::ErrorType error = Bse::ERROR_NONE;
+  Bse::Error error = Bse::Error::NONE;
   BseLoader *loader;
 
   if (error_p)
-    *error_p = Bse::ERROR_INTERNAL;
+    *error_p = Bse::Error::INTERNAL;
   assert_return (file_name != NULL, NULL);
 
   loader = bse_loader_match (file_name);
   if (loader)
     {
       finfo = loader->load_file_info (loader->data, file_name, &error);
-      if (error && finfo)
+      if (error != 0 && finfo)
 	{
 	  /* loaders shouldn't do this */
 	  loader->free_file_info (loader->data, finfo);
 	  finfo = NULL;
 	}
-      if (!finfo && !error)
-	error = Bse::ERROR_FILE_EMPTY;	/* FIXME: try next loader */
+      if (!finfo && error == 0)
+	error = Bse::Error::FILE_EMPTY;	/* FIXME: try next loader */
       if (finfo)
 	{
 	  if (finfo->n_waves > 0)
@@ -173,7 +173,7 @@ bse_wave_file_info_load (const char   *file_name,
 	    {
 	      loader->free_file_info (loader->data, finfo);
 	      finfo = NULL;
-	      error = Bse::ERROR_FILE_EMPTY;   /* FIXME: try next loader */
+	      error = Bse::Error::FILE_EMPTY;   /* FIXME: try next loader */
 	    }
 	}
     }
@@ -181,8 +181,8 @@ bse_wave_file_info_load (const char   *file_name,
     {
       /* try to provide apropriate error code */
       error = gsl_file_check (file_name, "rf");
-      if (!error)
-	error = Bse::ERROR_FORMAT_UNKNOWN;
+      if (error == 0)
+	error = Bse::Error::FORMAT_UNKNOWN;
     }
 
   if (error_p)
@@ -235,14 +235,14 @@ BseWaveDsc*
 bse_wave_dsc_load (BseWaveFileInfo *wave_file_info,
 		   uint             nth_wave,
                    gboolean         accept_empty,
-                   Bse::ErrorType    *error_p)
+                   Bse::Error    *error_p)
 {
-  Bse::ErrorType error = Bse::ERROR_NONE;
+  Bse::Error error = Bse::Error::NONE;
   BseWaveDsc *wdsc;
   BseLoader *loader;
 
   if (error_p)
-    *error_p = Bse::ERROR_INTERNAL;
+    *error_p = Bse::Error::INTERNAL;
   assert_return (wave_file_info != NULL, NULL);
   assert_return (wave_file_info->loader != NULL, NULL);
   assert_return (nth_wave < wave_file_info->n_waves, NULL);
@@ -250,14 +250,14 @@ bse_wave_dsc_load (BseWaveFileInfo *wave_file_info,
   loader = wave_file_info->loader;
   wdsc = loader->load_wave_dsc (loader->data, wave_file_info, nth_wave,&error);
 
-  if (error && wdsc)
+  if (error != 0 && wdsc)
     {
       /* loaders shouldn't do this */
       loader->free_wave_dsc (loader->data, wdsc);
       wdsc = NULL;
     }
-  if (!wdsc && !error)
-    error = Bse::ERROR_FILE_EMPTY;
+  if (!wdsc && error == 0)
+    error = Bse::Error::FILE_EMPTY;
   if (wdsc)
     {
       if (accept_empty || wdsc->n_chunks > 0)
@@ -272,7 +272,7 @@ bse_wave_dsc_load (BseWaveFileInfo *wave_file_info,
 	{
 	  loader->free_wave_dsc (loader->data, wdsc);
 	  wdsc = NULL;
-	  error = Bse::ERROR_FILE_EMPTY;
+	  error = Bse::Error::FILE_EMPTY;
 	}
     }
 
@@ -298,14 +298,14 @@ bse_wave_dsc_free (BseWaveDsc *wave_dsc)
 GslDataHandle*
 bse_wave_handle_create (BseWaveDsc   *wave_dsc,
 			uint	      nth_chunk,
-			Bse::ErrorType *error_p)
+			Bse::Error *error_p)
 {
-  Bse::ErrorType error = Bse::ERROR_NONE;
+  Bse::Error error = Bse::Error::NONE;
   GslDataHandle *dhandle;
   BseLoader *loader;
 
   if (error_p)
-    *error_p = Bse::ERROR_INTERNAL;
+    *error_p = Bse::Error::INTERNAL;
   assert_return (wave_dsc != NULL, NULL);
   assert_return (wave_dsc->file_info != NULL, NULL);
   assert_return (nth_chunk < wave_dsc->n_chunks, NULL);
@@ -316,14 +316,14 @@ bse_wave_handle_create (BseWaveDsc   *wave_dsc,
 					 wave_dsc,
 					 nth_chunk,
 					 &error);
-  if (error && dhandle)
+  if (error != 0 && dhandle)
     {
       /* loaders shouldn't do this */
       gsl_data_handle_unref (dhandle);
       dhandle = NULL;
     }
-  if (!dhandle && !error)
-    error = Bse::ERROR_FORMAT_INVALID;
+  if (!dhandle && error == 0)
+    error = Bse::Error::FORMAT_INVALID;
 
   if (error_p)
     *error_p = error;
@@ -334,14 +334,14 @@ bse_wave_handle_create (BseWaveDsc   *wave_dsc,
 GslWaveChunk*
 bse_wave_chunk_create (BseWaveDsc   *wave_dsc,
 		       uint          nth_chunk,
-		       Bse::ErrorType *error_p)
+		       Bse::Error *error_p)
 {
   GslDataHandle *dhandle;
   GslDataCache *dcache;
   GslWaveChunk *wchunk;
 
   if (error_p)
-    *error_p = Bse::ERROR_INTERNAL;
+    *error_p = Bse::Error::INTERNAL;
   assert_return (wave_dsc != NULL, NULL);
   assert_return (nth_chunk < wave_dsc->n_chunks, NULL);
 
@@ -352,7 +352,7 @@ bse_wave_chunk_create (BseWaveDsc   *wave_dsc,
   BseWaveChunkDsc *chunk = wave_dsc->chunks + nth_chunk;
 
   if (error_p)
-    *error_p = Bse::ERROR_IO;
+    *error_p = Bse::Error::IO;
 
   /* FIXME: we essentially create a dcache for each wchunk here ;( */
 
@@ -381,7 +381,7 @@ bse_wave_chunk_create (BseWaveDsc   *wave_dsc,
   gsl_data_cache_unref (dcache);
 
   if (error_p && wchunk)
-    *error_p = Bse::ERROR_NONE;
+    *error_p = Bse::Error::NONE;
 
   return wchunk;
 }

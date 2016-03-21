@@ -43,7 +43,7 @@ main (int   argc,
       printout ("sample_file_info(\"%s\"): failed\n", file_name);
     }
 
-  printout ("error_blurb(ERROR_DEVICE_ASYNC): %s\n", error_blurb (ERROR_DEVICE_ASYNC).c_str());
+  printout ("error_blurb(Error::DEVICE_ASYNC): %s\n", error_blurb (Error::DEVICE_ASYNC).c_str());
 
   Server server = 1;    // FIXME: users may not hardcode this
 

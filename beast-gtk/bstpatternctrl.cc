@@ -19,32 +19,33 @@ pattern_controller_vraster_notify (gpointer             notify_data,
   BstPatternController *self = (BstPatternController*) notify_data;
   BstPatternView *pview = self->pview;
   static const struct { int value, ticks; } choices[] = {
-    { NOTE_LENGTH_1,        1536 }, /* 4 * 384 */
-    { NOTE_LENGTH_2,         768 },
-    { NOTE_LENGTH_4,         384 },
-    { NOTE_LENGTH_8,         192 },
-    { NOTE_LENGTH_16,         96 },
-    { NOTE_LENGTH_32,         48 },
-    { NOTE_LENGTH_64,         24 },
-    { NOTE_LENGTH_128,        12 },
-    { NOTE_LENGTH_1P,       2304 }, /* 4 * 384 * 3 / 2 */
-    { NOTE_LENGTH_2P,       1152 },
-    { NOTE_LENGTH_4P,        576 },
-    { NOTE_LENGTH_8P,        288 },
-    { NOTE_LENGTH_16P,       144 },
-    { NOTE_LENGTH_32P,        72 },
-    { NOTE_LENGTH_64P,        36 },
-    { NOTE_LENGTH_128P,       18 },
-    { NOTE_LENGTH_1T,       1024 }, /* 4 * 384 * 2 / 3 */
-    { NOTE_LENGTH_2T,        512 },
-    { NOTE_LENGTH_4T,        256 },
-    { NOTE_LENGTH_8T,        128 },
-    { NOTE_LENGTH_16T,        64 },
-    { NOTE_LENGTH_32T,        32 },
-    { NOTE_LENGTH_64T,        16 },
-    { NOTE_LENGTH_128T,        8 },
+    { int64 (NoteLength::NOTE_LENGTH_1),        1536 }, /* 4 * 384 */
+    { int64 (NoteLength::NOTE_LENGTH_2),         768 },
+    { int64 (NoteLength::NOTE_LENGTH_4),         384 },
+    { int64 (NoteLength::NOTE_LENGTH_8),         192 },
+    { int64 (NoteLength::NOTE_LENGTH_16),         96 },
+    { int64 (NoteLength::NOTE_LENGTH_32),         48 },
+    { int64 (NoteLength::NOTE_LENGTH_64),         24 },
+    { int64 (NoteLength::NOTE_LENGTH_128),        12 },
+    { int64 (NoteLength::NOTE_LENGTH_1P),       2304 }, /* 4 * 384 * 3 / 2 */
+    { int64 (NoteLength::NOTE_LENGTH_2P),       1152 },
+    { int64 (NoteLength::NOTE_LENGTH_4P),        576 },
+    { int64 (NoteLength::NOTE_LENGTH_8P),        288 },
+    { int64 (NoteLength::NOTE_LENGTH_16P),       144 },
+    { int64 (NoteLength::NOTE_LENGTH_32P),        72 },
+    { int64 (NoteLength::NOTE_LENGTH_64P),        36 },
+    { int64 (NoteLength::NOTE_LENGTH_128P),       18 },
+    { int64 (NoteLength::NOTE_LENGTH_1T),       1024 }, /* 4 * 384 * 2 / 3 */
+    { int64 (NoteLength::NOTE_LENGTH_2T),        512 },
+    { int64 (NoteLength::NOTE_LENGTH_4T),        256 },
+    { int64 (NoteLength::NOTE_LENGTH_8T),        128 },
+    { int64 (NoteLength::NOTE_LENGTH_16T),        64 },
+    { int64 (NoteLength::NOTE_LENGTH_32T),        32 },
+    { int64 (NoteLength::NOTE_LENGTH_64T),        16 },
+    { int64 (NoteLength::NOTE_LENGTH_128T),        8 },
   };
-  int vraster = 384, vsval = Rapicorn::Aida::enum_value_from_string<NoteLength> (sfi_value_get_choice (&self->vraster->value));
+  int vraster = 384;
+  const int64 vsval = int64 (Rapicorn::Aida::enum_value_from_string<NoteLength> (sfi_value_get_choice (&self->vraster->value)));
   for (uint i = 0; i < G_N_ELEMENTS (choices); i++)
     if (choices[i].value == vsval)
       {
@@ -63,24 +64,25 @@ pattern_controller_row_shading_notify (gpointer  notify_data,
   BstPatternController *self = (BstPatternController*) notify_data;
   BstPatternView *pview = self->pview;
   static const struct { int value, r1, r2, r3, r4; } choices[] = {
-    { ROW_SHADING_NONE,      0, 0, 0, 0 },
-    { ROW_SHADING_2,         2 },
-    { ROW_SHADING_4,         4 },
-    { ROW_SHADING_8,         8 },
-    { ROW_SHADING_16,       16 },
-    { ROW_SHADING_2_4,       4, 2 },
-    { ROW_SHADING_4_8,       8, 4 },
-    { ROW_SHADING_4_12,     12, 4 },
-    { ROW_SHADING_4_16,     16, 4 },
-    { ROW_SHADING_8_16,     16, 8 },
-    { ROW_SHADING_3,         3 },
-    { ROW_SHADING_6,         6 },
-    { ROW_SHADING_12,       12 },
-    { ROW_SHADING_3_6,       6, 3 },
-    { ROW_SHADING_3_12,     12, 3 },
-    { ROW_SHADING_6_12,     12, 6 },
+    { int64 (RowShading::ROW_SHADING_NONE),      0, 0, 0, 0 },
+    { int64 (RowShading::ROW_SHADING_2),         2 },
+    { int64 (RowShading::ROW_SHADING_4),         4 },
+    { int64 (RowShading::ROW_SHADING_8),         8 },
+    { int64 (RowShading::ROW_SHADING_16),       16 },
+    { int64 (RowShading::ROW_SHADING_2_4),       4, 2 },
+    { int64 (RowShading::ROW_SHADING_4_8),       8, 4 },
+    { int64 (RowShading::ROW_SHADING_4_12),     12, 4 },
+    { int64 (RowShading::ROW_SHADING_4_16),     16, 4 },
+    { int64 (RowShading::ROW_SHADING_8_16),     16, 8 },
+    { int64 (RowShading::ROW_SHADING_3),         3 },
+    { int64 (RowShading::ROW_SHADING_6),         6 },
+    { int64 (RowShading::ROW_SHADING_12),       12 },
+    { int64 (RowShading::ROW_SHADING_3_6),       6, 3 },
+    { int64 (RowShading::ROW_SHADING_3_12),     12, 3 },
+    { int64 (RowShading::ROW_SHADING_6_12),     12, 6 },
   };
-  int r1 = 0, r2 = 0, r3 = 0, r4 = 0, vsval = Rapicorn::Aida::enum_value_from_string<RowShading> (sfi_value_get_choice (&self->row_shading->value));
+  int r1 = 0, r2 = 0, r3 = 0, r4 = 0;
+  const int64 vsval = int64 (Rapicorn::Aida::enum_value_from_string<RowShading> (sfi_value_get_choice (&self->row_shading->value)));
   for (uint i = 0; i < G_N_ELEMENTS (choices); i++)
     if (choices[i].value == vsval)
       {
@@ -255,7 +257,6 @@ pattern_controller_key_press (BstPatternController *self,
       /* movement */
       switch (movement)
         {
-          guint d;
         case BST_PATTERN_MOVE_LEFT:     focus_col--;                                            break;
         case BST_PATTERN_MOVE_RIGHT:    focus_col++;                                            break;
         case BST_PATTERN_MOVE_UP:       focus_row--;                                            break;
@@ -269,11 +270,13 @@ pattern_controller_key_press (BstPatternController *self,
         case BST_PATTERN_JUMP_TOP:      focus_row = 0;                                          break;
         case BST_PATTERN_JUMP_BOTTOM:   focus_row = bst_pattern_view_get_last_row (pview);      break;
         case BST_PATTERN_MOVE_NEXT:
-          d = Rapicorn::Aida::enum_value_from_string<Bst::Direction> (sfi_value_get_choice (&self->step_dir->value));
-          if (d == Bst::DIR_LEFT || d == Bst::DIR_RIGHT)
-            focus_col += (d == Bst::DIR_LEFT ? -1 : +1) * g_value_get_int (&self->steps->value);
-          else /* UP/DOWN */
-            focus_row += (d == Bst::DIR_UP ? -1 : +1) * g_value_get_int (&self->steps->value);
+          {
+            Bst::Direction d = Rapicorn::Aida::enum_value_from_string<Bst::Direction> (sfi_value_get_choice (&self->step_dir->value));
+            if (d == Bst::Direction::DIR_LEFT || d == Bst::Direction::DIR_RIGHT)
+              focus_col += (d == Bst::Direction::DIR_LEFT ? -1 : +1) * g_value_get_int (&self->steps->value);
+            else /* UP/DOWN */
+              focus_row += (d == Bst::Direction::DIR_UP ? -1 : +1) * g_value_get_int (&self->steps->value);
+          }
           break;
         case BST_PATTERN_SET_STEP_WIDTH:
           g_value_set_int (&self->steps->value, param);

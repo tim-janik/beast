@@ -28,9 +28,9 @@ typedef int sdword;
  * executes read_me (which should be a function call to read something from the file),
  * and returns from the calling function if that fails
  */
-#define read_or_return_error(read_me) G_STMT_START{ Bse::ErrorType _error = read_me; if (_error) return _error; }G_STMT_END
+#define read_or_return_error(read_me) G_STMT_START{ Bse::Error _error = read_me; if (_error != 0) return _error; }G_STMT_END
 
-static inline Bse::ErrorType
+static inline Bse::Error
 fread_block (FILE *file,
              int   len,
              void *data)
@@ -38,13 +38,13 @@ fread_block (FILE *file,
   if (fread (data, len, 1, file) != 1)
     {
       if (feof (file))
-        return Bse::ERROR_FILE_EOF;
+        return Bse::Error::FILE_EOF;
       else
-        return gsl_error_from_errno (errno, Bse::ERROR_FILE_READ_FAILED);
+        return gsl_error_from_errno (errno, Bse::Error::FILE_READ_FAILED);
     }
-  return Bse::ERROR_NONE;
+  return Bse::Error::NONE;
 }
-static inline Bse::ErrorType
+static inline Bse::Error
 skip (FILE *file,
       int   len)
 {
@@ -54,10 +54,10 @@ skip (FILE *file,
       read_or_return_error (fread_block (file, 1, &junk));
       len--;
     }
-  return Bse::ERROR_NONE;
+  return Bse::Error::NONE;
 }
 
-static inline Bse::ErrorType
+static inline Bse::Error
 fread_bytes (FILE          *file,
              unsigned char *bytes,
              int            len)
@@ -65,7 +65,7 @@ fread_bytes (FILE          *file,
   return fread_block (file, len, bytes);
 }
 
-static inline Bse::ErrorType
+static inline Bse::Error
 fread_string (FILE *file,
               char *str,
               int   len)
@@ -74,7 +74,7 @@ fread_string (FILE *file,
 }
 
 /* readXXX with sizeof(xxx) == 1 */
-static inline Bse::ErrorType
+static inline Bse::Error
 fread_byte (FILE *file,
           byte &b)
 {
@@ -82,7 +82,7 @@ fread_byte (FILE *file,
 }
 
 /* readXXX with sizeof(xxx) == 2 */
-static inline Bse::ErrorType
+static inline Bse::Error
 fread_word (FILE *file,
           word &w)
 {
@@ -92,10 +92,10 @@ fread_word (FILE *file,
   read_or_return_error (fread_block (file, 1, &h));
   w = (h << 8) + l;
 
-  return Bse::ERROR_NONE;
+  return Bse::Error::NONE;
 }
 
-static inline Bse::ErrorType
+static inline Bse::Error
 fread_short_word (FILE  *file,
                   sword &sw)
 {
@@ -104,11 +104,11 @@ fread_short_word (FILE  *file,
   read_or_return_error (fread_word (file, w));
   sw = (sword) w;
 
-  return Bse::ERROR_NONE;
+  return Bse::Error::NONE;
 }
 
 /* readXXX with sizeof(xxx) == 4 */
-static inline Bse::ErrorType
+static inline Bse::Error
 fread_dword (FILE *file, dword& dw)
 {
   byte h, l, hh, hl;
@@ -119,7 +119,7 @@ fread_dword (FILE *file, dword& dw)
   read_or_return_error (fread_block (file, 1, &hh));
   dw = (hh << 24) + (hl << 16) + (h << 8) + l;
 
-  return Bse::ERROR_NONE;
+  return Bse::Error::NONE;
 }
 
 struct PatHeader
@@ -141,7 +141,7 @@ struct PatHeader
   {
   }
 
-  Bse::ErrorType
+  Bse::Error
   load (FILE *file)
   {
     read_or_return_error (fread_string (file, id, 12));
@@ -159,7 +159,7 @@ struct PatHeader
 
     read_or_return_error (fread_string (file, reserved, 36));
 
-    return Bse::ERROR_NONE;
+    return Bse::Error::NONE;
   }
 };
 
@@ -181,7 +181,7 @@ struct PatInstrument
   {
   }
 
-  Bse::ErrorType
+  Bse::Error
   load (FILE *file)
   {
     read_or_return_error (fread_word (file, number));
@@ -196,7 +196,7 @@ struct PatInstrument
     read_or_return_error (fread_byte (file, sampleCount));
     read_or_return_error (fread_string (file, reserved, 40));
 
-    return Bse::ERROR_NONE;
+    return Bse::Error::NONE;
   }
 };
 
@@ -242,7 +242,7 @@ struct PatPatch
   {
   }
 
-  Bse::ErrorType
+  Bse::Error
   load (FILE *file)
   {
     read_or_return_error (fread_string (file, filename, 7));
@@ -269,7 +269,7 @@ struct PatPatch
     read_or_return_error (fread_word (file, freqScaleFactor));
     read_or_return_error (fread_string (file, reserved, 36));
 
-    return Bse::ERROR_NONE;
+    return Bse::Error::NONE;
   }
 };
 #undef read_or_return_error
@@ -377,7 +377,7 @@ struct FileInfo
 
 
   FileInfo (const gchar  *file_name,
-            Bse::ErrorType *error_p)
+            Bse::Error *error_p)
   {
     /* initialize C structures with zeros */
     memset (&wfi, 0, sizeof (wfi));
@@ -387,7 +387,7 @@ struct FileInfo
     FILE *patfile = fopen (file_name, "r");
     if (!patfile)
       {
-	*error_p = gsl_error_from_errno (errno, Bse::ERROR_FILE_OPEN_FAILED);
+	*error_p = gsl_error_from_errno (errno, Bse::Error::FILE_OPEN_FAILED);
 	return;
       }
 
@@ -395,7 +395,7 @@ struct FileInfo
     header = new PatHeader();
 
     *error_p = header->load (patfile);
-    if (*error_p)
+    if (*error_p != 0)
       {
 	fclose (patfile);
 	return;
@@ -407,7 +407,7 @@ struct FileInfo
     instrument = new PatInstrument();
 
     *error_p = instrument->load (patfile);
-    if (*error_p)
+    if (*error_p != 0)
       {
 	fclose (patfile);
         return;
@@ -423,13 +423,13 @@ struct FileInfo
 	patches.push_back (patch);
 
         *error_p = patch->load (patfile);
-        if (*error_p)
+        if (*error_p != 0)
           return;
 
 	data_offset (i) = (guint) ftell (patfile);
 
 	*error_p = skip (patfile, patch->wavesize);
-        if (*error_p)
+        if (*error_p != 0)
 	  {
 	    fclose (patfile);
 	    return;
@@ -528,10 +528,10 @@ struct FileInfo
 static BseWaveFileInfo*
 pat_load_file_info (gpointer      data,
 		    const gchar  *file_name,
-		    Bse::ErrorType *error_p)
+		    Bse::Error *error_p)
 {
   FileInfo *file_info = new FileInfo (file_name, error_p);
-  if (*error_p)
+  if (*error_p != 0)
     {
       delete file_info;
       return NULL;
@@ -552,7 +552,7 @@ static BseWaveDsc*
 pat_load_wave_dsc (gpointer         data,
 		   BseWaveFileInfo *wave_file_info,
 		   guint            nth_wave,
-		   Bse::ErrorType    *error_p)
+		   Bse::Error    *error_p)
 {
   FileInfo *file_info = reinterpret_cast<FileInfo*> (wave_file_info);
   return &file_info->wdsc;
@@ -568,7 +568,7 @@ static GslDataHandle*
 pat_create_chunk_handle (gpointer      data,
 			 BseWaveDsc   *wave_dsc,
 			 guint         nth_chunk,
-			 Bse::ErrorType *error_p)
+			 Bse::Error *error_p)
 {
   assert_return (nth_chunk < wave_dsc->n_chunks, NULL);
   FileInfo *file_info = reinterpret_cast<FileInfo*> (wave_dsc->file_info);

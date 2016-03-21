@@ -127,11 +127,11 @@ guint		bse_source_find_ichannel	(BseSource	*source,
 						 const gchar    *ichannel_ident);
 guint		bse_source_find_ochannel	(BseSource	*source,
 						 const gchar    *ochannel_ident);
-Bse::ErrorType	bse_source_set_input		(BseSource	*source,
+Bse::Error	bse_source_set_input		(BseSource	*source,
 						 guint		 ichannel,
 						 BseSource	*osource,
 						 guint		 ochannel);
-Bse::ErrorType	bse_source_unset_input		(BseSource	*source,
+Bse::Error	bse_source_unset_input		(BseSource	*source,
 						 guint		 ichannel,
 						 BseSource	*osource,
 						 guint		 ochannel);
@@ -190,7 +190,7 @@ void		bse_source_access_modules	(BseSource	*source,
 						 gpointer	 data,
 						 BseFreeFunc	 data_free_func,
 						 BseTrans	*trans);
-Bse::ErrorType    bse_source_check_input          (BseSource      *source,
+Bse::Error    bse_source_check_input          (BseSource      *source,
                                                  guint           ichannel,
                                                  BseSource      *osource,
                                                  guint           ochannel);
@@ -215,22 +215,22 @@ void	   bse_source_update_modules	        (BseSource	*source,
 						 BseTrans	*trans);
 void	   bse_source_clear_ichannels	        (BseSource	*source);
 void	   bse_source_clear_ochannels	        (BseSource	*source);
-Bse::MusicalTuningType bse_source_prepared_musical_tuning (BseSource *source);
+Bse::MusicalTuning bse_source_prepared_musical_tuning (BseSource *source);
 
 /* automation */
 typedef struct {
   GParamSpec       *pspec;
   guint             midi_channel;
-  Bse::MidiSignalType signal_type;
+  Bse::MidiSignal signal_type;
 } BseAutomationProperty;
-Bse::ErrorType                 bse_source_set_automation_property   (BseSource         *source,
+Bse::Error                 bse_source_set_automation_property   (BseSource         *source,
                                                                    const gchar       *prop_name,
                                                                    guint              midi_channel,
-                                                                   Bse::MidiSignalType  signal_type);
+                                                                   Bse::MidiSignal  signal_type);
 void                         bse_source_get_automation_property   (BseSource         *source,
                                                                    const gchar       *prop_name,
                                                                    guint             *pmidi_channel,
-                                                                   Bse::MidiSignalType *psignal_type);
+                                                                   Bse::MidiSignal *psignal_type);
 BseAutomationProperty*       bse_source_get_automation_properties (BseSource         *source,
                                                                    guint             *n_props);
 

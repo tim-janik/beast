@@ -42,25 +42,25 @@ typedef struct {
 
 
 /* --- functions --- */
-static Bse::ErrorType
+static Bse::Error
 ov_errno_to_error (gint         ov_errno,
-		   Bse::ErrorType fallback)
+		   Bse::Error fallback)
 {
   switch (ov_errno)
     {
-    case OV_EOF:	return Bse::ERROR_FILE_EOF;
+    case OV_EOF:	return Bse::Error::FILE_EOF;
     case OV_EBADLINK:
     case OV_EBADPACKET:
-    case OV_HOLE:	return Bse::ERROR_DATA_CORRUPT;
-    case OV_EREAD:	return Bse::ERROR_FILE_READ_FAILED;
-    case OV_ENOSEEK:	return Bse::ERROR_FILE_SEEK_FAILED;
+    case OV_HOLE:	return Bse::Error::DATA_CORRUPT;
+    case OV_EREAD:	return Bse::Error::FILE_READ_FAILED;
+    case OV_ENOSEEK:	return Bse::Error::FILE_SEEK_FAILED;
     case OV_EFAULT:
-    case OV_EIMPL:	return Bse::ERROR_CODEC_FAILURE;
-    case OV_EINVAL:	return Bse::ERROR_INTERNAL;
+    case OV_EIMPL:	return Bse::Error::CODEC_FAILURE;
+    case OV_EINVAL:	return Bse::Error::INTERNAL;
     case OV_ENOTAUDIO:
     case OV_EVERSION:
     case OV_EBADHEADER:
-    case OV_ENOTVORBIS:	return Bse::ERROR_FORMAT_INVALID;
+    case OV_ENOTVORBIS:	return Bse::Error::FORMAT_INVALID;
     case OV_FALSE:
     default:		return fallback;
     }
@@ -153,7 +153,7 @@ dh_vorbis_page_seek (VorbisHandle *vhandle, int64 pos)
   return err;
 }
 
-static Bse::ErrorType
+static Bse::Error
 dh_vorbis_open (GslDataHandle      *dhandle,
 		GslDataHandleSetup *setup)
 {
@@ -168,7 +168,7 @@ dh_vorbis_open (GslDataHandle      *dhandle,
   if (!vfile->rfile)
     {
       g_free (vfile);
-      return gsl_error_from_errno (errno, Bse::ERROR_FILE_OPEN_FAILED);
+      return gsl_error_from_errno (errno, Bse::Error::FILE_OPEN_FAILED);
     }
   vfile->byte_length = gsl_rfile_length (vfile->rfile);
   if (vhandle->rfile_add_zoffset)
@@ -193,9 +193,9 @@ dh_vorbis_open (GslDataHandle      *dhandle,
                     vhandle->rfile_byte_offset,
                     vfile->byte_offset,
                     vhandle->rfile_add_zoffset,
-                    bse_error_blurb (ov_errno_to_error (err, Bse::ERROR_FILE_OPEN_FAILED)));
+                    bse_error_blurb (ov_errno_to_error (err, Bse::Error::FILE_OPEN_FAILED)));
       vfile_close (vfile);
-      return ov_errno_to_error (err, Bse::ERROR_FILE_OPEN_FAILED);
+      return ov_errno_to_error (err, Bse::Error::FILE_OPEN_FAILED);
     }
 
   n = ov_streams (&vhandle->ofile);
@@ -209,7 +209,7 @@ dh_vorbis_open (GslDataHandle      *dhandle,
   else
     {
       ov_clear (&vhandle->ofile); /* closes file */
-      return Bse::ERROR_NO_DATA;	/* requested bitstream not available */
+      return Bse::Error::NO_DATA;	/* requested bitstream not available */
     }
 
   vhandle->soffset = 0;
@@ -226,7 +226,7 @@ dh_vorbis_open (GslDataHandle      *dhandle,
   else
     {
       ov_clear (&vhandle->ofile); /* closes file */
-      return Bse::ERROR_NO_DATA;
+      return Bse::Error::NO_DATA;
     }
 
   vhandle->max_block_size = vorbis_info_blocksize (vi, 0);
@@ -239,7 +239,7 @@ dh_vorbis_open (GslDataHandle      *dhandle,
   setup->mix_freq = vi->rate;
   setup->needs_cache = TRUE;
   setup->xinfos = bse_xinfos_add_float (setup->xinfos, "osc-freq", vhandle->osc_freq);
-  return Bse::ERROR_NONE;
+  return Bse::Error::NONE;
 }
 
 static GslLong
@@ -389,7 +389,7 @@ gsl_data_handle_new_ogg_vorbis_any (const gchar *file_name,
   gboolean success = gsl_data_handle_common_init (&vhandle->dhandle, file_name);
   if (success)
     {
-      Bse::ErrorType error;
+      Bse::Error error;
 
       vhandle->dhandle.vtable = &dh_vorbis_vtable;
       vhandle->n_bitstreams = 0;
@@ -403,7 +403,7 @@ gsl_data_handle_new_ogg_vorbis_any (const gchar *file_name,
        * to initialize things like the bitstream_serialno.
        */
       error = gsl_data_handle_open (&vhandle->dhandle);
-      if (!error)
+      if (error == 0)
 	{
           if (n_channelsp)
             *n_channelsp = vhandle->dhandle.setup.n_channels;
@@ -473,7 +473,7 @@ gsl_vorbis1_handle_new (GslDataHandle *ogg_vorbis_handle,
 {
   GslVorbis1Handle *v1h = NULL;
   if (ogg_vorbis_handle->vtable == &dh_vorbis_vtable &&
-      gsl_data_handle_open (ogg_vorbis_handle) == Bse::ERROR_NONE)
+      gsl_data_handle_open (ogg_vorbis_handle) == Bse::Error::NONE)
     {
       v1h = g_new0 (GslVorbis1Handle, 1);
       v1h->dhandle = ogg_vorbis_handle;
@@ -496,7 +496,7 @@ gsl_vorbis1_handle_read (GslVorbis1Handle *v1h, /* returns -errno || length */
     {
       v1h->rfile = gsl_rfile_open (v1h->dhandle->name);
       if (!v1h->rfile)
-        return gsl_error_from_errno (errno, Bse::ERROR_FILE_OPEN_FAILED);
+        return -(errno ? errno : ENOENT);
       v1h->byte_length = gsl_rfile_length (v1h->rfile);
       if (v1h->rfile_add_zoffset)
         {

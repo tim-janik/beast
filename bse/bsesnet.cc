@@ -926,17 +926,17 @@ SNetImpl::auto_activate (bool v)
     BSE_OBJECT_UNSET_FLAGS (self, BSE_SUPER_FLAG_NEEDS_CONTEXT);
 }
 
-ErrorType
+Error
 SNetImpl::can_create_source (const String &module_type)
 {
   BseSNet *self = as<BseSNet*>();
   GType type = g_type_from_name (module_type.c_str());
-  ErrorType error = ERROR_NONE;
+  Error error = Error::NONE;
   if (!BSE_SNET_USER_SYNTH (self) && !BSE_DBG_EXT)
-    error = ERROR_NOT_OWNER;
+    error = Error::NOT_OWNER;
   else if (!g_type_is_a (type, BSE_TYPE_SOURCE) ||
 	   g_type_is_a (type, BSE_TYPE_CONTAINER))
-    error = ERROR_SOURCE_TYPE_INVALID;
+    error = Error::SOURCE_TYPE_INVALID;
   return error;
 }
 
@@ -944,7 +944,7 @@ SourceIfaceP
 SNetImpl::create_source (const String &module_type)
 {
   BseSNet *self = as<BseSNet*>();
-  if (can_create_source (module_type) != ERROR_NONE)
+  if (can_create_source (module_type) != Error::NONE)
     return NULL;
   BseUndoStack *ustack = bse_item_undo_open (self, __func__);
   BseSource *child = (BseSource*) bse_container_new_child (self, g_type_from_name (module_type.c_str()), NULL);
@@ -952,7 +952,7 @@ SNetImpl::create_source (const String &module_type)
     {
       // an undo lambda is needed for wrapping object argument references
       UndoDescriptor<SourceImpl> child_descriptor = undo_descriptor (*child->as<SourceImpl*>());
-      auto lambda = [child_descriptor] (SNetImpl &self, BseUndoStack *ustack) -> ErrorType {
+      auto lambda = [child_descriptor] (SNetImpl &self, BseUndoStack *ustack) -> Error {
         return self.remove_source (self.undo_resolve (child_descriptor));
       };
       push_undo (__func__, *this, lambda);
@@ -961,20 +961,20 @@ SNetImpl::create_source (const String &module_type)
   return child ? child->as<SourceIfaceP>() : NULL;
 }
 
-ErrorType
+Error
 SNetImpl::remove_source (SourceIface &module)
 {
   BseSNet *self = as<BseSNet*>();
   BseSource *child = module.as<BseSource*>();
-  Bse::ErrorType error = Bse::ERROR_NONE;
+  Bse::Error error = Bse::Error::NONE;
   if (!BSE_IS_SOURCE (child) || child->parent != self || (!BSE_SNET_USER_SYNTH (self) && !BSE_DBG_EXT))
-    return ERROR_PROC_PARAM_INVAL;
+    return Error::PROC_PARAM_INVAL;
   BseUndoStack *ustack = bse_item_undo_open (self, string_format ("%s: %s", __func__, bse_object_debug_name (child)).c_str());
   bse_container_uncross_undoable (self, child);
   {
     // an undo lambda is needed for wrapping object argument references
     UndoDescriptor<SourceImpl> child_descriptor = undo_descriptor (*child->as<SourceImpl*>());
-    auto lambda = [child_descriptor] (SNetImpl &self, BseUndoStack *ustack) -> ErrorType {
+    auto lambda = [child_descriptor] (SNetImpl &self, BseUndoStack *ustack) -> Error {
       return self.remove_source (self.undo_resolve (child_descriptor));
     };
     push_undo_to_redo (__func__, *this, lambda); // how to get rid of the item once backed up

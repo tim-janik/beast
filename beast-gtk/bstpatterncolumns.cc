@@ -101,7 +101,7 @@ pattern_column_note_char (BstPatternColumnNote *self, const Bse::PartNoteSeq &ps
   else if (pseq.size() > 1)
     return '*';
   // pseq.size() == 1
-  Bse::NoteDescription ndesc = bse_server.note_describe (Bse::MUSICAL_TUNING_12_TET, // tuning is irrelevant if we ignore ->freq
+  Bse::NoteDescription ndesc = bse_server.note_describe (Bse::MusicalTuning::OD_12_TET, // tuning is irrelevant if we ignore ->freq
                                                          pseq[0].note, pseq[0].fine_tune);
   switch (pos)
     {
@@ -372,18 +372,18 @@ pattern_column_event_value_from_string (BstPatternColumn *column,
   return pattern_column_event_value_from_int (column, ival);
 }
 
-static Bse::MidiSignalType
+static Bse::MidiSignal
 pattern_column_control_type (BstPatternColumn *column, bool *isnote_p)
 {
-  Bse::MidiSignalType control_type;
+  Bse::MidiSignal control_type;
   bool isnote = true;
   if (column->ltype == BST_PATTERN_LTYPE_VELOCITY)
-    control_type = Bse::MIDI_SIGNAL_VELOCITY;
+    control_type = Bse::MidiSignal::VELOCITY;
   else if (column->ltype == BST_PATTERN_LTYPE_FINE_TUNE)
-    control_type = Bse::MIDI_SIGNAL_FINE_TUNE;
+    control_type = Bse::MidiSignal::FINE_TUNE;
   else
     {
-      control_type = Bse::MidiSignalType (Bse::MIDI_SIGNAL_CONTINUOUS_0 + column->num);
+      control_type = Bse::MidiSignal (int64 (Bse::MidiSignal::CONTINUOUS_0) + column->num);
       isnote = false;
     }
   if (isnote_p)
@@ -399,7 +399,7 @@ pattern_column_event_lookup (BstPatternColumn   *column,
                              Bse::PartControlSeq *cseq_p,
                              gchar              *placeholder_p)
 {
-  Bse::MidiSignalType control_type = (Bse::MidiSignalType) pattern_column_control_type (column, NULL);
+  Bse::MidiSignal control_type = (Bse::MidiSignal) pattern_column_control_type (column, NULL);
   Bse::PartH part = pview->part;
   Bse::PartControlSeq cseq = part.get_channel_controls (column->num, tick, duration, control_type);
   Bse::PartControl pctrl;
@@ -510,7 +510,7 @@ pattern_column_event_key_event (BstPatternColumn       *column,
       guint digit = column->n_focus_positions - focus_pos;
       gint dmax = control_get_max (num_type, 1);
       bool isnote;
-      Bse::MidiSignalType control_type = pattern_column_control_type (column, &isnote);
+      Bse::MidiSignal control_type = pattern_column_control_type (column, &isnote);
       gfloat value;
       ivalue = MIN (param, dmax) * control_get_digit_increment (num_type, digit);
       value = pattern_column_event_value_from_int (column, ivalue);

@@ -26,8 +26,8 @@ void            bst_skin_config_add_notify      (BstSkinConfigNotify func,
 void            bst_skin_config_set_rcfile      (const gchar    *file_name);
 const gchar*    bst_skin_config_rcfile          (void);
 const gchar*    bst_skin_config_dirname         (void);
-Bse::ErrorType    bst_skin_dump                   (const gchar    *file_name);
-Bse::ErrorType    bst_skin_parse                  (const gchar    *file_name);
+Bse::Error    bst_skin_dump                   (const gchar    *file_name);
+Bse::Error    bst_skin_parse                  (const gchar    *file_name);
 
 
 G_END_DECLS

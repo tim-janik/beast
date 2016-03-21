@@ -48,13 +48,13 @@ G_BEGIN_DECLS
 #define BSE_NOTE_OCTAVE_DOWN(n)         (BSE_NOTE_SHIFT ((n), -12))
 
 // Internals, use Bse::Server API instead
-int    bse_note_from_freq                (Bse::MusicalTuningType musical_tuning, double freq);
-int    bse_note_from_freq_bounded        (Bse::MusicalTuningType musical_tuning, double freq);
-int    bse_note_fine_tune_from_note_freq (Bse::MusicalTuningType musical_tuning, int note, double freq);
-double bse_note_to_freq                  (Bse::MusicalTuningType musical_tuning, int note);
-double bse_note_to_tuned_freq            (Bse::MusicalTuningType musical_tuning, int note, int fine_tune);
+int    bse_note_from_freq                (Bse::MusicalTuning musical_tuning, double freq);
+int    bse_note_from_freq_bounded        (Bse::MusicalTuning musical_tuning, double freq);
+int    bse_note_fine_tune_from_note_freq (Bse::MusicalTuning musical_tuning, int note, double freq);
+double bse_note_to_freq                  (Bse::MusicalTuning musical_tuning, int note);
+double bse_note_to_tuned_freq            (Bse::MusicalTuning musical_tuning, int note, int fine_tune);
 
-Bse::NoteDescription bse_note_description (Bse::MusicalTuningType musical_tuning, int note, int finetune);
+Bse::NoteDescription bse_note_description (Bse::MusicalTuning musical_tuning, int note, int finetune);
 int    bse_note_from_string              (const String &note_string);
 
 

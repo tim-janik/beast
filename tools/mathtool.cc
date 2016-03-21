@@ -92,7 +92,7 @@ main (int   argc,
       while (file)
 	{
 	  BseWaveFileInfo *fi;
-	  Bse::ErrorType error;
+	  Bse::Error error;
 
 	  fi = bse_wave_file_info_load (file, &error);
 	  if (fi)

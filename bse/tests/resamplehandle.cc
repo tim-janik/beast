@@ -63,7 +63,7 @@ check (const char           *up_down,
     }
   gsl_data_handle_unref (ihandle);
 
-  Bse::ErrorType error = gsl_data_handle_open (rhandle);
+  Bse::Error error = gsl_data_handle_open (rhandle);
   TASSERT (error == 0);
 
   double worst_diff, worst_diff_db;
@@ -367,7 +367,7 @@ test_state_length (const char *run_type)
     const guint precision_bits = 16;
     GslDataHandle *ihandle = gsl_data_handle_new_mem (1, 32, 44100, 440, input.size(), &input[0], NULL);
     GslDataHandle *rhandle = bse_data_handle_new_upsample2 (ihandle, precision_bits);
-    Bse::ErrorType open_error = gsl_data_handle_open (rhandle);
+    Bse::Error open_error = gsl_data_handle_open (rhandle);
     TASSERT (open_error == 0);
     TASSERT (gsl_data_handle_get_state_length (ihandle) == 0);
 
@@ -416,7 +416,7 @@ test_state_length (const char *run_type)
     const guint precision_bits = 16;
     GslDataHandle *ihandle = gsl_data_handle_new_mem (1, 32, 44100, 440, input.size(), &input[0], NULL);
     GslDataHandle *rhandle = bse_data_handle_new_downsample2 (ihandle, precision_bits);
-    Bse::ErrorType open_error = gsl_data_handle_open (rhandle);
+    Bse::Error open_error = gsl_data_handle_open (rhandle);
     TASSERT (open_error == 0);
     TASSERT (gsl_data_handle_get_state_length (ihandle) == 0);
 

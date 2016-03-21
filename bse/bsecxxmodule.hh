@@ -145,7 +145,7 @@ protected:
   uint                      block_size                 () const;
   uint                      max_block_size             () const;
 public: /* FIXME: make this protected as soon as the modules have their own current_musical_tuning() accessor */
-  Bse::MusicalTuningType    current_musical_tuning     () const;
+  Bse::MusicalTuning    current_musical_tuning     () const;
 };
 /* implement Bse::Effect and Bse::SynthesisModule methods */
 #define BSE_EFFECT_INTEGRATE_MODULE(ObjectType,ModuleType,ParamType)            \

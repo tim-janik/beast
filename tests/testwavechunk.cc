@@ -43,7 +43,7 @@ run_loop_test (GslWaveLoopType loop_type,
   GslDataCache *dcache;
   GslWaveChunkBlock block = { 0, };
   GslWaveChunk *wchunk;
-  Bse::ErrorType error;
+  Bse::Error error;
   myhandle = gsl_data_handle_new_mem (1, 32, 44100, 440, my_data_length, my_data, NULL);
   dcache = gsl_data_cache_new (myhandle, 1);
   gsl_data_handle_unref (myhandle);
@@ -51,7 +51,7 @@ run_loop_test (GslWaveLoopType loop_type,
                                44100.0, 44.0,
 			       loop_type, loop_first, loop_last, loop_count);
   error = gsl_wave_chunk_open (wchunk);
-  if (error)
+  if (error != 0)
     g_error ("failed to open wave chunk: %s", bse_error_blurb (error));
   gsl_wave_chunk_unref (wchunk);
   if (verbosity >= VERBOSITY_SETUP)
@@ -160,7 +160,7 @@ reversed_datahandle_test (void)
   GslDataHandle *myhandle;
   GslDataHandle *rhandle1, *rhandle2;
   GslLong o, l, i, e;
-  Bse::ErrorType error;
+  Bse::Error error;
   TSTART ("reversed datahandle");
   myhandle = gsl_data_handle_new_mem (1, 32, 44100, 440, my_data_length, my_data, NULL);
   rhandle1 = gsl_data_handle_new_reverse (myhandle);
@@ -168,7 +168,7 @@ reversed_datahandle_test (void)
   rhandle2 = gsl_data_handle_new_reverse (rhandle1);
   gsl_data_handle_unref (rhandle1);
   error = gsl_data_handle_open (rhandle2);
-  if (error)
+  if (error != 0)
     g_error ("failed to open rhandle2: %s", bse_error_blurb (error));
   gsl_data_handle_unref (rhandle2);
   TASSERT (gsl_data_handle_length (rhandle2) == gsl_data_handle_length (myhandle));
@@ -261,7 +261,7 @@ multi_channel_test_one (int pingpong,
   GslDataHandle *myhandle;
   GslDataCache *dcache;
   GslWaveChunk *wchunk;
-  Bse::ErrorType error;
+  Bse::Error error;
   const int LOOP_COUNT = 20;
   const int LOOP_TYPE = pingpong ? GSL_WAVE_LOOP_PINGPONG : GSL_WAVE_LOOP_JUMP;
   size_t my_data_length = channels * frames;
@@ -277,7 +277,7 @@ multi_channel_test_one (int pingpong,
                                44100.0, 44.0,
                                GslWaveLoopType (LOOP_TYPE), loop_start * channels, loop_end * channels, LOOP_COUNT);
   error = gsl_wave_chunk_open (wchunk);
-  if (error)
+  if (error != 0)
     g_error ("failed to open wave chunk: %s", bse_error_blurb (error));
   gsl_wave_chunk_unref (wchunk);
   float *expect = (float*) malloc (my_data_length * sizeof (float) * (LOOP_COUNT + 1));

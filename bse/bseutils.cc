@@ -29,7 +29,7 @@ bse_part_note (uint id, uint channel, uint tick, uint duration, int note, int fi
 }
 
 Bse::PartControl
-bse_part_control (uint id, uint tick, Bse::MidiSignalType control_type, double value, bool selected)
+bse_part_control (uint id, uint tick, Bse::MidiSignal control_type, double value, bool selected)
 {
   Bse::PartControl pctrl;
   pctrl.id = id;

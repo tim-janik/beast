@@ -134,10 +134,10 @@ BseMidiEvent* bse_midi_event_note_off (uint                midi_channel,
                                        gfloat              frequency);
 BseMidiEvent* bse_midi_event_signal   (uint                midi_channel,
                                        uint64              delta_time,
-                                       Bse::MidiSignalType   signal_type,
+                                       Bse::MidiSignal   signal_type,
                                        float               value);
-double        bse_midi_signal_default (Bse::MidiSignalType signal);
-const char*   bse_midi_signal_name    (Bse::MidiSignalType signal);
+double        bse_midi_signal_default (Bse::MidiSignal signal);
+const char*   bse_midi_signal_name    (Bse::MidiSignal signal);
 
 G_END_DECLS
 

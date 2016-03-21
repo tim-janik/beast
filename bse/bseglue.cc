@@ -595,7 +595,7 @@ bglue_iface_children (SfiGlueContext *context,
   return childnames;
 }
 
-static Bse::ErrorType
+static Bse::Error
 bglue_marshal_proc (void              *marshal_data,
 		    BseProcedureClass *proc,
 		    const GValue      *ivalues,
@@ -618,7 +618,7 @@ bglue_exec_proc (SfiGlueContext *context,
       GValue *ovalues = g_new0 (GValue, proc->n_out_pspecs);
       GSList *ilist = NULL, *olist = NULL, *clearlist = NULL;
       uint i, sl = sfi_seq_length (params);
-      Bse::ErrorType error;
+      Bse::Error error;
 
       for (i = 0; i < proc->n_in_pspecs; i++)
 	{
@@ -655,7 +655,7 @@ bglue_exec_proc (SfiGlueContext *context,
 	sfi_value_free ((GValue*) ilist->data);
       g_slist_free (clearlist);
 
-      if (error)
+      if (error != 0)
         g_warning ("while executing \"%s\": %s", BSE_PROCEDURE_NAME (proc), bse_error_blurb (error));
       if (proc->n_out_pspecs)
 	retval = bglue_value_to_serializable (ovalues + 0);

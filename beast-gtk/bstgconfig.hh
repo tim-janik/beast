@@ -26,8 +26,8 @@ void		bst_gconfig_push_updates	(void);
 
 
 /* --- rc file --- */
-Bse::ErrorType     bst_rc_dump                    (const gchar    *file_name);
-Bse::ErrorType     bst_rc_parse                   (const gchar    *file_name);
+Bse::Error     bst_rc_dump                    (const gchar    *file_name);
+Bse::Error     bst_rc_parse                   (const gchar    *file_name);
 
 G_END_DECLS
 

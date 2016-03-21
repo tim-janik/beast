@@ -194,46 +194,46 @@ gsl_byte_order_from_string (const gchar *string)
   return 0;
 }
 
-Bse::ErrorType
+Bse::Error
 gsl_file_check (const gchar *file_name,
 		const gchar *mode)
 {
   if (birnet_file_check (file_name, mode))
-    return Bse::ERROR_NONE;
-  return gsl_error_from_errno (errno, Bse::ERROR_FILE_OPEN_FAILED);
+    return Bse::Error::NONE;
+  return gsl_error_from_errno (errno, Bse::Error::FILE_OPEN_FAILED);
 }
 
-Bse::ErrorType
+Bse::Error
 gsl_error_from_errno (gint         sys_errno,
-		      Bse::ErrorType fallback)
+		      Bse::Error fallback)
 {
   switch (sys_errno)
     {
-    case 0:             return Bse::ERROR_NONE;
+    case 0:             return Bse::Error::NONE;
     case ELOOP:
     case ENAMETOOLONG:
-    case ENOENT:        return Bse::ERROR_FILE_NOT_FOUND;
-    case EISDIR:        return Bse::ERROR_FILE_IS_DIR;
+    case ENOENT:        return Bse::Error::FILE_NOT_FOUND;
+    case EISDIR:        return Bse::Error::FILE_IS_DIR;
     case EROFS:
     case EPERM:
-    case EACCES:        return Bse::ERROR_PERMS;
+    case EACCES:        return Bse::Error::PERMS;
 #ifdef ENODATA  /* GNU/kFreeBSD lacks this */
     case ENODATA:
 #endif
-    case ENOMSG:        return Bse::ERROR_FILE_EOF;
-    case ENOMEM:	return Bse::ERROR_NO_MEMORY;
-    case ENOSPC:	return Bse::ERROR_NO_SPACE;
-    case ENFILE:	return Bse::ERROR_NO_FILES;
-    case EMFILE:	return Bse::ERROR_MANY_FILES;
+    case ENOMSG:        return Bse::Error::FILE_EOF;
+    case ENOMEM:	return Bse::Error::NO_MEMORY;
+    case ENOSPC:	return Bse::Error::NO_SPACE;
+    case ENFILE:	return Bse::Error::NO_FILES;
+    case EMFILE:	return Bse::Error::MANY_FILES;
     case EFBIG:
     case ESPIPE:
-    case EIO:           return Bse::ERROR_IO;
-    case EEXIST:        return Bse::ERROR_FILE_EXISTS;
+    case EIO:           return Bse::Error::IO;
+    case EEXIST:        return Bse::Error::FILE_EXISTS;
     case ETXTBSY:
-    case EBUSY:         return Bse::ERROR_FILE_BUSY;
+    case EBUSY:         return Bse::Error::FILE_BUSY;
     case EAGAIN:
-    case EINTR:		return Bse::ERROR_TEMP;
-    case EFAULT:        return Bse::ERROR_INTERNAL;
+    case EINTR:		return Bse::Error::TEMP;
+    case EFAULT:        return Bse::Error::INTERNAL;
     case EBADF:
     case ENOTDIR:
     case ENODEV:
@@ -243,16 +243,16 @@ gsl_error_from_errno (gint         sys_errno,
 }
 
 static guint
-score_error (Bse::ErrorType error)
+score_error (Bse::Error error)
 {
   /* errors are sorted by increasing descriptiveness */
-  static const Bse::ErrorType error_score[] = {
-    Bse::ERROR_NONE /* least descriptive, indicates 0-initialized error variable */,
-    Bse::ERROR_UNKNOWN, Bse::ERROR_INTERNAL, Bse::ERROR_TEMP,
-    Bse::ERROR_IO, Bse::ERROR_FILE_EOF,
-    Bse::ERROR_FILE_OPEN_FAILED, Bse::ERROR_FILE_SEEK_FAILED,
-    Bse::ERROR_FILE_READ_FAILED, Bse::ERROR_FILE_WRITE_FAILED,
-    Bse::ERROR_FILE_NOT_FOUND, Bse::ERROR_WAVE_NOT_FOUND,
+  static const Bse::Error error_score[] = {
+    Bse::Error::NONE /* least descriptive, indicates 0-initialized error variable */,
+    Bse::Error::UNKNOWN, Bse::Error::INTERNAL, Bse::Error::TEMP,
+    Bse::Error::IO, Bse::Error::FILE_EOF,
+    Bse::Error::FILE_OPEN_FAILED, Bse::Error::FILE_SEEK_FAILED,
+    Bse::Error::FILE_READ_FAILED, Bse::Error::FILE_WRITE_FAILED,
+    Bse::Error::FILE_NOT_FOUND, Bse::Error::WAVE_NOT_FOUND,
   };
   guint i;
   for (i = 0; i < G_N_ELEMENTS (error_score); i++)
@@ -261,12 +261,12 @@ score_error (Bse::ErrorType error)
   return i;
 }
 
-Bse::ErrorType
+Bse::Error
 gsl_error_select (guint           n_errors,
-                  Bse::ErrorType    first_error,
+                  Bse::Error    first_error,
                   ...)
 {
-  Bse::ErrorType *errors = g_new (Bse::ErrorType, MAX (1, n_errors));
+  Bse::Error *errors = g_new (Bse::Error, MAX (1, n_errors));
   va_list args;
   guint i, score;
   /* function used to select a descriptive error in
@@ -276,12 +276,12 @@ gsl_error_select (guint           n_errors,
   for (i = 0; i < n_errors; i++)
     {
       if (i)
-        first_error = (Bse::ErrorType) va_arg (args, int); // Bse::ErrorType
+        first_error = (Bse::Error) va_arg (args, int); // Bse::Error
       errors[i] = first_error;
     }
   va_end (args);
   /* grab first error, unless followed by an error with higher score */
-  Bse::ErrorType e = errors[0];
+  Bse::Error e = errors[0];
   score = score_error (e);
   for (i = 1; i < n_errors; i++)
     {

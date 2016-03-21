@@ -182,7 +182,7 @@ bse_wave_osc_set_from_esample (BseWaveOsc        *self,
     {
       assert_return (BSE_EDITABLE_SAMPLE (esample));
 
-      if (esample->wchunk && gsl_wave_chunk_open (esample->wchunk) == Bse::ERROR_NONE)
+      if (esample->wchunk && gsl_wave_chunk_open (esample->wchunk) == Bse::Error::NONE)
         {
           self->esample_wchunk = esample->wchunk;
           bse_wave_osc_update_config_wchunk (self);

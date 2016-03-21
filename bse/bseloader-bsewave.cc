@@ -131,7 +131,7 @@ bsewave_skip_rest_statement (GScanner *scanner,
 static BseWaveFileInfo*
 bsewave_load_file_info (void         *data,
 			const char   *_file_name,
-			Bse::ErrorType *error_p)
+			Bse::Error *error_p)
 {
   FileInfo *fi = NULL;
   gboolean in_wave = FALSE, abort = FALSE;
@@ -158,7 +158,7 @@ bsewave_load_file_info (void         *data,
   fd = open (file_name, O_RDONLY);
   if (fd < 0)
     {
-      *error_p = gsl_error_from_errno (errno, Bse::ERROR_FILE_OPEN_FAILED);
+      *error_p = gsl_error_from_errno (errno, Bse::Error::FILE_OPEN_FAILED);
       g_free (cwd);
       g_free (file_name);
       return NULL;
@@ -567,14 +567,14 @@ static BseWaveDsc*
 bsewave_load_wave_dsc (void            *data,
 		       BseWaveFileInfo *file_info,
 		       uint             nth_wave,
-		       Bse::ErrorType    *error_p)
+		       Bse::Error    *error_p)
 {
   uint token, i;
 
   int fd = open (file_info->file_name, O_RDONLY);
   if (fd < 0)
     {
-      *error_p = gsl_error_from_errno (errno, Bse::ERROR_FILE_OPEN_FAILED);
+      *error_p = gsl_error_from_errno (errno, Bse::Error::FILE_OPEN_FAILED);
       return NULL;
     }
 
@@ -642,7 +642,7 @@ static GslDataHandle*
 bsewave_load_singlechunk_wave (BseWaveFileInfo *fi,
 			       const char      *wave_name,
                                float            osc_freq,
-			       Bse::ErrorType    *error_p,
+			       Bse::Error    *error_p,
                                uint            *n_channelsp)
 {
   BseWaveDsc *wdsc;
@@ -653,7 +653,7 @@ bsewave_load_singlechunk_wave (BseWaveFileInfo *fi,
   else if (!wave_name)
     {
       /* don't know which wave to pick */
-      *error_p = Bse::ERROR_FORMAT_INVALID;
+      *error_p = Bse::Error::FORMAT_INVALID;
       return NULL;
     }
   else /* find named wave */
@@ -662,7 +662,7 @@ bsewave_load_singlechunk_wave (BseWaveFileInfo *fi,
 	break;
   if (i >= fi->n_waves)
     {
-      *error_p = Bse::ERROR_WAVE_NOT_FOUND;
+      *error_p = Bse::Error::WAVE_NOT_FOUND;
       return NULL;
     }
 
@@ -691,7 +691,7 @@ bsewave_load_singlechunk_wave (BseWaveFileInfo *fi,
    * point to a wave with multiple chunks...
    */
   bse_wave_dsc_free (wdsc);
-  *error_p = Bse::ERROR_FORMAT_INVALID;
+  *error_p = Bse::Error::FORMAT_INVALID;
   return NULL;
 }
 
@@ -699,7 +699,7 @@ static GslDataHandle*
 bsewave_create_chunk_handle (void         *data,
 			     BseWaveDsc   *wave_dsc,
 			     uint          nth_chunk,
-			     Bse::ErrorType *error_p)
+			     Bse::Error *error_p)
 {
   WaveDsc *dsc = (WaveDsc*) wave_dsc;
   FileInfo *fi = (FileInfo*) dsc->wdsc.file_info;
@@ -711,7 +711,7 @@ bsewave_create_chunk_handle (void         *data,
       char *string;
     case AUTO_FILE_MAGIC:
       {
-        *error_p = Bse::ERROR_IO;
+        *error_p = Bse::Error::IO;
         /* construct chunk file name from (hopefully) relative path */
         if (g_path_is_absolute ((char*) LOADER_FILE (chunk)))
           string = g_strdup ((char*) LOADER_FILE (chunk));
@@ -735,7 +735,7 @@ bsewave_create_chunk_handle (void         *data,
               }
             if (dhandle && nch != dsc->wdsc.n_channels)
               {
-                *error_p = Bse::ERROR_WRONG_N_CHANNELS;
+                *error_p = Bse::Error::WRONG_N_CHANNELS;
                 gsl_data_handle_unref (dhandle);
                 dhandle = NULL;
               }
@@ -760,7 +760,7 @@ bsewave_create_chunk_handle (void         *data,
 				     LOADER_BOFFSET (chunk),    /* byte offset */
                                      LOADER_LENGTH (chunk) ? LOADER_LENGTH (chunk) : -1,        /* n_values */
                                      chunk->xinfos);
-      *error_p = dhandle ? Bse::ERROR_NONE : Bse::ERROR_IO;
+      *error_p = dhandle ? Bse::Error::NONE : Bse::Error::IO;
       g_free (string);
       break;
     case RAW_LINK_MAGIC:
@@ -775,15 +775,15 @@ bsewave_create_chunk_handle (void         *data,
                                                  LOADER_BOFFSET (chunk),        /* byte offset */
 						 LOADER_LENGTH (chunk),         /* byte length */
                                                  chunk->xinfos);
-	  *error_p = dhandle ? Bse::ERROR_NONE : Bse::ERROR_IO;
+	  *error_p = dhandle ? Bse::Error::NONE : Bse::Error::IO;
 	}
       else
-        *error_p = Bse::ERROR_WAVE_NOT_FOUND;
+        *error_p = Bse::Error::WAVE_NOT_FOUND;
       break;
     case VORBIS_LINK_MAGIC:
       if (LOADER_LENGTH (chunk))        /* inlined binary data */
 	{
-          *error_p = Bse::ERROR_IO;
+          *error_p = Bse::Error::IO;
           uint vnch = 0;
 	  dhandle = gsl_data_handle_new_ogg_vorbis_zoffset (fi->wfi.file_name,
                                                             chunk->osc_freq,
@@ -792,7 +792,7 @@ bsewave_create_chunk_handle (void         *data,
                                                             &vnch, NULL);
           if (dhandle && vnch != dsc->wdsc.n_channels)
             {
-              *error_p = Bse::ERROR_WRONG_N_CHANNELS;
+              *error_p = Bse::Error::WRONG_N_CHANNELS;
               gsl_data_handle_unref (dhandle);
               dhandle = NULL;
             }
@@ -804,12 +804,12 @@ bsewave_create_chunk_handle (void         *data,
             }
 	}
       else
-        *error_p = Bse::ERROR_WAVE_NOT_FOUND;
+        *error_p = Bse::Error::WAVE_NOT_FOUND;
       break;
     case FLAC_LINK_MAGIC:
       if (LOADER_LENGTH (chunk))        /* inlined binary data */
         {
-          *error_p = Bse::ERROR_IO;
+          *error_p = Bse::Error::IO;
           uint vnch = 0;
 	  dhandle = bse_data_handle_new_flac_zoffset (fi->wfi.file_name,
                                                       chunk->osc_freq,
@@ -818,7 +818,7 @@ bsewave_create_chunk_handle (void         *data,
                                                       &vnch, NULL);
           if (dhandle && vnch != dsc->wdsc.n_channels)
             {
-              *error_p = Bse::ERROR_WRONG_N_CHANNELS;
+              *error_p = Bse::Error::WRONG_N_CHANNELS;
               gsl_data_handle_unref (dhandle);
               dhandle = NULL;
             }
@@ -830,14 +830,14 @@ bsewave_create_chunk_handle (void         *data,
             }
         }
       else
-        *error_p = Bse::ERROR_WAVE_NOT_FOUND;
+        *error_p = Bse::Error::WAVE_NOT_FOUND;
       break;
     default:    /* no file_name and no loader specified */
-      *error_p = Bse::ERROR_FORMAT_UNKNOWN;
+      *error_p = Bse::Error::FORMAT_UNKNOWN;
       break;
     }
   if (dhandle)
-    *error_p = Bse::ERROR_NONE;
+    *error_p = Bse::Error::NONE;
   return dhandle;
 }
 

@@ -46,40 +46,40 @@ bse_pcm_device_port_audio_init (BsePcmDevicePortAudio *self)
   Pa_Initialize();
 }
 
-static Bse::ErrorType
+static Bse::Error
 bse_error_from_pa_error (PaError      pa_error,
-                         Bse::ErrorType fallback)
+                         Bse::Error fallback)
 {
   switch (pa_error)
     {
-    case paNoError:                     		return Bse::ERROR_NONE;
-    case paNotInitialized:              		return Bse::ERROR_INTERNAL;      /* wrong portaudio usage */
+    case paNoError:                     		return Bse::Error::NONE;
+    case paNotInitialized:              		return Bse::Error::INTERNAL;      /* wrong portaudio usage */
     case paUnanticipatedHostError:      		return fallback;
-    case paInvalidChannelCount:         		return Bse::ERROR_DEVICE_CHANNELS;
-    case paInvalidSampleRate:           		return Bse::ERROR_DEVICE_FREQUENCY;
-    case paInvalidDevice:               		return Bse::ERROR_DEVICE_NOT_AVAILABLE;
+    case paInvalidChannelCount:         		return Bse::Error::DEVICE_CHANNELS;
+    case paInvalidSampleRate:           		return Bse::Error::DEVICE_FREQUENCY;
+    case paInvalidDevice:               		return Bse::Error::DEVICE_NOT_AVAILABLE;
     case paInvalidFlag:                 		return fallback;
-    case paSampleFormatNotSupported:    		return Bse::ERROR_DEVICE_FORMAT;
-    case paBadIODeviceCombination:      		return Bse::ERROR_DEVICES_MISMATCH;
-    case paInsufficientMemory:          		return Bse::ERROR_NO_MEMORY;
-    case paBufferTooBig:                		return Bse::ERROR_DEVICE_BUFFER;
-    case paBufferTooSmall:                              return Bse::ERROR_DEVICE_BUFFER;
-    case paNullCallback:                                return Bse::ERROR_INTERNAL;      /* wrong portaudio usage */
-    case paBadStreamPtr:                                return Bse::ERROR_INTERNAL;      /* wrong portaudio usage */
+    case paSampleFormatNotSupported:    		return Bse::Error::DEVICE_FORMAT;
+    case paBadIODeviceCombination:      		return Bse::Error::DEVICES_MISMATCH;
+    case paInsufficientMemory:          		return Bse::Error::NO_MEMORY;
+    case paBufferTooBig:                		return Bse::Error::DEVICE_BUFFER;
+    case paBufferTooSmall:                              return Bse::Error::DEVICE_BUFFER;
+    case paNullCallback:                                return Bse::Error::INTERNAL;      /* wrong portaudio usage */
+    case paBadStreamPtr:                                return Bse::Error::INTERNAL;      /* wrong portaudio usage */
     case paTimedOut:                                    return fallback;
     case paInternalError:                               return fallback;                /* puhh, portaudio internal... */
-    case paDeviceUnavailable:                           return Bse::ERROR_DEVICE_NOT_AVAILABLE;
+    case paDeviceUnavailable:                           return Bse::Error::DEVICE_NOT_AVAILABLE;
     case paIncompatibleHostApiSpecificStreamInfo:       return fallback;                /* portaudio has odd errors... */
     case paStreamIsStopped:                             return fallback;
     case paStreamIsNotStopped:                          return fallback;
-    case paInputOverflowed:                             return Bse::ERROR_IO;            /* driver should recover */
-    case paOutputUnderflowed:                           return Bse::ERROR_IO;            /* driver should recover */
-    case paHostApiNotFound:                             return Bse::ERROR_DEVICE_NOT_AVAILABLE;
-    case paInvalidHostApi:                              return Bse::ERROR_DEVICE_NOT_AVAILABLE;
-    case paCanNotReadFromACallbackStream:               return Bse::ERROR_INTERNAL;      /* wrong portaudio usage */
-    case paCanNotWriteToACallbackStream:                return Bse::ERROR_INTERNAL;      /* wrong portaudio usage */
-    case paCanNotReadFromAnOutputOnlyStream:            return Bse::ERROR_INTERNAL;      /* wrong portaudio usage */
-    case paCanNotWriteToAnInputOnlyStream:              return Bse::ERROR_INTERNAL;      /* wrong portaudio usage */
+    case paInputOverflowed:                             return Bse::Error::IO;            /* driver should recover */
+    case paOutputUnderflowed:                           return Bse::Error::IO;            /* driver should recover */
+    case paHostApiNotFound:                             return Bse::Error::DEVICE_NOT_AVAILABLE;
+    case paInvalidHostApi:                              return Bse::Error::DEVICE_NOT_AVAILABLE;
+    case paCanNotReadFromACallbackStream:               return Bse::Error::INTERNAL;      /* wrong portaudio usage */
+    case paCanNotWriteToACallbackStream:                return Bse::Error::INTERNAL;      /* wrong portaudio usage */
+    case paCanNotReadFromAnOutputOnlyStream:            return Bse::Error::INTERNAL;      /* wrong portaudio usage */
+    case paCanNotWriteToAnInputOnlyStream:              return Bse::Error::INTERNAL;      /* wrong portaudio usage */
     case paIncompatibleStreamHostApi:                   return fallback;
     }
   return fallback;
@@ -159,7 +159,7 @@ bse_pcm_device_port_audio_list_devices (BseDevice *device)
   return ring;
 }
 
-static Bse::ErrorType
+static Bse::Error
 bse_pcm_device_port_audio_open (BseDevice     *device,
 			        gboolean       require_readable,
 			        gboolean       require_writable,
@@ -193,7 +193,7 @@ bse_pcm_device_port_audio_open (BseDevice     *device,
 	}
     }
 
-  Bse::ErrorType error = Bse::ERROR_NONE;
+  Bse::Error error = Bse::Error::NONE;
 
   PaStreamParameters inputParameters = { 0, };
   inputParameters.device = Pa_GetDefaultInputDevice();
@@ -212,7 +212,7 @@ bse_pcm_device_port_audio_open (BseDevice     *device,
           device_name = args[0];
 	}
       else
-	error = Bse::ERROR_DEVICE_NOT_AVAILABLE;
+	error = Bse::Error::DEVICE_NOT_AVAILABLE;
     }
   if (!error)
     {
@@ -233,14 +233,14 @@ bse_pcm_device_port_audio_open (BseDevice     *device,
                                         NULL,	/* no callback -> blocking api */
                                         NULL);
       if (pa_error != paNoError || !portaudio->stream)
-        error = bse_error_from_pa_error (pa_error, Bse::ERROR_FILE_OPEN_FAILED);
+        error = bse_error_from_pa_error (pa_error, Bse::Error::FILE_OPEN_FAILED);
     }
   if (!error)
     {
       PaError pa_error = Pa_StartStream (portaudio->stream);
       if (pa_error != paNoError)
         {
-          error = bse_error_from_pa_error (pa_error, Bse::ERROR_FILE_OPEN_FAILED);
+          error = bse_error_from_pa_error (pa_error, Bse::Error::FILE_OPEN_FAILED);
           Pa_CloseStream (portaudio->stream);
           portaudio->stream = NULL;
         }

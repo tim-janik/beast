@@ -337,8 +337,8 @@ wstore_context_reader (gpointer data,
 
   if (!wc->opened)
     {
-      Bse::ErrorType error = gsl_data_handle_open (wc->dhandle);
-      if (error)
+      Bse::Error error = gsl_data_handle_open (wc->dhandle);
+      if (error != 0)
 	return -ENOENT; /* approximation of OPEN_FAILED */
       wc->opened = TRUE;
     }
@@ -480,7 +480,7 @@ gsl_data_find_sample (GslDataHandle *dhandle,
   assert_return (dhandle != NULL, -1);
   assert_return (direction == -1 || direction == +1, -1);
 
-  if (gsl_data_handle_open (dhandle) != Bse::ERROR_NONE ||
+  if (gsl_data_handle_open (dhandle) != Bse::Error::NONE ||
       start_offset >= dhandle->setup.n_values)
     return -1;
 
@@ -564,7 +564,7 @@ gsl_data_find_tailmatch (GslDataHandle     *dhandle,
   assert_return (lspec->max_loop >= lspec->min_loop, FALSE);
   assert_return (lspec->tail_cut >= lspec->max_loop, FALSE);
 
-  if (gsl_data_handle_open (dhandle) != Bse::ERROR_NONE)
+  if (gsl_data_handle_open (dhandle) != Bse::Error::NONE)
     return FALSE;
   length = dhandle->setup.n_values;
   if (lspec->head_skip < length)
@@ -751,17 +751,17 @@ gsl_data_make_fade_ramp (GslDataHandle *handle,
  * according to a given threshold and optionally produce
  * a fade ramp.
  */
-Bse::ErrorType
+Bse::Error
 gsl_data_clip_sample (GslDataHandle     *dhandle,
                       GslDataClipConfig *cconfig,
                       GslDataClipResult *result)
 {
-  assert_return (result != NULL, Bse::ERROR_INTERNAL);
+  assert_return (result != NULL, Bse::Error::INTERNAL);
   memset (result, 0, sizeof (*result));
-  result->error = Bse::ERROR_INTERNAL;
-  assert_return (dhandle, Bse::ERROR_INTERNAL);
-  assert_return (GSL_DATA_HANDLE_OPENED (dhandle), Bse::ERROR_INTERNAL);
-  assert_return (cconfig != NULL, Bse::ERROR_INTERNAL);
+  result->error = Bse::Error::INTERNAL;
+  assert_return (dhandle, Bse::Error::INTERNAL);
+  assert_return (GSL_DATA_HANDLE_OPENED (dhandle), Bse::Error::INTERNAL);
+  assert_return (cconfig != NULL, Bse::Error::INTERNAL);
   gboolean info = cconfig->produce_info != FALSE;
 
   SfiNum last_value = gsl_data_handle_n_values (dhandle);
@@ -769,7 +769,7 @@ gsl_data_clip_sample (GslDataHandle     *dhandle,
     {
       if (info)
         sfi_info ("Signal too short");
-      result->error = Bse::ERROR_FILE_EMPTY;
+      result->error = Bse::Error::FILE_EMPTY;
       return result->error;
     }
   last_value -= 1;
@@ -781,7 +781,7 @@ gsl_data_clip_sample (GslDataHandle     *dhandle,
       if (info)
         sfi_info ("All of signal below threshold");
       result->clipped_to_0length = TRUE;
-      result->error = Bse::ERROR_DATA_UNMATCHED;
+      result->error = Bse::Error::DATA_UNMATCHED;
       return result->error;
     }
   SfiNum tail = gsl_data_find_sample (dhandle, +cconfig->threshold, -cconfig->threshold,  -1, -1);
@@ -792,7 +792,7 @@ gsl_data_clip_sample (GslDataHandle     *dhandle,
     {
       if (info)
         sfi_info ("Signal tail above threshold, # samples below: %llu", last_value - tail);
-      result->error = Bse::ERROR_DATA_UNMATCHED;
+      result->error = Bse::Error::DATA_UNMATCHED;
       return result->error;
     }
   result->tail_detected = TRUE;
@@ -800,7 +800,7 @@ gsl_data_clip_sample (GslDataHandle     *dhandle,
     {
       if (info)
         sfi_info ("Signal head above threshold, # samples below: %llu", head);
-      result->error = Bse::ERROR_DATA_UNMATCHED;
+      result->error = Bse::Error::DATA_UNMATCHED;
       return result->error;
     }
   result->head_detected = TRUE;
@@ -829,7 +829,7 @@ gsl_data_clip_sample (GslDataHandle     *dhandle,
   if (head == 0 && last_value == tail)
     {
       result->dhandle = gsl_data_handle_ref (dhandle);
-      result->error = Bse::ERROR_NONE;
+      result->error = Bse::Error::NONE;
       return result->error;
     }
 
@@ -878,7 +878,7 @@ gsl_data_clip_sample (GslDataHandle     *dhandle,
   result->dhandle = gsl_data_handle_ref (fade_handle);
   gsl_data_handle_close (fade_handle);
   gsl_data_handle_close (clip_handle);
-  result->error = Bse::ERROR_NONE;
+  result->error = Bse::Error::NONE;
   return result->error;
 }
 

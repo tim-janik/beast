@@ -614,8 +614,8 @@ void CodeGeneratorCBase::printChoiceConverters()
       printf("const gchar*\n");
       printf("%s_to_choice (%s value)\n", name.c_str(), arg.c_str());
       printf("{\n");
-      printf("  assert_return (value >= %d && value <= %d, NULL);\n", minval, maxval);
-      printf("  return sfi_constants_get_name (G_N_ELEMENTS (%s_vals), %s_vals, value);\n",
+      printf("  assert_return (int64 (value) >= %d && int64 (value) <= %d, NULL);\n", minval, maxval);
+      printf("  return sfi_constants_get_name (G_N_ELEMENTS (%s_vals), %s_vals, int64 (value));\n",
 	  name.c_str(), name.c_str());
       printf("}\n\n");
 

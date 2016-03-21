@@ -373,17 +373,17 @@ main_open_files (int filesc, char **filesv)
 	    {
 	      SfiProxy wrepo = bse_project_get_wave_repo (app->project.proxy_id());
 	      gxk_status_printf (GXK_STATUS_WAIT, NULL, _("Loading \"%s\""), filesv[i]);
-	      Bse::ErrorType error = bse_wave_repo_load_file (wrepo, filesv[i]);
+	      Bse::Error error = bse_wave_repo_load_file (wrepo, filesv[i]);
               bst_status_eprintf (error, _("Loading \"%s\""), filesv[i]);
-              if (error)
+              if (error != 0)
                 sfi_error (_("Failed to load wave file \"%s\": %s"), filesv[i], Bse::error_blurb (error));
 	    }
           else
 	    {
               Bse::ProjectH project = bse_server.create_project ("Untitled.bse");
 	      SfiProxy wrepo = bse_project_get_wave_repo (project.proxy_id());
-	      Bse::ErrorType error = bse_wave_repo_load_file (wrepo, filesv[i]);
-	      if (!error)
+	      Bse::Error error = bse_wave_repo_load_file (wrepo, filesv[i]);
+	      if (error == 0)
 		{
 		  app = bst_app_new (project);
 		  gxk_idle_show_widget (GTK_WIDGET (app));
@@ -401,11 +401,11 @@ main_open_files (int filesc, char **filesv)
       if (!app || !merge_with_last)
         {
           Bse::ProjectH project = bse_server.create_project (filesv[i]);
-          Bse::ErrorType error = bst_project_restore_from_file (project, filesv[i], TRUE, TRUE);
+          Bse::Error error = bst_project_restore_from_file (project, filesv[i], TRUE, TRUE);
           if (rewrite_bse_file)
             {
               Rapicorn::printerr ("%s: loading: %s\n", filesv[i], Bse::error_blurb (error));
-              if (error)
+              if (error != 0)
                 exit (1);
               if (unlink (filesv[i]) < 0)
                 {
@@ -414,26 +414,26 @@ main_open_files (int filesc, char **filesv)
                 }
               error = bse_project_store_bse (project.proxy_id(), 0, filesv[i], TRUE);
               Rapicorn::printerr ("%s: writing: %s\n", filesv[i], Bse::error_blurb (error));
-              if (error)
+              if (error != 0)
                 exit (3);
               exit (0);
             }
-          if (!error || error == Bse::ERROR_FILE_NOT_FOUND)
+          if (error == 0 || error == Bse::Error::FILE_NOT_FOUND)
             {
-              error = Bse::ERROR_NONE;
+              error = Bse::Error::NONE;
               app = bst_app_new (project);
               gxk_idle_show_widget (GTK_WIDGET (app));
               gtk_widget_hide (beast_splash);
             }
           else
             bse_server.destroy_project (project);
-          if (error)
+          if (error != 0)
             sfi_error (_("Failed to load project \"%s\": %s"), filesv[i], Bse::error_blurb (error));
         }
       else
         {
-          Bse::ErrorType error = bst_project_restore_from_file (app->project, filesv[i], TRUE, FALSE);
-          if (error)
+          Bse::Error error = bst_project_restore_from_file (app->project, filesv[i], TRUE, FALSE);
+          if (error != 0)
             sfi_error (_("Failed to merge project \"%s\": %s"), filesv[i], Bse::error_blurb (error));
         }
     }
@@ -574,8 +574,8 @@ main_save_rc_files ()
         bse_server.save_preferences();
       /* save BEAST configuration and accelerator map */
       gchar *file_name = BST_STRDUP_RC_FILE ();
-      Bse::ErrorType error = bst_rc_dump (file_name);
-      if (error)
+      Bse::Error error = bst_rc_dump (file_name);
+      if (error != 0)
 	g_warning ("failed to save rc-file \"%s\": %s", file_name, Bse::error_blurb (error));
       g_free (file_name);
     }

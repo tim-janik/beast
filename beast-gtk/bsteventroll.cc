@@ -84,7 +84,7 @@ bst_event_roll_init (BstEventRoll *self)
   GTK_WIDGET_SET_FLAGS (self, GTK_CAN_FOCUS);
   gtk_widget_set_double_buffered (widget, FALSE);
 
-  self->control_type = Bse::MIDI_SIGNAL_CONTINUOUS_7; /* volume */
+  self->control_type = Bse::MidiSignal::CONTINUOUS_7; /* volume */
   self->ppqn = 384;	/* default Parts (clock ticks) Per Quarter Note */
   self->qnpt = 1;
   self->max_ticks = 1;
@@ -697,7 +697,7 @@ bst_event_roll_set_view_selection (BstEventRoll *self,
 }
 
 void
-bst_event_roll_set_control_type (BstEventRoll *self, Bse::MidiSignalType control_type)
+bst_event_roll_set_control_type (BstEventRoll *self, Bse::MidiSignal control_type)
 {
   assert_return (BST_IS_EVENT_ROLL (self));
 

@@ -86,7 +86,7 @@ class Organ : public OrganBase {
   };
   /* FIXME: get rid of this as soon as the modules have their own current_musical_tuning() accessor */
   struct Properties : public OrganProperties {
-    Bse::MusicalTuningType current_musical_tuning;
+    Bse::MusicalTuning current_musical_tuning;
     Properties (Organ *organ) :
       OrganProperties (organ),
       current_musical_tuning (organ->current_musical_tuning())

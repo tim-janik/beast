@@ -127,7 +127,7 @@ bse_part_class_init (BsePartClass *klass)
 static void
 bse_part_init (BsePart *self)
 {
-  self->semitone_table = bse_semitone_table_from_tuning (Bse::MUSICAL_TUNING_12_TET);
+  self->semitone_table = bse_semitone_table_from_tuning (Bse::MusicalTuning::OD_12_TET);
   self->n_ids = 0;
   self->ids = NULL;
   self->last_id = 0;
@@ -536,7 +536,7 @@ void
 bse_part_select_controls (BsePart          *self,
                           guint             tick,
                           guint             duration,
-                          Bse::MidiSignalType ctype,
+                          Bse::MidiSignal ctype,
                           gboolean          selected)
 {
   assert_return (BSE_IS_PART (self));
@@ -620,7 +620,7 @@ void
 bse_part_select_controls_exclusive (BsePart           *self,
                                     guint              tick,
                                     guint              duration,
-                                    Bse::MidiSignalType  ctype)
+                                    Bse::MidiSignal  ctype)
 {
   BsePartTickNode *node, *bound;
 
@@ -775,7 +775,7 @@ bse_part_insert_note (BsePart *self,
 {
   BsePartEventNote key = { 0 };
   const bool use_any_channel = channel == ~uint (0);
-  assert_return (BSE_IS_PART (self), Bse::ERROR_INTERNAL);
+  assert_return (BSE_IS_PART (self), 0);
   if (use_any_channel)
     channel = 0;
   else if (channel >= self->n_channels)
@@ -817,15 +817,15 @@ bse_part_insert_note (BsePart *self,
 }
 
 static gboolean
-check_valid_control_type (Bse::MidiSignalType ctype)
+check_valid_control_type (Bse::MidiSignal ctype)
 {
-  if (ctype >= Bse::MIDI_SIGNAL_PROGRAM && ctype <= Bse::MIDI_SIGNAL_FINE_TUNE)
+  if (ctype >= Bse::MidiSignal::PROGRAM && ctype <= Bse::MidiSignal::FINE_TUNE)
     return TRUE;
-  if (ctype >= Bse::MIDI_SIGNAL_CONTINUOUS_0 && ctype <= Bse::MIDI_SIGNAL_CONTINUOUS_31)
+  if (ctype >= Bse::MidiSignal::CONTINUOUS_0 && ctype <= Bse::MidiSignal::CONTINUOUS_31)
     return TRUE;
-  if (ctype >= Bse::MIDI_SIGNAL_PARAMETER && ctype <= Bse::MIDI_SIGNAL_NON_PARAMETER)
+  if (ctype >= Bse::MidiSignal::PARAMETER && ctype <= Bse::MidiSignal::NON_PARAMETER)
     return TRUE;
-  if (ctype >= Bse::MIDI_SIGNAL_CONTROL_0 && ctype <= Bse::MIDI_SIGNAL_CONTROL_127)
+  if (ctype >= Bse::MidiSignal::CONTROL_0 && ctype <= Bse::MidiSignal::CONTROL_127)
     return TRUE;
   return FALSE;
 }
@@ -833,13 +833,13 @@ check_valid_control_type (Bse::MidiSignalType ctype)
 guint
 bse_part_insert_control (BsePart          *self,
                          guint             tick,
-                         Bse::MidiSignalType ctype,
+                         Bse::MidiSignal ctype,
                          gfloat            value)
 {
   BsePartTickNode *node;
   BsePartEventControl *cev;
   guint id;
-  assert_return (BSE_IS_PART (self), Bse::ERROR_INTERNAL);
+  assert_return (BSE_IS_PART (self), 0);
 
   if (!(value >= -1 && value <= +1 &&
         tick < BSE_PART_MAX_TICK &&
@@ -859,7 +859,7 @@ bse_part_insert_control (BsePart          *self,
       }
   /* insert new event */
   id = bse_part_alloc_id (self, tick);
-  bse_part_controls_insert (&self->controls, node, id, FALSE, ctype, value);
+  bse_part_controls_insert (&self->controls, node, id, FALSE, int64 (ctype), value);
   queue_control_update (self, tick);
   if (tick >= self->last_tick_SL)
     part_update_last_tick (self);
@@ -958,7 +958,7 @@ gboolean
 bse_part_change_control (BsePart           *self,
                          guint              id,
                          guint              tick,
-                         Bse::MidiSignalType  ctype,
+                         Bse::MidiSignal  ctype,
                          gfloat             value)
 {
   guint old_tick;
@@ -1000,13 +1000,13 @@ bse_part_change_control (BsePart           *self,
           bse_part_controls_remove (&self->controls, old_tick, cev);    /* invalidates node */
           bse_part_move_id (self, id, tick);
           node = bse_part_controls_ensure_tick (&self->controls, tick);
-          bse_part_controls_insert (&self->controls, node, id, selected, ctype, value);
+          bse_part_controls_insert (&self->controls, node, id, selected, int64 (ctype), value);
           queue_control_update (self, tick);
           if (MAX (old_tick, tick) >= self->last_tick_SL)
             part_update_last_tick (self);
         }
       else
-        bse_part_controls_change (&self->controls, node, cev, id, selected, ctype, value);
+        bse_part_controls_change (&self->controls, node, cev, id, selected, int64 (ctype), value);
       return TRUE;
     }
   else
@@ -1022,10 +1022,10 @@ bse_part_change_control (BsePart           *self,
               gfloat velocity = note->velocity;
               switch (ctype)
                 {
-                case Bse::MIDI_SIGNAL_VELOCITY:
+                case Bse::MidiSignal::VELOCITY:
                   velocity = CLAMP (value, 0, +1);
                   break;
-                case Bse::MIDI_SIGNAL_FINE_TUNE:
+                case Bse::MidiSignal::FINE_TUNE:
                   fine_tune = bse_ftoi (value * BSE_MAX_FINE_TUNE);
                   fine_tune = CLAMP (fine_tune, BSE_MIN_FINE_TUNE, BSE_MAX_FINE_TUNE);
                   break;
@@ -1040,13 +1040,13 @@ bse_part_change_control (BsePart           *self,
 }
 
 static inline gfloat
-note_get_control_value (const BsePartEventNote *note, Bse::MidiSignalType ctype)
+note_get_control_value (const BsePartEventNote *note, Bse::MidiSignal ctype)
 {
   switch (ctype)
     {
-    case Bse::MIDI_SIGNAL_VELOCITY:
+    case Bse::MidiSignal::VELOCITY:
       return note->velocity;
-    case Bse::MIDI_SIGNAL_FINE_TUNE:
+    case Bse::MidiSignal::FINE_TUNE:
       return note->fine_tune * (1.0 / BSE_MAX_FINE_TUNE);
     default:
       return 0;
@@ -1085,7 +1085,7 @@ bse_part_query_event (BsePart           *self,
           equery->velocity = 0;
           equery->fine_tune_value = 0;
           equery->velocity_value = 0;
-          equery->control_type = Bse::MidiSignalType (cev->ctype);
+          equery->control_type = Bse::MidiSignal (cev->ctype);
           equery->control_value = cev->value;
         }
       return BSE_PART_EVENT_CONTROL;
@@ -1111,9 +1111,9 @@ bse_part_query_event (BsePart           *self,
           equery->note = note->note;
           equery->fine_tune = note->fine_tune;
           equery->velocity = note->velocity;
-          equery->fine_tune_value = note_get_control_value (note, Bse::MIDI_SIGNAL_FINE_TUNE);
-          equery->velocity_value = note_get_control_value (note, Bse::MIDI_SIGNAL_VELOCITY);
-          equery->control_type = Bse::MidiSignalType (0);
+          equery->fine_tune_value = note_get_control_value (note, Bse::MidiSignal::FINE_TUNE);
+          equery->velocity_value = note_get_control_value (note, Bse::MidiSignal::VELOCITY);
+          equery->control_type = Bse::MidiSignal (0);
           equery->control_value = 0;
         }
       return BSE_PART_EVENT_NOTE;
@@ -1131,7 +1131,7 @@ part_note_seq_append (Bse::PartNoteSeq &pseq, uint channel, const BsePartEventNo
 }
 
 static void
-part_control_seq_append_note (Bse::PartControlSeq &cseq, const BsePartEventNote *note, Bse::MidiSignalType ctype)
+part_control_seq_append_note (Bse::PartControlSeq &cseq, const BsePartEventNote *note, Bse::MidiSignal ctype)
 {
   Bse::PartControl pctrl = bse_part_control (note->id, note->tick, ctype, note_get_control_value (note, ctype), note->selected);
   cseq.push_back (pctrl);
@@ -1201,7 +1201,7 @@ bse_part_list_controls (BsePart          *self,
                         guint             match_channel, /* for note events */
                         guint             tick,
                         guint             duration,
-                        Bse::MidiSignalType ctype)
+                        Bse::MidiSignal ctype)
 {
   Bse::PartControlSeq cseq;
 
@@ -1238,7 +1238,7 @@ bse_part_list_controls (BsePart          *self,
           BsePartEventControl *cev;
           for (cev = node->events; cev; cev = cev->next)
             if (cev->ctype == ctype)
-              cseq.push_back (bse_part_control (cev->id, node->tick, Bse::MidiSignalType (cev->ctype), cev->value, cev->selected));
+              cseq.push_back (bse_part_control (cev->id, node->tick, Bse::MidiSignal (cev->ctype), cev->value, cev->selected));
           node++;
         }
     }
@@ -1306,7 +1306,7 @@ bse_part_list_selected_notes (BsePart *self)
 }
 
 Bse::PartControlSeq
-bse_part_list_selected_controls (BsePart *self, Bse::MidiSignalType ctype)
+bse_part_list_selected_controls (BsePart *self, Bse::MidiSignal ctype)
 {
   Bse::PartControlSeq cseq;
   assert_return (BSE_IS_PART (self), cseq);
@@ -1335,7 +1335,7 @@ bse_part_list_selected_controls (BsePart *self, Bse::MidiSignalType ctype)
           BsePartEventControl *cev;
           for (cev = node->events; cev; cev = cev->next)
             if (cev->ctype == ctype && cev->selected)
-              cseq.push_back (bse_part_control (cev->id, node->tick, Bse::MidiSignalType (cev->ctype), cev->value, cev->selected));
+              cseq.push_back (bse_part_control (cev->id, node->tick, Bse::MidiSignal (cev->ctype), cev->value, cev->selected));
           node++;
         }
     }
@@ -1523,7 +1523,7 @@ bse_part_restore_private (BseObject  *object,
           parse_or_return (scanner, ')');
           if (error)
             bse_storage_warn (storage, "unknown control event: %s", error->message);
-          else if (!bse_part_insert_control (self, tick, Bse::MidiSignalType (ctype), CLAMP (value, -1, +1)))
+          else if (!bse_part_insert_control (self, tick, Bse::MidiSignal (ctype), CLAMP (value, -1, +1)))
             bse_storage_warn (storage, "failed to insert control event of type: %d", ctype);
           g_clear_error (&error);
         }
@@ -1593,7 +1593,7 @@ bse_part_restore_private (BseObject  *object,
         return G_TOKEN_FLOAT;
       parse_or_return (scanner, ')');
 
-      if (!bse_part_insert_control (self, tick, Bse::MidiSignalType (ctype), CLAMP (value, -1, +1)))
+      if (!bse_part_insert_control (self, tick, Bse::MidiSignal (ctype), CLAMP (value, -1, +1)))
         bse_storage_warn (storage, "skipping control event of invalid type: %d", ctype);
       return G_TOKEN_NONE;
     }
@@ -2120,28 +2120,28 @@ PartImpl::get_notes (int tick, int note)
 }
 
 PartControlSeq
-PartImpl::list_controls (int tick, int duration, MidiSignalType control_type)
+PartImpl::list_controls (int tick, int duration, MidiSignal control_type)
 {
   BsePart *self = as<BsePart*>();
   return bse_part_list_controls (self, ~uint (0), tick, duration, control_type);
 }
 
 PartControlSeq
-PartImpl::list_selected_controls (MidiSignalType control_type)
+PartImpl::list_selected_controls (MidiSignal control_type)
 {
   BsePart *self = as<BsePart*>();
   return bse_part_list_selected_controls (self, control_type);
 }
 
 PartControlSeq
-PartImpl::get_controls (int tick, MidiSignalType control_type)
+PartImpl::get_controls (int tick, MidiSignal control_type)
 {
   BsePart *self = as<BsePart*>();
   return bse_part_list_controls (self, ~uint (0), tick, 1, control_type);
 }
 
 PartControlSeq
-PartImpl::get_channel_controls (int channel, int tick, int duration, MidiSignalType control_type)
+PartImpl::get_channel_controls (int channel, int tick, int duration, MidiSignal control_type)
 {
   BsePart *self = as<BsePart*>();
   return bse_part_list_controls (self, channel, tick, duration, control_type);
@@ -2179,8 +2179,8 @@ PartImpl::get_min_note ()
   return BSE_MIN_NOTE;
 }
 
-ErrorType
-PartImpl::change_control (int id, int tick, MidiSignalType control_type, double value)
+Error
+PartImpl::change_control (int id, int tick, MidiSignal control_type, double value)
 {
   BsePart *self = as<BsePart*>();
   const uint utick = tick;
@@ -2207,19 +2207,19 @@ PartImpl::change_control (int id, int tick, MidiSignalType control_type, double 
            equery.velocity_value  != xquery.velocity_value))
         switch (control_type)
           {
-          case MIDI_SIGNAL_VELOCITY:
+          case MidiSignal::VELOCITY:
             push_undo ("Change Velocity", *this, &PartImpl::change_control, id, equery.tick, control_type, equery.velocity_value);
             break;
-          case MIDI_SIGNAL_FINE_TUNE:
+          case MidiSignal::FINE_TUNE:
             push_undo ("Change Fine-Tune", *this, &PartImpl::change_control, id, equery.tick, control_type, equery.fine_tune_value);
             break;
           default: ;
           }
     }
-  return success ? ERROR_NONE : ERROR_NO_EVENT;
+  return success ? Error::NONE : Error::NO_EVENT;
 }
 
-ErrorType
+Error
 PartImpl::change_note (int id, int tick, int duration, int note, int fine_tune, double velocity)
 {
   BsePart *self = as<BsePart*>();
@@ -2241,10 +2241,10 @@ PartImpl::change_note (int id, int tick, int duration, int note, int fine_tune, 
       else
         success = true;
     }
-  return success ? ERROR_NONE : ERROR_NO_EVENT;
+  return success ? Error::NONE : Error::NO_EVENT;
 }
 
-ErrorType
+Error
 PartImpl::delete_event (int id)
 {
   BsePart *self = as<BsePart*>();
@@ -2265,11 +2265,11 @@ PartImpl::delete_event (int id)
         push_undo ("Delete MIDI Control", *this, &PartImpl::insert_control, equery.tick,
                    equery.control_type, equery.control_value);
     }
-  return deleted ? ERROR_NONE : ERROR_NO_EVENT;
+  return deleted ? Error::NONE : Error::NO_EVENT;
 }
 
 void
-PartImpl::deselect_controls (int tick, int duration, MidiSignalType control_type)
+PartImpl::deselect_controls (int tick, int duration, MidiSignal control_type)
 {
   BsePart *self = as<BsePart*>();
   bse_part_select_controls (self, tick, duration, control_type, false);
@@ -2306,14 +2306,14 @@ PartImpl::is_event_selected (int id)
 }
 
 void
-PartImpl::select_controls (int tick, int duration, MidiSignalType control_type)
+PartImpl::select_controls (int tick, int duration, MidiSignal control_type)
 {
   BsePart *self = as<BsePart*>();
   bse_part_select_controls (self, tick, duration, control_type, true);
 }
 
 void
-PartImpl::select_controls_exclusive (int tick, int duration, MidiSignalType control_type)
+PartImpl::select_controls_exclusive (int tick, int duration, MidiSignal control_type)
 {
   BsePart *self = as<BsePart*>();
   bse_part_select_controls_exclusive (self, tick, duration, control_type);
@@ -2346,7 +2346,7 @@ PartImpl::select_notes_exclusive (int tick, int duration, int min_note, int max_
 }
 
 int
-PartImpl::insert_control (int tick, MidiSignalType control_type, double value)
+PartImpl::insert_control (int tick, MidiSignal control_type, double value)
 {
   BsePart *self = as<BsePart*>();
   uint id = bse_part_insert_control (self, tick, control_type, value);
