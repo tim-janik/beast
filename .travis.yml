@@ -31,15 +31,15 @@ install:
   # Complete history is required for VCSREVISION
   - travis_retry git fetch --unshallow
   # Configure Dockerfile by substituting @VAR@ with $VAR
-  - export RAPICORNREPO="$bintray_url/$XUP snapshot main" && \
+  - export RAPICORNREPO="$bintray_url/$XUP snapshot main" &&
     ./buildtool.sh applyenv .travis.docker > Dockerfile
   # Build and run tests, create packages
   - docker build -t beast .
 
 script:
   # Upload packages
-  - test -z "$XUP" || docker run -ti --rm beast /bin/bash -c \
-        "export BINTRAY_APITOKEN=$BINTRAY_APITOKEN && ls -al && beast/buildtool.sh bintrayup beast-team $XUP/beast snapshot *.deb"
+  - test -z "$XUP" || docker run -ti --rm beast /bin/bash -c
+    "export BINTRAY_APITOKEN=$BINTRAY_APITOKEN && ls -al && beast/buildtool.sh bintrayup beast-team $XUP/beast snapshot *.deb"
   - docker ps -a
 
 after_success:
