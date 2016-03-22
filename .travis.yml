@@ -8,8 +8,6 @@ dist: trusty
 sudo: required
 services: docker
 language: c
-matrix:
-  fast_finish: true
 
 env:
   global:
@@ -20,6 +18,10 @@ env:
     - XFROM="ubuntu:trusty" XUP="trusty"
     - XFROM="ubuntu:wily"   XUP="wily"
     - XFROM="ubuntu:xenial" XUP="xenial"
+matrix:
+  fast_finish: true
+  allow_failures:
+    - env: XFROM="ubuntu:trusty" XUP="trusty"
 
 before_install:
   - uname -a
