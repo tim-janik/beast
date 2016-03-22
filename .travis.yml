@@ -23,6 +23,7 @@ matrix:
   fast_finish: true
   allow_failures:
     - env: XFROM="ubuntu:trusty" XUP="trusty"
+    - env: XFROM="ubuntu:xenial" XUP="xenial"
 
 before_install:
   - uname -a
