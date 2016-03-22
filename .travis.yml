@@ -17,7 +17,9 @@ env:
     - bintray_url="https://dl.bintray.com/beast-team"
   matrix:
     - XFROM="debian:jessie" XUP="jessie"
+    - XFROM="ubuntu:trusty" XUP="trusty"
     - XFROM="ubuntu:wily"   XUP="wily"
+    - XFROM="ubuntu:xenial" XUP="xenial"
 
 before_install:
   - uname -a
