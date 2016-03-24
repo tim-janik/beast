@@ -41,15 +41,26 @@ install:
   # Point BINTRAYREPO at the beast-time package repository
   - export BINTRAYREPO="$bintray_url/$XUP snapshot main"
   # Configure Dockerfile by substituting @VAR@ with $VAR
-  - export RAPICORNREPO="$bintray_url/$XUP snapshot main" &&
-    ./buildtool.sh applyenv .travis.docker > Dockerfile
+  - ./buildtool.sh applyenv .travis.docker > Dockerfile
   # Build and run tests, create packages
   - docker build -t beast .
+  # Test package installation and removal locally
+  - docker run -ti --rm beast /bin/bash -c
+        "set -x && dpkg-scanpackages . /dev/null | gzip -9c > Packages.gz &&
+        echo 'deb [trusted=yes] file:///usr/src ./' > /etc/apt/sources.list.d/usrsrc.list &&
+        retry apt-get update && apt-get install -y beast libbse-dev &&
+        apt-get purge -y beast libbse-dev && apt-get --purge -y autoremove"
 
 script:
   # Upload packages
   - test -z "$XUP" || docker run -ti --rm beast /bin/bash -c
     "export BINTRAY_APITOKEN=$BINTRAY_APITOKEN && ls -al && beast/buildtool.sh bintrayup beast-team $XUP/beast snapshot *.deb"
+  # Test package installation from remote location
+  - docker run -ti --rm beast /bin/bash -c \
+        "set -x && echo 'deb [trusted=yes] $BINTRAYREPO' |
+        tee /etc/apt/sources.list.d/bintray-beast-team.list &&
+        retry apt-get -y install apt-transport-https ca-certificates &&
+        retry apt-get update && retry apt-get -y install beast libbse-dev"
   - docker ps -a
 
 after_success:
