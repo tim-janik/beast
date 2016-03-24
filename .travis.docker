@@ -8,7 +8,7 @@ MAINTAINER Tim Janik <timj@gnu.org>
 ENV EMAIL beast@gnome.org
 ENV TRAVIS_JOB_NUMBER "@TRAVIS_JOB_NUMBER@"
 ENV http_proxy "@http_proxy@"
-ENV RAPICORNREPO "@RAPICORNREPO@"
+ENV BINTRAYREPO "@BINTRAYREPO@"
 
 # Automation tools and convenience commands
 ENV DEBIAN_FRONTEND noninteractive
@@ -23,7 +23,7 @@ RUN echo '#!/bin/bash\n"$@" || { sleep 5 ; "$@" ; } || { sleep 60 ; "$@" ; }' > 
 RUN retry apt-get update && retry apt-get -y install apt-utils && retry apt-get -y upgrade
 
 # Install Rapicorn packages
-RUN echo 'deb [trusted=yes] @RAPICORNREPO@' | \
+RUN echo 'deb [trusted=yes] @BINTRAYREPO@' | \
     tee /etc/apt/sources.list.d/bintray-beast-team.list && \
     retry apt-get -y install apt-transport-https ca-certificates && \
     retry apt-get update && retry apt-get -y install rapicorn && \

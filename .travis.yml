@@ -37,6 +37,8 @@ before_install:
 install:
   # Complete history is required for VCSREVISION
   - travis_retry git fetch --unshallow
+  # Point BINTRAYREPO at the beast-time package repository
+  - export BINTRAYREPO="$bintray_url/$XUP snapshot main"
   # Configure Dockerfile by substituting @VAR@ with $VAR
   - export RAPICORNREPO="$bintray_url/$XUP snapshot main" &&
     ./buildtool.sh applyenv .travis.docker > Dockerfile
