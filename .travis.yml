@@ -57,9 +57,9 @@ script:
     "export BINTRAY_APITOKEN=$BINTRAY_APITOKEN && ls -al && beast/buildtool.sh bintrayup beast-team $XUP/beast snapshot *.deb"
   # Test package installation from remote location
   - docker run -ti --rm beast /bin/bash -c \
-        "set -x && echo 'deb [trusted=yes] $BINTRAYREPO' |
-        tee /etc/apt/sources.list.d/bintray-beast-team.list &&
-        retry apt-get -y install apt-transport-https ca-certificates &&
+        "set -x && retry apt-get -y install apt-transport-https ca-certificates &&
+        apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 379CE192D401AB61 &&
+        echo 'deb [trusted=yes] $BINTRAYREPO' | tee /etc/apt/sources.list.d/bintray-beast-team.list &&
         retry apt-get update && retry apt-get -y install beast libbse-dev"
   - docker ps -a
 
