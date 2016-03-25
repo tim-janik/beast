@@ -9,6 +9,7 @@ function die { e="$1" ; shift ; [ -n "$*" ] && echo "$SCRIPTNAME: $*" >&2 ; exit
 mkconfig() # print shell variables describing package, version, commit id, monotonic revision
 {
   set -e # abort on errors
+  REVISIONSUFFIX="$1" # may be empty
   # ensure we're in the project directory and have full git history
   SCRIPTPATH=`readlink -f $0`
   SCRIPTDIR=`dirname "$SCRIPTPATH"`
@@ -19,26 +20,39 @@ mkconfig() # print shell variables describing package, version, commit id, monot
   test -r configure.ac || die 7 "missing configure.ac"
   test -z "$PACKAGE" &&
     PACKAGE=`sed -nr "/^AC_INIT\b/{ s/^[^(]*\([ 	]*([^,	 ]+).*/\1/; s/\[|]//g; p; }" configure.ac`
-  test -z "$VERSION" &&
-    VERSION=`sed -nr "/^AC_INIT\b/{ s/^[^,]*,[^0-9]*([0-9.]*).*/\1/; p; }" configure.ac`
-  [[ $VERSION =~ ^[0-9.]+$ ]] || die 6 "failed to detect package version"
-  # gather git bits
-  TOTAL_COMMITS=`git rev-list --count HEAD` # count commits to provide a monotonically increasing revision
-  REVISIONSUFFIX=
-  test -z "$TRAVIS_JOB_NUMBER" || REVISIONSUFFIX="-0travis${TRAVIS_JOB_NUMBER/*./}"
-  test -z "$BUILDREVISION" || REVISIONSUFFIX="-${BUILDREVISION}"
-  test -n "$REVISIONSUFFIX" || REVISIONSUFFIX="-0anon" # avoid non-native-package-with-native-version
-  VCSREVISION="+git$TOTAL_COMMITS$REVISIONSUFFIX"
+  test -z "$UPSVERSION" &&
+    UPSVERSION=`sed -nr "/^AC_INIT\b/{ s/^[^,]*,[^0-9]*([0-9.]*).*/\1/; p; }" configure.ac`
+  [[ $UPSVERSION =~ ^[0-9.]+$ ]] || die 6 "failed to detect package version"
+  [[ $UPSVERSION =~ [13579]$ ]] && DEVELOPMENT=true || DEVELOPMENT=false # spot unreleased odd devel versions
+  # commit ID and changelog message
   COMMITID=`git rev-parse HEAD`
-  CHANGELOGMSG="Automatic snapshot, git commit $COMMITID"
+  if $DEVELOPMENT ; then
+    CHANGELOGMSG="Development snapshot, git commit $COMMITID"
+  else
+    CHANGELOGMSG="Release snapshot, git commit $COMMITID"
+  fi
+  # upstream version details
+  TOTAL_COMMITS=`git rev-list --count HEAD` # count commits to provide a monotonically increasing revision
+  if $DEVELOPMENT ; then
+    UPSDETAIL="~git$TOTAL_COMMITS" # sort *before* UPSDETAIL="" (pre-release candidates)
+  else
+    UPSDETAIL="+git$TOTAL_COMMITS" # sort *after* UPSDETAIL="" (post release patchlevel)
+  fi
+  # build revision parts
+  REVISIONSUFFIX="-${REVISIONSUFFIX:-0.1local}" # avoid non-native-package-with-native-version
+  test -z "$TRAVIS_JOB_NUMBER" || REVISIONSUFFIX="$REVISIONSUFFIX~travis${TRAVIS_JOB_NUMBER/*./}"
+  BUILDREV="$REVISIONSUFFIX"
   # print variables after all errors have been checked for
   cat <<-__EOF
 	PACKAGE=$PACKAGE
-	VERSION=$VERSION
+	UPSVERSION=$UPSVERSION
+	UPSDETAIL=$UPSDETAIL
+	BUILDREV=$BUILDREV
+	DEVELOPMENT=$DEVELOPMENT
 	TOTAL_COMMITS=$TOTAL_COMMITS
-	VCSREVISION=$VCSREVISION
 	COMMITID=$COMMITID
 	CHANGELOGMSG="$CHANGELOGMSG"
+	DEBVERSION=$UPSVERSION$UPSDETAIL$BUILDREV
 	__EOF
   popd >/dev/null					# cd OLDPWD
 }
@@ -47,14 +61,14 @@ mkconfig() # print shell variables describing package, version, commit id, monot
 bintrayup() # Usage: bintrayup <bintrayaccount> <packagepath> <packagedistribution> [packages...]
 {
   set +x # avoid printing authentication secrets
-  mkconfig >/dev/null # PACKAGE, VERSION, ...
+  mkconfig >/dev/null # PACKAGE, UPSVERSION, ...
   ACCNAME="$1"; PKGPATH="$2"; PKGDIST="$3" # BINTRAY_APITOKEN must be set by caller
   test -n "$ACCNAME" || die 1 "missing bintray account"
   test -n "$PKGPATH" || die 1 "missing package path"
   test -n "$PKGDIST" || die 1 "missing distribution"
   shift 3
   # create new bintray versoin
-  REPOVERSION="$VERSION+git$TOTAL_COMMITS" # echo "REPOVERSION=$REPOVERSION"
+  REPOVERSION="$UPSVERSION$UPSDETAIL" # echo "REPOVERSION=$REPOVERSION"
   echo "  REMOTE  " "creating new version: $REPOVERSION"
   curl -d "{ \"name\": \"$REPOVERSION\", \"released\": \"`date -I`\", \"desc\": \"Automatic CI Build\" }" \
     -u"$ACCNAME:$BINTRAY_APITOKEN" "https://api.bintray.com/packages/$ACCNAME/$PKGPATH/versions" \
