@@ -42,6 +42,8 @@ mkconfig() # print shell variables describing package, version, commit id, monot
   REVISIONSUFFIX="-${REVISIONSUFFIX:-0.1local}" # avoid non-native-package-with-native-version
   test -z "$TRAVIS_JOB_NUMBER" || REVISIONSUFFIX="$REVISIONSUFFIX~travis${TRAVIS_JOB_NUMBER/*./}"
   BUILDREV="$REVISIONSUFFIX"
+  # complate deb package versioning
+  DEBVERSION="$UPSVERSION$UPSDETAIL$BUILDREV"
   # print variables after all errors have been checked for
   cat <<-__EOF
 	PACKAGE=$PACKAGE
@@ -52,7 +54,7 @@ mkconfig() # print shell variables describing package, version, commit id, monot
 	TOTAL_COMMITS=$TOTAL_COMMITS
 	COMMITID=$COMMITID
 	CHANGELOGMSG="$CHANGELOGMSG"
-	DEBVERSION=$UPSVERSION$UPSDETAIL$BUILDREV
+	DEBVERSION=$DEBVERSION
 	__EOF
   popd >/dev/null					# cd OLDPWD
 }
@@ -68,7 +70,7 @@ bintrayup() # Usage: bintrayup <bintrayaccount> <packagepath> <packagedistributi
   test -n "$PKGDIST" || die 1 "missing distribution"
   shift 3
   # create new bintray versoin
-  REPOVERSION="$UPSVERSION$UPSDETAIL" # echo "REPOVERSION=$REPOVERSION"
+  REPOVERSION="$DEBVERSION" # echo "REPOVERSION=$REPOVERSION"
   echo "  REMOTE  " "creating new version: $REPOVERSION"
   curl -d "{ \"name\": \"$REPOVERSION\", \"released\": \"`date -I`\", \"desc\": \"Automatic CI Build\" }" \
     -u"$ACCNAME:$BINTRAY_APITOKEN" "https://api.bintray.com/packages/$ACCNAME/$PKGPATH/versions" \
