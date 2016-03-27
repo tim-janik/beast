@@ -10,6 +10,7 @@ mkconfig() # print shell variables describing package, version, commit id, monot
 {
   set -e # abort on errors
   REVISIONSUFFIX="$1" # may be empty
+  # uses: .git/ $DISTRELEASE $TRAVIS_JOB_NUMBER
   # ensure we're in the project directory and have full git history
   SCRIPTPATH=`readlink -f $0`
   SCRIPTDIR=`dirname "$SCRIPTPATH"`
@@ -39,10 +40,11 @@ mkconfig() # print shell variables describing package, version, commit id, monot
     UPSDETAIL="+git$TOTAL_COMMITS" # sort *after* UPSDETAIL="" (post release patchlevel)
   fi
   # build revision parts
-  REVISIONSUFFIX="-${REVISIONSUFFIX:-0.1local}" # avoid non-native-package-with-native-version
-  test -z "$TRAVIS_JOB_NUMBER" || REVISIONSUFFIX="$REVISIONSUFFIX~travis${TRAVIS_JOB_NUMBER/*./}"
+  REVISIONSUFFIX="-${REVISIONSUFFIX:-0${DISTRELEASE:-local}}" # ensure suffix to avoid non-native-package-with-native-version
   BUILDREV="$REVISIONSUFFIX"
-  # complate deb package versioning
+  test -z "$TRAVIS_JOB_NUMBER" || BUILDREV="$BUILDREV~travis${TRAVIS_JOB_NUMBER/*./}"
+  # complete version variants
+  UPLOADVERSION="$UPSVERSION$UPSDETAIL$REVISIONSUFFIX"
   DEBVERSION="$UPSVERSION$UPSDETAIL$BUILDREV"
   # print variables after all errors have been checked for
   cat <<-__EOF
@@ -50,6 +52,7 @@ mkconfig() # print shell variables describing package, version, commit id, monot
 	UPSVERSION=$UPSVERSION
 	UPSDETAIL=$UPSDETAIL
 	BUILDREV=$BUILDREV
+	UPLOADVERSION=$UPLOADVERSION
 	DEVELOPMENT=$DEVELOPMENT
 	TOTAL_COMMITS=$TOTAL_COMMITS
 	COMMITID=$COMMITID
@@ -70,7 +73,7 @@ bintrayup() # Usage: bintrayup <bintrayaccount> <packagepath> <packagedistributi
   test -n "$PKGDIST" || die 1 "missing distribution"
   shift 3
   # create new bintray versoin
-  REPOVERSION="$DEBVERSION" # echo "REPOVERSION=$REPOVERSION"
+  REPOVERSION="$UPLOADVERSION" # echo "REPOVERSION=$REPOVERSION"
   echo "  REMOTE  " "creating new version: $REPOVERSION"
   curl -d "{ \"name\": \"$REPOVERSION\", \"released\": \"`date -I`\", \"desc\": \"Automatic CI Build\" }" \
     -u"$ACCNAME:$BINTRAY_APITOKEN" "https://api.bintray.com/packages/$ACCNAME/$PKGPATH/versions" \
