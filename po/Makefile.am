@@ -72,7 +72,7 @@ all: $(GMOFILES)
 # compile translation catalogs
 %.gmo: %.po
 	@echo $(ECHO_N) "$(@F): " \
-	&& $(GMSGFMT) --statistics --directory=$(srcdir) -o xgen-$(@F) $< \
+	&& $(GMSGFMT) --statistics --directory=$(srcdir) -o xgen-$(@F) $(<F) \
 	&& mv xgen-$(@F) $@
 
 # install translation catalogs
