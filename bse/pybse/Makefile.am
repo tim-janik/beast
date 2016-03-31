@@ -14,13 +14,13 @@ AIDACC_VDEBUG = $(AIDACC) $(if $(findstring 1, $(V)), --aida-debug)
 # == Pyx ==
 AIDASTDINC = $(shell ${AIDACC} -x PyxxStub.py -G --print-include-path /dev/null)
 # Python 'Bse' module build via Cython
-Bse.pyx: bseidlapi.pyx
+$(srcdir)/Bse.pyx: bseidlapi.pyx
 bseidlapi.pyx: ../bseapi.idl
 	$(AM_V_GEN)
 	$(Q) ${AIDACC} -x PyxxStub.py $< -o $@ -G strip-path=$(abs_top_srcdir)/
 Bse.cc: Bse.pyx bseidlapi.pyx
 	@echo "  CYTHON  " $@
-	$(Q) cython --cplus -Wextra -Werror --fast-fail -I. -I$(AIDASTDINC) Bse.pyx -o $@
+	$(Q) cython --cplus -Wextra -Werror --fast-fail -I. -I$(AIDASTDINC) $(srcdir)/Bse.pyx -o $@
 	@: # FIXME: CYTHON
 # pythondir = ${prefix}/lib/pythonX.Y/site-packages
 pymodulesdir          = ${bselibdir}/pymodules
