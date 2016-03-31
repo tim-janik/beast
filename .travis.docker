@@ -1,14 +1,18 @@
 # This Source Code Form is licensed MPL-2.0: http://mozilla.org/MPL/2.0
 
 # Pick distribution to start from
-FROM @XFROM@
+FROM @DIST@
 MAINTAINER Tim Janik <timj@gnu.org>
 
 # Carry over enviroment variables
 ENV EMAIL beast@gnome.org
+ENV DIST "@DIST@"
+ENV DISTNAME "@DISTNAME@"
+ENV DISTRELEASE "@DISTRELEASE@"
+ENV BINTRAYREPO "@BINTRAYREPO@"
 ENV TRAVIS_JOB_NUMBER "@TRAVIS_JOB_NUMBER@"
 ENV http_proxy "@http_proxy@"
-ENV BINTRAYREPO "@BINTRAYREPO@"
+ENV INTENT "@INTENT@"
 
 # Automation tools and convenience commands
 ENV DEBIAN_FRONTEND noninteractive
@@ -19,8 +23,9 @@ RUN echo '#!/bin/bash\n"$@" || { sleep 5 ; "$@" ; } || { sleep 60 ; "$@" ; }' > 
     '\nfunction regrep { (shopt -s globstar extglob; IFS=; set - ; /usr/bin/nice /bin/egrep --color=auto -d skip "") }' \
     | tee -a /etc/bash.bashrc >> /root/.bashrc
 
-# Ensure uptodate distribution
-RUN retry apt-get update && retry apt-get -y install apt-utils && retry apt-get -y upgrade
+# Ensure uptodate distribution and access to the bintray.com repositories
+RUN retry apt-get update && retry apt-get -y install apt-utils && retry apt-get -y upgrade && \
+    apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 379CE192D401AB61
 
 # Install Rapicorn packages
 RUN echo 'deb [trusted=yes] @BINTRAYREPO@' | \
@@ -45,6 +50,7 @@ COPY .git /tmp/beast.git
 RUN git clone /tmp/beast.git
 
 # Build sources, run tests and create distribution tarball
+# Carry out distcheck test if desired
 RUN cd beast && \
     nice ./autogen.sh --prefix=/usr --enable-devel-mode=no && \
     nice make -j4 && \
@@ -53,23 +59,32 @@ RUN cd beast && \
     nice make installcheck && \
     nice make dist && \
     nice make uninstall && \
+    ( [ $INTENT = distcheck ] || exit 0 && \
+      nice make distcheck ) && \
     nice make clean && \
     DIST_TARBALL=`echo *.tar.xz` && \
     ls -l "$DIST_TARBALL"
 
-# Create packages as follows:
+# Create deb packages as follows:
 # Eval configuration, prepare debian source tarball, prepare debian/ directory,
 # update 'changelog', install dependencies, build debian packages.
-RUN eval `beast/buildtool.sh config` && \
-    DIST_TARBALL="$PACKAGE/$PACKAGE-$VERSION.tar.xz" && \
-    DEBVERSION="$VERSION$VCSREVISION" && \
+RUN [ $INTENT = deb ] || exit 0 && \
+    eval `beast/buildtool.sh config` && \
+    DIST_TARBALL="$PACKAGE/$PACKAGE-$UPSVERSION.tar.xz" && \
     DEB_TARBALL="$PACKAGE"_"${DEBVERSION%-*}.orig.tar.xz" && \
     cp $DIST_TARBALL $DEB_TARBALL && tar xf $DEB_TARBALL && \
-    cd $PACKAGE-$VERSION/ && cp -r ../$PACKAGE/debian/ . && \
+    cd $PACKAGE-$UPSVERSION/ && cp -r ../$PACKAGE/debian/ . && \
     dch -v "$DEBVERSION" "$CHANGELOGMSG" && dch -r "" && cat debian/changelog && \
     retry apt-get -y install $(dpkg-checkbuilddeps 2>&1 | sed 's/.*: //') && \
     nice debuild -j`nproc` -rfakeroot -us -uc && \
     cd .. && ls -al
+
+# Test package installation and removal locally
+RUN [ $INTENT = deb ] || exit 0 && \
+    dpkg-scanpackages . /dev/null | gzip -9c > Packages.gz && \
+    echo 'deb [trusted=yes] file:///usr/src ./' > /etc/apt/sources.list.d/usrsrc.list && \
+    retry apt-get update && apt-get install -y beast libbse-dev && \
+    apt-get purge -y beast libbse-dev && apt-get --purge -y autoremove
 
 # nice -n19 docker build -t beast .
 # docker run -ti --rm beast /bin/bash

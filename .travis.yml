@@ -12,21 +12,28 @@ language: c
 env:
   global:
     #- http_proxy="http://example.com"
-    - bintray_url="https://dl.bintray.com/beast-team"
+    - INTENT="deb" # build and upload deb packages
   matrix:
-    - XFROM="debian:jessie"  XUP="jessie"
-    - XFROM="debian:testing" XUP="testing"
-    - XFROM="ubuntu:trusty"  XUP="trusty"
-    - XFROM="ubuntu:wily"    XUP="wily"
-    - XFROM="ubuntu:xenial"  XUP="xenial"
+    # Distribution Name and Version
+    - DIST="debian:jessie"
+    - DIST="debian:testing"
+    - DIST="ubuntu:trusty"
+    - DIST="ubuntu:wily"
+    - DIST="ubuntu:xenial"
+    - INTENT="distcheck" DIST="ubuntu:wily" # run and succeed in 'distcheck'
 matrix:
-  fast_finish: true
   allow_failures:
-    - env: XFROM="debian:testing" XUP="testing"
-    - env: XFROM="ubuntu:trusty"  XUP="trusty"
-    - env: XFROM="ubuntu:xenial"  XUP="xenial"
+    - env: DIST="debian:testing"
+    - env: DIST="ubuntu:trusty"
+    - env: DIST="ubuntu:xenial"
+  fast_finish: true
 
 before_install:
+  # Build variable setup
+  - export DISTNAME="${DIST%:*}" DISTRELEASE="${DIST#*:}" # Example: DIST=debian:jessie DISTNAME=debian DISTRELEASE=jessie
+  - export BINTRAYREPO="deb [trusted=yes] https://dl.bintray.com/beast-team/deb $DISTRELEASE main"
+  - echo "DIST=$DIST DISTNAME=$DISTNAME DISTRELEASE=$DISTRELEASE BINTRAYREPO='$BINTRAYREPO'"
+  # Sample environment
   - uname -a
   - cat /etc/os-release
   - pwd
@@ -36,31 +43,22 @@ before_install:
   - $CC --version
 
 install:
-  # Complete history is required for VCSREVISION
+  # Complete history is required for monotonic revisioning
   - travis_retry git fetch --unshallow
-  # Point BINTRAYREPO at the beast-time package repository
-  - export BINTRAYREPO="$bintray_url/$XUP snapshot main"
   # Configure Dockerfile by substituting @VAR@ with $VAR
   - ./buildtool.sh applyenv .travis.docker > Dockerfile
   # Build and run tests, create packages
   - docker build -t beast .
-  # Test package installation and removal locally
-  - docker run -ti --rm beast /bin/bash -c
-        "set -x && dpkg-scanpackages . /dev/null | gzip -9c > Packages.gz &&
-        echo 'deb [trusted=yes] file:///usr/src ./' > /etc/apt/sources.list.d/usrsrc.list &&
-        retry apt-get update && apt-get install -y beast libbse-dev &&
-        apt-get purge -y beast libbse-dev && apt-get --purge -y autoremove"
 
 script:
   # Upload packages
-  - test -z "$XUP" || docker run -ti --rm beast /bin/bash -c
-    "export BINTRAY_APITOKEN=$BINTRAY_APITOKEN && ls -al && beast/buildtool.sh bintrayup beast-team $XUP/beast snapshot *.deb"
+  - ([ $INTENT = deb ] || exit 0 && docker run -ti --rm beast /bin/bash -c \
+      "export BINTRAY_APITOKEN=$BINTRAY_APITOKEN && ls -al && beast/buildtool.sh bintrayup beast-team deb/beast $DISTRELEASE *.deb")
   # Test package installation from remote location
-  - docker run -ti --rm beast /bin/bash -c \
+  - ([ $INTENT = deb ] || exit 0 && sleep 60 && travis_retry docker run -ti --rm beast /bin/bash -c \
         "set -x && retry apt-get -y install apt-transport-https ca-certificates &&
-        apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 379CE192D401AB61 &&
-        echo 'deb [trusted=yes] $BINTRAYREPO' | tee /etc/apt/sources.list.d/bintray-beast-team.list &&
-        retry apt-get update && retry apt-get -y install beast libbse-dev"
+        echo '$BINTRAYREPO' | tee /etc/apt/sources.list.d/bintray-beast-team.list &&
+        retry apt-get update && retry apt-get -y install beast libbse-dev")
   - docker ps -a
 
 after_success:
