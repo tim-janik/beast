@@ -1,11 +1,11 @@
-beast (0.9.3+git5563-0) experimental; urgency=medium
+beast (0.9.3~git5563-0) experimental; urgency=medium
 
   * beast.postinst: add setuid bit to the beast launcher, so the audio
     processing can run at nice level -20 with soft realtime scheduling.
 
  -- Tim Janik <timj@gnu.org>  Tue, 03 Nov 2015 22:44:51 +0100
 
-beast (0.9.3+git5555-0) experimental; urgency=low
+beast (0.9.3~git5555-0) experimental; urgency=low
 
   * Debian package build setup for Beast and libbse, hosted at:
     https://github.com/tim-janik/beast/
