@@ -169,13 +169,24 @@ update-po: Makefile
 	  $(GMSGFMT) -o /dev/null --verbose $(srcdir)/$$i ; \
 	done
 .PHONY: update-po
-DISTDIR_HOOK = distdir # use indirection to emulate distdir-hook
-$(DISTDIR_HOOK): $(shell test w == `stat -c '%A' $(srcdir)/messages.pot | cut -c3` && echo 'update-po') # using 'test -w' fails for UID=0
+check-update-po: Makefile $(srcdir)/messages.pot
+	$(Q) rm -f check-messages.pot # force rebuild
+	$(Q) $(MAKE) --no-print-directory check-messages.pot
+	@echo -n "Checking for updated po files: "
+	$(Q) for i in $(POFILES) ; do \
+	  echo -n '.' ; \
+	  cp $(srcdir)/$$i xtmp-$$i && $(MSGMERGE) -qsU --backup=none xtmp-$$i check-messages.pot || exit ; \
+	  cmp -s $(srcdir)/$$i xtmp-$$i || \
+	  { echo ; echo "$$i: error: message updates missing, run 'update-po' first" >&2 ; exit 1 ; } ; \
+	  rm -f xtmp-$$i ; \
+	done ; echo
+	$(Q) rm -f check-messages.pot
+.PHONY: check-update-po
 
 CLEANFILES += $(POTLIST) $(TMPLIST) $(TMPDIR)/
 
-$(srcdir)/messages.pot: POTSCAN
-	@echo "Rebuilding $(@F)..."
+$(srcdir)/messages.pot check-messages.pot: POTSCAN
+	@echo "Building $(@F)..."
 	@rm -f $(POTLIST) $(TMPLIST) ; rm -rf $(TMPDIR)/
 	@sed -e '/^#/d' -e 's/^\[[^:]*:[^]]*][[:space:]]*//' -e '/^[[:space:]]*$$/d' < POTSCAN > $(POTLIST) \
 	&& cp $(POTLIST) $(TMPLIST) && mkdir -p $(TMPDIR)/
