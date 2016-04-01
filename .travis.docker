@@ -41,25 +41,32 @@ RUN retry apt-get install -y \
     libasound2-dev libflac-dev libvorbis-dev libmad0-dev libgnomecanvas2-dev libxml2-utils guile-1.8-dev
 
 # Setup build environment by copying the git history
-WORKDIR /usr/src/
 COPY .git /tmp/beast.git
-RUN git clone /tmp/beast.git
+RUN cd /usr/src/ && git clone /tmp/beast.git
+
+# Build sources in /usr/src/$PROJECT/
+WORKDIR /usr/src/beast
 
 # Build sources, run tests and create distribution tarball
 # Carry out distcheck test if desired
-RUN cd beast && \
-    nice ./autogen.sh --prefix=/usr --enable-devel-mode=no && \
-    nice make -j4 && \
-    nice make check && \
-    nice make install && \
-    nice make installcheck && \
-    nice make dist && \
-    nice make uninstall && \
-    ( [ $INTENT = distcheck ] || exit 0 && \
-      nice make distcheck ) && \
-    nice make clean && \
-    DIST_TARBALL=`echo *.tar.xz` && \
-    ls -l "$DIST_TARBALL"
+RUN nice ./autogen.sh --prefix=/usr --enable-devel-mode=no
+RUN nice make -j`nproc`
+RUN nice make check
+RUN nice make install
+RUN nice make installcheck
+RUN nice make dist
+RUN nice make uninstall
+
+# Carry out distcheck test if desired
+RUN [ $INTENT = distcheck ] || exit 0 && \
+    nice make distcheck
+
+# Cleanup, show tarball
+RUN nice make clean
+RUN ls -l *.tar.xz
+
+# Build packages in /usr/src/
+WORKDIR /usr/src/
 
 # Create deb packages as follows:
 # Eval configuration, prepare debian source tarball, prepare debian/ directory,
