@@ -28,13 +28,9 @@ RUN retry apt-get update && retry apt-get -y install apt-utils && retry apt-get 
     apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 379CE192D401AB61
 
 # Install Rapicorn packages
-RUN echo 'deb [trusted=yes] @BINTRAYREPO@' | \
-    tee /etc/apt/sources.list.d/bintray-beast-team.list && \
-    retry apt-get -y install apt-transport-https ca-certificates && \
-    retry apt-get update && retry apt-get -y install rapicorn && \
-    sed 's/^/#/' -i /etc/apt/sources.list.d/bintray-beast-team.list && \
-    apt-get -y purge apt-transport-https ca-certificates && \
-    apt-get -y --purge autoremove
+RUN retry apt-get -y install apt-transport-https ca-certificates && \
+    echo "$BINTRAYREPO" | tee /etc/apt/sources.list.d/bintray-beast-team.list && \
+    retry apt-get update && retry apt-get -y install rapicorn
 
 # Provide build essentials and dependencies
 RUN retry apt-get install -y \
