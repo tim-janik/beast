@@ -170,7 +170,7 @@ update-po: Makefile
 	done
 .PHONY: update-po
 DISTDIR_HOOK = distdir # use indirection to emulate distdir-hook
-$(DISTDIR_HOOK): $(shell test -w $(srcdir)/messages.pot && echo 'update-po')
+$(DISTDIR_HOOK): $(shell test w == `stat -c '%A' $(srcdir)/messages.pot | cut -c3` && echo 'update-po') # using 'test -w' fails for UID=0
 
 CLEANFILES += $(POTLIST) $(TMPLIST) $(TMPDIR)/
 
