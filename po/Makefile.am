@@ -80,7 +80,7 @@ install: install-data
 install-data: $(GMOFILES)
 	@echo "Installing localised message files..."
 	@for lang in $(TRANSLATIONS); do \
-	  $(mkinstalldirs) "$(DESTDIR)$(LOCALEDIR)/$$lang/LC_MESSAGES/"; \
+	  $(mkinstalldirs) "$(DESTDIR)$(LOCALEDIR)/$$lang/LC_MESSAGES/" || exit ; \
 	  test ! -r "$$lang.gmo" || { \
 	    printf "  %-12s -> %s\n" "$$lang.gmo" ".../$$lang/$(BST_GETTEXT_DOMAIN).mo" ; \
             $(INSTALL_DATA) "$$lang.gmo" \
@@ -165,7 +165,7 @@ update-po: Makefile
 	@echo "Merging messages.pot into po files..."
 	@for i in $(POFILES) ; do \
 	  printf "%12s: " "$$i" ; \
-	  $(MSGMERGE) -qsU --backup=none $(srcdir)/$$i $(srcdir)/messages.pot || exit 1 ; \
+	  $(MSGMERGE) -qsU --backup=none $(srcdir)/$$i $(srcdir)/messages.pot || exit ; \
 	  $(GMSGFMT) -o /dev/null --verbose $(srcdir)/$$i ; \
 	done
 .PHONY: update-po
@@ -202,17 +202,15 @@ split_lines = test -e $(1) -a -w . && { \
 }
 # (prepare_pot_source, POSRC_TYPE, INFILE)
 define prepare_pot_source
-	DOING=$(if $(POSRC_$(strip $(1))_FILTER),"Preparing","Listing"); \
+	DOING=$(if $(POSRC_$(strip $(1))_FILTER),"Preparing","Listing") ; \
 	printf "  %-32s" "$$DOING $(strip $(or $(POSRC_$(strip $(1))_NAME), $(1) Files)): " ; \
-	$(call split_lines, $(2), "potlist$$$$.tmp", $(POSRC_$(strip $(1))_PATTERN)) ; \
-	wc -l < "potlist$$$$.tmp" ; \
+	$(call split_lines, $(2), "potlist$$$$.tmp", $(POSRC_$(strip $(1))_PATTERN)) && \
+	wc -l < "potlist$$$$.tmp" || exit ; \
 	$(if $(POSRC_$(strip $(1))_FILTER), \
-	  cat "potlist$$$$.tmp" | \
 	  while read file ; do \
-	    d=`dirname "$$file"` ; mkdir -p "$(TMPDIR)/$$d" || exit $$? ; \
-	    $(POSRC_$(strip $(1))_FILTER) $(top_srcdir)/"$$file" > "$(TMPDIR)/$$file" \
-	    || exit $$? ; \
-	  done \
+	    d=`dirname "$$file"` && mkdir -p "$(TMPDIR)/$$d" || exit ; \
+	    $(POSRC_$(strip $(1))_FILTER) $(top_srcdir)/"$$file" > "$(TMPDIR)/$$file" || exit ; \
+	  done < "potlist$$$$.tmp" \
 	, \
 	  : \
 	) ; rm -f "potlist$$$$.tmp"
@@ -225,7 +223,7 @@ unlisted:
 	@ # list possible POT sources...
 	@(cd $(top_srcdir) && find . $(FIND_NOHIDDEN) -type f -print) | sed 's,^\./,,' \
 	| grep -vxF -f $(srcdir)/POTSCAN -f $(srcdir)/POTSKIP \
-	| grep -vEf $(srcdir)/POTIGNORE -e '^_(inst|build)/' -e $(DISTDIRPAT) > "xgen-$(@F)" ; :
+	| grep -vEf $(srcdir)/POTIGNORE -e '^_(inst|build)/' -e $(DISTDIRPAT) > "xgen-$(@F)"
 	@ # scanning file types...
 	@$(foreach TYPE, $(POSRC_TYPES), \
 	  $(call test_unlisted, $(TYPE), "xgen-$(@F)", "unlisted"))
