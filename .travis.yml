@@ -12,19 +12,19 @@ language: c
 env:
   global:
     #- http_proxy="http://example.com"
-    - INTENT="deb" # build and upload deb packages
+    - INTENT="deb" # default intent
   matrix:
-    # Distribution Name and Version
+    # distcheck: succeed in 'make distcheck'
+    - INTENT="distcheck" DIST="ubuntu:wily"
+    # deb: build packages for distribution $DIST
+    - DIST="ubuntu:wily"
     - DIST="debian:jessie"
     - DIST="debian:testing"
-    - DIST="ubuntu:trusty"
-    - DIST="ubuntu:wily"
     - DIST="ubuntu:xenial"
-    - INTENT="distcheck" DIST="ubuntu:wily" # run and succeed in 'distcheck'
+    #- DIST="ubuntu:trusty" # C++11 support too old
 matrix:
   allow_failures:
     - env: DIST="debian:testing"
-    - env: DIST="ubuntu:trusty"
     - env: DIST="ubuntu:xenial"
   fast_finish: true
 
