@@ -68,11 +68,11 @@ notifications:
   irc:
     channels:
       - "irc.gimp.org#beast"
-    on_success: change # always / never / change
-    on_failure: change # always / never / change
+    on_success: always
+    on_failure: always
     skip_join: true
   email: false
     #recipients:
     #  - beast@gnome.org
-    #on_success: change
+    #on_success: never
     #on_failure: change
