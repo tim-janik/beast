@@ -15,7 +15,7 @@ Package: beast
 Architecture: any
 Depends:
  libbse-0-9 (= ${binary:Version}), beast-doc (= ${source:Version}),
- rapicorn (>= 15.9.1), python-rapicorn (>= 15.9.1),
+ rapicorn (>= 15.9.1~git5343), python-rapicorn (>= 15.9.1~git5343),
  ${shlibs:Depends}, ${misc:Depends}
 Description: Music Synthesizer and Composer
  Beast is a free software music composer and modular synthesizer.
@@ -52,7 +52,7 @@ Description: Music Synthesizer and Composer
 Package: libbse-dev
 Section: libdevel
 Architecture: any
-Depends: libbse-0-9 (= ${binary:Version}), librapicorn-dev (>= 15.9.1), ${shlibs:Depends}, ${misc:Depends}
+Depends: libbse-0-9 (= ${binary:Version}), librapicorn-dev (>= 15.9.1~git5343), ${shlibs:Depends}, ${misc:Depends}
 Breaks: libbse-0.7-4, bse-alsa (<< 0.9.3)
 Replaces: libbse-0.7-4, bse-alsa (<< 0.9.3)
 Description: Music Synthesizer and Composer
