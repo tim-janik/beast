@@ -47,6 +47,15 @@ bse-app-test:
 installcheck-local: bse-app-test
 
 
+# == distcheck-checks ==
+distcheck-check-xz-opt:
+	$(Q) test "$$XZ_OPT" != '--fast' -a "$$XZ_OPT" != '-0' || \
+	{ echo "distcheck: error: bad compression option for distribution tarball: XZ_OPT=$$XZ_OPT" >&2 ; exit 1 ; }
+check-update-po:
+	$(Q) $(MAKE) -C po check-update-po
+DISTCHECK_HOOK = distcheck # help add dependencies to 'distcheck' without overriding its definition
+$(DISTCHECK_HOOK): distcheck-check-xz-opt check-update-po
+
 # == Dist Fixes ==
 # Some files remain after distcheck, that we cannot clean up. So we role our own listfiles filter.
 distuninstallcheck_listfiles  = find . -type f $(patsubst ./%, ! -path \*/%, $(uninstall_filter_files)) -print
