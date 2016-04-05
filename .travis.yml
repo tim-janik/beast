@@ -32,7 +32,7 @@ before_install:
   # Build variable setup
   - export DISTNAME="${DIST%:*}" DISTRELEASE="${DIST#*:}" # Example: DIST=debian:jessie DISTNAME=debian DISTRELEASE=jessie
   - export BINTRAYREPO="deb [trusted=yes] https://dl.bintray.com/beast-team/deb $DISTRELEASE main"
-  - echo "DIST=$DIST DISTNAME=$DISTNAME DISTRELEASE=$DISTRELEASE BINTRAYREPO='$BINTRAYREPO'"
+  - echo "INTENT=$INTENT DIST=$DIST DISTNAME=$DISTNAME DISTRELEASE=$DISTRELEASE BINTRAYREPO='$BINTRAYREPO'"
   # Sample environment
   - uname -a
   - cat /etc/os-release

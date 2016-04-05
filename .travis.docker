@@ -36,7 +36,7 @@ RUN retry apt-get -y install apt-transport-https ca-certificates && \
 RUN retry apt-get install -y \
     build-essential devscripts lintian automake autoconf autoconf-archive libtool intltool git xvfb libxml-parser-perl \
     gawk bison flex cython doxygen graphviz texlive-binaries pandoc \
-    libcairo2-dev libcroco3-dev libpango1.0-dev python2.7-dev libxml2-dev libgdk-pixbuf2.0-dev libreadline6-dev \
+    libpango1.0-dev python2.7-dev libxml2-dev libreadline6-dev \
     libreadline-dev python-all-dev \
     libasound2-dev libflac-dev libvorbis-dev libmad0-dev libgnomecanvas2-dev libxml2-utils guile-1.8-dev
 
