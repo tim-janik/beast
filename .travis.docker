@@ -6,13 +6,6 @@ MAINTAINER Tim Janik <timj@gnu.org>
 
 # Carry over enviroment variables
 ENV EMAIL beast@gnome.org
-ENV DIST "@DIST@"
-ENV DISTNAME "@DISTNAME@"
-ENV DISTRELEASE "@DISTRELEASE@"
-ENV BINTRAYREPO "@BINTRAYREPO@"
-ENV TRAVIS_JOB_NUMBER "@TRAVIS_JOB_NUMBER@"
-ENV http_proxy "@http_proxy@"
-ENV INTENT "@INTENT@"
 
 # Automation tools and convenience commands
 ENV DEBIAN_FRONTEND noninteractive
@@ -24,10 +17,12 @@ RUN echo '#!/bin/bash\n"$@" || { sleep 10 ; "$@" ; } || { sleep 90 ; "$@" ; }' >
     | tee -a /etc/bash.bashrc >> /root/.bashrc
 
 # Ensure uptodate distribution and access to the bintray.com repositories
+ENV http_proxy "@http_proxy@"
 RUN retry apt-get update && retry apt-get -y install apt-utils && retry apt-get -y upgrade && \
     apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 379CE192D401AB61
 
 # Install Rapicorn packages
+ENV BINTRAYREPO "@BINTRAYREPO@"
 RUN retry apt-get -y install apt-transport-https ca-certificates && \
     echo "$BINTRAYREPO" | tee /etc/apt/sources.list.d/bintray-beast-team.list && \
     retry apt-get update && retry apt-get -y install rapicorn
@@ -58,6 +53,7 @@ RUN nice make dist
 RUN nice make uninstall
 
 # Carry out distcheck test if desired
+ENV INTENT "@INTENT@"
 RUN [ $INTENT = distcheck ] || exit 0 && \
     nice make distcheck
 
@@ -71,6 +67,8 @@ WORKDIR /usr/src/
 # Create deb packages as follows:
 # Eval configuration, prepare debian source tarball, prepare debian/ directory,
 # update 'changelog', install dependencies, build debian packages.
+ENV DISTRELEASE "@DISTRELEASE@"
+ENV TRAVIS_JOB_NUMBER "@TRAVIS_JOB_NUMBER@"
 RUN [ $INTENT = deb ] || exit 0 && \
     eval `beast/buildtool.sh config` && \
     DIST_TARBALL="$PACKAGE/$PACKAGE-$UPSVERSION.tar.xz" && \
