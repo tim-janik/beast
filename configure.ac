@@ -316,7 +316,7 @@ AC_DEFUN([MC_SFI_REQUIREMENTS],
 AC_DEFUN([MC_BSE_REQUIREMENTS],
 [
     dnl # require Rapicorn
-    PKG_CHECK_MODULES(RAPICORN, rapicorn >= 16.0.0)
+    PKG_CHECK_MODULES(RAPICORN, rapicorn >= 16.0.1)
     MC_ASSERT_PROG(AIDACC, aidacc, [aidacc gets shipped with Rapicorn])
     MC_ASSERT_PROG(AIDACC, rapidres, [rapidres gets shipped with Rapicorn])
 
