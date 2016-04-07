@@ -1,4 +1,4 @@
-Beast 0.10.0:					(2016-04-06)
+Beast 0.10.0:					(2016-04-07)
 
 * Memory leak and stability fixes.
 * Removal of deprecated Glib/Gtk+ functions.

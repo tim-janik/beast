@@ -17,8 +17,8 @@ AC_PREREQ(2.57)
 # * ABI_VERSION:     Record the latest version since ABI compatibility has been kept
 # * ABI changes:     Increment MAJOR or MINOR and reset ABI_VERSION to the current VERSION
 # * -RC:             Release candidate, may contain -rc[0-9]+ or nothing
-AC_INIT([beast], [0.9.3]) # defines PACKAGE_NAME, PACKAGE_VERSION, PACKAGE_STRING
-:;   ABI_VERSION=[0.9.3]
+AC_INIT([beast], [0.10.0]) # defines PACKAGE_NAME, PACKAGE_VERSION, PACKAGE_STRING
+:;   ABI_VERSION=[0.10.0]
 BST_VERSION_HINT=alpha
 AC_CONFIG_SRCDIR([bse/bseconfig.h.in])
 AC_CONFIG_AUX_DIR([autotools])
@@ -316,7 +316,7 @@ AC_DEFUN([MC_SFI_REQUIREMENTS],
 AC_DEFUN([MC_BSE_REQUIREMENTS],
 [
     dnl # require Rapicorn
-    PKG_CHECK_MODULES(RAPICORN, rapicorn >= 15.09.1)
+    PKG_CHECK_MODULES(RAPICORN, rapicorn >= 16.0.0)
     MC_ASSERT_PROG(AIDACC, aidacc, [aidacc gets shipped with Rapicorn])
     MC_ASSERT_PROG(AIDACC, rapidres, [rapidres gets shipped with Rapicorn])
 
