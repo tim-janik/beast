@@ -17,7 +17,7 @@ AC_PREREQ(2.57)
 # * ABI_VERSION:     Record the latest version since ABI compatibility has been kept
 # * ABI changes:     Increment MAJOR or MINOR and reset ABI_VERSION to the current VERSION
 # * -RC:             Release candidate, may contain -rc[0-9]+ or nothing
-AC_INIT([beast], [0.10.0]) # defines PACKAGE_NAME, PACKAGE_VERSION, PACKAGE_STRING
+AC_INIT([beast], [0.10.1]) # defines PACKAGE_NAME, PACKAGE_VERSION, PACKAGE_STRING
 :;   ABI_VERSION=[0.10.0]
 BST_VERSION_HINT=alpha
 AC_CONFIG_SRCDIR([bse/bseconfig.h.in])
