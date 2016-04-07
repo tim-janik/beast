@@ -12,9 +12,9 @@ language: c
 env:
   global:
     #- http_proxy="http://example.com"
-    - INTENT="deb" # default intent
+    - INTENT="package" # default intent
   matrix:
-    # deb: build packages for distribution $DIST
+    # package: build packages for distribution $DIST
     - DIST="ubuntu:wily"
     - DIST="debian:jessie"
     - DIST="debian:testing"
@@ -52,10 +52,10 @@ install:
 
 script:
   # Upload packages
-  - ([ $INTENT = deb ] || exit 0 && docker run -ti --rm beast /bin/bash -c \
+  - ([ $INTENT = package ] || exit 0 && docker run -ti --rm beast /bin/bash -c \
       "export BINTRAY_APITOKEN=$BINTRAY_APITOKEN && ls -al && beast/buildtool.sh bintrayup beast-team deb/beast $DISTRELEASE *.deb")
   # Test package installation from remote location
-  - ([ $INTENT = deb ] || exit 0 && sleep 60 && travis_retry docker run -ti --rm beast /bin/bash -c \
+  - ([ $INTENT = package ] || exit 0 && sleep 60 && travis_retry docker run -ti --rm beast /bin/bash -c \
         "set -x && retry apt-get update && retry apt-get -y install beast libbse-dev")
   - docker ps -a
 

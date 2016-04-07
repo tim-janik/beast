@@ -69,7 +69,7 @@ WORKDIR /usr/src/
 # update 'changelog', install dependencies, build debian packages.
 ENV DISTRELEASE "@DISTRELEASE@"
 ENV TRAVIS_JOB_NUMBER "@TRAVIS_JOB_NUMBER@"
-RUN [ $INTENT = deb ] || exit 0 && \
+RUN [ $INTENT = package ] || exit 0 && \
     eval `beast/buildtool.sh config` && \
     DIST_TARBALL="$PACKAGE/$PACKAGE-$UPSVERSION.tar.xz" && \
     DEB_TARBALL="$PACKAGE"_"${DEBVERSION%-*}.orig.tar.xz" && \
@@ -81,7 +81,7 @@ RUN [ $INTENT = deb ] || exit 0 && \
     cd .. && ls -al
 
 # Test package installation and removal locally
-RUN [ $INTENT = deb ] || exit 0 && \
+RUN [ $INTENT = package ] || exit 0 && \
     dpkg-scanpackages . /dev/null | gzip -9c > Packages.gz && \
     echo 'deb [trusted=yes] file:///usr/src ./' > /etc/apt/sources.list.d/usrsrc.list && \
     retry apt-get update && apt-get install -y beast libbse-dev && \
