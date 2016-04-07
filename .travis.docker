@@ -22,9 +22,9 @@ RUN retry apt-get update && retry apt-get -y install apt-utils && retry apt-get 
     apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 379CE192D401AB61
 
 # Install Rapicorn packages
-ENV BINTRAYREPO "@BINTRAYREPO@"
+ENV BEASTAPTSOURCE "@BEASTAPTSOURCE@"
 RUN retry apt-get -y install apt-transport-https ca-certificates && \
-    echo "$BINTRAYREPO" | tee /etc/apt/sources.list.d/bintray-beast-team.list && \
+    echo "$BEASTAPTSOURCE" | tee /etc/apt/sources.list.d/beast-team.list && \
     retry apt-get update && retry apt-get -y install rapicorn
 
 # Provide build essentials and dependencies

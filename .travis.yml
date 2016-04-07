@@ -29,10 +29,13 @@ matrix:
   fast_finish: true
 
 before_install:
-  # Build variable setup
-  - export DISTNAME="${DIST%:*}" DISTRELEASE="${DIST#*:}" # Example: DIST=debian:jessie DISTNAME=debian DISTRELEASE=jessie
-  - export BINTRAYREPO="deb [trusted=yes] https://dl.bintray.com/beast-team/deb $DISTRELEASE main"
-  - echo "INTENT=$INTENT DIST=$DIST DISTNAME=$DISTNAME DISTRELEASE=$DISTRELEASE BINTRAYREPO='$BINTRAYREPO'"
+  # buildtool.sh requires complete history for monotonic revisioning
+  - travis_retry git fetch --unshallow
+  # Build variable setup; example: DIST=debian:jessie DISTNAME=debian DISTRELEASE=jessie
+  - true &&
+    export DISTNAME="${DIST%:*}" DISTRELEASE="${DIST#*:}" &&
+    export BEASTAPTSOURCE="deb [trusted=yes] https://dl.bintray.com/beast-team/deb $DISTRELEASE main" &&
+    echo "INTENT=$INTENT DIST=$DIST DISTNAME=$DISTNAME DISTRELEASE=$DISTRELEASE BEASTAPTSOURCE='$BEASTAPTSOURCE'"
   # Sample environment
   - uname -a
   - cat /etc/os-release
@@ -43,8 +46,6 @@ before_install:
   - $CC --version
 
 install:
-  # Complete history is required for monotonic revisioning
-  - travis_retry git fetch --unshallow
   # Configure Dockerfile by substituting @VAR@ with $VAR
   - ./buildtool.sh applyenv .travis.docker > Dockerfile
   # Build and run tests, create packages
