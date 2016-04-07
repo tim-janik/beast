@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-09-16 00:42+0200\n"
+"POT-Creation-Date: 2016-04-05 23:03+0200\n"
 "PO-Revision-Date: 2005-07-05 19:42+0200\n"
 "Last-Translator: Miloslav Trmac <mitr@volny.cz>\n"
 "Language-Team: Czech <cs@li.org>\n"
@@ -112,7 +112,7 @@ msgstr "%s: automatizace z ovládacího prvku MIDI: %s"
 msgid "%s: automation from MIDI control: %s (MIDI channel: %d)"
 msgstr "%s: automatizace z ovládacího prvku MIDI: %s (kanál MIDI: %d)"
 
-#: beast-gtk/bstcanvassource.cc:980
+#: beast-gtk/bstcanvassource.cc:968
 msgid "(Hint)"
 msgstr "(Nápověda)"
 
@@ -355,7 +355,7 @@ msgid "12"
 msgstr "12"
 
 #. Equal Temperament: http://en.wikipedia.org/wiki/Equal_temperament
-#: bse/bsebasics.idl:38
+#: bse/bseapi.idl:280
 msgid "12 Tone Equal Temperament"
 msgstr ""
 
@@ -511,7 +511,7 @@ msgstr ""
 msgid "5 1/3rd Harmonic"
 msgstr ""
 
-#: bse/bsebasics.idl:45
+#: bse/bseapi.idl:287
 msgid "5 Tone Equal Temperament"
 msgstr ""
 
@@ -535,7 +535,7 @@ msgstr "Okno FFT s 64 hodnotami"
 msgid "65536 Value FFT Window"
 msgstr "Okno FFT s 65536 hodnotami"
 
-#: bse/bsebasics.idl:42
+#: bse/bseapi.idl:284
 msgid "7 Tone Equal Temperament"
 msgstr ""
 
@@ -638,7 +638,7 @@ msgid ""
 msgstr "Okno FFT s 8192 hodnotami odpovídá spektru s 4097 vrcholy frekvence"
 
 #. http://en.wikipedia.org/wiki/Equal_temperament
-#: bse/bsebasics.idl:46
+#: bse/bseapi.idl:288
 msgid ""
 "A fairly common tuning system is the five-tone equal temperament tuning "
 "system, abbreviated as 5-TET. It divides the octave into 5 equal parts using "
@@ -646,14 +646,14 @@ msgid ""
 msgstr ""
 
 #. http://en.wikipedia.org/wiki/Equal_temperament
-#: bse/bsebasics.idl:43
+#: bse/bseapi.idl:285
 msgid ""
 "A fairly common tuning system is the seven-tone equal temperament tuning "
 "system, abbreviated as 7-TET. It divides the octave into 7 equal parts using "
 "171 cent steps."
 msgstr ""
 
-#: beast-gtk/bstapp.cc:156
+#: beast-gtk/bstapp.cc:151
 msgid "A guide to synthesis plugin development"
 msgstr "Průvodce vývojem zásuvných modulů pro syntézu"
 
@@ -664,11 +664,11 @@ msgid ""
 msgstr ""
 "Řetězec se znaky _ na místech odpovídajících znakům v textu, které podtrhnout"
 
-#: beast-gtk/bstsnetrouter.cc:1060
+#: beast-gtk/bstsnetrouter.cc:1048
 msgid "ADSR"
 msgstr "ADSR"
 
-#: beast-gtk/bstsnetrouter.cc:1060
+#: beast-gtk/bstsnetrouter.cc:1048
 msgid "ADSR Envelope Generator"
 msgstr "Generátor obálky ADSR"
 
@@ -701,19 +701,15 @@ msgstr "Zesílený výstup zvuku"
 msgid "Add"
 msgstr "Přidat"
 
-#: beast-gtk/bstapp.cc:123
+#: beast-gtk/bstapp.cc:118
 msgid "Add Custom Synthesizer"
 msgstr "Přidat vlastní syntetizér"
 
-#: beast-gtk/bstapp.cc:125
+#: beast-gtk/bstapp.cc:120
 msgid "Add MIDI Synthesizer"
 msgstr "Přidat syntetizér MIDI"
 
-#: bse/bsebus.proc:89
-msgid "Add a bus to the input list of a bus."
-msgstr ""
-
-#: beast-gtk/bstapp.cc:125
+#: beast-gtk/bstapp.cc:120
 msgid ""
 "Add a new MIDI synthesizer to control an instrument from external MIDI events"
 msgstr ""
@@ -723,18 +719,13 @@ msgstr ""
 msgid "Add a new bus to the mixer"
 msgstr "Přidat k mixéru novou sběrnici"
 
-#: beast-gtk/bstapp.cc:123
+#: beast-gtk/bstapp.cc:118
 msgid "Add a new synthesizer mesh to be used as effect or instrument in songs"
 msgstr ""
 "Přidat novou síť syntetizéru pro použití jako efekt nebo nástroj ve skladbách"
 
 #: beast-gtk/bsttrackview.cc:48
 msgid "Add a new track to this song"
-msgstr "Přidat k této skladbě novou stopu"
-
-#: bse/bsebus.proc:15
-#, fuzzy
-msgid "Add a track to the input list of a bus."
 msgstr "Přidat k této skladbě novou stopu"
 
 #: beast-gtk/bstparam-searchpath.cc:112
@@ -750,7 +741,7 @@ msgid "Add reeds sound"
 msgstr ""
 
 # FIXME: s/synthsizer/synthesizer/
-#: beast-gtk/bstsupershell.cc:198
+#: beast-gtk/bstsupershell.cc:193
 #, fuzzy
 msgid "Add, edit and connect synthesizer mesh components"
 msgstr "Přidávat, upravovat a propojovat komponenty sítě syntetizéru"
@@ -784,15 +775,15 @@ msgstr "Upravit, jak moc řídicí signály ovlivňují výstupní hlasitost"
 msgid "Adjust output balance between left and right"
 msgstr "Upravit vyvážení výstupu mezi levou a pravou stranou"
 
-#: beast-gtk/bstapp.cc:84
+#: beast-gtk/bstapp.cc:81
 msgid "Adjust overall program behaviour"
 msgstr "Upravit obecné chování programu"
 
-#: beast-gtk/bstsupershell.cc:169
+#: beast-gtk/bstsupershell.cc:168
 msgid "Adjust overall song behaviour"
 msgstr "Upravit obecné chování skladby"
 
-#: beast-gtk/bstsupershell.cc:202
+#: beast-gtk/bstsupershell.cc:197
 msgid "Adjust overall synthesizer behaviour"
 msgstr "Upravit obecné chování syntetizéru"
 
@@ -800,7 +791,7 @@ msgstr "Upravit obecné chování syntetizéru"
 msgid "Adjust relative alignment of the values or bars to be drawn"
 msgstr "Upravit relativní zarovnání kreslených hodnot nebo pruhů"
 
-#: beast-gtk/bstpatternctrl.cc:130
+#: beast-gtk/bstpatternctrl.cc:132
 msgid "Adjust the number of rows between each shaded row"
 msgstr "Upravit počet řádků mezi stínovanými řádky"
 
@@ -819,14 +810,14 @@ msgstr "Upravit faktor zvětšení zobrazení routeru"
 msgid "Adjust whether to draw dB values instead of lines"
 msgstr "Upravit, jestli kreslit hodnoty dB místo čar"
 
-#: bse/bsebus.cc:859 bse/bsebus.cc:861 bse/bsebus.cc:863 bse/bsebus.cc:865
-#: bse/bsebus.cc:869 bse/bsemidisynth.cc:442 bse/bsemidisynth.cc:448
-#: bse/bsemidisynth.cc:455 bse/bsetrack.cc:1024
+#: bse/bsebus.cc:867 bse/bsebus.cc:869 bse/bsebus.cc:871 bse/bsebus.cc:873
+#: bse/bsebus.cc:877 bse/bsemidisynth.cc:441 bse/bsemidisynth.cc:447
+#: bse/bsemidisynth.cc:454 bse/bsetrack.cc:1022
 msgid "Adjustments"
 msgstr "Úpravy"
 
 #. TRANSLATORS: keep this text to 70 chars in width
-#: drivers/bsemididevice-alsa.cc:331
+#: drivers/bsemididevice-alsa.cc:330
 #, c-format
 msgid ""
 "Advanced Linux Sound Architecture MIDI driver, using\n"
@@ -855,7 +846,7 @@ msgstr ""
 "  PODZAŘ - číslo podzařízení pro moduly jako 'hw'\n"
 
 #. TRANSLATORS: keep this text to 70 chars in width
-#: drivers/bsepcmdevice-alsa.cc:583
+#: drivers/bsepcmdevice-alsa.cc:582
 #, c-format
 msgid ""
 "Advanced Linux Sound Architecture PCM driver, using\n"
@@ -913,7 +904,7 @@ msgstr "Úroveň rozladění v centech (setinách noty)"
 msgid "Amplified audio output"
 msgstr "Zesílený výstup zvuku"
 
-#: bse/bseserver.cc:433
+#: bse/bseserver.cc:434
 msgid ""
 "An audio project is in use which processes an audio input signal, but the "
 "audio device has not been opened in recording mode. An audio signal of "
@@ -930,7 +921,7 @@ msgstr ""
 msgid "An error occoured during execution of script procedure '%s': %s"
 msgstr "Při provádění procedury skriptu '%s' došlo k chybě: %s"
 
-#: bse/bseserver.cc:572
+#: bse/bseserver.cc:573
 msgid ""
 "An error occoured while opening the recording file, selecting a different "
 "file might fix this situation."
@@ -938,7 +929,7 @@ msgstr ""
 "Při otevírání souboru záznamu došlo k chybě, výběr jiného souboru možná tuto "
 "situaci opraví."
 
-#: beast-gtk/bstapp.cc:147
+#: beast-gtk/bstapp.cc:142
 msgid "Answers to frequently asked questions"
 msgstr "Odpovědi na často kladené otázky"
 
@@ -951,7 +942,7 @@ msgstr "Vyhlazovat"
 msgid "Apply configuration changes to the pattern editor layout"
 msgstr "Použít změny nastavení rozložení editoru vzorků"
 
-#: beast-gtk/gxk/gxklistwrapper.cc:88
+#: beast-gtk/gxk/gxklistwrapper.cc:89
 msgid "Array of column types"
 msgstr "Pole typů sloupců"
 
@@ -1062,7 +1053,7 @@ msgstr "Zvuk"
 msgid "Audio Gate"
 msgstr "Výstup zvuku"
 
-#: bse/bseserver.cc:485
+#: bse/bseserver.cc:486
 #, fuzzy
 msgid "Audio I/O Failed"
 msgstr "Výstup zvuku"
@@ -1154,7 +1145,7 @@ msgstr "Výstup zvuku2"
 msgid "Audio Output"
 msgstr "Výstup zvuku"
 
-#: bse/bseserver.cc:431
+#: bse/bseserver.cc:432
 msgid "Audio Recording Failed"
 msgstr ""
 
@@ -1178,7 +1169,7 @@ msgstr "Výstup zvuku1"
 msgid "Audio Sum2"
 msgstr "Výstup zvuku2"
 
-#: bse/bseserver.cc:438
+#: bse/bseserver.cc:439
 #, c-format
 msgid "Audio device \"%s\" is not open for input, audio driver: %s=%s"
 msgstr "Zvukové zařízení \"%s\" není otevřeno pro vstup, ovladač zvuku: %s=%s"
@@ -1199,9 +1190,10 @@ msgstr "Vstup zvuku 2"
 msgid "Author"
 msgstr "Autor"
 
-#: bse/bseautodoc.cc:338 bse/bseautodoc.cc:412
-msgid "Authors:"
-msgstr "Autoři:"
+#: bse/bseapi.idl:631
+#, fuzzy
+msgid "Auto Activate"
+msgstr "Automaticky oříznout"
 
 #: plugins/artscompressor.idl:40 plugins/standardsaturator.idl:42
 msgid "Auto Output"
@@ -1219,6 +1211,12 @@ msgid ""
 msgstr ""
 "Auto je speciální ovladač, znamená automatický\n"
 "výběr ovladače."
+
+#: bse/bseapi.idl:632
+msgid ""
+"Automatic activation only needs to be enabled for synthesis networks that "
+"don't use virtual ports for their input and output"
+msgstr ""
 
 #: plugins/standardsaturator.idl:43
 msgid ""
@@ -1239,11 +1237,11 @@ msgstr "Dostupné položky:"
 msgid "Available Outputs"
 msgstr "Dostupné výstupy"
 
-#: bse/bsemidisynth.cc:214 bse/bsesong.cc:125 bse/bsetrack.cc:278
+#: bse/bsemidisynth.cc:213 bse/bsesong.cc:123 bse/bsetrack.cc:278
 msgid "Available Postprocessors"
 msgstr "Dostupné postprocesory"
 
-#: bse/bsemidisynth.cc:210 bse/bsesubsynth.cc:141 bse/bsetrack.cc:274
+#: bse/bsemidisynth.cc:209 bse/bsesubsynth.cc:141 bse/bsetrack.cc:274
 msgid "Available Synthesizers"
 msgstr "Dostupné syntetizéry"
 
@@ -1264,25 +1262,28 @@ msgstr ""
 "Průměrný počet milisekund uživatelského času CPU použitého vláknem za sekundu"
 
 #. Name
-#: data/beast.desktop.in:4
+#: data/beast.desktop.in:3
 msgid "BEAST"
 msgstr "BEAST"
 
-#: beast-gtk/bstmain.cc:879
+#: beast-gtk/bstmain.cc:1053
 msgid "BEAST About"
 msgstr "BEAST O aplikaci"
 
-#: beast-gtk/bstmain.cc:122
+#: beast-gtk/bstmain.cc:213
 msgid "BEAST Startup"
 msgstr "Spuštění BEAST"
 
-#: beast-gtk/bstmain.cc:880
+#: beast-gtk/bstmain.cc:1054
 #, c-format
 msgid "BEAST Version %s"
 msgstr "BEAST verze %s"
 
-#. start BSE core and connect
-#: beast-gtk/bstmain.cc:157
+#: bse/bseapi.idl:762
+msgid "BPM"
+msgstr ""
+
+#: beast-gtk/bstmain.cc:261
 msgid "BSE Core"
 msgstr "Jádro BSE"
 
@@ -1326,11 +1327,11 @@ msgstr "Obrázek na pozadí používaný editorem vzorků."
 msgid "Background image used by the piano-roll editor."
 msgstr "Obrázek na pozadí používaný editorem svitku klavíru."
 
-#: bse/bseapi.idl:76
+#: bse/bseapi.idl:77
 msgid "Bad loopback"
 msgstr "Špatný loopback"
 
-#: bse/bseapi.idl:111 bse/bsebasics.idl:123 plugins/bseamplifier.idl:36
+#: bse/bseapi.idl:112 bse/bsebasics.idl:41 plugins/bseamplifier.idl:36
 #: plugins/bseamplifier.idl:41 plugins/bsebalance.idl:27
 #: plugins/bsebalance.idl:32
 msgid "Balance"
@@ -1345,7 +1346,7 @@ msgid "Balance control input levels"
 msgstr "Vyrovnat úrovně řídicích vstupů"
 
 #. 14bit, continuous controls
-#: bse/bseapi.idl:103 bse/bsebasics.idl:115
+#: bse/bseapi.idl:104 bse/bsebasics.idl:33
 msgid "Bank Select"
 msgstr "Vybrěr banky"
 
@@ -1354,7 +1355,7 @@ msgstr "Vybrěr banky"
 msgid "Base Frequency"
 msgstr "Základní frekvence"
 
-#: beast-gtk/bstpatternctrl.cc:125
+#: beast-gtk/bstpatternctrl.cc:127
 msgid "Base Octave"
 msgstr "Základní oktáva"
 
@@ -1365,6 +1366,10 @@ msgstr "Základní hlasitost"
 #: plugins/bseamplifier.idl:50
 msgid "Base amplification (the control signal adds up to this)"
 msgstr "Základní zesílení (k tomuto přidává řídicí signál)"
+
+#: bse/bseapi.idl:762
+msgid "Beats per minute"
+msgstr "Úderů za minutu"
 
 #: beast-gtk/bstkeybindings.cc:33
 msgid "Bind a new key combination to a program function"
@@ -1382,7 +1387,7 @@ msgstr ""
 msgid "Brass Sounds"
 msgstr ""
 
-#: bse/bseapi.idl:105 bse/bsebasics.idl:117
+#: bse/bseapi.idl:106 bse/bsebasics.idl:35
 msgid "Breath Control"
 msgstr "Řízení dýchání"
 
@@ -1428,7 +1433,7 @@ msgstr ""
 msgid "Bus Name"
 msgstr "Název sběrnice"
 
-#: bse/bsebus.cc:918
+#: bse/bsebus.cc:926
 msgid ""
 "Bus implementation for songs, used to route track audio signals to the "
 "master output."
@@ -1436,7 +1441,7 @@ msgstr ""
 "Implementace sběrnice pro skladby používaná pro směrování signálů stop zvuku "
 "na hlavní výstup."
 
-#: beast-gtk/bstsupershell.cc:177
+#: beast-gtk/bstsupershell.cc:176
 msgid "Busses"
 msgstr "Sběrnice"
 
@@ -1457,7 +1462,7 @@ msgstr "CPU%"
 msgid "CPU%"
 msgstr "CPU%"
 
-#: beast-gtk/bstapp.cc:629
+#: beast-gtk/bstapp.cc:624
 msgid "Cancel"
 msgstr "Zrušit"
 
@@ -1469,7 +1474,7 @@ msgstr "Střední frekvence"
 msgid "Center Frequency Input"
 msgstr "Vstup střední frekvence"
 
-#: beast-gtk/bstpatternctrl.cc:328
+#: beast-gtk/bstpatternctrl.cc:331
 msgid "Change the base octave by a given amount"
 msgstr "Změnit základní oktávu o danou hodnotu"
 
@@ -1477,7 +1482,7 @@ msgstr "Změnit základní oktávu o danou hodnotu"
 msgid "Change the currently selected key binding"
 msgstr "Změnit momentálně vybranou klávesovou zkratku"
 
-#: beast-gtk/bstpatternctrl.cc:332
+#: beast-gtk/bstpatternctrl.cc:335
 msgid "Change the numeric focus cell contents (e.g. octave) by a given amount"
 msgstr "Změnit číselný obsah aktivní buňky (např. oktávu) o danou hodnotu"
 
@@ -1489,7 +1494,7 @@ msgstr ""
 msgid "Change..."
 msgstr "Změnit..."
 
-#: beast-gtk/bstapp.cc:624
+#: beast-gtk/bstapp.cc:619
 #, c-format
 msgid ""
 "Changes were made to project \"%s\" since the last time it was saved to disk."
@@ -1501,12 +1506,12 @@ msgstr ""
 msgid "Channel"
 msgstr "Kanál"
 
-#: beast-gtk/bstsnetrouter.cc:1124
+#: beast-gtk/bstsnetrouter.cc:1112
 msgid "Channel Hints"
 msgstr "Nápovědy kanálů"
 
 #. 7bit
-#: bse/bseapi.idl:98
+#: bse/bseapi.idl:99
 msgid "Channel Pressure"
 msgstr "Tlak kanálu"
 
@@ -1547,28 +1552,28 @@ msgstr "Zvolte vodorovnou nebo svislou orientaci"
 msgid "Chorus audio output"
 msgstr "Výstup zvuku sboru"
 
-#: beast-gtk/bstpartdialog.cc:46
+#: beast-gtk/bstpartdialog.cc:45
 msgid "Clear"
 msgstr "Vymazat"
 
-#: beast-gtk/bstpartdialog.cc:46
+#: beast-gtk/bstpartdialog.cc:45
 msgid "Clear the current selection"
 msgstr "Odstranit aktuální výběr"
 
-#: beast-gtk/bstapp.cc:622
+#: beast-gtk/bstapp.cc:617
 #, c-format
 msgid "Close %s"
 msgstr "Zavřít %s"
 
-#: beast-gtk/bstapp.cc:80
+#: beast-gtk/bstapp.cc:77
 msgid "Close all windows and quit"
 msgstr "Zavřít všechna okna a skončit"
 
-#: beast-gtk/bstapp.cc:70
+#: beast-gtk/bstapp.cc:67
 msgid "Close the project"
 msgstr "Zavřít projekt"
 
-#: bse/bseapi.idl:50
+#: bse/bseapi.idl:51
 #, fuzzy
 msgid "Codec failure"
 msgstr "Chyba kodeku"
@@ -1579,7 +1584,7 @@ msgid "Color Entry"
 msgstr "Zadání barvy"
 
 #: beast-gtk/bstitemview.cc:195 beast-gtk/bsttrackview.cc:610
-#: bse/bseobject.cc:873
+#: bse/bseobject.cc:878
 msgid "Comment"
 msgstr "Poznámka"
 
@@ -1606,24 +1611,24 @@ msgstr "Nastavit rozložení sloupců editoru vzorků"
 msgid "Const Out%u"
 msgstr "Konst Out%u"
 
-#: bse/bseapi.idl:137
+#: bse/bseapi.idl:138
 msgid "Constant CENTER"
 msgstr "Konstantní STŘEDNÍ"
 
 #. 14bit, special case signals
-#: bse/bseapi.idl:136
+#: bse/bseapi.idl:137
 msgid "Constant HIGH"
 msgstr "Konstantní VYSOKÉ"
 
-#: bse/bseapi.idl:138
+#: bse/bseapi.idl:139
 msgid "Constant LOW"
 msgstr "Konstantní NÍZKÉ"
 
-#: bse/bseapi.idl:139
+#: bse/bseapi.idl:140
 msgid "Constant Negative CENTER"
 msgstr "Konstantná záporné STŘEDNÍ"
 
-#: bse/bseapi.idl:140
+#: bse/bseapi.idl:141
 msgid "Constant Negative HIGH"
 msgstr "Konstantní záporné VYSOKÉ"
 
@@ -1651,367 +1656,367 @@ msgstr ""
 msgid "Contents"
 msgstr "Obsah"
 
-#: bse/bseapi.idl:117 bse/bsebasics.idl:129
+#: bse/bseapi.idl:118 bse/bsebasics.idl:47
 msgid "Continuous 14"
 msgstr "Spojité 14"
 
-#: bse/bseapi.idl:118 bse/bsebasics.idl:130
+#: bse/bseapi.idl:119 bse/bsebasics.idl:48
 msgid "Continuous 15"
 msgstr "Spojité 15"
 
-#: bse/bseapi.idl:123 bse/bsebasics.idl:135
+#: bse/bseapi.idl:124 bse/bsebasics.idl:53
 msgid "Continuous 20"
 msgstr "Spojité 20"
 
-#: bse/bseapi.idl:124 bse/bsebasics.idl:136
+#: bse/bseapi.idl:125 bse/bsebasics.idl:54
 msgid "Continuous 21"
 msgstr "Spojité 21"
 
-#: bse/bseapi.idl:125 bse/bsebasics.idl:137
+#: bse/bseapi.idl:126 bse/bsebasics.idl:55
 msgid "Continuous 22"
 msgstr "Spojité 22"
 
-#: bse/bseapi.idl:126 bse/bsebasics.idl:138
+#: bse/bseapi.idl:127 bse/bsebasics.idl:56
 msgid "Continuous 23"
 msgstr "Spojité 23"
 
-#: bse/bseapi.idl:127 bse/bsebasics.idl:139
+#: bse/bseapi.idl:128 bse/bsebasics.idl:57
 msgid "Continuous 24"
 msgstr "Spojité 24"
 
-#: bse/bseapi.idl:128 bse/bsebasics.idl:140
+#: bse/bseapi.idl:129 bse/bsebasics.idl:58
 msgid "Continuous 25"
 msgstr "Spojité 25"
 
-#: bse/bseapi.idl:129 bse/bsebasics.idl:141
+#: bse/bseapi.idl:130 bse/bsebasics.idl:59
 msgid "Continuous 26"
 msgstr "Spojité 26"
 
-#: bse/bseapi.idl:130 bse/bsebasics.idl:142
+#: bse/bseapi.idl:131 bse/bsebasics.idl:60
 msgid "Continuous 27"
 msgstr "Spojité 27"
 
-#: bse/bseapi.idl:131 bse/bsebasics.idl:143
+#: bse/bseapi.idl:132 bse/bsebasics.idl:61
 msgid "Continuous 28"
 msgstr "Spojité 28"
 
-#: bse/bseapi.idl:132 bse/bsebasics.idl:144
+#: bse/bseapi.idl:133 bse/bsebasics.idl:62
 msgid "Continuous 29"
 msgstr "Spojité 29"
 
-#: bse/bseapi.idl:106 bse/bsebasics.idl:118
+#: bse/bseapi.idl:107 bse/bsebasics.idl:36
 msgid "Continuous 3"
 msgstr "Spojité 3"
 
-#: bse/bseapi.idl:133 bse/bsebasics.idl:145
+#: bse/bseapi.idl:134 bse/bsebasics.idl:63
 msgid "Continuous 30"
 msgstr "Spojité 30"
 
-#: bse/bseapi.idl:134 bse/bsebasics.idl:146
+#: bse/bseapi.idl:135 bse/bsebasics.idl:64
 msgid "Continuous 31"
 msgstr "Spojité 31"
 
-#: bse/bseapi.idl:112 bse/bsebasics.idl:124
+#: bse/bseapi.idl:113 bse/bsebasics.idl:42
 msgid "Continuous 9"
 msgstr "Spojité 9"
 
-#: bse/bsebasics.idl:115
+#: bse/bsebasics.idl:33
 msgid "Continuous MIDI Control #1 - Bank Select"
 msgstr "Spojité řízení MIDI č. 1 - Výběr banky"
 
-#: beast-gtk/bstmain.cc:881
+#: beast-gtk/bstmain.cc:1055
 msgid "Contributions made by:"
 msgstr "Přispěli:"
 
 #. 7bit, literal channel controls, MSB values
-#: bse/bseapi.idl:144 bse/bsebasics.idl:148
+#: bse/bseapi.idl:145 bse/bsebasics.idl:66
 msgid "Control 0 Bank Select MSB"
 msgstr "Řízení 0 Výběr banky MSB"
 
-#: bse/bseapi.idl:145 bse/bsebasics.idl:149
+#: bse/bseapi.idl:146 bse/bsebasics.idl:67
 msgid "Control 1 Modulation Depth MSB"
 msgstr "Řízení 1 Hloubka modulace MSB"
 
-#: bse/bseapi.idl:154 bse/bsebasics.idl:158
+#: bse/bseapi.idl:155 bse/bsebasics.idl:76
 msgid "Control 10 Panorama MSB"
 msgstr "Řízení 10 Panorama MSB"
 
-#: bse/bseapi.idl:246 bse/bsebasics.idl:250
+#: bse/bseapi.idl:247 bse/bsebasics.idl:168
 msgid "Control 100 Registered Parameter MSB"
 msgstr "Řízení 100 Registrovaný parametr MSB"
 
-#: bse/bseapi.idl:247 bse/bsebasics.idl:251
+#: bse/bseapi.idl:248 bse/bsebasics.idl:169
 msgid "Control 101 Registered Parameter LSB"
 msgstr "Řízení 101 Registrovaný parametr LSB"
 
-#: bse/bseapi.idl:155 bse/bsebasics.idl:159
+#: bse/bseapi.idl:156 bse/bsebasics.idl:77
 msgid "Control 11 Expression MSB"
 msgstr "Řízení 11 Výraz MSB"
 
-#: bse/bseapi.idl:156 bse/bsebasics.idl:160
+#: bse/bseapi.idl:157 bse/bsebasics.idl:78
 msgid "Control 12 Effect Control 1 MSB"
 msgstr "Řízení 12 Řízení efektů 1 MSB"
 
-#: bse/bseapi.idl:266 bse/bsebasics.idl:270
+#: bse/bseapi.idl:267 bse/bsebasics.idl:188
 msgid "Control 120 All Sound Off ITrigger"
 msgstr "Řízení 120 Spuštění vypnutí všeho zvuku"
 
-#: bse/bseapi.idl:267 bse/bsebasics.idl:271
+#: bse/bseapi.idl:268 bse/bsebasics.idl:189
 msgid "Control 121 All Controllers Off ITrigger"
 msgstr "Řízení 121 Spuštění vypnutí všech řadičů"
 
-#: bse/bseapi.idl:268 bse/bsebasics.idl:272
+#: bse/bseapi.idl:269 bse/bsebasics.idl:190
 msgid "Control 122 Local Control Switch"
 msgstr "Řízení 122 Přepnutí místního řízení"
 
-#: bse/bseapi.idl:269 bse/bsebasics.idl:273
+#: bse/bseapi.idl:270 bse/bsebasics.idl:191
 msgid "Control 123 All Notes Off ITrigger"
 msgstr "Řízení 123 Spuštění vypnutí všech not"
 
-#: bse/bseapi.idl:270 bse/bsebasics.idl:274
+#: bse/bseapi.idl:271 bse/bsebasics.idl:192
 msgid "Control 124 Omni Mode Off ITrigger"
 msgstr "Řízení 124 Spuštění vypnutí režimu Omni"
 
-#: bse/bseapi.idl:271 bse/bsebasics.idl:275
+#: bse/bseapi.idl:272 bse/bsebasics.idl:193
 msgid "Control 125 Omni Mode On ITrigger"
 msgstr "Řízení 125 Spuštění zapnutí režimu Omni"
 
-#: bse/bseapi.idl:272 bse/bsebasics.idl:276
+#: bse/bseapi.idl:273 bse/bsebasics.idl:194
 msgid "Control 126 Monophonic Voices Mode"
 msgstr "Řízení 126 Režim monofonních zvuků"
 
-#: bse/bseapi.idl:273 bse/bsebasics.idl:277
+#: bse/bseapi.idl:274 bse/bsebasics.idl:195
 msgid "Control 127 Polyphonic Mode On ITrigger"
 msgstr "Řízení 127 Spuštění zapnutí polyfonního režimu"
 
-#: bse/bseapi.idl:157 bse/bsebasics.idl:161
+#: bse/bseapi.idl:158 bse/bsebasics.idl:79
 msgid "Control 13 Effect Control 2 MSB"
 msgstr "Řízení 13 Řízení efektů 2 MSB"
 
-#: bse/bseapi.idl:160 bse/bsebasics.idl:164
+#: bse/bseapi.idl:161 bse/bsebasics.idl:82
 msgid "Control 16 General Purpose Controller 1 MSB"
 msgstr "Řízení 16 Všeobecný řadič 1 MSB"
 
-#: bse/bseapi.idl:161 bse/bsebasics.idl:165
+#: bse/bseapi.idl:162 bse/bsebasics.idl:83
 msgid "Control 17 General Purpose Controller 2 MSB"
 msgstr "Řízení 17 Všeobecný řadič 2 MSB"
 
-#: bse/bseapi.idl:162 bse/bsebasics.idl:166
+#: bse/bseapi.idl:163 bse/bsebasics.idl:84
 msgid "Control 18 General Purpose Controller 3 MSB"
 msgstr "Řízení 18 Všeobecný řadič 3 MSB"
 
-#: bse/bseapi.idl:163 bse/bsebasics.idl:167
+#: bse/bseapi.idl:164 bse/bsebasics.idl:85
 msgid "Control 19 General Purpose Controller 4 MSB"
 msgstr "Řízení 19 Všeobecný řadič 4 MSB"
 
-#: bse/bseapi.idl:146 bse/bsebasics.idl:150
+#: bse/bseapi.idl:147 bse/bsebasics.idl:68
 msgid "Control 2 Breath Control MSB"
 msgstr "Řízení 2 Řízení dýchání MSB"
 
 #. 7bit, literal channel controls, LSB values
-#: bse/bseapi.idl:177 bse/bsebasics.idl:181
+#: bse/bseapi.idl:178 bse/bsebasics.idl:99
 msgid "Control 32 Bank Select LSB"
 msgstr "Řízení 32 Výběr banky LSB"
 
-#: bse/bseapi.idl:178 bse/bsebasics.idl:182
+#: bse/bseapi.idl:179 bse/bsebasics.idl:100
 msgid "Control 33 Modulation Depth LSB"
 msgstr "Řízení 33 Hloubka modulace LSB"
 
-#: bse/bseapi.idl:179 bse/bsebasics.idl:183
+#: bse/bseapi.idl:180 bse/bsebasics.idl:101
 msgid "Control 34 Breath Control LSB"
 msgstr "Řízení 34 Řízení dýchání LSB"
 
-#: bse/bseapi.idl:181 bse/bsebasics.idl:185
+#: bse/bseapi.idl:182 bse/bsebasics.idl:103
 msgid "Control 36 Foot Controller LSB"
 msgstr "Řízení 36 Pedál LSB"
 
-#: bse/bseapi.idl:182 bse/bsebasics.idl:186
+#: bse/bseapi.idl:183 bse/bsebasics.idl:104
 msgid "Control 37 Portamento Time LSB"
 msgstr "Řízení 37 Čas portamenta LSB"
 
-#: bse/bseapi.idl:183 bse/bsebasics.idl:187
+#: bse/bseapi.idl:184 bse/bsebasics.idl:105
 msgid "Control 38 Data Entry LSB"
 msgstr "Řízení 38 Vstup dat LSB"
 
-#: bse/bseapi.idl:184 bse/bsebasics.idl:188
+#: bse/bseapi.idl:185 bse/bsebasics.idl:106
 msgid "Control 39 Volume LSB"
 msgstr "Řízení 39 Hlasitost LSB"
 
-#: bse/bseapi.idl:148 bse/bsebasics.idl:152
+#: bse/bseapi.idl:149 bse/bsebasics.idl:70
 msgid "Control 4 Foot Controller MSB"
 msgstr "Řízení 4 Pedál MSB"
 
-#: bse/bseapi.idl:185 bse/bsebasics.idl:189
+#: bse/bseapi.idl:186 bse/bsebasics.idl:107
 msgid "Control 40 Balance LSB"
 msgstr "Řízení 40 Balance LSB"
 
-#: bse/bseapi.idl:187 bse/bsebasics.idl:191
+#: bse/bseapi.idl:188 bse/bsebasics.idl:109
 msgid "Control 42 Panorama LSB"
 msgstr "Řízení 42 Panorama LSB"
 
-#: bse/bseapi.idl:188 bse/bsebasics.idl:192
+#: bse/bseapi.idl:189 bse/bsebasics.idl:110
 msgid "Control 43 Expression LSB"
 msgstr "Řízení 43 Výraz LSB"
 
-#: bse/bseapi.idl:189 bse/bsebasics.idl:193
+#: bse/bseapi.idl:190 bse/bsebasics.idl:111
 msgid "Control 44 Effect Control 1 LSB"
 msgstr "Řízení 44 Řízení efektů 1 LSB"
 
-#: bse/bseapi.idl:190 bse/bsebasics.idl:194
+#: bse/bseapi.idl:191 bse/bsebasics.idl:112
 msgid "Control 45 Effect Control 2 LSB"
 msgstr "Řízení 45 Řízení efektů 2 LSB"
 
-#: bse/bseapi.idl:193 bse/bsebasics.idl:197
+#: bse/bseapi.idl:194 bse/bsebasics.idl:115
 msgid "Control 48 General Purpose Controller 1 LSB"
 msgstr "Řízení 48 Všeobecný řadič 1 LSB"
 
-#: bse/bseapi.idl:194 bse/bsebasics.idl:198
+#: bse/bseapi.idl:195 bse/bsebasics.idl:116
 msgid "Control 49 General Purpose Controller 2 LSB"
 msgstr "Řízení 49 Všeobecný řadič 2 LSB"
 
-#: bse/bseapi.idl:149 bse/bsebasics.idl:153
+#: bse/bseapi.idl:150 bse/bsebasics.idl:71
 msgid "Control 5 Portamento Time MSB"
 msgstr "Řízení 5 Čas portamenta MSB"
 
-#: bse/bseapi.idl:195 bse/bsebasics.idl:199
+#: bse/bseapi.idl:196 bse/bsebasics.idl:117
 msgid "Control 50 General Purpose Controller 3 LSB"
 msgstr "Řízení 50 Všeobecný řadič 3 LSB"
 
-#: bse/bseapi.idl:196 bse/bsebasics.idl:200
+#: bse/bseapi.idl:197 bse/bsebasics.idl:118
 msgid "Control 51 General Purpose Controller 4 LSB"
 msgstr "Řízení 51 Všeobecný řadič 4 LSB"
 
-#: bse/bseapi.idl:150 bse/bsebasics.idl:154
+#: bse/bseapi.idl:151 bse/bsebasics.idl:72
 msgid "Control 6 Data Entry MSB"
 msgstr "Řízení 6 Vstup dat MSB"
 
 #. 7bit, literal channel controls
-#: bse/bseapi.idl:210 bse/bsebasics.idl:214
+#: bse/bseapi.idl:211 bse/bsebasics.idl:132
 msgid "Control 64 Damper Pedal Switch (Sustain)"
 msgstr "Řízení 64 Přepnutí pedálu"
 
-#: bse/bseapi.idl:211 bse/bsebasics.idl:215
+#: bse/bseapi.idl:212 bse/bsebasics.idl:133
 msgid "Control 65 Portamento Switch"
 msgstr "Řízení 65 Přepnutí portamenta"
 
-#: bse/bseapi.idl:212 bse/bsebasics.idl:216
+#: bse/bseapi.idl:213 bse/bsebasics.idl:134
 msgid "Control 66 Sustenuto Switch"
 msgstr "Řízení 66 Přepnutí sustenuta"
 
-#: bse/bseapi.idl:213 bse/bsebasics.idl:217
+#: bse/bseapi.idl:214 bse/bsebasics.idl:135
 msgid "Control 67 Soft Switch"
 msgstr "Řízení 66 Přepnutí soft"
 
-#: bse/bseapi.idl:214 bse/bsebasics.idl:218
+#: bse/bseapi.idl:215 bse/bsebasics.idl:136
 msgid "Control 68 Legato Pedal Switch"
 msgstr "Řízení 66 Přepnutí legato pedálu"
 
-#: bse/bseapi.idl:215 bse/bsebasics.idl:219
+#: bse/bseapi.idl:216 bse/bsebasics.idl:137
 msgid "Control 69 Hold Pedal Switch"
 msgstr "Řízení 66 Přepnutí hold pedálu"
 
-#: bse/bseapi.idl:151 bse/bsebasics.idl:155
+#: bse/bseapi.idl:152 bse/bsebasics.idl:73
 msgid "Control 7 Volume MSB"
 msgstr "Řízení 7 Hlasitost MSB"
 
-#: bse/bseapi.idl:216 bse/bsebasics.idl:220
+#: bse/bseapi.idl:217 bse/bsebasics.idl:138
 msgid "Control 70 Sound Variation"
 msgstr "Řízení 70 Variace zvuku"
 
-#: bse/bseapi.idl:217 bse/bsebasics.idl:221
+#: bse/bseapi.idl:218 bse/bsebasics.idl:139
 msgid "Control 71 Filter Resonance (Timbre)"
 msgstr "Řízení 71 Rezonance filtru (timbre)"
 
-#: bse/bseapi.idl:218 bse/bsebasics.idl:222
+#: bse/bseapi.idl:219 bse/bsebasics.idl:140
 msgid "Control 72 Sound Release Time"
 msgstr "Řízení 72 Čas uvolnění zvuku"
 
-#: bse/bseapi.idl:219 bse/bsebasics.idl:223
+#: bse/bseapi.idl:220 bse/bsebasics.idl:141
 msgid "Control 73 Sound Attack Time"
 msgstr "Řízení 73 Čas nástupu zvuku"
 
-#: bse/bseapi.idl:220 bse/bsebasics.idl:224
+#: bse/bseapi.idl:221 bse/bsebasics.idl:142
 msgid "Control 74 Sound Brightness"
 msgstr "Řízení 73 Čistota zvuku"
 
-#: bse/bseapi.idl:221 bse/bsebasics.idl:225
+#: bse/bseapi.idl:222 bse/bsebasics.idl:143
 msgid "Control 75 Sound Decay Time"
 msgstr "Řízení 77 Čas útlumu zvuku"
 
-#: bse/bseapi.idl:222 bse/bsebasics.idl:226
+#: bse/bseapi.idl:223 bse/bsebasics.idl:144
 msgid "Control 76 Vibrato Rate"
 msgstr "Řízení 76 Rychlost vibrata"
 
-#: bse/bseapi.idl:223 bse/bsebasics.idl:227
+#: bse/bseapi.idl:224 bse/bsebasics.idl:145
 msgid "Control 77 Vibrato Depth"
 msgstr "Řízení 77 Hloubka vibrata"
 
-#: bse/bseapi.idl:224 bse/bsebasics.idl:228
+#: bse/bseapi.idl:225 bse/bsebasics.idl:146
 msgid "Control 78 Vibrato Delay"
 msgstr "Řízení 79 Zpoždění vibrata"
 
-#: bse/bseapi.idl:225 bse/bsebasics.idl:229
+#: bse/bseapi.idl:226 bse/bsebasics.idl:147
 msgid "Control 79 Sound Control 10"
 msgstr "Řízení 79 Řízení zvuku 10"
 
-#: bse/bseapi.idl:152 bse/bsebasics.idl:156
+#: bse/bseapi.idl:153 bse/bsebasics.idl:74
 msgid "Control 8 Balance MSB"
 msgstr "Řízení 7 Balance MSB"
 
-#: bse/bseapi.idl:226 bse/bsebasics.idl:230
+#: bse/bseapi.idl:227 bse/bsebasics.idl:148
 msgid "Control 80 General Purpose Switch 5"
 msgstr "Řízení 80 Všeobecné přepnutí 5"
 
-#: bse/bseapi.idl:227 bse/bsebasics.idl:231
+#: bse/bseapi.idl:228 bse/bsebasics.idl:149
 msgid "Control 81 General Purpose Switch 6"
 msgstr "Řízení 81 Všeobecné přepnutí 6"
 
-#: bse/bseapi.idl:228 bse/bsebasics.idl:232
+#: bse/bseapi.idl:229 bse/bsebasics.idl:150
 msgid "Control 82 General Purpose Switch 7"
 msgstr "Řízení 82 Všeobecné přepnutí 7"
 
-#: bse/bseapi.idl:229 bse/bsebasics.idl:233
+#: bse/bseapi.idl:230 bse/bsebasics.idl:151
 msgid "Control 83 General Purpose Switch 8"
 msgstr "Řízení 83 Všeobecné přepnutí 8"
 
-#: bse/bseapi.idl:230 bse/bsebasics.idl:234
+#: bse/bseapi.idl:231 bse/bsebasics.idl:152
 msgid "Control 84 Portamento Control (Note)"
 msgstr "Řízení 84 Řízení portamenta (nota)"
 
-#: bse/bseapi.idl:237 bse/bsebasics.idl:241
+#: bse/bseapi.idl:238 bse/bsebasics.idl:159
 msgid "Control 91 Reverb Depth"
 msgstr "Řízení 91 Hloubka ozvěny"
 
-#: bse/bseapi.idl:238 bse/bsebasics.idl:242
+#: bse/bseapi.idl:239 bse/bsebasics.idl:160
 msgid "Control 92 Tremolo Depth"
 msgstr "Řízení 92 Hloubka tremola"
 
-#: bse/bseapi.idl:239 bse/bsebasics.idl:243
+#: bse/bseapi.idl:240 bse/bsebasics.idl:161
 msgid "Control 93 Chorus Depth"
 msgstr "Řízení 93 Hloubka sboru"
 
 # ?
-#: bse/bseapi.idl:240 bse/bsebasics.idl:244
+#: bse/bseapi.idl:241 bse/bsebasics.idl:162
 msgid "Control 93 Detune Depth"
 msgstr "Řízení 94 Hloubka rozladění"
 
-#: bse/bseapi.idl:241 bse/bsebasics.idl:245
+#: bse/bseapi.idl:242 bse/bsebasics.idl:163
 msgid "Control 95 Phase Depth"
 msgstr "Řízení 95 Hloubka fáze"
 
-#: bse/bseapi.idl:242 bse/bsebasics.idl:246
+#: bse/bseapi.idl:243 bse/bsebasics.idl:164
 msgid "Control 96 Data Increment Trigger"
 msgstr "Řízení 96 Spuštění inkrementace dat"
 
-#: bse/bseapi.idl:243 bse/bsebasics.idl:247
+#: bse/bseapi.idl:244 bse/bsebasics.idl:165
 msgid "Control 97 Data Decrement Trigger"
 msgstr "Řízení 97 Spuštění dekrementace dat"
 
-#: bse/bseapi.idl:244 bse/bsebasics.idl:248
+#: bse/bseapi.idl:245 bse/bsebasics.idl:166
 msgid "Control 98 Non-Registered Parameter MSB"
 msgstr "Řízení 98 Neregistrovaný parametr MSB"
 
-#: bse/bseapi.idl:245 bse/bsebasics.idl:249
+#: bse/bseapi.idl:246 bse/bsebasics.idl:167
 msgid "Control 99 Non-Registered Parameter LSB"
 msgstr "Řízení 99 Neregistrovaný parametr LSB"
 
@@ -2033,7 +2038,7 @@ msgstr "Řídicí vstup"
 msgid "Control Strength"
 msgstr "Síla řízení"
 
-#: bse/bsesource.proc:685
+#: bse/bsesource.proc:686
 #, fuzzy
 msgid "Control Type"
 msgstr "Typ řízení:"
@@ -2043,19 +2048,15 @@ msgstr "Typ řízení:"
 msgid "Control Type:"
 msgstr "Typ řízení:"
 
-#: beast-gtk/bstrackitem.cc:188
-msgid "Controller"
-msgstr "Ovladač"
-
-#: beast-gtk/bstpatternctrl.cc:126
+#: beast-gtk/bstpatternctrl.cc:128
 msgid "Controls the octave relative to which notes are entered"
 msgstr "Ovládá oktávu, relativně ke které se zadávají noty"
 
-#: beast-gtk/bstpartdialog.cc:48
+#: beast-gtk/bstpartdialog.cc:47
 msgid "Copy"
 msgstr "Kopírovat"
 
-#: beast-gtk/bstpartdialog.cc:48
+#: beast-gtk/bstpartdialog.cc:47
 msgid "Copy the current selection into clipboard"
 msgstr "Kopírovat aktuální výběr do schránky"
 
@@ -2063,20 +2064,20 @@ msgstr "Kopírovat aktuální výběr do schránky"
 msgid "Copyright license applying to this object"
 msgstr "Licence týkající se tohoto objektu"
 
-#: beast-gtk/bstsnetrouter.cc:615 beast-gtk/bstsnetrouter.cc:617
-#: beast-gtk/bstsnetrouter.cc:652
+#: beast-gtk/bstsnetrouter.cc:601 beast-gtk/bstsnetrouter.cc:603
+#: beast-gtk/bstsnetrouter.cc:638
 msgid "Create Link"
 msgstr "Vytvořit spojení"
 
-#: beast-gtk/bstapp.cc:121
+#: beast-gtk/bstapp.cc:116
 msgid "Create a new song, consisting of a mixer, tracks, parts and notes"
 msgstr "Vytvořit novou skladbu, skládající se z mixéru, stop, partů a poznámek"
 
-#: beast-gtk/bstapp.cc:111
+#: beast-gtk/bstapp.cc:106
 msgid "Create an extra view of the project"
 msgstr "Vytvořit další pohled na projekt"
 
-#: beast-gtk/bstapp.cc:62
+#: beast-gtk/bstapp.cc:59
 msgid "Create new project"
 msgstr "Vytvořit nový projekt"
 
@@ -2123,7 +2124,7 @@ msgstr "Říd Out4"
 msgid "Current Items:"
 msgstr "Aktuální položky:"
 
-#: beast-gtk/bstpartdialog.cc:47
+#: beast-gtk/bstpartdialog.cc:46
 msgid "Cut"
 msgstr "Vyjmout"
 
@@ -2144,7 +2145,7 @@ msgstr "Odříznutí [%]"
 msgid "Cutoff [Hz]"
 msgstr "Odříznutí [Hz]"
 
-#: beast-gtk/bstsnetrouter.cc:1061
+#: beast-gtk/bstsnetrouter.cc:1049
 msgid "DCA"
 msgstr "DCA"
 
@@ -2152,15 +2153,15 @@ msgstr "DCA"
 msgid "DEVICE,MODE"
 msgstr "ZAŘÍZENÍ,REŽIM"
 
-#: beast-gtk/bstapp.cc:158
+#: beast-gtk/bstapp.cc:153
 msgid "DSP Engine..."
 msgstr "Engine DSP..."
 
-#: bse/bseapi.idl:109 bse/bsebasics.idl:121
+#: bse/bseapi.idl:110 bse/bsebasics.idl:39
 msgid "Data Entry"
 msgstr "Vstup dat"
 
-#: bse/bseapi.idl:42
+#: bse/bseapi.idl:43
 msgid "Data corrupt"
 msgstr "Data poškozena"
 
@@ -2192,26 +2193,26 @@ msgstr "Útlum [%]"
 msgid "Decay [%]"
 msgstr "Útlum [%]"
 
-#: bse/bsebasics.idl:447
+#: bse/bsebasics.idl:321
 #, fuzzy
 msgid "Default Author"
 msgstr "Autor"
 
-#: bse/bsebasics.idl:449
+#: bse/bsebasics.idl:323
 #, fuzzy
 msgid "Default License"
 msgstr "Licence"
 
-#: bse/bsebasics.idl:446
+#: bse/bsebasics.idl:320
 #, fuzzy
 msgid "Default Values"
 msgstr "Kreslit hodnoty"
 
-#: bse/bsebasics.idl:447
+#: bse/bsebasics.idl:321
 msgid "Default value for 'Author' fields"
 msgstr ""
 
-#: bse/bsebasics.idl:449
+#: bse/bsebasics.idl:323
 msgid "Default value for 'License' fields"
 msgstr ""
 
@@ -2222,9 +2223,9 @@ msgstr ""
 #: beast-gtk/bstbuseditor.cc:24 beast-gtk/bstbusmixer.cc:21
 #: beast-gtk/bstbusview.cc:20 beast-gtk/bstkeybindings.cc:41
 #: beast-gtk/bstpartview.cc:25 beast-gtk/bstpianorollctrl.cc:64
-#: beast-gtk/bstrackitem.cc:196 beast-gtk/bstsnetrouter.cc:688
-#: beast-gtk/bstsnetrouter.cc:736 beast-gtk/bsttrackrollctrl.cc:35
-#: beast-gtk/bsttrackview.cc:51 beast-gtk/bstwaveview.cc:30
+#: beast-gtk/bstsnetrouter.cc:674 beast-gtk/bstsnetrouter.cc:725
+#: beast-gtk/bsttrackrollctrl.cc:35 beast-gtk/bsttrackview.cc:51
+#: beast-gtk/bstwaveview.cc:30
 msgid "Delete"
 msgstr "Odstranit"
 
@@ -2232,7 +2233,7 @@ msgstr "Odstranit"
 msgid "Delete Control Event"
 msgstr "Odstranit řídicí událost"
 
-#: beast-gtk/bstsnetrouter.cc:745
+#: beast-gtk/bstsnetrouter.cc:734
 msgid "Delete Link"
 msgstr "Odstranit spojení"
 
@@ -2252,7 +2253,7 @@ msgstr "Odstranit notu (tlačítko myši 1)"
 msgid "Delete parts"
 msgstr "Odstranit party"
 
-#: beast-gtk/bstapp.cc:101
+#: beast-gtk/bstapp.cc:98
 msgid "Delete the complete undo history"
 msgstr "Odstranit celou historii vracení"
 
@@ -2272,7 +2273,7 @@ msgstr "Odstranit momentálně vybranou stopu"
 msgid "Delete the currently selected wave"
 msgstr "Odstranit momentálně vybranou vlnu"
 
-#: bse/bsesong.cc:753
+#: bse/bsesong.cc:729
 msgid "Denominator"
 msgstr "Jmenovatel"
 
@@ -2288,29 +2289,29 @@ msgstr "Podrobnosti:"
 msgid "Detected file format"
 msgstr ""
 
-#: beast-gtk/bstapp.cc:156
+#: beast-gtk/bstapp.cc:151
 msgid "Developing Plugins..."
 msgstr "Vývoj zásuvných modulů..."
 
-#: beast-gtk/bstapp.cc:160
+#: beast-gtk/bstapp.cc:155
 msgid "Development..."
 msgstr "Vývoj..."
 
-#: bse/bseapi.idl:59
+#: bse/bseapi.idl:60
 msgid "Device busy"
 msgstr "Zařízení se používá"
 
-#: bse/bseapi.idl:65
+#: bse/bseapi.idl:66
 msgid "Device configurations mismatch"
 msgstr "Nastavení zařízení nesouhlasí"
 
 # If the en_* can get away with this, I can too
-#: bse/bseapi.idl:58
+#: bse/bseapi.idl:59
 msgid "Device not async capable"
 msgstr "Zařízení neumí asynchronně"
 
 #. file errors
-#: bse/bseapi.idl:23
+#: bse/bseapi.idl:24
 msgid "Device or resource busy"
 msgstr "Zařízení nebo zdroj se používá"
 
@@ -2322,19 +2323,18 @@ msgstr "Ciferník"
 msgid "Dial (Logarithmic)"
 msgstr "Ciferník (Logaritmický)"
 
-#. listen to BseServer notification
-#: beast-gtk/bstmain.cc:229
+#: beast-gtk/bstmain.cc:345
 msgid "Dialogs"
 msgstr "Dialogy"
 
 #. Rational Intonation: http://en.wikipedia.org/wiki/Just_intonation
-#: bse/bsebasics.idl:49
+#: bse/bseapi.idl:291
 #, fuzzy
 msgid "Diatonic Scale"
 msgstr "Svislé zvětšení"
 
 #. http://en.wikipedia.org/wiki/Just_intonation#Indian_scales
-#: bse/bsebasics.idl:55
+#: bse/bseapi.idl:297
 msgid ""
 "Diatonic scale used in Indian music with wolf interval at Dha, close to 3/2"
 msgstr ""
@@ -2343,11 +2343,11 @@ msgstr ""
 msgid "Difference between audio outputs 1 and 2"
 msgstr ""
 
-#: beast-gtk/bstpatternctrl.cc:116 beast-gtk/bstscrollgraph.cc:556
+#: beast-gtk/bstpatternctrl.cc:118 beast-gtk/bstscrollgraph.cc:556
 msgid "Direction"
 msgstr "Směr"
 
-#: beast-gtk/bstapp.cc:628
+#: beast-gtk/bstapp.cc:623
 msgid "Discard Changes"
 msgstr "Zahodit změny"
 
@@ -2381,7 +2381,7 @@ msgstr ""
 msgid "Disconnect In"
 msgstr "Odpojení In"
 
-#: beast-gtk/bstsnetrouter.cc:682
+#: beast-gtk/bstsnetrouter.cc:668
 #, fuzzy
 msgid "Disconnect Inputs"
 msgstr "Odpojení In"
@@ -2390,21 +2390,21 @@ msgstr "Odpojení In"
 msgid "Disconnect Out"
 msgstr "Odpojení Out"
 
-#: beast-gtk/bstsnetrouter.cc:683
+#: beast-gtk/bstsnetrouter.cc:669
 #, fuzzy
 msgid "Disconnect Outputs"
 msgstr "Odpojení Out"
 
-#: bse/bseserver.cc:570
+#: bse/bseserver.cc:571
 #, fuzzy
 msgid "Disk Recording Failed"
 msgstr "Začít zaznamenávat na disk"
 
-#: beast-gtk/bstapp.cc:105
+#: beast-gtk/bstapp.cc:102
 msgid "Display an overview of all procedures"
 msgstr "Zobrazit přehled všech procedur"
 
-#: beast-gtk/bstapp.cc:91
+#: beast-gtk/bstapp.cc:88
 msgid "Display developer and contributor credits"
 msgstr "Zobrazit kredity vývojářů a přispěvatelů"
 
@@ -2416,7 +2416,7 @@ msgstr "Zobrazovat dialogy s ladicími zprávami"
 msgid "Display dialogs with information messages"
 msgstr "Zobrazovat dialogy s informativními zprávami"
 
-#: beast-gtk/bstapp.cc:109
+#: beast-gtk/bstapp.cc:104
 msgid "Display statistics and timing information"
 msgstr "Zobrazit statistiky a informace o časování"
 
@@ -2424,7 +2424,7 @@ msgstr "Zobrazit statistiky a informace o časování"
 msgid "Distorted Audio Output"
 msgstr "Výstup zkresleného zvuku"
 
-#: beast-gtk/bstapp.cc:141
+#: beast-gtk/bstapp.cc:136
 msgid "Document _Index..."
 msgstr "_Rejstřík dokumentace..."
 
@@ -2509,10 +2509,6 @@ msgstr ""
 msgid "Drum frequency in Hertz"
 msgstr "Vstup frekvence bubnu"
 
-#: beast-gtk/bstrackitem.cc:189
-msgid "Duplicate"
-msgstr "Duplikovat"
-
 #: library/scripts/song-parts-operations.scm:19
 msgid ""
 "Duplicate all parts within the loop range and moves parts after the loop "
@@ -2540,10 +2536,6 @@ msgstr "Upravit"
 msgid "Edit Part"
 msgstr "Upravit part"
 
-#: beast-gtk/bstrackitem.cc:186
-msgid "Edit Rack Item"
-msgstr "Upravit položku racku"
-
 #: beast-gtk/bstwaveview.cc:32
 msgid "Edit the currently selected wave"
 msgstr "Upravit momentálně vybranou vlnu"
@@ -2567,15 +2559,15 @@ msgstr "Upravit/přesunout/menu (tlačítka myši 1-3)"
 msgid "Editor"
 msgstr "Editor"
 
-#: bse/bseapi.idl:115 bse/bsebasics.idl:127
+#: bse/bseapi.idl:116 bse/bsebasics.idl:45
 msgid "Effect Control 1"
 msgstr "Řízení efektů 1"
 
-#: bse/bseapi.idl:116 bse/bsebasics.idl:128
+#: bse/bseapi.idl:117 bse/bsebasics.idl:46
 msgid "Effect Control 2"
 msgstr "Řízení efektů 2"
 
-#: bse/bsebasics.idl:456
+#: bse/bsebasics.idl:330
 msgid "Effect Path"
 msgstr "Cesta efektů"
 
@@ -2608,7 +2600,7 @@ msgstr ""
 msgid "Enable or disable message display of a specific message type"
 msgstr "Povolit nebo zakázat zobrazování konkrétního typu zpráv"
 
-#: bse/bseapi.idl:25
+#: bse/bseapi.idl:26
 #, fuzzy
 msgid "End of file"
 msgstr "Pořadí filtrů"
@@ -2621,7 +2613,7 @@ msgstr "Konec:"
 msgid "Enhance/CanyonDelay"
 msgstr ""
 
-#: bse/bsesong.proc:100
+#: bse/bsesong.proc:101
 msgid "Ensure that each part in a song is inserted into at least one track."
 msgstr "Zajistit, že každý part skladby je vložen do alespoň jedné stopy."
 
@@ -2733,31 +2725,31 @@ msgstr "Exponenciální řízení"
 msgid "Exponential FM"
 msgstr "Exponenciální FM"
 
-#: beast-gtk/bstapp.cc:303
+#: beast-gtk/bstapp.cc:298
 msgid "Export Audio"
 msgstr "Exportovat zvuk"
 
-#: bse/bseapi.idl:114 bse/bsebasics.idl:126
+#: bse/bseapi.idl:115 bse/bsebasics.idl:44
 msgid "Expression"
 msgstr "Výraz"
 
-#: bse/bseapi.idl:61
+#: bse/bseapi.idl:62
 msgid "Failed to configure device buffer"
 msgstr "Nemohu nastavit vyrovnávací paměť zařízení"
 
-#: bse/bseapi.idl:60
+#: bse/bseapi.idl:61
 msgid "Failed to configure device format"
 msgstr "Nemohu nastavit formát zařízení"
 
-#: bse/bseapi.idl:64
+#: bse/bseapi.idl:65
 msgid "Failed to configure device frequency"
 msgstr "Nemohu nastavit frekvenci zařízení"
 
-#: bse/bseapi.idl:62
+#: bse/bseapi.idl:63
 msgid "Failed to configure device latency"
 msgstr "Nemohu nastavit zpoždění zařízení"
 
-#: bse/bseapi.idl:63
+#: bse/bseapi.idl:64
 msgid "Failed to configure number of device channels"
 msgstr "Nemohu nastavit počet kanálů zařízení"
 
@@ -2767,7 +2759,7 @@ msgid "Failed to crop part range."
 msgstr "Nemohu spustit zaznamenávání na disk."
 
 #. content errors
-#: bse/bseapi.idl:39
+#: bse/bseapi.idl:40
 #, fuzzy
 msgid "Failed to detect header"
 msgstr "Nemohu detekovat (začátek) hlavičky"
@@ -2782,33 +2774,33 @@ msgstr "Nemohu detekovat (začátek) hlavičky"
 msgid "Failed to execute script procedure '%s': %s"
 msgstr "Nemohu spustit proceduru skriptu '%s': %s"
 
-#: beast-gtk/bstmain.cc:311
+#: beast-gtk/bstmain.cc:431
 #, c-format
 msgid "Failed to load project \"%s\": %s"
 msgstr "Nemohu načíst projekt \"%s\": %s"
 
-#: beast-gtk/bstfiledialog.cc:736 beast-gtk/bstmain.cc:259
-#: beast-gtk/bstmain.cc:275
+#: beast-gtk/bstfiledialog.cc:736 beast-gtk/bstmain.cc:379
+#: beast-gtk/bstmain.cc:395
 #, c-format
 msgid "Failed to load wave file \"%s\": %s"
 msgstr "Nemohu načíst soubor vlny \"%s\": %s"
 
-#: beast-gtk/bstmain.cc:317
+#: beast-gtk/bstmain.cc:437
 #, fuzzy, c-format
 msgid "Failed to merge project \"%s\": %s"
 msgstr "Nemohu načíst projekt \"%s\": %s"
 
-#: bse/bseserver.cc:516
+#: bse/bseserver.cc:517
 #, c-format
 msgid "Failed to open MIDI devices: %s"
 msgstr "Nemohu otevřít zařízení MIDI: %s"
 
-#: bse/bseserver.cc:489
+#: bse/bseserver.cc:490
 #, c-format
 msgid "Failed to open PCM devices: %s"
 msgstr "Nemohu otevřít zařízení PCM: %s"
 
-#: bse/bseserver.cc:574
+#: bse/bseserver.cc:575
 #, fuzzy, c-format
 msgid "Failed to open file \"%s\" for recording: %s"
 msgstr "Nemohu otevřít soubor \"%s\" pro výstup: %s"
@@ -2831,7 +2823,7 @@ msgstr ""
 "kvůli:\n"
 "%s"
 
-#: bse/bseapi.idl:40
+#: bse/bseapi.idl:41
 msgid "Failed to retrieve seek information"
 msgstr "Nemohu získat informace o pozici"
 
@@ -2850,7 +2842,7 @@ msgstr ""
 "`%s':\n"
 "%s"
 
-#. error != Bse::ERROR_FILE_EXISTS
+#. error != Bse::Error::FILE_EXISTS
 #: beast-gtk/bstfiledialog.cc:522 beast-gtk/bstfiledialog.cc:536
 #, c-format
 msgid ""
@@ -2864,16 +2856,16 @@ msgstr ""
 "kvůli:\n"
 "%s"
 
-#: bse/bseapi.idl:55
+#: bse/bseapi.idl:56
 msgid "Failed to spawn child process"
 msgstr "Nemohu spustit proces potomka"
 
-#: bse/bseserver.cc:571
+#: bse/bseserver.cc:572
 #, fuzzy
 msgid "Failed to start PCM recording to disk."
 msgstr "Nemohu spustit zaznamenávání na disk."
 
-#: bse/bseserver.cc:432
+#: bse/bseserver.cc:433
 msgid "Failed to start recording from audio device."
 msgstr "Nemohu začít zaznamenávat ze zvukového zařízení."
 
@@ -2890,11 +2882,11 @@ msgstr ""
 msgid "File Selection"
 msgstr "Výběr souborů"
 
-#: bse/bseapi.idl:26
+#: bse/bseapi.idl:27
 msgid "File empty"
 msgstr "Soubor je prázdný"
 
-#: bse/bseapi.idl:24
+#: bse/bseapi.idl:25
 msgid "File exists already"
 msgstr "Soubor již existuje"
 
@@ -2974,7 +2966,7 @@ msgstr ""
 msgid "Filters/IIR Filter"
 msgstr "/Filtry/Filtr basů"
 
-#: bse/bsesong.proc:135
+#: bse/bsesong.proc:136
 msgid "Find a track suitable for playing notes of a given part."
 msgstr "Hledat stopu vhodnou pro přehrávání not daného partu."
 
@@ -3026,7 +3018,7 @@ msgstr "Velikost písma"
 msgid "Font size in pixels for labels displayed in synthesis networks"
 msgstr "Velikost písma v pixelech pro popisky zobrazované v sítích syntézy"
 
-#: bse/bseapi.idl:107 bse/bsebasics.idl:119
+#: bse/bseapi.idl:108 bse/bsebasics.idl:37
 msgid "Foot Controller"
 msgstr "Pedál"
 
@@ -3034,7 +3026,7 @@ msgstr "Pedál"
 msgid "Format"
 msgstr ""
 
-#: bse/bseobject.cc:873
+#: bse/bseobject.cc:878
 msgid "Free form comment or description"
 msgstr ""
 
@@ -3081,7 +3073,7 @@ msgstr "Frekvence"
 msgid "Frequency Signal"
 msgstr "Signál frekvence"
 
-#: bse/bsebasics.idl:437
+#: bse/bsebasics.idl:311
 msgid ""
 "Frequency at which control values are evaluated, should be much smaller than "
 "Synth Mixing Frequency to reduce CPU load"
@@ -3106,7 +3098,7 @@ msgstr "Funkce"
 msgid "Function used to create new key bindings"
 msgstr "Funkce používaná pro vytvoření nových klávesových zkratek"
 
-#: bse/bseapi.idl:51
+#: bse/bseapi.idl:52
 msgid "Functionality not implemented"
 msgstr "Funkce není implementována"
 
@@ -3164,19 +3156,19 @@ msgstr ""
 msgid "Gate input (activates/deactivates envelope)"
 msgstr "Vstup brány (aktivuje/deaktivuje obálku)"
 
-#: bse/bseapi.idl:119 bse/bsebasics.idl:131
+#: bse/bseapi.idl:120 bse/bsebasics.idl:49
 msgid "General Purpose Controller 1"
 msgstr "Všeobecný řadič 1"
 
-#: bse/bseapi.idl:120 bse/bsebasics.idl:132
+#: bse/bseapi.idl:121 bse/bsebasics.idl:50
 msgid "General Purpose Controller 2"
 msgstr "Všeobecný řadič 2"
 
-#: bse/bseapi.idl:121 bse/bsebasics.idl:133
+#: bse/bseapi.idl:122 bse/bsebasics.idl:51
 msgid "General Purpose Controller 3"
 msgstr "Všeobecný řadič 3"
 
-#: bse/bseapi.idl:122 bse/bsebasics.idl:134
+#: bse/bseapi.idl:123 bse/bsebasics.idl:52
 msgid "General Purpose Controller 4"
 msgstr "Všeobecný řadič 4"
 
@@ -3199,19 +3191,11 @@ msgstr "Jít o stranu vpřed"
 msgid "Go to browser index"
 msgstr "Jít do indexu prohlížeče"
 
-#: beast-gtk/bstrackitem.cc:191
-msgid "Grow Horizontally"
-msgstr "Vodorovně zvětšit"
-
-#: beast-gtk/bstrackitem.cc:192
-msgid "Grow Vertically"
-msgstr "Svisle zvětšit"
-
 #: beast-gtk/bstgrowbar.cc:78
 msgid "Grow the scrollable area"
 msgstr "Zvětšit posouvatelnou oblast"
 
-#: beast-gtk/bstpatternctrl.cc:121
+#: beast-gtk/bstpatternctrl.cc:123
 msgid "HWrap"
 msgstr "VPřechod"
 
@@ -3322,7 +3306,7 @@ msgstr "Stínování obrázku"
 msgid "Import MIDI: %s"
 msgstr "Import MIDI: %s"
 
-#: beast-gtk/bstapp.cc:68
+#: beast-gtk/bstapp.cc:65
 msgid "Import a standard MIDI file into the current project"
 msgstr "Importovat standardní soubor MIDI do aktuálního projektu"
 
@@ -3332,7 +3316,7 @@ msgid "Importing MIDI file `%s'"
 msgstr "Importuji soubor MIDI `%s'"
 
 #. http://en.wikipedia.org/wiki/Diatonic_scale
-#: bse/bsebasics.idl:50
+#: bse/bseapi.idl:292
 msgid ""
 "In music theory, a diatonic scale (also: heptatonia prima) is a seven-note "
 "musical scale comprising five whole-tone and two half-tone steps. The half "
@@ -3341,7 +3325,7 @@ msgid ""
 msgstr ""
 
 #. http://en.wikipedia.org/wiki/Werckmeister_temperament
-#: bse/bsebasics.idl:83
+#: bse/bseapi.idl:325
 msgid ""
 "In this tuning the fifths C-G, D-A, E-B, F#-C#, and Bb-F are tempered narrow "
 "by 1/3 comma, and the fifths G#-D# and Eb-Bb are widened by 1/3 comma. The "
@@ -3351,7 +3335,7 @@ msgid ""
 msgstr ""
 
 #. http://en.wikipedia.org/wiki/Werckmeister_temperament
-#: bse/bsebasics.idl:88
+#: bse/bseapi.idl:330
 msgid ""
 "In this tuning the fifths D-A, A-E, F#-C#, C#-G#, and F-C are narrowed by "
 "1/4 comma, and the fifth G#-D# is widened by 1/4 comma. The other fifths are "
@@ -3360,7 +3344,7 @@ msgid ""
 msgstr ""
 
 #. Werckmeister I
-#: bse/bsebasics.idl:54
+#: bse/bseapi.idl:296
 #, fuzzy
 msgid "Indian Scale"
 msgstr "Svislé zvětšení"
@@ -3369,12 +3353,11 @@ msgstr "Svislé zvětšení"
 msgid "Initial phase of the oscillator wave form (cycle offset in degree)"
 msgstr "Počáteční fáze vlny oscilátoru (posun cyklu ve stupních)"
 
-#. BEAST initialization
-#: beast-gtk/bstmain.cc:133
+#: beast-gtk/bstmain.cc:227
 msgid "Initializers"
 msgstr "Inicializéry"
 
-#: beast-gtk/bstcanvassource.cc:967 beast-gtk/bstsnetrouter.cc:1058
+#: beast-gtk/bstcanvassource.cc:955 beast-gtk/bstsnetrouter.cc:1046
 msgid "Input"
 msgstr "Vstup"
 
@@ -3407,19 +3390,19 @@ msgid "Input Port %u"
 msgstr "Vstupní port %u"
 
 #. SYNC: type partitions determine the order of displayed objects
-#: bse/bsebus.cc:876
+#: bse/bsebus.cc:884
 msgid "Input Signals"
 msgstr "Vstupní signály"
 
-#: bse/bseapi.idl:72
+#: bse/bseapi.idl:73
 msgid "Input channel already in use"
 msgstr "Vstupní kanál se již používá"
 
-#: beast-gtk/bstsnetrouter.cc:589
+#: beast-gtk/bstsnetrouter.cc:575
 msgid "Input channel in use"
 msgstr "Vstupní kanál se používá"
 
-#: bse/bseapi.idl:71
+#: bse/bseapi.idl:72
 msgid "Input channel is private"
 msgstr "Vstupní kanál je soukromý"
 
@@ -3427,16 +3410,16 @@ msgstr "Vstupní kanál je soukromý"
 msgid "Input port name to interface to"
 msgstr "Název vstupního portu, se kterým se spojit"
 
-#: bse/bseapi.idl:70
+#: bse/bseapi.idl:71
 msgid "Input/Output channels not connected"
 msgstr "Vstupní/výstupní kanál není připojen"
 
-#: bse/bseapi.idl:73
+#: bse/bseapi.idl:74
 #, fuzzy
 msgid "Input/output channels already connected"
 msgstr "Vstupní/výstupní kanály jsou již připojeny"
 
-#: bse/bseapi.idl:20
+#: bse/bseapi.idl:21
 msgid "Input/output error"
 msgstr "Chyba vstupu/výstupu"
 
@@ -3453,7 +3436,7 @@ msgstr "Vložit"
 msgid "Insert Control Event"
 msgstr "Vložit řídicí událost"
 
-#: beast-gtk/bstsnetrouter.cc:799
+#: beast-gtk/bstsnetrouter.cc:786
 msgid "Insert Module"
 msgstr "Vložit modul"
 
@@ -3466,7 +3449,7 @@ msgstr "Vložit notu"
 msgid "Insert Part"
 msgstr "Vložit part"
 
-#: beast-gtk/bstpartdialog.cc:49
+#: beast-gtk/bstpartdialog.cc:48
 msgid "Insert clipboard contents as current selection"
 msgstr "Vložit obsah schránky jako aktuální výběr"
 
@@ -3514,7 +3497,7 @@ msgstr "Vložit/upravit/přesunout party (tlačítko myši 1 a 2)"
 msgid "Insert/resize/move notes (mouse button 1 and 2)"
 msgstr "Vložit/změnit velikost/přesunout noty (tlačítko myši 1 a 2)"
 
-#: bse/bsebasics.idl:459
+#: bse/bsebasics.idl:333
 msgid "Instrument Path"
 msgstr "Cesta nástrojů"
 
@@ -3523,48 +3506,48 @@ msgstr "Cesta nástrojů"
 msgid "Instrument flavour"
 msgstr "Cesta nástrojů"
 
-#: bse/bseapi.idl:21
+#: bse/bseapi.idl:22
 #, fuzzy
 msgid "Insufficient permissions"
 msgstr "Nedostatečná oprávnění"
 
-#: bse/bseapi.idl:18
+#: bse/bseapi.idl:19
 msgid "Internal error (please report)"
 msgstr "Interní chyba (ohlaste ji prosím)"
 
-#: bse/bsebus.cc:888
+#: bse/bsebus.cc:896
 msgid "Internals"
 msgstr "Vnitřnosti"
 
-#: bse/bseapi.idl:53
+#: bse/bseapi.idl:54
 msgid "Invalid MIDI control type"
 msgstr "Neplatný typ řízení MIDI"
 
-#: bse/bseapi.idl:91
+#: bse/bseapi.idl:92
 msgid "Invalid duration"
 msgstr "Neplatné trvání"
 
-#: bse/bseapi.idl:44
+#: bse/bseapi.idl:45
 msgid "Invalid format"
 msgstr "Neplatný formát"
 
-#: bse/bseapi.idl:52
+#: bse/bseapi.idl:53
 msgid "Invalid object property"
 msgstr "Neplatná vlastnost objektu"
 
-#: bse/bseapi.idl:90
+#: bse/bseapi.idl:91
 msgid "Invalid offset"
 msgstr "Neplatný posun"
 
-#: bse/bseapi.idl:92
+#: bse/bseapi.idl:93
 msgid "Invalid overlap"
 msgstr "Neplatný překryv"
 
-#: bse/bseapi.idl:74
+#: bse/bseapi.idl:75
 msgid "Invalid synthesis module connection"
 msgstr "Neplatné připojení modulu syntézy"
 
-#: bse/bseapi.idl:78
+#: bse/bseapi.idl:79
 msgid "Invalid synthsis module type"
 msgstr "Neplatný typ modulu syntézy"
 
@@ -3572,7 +3555,7 @@ msgstr "Neplatný typ modulu syntézy"
 msgid "Invert"
 msgstr "Invertovat"
 
-#: bse/bsebasics.idl:442
+#: bse/bsebasics.idl:316
 msgid "Invert Sustain Pedal"
 msgstr "Invertovat pedál"
 
@@ -3580,19 +3563,14 @@ msgstr "Invertovat pedál"
 msgid "Invert the current selection"
 msgstr "Invertovat aktuální výběr"
 
-#: bse/bsebasics.idl:443
+#: bse/bsebasics.idl:317
 msgid ""
 "Invert the state of sustain (damper) pedal so on/off meanings are reversed"
 msgstr "Invertovat stav pedálu, aby byl prohozen význam zapnuto/vypnuto"
 
-#: bse/bseapi.idl:28
+#: bse/bseapi.idl:29
 msgid "Is a directory"
 msgstr "Je adresář"
-
-#: bse/bseparasite.proc:12 bse/bseparasite.proc:36 bse/bseparasite.proc:54
-#: bse/bseparasite.proc:73
-msgid "Item"
-msgstr "Položka"
 
 #: beast-gtk/bstparam-item-seq.cc:130
 msgid "Item List"
@@ -3614,12 +3592,12 @@ msgstr "Klávesová zkratka"
 msgid "Key combinations used to activate a function"
 msgstr "Kombinace kláves používané pro aktivování funkce"
 
-#: bse/bsebasics.idl:99
+#: bse/bseapi.idl:341
 msgid "Kirnberger III"
 msgstr ""
 
 #. http://en.wikipedia.org/wiki/Johann_Philipp_Kirnberger_temperament
-#: bse/bsebasics.idl:100
+#: bse/bseapi.idl:342
 msgid ""
 "Kirnberger's method of compensating for and closing the circle of fifths is "
 "to split the \"wolf\" interval known to those who have used meantone "
@@ -3637,16 +3615,15 @@ msgstr "Knoflík"
 msgid "Knob (Logarithmic)"
 msgstr "Knoflík (logaritmický)"
 
-#: bse/bsebasics.idl:469
+#: bse/bsebasics.idl:343
 msgid "LADSPA Path"
 msgstr "Cesta LADSPA"
 
-#: beast-gtk/bstmain.cc:185
+#: beast-gtk/bstmain.cc:290
 msgid "LADSPA Plugins"
 msgstr "Zásuvné moduly LADSPA"
 
-#: beast-gtk/bstrackview.cc:30 beast-gtk/gxk/gxkparam-label.cc:61
-#: beast-gtk/gxk/gxksimplelabel.cc:106
+#: beast-gtk/gxk/gxkparam-label.cc:61 beast-gtk/gxk/gxksimplelabel.cc:106
 msgid "Label"
 msgstr "Popisek"
 
@@ -3654,7 +3631,7 @@ msgstr "Popisek"
 msgid "Last modification time"
 msgstr "Čas poslední změny"
 
-#: bse/bsebasics.idl:428
+#: bse/bsebasics.idl:302
 msgid "Latency [ms]"
 msgstr "Zpoždění [ms]"
 
@@ -3671,7 +3648,7 @@ msgstr "Levé"
 msgid "Left Audio"
 msgstr "Levý zvuk"
 
-#: bse/bsebus.cc:893 bse/bsepcmoutput.cc:112
+#: bse/bsebus.cc:901 bse/bsepcmoutput.cc:112
 #: plugins/freeverb/bsefreeverb.cc:103
 msgid "Left Audio In"
 msgstr "Levý zvuk In"
@@ -3680,7 +3657,7 @@ msgstr "Levý zvuk In"
 msgid "Left Audio Input"
 msgstr "Vstup levého zvuku"
 
-#: bse/bsebus.cc:897 bse/bsepcminput.cc:112
+#: bse/bsebus.cc:905 bse/bsepcminput.cc:112
 #: plugins/freeverb/bsefreeverb.cc:105
 msgid "Left Audio Out"
 msgstr "Levý zvuk Out"
@@ -3710,7 +3687,7 @@ msgstr "Levé Out"
 msgid "Left Output"
 msgstr "Levý výstup"
 
-#: bse/bsebus.cc:866
+#: bse/bsebus.cc:874
 msgid "Left Volume"
 msgstr "Levá hlasitost"
 
@@ -3718,11 +3695,11 @@ msgstr "Levá hlasitost"
 msgid "Left audio output"
 msgstr "Výstup levého zvuku"
 
-#: bse/bsebus.cc:893 bse/bsepcmoutput.cc:112
+#: bse/bsebus.cc:901 bse/bsepcmoutput.cc:112
 msgid "Left channel input"
 msgstr "Vstup levého kanálu"
 
-#: bse/bsebus.cc:897 bse/bsepcminput.cc:112
+#: bse/bsebus.cc:905 bse/bsepcminput.cc:112
 msgid "Left channel output"
 msgstr "Výstup levého kanálu"
 
@@ -3742,10 +3719,6 @@ msgstr "Knihovna..."
 #: bse/bsesuper.cc:188
 msgid "License"
 msgstr "Licence"
-
-#: bse/bseautodoc.cc:347 bse/bseautodoc.cc:421
-msgid "License:"
-msgstr "Licence:"
 
 #: plugins/standardsaturator.idl:14
 msgid ""
@@ -3773,11 +3746,11 @@ msgstr "Seznam dostupných sběrnic mixérů, které používat jako výstup sb�
 msgid "List of available mixer busses to be used as track output"
 msgstr "Seznam dostupných sběrnic mixéru, které používat jako výstup stopy"
 
-#: bse/bsemidisynth.cc:210
+#: bse/bsemidisynth.cc:209
 msgid "List of available synthesis networks to choose a MIDI instrument from"
 msgstr "Seznam dostupných sítí syntézy, ze kterých zvolit nástroj MIDI"
 
-#: bse/bsemidisynth.cc:214 bse/bsesong.cc:125 bse/bsetrack.cc:278
+#: bse/bsemidisynth.cc:213 bse/bsesong.cc:123 bse/bsetrack.cc:278
 msgid "List of available synthesis networks to choose a postprocessor from"
 msgstr "Seznam dostupných sítí syntézy, ze které zvolit postprocesor"
 
@@ -3825,11 +3798,11 @@ msgstr "Načíst klávesovou zkratku"
 msgid "Load Wave"
 msgstr "Načíst vlnu"
 
-#: beast-gtk/bstapp.cc:133
+#: beast-gtk/bstapp.cc:128
 msgid "Load _Effect..."
 msgstr "Načíst _efekt..."
 
-#: beast-gtk/bstapp.cc:131
+#: beast-gtk/bstapp.cc:126
 msgid "Load _Instrument..."
 msgstr "Načíst _nástroj..."
 
@@ -3845,11 +3818,11 @@ msgstr "Načíst soubor zvuku z disku"
 msgid "Load a new wave file from library paths"
 msgstr "Načíst soubor zvuku z knihovny"
 
-#: beast-gtk/bstapp.cc:133
+#: beast-gtk/bstapp.cc:128
 msgid "Load synthesizer mesh from effects folder"
 msgstr "Načíst síť syntetizéru z adresáře efektů"
 
-#: beast-gtk/bstapp.cc:131
+#: beast-gtk/bstapp.cc:126
 msgid "Load synthesizer mesh from instruments folder"
 msgstr "Načíst síť syntetizéru z adresáře nástrojů"
 
@@ -3857,12 +3830,12 @@ msgstr "Načíst síť syntetizéru z adresáře nástrojů"
 msgid "Load..."
 msgstr "Načíst..."
 
-#: beast-gtk/bstmain.cc:255 beast-gtk/bstmain.cc:257
+#: beast-gtk/bstmain.cc:375 beast-gtk/bstmain.cc:377
 #, c-format
 msgid "Loading \"%s\""
 msgstr "Načítám \"%s\""
 
-#: beast-gtk/bstapp.cc:779
+#: beast-gtk/bstapp.cc:774
 #, c-format
 msgid "Loading skin `%s'"
 msgstr "Načítám skin `%s'"
@@ -3872,7 +3845,7 @@ msgstr "Načítám skin `%s'"
 msgid "Loading wave `%s'"
 msgstr "Načítám vlnu `%s'"
 
-#: beast-gtk/bstmain.cc:235
+#: beast-gtk/bstmain.cc:355
 msgid "Loading..."
 msgstr "Načítám..."
 
@@ -3881,9 +3854,7 @@ msgstr "Načítám..."
 msgid "Location"
 msgstr "Umístění"
 
-#. change default
-#. override parent property: 0
-#: bse/bsesong.cc:764 bse/bsesong.cc:768 bse/bsesong.cc:773 bse/bsesong.cc:778
+#: bse/bsesong.cc:735 bse/bsesong.cc:739 bse/bsesong.cc:744 bse/bsesong.cc:749
 msgid "Looping"
 msgstr "Opakování"
 
@@ -3916,21 +3887,21 @@ msgstr "Dolní propust [Hz]"
 msgid "Lowpass filter frequency for the control signal"
 msgstr "Frekvence dolní propusti pro řídicí signál"
 
-#: bse/bsebasics.idl:441
+#: bse/bsebasics.idl:315
 msgid "MIDI"
 msgstr "MIDI"
 
-#: bse/bsemidisynth.cc:425 bse/bsesource.proc:683 bse/bsetrack.cc:1045
+#: bse/bsemidisynth.cc:424 bse/bsesource.proc:684 bse/bsetrack.cc:1043
 msgid "MIDI Channel"
 msgstr "Kanál MIDI"
 
-#: bse/bseserver.cc:512
+#: bse/bseserver.cc:513
 msgid "MIDI I/O Failed"
 msgstr ""
 
-#: bse/bsemidisynth.cc:423 bse/bsemidisynth.cc:428 bse/bsemidisynth.cc:433
-#: bse/bsemidisynth.cc:437 bse/bsesong.cc:755 bse/bsetrack.cc:1043
-#: bse/bsetrack.cc:1049
+#: bse/bsemidisynth.cc:422 bse/bsemidisynth.cc:427 bse/bsemidisynth.cc:432
+#: bse/bsemidisynth.cc:436 bse/bsesong.cc:731 bse/bsetrack.cc:1041
+#: bse/bsetrack.cc:1047
 msgid "MIDI Instrument"
 msgstr "Nástroj MIDI"
 
@@ -3950,22 +3921,22 @@ msgstr "MIDI signál 3"
 msgid "MIDI Signal 4"
 msgstr "MIDI signál 4"
 
-#: beast-gtk/bstapp.cc:507
+#: beast-gtk/bstapp.cc:502
 #, c-format
 msgid "MIDI Synthesizer: %s"
 msgstr "Syntetizér MIDI: %s"
 
 #. Comment
-#: data/beast.desktop.in:6
+#: data/beast.desktop.in:5
 msgid "MIDI Tracker, Music Composition and Modular Synthesis Application"
 msgstr "MIDI tracker, aplikace pro skládání hudby a modulární syntézu"
 
-#: bse/bseserver.cc:517
+#: bse/bseserver.cc:518
 #, fuzzy
 msgid "MIDI device selections problems"
 msgstr "Rada o problémech s výběrem zařízení MIDI"
 
-#: bse/bseserver.cc:513
+#: bse/bseserver.cc:514
 #, fuzzy
 msgid "MIDI input or output is not available."
 msgstr "Vstup nebo výstup MIDI není k dispozici."
@@ -3979,11 +3950,11 @@ msgid "Manual trigger for the drum"
 msgstr ""
 
 #. TRANSLATORS: this is the name of the master mixer bus. i.e. the final audio output bus.
-#: bse/bsesong.cc:613
+#: bse/bsesong.cc:599
 msgid "Master"
 msgstr "Hlavní"
 
-#: bse/bsebus.cc:890
+#: bse/bsebus.cc:898
 msgid "Master Output"
 msgstr "Hlavní výstup"
 
@@ -3991,35 +3962,35 @@ msgstr "Hlavní výstup"
 msgid "Master Volume"
 msgstr "Hlavní hlasitost"
 
-#: bse/bsemidisynth.cc:457
+#: bse/bsemidisynth.cc:456
 msgid "Master [%]"
 msgstr "Hlavní [%]"
 
-#: bse/bsemidisynth.cc:450
+#: bse/bsemidisynth.cc:449
 msgid "Master [dB]"
 msgstr "Hlavní [dB]"
 
-#: bse/bsemidisynth.cc:444
+#: bse/bsemidisynth.cc:443
 msgid "Master [float]"
 msgstr "Hlavní [float]"
 
-#: bse/bsemidisynth.cc:430 bse/bsetrack.cc:1040
+#: bse/bsemidisynth.cc:429 bse/bsetrack.cc:1038
 msgid "Max Voices"
 msgstr "Max hlasů"
 
-#: beast-gtk/bsttrackview.cc:595 bse/bsemidisynth.cc:430 bse/bsetrack.cc:1040
+#: beast-gtk/bsttrackview.cc:595 bse/bsemidisynth.cc:429 bse/bsetrack.cc:1038
 msgid "Maximum number of voices for simultaneous playback"
 msgstr "Maximální počet hlasů pro současné přehrávání"
 
-#: bse/bsesong.cc:753
+#: bse/bsesong.cc:729
 msgid "Measure denominator, must be a power of 2"
 msgstr "Jmenovatel taktu, musí být mocnina 2"
 
-#: bse/bsesong.cc:749
+#: bse/bsesong.cc:725
 msgid "Measure numerator"
 msgstr "Čitatel taktu"
 
-#: beast-gtk/bstapp.cc:66
+#: beast-gtk/bstapp.cc:63
 msgid "Merge an existing project into the current project"
 msgstr "Sloučit existující projekt do aktuálního projektu"
 
@@ -4073,7 +4044,7 @@ msgstr ""
 msgid "Middle Bar Color"
 msgstr "Barva prostředního pruhu"
 
-#: bse/bsetrack.cc:1046
+#: bse/bsetrack.cc:1044
 msgid "Midi channel assigned to this track, 0 uses internal per-track channel"
 msgstr "Kanál midi přiřazený této stopě, 0 používá soukromý kanál pro stopu"
 
@@ -4085,7 +4056,7 @@ msgstr "Kanál midi přiřazený této stopě, 0 používá soukromý kanál pro
 msgid "Mix Out"
 msgstr "Mix Out"
 
-#: beast-gtk/bstsupershell.cc:166
+#: beast-gtk/bstsupershell.cc:165
 msgid "Mix track outputs, adjust volume and add effects"
 msgstr "Míchat výstupy stop, upravovat hlasitost a přidávat efekty"
 
@@ -4093,7 +4064,7 @@ msgstr "Míchat výstupy stop, upravovat hlasitost a přidávat efekty"
 msgid "Mixed audio output"
 msgstr "Výstup mixovaného zvuku"
 
-#: beast-gtk/bstsupershell.cc:166
+#: beast-gtk/bstsupershell.cc:165
 msgid "Mixer"
 msgstr "Mixér"
 
@@ -4101,11 +4072,11 @@ msgstr "Mixér"
 msgid "Mixer busses connected to track output"
 msgstr "Sběrnice mixéru připojené k výstupu stopy"
 
-#: bse/bsebus.cc:885
+#: bse/bsebus.cc:893
 msgid "Mixer busses used as output for synthesis signals"
 msgstr "Sběrnice mixéru používané jako výstup pro signály syntézy"
 
-#: bse/bsetrack.cc:1056
+#: bse/bsetrack.cc:1054
 msgid "Mixer busses used as output for this track"
 msgstr "Sběrnice mixéru používané jako výstup této stopy"
 
@@ -4129,7 +4100,7 @@ msgstr "Mod In"
 msgid "Modulation"
 msgstr "Modulace"
 
-#: bse/bseapi.idl:104 bse/bsebasics.idl:116
+#: bse/bseapi.idl:105 bse/bsebasics.idl:34
 msgid "Modulation Depth"
 msgstr "Hloubka modulace"
 
@@ -4141,7 +4112,7 @@ msgstr "Vstup modulace"
 msgid "Modulation Strength for linear frequency modulation"
 msgstr "Síla lineární frekvenční modulace"
 
-#: beast-gtk/bstcanvassource.cc:431
+#: beast-gtk/bstcanvassource.cc:427
 msgid "Module Info"
 msgstr "Informace o modulu"
 
@@ -4149,7 +4120,7 @@ msgstr "Informace o modulu"
 msgid "Module Link: "
 msgstr "Spojení modulů: "
 
-#: beast-gtk/bstcanvaslink.cc:170 beast-gtk/bstsnetrouter.cc:732
+#: beast-gtk/bstcanvaslink.cc:170 beast-gtk/bstsnetrouter.cc:721
 msgid "Module link"
 msgstr "Spojení modulů"
 
@@ -4172,46 +4143,46 @@ msgstr "Přesunout part"
 msgid "Move downwards"
 msgstr "Posunout dolů"
 
-#: beast-gtk/bstpatternctrl.cc:310
+#: beast-gtk/bstpatternctrl.cc:313
 msgid "Move focus cell downwards"
 msgstr "Aktivovat buňku doků"
 
-#: beast-gtk/bstpatternctrl.cc:314
+#: beast-gtk/bstpatternctrl.cc:317
 msgid "Move focus cell downwards page-wise"
 msgstr "Aktivovat buňku o stránku níž"
 
-#: beast-gtk/bstpatternctrl.cc:308
+#: beast-gtk/bstpatternctrl.cc:311
 msgid "Move focus cell to the left"
 msgstr "Aktivovat buňku vlevo"
 
-#: beast-gtk/bstpatternctrl.cc:312
+#: beast-gtk/bstpatternctrl.cc:315
 msgid "Move focus cell to the left page-wise"
 msgstr "Aktivovat buňku o stránku vlevo"
 
-#: beast-gtk/bstpatternctrl.cc:309
+#: beast-gtk/bstpatternctrl.cc:312
 msgid "Move focus cell to the right"
 msgstr "Aktivovat buňku vpravo"
 
-#: beast-gtk/bstpatternctrl.cc:313
+#: beast-gtk/bstpatternctrl.cc:316
 msgid "Move focus cell to the right page-wise"
 msgstr "Aktivovat buňku o stránku vpravo"
 
-#: beast-gtk/bstpatternctrl.cc:307
+#: beast-gtk/bstpatternctrl.cc:310
 msgid "Move focus cell upwards"
 msgstr "Aktivovat buňku nahoře"
 
-#: beast-gtk/bstpatternctrl.cc:311
+#: beast-gtk/bstpatternctrl.cc:314
 msgid "Move focus cell upwards page-wise"
 msgstr "Aktivovat buňku o stránku výš"
 
 #. movement
-#: beast-gtk/bstpatternctrl.cc:306
+#: beast-gtk/bstpatternctrl.cc:309
 msgid ""
 "Move focus to the next cell (up/left/right/down according to configuration)"
 msgstr ""
 "Aktivovat následující buňku (nahoru/doleva/doprava/dolů podle nastavení)"
 
-#: beast-gtk/bstpartdialog.cc:47
+#: beast-gtk/bstpartdialog.cc:46
 msgid "Move the current selection into clipboard"
 msgstr "Přesunout aktuální výběr do schránky"
 
@@ -4242,23 +4213,23 @@ msgid "Multiply Controls"
 msgstr "Násobit řízení"
 
 #. GenericName
-#: data/beast.desktop.in:5
+#: data/beast.desktop.in:4
 msgid "Music Composer"
 msgstr "Skladatel hudby"
 
-#: bse/bsesong.cc:735
+#: bse/bseapi.idl:765
 msgid "Musical Tuning"
 msgstr ""
 
-#: bse/bsebus.cc:860
+#: bse/bsebus.cc:868
 msgid "Mute"
 msgstr "Umlčet"
 
-#: bse/bsebus.cc:860
+#: bse/bsebus.cc:868
 msgid "Mute: turn off the bus volume"
 msgstr "Umlčet: vypnout hlasitost sběrnice"
 
-#: bse/bsetrack.cc:1026
+#: bse/bsetrack.cc:1024
 msgid "Muted"
 msgstr "Umlčeno"
 
@@ -4272,7 +4243,7 @@ msgid "N Wait Spins"
 msgstr ""
 
 #: beast-gtk/bstfiledialog.cc:122 beast-gtk/bstitemview.cc:192
-#: beast-gtk/bsttrackview.cc:589 bse/bseobject.cc:863
+#: beast-gtk/bsttrackview.cc:589 bse/bseobject.cc:868
 msgid "Name"
 msgstr "Název"
 
@@ -4280,7 +4251,7 @@ msgstr "Název"
 msgid "Name for the current skin configuration (used for skin selections)."
 msgstr "Název aktuálního nastavení skinu (používané pro výběry skinu)."
 
-#: bse/bseserver.cc:123
+#: bse/bseserver.cc:124
 msgid "Name of the WAVE file used for recording BSE sound output"
 msgstr "Název souboru WAVE používaného pro záznam výstupu zvuku BSE"
 
@@ -4288,11 +4259,11 @@ msgstr "Název souboru WAVE používaného pro záznam výstupu zvuku BSE"
 msgid "Negative Value Color"
 msgstr "Barva záporné hodnoty"
 
-#: beast-gtk/bstapp.cc:121
+#: beast-gtk/bstapp.cc:116
 msgid "New Song"
 msgstr "Nová skladba"
 
-#: beast-gtk/bstapp.cc:111
+#: beast-gtk/bstapp.cc:106
 msgid "New View"
 msgstr "Nový pohled"
 
@@ -4321,7 +4292,7 @@ msgstr "Žádný part"
 msgid "No Track"
 msgstr "Žádná stopa"
 
-#: bse/bseserver.cc:514
+#: bse/bseserver.cc:515
 msgid ""
 "No available MIDI device could be found and opened successfully. Reverting "
 "to null device, no MIDI events will be received or sent."
@@ -4329,7 +4300,7 @@ msgstr ""
 "Nebylo možné najít a otevřít žádné dostupné zařízení MIDI. Vracím se k "
 "prázdnému zařízení, nebudou přijímány ani odesílány žádné události MIDI."
 
-#: bse/bseserver.cc:487
+#: bse/bseserver.cc:488
 msgid ""
 "No available audio device could be found and opened successfully. Sorry, no "
 "fallback selection can be made for audio devices, giving up."
@@ -4337,16 +4308,16 @@ msgstr ""
 "Nebylo možné naját a otevřít žádné dostupné zvukové zařízení. Lituji, pro "
 "výběr zvukového zařízení není možná náhradní volba, vzdávám to."
 
-#: bse/bseserver.cc:486
+#: bse/bseserver.cc:487
 msgid "No available audio device was found."
 msgstr "Nebylo nalezeno žádné dostupné zvukové zařízení."
 
-#: bse/bseapi.idl:41
+#: bse/bseapi.idl:42
 msgid "No data available"
 msgstr "Nejsou k dispozici žádná data"
 
 #. Device errors
-#: bse/bseapi.idl:57
+#: bse/bseapi.idl:58
 msgid "No device (driver) available"
 msgstr "Není k dispozici zařízení (ovladač)"
 
@@ -4359,42 +4330,42 @@ msgstr "Nevybrána žádná kvantizace"
 msgid "No quantization selected"
 msgstr "Nevybrána žádná kvantizace"
 
-#: bse/bseapi.idl:36
+#: bse/bseapi.idl:37
 msgid "No space left on device"
 msgstr "Na zařízení nezbývá místo"
 
 #. various procedure errors
-#: bse/bseapi.idl:86
+#: bse/bseapi.idl:87
 msgid "No such entry"
 msgstr "Taková položka neexistuje"
 
-#: bse/bseapi.idl:87
+#: bse/bseapi.idl:88
 msgid "No such event"
 msgstr "Taková událost neexistuje"
 
-#: bse/bseapi.idl:27
+#: bse/bseapi.idl:28
 msgid "No such file, device or directory"
 msgstr "Takový soubor, zařízení nebo adresář neexistuje"
 
-#: bse/bseapi.idl:68
+#: bse/bseapi.idl:69
 msgid "No such input channel"
 msgstr "Takový vstupní kanál neexistuje"
 
-#: bse/bseapi.idl:69
+#: bse/bseapi.idl:70
 msgid "No such output channel"
 msgstr "Takový výstupní kanál neexistuje"
 
 #. BseProcedure errors
-#: bse/bseapi.idl:80
+#: bse/bseapi.idl:81
 msgid "No such procedure"
 msgstr "Taková procedura neexistuje"
 
 #. BseSource errors
-#: bse/bseapi.idl:67
+#: bse/bseapi.idl:68
 msgid "No such synthesis module"
 msgstr "Takový modul syntézy neexistuje"
 
-#: bse/bseapi.idl:49
+#: bse/bseapi.idl:50
 msgid "No such wave"
 msgstr "Taková vlna neexistuje"
 
@@ -4402,7 +4373,7 @@ msgstr "Taková vlna neexistuje"
 #: beast-gtk/bsteventrollctrl.cc:613 beast-gtk/bstpianorollctrl.cc:540
 #: beast-gtk/bstpianorollctrl.cc:637 beast-gtk/bstpianorollctrl.cc:700
 #: beast-gtk/bsttrackrollctrl.cc:466 beast-gtk/bsttrackrollctrl.cc:486
-#: beast-gtk/bsttrackrollctrl.cc:557 bse/bseapi.idl:88
+#: beast-gtk/bsttrackrollctrl.cc:557 bse/bseapi.idl:89
 msgid "No target"
 msgstr "Žádný cíl"
 
@@ -4437,14 +4408,14 @@ msgstr "Výstup hluku"
 msgid "Noise is a generator of (supposedly) white noise"
 msgstr "Šum je generátor (snad) bílého šumu"
 
-#: bse/bseapi.idl:142
+#: bse/bseapi.idl:143
 msgid "Non-Registered Parameter"
 msgstr "Neregistrovaný parametr"
 
 #. special cased signals
 #: beast-gtk/bstapi.idl:37 beast-gtk/bstapi.idl:76
 #: beast-gtk/bsteventrollctrl.cc:44 beast-gtk/bstpianorollctrl.cc:44
-#: bse/bsebasics.idl:113
+#: bse/bsebasics.idl:31
 msgid "None"
 msgstr "Žádné"
 
@@ -4483,7 +4454,7 @@ msgstr "Rychlost noty"
 msgid "Note Entry"
 msgstr "Vstup noty"
 
-#: bse/bseapi.idl:101
+#: bse/bseapi.idl:102
 msgid "Note Fine Tune"
 msgstr "Doladění noty"
 
@@ -4504,7 +4475,7 @@ msgid "Note Sync Signal"
 msgstr "Signál synchronizace noty"
 
 #. 14bit
-#: bse/bseapi.idl:100
+#: bse/bseapi.idl:101
 msgid "Note Velocity"
 msgstr "Rychlost noty"
 
@@ -4522,7 +4493,7 @@ msgid ""
 "Note values are converted to Hertz according to the current musical tuning"
 msgstr ""
 
-#: beast-gtk/bstapp.cc:143
+#: beast-gtk/bstapp.cc:138
 msgid "Notes and informations about this release cycle"
 msgstr "Poznámky a informace o tomto cyklu vydání"
 
@@ -4535,31 +4506,27 @@ msgstr "Noty z nezaškrtnutých stop sekvencer při přehrávání ignoruje"
 msgid "Notify users via error bells if edits cannot be carried out"
 msgstr ""
 
-#: beast-gtk/gxk/gxklistwrapper.cc:84
+#: beast-gtk/gxk/gxklistwrapper.cc:85
 msgid "Number of Columns"
 msgstr "Počet sloupců"
 
-#: beast-gtk/gxk/gxklistwrapper.cc:92
+#: beast-gtk/gxk/gxklistwrapper.cc:93
 msgid "Number of Rows"
 msgstr "Počet řádků"
-
-#: bse/bseautodoc.cc:319
-msgid "Number of elements (C specific)"
-msgstr ""
 
 #: bse/bsebiquadfilter.cc:160 bse/bsestandardosc.cc:159 bse/bsewaveosc.cc:566
 msgid "Number of octaves to be affected by exponential frequency modulation"
 msgstr "Počet oktáv, na které má mít vliv exponenciální frekvenční modulace"
 
-#: bse/bsesong.cc:745
+#: bse/bsesong.cc:721
 msgid "Number of ticks per quarter note"
 msgstr "Počet dob na čtvrťovou notu"
 
-#: bse/bsesong.cc:749
+#: bse/bsesong.cc:725
 msgid "Numerator"
 msgstr "Čitatel"
 
-#: bse/bseapi.idl:17
+#: bse/bseapi.idl:18
 msgid "OK"
 msgstr ""
 
@@ -4577,15 +4544,15 @@ msgstr "Výběr objektu: %s"
 msgid "Octaves"
 msgstr "Oktávy"
 
-#: beast-gtk/bstapp.cc:169
+#: beast-gtk/bstapp.cc:164
 msgid "Online Demos..."
 msgstr "Dema online..."
 
-#: beast-gtk/bstapp.cc:165
+#: beast-gtk/bstapp.cc:160
 msgid "Online Sound Archive..."
 msgstr "Archiv zvuků online..."
 
-#: beast-gtk/bstapp.cc:151
+#: beast-gtk/bstapp.cc:146
 msgid "Online _Help Desk..."
 msgstr "_Nápověda online..."
 
@@ -4626,11 +4593,11 @@ msgstr ""
 "             jen pro čtení, pro čtení a zápis, nebo jen pro zápis;\"\n"
 "             přidání \"hs\" vynucuje tvrdou synchronizaci při podtečení.\n"
 
-#: beast-gtk/bstapp.cc:64
+#: beast-gtk/bstapp.cc:61
 msgid "Open existing project"
 msgstr "Otevřít existující projekt"
 
-#: bse/bseapi.idl:29
+#: bse/bseapi.idl:30
 msgid "Open failed"
 msgstr "Otevření selhalo"
 
@@ -4638,7 +4605,7 @@ msgstr "Otevření selhalo"
 msgid "Open file browser"
 msgstr "Otevřít prohlížeč souborů"
 
-#: beast-gtk/bstapp.cc:711 beast-gtk/bstapp.cc:720
+#: beast-gtk/bstapp.cc:706 beast-gtk/bstapp.cc:715
 #: beast-gtk/bstfiledialog.cc:419 beast-gtk/bstfiledialog.cc:427
 #, c-format
 msgid "Opening project `%s'"
@@ -4680,7 +4647,7 @@ msgstr "Původ:  %s\n"
 #. TRANSLATORS: this is the name of the track that is used to automatically
 #. * adopt orphan (unlinked) parts.
 #.
-#: bse/bsesong.proc:79
+#: bse/bsesong.proc:80
 msgid "Orphan Parts"
 msgstr "Nepřipojené party"
 
@@ -4692,7 +4659,7 @@ msgstr "Oscilovaný výstup"
 msgid "Oscillating Frequency Input"
 msgstr "Vstup oscilující frekvence"
 
-#: beast-gtk/bstsnetrouter.cc:1059
+#: beast-gtk/bstsnetrouter.cc:1047
 msgid "Oscillator"
 msgstr "Oscilátor"
 
@@ -4723,11 +4690,11 @@ msgstr "_Jiné zdroje"
 msgid "Other Sources/Simple ADSR"
 msgstr "_Jiné zdroje"
 
-#: bse/bseapi.idl:37
+#: bse/bseapi.idl:38
 msgid "Out of memory"
 msgstr "Nedostatek paměti"
 
-#: beast-gtk/bstcanvassource.cc:976 beast-gtk/bstsnetrouter.cc:1062
+#: beast-gtk/bstcanvassource.cc:964 beast-gtk/bstsnetrouter.cc:1050
 #: plugins/bseamplifier.idl:48
 msgid "Output"
 msgstr "Výstup"
@@ -4749,11 +4716,11 @@ msgstr "Posun výstupu"
 msgid "Output Port %u"
 msgstr "Výstupní port %u"
 
-#: beast-gtk/bstsnetrouter.cc:686
+#: beast-gtk/bstsnetrouter.cc:672
 msgid "Output Signal Monitor"
 msgstr "Sledování výstupního signálu"
 
-#: bse/bsebus.cc:884 bse/bsetrack.cc:1055
+#: bse/bsebus.cc:892 bse/bsetrack.cc:1053
 msgid "Output Signals"
 msgstr "Výstupní signály"
 
@@ -4779,24 +4746,24 @@ msgstr "Zesílení ve výstupní fázi v decibelech"
 msgid "Outputs"
 msgstr "Výstupy"
 
-#: bse/bseapi.idl:89
+#: bse/bseapi.idl:90
 msgid "Ownership mismatch"
 msgstr "Vlastnictví nesouhlasí"
 
-#: beast-gtk/bstsnetrouter.cc:1058
+#: beast-gtk/bstsnetrouter.cc:1046
 msgid "PCM Input module"
 msgstr "Modul vstupu PCM"
 
-#: beast-gtk/bstsnetrouter.cc:1062
+#: beast-gtk/bstsnetrouter.cc:1050
 msgid "PCM Output module"
 msgstr "Modul výstupu PCM"
 
-#: bse/bseserver.cc:490
+#: bse/bseserver.cc:491
 #, fuzzy
 msgid "PCM device selections problems"
 msgstr "Rada o problémech s výběrem zařízení PCM"
 
-#: bse/bseserver.cc:575
+#: bse/bseserver.cc:576
 #, fuzzy
 msgid "PCM recording errors"
 msgstr "Zobrazit chyby zaznamenávaného souboru"
@@ -4806,7 +4773,7 @@ msgstr "Zobrazit chyby zaznamenávaného souboru"
 msgid "PID:     %u\n"
 msgstr "PID:     %u\n"
 
-#: drivers/bsemididevice-alsa.cc:329 drivers/bsepcmdevice-alsa.cc:581
+#: drivers/bsemididevice-alsa.cc:328 drivers/bsepcmdevice-alsa.cc:580
 msgid "PLUGIN:CARD,DEV,SUBDEV"
 msgstr "MODUL:KARTA,ZAŘ,PODZAŘ"
 
@@ -4814,11 +4781,11 @@ msgstr "MODUL:KARTA,ZAŘ,PODZAŘ"
 msgid "PWM In"
 msgstr "PWM In"
 
-#: beast-gtk/bstsnetrouter.cc:36 beast-gtk/bstsnetrouter.cc:902
+#: beast-gtk/bstsnetrouter.cc:36 beast-gtk/bstsnetrouter.cc:890
 msgid "Palette"
 msgstr "Paleta"
 
-#: bse/bseapi.idl:113 bse/bsebasics.idl:125
+#: bse/bseapi.idl:114 bse/bsebasics.idl:43
 msgid "Panorama"
 msgstr "Panorama"
 
@@ -4835,19 +4802,11 @@ msgstr "Parametr, který při aktivaci předat funkci"
 msgid "Parameters"
 msgstr "Parametry"
 
-#: bse/bseparasite.proc:38 bse/bseparasite.proc:56 bse/bseparasite.proc:75
-msgid "Parasite"
-msgstr "Parazit"
-
-#: bse/bseparasite.proc:14
-msgid "Parasite Paths"
-msgstr "Parazitující cesty"
-
-#: bse/bseapi.idl:75
+#: bse/bseapi.idl:76
 msgid "Parent mismatch"
 msgstr "Rodič nesouhlasí"
 
-#: bse/bseapi.idl:54
+#: bse/bseapi.idl:55
 msgid "Parsing error"
 msgstr "Chyba zpracovávání"
 
@@ -4857,7 +4816,7 @@ msgstr "Chyba zpracovávání"
 msgid "Part"
 msgstr "Party"
 
-#: beast-gtk/bstsupershell.cc:173
+#: beast-gtk/bstsupershell.cc:172
 msgid "Parts"
 msgstr "Party"
 
@@ -4865,14 +4824,9 @@ msgstr "Party"
 msgid "Passband falloff at cutoff frequency"
 msgstr ""
 
-#: beast-gtk/bstpartdialog.cc:49
+#: beast-gtk/bstpartdialog.cc:48
 msgid "Paste"
 msgstr "Vložit"
-
-#: bse/bseparasite.proc:13 bse/bseparasite.proc:37 bse/bseparasite.proc:55
-#: bse/bseparasite.proc:74
-msgid "Path"
-msgstr "Cesta"
 
 #: beast-gtk/gxk/gxksimplelabel.cc:125
 msgid "Pattern"
@@ -4883,20 +4837,20 @@ msgstr "Vzorek"
 msgid "Pattern Editor Layout"
 msgstr "Rozložení editoru vzorků"
 
-#: bse/bsebasics.idl:60
+#: bse/bseapi.idl:302
 msgid "Pentatonic 5-limit"
 msgstr ""
 
-#: bse/bsebasics.idl:64
+#: bse/bseapi.idl:306
 msgid "Pentatonic Blues"
 msgstr ""
 
-#: bse/bsebasics.idl:67
+#: bse/bseapi.idl:309
 msgid "Pentatonic Gogo"
 msgstr ""
 
 #. http://en.wikipedia.org/wiki/Pentatonic_scale
-#: bse/bsebasics.idl:61
+#: bse/bseapi.idl:303
 msgid ""
 "Pentatonic scales are used in modern jazz and pop/rock contexts because they "
 "work exceedingly well over several chords diatonic to the same key, often "
@@ -4933,7 +4887,7 @@ msgid "Piano Notes"
 msgstr "Noty klavíru"
 
 #. 7bit
-#: bse/bseapi.idl:99
+#: bse/bseapi.idl:100
 msgid "Pitch Bend"
 msgstr ""
 
@@ -4941,15 +4895,20 @@ msgstr ""
 msgid "Play note"
 msgstr "Přehrát notu"
 
-#: beast-gtk/bstapp.cc:115
+#: beast-gtk/bstapp.cc:110
 msgid "Play or restart playback of the project"
 msgstr "Přehrávat nebo znovu spustit přehrávání projektu"
 
-#: beast-gtk/bstplayback.cc:63
+#: beast-gtk/bstplayback.cc:64
 msgid "Playback"
 msgstr "Přehrávání"
 
-#: bse/bsemidisynth.cc:461 bse/bsesong.cc:759
+#. /< Check whether users may edit synthesis modules of this network.
+#. /< Check whether inserting a new module into a synthesis network is possible.
+#. /< Insert a new module into a synthesis network.
+#. /< Remove an existing module from its synthesis network.
+#. /< Signal that notifies when a named output port is unregistered.
+#: bse/bseapi.idl:630
 msgid "Playback Settings"
 msgstr "Nastavení přehrávání"
 
@@ -4976,11 +4935,11 @@ msgstr "Brnknout do strun při vzestupných hranách"
 msgid "Pluck the string"
 msgstr "Nastavení přehrávání"
 
-#: bse/bsebasics.idl:465
+#: bse/bsebasics.idl:339
 msgid "Plugin Path"
 msgstr "Cesta zásuvných modulů"
 
-#: beast-gtk/bstmain.cc:166
+#: beast-gtk/bstmain.cc:268
 msgid "Plugins"
 msgstr "Zásuvné moduly"
 
@@ -4988,7 +4947,7 @@ msgstr "Zásuvné moduly"
 msgid "Popup Options"
 msgstr "Možnosti kontextového menu"
 
-#: bse/bseapi.idl:108 bse/bsebasics.idl:120
+#: bse/bseapi.idl:109 bse/bsebasics.idl:38
 msgid "Portamento Time"
 msgstr "Čas portamenta"
 
@@ -5004,11 +4963,11 @@ msgstr "Pozice převzata"
 msgid "Positive Value Color"
 msgstr "Barva kladné hodnoty"
 
-#: bse/bsemidisynth.cc:439 bse/bsesong.cc:757 bse/bsetrack.cc:1051
+#: bse/bsemidisynth.cc:438 bse/bsesong.cc:733 bse/bsetrack.cc:1049
 msgid "Postprocessor"
 msgstr "Postprocesor"
 
-#: beast-gtk/bstapp.cc:961
+#: beast-gtk/bstapp.cc:938
 msgid "Preferences"
 msgstr "Nastavení"
 
@@ -5019,27 +4978,27 @@ msgstr "Nastavení"
 msgid "Preview"
 msgstr "Náslech"
 
-#: beast-gtk/bstapp.cc:988
+#: beast-gtk/bstapp.cc:965
 msgid "Procedure Browser"
 msgstr "Procházeč procedur"
 
-#: beast-gtk/bstapp.cc:105
+#: beast-gtk/bstapp.cc:102
 msgid "Procedure _Browser"
 msgstr "_Procházeč procedur"
 
-#: bse/bseapi.idl:81
+#: bse/bseapi.idl:82
 msgid "Procedure currently busy"
 msgstr "Procedura se právě používá"
 
-#: bse/bseapi.idl:84
+#: bse/bseapi.idl:85
 msgid "Procedure execution aborted"
 msgstr "Spouštění procedury přerušeno"
 
-#: bse/bseapi.idl:83
+#: bse/bseapi.idl:84
 msgid "Procedure execution failed"
 msgstr "Spouštění procedury selhalo"
 
-#: bse/bseapi.idl:82
+#: bse/bseapi.idl:83
 msgid "Procedure parameter invalid"
 msgstr "Parametr procedury není platný"
 
@@ -5057,7 +5016,7 @@ msgstr ""
 msgid "Process: %s\n"
 msgstr "Proces:  %s\n"
 
-#: bse/bsebasics.idl:429
+#: bse/bsebasics.idl:303
 msgid ""
 "Processing duration between input and output of a single sample, smaller "
 "values increase CPU load"
@@ -5065,12 +5024,12 @@ msgstr ""
 "Doba zpracovávání mezi vstupem a výstupem jednoho vzorku, menší hodnoty "
 "zvyšují zátěž CPU"
 
-#: beast-gtk/bstapp.cc:109 beast-gtk/bstprofiler.cc:116
+#: beast-gtk/bstapp.cc:104 beast-gtk/bstprofiler.cc:116
 msgid "Profiler"
 msgstr "Profiler"
 
 #. special case signals
-#: bse/bseapi.idl:97
+#: bse/bseapi.idl:98
 msgid "Program Change"
 msgstr "Změna programu"
 
@@ -5081,8 +5040,8 @@ msgid ""
 "to time. It is a funny example though."
 msgstr ""
 
-#: beast-gtk/bstsnetrouter.cc:680 beast-gtk/bstsupershell.cc:169
-#: beast-gtk/bstsupershell.cc:202 beast-gtk/bstsupershell.cc:217
+#: beast-gtk/bstsnetrouter.cc:666 beast-gtk/bstsupershell.cc:168
+#: beast-gtk/bstsupershell.cc:197 beast-gtk/bstsupershell.cc:212
 #: plugins/standardguspatchenvelope.idl:19
 msgid "Properties"
 msgstr "Vlastnosti"
@@ -5103,15 +5062,15 @@ msgstr ""
 "Část trvání kladné komponenty pulzové vlny (aby toto mělo vliv, musí být "
 "jako tvar vlny vybrán Pulz)"
 
-#: beast-gtk/bstapp.cc:141
+#: beast-gtk/bstapp.cc:136
 msgid "Provide an overview of all BEAST documentation contents"
 msgstr "Poskytnout přehled veškeré dokumentace BEAST"
 
-#: beast-gtk/bstapp.cc:160
+#: beast-gtk/bstapp.cc:155
 msgid "Provide an overview of development related topics and documents"
 msgstr "Poskytnout přehled témat a dokumentů souvisejících s vývojem"
 
-#: beast-gtk/bstapp.cc:149
+#: beast-gtk/bstapp.cc:144
 msgid "Provides an introduction about how to accomplish the most common tasks"
 msgstr "Poskytuje úvod o tom, jak provést nejčastější úkony"
 
@@ -5132,12 +5091,12 @@ msgstr "Šířka pulzu"
 msgid "Pulse Width Modulation Input"
 msgstr "Vstup modulace šířky pulzu"
 
-#: bse/bsebasics.idl:56
+#: bse/bseapi.idl:298
 msgid "Pythagorean Tuning"
 msgstr ""
 
 #. http://en.wikipedia.org/wiki/Pythagorean_tuning
-#: bse/bsebasics.idl:57
+#: bse/bseapi.idl:299
 msgid ""
 "Pythagorean tuning is the oldest way of tuning the 12-note chromatic scale, "
 "in which the frequency relationships of all intervals are based on the ratio "
@@ -5239,35 +5198,21 @@ msgid "Quarter note"
 msgstr "Čtvrťová nota"
 
 #. Meantone Temperament: http://en.wikipedia.org/wiki/Meantone_temperament
-#: bse/bsebasics.idl:71
+#: bse/bseapi.idl:313
 #, fuzzy
 msgid "Quarter-Comma Meantone"
 msgstr "Čtvrťová nota"
 
 #. http://en.wikipedia.org/wiki/Quarter-comma_meantone
-#: bse/bsebasics.idl:72
+#: bse/bseapi.idl:314
 msgid ""
 "Quarter-comma meantone was the most common meantone temperament in the "
 "sixteenth and seventeenth centuries and sometimes used later."
 msgstr ""
 
-#. parse rc file
-#: beast-gtk/bstmain.cc:141
+#: beast-gtk/bstmain.cc:238
 msgid "RC Files"
 msgstr "Soubory RC"
-
-#: beast-gtk/bstsupershell.cc:194
-msgid "Rack"
-msgstr "Rack"
-
-#: beast-gtk/bstapp.cc:107
-msgid "Rack Editor"
-msgstr "Editor racku"
-
-#. FIXME: undo Edit when hide && GXK_DIALOG_HIDE_ON_DELETE
-#: beast-gtk/bstapp.cc:947
-msgid "Rack editor"
-msgstr "Editor racku"
 
 #. label=
 #: beast-gtk/bstkeybindings.cc:37 beast-gtk/res/radgets-beast.xml:283
@@ -5278,10 +5223,6 @@ msgstr "Zvýšit"
 msgid "Raise the currently selected key binding, relative to its neighbours"
 msgstr "Zvýšit momentálně vybranou klávesovou zkratku relativně vůči sousedům"
 
-#: bse/bseautodoc.cc:169 bse/bseautodoc.cc:175
-msgid "Range:"
-msgstr "Rozsah:"
-
 #: plugins/davsyndrum.cc:101
 msgid "Ratio In"
 msgstr "Poměr In"
@@ -5290,11 +5231,11 @@ msgstr "Poměr In"
 msgid "Ratio [x:1]"
 msgstr "Poměr [x:1]"
 
-#: bse/bseapi.idl:31
+#: bse/bseapi.idl:32
 msgid "Read failed"
 msgstr "Čtení selhalo"
 
-#: beast-gtk/bstapp.cc:88
+#: beast-gtk/bstapp.cc:85
 msgid "Rebuild"
 msgstr "Znovu sestavit"
 
@@ -5308,15 +5249,15 @@ msgstr ""
 msgid "Rectangle select notes"
 msgstr "Vybrat noty v obdélníku"
 
-#: beast-gtk/bstpartdialog.cc:53
+#: beast-gtk/bstpartdialog.cc:52
 msgid "Redo"
 msgstr "Znovu"
 
-#: beast-gtk/bstapp.cc:97
+#: beast-gtk/bstapp.cc:94
 msgid "Redo the last undone action"
 msgstr "Zopakovat poslední vrácenou akci"
 
-#: beast-gtk/bstpartdialog.cc:53
+#: beast-gtk/bstpartdialog.cc:52
 msgid "Redo the last undone editing step"
 msgstr "Zopakovat poslední vrácený krok úprav"
 
@@ -5329,7 +5270,7 @@ msgstr ""
 msgid "Reflection cutoff frequency"
 msgstr "Nastavit procenta odříznutí frekvence"
 
-#: bse/bseapi.idl:141
+#: bse/bseapi.idl:142
 msgid "Registered Parameter"
 msgstr "Registrovaný parametr"
 
@@ -5346,7 +5287,7 @@ msgstr "Uvolnit čítač"
 msgid "Reload current page"
 msgstr "Znovu načíst aktuální stranu"
 
-#: beast-gtk/bstsnetrouter.cc:713
+#: beast-gtk/bstsnetrouter.cc:702
 msgid "Remove Module"
 msgstr "Odstranit modul"
 
@@ -5354,19 +5295,11 @@ msgstr "Odstranit modul"
 msgid "Remove Paths"
 msgstr "Odstranit cesty"
 
-#: beast-gtk/bstapp.cc:127
+#: beast-gtk/bstapp.cc:122
 msgid "Remove Song or Synthesizer"
 msgstr "Odstranit skladbu nebo syntetizér"
 
-#: bse/bsebus.proc:125
-msgid "Remove a bus from the input list of a bus."
-msgstr ""
-
-#: bse/bsebus.proc:51
-msgid "Remove a track from the input list of a bus."
-msgstr ""
-
-#: beast-gtk/bstpatternctrl.cc:340 beast-gtk/bstpatternctrl.cc:354
+#: beast-gtk/bstpatternctrl.cc:343 beast-gtk/bstpatternctrl.cc:357
 msgid "Remove any events in the focus cell"
 msgstr "Odstranit události v aktivní buňce"
 
@@ -5374,7 +5307,7 @@ msgstr "Odstranit události v aktivní buňce"
 msgid "Remove directory from searchpath"
 msgstr "Odstranit adresář z cesty hledání"
 
-#: beast-gtk/bstapp.cc:127
+#: beast-gtk/bstapp.cc:122
 msgid "Remove the currently selected synthesizer (song)"
 msgstr "Odstranit momentálně vybraný syntetizér (skladbu)"
 
@@ -5401,15 +5334,15 @@ msgstr "Opakovat"
 msgid "Repeat playback within loop points"
 msgstr "Opakovat přehrávání mezi hranicemi smyčky"
 
-#: beast-gtk/bstapp.cc:153
+#: beast-gtk/bstapp.cc:148
 msgid "Report a Beast Bug..."
 msgstr ""
 
-#: bse/bseapi.idl:46
+#: bse/bseapi.idl:47
 msgid "Requested data values unmatched"
 msgstr "Požadované hodnoty dat nenalezeny"
 
-#: beast-gtk/bstsnetrouter.cc:681
+#: beast-gtk/bstsnetrouter.cc:667
 msgid "Reset Properties"
 msgstr "Přenastavit vlastnosti"
 
@@ -5436,15 +5369,15 @@ msgstr "Rezonance [%]"
 msgid "Restarting Playback"
 msgstr "Znovu spouštím přehrávání"
 
-#: bse/bsecontainer.proc:13
+#: bse/bsecontainer.proc:14
 msgid "Retrieve all immediate children of a container"
 msgstr ""
 
-#: bse/bsesong.proc:48
+#: bse/bsesong.proc:49
 msgid "Retrieve master output bus of a song if it exists."
 msgstr "Získat sběrnici hlavního výstupu skladby, pokud existuje."
 
-#: bse/bsesong.proc:21
+#: bse/bsesong.proc:22
 msgid ""
 "Retrieve master output bus of a song, will create one if it doesn't exist."
 msgstr ""
@@ -5466,7 +5399,7 @@ msgstr "Pravé"
 msgid "Right Audio"
 msgstr "Pravý zvuk"
 
-#: bse/bsebus.cc:895 bse/bsepcmoutput.cc:114
+#: bse/bsebus.cc:903 bse/bsepcmoutput.cc:114
 #: plugins/freeverb/bsefreeverb.cc:104
 msgid "Right Audio In"
 msgstr "Pravý zvuk In"
@@ -5475,7 +5408,7 @@ msgstr "Pravý zvuk In"
 msgid "Right Audio Input"
 msgstr "Vstup pravého zvuku"
 
-#: bse/bsebus.cc:899 bse/bsepcminput.cc:114
+#: bse/bsebus.cc:907 bse/bsepcminput.cc:114
 #: plugins/freeverb/bsefreeverb.cc:106
 msgid "Right Audio Out"
 msgstr "Pravý zvuk Out"
@@ -5505,7 +5438,7 @@ msgstr "Pravé Out"
 msgid "Right Output"
 msgstr "Pravý výstup"
 
-#: bse/bsebus.cc:870
+#: bse/bsebus.cc:878
 msgid "Right Volume"
 msgstr "Pravá hlasitost"
 
@@ -5517,11 +5450,11 @@ msgstr "Výstup pravého zvuku"
 msgid "Right channel Input"
 msgstr "Vstup pravého kanálu"
 
-#: bse/bsebus.cc:895
+#: bse/bsebus.cc:903
 msgid "Right channel input"
 msgstr "Vstup pravého kanálu"
 
-#: bse/bsebus.cc:899 bse/bsepcminput.cc:114
+#: bse/bsebus.cc:907 bse/bsepcminput.cc:114
 msgid "Right channel output"
 msgstr "Výstup pravého kanálu"
 
@@ -5536,7 +5469,7 @@ msgid ""
 "modules within a synthesis network."
 msgstr ""
 
-#: beast-gtk/bstsupershell.cc:181 beast-gtk/bstsupershell.cc:198
+#: beast-gtk/bstsupershell.cc:180 beast-gtk/bstsupershell.cc:193
 msgid "Routing"
 msgstr "Směrování"
 
@@ -5555,7 +5488,7 @@ msgstr "/Směrování/Zesilovač"
 msgid "Routing/Multiply"
 msgstr "/Směrování/Zesilovač"
 
-#: beast-gtk/bstpatternctrl.cc:129
+#: beast-gtk/bstpatternctrl.cc:131
 msgid "Row Shading"
 msgstr "Stínování řádků"
 
@@ -5563,7 +5496,7 @@ msgstr "Stínování řádků"
 msgid "STime"
 msgstr "SČas"
 
-#: bse/bsebasics.idl:453
+#: bse/bsebasics.idl:327
 msgid "Sample Path"
 msgstr "Cesta vzorků"
 
@@ -5601,15 +5534,15 @@ msgid ""
 "curvature across all levels"
 msgstr ""
 
-#: beast-gtk/bstapp.cc:137
+#: beast-gtk/bstapp.cc:132
 msgid "Save As Effect..."
 msgstr "Uložit jako efekt..."
 
-#: beast-gtk/bstapp.cc:135
+#: beast-gtk/bstapp.cc:130
 msgid "Save As Instrument..."
 msgstr "Uložit jako nástroj..."
 
-#: beast-gtk/bstapp.cc:627
+#: beast-gtk/bstapp.cc:622
 msgid "Save Changes"
 msgstr "Uložit změny"
 
@@ -5621,19 +5554,19 @@ msgstr "Uložit efekt"
 msgid "Save Instrument"
 msgstr "Uložit nástroj"
 
-#: beast-gtk/bstapp.cc:76
+#: beast-gtk/bstapp.cc:73
 msgid "Save _As..."
 msgstr "Uložit _jako..."
 
-#: beast-gtk/bstapp.cc:137
+#: beast-gtk/bstapp.cc:132
 msgid "Save synthesizer mesh to effects folder"
 msgstr "Uložit síť syntetizéru do adresáře efektů"
 
-#: beast-gtk/bstapp.cc:135
+#: beast-gtk/bstapp.cc:130
 msgid "Save synthesizer mesh to instruments folder"
 msgstr "Uložit síť syntetizéru do adresáře nástrojů"
 
-#: beast-gtk/bstapp.cc:626
+#: beast-gtk/bstapp.cc:621
 msgid "Save the project before closing its window?"
 msgstr "Uložit projekt před zavřením tohoto okna?"
 
@@ -5657,7 +5590,7 @@ msgstr "Ukládám nástroj `%s'"
 msgid "Saving project `%s'"
 msgstr "Ukládám projekt `%s'"
 
-#: bse/bsebasics.idl:462
+#: bse/bsebasics.idl:336
 msgid "Script Path"
 msgstr "Cesta skriptů"
 
@@ -5665,7 +5598,7 @@ msgstr "Cesta skriptů"
 msgid "Script execution error."
 msgstr "Chyba provádění skriptu."
 
-#: beast-gtk/bstmain.cc:213
+#: beast-gtk/bstmain.cc:325
 msgid "Scripts"
 msgstr "Skripty"
 
@@ -5685,11 +5618,11 @@ msgstr "Neposouvat nic"
 msgid "Scroll Right"
 msgstr "Posouvat pravý"
 
-#: bse/bsebasics.idl:452
+#: bse/bsebasics.idl:326
 msgid "Search Paths"
 msgstr "Cesty hledání"
 
-#: bse/bsebasics.idl:457
+#: bse/bsebasics.idl:331
 #, fuzzy
 msgid ""
 "Search path of directories, seperated by \";\", used to find BSE effect "
@@ -5698,7 +5631,7 @@ msgstr ""
 "Cesta hledání z adresářů oddělených \"%s\" používaná pro hledání souborů s "
 "efekty BSE."
 
-#: bse/bsebasics.idl:460
+#: bse/bsebasics.idl:334
 #, fuzzy
 msgid ""
 "Search path of directories, seperated by \";\", used to find BSE instrument "
@@ -5707,7 +5640,7 @@ msgstr ""
 "Cesta hledání z adresářů oddělených \"%s\" používaná pro hledání souborů s "
 "nástroj BSE."
 
-#: bse/bsebasics.idl:466
+#: bse/bsebasics.idl:340
 #, fuzzy
 msgid ""
 "Search path of directories, seperated by \";\", used to find BSE plugins. "
@@ -5718,7 +5651,7 @@ msgstr ""
 "modulů BSE. V této cestě se hledá navíc ke standardnímu umístění zásuvných "
 "modulů BSE v tomto systému."
 
-#: bse/bsebasics.idl:463
+#: bse/bsebasics.idl:337
 #, fuzzy
 msgid ""
 "Search path of directories, seperated by \";\", used to find BSE scheme "
@@ -5727,7 +5660,7 @@ msgstr ""
 "Cesta hledání z adresářů oddělených \"%s\" používaná pro hledání skriptů BSE "
 "v scheme."
 
-#: bse/bsebasics.idl:470
+#: bse/bsebasics.idl:344
 #, fuzzy
 msgid ""
 "Search path of directories, seperated by \";\", used to find LADSPA plugins. "
@@ -5741,7 +5674,7 @@ msgstr ""
 "Simple Plugin API, více informací o zásuvných modulech LADSPA můžete najít "
 "na http://www.ladspa.org/."
 
-#: bse/bsebasics.idl:454
+#: bse/bsebasics.idl:328
 #, fuzzy
 msgid ""
 "Search path of directories, seperated by \";\", used to find audio samples."
@@ -5772,7 +5705,7 @@ msgstr "Druhý řídicí vstup"
 msgid "Second filter cutoff frequency"
 msgstr "Nastavit procenta odříznutí frekvence"
 
-#: bse/bseapi.idl:30
+#: bse/bseapi.idl:31
 msgid "Seek failed"
 msgstr "Posun selhal"
 
@@ -5805,11 +5738,11 @@ msgstr "Vybrat všechny události"
 msgid "Select all notes"
 msgstr "Vybrat všechny noty"
 
-#: beast-gtk/bstsnetrouter.cc:617
+#: beast-gtk/bstsnetrouter.cc:603
 msgid "Select input module"
 msgstr "Vybrat vstupní modul"
 
-#: beast-gtk/bstsnetrouter.cc:615
+#: beast-gtk/bstsnetrouter.cc:601
 msgid "Select output module"
 msgstr "Vybrat výstupní modul"
 
@@ -5833,7 +5766,7 @@ msgstr "Nastavit úroveň rezonance v procentech"
 msgid "Set the attack time in milliseconds"
 msgstr "Nastavit čas nástupu v milisekundách"
 
-#: beast-gtk/bstpatternctrl.cc:325
+#: beast-gtk/bstpatternctrl.cc:328
 msgid "Set the base octave"
 msgstr "Nastavit základní oktávu"
 
@@ -5857,31 +5790,31 @@ msgstr "Nastavit úroveň obálky v procentech"
 msgid "Set the feedback amount; a negative feedback inverts the signal"
 msgstr ""
 
-#: beast-gtk/bstpatternctrl.cc:344 beast-gtk/bstpatternctrl.cc:358
+#: beast-gtk/bstpatternctrl.cc:347 beast-gtk/bstpatternctrl.cc:361
 msgid "Set the focus cell note"
 msgstr "Nastavit notu v aktivní buňce"
 
-#: beast-gtk/bstpatternctrl.cc:336
+#: beast-gtk/bstpatternctrl.cc:339
 msgid "Set the focus cell octave"
 msgstr "Nastavit oktávu aktivní buňky"
 
-#: beast-gtk/bstpatternctrl.cc:318
+#: beast-gtk/bstpatternctrl.cc:321
 msgid "Set the focus cell to the bottommost position possible"
 msgstr "Aktivovat nejspodnější možnou buňku"
 
-#: beast-gtk/bstpatternctrl.cc:316
+#: beast-gtk/bstpatternctrl.cc:319
 msgid "Set the focus cell to the leftmost position possible"
 msgstr "Aktivovat nejlevější možnou buňku"
 
-#: beast-gtk/bstpatternctrl.cc:317
+#: beast-gtk/bstpatternctrl.cc:320
 msgid "Set the focus cell to the rightmost position possible"
 msgstr "Aktivovat nejpravější možnou buňku"
 
-#: beast-gtk/bstpatternctrl.cc:315
+#: beast-gtk/bstpatternctrl.cc:318
 msgid "Set the focus cell to the topmost position possible"
 msgstr "Aktivovat nejvyšší možnou buňku"
 
-#: beast-gtk/bstpatternctrl.cc:321
+#: beast-gtk/bstpatternctrl.cc:324
 msgid "Set the number of steps to make when moving to the next cell"
 msgstr "Nastavit počet provedených kroků při přesunu na následující buňku"
 
@@ -5893,7 +5826,7 @@ msgstr "Nastavit zesílení výstupu"
 msgid "Set the release time in milliseconds"
 msgstr "Nastavit čas uvolnění v milisekundách"
 
-#: beast-gtk/bstpatternctrl.cc:348 beast-gtk/bstpatternctrl.cc:362
+#: beast-gtk/bstpatternctrl.cc:351 beast-gtk/bstpatternctrl.cc:365
 msgid "Sets the value of the focus digit"
 msgstr "Nastavuje hodnotu aktivní číslice"
 
@@ -5917,7 +5850,7 @@ msgstr "Minimum tvaru"
 msgid "Shape Range"
 msgstr "Rozsah tvaru"
 
-#: beast-gtk/bstsnetrouter.cc:685 beast-gtk/bstsnetrouter.cc:734
+#: beast-gtk/bstsnetrouter.cc:671 beast-gtk/bstsnetrouter.cc:723
 msgid "Show Info"
 msgstr "Zobrazit informace"
 
@@ -5925,14 +5858,6 @@ msgstr "Zobrazit informace"
 #, fuzzy, c-format
 msgid "Show messages about %s"
 msgstr "Zobrazovat zprávy o problémech se vstupem zvuku"
-
-#: beast-gtk/bstrackitem.cc:193
-msgid "Shrink Horizontally"
-msgstr "Vodorovně zmenšit"
-
-#: beast-gtk/bstrackitem.cc:194
-msgid "Shrink Vertically"
-msgstr "Svisle zmenšit"
 
 #: beast-gtk/bstgrowbar.cc:76
 msgid "Shrink the scrollable area"
@@ -5942,16 +5867,16 @@ msgstr "Zmenšit posouvatelnou oblast"
 msgid "Signal In"
 msgstr "Signál In"
 
-#: bse/bsebus.cc:873
+#: bse/bsebus.cc:881
 msgid "Signal Inputs"
 msgstr "Vstupy signálu"
 
-#: bse/bsebus.cc:882 bse/bsetrack.cc:1053
+#: bse/bsebus.cc:890 bse/bsetrack.cc:1051
 msgid "Signal Outputs"
 msgstr "Výstupy signálu"
 
 #. Werckmeister II
-#: bse/bsebasics.idl:74
+#: bse/bseapi.idl:316
 msgid "Silbermann-Sorge Temperament"
 msgstr ""
 
@@ -6030,12 +5955,12 @@ msgstr ""
 msgid "Sole Output"
 msgstr "Jediný výstup"
 
-#: bse/bsebus.cc:862
+#: bse/bsebus.cc:870
 msgid "Solo"
 msgstr "Sólo"
 
 # FIXME: s/busses/buses/
-#: bse/bsebus.cc:862
+#: bse/bsebus.cc:870
 msgid "Solo: mute all other busses"
 msgstr "Sólo: umlčet všechny ostatní sběrnice"
 
@@ -6046,7 +5971,7 @@ msgstr "Sólo: umlčet všechny ostatní sběrnice"
 msgid "Song"
 msgstr "_Skladba"
 
-#: beast-gtk/bstapp.cc:502
+#: beast-gtk/bstapp.cc:497
 #, c-format
 msgid "Song: %s"
 msgstr "Skladba: %s"
@@ -6065,7 +5990,7 @@ msgid "Spin Button (Logarithmic)"
 msgstr "Tlačítko se šipkami (logaritmické)"
 
 #. show splash images
-#: beast-gtk/bstmain.cc:145
+#: beast-gtk/bstmain.cc:246
 msgid "Splash Image"
 msgstr "Obrázek při spuštění"
 
@@ -6073,11 +5998,11 @@ msgstr "Obrázek při spuštění"
 msgid "Standard Option Menu"
 msgstr "Standardní menu možností"
 
-#: beast-gtk/bstsnetrouter.cc:1061
+#: beast-gtk/bstsnetrouter.cc:1049
 msgid "Standard amplifier module"
 msgstr "Standardní modul zesilovače"
 
-#: beast-gtk/bstsnetrouter.cc:1059
+#: beast-gtk/bstsnetrouter.cc:1047
 msgid "Standard oscillator module"
 msgstr "Standardní modul oscilátoru"
 
@@ -6114,24 +6039,24 @@ msgstr "Spustit editor"
 msgid "Start Procedure"
 msgstr "Spustit proceduru"
 
-#: beast-gtk/bstapp.cc:169
+#: beast-gtk/bstapp.cc:164
 msgid "Start a web browser pointing to online demo songs"
 msgstr "Spustit WWW prohlížeč s demonstračními skladbami online"
 
-#: beast-gtk/bstapp.cc:145
+#: beast-gtk/bstapp.cc:140
 msgid "Start a web browser pointing to the BEAST website"
 msgstr "Spustit WWW prohlížeč WWW stránkami BEAST"
 
-#: beast-gtk/bstapp.cc:151
+#: beast-gtk/bstapp.cc:146
 msgid ""
 "Start a web browser pointing to the online help desk at the BEAST website"
 msgstr "Spustit WWW prohlížeč s nápovědou online na WWW stránkách BEAST"
 
-#: beast-gtk/bstapp.cc:165
+#: beast-gtk/bstapp.cc:160
 msgid "Start a web browser pointing to the online sound archive"
 msgstr "Spustit WWW prohlížeč s archivem zvuků online"
 
-#: beast-gtk/bstapp.cc:153
+#: beast-gtk/bstapp.cc:148
 #, fuzzy
 msgid ""
 "Start a web browser with the bug report form for the BEAST bugzilla product"
@@ -6145,15 +6070,15 @@ msgstr "Začátek:"
 msgid "Starting Playback"
 msgstr "Spouštím přehrávání"
 
-#: beast-gtk/bstmain.cc:129
+#: beast-gtk/bstmain.cc:220
 msgid "Startup"
 msgstr "Spuštění"
 
-#: beast-gtk/bstpatternctrl.cc:111
+#: beast-gtk/bstpatternctrl.cc:113
 msgid "Steps"
 msgstr "Kroky"
 
-#: beast-gtk/bstapp.cc:117
+#: beast-gtk/bstapp.cc:112
 msgid "Stop playback of the project"
 msgstr "Zastavit přehrávání projektu"
 
@@ -6221,7 +6146,7 @@ msgstr "Přepínače"
 msgid "SynDrum Output"
 msgstr "Výstup SynDrum"
 
-#: bse/bsebus.cc:864
+#: bse/bsebus.cc:872
 msgid "Sync"
 msgstr "Sync"
 
@@ -6241,11 +6166,11 @@ msgstr "Vstup synchronizace"
 msgid "Syncronization Output"
 msgstr "Výstup synchronizace"
 
-#: bse/bsebus.cc:864
+#: bse/bsebus.cc:872
 msgid "Syncronize left and right volume"
 msgstr "Synchronizovat levou a pravou hlasitost"
 
-#: bse/bsebasics.idl:436
+#: bse/bsebasics.idl:310
 msgid "Synth Control Frequency"
 msgstr "Frekvence řízení syntézy"
 
@@ -6253,11 +6178,11 @@ msgstr "Frekvence řízení syntézy"
 msgid "Synth Done"
 msgstr "Syntéza dokončena"
 
-#: bse/bsetrack.cc:1028 bse/bsetrack.cc:1033 bse/bsetrack.cc:1038
+#: bse/bsetrack.cc:1026 bse/bsetrack.cc:1031 bse/bsetrack.cc:1036
 msgid "Synth Input"
 msgstr "Vstup syntézy"
 
-#: bse/bsebasics.idl:432
+#: bse/bsebasics.idl:306
 msgid "Synth Mixing Frequency"
 msgstr "Frekvence mixování syntézy"
 
@@ -6271,15 +6196,15 @@ msgstr "Syntéza dokončena"
 msgid "Synthesis Modules"
 msgstr "Moduly syntézy"
 
-#: bse/bsebasics.idl:426
+#: bse/bsebasics.idl:300
 msgid "Synthesis Settings"
 msgstr "Nastavení syntézy"
 
-#: bse/bsebasics.idl:433
+#: bse/bsebasics.idl:307
 msgid "Synthesis mixing frequency, common values are: 22050, 44100, 48000"
 msgstr "Frekvence mixování syntézy, obvyklé hodnoty jsou 22050, 4410, 48000"
 
-#: bse/bseapi.idl:77
+#: bse/bseapi.idl:78
 msgid "Synthesis module currently busy"
 msgstr "Modul syntézy se právě používá"
 
@@ -6292,16 +6217,16 @@ msgstr "Modul syntézy se právě používá"
 msgid "Synthesis network or wave to be used as instrument by this track"
 msgstr "Síť syntézy nebo vlna, kterou v této stopě používat jako nástroj"
 
-#: bse/bsemidisynth.cc:435
+#: bse/bsemidisynth.cc:434
 msgid "Synthesis network to be used as MIDI instrument"
 msgstr "Síť syntézy, kterou používat jako nástroj MIDI"
 
-#: bse/bsetrack.cc:1030
+#: bse/bsetrack.cc:1028
 msgid "Synthesis network to be used as instrument"
 msgstr "Síť syntézy, kterou používat jako nástroj"
 
-#: beast-gtk/bsttrackview.cc:607 bse/bsemidisynth.cc:439 bse/bsesong.cc:757
-#: bse/bsetrack.cc:1051
+#: beast-gtk/bsttrackview.cc:607 bse/bsemidisynth.cc:438 bse/bsesong.cc:733
+#: bse/bsetrack.cc:1049
 msgid "Synthesis network to be used as postprocessor"
 msgstr "Síť syntézy, kterou používat jako postprocesor"
 
@@ -6312,15 +6237,15 @@ msgstr "Síť syntézy, kterou používat jako vloženou podsíť"
 #. TRANSLATORS: the "tracks and busses" order in this tooltip needs
 #. * to be preserved to match the GUI order of displayed objects.
 #.
-#: bse/bsebus.cc:880
+#: bse/bsebus.cc:888
 msgid "Synthesis signals (from tracks and busses) used as bus input"
 msgstr "Signály syntézy (ze stop a sběrnic) používané jako vstup sběrnice"
 
-#: bse/bsesong.proc:178
+#: bse/bsesong.proc:179
 msgid "Synthesize a note on a song of an active project."
 msgstr "Syntetizovat notu do skladby z aktuálního projektu."
 
-#: bse/bsemidisynth.cc:435 bse/bsesubsynth.cc:495 bse/bsetrack.cc:1030
+#: bse/bsemidisynth.cc:434 bse/bsesubsynth.cc:495 bse/bsetrack.cc:1028
 msgid "Synthesizer"
 msgstr "Syntetizér"
 
@@ -6330,7 +6255,7 @@ msgstr "Syntetizér"
 msgid "Synthesizer Selection: %s"
 msgstr "Výběr syntetizéru: %s"
 
-#: beast-gtk/bstapp.cc:512
+#: beast-gtk/bstapp.cc:507
 #, c-format
 msgid "Synthesizer: %s"
 msgstr "Syntetizér: %s"
@@ -6343,12 +6268,12 @@ msgstr ""
 msgid "TID"
 msgstr "TID"
 
-#: beast-gtk/bstapp.cc:158
+#: beast-gtk/bstapp.cc:153
 msgid "Technical description of the multi-threaded synthesis engine innards"
 msgstr "Technický popis vnitřností vícevláknového engine syntetizéru"
 
 #. miscellaneous errors
-#: bse/bseapi.idl:48
+#: bse/bseapi.idl:49
 msgid "Temporary error"
 msgstr "Dočasná chyba"
 
@@ -6368,14 +6293,14 @@ msgstr "Barva textu"
 msgid "Text Entry"
 msgstr "Pole textu"
 
-#: bse/bsesource.proc:683
+#: bse/bsesource.proc:684
 msgid ""
 "The MIDI Channel from which automation events should be received, 0 "
 "designates the default MIDI channel"
 msgstr ""
 
 #. http://en.wikipedia.org/wiki/Pentatonic_scale
-#: bse/bsebasics.idl:68
+#: bse/bseapi.idl:310
 msgid ""
 "The Pentatonic Gogo scale is an anhemitonic pentatonic scale used to tune "
 "the instruments of the Gogo people of Tanzania."
@@ -6389,7 +6314,7 @@ msgid ""
 msgstr ""
 
 #. http://de.wikipedia.org/wiki/Silbermann-Sorge-Temperatur
-#: bse/bsebasics.idl:75
+#: bse/bseapi.idl:317
 msgid ""
 "The Silbermann-Sorge temperament is a meantone temperament used for Baroque "
 "era organs by Gottfried Silbermann."
@@ -6417,13 +6342,13 @@ msgid "The audio channel to play, usually 1 is left, 2 is right"
 msgstr "Zvukový kanál, který přehrávat, obvykle 1 je levý, 2 je pravý"
 
 #. http://en.wikipedia.org/wiki/Pentatonic_scale
-#: bse/bsebasics.idl:65
+#: bse/bseapi.idl:307
 msgid ""
 "The blues scale is the minor pentatonic with an additional augmented fourth, "
 "which is referred to as the \"blues note\"."
 msgstr ""
 
-#: beast-gtk/bstpatternctrl.cc:117
+#: beast-gtk/bstpatternctrl.cc:119
 msgid "The direction of cell movement each time an event or note was edited"
 msgstr "Směr pohybu buňky po každé úpravě události nebo noty"
 
@@ -6478,7 +6403,7 @@ msgid "The mnemonic accelerator key for this label"
 msgstr "Mnemonická klávesová zkratka pro tento popisek"
 
 #. http://en.wikipedia.org/wiki/Equal_temperament
-#: bse/bsebasics.idl:39
+#: bse/bseapi.idl:281
 msgid ""
 "The most common tuning system for modern Western music, is the twelve-tone "
 "equal temperament, abbreviated as 12-TET, which divides the octave into 12 "
@@ -6489,7 +6414,7 @@ msgstr ""
 msgid "The number of bits the quantization steps correspond to."
 msgstr ""
 
-#: beast-gtk/bstpatternctrl.cc:112
+#: beast-gtk/bstpatternctrl.cc:114
 msgid ""
 "The number of cells to move across each time an event or note was edited"
 msgstr "Počet buněk, o které se posunout po každé úpravě události nebo noty"
@@ -6511,21 +6436,9 @@ msgid ""
 "The port name is a unique name to establish input<->output port relationships"
 msgstr "Název portu je jedinečný název pro tvorbu vztahů portů vstup<->výstup"
 
-#: beast-gtk/bstapp.cc:623
+#: beast-gtk/bstapp.cc:618
 msgid "The project has been modified."
 msgstr "Projekt byl změněn."
-
-#: beast-gtk/bstrackeditor.cc:78
-msgid ""
-"The rack editor is still highly experimental code and guaranteed to be "
-"broken by future releases. So don't rely on rack editor contents to look "
-"similarly in future versions and be prepared to work around possible "
-"instabilities in the code (i.e. save your projects regularly)."
-msgstr ""
-"Editor racku je stále ještě vysoce experimentální kód a je zaručeno, že v "
-"budoucích verzích bude změněn. Takže nebuďte závislí na tom, že obsah "
-"editoru racku bude v dalších verzích vypadat stejně, a buďte připraveni na "
-"obcházení možných nestabilit kódu (tj. pravidelně ukládejte své projekty)."
 
 #: plugins/davsyndrum.cc:95
 msgid ""
@@ -6542,7 +6455,7 @@ msgstr "Nastavit čas uvolnění v milisekundách"
 msgid "The text of the label"
 msgstr "Text popisku"
 
-#: beast-gtk/bstpatternctrl.cc:106
+#: beast-gtk/bstpatternctrl.cc:108
 msgid "The tick/note length per line"
 msgstr "Délka znaménka/noty na řádku"
 
@@ -6554,7 +6467,7 @@ msgstr ""
 msgid "The time for the right to left delay"
 msgstr ""
 
-#: bse/bsesong.cc:736
+#: bse/bseapi.idl:766
 msgid ""
 "The tuning system which specifies the tones or pitches to be used. Due to "
 "the psychoacoustic properties of tones, various pitch combinations can sound "
@@ -6562,7 +6475,7 @@ msgid ""
 "system defines the number and spacing of frequency values applied."
 msgstr ""
 
-#: bse/bsesource.proc:685
+#: bse/bsesource.proc:686
 msgid "The type of control events used for automation"
 msgstr ""
 
@@ -6587,10 +6500,6 @@ msgstr "Widget, který aktivovat, když je stisknuta mnemonická klávesa popisk
 msgid "Thirty-secondth note"
 msgstr "Dvaatřicetinová nota"
 
-#: bse/bseautodoc.cc:247
-msgid "This procedure has multiple return values."
-msgstr ""
-
 #: library/scripts/mixer-splitup-by-track.scm:43
 msgid "This script cannot be used while the project is playing"
 msgstr ""
@@ -6612,7 +6521,7 @@ msgid "This signal goes high after the release phase has completed"
 msgstr "Tento signál je high po dokončení fáze uvolnění"
 
 #. http://en.wikipedia.org/wiki/Werckmeister_temperament
-#: bse/bsebasics.idl:92
+#: bse/bseapi.idl:334
 msgid ""
 "This tuning is also known as Septenarius tuning is based on a division of "
 "the monochord length into 196 = 7 * 7 * 4 parts. The resulting scale has "
@@ -6623,7 +6532,7 @@ msgid ""
 msgstr ""
 
 #. http://en.wikipedia.org/wiki/Werckmeister_temperament
-#: bse/bsebasics.idl:79
+#: bse/bseapi.idl:321
 msgid ""
 "This tuning uses mostly pure (perfect) fifths, as in Pythagorean tuning, but "
 "each of the fifths C-G, G-D, D-A and B-F# is made smaller, i.e. tempered by "
@@ -6632,7 +6541,7 @@ msgid ""
 msgstr ""
 
 #. http://en.wikipedia.org/wiki/Young_temperament
-#: bse/bsebasics.idl:106
+#: bse/bseapi.idl:348
 msgid ""
 "Thomas Young devised a form of musical tuning to make the harmony most "
 "perfect in those keys which are the most frequently used (give better major "
@@ -6657,7 +6566,7 @@ msgstr "Priorita vlákna od -20 (vysoká) do +19 (nízká)"
 msgid "Threshold [dB]"
 msgstr "Práh [dB]"
 
-#: bse/bsesong.cc:745
+#: bse/bsesong.cc:721
 msgid "Ticks"
 msgstr "Doby"
 
@@ -6684,14 +6593,6 @@ msgstr "Pole pro zadání času"
 #. Bus        get_master_bus          ();            ///< Retrieve master output bus of a song if it exists.
 #. void synthesize_note (Track track, int32 duration, int32 note, int32 fine_tune, float64 velocity); ///< Synthesize a note on a song of an active project.
 #. signal void   pointer_changed (int32 a);
-#. group _("Tuning") {
-#. MusicalTuningType musical_tuning = Enum ("Musical Tuning",
-#. "The tuning system which specifies the tones or pitches to be used. "
-#. "Due to the psychoacoustic properties of tones, various pitch combinations can "
-#. "sound 'natural' or 'pleasing' when used in combination. "
-#. "The musical tuning system defines the number and spacing of frequency values applied.",
-#. STANDARD ":unprepared:skip-default", BSE_MUSICAL_TUNING_12_TET);
-#. };
 #. group _("Timing") {
 #. int32   tpqn          = Range  ("Ticks", "Number of ticks per quarter note", STANDARD, 384, 384, 0, 384);
 #. int32   numerator     = Range  ("Numerator", "Measure numerator", STANDARD, 1, 256, 1, 4);
@@ -6701,12 +6602,11 @@ msgstr "Pole pro zadání času"
 #. group _("MIDI Instrument") {
 #. CSynth  pnet          = Object ("Postprocessor", "Synthesis network to be used as postprocessor", STANDARD);
 #. };
-#. bool  auto_activate = Bool  ("Auto Activate", "", STORAGE, TRUE);
 #. bool  loop_enabled  = Bool  ("Loop Enabled", "", STORAGE, FALSE);
 #. int32 loop_left     = Range ("Loop Left", "", STORAGE, -1, MAXINT31, 384, -1);
 #. int32 loop_right    = Range ("Loop Right", "", STORAGE, -1, MAXINT31, 384, -1);
 #. int32 tick_pointer  = Range ("Tick Pointer", "", STORAGE, -1, MAXINT31, 384, -1);
-#: bse/bseapi.idl:564 bse/bsesong.cc:743 bse/bsesong.cc:747 bse/bsesong.cc:751
+#: bse/bseapi.idl:761 bse/bsesong.cc:719 bse/bsesong.cc:723 bse/bsesong.cc:727
 msgid "Timing"
 msgstr "Časování"
 
@@ -6714,7 +6614,7 @@ msgstr "Časování"
 msgid "Toggle Button"
 msgstr "Přepínací tlačítko"
 
-#: beast-gtk/bstsnetrouter.cc:1124
+#: beast-gtk/bstsnetrouter.cc:1112
 msgid "Toggle channel name hints"
 msgstr "Přepnout nápovědy názvů kanálů"
 
@@ -6726,7 +6626,7 @@ msgstr "Přepnout exponenciální a lineární odezvu na řízení"
 msgid "Toggle visibility of the tool palette"
 msgstr "Přepnout viditelnost palety nástrojů"
 
-#: beast-gtk/bstpatternctrl.cc:122
+#: beast-gtk/bstpatternctrl.cc:124
 msgid ""
 "Toggle whether horizontal movement of the focus cell will wrap around edges"
 msgstr ""
@@ -6734,11 +6634,11 @@ msgstr ""
 "konce"
 
 #. out of resource conditions
-#: bse/bseapi.idl:34
+#: bse/bseapi.idl:35
 msgid "Too many open files"
 msgstr "Příliš mnoho otevřených souborů"
 
-#: bse/bseapi.idl:35
+#: bse/bseapi.idl:36
 msgid "Too many open files in system"
 msgstr "Příliš mnoho otevřených souborů v systému"
 
@@ -6746,11 +6646,11 @@ msgstr "Příliš mnoho otevřených souborů v systému"
 msgid "Totals"
 msgstr "Součty"
 
-#: beast-gtk/bstsupershell.cc:163
+#: beast-gtk/bstsupershell.cc:162
 msgid "Tracks"
 msgstr "Stopy"
 
-#: beast-gtk/bstsupershell.cc:163
+#: beast-gtk/bstsupershell.cc:162
 msgid "Tracks contain instrument definitions and parts with notes"
 msgstr "Stopy obsahují definice nástrojů a party s notami"
 
@@ -6839,7 +6739,7 @@ msgstr "Dvaatřicetinová nota v triole"
 msgid "Triplet whole note"
 msgstr "Celá nota v triole"
 
-#: bse/bsesong.cc:733
+#: bse/bseapi.idl:764
 #, fuzzy
 msgid "Tuning"
 msgstr "Časování"
@@ -6856,15 +6756,15 @@ msgstr "UČas"
 msgid "Unconnected Output Channel"
 msgstr "Nepřipojený výstupn kanály"
 
-#: beast-gtk/bstpartdialog.cc:52
+#: beast-gtk/bstpartdialog.cc:51
 msgid "Undo"
 msgstr "Zpět"
 
-#: beast-gtk/bstpartdialog.cc:52
+#: beast-gtk/bstpartdialog.cc:51
 msgid "Undo last editing step"
 msgstr "Vrátit poslední krok úprav"
 
-#: beast-gtk/bstapp.cc:95
+#: beast-gtk/bstapp.cc:92
 msgid "Undo the effect of the last action"
 msgstr "Vrátit zpět efekt předchozí akce"
 
@@ -6876,15 +6776,15 @@ msgstr "Nefiltrovaný signál zvuku"
 msgid "Unfiltered Input"
 msgstr "Nefiltrovaný vstup"
 
-#: bse/bseobject.cc:863
+#: bse/bseobject.cc:868
 msgid "Unique name of this object"
 msgstr ""
 
-#: bse/bseapi.idl:19
+#: bse/bseapi.idl:20
 msgid "Unknown error"
 msgstr "Neznámá chyba"
 
-#: bse/bseapi.idl:45
+#: bse/bseapi.idl:46
 msgid "Unknown format"
 msgstr "Neznámý formát"
 
@@ -6912,8 +6812,8 @@ msgstr "Nahoru"
 msgid "Update Percentage"
 msgstr ""
 
-#: beast-gtk/bstutils.cc:243 beast-gtk/bstutils.cc:265
-#: beast-gtk/bstutils.cc:268
+#: beast-gtk/bstutils.cc:276 beast-gtk/bstutils.cc:298
+#: beast-gtk/bstutils.cc:301
 msgid "Updating View"
 msgstr "Aktualizuji pohled"
 
@@ -6938,7 +6838,7 @@ msgid "VScale:"
 msgstr "VMěřítko:"
 
 #. label=
-#: beast-gtk/bstpatternctrl.cc:105 beast-gtk/res/radgets-beast.xml:434
+#: beast-gtk/bstpatternctrl.cc:107 beast-gtk/res/radgets-beast.xml:434
 msgid "VZoom"
 msgstr "SZvětšení"
 
@@ -7015,23 +6915,23 @@ msgstr "Virtuální vstup %u"
 msgid "Virtual output %u"
 msgstr "Virtuální výstup %u"
 
-#: bse/bseapi.idl:110 bse/bsebasics.idl:122 bse/bsebusmodule.idl:13
+#: bse/bseapi.idl:111 bse/bsebasics.idl:40 bse/bsebusmodule.idl:13
 msgid "Volume"
 msgstr "Hlasitost"
 
-#: bse/bsebus.cc:866
+#: bse/bsebus.cc:874
 msgid "Volume adjustment in decibel of left bus channel"
 msgstr "Úprava hlasitosti levého kanálu sběrnice v decibelech"
 
-#: bse/bsebus.cc:870
+#: bse/bsebus.cc:878
 msgid "Volume adjustment in decibel of right bus channel"
 msgstr "Úprava hlasitosti pravého kanálu sběrnice v decibelech"
 
-#: bse/bseserver.cc:122
+#: bse/bseserver.cc:123
 msgid "WAVE File"
 msgstr "Soubor WAVE"
 
-#: bse/bsestandardosc.cc:118 bse/bsetrack.cc:1035 bse/bsewaveosc.cc:543
+#: bse/bsestandardosc.cc:118 bse/bsetrack.cc:1033 bse/bsewaveosc.cc:543
 #: bse/bsewaveosc.cc:545 bse/bsewaveosc.cc:547
 msgid "Wave"
 msgstr "Vlna"
@@ -7049,11 +6949,11 @@ msgstr "Tvar vlny"
 msgid "Wave Output"
 msgstr "Výstup vlny"
 
-#: beast-gtk/bstapp.cc:497
+#: beast-gtk/bstapp.cc:492
 msgid "Wave Repository"
 msgstr "Úložiště vln"
 
-#: bse/bsetrack.cc:1035
+#: bse/bsetrack.cc:1033
 msgid "Wave to be used as instrument"
 msgstr "Vlna, kterou používat jako nástroj"
 
@@ -7066,24 +6966,24 @@ msgstr "Vlna používaná jako zdroj oscilátoru"
 msgid "Wave_s"
 msgstr "_Vlny"
 
-#: beast-gtk/bstapp.cc:495 beast-gtk/bstsupershell.cc:214
+#: beast-gtk/bstapp.cc:490 beast-gtk/bstsupershell.cc:209
 msgid "Waves"
 msgstr "Vlny"
 
 #. Well Temperament: http://en.wikipedia.org/wiki/Well_temperament
-#: bse/bsebasics.idl:78
+#: bse/bseapi.idl:320
 msgid "Werckmeister III"
 msgstr ""
 
-#: bse/bsebasics.idl:82
+#: bse/bseapi.idl:324
 msgid "Werckmeister IV"
 msgstr ""
 
-#: bse/bsebasics.idl:87
+#: bse/bseapi.idl:329
 msgid "Werckmeister V"
 msgstr ""
 
-#: bse/bsebasics.idl:91
+#: bse/bseapi.idl:333
 msgid "Werckmeister VI"
 msgstr ""
 
@@ -7099,19 +6999,19 @@ msgstr "Celá nota"
 msgid "Window Size"
 msgstr "Velikost okna"
 
-#: bse/bseapi.idl:32
+#: bse/bseapi.idl:33
 msgid "Write failed"
 msgstr "Zápis selhal"
 
-#: beast-gtk/bstapp.cc:76
+#: beast-gtk/bstapp.cc:73
 msgid "Write project to a specific file"
 msgstr "Zapsat projekt do konkrétního souboru"
 
-#: beast-gtk/bstapp.cc:74
+#: beast-gtk/bstapp.cc:71
 msgid "Write project to disk"
 msgstr "Zapsat projekt na disk"
 
-#: bse/bseapi.idl:43
+#: bse/bseapi.idl:44
 msgid "Wrong number of channels"
 msgstr "Špatný počet kanálů"
 
@@ -7123,7 +7023,7 @@ msgstr "Výstup XtalStrings"
 msgid "You probably want to start this script from a part editor."
 msgstr ""
 
-#: bse/bsebasics.idl:105
+#: bse/bseapi.idl:347
 msgid "Young Temperament"
 msgstr ""
 
@@ -7144,7 +7044,7 @@ msgstr "Zvětšení:"
 msgid "[nosleep]"
 msgstr ""
 
-#: beast-gtk/bstapp.cc:91
+#: beast-gtk/bstapp.cc:88
 msgid "_About..."
 msgstr "O _aplikaci..."
 
@@ -7168,7 +7068,7 @@ msgstr "_Zdroje zvuku"
 msgid "_Back"
 msgstr "_Zpět"
 
-#: beast-gtk/bstapp.cc:145
+#: beast-gtk/bstapp.cc:140
 #, fuzzy
 msgid "_Beast Website..."
 msgstr "_WWW stránky BEAST..."
@@ -7178,11 +7078,11 @@ msgstr "_WWW stránky BEAST..."
 msgid "_Cancel"
 msgstr "_Zrušit"
 
-#: beast-gtk/bstapp.cc:101 beast-gtk/bstpartdialog.cc:56
+#: beast-gtk/bstapp.cc:98 beast-gtk/bstpartdialog.cc:55
 msgid "_Clear Undo"
 msgstr "Vyma_zat historii"
 
-#: beast-gtk/bstapp.cc:70
+#: beast-gtk/bstapp.cc:67
 msgid "_Close"
 msgstr "_Zavřít"
 
@@ -7197,7 +7097,6 @@ msgid "_Distortion"
 msgstr "_Zkreslení"
 
 #. label=
-#: beast-gtk/bstrackeditor.cc:92 beast-gtk/bstrackview.cc:27
 #: beast-gtk/res/radgets-beast.xml:450 beast-gtk/res/radgets-beast.xml:486
 #: beast-gtk/res/radgets-beast.xml:599
 msgid "_Edit"
@@ -7208,7 +7107,7 @@ msgstr "_Upravit"
 msgid "_Enhance"
 msgstr "_Vylepšit"
 
-#: beast-gtk/bstapp.cc:147
+#: beast-gtk/bstapp.cc:142
 msgid "_FAQ..."
 msgstr "_FAQ..."
 
@@ -7237,7 +7136,7 @@ msgstr "_Vpřed"
 msgid "_Help"
 msgstr "Nápo_věda"
 
-#: beast-gtk/bstapp.cc:68
+#: beast-gtk/bstapp.cc:65
 msgid "_Import MIDI..."
 msgstr "_Importovat MIDI..."
 
@@ -7256,7 +7155,7 @@ msgstr "_Vstup a výstup"
 msgid "_LADSPA"
 msgstr "_LADSPA"
 
-#: beast-gtk/bstapp.cc:66
+#: beast-gtk/bstapp.cc:63
 msgid "_Merge..."
 msgstr "S_loučit..."
 
@@ -7265,11 +7164,11 @@ msgstr "S_loučit..."
 msgid "_Misc"
 msgstr "_Různé"
 
-#: beast-gtk/bstapp.cc:62
+#: beast-gtk/bstapp.cc:59
 msgid "_New"
 msgstr "_Nový"
 
-#: beast-gtk/bstapp.cc:64
+#: beast-gtk/bstapp.cc:61
 msgid "_Open..."
 msgstr "_Otevřít..."
 
@@ -7278,11 +7177,11 @@ msgstr "_Otevřít..."
 msgid "_Other Sources"
 msgstr "_Jiné zdroje"
 
-#: beast-gtk/bstapp.cc:115
+#: beast-gtk/bstapp.cc:110
 msgid "_Play"
 msgstr "_Přehrávat"
 
-#: beast-gtk/bstapp.cc:84
+#: beast-gtk/bstapp.cc:81
 msgid "_Preferences..."
 msgstr "_Nastaven..."
 
@@ -7296,19 +7195,19 @@ msgstr "_Projekt"
 msgid "_Quantization"
 msgstr "_Kvantizace"
 
-#: beast-gtk/bstapp.cc:149
+#: beast-gtk/bstapp.cc:144
 msgid "_Quick Start..."
 msgstr "_Rychlý start..."
 
-#: beast-gtk/bstapp.cc:80
+#: beast-gtk/bstapp.cc:77
 msgid "_Quit"
 msgstr "U_končit"
 
-#: beast-gtk/bstapp.cc:97
+#: beast-gtk/bstapp.cc:94
 msgid "_Redo"
 msgstr "Z_novu"
 
-#: beast-gtk/bstapp.cc:143
+#: beast-gtk/bstapp.cc:138
 msgid "_Release Notes..."
 msgstr "_Poznámky o vydání..."
 
@@ -7327,7 +7226,7 @@ msgstr "_Odstranit"
 msgid "_Routing"
 msgstr "_Směrování"
 
-#: beast-gtk/bstapp.cc:74
+#: beast-gtk/bstapp.cc:71
 msgid "_Save"
 msgstr "_Uložit"
 
@@ -7351,7 +7250,7 @@ msgstr "_Skladba"
 msgid "_Spatial"
 msgstr "_Prostorové"
 
-#: beast-gtk/bstapp.cc:117
+#: beast-gtk/bstapp.cc:112
 msgid "_Stop"
 msgstr "_Zastavit"
 
@@ -7371,7 +7270,7 @@ msgstr "_Syntetizéry"
 msgid "_Tools"
 msgstr "_Nástroje"
 
-#: beast-gtk/bstapp.cc:95
+#: beast-gtk/bstapp.cc:92
 msgid "_Undo"
 msgstr "_Zpět"
 
@@ -7390,7 +7289,7 @@ msgstr "_Zobrazit"
 msgid "_Virtualization"
 msgstr "_Virtualizace"
 
-#: bse/bseserver.cc:442
+#: bse/bseserver.cc:443
 #, fuzzy
 msgid "audio input problems"
 msgstr "Zobrazovat zprávy o problémech se vstupem zvuku"
@@ -7399,227 +7298,227 @@ msgstr "Zobrazovat zprávy o problémech se vstupem zvuku"
 msgid "connection terminated"
 msgstr "spojení přerušeno"
 
-#: bse/bseapi.idl:248 bse/bsebasics.idl:252
+#: bse/bseapi.idl:249 bse/bsebasics.idl:170
 msgid "control-102"
 msgstr "control-102"
 
-#: bse/bseapi.idl:249 bse/bsebasics.idl:253
+#: bse/bseapi.idl:250 bse/bsebasics.idl:171
 msgid "control-103"
 msgstr "control-103"
 
-#: bse/bseapi.idl:250 bse/bsebasics.idl:254
+#: bse/bseapi.idl:251 bse/bsebasics.idl:172
 msgid "control-104"
 msgstr "control-104"
 
-#: bse/bseapi.idl:251 bse/bsebasics.idl:255
+#: bse/bseapi.idl:252 bse/bsebasics.idl:173
 msgid "control-105"
 msgstr "control-105"
 
-#: bse/bseapi.idl:252 bse/bsebasics.idl:256
+#: bse/bseapi.idl:253 bse/bsebasics.idl:174
 msgid "control-106"
 msgstr "control-106"
 
-#: bse/bseapi.idl:253 bse/bsebasics.idl:257
+#: bse/bseapi.idl:254 bse/bsebasics.idl:175
 msgid "control-107"
 msgstr "control-107"
 
-#: bse/bseapi.idl:254 bse/bsebasics.idl:258
+#: bse/bseapi.idl:255 bse/bsebasics.idl:176
 msgid "control-108"
 msgstr "control-108"
 
-#: bse/bseapi.idl:255 bse/bsebasics.idl:259
+#: bse/bseapi.idl:256 bse/bsebasics.idl:177
 msgid "control-109"
 msgstr "control-109"
 
-#: bse/bseapi.idl:256 bse/bsebasics.idl:260
+#: bse/bseapi.idl:257 bse/bsebasics.idl:178
 msgid "control-110"
 msgstr "control-110"
 
-#: bse/bseapi.idl:257 bse/bsebasics.idl:261
+#: bse/bseapi.idl:258 bse/bsebasics.idl:179
 msgid "control-111"
 msgstr "control-111"
 
-#: bse/bseapi.idl:258 bse/bsebasics.idl:262
+#: bse/bseapi.idl:259 bse/bsebasics.idl:180
 msgid "control-112"
 msgstr "control-112"
 
-#: bse/bseapi.idl:259 bse/bsebasics.idl:263
+#: bse/bseapi.idl:260 bse/bsebasics.idl:181
 msgid "control-113"
 msgstr "control-113"
 
-#: bse/bseapi.idl:260 bse/bsebasics.idl:264
+#: bse/bseapi.idl:261 bse/bsebasics.idl:182
 msgid "control-114"
 msgstr "control-114"
 
-#: bse/bseapi.idl:261 bse/bsebasics.idl:265
+#: bse/bseapi.idl:262 bse/bsebasics.idl:183
 msgid "control-115"
 msgstr "control-115"
 
-#: bse/bseapi.idl:262 bse/bsebasics.idl:266
+#: bse/bseapi.idl:263 bse/bsebasics.idl:184
 msgid "control-116"
 msgstr "control-116"
 
-#: bse/bseapi.idl:263 bse/bsebasics.idl:267
+#: bse/bseapi.idl:264 bse/bsebasics.idl:185
 msgid "control-117"
 msgstr "control-117"
 
-#: bse/bseapi.idl:264 bse/bsebasics.idl:268
+#: bse/bseapi.idl:265 bse/bsebasics.idl:186
 msgid "control-118"
 msgstr "control-118"
 
-#: bse/bseapi.idl:265 bse/bsebasics.idl:269
+#: bse/bseapi.idl:266 bse/bsebasics.idl:187
 msgid "control-119"
 msgstr "control-119"
 
-#: bse/bseapi.idl:158 bse/bsebasics.idl:162
+#: bse/bseapi.idl:159 bse/bsebasics.idl:80
 msgid "control-14"
 msgstr "control-14"
 
-#: bse/bseapi.idl:159 bse/bsebasics.idl:163
+#: bse/bseapi.idl:160 bse/bsebasics.idl:81
 msgid "control-15"
 msgstr "control-15"
 
-#: bse/bseapi.idl:164 bse/bsebasics.idl:168
+#: bse/bseapi.idl:165 bse/bsebasics.idl:86
 msgid "control-20"
 msgstr "control-20"
 
-#: bse/bseapi.idl:165 bse/bsebasics.idl:169
+#: bse/bseapi.idl:166 bse/bsebasics.idl:87
 msgid "control-21"
 msgstr "control-21"
 
-#: bse/bseapi.idl:166 bse/bsebasics.idl:170
+#: bse/bseapi.idl:167 bse/bsebasics.idl:88
 msgid "control-22"
 msgstr "control-22"
 
-#: bse/bseapi.idl:167 bse/bsebasics.idl:171
+#: bse/bseapi.idl:168 bse/bsebasics.idl:89
 msgid "control-23"
 msgstr "control-23"
 
-#: bse/bseapi.idl:168 bse/bsebasics.idl:172
+#: bse/bseapi.idl:169 bse/bsebasics.idl:90
 msgid "control-24"
 msgstr "control-24"
 
-#: bse/bseapi.idl:169 bse/bsebasics.idl:173
+#: bse/bseapi.idl:170 bse/bsebasics.idl:91
 msgid "control-25"
 msgstr "control-25"
 
-#: bse/bseapi.idl:170 bse/bsebasics.idl:174
+#: bse/bseapi.idl:171 bse/bsebasics.idl:92
 msgid "control-26"
 msgstr "control-26"
 
-#: bse/bseapi.idl:171 bse/bsebasics.idl:175
+#: bse/bseapi.idl:172 bse/bsebasics.idl:93
 msgid "control-27"
 msgstr "Řízení 18 Všeobecný řadič 3 MSB"
 
-#: bse/bseapi.idl:172 bse/bsebasics.idl:176
+#: bse/bseapi.idl:173 bse/bsebasics.idl:94
 msgid "control-28"
 msgstr "control-28"
 
-#: bse/bseapi.idl:173 bse/bsebasics.idl:177
+#: bse/bseapi.idl:174 bse/bsebasics.idl:95
 msgid "control-29"
 msgstr "control-29"
 
-#: bse/bseapi.idl:147 bse/bsebasics.idl:151
+#: bse/bseapi.idl:148 bse/bsebasics.idl:69
 msgid "control-3"
 msgstr "control-3"
 
-#: bse/bseapi.idl:174 bse/bsebasics.idl:178
+#: bse/bseapi.idl:175 bse/bsebasics.idl:96
 msgid "control-30"
 msgstr "control-30"
 
-#: bse/bseapi.idl:175 bse/bsebasics.idl:179
+#: bse/bseapi.idl:176 bse/bsebasics.idl:97
 msgid "control-31"
 msgstr "control-31"
 
-#: bse/bseapi.idl:180 bse/bsebasics.idl:184
+#: bse/bseapi.idl:181 bse/bsebasics.idl:102
 msgid "control-35"
 msgstr "control-35"
 
-#: bse/bseapi.idl:186 bse/bsebasics.idl:190
+#: bse/bseapi.idl:187 bse/bsebasics.idl:108
 msgid "control-41"
 msgstr "control-41"
 
-#: bse/bseapi.idl:191 bse/bsebasics.idl:195
+#: bse/bseapi.idl:192 bse/bsebasics.idl:113
 msgid "control-46"
 msgstr "control-46"
 
-#: bse/bseapi.idl:192 bse/bsebasics.idl:196
+#: bse/bseapi.idl:193 bse/bsebasics.idl:114
 msgid "control-47"
 msgstr "control-47"
 
-#: bse/bseapi.idl:197 bse/bsebasics.idl:201
+#: bse/bseapi.idl:198 bse/bsebasics.idl:119
 msgid "control-52"
 msgstr "control-52"
 
-#: bse/bseapi.idl:198 bse/bsebasics.idl:202
+#: bse/bseapi.idl:199 bse/bsebasics.idl:120
 msgid "control-53"
 msgstr "control-53"
 
-#: bse/bseapi.idl:199 bse/bsebasics.idl:203
+#: bse/bseapi.idl:200 bse/bsebasics.idl:121
 msgid "control-54"
 msgstr "control-54"
 
-#: bse/bseapi.idl:200 bse/bsebasics.idl:204
+#: bse/bseapi.idl:201 bse/bsebasics.idl:122
 msgid "control-55"
 msgstr "control-55"
 
-#: bse/bseapi.idl:201 bse/bsebasics.idl:205
+#: bse/bseapi.idl:202 bse/bsebasics.idl:123
 msgid "control-56"
 msgstr "control-56"
 
-#: bse/bseapi.idl:202 bse/bsebasics.idl:206
+#: bse/bseapi.idl:203 bse/bsebasics.idl:124
 msgid "control-57"
 msgstr "control-57"
 
-#: bse/bseapi.idl:203 bse/bsebasics.idl:207
+#: bse/bseapi.idl:204 bse/bsebasics.idl:125
 msgid "control-58"
 msgstr "control-58"
 
-#: bse/bseapi.idl:204 bse/bsebasics.idl:208
+#: bse/bseapi.idl:205 bse/bsebasics.idl:126
 msgid "control-59"
 msgstr "control-59"
 
-#: bse/bseapi.idl:205 bse/bsebasics.idl:209
+#: bse/bseapi.idl:206 bse/bsebasics.idl:127
 msgid "control-60"
 msgstr "control-60"
 
-#: bse/bseapi.idl:206 bse/bsebasics.idl:210
+#: bse/bseapi.idl:207 bse/bsebasics.idl:128
 msgid "control-61"
 msgstr "control-61"
 
-#: bse/bseapi.idl:207 bse/bsebasics.idl:211
+#: bse/bseapi.idl:208 bse/bsebasics.idl:129
 msgid "control-62"
 msgstr "control-62"
 
-#: bse/bseapi.idl:208 bse/bsebasics.idl:212
+#: bse/bseapi.idl:209 bse/bsebasics.idl:130
 msgid "control-63"
 msgstr "control-63"
 
-#: bse/bseapi.idl:231 bse/bsebasics.idl:235
+#: bse/bseapi.idl:232 bse/bsebasics.idl:153
 msgid "control-85"
 msgstr "control-85"
 
-#: bse/bseapi.idl:232 bse/bsebasics.idl:236
+#: bse/bseapi.idl:233 bse/bsebasics.idl:154
 msgid "control-86"
 msgstr "control-86"
 
-#: bse/bseapi.idl:233 bse/bsebasics.idl:237
+#: bse/bseapi.idl:234 bse/bsebasics.idl:155
 msgid "control-87"
 msgstr "control-87"
 
-#: bse/bseapi.idl:234 bse/bsebasics.idl:238
+#: bse/bseapi.idl:235 bse/bsebasics.idl:156
 msgid "control-88"
 msgstr "control-88"
 
-#: bse/bseapi.idl:235 bse/bsebasics.idl:239
+#: bse/bseapi.idl:236 bse/bsebasics.idl:157
 msgid "control-89"
 msgstr "control-89"
 
-#: bse/bseapi.idl:153 bse/bsebasics.idl:157
+#: bse/bseapi.idl:154 bse/bsebasics.idl:75
 msgid "control-9"
 msgstr "control-9"
 
-#: bse/bseapi.idl:236 bse/bsebasics.idl:240
+#: bse/bseapi.idl:237 bse/bsebasics.idl:158
 msgid "control-90"
 msgstr "control-90"
 
@@ -7662,6 +7561,10 @@ msgstr "zpracování"
 #~ msgid "A unique number identifying this thread"
 #~ msgstr "Jedinečné číslo identifikující toto vlákno"
 
+#, fuzzy
+#~ msgid "Add a track to the input list of a bus."
+#~ msgstr "Přidat k této skladbě novou stopu"
+
 #~ msgid "Adjust general song parameters"
 #~ msgstr "Upravit obecné parametry skladby"
 
@@ -7683,6 +7586,9 @@ msgstr "zpracování"
 #~ msgid "Audio output"
 #~ msgstr "Výstup zvuku"
 
+#~ msgid "Authors:"
+#~ msgstr "Autoři:"
+
 #~ msgid "BEAST-%s Release Notes"
 #~ msgstr "Poznámky o vydání BEAST-%s"
 
@@ -7691,9 +7597,6 @@ msgstr "zpracování"
 
 #~ msgid "BSE-Objects"
 #~ msgstr "BSE-Objekty"
-
-#~ msgid "Beats per minute"
-#~ msgstr "Úderů za minutu"
 
 #~ msgid ""
 #~ "BseEvaluator is a module which can compute arithmetic operations in a "
@@ -7726,6 +7629,9 @@ msgstr "zpracování"
 #~ msgid "Connect all unconnected track of a song to the master output bus."
 #~ msgstr ""
 #~ "Připojit všechny nepřipojené stopy skladby k hlavní výstupní sběrnici."
+
+#~ msgid "Controller"
+#~ msgstr "Ovladač"
 
 #~ msgid "Create a new Part in a Song."
 #~ msgstr "Vytvořit nový part skladby."
@@ -7786,6 +7692,12 @@ msgstr "zpracování"
 #~ msgid "Display dialogs with dignostic messages"
 #~ msgstr "Zobrazovat dialogy s diagnostickými zprávami"
 
+#~ msgid "Duplicate"
+#~ msgstr "Duplikovat"
+
+#~ msgid "Edit Rack Item"
+#~ msgstr "Upravit položku racku"
+
 #, fuzzy
 #~ msgid "Enable meters"
 #~ msgstr "Parametry"
@@ -7821,6 +7733,12 @@ msgstr "zpracování"
 #~ msgid "GNU General Public License"
 #~ msgstr "GNU General Public License"
 
+#~ msgid "Grow Horizontally"
+#~ msgstr "Vodorovně zvětšit"
+
+#~ msgid "Grow Vertically"
+#~ msgstr "Svisle zvětšit"
+
 #~ msgid "Guitar Output"
 #~ msgstr "Výstup kytary"
 
@@ -7839,8 +7757,14 @@ msgstr "zpracování"
 #~ msgid "Input Synths"
 #~ msgstr "Vstupní syntézy"
 
+#~ msgid "Item"
+#~ msgstr "Položka"
+
 #~ msgid "Language"
 #~ msgstr "Jazyk"
+
+#~ msgid "License:"
+#~ msgstr "Licence:"
 
 #~ msgid "Loading project \"%s\""
 #~ msgstr "Načítám projekt \"%s\""
@@ -7889,6 +7813,15 @@ msgstr "zpracování"
 #~ msgid "Output Channels:"
 #~ msgstr "Výstupní kanály:"
 
+#~ msgid "Parasite"
+#~ msgstr "Parazit"
+
+#~ msgid "Parasite Paths"
+#~ msgstr "Parazitující cesty"
+
+#~ msgid "Path"
+#~ msgstr "Cesta"
+
 #~ msgid "Perform exponential frequency modulationinstead of linear"
 #~ msgstr "Provádět exponenciální frekvenční modulaci místo lineární"
 
@@ -7914,6 +7847,18 @@ msgstr "zpracování"
 
 #~ msgid "Properties:"
 #~ msgstr "Vlastnosti:"
+
+#~ msgid "Rack"
+#~ msgstr "Rack"
+
+#~ msgid "Rack Editor"
+#~ msgstr "Editor racku"
+
+#~ msgid "Rack editor"
+#~ msgstr "Editor racku"
+
+#~ msgid "Range:"
+#~ msgstr "Rozsah:"
 
 #~ msgid "Ratio"
 #~ msgstr "Poměr"
@@ -7967,6 +7912,12 @@ msgstr "zpracování"
 #, fuzzy
 #~ msgid "Show messages about web browser launch problems"
 #~ msgstr "Zobrazovat zprávy o problémech se vstupem zvuku"
+
+#~ msgid "Shrink Horizontally"
+#~ msgstr "Vodorovně zmenšit"
+
+#~ msgid "Shrink Vertically"
+#~ msgstr "Svisle zmenšit"
 
 #~ msgid "Signal debugging module"
 #~ msgstr "Modul ladění signálu"
@@ -8034,6 +7985,18 @@ msgstr "zpracování"
 
 #~ msgid "The processor that this thread is currently being executed on"
 #~ msgstr "Procesor, na kterém se toto vlákno právě provádí"
+
+#~ msgid ""
+#~ "The rack editor is still highly experimental code and guaranteed to be "
+#~ "broken by future releases. So don't rely on rack editor contents to look "
+#~ "similarly in future versions and be prepared to work around possible "
+#~ "instabilities in the code (i.e. save your projects regularly)."
+#~ msgstr ""
+#~ "Editor racku je stále ještě vysoce experimentální kód a je zaručeno, že v "
+#~ "budoucích verzích bude změněn. Takže nebuďte závislí na tom, že obsah "
+#~ "editoru racku bude v dalších verzích vypadat stejně, a buďte připraveni "
+#~ "na obcházení možných nestabilit kódu (tj. pravidelně ukládejte své "
+#~ "projekty)."
 
 #~ msgid "The source code"
 #~ msgstr "Zdrojový kód"

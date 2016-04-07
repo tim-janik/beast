@@ -14,8 +14,8 @@ Vcs-Browser: https://github.com/tim-janik/beast/tree/master/debian
 Package: beast
 Architecture: any
 Depends:
- libbse-0-9 (= ${binary:Version}), beast-doc (= ${source:Version}),
- rapicorn (>= 15.9.1~git5343), python-rapicorn (>= 15.9.1~git5343),
+ libbse-0-10 (= ${binary:Version}), beast-doc (= ${source:Version}),
+ rapicorn (>= 16.0.0), python-rapicorn (>= 16.0.0),
  ${shlibs:Depends}, ${misc:Depends}
 Description: Music Synthesizer and Composer
  Beast is a free software music composer and modular synthesizer.
@@ -37,11 +37,11 @@ Description: Music Synthesizer and Composer
  .
  This package contains the reference documentation and user manual.
 
-Package: libbse-0-9
+Package: libbse-0-10
 Section: libs
 Architecture: any
 Pre-Depends: ${misc:Pre-Depends}
-Depends: librapicorn-15-9, ${shlibs:Depends}, ${misc:Depends}
+Depends: librapicorn-16-0, ${shlibs:Depends}, ${misc:Depends}
 Breaks: beast (<< 0.7.4)
 Replaces: beast (<< 0.7.4)
 Description: Music Synthesizer and Composer
@@ -52,7 +52,7 @@ Description: Music Synthesizer and Composer
 Package: libbse-dev
 Section: libdevel
 Architecture: any
-Depends: libbse-0-9 (= ${binary:Version}), librapicorn-dev (>= 15.9.1~git5343), ${shlibs:Depends}, ${misc:Depends}
+Depends: libbse-0-10 (= ${binary:Version}), librapicorn-dev (>= 16.0.0), ${shlibs:Depends}, ${misc:Depends}
 Breaks: libbse-0.7-4, bse-alsa (<< 0.9.3)
 Replaces: libbse-0.7-4, bse-alsa (<< 0.9.3)
 Description: Music Synthesizer and Composer
