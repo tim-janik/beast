@@ -31,10 +31,11 @@ matrix:
 before_install:
   # buildtool.sh requires complete history for monotonic revisioning
   - travis_retry git fetch --unshallow
-  # Build variable setup; example: DIST=debian:jessie DISTNAME=debian DISTRELEASE=jessie
+  # Build variable setup; example: DIST=debian:jessie DISTNAME=debian DISTRELEASE=jessie BTREPO=devel
+  # Uses `buildtool.sh` to determine the version dependent bintray repository name
   - true &&
-    export DISTNAME="${DIST%:*}" DISTRELEASE="${DIST#*:}" &&
-    export BEASTAPTSOURCE="deb [trusted=yes] https://dl.bintray.com/beast-team/deb $DISTRELEASE main" &&
+    export DISTNAME="${DIST%:*}" DISTRELEASE="${DIST#*:}" BTREPO="`./buildtool.sh ifdevel devel deb`" &&
+    export BEASTAPTSOURCE="deb [trusted=yes] https://dl.bintray.com/beast-team/$BTREPO $DISTRELEASE main" &&
     echo "INTENT=$INTENT DIST=$DIST DISTNAME=$DISTNAME DISTRELEASE=$DISTRELEASE BEASTAPTSOURCE='$BEASTAPTSOURCE'"
   # Sample environment
   - uname -a
@@ -54,7 +55,7 @@ install:
 script:
   # Upload packages
   - ([ $INTENT = package ] || exit 0 && docker run -ti --rm beast /bin/bash -c \
-      "export BINTRAY_APITOKEN=$BINTRAY_APITOKEN && ls -al && beast/buildtool.sh bintrayup beast-team deb/beast $DISTRELEASE *.deb")
+      "export BINTRAY_APITOKEN=$BINTRAY_APITOKEN && ls -al && beast/buildtool.sh bintrayup beast-team $BTREPO/beast $DISTRELEASE *.deb")
   # Test package installation from remote location
   - ([ $INTENT = package ] || exit 0 && sleep 60 && travis_retry docker run -ti --rm beast /bin/bash -c \
         "set -x && retry apt-get update && retry apt-get -y install beast libbse-dev")

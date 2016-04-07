@@ -68,6 +68,17 @@ mkconfig() # print shell variables describing package, version, commit id, monot
   popd >/dev/null					# cd OLDPWD
 }
 
+# == ifdevel ==
+ifdevel() # Usage: ifdevel <develvalue> [alternative]
+{
+  mkconfig >/dev/null # PACKAGE, UPSVERSION, DEVELOPMENT, ...
+  if $DEVELOPMENT ; then
+    echo "$1"
+  else
+    echo "$2"
+  fi
+}
+
 # == bintrayup ==
 bintrayup() # Usage: bintrayup <bintrayaccount> <packagepath> <packagedistribution> [packages...]
 {
@@ -126,5 +137,6 @@ applyenv() # Usage: applyenv <inputfile> [inputargs...]
 
 # == commands ==
 [[ "$1" != config ]]	|| { shift; mkconfig "$@" ; exit $? ; }
+[[ "$1" != ifdevel ]]	|| { shift; ifdevel "$@" ; exit $? ; }
 [[ "$1" != bintrayup ]]	|| { shift; bintrayup "$@" ; exit $? ; }
 [[ "$1" != applyenv ]]	|| { shift; applyenv "$@" ; exit $? ; }
