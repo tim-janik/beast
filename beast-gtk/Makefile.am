@@ -140,7 +140,7 @@ beast_@MAJOR@_@MINOR@_@MICRO@_SOURCES = $(bst_cc_sources) bstmain.cc
 beast_@MAJOR@_@MINOR@_@MICRO@_LDADD = $(progs_LDADD)
 beast_build_objects = $(beast_@MAJOR@_@MINOR@_@MICRO@_OBJECTS) # dependency for generated sources
 noinst_PROGRAMS = $(ALLTESTS)
-progs_LDADD     = $(BEAST_LIBS) ./gxk/libgxk.a $(GXK_LIBS) $(top_builddir)/bse/libbse-@MAJOR@.la $(RAPICORN_LIBS) $(BSE_LIBS)
+progs_LDADD     = $(BEAST_LIBS) ./gxk/libgxk.a $(GXK_LIBS) $(top_builddir)/bse/libbse-@MAJOR@.la $(RAPICORN_LIBS) $(BSE_LIBS) $(PYTHON_LIBS)
 
 noinst_PROGRAMS += tsmview
 tsmview_SOURCES  = tsmview.cc
