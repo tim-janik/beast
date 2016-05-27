@@ -373,7 +373,8 @@ main_open_files (int filesc, char **filesv)
 	    {
 	      SfiProxy wrepo = bse_project_get_wave_repo (app->project.proxy_id());
 	      gxk_status_printf (GXK_STATUS_WAIT, NULL, _("Loading \"%s\""), filesv[i]);
-	      Bse::Error error = bse_wave_repo_load_file (wrepo, filesv[i]);
+              Bse::WaveRepoH repo = Bse::WaveRepoH::down_cast (bse_server.from_proxy (wrepo));
+              Bse::Error error = repo.load_file (filesv[i]);
               bst_status_eprintf (error, _("Loading \"%s\""), filesv[i]);
               if (error != 0)
                 sfi_error (_("Failed to load wave file \"%s\": %s"), filesv[i], Bse::error_blurb (error));
@@ -382,7 +383,8 @@ main_open_files (int filesc, char **filesv)
 	    {
               Bse::ProjectH project = bse_server.create_project ("Untitled.bse");
 	      SfiProxy wrepo = bse_project_get_wave_repo (project.proxy_id());
-	      Bse::Error error = bse_wave_repo_load_file (wrepo, filesv[i]);
+              Bse::WaveRepoH repo = Bse::WaveRepoH::down_cast (bse_server.from_proxy (wrepo));
+              Bse::Error error = repo.load_file (filesv[i]);
 	      if (error == 0)
 		{
 		  app = bst_app_new (project);

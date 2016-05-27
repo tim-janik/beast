@@ -727,10 +727,9 @@ static gboolean
 bst_file_dialog_load_wave (BstFileDialog *self,
 			   const gchar   *file_name)
 {
-  Bse::Error error;
-
   gxk_status_printf (0, NULL, _("Loading wave `%s'"), file_name);
-  error = bse_wave_repo_load_file (self->wave_repo, file_name);
+  Bse::WaveRepoH repo = Bse::WaveRepoH::down_cast (bse_server.from_proxy (self->wave_repo));
+  Bse::Error error = repo.load_file (file_name);
   bst_status_eprintf (error, _("Loading wave `%s'"), file_name);
   if (error != 0)
     sfi_error (_("Failed to load wave file \"%s\": %s"), file_name, Bse::error_blurb (error));
