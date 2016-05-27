@@ -798,6 +798,8 @@ interface Wave : Source {
 
 /// Interface serving as container for Wave objects.
 interface WaveRepo : Super {
+  Error load_file   (String file_name);         ///< Load wave from file.
+  void  remove_wave (Wave wave);                ///< Remove a wave from repository.
 };
 
 /// Interface for MIDI event notification.
