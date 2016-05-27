@@ -496,6 +496,11 @@ interface Item : Object {
   // int32 seqid = Range ("Sequential ID", "", ":readwrite", 0, MAXINT31, 1);
 };
 
+/// A list of part note events.
+sequence ItemSeq {
+  Item items;
+};
+
 /// Part specific note event representation.
 record PartNote
 {
@@ -615,6 +620,7 @@ interface ContextMerger : Source {
 interface Container : Source {
   Item lookup_item (String uname); ///< Find an immediate child of a container by name (unique per container child).
   Item get_item    (String item_type, int32 seq_id); ///< Retrieve the immediate child of type @a item_type by its sequential id (the 'nth' child).
+  ItemSeq list_children (); ///< List all immediate children of a container.
 };
 
 /// Base interface type for Item managers.

@@ -48,7 +48,6 @@ struct BseContainerClass : BseSourceClass {
 void		bse_container_forall_items	(BseContainer	*container,
 						 BseForallItemsFunc func,
 						 gpointer	 data);
-BseIt3mSeq*	bse_container_list_children	(BseContainer	*container);
 guint		bse_container_get_item_seqid	(BseContainer	*container,
 						 BseItem	*item);
 BseItem*	bse_container_get_item		(BseContainer	*container,
@@ -112,6 +111,7 @@ public:
   explicit           ContainerImpl  (BseObject*);
   virtual ItemIfaceP lookup_item    (const String &uname) override;
   virtual ItemIfaceP get_item       (const String &item_type, int seq_id) override;
+  virtual ItemSeq    list_children  ();
 };
 
 } // Bse
