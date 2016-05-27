@@ -331,9 +331,7 @@ void
 bst_snet_router_update (BstSNetRouter *self)
 {
   GnomeCanvas *canvas;
-  BseIt3mSeq *iseq;
   GSList *slist, *csources = NULL;
-  guint i;
 
   assert_return (BST_IS_SNET_ROUTER (self));
 
@@ -343,7 +341,7 @@ bst_snet_router_update (BstSNetRouter *self)
   bst_snet_router_destroy_contents (self);
 
 #if 0
-    {
+  {
       /* add canvas source for the snet itself */
       csource = bst_canvas_source_new (GNOME_CANVAS_GROUP (canvas->root), self->snet);
       bst_canvas_source_set_channel_hints (BST_CANVAS_SOURCE (csource), CHANNEL_HINTS (self));
@@ -351,14 +349,14 @@ bst_snet_router_update (BstSNetRouter *self)
                         "swapped_signal::update_links", bst_snet_router_queue_link_update, self,
                         NULL);
       csources = g_slist_prepend (csources, csource);
-    }
+  }
 #endif
 
   /* walk all child sources */
-  iseq = bse_container_list_children (self->snet.proxy_id());
-  for (i = 0; i < iseq->n_items; i++)
+  Bse::ItemSeq items = self->snet.list_children();
+  for (size_t i = 0; i < items.size(); i++)
     {
-      SfiProxy item = iseq->items[i];
+      SfiProxy item = items[i].proxy_id();
 
       if (BSE_IS_SOURCE (item))
         {

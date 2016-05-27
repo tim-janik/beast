@@ -158,10 +158,10 @@ bus_mixer_set_container (BstItemView *iview,
                          "signal::item_added", bus_mixer_item_added, self,
                          "signal::item_remove", bus_mixer_item_removed, self,
                          NULL);
-      BseIt3mSeq *iseq = bse_container_list_children (iview->container);
-      guint i;
-      for (i = 0; i < iseq->n_items; i++)
-        bus_mixer_item_added (iview->container, iseq->items[i], self);
+      Bse::ContainerH container = Bse::ContainerH::down_cast (bse_server.from_proxy (iview->container));
+      Bse::ItemSeq items = container.list_children();
+      for (size_t i = 0; i < items.size(); i++)
+        bus_mixer_item_added (iview->container, items[i].proxy_id(), self);
     }
 }
 

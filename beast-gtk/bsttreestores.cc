@@ -328,8 +328,6 @@ bst_child_list_wrapper_setup (GxkListWrapper *self,
   if (parent)
     {
       ProxyStore *ps = g_new0 (ProxyStore, 1);
-      BseIt3mSeq *iseq;
-      guint i;
       ps->self = self;
       ps->row_from_proxy = child_list_wrapper_row_from_proxy;
       ps->u.cl.ipool = sfi_upool_new ();
@@ -340,9 +338,10 @@ bst_child_list_wrapper_setup (GxkListWrapper *self,
                          "signal::item_added", child_list_wrapper_item_added, ps,
                          "signal::item_remove", child_list_wrapper_item_removed, ps,
                          NULL);
-      iseq = bse_container_list_children (ps->u.cl.container);
-      for (i = 0; i < iseq->n_items; i++)
-        child_list_wrapper_item_added (ps->u.cl.container, iseq->items[i], ps);
+      Bse::ContainerH container = Bse::ContainerH::down_cast (bse_server.from_proxy (ps->u.cl.container));
+      Bse::ItemSeq items = container.list_children();
+      for (size_t i = 0; i < items.size(); i++)
+        child_list_wrapper_item_added (ps->u.cl.container, items[i].proxy_id(), ps);
       g_object_set_data_full ((GObject*) self, "ProxyStore", ps, child_list_wrapper_destroy_data);
     }
 }

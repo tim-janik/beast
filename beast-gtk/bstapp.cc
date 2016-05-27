@@ -1095,8 +1095,6 @@ app_action_check (gpointer data,
   switch (action)
     {
       SfiProxy super;
-      BseIt3mSeq *iseq;
-      guint i;
     case BST_ACTION_NEW_PROJECT:
     case BST_ACTION_OPEN_PROJECT:
     case BST_ACTION_MERGE_PROJECT:
@@ -1109,10 +1107,12 @@ app_action_check (gpointer data,
     case BST_ACTION_SAVE_PROJECT:
       return self->project.is_dirty();
     case BST_ACTION_NEW_SONG:
-      iseq = bse_container_list_children (self->project.proxy_id());
-      for (i = 0; i < iseq->n_items; i++)
-        if (BSE_IS_SONG (iseq->items[i]))
-          return FALSE;
+      {
+        Bse::ItemSeq items = self->project.list_children();
+        for (size_t i = 0; i < items.size(); i++)
+          if (BSE_IS_SONG (items[i].proxy_id()))
+            return FALSE;
+      }
       return TRUE;
     case BST_ACTION_REMOVE_SYNTH:
       super = bst_app_get_current_super (self);

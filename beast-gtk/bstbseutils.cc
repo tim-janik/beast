@@ -10,16 +10,18 @@ bst_project_restore_from_file (Bse::ProjectH project, const gchar *file_name, bo
   /* regardless of how good the restoration worked, try to
    * keep the resulting project in a GUI usable state.
    */
-  BseIt3mSeq *iseq = bse_container_list_children (project.proxy_id());
-  guint i;
-  for (i = 0; i < iseq->n_items; i++)
-    if (BSE_IS_SONG (iseq->items[i]))
-      {
-        /* fixup orphaned parts */
-        bse_song_ensure_track_links (iseq->items[i]);
-        /* songs always need a master bus */
-        bse_song_ensure_master_bus (iseq->items[i]);
-      }
+  Bse::ItemSeq items = project.list_children();
+  for (size_t i = 0; i < items.size(); i++)
+    {
+      SfiProxy item = items[i].proxy_id();
+      if (BSE_IS_SONG (item))
+        {
+          /* fixup orphaned parts */
+          bse_song_ensure_track_links (item);
+          /* songs always need a master bus */
+          bse_song_ensure_master_bus (item);
+        }
+    }
   if (error == 0 && apply_project_file_name)
     {
       bse_proxy_set_data_full (project.proxy_id(), "beast-project-file-name", g_strdup (file_name), g_free);
@@ -39,16 +41,18 @@ bst_project_import_midi_file (Bse::ProjectH project, const gchar *file_name)
   /* regardless of how good the restoration worked, try to
    * keep the resulting project in a GUI usable state.
    */
-  BseIt3mSeq *iseq = bse_container_list_children (project.proxy_id());
-  guint i;
-  for (i = 0; i < iseq->n_items; i++)
-    if (BSE_IS_SONG (iseq->items[i]))
-      {
-        /* fixup orphaned parts */
-        bse_song_ensure_track_links (iseq->items[i]);
-        /* songs always need a master bus */
-        bse_song_ensure_master_bus (iseq->items[i]);
-      }
+  Bse::ItemSeq items = project.list_children();
+  for (size_t i = 0; i < items.size(); i++)
+    {
+      SfiProxy item = items[i].proxy_id();
+      if (BSE_IS_SONG (item))
+        {
+          /* fixup orphaned parts */
+          bse_song_ensure_track_links (item);
+          /* songs always need a master bus */
+          bse_song_ensure_master_bus (item);
+        }
+    }
   return error;
 }
 
