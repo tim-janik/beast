@@ -614,6 +614,7 @@ interface ContextMerger : Source {
 /// Base interface type for containers of Item derived types.
 interface Container : Source {
   Item lookup_item (String uname); ///< Find an immediate child of a container by name (unique per container child).
+  Item get_item    (String item_type, int32 seq_id); ///< Retrieve the immediate child of type @a item_type by its sequential id (the 'nth' child).
 };
 
 /// Base interface type for Item managers.

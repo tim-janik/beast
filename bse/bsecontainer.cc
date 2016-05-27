@@ -1360,4 +1360,13 @@ ContainerImpl::lookup_item (const String &uname)
   return child->as<ItemIfaceP>();
 }
 
+ItemIfaceP
+ContainerImpl::get_item (const String &item_type, int seq_id)
+{
+  BseContainer *self = as<BseContainer*>();
+  GType type = g_type_from_name (item_type.c_str());
+  BseItem *child = bse_container_get_item (self, type, seq_id);
+  return child->as<ItemIfaceP>();
+}
+
 } // Bse

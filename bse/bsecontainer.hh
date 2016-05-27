@@ -111,6 +111,7 @@ protected:
 public:
   explicit           ContainerImpl  (BseObject*);
   virtual ItemIfaceP lookup_item    (const String &uname) override;
+  virtual ItemIfaceP get_item       (const String &item_type, int seq_id) override;
 };
 
 } // Bse
