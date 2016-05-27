@@ -393,7 +393,9 @@ bst_child_list_wrapper_get_proxy (GxkListWrapper *self,
   if (ps && row >= 0)
     {
       guint seqid = row + 1;
-      return bse_container_get_item (ps->u.cl.container, ps->u.cl.child_type, seqid);
+      Bse::ContainerH container = Bse::ContainerH::down_cast (bse_server.from_proxy (ps->u.cl.container));
+      Bse::ItemH item = container.get_item (ps->u.cl.child_type, seqid);
+      return item ? item.proxy_id() : 0;
     }
   return 0;
 }
