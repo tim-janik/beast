@@ -299,8 +299,9 @@ bst_wave_editor_set_wave (BstWaveEditor *self,
       if (self->wave)
 	{
 	  bse_item_use (self->wave);
+          Bse::WaveH wave = Bse::WaveH::down_cast (bse_server.from_proxy (self->wave));
 	  /* add wave's chunks to list */
-	  gxk_list_wrapper_notify_prepend (self->chunk_wrapper, bse_wave_n_wave_chunks (self->wave));
+	  gxk_list_wrapper_notify_prepend (self->chunk_wrapper, wave.n_wave_chunks());
 	  /* setup (initial) list selection */
 	  gxk_tree_selection_select_spath (gtk_tree_view_get_selection (GTK_TREE_VIEW (self->tree)), "0");
 	}
@@ -572,7 +573,6 @@ tree_selection_changed (BstWaveEditor    *self,
   if (gtk_tree_selection_get_selected (tsel, &model, &iter))
     {
       gchar *osc_str, *mix_str;
-      SfiProxy esample;
 
       assert (self->chunk_wrapper == (GxkListWrapper*) model);
 
@@ -582,10 +582,9 @@ tree_selection_changed (BstWaveEditor    *self,
 			  -1);
       g_free (osc_str);
       g_free (mix_str);
-
-      esample = bse_wave_use_editable (self->wave, gxk_list_wrapper_get_index (self->chunk_wrapper, &iter));
-      bst_wave_editor_set_esample (self, esample);
-      bse_item_unuse (esample);
+      Bse::WaveH wave = Bse::WaveH::down_cast (bse_server.from_proxy (self->wave));
+      Bse::EditableSampleHandle esample = wave.use_editable (gxk_list_wrapper_get_index (self->chunk_wrapper, &iter));
+      bst_wave_editor_set_esample (self, esample.proxy_id());
     }
 }
 
@@ -657,27 +656,27 @@ wave_chunk_fill_value (BstWaveEditor *self,
 		       guint          row,
 		       GValue        *value)
 {
-  SfiProxy wave = self->wave;
+  Bse::WaveH wave = Bse::WaveH::down_cast (bse_server.from_proxy (self->wave));
   guint cidx = row; /* wave chunk index */
 
   switch (column)
     {
       const gchar *string;
     case COL_OSC_FREQ:
-      g_value_take_string (value, g_strdup_format ("%.2f", bse_wave_chunk_get_osc_freq (wave, cidx)));
+      g_value_take_string (value, g_strdup_format ("%.2f", wave.chunk_get_osc_freq (cidx)));
       break;
     case COL_MIX_FREQ:
-      g_value_take_string (value, g_strdup_format ("%.2f", bse_wave_chunk_get_mix_freq (wave, cidx)));
+      g_value_take_string (value, g_strdup_format ("%.2f", wave.chunk_get_mix_freq (cidx)));
       break;
     case COL_LOOP:
       g_value_take_string (value, g_strdup_format ("L:%u {0x%08x,0x%08x}", 0, 0, 0));
       break;
     case COL_WAVE_NAME:
-      bse_proxy_get (wave, "wave-name", &string, NULL);
+      bse_proxy_get (wave.proxy_id(), "wave-name", &string, NULL);
       g_value_set_string (value, string);
       break;
     case COL_FILE_NAME:
-      bse_proxy_get (wave, "file-name", &string, NULL);
+      bse_proxy_get (wave.proxy_id(), "file-name", &string, NULL);
       g_value_set_string (value, string);
       break;
     }
