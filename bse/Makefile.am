@@ -118,7 +118,7 @@ bse_proc_sources = $(strip \
 	bsecategories.proc	bseeditablesample.proc	\
 	bsejanitor.proc								bseproject.proc		\
 				bsesong.proc					bsesource.proc		\
-				bseitem.proc		bsewave.proc		bsewaveosc.proc		\
+				bseitem.proc					bsewaveosc.proc		\
 )
 bse_proc_gen_sources = $(bse_proc_sources:.proc=.genprc.cc)
 # non-compile and non-install sources required

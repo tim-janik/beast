@@ -794,6 +794,10 @@ interface EditableSample : Item {
 
 /// Interface for PCM wave samples.
 interface Wave : Source {
+  float64        chunk_get_mix_freq    (int32 chunk_index); ///< Retrieve mixing frequency of a wave chunk.
+  float64        chunk_get_osc_freq    (int32 chunk_index); ///< Retrieve oscillating frequency of a wave chunk.
+  int32          n_wave_chunks         ();                  ///< Get the number of wave chunks of a wave.
+  EditableSample use_editable          (int32 chunk_index); ///< Retrieve an editable sample object for a wave chunk.
 };
 
 /// Interface serving as container for Wave objects.
