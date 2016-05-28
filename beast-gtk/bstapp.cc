@@ -199,7 +199,6 @@ bst_app_init (BstApp *self)
 {
   new (&self->project) Bse::ProjectH();
   GtkWidget *widget = GTK_WIDGET (self);
-  BseCategorySeq *cseq;
   GxkActionList *al1, *al2;
 
   g_object_set (self,
@@ -248,26 +247,26 @@ bst_app_init (BstApp *self)
     gxk_widget_publish_actions (self, "demo-dialogs", G_N_ELEMENTS (demo_dialogs), demo_dialogs,
                                 NULL, app_action_check, app_action_exec);
   /* Project utilities */
-  cseq = bse_categories_match ("/Project/*");
+  Bse::CategorySeq cseq = bse_server.category_match ("/Project/*");
   al1 = bst_action_list_from_cats (cseq, 1, BST_STOCK_EXECUTE, NULL, bst_app_run_script_proc, self);
   gxk_action_list_sort (al1);
   gxk_widget_publish_action_list (widget, "tools-project", al1);
   /* Song scripts */
-  cseq = bse_categories_match ("/Song/*");
+  cseq = bse_server.category_match ("/Song/*");
   al1 = bst_action_list_from_cats (cseq, 1, BST_STOCK_EXECUTE, NULL, bst_app_run_script_proc, self);
   gxk_action_list_sort (al1);
   gxk_widget_publish_action_list (widget, "tools-song", al1);
   /* CSynth & SNet utilities */
-  cseq = bse_categories_match ("/CSynth/*");
+  cseq = bse_server.category_match ("/CSynth/*");
   al1 = bst_action_list_from_cats (cseq, 1, BST_STOCK_EXECUTE, NULL, bst_app_run_script_proc, self);
   gxk_action_list_sort (al1);
-  cseq = bse_categories_match ("/SNet/*");
+  cseq = bse_server.category_match ("/SNet/*");
   al2 = bst_action_list_from_cats (cseq, 1, BST_STOCK_EXECUTE, NULL, bst_app_run_script_proc, self);
   gxk_action_list_sort (al2);
   al1 = gxk_action_list_merge (al1, al2);
   gxk_widget_publish_action_list (widget, "tools-synth", al1);
   /* WaveRepo utilities */
-  cseq = bse_categories_match ("/WaveRepo/*");
+  cseq = bse_server.category_match ("/WaveRepo/*");
   al1 = bst_action_list_from_cats (cseq, 1, BST_STOCK_EXECUTE, NULL, bst_app_run_script_proc, self);
   gxk_action_list_sort (al1);
   gxk_widget_publish_action_list (widget, "tools-wave-repo", al1);
@@ -791,7 +790,7 @@ static void
 bst_app_run_script_proc (gpointer data, size_t action_id)
 {
   BstApp *self = BST_APP (data);
-  BseCategory *cat = bse_category_find (g_quark_to_string (action_id));
+  Bse::Category cat = bst_category_find (g_quark_to_string (action_id));
   SfiProxy super = bst_app_get_current_super (self);
   const gchar *song = "", *wave_repo = "", *snet = "", *csynth = "";
 
@@ -806,7 +805,7 @@ bst_app_run_script_proc (gpointer data, size_t action_id)
         csynth = "custom-synth";
     }
 
-  bst_procedure_exec_auto (cat->otype,
+  bst_procedure_exec_auto (cat.otype.c_str(),
                            "project", SFI_TYPE_PROXY, self->project.proxy_id(),
                            song, SFI_TYPE_PROXY, super,
                            wave_repo, SFI_TYPE_PROXY, super,

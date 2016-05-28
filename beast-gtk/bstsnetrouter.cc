@@ -320,8 +320,8 @@ static void
 bst_router_run_method (gpointer user_data, size_t action_id)
 {
   BstSNetRouter *self = BST_SNET_ROUTER (user_data);
-  BseCategory *cat = bse_category_find (g_quark_to_string (action_id));
-  bst_procedure_exec_auto (cat->otype,
+  Bse::Category cat = bst_category_find (g_quark_to_string (action_id));
+  bst_procedure_exec_auto (cat.otype.c_str(),
                            "synth-net", SFI_TYPE_PROXY, self->snet.proxy_id(),
                            BSE_IS_CSYNTH (self->snet.proxy_id()) ? "custom-synth" : "", SFI_TYPE_PROXY, self->snet.proxy_id(),
                            NULL);
@@ -1016,11 +1016,10 @@ bst_snet_router_init (BstSNetRouter      *self)
                     NULL);
 
   /* CSynth & SNet utilities */
-  BseCategorySeq *cseq;
-  cseq = bse_categories_match ("/CSynth/*");
+  Bse::CategorySeq cseq = bse_server.category_match ("/CSynth/*");
   al1 = bst_action_list_from_cats (cseq, 1, BST_STOCK_EXECUTE, NULL, bst_router_run_method, self);
   gxk_action_list_sort (al1);
-  cseq = bse_categories_match ("/SNet/*");
+  cseq = bse_server.category_match ("/SNet/*");
   al2 = bst_action_list_from_cats (cseq, 1, BST_STOCK_EXECUTE, NULL, bst_router_run_method, self);
   gxk_action_list_sort (al2);
   al1 = gxk_action_list_merge (al1, al2);
@@ -1033,7 +1032,6 @@ bst_snet_router_init (BstSNetRouter      *self)
   gxk_widget_publish_actions (self, "router-toolbar-actions",
                               G_N_ELEMENTS (router_toolbar_actions), router_toolbar_actions,
                               NULL, NULL, snet_router_action_exec);
-  cseq = NULL;
 
   // construct module type action lists
   canvas_modules = gxk_action_list_create_grouped (self->canvas_tool);

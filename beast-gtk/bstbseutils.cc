@@ -1,5 +1,6 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bstbseutils.hh"
+#include "bstutils.hh"
 
 /* --- BEAST utilities --- */
 Bse::Error
@@ -61,23 +62,23 @@ bst_procedure_get_title (const gchar *procedure)
 {
   if (procedure)
     {
-      BseCategorySeq *cseq = bse_categories_match_typed ("*", procedure);
-      if (cseq->n_cats)
-        return cseq->cats[0]->category + bst_path_leaf_index (cseq->cats[0]->category);
+      Bse::CategorySeq cseq = bse_server.category_match_typed ("*", procedure);
+      if (cseq.size())
+        return cseq[0].category.c_str() + bst_path_leaf_index (cseq[0].category);
     }
   return NULL;
 }
 
 
-BseCategory*
-bse_category_find (const gchar* pattern)
+Bse::Category
+bst_category_find (const String &pattern)
 {
-  BseCategorySeq *cseq = NULL;
-  if (pattern)
-    cseq = bse_categories_match (pattern);
-  if (cseq && cseq->n_cats == 1)
-    return cseq->cats[0];
-  return NULL;
+  Bse::CategorySeq cseq;
+  if (!pattern.empty())
+    cseq = bse_server.category_match (pattern);
+  if (cseq.size() == 1)
+    return cseq[0];
+  return Bse::Category();
 }
 
 /// Return the character index of the last string segment not containing @a separator.

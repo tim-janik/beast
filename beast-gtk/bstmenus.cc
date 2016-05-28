@@ -4,13 +4,13 @@
 
 
 /* --- structures --- */
-struct _BstChoice
-{
+struct BstChoice {
   BstChoiceFlags type_and_flags;
   const gchar   *icon_stock_id;
-  BseIc0n       *bse_icon;
+  Bse::Icon      bseicon;
   const gchar   *name;
-  gpointer       p_id;
+  void          *p_id;
+  BstChoice() : type_and_flags (BST_CHOICE_TYPE_SEPARATOR), icon_stock_id (NULL), name (NULL), p_id (NULL) {}
 };
 
 
@@ -26,17 +26,22 @@ bst_choice_alloc (BstChoiceFlags type,
 		  const gchar   *choice_name,
 		  gpointer       choice_id,
 		  const gchar   *icon_stock_id,
-		  BseIc0n       *icon)
+		  const Bse::Icon &bseicon)
 {
-  BstChoice *choice = g_new (BstChoice, 1);
-
+  BstChoice *choice = new BstChoice();
   choice->type_and_flags = type;
   choice->icon_stock_id = icon_stock_id;
-  choice->bse_icon = icon ? bse_ic0n_copy_shallow (icon) : NULL;
+  choice->bseicon = bseicon;
   choice->name = choice_name;
   choice->p_id = choice_id;
 
   return choice;
+}
+
+static void
+free_choice (BstChoice *choice)
+{
+  delete choice;
 }
 
 static void
@@ -99,14 +104,6 @@ menu_item_add_activator (GtkWidget *widget,
     g_object_connect (widget,
 		      "signal::activate", function, NULL,
 		      NULL);
-}
-
-static void
-free_choice (BstChoice *choice)
-{
-  if (choice->bse_icon)
-    bse_ic0n_free (choice->bse_icon);
-  g_free (choice);
 }
 
 void
