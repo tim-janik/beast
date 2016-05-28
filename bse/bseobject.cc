@@ -59,7 +59,7 @@ enum
 enum
 {
   SIGNAL_RELEASE,
-  SIGNAL_IC0N_CHANGED,
+  SIGNAL_ICON_CHANGED,
   SIGNAL_LAST
 };
 
@@ -71,9 +71,9 @@ static gint		eclosure_equals			(gconstpointer	 c1,
 
 
 /* --- variables --- */
+GQuark             bse_quark_uname = 0;
+static GQuark	   bse_quark_icon = 0;
 static gpointer	   parent_class = NULL;
-GQuark		   bse_quark_uname = 0;
-GQuark		   bse_quark_icon = 0;
 static GQuark	   quark_blurb = 0;
 static GHashTable *object_unames_ht = NULL;
 static GHashTable *eclosures_ht = NULL;
@@ -574,52 +574,39 @@ bse_object_notify_icon_changed (BseObject *object)
 {
   assert_return (BSE_IS_OBJECT (object));
 
-  g_signal_emit (object, object_signals[SIGNAL_IC0N_CHANGED], 0);
+  g_signal_emit (object, object_signals[SIGNAL_ICON_CHANGED], 0);
 }
 
-BseIc0n*
+Bse::Icon
 bse_object_get_icon (BseObject *object)
 {
-  BseIc0n *icon;
-
-  assert_return (BSE_IS_OBJECT (object), NULL);
-
+  assert_return (BSE_IS_OBJECT (object), Bse::Icon());
   g_object_ref (object);
-
-  icon = BSE_OBJECT_GET_CLASS (object)->get_icon (object);
-
+  Bse::Icon icon = BSE_OBJECT_GET_CLASS (object)->get_icon (object);
   g_object_unref (object);
-
   return icon;
 }
 
-static BseIc0n*
+static Bse::Icon
 bse_object_do_get_icon (BseObject *object)
 {
-  BseIc0n *icon;
-
-  assert_return (BSE_IS_OBJECT (object), NULL);
-
-  icon = (BseIc0n*) g_object_get_qdata (G_OBJECT (object), bse_quark_icon);
+  assert_return (BSE_IS_OBJECT (object), Bse::Icon());
+  Bse::Icon *icon = (Bse::Icon*) g_object_get_qdata (G_OBJECT (object), bse_quark_icon);
   if (!icon)
     {
-      BseCategorySeq *cseq;
-      guint i;
-
       /* FIXME: this is a bit of a hack, we could store the first per-type
        * category icon as static type-data and fetch that from here
        */
-      cseq = bse_categories_from_type (G_OBJECT_TYPE (object));
-      for (i = 0; i < cseq->n_cats; i++)
-	if (cseq->cats[i]->icon)
+      Bse::CategorySeq cseq = bse_categories_from_type (G_OBJECT_TYPE (object));
+      for (uint i = 0; i < cseq.size(); i++)
+	if (cseq[i].icon.pixels.size())
 	  {
-	    icon = bse_ic0n_copy_shallow (cseq->cats[i]->icon);
-	    g_object_set_qdata_full (G_OBJECT (object), bse_quark_icon, icon, (GDestroyNotify) bse_ic0n_free);
+            icon = new Bse::Icon (cseq[i].icon);
+	    g_object_set_qdata_full (G_OBJECT (object), bse_quark_icon, icon, [] (void *d) { delete (Bse::Icon*) d; });
 	    break;
 	  }
-      bse_category_seq_free (cseq);
     }
-  return icon;
+  return icon ? *icon : Bse::Icon();
 }
 
 static void
@@ -879,10 +866,8 @@ bse_object_class_init (BseObjectClass *klass)
 						"",
 						SFI_PARAM_STANDARD ":skip-default"));
 
-  object_signals[SIGNAL_RELEASE] = bse_object_class_add_signal (klass, "release",
-								G_TYPE_NONE, 0);
-  object_signals[SIGNAL_IC0N_CHANGED] = bse_object_class_add_signal (klass, "icon_changed",
-								     G_TYPE_NONE, 0);
+  object_signals[SIGNAL_RELEASE] = bse_object_class_add_signal (klass, "release", G_TYPE_NONE, 0);
+  object_signals[SIGNAL_ICON_CHANGED] = bse_object_class_add_signal (klass, "icon_changed", G_TYPE_NONE, 0);
 }
 
 BSE_BUILTIN_TYPE (BseObject)

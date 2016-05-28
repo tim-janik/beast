@@ -864,6 +864,22 @@ interface Project : Container {
 interface PcmWriter : Item {
 };
 
+/// Categories describe useful type entities.
+record Category
+{
+  int32  category_id = Num ("Category ID", "", ":readwrite");
+  String category;
+  int32  mindex;
+  int32  lindex;
+  String otype;
+  Icon   icon;
+};
+
+/// Sequence of Category records.
+sequence CategorySeq {
+  Category cats;
+};
+
 /** Main Bse remote origin object.
  * The Bse::Server object controls the main BSE thread and keeps track of all objects
  * used in the BSE context.
@@ -911,6 +927,9 @@ interface Server : Object {
   int32           note_from_freq (MusicalTuning musical_tuning, float64 frequency);
   /// Retrieve the frequency of a certain note.
   float64         note_to_freq (MusicalTuning musical_tuning, int32 note, int32 fine_tune);
+
+  CategorySeq category_match_typed (String pattern, String type_name); ///< List BSE categories according to a pattern and type match.
+  CategorySeq category_match       (String pattern);                   ///< List BSE categories according to a pattern match.
 
   // *** Old Janitor ***
   // void   trigger_action   (String action); ///< Trigger an installed user action of this janitor.
