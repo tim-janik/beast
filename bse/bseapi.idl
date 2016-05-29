@@ -746,11 +746,12 @@ interface Song : SNet {
   void       remove_part             (Part part);   ///< Delete a Part from a Song.
   Track      create_track            ();            ///< Create a new Track for a Song.
   void       remove_track            (Track track); ///< Delete a Track from a Song.
-  // Bus        ensure_master_bus       ();            ///< Retrieve master output bus of a song, will create one if it doesn't exist.
-  // void       ensure_track_links      ();            ///< Ensure that each part in a song is inserted into at least one track.
-  // Track      find_track_for_part     (Part part);   ///< Find a track suitable for playing notes of a given part.
-  // Bus        get_master_bus          ();            ///< Retrieve master output bus of a song if it exists.
-  // void synthesize_note (Track track, int32 duration, int32 note, int32 fine_tune, float64 velocity); ///< Synthesize a note on a song of an active project.
+  Bus        ensure_master_bus       ();            ///< Retrieve master output bus of a song, will create one if it doesn't exist.
+  void       ensure_track_links      ();            ///< Ensure that each part in a song is inserted into at least one track.
+  Track      find_track_for_part     (Part part);   ///< Find a track suitable for playing notes of a given part.
+  Bus        get_master_bus          ();            ///< Retrieve master output bus of a song if it exists.
+  /// Synthesize a note on a song of an active project.
+  void       synthesize_note         (Track track, int32 duration, int32 note, int32 fine_tune, float64 velocity);
   // signal void   pointer_changed (int32 a);
   // group _("Timing") {
   // int32   tpqn          = Range  ("Ticks", "Number of ticks per quarter note", STANDARD, 384, 384, 0, 384);

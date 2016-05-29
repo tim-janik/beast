@@ -958,4 +958,110 @@ SongImpl::musical_tuning (MusicalTuning tuning)
     }
 }
 
+BusIfaceP
+SongImpl::ensure_master_bus ()
+{
+  BseSong *self = as<BseSong*>();
+  BseSource *child = bse_song_ensure_master (self);
+  return child->as<BusIfaceP>();
+}
+
+TrackIfaceP
+SongImpl::find_track_for_part (PartIface &part_iface)
+{
+  BseSong *self = as<BseSong*>();
+  BsePart *part = part_iface.as<BsePart*>();
+  BseTrack *track = NULL;
+  uint tick = 0;
+  for (SfiRing *ring = self->tracks_SL; ring; ring = sfi_ring_walk (ring, self->tracks_SL))
+    {
+      BseTrack *test_track = (BseTrack*) ring->data;
+      uint start;
+      if (bse_track_find_part (test_track, part, &start) &&
+	  (!track || start < tick))
+	{
+	  track = test_track;
+	  tick = start;
+	}
+    }
+  return track ? track->as<TrackIfaceP>() : NULL;
+}
+
+BusIfaceP
+SongImpl::get_master_bus ()
+{
+  BseSong *self = as<BseSong*>();
+  BseBus *bus = bse_song_find_master (self);
+  return bus ? bus->as<BusIfaceP>() : NULL;
+}
+
+void
+SongImpl::synthesize_note (TrackIface &track_iface, int duration, int note, int fine_tune, double velocity)
+{
+  BseSong *self = as<BseSong*>();
+  BseTrack *track = track_iface.as<BseTrack*>();
+  if (BSE_SOURCE_PREPARED (self) && self->midi_receiver_SL)
+    {
+      double semitone_factor = bse_transpose_factor (self->musical_tuning, CLAMP (note, SFI_MIN_NOTE, SFI_MAX_NOTE) - SFI_KAMMER_NOTE);
+      double freq = BSE_KAMMER_FREQUENCY * semitone_factor * bse_cent_tune_fast (fine_tune);
+      SfiTime tstamp = Bse::TickStamp::current() + bse_engine_block_size () * 2;
+      BseMidiEvent *eon, *eoff;
+      eon  = bse_midi_event_note_on (track->midi_channel_SL, tstamp, freq, velocity);
+      eoff = bse_midi_event_note_off (track->midi_channel_SL, tstamp + duration, freq);
+      bse_midi_receiver_push_event (self->midi_receiver_SL, eon);
+      bse_midi_receiver_push_event (self->midi_receiver_SL, eoff);
+      bse_midi_receiver_process_events (self->midi_receiver_SL, tstamp + duration);
+      bse_project_keep_activated (BSE_PROJECT (BSE_ITEM (self)->parent), tstamp + duration);
+    }
+}
+
+static const gchar*
+orphans_track_name (void)
+{
+  /* TRANSLATORS: this is the name of the track that is used to automatically
+   * adopt orphan (unlinked) parts.
+   */
+  return _("Orphan Parts");
+}
+
+static BseTrack*
+bse_song_ensure_orphans_track_noundo (BseSong *self)
+{
+  for (SfiRing *ring = self->tracks_SL; ring; ring = sfi_ring_walk (ring, self->tracks_SL))
+    {
+      BseTrack *track = (BseTrack*) ring->data;
+      gboolean muted = FALSE;
+      g_object_get (track, "muted", &muted, NULL);
+      if (muted && g_object_get_data ((GObject*) track, "BseSong-orphan-track") == bse_song_ensure_orphans_track_noundo) /* detect orphan-parts track */
+        return track;
+    }
+  BseTrack *child = (BseTrack*) bse_container_new_child_bname (BSE_CONTAINER (self), BSE_TYPE_TRACK, orphans_track_name(), NULL);
+  g_object_set (child, "muted", TRUE, NULL); /* no undo */
+  g_object_set_data ((GObject*) child, "BseSong-orphan-track", (void*) bse_song_ensure_orphans_track_noundo); /* mark orphan-parts track */
+  return child;
+}
+
+void
+SongImpl::ensure_track_links ()
+{
+  BseSong *self = as<BseSong*>();
+  bool clear_undo = false;
+  for (SfiRing *ring = self->parts; ring; ring = sfi_ring_walk (ring, self->parts))
+    {
+      BsePart *part = (BsePart*) ring->data;
+      if (bse_song_find_first_track (self, part))
+        continue;
+      BseTrack *track = bse_song_ensure_orphans_track_noundo (self);
+      TrackImpl *trackimpl = track->as<TrackImpl*>();
+      trackimpl->insert_part (bse_track_get_last_tick (track), *part->as<PartImpl*>());
+      clear_undo = true;
+    }
+  if (clear_undo)
+    {
+      BseProject *project = bse_item_get_project (self);
+      if (project)
+        bse_project_clear_undo (project);
+    }
+}
+
 } // Bse
