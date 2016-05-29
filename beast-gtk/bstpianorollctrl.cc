@@ -894,9 +894,15 @@ controller_piano_drag (BstPianoRollController *self,
 		       BstPianoRollDrag       *drag)
 {
   Bse::PartH part = self->proll->part;
-  SfiProxy song = bse_item_get_parent (part.proxy_id());
-  SfiProxy projectid = song ? bse_item_get_parent (song) : 0;
-  SfiProxy track = song ? bse_song_find_track_for_part (song, part.proxy_id()) : 0;
+  SfiProxy song_proxy = bse_item_get_parent (part.proxy_id());
+  SfiProxy projectid = song_proxy ? bse_item_get_parent (song_proxy) : 0;
+  Bse::SongH song;
+  Bse::TrackH track;
+  if (song_proxy)
+    {
+      song = Bse::SongH::down_cast (bse_server.from_proxy (song_proxy));
+      track = song.find_track_for_part (part);
+    }
 
   // printerr ("piano drag event, note=%d (valid=%d)", drag->current_note, drag->current_valid);
 
@@ -913,7 +919,7 @@ controller_piano_drag (BstPianoRollController *self,
 	  error = project.activate();
 	  self->obj_note = drag->current_note;
 	  if (error == Bse::Error::NONE)
-	    bse_song_synthesize_note (song, track, 384 * 4, self->obj_note, 0, 1.0);
+	    song.synthesize_note (track, 384 * 4, self->obj_note, 0, 1.0);
 	  bst_status_eprintf (error, _("Play note"));
 	  drag->state = GXK_DRAG_CONTINUE;
 	}

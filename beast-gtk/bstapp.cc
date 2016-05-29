@@ -892,7 +892,10 @@ app_action_exec (gpointer data,
     case BST_ACTION_NEW_SONG:
       bse_item_group_undo (self->project.proxy_id(), "Create Song");
       proxy = bse_project_create_song (self->project.proxy_id(), NULL);
-      bse_song_ensure_master_bus (proxy);
+      {
+        Bse::SongH song = Bse::SongH::down_cast (bse_server.from_proxy (proxy));
+        song.ensure_master_bus();
+      }
       bse_item_ungroup_undo (self->project.proxy_id());
       self->select_unseen_super = TRUE;
       break;

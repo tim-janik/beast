@@ -17,10 +17,9 @@ bst_project_restore_from_file (Bse::ProjectH project, const gchar *file_name, bo
       SfiProxy item = items[i].proxy_id();
       if (BSE_IS_SONG (item))
         {
-          /* fixup orphaned parts */
-          bse_song_ensure_track_links (item);
-          /* songs always need a master bus */
-          bse_song_ensure_master_bus (item);
+          Bse::SongH song = Bse::SongH::down_cast (bse_server.from_proxy (item));
+          song.ensure_track_links();    // fixup orphaned parts
+          song.ensure_master_bus();     // songs always need a master bus
         }
     }
   if (error == 0 && apply_project_file_name)
@@ -48,10 +47,9 @@ bst_project_import_midi_file (Bse::ProjectH project, const gchar *file_name)
       SfiProxy item = items[i].proxy_id();
       if (BSE_IS_SONG (item))
         {
-          /* fixup orphaned parts */
-          bse_song_ensure_track_links (item);
-          /* songs always need a master bus */
-          bse_song_ensure_master_bus (item);
+          Bse::SongH song = Bse::SongH::down_cast (bse_server.from_proxy (item));
+          song.ensure_track_links();    // fixup orphaned parts
+          song.ensure_master_bus();     // songs always need a master bus
         }
     }
   return error;
