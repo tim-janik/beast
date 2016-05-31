@@ -613,12 +613,12 @@ bse_song_ensure_master (BseSong *self)
       g_object_set (child, "master-output", TRUE, NULL); // not-undoable
       Bse::BusImpl *bus = child->as<Bse::BusImpl*>();
       Bse::ItemImpl::UndoDescriptor<Bse::BusImpl> bus_descriptor = this_->undo_descriptor (*bus);
-      auto lambda = [bus_descriptor] (Bse::SongImpl &self, BseUndoStack *ustack) -> Bse::Error {
+      auto remove_bus_lambda = [bus_descriptor] (Bse::SongImpl &self, BseUndoStack *ustack) -> Bse::Error {
         Bse::BusImpl &bus = self.undo_resolve (bus_descriptor);
         self.remove_bus (bus);
         return Bse::Error::NONE;
       };
-      this_->push_undo (__func__, *this_, lambda);
+      this_->push_undo (__func__, *this_, remove_bus_lambda);
       bse_item_undo_close (ustack);
     }
   return child;
@@ -785,12 +785,12 @@ SongImpl::create_bus ()
     return NULL;
   BusImpl *bus = ((BseItem*) bse_container_new_child (BSE_CONTAINER (self), BSE_TYPE_BUS, NULL))->as<BusImpl*>();
   UndoDescriptor<BusImpl> bus_descriptor = undo_descriptor (*bus);
-  auto lambda = [bus_descriptor] (SongImpl &self, BseUndoStack *ustack) -> Error {
+  auto remove_bus_lambda = [bus_descriptor] (SongImpl &self, BseUndoStack *ustack) -> Error {
     BusImpl &bus = self.undo_resolve (bus_descriptor);
     self.remove_bus (bus);
     return Error::NONE;
   };
-  push_undo (__func__, *this, lambda);
+  push_undo (__func__, *this, remove_bus_lambda);
   return bus->as<BusIfaceP>();
 }
 
@@ -798,24 +798,23 @@ void
 SongImpl::remove_bus (BusIface &bus_iface)
 {
   BseSong *self = as<BseSong*>();
-  BusImpl *bus = dynamic_cast<BusImpl*> (&bus_iface);
-  return_unless (bus->parent() == this);
-  if (BSE_SOURCE_PREPARED (self))
-    return;
-  BseItem *child = bus->as<BseItem*>();
-  BseUndoStack *ustack = bse_item_undo_open (self, "Remove Bus");
+  BusImpl &bus = dynamic_cast<BusImpl&> (bus_iface);
+  assert_return (bus.parent() == this);
+  return_unless (BSE_SOURCE_PREPARED (self) == false);
+  BseItem *child = bus.as<BseItem*>();
+  BseUndoStack *ustack = bse_item_undo_open (self, __func__);
   // reset ::master-output property undoable
   bse_item_set (child, "master-output", FALSE, NULL);
   // backup object references to undo stack
   bse_container_uncross_undoable (BSE_CONTAINER (self), child);
   // implement "undo" of bse_container_remove_backedup, i.e. redo
-  UndoDescriptor<BusImpl> bus_descriptor = undo_descriptor (*bus);
-  auto lambda = [bus_descriptor] (SongImpl &self, BseUndoStack *ustack) -> Error {
+  UndoDescriptor<BusImpl> bus_descriptor = undo_descriptor (bus);
+  auto remove_bus_lambda = [bus_descriptor] (SongImpl &self, BseUndoStack *ustack) -> Error {
     BusImpl &bus = self.undo_resolve (bus_descriptor);
     self.remove_bus (bus);
     return Error::NONE;
   };
-  push_undo_to_redo (__func__, *this, lambda);
+  push_undo_to_redo (__func__, *this, remove_bus_lambda);
   // backup and remove (without redo queueing)
   bse_container_remove_backedup (BSE_CONTAINER (self), child, ustack);
   // done
@@ -829,12 +828,12 @@ SongImpl::create_part ()
   BseItem *child = (BseItem*) bse_container_new_child (BSE_CONTAINER (self), BSE_TYPE_PART, NULL);
   PartImpl *part = child->as<PartImpl*>();
   UndoDescriptor<PartImpl> part_descriptor = undo_descriptor (*part);
-  auto lambda = [part_descriptor] (SongImpl &self, BseUndoStack *ustack) -> Error {
+  auto remove_part_lambda = [part_descriptor] (SongImpl &self, BseUndoStack *ustack) -> Error {
     PartImpl &part = self.undo_resolve (part_descriptor);
     self.remove_part (part);
     return Error::NONE;
   };
-  push_undo (__func__, *this, lambda);
+  push_undo (__func__, *this, remove_part_lambda);
   return part->as<PartIfaceP>();
 }
 
@@ -852,12 +851,12 @@ SongImpl::remove_part (PartIface &part_iface)
   bse_container_uncross_undoable (BSE_CONTAINER (self), child);
   // implement "undo" of bse_container_remove_backedup, i.e. redo
   UndoDescriptor<PartImpl> part_descriptor = undo_descriptor (*part);
-  auto lambda = [part_descriptor] (SongImpl &self, BseUndoStack *ustack) -> Error {
+  auto remove_part_lambda = [part_descriptor] (SongImpl &self, BseUndoStack *ustack) -> Error {
     PartImpl &part = self.undo_resolve (part_descriptor);
     self.remove_part (part);
     return Error::NONE;
   };
-  push_undo_to_redo (__func__, *this, lambda);
+  push_undo_to_redo (__func__, *this, remove_part_lambda);
   // remove (without redo queueing)
   bse_container_remove_backedup (BSE_CONTAINER (self), child, ustack);
   // done
@@ -872,12 +871,12 @@ SongImpl::create_track ()
   BseItem *child = (BseItem*) bse_container_new_child (BSE_CONTAINER (self), BSE_TYPE_TRACK, NULL);
   TrackImpl *track = child->as<TrackImpl*>();
   UndoDescriptor<TrackImpl> track_descriptor = undo_descriptor (*track);
-  auto lambda = [track_descriptor] (SongImpl &self, BseUndoStack *ustack) -> Error {
+  auto remove_track_lambda = [track_descriptor] (SongImpl &self, BseUndoStack *ustack) -> Error {
     TrackImpl &track = self.undo_resolve (track_descriptor);
     self.remove_track (track);
     return Error::NONE;
   };
-  push_undo (__func__, *this, lambda);
+  push_undo (__func__, *this, remove_track_lambda);
   return track->as<TrackIfaceP>();
 }
 
@@ -895,12 +894,12 @@ SongImpl::remove_track (TrackIface &track_iface)
   bse_container_uncross_undoable (BSE_CONTAINER (self), child);
   // implement "undo" of bse_container_remove_backedup, i.e. redo
   UndoDescriptor<TrackImpl> track_descriptor = undo_descriptor (*track);
-  auto lambda = [track_descriptor] (SongImpl &self, BseUndoStack *ustack) -> Error {
+  auto remove_track_lambda = [track_descriptor] (SongImpl &self, BseUndoStack *ustack) -> Error {
     TrackImpl &track = self.undo_resolve (track_descriptor);
     self.remove_track (track);
     return Error::NONE;
   };
-  push_undo_to_redo (__func__, *this, lambda);
+  push_undo_to_redo (__func__, *this, remove_track_lambda);
   // remove (without redo queueing)
   bse_container_remove_backedup (BSE_CONTAINER (self), child, ustack);
   // done
