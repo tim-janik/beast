@@ -48,8 +48,6 @@ beast-gtk/bstusermessage.cc
 beast-gtk/bstutils.cc
 beast-gtk/bstwaveeditor.cc
 beast-gtk/bstwaveview.cc
-beast-gtk/res/radgets-beast.xml
-beast-gtk/res/radgets-standard.xml
 beast-gtk/gxk/gxklistwrapper.cc
 beast-gtk/gxk/gxkparam-entry.cc
 beast-gtk/gxk/gxkparam-label.cc
@@ -57,6 +55,8 @@ beast-gtk/gxk/gxkparam-scale.cc
 beast-gtk/gxk/gxkparam-spinner.cc
 beast-gtk/gxk/gxkparam-toggle.cc
 beast-gtk/gxk/gxksimplelabel.cc
+beast-gtk/res/radgets-beast.xml
+beast-gtk/res/radgets-standard.xml
 bse/bseapi.idl
 bse/bsebasics.idl
 bse/bsebiquadfilter.cc
