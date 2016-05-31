@@ -63,7 +63,6 @@ bse/bsebiquadfilter.cc
 bse/bsebus.cc
 bse/bsebusmodule.idl
 bse/bseconstant.cc
-bse/bsecontainer.proc
 bse/bsedevice.cc
 bse/bseenums.cc
 bse/bseinstrumentinput.cc
@@ -85,7 +84,6 @@ bse/bsepcmoutput.cc
 bse/bseserver.cc
 bse/bsesnooper.cc
 bse/bsesong.cc
-bse/bsesong.proc
 bse/bsesource.proc
 bse/bsestandardosc.cc
 bse/bsesubiport.cc
