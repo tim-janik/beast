@@ -19,6 +19,7 @@ G_BEGIN_DECLS
 typedef struct {
   GtkHBox	 parent_instance;
   Bse::ProjectH  project;
+  size_t         sig_state_changed_id;
   GxkLed	*led;
   GtkWidget	*stop;
   GtkWidget	*rew;

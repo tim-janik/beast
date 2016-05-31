@@ -46,18 +46,15 @@ bst_project_ctrl_finalize (GObject *object)
 }
 
 static void
-project_state_changed (BstProjectCtrl *self,
-		       SfiChoice       choice)
+project_state_changed (BstProjectCtrl *self, Bse::ProjectState state)
 {
-  BseProjectState state = bse_project_state_from_choice (choice);
-
   if (self->led)
     switch (state)
       {
-      case BSE_PROJECT_ACTIVE:
+      case Bse::ProjectState::ACTIVE:
 	gxk_led_set_color (self->led, GXK_LED_BLUE);
 	break;
-      case BSE_PROJECT_PLAYING:
+      case Bse::ProjectState::PLAYING:
 	gxk_led_set_color (self->led, GXK_LED_GREEN);
 	break;
       default:
@@ -78,18 +75,21 @@ bst_project_ctrl_set_project (BstProjectCtrl *self, Bse::ProjectH project)
   assert_return (BST_IS_PROJECT_CTRL (self));
 
   if (self->project)
-    bse_proxy_disconnect (self->project.proxy_id(),
-			  "any_signal", project_state_changed, self,
-			  "any_signal::release", project_release, self,
-			  NULL);
+    {
+      bse_proxy_disconnect (self->project.proxy_id(),
+                            "any_signal::release", project_release, self,
+                            NULL);
+      self->project.sig_state_changed() -= self->sig_state_changed_id;
+      self->sig_state_changed_id = 0;
+    }
   self->project = project;
   if (self->project)
     {
       bse_proxy_connect (self->project.proxy_id(),
-			 "swapped_signal::state-changed", project_state_changed, self,
 			 "swapped_signal::release", project_release, self,
 			 NULL);
-      project_state_changed (self, bse_project_state_to_choice (bse_project_get_state (self->project.proxy_id())));
+      self->sig_state_changed_id = self->project.sig_state_changed() += [self] (Bse::ProjectState state) { project_state_changed (self, state); };
+      project_state_changed (self, self->project.get_state());
     }
   else if (self->led)
     gxk_led_set_color (self->led, GXK_LED_OFF);
@@ -99,6 +99,7 @@ static void
 bst_project_ctrl_init (BstProjectCtrl *self)
 {
   new (&self->project) Bse::ProjectH();
+  self->sig_state_changed_id = 0;
   GtkWidget *box = GTK_WIDGET (self);
   GtkWidget *frame;
   guint spaceing = 0;

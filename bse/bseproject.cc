@@ -75,7 +75,6 @@ static BseUndoStack* bse_project_get_undo       (BseItem                *item);
 
 /* --- variables --- */
 static GTypeClass *parent_class = NULL;
-static guint       signal_state_changed = 0;
 static GQuark      quark_storage_trap = 0;
 
 
@@ -135,10 +134,6 @@ bse_project_class_init (BseProjectClass *klass)
                               PARAM_DIRTY,
                               sfi_pspec_bool ("dirty", NULL, "Whether project needs saving",
                                               FALSE, "r"));
-
-  signal_state_changed = bse_object_class_add_signal (object_class, "state-changed",
-						      G_TYPE_NONE,
-						      1, BSE_TYPE_PROJECT_STATE);
 }
 
 static void
@@ -171,7 +166,7 @@ static void
 bse_project_init (BseProject *self,
 		  gpointer    rclass)
 {
-  self->state = BSE_PROJECT_INACTIVE;
+  self->state = Bse::ProjectState::INACTIVE;
   self->supers = NULL;
   self->items = NULL;
   self->in_undo = FALSE;
@@ -321,7 +316,7 @@ bse_project_push_undo_silent_deactivate (BseProject *self)
    * an "add-on" step, which just prepares state for execution of further
    * undo steps, if there are any pending.
    */
-  if (self->state != BSE_PROJECT_INACTIVE)
+  if (self->state != Bse::ProjectState::INACTIVE)
     {
       BseUndoStack *ustack = bse_item_undo_open (self, "deactivate-project");
       BseUndoStep *ustep = bse_undo_step_new (project_undo_do_deactivate, project_undo_do_deactivate_free, 1);
@@ -706,14 +701,13 @@ auto_deactivate (gpointer data)
 {
   BseProject *self = BSE_PROJECT (data);
   self->deactivate_timer = 0;
-  if (self->state == BSE_PROJECT_ACTIVE)
+  if (self->state == Bse::ProjectState::ACTIVE)
     bse_project_deactivate (self);
   return FALSE;
 }
 
 void
-bse_project_state_changed (BseProject     *self,
-			   BseProjectState state)
+bse_project_state_changed (BseProject *self, Bse::ProjectState state)
 {
   assert_return (BSE_IS_PROJECT (self));
 
@@ -723,7 +717,7 @@ bse_project_state_changed (BseProject     *self,
       self->deactivate_timer = 0;
     }
   self->state = state;
-  if (self->state == BSE_PROJECT_ACTIVE && self->deactivate_usecs >= 0)
+  if (self->state == Bse::ProjectState::ACTIVE && self->deactivate_usecs >= 0)
     {
       SfiTime stamp = Bse::TickStamp::current();
       SfiTime delay_usecs = 0;
@@ -731,7 +725,7 @@ bse_project_state_changed (BseProject     *self,
 	delay_usecs = (self->deactivate_min_tick - stamp) * 1000000 / bse_engine_sample_freq ();
       self->deactivate_timer = bse_idle_timed (self->deactivate_usecs + delay_usecs, auto_deactivate, self);
     }
-  g_signal_emit (self, signal_state_changed, 0, state);
+  self->as<Bse::ProjectIface*>()->sig_state_changed.emit (state);
 }
 
 void
@@ -757,7 +751,7 @@ bse_project_activate (BseProject *self)
 
   assert_return (BSE_IS_PROJECT (self), Bse::Error::INTERNAL);
 
-  if (self->state != BSE_PROJECT_INACTIVE)
+  if (self->state != Bse::ProjectState::INACTIVE)
     return Bse::Error::NONE;
 
   assert_return (BSE_SOURCE_PREPARED (self) == FALSE, Bse::Error::INTERNAL);
@@ -786,7 +780,7 @@ bse_project_activate (BseProject *self)
 	super->context_handle = ~0;
     }
   bse_trans_commit (trans);
-  bse_project_state_changed (self, BSE_PROJECT_ACTIVE);
+  bse_project_state_changed (self, Bse::ProjectState::ACTIVE);
   return Bse::Error::NONE;
 }
 
@@ -799,7 +793,7 @@ bse_project_start_playback (BseProject *self)
 
   assert_return (BSE_IS_PROJECT (self));
 
-  if (self->state != BSE_PROJECT_ACTIVE)
+  if (self->state != Bse::ProjectState::ACTIVE)
     return;
   assert_return (BSE_SOURCE_PREPARED (self) == TRUE);
 
@@ -830,7 +824,7 @@ bse_project_start_playback (BseProject *self)
   bse_engine_wait_on_trans();
   /* update state */
   if (seen_synth || songs)
-    bse_project_state_changed (self, BSE_PROJECT_PLAYING);
+    bse_project_state_changed (self, Bse::ProjectState::PLAYING);
   /* then, start the sequencer */
   while (songs)
     Bse::Sequencer::instance().start_song ((BseSong*) sfi_ring_pop_head (&songs), 0);
@@ -844,7 +838,7 @@ bse_project_stop_playback (BseProject *self)
 
   assert_return (BSE_IS_PROJECT (self));
 
-  if (self->state != BSE_PROJECT_PLAYING)
+  if (self->state != Bse::ProjectState::PLAYING)
     return;
   assert_return (BSE_SOURCE_PREPARED (self) == TRUE);
 
@@ -867,7 +861,7 @@ bse_project_stop_playback (BseProject *self)
   /* wait until after all modules have actually been dismissed */
   bse_engine_wait_on_trans ();
   /* update state */
-  bse_project_state_changed (self, BSE_PROJECT_ACTIVE);
+  bse_project_state_changed (self, Bse::ProjectState::ACTIVE);
 }
 
 void
@@ -875,7 +869,7 @@ bse_project_check_auto_stop (BseProject *self)
 {
   assert_return (BSE_IS_PROJECT (self));
 
-  if (self->state == BSE_PROJECT_PLAYING)
+  if (self->state == Bse::ProjectState::PLAYING)
     {
       GSList *slist;
       for (slist = self->supers; slist; slist = slist->next)
@@ -899,7 +893,7 @@ bse_project_deactivate (BseProject *self)
 
   assert_return (BSE_IS_PROJECT (self));
 
-  if (self->state == BSE_PROJECT_INACTIVE)
+  if (self->state == Bse::ProjectState::INACTIVE)
     return;
   assert_return (BSE_SOURCE_PREPARED (self) == TRUE);
 
@@ -920,7 +914,7 @@ bse_project_deactivate (BseProject *self)
   /* wait until after all modules have actually been dismissed */
   bse_engine_wait_on_trans ();
   bse_source_reset (BSE_SOURCE (self));
-  bse_project_state_changed (self, BSE_PROJECT_INACTIVE);
+  bse_project_state_changed (self, Bse::ProjectState::INACTIVE);
 
   bse_server_close_devices (bse_server_get ());
 }
@@ -945,15 +939,15 @@ Error
 ProjectImpl::play ()
 {
   BseProject *self = as<BseProject*>();
-  BseProjectState state_before = self->state;
+  Bse::ProjectState state_before = self->state;
   Bse::Error error = bse_project_activate (self);
   if (error == 0)
     {
-      if (self->state == BSE_PROJECT_PLAYING)
+      if (self->state == Bse::ProjectState::PLAYING)
         bse_project_stop_playback (self);
       bse_project_start_playback (self);
     }
-  if (state_before == BSE_PROJECT_INACTIVE && self->state != BSE_PROJECT_INACTIVE)
+  if (state_before == Bse::ProjectState::INACTIVE && self->state != Bse::ProjectState::INACTIVE)
     {
       // some things work only (can only be undone) in deactivated projects
       bse_project_push_undo_silent_deactivate (self);
@@ -965,9 +959,9 @@ Error
 ProjectImpl::activate ()
 {
   BseProject *self = as<BseProject*>();
-  BseProjectState state_before = self->state;
+  Bse::ProjectState state_before = self->state;
   Bse::Error error = bse_project_activate (self);
-  if (state_before == BSE_PROJECT_INACTIVE && self->state != BSE_PROJECT_INACTIVE)
+  if (state_before == Bse::ProjectState::INACTIVE && self->state != Bse::ProjectState::INACTIVE)
     {
       // some things work only (can only be undone) in deactivated projects
       bse_project_push_undo_silent_deactivate (self);
@@ -988,23 +982,23 @@ bool
 ProjectImpl::is_playing ()
 {
   BseProject *self = as<BseProject*>();
-  return self->state == BSE_PROJECT_PLAYING;
+  return self->state == Bse::ProjectState::PLAYING;
 }
 
 bool
 ProjectImpl::is_active ()
 {
   BseProject *self = as<BseProject*>();
-  return self->state != BSE_PROJECT_INACTIVE;
+  return self->state != Bse::ProjectState::INACTIVE;
 }
 
 void
 ProjectImpl::start_playback ()
 {
   BseProject *self = as<BseProject*>();
-  BseProjectState state_before = self->state;
+  Bse::ProjectState state_before = self->state;
   bse_project_start_playback (self);
-  if (state_before == BSE_PROJECT_INACTIVE && self->state != BSE_PROJECT_INACTIVE)
+  if (state_before == Bse::ProjectState::INACTIVE && self->state != Bse::ProjectState::INACTIVE)
     {
       // some things work only (can only be undone) in deactivated projects
       bse_project_push_undo_silent_deactivate (self);
@@ -1175,6 +1169,13 @@ ProjectImpl::restore_from_file (const String &file_name)
   else
     error = Bse::Error::PROC_BUSY;
   return Bse::Error (error);
+}
+
+ProjectState
+ProjectImpl::get_state ()
+{
+  BseProject *self = as<BseProject*>();
+  return self->state;
 }
 
 } // Bse
