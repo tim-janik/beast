@@ -13,6 +13,7 @@
 #include "bstprofiler.hh"
 #include "bstusermessage.hh"
 #include <string.h>
+#include <algorithm>
 
 
 /* --- prototypes --- */
@@ -439,20 +440,6 @@ bst_app_get_current_super (BstApp *app)
   return 0;
 }
 
-static gint
-proxy_rate_item (SfiProxy p)
-{
-  if (BSE_IS_WAVE_REPO (p))
-    return 1;
-  else if (BSE_IS_SONG (p))
-    return 2;
-  else if (BSE_IS_MIDI_SYNTH (p))
-    return 4;
-  else if (BSE_IS_CSYNTH (p))
-    return 3;
-  return 5;
-}
-
 static void
 app_update_page_item (SfiProxy     item,
                       const gchar *property_name,
@@ -523,16 +510,24 @@ bst_app_add_page_item (BstApp  *self,
   g_free (tip);
 }
 
-static gint
-proxyp_cmp_items (gconstpointer v1,
-                  gconstpointer v2,
-                  gpointer      data)
+static int
+proxy_rate_item (SfiProxy p)
 {
-  const SfiProxy *p1 = (const SfiProxy*) v1;
-  const SfiProxy *p2 = (const SfiProxy*) v2;
-  if (*p1 == *p2)
-    return 0;
-  return proxy_rate_item (*p1) - proxy_rate_item (*p2);
+  if (BSE_IS_WAVE_REPO (p))
+    return 1;
+  else if (BSE_IS_SONG (p))
+    return 2;
+  else if (BSE_IS_MIDI_SYNTH (p))
+    return 4;
+  else if (BSE_IS_CSYNTH (p))
+    return 3;
+  return 5;
+}
+
+static bool
+super_rating_lesser (Bse::SuperH &a, Bse::SuperH &b)
+{
+  return proxy_rate_item (a.proxy_id()) < proxy_rate_item (b.proxy_id());
 }
 
 static void
@@ -543,31 +538,30 @@ bst_app_reload_pages (BstApp *self)
   GtkWidget *old_focus = GTK_WINDOW (self)->focus_widget;
   if (old_focus)
     gtk_widget_ref (old_focus);
-  SfiProxy old_item = self->ppages->selected ? (SfiProxy) self->ppages->selected->user_data : 0;
+  SfiProxy old_super = self->ppages->selected ? (SfiProxy) self->ppages->selected->user_data : 0;
 
-  /* collect page objects */
-  BseIt3mSeq *iseq = bse_project_get_supers (self->project.proxy_id());
-  SfiRing *ring, *proxies = NULL;
-  guint i;
-  for (i = 0; i < iseq->n_items; i++)
-    if (!bse_item_internal (iseq->items[i]) || BST_DBG_EXT)
-      proxies = sfi_ring_append (proxies, iseq->items + i);
-  /* sort proxies */
-  proxies = sfi_ring_sort (proxies, proxyp_cmp_items, NULL);
+  // collect Super objects that need their own view
+  Bse::SuperSeq sseq = self->project.get_supers();
+  // sort out internal objects
+  for (Bse::SuperSeq::iterator it = sseq.begin(); it != sseq.end();)
+    if (!BST_DBG_EXT && bse_item_internal (it->proxy_id()))
+      it = sseq.erase (it);
+    else
+      ++it;
+  // sort Super objects according to UI display preference
+  std::sort (sseq.begin(), sseq.end(), super_rating_lesser);
 
-  /* remove outdated project pages */
+  // remove views for pruned Super objects
   SfiRing *outdated = NULL;
-  GSList *slist;
-  for (slist = self->ppages->entries; slist; slist = slist->next)
+  for (GSList *slist = self->ppages->entries; slist; slist = slist->next)
     {
       GxkAssortmentEntry *entry = (GxkAssortmentEntry*) slist->data;
-      for (ring = proxies; ring; ring = sfi_ring_next (ring, proxies))
-        {
-          SfiProxy *pp = (SfiProxy*) ring->data, item = *pp;
-          if (item == (SfiProxy) entry->user_data)
-            break;
-        }
-      if (!ring)
+      const SfiProxy view_proxy = (SfiProxy) entry->user_data;
+      Bse::SuperH super;
+      for (auto &candidate : sseq)
+        if (candidate.proxy_id() == view_proxy)
+          super = candidate;
+      if (!super)
         outdated = sfi_ring_append (outdated, entry);
     }
   while (outdated)
@@ -576,31 +570,32 @@ bst_app_reload_pages (BstApp *self)
       gxk_assortment_remove (self->ppages, entry);
     }
 
-  /* add missing project pages */
+  // create views for new Super objects
   SfiProxy first_unseen = 0, first_synth = 0;
-  i = 0;
-  for (ring = proxies; ring; ring = sfi_ring_next (ring, proxies), i++)
+  size_t pos = 0;
+  for (auto &super : sseq)
     {
-      SfiProxy *pp = (SfiProxy*) ring->data, item = *pp;
-      if (!gxk_assortment_find_data (self->ppages, (void*) item))
+      SfiProxy view_proxy = super.proxy_id();
+      if (!gxk_assortment_find_data (self->ppages, (void*) view_proxy))
         {
-          bst_app_add_page_item (self, i, item);
+          bst_app_add_page_item (self, pos, view_proxy);
           if (!first_unseen)
-            first_unseen = item;
+            first_unseen = view_proxy;
         }
-      if (!first_synth && BSE_IS_SNET (item))
-        first_synth = item;
+      if (!first_synth && BSE_IS_SNET (view_proxy))
+        first_synth = view_proxy;
+      pos++;
     }
 
-  /* select/restore current page */
+  // re-select current page
   if (first_unseen && self->select_unseen_super)
     gxk_assortment_select_data (self->ppages, (void*) first_unseen);
-  else if (old_item && gxk_assortment_find_data (self->ppages, (void*) old_item))
-    gxk_assortment_select_data (self->ppages, (void*) old_item);
+  else if (old_super && gxk_assortment_find_data (self->ppages, (void*) old_super))
+    gxk_assortment_select_data (self->ppages, (void*) old_super);
   else if (first_synth)
     gxk_assortment_select_data (self->ppages, (void*) first_synth);
   self->select_unseen_super = FALSE;
-  /* restore focus */
+  // restore focus
   if (old_focus)
     {
       if (gxk_widget_ancestry_viewable (old_focus) &&

@@ -97,6 +97,7 @@ public:
   virtual Error              import_midi_file    (const String &file_name) override;
   virtual Error              restore_from_file   (const String &file_name) override;
   virtual ProjectState       get_state           () override;
+  virtual SuperSeq           get_supers          () override;
 };
 
 } // Bse

@@ -1178,4 +1178,17 @@ ProjectImpl::get_state ()
   return self->state;
 }
 
+SuperSeq
+ProjectImpl::get_supers ()
+{
+  BseProject *self = as<BseProject*>();
+  SuperSeq sseq;
+  for (GSList *slist = self->supers; slist; slist = slist->next)
+    {
+      BseItem *bseitem = (BseItem*) slist->data;
+      sseq.push_back (bseitem->as<SuperIfaceP>());
+    }
+  return sseq;
+}
+
 } // Bse

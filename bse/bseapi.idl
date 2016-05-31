@@ -627,6 +627,11 @@ interface Container : Source {
 interface Super : Container {
 };
 
+/// A list of Super type objects.
+sequence SuperSeq {
+  Super supers;
+};
+
 /// Base interface type for all kinds of synthesis networks.
 interface SNet : Super {
   bool        supports_user_synths ();                ///< Check whether users may edit synthesis modules of this network.
@@ -844,7 +849,7 @@ interface Project : Container {
   void         clear_undo          (); ///< Delete all recorded undo or redo steps.
   void         clean_dirty         (); ///< Clear a project's dirty flags.
   bool         is_dirty            (); ///< Check whether a project needs saving.
-  //ItemSeq      get_supers          (); ///< Retrieve all Super type objects of this project.
+  SuperSeq     get_supers          (); ///< Retrieve all Super type objects of this project.
   //Error        store_bse           (Super super, String file_name, bool self_contained);
   //Song         create_song         (String name); ///< Create a song for this project.
   //WaveRepo     get_wave_repo       ();            ///< Retrieve the project's unique wave repository.
