@@ -242,7 +242,7 @@ unlisted:
 	@ # report...
 	@test `wc -l <unlisted` -gt 0 || rm -f unlisted
 	@if test -e unlisted ; then \
-	  echo "Found `wc -l <unlisted` untranslated files, see:"; ls -l "`pwd`/unlisted" ; \
+	  echo "Missing `wc -l <unlisted` untranslated file from POTSCAN, see:"; ls -l "`pwd`/unlisted" ; \
 	else echo "Done, all files listed." ; fi
 DISTDIRPAT = '^$(PACKAGE)-$(VERSION)/' # ignore $(distdir)/*
 FIND_NOHIDDEN = \( -name '.?*' -prune -false -o ! -name '.?*' \) # skip .foobar dirs & files
