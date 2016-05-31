@@ -63,6 +63,7 @@ bse/bsebiquadfilter.cc
 bse/bsebus.cc
 bse/bsebusmodule.idl
 bse/bseconstant.cc
+bse/bsecsynth.cc
 bse/bsedevice.cc
 bse/bseenums.cc
 bse/bseinstrumentinput.cc

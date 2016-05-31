@@ -549,8 +549,10 @@ static void
 bse_song_init (BseSong *self)
 {
   BseSNet *snet = BSE_SNET (self);
-  Bse::SongTiming timing;
 
+  bse_item_set (self, "uname", _("Song"), NULL);
+
+  Bse::SongTiming timing;
   bse_song_timing_get_default (&timing);
 
   BSE_OBJECT_UNSET_FLAGS (self, BSE_SNET_FLAG_USER_SYNTH);
