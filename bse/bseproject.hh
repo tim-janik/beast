@@ -98,6 +98,13 @@ public:
   virtual Error              restore_from_file   (const String &file_name) override;
   virtual ProjectState       get_state           () override;
   virtual SuperSeq           get_supers          () override;
+  virtual Error              store_bse           (SuperIface &super, const String &file_name, bool self_contained) override;
+  virtual SongIfaceP         create_song         (const String &name) override;
+  virtual WaveRepoIfaceP     get_wave_repo       () override;
+  virtual CSynthIfaceP       create_csynth       (const String &name) override;
+  virtual MidiSynthIfaceP    create_midi_synth   (const String &name) override;
+  virtual MidiNotifierIfaceP get_midi_notifier   () override;
+  virtual void               remove_snet         (SNetIface &snet) override;
 };
 
 } // Bse

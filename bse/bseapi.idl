@@ -850,13 +850,13 @@ interface Project : Container {
   void         clean_dirty         (); ///< Clear a project's dirty flags.
   bool         is_dirty            (); ///< Check whether a project needs saving.
   SuperSeq     get_supers          (); ///< Retrieve all Super type objects of this project.
-  //Error        store_bse           (Super super, String file_name, bool self_contained);
-  //Song         create_song         (String name); ///< Create a song for this project.
-  //WaveRepo     get_wave_repo       ();            ///< Retrieve the project's unique wave repository.
-  //CSynth       create_csynth       (String name); ///< Create a synthsizer network for this project.
-  //MidiSynth    create_midi_synth   (String name); ///< Create a MIDI synthesizer network for this project.
-  //MidiNotifier get_midi_notifier   ();            ///< Retrieve the project's midi notifier object.
-  //void         remove_snet         (SNet snet);   ///< Remove an existing synthesizer network from this project.
+  Error        store_bse           (Super super, String file_name, bool self_contained);
+  Song         create_song         (String name); ///< Create a song for this project.
+  WaveRepo     get_wave_repo       ();            ///< Retrieve the project's unique wave repository.
+  CSynth       create_csynth       (String name); ///< Create a synthsizer network for this project.
+  MidiSynth    create_midi_synth   (String name); ///< Create a MIDI synthesizer network for this project.
+  MidiNotifier get_midi_notifier   ();            ///< Retrieve the project's midi notifier object.
+  void         remove_snet         (SNet snet);   ///< Remove an existing synthesizer network from this project.
   Error        restore_from_file   (String file_name); ///< Load a project from file.
   /// Inject a MIDI control event into the project's MIDI receiver.
   void         inject_midi_control (int32 midi_channel, int32 midi_control, float64 control_value);

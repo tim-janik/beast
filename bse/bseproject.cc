@@ -1,6 +1,6 @@
 // Licensed GNU LGPL v2.1 or later: http://www.gnu.org/licenses/lgpl.html
 #include "bseproject.hh"
-
+#include "bsemidisynth.hh"
 #include "bsesuper.hh"
 #include "bsestorage.hh"
 #include "bsesong.hh"
@@ -1189,6 +1189,124 @@ ProjectImpl::get_supers ()
       sseq.push_back (bseitem->as<SuperIfaceP>());
     }
   return sseq;
+}
+
+void
+ProjectImpl::remove_snet (SNetIface &snet_iface)
+{
+  BseProject *self = as<BseProject*>();
+  SNetImpl &snet = dynamic_cast<SNetImpl&> (snet_iface);
+  assert_return (snet.parent() == this);
+  return_unless (BSE_SOURCE_PREPARED (self) == false);
+  BseItem *child = snet.as<BseItem*>();
+  BseUndoStack *ustack = bse_item_undo_open (self, __func__);
+  // backup object references to undo stack
+  bse_container_uncross_undoable (BSE_CONTAINER (self), child);
+  // implement "undo" of bse_container_remove_backedup, i.e. redo
+  UndoDescriptor<SNetImpl> snet_descriptor = undo_descriptor (snet);
+  auto lambda = [snet_descriptor] (ProjectImpl &self, BseUndoStack *ustack) -> Error {
+    SNetImpl &snet = self.undo_resolve (snet_descriptor);
+    self.remove_snet (snet);
+    return Error::NONE;
+  };
+  push_undo_to_redo (__func__, *this, lambda);
+  // backup and remove (without redo queueing)
+  bse_container_remove_backedup (BSE_CONTAINER (self), child, ustack);
+  // done
+  bse_item_undo_close (ustack);
+}
+
+Error
+ProjectImpl::store_bse (SuperIface &super_iface, const String &file_name, bool self_contained)
+{
+  BseProject *self = as<BseProject*>();
+  SuperImpl *super = dynamic_cast<SuperImpl*> (&super_iface);
+  BseSuper *bsesuper = super ? super->as<BseSuper*>() : NULL;
+  if (super)
+    assert_return (super->parent() == this, Error::INTERNAL);
+  return bse_project_store_bse (self, bsesuper, file_name.c_str(), self_contained);
+}
+
+SongIfaceP
+ProjectImpl::create_song (const String &name)
+{
+  BseProject *self = as<BseProject*>();
+  BseUndoStack *ustack = bse_item_undo_open (self, __func__);
+  BseSong *song = (BseSong*) bse_container_new_child (self, BSE_TYPE_SONG, NULL);
+  if (song)
+    {
+      if (!name.empty())
+        bse_item_set (song, "uname", name.c_str(), NULL);
+      UndoDescriptor<SongImpl> song_descriptor = undo_descriptor (*song->as<SongImpl*>());
+      auto remove_song_lambda = [song_descriptor] (ProjectImpl &self, BseUndoStack *ustack) -> Error {
+        SongImpl &song = self.undo_resolve (song_descriptor);
+        self.remove_snet (song);
+        return Error::NONE;
+      };
+      push_undo (__func__, *this, remove_song_lambda);
+    }
+  bse_item_undo_close (ustack);
+  return song->as<SongIfaceP>();
+}
+
+CSynthIfaceP
+ProjectImpl::create_csynth (const String &name)
+{
+  BseProject *self = as<BseProject*>();
+  BseUndoStack *ustack = bse_item_undo_open (self, __func__);
+  BseCSynth *csynth = (BseCSynth*) bse_container_new_child (self, BSE_TYPE_CSYNTH, NULL);
+  if (csynth)
+    {
+      if (!name.empty())
+        bse_item_set (csynth, "uname", name.c_str(), NULL);
+      UndoDescriptor<CSynthImpl> csynth_descriptor = undo_descriptor (*csynth->as<CSynthImpl*>());
+      auto remove_csynth_lambda = [csynth_descriptor] (ProjectImpl &self, BseUndoStack *ustack) -> Error {
+        CSynthImpl &csynth = self.undo_resolve (csynth_descriptor);
+        self.remove_snet (csynth);
+        return Error::NONE;
+      };
+      push_undo (__func__, *this, remove_csynth_lambda);
+    }
+  bse_item_undo_close (ustack);
+  return csynth->as<CSynthIfaceP>();
+}
+
+MidiSynthIfaceP
+ProjectImpl::create_midi_synth (const String &name)
+{
+  BseProject *self = as<BseProject*>();
+  BseUndoStack *ustack = bse_item_undo_open (self, __func__);
+  BseMidiSynth *midi_synth = (BseMidiSynth*) bse_container_new_child (self, BSE_TYPE_MIDI_SYNTH, NULL);
+  if (midi_synth)
+    {
+      if (!name.empty())
+        bse_item_set (midi_synth, "uname", name.c_str(), NULL);
+      UndoDescriptor<MidiSynthImpl> midi_synth_descriptor = undo_descriptor (*midi_synth->as<MidiSynthImpl*>());
+      auto remove_midi_synth_lambda = [midi_synth_descriptor] (ProjectImpl &self, BseUndoStack *ustack) -> Error {
+        MidiSynthImpl &midi_synth = self.undo_resolve (midi_synth_descriptor);
+        self.remove_snet (midi_synth);
+        return Error::NONE;
+      };
+      push_undo (__func__, *this, remove_midi_synth_lambda);
+    }
+  bse_item_undo_close (ustack);
+  return midi_synth->as<MidiSynthIfaceP>();
+}
+
+WaveRepoIfaceP
+ProjectImpl::get_wave_repo ()
+{
+  BseProject *self = as<BseProject*>();
+  BseWaveRepo *wrepo = bse_project_get_wave_repo (self);
+  return wrepo ? wrepo->as<WaveRepoIfaceP>() : NULL;
+}
+
+MidiNotifierIfaceP
+ProjectImpl::get_midi_notifier ()
+{
+  BseProject *self = as<BseProject*>();
+  BseMidiNotifier *notifier = bse_project_get_midi_notifier (self);
+  return notifier ? notifier->as<MidiNotifierIfaceP>() : NULL;
 }
 
 } // Bse

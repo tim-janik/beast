@@ -116,7 +116,7 @@ idl_dummy_files = $(strip	\
 # BSE procedure sources
 bse_proc_sources = $(strip \
 	bseeditablesample.proc	\
-	bsejanitor.proc								bseproject.proc		\
+	bsejanitor.proc		\
 										bsesource.proc		\
 				bseitem.proc					bsewaveosc.proc		\
 )
